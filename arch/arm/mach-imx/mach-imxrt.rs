@@ -7,7 +7,7 @@
 // Dependencies supplied by the kernel architecture headers:
 // linux/kernel.h, asm/mach/arch.h, and asm/v7m.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // `__initconst` places this data in the kernel's init-const section.
 #[used]
@@ -27,7 +27,7 @@ static IMXRT_COMPAT: [*const c_char; 2] = [
 //
 // Preserve the macro-generated registration as an external kernel item.
 extern "C" {
-    static IMXRTDT: core::ffi::c_void;
+    static IMXRTDT: kernel::ffi::c_void;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

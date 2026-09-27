@@ -19,8 +19,8 @@ extern "C" {
     fn omap_hwmod_read(oh: *mut omap_hwmod, reg: u16) -> u32;
     fn omap_hwmod_write(v: u32, oh: *mut omap_hwmod, reg: u16);
     fn omap_hwmod_softreset(oh: *mut omap_hwmod);
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
     fn udelay(usec: u32);
 }
 
@@ -37,7 +37,7 @@ pub struct omap_hwmod_class {
 #[repr(C)]
 pub struct omap_hwmod {
     pub r#class: *mut omap_hwmod_class,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 const SYSS_RESETDONE_MASK: u32 = 1 << 0;

@@ -7,13 +7,13 @@
 
 #[repr(C)]
 pub struct adf_etr_ring_debug_entry {
-    pub ring_name: [core::ffi::c_char; ADF_CFG_MAX_KEY_LEN_IN_BYTES as usize],
+    pub ring_name: [kernel::ffi::c_char; ADF_CFG_MAX_KEY_LEN_IN_BYTES as usize],
     pub debug: *mut dentry,
 }
 
 #[repr(C)]
 pub struct adf_etr_ring_data {
-    pub base_addr: *mut core::ffi::c_void,
+    pub base_addr: *mut kernel::ffi::c_void,
     pub inflights: *mut atomic_t,
     pub callback: adf_callback_fn,
     pub bank: *mut adf_etr_bank_data,
@@ -32,7 +32,7 @@ pub struct adf_etr_ring_data {
 pub struct adf_etr_bank_data {
     pub rings: *mut adf_etr_ring_data,
     pub resp_handler: tasklet_struct,
-    pub csr_addr: *mut core::ffi::c_void,
+    pub csr_addr: *mut kernel::ffi::c_void,
     pub irq_coalesc_timer: u32,
     pub bank_number: u32,
     pub ring_mask: u16,
@@ -59,7 +59,7 @@ extern "C" {
     pub fn adf_bank_debugfs_rm(bank: *mut adf_etr_bank_data);
     pub fn adf_ring_debugfs_add(
         ring: *mut adf_etr_ring_data,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> i32;
     pub fn adf_ring_debugfs_rm(ring: *mut adf_etr_ring_data);
 }
@@ -75,7 +75,7 @@ pub unsafe fn adf_bank_debugfs_rm(_bank: *mut adf_etr_bank_data) {}
 #[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn adf_ring_debugfs_add(
     _ring: *mut adf_etr_ring_data,
-    _name: *const core::ffi::c_char,
+    _name: *const kernel::ffi::c_char,
 ) -> i32 {
     0
 }

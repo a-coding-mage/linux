@@ -61,11 +61,11 @@ extern "C" {
     fn dev_get_drvdata(dev: *mut device) -> *mut intel_soc_pmic;
     fn intel_pmic_install_opregion_handler(
         dev: *mut device,
-        handle: *mut core::ffi::c_void,
+        handle: *mut kernel::ffi::c_void,
         regmap: *mut regmap,
         data: *const intel_pmic_opregion_data,
     ) -> i32;
-    fn acpi_dev_clear_dependencies(companion: *mut core::ffi::c_void);
+    fn acpi_dev_clear_dependencies(companion: *mut kernel::ffi::c_void);
     fn acpi_lpat_raw_to_temp(raw: i32, lpat: i32) -> i32;
 }
 
@@ -159,7 +159,7 @@ unsafe extern "C" fn chtdc_ti_pmic_opregion_probe(pdev: *mut platform_device) ->
 
 #[repr(C)]
 struct platform_device_id {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 static chtdc_ti_pmic_opregion_id_table: [platform_device_id; 2] = [
@@ -170,7 +170,7 @@ static chtdc_ti_pmic_opregion_id_table: [platform_device_id; 2] = [
 #[repr(C)]
 struct platform_driver {
     probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32>,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     id_table: *const platform_device_id,
 }
 

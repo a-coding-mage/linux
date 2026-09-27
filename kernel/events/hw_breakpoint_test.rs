@@ -9,7 +9,7 @@
 
 const MAX_TEST_BREAKPOINTS: usize = 512;
 
-static mut BREAK_VARS: [core::ffi::c_char; MAX_TEST_BREAKPOINTS] = [0; MAX_TEST_BREAKPOINTS];
+static mut BREAK_VARS: [kernel::ffi::c_char; MAX_TEST_BREAKPOINTS] = [0; MAX_TEST_BREAKPOINTS];
 static mut TEST_BPS: [*mut perf_event; MAX_TEST_BREAKPOINTS] = [core::ptr::null_mut(); MAX_TEST_BREAKPOINTS];
 static mut OTHER_TASK: *mut task_struct = core::ptr::null_mut();
 
@@ -35,7 +35,7 @@ struct kunit_case {
 #[allow(non_camel_case_types)]
 #[repr(C)]
 struct kunit_suite {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     test_cases: *mut kunit_case,
     init: Option<unsafe extern "C" fn(*mut kunit) -> i32>,
     exit: Option<unsafe extern "C" fn(*mut kunit)>,
@@ -43,10 +43,10 @@ struct kunit_suite {
 
 extern "C" {
     fn hw_breakpoint_init(attr: *mut perf_event_attr);
-    fn perf_event_create_kernel_counter(attr: *mut perf_event_attr, cpu: i32, tsk: *mut task_struct, overflow_handler: *mut core::ffi::c_void, context: *mut core::ffi::c_void) -> *mut perf_event;
+    fn perf_event_create_kernel_counter(attr: *mut perf_event_attr, cpu: i32, tsk: *mut task_struct, overflow_handler: *mut kernel::ffi::c_void, context: *mut kernel::ffi::c_void) -> *mut perf_event;
     fn unregister_hw_breakpoint(bp: *mut perf_event);
     fn hw_breakpoint_slots(kind: i32) -> i32;
-    fn kthread_create(threadfn: unsafe extern "C" fn(*mut core::ffi::c_void) -> i32, data: *mut core::ffi::c_void, name: *const core::ffi::c_char) -> *mut task_struct;
+    fn kthread_create(threadfn: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32, data: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char) -> *mut task_struct;
     fn kthread_stop(tsk: *mut task_struct);
     fn num_online_cpus() -> i32;
     fn hw_breakpoint_is_used() -> bool;
@@ -96,7 +96,7 @@ unsafe fn fill_bp_slots(test: *mut kunit, id: &mut i32, cpu: i32, tsk: *mut task
     *id + get_test_bp_slots() <= MAX_TEST_BREAKPOINTS as i32
 }
 
-unsafe extern "C" fn dummy_kthread(_arg: *mut core::ffi::c_void) -> i32 { 0 }
+unsafe extern "C" fn dummy_kthread(_arg: *mut kernel::ffi::c_void) -> i32 { 0 }
 
 unsafe fn get_other_task(_test: *mut kunit) -> *mut task_struct {
     if !OTHER_TASK.is_null() { return OTHER_TASK; }

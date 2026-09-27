@@ -20,11 +20,11 @@ pub unsafe fn tick_resume_local() {}
 
 #[cfg(all(CONFIG_GENERIC_CLOCKEVENTS, CONFIG_HOTPLUG_CPU))]
 extern "C" {
-    pub fn tick_cpu_dying(cpu: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    pub fn tick_cpu_dying(cpu: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
     pub fn tick_assert_timekeeping_handover();
 }
 #[cfg(not(all(CONFIG_GENERIC_CLOCKEVENTS, CONFIG_HOTPLUG_CPU)))]
-pub const tick_cpu_dying: Option<unsafe extern "C" fn(::core::ffi::c_uint) -> ::core::ffi::c_int> = None;
+pub const tick_cpu_dying: Option<unsafe extern "C" fn(::kernel::ffi::c_uint) -> ::kernel::ffi::c_int> = None;
 #[cfg(not(all(CONFIG_GENERIC_CLOCKEVENTS, CONFIG_HOTPLUG_CPU)))]
 pub unsafe fn tick_assert_timekeeping_handover() {}
 
@@ -41,9 +41,9 @@ extern "C" { pub fn tick_irq_enter(); }
 pub unsafe fn tick_irq_enter() {}
 
 #[cfg(all(CONFIG_GENERIC_CLOCKEVENTS_BROADCAST, CONFIG_TICK_ONESHOT))]
-extern "C" { pub fn hotplug_cpu__broadcast_tick_pull(dead_cpu: ::core::ffi::c_int); }
+extern "C" { pub fn hotplug_cpu__broadcast_tick_pull(dead_cpu: ::kernel::ffi::c_int); }
 #[cfg(not(all(CONFIG_GENERIC_CLOCKEVENTS_BROADCAST, CONFIG_TICK_ONESHOT)))]
-pub unsafe fn hotplug_cpu__broadcast_tick_pull(_dead_cpu: ::core::ffi::c_int) {}
+pub unsafe fn hotplug_cpu__broadcast_tick_pull(_dead_cpu: ::kernel::ffi::c_int) {}
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -60,14 +60,14 @@ extern "C" { pub fn tick_broadcast_control(mode: tick_broadcast_mode); }
 pub unsafe fn tick_broadcast_control(_mode: tick_broadcast_mode) {}
 
 #[cfg(CONFIG_GENERIC_CLOCKEVENTS)]
-extern "C" { pub fn tick_broadcast_oneshot_control(state: tick_broadcast_state) -> ::core::ffi::c_int; }
+extern "C" { pub fn tick_broadcast_oneshot_control(state: tick_broadcast_state) -> ::kernel::ffi::c_int; }
 #[cfg(not(CONFIG_GENERIC_CLOCKEVENTS))]
-pub unsafe fn tick_broadcast_oneshot_control(_state: tick_broadcast_state) -> ::core::ffi::c_int { 0 }
+pub unsafe fn tick_broadcast_oneshot_control(_state: tick_broadcast_state) -> ::kernel::ffi::c_int { 0 }
 
 pub unsafe fn tick_broadcast_enable() { tick_broadcast_control(tick_broadcast_mode::TICK_BROADCAST_ON); }
 pub unsafe fn tick_broadcast_disable() { tick_broadcast_control(tick_broadcast_mode::TICK_BROADCAST_OFF); }
 pub unsafe fn tick_broadcast_force() { tick_broadcast_control(tick_broadcast_mode::TICK_BROADCAST_FORCE); }
-pub unsafe fn tick_broadcast_enter() -> ::core::ffi::c_int { tick_broadcast_oneshot_control(tick_broadcast_state::TICK_BROADCAST_ENTER) }
+pub unsafe fn tick_broadcast_enter() -> ::kernel::ffi::c_int { tick_broadcast_oneshot_control(tick_broadcast_state::TICK_BROADCAST_ENTER) }
 pub unsafe fn tick_broadcast_exit() { tick_broadcast_oneshot_control(tick_broadcast_state::TICK_BROADCAST_EXIT); }
 
 #[repr(C)]
@@ -96,13 +96,13 @@ extern "C" {
     pub static mut tick_nohz_enabled: bool;
     pub fn tick_nohz_is_active() -> bool;
     pub fn tick_nohz_tick_stopped() -> bool;
-    pub fn tick_nohz_tick_stopped_cpu(cpu: ::core::ffi::c_int) -> bool;
+    pub fn tick_nohz_tick_stopped_cpu(cpu: ::kernel::ffi::c_int) -> bool;
     pub fn tick_nohz_idle_stop_tick(); pub fn tick_nohz_idle_retain_tick(); pub fn tick_nohz_idle_restart_tick();
     pub fn tick_nohz_idle_enter(); pub fn tick_nohz_idle_exit(); pub fn tick_nohz_irq_exit();
     pub fn tick_nohz_idle_got_tick() -> bool;
     pub fn tick_nohz_get_next_hrtimer() -> ktime_t;
     pub fn tick_nohz_get_sleep_length(delta_next: *mut ktime_t) -> ktime_t;
-    pub fn tick_nohz_get_idle_calls_cpu(cpu: ::core::ffi::c_int) -> ::core::ffi::c_ulong;
+    pub fn tick_nohz_get_idle_calls_cpu(cpu: ::kernel::ffi::c_int) -> ::kernel::ffi::c_ulong;
 }
 #[cfg(not(CONFIG_NO_HZ_COMMON))]
 pub const tick_nohz_enabled: i32 = 0;
@@ -111,7 +111,7 @@ pub unsafe fn tick_nohz_is_active() -> bool { false }
 #[cfg(not(CONFIG_NO_HZ_COMMON))]
 pub unsafe fn tick_nohz_tick_stopped() -> i32 { 0 }
 #[cfg(not(CONFIG_NO_HZ_COMMON))]
-pub unsafe fn tick_nohz_tick_stopped_cpu(_cpu: ::core::ffi::c_int) -> i32 { 0 }
+pub unsafe fn tick_nohz_tick_stopped_cpu(_cpu: ::kernel::ffi::c_int) -> i32 { 0 }
 #[cfg(not(CONFIG_NO_HZ_COMMON))]
 pub unsafe fn tick_nohz_idle_stop_tick() {}
 #[cfg(not(CONFIG_NO_HZ_COMMON))]
@@ -138,24 +138,24 @@ extern "C" {
 extern "C" {
     pub static mut tick_nohz_full_running: bool;
     pub fn tick_nohz_full_enabled() -> bool;
-    pub fn tick_nohz_full_cpu(cpu: ::core::ffi::c_int) -> bool;
+    pub fn tick_nohz_full_cpu(cpu: ::kernel::ffi::c_int) -> bool;
     pub fn tick_nohz_dep_set(bit: tick_dep_bits); pub fn tick_nohz_dep_clear(bit: tick_dep_bits);
-    pub fn tick_nohz_dep_set_cpu(cpu: ::core::ffi::c_int, bit: tick_dep_bits);
-    pub fn tick_nohz_dep_clear_cpu(cpu: ::core::ffi::c_int, bit: tick_dep_bits);
+    pub fn tick_nohz_dep_set_cpu(cpu: ::kernel::ffi::c_int, bit: tick_dep_bits);
+    pub fn tick_nohz_dep_clear_cpu(cpu: ::kernel::ffi::c_int, bit: tick_dep_bits);
     pub fn tick_nohz_dep_set_task(tsk: *mut task_struct, bit: tick_dep_bits);
     pub fn tick_nohz_dep_clear_task(tsk: *mut task_struct, bit: tick_dep_bits);
     pub fn tick_nohz_dep_set_signal(tsk: *mut task_struct, bit: tick_dep_bits);
     pub fn tick_nohz_dep_clear_signal(signal: *mut signal_struct, bit: tick_dep_bits);
-    pub fn tick_nohz_cpu_hotpluggable(cpu: ::core::ffi::c_uint) -> bool;
-    pub fn tick_nohz_full_kick_cpu(cpu: ::core::ffi::c_int); pub fn __tick_nohz_task_switch();
+    pub fn tick_nohz_cpu_hotpluggable(cpu: ::kernel::ffi::c_uint) -> bool;
+    pub fn tick_nohz_full_kick_cpu(cpu: ::kernel::ffi::c_int); pub fn __tick_nohz_task_switch();
     pub fn tick_nohz_full_setup(cpumask: cpumask_var_t);
 }
 #[cfg(not(CONFIG_NO_HZ_FULL))]
 pub unsafe fn tick_nohz_full_enabled() -> bool { false }
 #[cfg(not(CONFIG_NO_HZ_FULL))]
-pub unsafe fn tick_nohz_full_cpu(_cpu: ::core::ffi::c_int) -> bool { false }
+pub unsafe fn tick_nohz_full_cpu(_cpu: ::kernel::ffi::c_int) -> bool { false }
 #[cfg(not(CONFIG_NO_HZ_FULL))]
-pub unsafe fn tick_nohz_full_kick_cpu(_cpu: ::core::ffi::c_int) {}
+pub unsafe fn tick_nohz_full_kick_cpu(_cpu: ::kernel::ffi::c_int) {}
 #[cfg(not(CONFIG_NO_HZ_FULL))]
 pub unsafe fn __tick_nohz_task_switch() {}
 #[cfg(not(CONFIG_NO_HZ_FULL))]
@@ -166,9 +166,9 @@ pub unsafe fn tick_dep_set(bit: tick_dep_bits) { if tick_nohz_full_enabled() { t
 #[cfg(CONFIG_NO_HZ_FULL)]
 pub unsafe fn tick_dep_clear(bit: tick_dep_bits) { if tick_nohz_full_enabled() { tick_nohz_dep_clear(bit); } }
 #[cfg(CONFIG_NO_HZ_FULL)]
-pub unsafe fn tick_dep_set_cpu(cpu: ::core::ffi::c_int, bit: tick_dep_bits) { if tick_nohz_full_cpu(cpu) { tick_nohz_dep_set_cpu(cpu, bit); } }
+pub unsafe fn tick_dep_set_cpu(cpu: ::kernel::ffi::c_int, bit: tick_dep_bits) { if tick_nohz_full_cpu(cpu) { tick_nohz_dep_set_cpu(cpu, bit); } }
 #[cfg(CONFIG_NO_HZ_FULL)]
-pub unsafe fn tick_dep_clear_cpu(cpu: ::core::ffi::c_int, bit: tick_dep_bits) { if tick_nohz_full_cpu(cpu) { tick_nohz_dep_clear_cpu(cpu, bit); } }
+pub unsafe fn tick_dep_clear_cpu(cpu: ::kernel::ffi::c_int, bit: tick_dep_bits) { if tick_nohz_full_cpu(cpu) { tick_nohz_dep_clear_cpu(cpu, bit); } }
 #[cfg(CONFIG_NO_HZ_FULL)]
 pub unsafe fn tick_dep_set_task(tsk: *mut task_struct, bit: tick_dep_bits) { if tick_nohz_full_enabled() { tick_nohz_dep_set_task(tsk, bit); } }
 #[cfg(CONFIG_NO_HZ_FULL)]
@@ -178,15 +178,15 @@ pub unsafe fn tick_dep_set_signal(tsk: *mut task_struct, bit: tick_dep_bits) { i
 #[cfg(CONFIG_NO_HZ_FULL)]
 pub unsafe fn tick_dep_clear_signal(signal: *mut signal_struct, bit: tick_dep_bits) { if tick_nohz_full_enabled() { tick_nohz_dep_clear_signal(signal, bit); } }
 #[cfg(not(CONFIG_NO_HZ_FULL))]
-pub unsafe fn tick_nohz_cpu_hotpluggable(_cpu: ::core::ffi::c_uint) -> bool { true }
+pub unsafe fn tick_nohz_cpu_hotpluggable(_cpu: ::kernel::ffi::c_uint) -> bool { true }
 #[cfg(not(CONFIG_NO_HZ_FULL))]
 pub unsafe fn tick_dep_set(_bit: tick_dep_bits) {}
 #[cfg(not(CONFIG_NO_HZ_FULL))]
 pub unsafe fn tick_dep_clear(_bit: tick_dep_bits) {}
 #[cfg(not(CONFIG_NO_HZ_FULL))]
-pub unsafe fn tick_dep_set_cpu(_cpu: ::core::ffi::c_int, _bit: tick_dep_bits) {}
+pub unsafe fn tick_dep_set_cpu(_cpu: ::kernel::ffi::c_int, _bit: tick_dep_bits) {}
 #[cfg(not(CONFIG_NO_HZ_FULL))]
-pub unsafe fn tick_dep_clear_cpu(_cpu: ::core::ffi::c_int, _bit: tick_dep_bits) {}
+pub unsafe fn tick_dep_clear_cpu(_cpu: ::kernel::ffi::c_int, _bit: tick_dep_bits) {}
 #[cfg(not(CONFIG_NO_HZ_FULL))]
 pub unsafe fn tick_dep_set_task(_tsk: *mut task_struct, _bit: tick_dep_bits) {}
 #[cfg(not(CONFIG_NO_HZ_FULL))]

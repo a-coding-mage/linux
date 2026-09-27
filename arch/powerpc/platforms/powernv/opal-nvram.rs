@@ -11,7 +11,7 @@
 extern "C" {
     fn opal_read_nvram(buf: u64, count: usize, offset: i32) -> i64;
     fn opal_write_nvram(buf: u64, count: usize, offset: i32) -> i64;
-    fn opal_poll_events(arg: *mut core::ffi::c_void);
+    fn opal_poll_events(arg: *mut kernel::ffi::c_void);
     fn in_interrupt() -> bool;
     fn irqs_disabled() -> bool;
     fn mdelay(ms: u64);
@@ -20,16 +20,16 @@ extern "C" {
     fn nvram_init_oops_partition(partition: i32);
     fn of_find_compatible_node(
         from: *mut device_node,
-        type_: *const core::ffi::c_char,
-        compatible: *const core::ffi::c_char,
+        type_: *const kernel::ffi::c_char,
+        compatible: *const kernel::ffi::c_char,
     ) -> *mut device_node;
     fn of_get_property(
         node: *mut device_node,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         length: *mut i32,
     ) -> *const u32;
     fn of_node_put(node: *mut device_node);
-    fn pr_info(format: *const core::ffi::c_char, ...);
+    fn pr_info(format: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -139,7 +139,7 @@ pub unsafe extern "C" fn opal_nvram_init() {
     np = of_find_compatible_node(
         core::ptr::null_mut(),
         core::ptr::null(),
-        b"ibm,opal-nvram\0".as_ptr() as *const core::ffi::c_char,
+        b"ibm,opal-nvram\0".as_ptr() as *const kernel::ffi::c_char,
     );
     if np.is_null() {
         return;
@@ -147,7 +147,7 @@ pub unsafe extern "C" fn opal_nvram_init() {
 
     nbytes_p = of_get_property(
         np,
-        b"#bytes\0".as_ptr() as *const core::ffi::c_char,
+        b"#bytes\0".as_ptr() as *const kernel::ffi::c_char,
         core::ptr::null_mut(),
     );
     if nbytes_p.is_null() {
@@ -156,7 +156,7 @@ pub unsafe extern "C" fn opal_nvram_init() {
     }
     NVRAM_SIZE = u32::from_be(*nbytes_p);
 
-    pr_info(b"OPAL nvram setup, %u bytes\n\0".as_ptr() as *const core::ffi::c_char, NVRAM_SIZE);
+    pr_info(b"OPAL nvram setup, %u bytes\n\0".as_ptr() as *const kernel::ffi::c_char, NVRAM_SIZE);
     of_node_put(np);
 
     ppc_md.nvram_read = Some(opal_nvram_read);

@@ -31,11 +31,11 @@ const PC263_DO_8_15_REG: usize = 0x01;
 
 #[repr(C)]
 struct pc263_board {
-    name: *const ::core::ffi::c_char,
+    name: *const ::kernel::ffi::c_char,
 }
 
 static PC263_BOARDS: [pc263_board; 1] = [pc263_board {
-    name: b"pc263\0".as_ptr() as *const ::core::ffi::c_char,
+    name: b"pc263\0".as_ptr() as *const ::kernel::ffi::c_char,
 }];
 
 unsafe extern "C" {
@@ -69,7 +69,7 @@ struct comedi_subdevice {
     subdev_flags: u32,
     n_chan: u32,
     maxdata: u32,
-    range_table: *const core::ffi::c_void,
+    range_table: *const kernel::ffi::c_void,
     insn_bits: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_subdevice, *mut comedi_insn, *mut u32) -> i32>,
     state: u32,
 }
@@ -85,7 +85,7 @@ struct comedi_devconfig {
 }
 
 extern "C" {
-    static range_digital: core::ffi::c_void;
+    static range_digital: kernel::ffi::c_void;
 }
 
 const COMEDI_SUBD_DO: u32 = 2;
@@ -127,7 +127,7 @@ unsafe extern "C" fn pc263_attach(
     s.subdev_flags = SDF_WRITABLE;
     s.n_chan = 16;
     s.maxdata = 1;
-    s.range_table = &range_digital as *const _ as *const core::ffi::c_void;
+    s.range_table = &range_digital as *const _ as *const kernel::ffi::c_void;
     s.insn_bits = Some(pc263_do_insn_bits);
 
     // read initial relay state
@@ -141,17 +141,17 @@ unsafe extern "C" fn pc263_attach(
 // Linux module_comedi_driver and MODULE_* declarations in the C source.
 #[repr(C)]
 struct comedi_driver {
-    driver_name: *const ::core::ffi::c_char,
-    module: *const core::ffi::c_void,
+    driver_name: *const ::kernel::ffi::c_char,
+    module: *const kernel::ffi::c_void,
     attach: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_devconfig) -> i32>,
     detach: Option<unsafe extern "C" fn(*mut comedi_device) -> i32>,
-    board_name: *const *const ::core::ffi::c_char,
+    board_name: *const *const ::kernel::ffi::c_char,
     offset: usize,
     num_names: usize,
 }
 
 static mut AMPLC_PC263_DRIVER: comedi_driver = comedi_driver {
-    driver_name: b"amplc_pc263\0".as_ptr() as *const ::core::ffi::c_char,
+    driver_name: b"amplc_pc263\0".as_ptr() as *const ::kernel::ffi::c_char,
     module: core::ptr::null(),
     attach: Some(pc263_attach),
     detach: Some(comedi_legacy_detach),

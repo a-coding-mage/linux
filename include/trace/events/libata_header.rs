@@ -54,13 +54,13 @@ macro_rules! show_class_name { ($v:expr) => { __print_symbolic!($v, ATA_DEV_UNKN
 macro_rules! show_sff_hsm_state_name { ($v:expr) => { __print_symbolic!($v, HSM_ST_IDLE, HSM_ST_FIRST, HSM_ST, HSM_ST_LAST, HSM_ST_ERR) }; }
 
 extern "C" {
-    pub fn libata_trace_parse_status(p: *mut trace_seq, s: u8) -> *const core::ffi::c_char;
-    pub fn libata_trace_parse_host_stat(p: *mut trace_seq, s: u8) -> *const core::ffi::c_char;
-    pub fn libata_trace_parse_eh_action(p: *mut trace_seq, a: u32) -> *const core::ffi::c_char;
-    pub fn libata_trace_parse_eh_err_mask(p: *mut trace_seq, m: u32) -> *const core::ffi::c_char;
-    pub fn libata_trace_parse_qc_flags(p: *mut trace_seq, f: u32) -> *const core::ffi::c_char;
-    pub fn libata_trace_parse_tf_flags(p: *mut trace_seq, f: u32) -> *const core::ffi::c_char;
-    pub fn libata_trace_parse_subcmd(p: *mut trace_seq, c: u8, f: u8, h: u8) -> *const core::ffi::c_char;
+    pub fn libata_trace_parse_status(p: *mut trace_seq, s: u8) -> *const kernel::ffi::c_char;
+    pub fn libata_trace_parse_host_stat(p: *mut trace_seq, s: u8) -> *const kernel::ffi::c_char;
+    pub fn libata_trace_parse_eh_action(p: *mut trace_seq, a: u32) -> *const kernel::ffi::c_char;
+    pub fn libata_trace_parse_eh_err_mask(p: *mut trace_seq, m: u32) -> *const kernel::ffi::c_char;
+    pub fn libata_trace_parse_qc_flags(p: *mut trace_seq, f: u32) -> *const kernel::ffi::c_char;
+    pub fn libata_trace_parse_tf_flags(p: *mut trace_seq, f: u32) -> *const kernel::ffi::c_char;
+    pub fn libata_trace_parse_subcmd(p: *mut trace_seq, c: u8, f: u8, h: u8) -> *const kernel::ffi::c_char;
 }
 
 // The following trace-event declarations preserve the complete source topology

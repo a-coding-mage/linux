@@ -14,8 +14,8 @@ pub struct mm_context {
 
     /* Address range in need of a TLB sync */
     pub sync_tlb_lock: spinlock_t,
-    pub sync_tlb_range_from: ::core::ffi::c_ulong,
-    pub sync_tlb_range_to: ::core::ffi::c_ulong,
+    pub sync_tlb_range_from: ::kernel::ffi::c_ulong,
+    pub sync_tlb_range_to: ::kernel::ffi::c_ulong,
 }
 
 pub type mm_context_t = mm_context;

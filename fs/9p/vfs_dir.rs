@@ -10,16 +10,16 @@
 
 #[repr(C)]
 pub struct p9_rdir {
-    pub head: libc::c_int,
-    pub tail: libc::c_int,
+    pub head: kernel::ffi::c_int,
+    pub tail: kernel::ffi::c_int,
     pub offset: libc::loff_t,
     pub buf: [u8; 0],
 }
 
 #[inline]
-unsafe fn dt_type(mistat: *mut p9_wstat) -> libc::c_int {
-    let perm: libc::c_ulong = (*mistat).mode;
-    let mut rettype: libc::c_int = DT_REG;
+unsafe fn dt_type(mistat: *mut p9_wstat) -> kernel::ffi::c_int {
+    let perm: kernel::ffi::c_ulong = (*mistat).mode;
+    let mut rettype: kernel::ffi::c_int = DT_REG;
 
     if perm & P9_DMDIR != 0 {
         rettype = DT_DIR;
@@ -31,7 +31,7 @@ unsafe fn dt_type(mistat: *mut p9_wstat) -> libc::c_int {
     rettype
 }
 
-unsafe fn v9fs_alloc_rdir_buf(filp: *mut file, buflen: libc::c_int) -> *mut p9_rdir {
+unsafe fn v9fs_alloc_rdir_buf(filp: *mut file, buflen: kernel::ffi::c_int) -> *mut p9_rdir {
     let fid: *mut p9_fid = (*filp).private_data as *mut p9_fid;
 
     if (*fid).rdir.is_null() {
@@ -43,21 +43,21 @@ unsafe fn v9fs_alloc_rdir_buf(filp: *mut file, buflen: libc::c_int) -> *mut p9_r
     (*fid).rdir
 }
 
-unsafe fn v9fs_dir_readdir(file: *mut file, ctx: *mut dir_context) -> libc::c_int {
+unsafe fn v9fs_dir_readdir(file: *mut file, ctx: *mut dir_context) -> kernel::ffi::c_int {
     let mut over: bool;
     let mut st: p9_wstat = core::mem::zeroed();
-    let mut err: libc::c_int = 0;
+    let mut err: kernel::ffi::c_int = 0;
     let fid: *mut p9_fid;
-    let buflen: libc::c_int;
+    let buflen: kernel::ffi::c_int;
     let rdir: *mut p9_rdir;
     let mut kvec: kvec = core::mem::zeroed();
 
-    p9_debug(P9_DEBUG_VFS, b"name %pD\0".as_ptr() as *const libc::c_char, file);
+    p9_debug(P9_DEBUG_VFS, b"name %pD\0".as_ptr() as *const kernel::ffi::c_char, file);
     fid = (*file).private_data as *mut p9_fid;
     buflen = (*(*fid).clnt).msize - P9_IOHDRSZ;
     rdir = v9fs_alloc_rdir_buf(file, buflen);
     if rdir.is_null() { return -ENOMEM; }
-    kvec.iov_base = (*rdir).buf.as_mut_ptr() as *mut libc::c_void;
+    kvec.iov_base = (*rdir).buf.as_mut_ptr() as *mut kernel::ffi::c_void;
     kvec.iov_len = buflen as usize;
 
     if (*rdir).head < (*rdir).tail && (*rdir).offset != (*ctx).pos {
@@ -68,7 +68,7 @@ unsafe fn v9fs_dir_readdir(file: *mut file, ctx: *mut dir_context) -> libc::c_in
     loop {
         if (*rdir).tail == (*rdir).head {
             let mut to: iov_iter = core::mem::zeroed();
-            let n: libc::c_int;
+            let n: kernel::ffi::c_int;
             iov_iter_kvec(&mut to, ITER_DEST, &mut kvec, 1, buflen as usize);
             n = p9_client_read((*file).private_data, (*ctx).pos, &mut to, &mut err);
             if err != 0 { return err; }
@@ -81,7 +81,7 @@ unsafe fn v9fs_dir_readdir(file: *mut file, ctx: *mut dir_context) -> libc::c_in
             err = p9stat_read((*fid).clnt, (*rdir).buf.as_mut_ptr().add((*rdir).head as usize),
                               ((*rdir).tail - (*rdir).head) as usize, &mut st);
             if err <= 0 {
-                p9_debug(P9_DEBUG_VFS, b"returned %d\n\0".as_ptr() as *const libc::c_char, err);
+                p9_debug(P9_DEBUG_VFS, b"returned %d\n\0".as_ptr() as *const kernel::ffi::c_char, err);
                 return -EIO;
             }
             over = !dir_emit(ctx, st.name, strlen(st.name), QID2INO(&st.qid), dt_type(&mut st));
@@ -94,8 +94,8 @@ unsafe fn v9fs_dir_readdir(file: *mut file, ctx: *mut dir_context) -> libc::c_in
     }
 }
 
-unsafe fn v9fs_dir_readdir_dotl(file: *mut file, ctx: *mut dir_context) -> libc::c_int {
-    let mut err: libc::c_int = 0;
+unsafe fn v9fs_dir_readdir_dotl(file: *mut file, ctx: *mut dir_context) -> kernel::ffi::c_int {
+    let mut err: kernel::ffi::c_int = 0;
     let fid = (*file).private_data as *mut p9_fid;
     let buflen = (*(*fid).clnt).msize - P9_READDIRHDRSZ;
     let rdir = v9fs_alloc_rdir_buf(file, buflen);
@@ -123,7 +123,7 @@ unsafe fn v9fs_dir_readdir_dotl(file: *mut file, ctx: *mut dir_context) -> libc:
     }
 }
 
-pub unsafe fn v9fs_dir_release(inode: *mut inode, filp: *mut file) -> libc::c_int {
+pub unsafe fn v9fs_dir_release(inode: *mut inode, filp: *mut file) -> kernel::ffi::c_int {
     let v9inode = V9FS_I(inode);
     let fid = (*filp).private_data as *mut p9_fid;
     let mut retval = 0;

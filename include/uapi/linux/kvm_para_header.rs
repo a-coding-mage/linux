@@ -10,10 +10,10 @@
 
 /* Return values for hypercalls */
 pub const KVM_ENOSYS: i32 = 1000;
-pub const KVM_EFAULT: _ = EFAULT;
-pub const KVM_EINVAL: _ = EINVAL;
-pub const KVM_E2BIG: _ = E2BIG;
-pub const KVM_EPERM: _ = EPERM;
+pub const KVM_EFAULT: i32 = EFAULT;
+pub const KVM_EINVAL: i32 = EINVAL;
+pub const KVM_E2BIG: i32 = E2BIG;
+pub const KVM_EPERM: i32 = EPERM;
 pub const KVM_EOPNOTSUPP: i32 = 95;
 
 pub const KVM_HC_VAPIC_POLL_IRQ: i32 = 1;

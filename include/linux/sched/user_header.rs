@@ -8,7 +8,7 @@ pub struct user_struct {
 	pub __count: refcount_t, /* reference count */
 	#[cfg(CONFIG_EPOLL)]
 	pub epoll_watches: percpu_counter, /* The number of file descriptors currently watched */
-	pub unix_inflight: ::core::ffi::c_ulong, /* How many files in flight in unix sockets */
+	pub unix_inflight: ::kernel::ffi::c_ulong, /* How many files in flight in unix sockets */
 	pub pipe_bufs: atomic_long_t, /* how many pages are allocated in pipe buffers */
 
 	/* Hash table maintenance information */
@@ -34,7 +34,7 @@ pub struct user_struct {
 }
 
 extern "C" {
-	pub fn uids_sysfs_init() -> ::core::ffi::c_int;
+	pub fn uids_sysfs_init() -> ::kernel::ffi::c_int;
 
 	pub fn find_user(uid: kuid_t) -> *mut user_struct;
 

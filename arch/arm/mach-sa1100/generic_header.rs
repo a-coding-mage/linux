@@ -15,7 +15,7 @@ extern "C" {
     pub fn sa1100_init_irq();
     // C __init attribute.
     pub fn sa1100_init_gpio();
-    pub fn sa11x0_restart(mode: reboot_mode, cmd: *const core::ffi::c_char);
+    pub fn sa11x0_restart(mode: reboot_mode, cmd: *const kernel::ffi::c_char);
     pub fn sa11x0_init_late();
 }
 
@@ -35,7 +35,7 @@ extern "C" {
     pub fn sa1110_mb_disable();
 
     pub static mut sa11x0_freq_table: [cpufreq_frequency_table];
-    pub fn sa11x0_getspeed(cpu: core::ffi::c_uint) -> core::ffi::c_uint;
+    pub fn sa11x0_getspeed(cpu: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
 }
 
 pub struct flash_platform_data;
@@ -45,7 +45,7 @@ extern "C" {
     pub fn sa11x0_register_mtd(
         flash: *mut flash_platform_data,
         res: *mut resource,
-        nr: core::ffi::c_int,
+        nr: kernel::ffi::c_int,
     );
 }
 
@@ -62,22 +62,22 @@ extern "C" {
 
 #[cfg(CONFIG_PM)]
 extern "C" {
-    pub fn sa11x0_pm_init() -> core::ffi::c_int;
+    pub fn sa11x0_pm_init() -> kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_PM))]
 #[inline]
-pub fn sa11x0_pm_init() -> core::ffi::c_int {
+pub fn sa11x0_pm_init() -> kernel::ffi::c_int {
     0
 }
 
 extern "C" {
-    pub fn sa11xx_clk_init() -> core::ffi::c_int;
+    pub fn sa11xx_clk_init() -> kernel::ffi::c_int;
 }
 
 pub struct gpiod_lookup_table;
 extern "C" {
-    pub fn sa11x0_register_pcmcia(socket: core::ffi::c_int, table: *mut gpiod_lookup_table);
+    pub fn sa11x0_register_pcmcia(socket: kernel::ffi::c_int, table: *mut gpiod_lookup_table);
 }
 
 pub struct software_node;
@@ -89,12 +89,12 @@ pub struct fixed_voltage_config;
 pub struct regulator_consumer_supply;
 extern "C" {
     pub fn sa11x0_register_fixed_regulator(
-        n: core::ffi::c_int,
+        n: kernel::ffi::c_int,
         cfg: *mut fixed_voltage_config,
         supplies: *mut regulator_consumer_supply,
-        num_supplies: core::ffi::c_uint,
+        num_supplies: kernel::ffi::c_uint,
         uses_gpio: bool,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

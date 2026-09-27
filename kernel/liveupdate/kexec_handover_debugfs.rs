@@ -21,8 +21,8 @@ struct fdt_debugfs {
 unsafe fn __kho_debugfs_blob_add(
     list: *mut list_head,
     dir: *mut dentry,
-    name: *const core::ffi::c_char,
-    blob: *const core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    blob: *const kernel::ffi::c_void,
     size: usize,
 ) -> i32 {
     let f = kmalloc_obj_fdt_debugfs();
@@ -30,12 +30,12 @@ unsafe fn __kho_debugfs_blob_add(
         return -ENOMEM;
     }
 
-    (*f).wrapper.data = blob as *mut core::ffi::c_void;
+    (*f).wrapper.data = blob as *mut kernel::ffi::c_void;
     (*f).wrapper.size = size;
 
     let file = debugfs_create_blob(name, 0o400, dir, &mut (*f).wrapper);
     if is_err(file) {
-        kfree(f as *mut core::ffi::c_void);
+        kfree(f as *mut kernel::ffi::c_void);
         return ptr_err(file);
     }
 
@@ -46,8 +46,8 @@ unsafe fn __kho_debugfs_blob_add(
 
 unsafe fn kho_debugfs_blob_add(
     dbg: *mut kho_debugfs,
-    name: *const core::ffi::c_char,
-    blob: *const core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    blob: *const kernel::ffi::c_void,
     size: usize,
     root: bool,
 ) -> i32 {
@@ -55,26 +55,26 @@ unsafe fn kho_debugfs_blob_add(
     __kho_debugfs_blob_add(&mut (*dbg).fdt_list, dir, name, blob, size)
 }
 
-unsafe fn kho_debugfs_blob_remove(dbg: *mut kho_debugfs, blob: *mut core::ffi::c_void) {
+unsafe fn kho_debugfs_blob_remove(dbg: *mut kho_debugfs, blob: *mut kernel::ffi::c_void) {
     let mut ff: *mut fdt_debugfs;
     list_for_each_entry!(ff, &mut (*dbg).fdt_list, list, {
         if (*ff).wrapper.data == blob {
             debugfs_remove((*ff).file);
             list_del(&mut (*ff).list);
-            kfree(ff as *mut core::ffi::c_void);
+            kfree(ff as *mut kernel::ffi::c_void);
             break;
         }
     });
 }
 
-unsafe extern "C" fn scratch_phys_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn scratch_phys_show(m: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
     for i in 0..kho_scratch_cnt {
         seq_printf(m, c"0x%llx\n".as_ptr(), (*kho_scratch.add(i as usize)).addr);
     }
     0
 }
 
-unsafe extern "C" fn scratch_len_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn scratch_len_show(m: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
     for i in 0..kho_scratch_cnt {
         seq_printf(m, c"0x%llx\n".as_ptr(), (*kho_scratch.add(i as usize)).size);
     }
@@ -87,7 +87,7 @@ extern "C" {
     static scratch_len_fops: file_operations;
 }
 
-unsafe extern "C" fn kho_in_debugfs_init(dbg: *mut kho_debugfs, fdt: *const core::ffi::c_void) {
+unsafe extern "C" fn kho_in_debugfs_init(dbg: *mut kho_debugfs, fdt: *const kernel::ffi::c_void) {
     let mut dir: *mut dentry;
     let mut sub_fdt_dir: *mut dentry;
     let mut err: i32;

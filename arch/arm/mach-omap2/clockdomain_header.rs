@@ -27,7 +27,7 @@ pub const CLKDM_CAN_HWSUP_SWSUP: u32 = CLKDM_CAN_SWSUP | CLKDM_CAN_HWSUP;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union clkdm_autodep_clkdm {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub ptr: *mut clockdomain,
 }
 
@@ -38,7 +38,7 @@ pub struct clkdm_autodep {
 
 #[repr(C)]
 pub struct clkdm_dep {
-    pub clkdm_name: *const ::core::ffi::c_char,
+    pub clkdm_name: *const ::kernel::ffi::c_char,
     pub clkdm: *mut clockdomain,
     pub wkdep_usecount: i16,
     pub sleepdep_usecount: i16,
@@ -49,13 +49,13 @@ pub struct omap_hwmod;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union clockdomain_pwrdm {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub ptr: *mut powerdomain,
 }
 
 #[repr(C)]
 pub struct clockdomain {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub pwrdm: clockdomain_pwrdm,
     pub clktrctrl_mask: u16,
     pub flags: u8,
@@ -66,58 +66,58 @@ pub struct clockdomain {
     pub clkdm_offs: u16,
     pub wkdep_srcs: *mut clkdm_dep,
     pub sleepdep_srcs: *mut clkdm_dep,
-    pub usecount: ::core::ffi::c_int,
-    pub forcewake_count: ::core::ffi::c_int,
+    pub usecount: ::kernel::ffi::c_int,
+    pub forcewake_count: ::kernel::ffi::c_int,
     pub node: list_head,
     pub context: u32,
 }
 
 #[repr(C)]
 pub struct clkdm_ops {
-    pub clkdm_add_wkdep: Option<unsafe extern "C" fn(*mut clockdomain, *mut clockdomain) -> ::core::ffi::c_int>,
-    pub clkdm_del_wkdep: Option<unsafe extern "C" fn(*mut clockdomain, *mut clockdomain) -> ::core::ffi::c_int>,
-    pub clkdm_read_wkdep: Option<unsafe extern "C" fn(*mut clockdomain, *mut clockdomain) -> ::core::ffi::c_int>,
-    pub clkdm_clear_all_wkdeps: Option<unsafe extern "C" fn(*mut clockdomain) -> ::core::ffi::c_int>,
-    pub clkdm_add_sleepdep: Option<unsafe extern "C" fn(*mut clockdomain, *mut clockdomain) -> ::core::ffi::c_int>,
-    pub clkdm_del_sleepdep: Option<unsafe extern "C" fn(*mut clockdomain, *mut clockdomain) -> ::core::ffi::c_int>,
-    pub clkdm_read_sleepdep: Option<unsafe extern "C" fn(*mut clockdomain, *mut clockdomain) -> ::core::ffi::c_int>,
-    pub clkdm_clear_all_sleepdeps: Option<unsafe extern "C" fn(*mut clockdomain) -> ::core::ffi::c_int>,
-    pub clkdm_sleep: Option<unsafe extern "C" fn(*mut clockdomain) -> ::core::ffi::c_int>,
-    pub clkdm_wakeup: Option<unsafe extern "C" fn(*mut clockdomain) -> ::core::ffi::c_int>,
+    pub clkdm_add_wkdep: Option<unsafe extern "C" fn(*mut clockdomain, *mut clockdomain) -> ::kernel::ffi::c_int>,
+    pub clkdm_del_wkdep: Option<unsafe extern "C" fn(*mut clockdomain, *mut clockdomain) -> ::kernel::ffi::c_int>,
+    pub clkdm_read_wkdep: Option<unsafe extern "C" fn(*mut clockdomain, *mut clockdomain) -> ::kernel::ffi::c_int>,
+    pub clkdm_clear_all_wkdeps: Option<unsafe extern "C" fn(*mut clockdomain) -> ::kernel::ffi::c_int>,
+    pub clkdm_add_sleepdep: Option<unsafe extern "C" fn(*mut clockdomain, *mut clockdomain) -> ::kernel::ffi::c_int>,
+    pub clkdm_del_sleepdep: Option<unsafe extern "C" fn(*mut clockdomain, *mut clockdomain) -> ::kernel::ffi::c_int>,
+    pub clkdm_read_sleepdep: Option<unsafe extern "C" fn(*mut clockdomain, *mut clockdomain) -> ::kernel::ffi::c_int>,
+    pub clkdm_clear_all_sleepdeps: Option<unsafe extern "C" fn(*mut clockdomain) -> ::kernel::ffi::c_int>,
+    pub clkdm_sleep: Option<unsafe extern "C" fn(*mut clockdomain) -> ::kernel::ffi::c_int>,
+    pub clkdm_wakeup: Option<unsafe extern "C" fn(*mut clockdomain) -> ::kernel::ffi::c_int>,
     pub clkdm_allow_idle: Option<unsafe extern "C" fn(*mut clockdomain)>,
     pub clkdm_deny_idle: Option<unsafe extern "C" fn(*mut clockdomain)>,
-    pub clkdm_clk_enable: Option<unsafe extern "C" fn(*mut clockdomain) -> ::core::ffi::c_int>,
-    pub clkdm_clk_disable: Option<unsafe extern "C" fn(*mut clockdomain) -> ::core::ffi::c_int>,
-    pub clkdm_save_context: Option<unsafe extern "C" fn(*mut clockdomain) -> ::core::ffi::c_int>,
-    pub clkdm_restore_context: Option<unsafe extern "C" fn(*mut clockdomain) -> ::core::ffi::c_int>,
+    pub clkdm_clk_enable: Option<unsafe extern "C" fn(*mut clockdomain) -> ::kernel::ffi::c_int>,
+    pub clkdm_clk_disable: Option<unsafe extern "C" fn(*mut clockdomain) -> ::kernel::ffi::c_int>,
+    pub clkdm_save_context: Option<unsafe extern "C" fn(*mut clockdomain) -> ::kernel::ffi::c_int>,
+    pub clkdm_restore_context: Option<unsafe extern "C" fn(*mut clockdomain) -> ::kernel::ffi::c_int>,
 }
 
 extern "C" {
-    pub fn clkdm_register_platform_funcs(co: *mut clkdm_ops) -> ::core::ffi::c_int;
-    pub fn clkdm_register_autodeps(ia: *mut clkdm_autodep) -> ::core::ffi::c_int;
-    pub fn clkdm_register_clkdms(c: *mut *mut clockdomain) -> ::core::ffi::c_int;
-    pub fn clkdm_complete_init() -> ::core::ffi::c_int;
-    pub fn clkdm_lookup(name: *const ::core::ffi::c_char) -> *mut clockdomain;
-    pub fn clkdm_for_each(fn_: Option<unsafe extern "C" fn(*mut clockdomain, *mut ::core::ffi::c_void) -> ::core::ffi::c_int>, user: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
+    pub fn clkdm_register_platform_funcs(co: *mut clkdm_ops) -> ::kernel::ffi::c_int;
+    pub fn clkdm_register_autodeps(ia: *mut clkdm_autodep) -> ::kernel::ffi::c_int;
+    pub fn clkdm_register_clkdms(c: *mut *mut clockdomain) -> ::kernel::ffi::c_int;
+    pub fn clkdm_complete_init() -> ::kernel::ffi::c_int;
+    pub fn clkdm_lookup(name: *const ::kernel::ffi::c_char) -> *mut clockdomain;
+    pub fn clkdm_for_each(fn_: Option<unsafe extern "C" fn(*mut clockdomain, *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int>, user: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
     pub fn clkdm_get_pwrdm(clkdm: *mut clockdomain) -> *mut powerdomain;
-    pub fn clkdm_add_wkdep(clkdm1: *mut clockdomain, clkdm2: *mut clockdomain) -> ::core::ffi::c_int;
-    pub fn clkdm_del_wkdep(clkdm1: *mut clockdomain, clkdm2: *mut clockdomain) -> ::core::ffi::c_int;
-    pub fn clkdm_read_wkdep(clkdm1: *mut clockdomain, clkdm2: *mut clockdomain) -> ::core::ffi::c_int;
-    pub fn clkdm_clear_all_wkdeps(clkdm: *mut clockdomain) -> ::core::ffi::c_int;
-    pub fn clkdm_add_sleepdep(clkdm1: *mut clockdomain, clkdm2: *mut clockdomain) -> ::core::ffi::c_int;
-    pub fn clkdm_del_sleepdep(clkdm1: *mut clockdomain, clkdm2: *mut clockdomain) -> ::core::ffi::c_int;
-    pub fn clkdm_read_sleepdep(clkdm1: *mut clockdomain, clkdm2: *mut clockdomain) -> ::core::ffi::c_int;
-    pub fn clkdm_clear_all_sleepdeps(clkdm: *mut clockdomain) -> ::core::ffi::c_int;
+    pub fn clkdm_add_wkdep(clkdm1: *mut clockdomain, clkdm2: *mut clockdomain) -> ::kernel::ffi::c_int;
+    pub fn clkdm_del_wkdep(clkdm1: *mut clockdomain, clkdm2: *mut clockdomain) -> ::kernel::ffi::c_int;
+    pub fn clkdm_read_wkdep(clkdm1: *mut clockdomain, clkdm2: *mut clockdomain) -> ::kernel::ffi::c_int;
+    pub fn clkdm_clear_all_wkdeps(clkdm: *mut clockdomain) -> ::kernel::ffi::c_int;
+    pub fn clkdm_add_sleepdep(clkdm1: *mut clockdomain, clkdm2: *mut clockdomain) -> ::kernel::ffi::c_int;
+    pub fn clkdm_del_sleepdep(clkdm1: *mut clockdomain, clkdm2: *mut clockdomain) -> ::kernel::ffi::c_int;
+    pub fn clkdm_read_sleepdep(clkdm1: *mut clockdomain, clkdm2: *mut clockdomain) -> ::kernel::ffi::c_int;
+    pub fn clkdm_clear_all_sleepdeps(clkdm: *mut clockdomain) -> ::kernel::ffi::c_int;
     pub fn clkdm_allow_idle_nolock(clkdm: *mut clockdomain);
     pub fn clkdm_allow_idle(clkdm: *mut clockdomain);
     pub fn clkdm_deny_idle_nolock(clkdm: *mut clockdomain);
     pub fn clkdm_deny_idle(clkdm: *mut clockdomain);
-    pub fn clkdm_wakeup(clkdm: *mut clockdomain) -> ::core::ffi::c_int;
-    pub fn clkdm_sleep(clkdm: *mut clockdomain) -> ::core::ffi::c_int;
-    pub fn clkdm_clk_enable(clkdm: *mut clockdomain, clk: *mut clk) -> ::core::ffi::c_int;
-    pub fn clkdm_clk_disable(clkdm: *mut clockdomain, clk: *mut clk) -> ::core::ffi::c_int;
-    pub fn clkdm_hwmod_enable(clkdm: *mut clockdomain, oh: *mut omap_hwmod) -> ::core::ffi::c_int;
-    pub fn clkdm_hwmod_disable(clkdm: *mut clockdomain, oh: *mut omap_hwmod) -> ::core::ffi::c_int;
+    pub fn clkdm_wakeup(clkdm: *mut clockdomain) -> ::kernel::ffi::c_int;
+    pub fn clkdm_sleep(clkdm: *mut clockdomain) -> ::kernel::ffi::c_int;
+    pub fn clkdm_clk_enable(clkdm: *mut clockdomain, clk: *mut clk) -> ::kernel::ffi::c_int;
+    pub fn clkdm_clk_disable(clkdm: *mut clockdomain, clk: *mut clk) -> ::kernel::ffi::c_int;
+    pub fn clkdm_hwmod_enable(clkdm: *mut clockdomain, oh: *mut omap_hwmod) -> ::kernel::ffi::c_int;
+    pub fn clkdm_hwmod_disable(clkdm: *mut clockdomain, oh: *mut omap_hwmod) -> ::kernel::ffi::c_int;
     pub fn clkdm_save_context();
     pub fn clkdm_restore_context();
     pub fn omap242x_clockdomains_init();

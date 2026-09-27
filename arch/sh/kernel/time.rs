@@ -10,9 +10,9 @@
 
 // Dependencies supplied by the surrounding kernel translation unit.
 extern "C" {
-    fn sh_early_platform_driver_register_all(class_str: *const core::ffi::c_char);
+    fn sh_early_platform_driver_register_all(class_str: *const kernel::ffi::c_char);
     fn sh_early_platform_driver_probe(
-        class_str: *const core::ffi::c_char,
+        class_str: *const kernel::ffi::c_char,
         nr: i32,
         start: i32,
     );
@@ -32,8 +32,8 @@ unsafe extern "C" fn sh_late_time_init() {
      * instead. No error handling is necessary here.
      */
     unsafe {
-        sh_early_platform_driver_register_all(b"earlytimer\0".as_ptr() as *const core::ffi::c_char);
-        sh_early_platform_driver_probe(b"earlytimer\0".as_ptr() as *const core::ffi::c_char, 2, 0);
+        sh_early_platform_driver_register_all(b"earlytimer\0".as_ptr() as *const kernel::ffi::c_char);
+        sh_early_platform_driver_probe(b"earlytimer\0".as_ptr() as *const kernel::ffi::c_char, 2, 0);
     }
 }
 

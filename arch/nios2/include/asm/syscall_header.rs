@@ -62,7 +62,7 @@ pub unsafe fn syscall_set_return_value(
 pub unsafe fn syscall_get_arguments(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    args: *mut libc::c_ulong,
+    args: *mut kernel::ffi::c_ulong,
 ) {
     *args = (*regs).r4 as _;
     *args.add(1) = (*regs).r5 as _;
@@ -75,7 +75,7 @@ pub unsafe fn syscall_get_arguments(
 pub unsafe fn syscall_set_arguments(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    args: *const libc::c_ulong,
+    args: *const kernel::ffi::c_ulong,
 ) {
     (*regs).r4 = *args.add(0) as _;
     (*regs).r5 = *args.add(1) as _;

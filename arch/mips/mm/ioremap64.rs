@@ -4,38 +4,38 @@
 //   pgprot_t, phys_addr_t, _CACHE_MASK, _CACHE_UNCACHED, IO_BASE, UNCAC_BASE
 
 extern "C" {
-    fn pgprot_val(prot: pgprot_t) -> ::core::ffi::c_ulong;
+    fn pgprot_val(prot: pgprot_t) -> ::kernel::ffi::c_ulong;
     fn plat_ioremap(
         offset: phys_addr_t,
-        size: ::core::ffi::c_ulong,
-        flags: ::core::ffi::c_ulong,
-    ) -> *mut ::core::ffi::c_void;
-    fn plat_iounmap(addr: *const ::core::ffi::c_void);
+        size: ::kernel::ffi::c_ulong,
+        flags: ::kernel::ffi::c_ulong,
+    ) -> *mut ::kernel::ffi::c_void;
+    fn plat_iounmap(addr: *const ::kernel::ffi::c_void);
 }
 
 pub unsafe extern "C" fn ioremap_prot(
     offset: phys_addr_t,
-    size: ::core::ffi::c_ulong,
+    size: ::kernel::ffi::c_ulong,
     prot: pgprot_t,
-) -> *mut ::core::ffi::c_void {
+) -> *mut ::kernel::ffi::c_void {
     let flags = pgprot_val(prot) & _CACHE_MASK;
     let base: u64 = if flags == _CACHE_UNCACHED {
         IO_BASE
     } else {
         UNCAC_BASE
     };
-    let mut addr: *mut ::core::ffi::c_void;
+    let mut addr: *mut ::kernel::ffi::c_void;
 
     addr = plat_ioremap(offset, size, flags);
     if addr.is_null() {
-        addr = (base + offset as u64) as usize as *mut ::core::ffi::c_void;
+        addr = (base + offset as u64) as usize as *mut ::kernel::ffi::c_void;
     }
     addr
 }
 
 // EXPORT_SYMBOL(ioremap_prot);
 
-pub unsafe extern "C" fn iounmap(addr: *const ::core::ffi::c_void) {
+pub unsafe extern "C" fn iounmap(addr: *const ::kernel::ffi::c_void) {
     plat_iounmap(addr);
 }
 

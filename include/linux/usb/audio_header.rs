@@ -21,7 +21,7 @@
 #[repr(C)]
 pub struct usb_audio_control {
     pub list: list_head,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub type_: u8,
     pub data: [i32; 5],
     pub set: Option<unsafe extern "C" fn(
@@ -37,7 +37,7 @@ pub struct usb_audio_control_selector {
     pub list: list_head,
     pub control: list_head,
     pub id: u8,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub type_: u8,
     pub desc: *mut usb_descriptor_header,
 }

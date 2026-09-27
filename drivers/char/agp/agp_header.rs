@@ -37,7 +37,7 @@ pub const AGP_PAGE_DESTROY_FREE: i32 = 2;
 
 #[repr(C)]
 pub struct gatt_mask {
-    pub mask: ::core::ffi::c_ulong,
+    pub mask: ::kernel::ffi::c_ulong,
     pub r#type: u32,
 }
 
@@ -82,7 +82,7 @@ pub struct aper_size_info_fixed {
 #[repr(C)]
 pub struct agp_bridge_driver {
     pub owner: *mut module,
-    pub aperture_sizes: *const core::ffi::c_void,
+    pub aperture_sizes: *const kernel::ffi::c_void,
     pub num_aperture_sizes: i32,
     pub size_type: aper_size_type,
     pub cant_use_aperture: bool,
@@ -93,7 +93,7 @@ pub struct agp_bridge_driver {
     pub agp_enable: Option<unsafe extern "C" fn(*mut agp_bridge_data, u32)>,
     pub cleanup: Option<unsafe extern "C" fn()>,
     pub tlb_flush: Option<unsafe extern "C" fn(*mut agp_memory)>,
-    pub mask_memory: Option<unsafe extern "C" fn(*mut agp_bridge_data, dma_addr_t, i32) -> ::core::ffi::c_ulong>,
+    pub mask_memory: Option<unsafe extern "C" fn(*mut agp_bridge_data, dma_addr_t, i32) -> ::kernel::ffi::c_ulong>,
     pub cache_flush: Option<unsafe extern "C" fn()>,
     pub create_gatt_table: Option<unsafe extern "C" fn(*mut agp_bridge_data) -> i32>,
     pub free_gatt_table: Option<unsafe extern "C" fn(*mut agp_bridge_data) -> i32>,
@@ -113,19 +113,19 @@ pub struct agp_bridge_data {
     pub version: *const agp_version,
     pub driver: *const agp_bridge_driver,
     pub vm_ops: *const vm_operations_struct,
-    pub previous_size: *mut core::ffi::c_void,
-    pub current_size: *mut core::ffi::c_void,
-    pub dev_private_data: *mut core::ffi::c_void,
+    pub previous_size: *mut kernel::ffi::c_void,
+    pub current_size: *mut kernel::ffi::c_void,
+    pub dev_private_data: *mut kernel::ffi::c_void,
     pub dev: *mut pci_dev,
     pub gatt_table: *mut u32,
     pub gatt_table_real: *mut u32,
-    pub scratch_page: ::core::ffi::c_ulong,
+    pub scratch_page: ::kernel::ffi::c_ulong,
     pub scratch_page_page: *mut page,
     pub scratch_page_dma: dma_addr_t,
-    pub gart_bus_addr: ::core::ffi::c_ulong,
-    pub gatt_bus_addr: ::core::ffi::c_ulong,
+    pub gart_bus_addr: ::kernel::ffi::c_ulong,
+    pub gatt_bus_addr: ::kernel::ffi::c_ulong,
     pub mode: u32,
-    pub key_list: *mut ::core::ffi::c_ulong,
+    pub key_list: *mut ::kernel::ffi::c_ulong,
     pub current_memory_agp: atomic_t,
     pub agp_in_use: atomic_t,
     pub max_memory_agp: i32,
@@ -192,7 +192,7 @@ extern "C" {
     pub fn agp_3_5_enable(bridge: *mut agp_bridge_data) -> i32;
     pub fn global_cache_flush();
     pub fn get_agp_version(bridge: *mut agp_bridge_data);
-    pub fn agp_generic_mask_memory(bridge: *mut agp_bridge_data, phys: dma_addr_t, r#type: i32) -> ::core::ffi::c_ulong;
+    pub fn agp_generic_mask_memory(bridge: *mut agp_bridge_data, phys: dma_addr_t, r#type: i32) -> ::kernel::ffi::c_ulong;
     pub fn agp_generic_type_to_mask_type(bridge: *mut agp_bridge_data, r#type: i32) -> i32;
     pub fn agp_generic_find_bridge(pdev: *mut pci_dev) -> *mut agp_bridge_data;
     pub fn agp_generic_alloc_user(page_count: usize, r#type: i32) -> *mut agp_memory;
@@ -208,7 +208,7 @@ extern "C" {
 
 #[inline]
 pub unsafe fn agp_free_page_array(mem: *mut agp_memory) {
-    kvfree((*mem).pages as *mut core::ffi::c_void);
+    kvfree((*mem).pages as *mut kernel::ffi::c_void);
 }
 
 // The following C preprocessor helpers retain their intended dependency on kernel page APIs.

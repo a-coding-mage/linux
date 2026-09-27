@@ -21,7 +21,7 @@
 
 // C dependencies supplied by the surrounding kernel translation unit.
 
-pub static mut irq_err_count: core::ffi::c_ulong = 0;
+pub static mut irq_err_count: kernel::ffi::c_ulong = 0;
 
 #[cfg(CONFIG_IRQSTACKS)]
 pub static mut irq_stack_ptr: *mut u8 = core::ptr::null_mut();
@@ -29,7 +29,7 @@ pub static mut irq_stack_ptr: *mut u8 = core::ptr::null_mut();
 #[cfg(CONFIG_IRQSTACKS)]
 unsafe fn init_irq_stacks() {
     let mut stack: *mut u8;
-    let mut cpu: core::ffi::c_int = 0;
+    let mut cpu: kernel::ffi::c_int = 0;
 
     // for_each_possible_cpu(cpu)
     while cpu < nr_cpu_ids() {
@@ -55,7 +55,7 @@ unsafe fn init_irq_stacks() {
 }
 
 #[cfg(all(CONFIG_IRQSTACKS, CONFIG_SOFTIRQ_ON_OWN_STACK))]
-unsafe extern "C" fn ____do_softirq(_arg: *mut core::ffi::c_void) {
+unsafe extern "C" fn ____do_softirq(_arg: *mut kernel::ffi::c_void) {
     __do_softirq();
 }
 
@@ -70,8 +70,8 @@ pub unsafe fn do_softirq_own_stack() {
 
 pub unsafe fn arch_show_interrupts(
     p: *mut seq_file,
-    prec: core::ffi::c_int,
-) -> core::ffi::c_int {
+    prec: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     #[cfg(CONFIG_FIQ)]
     show_fiq_list(p, prec);
     #[cfg(CONFIG_SMP)]
@@ -86,7 +86,7 @@ pub unsafe fn arch_show_interrupts(
  * their own 'handler'.  Used by platform code implementing C-based 1st
  * level decoding.
  */
-pub unsafe fn handle_IRQ(irq: core::ffi::c_uint, regs: *mut pt_regs) {
+pub unsafe fn handle_IRQ(irq: kernel::ffi::c_uint, regs: *mut pt_regs) {
     let desc: *mut irq_desc;
 
     /*
@@ -107,7 +107,7 @@ pub unsafe fn handle_IRQ(irq: core::ffi::c_uint, regs: *mut pt_regs) {
 }
 
 pub unsafe fn init_IRQ() {
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     #[cfg(CONFIG_IRQSTACKS)]
     init_irq_stacks();
@@ -134,7 +134,7 @@ pub unsafe fn init_IRQ() {
 }
 
 #[cfg(CONFIG_SPARSE_IRQ)]
-pub unsafe fn arch_probe_nr_irqs() -> core::ffi::c_int {
+pub unsafe fn arch_probe_nr_irqs() -> kernel::ffi::c_int {
     irq_set_nr_irqs(if (*machine_desc).nr_irqs != 0 {
         (*machine_desc).nr_irqs
     } else {

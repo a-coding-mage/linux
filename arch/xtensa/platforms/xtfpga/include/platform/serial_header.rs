@@ -15,7 +15,7 @@
 #[macro_export]
 macro_rules! BASE_BAUD {
     () => {{
-        unsafe { *(XTFPGA_CLKFRQ_VADDR as *const core::ffi::c_long) / 16 }
+        unsafe { *(XTFPGA_CLKFRQ_VADDR as *const kernel::ffi::c_long) / 16 }
     }};
 }
 

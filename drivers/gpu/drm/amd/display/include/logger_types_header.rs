@@ -69,7 +69,7 @@ macro_rules! DC_LOG_REGISTER_WRITE { ($($arg:tt)*) => { pr_debug!("[REGISTER_WRI
 
 #[repr(C)]
 pub struct dc_log_buffer_ctx {
-    pub buf: *mut core::ffi::c_char,
+    pub buf: *mut kernel::ffi::c_char,
     pub pos: usize,
     pub size: usize,
 }

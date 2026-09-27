@@ -5,7 +5,7 @@
 
 // C dependency: <linux/types.h>
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct pci_dev {
@@ -43,7 +43,7 @@ extern "C" {
      *
      * Return: 0 on success or a negative error code on failure.
      */
-    pub fn xe_sriov_vfio_flr_prepare(xe: *mut xe_device, vfid: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn xe_sriov_vfio_flr_prepare(xe: *mut xe_device, vfid: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 
     /**
      * xe_sriov_vfio_wait_flr_done() - Wait for VF FLR completion.
@@ -55,7 +55,7 @@ extern "C" {
      *
      * Return: 0 on success or a negative error code on failure.
      */
-    pub fn xe_sriov_vfio_wait_flr_done(xe: *mut xe_device, vfid: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn xe_sriov_vfio_wait_flr_done(xe: *mut xe_device, vfid: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 
     /**
      * xe_sriov_vfio_suspend_device() - Suspend VF.
@@ -66,7 +66,7 @@ extern "C" {
      *
      * Return: 0 on success or a negative error code on failure.
      */
-    pub fn xe_sriov_vfio_suspend_device(xe: *mut xe_device, vfid: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn xe_sriov_vfio_suspend_device(xe: *mut xe_device, vfid: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 
     /**
      * xe_sriov_vfio_resume_device() - Resume VF.
@@ -77,7 +77,7 @@ extern "C" {
      *
      * Return: 0 on success or a negative error code on failure.
      */
-    pub fn xe_sriov_vfio_resume_device(xe: *mut xe_device, vfid: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn xe_sriov_vfio_resume_device(xe: *mut xe_device, vfid: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 
     /**
      * xe_sriov_vfio_stop_copy_enter() - Initiate a VF device migration data save.
@@ -86,7 +86,7 @@ extern "C" {
      *
      * Return: 0 on success or a negative error code on failure.
      */
-    pub fn xe_sriov_vfio_stop_copy_enter(xe: *mut xe_device, vfid: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn xe_sriov_vfio_stop_copy_enter(xe: *mut xe_device, vfid: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 
     /**
      * xe_sriov_vfio_stop_copy_exit() - Finish a VF device migration data save.
@@ -95,7 +95,7 @@ extern "C" {
      *
      * Return: 0 on success or a negative error code on failure.
      */
-    pub fn xe_sriov_vfio_stop_copy_exit(xe: *mut xe_device, vfid: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn xe_sriov_vfio_stop_copy_exit(xe: *mut xe_device, vfid: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 
     /**
      * xe_sriov_vfio_resume_data_enter() - Initiate a VF device migration data restore.
@@ -104,7 +104,7 @@ extern "C" {
      *
      * Return: 0 on success or a negative error code on failure.
      */
-    pub fn xe_sriov_vfio_resume_data_enter(xe: *mut xe_device, vfid: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn xe_sriov_vfio_resume_data_enter(xe: *mut xe_device, vfid: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 
     /**
      * xe_sriov_vfio_resume_data_exit() - Finish a VF device migration data restore.
@@ -113,7 +113,7 @@ extern "C" {
      *
      * Return: 0 on success or a negative error code on failure.
      */
-    pub fn xe_sriov_vfio_resume_data_exit(xe: *mut xe_device, vfid: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn xe_sriov_vfio_resume_data_exit(xe: *mut xe_device, vfid: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 
     /**
      * xe_sriov_vfio_error() - Move VF device to error state.
@@ -124,7 +124,7 @@ extern "C" {
      *
      * Return: 0 on success or a negative error code on failure.
      */
-    pub fn xe_sriov_vfio_error(xe: *mut xe_device, vfid: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn xe_sriov_vfio_error(xe: *mut xe_device, vfid: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 
     /**
      * xe_sriov_vfio_data_read() - Read migration data from the VF device.
@@ -138,7 +138,7 @@ extern "C" {
      */
     pub fn xe_sriov_vfio_data_read(
         xe: *mut xe_device,
-        vfid: core::ffi::c_uint,
+        vfid: kernel::ffi::c_uint,
         buf: *mut c_char,
         len: usize,
     ) -> isize;
@@ -154,7 +154,7 @@ extern "C" {
      */
     pub fn xe_sriov_vfio_data_write(
         xe: *mut xe_device,
-        vfid: core::ffi::c_uint,
+        vfid: kernel::ffi::c_uint,
         buf: *const c_char,
         len: usize,
     ) -> isize;
@@ -166,7 +166,7 @@ extern "C" {
      *
      * Return: migration data size in bytes or a negative error code on failure.
      */
-    pub fn xe_sriov_vfio_stop_copy_size(xe: *mut xe_device, vfid: core::ffi::c_uint) -> isize;
+    pub fn xe_sriov_vfio_stop_copy_size(xe: *mut xe_device, vfid: kernel::ffi::c_uint) -> isize;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

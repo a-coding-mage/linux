@@ -7,7 +7,7 @@
  * Copyright (C) 2001 MIPS Technologies, Inc.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     pub static mut _machine_restart: Option<unsafe extern "C" fn(command: *mut c_char)>;

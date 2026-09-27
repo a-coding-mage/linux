@@ -8,7 +8,7 @@
  */
 
 // Linux kernel dependencies supplied by other translation units.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct wm831x {
@@ -58,9 +58,9 @@ extern "C" {
     fn dev_err(dev: *mut device, fmt: *const c_char, ...);
     fn dev_crit(dev: *mut device, fmt: *const c_char, ...);
     fn dev_get_drvdata(dev: *mut device) -> *mut wm831x;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_clk_hw_register(dev: *mut device, hw: *mut clk_hw) -> i32;
-    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut core::ffi::c_void);
+    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut kernel::ffi::c_void);
     fn clk_hw_determine_rate_no_reparent(hw: *mut clk_hw, req: *mut clk_rate_request) -> i32;
 }
 
@@ -130,7 +130,7 @@ unsafe fn wm831x_clk_probe(pdev: *mut platform_device) -> i32 {
     (*clkdata).xtal_ena = ret as u32 & WM831X_XTAL_ENA != 0;
     (*clkdata).xtal_hw.init = &WM831X_XTAL_INIT;
     let ret = devm_clk_hw_register(&mut (*pdev).dev, &mut (*clkdata).xtal_hw); if ret != 0 { return ret; }
-    platform_set_drvdata(pdev, clkdata as *mut core::ffi::c_void);
+    platform_set_drvdata(pdev, clkdata as *mut kernel::ffi::c_void);
     0
 }
 

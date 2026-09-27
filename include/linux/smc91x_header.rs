@@ -40,7 +40,7 @@ pub const RPC_LED_RX: u32 = 0x07; /* LED = RX packet occurred */
 
 #[repr(C)]
 pub struct smc91x_platdata {
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub leda: u8,
     pub ledb: u8,
     pub pxa_u16_align4: bool, /* PXA buggy u16 writes on 4*n+2 addresses */

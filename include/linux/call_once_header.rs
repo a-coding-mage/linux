@@ -15,7 +15,7 @@ pub struct once {
 #[inline]
 pub unsafe fn __once_init(
     once: *mut once,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     key: *mut lock_class_key,
 ) {
     atomic_set(&mut (*once).state, ONCE_NOT_STARTED);
@@ -29,7 +29,7 @@ macro_rules! once_init {
         unsafe {
             __once_init(
                 $once,
-                concat!(stringify!($once), "\0").as_ptr() as *const core::ffi::c_char,
+                concat!(stringify!($once), "\0").as_ptr() as *const kernel::ffi::c_char,
                 &raw mut __KEY,
             );
         }

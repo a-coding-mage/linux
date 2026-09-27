@@ -21,27 +21,27 @@ pub struct range {
 
 extern "C" {
     pub static mut pfn_mapped: [range; 0];
-    pub static mut nr_pfn_mapped: ::core::ffi::c_int;
+    pub static mut nr_pfn_mapped: ::kernel::ffi::c_int;
 
-    pub fn copy_page(to: *mut ::core::ffi::c_void, from: *mut ::core::ffi::c_void);
+    pub fn copy_page(to: *mut ::kernel::ffi::c_void, from: *mut ::kernel::ffi::c_void);
     pub fn vma_alloc_folio(
-        gfp: ::core::ffi::c_ulong,
-        order: ::core::ffi::c_ulong,
-        vma: *mut ::core::ffi::c_void,
-        vaddr: ::core::ffi::c_ulong,
-    ) -> *mut ::core::ffi::c_void;
-    pub fn __phys_addr(x: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn __phys_addr_nodebug(x: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn __phys_addr_symbol(x: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn __virt_addr_valid(kaddr: ::core::ffi::c_ulong) -> bool;
-    pub fn pfn_to_page(pfn: ::core::ffi::c_ulong) -> *mut page;
+        gfp: ::kernel::ffi::c_ulong,
+        order: ::kernel::ffi::c_ulong,
+        vma: *mut ::kernel::ffi::c_void,
+        vaddr: ::kernel::ffi::c_ulong,
+    ) -> *mut ::kernel::ffi::c_void;
+    pub fn __phys_addr(x: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn __phys_addr_nodebug(x: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn __phys_addr_symbol(x: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn __virt_addr_valid(kaddr: ::kernel::ffi::c_ulong) -> bool;
+    pub fn pfn_to_page(pfn: ::kernel::ffi::c_ulong) -> *mut page;
 }
 
 #[inline(always)]
 pub unsafe fn copy_user_page(
-    to: *mut ::core::ffi::c_void,
-    from: *mut ::core::ffi::c_void,
-    _vaddr: ::core::ffi::c_ulong,
+    to: *mut ::kernel::ffi::c_void,
+    from: *mut ::kernel::ffi::c_void,
+    _vaddr: ::kernel::ffi::c_ulong,
     _topage: *mut page,
 ) {
     copy_page(to, from);
@@ -62,33 +62,33 @@ macro_rules! vma_alloc_zeroed_movable_folio {
 }
 
 #[inline(always)]
-pub unsafe fn __pa<T>(x: *const T) -> ::core::ffi::c_ulong {
-    __phys_addr(x as ::core::ffi::c_ulong)
+pub unsafe fn __pa<T>(x: *const T) -> ::kernel::ffi::c_ulong {
+    __phys_addr(x as ::kernel::ffi::c_ulong)
 }
 
 #[inline(always)]
-pub unsafe fn __pa_nodebug<T>(x: *const T) -> ::core::ffi::c_ulong {
-    __phys_addr_nodebug(x as ::core::ffi::c_ulong)
+pub unsafe fn __pa_nodebug<T>(x: *const T) -> ::kernel::ffi::c_ulong {
+    __phys_addr_nodebug(x as ::kernel::ffi::c_ulong)
 }
 
 /* __pa_symbol uses __phys_reloc_hide in the original C implementation. */
 #[inline(always)]
-pub unsafe fn __pa_symbol<T>(x: *const T) -> ::core::ffi::c_ulong {
-    __phys_addr_symbol(x as ::core::ffi::c_ulong)
+pub unsafe fn __pa_symbol<T>(x: *const T) -> ::kernel::ffi::c_ulong {
+    __phys_addr_symbol(x as ::kernel::ffi::c_ulong)
 }
 
 #[inline(always)]
-pub unsafe fn __va(x: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void {
-    (x + PAGE_OFFSET) as *mut ::core::ffi::c_void
+pub unsafe fn __va(x: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void {
+    (x + PAGE_OFFSET) as *mut ::kernel::ffi::c_void
 }
 
 #[inline(always)]
-pub unsafe fn __boot_va(x: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void {
+pub unsafe fn __boot_va(x: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void {
     __va(x)
 }
 
 #[inline(always)]
-pub unsafe fn __boot_pa<T>(x: *const T) -> ::core::ffi::c_ulong {
+pub unsafe fn __boot_pa<T>(x: *const T) -> ::kernel::ffi::c_ulong {
     __pa(x)
 }
 
@@ -99,11 +99,11 @@ pub unsafe fn virt_to_page<T>(kaddr: *const T) -> *mut page {
 
 #[inline(always)]
 pub unsafe fn virt_addr_valid<T>(kaddr: *const T) -> bool {
-    __virt_addr_valid(kaddr as ::core::ffi::c_ulong)
+    __virt_addr_valid(kaddr as ::kernel::ffi::c_ulong)
 }
 
 #[inline(always)]
-pub unsafe fn pfn_to_kaddr(pfn: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void {
+pub unsafe fn pfn_to_kaddr(pfn: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void {
     __va(pfn << PAGE_SHIFT)
 }
 

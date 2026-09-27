@@ -19,7 +19,7 @@ pub struct printk_info {
 #[repr(C)]
 pub struct printk_record {
     pub info: *mut printk_info,
-    pub text_buf: *mut core::ffi::c_char,
+    pub text_buf: *mut kernel::ffi::c_char,
     pub text_buf_size: u32,
 }
 
@@ -38,7 +38,7 @@ pub struct prb_desc {
 #[repr(C)]
 pub struct prb_data_ring {
     pub size_bits: u32,
-    pub data: *mut core::ffi::c_char,
+    pub data: *mut kernel::ffi::c_char,
     pub head_lpos: atomic_long_t,
     pub tail_lpos: atomic_long_t,
 }
@@ -113,14 +113,14 @@ unsafe extern "C" {
                                r: *mut printk_record, caller_id: u32, max_size: u32) -> bool;
     pub fn prb_commit(e: *mut prb_reserved_entry);
     pub fn prb_final_commit(e: *mut prb_reserved_entry);
-    pub fn prb_init(rb: *mut printk_ringbuffer, text_buf: *mut core::ffi::c_char,
+    pub fn prb_init(rb: *mut printk_ringbuffer, text_buf: *mut kernel::ffi::c_char,
                     text_buf_size: u32, descs: *mut prb_desc, descs_count_bits: u32,
                     infos: *mut printk_info);
     pub fn prb_record_text_space(e: *mut prb_reserved_entry) -> u32;
 }
 
 pub unsafe fn prb_rec_init_rd(r: *mut printk_record, info: *mut printk_info,
-                              text_buf: *mut core::ffi::c_char, text_buf_size: u32) {
+                              text_buf: *mut kernel::ffi::c_char, text_buf_size: u32) {
     (*r).info = info;
     (*r).text_buf = text_buf;
     (*r).text_buf_size = text_buf_size;

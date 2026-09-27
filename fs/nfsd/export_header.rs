@@ -13,8 +13,8 @@ pub const MAX_FS_LOCATIONS: usize = 128;
 
 #[repr(C)]
 pub struct nfsd4_fs_location {
-    pub hosts: *mut core::ffi::c_char, /* colon separated list of hosts */
-    pub path: *mut core::ffi::c_char,  /* slash separated list of path components */
+    pub hosts: *mut kernel::ffi::c_char, /* colon separated list of hosts */
+    pub path: *mut kernel::ffi::c_char,  /* slash separated list of path components */
 }
 
 #[repr(C)]
@@ -23,7 +23,7 @@ pub struct nfsd4_fs_locations {
     pub locations: *mut nfsd4_fs_location,
     /* If we're not actually serving this data ourselves (only providing a
      * list of replicas that do serve it) then we set "migrated": */
-    pub migrated: core::ffi::c_int,
+    pub migrated: kernel::ffi::c_int,
 }
 
 /*
@@ -57,8 +57,8 @@ pub struct export_stats {
 pub struct svc_export {
     pub h: cache_head,
     pub ex_client: *mut auth_domain,
-    pub ex_flags: core::ffi::c_int,
-    pub ex_fsid: core::ffi::c_int,
+    pub ex_flags: kernel::ffi::c_int,
+    pub ex_fsid: kernel::ffi::c_int,
     pub ex_path: path,
     pub ex_anon_uid: kuid_t,
     pub ex_anon_gid: kgid_t,
@@ -94,17 +94,17 @@ pub unsafe fn EX_ISSYNC(exp: *const svc_export) -> bool {
 }
 
 #[inline]
-pub unsafe fn EX_NOHIDE(exp: *const svc_export) -> core::ffi::c_int {
+pub unsafe fn EX_NOHIDE(exp: *const svc_export) -> kernel::ffi::c_int {
     (*exp).ex_flags & NFSEXP_NOHIDE
 }
 
 #[inline]
-pub unsafe fn EX_WGATHER(exp: *const svc_export) -> core::ffi::c_int {
+pub unsafe fn EX_WGATHER(exp: *const svc_export) -> kernel::ffi::c_int {
     (*exp).ex_flags & NFSEXP_GATHERED_WRITES
 }
 
 extern "C" {
-    pub fn nfsexp_flags(cred: *mut svc_cred, exp: *mut svc_export) -> core::ffi::c_int;
+    pub fn nfsexp_flags(cred: *mut svc_cred, exp: *mut svc_export) -> kernel::ffi::c_int;
     pub fn check_xprtsec_policy(exp: *mut svc_export, rqstp: *mut svc_rqst) -> __be32;
     pub fn check_security_flavor(
         exp: *mut svc_export,
@@ -118,7 +118,7 @@ extern "C" {
     ) -> __be32;
 
     /* Function declarations */
-    pub fn nfsd_export_init(net: *mut net) -> core::ffi::c_int;
+    pub fn nfsd_export_init(net: *mut net) -> kernel::ffi::c_int;
     pub fn nfsd_export_shutdown(net: *mut net);
     pub fn nfsd_export_flush(net: *mut net);
     pub fn rqst_exp_get_by_name(rqstp: *mut svc_rqst, path: *const path) -> *mut svc_export;
@@ -127,17 +127,17 @@ extern "C" {
     pub fn exp_rootfh(
         net: *mut net,
         cl: *mut auth_domain,
-        path: *mut core::ffi::c_char,
+        path: *mut kernel::ffi::c_char,
         fh: *mut knfsd_fh,
-        maxsize: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        maxsize: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
     pub fn exp_pseudoroot(rqstp: *mut svc_rqst, fh: *mut svc_fh) -> __be32;
     pub fn rqst_exp_find(
         reqp: *mut cache_req,
         net: *mut net,
         cl: *mut auth_domain,
         gsscl: *mut auth_domain,
-        fsid_type: core::ffi::c_int,
+        fsid_type: kernel::ffi::c_int,
         fsidv: *mut u32,
     ) -> *mut svc_export;
 }

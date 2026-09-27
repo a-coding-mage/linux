@@ -79,7 +79,7 @@ pub struct hfi1_sdma_comp_entry { pub status: u32, pub errcode: u32 }
 pub struct hfi1_status {
     pub dev: u64,
     pub port: u64,
-    pub freezemsg: [core::ffi::c_char; 0],
+    pub freezemsg: [kernel::ffi::c_char; 0],
 }
 
 pub const HFI1_SDMA_REQ_VERSION_MASK: u16 = 0xF;

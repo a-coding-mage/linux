@@ -16,8 +16,8 @@ pub static mut p9_debug_level: u32 = 0;
 #[cfg(CONFIG_NET_9P_DEBUG)]
 pub unsafe fn _p9_debug(
     level: p9_debug_flags,
-    func: *const core::ffi::c_char,
-    fmt: *const core::ffi::c_char,
+    func: *const kernel::ffi::c_char,
+    fmt: *const kernel::ffi::c_char,
     mut args: ...,
 ) {
     // va_list/va_format and task_pid_nr(current) are kernel facilities.
@@ -53,7 +53,7 @@ pub unsafe fn v9fs_unregister_trans(m: *mut p9_trans_module) {
     spin_unlock(&raw mut v9fs_trans_lock);
 }
 
-unsafe fn _p9_get_trans_by_name(s: *const core::ffi::c_char) -> *mut p9_trans_module {
+unsafe fn _p9_get_trans_by_name(s: *const kernel::ffi::c_char) -> *mut p9_trans_module {
     let mut found: *mut p9_trans_module = core::ptr::null_mut();
 
     spin_lock(&raw mut v9fs_trans_lock);
@@ -67,7 +67,7 @@ unsafe fn _p9_get_trans_by_name(s: *const core::ffi::c_char) -> *mut p9_trans_mo
     found
 }
 
-pub unsafe fn v9fs_get_trans_by_name(s: *const core::ffi::c_char) -> *mut p9_trans_module {
+pub unsafe fn v9fs_get_trans_by_name(s: *const kernel::ffi::c_char) -> *mut p9_trans_module {
     let mut found = _p9_get_trans_by_name(s);
     // CONFIG_MODULES preserves the original optional request_module path.
     #[cfg(CONFIG_MODULES)]

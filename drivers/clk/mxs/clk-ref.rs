@@ -13,10 +13,10 @@ pub struct clk_hw {
 
 #[repr(C)]
 pub struct clk_init_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const clk_ops,
     pub flags: u32,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: u32,
 }
 
@@ -48,15 +48,15 @@ pub struct clk_ref {
 }
 
 extern "C" {
-    static mut mxs_lock: core::ffi::c_void;
+    static mut mxs_lock: kernel::ffi::c_void;
     static CLR: usize;
     static SET: usize;
 
     fn writel_relaxed(value: u32, address: *mut u8);
     fn readl_relaxed(address: *mut u8) -> u32;
-    fn spin_lock_irqsave(lock: *mut core::ffi::c_void, flags: *mut usize);
-    fn spin_unlock_irqrestore(lock: *mut core::ffi::c_void, flags: usize);
-    fn clk_register(parent: *mut core::ffi::c_void, hw: *mut clk_hw) -> *mut clk;
+    fn spin_lock_irqsave(lock: *mut kernel::ffi::c_void, flags: *mut usize);
+    fn spin_unlock_irqrestore(lock: *mut kernel::ffi::c_void, flags: usize);
+    fn clk_register(parent: *mut kernel::ffi::c_void, hw: *mut clk_hw) -> *mut clk;
 }
 
 unsafe fn to_clk_ref(hw: *mut clk_hw) -> *mut clk_ref {
@@ -153,8 +153,8 @@ static clk_ref_ops: clk_ops = clk_ops {
 };
 
 pub unsafe extern "C" fn mxs_clk_ref(
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
     reg: *mut u8,
     idx: u8,
 ) -> *mut clk {
@@ -182,7 +182,7 @@ pub unsafe extern "C" fn mxs_clk_ref(
 
     let clk = clk_register(core::ptr::null_mut(), &mut (*ref_).hw);
     if is_err(clk) {
-        kfree(ref_ as *mut core::ffi::c_void);
+        kfree(ref_ as *mut kernel::ffi::c_void);
     }
 
     clk
@@ -192,7 +192,7 @@ extern "C" {
     fn kzalloc_obj<T>() -> *mut T;
     fn err_ptr(error: i32) -> *mut clk;
     fn is_err(ptr: *mut clk) -> bool;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

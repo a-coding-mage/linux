@@ -4,7 +4,7 @@
  * External kernel/comedi constants and functions are supplied by dependencies.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct ni_route_set {

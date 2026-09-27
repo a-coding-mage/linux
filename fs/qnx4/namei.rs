@@ -23,16 +23,16 @@
  */
 unsafe fn qnx4_match(
     len: i32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     bh: *mut buffer_head,
     offset: *mut usize,
 ) -> i32 {
     let de: *mut qnx4_directory_entry;
-    let mut fname: *const core::ffi::c_char;
+    let mut fname: *const kernel::ffi::c_char;
     let mut fnamelen: i32 = 0;
 
     if bh.is_null() {
-        printk(KERN_WARNING, b"qnx4: matching unassigned buffer !\n\0".as_ptr() as *const core::ffi::c_char);
+        printk(KERN_WARNING, b"qnx4: matching unassigned buffer !\n\0".as_ptr() as *const kernel::ffi::c_char);
         return 0;
     }
     de = ((*bh).b_data.add(*offset)) as *mut qnx4_directory_entry;
@@ -53,7 +53,7 @@ unsafe fn qnx4_match(
 unsafe fn qnx4_find_entry(
     len: i32,
     dir: *mut inode,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     res_dir: *mut *mut qnx4_inode_entry,
     ino: *mut i32,
 ) -> *mut buffer_head {
@@ -102,7 +102,7 @@ unsafe fn qnx4_lookup(
     let mut de: *mut qnx4_inode_entry = core::ptr::null_mut();
     let mut lnk: *mut qnx4_link_info;
     let bh: *mut buffer_head;
-    let name: *const core::ffi::c_char = (*dentry).d_name.name;
+    let name: *const kernel::ffi::c_char = (*dentry).d_name.name;
     let len: i32 = (*dentry).d_name.len as i32;
     let mut foundinode: *mut inode = core::ptr::null_mut();
 

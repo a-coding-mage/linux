@@ -11,7 +11,7 @@
 // Dependencies supplied by xor_impl.h and xor_arch.h are provided by the
 // surrounding translation unit.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     pub fn xor_vis_2(

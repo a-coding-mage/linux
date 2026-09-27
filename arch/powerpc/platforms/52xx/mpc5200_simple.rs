@@ -25,7 +25,7 @@
 
 #[repr(C)]
 pub struct PpcMd {
-    pub progress: Option<unsafe extern "C" fn(*const core::ffi::c_char, i32)>,
+    pub progress: Option<unsafe extern "C" fn(*const kernel::ffi::c_char, i32)>,
 }
 
 extern "C" {
@@ -44,7 +44,7 @@ extern "C" {
  */
 unsafe extern "C" fn mpc5200_simple_setup_arch() {
     if let Some(progress) = ppc_md.progress {
-        progress(b"mpc5200_simple_setup_arch()\0".as_ptr() as *const core::ffi::c_char, 0);
+        progress(b"mpc5200_simple_setup_arch()\0".as_ptr() as *const kernel::ffi::c_char, 0);
     }
 
     /* Map important registers from the internal memory map */
@@ -55,26 +55,26 @@ unsafe extern "C" fn mpc5200_simple_setup_arch() {
 }
 
 /* list of the supported boards */
-static BOARD: [Option<&'static core::ffi::c_char>; 13] = [
-    Some(b"anonymous,a3m071\0".as_ptr() as *const core::ffi::c_char),
-    Some(b"anonymous,a4m072\0".as_ptr() as *const core::ffi::c_char),
-    Some(b"anon,charon\0".as_ptr() as *const core::ffi::c_char),
-    Some(b"ifm,o2d\0".as_ptr() as *const core::ffi::c_char),
-    Some(b"intercontrol,digsy-mtc\0".as_ptr() as *const core::ffi::c_char),
-    Some(b"manroland,mucmc52\0".as_ptr() as *const core::ffi::c_char),
-    Some(b"manroland,uc101\0".as_ptr() as *const core::ffi::c_char),
-    Some(b"phytec,pcm030\0".as_ptr() as *const core::ffi::c_char),
-    Some(b"phytec,pcm032\0".as_ptr() as *const core::ffi::c_char),
-    Some(b"promess,motionpro\0".as_ptr() as *const core::ffi::c_char),
-    Some(b"schindler,cm5200\0".as_ptr() as *const core::ffi::c_char),
-    Some(b"tqc,tqm5200\0".as_ptr() as *const core::ffi::c_char),
+static BOARD: [Option<&'static kernel::ffi::c_char>; 13] = [
+    Some(b"anonymous,a3m071\0".as_ptr() as *const kernel::ffi::c_char),
+    Some(b"anonymous,a4m072\0".as_ptr() as *const kernel::ffi::c_char),
+    Some(b"anon,charon\0".as_ptr() as *const kernel::ffi::c_char),
+    Some(b"ifm,o2d\0".as_ptr() as *const kernel::ffi::c_char),
+    Some(b"intercontrol,digsy-mtc\0".as_ptr() as *const kernel::ffi::c_char),
+    Some(b"manroland,mucmc52\0".as_ptr() as *const kernel::ffi::c_char),
+    Some(b"manroland,uc101\0".as_ptr() as *const kernel::ffi::c_char),
+    Some(b"phytec,pcm030\0".as_ptr() as *const kernel::ffi::c_char),
+    Some(b"phytec,pcm032\0".as_ptr() as *const kernel::ffi::c_char),
+    Some(b"promess,motionpro\0".as_ptr() as *const kernel::ffi::c_char),
+    Some(b"schindler,cm5200\0".as_ptr() as *const kernel::ffi::c_char),
+    Some(b"tqc,tqm5200\0".as_ptr() as *const kernel::ffi::c_char),
     None,
 ];
 
 #[repr(C)]
 pub struct MachineDesc {
-    pub name: *const core::ffi::c_char,
-    pub compatibles: *const Option<&'static core::ffi::c_char>,
+    pub name: *const kernel::ffi::c_char,
+    pub compatibles: *const Option<&'static kernel::ffi::c_char>,
     pub setup_arch: Option<unsafe extern "C" fn()>,
     pub discover_phbs: Option<unsafe extern "C" fn()>,
     pub init: Option<unsafe extern "C" fn()>,
@@ -85,7 +85,7 @@ pub struct MachineDesc {
 
 #[no_mangle]
 pub static mpc5200_simple_platform: MachineDesc = MachineDesc {
-    name: b"mpc5200-simple-platform\0".as_ptr() as *const core::ffi::c_char,
+    name: b"mpc5200-simple-platform\0".as_ptr() as *const kernel::ffi::c_char,
     compatibles: BOARD.as_ptr(),
     setup_arch: Some(mpc5200_simple_setup_arch),
     discover_phbs: Some(mpc52xx_setup_pci),

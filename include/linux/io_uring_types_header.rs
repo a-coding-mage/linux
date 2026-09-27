@@ -29,12 +29,12 @@ pub const IO_RINGFD_REG_MAX: usize = 16;
 #[repr(C)] pub struct mpscq { pub tail: *mut llist_node, pub stub: llist_node }
 #[repr(C)] pub struct io_wq_work { pub list: io_wq_work_node, pub flags: atomic_t, pub cancel_seq: i32 }
 #[repr(C)] pub struct io_rsrc_data { pub nr: u32, pub nodes: *mut *mut io_rsrc_node }
-#[repr(C)] pub struct io_file_table { pub data: io_rsrc_data, pub bitmap: *mut libc::c_ulong, pub alloc_hint: u32 }
+#[repr(C)] pub struct io_file_table { pub data: io_rsrc_data, pub bitmap: *mut kernel::ffi::c_ulong, pub alloc_hint: u32 }
 #[repr(C)] pub struct io_hash_bucket { pub list: hlist_head }
-#[repr(C)] pub struct io_hash_table { pub hbs: *mut io_hash_bucket, pub hash_bits: libc::c_uint }
-#[repr(C)] pub struct io_mapped_region { pub pages: *mut *mut page, pub ptr: *mut libc::c_void, pub nr_pages: libc::c_uint, pub flags: libc::c_uint }
+#[repr(C)] pub struct io_hash_table { pub hbs: *mut io_hash_bucket, pub hash_bits: kernel::ffi::c_uint }
+#[repr(C)] pub struct io_mapped_region { pub pages: *mut *mut page, pub ptr: *mut kernel::ffi::c_void, pub nr_pages: kernel::ffi::c_uint, pub flags: kernel::ffi::c_uint }
 
-#[repr(C)] pub union io_br_sel_union { pub addr: *mut libc::c_void, pub val: isize }
+#[repr(C)] pub union io_br_sel_union { pub addr: *mut kernel::ffi::c_void, pub val: isize }
 #[repr(C)] pub struct io_br_sel { pub buf_list: *mut io_buffer_list, pub value: io_br_sel_union }
 
 #[repr(C)] pub struct io_uring_task {
@@ -45,7 +45,7 @@ pub const IO_RINGFD_REG_MAX: usize = 16;
     pub task_list: mpscq, pub task_work: callback_head,
 }
 #[repr(C)] pub union iou_vec_union { pub iovec: *mut iovec, pub bvec: *mut bio_vec }
-#[repr(C)] pub struct iou_vec { pub value: iou_vec_union, pub nr: libc::c_uint }
+#[repr(C)] pub struct iou_vec { pub value: iou_vec_union, pub nr: kernel::ffi::c_uint }
 #[repr(C)] pub struct io_uring { pub head: u32, pub tail: u32 }
 
 #[repr(C)] pub struct io_rings {
@@ -58,7 +58,7 @@ pub const IO_RINGFD_REG_MAX: usize = 16;
 #[repr(C)] pub struct io_bpf_filter { _private: [u8; 0] }
 #[repr(C)] pub struct io_bpf_filters { pub refs: refcount_t, pub lock: spinlock_t, pub filters: *mut *mut io_bpf_filter, pub rcu_head: rcu_head }
 #[repr(C)] pub struct io_restriction {
-    pub register_op: [libc::c_ulong; 1], pub sqe_op: [libc::c_ulong; 1], pub bpf_filters: *mut io_bpf_filters,
+    pub register_op: [kernel::ffi::c_ulong; 1], pub sqe_op: [kernel::ffi::c_ulong; 1], pub bpf_filters: *mut io_bpf_filters,
     pub bpf_filters_cow: bool, pub sqe_flags_allowed: u8, pub sqe_flags_required: u8,
     pub op_registered: bool, pub reg_registered: bool,
 }
@@ -67,7 +67,7 @@ pub const IO_RINGFD_REG_MAX: usize = 16;
     pub free_list: io_wq_work_node, pub compl_reqs: io_wq_work_list, pub link: io_submit_link,
     pub plug_started: bool, pub need_plug: bool, pub cq_flush: bool, pub submit_nr: u16, pub plug: blk_plug,
 }
-#[repr(C)] pub struct io_alloc_cache { pub entries: *mut *mut libc::c_void, pub nr_cached: u32, pub max_cached: u32, pub elem_size: u32, pub init_clear: u32 }
+#[repr(C)] pub struct io_alloc_cache { pub entries: *mut *mut kernel::ffi::c_void, pub nr_cached: u32, pub max_cached: u32, pub elem_size: u32, pub init_clear: u32 }
 
 pub const IO_RING_F_DRAIN_NEXT: u32 = 1 << 0;
 pub const IO_RING_F_OP_RESTRICTED: u32 = 1 << 1;
@@ -87,20 +87,20 @@ pub const IO_RING_F_IOWQ_LIMITS_SET: u32 = 1 << 12;
 #[repr(C)] pub struct io_ring_ctx {
     pub flags: u32, pub int_flags: u32, pub submitter_task: *mut task_struct, pub rings: *mut io_rings,
     pub bpf_filters: *mut *mut io_bpf_filter, pub refs: percpu_ref, pub clockid: clockid_t,
-    pub clock_offset: tk_offsets, pub notify_method: task_work_notify_mode, pub sq_thread_idle: libc::c_uint,
-    pub uring_lock: mutex, pub sq_array: *mut u32, pub sq_sqes: *mut io_uring_sqe, pub cached_sq_head: libc::c_uint,
-    pub sq_entries: libc::c_uint, pub cancel_seq: atomic_t, pub poll_multi_queue: bool, pub iopoll_list: list_head,
+    pub clock_offset: tk_offsets, pub notify_method: task_work_notify_mode, pub sq_thread_idle: kernel::ffi::c_uint,
+    pub uring_lock: mutex, pub sq_array: *mut u32, pub sq_sqes: *mut io_uring_sqe, pub cached_sq_head: kernel::ffi::c_uint,
+    pub sq_entries: kernel::ffi::c_uint, pub cancel_seq: atomic_t, pub poll_multi_queue: bool, pub iopoll_list: list_head,
     pub work_head: *mut llist_node, pub file_table: io_file_table, pub buf_table: io_rsrc_data,
     pub node_cache: io_alloc_cache, pub imu_cache: io_alloc_cache, pub submit_state: io_submit_state,
     pub io_bl_xa: xarray, pub cancel_table: io_hash_table, pub apoll_cache: io_alloc_cache,
     pub netmsg_cache: io_alloc_cache, pub rw_cache: io_alloc_cache, pub cmd_cache: io_alloc_cache,
     pub loop_step: Option<unsafe extern "C" fn(*mut iou_ctx, *mut iou_loop_params) -> i32>,
     pub cancelable_uring_cmd: hlist_head, pub hybrid_poll_time: u64,
-    pub cqe_cached: *mut io_uring_cqe, pub cqe_sentinel: *mut io_uring_cqe, pub cached_cq_tail: libc::c_uint,
-    pub cq_entries: libc::c_uint, pub io_ev_fd: *mut io_ev_fd, pub cq_wait_arg: *mut libc::c_void, pub cq_wait_size: usize,
-    pub rings_rcu: *mut io_rings, pub work_list: mpscq, pub check_cq: libc::c_ulong, pub cq_wait_nr: atomic_t,
+    pub cqe_cached: *mut io_uring_cqe, pub cqe_sentinel: *mut io_uring_cqe, pub cached_cq_tail: kernel::ffi::c_uint,
+    pub cq_entries: kernel::ffi::c_uint, pub io_ev_fd: *mut io_ev_fd, pub cq_wait_arg: *mut kernel::ffi::c_void, pub cq_wait_size: usize,
+    pub rings_rcu: *mut io_rings, pub work_list: mpscq, pub check_cq: kernel::ffi::c_ulong, pub cq_wait_nr: atomic_t,
     pub cq_timeouts: atomic_t, pub cq_wait: wait_queue_head, pub timeout_lock: raw_spinlock_t,
-    pub timeout_list: list_head, pub ltimeout_list: list_head, pub cq_last_tm_flush: libc::c_uint,
+    pub timeout_list: list_head, pub ltimeout_list: list_head, pub cq_last_tm_flush: kernel::ffi::c_uint,
     pub completion_lock: spinlock_t, pub cq_overflow_list: list_head, pub waitid_list: hlist_head,
     // CONFIG_FUTEX: futex_list and futex_cache are present when enabled.
     pub sq_creds: *const cred, pub sq_data: *mut io_sq_data, pub sqo_sq_wait: wait_queue_head, pub sqd_list: list_head,
@@ -108,8 +108,8 @@ pub const IO_RING_F_IOWQ_LIMITS_SET: u32 = 1 << 12;
     pub zcrx_ctxs: xarray, pub hpage_acct: xarray, pub pers_next: u32, pub personalities: xarray,
     pub hash_map: *mut io_wq_hash, pub user: *mut user_struct, pub mm_account: *mut mm_struct,
     pub tctx_list: list_head, pub tctx_lock: mutex, pub exit_work: work_struct, pub ref_comp: completion,
-    pub iowq_limits: [u32; 2], pub poll_wq_task_work: callback_head, pub defer_list: list_head, pub nr_drained: libc::c_uint,
-    pub nr_req_allocated: libc::c_uint, pub bpf_ops: *mut io_uring_bpf_ops, pub mmap_lock: mutex,
+    pub iowq_limits: [u32; 2], pub poll_wq_task_work: callback_head, pub defer_list: list_head, pub nr_drained: kernel::ffi::c_uint,
+    pub nr_req_allocated: kernel::ffi::c_uint, pub bpf_ops: *mut io_uring_bpf_ops, pub mmap_lock: mutex,
     pub sq_region: io_mapped_region, pub ring_region: io_mapped_region, pub param_region: io_mapped_region,
     pub kcov_handle: kcov_common_handle_id,
 }
@@ -186,7 +186,7 @@ pub type io_req_tw_func_t = Option<unsafe extern "C" fn(io_tw_req, io_tw_token_t
 #[repr(C)] pub struct io_cqe { pub user_data: u64, pub res: i32, pub flags_fd: io_cqe_flags_fd }
 #[repr(C)] pub struct io_cmd_data { pub file: *mut file, pub data: [u8; 56] }
 pub unsafe fn io_kiocb_cmd_sz_check(_cmd_sz: usize) {}
-pub unsafe fn cmd_to_io_kiocb(ptr: *mut libc::c_void) -> *mut io_kiocb { ptr as *mut io_kiocb }
+pub unsafe fn cmd_to_io_kiocb(ptr: *mut kernel::ffi::c_void) -> *mut io_kiocb { ptr as *mut io_kiocb }
 
 #[repr(C)] pub union io_kiocb_file_cmd { pub file: *mut file, pub cmd: io_cmd_data }
 #[repr(C)] pub union io_kiocb_buf { pub kbuf: *mut io_buffer, pub buf_node: *mut io_rsrc_node }
@@ -199,7 +199,7 @@ pub unsafe fn cmd_to_io_kiocb(ptr: *mut libc::c_void) -> *mut io_kiocb { ptr as 
     pub flags: io_req_flags_t, pub cqe: io_cqe, pub ctx: *mut io_ring_ctx, pub tctx: *mut io_uring_task,
     pub buf: io_kiocb_buf, pub comp_poll: io_kiocb_comp_poll, pub file_node: *mut io_rsrc_node,
     pub refs: atomic_t, pub cancel_seq_set: bool, pub task_poll: io_kiocb_task_poll,
-    pub hash_list_rcu: io_kiocb_hash_list_rcu, pub apoll: *mut async_poll, pub async_data: *mut libc::c_void,
+    pub hash_list_rcu: io_kiocb_hash_list_rcu, pub apoll: *mut async_poll, pub async_data: *mut kernel::ffi::c_void,
     pub poll_refs: atomic_t, pub link: *mut io_kiocb, pub creds: *const cred, pub work: io_wq_work, pub big_cqe: io_big_cqe,
 }
 #[repr(C)] pub struct io_overflow_cqe { pub list: list_head, pub cqe: io_uring_cqe }

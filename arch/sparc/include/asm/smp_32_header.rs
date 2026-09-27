@@ -11,7 +11,7 @@
 #[cfg(CONFIG_SMP)]
 extern "C" {
     pub static mut boot_cpu_id: u8;
-    pub static mut cpu_callin_map: [core::ffi::c_ulong; NR_CPUS];
+    pub static mut cpu_callin_map: [kernel::ffi::c_ulong; NR_CPUS];
     pub static mut smp_commenced_mask: cpumask_t;
     pub static mut smp_penguin_ctable: linux_prom_registers;
 
@@ -40,12 +40,12 @@ extern "C" {
 #[repr(C)]
 pub struct sparc32_ipi_ops {
     pub cross_call: Option<unsafe extern "C" fn(
-        func: *mut core::ffi::c_void,
+        func: *mut kernel::ffi::c_void,
         mask: cpumask_t,
-        arg1: core::ffi::c_ulong,
-        arg2: core::ffi::c_ulong,
-        arg3: core::ffi::c_ulong,
-        arg4: core::ffi::c_ulong,
+        arg1: kernel::ffi::c_ulong,
+        arg2: kernel::ffi::c_ulong,
+        arg3: kernel::ffi::c_ulong,
+        arg4: kernel::ffi::c_ulong,
     )>,
     pub resched: Option<unsafe extern "C" fn(cpu: i32)>,
     pub single: Option<unsafe extern "C" fn(cpu: i32)>,
@@ -59,22 +59,22 @@ extern "C" {
 
 #[cfg(CONFIG_SMP)]
 #[inline]
-pub unsafe fn xc0(func: *mut core::ffi::c_void) {
+pub unsafe fn xc0(func: *mut kernel::ffi::c_void) {
     ((*sparc32_ipi_ops).cross_call.unwrap())(func, *cpu_online_mask, 0, 0, 0, 0);
 }
 
 #[cfg(CONFIG_SMP)]
 #[inline]
-pub unsafe fn xc1(func: *mut core::ffi::c_void, arg1: core::ffi::c_ulong) {
+pub unsafe fn xc1(func: *mut kernel::ffi::c_void, arg1: kernel::ffi::c_ulong) {
     ((*sparc32_ipi_ops).cross_call.unwrap())(func, *cpu_online_mask, arg1, 0, 0, 0);
 }
 
 #[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn xc2(
-    func: *mut core::ffi::c_void,
-    arg1: core::ffi::c_ulong,
-    arg2: core::ffi::c_ulong,
+    func: *mut kernel::ffi::c_void,
+    arg1: kernel::ffi::c_ulong,
+    arg2: kernel::ffi::c_ulong,
 ) {
     ((*sparc32_ipi_ops).cross_call.unwrap())(func, *cpu_online_mask, arg1, arg2, 0, 0);
 }
@@ -82,10 +82,10 @@ pub unsafe fn xc2(
 #[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn xc3(
-    func: *mut core::ffi::c_void,
-    arg1: core::ffi::c_ulong,
-    arg2: core::ffi::c_ulong,
-    arg3: core::ffi::c_ulong,
+    func: *mut kernel::ffi::c_void,
+    arg1: kernel::ffi::c_ulong,
+    arg2: kernel::ffi::c_ulong,
+    arg3: kernel::ffi::c_ulong,
 ) {
     ((*sparc32_ipi_ops).cross_call.unwrap())(func, *cpu_online_mask, arg1, arg2, arg3, 0);
 }
@@ -93,11 +93,11 @@ pub unsafe fn xc3(
 #[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn xc4(
-    func: *mut core::ffi::c_void,
-    arg1: core::ffi::c_ulong,
-    arg2: core::ffi::c_ulong,
-    arg3: core::ffi::c_ulong,
-    arg4: core::ffi::c_ulong,
+    func: *mut kernel::ffi::c_void,
+    arg1: kernel::ffi::c_ulong,
+    arg2: kernel::ffi::c_ulong,
+    arg3: kernel::ffi::c_ulong,
+    arg4: kernel::ffi::c_ulong,
 ) {
     ((*sparc32_ipi_ops).cross_call.unwrap())(func, *cpu_online_mask, arg1, arg2, arg3, arg4);
 }

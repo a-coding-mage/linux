@@ -194,6 +194,6 @@ pub unsafe fn pse_has_podl(_psec: *mut pse_control) -> bool { false }
 #[cfg(not(CONFIG_PSE_CONTROLLER))]
 pub unsafe fn pse_has_c33(_psec: *mut pse_control) -> bool { false }
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

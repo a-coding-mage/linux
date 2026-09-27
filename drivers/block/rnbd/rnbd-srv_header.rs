@@ -14,8 +14,8 @@ pub struct rnbd_srv_session {
     /* Entry inside global sess_list */
     pub list: list_head,
     pub rtrs: *mut rtrs_srv_sess,
-    pub sessname: [core::ffi::c_char; NAME_MAX],
-    pub queue_depth: core::ffi::c_int,
+    pub sessname: [kernel::ffi::c_char; NAME_MAX],
+    pub queue_depth: kernel::ffi::c_int,
 
     pub index_idr: xarray,
     pub lock: mutex,
@@ -29,11 +29,11 @@ pub struct rnbd_srv_dev {
     pub dev_kobj: kobject,
     pub dev_sessions_kobj: *mut kobject,
     pub kref: kref,
-    pub name: [core::ffi::c_char; NAME_MAX],
+    pub name: [kernel::ffi::c_char; NAME_MAX],
     /* List of rnbd_srv_sess_dev structs */
     pub sess_dev_list: list_head,
     pub lock: mutex,
-    pub open_write_cnt: core::ffi::c_int,
+    pub open_write_cnt: kernel::ffi::c_int,
 }
 
 /* Structure which binds N devices and N sessions */
@@ -50,7 +50,7 @@ pub struct rnbd_srv_sess_dev {
     pub readonly: bool,
     pub kref: kref,
     pub destroy_comp: *mut completion,
-    pub pathname: [core::ffi::c_char; NAME_MAX],
+    pub pathname: [kernel::ffi::c_char; NAME_MAX],
     pub access_mode: rnbd_access_mode,
 }
 
@@ -64,13 +64,13 @@ extern "C" {
     pub fn rnbd_srv_create_dev_sysfs(
         dev: *mut rnbd_srv_dev,
         bdev: *mut block_device,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn rnbd_srv_destroy_dev_sysfs(dev: *mut rnbd_srv_dev);
     pub fn rnbd_srv_create_dev_session_sysfs(
         sess_dev: *mut rnbd_srv_sess_dev,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn rnbd_srv_destroy_dev_session_sysfs(sess_dev: *mut rnbd_srv_sess_dev);
-    pub fn rnbd_srv_create_sysfs_files() -> core::ffi::c_int;
+    pub fn rnbd_srv_create_sysfs_files() -> kernel::ffi::c_int;
     pub fn rnbd_srv_destroy_sysfs_files();
     pub fn rnbd_destroy_sess_dev(sess_dev: *mut rnbd_srv_sess_dev, keep_id: bool);
 }

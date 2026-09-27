@@ -17,7 +17,7 @@ pub union cvmx_pcsxx_register {
 macro_rules! pcsxx_addr_fn {
     ($name:ident, $addr:expr) => {
         #[inline]
-        pub unsafe fn $name(block_id: libc::c_ulong) -> u64 {
+        pub unsafe fn $name(block_id: kernel::ffi::c_ulong) -> u64 {
             match cvmx_get_octeon_family() {
                 x if x == (OCTEON_CN56XX & OCTEON_FAMILY_MASK)
                     || x == (OCTEON_CN66XX & OCTEON_FAMILY_MASK)

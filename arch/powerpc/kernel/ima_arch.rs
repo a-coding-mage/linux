@@ -4,7 +4,7 @@
  * Author: Nayna Jain
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn is_ppc_secureboot_enabled() -> bool;

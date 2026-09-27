@@ -144,7 +144,7 @@ pub struct smb2_file_full_ea_info {
     pub flags: u8,
     pub ea_name_length: u8,
     pub ea_value_length: u16,
-    pub ea_data: [core::ffi::c_char; 0],
+    pub ea_data: [kernel::ffi::c_char; 0],
 }
 
 #[repr(C, packed)]
@@ -175,11 +175,11 @@ pub struct smb2_file_id_extd_directory_info {
     pub EaSize: u32,
     pub ReparsePointTag: u32,
     pub UniqueId: u64,
-    pub FileName: [core::ffi::c_char; 0],
+    pub FileName: [kernel::ffi::c_char; 0],
 }
 
 extern "C" {
-    pub static mut smb2_padding: [core::ffi::c_char; 7];
+    pub static mut smb2_padding: [kernel::ffi::c_char; 7];
 }
 
 #[repr(C, packed)]

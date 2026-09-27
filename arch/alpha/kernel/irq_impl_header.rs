@@ -14,13 +14,13 @@
 pub const RTC_IRQ: i32 = 8;
 
 extern "C" {
-    pub fn isa_device_interrupt(irq: ::core::ffi::c_ulong);
-    pub fn isa_no_iack_sc_device_interrupt(irq: ::core::ffi::c_ulong);
-    pub fn srm_device_interrupt(irq: ::core::ffi::c_ulong);
-    pub fn pyxis_device_interrupt(irq: ::core::ffi::c_ulong);
+    pub fn isa_device_interrupt(irq: ::kernel::ffi::c_ulong);
+    pub fn isa_no_iack_sc_device_interrupt(irq: ::kernel::ffi::c_ulong);
+    pub fn srm_device_interrupt(irq: ::kernel::ffi::c_ulong);
+    pub fn pyxis_device_interrupt(irq: ::kernel::ffi::c_ulong);
 
-    pub fn init_srm_irqs(a: ::core::ffi::c_long, b: ::core::ffi::c_ulong);
-    pub fn init_pyxis_irqs(a: ::core::ffi::c_ulong);
+    pub fn init_srm_irqs(a: ::kernel::ffi::c_long, b: ::kernel::ffi::c_ulong);
+    pub fn init_pyxis_irqs(a: ::kernel::ffi::c_ulong);
     pub fn init_rtc_irq(handler: irq_handler_t);
 
     pub fn common_init_isa_dma();
@@ -31,7 +31,7 @@ extern "C" {
     pub static mut i8259a_irq_type: irq_chip;
     pub fn init_i8259a_irqs();
 
-    pub fn handle_irq(irq: ::core::ffi::c_int);
+    pub fn handle_irq(irq: ::kernel::ffi::c_int);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

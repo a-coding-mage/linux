@@ -8,8 +8,8 @@
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const ::core::ffi::c_char,
-    pub data: *const ::core::ffi::c_void,
+    pub compatible: *const ::kernel::ffi::c_char,
+    pub data: *const ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -24,17 +24,17 @@ pub struct device_node {
 
 extern "C" {
     fn of_cpu_device_node_get(cpu: i32) -> *mut device_node;
-    fn of_property_present(np: *const device_node, propname: *const ::core::ffi::c_char) -> bool;
+    fn of_property_present(np: *const device_node, propname: *const ::kernel::ffi::c_char) -> bool;
     fn of_machine_device_match(matches: *const of_device_id) -> bool;
-    fn of_machine_get_match_data(matches: *const of_device_id) -> *const ::core::ffi::c_void;
+    fn of_machine_get_match_data(matches: *const of_device_id) -> *const ::kernel::ffi::c_void;
     fn platform_device_register_data(
-        parent: *mut ::core::ffi::c_void,
-        name: *const ::core::ffi::c_char,
+        parent: *mut ::kernel::ffi::c_void,
+        name: *const ::kernel::ffi::c_char,
         id: i32,
-        data: *const ::core::ffi::c_void,
+        data: *const ::kernel::ffi::c_void,
         size: usize,
-    ) -> *mut ::core::ffi::c_void;
-    fn PTR_ERR_OR_ZERO(ptr: *mut ::core::ffi::c_void) -> i32;
+    ) -> *mut ::kernel::ffi::c_void;
+    fn PTR_ERR_OR_ZERO(ptr: *mut ::kernel::ffi::c_void) -> i32;
 }
 
 const ENODEV: i32 = 19;
@@ -223,7 +223,7 @@ unsafe fn cpu0_node_has_opp_v2_prop() -> bool {
 }
 
 unsafe fn cpufreq_dt_platdev_init() -> i32 {
-    let mut data: *const ::core::ffi::c_void = core::ptr::null();
+    let mut data: *const ::kernel::ffi::c_void = core::ptr::null();
 
     if of_machine_device_match(ALLOWLIST.as_ptr()) {
         data = of_machine_get_match_data(ALLOWLIST.as_ptr());

@@ -5,7 +5,7 @@
 
 #![allow(non_upper_case_globals, non_camel_case_types, non_snake_case)]
 
-use core::ffi::c_int;
+use kernel::ffi::c_int;
 
 // External kernel types and functions (from us144mkii.h and other kernel modules)
 // These would be provided by the kernel build environment
@@ -32,16 +32,16 @@ extern "C" {
         size: usize,
         mem_flags: u32,
         dma: *mut u64,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     fn usb_free_coherent(
         dev: *mut usb_device,
         size: usize,
-        addr: *mut core::ffi::c_void,
+        addr: *mut kernel::ffi::c_void,
         dma: u64,
     );
     fn usb_kill_anchored_urbs(anchor: *mut usb_anchor);
-    fn usb_get_intfdata(intf: *mut usb_interface) -> *mut core::ffi::c_void;
-    fn usb_set_intfdata(intf: *mut usb_interface, data: *mut core::ffi::c_void);
+    fn usb_get_intfdata(intf: *mut usb_interface) -> *mut kernel::ffi::c_void;
+    fn usb_set_intfdata(intf: *mut usb_interface, data: *mut kernel::ffi::c_void);
     fn usb_get_dev(dev: *mut usb_device) -> *mut usb_device;
     fn usb_put_dev(dev: *mut usb_device);
     fn usb_rcvctrlpipe(dev: *mut usb_device, endpoint: c_int) -> c_int;
@@ -57,7 +57,7 @@ extern "C" {
         requesttype: u8,
         value: u16,
         index: u16,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         size: u16,
         timeout: c_int,
     ) -> c_int;
@@ -66,17 +66,17 @@ extern "C" {
     fn interface_to_usbdev(intf: *mut usb_interface) -> *mut usb_device;
 
     // Memory allocation
-    fn kmalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *const core::ffi::c_void);
+    fn kmalloc(size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *const kernel::ffi::c_void);
     fn kfifo_alloc(fifo: *mut kfifo, size: usize, flags: u32) -> c_int;
     fn kfifo_free(fifo: *mut kfifo);
 
     // ALSA functions
     fn snd_card_new(
-        parent: *mut core::ffi::c_void,
+        parent: *mut kernel::ffi::c_void,
         idx: c_int,
-        xid: *const core::ffi::c_char,
-        module: *mut core::ffi::c_void,
+        xid: *const kernel::ffi::c_char,
+        module: *mut kernel::ffi::c_void,
         extra_size: usize,
         card_ret: *mut *mut snd_card,
     ) -> c_int;
@@ -85,13 +85,13 @@ extern "C" {
     fn snd_card_register(card: *mut snd_card) -> c_int;
     fn snd_pcm_new(
         card: *mut snd_card,
-        id: *const core::ffi::c_char,
+        id: *const kernel::ffi::c_char,
         device: c_int,
         playback_count: c_int,
         capture_count: c_int,
-        rpcm: *mut *mut core::ffi::c_void,
+        rpcm: *mut *mut kernel::ffi::c_void,
     ) -> c_int;
-    fn snd_pcm_suspend_all(pcm: *mut core::ffi::c_void) -> c_int;
+    fn snd_pcm_suspend_all(pcm: *mut kernel::ffi::c_void) -> c_int;
 
     // Synchronization
     fn spin_lock_init(lock: *mut spinlock_t);
@@ -106,19 +106,19 @@ extern "C" {
     // Work queue and scheduling
     fn cancel_work_sync(work: *mut work_struct) -> bool;
     fn schedule_work(work: *mut work_struct) -> bool;
-    fn init_completion(x: *mut core::ffi::c_void);
+    fn init_completion(x: *mut kernel::ffi::c_void);
 
     // Utilities
-    fn dev_info(dev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
-    fn dev_err(dev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
-    fn dev_name(dev: *const core::ffi::c_void) -> *const core::ffi::c_char;
-    fn strscpy(dest: *mut core::ffi::c_char, src: *const core::ffi::c_char, count: usize) -> usize;
+    fn dev_info(dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_err(dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_name(dev: *const kernel::ffi::c_void) -> *const kernel::ffi::c_char;
+    fn strscpy(dest: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char, count: usize) -> usize;
     fn le16_to_cpu(x: u16) -> u16;
 
     // Macros/functions from us144mkii.h that need external definition
-    fn tascam_init_pcm(pcm: *mut core::ffi::c_void) -> c_int;
-    fn tascam_create_midi(tascam: *mut core::ffi::c_void) -> c_int;
-    fn tascam_create_controls(tascam: *mut core::ffi::c_void) -> c_int;
+    fn tascam_init_pcm(pcm: *mut kernel::ffi::c_void) -> c_int;
+    fn tascam_create_midi(tascam: *mut kernel::ffi::c_void) -> c_int;
+    fn tascam_create_controls(tascam: *mut kernel::ffi::c_void) -> c_int;
     fn tascam_stop_pcm_work_handler(work: *mut work_struct);
     fn tascam_capture_work_handler(work: *mut work_struct);
     fn tascam_midi_in_work(work: *mut work_struct);
@@ -128,16 +128,16 @@ extern "C" {
     fn playback_urb_complete(urb: *mut urb);
     fn feedback_urb_complete(urb: *mut urb);
     fn capture_urb_complete(urb: *mut urb);
-    fn us144mkii_configure_device_for_rate(tascam: *mut core::ffi::c_void, rate: c_int);
+    fn us144mkii_configure_device_for_rate(tascam: *mut kernel::ffi::c_void, rate: c_int);
 
     // Atomic operations
     fn atomic_set(v: *mut i32, i: i32);
     fn atomic_read(v: *const i32) -> i32;
 
     fn snprintf(
-        str: *mut core::ffi::c_char,
+        str: *mut kernel::ffi::c_char,
         size: usize,
-        format: *const core::ffi::c_char,
+        format: *const kernel::ffi::c_char,
         ...
     ) -> c_int;
 
@@ -186,7 +186,7 @@ const DRIVER_NAME: &[u8] = b"snd-usb-tascam-us144\0";
 
 // Module parameters
 static mut index: [c_int; SNDRV_CARDS] = [-1; SNDRV_CARDS];
-static mut id: [*mut core::ffi::c_char; SNDRV_CARDS] = [core::ptr::null_mut(); SNDRV_CARDS];
+static mut id: [*mut kernel::ffi::c_char; SNDRV_CARDS] = [core::ptr::null_mut(); SNDRV_CARDS];
 static mut enable: [bool; SNDRV_CARDS] = {
     let mut arr = [false; SNDRV_CARDS];
     arr[0] = true;
@@ -202,7 +202,7 @@ extern "C" {
     fn tascam_resume(intf: *mut usb_interface) -> c_int;
 }
 
-pub unsafe fn tascam_free_urbs(tascam: *mut core::ffi::c_void) {
+pub unsafe fn tascam_free_urbs(tascam: *mut kernel::ffi::c_void) {
     let tascam = tascam as *mut crate::TascamCard;
 
     usb_kill_anchored_urbs(&mut (*tascam).playback_anchor);
@@ -285,7 +285,7 @@ pub unsafe fn tascam_free_urbs(tascam: *mut core::ffi::c_void) {
     (*tascam).capture_ring_buffer = core::ptr::null_mut();
 }
 
-pub unsafe fn tascam_alloc_urbs(tascam: *mut core::ffi::c_void) -> c_int {
+pub unsafe fn tascam_alloc_urbs(tascam: *mut kernel::ffi::c_void) -> c_int {
     let tascam = tascam as *mut crate::TascamCard;
     let mut max_packet_size: usize;
 
@@ -646,7 +646,7 @@ pub unsafe fn tascam_probe(
         RT_D2H_VENDOR_DEV,
         MODE_VAL_HANDSHAKE_READ,
         0x0000,
-        handshake_buf as *mut core::ffi::c_void,
+        handshake_buf as *mut kernel::ffi::c_void,
         1,
         USB_CTRL_TIMEOUT_MS,
     );
@@ -691,9 +691,9 @@ pub unsafe fn tascam_probe(
     }
 
     err = snd_card_new(
-        &mut (*dev).dev as *mut _ as *mut core::ffi::c_void,
+        &mut (*dev).dev as *mut _ as *mut kernel::ffi::c_void,
         index[dev_idx as usize],
-        id[dev_idx as usize] as *const core::ffi::c_char,
+        id[dev_idx as usize] as *const kernel::ffi::c_char,
         core::ptr::null_mut(),
         core::mem::size_of::<crate::TascamCard>(),
         &mut card,
@@ -772,7 +772,7 @@ pub unsafe fn tascam_probe(
         0,
         1,
         1,
-        &mut (*tascam).pcm as *mut _ as *mut *mut core::ffi::c_void,
+        &mut (*tascam).pcm as *mut _ as *mut *mut kernel::ffi::c_void,
     );
     if err < 0 {
         goto_probe_error(tascam, card);
@@ -887,7 +887,7 @@ pub unsafe fn container_of<T, U>(ptr: *mut U, member_offset: usize) -> *mut T {
 pub struct TascamCard {
     pub dev: *mut usb_device,
     pub card: *mut snd_card,
-    pub pcm: *mut core::ffi::c_void,
+    pub pcm: *mut kernel::ffi::c_void,
     pub iface0: *mut usb_interface,
     pub iface1: *mut usb_interface,
     pub lock: spinlock_t,
@@ -912,12 +912,12 @@ pub struct TascamCard {
     pub capture_work: work_struct,
     pub midi_in_work: work_struct,
     pub midi_out_work: work_struct,
-    pub midi_out_drain_completion: core::ffi::c_void,
+    pub midi_out_drain_completion: kernel::ffi::c_void,
     pub midi_in_fifo: kfifo,
-    pub capture_ring_buffer: *mut core::ffi::c_void,
-    pub capture_decode_raw_block: *mut core::ffi::c_void,
-    pub capture_decode_dst_block: *mut core::ffi::c_void,
-    pub capture_routing_buffer: *mut core::ffi::c_void,
+    pub capture_ring_buffer: *mut kernel::ffi::c_void,
+    pub capture_decode_raw_block: *mut kernel::ffi::c_void,
+    pub capture_decode_dst_block: *mut kernel::ffi::c_void,
+    pub capture_routing_buffer: *mut kernel::ffi::c_void,
     pub active_urbs: i32,
     pub midi_in_active: i32,
     pub midi_out_active: i32,
@@ -928,8 +928,8 @@ pub struct TascamCard {
 
 #[repr(C)]
 pub struct SndPcm {
-    pub private_data: *mut core::ffi::c_void,
-    pub name: [core::ffi::c_char; 80],
+    pub private_data: *mut kernel::ffi::c_void,
+    pub name: [kernel::ffi::c_char; 80],
 }
 
 // Stub for usb_fill_bulk_urb macro behavior
@@ -937,10 +937,10 @@ unsafe fn usb_fill_bulk_urb(
     urb: *mut urb,
     dev: *mut usb_device,
     pipe: c_int,
-    transfer_buffer: *mut core::ffi::c_void,
+    transfer_buffer: *mut kernel::ffi::c_void,
     transfer_buffer_length: usize,
     complete: Option<unsafe extern "C" fn(*mut urb)>,
-    context: *mut core::ffi::c_void,
+    context: *mut kernel::ffi::c_void,
 ) {
     (*urb).dev = dev;
     (*urb).pipe = pipe;

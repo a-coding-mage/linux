@@ -8,7 +8,7 @@
 #[repr(C)]
 pub struct wm2000_platform_data {
     /// Filename for system-specific image to download to device.
-    pub download_file: *const core::ffi::c_char,
+    pub download_file: *const kernel::ffi::c_char,
 
     /// Disable speech clarity enhancement, for use when an external algorithm
     /// is used. This corresponds to the C unsigned int 1-bit bit-field.

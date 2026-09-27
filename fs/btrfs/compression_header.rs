@@ -33,7 +33,7 @@ pub struct compressed_bio {
 	/* starting offset in the inode for our pages */
 	pub start: u64,
 	/* Number of bytes in the inode we're working on */
-	pub len: ::core::ffi::c_uint,
+	pub len: ::kernel::ffi::c_uint,
 	/* The compression algorithm for this bio */
 	pub compress_type: u8,
 	/* Whether this is a write for writeback. */
@@ -63,15 +63,15 @@ extern "C" {
 	pub fn btrfs_free_compress_wsm(fs_info: *mut btrfs_fs_info);
 	pub fn btrfs_init_compress() -> i32;
 	pub fn btrfs_exit_compress();
-	pub fn btrfs_compress_level_valid(typ: ::core::ffi::c_uint, level: i32) -> bool;
+	pub fn btrfs_compress_level_valid(typ: ::kernel::ffi::c_uint, level: i32) -> bool;
 	pub fn btrfs_decompress(typ: i32, data_in: *const u8, dest_folio: *mut folio,
-		dest_pgoff: ::core::ffi::c_ulong, srclen: usize, destlen: usize) -> i32;
-	pub fn btrfs_decompress_buf2page(buf: *const ::core::ffi::c_char, buf_len: u32,
+		dest_pgoff: ::kernel::ffi::c_ulong, srclen: usize, destlen: usize) -> i32;
+	pub fn btrfs_decompress_buf2page(buf: *const ::kernel::ffi::c_char, buf_len: u32,
 		cb: *mut compressed_bio, decompressed: u32) -> i32;
 	pub fn btrfs_alloc_compressed_write(inode: *mut btrfs_inode, start: u64, len: u64) -> *mut compressed_bio;
 	pub fn btrfs_submit_compressed_write(ordered: *mut btrfs_ordered_extent, cb: *mut compressed_bio);
 	pub fn btrfs_submit_compressed_read(bbio: *mut btrfs_bio);
-	pub fn btrfs_compress_str2level(typ: ::core::ffi::c_uint, s: *const ::core::ffi::c_char, level_ret: *mut i32) -> i32;
+	pub fn btrfs_compress_str2level(typ: ::kernel::ffi::c_uint, s: *const ::kernel::ffi::c_char, level_ret: *mut i32) -> i32;
 	pub fn btrfs_alloc_compr_folio(fs_info: *mut btrfs_fs_info, gfp: gfp_t) -> *mut folio;
 	pub fn btrfs_free_compr_folio(folio: *mut folio);
 }
@@ -109,13 +109,13 @@ extern "C" {
 	pub static btrfs_lzo_compress: btrfs_compress_levels;
 	pub static btrfs_zstd_compress: btrfs_compress_levels;
 
-	pub fn btrfs_compress_type2str(typ: btrfs_compression_type) -> *const ::core::ffi::c_char;
-	pub fn btrfs_compress_is_valid_type(s: *const ::core::ffi::c_char, len: usize) -> bool;
+	pub fn btrfs_compress_type2str(typ: btrfs_compression_type) -> *const ::kernel::ffi::c_char;
+	pub fn btrfs_compress_is_valid_type(s: *const ::kernel::ffi::c_char, len: usize) -> bool;
 	pub fn btrfs_compress_heuristic(inode: *mut btrfs_inode, start: u64, end: u64) -> i32;
 	pub fn btrfs_compress_filemap_get_folio(mapping: *mut address_space, start: u64,
 		in_folio_ret: *mut *mut folio) -> i32;
 	pub fn btrfs_compress_bio(inode: *mut btrfs_inode, start: u64, len: u32,
-		typ: ::core::ffi::c_uint, level: i32, write_flags: blk_opf_t) -> *mut compressed_bio;
+		typ: ::kernel::ffi::c_uint, level: i32, write_flags: blk_opf_t) -> *mut compressed_bio;
 }
 
 #[inline]
@@ -130,18 +130,18 @@ pub unsafe fn cleanup_compressed_bio(cb: *mut compressed_bio) {
 extern "C" {
 	pub fn zlib_compress_bio(ws: *mut list_head, cb: *mut compressed_bio) -> i32;
 	pub fn zlib_decompress_bio(ws: *mut list_head, cb: *mut compressed_bio) -> i32;
-	pub fn zlib_decompress(ws: *mut list_head, data_in: *const u8, dest_folio: *mut folio, dest_pgoff: ::core::ffi::c_ulong, srclen: usize, destlen: usize) -> i32;
-	pub fn zlib_alloc_workspace(fs_info: *mut btrfs_fs_info, level: ::core::ffi::c_uint) -> *mut list_head;
+	pub fn zlib_decompress(ws: *mut list_head, data_in: *const u8, dest_folio: *mut folio, dest_pgoff: ::kernel::ffi::c_ulong, srclen: usize, destlen: usize) -> i32;
+	pub fn zlib_alloc_workspace(fs_info: *mut btrfs_fs_info, level: ::kernel::ffi::c_uint) -> *mut list_head;
 	pub fn zlib_free_workspace(ws: *mut list_head);
-	pub fn zlib_get_workspace(fs_info: *mut btrfs_fs_info, level: ::core::ffi::c_uint) -> *mut list_head;
+	pub fn zlib_get_workspace(fs_info: *mut btrfs_fs_info, level: ::kernel::ffi::c_uint) -> *mut list_head;
 	pub fn lzo_compress_bio(ws: *mut list_head, cb: *mut compressed_bio) -> i32;
 	pub fn lzo_decompress_bio(ws: *mut list_head, cb: *mut compressed_bio) -> i32;
-	pub fn lzo_decompress(ws: *mut list_head, data_in: *const u8, dest_folio: *mut folio, dest_pgoff: ::core::ffi::c_ulong, srclen: usize, destlen: usize) -> i32;
+	pub fn lzo_decompress(ws: *mut list_head, data_in: *const u8, dest_folio: *mut folio, dest_pgoff: ::kernel::ffi::c_ulong, srclen: usize, destlen: usize) -> i32;
 	pub fn lzo_alloc_workspace(fs_info: *mut btrfs_fs_info) -> *mut list_head;
 	pub fn lzo_free_workspace(ws: *mut list_head);
 	pub fn zstd_compress_bio(ws: *mut list_head, cb: *mut compressed_bio) -> i32;
 	pub fn zstd_decompress_bio(ws: *mut list_head, cb: *mut compressed_bio) -> i32;
-	pub fn zstd_decompress(ws: *mut list_head, data_in: *const u8, dest_folio: *mut folio, dest_pgoff: ::core::ffi::c_ulong, srclen: usize, destlen: usize) -> i32;
+	pub fn zstd_decompress(ws: *mut list_head, data_in: *const u8, dest_folio: *mut folio, dest_pgoff: ::kernel::ffi::c_ulong, srclen: usize, destlen: usize) -> i32;
 	pub fn zstd_alloc_workspace_manager(fs_info: *mut btrfs_fs_info) -> i32;
 	pub fn zstd_free_workspace_manager(fs_info: *mut btrfs_fs_info);
 	pub fn zstd_alloc_workspace(fs_info: *mut btrfs_fs_info, level: i32) -> *mut list_head;

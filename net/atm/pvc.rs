@@ -5,21 +5,21 @@
 
 // C dependencies supplied by the surrounding kernel translation unit.
 
-unsafe fn pvc_shutdown(_sock: *mut socket, _how: libc::c_int) -> libc::c_int {
+unsafe fn pvc_shutdown(_sock: *mut socket, _how: core::ffi::c_int) -> core::ffi::c_int {
     0
 }
 
 unsafe fn pvc_bind(
     sock: *mut socket,
     sockaddr: *mut sockaddr_unsized,
-    sockaddr_len: libc::c_int,
-) -> libc::c_int {
+    sockaddr_len: core::ffi::c_int,
+) -> core::ffi::c_int {
     let sk = (*sock).sk;
     let addr: *mut sockaddr_atmpvc;
     let vcc: *mut atm_vcc;
-    let error: libc::c_int;
+    let error: core::ffi::c_int;
 
-    if sockaddr_len != core::mem::size_of::<sockaddr_atmpvc>() as libc::c_int {
+    if sockaddr_len != core::mem::size_of::<sockaddr_atmpvc>() as core::ffi::c_int {
         return -EINVAL;
     }
     addr = sockaddr as *mut sockaddr_atmpvc;
@@ -54,19 +54,19 @@ unsafe fn pvc_bind(
 unsafe fn pvc_connect(
     sock: *mut socket,
     sockaddr: *mut sockaddr_unsized,
-    sockaddr_len: libc::c_int,
-    _flags: libc::c_int,
-) -> libc::c_int {
+    sockaddr_len: core::ffi::c_int,
+    _flags: core::ffi::c_int,
+) -> core::ffi::c_int {
     pvc_bind(sock, sockaddr, sockaddr_len)
 }
 
 unsafe fn pvc_setsockopt(
     sock: *mut socket,
-    level: libc::c_int,
-    optname: libc::c_int,
+    level: core::ffi::c_int,
+    optname: core::ffi::c_int,
     optval: sockptr_t,
-    optlen: libc::c_uint,
-) -> libc::c_int {
+    optlen: core::ffi::c_uint,
+) -> core::ffi::c_int {
     let sk = (*sock).sk;
     lock_sock(sk);
     let error = vcc_setsockopt(sock, level, optname, optval, optlen);
@@ -76,10 +76,10 @@ unsafe fn pvc_setsockopt(
 
 unsafe fn pvc_getsockopt(
     sock: *mut socket,
-    level: libc::c_int,
-    optname: libc::c_int,
+    level: core::ffi::c_int,
+    optname: core::ffi::c_int,
     opt: *mut sockopt_t,
-) -> libc::c_int {
+) -> core::ffi::c_int {
     let sk = (*sock).sk;
     lock_sock(sk);
     let error = vcc_getsockopt(sock, level, optname, opt);
@@ -90,8 +90,8 @@ unsafe fn pvc_getsockopt(
 unsafe fn pvc_getname(
     sock: *mut socket,
     sockaddr: *mut sockaddr,
-    _peer: libc::c_int,
-) -> libc::c_int {
+    _peer: core::ffi::c_int,
+) -> core::ffi::c_int {
     let addr: *mut sockaddr_atmpvc;
     let vcc = ATM_SD(sock);
 
@@ -104,7 +104,7 @@ unsafe fn pvc_getname(
     (*addr).sap_addr.itf = (*(*vcc).dev).number;
     (*addr).sap_addr.vpi = (*vcc).vpi;
     (*addr).sap_addr.vci = (*vcc).vci;
-    core::mem::size_of::<sockaddr_atmpvc>() as libc::c_int
+    core::mem::size_of::<sockaddr_atmpvc>() as core::ffi::c_int
 }
 
 static pvc_proto_ops: proto_ops = proto_ops {
@@ -133,9 +133,9 @@ static pvc_proto_ops: proto_ops = proto_ops {
 unsafe fn pvc_create(
     net: *mut net,
     sock: *mut socket,
-    protocol: libc::c_int,
-    kern: libc::c_int,
-) -> libc::c_int {
+    protocol: core::ffi::c_int,
+    kern: core::ffi::c_int,
+) -> core::ffi::c_int {
     if net != &raw mut init_net {
         return -EAFNOSUPPORT;
     }
@@ -153,7 +153,7 @@ static pvc_family_ops: net_proto_family = net_proto_family {
  * Initialize the ATM PVC protocol family
  */
 
-unsafe fn atmpvc_init() -> libc::c_int {
+unsafe fn atmpvc_init() -> core::ffi::c_int {
     sock_register(&raw const pvc_family_ops)
 }
 

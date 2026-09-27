@@ -7,7 +7,7 @@
  * Copyright (C) 2013  Cogent Embedded, Inc.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Dependencies supplied by the kernel and other translation units.
 unsafe extern "C" {

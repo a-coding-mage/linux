@@ -35,20 +35,20 @@ pub struct sof_amd_acp_desc {
 
 #[repr(C)]
 pub struct sof_dev_desc {
-    pub machines: *const core::ffi::c_void,
-    pub resindex_lpe_base: core::ffi::c_int,
-    pub resindex_pcicfg_base: core::ffi::c_int,
-    pub resindex_imr_base: core::ffi::c_int,
-    pub irqindex_host_ipc: core::ffi::c_int,
+    pub machines: *const kernel::ffi::c_void,
+    pub resindex_lpe_base: kernel::ffi::c_int,
+    pub resindex_pcicfg_base: kernel::ffi::c_int,
+    pub resindex_imr_base: kernel::ffi::c_int,
+    pub irqindex_host_ipc: kernel::ffi::c_int,
     pub chip_info: *const sof_amd_acp_desc,
-    pub ipc_supported_mask: core::ffi::c_uint,
-    pub ipc_default: core::ffi::c_uint,
-    pub default_fw_path: [*const core::ffi::c_char; SOF_IPC_TYPE_COUNT],
-    pub default_tplg_path: [*const core::ffi::c_char; SOF_IPC_TYPE_COUNT],
-    pub default_fw_filename: [*const core::ffi::c_char; SOF_IPC_TYPE_COUNT],
-    pub nocodec_tplg_filename: *const core::ffi::c_char,
-    pub ops: *const core::ffi::c_void,
-    pub ops_init: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> core::ffi::c_int>,
+    pub ipc_supported_mask: kernel::ffi::c_uint,
+    pub ipc_default: kernel::ffi::c_uint,
+    pub default_fw_path: [*const kernel::ffi::c_char; SOF_IPC_TYPE_COUNT],
+    pub default_tplg_path: [*const kernel::ffi::c_char; SOF_IPC_TYPE_COUNT],
+    pub default_fw_filename: [*const kernel::ffi::c_char; SOF_IPC_TYPE_COUNT],
+    pub nocodec_tplg_filename: *const kernel::ffi::c_char,
+    pub ops: *const kernel::ffi::c_void,
+    pub ops_init: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> kernel::ffi::c_int>,
 }
 
 #[repr(C)]
@@ -69,20 +69,20 @@ pub struct pci_device_id {
 
 #[repr(C)]
 pub struct pci_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id_table: *const pci_device_id,
-    pub probe: Option<unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(*mut pci_dev)>,
 }
 
 unsafe extern "C" {
-    static snd_soc_acpi_amd_rmb_sof_machines: core::ffi::c_void;
-    static sof_rembrandt_ops: core::ffi::c_void;
-    static KBUILD_MODNAME: core::ffi::c_char;
+    static snd_soc_acpi_amd_rmb_sof_machines: kernel::ffi::c_void;
+    static sof_rembrandt_ops: kernel::ffi::c_void;
+    static KBUILD_MODNAME: kernel::ffi::c_char;
 
-    fn sof_rembrandt_ops_init(arg: *mut core::ffi::c_void) -> core::ffi::c_int;
-    fn snd_amd_acp_find_config(pci: *mut pci_dev) -> core::ffi::c_uint;
-    fn sof_pci_probe(pci: *mut pci_dev, pci_id: *const pci_device_id) -> core::ffi::c_int;
+    fn sof_rembrandt_ops_init(arg: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    fn snd_amd_acp_find_config(pci: *mut pci_dev) -> kernel::ffi::c_uint;
+    fn sof_pci_probe(pci: *mut pci_dev, pci_id: *const pci_device_id) -> kernel::ffi::c_int;
     fn sof_pci_remove(pci: *mut pci_dev);
 }
 
@@ -100,22 +100,22 @@ unsafe extern "C" {
 unsafe extern "C" {
     static SOF_IPC_TYPE_3: usize;
     static ACP_RMB_PCI_ID: u8;
-    static FLAG_AMD_SOF: core::ffi::c_uint;
-    static FLAG_AMD_SOF_ONLY_DMIC: core::ffi::c_uint;
-    static ENODEV: core::ffi::c_int;
+    static FLAG_AMD_SOF: kernel::ffi::c_uint;
+    static FLAG_AMD_SOF_ONLY_DMIC: kernel::ffi::c_uint;
+    static ENODEV: kernel::ffi::c_int;
     static PCI_VENDOR_ID_AMD: u32;
     static ACP_PCI_DEV_ID: u32;
 }
 
 pub const SOF_IPC_TYPE_COUNT: usize = 4;
 
-const fn bit(nr: usize) -> core::ffi::c_uint {
+const fn bit(nr: usize) -> kernel::ffi::c_uint {
     1u32 << nr
 }
 
 macro_rules! c_str {
     ($s:literal) => {
-        concat!($s, "\0").as_ptr() as *const core::ffi::c_char
+        concat!($s, "\0").as_ptr() as *const kernel::ffi::c_char
     };
 }
 
@@ -143,19 +143,19 @@ static rembrandt_desc: sof_dev_desc = unsafe {
     default_fw_filename[SOF_IPC_TYPE_3] = c_str!("sof-rmb.ri");
 
     sof_dev_desc {
-        machines: &snd_soc_acpi_amd_rmb_sof_machines as *const _ as *const core::ffi::c_void,
+        machines: &snd_soc_acpi_amd_rmb_sof_machines as *const _ as *const kernel::ffi::c_void,
         resindex_lpe_base: 0,
         resindex_pcicfg_base: -1,
         resindex_imr_base: -1,
         irqindex_host_ipc: -1,
         chip_info: &rembrandt_chip_info,
         ipc_supported_mask: bit(SOF_IPC_TYPE_3),
-        ipc_default: SOF_IPC_TYPE_3 as core::ffi::c_uint,
+        ipc_default: SOF_IPC_TYPE_3 as kernel::ffi::c_uint,
         default_fw_path,
         default_tplg_path,
         default_fw_filename,
         nocodec_tplg_filename: c_str!("sof-acp.tplg"),
-        ops: &sof_rembrandt_ops as *const _ as *const core::ffi::c_void,
+        ops: &sof_rembrandt_ops as *const _ as *const kernel::ffi::c_void,
         ops_init: Some(sof_rembrandt_ops_init),
     }
 };
@@ -163,8 +163,8 @@ static rembrandt_desc: sof_dev_desc = unsafe {
 unsafe extern "C" fn acp_pci_rmb_probe(
     pci: *mut pci_dev,
     pci_id: *const pci_device_id,
-) -> core::ffi::c_int {
-    let flag: core::ffi::c_uint;
+) -> kernel::ffi::c_int {
+    let flag: kernel::ffi::c_uint;
 
     if unsafe { (*pci).revision != ACP_RMB_PCI_ID } {
         return unsafe { -ENODEV };
@@ -211,7 +211,7 @@ static rmb_pci_ids: [pci_device_id; 2] = unsafe {
 
 /* pci_driver definition */
 static mut snd_sof_pci_amd_rmb_driver: pci_driver = pci_driver {
-    name: unsafe { &KBUILD_MODNAME as *const core::ffi::c_char },
+    name: unsafe { &KBUILD_MODNAME as *const kernel::ffi::c_char },
     id_table: rmb_pci_ids.as_ptr(),
     probe: Some(acp_pci_rmb_probe),
     remove: Some(acp_pci_rmb_remove),

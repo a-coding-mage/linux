@@ -62,7 +62,7 @@ pub const SND_JACK_SWITCH_TYPES: i32 = 7;
 pub struct snd_jack {
     pub kctl_list: list_head,
     pub card: *mut snd_card,
-    pub id: *const core::ffi::c_char,
+    pub id: *const kernel::ffi::c_char,
     /* CONFIG_SND_JACK_INPUT_DEV conditionally includes the following fields. */
     #[cfg(CONFIG_SND_JACK_INPUT_DEV)]
     pub input_dev: *mut input_dev,
@@ -73,11 +73,11 @@ pub struct snd_jack {
     #[cfg(CONFIG_SND_JACK_INPUT_DEV)]
     pub type_: i32,
     #[cfg(CONFIG_SND_JACK_INPUT_DEV)]
-    pub name: [core::ffi::c_char; 100],
+    pub name: [kernel::ffi::c_char; 100],
     #[cfg(CONFIG_SND_JACK_INPUT_DEV)]
     pub key: [u32; 6], /* Keep in sync with definitions above */
     pub hw_status_cache: i32,
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
     pub private_free: Option<unsafe extern "C" fn(jack: *mut snd_jack)>,
 }
 
@@ -86,7 +86,7 @@ pub struct snd_jack {
 extern "C" {
     pub fn snd_jack_new(
         card: *mut snd_card,
-        id: *const core::ffi::c_char,
+        id: *const kernel::ffi::c_char,
         type_: i32,
         jack: *mut *mut snd_jack,
         initial_kctl: bool,
@@ -94,7 +94,7 @@ extern "C" {
     ) -> i32;
     pub fn snd_jack_add_new_kctl(
         jack: *mut snd_jack,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         mask: i32,
     ) -> i32;
     #[cfg(CONFIG_SND_JACK_INPUT_DEV)]
@@ -110,7 +110,7 @@ extern "C" {
 #[cfg(not(CONFIG_SND_JACK))]
 pub unsafe fn snd_jack_new(
     _card: *mut snd_card,
-    _id: *const core::ffi::c_char,
+    _id: *const kernel::ffi::c_char,
     _type: i32,
     _jack: *mut *mut snd_jack,
     _initial_kctl: bool,
@@ -122,7 +122,7 @@ pub unsafe fn snd_jack_new(
 #[cfg(not(CONFIG_SND_JACK))]
 pub unsafe fn snd_jack_add_new_kctl(
     _jack: *mut snd_jack,
-    _name: *const core::ffi::c_char,
+    _name: *const kernel::ffi::c_char,
     _mask: i32,
 ) -> i32 {
     0

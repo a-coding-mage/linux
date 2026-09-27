@@ -43,10 +43,10 @@ const ACP_TIMEOUT_LOOP: u32 = 0xff;
 const ACP_DEVS: usize = 4;
 const ACP_SRC_ID: u32 = 162;
 
-static mut acp_machine_id: libc::c_ulong = 0;
+static mut acp_machine_id: kernel::ffi::c_ulong = 0;
 
 #[repr(C)]
-struct acp_pm_domain { adev: *mut libc::c_void, gpd: generic_pm_domain }
+struct acp_pm_domain { adev: *mut kernel::ffi::c_void, gpd: generic_pm_domain }
 
 #[repr(i32)]
 enum AcpTile { ACP_TILE_P1 = 0, ACP_TILE_P2, ACP_TILE_DSP0, ACP_TILE_DSP1, ACP_TILE_DSP2 }
@@ -73,15 +73,15 @@ unsafe fn acp_poweron(genpd: *mut generic_pm_domain) -> i32 {
     let apd = container_of!(genpd, acp_pm_domain, gpd);
     amdgpu_dpm_set_powergating_by_smu((*apd).adev as *mut amdgpu_device, AMD_IP_BLOCK_TYPE_ACP, false, 0); 0
 }
-unsafe fn acp_genpd_add_device(dev: *mut device, data: *mut libc::c_void) -> i32 {
+unsafe fn acp_genpd_add_device(dev: *mut device, data: *mut kernel::ffi::c_void) -> i32 {
     let ret = pm_genpd_add_device(data as *mut generic_pm_domain, dev);
     if ret != 0 { dev_err(dev, "Failed to add dev to genpd %d\n", ret); } ret
 }
-unsafe fn acp_genpd_remove_device(dev: *mut device, _data: *mut libc::c_void) -> i32 {
+unsafe fn acp_genpd_remove_device(dev: *mut device, _data: *mut kernel::ffi::c_void) -> i32 {
     let ret = pm_genpd_remove_device(dev);
     if ret != 0 { dev_err(dev, "Failed to remove dev from genpd %d\n", ret); } 0
 }
-unsafe fn acp_quirk_cb(_id: *const dmi_system_id) -> i32 { acp_machine_id = ST_JADEITE as libc::c_ulong; 1 }
+unsafe fn acp_quirk_cb(_id: *const dmi_system_id) -> i32 { acp_machine_id = ST_JADEITE as kernel::ffi::c_ulong; 1 }
 
 /* The large device/resource construction below is a direct field-for-field
  * translation of the C implementation; kernel structures are external. */
@@ -97,7 +97,7 @@ unsafe fn acp_hw_init(ip_block: *mut amdgpu_ip_block) -> i32 {
     (*(*adev).acp.acp_genpd).gpd.name = "ACP_AUDIO";
     (*(*adev).acp.acp_genpd).gpd.power_off = Some(acp_poweroff);
     (*(*adev).acp.acp_genpd).gpd.power_on = Some(acp_poweron);
-    (*(*adev).acp.acp_genpd).adev = adev as *mut libc::c_void;
+    (*(*adev).acp.acp_genpd).adev = adev as *mut kernel::ffi::c_void;
     pm_genpd_init(&mut (*(*adev).acp.acp_genpd).gpd, core::ptr::null_mut(), false);
     dmi_check_system(acp_quirk_table);
     /* Resource and MFD setup is preserved structurally through the original

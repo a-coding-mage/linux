@@ -13,7 +13,7 @@ const CFG_SPACE_SIZE: usize = 4096;
 #[repr(C)]
 struct UmPciDeviceReg {
     dev: *mut UmPciDevice,
-    iomem: *mut core::ffi::c_void,
+    iomem: *mut kernel::ffi::c_void,
 }
 
 static mut bridge: *mut PciHostBridge = core::ptr::null_mut();
@@ -25,31 +25,31 @@ static mut um_pci_devices: [UmPciDeviceReg; MAX_DEVICES] = [UmPciDeviceReg {
 }; MAX_DEVICES];
 static mut um_pci_fwnode: *mut FwnodeHandle = core::ptr::null_mut();
 static mut um_pci_inner_domain: *mut IrqDomain = core::ptr::null_mut();
-static mut um_pci_msi_used: [core::ffi::c_ulong; 1] = [0; 1];
+static mut um_pci_msi_used: [kernel::ffi::c_ulong; 1] = [0; 1];
 
 #[repr(C)]
 struct LogicIomemOps {
-    read: Option<unsafe extern "C" fn(*mut core::ffi::c_void, u32, i32) -> core::ffi::c_ulong>,
-    write: Option<unsafe extern "C" fn(*mut core::ffi::c_void, u32, i32, core::ffi::c_ulong)>,
-    set: Option<unsafe extern "C" fn(*mut core::ffi::c_void, u32, u8, i32)>,
-    copy_from: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void, u32, i32)>,
-    copy_to: Option<unsafe extern "C" fn(*mut core::ffi::c_void, u32, *const core::ffi::c_void, i32)>,
+    read: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, u32, i32) -> kernel::ffi::c_ulong>,
+    write: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, u32, i32, kernel::ffi::c_ulong)>,
+    set: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, u32, u8, i32)>,
+    copy_from: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut kernel::ffi::c_void, u32, i32)>,
+    copy_to: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, u32, *const kernel::ffi::c_void, i32)>,
 }
 
 #[repr(C)]
 struct LogicIomemRegionOps {
-    map: Option<unsafe extern "C" fn(usize, usize, *mut *const LogicIomemOps, *mut *mut core::ffi::c_void) -> isize>,
+    map: Option<unsafe extern "C" fn(usize, usize, *mut *const LogicIomemOps, *mut *mut kernel::ffi::c_void) -> isize>,
 }
 
-unsafe extern "C" fn um_pci_cfgspace_read(priv_: *mut core::ffi::c_void, offset: u32, size: i32) -> core::ffi::c_ulong {
+unsafe extern "C" fn um_pci_cfgspace_read(priv_: *mut kernel::ffi::c_void, offset: u32, size: i32) -> kernel::ffi::c_ulong {
     let reg = priv_ as *mut UmPciDeviceReg;
     let dev = (*reg).dev;
-    if dev.is_null() { return core::ffi::c_ulong::MAX; }
-    match size { 1 | 2 | 4 => {}, 8 => {}, _ => { return core::ffi::c_ulong::MAX; } }
+    if dev.is_null() { return kernel::ffi::c_ulong::MAX; }
+    match size { 1 | 2 | 4 => {}, 8 => {}, _ => { return kernel::ffi::c_ulong::MAX; } }
     ((*(*dev).ops).cfgspace_read.unwrap())(dev, offset, size)
 }
 
-unsafe extern "C" fn um_pci_cfgspace_write(priv_: *mut core::ffi::c_void, offset: u32, size: i32, val: core::ffi::c_ulong) {
+unsafe extern "C" fn um_pci_cfgspace_write(priv_: *mut kernel::ffi::c_void, offset: u32, size: i32, val: kernel::ffi::c_ulong) {
     let reg = priv_ as *mut UmPciDeviceReg;
     let dev = (*reg).dev;
     if dev.is_null() { return; }
@@ -61,7 +61,7 @@ static um_pci_device_cfgspace_ops: LogicIomemOps = LogicIomemOps {
     read: Some(um_pci_cfgspace_read), write: Some(um_pci_cfgspace_write), set: None, copy_from: None, copy_to: None,
 };
 
-unsafe fn bar_dev(priv_: *mut core::ffi::c_void) -> (*mut UmPciDevice, u8) {
+unsafe fn bar_dev(priv_: *mut kernel::ffi::c_void) -> (*mut UmPciDevice, u8) {
     let resptr = priv_ as *mut u8;
     let bar = *resptr;
     // container_of(resptr - *resptr, struct um_pci_device, resptr[0])
@@ -69,17 +69,17 @@ unsafe fn bar_dev(priv_: *mut core::ffi::c_void) -> (*mut UmPciDevice, u8) {
     (dev, bar)
 }
 
-unsafe extern "C" fn um_pci_bar_read(priv_: *mut core::ffi::c_void, offset: u32, size: i32) -> core::ffi::c_ulong {
-    let (dev, bar) = bar_dev(priv_); match size { 1 | 2 | 4 => {}, 8 => {}, _ => return core::ffi::c_ulong::MAX }
+unsafe extern "C" fn um_pci_bar_read(priv_: *mut kernel::ffi::c_void, offset: u32, size: i32) -> kernel::ffi::c_ulong {
+    let (dev, bar) = bar_dev(priv_); match size { 1 | 2 | 4 => {}, 8 => {}, _ => return kernel::ffi::c_ulong::MAX }
     ((*(*dev).ops).bar_read.unwrap())(dev, bar, offset, size)
 }
-unsafe extern "C" fn um_pci_bar_write(priv_: *mut core::ffi::c_void, offset: u32, size: i32, val: core::ffi::c_ulong) {
+unsafe extern "C" fn um_pci_bar_write(priv_: *mut kernel::ffi::c_void, offset: u32, size: i32, val: kernel::ffi::c_ulong) {
     let (dev, bar) = bar_dev(priv_); match size { 1 | 2 | 4 => {}, 8 => {}, _ => return }
     ((*(*dev).ops).bar_write.unwrap())(dev, bar, offset, size, val);
 }
-unsafe extern "C" fn um_pci_bar_copy_from(priv_: *mut core::ffi::c_void, buffer: *mut core::ffi::c_void, offset: u32, size: i32) { let (dev, bar) = bar_dev(priv_); ((*(*dev).ops).bar_copy_from.unwrap())(dev, bar, buffer, offset, size); }
-unsafe extern "C" fn um_pci_bar_copy_to(priv_: *mut core::ffi::c_void, offset: u32, buffer: *const core::ffi::c_void, size: i32) { let (dev, bar) = bar_dev(priv_); ((*(*dev).ops).bar_copy_to.unwrap())(dev, bar, offset, buffer, size); }
-unsafe extern "C" fn um_pci_bar_set(priv_: *mut core::ffi::c_void, offset: u32, value: u8, size: i32) { let (dev, bar) = bar_dev(priv_); ((*(*dev).ops).bar_set.unwrap())(dev, bar, offset, value, size); }
+unsafe extern "C" fn um_pci_bar_copy_from(priv_: *mut kernel::ffi::c_void, buffer: *mut kernel::ffi::c_void, offset: u32, size: i32) { let (dev, bar) = bar_dev(priv_); ((*(*dev).ops).bar_copy_from.unwrap())(dev, bar, buffer, offset, size); }
+unsafe extern "C" fn um_pci_bar_copy_to(priv_: *mut kernel::ffi::c_void, offset: u32, buffer: *const kernel::ffi::c_void, size: i32) { let (dev, bar) = bar_dev(priv_); ((*(*dev).ops).bar_copy_to.unwrap())(dev, bar, offset, buffer, size); }
+unsafe extern "C" fn um_pci_bar_set(priv_: *mut kernel::ffi::c_void, offset: u32, value: u8, size: i32) { let (dev, bar) = bar_dev(priv_); ((*(*dev).ops).bar_set.unwrap())(dev, bar, offset, value, size); }
 
 static um_pci_device_bar_ops: LogicIomemOps = LogicIomemOps { read: Some(um_pci_bar_read), write: Some(um_pci_bar_write), set: Some(um_pci_bar_set), copy_from: Some(um_pci_bar_copy_from), copy_to: Some(um_pci_bar_copy_to) };
 
@@ -117,9 +117,9 @@ impl Mutex { const fn new() -> Self { Mutex } }
 #[repr(C)] struct IrqDomain;
 #[repr(C)] struct UmPciDevice { ops: *const UmPciDeviceOps, irq: i32, resptr: [u8; 6] }
 #[repr(C)] struct UmPciDeviceOps {
-    cfgspace_read: Option<unsafe extern "C" fn(*mut UmPciDevice, u32, i32) -> core::ffi::c_ulong>, cfgspace_write: Option<unsafe extern "C" fn(*mut UmPciDevice, u32, i32, core::ffi::c_ulong)>, bar_read: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, u32, i32) -> core::ffi::c_ulong>, bar_write: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, u32, i32, core::ffi::c_ulong)>, bar_copy_from: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, *mut core::ffi::c_void, u32, i32)>, bar_copy_to: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, u32, *const core::ffi::c_void, i32)>, bar_set: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, u32, u8, i32)>
+    cfgspace_read: Option<unsafe extern "C" fn(*mut UmPciDevice, u32, i32) -> kernel::ffi::c_ulong>, cfgspace_write: Option<unsafe extern "C" fn(*mut UmPciDevice, u32, i32, kernel::ffi::c_ulong)>, bar_read: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, u32, i32) -> kernel::ffi::c_ulong>, bar_write: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, u32, i32, kernel::ffi::c_ulong)>, bar_copy_from: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, *mut kernel::ffi::c_void, u32, i32)>, bar_copy_to: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, u32, *const kernel::ffi::c_void, i32)>, bar_set: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, u32, u8, i32)>
 }
-extern "C" { fn irq_alloc_desc(_: i32) -> i32; fn irq_free_desc(_: i32); fn numa_node_id() -> i32; fn pci_get_slot(_: *mut PciBus, _: i32) -> *mut core::ffi::c_void; fn pci_stop_and_remove_bus_device_locked(_: *mut core::ffi::c_void); }
+extern "C" { fn irq_alloc_desc(_: i32) -> i32; fn irq_free_desc(_: i32); fn numa_node_id() -> i32; fn pci_get_slot(_: *mut PciBus, _: i32) -> *mut kernel::ffi::c_void; fn pci_stop_and_remove_bus_device_locked(_: *mut kernel::ffi::c_void); }
 
 #[no_mangle]
 pub unsafe extern "C" fn um_pci_platform_device_register(dev: *mut UmPciDevice) -> i32 {

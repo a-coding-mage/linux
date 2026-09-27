@@ -29,7 +29,7 @@ pub struct dma_heap_ops {
     pub allocate: Option<
         unsafe extern "C" fn(
             heap: *mut dma_heap,
-            len: ::core::ffi::c_ulong,
+            len: ::kernel::ffi::c_ulong,
             fd_flags: u32,
             heap_flags: u64,
         ) -> *mut dma_buf,
@@ -46,15 +46,15 @@ pub struct dma_heap_ops {
  */
 #[repr(C)]
 pub struct dma_heap_export_info {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub ops: *const dma_heap_ops,
-    pub priv_: *mut ::core::ffi::c_void,
+    pub priv_: *mut ::kernel::ffi::c_void,
 }
 
 unsafe extern "C" {
-    pub fn dma_heap_get_drvdata(heap: *mut dma_heap) -> *mut ::core::ffi::c_void;
+    pub fn dma_heap_get_drvdata(heap: *mut dma_heap) -> *mut ::kernel::ffi::c_void;
 
-    pub fn dma_heap_get_name(heap: *mut dma_heap) -> *const ::core::ffi::c_char;
+    pub fn dma_heap_get_name(heap: *mut dma_heap) -> *const ::kernel::ffi::c_char;
 
     pub fn dma_heap_add(exp_info: *const dma_heap_export_info) -> *mut dma_heap;
 

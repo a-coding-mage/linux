@@ -25,8 +25,8 @@ static sam9rl_plla_characteristics: clk_pll_characteristics = clk_pll_characteri
 
 #[repr(C)]
 struct At91sam9rlSystemck {
-    n: *const core::ffi::c_char,
-    p: *const core::ffi::c_char,
+    n: *const kernel::ffi::c_char,
+    p: *const kernel::ffi::c_char,
     id: u8,
 }
 
@@ -37,7 +37,7 @@ static at91sam9rl_systemck: [At91sam9rlSystemck; 2] = [
 
 #[repr(C)]
 struct At91sam9rlPeriphck {
-    n: *const core::ffi::c_char,
+    n: *const kernel::ffi::c_char,
     id: u8,
 }
 
@@ -67,10 +67,10 @@ static at91sam9rl_periphck: [At91sam9rlPeriphck; 22] = [
 ];
 
 unsafe fn at91sam9rl_pmc_setup(np: *mut device_node) {
-    let mut slck_name: *const core::ffi::c_char;
-    let mut mainxtal_name: *const core::ffi::c_char;
+    let mut slck_name: *const kernel::ffi::c_char;
+    let mut mainxtal_name: *const kernel::ffi::c_char;
     let mut at91sam9rl_pmc: *mut pmc_data;
-    let mut parent_names: [*const core::ffi::c_char; 6] = [core::ptr::null(); 6];
+    let mut parent_names: [*const kernel::ffi::c_char; 6] = [core::ptr::null(); 6];
     let mut regmap: *mut regmap;
     let mut hw: *mut clk_hw;
     let mut i: i32;
@@ -89,20 +89,20 @@ unsafe fn at91sam9rl_pmc_setup(np: *mut device_node) {
     if at91sam9rl_pmc.is_null() { return; }
 
     hw = at91_clk_register_rm9200_main(regmap, b"mainck\0".as_ptr() as _, mainxtal_name, core::ptr::null());
-    if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut core::ffi::c_void); return; }
+    if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut kernel::ffi::c_void); return; }
     (*at91sam9rl_pmc).chws[PMC_MAIN] = hw;
     hw = at91_clk_register_pll(regmap, b"pllack\0".as_ptr() as _, b"mainck\0".as_ptr() as _, 0, &at91rm9200_pll_layout, &sam9rl_plla_characteristics);
-    if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut core::ffi::c_void); return; }
+    if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut kernel::ffi::c_void); return; }
     (*at91sam9rl_pmc).chws[PMC_PLLACK] = hw;
     hw = at91_clk_register_utmi(regmap, core::ptr::null(), b"utmick\0".as_ptr() as _, b"mainck\0".as_ptr() as _, core::ptr::null());
-    if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut core::ffi::c_void); return; }
+    if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut kernel::ffi::c_void); return; }
     (*at91sam9rl_pmc).chws[PMC_UTMI] = hw;
 
     parent_names[0] = slck_name; parent_names[1] = b"mainck\0".as_ptr() as _; parent_names[2] = b"pllack\0".as_ptr() as _; parent_names[3] = b"utmick\0".as_ptr() as _;
     hw = at91_clk_register_master_pres(regmap, b"masterck_pres\0".as_ptr() as _, 4, parent_names.as_ptr(), core::ptr::null(), &at91rm9200_master_layout, &sam9rl_mck_characteristics, &raw mut sam9rl_mck_lock);
-    if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut core::ffi::c_void); return; }
+    if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut kernel::ffi::c_void); return; }
     hw = at91_clk_register_master_div(regmap, b"masterck_div\0".as_ptr() as _, b"masterck_pres\0".as_ptr() as _, core::ptr::null(), &at91rm9200_master_layout, &sam9rl_mck_characteristics, &raw mut sam9rl_mck_lock, CLK_SET_RATE_GATE, 0);
-    if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut core::ffi::c_void); return; }
+    if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut kernel::ffi::c_void); return; }
     (*at91sam9rl_pmc).chws[PMC_MCK] = hw;
 
     parent_names[4] = b"masterck_div\0".as_ptr() as _;
@@ -110,17 +110,17 @@ unsafe fn at91sam9rl_pmc_setup(np: *mut device_node) {
         let mut name = [0i8; 6];
         snprintf(name.as_mut_ptr(), name.len(), b"prog%d\0".as_ptr() as _, i);
         hw = at91_clk_register_programmable(regmap, name.as_ptr(), parent_names.as_ptr(), core::ptr::null(), 5, i, &at91rm9200_programmable_layout, core::ptr::null());
-        if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut core::ffi::c_void); return; }
+        if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut kernel::ffi::c_void); return; }
         (*at91sam9rl_pmc).pchws[i as usize] = hw;
     }
     for entry in &at91sam9rl_systemck {
         hw = at91_clk_register_system(regmap, entry.n, entry.p, core::ptr::null(), entry.id, 0);
-        if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut core::ffi::c_void); return; }
+        if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut kernel::ffi::c_void); return; }
         (*at91sam9rl_pmc).shws[entry.id as usize] = hw;
     }
     for entry in &at91sam9rl_periphck {
         hw = at91_clk_register_peripheral(regmap, entry.n, b"masterck_div\0".as_ptr() as _, core::ptr::null(), entry.id);
-        if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut core::ffi::c_void); return; }
+        if IS_ERR(hw) { kfree(at91sam9rl_pmc as *mut kernel::ffi::c_void); return; }
         (*at91sam9rl_pmc).phws[entry.id as usize] = hw;
     }
     of_clk_add_hw_provider(np, of_clk_hw_pmc_get, at91sam9rl_pmc);

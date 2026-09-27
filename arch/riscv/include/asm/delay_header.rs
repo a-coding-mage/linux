@@ -6,7 +6,7 @@
 
 // C header guard: _ASM_RISCV_DELAY_H
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 unsafe extern "C" {
     pub static mut riscv_timebase: c_ulong;

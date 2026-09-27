@@ -9,7 +9,7 @@
 
 //! NMI callback registration and reason codes.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 /*
  * NMI reason codes:

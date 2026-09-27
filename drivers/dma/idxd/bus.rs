@@ -7,7 +7,7 @@
 pub unsafe fn __idxd_driver_register(
     idxd_drv: *mut idxd_device_driver,
     owner: *mut module,
-    mod_name: *const core::ffi::c_char,
+    mod_name: *const kernel::ffi::c_char,
 ) -> i32 {
     let drv: *mut device_driver = unsafe { &mut (*idxd_drv).drv };
 

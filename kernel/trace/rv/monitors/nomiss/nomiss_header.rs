@@ -50,9 +50,9 @@ pub const env_max_stored_nomiss: envs_nomiss = envs_nomiss::is_constr_dl_nomiss;
 
 #[repr(C)]
 pub struct automaton_nomiss {
-    pub state_names: [*const ::core::ffi::c_char; states_nomiss::state_max_nomiss as usize],
-    pub event_names: [*const ::core::ffi::c_char; events_nomiss::event_max_nomiss as usize],
-    pub env_names: [*const ::core::ffi::c_char; envs_nomiss::env_max_nomiss as usize],
+    pub state_names: [*const ::kernel::ffi::c_char; states_nomiss::state_max_nomiss as usize],
+    pub event_names: [*const ::kernel::ffi::c_char; events_nomiss::event_max_nomiss as usize],
+    pub env_names: [*const ::kernel::ffi::c_char; envs_nomiss::env_max_nomiss as usize],
     pub function: [[u8; events_nomiss::event_max_nomiss as usize]; states_nomiss::state_max_nomiss as usize],
     pub initial_state: u8,
     pub final_states: [bool; states_nomiss::state_max_nomiss as usize],
@@ -60,25 +60,25 @@ pub struct automaton_nomiss {
 
 pub static automaton_nomiss: automaton_nomiss = automaton_nomiss {
     state_names: [
-        b"ready\0".as_ptr() as *const ::core::ffi::c_char,
-        b"idle\0".as_ptr() as *const ::core::ffi::c_char,
-        b"running\0".as_ptr() as *const ::core::ffi::c_char,
-        b"sleeping\0".as_ptr() as *const ::core::ffi::c_char,
-        b"throttled\0".as_ptr() as *const ::core::ffi::c_char,
+        b"ready\0".as_ptr() as *const ::kernel::ffi::c_char,
+        b"idle\0".as_ptr() as *const ::kernel::ffi::c_char,
+        b"running\0".as_ptr() as *const ::kernel::ffi::c_char,
+        b"sleeping\0".as_ptr() as *const ::kernel::ffi::c_char,
+        b"throttled\0".as_ptr() as *const ::kernel::ffi::c_char,
     ],
     event_names: [
-        b"dl_replenish\0".as_ptr() as *const ::core::ffi::c_char,
-        b"dl_server_idle\0".as_ptr() as *const ::core::ffi::c_char,
-        b"dl_server_stop\0".as_ptr() as *const ::core::ffi::c_char,
-        b"dl_throttle\0".as_ptr() as *const ::core::ffi::c_char,
-        b"sched_switch_in\0".as_ptr() as *const ::core::ffi::c_char,
-        b"sched_switch_suspend\0".as_ptr() as *const ::core::ffi::c_char,
-        b"sched_wakeup\0".as_ptr() as *const ::core::ffi::c_char,
+        b"dl_replenish\0".as_ptr() as *const ::kernel::ffi::c_char,
+        b"dl_server_idle\0".as_ptr() as *const ::kernel::ffi::c_char,
+        b"dl_server_stop\0".as_ptr() as *const ::kernel::ffi::c_char,
+        b"dl_throttle\0".as_ptr() as *const ::kernel::ffi::c_char,
+        b"sched_switch_in\0".as_ptr() as *const ::kernel::ffi::c_char,
+        b"sched_switch_suspend\0".as_ptr() as *const ::kernel::ffi::c_char,
+        b"sched_wakeup\0".as_ptr() as *const ::kernel::ffi::c_char,
     ],
     env_names: [
-        b"clk\0".as_ptr() as *const ::core::ffi::c_char,
-        b"is_constr_dl\0".as_ptr() as *const ::core::ffi::c_char,
-        b"is_defer\0".as_ptr() as *const ::core::ffi::c_char,
+        b"clk\0".as_ptr() as *const ::kernel::ffi::c_char,
+        b"is_constr_dl\0".as_ptr() as *const ::kernel::ffi::c_char,
+        b"is_defer\0".as_ptr() as *const ::kernel::ffi::c_char,
     ],
     function: [
         [0, 1, 3, 4, 2, 5, 0],

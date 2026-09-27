@@ -33,7 +33,7 @@ pub struct atomic_t {
 pub struct tmigr_hierarchy {
     pub cpumask: *mut cpumask,
     pub root: *mut tmigr_group,
-    pub capacity: libc::c_ulong,
+    pub capacity: kernel::ffi::c_ulong,
     pub node: list_head,
     pub level_list: [list_head; 0],
 }
@@ -41,7 +41,7 @@ pub struct tmigr_hierarchy {
 #[repr(C)]
 pub struct tmigr_event {
     pub nextevt: timerqueue_node,
-    pub cpu: libc::c_uint,
+    pub cpu: kernel::ffi::c_uint,
     pub ignore: bool,
 }
 
@@ -53,9 +53,9 @@ pub struct tmigr_group {
     pub next_expiry: u64,
     pub events: timerqueue_head,
     pub migr_state: atomic_t,
-    pub level: libc::c_uint,
-    pub numa_node: libc::c_int,
-    pub num_children: libc::c_uint,
+    pub level: kernel::ffi::c_uint,
+    pub numa_node: kernel::ffi::c_int,
+    pub num_children: kernel::ffi::c_uint,
     pub groupmask: u8,
     pub list: list_head,
 }

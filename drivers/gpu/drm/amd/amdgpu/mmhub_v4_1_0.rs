@@ -4,7 +4,7 @@ const REGMMVM_L2_CNTL3_DEFAULT: u32 = 0x80100007;
 const REGMMVM_L2_CNTL4_DEFAULT: u32 = 0x000000c1;
 const REGMMVM_L2_CNTL5_DEFAULT: u32 = 0x00003fe0;
 
-static MMHUB_CLIENT_IDS_V4_1_0: [[*const core::ffi::c_char; 2]; 55] = [[core::ptr::null(); 2]; 55];
+static MMHUB_CLIENT_IDS_V4_1_0: [[*const kernel::ffi::c_char; 2]; 55] = [[core::ptr::null(); 2]; 55];
 
 unsafe fn mmhub_v4_1_0_get_invalidate_req(vmid: u32, _flush_type: u32) -> u32 {
     let mut req: u32 = 0;

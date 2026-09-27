@@ -13,15 +13,15 @@ const I2C_MAX_TRANSACTION_LEN: u8 = 8;
 // The following opaque declarations correspond to structures and helpers from
 // habanalabs.h, hldio.h, Linux kernel headers, and mmu_general.h.
 extern "C" {
-    fn hl_device_operational(hdev: *mut hl_device, arg: *mut core::ffi::c_void) -> bool;
-    fn dev_err(dev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
-    fn dev_warn_ratelimited(dev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
-    fn dev_dbg(dev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
+    fn hl_device_operational(hdev: *mut hl_device, arg: *mut kernel::ffi::c_void) -> bool;
+    fn dev_err(dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_warn_ratelimited(dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_dbg(dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
     fn hl_mmu_va_to_pa(ctx: *mut hl_ctx, va: u64, pa: *mut u64) -> i32;
     fn hl_get_compute_ctx(hdev: *mut hl_device) -> *mut hl_ctx;
     fn hl_ctx_put(ctx: *mut hl_ctx);
     fn hl_mem_area_inside_range(addr: u64, size: u32, start: u64, end: u64) -> bool;
-    fn device_iommu_mapped(dev: *mut core::ffi::c_void) -> bool;
+    fn device_iommu_mapped(dev: *mut kernel::ffi::c_void) -> bool;
     fn ktime_get_real_seconds() -> i64;
 }
 
@@ -33,9 +33,9 @@ extern "C" {
 #[repr(C)] pub struct hl_cs { pub opaque: [u8; 0] }
 #[repr(C)] pub struct hl_cs_job { pub opaque: [u8; 0] }
 #[repr(C)] pub struct hl_userptr { pub opaque: [u8; 0] }
-#[repr(C)] pub struct seq_file { pub private: *mut core::ffi::c_void }
-#[repr(C)] pub struct file { pub private_data: *mut core::ffi::c_void }
-#[repr(C)] pub struct inode { pub i_private: *mut core::ffi::c_void }
+#[repr(C)] pub struct seq_file { pub private: *mut kernel::ffi::c_void }
+#[repr(C)] pub struct file { pub private_data: *mut kernel::ffi::c_void }
+#[repr(C)] pub struct inode { pub i_private: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct dentry { pub opaque: [u8; 0] }
 
 #[repr(C)] pub struct cpucp_packet { pub bytes: [u8; 128] }
@@ -64,15 +64,15 @@ unsafe fn hl_debugfs_led_set(hdev: *mut hl_device, _led: u8, _state: u8) {
 }
 
 // Show callbacks preserve the source callback ABI and return convention.
-unsafe fn command_buffers_show(_s: *mut seq_file, _data: *mut core::ffi::c_void) -> i32 { 0 }
-unsafe fn command_submission_show(_s: *mut seq_file, _data: *mut core::ffi::c_void) -> i32 { 0 }
-unsafe fn command_submission_jobs_show(_s: *mut seq_file, _data: *mut core::ffi::c_void) -> i32 { 0 }
-unsafe fn userptr_show(_s: *mut seq_file, _data: *mut core::ffi::c_void) -> i32 { 0 }
-unsafe fn vm_show(_s: *mut seq_file, _data: *mut core::ffi::c_void) -> i32 { 0 }
-unsafe fn userptr_lookup_show(_s: *mut seq_file, _data: *mut core::ffi::c_void) -> i32 { 0 }
-unsafe fn mmu_show(_s: *mut seq_file, _data: *mut core::ffi::c_void) -> i32 { 0 }
-unsafe fn mmu_ack_error(_s: *mut seq_file, _data: *mut core::ffi::c_void) -> i32 { 0 }
-unsafe fn engines_show(_s: *mut seq_file, _data: *mut core::ffi::c_void) -> i32 { 0 }
+unsafe fn command_buffers_show(_s: *mut seq_file, _data: *mut kernel::ffi::c_void) -> i32 { 0 }
+unsafe fn command_submission_show(_s: *mut seq_file, _data: *mut kernel::ffi::c_void) -> i32 { 0 }
+unsafe fn command_submission_jobs_show(_s: *mut seq_file, _data: *mut kernel::ffi::c_void) -> i32 { 0 }
+unsafe fn userptr_show(_s: *mut seq_file, _data: *mut kernel::ffi::c_void) -> i32 { 0 }
+unsafe fn vm_show(_s: *mut seq_file, _data: *mut kernel::ffi::c_void) -> i32 { 0 }
+unsafe fn userptr_lookup_show(_s: *mut seq_file, _data: *mut kernel::ffi::c_void) -> i32 { 0 }
+unsafe fn mmu_show(_s: *mut seq_file, _data: *mut kernel::ffi::c_void) -> i32 { 0 }
+unsafe fn mmu_ack_error(_s: *mut seq_file, _data: *mut kernel::ffi::c_void) -> i32 { 0 }
+unsafe fn engines_show(_s: *mut seq_file, _data: *mut kernel::ffi::c_void) -> i32 { 0 }
 
 unsafe fn hl_is_device_va(_hdev: *mut hl_device, _addr: u64) -> bool { false }
 unsafe fn hl_is_device_internal_memory_va(_hdev: *mut hl_device, _addr: u64, _size: u32) -> bool { false }
@@ -111,8 +111,8 @@ unsafe fn hl_check_razwi_happened(_f: *mut file, _b: *mut u8, _c: usize, _p: *mu
 pub unsafe fn hl_debugfs_device_init(_hdev: *mut hl_device) -> i32 { 0 }
 pub unsafe fn hl_debugfs_device_fini(_hdev: *mut hl_device) {}
 pub unsafe fn hl_debugfs_add_device(_hdev: *mut hl_device) {}
-pub unsafe fn hl_debugfs_add_file(_hpriv: *mut core::ffi::c_void) {}
-pub unsafe fn hl_debugfs_remove_file(_hpriv: *mut core::ffi::c_void) {}
+pub unsafe fn hl_debugfs_add_file(_hpriv: *mut kernel::ffi::c_void) {}
+pub unsafe fn hl_debugfs_remove_file(_hpriv: *mut kernel::ffi::c_void) {}
 pub unsafe fn hl_debugfs_add_cb(_cb: *mut hl_cb) {}
 pub unsafe fn hl_debugfs_remove_cb(_cb: *mut hl_cb) {}
 pub unsafe fn hl_debugfs_add_cs(_cs: *mut hl_cs) {}

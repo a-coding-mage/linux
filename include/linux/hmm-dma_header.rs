@@ -21,7 +21,7 @@ pub type dma_addr_t = usize;
 #[repr(C)]
 pub struct hmm_dma_map {
     pub state: dma_iova_state,
-    pub pfn_list: *mut ::core::ffi::c_ulong,
+    pub pfn_list: *mut ::kernel::ffi::c_ulong,
     pub dma_list: *mut dma_addr_t,
     pub dma_entry_size: usize,
 }
@@ -32,7 +32,7 @@ unsafe extern "C" {
         map: *mut hmm_dma_map,
         nr_entries: usize,
         dma_entry_size: usize,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn hmm_dma_map_free(dev: *mut device, map: *mut hmm_dma_map);
 

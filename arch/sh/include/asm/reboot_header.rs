@@ -9,7 +9,7 @@ pub struct pt_regs {
 
 #[repr(C)]
 pub struct machine_ops {
-    pub restart: Option<unsafe extern "C" fn(cmd: *mut ::core::ffi::c_char)>,
+    pub restart: Option<unsafe extern "C" fn(cmd: *mut ::kernel::ffi::c_char)>,
     pub halt: Option<unsafe extern "C" fn()>,
     pub power_off: Option<unsafe extern "C" fn()>,
     pub shutdown: Option<unsafe extern "C" fn()>,

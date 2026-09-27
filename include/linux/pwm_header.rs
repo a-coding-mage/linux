@@ -39,7 +39,7 @@ pub struct pwm_state {
 
 #[repr(C)]
 pub struct pwm_device {
-    pub label: *const core::ffi::c_char,
+    pub label: *const kernel::ffi::c_char,
     pub flags: usize,
     pub hwpwm: u32,
     pub chip: *mut pwm_chip,
@@ -122,10 +122,10 @@ pub struct pwm_ops {
     pub free: Option<unsafe extern "C" fn(*mut pwm_chip, *mut pwm_device)>,
     pub capture: Option<unsafe extern "C" fn(*mut pwm_chip, *mut pwm_device, *mut pwm_capture, usize) -> i32>,
     pub sizeof_wfhw: usize,
-    pub round_waveform_tohw: Option<unsafe extern "C" fn(*mut pwm_chip, *mut pwm_device, *const pwm_waveform, *mut core::ffi::c_void) -> i32>,
-    pub round_waveform_fromhw: Option<unsafe extern "C" fn(*mut pwm_chip, *mut pwm_device, *const core::ffi::c_void, *mut pwm_waveform) -> i32>,
-    pub read_waveform: Option<unsafe extern "C" fn(*mut pwm_chip, *mut pwm_device, *mut core::ffi::c_void) -> i32>,
-    pub write_waveform: Option<unsafe extern "C" fn(*mut pwm_chip, *mut pwm_device, *const core::ffi::c_void) -> i32>,
+    pub round_waveform_tohw: Option<unsafe extern "C" fn(*mut pwm_chip, *mut pwm_device, *const pwm_waveform, *mut kernel::ffi::c_void) -> i32>,
+    pub round_waveform_fromhw: Option<unsafe extern "C" fn(*mut pwm_chip, *mut pwm_device, *const kernel::ffi::c_void, *mut pwm_waveform) -> i32>,
+    pub read_waveform: Option<unsafe extern "C" fn(*mut pwm_chip, *mut pwm_device, *mut kernel::ffi::c_void) -> i32>,
+    pub write_waveform: Option<unsafe extern "C" fn(*mut pwm_chip, *mut pwm_device, *const kernel::ffi::c_void) -> i32>,
     pub apply: Option<unsafe extern "C" fn(*mut pwm_chip, *mut pwm_device, *const pwm_state) -> i32>,
     pub get_state: Option<unsafe extern "C" fn(*mut pwm_chip, *mut pwm_device, *mut pwm_state) -> i32>,
 }
@@ -176,10 +176,10 @@ extern "C" {
     pub fn __devm_pwmchip_add(dev: *mut device, chip: *mut pwm_chip, owner: *mut module) -> i32;
     pub fn of_pwm_xlate_with_flags(chip: *mut pwm_chip, args: *const of_phandle_args) -> *mut pwm_device;
     pub fn of_pwm_single_xlate(chip: *mut pwm_chip, args: *const of_phandle_args) -> *mut pwm_device;
-    pub fn pwm_get(dev: *mut device, con_id: *const core::ffi::c_char) -> *mut pwm_device;
+    pub fn pwm_get(dev: *mut device, con_id: *const kernel::ffi::c_char) -> *mut pwm_device;
     pub fn pwm_put(pwm: *mut pwm_device);
-    pub fn devm_pwm_get(dev: *mut device, con_id: *const core::ffi::c_char) -> *mut pwm_device;
-    pub fn devm_fwnode_pwm_get(dev: *mut device, fwnode: *mut fwnode_handle, con_id: *const core::ffi::c_char) -> *mut pwm_device;
+    pub fn devm_pwm_get(dev: *mut device, con_id: *const kernel::ffi::c_char) -> *mut pwm_device;
+    pub fn devm_fwnode_pwm_get(dev: *mut device, fwnode: *mut fwnode_handle, con_id: *const kernel::ffi::c_char) -> *mut pwm_device;
 }
 
 /* The remaining kernel-owned structures and APIs are declarations supplied by dependencies. */
@@ -192,21 +192,21 @@ extern "C" {
     pub fn pwm_get_state_hw(pwm: *mut pwm_device, state: *mut pwm_state) -> i32;
     pub fn pwm_adjust_config(pwm: *mut pwm_device) -> i32;
     pub fn pwmchip_put(chip: *mut pwm_chip);
-    pub fn pwmchip_release(dev: *mut core::ffi::c_void);
+    pub fn pwmchip_release(dev: *mut kernel::ffi::c_void);
     pub fn pwm_add_table(table: *mut pwm_lookup, num: usize);
     pub fn pwm_remove_table(table: *mut pwm_lookup, num: usize);
 }
 
 #[repr(C)]
 pub struct pwm_lookup {
-    pub list: *mut core::ffi::c_void,
-    pub provider: *const core::ffi::c_char,
+    pub list: *mut kernel::ffi::c_void,
+    pub provider: *const kernel::ffi::c_char,
     pub index: u32,
-    pub dev_id: *const core::ffi::c_char,
-    pub con_id: *const core::ffi::c_char,
+    pub dev_id: *const kernel::ffi::c_char,
+    pub con_id: *const kernel::ffi::c_char,
     pub period: u32,
     pub polarity: pwm_polarity,
-    pub module: *const core::ffi::c_char,
+    pub module: *const kernel::ffi::c_char,
 }
 
 /* PWM_LOOKUP_WITH_MODULE and PWM_LOOKUP are C initializer macros; use struct literals. */

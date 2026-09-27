@@ -6,7 +6,7 @@
  */
 
 // Dependencies supplied by the surrounding kernel translation unit.
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 const ITERS_PER_TEST: i32 = 2000;
 

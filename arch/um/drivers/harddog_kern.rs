@@ -26,11 +26,11 @@ const WDIOC_KEEPALIVE: u32 = 0x8004_5705;
 
 /* External kernel and UML interfaces. */
 extern "C" {
-    fn mconsole_notify_socket() -> *mut core::ffi::c_char;
+    fn mconsole_notify_socket() -> *mut kernel::ffi::c_char;
     fn start_watchdog(
         in_fd: *mut i32,
         out_fd: *mut i32,
-        sock: *mut core::ffi::c_char,
+        sock: *mut kernel::ffi::c_char,
     ) -> i32;
     fn stop_watchdog(in_fd: i32, out_fd: i32);
     fn ping_watchdog(out_fd: i32) -> isize;
@@ -57,7 +57,7 @@ struct watchdog_info {
 
 #[repr(C)]
 struct file_operations {
-    owner: *const core::ffi::c_void,
+    owner: *const kernel::ffi::c_void,
     write: Option<unsafe extern "C" fn(*mut file, *const u8, usize, *mut i64) -> isize>,
     unlocked_ioctl: Option<unsafe extern "C" fn(*mut file, u32, u64) -> i64>,
     compat_ioctl: Option<unsafe extern "C" fn(*mut file, u32, u64) -> i64>,
@@ -83,7 +83,7 @@ static mut harddog_out_fd: i32 = -1;
 #[no_mangle]
 unsafe extern "C" fn harddog_open(inode: *mut inode, file: *mut file) -> i32 {
     let mut err: i32 = -EBUSY;
-    let mut sock: *mut core::ffi::c_char = core::ptr::null_mut();
+    let mut sock: *mut kernel::ffi::c_char = core::ptr::null_mut();
 
     /* mutex_lock(&harddog_mutex); spin_lock(&lock); */
     if timer_alive != 0 {
@@ -134,7 +134,7 @@ unsafe extern "C" fn harddog_ioctl_unlocked(
     cmd: u32,
     arg: u64,
 ) -> i64 {
-    let argp = arg as *mut core::ffi::c_void;
+    let argp = arg as *mut kernel::ffi::c_void;
     static mut ident: watchdog_info = watchdog_info {
         options: WDIOC_SETTIMEOUT,
         firmware_version: 0,

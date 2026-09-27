@@ -20,10 +20,10 @@ pub struct device;
 pub struct sh_dmae_chan {
     pub shdma_chan: shdma_chan,
     pub config: *const sh_dmae_slave_config, // Slave DMA configuration
-    pub xmit_shift: ::core::ffi::c_int, // log_2(bytes_per_xfer)
-    pub base: *mut core::ffi::c_void,
-    pub dev_id: [core::ffi::c_char; 32], // unique name per DMAC of channel
-    pub pm_error: ::core::ffi::c_int,
+    pub xmit_shift: ::kernel::ffi::c_int, // log_2(bytes_per_xfer)
+    pub base: *mut kernel::ffi::c_void,
+    pub dev_id: [kernel::ffi::c_char; 32], // unique name per DMAC of channel
+    pub pm_error: ::kernel::ffi::c_int,
     pub slave_addr: dma_addr_t,
 }
 
@@ -33,9 +33,9 @@ pub struct sh_dmae_device {
     pub chan: [*mut sh_dmae_chan; SH_DMAE_MAX_CHANNELS],
     pub pdata: *const sh_dmae_pdata,
     pub node: list_head,
-    pub chan_reg: *mut core::ffi::c_void,
-    pub dmars: *mut core::ffi::c_void,
-    pub chcr_offset: ::core::ffi::c_uint,
+    pub chan_reg: *mut kernel::ffi::c_void,
+    pub dmars: *mut kernel::ffi::c_void,
+    pub chcr_offset: ::kernel::ffi::c_uint,
     pub chcr_ie_bit: u32,
 }
 

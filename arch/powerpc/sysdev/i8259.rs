@@ -5,7 +5,7 @@
 
 // C dependencies from the kernel headers are supplied externally.
 
-static mut pci_intack: *mut core::ffi::c_void = core::ptr::null_mut(); /* RO, gives us the irq vector */
+static mut pci_intack: *mut kernel::ffi::c_void = core::ptr::null_mut(); /* RO, gives us the irq vector */
 
 static mut cached_8259: [u8; 2] = [0xff, 0xff];
 
@@ -17,7 +17,7 @@ extern "C" {
     fn raw_spin_unlock(lock: *mut raw_spinlock_t);
     fn raw_spin_lock_irqsave(lock: *mut raw_spinlock_t, flags: *mut c_ulong);
     fn raw_spin_unlock_irqrestore(lock: *mut raw_spinlock_t, flags: c_ulong);
-    fn readb(addr: *const core::ffi::c_void) -> c_int;
+    fn readb(addr: *const kernel::ffi::c_void) -> c_int;
     fn inb(port: u16) -> c_int;
     fn outb(value: u8, port: u16);
     fn udelay(usecs: u64);
@@ -25,12 +25,12 @@ extern "C" {
     fn irq_set_chip_and_handler(virq: c_uint, chip: *mut irq_chip, handler: unsafe extern "C" fn());
     fn irq_domain_get_of_node(h: *mut irq_domain) -> *mut device_node;
     fn irq_domain_create_legacy(fwnode: *mut fwnode_handle, size: c_uint, first_hwirq: c_uint,
-                                hwirq: c_uint, ops: *const irq_domain_ops, host_data: *mut core::ffi::c_void) -> *mut irq_domain;
+                                hwirq: c_uint, ops: *const irq_domain_ops, host_data: *mut kernel::ffi::c_void) -> *mut irq_domain;
     fn of_fwnode_handle(node: *mut device_node) -> *mut fwnode_handle;
     fn request_resource(parent: *mut resource, child: *mut resource) -> c_int;
-    fn ioremap(addr: c_ulong, size: usize) -> *mut core::ffi::c_void;
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
+    fn ioremap(addr: c_ulong, size: usize) -> *mut kernel::ffi::c_void;
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
 }
 
 type c_int = i32;
@@ -44,13 +44,13 @@ type irq_hw_number_t = c_ulong;
 #[repr(C)] pub struct fwnode_handle {}
 #[repr(C)] pub struct irq_data { pub irq: c_uint }
 #[repr(C)] pub struct irq_chip {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub irq_mask: Option<unsafe extern "C" fn(*mut irq_data)>,
     pub irq_disable: Option<unsafe extern "C" fn(*mut irq_data)>,
     pub irq_unmask: Option<unsafe extern "C" fn(*mut irq_data)>,
     pub irq_mask_ack: Option<unsafe extern "C" fn(*mut irq_data)>,
 }
-#[repr(C)] pub struct resource { pub name: *const core::ffi::c_char, pub start: c_ulong, pub end: c_ulong, pub flags: c_ulong }
+#[repr(C)] pub struct resource { pub name: *const kernel::ffi::c_char, pub start: c_ulong, pub end: c_ulong, pub flags: c_ulong }
 #[repr(C)] pub struct irq_domain_ops {
     pub match_: Option<unsafe extern "C" fn(*mut irq_domain, *mut device_node, c_uint) -> c_int>,
     pub map: Option<unsafe extern "C" fn(*mut irq_domain, c_uint, irq_hw_number_t) -> c_int>,

@@ -69,7 +69,7 @@ pub struct sidtab_node_inner {
 
 #[repr(C)]
 pub struct sidtab_isid_entry {
-    pub set: core::ffi::c_int,
+    pub set: kernel::ffi::c_int,
     pub entry: sidtab_entry,
 }
 
@@ -118,12 +118,12 @@ pub struct sidtab {
 }
 
 unsafe extern "C" {
-    pub fn sidtab_init(s: *mut sidtab) -> core::ffi::c_int;
+    pub fn sidtab_init(s: *mut sidtab) -> kernel::ffi::c_int;
     pub fn sidtab_set_initial(
         s: *mut sidtab,
         sid: u32,
         context: *mut context,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn sidtab_search_entry(s: *mut sidtab, sid: u32) -> *mut sidtab_entry;
     pub fn sidtab_search_entry_force(s: *mut sidtab, sid: u32) -> *mut sidtab_entry;
 }
@@ -154,7 +154,7 @@ unsafe extern "C" {
     pub fn sidtab_convert(
         s: *mut sidtab,
         params: *mut sidtab_convert_params,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn sidtab_cancel_convert(s: *mut sidtab);
 
@@ -163,19 +163,19 @@ unsafe extern "C" {
      * __acquires(&s->lock)
      * __releases(&s->lock)
      */
-    pub fn sidtab_freeze_begin(s: *mut sidtab, flags: *mut core::ffi::c_ulong);
-    pub fn sidtab_freeze_end(s: *mut sidtab, flags: *mut core::ffi::c_ulong);
+    pub fn sidtab_freeze_begin(s: *mut sidtab, flags: *mut kernel::ffi::c_ulong);
+    pub fn sidtab_freeze_end(s: *mut sidtab, flags: *mut kernel::ffi::c_ulong);
 
     pub fn sidtab_context_to_sid(
         s: *mut sidtab,
         context: *mut context,
         sid: *mut u32,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn sidtab_destroy(s: *mut sidtab);
 
-    pub fn sidtab_hash_stats(sidtab: *mut sidtab, page: *mut core::ffi::c_char)
-        -> core::ffi::c_int;
+    pub fn sidtab_hash_stats(sidtab: *mut sidtab, page: *mut kernel::ffi::c_char)
+        -> kernel::ffi::c_int;
 }
 
 /* CONFIG_SECURITY_SELINUX_SID2STR_CACHE_SIZE > 0 */
@@ -184,15 +184,15 @@ unsafe extern "C" {
     pub fn sidtab_sid2str_put(
         s: *mut sidtab,
         entry: *mut sidtab_entry,
-        str_: *const core::ffi::c_char,
+        str_: *const kernel::ffi::c_char,
         str_len: u32,
     );
     pub fn sidtab_sid2str_get(
         s: *mut sidtab,
         entry: *mut sidtab_entry,
-        out: *mut *mut core::ffi::c_char,
+        out: *mut *mut kernel::ffi::c_char,
         out_len: *mut u32,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 /* !(CONFIG_SECURITY_SELINUX_SID2STR_CACHE_SIZE > 0) */
@@ -201,7 +201,7 @@ unsafe extern "C" {
 pub unsafe fn sidtab_sid2str_put(
     _s: *mut sidtab,
     _entry: *mut sidtab_entry,
-    _str: *const core::ffi::c_char,
+    _str: *const kernel::ffi::c_char,
     _str_len: u32,
 ) {
 }
@@ -211,9 +211,9 @@ pub unsafe fn sidtab_sid2str_put(
 pub unsafe fn sidtab_sid2str_get(
     _s: *mut sidtab,
     _entry: *mut sidtab_entry,
-    _out: *mut *mut core::ffi::c_char,
+    _out: *mut *mut kernel::ffi::c_char,
     _out_len: *mut u32,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     -ENOENT
 }
 

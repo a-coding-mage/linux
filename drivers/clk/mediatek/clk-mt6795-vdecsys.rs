@@ -40,7 +40,7 @@ struct mtk_clk_desc {
 #[repr(C)]
 struct of_device_id {
     compatible: *const c_char,
-    data: *const core::ffi::c_void,
+    data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -56,8 +56,8 @@ struct platform_driver {
     driver: platform_driver_driver,
 }
 
-type c_int = core::ffi::c_int;
-type c_char = core::ffi::c_char;
+type c_int = kernel::ffi::c_int;
+type c_char = kernel::ffi::c_char;
 struct platform_device;
 struct mtk_clk_gate_ops;
 
@@ -103,7 +103,7 @@ static VDEC_DESC: mtk_clk_desc = mtk_clk_desc {
 static OF_MATCH_CLK_MT6795_VDECSYS: [of_device_id; 2] = [
     of_device_id {
         compatible: b"mediatek,mt6795-vdecsys\0".as_ptr() as *const c_char,
-        data: &VDEC_DESC as *const mtk_clk_desc as *const core::ffi::c_void,
+        data: &VDEC_DESC as *const mtk_clk_desc as *const kernel::ffi::c_void,
     },
     of_device_id {
         compatible: core::ptr::null(),

@@ -44,16 +44,16 @@ pub struct genl_split_ops {
 
 #[repr(C)]
 pub struct genl_multicast_group {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct genl_family {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub version: u8,
     pub netnsok: bool,
     pub parallel_ops: bool,
-    pub module: *mut core::ffi::c_void,
+    pub module: *mut kernel::ffi::c_void,
     pub split_ops: *const genl_split_ops,
     pub n_split_ops: usize,
     pub mcgrps: *const genl_multicast_group,

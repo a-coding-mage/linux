@@ -14,10 +14,10 @@ macro_rules! unix_sk_has_data {
     };
 }
 
-unsafe fn unix_msg_wait_data(sk: *mut sock, psock: *mut sk_psock, timeo: libc::c_long) -> libc::c_int {
+unsafe fn unix_msg_wait_data(sk: *mut sock, psock: *mut sk_psock, timeo: kernel::ffi::c_long) -> kernel::ffi::c_int {
     let mut wait = DEFINE_WAIT_FUNC!(woken_wake_function);
     let u = unix_sk(sk);
-    let mut ret: libc::c_int = 0;
+    let mut ret: kernel::ffi::c_int = 0;
 
     if (*sk).sk_shutdown & RCV_SHUTDOWN != 0 {
         return 1;
@@ -33,14 +33,14 @@ unsafe fn unix_msg_wait_data(sk: *mut sock, psock: *mut sk_psock, timeo: libc::c
         mutex_unlock(&mut (*u).iolock);
         wait_woken(&mut wait, TASK_INTERRUPTIBLE, timeo);
         mutex_lock(&mut (*u).iolock);
-        ret = unix_sk_has_data!(sk, psock) as libc::c_int;
+        ret = unix_sk_has_data!(sk, psock) as kernel::ffi::c_int;
     }
     sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
     remove_wait_queue(sk_sleep(sk), &mut wait);
     ret
 }
 
-unsafe fn __unix_recvmsg(sk: *mut sock, msg: *mut msghdr, len: usize, flags: libc::c_int) -> libc::c_int {
+unsafe fn __unix_recvmsg(sk: *mut sock, msg: *mut msghdr, len: usize, flags: kernel::ffi::c_int) -> kernel::ffi::c_int {
     if (*sk).sk_type == SOCK_DGRAM {
         __unix_dgram_recvmsg(sk, msg, len, flags)
     } else {
@@ -48,10 +48,10 @@ unsafe fn __unix_recvmsg(sk: *mut sock, msg: *mut msghdr, len: usize, flags: lib
     }
 }
 
-unsafe fn unix_bpf_recvmsg(sk: *mut sock, msg: *mut msghdr, len: usize, flags: libc::c_int) -> libc::c_int {
+unsafe fn unix_bpf_recvmsg(sk: *mut sock, msg: *mut msghdr, len: usize, flags: kernel::ffi::c_int) -> kernel::ffi::c_int {
     let u = unix_sk(sk);
     let mut psock: *mut sk_psock;
-    let mut copied: libc::c_int;
+    let mut copied: kernel::ffi::c_int;
 
     if flags & MSG_OOB != 0 {
         return -EOPNOTSUPP;
@@ -140,7 +140,7 @@ unsafe fn unix_stream_bpf_check_needs_rebuild(ops: *mut proto) {
     }
 }
 
-pub unsafe fn unix_dgram_bpf_update_proto(sk: *mut sock, psock: *mut sk_psock, restore: bool) -> libc::c_int {
+pub unsafe fn unix_dgram_bpf_update_proto(sk: *mut sock, psock: *mut sk_psock, restore: bool) -> kernel::ffi::c_int {
     if (*sk).sk_type != SOCK_DGRAM { return -EOPNOTSUPP; }
     if restore {
         (*sk).sk_write_space = (*psock).saved_write_space;
@@ -152,7 +152,7 @@ pub unsafe fn unix_dgram_bpf_update_proto(sk: *mut sock, psock: *mut sk_psock, r
     0
 }
 
-pub unsafe fn unix_stream_bpf_update_proto(sk: *mut sock, psock: *mut sk_psock, restore: bool) -> libc::c_int {
+pub unsafe fn unix_stream_bpf_update_proto(sk: *mut sock, psock: *mut sk_psock, restore: bool) -> kernel::ffi::c_int {
     let sk_pair: *mut sock;
     /* Restore does not decrement the sk_pair reference yet because we must
      * keep the a reference to the socket until after an RCU grace period

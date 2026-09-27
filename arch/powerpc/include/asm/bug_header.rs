@@ -80,8 +80,8 @@ extern "C" {
     pub fn emulate_single_step(regs: *mut PtRegs);
     pub fn _exception(regs: *mut PtRegs, err: i32, address: usize);
     pub fn _exception_pkey(regs: *mut PtRegs, address: usize, err: i32);
-    pub fn die(str_: *const core::ffi::c_char, regs: *mut PtRegs, err: isize);
-    pub fn die_mce(str_: *const core::ffi::c_char, regs: *mut PtRegs, err: isize);
+    pub fn die(str_: *const kernel::ffi::c_char, regs: *mut PtRegs, err: isize);
+    pub fn die_mce(str_: *const kernel::ffi::c_char, regs: *mut PtRegs, err: isize);
     pub fn die_will_crash() -> bool;
     pub fn panic_flush_kmsg_start();
     pub fn panic_flush_kmsg_end();

@@ -7,7 +7,7 @@
  * Author: Varshini Rajendran <varshini.rajendran@microchip.com>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Supplied by the architecture and generic platform code.
 unsafe extern "C" {

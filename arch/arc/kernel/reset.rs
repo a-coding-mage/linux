@@ -3,7 +3,7 @@
  * Copyright (C) 2011-2012 Synopsys, Inc. (www.synopsys.com)
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Supplied by the kernel logging dependency.
 unsafe extern "C" {

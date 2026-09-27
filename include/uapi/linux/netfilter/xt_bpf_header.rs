@@ -34,7 +34,7 @@ pub const XT_BPF_MODE_PATH_PINNED: xt_bpf_modes = xt_bpf_modes::XT_BPF_MODE_FD_P
 #[repr(C)]
 pub union xt_bpf_info_v1_data {
     pub bpf_program: [sock_filter; XT_BPF_MAX_NUM_INSTR],
-    pub path: [core::ffi::c_char; XT_BPF_PATH_MAX],
+    pub path: [kernel::ffi::c_char; XT_BPF_PATH_MAX],
 }
 
 #[repr(C)]

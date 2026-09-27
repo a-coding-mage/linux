@@ -96,9 +96,9 @@ pub enum lp3952_leds {
 #[repr(C)]
 pub struct lp3952_ctrl_hdl {
     pub cdev: led_classdev,
-    pub name: [core::ffi::c_char; LP3952_LABEL_MAX_LEN],
+    pub name: [kernel::ffi::c_char; LP3952_LABEL_MAX_LEN],
     pub channel: lp3952_leds,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]

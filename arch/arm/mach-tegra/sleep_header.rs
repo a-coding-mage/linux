@@ -47,7 +47,7 @@ pub const APB_MISC_GP_HIDREV: u32 = 0x804;
 
 unsafe extern "C" {
     pub fn tegra_resume();
-    pub fn tegra_sleep_cpu_finish(arg: core::ffi::c_ulong) -> core::ffi::c_int;
+    pub fn tegra_sleep_cpu_finish(arg: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
     pub fn tegra_disable_clean_inv_dcache(flag: u32);
 
     pub fn tegra20_hotplug_shutdown();

@@ -23,7 +23,7 @@ pub struct pt_regs {
 }
 
 unsafe extern "C" {
-    pub fn pnv_platform_error_reboot(regs: *mut pt_regs, msg: *const core::ffi::c_char) -> !;
+    pub fn pnv_platform_error_reboot(regs: *mut pt_regs, msg: *const kernel::ffi::c_char) -> !;
 }
 
 #[repr(C)]
@@ -62,7 +62,7 @@ pub struct memcons {
 unsafe extern "C" {
     pub fn memcons_copy(
         mc: *mut memcons,
-        to: *mut core::ffi::c_char,
+        to: *mut kernel::ffi::c_char,
         pos: i64,
         count: usize,
     ) -> isize;
@@ -73,7 +73,7 @@ unsafe extern "C" {
     /* __init */
     pub fn memcons_init(
         node: *mut device_node,
-        mc_prop_name: *const core::ffi::c_char,
+        mc_prop_name: *const kernel::ffi::c_char,
     ) -> *mut memcons;
 
     pub fn pnv_rng_init();

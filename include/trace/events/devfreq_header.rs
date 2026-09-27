@@ -6,7 +6,7 @@
 //! their assignment/printing rules.  The devfreq and tracepoint definitions
 //! are supplied by external dependencies.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* C dependencies:
  *   #include <linux/devfreq.h>

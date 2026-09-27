@@ -31,7 +31,7 @@ pub struct trace_buffer_meta_reader {
 }
 
 // TRACE_MMAP_IOCTL_GET_READER = _IO('R', 0x20)
-pub const TRACE_MMAP_IOCTL_GET_READER: ::core::ffi::c_ulong =
-    _IO(b'R' as ::core::ffi::c_ulong, 0x20);
+pub const TRACE_MMAP_IOCTL_GET_READER: ::kernel::ffi::c_ulong =
+    _IO(b'R' as ::kernel::ffi::c_ulong, 0x20);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

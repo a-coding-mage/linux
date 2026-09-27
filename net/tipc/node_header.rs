@@ -46,9 +46,9 @@ pub enum sk_buff {}
 pub enum netlink_callback {}
 pub enum genl_info {}
 
-pub type u8 = ::core::ffi::c_uchar;
-pub type u16 = ::core::ffi::c_ushort;
-pub type u32 = ::core::ffi::c_uint;
+pub type u8 = ::kernel::ffi::c_uchar;
+pub type u16 = ::kernel::ffi::c_ushort;
+pub type u32 = ::kernel::ffi::c_uint;
 pub type size_t = usize;
 
 /* Optional capabilities supported by this code version */
@@ -84,7 +84,7 @@ extern "C" {
     pub fn tipc_node_stop(net: *mut net);
     pub fn tipc_node_get_id(net: *mut net, addr: u32, id: *mut u8) -> bool;
     pub fn tipc_node_get_addr(node: *mut tipc_node) -> u32;
-    pub fn tipc_node_get_id_str(node: *mut tipc_node) -> *mut ::core::ffi::c_char;
+    pub fn tipc_node_get_id_str(node: *mut tipc_node) -> *mut ::kernel::ffi::c_char;
     pub fn tipc_node_put(node: *mut tipc_node);
     pub fn tipc_node_get(node: *mut tipc_node);
     pub fn tipc_node_create(net: *mut net, addr: u32, peer_id: *mut u8,
@@ -103,39 +103,39 @@ extern "C" {
                                 signature: u32, hash_mixes: u32,
                                 maddr: *mut tipc_media_addr, respond: *mut bool,
                                 dupl_addr: *mut bool);
-    pub fn tipc_node_delete_links(net: *mut net, bearer_id: ::core::ffi::c_int);
+    pub fn tipc_node_delete_links(net: *mut net, bearer_id: ::kernel::ffi::c_int);
     pub fn tipc_node_apply_property(net: *mut net, b: *mut tipc_bearer,
-                                    prop: ::core::ffi::c_int);
+                                    prop: ::kernel::ffi::c_int);
     pub fn tipc_node_get_linkname(net: *mut net, bearer_id: u32, node: u32,
-                                  linkname: *mut ::core::ffi::c_char,
-                                  len: usize) -> ::core::ffi::c_int;
+                                  linkname: *mut ::kernel::ffi::c_char,
+                                  len: usize) -> ::kernel::ffi::c_int;
     pub fn tipc_node_xmit(net: *mut net, list: *mut sk_buff_head, dnode: u32,
-                          selector: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn tipc_node_distr_xmit(net: *mut net, list: *mut sk_buff_head) -> ::core::ffi::c_int;
+                          selector: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn tipc_node_distr_xmit(net: *mut net, list: *mut sk_buff_head) -> ::kernel::ffi::c_int;
     pub fn tipc_node_xmit_skb(net: *mut net, skb: *mut sk_buff, dest: u32,
-                              selector: u32) -> ::core::ffi::c_int;
+                              selector: u32) -> ::kernel::ffi::c_int;
     pub fn tipc_node_subscribe(net: *mut net, subscr: *mut list_head, addr: u32);
     pub fn tipc_node_unsubscribe(net: *mut net, subscr: *mut list_head, addr: u32);
-    pub fn tipc_node_broadcast(net: *mut net, skb: *mut sk_buff, rc_dests: ::core::ffi::c_int);
-    pub fn tipc_node_add_conn(net: *mut net, dnode: u32, port: u32, peer_port: u32) -> ::core::ffi::c_int;
+    pub fn tipc_node_broadcast(net: *mut net, skb: *mut sk_buff, rc_dests: ::kernel::ffi::c_int);
+    pub fn tipc_node_add_conn(net: *mut net, dnode: u32, port: u32, peer_port: u32) -> ::kernel::ffi::c_int;
     pub fn tipc_node_remove_conn(net: *mut net, dnode: u32, port: u32);
-    pub fn tipc_node_get_mtu(net: *mut net, addr: u32, sel: u32, connected: bool) -> ::core::ffi::c_int;
+    pub fn tipc_node_get_mtu(net: *mut net, addr: u32, sel: u32, connected: bool) -> ::kernel::ffi::c_int;
     pub fn tipc_node_is_up(net: *mut net, addr: u32) -> bool;
     pub fn tipc_node_get_capabilities(net: *mut net, addr: u32) -> u16;
-    pub fn tipc_nl_node_dump(skb: *mut sk_buff, cb: *mut netlink_callback) -> ::core::ffi::c_int;
-    pub fn tipc_nl_node_dump_link(skb: *mut sk_buff, cb: *mut netlink_callback) -> ::core::ffi::c_int;
-    pub fn tipc_nl_node_reset_link_stats(skb: *mut sk_buff, info: *mut genl_info) -> ::core::ffi::c_int;
-    pub fn tipc_nl_node_get_link(skb: *mut sk_buff, info: *mut genl_info) -> ::core::ffi::c_int;
-    pub fn tipc_nl_node_set_link(skb: *mut sk_buff, info: *mut genl_info) -> ::core::ffi::c_int;
-    pub fn tipc_nl_peer_rm(skb: *mut sk_buff, info: *mut genl_info) -> ::core::ffi::c_int;
-    pub fn tipc_nl_node_set_monitor(skb: *mut sk_buff, info: *mut genl_info) -> ::core::ffi::c_int;
-    pub fn tipc_nl_node_get_monitor(skb: *mut sk_buff, info: *mut genl_info) -> ::core::ffi::c_int;
-    pub fn tipc_nl_node_dump_monitor(skb: *mut sk_buff, cb: *mut netlink_callback) -> ::core::ffi::c_int;
-    pub fn tipc_nl_node_dump_monitor_peer(skb: *mut sk_buff, cb: *mut netlink_callback) -> ::core::ffi::c_int;
+    pub fn tipc_nl_node_dump(skb: *mut sk_buff, cb: *mut netlink_callback) -> ::kernel::ffi::c_int;
+    pub fn tipc_nl_node_dump_link(skb: *mut sk_buff, cb: *mut netlink_callback) -> ::kernel::ffi::c_int;
+    pub fn tipc_nl_node_reset_link_stats(skb: *mut sk_buff, info: *mut genl_info) -> ::kernel::ffi::c_int;
+    pub fn tipc_nl_node_get_link(skb: *mut sk_buff, info: *mut genl_info) -> ::kernel::ffi::c_int;
+    pub fn tipc_nl_node_set_link(skb: *mut sk_buff, info: *mut genl_info) -> ::kernel::ffi::c_int;
+    pub fn tipc_nl_peer_rm(skb: *mut sk_buff, info: *mut genl_info) -> ::kernel::ffi::c_int;
+    pub fn tipc_nl_node_set_monitor(skb: *mut sk_buff, info: *mut genl_info) -> ::kernel::ffi::c_int;
+    pub fn tipc_nl_node_get_monitor(skb: *mut sk_buff, info: *mut genl_info) -> ::kernel::ffi::c_int;
+    pub fn tipc_nl_node_dump_monitor(skb: *mut sk_buff, cb: *mut netlink_callback) -> ::kernel::ffi::c_int;
+    pub fn tipc_nl_node_dump_monitor_peer(skb: *mut sk_buff, cb: *mut netlink_callback) -> ::kernel::ffi::c_int;
     #[cfg(CONFIG_TIPC_CRYPTO)]
-    pub fn tipc_nl_node_set_key(skb: *mut sk_buff, info: *mut genl_info) -> ::core::ffi::c_int;
+    pub fn tipc_nl_node_set_key(skb: *mut sk_buff, info: *mut genl_info) -> ::kernel::ffi::c_int;
     #[cfg(CONFIG_TIPC_CRYPTO)]
-    pub fn tipc_nl_node_flush_key(skb: *mut sk_buff, info: *mut genl_info) -> ::core::ffi::c_int;
+    pub fn tipc_nl_node_flush_key(skb: *mut sk_buff, info: *mut genl_info) -> ::kernel::ffi::c_int;
     pub fn tipc_node_pre_cleanup_net(exit_net: *mut net);
 }
 

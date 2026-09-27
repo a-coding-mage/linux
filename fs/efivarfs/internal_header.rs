@@ -29,7 +29,7 @@ pub struct efi_variable {
 pub struct efivar_entry {
     pub var: efi_variable,
     pub vfs_inode: inode,
-    pub open_count: ::core::ffi::c_ulong,
+    pub open_count: ::kernel::ffi::c_ulong,
     pub removed: bool,
 }
 
@@ -40,50 +40,50 @@ pub unsafe fn efivar_entry(inode: *mut inode) -> *mut efivar_entry {
 
 extern "C" {
     pub fn efivar_init(
-        func: Option<unsafe extern "C" fn(*mut efi_char16_t, efi_guid_t, ::core::ffi::c_ulong, *mut ::core::ffi::c_void) -> ::core::ffi::c_int>,
-        data: *mut ::core::ffi::c_void,
+        func: Option<unsafe extern "C" fn(*mut efi_char16_t, efi_guid_t, ::kernel::ffi::c_ulong, *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int>,
+        data: *mut ::kernel::ffi::c_void,
         duplicate_check: bool,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
-    pub fn efivar_entry_delete(entry: *mut efivar_entry) -> ::core::ffi::c_int;
+    pub fn efivar_entry_delete(entry: *mut efivar_entry) -> ::kernel::ffi::c_int;
 
-    pub fn efivar_entry_size(entry: *mut efivar_entry, size: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn efivar_entry_size(entry: *mut efivar_entry, size: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
     pub fn __efivar_entry_get(
         entry: *mut efivar_entry,
         attributes: *mut u32,
-        size: *mut ::core::ffi::c_ulong,
-        data: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        size: *mut ::kernel::ffi::c_ulong,
+        data: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
     pub fn efivar_entry_get(
         entry: *mut efivar_entry,
         attributes: *mut u32,
-        size: *mut ::core::ffi::c_ulong,
-        data: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        size: *mut ::kernel::ffi::c_ulong,
+        data: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
     pub fn efivar_entry_set_get_size(
         entry: *mut efivar_entry,
         attributes: u32,
-        size: *mut ::core::ffi::c_ulong,
-        data: *mut ::core::ffi::c_void,
+        size: *mut ::kernel::ffi::c_ulong,
+        data: *mut ::kernel::ffi::c_void,
         set: *mut bool,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn efivar_validate(
         vendor: efi_guid_t,
         var_name: *mut efi_char16_t,
         data: *mut u8,
-        data_size: ::core::ffi::c_ulong,
+        data_size: ::kernel::ffi::c_ulong,
     ) -> bool;
     pub fn efivar_variable_is_removable(
         vendor: efi_guid_t,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         len: usize,
     ) -> bool;
-    pub fn efivar_get_utf8name(name16: *const efi_char16_t, vendor: *mut efi_guid_t) -> *mut ::core::ffi::c_char;
+    pub fn efivar_get_utf8name(name16: *const efi_char16_t, vendor: *mut efi_guid_t) -> *mut ::kernel::ffi::c_char;
     pub fn efivarfs_variable_is_present(
         variable_name: *mut efi_char16_t,
         vendor: *mut efi_guid_t,
-        data: *mut ::core::ffi::c_void,
+        data: *mut ::kernel::ffi::c_void,
     ) -> bool;
 
     pub static efivarfs_file_operations: file_operations;
@@ -91,7 +91,7 @@ extern "C" {
     pub fn efivarfs_get_inode(
         sb: *mut super_block,
         dir: *const inode,
-        mode: ::core::ffi::c_int,
+        mode: ::kernel::ffi::c_int,
         dev: dev_t,
         is_removable: bool,
     ) -> *mut inode;

@@ -39,7 +39,7 @@ unsafe fn init_srcu_struct_fields(ssp: *mut srcu_struct) -> i32 {
 #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
 pub unsafe extern "C" fn init_srcu_struct_lockdep(
     ssp: *mut srcu_struct,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     key: *mut lock_class_key,
 ) -> i32 {
     // Don't re-initialize a lock while it is held.

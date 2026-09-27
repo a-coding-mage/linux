@@ -3,7 +3,7 @@
  * poweroff.c - sysrq handler to gracefully power down machine.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Kernel dependencies supplied by the surrounding tree.
 #[repr(C)]
@@ -23,8 +23,8 @@ extern "C" {
     fn kernel_power_off();
     fn schedule_work_on(cpu: usize, work: *mut work_struct);
     fn register_sysrq_key(key: u8, op: *const sysrq_key_op) -> i32;
-    fn cpumask_first(mask: *const core::ffi::c_void) -> usize;
-    static cpu_online_mask: core::ffi::c_void;
+    fn cpumask_first(mask: *const kernel::ffi::c_void) -> usize;
+    static cpu_online_mask: kernel::ffi::c_void;
 }
 
 // The value is supplied by the kernel sysrq interface.
@@ -45,7 +45,7 @@ static mut poweroff_work: work_struct = work_struct { _private: [] };
 unsafe extern "C" fn handle_poweroff(_key: u8) {
     /* run sysrq poweroff on boot cpu */
     schedule_work_on(
-        cpumask_first(&cpu_online_mask as *const _ as *const core::ffi::c_void),
+        cpumask_first(&cpu_online_mask as *const _ as *const kernel::ffi::c_void),
         &raw mut poweroff_work,
     );
 }

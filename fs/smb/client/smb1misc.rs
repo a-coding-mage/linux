@@ -11,22 +11,22 @@
 
 pub unsafe fn header_assemble(
     buffer: *mut smb_hdr,
-    smb_command: libc::c_char,
+    smb_command: kernel::ffi::c_char,
     tree_con: *const cifs_tcon,
-    word_count: libc::c_int,
-) -> libc::c_uint {
-    let temp = buffer as *mut libc::c_char;
+    word_count: kernel::ffi::c_int,
+) -> kernel::ffi::c_uint {
+    let temp = buffer as *mut kernel::ffi::c_char;
 
-    libc::memset(temp as *mut libc::c_void, 0, 256);
+    memset(temp as *mut kernel::ffi::c_void, 0, 256);
 
-    let in_len = (2 * word_count) as libc::c_uint
-        + core::mem::size_of::<smb_hdr>() as libc::c_uint
+    let in_len = (2 * word_count) as kernel::ffi::c_uint
+        + core::mem::size_of::<smb_hdr>() as kernel::ffi::c_uint
         + 2;
 
-    (*buffer).Protocol[0] = 0xffu8 as libc::c_char;
-    (*buffer).Protocol[1] = b'S' as libc::c_char;
-    (*buffer).Protocol[2] = b'M' as libc::c_char;
-    (*buffer).Protocol[3] = b'B' as libc::c_char;
+    (*buffer).Protocol[0] = 0xffu8 as kernel::ffi::c_char;
+    (*buffer).Protocol[1] = b'S' as kernel::ffi::c_char;
+    (*buffer).Protocol[2] = b'M' as kernel::ffi::c_char;
+    (*buffer).Protocol[3] = b'B' as kernel::ffi::c_char;
     (*buffer).Command = smb_command;
     (*buffer).Flags = 0;
     (*buffer).Flags2 = SMBFLG2_KNOWS_LONG_NAMES;
@@ -60,18 +60,18 @@ pub unsafe fn header_assemble(
         }
     }
 
-    (*buffer).WordCount = word_count as libc::c_char;
+    (*buffer).WordCount = word_count as kernel::ffi::c_char;
     in_len
 }
 
 pub unsafe fn is_valid_oplock_break(
-    buffer: *mut libc::c_char,
+    buffer: *mut kernel::ffi::c_char,
     srv: *mut TCP_Server_Info,
 ) -> bool {
     let buf = buffer as *mut smb_hdr;
     let p_smb = buffer as *mut smb_com_lock_req;
 
-    cifs_dbg(FYI, "Checking for oplock break or dnotify response\0".as_ptr() as *const libc::c_char);
+    cifs_dbg(FYI, "Checking for oplock break or dnotify response\0".as_ptr() as *const kernel::ffi::c_char);
     if (*p_smb).hdr.Command == SMB_COM_NT_TRANSACT
         && (*p_smb).hdr.Flags & SMBFLG_RESPONSE != 0
     {
@@ -81,17 +81,17 @@ pub unsafe fn is_valid_oplock_break(
         if get_bcc(buf) > core::mem::size_of::<file_notify_information>() {
             data_offset = le32_to_cpu((*p_smbr).DataOffset);
             if data_offset > len - core::mem::size_of::<file_notify_information>() {
-                cifs_dbg(FYI, "Invalid data_offset %u\n\0".as_ptr() as *const libc::c_char, data_offset);
+                cifs_dbg(FYI, "Invalid data_offset %u\n\0".as_ptr() as *const kernel::ffi::c_char, data_offset);
                 return true;
             }
-            let pnotify = (&mut (*p_smbr).hdr.Protocol as *mut _ as *mut libc::c_char)
+            let pnotify = (&mut (*p_smbr).hdr.Protocol as *mut _ as *mut kernel::ffi::c_char)
                 .add(data_offset as usize) as *mut file_notify_information;
-            cifs_dbg(FYI, "dnotify on %s Action: 0x%x\n\0".as_ptr() as *const libc::c_char,
+            cifs_dbg(FYI, "dnotify on %s Action: 0x%x\n\0".as_ptr() as *const kernel::ffi::c_char,
                 (*pnotify).FileName, (*pnotify).Action);
             return true;
         }
         if (*p_smbr).hdr.Status.CifsError != 0 {
-            cifs_dbg(FYI, "notify err 0x%x\n\0".as_ptr() as *const libc::c_char,
+            cifs_dbg(FYI, "notify err 0x%x\n\0".as_ptr() as *const kernel::ffi::c_char,
                 (*p_smbr).hdr.Status.CifsError);
             return true;
         }
@@ -100,14 +100,14 @@ pub unsafe fn is_valid_oplock_break(
     if (*p_smb).hdr.Command != SMB_COM_LOCKING_ANDX { return false; }
     if (*p_smb).hdr.Flags & SMBFLG_RESPONSE != 0 {
         if NT_STATUS_INVALID_HANDLE == le32_to_cpu((*p_smb).hdr.Status.CifsError) {
-            cifs_dbg(FYI, "Invalid handle on oplock break\n\0".as_ptr() as *const libc::c_char);
+            cifs_dbg(FYI, "Invalid handle on oplock break\n\0".as_ptr() as *const kernel::ffi::c_char);
             return true;
         } else if ERRbadfid == le16_to_cpu((*p_smb).hdr.Status.DosError.Error) {
             return true;
         } else { return false; }
     }
     if (*p_smb).hdr.WordCount != 8 { return false; }
-    cifs_dbg(FYI, "oplock type 0x%x level 0x%x\n\0".as_ptr() as *const libc::c_char,
+    cifs_dbg(FYI, "oplock type 0x%x level 0x%x\n\0".as_ptr() as *const kernel::ffi::c_char,
         (*p_smb).LockType, (*p_smb).OplockLevel);
     if (*p_smb).LockType & LOCKING_ANDX_OPLOCK_RELEASE == 0 { return false; }
 
@@ -140,9 +140,9 @@ pub unsafe fn is_valid_oplock_break(
     true
 }
 
-pub unsafe fn smbCalcSize(buf: *mut libc::c_void) -> libc::c_uint {
+pub unsafe fn smbCalcSize(buf: *mut kernel::ffi::c_void) -> kernel::ffi::c_uint {
     let ptr = buf as *mut smb_hdr;
-    (core::mem::size_of::<smb_hdr>() + (2 * (*ptr).WordCount as usize) + 2 + get_bcc(ptr) as usize) as libc::c_uint
+    (core::mem::size_of::<smb_hdr>() + (2 * (*ptr).WordCount as usize) + 2 + get_bcc(ptr) as usize) as kernel::ffi::c_uint
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

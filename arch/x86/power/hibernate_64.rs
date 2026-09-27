@@ -10,15 +10,15 @@
 // Linux kernel headers and architecture dependencies are supplied externally.
 
 extern "C" {
-    static mut temp_pgt: ::core::ffi::c_ulong;
-    static nr_pfn_mapped: ::core::ffi::c_int;
+    static mut temp_pgt: ::kernel::ffi::c_ulong;
+    static nr_pfn_mapped: ::kernel::ffi::c_int;
     static mut pfn_mapped: [PfnMapped; 0];
-    static restore_jump_address: ::core::ffi::c_ulong;
-    static jump_address_phys: ::core::ffi::c_ulong;
-    static __default_kernel_pte_mask: ::core::ffi::c_ulong;
+    static restore_jump_address: ::kernel::ffi::c_ulong;
+    static jump_address_phys: ::kernel::ffi::c_ulong;
+    static __default_kernel_pte_mask: ::kernel::ffi::c_ulong;
 
     fn pgtable_l5_enabled() -> bool;
-    fn get_safe_page(flags: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void;
+    fn get_safe_page(flags: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void;
     fn set_pmd(entry: *mut Pmd, value: Pmd);
     fn set_pud(entry: *mut Pud, value: Pud);
     fn set_p4d(entry: *mut P4d, value: P4d);
@@ -26,10 +26,10 @@ extern "C" {
     fn kernel_ident_mapping_init(
         info: *mut X86MappingInfo,
         pgd: *mut Pgd,
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
-    fn relocate_restore_code() -> ::core::ffi::c_int;
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
+    fn relocate_restore_code() -> ::kernel::ffi::c_int;
     fn restore_image();
 }
 
@@ -42,7 +42,7 @@ use crate::{
     pgprot_val, pgd_index, p4d_index, pfn_mapped, pmd_index, pud_index,
 };
 
-unsafe fn set_up_temporary_text_mapping(pgd: *mut Pgd) -> ::core::ffi::c_int {
+unsafe fn set_up_temporary_text_mapping(pgd: *mut Pgd) -> ::kernel::ffi::c_int {
     let pmd: *mut Pmd;
     let pud: *mut Pud;
     let mut p4d: *mut P4d = core::ptr::null_mut();
@@ -95,11 +95,11 @@ unsafe fn set_up_temporary_text_mapping(pgd: *mut Pgd) -> ::core::ffi::c_int {
     0
 }
 
-unsafe fn alloc_pgt_page(_context: *mut ::core::ffi::c_void) -> *mut ::core::ffi::c_void {
+unsafe fn alloc_pgt_page(_context: *mut ::kernel::ffi::c_void) -> *mut ::kernel::ffi::c_void {
     get_safe_page(GFP_ATOMIC)
 }
 
-unsafe fn set_up_temporary_mappings() -> ::core::ffi::c_int {
+unsafe fn set_up_temporary_mappings() -> ::kernel::ffi::c_int {
     let mut info = X86MappingInfo {
         alloc_pgt_page: Some(alloc_pgt_page),
         page_flag: __PAGE_KERNEL_LARGE_EXEC,
@@ -127,7 +127,7 @@ unsafe fn set_up_temporary_mappings() -> ::core::ffi::c_int {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn swsusp_arch_resume() -> ::core::ffi::c_int {
+pub unsafe extern "C" fn swsusp_arch_resume() -> ::kernel::ffi::c_int {
     /* We have got enough memory and from now on we cannot recover */
     let mut error = set_up_temporary_mappings();
     if error != 0 { return error; }

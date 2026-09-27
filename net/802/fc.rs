@@ -9,15 +9,15 @@
 // Linux kernel dependencies supplied by other translation units.
 
 unsafe extern "C" {
-    fn skb_push(skb: *mut sk_buff, len: usize) -> *mut core::ffi::c_void;
+    fn skb_push(skb: *mut sk_buff, len: usize) -> *mut kernel::ffi::c_void;
     fn alloc_netdev(
         sizeof_priv: i32,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         name_assign_type: u32,
         setup: Option<unsafe extern "C" fn(*mut net_device)>,
     ) -> *mut net_device;
-    fn memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, count: usize);
-    fn memset(dest: *mut core::ffi::c_void, value: i32, count: usize);
+    fn memcpy(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, count: usize);
+    fn memset(dest: *mut kernel::ffi::c_void, value: i32, count: usize);
     fn htons(value: u16) -> u16;
 }
 
@@ -45,8 +45,8 @@ pub struct header_ops {
         *mut sk_buff,
         *mut net_device,
         u16,
-        *const core::ffi::c_void,
-        *const core::ffi::c_void,
+        *const kernel::ffi::c_void,
+        *const kernel::ffi::c_void,
         u32,
     ) -> i32>,
 }
@@ -84,8 +84,8 @@ unsafe extern "C" fn fc_header(
     skb: *mut sk_buff,
     dev: *mut net_device,
     type_: u16,
-    daddr: *const core::ffi::c_void,
-    saddr: *const core::ffi::c_void,
+    daddr: *const kernel::ffi::c_void,
+    saddr: *const kernel::ffi::c_void,
     _len: u32,
 ) -> i32 {
     let mut hdr_len: i32;
@@ -110,13 +110,13 @@ unsafe extern "C" fn fc_header(
     }
 
     if !saddr.is_null() {
-        memcpy((*fch).saddr.as_mut_ptr() as *mut core::ffi::c_void, saddr, (*dev_fields(dev)).addr_len as usize);
+        memcpy((*fch).saddr.as_mut_ptr() as *mut kernel::ffi::c_void, saddr, (*dev_fields(dev)).addr_len as usize);
     } else {
-        memcpy((*fch).saddr.as_mut_ptr() as *mut core::ffi::c_void, (*dev_fields(dev)).dev_addr as *const core::ffi::c_void, (*dev_fields(dev)).addr_len as usize);
+        memcpy((*fch).saddr.as_mut_ptr() as *mut kernel::ffi::c_void, (*dev_fields(dev)).dev_addr as *const kernel::ffi::c_void, (*dev_fields(dev)).addr_len as usize);
     }
 
     if !daddr.is_null() {
-        memcpy((*fch).daddr.as_mut_ptr() as *mut core::ffi::c_void, daddr, (*dev_fields(dev)).addr_len as usize);
+        memcpy((*fch).daddr.as_mut_ptr() as *mut kernel::ffi::c_void, daddr, (*dev_fields(dev)).addr_len as usize);
         return hdr_len;
     }
     -hdr_len
@@ -137,7 +137,7 @@ unsafe extern "C" fn fc_setup(dev: *mut net_device) {
     (*dev).tx_queue_len = 100; /* Long queues on fc */
     (*dev).flags = IFF_BROADCAST;
 
-    memset((*dev).broadcast as *mut core::ffi::c_void, 0xFF, FC_ALEN as usize);
+    memset((*dev).broadcast as *mut kernel::ffi::c_void, 0xFF, FC_ALEN as usize);
 }
 
 /*
@@ -153,7 +153,7 @@ unsafe extern "C" fn fc_setup(dev: *mut net_device) {
  */
 #[no_mangle]
 pub unsafe extern "C" fn alloc_fcdev(sizeof_priv: i32) -> *mut net_device {
-    alloc_netdev(sizeof_priv, b"fc%d\0".as_ptr() as *const core::ffi::c_char, NET_NAME_UNKNOWN, Some(fc_setup))
+    alloc_netdev(sizeof_priv, b"fc%d\0".as_ptr() as *const kernel::ffi::c_char, NET_NAME_UNKNOWN, Some(fc_setup))
 }
 
 

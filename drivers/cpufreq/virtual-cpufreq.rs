@@ -14,7 +14,7 @@ const REG_PERF_DOMAIN_OFFSET: usize = 0x14;
 const PER_CPU_OFFSET: usize = 0x1000;
 const PERFTBL_MAX_ENTRIES: u32 = 64;
 
-static mut base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut perftbl_num_entries: [u32; 1] = [0; 1]; // DEFINE_PER_CPU(u32, perftbl_num_entries)
 
 unsafe fn virt_scale_freq_tick() {
@@ -138,7 +138,7 @@ unsafe fn virt_cpufreq_verify_policy(policy: *mut cpufreq_policy_data) -> i32 {
 
 #[repr(C)]
 struct cpufreq_driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     init: Option<unsafe fn(*mut cpufreq_policy) -> i32>,
     exit: Option<unsafe fn(*mut cpufreq_policy)>,
     online: Option<unsafe fn(*mut cpufreq_policy) -> i32>,

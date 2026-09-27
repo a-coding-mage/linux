@@ -7,7 +7,7 @@
 // Dependencies supplied by the Linux clock, platform-device, MediaTek clock,
 // gate, and MT2712 clock-binding headers are intentionally external.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 struct MtkGateRegs {
@@ -23,7 +23,7 @@ struct MtkGate {
     parent_name: *const c_char,
     regs: *const MtkGateRegs,
     shift: u8,
-    ops: *const core::ffi::c_void,
+    ops: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -35,13 +35,13 @@ struct MtkClkDesc {
 #[repr(C)]
 struct OfDeviceId {
     compatible: *const c_char,
-    data: *const core::ffi::c_void,
+    data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 struct PlatformDriver {
-    probe: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
-    remove: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
+    probe: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
+    remove: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
     driver: Driver,
 }
 
@@ -52,9 +52,9 @@ struct Driver {
 }
 
 extern "C" {
-    static mtk_clk_gate_ops_setclr: core::ffi::c_void;
-    fn mtk_clk_simple_probe(dev: *mut core::ffi::c_void) -> i32;
-    fn mtk_clk_simple_remove(dev: *mut core::ffi::c_void) -> i32;
+    static mtk_clk_gate_ops_setclr: kernel::ffi::c_void;
+    fn mtk_clk_simple_probe(dev: *mut kernel::ffi::c_void) -> i32;
+    fn mtk_clk_simple_remove(dev: *mut kernel::ffi::c_void) -> i32;
 }
 
 const CLK_MFG_BG3D: u32 = 0;
@@ -85,7 +85,7 @@ static MFG_DESC: MtkClkDesc = MtkClkDesc {
 static OF_MATCH_CLK_MT2712_MFG: [OfDeviceId; 2] = [
     OfDeviceId {
         compatible: b"mediatek,mt2712-mfgcfg\0".as_ptr() as *const c_char,
-        data: &MFG_DESC as *const MtkClkDesc as *const core::ffi::c_void,
+        data: &MFG_DESC as *const MtkClkDesc as *const kernel::ffi::c_void,
     },
     OfDeviceId {
         // sentinel

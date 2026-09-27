@@ -22,7 +22,7 @@ pub struct palmas_device_data {
 }
 
 unsafe extern "C" {
-    fn gpiochip_get_data(gc: *mut gpio_chip) -> *mut core::ffi::c_void;
+    fn gpiochip_get_data(gc: *mut gpio_chip) -> *mut kernel::ffi::c_void;
     fn palmas_read(palmas: *mut palmas, base: c_int, reg: c_uint, val: *mut c_uint) -> c_int;
     fn palmas_write(palmas: *mut palmas, base: c_int, reg: c_uint, val: c_uint) -> c_int;
     fn palmas_update_bits(
@@ -33,16 +33,16 @@ unsafe extern "C" {
         val: c_uint,
     ) -> c_int;
     fn palmas_irq_get_virq(palmas: *mut palmas, irq: c_int) -> c_int;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
-    fn dev_get_platdata(dev: *mut device) -> *mut core::ffi::c_void;
-    fn of_device_get_match_data(dev: *mut device) -> *const core::ffi::c_void;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: c_uint) -> *mut core::ffi::c_void;
-    fn dev_name(dev: *mut device) -> *const core::ffi::c_char;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
+    fn dev_get_platdata(dev: *mut device) -> *mut kernel::ffi::c_void;
+    fn of_device_get_match_data(dev: *mut device) -> *const kernel::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: c_uint) -> *mut kernel::ffi::c_void;
+    fn dev_name(dev: *mut device) -> *const kernel::ffi::c_char;
     fn devm_gpiochip_add_data(
         dev: *mut device,
         chip: *mut gpio_chip,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     ) -> c_int;
     fn platform_driver_register(driver: *mut platform_driver) -> c_int;
     fn platform_driver_unregister(driver: *mut platform_driver);
@@ -51,7 +51,7 @@ unsafe extern "C" {
 #[repr(C)]
 pub struct gpio_chip {
     pub owner: *mut module,
-    pub label: *const core::ffi::c_char,
+    pub label: *const kernel::ffi::c_char,
     pub ngpio: c_uint,
     pub can_sleep: bool,
     pub direction_input: Option<unsafe extern "C" fn(*mut gpio_chip, c_uint) -> c_int>,
@@ -85,13 +85,13 @@ pub struct platform_driver {
 }
 #[repr(C)]
 pub struct driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 type c_int = i32;

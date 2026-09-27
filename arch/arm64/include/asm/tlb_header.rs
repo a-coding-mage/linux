@@ -20,7 +20,7 @@
  * the hardware.
  */
 #[inline]
-pub unsafe fn tlb_get_level(tlb: *mut mmu_gather) -> ::core::ffi::c_int {
+pub unsafe fn tlb_get_level(tlb: *mut mmu_gather) -> ::kernel::ffi::c_int {
     /* The TTL field is only valid for the leaf entry. */
     if (*tlb).freed_tables {
         return TLBI_TTL_UNKNOWN;
@@ -65,8 +65,8 @@ pub unsafe fn tlb_flush(tlb: *mut mmu_gather) {
     } else {
         TLBF_NOWALKCACHE
     };
-    let stride: ::core::ffi::c_ulong = tlb_get_unmap_size(tlb);
-    let tlb_level: ::core::ffi::c_int = tlb_get_level(tlb);
+    let stride: ::kernel::ffi::c_ulong = tlb_get_unmap_size(tlb);
+    let tlb_level: ::kernel::ffi::c_int = tlb_get_level(tlb);
 
     /*
      * If we're tearing down the address space then we only care about
@@ -87,7 +87,7 @@ pub unsafe fn tlb_flush(tlb: *mut mmu_gather) {
 pub unsafe fn __pte_free_tlb(
     tlb: *mut mmu_gather,
     pte: pgtable_t,
-    _addr: ::core::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
 ) {
     let ptdesc: *mut ptdesc = page_ptdesc(pte);
 
@@ -99,7 +99,7 @@ pub unsafe fn __pte_free_tlb(
 pub unsafe fn __pmd_free_tlb(
     tlb: *mut mmu_gather,
     pmdp: *mut pmd_t,
-    _addr: ::core::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
 ) {
     let ptdesc: *mut ptdesc = virt_to_ptdesc(pmdp);
 
@@ -112,7 +112,7 @@ pub unsafe fn __pmd_free_tlb(
 pub unsafe fn __pud_free_tlb(
     tlb: *mut mmu_gather,
     pudp: *mut pud_t,
-    _addr: ::core::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
 ) {
     let ptdesc: *mut ptdesc = virt_to_ptdesc(pudp);
 
@@ -129,7 +129,7 @@ pub unsafe fn __pud_free_tlb(
 pub unsafe fn __p4d_free_tlb(
     tlb: *mut mmu_gather,
     p4dp: *mut p4d_t,
-    _addr: ::core::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
 ) {
     let ptdesc: *mut ptdesc = virt_to_ptdesc(p4dp);
 

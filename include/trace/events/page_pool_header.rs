@@ -4,7 +4,7 @@
 // The C tracepoint includes and tracepoint-generation macros are supplied by
 // other parts of the kernel and are intentionally not implemented here.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 // External kernel types and symbols supplied by the corresponding dependencies.
 #[repr(C)]
@@ -15,7 +15,7 @@ pub struct page_pool {
 pub type netmem_ref = usize;
 
 extern "C" {
-    pub fn netmem_pfn_trace(netmem: netmem_ref) -> libc::c_ulong;
+    pub fn netmem_pfn_trace(netmem: netmem_ref) -> kernel::ffi::c_ulong;
 }
 
 // NET_IOV is supplied by net/page_pool/types.h.
@@ -33,17 +33,17 @@ pub struct page_pool_release_entry {
 #[repr(C)]
 pub struct page_pool_state_release_entry {
     pub pool: *const page_pool,
-    pub netmem: libc::c_ulong,
+    pub netmem: kernel::ffi::c_ulong,
     pub release: u32,
-    pub pfn: libc::c_ulong,
+    pub pfn: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct page_pool_state_hold_entry {
     pub pool: *const page_pool,
-    pub netmem: libc::c_ulong,
+    pub netmem: kernel::ffi::c_ulong,
     pub hold: u32,
-    pub pfn: libc::c_ulong,
+    pub pfn: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -82,7 +82,7 @@ pub unsafe fn page_pool_state_release_assign(
     release: u32,
 ) {
     (*entry).pool = pool;
-    (*entry).netmem = netmem as libc::c_ulong;
+    (*entry).netmem = netmem as kernel::ffi::c_ulong;
     (*entry).release = release;
     (*entry).pfn = netmem_pfn_trace(netmem);
 }
@@ -97,7 +97,7 @@ pub unsafe fn page_pool_state_hold_assign(
     hold: u32,
 ) {
     (*entry).pool = pool;
-    (*entry).netmem = netmem as libc::c_ulong;
+    (*entry).netmem = netmem as kernel::ffi::c_ulong;
     (*entry).hold = hold;
     (*entry).pfn = netmem_pfn_trace(netmem);
 }

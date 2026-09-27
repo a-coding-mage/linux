@@ -72,15 +72,15 @@ pub type umode_t = u16;
  *     the tracefs or eventfs system or it will risk creating a deadlock.
  */
 pub type eventfs_callback = unsafe extern "C" fn(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     mode: *mut umode_t,
-    data: *mut *mut core::ffi::c_void,
+    data: *mut *mut kernel::ffi::c_void,
     fops: *mut *const file_operations,
-) -> core::ffi::c_int;
+) -> kernel::ffi::c_int;
 
 pub type eventfs_release = unsafe extern "C" fn(
-    name: *const core::ffi::c_char,
-    data: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    data: *mut kernel::ffi::c_void,
 );
 
 /**
@@ -92,51 +92,51 @@ pub type eventfs_release = unsafe extern "C" fn(
  */
 #[repr(C)]
 pub struct eventfs_entry {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub callback: eventfs_callback,
     pub release: eventfs_release,
 }
 
 unsafe extern "C" {
     pub fn eventfs_create_events_dir(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         parent: *mut dentry,
         entries: *const eventfs_entry,
-        size: core::ffi::c_int,
-        data: *mut core::ffi::c_void,
+        size: kernel::ffi::c_int,
+        data: *mut kernel::ffi::c_void,
     ) -> *mut eventfs_inode;
 
     pub fn eventfs_create_dir(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         parent: *mut eventfs_inode,
         entries: *const eventfs_entry,
-        size: core::ffi::c_int,
-        data: *mut core::ffi::c_void,
+        size: kernel::ffi::c_int,
+        data: *mut kernel::ffi::c_void,
     ) -> *mut eventfs_inode;
 
     pub fn eventfs_remove_events_dir(ei: *mut eventfs_inode);
     pub fn eventfs_remove_dir(ei: *mut eventfs_inode);
 
     pub fn tracefs_create_file(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         mode: umode_t,
         parent: *mut dentry,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         fops: *const file_operations,
     ) -> *mut dentry;
 
     pub fn tracefs_create_dir(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         parent: *mut dentry,
     ) -> *mut dentry;
 
     pub fn tracefs_remove(dentry: *mut dentry);
 
     pub fn tracefs_create_instance_dir(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         parent: *mut dentry,
-        mkdir: Option<unsafe extern "C" fn(name: *const core::ffi::c_char) -> core::ffi::c_int>,
-        rmdir: Option<unsafe extern "C" fn(name: *const core::ffi::c_char) -> core::ffi::c_int>,
+        mkdir: Option<unsafe extern "C" fn(name: *const kernel::ffi::c_char) -> kernel::ffi::c_int>,
+        rmdir: Option<unsafe extern "C" fn(name: *const kernel::ffi::c_char) -> kernel::ffi::c_int>,
     ) -> *mut dentry;
 
     pub fn tracefs_initialized() -> bool;

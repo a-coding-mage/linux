@@ -108,16 +108,16 @@ pub static ethnl_features_request_ops: ethnl_request_ops = ethnl_request_ops {
 pub static ethnl_features_set_policy: [nla_policy; ETHTOOL_A_FEATURES_WANTED + 1] =
     [nla_policy { type_: 0 }; ETHTOOL_A_FEATURES_WANTED + 1];
 
-unsafe fn ethnl_features_to_bitmap(dest: *mut libc::c_ulong, val: netdev_features_t) {
+unsafe fn ethnl_features_to_bitmap(dest: *mut kernel::ffi::c_ulong, val: netdev_features_t) {
     let words = BITS_TO_LONGS(NETDEV_FEATURE_COUNT);
     let mut i = 0;
     while i < words {
-        *dest.add(i) = (val >> (i * BITS_PER_LONG)) as libc::c_ulong;
+        *dest.add(i) = (val >> (i * BITS_PER_LONG)) as kernel::ffi::c_ulong;
         i += 1;
     }
 }
 
-unsafe fn ethnl_bitmap_to_features(src: *const libc::c_ulong) -> netdev_features_t {
+unsafe fn ethnl_bitmap_to_features(src: *const kernel::ffi::c_ulong) -> netdev_features_t {
     let nft_bits = core::mem::size_of::<netdev_features_t>() * BITS_PER_BYTE;
     let words = BITS_TO_LONGS(NETDEV_FEATURE_COUNT);
     let mut ret: netdev_features_t = 0;
@@ -133,13 +133,13 @@ unsafe fn ethnl_bitmap_to_features(src: *const libc::c_ulong) -> netdev_features
 unsafe fn features_send_reply(
     dev: *mut net_device,
     info: *mut genl_info,
-    wanted: *const libc::c_ulong,
-    wanted_mask: *const libc::c_ulong,
-    active: *const libc::c_ulong,
-    active_mask: *const libc::c_ulong,
+    wanted: *const kernel::ffi::c_ulong,
+    wanted_mask: *const kernel::ffi::c_ulong,
+    active: *const kernel::ffi::c_ulong,
+    active_mask: *const kernel::ffi::c_ulong,
     compact: bool,
 ) -> i32 {
-    let mut reply_payload: *mut core::ffi::c_void = core::ptr::null_mut();
+    let mut reply_payload: *mut kernel::ffi::c_void = core::ptr::null_mut();
     let mut reply_len = ethnl_reply_header_size();
     let mut ret = ethnl_bitset_size(wanted, wanted_mask, NETDEV_FEATURE_COUNT,
                                     netdev_features_strings, compact);
@@ -168,14 +168,14 @@ unsafe fn features_send_reply(
 
 // The remaining SET implementation retains C bitmap operations and kernel control flow.
 pub unsafe fn ethnl_set_features(skb: *mut sk_buff, info: *mut genl_info) -> i32 {
-    let mut wanted_diff_mask = [0 as libc::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
-    let mut active_diff_mask = [0 as libc::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
-    let mut old_active = [0 as libc::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
-    let mut old_wanted = [0 as libc::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
-    let mut new_active = [0 as libc::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
-    let mut new_wanted = [0 as libc::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
-    let mut req_wanted = [0 as libc::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
-    let mut req_mask = [0 as libc::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
+    let mut wanted_diff_mask = [0 as kernel::ffi::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
+    let mut active_diff_mask = [0 as kernel::ffi::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
+    let mut old_active = [0 as kernel::ffi::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
+    let mut old_wanted = [0 as kernel::ffi::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
+    let mut new_active = [0 as kernel::ffi::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
+    let mut new_wanted = [0 as kernel::ffi::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
+    let mut req_wanted = [0 as kernel::ffi::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
+    let mut req_mask = [0 as kernel::ffi::c_ulong; BITS_TO_LONGS(NETDEV_FEATURE_COUNT)];
     let mut req_info: ethnl_req_info = core::mem::zeroed();
     let tb = (*info).attrs;
     if (*tb.add(ETHTOOL_A_FEATURES_WANTED)).is_null() { return -EINVAL; }

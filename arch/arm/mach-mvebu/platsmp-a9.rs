@@ -17,11 +17,11 @@ extern "C" {
 }
 
 unsafe fn mvebu_cortex_a9_boot_secondary(
-    cpu: core::ffi::c_uint,
+    cpu: kernel::ffi::c_uint,
     _idle: *mut task_struct,
-) -> core::ffi::c_int {
-    let ret: core::ffi::c_int;
-    let hw_cpu: core::ffi::c_int;
+) -> kernel::ffi::c_int {
+    let ret: kernel::ffi::c_int;
+    let hw_cpu: kernel::ffi::c_int;
 
     pr_info!("Booting CPU %d\n", cpu);
 
@@ -31,8 +31,8 @@ unsafe fn mvebu_cortex_a9_boot_secondary(
      * soft interrupt, and then the secondary CPU branches to this
      * address.
      */
-    hw_cpu = cpu_logical_map(cpu) as core::ffi::c_int;
-    if of_machine_is_compatible(c"marvell,armada375".as_ptr() as *const core::ffi::c_char) {
+    hw_cpu = cpu_logical_map(cpu) as kernel::ffi::c_int;
+    if of_machine_is_compatible(c"marvell,armada375".as_ptr() as *const kernel::ffi::c_char) {
         mvebu_system_controller_set_cpu_boot_addr(mvebu_cortex_a9_secondary_startup);
     } else {
         mvebu_pmsu_set_cpu_boot_addr(hw_cpu, mvebu_cortex_a9_secondary_startup);
@@ -62,12 +62,12 @@ unsafe fn mvebu_cortex_a9_boot_secondary(
  * CPU from this state, which was entered by armada_38x_cpu_die()
  * below.
  */
-unsafe fn armada_38x_secondary_init(_cpu: core::ffi::c_uint) {
+unsafe fn armada_38x_secondary_init(_cpu: kernel::ffi::c_uint) {
     mvebu_v7_pmsu_idle_exit();
 }
 
 #[cfg(CONFIG_HOTPLUG_CPU)]
-unsafe fn armada_38x_cpu_die(_cpu: core::ffi::c_uint) {
+unsafe fn armada_38x_cpu_die(_cpu: kernel::ffi::c_uint) {
     /*
      * CPU hotplug is implemented by putting offline CPUs into the
      * deep idle sleep state.
@@ -82,7 +82,7 @@ unsafe fn armada_38x_cpu_die(_cpu: core::ffi::c_uint) {
  * by themselves, without any help from a still alive CPU.
  */
 #[cfg(CONFIG_HOTPLUG_CPU)]
-unsafe fn armada_38x_cpu_kill(_cpu: core::ffi::c_uint) -> core::ffi::c_int {
+unsafe fn armada_38x_cpu_kill(_cpu: kernel::ffi::c_uint) -> kernel::ffi::c_int {
     1
 }
 
@@ -94,14 +94,14 @@ pub struct task_struct {
 }
 
 extern "C" {
-    fn cpu_logical_map(cpu: core::ffi::c_uint) -> core::ffi::c_uint;
-    fn of_machine_is_compatible(compat: *const core::ffi::c_char) -> bool;
+    fn cpu_logical_map(cpu: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
+    fn of_machine_is_compatible(compat: *const kernel::ffi::c_char) -> bool;
     fn mvebu_system_controller_set_cpu_boot_addr(entry: unsafe extern "C" fn());
-    fn mvebu_pmsu_set_cpu_boot_addr(cpu: core::ffi::c_int, entry: unsafe extern "C" fn());
+    fn mvebu_pmsu_set_cpu_boot_addr(cpu: kernel::ffi::c_int, entry: unsafe extern "C" fn());
     fn smp_wmb();
-    fn cpumask_of(cpu: core::ffi::c_uint) -> *const core::ffi::c_void;
-    fn arch_send_wakeup_ipi_mask(mask: *const core::ffi::c_void);
-    fn mvebu_cpu_reset_deassert(cpu: core::ffi::c_int) -> core::ffi::c_int;
+    fn cpumask_of(cpu: kernel::ffi::c_uint) -> *const kernel::ffi::c_void;
+    fn arch_send_wakeup_ipi_mask(mask: *const kernel::ffi::c_void);
+    fn mvebu_cpu_reset_deassert(cpu: kernel::ffi::c_int) -> kernel::ffi::c_int;
     fn mvebu_v7_pmsu_idle_exit();
     fn armada_38x_do_cpu_suspend(power_down: bool);
 }
@@ -109,12 +109,12 @@ extern "C" {
 #[repr(C)]
 pub struct smp_operations {
     pub smp_boot_secondary:
-        Option<unsafe fn(core::ffi::c_uint, *mut task_struct) -> core::ffi::c_int>,
-    pub smp_secondary_init: Option<unsafe fn(core::ffi::c_uint)>,
+        Option<unsafe fn(kernel::ffi::c_uint, *mut task_struct) -> kernel::ffi::c_int>,
+    pub smp_secondary_init: Option<unsafe fn(kernel::ffi::c_uint)>,
     #[cfg(CONFIG_HOTPLUG_CPU)]
-    pub cpu_die: Option<unsafe fn(core::ffi::c_uint)>,
+    pub cpu_die: Option<unsafe fn(kernel::ffi::c_uint)>,
     #[cfg(CONFIG_HOTPLUG_CPU)]
-    pub cpu_kill: Option<unsafe fn(core::ffi::c_uint) -> core::ffi::c_int>,
+    pub cpu_kill: Option<unsafe fn(kernel::ffi::c_uint) -> kernel::ffi::c_int>,
 }
 
 static MVEBU_CORTEX_A9_SMP_OPS: smp_operations = smp_operations {

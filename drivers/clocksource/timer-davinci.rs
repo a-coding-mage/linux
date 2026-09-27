@@ -38,14 +38,14 @@ const DAVINCI_TIMER_TGCR_DEFAULT: u32 =
 #[repr(C)]
 struct DavinciClockevent {
     dev: clock_event_device,
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     cmp_off: u32,
 }
 
 #[repr(C)]
 struct DavinciClocksource {
     dev: clocksource,
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     tim_off: u32,
 }
 
@@ -68,14 +68,14 @@ unsafe fn davinci_clockevent_write(clockevent: *mut DavinciClockevent, reg: u32,
     writel_relaxed(val, (*clockevent).base.cast::<u8>().add(reg as usize).cast());
 }
 
-unsafe fn davinci_tim12_shutdown(base: *mut core::ffi::c_void) {
+unsafe fn davinci_tim12_shutdown(base: *mut kernel::ffi::c_void) {
     let mut tcr = DAVINCI_TIMER_ENAMODE_DISABLED << DAVINCI_TIMER_ENAMODE_SHIFT_TIM12;
     /* This function is only ever called if we're using both timer halves. */
     tcr |= DAVINCI_TIMER_ENAMODE_PERIODIC << DAVINCI_TIMER_ENAMODE_SHIFT_TIM34;
     writel_relaxed(tcr, base.cast::<u8>().add(DAVINCI_TIMER_REG_TCR as usize).cast());
 }
 
-unsafe fn davinci_tim12_set_oneshot(base: *mut core::ffi::c_void) {
+unsafe fn davinci_tim12_set_oneshot(base: *mut kernel::ffi::c_void) {
     let mut tcr = DAVINCI_TIMER_ENAMODE_ONESHOT << DAVINCI_TIMER_ENAMODE_SHIFT_TIM12;
     /* Same as above. */
     tcr |= DAVINCI_TIMER_ENAMODE_PERIODIC << DAVINCI_TIMER_ENAMODE_SHIFT_TIM34;
@@ -96,7 +96,7 @@ unsafe extern "C" fn davinci_clockevent_set_oneshot(dev: *mut clock_event_device
 }
 
 unsafe extern "C" fn davinci_clockevent_set_next_event_std(
-    cycles: core::ffi::c_ulong,
+    cycles: kernel::ffi::c_ulong,
     dev: *mut clock_event_device,
 ) -> i32 {
     let clockevent = to_davinci_clockevent(dev);
@@ -108,7 +108,7 @@ unsafe extern "C" fn davinci_clockevent_set_next_event_std(
 }
 
 unsafe extern "C" fn davinci_clockevent_set_next_event_cmp(
-    cycles: core::ffi::c_ulong,
+    cycles: kernel::ffi::c_ulong,
     dev: *mut clock_event_device,
 ) -> i32 {
     let clockevent = to_davinci_clockevent(dev);
@@ -117,7 +117,7 @@ unsafe extern "C" fn davinci_clockevent_set_next_event_cmp(
     0
 }
 
-unsafe extern "C" fn davinci_timer_irq_timer(_irq: i32, data: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn davinci_timer_irq_timer(_irq: i32, data: *mut kernel::ffi::c_void) -> irqreturn_t {
     let clockevent = data as *mut DavinciClockevent;
     if !clockevent_state_oneshot(&mut (*clockevent).dev) {
         davinci_tim12_shutdown((*clockevent).base);
@@ -136,7 +136,7 @@ unsafe extern "C" fn davinci_clocksource_read(_dev: *mut clocksource) -> u64 {
     davinci_timer_read_sched_clock()
 }
 
-unsafe fn davinci_clocksource_init_tim34(base: *mut core::ffi::c_void) {
+unsafe fn davinci_clocksource_init_tim34(base: *mut kernel::ffi::c_void) {
     let mut tcr = DAVINCI_TIMER_ENAMODE_PERIODIC << DAVINCI_TIMER_ENAMODE_SHIFT_TIM34;
     tcr |= DAVINCI_TIMER_ENAMODE_ONESHOT << DAVINCI_TIMER_ENAMODE_SHIFT_TIM12;
     writel_relaxed(0, base.cast::<u8>().add(DAVINCI_TIMER_REG_TIM34 as usize).cast());
@@ -144,14 +144,14 @@ unsafe fn davinci_clocksource_init_tim34(base: *mut core::ffi::c_void) {
     writel_relaxed(tcr, base.cast::<u8>().add(DAVINCI_TIMER_REG_TCR as usize).cast());
 }
 
-unsafe fn davinci_clocksource_init_tim12(base: *mut core::ffi::c_void) {
+unsafe fn davinci_clocksource_init_tim12(base: *mut kernel::ffi::c_void) {
     let tcr = DAVINCI_TIMER_ENAMODE_PERIODIC << DAVINCI_TIMER_ENAMODE_SHIFT_TIM12;
     writel_relaxed(0, base.cast::<u8>().add(DAVINCI_TIMER_REG_TIM12 as usize).cast());
     writel_relaxed(u32::MAX, base.cast::<u8>().add(DAVINCI_TIMER_REG_PRD12 as usize).cast());
     writel_relaxed(tcr, base.cast::<u8>().add(DAVINCI_TIMER_REG_TCR as usize).cast());
 }
 
-unsafe fn davinci_timer_init(base: *mut core::ffi::c_void) {
+unsafe fn davinci_timer_init(base: *mut kernel::ffi::c_void) {
     writel_relaxed(0, base.cast::<u8>().add(DAVINCI_TIMER_REG_TCR as usize).cast());
     writel_relaxed(DAVINCI_TIMER_TGCR_DEFAULT, base.cast::<u8>().add(DAVINCI_TIMER_REG_TGCR as usize).cast());
     writel_relaxed(0, base.cast::<u8>().add(DAVINCI_TIMER_REG_TIM12 as usize).cast());

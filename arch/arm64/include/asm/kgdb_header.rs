@@ -20,28 +20,28 @@ pub unsafe fn arch_kgdb_breakpoint() {
 
 unsafe extern "C" {
     pub fn kgdb_handle_bus_error();
-    pub static mut kgdb_fault_expected: core::ffi::c_int;
+    pub static mut kgdb_fault_expected: kernel::ffi::c_int;
 
-    pub fn kgdb_brk_handler(regs: *mut PtRegs, esr: core::ffi::c_ulong) -> core::ffi::c_int;
+    pub fn kgdb_brk_handler(regs: *mut PtRegs, esr: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
     pub fn kgdb_compiled_brk_handler(
         regs: *mut PtRegs,
-        esr: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        esr: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_KGDB)]
 unsafe extern "C" {
     pub fn kgdb_single_step_handler(
         regs: *mut PtRegs,
-        esr: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        esr: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_KGDB))]
 pub unsafe fn kgdb_single_step_handler(
     _regs: *mut PtRegs,
-    _esr: core::ffi::c_ulong,
-) -> core::ffi::c_int {
+    _esr: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     DBG_HOOK_ERROR
 }
 

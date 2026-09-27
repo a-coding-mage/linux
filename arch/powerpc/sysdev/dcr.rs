@@ -16,18 +16,18 @@ pub struct device_node {
 extern "C" {
     pub fn of_get_property(
         np: *const device_node,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         length: *mut u32,
     ) -> *const u32;
 }
 
-pub type spinlock_t = core::ffi::c_ulong;
+pub type spinlock_t = kernel::ffi::c_ulong;
 
 pub unsafe fn dcr_resource_start(np: *const device_node, index: u32) -> u32 {
     let mut ds: u32 = 0;
     let dr: *const u32 = of_get_property(
         np,
-        b"dcr-reg\0".as_ptr() as *const core::ffi::c_char,
+        b"dcr-reg\0".as_ptr() as *const kernel::ffi::c_char,
         &mut ds,
     );
 
@@ -44,7 +44,7 @@ pub unsafe fn dcr_resource_len(np: *const device_node, index: u32) -> u32 {
     let mut ds: u32 = 0;
     let dr: *const u32 = of_get_property(
         np,
-        b"dcr-reg\0".as_ptr() as *const core::ffi::c_char,
+        b"dcr-reg\0".as_ptr() as *const kernel::ffi::c_char,
         &mut ds,
     );
 

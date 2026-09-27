@@ -34,8 +34,8 @@ pub struct el_subpacket_annotation {
     pub class: u16,
     pub type_: u16,
     pub revision: u16,
-    pub description: *mut core::ffi::c_char,
-    pub annotation: *mut *mut core::ffi::c_char,
+    pub description: *mut kernel::ffi::c_char,
+    pub annotation: *mut *mut kernel::ffi::c_char,
 }
 
 #[macro_export]
@@ -87,12 +87,12 @@ macro_rules! GEN_MASK {
 }
 
 extern "C" {
-    pub static mut err_print_prefix: *mut core::ffi::c_char;
+    pub static mut err_print_prefix: *mut kernel::ffi::c_char;
 
     pub fn mchk_dump_mem(
-        address: *mut core::ffi::c_void,
+        address: *mut kernel::ffi::c_void,
         size: usize,
-        annotation: *mut *mut core::ffi::c_char,
+        annotation: *mut *mut kernel::ffi::c_char,
     );
     pub fn mchk_dump_logout_frame(frame: *mut el_common);
     pub fn el_print_timestamp(timestamp: *mut el_timestamp);

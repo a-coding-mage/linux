@@ -8,31 +8,31 @@
 
 unsafe fn blk_ia_range_sector_show(
     iar: *mut blk_independent_access_range,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
-    sprintf(buf, b"%llu\n\0".as_ptr() as *const core::ffi::c_char, (*iar).sector)
+    sprintf(buf, b"%llu\n\0".as_ptr() as *const kernel::ffi::c_char, (*iar).sector)
 }
 
 unsafe fn blk_ia_range_nr_sectors_show(
     iar: *mut blk_independent_access_range,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
-    sprintf(buf, b"%llu\n\0".as_ptr() as *const core::ffi::c_char, (*iar).nr_sectors)
+    sprintf(buf, b"%llu\n\0".as_ptr() as *const kernel::ffi::c_char, (*iar).nr_sectors)
 }
 
 #[repr(C)]
 struct blk_ia_range_sysfs_entry {
     attr: attribute,
-    show: unsafe fn(*mut blk_independent_access_range, *mut core::ffi::c_char) -> isize,
+    show: unsafe fn(*mut blk_independent_access_range, *mut kernel::ffi::c_char) -> isize,
 }
 
 static blk_ia_range_sector_entry: blk_ia_range_sysfs_entry = blk_ia_range_sysfs_entry {
-    attr: attribute { name: b"sector\0".as_ptr() as *const core::ffi::c_char, mode: 0o444 },
+    attr: attribute { name: b"sector\0".as_ptr() as *const kernel::ffi::c_char, mode: 0o444 },
     show: blk_ia_range_sector_show,
 };
 
 static blk_ia_range_nr_sectors_entry: blk_ia_range_sysfs_entry = blk_ia_range_sysfs_entry {
-    attr: attribute { name: b"nr_sectors\0".as_ptr() as *const core::ffi::c_char, mode: 0o444 },
+    attr: attribute { name: b"nr_sectors\0".as_ptr() as *const kernel::ffi::c_char, mode: 0o444 },
     show: blk_ia_range_nr_sectors_show,
 };
 
@@ -50,7 +50,7 @@ extern "C" {
 unsafe fn blk_ia_range_sysfs_show(
     kobj: *mut kobject,
     attr: *mut attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let entry = container_of!(attr, blk_ia_range_sysfs_entry, attr);
     let iar = container_of!(kobj, blk_independent_access_range, kobj);
@@ -85,7 +85,7 @@ static blk_ia_range_ktype: kobj_type = kobj_type {
  */
 unsafe fn blk_ia_ranges_sysfs_release(kobj: *mut kobject) {
     let iars = container_of!(kobj, blk_independent_access_ranges, kobj);
-    kfree(iars as *mut core::ffi::c_void);
+    kfree(iars as *mut kernel::ffi::c_void);
 }
 
 static blk_ia_ranges_ktype: kobj_type = kobj_type {
@@ -129,7 +129,7 @@ pub unsafe fn disk_unregister_independent_access_ranges(disk: *mut gendisk) {
     if (*iars).sysfs_registered {
         for i in 0..(*iars).nr_ia_ranges { kobject_del(&mut (*iars).ia_range.add(i as usize).as_mut().unwrap().kobj); }
         kobject_del(&mut (*iars).kobj); kobject_put(&mut (*iars).kobj);
-    } else { kfree(iars as *mut core::ffi::c_void); }
+    } else { kfree(iars as *mut kernel::ffi::c_void); }
     (*disk).ia_ranges = core::ptr::null_mut();
 }
 
@@ -172,8 +172,8 @@ pub unsafe fn disk_alloc_independent_access_ranges(disk: *mut gendisk, nr_ia_ran
 
 pub unsafe fn disk_set_independent_access_ranges(disk: *mut gendisk, mut iars: *mut blk_independent_access_ranges) {
     let q = (*disk).queue; mutex_lock(&mut (*q).sysfs_lock);
-    if !iars.is_null() && !disk_check_ia_ranges(disk, iars) { kfree(iars as *mut core::ffi::c_void); iars = core::ptr::null_mut(); }
-    if !iars.is_null() && !disk_ia_ranges_changed(disk, iars) { kfree(iars as *mut core::ffi::c_void); mutex_unlock(&mut (*q).sysfs_lock); return; }
+    if !iars.is_null() && !disk_check_ia_ranges(disk, iars) { kfree(iars as *mut kernel::ffi::c_void); iars = core::ptr::null_mut(); }
+    if !iars.is_null() && !disk_ia_ranges_changed(disk, iars) { kfree(iars as *mut kernel::ffi::c_void); mutex_unlock(&mut (*q).sysfs_lock); return; }
     disk_unregister_independent_access_ranges(disk); (*disk).ia_ranges = iars;
     if blk_queue_registered(q) { disk_register_independent_access_ranges(disk); }
     mutex_unlock(&mut (*q).sysfs_lock);

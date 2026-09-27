@@ -63,10 +63,10 @@ pub const R_HEXAGON_GOT_32: u32 = 42;
 pub const R_HEXAGON_GOT_16: u32 = 43;
 
 /* ELF register definitions. */
-pub type elf_greg_t = ::core::ffi::c_ulong;
+pub type elf_greg_t = ::kernel::ffi::c_ulong;
 pub type elf_gregset_t = user_regs_struct;
-pub const ELF_NGREG: usize = core::mem::size_of::<elf_gregset_t>() / core::mem::size_of::<::core::ffi::c_ulong>();
-pub type elf_fpregset_t = ::core::ffi::c_ulong;
+pub const ELF_NGREG: usize = core::mem::size_of::<elf_gregset_t>() / core::mem::size_of::<::kernel::ffi::c_ulong>();
+pub type elf_fpregset_t = ::kernel::ffi::c_ulong;
 
 /* Build-time architecture conditions are retained in these macro definitions. */
 #[cfg(any())]
@@ -108,9 +108,9 @@ pub const ELF_CORE_EFLAGS: u32 = 0x3;
 macro_rules! ELF_PLAT_INIT { ($regs:expr, $load_addr:expr) => {{ }}; }
 pub const CORE_DUMP_USE_REGSET: bool = true;
 pub const ELF_EXEC_PAGESIZE: usize = PAGE_SIZE;
-pub const ELF_ET_DYN_BASE: ::core::ffi::c_ulong = 0x08000000;
+pub const ELF_ET_DYN_BASE: ::kernel::ffi::c_ulong = 0x08000000;
 pub const ELF_HWCAP: u32 = 0;
-pub const ELF_PLATFORM: *const core::ffi::c_char = core::ptr::null();
+pub const ELF_PLATFORM: *const kernel::ffi::c_char = core::ptr::null();
 pub const ARCH_HAS_SETUP_ADDITIONAL_PAGES: i32 = 1;
 
 pub struct linux_binprm;

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /* Dependencies supplied by the corresponding kernel headers. */
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* This is a list of *what* is being read, not *how* nor *where*. */
 #[repr(C)]
@@ -43,7 +43,7 @@ extern "C" {
     pub fn kernel_read_file(
         file: *mut crate::file,
         offset: crate::loff_t,
-        buf: *mut *mut core::ffi::c_void,
+        buf: *mut *mut kernel::ffi::c_void,
         buf_size: usize,
         file_size: *mut usize,
         id: kernel_read_file_id,
@@ -52,7 +52,7 @@ extern "C" {
     pub fn kernel_read_file_from_path(
         path: *const c_char,
         offset: crate::loff_t,
-        buf: *mut *mut core::ffi::c_void,
+        buf: *mut *mut kernel::ffi::c_void,
         buf_size: usize,
         file_size: *mut usize,
         id: kernel_read_file_id,
@@ -61,7 +61,7 @@ extern "C" {
     pub fn kernel_read_file_from_path_initns(
         path: *const c_char,
         offset: crate::loff_t,
-        buf: *mut *mut core::ffi::c_void,
+        buf: *mut *mut kernel::ffi::c_void,
         buf_size: usize,
         file_size: *mut usize,
         id: kernel_read_file_id,
@@ -70,7 +70,7 @@ extern "C" {
     pub fn kernel_read_file_from_fd(
         fd: i32,
         offset: crate::loff_t,
-        buf: *mut *mut core::ffi::c_void,
+        buf: *mut *mut kernel::ffi::c_void,
         buf_size: usize,
         file_size: *mut usize,
         id: kernel_read_file_id,

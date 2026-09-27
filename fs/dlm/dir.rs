@@ -87,7 +87,7 @@ unsafe fn find_rsb_root(ls: *mut dlm_ls, name: *const i8, len: i32) -> *mut dlm_
     let mut p = (*ls).ls_masters_list.next;
     while p != &mut (*ls).ls_masters_list as *mut list_head {
         r = list_entry(p, mem::size_of::<dlm_rsb>(), res_masters_list);
-        if len == (*r).res_length && libc::memcmp(name as *const _, (*r).res_name as *const _, len as usize) == 0 { return r; }
+        if len == (*r).res_length && memcmp(name as *const _, (*r).res_name as *const _, len as usize) == 0 { return r; }
         p = (*p).next;
     }
     ptr::null_mut()

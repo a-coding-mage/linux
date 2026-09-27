@@ -10,17 +10,17 @@
 type Phandle = u32;
 
 extern "C" {
-    static prom_peer_name: *const core::ffi::c_char;
-    static prom_getprop_name: *const core::ffi::c_char;
+    static prom_peer_name: *const kernel::ffi::c_char;
+    static prom_getprop_name: *const kernel::ffi::c_char;
     static ldom_domaining_enabled: bool;
 
     fn p1275_cmd_direct(args: *mut usize);
-    fn ldom_set_var(name: *const core::ffi::c_char, value: *mut core::ffi::c_char);
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
-    fn strscpy(dst: *mut core::ffi::c_char, src: *const core::ffi::c_char);
+    fn ldom_set_var(name: *const kernel::ffi::c_char, value: *mut kernel::ffi::c_char);
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
+    fn strscpy(dst: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char);
 }
 
-unsafe fn prom_node_to_node(type_: *const core::ffi::c_char, node: Phandle) -> Phandle {
+unsafe fn prom_node_to_node(type_: *const kernel::ffi::c_char, node: Phandle) -> Phandle {
     let mut args: [usize; 5] = [0; 5];
 
     args[0] = type_ as usize;
@@ -36,7 +36,7 @@ unsafe fn prom_node_to_node(type_: *const core::ffi::c_char, node: Phandle) -> P
 
 #[inline]
 pub unsafe fn __prom_getchild(node: Phandle) -> Phandle {
-    prom_node_to_node(b"child\0".as_ptr() as *const core::ffi::c_char, node)
+    prom_node_to_node(b"child\0".as_ptr() as *const kernel::ffi::c_char, node)
 }
 
 pub unsafe fn prom_getchild(node: Phandle) -> Phandle {
@@ -59,7 +59,7 @@ pub unsafe fn prom_getparent(node: Phandle) -> Phandle {
     if node as i32 == -1 {
         return 0;
     }
-    cnode = prom_node_to_node(b"parent\0".as_ptr() as *const core::ffi::c_char, node);
+    cnode = prom_node_to_node(b"parent\0".as_ptr() as *const kernel::ffi::c_char, node);
     if cnode as i32 == -1 {
         return 0;
     }
@@ -85,7 +85,7 @@ pub unsafe fn prom_getsibling(node: Phandle) -> Phandle {
     sibnode
 }
 
-pub unsafe fn prom_getproplen(node: Phandle, prop: *const core::ffi::c_char) -> i32 {
+pub unsafe fn prom_getproplen(node: Phandle, prop: *const kernel::ffi::c_char) -> i32 {
     let mut args: [usize; 6] = [0; 6];
 
     if node == 0 || prop.is_null() {
@@ -104,8 +104,8 @@ pub unsafe fn prom_getproplen(node: Phandle, prop: *const core::ffi::c_char) -> 
     args[5] as i32
 }
 
-pub unsafe fn prom_getproperty(node: Phandle, prop: *const core::ffi::c_char,
-                               buffer: *mut core::ffi::c_char, bufsize: i32) -> i32 {
+pub unsafe fn prom_getproperty(node: Phandle, prop: *const kernel::ffi::c_char,
+                               buffer: *mut kernel::ffi::c_char, bufsize: i32) -> i32 {
     let mut args: [usize; 8] = [0; 8];
     let plen = prom_getproplen(node, prop);
     if plen > bufsize || plen == 0 || plen == -1 {
@@ -125,38 +125,38 @@ pub unsafe fn prom_getproperty(node: Phandle, prop: *const core::ffi::c_char,
     args[7] as i32
 }
 
-pub unsafe fn prom_getint(node: Phandle, prop: *const core::ffi::c_char) -> i32 {
+pub unsafe fn prom_getint(node: Phandle, prop: *const kernel::ffi::c_char) -> i32 {
     let mut intprop: i32 = 0;
-    if prom_getproperty(node, prop, &mut intprop as *mut i32 as *mut core::ffi::c_char,
+    if prom_getproperty(node, prop, &mut intprop as *mut i32 as *mut kernel::ffi::c_char,
                         core::mem::size_of::<i32>() as i32) != -1 {
         return intprop;
     }
     -1
 }
 
-pub unsafe fn prom_getintdefault(node: Phandle, property: *const core::ffi::c_char, deflt: i32) -> i32 {
+pub unsafe fn prom_getintdefault(node: Phandle, property: *const kernel::ffi::c_char, deflt: i32) -> i32 {
     let retval = prom_getint(node, property);
     if retval == -1 { deflt } else { retval }
 }
 
-pub unsafe fn prom_getbool(node: Phandle, prop: *const core::ffi::c_char) -> i32 {
+pub unsafe fn prom_getbool(node: Phandle, prop: *const kernel::ffi::c_char) -> i32 {
     if prom_getproplen(node, prop) == -1 { 0 } else { 1 }
 }
 
-pub unsafe fn prom_getstring(node: Phandle, prop: *const core::ffi::c_char,
-                             user_buf: *mut core::ffi::c_char, ubuf_size: i32) {
+pub unsafe fn prom_getstring(node: Phandle, prop: *const kernel::ffi::c_char,
+                             user_buf: *mut kernel::ffi::c_char, ubuf_size: i32) {
     if prom_getproperty(node, prop, user_buf, ubuf_size) == -1 {
         *user_buf = 0;
     }
 }
 
-pub unsafe fn prom_nodematch(node: Phandle, name: *const core::ffi::c_char) -> i32 {
+pub unsafe fn prom_nodematch(node: Phandle, name: *const kernel::ffi::c_char) -> i32 {
     let mut namebuf = [0i8; 128];
     prom_getproperty(node, b"name\0".as_ptr() as *const i8, namebuf.as_mut_ptr(), 128);
     if strcmp(namebuf.as_ptr(), name) == 0 { 1 } else { 0 }
 }
 
-pub unsafe fn prom_searchsiblings(node_start: Phandle, nodename: *const core::ffi::c_char) -> Phandle {
+pub unsafe fn prom_searchsiblings(node_start: Phandle, nodename: *const kernel::ffi::c_char) -> Phandle {
     let mut thisnode = node_start;
     let mut promlib_buf = [0i8; 128];
     while thisnode != 0 {
@@ -170,7 +170,7 @@ pub unsafe fn prom_searchsiblings(node_start: Phandle, nodename: *const core::ff
 
 static prom_nextprop_name: &[u8] = b"nextprop\0";
 
-pub unsafe fn prom_firstprop(node: Phandle, buffer: *mut core::ffi::c_char) -> *mut core::ffi::c_char {
+pub unsafe fn prom_firstprop(node: Phandle, buffer: *mut kernel::ffi::c_char) -> *mut kernel::ffi::c_char {
     *buffer = 0;
     if node as i32 == -1 { return buffer; }
     let mut args: [usize; 7] = [0; 7];
@@ -181,8 +181,8 @@ pub unsafe fn prom_firstprop(node: Phandle, buffer: *mut core::ffi::c_char) -> *
     buffer
 }
 
-pub unsafe fn prom_nextprop(node: Phandle, oprop: *const core::ffi::c_char,
-                            buffer: *mut core::ffi::c_char) -> *mut core::ffi::c_char {
+pub unsafe fn prom_nextprop(node: Phandle, oprop: *const kernel::ffi::c_char,
+                            buffer: *mut kernel::ffi::c_char) -> *mut kernel::ffi::c_char {
     let mut buf = [0i8; 32];
     if node as i32 == -1 { *buffer = 0; return buffer; }
     let mut prop = oprop;
@@ -198,7 +198,7 @@ pub unsafe fn prom_nextprop(node: Phandle, oprop: *const core::ffi::c_char,
     buffer
 }
 
-pub unsafe fn prom_finddevice(name: *const core::ffi::c_char) -> Phandle {
+pub unsafe fn prom_finddevice(name: *const kernel::ffi::c_char) -> Phandle {
     if name.is_null() { return 0; }
     let mut args: [usize; 5] = [0; 5];
     args[0] = b"finddevice\0".as_ptr() as usize;
@@ -207,7 +207,7 @@ pub unsafe fn prom_finddevice(name: *const core::ffi::c_char) -> Phandle {
     args[4] as i32 as Phandle
 }
 
-pub unsafe fn prom_node_has_property(node: Phandle, prop: *const core::ffi::c_char) -> i32 {
+pub unsafe fn prom_node_has_property(node: Phandle, prop: *const kernel::ffi::c_char) -> i32 {
     let mut buf = [0i8; 32];
     *buf.as_mut_ptr() = 0;
     loop {
@@ -218,8 +218,8 @@ pub unsafe fn prom_node_has_property(node: Phandle, prop: *const core::ffi::c_ch
     0
 }
 
-pub unsafe fn prom_setprop(node: Phandle, pname: *const core::ffi::c_char,
-                           value: *mut core::ffi::c_char, size: i32) -> i32 {
+pub unsafe fn prom_setprop(node: Phandle, pname: *const kernel::ffi::c_char,
+                           value: *mut kernel::ffi::c_char, size: i32) -> i32 {
     if size == 0 || pname.is_null() || value.is_null() { return 0; }
     // CONFIG_SUN_LDOMS: preserve the conditional build-time behavior.
     let mut args: [usize; 8] = [0; 8];
@@ -240,7 +240,7 @@ pub unsafe fn prom_inst2pkg(inst: i32) -> Phandle {
     if node as i32 == -1 { 0 } else { node }
 }
 
-pub unsafe fn prom_ihandle2path(handle: i32, buffer: *mut core::ffi::c_char, bufsize: i32) -> i32 {
+pub unsafe fn prom_ihandle2path(handle: i32, buffer: *mut kernel::ffi::c_char, bufsize: i32) -> i32 {
     let mut args: [usize; 7] = [0; 7];
     args[0] = b"instance-to-path\0".as_ptr() as usize;
     args[1] = 3; args[2] = 1; args[3] = handle as u32 as usize;

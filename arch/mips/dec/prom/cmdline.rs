@@ -6,7 +6,7 @@
  * Copyright (C) 2002, 2004  Maciej W. Rozycki
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Supplied by the corresponding PROM and kernel support modules.
 extern "C" {

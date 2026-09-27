@@ -7,7 +7,7 @@ unsafe fn field_get(mask: u64, value: u64) -> u64 {
     (value & mask) >> mask.trailing_zeros()
 }
 
-pub unsafe fn s390_search_extables(addr: ::core::ffi::c_ulong) -> *const exception_table_entry {
+pub unsafe fn s390_search_extables(addr: ::kernel::ffi::c_ulong) -> *const exception_table_entry {
     let fixup = search_exception_tables(addr);
     if !fixup.is_null() {
         return fixup;
@@ -50,9 +50,9 @@ unsafe fn ex_handler_zeropad(ex: *const exception_table_entry, regs: *mut pt_reg
     let reg_addr = field_get(EX_DATA_REG_ADDR, (*ex).data) as usize;
     let reg_data = field_get(EX_DATA_REG_ERR, (*ex).data) as usize;
     let addr = (*regs).gprs[reg_addr];
-    let offset = addr & (::core::mem::size_of::<::core::ffi::c_ulong>() - 1);
-    let addr = addr & !(::core::mem::size_of::<::core::ffi::c_ulong>() - 1);
-    let mut data = *(addr as *const ::core::ffi::c_ulong);
+    let offset = addr & (::core::mem::size_of::<::kernel::ffi::c_ulong>() - 1);
+    let addr = addr & !(::core::mem::size_of::<::kernel::ffi::c_ulong>() - 1);
+    let mut data = *(addr as *const ::kernel::ffi::c_ulong);
     data <<= 8 * offset;
     (*regs).gprs[reg_data] = data;
     (*regs).psw.addr = extable_fixup(ex);
@@ -81,8 +81,8 @@ unsafe fn ex_handler_ua_mvcos(
     from: bool,
     regs: *mut pt_regs,
 ) -> bool {
-    let mut uaddr: ::core::ffi::c_ulong;
-    let mut remainder: ::core::ffi::c_ulong;
+    let mut uaddr: ::kernel::ffi::c_ulong;
+    let mut remainder: ::kernel::ffi::c_ulong;
     let insn: *const insn_ssf;
 
     /*

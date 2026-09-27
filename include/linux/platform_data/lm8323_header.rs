@@ -24,9 +24,9 @@ pub struct lm8323_platform_data {
     pub repeat: bool,
     pub keymap: *const u16,
 
-    pub pwm_names: [*const core::ffi::c_char; LM8323_NUM_PWMS],
+    pub pwm_names: [*const kernel::ffi::c_char; LM8323_NUM_PWMS],
 
-    pub name: *const core::ffi::c_char, /* Device name. */
+    pub name: *const kernel::ffi::c_char, /* Device name. */
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

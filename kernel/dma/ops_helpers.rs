@@ -4,7 +4,7 @@
  * the allocated memory contains normal pages in the direct kernel mapping.
  */
 
-unsafe fn dma_common_vaddr_to_page(cpu_addr: *mut core::ffi::c_void) -> *mut page {
+unsafe fn dma_common_vaddr_to_page(cpu_addr: *mut kernel::ffi::c_void) -> *mut page {
     if is_vmalloc_addr(cpu_addr) {
         return vmalloc_to_page(cpu_addr);
     }
@@ -17,13 +17,13 @@ unsafe fn dma_common_vaddr_to_page(cpu_addr: *mut core::ffi::c_void) -> *mut pag
 pub unsafe fn dma_common_get_sgtable(
     dev: *mut device,
     sgt: *mut sg_table,
-    cpu_addr: *mut core::ffi::c_void,
+    cpu_addr: *mut kernel::ffi::c_void,
     dma_addr: dma_addr_t,
     size: usize,
-    attrs: libc::c_ulong,
-) -> libc::c_int {
+    attrs: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let page = dma_common_vaddr_to_page(cpu_addr);
-    let mut ret: libc::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
     if ret == 0 {
@@ -38,19 +38,19 @@ pub unsafe fn dma_common_get_sgtable(
 pub unsafe fn dma_common_mmap(
     dev: *mut device,
     vma: *mut vm_area_struct,
-    cpu_addr: *mut core::ffi::c_void,
+    cpu_addr: *mut kernel::ffi::c_void,
     dma_addr: dma_addr_t,
     size: usize,
-    attrs: libc::c_ulong,
-) -> libc::c_int {
+    attrs: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     // CONFIG_MMU conditional preserved from the C source.
     #[cfg(CONFIG_MMU)]
     {
-        let user_count: libc::c_ulong = vma_pages(vma);
-        let count: libc::c_ulong = PAGE_ALIGN(size) >> PAGE_SHIFT;
-        let off: libc::c_ulong = vma_start_pgoff(vma);
+        let user_count: kernel::ffi::c_ulong = vma_pages(vma);
+        let count: kernel::ffi::c_ulong = PAGE_ALIGN(size) >> PAGE_SHIFT;
+        let off: kernel::ffi::c_ulong = vma_start_pgoff(vma);
         let page = dma_common_vaddr_to_page(cpu_addr);
-        let mut ret: libc::c_int = -ENXIO;
+        let mut ret: kernel::ffi::c_int = -ENXIO;
 
         (*vma).vm_page_prot = dma_pgprot(dev, vma.vm_page_prot, attrs);
 

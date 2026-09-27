@@ -34,36 +34,41 @@
  * configuration-dependent compiler-attribute intent in the source comments. */
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct ftrace_branch_data {
-    pub func: *const core::ffi::c_char,
-    pub file: *const core::ffi::c_char,
-    pub line: core::ffi::c_uint,
+    pub func: *const kernel::ffi::c_char,
+    pub file: *const kernel::ffi::c_char,
+    pub line: kernel::ffi::c_uint,
     pub data: ftrace_branch_data_union,
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub union ftrace_branch_data_union {
     pub correct_incorrect: ftrace_branch_data_correct_incorrect,
     pub miss_hit_named: ftrace_branch_data_miss_hit,
-    pub miss_hit: [core::ffi::c_ulong; 2],
+    pub miss_hit: [kernel::ffi::c_ulong; 2],
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct ftrace_branch_data_correct_incorrect {
-    pub correct: core::ffi::c_ulong,
-    pub incorrect: core::ffi::c_ulong,
+    pub correct: kernel::ffi::c_ulong,
+    pub incorrect: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct ftrace_branch_data_miss_hit {
-    pub miss: core::ffi::c_ulong,
-    pub hit: core::ffi::c_ulong,
+    pub miss: kernel::ffi::c_ulong,
+    pub hit: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct ftrace_likely_data {
     pub data: ftrace_branch_data,
-    pub constant: core::ffi::c_ulong,
+    pub constant: kernel::ffi::c_ulong,
 }
 
 /*
@@ -89,5 +94,48 @@ pub struct ftrace_likely_data {
  * struct field delimiters. Otherwise __randomize_layout is __designated_init
  * and the delimiters are empty.
  */
+
+/* Is this type a native word size -- useful for atomic operations */
+#[inline(always)]
+pub const fn __native_word<T>() -> bool {
+    let size = core::mem::size_of::<T>();
+    size == core::mem::size_of::<kernel::ffi::c_char>()
+        || size == core::mem::size_of::<kernel::ffi::c_short>()
+        || size == core::mem::size_of::<kernel::ffi::c_int>()
+        || size == core::mem::size_of::<kernel::ffi::c_long>()
+}
+
+/**
+ * compiletime_assert - break build and emit msg if condition is false
+ * @condition: a compile-time constant condition to check
+ * @msg:       a message to emit if condition is false
+ *
+ * In tradition of POSIX assert, this macro will break the build if the
+ * supplied condition is *false*, emitting the supplied error message if the
+ * compiler has support to do so.
+ */
+#[macro_export]
+macro_rules! compiletime_assert {
+    ($condition:expr, $msg:expr) => {
+        const { assert!($condition, $msg) }
+    };
+}
+
+/*
+ * compiletime_assert_atomic_type(t) checks the lvalue's type; Rust callers
+ * pass a pointer to it so the check is made on the pointee type without
+ * evaluating or dereferencing anything.
+ */
+#[inline(always)]
+pub const fn __compiletime_assert_atomic_type<T>(_p: *const T) {
+    const {
+        assert!(
+            __native_word::<T>(),
+            "Need native word sized stores/loads for atomicity."
+        )
+    }
+}
+
+/* __diag_*() pragmas: Rust uses #[allow]/#[expect] attributes at the item. */
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

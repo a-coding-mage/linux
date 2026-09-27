@@ -10,7 +10,7 @@
 pub const MIPS_GT_BASE: usize = 0x1be00000;
 
 extern "C" {
-    pub static mut _pcictrl_gt64120: core::ffi::c_ulong;
+    pub static mut _pcictrl_gt64120: kernel::ffi::c_ulong;
 }
 
 /*

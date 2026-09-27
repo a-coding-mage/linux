@@ -13,7 +13,7 @@
 #[cfg(CONFIG_XTFPGA_LCD)]
 extern "C" {
     /* Display string STR at position POS on the LCD. */
-    pub fn lcd_disp_at_pos(str_: *mut core::ffi::c_char, pos: u8);
+    pub fn lcd_disp_at_pos(str_: *mut kernel::ffi::c_char, pos: u8);
 
     /* Shift the contents of the LCD display left or right. */
     pub fn lcd_shiftleft();
@@ -22,7 +22,7 @@ extern "C" {
 
 #[cfg(not(CONFIG_XTFPGA_LCD))]
 #[inline]
-pub unsafe fn lcd_disp_at_pos(_str: *mut core::ffi::c_char, _pos: u8) {}
+pub unsafe fn lcd_disp_at_pos(_str: *mut kernel::ffi::c_char, _pos: u8) {}
 
 #[cfg(not(CONFIG_XTFPGA_LCD))]
 #[inline]

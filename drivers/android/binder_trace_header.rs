@@ -8,12 +8,12 @@
 
 #![allow(non_camel_case_types, non_snake_case, dead_code)]
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // C forward declarations.  Their fields are defined by the binder sources.
 #[repr(C)]
 pub struct binder_buffer {
-    pub debug_id: ::core::ffi::c_int,
+    pub debug_id: ::kernel::ffi::c_int,
     pub data_size: usize,
     pub offsets_size: usize,
     pub extra_buffers_size: usize,
@@ -21,7 +21,7 @@ pub struct binder_buffer {
 
 #[repr(C)]
 pub struct binder_node {
-    pub debug_id: ::core::ffi::c_int,
+    pub debug_id: ::kernel::ffi::c_int,
     pub ptr: binder_uintptr_t,
 }
 
@@ -30,37 +30,37 @@ pub struct binder_proc;
 
 #[repr(C)]
 pub struct binder_alloc {
-    pub pid: ::core::ffi::c_int,
+    pub pid: ::kernel::ffi::c_int,
     pub vm_start: usize,
 }
 
 #[repr(C)]
 pub struct binder_ref_data {
-    pub debug_id: ::core::ffi::c_int,
+    pub debug_id: ::kernel::ffi::c_int,
     pub desc: u32,
 }
 
 #[repr(C)]
 pub struct binder_thread {
-    pub pid: ::core::ffi::c_int,
+    pub pid: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct binder_transaction {
-    pub debug_id: ::core::ffi::c_int,
+    pub debug_id: ::kernel::ffi::c_int,
     pub code: u32,
     pub flags: u32,
     pub to_proc: *mut binder_proc_with_pid,
     pub to_thread: *mut binder_thread,
-    pub from_pid: ::core::ffi::c_int,
-    pub from_tid: ::core::ffi::c_int,
+    pub from_pid: ::kernel::ffi::c_int,
+    pub from_tid: ::kernel::ffi::c_int,
     pub is_reply: bool,
 }
 
 // The binder sources provide the actual process layout used by transactions.
 #[repr(C)]
 pub struct binder_proc_with_pid {
-    pub pid: ::core::ffi::c_int,
+    pub pid: ::kernel::ffi::c_int,
 }
 
 pub type binder_uintptr_t = usize;

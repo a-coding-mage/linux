@@ -7,7 +7,7 @@
 
 #[repr(C)]
 pub struct rfkill_gpio_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub r#type: rfkill_type,
     pub reset_gpio: *mut gpio_desc,
     pub shutdown_gpio: *mut gpio_desc,
@@ -24,25 +24,25 @@ extern "C" {
     fn devm_acpi_dev_add_driver_gpios(dev: *mut device, mapping: *const acpi_gpio_mapping) -> i32;
     fn acpi_match_device(table: *const acpi_device_id, dev: *mut device) -> *const acpi_device_id;
     fn dmi_check_system(table: *const dmi_system_id) -> i32;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn dev_of_node(dev: *mut device) -> bool;
-    fn device_property_read_string(dev: *mut device, name: *const core::ffi::c_char,
-                                   value: *mut *const core::ffi::c_char) -> i32;
-    fn dev_name(dev: *mut device) -> *const core::ffi::c_char;
-    fn rfkill_find_type(name: *const core::ffi::c_char) -> rfkill_type;
-    fn devm_clk_get(dev: *mut device, id: *const core::ffi::c_char) -> *mut clk;
-    fn devm_gpiod_get_optional(dev: *mut device, con_id: *const core::ffi::c_char,
+    fn device_property_read_string(dev: *mut device, name: *const kernel::ffi::c_char,
+                                   value: *mut *const kernel::ffi::c_char) -> i32;
+    fn dev_name(dev: *mut device) -> *const kernel::ffi::c_char;
+    fn rfkill_find_type(name: *const kernel::ffi::c_char) -> rfkill_type;
+    fn devm_clk_get(dev: *mut device, id: *const kernel::ffi::c_char) -> *mut clk;
+    fn devm_gpiod_get_optional(dev: *mut device, con_id: *const kernel::ffi::c_char,
                                flags: u32) -> *mut gpio_desc;
-    fn is_err(ptr: *const core::ffi::c_void) -> bool;
-    fn ptr_err(ptr: *const core::ffi::c_void) -> i32;
-    fn device_property_present(dev: *mut device, name: *const core::ffi::c_char) -> bool;
+    fn is_err(ptr: *const kernel::ffi::c_void) -> bool;
+    fn ptr_err(ptr: *const kernel::ffi::c_void) -> i32;
+    fn device_property_present(dev: *mut device, name: *const kernel::ffi::c_char) -> bool;
     fn rfkill_init_sw_state(dev: *mut rfkill, blocked: bool);
-    fn rfkill_alloc(name: *const core::ffi::c_char, dev: *mut device, r#type: rfkill_type,
-                    ops: *const rfkill_ops, data: *mut core::ffi::c_void) -> *mut rfkill;
+    fn rfkill_alloc(name: *const kernel::ffi::c_char, dev: *mut device, r#type: rfkill_type,
+                    ops: *const rfkill_ops, data: *mut kernel::ffi::c_void) -> *mut rfkill;
     fn rfkill_register(dev: *mut rfkill) -> i32;
     fn rfkill_unregister(dev: *mut rfkill);
     fn rfkill_destroy(dev: *mut rfkill);
-    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut core::ffi::c_void);
+    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut kernel::ffi::c_void);
     fn platform_get_drvdata(pdev: *mut platform_device) -> *mut rfkill_gpio_data;
 }
 
@@ -54,10 +54,10 @@ extern "C" {
 #[repr(C)] pub struct acpi_device_id { pub driver_data: usize }
 #[repr(C)] pub struct dmi_system_id;
 #[repr(C)] pub struct acpi_gpio_mapping;
-#[repr(C)] pub struct rfkill_ops { pub set_block: Option<unsafe extern "C" fn(*mut core::ffi::c_void, bool) -> i32> }
+#[repr(C)] pub struct rfkill_ops { pub set_block: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, bool) -> i32> }
 pub type rfkill_type = u32;
 
-unsafe extern "C" fn rfkill_gpio_set_power(data: *mut core::ffi::c_void, blocked: bool) -> i32 {
+unsafe extern "C" fn rfkill_gpio_set_power(data: *mut kernel::ffi::c_void, blocked: bool) -> i32 {
     let rfkill = data as *mut rfkill_gpio_data;
     if !blocked && !is_err((*rfkill).clk as *const _) && !(*rfkill).clk_enabled {
         let ret = clk_enable((*rfkill).clk);
@@ -84,7 +84,7 @@ unsafe extern "C" fn rfkill_gpio_acpi_probe(dev: *mut device, rfkill: *mut rfkil
 unsafe extern "C" fn rfkill_gpio_probe(pdev: *mut platform_device) -> i32 {
     let rfkill = devm_kzalloc(&mut (*pdev).dev, core::mem::size_of::<rfkill_gpio_data>(), 0) as *mut rfkill_gpio_data;
     if rfkill.is_null() { return -12; }
-    let mut type_name: *const core::ffi::c_char = core::ptr::null();
+    let mut type_name: *const kernel::ffi::c_char = core::ptr::null();
     let (name_property, type_property) = if dev_of_node(&mut (*pdev).dev) {
         (c"label".as_ptr(), c"radio-type".as_ptr())
     } else { (c"name".as_ptr(), c"type".as_ptr()) };
@@ -134,7 +134,7 @@ static RFKILL_ACPI_MATCH: [acpi_device_id; 3] = [
 const fn gps_type() -> rfkill_type { 3 }
 
 #[repr(C)]
-struct of_device_id { compatible: *const core::ffi::c_char }
+struct of_device_id { compatible: *const kernel::ffi::c_char }
 
 static RFKILL_OF_MATCH: [of_device_id; 2] = [
     of_device_id { compatible: c"rfkill-gpio".as_ptr() },
@@ -145,7 +145,7 @@ static RFKILL_OF_MATCH: [of_device_id; 2] = [
 struct platform_driver {
     probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32>,
     remove: Option<unsafe extern "C" fn(*mut platform_device)>,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 static RFKILL_GPIO_DRIVER: platform_driver = platform_driver {

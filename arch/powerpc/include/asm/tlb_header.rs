@@ -20,7 +20,7 @@
 pub type __tlb_remove_tlb_entry_fn = unsafe fn(
     tlb: *mut mmu_gather,
     ptep: *mut pte_t,
-    address: ::core::ffi::c_ulong,
+    address: ::kernel::ffi::c_ulong,
 );
 
 unsafe extern "C" {
@@ -48,7 +48,7 @@ pub unsafe fn tlb_needs_table_invalidate() -> bool {
 pub unsafe fn __tlb_remove_tlb_entry(
     tlb: *mut mmu_gather,
     ptep: *mut pte_t,
-    address: ::core::ffi::c_ulong,
+    address: ::kernel::ffi::c_ulong,
 ) {
     /* CONFIG_PPC_BOOK3S_32 */
     #[cfg(CONFIG_PPC_BOOK3S_32)]
@@ -62,7 +62,7 @@ pub unsafe fn __tlb_remove_tlb_entry(
 /* CONFIG_SMP */
 #[cfg(CONFIG_SMP)]
 #[inline(always)]
-pub unsafe fn mm_is_core_local(mm: *mut mm_struct) -> ::core::ffi::c_int {
+pub unsafe fn mm_is_core_local(mm: *mut mm_struct) -> ::kernel::ffi::c_int {
     cpumask_subset(
         mm_cpumask(mm),
         topology_sibling_cpumask(smp_processor_id()),
@@ -89,13 +89,13 @@ pub unsafe fn mm_is_thread_local(mm: *mut mm_struct) -> bool {
 /* !CONFIG_SMP */
 #[cfg(not(CONFIG_SMP))]
 #[inline(always)]
-pub unsafe fn mm_is_core_local(_mm: *mut mm_struct) -> ::core::ffi::c_int {
+pub unsafe fn mm_is_core_local(_mm: *mut mm_struct) -> ::kernel::ffi::c_int {
     1
 }
 
 #[cfg(not(CONFIG_SMP))]
 #[inline(always)]
-pub unsafe fn mm_is_thread_local(_mm: *mut mm_struct) -> ::core::ffi::c_int {
+pub unsafe fn mm_is_thread_local(_mm: *mut mm_struct) -> ::kernel::ffi::c_int {
     1
 }
 

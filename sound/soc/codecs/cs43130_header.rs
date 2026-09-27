@@ -379,8 +379,8 @@ pub enum cs43130_dai_id {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct cs43130_clk_gen {
-    pub mclk_int: ::core::ffi::c_uint,
-    pub fs: ::core::ffi::c_int,
+    pub mclk_int: ::kernel::ffi::c_uint,
+    pub fs: ::kernel::ffi::c_int,
     pub v: u16_fract,
 }
 
@@ -474,7 +474,7 @@ pub static cs43130_64_clk_gen: [cs43130_clk_gen; 17] = [
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct cs43130_bitwidth_map {
-    pub bitwidth: ::core::ffi::c_uint,
+    pub bitwidth: ::kernel::ffi::c_uint,
     pub sp_bit: u8,
     pub ch_bit: u8,
 }
@@ -482,8 +482,8 @@ pub struct cs43130_bitwidth_map {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct cs43130_rate_map {
-    pub fs: ::core::ffi::c_int,
-    pub val: ::core::ffi::c_int,
+    pub fs: ::kernel::ffi::c_int,
+    pub val: ::kernel::ffi::c_int,
 }
 
 pub const HP_LEFT: u32 = 0;
@@ -492,12 +492,12 @@ pub const CS43130_AC_FREQ: usize = 10;
 pub const CS43130_DC_THRESHOLD: usize = 2;
 
 pub const CS43130_NUM_SUPPLIES: usize = 5;
-pub static cs43130_supply_names: [*const ::core::ffi::c_char; CS43130_NUM_SUPPLIES] = [
-    b"VA\0".as_ptr() as *const ::core::ffi::c_char,
-    b"VP\0".as_ptr() as *const ::core::ffi::c_char,
-    b"VCP\0".as_ptr() as *const ::core::ffi::c_char,
-    b"VD\0".as_ptr() as *const ::core::ffi::c_char,
-    b"VL\0".as_ptr() as *const ::core::ffi::c_char,
+pub static cs43130_supply_names: [*const ::kernel::ffi::c_char; CS43130_NUM_SUPPLIES] = [
+    b"VA\0".as_ptr() as *const ::kernel::ffi::c_char,
+    b"VP\0".as_ptr() as *const ::kernel::ffi::c_char,
+    b"VCP\0".as_ptr() as *const ::kernel::ffi::c_char,
+    b"VD\0".as_ptr() as *const ::kernel::ffi::c_char,
+    b"VL\0".as_ptr() as *const ::kernel::ffi::c_char,
 ];
 
 pub const CS43130_NUM_INT: usize = 5; /* number of interrupt status reg */
@@ -505,10 +505,10 @@ pub const CS43130_NUM_INT: usize = 5; /* number of interrupt status reg */
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct cs43130_dai {
-    pub sclk: ::core::ffi::c_uint,
-    pub dai_format: ::core::ffi::c_uint,
-    pub dai_mode: ::core::ffi::c_uint,
-    pub dai_invert: ::core::ffi::c_uint,
+    pub sclk: ::kernel::ffi::c_uint,
+    pub dai_format: ::kernel::ffi::c_uint,
+    pub dai_mode: ::kernel::ffi::c_uint,
+    pub dai_invert: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -518,19 +518,19 @@ pub struct cs43130_private {
     pub regmap: *mut regmap,
     pub supplies: [regulator_bulk_data; CS43130_NUM_SUPPLIES],
     pub reset_gpio: *mut gpio_desc,
-    pub dev_id: ::core::ffi::c_uint, /* codec device ID */
-    pub xtal_ibias: ::core::ffi::c_int,
+    pub dev_id: ::kernel::ffi::c_uint, /* codec device ID */
+    pub xtal_ibias: ::kernel::ffi::c_int,
     pub has_irq_line: bool,
 
     /* shared by both DAIs */
     pub clk_mutex: mutex,
-    pub clk_req: ::core::ffi::c_int,
+    pub clk_req: ::kernel::ffi::c_int,
     pub pll_bypass: bool,
     pub xtal_rdy: completion,
     pub pll_rdy: completion,
-    pub mclk: ::core::ffi::c_uint,
-    pub mclk_int: ::core::ffi::c_uint,
-    pub mclk_int_src: ::core::ffi::c_int,
+    pub mclk: ::kernel::ffi::c_uint,
+    pub mclk_int: ::kernel::ffi::c_uint,
+    pub mclk_int_src: ::kernel::ffi::c_int,
 
     /* DAI specific */
     pub dais: [cs43130_dai; cs43130_dai_id::CS43130_DAI_ID_MAX as usize],
@@ -540,7 +540,7 @@ pub struct cs43130_private {
     pub ac_meas: bool,
     pub hpload_done: bool,
     pub hpload_evt: completion,
-    pub hpload_stat: ::core::ffi::c_uint,
+    pub hpload_stat: ::kernel::ffi::c_uint,
     pub hpload_dc: [u16; 2],
     pub dc_threshold: [u16; CS43130_DC_THRESHOLD],
     pub ac_freq: [u16; CS43130_AC_FREQ],

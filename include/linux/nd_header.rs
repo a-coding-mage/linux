@@ -38,7 +38,7 @@ pub const NVDIMM_PMU_NULL_ATTR: usize = 3;
 pub struct nvdimm_pmu {
     pub pmu: pmu,
     pub dev: *mut device,
-    pub cpu: core::ffi::c_int,
+    pub cpu: kernel::ffi::c_int,
     pub node: hlist_node,
     pub cpuhp_state: cpuhp_state,
     /* cpumask provided by arch/platform specific code */
@@ -54,15 +54,15 @@ extern "C" {
     pub fn nvdimm_events_sysfs_show(
         dev: *mut device,
         attr: *mut device_attribute,
-        page: *mut core::ffi::c_char,
+        page: *mut kernel::ffi::c_char,
     ) -> ssize_t;
 
-    pub fn register_nvdimm_pmu(nvdimm: *mut nvdimm_pmu, pdev: *mut platform_device) -> core::ffi::c_int;
+    pub fn register_nvdimm_pmu(nvdimm: *mut nvdimm_pmu, pdev: *mut platform_device) -> kernel::ffi::c_int;
     pub fn unregister_nvdimm_pmu(nd_pmu: *mut nvdimm_pmu);
 }
 
 #[cfg(not(CONFIG_PERF_EVENTS))]
-pub unsafe fn register_nvdimm_pmu(_nvdimm: *mut nvdimm_pmu, _pdev: *mut platform_device) -> core::ffi::c_int {
+pub unsafe fn register_nvdimm_pmu(_nvdimm: *mut nvdimm_pmu, _pdev: *mut platform_device) -> kernel::ffi::c_int {
     -ENXIO
 }
 
@@ -73,7 +73,7 @@ pub unsafe fn unregister_nvdimm_pmu(_nd_pmu: *mut nvdimm_pmu) {}
 pub struct nd_device_driver {
     pub drv: device_driver,
     pub type_: c_ulong,
-    pub probe: Option<unsafe extern "C" fn(dev: *mut device) -> core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(dev: *mut device) -> kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(dev: *mut device)>,
     pub shutdown: Option<unsafe extern "C" fn(dev: *mut device)>,
     pub notify: Option<unsafe extern "C" fn(dev: *mut device, event: nvdimm_event)>,
@@ -84,18 +84,18 @@ pub struct nd_device_driver {
 
 #[repr(C)]
 pub struct nd_namespace_common {
-    pub force_raw: core::ffi::c_int,
+    pub force_raw: kernel::ffi::c_int,
     pub dev: device,
     pub claim: *mut device,
     pub claim_class: nvdimm_claim_class,
     pub rw_bytes: Option<unsafe extern "C" fn(
         *mut nd_namespace_common,
         resource_size_t,
-        *mut core::ffi::c_void,
+        *mut kernel::ffi::c_void,
         usize,
-        core::ffi::c_int,
+        kernel::ffi::c_int,
         c_ulong,
-    ) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
 }
 
 pub unsafe fn to_ndns(dev: *mut device) -> *mut nd_namespace_common {
@@ -107,7 +107,7 @@ pub struct nd_namespace_io {
     pub common: nd_namespace_common,
     pub res: resource,
     pub size: resource_size_t,
-    pub addr: *mut core::ffi::c_void,
+    pub addr: *mut kernel::ffi::c_void,
     pub bb: badblocks,
 }
 
@@ -115,9 +115,9 @@ pub struct nd_namespace_io {
 pub struct nd_namespace_pmem {
     pub nsio: nd_namespace_io,
     pub lbasize: c_ulong,
-    pub alt_name: *mut core::ffi::c_char,
+    pub alt_name: *mut kernel::ffi::c_char,
     pub uuid: *mut uuid_t,
-    pub id: core::ffi::c_int,
+    pub id: kernel::ffi::c_int,
 }
 
 pub unsafe fn to_nd_namespace_io(dev: *const device) -> *mut nd_namespace_io {
@@ -132,20 +132,20 @@ pub unsafe fn to_nd_namespace_pmem(dev: *const device) -> *mut nd_namespace_pmem
 pub unsafe fn nvdimm_read_bytes(
     ndns: *mut nd_namespace_common,
     offset: resource_size_t,
-    buf: *mut core::ffi::c_void,
+    buf: *mut kernel::ffi::c_void,
     size: usize,
     flags: c_ulong,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     ((*ndns).rw_bytes.unwrap())(ndns, offset, buf, size, READ, flags)
 }
 
 pub unsafe fn nvdimm_write_bytes(
     ndns: *mut nd_namespace_common,
     offset: resource_size_t,
-    buf: *mut core::ffi::c_void,
+    buf: *mut kernel::ffi::c_void,
     size: usize,
     flags: c_ulong,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     ((*ndns).rw_bytes.unwrap())(ndns, offset, buf, size, WRITE, flags)
 }
 
@@ -160,8 +160,8 @@ extern "C" {
     pub fn __nd_driver_register(
         nd_drv: *mut nd_device_driver,
         module: *mut module,
-        mod_name: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        mod_name: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
     pub fn driver_unregister(drv: *mut device_driver);
 }
 

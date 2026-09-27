@@ -18,7 +18,7 @@ extern "C" {
     pub fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut usize);
     pub fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: usize);
     pub static mut dma_spin_lock: spinlock_t;
-    pub fn request_dma(dmanr: u32, device_id: *const core::ffi::c_char) -> i32;
+    pub fn request_dma(dmanr: u32, device_id: *const kernel::ffi::c_char) -> i32;
     pub fn free_dma(dmanr: u32);
 }
 

@@ -31,7 +31,7 @@ extern "C" {
 extern "C" {
     pub fn __member_size<T>(p: *const T) -> usize;
     pub fn __struct_size<T>(p: *const T) -> usize;
-    pub fn __compiletime_strlen(p: *const core::ffi::c_char) -> usize;
+    pub fn __compiletime_strlen(p: *const kernel::ffi::c_char) -> usize;
 }
 
 #[inline(always)]
@@ -40,30 +40,30 @@ pub unsafe fn fortify_panic(func: FortifyFunc, write: u8, avail: usize, size: us
 }
 
 extern "C" {
-    pub fn __real_strnlen(p: *const core::ffi::c_char, maxlen: usize) -> usize;
-    pub fn __real_strscpy(p: *mut core::ffi::c_char, q: *const core::ffi::c_char, size: usize) -> isize;
-    pub fn __real_strlcat(p: *mut core::ffi::c_char, q: *const core::ffi::c_char, avail: usize) -> usize;
-    pub fn __real_memscan(p: *mut core::ffi::c_void, c: i32, size: usize) -> *mut core::ffi::c_void;
-    pub fn __real_memchr_inv(p: *const core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void;
-    pub fn __real_kmemdup(src: *const core::ffi::c_void, len: usize, gfp: usize) -> *mut core::ffi::c_void;
+    pub fn __real_strnlen(p: *const kernel::ffi::c_char, maxlen: usize) -> usize;
+    pub fn __real_strscpy(p: *mut kernel::ffi::c_char, q: *const kernel::ffi::c_char, size: usize) -> isize;
+    pub fn __real_strlcat(p: *mut kernel::ffi::c_char, q: *const kernel::ffi::c_char, avail: usize) -> usize;
+    pub fn __real_memscan(p: *mut kernel::ffi::c_void, c: i32, size: usize) -> *mut kernel::ffi::c_void;
+    pub fn __real_memchr_inv(p: *const kernel::ffi::c_void, c: i32, n: usize) -> *mut kernel::ffi::c_void;
+    pub fn __real_kmemdup(src: *const kernel::ffi::c_void, len: usize, gfp: usize) -> *mut kernel::ffi::c_void;
 }
 
 extern "C" {
-    pub fn __underlying_memcpy(p: *mut core::ffi::c_void, q: *const core::ffi::c_void, size: usize) -> *mut core::ffi::c_void;
-    pub fn __underlying_memmove(p: *mut core::ffi::c_void, q: *const core::ffi::c_void, size: usize) -> *mut core::ffi::c_void;
-    pub fn __underlying_memset(p: *mut core::ffi::c_void, c: i32, size: usize) -> *mut core::ffi::c_void;
-    pub fn __underlying_memchr(p: *const core::ffi::c_void, c: i32, size: usize) -> *mut core::ffi::c_void;
-    pub fn __underlying_memcmp(p: *const core::ffi::c_void, q: *const core::ffi::c_void, size: usize) -> i32;
-    pub fn __underlying_strcat(p: *mut core::ffi::c_char, q: *const core::ffi::c_char) -> *mut core::ffi::c_char;
-    pub fn __underlying_strcpy(p: *mut core::ffi::c_char, q: *const core::ffi::c_char) -> *mut core::ffi::c_char;
-    pub fn __underlying_strlen(p: *const core::ffi::c_char) -> usize;
-    pub fn __underlying_strncat(p: *mut core::ffi::c_char, q: *const core::ffi::c_char, count: usize) -> *mut core::ffi::c_char;
+    pub fn __underlying_memcpy(p: *mut kernel::ffi::c_void, q: *const kernel::ffi::c_void, size: usize) -> *mut kernel::ffi::c_void;
+    pub fn __underlying_memmove(p: *mut kernel::ffi::c_void, q: *const kernel::ffi::c_void, size: usize) -> *mut kernel::ffi::c_void;
+    pub fn __underlying_memset(p: *mut kernel::ffi::c_void, c: i32, size: usize) -> *mut kernel::ffi::c_void;
+    pub fn __underlying_memchr(p: *const kernel::ffi::c_void, c: i32, size: usize) -> *mut kernel::ffi::c_void;
+    pub fn __underlying_memcmp(p: *const kernel::ffi::c_void, q: *const kernel::ffi::c_void, size: usize) -> i32;
+    pub fn __underlying_strcat(p: *mut kernel::ffi::c_char, q: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    pub fn __underlying_strcpy(p: *mut kernel::ffi::c_char, q: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    pub fn __underlying_strlen(p: *const kernel::ffi::c_char) -> usize;
+    pub fn __underlying_strncat(p: *mut kernel::ffi::c_char, q: *const kernel::ffi::c_char, count: usize) -> *mut kernel::ffi::c_char;
 }
 
 /* The following inline functions retain the header's control flow; object
  * size values are provided by the translated kernel environment. */
 #[inline(always)]
-pub unsafe fn strnlen(p: *const core::ffi::c_char, maxlen: usize) -> usize {
+pub unsafe fn strnlen(p: *const kernel::ffi::c_char, maxlen: usize) -> usize {
     let p_size = __member_size(p);
     let p_len = __compiletime_strlen(p);
     if p_len != usize::MAX && maxlen >= p_size { return p_len; }
@@ -73,7 +73,7 @@ pub unsafe fn strnlen(p: *const core::ffi::c_char, maxlen: usize) -> usize {
 }
 
 #[inline(always)]
-pub unsafe fn __fortify_strlen(p: *const core::ffi::c_char) -> usize {
+pub unsafe fn __fortify_strlen(p: *const kernel::ffi::c_char) -> usize {
     let p_size = __member_size(p);
     if p_size == usize::MAX { return __underlying_strlen(p); }
     let ret = strnlen(p, p_size);
@@ -82,7 +82,7 @@ pub unsafe fn __fortify_strlen(p: *const core::ffi::c_char) -> usize {
 }
 
 #[inline(always)]
-pub unsafe fn sized_strscpy(p: *mut core::ffi::c_char, q: *const core::ffi::c_char, size: usize) -> isize {
+pub unsafe fn sized_strscpy(p: *mut kernel::ffi::c_char, q: *const kernel::ffi::c_char, size: usize) -> isize {
     let p_size = __member_size(p); let q_size = __member_size(q);
     if p_size == usize::MAX && q_size == usize::MAX { return __real_strscpy(p, q, size); }
     let len = strnlen(q, size);
@@ -92,7 +92,7 @@ pub unsafe fn sized_strscpy(p: *mut core::ffi::c_char, q: *const core::ffi::c_ch
 }
 
 #[inline(always)]
-pub unsafe fn strlcat(p: *mut core::ffi::c_char, q: *const core::ffi::c_char, avail: usize) -> usize {
+pub unsafe fn strlcat(p: *mut kernel::ffi::c_char, q: *const kernel::ffi::c_char, avail: usize) -> usize {
     let p_size = __member_size(p); let q_size = __member_size(q);
     if p_size == usize::MAX && q_size == usize::MAX { return __real_strlcat(p, q, avail); }
     let p_len = strnlen(p, avail); let mut copy_len = __fortify_strlen(q); let wanted = p_len + copy_len;
@@ -106,13 +106,13 @@ pub unsafe fn strlcat(p: *mut core::ffi::c_char, q: *const core::ffi::c_char, av
 }
 
 #[inline(always)]
-pub unsafe fn strcat(p: *mut core::ffi::c_char, q: *const core::ffi::c_char) -> *mut core::ffi::c_char {
+pub unsafe fn strcat(p: *mut kernel::ffi::c_char, q: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char {
     let p_size = __member_size(p); let wanted = strlcat(p, q, p_size);
     if p_size <= wanted { fortify_panic(FortifyFunc::Strcat, FORTIFY_WRITE, p_size, wanted + 1, 0); } p
 }
 
 #[inline(always)]
-pub unsafe fn strncat(p: *mut core::ffi::c_char, q: *const core::ffi::c_char, count: usize) -> *mut core::ffi::c_char {
+pub unsafe fn strncat(p: *mut kernel::ffi::c_char, q: *const kernel::ffi::c_char, count: usize) -> *mut kernel::ffi::c_char {
     let p_size = __member_size(p); let q_size = __member_size(q);
     if p_size == usize::MAX && q_size == usize::MAX { return __underlying_strncat(p, q, count); }
     let p_len = __fortify_strlen(p); let copy_len = strnlen(q, count); let total = p_len + copy_len + 1;
@@ -134,12 +134,12 @@ pub unsafe fn fortify_memcpy_chk(size: usize, p_size: usize, q_size: usize, _p_s
 }
 
 #[inline(always)]
-pub unsafe fn memscan(p: *mut core::ffi::c_void, c: i32, size: usize) -> *mut core::ffi::c_void {
+pub unsafe fn memscan(p: *mut kernel::ffi::c_void, c: i32, size: usize) -> *mut kernel::ffi::c_void {
     let p_size = __struct_size(p); if p_size < size { fortify_panic(FortifyFunc::Memscan, FORTIFY_READ, p_size, size, 0); } __real_memscan(p, c, size)
 }
 
 #[inline(always)]
-pub unsafe fn memcmp(p: *const core::ffi::c_void, q: *const core::ffi::c_void, size: usize) -> i32 {
+pub unsafe fn memcmp(p: *const kernel::ffi::c_void, q: *const kernel::ffi::c_void, size: usize) -> i32 {
     let p_size = __struct_size(p); let q_size = __struct_size(q);
     if p_size < size { fortify_panic(FortifyFunc::Memcmp, FORTIFY_READ, p_size, size, i32::MIN as isize); }
     if q_size < size { fortify_panic(FortifyFunc::Memcmp, FORTIFY_READ, q_size, size, i32::MIN as isize); }
@@ -147,17 +147,17 @@ pub unsafe fn memcmp(p: *const core::ffi::c_void, q: *const core::ffi::c_void, s
 }
 
 #[inline(always)]
-pub unsafe fn memchr(p: *const core::ffi::c_void, c: i32, size: usize) -> *mut core::ffi::c_void {
+pub unsafe fn memchr(p: *const kernel::ffi::c_void, c: i32, size: usize) -> *mut kernel::ffi::c_void {
     let p_size = __struct_size(p); if p_size < size { fortify_panic(FortifyFunc::Memchr, FORTIFY_READ, p_size, size, 0); } __underlying_memchr(p, c, size)
 }
 
 #[inline(always)]
-pub unsafe fn memchr_inv(p: *const core::ffi::c_void, c: i32, size: usize) -> *mut core::ffi::c_void {
+pub unsafe fn memchr_inv(p: *const kernel::ffi::c_void, c: i32, size: usize) -> *mut kernel::ffi::c_void {
     let p_size = __struct_size(p); if p_size < size { fortify_panic(FortifyFunc::MemchrInv, FORTIFY_READ, p_size, size, 0); } __real_memchr_inv(p, c, size)
 }
 
 #[inline(always)]
-pub unsafe fn strcpy(p: *mut core::ffi::c_char, q: *const core::ffi::c_char) -> *mut core::ffi::c_char {
+pub unsafe fn strcpy(p: *mut kernel::ffi::c_char, q: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char {
     let p_size = __member_size(p); let size = __fortify_strlen(q) + 1;
     if p_size < size { fortify_panic(FortifyFunc::Strcpy, FORTIFY_WRITE, p_size, size, 0); }
     __underlying_memcpy(p as *mut _, q as *const _, size); p

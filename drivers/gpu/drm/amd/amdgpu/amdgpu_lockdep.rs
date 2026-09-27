@@ -38,12 +38,12 @@ extern "C" {
     static mut amdgpu_grbm_lock_key: lock_class_key;
     static mut amdgpu_mmio_lock_key: lock_class_key;
 
-    fn lockdep_set_class(lock: *mut core::ffi::c_void, key: *mut lock_class_key);
-    fn kzalloc(size: usize, flags: gfp_t) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn lockdep_set_class(lock: *mut kernel::ffi::c_void, key: *mut lock_class_key);
+    fn kzalloc(size: usize, flags: gfp_t) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn amdgpu_reset_create_reset_domain(
         device: u32,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> *mut amdgpu_reset_domain;
     fn fs_reclaim_acquire(gfp: gfp_t);
     fn fs_reclaim_release(gfp: gfp_t);
@@ -56,7 +56,7 @@ extern "C" {
     fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut usize);
     fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: usize);
     fn amdgpu_reset_put_reset_domain(domain: *mut amdgpu_reset_domain);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[cfg(CONFIG_LOCKDEP)]
@@ -82,7 +82,7 @@ pub unsafe extern "C" fn amdgpu_lockdep_init() -> i32 {
     /* Initialize dummy reset domain */
     reset_domain = amdgpu_reset_create_reset_domain(SINGLE_DEVICE, c"lockdep_test".as_ptr());
     if reset_domain.is_null() {
-        kfree(locks as *mut core::ffi::c_void);
+        kfree(locks as *mut kernel::ffi::c_void);
         return -ENOMEM;
     }
 
@@ -135,7 +135,7 @@ pub unsafe extern "C" fn amdgpu_lockdep_init() -> i32 {
 
     /* Cleanup */
     amdgpu_reset_put_reset_domain(reset_domain);
-    kfree(locks as *mut core::ffi::c_void);
+    kfree(locks as *mut kernel::ffi::c_void);
     pr_info(c"AMDGPU: Lockdep annotations initialized (9 lock levels)\n".as_ptr());
     0
 }

@@ -40,17 +40,17 @@
 #[repr(C)]
 pub struct extcon_dev {
     /* Optional user initializing data */
-    pub name: *const core::ffi::c_char,
-    pub supported_cable: *const core::ffi::c_uint,
+    pub name: *const kernel::ffi::c_char,
+    pub supported_cable: *const kernel::ffi::c_uint,
     pub mutually_exclusive: *const u32,
 
     /* Internal data. Please do not set. */
     pub dev: device,
-    pub id: core::ffi::c_uint,
+    pub id: kernel::ffi::c_uint,
     pub nh_all: raw_notifier_head,
     pub nh: *mut raw_notifier_head,
     pub entry: list_head,
-    pub max_supported: core::ffi::c_int,
+    pub max_supported: kernel::ffi::c_int,
     pub lock: spinlock_t, /* could be called by irq handler */
     pub state: u32,
 

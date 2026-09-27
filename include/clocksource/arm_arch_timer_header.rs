@@ -63,7 +63,7 @@ pub const ARCH_TIMER_USR_PT_ACCESS_EN: i32 = 1 << 9; // physical timer registers
 pub const ARCH_TIMER_EVT_INTERVAL_SCALE: i32 = 1 << 17; // EVNTIS in the ARMv8 ARM
 
 pub const ARCH_TIMER_EVT_STREAM_PERIOD_US: i32 = 100;
-pub const ARCH_TIMER_EVT_STREAM_FREQ: _ = USEC_PER_SEC / ARCH_TIMER_EVT_STREAM_PERIOD_US;
+pub const ARCH_TIMER_EVT_STREAM_FREQ: i32 = USEC_PER_SEC / ARCH_TIMER_EVT_STREAM_PERIOD_US;
 
 #[repr(C)]
 pub struct arch_timer_kvm_info {

@@ -15,7 +15,7 @@ pub struct exception_table_entry {
 // Some users need to sleep while they hold this lock.
 // Also protects SMP-alternatives modification on x86; not exported to modules.
 extern "C" {
-    pub static mut text_mutex: core::ffi::c_void;
+    pub static mut text_mutex: kernel::ffi::c_void;
 
     pub static mut __start___ex_table: exception_table_entry;
     pub static mut __stop___ex_table: exception_table_entry;
@@ -42,7 +42,7 @@ extern "C" {
     pub fn rcu_is_watching() -> bool;
     pub fn ct_nmi_enter();
     pub fn ct_nmi_exit();
-    pub fn pr_notice(fmt: *const core::ffi::c_char, ...);
+    pub fn pr_notice(fmt: *const kernel::ffi::c_char, ...);
 }
 
 // Cleared by build-time tools if the table is already sorted.
@@ -57,7 +57,7 @@ pub unsafe extern "C" fn sort_main_extable() {
             > (&__start___ex_table as *const _ as usize)
     {
         let message = b"Sorting __ex_table...\0";
-        pr_notice(message.as_ptr() as *const core::ffi::c_char);
+        pr_notice(message.as_ptr() as *const kernel::ffi::c_char);
         sort_extable(
             &mut __start___ex_table,
             &mut __stop___ex_table,
@@ -143,23 +143,23 @@ pub unsafe extern "C" fn kernel_text_address(addr: usize) -> i32 {
 #[cfg(CONFIG_HAVE_FUNCTION_DESCRIPTORS)]
 #[repr(C)]
 pub struct func_desc_t {
-    pub addr: *mut core::ffi::c_void,
+    pub addr: *mut kernel::ffi::c_void,
 }
 
 #[cfg(CONFIG_HAVE_FUNCTION_DESCRIPTORS)]
 extern "C" {
     pub static __start_opd: u8;
     pub static __end_opd: u8;
-    pub fn get_kernel_nofault(dst: *mut *mut core::ffi::c_void, src: *const core::ffi::c_void) -> i32;
+    pub fn get_kernel_nofault(dst: *mut *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void) -> i32;
 }
 
 #[cfg(CONFIG_HAVE_FUNCTION_DESCRIPTORS)]
 #[no_mangle]
 pub unsafe extern "C" fn dereference_function_descriptor(
-    mut ptr: *mut core::ffi::c_void,
-) -> *mut core::ffi::c_void {
+    mut ptr: *mut kernel::ffi::c_void,
+) -> *mut kernel::ffi::c_void {
     let desc = ptr as *mut func_desc_t;
-    let mut p: *mut core::ffi::c_void = core::ptr::null_mut();
+    let mut p: *mut kernel::ffi::c_void = core::ptr::null_mut();
     if get_kernel_nofault(&mut p, &(*desc).addr) == 0 {
         ptr = p;
     }
@@ -169,8 +169,8 @@ pub unsafe extern "C" fn dereference_function_descriptor(
 #[cfg(CONFIG_HAVE_FUNCTION_DESCRIPTORS)]
 #[no_mangle]
 pub unsafe extern "C" fn dereference_kernel_function_descriptor(
-    ptr: *mut core::ffi::c_void,
-) -> *mut core::ffi::c_void {
+    ptr: *mut kernel::ffi::c_void,
+) -> *mut kernel::ffi::c_void {
     let start = &__start_opd as *const u8 as usize;
     let end = &__end_opd as *const u8 as usize;
     if (ptr as usize) < start || (ptr as usize) >= end {
@@ -180,7 +180,7 @@ pub unsafe extern "C" fn dereference_kernel_function_descriptor(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn func_ptr_is_kernel_text(ptr: *mut core::ffi::c_void) -> i32 {
+pub unsafe extern "C" fn func_ptr_is_kernel_text(ptr: *mut kernel::ffi::c_void) -> i32 {
     #[cfg(CONFIG_HAVE_FUNCTION_DESCRIPTORS)]
     let addr = dereference_function_descriptor(ptr) as usize;
     #[cfg(not(CONFIG_HAVE_FUNCTION_DESCRIPTORS))]

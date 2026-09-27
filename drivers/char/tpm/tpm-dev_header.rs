@@ -4,7 +4,7 @@
 //   #include <linux/poll.h>
 //   #include "tpm.h"
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // External types supplied by the included headers.
 pub type ssize_t = isize;

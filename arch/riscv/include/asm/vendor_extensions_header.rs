@@ -11,7 +11,7 @@ pub const RISCV_ISA_VENDOR_EXT_MAX: usize = 32;
 
 #[repr(C)]
 pub struct riscv_isavendorinfo {
-    pub isa: [core::ffi::c_ulong; 1],
+    pub isa: [kernel::ffi::c_ulong; 1],
 }
 
 #[repr(C)]
@@ -29,17 +29,17 @@ extern "C" {
     pub static riscv_isa_vendor_ext_list_size: usize;
 
     pub fn __riscv_isa_vendor_extension_available(
-        cpu: core::ffi::c_int,
-        vendor: core::ffi::c_ulong,
-        bit: core::ffi::c_uint,
+        cpu: kernel::ffi::c_int,
+        vendor: kernel::ffi::c_ulong,
+        bit: kernel::ffi::c_uint,
     ) -> bool;
     pub fn __riscv_has_extension_likely(
-        vendor: core::ffi::c_ulong,
-        ext: core::ffi::c_ulong,
+        vendor: kernel::ffi::c_ulong,
+        ext: kernel::ffi::c_ulong,
     ) -> bool;
     pub fn __riscv_has_extension_unlikely(
-        vendor: core::ffi::c_ulong,
-        ext: core::ffi::c_ulong,
+        vendor: kernel::ffi::c_ulong,
+        ext: kernel::ffi::c_ulong,
     ) -> bool;
 }
 
@@ -48,12 +48,12 @@ extern "Rust" {
     static NR_CPUS: usize;
 }
 
-pub const RISCV_VENDOR_EXT_ALTERNATIVES_BASE: core::ffi::c_ulong = 0x8000;
-pub const VENDOR_EXT_ALL_CPUS: core::ffi::c_int = -1;
+pub const RISCV_VENDOR_EXT_ALTERNATIVES_BASE: kernel::ffi::c_ulong = 0x8000;
+pub const VENDOR_EXT_ALL_CPUS: kernel::ffi::c_int = -1;
 
 pub unsafe fn riscv_has_vendor_extension_likely(
-    vendor: core::ffi::c_ulong,
-    ext: core::ffi::c_ulong,
+    vendor: kernel::ffi::c_ulong,
+    ext: kernel::ffi::c_ulong,
 ) -> bool {
     if !cfg!(CONFIG_RISCV_ISA_VENDOR_EXT) {
         return false;
@@ -64,12 +64,12 @@ pub unsafe fn riscv_has_vendor_extension_likely(
             ext.wrapping_add(RISCV_VENDOR_EXT_ALTERNATIVES_BASE),
         );
     }
-    __riscv_isa_vendor_extension_available(VENDOR_EXT_ALL_CPUS, vendor, ext as core::ffi::c_uint)
+    __riscv_isa_vendor_extension_available(VENDOR_EXT_ALL_CPUS, vendor, ext as kernel::ffi::c_uint)
 }
 
 pub unsafe fn riscv_has_vendor_extension_unlikely(
-    vendor: core::ffi::c_ulong,
-    ext: core::ffi::c_ulong,
+    vendor: kernel::ffi::c_ulong,
+    ext: kernel::ffi::c_ulong,
 ) -> bool {
     if !cfg!(CONFIG_RISCV_ISA_VENDOR_EXT) {
         return false;
@@ -80,13 +80,13 @@ pub unsafe fn riscv_has_vendor_extension_unlikely(
             ext.wrapping_add(RISCV_VENDOR_EXT_ALTERNATIVES_BASE),
         );
     }
-    __riscv_isa_vendor_extension_available(VENDOR_EXT_ALL_CPUS, vendor, ext as core::ffi::c_uint)
+    __riscv_isa_vendor_extension_available(VENDOR_EXT_ALL_CPUS, vendor, ext as kernel::ffi::c_uint)
 }
 
 pub unsafe fn riscv_cpu_has_vendor_extension_likely(
-    vendor: core::ffi::c_ulong,
-    cpu: core::ffi::c_int,
-    ext: core::ffi::c_ulong,
+    vendor: kernel::ffi::c_ulong,
+    cpu: kernel::ffi::c_int,
+    ext: kernel::ffi::c_ulong,
 ) -> bool {
     if !cfg!(CONFIG_RISCV_ISA_VENDOR_EXT) {
         return false;
@@ -99,13 +99,13 @@ pub unsafe fn riscv_cpu_has_vendor_extension_likely(
     {
         return true;
     }
-    __riscv_isa_vendor_extension_available(cpu, vendor, ext as core::ffi::c_uint)
+    __riscv_isa_vendor_extension_available(cpu, vendor, ext as kernel::ffi::c_uint)
 }
 
 pub unsafe fn riscv_cpu_has_vendor_extension_unlikely(
-    vendor: core::ffi::c_ulong,
-    cpu: core::ffi::c_int,
-    ext: core::ffi::c_ulong,
+    vendor: kernel::ffi::c_ulong,
+    cpu: kernel::ffi::c_int,
+    ext: kernel::ffi::c_ulong,
 ) -> bool {
     if !cfg!(CONFIG_RISCV_ISA_VENDOR_EXT) {
         return false;
@@ -118,7 +118,7 @@ pub unsafe fn riscv_cpu_has_vendor_extension_unlikely(
     {
         return true;
     }
-    __riscv_isa_vendor_extension_available(cpu, vendor, ext as core::ffi::c_uint)
+    __riscv_isa_vendor_extension_available(cpu, vendor, ext as kernel::ffi::c_uint)
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

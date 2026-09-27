@@ -4,7 +4,7 @@
 // provided by the watchdog implementation or by the no-op inline fallback.
 #[cfg(CONFIG_PPC_WATCHDOG)]
 extern "C" {
-    pub fn soft_nmi_interrupt(regs: *mut pt_regs) -> core::ffi::c_long;
+    pub fn soft_nmi_interrupt(regs: *mut pt_regs) -> kernel::ffi::c_long;
     pub fn watchdog_hardlockup_set_timeout_pct(pct: u64);
 }
 

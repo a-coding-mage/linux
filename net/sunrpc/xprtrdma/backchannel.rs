@@ -7,7 +7,7 @@
 
 // Linux/RPC-RDMA dependencies are supplied by the surrounding translation.
 
-pub unsafe fn xprt_rdma_bc_setup(xprt: *mut rpc_xprt, reqs: libc::c_uint) -> libc::c_int {
+pub unsafe fn xprt_rdma_bc_setup(xprt: *mut rpc_xprt, reqs: core::ffi::c_uint) -> core::ffi::c_int {
     let r_xprt = rpcx_to_rdmax(xprt);
     (*(*r_xprt).rx_buf).rb_bc_srv_max_requests = RPCRDMA_BACKWARD_WRS >> 1;
     trace_xprtrdma_cb_setup(r_xprt, reqs);
@@ -22,11 +22,11 @@ pub unsafe fn xprt_rdma_bc_maxpayload(xprt: *mut rpc_xprt) -> usize {
     maxmsg - RPCRDMA_HDRLEN_MIN as usize
 }
 
-pub unsafe fn xprt_rdma_bc_max_slots(_xprt: *mut rpc_xprt) -> libc::c_uint {
+pub unsafe fn xprt_rdma_bc_max_slots(_xprt: *mut rpc_xprt) -> core::ffi::c_uint {
     RPCRDMA_BACKWARD_WRS >> 1
 }
 
-unsafe fn rpcrdma_bc_marshal_reply(rqst: *mut rpc_rqst) -> libc::c_int {
+unsafe fn rpcrdma_bc_marshal_reply(rqst: *mut rpc_rqst) -> core::ffi::c_int {
     let r_xprt = rpcx_to_rdmax((*rqst).rq_xprt);
     let req = rpcr_to_rdmar(rqst);
     let mut p: *mut __be32;
@@ -54,7 +54,7 @@ unsafe fn rpcrdma_bc_marshal_reply(rqst: *mut rpc_rqst) -> libc::c_int {
     0
 }
 
-pub unsafe fn xprt_rdma_bc_send_reply(rqst: *mut rpc_rqst) -> libc::c_int {
+pub unsafe fn xprt_rdma_bc_send_reply(rqst: *mut rpc_rqst) -> core::ffi::c_int {
     let xprt = (*rqst).rq_xprt;
     let r_xprt = rpcx_to_rdmax(xprt);
     let req = rpcr_to_rdmar(rqst);
@@ -72,7 +72,7 @@ pub unsafe fn xprt_rdma_bc_send_reply(rqst: *mut rpc_rqst) -> libc::c_int {
     -ENOTCONN
 }
 
-pub unsafe fn xprt_rdma_bc_destroy(xprt: *mut rpc_xprt, _reqs: libc::c_uint) {
+pub unsafe fn xprt_rdma_bc_destroy(xprt: *mut rpc_xprt, _reqs: core::ffi::c_uint) {
     let mut rqst: *mut rpc_rqst;
     let mut tmp: *mut rpc_rqst;
     spin_lock(&mut (*xprt).bc_pa_lock);
@@ -141,7 +141,7 @@ pub unsafe fn rpcrdma_bc_receive_call(r_xprt: *mut rpcrdma_xprt, rep: *mut rpcrd
     (*rqst).rq_private_buf.len = size;
     let buf = &mut (*rqst).rq_rcv_buf;
     core::ptr::write_bytes(buf, 0, 1);
-    (*buf).head[0].iov_base = p as *mut libc::c_void;
+    (*buf).head[0].iov_base = p as *mut core::ffi::c_void;
     (*buf).head[0].iov_len = size;
     (*buf).len = size;
     let req = rpcr_to_rdmar(rqst);

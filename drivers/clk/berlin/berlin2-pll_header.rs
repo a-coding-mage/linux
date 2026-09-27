@@ -20,10 +20,10 @@ pub struct berlin2_pll_map {
 
 pub unsafe extern "C" fn berlin2_pll_register(
     map: *const berlin2_pll_map,
-    base: *mut core::ffi::c_void,
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
-    flags: core::ffi::c_ulong,
-) -> core::ffi::c_int;
+    base: *mut kernel::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
+    flags: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

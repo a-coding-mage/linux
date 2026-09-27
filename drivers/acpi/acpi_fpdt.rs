@@ -87,7 +87,7 @@ macro_rules! FPDT_ATTR {
         unsafe extern "C" fn ::kernel::macros::paste!([<$name _show>])(
             _kobj: *mut Kobject,
             _attr: *mut KobjAttribute,
-            buf: *mut core::ffi::c_char,
+            buf: *mut kernel::ffi::c_char,
         ) -> isize {
             sprintf_u64(buf, (*$crate::record_$phase).$name)
         }
@@ -108,7 +108,7 @@ FPDT_ATTR!(boot, exitbootservice_end);
 unsafe extern "C" fn resume_count_show(
     _kobj: *mut Kobject,
     _attr: *mut KobjAttribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     sprintf_u32(buf, (*record_resume).resume_count)
 }

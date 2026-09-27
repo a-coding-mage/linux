@@ -11,8 +11,8 @@ pub const WMI_MODULE_PREFIX: &str = "wmi:";
  */
 #[repr(C)]
 pub struct wmi_device_id {
-    pub guid_string: [core::ffi::c_char; UUID_STRING_LEN + 1],
-    pub context: *const core::ffi::c_void,
+    pub guid_string: [kernel::ffi::c_char; UUID_STRING_LEN + 1],
+    pub context: *const kernel::ffi::c_void,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

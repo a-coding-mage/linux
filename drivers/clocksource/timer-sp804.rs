@@ -46,7 +46,7 @@ static mut hisi_sp804_timer: sp804_timer = sp804_timer {
 
 static mut sp804_clkevt: [sp804_clkevt; NR_TIMERS] = unsafe { core::mem::zeroed() };
 
-unsafe fn sp804_get_clock_rate(mut clk: *mut clk, name: *const core::ffi::c_char) -> i64 {
+unsafe fn sp804_get_clock_rate(mut clk: *mut clk, name: *const kernel::ffi::c_char) -> i64 {
     let err: i32;
     if clk.is_null() {
         clk = clk_get_sys(b"sp804\0".as_ptr() as _, name);
@@ -64,7 +64,7 @@ unsafe fn sp804_get_clock_rate(mut clk: *mut clk, name: *const core::ffi::c_char
     clk_get_rate(clk)
 }
 
-unsafe fn sp804_clkevt_get(base: *mut core::ffi::c_void) -> *mut sp804_clkevt {
+unsafe fn sp804_clkevt_get(base: *mut kernel::ffi::c_void) -> *mut sp804_clkevt {
     for i in 0..NR_TIMERS {
         if sp804_clkevt[i].base == base { return &mut sp804_clkevt[i]; }
     }
@@ -99,7 +99,7 @@ unsafe fn sp804_register_delay_timer(clk: *mut sp804_clkevt, freq: i32) {
 #[cfg(not(CONFIG_ARM))]
 unsafe fn sp804_register_delay_timer(_clk: *mut sp804_clkevt, _freq: i32) {}
 
-unsafe fn sp804_clocksource_and_sched_clock_init(base: *mut core::ffi::c_void, name: *const core::ffi::c_char, clk: *mut clk, use_sched_clock: i32) -> i32 {
+unsafe fn sp804_clocksource_and_sched_clock_init(base: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, clk: *mut clk, use_sched_clock: i32) -> i32 {
     let rate = sp804_get_clock_rate(clk, name);
     if rate < 0 { return -EINVAL; }
     let clkevt = sp804_clkevt_get(base);
@@ -122,7 +122,7 @@ unsafe fn sp804_clocksource_and_sched_clock_init(base: *mut core::ffi::c_void, n
 
 static mut common_clkevt: *mut sp804_clkevt = core::ptr::null_mut();
 
-unsafe extern "C" fn sp804_timer_interrupt(_irq: i32, dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn sp804_timer_interrupt(_irq: i32, dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     let evt = dev_id as *mut clock_event_device;
     writel(1, (*common_clkevt).intclr);
     ((*evt).event_handler.unwrap())(evt);
@@ -158,7 +158,7 @@ static mut sp804_clockevent: clock_event_device = clock_event_device {
     ..unsafe { core::mem::zeroed() }
 };
 
-unsafe fn sp804_clockevents_init(base: *mut core::ffi::c_void, irq: u32, clk: *mut clk, name: *const core::ffi::c_char) -> i32 {
+unsafe fn sp804_clockevents_init(base: *mut kernel::ffi::c_void, irq: u32, clk: *mut clk, name: *const kernel::ffi::c_char) -> i32 {
     let evt = &mut sp804_clockevent;
     let rate = sp804_get_clock_rate(clk, name);
     if rate < 0 { return -EINVAL; }
@@ -173,7 +173,7 @@ unsafe fn sp804_clockevents_init(base: *mut core::ffi::c_void, irq: u32, clk: *m
     0
 }
 
-unsafe fn sp804_clkevt_init(timer: *mut sp804_timer, base: *mut core::ffi::c_void) {
+unsafe fn sp804_clkevt_init(timer: *mut sp804_timer, base: *mut kernel::ffi::c_void) {
     for i in 0..NR_TIMERS {
         let timer_base = (base as *mut u8).add((*timer).timer_base[i]) as _;
         let clkevt = &mut sp804_clkevt[i];
@@ -190,13 +190,13 @@ unsafe fn sp804_clkevt_init(timer: *mut sp804_timer, base: *mut core::ffi::c_voi
 
 unsafe fn sp804_of_init(np: *mut device_node, timer: *mut sp804_timer) -> i32 {
     static mut initialized: bool = false;
-    let mut base: *mut core::ffi::c_void;
+    let mut base: *mut kernel::ffi::c_void;
     let mut irq_num = 0u32;
     let name = of_get_property(np, b"compatible\0".as_ptr() as _, core::ptr::null_mut());
     if initialized { pr_debug(b"%pOF: skipping further SP804 timer device\n\0".as_ptr() as _, np); return 0; }
     base = of_iomap(np, 0); if base.is_null() { return -ENXIO; }
-    let timer1_base = (base as *mut u8).add((*timer).timer_base[0]) as *mut core::ffi::c_void;
-    let timer2_base = (base as *mut u8).add((*timer).timer_base[1]) as *mut core::ffi::c_void;
+    let timer1_base = (base as *mut u8).add((*timer).timer_base[0]) as *mut kernel::ffi::c_void;
+    let timer2_base = (base as *mut u8).add((*timer).timer_base[1]) as *mut kernel::ffi::c_void;
     writel(0, (timer1_base as *mut u8).add((*timer).ctrl) as _); writel(0, (timer2_base as *mut u8).add((*timer).ctrl) as _);
     let clk1 = { let c = of_clk_get(np, 0); if IS_ERR(c) { core::ptr::null_mut() } else { c } };
     let clk2 = if of_clk_get_parent_count(np) == 3 { let c = of_clk_get(np, 1); if IS_ERR(c) { pr_err(b"%pOFn clock not found: %d\n\0".as_ptr() as _, np, PTR_ERR(c)); core::ptr::null_mut() } else { c } } else { clk1 };

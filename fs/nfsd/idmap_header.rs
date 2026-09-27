@@ -52,12 +52,12 @@ pub unsafe fn nfsd_idmap_shutdown(_net: *mut net) {}
 unsafe extern "C" {
     pub fn nfsd_map_name_to_uid(
         rqst: *mut svc_rqst,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         len: usize,
         uid: *mut kuid_t) -> __be32;
     pub fn nfsd_map_name_to_gid(
         rqst: *mut svc_rqst,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         len: usize,
         gid: *mut kgid_t) -> __be32;
     pub fn nfsd4_encode_user(

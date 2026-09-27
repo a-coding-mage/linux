@@ -4,7 +4,7 @@
 
 #[repr(C)]
 pub struct sch_frag_data {
-    pub dst: ::core::ffi::c_ulong,
+    pub dst: ::kernel::ffi::c_ulong,
     pub cb: qdisc_skb_cb,
     pub inner_protocol: __be16,
     pub vlan_tci: u16,
@@ -114,7 +114,7 @@ unsafe fn sch_fragment(
 
     if skb_protocol(skb, true) == htons(ETH_P_IP) {
         let mut sch_frag_rt: rtable = core::mem::zeroed();
-        let orig_dst: ::core::ffi::c_ulong;
+        let orig_dst: ::kernel::ffi::c_ulong;
 
         local_lock_nested_bh(&raw mut (*this_cpu_ptr(&raw mut sch_frag_data_storage)).bh_lock);
         sch_frag_prepare_frag(skb, xmit);
@@ -127,7 +127,7 @@ unsafe fn sch_fragment(
         local_unlock_nested_bh(&raw mut (*this_cpu_ptr(&raw mut sch_frag_data_storage)).bh_lock);
         refdst_drop(orig_dst);
     } else if skb_protocol(skb, true) == htons(ETH_P_IPV6) {
-        let orig_dst: ::core::ffi::c_ulong;
+        let orig_dst: ::kernel::ffi::c_ulong;
         let mut sch_frag_rt: rt6_info = core::mem::zeroed();
 
         local_lock_nested_bh(&raw mut (*this_cpu_ptr(&raw mut sch_frag_data_storage)).bh_lock);

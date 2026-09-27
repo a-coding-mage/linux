@@ -5,7 +5,7 @@
  *  Copyright (C) 2003 Russell King, All Rights Reserved.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Forward declarations from the MTD subsystem.
 #[repr(C)]

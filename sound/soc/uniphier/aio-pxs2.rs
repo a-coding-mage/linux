@@ -294,8 +294,8 @@ static uniphier_aio_pxs2_spec: uniphier_aio_chip_spec = uniphier_aio_chip_spec {
 
 static uniphier_aio_of_match: [of_device_id; 2] = [
     of_device_id {
-        compatible: b"socionext,uniphier-pxs2-aio\0".as_ptr() as *const core::ffi::c_char,
-        data: &uniphier_aio_pxs2_spec as *const uniphier_aio_chip_spec as *const core::ffi::c_void,
+        compatible: b"socionext,uniphier-pxs2-aio\0".as_ptr() as *const kernel::ffi::c_char,
+        data: &uniphier_aio_pxs2_spec as *const uniphier_aio_chip_spec as *const kernel::ffi::c_void,
         ..unsafe { core::mem::zeroed() }
     },
     unsafe { core::mem::zeroed() },
@@ -304,7 +304,7 @@ static uniphier_aio_of_match: [of_device_id; 2] = [
 
 static mut uniphier_aio_driver: platform_driver = platform_driver {
     driver: device_driver {
-        name: b"snd-uniphier-aio-pxs2\0".as_ptr() as *const core::ffi::c_char,
+        name: b"snd-uniphier-aio-pxs2\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: uniphier_aio_of_match.as_ptr(),
         ..unsafe { core::mem::zeroed() }
     },

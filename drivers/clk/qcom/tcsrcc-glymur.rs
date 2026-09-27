@@ -12,15 +12,15 @@ pub struct tcsrcc_glymur_data {
 }
 
 extern "C" {
-    pub static glymur_tcsr_tx0_rx5_regulators: [*const core::ffi::c_char; 5];
-    pub static glymur_tcsr_tx1_rpt0_rx0_regulators: [*const core::ffi::c_char; 5];
-    pub static glymur_tcsr_tx1_rpt01_rx1_regulators: [*const core::ffi::c_char; 6];
-    pub static glymur_tcsr_tx1_rpt012_rx2_regulators: [*const core::ffi::c_char; 7];
-    pub static glymur_tcsr_tx1_rpt34_rx4_regulators: [*const core::ffi::c_char; 6];
-    pub static mahua_tcsr_tx1_rpt01_rx1_regulators: [*const core::ffi::c_char; 6];
-    pub static mahua_tcsr_tx1_rpt012_rx2_regulators: [*const core::ffi::c_char; 7];
-    pub static mahua_tcsr_tx1_rpt0_rx0_regulators: [*const core::ffi::c_char; 5];
-    pub static mahua_tcsr_tx1_rpt345_rx3_regulators: [*const core::ffi::c_char; 7];
+    pub static glymur_tcsr_tx0_rx5_regulators: [*const kernel::ffi::c_char; 5];
+    pub static glymur_tcsr_tx1_rpt0_rx0_regulators: [*const kernel::ffi::c_char; 5];
+    pub static glymur_tcsr_tx1_rpt01_rx1_regulators: [*const kernel::ffi::c_char; 6];
+    pub static glymur_tcsr_tx1_rpt012_rx2_regulators: [*const kernel::ffi::c_char; 7];
+    pub static glymur_tcsr_tx1_rpt34_rx4_regulators: [*const kernel::ffi::c_char; 6];
+    pub static mahua_tcsr_tx1_rpt01_rx1_regulators: [*const kernel::ffi::c_char; 6];
+    pub static mahua_tcsr_tx1_rpt012_rx2_regulators: [*const kernel::ffi::c_char; 7];
+    pub static mahua_tcsr_tx1_rpt0_rx0_regulators: [*const kernel::ffi::c_char; 5];
+    pub static mahua_tcsr_tx1_rpt345_rx3_regulators: [*const kernel::ffi::c_char; 7];
 }
 
 // The following declarations preserve the C structs and externally supplied constants.
@@ -35,16 +35,16 @@ pub struct regmap_config {
 
 #[repr(C)]
 pub struct qcom_clk_ref_desc {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub offset: u32,
-    pub regulator_names: *const *const core::ffi::c_char,
+    pub regulator_names: *const *const kernel::ffi::c_char,
     pub num_regulators: usize,
 }
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -53,7 +53,7 @@ pub struct platform_device;
 pub struct platform_driver;
 
 unsafe extern "C" {
-    fn device_get_match_data(dev: *const core::ffi::c_void) -> *const tcsrcc_glymur_data;
+    fn device_get_match_data(dev: *const kernel::ffi::c_void) -> *const tcsrcc_glymur_data;
     fn qcom_clk_ref_probe(
         pdev: *mut platform_device,
         config: *const regmap_config,

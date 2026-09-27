@@ -11,28 +11,28 @@
 // External declarations supplied by the Linux kernel and geode-common.h.
 #[repr(C)]
 pub struct geode_led {
-    pub gpio: ::core::ffi::c_int,
+    pub gpio: ::kernel::ffi::c_int,
     pub active_low: bool,
 }
 
 extern "C" {
-    fn geode_create_restart_key(gpio: ::core::ffi::c_int);
+    fn geode_create_restart_key(gpio: ::kernel::ffi::c_int);
     fn geode_create_leds(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         leds: *const geode_led,
         count: usize,
     );
     fn is_geode() -> bool;
-    fn dmi_get_system_info(field: ::core::ffi::c_int) -> *const ::core::ffi::c_char;
-    fn strcmp(a: *const ::core::ffi::c_char, b: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn printk(fmt: *const ::core::ffi::c_char, ...);
+    fn dmi_get_system_info(field: ::kernel::ffi::c_int) -> *const ::kernel::ffi::c_char;
+    fn strcmp(a: *const ::kernel::ffi::c_char, b: *const ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
+    fn printk(fmt: *const ::kernel::ffi::c_char, ...);
 }
 
 // Values supplied by the Linux DMI and logging interfaces.
 extern "C" {
-    static DMI_SYS_VENDOR: ::core::ffi::c_int;
-    static DMI_PRODUCT_NAME: ::core::ffi::c_int;
-    static KBUILD_MODNAME: ::core::ffi::c_char;
+    static DMI_SYS_VENDOR: ::kernel::ffi::c_int;
+    static DMI_PRODUCT_NAME: ::kernel::ffi::c_int;
+    static KBUILD_MODNAME: ::kernel::ffi::c_char;
 }
 
 static GEOS_LEDS: [geode_led; 3] = [
@@ -43,14 +43,14 @@ static GEOS_LEDS: [geode_led; 3] = [
 
 unsafe fn register_geos() {
     geode_create_restart_key(3);
-    geode_create_leds(b"geos\0".as_ptr() as *const ::core::ffi::c_char,
+    geode_create_leds(b"geos\0".as_ptr() as *const ::kernel::ffi::c_char,
                       GEOS_LEDS.as_ptr(),
                       GEOS_LEDS.len());
 }
 
-unsafe fn geos_init() -> ::core::ffi::c_int {
-    let vendor: *const ::core::ffi::c_char;
-    let product: *const ::core::ffi::c_char;
+unsafe fn geos_init() -> ::kernel::ffi::c_int {
+    let vendor: *const ::kernel::ffi::c_char;
+    let product: *const ::kernel::ffi::c_char;
 
     if !is_geode() {
         return 0;
@@ -58,19 +58,19 @@ unsafe fn geos_init() -> ::core::ffi::c_int {
 
     vendor = dmi_get_system_info(DMI_SYS_VENDOR);
     if vendor.is_null()
-        || strcmp(vendor, b"Traverse Technologies\0".as_ptr() as *const ::core::ffi::c_char) != 0
+        || strcmp(vendor, b"Traverse Technologies\0".as_ptr() as *const ::kernel::ffi::c_char) != 0
     {
         return 0;
     }
 
     product = dmi_get_system_info(DMI_PRODUCT_NAME);
     if product.is_null()
-        || strcmp(product, b"Geos\0".as_ptr() as *const ::core::ffi::c_char) != 0
+        || strcmp(product, b"Geos\0".as_ptr() as *const ::kernel::ffi::c_char) != 0
     {
         return 0;
     }
 
-    printk(b"%s: system is recognized as \"%s %s\"\n\0".as_ptr() as *const ::core::ffi::c_char,
+    printk(b"%s: system is recognized as \"%s %s\"\n\0".as_ptr() as *const ::kernel::ffi::c_char,
            &KBUILD_MODNAME,
            vendor,
            product);

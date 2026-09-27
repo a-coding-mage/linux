@@ -130,18 +130,18 @@ mod lwq_test {
         fn wake_up_var(q: *mut lwq);
         fn kthread_should_stop() -> bool;
         fn schedule_timeout_idle(timeout: i32);
-        fn kthread_run(f: unsafe extern "C" fn(*mut core::ffi::c_void) -> i32,
-                        data: *mut core::ffi::c_void,
-                        name: *const core::ffi::c_char,
-                        ...) -> *mut core::ffi::c_void;
-        fn kthread_stop(task: *mut core::ffi::c_void);
+        fn kthread_run(f: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32,
+                        data: *mut kernel::ffi::c_void,
+                        name: *const kernel::ffi::c_char,
+                        ...) -> *mut kernel::ffi::c_void;
+        fn kthread_stop(task: *mut kernel::ffi::c_void);
         fn kmalloc_tnode() -> *mut tnode;
-        fn kfree(p: *mut core::ffi::c_void);
-        fn printk_info(s: *const core::ffi::c_char, ...);
-        fn printk_cont(s: *const core::ffi::c_char, ...);
+        fn kfree(p: *mut kernel::ffi::c_void);
+        fn printk_info(s: *const kernel::ffi::c_char, ...);
+        fn printk_cont(s: *const kernel::ffi::c_char, ...);
     }
 
-    unsafe extern "C" fn lwq_exercise(qv: *mut core::ffi::c_void) -> i32 {
+    unsafe extern "C" fn lwq_exercise(qv: *mut kernel::ffi::c_void) -> i32 {
         let q = qv as *mut lwq;
         let mut cnt = 0;
         while cnt < 10000 {
@@ -164,7 +164,7 @@ mod lwq_test {
     #[allow(dead_code)]
     unsafe fn lwq_test() -> i32 {
         let mut q: lwq = core::mem::zeroed();
-        let mut threads: [*mut core::ffi::c_void; 8] = [core::ptr::null_mut(); 8];
+        let mut threads: [*mut kernel::ffi::c_void; 8] = [core::ptr::null_mut(); 8];
         printk_info(b"testing lwq....\0".as_ptr() as *const _);
         lwq_init(&mut q);
         printk_info(b" lwq: run some threads\n\0".as_ptr() as *const _);

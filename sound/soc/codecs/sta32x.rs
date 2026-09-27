@@ -17,11 +17,11 @@
 #![allow(non_upper_case_globals)]
 #![allow(dead_code)]
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 
-type u8 = ::core::ffi::c_uchar;
-type u16 = ::core::ffi::c_ushort;
-type u32 = ::core::ffi::c_uint;
+type u8 = ::kernel::ffi::c_uchar;
+type u16 = ::kernel::ffi::c_ushort;
+type u32 = ::kernel::ffi::c_uint;
 
 // pr_fmt(fmt) KBUILD_MODNAME ":%s:%d: " fmt, __func__, __LINE__
 // Linux, ALSA, regmap and local sta32x.h declarations are external to this file.
@@ -1249,7 +1249,7 @@ extern "C" {
     fn dev_err(dev: *mut device, fmt: *const c_char, ...);
 }
 
-type c_ulong = ::core::ffi::c_ulong;
+type c_ulong = ::kernel::ffi::c_ulong;
 
 #[repr(C)] pub struct regmap { _private: [u8; 0] }
 #[repr(C)] pub struct clk { _private: [u8; 0] }

@@ -37,32 +37,32 @@ pub struct ptp_system_timestamp {
 #[repr(C)]
 pub struct ptp_clock_info {
     pub owner: *mut module,
-    pub name: [::core::ffi::c_char; PTP_CLOCK_NAME_LEN],
+    pub name: [::kernel::ffi::c_char; PTP_CLOCK_NAME_LEN],
     pub max_adj: s32,
-    pub n_alarm: ::core::ffi::c_int,
-    pub n_ext_ts: ::core::ffi::c_int,
-    pub n_per_out: ::core::ffi::c_int,
-    pub n_pins: ::core::ffi::c_int,
-    pub n_per_lp: ::core::ffi::c_int,
-    pub pps: ::core::ffi::c_int,
-    pub supported_perout_flags: ::core::ffi::c_uint,
-    pub supported_extts_flags: ::core::ffi::c_uint,
+    pub n_alarm: ::kernel::ffi::c_int,
+    pub n_ext_ts: ::kernel::ffi::c_int,
+    pub n_per_out: ::kernel::ffi::c_int,
+    pub n_pins: ::kernel::ffi::c_int,
+    pub n_per_lp: ::kernel::ffi::c_int,
+    pub pps: ::kernel::ffi::c_int,
+    pub supported_perout_flags: ::kernel::ffi::c_uint,
+    pub supported_extts_flags: ::kernel::ffi::c_uint,
     pub pin_config: *mut ptp_pin_desc,
-    pub adjfine: Option<unsafe extern "C" fn(*mut ptp_clock_info, ::core::ffi::c_long) -> ::core::ffi::c_int>,
-    pub adjphase: Option<unsafe extern "C" fn(*mut ptp_clock_info, s32) -> ::core::ffi::c_int>,
+    pub adjfine: Option<unsafe extern "C" fn(*mut ptp_clock_info, ::kernel::ffi::c_long) -> ::kernel::ffi::c_int>,
+    pub adjphase: Option<unsafe extern "C" fn(*mut ptp_clock_info, s32) -> ::kernel::ffi::c_int>,
     pub getmaxphase: Option<unsafe extern "C" fn(*mut ptp_clock_info) -> s32>,
-    pub adjtime: Option<unsafe extern "C" fn(*mut ptp_clock_info, s64) -> ::core::ffi::c_int>,
-    pub gettime64: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut timespec64) -> ::core::ffi::c_int>,
-    pub gettimex64: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut timespec64, *mut ptp_system_timestamp) -> ::core::ffi::c_int>,
-    pub getcrosststamp: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut system_device_crosststamp) -> ::core::ffi::c_int>,
-    pub settime64: Option<unsafe extern "C" fn(*mut ptp_clock_info, *const timespec64) -> ::core::ffi::c_int>,
-    pub getcycles64: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut timespec64) -> ::core::ffi::c_int>,
-    pub getcyclesx64: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut timespec64, *mut ptp_system_timestamp) -> ::core::ffi::c_int>,
-    pub getcrosscycles: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut system_device_crosststamp) -> ::core::ffi::c_int>,
-    pub enable: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut ptp_clock_request, ::core::ffi::c_int) -> ::core::ffi::c_int>,
-    pub verify: Option<unsafe extern "C" fn(*mut ptp_clock_info, ::core::ffi::c_uint, ptp_pin_function, ::core::ffi::c_uint) -> ::core::ffi::c_int>,
-    pub do_aux_work: Option<unsafe extern "C" fn(*mut ptp_clock_info) -> ::core::ffi::c_long>,
-    pub perout_loopback: Option<unsafe extern "C" fn(*mut ptp_clock_info, ::core::ffi::c_uint, ::core::ffi::c_int) -> ::core::ffi::c_int>,
+    pub adjtime: Option<unsafe extern "C" fn(*mut ptp_clock_info, s64) -> ::kernel::ffi::c_int>,
+    pub gettime64: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut timespec64) -> ::kernel::ffi::c_int>,
+    pub gettimex64: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut timespec64, *mut ptp_system_timestamp) -> ::kernel::ffi::c_int>,
+    pub getcrosststamp: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut system_device_crosststamp) -> ::kernel::ffi::c_int>,
+    pub settime64: Option<unsafe extern "C" fn(*mut ptp_clock_info, *const timespec64) -> ::kernel::ffi::c_int>,
+    pub getcycles64: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut timespec64) -> ::kernel::ffi::c_int>,
+    pub getcyclesx64: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut timespec64, *mut ptp_system_timestamp) -> ::kernel::ffi::c_int>,
+    pub getcrosscycles: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut system_device_crosststamp) -> ::kernel::ffi::c_int>,
+    pub enable: Option<unsafe extern "C" fn(*mut ptp_clock_info, *mut ptp_clock_request, ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
+    pub verify: Option<unsafe extern "C" fn(*mut ptp_clock_info, ::kernel::ffi::c_uint, ptp_pin_function, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>,
+    pub do_aux_work: Option<unsafe extern "C" fn(*mut ptp_clock_info) -> ::kernel::ffi::c_long>,
+    pub perout_loopback: Option<unsafe extern "C" fn(*mut ptp_clock_info, ::kernel::ffi::c_uint, ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
 }
 
 pub struct ptp_clock;
@@ -86,21 +86,21 @@ pub union ptp_clock_event_data {
 
 #[repr(C)]
 pub struct ptp_clock_event {
-    pub type_: ::core::ffi::c_int,
-    pub index: ::core::ffi::c_int,
+    pub type_: ::kernel::ffi::c_int,
+    pub index: ::kernel::ffi::c_int,
     pub data: ptp_clock_event_data,
 }
 
 #[inline]
-pub unsafe fn scaled_ppm_to_ppb(ppm: ::core::ffi::c_long) -> ::core::ffi::c_long {
+pub unsafe fn scaled_ppm_to_ppb(ppm: ::kernel::ffi::c_long) -> ::kernel::ffi::c_long {
     let mut ppb: s64 = 1i64.wrapping_add(ppm as s64);
     ppb = ppb.wrapping_mul(125);
     ppb >>= 13;
-    ppb as ::core::ffi::c_long
+    ppb as ::kernel::ffi::c_long
 }
 
 #[inline]
-pub unsafe fn diff_by_scaled_ppm(base: u64, mut scaled_ppm: ::core::ffi::c_long, diff: *mut u64) -> bool {
+pub unsafe fn diff_by_scaled_ppm(base: u64, mut scaled_ppm: ::kernel::ffi::c_long, diff: *mut u64) -> bool {
     let mut negative = false;
     if scaled_ppm < 0 {
         negative = true;
@@ -111,7 +111,7 @@ pub unsafe fn diff_by_scaled_ppm(base: u64, mut scaled_ppm: ::core::ffi::c_long,
 }
 
 #[inline]
-pub unsafe fn adjust_by_scaled_ppm(base: u64, scaled_ppm: ::core::ffi::c_long) -> u64 {
+pub unsafe fn adjust_by_scaled_ppm(base: u64, scaled_ppm: ::kernel::ffi::c_long) -> u64 {
     let mut diff = 0u64;
     if diff_by_scaled_ppm(base, scaled_ppm, &mut diff) { base.wrapping_sub(diff) } else { base.wrapping_add(diff) }
 }
@@ -120,47 +120,47 @@ pub unsafe fn adjust_by_scaled_ppm(base: u64, scaled_ppm: ::core::ffi::c_long) -
 #[cfg(CONFIG_PTP_1588_CLOCK)]
 extern "C" {
     pub fn ptp_clock_register(info: *mut ptp_clock_info, parent: *mut device) -> *mut ptp_clock;
-    pub fn ptp_clock_unregister(ptp: *mut ptp_clock) -> ::core::ffi::c_int;
+    pub fn ptp_clock_unregister(ptp: *mut ptp_clock) -> ::kernel::ffi::c_int;
     pub fn ptp_clock_event(ptp: *mut ptp_clock, event: *mut ptp_clock_event);
-    pub fn ptp_clock_index(ptp: *mut ptp_clock) -> ::core::ffi::c_int;
-    pub fn ptp_clock_index_by_of_node(np: *mut device_node) -> ::core::ffi::c_int;
-    pub fn ptp_clock_index_by_dev(parent: *mut device) -> ::core::ffi::c_int;
-    pub fn ptp_find_pin(ptp: *mut ptp_clock, func: ptp_pin_function, chan: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn ptp_find_pin_unlocked(ptp: *mut ptp_clock, func: ptp_pin_function, chan: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn ptp_schedule_worker(ptp: *mut ptp_clock, delay: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn ptp_clock_index(ptp: *mut ptp_clock) -> ::kernel::ffi::c_int;
+    pub fn ptp_clock_index_by_of_node(np: *mut device_node) -> ::kernel::ffi::c_int;
+    pub fn ptp_clock_index_by_dev(parent: *mut device) -> ::kernel::ffi::c_int;
+    pub fn ptp_find_pin(ptp: *mut ptp_clock, func: ptp_pin_function, chan: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn ptp_find_pin_unlocked(ptp: *mut ptp_clock, func: ptp_pin_function, chan: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn ptp_schedule_worker(ptp: *mut ptp_clock, delay: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
     pub fn ptp_cancel_worker_sync(ptp: *mut ptp_clock);
 }
 
 #[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_clock_register(_: *mut ptp_clock_info, _: *mut device) -> *mut ptp_clock { core::ptr::null_mut() }
 #[cfg(not(CONFIG_PTP_1588_CLOCK))]
-#[inline] pub unsafe fn ptp_clock_unregister(_: *mut ptp_clock) -> ::core::ffi::c_int { 0 }
+#[inline] pub unsafe fn ptp_clock_unregister(_: *mut ptp_clock) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_clock_event(_: *mut ptp_clock, _: *mut ptp_clock_event) {}
 #[cfg(not(CONFIG_PTP_1588_CLOCK))]
-#[inline] pub unsafe fn ptp_clock_index(_: *mut ptp_clock) -> ::core::ffi::c_int { -1 }
+#[inline] pub unsafe fn ptp_clock_index(_: *mut ptp_clock) -> ::kernel::ffi::c_int { -1 }
 #[cfg(not(CONFIG_PTP_1588_CLOCK))]
-#[inline] pub unsafe fn ptp_clock_index_by_of_node(_: *mut device_node) -> ::core::ffi::c_int { -1 }
+#[inline] pub unsafe fn ptp_clock_index_by_of_node(_: *mut device_node) -> ::kernel::ffi::c_int { -1 }
 #[cfg(not(CONFIG_PTP_1588_CLOCK))]
-#[inline] pub unsafe fn ptp_clock_index_by_dev(_: *mut device) -> ::core::ffi::c_int { -1 }
+#[inline] pub unsafe fn ptp_clock_index_by_dev(_: *mut device) -> ::kernel::ffi::c_int { -1 }
 #[cfg(not(CONFIG_PTP_1588_CLOCK))]
-#[inline] pub unsafe fn ptp_find_pin(_: *mut ptp_clock, _: ptp_pin_function, _: ::core::ffi::c_uint) -> ::core::ffi::c_int { -1 }
+#[inline] pub unsafe fn ptp_find_pin(_: *mut ptp_clock, _: ptp_pin_function, _: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int { -1 }
 #[cfg(not(CONFIG_PTP_1588_CLOCK))]
-#[inline] pub unsafe fn ptp_find_pin_unlocked(_: *mut ptp_clock, _: ptp_pin_function, _: ::core::ffi::c_uint) -> ::core::ffi::c_int { -1 }
+#[inline] pub unsafe fn ptp_find_pin_unlocked(_: *mut ptp_clock, _: ptp_pin_function, _: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int { -1 }
 #[cfg(not(CONFIG_PTP_1588_CLOCK))]
-#[inline] pub unsafe fn ptp_schedule_worker(_: *mut ptp_clock, _: ::core::ffi::c_ulong) -> ::core::ffi::c_int { -95 }
+#[inline] pub unsafe fn ptp_schedule_worker(_: *mut ptp_clock, _: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int { -95 }
 #[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_cancel_worker_sync(_: *mut ptp_clock) {}
 
 #[cfg(CONFIG_PTP_1588_CLOCK_BUILTIN)]
 extern "C" {
-    pub fn ptp_get_vclocks_index(pclock_index: ::core::ffi::c_int, vclock_index: *mut *mut ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn ptp_convert_timestamp(hwtstamp: *const ktime_t, vclock_index: ::core::ffi::c_int) -> ktime_t;
+    pub fn ptp_get_vclocks_index(pclock_index: ::kernel::ffi::c_int, vclock_index: *mut *mut ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn ptp_convert_timestamp(hwtstamp: *const ktime_t, vclock_index: ::kernel::ffi::c_int) -> ktime_t;
 }
 #[cfg(not(CONFIG_PTP_1588_CLOCK_BUILTIN))]
-#[inline] pub unsafe fn ptp_get_vclocks_index(_: ::core::ffi::c_int, _: *mut *mut ::core::ffi::c_int) -> ::core::ffi::c_int { 0 }
+#[inline] pub unsafe fn ptp_get_vclocks_index(_: ::kernel::ffi::c_int, _: *mut *mut ::kernel::ffi::c_int) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_PTP_1588_CLOCK_BUILTIN))]
-#[inline] pub unsafe fn ptp_convert_timestamp(_: *const ktime_t, _: ::core::ffi::c_int) -> ktime_t { 0 }
+#[inline] pub unsafe fn ptp_convert_timestamp(_: *const ktime_t, _: ::kernel::ffi::c_int) -> ktime_t { 0 }
 
 #[inline]
 pub unsafe fn ptp_read_system_prets(sts: *mut ptp_system_timestamp) {

@@ -83,7 +83,7 @@ pub unsafe fn acpi_has_watchdog() -> bool {
 // EXPORT_SYMBOL_GPL(acpi_has_watchdog);
 
 /* ACPI watchdog can be disabled on boot command line */
-unsafe fn disable_acpi_watchdog(_str: *mut core::ffi::c_char) -> i32 {
+unsafe fn disable_acpi_watchdog(_str: *mut kernel::ffi::c_char) -> i32 {
     acpi_no_watchdog = true;
     1
 }

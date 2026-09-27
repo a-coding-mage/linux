@@ -3,7 +3,7 @@
  *  Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Supplied by the architecture and i.MX support dependencies.
 use crate::{mxc_restart, mxc_set_cpu_type, MachineDesc, MXC_CPU_MX1};

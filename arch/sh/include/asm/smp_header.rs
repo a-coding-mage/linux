@@ -103,7 +103,7 @@ pub unsafe fn hard_smp_processor_id() -> i32 {
 #[cfg(CONFIG_SMP)]
 #[repr(C)]
 pub struct of_cpu_method {
-    pub method: *const core::ffi::c_char,
+    pub method: *const kernel::ffi::c_char,
     pub ops: *mut plat_smp_ops,
 }
 

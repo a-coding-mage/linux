@@ -61,11 +61,11 @@ pub const SIGSTKSZ: usize = 8192;
 
 #[repr(C)]
 pub struct sigset_t {
-    pub sig: [::core::ffi::c_ulong; _NSIG_WORDS],
+    pub sig: [::kernel::ffi::c_ulong; _NSIG_WORDS],
 }
 
 // Not actually used, but required for linux/syscalls.h.
-pub type old_sigset_t = ::core::ffi::c_ulong;
+pub type old_sigset_t = ::kernel::ffi::c_ulong;
 
 // The asm-generic signal definitions are supplied by the corresponding
 // translated dependency.  If SA_RESTORER is defined by that dependency:
@@ -77,7 +77,7 @@ pub const __ARCH_HAS_SA_RESTORER: bool = true;
 #[repr(C)]
 pub struct sigaction {
     pub sa_handler: __sighandler_t,
-    pub sa_flags: ::core::ffi::c_ulong,
+    pub sa_flags: ::kernel::ffi::c_ulong,
     #[cfg(feature = "SA_RESTORER")]
     pub sa_restorer: __sigrestore_t,
     pub sa_mask: sigset_t, // mask last for extensibility
@@ -85,8 +85,8 @@ pub struct sigaction {
 
 #[repr(C)]
 pub struct sigaltstack {
-    pub ss_sp: *mut ::core::ffi::c_void,
-    pub ss_flags: ::core::ffi::c_int,
+    pub ss_sp: *mut ::kernel::ffi::c_void,
+    pub ss_flags: ::kernel::ffi::c_int,
     pub ss_size: __kernel_size_t,
 }
 

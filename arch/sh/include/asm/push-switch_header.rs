@@ -19,13 +19,13 @@ pub struct push_switch {
 #[repr(C)]
 pub struct push_switch_platform_info {
     /* IRQ handler */
-    pub irq_handler: Option<unsafe extern "C" fn(irq: i32, data: *mut core::ffi::c_void) -> irqreturn_t>,
+    pub irq_handler: Option<unsafe extern "C" fn(irq: i32, data: *mut kernel::ffi::c_void) -> irqreturn_t>,
     /* Special IRQ flags */
     pub irq_flags: u32,
     /* Bit location of switch */
     pub bit: u32,
     /* Symbolic switch name */
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

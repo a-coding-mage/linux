@@ -17,7 +17,7 @@ pub const fn pg_count_to_kb(x: usize) -> usize {
 #[repr(C)]
 pub struct oom_score_adj_update_entry {
     pub pid: pid_t,
-    pub comm: [core::ffi::c_char; TASK_COMM_LEN],
+    pub comm: [kernel::ffi::c_char; TASK_COMM_LEN],
     pub oom_score_adj: i16,
 }
 
@@ -37,7 +37,7 @@ pub struct reclaim_retry_zone_entry {
 pub struct mark_victim_entry {
     pub pid: i32,
     // __string(comm, task->comm)
-    pub comm: *mut core::ffi::c_char,
+    pub comm: *mut kernel::ffi::c_char,
     pub total_vm: usize,
     pub anon_rss: usize,
     pub file_rss: usize,

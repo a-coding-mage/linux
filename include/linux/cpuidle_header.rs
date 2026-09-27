@@ -31,8 +31,8 @@ pub struct cpuidle_state_usage {
 
 #[repr(C)]
 pub struct cpuidle_state {
-    pub name: [core::ffi::c_char; CPUIDLE_NAME_LEN],
-    pub desc: [core::ffi::c_char; CPUIDLE_DESC_LEN],
+    pub name: [kernel::ffi::c_char; CPUIDLE_NAME_LEN],
+    pub desc: [kernel::ffi::c_char; CPUIDLE_DESC_LEN],
     pub exit_latency_ns: i64,
     pub target_residency_ns: i64,
     pub flags: u32,
@@ -99,19 +99,19 @@ pub unsafe fn ct_cpuidle_exit() {
 
 #[repr(C)]
 pub struct cpuidle_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub owner: *mut module,
     pub bctimer: u32,
     pub states: [cpuidle_state; CPUIDLE_STATE_MAX],
     pub state_count: i32,
     pub safe_state_index: i32,
     pub cpumask: *mut cpumask,
-    pub governor: *const core::ffi::c_char,
+    pub governor: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct cpuidle_governor {
-    pub name: [core::ffi::c_char; CPUIDLE_NAME_LEN],
+    pub name: [kernel::ffi::c_char; CPUIDLE_NAME_LEN],
     pub governor_list: list_head,
     pub rating: u32,
     pub enable: Option<unsafe extern "C" fn(*mut cpuidle_driver, *mut cpuidle_device) -> i32>,

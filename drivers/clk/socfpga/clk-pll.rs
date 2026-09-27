@@ -35,7 +35,7 @@ pub struct clk_hw {
 #[repr(C)]
 pub struct socfpga_pll_hw {
     pub hw: clk_hw,
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub bit_idx: u32,
 }
 
@@ -52,34 +52,34 @@ pub struct clk_ops {
 
 #[repr(C)]
 pub struct clk_init_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const clk_ops,
     pub flags: u32,
     pub num_parents: u8,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct device_node {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 extern "C" {
     static mut clk_mgr_base_addr: *mut u8;
-    fn readl(addr: *const core::ffi::c_void) -> u32;
-    fn kzalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn of_property_read_u32(node: *mut device_node, name: *const core::ffi::c_char, value: *mut u32) -> i32;
-    fn of_property_read_string(node: *mut device_node, name: *const core::ffi::c_char, value: *mut *const core::ffi::c_char) -> i32;
-    fn of_find_compatible_node(from: *mut device_node, ty: *const core::ffi::c_char, compatible: *const core::ffi::c_char) -> *mut device_node;
+    fn readl(addr: *const kernel::ffi::c_void) -> u32;
+    fn kzalloc(size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn of_property_read_u32(node: *mut device_node, name: *const kernel::ffi::c_char, value: *mut u32) -> i32;
+    fn of_property_read_string(node: *mut device_node, name: *const kernel::ffi::c_char, value: *mut *const kernel::ffi::c_char) -> i32;
+    fn of_find_compatible_node(from: *mut device_node, ty: *const kernel::ffi::c_char, compatible: *const kernel::ffi::c_char) -> *mut device_node;
     fn of_iomap(node: *mut device_node, index: i32) -> *mut u8;
     fn of_node_put(node: *mut device_node);
-    fn of_clk_parent_fill(node: *mut device_node, parents: *mut *const core::ffi::c_char, size: u8) -> u8;
-    fn clk_hw_register(dev: *mut core::ffi::c_void, hw: *mut clk_hw) -> i32;
+    fn of_clk_parent_fill(node: *mut device_node, parents: *mut *const kernel::ffi::c_char, size: u8) -> u8;
+    fn clk_hw_register(dev: *mut kernel::ffi::c_void, hw: *mut clk_hw) -> i32;
     fn clk_hw_unregister(hw: *mut clk_hw);
-    fn of_clk_add_hw_provider(node: *mut device_node, get: *const core::ffi::c_void, hw: *mut clk_hw) -> i32;
-    fn of_clk_hw_simple_get() -> *const core::ffi::c_void;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn of_clk_add_hw_provider(node: *mut device_node, get: *const kernel::ffi::c_void, hw: *mut clk_hw) -> i32;
+    fn of_clk_hw_simple_get() -> *const kernel::ffi::c_void;
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
 }
 
 const CLKMGR_BYPASS: usize = 0;
@@ -87,8 +87,8 @@ const SOCFPGA_MAX_PARENTS: u8 = 3;
 
 unsafe fn clk_pll_recalc_rate(hwclk: *mut clk_hw, parent_rate: usize) -> usize {
     let socfpgaclk = (hwclk as *mut socfpga_pll).as_ref().unwrap();
-    let reg = readl(socfpgaclk.hw.reg as *const core::ffi::c_void);
-    let bypass = readl(clk_mgr_base_addr.add(CLKMGR_BYPASS) as *const core::ffi::c_void);
+    let reg = readl(socfpgaclk.hw.reg as *const kernel::ffi::c_void);
+    let bypass = readl(clk_mgr_base_addr.add(CLKMGR_BYPASS) as *const kernel::ffi::c_void);
     if bypass & MAINPLL_BYPASS != 0 {
         return parent_rate;
     }
@@ -101,7 +101,7 @@ unsafe fn clk_pll_recalc_rate(hwclk: *mut clk_hw, parent_rate: usize) -> usize {
 
 unsafe fn clk_pll_get_parent(hwclk: *mut clk_hw) -> u8 {
     let socfpgaclk = (hwclk as *mut socfpga_pll).as_ref().unwrap();
-    let pll_src = readl(socfpgaclk.hw.reg as *const core::ffi::c_void);
+    let pll_src = readl(socfpgaclk.hw.reg as *const kernel::ffi::c_void);
     ((pll_src >> CLK_MGR_PLL_CLK_SRC_SHIFT) & CLK_MGR_PLL_CLK_SRC_MASK) as u8
 }
 
@@ -123,10 +123,10 @@ unsafe fn __socfpga_pll_init(node: *mut device_node, ops: *const clk_ops) {
     let clkmgr_np = of_find_compatible_node(core::ptr::null_mut(), core::ptr::null(), b"altr,clk-mgr\0".as_ptr() as *const _);
     clk_mgr_base_addr = of_iomap(clkmgr_np, 0);
     of_node_put(clkmgr_np);
-    (*pll_clk).hw.reg = clk_mgr_base_addr.add(reg as usize) as *mut core::ffi::c_void;
+    (*pll_clk).hw.reg = clk_mgr_base_addr.add(reg as usize) as *mut kernel::ffi::c_void;
 
     of_property_read_string(node, b"clock-output-names\0".as_ptr() as *const _, &mut clk_name);
-    let mut parent_name: [*const core::ffi::c_char; SOCFPGA_MAX_PARENTS as usize] = [core::ptr::null(); SOCFPGA_MAX_PARENTS as usize];
+    let mut parent_name: [*const kernel::ffi::c_char; SOCFPGA_MAX_PARENTS as usize] = [core::ptr::null(); SOCFPGA_MAX_PARENTS as usize];
     let mut init = clk_init_data {
         name: clk_name,
         ops,

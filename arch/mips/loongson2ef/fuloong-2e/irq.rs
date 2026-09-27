@@ -7,7 +7,7 @@
 // Dependencies supplied by the surrounding kernel translation.
 
 unsafe fn i8259_irqdispatch() {
-    let irq: ::core::ffi::c_int;
+    let irq: ::kernel::ffi::c_int;
 
     irq = i8259_irq();
     if irq >= 0 {
@@ -17,7 +17,7 @@ unsafe fn i8259_irqdispatch() {
     }
 }
 
-pub unsafe extern "C" fn mach_irq_dispatch(pending: ::core::ffi::c_uint) {
+pub unsafe extern "C" fn mach_irq_dispatch(pending: ::kernel::ffi::c_uint) {
     if pending & CAUSEF_IP7 != 0 {
         do_IRQ(MIPS_CPU_IRQ_BASE + 7);
     } else if pending & CAUSEF_IP6 != 0 {
@@ -33,7 +33,7 @@ pub unsafe extern "C" fn mach_irq_dispatch(pending: ::core::ffi::c_uint) {
 }
 
 pub unsafe extern "C" fn mach_init_irq() {
-    let mut irq: ::core::ffi::c_int;
+    let mut irq: ::kernel::ffi::c_int;
 
     /* init all controller
      *   0-15       ------> i8259 interrupt
@@ -58,7 +58,7 @@ pub unsafe extern "C" fn mach_init_irq() {
         irq,
         no_action,
         IRQF_NO_THREAD,
-        b"cascade\0".as_ptr() as *const ::core::ffi::c_char,
+        b"cascade\0".as_ptr() as *const ::kernel::ffi::c_char,
         ::core::ptr::null_mut(),
     ) != 0 {
         pr_err(b"Failed to request irq %d (cascade)\n\0".as_ptr(), irq);
@@ -69,7 +69,7 @@ pub unsafe extern "C" fn mach_init_irq() {
         irq,
         no_action,
         IRQF_NO_THREAD,
-        b"cascade\0".as_ptr() as *const ::core::ffi::c_char,
+        b"cascade\0".as_ptr() as *const ::kernel::ffi::c_char,
         ::core::ptr::null_mut(),
     ) != 0 {
         pr_err(b"Failed to request irq %d (cascade)\n\0".as_ptr(), irq);

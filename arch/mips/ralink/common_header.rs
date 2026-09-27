@@ -13,10 +13,10 @@ pub struct ralink_soc_info {
     pub sys_type: [u8; RAMIPS_SYS_TYPE_LEN],
     pub compatible: *mut u8,
 
-    pub mem_base: core::ffi::c_ulong,
-    pub mem_size: core::ffi::c_ulong,
-    pub mem_size_min: core::ffi::c_ulong,
-    pub mem_size_max: core::ffi::c_ulong,
+    pub mem_base: kernel::ffi::c_ulong,
+    pub mem_size: kernel::ffi::c_ulong,
+    pub mem_size_min: kernel::ffi::c_ulong,
+    pub mem_size_max: kernel::ffi::c_ulong,
     pub mem_detect: Option<unsafe extern "C" fn()> ,
 }
 

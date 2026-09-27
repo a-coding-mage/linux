@@ -66,7 +66,7 @@ macro_rules! MUSB_EP_FIFO_DOUBLE {
 
 #[repr(C)]
 pub struct musb_hdrc_eps_bits {
-    pub name: [core::ffi::c_char; 16],
+    pub name: [kernel::ffi::c_char; 16],
     pub bits: u8,
 }
 
@@ -86,7 +86,7 @@ pub struct musb_hdrc_config {
 #[repr(C)]
 pub struct musb_hdrc_platform_data {
     pub mode: u8,
-    pub clock: *const core::ffi::c_char,
+    pub clock: *const kernel::ffi::c_char,
     pub set_vbus: Option<unsafe extern "C" fn(dev: *mut device, is_on: i32) -> i32>,
     pub power: u8,
     pub min_power: u8,
@@ -94,8 +94,8 @@ pub struct musb_hdrc_platform_data {
     /* C bit-field extvbus:1, represented by its underlying storage. */
     pub extvbus: u32,
     pub config: *const musb_hdrc_config,
-    pub board_data: *mut core::ffi::c_void,
-    pub platform_ops: *const core::ffi::c_void,
+    pub board_data: *mut kernel::ffi::c_void,
+    pub platform_ops: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]

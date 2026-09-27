@@ -147,7 +147,7 @@ unsafe extern "C" {
     pub fn q6prm_vote_lpass_core_hw(
         dev: *mut device,
         hw_block_id: u32,
-        client_name: *const core::ffi::c_char,
+        client_name: *const kernel::ffi::c_char,
         client_handle: *mut u32,
     ) -> i32;
 

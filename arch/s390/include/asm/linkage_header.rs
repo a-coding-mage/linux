@@ -10,8 +10,8 @@
 
 /// Return the current instruction address.
 #[inline]
-pub unsafe fn _THIS_IP_() -> core::ffi::c_ulong {
-    let mut ip: core::ffi::c_ulong;
+pub unsafe fn _THIS_IP_() -> kernel::ffi::c_ulong {
+    let mut ip: kernel::ffi::c_ulong;
     core::arch::asm!("larl {0}, .", out(reg) ip);
     ip
 }

@@ -120,7 +120,7 @@ unsafe fn tsx_dev_mode_disable() {
     }
 }
 
-unsafe fn tsx_parse_cmdline(str_: *mut core::ffi::c_char) -> i32 {
+unsafe fn tsx_parse_cmdline(str_: *mut kernel::ffi::c_char) -> i32 {
     if str_.is_null() {
         return -EINVAL;
     }

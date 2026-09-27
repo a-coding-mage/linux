@@ -13,7 +13,7 @@
 
 pub unsafe fn hfs_mac2asc(
     sb: *mut super_block,
-    out: *mut ::core::ffi::c_char,
+    out: *mut ::kernel::ffi::c_char,
     input: *const hfs_name,
 ) -> i32 {
     let nls_disk = (*HFS_SB(sb)).nls_disk;

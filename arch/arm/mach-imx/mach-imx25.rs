@@ -3,7 +3,7 @@
  * Copyright 2012 Sascha Hauer, Pengutronix
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn mxc_set_cpu_type(cpu_type: i32);

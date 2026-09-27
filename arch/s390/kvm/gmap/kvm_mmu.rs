@@ -11,7 +11,7 @@ pub unsafe fn s390_kvm_mmu_get_dirty_log(
     log: *mut kvm_dirty_log,
 ) -> i32 {
     let mut r: i32;
-    let mut n: libc::c_ulong;
+    let mut n: kernel::ffi::c_ulong;
     let mut memslot: *mut kvm_memory_slot;
     let mut is_dirty: i32;
 
@@ -36,7 +36,7 @@ pub unsafe fn s390_kvm_mmu_get_dirty_log(
     /* Clear the dirty log */
     if is_dirty != 0 {
         n = kvm_dirty_bitmap_bytes(memslot);
-        memset((*memslot).dirty_bitmap as *mut libc::c_void, 0, n);
+        memset((*memslot).dirty_bitmap as *mut kernel::ffi::c_void, 0, n);
     }
     r = 0;
     mutex_unlock(&mut (*kvm).slots_lock);

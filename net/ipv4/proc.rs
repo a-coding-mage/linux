@@ -4,7 +4,7 @@
 
 const TCPUDP_MIB_MAX: usize = max_t!(u32, UDP_MIB_MAX, TCP_MIB_MAX) as usize;
 
-unsafe fn sockstat_seq_show(seq: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
+unsafe fn sockstat_seq_show(seq: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
     let net = (*seq).private as *mut net;
     let orphans = tcp_orphan_count_sum();
     let sockets = proto_sockets_allocated_sum_positive(&raw const tcp_prot);
@@ -42,7 +42,7 @@ static SNMP_TABLE! { snmp4_udp_list { /* source entries preserved */ } }
 static SNMP_TABLE! { snmp4_net_list { /* source entries preserved */ } }
 
 #[repr(C)]
-struct Icmpmibmap { name: *const core::ffi::c_char, index: i32 }
+struct Icmpmibmap { name: *const kernel::ffi::c_char, index: i32 }
 static ICMPMIBMAP: &[Icmpmibmap] = &[
     Icmpmibmap { name: c"DestUnreachs".as_ptr(), index: ICMP_DEST_UNREACH },
     Icmpmibmap { name: c"TimeExcds".as_ptr(), index: ICMP_TIME_EXCEEDED },
@@ -70,7 +70,7 @@ unsafe fn icmpmsg_put(seq: *mut seq_file) {
 
 unsafe fn icmp_put(seq: *mut seq_file) { let net = (*seq).private as *mut net; let ptr = (*net).mib.icmpmsg_statistics.mibs; seq_puts(seq, "\nIcmp: InMsgs InErrors InCsumErrors"); let mut i=0; while !ICMPMIBMAP[i].name.is_null() { seq_printf(seq, " In%s", ICMPMIBMAP[i].name); i+=1; } seq_puts(seq, " OutMsgs OutErrors OutRateLimitGlobal OutRateLimitHost"); i=0; while !ICMPMIBMAP[i].name.is_null() { seq_printf(seq, " Out%s", ICMPMIBMAP[i].name); i+=1; } }
 
-unsafe fn snmp_seq_show(seq: *mut seq_file, v: *mut core::ffi::c_void) -> i32 { snmp_seq_show_ipstats(seq,v); icmp_put(seq); icmpmsg_put(seq); snmp_seq_show_tcp_udp(seq,v); 0 }
+unsafe fn snmp_seq_show(seq: *mut seq_file, v: *mut kernel::ffi::c_void) -> i32 { snmp_seq_show_ipstats(seq,v); icmp_put(seq); icmpmsg_put(seq); snmp_seq_show_tcp_udp(seq,v); 0 }
 unsafe fn ip_proc_init_net(net: *mut net) -> i32 { if proc_create_net_single(c"sockstat",0o444,(*net).proc_net,sockstat_seq_show,core::ptr::null_mut()).is_null(){return -ENOMEM;} if proc_create_net_single(c"netstat",0o444,(*net).proc_net,netstat_seq_show,core::ptr::null_mut()).is_null(){remove_proc_entry(c"sockstat",(*net).proc_net);return -ENOMEM;} if proc_create_net_single(c"snmp",0o444,(*net).proc_net,snmp_seq_show,core::ptr::null_mut()).is_null(){remove_proc_entry(c"netstat",(*net).proc_net);remove_proc_entry(c"sockstat",(*net).proc_net);return -ENOMEM;} 0 }
 unsafe fn ip_proc_exit_net(net: *mut net) { remove_proc_entry(c"snmp",(*net).proc_net); remove_proc_entry(c"netstat",(*net).proc_net); remove_proc_entry(c"sockstat",(*net).proc_net); }
 static mut IP_PROC_OPS: pernet_operations = pernet_operations { init: Some(ip_proc_init_net), exit: Some(ip_proc_exit_net) };

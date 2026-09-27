@@ -4,7 +4,7 @@
  * Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct iova_bitmap {
@@ -13,18 +13,18 @@ pub struct iova_bitmap {
 
 pub type iova_bitmap_fn_t = unsafe extern "C" fn(
     bitmap: *mut iova_bitmap,
-    iova: libc::c_ulong,
+    iova: kernel::ffi::c_ulong,
     length: usize,
     opaque: *mut c_void,
-) -> libc::c_int;
+) -> kernel::ffi::c_int;
 
 /* Equivalent build-time condition for IS_ENABLED(CONFIG_IOMMUFD_DRIVER). */
 #[cfg(CONFIG_IOMMUFD_DRIVER)]
 extern "C" {
     pub fn iova_bitmap_alloc(
-        iova: libc::c_ulong,
+        iova: kernel::ffi::c_ulong,
         length: usize,
-        page_size: libc::c_ulong,
+        page_size: kernel::ffi::c_ulong,
         data: *mut u64,
     ) -> *mut iova_bitmap;
 
@@ -34,11 +34,11 @@ extern "C" {
         bitmap: *mut iova_bitmap,
         opaque: *mut c_void,
         fn_: iova_bitmap_fn_t,
-    ) -> libc::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn iova_bitmap_set(
         bitmap: *mut iova_bitmap,
-        iova: libc::c_ulong,
+        iova: kernel::ffi::c_ulong,
         length: usize,
     );
 }
@@ -46,9 +46,9 @@ extern "C" {
 #[cfg(not(CONFIG_IOMMUFD_DRIVER))]
 #[inline]
 pub unsafe fn iova_bitmap_alloc(
-    _iova: libc::c_ulong,
+    _iova: kernel::ffi::c_ulong,
     _length: usize,
-    _page_size: libc::c_ulong,
+    _page_size: kernel::ffi::c_ulong,
     _data: *mut u64,
 ) -> *mut iova_bitmap {
     core::ptr::null_mut()
@@ -64,7 +64,7 @@ pub unsafe fn iova_bitmap_for_each(
     _bitmap: *mut iova_bitmap,
     _opaque: *mut c_void,
     _fn_: iova_bitmap_fn_t,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     -95
 }
 
@@ -72,7 +72,7 @@ pub unsafe fn iova_bitmap_for_each(
 #[inline]
 pub unsafe fn iova_bitmap_set(
     _bitmap: *mut iova_bitmap,
-    _iova: libc::c_ulong,
+    _iova: kernel::ffi::c_ulong,
     _length: usize,
 ) {
 }

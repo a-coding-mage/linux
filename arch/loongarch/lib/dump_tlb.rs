@@ -24,8 +24,8 @@ extern "C" {
     fn write_csr_asid(value: u32);
     fn cpu_asid_mask(cpu: *const CpuData) -> u64;
     fn ilog2(value: u64) -> u32;
-    fn pr_info(format: *const core::ffi::c_char, ...);
-    fn pr_cont(format: *const core::ffi::c_char, ...);
+    fn pr_info(format: *const kernel::ffi::c_char, ...);
+    fn pr_cont(format: *const kernel::ffi::c_char, ...);
     static current_cpu_data: CpuData;
 }
 

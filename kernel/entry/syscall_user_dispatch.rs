@@ -13,7 +13,7 @@ unsafe fn trigger_sigsys(regs: *mut pt_regs) {
     clear_siginfo(&mut info);
     info.si_signo = SIGSYS;
     info.si_code = SYS_USER_DISPATCH;
-    info.si_call_addr = KSTK_EIP(current) as *mut core::ffi::c_void;
+    info.si_call_addr = KSTK_EIP(current) as *mut kernel::ffi::c_void;
     info.si_errno = 0;
     info.si_arch = syscall_get_arch(current);
     info.si_syscall = syscall_get_nr(current, regs);
@@ -23,7 +23,7 @@ unsafe fn trigger_sigsys(regs: *mut pt_regs) {
 
 pub unsafe fn syscall_user_dispatch(regs: *mut pt_regs) -> bool {
     let sd: *mut syscall_user_dispatch = &mut (*current).syscall_dispatch;
-    let mut state: core::ffi::c_char;
+    let mut state: kernel::ffi::c_char;
 
     if instruction_pointer(regs).wrapping_sub((*sd).offset) < (*sd).len {
         return false;
@@ -65,7 +65,7 @@ unsafe fn task_set_syscall_user_dispatch(
     mode: c_ulong,
     mut offset: c_ulong,
     mut len: c_ulong,
-    selector: *mut core::ffi::c_char,
+    selector: *mut kernel::ffi::c_char,
 ) -> c_int {
     match mode {
         PR_SYS_DISPATCH_OFF => {
@@ -114,7 +114,7 @@ unsafe fn task_set_syscall_user_dispatch(
      */
     if mode != PR_SYS_DISPATCH_OFF
         && !selector.is_null()
-        && !access_ok(untagged_addr(selector), core::mem::size_of::<core::ffi::c_char>())
+        && !access_ok(untagged_addr(selector), core::mem::size_of::<kernel::ffi::c_char>())
     {
         return -EFAULT;
     }
@@ -137,7 +137,7 @@ pub unsafe fn set_syscall_user_dispatch(
     mode: c_ulong,
     offset: c_ulong,
     len: c_ulong,
-    selector: *mut core::ffi::c_char,
+    selector: *mut kernel::ffi::c_char,
 ) -> c_int {
     task_set_syscall_user_dispatch(current, mode, offset, len, selector)
 }
@@ -145,7 +145,7 @@ pub unsafe fn set_syscall_user_dispatch(
 pub unsafe fn syscall_user_dispatch_get_config(
     task: *mut task_struct,
     size: c_ulong,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) -> c_int {
     let sd: *mut syscall_user_dispatch = &mut (*task).syscall_dispatch;
     let mut cfg: ptrace_sud_config = core::mem::zeroed();
@@ -174,7 +174,7 @@ pub unsafe fn syscall_user_dispatch_get_config(
 pub unsafe fn syscall_user_dispatch_set_config(
     task: *mut task_struct,
     size: c_ulong,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) -> c_int {
     let mut cfg: ptrace_sud_config = core::mem::zeroed();
 
@@ -191,7 +191,7 @@ pub unsafe fn syscall_user_dispatch_set_config(
         cfg.mode,
         cfg.offset,
         cfg.len,
-        cfg.selector as usize as *mut core::ffi::c_char,
+        cfg.selector as usize as *mut kernel::ffi::c_char,
     )
 }
 

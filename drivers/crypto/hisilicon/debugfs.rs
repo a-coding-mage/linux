@@ -28,12 +28,12 @@ const QM_IN_IDLE_STATE: u32 = 1;
 const CNT_CYC_REGS_NUM: usize = 10;
 
 #[repr(C)]
-pub struct qm_dfx_item { pub name: *const core::ffi::c_char, pub offset: u32 }
+pub struct qm_dfx_item { pub name: *const kernel::ffi::c_char, pub offset: u32 }
 #[repr(C)]
 pub struct qm_cmd_dump_item {
-    pub cmd: *const core::ffi::c_char,
-    pub info_name: *const core::ffi::c_char,
-    pub dump_fn: Option<unsafe extern "C" fn(*mut hisi_qm, *mut core::ffi::c_char, *const core::ffi::c_char) -> i32>,
+    pub cmd: *const kernel::ffi::c_char,
+    pub info_name: *const kernel::ffi::c_char,
+    pub dump_fn: Option<unsafe extern "C" fn(*mut hisi_qm, *mut kernel::ffi::c_char, *const kernel::ffi::c_char) -> i32>,
 }
 extern "C" {
     pub type hisi_qm; pub type seq_file; pub type dfx_diff_registers;

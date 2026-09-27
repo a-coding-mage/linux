@@ -7,9 +7,9 @@
 
 /* Linux and Alpha dependencies are supplied by the surrounding translation unit. */
 
-unsafe fn io7_device_interrupt(vector: libc::c_ulong) {
-    let pid: libc::c_uint = vector >> 16;
-    let mut irq: libc::c_uint = ((vector & 0xffff).wrapping_sub(0x800)) >> 4;
+unsafe fn io7_device_interrupt(vector: kernel::ffi::c_ulong) {
+    let pid: kernel::ffi::c_uint = vector >> 16;
+    let mut irq: kernel::ffi::c_uint = ((vector & 0xffff).wrapping_sub(0x800)) >> 4;
 
     /* Vector is 0x800 + (interrupt); interrupt contains PE and irq fields. */
     irq = irq.wrapping_add(16);
@@ -18,7 +18,7 @@ unsafe fn io7_device_interrupt(vector: libc::c_ulong) {
     handle_irq(irq);
 }
 
-unsafe fn io7_get_irq_ctl(irq: libc::c_uint, pio7: *mut *mut io7) -> *mut libc::c_ulong {
+unsafe fn io7_get_irq_ctl(irq: kernel::ffi::c_uint, pio7: *mut *mut io7) -> *mut kernel::ffi::c_ulong {
     let pid = irq >> MARVEL_IRQ_VEC_PE_SHIFT;
     let io7 = marvel_find_io7(pid);
     if io7.is_null() {
@@ -50,7 +50,7 @@ unsafe fn io7_enable_irq(d: *mut irq_data) {
         return;
     }
     raw_spin_lock(&mut (*io7).irq_lock);
-    core::ptr::write_volatile(ctl, core::ptr::read_volatile(ctl) | (1usize << 24) as libc::c_ulong);
+    core::ptr::write_volatile(ctl, core::ptr::read_volatile(ctl) | (1usize << 24) as kernel::ffi::c_ulong);
     mb();
     core::ptr::read_volatile(ctl);
     raw_spin_unlock(&mut (*io7).irq_lock);
@@ -65,7 +65,7 @@ unsafe fn io7_disable_irq(d: *mut irq_data) {
         return;
     }
     raw_spin_lock(&mut (*io7).irq_lock);
-    core::ptr::write_volatile(ctl, core::ptr::read_volatile(ctl) & !((1usize << 24) as libc::c_ulong));
+    core::ptr::write_volatile(ctl, core::ptr::read_volatile(ctl) & !((1usize << 24) as kernel::ffi::c_ulong));
     mb();
     core::ptr::read_volatile(ctl);
     raw_spin_unlock(&mut (*io7).irq_lock);
@@ -83,41 +83,41 @@ static mut io7_msi_irq_type: irq_chip = irq_chip {
     name: "MSI", irq_unmask: Some(io7_enable_irq), irq_mask: Some(io7_disable_irq), irq_ack: Some(marvel_irq_noop),
 };
 
-unsafe fn io7_redirect_irq(_io7: *mut io7, csr: *mut libc::c_ulong, where_: libc::c_uint) {
+unsafe fn io7_redirect_irq(_io7: *mut io7, csr: *mut kernel::ffi::c_ulong, where_: kernel::ffi::c_uint) {
     let mut val = core::ptr::read_volatile(csr);
-    val &= !(0x1ffusize << 24) as libc::c_ulong;
-    val |= (where_ as libc::c_ulong) << 24;
+    val &= !(0x1ffusize << 24) as kernel::ffi::c_ulong;
+    val |= (where_ as kernel::ffi::c_ulong) << 24;
     core::ptr::write_volatile(csr, val);
     mb(); core::ptr::read_volatile(csr);
 }
 
-unsafe fn io7_redirect_one_lsi(io7: *mut io7, which: libc::c_uint, where_: libc::c_uint) {
+unsafe fn io7_redirect_one_lsi(io7: *mut io7, which: kernel::ffi::c_uint, where_: kernel::ffi::c_uint) {
     let csr = &mut (*(*io7).csrs).PO7_LSI_CTL[which as usize].csr as *mut _;
     let mut val = core::ptr::read_volatile(csr);
-    val &= !(0x1ffusize << 14) as libc::c_ulong;
-    val |= (where_ as libc::c_ulong) << 14;
+    val &= !(0x1ffusize << 14) as kernel::ffi::c_ulong;
+    val |= (where_ as kernel::ffi::c_ulong) << 14;
     core::ptr::write_volatile(csr, val); mb(); core::ptr::read_volatile(csr);
 }
 
-unsafe fn io7_redirect_one_msi(io7: *mut io7, which: libc::c_uint, where_: libc::c_uint) {
+unsafe fn io7_redirect_one_msi(io7: *mut io7, which: kernel::ffi::c_uint, where_: kernel::ffi::c_uint) {
     let csr = &mut (*(*io7).csrs).PO7_MSI_CTL[which as usize].csr as *mut _;
     let mut val = core::ptr::read_volatile(csr);
-    val &= !(0x1ffusize << 14) as libc::c_ulong;
-    val |= (where_ as libc::c_ulong) << 14;
+    val &= !(0x1ffusize << 14) as kernel::ffi::c_ulong;
+    val |= (where_ as kernel::ffi::c_ulong) << 14;
     core::ptr::write_volatile(csr, val); mb(); core::ptr::read_volatile(csr);
 }
 
-unsafe fn init_one_io7_lsi(io7: *mut io7, which: libc::c_uint, where_: libc::c_uint) {
+unsafe fn init_one_io7_lsi(io7: *mut io7, which: kernel::ffi::c_uint, where_: kernel::ffi::c_uint) {
     let csr = &mut (*(*io7).csrs).PO7_LSI_CTL[which as usize].csr as *mut _;
-    core::ptr::write_volatile(csr, (where_ as libc::c_ulong) << 14); mb(); core::ptr::read_volatile(csr);
+    core::ptr::write_volatile(csr, (where_ as kernel::ffi::c_ulong) << 14); mb(); core::ptr::read_volatile(csr);
 }
-unsafe fn init_one_io7_msi(io7: *mut io7, which: libc::c_uint, where_: libc::c_uint) {
+unsafe fn init_one_io7_msi(io7: *mut io7, which: kernel::ffi::c_uint, where_: kernel::ffi::c_uint) {
     let csr = &mut (*(*io7).csrs).PO7_MSI_CTL[which as usize].csr as *mut _;
-    core::ptr::write_volatile(csr, (where_ as libc::c_ulong) << 14); mb(); core::ptr::read_volatile(csr);
+    core::ptr::write_volatile(csr, (where_ as kernel::ffi::c_ulong) << 14); mb(); core::ptr::read_volatile(csr);
 }
 
 unsafe fn init_io7_irqs(io7: *mut io7, lsi_ops: *mut irq_chip, msi_ops: *mut irq_chip) {
-    let base = ((*io7).pe << MARVEL_IRQ_VEC_PE_SHIFT) as libc::c_long + 16;
+    let base = ((*io7).pe << MARVEL_IRQ_VEC_PE_SHIFT) as kernel::ffi::c_long + 16;
     printk(0, "Initializing interrupts for IO7 at PE %u - base %lx\n", (*io7).pe, base);
     printk(0, "  Interrupts reported to CPU at PE %u\n", boot_cpuid);
     for i in 0..128 { irq_set_chip_and_handler(base + i, lsi_ops, handle_level_irq); irq_set_status_flags(base + i, IRQ_LEVEL); }
@@ -140,23 +140,23 @@ unsafe fn marvel_init_irq() {
     loop { io7 = marvel_next_io7(io7); if io7.is_null() { break; } init_io7_irqs(io7, &mut io7_lsi_irq_type, &mut io7_msi_irq_type); }
 }
 
-unsafe fn marvel_map_irq(cdev: *const pci_dev, _slot: u8, _pin: u8) -> libc::c_int {
+unsafe fn marvel_map_irq(cdev: *const pci_dev, _slot: u8, _pin: u8) -> kernel::ffi::c_int {
     let dev = cdev as *mut pci_dev;
     let hose = (*dev).sysdata as *mut pci_controller;
     let io7 = (*((*hose).sysdata as *mut io7_port)).io7;
     let mut intline = 0u8; pci_read_config_byte(dev, PCI_INTERRUPT_LINE, &mut intline);
-    let mut irq = intline as libc::c_int;
+    let mut irq = intline as kernel::ffi::c_int;
     let msi_loc = (*dev).msi_cap; let mut msg_ctl = 0u16; let mut msg_dat = 0u16;
     if msi_loc != 0 { pci_read_config_word(dev, msi_loc + PCI_MSI_FLAGS, &mut msg_ctl); }
     if msg_ctl & PCI_MSI_FLAGS_ENABLE != 0 {
         let off = if msg_ctl & PCI_MSI_FLAGS_64BIT != 0 { PCI_MSI_DATA_64 } else { PCI_MSI_DATA_32 };
         pci_read_config_word(dev, msi_loc + off, &mut msg_dat);
-        irq = (msg_dat & 0x1ff) as libc::c_int; irq += 0x80;
+        irq = (msg_dat & 0x1ff) as kernel::ffi::c_int; irq += 0x80;
         printk(0, "PCI:%d:%d:%d (hose %d) is using MSI\n", (*(*dev).bus).number, PCI_SLOT((*dev).devfn), PCI_FUNC((*dev).devfn), (*hose).index);
         printk(0, "  %d message(s) from 0x%04x\n", 1 << ((msg_ctl & PCI_MSI_FLAGS_QSIZE) >> 4), msg_dat);
-        printk(0, "  reporting on %d IRQ(s) from %d (0x%x)\n", 1 << ((msg_ctl & PCI_MSI_FLAGS_QSIZE) >> 4), (irq + 16) | ((*io7).pe << MARVEL_IRQ_VEC_PE_SHIFT) as libc::c_int, (irq + 16) | ((*io7).pe << MARVEL_IRQ_VEC_PE_SHIFT) as libc::c_int);
+        printk(0, "  reporting on %d IRQ(s) from %d (0x%x)\n", 1 << ((msg_ctl & PCI_MSI_FLAGS_QSIZE) >> 4), (irq + 16) | ((*io7).pe << MARVEL_IRQ_VEC_PE_SHIFT) as kernel::ffi::c_int, (irq + 16) | ((*io7).pe << MARVEL_IRQ_VEC_PE_SHIFT) as kernel::ffi::c_int);
     }
-    (irq + 16) | ((*io7).pe << MARVEL_IRQ_VEC_PE_SHIFT) as libc::c_int
+    (irq + 16) | ((*io7).pe << MARVEL_IRQ_VEC_PE_SHIFT) as kernel::ffi::c_int
 }
 
 unsafe fn marvel_init_pci() { marvel_register_error_handlers(); pci_set_flags(PCI_PROBE_ONLY); common_init_pci(); locate_and_init_vga(core::ptr::null_mut()); let mut io7 = core::ptr::null_mut(); loop { io7 = marvel_next_io7(io7); if io7.is_null() { break; } io7_clear_errors(io7); } }

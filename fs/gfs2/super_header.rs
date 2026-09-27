@@ -14,28 +14,28 @@ extern "C" {
     pub fn gfs2_lm_unmount(sdp: *mut gfs2_sbd);
 
     pub fn gfs2_jindex_free(sdp: *mut gfs2_sbd);
-    pub fn gfs2_jdesc_find(sdp: *mut gfs2_sbd, jid: core::ffi::c_uint) -> *mut gfs2_jdesc;
-    pub fn gfs2_jdesc_check(jd: *mut gfs2_jdesc) -> core::ffi::c_int;
+    pub fn gfs2_jdesc_find(sdp: *mut gfs2_sbd, jid: kernel::ffi::c_uint) -> *mut gfs2_jdesc;
+    pub fn gfs2_jdesc_check(jd: *mut gfs2_jdesc) -> kernel::ffi::c_int;
     pub fn gfs2_lookup_in_master_dir(
         sdp: *mut gfs2_sbd,
-        filename: *mut core::ffi::c_char,
+        filename: *mut kernel::ffi::c_char,
         ipp: *mut *mut gfs2_inode,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
-    pub fn gfs2_make_fs_rw(sdp: *mut gfs2_sbd) -> core::ffi::c_int;
+    pub fn gfs2_make_fs_rw(sdp: *mut gfs2_sbd) -> kernel::ffi::c_int;
     pub fn gfs2_make_fs_ro(sdp: *mut gfs2_sbd);
     pub fn gfs2_online_uevent(sdp: *mut gfs2_sbd);
     pub fn gfs2_destroy_threads(sdp: *mut gfs2_sbd);
-    pub fn gfs2_statfs_init(sdp: *mut gfs2_sbd) -> core::ffi::c_int;
+    pub fn gfs2_statfs_init(sdp: *mut gfs2_sbd) -> kernel::ffi::c_int;
     pub fn gfs2_statfs_change(sdp: *mut gfs2_sbd, total: s64, free: s64, dinodes: s64);
-    pub fn gfs2_statfs_change_in(sc: *mut gfs2_statfs_change_host, buf: *const core::ffi::c_void);
-    pub fn gfs2_statfs_change_out(sc: *const gfs2_statfs_change_host, buf: *mut core::ffi::c_void);
+    pub fn gfs2_statfs_change_in(sc: *mut gfs2_statfs_change_host, buf: *const kernel::ffi::c_void);
+    pub fn gfs2_statfs_change_out(sc: *const gfs2_statfs_change_host, buf: *mut kernel::ffi::c_void);
     pub fn update_statfs(sdp: *mut gfs2_sbd, m_bh: *mut buffer_head);
-    pub fn gfs2_statfs_sync(sb: *mut super_block, type_: core::ffi::c_int) -> core::ffi::c_int;
+    pub fn gfs2_statfs_sync(sb: *mut super_block, type_: kernel::ffi::c_int) -> kernel::ffi::c_int;
     pub fn gfs2_freeze_func(work: *mut work_struct);
 
     pub fn free_local_statfs_inodes(sdp: *mut gfs2_sbd);
-    pub fn find_local_statfs_inode(sdp: *mut gfs2_sbd, index: core::ffi::c_uint) -> *mut inode;
+    pub fn find_local_statfs_inode(sdp: *mut gfs2_sbd, index: kernel::ffi::c_uint) -> *mut inode;
     pub fn free_sbd(sdp: *mut gfs2_sbd);
 
     pub static mut gfs2_fs_type: file_system_type;
@@ -71,8 +71,8 @@ extern "C" {
  * supplied gfs2_sbd definition.
  */
 #[inline]
-pub unsafe fn gfs2_jindex_size(sdp: *mut gfs2_sbd) -> core::ffi::c_uint {
-    let mut x: core::ffi::c_uint;
+pub unsafe fn gfs2_jindex_size(sdp: *mut gfs2_sbd) -> kernel::ffi::c_uint {
+    let mut x: kernel::ffi::c_uint;
     spin_lock(&mut (*sdp).sd_jindex_spin);
     x = (*sdp).sd_journals;
     spin_unlock(&mut (*sdp).sd_jindex_spin);
@@ -80,8 +80,8 @@ pub unsafe fn gfs2_jindex_size(sdp: *mut gfs2_sbd) -> core::ffi::c_uint {
 }
 
 extern "C" {
-    fn spin_lock(lock: *mut core::ffi::c_void);
-    fn spin_unlock(lock: *mut core::ffi::c_void);
+    fn spin_lock(lock: *mut kernel::ffi::c_void);
+    fn spin_unlock(lock: *mut kernel::ffi::c_void);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

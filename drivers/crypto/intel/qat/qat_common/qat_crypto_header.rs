@@ -13,8 +13,8 @@ pub struct qat_crypto_instance {
     pub pke_rx: *mut adf_etr_ring_data,
     pub accel_dev: *mut adf_accel_dev,
     pub list: list_head,
-    pub state: ::core::ffi::c_ulong,
-    pub id: ::core::ffi::c_int,
+    pub state: ::kernel::ffi::c_ulong,
+    pub id: ::kernel::ffi::c_int,
     pub refctr: atomic_t,
     pub backlog: qat_instance_backlog,
 }

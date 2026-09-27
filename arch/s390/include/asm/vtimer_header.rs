@@ -16,20 +16,20 @@ pub struct vtimer_list {
     pub entry: list_head,
     pub expires: u64,
     pub interval: u64,
-    pub function: Option<unsafe extern "C" fn(::core::ffi::c_ulong)>,
-    pub data: ::core::ffi::c_ulong,
+    pub function: Option<unsafe extern "C" fn(::kernel::ffi::c_ulong)>,
+    pub data: ::kernel::ffi::c_ulong,
 }
 
 unsafe extern "C" {
     pub fn init_virt_timer(timer: *mut vtimer_list);
     pub fn add_virt_timer(timer: *mut vtimer_list);
     pub fn add_virt_timer_periodic(timer: *mut vtimer_list);
-    pub fn mod_virt_timer(timer: *mut vtimer_list, expires: u64) -> ::core::ffi::c_int;
+    pub fn mod_virt_timer(timer: *mut vtimer_list, expires: u64) -> ::kernel::ffi::c_int;
     pub fn mod_virt_timer_periodic(
         timer: *mut vtimer_list,
         expires: u64,
-    ) -> ::core::ffi::c_int;
-    pub fn del_virt_timer(timer: *mut vtimer_list) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn del_virt_timer(timer: *mut vtimer_list) -> ::kernel::ffi::c_int;
     pub fn vtime_init();
 }
 

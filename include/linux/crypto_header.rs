@@ -43,13 +43,13 @@ pub const CRYPTO_TFM_REQ_MAY_BACKLOG: u32 = 0x00000400;
 pub const CRYPTO_TFM_REQ_ON_STACK: u32 = 0x00000800;
 pub const CRYPTO_MAX_ALG_NAME: usize = 128;
 
-pub type CryptoCompletionT = unsafe extern "C" fn(req: *mut core::ffi::c_void, err: i32);
+pub type CryptoCompletionT = unsafe extern "C" fn(req: *mut kernel::ffi::c_void, err: i32);
 
 #[repr(C)]
 pub struct CryptoAsyncRequest {
     pub list: ListHead,
     pub complete: Option<CryptoCompletionT>,
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
     pub tfm: *mut CryptoTfm,
     pub flags: u32,
 }
@@ -79,8 +79,8 @@ pub struct CryptoAlg {
     pub cra_reqsize: u32,
     pub cra_priority: i32,
     pub cra_refcnt: RefcountT,
-    pub cra_name: [core::ffi::c_char; CRYPTO_MAX_ALG_NAME],
-    pub cra_driver_name: [core::ffi::c_char; CRYPTO_MAX_ALG_NAME],
+    pub cra_name: [kernel::ffi::c_char; CRYPTO_MAX_ALG_NAME],
+    pub cra_driver_name: [kernel::ffi::c_char; CRYPTO_MAX_ALG_NAME],
     pub cra_type: *const CryptoType,
     pub cra_u: CryptoAlgUnion,
     pub cra_init: Option<unsafe extern "C" fn(*mut CryptoTfm) -> i32>,
@@ -96,10 +96,10 @@ pub struct CryptoWait {
 }
 
 extern "C" {
-    pub fn crypto_req_done(req: *mut core::ffi::c_void, err: i32);
-    pub fn crypto_has_alg(name: *const core::ffi::c_char, type_: u32, mask: u32) -> i32;
-    pub fn crypto_alloc_base(name: *const core::ffi::c_char, type_: u32, mask: u32) -> *mut CryptoTfm;
-    pub fn crypto_destroy_tfm(mem: *mut core::ffi::c_void, tfm: *mut CryptoTfm);
+    pub fn crypto_req_done(req: *mut kernel::ffi::c_void, err: i32);
+    pub fn crypto_has_alg(name: *const kernel::ffi::c_char, type_: u32, mask: u32) -> i32;
+    pub fn crypto_alloc_base(name: *const kernel::ffi::c_char, type_: u32, mask: u32) -> *mut CryptoTfm;
+    pub fn crypto_destroy_tfm(mem: *mut kernel::ffi::c_void, tfm: *mut CryptoTfm);
     pub fn wait_for_completion(completion: *mut Completion);
     pub fn reinit_completion(completion: *mut Completion);
     pub fn init_completion(completion: *mut Completion);
@@ -117,11 +117,11 @@ pub struct CryptoTfm {
 }
 
 pub unsafe fn crypto_free_tfm(tfm: *mut CryptoTfm) {
-    crypto_destroy_tfm(tfm as *mut core::ffi::c_void, tfm);
+    crypto_destroy_tfm(tfm as *mut kernel::ffi::c_void, tfm);
 }
 
-pub unsafe fn crypto_tfm_alg_name(tfm: *mut CryptoTfm) -> *const core::ffi::c_char { (*(*tfm).__crt_alg).cra_name.as_ptr() }
-pub unsafe fn crypto_tfm_alg_driver_name(tfm: *mut CryptoTfm) -> *const core::ffi::c_char { (*(*tfm).__crt_alg).cra_driver_name.as_ptr() }
+pub unsafe fn crypto_tfm_alg_name(tfm: *mut CryptoTfm) -> *const kernel::ffi::c_char { (*(*tfm).__crt_alg).cra_name.as_ptr() }
+pub unsafe fn crypto_tfm_alg_driver_name(tfm: *mut CryptoTfm) -> *const kernel::ffi::c_char { (*(*tfm).__crt_alg).cra_driver_name.as_ptr() }
 pub unsafe fn crypto_tfm_alg_blocksize(tfm: *mut CryptoTfm) -> u32 { (*(*tfm).__crt_alg).cra_blocksize }
 pub unsafe fn crypto_tfm_alg_alignmask(tfm: *mut CryptoTfm) -> u32 { (*(*tfm).__crt_alg).cra_alignmask }
 pub unsafe fn crypto_tfm_alg_reqsize(tfm: *mut CryptoTfm) -> u32 { (*(*tfm).__crt_alg).cra_reqsize }
@@ -131,7 +131,7 @@ pub unsafe fn crypto_tfm_clear_flags(tfm: *mut CryptoTfm, flags: u32) { (*tfm).c
 pub unsafe fn crypto_tfm_is_async(tfm: *mut CryptoTfm) -> bool { (*(*tfm).__crt_alg).cra_flags & CRYPTO_ALG_ASYNC != 0 }
 pub unsafe fn crypto_req_on_stack(req: *mut CryptoAsyncRequest) -> bool { (*req).flags & CRYPTO_TFM_REQ_ON_STACK != 0 }
 
-pub unsafe fn crypto_request_set_callback(req: *mut CryptoAsyncRequest, flags: u32, compl: Option<CryptoCompletionT>, data: *mut core::ffi::c_void) {
+pub unsafe fn crypto_request_set_callback(req: *mut CryptoAsyncRequest, flags: u32, compl: Option<CryptoCompletionT>, data: *mut kernel::ffi::c_void) {
     (*req).complete = compl;
     (*req).data = data;
     (*req).flags &= CRYPTO_TFM_REQ_ON_STACK;

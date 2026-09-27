@@ -62,11 +62,11 @@ pub struct mtd_blktrans_dev {
     pub list: list_head,
     pub mtd: *mut mtd_info,
     pub lock: mutex,
-    pub devnum: core::ffi::c_int,
+    pub devnum: kernel::ffi::c_int,
     pub bg_stop: bool,
     pub size: usize,
-    pub readonly: core::ffi::c_int,
-    pub open: core::ffi::c_int,
+    pub readonly: kernel::ffi::c_int,
+    pub open: kernel::ffi::c_int,
     pub r#ref: kref,
     pub disk: *mut gendisk,
     pub disk_attributes: *mut attribute_group,
@@ -74,45 +74,45 @@ pub struct mtd_blktrans_dev {
     pub rq_list: list_head,
     pub tag_set: *mut blk_mq_tag_set,
     pub queue_lock: spinlock_t,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
     pub writable: bool,
 }
 
 #[repr(C)]
 pub struct mtd_blktrans_ops {
-    pub name: *mut core::ffi::c_char,
-    pub major: core::ffi::c_int,
-    pub part_bits: core::ffi::c_int,
-    pub blksize: core::ffi::c_int,
-    pub blkshift: core::ffi::c_int,
+    pub name: *mut kernel::ffi::c_char,
+    pub major: kernel::ffi::c_int,
+    pub part_bits: kernel::ffi::c_int,
+    pub blksize: kernel::ffi::c_int,
+    pub blkshift: kernel::ffi::c_int,
 
     /* Access functions */
     pub readsect: Option<unsafe extern "C" fn(
         dev: *mut mtd_blktrans_dev,
         block: usize,
-        buffer: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int>,
+        buffer: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int>,
     pub writesect: Option<unsafe extern "C" fn(
         dev: *mut mtd_blktrans_dev,
         block: usize,
-        buffer: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int>,
+        buffer: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int>,
     pub discard: Option<unsafe extern "C" fn(
         dev: *mut mtd_blktrans_dev,
         block: usize,
         nr_blocks: u32,
-    ) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
     pub background: Option<unsafe extern "C" fn(dev: *mut mtd_blktrans_dev)>,
 
     /* Block layer ioctls */
     pub getgeo: Option<unsafe extern "C" fn(
         dev: *mut mtd_blktrans_dev,
         geo: *mut hd_geometry,
-    ) -> core::ffi::c_int>,
-    pub flush: Option<unsafe extern "C" fn(dev: *mut mtd_blktrans_dev) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
+    pub flush: Option<unsafe extern "C" fn(dev: *mut mtd_blktrans_dev) -> kernel::ffi::c_int>,
 
     /* Called with mtd_table_mutex held; no race with add/remove */
-    pub open: Option<unsafe extern "C" fn(dev: *mut mtd_blktrans_dev) -> core::ffi::c_int>,
+    pub open: Option<unsafe extern "C" fn(dev: *mut mtd_blktrans_dev) -> kernel::ffi::c_int>,
     pub release: Option<unsafe extern "C" fn(dev: *mut mtd_blktrans_dev)>,
 
     /* Called on {de,}registration and on subsequent addition/removal
@@ -129,11 +129,11 @@ pub struct mtd_blktrans_ops {
 }
 
 unsafe extern "C" {
-    pub fn register_mtd_blktrans(tr: *mut mtd_blktrans_ops) -> core::ffi::c_int;
-    pub fn deregister_mtd_blktrans(tr: *mut mtd_blktrans_ops) -> core::ffi::c_int;
-    pub fn add_mtd_blktrans_dev(dev: *mut mtd_blktrans_dev) -> core::ffi::c_int;
-    pub fn del_mtd_blktrans_dev(dev: *mut mtd_blktrans_dev) -> core::ffi::c_int;
-    pub fn mtd_blktrans_cease_background(dev: *mut mtd_blktrans_dev) -> core::ffi::c_int;
+    pub fn register_mtd_blktrans(tr: *mut mtd_blktrans_ops) -> kernel::ffi::c_int;
+    pub fn deregister_mtd_blktrans(tr: *mut mtd_blktrans_ops) -> kernel::ffi::c_int;
+    pub fn add_mtd_blktrans_dev(dev: *mut mtd_blktrans_dev) -> kernel::ffi::c_int;
+    pub fn del_mtd_blktrans_dev(dev: *mut mtd_blktrans_dev) -> kernel::ffi::c_int;
+    pub fn mtd_blktrans_cease_background(dev: *mut mtd_blktrans_dev) -> kernel::ffi::c_int;
 }
 
 /**

@@ -14,14 +14,14 @@ pub struct IvpuIpcTxBuf {
     pub jsm: VpuJsmMsg,
 }
 
-unsafe fn ivpu_ipc_msg_dump(vdev: *mut IvpuDevice, c: *mut core::ffi::c_char,
+unsafe fn ivpu_ipc_msg_dump(vdev: *mut IvpuDevice, c: *mut kernel::ffi::c_char,
                             ipc_hdr: *mut IvpuIpcHdr, vpu_addr: u32) {
     ivpu_dbg(vdev, IPC, c, vpu_addr, (*ipc_hdr).data_addr, (*ipc_hdr).data_size,
              (*ipc_hdr).channel, (*ipc_hdr).src_node, (*ipc_hdr).dst_node,
              (*ipc_hdr).status);
 }
 
-unsafe fn ivpu_jsm_msg_dump(vdev: *mut IvpuDevice, c: *mut core::ffi::c_char,
+unsafe fn ivpu_jsm_msg_dump(vdev: *mut IvpuDevice, c: *mut kernel::ffi::c_char,
                             jsm_msg: *mut VpuJsmMsg, vpu_addr: u32) {
     let payload = &(*jsm_msg).payload as *const _ as *const u32;
     ivpu_dbg(vdev, JSM, c, vpu_addr, ivpu_jsm_msg_type_to_str((*jsm_msg).type_),
@@ -111,7 +111,7 @@ pub unsafe fn ivpu_ipc_send_receive_internal(vdev:*mut IvpuDevice,req:*mut VpuJs
 pub unsafe fn ivpu_ipc_send_receive(vdev:*mut IvpuDevice,req:*mut VpuJsmMsg,expected_resp:VpuIpcMsgType,resp:*mut VpuJsmMsg,channel:u32,timeout_ms:usize)->i32 { let _=(vdev,req,expected_resp,resp,channel,timeout_ms); todo!() }
 pub unsafe fn ivpu_ipc_send_and_wait(vdev:*mut IvpuDevice,req:*mut VpuJsmMsg,channel:u32,timeout_ms:usize)->i32 { let _=(vdev,req,channel,timeout_ms); todo!() }
 pub unsafe fn ivpu_ipc_irq_handler(vdev:*mut IvpuDevice) { let _=vdev; todo!() }
-pub unsafe fn ivpu_ipc_irq_thread_handler(irq:i32,ptr:*mut core::ffi::c_void)->IrqreturnT { let _=(irq,ptr); todo!() }
+pub unsafe fn ivpu_ipc_irq_thread_handler(irq:i32,ptr:*mut kernel::ffi::c_void)->IrqreturnT { let _=(irq,ptr); todo!() }
 pub unsafe fn ivpu_ipc_init(vdev:*mut IvpuDevice)->i32 { let _=vdev; todo!() }
 pub unsafe fn ivpu_ipc_fini(vdev:*mut IvpuDevice) { let _=vdev; todo!() }
 pub unsafe fn ivpu_ipc_enable(vdev:*mut IvpuDevice) { let _=vdev; todo!() }

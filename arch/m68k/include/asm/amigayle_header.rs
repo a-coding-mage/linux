@@ -104,9 +104,9 @@ pub const GAYLE_CFG_720NS: u8 = 0x0c;
 
 #[repr(C)]
 pub struct gayle_ide_platform_data {
-    pub base: libc::c_ulong,
-    pub irqport: libc::c_ulong,
-    pub explicit_ack: libc::c_int, /* A1200 IDE needs explicit ack */
+    pub base: kernel::ffi::c_ulong,
+    pub irqport: kernel::ffi::c_ulong,
+    pub explicit_ack: kernel::ffi::c_int, /* A1200 IDE needs explicit ack */
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

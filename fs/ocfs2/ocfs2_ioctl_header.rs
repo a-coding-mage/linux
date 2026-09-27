@@ -16,14 +16,14 @@ pub struct ocfs2_space_resv {
     pub l_pad: [i32; 4], /* reserve area */
 }
 
-pub const OCFS2_IOC_ALLOCSP: _ = _IOW(b'X', 10, core::mem::size_of::<ocfs2_space_resv>());
-pub const OCFS2_IOC_FREESP: _ = _IOW(b'X', 11, core::mem::size_of::<ocfs2_space_resv>());
-pub const OCFS2_IOC_RESVSP: _ = _IOW(b'X', 40, core::mem::size_of::<ocfs2_space_resv>());
-pub const OCFS2_IOC_UNRESVSP: _ = _IOW(b'X', 41, core::mem::size_of::<ocfs2_space_resv>());
-pub const OCFS2_IOC_ALLOCSP64: _ = _IOW(b'X', 36, core::mem::size_of::<ocfs2_space_resv>());
-pub const OCFS2_IOC_FREESP64: _ = _IOW(b'X', 37, core::mem::size_of::<ocfs2_space_resv>());
-pub const OCFS2_IOC_RESVSP64: _ = _IOW(b'X', 42, core::mem::size_of::<ocfs2_space_resv>());
-pub const OCFS2_IOC_UNRESVSP64: _ = _IOW(b'X', 43, core::mem::size_of::<ocfs2_space_resv>());
+pub const OCFS2_IOC_ALLOCSP: u32 = _IOW(b'X', 10, core::mem::size_of::<ocfs2_space_resv>());
+pub const OCFS2_IOC_FREESP: u32 = _IOW(b'X', 11, core::mem::size_of::<ocfs2_space_resv>());
+pub const OCFS2_IOC_RESVSP: u32 = _IOW(b'X', 40, core::mem::size_of::<ocfs2_space_resv>());
+pub const OCFS2_IOC_UNRESVSP: u32 = _IOW(b'X', 41, core::mem::size_of::<ocfs2_space_resv>());
+pub const OCFS2_IOC_ALLOCSP64: u32 = _IOW(b'X', 36, core::mem::size_of::<ocfs2_space_resv>());
+pub const OCFS2_IOC_FREESP64: u32 = _IOW(b'X', 37, core::mem::size_of::<ocfs2_space_resv>());
+pub const OCFS2_IOC_RESVSP64: u32 = _IOW(b'X', 42, core::mem::size_of::<ocfs2_space_resv>());
+pub const OCFS2_IOC_UNRESVSP64: u32 = _IOW(b'X', 43, core::mem::size_of::<ocfs2_space_resv>());
 
 #[repr(C)]
 pub struct ocfs2_new_group_input {
@@ -35,9 +35,9 @@ pub struct ocfs2_new_group_input {
     pub reserved2: u32,
 }
 
-pub const OCFS2_IOC_GROUP_EXTEND: _ = _IOW(b'o', 1, core::mem::size_of::<i32>());
-pub const OCFS2_IOC_GROUP_ADD: _ = _IOW(b'o', 2, core::mem::size_of::<ocfs2_new_group_input>());
-pub const OCFS2_IOC_GROUP_ADD64: _ = _IOW(b'o', 3, core::mem::size_of::<ocfs2_new_group_input>());
+pub const OCFS2_IOC_GROUP_EXTEND: u32 = _IOW(b'o', 1, core::mem::size_of::<i32>());
+pub const OCFS2_IOC_GROUP_ADD: u32 = _IOW(b'o', 2, core::mem::size_of::<ocfs2_new_group_input>());
+pub const OCFS2_IOC_GROUP_ADD64: u32 = _IOW(b'o', 3, core::mem::size_of::<ocfs2_new_group_input>());
 
 #[repr(C)]
 pub struct reflink_arguments {
@@ -45,7 +45,7 @@ pub struct reflink_arguments {
     pub new_path: u64,
     pub preserve: u64,
 }
-pub const OCFS2_IOC_REFLINK: _ = _IOW(b'o', 4, core::mem::size_of::<reflink_arguments>());
+pub const OCFS2_IOC_REFLINK: u32 = _IOW(b'o', 4, core::mem::size_of::<reflink_arguments>());
 
 pub const OCFS2_INFO_MAX_REQUEST: u32 = 50;
 pub const OCFS2_TEXT_UUID_LEN: usize = (OCFS2_VOL_UUID_LEN * 2);
@@ -129,7 +129,7 @@ pub enum ocfs2_info_type {
 pub const OCFS2_INFO_FL_NON_COHERENT: u32 = 0x00000001;
 pub const OCFS2_INFO_FL_FILLED: u32 = 0x40000000;
 pub const OCFS2_INFO_FL_ERROR: u32 = 0x80000000;
-pub const OCFS2_IOC_INFO: _ = _IOR(b'o', 5, core::mem::size_of::<ocfs2_info>());
+pub const OCFS2_IOC_INFO: u32 = _IOR(b'o', 5, core::mem::size_of::<ocfs2_info>());
 
 #[repr(C)]
 pub struct ocfs2_move_extents {
@@ -140,6 +140,6 @@ pub struct ocfs2_move_extents {
 pub const OCFS2_MOVE_EXT_FL_AUTO_DEFRAG: u32 = 0x00000001;
 pub const OCFS2_MOVE_EXT_FL_PART_DEFRAG: u32 = 0x00000002;
 pub const OCFS2_MOVE_EXT_FL_COMPLETE: u32 = 0x00000004;
-pub const OCFS2_IOC_MOVE_EXT: _ = _IOW(b'o', 6, core::mem::size_of::<ocfs2_move_extents>());
+pub const OCFS2_IOC_MOVE_EXT: u32 = _IOW(b'o', 6, core::mem::size_of::<ocfs2_move_extents>());
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

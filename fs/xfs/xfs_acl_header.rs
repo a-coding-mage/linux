@@ -36,7 +36,7 @@ extern "C" {
         type_: i32,
     ) -> i32;
     pub fn __xfs_set_acl(inode: *mut inode, acl: *mut posix_acl, type_: i32) -> i32;
-    pub fn xfs_forget_acl(inode: *mut inode, name: *const core::ffi::c_char);
+    pub fn xfs_forget_acl(inode: *mut inode, name: *const kernel::ffi::c_char);
 }
 
 #[cfg(not(CONFIG_XFS_POSIX_ACL))]
@@ -56,6 +56,6 @@ pub unsafe fn __xfs_set_acl(_inode: *mut inode, _acl: *mut posix_acl, _type_: i3
 
 #[cfg(not(CONFIG_XFS_POSIX_ACL))]
 #[inline]
-pub unsafe fn xfs_forget_acl(_inode: *mut inode, _name: *const core::ffi::c_char) {}
+pub unsafe fn xfs_forget_acl(_inode: *mut inode, _name: *const kernel::ffi::c_char) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

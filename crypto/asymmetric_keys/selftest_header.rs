@@ -6,7 +6,7 @@
 
 extern "C" {
     pub fn fips_signature_selftest(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         keys: *const u8,
         keys_len: usize,
         data: *const u8,

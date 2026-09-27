@@ -5,7 +5,7 @@
  */
 
 // Dependencies supplied by the surrounding kernel translation unit.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn mxc_set_cpu_type(cpu_type: u32);

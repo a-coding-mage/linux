@@ -9,7 +9,7 @@
 
 #[repr(C)]
 pub struct RpmsgDeviceId {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub driver_data: usize,
 }
 
@@ -40,7 +40,7 @@ pub struct CdxMcdi {
 }
 #[repr(C)]
 pub struct RpmsgChannelInfo {
-    pub name: [core::ffi::c_char; 32],
+    pub name: [kernel::ffi::c_char; 32],
     pub src: u32,
     pub dst: u32,
 }
@@ -51,20 +51,20 @@ extern "C" {
     static mut cdx_rpmsg_id_table: [RpmsgDeviceId; 2];
     fn kzalloc(size: usize, flags: u32) -> *mut u8;
     fn kfree(ptr: *mut u8);
-    fn memcpy(dst: *mut u8, src: *const core::ffi::c_void, n: usize);
+    fn memcpy(dst: *mut u8, src: *const kernel::ffi::c_void, n: usize);
     fn rpmsg_send(ept: *mut RpmsgEndpoint, data: *const u8, len: usize) -> i32;
-    fn platform_get_drvdata(pdev: *mut PlatformDevice) -> *mut core::ffi::c_void;
-    fn of_parse_phandle(node: *mut DeviceNode, name: *const core::ffi::c_char, index: i32) -> *mut DeviceNode;
+    fn platform_get_drvdata(pdev: *mut PlatformDevice) -> *mut kernel::ffi::c_void;
+    fn of_parse_phandle(node: *mut DeviceNode, name: *const kernel::ffi::c_char, index: i32) -> *mut DeviceNode;
     fn rproc_get_by_phandle(phandle: u32) -> *mut Rproc;
     fn rproc_boot(rp: *mut Rproc) -> i32;
     fn rproc_put(rp: *mut Rproc);
     fn of_node_put(node: *mut DeviceNode);
     fn rproc_detach(rp: *mut Rproc);
-    fn dev_get_drvdata(dev: *mut Device) -> *mut core::ffi::c_void;
+    fn dev_get_drvdata(dev: *mut Device) -> *mut kernel::ffi::c_void;
     fn cdx_mcdi_process_cmd(mcdi: *mut CdxMcdi, data: *mut CdxDword, len: i32);
     fn cdx_rpmsg_post_probe(controller: *mut CdxController);
-    fn rpmsg_create_ept(rpdev: *mut RpmsgDevice, cb: unsafe extern "C" fn(*mut RpmsgDevice, *mut core::ffi::c_void, i32, *mut core::ffi::c_void, u32) -> i32, priv_: *mut core::ffi::c_void, info: RpmsgChannelInfo) -> *mut RpmsgEndpoint;
-    fn dev_set_drvdata(dev: *mut Device, data: *mut core::ffi::c_void);
+    fn rpmsg_create_ept(rpdev: *mut RpmsgDevice, cb: unsafe extern "C" fn(*mut RpmsgDevice, *mut kernel::ffi::c_void, i32, *mut kernel::ffi::c_void, u32) -> i32, priv_: *mut kernel::ffi::c_void, info: RpmsgChannelInfo) -> *mut RpmsgEndpoint;
+    fn dev_set_drvdata(dev: *mut Device, data: *mut kernel::ffi::c_void);
     fn schedule_work(work: *mut WorkStruct);
     fn flush_work(work: *mut WorkStruct);
     fn cdx_rpmsg_pre_remove(controller: *mut CdxController);
@@ -125,16 +125,16 @@ pub unsafe extern "C" fn cdx_rpmsg_send(
 ) -> i32 {
     let send_buf = kzalloc(hdr_len + sdu_len, GFP_KERNEL);
     if send_buf.is_null() { return -ENOMEM; }
-    memcpy(send_buf, hdr as *const core::ffi::c_void, hdr_len);
-    memcpy(send_buf.add(hdr_len), sdu as *const core::ffi::c_void, sdu_len);
+    memcpy(send_buf, hdr as *const kernel::ffi::c_void, hdr_len);
+    memcpy(send_buf.add(hdr_len), sdu as *const kernel::ffi::c_void, sdu_len);
     let ret = rpmsg_send((*cdx_mcdi).ept, send_buf, hdr_len + sdu_len);
     kfree(send_buf);
     ret
 }
 
 pub unsafe extern "C" fn cdx_rpmsg_cb(
-    rpdev: *mut RpmsgDevice, data: *mut core::ffi::c_void, len: i32,
-    _priv: *mut core::ffi::c_void, _src: u32,
+    rpdev: *mut RpmsgDevice, data: *mut kernel::ffi::c_void, len: i32,
+    _priv: *mut kernel::ffi::c_void, _src: u32,
 ) -> i32 {
     let cdx_c = dev_get_drvdata(rpdev as *mut Device) as *mut CdxController;
     let cdx_mcdi = (*cdx_c).priv_;

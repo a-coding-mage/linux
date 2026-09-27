@@ -1558,7 +1558,7 @@ pub extern "C" fn snd_usb_pcm_open(substream: *mut snd_pcm_substream) -> i32 {
             (*runtime).hw.info |= SNDRV_PCM_INFO_SYNC_APPLPTR;
         }
 
-        (*runtime).private_data = subs as *mut _ as *mut libc::c_void;
+        (*runtime).private_data = subs as *mut _ as *mut core::ffi::c_void;
         (*subs).pcm_substream = substream;
 
         // initialize DSD/DOP context
@@ -2513,14 +2513,14 @@ extern "C" {
         cond: i32,
         var: u32,
         func: Option<fn(*mut snd_pcm_hw_params, *mut snd_pcm_hw_rule) -> i32>,
-        private: *mut libc::c_void,
+        private: *mut core::ffi::c_void,
         dep1: i32,
         dep2: i32,
         dep3: i32,
         dep4: i32,
         dep5: i32,
     ) -> i32;
-    fn snd_pcm_substream_chip(substream: *mut snd_pcm_substream) -> *mut libc::c_void;
+    fn snd_pcm_substream_chip(substream: *mut snd_pcm_substream) -> *mut core::ffi::c_void;
     fn snd_pcm_set_ops(pcm: *mut snd_pcm, stream: i32, ops: *const snd_pcm_ops);
     fn snd_pcm_period_elapsed(substream: *mut snd_pcm_substream);
     fn snd_pcm_period_elapsed_under_stream_lock(substream: *mut snd_pcm_substream);
@@ -2536,7 +2536,7 @@ extern "C" {
         ep: *mut snd_usb_endpoint,
         prepare: Option<fn(*mut snd_usb_substream, *mut urb, bool) -> i32>,
         retire: Option<fn(*mut snd_usb_substream, *mut urb)>,
-        private: *mut libc::c_void,
+        private: *mut core::ffi::c_void,
     );
     fn snd_usb_queue_pending_output_urbs(ep: *mut snd_usb_endpoint, in_stream_lock: bool) -> i32;
     fn bitrev8(byte: u8) -> u8;
@@ -2549,28 +2549,28 @@ extern "C" {
 type snd_pcm_uframes_t = u32;
 type snd_pcm_format_t = i32;
 type atomic_t = i32;
-type spinlock_t = libc::c_void;
-type mutex = libc::c_void;
-type device = libc::c_void;
-type usb_device = libc::c_void;
-type usb_host_interface = libc::c_void;
-type usb_interface_descriptor = libc::c_void;
-type usb_endpoint_descriptor = libc::c_void;
-type snd_pcm = libc::c_void;
-type snd_pcm_substream = libc::c_void;
-type snd_pcm_runtime = libc::c_void;
-type snd_pcm_hw_params = libc::c_void;
-type snd_pcm_hw_rule = libc::c_void;
-type snd_usb_audio = libc::c_void;
-type snd_usb_stream = libc::c_void;
-type snd_usb_substream = libc::c_void;
-type snd_usb_endpoint = libc::c_void;
-type snd_usb_power_domain = libc::c_void;
-type audioformat = libc::c_void;
-type list_head = libc::c_void;
-type urb = libc::c_void;
-type snd_urb_ctx = libc::c_void;
-type timespec = libc::c_void;
+type spinlock_t = core::ffi::c_void;
+type mutex = core::ffi::c_void;
+type device = core::ffi::c_void;
+type usb_device = core::ffi::c_void;
+type usb_host_interface = core::ffi::c_void;
+type usb_interface_descriptor = core::ffi::c_void;
+type usb_endpoint_descriptor = core::ffi::c_void;
+type snd_pcm = core::ffi::c_void;
+type snd_pcm_substream = core::ffi::c_void;
+type snd_pcm_runtime = core::ffi::c_void;
+type snd_pcm_hw_params = core::ffi::c_void;
+type snd_pcm_hw_rule = core::ffi::c_void;
+type snd_usb_audio = core::ffi::c_void;
+type snd_usb_stream = core::ffi::c_void;
+type snd_usb_substream = core::ffi::c_void;
+type snd_usb_endpoint = core::ffi::c_void;
+type snd_usb_power_domain = core::ffi::c_void;
+type audioformat = core::ffi::c_void;
+type list_head = core::ffi::c_void;
+type urb = core::ffi::c_void;
+type snd_urb_ctx = core::ffi::c_void;
+type timespec = core::ffi::c_void;
 
 #[repr(C)]
 struct snd_interval {

@@ -21,7 +21,7 @@
 #[repr(C)]
 pub struct sockaddr_inet {
     pub sa_family: u16,
-    pub sa_data: [core::ffi::c_char;
+    pub sa_data: [kernel::ffi::c_char;
         core::mem::size_of::<sockaddr_in6>() - core::mem::size_of::<u16>()],
 }
 

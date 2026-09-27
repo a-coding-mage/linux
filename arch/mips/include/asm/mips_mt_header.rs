@@ -10,11 +10,11 @@
  * How many VPEs and TCs is Linux allowed to use?  0 means no limit.
  */
 unsafe extern "C" {
-    pub static mut tclimit: core::ffi::c_int;
-    pub static mut vpelimit: core::ffi::c_int;
+    pub static mut tclimit: kernel::ffi::c_int;
+    pub static mut vpelimit: kernel::ffi::c_int;
 
     pub static mut mt_fpu_cpumask: crate::cpumask_t;
-    pub static mut mt_fpemul_threshold: core::ffi::c_ulong;
+    pub static mut mt_fpemul_threshold: kernel::ffi::c_ulong;
 }
 
 // CONFIG_MIPS_MT selects the external implementation in the original build.

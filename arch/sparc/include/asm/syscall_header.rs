@@ -10,16 +10,16 @@
  * type here is what we want [need] for both 32 bit and 64 bit systems.
  */
 extern "C" {
-    pub static sys_call_table: [core::ffi::c_uint; 0];
+    pub static sys_call_table: [kernel::ffi::c_uint; 0];
 }
 
 /* The system call number is given by the user in %g1 */
-pub unsafe fn syscall_get_nr(task: *mut task_struct, regs: *mut pt_regs) -> core::ffi::c_long {
+pub unsafe fn syscall_get_nr(task: *mut task_struct, regs: *mut pt_regs) -> kernel::ffi::c_long {
     let _ = task;
     let syscall_p: i32 = pt_regs_is_syscall(regs);
 
     if syscall_p != 0 {
-        (*regs).u_regs[UREG_G1 as usize] as core::ffi::c_long
+        (*regs).u_regs[UREG_G1 as usize] as kernel::ffi::c_long
     } else {
         -1
     }
@@ -74,9 +74,9 @@ pub unsafe fn syscall_clear_error(regs: *mut pt_regs) {
     (*regs).tstate &= !(TSTATE_XCARRY | TSTATE_ICARRY);
 }
 
-pub unsafe fn syscall_get_error(task: *mut task_struct, regs: *mut pt_regs) -> core::ffi::c_long {
+pub unsafe fn syscall_get_error(task: *mut task_struct, regs: *mut pt_regs) -> kernel::ffi::c_long {
     let _ = task;
-    let val = (*regs).u_regs[UREG_I0 as usize] as core::ffi::c_long;
+    let val = (*regs).u_regs[UREG_I0 as usize] as kernel::ffi::c_long;
 
     if syscall_has_error(regs) { -val } else { 0 }
 }
@@ -84,16 +84,16 @@ pub unsafe fn syscall_get_error(task: *mut task_struct, regs: *mut pt_regs) -> c
 pub unsafe fn syscall_get_return_value(
     task: *mut task_struct,
     regs: *mut pt_regs,
-) -> core::ffi::c_long {
+) -> kernel::ffi::c_long {
     let _ = task;
-    (*regs).u_regs[UREG_I0 as usize] as core::ffi::c_long
+    (*regs).u_regs[UREG_I0 as usize] as kernel::ffi::c_long
 }
 
 pub unsafe fn syscall_set_return_value(
     task: *mut task_struct,
     regs: *mut pt_regs,
     error: i32,
-    val: core::ffi::c_long,
+    val: kernel::ffi::c_long,
 ) {
     let _ = task;
     if error != 0 {
@@ -108,7 +108,7 @@ pub unsafe fn syscall_set_return_value(
 pub unsafe fn syscall_get_arguments(
     task: *mut task_struct,
     regs: *mut pt_regs,
-    args: *mut core::ffi::c_ulong,
+    args: *mut kernel::ffi::c_ulong,
 ) {
     let mut zero_extend = false;
     let n: usize = 6;
@@ -130,7 +130,7 @@ pub unsafe fn syscall_get_arguments(
 pub unsafe fn syscall_set_arguments(
     task: *mut task_struct,
     regs: *mut pt_regs,
-    args: *const core::ffi::c_ulong,
+    args: *const kernel::ffi::c_ulong,
 ) {
     let _ = task;
     for i in 0..6usize {

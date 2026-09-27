@@ -22,10 +22,10 @@ unsafe fn port_cost(dev: *mut net_device) -> i32 {
         }
     }
 
-    if libc::strncmp((*dev).name.as_ptr() as *const _, b"lec\0".as_ptr() as *const _, 3) == 0 {
+    if strncmp((*dev).name.as_ptr() as *const _, b"lec\0".as_ptr() as *const _, 3) == 0 {
         return 7;
     }
-    if libc::strncmp((*dev).name.as_ptr() as *const _, b"plip\0".as_ptr() as *const _, 4) == 0 {
+    if strncmp((*dev).name.as_ptr() as *const _, b"plip\0".as_ptr() as *const _, 4) == 0 {
         return 2500;
     }
     100

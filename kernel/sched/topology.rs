@@ -48,8 +48,8 @@ static int sched_domain_debug_one(sched_domain *sd, int cpu, int level,
 				  cpumask *groupmask)
 {
 	struct sched_group *group = (*sd).groups;
-	core::ffi::c_ulong flags = (*sd).flags;
-	core::ffi::c_uint idx;
+	kernel::ffi::c_ulong flags = (*sd).flags;
+	kernel::ffi::c_uint idx;
 
 	cpumask_clear(groupmask);
 
@@ -65,8 +65,8 @@ static int sched_domain_debug_one(sched_domain *sd, int cpu, int level,
 	}
 
 	for_each_set_bit!(idx, &flags, __SD_FLAG_CNT, {
-		core::ffi::c_uint flag = BIT(idx);
-		core::ffi::c_uint meta_flags = sd_flag_debug[idx].meta_flags;
+		kernel::ffi::c_uint flag = BIT(idx);
+		kernel::ffi::c_uint meta_flags = sd_flag_debug[idx].meta_flags;
 
 		if ((meta_flags & SDF_SHARED_CHILD) && (*sd).child &&
 		    !((*(*sd).child).flags & flag))
@@ -166,7 +166,7 @@ static void sched_domain_debug(sched_domain *sd, int cpu)
 
 /* Generate a mask of SD flags with the SDF_NEEDS_GROUPS metaflag */
 // conditional or macro directive: #define SD_FLAG(name, mflags) (name * !!((mflags) & SDF_NEEDS_GROUPS)) |
-static core::ffi::c_uint SD_DEGENERATE_GROUPS_MASK =
+static kernel::ffi::c_uint SD_DEGENERATE_GROUPS_MASK =
 // #include <linux/sched/sd_flags.h>
 0;
 // conditional or macro directive: #undef SD_FLAG
@@ -191,7 +191,7 @@ static int sd_degenerate(sched_domain *sd)
 static int
 sd_parent_degenerate(sched_domain *sd, sched_domain *parent)
 {
-	core::ffi::c_ulong cflags = (*sd).flags, pflags = (*parent).flags;
+	kernel::ffi::c_ulong cflags = (*sd).flags, pflags = (*parent).flags;
 
 	if (sd_degenerate(parent))
 		return 1;
@@ -211,7 +211,7 @@ sd_parent_degenerate(sched_domain *sd, sched_domain *parent)
 
 // conditional or macro directive: #if defined(CONFIG_ENERGY_MODEL) && defined(CONFIG_CPU_FREQ_GOV_SCHEDUTIL)
 DEFINE_STATIC_KEY_FALSE(sched_energy_present);
-static core::ffi::c_uint sysctl_sched_energy_aware = 1;
+static kernel::ffi::c_uint sysctl_sched_energy_aware = 1;
 static DEFINE_MUTEX(sched_energy_mutex);
 static bool sched_energy_update;
 
@@ -303,7 +303,7 @@ static const struct ctl_table sched_energy_aware_sysctls[] = {
 	{
 		procname: "sched_energy_aware",
 		data: &sysctl_sched_energy_aware,
-		maxlen: sizeof(core::ffi::c_uint),
+		maxlen: sizeof(kernel::ffi::c_uint),
 		mode: 0644,
 		proc_handler: sched_energy_aware_handler,
 		extra1: SYSCTL_ZERO,
@@ -884,11 +884,11 @@ int sysctl_sched_cache_user = 1;
  * to fill in the bottom domain's llc_bytes once the cache attributes
  * are available.
  */
-static core::ffi::c_ulong get_effective_llc_bytes(int cpu,
+static kernel::ffi::c_ulong get_effective_llc_bytes(int cpu,
 					     sched_domain *sd)
 {
 	struct cacheinfo *ci;
-	core::ffi::c_uint hw_weight;
+	kernel::ffi::c_uint hw_weight;
 
 	ci = get_cpu_cacheinfo_llc(cpu);
 	if (!ci)
@@ -906,7 +906,7 @@ static bool alloc_sd_llc(const struct cpumask *cpu_map,
 {
 	'err: {
 	struct sched_domain *sd, *top_llc, *parent;
-	core::ffi::c_uint *p;
+	kernel::ffi::c_uint *p;
 	int i;
 
 	for_each_cpu!(i, cpu_map, {
@@ -914,7 +914,7 @@ static bool alloc_sd_llc(const struct cpumask *cpu_map,
 		if (!sd)
 			break 'err;
 
-		p = kcalloc_node(max_lid + 1, sizeof(core::ffi::c_uint),
+		p = kcalloc_node(max_lid + 1, sizeof(kernel::ffi::c_uint),
 				 GFP_KERNEL, cpu_to_node(i));
 		if (!p)
 			break 'err;
@@ -1011,11 +1011,11 @@ void sched_cache_active_set(void)
  * and does not populates the per-CPU struct cpu_cacheinfo array
  * that get_cpu_cacheinfo_llc() reads.
  */
-void sched_update_llc_bytes(cpu: core::ffi::c_uint)
+void sched_update_llc_bytes(cpu: kernel::ffi::c_uint)
 {
 	'unlock: {
 	struct sched_domain *sd, *sdp;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	sched_domains_mutex_lock();
 
@@ -1736,7 +1736,7 @@ static void free_asym_cap_entry(rcu_head *head)
 void asym_cpu_capacity_update_data(int cpu)
 {
 	'done: {
-	core::ffi::c_ulong capacity = arch_scale_cpu_capacity(cpu);
+	kernel::ffi::c_ulong capacity = arch_scale_cpu_capacity(cpu);
 	struct asym_cap_data *insert_entry = NULL;
 	struct asym_cap_data *entry;
 
@@ -2284,7 +2284,7 @@ static bool modified_sched_node_distance(void)
 static int sched_record_numa_dist(int offline_node, int (*n_dist)(int, int),
 				  int **dist, int *levels)
 {
-	core::ffi::c_ulong *distance_map __free(bitmap) = NULL;
+	kernel::ffi::c_ulong *distance_map __free(bitmap) = NULL;
 	int nr_levels = 0;
 	int i, j;
 	int *distances;
@@ -2510,7 +2510,7 @@ void sched_update_numa(int cpu, online: bool)
 	sched_init_numa(online ? NUMA_NO_NODE : node);
 }
 
-void sched_domains_numa_masks_set(cpu: core::ffi::c_uint)
+void sched_domains_numa_masks_set(cpu: kernel::ffi::c_uint)
 {
 	int node = cpu_to_node(cpu);
 	int i, j;
@@ -2528,7 +2528,7 @@ void sched_domains_numa_masks_set(cpu: core::ffi::c_uint)
 	}
 }
 
-void sched_domains_numa_masks_clear(cpu: core::ffi::c_uint)
+void sched_domains_numa_masks_clear(cpu: kernel::ffi::c_uint)
 {
 	int i, j;
 
@@ -2665,7 +2665,7 @@ EXPORT_SYMBOL_GPL(sched_numa_find_nth_cpu);
  * Also note that this is a reflection of sched_domains_numa_masks, which may change
  * during the lifetime of the system (offline nodes are taken out of the masks).
  */
-const struct cpumask *sched_numa_hop_mask(node: core::ffi::c_uint, hops: core::ffi::c_uint)
+const struct cpumask *sched_numa_hop_mask(node: kernel::ffi::c_uint, hops: kernel::ffi::c_uint)
 {
 	struct cpumask ***masks;
 
@@ -2897,9 +2897,9 @@ static bool topology_span_sane(const struct cpumask *cpu_map)
 static void adjust_numa_imbalance(sched_domain *sd_llc)
 {
 	struct sched_domain *parent;
-	core::ffi::c_uint imb_span = 1;
-	core::ffi::c_uint imb = 0;
-	core::ffi::c_uint nr_llcs;
+	kernel::ffi::c_uint imb_span = 1;
+	kernel::ffi::c_uint imb = 0;
+	kernel::ffi::c_uint nr_llcs;
 
 	WARN_ON(!(sd_llc->flags & SD_SHARE_LLC));
 	WARN_ON(!sd_llc->parent);
@@ -3278,7 +3278,7 @@ int __weak arch_update_cpu_topology(void)
 	return 0;
 }
 
-cpumask_var_t *alloc_sched_domains(ndoms: core::ffi::c_uint)
+cpumask_var_t *alloc_sched_domains(ndoms: kernel::ffi::c_uint)
 {
 	int i;
 	cpumask_var_t *doms;
@@ -3295,9 +3295,9 @@ cpumask_var_t *alloc_sched_domains(ndoms: core::ffi::c_uint)
 	return doms;
 }
 
-void free_sched_domains(cpumask_var_t doms[], ndoms: core::ffi::c_uint)
+void free_sched_domains(cpumask_var_t doms[], ndoms: kernel::ffi::c_uint)
 {
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 	for (i = 0; i < ndoms; i++)
 		free_cpumask_var(doms[i]);
 	kfree(doms);
@@ -3337,7 +3337,7 @@ int __init sched_init_domains(const struct cpumask *cpu_map)
  */
 static void detach_destroy_domains(const struct cpumask *cpu_map)
 {
-	core::ffi::c_uint cpu = cpumask_any(cpu_map);
+	kernel::ffi::c_uint cpu = cpumask_any(cpu_map);
 	int i;
 
 	if (rcu_access_pointer(per_cpu(sd_asym_cpucapacity, cpu)))

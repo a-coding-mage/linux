@@ -43,8 +43,8 @@ extern "C" {
     static mut pkmap_page_table: *mut pte_t;
 
     fn pmd_off_k(kvaddr: c_ulong) -> *mut pmd_t;
-    fn memblock_alloc_low(size: c_ulong, align: c_ulong) -> *mut core::ffi::c_void;
-    fn panic(format: *const core::ffi::c_char, ...);
+    fn memblock_alloc_low(size: c_ulong, align: c_ulong) -> *mut kernel::ffi::c_void;
+    fn panic(format: *const kernel::ffi::c_char, ...);
     fn pmd_populate_kernel(mm: *mut mm_struct, pmd: *mut pmd_t, pte: *mut pte_t);
 }
 
@@ -57,7 +57,7 @@ unsafe fn alloc_kmap_pgtable(kvaddr: c_ulong) -> *mut pte_t {
     if pte_k.is_null() {
         panic(
             b"%s: Failed to allocate %lu bytes align=0x%lx\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
             b"alloc_kmap_pgtable\0".as_ptr(),
             PAGE_SIZE,
             PAGE_SIZE,

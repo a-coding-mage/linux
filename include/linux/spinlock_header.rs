@@ -11,7 +11,7 @@
 extern "C" {
     pub fn __raw_spin_lock_init(
         lock: *mut raw_spinlock_t,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         key: *mut lock_class_key,
         inner: i16,
     );
@@ -55,7 +55,7 @@ extern "C" {
     pub fn spin_is_contended(lock: *mut spinlock_t) -> i32;
 }
 
-pub type c_ulong = core::ffi::c_ulong;
+pub type c_ulong = kernel::ffi::c_ulong;
 
 /* smp_mb__after_spinlock provides a full memory barrier; supplied by kcsan. */
 extern "C" {

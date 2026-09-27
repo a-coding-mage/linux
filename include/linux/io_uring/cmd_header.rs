@@ -43,38 +43,38 @@ pub unsafe fn io_uring_cmd_to_pdu<T>(cmd: *mut io_uring_cmd) -> *mut T {
 #[cfg(CONFIG_IO_URING)]
 extern "C" {
     pub fn io_uring_cmd_import_fixed(
-        ubuf: u64, len: libc::c_ulong, rw: libc::c_int,
+        ubuf: u64, len: kernel::ffi::c_ulong, rw: kernel::ffi::c_int,
         iter: *mut iov_iter, ioucmd: *mut io_uring_cmd,
-        issue_flags: libc::c_uint,
-    ) -> libc::c_int;
+        issue_flags: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
     pub fn io_uring_cmd_import_fixed_vec(
         ioucmd: *mut io_uring_cmd, uvec: *const iovec, uvec_segs: usize,
-        ddir: libc::c_int, iter: *mut iov_iter, issue_flags: libc::c_uint,
-    ) -> libc::c_int;
+        ddir: kernel::ffi::c_int, iter: *mut iov_iter, issue_flags: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
     pub fn __io_uring_cmd_done(cmd: *mut io_uring_cmd, ret: i32, res2: u64,
-                               issue_flags: libc::c_uint, is_cqe32: bool);
+                               issue_flags: kernel::ffi::c_uint, is_cqe32: bool);
     pub fn __io_uring_cmd_do_in_task(ioucmd: *mut io_uring_cmd,
                                      task_work_cb: io_req_tw_func_t,
-                                     flags: libc::c_uint);
+                                     flags: kernel::ffi::c_uint);
     pub fn io_uring_cmd_mark_cancelable(cmd: *mut io_uring_cmd,
-                                        issue_flags: libc::c_uint);
+                                        issue_flags: kernel::ffi::c_uint);
     pub fn io_uring_cmd_issue_blocking(ioucmd: *mut io_uring_cmd);
     pub fn io_uring_cmd_buffer_select(ioucmd: *mut io_uring_cmd,
-                                      buf_group: libc::c_uint, len: *mut usize,
-                                      issue_flags: libc::c_uint) -> io_br_sel;
+                                      buf_group: kernel::ffi::c_uint, len: *mut usize,
+                                      issue_flags: kernel::ffi::c_uint) -> io_br_sel;
     pub fn io_uring_mshot_cmd_post_cqe(ioucmd: *mut io_uring_cmd,
                                        sel: *mut io_br_sel,
-                                       issue_flags: libc::c_uint) -> bool;
+                                       issue_flags: kernel::ffi::c_uint) -> bool;
     pub fn io_buffer_register_request(cmd: *mut io_uring_cmd, rq: *mut request,
-                                      release: Option<unsafe extern "C" fn(*mut libc::c_void)>,
-                                      index: libc::c_uint, issue_flags: libc::c_uint) -> libc::c_int;
+                                      release: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
+                                      index: kernel::ffi::c_uint, issue_flags: kernel::ffi::c_uint) -> kernel::ffi::c_int;
     pub fn io_buffer_register_bvec(cmd: *mut io_uring_cmd, bvs: *const bio_vec,
-                                   nr_bvecs: libc::c_uint,
-                                   release: Option<unsafe extern "C" fn(*mut libc::c_void)>,
-                                   priv_: *mut libc::c_void, dir: u8,
-                                   index: libc::c_uint, issue_flags: libc::c_uint) -> libc::c_int;
-    pub fn io_buffer_unregister(cmd: *mut io_uring_cmd, index: libc::c_uint,
-                                issue_flags: libc::c_uint) -> libc::c_int;
+                                   nr_bvecs: kernel::ffi::c_uint,
+                                   release: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
+                                   priv_: *mut kernel::ffi::c_void, dir: u8,
+                                   index: kernel::ffi::c_uint, issue_flags: kernel::ffi::c_uint) -> kernel::ffi::c_int;
+    pub fn io_buffer_unregister(cmd: *mut io_uring_cmd, index: kernel::ffi::c_uint,
+                                issue_flags: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 }
 
 #[inline]
@@ -102,19 +102,19 @@ pub unsafe fn io_uring_cmd_get_task(cmd: *mut io_uring_cmd) -> *mut task_struct 
 }
 
 #[inline]
-pub unsafe fn io_uring_cmd_ctx_handle(cmd: *mut io_uring_cmd) -> *mut libc::c_void {
+pub unsafe fn io_uring_cmd_ctx_handle(cmd: *mut io_uring_cmd) -> *mut kernel::ffi::c_void {
     (*cmd_to_io_kiocb(cmd)).ctx
 }
 
 #[inline]
 pub unsafe fn io_uring_cmd_done(cmd: *mut io_uring_cmd, ret: i32,
-                                issue_flags: libc::c_uint) {
+                                issue_flags: kernel::ffi::c_uint) {
     __io_uring_cmd_done(cmd, ret, 0, issue_flags, false);
 }
 
 #[inline]
 pub unsafe fn io_uring_cmd_done32(cmd: *mut io_uring_cmd, ret: i32, res2: u64,
-                                  issue_flags: libc::c_uint) {
+                                  issue_flags: kernel::ffi::c_uint) {
     __io_uring_cmd_done(cmd, ret, res2, issue_flags, true);
 }
 

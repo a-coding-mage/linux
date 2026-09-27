@@ -33,7 +33,7 @@ const HISI_GPIO_DRIVER_NAME: &str = "gpio-hisi";
 struct HisiGpio {
     chip: gpio_generic_chip,
     dev: *mut device,
-    reg_base: *mut core::ffi::c_void,
+    reg_base: *mut kernel::ffi::c_void,
     line_num: u32,
     irq: i32,
 }
@@ -61,7 +61,7 @@ unsafe fn hisi_gpio_set_debounce(chip: *mut gpio_chip, off: u32, debounce: u32) 
 unsafe fn hisi_gpio_set_config(
     chip: *mut gpio_chip,
     offset: u32,
-    config: libc::c_ulong,
+    config: kernel::ffi::c_ulong,
 ) -> i32 {
     let config_para = pinconf_to_config_param(config);
     let config_arg: u32;

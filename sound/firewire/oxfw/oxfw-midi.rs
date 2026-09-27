@@ -7,7 +7,7 @@
 
 // Dependency intent from C source: #include "oxfw.h"
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 use core::mem::size_of;
 use core::ptr;
 
@@ -123,7 +123,7 @@ unsafe extern "C" {
     fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: c_ulong);
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 struct MutexGuard {
     lock: *mut mutex,

@@ -7,9 +7,9 @@
  */
 unsafe fn fake_pci_dev(
     hose: *mut pci_channel,
-    top_bus: ::core::ffi::c_int,
-    busnr: ::core::ffi::c_int,
-    devfn: ::core::ffi::c_int,
+    top_bus: ::kernel::ffi::c_int,
+    busnr: ::kernel::ffi::c_int,
+    devfn: ::kernel::ffi::c_int,
 ) -> *mut pci_dev {
     static mut DEV: pci_dev = pci_dev::ZERO;
     static mut BUS: pci_bus = pci_bus::ZERO;
@@ -32,63 +32,63 @@ unsafe fn fake_pci_dev(
 }
 
 pub unsafe fn early_read_config_byte(
-    hose: *mut pci_channel, top_bus: ::core::ffi::c_int,
-    bus: ::core::ffi::c_int, devfn: ::core::ffi::c_int,
-    offset: ::core::ffi::c_int, value: *mut u8,
-) -> ::core::ffi::c_int {
+    hose: *mut pci_channel, top_bus: ::kernel::ffi::c_int,
+    bus: ::kernel::ffi::c_int, devfn: ::kernel::ffi::c_int,
+    offset: ::kernel::ffi::c_int, value: *mut u8,
+) -> ::kernel::ffi::c_int {
     pci_read_config_byte(fake_pci_dev(hose, top_bus, bus, devfn), offset, value)
 }
 
 pub unsafe fn early_read_config_word(
-    hose: *mut pci_channel, top_bus: ::core::ffi::c_int,
-    bus: ::core::ffi::c_int, devfn: ::core::ffi::c_int,
-    offset: ::core::ffi::c_int, value: *mut u16,
-) -> ::core::ffi::c_int {
+    hose: *mut pci_channel, top_bus: ::kernel::ffi::c_int,
+    bus: ::kernel::ffi::c_int, devfn: ::kernel::ffi::c_int,
+    offset: ::kernel::ffi::c_int, value: *mut u16,
+) -> ::kernel::ffi::c_int {
     pci_read_config_word(fake_pci_dev(hose, top_bus, bus, devfn), offset, value)
 }
 
 pub unsafe fn early_read_config_dword(
-    hose: *mut pci_channel, top_bus: ::core::ffi::c_int,
-    bus: ::core::ffi::c_int, devfn: ::core::ffi::c_int,
-    offset: ::core::ffi::c_int, value: *mut u32,
-) -> ::core::ffi::c_int {
+    hose: *mut pci_channel, top_bus: ::kernel::ffi::c_int,
+    bus: ::kernel::ffi::c_int, devfn: ::kernel::ffi::c_int,
+    offset: ::kernel::ffi::c_int, value: *mut u32,
+) -> ::kernel::ffi::c_int {
     pci_read_config_dword(fake_pci_dev(hose, top_bus, bus, devfn), offset, value)
 }
 
 pub unsafe fn early_write_config_byte(
-    hose: *mut pci_channel, top_bus: ::core::ffi::c_int,
-    bus: ::core::ffi::c_int, devfn: ::core::ffi::c_int,
-    offset: ::core::ffi::c_int, value: u8,
-) -> ::core::ffi::c_int {
+    hose: *mut pci_channel, top_bus: ::kernel::ffi::c_int,
+    bus: ::kernel::ffi::c_int, devfn: ::kernel::ffi::c_int,
+    offset: ::kernel::ffi::c_int, value: u8,
+) -> ::kernel::ffi::c_int {
     pci_write_config_byte(fake_pci_dev(hose, top_bus, bus, devfn), offset, value)
 }
 
 pub unsafe fn early_write_config_word(
-    hose: *mut pci_channel, top_bus: ::core::ffi::c_int,
-    bus: ::core::ffi::c_int, devfn: ::core::ffi::c_int,
-    offset: ::core::ffi::c_int, value: u16,
-) -> ::core::ffi::c_int {
+    hose: *mut pci_channel, top_bus: ::kernel::ffi::c_int,
+    bus: ::kernel::ffi::c_int, devfn: ::kernel::ffi::c_int,
+    offset: ::kernel::ffi::c_int, value: u16,
+) -> ::kernel::ffi::c_int {
     pci_write_config_word(fake_pci_dev(hose, top_bus, bus, devfn), offset, value)
 }
 
 pub unsafe fn early_write_config_dword(
-    hose: *mut pci_channel, top_bus: ::core::ffi::c_int,
-    bus: ::core::ffi::c_int, devfn: ::core::ffi::c_int,
-    offset: ::core::ffi::c_int, value: u32,
-) -> ::core::ffi::c_int {
+    hose: *mut pci_channel, top_bus: ::kernel::ffi::c_int,
+    bus: ::kernel::ffi::c_int, devfn: ::kernel::ffi::c_int,
+    offset: ::kernel::ffi::c_int, value: u32,
+) -> ::kernel::ffi::c_int {
     pci_write_config_dword(fake_pci_dev(hose, top_bus, bus, devfn), offset, value)
 }
 
 pub unsafe fn pci_is_66mhz_capable(
     hose: *mut pci_channel,
-    top_bus: ::core::ffi::c_int,
-    current_bus: ::core::ffi::c_int,
+    top_bus: ::kernel::ffi::c_int,
+    current_bus: ::kernel::ffi::c_int,
 ) -> bool {
     let mut pci_devfn: u32 = 0;
     let mut vid: u16 = 0;
-    let mut cap66: ::core::ffi::c_int = -1;
+    let mut cap66: ::kernel::ffi::c_int = -1;
     let mut stat: u16 = 0;
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     pr_info!("PCI: Checking 66MHz capabilities...\n");
 
@@ -147,11 +147,11 @@ pub unsafe fn pcibios_enable_timers(hose: *mut pci_channel) {
 
 /* A simple handler for the regular PCI status errors, called from IRQ context. */
 pub unsafe fn pcibios_handle_status_errors(
-    addr: ::core::ffi::c_ulong,
-    status: ::core::ffi::c_uint,
+    addr: ::kernel::ffi::c_ulong,
+    status: ::kernel::ffi::c_uint,
     hose: *mut pci_channel,
-) -> ::core::ffi::c_uint {
-    let mut cmd: ::core::ffi::c_uint = 0;
+) -> ::kernel::ffi::c_uint {
+    let mut cmd: ::kernel::ffi::c_uint = 0;
     if status & PCI_STATUS_REC_MASTER_ABORT != 0 {
         printk!(KERN_DEBUG, "PCI: master abort, pc=0x{:08x}\n", addr);
         cmd |= PCI_STATUS_REC_MASTER_ABORT;

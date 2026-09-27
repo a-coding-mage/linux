@@ -17,8 +17,8 @@
 
 #[repr(C)]
 pub struct xor_block_template {
-    pub name: *const core::ffi::c_char,
-    pub xor_gen: unsafe extern "C" fn(*mut core::ffi::c_void, *mut *mut core::ffi::c_void, u32, u32),
+    pub name: *const kernel::ffi::c_char,
+    pub xor_gen: unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut *mut kernel::ffi::c_void, u32, u32),
 }
 
 #[inline(always)]
@@ -128,8 +128,8 @@ unsafe extern "C" fn xor_sse_5_pf64(
 }
 
 unsafe extern "C" fn xor_gen_sse(
-    dest: *mut core::ffi::c_void,
-    srcs: *mut *mut core::ffi::c_void,
+    dest: *mut kernel::ffi::c_void,
+    srcs: *mut *mut kernel::ffi::c_void,
     src_cnt: u32,
     bytes: u32,
 ) {
@@ -143,13 +143,13 @@ unsafe extern "C" fn xor_gen_sse(
 }
 
 pub static mut xor_block_sse: xor_block_template = xor_block_template {
-    name: b"sse\0".as_ptr() as *const core::ffi::c_char,
+    name: b"sse\0".as_ptr() as *const kernel::ffi::c_char,
     xor_gen: xor_gen_sse,
 };
 
 unsafe extern "C" fn xor_gen_sse_pf64(
-    dest: *mut core::ffi::c_void,
-    srcs: *mut *mut core::ffi::c_void,
+    dest: *mut kernel::ffi::c_void,
+    srcs: *mut *mut kernel::ffi::c_void,
     src_cnt: u32,
     bytes: u32,
 ) {
@@ -157,7 +157,7 @@ unsafe extern "C" fn xor_gen_sse_pf64(
 }
 
 pub static mut xor_block_sse_pf64: xor_block_template = xor_block_template {
-    name: b"prefetch64-sse\0".as_ptr() as *const core::ffi::c_char,
+    name: b"prefetch64-sse\0".as_ptr() as *const kernel::ffi::c_char,
     xor_gen: xor_gen_sse_pf64,
 };
 

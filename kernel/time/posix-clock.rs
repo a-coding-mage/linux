@@ -27,7 +27,7 @@ unsafe fn put_posix_clock(clk: *mut posix_clock) {
 
 unsafe extern "C" fn posix_clock_read(
     fp: *mut file,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     count: usize,
     _ppos: *mut loff_t,
 ) -> isize {
@@ -70,14 +70,14 @@ unsafe extern "C" fn posix_clock_poll(
 unsafe extern "C" fn posix_clock_ioctl(
     fp: *mut file,
     cmd: u32,
-    arg: libc::c_ulong,
-) -> libc::c_long {
+    arg: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_long {
     let pccontext = (*fp).private_data as *mut posix_clock_context;
     let clk = get_posix_clock(fp);
     let mut err: i32 = -ENOTTY;
 
     if clk.is_null() {
-        return -ENODEV as libc::c_long;
+        return -ENODEV as kernel::ffi::c_long;
     }
 
     if let Some(ioctl) = (*clk).ops.ioctl {
@@ -85,7 +85,7 @@ unsafe extern "C" fn posix_clock_ioctl(
     }
 
     put_posix_clock(clk);
-    err as libc::c_long
+    err as kernel::ffi::c_long
 }
 
 unsafe extern "C" fn posix_clock_open(inode: *mut inode, fp: *mut file) -> i32 {
@@ -109,11 +109,11 @@ unsafe extern "C" fn posix_clock_open(inode: *mut inode, fp: *mut file) -> i32 {
                 if err != 0 {
                     kfree(pccontext);
                 } else {
-                    (*fp).private_data = pccontext as *mut core::ffi::c_void;
+                    (*fp).private_data = pccontext as *mut kernel::ffi::c_void;
                     get_device((*clk).dev);
                 }
             } else {
-                (*fp).private_data = pccontext as *mut core::ffi::c_void;
+                (*fp).private_data = pccontext as *mut kernel::ffi::c_void;
                 get_device((*clk).dev);
                 err = 0;
             }

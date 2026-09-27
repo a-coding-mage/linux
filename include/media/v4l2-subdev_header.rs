@@ -2,9 +2,9 @@
 /* Rust source-level translation of v4l2-subdev.h. */
 
 /* Types supplied by the included kernel/media headers remain external. */
-pub type u8 = core::ffi::c_uchar;
-pub type u32 = core::ffi::c_uint;
-pub type u64 = core::ffi::c_ulonglong;
+pub type u8 = kernel::ffi::c_uchar;
+pub type u32 = kernel::ffi::c_uint;
+pub type u64 = kernel::ffi::c_ulonglong;
 pub type ssize_t = isize;
 pub type size_t = usize;
 pub type v4l2_std_id = u64;
@@ -75,14 +75,14 @@ pub enum v4l2_subdev_io_pin_bits { V4L2_SUBDEV_IO_PIN_DISABLE=0, V4L2_SUBDEV_IO_
 pub struct v4l2_subdev_io_pin_config { pub flags:u32, pub pin:u8, pub function:u8, pub value:u8, pub strength:u8 }
 
 #[repr(C)] pub struct v4l2_subdev_core_ops {
- pub log_status: Option<unsafe extern "C" fn(*mut v4l2_subdev)->core::ffi::c_int>,
- pub s_io_pin_config: Option<unsafe extern "C" fn(*mut v4l2_subdev,size_t,*mut v4l2_subdev_io_pin_config)->core::ffi::c_int>,
- pub init: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32)->core::ffi::c_int>, pub load_fw: Option<unsafe extern "C" fn(*mut v4l2_subdev)->core::ffi::c_int>, pub reset: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32)->core::ffi::c_int>, pub s_gpio: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32)->core::ffi::c_int>,
- pub command: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32,*mut core::ffi::c_void)->isize>, pub ioctl: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32,*mut core::ffi::c_void)->isize>,
+ pub log_status: Option<unsafe extern "C" fn(*mut v4l2_subdev)->kernel::ffi::c_int>,
+ pub s_io_pin_config: Option<unsafe extern "C" fn(*mut v4l2_subdev,size_t,*mut v4l2_subdev_io_pin_config)->kernel::ffi::c_int>,
+ pub init: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32)->kernel::ffi::c_int>, pub load_fw: Option<unsafe extern "C" fn(*mut v4l2_subdev)->kernel::ffi::c_int>, pub reset: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32)->kernel::ffi::c_int>, pub s_gpio: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32)->kernel::ffi::c_int>,
+ pub command: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32,*mut kernel::ffi::c_void)->isize>, pub ioctl: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32,*mut kernel::ffi::c_void)->isize>,
  /* CONFIG_COMPAT: compat_ioctl32 */ pub compat_ioctl32: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32,usize)->isize>,
- /* CONFIG_VIDEO_ADV_DEBUG */ pub g_register: Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_dbg_register)->core::ffi::c_int>, pub s_register: Option<unsafe extern "C" fn(*mut v4l2_subdev,*const v4l2_dbg_register)->core::ffi::c_int>,
- pub s_power: Option<unsafe extern "C" fn(*mut v4l2_subdev,core::ffi::c_int)->core::ffi::c_int>, pub interrupt_service_routine: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32,*mut bool)->core::ffi::c_int>,
- pub subscribe_event: Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_fh,*mut v4l2_event_subscription)->core::ffi::c_int>, pub unsubscribe_event: Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_fh,*mut v4l2_event_subscription)->core::ffi::c_int>,
+ /* CONFIG_VIDEO_ADV_DEBUG */ pub g_register: Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_dbg_register)->kernel::ffi::c_int>, pub s_register: Option<unsafe extern "C" fn(*mut v4l2_subdev,*const v4l2_dbg_register)->kernel::ffi::c_int>,
+ pub s_power: Option<unsafe extern "C" fn(*mut v4l2_subdev,kernel::ffi::c_int)->kernel::ffi::c_int>, pub interrupt_service_routine: Option<unsafe extern "C" fn(*mut v4l2_subdev,u32,*mut bool)->kernel::ffi::c_int>,
+ pub subscribe_event: Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_fh,*mut v4l2_event_subscription)->kernel::ffi::c_int>, pub unsubscribe_event: Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_fh,*mut v4l2_event_subscription)->kernel::ffi::c_int>,
 }
 
 #[repr(C)] pub struct v4l2_subdev_tuner_ops { pub standby:Option<unsafe extern "C" fn(*mut v4l2_subdev)->i32>, pub s_radio:Option<unsafe extern "C" fn(*mut v4l2_subdev)->i32>, pub s_frequency:Option<unsafe extern "C" fn(*mut v4l2_subdev,*const v4l2_frequency)->i32>, pub g_frequency:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_frequency)->i32>, pub enum_freq_bands:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_frequency_band)->i32>, pub g_tuner:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_tuner)->i32>, pub s_tuner:Option<unsafe extern "C" fn(*mut v4l2_subdev,*const v4l2_tuner)->i32>, pub g_modulator:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_modulator)->i32>, pub s_modulator:Option<unsafe extern "C" fn(*mut v4l2_subdev,*const v4l2_modulator)->i32>, pub s_type_addr:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut tuner_setup)->i32>, pub s_config:Option<unsafe extern "C" fn(*mut v4l2_subdev,*const v4l2_priv_tun_config)->i32> }
@@ -96,7 +96,7 @@ pub const V4L2_FRAME_DESC_ENTRY_MAX:usize=8;
 #[repr(C)] pub struct v4l2_mbus_frame_desc { pub type_:v4l2_mbus_frame_desc_type, pub entry:[v4l2_mbus_frame_desc_entry;V4L2_FRAME_DESC_ENTRY_MAX], pub num_entries:u16 }
 #[repr(C)] pub enum v4l2_subdev_pre_streamon_flags { V4L2_SUBDEV_PRE_STREAMON_FL_MANUAL_LP=1 }
 
-#[repr(C)] pub struct v4l2_subdev_video_ops { pub s_routing:Option<unsafe extern "C" fn(*mut v4l2_subdev,u32,u32,u32)->i32>, pub s_crystal_freq:Option<unsafe extern "C" fn(*mut v4l2_subdev,u32,u32)->i32>, pub g_std:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_std_id)->i32>, pub s_std:Option<unsafe extern "C" fn(*mut v4l2_subdev,v4l2_std_id)->i32>, pub s_std_output:Option<unsafe extern "C" fn(*mut v4l2_subdev,v4l2_std_id)->i32>, pub g_std_output:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_std_id)->i32>, pub querystd:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_std_id)->i32>, pub g_tvnorms:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_std_id)->i32>, pub g_tvnorms_output:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_std_id)->i32>, pub g_input_status:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut u32)->i32>, pub s_stream:Option<unsafe extern "C" fn(*mut v4l2_subdev,i32)->i32>, pub s_rx_buffer:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut core::ffi::c_void,*mut u32)->i32>, pub pre_streamon:Option<unsafe extern "C" fn(*mut v4l2_subdev,u32)->i32>, pub post_streamoff:Option<unsafe extern "C" fn(*mut v4l2_subdev)->i32> }
+#[repr(C)] pub struct v4l2_subdev_video_ops { pub s_routing:Option<unsafe extern "C" fn(*mut v4l2_subdev,u32,u32,u32)->i32>, pub s_crystal_freq:Option<unsafe extern "C" fn(*mut v4l2_subdev,u32,u32)->i32>, pub g_std:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_std_id)->i32>, pub s_std:Option<unsafe extern "C" fn(*mut v4l2_subdev,v4l2_std_id)->i32>, pub s_std_output:Option<unsafe extern "C" fn(*mut v4l2_subdev,v4l2_std_id)->i32>, pub g_std_output:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_std_id)->i32>, pub querystd:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_std_id)->i32>, pub g_tvnorms:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_std_id)->i32>, pub g_tvnorms_output:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_std_id)->i32>, pub g_input_status:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut u32)->i32>, pub s_stream:Option<unsafe extern "C" fn(*mut v4l2_subdev,i32)->i32>, pub s_rx_buffer:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut kernel::ffi::c_void,*mut u32)->i32>, pub pre_streamon:Option<unsafe extern "C" fn(*mut v4l2_subdev,u32)->i32>, pub post_streamoff:Option<unsafe extern "C" fn(*mut v4l2_subdev)->i32> }
 #[repr(C)] pub struct v4l2_subdev_vbi_ops { pub decode_vbi_line:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_decode_vbi_line)->i32>, pub s_vbi_data:Option<unsafe extern "C" fn(*mut v4l2_subdev,*const v4l2_sliced_vbi_data)->i32>, pub g_vbi_data:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_sliced_vbi_data)->i32>, pub g_sliced_vbi_cap:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_sliced_vbi_cap)->i32>, pub s_raw_fmt:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_vbi_format)->i32>, pub g_sliced_fmt:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_sliced_vbi_format)->i32>, pub s_sliced_fmt:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_sliced_vbi_format)->i32> }
 #[repr(C)] pub struct v4l2_subdev_sensor_ops { pub g_skip_top_lines:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut u32)->i32>, pub g_skip_frames:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut u32)->i32> }
 #[repr(C)] pub enum v4l2_subdev_ir_mode { V4L2_SUBDEV_IR_MODE_PULSE_WIDTH }
@@ -113,15 +113,15 @@ pub const V4L2_FRAME_DESC_ENTRY_MAX:usize=8;
 #[repr(C)] pub struct v4l2_subdev_internal_ops { pub init_state:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_subdev_state)->i32>, pub registered:Option<unsafe extern "C" fn(*mut v4l2_subdev)->i32>, pub unregistered:Option<unsafe extern "C" fn(*mut v4l2_subdev)>, pub open:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_subdev_fh)->i32>, pub close:Option<unsafe extern "C" fn(*mut v4l2_subdev,*mut v4l2_subdev_fh)->i32>, pub release:Option<unsafe extern "C" fn(*mut v4l2_subdev)> }
 
 pub const V4L2_SUBDEV_FL_IS_I2C:u32=1<<0; pub const V4L2_SUBDEV_FL_IS_SPI:u32=1<<1; pub const V4L2_SUBDEV_FL_HAS_DEVNODE:u32=1<<2; pub const V4L2_SUBDEV_FL_HAS_EVENTS:u32=1<<3; pub const V4L2_SUBDEV_FL_STREAMS:u32=1<<4;
-#[repr(C)] pub struct v4l2_subdev_platform_data { pub regulators:*mut regulator_bulk_data, pub num_regulators:i32, pub host_priv:*mut core::ffi::c_void }
-#[repr(C)] pub struct v4l2_subdev { pub entity:media_entity, pub list:list_head, pub owner:*mut module, pub owner_v4l2_dev:bool, pub flags:u32, pub v4l2_dev:*mut v4l2_device, pub ops:*const v4l2_subdev_ops, pub internal_ops:*const v4l2_subdev_internal_ops, pub ctrl_handler:*mut v4l2_ctrl_handler, pub name:[u8;52], pub grp_id:u32, pub dev_priv:*mut core::ffi::c_void, pub host_priv:*mut core::ffi::c_void, pub devnode:*mut video_device, pub dev:*mut device, pub fwnode:*mut fwnode_handle, pub async_list:list_head, pub async_subdev_endpoint_list:list_head, pub subdev_notifier:*mut v4l2_async_notifier, pub asc_list:list_head, pub pdata:*mut v4l2_subdev_platform_data, pub state_lock:*mut mutex, pub privacy_led:*mut led_classdev, pub active_state:*mut v4l2_subdev_state, pub enabled_pads:u64, pub s_stream_enabled:bool }
+#[repr(C)] pub struct v4l2_subdev_platform_data { pub regulators:*mut regulator_bulk_data, pub num_regulators:i32, pub host_priv:*mut kernel::ffi::c_void }
+#[repr(C)] pub struct v4l2_subdev { pub entity:media_entity, pub list:list_head, pub owner:*mut module, pub owner_v4l2_dev:bool, pub flags:u32, pub v4l2_dev:*mut v4l2_device, pub ops:*const v4l2_subdev_ops, pub internal_ops:*const v4l2_subdev_internal_ops, pub ctrl_handler:*mut v4l2_ctrl_handler, pub name:[u8;52], pub grp_id:u32, pub dev_priv:*mut kernel::ffi::c_void, pub host_priv:*mut kernel::ffi::c_void, pub devnode:*mut video_device, pub dev:*mut device, pub fwnode:*mut fwnode_handle, pub async_list:list_head, pub async_subdev_endpoint_list:list_head, pub subdev_notifier:*mut v4l2_async_notifier, pub asc_list:list_head, pub pdata:*mut v4l2_subdev_platform_data, pub state_lock:*mut mutex, pub privacy_led:*mut led_classdev, pub active_state:*mut v4l2_subdev_state, pub enabled_pads:u64, pub s_stream_enabled:bool }
 #[repr(C)] pub struct v4l2_subdev_fh { pub vfh:v4l2_fh, pub owner:*mut module, pub state:*mut v4l2_subdev_state, pub client_caps:u64 }
 
 extern "C" { pub static v4l2_subdev_fops:v4l2_file_operations; pub fn v4l2_subdev_init(sd:*mut v4l2_subdev,ops:*const v4l2_subdev_ops); pub static v4l2_subdev_call_wrappers:v4l2_subdev_ops; pub fn v4l2_subdev_notify_event(sd:*mut v4l2_subdev,ev:*const v4l2_event); pub fn v4l2_subdev_is_streaming(sd:*mut v4l2_subdev)->bool; }
-pub unsafe fn v4l2_set_subdevdata(sd:*mut v4l2_subdev,p:*mut core::ffi::c_void){(*sd).dev_priv=p}
-pub unsafe fn v4l2_get_subdevdata(sd:*const v4l2_subdev)->*mut core::ffi::c_void{(*sd).dev_priv}
-pub unsafe fn v4l2_set_subdev_hostdata(sd:*mut v4l2_subdev,p:*mut core::ffi::c_void){(*sd).host_priv=p}
-pub unsafe fn v4l2_get_subdev_hostdata(sd:*const v4l2_subdev)->*mut core::ffi::c_void{(*sd).host_priv}
+pub unsafe fn v4l2_set_subdevdata(sd:*mut v4l2_subdev,p:*mut kernel::ffi::c_void){(*sd).dev_priv=p}
+pub unsafe fn v4l2_get_subdevdata(sd:*const v4l2_subdev)->*mut kernel::ffi::c_void{(*sd).dev_priv}
+pub unsafe fn v4l2_set_subdev_hostdata(sd:*mut v4l2_subdev,p:*mut kernel::ffi::c_void){(*sd).host_priv=p}
+pub unsafe fn v4l2_get_subdev_hostdata(sd:*const v4l2_subdev)->*mut kernel::ffi::c_void{(*sd).host_priv}
 pub unsafe fn v4l2_subdev_lock_state(state:*mut v4l2_subdev_state){ extern "C"{fn mutex_lock(m:*mut mutex);} mutex_lock((*state).lock) }
 pub unsafe fn v4l2_subdev_unlock_state(state:*mut v4l2_subdev_state){ extern "C"{fn mutex_unlock(m:*mut mutex);} mutex_unlock((*state).lock) }
 pub unsafe fn v4l2_subdev_lock_and_get_active_state(sd:*mut v4l2_subdev)->*mut v4l2_subdev_state{let s=(*sd).active_state;if !s.is_null(){v4l2_subdev_lock_state(s)};s}
@@ -138,9 +138,9 @@ extern "C" {
  pub fn v4l2_subdev_link_validate_default(sd:*mut v4l2_subdev,link:*mut media_link,source_fmt:*mut v4l2_subdev_format,sink_fmt:*mut v4l2_subdev_format)->i32;
  pub fn v4l2_subdev_link_validate(link:*mut media_link)->i32;
  pub fn v4l2_subdev_has_pad_interdep(entity:*mut media_entity,pad0:u32,pad1:u32)->bool;
- pub fn __v4l2_subdev_state_alloc(sd:*mut v4l2_subdev,lock_name:*const core::ffi::c_char,key:*mut lock_class_key)->*mut v4l2_subdev_state;
+ pub fn __v4l2_subdev_state_alloc(sd:*mut v4l2_subdev,lock_name:*const kernel::ffi::c_char,key:*mut lock_class_key)->*mut v4l2_subdev_state;
  pub fn __v4l2_subdev_state_free(state:*mut v4l2_subdev);
- pub fn __v4l2_subdev_init_finalize(sd:*mut v4l2_subdev,name:*const core::ffi::c_char,key:*mut lock_class_key)->i32;
+ pub fn __v4l2_subdev_init_finalize(sd:*mut v4l2_subdev,name:*const kernel::ffi::c_char,key:*mut lock_class_key)->i32;
  pub fn v4l2_subdev_cleanup(sd:*mut v4l2_subdev);
  pub fn __v4l2_subdev_state_get_format(state:*mut v4l2_subdev_state,pad:u32,stream:u32)->*mut v4l2_mbus_framefmt;
  pub fn __v4l2_subdev_state_get_crop(state:*mut v4l2_subdev_state,pad:u32,stream:u32)->*mut v4l2_rect;

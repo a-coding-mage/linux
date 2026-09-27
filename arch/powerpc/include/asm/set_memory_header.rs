@@ -12,73 +12,73 @@ pub const SET_MEMORY_ROX: i32 = 6;
 
 unsafe extern "C" {
     pub fn change_memory_attr(
-        addr: ::core::ffi::c_ulong,
-        numpages: ::core::ffi::c_int,
-        action: ::core::ffi::c_long,
-    ) -> ::core::ffi::c_int;
+        addr: ::kernel::ffi::c_ulong,
+        numpages: ::kernel::ffi::c_int,
+        action: ::kernel::ffi::c_long,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[must_use]
 #[inline]
 pub unsafe fn set_memory_ro(
-    addr: ::core::ffi::c_ulong,
-    numpages: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_RO as ::core::ffi::c_long) }
+    addr: ::kernel::ffi::c_ulong,
+    numpages: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
+    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_RO as ::kernel::ffi::c_long) }
 }
 
 #[must_use]
 #[inline]
 pub unsafe fn set_memory_rw(
-    addr: ::core::ffi::c_ulong,
-    numpages: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_RW as ::core::ffi::c_long) }
+    addr: ::kernel::ffi::c_ulong,
+    numpages: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
+    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_RW as ::kernel::ffi::c_long) }
 }
 
 #[must_use]
 #[inline]
 pub unsafe fn set_memory_nx(
-    addr: ::core::ffi::c_ulong,
-    numpages: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_NX as ::core::ffi::c_long) }
+    addr: ::kernel::ffi::c_ulong,
+    numpages: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
+    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_NX as ::kernel::ffi::c_long) }
 }
 
 #[must_use]
 #[inline]
 pub unsafe fn set_memory_x(
-    addr: ::core::ffi::c_ulong,
-    numpages: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_X as ::core::ffi::c_long) }
+    addr: ::kernel::ffi::c_ulong,
+    numpages: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
+    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_X as ::kernel::ffi::c_long) }
 }
 
 #[must_use]
 #[inline]
 pub unsafe fn set_memory_np(
-    addr: ::core::ffi::c_ulong,
-    numpages: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_NP as ::core::ffi::c_long) }
+    addr: ::kernel::ffi::c_ulong,
+    numpages: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
+    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_NP as ::kernel::ffi::c_long) }
 }
 
 #[must_use]
 #[inline]
 pub unsafe fn set_memory_p(
-    addr: ::core::ffi::c_ulong,
-    numpages: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_P as ::core::ffi::c_long) }
+    addr: ::kernel::ffi::c_ulong,
+    numpages: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
+    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_P as ::kernel::ffi::c_long) }
 }
 
 #[must_use]
 #[inline]
 pub unsafe fn set_memory_rox(
-    addr: ::core::ffi::c_ulong,
-    numpages: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_ROX as ::core::ffi::c_long) }
+    addr: ::kernel::ffi::c_ulong,
+    numpages: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
+    unsafe { change_memory_attr(addr, numpages, SET_MEMORY_ROX as ::kernel::ffi::c_long) }
 }
 
 // C self-referential macro: #define set_memory_rox set_memory_rox

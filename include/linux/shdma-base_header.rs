@@ -38,7 +38,7 @@ pub struct device;
 
 #[repr(C)]
 pub struct shdma_slave {
-    pub slave_id: ::core::ffi::c_int,
+    pub slave_id: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -48,8 +48,8 @@ pub struct shdma_desc {
     pub direction: dma_transfer_direction,
     pub partial: usize,
     pub cookie: dma_cookie_t,
-    pub chunks: ::core::ffi::c_int,
-    pub mark: ::core::ffi::c_int,
+    pub chunks: ::kernel::ffi::c_int,
+    pub mark: ::kernel::ffi::c_int,
     pub cyclic: bool, /* used as cyclic transfer */
 }
 
@@ -60,14 +60,14 @@ pub struct shdma_chan {
     pub ld_free: list_head,    /* Free link descriptors */
     pub dma_chan: dma_chan,    /* DMA channel */
     pub dev: *mut device,      /* Channel device */
-    pub desc: *mut ::core::ffi::c_void, /* buffer for descriptor array */
-    pub desc_num: ::core::ffi::c_int, /* desc count */
+    pub desc: *mut ::kernel::ffi::c_void, /* buffer for descriptor array */
+    pub desc_num: ::kernel::ffi::c_int, /* desc count */
     pub max_xfer_len: usize,    /* max transfer length */
-    pub id: ::core::ffi::c_int, /* Raw id of this channel */
-    pub irq: ::core::ffi::c_int, /* Channel IRQ */
-    pub slave_id: ::core::ffi::c_int, /* Client ID for slave DMA */
-    pub real_slave_id: ::core::ffi::c_int, /* argument passed to filter function */
-    pub hw_req: ::core::ffi::c_int, /* DMA request line for slave DMA - same
+    pub id: ::kernel::ffi::c_int, /* Raw id of this channel */
+    pub irq: ::kernel::ffi::c_int, /* Channel IRQ */
+    pub slave_id: ::kernel::ffi::c_int, /* Client ID for slave DMA */
+    pub real_slave_id: ::kernel::ffi::c_int, /* argument passed to filter function */
+    pub hw_req: ::kernel::ffi::c_int, /* DMA request line for slave DMA - same
                                       * as MID/RID, used with DT */
     pub pm_state: shdma_pm_state,
 }
@@ -92,12 +92,12 @@ pub struct shdma_ops {
     pub halt_channel: Option<unsafe extern "C" fn(*mut shdma_chan)>,
     pub channel_busy: Option<unsafe extern "C" fn(*mut shdma_chan) -> bool>,
     pub slave_addr: Option<unsafe extern "C" fn(*mut shdma_chan) -> dma_addr_t>,
-    pub desc_setup: Option<unsafe extern "C" fn(*mut shdma_chan, *mut shdma_desc, dma_addr_t, dma_addr_t, *mut usize) -> ::core::ffi::c_int>,
-    pub set_slave: Option<unsafe extern "C" fn(*mut shdma_chan, ::core::ffi::c_int, dma_addr_t, bool) -> ::core::ffi::c_int>,
-    pub setup_xfer: Option<unsafe extern "C" fn(*mut shdma_chan, ::core::ffi::c_int) -> ::core::ffi::c_int>,
+    pub desc_setup: Option<unsafe extern "C" fn(*mut shdma_chan, *mut shdma_desc, dma_addr_t, dma_addr_t, *mut usize) -> ::kernel::ffi::c_int>,
+    pub set_slave: Option<unsafe extern "C" fn(*mut shdma_chan, ::kernel::ffi::c_int, dma_addr_t, bool) -> ::kernel::ffi::c_int>,
+    pub setup_xfer: Option<unsafe extern "C" fn(*mut shdma_chan, ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
     pub start_xfer: Option<unsafe extern "C" fn(*mut shdma_chan, *mut shdma_desc)>,
-    pub embedded_desc: Option<unsafe extern "C" fn(*mut ::core::ffi::c_void, ::core::ffi::c_int) -> *mut shdma_desc>,
-    pub chan_irq: Option<unsafe extern "C" fn(*mut shdma_chan, ::core::ffi::c_int) -> bool>,
+    pub embedded_desc: Option<unsafe extern "C" fn(*mut ::kernel::ffi::c_void, ::kernel::ffi::c_int) -> *mut shdma_desc>,
+    pub chan_irq: Option<unsafe extern "C" fn(*mut shdma_chan, ::kernel::ffi::c_int) -> bool>,
     pub get_partial: Option<unsafe extern "C" fn(*mut shdma_chan, *mut shdma_desc) -> usize>,
 }
 
@@ -119,18 +119,18 @@ macro_rules! shdma_for_each_chan {
 }
 
 extern "C" {
-    pub fn shdma_request_irq(chan: *mut shdma_chan, irq: ::core::ffi::c_int,
-                              flags: ::core::ffi::c_ulong, name: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
+    pub fn shdma_request_irq(chan: *mut shdma_chan, irq: ::kernel::ffi::c_int,
+                              flags: ::kernel::ffi::c_ulong, name: *const ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
     pub fn shdma_reset(sdev: *mut shdma_dev) -> bool;
-    pub fn shdma_chan_probe(sdev: *mut shdma_dev, schan: *mut shdma_chan, id: ::core::ffi::c_int);
+    pub fn shdma_chan_probe(sdev: *mut shdma_dev, schan: *mut shdma_chan, id: ::kernel::ffi::c_int);
     pub fn shdma_chan_remove(schan: *mut shdma_chan);
-    pub fn shdma_init(dev: *mut device, sdev: *mut shdma_dev, chan_num: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn shdma_init(dev: *mut device, sdev: *mut shdma_dev, chan_num: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
     pub fn shdma_cleanup(sdev: *mut shdma_dev);
 }
 
 // CONFIG_SH_DMAE_BASE conditional: when enabled this is supplied externally.
 extern "C" {
-    pub fn shdma_chan_filter(chan: *mut dma_chan, arg: *mut ::core::ffi::c_void) -> bool;
+    pub fn shdma_chan_filter(chan: *mut dma_chan, arg: *mut ::kernel::ffi::c_void) -> bool;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

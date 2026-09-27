@@ -20,7 +20,7 @@ pub struct kunit {
 pub struct status_to_posix_error {
     pub smb2_status: u32,
     pub posix_error: i32,
-    pub status_string: *const ::core::ffi::c_char,
+    pub status_string: *const ::kernel::ffi::c_char,
 }
 
 extern "C" {
@@ -83,12 +83,12 @@ static mut maperror_test_cases: [kunit_case; 0] = [];
 // };
 #[repr(C)]
 struct kunit_suite {
-    name: *const ::core::ffi::c_char,
+    name: *const ::kernel::ffi::c_char,
     test_cases: *mut kunit_case,
 }
 
 static mut maperror_suite: kunit_suite = kunit_suite {
-    name: b"smb2_maperror\0".as_ptr() as *const ::core::ffi::c_char,
+    name: b"smb2_maperror\0".as_ptr() as *const ::kernel::ffi::c_char,
     test_cases: ::core::ptr::null_mut(),
 };
 

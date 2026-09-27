@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-use core::ffi::c_int;
+use kernel::ffi::c_int;
 
 #[repr(C)]
 pub struct skey_region {
-    pub start: ::core::ffi::c_ulong,
-    pub end: ::core::ffi::c_ulong,
+    pub start: ::kernel::ffi::c_ulong,
+    pub end: ::kernel::ffi::c_ulong,
 }
 
 /*

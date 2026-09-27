@@ -26,7 +26,7 @@ static mut chan6g_61: ieee80211_channel = ieee80211_channel {
 
 #[repr(C)]
 struct subchan_test_case {
-    desc: *const core::ffi::c_char,
+    desc: *const kernel::ffi::c_char,
     c: cfg80211_chan_def,
     n: u8,
     expect: i32,
@@ -58,7 +58,7 @@ unsafe fn subchan_offset(test: *mut kunit) {
 
 #[repr(C)]
 struct psd_reorder_test_case {
-    desc: *const core::ffi::c_char,
+    desc: *const kernel::ffi::c_char,
     ap: cfg80211_chan_def,
     used: cfg80211_chan_def,
     psd: ieee80211_parsed_tpe_psd,

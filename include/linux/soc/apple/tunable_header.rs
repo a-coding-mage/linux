@@ -67,7 +67,7 @@ unsafe extern "C" {
     pub fn devm_apple_tunable_parse(
         dev: *mut Device,
         np: *mut DeviceNode,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         res: *mut Resource,
     ) -> *mut AppleTunable;
 }
@@ -79,7 +79,7 @@ unsafe extern "C" {
  * @param tunable: Pointer to the tunable.
  */
 unsafe extern "C" {
-    pub fn apple_tunable_apply(regs: *mut core::ffi::c_void, tunable: *mut AppleTunable);
+    pub fn apple_tunable_apply(regs: *mut kernel::ffi::c_void, tunable: *mut AppleTunable);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

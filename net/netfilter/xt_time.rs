@@ -27,8 +27,8 @@ extern "C" {
     fn ktime_get_real_seconds() -> i64;
     fn xt_register_match(reg: *mut xt_match) -> i32;
     fn xt_unregister_match(reg: *mut xt_match);
-    fn pr_info_ratelimited(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn pr_info_ratelimited(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -65,12 +65,12 @@ pub struct xt_time_info {
 
 #[repr(C)]
 pub struct xt_match {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub family: u16,
     pub match_: Option<unsafe extern "C" fn(*const sk_buff, *mut xt_action_param) -> bool>,
     pub checkentry: Option<unsafe extern "C" fn(*const xt_mtchk_param) -> i32>,
     pub matchsize: usize,
-    pub me: *mut core::ffi::c_void,
+    pub me: *mut kernel::ffi::c_void,
 }
 
 pub const DSE_FIRST: u32 = 2039;

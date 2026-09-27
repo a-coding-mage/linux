@@ -36,7 +36,7 @@ struct hisi_soc_hha {
     cci: cache_coherency_ops_inst,
     /* Locks HHA instance to forbid overlapping access. */
     lock: mutex,
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -60,12 +60,12 @@ struct resource {
 struct acpi_device_id;
 
 extern "C" {
-    fn readl_poll_timeout_atomic(addr: *mut core::ffi::c_void, val: *mut u32,
+    fn readl_poll_timeout_atomic(addr: *mut kernel::ffi::c_void, val: *mut u32,
                                   condition: bool, gap_us: u32,
                                   timeout_us: u32) -> i32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn ioremap(start: usize, size: usize) -> *mut core::ffi::c_void;
-    fn iounmap(addr: *mut core::ffi::c_void);
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn ioremap(start: usize, size: usize) -> *mut kernel::ffi::c_void;
+    fn iounmap(addr: *mut kernel::ffi::c_void);
     fn resource_size(res: *const resource) -> usize;
     fn platform_get_resource(pdev: *mut platform_device, ty: u32, num: u32)
         -> *mut resource;
@@ -78,8 +78,8 @@ extern "C" {
     fn cache_coherency_ops_instance_put(cci: *mut cache_coherency_ops_inst);
     fn cache_coherency_ops_instance_register(cci: *mut cache_coherency_ops_inst) -> i32;
     fn cache_coherency_ops_instance_unregister(cci: *mut cache_coherency_ops_inst);
-    fn dev_err_probe(pdev: *mut core::ffi::c_void, err: i32,
-                     msg: *const core::ffi::c_char) -> i32;
+    fn dev_err_probe(pdev: *mut kernel::ffi::c_void, err: i32,
+                     msg: *const kernel::ffi::c_char) -> i32;
 }
 
 unsafe fn hisi_hha_cache_maintain_wait_finished(soc_hha: *mut hisi_soc_hha) -> bool {

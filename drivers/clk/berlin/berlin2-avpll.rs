@@ -99,7 +99,7 @@ const VCO_DPLL_CH1_ENABLE: u32 = 1 << 17;
 #[repr(C)]
 pub struct berlin2_avpll_vco {
     pub hw: clk_hw,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub flags: u8,
 }
 
@@ -107,9 +107,9 @@ pub struct berlin2_avpll_vco {
 pub struct clk_hw { pub init: *const clk_init_data }
 #[repr(C)]
 pub struct clk_init_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const clk_ops,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: u8,
     pub flags: usize,
 }
@@ -122,10 +122,10 @@ pub struct clk_ops {
 }
 
 unsafe extern "C" {
-    fn readl_relaxed(addr: *mut core::ffi::c_void) -> u32;
-    fn writel_relaxed(value: u32, addr: *mut core::ffi::c_void);
-    fn kzalloc(size: usize) -> *mut core::ffi::c_void;
-    fn clk_hw_register(dev: *mut core::ffi::c_void, hw: *mut clk_hw) -> i32;
+    fn readl_relaxed(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel_relaxed(value: u32, addr: *mut kernel::ffi::c_void);
+    fn kzalloc(size: usize) -> *mut kernel::ffi::c_void;
+    fn clk_hw_register(dev: *mut kernel::ffi::c_void, hw: *mut clk_hw) -> i32;
 }
 
 static VCO_REFDIV: [u8; 4] = [1, 2, 4, 3];
@@ -173,8 +173,8 @@ pub const BERLIN2_AVPLL_BIT_QUIRK: u8 = 1 << 0;
 pub const BERLIN2_AVPLL_SCRAMBLE_QUIRK: u8 = 1 << 1;
 
 pub unsafe extern "C" fn berlin2_avpll_vco_register(
-    base: *mut core::ffi::c_void, name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char, vco_flags: u8, flags: usize,
+    base: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char, vco_flags: u8, flags: usize,
 ) -> i32 {
     let vco = kzalloc(core::mem::size_of::<berlin2_avpll_vco>()) as *mut berlin2_avpll_vco;
     if vco.is_null() { return -12; }
@@ -184,7 +184,7 @@ pub unsafe extern "C" fn berlin2_avpll_vco_register(
 }
 
 #[repr(C)]
-pub struct berlin2_avpll_channel { pub hw: clk_hw, pub base: *mut core::ffi::c_void, pub flags: u8, pub index: u8 }
+pub struct berlin2_avpll_channel { pub hw: clk_hw, pub base: *mut kernel::ffi::c_void, pub flags: u8, pub index: u8 }
 
 static DIV_HDMI: [u8; 4] = [1, 2, 4, 6];
 static DIV_AV1: [u8; 4] = [1, 2, 5, 5];
@@ -240,8 +240,8 @@ static BERLIN2_AVPLL_CHANNEL_OPS: clk_ops = clk_ops {
 static QUIRK_INDEX: [u8; 8] = [0, 6, 5, 4, 3, 2, 1, 7];
 
 pub unsafe extern "C" fn berlin2_avpll_channel_register(
-    base: *mut core::ffi::c_void, name: *const core::ffi::c_char, index: u8,
-    parent_name: *const core::ffi::c_char, ch_flags: u8, flags: usize,
+    base: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, index: u8,
+    parent_name: *const kernel::ffi::c_char, ch_flags: u8, flags: usize,
 ) -> i32 {
     let ch = kzalloc(core::mem::size_of::<berlin2_avpll_channel>()) as *mut berlin2_avpll_channel;
     if ch.is_null() { return -12; }

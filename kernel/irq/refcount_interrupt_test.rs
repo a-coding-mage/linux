@@ -17,9 +17,9 @@ pub struct kunit_case {
 
 #[repr(C)]
 pub struct kunit_suite {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub test_cases: *mut kunit_case,
-    pub init: Option<unsafe extern "C" fn(*mut kunit) -> core::ffi::c_int>,
+    pub init: Option<unsafe extern "C" fn(*mut kunit) -> kernel::ffi::c_int>,
     pub exit: Option<unsafe extern "C" fn(*mut kunit)>,
 }
 
@@ -31,7 +31,7 @@ unsafe extern "C" {
     fn irqs_disabled() -> bool;
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 // Equivalent to KUNIT_EXPECT_FALSE(test, irqs_disabled()).
 macro_rules! test_irq_on {
@@ -121,7 +121,7 @@ static mut test_cases: [Option<unsafe extern "C" fn(*mut kunit)>; 5] = [
 ];
 
 /* init and exit are the same. */
-unsafe extern "C" fn test_init(test: *mut kunit) -> core::ffi::c_int {
+unsafe extern "C" fn test_init(test: *mut kunit) -> kernel::ffi::c_int {
     test_irq_on!(test);
     0
 }
@@ -131,7 +131,7 @@ unsafe extern "C" fn test_exit(test: *mut kunit) {
 }
 
 static mut refcount_interrupt_test_suite: kunit_suite = kunit_suite {
-    name: b"refcount_interrupt\0".as_ptr() as *const core::ffi::c_char,
+    name: b"refcount_interrupt\0".as_ptr() as *const kernel::ffi::c_char,
     test_cases: core::ptr::null_mut(),
     init: Some(test_init),
     exit: Some(test_exit),

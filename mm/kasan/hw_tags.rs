@@ -62,7 +62,7 @@ extern "C" {
     static mut kasan_page_alloc_skip: isize;
 }
 
-unsafe fn early_kasan_flag(arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn early_kasan_flag(arg: *mut kernel::ffi::c_char) -> i32 {
     if arg.is_null() { return -EINVAL; }
     if c_str_eq(arg, b"off\0") { KASAN_ARG = KasanArg::KasanArgOff; }
     else if c_str_eq(arg, b"on\0") { KASAN_ARG = KasanArg::KasanArgOn; }
@@ -70,7 +70,7 @@ unsafe fn early_kasan_flag(arg: *mut core::ffi::c_char) -> i32 {
     0
 }
 
-unsafe fn early_kasan_mode(arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn early_kasan_mode(arg: *mut kernel::ffi::c_char) -> i32 {
     if arg.is_null() { return -EINVAL; }
     if c_str_eq(arg, b"sync\0") { KASAN_ARG_MODE = KasanArgMode::KasanArgModeSync; }
     else if c_str_eq(arg, b"async\0") { KASAN_ARG_MODE = KasanArgMode::KasanArgModeAsync; }
@@ -79,7 +79,7 @@ unsafe fn early_kasan_mode(arg: *mut core::ffi::c_char) -> i32 {
     0
 }
 
-unsafe fn early_kasan_flag_vmalloc(arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn early_kasan_flag_vmalloc(arg: *mut kernel::ffi::c_char) -> i32 {
     if arg.is_null() { return -EINVAL; }
     // IS_ENABLED(CONFIG_KASAN_VMALLOC): return 0 when the configuration is disabled.
     if !CONFIG_KASAN_VMALLOC { return 0; }
@@ -89,7 +89,7 @@ unsafe fn early_kasan_flag_vmalloc(arg: *mut core::ffi::c_char) -> i32 {
     0
 }
 
-unsafe fn early_kasan_flag_write_only(arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn early_kasan_flag_write_only(arg: *mut kernel::ffi::c_char) -> i32 {
     if arg.is_null() { return -EINVAL; }
     if c_str_eq(arg, b"off\0") { KASAN_FLAG_WRITE_ONLY = false; }
     else if c_str_eq(arg, b"on\0") { KASAN_FLAG_WRITE_ONLY = true; }
@@ -97,13 +97,13 @@ unsafe fn early_kasan_flag_write_only(arg: *mut core::ffi::c_char) -> i32 {
     0
 }
 
-unsafe fn kasan_mode_info() -> *const core::ffi::c_char {
+unsafe fn kasan_mode_info() -> *const kernel::ffi::c_char {
     if kasan_mode == KASAN_MODE_ASYNC { b"async\0".as_ptr() as *const _ }
     else if kasan_mode == KASAN_MODE_ASYMM { b"asymm\0".as_ptr() as *const _ }
     else { b"sync\0".as_ptr() as *const _ }
 }
 
-unsafe fn early_kasan_flag_page_alloc_sample(arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn early_kasan_flag_page_alloc_sample(arg: *mut kernel::ffi::c_char) -> i32 {
     if arg.is_null() { return -EINVAL; }
     let rv = kstrtoul(arg, 0, &mut kasan_page_alloc_sample);
     if rv != 0 { return rv; }
@@ -114,7 +114,7 @@ unsafe fn early_kasan_flag_page_alloc_sample(arg: *mut core::ffi::c_char) -> i32
     0
 }
 
-unsafe fn early_kasan_flag_page_alloc_sample_order(arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn early_kasan_flag_page_alloc_sample_order(arg: *mut kernel::ffi::c_char) -> i32 {
     if arg.is_null() { return -EINVAL; }
     let rv = kstrtouint(arg, 0, &mut kasan_page_alloc_sample_order);
     if rv != 0 { return rv; }
@@ -150,8 +150,8 @@ pub unsafe fn kasan_init_hw_tags() {
 
 // CONFIG_KASAN_VMALLOC-gated definitions are preserved below.
 #[cfg(CONFIG_KASAN_VMALLOC)]
-unsafe fn unpoison_vmalloc_pages(addr: *const core::ffi::c_void, tag: u8) {
-    let area = find_vm_area(addr as *mut core::ffi::c_void);
+unsafe fn unpoison_vmalloc_pages(addr: *const kernel::ffi::c_void, tag: u8) {
+    let area = find_vm_area(addr as *mut kernel::ffi::c_void);
     if area.is_null() { WARN_ON(true); return; }
     for i in 0..(*area).nr_pages {
         let page = *(*area).pages.add(i as usize);
@@ -160,7 +160,7 @@ unsafe fn unpoison_vmalloc_pages(addr: *const core::ffi::c_void, tag: u8) {
 }
 
 #[cfg(CONFIG_KASAN_VMALLOC)]
-unsafe fn init_vmalloc_pages(start: *const core::ffi::c_void, size: u64) {
+unsafe fn init_vmalloc_pages(start: *const kernel::ffi::c_void, size: u64) {
     let mut addr = start as usize;
     let end = addr.wrapping_add(size as usize);
     while addr < end {
@@ -170,7 +170,7 @@ unsafe fn init_vmalloc_pages(start: *const core::ffi::c_void, size: u64) {
 }
 
 #[cfg(CONFIG_KASAN_VMALLOC)]
-pub unsafe fn __kasan_unpoison_vmalloc(start: *const core::ffi::c_void, size: u64, flags: KasanVmallocFlags) -> *mut core::ffi::c_void {
+pub unsafe fn __kasan_unpoison_vmalloc(start: *const kernel::ffi::c_void, size: u64, flags: KasanVmallocFlags) -> *mut kernel::ffi::c_void {
     if !kasan_vmalloc_enabled() {
         if flags & KASAN_VMALLOC_INIT != 0 { init_vmalloc_pages(start, size); }
         return start as *mut _;
@@ -190,7 +190,7 @@ pub unsafe fn __kasan_unpoison_vmalloc(start: *const core::ffi::c_void, size: u6
 }
 
 #[cfg(CONFIG_KASAN_VMALLOC)]
-pub unsafe fn __kasan_poison_vmalloc(_start: *const core::ffi::c_void, _size: u64) {}
+pub unsafe fn __kasan_poison_vmalloc(_start: *const kernel::ffi::c_void, _size: u64) {}
 
 pub unsafe fn kasan_enable_hw_tags() {
     if KASAN_ARG_MODE == KasanArgMode::KasanArgModeAsync { hw_enable_tag_checks_async(); }

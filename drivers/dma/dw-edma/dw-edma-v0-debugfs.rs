@@ -16,27 +16,27 @@ const REGISTERS_STR: &str = "registers";
 #[repr(C)]
 struct DwEdmaDebugfsEntry {
     dw: *mut dw_edma,
-    name: *const core::ffi::c_char,
-    reg: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    reg: *mut kernel::ffi::c_void,
     dir: dw_edma_dir,
     ch: u16,
 }
 
-unsafe fn regs_addr(dw: *mut dw_edma, name: &str) -> *mut core::ffi::c_void {
-    dw_edma_v0_regs_addr(dw, name.as_ptr() as *const core::ffi::c_char)
+unsafe fn regs_addr(dw: *mut dw_edma, name: &str) -> *mut kernel::ffi::c_void {
+    dw_edma_v0_regs_addr(dw, name.as_ptr() as *const kernel::ffi::c_char)
 }
 
-unsafe fn regs_ch_addr(dw: *mut dw_edma, name: &str, dir: dw_edma_dir, ch: u16) -> *mut core::ffi::c_void {
-    dw_edma_v0_ch_regs_addr(dw, name.as_ptr() as *const core::ffi::c_char, dir, ch)
+unsafe fn regs_ch_addr(dw: *mut dw_edma, name: &str, dir: dw_edma_dir, ch: u16) -> *mut kernel::ffi::c_void {
+    dw_edma_v0_ch_regs_addr(dw, name.as_ptr() as *const kernel::ffi::c_char, dir, ch)
 }
 
-unsafe fn debugfs_u32_get(data: *mut core::ffi::c_void, val: *mut u64) -> i32 {
+unsafe fn debugfs_u32_get(data: *mut kernel::ffi::c_void, val: *mut u64) -> i32 {
     let entry = &*(data as *const DwEdmaDebugfsEntry);
     let dw = &*entry.dw;
     let reg = entry.reg;
 
     if dw.chip.mf == EDMA_MF_EDMA_LEGACY && reg as usize >= regs_addr(entry.dw, "type.legacy.ch") as usize {
-        let mut flags: libc::c_ulong = 0;
+        let mut flags: kernel::ffi::c_ulong = 0;
         let mut viewport_sel: u32 = if entry.dir == EDMA_DIR_READ { 1u32 << 31 } else { 0 };
         viewport_sel |= ((entry.ch as u32) << EDMA_V0_VIEWPORT_SHIFT) & EDMA_V0_VIEWPORT_MASK;
 
@@ -64,7 +64,7 @@ unsafe fn dw_edma_debugfs_create_x32(
     }
 }
 
-unsafe fn entry(dw: *mut dw_edma, name: &'static [u8], reg: *mut core::ffi::c_void, dir: dw_edma_dir, ch: u16) -> DwEdmaDebugfsEntry {
+unsafe fn entry(dw: *mut dw_edma, name: &'static [u8], reg: *mut kernel::ffi::c_void, dir: dw_edma_dir, ch: u16) -> DwEdmaDebugfsEntry {
     DwEdmaDebugfsEntry { dw, name: name.as_ptr() as *const _, reg, dir, ch }
 }
 

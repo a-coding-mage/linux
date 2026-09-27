@@ -14,7 +14,7 @@
 pub unsafe fn scatterwalk_crypto_chain(
     head: *mut scatterlist,
     sg: *mut scatterlist,
-    num: libc::c_int,
+    num: core::ffi::c_int,
 ) {
     if !sg.is_null() {
         sg_chain(head, num, sg);
@@ -37,7 +37,7 @@ pub unsafe fn scatterwalk_start(walk: *mut scatter_walk, sg: *mut scatterlist) {
 pub unsafe fn scatterwalk_start_at_pos(
     walk: *mut scatter_walk,
     mut sg: *mut scatterlist,
-    mut pos: libc::c_uint,
+    mut pos: core::ffi::c_uint,
 ) {
     while pos > (*sg).length {
         pos -= (*sg).length;
@@ -50,10 +50,10 @@ pub unsafe fn scatterwalk_start_at_pos(
 #[inline]
 pub unsafe fn scatterwalk_clamp(
     walk: *mut scatter_walk,
-    nbytes: libc::c_uint,
-) -> libc::c_uint {
-    let len_this_sg: libc::c_uint;
-    let limit: libc::c_uint;
+    nbytes: core::ffi::c_uint,
+) -> core::ffi::c_uint {
+    let len_this_sg: core::ffi::c_uint;
+    let limit: core::ffi::c_uint;
 
     if (*walk).offset >= (*(*walk).sg).offset + (*(*walk).sg).length {
         scatterwalk_start(walk, sg_next((*walk).sg));
@@ -132,7 +132,7 @@ pub unsafe fn scatterwalk_map(walk: *mut scatter_walk) {
  * Returns: the next number of bytes available, <= @total
  */
 #[inline]
-pub unsafe fn scatterwalk_next(walk: *mut scatter_walk, total: libc::c_uint) -> libc::c_uint {
+pub unsafe fn scatterwalk_next(walk: *mut scatter_walk, total: core::ffi::c_uint) -> core::ffi::c_uint {
     let nbytes = scatterwalk_clamp(walk, total);
     scatterwalk_map(walk);
     nbytes
@@ -146,7 +146,7 @@ pub unsafe fn scatterwalk_unmap(walk: *mut scatter_walk) {
 }
 
 #[inline]
-pub unsafe fn scatterwalk_advance(walk: *mut scatter_walk, nbytes: libc::c_uint) {
+pub unsafe fn scatterwalk_advance(walk: *mut scatter_walk, nbytes: core::ffi::c_uint) {
     (*walk).offset += nbytes;
 }
 
@@ -159,7 +159,7 @@ pub unsafe fn scatterwalk_advance(walk: *mut scatter_walk, nbytes: libc::c_uint)
  * Use this if the mapped address was not written to, i.e. it is source data.
  */
 #[inline]
-pub unsafe fn scatterwalk_done_src(walk: *mut scatter_walk, nbytes: libc::c_uint) {
+pub unsafe fn scatterwalk_done_src(walk: *mut scatter_walk, nbytes: core::ffi::c_uint) {
     scatterwalk_unmap(walk);
     scatterwalk_advance(walk, nbytes);
 }
@@ -174,8 +174,8 @@ pub unsafe fn scatterwalk_done_src(walk: *mut scatter_walk, nbytes: libc::c_uint
 #[inline]
 pub unsafe fn __scatterwalk_flush_dcache_pages(
     mut base_page: *mut page,
-    mut offset: libc::c_uint,
-    nbytes: libc::c_uint,
+    mut offset: core::ffi::c_uint,
+    nbytes: core::ffi::c_uint,
 ) {
     base_page = base_page.add((offset / PAGE_SIZE) as usize);
     offset %= PAGE_SIZE;
@@ -198,7 +198,7 @@ pub unsafe fn __scatterwalk_flush_dcache_pages(
  * destination data.
  */
 #[inline]
-pub unsafe fn scatterwalk_done_dst(walk: *mut scatter_walk, nbytes: libc::c_uint) {
+pub unsafe fn scatterwalk_done_dst(walk: *mut scatter_walk, nbytes: core::ffi::c_uint) {
     scatterwalk_unmap(walk);
     if cfg!(feature = "ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE") {
         __scatterwalk_flush_dcache_pages(sg_page((*walk).sg), (*walk).offset, nbytes);
@@ -207,33 +207,33 @@ pub unsafe fn scatterwalk_done_dst(walk: *mut scatter_walk, nbytes: libc::c_uint
 }
 
 extern "C" {
-    pub fn scatterwalk_skip(walk: *mut scatter_walk, nbytes: libc::c_uint);
+    pub fn scatterwalk_skip(walk: *mut scatter_walk, nbytes: core::ffi::c_uint);
     pub fn memcpy_from_scatterwalk(
         buf: *mut core::ffi::c_void,
         walk: *mut scatter_walk,
-        nbytes: libc::c_uint,
+        nbytes: core::ffi::c_uint,
     );
     pub fn memcpy_to_scatterwalk(
         walk: *mut scatter_walk,
         buf: *const core::ffi::c_void,
-        nbytes: libc::c_uint,
+        nbytes: core::ffi::c_uint,
     );
     pub fn memcpy_from_sglist(
         buf: *mut core::ffi::c_void,
         sg: *mut scatterlist,
-        start: libc::c_uint,
-        nbytes: libc::c_uint,
+        start: core::ffi::c_uint,
+        nbytes: core::ffi::c_uint,
     );
     pub fn memcpy_to_sglist(
         sg: *mut scatterlist,
-        start: libc::c_uint,
+        start: core::ffi::c_uint,
         buf: *const core::ffi::c_void,
-        nbytes: libc::c_uint,
+        nbytes: core::ffi::c_uint,
     );
     pub fn memcpy_sglist(
         dst: *mut scatterlist,
         src: *mut scatterlist,
-        nbytes: libc::c_uint,
+        nbytes: core::ffi::c_uint,
     );
 }
 

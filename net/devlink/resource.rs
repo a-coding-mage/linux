@@ -6,7 +6,7 @@
 
 #[repr(C)]
 pub struct DevlinkResource {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: u64,
     pub size: u64,
     pub size_new: u64,
@@ -15,8 +15,8 @@ pub struct DevlinkResource {
     pub size_params: DevlinkResourceSizeParams,
     pub list: ListHead,
     pub resource_list: ListHead,
-    pub occ_get: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> u64>,
-    pub occ_get_priv: *mut core::ffi::c_void,
+    pub occ_get: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> u64>,
+    pub occ_get_priv: *mut kernel::ffi::c_void,
 }
 
 unsafe fn __devlink_resource_find(
@@ -75,22 +75,22 @@ unsafe fn devlink_resource_validate_size(
     let mut reminder = 0u64;
     let mut err = 0;
     if size > unsafe { (*resource).size_params.size_max } {
-        nl_set_err_msg!(extack, "Size larger than maximum"); err = -libc::EINVAL;
+        nl_set_err_msg!(extack, "Size larger than maximum"); err = -EINVAL;
     }
     if size < unsafe { (*resource).size_params.size_min } {
-        nl_set_err_msg!(extack, "Size smaller than minimum"); err = -libc::EINVAL;
+        nl_set_err_msg!(extack, "Size smaller than minimum"); err = -EINVAL;
     }
     div64_u64_rem!(size, unsafe { (*resource).size_params.size_granularity }, &mut reminder);
-    if reminder != 0 { nl_set_err_msg!(extack, "Wrong granularity"); err = -libc::EINVAL; }
+    if reminder != 0 { nl_set_err_msg!(extack, "Wrong granularity"); err = -EINVAL; }
     err
 }
 
 pub unsafe fn devlink_nl_resource_set_doit(_skb: *mut SkBuff, info: *mut GenlInfo) -> i32 {
     let devlink = unsafe { (*devlink_nl_ctx(info)).devlink };
-    if genl_req_attr_check!(info, DEVLINK_ATTR_RESOURCE_ID) || genl_req_attr_check!(info, DEVLINK_ATTR_RESOURCE_SIZE) { return -libc::EINVAL; }
+    if genl_req_attr_check!(info, DEVLINK_ATTR_RESOURCE_ID) || genl_req_attr_check!(info, DEVLINK_ATTR_RESOURCE_SIZE) { return -EINVAL; }
     let resource_id = nla_get_u64!(unsafe { (*info).attrs[DEVLINK_ATTR_RESOURCE_ID] });
     let resource = unsafe { devlink_resource_find(devlink, core::ptr::null_mut(), resource_id) };
-    if resource.is_null() { return -libc::EINVAL; }
+    if resource.is_null() { return -EINVAL; }
     let size = nla_get_u64!(unsafe { (*info).attrs[DEVLINK_ATTR_RESOURCE_SIZE] });
     let err = unsafe { devlink_resource_validate_size(resource, size, (*info).extack) };
     if err != 0 { return err; }
@@ -111,7 +111,7 @@ pub unsafe fn devlink_resources_validate(devlink: *mut Devlink, mut resource: *m
     let resource_list = if !resource.is_null() { &mut (*resource).resource_list } else { &mut (*devlink).resource_list };
     let mut err = 0;
     list_for_each_entry!(resource, resource_list, list, {
-        if !(*resource).size_valid { return -libc::EINVAL; }
+        if !(*resource).size_valid { return -EINVAL; }
         err = devlink_resources_validate(devlink, resource, info);
         if err != 0 { return err; }
     });

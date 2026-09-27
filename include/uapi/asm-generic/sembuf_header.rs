@@ -27,20 +27,20 @@
 pub struct semid64_ds {
     pub sem_perm: ipc64_perm, /* permissions .. see ipc.h */
     #[cfg(target_pointer_width = "64")]
-    pub sem_otime: core::ffi::c_long, /* last semop time */
+    pub sem_otime: kernel::ffi::c_long, /* last semop time */
     #[cfg(target_pointer_width = "64")]
-    pub sem_ctime: core::ffi::c_long, /* last change time */
+    pub sem_ctime: kernel::ffi::c_long, /* last change time */
     #[cfg(target_pointer_width = "32")]
-    pub sem_otime: core::ffi::c_ulong, /* last semop time */
+    pub sem_otime: kernel::ffi::c_ulong, /* last semop time */
     #[cfg(target_pointer_width = "32")]
-    pub sem_otime_high: core::ffi::c_ulong,
+    pub sem_otime_high: kernel::ffi::c_ulong,
     #[cfg(target_pointer_width = "32")]
-    pub sem_ctime: core::ffi::c_ulong, /* last change time */
+    pub sem_ctime: kernel::ffi::c_ulong, /* last change time */
     #[cfg(target_pointer_width = "32")]
-    pub sem_ctime_high: core::ffi::c_ulong,
-    pub sem_nsems: core::ffi::c_ulong, /* no. of semaphores in array */
-    pub __unused3: core::ffi::c_ulong,
-    pub __unused4: core::ffi::c_ulong,
+    pub sem_ctime_high: kernel::ffi::c_ulong,
+    pub sem_nsems: kernel::ffi::c_ulong, /* no. of semaphores in array */
+    pub __unused3: kernel::ffi::c_ulong,
+    pub __unused4: kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

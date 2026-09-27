@@ -25,10 +25,10 @@ pub struct slave {
     pub list: list_head,
     pub dev: *mut net_device,
     pub dev_tracker: netdevice_tracker,
-    pub priority: libc::c_long,
-    pub priority_bps: libc::c_long,
-    pub priority_Bps: libc::c_long,
-    pub bytes_queued: libc::c_long,
+    pub priority: kernel::ffi::c_long,
+    pub priority_bps: kernel::ffi::c_long,
+    pub priority_Bps: kernel::ffi::c_long,
+    pub bytes_queued: kernel::ffi::c_long,
 }
 
 pub type slave_t = slave;
@@ -37,7 +37,7 @@ pub type slave_t = slave;
 pub struct slave_queue {
     pub lock: spinlock_t,
     pub all_slaves: list_head,
-    pub num_slaves: libc::c_int,
+    pub num_slaves: kernel::ffi::c_int,
     pub master_dev: *mut net_device,
 }
 
@@ -46,8 +46,8 @@ pub type slave_queue_t = slave_queue;
 #[repr(C)]
 pub struct equalizer {
     pub queue: slave_queue_t,
-    pub min_slaves: libc::c_int,
-    pub max_slaves: libc::c_int,
+    pub min_slaves: kernel::ffi::c_int,
+    pub max_slaves: kernel::ffi::c_int,
     pub timer: timer_list,
 }
 

@@ -2,7 +2,7 @@
 // Translated from the C implementation; declarations supplied by the kernel
 // are referenced externally below.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 extern "C" {
     fn save_counter();
@@ -12,12 +12,12 @@ extern "C" {
     fn csr_read(reg: u32) -> c_ulong;
     fn csr_write(value: c_ulong, reg: u32);
     fn is_fpu_owner() -> bool;
-    fn save_fp(task: *mut core::ffi::c_void);
-    fn restore_fp(task: *mut core::ffi::c_void);
-    static mut current: *mut core::ffi::c_void;
+    fn save_fp(task: *mut kernel::ffi::c_void);
+    fn restore_fp(task: *mut kernel::ffi::c_void);
+    static mut current: *mut kernel::ffi::c_void;
     fn enable_pci_wakeup();
     fn local_flush_tlb_all();
-    fn __pa(address: *const core::ffi::c_void) -> c_ulong;
+    fn __pa(address: *const kernel::ffi::c_void) -> c_ulong;
     fn swsusp_asm_suspend() -> i32;
     fn swsusp_asm_resume() -> i32;
     static __nosave_begin: u8;

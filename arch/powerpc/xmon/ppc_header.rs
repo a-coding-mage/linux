@@ -24,8 +24,8 @@ pub type ppc_cpu_t = u64;
 #[repr(C)]
 pub struct powerpc_opcode {
     pub name: *const i8,
-    pub opcode: libc::c_ulong,
-    pub mask: libc::c_ulong,
+    pub opcode: kernel::ffi::c_ulong,
+    pub mask: kernel::ffi::c_ulong,
     pub flags: ppc_cpu_t,
     pub deprecated: ppc_cpu_t,
     pub operands: [u8; 8],
@@ -33,9 +33,9 @@ pub struct powerpc_opcode {
 
 extern "C" {
     pub static powerpc_opcodes: [powerpc_opcode; 0];
-    pub static powerpc_num_opcodes: libc::c_int;
+    pub static powerpc_num_opcodes: kernel::ffi::c_int;
     pub static vle_opcodes: [powerpc_opcode; 0];
-    pub static vle_num_opcodes: libc::c_int;
+    pub static vle_num_opcodes: kernel::ffi::c_int;
 }
 
 pub const PPC_OPCODE_PPC: ppc_cpu_t = 1;
@@ -95,61 +95,61 @@ pub const fn VLE_OP_TO_SEG(i: u64) -> u64 { i >> 1 }
 
 #[repr(C)]
 pub struct powerpc_operand {
-    pub bitm: libc::c_uint,
-    pub shift: libc::c_int,
-    pub insert: Option<unsafe extern "C" fn(libc::c_ulong, libc::c_long, ppc_cpu_t, *mut *const i8) -> libc::c_ulong>,
-    pub extract: Option<unsafe extern "C" fn(libc::c_ulong, ppc_cpu_t, *mut libc::c_int) -> libc::c_long>,
-    pub flags: libc::c_ulong,
+    pub bitm: kernel::ffi::c_uint,
+    pub shift: kernel::ffi::c_int,
+    pub insert: Option<unsafe extern "C" fn(kernel::ffi::c_ulong, kernel::ffi::c_long, ppc_cpu_t, *mut *const i8) -> kernel::ffi::c_ulong>,
+    pub extract: Option<unsafe extern "C" fn(kernel::ffi::c_ulong, ppc_cpu_t, *mut kernel::ffi::c_int) -> kernel::ffi::c_long>,
+    pub flags: kernel::ffi::c_ulong,
 }
 
 extern "C" {
     pub static powerpc_operands: [powerpc_operand; 0];
-    pub static num_powerpc_operands: libc::c_uint;
+    pub static num_powerpc_operands: kernel::ffi::c_uint;
 }
 
-pub const PPC_OPSHIFT_INV: libc::c_uint = 0x80000000;
-pub const PPC_OPERAND_SIGNED: libc::c_ulong = 0x1;
-pub const PPC_OPERAND_SIGNOPT: libc::c_ulong = 0x2;
-pub const PPC_OPERAND_FAKE: libc::c_ulong = 0x4;
-pub const PPC_OPERAND_PARENS: libc::c_ulong = 0x8;
-pub const PPC_OPERAND_CR_BIT: libc::c_ulong = 0x10;
-pub const PPC_OPERAND_GPR: libc::c_ulong = 0x20;
-pub const PPC_OPERAND_GPR_0: libc::c_ulong = 0x40;
-pub const PPC_OPERAND_FPR: libc::c_ulong = 0x80;
-pub const PPC_OPERAND_RELATIVE: libc::c_ulong = 0x100;
-pub const PPC_OPERAND_ABSOLUTE: libc::c_ulong = 0x200;
-pub const PPC_OPERAND_OPTIONAL: libc::c_ulong = 0x400;
-pub const PPC_OPERAND_NEXT: libc::c_ulong = 0x800;
-pub const PPC_OPERAND_NEGATIVE: libc::c_ulong = 0x1000;
-pub const PPC_OPERAND_VR: libc::c_ulong = 0x2000;
-pub const PPC_OPERAND_DS: libc::c_ulong = 0x4000;
-pub const PPC_OPERAND_DQ: libc::c_ulong = 0x8000;
-pub const PPC_OPERAND_PLUS1: libc::c_ulong = 0x10000;
-pub const PPC_OPERAND_FSL: libc::c_ulong = 0x20000;
-pub const PPC_OPERAND_FCR: libc::c_ulong = 0x40000;
-pub const PPC_OPERAND_UDI: libc::c_ulong = 0x80000;
-pub const PPC_OPERAND_VSR: libc::c_ulong = 0x100000;
-pub const PPC_OPERAND_CR_REG: libc::c_ulong = 0x200000;
-pub const PPC_OPERAND_OPTIONAL_VALUE: libc::c_ulong = 0x400000;
-pub const PPC_OPERAND_OPTIONAL32: libc::c_ulong = 0x800000;
+pub const PPC_OPSHIFT_INV: kernel::ffi::c_uint = 0x80000000;
+pub const PPC_OPERAND_SIGNED: kernel::ffi::c_ulong = 0x1;
+pub const PPC_OPERAND_SIGNOPT: kernel::ffi::c_ulong = 0x2;
+pub const PPC_OPERAND_FAKE: kernel::ffi::c_ulong = 0x4;
+pub const PPC_OPERAND_PARENS: kernel::ffi::c_ulong = 0x8;
+pub const PPC_OPERAND_CR_BIT: kernel::ffi::c_ulong = 0x10;
+pub const PPC_OPERAND_GPR: kernel::ffi::c_ulong = 0x20;
+pub const PPC_OPERAND_GPR_0: kernel::ffi::c_ulong = 0x40;
+pub const PPC_OPERAND_FPR: kernel::ffi::c_ulong = 0x80;
+pub const PPC_OPERAND_RELATIVE: kernel::ffi::c_ulong = 0x100;
+pub const PPC_OPERAND_ABSOLUTE: kernel::ffi::c_ulong = 0x200;
+pub const PPC_OPERAND_OPTIONAL: kernel::ffi::c_ulong = 0x400;
+pub const PPC_OPERAND_NEXT: kernel::ffi::c_ulong = 0x800;
+pub const PPC_OPERAND_NEGATIVE: kernel::ffi::c_ulong = 0x1000;
+pub const PPC_OPERAND_VR: kernel::ffi::c_ulong = 0x2000;
+pub const PPC_OPERAND_DS: kernel::ffi::c_ulong = 0x4000;
+pub const PPC_OPERAND_DQ: kernel::ffi::c_ulong = 0x8000;
+pub const PPC_OPERAND_PLUS1: kernel::ffi::c_ulong = 0x10000;
+pub const PPC_OPERAND_FSL: kernel::ffi::c_ulong = 0x20000;
+pub const PPC_OPERAND_FCR: kernel::ffi::c_ulong = 0x40000;
+pub const PPC_OPERAND_UDI: kernel::ffi::c_ulong = 0x80000;
+pub const PPC_OPERAND_VSR: kernel::ffi::c_ulong = 0x100000;
+pub const PPC_OPERAND_CR_REG: kernel::ffi::c_ulong = 0x200000;
+pub const PPC_OPERAND_OPTIONAL_VALUE: kernel::ffi::c_ulong = 0x400000;
+pub const PPC_OPERAND_OPTIONAL32: kernel::ffi::c_ulong = 0x800000;
 
 #[repr(C)]
 pub struct powerpc_macro {
     pub name: *const i8,
-    pub operands: libc::c_uint,
+    pub operands: kernel::ffi::c_uint,
     pub flags: ppc_cpu_t,
     pub format: *const i8,
 }
 
 extern "C" {
     pub static powerpc_macros: [powerpc_macro; 0];
-    pub static powerpc_num_macros: libc::c_int;
+    pub static powerpc_num_macros: kernel::ffi::c_int;
 }
 
 #[inline]
-pub unsafe fn ppc_optional_operand_value(operand: *const powerpc_operand) -> libc::c_long {
+pub unsafe fn ppc_optional_operand_value(operand: *const powerpc_operand) -> kernel::ffi::c_long {
     if ((*operand).flags & PPC_OPERAND_OPTIONAL_VALUE) != 0 {
-        (*operand.add(1)).shift as libc::c_long
+        (*operand.add(1)).shift as kernel::ffi::c_long
     } else {
         0
     }

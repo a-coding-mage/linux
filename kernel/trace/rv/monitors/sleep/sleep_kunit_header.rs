@@ -16,36 +16,36 @@ extern "C" {
 pub struct rv_sleep_ops {
     pub mon: rv_kunit_mon,
     pub handle_sched_waking:
-        Option<unsafe extern "C" fn(data: *mut core::ffi::c_void, task: *mut task_struct)>,
+        Option<unsafe extern "C" fn(data: *mut kernel::ffi::c_void, task: *mut task_struct)>,
     pub handle_sched_exit:
-        Option<unsafe extern "C" fn(data: *mut core::ffi::c_void, is_switch: bool)>,
+        Option<unsafe extern "C" fn(data: *mut kernel::ffi::c_void, is_switch: bool)>,
     pub handle_sched_set_state: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         task: *mut task_struct,
-        state: core::ffi::c_int,
+        state: kernel::ffi::c_int,
     )>,
     pub handle_contention_begin: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
-        lock: *mut core::ffi::c_void,
-        flags: core::ffi::c_uint,
+        data: *mut kernel::ffi::c_void,
+        lock: *mut kernel::ffi::c_void,
+        flags: kernel::ffi::c_uint,
     )>,
     pub handle_contention_end: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
-        lock: *mut core::ffi::c_void,
-        ret: core::ffi::c_int,
+        data: *mut kernel::ffi::c_void,
+        lock: *mut kernel::ffi::c_void,
+        ret: kernel::ffi::c_int,
     )>,
     pub handle_sys_enter: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         regs: *mut pt_regs,
-        id: core::ffi::c_long,
+        id: kernel::ffi::c_long,
     )>,
     pub handle_sys_exit: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         regs: *mut pt_regs,
-        ret: core::ffi::c_long,
+        ret: kernel::ffi::c_long,
     )>,
     pub handle_task_newtask: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         task: *mut task_struct,
         flags: u64,
     )>,

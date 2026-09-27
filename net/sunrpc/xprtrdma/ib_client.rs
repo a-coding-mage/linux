@@ -9,7 +9,7 @@
 #[repr(C)]
 pub struct rpcrdma_device {
     pub rd_kref: kref,
-    pub rd_flags: ::core::ffi::c_ulong,
+    pub rd_flags: ::kernel::ffi::c_ulong,
     pub rd_device: *mut ib_device,
     pub rd_xa: xarray,
     pub rd_done: completion,
@@ -18,7 +18,7 @@ pub struct rpcrdma_device {
 pub const RPCRDMA_RD_F_REMOVING: usize = 0;
 
 static mut rpcrdma_ib_client: ib_client = ib_client {
-    name: "rpcrdma".as_ptr() as *const ::core::ffi::c_char,
+    name: "rpcrdma".as_ptr() as *const ::kernel::ffi::c_char,
     add: Some(rpcrdma_add_one),
     remove: Some(rpcrdma_remove_one),
 };
@@ -106,10 +106,10 @@ unsafe extern "C" fn rpcrdma_add_one(device: *mut ib_device) -> i32 {
 
 unsafe extern "C" fn rpcrdma_remove_one(
     device: *mut ib_device,
-    client_data: *mut ::core::ffi::c_void,
+    client_data: *mut ::kernel::ffi::c_void,
 ) {
     let rd = client_data as *mut rpcrdma_device;
-    let mut index: ::core::ffi::c_ulong = 0;
+    let mut index: ::kernel::ffi::c_ulong = 0;
 
     trace_rpcrdma_client_remove_one(device);
 
@@ -125,7 +125,7 @@ unsafe extern "C" fn rpcrdma_remove_one(
 
     trace_rpcrdma_client_remove_one_done(device);
     xa_destroy(&raw mut (*rd).rd_xa);
-    kfree(rd as *mut ::core::ffi::c_void);
+    kfree(rd as *mut ::kernel::ffi::c_void);
 }
 
 pub unsafe fn rpcrdma_ib_client_unregister() {

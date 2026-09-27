@@ -11,7 +11,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-const _BLOCKABLE: libc::c_ulong = !(sigmask(SIGKILL) | sigmask(SIGSTOP));
+const _BLOCKABLE: kernel::ffi::c_ulong = !(sigmask(SIGKILL) | sigmask(SIGSTOP));
 
 #[repr(C)]
 struct rt_sigframe {
@@ -23,11 +23,11 @@ unsafe fn rt_restore_ucontext(
     regs: *mut pt_regs,
     sw: *mut switch_stack,
     uc: *mut ucontext,
-    pr2: *mut libc::c_int,
-) -> libc::c_int {
-    let mut temp: libc::c_int = 0;
+    pr2: *mut kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
+    let mut temp: kernel::ffi::c_int = 0;
     let gregs = unsafe { (*uc).uc_mcontext.gregs };
-    let mut err: libc::c_int;
+    let mut err: kernel::ffi::c_int;
 
     unsafe { (*current).restart_block.fn_ = do_no_restart_syscall; }
 
@@ -69,7 +69,7 @@ unsafe fn rt_restore_ucontext(
     err
 }
 
-unsafe fn do_rt_sigreturn(sw: *mut switch_stack) -> libc::c_int {
+unsafe fn do_rt_sigreturn(sw: *mut switch_stack) -> kernel::ffi::c_int {
     let regs = unsafe { sw.add(1) as *mut pt_regs };
     let frame = unsafe { (*regs).sp as *mut rt_sigframe };
     let mut set: sigset_t = core::mem::zeroed();
@@ -81,7 +81,7 @@ unsafe fn do_rt_sigreturn(sw: *mut switch_stack) -> libc::c_int {
     rval
 }
 
-unsafe fn rt_setup_ucontext(uc: *mut ucontext, regs: *mut pt_regs) -> libc::c_int {
+unsafe fn rt_setup_ucontext(uc: *mut ucontext, regs: *mut pt_regs) -> kernel::ffi::c_int {
     let sw = unsafe { (regs as *mut switch_stack).sub(1) };
     let gregs = unsafe { (*uc).uc_mcontext.gregs };
     let mut err = 0;
@@ -103,12 +103,12 @@ unsafe fn rt_setup_ucontext(uc: *mut ucontext, regs: *mut pt_regs) -> libc::c_in
     err
 }
 
-unsafe fn get_sigframe(ksig: *mut ksignal, regs: *mut pt_regs, frame_size: usize) -> *mut libc::c_void {
+unsafe fn get_sigframe(ksig: *mut ksignal, regs: *mut pt_regs, frame_size: usize) -> *mut kernel::ffi::c_void {
     let usp = unsafe { sigsp((*regs).sp, ksig) };
-    ((usp.wrapping_sub(frame_size as u64)) & !7u64) as *mut libc::c_void
+    ((usp.wrapping_sub(frame_size as u64)) & !7u64) as *mut kernel::ffi::c_void
 }
 
-unsafe fn setup_rt_frame(ksig: *mut ksignal, set: *mut sigset_t, regs: *mut pt_regs) -> libc::c_int {
+unsafe fn setup_rt_frame(ksig: *mut ksignal, set: *mut sigset_t, regs: *mut pt_regs) -> kernel::ffi::c_int {
     let frame = unsafe { get_sigframe(ksig, regs, core::mem::size_of::<rt_sigframe>()) as *mut rt_sigframe };
     let mut err = 0;
     if unsafe { (*ksig).ka.sa.sa_flags & SA_SIGINFO } != 0 { err |= unsafe { copy_siginfo_to_user(&mut (*frame).info, &(*ksig).info) }; }
@@ -127,7 +127,7 @@ unsafe fn handle_signal(ksig: *mut ksignal, regs: *mut pt_regs) {
     unsafe { signal_setup_done(ret, ksig, 0); }
 }
 
-unsafe fn do_signal(regs: *mut pt_regs) -> libc::c_int {
+unsafe fn do_signal(regs: *mut pt_regs) -> kernel::ffi::c_int {
     let mut retval = 0; let mut continue_addr = 0; let mut restart_addr = 0; let mut restart = 0; let mut ksig: ksignal = core::mem::zeroed();
     unsafe { (*current).thread.kregs = regs; }
     if unsafe { (*regs).orig_r2 >= 0 && (*regs).r1 != 0 } {
@@ -142,7 +142,7 @@ unsafe fn do_signal(regs: *mut pt_regs) -> libc::c_int {
     restart
 }
 
-unsafe fn do_notify_resume(regs: *mut pt_regs) -> libc::c_int {
+unsafe fn do_notify_resume(regs: *mut pt_regs) -> kernel::ffi::c_int {
     if unsafe { !user_mode(regs) } { return 0; }
     if unsafe { test_thread_flag(TIF_SIGPENDING) || test_thread_flag(TIF_NOTIFY_SIGNAL) } { let restart = unsafe { do_signal(regs) }; if restart != 0 { return restart; } }
     else if unsafe { test_thread_flag(TIF_NOTIFY_RESUME) } { unsafe { resume_user_mode_work(regs); } }

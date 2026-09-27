@@ -21,9 +21,9 @@
 
 #[repr(C)]
 pub struct cpm_pin {
-    pub port: ::core::ffi::c_int,
-    pub pin: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_int,
+    pub port: ::kernel::ffi::c_int,
+    pub pin: ::kernel::ffi::c_int,
+    pub flags: ::kernel::ffi::c_int,
 }
 
 static mut tqm8xx_pins: [cpm_pin; 9] = [
@@ -54,8 +54,8 @@ static mut tqm8xx_fec_pins: [cpm_pin; 13] = [
     cpm_pin { port: CPM_PORTD, pin: 15, flags: CPM_PIN_OUTPUT },
 ];
 
-unsafe fn init_pins(n: ::core::ffi::c_int, mut pin: *mut cpm_pin) {
-    let mut i: ::core::ffi::c_int = 0;
+unsafe fn init_pins(n: ::kernel::ffi::c_int, mut pin: *mut cpm_pin) {
+    let mut i: ::kernel::ffi::c_int = 0;
     while i < n {
         cpm1_set_pin((*pin).port, (*pin).pin, (*pin).flags);
         pin = pin.add(1);
@@ -66,9 +66,9 @@ unsafe fn init_pins(n: ::core::ffi::c_int, mut pin: *mut cpm_pin) {
 unsafe fn init_ioports() {
     let mut dnode: *mut device_node;
     let mut prop: *mut property;
-    let mut len: ::core::ffi::c_int = 0;
+    let mut len: ::kernel::ffi::c_int = 0;
 
-    init_pins(tqm8xx_pins.len() as ::core::ffi::c_int, tqm8xx_pins.as_mut_ptr());
+    init_pins(tqm8xx_pins.len() as ::kernel::ffi::c_int, tqm8xx_pins.as_mut_ptr());
     cpm1_clk_setup(CPM_CLK_SMC1, CPM_BRG1, CPM_CLK_RTX);
 
     dnode = of_find_node_by_name(core::ptr::null_mut(), c"aliases".as_ptr());
@@ -81,7 +81,7 @@ unsafe fn init_ioports() {
         return;
     }
 
-    init_pins(tqm8xx_fec_pins.len() as ::core::ffi::c_int, tqm8xx_fec_pins.as_mut_ptr());
+    init_pins(tqm8xx_fec_pins.len() as ::kernel::ffi::c_int, tqm8xx_fec_pins.as_mut_ptr());
 }
 
 unsafe fn tqm8xx_setup_arch() {
@@ -91,8 +91,8 @@ unsafe fn tqm8xx_setup_arch() {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub name: *const ::core::ffi::c_char,
-    pub compatible: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
+    pub compatible: *const ::kernel::ffi::c_char,
 }
 
 static of_bus_ids: [of_device_id; 4] = [
@@ -102,7 +102,7 @@ static of_bus_ids: [of_device_id; 4] = [
     of_device_id { name: core::ptr::null(), compatible: c"simple-bus".as_ptr() },
 ];
 
-unsafe fn declare_of_platform_devices() -> ::core::ffi::c_int {
+unsafe fn declare_of_platform_devices() -> ::kernel::ffi::c_int {
     of_platform_bus_probe(core::ptr::null_mut(), of_bus_ids.as_ptr(), core::ptr::null_mut());
     0
 }

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     pub static hex_asc: [c_char; 16];
@@ -55,7 +55,7 @@ pub unsafe fn hex_byte_pack_upper(mut buf: *mut c_char, byte: u8) -> *mut c_char
 extern "C" {
     pub fn hex_to_bin(ch: u8) -> i32;
     pub fn hex2bin(dst: *mut u8, src: *const c_char, count: usize) -> i32;
-    pub fn bin2hex(dst: *mut c_char, src: *const core::ffi::c_void, count: usize) -> *mut c_char;
+    pub fn bin2hex(dst: *mut c_char, src: *const kernel::ffi::c_void, count: usize) -> *mut c_char;
     pub fn mac_pton(s: *const c_char, mac: *mut u8) -> bool;
 }
 

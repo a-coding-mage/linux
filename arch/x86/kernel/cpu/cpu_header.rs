@@ -5,23 +5,23 @@
 
 #[repr(C)]
 pub struct cpu_dev {
-    pub c_vendor: *const ::core::ffi::c_char,
+    pub c_vendor: *const ::kernel::ffi::c_char,
 
     /* some have two possibilities for cpuid string */
-    pub c_ident: [*const ::core::ffi::c_char; 2],
+    pub c_ident: [*const ::kernel::ffi::c_char; 2],
 
     pub c_early_init: Option<unsafe extern "C" fn(*mut cpuinfo_x86)>,
     pub c_bsp_init: Option<unsafe extern "C" fn(*mut cpuinfo_x86)>,
     pub c_init: Option<unsafe extern "C" fn(*mut cpuinfo_x86)>,
     pub c_identify: Option<unsafe extern "C" fn(*mut cpuinfo_x86)>,
     pub c_detect_tlb: Option<unsafe extern "C" fn(*mut cpuinfo_x86)>,
-    pub c_x86_vendor: ::core::ffi::c_int,
+    pub c_x86_vendor: ::kernel::ffi::c_int,
 
     // CONFIG_X86_32
     // Optional vendor specific routine to obtain the cache size.
     #[cfg(CONFIG_X86_32)]
     pub legacy_cache_size:
-        Option<unsafe extern "C" fn(*mut cpuinfo_x86, ::core::ffi::c_uint) -> ::core::ffi::c_uint>,
+        Option<unsafe extern "C" fn(*mut cpuinfo_x86, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint>,
 
     // Family/stepping-based lookup table for model names.
     #[cfg(CONFIG_X86_32)]
@@ -31,8 +31,8 @@ pub struct cpu_dev {
 #[cfg(CONFIG_X86_32)]
 #[repr(C)]
 pub struct legacy_cpu_model_info {
-    pub family: ::core::ffi::c_int,
-    pub model_names: [*const ::core::ffi::c_char; 16],
+    pub family: ::kernel::ffi::c_int,
+    pub model_names: [*const ::kernel::ffi::c_char; 16],
 }
 
 // SAFETY: vendor descriptors are immutable tables of C strings and function
@@ -101,12 +101,12 @@ pub unsafe fn intel_unlock_cpuid_leafs(_c: *mut cpuinfo_x86) {}
 // CONFIG_AMD_NB && CONFIG_SYSFS
 #[cfg(all(CONFIG_AMD_NB, CONFIG_SYSFS))]
 unsafe extern "C" {
-    pub fn amd_init_l3_cache(index: ::core::ffi::c_int) -> *mut amd_northbridge;
+    pub fn amd_init_l3_cache(index: ::kernel::ffi::c_int) -> *mut amd_northbridge;
 }
 
 #[cfg(not(all(CONFIG_AMD_NB, CONFIG_SYSFS)))]
 #[inline]
-pub unsafe fn amd_init_l3_cache(_index: ::core::ffi::c_int) -> *mut amd_northbridge {
+pub unsafe fn amd_init_l3_cache(_index: ::kernel::ffi::c_int) -> *mut amd_northbridge {
     ::core::ptr::null_mut()
 }
 

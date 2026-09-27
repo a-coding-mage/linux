@@ -11,10 +11,10 @@ pub const DRM_ROCKET_SUBMIT: u32 = 0x01;
 pub const DRM_ROCKET_PREP_BO: u32 = 0x02;
 pub const DRM_ROCKET_FINI_BO: u32 = 0x03;
 
-pub const DRM_IOCTL_ROCKET_CREATE_BO: _ = DRM_IOWR!(DRM_COMMAND_BASE + DRM_ROCKET_CREATE_BO, drm_rocket_create_bo);
-pub const DRM_IOCTL_ROCKET_SUBMIT: _ = DRM_IOW!(DRM_COMMAND_BASE + DRM_ROCKET_SUBMIT, drm_rocket_submit);
-pub const DRM_IOCTL_ROCKET_PREP_BO: _ = DRM_IOW!(DRM_COMMAND_BASE + DRM_ROCKET_PREP_BO, drm_rocket_prep_bo);
-pub const DRM_IOCTL_ROCKET_FINI_BO: _ = DRM_IOW!(DRM_COMMAND_BASE + DRM_ROCKET_FINI_BO, drm_rocket_fini_bo);
+pub const DRM_IOCTL_ROCKET_CREATE_BO: u32 = DRM_IOWR!(DRM_COMMAND_BASE + DRM_ROCKET_CREATE_BO, drm_rocket_create_bo);
+pub const DRM_IOCTL_ROCKET_SUBMIT: u32 = DRM_IOW!(DRM_COMMAND_BASE + DRM_ROCKET_SUBMIT, drm_rocket_submit);
+pub const DRM_IOCTL_ROCKET_PREP_BO: u32 = DRM_IOW!(DRM_COMMAND_BASE + DRM_ROCKET_PREP_BO, drm_rocket_prep_bo);
+pub const DRM_IOCTL_ROCKET_FINI_BO: u32 = DRM_IOW!(DRM_COMMAND_BASE + DRM_ROCKET_FINI_BO, drm_rocket_fini_bo);
 
 /**
  * struct drm_rocket_create_bo - ioctl argument for creating Rocket BOs.

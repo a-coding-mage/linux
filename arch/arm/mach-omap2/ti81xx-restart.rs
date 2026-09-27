@@ -3,7 +3,7 @@
 // Dependencies supplied by the surrounding kernel translation:
 // iomap.h, common.h, control.h, and prm3xxx.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 const TI81XX_PRM_DEVICE_RSTCTRL: u32 = 0x00a0;
 const TI81XX_GLOBAL_RST_COLD: u32 = 1 << 1;

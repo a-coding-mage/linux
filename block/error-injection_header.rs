@@ -4,7 +4,7 @@
 
 #[repr(C)]
 pub struct gendisk {
-    pub state: *mut core::ffi::c_ulong,
+    pub state: *mut kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -26,7 +26,7 @@ extern "C" {
     pub fn __blk_error_inject(bio: *mut bio) -> bool;
 
     pub fn static_branch_unlikely(key: *const static_key_false) -> bool;
-    pub fn test_bit(nr: core::ffi::c_ulong, addr: *const core::ffi::c_ulong) -> bool;
+    pub fn test_bit(nr: kernel::ffi::c_ulong, addr: *const kernel::ffi::c_ulong) -> bool;
 }
 
 // Opaque dependency type provided by linux/jump_label.h.
@@ -36,7 +36,7 @@ pub struct static_key_false {
 }
 
 // Dependency supplied by the surrounding kernel translation.
-pub const GD_ERROR_INJECT: core::ffi::c_ulong = 0;
+pub const GD_ERROR_INJECT: kernel::ffi::c_ulong = 0;
 
 #[inline]
 pub unsafe fn blk_error_inject(bio: *mut bio) -> bool {

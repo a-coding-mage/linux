@@ -50,8 +50,8 @@ enum iproc_arm_pll_fid {
 #[repr(C)]
 struct iproc_arm_pll {
     hw: clk_hw,
-    base: *mut core::ffi::c_void,
-    rate: libc::c_ulong,
+    base: *mut kernel::ffi::c_void,
+    rate: kernel::ffi::c_ulong,
 }
 
 unsafe fn to_iproc_arm_pll(hw: *mut clk_hw) -> *mut iproc_arm_pll {
@@ -135,8 +135,8 @@ unsafe fn __get_ndiv(pll: *mut iproc_arm_pll) -> u32 {
 
 unsafe extern "C" fn iproc_arm_pll_recalc_rate(
     hw: *mut clk_hw,
-    parent_rate: libc::c_ulong,
-) -> libc::c_ulong {
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     let pll = to_iproc_arm_pll(hw);
     let mut val = readl((*pll).base.add(IPROC_CLK_PLLARMC_OFFSET));
     if val & (1u32 << IPROC_CLK_PLLARMC_BYPCLK_EN_SHIFT) != 0 {
@@ -156,7 +156,7 @@ unsafe extern "C" fn iproc_arm_pll_recalc_rate(
         (*pll).rate = 0;
         return 0;
     }
-    (*pll).rate = (((ndiv * parent_rate as u64) >> 20) / pdiv as u64 / mdiv as u64) as libc::c_ulong;
+    (*pll).rate = (((ndiv * parent_rate as u64) >> 20) / pdiv as u64 / mdiv as u64) as kernel::ffi::c_ulong;
     pr_debug!("%s: ARM PLL rate: %lu. parent rate: %lu\n", "iproc_arm_pll_recalc_rate", (*pll).rate, parent_rate);
     pr_debug!("%s: ndiv_int: %u, pdiv: %u, mdiv: %d\n", "iproc_arm_pll_recalc_rate", (ndiv >> 20) as u32, pdiv, mdiv);
     (*pll).rate

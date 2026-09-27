@@ -10,7 +10,7 @@ unsafe extern "C" {
     fn mxc_set_cpu_type(cpu_type: u32);
     fn imx_src_init();
     fn imx5_pmu_init();
-    fn imx_aips_allow_unprivileged_access(compat: *const core::ffi::c_char);
+    fn imx_aips_allow_unprivileged_access(compat: *const kernel::ffi::c_char);
     fn imx53_pm_init();
 }
 
@@ -28,7 +28,7 @@ unsafe fn imx53_dt_init() {
         imx_src_init();
         imx5_pmu_init();
         imx_aips_allow_unprivileged_access(
-            b"fsl,imx53-aipstz\0".as_ptr() as *const core::ffi::c_char,
+            b"fsl,imx53-aipstz\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 }
@@ -39,8 +39,8 @@ unsafe fn imx53_init_late() {
     }
 }
 
-static IMX53_DT_BOARD_COMPAT: [*const core::ffi::c_char; 2] = [
-    b"fsl,imx53\0".as_ptr() as *const core::ffi::c_char,
+static IMX53_DT_BOARD_COMPAT: [*const kernel::ffi::c_char; 2] = [
+    b"fsl,imx53\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -52,7 +52,7 @@ struct MachineDesc {
     init_early: unsafe fn(),
     init_machine: unsafe fn(),
     init_late: unsafe fn(),
-    dt_compat: *const *const core::ffi::c_char,
+    dt_compat: *const *const kernel::ffi::c_char,
 }
 
 #[used]

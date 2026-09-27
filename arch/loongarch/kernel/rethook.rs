@@ -6,7 +6,7 @@
 // Dependencies supplied by the surrounding kernel sources:
 // linux/kprobes.h, linux/rethook.h, and the local rethook.h.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct PtRegs {

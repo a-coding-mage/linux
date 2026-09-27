@@ -15,9 +15,9 @@ pub const LINUX_TIMER: usize = 0;
 pub const LINUX_TIMER_INT: usize = XCHAL_TIMER0_INTERRUPT;
 
 extern "C" {
-    pub static mut ccount_freq: ::core::ffi::c_ulong;
+    pub static mut ccount_freq: ::kernel::ffi::c_ulong;
 
-    pub fn local_timer_setup(cpu: ::core::ffi::c_uint);
+    pub fn local_timer_setup(cpu: ::kernel::ffi::c_uint);
 }
 
 /*
@@ -25,22 +25,22 @@ extern "C" {
  */
 
 #[inline]
-pub unsafe fn get_ccount() -> ::core::ffi::c_ulong {
+pub unsafe fn get_ccount() -> ::kernel::ffi::c_ulong {
     xtensa_get_sr(ccount)
 }
 
 #[inline]
-pub unsafe fn set_ccount(ccount: ::core::ffi::c_ulong) {
+pub unsafe fn set_ccount(ccount: ::kernel::ffi::c_ulong) {
     xtensa_set_sr(ccount, ccount);
 }
 
 #[inline]
-pub unsafe fn get_linux_timer() -> ::core::ffi::c_ulong {
+pub unsafe fn get_linux_timer() -> ::kernel::ffi::c_ulong {
     xtensa_get_sr(SREG_CCOMPARE + LINUX_TIMER)
 }
 
 #[inline]
-pub unsafe fn set_linux_timer(ccompare: ::core::ffi::c_ulong) {
+pub unsafe fn set_linux_timer(ccompare: ::kernel::ffi::c_ulong) {
     xtensa_set_sr(ccompare, SREG_CCOMPARE + LINUX_TIMER);
 }
 

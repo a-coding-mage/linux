@@ -8,7 +8,7 @@
 // The C header includes <asm/ptrace.h>; `pt_regs` is supplied by that dependency.
 
 extern "C" {
-    pub fn __riscv_sys_ni_syscall(regs: *const pt_regs) -> ::core::ffi::c_long;
+    pub fn __riscv_sys_ni_syscall(regs: *const pt_regs) -> ::kernel::ffi::c_long;
 }
 
 #[cfg(target_pointer_width = "64")]

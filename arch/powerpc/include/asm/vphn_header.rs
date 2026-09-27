@@ -20,10 +20,10 @@ pub const VPHN_FLAG_PCPU: u64 = 2;
 
 unsafe extern "C" {
     pub fn hcall_vphn(
-        cpu: ::core::ffi::c_ulong,
+        cpu: ::kernel::ffi::c_ulong,
         flags: u64,
         associativity: *mut __be32,
-    ) -> ::core::ffi::c_long;
+    ) -> ::kernel::ffi::c_long;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

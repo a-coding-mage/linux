@@ -11,11 +11,11 @@
  */
 extern "C" {
     pub fn __cpcmd(
-        cmd: *const ::core::ffi::c_char,
-        response: *mut ::core::ffi::c_char,
-        rlen: ::core::ffi::c_int,
-        response_code: *mut ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        cmd: *const ::kernel::ffi::c_char,
+        response: *mut ::kernel::ffi::c_char,
+        rlen: ::kernel::ffi::c_int,
+        response_code: *mut ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 /*
@@ -33,11 +33,11 @@ extern "C" {
  */
 extern "C" {
     pub fn cpcmd(
-        cmd: *const ::core::ffi::c_char,
-        response: *mut ::core::ffi::c_char,
-        rlen: ::core::ffi::c_int,
-        response_code: *mut ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        cmd: *const ::kernel::ffi::c_char,
+        response: *mut ::kernel::ffi::c_char,
+        rlen: ::kernel::ffi::c_int,
+        response_code: *mut ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

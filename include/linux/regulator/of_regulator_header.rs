@@ -6,7 +6,7 @@
 
 /* C header guard: __LINUX_OF_REG_H */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct regulator_desc {
@@ -30,7 +30,7 @@ pub struct device_node {
 
 #[repr(C)]
 pub struct of_regulator_match {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub driver_data: *mut c_void,
     pub init_data: *mut regulator_init_data,
     pub of_node: *mut device_node,

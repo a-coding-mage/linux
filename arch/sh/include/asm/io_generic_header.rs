@@ -16,9 +16,9 @@ macro_rules! declare_io_generic {
     ($prefix:ident) => {
         pub mod $prefix {
             unsafe extern "C" {
-                pub fn ioport_map(addr: ::core::ffi::c_ulong, size: ::core::ffi::c_uint)
-                    -> *mut ::core::ffi::c_void;
-                pub fn ioport_unmap(addr: *mut ::core::ffi::c_void);
+                pub fn ioport_map(addr: ::kernel::ffi::c_ulong, size: ::kernel::ffi::c_uint)
+                    -> *mut ::kernel::ffi::c_void;
+                pub fn ioport_unmap(addr: *mut ::kernel::ffi::c_void);
                 pub fn mem_init();
             }
         }

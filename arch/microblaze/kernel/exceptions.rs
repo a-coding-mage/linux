@@ -24,7 +24,7 @@ const MICROBLAZE_PRIVILEGED_EXCEPTION: u32 = 0x07;
 
 static mut die_lock: DEFINE_SPINLOCK = DEFINE_SPINLOCK::new();
 
-pub unsafe fn die(str_: *const core::ffi::c_char, fp: *mut pt_regs, err: libc::c_long) {
+pub unsafe fn die(str_: *const kernel::ffi::c_char, fp: *mut pt_regs, err: kernel::ffi::c_long) {
     console_verbose();
     spin_lock_irq(&raw mut die_lock);
     pr_warn!("Oops: %s, sig: %ld\n", str_, err);
@@ -44,25 +44,25 @@ pub unsafe extern "C" fn sw_exception(regs: *mut pt_regs) {
 }
 
 pub unsafe fn _exception(
-    signr: libc::c_int,
+    signr: kernel::ffi::c_int,
     regs: *mut pt_regs,
-    code: libc::c_int,
-    addr: libc::c_ulong,
+    code: kernel::ffi::c_int,
+    addr: kernel::ffi::c_ulong,
 ) {
     if kernel_mode(regs) {
-        die(c"Exception in kernel mode".as_ptr(), regs, signr as libc::c_long);
+        die(c"Exception in kernel mode".as_ptr(), regs, signr as kernel::ffi::c_long);
     }
 
-    force_sig_fault(signr, code, addr as *mut core::ffi::c_void);
+    force_sig_fault(signr, code, addr as *mut kernel::ffi::c_void);
 }
 
 pub unsafe extern "C" fn full_exception(
     regs: *mut pt_regs,
-    type_: libc::c_uint,
-    mut fsr: libc::c_int,
-    mut addr: libc::c_int,
+    type_: kernel::ffi::c_uint,
+    mut fsr: kernel::ffi::c_int,
+    mut addr: kernel::ffi::c_int,
 ) {
-    addr = (*regs).pc as libc::c_int;
+    addr = (*regs).pc as kernel::ffi::c_int;
 
     #[cfg(any())]
     pr_warn!(
@@ -70,40 +70,40 @@ pub unsafe extern "C" fn full_exception(
         type_,
         if user_mode(regs) { "user" } else { "kernel" },
         fsr,
-        (*regs).pc as libc::c_uint,
-        (*regs).esr as libc::c_uint
+        (*regs).pc as kernel::ffi::c_uint,
+        (*regs).esr as kernel::ffi::c_uint
     );
 
     match type_ & 0x1f {
         MICROBLAZE_ILL_OPCODE_EXCEPTION => {
             if user_mode(regs) {
                 pr_debug!("Illegal opcode exception in user mode\n");
-                _exception(SIGILL, regs, ILL_ILLOPC, addr as libc::c_ulong);
+                _exception(SIGILL, regs, ILL_ILLOPC, addr as kernel::ffi::c_ulong);
                 return;
             }
             pr_warn!("Illegal opcode exception in kernel mode.\n");
-            die(c"opcode exception".as_ptr(), regs, SIGBUS as libc::c_long);
+            die(c"opcode exception".as_ptr(), regs, SIGBUS as kernel::ffi::c_long);
         }
         MICROBLAZE_IBUS_EXCEPTION | MICROBLAZE_DBUS_EXCEPTION => {
             let data = type_ == MICROBLAZE_DBUS_EXCEPTION;
             if user_mode(regs) {
                 if data { pr_debug!("Data bus error exception in user mode\n"); }
                 else { pr_debug!("Instruction bus error exception in user mode\n"); }
-                _exception(SIGBUS, regs, BUS_ADRERR, addr as libc::c_ulong);
+                _exception(SIGBUS, regs, BUS_ADRERR, addr as kernel::ffi::c_ulong);
                 return;
             }
             if data { pr_warn!("Data bus error exception in kernel mode.\n"); }
             else { pr_warn!("Instruction bus error exception in kernel mode.\n"); }
-            die(c"bus exception".as_ptr(), regs, SIGBUS as libc::c_long);
+            die(c"bus exception".as_ptr(), regs, SIGBUS as kernel::ffi::c_long);
         }
         MICROBLAZE_DIV_ZERO_EXCEPTION => {
             if user_mode(regs) {
                 pr_debug!("Divide by zero exception in user mode\n");
-                _exception(SIGFPE, regs, FPE_INTDIV, addr as libc::c_ulong);
+                _exception(SIGFPE, regs, FPE_INTDIV, addr as kernel::ffi::c_ulong);
                 return;
             }
             pr_warn!("Divide by zero exception in kernel mode.\n");
-            die(c"Divide by zero exception".as_ptr(), regs, SIGBUS as libc::c_long);
+            die(c"Divide by zero exception".as_ptr(), regs, SIGBUS as kernel::ffi::c_long);
         }
         MICROBLAZE_FPU_EXCEPTION => {
             pr_debug!("FPU exception\n");
@@ -114,17 +114,17 @@ pub unsafe extern "C" fn full_exception(
             else if fsr & FSR_UF != 0 { fsr = FPE_FLTUND; }
             else if fsr & FSR_DZ != 0 { fsr = FPE_FLTDIV; }
             else if fsr & FSR_DO != 0 { fsr = FPE_FLTRES; }
-            _exception(SIGFPE, regs, fsr, addr as libc::c_ulong);
+            _exception(SIGFPE, regs, fsr, addr as kernel::ffi::c_ulong);
         }
         MICROBLAZE_PRIVILEGED_EXCEPTION => {
             pr_debug!("Privileged exception\n");
-            _exception(SIGILL, regs, ILL_PRVOPC, addr as libc::c_ulong);
+            _exception(SIGILL, regs, ILL_PRVOPC, addr as kernel::ffi::c_ulong);
         }
         _ => {
             /* FIXME what to do in unexpected exception */
             pr_warn!(
                 "Unexpected exception %02x PC=%08x in %s mode\n",
-                type_, addr as libc::c_uint,
+                type_, addr as kernel::ffi::c_uint,
                 if kernel_mode(regs) { "kernel" } else { "user" }
             );
         }

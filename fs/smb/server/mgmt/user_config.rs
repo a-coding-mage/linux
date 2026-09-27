@@ -6,25 +6,25 @@
 // Dependencies supplied by the surrounding kernel/ksmbd translation.
 
 extern "C" {
-    fn ksmbd_ipc_login_request(account: *const libc::c_char) -> *mut ksmbd_login_response;
+    fn ksmbd_ipc_login_request(account: *const kernel::ffi::c_char) -> *mut ksmbd_login_response;
     fn ksmbd_ipc_login_request_ext(
-        account: *const libc::c_char,
+        account: *const kernel::ffi::c_char,
     ) -> *mut ksmbd_login_response_ext;
-    fn ksmbd_ipc_logout_request(name: *mut libc::c_char, flags: u32);
-    fn kvfree_sensitive(ptr: *mut libc::c_void, size: usize);
-    fn kvfree(ptr: *mut libc::c_void);
-    fn kmalloc(size: usize, flags: u32) -> *mut libc::c_void;
+    fn ksmbd_ipc_logout_request(name: *mut kernel::ffi::c_char, flags: u32);
+    fn kvfree_sensitive(ptr: *mut kernel::ffi::c_void, size: usize);
+    fn kvfree(ptr: *mut kernel::ffi::c_void);
+    fn kmalloc(size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn kmalloc_obj<T>(flags: u32) -> *mut T;
-    fn kstrdup(s: *const libc::c_char, flags: u32) -> *mut libc::c_char;
-    fn kmemdup(src: *const libc::c_void, size: usize, flags: u32) -> *mut libc::c_void;
-    fn memcpy(dst: *mut libc::c_void, src: *const libc::c_void, size: usize) -> *mut libc::c_void;
-    fn kfree(ptr: *mut libc::c_void);
-    fn kfree_sensitive(ptr: *mut libc::c_void);
-    fn strcmp(a: *const libc::c_char, b: *const libc::c_char) -> libc::c_int;
-    fn memcmp(a: *const libc::c_void, b: *const libc::c_void, size: usize) -> libc::c_int;
+    fn kstrdup(s: *const kernel::ffi::c_char, flags: u32) -> *mut kernel::ffi::c_char;
+    fn kmemdup(src: *const kernel::ffi::c_void, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn memcpy(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, size: usize) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn kfree_sensitive(ptr: *mut kernel::ffi::c_void);
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    fn memcmp(a: *const kernel::ffi::c_void, b: *const kernel::ffi::c_void, size: usize) -> kernel::ffi::c_int;
 }
 
-pub unsafe fn ksmbd_login_user(account: *const libc::c_char) -> *mut ksmbd_user {
+pub unsafe fn ksmbd_login_user(account: *const kernel::ffi::c_char) -> *mut ksmbd_user {
     let resp: *mut ksmbd_login_response;
     let mut resp_ext: *mut ksmbd_login_response_ext = core::ptr::null_mut();
     let mut user: *mut ksmbd_user = core::ptr::null_mut();

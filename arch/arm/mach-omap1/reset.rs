@@ -18,7 +18,7 @@ const OMAP_GLOBAL_WARM_RST_SRC_ID_SHIFT: u32 = 1;
 const OMAP_MPU_WD_RST_SRC_ID_SHIFT: u32 = 3;
 const OMAP_EXTWARM_RST_SRC_ID_SHIFT: u32 = 5;
 
-pub unsafe fn omap1_restart(mode: reboot_mode, cmd: *const core::ffi::c_char) {
+pub unsafe fn omap1_restart(mode: reboot_mode, cmd: *const kernel::ffi::c_char) {
     /*
      * Workaround for 5912/1611b bug mentioned in sprz209d.pdf p. 28
      * "Global Software Reset Affects Traffic Controller Frequency".

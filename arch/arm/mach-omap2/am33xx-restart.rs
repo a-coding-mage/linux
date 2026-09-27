@@ -7,7 +7,7 @@
 pub const AM335X_PIN_EMU0: u32 = 0;
 pub const AM335X_PIN_EMU1: u32 = 0;
 
-pub type reboot_mode = core::ffi::c_int;
+pub type reboot_mode = kernel::ffi::c_int;
 
 extern "C" {
     fn omap_ctrl_readl(reg: u32) -> u32;
@@ -56,7 +56,7 @@ unsafe fn am33xx_advisory_1_0_36() {
  * Resets the SoC.  For @cmd, see the 'reboot' syscall in
  * kernel/sys.c.  No return value.
  */
-pub unsafe fn am33xx_restart(mode: reboot_mode, _cmd: *const core::ffi::c_char) {
+pub unsafe fn am33xx_restart(mode: reboot_mode, _cmd: *const kernel::ffi::c_char) {
     am33xx_advisory_1_0_36();
 
     /* TODO: Handle cmd if necessary */

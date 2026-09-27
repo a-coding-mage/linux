@@ -24,8 +24,8 @@ extern "C" {
 #[cfg(CONFIG_MIPS_MT_SMP)]
 static mut lantiq_smp_ops: plat_smp_ops = unsafe { core::mem::zeroed() };
 
-pub unsafe extern "C" fn get_system_type() -> *const core::ffi::c_char {
-    soc_info.sys_type.as_ptr() as *const core::ffi::c_char
+pub unsafe extern "C" fn get_system_type() -> *const kernel::ffi::c_char {
+    soc_info.sys_type.as_ptr() as *const kernel::ffi::c_char
 }
 
 pub unsafe extern "C" fn ltq_soc_type() -> i32 {
@@ -34,19 +34,19 @@ pub unsafe extern "C" fn ltq_soc_type() -> i32 {
 
 unsafe fn prom_init_cmdline() {
     let argc: i32 = fw_arg0;
-    let argv: *mut *mut core::ffi::c_char = KSEG1ADDR(fw_arg1) as *mut *mut core::ffi::c_char;
+    let argv: *mut *mut kernel::ffi::c_char = KSEG1ADDR(fw_arg1) as *mut *mut kernel::ffi::c_char;
     let mut i = 0;
 
     arcs_cmdline[0] = 0;
 
     while i < argc {
-        let p: *mut core::ffi::c_char = KSEG1ADDR(*argv.add(i as usize)) as *mut core::ffi::c_char;
+        let p: *mut kernel::ffi::c_char = KSEG1ADDR(*argv.add(i as usize)) as *mut kernel::ffi::c_char;
 
-        if CPHYSADDR(p as *const core::ffi::c_void) != 0 && *p != 0 {
+        if CPHYSADDR(p as *const kernel::ffi::c_void) != 0 && *p != 0 {
             strlcat(arcs_cmdline.as_mut_ptr(), p, core::mem::size_of_val(&arcs_cmdline));
             strlcat(
                 arcs_cmdline.as_mut_ptr(),
-                b" \0".as_ptr() as *const core::ffi::c_char,
+                b" \0".as_ptr() as *const kernel::ffi::c_char,
                 core::mem::size_of_val(&arcs_cmdline),
             );
         }
@@ -55,7 +55,7 @@ unsafe fn prom_init_cmdline() {
 }
 
 pub unsafe extern "C" fn plat_mem_setup() {
-    let mut dtb: *mut core::ffi::c_void;
+    let mut dtb: *mut kernel::ffi::c_void;
 
     ioport_resource.start = IOPORT_RESOURCE_START;
     ioport_resource.end = IOPORT_RESOURCE_END;
@@ -91,7 +91,7 @@ pub unsafe extern "C" fn prom_init() {
     snprintf(
         soc_info.sys_type.as_mut_ptr(),
         LTQ_SYS_TYPE_LEN - 1,
-        b"%s rev %s\0".as_ptr() as *const core::ffi::c_char,
+        b"%s rev %s\0".as_ptr() as *const kernel::ffi::c_char,
         soc_info.name.as_ptr(),
         soc_info.rev_type.as_ptr(),
     );

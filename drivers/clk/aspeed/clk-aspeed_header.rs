@@ -47,9 +47,9 @@ pub struct spinlock_t {
 pub struct aspeed_gate_data {
     pub clock_idx: u8,
     pub reset_idx: i8,
-    pub name: *const core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char,
-    pub flags: core::ffi::c_ulong,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char,
+    pub flags: kernel::ffi::c_ulong,
 }
 
 /**
@@ -116,7 +116,7 @@ pub struct aspeed_clk_soc_data {
     pub eclk_div_table: *const clk_div_table,
     pub mac_div_table: *const clk_div_table,
     pub calc_pll: Option<unsafe extern "C" fn(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         val: u32,
     ) -> *mut clk_hw>,
 }

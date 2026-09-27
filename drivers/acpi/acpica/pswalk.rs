@@ -13,8 +13,8 @@
 pub const _COMPONENT: u32 = ACPI_PARSER;
 
 extern "C" {
-    fn acpi_ps_get_opcode_name(opcode: u16) -> *const core::ffi::c_char;
-    fn acpi_os_printf(format: *const core::ffi::c_char, ...);
+    fn acpi_ps_get_opcode_name(opcode: u16) -> *const kernel::ffi::c_char;
+    fn acpi_os_printf(format: *const kernel::ffi::c_char, ...);
     fn acpi_ps_get_arg(op: *mut AcpiParseObject, arg: u32) -> *mut AcpiParseObject;
     fn acpi_ps_free_op(op: *mut AcpiParseObject);
 }
@@ -43,7 +43,7 @@ pub struct AcpiParseObjectNamed {
 
 #[repr(C)]
 pub union AcpiParseValue {
-    pub string: *const core::ffi::c_char,
+    pub string: *const kernel::ffi::c_char,
 }
 
 pub const ACPI_PARSER: u32 = 0;
@@ -73,7 +73,7 @@ pub unsafe extern "C" fn acpi_ps_delete_parse_tree(
             if false {
                 /* This debug option will print the entire parse tree */
                 acpi_os_printf(
-                    b"      %*s%s %p\0".as_ptr() as *const core::ffi::c_char,
+                    b"      %*s%s %p\0".as_ptr() as *const kernel::ffi::c_char,
                 );
                 let opcode_name = acpi_ps_get_opcode_name((*op).common.aml_opcode);
                 let _ = opcode_name;
@@ -83,7 +83,7 @@ pub unsafe extern "C" fn acpi_ps_delete_parse_tree(
                 if (*op).named.aml_opcode == AML_STRING_OP {
                     acpi_os_printf((*op).common.value.string);
                 }
-                acpi_os_printf(b"\n\0".as_ptr() as *const core::ffi::c_char);
+                acpi_os_printf(b"\n\0".as_ptr() as *const kernel::ffi::c_char);
             }
 
             /* Look for an argument or child of the current op */

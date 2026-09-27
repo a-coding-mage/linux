@@ -26,7 +26,7 @@ pub enum si_type {
 
 /* Array is defined in the ipmi_si_intf.c. */
 extern "C" {
-    pub static si_to_str: *const *const core::ffi::c_char;
+    pub static si_to_str: *const *const kernel::ffi::c_char;
 }
 
 #[repr(C)]
@@ -61,12 +61,12 @@ pub struct si_sm_io {
      * Generic info used by the actual handling routines, the
      * state machine shouldn't touch these.
      */
-    pub addr: *mut core::ffi::c_void,
+    pub addr: *mut kernel::ffi::c_void,
     pub regspacing: u32,
     pub regsize: u32,
     pub regshift: u32,
     pub addr_space: ipmi_addr_space,
-    pub addr_data: core::ffi::c_ulong,
+    pub addr_data: kernel::ffi::c_ulong,
     pub addr_source: ipmi_addr_src, /* ACPI, PCI, SMBIOS, hardcode, etc. */
     pub addr_info: ipmi_smi_info_union,
 
@@ -76,7 +76,7 @@ pub struct si_sm_io {
 
     pub irq: i32,
     pub irq_setup: Option<unsafe extern "C" fn(io: *mut si_sm_io) -> i32>,
-    pub irq_handler_data: *mut core::ffi::c_void,
+    pub irq_handler_data: *mut kernel::ffi::c_void,
     pub irq_cleanup: Option<unsafe extern "C" fn(io: *mut si_sm_io)>,
 
     pub slave_addr: u8,
@@ -86,7 +86,7 @@ pub struct si_sm_io {
 
 extern "C" {
     pub fn ipmi_si_add_smi(io: *mut si_sm_io) -> i32;
-    pub fn ipmi_si_irq_handler(irq: i32, data: *mut core::ffi::c_void) -> irqreturn_t;
+    pub fn ipmi_si_irq_handler(irq: i32, data: *mut kernel::ffi::c_void) -> irqreturn_t;
     pub fn ipmi_irq_start_cleanup(io: *mut si_sm_io);
     pub fn ipmi_std_irq_setup(io: *mut si_sm_io) -> i32;
     pub fn ipmi_irq_finish_setup(io: *mut si_sm_io);
@@ -94,15 +94,15 @@ extern "C" {
     pub fn ipmi_si_remove_by_data(
         addr_space: i32,
         si_type: si_type,
-        addr: core::ffi::c_ulong,
+        addr: kernel::ffi::c_ulong,
     ) -> *mut device;
     pub fn ipmi_hardcode_init();
     pub fn ipmi_si_hardcode_exit();
     pub fn ipmi_si_hotmod_exit();
-    pub fn ipmi_si_hardcode_match(addr_space: i32, addr: core::ffi::c_ulong) -> i32;
+    pub fn ipmi_si_hardcode_match(addr_space: i32, addr: kernel::ffi::c_ulong) -> i32;
     pub fn ipmi_si_platform_init();
     pub fn ipmi_si_platform_shutdown();
-    pub fn ipmi_remove_platform_device_by_name(name: *mut core::ffi::c_char);
+    pub fn ipmi_remove_platform_device_by_name(name: *mut kernel::ffi::c_char);
 
     pub static mut ipmi_platform_driver: platform_driver;
 }

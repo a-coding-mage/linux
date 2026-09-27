@@ -10,9 +10,9 @@ pub struct xt_rateest {
     pub lock: spinlock_t,
 
     /* following fields not accessed in hot path */
-    pub refcnt: ::core::ffi::c_uint,
+    pub refcnt: ::kernel::ffi::c_uint,
     pub list: hlist_node,
-    pub name: [::core::ffi::c_char; IFNAMSIZ],
+    pub name: [::kernel::ffi::c_char; IFNAMSIZ],
     pub params: gnet_estimator,
     pub rcu: rcu_head,
 
@@ -23,7 +23,7 @@ pub struct xt_rateest {
 extern "C" {
     pub fn xt_rateest_lookup(
         net: *mut net,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
     ) -> *mut xt_rateest;
     pub fn xt_rateest_put(net: *mut net, est: *mut xt_rateest);
 }

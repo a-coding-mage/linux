@@ -13,31 +13,31 @@
 // C dependencies supplied by the surrounding kernel translation.
 
 extern "C" {
-    fn jazz_machine_restart(command: *mut core::ffi::c_char);
+    fn jazz_machine_restart(command: *mut kernel::ffi::c_char);
     fn add_wired_entry(entrylo0: u64, entrylo1: u64, entryhi: u64, pagemask: u64);
     fn set_io_port_base(base: u64);
     fn request_resource(parent: *mut resource, child: *mut resource) -> i32;
-    fn add_preferred_console(name: *const core::ffi::c_char, idx: i32, options: *const core::ffi::c_char) -> i32;
+    fn add_preferred_console(name: *const kernel::ffi::c_char, idx: i32, options: *const kernel::ffi::c_char) -> i32;
     fn platform_device_register(device: *mut platform_device) -> i32;
 }
 
 extern "C" {
     static mut ioport_resource: resource;
-    static mut _machine_restart: Option<unsafe extern "C" fn(*mut core::ffi::c_char)>;
+    static mut _machine_restart: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char)>;
 }
 
 #[repr(C)]
 struct resource {
     start: u64,
     end: u64,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     flags: u64,
 }
 
 #[repr(C)]
 struct plat_serial8250_port {
     mapbase: u64,
-    membase: *mut core::ffi::c_void,
+    membase: *mut kernel::ffi::c_void,
     irq: u32,
     uartclk: u32,
     iotype: u32,
@@ -46,14 +46,14 @@ struct plat_serial8250_port {
 
 #[repr(C)]
 struct device {
-    platform_data: *mut core::ffi::c_void,
+    platform_data: *mut kernel::ffi::c_void,
     dma_mask: *mut u64,
     coherent_dma_mask: u64,
 }
 
 #[repr(C)]
 struct platform_device {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     id: i32,
     num_resources: u32,
     resource: *mut resource,

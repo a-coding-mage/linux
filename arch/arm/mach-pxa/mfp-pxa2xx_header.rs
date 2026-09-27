@@ -106,9 +106,9 @@ pxa2xx_gpio_configs!(
 );
 
 unsafe extern "C" {
-    pub fn pxa2xx_mfp_config(mfp_cfgs: *mut libc::c_ulong, num: libc::c_int);
-    pub fn pxa2xx_mfp_set_lpm(mfp: libc::c_int, lpm: libc::c_ulong);
-    pub fn gpio_set_wake(gpio: libc::c_uint, on: libc::c_uint) -> libc::c_int;
+    pub fn pxa2xx_mfp_config(mfp_cfgs: *mut kernel::ffi::c_ulong, num: kernel::ffi::c_int);
+    pub fn pxa2xx_mfp_set_lpm(mfp: kernel::ffi::c_int, lpm: kernel::ffi::c_ulong);
+    pub fn gpio_set_wake(gpio: kernel::ffi::c_uint, on: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

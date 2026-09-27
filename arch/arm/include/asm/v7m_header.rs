@@ -94,7 +94,7 @@ pub const V7M_SCB_BPIALL: u32 = 0x278; /* D-cache clean and invalidate by set-wa
 pub enum reboot_mode {}
 
 extern "C" {
-    pub fn armv7m_restart(mode: reboot_mode, cmd: *const core::ffi::c_char);
+    pub fn armv7m_restart(mode: reboot_mode, cmd: *const kernel::ffi::c_char);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

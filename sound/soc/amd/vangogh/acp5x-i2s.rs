@@ -10,36 +10,36 @@
 
 const DRV_NAME: &[u8] = b"acp5x_i2s_playcap\0";
 
-type u16 = core::ffi::c_ushort;
-type u32 = core::ffi::c_uint;
-type u64 = core::ffi::c_ulonglong;
+type u16 = kernel::ffi::c_ushort;
+type u32 = kernel::ffi::c_uint;
+type u64 = kernel::ffi::c_ulonglong;
 
 extern "C" {
-    static SND_SOC_DAIFMT_FORMAT_MASK: core::ffi::c_uint;
-    static SND_SOC_DAIFMT_I2S: core::ffi::c_uint;
-    static SND_SOC_DAIFMT_DSP_A: core::ffi::c_uint;
-    static SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK: core::ffi::c_uint;
-    static SND_SOC_DAIFMT_BP_FP: core::ffi::c_uint;
-    static SND_SOC_DAIFMT_BC_FC: core::ffi::c_uint;
-    static TDM_DISABLE: core::ffi::c_int;
-    static TDM_ENABLE: core::ffi::c_int;
-    static I2S_MASTER_MODE_ENABLE: core::ffi::c_int;
-    static I2S_MASTER_MODE_DISABLE: core::ffi::c_int;
-    static EINVAL: core::ffi::c_int;
-    static ENOMEM: core::ffi::c_int;
-    static SLOT_WIDTH_8: core::ffi::c_int;
-    static SLOT_WIDTH_16: core::ffi::c_int;
-    static SLOT_WIDTH_24: core::ffi::c_int;
-    static SLOT_WIDTH_32: core::ffi::c_int;
+    static SND_SOC_DAIFMT_FORMAT_MASK: kernel::ffi::c_uint;
+    static SND_SOC_DAIFMT_I2S: kernel::ffi::c_uint;
+    static SND_SOC_DAIFMT_DSP_A: kernel::ffi::c_uint;
+    static SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK: kernel::ffi::c_uint;
+    static SND_SOC_DAIFMT_BP_FP: kernel::ffi::c_uint;
+    static SND_SOC_DAIFMT_BC_FC: kernel::ffi::c_uint;
+    static TDM_DISABLE: kernel::ffi::c_int;
+    static TDM_ENABLE: kernel::ffi::c_int;
+    static I2S_MASTER_MODE_ENABLE: kernel::ffi::c_int;
+    static I2S_MASTER_MODE_DISABLE: kernel::ffi::c_int;
+    static EINVAL: kernel::ffi::c_int;
+    static ENOMEM: kernel::ffi::c_int;
+    static SLOT_WIDTH_8: kernel::ffi::c_int;
+    static SLOT_WIDTH_16: kernel::ffi::c_int;
+    static SLOT_WIDTH_24: kernel::ffi::c_int;
+    static SLOT_WIDTH_32: kernel::ffi::c_int;
     static FRM_LEN: u32;
-    static SNDRV_PCM_STREAM_PLAYBACK: core::ffi::c_int;
-    static SNDRV_PCM_FORMAT_U8: core::ffi::c_int;
-    static SNDRV_PCM_FORMAT_S8: core::ffi::c_int;
-    static SNDRV_PCM_FORMAT_S16_LE: core::ffi::c_int;
-    static SNDRV_PCM_FORMAT_S24_LE: core::ffi::c_int;
-    static SNDRV_PCM_FORMAT_S32_LE: core::ffi::c_int;
-    static I2S_HS_INSTANCE: core::ffi::c_int;
-    static I2S_SP_INSTANCE: core::ffi::c_int;
+    static SNDRV_PCM_STREAM_PLAYBACK: kernel::ffi::c_int;
+    static SNDRV_PCM_FORMAT_U8: kernel::ffi::c_int;
+    static SNDRV_PCM_FORMAT_S8: kernel::ffi::c_int;
+    static SNDRV_PCM_FORMAT_S16_LE: kernel::ffi::c_int;
+    static SNDRV_PCM_FORMAT_S24_LE: kernel::ffi::c_int;
+    static SNDRV_PCM_FORMAT_S32_LE: kernel::ffi::c_int;
+    static I2S_HS_INSTANCE: kernel::ffi::c_int;
+    static I2S_SP_INSTANCE: kernel::ffi::c_int;
     static ACP_HSTDM_ITER: u32;
     static ACP_HSTDM_TXFRMT: u32;
     static ACP_I2STDM_ITER: u32;
@@ -49,12 +49,12 @@ extern "C" {
     static ACP_I2STDM_IRER: u32;
     static ACP_I2STDM_RXFRMT: u32;
     static ACP5x_ITER_IRER_SAMP_LEN_MASK: u32;
-    static SNDRV_PCM_TRIGGER_START: core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_RESUME: core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_PAUSE_RELEASE: core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_STOP: core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_SUSPEND: core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_PAUSE_PUSH: core::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_START: kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_RESUME: kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_PAUSE_RELEASE: kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_STOP: kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_SUSPEND: kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_PAUSE_PUSH: kernel::ffi::c_int;
     static ACP_HS_TX_INTR_WATERMARK_SIZE: u32;
     static ACP_HSTDM_IER: u32;
     static ACP_HS_TX_RINGBUFSIZE: u32;
@@ -75,32 +75,32 @@ extern "C" {
     static GFP_KERNEL: u32;
     static IORESOURCE_MEM: u32;
 
-    fn snd_soc_dai_get_drvdata(cpu_dai: *mut snd_soc_dai) -> *mut core::ffi::c_void;
+    fn snd_soc_dai_get_drvdata(cpu_dai: *mut snd_soc_dai) -> *mut kernel::ffi::c_void;
     fn snd_soc_substream_to_rtd(substream: *mut snd_pcm_substream) -> *mut snd_soc_pcm_runtime;
-    fn snd_soc_card_get_drvdata(card: *mut snd_soc_card) -> *mut core::ffi::c_void;
-    fn params_format(params: *mut snd_pcm_hw_params) -> core::ffi::c_int;
-    fn params_rate(params: *mut snd_pcm_hw_params) -> core::ffi::c_uint;
-    fn acp_readl(addr: *mut core::ffi::c_void) -> u32;
-    fn acp_writel(val: u32, addr: *mut core::ffi::c_void);
+    fn snd_soc_card_get_drvdata(card: *mut snd_soc_card) -> *mut kernel::ffi::c_void;
+    fn params_format(params: *mut snd_pcm_hw_params) -> kernel::ffi::c_int;
+    fn params_rate(params: *mut snd_pcm_hw_params) -> kernel::ffi::c_uint;
+    fn acp_readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn acp_writel(val: u32, addr: *mut kernel::ffi::c_void);
     fn frames_to_bytes(runtime: *mut snd_pcm_runtime, frames: u64) -> u32;
-    fn acp_get_byte_count(rtd: *mut i2s_stream_instance, stream: core::ffi::c_int) -> u64;
+    fn acp_get_byte_count(rtd: *mut i2s_stream_instance, stream: kernel::ffi::c_int) -> u64;
     fn acp5x_set_i2s_clk(adata: *mut i2s_dev_data, rtd: *mut i2s_stream_instance);
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn platform_get_resource(
         pdev: *mut platform_device,
         ty: u32,
-        num: core::ffi::c_uint,
+        num: kernel::ffi::c_uint,
     ) -> *mut resource;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     fn resource_size(res: *mut resource) -> usize;
-    fn devm_ioremap(dev: *mut device, offset: u64, size: usize) -> *mut core::ffi::c_void;
-    fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
+    fn devm_ioremap(dev: *mut device, offset: u64, size: usize) -> *mut kernel::ffi::c_void;
+    fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
     fn devm_snd_soc_register_component(
         dev: *mut device,
         cmpnt_drv: *const snd_soc_component_driver,
         dai_drv: *mut snd_soc_dai_driver,
-        num_dai: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        num_dai: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -125,7 +125,7 @@ struct device {
 
 #[repr(C)]
 struct snd_pcm_runtime {
-    private_data: *mut core::ffi::c_void,
+    private_data: *mut kernel::ffi::c_void,
     period_size: u64,
     buffer_size: u64,
 }
@@ -133,7 +133,7 @@ struct snd_pcm_runtime {
 #[repr(C)]
 struct snd_pcm_substream {
     runtime: *mut snd_pcm_runtime,
-    stream: core::ffi::c_int,
+    stream: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -143,22 +143,22 @@ struct snd_soc_pcm_runtime {
 
 #[repr(C)]
 struct acp5x_platform_info {
-    play_i2s_instance: core::ffi::c_int,
-    cap_i2s_instance: core::ffi::c_int,
+    play_i2s_instance: kernel::ffi::c_int,
+    cap_i2s_instance: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 struct i2s_dev_data {
-    acp5x_base: *mut core::ffi::c_void,
-    tdm_mode: core::ffi::c_int,
-    master_mode: core::ffi::c_int,
+    acp5x_base: *mut kernel::ffi::c_void,
+    tdm_mode: kernel::ffi::c_int,
+    master_mode: kernel::ffi::c_int,
     tdm_fmt: u32,
 }
 
 #[repr(C)]
 struct i2s_stream_instance {
-    acp5x_base: *mut core::ffi::c_void,
-    i2s_instance: core::ffi::c_int,
+    acp5x_base: *mut kernel::ffi::c_void,
+    i2s_instance: kernel::ffi::c_int,
     xfer_resolution: u32,
     lrclk_div: u32,
     bclk_div: u32,
@@ -172,38 +172,38 @@ struct snd_soc_dai_ops {
             *mut snd_pcm_substream,
             *mut snd_pcm_hw_params,
             *mut snd_soc_dai,
-        ) -> core::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
     trigger:
-        Option<unsafe extern "C" fn(*mut snd_pcm_substream, core::ffi::c_int, *mut snd_soc_dai) -> core::ffi::c_int>,
-    set_fmt: Option<unsafe extern "C" fn(*mut snd_soc_dai, core::ffi::c_uint) -> core::ffi::c_int>,
+        Option<unsafe extern "C" fn(*mut snd_pcm_substream, kernel::ffi::c_int, *mut snd_soc_dai) -> kernel::ffi::c_int>,
+    set_fmt: Option<unsafe extern "C" fn(*mut snd_soc_dai, kernel::ffi::c_uint) -> kernel::ffi::c_int>,
     set_tdm_slot: Option<
         unsafe extern "C" fn(
             *mut snd_soc_dai,
             u32,
             u32,
-            core::ffi::c_int,
-            core::ffi::c_int,
-        ) -> core::ffi::c_int,
+            kernel::ffi::c_int,
+            kernel::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
     auto_selectable_formats: *const u64,
-    num_auto_selectable_formats: core::ffi::c_int,
+    num_auto_selectable_formats: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 struct snd_soc_component_driver {
-    name: *const core::ffi::c_char,
-    legacy_dai_naming: core::ffi::c_int,
+    name: *const kernel::ffi::c_char,
+    legacy_dai_naming: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 struct snd_soc_pcm_stream {
     rates: u32,
     formats: u64,
-    channels_min: core::ffi::c_uint,
-    channels_max: core::ffi::c_uint,
-    rate_min: core::ffi::c_uint,
-    rate_max: core::ffi::c_uint,
+    channels_min: kernel::ffi::c_uint,
+    channels_max: kernel::ffi::c_uint,
+    rate_min: kernel::ffi::c_uint,
+    rate_max: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -225,12 +225,12 @@ struct platform_device {
 
 #[repr(C)]
 struct driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 struct platform_driver {
-    probe: Option<unsafe extern "C" fn(*mut platform_device) -> core::ffi::c_int>,
+    probe: Option<unsafe extern "C" fn(*mut platform_device) -> kernel::ffi::c_int>,
     driver: driver,
 }
 
@@ -238,30 +238,30 @@ const fn BIT(nr: u32) -> u32 {
     1u32 << nr
 }
 
-unsafe fn ptr_add(base: *mut core::ffi::c_void, offset: u32) -> *mut core::ffi::c_void {
-    (base as *mut u8).add(offset as usize) as *mut core::ffi::c_void
+unsafe fn ptr_add(base: *mut kernel::ffi::c_void, offset: u32) -> *mut kernel::ffi::c_void {
+    (base as *mut u8).add(offset as usize) as *mut kernel::ffi::c_void
 }
 
 unsafe extern "C" fn acp5x_i2s_set_fmt(
     cpu_dai: *mut snd_soc_dai,
-    fmt: core::ffi::c_uint,
-) -> core::ffi::c_int {
+    fmt: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let adata: *mut i2s_dev_data;
-    let mut mode: core::ffi::c_int;
+    let mut mode: kernel::ffi::c_int;
 
     adata = snd_soc_dai_get_drvdata(cpu_dai) as *mut i2s_dev_data;
-    mode = (fmt & SND_SOC_DAIFMT_FORMAT_MASK) as core::ffi::c_int;
-    if mode == SND_SOC_DAIFMT_I2S as core::ffi::c_int {
+    mode = (fmt & SND_SOC_DAIFMT_FORMAT_MASK) as kernel::ffi::c_int;
+    if mode == SND_SOC_DAIFMT_I2S as kernel::ffi::c_int {
         (*adata).tdm_mode = TDM_DISABLE;
-    } else if mode == SND_SOC_DAIFMT_DSP_A as core::ffi::c_int {
+    } else if mode == SND_SOC_DAIFMT_DSP_A as kernel::ffi::c_int {
         (*adata).tdm_mode = TDM_ENABLE;
     } else {
         return -EINVAL;
     }
-    mode = (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) as core::ffi::c_int;
-    if mode == SND_SOC_DAIFMT_BP_FP as core::ffi::c_int {
+    mode = (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) as kernel::ffi::c_int;
+    if mode == SND_SOC_DAIFMT_BP_FP as kernel::ffi::c_int {
         (*adata).master_mode = I2S_MASTER_MODE_ENABLE;
-    } else if mode == SND_SOC_DAIFMT_BC_FC as core::ffi::c_int {
+    } else if mode == SND_SOC_DAIFMT_BC_FC as kernel::ffi::c_int {
         (*adata).master_mode = I2S_MASTER_MODE_DISABLE;
     }
     0
@@ -271,9 +271,9 @@ unsafe extern "C" fn acp5x_i2s_set_tdm_slot(
     cpu_dai: *mut snd_soc_dai,
     _tx_mask: u32,
     _rx_mask: u32,
-    slots: core::ffi::c_int,
-    slot_width: core::ffi::c_int,
-) -> core::ffi::c_int {
+    slots: kernel::ffi::c_int,
+    slot_width: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let adata: *mut i2s_dev_data;
     let frm_len: u32;
     let slot_len: u16;
@@ -301,7 +301,7 @@ unsafe extern "C" fn acp5x_i2s_hwparams(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let rtd: *mut i2s_stream_instance;
     let prtd: *mut snd_soc_pcm_runtime;
     let card: *mut snd_soc_card;
@@ -404,9 +404,9 @@ unsafe extern "C" fn acp5x_i2s_hwparams(
 
 unsafe extern "C" fn acp5x_i2s_trigger(
     substream: *mut snd_pcm_substream,
-    cmd: core::ffi::c_int,
+    cmd: kernel::ffi::c_int,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let rtd: *mut i2s_stream_instance;
     let adata: *mut i2s_dev_data;
     let mut val: u32;
@@ -416,7 +416,7 @@ unsafe extern "C" fn acp5x_i2s_trigger(
     let water_val: u32;
     let buf_size: u32;
     let buf_reg: u32;
-    let ret: core::ffi::c_int;
+    let ret: kernel::ffi::c_int;
 
     adata = snd_soc_dai_get_drvdata(dai) as *mut i2s_dev_data;
     rtd = (*(*substream).runtime).private_data as *mut i2s_stream_instance;
@@ -508,7 +508,7 @@ static acp5x_i2s_dai_ops: snd_soc_dai_ops = snd_soc_dai_ops {
 };
 
 static acp5x_dai_component: snd_soc_component_driver = snd_soc_component_driver {
-    name: b"acp5x-i2s\0".as_ptr() as *const core::ffi::c_char,
+    name: b"acp5x-i2s\0".as_ptr() as *const kernel::ffi::c_char,
     legacy_dai_naming: 1,
 };
 
@@ -532,10 +532,10 @@ static mut acp5x_i2s_dai: snd_soc_dai_driver = snd_soc_dai_driver {
     ops: &acp5x_i2s_dai_ops as *const snd_soc_dai_ops,
 };
 
-unsafe extern "C" fn acp5x_dai_probe(pdev: *mut platform_device) -> core::ffi::c_int {
+unsafe extern "C" fn acp5x_dai_probe(pdev: *mut platform_device) -> kernel::ffi::c_int {
     let res: *mut resource;
     let adata: *mut i2s_dev_data;
-    let ret: core::ffi::c_int;
+    let ret: kernel::ffi::c_int;
 
     adata = devm_kzalloc(
         &mut (*pdev).dev,
@@ -548,7 +548,7 @@ unsafe extern "C" fn acp5x_dai_probe(pdev: *mut platform_device) -> core::ffi::c
 
     res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
     if res.is_null() {
-        dev_err(&mut (*pdev).dev, b"IORESOURCE_MEM FAILED\n\0".as_ptr() as *const core::ffi::c_char);
+        dev_err(&mut (*pdev).dev, b"IORESOURCE_MEM FAILED\n\0".as_ptr() as *const kernel::ffi::c_char);
         return -ENOMEM;
     }
     (*adata).acp5x_base = devm_ioremap(&mut (*pdev).dev, (*res).start, resource_size(res));
@@ -557,7 +557,7 @@ unsafe extern "C" fn acp5x_dai_probe(pdev: *mut platform_device) -> core::ffi::c
     }
 
     (*adata).master_mode = I2S_MASTER_MODE_ENABLE;
-    dev_set_drvdata(&mut (*pdev).dev, adata as *mut core::ffi::c_void);
+    dev_set_drvdata(&mut (*pdev).dev, adata as *mut kernel::ffi::c_void);
     acp5x_i2s_selectable_formats = SND_SOC_POSSIBLE_DAIFMT_I2S | SND_SOC_POSSIBLE_DAIFMT_DSP_A;
     acp5x_i2s_dai.playback.rates = SNDRV_PCM_RATE_8000_96000;
     acp5x_i2s_dai.playback.formats =
@@ -574,7 +574,7 @@ unsafe extern "C" fn acp5x_dai_probe(pdev: *mut platform_device) -> core::ffi::c
     if ret != 0 {
         dev_err(
             &mut (*pdev).dev,
-            b"Fail to register acp i2s dai\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Fail to register acp i2s dai\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
     ret
@@ -583,7 +583,7 @@ unsafe extern "C" fn acp5x_dai_probe(pdev: *mut platform_device) -> core::ffi::c
 static acp5x_dai_driver: platform_driver = platform_driver {
     probe: Some(acp5x_dai_probe),
     driver: driver {
-        name: b"acp5x_i2s_playcap\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp5x_i2s_playcap\0".as_ptr() as *const kernel::ffi::c_char,
     },
 };
 

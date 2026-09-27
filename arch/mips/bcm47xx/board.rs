@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 // Dependencies supplied by the surrounding kernel/Rust translation.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct bcm47xx_board_type { pub board: bcm47xx_board, pub name: *const c_char }

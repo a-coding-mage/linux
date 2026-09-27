@@ -30,9 +30,9 @@ pub struct ipc64_perm {
     pub cuid: __kernel_uid32_t,
     pub cgid: __kernel_gid32_t,
     pub mode: __kernel_mode_t,
-    pub seq: ::core::ffi::c_ulong,
-    pub __unused1: ::core::ffi::c_ulong,
-    pub __unused2: ::core::ffi::c_ulong,
+    pub seq: ::kernel::ffi::c_ulong,
+    pub __unused1: ::kernel::ffi::c_ulong,
+    pub __unused2: ::kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

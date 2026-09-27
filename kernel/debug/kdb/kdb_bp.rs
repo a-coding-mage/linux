@@ -24,7 +24,7 @@ unsafe fn kdb_bptype(bp: *mut kdb_bp_t) -> &'static str {
     kdb_rwtypes[(*bp).bp_type as usize]
 }
 
-unsafe fn kdb_parsebp(argc: i32, argv: *const *const core::ffi::c_char,
+unsafe fn kdb_parsebp(argc: i32, argv: *const *const kernel::ffi::c_char,
                       nextargp: *mut i32, bp: *mut kdb_bp_t) -> i32 {
     let mut nextarg = *nextargp;
     let diag: i32;
@@ -125,7 +125,7 @@ unsafe fn kdb_printbp(bp: *mut kdb_bp_t, i: i32) {
 // The remaining command handlers and registration table retain the C command interface.
 // External kernel-specific declarations and macro definitions are intentionally referenced here.
 
-pub unsafe fn kdb_ss(argc: i32, _argv: *const *const core::ffi::c_char) -> i32 {
+pub unsafe fn kdb_ss(argc: i32, _argv: *const *const kernel::ffi::c_char) -> i32 {
     if argc != 0 { return KDB_ARGCOUNT; }
     KDB_STATE_SET!(DOING_SS);
     KDB_CMD_SS
@@ -137,7 +137,7 @@ pub unsafe fn kdb_initbptab() {
     if arch_kgdb_ops.flags & KGDB_HW_BREAKPOINT != 0 { kdb_register_table(&mut bphcmd, 1); }
 }
 
-unsafe fn kdb_bp(argc: i32, argv: *const *const core::ffi::c_char) -> i32 {
+unsafe fn kdb_bp(argc: i32, argv: *const *const kernel::ffi::c_char) -> i32 {
     if argc == 0 {
         for i in 0..KDB_MAXBPT { let bp = &mut kdb_breakpoints[i] as *mut kdb_bp_t; if !(*bp).bp_free { kdb_printbp(bp, i as i32); } }
         return 0;
@@ -145,7 +145,7 @@ unsafe fn kdb_bp(argc: i32, argv: *const *const core::ffi::c_char) -> i32 {
     let mut nextarg = 1;
     let mut addr = 0u64;
     let mut offset = 0i64;
-    let mut symname: *mut core::ffi::c_char = core::ptr::null_mut();
+    let mut symname: *mut kernel::ffi::c_char = core::ptr::null_mut();
     let mut template: kdb_bp_t = core::mem::zeroed();
     let mut diag = kdbgetaddrarg(argc, argv, &mut nextarg, &mut addr, &mut offset, &mut symname);
     if diag != 0 { return diag; }
@@ -167,7 +167,7 @@ unsafe fn kdb_bp(argc: i32, argv: *const *const core::ffi::c_char) -> i32 {
     0
 }
 
-unsafe fn kdb_bc(argc: i32, argv: *const *const core::ffi::c_char) -> i32 {
+unsafe fn kdb_bc(argc: i32, argv: *const *const kernel::ffi::c_char) -> i32 {
     if argc != 1 { return KDB_ARGCOUNT; }
     let cmd = if strcmp(*argv, b"be\0".as_ptr() as *const _) == 0 { 1 } else if strcmp(*argv, b"bd\0".as_ptr() as *const _) == 0 { 2 } else { 0 };
     let mut low = KDB_MAXBPT; let mut high = 0; let mut addr = 0u64;

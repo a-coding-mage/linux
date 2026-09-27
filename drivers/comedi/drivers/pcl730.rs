@@ -28,7 +28,7 @@
 
 #[repr(C)]
 pub struct pcl730_board {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub io_range: u16,
     pub min_io_start: u16,
     pub align_io_start: u16,
@@ -68,8 +68,8 @@ extern "C" {
     fn comedi_alloc_subdevices(dev: *mut comedi_device, n: i32) -> i32;
 }
 
-#[repr(C)] pub struct comedi_device { pub board_ptr: *const pcl730_board, pub iobase: usize, pub subdevices: *mut comedi_subdevice, pub board_name: *const core::ffi::c_char, pub class_dev: *mut core::ffi::c_void }
-#[repr(C)] pub struct comedi_subdevice { pub type_: u32, pub subdev_flags: u32, pub n_chan: u32, pub maxdata: u32, pub range_table: *const core::ffi::c_void, pub insn_bits: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_subdevice, *mut comedi_insn, *mut u32) -> i32>, pub private: *mut core::ffi::c_void, pub state: u32 }
+#[repr(C)] pub struct comedi_device { pub board_ptr: *const pcl730_board, pub iobase: usize, pub subdevices: *mut comedi_subdevice, pub board_name: *const kernel::ffi::c_char, pub class_dev: *mut kernel::ffi::c_void }
+#[repr(C)] pub struct comedi_subdevice { pub type_: u32, pub subdev_flags: u32, pub n_chan: u32, pub maxdata: u32, pub range_table: *const kernel::ffi::c_void, pub insn_bits: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_subdevice, *mut comedi_insn, *mut u32) -> i32>, pub private: *mut kernel::ffi::c_void, pub state: u32 }
 #[repr(C)] pub struct comedi_insn { pub n: u32 }
 #[repr(C)] pub struct comedi_devconfig { pub options: [u32; 4] }
 
@@ -117,18 +117,18 @@ unsafe extern "C" fn pcl730_attach(dev: *mut comedi_device, it: *mut comedi_devc
     if (*board).n_iso_in_chan != 0 {
         let s = (*dev).subdevices.add(subdev); subdev += 1;
         (*s).type_ = 1; (*s).subdev_flags = 0x01; (*s).n_chan = (*board).n_iso_in_chan as u32; (*s).maxdata = 1; (*s).insn_bits = Some(pcl730_di_insn_bits);
-        (*s).private = if (*board).is_ir104 != 0 { 4usize } else if (*board).is_acl7225b != 0 { 2 } else if (*board).is_pcl725 != 0 { 1 } else { 0 } as *mut core::ffi::c_void;
+        (*s).private = if (*board).is_ir104 != 0 { 4usize } else if (*board).is_acl7225b != 0 { 2 } else if (*board).is_pcl725 != 0 { 1 } else { 0 } as *mut kernel::ffi::c_void;
     }
     if (*board).has_ttl_io != 0 {
         let s = (*dev).subdevices.add(subdev); subdev += 1;
-        (*s).type_ = 2; (*s).subdev_flags = 0x02; (*s).n_chan = (*board).n_ttl_chan as u32; (*s).maxdata = 1; (*s).insn_bits = Some(pcl730_do_insn_bits); (*s).private = 2usize as *mut core::ffi::c_void;
+        (*s).type_ = 2; (*s).subdev_flags = 0x02; (*s).n_chan = (*board).n_ttl_chan as u32; (*s).maxdata = 1; (*s).insn_bits = Some(pcl730_do_insn_bits); (*s).private = 2usize as *mut kernel::ffi::c_void;
         let s = (*dev).subdevices.add(subdev);
-        (*s).type_ = 1; (*s).subdev_flags = 0x01; (*s).n_chan = (*board).n_ttl_chan as u32; (*s).maxdata = 1; (*s).insn_bits = Some(pcl730_di_insn_bits); (*s).private = 2usize as *mut core::ffi::c_void;
+        (*s).type_ = 1; (*s).subdev_flags = 0x01; (*s).n_chan = (*board).n_ttl_chan as u32; (*s).maxdata = 1; (*s).insn_bits = Some(pcl730_di_insn_bits); (*s).private = 2usize as *mut kernel::ffi::c_void;
     }
     0
 }
 
-#[repr(C)] struct comedi_driver { driver_name: *const core::ffi::c_char, attach: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_devconfig) -> i32>, board_name: *const *const core::ffi::c_char, num_names: usize, offset: usize }
+#[repr(C)] struct comedi_driver { driver_name: *const kernel::ffi::c_char, attach: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_devconfig) -> i32>, board_name: *const *const kernel::ffi::c_char, num_names: usize, offset: usize }
 static mut pcl730_driver: comedi_driver = comedi_driver { driver_name: c"pcl730".as_ptr(), attach: Some(pcl730_attach), board_name: unsafe { &pcl730_boards[0].name }, num_names: 13, offset: core::mem::size_of::<pcl730_board>() };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

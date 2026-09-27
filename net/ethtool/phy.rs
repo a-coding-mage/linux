@@ -15,12 +15,12 @@ pub struct phy_req_info {
 pub struct phy_reply_data {
     pub base: ethnl_reply_data,
     pub phyindex: u32,
-    pub drvname: *mut ::core::ffi::c_char,
-    pub name: *mut ::core::ffi::c_char,
-    pub upstream_type: ::core::ffi::c_uint,
-    pub upstream_sfp_name: *mut ::core::ffi::c_char,
-    pub upstream_index: ::core::ffi::c_uint,
-    pub downstream_sfp_name: *mut ::core::ffi::c_char,
+    pub drvname: *mut ::kernel::ffi::c_char,
+    pub name: *mut ::kernel::ffi::c_char,
+    pub upstream_type: ::kernel::ffi::c_uint,
+    pub upstream_sfp_name: *mut ::kernel::ffi::c_char,
+    pub upstream_index: ::kernel::ffi::c_uint,
+    pub downstream_sfp_name: *mut ::kernel::ffi::c_char,
 }
 
 // PHY_REPDATA(__reply_base) == container_of(__reply_base, struct phy_reply_data, base)

@@ -9,29 +9,29 @@
 #[repr(C)]
 pub struct msi_bitmap {
     pub of_node: *mut device_node,
-    pub bitmap: *mut ::core::ffi::c_ulong,
+    pub bitmap: *mut ::kernel::ffi::c_ulong,
     pub lock: spinlock_t,
-    pub irq_count: ::core::ffi::c_uint,
+    pub irq_count: ::kernel::ffi::c_uint,
     pub bitmap_from_slab: bool,
 }
 
 extern "C" {
-    pub fn msi_bitmap_alloc_hwirqs(bmp: *mut msi_bitmap, num: ::core::ffi::c_int)
-        -> ::core::ffi::c_int;
+    pub fn msi_bitmap_alloc_hwirqs(bmp: *mut msi_bitmap, num: ::kernel::ffi::c_int)
+        -> ::kernel::ffi::c_int;
     pub fn msi_bitmap_free_hwirqs(
         bmp: *mut msi_bitmap,
-        offset: ::core::ffi::c_uint,
-        num: ::core::ffi::c_uint,
+        offset: ::kernel::ffi::c_uint,
+        num: ::kernel::ffi::c_uint,
     );
-    pub fn msi_bitmap_reserve_hwirq(bmp: *mut msi_bitmap, hwirq: ::core::ffi::c_uint);
+    pub fn msi_bitmap_reserve_hwirq(bmp: *mut msi_bitmap, hwirq: ::kernel::ffi::c_uint);
 
-    pub fn msi_bitmap_reserve_dt_hwirqs(bmp: *mut msi_bitmap) -> ::core::ffi::c_int;
+    pub fn msi_bitmap_reserve_dt_hwirqs(bmp: *mut msi_bitmap) -> ::kernel::ffi::c_int;
 
     pub fn msi_bitmap_alloc(
         bmp: *mut msi_bitmap,
-        irq_count: ::core::ffi::c_uint,
+        irq_count: ::kernel::ffi::c_uint,
         of_node: *mut device_node,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn msi_bitmap_free(bmp: *mut msi_bitmap);
 }
 

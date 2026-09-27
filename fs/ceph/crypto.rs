@@ -7,7 +7,7 @@
  * Modified by Jaegeuk Kim, 2015.
  */
 
-unsafe fn ceph_crypt_get_context(inode: *mut inode, ctx: *mut core::ffi::c_void, len: usize) -> i32 {
+unsafe fn ceph_crypt_get_context(inode: *mut inode, ctx: *mut kernel::ffi::c_void, len: usize) -> i32 {
     let ci = ceph_inode(inode);
     let cfa = (*ci).fscrypt_auth as *mut ceph_fscrypt_auth;
     if cfa.is_null() || (*ci).fscrypt_auth_len < (core::mem::offset_of!(ceph_fscrypt_auth, cfa_blob) + 1) { return -ENOBUFS; }
@@ -18,7 +18,7 @@ unsafe fn ceph_crypt_get_context(inode: *mut inode, ctx: *mut core::ffi::c_void,
     ctxlen as i32
 }
 
-unsafe fn ceph_crypt_set_context(inode: *mut inode, ctx: *const core::ffi::c_void, len: usize, fs_data: *mut core::ffi::c_void) -> i32 {
+unsafe fn ceph_crypt_set_context(inode: *mut inode, ctx: *const kernel::ffi::c_void, len: usize, fs_data: *mut kernel::ffi::c_void) -> i32 {
     let mut attr: iattr = core::mem::zeroed();
     let mut cia: ceph_iattr = core::mem::zeroed();
     WARN_ON_ONCE(!fs_data.is_null());
@@ -78,7 +78,7 @@ pub unsafe fn ceph_fscrypt_as_ctx_to_req(req: *mut ceph_mds_request, as_: *mut c
     core::mem::swap(&mut (*req).r_fscrypt_auth, &mut (*as_).fscrypt_auth);
 }
 
-unsafe fn parse_longname(parent: *const inode, name: *const core::ffi::c_char, name_len: *mut i32) -> *mut inode {
+unsafe fn parse_longname(parent: *const inode, name: *const kernel::ffi::c_char, name_len: *mut i32) -> *mut inode {
     let cl = ceph_inode_to_client(parent);
     if *name_len <= 0 || *name != b'_' as i8 { return ERR_PTR(-EIO); }
     let str_ = kmemdup_nul(name.add(1), (*name_len - 1) as usize, GFP_KERNEL);

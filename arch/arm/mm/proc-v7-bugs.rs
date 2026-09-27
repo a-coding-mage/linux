@@ -36,7 +36,7 @@ unsafe fn call_hvc_arch_workaround_1() {
 
 #[cfg(CONFIG_HARDEN_BRANCH_PREDICTOR)]
 unsafe fn spectre_v2_install_workaround(method: u32) -> u32 {
-    let mut spectre_v2_method: *const core::ffi::c_char = core::ptr::null();
+    let mut spectre_v2_method: *const kernel::ffi::c_char = core::ptr::null();
     let cpu = smp_processor_id();
     if harden_branch_predictor_fn.is_some() { return SPECTRE_MITIGATED as u32; }
     match method {
@@ -75,7 +75,7 @@ unsafe fn cpu_v7_spectre_v2_init() {
 static mut spectre_bhb_method: i32 = 0;
 
 #[cfg(CONFIG_HARDEN_BRANCH_HISTORY)]
-unsafe fn spectre_bhb_method_name(method: i32) -> *const core::ffi::c_char {
+unsafe fn spectre_bhb_method_name(method: i32) -> *const kernel::ffi::c_char {
     match method { SPECTRE_V2_METHOD_LOOP8 => b"loop\0".as_ptr() as _, SPECTRE_V2_METHOD_BPIALL => b"BPIALL\0".as_ptr() as _, _ => b"unknown\0".as_ptr() as _ }
 }
 
@@ -95,7 +95,7 @@ unsafe fn cpu_v7_spectre_bhb_init() {
     spectre_v2_update_state(state, method as u32);
 }
 
-unsafe fn cpu_v7_check_auxcr_set(warned: *mut bool, mask: u32, msg: *const core::ffi::c_char) -> bool {
+unsafe fn cpu_v7_check_auxcr_set(warned: *mut bool, mask: u32, msg: *const kernel::ffi::c_char) -> bool {
     let aux_cr: u32; core::arch::asm!("mrc p15, 0, {0}, c1, c0, 1", out(reg) aux_cr);
     if (aux_cr & mask) != mask { if !*warned { pr_err!("CPU%u: %s", smp_processor_id(), msg); } *warned = true; return false; } true
 }

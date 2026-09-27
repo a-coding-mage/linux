@@ -13,7 +13,7 @@
 // #include <linux/key.h>
 // #include <linux/rcupdate.h>
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct encrypted_key_payload {

@@ -17,79 +17,79 @@ pub unsafe fn flush_cache_dup_mm(mm: *mut crate::mm_struct) {
 }
 
 unsafe extern "C" {
-    pub fn flush_user_icache_range_asm(start: libc::c_ulong, end: libc::c_ulong);
-    pub fn flush_kernel_icache_range_asm(start: libc::c_ulong, end: libc::c_ulong);
-    pub fn flush_user_dcache_range_asm(start: libc::c_ulong, end: libc::c_ulong);
-    pub fn flush_kernel_dcache_range_asm(start: libc::c_ulong, end: libc::c_ulong);
-    pub fn purge_kernel_dcache_range_asm(start: libc::c_ulong, end: libc::c_ulong);
-    pub fn flush_kernel_dcache_page_asm(addr: *const core::ffi::c_void);
-    pub fn flush_kernel_icache_page(addr: *mut core::ffi::c_void);
+    pub fn flush_user_icache_range_asm(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong);
+    pub fn flush_kernel_icache_range_asm(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong);
+    pub fn flush_user_dcache_range_asm(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong);
+    pub fn flush_kernel_dcache_range_asm(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong);
+    pub fn purge_kernel_dcache_range_asm(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong);
+    pub fn flush_kernel_dcache_page_asm(addr: *const kernel::ffi::c_void);
+    pub fn flush_kernel_icache_page(addr: *mut kernel::ffi::c_void);
 
     /* Cache flush operations */
     pub fn flush_cache_all_local();
     pub fn flush_cache_all();
     pub fn flush_cache_mm(mm: *mut crate::mm_struct);
 
-    pub fn flush_kernel_vmap_range(vaddr: *mut core::ffi::c_void, size: libc::c_int);
-    pub fn invalidate_kernel_vmap_range(vaddr: *mut core::ffi::c_void, size: libc::c_int);
+    pub fn flush_kernel_vmap_range(vaddr: *mut kernel::ffi::c_void, size: kernel::ffi::c_int);
+    pub fn invalidate_kernel_vmap_range(vaddr: *mut kernel::ffi::c_void, size: kernel::ffi::c_int);
 
-    pub fn flush_cache_vmap(start: libc::c_ulong, end: libc::c_ulong);
-    pub fn flush_cache_vunmap(start: libc::c_ulong, end: libc::c_ulong);
+    pub fn flush_cache_vmap(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong);
+    pub fn flush_cache_vunmap(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong);
 
     pub fn flush_dcache_folio(folio: *mut crate::folio);
 
     pub fn flush_icache_pages(
         vma: *mut crate::vm_area_struct,
         page: *mut crate::page,
-        nr: libc::c_uint,
+        nr: kernel::ffi::c_uint,
     );
 
     pub fn copy_to_user_page(
         vma: *mut crate::vm_area_struct,
         page: *mut crate::page,
-        user_vaddr: libc::c_ulong,
-        dst: *mut core::ffi::c_void,
-        src: *mut core::ffi::c_void,
-        len: libc::c_int,
+        user_vaddr: kernel::ffi::c_ulong,
+        dst: *mut kernel::ffi::c_void,
+        src: *mut kernel::ffi::c_void,
+        len: kernel::ffi::c_int,
     );
     pub fn copy_from_user_page(
         vma: *mut crate::vm_area_struct,
         page: *mut crate::page,
-        user_vaddr: libc::c_ulong,
-        dst: *mut core::ffi::c_void,
-        src: *mut core::ffi::c_void,
-        len: libc::c_int,
+        user_vaddr: kernel::ffi::c_ulong,
+        dst: *mut kernel::ffi::c_void,
+        src: *mut kernel::ffi::c_void,
+        len: kernel::ffi::c_int,
     );
     pub fn flush_cache_page(
         vma: *mut crate::vm_area_struct,
-        vmaddr: libc::c_ulong,
-        pfn: libc::c_ulong,
+        vmaddr: kernel::ffi::c_ulong,
+        pfn: kernel::ffi::c_ulong,
     );
     pub fn flush_cache_range(
         vma: *mut crate::vm_area_struct,
-        start: libc::c_ulong,
-        end: libc::c_ulong,
+        start: kernel::ffi::c_ulong,
+        end: kernel::ffi::c_ulong,
     );
 
     pub fn flush_anon_page(
         vma: *mut crate::vm_area_struct,
         page: *mut crate::page,
-        vmaddr: libc::c_ulong,
+        vmaddr: kernel::ffi::c_ulong,
     );
-    pub fn kunmap_flush_on_unmap(addr: *const core::ffi::c_void);
+    pub fn kunmap_flush_on_unmap(addr: *const kernel::ffi::c_void);
 }
 
 #[inline(always)]
-pub unsafe fn flush_kernel_dcache_range(start: libc::c_ulong, size: libc::c_ulong) {
+pub unsafe fn flush_kernel_dcache_range(start: kernel::ffi::c_ulong, size: kernel::ffi::c_ulong) {
     flush_kernel_dcache_range_asm(start, start.wrapping_add(size));
 }
 
 // The only way to flush a vmap range is to flush whole cache.
-pub const ARCH_IMPLEMENTS_FLUSH_KERNEL_VMAP_RANGE: libc::c_int = 1;
+pub const ARCH_IMPLEMENTS_FLUSH_KERNEL_VMAP_RANGE: kernel::ffi::c_int = 1;
 
-pub unsafe fn flush_cache_vmap_early(_start: libc::c_ulong, _end: libc::c_ulong) {}
+pub unsafe fn flush_cache_vmap_early(_start: kernel::ffi::c_ulong, _end: kernel::ffi::c_ulong) {}
 
-pub const ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE: libc::c_int = 1;
+pub const ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE: kernel::ffi::c_int = 1;
 
 #[inline(always)]
 pub unsafe fn flush_dcache_page(page: *mut crate::page) {
@@ -108,14 +108,14 @@ pub unsafe fn flush_dcache_mmap_unlock(mapping: *mut crate::address_space) {
 
 pub unsafe fn flush_dcache_mmap_lock_irqsave(
     mapping: *mut crate::address_space,
-    flags: *mut libc::c_ulong,
+    flags: *mut kernel::ffi::c_ulong,
 ) {
     crate::xa_lock_irqsave(unsafe { &mut (*mapping).i_pages }, flags);
 }
 
 pub unsafe fn flush_dcache_mmap_unlock_irqrestore(
     mapping: *mut crate::address_space,
-    flags: libc::c_ulong,
+    flags: kernel::ffi::c_ulong,
 ) {
     crate::xa_unlock_irqrestore(unsafe { &mut (*mapping).i_pages }, flags);
 }
@@ -123,7 +123,7 @@ pub unsafe fn flush_dcache_mmap_unlock_irqrestore(
 // flush_icache_pages is intentionally a self-referential macro in the C header.
 
 #[inline(always)]
-pub unsafe fn flush_icache_range(s: libc::c_ulong, e: libc::c_ulong) {
+pub unsafe fn flush_icache_range(s: kernel::ffi::c_ulong, e: kernel::ffi::c_ulong) {
     flush_kernel_dcache_range_asm(s, e);
     flush_kernel_icache_range_asm(s, e);
 }

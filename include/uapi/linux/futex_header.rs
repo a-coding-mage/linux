@@ -88,7 +88,7 @@ pub struct robust_list {
 #[repr(C)]
 pub struct robust_list_head {
     pub list: robust_list,
-    pub futex_offset: libc::c_long,
+    pub futex_offset: kernel::ffi::c_long,
     pub list_op_pending: *mut robust_list,
 }
 

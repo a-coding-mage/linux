@@ -19,38 +19,38 @@ struct ExynosNocp {
 
 // The following types, constants, and functions are supplied by other files.
 #[repr(C)] struct DevfreqEventDev { dev: Device, desc: *const DevfreqEventDesc }
-#[repr(C)] struct DevfreqEventDesc { ops: *const DevfreqEventOps, driver_data: *mut core::ffi::c_void, name: *const core::ffi::c_char }
+#[repr(C)] struct DevfreqEventDesc { ops: *const DevfreqEventOps, driver_data: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char }
 #[repr(C)] struct DevfreqEventData { load_count: u64, total_count: u64 }
 #[repr(C)] struct DevfreqEventOps {
     set_event: Option<unsafe extern "C" fn(*mut DevfreqEventDev) -> i32>,
     get_event: Option<unsafe extern "C" fn(*mut DevfreqEventDev, *mut DevfreqEventData) -> i32>,
 }
 #[repr(C)] struct Device { of_node: *mut DeviceNode }
-#[repr(C)] struct DeviceNode { full_name: *const core::ffi::c_char }
+#[repr(C)] struct DeviceNode { full_name: *const kernel::ffi::c_char }
 #[repr(C)] struct PlatformDevice { dev: Device }
 #[repr(C)] struct Resource;
 #[repr(C)] struct Regmap;
 #[repr(C)] struct Clk;
 #[repr(C)] struct RegmapConfig { reg_bits: u32, val_bits: u32, reg_stride: u32, max_register: u32 }
-#[repr(C)] struct OfDeviceId { compatible: *const core::ffi::c_char }
+#[repr(C)] struct OfDeviceId { compatible: *const kernel::ffi::c_char }
 #[repr(C)] struct PlatformDriver { probe: Option<unsafe extern "C" fn(*mut PlatformDevice) -> i32>, remove: Option<unsafe extern "C" fn(*mut PlatformDevice)> }
 
 extern "C" {
-    fn devfreq_event_get_drvdata(edev: *mut DevfreqEventDev) -> *mut core::ffi::c_void;
+    fn devfreq_event_get_drvdata(edev: *mut DevfreqEventDev) -> *mut kernel::ffi::c_void;
     fn regmap_update_bits(map: *mut Regmap, reg: u32, mask: u32, val: u32) -> i32;
     fn regmap_write(map: *mut Regmap, reg: u32, val: u32) -> i32;
     fn regmap_read(map: *mut Regmap, reg: u32, val: *mut u32) -> i32;
-    fn devm_clk_get(dev: *mut Device, name: *const core::ffi::c_char) -> *mut Clk;
-    fn devm_platform_get_and_ioremap_resource(pdev: *mut PlatformDevice, index: u32, res: *mut *mut Resource) -> *mut core::ffi::c_void;
+    fn devm_clk_get(dev: *mut Device, name: *const kernel::ffi::c_char) -> *mut Clk;
+    fn devm_platform_get_and_ioremap_resource(pdev: *mut PlatformDevice, index: u32, res: *mut *mut Resource) -> *mut kernel::ffi::c_void;
     fn resource_size(res: *mut Resource) -> u64;
-    fn devm_regmap_init_mmio(dev: *mut Device, base: *mut core::ffi::c_void, config: *mut RegmapConfig) -> *mut Regmap;
-    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_regmap_init_mmio(dev: *mut Device, base: *mut kernel::ffi::c_void, config: *mut RegmapConfig) -> *mut Regmap;
+    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_devfreq_event_add_edev(dev: *mut Device, desc: *mut DevfreqEventDesc) -> *mut DevfreqEventDev;
-    fn platform_set_drvdata(pdev: *mut PlatformDevice, data: *mut core::ffi::c_void);
-    fn platform_get_drvdata(pdev: *mut PlatformDevice) -> *mut core::ffi::c_void;
+    fn platform_set_drvdata(pdev: *mut PlatformDevice, data: *mut kernel::ffi::c_void);
+    fn platform_get_drvdata(pdev: *mut PlatformDevice) -> *mut kernel::ffi::c_void;
     fn clk_prepare_enable(clk: *mut Clk) -> i32;
     fn clk_disable_unprepare(clk: *mut Clk);
-    fn dev_name(dev: *mut Device) -> *const core::ffi::c_char;
+    fn dev_name(dev: *mut Device) -> *const kernel::ffi::c_char;
 }
 
 unsafe fn exynos_nocp_set_event(edev: *mut DevfreqEventDev) -> i32 {

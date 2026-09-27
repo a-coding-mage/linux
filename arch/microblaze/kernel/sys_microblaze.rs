@@ -21,26 +21,26 @@
 
 extern "C" {
     fn ksys_mmap_pgoff(
-        addr: ::core::ffi::c_ulong,
-        len: ::core::ffi::c_ulong,
-        prot: ::core::ffi::c_ulong,
-        flags: ::core::ffi::c_ulong,
-        fd: ::core::ffi::c_ulong,
-        pgoff: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_long;
+        addr: ::kernel::ffi::c_ulong,
+        len: ::kernel::ffi::c_ulong,
+        prot: ::kernel::ffi::c_ulong,
+        flags: ::kernel::ffi::c_ulong,
+        fd: ::kernel::ffi::c_ulong,
+        pgoff: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_long;
 }
 
 // SYSCALL_DEFINE6(mmap, ...)
 pub unsafe fn mmap(
-    addr: ::core::ffi::c_ulong,
-    len: ::core::ffi::c_ulong,
-    prot: ::core::ffi::c_ulong,
-    flags: ::core::ffi::c_ulong,
-    fd: ::core::ffi::c_ulong,
-    pgoff: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_long {
+    addr: ::kernel::ffi::c_ulong,
+    len: ::kernel::ffi::c_ulong,
+    prot: ::kernel::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
+    fd: ::kernel::ffi::c_ulong,
+    pgoff: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_long {
     if pgoff & !PAGE_MASK != 0 {
-        return -(EINVAL as ::core::ffi::c_long);
+        return -(EINVAL as ::kernel::ffi::c_long);
     }
 
     ksys_mmap_pgoff(addr, len, prot, flags, fd, pgoff >> PAGE_SHIFT)
@@ -48,15 +48,15 @@ pub unsafe fn mmap(
 
 // SYSCALL_DEFINE6(mmap2, ...)
 pub unsafe fn mmap2(
-    addr: ::core::ffi::c_ulong,
-    len: ::core::ffi::c_ulong,
-    prot: ::core::ffi::c_ulong,
-    flags: ::core::ffi::c_ulong,
-    fd: ::core::ffi::c_ulong,
-    pgoff: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_long {
+    addr: ::kernel::ffi::c_ulong,
+    len: ::kernel::ffi::c_ulong,
+    prot: ::kernel::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
+    fd: ::kernel::ffi::c_ulong,
+    pgoff: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_long {
     if pgoff & (!PAGE_MASK >> 12) != 0 {
-        return -(EINVAL as ::core::ffi::c_long);
+        return -(EINVAL as ::kernel::ffi::c_long);
     }
 
     ksys_mmap_pgoff(addr, len, prot, flags, fd, pgoff >> (PAGE_SHIFT - 12))

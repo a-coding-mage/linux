@@ -14,7 +14,7 @@ const KONA_GPTIMER_STCS_COMPARE_ENABLE_SHIFT: u32 = 4;
 #[repr(C)]
 struct kona_bcm_timers {
     tmr_irq: i32,
-    tmr_regs: *mut core::ffi::c_void,
+    tmr_regs: *mut kernel::ffi::c_void,
 }
 
 static mut timers: kona_bcm_timers = kona_bcm_timers {
@@ -25,16 +25,16 @@ static mut timers: kona_bcm_timers = kona_bcm_timers {
 static mut arch_timer_rate: u32 = 0;
 
 extern "C" {
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
 }
 
 /*
  * We use the peripheral timers for system tick, the cpu global timer for
  * profile tick
  */
-unsafe fn kona_timer_disable_and_clear(base: *mut core::ffi::c_void) {
+unsafe fn kona_timer_disable_and_clear(base: *mut kernel::ffi::c_void) {
     let mut reg: u32;
 
     /*
@@ -52,7 +52,7 @@ unsafe fn kona_timer_disable_and_clear(base: *mut core::ffi::c_void) {
 }
 
 unsafe fn kona_timer_get_counter(
-    timer_base: *mut core::ffi::c_void,
+    timer_base: *mut kernel::ffi::c_void,
     msw: *mut u32,
     lsw: *mut u32,
 ) -> i32 {
@@ -126,12 +126,12 @@ unsafe fn kona_timer_shutdown(_evt: *mut clock_event_device) -> i32 {
 
 #[repr(C)]
 struct clock_event_device {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     features: u32,
     set_next_event: Option<unsafe fn(usize, *mut clock_event_device) -> i32>,
     set_state_shutdown: Option<unsafe fn(*mut clock_event_device) -> i32>,
     tick_resume: Option<unsafe fn(*mut clock_event_device) -> i32>,
-    cpumask: *mut core::ffi::c_void,
+    cpumask: *mut kernel::ffi::c_void,
     event_handler: Option<unsafe fn(*mut clock_event_device)>,
 }
 
@@ -146,7 +146,7 @@ static mut kona_clockevent_timer: clock_event_device = clock_event_device {
 };
 
 extern "C" {
-    fn cpumask_of(cpu: u32) -> *mut core::ffi::c_void;
+    fn cpumask_of(cpu: u32) -> *mut kernel::ffi::c_void;
     fn clockevents_config_and_register(dev: *mut clock_event_device, freq: u32, min_delta: u32, max_delta: u32);
 }
 
@@ -155,7 +155,7 @@ unsafe fn kona_timer_clockevents_init() {
     clockevents_config_and_register(&mut kona_clockevent_timer, arch_timer_rate, 6, 0xffff_ffff);
 }
 
-unsafe fn kona_timer_interrupt(_irq: i32, _dev_id: *mut core::ffi::c_void) -> i32 {
+unsafe fn kona_timer_interrupt(_irq: i32, _dev_id: *mut kernel::ffi::c_void) -> i32 {
     let evt = &mut kona_clockevent_timer;
 
     kona_timer_disable_and_clear(timers.tmr_regs);
@@ -171,13 +171,13 @@ struct device_node {
 }
 
 extern "C" {
-    fn of_clk_get_by_name(node: *mut device_node, name: *const core::ffi::c_char) -> *mut core::ffi::c_void;
-    fn clk_get_rate(clk: *mut core::ffi::c_void) -> u32;
-    fn clk_prepare_enable(clk: *mut core::ffi::c_void) -> i32;
-    fn of_property_read_u32(node: *mut device_node, propname: *const core::ffi::c_char, out: *mut u32) -> i32;
+    fn of_clk_get_by_name(node: *mut device_node, name: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
+    fn clk_get_rate(clk: *mut kernel::ffi::c_void) -> u32;
+    fn clk_prepare_enable(clk: *mut kernel::ffi::c_void) -> i32;
+    fn of_property_read_u32(node: *mut device_node, propname: *const kernel::ffi::c_char, out: *mut u32) -> i32;
     fn irq_of_parse_and_map(node: *mut device_node, index: u32) -> i32;
-    fn of_iomap(node: *mut device_node, index: u32) -> *mut core::ffi::c_void;
-    fn request_irq(irq: i32, handler: unsafe fn(i32, *mut core::ffi::c_void) -> i32, flags: u32, name: *const core::ffi::c_char, dev: *mut core::ffi::c_void) -> i32;
+    fn of_iomap(node: *mut device_node, index: u32) -> *mut kernel::ffi::c_void;
+    fn request_irq(irq: i32, handler: unsafe fn(i32, *mut kernel::ffi::c_void) -> i32, flags: u32, name: *const kernel::ffi::c_char, dev: *mut kernel::ffi::c_void) -> i32;
     static HZ: u32;
 }
 

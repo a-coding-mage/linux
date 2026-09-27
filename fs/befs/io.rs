@@ -54,7 +54,7 @@ pub unsafe fn befs_bread_iaddr(
         sb,
         "%s: offset = %lu",
         c"befs_bread_iaddr",
-        block as libc::c_ulong,
+        block as kernel::ffi::c_ulong,
     );
 
     bh = sb_bread(sb, block);
@@ -63,7 +63,7 @@ pub unsafe fn befs_bread_iaddr(
         befs_error(
             sb,
             "Failed to read block %lu",
-            block as libc::c_ulong,
+            block as kernel::ffi::c_ulong,
         );
         befs_debug(sb, "<--- %s ERROR", c"befs_bread_iaddr");
         return core::ptr::null_mut();

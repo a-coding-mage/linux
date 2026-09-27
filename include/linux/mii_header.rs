@@ -6,29 +6,29 @@
 
 #[repr(C)]
 pub struct mii_if_info {
-    pub phy_id: ::core::ffi::c_int,
-    pub advertising: ::core::ffi::c_int,
-    pub phy_id_mask: ::core::ffi::c_int,
-    pub reg_num_mask: ::core::ffi::c_int,
+    pub phy_id: ::kernel::ffi::c_int,
+    pub advertising: ::kernel::ffi::c_int,
+    pub phy_id_mask: ::kernel::ffi::c_int,
+    pub reg_num_mask: ::kernel::ffi::c_int,
     // C bit-fields: is full duplex, is autoneg disabled, GMII registers supported.
-    pub full_duplex: ::core::ffi::c_uint,
-    pub force_media: ::core::ffi::c_uint,
-    pub supports_gmii: ::core::ffi::c_uint,
+    pub full_duplex: ::kernel::ffi::c_uint,
+    pub force_media: ::kernel::ffi::c_uint,
+    pub supports_gmii: ::kernel::ffi::c_uint,
     pub dev: *mut net_device,
-    pub mdio_read: Option<unsafe extern "C" fn(*mut net_device, ::core::ffi::c_int, ::core::ffi::c_int) -> ::core::ffi::c_int>,
-    pub mdio_write: Option<unsafe extern "C" fn(*mut net_device, ::core::ffi::c_int, ::core::ffi::c_int, ::core::ffi::c_int)>,
+    pub mdio_read: Option<unsafe extern "C" fn(*mut net_device, ::kernel::ffi::c_int, ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
+    pub mdio_write: Option<unsafe extern "C" fn(*mut net_device, ::kernel::ffi::c_int, ::kernel::ffi::c_int, ::kernel::ffi::c_int)>,
 }
 
-pub unsafe extern "C" fn mii_link_ok(mii: *mut mii_if_info) -> ::core::ffi::c_int;
-pub unsafe extern "C" fn mii_nway_restart(mii: *mut mii_if_info) -> ::core::ffi::c_int;
+pub unsafe extern "C" fn mii_link_ok(mii: *mut mii_if_info) -> ::kernel::ffi::c_int;
+pub unsafe extern "C" fn mii_nway_restart(mii: *mut mii_if_info) -> ::kernel::ffi::c_int;
 pub unsafe extern "C" fn mii_ethtool_gset(mii: *mut mii_if_info, ecmd: *mut ethtool_cmd);
 pub unsafe extern "C" fn mii_ethtool_get_link_ksettings(mii: *mut mii_if_info, cmd: *mut ethtool_link_ksettings);
-pub unsafe extern "C" fn mii_ethtool_sset(mii: *mut mii_if_info, ecmd: *mut ethtool_cmd) -> ::core::ffi::c_int;
-pub unsafe extern "C" fn mii_ethtool_set_link_ksettings(mii: *mut mii_if_info, cmd: *const ethtool_link_ksettings) -> ::core::ffi::c_int;
-pub unsafe extern "C" fn mii_check_gmii_support(mii: *mut mii_if_info) -> ::core::ffi::c_int;
+pub unsafe extern "C" fn mii_ethtool_sset(mii: *mut mii_if_info, ecmd: *mut ethtool_cmd) -> ::kernel::ffi::c_int;
+pub unsafe extern "C" fn mii_ethtool_set_link_ksettings(mii: *mut mii_if_info, cmd: *const ethtool_link_ksettings) -> ::kernel::ffi::c_int;
+pub unsafe extern "C" fn mii_check_gmii_support(mii: *mut mii_if_info) -> ::kernel::ffi::c_int;
 pub unsafe extern "C" fn mii_check_link(mii: *mut mii_if_info);
-pub unsafe extern "C" fn mii_check_media(mii: *mut mii_if_info, ok_to_print: ::core::ffi::c_uint, init_media: ::core::ffi::c_uint) -> ::core::ffi::c_uint;
-pub unsafe extern "C" fn generic_mii_ioctl(mii_if: *mut mii_if_info, mii_data: *mut mii_ioctl_data, cmd: ::core::ffi::c_int, duplex_changed: *mut ::core::ffi::c_uint) -> ::core::ffi::c_int;
+pub unsafe extern "C" fn mii_check_media(mii: *mut mii_if_info, ok_to_print: ::kernel::ffi::c_uint, init_media: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint;
+pub unsafe extern "C" fn generic_mii_ioctl(mii_if: *mut mii_if_info, mii_data: *mut mii_ioctl_data, cmd: ::kernel::ffi::c_int, duplex_changed: *mut ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
 
 #[inline]
 pub unsafe fn if_mii(rq: *mut ifreq) -> *mut mii_ioctl_data {
@@ -62,7 +62,7 @@ pub fn ethtool_adv_to_mii_adv_t(mut ethadv: u32) -> u32 {
 }
 
 #[inline]
-pub unsafe fn linkmode_adv_to_mii_adv_t(advertising: *const ::core::ffi::c_ulong) -> u32 {
+pub unsafe fn linkmode_adv_to_mii_adv_t(advertising: *const ::kernel::ffi::c_ulong) -> u32 {
     let mut result = 0;
     if linkmode_test_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT, advertising) != 0 { result |= ADVERTISE_10HALF; }
     if linkmode_test_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, advertising) != 0 { result |= ADVERTISE_10FULL; }
@@ -94,7 +94,7 @@ pub fn ethtool_adv_to_mii_ctrl1000_t(ethadv: u32) -> u32 {
 }
 
 #[inline]
-pub unsafe fn linkmode_adv_to_mii_ctrl1000_t(advertising: *const ::core::ffi::c_ulong) -> u32 {
+pub unsafe fn linkmode_adv_to_mii_ctrl1000_t(advertising: *const ::kernel::ffi::c_ulong) -> u32 {
     let mut result = 0;
     if linkmode_test_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT, advertising) != 0 { result |= ADVERTISE_1000HALF; }
     if linkmode_test_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, advertising) != 0 { result |= ADVERTISE_1000FULL; }
@@ -124,7 +124,7 @@ pub fn mii_stat1000_to_ethtool_lpa_t(lpa: u32) -> u32 {
 }
 
 #[inline]
-pub unsafe fn mii_stat1000_mod_linkmode_lpa_t(advertising: *mut ::core::ffi::c_ulong, lpa: u32) {
+pub unsafe fn mii_stat1000_mod_linkmode_lpa_t(advertising: *mut ::kernel::ffi::c_ulong, lpa: u32) {
     linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT, advertising, lpa & LPA_1000HALF);
     linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, advertising, lpa & LPA_1000FULL);
 }
@@ -149,7 +149,7 @@ pub fn mii_adv_to_ethtool_adv_x(adv: u32) -> u32 {
     result
 }
 #[inline]
-pub unsafe fn mii_adv_mod_linkmode_adv_t(advertising: *mut ::core::ffi::c_ulong, adv: u32) {
+pub unsafe fn mii_adv_mod_linkmode_adv_t(advertising: *mut ::kernel::ffi::c_ulong, adv: u32) {
     linkmode_mod_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT, advertising, adv & ADVERTISE_10HALF);
     linkmode_mod_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, advertising, adv & ADVERTISE_10FULL);
     linkmode_mod_bit(ETHTOOL_LINK_MODE_100baseT_Half_BIT, advertising, adv & ADVERTISE_100HALF);
@@ -159,31 +159,31 @@ pub unsafe fn mii_adv_mod_linkmode_adv_t(advertising: *mut ::core::ffi::c_ulong,
 }
 
 #[inline]
-pub unsafe fn mii_adv_to_linkmode_adv_t(advertising: *mut ::core::ffi::c_ulong, adv: u32) {
+pub unsafe fn mii_adv_to_linkmode_adv_t(advertising: *mut ::kernel::ffi::c_ulong, adv: u32) {
     linkmode_zero(advertising);
     mii_adv_mod_linkmode_adv_t(advertising, adv);
 }
 
 #[inline]
-pub unsafe fn mii_lpa_to_linkmode_lpa_t(lp_advertising: *mut ::core::ffi::c_ulong, lpa: u32) {
+pub unsafe fn mii_lpa_to_linkmode_lpa_t(lp_advertising: *mut ::kernel::ffi::c_ulong, lpa: u32) {
     mii_adv_to_linkmode_adv_t(lp_advertising, lpa);
     if lpa & LPA_LPACK != 0 { linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, lp_advertising); }
 }
 
 #[inline]
-pub unsafe fn mii_lpa_mod_linkmode_lpa_t(lp_advertising: *mut ::core::ffi::c_ulong, lpa: u32) {
+pub unsafe fn mii_lpa_mod_linkmode_lpa_t(lp_advertising: *mut ::kernel::ffi::c_ulong, lpa: u32) {
     mii_adv_mod_linkmode_adv_t(lp_advertising, lpa);
     linkmode_mod_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, lp_advertising, lpa & LPA_LPACK);
 }
 
 #[inline]
-pub unsafe fn mii_ctrl1000_mod_linkmode_adv_t(advertising: *mut ::core::ffi::c_ulong, ctrl1000: u32) {
+pub unsafe fn mii_ctrl1000_mod_linkmode_adv_t(advertising: *mut ::kernel::ffi::c_ulong, ctrl1000: u32) {
     linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT, advertising, ctrl1000 & ADVERTISE_1000HALF);
     linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, advertising, ctrl1000 & ADVERTISE_1000FULL);
 }
 
 #[inline]
-pub unsafe fn linkmode_adv_to_lcl_adv_t(advertising: *const ::core::ffi::c_ulong) -> u32 {
+pub unsafe fn linkmode_adv_to_lcl_adv_t(advertising: *const ::kernel::ffi::c_ulong) -> u32 {
     let mut lcl_adv = 0;
     if linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, advertising) != 0 { lcl_adv |= ADVERTISE_PAUSE_CAP; }
     if linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, advertising) != 0 { lcl_adv |= ADVERTISE_PAUSE_ASYM; }
@@ -191,7 +191,7 @@ pub unsafe fn linkmode_adv_to_lcl_adv_t(advertising: *const ::core::ffi::c_ulong
 }
 
 #[inline]
-pub unsafe fn mii_lpa_mod_linkmode_x(linkmodes: *mut ::core::ffi::c_ulong, lpa: u16, fd_bit: ::core::ffi::c_int) {
+pub unsafe fn mii_lpa_mod_linkmode_x(linkmodes: *mut ::kernel::ffi::c_ulong, lpa: u16, fd_bit: ::kernel::ffi::c_int) {
     linkmode_mod_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, linkmodes, (lpa as u32) & LPA_LPACK);
     linkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT, linkmodes, (lpa as u32) & LPA_1000XPAUSE);
     linkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, linkmodes, (lpa as u32) & LPA_1000XPAUSE_ASYM);
@@ -199,7 +199,7 @@ pub unsafe fn mii_lpa_mod_linkmode_x(linkmodes: *mut ::core::ffi::c_ulong, lpa: 
 }
 
 #[inline]
-pub unsafe fn linkmode_adv_to_mii_adv_x(linkmodes: *const ::core::ffi::c_ulong, fd_bit: ::core::ffi::c_int) -> u16 {
+pub unsafe fn linkmode_adv_to_mii_adv_x(linkmodes: *const ::kernel::ffi::c_ulong, fd_bit: ::kernel::ffi::c_int) -> u16 {
     let mut adv = 0;
     if linkmode_test_bit(fd_bit, linkmodes) != 0 { adv |= ADVERTISE_1000XFULL as u16; }
     if linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, linkmodes) != 0 { adv |= ADVERTISE_1000XPAUSE as u16; }
@@ -208,7 +208,7 @@ pub unsafe fn linkmode_adv_to_mii_adv_x(linkmodes: *const ::core::ffi::c_ulong, 
 }
 
 #[inline]
-pub fn mii_advertise_flowctrl(cap: ::core::ffi::c_int) -> u16 {
+pub fn mii_advertise_flowctrl(cap: ::kernel::ffi::c_int) -> u16 {
     let mut adv = 0;
     if cap & FLOW_CTRL_RX != 0 { adv = (ADVERTISE_PAUSE_CAP | ADVERTISE_PAUSE_ASYM) as u16; }
     if cap & FLOW_CTRL_TX != 0 { adv ^= ADVERTISE_PAUSE_ASYM as u16; }
@@ -225,7 +225,7 @@ pub fn mii_resolve_flowctrl_fdx(lcladv: u16, rmtadv: u16) -> u8 {
 }
 
 #[inline]
-pub fn mii_bmcr_encode_fixed(speed: ::core::ffi::c_int, duplex: ::core::ffi::c_int) -> u16 {
+pub fn mii_bmcr_encode_fixed(speed: ::kernel::ffi::c_int, duplex: ::kernel::ffi::c_int) -> u16 {
     let mut bmcr = match speed {
         SPEED_2500 | SPEED_1000 => BMCR_SPEED1000,
         SPEED_100 => BMCR_SPEED100,

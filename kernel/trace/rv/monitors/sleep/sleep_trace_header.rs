@@ -7,7 +7,7 @@
 /* Corresponds to CONFIG_RV_MON_SLEEP. */
 #[cfg(CONFIG_RV_MON_SLEEP)]
 mod config_rv_mon_sleep {
-    use core::ffi::c_char;
+    use kernel::ffi::c_char;
 
     #[repr(C)]
     pub struct task_struct {

@@ -33,7 +33,7 @@ static mut struct damos_sysfs_probe *damos_sysfs_probe_alloc(u8 hits)
 }
 
 static isize hits_show(struct kobject *kobj, struct kobj_attribute *attr,
-		buf: *mut core::ffi::c_char)
+		buf: *mut kernel::ffi::c_char)
 {
 	struct damos_sysfs_probe *probe = container_of(kobj,
 			struct damos_sysfs_probe, kobj);
@@ -211,7 +211,7 @@ static void damos_sysfs_region_rm_dirs(
 }
 
 static isize start_show(struct kobject *kobj, struct kobj_attribute *attr,
-		buf: *mut core::ffi::c_char)
+		buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_region *region = container_of(kobj,
 			struct damon_sysfs_scheme_region, kobj);
@@ -220,7 +220,7 @@ static isize start_show(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static isize end_show(struct kobject *kobj, struct kobj_attribute *attr,
-		buf: *mut core::ffi::c_char)
+		buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_region *region = container_of(kobj,
 			struct damon_sysfs_scheme_region, kobj);
@@ -229,7 +229,7 @@ static isize end_show(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static isize nr_accesses_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_region *region = container_of(kobj,
 			struct damon_sysfs_scheme_region, kobj);
@@ -238,7 +238,7 @@ static isize nr_accesses_show(struct kobject *kobj,
 }
 
 static isize age_show(struct kobject *kobj, struct kobj_attribute *attr,
-		buf: *mut core::ffi::c_char)
+		buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_region *region = container_of(kobj,
 			struct damon_sysfs_scheme_region, kobj);
@@ -247,7 +247,7 @@ static isize age_show(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static isize sz_filter_passed_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_region *region = container_of(kobj,
 			struct damon_sysfs_scheme_region, kobj);
@@ -321,7 +321,7 @@ damon_sysfs_scheme_regions_alloc(void)
 }
 
 static isize total_bytes_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_regions *regions = container_of(kobj,
 			struct damon_sysfs_scheme_regions, kobj);
@@ -385,7 +385,7 @@ static mut struct damon_sysfs_stats *damon_sysfs_stats_alloc(void)
 }
 
 static isize nr_tried_show(struct kobject *kobj, struct kobj_attribute *attr,
-		buf: *mut core::ffi::c_char)
+		buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_stats *stats = container_of(kobj,
 			struct damon_sysfs_stats, kobj);
@@ -394,7 +394,7 @@ static isize nr_tried_show(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static isize sz_tried_show(struct kobject *kobj, struct kobj_attribute *attr,
-		buf: *mut core::ffi::c_char)
+		buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_stats *stats = container_of(kobj,
 			struct damon_sysfs_stats, kobj);
@@ -403,7 +403,7 @@ static isize sz_tried_show(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static isize nr_applied_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_stats *stats = container_of(kobj,
 			struct damon_sysfs_stats, kobj);
@@ -412,7 +412,7 @@ static isize nr_applied_show(struct kobject *kobj,
 }
 
 static isize sz_applied_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_stats *stats = container_of(kobj,
 			struct damon_sysfs_stats, kobj);
@@ -421,7 +421,7 @@ static isize sz_applied_show(struct kobject *kobj,
 }
 
 static isize sz_ops_filter_passed_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_stats *stats = container_of(kobj,
 			struct damon_sysfs_stats, kobj);
@@ -430,7 +430,7 @@ static isize sz_ops_filter_passed_show(struct kobject *kobj,
 }
 
 static isize qt_exceeds_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_stats *stats = container_of(kobj,
 			struct damon_sysfs_stats, kobj);
@@ -439,7 +439,7 @@ static isize qt_exceeds_show(struct kobject *kobj,
 }
 
 static isize nr_snapshots_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_stats *stats = container_of(kobj,
 			struct damon_sysfs_stats, kobj);
@@ -448,7 +448,7 @@ static isize nr_snapshots_show(struct kobject *kobj,
 }
 
 static isize max_nr_snapshots_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_stats *stats = container_of(kobj,
 			struct damon_sysfs_stats, kobj);
@@ -457,7 +457,7 @@ static isize max_nr_snapshots_show(struct kobject *kobj,
 }
 
 static isize max_nr_snapshots_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_stats *stats = container_of(kobj,
 			struct damon_sysfs_stats, kobj);
@@ -555,7 +555,7 @@ static mut struct damon_sysfs_scheme_filter *damon_sysfs_scheme_filter_alloc(
 
 struct damos_sysfs_filter_type_name {
 	enum damos_filter_type type;
-	*mut core::ffi::c_charname;
+	*mut kernel::ffi::c_charname;
 };
 
 static const struct damos_sysfs_filter_type_name
@@ -595,7 +595,7 @@ damos_sysfs_filter_type_names[] = {
 };
 
 static isize type_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -629,7 +629,7 @@ static bool damos_sysfs_scheme_filter_valid_type(
 }
 
 static isize type_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -654,7 +654,7 @@ static isize type_store(struct kobject *kobj,
 }
 
 static isize matching_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -663,7 +663,7 @@ static isize matching_show(struct kobject *kobj,
 }
 
 static isize matching_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -678,7 +678,7 @@ static isize matching_store(struct kobject *kobj,
 }
 
 static isize allow_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -687,7 +687,7 @@ static isize allow_show(struct kobject *kobj,
 }
 
 static isize allow_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -702,7 +702,7 @@ static isize allow_store(struct kobject *kobj,
 }
 
 static isize memcg_path_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -717,11 +717,11 @@ static isize memcg_path_show(struct kobject *kobj,
 }
 
 static isize memcg_path_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
-	*mut core::ffi::c_charpath = kmalloc_array(size_add(count, 1), sizeof(*path),
+	*mut kernel::ffi::c_charpath = kmalloc_array(size_add(count, 1), sizeof(*path),
 				   GFP_KERNEL);
 
 	if (!path)
@@ -739,7 +739,7 @@ static isize memcg_path_store(struct kobject *kobj,
 }
 
 static isize addr_start_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -748,7 +748,7 @@ static isize addr_start_show(struct kobject *kobj,
 }
 
 static isize addr_start_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -758,7 +758,7 @@ static isize addr_start_store(struct kobject *kobj,
 }
 
 static isize addr_end_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -767,7 +767,7 @@ static isize addr_end_show(struct kobject *kobj,
 }
 
 static isize addr_end_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -777,7 +777,7 @@ static isize addr_end_store(struct kobject *kobj,
 }
 
 static isize min_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -786,7 +786,7 @@ static isize min_show(struct kobject *kobj,
 }
 
 static isize min_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -796,7 +796,7 @@ static isize min_store(struct kobject *kobj,
 }
 
 static isize max_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -805,7 +805,7 @@ static isize max_show(struct kobject *kobj,
 }
 
 static isize max_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -815,7 +815,7 @@ static isize max_store(struct kobject *kobj,
 }
 
 static isize damon_target_idx_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -824,7 +824,7 @@ static isize damon_target_idx_show(struct kobject *kobj,
 }
 
 static isize damon_target_idx_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme_filter *filter = container_of(kobj,
 			struct damon_sysfs_scheme_filter, kobj);
@@ -966,7 +966,7 @@ static int damon_sysfs_scheme_filters_add_dirs(
 }
 
 static isize nr_filters_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme_filters *filters = container_of(kobj,
 			struct damon_sysfs_scheme_filters, kobj);
@@ -975,7 +975,7 @@ static isize nr_filters_show(struct kobject *kobj,
 }
 
 static isize nr_filters_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme_filters *filters;
 	int nr, err = kstrtoint(buf, 0, &nr);
@@ -1049,7 +1049,7 @@ static mut struct damon_sysfs_watermarks *damon_sysfs_watermarks_alloc(
 
 struct damos_sysfs_wmark_metric_name {
 	enum damos_wmark_metric metric;
-	*mut core::ffi::c_charname;
+	*mut kernel::ffi::c_charname;
 };
 
 static const struct damos_sysfs_wmark_metric_name
@@ -1065,7 +1065,7 @@ damos_sysfs_wmark_metric_names[] = {
 };
 
 static isize metric_show(struct kobject *kobj, struct kobj_attribute *attr,
-		buf: *mut core::ffi::c_char)
+		buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
 			struct damon_sysfs_watermarks, kobj);
@@ -1082,7 +1082,7 @@ static isize metric_show(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static isize metric_store(struct kobject *kobj, struct kobj_attribute *attr,
-		const *mut core::ffi::c_charbuf, usize count)
+		const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
 			struct damon_sysfs_watermarks, kobj);
@@ -1101,7 +1101,7 @@ static isize metric_store(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static isize interval_us_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
 			struct damon_sysfs_watermarks, kobj);
@@ -1110,7 +1110,7 @@ static isize interval_us_show(struct kobject *kobj,
 }
 
 static isize interval_us_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
 			struct damon_sysfs_watermarks, kobj);
@@ -1120,7 +1120,7 @@ static isize interval_us_store(struct kobject *kobj,
 }
 
 static isize high_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
 			struct damon_sysfs_watermarks, kobj);
@@ -1129,7 +1129,7 @@ static isize high_show(struct kobject *kobj,
 }
 
 static isize high_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
 			struct damon_sysfs_watermarks, kobj);
@@ -1139,7 +1139,7 @@ static isize high_store(struct kobject *kobj,
 }
 
 static isize mid_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
 			struct damon_sysfs_watermarks, kobj);
@@ -1148,7 +1148,7 @@ static isize mid_show(struct kobject *kobj,
 }
 
 static isize mid_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
 			struct damon_sysfs_watermarks, kobj);
@@ -1158,7 +1158,7 @@ static isize mid_store(struct kobject *kobj,
 }
 
 static isize low_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
 			struct damon_sysfs_watermarks, kobj);
@@ -1167,7 +1167,7 @@ static isize low_show(struct kobject *kobj,
 }
 
 static isize low_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
 			struct damon_sysfs_watermarks, kobj);
@@ -1222,7 +1222,7 @@ struct damos_sysfs_quota_goal {
 	usize target_value;
 	usize current_value;
 	int nid;
-	*mut core::ffi::c_charpath;
+	*mut kernel::ffi::c_charpath;
 };
 
 static mut struct damos_sysfs_quota_goal *damos_sysfs_quota_goal_alloc(void)
@@ -1232,7 +1232,7 @@ static mut struct damos_sysfs_quota_goal *damos_sysfs_quota_goal_alloc(void)
 
 struct damos_sysfs_qgoal_metric_name {
 	enum damos_quota_goal_metric metric;
-	*mut core::ffi::c_charname;
+	*mut kernel::ffi::c_charname;
 };
 
 static mut struct damos_sysfs_qgoal_metric_name damos_sysfs_qgoal_metric_names[] = {
@@ -1275,7 +1275,7 @@ static mut struct damos_sysfs_qgoal_metric_name damos_sysfs_qgoal_metric_names[]
 };
 
 static isize target_metric_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damos_sysfs_quota_goal *goal = container_of(kobj,
 			struct damos_sysfs_quota_goal, kobj);
@@ -1292,7 +1292,7 @@ static isize target_metric_show(struct kobject *kobj,
 }
 
 static isize target_metric_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damos_sysfs_quota_goal *goal = container_of(kobj,
 			struct damos_sysfs_quota_goal, kobj);
@@ -1311,7 +1311,7 @@ static isize target_metric_store(struct kobject *kobj,
 }
 
 static isize target_value_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damos_sysfs_quota_goal *goal = container_of(kobj, struct
 			damos_sysfs_quota_goal, kobj);
@@ -1320,7 +1320,7 @@ static isize target_value_show(struct kobject *kobj,
 }
 
 static isize target_value_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damos_sysfs_quota_goal *goal = container_of(kobj, struct
 			damos_sysfs_quota_goal, kobj);
@@ -1330,7 +1330,7 @@ static isize target_value_store(struct kobject *kobj,
 }
 
 static isize current_value_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damos_sysfs_quota_goal *goal = container_of(kobj, struct
 			damos_sysfs_quota_goal, kobj);
@@ -1339,7 +1339,7 @@ static isize current_value_show(struct kobject *kobj,
 }
 
 static isize current_value_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damos_sysfs_quota_goal *goal = container_of(kobj, struct
 			damos_sysfs_quota_goal, kobj);
@@ -1350,7 +1350,7 @@ static isize current_value_store(struct kobject *kobj,
 }
 
 static isize nid_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damos_sysfs_quota_goal *goal = container_of(kobj, struct
 			damos_sysfs_quota_goal, kobj);
@@ -1360,7 +1360,7 @@ static isize nid_show(struct kobject *kobj,
 }
 
 static isize nid_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damos_sysfs_quota_goal *goal = container_of(kobj, struct
 			damos_sysfs_quota_goal, kobj);
@@ -1371,7 +1371,7 @@ static isize nid_store(struct kobject *kobj,
 }
 
 static isize path_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damos_sysfs_quota_goal *goal = container_of(kobj,
 			struct damos_sysfs_quota_goal, kobj);
@@ -1385,11 +1385,11 @@ static isize path_show(struct kobject *kobj,
 }
 
 static isize path_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damos_sysfs_quota_goal *goal = container_of(kobj,
 			struct damos_sysfs_quota_goal, kobj);
-	*mut core::ffi::c_charpath = kmalloc_array(size_add(count, 1), sizeof(*path),
+	*mut kernel::ffi::c_charpath = kmalloc_array(size_add(count, 1), sizeof(*path),
 				   GFP_KERNEL);
 
 	if (!path)
@@ -1515,7 +1515,7 @@ static int damos_sysfs_quota_goals_add_dirs(
 }
 
 static isize nr_goals_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damos_sysfs_quota_goals *goals = container_of(kobj,
 			struct damos_sysfs_quota_goals, kobj);
@@ -1524,7 +1524,7 @@ static isize nr_goals_show(struct kobject *kobj,
 }
 
 static isize nr_goals_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damos_sysfs_quota_goals *goals;
 	int nr, err = kstrtoint(buf, 0, &nr);
@@ -1592,7 +1592,7 @@ static mut struct damon_sysfs_weights *damon_sysfs_weights_alloc(u32 sz,
 }
 
 static isize sz_permil_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_weights *weights = container_of(kobj,
 			struct damon_sysfs_weights, kobj);
@@ -1601,7 +1601,7 @@ static isize sz_permil_show(struct kobject *kobj,
 }
 
 static isize sz_permil_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_weights *weights = container_of(kobj,
 			struct damon_sysfs_weights, kobj);
@@ -1611,7 +1611,7 @@ static isize sz_permil_store(struct kobject *kobj,
 }
 
 static isize nr_accesses_permil_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_weights *weights = container_of(kobj,
 			struct damon_sysfs_weights, kobj);
@@ -1620,7 +1620,7 @@ static isize nr_accesses_permil_show(struct kobject *kobj,
 }
 
 static isize nr_accesses_permil_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_weights *weights = container_of(kobj,
 			struct damon_sysfs_weights, kobj);
@@ -1630,7 +1630,7 @@ static isize nr_accesses_permil_store(struct kobject *kobj,
 }
 
 static isize age_permil_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_weights *weights = container_of(kobj,
 			struct damon_sysfs_weights, kobj);
@@ -1639,7 +1639,7 @@ static isize age_permil_show(struct kobject *kobj,
 }
 
 static isize age_permil_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_weights *weights = container_of(kobj,
 			struct damon_sysfs_weights, kobj);
@@ -1742,7 +1742,7 @@ static void damon_sysfs_quotas_rm_dirs(struct damon_sysfs_quotas *quotas)
 }
 
 static isize ms_show(struct kobject *kobj, struct kobj_attribute *attr,
-		buf: *mut core::ffi::c_char)
+		buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1751,7 +1751,7 @@ static isize ms_show(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static isize ms_store(struct kobject *kobj, struct kobj_attribute *attr,
-		const *mut core::ffi::c_charbuf, usize count)
+		const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1763,7 +1763,7 @@ static isize ms_store(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static isize bytes_show(struct kobject *kobj, struct kobj_attribute *attr,
-		buf: *mut core::ffi::c_char)
+		buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1772,7 +1772,7 @@ static isize bytes_show(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static isize bytes_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1784,7 +1784,7 @@ static isize bytes_store(struct kobject *kobj,
 }
 
 static isize reset_interval_ms_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1793,7 +1793,7 @@ static isize reset_interval_ms_show(struct kobject *kobj,
 }
 
 static isize reset_interval_ms_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1805,7 +1805,7 @@ static isize reset_interval_ms_store(struct kobject *kobj,
 }
 
 static isize effective_bytes_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1815,7 +1815,7 @@ static isize effective_bytes_show(struct kobject *kobj,
 
 struct damos_sysfs_qgoal_tuner_name {
 	enum damos_quota_goal_tuner tuner;
-	*mut core::ffi::c_charname;
+	*mut kernel::ffi::c_charname;
 };
 
 static mut struct damos_sysfs_qgoal_tuner_name damos_sysfs_qgoal_tuner_names[] = {
@@ -1830,7 +1830,7 @@ static mut struct damos_sysfs_qgoal_tuner_name damos_sysfs_qgoal_tuner_names[] =
 };
 
 static isize goal_tuner_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1847,7 +1847,7 @@ static isize goal_tuner_show(struct kobject *kobj,
 }
 
 static isize goal_tuner_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1866,7 +1866,7 @@ static isize goal_tuner_store(struct kobject *kobj,
 }
 
 static isize fail_charge_num_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1875,7 +1875,7 @@ static isize fail_charge_num_show(struct kobject *kobj,
 }
 
 static isize fail_charge_num_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1887,7 +1887,7 @@ static isize fail_charge_num_store(struct kobject *kobj,
 }
 
 static isize fail_charge_denom_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1896,7 +1896,7 @@ static isize fail_charge_denom_show(struct kobject *kobj,
 }
 
 static isize fail_charge_denom_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_quotas *quotas = container_of(kobj,
 			struct damon_sysfs_quotas, kobj);
@@ -1975,7 +1975,7 @@ static mut struct damon_sysfs_access_pattern *damon_sysfs_access_pattern_alloc(v
 static int damon_sysfs_access_pattern_add_range_dir(
 		struct damon_sysfs_access_pattern *access_pattern,
 		struct damon_sysfs_ul_range **range_dir_ptr,
-		name: *mut core::ffi::c_char)
+		name: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_ul_range *range = damon_sysfs_ul_range_alloc(0, 0);
 	int err;
@@ -2061,7 +2061,7 @@ static mut struct damos_sysfs_dest *damos_sysfs_dest_alloc(void)
 }
 
 static isize id_show(
-		struct kobject *kobj, struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobject *kobj, struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damos_sysfs_dest *dest = container_of(kobj,
 			struct damos_sysfs_dest, kobj);
@@ -2070,7 +2070,7 @@ static isize id_show(
 }
 
 static isize id_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damos_sysfs_dest *dest = container_of(kobj,
 			struct damos_sysfs_dest, kobj);
@@ -2080,7 +2080,7 @@ static isize id_store(struct kobject *kobj,
 }
 
 static isize weight_show(
-		struct kobject *kobj, struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobject *kobj, struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damos_sysfs_dest *dest = container_of(kobj,
 			struct damos_sysfs_dest, kobj);
@@ -2089,7 +2089,7 @@ static isize weight_show(
 }
 
 static isize weight_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damos_sysfs_dest *dest = container_of(kobj,
 			struct damos_sysfs_dest, kobj);
@@ -2194,7 +2194,7 @@ static int damos_sysfs_dests_add_dirs(
 }
 
 static isize nr_dests_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damos_sysfs_dests *dests = container_of(kobj,
 			struct damos_sysfs_dests, kobj);
@@ -2203,7 +2203,7 @@ static isize nr_dests_show(struct kobject *kobj,
 }
 
 static isize nr_dests_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damos_sysfs_dests *dests;
 	int nr, err = kstrtoint(buf, 0, &nr);
@@ -2267,7 +2267,7 @@ struct damon_sysfs_scheme {
 
 struct damos_sysfs_action_name {
 	enum damos_action action;
-	*mut core::ffi::c_charname;
+	*mut kernel::ffi::c_charname;
 };
 
 static mut struct damos_sysfs_action_name damos_sysfs_action_names[] = {
@@ -2413,7 +2413,7 @@ static int damon_sysfs_scheme_set_watermarks(struct damon_sysfs_scheme *scheme)
 }
 
 static int damon_sysfs_scheme_set_filters(struct damon_sysfs_scheme *scheme,
-		enum damos_sysfs_filter_handle_layer layer, const *mut core::ffi::c_charname,
+		enum damos_sysfs_filter_handle_layer layer, const *mut kernel::ffi::c_charname,
 		struct damon_sysfs_scheme_filters **filters_ptr)
 {
 	struct damon_sysfs_scheme_filters *filters =
@@ -2572,7 +2572,7 @@ static void damon_sysfs_scheme_rm_dirs(struct damon_sysfs_scheme *scheme)
 }
 
 static isize action_show(struct kobject *kobj, struct kobj_attribute *attr,
-		buf: *mut core::ffi::c_char)
+		buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme *scheme = container_of(kobj,
 			struct damon_sysfs_scheme, kobj);
@@ -2589,7 +2589,7 @@ static isize action_show(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static isize action_store(struct kobject *kobj, struct kobj_attribute *attr,
-		const *mut core::ffi::c_charbuf, usize count)
+		const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme *scheme = container_of(kobj,
 			struct damon_sysfs_scheme, kobj);
@@ -2608,7 +2608,7 @@ static isize action_store(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static isize apply_interval_us_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme *scheme = container_of(kobj,
 			struct damon_sysfs_scheme, kobj);
@@ -2617,7 +2617,7 @@ static isize apply_interval_us_show(struct kobject *kobj,
 }
 
 static isize apply_interval_us_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme *scheme = container_of(kobj,
 			struct damon_sysfs_scheme, kobj);
@@ -2627,7 +2627,7 @@ static isize apply_interval_us_store(struct kobject *kobj,
 }
 
 static isize target_nid_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_scheme *scheme = container_of(kobj,
 			struct damon_sysfs_scheme, kobj);
@@ -2636,7 +2636,7 @@ static isize target_nid_show(struct kobject *kobj,
 }
 
 static isize target_nid_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_scheme *scheme = container_of(kobj,
 			struct damon_sysfs_scheme, kobj);
@@ -2749,7 +2749,7 @@ out:
 }
 
 static isize nr_schemes_show(struct kobject *kobj,
-		struct kobj_attribute *attr, buf: *mut core::ffi::c_char)
+		struct kobj_attribute *attr, buf: *mut kernel::ffi::c_char)
 {
 	struct damon_sysfs_schemes *schemes = container_of(kobj,
 			struct damon_sysfs_schemes, kobj);
@@ -2758,7 +2758,7 @@ static isize nr_schemes_show(struct kobject *kobj,
 }
 
 static isize nr_schemes_store(struct kobject *kobj,
-		struct kobj_attribute *attr, const *mut core::ffi::c_charbuf, usize count)
+		struct kobj_attribute *attr, const *mut kernel::ffi::c_charbuf, usize count)
 {
 	struct damon_sysfs_schemes *schemes;
 	int nr, err = kstrtoint(buf, 0, &nr);

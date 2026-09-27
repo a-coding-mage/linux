@@ -13,9 +13,9 @@ unsafe extern "C" {
     fn native_cpu_die();
     fn native_cpu_disable() -> i32;
     fn native_play_dead();
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
-    fn cpumask_of(cpu: u32) -> *mut core::ffi::c_void;
-    fn init_cpu_possible(mask: *mut core::ffi::c_void);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
+    fn cpumask_of(cpu: u32) -> *mut kernel::ffi::c_void;
+    fn init_cpu_possible(mask: *mut kernel::ffi::c_void);
     fn set_cpu_possible(cpu: u64, possible: bool);
     fn set_cpu_present(cpu: u64, present: bool);
     static mut __cpu_number_map: [u32; 0];
@@ -23,15 +23,15 @@ unsafe extern "C" {
     fn of_get_cpu_hwid(np: *mut DeviceNode, index: u32) -> u64;
     fn of_property_read_string(
         np: *mut DeviceNode,
-        property: *const core::ffi::c_char,
-        value: *mut *const core::ffi::c_char,
+        property: *const kernel::ffi::c_char,
+        value: *mut *const kernel::ffi::c_char,
     ) -> i32;
     fn of_find_node_by_name(
         from: *mut DeviceNode,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> *mut DeviceNode;
     fn of_node_put(np: *mut DeviceNode);
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
     fn register_smp_ops(ops: *const PlatSmpOps);
 }
 
@@ -42,7 +42,7 @@ pub struct DeviceNode {
 
 #[repr(C)]
 pub struct OfCpuMethod {
-    pub method: *const core::ffi::c_char,
+    pub method: *const kernel::ffi::c_char,
     pub ops: *const PlatSmpOps,
 }
 
@@ -97,7 +97,7 @@ pub static __cpu_method_of_table_sentinel: OfCpuMethod = OfCpuMethod {
 #[cfg(CONFIG_SMP)]
 unsafe extern "C" fn sh_of_smp_probe() {
     let mut np: *mut DeviceNode;
-    let mut method: *const core::ffi::c_char = core::ptr::null();
+    let mut method: *const kernel::ffi::c_char = core::ptr::null();
     let mut m: *const OfCpuMethod = __cpu_method_of_table.as_ptr();
 
     pr_info(b"SH generic board support: scanning for cpus\0".as_ptr() as *const _);
@@ -157,7 +157,7 @@ unsafe extern "C" fn sh_of_mem_reserve() {
     early_init_fdt_scan_reserved_mem();
 }
 
-unsafe extern "C" fn sh_of_setup(cmdline_p: *mut *mut core::ffi::c_char) {
+unsafe extern "C" fn sh_of_setup(cmdline_p: *mut *mut kernel::ffi::c_char) {
     let mut root: *mut DeviceNode;
 
     sh_mv.mv_name = b"Unknown SH model\0".as_ptr() as *const _;
@@ -193,8 +193,8 @@ unsafe extern "C" fn sh_of_clk_init() -> i32 {
 
 #[repr(C)]
 pub struct ShMachineVector {
-    pub mv_setup: Option<unsafe extern "C" fn(*mut *mut core::ffi::c_char)>,
-    pub mv_name: *const core::ffi::c_char,
+    pub mv_setup: Option<unsafe extern "C" fn(*mut *mut kernel::ffi::c_char)>,
+    pub mv_name: *const kernel::ffi::c_char,
     pub mv_irq_demux: Option<unsafe extern "C" fn(i32) -> i32>,
     pub mv_init_irq: Option<unsafe extern "C" fn()>,
     pub mv_clk_init: Option<unsafe extern "C" fn() -> i32>,

@@ -14,20 +14,20 @@
 // Dependencies supplied by the surrounding kernel translation.
 extern "C" {
     static mut tx4938_ccfgptr: *mut tx4938_ccfg;
-    static mut tx4938_pcic1ptr: *mut core::ffi::c_void;
+    static mut tx4938_pcic1ptr: *mut kernel::ffi::c_void;
     static mut txx9_cpu_clock: i32;
     static mut txx9_gbus_clock: u32;
 
     fn __raw_readq(addr: *const u64) -> u64;
     fn tx4938_ccfg_set(bits: u64);
     fn tx4938_ccfg_change(mask: u64, value: u32);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
-    fn pr_cont(fmt: *const core::ffi::c_char, ...);
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
-    fn get_tx4927_pcicptr(sysdata: *mut core::ffi::c_void) -> *mut core::ffi::c_void;
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_cont(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
+    fn get_tx4927_pcicptr(sysdata: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
     fn request_irq(irq: u32, handler: unsafe extern "C" fn(), flags: u32,
-                   name: *const core::ffi::c_char, dev: *mut core::ffi::c_void) -> i32;
+                   name: *const kernel::ffi::c_char, dev: *mut kernel::ffi::c_void) -> i32;
     fn tx4927_pcierr_interrupt();
 }
 
@@ -39,7 +39,7 @@ struct tx4938_ccfg {
 
 #[repr(C)]
 struct pci_bus {
-    sysdata: *mut core::ffi::c_void,
+    sysdata: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -64,7 +64,7 @@ extern "C" {
     static TX4938_CCFG_PCI1_66: u64;
     static TX4938_PCFG_ETH0_SEL: u64;
     static TX4938_PCFG_ETH1_SEL: u64;
-    static TX4927_PCIC_REG: *mut core::ffi::c_void;
+    static TX4927_PCIC_REG: *mut kernel::ffi::c_void;
     static TXX9_IRQ_BASE: u32;
     static TX4938_IR_PCIERR: u32;
     static TX4938_IR_ETH0: u32;

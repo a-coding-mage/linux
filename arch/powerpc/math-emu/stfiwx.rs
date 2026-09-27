@@ -2,16 +2,16 @@
 
 unsafe extern "C" {
     fn copy_to_user(
-        to: *mut core::ffi::c_void,
-        from: *const core::ffi::c_void,
+        to: *mut kernel::ffi::c_void,
+        from: *const kernel::ffi::c_void,
         n: usize,
     ) -> usize;
 
     #[cfg(feature = "DEBUG")]
-    fn printk(format: *const core::ffi::c_char, ...) -> i32;
+    fn printk(format: *const kernel::ffi::c_char, ...) -> i32;
 }
 
-pub unsafe fn stfiwx(fr_s: *mut u32, ea: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn stfiwx(fr_s: *mut u32, ea: *mut kernel::ffi::c_void) -> i32 {
     #[cfg(feature = "DEBUG")]
     {
         // Equivalent to: printk("%s: %p %p\n", __func__, frS, ea);
@@ -19,8 +19,8 @@ pub unsafe fn stfiwx(fr_s: *mut u32, ea: *mut core::ffi::c_void) -> i32 {
         let function = b"stfiwx\0";
         unsafe {
             printk(
-                format.as_ptr() as *const core::ffi::c_char,
-                function.as_ptr() as *const core::ffi::c_char,
+                format.as_ptr() as *const kernel::ffi::c_char,
+                function.as_ptr() as *const kernel::ffi::c_char,
                 fr_s,
                 ea,
             );
@@ -30,7 +30,7 @@ pub unsafe fn stfiwx(fr_s: *mut u32, ea: *mut core::ffi::c_void) -> i32 {
     if unsafe {
         copy_to_user(
             ea,
-            fr_s.add(1) as *const core::ffi::c_void,
+            fr_s.add(1) as *const kernel::ffi::c_void,
             core::mem::size_of::<u32>(),
         )
     } != 0

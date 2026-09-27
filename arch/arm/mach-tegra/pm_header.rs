@@ -7,8 +7,8 @@
  *	Colin Cross <ccross@google.com>
  */
 
-use core::ffi::c_void;
-use core::ffi::c_ulong;
+use kernel::ffi::c_void;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct tegra_lp1_iram {

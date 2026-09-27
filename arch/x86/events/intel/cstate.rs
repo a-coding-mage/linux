@@ -15,14 +15,14 @@
 
 #[repr(C)]
 struct CstateModel {
-    core_events: libc::c_ulong,
-    pkg_events: libc::c_ulong,
-    module_events: libc::c_ulong,
-    quirks: libc::c_ulong,
+    core_events: kernel::ffi::c_ulong,
+    pkg_events: kernel::ffi::c_ulong,
+    module_events: kernel::ffi::c_ulong,
+    quirks: kernel::ffi::c_ulong,
 }
 
-const SLM_PKG_C6_USE_C7_MSR: libc::c_ulong = 1 << 0;
-const KNL_CORE_C6_MSR: libc::c_ulong = 1 << 1;
+const SLM_PKG_C6_USE_C7_MSR: kernel::ffi::c_ulong = 1 << 0;
+const KNL_CORE_C6_MSR: kernel::ffi::c_ulong = 1 << 1;
 
 static mut cstate_core_pmu: pmu = unsafe { core::mem::zeroed() };
 static mut has_cstate_core: bool = false;
@@ -42,14 +42,14 @@ PMU_EVENT_ATTR_STRING!(c3-residency, attr_cstate_core_c3, "event=0x01");
 PMU_EVENT_ATTR_STRING!(c6-residency, attr_cstate_core_c6, "event=0x02");
 PMU_EVENT_ATTR_STRING!(c7-residency, attr_cstate_core_c7, "event=0x03");
 
-static mut core_msr_mask: libc::c_ulong = 0;
+static mut core_msr_mask: kernel::ffi::c_ulong = 0;
 PMU_EVENT_GROUP!(events, cstate_core_c1);
 PMU_EVENT_GROUP!(events, cstate_core_c3);
 PMU_EVENT_GROUP!(events, cstate_core_c6);
 PMU_EVENT_GROUP!(events, cstate_core_c7);
 
-unsafe fn test_msr(idx: i32, data: *mut libc::c_void) -> bool {
-    test_bit(idx, data as *mut libc::c_ulong)
+unsafe fn test_msr(idx: i32, data: *mut kernel::ffi::c_void) -> bool {
+    test_bit(idx, data as *mut kernel::ffi::c_ulong)
 }
 
 static mut core_msr: [perf_msr; 4] = [
@@ -89,7 +89,7 @@ PMU_EVENT_ATTR_STRING!(c7-residency, attr_cstate_pkg_c7, "event=0x03");
 PMU_EVENT_ATTR_STRING!(c8-residency, attr_cstate_pkg_c8, "event=0x04");
 PMU_EVENT_ATTR_STRING!(c9-residency, attr_cstate_pkg_c9, "event=0x05");
 PMU_EVENT_ATTR_STRING!(c10-residency, attr_cstate_pkg_c10, "event=0x06");
-static mut pkg_msr_mask: libc::c_ulong = 0;
+static mut pkg_msr_mask: kernel::ffi::c_ulong = 0;
 PMU_EVENT_GROUP!(events, cstate_pkg_c2);
 PMU_EVENT_GROUP!(events, cstate_pkg_c3);
 PMU_EVENT_GROUP!(events, cstate_pkg_c6);
@@ -112,7 +112,7 @@ static mut has_cstate_module: bool = false;
 const PERF_CSTATE_MODULE_C6_RES: usize = 0;
 const PERF_CSTATE_MODULE_EVENT_MAX: usize = 1;
 PMU_EVENT_ATTR_STRING!(c6-residency, attr_cstate_module_c6, "event=0x00");
-static mut module_msr_mask: libc::c_ulong = 0;
+static mut module_msr_mask: kernel::ffi::c_ulong = 0;
 PMU_EVENT_GROUP!(events, cstate_module_c6);
 static mut module_msr: [perf_msr; 1] = [perf_msr { msr: MSR_MODULE_C6_RES_MS, group: &group_cstate_module_c6, test: test_msr }];
 
@@ -123,17 +123,17 @@ unsafe fn cstate_pmu_event_init(event: *mut perf_event) -> i32 {
     if (*event).cpu < 0 { return -EINVAL; }
     if (*event).pmu == &cstate_core_pmu {
         if cfg >= PERF_CSTATE_CORE_EVENT_MAX as u64 { return -EINVAL; }
-        cfg = array_index_nospec(cfg as libc::c_ulong, PERF_CSTATE_CORE_EVENT_MAX);
+        cfg = array_index_nospec(cfg as kernel::ffi::c_ulong, PERF_CSTATE_CORE_EVENT_MAX);
         if core_msr_mask & (1 << cfg) == 0 { return -EINVAL; }
         (*event).hw.event_base = core_msr[cfg as usize].msr;
     } else if (*event).pmu == &cstate_pkg_pmu {
         if cfg >= PERF_CSTATE_PKG_EVENT_MAX as u64 { return -EINVAL; }
-        cfg = array_index_nospec(cfg as libc::c_ulong, PERF_CSTATE_PKG_EVENT_MAX);
+        cfg = array_index_nospec(cfg as kernel::ffi::c_ulong, PERF_CSTATE_PKG_EVENT_MAX);
         if pkg_msr_mask & (1 << cfg) == 0 { return -EINVAL; }
         (*event).hw.event_base = pkg_msr[cfg as usize].msr;
     } else if (*event).pmu == &cstate_module_pmu {
         if cfg >= PERF_CSTATE_MODULE_EVENT_MAX as u64 { return -EINVAL; }
-        cfg = array_index_nospec(cfg as libc::c_ulong, PERF_CSTATE_MODULE_EVENT_MAX);
+        cfg = array_index_nospec(cfg as kernel::ffi::c_ulong, PERF_CSTATE_MODULE_EVENT_MAX);
         if module_msr_mask & (1 << cfg) == 0 { return -EINVAL; }
         (*event).hw.event_base = module_msr[cfg as usize].msr;
     } else { return -ENOENT; }

@@ -20,7 +20,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* Vega10+ IH clients */
 pub const SOC15_IH_CLIENTID_IH: u32 = 0x00;

@@ -7,7 +7,7 @@
 #[repr(C)]
 pub struct timespec {
 	pub tv_sec: __kernel_old_time_t, // seconds
-	pub tv_nsec: core::ffi::c_long,  // nanoseconds
+	pub tv_nsec: kernel::ffi::c_long,  // nanoseconds
 }
 
 #[cfg(not(feature = "__KERNEL__"))]

@@ -8,7 +8,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-pub unsafe fn sync_icache_aliases(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong) {
+pub unsafe fn sync_icache_aliases(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong) {
     if icache_is_aliasing() {
         dcache_clean_pou(start, end);
         icache_inval_all_pou();
@@ -23,8 +23,8 @@ pub unsafe fn sync_icache_aliases(start: ::core::ffi::c_ulong, end: ::core::ffi:
 
 unsafe fn flush_ptrace_access(
     vma: *mut vm_area_struct,
-    start: ::core::ffi::c_ulong,
-    end: ::core::ffi::c_ulong,
+    start: ::kernel::ffi::c_ulong,
+    end: ::kernel::ffi::c_ulong,
 ) {
     if (*vma).vm_flags & VM_EXEC != 0 {
         sync_icache_aliases(start, end);
@@ -39,13 +39,13 @@ unsafe fn flush_ptrace_access(
 pub unsafe fn copy_to_user_page(
     vma: *mut vm_area_struct,
     _page: *mut page,
-    _uaddr: ::core::ffi::c_ulong,
-    dst: *mut ::core::ffi::c_void,
-    src: *const ::core::ffi::c_void,
-    len: ::core::ffi::c_ulong,
+    _uaddr: ::kernel::ffi::c_ulong,
+    dst: *mut ::kernel::ffi::c_void,
+    src: *const ::kernel::ffi::c_void,
+    len: ::kernel::ffi::c_ulong,
 ) {
     ::core::ptr::copy_nonoverlapping(src as *const u8, dst as *mut u8, len as usize);
-    flush_ptrace_access(vma, dst as ::core::ffi::c_ulong, dst as ::core::ffi::c_ulong + len);
+    flush_ptrace_access(vma, dst as ::kernel::ffi::c_ulong, dst as ::kernel::ffi::c_ulong + len);
 }
 
 pub unsafe fn __sync_icache_dcache(pte: pte_t) {
@@ -53,8 +53,8 @@ pub unsafe fn __sync_icache_dcache(pte: pte_t) {
 
     if !test_bit(PG_dcache_clean, &mut (*folio).flags.f) {
         sync_icache_aliases(
-            folio_address(folio) as ::core::ffi::c_ulong,
-            folio_address(folio) as ::core::ffi::c_ulong + folio_size(folio),
+            folio_address(folio) as ::kernel::ffi::c_ulong,
+            folio_address(folio) as ::kernel::ffi::c_ulong + folio_size(folio),
         );
         set_bit(PG_dcache_clean, &mut (*folio).flags.f);
     }
@@ -88,17 +88,17 @@ pub unsafe fn flush_dcache_page(page: *mut page) {
 
 // Preserved from CONFIG_ARCH_HAS_PMEM_API; the surrounding build selects this condition.
 #[cfg(CONFIG_ARCH_HAS_PMEM_API)]
-pub unsafe fn arch_wb_cache_pmem(addr: *mut ::core::ffi::c_void, size: usize) {
+pub unsafe fn arch_wb_cache_pmem(addr: *mut ::kernel::ffi::c_void, size: usize) {
     /* Ensure order against any prior non-cacheable writes */
     dmb(osh);
-    dcache_clean_pop(addr as ::core::ffi::c_ulong, addr as ::core::ffi::c_ulong + size as ::core::ffi::c_ulong);
+    dcache_clean_pop(addr as ::kernel::ffi::c_ulong, addr as ::kernel::ffi::c_ulong + size as ::kernel::ffi::c_ulong);
 }
 
 // EXPORT_SYMBOL_GPL(arch_wb_cache_pmem);
 
 #[cfg(CONFIG_ARCH_HAS_PMEM_API)]
-pub unsafe fn arch_invalidate_pmem(addr: *mut ::core::ffi::c_void, size: usize) {
-    dcache_inval_poc(addr as ::core::ffi::c_ulong, addr as ::core::ffi::c_ulong + size as ::core::ffi::c_ulong);
+pub unsafe fn arch_invalidate_pmem(addr: *mut ::kernel::ffi::c_void, size: usize) {
+    dcache_inval_poc(addr as ::kernel::ffi::c_ulong, addr as ::kernel::ffi::c_ulong + size as ::kernel::ffi::c_ulong);
 }
 
 // EXPORT_SYMBOL_GPL(arch_invalidate_pmem);

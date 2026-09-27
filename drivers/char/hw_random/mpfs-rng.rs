@@ -11,7 +11,7 @@
 
 const CMD_OPCODE: u32 = 0x21;
 const CMD_DATA_SIZE: u32 = 0;
-const CMD_DATA: *mut core::ffi::c_void = core::ptr::null_mut();
+const CMD_DATA: *mut kernel::ffi::c_void = core::ptr::null_mut();
 const MBOX_OFFSET: u32 = 0;
 const RESP_OFFSET: u32 = 0;
 const RNG_RESP_BYTES: usize = 32;
@@ -29,8 +29,8 @@ pub struct mpfs_sys_controller {
 
 #[repr(C)]
 pub struct hwrng {
-    pub read: Option<unsafe extern "C" fn(*mut hwrng, *mut core::ffi::c_void, usize, bool) -> i32>,
-    pub name: *const core::ffi::c_char,
+    pub read: Option<unsafe extern "C" fn(*mut hwrng, *mut kernel::ffi::c_void, usize, bool) -> i32>,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -45,7 +45,7 @@ pub struct mpfs_mss_msg {
     pub cmd_opcode: u32,
     pub cmd_data_size: u32,
     pub response: *mut mpfs_mss_response,
-    pub cmd_data: *mut core::ffi::c_void,
+    pub cmd_data: *mut kernel::ffi::c_void,
     pub mbox_offset: u32,
     pub resp_offset: u32,
 }
@@ -60,7 +60,7 @@ extern "C" {
 #[no_mangle]
 pub unsafe extern "C" fn mpfs_rng_read(
     rng: *mut hwrng,
-    buf: *mut core::ffi::c_void,
+    buf: *mut kernel::ffi::c_void,
     max: usize,
     wait: bool,
 ) -> i32 {

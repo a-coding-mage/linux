@@ -27,12 +27,12 @@ pub struct dma_buf {
     pub ops: *const dma_buf_ops,
     pub vmapping_counter: u32,
     pub vmap_ptr: iosys_map,
-    pub exp_name: *const core::ffi::c_char,
-    pub name: *const core::ffi::c_char,
+    pub exp_name: *const kernel::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub name_lock: spinlock_t,
     pub owner: *mut module,
     pub list_node: list_head,
-    pub r#priv: *mut core::ffi::c_void,
+    pub r#priv: *mut kernel::ffi::c_void,
     pub resv: *mut dma_resv,
     pub poll: wait_queue_head_t,
     pub cb_in: dma_buf_poll_cb_t,
@@ -59,19 +59,19 @@ pub struct dma_buf_attachment {
     pub node: list_head,
     pub peer2peer: bool,
     pub importer_ops: *const dma_buf_attach_ops,
-    pub importer_priv: *mut core::ffi::c_void,
-    pub r#priv: *mut core::ffi::c_void,
+    pub importer_priv: *mut kernel::ffi::c_void,
+    pub r#priv: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct dma_buf_export_info {
-    pub exp_name: *const core::ffi::c_char,
+    pub exp_name: *const kernel::ffi::c_char,
     pub owner: *mut module,
     pub ops: *const dma_buf_ops,
     pub size: usize,
     pub flags: i32,
     pub resv: *mut dma_resv,
-    pub r#priv: *mut core::ffi::c_void,
+    pub r#priv: *mut kernel::ffi::c_void,
 }
 
 #[macro_export]
@@ -101,7 +101,7 @@ pub unsafe fn dma_buf_is_dynamic(dmabuf: *mut dma_buf) -> bool {
 
 extern "C" {
     pub fn dma_buf_attach(dmabuf: *mut dma_buf, dev: *mut device) -> *mut dma_buf_attachment;
-    pub fn dma_buf_dynamic_attach(dmabuf: *mut dma_buf, dev: *mut device, importer_ops: *const dma_buf_attach_ops, importer_priv: *mut core::ffi::c_void) -> *mut dma_buf_attachment;
+    pub fn dma_buf_dynamic_attach(dmabuf: *mut dma_buf, dev: *mut device, importer_ops: *const dma_buf_attach_ops, importer_priv: *mut kernel::ffi::c_void) -> *mut dma_buf_attachment;
     pub fn dma_buf_detach(dmabuf: *mut dma_buf, attach: *mut dma_buf_attachment);
     pub fn dma_buf_pin(attach: *mut dma_buf_attachment) -> i32;
     pub fn dma_buf_unpin(attach: *mut dma_buf_attachment);

@@ -5,7 +5,7 @@
 // External declarations for Linux kernel audio subsystem types and functions.
 // These are provided by other translation units and the Linux kernel.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Convert our full speed USB rate into sampling rate in Hz
 #[inline]
@@ -22,7 +22,7 @@ fn get_high_speed_hz(usb_rate: u32) -> u32 {
 // Types from external headers - these are from the kernel audio subsystem
 #[repr(C)]
 pub struct snd_info_entry {
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
     // ... other fields
 }
 
@@ -208,7 +208,7 @@ extern "C" {
     fn snd_card_ro_proc_new(
         card: *mut snd_card,
         name: *const c_char,
-        private_data: *mut core::ffi::c_void,
+        private_data: *mut kernel::ffi::c_void,
         read_proc: Option<unsafe extern "C" fn(*mut snd_info_entry, *mut snd_info_buffer)>,
     ) -> i32;
     fn pcm_for_each_format(fmt: *mut snd_pcm_format_t) -> bool;
@@ -251,13 +251,13 @@ pub unsafe extern "C" fn snd_usb_audio_create_proc(chip: *mut snd_usb_audio) {
     snd_card_ro_proc_new(
         (*chip).card,
         b"usbbus\0".as_ptr() as *const c_char,
-        chip as *mut core::ffi::c_void,
+        chip as *mut kernel::ffi::c_void,
         Some(proc_audio_usbbus_read),
     );
     snd_card_ro_proc_new(
         (*chip).card,
         b"usbid\0".as_ptr() as *const c_char,
-        chip as *mut core::ffi::c_void,
+        chip as *mut kernel::ffi::c_void,
         Some(proc_audio_usbid_read),
     );
 }
@@ -513,7 +513,7 @@ pub unsafe extern "C" fn snd_usb_proc_pcm_format_add(stream: *mut snd_usb_stream
     snd_card_ro_proc_new(
         card,
         name.as_ptr(),
-        stream as *mut core::ffi::c_void,
+        stream as *mut kernel::ffi::c_void,
         Some(proc_pcm_format_read),
     );
 }

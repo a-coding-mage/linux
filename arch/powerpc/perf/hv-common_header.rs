@@ -12,7 +12,7 @@ pub struct hv_perf_caps {
 }
 
 extern "C" {
-    pub fn hv_perf_caps_get(caps: *mut hv_perf_caps) -> core::ffi::c_ulong;
+    pub fn hv_perf_caps_get(caps: *mut hv_perf_caps) -> kernel::ffi::c_ulong;
 }
 
 // EVENT_DEFINE_RANGE_FORMAT(name, attr_var, bit_start, bit_end)

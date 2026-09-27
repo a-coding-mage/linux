@@ -12,7 +12,7 @@ unsafe extern "C" {
     fn rt_sysc_w32(value: u32, reg: u32);
     fn mdelay(ms: u32);
     fn local_irq_disable();
-    static mut _machine_restart: Option<unsafe extern "C" fn(*mut core::ffi::c_char)>;
+    static mut _machine_restart: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char)>;
 }
 
 /* Reset Control */
@@ -21,7 +21,7 @@ const SYSC_REG_RESET_CTRL: u32 = 0x034;
 const RSTCTL_RESET_PCI: u32 = 1u32 << 26;
 const RSTCTL_RESET_SYSTEM: u32 = 1u32 << 0;
 
-unsafe extern "C" fn ralink_restart(_command: *mut core::ffi::c_char) {
+unsafe extern "C" fn ralink_restart(_command: *mut kernel::ffi::c_char) {
     // Preserved from IS_ENABLED(CONFIG_PCI); the build configuration supplies this condition.
     #[cfg(CONFIG_PCI)]
     {

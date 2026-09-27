@@ -6,7 +6,7 @@
 
 // Dependency: xfs_quota_defs.h
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct xfs_rtgroup;
@@ -49,8 +49,8 @@ pub type xfs_rgblock_t = u32;
 pub type xfs_filblks_t = u64;
 
 extern "C" {
-    pub fn xchk_needs_repair(sm: *const core::ffi::c_void) -> bool;
-    pub fn xfs_trans_commit(tp: *mut core::ffi::c_void) -> i32;
+    pub fn xchk_needs_repair(sm: *const kernel::ffi::c_void) -> bool;
+    pub fn xfs_trans_commit(tp: *mut kernel::ffi::c_void) -> i32;
 }
 
 #[inline]
@@ -71,7 +71,7 @@ extern "C" {
 
 #[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 #[inline]
-pub unsafe fn xrep_trans_commit(sc: *mut xfs_scrub, tp: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn xrep_trans_commit(sc: *mut xfs_scrub, tp: *mut kernel::ffi::c_void) -> i32 {
     let error = xfs_trans_commit(tp);
     let _ = sc;
     error

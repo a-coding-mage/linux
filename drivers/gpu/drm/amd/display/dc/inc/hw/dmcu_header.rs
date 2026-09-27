@@ -39,10 +39,10 @@ pub enum dmcu_state {
 
 #[repr(C)]
 pub struct dmcu_version {
-    pub interface_version: ::core::ffi::c_uint,
-    pub abm_version: ::core::ffi::c_uint,
-    pub psr_version: ::core::ffi::c_uint,
-    pub build_version: ::core::ffi::c_uint,
+    pub interface_version: ::kernel::ffi::c_uint,
+    pub abm_version: ::kernel::ffi::c_uint,
+    pub psr_version: ::kernel::ffi::c_uint,
+    pub build_version: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -52,7 +52,7 @@ pub struct dmcu {
 
     pub dmcu_state: dmcu_state,
     pub dmcu_version: dmcu_version,
-    pub cached_wait_loop_number: ::core::ffi::c_uint,
+    pub cached_wait_loop_number: ::kernel::ffi::c_uint,
     pub psp_version: u32,
     pub auto_load_dmcu: bool,
 }
@@ -62,9 +62,9 @@ pub struct dmcu_funcs {
     pub dmcu_init: Option<unsafe extern "C" fn(dmcu: *mut dmcu) -> bool>,
     pub load_iram: Option<unsafe extern "C" fn(
         dmcu: *mut dmcu,
-        start_offset: ::core::ffi::c_uint,
-        src: *const ::core::ffi::c_char,
-        bytes: ::core::ffi::c_uint,
+        start_offset: ::kernel::ffi::c_uint,
+        src: *const ::kernel::ffi::c_char,
+        bytes: ::kernel::ffi::c_uint,
     ) -> bool>,
     pub set_psr_enable: Option<unsafe extern "C" fn(dmcu: *mut dmcu, enable: bool, wait: bool)>,
     pub setup_psr: Option<unsafe extern "C" fn(
@@ -73,8 +73,8 @@ pub struct dmcu_funcs {
         psr_context: *mut psr_context,
     ) -> bool>,
     pub get_psr_state: Option<unsafe extern "C" fn(dmcu: *mut dmcu, dc_psr_state: *mut dc_psr_state)>,
-    pub set_psr_wait_loop: Option<unsafe extern "C" fn(dmcu: *mut dmcu, wait_loop_number: ::core::ffi::c_uint)>,
-    pub get_psr_wait_loop: Option<unsafe extern "C" fn(dmcu: *mut dmcu, psr_wait_loop_number: *mut ::core::ffi::c_uint)>,
+    pub set_psr_wait_loop: Option<unsafe extern "C" fn(dmcu: *mut dmcu, wait_loop_number: ::kernel::ffi::c_uint)>,
+    pub get_psr_wait_loop: Option<unsafe extern "C" fn(dmcu: *mut dmcu, psr_wait_loop_number: *mut ::kernel::ffi::c_uint)>,
     pub is_dmcu_initialized: Option<unsafe extern "C" fn(dmcu: *mut dmcu) -> bool>,
     pub lock_phy: Option<unsafe extern "C" fn(dmcu: *mut dmcu) -> bool>,
     pub unlock_phy: Option<unsafe extern "C" fn(dmcu: *mut dmcu) -> bool>,

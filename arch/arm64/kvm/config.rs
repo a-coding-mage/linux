@@ -38,7 +38,7 @@ pub struct RegBitsToFeatMap {
 
 #[repr(C)]
 pub struct RegFeatMapDesc {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub feat_map: RegBitsToFeatMap,
     pub bit_feat_map: *const RegBitsToFeatMap,
     pub bit_feat_map_sz: u32,

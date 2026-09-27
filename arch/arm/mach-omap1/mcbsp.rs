@@ -16,7 +16,7 @@ const DSP_RSTCT2_WD_PER_EN: u16 = 1 << 1;
 pub struct clk { _private: [u8; 0] }
 #[repr(C)]
 pub struct resource {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub start: usize,
     pub end: usize,
     pub flags: usize,
@@ -33,21 +33,21 @@ pub struct omap_mcbsp_platform_data {
     pub reg_step: u32,
 }
 #[repr(C)]
-pub struct device { pub platform_data: *mut core::ffi::c_void }
+pub struct device { pub platform_data: *mut kernel::ffi::c_void }
 #[repr(C)]
 pub struct platform_device { pub dev: device }
 
 extern "C" {
     static mut DSP_RSTCT2: *mut u16;
-    fn clk_get(dev: *mut core::ffi::c_void, id: *const core::ffi::c_char) -> *mut clk;
+    fn clk_get(dev: *mut kernel::ffi::c_void, id: *const kernel::ffi::c_char) -> *mut clk;
     fn clk_prepare_enable(clk: *mut clk) -> i32;
     fn clk_disable_unprepare(clk: *mut clk);
     fn clk_put(clk: *mut clk);
     fn __raw_readw(addr: *mut u16) -> u16;
     fn __raw_writew(value: u16, addr: *mut u16);
     fn kzalloc_objs<T>(count: usize) -> *mut T;
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn platform_device_alloc(name: *const core::ffi::c_char, id: i32) -> *mut platform_device;
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn platform_device_alloc(name: *const kernel::ffi::c_char, id: i32) -> *mut platform_device;
     fn platform_device_add_resources(dev: *mut platform_device, res: *mut resource, count: i32) -> i32;
     fn platform_device_add(dev: *mut platform_device) -> i32;
     fn platform_device_put(dev: *mut platform_device);

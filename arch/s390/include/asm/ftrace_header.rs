@@ -7,7 +7,7 @@ pub const MCOUNT_INSN_SIZE: usize = 6;
 // surrounding kernel translation.
 
 #[inline(always)]
-pub unsafe fn return_address(n: core::ffi::c_uint) -> c_ulong {
+pub unsafe fn return_address(n: kernel::ffi::c_uint) -> c_ulong {
     if n == 0 {
         return __builtin_return_address(0) as c_ulong;
     }
@@ -28,15 +28,15 @@ pub unsafe fn return_address(n: core::ffi::c_uint) -> c_ulong {
 }
 
 #[inline(always)]
-pub unsafe fn ftrace_return_address(n: core::ffi::c_uint) -> c_ulong {
+pub unsafe fn ftrace_return_address(n: kernel::ffi::c_uint) -> c_ulong {
     return_address(n)
 }
 
 unsafe extern "C" {
     pub fn ftrace_caller();
-    pub static mut ftrace_func: *mut core::ffi::c_void;
+    pub static mut ftrace_func: *mut kernel::ffi::c_void;
     pub fn ftrace_need_init_nop() -> bool;
-    pub fn ftrace_init_nop(mod_: *mut module, rec: *mut dyn_ftrace) -> core::ffi::c_int;
+    pub fn ftrace_init_nop(mod_: *mut module, rec: *mut dyn_ftrace) -> kernel::ffi::c_int;
     pub fn ftrace_graph_func(
         ip: c_ulong,
         parent_ip: c_ulong,
@@ -62,7 +62,7 @@ pub struct dyn_ftrace;
 pub struct ftrace_ops;
 #[repr(C)]
 pub struct stack_frame {
-    pub back_chain: *mut core::ffi::c_void,
+    pub back_chain: *mut kernel::ffi::c_void,
     pub gprs: [c_ulong; 16],
 }
 
@@ -120,8 +120,8 @@ pub const ARCH_HAS_SYSCALL_MATCH_SYM_NAME: bool = true;
 
 #[inline]
 pub unsafe fn arch_syscall_match_sym_name(
-    sym: *const core::ffi::c_char,
-    name: *const core::ffi::c_char,
+    sym: *const kernel::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> bool {
     // Skip the __s390x_ prefix.
     strcmp(sym.add(7), name) == 0 || strcmp(sym.add(8), name) == 0
@@ -134,15 +134,15 @@ pub unsafe fn arch_syscall_match_sym_name(
 // FTRACE_GEN_NOP_ASM(name) emits FTRACE_GEN_MCOUNT_RECORD(name) and
 // FTRACE_NOP_INSN when CONFIG_FUNCTION_TRACER is enabled.
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 unsafe extern "C" {
-    fn __builtin_return_address(level: core::ffi::c_uint) -> *mut core::ffi::c_void;
-    fn current_frame_address() -> *mut core::ffi::c_void;
+    fn __builtin_return_address(level: kernel::ffi::c_uint) -> *mut kernel::ffi::c_void;
+    fn current_frame_address() -> *mut kernel::ffi::c_void;
     fn arch_ftrace_regs(fregs: *mut ftrace_regs) -> *mut arch_ftrace_regs_type;
-    fn test_pt_regs_flag(regs: *mut pt_regs, flag: core::ffi::c_int) -> bool;
+    fn test_pt_regs_flag(regs: *mut pt_regs, flag: kernel::ffi::c_int) -> bool;
     fn ftrace_regs_get_stack_pointer(fregs: *mut ftrace_regs) -> c_ulong;
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> core::ffi::c_int;
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -163,6 +163,6 @@ pub struct psw_t {
     pub addr: c_ulong,
 }
 
-pub const PIF_FTRACE_FULL_REGS: core::ffi::c_int = 0;
+pub const PIF_FTRACE_FULL_REGS: kernel::ffi::c_int = 0;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

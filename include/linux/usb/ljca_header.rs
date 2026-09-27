@@ -32,9 +32,9 @@ pub struct ljca_adapter;
  * must copy it.
  */
 pub type ljca_event_cb_t = Option<unsafe extern "C" fn(
-    context: *mut core::ffi::c_void,
+    context: *mut kernel::ffi::c_void,
     cmd: u8,
-    evt_data: *const core::ffi::c_void,
+    evt_data: *const kernel::ffi::c_void,
     len: i32,
 )>;
 
@@ -58,7 +58,7 @@ pub struct ljca_client {
     pub link: list_head,
     pub auxdev: auxiliary_device,
     pub adapter: *mut ljca_adapter,
-    pub context: *mut core::ffi::c_void,
+    pub context: *mut kernel::ffi::c_void,
     pub event_cb: ljca_event_cb_t,
     /* lock to protect event_cb */
     pub event_cb_lock: spinlock_t,
@@ -72,8 +72,8 @@ pub struct ljca_client {
  */
 #[repr(C)]
 pub struct ljca_gpio_info {
-    pub num: core::ffi::c_uint,
-    pub valid_pin_map: [core::ffi::c_ulong; 1],
+    pub num: kernel::ffi::c_uint,
+    pub valid_pin_map: [kernel::ffi::c_ulong; 1],
 }
 
 /**
@@ -115,7 +115,7 @@ extern "C" {
     pub fn ljca_register_event_cb(
         client: *mut ljca_client,
         event_cb: ljca_event_cb_t,
-        context: *mut core::ffi::c_void,
+        context: *mut kernel::ffi::c_void,
     ) -> i32;
 
     /**

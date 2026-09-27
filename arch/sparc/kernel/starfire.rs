@@ -12,13 +12,13 @@ type Phandle = u32;
 type S32 = i32;
 
 unsafe extern "C" {
-    fn prom_finddevice(path: *const core::ffi::c_char) -> Phandle;
-    fn prom_printf(format: *const core::ffi::c_char, ...);
+    fn prom_finddevice(path: *const kernel::ffi::c_char) -> Phandle;
+    fn prom_printf(format: *const kernel::ffi::c_char, ...);
     fn prom_halt() -> !;
     fn upa_readl(address: usize) -> u32;
     fn upa_writel(value: u32, address: usize);
-    fn printk(format: *const core::ffi::c_char, ...);
-    fn panic(format: *const core::ffi::c_char) -> !;
+    fn printk(format: *const kernel::ffi::c_char, ...);
+    fn panic(format: *const kernel::ffi::c_char) -> !;
 }
 
 /*

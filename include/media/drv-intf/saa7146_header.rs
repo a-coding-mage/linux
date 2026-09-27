@@ -2,14 +2,14 @@
 // C header dependencies are supplied by the surrounding kernel translation.
 
 extern "C" {
-    pub static mut saa7146_debug: ::core::ffi::c_uint;
+    pub static mut saa7146_debug: ::kernel::ffi::c_uint;
 }
 
 #[repr(C)]
 pub struct saa7146_pgtable { pub size: u32, pub cpu: *mut u32, pub dma: dma_addr_t, pub offset: usize, pub slist: *mut scatterlist, pub nents: i32 }
-#[repr(C)] pub struct saa7146_pci_extension_data { pub ext: *mut saa7146_extension, pub ext_priv: *mut core::ffi::c_void }
+#[repr(C)] pub struct saa7146_pci_extension_data { pub ext: *mut saa7146_extension, pub ext_priv: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct saa7146_extension {
-    pub name: [core::ffi::c_char; 32], pub flags: i32, pub module: *mut module, pub driver: pci_driver,
+    pub name: [kernel::ffi::c_char; 32], pub flags: i32, pub module: *mut module, pub driver: pci_driver,
     pub pci_tbl: *const pci_device_id, pub probe: Option<unsafe extern "C" fn(*mut saa7146_dev)->i32>,
     pub attach: Option<unsafe extern "C" fn(*mut saa7146_dev,*mut saa7146_pci_extension_data)->i32>,
     pub detach: Option<unsafe extern "C" fn(*mut saa7146_dev)->i32>, pub irq_mask: u32,
@@ -19,13 +19,13 @@ pub struct saa7146_pgtable { pub size: u32, pub cpu: *mut u32, pub dma: dma_addr
 #[repr(C)] pub struct saa7146_dev {
     pub module: *mut module, pub v4l2_dev: v4l2_device, pub ctrl_handler: v4l2_ctrl_handler,
     pub slock: spinlock_t, pub v4l2_lock: mutex, pub mem: *mut u8, pub revision: u32,
-    pub name: [core::ffi::c_char;32], pub pci: *mut pci_dev, pub int_todo: u32, pub int_slock: spinlock_t,
-    pub ext: *mut saa7146_extension, pub ext_priv: *mut core::ffi::c_void, pub ext_vv_data: *mut saa7146_ext_vv,
+    pub name: [kernel::ffi::c_char;32], pub pci: *mut pci_dev, pub int_todo: u32, pub int_slock: spinlock_t,
+    pub ext: *mut saa7146_extension, pub ext_priv: *mut kernel::ffi::c_void, pub ext_vv_data: *mut saa7146_ext_vv,
     pub vv_data: *mut saa7146_vv, pub vv_callback: Option<unsafe extern "C" fn(*mut saa7146_dev,usize)>,
     pub i2c_lock: mutex, pub i2c_bitrate: u32, pub d_i2c: saa7146_dma, pub i2c_wq: wait_queue_head_t,
     pub i2c_op: i32, pub d_rps0: saa7146_dma, pub d_rps1: saa7146_dma,
 }
-extern "C" { pub fn saa7146_i2c_adapter_prepare(_: *mut saa7146_dev,_: *mut i2c_adapter,_: u32)->i32; pub fn saa7146_register_extension(_: *mut saa7146_extension)->i32; pub fn saa7146_unregister_extension(_: *mut saa7146_extension)->i32; pub fn saa7146_format_by_fourcc(_: *mut saa7146_dev,_: i32)->*mut saa7146_format; pub fn saa7146_pgtable_alloc(_: *mut pci_dev,_: *mut saa7146_pgtable)->i32; pub fn saa7146_pgtable_free(_: *mut pci_dev,_: *mut saa7146_pgtable); pub fn saa7146_pgtable_build_single(_: *mut pci_dev,_: *mut saa7146_pgtable,_: *mut scatterlist,_: i32)->i32; pub fn saa7146_vmalloc_build_pgtable(_: *mut pci_dev,_: isize,_: *mut saa7146_pgtable)->*mut core::ffi::c_void; pub fn saa7146_vfree_destroy_pgtable(_: *mut pci_dev,_: *mut core::ffi::c_void,_: *mut saa7146_pgtable); pub fn saa7146_setgpio(_: *mut saa7146_dev,_: i32,_: u32); pub fn saa7146_wait_for_debi_done(_: *mut saa7146_dev,_: i32)->i32; }
+extern "C" { pub fn saa7146_i2c_adapter_prepare(_: *mut saa7146_dev,_: *mut i2c_adapter,_: u32)->i32; pub fn saa7146_register_extension(_: *mut saa7146_extension)->i32; pub fn saa7146_unregister_extension(_: *mut saa7146_extension)->i32; pub fn saa7146_format_by_fourcc(_: *mut saa7146_dev,_: i32)->*mut saa7146_format; pub fn saa7146_pgtable_alloc(_: *mut pci_dev,_: *mut saa7146_pgtable)->i32; pub fn saa7146_pgtable_free(_: *mut pci_dev,_: *mut saa7146_pgtable); pub fn saa7146_pgtable_build_single(_: *mut pci_dev,_: *mut saa7146_pgtable,_: *mut scatterlist,_: i32)->i32; pub fn saa7146_vmalloc_build_pgtable(_: *mut pci_dev,_: isize,_: *mut saa7146_pgtable)->*mut kernel::ffi::c_void; pub fn saa7146_vfree_destroy_pgtable(_: *mut pci_dev,_: *mut kernel::ffi::c_void,_: *mut saa7146_pgtable); pub fn saa7146_setgpio(_: *mut saa7146_dev,_: i32,_: u32); pub fn saa7146_wait_for_debi_done(_: *mut saa7146_dev,_: i32)->i32; }
 
 pub const SAA7146_USE_I2C_IRQ:i32=1; pub const SAA7146_I2C_SHORT_DELAY:i32=2;
 pub const SAA7146_I2C_MEM:usize=PAGE_SIZE; pub const SAA7146_RPS_MEM:usize=PAGE_SIZE;

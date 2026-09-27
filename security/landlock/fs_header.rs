@@ -200,8 +200,8 @@ unsafe extern "C" {
  * ("<too_long>", "<unreachable>").
  */
 #[inline]
-pub unsafe fn resolve_path_for_trace(path: *const path, buf: *mut core::ffi::c_char) -> *const core::ffi::c_char {
-    let p: *const core::ffi::c_char;
+pub unsafe fn resolve_path_for_trace(path: *const path, buf: *mut kernel::ffi::c_char) -> *const kernel::ffi::c_char {
+    let p: *const kernel::ffi::c_char;
 
     unsafe {
         p = d_absolute_path(path, buf, PATH_MAX);

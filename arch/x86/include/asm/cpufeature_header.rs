@@ -32,9 +32,9 @@ pub enum cpuid_leafs {
 }
 
 extern "C" {
-    pub static x86_cap_flags: [*const core::ffi::c_char; NCAPINTS * 32];
-    pub static x86_power_flags: [*const core::ffi::c_char; 32];
-    pub static x86_bug_flags: [*const core::ffi::c_char; NBUGINTS * 32];
+    pub static x86_cap_flags: [*const kernel::ffi::c_char; NCAPINTS * 32];
+    pub static x86_power_flags: [*const kernel::ffi::c_char; 32];
+    pub static x86_bug_flags: [*const kernel::ffi::c_char; NBUGINTS * 32];
 
     pub fn setup_clear_cpu_cap(bit: u32);
     pub fn clear_cpu_cap(c: *mut cpuinfo_x86, bit: u32);
@@ -43,7 +43,7 @@ extern "C" {
 
 /* In order to save room, index this array by X86_BUG_<name> - NCAPINTS*32. */
 #[inline(always)]
-pub unsafe fn x86_bug_flag(flag: usize) -> *const core::ffi::c_char {
+pub unsafe fn x86_bug_flag(flag: usize) -> *const kernel::ffi::c_char {
     x86_bug_flags[flag]
 }
 

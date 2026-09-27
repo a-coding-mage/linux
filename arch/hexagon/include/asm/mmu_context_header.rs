@@ -24,7 +24,7 @@ pub unsafe fn switch_mm(
     next: *mut mm_struct,
     _tsk: *mut task_struct,
 ) {
-    let mut l1: libc::c_int;
+    let mut l1: kernel::ffi::c_int;
 
     /*
      * For virtual machine, we have to update system map if it's been
@@ -40,13 +40,13 @@ pub unsafe fn switch_mm(
         (*next).context.generation = (*prev).context.generation;
     }
 
-    __vmnewmap((*next).context.ptbase as *mut libc::c_void);
+    __vmnewmap((*next).context.ptbase as *mut kernel::ffi::c_void);
 }
 
 /* Activate new memory map for task. */
 #[inline]
 pub unsafe fn activate_mm(prev: *mut mm_struct, next: *mut mm_struct) {
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     local_irq_save(&mut flags);
     switch_mm(prev, next, current_thread_info().task);

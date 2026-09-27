@@ -2,7 +2,7 @@
 
 // External declaration from the translated dependencies.
 unsafe extern "C" {
-    pub fn kaslr_get_random_long(purpose: *const core::ffi::c_char) -> core::ffi::c_ulong;
+    pub fn kaslr_get_random_long(purpose: *const kernel::ffi::c_char) -> kernel::ffi::c_ulong;
 }
 
 #[cfg(CONFIG_RANDOMIZE_MEMORY)]

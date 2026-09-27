@@ -6,7 +6,7 @@
 #[inline]
 unsafe fn udf_match(len1: c_int, name1: *const u8, len2: c_int, name2: *const u8) -> c_int {
     if len1 != len2 { return 0; }
-    if libc::memcmp(name1 as *const _, name2 as *const _, len1 as usize) == 0 { 1 } else { 0 }
+    if memcmp(name1 as *const _, name2 as *const _, len1 as usize) == 0 { 1 } else { 0 }
 }
 
 unsafe fn udf_fiiter_find_entry(dir: *mut inode, child: *const qstr, iter: *mut udf_fileident_iter) -> c_int {
@@ -50,8 +50,8 @@ unsafe fn udf_expand_dir_adinicb(inode: *mut inode, block: *mut udf_pblk_t) -> c
     let mut ret = 0; *block = udf_new_block((*inode).i_sb, inode, (*iinfo).i_location.partitionReferenceNum, (*iinfo).i_location.logicalBlockNum, &mut ret); if *block == 0 { return ret; }
     let newblock = udf_get_pblock((*inode).i_sb, *block, (*iinfo).i_location.partitionReferenceNum, 0); if newblock == 0xffffffff { return -EFSCORRUPTED; }
     let dbh = sb_getblk((*inode).i_sb, newblock); if dbh.is_null() { return -ENOMEM; }
-    lock_buffer(dbh); libc::memcpy((*dbh).b_data as *mut _, (*iinfo).i_data as *const _, (*inode).i_size as usize); libc::memset((*dbh).b_data.add((*inode).i_size as usize) as *mut _, 0, ((*inode).i_sb).s_blocksize as usize - (*inode).i_size as usize); set_buffer_uptodate(dbh); unlock_buffer(dbh);
-    (*iinfo).i_alloc_type = alloctype; libc::memset((*iinfo).i_data.add((*iinfo).i_lenEAttr as usize) as *mut _, 0, (*iinfo).i_lenAlloc as usize); (*iinfo).i_lenAlloc = 0;
+    lock_buffer(dbh); memcpy((*dbh).b_data as *mut _, (*iinfo).i_data as *const _, (*inode).i_size as usize); memset((*dbh).b_data.add((*inode).i_size as usize) as *mut _, 0, ((*inode).i_sb).s_blocksize as usize - (*inode).i_size as usize); set_buffer_uptodate(dbh); unlock_buffer(dbh);
+    (*iinfo).i_alloc_type = alloctype; memset((*iinfo).i_data.add((*iinfo).i_lenEAttr as usize) as *mut _, 0, (*iinfo).i_lenAlloc as usize); (*iinfo).i_lenAlloc = 0;
     let mut eloc = core::mem::zeroed::<kernel_lb_addr>(); eloc.logicalBlockNum = *block; eloc.partitionReferenceNum = (*iinfo).i_location.partitionReferenceNum; (*iinfo).i_lenExtents = (*inode).i_size;
     let mut epos = extent_position { bh: core::ptr::null_mut(), block: (*iinfo).i_location, offset: udf_file_entry_alloc_offset(inode) };
     ret = udf_add_aext(inode, &mut epos, &eloc, (*inode).i_size, 0); brelse(epos.bh); if ret < 0 { brelse(dbh); udf_free_blocks((*inode).i_sb, inode, &eloc, 0, 1); return ret; } mark_inode_dirty(inode);
@@ -61,7 +61,7 @@ unsafe fn udf_expand_dir_adinicb(inode: *mut inode, block: *mut udf_pblk_t) -> c
 
 // Remaining functions retain the source control flow and ABI-facing names.
 // The kernel/UDF declarations referenced below are external to this file.
-unsafe fn udf_fiiter_delete_entry(iter: *mut udf_fileident_iter) { (*iter).fi.fileCharacteristics |= FID_FILE_CHAR_DELETED; if UDF_QUERY_FLAG((*iter).dir.i_sb, UDF_FLAG_STRICT) { libc::memset(&mut (*iter).fi.icb as *mut _ as *mut _, 0, core::mem::size_of::<long_ad>()); } udf_fiiter_write_fi(iter, core::ptr::null_mut()); }
+unsafe fn udf_fiiter_delete_entry(iter: *mut udf_fileident_iter) { (*iter).fi.fileCharacteristics |= FID_FILE_CHAR_DELETED; if UDF_QUERY_FLAG((*iter).dir.i_sb, UDF_FLAG_STRICT) { memset(&mut (*iter).fi.icb as *mut _ as *mut _, 0, core::mem::size_of::<long_ad>()); } udf_fiiter_write_fi(iter, core::ptr::null_mut()); }
 
 // The operation tables and remaining entry points are declared by the
 // surrounding kernel translation unit where their exact external types live.

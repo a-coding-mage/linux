@@ -151,7 +151,7 @@ unsafe fn mtip_check_surprise_removal(driver_data *dd)
 }
 
 static struct mtip_cmd *mtip_cmd_from_tag(driver_data *dd,
-					  tag: core::ffi::c_uint)
+					  tag: kernel::ffi::c_uint)
 {
 	return blk_mq_rq_to_pdu(blk_mq_tag_to_rq((*dd).tags.tags[0], tag));
 }
@@ -167,7 +167,7 @@ static struct mtip_cmd *mtip_cmd_from_tag(driver_data *dd,
  */
 unsafe fn mtip_hba_reset(driver_data *dd)
 {
-	core::ffi::c_ulong timeout;
+	kernel::ffi::c_ulong timeout;
 
 	/* Set the reset bit */
 	writel(HOST_RESET, (*dd).mmio + HOST_CTL);
@@ -364,7 +364,7 @@ unsafe fn mtip_init_port(mtip_port *port)
  */
 unsafe fn mtip_restart_port(mtip_port *port)
 {
-	core::ffi::c_ulong timeout;
+	kernel::ffi::c_ulong timeout;
 
 	/* Disable the DMA engine */
 	mtip_enable_engine(port, 0);
@@ -457,10 +457,10 @@ unsafe fn mtip_device_reset(driver_data *dd)
  */
 unsafe fn print_tags(driver_data *dd,
 			char *msg,
-			core::ffi::c_ulong *tagbits,
+			kernel::ffi::c_ulong *tagbits,
 			int cnt)
 {
-	core::ffi::c_uchar tagmap[128];
+	kernel::ffi::c_uchar tagmap[128];
 	int group, tagmap_len = 0;
 
 	memset(tagmap, 0, sizeof(tagmap));
@@ -472,8 +472,8 @@ unsafe fn print_tags(driver_data *dd,
 }
 
 unsafe fn mtip_read_log_page(mtip_port *port, page: u8, u16 *buffer,
-				dma_addr_t buffer_dma, sectors: core::ffi::c_uint);
-unsafe fn mtip_get_smart_attr(mtip_port *port, id: core::ffi::c_uint,
+				dma_addr_t buffer_dma, sectors: kernel::ffi::c_uint);
+unsafe fn mtip_get_smart_attr(mtip_port *port, id: kernel::ffi::c_uint,
 						smart_attr *attrib);
 
 unsafe fn mtip_complete_command(mtip_cmd *cmd, blk_status_t status)
@@ -500,9 +500,9 @@ unsafe fn mtip_handle_tfe(driver_data *dd)
 	struct mtip_cmd  *cmd;
 	u32 completed;
 	struct host_to_dev_fis *fis;
-	core::ffi::c_ulong tagaccum[SLOTBITS_IN_LONGS];
-	core::ffi::c_uint cmd_cnt = 0;
-	core::ffi::c_uchar *buf;
+	kernel::ffi::c_ulong tagaccum[SLOTBITS_IN_LONGS];
+	kernel::ffi::c_uint cmd_cnt = 0;
+	kernel::ffi::c_uchar *buf;
 	char *fail_reason = NULL;
 	int fail_all_ncq_write = 0, fail_all_ncq_cmds = 0;
 
@@ -561,7 +561,7 @@ unsafe fn mtip_handle_tfe(driver_data *dd)
 			"Error in READ LOG EXT (10h) command\n");
 		/* non-critical error, don't fail the load */
 	} else {
-		buf = (*(*(core::ffi::c_uchar *)dd).port).log_buf;
+		buf = (*(*(kernel::ffi::c_uchar *)dd).port).log_buf;
 		if (buf[259] & 0x1) {
 			dev_info((*(*&dd).pdev).dev,
 				"Write protect bit is set.\n");
@@ -832,7 +832,7 @@ unsafe fn mtip_issue_non_ncq_command(mtip_port *port, int tag)
 unsafe fn mtip_pause_ncq(mtip_port *port,
 				host_to_dev_fis *fis)
 {
-	core::ffi::c_ulong task_file_data;
+	kernel::ffi::c_ulong task_file_data;
 
 	task_file_data = readl((*port).mmio+PORT_TFDATA);
 	if ((task_file_data & 1))
@@ -863,8 +863,8 @@ unsafe fn mtip_pause_ncq(mtip_port *port,
 
 unsafe fn mtip_commands_active(mtip_port *port)
 {
-	core::ffi::c_uint active;
-	core::ffi::c_uint n;
+	kernel::ffi::c_uint active;
+	kernel::ffi::c_uint n;
 
 	/*
 	 * Ignore s_active bit 0 of array element 0.
@@ -887,10 +887,10 @@ unsafe fn mtip_commands_active(mtip_port *port)
  *	0	Success
  *	-EBUSY  Commands still active
  */
-unsafe fn mtip_quiesce_io(mtip_port *port, timeout: core::ffi::c_ulong)
+unsafe fn mtip_quiesce_io(mtip_port *port, timeout: kernel::ffi::c_ulong)
 {
 	'err_fault: {
-	core::ffi::c_ulong to;
+	kernel::ffi::c_ulong to;
 	bool active = true;
 
 	blk_mq_quiesce_queue((*(*port).dd).queue);
@@ -952,7 +952,7 @@ unsafe fn mtip_exec_internal_command(mtip_port *port,
 					dma_addr_t buffer,
 					int buf_len,
 					opts: u32,
-					timeout: core::ffi::c_ulong)
+					timeout: kernel::ffi::c_ulong)
 {
 	'exec_ic_exit: {
 	struct mtip_cmd *int_cmd;
@@ -1063,7 +1063,7 @@ unsafe fn mtip_exec_internal_command(mtip_port *port,
  * return value
  *	None
  */
-unsafe fn void ata_swap_string(u16 *buf, len: core::ffi::c_uint)
+unsafe fn void ata_swap_string(u16 *buf, len: kernel::ffi::c_uint)
 {
 	int i;
 	for (i = 0; i < (len/2); i++)
@@ -1072,7 +1072,7 @@ unsafe fn void ata_swap_string(u16 *buf, len: core::ffi::c_uint)
 
 unsafe fn mtip_set_timeout(driver_data *dd,
 					host_to_dev_fis *fis,
-					core::ffi::c_uint *timeout, erasemode: u8)
+					kernel::ffi::c_uint *timeout, erasemode: u8)
 {
 	switch (fis->command) {
 	case ATA_CMD_DOWNLOAD_MICRO:
@@ -1207,8 +1207,8 @@ unsafe fn mtip_standby_immediate(mtip_port *port)
 {
 	int rv;
 	struct host_to_dev_fis	fis;
-	core::ffi::c_ulong __maybe_unused start;
-	core::ffi::c_uint timeout;
+	kernel::ffi::c_ulong __maybe_unused start;
+	kernel::ffi::c_uint timeout;
 
 	/* Build the FIS. */
 	memset(&fis, 0, sizeof(host_to_dev_fis));
@@ -1248,7 +1248,7 @@ unsafe fn mtip_standby_immediate(mtip_port *port)
  *	@rv	return value from mtip_exec_internal_command()
  */
 unsafe fn mtip_read_log_page(mtip_port *port, page: u8, u16 *buffer,
-				dma_addr_t buffer_dma, sectors: core::ffi::c_uint)
+				dma_addr_t buffer_dma, sectors: kernel::ffi::c_uint)
 {
 	struct host_to_dev_fis fis;
 
@@ -1318,7 +1318,7 @@ unsafe fn mtip_get_smart_data(mtip_port *port, u8 *buffer,
  *	-EINVAL	NULL buffer passed or unsupported attribute @id.
  *	-EPERM	Identify data not valid, SMART not supported or not enabled
  */
-unsafe fn mtip_get_smart_attr(mtip_port *port, id: core::ffi::c_uint,
+unsafe fn mtip_get_smart_attr(mtip_port *port, id: kernel::ffi::c_uint,
 						smart_attr *attrib)
 {
 	int rv, i;
@@ -1397,7 +1397,7 @@ unsafe fn mtip_hw_get_capacity(driver_data *dd, sector_t *sectors)
 unsafe fn mtip_dump_identify(mtip_port *port)
 {
 	sector_t sectors;
-	core::ffi::c_ushort revid;
+	kernel::ffi::c_ushort revid;
 	char cbuf[42];
 
 	if (!port->identify_valid)
@@ -1454,7 +1454,7 @@ unsafe fn void fill_command_sg(driver_data *dd,
 				int nents)
 {
 	int n;
-	core::ffi::c_uint dma_len;
+	kernel::ffi::c_uint dma_len;
 	struct mtip_cmd_sg *command_sg;
 	struct scatterlist *sg;
 
@@ -1483,7 +1483,7 @@ unsafe fn exec_drive_task(mtip_port *port, u8 *command)
 {
 	struct host_to_dev_fis	fis;
 	struct host_to_dev_fis *reply = (port->rxfis + RX_FIS_D2H_REG);
-	core::ffi::c_uint to;
+	kernel::ffi::c_uint to;
 
 	/* Build the FIS. */
 	memset(&fis, 0, sizeof(host_to_dev_fis));
@@ -1557,7 +1557,7 @@ unsafe fn exec_drive_command(mtip_port *port, u8 *command,
 	u8 *buf = NULL;
 	dma_addr_t dma_addr = 0;
 	int rv = 0, xfer_sz = command[3];
-	core::ffi::c_uint to;
+	kernel::ffi::c_uint to;
 
 	if (xfer_sz) {
 		if (!user_buffer)
@@ -1658,10 +1658,10 @@ unsafe fn exec_drive_command(mtip_port *port, u8 *command,
  *      0       otherwise
  *
  */
-static core::ffi::c_uint implicit_sector(command: core::ffi::c_uchar,
-				    features: core::ffi::c_uchar)
+static kernel::ffi::c_uint implicit_sector(command: kernel::ffi::c_uchar,
+				    features: kernel::ffi::c_uchar)
 {
-	core::ffi::c_uint rv = 0;
+	kernel::ffi::c_uint rv = 0;
 
 	/* list of commands that have an implicit sector count of 1 */
 	switch (command) {
@@ -1711,13 +1711,13 @@ unsafe fn exec_drive_taskfile(driver_data *dd,
 	dma_addr_t inbuf_dma = 0;
 	dma_addr_t dma_buffer = 0;
 	int err = 0;
-	core::ffi::c_uint taskin = 0;
-	core::ffi::c_uint taskout = 0;
+	kernel::ffi::c_uint taskin = 0;
+	kernel::ffi::c_uint taskout = 0;
 	u8 nsect = 0;
-	core::ffi::c_uint timeout;
-	core::ffi::c_uint force_single_sector;
-	core::ffi::c_uint transfer_size;
-	core::ffi::c_ulong task_file_data;
+	kernel::ffi::c_uint timeout;
+	kernel::ffi::c_uint force_single_sector;
+	kernel::ffi::c_uint transfer_size;
+	kernel::ffi::c_ulong task_file_data;
 	int intotal = outtotal + req_task->out_size;
 	int erasemode = 0;
 
@@ -1949,8 +1949,8 @@ unsafe fn exec_drive_taskfile(driver_data *dd,
  *	-EFAULT An error occurred copying data to a user space buffer.
  *	-EIO	An error occurred while executing the command.
  */
-unsafe fn mtip_hw_ioctl(driver_data *dd, cmd: core::ffi::c_uint,
-			 arg: core::ffi::c_ulong)
+unsafe fn mtip_hw_ioctl(driver_data *dd, cmd: kernel::ffi::c_uint,
+			 arg: kernel::ffi::c_ulong)
 {
 	switch (cmd) {
 	case HDIO_GET_IDENTITY:
@@ -2063,8 +2063,8 @@ unsafe fn mtip_hw_submit_io(driver_data *dd, request *rq,
 	struct mtip_port *port = dd->port;
 	int dma_dir = rq_data_dir(rq) == READ ? DMA_FROM_DEVICE : DMA_TO_DEVICE;
 	u64 start = blk_rq_pos(rq);
-	core::ffi::c_uint nsect = blk_rq_sectors(rq);
-	core::ffi::c_uint nents;
+	kernel::ffi::c_uint nsect = blk_rq_sectors(rq);
+	kernel::ffi::c_uint nents;
 
 	/* Map the scatter list for DMA access */
 	command->scatter_ents = blk_rq_map_sg(rq, command->sg);
@@ -2333,7 +2333,7 @@ unsafe fn mtip_device_unaligned_constrained(driver_data *dd)
 unsafe fn mtip_detect_product(driver_data *dd)
 {
 	u32 hwdata;
-	rev: core::ffi::c_uint, slotgroups;
+	rev: kernel::ffi::c_uint, slotgroups;
 
 	/*
 	 * HBA base + 0xFC [15:0] - vendor-specific hardware interface
@@ -2382,7 +2382,7 @@ unsafe fn mtip_detect_product(driver_data *dd)
  */
 unsafe fn mtip_ftl_rebuild_poll(driver_data *dd)
 {
-	timeout: core::ffi::c_ulong, cnt = 0, start;
+	timeout: kernel::ffi::c_ulong, cnt = 0, start;
 
 	dev_warn(&dd->pdev->dev,
 		"FTL rebuild in progress. Polling for completion.\n");
@@ -2476,8 +2476,8 @@ unsafe fn mtip_service_thread(void *data)
 {
 	'st_out: {
 	struct driver_data *dd = (driver_data *)data;
-	slot: core::ffi::c_ulong, slot_start, slot_wrap, to;
-	core::ffi::c_uint num_cmd_slots = dd->slot_groups * 32;
+	slot: kernel::ffi::c_ulong, slot_start, slot_wrap, to;
+	kernel::ffi::c_uint num_cmd_slots = dd->slot_groups * 32;
 	struct mtip_port *port = dd->port;
 
 	while (1) {
@@ -2650,7 +2650,7 @@ unsafe fn mtip_dma_alloc(driver_data *dd)
 unsafe fn mtip_hw_get_identify(driver_data *dd)
 {
 	struct smart_attr attr242;
-	core::ffi::c_uchar *buf;
+	kernel::ffi::c_uchar *buf;
 	int rv;
 
 	if (mtip_get_identify(dd->port, NULL) < 0)
@@ -2672,7 +2672,7 @@ unsafe fn mtip_hw_get_identify(driver_data *dd)
 			"Error in READ LOG EXT (10h) command\n");
 		/* non-critical error, don't fail the load */
 	} else {
-		buf = (core::ffi::c_uchar *)dd->port->log_buf;
+		buf = (kernel::ffi::c_uchar *)dd->port->log_buf;
 		if (buf[259] & 0x1) {
 			dev_info(&dd->pdev->dev,
 				"Write protect bit is set.\n");
@@ -2718,7 +2718,7 @@ unsafe fn mtip_hw_init(driver_data *dd)
 	'out3: {
 	int i;
 	int rv;
-	timeout: core::ffi::c_ulong, timetaken;
+	timeout: kernel::ffi::c_ulong, timetaken;
 
 	dd->mmio = pcim_iomap_region(dd->pdev, MTIP_ABAR, MTIP_DRV_NAME);
 	if (IS_ERR(dd->mmio)) {
@@ -3052,7 +3052,7 @@ unsafe fn rssd_disk_name_format(char *prefix,
 unsafe fn mtip_block_ioctl(block_device *dev,
 			    blk_mode_t mode,
 			    unsigned cmd,
-			    arg: core::ffi::c_ulong)
+			    arg: kernel::ffi::c_ulong)
 {
 	struct driver_data *dd = dev->bd_disk->private_data;
 
@@ -3092,7 +3092,7 @@ unsafe fn mtip_block_ioctl(block_device *dev,
 unsafe fn mtip_block_compat_ioctl(block_device *dev,
 			    blk_mode_t mode,
 			    unsigned cmd,
-			    arg: core::ffi::c_ulong)
+			    arg: kernel::ffi::c_ulong)
 {
 	struct driver_data *dd = dev->bd_disk->private_data;
 
@@ -3223,7 +3223,7 @@ unsafe fn bool is_se_active(driver_data *dd)
 {
 	if (unlikely(test_bit(MTIP_PF_SE_ACTIVE_BIT, &dd->port->flags))) {
 		if (dd->port->ic_pause_timer) {
-			core::ffi::c_ulong to = dd->port->ic_pause_timer +
+			kernel::ffi::c_ulong to = dd->port->ic_pause_timer +
 							msecs_to_jiffies(1000);
 			if (time_after(jiffies, to)) {
 				clear_bit(MTIP_PF_SE_ACTIVE_BIT,
@@ -3345,7 +3345,7 @@ unsafe fn mtip_queue_rq(blk_mq_hw_ctx *hctx,
 }
 
 unsafe fn mtip_free_cmd(blk_mq_tag_set *set, request *rq,
-			  hctx_idx: core::ffi::c_uint)
+			  hctx_idx: kernel::ffi::c_uint)
 {
 	struct driver_data *dd = set->driver_data;
 	struct mtip_cmd *cmd = blk_mq_rq_to_pdu(rq);
@@ -3358,7 +3358,7 @@ unsafe fn mtip_free_cmd(blk_mq_tag_set *set, request *rq,
 }
 
 unsafe fn mtip_init_cmd(blk_mq_tag_set *set, request *rq,
-			 hctx_idx: core::ffi::c_uint, int numa_node)
+			 hctx_idx: kernel::ffi::c_uint, int numa_node)
 {
 	struct driver_data *dd = set->driver_data;
 	struct mtip_cmd *cmd = blk_mq_rq_to_pdu(rq);
@@ -3437,7 +3437,7 @@ unsafe fn mtip_block_initialize(driver_data *dd)
 	int rv = 0, wait_for_rebuild = 0;
 	bool disk_added = false;
 	sector_t capacity;
-	core::ffi::c_uint index = 0;
+	kernel::ffi::c_uint index = 0;
 
 	if (dd->disk)
 		break 'skip_create_disk; /* hw init done, before rebuild */
@@ -3678,7 +3678,7 @@ static DEFINE_HANDLER(7);
 
 unsafe fn mtip_disable_link_opts(driver_data *dd, pci_dev *pdev)
 {
-	core::ffi::c_ushort pcie_dev_ctrl;
+	kernel::ffi::c_ushort pcie_dev_ctrl;
 
 	if (pci_is_pcie(pdev)) {
 		pcie_capability_read_word(pdev, PCI_EXP_DEVCTL, &pcie_dev_ctrl);
@@ -3910,7 +3910,7 @@ unsafe fn mtip_pci_probe(pci_dev *pdev,
 unsafe fn mtip_pci_remove(pci_dev *pdev)
 {
 	struct driver_data *dd = pci_get_drvdata(pdev);
-	core::ffi::c_ulong to;
+	kernel::ffi::c_ulong to;
 
 	mtip_check_surprise_removal(dd);
 	synchronize_irq(dd->pdev->irq);

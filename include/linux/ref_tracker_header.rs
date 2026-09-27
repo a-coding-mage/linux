@@ -13,7 +13,7 @@ pub struct ref_tracker_dir {
     #[cfg(CONFIG_REF_TRACKER)]
     pub lock: spinlock_t,
     #[cfg(CONFIG_REF_TRACKER)]
-    pub quarantine_avail: ::core::ffi::c_uint,
+    pub quarantine_avail: ::kernel::ffi::c_uint,
     #[cfg(CONFIG_REF_TRACKER)]
     pub untracked: refcount_t,
     #[cfg(CONFIG_REF_TRACKER)]
@@ -25,7 +25,7 @@ pub struct ref_tracker_dir {
     #[cfg(CONFIG_REF_TRACKER)]
     pub quarantine: list_head, // List of dead trackers
     #[cfg(CONFIG_REF_TRACKER)]
-    pub class: *const ::core::ffi::c_char, // object classname
+    pub class: *const ::kernel::ffi::c_char, // object classname
 }
 
 #[cfg(CONFIG_REF_TRACKER)]
@@ -34,7 +34,7 @@ extern "C" {
     pub fn ref_tracker_dir_debugfs(dir: *mut ref_tracker_dir);
     pub fn ref_tracker_dir_symlink(
         dir: *mut ref_tracker_dir,
-        fmt: *const ::core::ffi::c_char,
+        fmt: *const ::kernel::ffi::c_char,
         ...,
     );
 }
@@ -49,7 +49,7 @@ pub unsafe fn ref_tracker_dir_debugfs(_dir: *mut ref_tracker_dir) {}
 #[inline]
 pub unsafe extern "C" fn ref_tracker_dir_symlink(
     _dir: *mut ref_tracker_dir,
-    _fmt: *const ::core::ffi::c_char,
+    _fmt: *const ::kernel::ffi::c_char,
     ...,
 ) {
 }
@@ -58,8 +58,8 @@ pub unsafe extern "C" fn ref_tracker_dir_symlink(
 #[inline]
 pub unsafe fn ref_tracker_dir_init(
     dir: *mut ref_tracker_dir,
-    quarantine_count: ::core::ffi::c_uint,
-    class: *const ::core::ffi::c_char,
+    quarantine_count: ::kernel::ffi::c_uint,
+    class: *const ::kernel::ffi::c_char,
 ) {
     INIT_LIST_HEAD(::core::ptr::addr_of_mut!((*dir).list));
     INIT_LIST_HEAD(::core::ptr::addr_of_mut!((*dir).quarantine));
@@ -78,34 +78,34 @@ extern "C" {
     pub fn ref_tracker_dir_exit(dir: *mut ref_tracker_dir);
     pub fn ref_tracker_dir_print_locked(
         dir: *mut ref_tracker_dir,
-        display_limit: ::core::ffi::c_uint,
+        display_limit: ::kernel::ffi::c_uint,
     );
     pub fn ref_tracker_dir_print(
         dir: *mut ref_tracker_dir,
-        display_limit: ::core::ffi::c_uint,
+        display_limit: ::kernel::ffi::c_uint,
     );
     pub fn ref_tracker_dir_snprint(
         dir: *mut ref_tracker_dir,
-        buf: *mut ::core::ffi::c_char,
+        buf: *mut ::kernel::ffi::c_char,
         size: usize,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn ref_tracker_alloc(
         dir: *mut ref_tracker_dir,
         trackerp: *mut *mut ref_tracker,
         gfp: gfp_t,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn ref_tracker_free(
         dir: *mut ref_tracker_dir,
         trackerp: *mut *mut ref_tracker,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_REF_TRACKER))]
 #[inline]
 pub unsafe fn ref_tracker_dir_init(
     _dir: *mut ref_tracker_dir,
-    _quarantine_count: ::core::ffi::c_uint,
-    _class: *const ::core::ffi::c_char,
+    _quarantine_count: ::kernel::ffi::c_uint,
+    _class: *const ::kernel::ffi::c_char,
 ) {
 }
 
@@ -117,7 +117,7 @@ pub unsafe fn ref_tracker_dir_debugfs(_dir: *mut ref_tracker_dir) {}
 #[inline]
 pub unsafe extern "C" fn ref_tracker_dir_symlink(
     _dir: *mut ref_tracker_dir,
-    _fmt: *const ::core::ffi::c_char,
+    _fmt: *const ::kernel::ffi::c_char,
     ...,
 ) {
 }
@@ -130,7 +130,7 @@ pub unsafe fn ref_tracker_dir_exit(_dir: *mut ref_tracker_dir) {}
 #[inline]
 pub unsafe fn ref_tracker_dir_print_locked(
     _dir: *mut ref_tracker_dir,
-    _display_limit: ::core::ffi::c_uint,
+    _display_limit: ::kernel::ffi::c_uint,
 ) {
 }
 
@@ -138,7 +138,7 @@ pub unsafe fn ref_tracker_dir_print_locked(
 #[inline]
 pub unsafe fn ref_tracker_dir_print(
     _dir: *mut ref_tracker_dir,
-    _display_limit: ::core::ffi::c_uint,
+    _display_limit: ::kernel::ffi::c_uint,
 ) {
 }
 
@@ -146,9 +146,9 @@ pub unsafe fn ref_tracker_dir_print(
 #[inline]
 pub unsafe fn ref_tracker_dir_snprint(
     _dir: *mut ref_tracker_dir,
-    _buf: *mut ::core::ffi::c_char,
+    _buf: *mut ::kernel::ffi::c_char,
     _size: usize,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -158,7 +158,7 @@ pub unsafe fn ref_tracker_alloc(
     _dir: *mut ref_tracker_dir,
     _trackerp: *mut *mut ref_tracker,
     _gfp: gfp_t,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -167,7 +167,7 @@ pub unsafe fn ref_tracker_alloc(
 pub unsafe fn ref_tracker_free(
     _dir: *mut ref_tracker_dir,
     _trackerp: *mut *mut ref_tracker,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     0
 }
 

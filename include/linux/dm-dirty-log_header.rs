@@ -18,13 +18,13 @@ pub struct dm_dirty_log_type;
 #[repr(C)]
 pub struct dm_dirty_log {
 	pub type_: *mut dm_dirty_log_type,
-	pub flush_callback_fn: Option<unsafe extern "C" fn(ti: *mut dm_target) -> ::core::ffi::c_int>,
-	pub context: *mut ::core::ffi::c_void,
+	pub flush_callback_fn: Option<unsafe extern "C" fn(ti: *mut dm_target) -> ::kernel::ffi::c_int>,
+	pub context: *mut ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct dm_dirty_log_type {
-	pub name: *const ::core::ffi::c_char,
+	pub name: *const ::kernel::ffi::c_char,
 	pub module: *mut module,
 
 	/* For internal device-mapper use */
@@ -33,18 +33,18 @@ pub struct dm_dirty_log_type {
 	pub ctr: Option<unsafe extern "C" fn(
 		log: *mut dm_dirty_log,
 		ti: *mut dm_target,
-		argc: ::core::ffi::c_uint,
-		argv: *mut *mut ::core::ffi::c_char,
-	) -> ::core::ffi::c_int>,
+		argc: ::kernel::ffi::c_uint,
+		argv: *mut *mut ::kernel::ffi::c_char,
+	) -> ::kernel::ffi::c_int>,
 	pub dtr: Option<unsafe extern "C" fn(log: *mut dm_dirty_log)>,
 
 	/*
 	 * There are times when we don't want the log to touch
 	 * the disk.
 	 */
-	pub presuspend: Option<unsafe extern "C" fn(log: *mut dm_dirty_log) -> ::core::ffi::c_int>,
-	pub postsuspend: Option<unsafe extern "C" fn(log: *mut dm_dirty_log) -> ::core::ffi::c_int>,
-	pub resume: Option<unsafe extern "C" fn(log: *mut dm_dirty_log) -> ::core::ffi::c_int>,
+	pub presuspend: Option<unsafe extern "C" fn(log: *mut dm_dirty_log) -> ::kernel::ffi::c_int>,
+	pub postsuspend: Option<unsafe extern "C" fn(log: *mut dm_dirty_log) -> ::kernel::ffi::c_int>,
+	pub resume: Option<unsafe extern "C" fn(log: *mut dm_dirty_log) -> ::kernel::ffi::c_int>,
 
 	/*
 	 * Retrieves the smallest size of region that the log can
@@ -56,7 +56,7 @@ pub struct dm_dirty_log_type {
 	 * A predicate to say whether a region is clean or not.
 	 * May block.
 	 */
-	pub is_clean: Option<unsafe extern "C" fn(log: *mut dm_dirty_log, region: region_t) -> ::core::ffi::c_int>,
+	pub is_clean: Option<unsafe extern "C" fn(log: *mut dm_dirty_log, region: region_t) -> ::kernel::ffi::c_int>,
 
 	/*
 	 *  Returns: 0, 1, -EWOULDBLOCK, < 0
@@ -72,14 +72,14 @@ pub struct dm_dirty_log_type {
 	pub in_sync: Option<unsafe extern "C" fn(
 		log: *mut dm_dirty_log,
 		region: region_t,
-		can_block: ::core::ffi::c_int,
-	) -> ::core::ffi::c_int>,
+		can_block: ::kernel::ffi::c_int,
+	) -> ::kernel::ffi::c_int>,
 
 	/*
 	 * Flush the current log state (eg, to disk).  This
 	 * function may block.
 	 */
-	pub flush: Option<unsafe extern "C" fn(log: *mut dm_dirty_log) -> ::core::ffi::c_int>,
+	pub flush: Option<unsafe extern "C" fn(log: *mut dm_dirty_log) -> ::kernel::ffi::c_int>,
 
 	/*
 	 * Mark an area as clean or dirty.  These functions may
@@ -105,7 +105,7 @@ pub struct dm_dirty_log_type {
 	pub get_resync_work: Option<unsafe extern "C" fn(
 		log: *mut dm_dirty_log,
 		region: *mut region_t,
-	) -> ::core::ffi::c_int>,
+	) -> ::kernel::ffi::c_int>,
 
 	/*
 	 * This notifies the log that the resync status of a region
@@ -115,7 +115,7 @@ pub struct dm_dirty_log_type {
 	pub set_region_sync: Option<unsafe extern "C" fn(
 		log: *mut dm_dirty_log,
 		region: region_t,
-		in_sync: ::core::ffi::c_int,
+		in_sync: ::kernel::ffi::c_int,
 	)>,
 
 	/*
@@ -129,9 +129,9 @@ pub struct dm_dirty_log_type {
 	pub status: Option<unsafe extern "C" fn(
 		log: *mut dm_dirty_log,
 		status_type: status_type_t,
-		result: *mut ::core::ffi::c_char,
-		maxlen: ::core::ffi::c_uint,
-	) -> ::core::ffi::c_int>,
+		result: *mut ::kernel::ffi::c_char,
+		maxlen: ::kernel::ffi::c_uint,
+	) -> ::kernel::ffi::c_int>,
 
 	/*
 	 * is_remote_recovering is necessary for cluster mirroring. It provides
@@ -144,23 +144,23 @@ pub struct dm_dirty_log_type {
 	pub is_remote_recovering: Option<unsafe extern "C" fn(
 		log: *mut dm_dirty_log,
 		region: region_t,
-	) -> ::core::ffi::c_int>,
+	) -> ::kernel::ffi::c_int>,
 }
 
 unsafe extern "C" {
-	pub fn dm_dirty_log_type_register(type_: *mut dm_dirty_log_type) -> ::core::ffi::c_int;
-	pub fn dm_dirty_log_type_unregister(type_: *mut dm_dirty_log_type) -> ::core::ffi::c_int;
+	pub fn dm_dirty_log_type_register(type_: *mut dm_dirty_log_type) -> ::kernel::ffi::c_int;
+	pub fn dm_dirty_log_type_unregister(type_: *mut dm_dirty_log_type) -> ::kernel::ffi::c_int;
 
 	/*
 	 * Make sure you use these two functions, rather than calling
 	 * type->constructor/destructor() directly.
 	 */
 	pub fn dm_dirty_log_create(
-		type_name: *const ::core::ffi::c_char,
+		type_name: *const ::kernel::ffi::c_char,
 		ti: *mut dm_target,
-		flush_callback_fn: Option<unsafe extern "C" fn(ti: *mut dm_target) -> ::core::ffi::c_int>,
-		argc: ::core::ffi::c_uint,
-		argv: *mut *mut ::core::ffi::c_char,
+		flush_callback_fn: Option<unsafe extern "C" fn(ti: *mut dm_target) -> ::kernel::ffi::c_int>,
+		argc: ::kernel::ffi::c_uint,
+		argv: *mut *mut ::kernel::ffi::c_char,
 	) -> *mut dm_dirty_log;
 	pub fn dm_dirty_log_destroy(log: *mut dm_dirty_log);
 }

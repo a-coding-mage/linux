@@ -20,65 +20,65 @@ const DEV_NAME: &[u8] = b"gusclassic\0";
 extern "C" {
     static THIS_MODULE: *mut module;
 
-    static SNDRV_DEFAULT_IDX: [::core::ffi::c_int; SNDRV_CARDS];
-    static SNDRV_DEFAULT_STR: [*mut ::core::ffi::c_char; SNDRV_CARDS];
+    static SNDRV_DEFAULT_IDX: [::kernel::ffi::c_int; SNDRV_CARDS];
+    static SNDRV_DEFAULT_STR: [*mut ::kernel::ffi::c_char; SNDRV_CARDS];
     static SNDRV_DEFAULT_ENABLE: [bool; SNDRV_CARDS];
-    static SNDRV_DEFAULT_PORT: [::core::ffi::c_long; SNDRV_CARDS];
-    static SNDRV_DEFAULT_IRQ: [::core::ffi::c_int; SNDRV_CARDS];
-    static SNDRV_DEFAULT_DMA: [::core::ffi::c_int; SNDRV_CARDS];
+    static SNDRV_DEFAULT_PORT: [::kernel::ffi::c_long; SNDRV_CARDS];
+    static SNDRV_DEFAULT_IRQ: [::kernel::ffi::c_int; SNDRV_CARDS];
+    static SNDRV_DEFAULT_DMA: [::kernel::ffi::c_int; SNDRV_CARDS];
 
-    fn snd_legacy_find_free_irq(table: *const ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn snd_legacy_find_free_dma(table: *const ::core::ffi::c_int) -> ::core::ffi::c_int;
+    fn snd_legacy_find_free_irq(table: *const ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    fn snd_legacy_find_free_dma(table: *const ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
     fn snd_gus_create(
         card: *mut snd_card,
-        port: ::core::ffi::c_long,
-        irq: ::core::ffi::c_int,
-        dma1: ::core::ffi::c_int,
-        dma2: ::core::ffi::c_int,
-        timer_dev: ::core::ffi::c_int,
-        voices: ::core::ffi::c_int,
-        pcm_channels: ::core::ffi::c_int,
-        effect: ::core::ffi::c_int,
+        port: ::kernel::ffi::c_long,
+        irq: ::kernel::ffi::c_int,
+        dma1: ::kernel::ffi::c_int,
+        dma2: ::kernel::ffi::c_int,
+        timer_dev: ::kernel::ffi::c_int,
+        voices: ::kernel::ffi::c_int,
+        pcm_channels: ::kernel::ffi::c_int,
+        effect: ::kernel::ffi::c_int,
         rgus: *mut *mut snd_gus_card,
-    ) -> ::core::ffi::c_int;
-    fn snd_gf1_i_write8(gus: *mut snd_gus_card, reg: ::core::ffi::c_int, data: ::core::ffi::c_uchar);
-    fn snd_gf1_i_look8(gus: *mut snd_gus_card, reg: ::core::ffi::c_int) -> ::core::ffi::c_uchar;
-    fn udelay(usecs: ::core::ffi::c_ulong);
+    ) -> ::kernel::ffi::c_int;
+    fn snd_gf1_i_write8(gus: *mut snd_gus_card, reg: ::kernel::ffi::c_int, data: ::kernel::ffi::c_uchar);
+    fn snd_gf1_i_look8(gus: *mut snd_gus_card, reg: ::kernel::ffi::c_int) -> ::kernel::ffi::c_uchar;
+    fn udelay(usecs: ::kernel::ffi::c_ulong);
     fn snd_devm_card_new(
         dev: *mut device,
-        idx: ::core::ffi::c_int,
-        xid: *mut ::core::ffi::c_char,
+        idx: ::kernel::ffi::c_int,
+        xid: *mut ::kernel::ffi::c_char,
         module: *mut module,
-        extra_size: ::core::ffi::c_int,
+        extra_size: ::kernel::ffi::c_int,
         card_ret: *mut *mut snd_card,
-    ) -> ::core::ffi::c_int;
-    fn snd_gus_initialize(gus: *mut snd_gus_card) -> ::core::ffi::c_int;
-    fn snd_gf1_new_mixer(gus: *mut snd_gus_card) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    fn snd_gus_initialize(gus: *mut snd_gus_card) -> ::kernel::ffi::c_int;
+    fn snd_gf1_new_mixer(gus: *mut snd_gus_card) -> ::kernel::ffi::c_int;
     fn snd_gf1_pcm_new(
         gus: *mut snd_gus_card,
-        pcm_dev: ::core::ffi::c_int,
-        control_index: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn snd_gf1_rawmidi_new(gus: *mut snd_gus_card, device: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    fn strlen(s: *const ::core::ffi::c_char) -> usize;
-    fn sprintf(s: *mut ::core::ffi::c_char, format: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
-    fn snd_card_register(card: *mut snd_card) -> ::core::ffi::c_int;
-    fn dev_set_drvdata(dev: *mut device, data: *mut ::core::ffi::c_void);
-    fn dev_get_drvdata(dev: *mut device) -> *mut ::core::ffi::c_void;
-    fn snd_gus_suspend(private_data: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-    fn snd_gus_resume(private_data: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-    fn dev_err(dev: *mut device, format: *const ::core::ffi::c_char, ...);
-    fn dev_dbg(dev: *mut device, format: *const ::core::ffi::c_char, ...);
+        pcm_dev: ::kernel::ffi::c_int,
+        control_index: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
+    fn snd_gf1_rawmidi_new(gus: *mut snd_gus_card, device: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    fn strlen(s: *const ::kernel::ffi::c_char) -> usize;
+    fn sprintf(s: *mut ::kernel::ffi::c_char, format: *const ::kernel::ffi::c_char, ...) -> ::kernel::ffi::c_int;
+    fn snd_card_register(card: *mut snd_card) -> ::kernel::ffi::c_int;
+    fn dev_set_drvdata(dev: *mut device, data: *mut ::kernel::ffi::c_void);
+    fn dev_get_drvdata(dev: *mut device) -> *mut ::kernel::ffi::c_void;
+    fn snd_gus_suspend(private_data: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
+    fn snd_gus_resume(private_data: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
+    fn dev_err(dev: *mut device, format: *const ::kernel::ffi::c_char, ...);
+    fn dev_dbg(dev: *mut device, format: *const ::kernel::ffi::c_char, ...);
 }
 
 extern "C" {
     static SNDRV_CARDS: usize;
-    static SNDRV_AUTO_IRQ: ::core::ffi::c_int;
-    static SNDRV_AUTO_DMA: ::core::ffi::c_int;
-    static SNDRV_AUTO_PORT: ::core::ffi::c_long;
-    static SNDRV_GF1_GB_RESET: ::core::ffi::c_int;
-    static EBUSY: ::core::ffi::c_int;
-    static ENODEV: ::core::ffi::c_int;
+    static SNDRV_AUTO_IRQ: ::kernel::ffi::c_int;
+    static SNDRV_AUTO_DMA: ::kernel::ffi::c_int;
+    static SNDRV_AUTO_PORT: ::kernel::ffi::c_long;
+    static SNDRV_GF1_GB_RESET: ::kernel::ffi::c_int;
+    static EBUSY: ::kernel::ffi::c_int;
+    static ENODEV: ::kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -99,57 +99,57 @@ pub struct pm_message_t {
 #[repr(C)]
 pub struct snd_card {
     pub dev: *mut device,
-    pub private_data: *mut ::core::ffi::c_void,
-    pub longname: [::core::ffi::c_char; 80],
+    pub private_data: *mut ::kernel::ffi::c_void,
+    pub longname: [::kernel::ffi::c_char; 80],
 }
 
 #[repr(C)]
 pub struct snd_gus_gf1 {
-    pub port: ::core::ffi::c_ulong,
-    pub irq: ::core::ffi::c_int,
-    pub dma1: ::core::ffi::c_int,
-    pub dma2: ::core::ffi::c_int,
+    pub port: ::kernel::ffi::c_ulong,
+    pub irq: ::kernel::ffi::c_int,
+    pub dma1: ::kernel::ffi::c_int,
+    pub dma2: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct snd_gus_card {
     pub card: *mut snd_card,
     pub gf1: snd_gus_gf1,
-    pub joystick_dac: ::core::ffi::c_int,
-    pub max_flag: ::core::ffi::c_int,
-    pub ess_flag: ::core::ffi::c_int,
-    pub ace_flag: ::core::ffi::c_int,
+    pub joystick_dac: ::kernel::ffi::c_int,
+    pub max_flag: ::kernel::ffi::c_int,
+    pub ess_flag: ::kernel::ffi::c_int,
+    pub ace_flag: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct isa_driver_inner {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct isa_driver {
-    pub match_: Option<unsafe extern "C" fn(*mut device, ::core::ffi::c_uint) -> ::core::ffi::c_int>,
-    pub probe: Option<unsafe extern "C" fn(*mut device, ::core::ffi::c_uint) -> ::core::ffi::c_int>,
+    pub match_: Option<unsafe extern "C" fn(*mut device, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(*mut device, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>,
     // Present in the original only under CONFIG_PM.
     pub suspend: Option<
-        unsafe extern "C" fn(*mut device, ::core::ffi::c_uint, pm_message_t) -> ::core::ffi::c_int,
+        unsafe extern "C" fn(*mut device, ::kernel::ffi::c_uint, pm_message_t) -> ::kernel::ffi::c_int,
     >,
     // Present in the original only under CONFIG_PM.
-    pub resume: Option<unsafe extern "C" fn(*mut device, ::core::ffi::c_uint) -> ::core::ffi::c_int>,
+    pub resume: Option<unsafe extern "C" fn(*mut device, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>,
     pub driver: isa_driver_inner,
 }
 
-static mut index: [::core::ffi::c_int; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_IDX }; /* Index 0-MAX */
-static mut id: [*mut ::core::ffi::c_char; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_STR }; /* ID for this card */
+static mut index: [::kernel::ffi::c_int; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_IDX }; /* Index 0-MAX */
+static mut id: [*mut ::kernel::ffi::c_char; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_STR }; /* ID for this card */
 static mut enable: [bool; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_ENABLE }; /* Enable this card */
-static mut port: [::core::ffi::c_long; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_PORT }; /* 0x220,0x230,0x240,0x250,0x260 */
-static mut irq: [::core::ffi::c_int; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_IRQ }; /* 3,5,9,11,12,15 */
-static mut dma1: [::core::ffi::c_int; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_DMA }; /* 1,3,5,6,7 */
-static mut dma2: [::core::ffi::c_int; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_DMA }; /* 1,3,5,6,7 */
-static mut joystick_dac: [::core::ffi::c_int; SNDRV_CARDS] = [29; SNDRV_CARDS];
+static mut port: [::kernel::ffi::c_long; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_PORT }; /* 0x220,0x230,0x240,0x250,0x260 */
+static mut irq: [::kernel::ffi::c_int; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_IRQ }; /* 3,5,9,11,12,15 */
+static mut dma1: [::kernel::ffi::c_int; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_DMA }; /* 1,3,5,6,7 */
+static mut dma2: [::kernel::ffi::c_int; SNDRV_CARDS] = unsafe { SNDRV_DEFAULT_DMA }; /* 1,3,5,6,7 */
+static mut joystick_dac: [::kernel::ffi::c_int; SNDRV_CARDS] = [29; SNDRV_CARDS];
 /* 0 to 31, (0.59V-4.52V or 0.389V-2.98V) */
-static mut channels: [::core::ffi::c_int; SNDRV_CARDS] = [24; SNDRV_CARDS];
-static mut pcm_channels: [::core::ffi::c_int; SNDRV_CARDS] = [2; SNDRV_CARDS];
+static mut channels: [::kernel::ffi::c_int; SNDRV_CARDS] = [24; SNDRV_CARDS];
+static mut pcm_channels: [::kernel::ffi::c_int; SNDRV_CARDS] = [2; SNDRV_CARDS];
 
 // module_param_array(index, int, NULL, 0444);
 // MODULE_PARM_DESC(index, "Index value for " CRD_NAME " soundcard.");
@@ -174,23 +174,23 @@ static mut pcm_channels: [::core::ffi::c_int; SNDRV_CARDS] = [2; SNDRV_CARDS];
 
 unsafe extern "C" fn snd_gusclassic_match(
     _dev: *mut device,
-    n: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
-    enable[n as usize] as ::core::ffi::c_int
+    n: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
+    enable[n as usize] as ::kernel::ffi::c_int
 }
 
 unsafe extern "C" fn snd_gusclassic_create(
     card: *mut snd_card,
     dev: *mut device,
-    n: ::core::ffi::c_uint,
+    n: ::kernel::ffi::c_uint,
     rgus: *mut *mut snd_gus_card,
-) -> ::core::ffi::c_int {
-    static possible_ports: [::core::ffi::c_long; 5] = [0x220, 0x230, 0x240, 0x250, 0x260];
-    static possible_irqs: [::core::ffi::c_int; 9] = [5, 11, 12, 9, 7, 15, 3, 4, -1];
-    static possible_dmas: [::core::ffi::c_int; 6] = [5, 6, 7, 1, 3, -1];
+) -> ::kernel::ffi::c_int {
+    static possible_ports: [::kernel::ffi::c_long; 5] = [0x220, 0x230, 0x240, 0x250, 0x260];
+    static possible_irqs: [::kernel::ffi::c_int; 9] = [5, 11, 12, 9, 7, 15, 3, 4, -1];
+    static possible_dmas: [::kernel::ffi::c_int; 6] = [5, 6, 7, 1, 3, -1];
 
-    let mut i: ::core::ffi::c_int;
-    let mut error: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
+    let mut error: ::kernel::ffi::c_int;
     let n = n as usize;
 
     if irq[n] == SNDRV_AUTO_IRQ {
@@ -254,8 +254,8 @@ unsafe extern "C" fn snd_gusclassic_create(
     error
 }
 
-unsafe extern "C" fn snd_gusclassic_detect(gus: *mut snd_gus_card) -> ::core::ffi::c_int {
-    let mut d: ::core::ffi::c_uchar;
+unsafe extern "C" fn snd_gusclassic_detect(gus: *mut snd_gus_card) -> ::kernel::ffi::c_int {
+    let mut d: ::kernel::ffi::c_uchar;
 
     snd_gf1_i_write8(gus, SNDRV_GF1_GB_RESET, 0); /* reset GF1 */
     d = snd_gf1_i_look8(gus, SNDRV_GF1_GB_RESET);
@@ -264,7 +264,7 @@ unsafe extern "C" fn snd_gusclassic_detect(gus: *mut snd_gus_card) -> ::core::ff
             (*(*gus).card).dev,
             b"[0x%lx] check 1 failed - 0x%x\n\0".as_ptr() as *const _,
             (*gus).gf1.port,
-            d as ::core::ffi::c_int,
+            d as ::kernel::ffi::c_int,
         );
         return -ENODEV;
     }
@@ -277,7 +277,7 @@ unsafe extern "C" fn snd_gusclassic_detect(gus: *mut snd_gus_card) -> ::core::ff
             (*(*gus).card).dev,
             b"[0x%lx] check 2 failed - 0x%x\n\0".as_ptr() as *const _,
             (*gus).gf1.port,
-            d as ::core::ffi::c_int,
+            d as ::kernel::ffi::c_int,
         );
         return -ENODEV;
     }
@@ -286,11 +286,11 @@ unsafe extern "C" fn snd_gusclassic_detect(gus: *mut snd_gus_card) -> ::core::ff
 
 unsafe extern "C" fn snd_gusclassic_probe(
     dev: *mut device,
-    n: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    n: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let mut card: *mut snd_card = ::core::ptr::null_mut();
     let mut gus: *mut snd_gus_card = ::core::ptr::null_mut();
-    let mut error: ::core::ffi::c_int;
+    let mut error: ::kernel::ffi::c_int;
     let n = n as usize;
 
     error = snd_devm_card_new(dev, index[n], id[n], THIS_MODULE, 0, &mut card);
@@ -302,11 +302,11 @@ unsafe extern "C" fn snd_gusclassic_probe(
         pcm_channels[n] = 2;
     }
 
-    error = snd_gusclassic_create(card, dev, n as ::core::ffi::c_uint, &mut gus);
+    error = snd_gusclassic_create(card, dev, n as ::kernel::ffi::c_uint, &mut gus);
     if error < 0 {
         return error;
     }
-    (*card).private_data = gus as *mut ::core::ffi::c_void;
+    (*card).private_data = gus as *mut ::kernel::ffi::c_void;
 
     error = snd_gusclassic_detect(gus);
     if error < 0 {
@@ -368,16 +368,16 @@ unsafe extern "C" fn snd_gusclassic_probe(
         return error;
     }
 
-    dev_set_drvdata(dev, card as *mut ::core::ffi::c_void);
+    dev_set_drvdata(dev, card as *mut ::kernel::ffi::c_void);
     0
 }
 
 // Original code conditionally includes these callbacks under CONFIG_PM.
 unsafe extern "C" fn snd_gusclassic_suspend(
     dev: *mut device,
-    _n: ::core::ffi::c_uint,
+    _n: ::kernel::ffi::c_uint,
     _state: pm_message_t,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let card: *mut snd_card = dev_get_drvdata(dev) as *mut snd_card;
 
     snd_gus_suspend((*card).private_data)
@@ -386,8 +386,8 @@ unsafe extern "C" fn snd_gusclassic_suspend(
 // Original code conditionally includes this callback under CONFIG_PM.
 unsafe extern "C" fn snd_gusclassic_resume(
     dev: *mut device,
-    _n: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    _n: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let card: *mut snd_card = dev_get_drvdata(dev) as *mut snd_card;
 
     snd_gus_resume((*card).private_data)
@@ -400,7 +400,7 @@ static mut snd_gusclassic_driver: isa_driver = isa_driver {
     suspend: Some(snd_gusclassic_suspend),
     resume: Some(snd_gusclassic_resume),
     driver: isa_driver_inner {
-        name: DEV_NAME.as_ptr() as *const ::core::ffi::c_char,
+        name: DEV_NAME.as_ptr() as *const ::kernel::ffi::c_char,
     },
 };
 

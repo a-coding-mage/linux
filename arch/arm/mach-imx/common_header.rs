@@ -18,10 +18,10 @@ extern "C" {
     pub fn imx31_init_early();
     pub fn imx35_init_early();
     pub fn mxc_set_cpu_type(ty: u32);
-    pub fn mxc_restart(mode: reboot_mode, command: *const core::ffi::c_char);
-    pub fn mxc_arch_reset_init(base: *mut core::ffi::c_void);
-    pub fn imx_set_aips(base: *mut core::ffi::c_void);
-    pub fn imx_aips_allow_unprivileged_access(compat: *const core::ffi::c_char);
+    pub fn mxc_restart(mode: reboot_mode, command: *const kernel::ffi::c_char);
+    pub fn mxc_arch_reset_init(base: *mut kernel::ffi::c_void);
+    pub fn imx_set_aips(base: *mut kernel::ffi::c_void);
+    pub fn imx_aips_allow_unprivileged_access(compat: *const kernel::ffi::c_char);
     pub fn imx_set_soc_revision(rev: u32);
     pub fn imx_init_revision_from_anatop();
     pub fn imx6_enable_rbc(enable: bool);
@@ -56,7 +56,7 @@ pub enum ulp_cpu_pwr_mode {
 
 extern "C" {
     pub fn imx_enable_cpu(cpu: i32, enable: bool);
-    pub fn imx_set_cpu_jump(cpu: i32, jump_addr: *mut core::ffi::c_void);
+    pub fn imx_set_cpu_jump(cpu: i32, jump_addr: *mut kernel::ffi::c_void);
     pub fn imx_get_cpu_arg(cpu: i32) -> u32;
     pub fn imx_set_cpu_arg(cpu: i32, arg: u32);
 }
@@ -97,21 +97,21 @@ extern "C" {
 
 #[cfg(CONFIG_SUSPEND)]
 extern "C" {
-    pub fn imx53_suspend(ocram_vbase: *mut core::ffi::c_void);
+    pub fn imx53_suspend(ocram_vbase: *mut kernel::ffi::c_void);
     pub static imx53_suspend_sz: u32;
-    pub fn imx6_suspend(ocram_vbase: *mut core::ffi::c_void);
+    pub fn imx6_suspend(ocram_vbase: *mut kernel::ffi::c_void);
 }
 
 #[cfg(not(CONFIG_SUSPEND))]
-pub fn imx53_suspend(_ocram_vbase: *mut core::ffi::c_void) {}
+pub fn imx53_suspend(_ocram_vbase: *mut kernel::ffi::c_void) {}
 #[cfg(not(CONFIG_SUSPEND))]
 pub static imx53_suspend_sz: u32 = 0;
 #[cfg(not(CONFIG_SUSPEND))]
-pub fn imx6_suspend(_ocram_vbase: *mut core::ffi::c_void) {}
+pub fn imx6_suspend(_ocram_vbase: *mut kernel::ffi::c_void) {}
 
 extern "C" {
     pub fn v7_cpu_resume();
-    pub fn imx6_pm_ccm_init(ccm_compat: *const core::ffi::c_char);
+    pub fn imx6_pm_ccm_init(ccm_compat: *const kernel::ffi::c_char);
     pub fn imx6q_pm_init();
     pub fn imx6dl_pm_init();
     pub fn imx6sl_pm_init();

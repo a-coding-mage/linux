@@ -9,32 +9,32 @@ pub struct __old_kernel_stat {
     pub st_uid: u16,
     pub st_gid: u16,
     pub st_rdev: u16,
-    pub st_size: libc::c_ulong,
-    pub st_atime: libc::c_ulong,
-    pub st_mtime: libc::c_ulong,
-    pub st_ctime: libc::c_ulong,
+    pub st_size: kernel::ffi::c_ulong,
+    pub st_atime: kernel::ffi::c_ulong,
+    pub st_mtime: kernel::ffi::c_ulong,
+    pub st_ctime: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct stat {
-    pub st_dev: libc::c_ulong,
-    pub st_ino: libc::c_ulong,
+    pub st_dev: kernel::ffi::c_ulong,
+    pub st_ino: kernel::ffi::c_ulong,
     pub st_mode: u16,
     pub st_nlink: u16,
     pub st_uid: u16,
     pub st_gid: u16,
-    pub st_rdev: libc::c_ulong,
-    pub st_size: libc::c_ulong,
-    pub st_blksize: libc::c_ulong,
-    pub st_blocks: libc::c_ulong,
-    pub st_atime: libc::c_ulong,
-    pub st_atime_nsec: libc::c_ulong,
-    pub st_mtime: libc::c_ulong,
-    pub st_mtime_nsec: libc::c_ulong,
-    pub st_ctime: libc::c_ulong,
-    pub st_ctime_nsec: libc::c_ulong,
-    pub __unused4: libc::c_ulong,
-    pub __unused5: libc::c_ulong,
+    pub st_rdev: kernel::ffi::c_ulong,
+    pub st_size: kernel::ffi::c_ulong,
+    pub st_blksize: kernel::ffi::c_ulong,
+    pub st_blocks: kernel::ffi::c_ulong,
+    pub st_atime: kernel::ffi::c_ulong,
+    pub st_atime_nsec: kernel::ffi::c_ulong,
+    pub st_mtime: kernel::ffi::c_ulong,
+    pub st_mtime_nsec: kernel::ffi::c_ulong,
+    pub st_ctime: kernel::ffi::c_ulong,
+    pub st_ctime_nsec: kernel::ffi::c_ulong,
+    pub __unused4: kernel::ffi::c_ulong,
+    pub __unused5: kernel::ffi::c_ulong,
 }
 
 /* This matches struct stat64 in glibc2.1, hence the absolutely
@@ -45,35 +45,35 @@ pub struct stat64 {
     pub st_dev: u64,
     pub __pad0: [u8; 4],
 
-    pub __st_ino: libc::c_ulong,
+    pub __st_ino: kernel::ffi::c_ulong,
 
     pub st_mode: u32,
     pub st_nlink: u32,
 
-    pub st_uid: libc::c_ulong,
-    pub st_gid: libc::c_ulong,
+    pub st_uid: kernel::ffi::c_ulong,
+    pub st_gid: kernel::ffi::c_ulong,
 
     pub st_rdev: u64,
     pub __pad3: [u8; 4],
 
     pub st_size: i64,
-    pub st_blksize: libc::c_ulong,
+    pub st_blksize: kernel::ffi::c_ulong,
 
     pub st_blocks: u64, /* Number 512-byte blocks allocated. */
 
-    pub st_atime: libc::c_ulong,
-    pub st_atime_nsec: libc::c_ulong,
+    pub st_atime: kernel::ffi::c_ulong,
+    pub st_atime_nsec: kernel::ffi::c_ulong,
 
-    pub st_mtime: libc::c_ulong,
-    pub st_mtime_nsec: libc::c_ulong,
+    pub st_mtime: kernel::ffi::c_ulong,
+    pub st_mtime_nsec: kernel::ffi::c_ulong,
 
-    pub st_ctime: libc::c_ulong,
-    pub st_ctime_nsec: libc::c_ulong,
+    pub st_ctime: kernel::ffi::c_ulong,
+    pub st_ctime_nsec: kernel::ffi::c_ulong,
 
     pub st_ino: u64,
 }
 
-pub const STAT64_HAS_BROKEN_ST_INO: libc::c_int = 1;
-pub const STAT_HAVE_NSEC: libc::c_int = 1;
+pub const STAT64_HAS_BROKEN_ST_INO: kernel::ffi::c_int = 1;
+pub const STAT_HAVE_NSEC: kernel::ffi::c_int = 1;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -10,14 +10,14 @@ pub struct gio_device_id {
 pub struct gio_device {
     pub dev: device,
     pub resource: resource,
-    pub irq: ::core::ffi::c_uint,
-    pub slotno: ::core::ffi::c_uint,
+    pub irq: ::kernel::ffi::c_uint,
+    pub slotno: ::kernel::ffi::c_uint,
 
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub id: gio_device_id,
     // C bit-fields; represented by their containing unsigned-int storage.
-    pub id32: ::core::ffi::c_uint,
-    pub gio64: ::core::ffi::c_uint,
+    pub id32: ::kernel::ffi::c_uint,
+    pub gio64: ::kernel::ffi::c_uint,
 }
 
 macro_rules! to_gio_device {
@@ -28,11 +28,11 @@ macro_rules! to_gio_device {
 
 #[repr(C)]
 pub struct gio_driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub owner: *mut module,
     pub id_table: *const gio_device_id,
 
-    pub probe: Option<unsafe extern "C" fn(*mut gio_device, *const gio_device_id) -> ::core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(*mut gio_device, *const gio_device_id) -> ::kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(*mut gio_device)>,
     pub shutdown: Option<unsafe extern "C" fn(*mut gio_device)>,
 
@@ -49,10 +49,10 @@ extern "C" {
     pub fn gio_dev_get(dev: *mut gio_device) -> *mut gio_device;
     pub fn gio_dev_put(dev: *mut gio_device);
 
-    pub fn gio_device_register(dev: *mut gio_device) -> ::core::ffi::c_int;
+    pub fn gio_device_register(dev: *mut gio_device) -> ::kernel::ffi::c_int;
     pub fn gio_device_unregister(dev: *mut gio_device);
 
-    pub fn gio_register_driver(driver: *mut gio_driver) -> ::core::ffi::c_int;
+    pub fn gio_register_driver(driver: *mut gio_driver) -> ::kernel::ffi::c_int;
     pub fn gio_unregister_driver(driver: *mut gio_driver);
 
     pub fn gio_set_master(dev: *mut gio_device);

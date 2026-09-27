@@ -3,9 +3,9 @@
 /* Dependencies supplied by the Linux/compiler, asm, and generic bitops headers. */
 
 #[inline]
-pub unsafe fn set_bit(nr: i32, addr: *mut libc::c_ulong) {
-    let mask: libc::c_ulong = BIT_MASK(nr);
-    let mut flags: libc::c_ulong = 0;
+pub unsafe fn set_bit(nr: i32, addr: *mut kernel::ffi::c_ulong) {
+    let mask: kernel::ffi::c_ulong = BIT_MASK(nr);
+    let mut flags: kernel::ffi::c_ulong = 0;
     let word = BIT_WORD(nr) as isize;
     let p = addr.offset(word);
     _atomic_spin_lock_irqsave(p, &mut flags);
@@ -14,9 +14,9 @@ pub unsafe fn set_bit(nr: i32, addr: *mut libc::c_ulong) {
 }
 
 #[inline]
-pub unsafe fn clear_bit(nr: i32, addr: *mut libc::c_ulong) {
-    let mask: libc::c_ulong = BIT_MASK(nr);
-    let mut flags: libc::c_ulong = 0;
+pub unsafe fn clear_bit(nr: i32, addr: *mut kernel::ffi::c_ulong) {
+    let mask: kernel::ffi::c_ulong = BIT_MASK(nr);
+    let mut flags: kernel::ffi::c_ulong = 0;
     let p = addr.offset(BIT_WORD(nr) as isize);
     _atomic_spin_lock_irqsave(p, &mut flags);
     *p &= !mask;
@@ -24,9 +24,9 @@ pub unsafe fn clear_bit(nr: i32, addr: *mut libc::c_ulong) {
 }
 
 #[inline]
-pub unsafe fn change_bit(nr: i32, addr: *mut libc::c_ulong) {
-    let mask: libc::c_ulong = BIT_MASK(nr);
-    let mut flags: libc::c_ulong = 0;
+pub unsafe fn change_bit(nr: i32, addr: *mut kernel::ffi::c_ulong) {
+    let mask: kernel::ffi::c_ulong = BIT_MASK(nr);
+    let mut flags: kernel::ffi::c_ulong = 0;
     let p = addr.offset(BIT_WORD(nr) as isize);
     _atomic_spin_lock_irqsave(p, &mut flags);
     *p ^= mask;
@@ -34,9 +34,9 @@ pub unsafe fn change_bit(nr: i32, addr: *mut libc::c_ulong) {
 }
 
 #[inline]
-pub unsafe fn test_and_set_bit(nr: i32, addr: *mut libc::c_ulong) -> i32 {
-    let mask: libc::c_ulong = BIT_MASK(nr);
-    let mut flags: libc::c_ulong = 0;
+pub unsafe fn test_and_set_bit(nr: i32, addr: *mut kernel::ffi::c_ulong) -> i32 {
+    let mask: kernel::ffi::c_ulong = BIT_MASK(nr);
+    let mut flags: kernel::ffi::c_ulong = 0;
     let p = addr.offset(BIT_WORD(nr) as isize);
     _atomic_spin_lock_irqsave(p, &mut flags);
     let old = *p;
@@ -47,9 +47,9 @@ pub unsafe fn test_and_set_bit(nr: i32, addr: *mut libc::c_ulong) -> i32 {
 }
 
 #[inline]
-pub unsafe fn test_and_clear_bit(nr: i32, addr: *mut libc::c_ulong) -> i32 {
-    let mask: libc::c_ulong = BIT_MASK(nr);
-    let mut flags: libc::c_ulong = 0;
+pub unsafe fn test_and_clear_bit(nr: i32, addr: *mut kernel::ffi::c_ulong) -> i32 {
+    let mask: kernel::ffi::c_ulong = BIT_MASK(nr);
+    let mut flags: kernel::ffi::c_ulong = 0;
     let p = addr.offset(BIT_WORD(nr) as isize);
     _atomic_spin_lock_irqsave(p, &mut flags);
     let old = *p;
@@ -60,9 +60,9 @@ pub unsafe fn test_and_clear_bit(nr: i32, addr: *mut libc::c_ulong) -> i32 {
 }
 
 #[inline]
-pub unsafe fn test_and_change_bit(nr: i32, addr: *mut libc::c_ulong) -> i32 {
-    let mask: libc::c_ulong = BIT_MASK(nr);
-    let mut flags: libc::c_ulong = 0;
+pub unsafe fn test_and_change_bit(nr: i32, addr: *mut kernel::ffi::c_ulong) -> i32 {
+    let mask: kernel::ffi::c_ulong = BIT_MASK(nr);
+    let mut flags: kernel::ffi::c_ulong = 0;
     let p = addr.offset(BIT_WORD(nr) as isize);
     _atomic_spin_lock_irqsave(p, &mut flags);
     let oldbit = *p;
@@ -75,15 +75,15 @@ pub unsafe fn test_and_change_bit(nr: i32, addr: *mut libc::c_ulong) -> i32 {
 
 /** Find first bit in word; undefined if no bit is set. */
 #[inline]
-pub const fn __ffs(x: libc::c_ulong) -> libc::c_ulong {
-    x.trailing_zeros() as libc::c_ulong
+pub const fn __ffs(x: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
+    x.trailing_zeros() as kernel::ffi::c_ulong
 }
 
 /* Generic ffz operations are supplied by asm-generic/bitops/ffz.h. */
 
 #[inline]
 pub const fn ffs(x: i32) -> i32 {
-    if x != 0 { (__ffs(x as libc::c_ulong) + 1) as i32 } else { 0 }
+    if x != 0 { (__ffs(x as kernel::ffi::c_ulong) + 1) as i32 } else { 0 }
 }
 
 #[inline]
@@ -96,10 +96,10 @@ pub const fn fls(x: u32) -> i32 {
  */
 
 extern "C" {
-    fn BIT_MASK(nr: i32) -> libc::c_ulong;
-    fn BIT_WORD(nr: i32) -> libc::c_ulong;
-    fn _atomic_spin_lock_irqsave(addr: *mut libc::c_ulong, flags: *mut libc::c_ulong);
-    fn _atomic_spin_unlock_irqrestore(addr: *mut libc::c_ulong, flags: libc::c_ulong);
+    fn BIT_MASK(nr: i32) -> kernel::ffi::c_ulong;
+    fn BIT_WORD(nr: i32) -> kernel::ffi::c_ulong;
+    fn _atomic_spin_lock_irqsave(addr: *mut kernel::ffi::c_ulong, flags: *mut kernel::ffi::c_ulong);
+    fn _atomic_spin_unlock_irqrestore(addr: *mut kernel::ffi::c_ulong, flags: kernel::ffi::c_ulong);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -9,7 +9,7 @@
  * Copyright (C) 2015 Red Hat. Author: Rob Clark <robdclark@gmail.com>
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]

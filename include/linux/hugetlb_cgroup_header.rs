@@ -29,7 +29,7 @@ pub enum hugetlb_memory_event {
 #[repr(C)]
 pub struct hugetlb_cgroup_per_node {
     /* hugetlb usage in pages over all hstates. */
-    pub usage: [::core::ffi::c_ulong; HUGE_MAX_HSTATE],
+    pub usage: [::kernel::ffi::c_ulong; HUGE_MAX_HSTATE],
 }
 
 #[cfg(CONFIG_CGROUP_HUGETLB)]
@@ -109,23 +109,23 @@ pub unsafe fn resv_map_put_hugetlb_cgroup_uncharge_info(resv_map: *mut resv_map)
 
 #[cfg(CONFIG_CGROUP_HUGETLB)]
 extern "C" {
-    pub fn hugetlb_cgroup_charge_cgroup(idx: i32, nr_pages: ::core::ffi::c_ulong, ptr: *mut *mut hugetlb_cgroup) -> i32;
-    pub fn hugetlb_cgroup_charge_cgroup_rsvd(idx: i32, nr_pages: ::core::ffi::c_ulong, ptr: *mut *mut hugetlb_cgroup) -> i32;
-    pub fn hugetlb_cgroup_commit_charge(idx: i32, nr_pages: ::core::ffi::c_ulong, h_cg: *mut hugetlb_cgroup, folio: *mut folio);
-    pub fn hugetlb_cgroup_commit_charge_rsvd(idx: i32, nr_pages: ::core::ffi::c_ulong, h_cg: *mut hugetlb_cgroup, folio: *mut folio);
-    pub fn hugetlb_cgroup_uncharge_folio(idx: i32, nr_pages: ::core::ffi::c_ulong, folio: *mut folio);
-    pub fn hugetlb_cgroup_uncharge_folio_rsvd(idx: i32, nr_pages: ::core::ffi::c_ulong, folio: *mut folio);
-    pub fn hugetlb_cgroup_uncharge_cgroup(idx: i32, nr_pages: ::core::ffi::c_ulong, h_cg: *mut hugetlb_cgroup);
-    pub fn hugetlb_cgroup_uncharge_cgroup_rsvd(idx: i32, nr_pages: ::core::ffi::c_ulong, h_cg: *mut hugetlb_cgroup);
-    pub fn hugetlb_cgroup_uncharge_counter(resv: *mut resv_map, start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn hugetlb_cgroup_uncharge_file_region(resv: *mut resv_map, rg: *mut file_region, nr_pages: ::core::ffi::c_ulong, region_del: bool);
+    pub fn hugetlb_cgroup_charge_cgroup(idx: i32, nr_pages: ::kernel::ffi::c_ulong, ptr: *mut *mut hugetlb_cgroup) -> i32;
+    pub fn hugetlb_cgroup_charge_cgroup_rsvd(idx: i32, nr_pages: ::kernel::ffi::c_ulong, ptr: *mut *mut hugetlb_cgroup) -> i32;
+    pub fn hugetlb_cgroup_commit_charge(idx: i32, nr_pages: ::kernel::ffi::c_ulong, h_cg: *mut hugetlb_cgroup, folio: *mut folio);
+    pub fn hugetlb_cgroup_commit_charge_rsvd(idx: i32, nr_pages: ::kernel::ffi::c_ulong, h_cg: *mut hugetlb_cgroup, folio: *mut folio);
+    pub fn hugetlb_cgroup_uncharge_folio(idx: i32, nr_pages: ::kernel::ffi::c_ulong, folio: *mut folio);
+    pub fn hugetlb_cgroup_uncharge_folio_rsvd(idx: i32, nr_pages: ::kernel::ffi::c_ulong, folio: *mut folio);
+    pub fn hugetlb_cgroup_uncharge_cgroup(idx: i32, nr_pages: ::kernel::ffi::c_ulong, h_cg: *mut hugetlb_cgroup);
+    pub fn hugetlb_cgroup_uncharge_cgroup_rsvd(idx: i32, nr_pages: ::kernel::ffi::c_ulong, h_cg: *mut hugetlb_cgroup);
+    pub fn hugetlb_cgroup_uncharge_counter(resv: *mut resv_map, start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn hugetlb_cgroup_uncharge_file_region(resv: *mut resv_map, rg: *mut file_region, nr_pages: ::kernel::ffi::c_ulong, region_del: bool);
     pub fn hugetlb_cgroup_file_init(); // C declaration has __init.
     pub fn hugetlb_cgroup_migrate(old_folio: *mut folio, new_folio: *mut folio);
 }
 
 // CONFIG_CGROUP_HUGETLB disabled: direct translations of the C no-op stubs.
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
-#[inline] pub unsafe fn hugetlb_cgroup_uncharge_file_region(_: *mut resv_map, _: *mut file_region, _: ::core::ffi::c_ulong, _: bool) {}
+#[inline] pub unsafe fn hugetlb_cgroup_uncharge_file_region(_: *mut resv_map, _: *mut file_region, _: ::kernel::ffi::c_ulong, _: bool) {}
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
 #[inline] pub unsafe fn hugetlb_cgroup_from_folio(_: *mut folio) -> *mut hugetlb_cgroup { core::ptr::null_mut() }
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
@@ -143,23 +143,23 @@ extern "C" {
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
 #[inline] pub unsafe fn resv_map_put_hugetlb_cgroup_uncharge_info(_: *mut resv_map) {}
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
-#[inline] pub unsafe fn hugetlb_cgroup_charge_cgroup(_: i32, _: ::core::ffi::c_ulong, _: *mut *mut hugetlb_cgroup) -> i32 { 0 }
+#[inline] pub unsafe fn hugetlb_cgroup_charge_cgroup(_: i32, _: ::kernel::ffi::c_ulong, _: *mut *mut hugetlb_cgroup) -> i32 { 0 }
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
-#[inline] pub unsafe fn hugetlb_cgroup_charge_cgroup_rsvd(_: i32, _: ::core::ffi::c_ulong, _: *mut *mut hugetlb_cgroup) -> i32 { 0 }
+#[inline] pub unsafe fn hugetlb_cgroup_charge_cgroup_rsvd(_: i32, _: ::kernel::ffi::c_ulong, _: *mut *mut hugetlb_cgroup) -> i32 { 0 }
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
-#[inline] pub unsafe fn hugetlb_cgroup_commit_charge(_: i32, _: ::core::ffi::c_ulong, _: *mut hugetlb_cgroup, _: *mut folio) {}
+#[inline] pub unsafe fn hugetlb_cgroup_commit_charge(_: i32, _: ::kernel::ffi::c_ulong, _: *mut hugetlb_cgroup, _: *mut folio) {}
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
-#[inline] pub unsafe fn hugetlb_cgroup_commit_charge_rsvd(_: i32, _: ::core::ffi::c_ulong, _: *mut hugetlb_cgroup, _: *mut folio) {}
+#[inline] pub unsafe fn hugetlb_cgroup_commit_charge_rsvd(_: i32, _: ::kernel::ffi::c_ulong, _: *mut hugetlb_cgroup, _: *mut folio) {}
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
-#[inline] pub unsafe fn hugetlb_cgroup_uncharge_folio(_: i32, _: ::core::ffi::c_ulong, _: *mut folio) {}
+#[inline] pub unsafe fn hugetlb_cgroup_uncharge_folio(_: i32, _: ::kernel::ffi::c_ulong, _: *mut folio) {}
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
-#[inline] pub unsafe fn hugetlb_cgroup_uncharge_folio_rsvd(_: i32, _: ::core::ffi::c_ulong, _: *mut folio) {}
+#[inline] pub unsafe fn hugetlb_cgroup_uncharge_folio_rsvd(_: i32, _: ::kernel::ffi::c_ulong, _: *mut folio) {}
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
-#[inline] pub unsafe fn hugetlb_cgroup_uncharge_cgroup(_: i32, _: ::core::ffi::c_ulong, _: *mut hugetlb_cgroup) {}
+#[inline] pub unsafe fn hugetlb_cgroup_uncharge_cgroup(_: i32, _: ::kernel::ffi::c_ulong, _: *mut hugetlb_cgroup) {}
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
-#[inline] pub unsafe fn hugetlb_cgroup_uncharge_cgroup_rsvd(_: i32, _: ::core::ffi::c_ulong, _: *mut hugetlb_cgroup) {}
+#[inline] pub unsafe fn hugetlb_cgroup_uncharge_cgroup_rsvd(_: i32, _: ::kernel::ffi::c_ulong, _: *mut hugetlb_cgroup) {}
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
-#[inline] pub unsafe fn hugetlb_cgroup_uncharge_counter(_: *mut resv_map, _: ::core::ffi::c_ulong, _: ::core::ffi::c_ulong) {}
+#[inline] pub unsafe fn hugetlb_cgroup_uncharge_counter(_: *mut resv_map, _: ::kernel::ffi::c_ulong, _: ::kernel::ffi::c_ulong) {}
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]
 #[inline] pub unsafe fn hugetlb_cgroup_file_init() {}
 #[cfg(not(CONFIG_CGROUP_HUGETLB))]

@@ -22,37 +22,37 @@ pub const IB_IOCTL_MAGIC: u8 = RDMA_IOCTL_MAGIC;
  */
 
 /* MAD specific section */
-pub const IB_USER_MAD_REGISTER_AGENT: _ = _IOWR!(RDMA_IOCTL_MAGIC, 0x01, ib_user_mad_reg_req);
-pub const IB_USER_MAD_UNREGISTER_AGENT: _ = _IOW!(RDMA_IOCTL_MAGIC, 0x02, u32);
-pub const IB_USER_MAD_ENABLE_PKEY: _ = _IO!(RDMA_IOCTL_MAGIC, 0x03);
-pub const IB_USER_MAD_REGISTER_AGENT2: _ = _IOWR!(RDMA_IOCTL_MAGIC, 0x04, ib_user_mad_reg_req2);
+pub const IB_USER_MAD_REGISTER_AGENT: u32 = _IOWR!(RDMA_IOCTL_MAGIC, 0x01, ib_user_mad_reg_req);
+pub const IB_USER_MAD_UNREGISTER_AGENT: u32 = _IOW!(RDMA_IOCTL_MAGIC, 0x02, u32);
+pub const IB_USER_MAD_ENABLE_PKEY: u32 = _IO!(RDMA_IOCTL_MAGIC, 0x03);
+pub const IB_USER_MAD_REGISTER_AGENT2: u32 = _IOWR!(RDMA_IOCTL_MAGIC, 0x04, ib_user_mad_reg_req2);
 
 /* HFI specific section */
 /* allocate HFI and context */
-pub const HFI1_IOCTL_ASSIGN_CTXT: _ = _IOWR!(RDMA_IOCTL_MAGIC, 0xE1, hfi1_user_info);
+pub const HFI1_IOCTL_ASSIGN_CTXT: u32 = _IOWR!(RDMA_IOCTL_MAGIC, 0xE1, hfi1_user_info);
 /* find out what resources we got */
-pub const HFI1_IOCTL_CTXT_INFO: _ = _IOW!(RDMA_IOCTL_MAGIC, 0xE2, hfi1_ctxt_info);
+pub const HFI1_IOCTL_CTXT_INFO: u32 = _IOW!(RDMA_IOCTL_MAGIC, 0xE2, hfi1_ctxt_info);
 /* set up userspace */
-pub const HFI1_IOCTL_USER_INFO: _ = _IOW!(RDMA_IOCTL_MAGIC, 0xE3, hfi1_base_info);
+pub const HFI1_IOCTL_USER_INFO: u32 = _IOW!(RDMA_IOCTL_MAGIC, 0xE3, hfi1_base_info);
 /* update expected TID entries */
-pub const HFI1_IOCTL_TID_UPDATE: _ = _IOWR!(RDMA_IOCTL_MAGIC, 0xE4, hfi1_tid_info);
+pub const HFI1_IOCTL_TID_UPDATE: u32 = _IOWR!(RDMA_IOCTL_MAGIC, 0xE4, hfi1_tid_info);
 /* free expected TID entries */
-pub const HFI1_IOCTL_TID_FREE: _ = _IOWR!(RDMA_IOCTL_MAGIC, 0xE5, hfi1_tid_info);
+pub const HFI1_IOCTL_TID_FREE: u32 = _IOWR!(RDMA_IOCTL_MAGIC, 0xE5, hfi1_tid_info);
 /* force an update of PIO credit */
-pub const HFI1_IOCTL_CREDIT_UPD: _ = _IO!(RDMA_IOCTL_MAGIC, 0xE6);
+pub const HFI1_IOCTL_CREDIT_UPD: u32 = _IO!(RDMA_IOCTL_MAGIC, 0xE6);
 /* control receipt of packets */
-pub const HFI1_IOCTL_RECV_CTRL: _ = _IOW!(RDMA_IOCTL_MAGIC, 0xE8, i32);
+pub const HFI1_IOCTL_RECV_CTRL: u32 = _IOW!(RDMA_IOCTL_MAGIC, 0xE8, i32);
 /* set the kind of polling we want */
-pub const HFI1_IOCTL_POLL_TYPE: _ = _IOW!(RDMA_IOCTL_MAGIC, 0xE9, i32);
+pub const HFI1_IOCTL_POLL_TYPE: u32 = _IOW!(RDMA_IOCTL_MAGIC, 0xE9, i32);
 /* ack & clear user status bits */
-pub const HFI1_IOCTL_ACK_EVENT: _ = _IOW!(RDMA_IOCTL_MAGIC, 0xEA, libc::c_ulong);
+pub const HFI1_IOCTL_ACK_EVENT: u32 = _IOW!(RDMA_IOCTL_MAGIC, 0xEA, kernel::ffi::c_ulong);
 /* set context's pkey */
-pub const HFI1_IOCTL_SET_PKEY: _ = _IOW!(RDMA_IOCTL_MAGIC, 0xEB, u16);
+pub const HFI1_IOCTL_SET_PKEY: u32 = _IOW!(RDMA_IOCTL_MAGIC, 0xEB, u16);
 /* reset context's HW send context */
-pub const HFI1_IOCTL_CTXT_RESET: _ = _IO!(RDMA_IOCTL_MAGIC, 0xEC);
+pub const HFI1_IOCTL_CTXT_RESET: u32 = _IO!(RDMA_IOCTL_MAGIC, 0xEC);
 /* read TID cache invalidations */
-pub const HFI1_IOCTL_TID_INVAL_READ: _ = _IOWR!(RDMA_IOCTL_MAGIC, 0xED, hfi1_tid_info);
+pub const HFI1_IOCTL_TID_INVAL_READ: u32 = _IOWR!(RDMA_IOCTL_MAGIC, 0xED, hfi1_tid_info);
 /* get the version of the user cdev */
-pub const HFI1_IOCTL_GET_VERS: _ = _IOR!(RDMA_IOCTL_MAGIC, 0xEE, i32);
+pub const HFI1_IOCTL_GET_VERS: u32 = _IOR!(RDMA_IOCTL_MAGIC, 0xEE, i32);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

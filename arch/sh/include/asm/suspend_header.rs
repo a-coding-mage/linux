@@ -2,8 +2,8 @@
 
 /* C header guard: _ASM_SH_SUSPEND_H */
 
-use core::ffi::c_void;
-use core::ffi::c_ulong;
+use kernel::ffi::c_void;
+use kernel::ffi::c_ulong;
 
 /* The following types are supplied by the corresponding external headers. */
 extern "C" {

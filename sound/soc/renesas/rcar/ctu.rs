@@ -6,7 +6,7 @@
 
 use crate::*;
 
-const CTU_NAME: *const ::core::ffi::c_char = b"ctu\0".as_ptr() as *const ::core::ffi::c_char;
+const CTU_NAME: *const ::kernel::ffi::c_char = b"ctu\0".as_ptr() as *const ::kernel::ffi::c_char;
 
 /*
  * User needs to setup CTU by amixer, and its settings are
@@ -74,13 +74,13 @@ pub struct rsnd_ctu {
 	pub pass: rsnd_kctrl_cfg_m,
 	pub sv: [rsnd_kctrl_cfg_m; 4],
 	pub reset: rsnd_kctrl_cfg_s,
-	pub channels: ::core::ffi::c_int,
+	pub channels: ::kernel::ffi::c_int,
 	pub flags: u32,
 }
 
 const KCTRL_INITIALIZED: u32 = 1 << 0;
 
-unsafe fn rsnd_ctu_nr(priv_: *mut rsnd_priv) -> ::core::ffi::c_int {
+unsafe fn rsnd_ctu_nr(priv_: *mut rsnd_priv) -> ::kernel::ffi::c_int {
 	(*priv_).ctu_nr
 }
 
@@ -88,7 +88,7 @@ unsafe fn rsnd_mod_to_ctu(mod_: *mut rsnd_mod) -> *mut rsnd_ctu {
 	mod_ as *mut rsnd_ctu
 }
 
-unsafe fn rsnd_ctu_get(priv_: *mut rsnd_priv, id: ::core::ffi::c_int) -> *mut rsnd_ctu {
+unsafe fn rsnd_ctu_get(priv_: *mut rsnd_priv, id: ::kernel::ffi::c_int) -> *mut rsnd_ctu {
 	((*priv_).ctu as *mut rsnd_ctu).offset(id as isize)
 }
 
@@ -106,7 +106,7 @@ unsafe extern "C" fn rsnd_ctu_probe_(
 	mod_: *mut rsnd_mod,
 	io: *mut rsnd_dai_stream,
 	priv_: *mut rsnd_priv,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
 	rsnd_cmd_attach(io, rsnd_mod_id(mod_))
 }
 
@@ -114,8 +114,8 @@ unsafe extern "C" fn rsnd_ctu_value_init(io: *mut rsnd_dai_stream, mod_: *mut rs
 	let ctu = rsnd_mod_to_ctu(mod_);
 	let mut cpmdr: u32 = 0;
 	let mut scmdr: u32 = 0;
-	let mut i: ::core::ffi::c_int;
-	let mut j: ::core::ffi::c_int;
+	let mut i: ::kernel::ffi::c_int;
+	let mut j: ::kernel::ffi::c_int;
 
 	i = 0;
 	while i < RSND_MAX_CHANNELS {
@@ -162,7 +162,7 @@ unsafe extern "C" fn rsnd_ctu_value_init(io: *mut rsnd_dai_stream, mod_: *mut rs
 
 unsafe extern "C" fn rsnd_ctu_value_reset(io: *mut rsnd_dai_stream, mod_: *mut rsnd_mod) {
 	let ctu = rsnd_mod_to_ctu(mod_);
-	let mut i: ::core::ffi::c_int;
+	let mut i: ::kernel::ffi::c_int;
 
 	if rsnd_kctrl_vals(&mut (*ctu).reset) == 0 {
 		return;
@@ -184,8 +184,8 @@ unsafe extern "C" fn rsnd_ctu_init(
 	mod_: *mut rsnd_mod,
 	io: *mut rsnd_dai_stream,
 	priv_: *mut rsnd_priv,
-) -> ::core::ffi::c_int {
-	let ret: ::core::ffi::c_int;
+) -> ::kernel::ffi::c_int {
+	let ret: ::kernel::ffi::c_int;
 
 	ret = rsnd_mod_power_on(mod_);
 	if ret < 0 {
@@ -203,7 +203,7 @@ unsafe extern "C" fn rsnd_ctu_quit(
 	mod_: *mut rsnd_mod,
 	io: *mut rsnd_dai_stream,
 	priv_: *mut rsnd_priv,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
 	rsnd_ctu_halt(mod_);
 
 	rsnd_mod_power_off(mod_);
@@ -215,9 +215,9 @@ unsafe extern "C" fn rsnd_ctu_pcm_new(
 	mod_: *mut rsnd_mod,
 	io: *mut rsnd_dai_stream,
 	rtd: *mut snd_soc_pcm_runtime,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
 	let ctu = rsnd_mod_to_ctu(mod_);
-	let mut ret: ::core::ffi::c_int;
+	let mut ret: ::kernel::ffi::c_int;
 
 	if rsnd_flags_has(ctu, KCTRL_INITIALIZED) {
 		return 0;
@@ -228,7 +228,7 @@ unsafe extern "C" fn rsnd_ctu_pcm_new(
 		mod_,
 		io,
 		rtd,
-		b"CTU Pass\0".as_ptr() as *const ::core::ffi::c_char,
+		b"CTU Pass\0".as_ptr() as *const ::kernel::ffi::c_char,
 		Some(rsnd_kctrl_accept_anytime),
 		::core::ptr::null_mut(),
 		&mut (*ctu).pass,
@@ -244,7 +244,7 @@ unsafe extern "C" fn rsnd_ctu_pcm_new(
 		mod_,
 		io,
 		rtd,
-		b"CTU SV0\0".as_ptr() as *const ::core::ffi::c_char,
+		b"CTU SV0\0".as_ptr() as *const ::kernel::ffi::c_char,
 		Some(rsnd_kctrl_accept_anytime),
 		::core::ptr::null_mut(),
 		&mut (*ctu).sv[0],
@@ -260,7 +260,7 @@ unsafe extern "C" fn rsnd_ctu_pcm_new(
 		mod_,
 		io,
 		rtd,
-		b"CTU SV1\0".as_ptr() as *const ::core::ffi::c_char,
+		b"CTU SV1\0".as_ptr() as *const ::kernel::ffi::c_char,
 		Some(rsnd_kctrl_accept_anytime),
 		::core::ptr::null_mut(),
 		&mut (*ctu).sv[1],
@@ -276,7 +276,7 @@ unsafe extern "C" fn rsnd_ctu_pcm_new(
 		mod_,
 		io,
 		rtd,
-		b"CTU SV2\0".as_ptr() as *const ::core::ffi::c_char,
+		b"CTU SV2\0".as_ptr() as *const ::kernel::ffi::c_char,
 		Some(rsnd_kctrl_accept_anytime),
 		::core::ptr::null_mut(),
 		&mut (*ctu).sv[2],
@@ -292,7 +292,7 @@ unsafe extern "C" fn rsnd_ctu_pcm_new(
 		mod_,
 		io,
 		rtd,
-		b"CTU SV3\0".as_ptr() as *const ::core::ffi::c_char,
+		b"CTU SV3\0".as_ptr() as *const ::kernel::ffi::c_char,
 		Some(rsnd_kctrl_accept_anytime),
 		::core::ptr::null_mut(),
 		&mut (*ctu).sv[3],
@@ -308,7 +308,7 @@ unsafe extern "C" fn rsnd_ctu_pcm_new(
 		mod_,
 		io,
 		rtd,
-		b"CTU Reset\0".as_ptr() as *const ::core::ffi::c_char,
+		b"CTU Reset\0".as_ptr() as *const ::kernel::ffi::c_char,
 		Some(rsnd_kctrl_accept_anytime),
 		Some(rsnd_ctu_value_reset),
 		&mut (*ctu).reset,
@@ -320,7 +320,7 @@ unsafe extern "C" fn rsnd_ctu_pcm_new(
 	ret
 }
 
-unsafe extern "C" fn rsnd_ctu_id(mod_: *mut rsnd_mod) -> ::core::ffi::c_int {
+unsafe extern "C" fn rsnd_ctu_id(mod_: *mut rsnd_mod) -> ::kernel::ffi::c_int {
 	/*
 	 * ctu00: -> 0, ctu01: -> 0, ctu02: -> 0, ctu03: -> 0
 	 * ctu10: -> 1, ctu11: -> 1, ctu12: -> 1, ctu13: -> 1
@@ -328,7 +328,7 @@ unsafe extern "C" fn rsnd_ctu_id(mod_: *mut rsnd_mod) -> ::core::ffi::c_int {
 	(*mod_).id / 4
 }
 
-unsafe extern "C" fn rsnd_ctu_id_sub(mod_: *mut rsnd_mod) -> ::core::ffi::c_int {
+unsafe extern "C" fn rsnd_ctu_id_sub(mod_: *mut rsnd_mod) -> ::kernel::ffi::c_int {
 	/*
 	 * ctu00: -> 0, ctu01: -> 1, ctu02: -> 2, ctu03: -> 3
 	 * ctu10: -> 0, ctu11: -> 1, ctu12: -> 2, ctu13: -> 3
@@ -368,7 +368,7 @@ static mut rsnd_ctu_ops: rsnd_mod_ops = rsnd_mod_ops {
 
 pub unsafe extern "C" fn rsnd_ctu_mod_get(
 	priv_: *mut rsnd_priv,
-	mut id: ::core::ffi::c_int,
+	mut id: ::kernel::ffi::c_int,
 ) -> *mut rsnd_mod {
 	if WARN_ON(id < 0 || id >= rsnd_ctu_nr(priv_)) {
 		id = 0;
@@ -377,14 +377,14 @@ pub unsafe extern "C" fn rsnd_ctu_mod_get(
 	rsnd_mod_get(rsnd_ctu_get(priv_, id))
 }
 
-pub unsafe extern "C" fn rsnd_ctu_probe(priv_: *mut rsnd_priv) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn rsnd_ctu_probe(priv_: *mut rsnd_priv) -> ::kernel::ffi::c_int {
 	let mut node: *mut device_node;
 	let dev: *mut device = rsnd_priv_to_dev(priv_);
 	let mut ctu: *mut rsnd_ctu;
 	let mut clk: *mut clk;
-	let mut i: ::core::ffi::c_int;
-	let nr: ::core::ffi::c_int;
-	let mut ret: ::core::ffi::c_int;
+	let mut i: ::kernel::ffi::c_int;
+	let nr: ::kernel::ffi::c_int;
+	let mut ret: ::kernel::ffi::c_int;
 
 	node = rsnd_ctu_of_node(priv_);
 	if node.is_null() {
@@ -407,7 +407,7 @@ pub unsafe extern "C" fn rsnd_ctu_probe(priv_: *mut rsnd_priv) -> ::core::ffi::c
 			goto_rsnd_ctu_probe_done(node, ret)
 		} else {
 			(*priv_).ctu_nr = nr;
-			(*priv_).ctu = ctu as *mut ::core::ffi::c_void;
+			(*priv_).ctu = ctu as *mut ::kernel::ffi::c_void;
 
 			i = 0;
 			ret = 0;
@@ -447,8 +447,8 @@ pub unsafe extern "C" fn rsnd_ctu_probe(priv_: *mut rsnd_priv) -> ::core::ffi::c
 
 unsafe fn goto_rsnd_ctu_probe_done(
 	node: *mut device_node,
-	ret: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+	ret: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
 	of_node_put(node);
 
 	ret
@@ -456,7 +456,7 @@ unsafe fn goto_rsnd_ctu_probe_done(
 
 pub unsafe extern "C" fn rsnd_ctu_remove(priv_: *mut rsnd_priv) {
 	let mut ctu: *mut rsnd_ctu;
-	let mut i: ::core::ffi::c_int;
+	let mut i: ::kernel::ffi::c_int;
 
 	i = 0;
 	while i < rsnd_ctu_nr(priv_) {
@@ -468,7 +468,7 @@ pub unsafe extern "C" fn rsnd_ctu_remove(priv_: *mut rsnd_priv) {
 
 pub unsafe extern "C" fn rsnd_ctu_suspend(priv_: *mut rsnd_priv) {
 	let mut ctu: *mut rsnd_ctu;
-	let mut i: ::core::ffi::c_int;
+	let mut i: ::kernel::ffi::c_int;
 
 	i = 0;
 	while i < rsnd_ctu_nr(priv_) {
@@ -480,7 +480,7 @@ pub unsafe extern "C" fn rsnd_ctu_suspend(priv_: *mut rsnd_priv) {
 
 pub unsafe extern "C" fn rsnd_ctu_resume(priv_: *mut rsnd_priv) {
 	let mut ctu: *mut rsnd_ctu;
-	let mut i: ::core::ffi::c_int;
+	let mut i: ::kernel::ffi::c_int;
 
 	i = 0;
 	while i < rsnd_ctu_nr(priv_) {

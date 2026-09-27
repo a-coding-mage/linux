@@ -10,8 +10,8 @@
 extern "C" {
     pub fn utf8version_is_supported(
         um: *const unicode_map,
-        version: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        version: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
 }
 
 /*
@@ -24,7 +24,7 @@ extern "C" {
     pub fn utf8nlen(
         um: *const unicode_map,
         n: utf8_normalization,
-        s: *const core::ffi::c_char,
+        s: *const kernel::ffi::c_char,
         len: usize,
     ) -> isize;
 }
@@ -39,12 +39,12 @@ pub const UTF8HANGULLEAF: usize = 12;
 pub struct utf8cursor {
     pub um: *const unicode_map,
     pub n: utf8_normalization,
-    pub s: *const core::ffi::c_char,
-    pub p: *const core::ffi::c_char,
-    pub ss: *const core::ffi::c_char,
-    pub sp: *const core::ffi::c_char,
-    pub len: core::ffi::c_uint,
-    pub slen: core::ffi::c_uint,
+    pub s: *const kernel::ffi::c_char,
+    pub p: *const kernel::ffi::c_char,
+    pub ss: *const kernel::ffi::c_char,
+    pub sp: *const kernel::ffi::c_char,
+    pub len: kernel::ffi::c_uint,
+    pub slen: kernel::ffi::c_uint,
     pub ccc: i16,
     pub nccc: i16,
     pub hangul: [u8; UTF8HANGULLEAF],
@@ -60,9 +60,9 @@ extern "C" {
         u8c: *mut utf8cursor,
         um: *const unicode_map,
         n: utf8_normalization,
-        s: *const core::ffi::c_char,
+        s: *const kernel::ffi::c_char,
         len: usize,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 /*
@@ -72,25 +72,25 @@ extern "C" {
  * Returns -1 if the string being normalized is not valid UTF-8.
  */
 extern "C" {
-    pub fn utf8byte(u8c: *mut utf8cursor) -> core::ffi::c_int;
+    pub fn utf8byte(u8c: *mut utf8cursor) -> kernel::ffi::c_int;
 }
 
 #[repr(C)]
 pub struct utf8data {
-    pub maxage: core::ffi::c_uint,
-    pub offset: core::ffi::c_uint,
+    pub maxage: kernel::ffi::c_uint,
+    pub offset: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct utf8data_table {
-    pub utf8agetab: *const core::ffi::c_uint,
-    pub utf8agetab_size: core::ffi::c_int,
+    pub utf8agetab: *const kernel::ffi::c_uint,
+    pub utf8agetab_size: kernel::ffi::c_int,
 
     pub utf8nfdicfdata: *const utf8data,
-    pub utf8nfdicfdata_size: core::ffi::c_int,
+    pub utf8nfdicfdata_size: kernel::ffi::c_int,
 
     pub utf8nfdidata: *const utf8data,
-    pub utf8nfdidata_size: core::ffi::c_int,
+    pub utf8nfdidata_size: kernel::ffi::c_int,
 
     pub utf8data: *const u8,
 }

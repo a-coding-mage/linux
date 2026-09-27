@@ -6,10 +6,10 @@
 #[repr(C)]
 pub struct fqdir {
     /* sysctls */
-    pub high_thresh: ::core::ffi::c_long,
-    pub low_thresh: ::core::ffi::c_long,
-    pub timeout: ::core::ffi::c_int,
-    pub max_dist: ::core::ffi::c_int,
+    pub high_thresh: ::kernel::ffi::c_long,
+    pub low_thresh: ::kernel::ffi::c_long,
+    pub timeout: ::kernel::ffi::c_int,
+    pub max_dist: ::kernel::ffi::c_int,
     pub f: *mut inet_frags,
     pub net: *mut net,
     pub dead: bool,
@@ -93,8 +93,8 @@ pub struct inet_frag_queue {
     pub fragments_tail: *mut sk_buff,
     pub last_run_head: *mut sk_buff,
     pub stamp: ktime_t,
-    pub len: ::core::ffi::c_int,
-    pub meat: ::core::ffi::c_int,
+    pub len: ::kernel::ffi::c_int,
+    pub meat: ::kernel::ffi::c_int,
     pub tstamp_type: u8,
     pub flags: __u8,
     pub max_size: u16,
@@ -104,53 +104,53 @@ pub struct inet_frag_queue {
 
 #[repr(C)]
 pub struct inet_frags {
-    pub qsize: ::core::ffi::c_uint,
-    pub constructor: Option<unsafe extern "C" fn(*mut inet_frag_queue, *const ::core::ffi::c_void)>,
+    pub qsize: ::kernel::ffi::c_uint,
+    pub constructor: Option<unsafe extern "C" fn(*mut inet_frag_queue, *const ::kernel::ffi::c_void)>,
     pub destructor: Option<unsafe extern "C" fn(*mut inet_frag_queue)>,
     pub frag_expire: Option<unsafe extern "C" fn(*mut timer_list)>,
     pub frags_cachep: *mut kmem_cache,
-    pub frags_cache_name: *const ::core::ffi::c_char,
+    pub frags_cache_name: *const ::kernel::ffi::c_char,
     pub rhash_params: rhashtable_params,
     pub refcnt: refcount_t,
     pub completion: completion,
 }
 
 extern "C" {
-    pub fn inet_frags_init(f: *mut inet_frags) -> ::core::ffi::c_int;
+    pub fn inet_frags_init(f: *mut inet_frags) -> ::kernel::ffi::c_int;
     pub fn inet_frags_fini(f: *mut inet_frags);
-    pub fn fqdir_init(fqdirp: *mut *mut fqdir, f: *mut inet_frags, net: *mut net) -> ::core::ffi::c_int;
+    pub fn fqdir_init(fqdirp: *mut *mut fqdir, f: *mut inet_frags, net: *mut net) -> ::kernel::ffi::c_int;
     pub fn fqdir_pre_exit(fqdir: *mut fqdir);
     pub fn fqdir_exit(fqdir: *mut fqdir);
-    pub fn inet_frag_kill(q: *mut inet_frag_queue, refs: *mut ::core::ffi::c_int);
+    pub fn inet_frag_kill(q: *mut inet_frag_queue, refs: *mut ::kernel::ffi::c_int);
     pub fn inet_frag_destroy(q: *mut inet_frag_queue);
-    pub fn inet_frag_find(fqdir: *mut fqdir, key: *mut ::core::ffi::c_void) -> *mut inet_frag_queue;
+    pub fn inet_frag_find(fqdir: *mut fqdir, key: *mut ::kernel::ffi::c_void) -> *mut inet_frag_queue;
     pub fn inet_frag_queue_flush(q: *mut inet_frag_queue, reason: skb_drop_reason);
 
-    pub fn refcount_sub_and_test(refs: ::core::ffi::c_int, r: *mut refcount_t) -> bool;
-    pub fn atomic_long_read(v: *const atomic_long_t) -> ::core::ffi::c_long;
-    pub fn atomic_long_sub(val: ::core::ffi::c_long, v: *mut atomic_long_t);
-    pub fn atomic_long_add(val: ::core::ffi::c_long, v: *mut atomic_long_t);
+    pub fn refcount_sub_and_test(refs: ::kernel::ffi::c_int, r: *mut refcount_t) -> bool;
+    pub fn atomic_long_read(v: *const atomic_long_t) -> ::kernel::ffi::c_long;
+    pub fn atomic_long_sub(val: ::kernel::ffi::c_long, v: *mut atomic_long_t);
+    pub fn atomic_long_add(val: ::kernel::ffi::c_long, v: *mut atomic_long_t);
 
-    pub fn inet_frag_queue_insert(q: *mut inet_frag_queue, skb: *mut sk_buff, offset: ::core::ffi::c_int, end: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn inet_frag_reasm_prepare(q: *mut inet_frag_queue, skb: *mut sk_buff, parent: *mut sk_buff) -> *mut ::core::ffi::c_void;
-    pub fn inet_frag_reasm_finish(q: *mut inet_frag_queue, head: *mut sk_buff, reasm_data: *mut ::core::ffi::c_void, try_coalesce: bool);
+    pub fn inet_frag_queue_insert(q: *mut inet_frag_queue, skb: *mut sk_buff, offset: ::kernel::ffi::c_int, end: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn inet_frag_reasm_prepare(q: *mut inet_frag_queue, skb: *mut sk_buff, parent: *mut sk_buff) -> *mut ::kernel::ffi::c_void;
+    pub fn inet_frag_reasm_finish(q: *mut inet_frag_queue, head: *mut sk_buff, reasm_data: *mut ::kernel::ffi::c_void, try_coalesce: bool);
     pub fn inet_frag_pull_head(q: *mut inet_frag_queue) -> *mut sk_buff;
 }
 
-pub unsafe fn inet_frag_putn(q: *mut inet_frag_queue, refs: ::core::ffi::c_int) {
+pub unsafe fn inet_frag_putn(q: *mut inet_frag_queue, refs: ::kernel::ffi::c_int) {
     if refs != 0 && refcount_sub_and_test(refs, &mut (*q).refcnt) {
         inet_frag_destroy(q);
     }
 }
 
 /* Memory Tracking Functions. */
-pub unsafe fn frag_mem_limit(fqdir: *const fqdir) -> ::core::ffi::c_long {
+pub unsafe fn frag_mem_limit(fqdir: *const fqdir) -> ::kernel::ffi::c_long {
     atomic_long_read(&(*fqdir).mem)
 }
-pub unsafe fn sub_frag_mem_limit(fqdir: *mut fqdir, val: ::core::ffi::c_long) {
+pub unsafe fn sub_frag_mem_limit(fqdir: *mut fqdir, val: ::kernel::ffi::c_long) {
     atomic_long_sub(val, &mut (*fqdir).mem)
 }
-pub unsafe fn add_frag_mem_limit(fqdir: *mut fqdir, val: ::core::ffi::c_long) {
+pub unsafe fn add_frag_mem_limit(fqdir: *mut fqdir, val: ::kernel::ffi::c_long) {
     atomic_long_add(val, &mut (*fqdir).mem)
 }
 
@@ -166,8 +166,8 @@ pub const IPFRAG_ECN_CE: u8 = 0x08;
 pub static mut ip_frag_ecn_table: [u8; 16] = [0; 16];
 
 /* Return values of inet_frag_queue_insert() */
-pub const IPFRAG_OK: ::core::ffi::c_int = 0;
-pub const IPFRAG_DUP: ::core::ffi::c_int = 1;
-pub const IPFRAG_OVERLAP: ::core::ffi::c_int = 2;
+pub const IPFRAG_OK: ::kernel::ffi::c_int = 0;
+pub const IPFRAG_DUP: ::kernel::ffi::c_int = 1;
+pub const IPFRAG_OVERLAP: ::kernel::ffi::c_int = 2;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

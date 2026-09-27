@@ -3,19 +3,19 @@
 // The C header guard is omitted in Rust; item/module inclusion provides the guard.
 
 extern "C" {
-    pub static mut __stack_chk_guard: core::ffi::c_ulong;
-    pub static mut stack_protector_debug: core::ffi::c_int;
+    pub static mut __stack_chk_guard: kernel::ffi::c_ulong;
+    pub static mut stack_protector_debug: kernel::ffi::c_int;
 
-    pub fn __stack_protector_apply_early(kernel_start: core::ffi::c_ulong);
+    pub fn __stack_protector_apply_early(kernel_start: kernel::ffi::c_ulong);
     pub fn __stack_protector_apply(
-        start: *mut core::ffi::c_ulong,
-        end: *mut core::ffi::c_ulong,
-        kernel_start: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        start: *mut kernel::ffi::c_ulong,
+        end: *mut kernel::ffi::c_ulong,
+        kernel_start: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
 }
 
 #[inline]
-pub unsafe fn stack_protector_apply_early(kernel_start: core::ffi::c_ulong) {
+pub unsafe fn stack_protector_apply_early(kernel_start: kernel::ffi::c_ulong) {
     // Preserves IS_ENABLED(CONFIG_STACKPROTECTOR), whose build-time definition
     // is supplied by the surrounding kernel configuration.
     #[cfg(CONFIG_STACKPROTECTOR)]
@@ -26,9 +26,9 @@ pub unsafe fn stack_protector_apply_early(kernel_start: core::ffi::c_ulong) {
 
 #[inline]
 pub unsafe fn stack_protector_apply(
-    start: *mut core::ffi::c_ulong,
-    end: *mut core::ffi::c_ulong,
-) -> core::ffi::c_int {
+    start: *mut kernel::ffi::c_ulong,
+    end: *mut kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     // Preserves IS_ENABLED(CONFIG_STACKPROTECTOR), whose build-time definition
     // is supplied by the surrounding kernel configuration.
     #[cfg(CONFIG_STACKPROTECTOR)]

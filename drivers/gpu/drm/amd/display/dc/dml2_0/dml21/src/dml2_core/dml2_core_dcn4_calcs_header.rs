@@ -136,10 +136,10 @@ unsafe extern "C" {
     );
     pub fn dml2_core_internal_bw_type_str(
         bw_type: dml2_core_internal_bw_type,
-    ) -> *const ::core::ffi::c_char;
+    ) -> *const ::kernel::ffi::c_char;
     pub fn dml2_core_internal_soc_state_type_str(
         dml2_core_internal_soc_state_type: dml2_core_internal_soc_state_type,
-    ) -> *const ::core::ffi::c_char;
+    ) -> *const ::kernel::ffi::c_char;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

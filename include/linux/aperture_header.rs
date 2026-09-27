@@ -18,22 +18,22 @@ extern "C" {
         pdev: *mut platform_device,
         base: resource_size_t,
         size: resource_size_t,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn aperture_remove_conflicting_devices(
         base: resource_size_t,
         size: resource_size_t,
-        name: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        name: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn __aperture_remove_legacy_vga_devices(
         pdev: *mut pci_dev,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn aperture_remove_conflicting_pci_devices(
         pdev: *mut pci_dev,
-        name: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        name: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_APERTURE_HELPERS))]
@@ -41,7 +41,7 @@ pub unsafe fn devm_aperture_acquire_for_platform_device(
     _pdev: *mut platform_device,
     _base: resource_size_t,
     _size: resource_size_t,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -49,23 +49,23 @@ pub unsafe fn devm_aperture_acquire_for_platform_device(
 pub unsafe fn aperture_remove_conflicting_devices(
     _base: resource_size_t,
     _size: resource_size_t,
-    _name: *const ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
+    _name: *const ::kernel::ffi::c_char,
+) -> ::kernel::ffi::c_int {
     0
 }
 
 #[cfg(not(CONFIG_APERTURE_HELPERS))]
 pub unsafe fn __aperture_remove_legacy_vga_devices(
     _pdev: *mut pci_dev,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     0
 }
 
 #[cfg(not(CONFIG_APERTURE_HELPERS))]
 pub unsafe fn aperture_remove_conflicting_pci_devices(
     _pdev: *mut pci_dev,
-    _name: *const ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
+    _name: *const ::kernel::ffi::c_char,
+) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -80,8 +80,8 @@ pub unsafe fn aperture_remove_conflicting_pci_devices(
  * 0 on success, or a negative errno code otherwise
  */
 pub unsafe fn aperture_remove_all_conflicting_devices(
-    name: *const ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
+    name: *const ::kernel::ffi::c_char,
+) -> ::kernel::ffi::c_int {
     aperture_remove_conflicting_devices(0 as resource_size_t, resource_size_t::MAX, name)
 }
 

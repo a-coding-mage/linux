@@ -55,14 +55,14 @@ pub struct Timespec64 {
 
 #[repr(C)]
 pub struct TimestampExpectation {
-    pub test_case_name: *const core::ffi::c_char,
+    pub test_case_name: *const kernel::ffi::c_char,
     pub expected: Timespec64,
     pub extra_bits: u32,
     pub msb_set: bool,
     pub lower_bound: bool,
 }
 
-macro_rules! cstr { ($s:expr) => { concat!($s, "\0").as_ptr() as *const core::ffi::c_char } }
+macro_rules! cstr { ($s:expr) => { concat!($s, "\0").as_ptr() as *const kernel::ffi::c_char } }
 
 pub static TEST_DATA: [TimestampExpectation; 16] = [
     TimestampExpectation { test_case_name: cstr!(LOWER_BOUND_NEG_NO_EXTRA_BITS_CASE), msb_set: true, lower_bound: true, extra_bits: 0, expected: Timespec64 { tv_sec: -0x80000000, tv_nsec: 0 } },
@@ -85,8 +85,8 @@ pub static TEST_DATA: [TimestampExpectation; 16] = [
 
 // The KUnit parameter-description helper and array-parameter registration are
 // supplied by KUnit in the surrounding kernel translation.
-pub unsafe fn timestamp_expectation_to_desc(t: *const TimestampExpectation, desc: *mut core::ffi::c_char) {
-    unsafe extern "C" { fn strscpy(dst: *mut core::ffi::c_char, src: *const core::ffi::c_char, count: usize) -> isize; }
+pub unsafe fn timestamp_expectation_to_desc(t: *const TimestampExpectation, desc: *mut kernel::ffi::c_char) {
+    unsafe extern "C" { fn strscpy(dst: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char, count: usize) -> isize; }
     unsafe { strscpy(desc, (*t).test_case_name, 256); }
 }
 
@@ -105,10 +105,10 @@ pub unsafe fn get_32bit_time(test: *const TimestampExpectation) -> i64 {
  * Documentation/filesystems/ext4/inodes.rst. */
 
 // KUnit test context and ext4_decode_extra_time are external kernel symbols.
-#[repr(C)] pub struct Kunit { pub param_value: *mut core::ffi::c_void }
+#[repr(C)] pub struct Kunit { pub param_value: *mut kernel::ffi::c_void }
 unsafe extern "C" {
     fn ext4_decode_extra_time(sec: u32, extra: u32) -> Timespec64;
-    fn kunit_expect_eq_msg(test: *mut Kunit, expected: i64, actual: i64, fmt: *const core::ffi::c_char, ...);
+    fn kunit_expect_eq_msg(test: *mut Kunit, expected: i64, actual: i64, fmt: *const kernel::ffi::c_char, ...);
 }
 
 pub unsafe fn inode_test_xtimestamp_decoding(test: *mut Kunit) {

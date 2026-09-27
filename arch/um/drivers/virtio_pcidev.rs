@@ -23,9 +23,9 @@ pub struct virtio_pcidev_device {
     pub cmd_vq: *mut virtqueue,
     pub irq_vq: *mut virtqueue,
     pub bufs: [virtio_pcidev_message_buffer; VIRTIO_PCIDEV_WRITE_BUFS + 1],
-    pub extra_ptrs: [*mut core::ffi::c_void; VIRTIO_PCIDEV_WRITE_BUFS + 1],
+    pub extra_ptrs: [*mut kernel::ffi::c_void; VIRTIO_PCIDEV_WRITE_BUFS + 1],
     pub used_bufs: [usize; 1],
-    pub status: core::ffi::c_ulong,
+    pub status: kernel::ffi::c_ulong,
     pub platform: bool,
 }
 
@@ -41,15 +41,15 @@ unsafe fn virtio_pcidev_get_buf(dev: *mut virtio_pcidev_device, posted: *mut boo
     VIRTIO_PCIDEV_WRITE_BUFS as i32
 }
 
-unsafe fn virtio_pcidev_free_buf(dev: *mut virtio_pcidev_device, buf: *mut core::ffi::c_void) {
-    let last = (*dev).bufs.as_mut_ptr().add(VIRTIO_PCIDEV_WRITE_BUFS) as *mut core::ffi::c_void;
+unsafe fn virtio_pcidev_free_buf(dev: *mut virtio_pcidev_device, buf: *mut kernel::ffi::c_void) {
+    let last = (*dev).bufs.as_mut_ptr().add(VIRTIO_PCIDEV_WRITE_BUFS) as *mut kernel::ffi::c_void;
     if buf == last {
         kfree((*dev).extra_ptrs[VIRTIO_PCIDEV_WRITE_BUFS]);
         (*dev).extra_ptrs[VIRTIO_PCIDEV_WRITE_BUFS] = core::ptr::null_mut();
         return;
     }
     for i in 0..VIRTIO_PCIDEV_WRITE_BUFS {
-        if buf == (*dev).bufs.as_mut_ptr().add(i) as *mut core::ffi::c_void {
+        if buf == (*dev).bufs.as_mut_ptr().add(i) as *mut kernel::ffi::c_void {
             kfree((*dev).extra_ptrs[i]);
             (*dev).extra_ptrs[i] = core::ptr::null_mut();
             WARN_ON(!test_and_clear_bit(i, (*dev).used_bufs.as_mut_ptr()));
@@ -60,8 +60,8 @@ unsafe fn virtio_pcidev_free_buf(dev: *mut virtio_pcidev_device, buf: *mut core:
 }
 
 unsafe fn virtio_pcidev_send_cmd(dev: *mut virtio_pcidev_device, cmd: *mut virtio_pcidev_msg,
-                                 cmd_size: usize, extra: *const core::ffi::c_void,
-                                 extra_size: usize, out: *mut core::ffi::c_void,
+                                 cmd_size: usize, extra: *const kernel::ffi::c_void,
+                                 extra_size: usize, out: *mut kernel::ffi::c_void,
                                  out_size: usize) -> i32 {
     let mut out_sg: scatterlist = core::mem::zeroed();
     let mut extra_sg: scatterlist = core::mem::zeroed();
@@ -144,13 +144,13 @@ unsafe fn virtio_pcidev_cfgspace_write(pdev: *mut um_pci_device, offset: u32, si
     match size { 1 => msg[core::mem::size_of::<virtio_pcidev_msg>()] = val as u8, 2 => msg[core::mem::size_of::<virtio_pcidev_msg>()..].copy_from_slice(&(val as u16).to_le_bytes()), 4 => msg[core::mem::size_of::<virtio_pcidev_msg>()..].copy_from_slice(&(val as u32).to_le_bytes()), 8 => msg[core::mem::size_of::<virtio_pcidev_msg>()..].copy_from_slice(&val.to_le_bytes()), _ => {} }
     WARN_ON(virtio_pcidev_send_cmd(dev, hdr, core::mem::size_of::<virtio_pcidev_msg>() + 8, core::ptr::null(), 0, core::ptr::null_mut(), 0) != 0);
 }
-unsafe fn virtio_pcidev_bar_copy_from(pdev: *mut um_pci_device, bar: i32, buffer: *mut core::ffi::c_void, offset: u32, size: i32) { let dev=container_of!(pdev,virtio_pcidev_device,pdev); let mut h:virtio_pcidev_msg=core::mem::zeroed(); h.op=VIRTIO_PCIDEV_OP_MMIO_READ;h.bar=bar;h.size=size;h.addr=offset; core::ptr::write_bytes(buffer,0xff,size as usize); virtio_pcidev_send_cmd(dev,&mut h,core::mem::size_of_val(&h),core::ptr::null(),0,buffer,size as usize); }
+unsafe fn virtio_pcidev_bar_copy_from(pdev: *mut um_pci_device, bar: i32, buffer: *mut kernel::ffi::c_void, offset: u32, size: i32) { let dev=container_of!(pdev,virtio_pcidev_device,pdev); let mut h:virtio_pcidev_msg=core::mem::zeroed(); h.op=VIRTIO_PCIDEV_OP_MMIO_READ;h.bar=bar;h.size=size;h.addr=offset; core::ptr::write_bytes(buffer,0xff,size as usize); virtio_pcidev_send_cmd(dev,&mut h,core::mem::size_of_val(&h),core::ptr::null(),0,buffer,size as usize); }
 unsafe fn virtio_pcidev_bar_read(pdev: *mut um_pci_device, bar: i32, offset: u32, size: i32) -> u64 { let mut d=[0xffu8;8];virtio_pcidev_bar_copy_from(pdev,bar,d.as_mut_ptr() as *mut _,offset,size); match size {1=>d[0] as u64,2=>u16::from_le_bytes([d[0],d[1]]) as u64,4=>u32::from_le_bytes(d[0..4].try_into().unwrap()) as u64,8=>u64::from_le_bytes(d),_=>ULONG_MAX} }
-unsafe fn virtio_pcidev_bar_copy_to(pdev:*mut um_pci_device,bar:i32,offset:u32,buffer:*const core::ffi::c_void,size:i32){let dev=container_of!(pdev,virtio_pcidev_device,pdev);let mut h:virtio_pcidev_msg=core::mem::zeroed();h.op=VIRTIO_PCIDEV_OP_MMIO_WRITE;h.bar=bar;h.size=size;h.addr=offset;virtio_pcidev_send_cmd(dev,&mut h,core::mem::size_of_val(&h),buffer,size as usize,core::ptr::null_mut(),0);}
+unsafe fn virtio_pcidev_bar_copy_to(pdev:*mut um_pci_device,bar:i32,offset:u32,buffer:*const kernel::ffi::c_void,size:i32){let dev=container_of!(pdev,virtio_pcidev_device,pdev);let mut h:virtio_pcidev_msg=core::mem::zeroed();h.op=VIRTIO_PCIDEV_OP_MMIO_WRITE;h.bar=bar;h.size=size;h.addr=offset;virtio_pcidev_send_cmd(dev,&mut h,core::mem::size_of_val(&h),buffer,size as usize,core::ptr::null_mut(),0);}
 unsafe fn virtio_pcidev_bar_write(pdev:*mut um_pci_device,bar:i32,offset:u32,size:i32,val:u64){let mut d=[0u8;8];match size{1=>d[0]=val as u8,2=>d[..2].copy_from_slice(&(val as u16).to_le_bytes()),4=>d[..4].copy_from_slice(&(val as u32).to_le_bytes()),8=>d.copy_from_slice(&val.to_le_bytes()),_=>{}}virtio_pcidev_bar_copy_to(pdev,bar,offset,d.as_ptr() as *const _,size);}
 unsafe fn virtio_pcidev_bar_set(pdev:*mut um_pci_device,bar:i32,offset:u32,value:u8,size:i32){let dev=container_of!(pdev,virtio_pcidev_device,pdev);let mut h:virtio_pcidev_msg=core::mem::zeroed();h.op=VIRTIO_PCIDEV_OP_MMIO_MEMSET;h.bar=bar;h.size=size;h.addr=offset;virtio_pcidev_send_cmd(dev,&mut h,core::mem::size_of_val(&h),&value as *const _ as *const _,1,core::ptr::null_mut(),0);}
 
-unsafe fn virtio_pcidev_irq_vq_addbuf(vq:*mut virtqueue,buf:*mut core::ffi::c_void,kick:bool){let mut sg:scatterlist=core::mem::zeroed();sg_init_one(&mut sg,buf,MAX_IRQ_MSG_SIZE);if virtqueue_add_inbuf(vq,&mut sg,1,buf,GFP_ATOMIC)!=0{kfree(buf)}else if kick{virtqueue_kick(vq)}}
+unsafe fn virtio_pcidev_irq_vq_addbuf(vq:*mut virtqueue,buf:*mut kernel::ffi::c_void,kick:bool){let mut sg:scatterlist=core::mem::zeroed();sg_init_one(&mut sg,buf,MAX_IRQ_MSG_SIZE);if virtqueue_add_inbuf(vq,&mut sg,1,buf,GFP_ATOMIC)!=0{kfree(buf)}else if kick{virtqueue_kick(vq)}}
 unsafe fn virtio_pcidev_cmd_vq_cb(vq:*mut virtqueue){let dev=(*(*vq).vdev).priv_ as *mut virtio_pcidev_device;if test_bit(VIRTIO_PCIDEV_STAT_WAITING,(*dev).status as *const _){return}let mut len=0;loop{let b=virtqueue_get_buf(vq,&mut len);if b.is_null(){break}virtio_pcidev_free_buf(dev,b)}}
 unsafe fn virtio_pcidev_irq_vq_cb(vq:*mut virtqueue){let mut len=0;loop{let m=virtqueue_get_buf(vq,&mut len);if m.is_null(){break}virtio_pcidev_irq_vq_addbuf(vq,m,true)}}
 

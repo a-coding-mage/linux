@@ -9,7 +9,7 @@
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
-pub unsafe fn __vdso_syscall0(sys_nr: libc::c_long) -> libc::c_long {
+pub unsafe fn __vdso_syscall0(sys_nr: core::ffi::c_long) -> core::ffi::c_long {
     let mut ret = sys_nr;
     core::arch::asm!(
         "syscall",
@@ -23,7 +23,7 @@ pub unsafe fn __vdso_syscall0(sys_nr: libc::c_long) -> libc::c_long {
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
-pub unsafe fn __vdso_syscall1(sys_nr: libc::c_long, a1: libc::c_long) -> libc::c_long {
+pub unsafe fn __vdso_syscall1(sys_nr: core::ffi::c_long, a1: core::ffi::c_long) -> core::ffi::c_long {
     let mut ret = sys_nr;
     core::arch::asm!("syscall", inout("rax") ret, in("rdi") a1, lateout("rcx") _, lateout("r11") _, options(nostack));
     ret
@@ -31,7 +31,7 @@ pub unsafe fn __vdso_syscall1(sys_nr: libc::c_long, a1: libc::c_long) -> libc::c
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
-pub unsafe fn __vdso_syscall2(sys_nr: libc::c_long, a1: libc::c_long, a2: libc::c_long) -> libc::c_long {
+pub unsafe fn __vdso_syscall2(sys_nr: core::ffi::c_long, a1: core::ffi::c_long, a2: core::ffi::c_long) -> core::ffi::c_long {
     let mut ret = sys_nr;
     core::arch::asm!("syscall", inout("rax") ret, in("rdi") a1, in("rsi") a2, lateout("rcx") _, lateout("r11") _, options(nostack));
     ret
@@ -39,7 +39,7 @@ pub unsafe fn __vdso_syscall2(sys_nr: libc::c_long, a1: libc::c_long, a2: libc::
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
-pub unsafe fn __vdso_syscall3(sys_nr: libc::c_long, a1: libc::c_long, a2: libc::c_long, a3: libc::c_long) -> libc::c_long {
+pub unsafe fn __vdso_syscall3(sys_nr: core::ffi::c_long, a1: core::ffi::c_long, a2: core::ffi::c_long, a3: core::ffi::c_long) -> core::ffi::c_long {
     let mut ret = sys_nr;
     core::arch::asm!("syscall", inout("rax") ret, in("rdi") a1, in("rsi") a2, in("rdx") a3, lateout("rcx") _, lateout("r11") _, options(nostack));
     ret
@@ -47,7 +47,7 @@ pub unsafe fn __vdso_syscall3(sys_nr: libc::c_long, a1: libc::c_long, a2: libc::
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
-pub unsafe fn __vdso_syscall4(sys_nr: libc::c_long, a1: libc::c_long, a2: libc::c_long, a3: libc::c_long, a4: libc::c_long) -> libc::c_long {
+pub unsafe fn __vdso_syscall4(sys_nr: core::ffi::c_long, a1: core::ffi::c_long, a2: core::ffi::c_long, a3: core::ffi::c_long, a4: core::ffi::c_long) -> core::ffi::c_long {
     let mut ret = sys_nr;
     core::arch::asm!("syscall", inout("rax") ret, in("rdi") a1, in("rsi") a2, in("rdx") a3, in("r10") a4, lateout("rcx") _, lateout("r11") _, options(nostack));
     ret
@@ -55,7 +55,7 @@ pub unsafe fn __vdso_syscall4(sys_nr: libc::c_long, a1: libc::c_long, a2: libc::
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
-pub unsafe fn __vdso_syscall5(sys_nr: libc::c_long, a1: libc::c_long, a2: libc::c_long, a3: libc::c_long, a4: libc::c_long, a5: libc::c_long) -> libc::c_long {
+pub unsafe fn __vdso_syscall5(sys_nr: core::ffi::c_long, a1: core::ffi::c_long, a2: core::ffi::c_long, a3: core::ffi::c_long, a4: core::ffi::c_long, a5: core::ffi::c_long) -> core::ffi::c_long {
     let mut ret = sys_nr;
     core::arch::asm!("syscall", inout("rax") ret, in("rdi") a1, in("rsi") a2, in("rdx") a3, in("r10") a4, in("r8") a5, lateout("rcx") _, lateout("r11") _, options(nostack));
     ret

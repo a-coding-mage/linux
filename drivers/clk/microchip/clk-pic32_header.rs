@@ -10,7 +10,7 @@
 #[repr(C)]
 pub struct pic32_clk_common {
     pub dev: *mut device,
-    pub iobase: *mut core::ffi::c_void,
+    pub iobase: *mut kernel::ffi::c_void,
     pub reg_lock: spinlock_t, /* clock lock */
 }
 
@@ -56,7 +56,7 @@ pub struct pic32_sec_osc_data {
     pub status_reg: u32,
     pub enable_mask: u32,
     pub status_mask: u32,
-    pub fixed_rate: core::ffi::c_ulong,
+    pub fixed_rate: kernel::ffi::c_ulong,
 }
 
 extern "C" {

@@ -11,20 +11,20 @@
  */
 unsafe fn exfat_test_bitmap_range(
     sb: *mut super_block,
-    clu: ::core::ffi::c_uint,
-    count: ::core::ffi::c_uint,
+    clu: ::kernel::ffi::c_uint,
+    count: ::kernel::ffi::c_uint,
 ) -> bool {
     let sbi = EXFAT_SB(sb);
     let mut start = clu;
     let end = clu.wrapping_add(count);
-    let mut ent_idx: ::core::ffi::c_uint;
-    let mut i: ::core::ffi::c_uint;
-    let mut b: ::core::ffi::c_uint;
-    let mut bit_offset: ::core::ffi::c_uint;
-    let mut bits_to_check: ::core::ffi::c_uint;
+    let mut ent_idx: ::kernel::ffi::c_uint;
+    let mut i: ::kernel::ffi::c_uint;
+    let mut b: ::kernel::ffi::c_uint;
+    let mut bit_offset: ::kernel::ffi::c_uint;
+    let mut bits_to_check: ::kernel::ffi::c_uint;
     let bitmap_le: *mut __le_long;
-    let mut mask: ::core::ffi::c_ulong;
-    let mut word: ::core::ffi::c_ulong;
+    let mut mask: ::kernel::ffi::c_ulong;
+    let mut word: ::kernel::ffi::c_ulong;
 
     if !is_valid_cluster(sbi, start) || !is_valid_cluster(sbi, end.wrapping_sub(1)) {
         return false;
@@ -41,14 +41,14 @@ unsafe fn exfat_test_bitmap_range(
         bit_offset = b % BITS_PER_LONG;
         bits_to_check = core::cmp::min(
             end.wrapping_sub(start),
-            (BITS_PER_LONG - bit_offset) as ::core::ffi::c_uint,
+            (BITS_PER_LONG - bit_offset) as ::kernel::ffi::c_uint,
         );
 
         /* Create a bitmask for the range of bits to check */
         if bits_to_check >= BITS_PER_LONG {
             mask = !0;
         } else {
-            mask = ((1 as ::core::ffi::c_ulong).wrapping_shl(bits_to_check) - 1)
+            mask = ((1 as ::kernel::ffi::c_ulong).wrapping_shl(bits_to_check) - 1)
                 .wrapping_shl(bit_offset);
         }
         word = lel_to_cpu(*bitmap_le.add((b / BITS_PER_LONG) as usize));
@@ -64,12 +64,12 @@ unsafe fn exfat_test_bitmap_range(
     true
 }
 
-unsafe fn exfat_allocate_bitmap(sb: *mut super_block, ep: *mut exfat_dentry) -> ::core::ffi::c_int {
+unsafe fn exfat_allocate_bitmap(sb: *mut super_block, ep: *mut exfat_dentry) -> ::kernel::ffi::c_int {
     let sbi = EXFAT_SB(sb);
-    let map_size: ::core::ffi::c_longlong;
-    let mut i: ::core::ffi::c_uint = 0;
-    let mut j: ::core::ffi::c_uint;
-    let need_map_size: ::core::ffi::c_uint;
+    let map_size: ::kernel::ffi::c_longlong;
+    let mut i: ::kernel::ffi::c_uint = 0;
+    let mut j: ::kernel::ffi::c_uint;
+    let need_map_size: ::kernel::ffi::c_uint;
     let mut sector: sector_t;
     let mut end: sector_t;
     let mut ra: sector_t;
@@ -78,10 +78,10 @@ unsafe fn exfat_allocate_bitmap(sb: *mut super_block, ep: *mut exfat_dentry) -> 
     (*sbi).map_clu = le32_to_cpu((*ep).dentry.bitmap.start_clu);
     map_size = le64_to_cpu((*ep).dentry.bitmap.size);
     need_map_size = ((EXFAT_DATA_CLUSTER_COUNT(sbi) - 1) / BITS_PER_BYTE) + 1;
-    if need_map_size as ::core::ffi::c_longlong != map_size {
+    if need_map_size as ::kernel::ffi::c_longlong != map_size {
         exfat_err(sb, "bogus allocation bitmap size(need : %u, cur : %lld)", need_map_size, map_size);
         /* Only allowed when bogus allocation bitmap size is large */
-        if need_map_size as ::core::ffi::c_longlong > map_size {
+        if need_map_size as ::kernel::ffi::c_longlong > map_size {
             return -EIO;
         }
     }
@@ -118,14 +118,14 @@ unsafe fn exfat_allocate_bitmap(sb: *mut super_block, ep: *mut exfat_dentry) -> 
         brelse((*sbi).vol_amap[j as usize]);
         j += 1;
     }
-    kvfree((*sbi).vol_amap as *mut ::core::ffi::c_void);
+    kvfree((*sbi).vol_amap as *mut ::kernel::ffi::c_void);
     (*sbi).vol_amap = core::ptr::null_mut();
     -EIO
 }
 
-pub unsafe fn exfat_load_bitmap(sb: *mut super_block) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_uint;
-    let mut type_: ::core::ffi::c_uint;
+pub unsafe fn exfat_load_bitmap(sb: *mut super_block) -> ::kernel::ffi::c_int {
+    let mut i: ::kernel::ffi::c_uint;
+    let mut type_: ::kernel::ffi::c_uint;
     let mut clu: exfat_chain = core::mem::zeroed();
     let sbi = EXFAT_SB(sb);
 
@@ -164,10 +164,10 @@ pub unsafe fn exfat_free_bitmap(sbi: *mut exfat_sb_info) {
         __brelse((*sbi).vol_amap[i as usize]);
         i += 1;
     }
-    kvfree((*sbi).vol_amap as *mut ::core::ffi::c_void);
+    kvfree((*sbi).vol_amap as *mut ::kernel::ffi::c_void);
 }
 
-pub unsafe fn exfat_set_bitmap(sb: *mut super_block, clu: ::core::ffi::c_uint, sync: bool) -> ::core::ffi::c_int {
+pub unsafe fn exfat_set_bitmap(sb: *mut super_block, clu: ::kernel::ffi::c_uint, sync: bool) -> ::kernel::ffi::c_int {
     let sbi = EXFAT_SB(sb);
     if !is_valid_cluster(sbi, clu) { return -EINVAL; }
     let ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
@@ -178,7 +178,7 @@ pub unsafe fn exfat_set_bitmap(sb: *mut super_block, clu: ::core::ffi::c_uint, s
     0
 }
 
-pub unsafe fn exfat_clear_bitmap(sb: *mut super_block, clu: ::core::ffi::c_uint, sync: bool) -> ::core::ffi::c_int {
+pub unsafe fn exfat_clear_bitmap(sb: *mut super_block, clu: ::kernel::ffi::c_uint, sync: bool) -> ::kernel::ffi::c_int {
     let sbi = EXFAT_SB(sb);
     if !is_valid_cluster(sbi, clu) { return -EIO; }
     let ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
@@ -190,7 +190,7 @@ pub unsafe fn exfat_clear_bitmap(sb: *mut super_block, clu: ::core::ffi::c_uint,
     0
 }
 
-pub unsafe fn exfat_test_bitmap(sb: *mut super_block, clu: ::core::ffi::c_uint) -> bool {
+pub unsafe fn exfat_test_bitmap(sb: *mut super_block, clu: ::kernel::ffi::c_uint) -> bool {
     let sbi = EXFAT_SB(sb);
     if (*sbi).vol_amap.is_null() { return true; }
     if !is_valid_cluster(sbi, clu) { return false; }

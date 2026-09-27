@@ -153,30 +153,30 @@ pub struct snd_compr_task_status {
  * SNDRV_COMPRESS_DRAIN: Play till end of buffers and stop after that
  * SNDRV_COMPRESS_IOCTL_VERSION: Query the API version
  */
-pub const SNDRV_COMPRESS_IOCTL_VERSION: _ = _IOR('C', 0x00, i32);
-pub const SNDRV_COMPRESS_GET_CAPS: _ = _IOWR('C', 0x10, snd_compr_caps);
-pub const SNDRV_COMPRESS_GET_CODEC_CAPS: _ = _IOWR('C', 0x11, snd_compr_codec_caps);
-pub const SNDRV_COMPRESS_SET_PARAMS: _ = _IOW('C', 0x12, snd_compr_params);
-pub const SNDRV_COMPRESS_GET_PARAMS: _ = _IOR('C', 0x13, snd_codec);
-pub const SNDRV_COMPRESS_SET_METADATA: _ = _IOW('C', 0x14, snd_compr_metadata);
-pub const SNDRV_COMPRESS_GET_METADATA: _ = _IOWR('C', 0x15, snd_compr_metadata);
-pub const SNDRV_COMPRESS_TSTAMP: _ = _IOR('C', 0x20, snd_compr_tstamp);
-pub const SNDRV_COMPRESS_AVAIL: _ = _IOR('C', 0x21, snd_compr_avail);
-pub const SNDRV_COMPRESS_TSTAMP64: _ = _IOR('C', 0x22, snd_compr_tstamp64);
-pub const SNDRV_COMPRESS_AVAIL64: _ = _IOR('C', 0x23, snd_compr_avail64);
-pub const SNDRV_COMPRESS_PAUSE: _ = _IO('C', 0x30);
-pub const SNDRV_COMPRESS_RESUME: _ = _IO('C', 0x31);
-pub const SNDRV_COMPRESS_START: _ = _IO('C', 0x32);
-pub const SNDRV_COMPRESS_STOP: _ = _IO('C', 0x33);
-pub const SNDRV_COMPRESS_DRAIN: _ = _IO('C', 0x34);
-pub const SNDRV_COMPRESS_NEXT_TRACK: _ = _IO('C', 0x35);
-pub const SNDRV_COMPRESS_PARTIAL_DRAIN: _ = _IO('C', 0x36);
+pub const SNDRV_COMPRESS_IOCTL_VERSION: u32 = _IOR('C', 0x00, i32);
+pub const SNDRV_COMPRESS_GET_CAPS: u32 = _IOWR('C', 0x10, snd_compr_caps);
+pub const SNDRV_COMPRESS_GET_CODEC_CAPS: u32 = _IOWR('C', 0x11, snd_compr_codec_caps);
+pub const SNDRV_COMPRESS_SET_PARAMS: u32 = _IOW('C', 0x12, snd_compr_params);
+pub const SNDRV_COMPRESS_GET_PARAMS: u32 = _IOR('C', 0x13, snd_codec);
+pub const SNDRV_COMPRESS_SET_METADATA: u32 = _IOW('C', 0x14, snd_compr_metadata);
+pub const SNDRV_COMPRESS_GET_METADATA: u32 = _IOWR('C', 0x15, snd_compr_metadata);
+pub const SNDRV_COMPRESS_TSTAMP: u32 = _IOR('C', 0x20, snd_compr_tstamp);
+pub const SNDRV_COMPRESS_AVAIL: u32 = _IOR('C', 0x21, snd_compr_avail);
+pub const SNDRV_COMPRESS_TSTAMP64: u32 = _IOR('C', 0x22, snd_compr_tstamp64);
+pub const SNDRV_COMPRESS_AVAIL64: u32 = _IOR('C', 0x23, snd_compr_avail64);
+pub const SNDRV_COMPRESS_PAUSE: u32 = _IO('C', 0x30);
+pub const SNDRV_COMPRESS_RESUME: u32 = _IO('C', 0x31);
+pub const SNDRV_COMPRESS_START: u32 = _IO('C', 0x32);
+pub const SNDRV_COMPRESS_STOP: u32 = _IO('C', 0x33);
+pub const SNDRV_COMPRESS_DRAIN: u32 = _IO('C', 0x34);
+pub const SNDRV_COMPRESS_NEXT_TRACK: u32 = _IO('C', 0x35);
+pub const SNDRV_COMPRESS_PARTIAL_DRAIN: u32 = _IO('C', 0x36);
 
-pub const SNDRV_COMPRESS_TASK_CREATE: _ = _IOWR('C', 0x60, snd_compr_task);
-pub const SNDRV_COMPRESS_TASK_FREE: _ = _IOW('C', 0x61, __u64);
-pub const SNDRV_COMPRESS_TASK_START: _ = _IOWR('C', 0x62, snd_compr_task);
-pub const SNDRV_COMPRESS_TASK_STOP: _ = _IOW('C', 0x63, __u64);
-pub const SNDRV_COMPRESS_TASK_STATUS: _ = _IOWR('C', 0x68, snd_compr_task_status);
+pub const SNDRV_COMPRESS_TASK_CREATE: u32 = _IOWR('C', 0x60, snd_compr_task);
+pub const SNDRV_COMPRESS_TASK_FREE: u32 = _IOW('C', 0x61, __u64);
+pub const SNDRV_COMPRESS_TASK_START: u32 = _IOWR('C', 0x62, snd_compr_task);
+pub const SNDRV_COMPRESS_TASK_STOP: u32 = _IOW('C', 0x63, __u64);
+pub const SNDRV_COMPRESS_TASK_STATUS: u32 = _IOWR('C', 0x68, snd_compr_task_status);
 
 /*
  * TODO

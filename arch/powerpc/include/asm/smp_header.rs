@@ -2,7 +2,7 @@
 /* PowerPC-specific SMP declarations, translated from smp.h. */
 
 #[cfg(not(__ASSEMBLER__))]
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[cfg(not(__ASSEMBLER__))]
 extern "C" {
@@ -15,7 +15,7 @@ extern "C" {
     pub fn cpu_to_chip_id(cpu: i32) -> i32;
     pub static mut chip_id_lookup_table: *mut i32;
     pub static mut secondary_current: *mut task_struct;
-    pub fn start_secondary(unused: *mut core::ffi::c_void);
+    pub fn start_secondary(unused: *mut kernel::ffi::c_void);
     pub fn smp_send_nmi_ipi(cpu: i32, f: Option<unsafe extern "C" fn(*mut pt_regs)>, delay_us: u64) -> i32;
     pub fn smp_send_safe_nmi_ipi(cpu: i32, f: Option<unsafe extern "C" fn(*mut pt_regs)>, delay_us: u64) -> i32;
     pub fn smp_send_debugger_break();

@@ -53,13 +53,13 @@ static mut clk_data: *mut clk_hw_onecell_data = core::ptr::null_mut();
 static mut asm9260_clk_lock: spinlock_t = DEFINE_SPINLOCK!();
 
 #[repr(C)]
-struct asm9260_div_clk { idx: u32, name: *const core::ffi::c_char, parent_name: *const core::ffi::c_char, reg: u32 }
+struct asm9260_div_clk { idx: u32, name: *const kernel::ffi::c_char, parent_name: *const kernel::ffi::c_char, reg: u32 }
 #[repr(C)]
-struct asm9260_gate_data { idx: u32, name: *const core::ffi::c_char, parent_name: *const core::ffi::c_char, reg: u32, bit_idx: u8, flags: c_ulong }
+struct asm9260_gate_data { idx: u32, name: *const kernel::ffi::c_char, parent_name: *const kernel::ffi::c_char, reg: u32, bit_idx: u8, flags: c_ulong }
 #[repr(C)]
-struct asm9260_mux_clock { mask: u8, table: *mut u32, name: *const core::ffi::c_char, parent_data: *const clk_parent_data, num_parents: u8, offset: c_ulong, flags: c_ulong }
+struct asm9260_mux_clock { mask: u8, table: *mut u32, name: *const kernel::ffi::c_char, parent_data: *const clk_parent_data, num_parents: u8, offset: c_ulong, flags: c_ulong }
 
-static mut base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 static asm9260_div_clks: &[asm9260_div_clk] = &[
     asm9260_div_clk { idx: CLKID_SYS_CPU, name: c"cpu_div".as_ptr(), parent_name: c"main_gate".as_ptr(), reg: HW_CPUCLKDIV },

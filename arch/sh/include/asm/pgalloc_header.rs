@@ -17,12 +17,12 @@ extern "C" {
 // helper are intended to be enabled only when that build-time condition holds.
 extern "C" {
     pub fn pud_populate(mm: *mut mm_struct, pudp: *mut pud_t, pmd: *mut pmd_t);
-    pub fn pmd_alloc_one(mm: *mut mm_struct, address: ::core::ffi::c_ulong) -> *mut pmd_t;
+    pub fn pmd_alloc_one(mm: *mut mm_struct, address: ::kernel::ffi::c_ulong) -> *mut pmd_t;
     pub fn pmd_free(mm: *mut mm_struct, pmd: *mut pmd_t);
 }
 
 #[inline(always)]
-pub unsafe fn __pmd_free_tlb(tlb: *mut mmu_gather, pmdp: *mut pmd_t, _addr: ::core::ffi::c_ulong) {
+pub unsafe fn __pmd_free_tlb(tlb: *mut mmu_gather, pmdp: *mut pmd_t, _addr: ::kernel::ffi::c_ulong) {
     pmd_free((*tlb).mm, pmdp);
 }
 
@@ -32,7 +32,7 @@ pub unsafe fn pmd_populate_kernel(
     pmd: *mut pmd_t,
     pte: *mut pte_t,
 ) {
-    set_pmd(pmd, __pmd(pte as ::core::ffi::c_ulong));
+    set_pmd(pmd, __pmd(pte as ::kernel::ffi::c_ulong));
 }
 
 #[inline(always)]
@@ -41,14 +41,14 @@ pub unsafe fn pmd_populate(
     pmd: *mut pmd_t,
     pte: pgtable_t,
 ) {
-    set_pmd(pmd, __pmd(page_address(pte) as ::core::ffi::c_ulong));
+    set_pmd(pmd, __pmd(page_address(pte) as ::kernel::ffi::c_ulong));
 }
 
 #[inline(always)]
 pub unsafe fn __pte_free_tlb(
     tlb: *mut mmu_gather,
     pte: pgtable_t,
-    _addr: ::core::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
 ) {
     tlb_remove_ptdesc(tlb, page_ptdesc(pte));
 }

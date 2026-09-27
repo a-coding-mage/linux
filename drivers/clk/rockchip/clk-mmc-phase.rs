@@ -10,7 +10,7 @@
 #[repr(C)]
 struct RockchipMmcClock {
     hw: clk_hw,
-    reg: *mut core::ffi::c_void,
+    reg: *mut kernel::ffi::c_void,
     grf: *mut regmap,
     grf_reg: i32,
     shift: i32,
@@ -154,7 +154,7 @@ static ROCKCHIP_MMC_CLK_OPS: clk_ops = clk_ops {
 unsafe fn rockchip_mmc_clk_rate_notify(
     nb: *mut notifier_block,
     event: u64,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) -> i32 {
     let mmc_clock = container_of!(nb, RockchipMmcClock, clk_rate_change_nb);
     let ndata = data as *mut clk_notifier_data;
@@ -186,10 +186,10 @@ unsafe fn rockchip_mmc_clk_rate_notify(
 }
 
 unsafe fn rockchip_clk_register_mmc(
-    name: *const core::ffi::c_char,
-    parent_names: *const *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    parent_names: *const *const kernel::ffi::c_char,
     num_parents: u8,
-    reg: *mut core::ffi::c_void,
+    reg: *mut kernel::ffi::c_void,
     grf: *mut regmap,
     grf_reg: i32,
     shift: i32,

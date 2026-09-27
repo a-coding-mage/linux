@@ -26,18 +26,18 @@ struct vpd_cbmem {
 #[repr(C)]
 struct vpd_section {
     enabled: bool,
-    name: *const core::ffi::c_char,
-    raw_name: *mut core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    raw_name: *mut kernel::ffi::c_char,
     kobj: *mut kobject,
-    baseaddr: *mut core::ffi::c_char,
+    baseaddr: *mut kernel::ffi::c_char,
     bin_attr: bin_attribute,
     attribs: list_head,
 }
 
 #[repr(C)]
 struct vpd_attrib_info {
-    key: *mut core::ffi::c_char,
-    value: *const core::ffi::c_char,
+    key: *mut kernel::ffi::c_char,
+    value: *const kernel::ffi::c_char,
     bin_attr: bin_attribute,
     list: list_head,
 }
@@ -49,7 +49,7 @@ unsafe extern "C" fn vpd_attrib_read(
     _filp: *mut file,
     _kobp: *mut kobject,
     bin_attr: *const bin_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     mut pos: loff_t,
     count: usize,
 ) -> isize {
@@ -87,7 +87,7 @@ unsafe extern "C" fn vpd_section_attrib_add(
     key_len: u32,
     value: *const u8,
     value_len: u32,
-    arg: *mut core::ffi::c_void,
+    arg: *mut kernel::ffi::c_void,
 ) -> i32 {
     let sec = arg as *mut vpd_section;
     if vpd_section_check_key_name(key, key_len as i32) != VPD_OK {
@@ -110,8 +110,8 @@ unsafe extern "C" fn vpd_section_attrib_add(
     (*info).bin_attr.attr.mode = 0o444;
     (*info).bin_attr.size = value_len as usize;
     (*info).bin_attr.read = Some(vpd_attrib_read);
-    (*info).bin_attr.private = info as *mut core::ffi::c_void;
-    (*info).value = value as *const core::ffi::c_char;
+    (*info).bin_attr.private = info as *mut kernel::ffi::c_void;
+    (*info).value = value as *const kernel::ffi::c_char;
     INIT_LIST_HEAD(&mut (*info).list);
 
     let ret = sysfs_create_bin_file((*sec).kobj, &mut (*info).bin_attr);
@@ -138,7 +138,7 @@ unsafe fn vpd_section_attrib_destroy(sec: *mut vpd_section) {
 
 unsafe extern "C" fn vpd_section_read(
     _filp: *mut file, _kobp: *mut kobject, bin_attr: *const bin_attribute,
-    buf: *mut core::ffi::c_char, mut pos: loff_t, count: usize,
+    buf: *mut kernel::ffi::c_char, mut pos: loff_t, count: usize,
 ) -> isize {
     let sec = (*bin_attr).private as *mut vpd_section;
     memory_read_from_buffer(buf, count, &mut pos, (*sec).baseaddr, (*sec).bin_attr.size)
@@ -148,13 +148,13 @@ unsafe fn vpd_section_create_attribs(sec: *mut vpd_section) -> i32 {
     let mut consumed: i32 = 0;
     loop {
         let ret = vpd_decode_string((*sec).bin_attr.size, (*sec).baseaddr, &mut consumed,
-                                    Some(vpd_section_attrib_add), sec as *mut core::ffi::c_void);
+                                    Some(vpd_section_attrib_add), sec as *mut kernel::ffi::c_void);
         if ret != VPD_OK { break; }
     }
     0
 }
 
-unsafe fn vpd_section_init(name: *const core::ffi::c_char, sec: *mut vpd_section,
+unsafe fn vpd_section_init(name: *const kernel::ffi::c_char, sec: *mut vpd_section,
                            physaddr: phys_addr_t, size: usize) -> i32 {
     (*sec).baseaddr = memremap(physaddr, size, MEMREMAP_WB);
     if (*sec).baseaddr.is_null() { return -ENOMEM; }
@@ -166,7 +166,7 @@ unsafe fn vpd_section_init(name: *const core::ffi::c_char, sec: *mut vpd_section
     (*sec).bin_attr.attr.mode = 0o444;
     (*sec).bin_attr.size = size;
     (*sec).bin_attr.read = Some(vpd_section_read);
-    (*sec).bin_attr.private = sec as *mut core::ffi::c_void;
+    (*sec).bin_attr.private = sec as *mut kernel::ffi::c_void;
     let err = sysfs_create_bin_file(vpd_kobj, &mut (*sec).bin_attr);
     if err != 0 { kfree((*sec).raw_name); memunmap((*sec).baseaddr); return err; }
     (*sec).kobj = kobject_create_and_add(name, vpd_kobj);
@@ -196,7 +196,7 @@ unsafe fn vpd_sections_init(physaddr: phys_addr_t) -> i32 {
     let temp = memremap(physaddr, core::mem::size_of::<vpd_cbmem>(), MEMREMAP_WB) as *const vpd_cbmem;
     if temp.is_null() { return -ENOMEM; }
     let header = core::ptr::read(temp);
-    memunmap(temp as *mut core::ffi::c_void);
+    memunmap(temp as *mut kernel::ffi::c_void);
     if header.magic != VPD_CBMEM_MAGIC { return -ENODEV; }
     if header.ro_size != 0 {
         let ret = vpd_section_init(b"ro\0".as_ptr() as *const i8, &mut ro_vpd,

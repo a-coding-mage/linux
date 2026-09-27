@@ -38,9 +38,9 @@
  */
 #[repr(C)]
 pub struct omap_opp_def {
-    pub hwmod_name: *mut core::ffi::c_char,
-    pub freq: core::ffi::c_ulong,
-    pub u_volt: core::ffi::c_ulong,
+    pub hwmod_name: *mut kernel::ffi::c_char,
+    pub freq: kernel::ffi::c_ulong,
+    pub u_volt: kernel::ffi::c_ulong,
     pub default_available: bool,
 }
 

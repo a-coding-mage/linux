@@ -17,19 +17,19 @@ extern "C" {
     fn __pa_symbol(symbol: unsafe extern "C" fn()) -> u32;
     fn writel_relaxed(value: u32, address: *mut u32);
     fn smp_wmb();
-    fn __cpuc_flush_dcache_area(address: *mut core::ffi::c_void, size: usize);
+    fn __cpuc_flush_dcache_area(address: *mut kernel::ffi::c_void, size: usize);
 
     fn of_find_compatible_node(
         from: *mut device_node,
-        typ: *const core::ffi::c_char,
-        compatible: *const core::ffi::c_char,
+        typ: *const kernel::ffi::c_char,
+        compatible: *const kernel::ffi::c_char,
     ) -> *mut device_node;
     fn of_iomap(node: *mut device_node, index: i32) -> *mut u8;
     fn of_node_put(node: *mut device_node);
     fn readl(address: *mut u8) -> u32;
     fn writel(value: u32, address: *mut u8);
     fn of_get_cpu_node(cpu: i32, thread: *mut i32) -> *mut device_node;
-    fn of_property_read_u32(node: *mut device_node, name: *const core::ffi::c_char, value: *mut u32) -> i32;
+    fn of_property_read_u32(node: *mut device_node, name: *const kernel::ffi::c_char, value: *mut u32) -> i32;
     fn set_cpu_present(cpu: i32, present: bool);
 }
 

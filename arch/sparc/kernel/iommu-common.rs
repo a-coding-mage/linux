@@ -6,7 +6,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-static mut iommu_large_alloc: libc::c_ulong = 15;
+static mut iommu_large_alloc: kernel::ffi::c_ulong = 15;
 
 // DEFINE_PER_CPU(unsigned int, iommu_hash_common);
 static mut iommu_hash_common: u32 = 0;
@@ -50,7 +50,7 @@ unsafe fn setup_iommu_pool_hash() {
  */
 pub unsafe fn iommu_tbl_pool_init(
     iommu: *mut iommu_map_table,
-    num_entries: libc::c_ulong,
+    num_entries: kernel::ffi::c_ulong,
     table_shift: u32,
     lazy_flush: Option<unsafe extern "C" fn(*mut iommu_map_table)>,
     large_pool: bool,
@@ -79,24 +79,24 @@ pub unsafe fn iommu_tbl_pool_init(
     }
 
     if !large_pool {
-        (*iommu).poolsize = num_entries / (*iommu).nr_pools as libc::c_ulong;
+        (*iommu).poolsize = num_entries / (*iommu).nr_pools as kernel::ffi::c_ulong;
     } else {
-        (*iommu).poolsize = (num_entries * 3 / 4) / (*iommu).nr_pools as libc::c_ulong;
+        (*iommu).poolsize = (num_entries * 3 / 4) / (*iommu).nr_pools as kernel::ffi::c_ulong;
     }
     let mut i = 0;
     while i < (*iommu).nr_pools {
         spin_lock_init(&mut (*iommu).pools[i as usize].lock);
-        (*iommu).pools[i as usize].start = start as libc::c_ulong;
-        (*iommu).pools[i as usize].hint = start as libc::c_ulong;
+        (*iommu).pools[i as usize].start = start as kernel::ffi::c_ulong;
+        (*iommu).pools[i as usize].hint = start as kernel::ffi::c_ulong;
         start += (*iommu).poolsize as u32;
-        (*iommu).pools[i as usize].end = start as libc::c_ulong - 1;
+        (*iommu).pools[i as usize].end = start as kernel::ffi::c_ulong - 1;
         i += 1;
     }
     if !large_pool {
         return;
     }
     spin_lock_init(&mut (*p).lock);
-    (*p).start = start as libc::c_ulong;
+    (*p).start = start as kernel::ffi::c_ulong;
     (*p).hint = (*p).start;
     (*p).end = num_entries;
 }
@@ -104,29 +104,29 @@ pub unsafe fn iommu_tbl_pool_init(
 pub unsafe fn iommu_tbl_range_alloc(
     dev: *mut device,
     iommu: *mut iommu_map_table,
-    npages: libc::c_ulong,
-    handle: *mut libc::c_ulong,
-    mask: libc::c_ulong,
+    npages: kernel::ffi::c_ulong,
+    handle: *mut kernel::ffi::c_ulong,
+    mask: kernel::ffi::c_ulong,
     align_order: u32,
-) -> libc::c_ulong {
+) -> kernel::ffi::c_ulong {
     let pool_hash: u32 = iommu_hash_common;
-    let mut n: libc::c_ulong;
-    let mut end: libc::c_ulong;
-    let mut start: libc::c_ulong;
-    let mut limit: libc::c_ulong;
-    let mut boundary_size: libc::c_ulong;
+    let mut n: kernel::ffi::c_ulong;
+    let mut end: kernel::ffi::c_ulong;
+    let mut start: kernel::ffi::c_ulong;
+    let mut limit: kernel::ffi::c_ulong;
+    let mut boundary_size: kernel::ffi::c_ulong;
     let mut pool: *mut iommu_pool;
     let mut pass = 0;
     let mut pool_nr: u32;
     let npools = (*iommu).nr_pools;
-    let flags: libc::c_ulong;
+    let flags: kernel::ffi::c_ulong;
     let large_pool = ((*iommu).flags & IOMMU_HAS_LARGE_POOL) != 0;
     let largealloc = large_pool && npages > iommu_large_alloc;
-    let mut shift: libc::c_ulong;
-    let mut align_mask: libc::c_ulong = 0;
+    let mut shift: kernel::ffi::c_ulong;
+    let mut align_mask: kernel::ffi::c_ulong = 0;
 
     if align_order > 0 {
-        align_mask = !0 as libc::c_ulong >> (BITS_PER_LONG - align_order);
+        align_mask = !0 as kernel::ffi::c_ulong >> (BITS_PER_LONG - align_order);
     }
     if unlikely(npages == 0) {
         WARN_ON_ONCE(1);
@@ -161,12 +161,12 @@ pub unsafe fn iommu_tbl_range_alloc(
         }
         if ((*iommu).flags & IOMMU_NO_SPAN_BOUND) != 0 {
             shift = 0;
-            boundary_size = (*iommu).poolsize * npools as libc::c_ulong;
+            boundary_size = (*iommu).poolsize * npools as kernel::ffi::c_ulong;
         } else {
             boundary_size = dma_get_seg_boundary_nr_pages(dev, (*iommu).table_shift);
         }
         n = iommu_area_alloc((*iommu).map, limit, start, npages, shift, boundary_size, align_mask);
-        if n == !0 as libc::c_ulong {
+        if n == !0 as kernel::ffi::c_ulong {
             if likely(pass == 0) {
                 (*pool).hint = (*pool).start;
                 set_flush(iommu); pass += 1; continue;
@@ -191,13 +191,13 @@ pub unsafe fn iommu_tbl_range_alloc(
     n
 }
 
-unsafe fn get_pool(tbl: *mut iommu_map_table, entry: libc::c_ulong) -> *mut iommu_pool {
+unsafe fn get_pool(tbl: *mut iommu_map_table, entry: kernel::ffi::c_ulong) -> *mut iommu_pool {
     let largepool_start = (*tbl).large_pool.start;
     if ((*tbl).flags & IOMMU_HAS_LARGE_POOL) != 0 && entry >= largepool_start {
         &mut (*tbl).large_pool
     } else {
         let pool_nr = entry / (*tbl).poolsize;
-        BUG_ON(pool_nr >= (*tbl).nr_pools as libc::c_ulong);
+        BUG_ON(pool_nr >= (*tbl).nr_pools as kernel::ffi::c_ulong);
         &mut (*tbl).pools[pool_nr as usize]
     }
 }

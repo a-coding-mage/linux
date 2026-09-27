@@ -12,7 +12,7 @@ pub const SA_RESTORER: u32 = 0x04000000;
 pub struct old_sigaction {
     pub sa_handler: __sighandler_t,
     pub sa_mask: old_sigset_t,
-    pub sa_flags: ::core::ffi::c_ulong,
+    pub sa_flags: ::kernel::ffi::c_ulong,
     pub sa_restorer: Option<unsafe extern "C" fn()>,
 }
 

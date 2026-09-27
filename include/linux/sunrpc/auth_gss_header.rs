@@ -88,7 +88,7 @@ pub struct gss_cred {
     pub gc_service: rpc_gss_svc,
     pub gc_ctx: *mut gss_cl_ctx,
     pub gc_upcall: *mut gss_upcall_msg,
-    pub gc_principal: *const core::ffi::c_char,
+    pub gc_principal: *const kernel::ffi::c_char,
     pub gc_upcall_timestamp: usize,
 }
 

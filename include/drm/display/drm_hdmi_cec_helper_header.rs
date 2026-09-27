@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub enum drm_connector {}
 pub enum cec_msg {}
@@ -11,7 +11,7 @@ pub struct drm_connector_hdmi_cec_funcs {
     /**
      * @init: perform hardware-specific initialization before registering the CEC adapter
      */
-    pub init: Option<unsafe extern "C" fn(connector: *mut drm_connector) -> core::ffi::c_int>,
+    pub init: Option<unsafe extern "C" fn(connector: *mut drm_connector) -> kernel::ffi::c_int>,
 
     /**
      * @uninit: perform hardware-specific teardown for the CEC adapter
@@ -24,7 +24,7 @@ pub struct drm_connector_hdmi_cec_funcs {
     pub enable: Option<unsafe extern "C" fn(
         connector: *mut drm_connector,
         enable: bool,
-    ) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
 
     /**
      * @log_addr: set adapter's logical address, can be called multiple
@@ -33,7 +33,7 @@ pub struct drm_connector_hdmi_cec_funcs {
     pub log_addr: Option<unsafe extern "C" fn(
         connector: *mut drm_connector,
         logical_addr: u8,
-    ) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
 
     /**
      * @transmit: start transmission of the specified CEC message
@@ -43,7 +43,7 @@ pub struct drm_connector_hdmi_cec_funcs {
         attempts: u8,
         signal_free_time: u32,
         msg: *mut cec_msg,
-    ) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
 }
 
 extern "C" {
@@ -53,7 +53,7 @@ extern "C" {
         name: *const c_char,
         available_las: u8,
         dev: *mut device,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn drm_connector_hdmi_cec_received_msg(
         connector: *mut drm_connector,
@@ -83,7 +83,7 @@ extern "C" {
         connector: *mut drm_connector,
         port_name: *const c_char,
         dev: *mut device,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // Equivalent to the disabled CONFIG_DRM_DISPLAY_HDMI_CEC_NOTIFIER_HELPER branch.
@@ -93,7 +93,7 @@ pub unsafe fn drmm_connector_hdmi_cec_notifier_register(
     _connector: *mut drm_connector,
     _port_name: *const c_char,
     _dev: *mut device,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     0
 }
 

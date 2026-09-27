@@ -4,9 +4,12 @@
  * This file provides wrappers with sanitizer instrumentation for bit
  * locking operations.
  *
- * The architecture-specific arch_* bit operations, instrumentation helpers,
- * and BIT_WORD are supplied by other translated dependencies.
+ * To use this functionality, an arch's bitops.h file needs to define each of
+ * the below bit operations with an arch_ prefix (e.g. arch_set_bit(),
+ * arch___set_bit(), etc.).
  */
+
+/* Depends on: linux/instrumented.h */
 
 /**
  * clear_bit_unlock - Clear a bit in memory, for unlock
@@ -16,10 +19,15 @@
  * This operation is atomic and provides release barrier semantics.
  */
 #[inline]
-pub unsafe fn clear_bit_unlock(nr: core::ffi::c_long, addr: *mut core::ffi::c_ulong) {
-    kcsan_release();
-    instrument_atomic_write(addr.add(BIT_WORD(nr) as usize), core::mem::size_of::<core::ffi::c_long>());
-    arch_clear_bit_unlock(nr, addr);
+pub unsafe fn clear_bit_unlock(nr: kernel::ffi::c_long, addr: *mut kernel::ffi::c_ulong) {
+    kcsan_release!();
+    unsafe {
+        instrument_atomic_write(
+            addr.wrapping_offset(BIT_WORD!(nr)).cast(),
+            core::mem::size_of::<kernel::ffi::c_long>(),
+        );
+        arch_clear_bit_unlock(nr, addr);
+    }
 }
 
 /**
@@ -32,10 +40,15 @@ pub unsafe fn clear_bit_unlock(nr: core::ffi::c_long, addr: *mut core::ffi::c_ul
  * concurrently modify other bits in the word.
  */
 #[inline]
-pub unsafe fn __clear_bit_unlock(nr: core::ffi::c_long, addr: *mut core::ffi::c_ulong) {
-    kcsan_release();
-    instrument_write(addr.add(BIT_WORD(nr) as usize), core::mem::size_of::<core::ffi::c_long>());
-    arch___clear_bit_unlock(nr, addr);
+pub unsafe fn __clear_bit_unlock(nr: kernel::ffi::c_long, addr: *mut kernel::ffi::c_ulong) {
+    kcsan_release!();
+    unsafe {
+        instrument_write(
+            addr.wrapping_offset(BIT_WORD!(nr)).cast(),
+            core::mem::size_of::<kernel::ffi::c_long>(),
+        );
+        arch___clear_bit_unlock(nr, addr);
+    }
 }
 
 /**
@@ -48,15 +61,14 @@ pub unsafe fn __clear_bit_unlock(nr: core::ffi::c_long, addr: *mut core::ffi::c_
  * It can be used to implement bit locks.
  */
 #[inline]
-pub unsafe fn test_and_set_bit_lock(
-    nr: core::ffi::c_long,
-    addr: *mut core::ffi::c_ulong,
-) -> bool {
-    instrument_atomic_read_write(
-        addr.add(BIT_WORD(nr) as usize),
-        core::mem::size_of::<core::ffi::c_long>(),
-    );
-    arch_test_and_set_bit_lock(nr, addr)
+pub unsafe fn test_and_set_bit_lock(nr: kernel::ffi::c_long, addr: *mut kernel::ffi::c_ulong) -> bool {
+    unsafe {
+        instrument_atomic_read_write(
+            addr.wrapping_offset(BIT_WORD!(nr)).cast(),
+            core::mem::size_of::<kernel::ffi::c_long>(),
+        );
+        arch_test_and_set_bit_lock(nr, addr)
+    }
 }
 
 /**
@@ -74,13 +86,12 @@ pub unsafe fn test_and_set_bit_lock(
  * Return: Whether the top bit of the byte is set.
  */
 #[inline]
-pub unsafe fn xor_unlock_is_negative_byte(
-    mask: core::ffi::c_ulong,
-    addr: *mut core::ffi::c_ulong,
-) -> bool {
-    kcsan_release();
-    instrument_atomic_write(addr, core::mem::size_of::<core::ffi::c_long>());
-    arch_xor_unlock_is_negative_byte(mask, addr)
+pub unsafe fn xor_unlock_is_negative_byte(mask: kernel::ffi::c_ulong, addr: *mut kernel::ffi::c_ulong) -> bool {
+    kcsan_release!();
+    unsafe {
+        instrument_atomic_write(addr.cast(), core::mem::size_of::<kernel::ffi::c_long>());
+        arch_xor_unlock_is_negative_byte(mask, addr)
+    }
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

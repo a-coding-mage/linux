@@ -32,8 +32,8 @@
  *   inode->i_lock
  */
 
-static core::ffi::c_uint i_hash_mask __ro_after_init;
-static core::ffi::c_uint i_hash_shift __ro_after_init;
+static kernel::ffi::c_uint i_hash_mask __ro_after_init;
+static kernel::ffi::c_uint i_hash_shift __ro_after_init;
 static struct hlist_head *inode_hashtable __ro_after_init;
 static __cacheline_aligned_in_smp DEFINE_SPINLOCK(inode_hash_lock);
 
@@ -45,8 +45,8 @@ const struct address_space_operations empty_aops = {
 };
 EXPORT_SYMBOL(empty_aops);
 
-static DEFINE_PER_CPU(core::ffi::c_ulong, nr_inodes);
-static DEFINE_PER_CPU(core::ffi::c_ulong, nr_unused);
+static DEFINE_PER_CPU(kernel::ffi::c_ulong, nr_inodes);
+static DEFINE_PER_CPU(kernel::ffi::c_ulong, nr_unused);
 
 static struct kmem_cache *inode_cachep __ro_after_init;
 
@@ -80,9 +80,9 @@ static DEFINE_PER_CPU(long, mg_ctime_updates);
 static DEFINE_PER_CPU(long, mg_fine_stamps);
 static DEFINE_PER_CPU(long, mg_ctime_swaps);
 
-static core::ffi::c_ulong get_mg_ctime_updates(void)
+static kernel::ffi::c_ulong get_mg_ctime_updates(void)
 {
-	core::ffi::c_ulong sum = 0;
+	kernel::ffi::c_ulong sum = 0;
 	int i;
 
 	for_each_possible_cpu(i)
@@ -90,9 +90,9 @@ static core::ffi::c_ulong get_mg_ctime_updates(void)
 	return sum;
 }
 
-static core::ffi::c_ulong get_mg_fine_stamps(void)
+static kernel::ffi::c_ulong get_mg_fine_stamps(void)
 {
-	core::ffi::c_ulong sum = 0;
+	kernel::ffi::c_ulong sum = 0;
 	int i;
 
 	for_each_possible_cpu(i)
@@ -100,9 +100,9 @@ static core::ffi::c_ulong get_mg_fine_stamps(void)
 	return sum;
 }
 
-static core::ffi::c_ulong get_mg_ctime_swaps(void)
+static kernel::ffi::c_ulong get_mg_ctime_swaps(void)
 {
-	core::ffi::c_ulong sum = 0;
+	kernel::ffi::c_ulong sum = 0;
 	int i;
 
 	for_each_possible_cpu(i)
@@ -114,10 +114,10 @@ static core::ffi::c_ulong get_mg_ctime_swaps(void)
 
 static int mgts_show(seq_file *s, void *p)
 {
-	core::ffi::c_ulong ctime_updates = get_mg_ctime_updates();
-	core::ffi::c_ulong ctime_swaps = get_mg_ctime_swaps();
-	core::ffi::c_ulong fine_stamps = get_mg_fine_stamps();
-	core::ffi::c_ulong floor_swaps = timekeeping_get_mg_floor_swaps();
+	kernel::ffi::c_ulong ctime_updates = get_mg_ctime_updates();
+	kernel::ffi::c_ulong ctime_swaps = get_mg_ctime_swaps();
+	kernel::ffi::c_ulong fine_stamps = get_mg_fine_stamps();
+	kernel::ffi::c_ulong floor_swaps = timekeeping_get_mg_floor_swaps();
 
 	seq_printf(s, "%lu %lu %lu %lu\n",
 		   ctime_updates, ctime_swaps, fine_stamps, floor_swaps);
@@ -413,7 +413,7 @@ EXPORT_SYMBOL(clear_nlink);
  * This is a low-level filesystem helper to replace any
  * direct filesystem manipulation of i_nlink.
  */
-void set_nlink(inode *inode, nlink: core::ffi::c_uint)
+void set_nlink(inode *inode, nlink: kernel::ffi::c_uint)
 {
 	if (!nlink) {
 		clear_nlink(inode);
@@ -627,11 +627,11 @@ void inode_sb_list_del(inode *inode)
 	}
 }
 
-static core::ffi::c_ulong hash(super_block *sb, hashval: u64)
+static kernel::ffi::c_ulong hash(super_block *sb, hashval: u64)
 {
-	core::ffi::c_ulong tmp;
+	kernel::ffi::c_ulong tmp;
 
-	tmp = (hashval * (core::ffi::c_ulong)sb) ^ (GOLDEN_RATIO_PRIME + hashval) /
+	tmp = (hashval * (kernel::ffi::c_ulong)sb) ^ (GOLDEN_RATIO_PRIME + hashval) /
 			L1_CACHE_BYTES;
 	tmp = tmp ^ ((tmp ^ GOLDEN_RATIO_PRIME) >> i_hash_shift);
 	return tmp & i_hash_mask;
@@ -946,7 +946,7 @@ static enum lru_status inode_lru_isolate(list_head *item,
 	 * be under pressure before the cache inside the highmem zone.
 	 */
 	if (!mapping_empty((*&inode).i_data)) {
-		core::ffi::c_ulong reap;
+		kernel::ffi::c_ulong reap;
 
 		inode_pin_lru_isolating(inode);
 		spin_unlock((*&inode).i_lock);
@@ -1101,12 +1101,12 @@ repeat:
  * here to attempt to avoid that.
  */
 /* preprocessor define LAST_INO_BATCH 1024 */
-static DEFINE_PER_CPU(core::ffi::c_uint, last_ino);
+static DEFINE_PER_CPU(kernel::ffi::c_uint, last_ino);
 
-core::ffi::c_uint get_next_ino(void)
+kernel::ffi::c_uint get_next_ino(void)
 {
-	core::ffi::c_uint *p = &get_cpu_var(last_ino);
-	core::ffi::c_uint res = *p;
+	kernel::ffi::c_uint *p = &get_cpu_var(last_ino);
+	kernel::ffi::c_uint res = *p;
 
 /* preprocessor ifdef CONFIG_SMP */
 	if (unlikely((res & (LAST_INO_BATCH-1)) == 0)) {
@@ -1535,7 +1535,7 @@ ino_t iunique(super_block *sb, ino_t max_reserved)
 	 * here to attempt to avoid that.
 	 */
 	static DEFINE_SPINLOCK(iunique_lock);
-	static core::ffi::c_uint counter;
+	static kernel::ffi::c_uint counter;
 	ino_t res;
 
 	rcu_read_lock();
@@ -2143,12 +2143,12 @@ static int inode_update_atime(inode *inode)
 	return inode_time_dirty_flag(inode);
 }
 
-static int inode_update_cmtime(inode *inode, flags: core::ffi::c_uint)
+static int inode_update_cmtime(inode *inode, flags: kernel::ffi::c_uint)
 {
 	struct timespec64 ctime = inode_get_ctime(inode);
 	struct timespec64 mtime = inode_get_mtime(inode);
 	struct timespec64 now = inode_set_ctime_current(inode);
-	core::ffi::c_uint dirty = 0;
+	kernel::ffi::c_uint dirty = 0;
 	bool mtime_changed;
 
 	mtime_changed = !timespec64_equal(&now, &mtime);
@@ -2199,7 +2199,7 @@ static int inode_update_cmtime(inode *inode, flags: core::ffi::c_uint)
  * happened.
  */
 int inode_update_time(inode *inode, fs_update_time type,
-		flags: core::ffi::c_uint)
+		flags: kernel::ffi::c_uint)
 {
 	switch (type) {
 	case FS_UPD_ATIME:
@@ -2222,7 +2222,7 @@ EXPORT_SYMBOL(inode_update_time);
  * Returns a negative error value on error, else 0.
  */
 int generic_update_time(inode *inode, fs_update_time type,
-		flags: core::ffi::c_uint)
+		flags: kernel::ffi::c_uint)
 {
 	int dirty;
 
@@ -2360,7 +2360,7 @@ static int __remove_privs(mnt_idmap *idmap,
 	return notify_change(idmap, dentry, &newattrs, NULL);
 }
 
-static int file_remove_privs_flags(file *file, flags: core::ffi::c_uint)
+static int file_remove_privs_flags(file *file, flags: kernel::ffi::c_uint)
 {
 	struct dentry *dentry = file_dentry(file);
 	struct inode *inode = file_inode(file);
@@ -2454,7 +2454,7 @@ bool need_cmtime_update(inode *inode)
 	return IS_I_VERSION(inode) && inode_iversion_need_inc(inode);
 }
 
-static int file_update_time_flags(file *file, flags: core::ffi::c_uint)
+static int file_update_time_flags(file *file, flags: kernel::ffi::c_uint)
 {
 	struct inode *inode = file_inode(file);
 	int ret;
@@ -2613,7 +2613,7 @@ static void __wait_on_freeing_inode(inode *inode, hash_locked: bool, rcu_locked:
 		rcu_read_lock();
 }
 
-static __initdata core::ffi::c_ulong ihash_entries;
+static __initdata kernel::ffi::c_ulong ihash_entries;
 static int __init set_ihash_entries(char *str)
 {
 	return kstrtoul(str, 0, &ihash_entries) == 0;
@@ -2804,8 +2804,8 @@ EXPORT_SYMBOL(inode_dio_wait_interruptible);
  * it is so documented in include/linux/fs.h and that all code follows
  * the locking convention!!
  */
-void inode_set_flags(inode *inode, flags: core::ffi::c_uint,
-		     mask: core::ffi::c_uint)
+void inode_set_flags(inode *inode, flags: kernel::ffi::c_uint,
+		     mask: kernel::ffi::c_uint)
 {
 	WARN_ON_ONCE(flags & ~mask);
 	set_mask_bits(&inode->i_flags, mask, flags);
@@ -2840,7 +2840,7 @@ EXPORT_SYMBOL(inode_set_ctime_to_ts);
 struct timespec64 timestamp_truncate(timespec64 t, inode *inode)
 {
 	struct super_block *sb = inode->i_sb;
-	core::ffi::c_uint gran = sb->s_time_gran;
+	kernel::ffi::c_uint gran = sb->s_time_gran;
 
 	t.tv_sec = clamp(t.tv_sec, sb->s_time_min, sb->s_time_max);
 	if (unlikely(t.tv_sec == sb->s_time_max || t.tv_sec == sb->s_time_min))
@@ -3086,9 +3086,9 @@ void dump_inode(inode *inode, const char *reason)
 	const char *fs_name_ptr;
 	char fs_name[32] = {};
 	umode_t mode;
-	core::ffi::c_ushort opflags;
-	core::ffi::c_uint flags;
-	core::ffi::c_uint state;
+	kernel::ffi::c_ushort opflags;
+	kernel::ffi::c_uint flags;
+	kernel::ffi::c_uint state;
 	int count;
 
 	if (get_kernel_nofault(sb, &inode->i_sb) ||

@@ -30,20 +30,20 @@ pub struct DISPLAY_STATUS {
     _private: [u8; 0],
 }
 
-pub type PCHAR = *mut ::core::ffi::c_char;
-pub type LONG = ::core::ffi::c_long;
-pub type ULONG = ::core::ffi::c_ulong;
+pub type PCHAR = *mut ::kernel::ffi::c_char;
+pub type LONG = ::kernel::ffi::c_long;
+pub type ULONG = ::kernel::ffi::c_ulong;
 pub type PULONG = *mut ULONG;
-pub type PVOID = *mut ::core::ffi::c_void;
+pub type PVOID = *mut ::kernel::ffi::c_void;
 pub type VOID = ();
 
 extern "C" {
     pub static mut romvec: *mut linux_romvec;
 
-    pub static mut prom_flags: ::core::ffi::c_int;
+    pub static mut prom_flags: ::kernel::ffi::c_int;
 
     /* Simple char-by-char console I/O. */
-    pub fn prom_getchar() -> ::core::ffi::c_char;
+    pub fn prom_getchar() -> ::kernel::ffi::c_char;
 
     /* Get next memory descriptor after CURR, returns first descriptor
      * in chain if CURR is NULL.
@@ -64,7 +64,7 @@ extern "C" {
     pub fn ArcGetEnvironmentVariable(name: PCHAR) -> PCHAR;
 
     /* ARCS command line parsing. */
-    pub fn prom_init_cmdline(argc: ::core::ffi::c_int, argv: *mut LONG);
+    pub fn prom_init_cmdline(argc: ::kernel::ffi::c_int, argv: *mut LONG);
 
     /* File operations. */
     pub fn ArcRead(fd: ULONG, buf: PVOID, num: ULONG, cnt: PULONG) -> LONG;
@@ -75,9 +75,9 @@ extern "C" {
     pub fn ArcGetDisplayStatus(FileID: ULONG) -> *mut DISPLAY_STATUS;
 }
 
-pub const PROM_FLAG_ARCS: ::core::ffi::c_int = 1;
-pub const PROM_FLAG_USE_AS_CONSOLE: ::core::ffi::c_int = 2;
-pub const PROM_FLAG_DONT_FREE_TEMP: ::core::ffi::c_int = 4;
+pub const PROM_FLAG_ARCS: ::kernel::ffi::c_int = 1;
+pub const PROM_FLAG_USE_AS_CONSOLE: ::kernel::ffi::c_int = 2;
+pub const PROM_FLAG_DONT_FREE_TEMP: ::kernel::ffi::c_int = 4;
 
 pub const PROM_NULL_MDESC: *mut linux_mdesc = ::core::ptr::null_mut();
 pub const PROM_NULL_COMPONENT: *mut pcomponent = ::core::ptr::null_mut();

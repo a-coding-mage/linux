@@ -33,7 +33,7 @@ pub unsafe fn slb_preload_disabled() -> bool {
 }
 
 extern "C" {
-    pub fn hpt_do_stress(ea: ::core::ffi::c_ulong, hpte_group: ::core::ffi::c_ulong);
+    pub fn hpt_do_stress(ea: ::kernel::ffi::c_ulong, hpte_group: ::kernel::ffi::c_ulong);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

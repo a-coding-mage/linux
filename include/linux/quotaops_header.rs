@@ -24,8 +24,8 @@ pub unsafe fn is_quota_modification(
 
 #[cfg(CONFIG_QUOTA)]
 extern "C" {
-    pub fn __quota_error(sb: *mut super_block, func: *const core::ffi::c_char,
-                         fmt: *const core::ffi::c_char, ...);
+    pub fn __quota_error(sb: *mut super_block, func: *const kernel::ffi::c_char,
+                         fmt: *const kernel::ffi::c_char, ...);
     pub fn dquot_initialize(inode: *mut inode) -> i32;
     pub fn dquot_initialize_needed(inode: *mut inode) -> bool;
     pub fn dquot_drop(inode: *mut inode);

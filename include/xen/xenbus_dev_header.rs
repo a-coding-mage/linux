@@ -31,8 +31,8 @@
 // The Linux ioctl helpers (_IOC and _IOC_NONE) are supplied by the dependent
 // platform headers.
 
-pub const IOCTL_XENBUS_BACKEND_EVTCHN: _ = _IOC(_IOC_NONE, 'B' as _, 0, 0);
+pub const IOCTL_XENBUS_BACKEND_EVTCHN: u32 = _IOC(_IOC_NONE, 'B' as _, 0, 0);
 
-pub const IOCTL_XENBUS_BACKEND_SETUP: _ = _IOC(_IOC_NONE, 'B' as _, 1, 0);
+pub const IOCTL_XENBUS_BACKEND_SETUP: u32 = _IOC(_IOC_NONE, 'B' as _, 1, 0);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

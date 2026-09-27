@@ -46,23 +46,23 @@ pub unsafe fn adf_heartbeat_inject_error(accel_dev: *mut adf_accel_dev) -> i32 {
     let mut rand: u32;
     let mut rand_ae: u32;
     let mut rand_thr: u32;
-    let ae_mask: ::core::ffi::c_ulong = (*hw_device).ae_mask;
+    let ae_mask: ::kernel::ffi::c_ulong = (*hw_device).ae_mask;
     let ret: i32;
 
     loop {
         /* Ensure we have a valid ae */
         get_random_bytes(
-            &mut rand as *mut u32 as *mut ::core::ffi::c_void,
+            &mut rand as *mut u32 as *mut ::kernel::ffi::c_void,
             core::mem::size_of::<u32>(),
         );
         rand_ae = rand % max_aes as u32;
-        if test_bit(rand_ae as usize, &ae_mask as *const _ as *const ::core::ffi::c_ulong) {
+        if test_bit(rand_ae as usize, &ae_mask as *const _ as *const ::kernel::ffi::c_ulong) {
             break;
         }
     }
 
     get_random_bytes(
-        &mut rand as *mut u32 as *mut ::core::ffi::c_void,
+        &mut rand as *mut u32 as *mut ::kernel::ffi::c_void,
         core::mem::size_of::<u32>(),
     );
     rand_thr = rand % hb_ctrs as u32;

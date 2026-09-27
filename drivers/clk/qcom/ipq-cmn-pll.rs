@@ -25,7 +25,7 @@ const CMN_PLL_DIVIDER_CTRL_FACTOR: u32 = 0x3ff;
 #[repr(C)]
 pub struct CmnPllFixedOutputClk {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub rate: usize,
 }
 
@@ -49,7 +49,7 @@ pub struct Regmap { _private: [u8; 0] }
 pub struct ClkHw { pub init: *const ClkInitData }
 #[repr(C)]
 pub struct ClkInitData {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub parent_data: *const ClkParentData,
     pub num_parents: u32,
     pub ops: *const ClkOps,

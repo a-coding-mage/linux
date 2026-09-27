@@ -108,7 +108,7 @@ unsafe void rfcomm_schedule(void)
 /* ---- RFCOMM FCS computation ---- */
 
 /* reversed, 8-bit, poly=0x07 */
-unsafe core::ffi::c_uchar rfcomm_crc_table[256] = {
+unsafe kernel::ffi::c_uchar rfcomm_crc_table[256] = {
 	0x00, 0x91, 0xe3, 0x72, 0x07, 0x96, 0xe4, 0x75,
 	0x0e, 0x9f, 0xed, 0x7c, 0x09, 0x98, 0xea, 0x7b,
 	0x1c, 0x8d, 0xff, 0x6e, 0x1b, 0x8a, 0xf8, 0x69,
@@ -572,7 +572,7 @@ unsafe int rfcomm_dlc_send_frag(rfcomm_dlc *d, sk_buff *frag)
 int rfcomm_dlc_send(rfcomm_dlc *d, sk_buff *skb)
 {
 	'unlock: {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	struct sk_buff *frag, *next;
 	int len;
 
@@ -1154,7 +1154,7 @@ unsafe int rfcomm_send_test(rfcomm_session *s, int cr, u8 *pattern, int len)
 	struct socket *sock = s->sock;
 	struct kvec iv[3];
 	struct msghdr msg;
-	core::ffi::c_uchar hdr[5], crc[1];
+	kernel::ffi::c_uchar hdr[5], crc[1];
 
 	if (len > 125)
 		return -EINVAL;

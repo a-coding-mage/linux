@@ -72,8 +72,8 @@
 #[repr(C)]
 pub struct mips_static_suspend_state {
     #[cfg(CONFIG_EVA)]
-    pub segctl: [::core::ffi::c_ulong; 3],
-    pub sp: ::core::ffi::c_ulong,
+    pub segctl: [::kernel::ffi::c_ulong; 3],
+    pub sp: ::kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

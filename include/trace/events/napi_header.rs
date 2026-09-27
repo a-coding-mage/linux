@@ -10,20 +10,20 @@ pub const NO_DEV: &str = "(no_device)";
 #[repr(C)]
 pub struct NapiPollEntry {
     pub napi: *mut NapiStruct,
-    pub dev_name: *const ::core::ffi::c_char,
-    pub work: ::core::ffi::c_int,
-    pub budget: ::core::ffi::c_int,
+    pub dev_name: *const ::kernel::ffi::c_char,
+    pub work: ::kernel::ffi::c_int,
+    pub budget: ::kernel::ffi::c_int,
 }
 
 /* Equivalent payload for the dql_stall_detected trace event. */
 #[repr(C)]
 pub struct DqlStallDetectedEntry {
     pub thrs: u16,
-    pub len: ::core::ffi::c_uint,
-    pub last_reap: ::core::ffi::c_ulong,
-    pub hist_head: ::core::ffi::c_ulong,
-    pub now: ::core::ffi::c_ulong,
-    pub hist: [::core::ffi::c_ulong; 4],
+    pub len: ::kernel::ffi::c_uint,
+    pub last_reap: ::kernel::ffi::c_ulong,
+    pub hist_head: ::kernel::ffi::c_ulong,
+    pub now: ::kernel::ffi::c_ulong,
+    pub hist: [::kernel::ffi::c_ulong; 4],
 }
 
 /* Supplied by linux/netdevice.h. */

@@ -25,7 +25,7 @@ pub const KF_SPINLOCK_SAFE: u32 = 1 << 17;
 pub struct btf_kfunc_id_set {
     pub owner: *mut module,
     pub set: *mut btf_id_set8,
-    pub filter: Option<unsafe extern "C" fn(*const bpf_prog, u32) -> ::core::ffi::c_int>,
+    pub filter: Option<unsafe extern "C" fn(*const bpf_prog, u32) -> ::kernel::ffi::c_int>,
 }
 
 #[repr(C)]
@@ -45,29 +45,29 @@ pub enum btf_field_iter_kind { BTF_FIELD_ITER_IDS, BTF_FIELD_ITER_STRS }
 
 #[repr(C)]
 pub struct btf_field_desc {
-    pub t_off_cnt: ::core::ffi::c_int,
-    pub t_offs: [::core::ffi::c_int; 2],
-    pub m_sz: ::core::ffi::c_int,
-    pub m_off_cnt: ::core::ffi::c_int,
-    pub m_offs: [::core::ffi::c_int; 1],
+    pub t_off_cnt: ::kernel::ffi::c_int,
+    pub t_offs: [::kernel::ffi::c_int; 2],
+    pub m_sz: ::kernel::ffi::c_int,
+    pub m_off_cnt: ::kernel::ffi::c_int,
+    pub m_offs: [::kernel::ffi::c_int; 1],
 }
 
 #[repr(C)]
 pub struct btf_field_iter {
     pub desc: btf_field_desc,
-    pub p: *mut ::core::ffi::c_void,
-    pub m_idx: ::core::ffi::c_int,
-    pub off_idx: ::core::ffi::c_int,
-    pub vlen: ::core::ffi::c_int,
+    pub p: *mut ::kernel::ffi::c_void,
+    pub m_idx: ::kernel::ffi::c_int,
+    pub off_idx: ::kernel::ffi::c_int,
+    pub vlen: ::kernel::ffi::c_int,
 }
 
 extern "C" {
-    pub fn btf_get_name(btf: *const btf) -> *const ::core::ffi::c_char;
+    pub fn btf_get_name(btf: *const btf) -> *const ::kernel::ffi::c_char;
     pub fn btf_get(btf: *mut btf);
     pub fn btf_put(btf: *mut btf);
     pub fn btf_type_id_size(btf: *const btf, type_id: *mut u32, ret_size: *mut u32) -> *const btf_type;
-    pub fn btf_type_seq_show(btf: *const btf, type_id: u32, obj: *mut ::core::ffi::c_void, m: *mut seq_file);
-    pub fn btf_get_fd_by_id(id: u32) -> ::core::ffi::c_int;
+    pub fn btf_type_seq_show(btf: *const btf, type_id: u32, obj: *mut ::kernel::ffi::c_void, m: *mut seq_file);
+    pub fn btf_get_fd_by_id(id: u32) -> ::kernel::ffi::c_int;
     pub fn btf_obj_id(btf: *const btf) -> u32;
     pub fn btf_is_kernel(btf: *const btf) -> bool;
     pub fn btf_is_module(btf: *const btf) -> bool;
@@ -82,7 +82,7 @@ extern "C" {
     pub fn btf_type_skip_modifiers(btf: *const btf, id: u32, res_id: *mut u32) -> *const btf_type;
     pub fn btf_type_resolve_ptr(btf: *const btf, id: u32, res_id: *mut u32) -> *const btf_type;
     pub fn btf_type_resolve_func_ptr(btf: *const btf, id: u32, res_id: *mut u32) -> *const btf_type;
-    pub fn btf_type_str(t: *const btf_type) -> *const ::core::ffi::c_char;
+    pub fn btf_type_str(t: *const btf_type) -> *const ::kernel::ffi::c_char;
 }
 
 // The following declarations preserve the remaining header API. Their
@@ -91,37 +91,37 @@ extern "C" {
 extern "C" {
     pub static btf_fops: file_operations;
     pub fn btf_header(btf: *const btf) -> *const btf_header;
-    pub fn btf_new_fd(attr: *const bpf_attr, uattr: bpfptr_t, attr_log: *mut bpf_log_attr) -> ::core::ffi::c_int;
-    pub fn btf_get_by_fd(fd: ::core::ffi::c_int) -> *mut btf;
-    pub fn btf_type_name_to_buf(btf: *const btf, type_id: u32, buf: *mut ::core::ffi::c_char, len: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn btf_param_match_suffix(btf: *const btf, arg: *const btf_param, suffix: *const ::core::ffi::c_char) -> bool;
-    pub fn btf_ctx_arg_offset(btf: *const btf, func_proto: *const btf_type, arg_no: u32) -> ::core::ffi::c_int;
-    pub fn btf_ctx_arg_idx(btf: *mut btf, func_proto: *const btf_type, off: ::core::ffi::c_int) -> u32;
+    pub fn btf_new_fd(attr: *const bpf_attr, uattr: bpfptr_t, attr_log: *mut bpf_log_attr) -> ::kernel::ffi::c_int;
+    pub fn btf_get_by_fd(fd: ::kernel::ffi::c_int) -> *mut btf;
+    pub fn btf_type_name_to_buf(btf: *const btf, type_id: u32, buf: *mut ::kernel::ffi::c_char, len: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn btf_param_match_suffix(btf: *const btf, arg: *const btf_param, suffix: *const ::kernel::ffi::c_char) -> bool;
+    pub fn btf_ctx_arg_offset(btf: *const btf, func_proto: *const btf_type, arg_no: u32) -> ::kernel::ffi::c_int;
+    pub fn btf_ctx_arg_idx(btf: *mut btf, func_proto: *const btf_type, off: ::kernel::ffi::c_int) -> u32;
     pub fn btf_member_is_reg_int(btf: *const btf, s: *const btf_type, m: *const btf_member, expected_offset: u32, expected_size: u32) -> bool;
     pub fn btf_parse_fields(btf: *const btf, t: *const btf_type, field_mask: u32, value_size: u32) -> *mut btf_record;
-    pub fn btf_check_and_fixup_fields(btf: *const btf, rec: *mut btf_record) -> ::core::ffi::c_int;
-    pub fn btf_find_by_name_kind(btf: *const btf, name: *const ::core::ffi::c_char, kind: u8) -> i32;
-    pub fn bpf_find_btf_id(name: *const ::core::ffi::c_char, kind: u32, btf_p: *mut *mut btf) -> i32;
+    pub fn btf_check_and_fixup_fields(btf: *const btf, rec: *mut btf_record) -> ::kernel::ffi::c_int;
+    pub fn btf_find_by_name_kind(btf: *const btf, name: *const ::kernel::ffi::c_char, kind: u8) -> i32;
+    pub fn bpf_find_btf_id(name: *const ::kernel::ffi::c_char, kind: u32, btf_p: *mut *mut btf) -> i32;
     pub fn btf_get_module_btf(module: *const module) -> *mut btf;
     pub fn btf_relocate_id(btf: *const btf, id: u32) -> u32;
     pub fn btf_resolve_size(btf: *const btf, ty: *const btf_type, type_size: *mut u32) -> *const btf_type;
     pub fn btf_type_by_id(btf: *const btf, type_id: u32) -> *const btf_type;
     pub fn btf_set_base_btf(btf: *mut btf, base_btf: *const btf);
-    pub fn btf_relocate(btf: *mut btf, base_btf: *const btf, map_ids: *mut *mut u32) -> ::core::ffi::c_int;
-    pub fn btf_field_iter_init(it: *mut btf_field_iter, t: *mut btf_type, iter_kind: btf_field_iter_kind) -> ::core::ffi::c_int;
+    pub fn btf_relocate(btf: *mut btf, base_btf: *const btf, map_ids: *mut *mut u32) -> ::kernel::ffi::c_int;
+    pub fn btf_field_iter_init(it: *mut btf_field_iter, t: *mut btf_type, iter_kind: btf_field_iter_kind) -> ::kernel::ffi::c_int;
     pub fn btf_field_iter_next(it: *mut btf_field_iter) -> *mut u32;
-    pub fn btf_name_by_offset(btf: *const btf, offset: u32) -> *const ::core::ffi::c_char;
-    pub fn btf_str_by_offset(btf: *const btf, offset: u32) -> *const ::core::ffi::c_char;
+    pub fn btf_name_by_offset(btf: *const btf, offset: u32) -> *const ::kernel::ffi::c_char;
+    pub fn btf_str_by_offset(btf: *const btf, offset: u32) -> *const ::kernel::ffi::c_char;
     pub fn btf_parse_vmlinux() -> *mut btf;
     pub fn bpf_prog_get_target_btf(prog: *const bpf_prog) -> *mut btf;
     pub fn btf_kfunc_flags(btf: *const btf, kfunc_btf_id: u32, prog: *const bpf_prog) -> *mut u32;
-    pub fn btf_kfunc_check_flag(btf: *const btf, kfunc_btf_id: u32, flag: u32) -> ::core::ffi::c_int;
+    pub fn btf_kfunc_check_flag(btf: *const btf, kfunc_btf_id: u32, flag: u32) -> ::kernel::ffi::c_int;
     pub fn btf_kfunc_is_allowed(btf: *const btf, kfunc_btf_id: u32, prog: *const bpf_prog) -> bool;
     pub fn btf_find_dtor_kfunc(btf: *mut btf, btf_id: u32) -> i32;
     pub fn btf_find_struct_meta(btf: *const btf, btf_id: u32) -> *mut btf_struct_meta;
-    pub fn btf_is_projection_of(pname: *const ::core::ffi::c_char, tname: *const ::core::ffi::c_char) -> bool;
+    pub fn btf_is_projection_of(pname: *const ::kernel::ffi::c_char, tname: *const ::kernel::ffi::c_char) -> bool;
     pub fn btf_types_are_same(btf1: *const btf, id1: u32, btf2: *const btf, id2: u32) -> bool;
-    pub fn btf_check_iter_arg(btf: *mut btf, func: *const btf_type, arg_idx: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn btf_check_iter_arg(btf: *mut btf, func: *const btf_type, arg_idx: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
 }
 
 // C flexible-array and opaque kernel declarations.

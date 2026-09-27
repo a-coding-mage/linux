@@ -4,7 +4,7 @@
  * Misc librarized functions for cmdline poking.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Supplied by the corresponding kernel headers/build configuration.
 const COMMAND_LINE_SIZE: i32 = 2048;

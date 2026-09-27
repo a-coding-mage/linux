@@ -14,7 +14,7 @@ unsafe extern "C" {
     pub fn flush_icache_range(start: c_ulong, end: c_ulong);
     pub fn __flush_icache_page(address: c_ulong);
 
-    pub fn __flush_dcache_page(addr: *mut core::ffi::c_void, flush_icache: c_int);
+    pub fn __flush_dcache_page(addr: *mut kernel::ffi::c_void, flush_icache: c_int);
     pub fn flush_dcache_folio_impl(folio: *mut folio);
 
     #[cfg(CONFIG_SMP)]
@@ -29,14 +29,14 @@ unsafe extern "C" {
         vma: *mut vm_area_struct,
         page: *mut page,
         uaddr: c_ulong,
-        kaddr: *mut core::ffi::c_void,
+        kaddr: *mut kernel::ffi::c_void,
         len: c_ulong,
         write: c_int,
     );
 }
 
-pub type c_ulong = core::ffi::c_ulong;
-pub type c_int = core::ffi::c_int;
+pub type c_ulong = kernel::ffi::c_ulong;
+pub type c_int = kernel::ffi::c_int;
 
 /* These are the same regardless of whether this is an SMP kernel or not. */
 #[inline(always)]
@@ -85,10 +85,10 @@ pub unsafe fn flush_dcache_page(page: *mut page) {
     flush_dcache_folio(page_folio(page));
 }
 
-pub type folio = core::ffi::c_void;
-pub type page = core::ffi::c_void;
-pub type mm_struct = core::ffi::c_void;
-pub type vm_area_struct = core::ffi::c_void;
+pub type folio = kernel::ffi::c_void;
+pub type page = kernel::ffi::c_void;
+pub type mm_struct = kernel::ffi::c_void;
+pub type vm_area_struct = kernel::ffi::c_void;
 
 unsafe extern "C" {
     pub fn page_folio(page: *mut page) -> *mut folio;
@@ -100,13 +100,13 @@ pub unsafe fn copy_to_user_page(
     vma: *mut vm_area_struct,
     page: *mut page,
     vaddr: c_ulong,
-    dst: *mut core::ffi::c_void,
-    src: *const core::ffi::c_void,
+    dst: *mut kernel::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     len: c_ulong,
 ) {
     flush_cache_page(vma, vaddr, page_to_pfn(page));
     core::ptr::copy_nonoverlapping(src as *const u8, dst as *mut u8, len as usize);
-    flush_ptrace_access(vma, page, vaddr, src as *mut core::ffi::c_void, len, 0);
+    flush_ptrace_access(vma, page, vaddr, src as *mut kernel::ffi::c_void, len, 0);
 }
 
 #[inline(always)]
@@ -114,8 +114,8 @@ pub unsafe fn copy_from_user_page(
     vma: *mut vm_area_struct,
     page: *mut page,
     vaddr: c_ulong,
-    dst: *mut core::ffi::c_void,
-    src: *const core::ffi::c_void,
+    dst: *mut kernel::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     len: c_ulong,
 ) {
     flush_cache_page(vma, vaddr, page_to_pfn(page));
@@ -124,8 +124,8 @@ pub unsafe fn copy_from_user_page(
 }
 
 /* The following C macros are intentional no-ops. */
-#[inline(always)] pub unsafe fn flush_dcache_mmap_lock(_mapping: *mut core::ffi::c_void) {}
-#[inline(always)] pub unsafe fn flush_dcache_mmap_unlock(_mapping: *mut core::ffi::c_void) {}
+#[inline(always)] pub unsafe fn flush_dcache_mmap_lock(_mapping: *mut kernel::ffi::c_void) {}
+#[inline(always)] pub unsafe fn flush_dcache_mmap_unlock(_mapping: *mut kernel::ffi::c_void) {}
 #[inline(always)] pub unsafe fn flush_cache_vmap(_start: c_ulong, _end: c_ulong) {}
 #[inline(always)] pub unsafe fn flush_cache_vmap_early(_start: c_ulong, _end: c_ulong) {}
 #[inline(always)] pub unsafe fn flush_cache_vunmap(_start: c_ulong, _end: c_ulong) {}

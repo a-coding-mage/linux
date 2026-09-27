@@ -66,7 +66,7 @@ const SSS_HASH_QUEUE_LENGTH: usize = 10;
 pub struct samsung_aes_variant {
     pub aes_offset: u32,
     pub hash_offset: u32,
-    pub clk_names: [*const core::ffi::c_char; 2],
+    pub clk_names: [*const kernel::ffi::c_char; 2],
 }
 
 #[repr(C)]
@@ -88,9 +88,9 @@ pub struct s5p_hash_reqctx {
     pub digest: [u8; 32],
     pub nregs: u32,
     pub engine: u32,
-    pub sg: *mut core::ffi::c_void,
+    pub sg: *mut kernel::ffi::c_void,
     pub sg_len: u32,
-    pub sgl: [core::ffi::c_void; 2],
+    pub sgl: [kernel::ffi::c_void; 2],
     pub skip: usize,
     pub total: usize,
     pub finup: bool,
@@ -101,25 +101,25 @@ pub struct s5p_hash_reqctx {
 
 #[repr(C)]
 pub struct s5p_aes_dev {
-    pub dev: *mut core::ffi::c_void,
-    pub clk: *mut core::ffi::c_void,
-    pub pclk: *mut core::ffi::c_void,
+    pub dev: *mut kernel::ffi::c_void,
+    pub clk: *mut kernel::ffi::c_void,
+    pub pclk: *mut kernel::ffi::c_void,
     pub ioaddr: *mut u8,
     pub aes_ioaddr: *mut u8,
     pub irq_fc: i32,
-    pub req: *mut core::ffi::c_void,
+    pub req: *mut kernel::ffi::c_void,
     pub ctx: *mut s5p_aes_ctx,
-    pub sg_src: *mut core::ffi::c_void,
-    pub sg_dst: *mut core::ffi::c_void,
-    pub sg_src_cpy: *mut core::ffi::c_void,
-    pub sg_dst_cpy: *mut core::ffi::c_void,
+    pub sg_src: *mut kernel::ffi::c_void,
+    pub sg_dst: *mut kernel::ffi::c_void,
+    pub sg_src_cpy: *mut kernel::ffi::c_void,
+    pub sg_dst_cpy: *mut kernel::ffi::c_void,
     pub busy: bool,
-    pub res: *mut core::ffi::c_void,
+    pub res: *mut kernel::ffi::c_void,
     pub io_hash_base: *mut u8,
     pub hash_flags: usize,
     pub xmit_buf: [u8; BUFLEN],
-    pub hash_req: *mut core::ffi::c_void,
-    pub hash_sg_iter: *mut core::ffi::c_void,
+    pub hash_req: *mut kernel::ffi::c_void,
+    pub hash_sg_iter: *mut kernel::ffi::c_void,
     pub hash_sg_cnt: u32,
     pub use_hash: bool,
 }
@@ -127,7 +127,7 @@ pub struct s5p_aes_dev {
 // The remaining driver routines retain their C ABI and are supplied by the
 // kernel integration layer; their declarations are intentionally external.
 extern "C" {
-    fn s5p_aes_interrupt(irq: i32, dev_id: *mut core::ffi::c_void) -> i32;
+    fn s5p_aes_interrupt(irq: i32, dev_id: *mut kernel::ffi::c_void) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

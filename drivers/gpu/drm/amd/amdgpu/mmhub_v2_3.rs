@@ -20,7 +20,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-static MMHUB_CLIENT_IDS_VANGOGH: [[*const core::ffi::c_char; 2]; 31] = [
+static MMHUB_CLIENT_IDS_VANGOGH: [[*const kernel::ffi::c_char; 2]; 31] = [
     [c"MP0".as_ptr(), c"MP0".as_ptr()], [c"MP1".as_ptr(), c"MP1".as_ptr()],
     [c"DCEDMC".as_ptr(), c"DCEDMC".as_ptr()], [c"DCEVGA".as_ptr(), c"DCEVGA".as_ptr()],
     [core::ptr::null(), c"DCEDWB".as_ptr()], [core::ptr::null(), c"XDP".as_ptr()],

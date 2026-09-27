@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 
 /* Dependencies supplied by the corresponding Linux headers. */
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const XT_FUNCTION_MAXNAMELEN: usize = 30;
 pub const XT_EXTENSION_MAXNAMELEN: usize = 29;

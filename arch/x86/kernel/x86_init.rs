@@ -7,12 +7,12 @@
 // Declarations supplied by the Linux kernel headers are external dependencies.
 
 pub unsafe extern "C" fn x86_init_noop() {}
-pub unsafe extern "C" fn x86_init_uint_noop(_unused: ::core::ffi::c_uint) {}
-unsafe extern "C" fn iommu_init_noop() -> ::core::ffi::c_int { 0 }
+pub unsafe extern "C" fn x86_init_uint_noop(_unused: ::kernel::ffi::c_uint) {}
+unsafe extern "C" fn iommu_init_noop() -> ::kernel::ffi::c_int { 0 }
 unsafe extern "C" fn iommu_shutdown_noop() {}
 pub unsafe extern "C" fn bool_x86_init_noop() -> bool { false }
-pub unsafe extern "C" fn x86_op_int_noop(_cpu: ::core::ffi::c_int) {}
-pub unsafe extern "C" fn set_rtc_noop(now: *const timespec64) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn x86_op_int_noop(_cpu: ::kernel::ffi::c_int) {}
+pub unsafe extern "C" fn set_rtc_noop(now: *const timespec64) -> ::kernel::ffi::c_int {
     let _ = now;
     -EINVAL
 }
@@ -20,7 +20,7 @@ pub unsafe extern "C" fn get_rtc_noop(now: *mut timespec64) { let _ = now; }
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const ::core::ffi::c_char,
+    pub compatible: *const ::kernel::ffi::c_char,
 }
 
 #[used]
@@ -94,8 +94,8 @@ pub static mut x86_init: x86_init_ops = x86_init_ops {
 };
 
 unsafe extern "C" fn default_nmi_init() {}
-unsafe extern "C" fn enc_status_change_prepare_noop(_vaddr: ::core::ffi::c_ulong, _npages: ::core::ffi::c_int, _enc: bool) -> ::core::ffi::c_int { 0 }
-unsafe extern "C" fn enc_status_change_finish_noop(_vaddr: ::core::ffi::c_ulong, _npages: ::core::ffi::c_int, _enc: bool) -> ::core::ffi::c_int { 0 }
+unsafe extern "C" fn enc_status_change_prepare_noop(_vaddr: ::kernel::ffi::c_ulong, _npages: ::kernel::ffi::c_int, _enc: bool) -> ::kernel::ffi::c_int { 0 }
+unsafe extern "C" fn enc_status_change_finish_noop(_vaddr: ::kernel::ffi::c_ulong, _npages: ::kernel::ffi::c_int, _enc: bool) -> ::kernel::ffi::c_int { 0 }
 unsafe extern "C" fn enc_tlb_flush_required_noop(_enc: bool) -> bool { false }
 unsafe extern "C" fn enc_cache_flush_required_noop() -> bool { false }
 unsafe extern "C" fn enc_kexec_begin_noop() {}

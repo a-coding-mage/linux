@@ -66,7 +66,7 @@ pub struct sdw_port_config {
 }
 
 unsafe extern "C" {
-    pub fn snd_soc_component_get_drvdata(component: *mut snd_soc_component) -> *mut core::ffi::c_void;
+    pub fn snd_soc_component_get_drvdata(component: *mut snd_soc_component) -> *mut kernel::ffi::c_void;
     pub fn snd_soc_dai_get_dma_data(
         dai: *mut snd_soc_dai,
         substream: *mut snd_pcm_substream,
@@ -92,9 +92,9 @@ unsafe extern "C" {
     pub fn snd_soc_dai_dma_data_set(
         dai: *mut snd_soc_dai,
         direction: i32,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     );
-    pub fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    pub fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[unsafe(no_mangle)]
@@ -125,7 +125,7 @@ pub unsafe extern "C" fn cs42l43_sdw_add_peripheral(
         unsafe {
             dev_err(
                 (*priv_0).dev,
-                FAILED_TO_ADD_SDW_STREAM.as_ptr() as *const core::ffi::c_char,
+                FAILED_TO_ADD_SDW_STREAM.as_ptr() as *const kernel::ffi::c_char,
                 ret,
             )
         };
@@ -159,7 +159,7 @@ pub unsafe extern "C" fn cs42l43_sdw_remove_peripheral(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn cs42l43_sdw_set_stream(
     dai: *mut snd_soc_dai,
-    sdw_stream: *mut core::ffi::c_void,
+    sdw_stream: *mut kernel::ffi::c_void,
     direction: i32,
 ) -> i32 {
     unsafe { snd_soc_dai_dma_data_set(dai, direction, sdw_stream) };

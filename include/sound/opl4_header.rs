@@ -25,12 +25,12 @@ pub struct snd_opl4 {
 extern "C" {
     pub fn snd_opl4_create(
         card: *mut snd_card,
-        fm_port: ::core::ffi::c_ulong,
-        pcm_port: ::core::ffi::c_ulong,
-        seq_device: ::core::ffi::c_int,
+        fm_port: ::kernel::ffi::c_ulong,
+        pcm_port: ::kernel::ffi::c_ulong,
+        seq_device: ::kernel::ffi::c_int,
         opl3: *mut *mut snd_opl3,
         opl4: *mut *mut snd_opl4,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

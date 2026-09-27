@@ -15,17 +15,17 @@ pub struct xfs_healthmon {
     pub first_event: *mut xfs_healthmon_event,
     pub last_event: *mut xfs_healthmon_event,
     pub unmount_event: *mut xfs_healthmon_event,
-    pub events: ::core::ffi::c_uint,
+    pub events: ::kernel::ffi::c_uint,
     // C bit-field: bool verbose:1;
     pub verbose: bool,
     pub wait: wait_queue_head,
-    pub buffer: *mut ::core::ffi::c_char,
+    pub buffer: *mut ::kernel::ffi::c_char,
     pub bufsize: size_t,
     pub bufhead: size_t,
     pub buftail: size_t,
-    pub lost_prev_event: ::core::ffi::c_ulonglong,
-    pub total_events: ::core::ffi::c_ulonglong,
-    pub total_lost: ::core::ffi::c_ulonglong,
+    pub lost_prev_event: ::kernel::ffi::c_ulonglong,
+    pub total_events: ::kernel::ffi::c_ulonglong,
+    pub total_lost: ::kernel::ffi::c_ulonglong,
 }
 
 #[repr(C)]
@@ -63,10 +63,10 @@ pub enum xfs_healthmon_domain {
 #[repr(C)]
 pub union xfs_healthmon_event_data {
     pub lostcount: u64,
-    pub fsmask: ::core::ffi::c_uint,
+    pub fsmask: ::kernel::ffi::c_uint,
     pub group_data: xfs_healthmon_group_data,
     pub inode_data: xfs_healthmon_inode_data,
-    pub flags: ::core::ffi::c_uint,
+    pub flags: ::kernel::ffi::c_uint,
     pub media_data: xfs_healthmon_media_data,
     pub file_range_data: xfs_healthmon_file_range_data,
 }
@@ -74,14 +74,14 @@ pub union xfs_healthmon_event_data {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct xfs_healthmon_group_data {
-    pub grpmask: ::core::ffi::c_uint,
-    pub group: ::core::ffi::c_uint,
+    pub grpmask: ::kernel::ffi::c_uint,
+    pub group: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct xfs_healthmon_inode_data {
-    pub imask: ::core::ffi::c_uint,
+    pub imask: ::kernel::ffi::c_uint,
     pub gen: u32,
     pub ino: xfs_ino_t,
 }
@@ -100,7 +100,7 @@ pub struct xfs_healthmon_file_range_data {
     pub fpos: loff_t,
     pub flen: u64,
     pub fgen: u32,
-    pub error: ::core::ffi::c_int,
+    pub error: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -115,16 +115,16 @@ pub struct xfs_healthmon_event {
 extern "C" {
     pub fn xfs_healthmon_unmount(mp: *mut xfs_mount);
     pub fn xfs_healthmon_report_fs(mp: *mut xfs_mount, type_: xfs_healthmon_type,
-        old_mask: ::core::ffi::c_uint, new_mask: ::core::ffi::c_uint);
+        old_mask: ::kernel::ffi::c_uint, new_mask: ::kernel::ffi::c_uint);
     pub fn xfs_healthmon_report_group(xg: *mut xfs_group, type_: xfs_healthmon_type,
-        old_mask: ::core::ffi::c_uint, new_mask: ::core::ffi::c_uint);
+        old_mask: ::kernel::ffi::c_uint, new_mask: ::kernel::ffi::c_uint);
     pub fn xfs_healthmon_report_inode(ip: *mut xfs_inode, type_: xfs_healthmon_type,
-        old_mask: ::core::ffi::c_uint, new_mask: ::core::ffi::c_uint);
+        old_mask: ::kernel::ffi::c_uint, new_mask: ::kernel::ffi::c_uint);
     pub fn xfs_healthmon_report_shutdown(mp: *mut xfs_mount, flags: u32);
     pub fn xfs_healthmon_report_media(mp: *mut xfs_mount, fdev: xfs_device,
         daddr: xfs_daddr_t, bbcount: u64);
     pub fn xfs_healthmon_report_file_ioerror(ip: *mut xfs_inode, p: *const fserror_event);
-    pub fn xfs_ioc_health_monitor(file: *mut file, arg: *mut xfs_health_monitor) -> ::core::ffi::c_long;
+    pub fn xfs_ioc_health_monitor(file: *mut file, arg: *mut xfs_health_monitor) -> ::kernel::ffi::c_long;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

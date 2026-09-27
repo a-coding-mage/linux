@@ -6,18 +6,18 @@
 // dependencies of this translation.
 
 #[inline]
-unsafe fn get_user_word(word: *mut ::core::ffi::c_ulong,
-                        base: ::core::ffi::c_ulong,
-                        off: ::core::ffi::c_int,
-                        ws: ::core::ffi::c_uint) -> ::core::ffi::c_int {
-    let addr = (base as *mut ::core::ffi::c_ulong).offset(off as isize);
+unsafe fn get_user_word(word: *mut ::kernel::ffi::c_ulong,
+                        base: ::kernel::ffi::c_ulong,
+                        off: ::kernel::ffi::c_int,
+                        ws: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int {
+    let addr = (base as *mut ::kernel::ffi::c_ulong).offset(off as isize);
 
     // CONFIG_COMPAT conditional retained from the C implementation.
     #[cfg(CONFIG_COMPAT)]
-    if ws == core::mem::size_of::<::core::ffi::c_int>() as ::core::ffi::c_uint {
-        let mut data: ::core::ffi::c_uint = 0;
-        let ret = get_user(data, addr as *mut ::core::ffi::c_uint);
-        *word = data as ::core::ffi::c_ulong;
+    if ws == core::mem::size_of::<::kernel::ffi::c_int>() as ::kernel::ffi::c_uint {
+        let mut data: ::kernel::ffi::c_uint = 0;
+        let ret = get_user(data, addr as *mut ::kernel::ffi::c_uint);
+        *word = data as ::kernel::ffi::c_ulong;
         return ret;
     }
 
@@ -27,10 +27,10 @@ unsafe fn get_user_word(word: *mut ::core::ffi::c_ulong,
 unsafe fn unwind_user_next_common(
     state: *mut unwind_user_state,
     frame: *const unwind_user_frame,
-) -> ::core::ffi::c_int {
-    let (mut cfa, mut fp, mut ra): (::core::ffi::c_ulong,
-                                    ::core::ffi::c_ulong,
-                                    ::core::ffi::c_ulong);
+) -> ::kernel::ffi::c_int {
+    let (mut cfa, mut fp, mut ra): (::kernel::ffi::c_ulong,
+                                    ::kernel::ffi::c_ulong,
+                                    ::kernel::ffi::c_ulong);
 
     // Get the Canonical Frame Address (CFA)
     if (*frame).use_fp {
@@ -74,7 +74,7 @@ unsafe fn unwind_user_next_common(
     0
 }
 
-unsafe fn unwind_user_next_fp(state: *mut unwind_user_state) -> ::core::ffi::c_int {
+unsafe fn unwind_user_next_fp(state: *mut unwind_user_state) -> ::kernel::ffi::c_int {
     let regs = task_pt_regs(current);
 
     if (*state).topmost && unwind_user_at_function_start(regs) {
@@ -86,9 +86,9 @@ unsafe fn unwind_user_next_fp(state: *mut unwind_user_state) -> ::core::ffi::c_i
     unwind_user_next_common(state, &fp_frame)
 }
 
-unsafe fn unwind_user_next(state: *mut unwind_user_state) -> ::core::ffi::c_int {
+unsafe fn unwind_user_next(state: *mut unwind_user_state) -> ::kernel::ffi::c_int {
     let mut iter_mask = (*state).available_types;
-    let mut bit: ::core::ffi::c_uint = 0;
+    let mut bit: ::kernel::ffi::c_uint = 0;
 
     if (*state).done {
         return -EINVAL;
@@ -118,7 +118,7 @@ unsafe fn unwind_user_next(state: *mut unwind_user_state) -> ::core::ffi::c_int 
     -EINVAL
 }
 
-unsafe fn unwind_user_start(state: *mut unwind_user_state) -> ::core::ffi::c_int {
+unsafe fn unwind_user_start(state: *mut unwind_user_state) -> ::kernel::ffi::c_int {
     let regs = task_pt_regs(current);
 
     memset(state as *mut _, 0, core::mem::size_of::<unwind_user_state>());
@@ -147,8 +147,8 @@ unsafe fn unwind_user_start(state: *mut unwind_user_state) -> ::core::ffi::c_int
 
 pub unsafe fn unwind_user(
     trace: *mut unwind_stacktrace,
-    max_entries: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    max_entries: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let mut state: unwind_user_state = core::mem::zeroed();
 
     (*trace).nr = 0;

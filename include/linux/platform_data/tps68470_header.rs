@@ -31,8 +31,8 @@ pub struct tps68470_regulator_platform_data {
 
 #[repr(C)]
 pub struct tps68470_clk_consumer {
-    pub consumer_dev_name: *const core::ffi::c_char,
-    pub consumer_con_id: *const core::ffi::c_char,
+    pub consumer_dev_name: *const kernel::ffi::c_char,
+    pub consumer_con_id: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]

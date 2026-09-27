@@ -70,6 +70,6 @@ pub const WSMT_DIS_TOKEN: u32 = 0x04ED;
 /* Dell SMBIOS calling IOCTL command used by dell-smbios-wmi.
  * `_IOWR` is supplied by the surrounding Linux UAPI ioctl bindings.
  */
-pub const DELL_WMI_SMBIOS_CMD: _ = _IOWR!(WMI_IOC, 0, dell_wmi_smbios_buffer);
+pub const DELL_WMI_SMBIOS_CMD: u32 = _IOWR!(WMI_IOC, 0, dell_wmi_smbios_buffer);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

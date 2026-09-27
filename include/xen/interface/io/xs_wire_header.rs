@@ -44,12 +44,12 @@ pub const XS_WRITE_CREATE_EXCL: &str = "CREATE|EXCL";
 #[repr(C)]
 pub struct xsd_errors {
     pub errnum: i32,
-    pub errstring: *const core::ffi::c_char,
+    pub errstring: *const kernel::ffi::c_char,
 }
 
 macro_rules! XSD_ERROR {
     ($x:ident) => {
-        xsd_errors { errnum: $x, errstring: concat!(stringify!($x), "\0").as_ptr() as *const core::ffi::c_char }
+        xsd_errors { errnum: $x, errstring: concat!(stringify!($x), "\0").as_ptr() as *const kernel::ffi::c_char }
     };
 }
 
@@ -96,8 +96,8 @@ pub const fn MASK_XENSTORE_IDX(idx: XENSTORE_RING_IDX) -> XENSTORE_RING_IDX {
 
 #[repr(C)]
 pub struct xenstore_domain_interface {
-    pub req: [core::ffi::c_char; XENSTORE_RING_SIZE], // Requests to xenstore daemon.
-    pub rsp: [core::ffi::c_char; XENSTORE_RING_SIZE], // Replies and async watch events.
+    pub req: [kernel::ffi::c_char; XENSTORE_RING_SIZE], // Requests to xenstore daemon.
+    pub rsp: [kernel::ffi::c_char; XENSTORE_RING_SIZE], // Replies and async watch events.
     pub req_cons: XENSTORE_RING_IDX,
     pub req_prod: XENSTORE_RING_IDX,
     pub rsp_cons: XENSTORE_RING_IDX,

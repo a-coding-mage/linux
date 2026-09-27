@@ -58,8 +58,8 @@ pub const STACK_INT_FRAME_MARKER_LONGS: usize = STACK_INT_FRAME_MARKER / core::m
 // External dependencies supplied by the surrounding kernel translation.
 extern "C" {
     pub fn set_thread_flag(flag: usize);
-    pub fn task_stack_page(task: *mut core::ffi::c_void) -> usize;
-    pub static mut current: *mut core::ffi::c_void;
+    pub fn task_stack_page(task: *mut kernel::ffi::c_void) -> usize;
+    pub static mut current: *mut kernel::ffi::c_void;
 }
 
 #[inline]
@@ -113,7 +113,7 @@ pub const NR_REG_ARGUMENTS: usize = 8;
 pub const ARCH_HAS_USER_SINGLE_STEP_REPORT: bool = true;
 pub const MAX_REG_OFFSET: usize = core::mem::offset_of!(PtRegsFields, dsisr);
 
-extern "C" { pub fn regs_query_register_offset(name: *const core::ffi::c_char) -> i32; pub fn regs_query_register_name(offset: u32) -> *const core::ffi::c_char; }
+extern "C" { pub fn regs_query_register_offset(name: *const kernel::ffi::c_char) -> i32; pub fn regs_query_register_name(offset: u32) -> *const kernel::ffi::c_char; }
 #[inline] pub unsafe fn regs_get_register(regs: *mut PtRegsFields, offset: usize) -> usize { if offset > MAX_REG_OFFSET { 0 } else { *((regs as *mut u8).add(offset) as *const usize) } }
 #[inline] pub unsafe fn regs_within_kernel_stack(regs: *mut PtRegsFields, addr: usize) -> bool { (addr & !(THREAD_SIZE - 1)) == ((*regs).gpr[1] & !(THREAD_SIZE - 1)) }
 #[inline] pub unsafe fn regs_get_kernel_stack_nth(regs: *mut PtRegsFields, n: usize) -> usize { let addr = ((*regs).gpr[1] as *mut usize).add(n); if regs_within_kernel_stack(regs, addr as usize) { *addr } else { 0 } }

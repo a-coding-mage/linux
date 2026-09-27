@@ -13,16 +13,16 @@ use core::cmp::min;
 /// Arguments passed to an ARM SMC call (the fields used by this header).
 #[repr(C)]
 pub struct ArmSmcccArgs {
-    pub args: [core::ffi::c_ulong; 8],
+    pub args: [kernel::ffi::c_ulong; 8],
 }
 
 /// Results returned by an ARM SMC call (the fields used by this header).
 #[repr(C)]
 pub struct ArmSmcccRes {
-    pub a0: core::ffi::c_ulong,
-    pub a1: core::ffi::c_ulong,
-    pub a2: core::ffi::c_ulong,
-    pub a3: core::ffi::c_ulong,
+    pub a0: kernel::ffi::c_ulong,
+    pub a1: kernel::ffi::c_ulong,
+    pub a2: kernel::ffi::c_ulong,
+    pub a3: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -31,11 +31,11 @@ pub struct ScmSmcRequest {
     pub svc_id: u8,
     pub cmd_id: u8,
     pub args_cnt: u8,
-    pub args: [core::ffi::c_ulong; 6],
+    pub args: [kernel::ffi::c_ulong; 6],
 }
 
 /// Translation of the `scm_smc_request` tracepoint's fast assignment.
-pub unsafe fn scm_smc_request(a0: core::ffi::c_ulong, smc: *const ArmSmcccArgs) -> ScmSmcRequest {
+pub unsafe fn scm_smc_request(a0: kernel::ffi::c_ulong, smc: *const ArmSmcccArgs) -> ScmSmcRequest {
     let smc_ref = &*smc;
     let n = min((smc_ref.args[1] & 0xF) as u8, 6u8);
     let mut entry = ScmSmcRequest {
@@ -86,10 +86,10 @@ pub fn scm_waitq_get_wq_ctx(wq_ctx: u32, flags: u32, pending: u32) -> ScmWaitqGe
 pub struct ScmSmcDone {
     pub ret: i32,
     pub smc_id: u64,
-    pub res: core::ffi::c_ulong,
-    pub res0: core::ffi::c_ulong,
-    pub res1: core::ffi::c_ulong,
-    pub res2: core::ffi::c_ulong,
+    pub res: kernel::ffi::c_ulong,
+    pub res0: kernel::ffi::c_ulong,
+    pub res1: kernel::ffi::c_ulong,
+    pub res2: kernel::ffi::c_ulong,
 }
 
 /// Translation of the `scm_smc_done` tracepoint's fast assignment.

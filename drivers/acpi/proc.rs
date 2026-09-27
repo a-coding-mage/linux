@@ -5,7 +5,7 @@
 
 unsafe fn acpi_system_wakeup_device_seq_show(
     seq: *mut seq_file,
-    _offset: *mut core::ffi::c_void,
+    _offset: *mut kernel::ffi::c_void,
 ) -> i32 {
     let mut dev: *mut acpi_device;
     let mut tmp: *mut acpi_device;
@@ -92,7 +92,7 @@ unsafe fn physical_device_enable_wakeup(adev: *mut acpi_device) {
 
 unsafe fn acpi_system_write_wakeup_device(
     _file: *mut file,
-    buffer: *const core::ffi::c_char,
+    buffer: *const kernel::ffi::c_char,
     mut count: usize,
     _ppos: *mut loff_t,
 ) -> isize {

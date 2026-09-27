@@ -20,7 +20,7 @@
  */
 
 extern "C" {
-    fn strcpy(dest: *mut core::ffi::c_char, src: *const core::ffi::c_char) -> *mut core::ffi::c_char;
+    fn strcpy(dest: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
 }
 
 pub unsafe fn amdgpu_mmhub_ras_sw_init(adev: *mut amdgpu_device) -> i32 {
@@ -39,8 +39,8 @@ pub unsafe fn amdgpu_mmhub_ras_sw_init(adev: *mut amdgpu_device) -> i32 {
     }
 
     strcpy(
-        (*ras).ras_block.ras_comm.name.as_mut_ptr() as *mut core::ffi::c_char,
-        b"mmhub\0".as_ptr() as *const core::ffi::c_char,
+        (*ras).ras_block.ras_comm.name.as_mut_ptr() as *mut kernel::ffi::c_char,
+        b"mmhub\0".as_ptr() as *const kernel::ffi::c_char,
     );
     (*ras).ras_block.ras_comm.block = AMDGPU_RAS_BLOCK__MMHUB;
     (*ras).ras_block.ras_comm.type_ = AMDGPU_RAS_ERROR__MULTI_UNCORRECTABLE;

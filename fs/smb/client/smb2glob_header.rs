@@ -56,7 +56,7 @@ pub const RELATED_REQUEST: i32 = 8;
 pub struct status_to_posix_error {
     pub smb2_status: u32,
     pub posix_error: i32,
-    pub status_string: *mut core::ffi::c_char,
+    pub status_string: *mut kernel::ffi::c_char,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

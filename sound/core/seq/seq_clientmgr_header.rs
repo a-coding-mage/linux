@@ -4,7 +4,7 @@
  *   Copyright (c) 1998-1999 by Frank van de Pol <fvdpol@coil.demon.nl>
  */
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 
 /* Dependencies in the original C header:
  * <sound/seq_kernel.h>, <linux/bitops.h>, "seq_fifo.h", "seq_ports.h",
@@ -60,7 +60,7 @@ pub struct snd_seq_client {
     pub number: c_int,      /* client number */
     pub filter: c_uint,     /* filter flags */
     /* C declaration: DECLARE_BITMAP(event_filter, 256); */
-    pub event_filter: [core::ffi::c_ulong; __BITS_TO_LONGS(256)],
+    pub event_filter: [kernel::ffi::c_ulong; __BITS_TO_LONGS(256)],
     pub group_filter: c_uint,
     pub use_lock: snd_use_lock_t,
     pub event_lost: c_int,

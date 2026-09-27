@@ -96,7 +96,7 @@ static int sctp_sock_migrate(sock *oldsk, sock *newsk,
 			     sctp_association *assoc,
 			     sctp_socket_type type);
 
-static core::ffi::c_ulong sctp_memory_pressure;
+static kernel::ffi::c_ulong sctp_memory_pressure;
 static atomic_long_t sctp_memory_allocated;
 static DEFINE_PER_CPU(int, sctp_memory_per_cpu_fw_alloc);
 struct percpu_counter sctp_sockets_allocated;
@@ -380,7 +380,7 @@ static int sctp_do_bind(sock *sk, sctp_addr *addr, int len)
 	struct sctp_endpoint *ep = (*sp).ep;
 	struct sctp_bind_addr *bp = (*&ep).base.bind_addr;
 	struct sctp_af *af;
-	core::ffi::c_ushort snum;
+	kernel::ffi::c_ushort snum;
 	int ret = 0;
 
 	/* Common sockaddr verification. */
@@ -1497,7 +1497,7 @@ static void sctp_close(sock *sk, long timeout)
 	struct sctp_endpoint *ep;
 	struct sctp_association *asoc;
 	struct list_head *pos, *temp;
-	core::ffi::c_uint data_was_unread;
+	kernel::ffi::c_uint data_was_unread;
 
 	pr_debug("%s: sk:%p, timeout:%ld\n", __func__, sk, timeout);
 
@@ -2235,7 +2235,7 @@ static int sctp_recvmsg(sock *sk, msghdr *msg, size_t len,
  * instead a error will be indicated to the user.
  */
 static int sctp_setsockopt_disable_fragments(sock *sk, int *val,
-					     optlen: core::ffi::c_uint)
+					     optlen: kernel::ffi::c_uint)
 {
 	if (optlen < sizeof(int))
 		return -EINVAL;
@@ -2244,7 +2244,7 @@ static int sctp_setsockopt_disable_fragments(sock *sk, int *val,
 }
 
 static int sctp_setsockopt_events(sock *sk, __u8 *sn_type,
-				  optlen: core::ffi::c_uint)
+				  optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 	struct sctp_association *asoc;
@@ -2293,7 +2293,7 @@ static int sctp_setsockopt_events(sock *sk, __u8 *sn_type,
  * association is closed.
  */
 static int sctp_setsockopt_autoclose(sock *sk, u32 *optval,
-				     optlen: core::ffi::c_uint)
+				     optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 	struct net *net = sock_net(sk);
@@ -2642,7 +2642,7 @@ static int sctp_apply_peer_addr_params(sctp_paddrparams *params,
 
 static int sctp_setsockopt_peer_addr_params(sock *sk,
 					    sctp_paddrparams *params,
-					    optlen: core::ffi::c_uint)
+					    optlen: kernel::ffi::c_uint)
 {
 	struct sctp_transport   *trans = NULL;
 	struct sctp_association *asoc = NULL;
@@ -2856,7 +2856,7 @@ static int __sctp_setsockopt_delayed_ack(sock *sk,
 
 static int sctp_setsockopt_delayed_ack(sock *sk,
 				       sctp_sack_info *params,
-				       optlen: core::ffi::c_uint)
+				       optlen: kernel::ffi::c_uint)
 {
 	if (optlen == sizeof(sctp_assoc_value)) {
 		struct sctp_assoc_value *v = (sctp_assoc_value *)params;
@@ -2893,7 +2893,7 @@ static int sctp_setsockopt_delayed_ack(sock *sk,
  * sockets derived from a listener socket.
  */
 static int sctp_setsockopt_initmsg(sock *sk, sctp_initmsg *sinit,
-				   optlen: core::ffi::c_uint)
+				   optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 
@@ -2928,7 +2928,7 @@ static int sctp_setsockopt_initmsg(sock *sk, sctp_initmsg *sinit,
  */
 static int sctp_setsockopt_default_send_param(sock *sk,
 					      sctp_sndrcvinfo *info,
-					      optlen: core::ffi::c_uint)
+					      optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 	struct sctp_association *asoc;
@@ -2986,7 +2986,7 @@ static int sctp_setsockopt_default_send_param(sock *sk,
  */
 static int sctp_setsockopt_default_sndinfo(sock *sk,
 					   sctp_sndinfo *info,
-					   optlen: core::ffi::c_uint)
+					   optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 	struct sctp_association *asoc;
@@ -3043,7 +3043,7 @@ static int sctp_setsockopt_default_sndinfo(sock *sk,
  * association peer's addresses.
  */
 static int sctp_setsockopt_primary_addr(sock *sk, sctp_prim *prim,
-					optlen: core::ffi::c_uint)
+					optlen: kernel::ffi::c_uint)
 {
 	struct sctp_transport *trans;
 	struct sctp_af *af;
@@ -3081,7 +3081,7 @@ static int sctp_setsockopt_primary_addr(sock *sk, sctp_prim *prim,
  *  integer boolean flag.
  */
 static int sctp_setsockopt_nodelay(sock *sk, int *val,
-				   optlen: core::ffi::c_uint)
+				   optlen: kernel::ffi::c_uint)
 {
 	if (optlen < sizeof(int))
 		return -EINVAL;
@@ -3103,10 +3103,10 @@ static int sctp_setsockopt_nodelay(sock *sk, int *val,
  */
 static int sctp_setsockopt_rtoinfo(sock *sk,
 				   sctp_rtoinfo *rtoinfo,
-				   optlen: core::ffi::c_uint)
+				   optlen: kernel::ffi::c_uint)
 {
 	struct sctp_association *asoc;
-	rto_min: core::ffi::c_ulong, rto_max;
+	rto_min: kernel::ffi::c_ulong, rto_max;
 	struct sctp_sock *sp = sctp_sk(sk);
 
 	if (optlen != sizeof (sctp_rtoinfo))
@@ -3167,7 +3167,7 @@ static int sctp_setsockopt_rtoinfo(sock *sk,
  */
 static int sctp_setsockopt_associnfo(sock *sk,
 				     sctp_assocparams *assocparams,
-				     optlen: core::ffi::c_uint)
+				     optlen: kernel::ffi::c_uint)
 {
 
 	struct sctp_association *asoc;
@@ -3234,7 +3234,7 @@ static int sctp_setsockopt_associnfo(sock *sk,
  * addresses on the socket.
  */
 static int sctp_setsockopt_mappedv4(sock *sk, int *val,
-				    optlen: core::ffi::c_uint)
+				    optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 
@@ -3277,7 +3277,7 @@ static int sctp_setsockopt_mappedv4(sock *sk, int *val,
  */
 static int sctp_setsockopt_maxseg(sock *sk,
 				  sctp_assoc_value *params,
-				  optlen: core::ffi::c_uint)
+				  optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 	struct sctp_association *asoc;
@@ -3337,7 +3337,7 @@ static int sctp_setsockopt_maxseg(sock *sk,
  */
 static int sctp_setsockopt_peer_primary_addr(sock *sk,
 					     sctp_setpeerprim *prim,
-					     optlen: core::ffi::c_uint)
+					     optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock	*sp;
 	struct sctp_association	*asoc = NULL;
@@ -3398,7 +3398,7 @@ static int sctp_setsockopt_peer_primary_addr(sock *sk,
 
 static int sctp_setsockopt_adaptation_layer(sock *sk,
 					    sctp_setadaptation *adapt,
-					    optlen: core::ffi::c_uint)
+					    optlen: kernel::ffi::c_uint)
 {
 	if (optlen != sizeof(sctp_setadaptation))
 		return -EINVAL;
@@ -3424,7 +3424,7 @@ static int sctp_setsockopt_adaptation_layer(sock *sk,
  */
 static int sctp_setsockopt_context(sock *sk,
 				   sctp_assoc_value *params,
-				   optlen: core::ffi::c_uint)
+				   optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 	struct sctp_association *asoc;
@@ -3483,7 +3483,7 @@ static int sctp_setsockopt_context(sock *sk,
  * incorrectly.
  */
 static int sctp_setsockopt_fragment_interleave(sock *sk, int *val,
-					       optlen: core::ffi::c_uint)
+					       optlen: kernel::ffi::c_uint)
 {
 	if (optlen != sizeof(int))
 		return -EINVAL;
@@ -3514,7 +3514,7 @@ static int sctp_setsockopt_fragment_interleave(sock *sk, int *val,
  * message.
  */
 static int sctp_setsockopt_partial_delivery_point(sock *sk, u32 *val,
-						  optlen: core::ffi::c_uint)
+						  optlen: kernel::ffi::c_uint)
 {
 	if (optlen != sizeof(u32))
 		return -EINVAL;
@@ -3543,7 +3543,7 @@ static int sctp_setsockopt_partial_delivery_point(sock *sk, u32 *val,
  */
 static int sctp_setsockopt_maxburst(sock *sk,
 				    sctp_assoc_value *params,
-				    optlen: core::ffi::c_uint)
+				    optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 	struct sctp_association *asoc;
@@ -3596,7 +3596,7 @@ static int sctp_setsockopt_maxburst(sock *sk,
  */
 static int sctp_setsockopt_auth_chunk(sock *sk,
 				      sctp_authchunk *val,
-				      optlen: core::ffi::c_uint)
+				      optlen: kernel::ffi::c_uint)
 {
 	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
 
@@ -3626,7 +3626,7 @@ static int sctp_setsockopt_auth_chunk(sock *sk,
  */
 static int sctp_setsockopt_hmac_ident(sock *sk,
 				      sctp_hmacalgo *hmacs,
-				      optlen: core::ffi::c_uint)
+				      optlen: kernel::ffi::c_uint)
 {
 	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
 	u32 idents;
@@ -3636,7 +3636,7 @@ static int sctp_setsockopt_hmac_ident(sock *sk,
 
 	if (optlen < sizeof(sctp_hmacalgo))
 		return -EINVAL;
-	optlen = min_t(core::ffi::c_uint, optlen, sizeof(sctp_hmacalgo) +
+	optlen = min_t(kernel::ffi::c_uint, optlen, sizeof(sctp_hmacalgo) +
 					     SCTP_AUTH_NUM_HMACS * sizeof(u16));
 
 	idents = hmacs->shmac_num_idents;
@@ -3655,7 +3655,7 @@ static int sctp_setsockopt_hmac_ident(sock *sk,
  */
 static int sctp_setsockopt_auth_key(sock *sk,
 				    sctp_authkey *authkey,
-				    optlen: core::ffi::c_uint)
+				    optlen: kernel::ffi::c_uint)
 {
 	'out: {
 	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
@@ -3667,7 +3667,7 @@ static int sctp_setsockopt_auth_key(sock *sk,
 	/* authkey->sca_keylength is u16, so optlen can't be bigger than
 	 * this.
 	 */
-	optlen = min_t(core::ffi::c_uint, optlen, USHRT_MAX + sizeof(*authkey));
+	optlen = min_t(kernel::ffi::c_uint, optlen, USHRT_MAX + sizeof(*authkey));
 
 	if (authkey->sca_keylength > optlen - sizeof(*authkey))
 		break 'out;
@@ -3717,7 +3717,7 @@ static int sctp_setsockopt_auth_key(sock *sk,
  */
 static int sctp_setsockopt_active_key(sock *sk,
 				      sctp_authkeyid *val,
-				      optlen: core::ffi::c_uint)
+				      optlen: kernel::ffi::c_uint)
 {
 	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
 	struct sctp_association *asoc;
@@ -3765,7 +3765,7 @@ static int sctp_setsockopt_active_key(sock *sk,
  */
 static int sctp_setsockopt_del_key(sock *sk,
 				   sctp_authkeyid *val,
-				   optlen: core::ffi::c_uint)
+				   optlen: kernel::ffi::c_uint)
 {
 	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
 	struct sctp_association *asoc;
@@ -3813,7 +3813,7 @@ static int sctp_setsockopt_del_key(sock *sk,
  */
 static int sctp_setsockopt_deactivate_key(sock *sk,
 					  sctp_authkeyid *val,
-					  optlen: core::ffi::c_uint)
+					  optlen: kernel::ffi::c_uint)
 {
 	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
 	struct sctp_association *asoc;
@@ -3869,7 +3869,7 @@ static int sctp_setsockopt_deactivate_key(sock *sk,
  * being set by sysctl as well as FreeBSD implementation
  */
 static int sctp_setsockopt_auto_asconf(sock *sk, int *val,
-					optlen: core::ffi::c_uint)
+					optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 
@@ -3902,7 +3902,7 @@ static int sctp_setsockopt_auto_asconf(sock *sk, int *val,
  */
 static int sctp_setsockopt_paddr_thresholds(sock *sk,
 					    sctp_paddrthlds_v2 *val,
-					    optlen: core::ffi::c_uint, v2: bool)
+					    optlen: kernel::ffi::c_uint, v2: bool)
 {
 	struct sctp_transport *trans;
 	struct sctp_association *asoc;
@@ -3964,7 +3964,7 @@ static int sctp_setsockopt_paddr_thresholds(sock *sk,
 }
 
 static int sctp_setsockopt_recvrcvinfo(sock *sk, int *val,
-				       optlen: core::ffi::c_uint)
+				       optlen: kernel::ffi::c_uint)
 {
 	if (optlen < sizeof(int))
 		return -EINVAL;
@@ -3975,7 +3975,7 @@ static int sctp_setsockopt_recvrcvinfo(sock *sk, int *val,
 }
 
 static int sctp_setsockopt_recvnxtinfo(sock *sk, int *val,
-				       optlen: core::ffi::c_uint)
+				       optlen: kernel::ffi::c_uint)
 {
 	if (optlen < sizeof(int))
 		return -EINVAL;
@@ -3987,7 +3987,7 @@ static int sctp_setsockopt_recvnxtinfo(sock *sk, int *val,
 
 static int sctp_setsockopt_pr_supported(sock *sk,
 					sctp_assoc_value *params,
-					optlen: core::ffi::c_uint)
+					optlen: kernel::ffi::c_uint)
 {
 	struct sctp_association *asoc;
 
@@ -4006,7 +4006,7 @@ static int sctp_setsockopt_pr_supported(sock *sk,
 
 static int sctp_setsockopt_default_prinfo(sock *sk,
 					  sctp_default_prinfo *info,
-					  optlen: core::ffi::c_uint)
+					  optlen: kernel::ffi::c_uint)
 {
 	'out: {
 	struct sctp_sock *sp = sctp_sk(sk);
@@ -4059,7 +4059,7 @@ static int sctp_setsockopt_default_prinfo(sock *sk,
 
 static int sctp_setsockopt_reconfig_supported(sock *sk,
 					      sctp_assoc_value *params,
-					      optlen: core::ffi::c_uint)
+					      optlen: kernel::ffi::c_uint)
 {
 	'out: {
 	struct sctp_association *asoc;
@@ -4083,7 +4083,7 @@ static int sctp_setsockopt_reconfig_supported(sock *sk,
 
 static int sctp_setsockopt_enable_strreset(sock *sk,
 					   sctp_assoc_value *params,
-					   optlen: core::ffi::c_uint)
+					   optlen: kernel::ffi::c_uint)
 {
 	'out: {
 	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
@@ -4126,14 +4126,14 @@ static int sctp_setsockopt_enable_strreset(sock *sk,
 
 static int sctp_setsockopt_reset_streams(sock *sk,
 					 sctp_reset_streams *params,
-					 optlen: core::ffi::c_uint)
+					 optlen: kernel::ffi::c_uint)
 {
 	struct sctp_association *asoc;
 
 	if (optlen < sizeof(*params))
 		return -EINVAL;
 	/* srs_number_streams is u16, so optlen can't be bigger than this. */
-	optlen = min_t(core::ffi::c_uint, optlen,
+	optlen = min_t(kernel::ffi::c_uint, optlen,
 		       struct_size_t(sctp_reset_streams, srs_stream_list,
 				     USHRT_MAX));
 
@@ -4149,7 +4149,7 @@ static int sctp_setsockopt_reset_streams(sock *sk,
 }
 
 static int sctp_setsockopt_reset_assoc(sock *sk, sctp_assoc_t *associd,
-				       optlen: core::ffi::c_uint)
+				       optlen: kernel::ffi::c_uint)
 {
 	struct sctp_association *asoc;
 
@@ -4165,7 +4165,7 @@ static int sctp_setsockopt_reset_assoc(sock *sk, sctp_assoc_t *associd,
 
 static int sctp_setsockopt_add_streams(sock *sk,
 				       sctp_add_streams *params,
-				       optlen: core::ffi::c_uint)
+				       optlen: kernel::ffi::c_uint)
 {
 	struct sctp_association *asoc;
 
@@ -4181,7 +4181,7 @@ static int sctp_setsockopt_add_streams(sock *sk,
 
 static int sctp_setsockopt_scheduler(sock *sk,
 				     sctp_assoc_value *params,
-				     optlen: core::ffi::c_uint)
+				     optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 	struct sctp_association *asoc;
@@ -4224,7 +4224,7 @@ static int sctp_setsockopt_scheduler(sock *sk,
 
 static int sctp_setsockopt_scheduler_value(sock *sk,
 					   sctp_stream_value *params,
-					   optlen: core::ffi::c_uint)
+					   optlen: kernel::ffi::c_uint)
 {
 	'out: {
 	struct sctp_association *asoc;
@@ -4260,7 +4260,7 @@ static int sctp_setsockopt_scheduler_value(sock *sk,
 
 static int sctp_setsockopt_interleaving_supported(sock *sk,
 						  sctp_assoc_value *p,
-						  optlen: core::ffi::c_uint)
+						  optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 	struct sctp_association *asoc;
@@ -4281,7 +4281,7 @@ static int sctp_setsockopt_interleaving_supported(sock *sk,
 }
 
 static int sctp_setsockopt_reuse_port(sock *sk, int *val,
-				      optlen: core::ffi::c_uint)
+				      optlen: kernel::ffi::c_uint)
 {
 	if (!sctp_style(sk, TCP))
 		return -EOPNOTSUPP;
@@ -4319,7 +4319,7 @@ static int sctp_assoc_ulpevent_type_set(sctp_event *param,
 }
 
 static int sctp_setsockopt_event(sock *sk, sctp_event *param,
-				 optlen: core::ffi::c_uint)
+				 optlen: kernel::ffi::c_uint)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
 	struct sctp_association *asoc;
@@ -4363,7 +4363,7 @@ static int sctp_setsockopt_event(sock *sk, sctp_event *param,
 
 static int sctp_setsockopt_asconf_supported(sock *sk,
 					    sctp_assoc_value *params,
-					    optlen: core::ffi::c_uint)
+					    optlen: kernel::ffi::c_uint)
 {
 	'out: {
 	struct sctp_association *asoc;
@@ -4394,7 +4394,7 @@ static int sctp_setsockopt_asconf_supported(sock *sk,
 
 static int sctp_setsockopt_auth_supported(sock *sk,
 					  sctp_assoc_value *params,
-					  optlen: core::ffi::c_uint)
+					  optlen: kernel::ffi::c_uint)
 {
 	'out: {
 	struct sctp_association *asoc;
@@ -4429,7 +4429,7 @@ static int sctp_setsockopt_auth_supported(sock *sk,
 
 static int sctp_setsockopt_ecn_supported(sock *sk,
 					 sctp_assoc_value *params,
-					 optlen: core::ffi::c_uint)
+					 optlen: kernel::ffi::c_uint)
 {
 	'out: {
 	struct sctp_association *asoc;
@@ -4452,7 +4452,7 @@ static int sctp_setsockopt_ecn_supported(sock *sk,
 
 static int sctp_setsockopt_pf_expose(sock *sk,
 				     sctp_assoc_value *params,
-				     optlen: core::ffi::c_uint)
+				     optlen: kernel::ffi::c_uint)
 {
 	'out: {
 	struct sctp_association *asoc;
@@ -4481,7 +4481,7 @@ static int sctp_setsockopt_pf_expose(sock *sk,
 
 static int sctp_setsockopt_encap_port(sock *sk,
 				      sctp_udpencaps *encap,
-				      optlen: core::ffi::c_uint)
+				      optlen: kernel::ffi::c_uint)
 {
 	struct sctp_association *asoc;
 	struct sctp_transport *t;
@@ -4531,7 +4531,7 @@ static int sctp_setsockopt_encap_port(sock *sk,
 
 static int sctp_setsockopt_probe_interval(sock *sk,
 					  sctp_probeinterval *params,
-					  optlen: core::ffi::c_uint)
+					  optlen: kernel::ffi::c_uint)
 {
 	struct sctp_association *asoc;
 	struct sctp_transport *t;
@@ -4604,7 +4604,7 @@ static int sctp_setsockopt_probe_interval(sock *sk,
  *   optlen  - the size of the buffer.
  */
 static int sctp_setsockopt(sock *sk, int level, int optname,
-			   sockptr_t optval, optlen: core::ffi::c_uint)
+			   sockptr_t optval, optlen: kernel::ffi::c_uint)
 {
 	void *kopt = NULL;
 	int retval = 0;
@@ -4625,7 +4625,7 @@ static int sctp_setsockopt(sock *sk, int level, int optname,
 
 	if (optlen > 0) {
 		/* Trim it to the biggest size sctp sockopt may need if necessary */
-		optlen = min_t(core::ffi::c_uint, optlen,
+		optlen = min_t(kernel::ffi::c_uint, optlen,
 			       PAGE_ALIGN(struct_size_t(sctp_reset_streams,
 							srs_stream_list, USHRT_MAX)));
 		kopt = memdup_sockptr(optval, optlen);
@@ -8465,7 +8465,7 @@ static void sctp_unhash(sock *sk)
  * a fastreuse flag (FIXME: NPI ipg).
  */
 static struct sctp_bind_bucket *sctp_bucket_create(
-	sctp_bind_hashbucket *head, net *, snum: core::ffi::c_ushort);
+	sctp_bind_hashbucket *head, net *, snum: kernel::ffi::c_ushort);
 
 static int sctp_get_port_local(sock *sk, sctp_addr *addr)
 {
@@ -8479,7 +8479,7 @@ static int sctp_get_port_local(sock *sk, sctp_addr *addr)
 	struct net *net = sock_net(sk);
 	struct sctp_bind_bucket *pp;
 	kuid_t uid = sk_uid(sk);
-	core::ffi::c_ushort snum;
+	kernel::ffi::c_ushort snum;
 	int ret;
 
 	snum = ntohs(addr->v4.sin_port);
@@ -8489,7 +8489,7 @@ static int sctp_get_port_local(sock *sk, sctp_addr *addr)
 	if (snum == 0) {
 		/* Search for an available port. */
 		int low, high, remaining, index;
-		core::ffi::c_uint rover;
+		kernel::ffi::c_uint rover;
 
 		inet_sk_get_local_port_range(sk, &low, &high);
 		remaining = (high - low) + 1;
@@ -8647,7 +8647,7 @@ static int sctp_get_port_local(sock *sk, sctp_addr *addr)
 /* Assign a 'snum' port to the socket.  If snum == 0, an ephemeral
  * port is requested.
  */
-static int sctp_get_port(sock *sk, snum: core::ffi::c_ushort)
+static int sctp_get_port(sock *sk, snum: kernel::ffi::c_ushort)
 {
 	union sctp_addr addr;
 	struct sctp_af *af = sctp_sk(sk)->pf->af;
@@ -8844,7 +8844,7 @@ __poll_t sctp_poll(file *file, socket *sock, poll_table *wait)
  ********************************************************************/
 
 static struct sctp_bind_bucket *sctp_bucket_create(
-	sctp_bind_hashbucket *head, net *net, snum: core::ffi::c_ushort)
+	sctp_bind_hashbucket *head, net *net, snum: kernel::ffi::c_ushort)
 {
 	struct sctp_bind_bucket *pp;
 

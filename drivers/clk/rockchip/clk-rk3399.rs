@@ -1534,8 +1534,8 @@ static rk3399_pmucru_critical_clocks: [&str; 0] = {
 unsafe fn rk3399_clk_init(np: *mut device_node)
 {
 	struct rockchip_clk_provider *ctx;
-	core::ffi::c_ulong clk_nr_clks;
-	let mut reg_base: *mut core::ffi::c_void;
+	kernel::ffi::c_ulong clk_nr_clks;
+	let mut reg_base: *mut kernel::ffi::c_void;
 
 	reg_base = of_iomap(np, 0);
 	if (!reg_base) {
@@ -1583,8 +1583,8 @@ CLK_OF_DECLARE(rk3399_cru, "rockchip,rk3399-cru", rk3399_clk_init);
 unsafe fn rk3399_pmu_clk_init(np: *mut device_node)
 {
 	struct rockchip_clk_provider *ctx;
-	core::ffi::c_ulong clkpmu_nr_clks;
-	let mut reg_base: *mut core::ffi::c_void;
+	kernel::ffi::c_ulong clkpmu_nr_clks;
+	let mut reg_base: *mut kernel::ffi::c_void;
 
 	reg_base = of_iomap(np, 0);
 	if (!reg_base) {

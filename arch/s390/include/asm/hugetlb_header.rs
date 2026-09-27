@@ -19,14 +19,14 @@ pub unsafe fn hugepages_supported() -> bool {
 extern "C" {
     pub fn set_huge_pte_at(
         mm: *mut mm_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
         pte: pte_t,
-        sz: ::core::ffi::c_ulong,
+        sz: ::kernel::ffi::c_ulong,
     );
     pub fn __set_huge_pte_at(
         mm: *mut mm_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
         pte: pte_t,
     );
@@ -36,13 +36,13 @@ extern "C" {
 extern "C" {
     pub fn huge_ptep_get(
         mm: *mut mm_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
     ) -> pte_t;
 
     pub fn __huge_ptep_get_and_clear(
         mm: *mut mm_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
     ) -> pte_t;
 }
@@ -51,9 +51,9 @@ extern "C" {
 #[inline]
 pub unsafe fn huge_ptep_get_and_clear(
     mm: *mut mm_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
-    _sz: ::core::ffi::c_ulong,
+    _sz: ::kernel::ffi::c_ulong,
 ) -> pte_t {
     __huge_ptep_get_and_clear(mm, addr, ptep)
 }
@@ -62,9 +62,9 @@ pub unsafe fn huge_ptep_get_and_clear(
 #[inline]
 pub unsafe fn huge_pte_clear(
     mm: *mut mm_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
-    _sz: ::core::ffi::c_ulong,
+    _sz: ::kernel::ffi::c_ulong,
 ) {
     let _ = (mm, addr);
     if (pte_val(ptep_get(ptep)) & _REGION_ENTRY_TYPE_MASK) == _REGION_ENTRY_TYPE_R3 {
@@ -78,7 +78,7 @@ pub unsafe fn huge_pte_clear(
 #[inline]
 pub unsafe fn huge_ptep_clear_flush(
     vma: *mut vm_area_struct,
-    address: ::core::ffi::c_ulong,
+    address: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
 ) -> pte_t {
     __huge_ptep_get_and_clear((*vma).vm_mm, address, ptep)
@@ -88,25 +88,25 @@ pub unsafe fn huge_ptep_clear_flush(
 #[inline]
 pub unsafe fn huge_ptep_set_access_flags(
     vma: *mut vm_area_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
     pte: pte_t,
-    _dirty: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    _dirty: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let changed = !pte_same(huge_ptep_get((*vma).vm_mm, addr, ptep), pte);
 
     if changed {
         __huge_ptep_get_and_clear((*vma).vm_mm, addr, ptep);
         __set_huge_pte_at((*vma).vm_mm, addr, ptep, pte);
     }
-    changed as ::core::ffi::c_int
+    changed as ::kernel::ffi::c_int
 }
 
 // __HAVE_ARCH_HUGE_PTEP_SET_WRPROTECT
 #[inline]
 pub unsafe fn huge_ptep_set_wrprotect(
     mm: *mut mm_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
 ) {
     let pte = __huge_ptep_get_and_clear(mm, addr, ptep);
@@ -127,7 +127,7 @@ pub unsafe fn huge_pte_clear_uffd(pte: pte_t) -> pte_t {
 
 // __HAVE_ARCH_HUGE_PTE_UFFD
 #[inline]
-pub unsafe fn huge_pte_uffd(_pte: pte_t) -> ::core::ffi::c_int {
+pub unsafe fn huge_pte_uffd(_pte: pte_t) -> ::kernel::ffi::c_int {
     0
 }
 

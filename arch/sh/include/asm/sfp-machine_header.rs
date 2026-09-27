@@ -22,9 +22,9 @@ pub const __BYTE_ORDER: u32 = __LITTLE_ENDIAN;
 pub const __BIG_ENDIAN: u32 = 0;
 
 pub const _FP_W_TYPE_SIZE: usize = 32;
-pub type _FP_W_TYPE = ::core::ffi::c_ulong;
-pub type _FP_WS_TYPE = ::core::ffi::c_long;
-pub type _FP_I_TYPE = ::core::ffi::c_long;
+pub type _FP_W_TYPE = ::kernel::ffi::c_ulong;
+pub type _FP_WS_TYPE = ::kernel::ffi::c_long;
+pub type _FP_I_TYPE = ::kernel::ffi::c_long;
 
 // These operations depend on the floating-point support definitions supplied by other headers.
 macro_rules! _FP_MUL_MEAT_S {

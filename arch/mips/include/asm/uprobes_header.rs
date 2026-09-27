@@ -29,14 +29,14 @@ pub const UPROBE_SWBP_INSN_SIZE: u32 = 4;
 
 #[repr(C)]
 pub struct arch_uprobe {
-    pub resume_epc: ::core::ffi::c_ulong,
+    pub resume_epc: ::kernel::ffi::c_ulong,
     pub insn: [u32; 2],
     pub ixol: [u32; 2],
 }
 
 #[repr(C)]
 pub struct arch_uprobe_task {
-    pub saved_trap_nr: ::core::ffi::c_ulong,
+    pub saved_trap_nr: ::kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

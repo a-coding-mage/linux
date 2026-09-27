@@ -12,7 +12,7 @@
 
 /* One argument, integer_argument; No return value expected */
 pub unsafe fn acpi_hw_execute_sleep_method(
-    method_pathname: *mut core::ffi::c_char,
+    method_pathname: *mut kernel::ffi::c_char,
     integer_argument: u32,
 ) {
     let mut arg_list: acpi_object_list = core::mem::zeroed();

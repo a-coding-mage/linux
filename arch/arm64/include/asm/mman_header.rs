@@ -10,7 +10,7 @@
 // This section is excluded when BUILD_VDSO is defined in the C build.
 
 #[inline]
-pub unsafe fn arch_calc_vm_prot_bits(prot: ::core::ffi::c_ulong, pkey: ::core::ffi::c_ulong) -> vm_flags_t {
+pub unsafe fn arch_calc_vm_prot_bits(prot: ::kernel::ffi::c_ulong, pkey: ::kernel::ffi::c_ulong) -> vm_flags_t {
     let mut ret: vm_flags_t = 0;
 
     if system_supports_bti() && (prot & PROT_BTI) != 0 {
@@ -32,7 +32,7 @@ pub unsafe fn arch_calc_vm_prot_bits(prot: ::core::ffi::c_ulong, pkey: ::core::f
 }
 
 #[inline]
-pub unsafe fn arch_calc_vm_flag_bits(file: *mut struct_file, flags: ::core::ffi::c_ulong) -> vm_flags_t {
+pub unsafe fn arch_calc_vm_flag_bits(file: *mut struct_file, flags: ::kernel::ffi::c_ulong) -> vm_flags_t {
     /*
      * Only allow MTE on anonymous mappings as these are guaranteed to be
      * backed by tags-capable memory. The vm_flags may be overridden by a
@@ -52,8 +52,8 @@ pub unsafe fn arch_calc_vm_flag_bits(file: *mut struct_file, flags: ::core::ffi:
 
 #[inline]
 pub unsafe fn arch_validate_prot(
-    prot: ::core::ffi::c_ulong,
-    _addr: ::core::ffi::c_ulong,
+    prot: ::kernel::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
 ) -> bool {
     let mut supported = PROT_READ | PROT_WRITE | PROT_EXEC | PROT_SEM;
 

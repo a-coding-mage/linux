@@ -42,7 +42,7 @@ pub unsafe fn kvm_mmu_page_assign(
 pub unsafe fn kvm_mmu_page_printk(
     p: *mut crate::trace_seq,
     entry: *const KvmMmuPageTraceEntry,
-) -> *const core::ffi::c_char {
+) -> *const kernel::ffi::c_char {
     let saved_ptr = crate::trace_seq_buffer_ptr(p);
     let access_str: [&[u8]; 16] = [
         b"----", b"r---", b"-w--", b"rw--", b"--u-", b"r-u-", b"-wu-", b"rwu-",

@@ -22,12 +22,12 @@ pub static mut plat_smp_ops: plat_smp_ops = unsafe { core::mem::zeroed() };
 #[no_mangle]
 pub static mut secondary_idle_tsk: *mut task_struct = core::ptr::null_mut();
 
-unsafe fn arc_get_cpu_map(name: *const core::ffi::c_char, cpumask: *mut cpumask) -> i32 {
+unsafe fn arc_get_cpu_map(name: *const kernel::ffi::c_char, cpumask: *mut cpumask) -> i32 {
     let dt_root: c_ulong = of_get_flat_dt_root();
     let mut len: i32 = 0;
     let buf = of_get_flat_dt_prop(dt_root, name, &mut len);
 
-    if buf.is_null() || memchr(buf as *const core::ffi::c_void, 0, len as usize).is_null() {
+    if buf.is_null() || memchr(buf as *const kernel::ffi::c_void, 0, len as usize).is_null() {
         return -EINVAL;
     }
 
@@ -96,7 +96,7 @@ pub unsafe fn arc_platform_smp_wait_to_boot(cpu: i32) {
 }
 
 #[no_mangle]
-pub unsafe fn arc_platform_smp_cpuinfo() -> *const core::ffi::c_char {
+pub unsafe fn arc_platform_smp_cpuinfo() -> *const kernel::ffi::c_char {
     plat_smp_ops.info.unwrap_or(c"".as_ptr())
 }
 
@@ -182,7 +182,7 @@ unsafe fn __do_IPI(msg: c_ulong) -> i32 {
     }; 0
 }
 
-unsafe fn do_IPI(irq: i32, _dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe fn do_IPI(irq: i32, _dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     let copy = ipi_data[smp_processor_id() as usize].swap(0, core::sync::atomic::Ordering::SeqCst);
     pr_debug!("IPI [%ld] received on cpu %d\n", copy, smp_processor_id());
     if let Some(ipi_clear) = plat_smp_ops.ipi_clear { ipi_clear(irq); }

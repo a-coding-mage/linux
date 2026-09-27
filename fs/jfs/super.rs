@@ -24,7 +24,7 @@ unsafe fn jfs_handle_error(sb: *mut super_block) {
     }
 }
 
-pub unsafe fn jfs_error(sb: *mut super_block, fmt: *const core::ffi::c_char, mut args: ...) {
+pub unsafe fn jfs_error(sb: *mut super_block, fmt: *const kernel::ffi::c_char, mut args: ...) {
     let mut vaf: va_format = core::mem::zeroed();
     vaf.fmt = fmt; vaf.va = &mut args;
     pr_err!("ERROR: (device %s): %ps: %pV\\n", (*sb).s_id, builtin_return_address(0), &vaf);
@@ -53,7 +53,7 @@ unsafe fn jfs_statfs(dentry: *mut dentry, buf: *mut kstatfs) -> i32 {
     (*buf).f_namelen=JFS_NAME_MAX; 0
 }
 
-#[repr(C)] pub struct jfs_context { pub flag:i32, pub uid:kuid_t, pub gid:kgid_t, pub umask:u32, pub minblks_trim:u32, pub nls_map:*mut core::ffi::c_void, pub resize:bool, pub newLVSize:i64 }
+#[repr(C)] pub struct jfs_context { pub flag:i32, pub uid:kuid_t, pub gid:kgid_t, pub umask:u32, pub minblks_trim:u32, pub nls_map:*mut kernel::ffi::c_void, pub resize:bool, pub newLVSize:i64 }
 
 unsafe fn jfs_put_super(sb:*mut super_block) { let sbi=JFS_SBI(sb); jfs_info!("In jfs_put_super"); jfs_quota_off_umount(sb); let rc=jfs_umount(sb); if rc!=0 { jfs_err!("jfs_umount failed with return code %d",rc); } unload_nls((*sbi).nls_tab); truncate_inode_pages((*sbi).direct_inode.i_mapping,0); iput((*sbi).direct_inode); kfree(sbi); }
 
@@ -99,7 +99,7 @@ unsafe fn jfs_fill_super(sb:*mut super_block, fc:*mut fs_context)->i32 { let ctx
 static mut jfs_super_operations: super_operations = super_operations { alloc_inode:Some(jfs_alloc_inode), free_inode:Some(jfs_free_inode), put_super:Some(jfs_put_super), sync_fs:Some(jfs_sync_fs), freeze_fs:Some(jfs_freeze), unfreeze_fs:Some(jfs_unfreeze), statfs:Some(jfs_statfs), ..super_operations::EMPTY };
 static mut jfs_export_operations: export_operations = export_operations::EMPTY;
 
-unsafe fn init_once(foo:*mut core::ffi::c_void) { let p=foo as *mut jfs_inode_info; core::ptr::write_bytes(p,0,1); INIT_LIST_HEAD(&mut (*p).anon_inode_list); init_rwsem(&mut (*p).rdwrlock); mutex_init(&mut (*p).commit_mutex); init_rwsem(&mut (*p).xattr_sem); spin_lock_init(&mut (*p).ag_lock); (*p).active_ag=-1; inode_init_once(&mut (*p).vfs_inode); }
+unsafe fn init_once(foo:*mut kernel::ffi::c_void) { let p=foo as *mut jfs_inode_info; core::ptr::write_bytes(p,0,1); INIT_LIST_HEAD(&mut (*p).anon_inode_list); init_rwsem(&mut (*p).rdwrlock); mutex_init(&mut (*p).commit_mutex); init_rwsem(&mut (*p).xattr_sem); spin_lock_init(&mut (*p).ag_lock); (*p).active_ag=-1; inode_init_once(&mut (*p).vfs_inode); }
 unsafe fn init_jfs_fs()->i32 { let mut rc=metapage_init(); if rc!=0{return rc;} rc=txInit(); if rc!=0{metapage_exit();return rc;} jfsIOthread=kthread_run(jfsIOWait,core::ptr::null_mut(),cstr!("jfsIO")); if IS_ERR(jfsIOthread){rc=PTR_ERR(jfsIOthread);txExit();metapage_exit();return rc;} if commit_threads<1{commit_threads=num_online_cpus();} if commit_threads>MAX_COMMIT_THREADS as i32{commit_threads=MAX_COMMIT_THREADS as i32;} for i in 0..commit_threads as usize {jfsCommitThread[i]=kthread_run(jfs_lazycommit,core::ptr::null_mut(),cstr!("jfsCommit"));} jfsSyncThread=kthread_run(jfs_sync,core::ptr::null_mut(),cstr!("jfsSync")); rc=register_filesystem(&mut jfs_fs_type); if rc!=0{txExit();metapage_exit();} rc }
 unsafe fn exit_jfs_fs(){ txExit(); metapage_exit(); kthread_stop(jfsIOthread); for i in 0..commit_threads as usize{kthread_stop(jfsCommitThread[i]);} kthread_stop(jfsSyncThread); unregister_filesystem(&mut jfs_fs_type); rcu_barrier(); kmem_cache_destroy(jfs_inode_cachep); }
 static mut jfs_fs_type:file_system_type=file_system_type::EMPTY;

@@ -154,21 +154,21 @@ pub const regk_crypto_sha256: u32 = 0x00000008;
 
 /* DMA descriptor structures */
 struct pdma_descr_ctrl  {
-	core::ffi::c_uchar short_descr : 1;
-	core::ffi::c_uchar pad1        : 1;
-	core::ffi::c_uchar eop         : 1;
-	core::ffi::c_uchar intr        : 1;
-	core::ffi::c_uchar short_len   : 3;
-	core::ffi::c_uchar pad2        : 1;
+	kernel::ffi::c_uchar short_descr : 1;
+	kernel::ffi::c_uchar pad1        : 1;
+	kernel::ffi::c_uchar eop         : 1;
+	kernel::ffi::c_uchar intr        : 1;
+	kernel::ffi::c_uchar short_len   : 3;
+	kernel::ffi::c_uchar pad2        : 1;
 } __packed;
 
 struct pdma_data_descr {
-	core::ffi::c_uint len : 24;
-	core::ffi::c_uint buf : 32;
+	kernel::ffi::c_uint len : 24;
+	kernel::ffi::c_uint buf : 32;
 } __packed;
 
 struct pdma_short_descr {
-	core::ffi::c_uchar data[7];
+	kernel::ffi::c_uchar data[7];
 } __packed;
 
 struct pdma_descr {
@@ -180,11 +180,11 @@ struct pdma_descr {
 };
 
 struct pdma_stat_descr {
-	core::ffi::c_uchar pad1        : 1;
-	core::ffi::c_uchar pad2        : 1;
-	core::ffi::c_uchar eop         : 1;
-	core::ffi::c_uchar pad3        : 5;
-	core::ffi::c_uint  len         : 24;
+	kernel::ffi::c_uchar pad1        : 1;
+	kernel::ffi::c_uchar pad2        : 1;
+	kernel::ffi::c_uchar eop         : 1;
+	kernel::ffi::c_uchar pad3        : 5;
+	kernel::ffi::c_uint  len         : 24;
 };
 
 /* Each descriptor array can hold max 64 entries */
@@ -299,7 +299,7 @@ struct artpec6_hash_request_context {
 	char partial_buffer_out[SHA256_BLOCK_SIZE];
 	char key_buffer[SHA256_BLOCK_SIZE];
 	char pad_buffer[SHA256_BLOCK_SIZE + 32];
-	core::ffi::c_uchar digeststate[SHA256_DIGEST_SIZE];
+	kernel::ffi::c_uchar digeststate[SHA256_DIGEST_SIZE];
 	size_t partial_bytes;
 	u64 digcnt;
 	u32 key_md;
@@ -310,11 +310,11 @@ struct artpec6_hash_request_context {
 
 struct artpec6_hash_export_state {
 	char partial_buffer[SHA256_BLOCK_SIZE];
-	core::ffi::c_uchar digeststate[SHA256_DIGEST_SIZE];
+	kernel::ffi::c_uchar digeststate[SHA256_DIGEST_SIZE];
 	size_t partial_bytes;
 	u64 digcnt;
 	int oper;
-	core::ffi::c_uint hash_flags;
+	kernel::ffi::c_uint hash_flags;
 };
 
 struct artpec6_hashalg_context {
@@ -330,7 +330,7 @@ struct artpec6_crypto_request_context {
 };
 
 struct artpec6_cryptotfm_context {
-	core::ffi::c_uchar aes_key[2*AES_MAX_KEY_SIZE];
+	kernel::ffi::c_uchar aes_key[2*AES_MAX_KEY_SIZE];
 	size_t key_length;
 	u32 key_md;
 	int crypto_type;
@@ -399,7 +399,7 @@ static void artpec6_crypto_walk_init(artpec6_crypto_walk *awalk,
  */
 static int
 artpec6_crypto_setup_out_descr(artpec6_crypto_req_common *common,
-			       void *dst, len: core::ffi::c_uint, eop: bool,
+			       void *dst, len: kernel::ffi::c_uint, eop: bool,
 			       use_short: bool)
 {
 	dma_addr_t dma_addr;
@@ -629,7 +629,7 @@ static void artpec6_crypto_complete_aead(crypto_async_request *req)
 
 	if (req_ctx->decrypt) {
 		u8 input_tag[AES_BLOCK_SIZE];
-		core::ffi::c_uint authsize = crypto_aead_authsize(aead);
+		kernel::ffi::c_uint authsize = crypto_aead_authsize(aead);
 
 		sg_pcopy_to_buffer(areq->src,
 				   sg_nents(areq->src),
@@ -664,7 +664,7 @@ static void artpec6_crypto_complete_hash(crypto_async_request *req)
 /*------------------- Hash functions -----------------------------------------*/
 static int
 artpec6_crypto_hash_set_key(crypto_ahash *tfm,
-		    const u8 *key, keylen: core::ffi::c_uint)
+		    const u8 *key, keylen: kernel::ffi::c_uint)
 {
 	struct artpec6_hashalg_context *tfm_ctx = crypto_tfm_ctx(&tfm->base);
 	size_t blocksize;
@@ -1329,7 +1329,7 @@ static int artpec6_crypto_probe(platform_device *pdev)
 #endif
 
 	tasklet_init(&ac->task, artpec6_crypto_task,
-		     (core::ffi::c_ulong)ac);
+		     (kernel::ffi::c_ulong)ac);
 
 	ac->pad_buffer = devm_kcalloc(&pdev->dev, 2, ARTPEC_CACHE_LINE_MAX,
 				      GFP_KERNEL);
@@ -1493,7 +1493,7 @@ static void artpec6_crypto_aes_ctr_exit(crypto_skcipher *tfm)
 
 static int
 artpec6_crypto_cipher_set_key(crypto_skcipher *cipher, const u8 *key,
-			      keylen: core::ffi::c_uint)
+			      keylen: kernel::ffi::c_uint)
 {
 	struct artpec6_cryptotfm_context *ctx =
 		crypto_skcipher_ctx(cipher);
@@ -1514,7 +1514,7 @@ artpec6_crypto_cipher_set_key(crypto_skcipher *cipher, const u8 *key,
 
 static int
 artpec6_crypto_xts_set_key(crypto_skcipher *cipher, const u8 *key,
-			      keylen: core::ffi::c_uint)
+			      keylen: kernel::ffi::c_uint)
 {
 	struct artpec6_cryptotfm_context *ctx =
 		crypto_skcipher_ctx(cipher);
@@ -1974,7 +1974,7 @@ static void artpec6_crypto_timeout(timer_list *t)
 	tasklet_schedule(&ac->task);
 }
 
-static void artpec6_crypto_task(data: core::ffi::c_ulong)
+static void artpec6_crypto_task(data: kernel::ffi::c_ulong)
 {
 	struct artpec6_crypto *ac = (artpec6_crypto *)data;
 	struct artpec6_crypto_req_common *req;
@@ -2014,7 +2014,7 @@ static void artpec6_crypto_task(data: core::ffi::c_ulong)
  */
 static int
 artpec6_crypto_setup_in_descr_phys(artpec6_crypto_req_common *common,
-			       dma_addr_t addr, len: core::ffi::c_uint, intr: bool)
+			       dma_addr_t addr, len: kernel::ffi::c_uint, intr: bool)
 {
 	struct artpec6_crypto_dma_descriptors *dma = common->dma;
 	struct pdma_descr *d;
@@ -2044,7 +2044,7 @@ artpec6_crypto_setup_in_descr_phys(artpec6_crypto_req_common *common,
  */
 static int
 artpec6_crypto_setup_in_descr(artpec6_crypto_req_common *common,
-			  void *buffer, len: core::ffi::c_uint, last: bool)
+			  void *buffer, len: kernel::ffi::c_uint, last: bool)
 {
 	dma_addr_t dma_addr;
 	int ret;
@@ -2277,9 +2277,9 @@ artpec6_crypto_terminate_in_descrs(artpec6_crypto_req_common *common)
  * @return The total number of padding bytes written to @dst
  */
 static size_t
-create_hash_pad(int oper, core::ffi::c_uchar *dst, dgstlen: u64, bitcount: u64)
+create_hash_pad(int oper, kernel::ffi::c_uchar *dst, dgstlen: u64, bitcount: u64)
 {
-	r#mod: core::ffi::c_uint, target, diff, pad_bytes, size_bytes;
+	r#mod: kernel::ffi::c_uint, target, diff, pad_bytes, size_bytes;
 	__be64 bits = __cpu_to_be64(bitcount);
 
 	switch (oper) {
@@ -2318,7 +2318,7 @@ create_hash_pad(int oper, core::ffi::c_uchar *dst, dgstlen: u64, bitcount: u64)
 static int artpec6_crypto_common_init(artpec6_crypto_req_common *common,
 		crypto_async_request *parent,
 		void (*complete)(crypto_async_request *req),
-		scatterlist *dstsg, nbytes: core::ffi::c_uint)
+		scatterlist *dstsg, nbytes: kernel::ffi::c_uint)
 {
 	gfp_t flags;
 	struct artpec6_crypto *ac = dev_get_drvdata(artpec6_crypto_dev);
@@ -2458,9 +2458,9 @@ artpec6_crypto_ctr_crypt(skcipher_request *req, encrypt: bool)
 	struct crypto_skcipher *cipher = crypto_skcipher_reqtfm(req);
 	struct artpec6_cryptotfm_context *ctx = crypto_skcipher_ctx(cipher);
 	size_t iv_len = crypto_skcipher_ivsize(cipher);
-	core::ffi::c_uint counter = be32_to_cpup((__be32 *)
+	kernel::ffi::c_uint counter = be32_to_cpup((__be32 *)
 					    (req->iv + iv_len - 4));
-	core::ffi::c_uint nblks = ALIGN(req->cryptlen, AES_BLOCK_SIZE) /
+	kernel::ffi::c_uint nblks = ALIGN(req->cryptlen, AES_BLOCK_SIZE) /
 			     AES_BLOCK_SIZE;
 
 	/*
@@ -2525,7 +2525,7 @@ static int artpec6_crypto_aead_init(crypto_aead *tfm)
 }
 
 static int artpec6_crypto_aead_set_key(crypto_aead *tfm, const u8 *key,
-			       len: core::ffi::c_uint)
+			       len: kernel::ffi::c_uint)
 {
 	struct artpec6_cryptotfm_context *ctx = crypto_tfm_ctx(&tfm->base);
 
@@ -2867,7 +2867,7 @@ artpec6_crypto_setup_out_descr_phys(artpec6_crypto_req_common *common,
  */
 static int
 artpec6_crypto_setup_out_descr_short(artpec6_crypto_req_common *common,
-				     void *dst, len: core::ffi::c_uint, eop: bool)
+				     void *dst, len: kernel::ffi::c_uint, eop: bool)
 {
 	struct artpec6_crypto_dma_descriptors *dma = (*common).dma;
 	struct pdma_descr *d;

@@ -8,10 +8,10 @@
 /* Transfer to guest mode work */
 // CONFIG_VIRT_XFER_TO_GUEST_WORK is a build-time configuration condition.
 #[cfg(CONFIG_VIRT_XFER_TO_GUEST_WORK)]
-pub const ARCH_XFER_TO_GUEST_MODE_WORK: ::core::ffi::c_ulong = 0;
+pub const ARCH_XFER_TO_GUEST_MODE_WORK: ::kernel::ffi::c_ulong = 0;
 
 #[cfg(CONFIG_VIRT_XFER_TO_GUEST_WORK)]
-pub const XFER_TO_GUEST_MODE_WORK: ::core::ffi::c_ulong =
+pub const XFER_TO_GUEST_MODE_WORK: ::kernel::ffi::c_ulong =
     _TIF_NEED_RESCHED
         | _TIF_NEED_RESCHED_LAZY
         | _TIF_SIGPENDING
@@ -30,8 +30,8 @@ pub const XFER_TO_GUEST_MODE_WORK: ::core::ffi::c_ulong =
  */
 #[cfg(CONFIG_VIRT_XFER_TO_GUEST_WORK)]
 pub unsafe extern "C" fn arch_xfer_to_guest_mode_handle_work(
-    ti_work: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    ti_work: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     let _ = ti_work;
     0
 }
@@ -44,7 +44,7 @@ pub unsafe extern "C" fn arch_xfer_to_guest_mode_handle_work(
  */
 #[cfg(CONFIG_VIRT_XFER_TO_GUEST_WORK)]
 unsafe extern "C" {
-    pub fn xfer_to_guest_mode_handle_work() -> ::core::ffi::c_int;
+    pub fn xfer_to_guest_mode_handle_work() -> ::kernel::ffi::c_int;
 }
 
 /**
@@ -73,7 +73,7 @@ pub unsafe fn xfer_to_guest_mode_prepare() {
 #[cfg(CONFIG_VIRT_XFER_TO_GUEST_WORK)]
 #[inline]
 pub unsafe fn __xfer_to_guest_mode_work_pending() -> bool {
-    let ti_work: ::core::ffi::c_ulong = read_thread_flags();
+    let ti_work: ::kernel::ffi::c_ulong = read_thread_flags();
 
     (ti_work & XFER_TO_GUEST_MODE_WORK) != 0
 }

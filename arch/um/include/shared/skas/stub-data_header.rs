@@ -13,13 +13,13 @@ pub const FUTEX_IN_KERN: i32 = 1;
 #[repr(C)]
 pub struct StubInitData {
     pub seccomp: i32,
-    pub stub_start: ::core::ffi::c_ulong,
+    pub stub_start: ::kernel::ffi::c_ulong,
     pub stub_code_fd: i32,
-    pub stub_code_offset: ::core::ffi::c_ulong,
+    pub stub_code_offset: ::kernel::ffi::c_ulong,
     pub stub_data_fd: i32,
-    pub stub_data_offset: ::core::ffi::c_ulong,
-    pub signal_handler: ::core::ffi::c_ulong,
-    pub signal_restorer: ::core::ffi::c_ulong,
+    pub stub_data_offset: ::kernel::ffi::c_ulong,
+    pub signal_handler: ::kernel::ffi::c_ulong,
+    pub signal_restorer: ::kernel::ffi::c_ulong,
 }
 
 /* STUB_NEXT_SYSCALL(s): advance by the command length of the current syscall. */
@@ -41,9 +41,9 @@ pub enum StubSyscallType {
 
 #[repr(C)]
 pub struct StubSyscallMem {
-    pub addr: ::core::ffi::c_ulong,
-    pub length: ::core::ffi::c_ulong,
-    pub offset: ::core::ffi::c_ulong,
+    pub addr: ::kernel::ffi::c_ulong,
+    pub length: ::kernel::ffi::c_ulong,
+    pub offset: ::kernel::ffi::c_ulong,
     pub fd: i32,
     pub prot: i32,
 }
@@ -62,7 +62,7 @@ pub struct StubSignalStack(pub [u8; UM_KERN_PAGE_SIZE]);
 
 #[repr(C)]
 pub struct StubData {
-    pub err: ::core::ffi::c_long,
+    pub err: ::kernel::ffi::c_long,
     pub syscall_data_len: i32,
     /* 128 leaves enough room for additional fields in the struct */
     pub syscall_data:

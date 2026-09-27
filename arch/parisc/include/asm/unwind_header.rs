@@ -8,12 +8,12 @@ pub const MAX_UNWIND_ENTRIES: usize = 30;
 /* From ABI specifications */
 #[repr(C)]
 pub struct unwind_table_entry {
-    pub region_start: core::ffi::c_uint,
-    pub region_end: core::ffi::c_uint,
+    pub region_start: kernel::ffi::c_uint,
+    pub region_end: kernel::ffi::c_uint,
     /* C bitfields occupying one 32-bit word. */
-    pub flags: core::ffi::c_uint,
+    pub flags: kernel::ffi::c_uint,
     /* C bitfields occupying one 32-bit word. */
-    pub frame_flags: core::ffi::c_uint,
+    pub frame_flags: kernel::ffi::c_uint,
 }
 
 /* Bit positions in unwind_table_entry::flags. */
@@ -57,13 +57,13 @@ pub const UNWIND_TOTAL_FRAME_SIZE_MASK: u32 = 0x07ff_ffff;
 #[repr(C)]
 pub struct unwind_table {
     pub list: list_head,
-    pub name: *const core::ffi::c_char,
-    pub gp: core::ffi::c_ulong,
-    pub base_addr: core::ffi::c_ulong,
-    pub start: core::ffi::c_ulong,
-    pub end: core::ffi::c_ulong,
+    pub name: *const kernel::ffi::c_char,
+    pub gp: kernel::ffi::c_ulong,
+    pub base_addr: kernel::ffi::c_ulong,
+    pub start: kernel::ffi::c_ulong,
+    pub end: kernel::ffi::c_ulong,
     pub table: *const unwind_table_entry,
-    pub length: core::ffi::c_ulong,
+    pub length: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -73,21 +73,21 @@ pub struct unwind_frame_info {
        available; but for now we only try to get the sp and ip for each
        frame */
     /* struct pt_regs regs; */
-    pub sp: core::ffi::c_ulong,
-    pub ip: core::ffi::c_ulong,
-    pub rp: core::ffi::c_ulong,
-    pub r31: core::ffi::c_ulong,
-    pub prev_sp: core::ffi::c_ulong,
-    pub prev_ip: core::ffi::c_ulong,
+    pub sp: kernel::ffi::c_ulong,
+    pub ip: kernel::ffi::c_ulong,
+    pub rp: kernel::ffi::c_ulong,
+    pub r31: kernel::ffi::c_ulong,
+    pub prev_sp: kernel::ffi::c_ulong,
+    pub prev_ip: kernel::ffi::c_ulong,
 }
 
 extern "C" {
     pub fn unwind_table_add(
-        name: *const core::ffi::c_char,
-        base_addr: core::ffi::c_ulong,
-        gp: core::ffi::c_ulong,
-        start: *mut core::ffi::c_void,
-        end: *mut core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        base_addr: kernel::ffi::c_ulong,
+        gp: kernel::ffi::c_ulong,
+        start: *mut kernel::ffi::c_void,
+        end: *mut kernel::ffi::c_void,
     ) -> *mut unwind_table;
     pub fn unwind_table_remove(table: *mut unwind_table);
     pub fn unwind_frame_init(
@@ -101,9 +101,9 @@ extern "C" {
         task: *mut task_struct,
         regs: *mut pt_regs,
     );
-    pub fn unwind_once(info: *mut unwind_frame_info) -> core::ffi::c_int;
-    pub fn unwind_to_user(info: *mut unwind_frame_info) -> core::ffi::c_int;
-    pub fn unwind_init() -> core::ffi::c_int;
+    pub fn unwind_once(info: *mut unwind_frame_info) -> kernel::ffi::c_int;
+    pub fn unwind_to_user(info: *mut unwind_frame_info) -> kernel::ffi::c_int;
+    pub fn unwind_init() -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

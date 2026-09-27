@@ -25,7 +25,7 @@ pub struct ocfs2_refcount_tree {
 pub type ocfs2_post_refcount_func = unsafe extern "C" fn(
     inode: *mut inode,
     handle: *mut handle_t,
-    para: *mut core::ffi::c_void,
+    para: *mut kernel::ffi::c_void,
 ) -> i32;
 
 /*
@@ -39,7 +39,7 @@ pub type ocfs2_post_refcount_func = unsafe extern "C" fn(
 pub struct ocfs2_post_refcount {
     pub credits: i32, /* credits it need for journal. */
     pub func: Option<ocfs2_post_refcount_func>, /* real function. */
-    pub para: *mut core::ffi::c_void,
+    pub para: *mut kernel::ffi::c_void,
 }
 
 extern "C" {
@@ -126,8 +126,8 @@ extern "C" {
         dealloc: *mut ocfs2_cached_dealloc_ctxt,
     ) -> i32;
     pub fn ocfs2_reflink_ioctl(
-        inode: *mut inode, oldname: *const core::ffi::c_char,
-        newname: *const core::ffi::c_char, preserve: bool,
+        inode: *mut inode, oldname: *const kernel::ffi::c_char,
+        newname: *const kernel::ffi::c_char, preserve: bool,
     ) -> i32;
     pub fn ocfs2_reflink_remap_blocks(
         s_inode: *mut inode, s_bh: *mut buffer_head, pos_in: i64,

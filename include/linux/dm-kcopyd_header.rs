@@ -27,11 +27,11 @@ pub const DM_KCOPYD_WRITE_SEQ: u32 = 2;
 
 #[repr(C)]
 pub struct dm_kcopyd_throttle {
-    pub throttle: ::core::ffi::c_uint,
-    pub num_io_jobs: ::core::ffi::c_uint,
-    pub io_period: ::core::ffi::c_uint,
-    pub total_period: ::core::ffi::c_uint,
-    pub last_jiffies: ::core::ffi::c_uint,
+    pub throttle: ::kernel::ffi::c_uint,
+    pub num_io_jobs: ::kernel::ffi::c_uint,
+    pub io_period: ::kernel::ffi::c_uint,
+    pub total_period: ::kernel::ffi::c_uint,
+    pub last_jiffies: ::kernel::ffi::c_uint,
 }
 
 /*
@@ -52,9 +52,9 @@ pub struct dm_kcopyd_client {
 }
 
 pub type dm_kcopyd_notify_fn = unsafe extern "C" fn(
-    read_err: ::core::ffi::c_int,
-    write_err: ::core::ffi::c_ulong,
-    context: *mut ::core::ffi::c_void,
+    read_err: ::kernel::ffi::c_int,
+    write_err: ::kernel::ffi::c_ulong,
+    context: *mut ::kernel::ffi::c_void,
 );
 
 extern "C" {
@@ -74,11 +74,11 @@ extern "C" {
     pub fn dm_kcopyd_copy(
         kc: *mut dm_kcopyd_client,
         from: *mut dm_io_region,
-        num_dests: ::core::ffi::c_uint,
+        num_dests: ::kernel::ffi::c_uint,
         dests: *mut dm_io_region,
-        flags: ::core::ffi::c_uint,
+        flags: ::kernel::ffi::c_uint,
         f: dm_kcopyd_notify_fn,
-        context: *mut ::core::ffi::c_void,
+        context: *mut ::kernel::ffi::c_void,
     );
 
     /*
@@ -95,21 +95,21 @@ extern "C" {
     pub fn dm_kcopyd_prepare_callback(
         kc: *mut dm_kcopyd_client,
         f: dm_kcopyd_notify_fn,
-        context: *mut ::core::ffi::c_void,
-    ) -> *mut ::core::ffi::c_void;
+        context: *mut ::kernel::ffi::c_void,
+    ) -> *mut ::kernel::ffi::c_void;
     pub fn dm_kcopyd_do_callback(
-        job: *mut ::core::ffi::c_void,
-        read_err: ::core::ffi::c_int,
-        write_err: ::core::ffi::c_ulong,
+        job: *mut ::kernel::ffi::c_void,
+        read_err: ::kernel::ffi::c_int,
+        write_err: ::kernel::ffi::c_ulong,
     );
 
     pub fn dm_kcopyd_zero(
         kc: *mut dm_kcopyd_client,
-        num_dests: ::core::ffi::c_uint,
+        num_dests: ::kernel::ffi::c_uint,
         dests: *mut dm_io_region,
-        flags: ::core::ffi::c_uint,
+        flags: ::kernel::ffi::c_uint,
         f: dm_kcopyd_notify_fn,
-        context: *mut ::core::ffi::c_void,
+        context: *mut ::kernel::ffi::c_void,
     );
 }
 

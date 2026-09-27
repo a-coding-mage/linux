@@ -8,9 +8,9 @@
 
 #[repr(C)]
 pub struct mtk_mux {
-    pub id: core::ffi::c_int,
-    pub name: *const core::ffi::c_char,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub id: kernel::ffi::c_int,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub parent_index: *const u8,
     pub flags: u32,
 
@@ -104,12 +104,12 @@ extern "C" {
     pub static mtk_mux_gate_hwv_fenc_clr_set_upd_ops: clk_ops;
 
     pub fn mtk_clk_register_muxes(dev: *mut device, muxes: *const mtk_mux,
-        num: core::ffi::c_int, node: *mut device_node, lock: *mut spinlock_t,
-        clk_data: *mut clk_hw_onecell_data) -> core::ffi::c_int;
-    pub fn mtk_clk_unregister_muxes(muxes: *const mtk_mux, num: core::ffi::c_int,
+        num: kernel::ffi::c_int, node: *mut device_node, lock: *mut spinlock_t,
+        clk_data: *mut clk_hw_onecell_data) -> kernel::ffi::c_int;
+    pub fn mtk_clk_unregister_muxes(muxes: *const mtk_mux, num: kernel::ffi::c_int,
         clk_data: *mut clk_hw_onecell_data);
     pub fn devm_mtk_clk_mux_notifier_register(dev: *mut device, clk: *mut clk,
-        mux_nb: *mut mtk_mux_nb) -> core::ffi::c_int;
+        mux_nb: *mut mtk_mux_nb) -> kernel::ffi::c_int;
 }
 
 #[repr(C)]

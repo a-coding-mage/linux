@@ -18,38 +18,38 @@ pub const PTRACE_GETFDPIC_INTERP: u32 = 1;
  */
 #[repr(C)]
 pub struct user_regs_struct {
-    pub pc: core::ffi::c_ulong,
-    pub ra: core::ffi::c_ulong,
-    pub sp: core::ffi::c_ulong,
-    pub gp: core::ffi::c_ulong,
-    pub tp: core::ffi::c_ulong,
-    pub t0: core::ffi::c_ulong,
-    pub t1: core::ffi::c_ulong,
-    pub t2: core::ffi::c_ulong,
-    pub s0: core::ffi::c_ulong,
-    pub s1: core::ffi::c_ulong,
-    pub a0: core::ffi::c_ulong,
-    pub a1: core::ffi::c_ulong,
-    pub a2: core::ffi::c_ulong,
-    pub a3: core::ffi::c_ulong,
-    pub a4: core::ffi::c_ulong,
-    pub a5: core::ffi::c_ulong,
-    pub a6: core::ffi::c_ulong,
-    pub a7: core::ffi::c_ulong,
-    pub s2: core::ffi::c_ulong,
-    pub s3: core::ffi::c_ulong,
-    pub s4: core::ffi::c_ulong,
-    pub s5: core::ffi::c_ulong,
-    pub s6: core::ffi::c_ulong,
-    pub s7: core::ffi::c_ulong,
-    pub s8: core::ffi::c_ulong,
-    pub s9: core::ffi::c_ulong,
-    pub s10: core::ffi::c_ulong,
-    pub s11: core::ffi::c_ulong,
-    pub t3: core::ffi::c_ulong,
-    pub t4: core::ffi::c_ulong,
-    pub t5: core::ffi::c_ulong,
-    pub t6: core::ffi::c_ulong,
+    pub pc: kernel::ffi::c_ulong,
+    pub ra: kernel::ffi::c_ulong,
+    pub sp: kernel::ffi::c_ulong,
+    pub gp: kernel::ffi::c_ulong,
+    pub tp: kernel::ffi::c_ulong,
+    pub t0: kernel::ffi::c_ulong,
+    pub t1: kernel::ffi::c_ulong,
+    pub t2: kernel::ffi::c_ulong,
+    pub s0: kernel::ffi::c_ulong,
+    pub s1: kernel::ffi::c_ulong,
+    pub a0: kernel::ffi::c_ulong,
+    pub a1: kernel::ffi::c_ulong,
+    pub a2: kernel::ffi::c_ulong,
+    pub a3: kernel::ffi::c_ulong,
+    pub a4: kernel::ffi::c_ulong,
+    pub a5: kernel::ffi::c_ulong,
+    pub a6: kernel::ffi::c_ulong,
+    pub a7: kernel::ffi::c_ulong,
+    pub s2: kernel::ffi::c_ulong,
+    pub s3: kernel::ffi::c_ulong,
+    pub s4: kernel::ffi::c_ulong,
+    pub s5: kernel::ffi::c_ulong,
+    pub s6: kernel::ffi::c_ulong,
+    pub s7: kernel::ffi::c_ulong,
+    pub s8: kernel::ffi::c_ulong,
+    pub s9: kernel::ffi::c_ulong,
+    pub s10: kernel::ffi::c_ulong,
+    pub s11: kernel::ffi::c_ulong,
+    pub t3: kernel::ffi::c_ulong,
+    pub t4: kernel::ffi::c_ulong,
+    pub t5: kernel::ffi::c_ulong,
+    pub t6: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -97,24 +97,24 @@ pub union __riscv_fp_state {
 
 #[repr(C)]
 pub struct __riscv_v_ext_state {
-    pub vstart: core::ffi::c_ulong,
-    pub vl: core::ffi::c_ulong,
-    pub vtype: core::ffi::c_ulong,
-    pub vcsr: core::ffi::c_ulong,
-    pub vlenb: core::ffi::c_ulong,
-    pub datap: *mut core::ffi::c_void,
+    pub vstart: kernel::ffi::c_ulong,
+    pub vl: kernel::ffi::c_ulong,
+    pub vtype: kernel::ffi::c_ulong,
+    pub vcsr: kernel::ffi::c_ulong,
+    pub vlenb: kernel::ffi::c_ulong,
+    pub datap: *mut kernel::ffi::c_void,
     /* In signal handler, datap will be set a correct user stack offset
      * and vector registers will be copied to the address of datap pointer. */
 }
 
 #[repr(C)]
 pub struct __riscv_v_regset_state {
-    pub vstart: core::ffi::c_ulong,
-    pub vl: core::ffi::c_ulong,
-    pub vtype: core::ffi::c_ulong,
-    pub vcsr: core::ffi::c_ulong,
-    pub vlenb: core::ffi::c_ulong,
-    pub vreg: [core::ffi::c_char; 0],
+    pub vstart: kernel::ffi::c_ulong,
+    pub vl: kernel::ffi::c_ulong,
+    pub vtype: kernel::ffi::c_ulong,
+    pub vcsr: kernel::ffi::c_ulong,
+    pub vlenb: kernel::ffi::c_ulong,
+    pub vreg: [kernel::ffi::c_char; 0],
 }
 
 /* VLEN >= ELEN, a power of 2, and no greater than 2^16 bits = 8192 bytes. */
@@ -122,7 +122,7 @@ pub const RISCV_MAX_VLENB: usize = 8192;
 
 #[repr(C)]
 pub struct __sc_riscv_cfi_state {
-    pub ss_ptr: core::ffi::c_ulong, /* shadow stack pointer */
+    pub ss_ptr: kernel::ffi::c_ulong, /* shadow stack pointer */
 }
 
 pub const PTRACE_CFI_BRANCH_LANDING_PAD_EN_BIT: usize = 0;
@@ -132,14 +132,14 @@ pub const PTRACE_CFI_SHADOW_STACK_EN_BIT: usize = 3;
 pub const PTRACE_CFI_SHADOW_STACK_LOCK_BIT: usize = 4;
 pub const PTRACE_CFI_SHADOW_STACK_PTR_BIT: usize = 5;
 
-pub const PTRACE_CFI_BRANCH_LANDING_PAD_EN_STATE: core::ffi::c_ulong = 1 << PTRACE_CFI_BRANCH_LANDING_PAD_EN_BIT;
-pub const PTRACE_CFI_BRANCH_LANDING_PAD_LOCK_STATE: core::ffi::c_ulong = 1 << PTRACE_CFI_BRANCH_LANDING_PAD_LOCK_BIT;
-pub const PTRACE_CFI_BRANCH_EXPECTED_LANDING_PAD_STATE: core::ffi::c_ulong = 1 << PTRACE_CFI_BRANCH_EXPECTED_LANDING_PAD_BIT;
-pub const PTRACE_CFI_SHADOW_STACK_EN_STATE: core::ffi::c_ulong = 1 << PTRACE_CFI_SHADOW_STACK_EN_BIT;
-pub const PTRACE_CFI_SHADOW_STACK_LOCK_STATE: core::ffi::c_ulong = 1 << PTRACE_CFI_SHADOW_STACK_LOCK_BIT;
-pub const PTRACE_CFI_SHADOW_STACK_PTR_STATE: core::ffi::c_ulong = 1 << PTRACE_CFI_SHADOW_STACK_PTR_BIT;
+pub const PTRACE_CFI_BRANCH_LANDING_PAD_EN_STATE: kernel::ffi::c_ulong = 1 << PTRACE_CFI_BRANCH_LANDING_PAD_EN_BIT;
+pub const PTRACE_CFI_BRANCH_LANDING_PAD_LOCK_STATE: kernel::ffi::c_ulong = 1 << PTRACE_CFI_BRANCH_LANDING_PAD_LOCK_BIT;
+pub const PTRACE_CFI_BRANCH_EXPECTED_LANDING_PAD_STATE: kernel::ffi::c_ulong = 1 << PTRACE_CFI_BRANCH_EXPECTED_LANDING_PAD_BIT;
+pub const PTRACE_CFI_SHADOW_STACK_EN_STATE: kernel::ffi::c_ulong = 1 << PTRACE_CFI_SHADOW_STACK_EN_BIT;
+pub const PTRACE_CFI_SHADOW_STACK_LOCK_STATE: kernel::ffi::c_ulong = 1 << PTRACE_CFI_SHADOW_STACK_LOCK_BIT;
+pub const PTRACE_CFI_SHADOW_STACK_PTR_STATE: kernel::ffi::c_ulong = 1 << PTRACE_CFI_SHADOW_STACK_PTR_BIT;
 
-pub const PTRACE_CFI_STATE_INVALID_MASK: core::ffi::c_ulong =
+pub const PTRACE_CFI_STATE_INVALID_MASK: kernel::ffi::c_ulong =
     !(PTRACE_CFI_BRANCH_LANDING_PAD_EN_STATE
         | PTRACE_CFI_BRANCH_LANDING_PAD_LOCK_STATE
         | PTRACE_CFI_BRANCH_EXPECTED_LANDING_PAD_STATE

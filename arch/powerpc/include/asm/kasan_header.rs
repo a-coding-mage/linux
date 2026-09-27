@@ -58,15 +58,15 @@ pub fn kasan_mmu_init() {}
 pub fn kasan_late_init() {}
 
 extern "C" {
-    pub fn kasan_update_early_region(k_start: ::core::ffi::c_ulong,
-                                     k_end: ::core::ffi::c_ulong,
+    pub fn kasan_update_early_region(k_start: ::kernel::ffi::c_ulong,
+                                     k_end: ::kernel::ffi::c_ulong,
                                      pte: pte_t);
     pub fn kasan_init_shadow_page_tables(
-        k_start: ::core::ffi::c_ulong,
-        k_end: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
-    pub fn kasan_init_region(start: *mut ::core::ffi::c_void, size: usize)
-        -> ::core::ffi::c_int;
+        k_start: ::kernel::ffi::c_ulong,
+        k_end: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
+    pub fn kasan_init_region(start: *mut ::kernel::ffi::c_void, size: usize)
+        -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

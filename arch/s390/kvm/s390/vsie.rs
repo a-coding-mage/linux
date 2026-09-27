@@ -53,9 +53,9 @@ struct vsie_page {
 	 * Flags: must be set/cleared atomically after the vsie page can be
 	 * looked up by other CPUs.
 	 */
-	core::ffi::c_ulong flags;			/* 0x0220 */
+	kernel::ffi::c_ulong flags;			/* 0x0220 */
 	/* address of the last reported fault to guest2 */
-	core::ffi::c_ulong fault_addr;		/* 0x0228 */
+	kernel::ffi::c_ulong fault_addr;		/* 0x0228 */
 	/* calculated guest addresses of satellite control blocks */
 	gpa_t sca_gpa;				/* 0x0230 */
 	gpa_t itdba_gpa;			/* 0x0238 */
@@ -169,10 +169,10 @@ static int prepare_cpuflags(kvm_vcpu *vcpu, vsie_page *vsie_page)
 }
 /* Copy to APCB FORMAT1 from APCB FORMAT0 */
 static int setup_apcb10(kvm_vcpu *vcpu, kvm_s390_apcb1 *apcb_s,
-			crycb_gpa: core::ffi::c_ulong, kvm_s390_apcb1 *apcb_h)
+			crycb_gpa: kernel::ffi::c_ulong, kvm_s390_apcb1 *apcb_h)
 {
 	struct kvm_s390_apcb0 tmp;
-	core::ffi::c_ulong apcb_gpa;
+	kernel::ffi::c_ulong apcb_gpa;
 
 	apcb_gpa = crycb_gpa + offsetof(kvm_s390_crypto_cb, apcb0);
 
@@ -198,10 +198,10 @@ static int setup_apcb10(kvm_vcpu *vcpu, kvm_s390_apcb1 *apcb_s,
  *
  * Returns 0 and -EFAULT on error reading guest apcb
  */
-static int setup_apcb00(kvm_vcpu *vcpu, core::ffi::c_ulong *apcb_s,
-			crycb_gpa: core::ffi::c_ulong, core::ffi::c_ulong *apcb_h)
+static int setup_apcb00(kvm_vcpu *vcpu, kernel::ffi::c_ulong *apcb_s,
+			crycb_gpa: kernel::ffi::c_ulong, kernel::ffi::c_ulong *apcb_h)
 {
-	core::ffi::c_ulong apcb_gpa;
+	kernel::ffi::c_ulong apcb_gpa;
 
 	apcb_gpa = crycb_gpa + offsetof(kvm_s390_crypto_cb, apcb0);
 
@@ -224,11 +224,11 @@ static int setup_apcb00(kvm_vcpu *vcpu, core::ffi::c_ulong *apcb_s,
  *
  * Returns 0 and -EFAULT on error reading guest apcb
  */
-static int setup_apcb11(kvm_vcpu *vcpu, core::ffi::c_ulong *apcb_s,
-			crycb_gpa: core::ffi::c_ulong,
-			core::ffi::c_ulong *apcb_h)
+static int setup_apcb11(kvm_vcpu *vcpu, kernel::ffi::c_ulong *apcb_s,
+			crycb_gpa: kernel::ffi::c_ulong,
+			kernel::ffi::c_ulong *apcb_h)
 {
-	core::ffi::c_ulong apcb_gpa;
+	kernel::ffi::c_ulong apcb_gpa;
 
 	apcb_gpa = crycb_gpa + offsetof(kvm_s390_crypto_cb, apcb1);
 
@@ -267,9 +267,9 @@ static int setup_apcb(kvm_vcpu *vcpu, kvm_s390_crypto_cb *crycb_s,
 			return -EACCES;
 		if (fmt_h != CRYCB_FORMAT2)
 			return -EINVAL;
-		return setup_apcb11(vcpu, (core::ffi::c_ulong *)&(*crycb_s).apcb1,
+		return setup_apcb11(vcpu, (kernel::ffi::c_ulong *)&(*crycb_s).apcb1,
 				    crycb_gpa,
-				    (core::ffi::c_ulong *)&(*crycb_h).apcb1);
+				    (kernel::ffi::c_ulong *)&(*crycb_h).apcb1);
 	case CRYCB_FORMAT1:
 		switch (fmt_h) {
 		case CRYCB_FORMAT2:
@@ -278,9 +278,9 @@ static int setup_apcb(kvm_vcpu *vcpu, kvm_s390_crypto_cb *crycb_s,
 					    (*&crycb_h).apcb1);
 		case CRYCB_FORMAT1:
 			return setup_apcb00(vcpu,
-					    (core::ffi::c_ulong *) (*&crycb_s).apcb0,
+					    (kernel::ffi::c_ulong *) (*&crycb_s).apcb0,
 					    crycb_gpa,
-					    (core::ffi::c_ulong *) (*&crycb_h).apcb0);
+					    (kernel::ffi::c_ulong *) (*&crycb_h).apcb0);
 		}
 		break;
 	case CRYCB_FORMAT0:
@@ -295,9 +295,9 @@ static int setup_apcb(kvm_vcpu *vcpu, kvm_s390_crypto_cb *crycb_s,
 		case CRYCB_FORMAT1:
 		case CRYCB_FORMAT0:
 			return setup_apcb00(vcpu,
-					    (core::ffi::c_ulong *) (*&crycb_s).apcb0,
+					    (kernel::ffi::c_ulong *) (*&crycb_s).apcb0,
 					    crycb_gpa,
-					    (core::ffi::c_ulong *) (*&crycb_h).apcb0);
+					    (kernel::ffi::c_ulong *) (*&crycb_h).apcb0);
 		}
 	}
 	return -EINVAL;
@@ -330,7 +330,7 @@ static int shadow_crycb(kvm_vcpu *vcpu, vsie_page *vsie_page)
 	struct kvm_s390_sie_block *scb_o = (*vsie_page).scb_o;
 	const uint32_t crycbd_o = READ_ONCE((*scb_o).crycbd);
 	const u32 crycb_addr = crycbd_o & 0x7ffffff8U;
-	core::ffi::c_ulong *b1, *b2;
+	kernel::ffi::c_ulong *b1, *b2;
 	u8 ecb3_flags;
 	u32 ecd_flags;
 	int apie_h;
@@ -381,8 +381,8 @@ static int shadow_crycb(kvm_vcpu *vcpu, vsie_page *vsie_page)
 	(*scb_s).ecd |= ecd_flags;
 
 	/* xor both blocks in one run */
-	b1 = (core::ffi::c_ulong *) (*vsie_page).crycb.dea_wrapping_key_mask;
-	b2 = (core::ffi::c_ulong *)
+	b1 = (kernel::ffi::c_ulong *) (*vsie_page).crycb.dea_wrapping_key_mask;
+	b2 = (kernel::ffi::c_ulong *)
 			    (*(*(*vcpu).kvm).arch.crypto.crycb).dea_wrapping_key_mask;
 	/* as 56%8 == 0, bitmap_xor won't overwrite any data */
 	bitmap_xor(b1, b1, b2, BITS_PER_BYTE * 56);
@@ -496,7 +496,7 @@ static int shadow_scb(kvm_vcpu *vcpu, vsie_page *vsie_page)
 	uint32_t new_prefix = READ_ONCE(__new_prefix);
 	const bool wants_tx = READ_ONCE((*scb_o).ecb) & ECB_TE;
 	bool had_tx = (*scb_s).ecb & ECB_TE;
-	core::ffi::c_ulong new_mso = 0;
+	kernel::ffi::c_ulong new_mso = 0;
 	int rc;
 
 	/* make sure we don't have any leftovers when reusing the scb */
@@ -635,7 +635,7 @@ static int shadow_scb(kvm_vcpu *vcpu, vsie_page *vsie_page)
 void kvm_s390_vsie_gmap_notifier(gmap *gmap, gpa_t start, gpa_t end)
 {
 	struct vsie_page *cur, *next;
-	core::ffi::c_ulong prefix;
+	kernel::ffi::c_ulong prefix;
 
 	KVM_BUG_ON(!test_bit(GMAP_FLAG_SHADOW, &gmap->flags), gmap->kvm);
 	/*
@@ -860,7 +860,7 @@ static int pin_blocks(kvm_vcpu *vcpu, vsie_page *vsie_page)
 	}
 	if (((scb_s->ecb & ECB_GS) && !(scb_s->ecd & ECD_HOSTREGMGMT)) ||
 	    (scb_s->ecd & ECD_ETOKENF)) {
-		core::ffi::c_ulong sdnxc;
+		kernel::ffi::c_ulong sdnxc;
 
 		gpa = READ_ONCE(scb_o->sdnxo) & ~0xfUL;
 		sdnxc = READ_ONCE(scb_o->sdnxo) & 0xfUL;
@@ -941,7 +941,7 @@ static int inject_fault(kvm_vcpu *vcpu, __u16 code, __u64 vaddr,
 		trans_exc_code: 			/* 0-51: virtual address */
 			(vaddr & 0xfffffffffffff000UL) |
 			/* 52-53: store / fetch */
-			(((core::ffi::c_uint) !write_flag) + 1) << 10,
+			(((kernel::ffi::c_uint) !write_flag) + 1) << 10,
 			/* 62-63: asce id (always primary == 0) */
 		exc_access_id: 0, /* always primary */
 		op_access_id: 0, /* not MVPG */
@@ -1120,7 +1120,7 @@ static u64 vsie_get_register(kvm_vcpu *vcpu, vsie_page *vsie_page, reg: u8)
 static int vsie_handle_mvpg(kvm_vcpu *vcpu, vsie_page *vsie_page, gmap *sg)
 {
 	struct kvm_s390_sie_block *scb_s = &vsie_page->scb_s;
-	src: core::ffi::c_ulong, dest, mask, prefix;
+	src: kernel::ffi::c_ulong, dest, mask, prefix;
 	u64 *pei_block = &vsie_page->scb_o->mcic;
 	union mvpg_pei pei_dest, pei_src;
 	int edat, rc_dest, rc_src;
@@ -1204,7 +1204,7 @@ static int do_vsie_run(kvm_vcpu *vcpu, vsie_page *vsie_page, gmap *sg)
 	'skip_sie: {
 	struct kvm_s390_sie_block *scb_s = &vsie_page->scb_s;
 	struct kvm_s390_sie_block *scb_o = vsie_page->scb_o;
-	core::ffi::c_ulong sie_return = SIE64_RETURN_NORMAL;
+	kernel::ffi::c_ulong sie_return = SIE64_RETURN_NORMAL;
 	int guest_bp_isolation;
 	int rc = 0;
 
@@ -1497,7 +1497,7 @@ static void put_vsie_page(vsie_page *vsie_page)
  *          - NULL if the same scb address is already used by another VCPU
  *          - ERR_PTR(-ENOMEM) if out of memory
  */
-static struct vsie_page *get_vsie_page(kvm *kvm, addr: core::ffi::c_ulong)
+static struct vsie_page *get_vsie_page(kvm *kvm, addr: kernel::ffi::c_ulong)
 {
 	struct vsie_page *vsie_page;
 	int nr_vcpus;
@@ -1577,7 +1577,7 @@ int kvm_s390_handle_vsie(kvm_vcpu *vcpu)
 	'out_unpin_scb: {
 	'out_unshadow: {
 	struct vsie_page *vsie_page;
-	core::ffi::c_ulong scb_addr;
+	kernel::ffi::c_ulong scb_addr;
 	int rc;
 
 	vcpu->stat.instruction_sie++;
@@ -1656,7 +1656,7 @@ void kvm_s390_vsie_destroy(kvm *kvm)
 		if (vsie_page->scb_gpa != ULONG_MAX)
 			radix_tree_delete(&kvm->arch.vsie.addr_to_page,
 					  vsie_page->scb_gpa >> SCB_ALIGNMENT_SHIFT);
-		free_page((core::ffi::c_ulong)vsie_page);
+		free_page((kernel::ffi::c_ulong)vsie_page);
 	}
 	kvm->arch.vsie.page_count = 0;
 	mutex_unlock(&kvm->arch.vsie.mutex);

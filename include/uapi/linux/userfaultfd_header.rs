@@ -4,7 +4,7 @@
 // Dependency supplied externally: linux types and ioctl encoding helpers.
 
 pub const USERFAULTFD_IOC: u32 = 0xAA;
-pub const USERFAULTFD_IOC_NEW: _ = _IO(USERFAULTFD_IOC, 0x00);
+pub const USERFAULTFD_IOC_NEW: u32 = _IO(USERFAULTFD_IOC, 0x00);
 
 pub const UFFD_API: __u64 = 0xAA;
 pub const UFFD_API_REGISTER_MODES: __u64 = UFFDIO_REGISTER_MODE_MISSING
@@ -63,18 +63,18 @@ pub const _UFFDIO_SET_MODE: u32 = 0x0A;
 pub const _UFFDIO_API: u32 = 0x3F;
 
 pub const UFFDIO: u32 = 0xAA;
-pub const UFFDIO_API: _ = _IOWR(UFFDIO, _UFFDIO_API, uffdio_api);
-pub const UFFDIO_REGISTER: _ = _IOWR(UFFDIO, _UFFDIO_REGISTER, uffdio_register);
-pub const UFFDIO_UNREGISTER: _ = _IOR(UFFDIO, _UFFDIO_UNREGISTER, uffdio_range);
-pub const UFFDIO_WAKE: _ = _IOR(UFFDIO, _UFFDIO_WAKE, uffdio_range);
-pub const UFFDIO_COPY: _ = _IOWR(UFFDIO, _UFFDIO_COPY, uffdio_copy);
-pub const UFFDIO_ZEROPAGE: _ = _IOWR(UFFDIO, _UFFDIO_ZEROPAGE, uffdio_zeropage);
-pub const UFFDIO_MOVE: _ = _IOWR(UFFDIO, _UFFDIO_MOVE, uffdio_move);
-pub const UFFDIO_WRITEPROTECT: _ = _IOWR(UFFDIO, _UFFDIO_WRITEPROTECT, uffdio_writeprotect);
-pub const UFFDIO_CONTINUE: _ = _IOWR(UFFDIO, _UFFDIO_CONTINUE, uffdio_continue);
-pub const UFFDIO_POISON: _ = _IOWR(UFFDIO, _UFFDIO_POISON, uffdio_poison);
-pub const UFFDIO_RWPROTECT: _ = _IOWR(UFFDIO, _UFFDIO_RWPROTECT, uffdio_rwprotect);
-pub const UFFDIO_SET_MODE: _ = _IOW(UFFDIO, _UFFDIO_SET_MODE, uffdio_set_mode);
+pub const UFFDIO_API: u32 = _IOWR(UFFDIO, _UFFDIO_API, uffdio_api);
+pub const UFFDIO_REGISTER: u32 = _IOWR(UFFDIO, _UFFDIO_REGISTER, uffdio_register);
+pub const UFFDIO_UNREGISTER: u32 = _IOR(UFFDIO, _UFFDIO_UNREGISTER, uffdio_range);
+pub const UFFDIO_WAKE: u32 = _IOR(UFFDIO, _UFFDIO_WAKE, uffdio_range);
+pub const UFFDIO_COPY: u32 = _IOWR(UFFDIO, _UFFDIO_COPY, uffdio_copy);
+pub const UFFDIO_ZEROPAGE: u32 = _IOWR(UFFDIO, _UFFDIO_ZEROPAGE, uffdio_zeropage);
+pub const UFFDIO_MOVE: u32 = _IOWR(UFFDIO, _UFFDIO_MOVE, uffdio_move);
+pub const UFFDIO_WRITEPROTECT: u32 = _IOWR(UFFDIO, _UFFDIO_WRITEPROTECT, uffdio_writeprotect);
+pub const UFFDIO_CONTINUE: u32 = _IOWR(UFFDIO, _UFFDIO_CONTINUE, uffdio_continue);
+pub const UFFDIO_POISON: u32 = _IOWR(UFFDIO, _UFFDIO_POISON, uffdio_poison);
+pub const UFFDIO_RWPROTECT: u32 = _IOWR(UFFDIO, _UFFDIO_RWPROTECT, uffdio_rwprotect);
+pub const UFFDIO_SET_MODE: u32 = _IOW(UFFDIO, _UFFDIO_SET_MODE, uffdio_set_mode);
 
 #[repr(C, packed)]
 pub struct uffd_msg {

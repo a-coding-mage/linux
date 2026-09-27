@@ -10,32 +10,32 @@ pub const MODULE_NAME: &str = "sco";
 // The declarations below are supplied by the surrounding kernel/RV modules.
 
 extern "C" {
-    fn da_monitor_init() -> core::ffi::c_int;
+    fn da_monitor_init() -> kernel::ffi::c_int;
     fn da_monitor_destroy();
     fn da_monitor_reset_all();
     fn rv_attach_trace_probe(
-        name: *const core::ffi::c_char,
-        probe: *const core::ffi::c_void,
-        handler: *const core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        probe: *const kernel::ffi::c_void,
+        handler: *const kernel::ffi::c_void,
     );
     fn rv_detach_trace_probe(
-        name: *const core::ffi::c_char,
-        probe: *const core::ffi::c_void,
-        handler: *const core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        probe: *const kernel::ffi::c_void,
+        handler: *const kernel::ffi::c_void,
     );
     fn rv_register_monitor(monitor: *mut rv_monitor, schedule_monitor: *mut rv_monitor)
-        -> core::ffi::c_int;
+        -> kernel::ffi::c_int;
     fn rv_unregister_monitor(monitor: *mut rv_monitor);
 }
 
 #[repr(C)]
 pub struct rv_monitor {
-    pub name: *const core::ffi::c_char,
-    pub description: *const core::ffi::c_char,
-    pub enable: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
+    pub name: *const kernel::ffi::c_char,
+    pub description: *const kernel::ffi::c_char,
+    pub enable: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
     pub disable: Option<unsafe extern "C" fn()>,
     pub reset: Option<unsafe extern "C" fn()>,
-    pub enabled: core::ffi::c_int,
+    pub enabled: kernel::ffi::c_int,
 }
 
 extern "C" {
@@ -43,47 +43,47 @@ extern "C" {
 }
 
 unsafe extern "C" fn handle_sched_set_state(
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
     _tsk: *mut task_struct,
-    _state: core::ffi::c_int,
+    _state: kernel::ffi::c_int,
 ) {
     da_handle_start_event!(sched_set_state_sco);
 }
 
 unsafe extern "C" fn handle_schedule_entry(
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
     _preempt: bool,
 ) {
     da_handle_event!(schedule_entry_sco);
 }
 
 unsafe extern "C" fn handle_schedule_exit(
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
     _is_switch: bool,
 ) {
     da_handle_start_event!(schedule_exit_sco);
 }
 
-unsafe extern "C" fn enable_sco() -> core::ffi::c_int {
+unsafe extern "C" fn enable_sco() -> kernel::ffi::c_int {
     let retval = da_monitor_init();
     if retval != 0 {
         return retval;
     }
 
     rv_attach_trace_probe(
-        b"sco\0".as_ptr() as *const core::ffi::c_char,
+        b"sco\0".as_ptr() as *const kernel::ffi::c_char,
         sched_set_state_tp,
-        handle_sched_set_state as *const core::ffi::c_void,
+        handle_sched_set_state as *const kernel::ffi::c_void,
     );
     rv_attach_trace_probe(
-        b"sco\0".as_ptr() as *const core::ffi::c_char,
+        b"sco\0".as_ptr() as *const kernel::ffi::c_char,
         sched_entry_tp,
-        handle_schedule_entry as *const core::ffi::c_void,
+        handle_schedule_entry as *const kernel::ffi::c_void,
     );
     rv_attach_trace_probe(
-        b"sco\0".as_ptr() as *const core::ffi::c_char,
+        b"sco\0".as_ptr() as *const kernel::ffi::c_char,
         sched_exit_tp,
-        handle_schedule_exit as *const core::ffi::c_void,
+        handle_schedule_exit as *const kernel::ffi::c_void,
     );
 
     0
@@ -93,34 +93,34 @@ unsafe extern "C" fn disable_sco() {
     rv_this.enabled = 0;
 
     rv_detach_trace_probe(
-        b"sco\0".as_ptr() as *const core::ffi::c_char,
+        b"sco\0".as_ptr() as *const kernel::ffi::c_char,
         sched_set_state_tp,
-        handle_sched_set_state as *const core::ffi::c_void,
+        handle_sched_set_state as *const kernel::ffi::c_void,
     );
     rv_detach_trace_probe(
-        b"sco\0".as_ptr() as *const core::ffi::c_char,
+        b"sco\0".as_ptr() as *const kernel::ffi::c_char,
         sched_entry_tp,
-        handle_schedule_entry as *const core::ffi::c_void,
+        handle_schedule_entry as *const kernel::ffi::c_void,
     );
     rv_detach_trace_probe(
-        b"sco\0".as_ptr() as *const core::ffi::c_char,
+        b"sco\0".as_ptr() as *const kernel::ffi::c_char,
         sched_exit_tp,
-        handle_schedule_exit as *const core::ffi::c_void,
+        handle_schedule_exit as *const kernel::ffi::c_void,
     );
 
     da_monitor_destroy();
 }
 
 pub static mut rv_this: rv_monitor = rv_monitor {
-    name: b"sco\0".as_ptr() as *const core::ffi::c_char,
-    description: b"scheduling context operations.\0".as_ptr() as *const core::ffi::c_char,
+    name: b"sco\0".as_ptr() as *const kernel::ffi::c_char,
+    description: b"scheduling context operations.\0".as_ptr() as *const kernel::ffi::c_char,
     enable: Some(enable_sco),
     disable: Some(disable_sco),
     reset: Some(da_monitor_reset_all),
     enabled: 0,
 };
 
-unsafe extern "C" fn register_sco() -> core::ffi::c_int {
+unsafe extern "C" fn register_sco() -> kernel::ffi::c_int {
     rv_register_monitor(&raw mut rv_this, &raw mut rv_sched)
 }
 
@@ -141,9 +141,9 @@ unsafe extern "C" fn unregister_sco() {
 pub struct rv_sco_ops {
     pub mon: rv_monitor_ops,
     pub handle_sched_set_state:
-        Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut task_struct, core::ffi::c_int)>,
-    pub handle_schedule_entry: Option<unsafe extern "C" fn(*mut core::ffi::c_void, bool)>,
-    pub handle_schedule_exit: Option<unsafe extern "C" fn(*mut core::ffi::c_void, bool)>,
+        Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut task_struct, kernel::ffi::c_int)>,
+    pub handle_schedule_entry: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, bool)>,
+    pub handle_schedule_exit: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, bool)>,
 }
 
 #[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]

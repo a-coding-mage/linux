@@ -3,13 +3,13 @@
 // Dependency declarations and build-time conditions are supplied by the
 // corresponding Linux/Rust translation units.
 
-pub const ARCH_EXIT_TO_USER_MODE_WORK: ::core::ffi::c_ulong =
+pub const ARCH_EXIT_TO_USER_MODE_WORK: ::kernel::ffi::c_ulong =
     _TIF_MTE_ASYNC_FAULT | _TIF_FOREIGN_FPSTATE;
 
 #[inline(always)]
 pub unsafe fn arch_exit_to_user_mode_work(
     regs: *mut pt_regs,
-    ti_work: ::core::ffi::c_ulong,
+    ti_work: ::kernel::ffi::c_ulong,
 ) {
     let _ = regs;
 

@@ -32,8 +32,8 @@ macro_rules! DNAME {
  */
 #[repr(C)]
 pub struct can_proto {
-    pub type_: ::core::ffi::c_int,
-    pub protocol: ::core::ffi::c_int,
+    pub type_: ::kernel::ffi::c_int,
+    pub protocol: ::kernel::ffi::c_int,
     pub ops: *const proto_ops,
     pub prot: *mut proto,
 }
@@ -58,7 +58,7 @@ macro_rules! CAN_REQUIRED_SIZE {
 /* function prototypes for the CAN networklayer core (af_can.c) */
 
 unsafe extern "C" {
-    pub fn can_proto_register(cp: *const can_proto) -> ::core::ffi::c_int;
+    pub fn can_proto_register(cp: *const can_proto) -> ::kernel::ffi::c_int;
     pub fn can_proto_unregister(cp: *const can_proto);
 
     pub fn can_rx_register(
@@ -66,22 +66,22 @@ unsafe extern "C" {
         dev: *mut net_device,
         can_id: canid_t,
         mask: canid_t,
-        func: Option<unsafe extern "C" fn(*mut sk_buff, *mut ::core::ffi::c_void)>,
-        data: *mut ::core::ffi::c_void,
-        ident: *mut ::core::ffi::c_char,
+        func: Option<unsafe extern "C" fn(*mut sk_buff, *mut ::kernel::ffi::c_void)>,
+        data: *mut ::kernel::ffi::c_void,
+        ident: *mut ::kernel::ffi::c_char,
         sk: *mut sock,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn can_rx_unregister(
         net: *mut net,
         dev: *mut net_device,
         can_id: canid_t,
         mask: canid_t,
-        func: Option<unsafe extern "C" fn(*mut sk_buff, *mut ::core::ffi::c_void)>,
-        data: *mut ::core::ffi::c_void,
+        func: Option<unsafe extern "C" fn(*mut sk_buff, *mut ::kernel::ffi::c_void)>,
+        data: *mut ::kernel::ffi::c_void,
     );
 
-    pub fn can_send(skb: *mut sk_buff, loop_: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn can_send(skb: *mut sk_buff, loop_: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
     pub fn can_set_skb_uid(skb: *mut sk_buff);
     pub fn can_sock_destruct(sk: *mut sock);
 }

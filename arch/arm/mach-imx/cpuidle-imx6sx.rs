@@ -7,7 +7,7 @@
 // linux/cpuidle.h, linux/cpu_pm.h, linux/module.h, asm/cacheflush.h,
 // asm/cpuidle.h, asm/suspend.h, common.h, cpuidle.h, hardware.h
 
-unsafe fn imx6sx_idle_finish(val: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+unsafe fn imx6sx_idle_finish(val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     let _ = val;
     /*
      * for Cortex-A7 which has an internal L2
@@ -28,8 +28,8 @@ unsafe fn imx6sx_idle_finish(val: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
 unsafe extern "C" fn imx6sx_enter_wait(
     dev: *mut cpuidle_device,
     drv: *mut cpuidle_driver,
-    index: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    index: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let _ = (dev, drv);
     unsafe {
         imx6_set_lpm(WAIT_UNCLOCKED);
@@ -98,7 +98,7 @@ static mut imx6sx_cpuidle_driver: cpuidle_driver = cpuidle_driver {
     safe_state_index: 0,
 };
 
-unsafe fn imx6sx_cpuidle_init() -> ::core::ffi::c_int {
+unsafe fn imx6sx_cpuidle_init() -> ::kernel::ffi::c_int {
     unsafe {
         imx6_set_int_mem_clk_lpm(true);
         imx6_enable_rbc(false);

@@ -3,9 +3,9 @@
 // Translated from nft_fib_inet.c. Kernel declarations are supplied by the
 // surrounding build.
 
-use core::ffi::c_char;
-use core::ffi::c_int;
-use core::ffi::c_void;
+use kernel::ffi::c_char;
+use kernel::ffi::c_int;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct nft_expr {

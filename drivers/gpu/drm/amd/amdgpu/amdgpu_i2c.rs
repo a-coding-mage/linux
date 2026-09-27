@@ -58,7 +58,7 @@ unsafe fn amdgpu_i2c_post_xfer(i2c_adap: *mut i2c_adapter) {
     mutex_unlock(&mut (*i2c).mutex);
 }
 
-unsafe fn amdgpu_i2c_get_clock(i2c_priv: *mut core::ffi::c_void) -> i32 {
+unsafe fn amdgpu_i2c_get_clock(i2c_priv: *mut kernel::ffi::c_void) -> i32 {
     let i2c = i2c_priv as *mut amdgpu_i2c_chan;
     let adev = drm_to_adev((*i2c).dev);
     let rec = &(*i2c).rec;
@@ -66,7 +66,7 @@ unsafe fn amdgpu_i2c_get_clock(i2c_priv: *mut core::ffi::c_void) -> i32 {
     (val != 0) as i32
 }
 
-unsafe fn amdgpu_i2c_get_data(i2c_priv: *mut core::ffi::c_void) -> i32 {
+unsafe fn amdgpu_i2c_get_data(i2c_priv: *mut kernel::ffi::c_void) -> i32 {
     let i2c = i2c_priv as *mut amdgpu_i2c_chan;
     let adev = drm_to_adev((*i2c).dev);
     let rec = &(*i2c).rec;
@@ -74,7 +74,7 @@ unsafe fn amdgpu_i2c_get_data(i2c_priv: *mut core::ffi::c_void) -> i32 {
     (val != 0) as i32
 }
 
-unsafe fn amdgpu_i2c_set_clock(i2c_priv: *mut core::ffi::c_void, clock: i32) {
+unsafe fn amdgpu_i2c_set_clock(i2c_priv: *mut kernel::ffi::c_void, clock: i32) {
     let i2c = i2c_priv as *mut amdgpu_i2c_chan;
     let adev = drm_to_adev((*i2c).dev);
     let rec = &(*i2c).rec;
@@ -83,7 +83,7 @@ unsafe fn amdgpu_i2c_set_clock(i2c_priv: *mut core::ffi::c_void, clock: i32) {
     WREG32(adev, rec.en_clk_reg, val);
 }
 
-unsafe fn amdgpu_i2c_set_data(i2c_priv: *mut core::ffi::c_void, data: i32) {
+unsafe fn amdgpu_i2c_set_data(i2c_priv: *mut kernel::ffi::c_void, data: i32) {
     let i2c = i2c_priv as *mut amdgpu_i2c_chan;
     let adev = drm_to_adev((*i2c).dev);
     let rec = &(*i2c).rec;
@@ -97,7 +97,7 @@ static amdgpu_atombios_i2c_algo: i2c_algorithm = i2c_algorithm {
     functionality: Some(amdgpu_atombios_i2c_func),
 };
 
-pub unsafe fn amdgpu_i2c_create(dev: *mut drm_device, rec: *const amdgpu_i2c_bus_rec, name: *const core::ffi::c_char) -> *mut amdgpu_i2c_chan {
+pub unsafe fn amdgpu_i2c_create(dev: *mut drm_device, rec: *const amdgpu_i2c_bus_rec, name: *const kernel::ffi::c_char) -> *mut amdgpu_i2c_chan {
     let mut i2c: *mut amdgpu_i2c_chan;
     let mut ret: i32;
     if (*rec).mm_i2c && amdgpu_hw_i2c == 0 { return core::ptr::null_mut(); }
@@ -113,7 +113,7 @@ pub unsafe fn amdgpu_i2c_create(dev: *mut drm_device, rec: *const amdgpu_i2c_bus
         snprintf((*i2c).adapter.name.as_mut_ptr(), core::mem::size_of_val(&(*i2c).adapter.name), b"AMDGPU i2c hw bus %s\0".as_ptr() as _, name);
         (*i2c).adapter.algo = &amdgpu_atombios_i2c_algo;
         ret = devm_i2c_add_adapter((*dev).dev, &mut (*i2c).adapter);
-        if ret != 0 { kfree(i2c as *mut core::ffi::c_void); return core::ptr::null_mut(); }
+        if ret != 0 { kfree(i2c as *mut kernel::ffi::c_void); return core::ptr::null_mut(); }
     } else {
         snprintf((*i2c).adapter.name.as_mut_ptr(), core::mem::size_of_val(&(*i2c).adapter.name), b"AMDGPU i2c bit bus %s\0".as_ptr() as _, name);
         (*i2c).adapter.algo_data = &mut (*i2c).bit as *mut _ as _;
@@ -125,7 +125,7 @@ pub unsafe fn amdgpu_i2c_create(dev: *mut drm_device, rec: *const amdgpu_i2c_bus
         (*i2c).bit.getscl = Some(amdgpu_i2c_get_clock);
         (*i2c).bit.udelay = 10;
         (*i2c).bit.timeout = usecs_to_jiffies(2200);
-        (*i2c).bit.data = i2c as *mut core::ffi::c_void;
+        (*i2c).bit.data = i2c as *mut kernel::ffi::c_void;
         ret = i2c_bit_add_bus(&mut (*i2c).adapter);
         if ret != 0 { DRM_ERROR!("Failed to register bit i2c %s\n", name); kfree(i2c as _); return core::ptr::null_mut(); }
     }

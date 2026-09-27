@@ -149,10 +149,10 @@ pub struct jr3_sensor {
 pub struct jr3_block {
     pub program_lo: [u32; 0x4000],
     pub sensor: jr3_sensor,
-    pub pad2: [core::ffi::c_char; 0x30000 - 0x00c00],
+    pub pad2: [kernel::ffi::c_char; 0x30000 - 0x00c00],
     pub program_hi: [u32; 0x8000],
     pub reset: u32,
-    pub pad3: [core::ffi::c_char; 0x20000 - 0x00004],
+    pub pad3: [kernel::ffi::c_char; 0x20000 - 0x00004],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

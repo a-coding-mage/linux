@@ -18,7 +18,7 @@ macro_rules! ARRAY_SIZE {
 pub type size_t = usize;
 
 unsafe extern "C" {
-    pub fn panic(fmt: *const ::core::ffi::c_char, ...);
+    pub fn panic(fmt: *const ::kernel::ffi::c_char, ...);
 }
 
 /* Requires preincluding include/linux/kern_levels.h. */
@@ -40,47 +40,47 @@ macro_rules! printk {
 
 #[cfg(CONFIG_PRINTK)]
 unsafe extern "C" {
-    pub fn _printk(fmt: *const ::core::ffi::c_char, ... ) -> ::core::ffi::c_int;
+    pub fn _printk(fmt: *const ::kernel::ffi::c_char, ... ) -> ::kernel::ffi::c_int;
     pub fn print_hex_dump(
-        level: *const ::core::ffi::c_char,
-        prefix_str: *const ::core::ffi::c_char,
-        prefix_type: ::core::ffi::c_int,
-        rowsize: ::core::ffi::c_int,
-        groupsize: ::core::ffi::c_int,
-        buf: *const ::core::ffi::c_void,
+        level: *const ::kernel::ffi::c_char,
+        prefix_str: *const ::kernel::ffi::c_char,
+        prefix_type: ::kernel::ffi::c_int,
+        rowsize: ::kernel::ffi::c_int,
+        groupsize: ::kernel::ffi::c_int,
+        buf: *const ::kernel::ffi::c_void,
         len: size_t,
         ascii: bool,
     );
 }
 
 #[cfg(not(CONFIG_PRINTK))]
-pub unsafe fn printk(_fmt: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int {
+pub unsafe fn printk(_fmt: *const ::kernel::ffi::c_char, ...) -> ::kernel::ffi::c_int {
     0
 }
 
 #[cfg(not(CONFIG_PRINTK))]
 pub unsafe fn print_hex_dump(
-    _level: *const ::core::ffi::c_char,
-    _prefix_str: *const ::core::ffi::c_char,
-    _prefix_type: ::core::ffi::c_int,
-    _rowsize: ::core::ffi::c_int,
-    _groupsize: ::core::ffi::c_int,
-    _buf: *const ::core::ffi::c_void,
+    _level: *const ::kernel::ffi::c_char,
+    _prefix_str: *const ::kernel::ffi::c_char,
+    _prefix_type: ::kernel::ffi::c_int,
+    _rowsize: ::kernel::ffi::c_int,
+    _groupsize: ::kernel::ffi::c_int,
+    _buf: *const ::kernel::ffi::c_void,
     _len: size_t,
     _ascii: bool,
 ) {
 }
 
 unsafe extern "C" {
-    pub fn in_aton(str_: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
+    pub fn in_aton(str_: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
     pub fn strlcat(
-        dst: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
+        dst: *mut ::kernel::ffi::c_char,
+        src: *const ::kernel::ffi::c_char,
         size: size_t,
     ) -> size_t;
     pub fn sized_strscpy(
-        dst: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
+        dst: *mut ::kernel::ffi::c_char,
+        src: *const ::kernel::ffi::c_char,
         size: size_t,
     ) -> size_t;
 }

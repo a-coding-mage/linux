@@ -117,7 +117,7 @@ pub unsafe fn regs_return_value(regs: *const PtRegs) -> isize {
 }
 
 extern "C" {
-    pub fn regs_query_register_offset(name: *const core::ffi::c_char) -> i32;
+    pub fn regs_query_register_offset(name: *const kernel::ffi::c_char) -> i32;
     pub fn regs_get_kernel_stack_nth(regs: *const PtRegs, n: u32) -> usize;
 }
 

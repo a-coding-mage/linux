@@ -16,7 +16,7 @@ pub unsafe fn kunit_try_catch_init(
     test: *mut kunit,
     try_fn: kunit_try_catch_func_t,
     catch_fn: kunit_try_catch_func_t,
-    timeout: ::core::ffi::c_ulong,
+    timeout: ::kernel::ffi::c_ulong,
 ) {
     (*try_catch).test = test;
     (*try_catch).r#try = try_fn;

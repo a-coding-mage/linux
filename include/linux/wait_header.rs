@@ -5,30 +5,30 @@
 pub type wait_queue_entry_t = wait_queue_entry;
 pub type wait_queue_func_t = unsafe extern "C" fn(
     wq_entry: *mut wait_queue_entry,
-    mode: ::core::ffi::c_uint,
-    flags: ::core::ffi::c_int,
-    key: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int;
+    mode: ::kernel::ffi::c_uint,
+    flags: ::kernel::ffi::c_int,
+    key: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int;
 
 extern "C" {
     pub fn default_wake_function(
         wq_entry: *mut wait_queue_entry,
-        mode: ::core::ffi::c_uint,
-        flags: ::core::ffi::c_int,
-        key: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        mode: ::kernel::ffi::c_uint,
+        flags: ::kernel::ffi::c_int,
+        key: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
 }
 
-pub const WQ_FLAG_EXCLUSIVE: ::core::ffi::c_uint = 0x01;
-pub const WQ_FLAG_WOKEN: ::core::ffi::c_uint = 0x02;
-pub const WQ_FLAG_CUSTOM: ::core::ffi::c_uint = 0x04;
-pub const WQ_FLAG_DONE: ::core::ffi::c_uint = 0x08;
-pub const WQ_FLAG_PRIORITY: ::core::ffi::c_uint = 0x10;
+pub const WQ_FLAG_EXCLUSIVE: ::kernel::ffi::c_uint = 0x01;
+pub const WQ_FLAG_WOKEN: ::kernel::ffi::c_uint = 0x02;
+pub const WQ_FLAG_CUSTOM: ::kernel::ffi::c_uint = 0x04;
+pub const WQ_FLAG_DONE: ::kernel::ffi::c_uint = 0x08;
+pub const WQ_FLAG_PRIORITY: ::kernel::ffi::c_uint = 0x10;
 
 #[repr(C)]
 pub struct wait_queue_entry {
-    pub flags: ::core::ffi::c_uint,
-    pub private: *mut ::core::ffi::c_void,
+    pub flags: ::kernel::ffi::c_uint,
+    pub private: *mut ::kernel::ffi::c_void,
     pub func: wait_queue_func_t,
     pub entry: list_head,
 }
@@ -45,23 +45,23 @@ pub struct task_struct;
 extern "C" {
     pub fn __init_waitqueue_head(
         wq_head: *mut wait_queue_head,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         key: *mut lock_class_key,
     );
     pub fn add_wait_queue(_: *mut wait_queue_head, _: *mut wait_queue_entry);
     pub fn add_wait_queue_exclusive(_: *mut wait_queue_head, _: *mut wait_queue_entry);
     pub fn add_wait_queue_priority(_: *mut wait_queue_head, _: *mut wait_queue_entry);
-    pub fn add_wait_queue_priority_exclusive(_: *mut wait_queue_head, _: *mut wait_queue_entry) -> ::core::ffi::c_int;
+    pub fn add_wait_queue_priority_exclusive(_: *mut wait_queue_head, _: *mut wait_queue_entry) -> ::kernel::ffi::c_int;
     pub fn remove_wait_queue(_: *mut wait_queue_head, _: *mut wait_queue_entry);
-    pub fn __wake_up(_: *mut wait_queue_head, _: ::core::ffi::c_uint, _: ::core::ffi::c_int, _: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-    pub fn __wake_up_on_current_cpu(_: *mut wait_queue_head, _: ::core::ffi::c_uint, _: *mut ::core::ffi::c_void);
-    pub fn __wake_up_locked_key(_: *mut wait_queue_head, _: ::core::ffi::c_uint, _: *mut ::core::ffi::c_void);
-    pub fn __wake_up_sync_key(_: *mut wait_queue_head, _: ::core::ffi::c_uint, _: *mut ::core::ffi::c_void);
-    pub fn __wake_up_locked_sync_key(_: *mut wait_queue_head, _: ::core::ffi::c_uint, _: *mut ::core::ffi::c_void);
-    pub fn __wake_up_locked(_: *mut wait_queue_head, _: ::core::ffi::c_uint, _: ::core::ffi::c_int);
-    pub fn __wake_up_sync(_: *mut wait_queue_head, _: ::core::ffi::c_uint);
+    pub fn __wake_up(_: *mut wait_queue_head, _: ::kernel::ffi::c_uint, _: ::kernel::ffi::c_int, _: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
+    pub fn __wake_up_on_current_cpu(_: *mut wait_queue_head, _: ::kernel::ffi::c_uint, _: *mut ::kernel::ffi::c_void);
+    pub fn __wake_up_locked_key(_: *mut wait_queue_head, _: ::kernel::ffi::c_uint, _: *mut ::kernel::ffi::c_void);
+    pub fn __wake_up_sync_key(_: *mut wait_queue_head, _: ::kernel::ffi::c_uint, _: *mut ::kernel::ffi::c_void);
+    pub fn __wake_up_locked_sync_key(_: *mut wait_queue_head, _: ::kernel::ffi::c_uint, _: *mut ::kernel::ffi::c_void);
+    pub fn __wake_up_locked(_: *mut wait_queue_head, _: ::kernel::ffi::c_uint, _: ::kernel::ffi::c_int);
+    pub fn __wake_up_sync(_: *mut wait_queue_head, _: ::kernel::ffi::c_uint);
     pub fn __wake_up_pollfree(_: *mut wait_queue_head);
-    pub fn init_wait_entry(_: *mut wait_queue_entry, _: ::core::ffi::c_int);
+    pub fn init_wait_entry(_: *mut wait_queue_entry, _: ::kernel::ffi::c_int);
 }
 
 #[inline]
@@ -79,8 +79,8 @@ pub unsafe fn init_waitqueue_func_entry(e: *mut wait_queue_entry, f: wait_queue_
 }
 
 #[inline]
-pub unsafe fn waitqueue_active(h: *mut wait_queue_head) -> ::core::ffi::c_int {
-    (!list_empty(&(*h).head)) as ::core::ffi::c_int
+pub unsafe fn waitqueue_active(h: *mut wait_queue_head) -> ::kernel::ffi::c_int {
+    (!list_empty(&(*h).head)) as ::kernel::ffi::c_int
 }
 
 #[inline]
@@ -129,7 +129,7 @@ pub unsafe fn wake_up_pollfree(h: *mut wait_queue_head) { if waitqueue_active(h)
 #[macro_export] macro_rules! wake_up_interruptible_nr { ($x:expr,$nr:expr) => { unsafe { $crate::__wake_up($x,TASK_INTERRUPTIBLE,$nr,core::ptr::null_mut()) } }; }
 #[macro_export] macro_rules! wake_up_interruptible_all { ($x:expr) => { unsafe { $crate::__wake_up($x,TASK_INTERRUPTIBLE,0,core::ptr::null_mut()) } }; }
 #[macro_export] macro_rules! wake_up_interruptible_sync { ($x:expr) => { unsafe { $crate::__wake_up_sync($x,TASK_INTERRUPTIBLE) } }; }
-#[macro_export] macro_rules! poll_to_key { ($m:expr) => { ($m as usize as *mut ::core::ffi::c_void) }; }
+#[macro_export] macro_rules! poll_to_key { ($m:expr) => { ($m as usize as *mut ::kernel::ffi::c_void) }; }
 #[macro_export] macro_rules! key_to_poll { ($m:expr) => { ($m as usize as _) }; }
 #[macro_export] macro_rules! wake_up_poll { ($x:expr,$m:expr) => { unsafe { $crate::__wake_up($x,TASK_NORMAL,1,poll_to_key!($m)) } }; }
 #[macro_export] macro_rules! wake_up_poll_on_current_cpu { ($x:expr,$m:expr) => { unsafe { $crate::__wake_up_on_current_cpu($x,TASK_NORMAL,poll_to_key!($m)) } }; }

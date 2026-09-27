@@ -10,31 +10,31 @@
 
 #[repr(C)]
 struct CpmPin {
-    port: core::ffi::c_int,
-    pin: core::ffi::c_int,
-    flags: core::ffi::c_int,
+    port: kernel::ffi::c_int,
+    pin: kernel::ffi::c_int,
+    flags: kernel::ffi::c_int,
 }
 
 extern "C" {
     static mut mpc8xx_immr: *mut Mpc8xxImmr;
 
-    fn cpm1_set_pin(port: core::ffi::c_int, pin: core::ffi::c_int, flags: core::ffi::c_int);
+    fn cpm1_set_pin(port: kernel::ffi::c_int, pin: kernel::ffi::c_int, flags: kernel::ffi::c_int);
     fn cpm1_clk_setup(
-        clk: core::ffi::c_int,
-        brg: core::ffi::c_int,
-        mode: core::ffi::c_int,
+        clk: kernel::ffi::c_int,
+        brg: kernel::ffi::c_int,
+        mode: kernel::ffi::c_int,
     );
     fn cpm_reset();
     fn clrbits32(address: *mut u32, mask: u32);
     fn of_platform_bus_probe(
-        node: *mut core::ffi::c_void,
+        node: *mut kernel::ffi::c_void,
         ids: *const OfDeviceId,
-        parent: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        parent: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
     fn mpc8xx_pic_init();
-    fn mpc8xx_get_irq() -> core::ffi::c_int;
-    fn mpc8xx_restart(cmd: *const core::ffi::c_char) -> !;
-    fn udbg_progress(s: *const core::ffi::c_char, hex: core::ffi::c_uint);
+    fn mpc8xx_get_irq() -> kernel::ffi::c_int;
+    fn mpc8xx_restart(cmd: *const kernel::ffi::c_char) -> !;
+    fn udbg_progress(s: *const kernel::ffi::c_char, hex: kernel::ffi::c_uint);
 }
 
 #[repr(C)]
@@ -44,7 +44,7 @@ struct Mpc8xxImmr {
 
 #[repr(C)]
 struct OfDeviceId {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 // CPM_PORT*, CPM_PIN_*, CPM_CLK_*, CPM_BRG1, and CPM_CLK_RTX are supplied by
@@ -111,11 +111,11 @@ unsafe fn adder875_setup() {
 }
 
 static OF_BUS_IDS: [OfDeviceId; 2] = [
-    OfDeviceId { compatible: b"simple-bus\0".as_ptr() as *const core::ffi::c_char },
+    OfDeviceId { compatible: b"simple-bus\0".as_ptr() as *const kernel::ffi::c_char },
     OfDeviceId { compatible: core::ptr::null() },
 ];
 
-unsafe extern "C" fn declare_of_platform_devices() -> core::ffi::c_int {
+unsafe extern "C" fn declare_of_platform_devices() -> kernel::ffi::c_int {
     of_platform_bus_probe(core::ptr::null_mut(), OF_BUS_IDS.as_ptr(), core::ptr::null_mut());
     0
 }

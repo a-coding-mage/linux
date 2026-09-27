@@ -3,7 +3,7 @@
 
 #[cfg(CONFIG_MMU)]
 #[cfg(not(CONFIG_SUN3))]
-pub unsafe fn flush_tlb_kernel_page(addr: *mut core::ffi::c_void) {
+pub unsafe fn flush_tlb_kernel_page(addr: *mut kernel::ffi::c_void) {
     if CPU_IS_COLDFIRE {
         mmu_write(MMUOR, MMUOR_CNL);
     } else if CPU_IS_040_OR_060 {
@@ -88,7 +88,7 @@ pub unsafe fn flush_tlb_kernel_range(_start: usize, _end: usize) { flush_tlb_all
 #[cfg(CONFIG_MMU)]
 #[cfg(CONFIG_SUN3)]
 extern "C" {
-    static mut sun3_reserved_pmeg: [core::ffi::c_char; SUN3_PMEGS_NUM];
+    static mut sun3_reserved_pmeg: [kernel::ffi::c_char; SUN3_PMEGS_NUM];
     static mut pmeg_vaddr: [usize; SUN3_PMEGS_NUM];
     static mut pmeg_alloc: [u8; SUN3_PMEGS_NUM];
     static mut pmeg_ctx: [u8; SUN3_PMEGS_NUM];

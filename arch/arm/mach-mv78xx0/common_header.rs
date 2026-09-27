@@ -27,7 +27,7 @@ pub enum reboot_mode {
  * Basic MV78xx0 init functions used early by machine-setup.
  */
 extern "C" {
-    pub fn mv78xx0_core_index() -> ::core::ffi::c_int;
+    pub fn mv78xx0_core_index() -> ::kernel::ffi::c_int;
     pub fn mv78xx0_map_io();
     pub fn mv78xx0_init();
     pub fn mv78xx0_init_early();
@@ -35,18 +35,18 @@ extern "C" {
 
     pub fn mv78xx0_setup_cpu_mbus();
     pub fn mv78xx0_setup_pcie_io_win(
-        window: ::core::ffi::c_int,
+        window: ::kernel::ffi::c_int,
         base: u32,
         size: u32,
-        maj: ::core::ffi::c_int,
-        min: ::core::ffi::c_int,
+        maj: ::kernel::ffi::c_int,
+        min: ::kernel::ffi::c_int,
     );
     pub fn mv78xx0_setup_pcie_mem_win(
-        window: ::core::ffi::c_int,
+        window: ::kernel::ffi::c_int,
         base: u32,
         size: u32,
-        maj: ::core::ffi::c_int,
-        min: ::core::ffi::c_int,
+        maj: ::kernel::ffi::c_int,
+        min: ::kernel::ffi::c_int,
     );
 
     pub fn mv78xx0_pcie_id(dev: *mut u32, rev: *mut u32);
@@ -58,7 +58,7 @@ extern "C" {
     pub fn mv78xx0_ge01_init(eth_data: *mut mv643xx_eth_platform_data);
     pub fn mv78xx0_ge10_init(eth_data: *mut mv643xx_eth_platform_data);
     pub fn mv78xx0_ge11_init(eth_data: *mut mv643xx_eth_platform_data);
-    pub fn mv78xx0_pcie_init(init_port0: ::core::ffi::c_int, init_port1: ::core::ffi::c_int);
+    pub fn mv78xx0_pcie_init(init_port0: ::kernel::ffi::c_int, init_port1: ::kernel::ffi::c_int);
     pub fn mv78xx0_sata_init(sata_data: *mut mv_sata_platform_data);
     pub fn mv78xx0_uart0_init();
     pub fn mv78xx0_uart1_init();
@@ -67,7 +67,7 @@ extern "C" {
     pub fn mv78xx0_xor_init();
     pub fn mv78xx0_crypto_init();
     pub fn mv78xx0_i2c_init();
-    pub fn mv78xx0_restart(mode: reboot_mode, cmd: *const ::core::ffi::c_char);
+    pub fn mv78xx0_restart(mode: reboot_mode, cmd: *const ::kernel::ffi::c_char);
 
     pub fn mv78xx0_timer_init();
 }

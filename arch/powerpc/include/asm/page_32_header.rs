@@ -11,7 +11,7 @@
 // #endif
 // #endif
 
-pub const VMA_DATA_DEFAULT_FLAGS: _ = VMA_DATA_DEFAULT_FLAGS32;
+pub const VMA_DATA_DEFAULT_FLAGS: usize = VMA_DATA_DEFAULT_FLAGS32;
 
 // #if defined(CONFIG_PPC_256K_PAGES) || \
 //     (defined(CONFIG_PPC_8xx) && defined(CONFIG_PPC_16K_PAGES))
@@ -20,9 +20,9 @@ pub const VMA_DATA_DEFAULT_FLAGS: _ = VMA_DATA_DEFAULT_FLAGS32;
 // #define PTE_SHIFT (PAGE_SHIFT - PTE_T_LOG2) /* full page */
 // #endif
 #[cfg(any(CONFIG_PPC_256K_PAGES, all(CONFIG_PPC_8xx, CONFIG_PPC_16K_PAGES)))]
-pub const PTE_SHIFT: _ = PAGE_SHIFT - PTE_T_LOG2 - 2;
+pub const PTE_SHIFT: usize = PAGE_SHIFT - PTE_T_LOG2 - 2;
 #[cfg(not(any(CONFIG_PPC_256K_PAGES, all(CONFIG_PPC_8xx, CONFIG_PPC_16K_PAGES))))]
-pub const PTE_SHIFT: _ = PAGE_SHIFT - PTE_T_LOG2;
+pub const PTE_SHIFT: usize = PAGE_SHIFT - PTE_T_LOG2;
 
 /*
  * The basic type of a PTE - 64 bits for those CPUs with > 32 bit

@@ -35,18 +35,18 @@ pub const MTRR_IOCTL_BASE: u8 = b'M';
 #[cfg(target_arch = "x86")]
 #[repr(C)]
 pub struct mtrr_sentry {
-    pub base: ::core::ffi::c_ulong, /*  Base address     */
-    pub size: ::core::ffi::c_uint,  /*  Size of region   */
-    pub type_: ::core::ffi::c_uint, /*  Type of region   */
+    pub base: ::kernel::ffi::c_ulong, /*  Base address     */
+    pub size: ::kernel::ffi::c_uint,  /*  Size of region   */
+    pub type_: ::kernel::ffi::c_uint, /*  Type of region   */
 }
 
 #[cfg(target_arch = "x86")]
 #[repr(C)]
 pub struct mtrr_gentry {
-    pub regnum: ::core::ffi::c_uint, /*  Register number  */
-    pub base: ::core::ffi::c_ulong,  /*  Base address     */
-    pub size: ::core::ffi::c_uint,   /*  Size of region   */
-    pub type_: ::core::ffi::c_uint,  /*  Type of region   */
+    pub regnum: ::kernel::ffi::c_uint, /*  Register number  */
+    pub base: ::kernel::ffi::c_ulong,  /*  Base address     */
+    pub size: ::kernel::ffi::c_uint,   /*  Size of region   */
+    pub type_: ::kernel::ffi::c_uint,  /*  Type of region   */
 }
 
 #[cfg(not(target_arch = "x86"))]
@@ -88,16 +88,16 @@ pub const fn MTRRphysBase_MSR(reg: u32) -> u32 { 0x200 + 2 * reg }
 pub const fn MTRRphysMask_MSR(reg: u32) -> u32 { 0x200 + 2 * reg + 1 }
 
 /*  These are the various ioctls  */
-pub const MTRRIOC_ADD_ENTRY: _ = _IOW(MTRR_IOCTL_BASE, 0, mtrr_sentry);
-pub const MTRRIOC_SET_ENTRY: _ = _IOW(MTRR_IOCTL_BASE, 1, mtrr_sentry);
-pub const MTRRIOC_DEL_ENTRY: _ = _IOW(MTRR_IOCTL_BASE, 2, mtrr_sentry);
-pub const MTRRIOC_GET_ENTRY: _ = _IOWR(MTRR_IOCTL_BASE, 3, mtrr_gentry);
-pub const MTRRIOC_KILL_ENTRY: _ = _IOW(MTRR_IOCTL_BASE, 4, mtrr_sentry);
-pub const MTRRIOC_ADD_PAGE_ENTRY: _ = _IOW(MTRR_IOCTL_BASE, 5, mtrr_sentry);
-pub const MTRRIOC_SET_PAGE_ENTRY: _ = _IOW(MTRR_IOCTL_BASE, 6, mtrr_sentry);
-pub const MTRRIOC_DEL_PAGE_ENTRY: _ = _IOW(MTRR_IOCTL_BASE, 7, mtrr_sentry);
-pub const MTRRIOC_GET_PAGE_ENTRY: _ = _IOWR(MTRR_IOCTL_BASE, 8, mtrr_gentry);
-pub const MTRRIOC_KILL_PAGE_ENTRY: _ = _IOW(MTRR_IOCTL_BASE, 9, mtrr_sentry);
+pub const MTRRIOC_ADD_ENTRY: u32 = _IOW(MTRR_IOCTL_BASE, 0, mtrr_sentry);
+pub const MTRRIOC_SET_ENTRY: u32 = _IOW(MTRR_IOCTL_BASE, 1, mtrr_sentry);
+pub const MTRRIOC_DEL_ENTRY: u32 = _IOW(MTRR_IOCTL_BASE, 2, mtrr_sentry);
+pub const MTRRIOC_GET_ENTRY: u32 = _IOWR(MTRR_IOCTL_BASE, 3, mtrr_gentry);
+pub const MTRRIOC_KILL_ENTRY: u32 = _IOW(MTRR_IOCTL_BASE, 4, mtrr_sentry);
+pub const MTRRIOC_ADD_PAGE_ENTRY: u32 = _IOW(MTRR_IOCTL_BASE, 5, mtrr_sentry);
+pub const MTRRIOC_SET_PAGE_ENTRY: u32 = _IOW(MTRR_IOCTL_BASE, 6, mtrr_sentry);
+pub const MTRRIOC_DEL_PAGE_ENTRY: u32 = _IOW(MTRR_IOCTL_BASE, 7, mtrr_sentry);
+pub const MTRRIOC_GET_PAGE_ENTRY: u32 = _IOWR(MTRR_IOCTL_BASE, 8, mtrr_gentry);
+pub const MTRRIOC_KILL_PAGE_ENTRY: u32 = _IOW(MTRR_IOCTL_BASE, 9, mtrr_sentry);
 
 /* MTRR memory types, which are defined in SDM */
 pub const MTRR_TYPE_UNCACHABLE: u32 = 0;

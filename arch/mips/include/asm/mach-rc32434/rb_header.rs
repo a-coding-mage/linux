@@ -62,7 +62,7 @@ pub struct dev_reg {
 
 #[repr(C)]
 pub struct korina_device {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub mac: [u8; 6],
     pub dev: *mut net_device,
 }
@@ -71,7 +71,7 @@ pub struct korina_device {
 pub struct mpmc_device {
     pub state: u8,
     pub lock: spinlock_t,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
 }
 
 unsafe extern "C" {

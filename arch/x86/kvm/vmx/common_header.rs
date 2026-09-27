@@ -20,7 +20,7 @@ pub struct VcpuVt {
 
     pub exit_reason: VmxExitReason,
 
-    pub exit_qualification: libc::c_ulong,
+    pub exit_qualification: kernel::ffi::c_ulong,
     pub exit_intr_info: u32,
 
     /*
@@ -65,8 +65,8 @@ pub unsafe fn vt_is_tdx_private_gpa(kvm: *mut kvm, gpa: gpa_t) -> bool {
 pub unsafe fn __vmx_handle_ept_violation(
     vcpu: *mut kvm_vcpu,
     gpa: gpa_t,
-    exit_qualification: libc::c_ulong,
-) -> libc::c_int {
+    exit_qualification: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let mut error_code: u64;
 
     /* Is it a write fault? */
@@ -109,7 +109,7 @@ pub unsafe fn __vmx_handle_ept_violation(
 }
 
 #[inline]
-pub unsafe fn kvm_vcpu_trigger_posted_interrupt(vcpu: *mut kvm_vcpu, pi_vec: libc::c_int) {
+pub unsafe fn kvm_vcpu_trigger_posted_interrupt(vcpu: *mut kvm_vcpu, pi_vec: kernel::ffi::c_int) {
     #[cfg(CONFIG_SMP)]
     if (*vcpu).mode == IN_GUEST_MODE {
         if vcpu != kvm_get_running_vcpu() {
@@ -129,7 +129,7 @@ pub unsafe fn kvm_vcpu_trigger_posted_interrupt(vcpu: *mut kvm_vcpu, pi_vec: lib
 pub unsafe fn __vmx_deliver_posted_interrupt(
     vcpu: *mut kvm_vcpu,
     pi_desc_ptr: *mut pi_desc,
-    vector: libc::c_int,
+    vector: kernel::ffi::c_int,
 ) {
     if pi_test_and_set_pir(vector, pi_desc_ptr) != 0 {
         return;

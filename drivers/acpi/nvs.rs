@@ -18,8 +18,8 @@ pub struct NvsRegion {
 pub struct NvsPage {
     pub phys_start: usize,
     pub size: u32,
-    pub kaddr: *mut core::ffi::c_void,
-    pub data: *mut core::ffi::c_void,
+    pub kaddr: *mut kernel::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
     pub unmap: bool,
     pub node: ListHead,
 }
@@ -34,16 +34,16 @@ unsafe extern "C" {
     static mut nvs_region_list: ListHead;
     fn kmalloc_obj<T>() -> *mut T;
     fn kzalloc_obj<T>() -> *mut T;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn kmalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn kmalloc(size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn list_add_tail(new: *mut ListHead, head: *mut ListHead);
     fn list_del(entry: *mut ListHead);
-    fn acpi_os_unmap_iomem(addr: *mut core::ffi::c_void, size: u32);
-    fn iounmap(addr: *mut core::ffi::c_void);
-    fn acpi_os_get_iomem(phys: usize, size: u32) -> *mut core::ffi::c_void;
-    fn acpi_os_ioremap(phys: usize, size: u32) -> *mut core::ffi::c_void;
-    fn memcpy(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, size: usize);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn acpi_os_unmap_iomem(addr: *mut kernel::ffi::c_void, size: u32);
+    fn iounmap(addr: *mut kernel::ffi::c_void);
+    fn acpi_os_get_iomem(phys: usize, size: u32) -> *mut kernel::ffi::c_void;
+    fn acpi_os_ioremap(phys: usize, size: u32) -> *mut kernel::ffi::c_void;
+    fn memcpy(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, size: usize);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 // CONFIG_ACPI_SLEEP supplies the implementation below; without it the
@@ -62,7 +62,7 @@ unsafe fn suspend_nvs_register(start: usize, mut size: usize) -> i32 {
             while node != &mut nvs_list {
                 let next = (*node).next;
                 list_del(node);
-                kfree(node as *mut core::ffi::c_void);
+                kfree(node as *mut kernel::ffi::c_void);
                 node = next;
             }
             return -ENOMEM;
@@ -100,8 +100,8 @@ pub unsafe fn acpi_nvs_register(start: u64, size: u64) -> i32 {
 }
 
 pub unsafe fn acpi_nvs_for_each_region(
-    func: unsafe extern "C" fn(u64, u64, *mut core::ffi::c_void) -> i32,
-    data: *mut core::ffi::c_void,
+    func: unsafe extern "C" fn(u64, u64, *mut kernel::ffi::c_void) -> i32,
+    data: *mut kernel::ffi::c_void,
 ) -> i32 {
     let mut node = nvs_region_list.next;
     while node != &mut nvs_region_list {

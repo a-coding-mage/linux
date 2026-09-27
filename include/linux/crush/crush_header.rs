@@ -44,7 +44,7 @@ pub const CRUSH_BUCKET_STRAW: i32 = 4;
 pub const CRUSH_BUCKET_STRAW2: i32 = 5;
 pub const CRUSH_LEGACY_ALLOWED_BUCKET_ALGS: u32 = (1 << CRUSH_BUCKET_UNIFORM) | (1 << CRUSH_BUCKET_LIST) | (1 << CRUSH_BUCKET_STRAW);
 
-unsafe extern "C" { pub fn crush_bucket_alg_name(alg: i32) -> *const core::ffi::c_char; }
+unsafe extern "C" { pub fn crush_bucket_alg_name(alg: i32) -> *const kernel::ffi::c_char; }
 
 #[repr(C)]
 pub struct crush_bucket { pub id: i32, pub type_: u16, pub alg: u8, pub hash: u8, pub weight: u32, pub size: u32, pub items: *mut i32 }
@@ -101,7 +101,7 @@ pub const fn crush_calc_tree_node(i: i32) -> i32 { ((i + 1) << 1) - 1 }
 /* Kernel-only declarations are intentionally preserved as conditional dependency references. */
 #[cfg(feature = "__KERNEL__")]
 unsafe extern "C" {
-    pub fn clear_crush_names(root: *mut core::ffi::c_void);
+    pub fn clear_crush_names(root: *mut kernel::ffi::c_void);
     pub fn clear_choose_args(c: *mut crush_map);
 }
 

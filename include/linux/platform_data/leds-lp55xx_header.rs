@@ -21,15 +21,15 @@ pub const LP55XX_MAX_GROUPED_CHAN: u32 = 4;
 
 #[repr(C)]
 pub struct lp55xx_led_config {
-    pub name: *const core::ffi::c_char,
-    pub default_trigger: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub default_trigger: *const kernel::ffi::c_char,
     pub chan_nr: u8,
     pub led_current: u8, /* mA x10, 0 if led is not connected */
     pub max_current: u8,
-    pub num_colors: core::ffi::c_int,
+    pub num_colors: kernel::ffi::c_int,
     pub max_channel: u32,
-    pub color_id: [core::ffi::c_int; LED_COLOR_ID_MAX],
-    pub output_num: [core::ffi::c_int; LED_COLOR_ID_MAX],
+    pub color_id: [kernel::ffi::c_int; LED_COLOR_ID_MAX],
+    pub output_num: [kernel::ffi::c_int; LED_COLOR_ID_MAX],
 }
 
 #[repr(C)]
@@ -69,7 +69,7 @@ pub struct lp55xx_platform_data {
     /* LED channel configuration */
     pub led_config: *mut lp55xx_led_config,
     pub num_channels: u8,
-    pub label: *const core::ffi::c_char,
+    pub label: *const kernel::ffi::c_char,
 
     /* Clock configuration */
     pub clock_mode: u8,

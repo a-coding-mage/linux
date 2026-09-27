@@ -38,8 +38,8 @@ pub unsafe fn kfence_early_init_enabled() -> bool {
 // CONFIG_PPC64
 #[cfg(CONFIG_PPC64)]
 #[inline]
-pub unsafe fn kfence_protect_page(addr: ::core::ffi::c_ulong, protect: bool) -> bool {
-    let page = unsafe { virt_to_page(addr as *mut ::core::ffi::c_void) };
+pub unsafe fn kfence_protect_page(addr: ::kernel::ffi::c_ulong, protect: bool) -> bool {
+    let page = unsafe { virt_to_page(addr as *mut ::kernel::ffi::c_void) };
 
     unsafe {
         __kernel_map_pages(page, 1, !protect);
@@ -51,7 +51,7 @@ pub unsafe fn kfence_protect_page(addr: ::core::ffi::c_ulong, protect: bool) -> 
 // !CONFIG_PPC64
 #[cfg(not(CONFIG_PPC64))]
 #[inline]
-pub unsafe fn kfence_protect_page(addr: ::core::ffi::c_ulong, protect: bool) -> bool {
+pub unsafe fn kfence_protect_page(addr: ::kernel::ffi::c_ulong, protect: bool) -> bool {
     let kpte = unsafe { virt_to_kpte(addr) };
 
     if protect {

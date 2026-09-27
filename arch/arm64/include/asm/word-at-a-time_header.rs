@@ -8,8 +8,8 @@
 // The __AARCH64EB__ build-time condition is preserved from the C header.
 #[cfg(not(target_endian = "big"))]
 pub struct word_at_a_time {
-    pub one_bits: ::core::ffi::c_ulong,
-    pub high_bits: ::core::ffi::c_ulong,
+    pub one_bits: ::kernel::ffi::c_ulong,
+    pub high_bits: ::kernel::ffi::c_ulong,
 }
 
 #[cfg(not(target_endian = "big"))]
@@ -23,10 +23,10 @@ macro_rules! WORD_AT_A_TIME_CONSTANTS {
 #[cfg(not(target_endian = "big"))]
 #[inline]
 pub unsafe fn has_zero(
-    a: ::core::ffi::c_ulong,
-    bits: *mut ::core::ffi::c_ulong,
+    a: ::kernel::ffi::c_ulong,
+    bits: *mut ::kernel::ffi::c_ulong,
     c: *const word_at_a_time,
-) -> ::core::ffi::c_ulong {
+) -> ::kernel::ffi::c_ulong {
     let mask = ((a.wrapping_sub((*c).one_bits)) & !a) & (*c).high_bits;
     *bits = mask;
     mask
@@ -52,7 +52,7 @@ macro_rules! find_zero {
 
 #[cfg(not(target_endian = "big"))]
 #[inline]
-pub fn zero_bytemask(mut bits: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub fn zero_bytemask(mut bits: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     bits = (bits.wrapping_sub(1)) & !bits;
     bits >> 7
 }
@@ -67,8 +67,8 @@ pub fn zero_bytemask(mut bits: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
  * return zeroes in the non-existing part.
  */
 #[inline]
-pub unsafe fn load_unaligned_zeropad(addr: *const ::core::ffi::c_void) -> ::core::ffi::c_ulong {
-    let mut ret: ::core::ffi::c_ulong;
+pub unsafe fn load_unaligned_zeropad(addr: *const ::kernel::ffi::c_void) -> ::kernel::ffi::c_ulong {
+    let mut ret: ::kernel::ffi::c_ulong;
 
     __mte_enable_tco_async();
 

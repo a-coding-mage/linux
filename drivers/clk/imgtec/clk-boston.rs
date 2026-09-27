@@ -26,17 +26,17 @@ unsafe fn ext_field(val: u32, mask: u32) -> u32 {
 }
 
 unsafe fn clk_boston_setup(np: *mut device_node) {
-    let mut in_freq: libc::c_ulong;
-    let mut cpu_freq: libc::c_ulong;
-    let mut sys_freq: libc::c_ulong;
-    let mut mmcmdiv: libc::c_uint = 0;
-    let mut mul: libc::c_uint;
-    let mut cpu_div: libc::c_uint;
-    let mut sys_div: libc::c_uint;
+    let mut in_freq: kernel::ffi::c_ulong;
+    let mut cpu_freq: kernel::ffi::c_ulong;
+    let mut sys_freq: kernel::ffi::c_ulong;
+    let mut mmcmdiv: kernel::ffi::c_uint = 0;
+    let mut mul: kernel::ffi::c_uint;
+    let mut cpu_div: kernel::ffi::c_uint;
+    let mut sys_div: kernel::ffi::c_uint;
     let mut onecell: *mut clk_hw_onecell_data;
     let regmap: *mut regmap;
     let mut hw: *mut clk_hw;
-    let mut err: libc::c_int;
+    let mut err: kernel::ffi::c_int;
 
     regmap = syscon_node_to_regmap((*np).parent);
     if IS_ERR(regmap) {
@@ -50,7 +50,7 @@ unsafe fn clk_boston_setup(np: *mut device_node) {
         return;
     }
 
-    in_freq = (ext_field(mmcmdiv, BOSTON_PLAT_MMCMDIV_INPUT) as libc::c_ulong)
+    in_freq = (ext_field(mmcmdiv, BOSTON_PLAT_MMCMDIV_INPUT) as kernel::ffi::c_ulong)
         .wrapping_mul(1_000_000);
     mul = ext_field(mmcmdiv, BOSTON_PLAT_MMCMDIV_MUL);
 
@@ -109,7 +109,7 @@ unsafe fn clk_boston_setup(np: *mut device_node) {
 }
 
 unsafe fn goto_fail_input(onecell: *mut clk_hw_onecell_data) {
-    kfree(onecell as *mut libc::c_void);
+    kfree(onecell as *mut kernel::ffi::c_void);
 }
 
 // Use CLK_OF_DECLARE so this driver is probed early enough to provide the CPU

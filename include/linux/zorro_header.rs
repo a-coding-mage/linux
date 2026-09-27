@@ -18,7 +18,7 @@ pub struct zorro_dev {
     pub dev: device,
     pub slotaddr: u16,
     pub slotsize: u16,
-    pub name: [core::ffi::c_char; 64],
+    pub name: [kernel::ffi::c_char; 64],
     pub resource: resource,
 }
 
@@ -32,9 +32,9 @@ macro_rules! to_zorro_dev {
 #[repr(C)]
 pub struct zorro_driver {
     pub node: list_head,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub id_table: *const zorro_device_id,
-    pub probe: Option<unsafe extern "C" fn(*mut zorro_dev, *const zorro_device_id) -> core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(*mut zorro_dev, *const zorro_device_id) -> kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(*mut zorro_dev)>,
     pub driver: device_driver,
 }
@@ -58,7 +58,7 @@ macro_rules! zorro_for_each_dev {
 
 /* New-style probing */
 extern "C" {
-    pub fn zorro_register_driver(driver: *mut zorro_driver) -> core::ffi::c_int;
+    pub fn zorro_register_driver(driver: *mut zorro_driver) -> kernel::ffi::c_int;
     pub fn zorro_unregister_driver(driver: *mut zorro_driver);
 
     pub static mut zorro_num_autocon: u32;
@@ -107,7 +107,7 @@ pub unsafe fn zorro_resource_flags(z: *mut zorro_dev) -> resource_flags_t {
 }
 
 #[inline]
-pub unsafe fn zorro_request_device(z: *mut zorro_dev, name: *const core::ffi::c_char) -> *mut resource {
+pub unsafe fn zorro_request_device(z: *mut zorro_dev, name: *const kernel::ffi::c_char) -> *mut resource {
     request_mem_region(zorro_resource_start(z), zorro_resource_len(z), name)
 }
 
@@ -121,12 +121,12 @@ pub unsafe fn zorro_release_device(z: *mut zorro_dev) {
  * device structure functions of these calls.
  */
 #[inline]
-pub unsafe fn zorro_get_drvdata(z: *mut zorro_dev) -> *mut core::ffi::c_void {
+pub unsafe fn zorro_get_drvdata(z: *mut zorro_dev) -> *mut kernel::ffi::c_void {
     dev_get_drvdata(&mut (*z).dev)
 }
 
 #[inline]
-pub unsafe fn zorro_set_drvdata(z: *mut zorro_dev, data: *mut core::ffi::c_void) {
+pub unsafe fn zorro_set_drvdata(z: *mut zorro_dev, data: *mut kernel::ffi::c_void) {
     dev_set_drvdata(&mut (*z).dev, data);
 }
 
@@ -134,7 +134,7 @@ pub unsafe fn zorro_set_drvdata(z: *mut zorro_dev, data: *mut core::ffi::c_void)
  * the system. Every bit represents a 64K chunk, for a maximum of 8MB.
  */
 extern "C" {
-    pub static mut zorro_unused_z2ram: [core::ffi::c_ulong; 2];
+    pub static mut zorro_unused_z2ram: [kernel::ffi::c_ulong; 2];
 }
 
 pub const Z2RAM_START: u32 = 0x00200000;

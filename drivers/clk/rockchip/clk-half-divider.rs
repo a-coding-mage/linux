@@ -11,14 +11,14 @@ const fn div_mask(width: u8) -> u32 {
 }
 
 unsafe fn _is_best_half_div(
-    rate: libc::c_ulong,
-    now: libc::c_ulong,
-    best: libc::c_ulong,
-    flags: libc::c_ulong,
+    rate: kernel::ffi::c_ulong,
+    now: kernel::ffi::c_ulong,
+    best: kernel::ffi::c_ulong,
+    flags: kernel::ffi::c_ulong,
 ) -> bool {
-    if flags & CLK_DIVIDER_ROUND_CLOSEST as libc::c_ulong != 0 {
-        (rate.wrapping_sub(now) as libc::c_long).abs()
-            < (rate.wrapping_sub(best) as libc::c_long).abs()
+    if flags & CLK_DIVIDER_ROUND_CLOSEST as kernel::ffi::c_ulong != 0 {
+        (rate.wrapping_sub(now) as kernel::ffi::c_long).abs()
+            < (rate.wrapping_sub(best) as kernel::ffi::c_long).abs()
     } else {
         now <= rate && now > best
     }
@@ -26,27 +26,27 @@ unsafe fn _is_best_half_div(
 
 unsafe fn clk_half_divider_recalc_rate(
     hw: *mut clk_hw,
-    parent_rate: libc::c_ulong,
-) -> libc::c_ulong {
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     let divider = to_clk_divider(hw);
     let mut val: u32 = readl((*divider).reg) >> (*divider).shift;
     val &= div_mask((*divider).width);
     val = val * 2 + 3;
-    div_round_up_ull((parent_rate as u64) * 2, val as u64) as libc::c_ulong
+    div_round_up_ull((parent_rate as u64) * 2, val as u64) as kernel::ffi::c_ulong
 }
 
 unsafe fn clk_half_divider_bestdiv(
     hw: *mut clk_hw,
-    mut rate: libc::c_ulong,
-    best_parent_rate: *mut libc::c_ulong,
+    mut rate: kernel::ffi::c_ulong,
+    best_parent_rate: *mut kernel::ffi::c_ulong,
     width: u8,
-    flags: libc::c_ulong,
-) -> libc::c_int {
+    flags: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let mut bestdiv: u32 = 0;
-    let mut parent_rate: libc::c_ulong;
-    let mut best: libc::c_ulong = 0;
-    let mut now: libc::c_ulong;
-    let mut maxdiv: libc::c_ulong = div_mask(width) as libc::c_ulong;
+    let mut parent_rate: kernel::ffi::c_ulong;
+    let mut best: kernel::ffi::c_ulong = 0;
+    let mut now: kernel::ffi::c_ulong;
+    let mut maxdiv: kernel::ffi::c_ulong = div_mask(width) as kernel::ffi::c_ulong;
     let parent_rate_saved = *best_parent_rate;
 
     if rate == 0 { rate = 1; }
@@ -54,18 +54,18 @@ unsafe fn clk_half_divider_bestdiv(
         parent_rate = *best_parent_rate;
         bestdiv = div_round_up_ull((parent_rate as u64) * 2, rate as u64) as u32;
         if bestdiv < 3 { bestdiv = 0; } else { bestdiv = (bestdiv - 3) / 2; }
-        bestdiv = if bestdiv as libc::c_ulong > maxdiv { maxdiv as u32 } else { bestdiv };
-        return bestdiv as libc::c_int;
+        bestdiv = if bestdiv as kernel::ffi::c_ulong > maxdiv { maxdiv as u32 } else { bestdiv };
+        return bestdiv as kernel::ffi::c_int;
     }
-    maxdiv = core::cmp::min(libc::c_ulong::MAX / rate, maxdiv);
+    maxdiv = core::cmp::min(kernel::ffi::c_ulong::MAX / rate, maxdiv);
     for i in 0..=maxdiv {
         if rate as u64 * (i * 2 + 3) as u64 == parent_rate_saved as u64 * 2 {
             *best_parent_rate = parent_rate_saved;
-            return i as libc::c_int;
+            return i as kernel::ffi::c_int;
         }
         parent_rate = clk_hw_round_rate((*hw).parent,
-            (rate as u64 * (i * 2 + 3) as u64 / 2) as libc::c_ulong);
-        now = div_round_up_ull((parent_rate as u64) * 2, (i * 2 + 3) as u64) as libc::c_ulong;
+            (rate as u64 * (i * 2 + 3) as u64 / 2) as kernel::ffi::c_ulong);
+        now = div_round_up_ull((parent_rate as u64) * 2, (i * 2 + 3) as u64) as kernel::ffi::c_ulong;
         if _is_best_half_div(rate, now, best, flags) {
             bestdiv = i as u32; best = now; *best_parent_rate = parent_rate;
         }
@@ -74,25 +74,25 @@ unsafe fn clk_half_divider_bestdiv(
         bestdiv = div_mask(width);
         *best_parent_rate = clk_hw_round_rate((*hw).parent, 1);
     }
-    bestdiv as libc::c_int
+    bestdiv as kernel::ffi::c_int
 }
 
-unsafe fn clk_half_divider_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request) -> libc::c_int {
+unsafe fn clk_half_divider_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request) -> kernel::ffi::c_int {
     let divider = to_clk_divider(hw);
     let div = clk_half_divider_bestdiv(hw, (*req).rate, &mut (*req).best_parent_rate,
                                        (*divider).width, (*divider).flags);
     (*req).rate = div_round_up_ull(((*req).best_parent_rate as u64) * 2,
-                                   (div * 2 + 3) as u64) as libc::c_ulong;
+                                   (div * 2 + 3) as u64) as kernel::ffi::c_ulong;
     0
 }
 
-unsafe fn clk_half_divider_set_rate(hw: *mut clk_hw, rate: libc::c_ulong,
-                                    parent_rate: libc::c_ulong) -> libc::c_int {
+unsafe fn clk_half_divider_set_rate(hw: *mut clk_hw, rate: kernel::ffi::c_ulong,
+                                    parent_rate: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     let divider = to_clk_divider(hw);
     let mut value = div_round_up_ull((parent_rate as u64) * 2, rate as u64) as u32;
     value = (value - 3) / 2;
     value = core::cmp::min(value, div_mask((*divider).width));
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     if !(*divider).lock.is_null() { spin_lock_irqsave((*divider).lock, &mut flags); } else { __acquire((*divider).lock); }
     let mut val: u32;
     if (*divider).flags & CLK_DIVIDER_HIWORD_MASK != 0 {
@@ -111,11 +111,11 @@ static clk_ops clk_half_divider_ops = clk_ops {
 
 // Register a clock branch. Most clock branches have a source, mux, gate, and divider.
 unsafe fn rockchip_clk_register_halfdiv(
-    name: *const libc::c_char, parent_names: *const *const libc::c_char,
-    num_parents: u8, base: *mut u8, muxdiv_offset: libc::c_int,
+    name: *const kernel::ffi::c_char, parent_names: *const *const kernel::ffi::c_char,
+    num_parents: u8, base: *mut u8, muxdiv_offset: kernel::ffi::c_int,
     mux_shift: u8, mux_width: u8, mux_flags: u8, div_shift: u8,
-    div_width: u8, div_flags: u8, gate_offset: libc::c_int, gate_shift: u8,
-    gate_flags: u8, flags: libc::c_ulong, lock: *mut spinlock_t,
+    div_width: u8, div_flags: u8, gate_offset: kernel::ffi::c_int, gate_shift: u8,
+    gate_flags: u8, flags: kernel::ffi::c_ulong, lock: *mut spinlock_t,
 ) -> *mut clk {
     let mut hw: *mut clk_hw = err_ptr(-ENOMEM);
     let mut mux: *mut clk_mux = core::ptr::null_mut();

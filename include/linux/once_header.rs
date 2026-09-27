@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 // Dependencies supplied by the surrounding kernel translation.
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct static_key_true {
@@ -43,7 +43,7 @@ macro_rules! DO_ONCE {
         static mut ___ONCE_KEY: $crate::static_key_true = unsafe { core::mem::zeroed() };
         let mut ___ret: bool = false;
         if unsafe { $crate::static_branch_unlikely(&___ONCE_KEY) } {
-            let mut ___flags: core::ffi::c_ulong = 0;
+            let mut ___flags: kernel::ffi::c_ulong = 0;
             ___ret = unsafe { $crate::__do_once_start(&mut ___DONE, &mut ___flags) };
             if ___ret {
                 $func($($arg),*);

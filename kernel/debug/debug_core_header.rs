@@ -18,32 +18,32 @@ pub struct task_struct;
 /* kernel debug core data structures */
 #[repr(C)]
 pub struct kgdb_state {
-    pub ex_vector: ::core::ffi::c_int,
-    pub signo: ::core::ffi::c_int,
-    pub err_code: ::core::ffi::c_int,
-    pub cpu: ::core::ffi::c_int,
-    pub pass_exception: ::core::ffi::c_int,
-    pub thr_query: ::core::ffi::c_ulong,
-    pub threadid: ::core::ffi::c_ulong,
-    pub kgdb_usethreadid: ::core::ffi::c_long,
+    pub ex_vector: ::kernel::ffi::c_int,
+    pub signo: ::kernel::ffi::c_int,
+    pub err_code: ::kernel::ffi::c_int,
+    pub cpu: ::kernel::ffi::c_int,
+    pub pass_exception: ::kernel::ffi::c_int,
+    pub thr_query: ::kernel::ffi::c_ulong,
+    pub threadid: ::kernel::ffi::c_ulong,
+    pub kgdb_usethreadid: ::kernel::ffi::c_long,
     pub linux_regs: *mut pt_regs,
     pub send_ready: *mut atomic_t,
 }
 
 /* Exception state values */
-pub const DCPU_WANT_MASTER: ::core::ffi::c_int = 0x1; /* Waiting to become a master kgdb cpu */
-pub const DCPU_NEXT_MASTER: ::core::ffi::c_int = 0x2; /* Transition from one master cpu to another */
-pub const DCPU_IS_SLAVE: ::core::ffi::c_int = 0x4; /* Slave cpu enter exception */
-pub const DCPU_WANT_BT: ::core::ffi::c_int = 0x8; /* Slave cpu should backtrace then clear flag */
+pub const DCPU_WANT_MASTER: ::kernel::ffi::c_int = 0x1; /* Waiting to become a master kgdb cpu */
+pub const DCPU_NEXT_MASTER: ::kernel::ffi::c_int = 0x2; /* Transition from one master cpu to another */
+pub const DCPU_IS_SLAVE: ::kernel::ffi::c_int = 0x4; /* Slave cpu enter exception */
+pub const DCPU_WANT_BT: ::kernel::ffi::c_int = 0x8; /* Slave cpu should backtrace then clear flag */
 
 #[repr(C)]
 pub struct debuggerinfo_struct {
-    pub debuggerinfo: *mut ::core::ffi::c_void,
+    pub debuggerinfo: *mut ::kernel::ffi::c_void,
     pub task: *mut task_struct,
-    pub exception_state: ::core::ffi::c_int,
-    pub ret_state: ::core::ffi::c_int,
-    pub irq_depth: ::core::ffi::c_int,
-    pub enter_kgdb: ::core::ffi::c_int,
+    pub exception_state: ::kernel::ffi::c_int,
+    pub ret_state: ::kernel::ffi::c_int,
+    pub irq_depth: ::kernel::ffi::c_int,
+    pub enter_kgdb: ::kernel::ffi::c_int,
     pub rounding_up: bool,
 }
 
@@ -51,47 +51,47 @@ extern "C" {
     pub static mut kgdb_info: [debuggerinfo_struct; 0];
 
     /* kernel debug core break point routines */
-    pub fn dbg_remove_all_break() -> ::core::ffi::c_int;
-    pub fn dbg_set_sw_break(addr: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn dbg_remove_sw_break(addr: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn dbg_activate_sw_breakpoints() -> ::core::ffi::c_int;
-    pub fn dbg_deactivate_sw_breakpoints() -> ::core::ffi::c_int;
+    pub fn dbg_remove_all_break() -> ::kernel::ffi::c_int;
+    pub fn dbg_set_sw_break(addr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn dbg_remove_sw_break(addr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn dbg_activate_sw_breakpoints() -> ::kernel::ffi::c_int;
+    pub fn dbg_deactivate_sw_breakpoints() -> ::kernel::ffi::c_int;
 
     /* polled character access to i/o module */
-    pub fn dbg_io_get_char() -> ::core::ffi::c_int;
+    pub fn dbg_io_get_char() -> ::kernel::ffi::c_int;
 
     /* Switch from one cpu to another */
-    pub static mut dbg_switch_cpu: ::core::ffi::c_int;
+    pub static mut dbg_switch_cpu: ::kernel::ffi::c_int;
 
     /* gdbstub interface functions */
-    pub fn gdb_serial_stub(ks: *mut kgdb_state) -> ::core::ffi::c_int;
-    pub fn gdbstub_msg_write(s: *const ::core::ffi::c_char, len: ::core::ffi::c_int);
+    pub fn gdb_serial_stub(ks: *mut kgdb_state) -> ::kernel::ffi::c_int;
+    pub fn gdbstub_msg_write(s: *const ::kernel::ffi::c_char, len: ::kernel::ffi::c_int);
 
     /* gdbstub functions used for kdb <-> gdbstub transition */
     pub fn gdbstub_state(
         ks: *mut kgdb_state,
-        cmd: *mut ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
-    pub static mut dbg_kdb_mode: ::core::ffi::c_int;
+        cmd: *mut ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
+    pub static mut dbg_kdb_mode: ::kernel::ffi::c_int;
 }
 
 /* stub return value for switching between the gdbstub and kdb */
-pub const DBG_PASS_EVENT: ::core::ffi::c_int = -12345;
+pub const DBG_PASS_EVENT: ::kernel::ffi::c_int = -12345;
 /* Switch from one cpu to another */
-pub const DBG_SWITCH_CPU_EVENT: ::core::ffi::c_int = -123456;
+pub const DBG_SWITCH_CPU_EVENT: ::kernel::ffi::c_int = -123456;
 
 #[cfg(CONFIG_KGDB_KDB)]
 extern "C" {
-    pub fn kdb_stub(ks: *mut kgdb_state) -> ::core::ffi::c_int;
-    pub fn kdb_parse(cmdstr: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
-    pub fn kdb_common_init_state(ks: *mut kgdb_state) -> ::core::ffi::c_int;
-    pub fn kdb_common_deinit_state() -> ::core::ffi::c_int;
-    pub fn kdb_dump_stack_on_cpu(cpu: ::core::ffi::c_int);
+    pub fn kdb_stub(ks: *mut kgdb_state) -> ::kernel::ffi::c_int;
+    pub fn kdb_parse(cmdstr: *const ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
+    pub fn kdb_common_init_state(ks: *mut kgdb_state) -> ::kernel::ffi::c_int;
+    pub fn kdb_common_deinit_state() -> ::kernel::ffi::c_int;
+    pub fn kdb_dump_stack_on_cpu(cpu: ::kernel::ffi::c_int);
 }
 
 #[cfg(not(CONFIG_KGDB_KDB))]
 #[inline]
-pub unsafe fn kdb_stub(_ks: *mut kgdb_state) -> ::core::ffi::c_int {
+pub unsafe fn kdb_stub(_ks: *mut kgdb_state) -> ::kernel::ffi::c_int {
     DBG_PASS_EVENT
 }
 

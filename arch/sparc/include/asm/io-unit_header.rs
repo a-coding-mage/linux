@@ -38,14 +38,14 @@ pub const IOUPTE_PARITY: u32 = 0x00000001; /* Parity is checked during DVMA */
 
 #[repr(C)]
 pub struct iounit_struct {
-    pub bmap: [core::ffi::c_ulong;
+    pub bmap: [kernel::ffi::c_ulong;
         ((IOUNIT_DMA_SIZE >> (PAGE_SHIFT + 3)) as usize) /
-            core::mem::size_of::<core::ffi::c_ulong>()],
+            core::mem::size_of::<kernel::ffi::c_ulong>()],
     pub lock: spinlock_t,
     /* __iomem */
     pub page_table: *mut iopte_t,
-    pub rotor: [core::ffi::c_ulong; 3],
-    pub limit: [core::ffi::c_ulong; 4],
+    pub rotor: [kernel::ffi::c_ulong; 3],
+    pub limit: [kernel::ffi::c_ulong; 4],
 }
 
 pub const IOUNIT_BMAP1_START: u32 = 0x00000000;

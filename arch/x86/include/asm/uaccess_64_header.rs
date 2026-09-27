@@ -9,13 +9,13 @@
 
 
 extern "C" {
-    pub static USER_PTR_MAX: core::ffi::c_ulong;
+    pub static USER_PTR_MAX: kernel::ffi::c_ulong;
 }
 
 /// `runtime_const_ptr(USER_PTR_MAX)`: a boot-patched immediate in the kernel
 /// image, a plain load in modules (which cannot use runtime constants).
 #[inline(always)]
-pub unsafe fn __user_ptr_max() -> core::ffi::c_ulong {
+pub unsafe fn __user_ptr_max() -> kernel::ffi::c_ulong {
     #[cfg(MODULE)]
     {
         USER_PTR_MAX
@@ -31,7 +31,7 @@ pub unsafe fn __user_ptr_max() -> core::ffi::c_ulong {
  */
 #[cfg(CONFIG_ADDRESS_MASKING)]
 #[inline]
-pub unsafe fn __untagged_addr(mut addr: core::ffi::c_ulong) -> core::ffi::c_ulong {
+pub unsafe fn __untagged_addr(mut addr: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     core::arch::asm!(
         ALTERNATIVE!("", "and %gs:{mask}(%rip), {addr}", "ft"),
         addr = inout(reg) addr,
@@ -46,13 +46,13 @@ pub unsafe fn __untagged_addr(mut addr: core::ffi::c_ulong) -> core::ffi::c_ulon
 #[macro_export]
 macro_rules! untagged_addr {
     ($addr:expr) => {
-        __untagged_addr(($addr) as core::ffi::c_ulong) as _
+        __untagged_addr(($addr) as kernel::ffi::c_ulong) as _
     };
 }
 
 #[cfg(CONFIG_ADDRESS_MASKING)]
 #[inline]
-pub unsafe fn __untagged_addr_remote(mm: *mut mm_struct, addr: core::ffi::c_ulong) -> core::ffi::c_ulong {
+pub unsafe fn __untagged_addr_remote(mm: *mut mm_struct, addr: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     mmap_assert_locked(mm);
     addr & (*mm).context.untag_mask
 }
@@ -61,14 +61,14 @@ pub unsafe fn __untagged_addr_remote(mm: *mut mm_struct, addr: core::ffi::c_ulon
 #[macro_export]
 macro_rules! untagged_addr_remote {
     ($mm:expr, $addr:expr) => {
-        __untagged_addr_remote($mm, ($addr) as core::ffi::c_ulong) as _
+        __untagged_addr_remote($mm, ($addr) as kernel::ffi::c_ulong) as _
     };
 }
 
 #[macro_export]
 macro_rules! valid_user_address {
     ($x:expr) => {
-        likely(($x) as core::ffi::c_ulong <= __user_ptr_max())
+        likely(($x) as kernel::ffi::c_ulong <= __user_ptr_max())
     };
 }
 
@@ -78,8 +78,8 @@ macro_rules! valid_user_address {
  * for dense accesses starting at the address.
  */
 #[inline]
-pub unsafe fn mask_user_address(ptr: *const core::ffi::c_void) -> *mut core::ffi::c_void {
-    let mut ret = ptr as *mut core::ffi::c_void;
+pub unsafe fn mask_user_address(ptr: *const kernel::ffi::c_void) -> *mut kernel::ffi::c_void {
+    let mut ret = ptr as *mut kernel::ffi::c_void;
     core::arch::asm!(
         "cmp {max}, {ret}",
         "cmova {max}, {ret}",
@@ -119,15 +119,15 @@ macro_rules! masked_user_access_begin {
  * constant case.
  */
 #[inline]
-pub unsafe fn __access_ok(ptr: *const core::ffi::c_void, size: core::ffi::c_ulong) -> bool {
+pub unsafe fn __access_ok(ptr: *const kernel::ffi::c_void, size: kernel::ffi::c_ulong) -> bool {
     // C takes the short path only for constant sizes; thanks to the guard
     // page it is equally valid for any size up to PAGE_SIZE.
-    if size <= PAGE_SIZE as core::ffi::c_ulong {
+    if size <= PAGE_SIZE as kernel::ffi::c_ulong {
         valid_user_address!(ptr)
     } else {
-        let sum = size.wrapping_add(ptr as core::ffi::c_ulong);
+        let sum = size.wrapping_add(ptr as kernel::ffi::c_ulong);
 
-        valid_user_address!(sum) && sum >= ptr as core::ffi::c_ulong
+        valid_user_address!(sum) && sum >= ptr as kernel::ffi::c_ulong
     }
 }
 
@@ -137,12 +137,12 @@ pub unsafe fn __access_ok(ptr: *const core::ffi::c_void, size: core::ffi::c_ulon
 
 extern "C" {
     /* Handles exceptions in both to and from, but doesn't do access_ok */
-    pub fn rep_movs_alternative(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, len: core::ffi::c_uint) -> core::ffi::c_ulong;
+    pub fn rep_movs_alternative(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, len: kernel::ffi::c_uint) -> kernel::ffi::c_ulong;
 }
 
 #[inline(always)]
 #[must_use]
-pub unsafe fn copy_user_generic(mut to: *mut core::ffi::c_void, mut from: *const core::ffi::c_void, mut len: core::ffi::c_ulong) -> core::ffi::c_ulong {
+pub unsafe fn copy_user_generic(mut to: *mut kernel::ffi::c_void, mut from: *const kernel::ffi::c_void, mut len: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     stac();
     /*
      * If CPU has FSRM feature, use 'rep movs'.
@@ -172,33 +172,33 @@ pub unsafe fn copy_user_generic(mut to: *mut core::ffi::c_void, mut from: *const
 
 #[inline(always)]
 #[must_use]
-pub unsafe fn raw_copy_from_user(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, size: core::ffi::c_ulong) -> core::ffi::c_ulong {
+pub unsafe fn raw_copy_from_user(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, size: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     copy_user_generic(dst, src, size)
 }
 
 #[inline(always)]
 #[must_use]
-pub unsafe fn raw_copy_to_user(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, size: core::ffi::c_ulong) -> core::ffi::c_ulong {
+pub unsafe fn raw_copy_to_user(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, size: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     copy_user_generic(dst, src, size)
 }
 
 extern "C" {
-    pub fn copy_to_nontemporal(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, size: usize) -> usize;
-    pub fn copy_user_flushcache(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, size: usize) -> usize;
+    pub fn copy_to_nontemporal(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, size: usize) -> usize;
+    pub fn copy_user_flushcache(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, size: usize) -> usize;
 }
 
 #[inline]
-pub unsafe fn copy_from_user_inatomic_nontemporal(dst: *mut core::ffi::c_void, mut src: *const core::ffi::c_void, size: core::ffi::c_uint) -> core::ffi::c_int {
+pub unsafe fn copy_from_user_inatomic_nontemporal(dst: *mut kernel::ffi::c_void, mut src: *const kernel::ffi::c_void, size: kernel::ffi::c_uint) -> kernel::ffi::c_int {
     kasan_check_write(dst, size as _);
     src = mask_user_address(src);
     stac();
-    let ret = copy_to_nontemporal(dst, src, size as usize) as core::ffi::c_long;
+    let ret = copy_to_nontemporal(dst, src, size as usize) as kernel::ffi::c_long;
     clac();
-    ret as core::ffi::c_int
+    ret as kernel::ffi::c_int
 }
 
 #[inline]
-pub unsafe fn copy_from_user_flushcache(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, size: usize) -> usize {
+pub unsafe fn copy_from_user_flushcache(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, size: usize) -> usize {
     kasan_check_write(dst, size as _);
     copy_user_flushcache(dst, src, size)
 }
@@ -208,12 +208,12 @@ pub unsafe fn copy_from_user_flushcache(dst: *mut core::ffi::c_void, src: *const
  */
 
 extern "C" {
-    pub fn rep_stos_alternative(addr: *mut core::ffi::c_void, len: core::ffi::c_ulong) -> core::ffi::c_ulong;
+    pub fn rep_stos_alternative(addr: *mut kernel::ffi::c_void, len: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
 }
 
 #[inline(always)]
 #[must_use]
-pub unsafe fn __clear_user(mut addr: *mut core::ffi::c_void, mut size: core::ffi::c_ulong) -> core::ffi::c_ulong {
+pub unsafe fn __clear_user(mut addr: *mut kernel::ffi::c_void, mut size: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     might_fault();
     stac();
 
@@ -245,7 +245,7 @@ pub unsafe fn __clear_user(mut addr: *mut core::ffi::c_void, mut size: core::ffi
 }
 
 #[inline(always)]
-pub unsafe fn clear_user(to: *mut core::ffi::c_void, n: core::ffi::c_ulong) -> core::ffi::c_ulong {
+pub unsafe fn clear_user(to: *mut kernel::ffi::c_void, n: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     if __access_ok(to, n) {
         return __clear_user(to, n);
     }

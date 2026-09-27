@@ -33,12 +33,12 @@ pub struct pwc_frame_buf {
 pub struct pwc_handler_enter_event {
     pub urb: *mut urb,
     pub fbuf: *mut pwc_frame_buf,
-    pub urb__status: core::ffi::c_int,
+    pub urb__status: kernel::ffi::c_int,
     pub urb__actual_length: u32,
-    pub fbuf__filled: core::ffi::c_int,
+    pub fbuf__filled: kernel::ffi::c_int,
     /// `__string(name, pdev->v4l2_dev.name)`; storage is owned by the
     /// generated trace event infrastructure.
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 /// Trace print format for `pwc_handler_enter`.
@@ -50,10 +50,10 @@ pub const PWC_HANDLER_ENTER_PRINTK: &str =
 pub struct pwc_handler_exit_event {
     pub urb: *mut urb,
     pub fbuf: *mut pwc_frame_buf,
-    pub fbuf__filled: core::ffi::c_int,
+    pub fbuf__filled: kernel::ffi::c_int,
     /// `__string(name, pdev->v4l2_dev.name)`; storage is owned by the
     /// generated trace event infrastructure.
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 /// Trace print format for `pwc_handler_exit`.

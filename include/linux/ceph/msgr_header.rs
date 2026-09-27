@@ -45,7 +45,7 @@ pub const CEPH_ENTITY_TYPE_AUTH: u32 = 0x20;
 pub const CEPH_ENTITY_TYPE_ANY: u32 = 0xFF;
 
 extern "C" {
-    pub fn ceph_entity_type_name(type_: core::ffi::c_int) -> *const core::ffi::c_char;
+    pub fn ceph_entity_type_name(type_: kernel::ffi::c_int) -> *const kernel::ffi::c_char;
 }
 
 #[repr(C, packed)]
@@ -56,7 +56,7 @@ pub struct ceph_entity_addr {
 }
 
 extern "C" {
-    pub fn memcmp(a: *const core::ffi::c_void, b: *const core::ffi::c_void, n: usize) -> core::ffi::c_int;
+    pub fn memcmp(a: *const kernel::ffi::c_void, b: *const kernel::ffi::c_void, n: usize) -> kernel::ffi::c_int;
 }
 
 #[inline]
@@ -65,8 +65,8 @@ pub unsafe fn ceph_addr_equal_no_type(
     rhs: *const ceph_entity_addr,
 ) -> bool {
     memcmp(
-        core::ptr::addr_of!((*lhs).in_addr) as *const core::ffi::c_void,
-        core::ptr::addr_of!((*rhs).in_addr) as *const core::ffi::c_void,
+        core::ptr::addr_of!((*lhs).in_addr) as *const kernel::ffi::c_void,
+        core::ptr::addr_of!((*rhs).in_addr) as *const kernel::ffi::c_void,
         core::mem::size_of::<sockaddr_storage>(),
     ) == 0 && (*lhs).nonce == (*rhs).nonce
 }

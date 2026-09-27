@@ -19,9 +19,9 @@ macro_rules! EXCEP_CTL { ($code:expr) => { (($code | AE_CODE_CONTROL) as acpi_st
 
 #[repr(C)]
 pub struct acpi_exception_info {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     #[cfg(any(feature = "ACPI_HELP_APP", feature = "ACPI_ASL_COMPILER"))]
-    pub description: *mut core::ffi::c_char,
+    pub description: *mut kernel::ffi::c_char,
 }
 
 #[cfg(any(feature = "ACPI_HELP_APP", feature = "ACPI_ASL_COMPILER"))]

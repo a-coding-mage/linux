@@ -32,7 +32,7 @@ pub struct kvm_page_track_notifier_node {
     pub track_write: Option<unsafe extern "C" fn(
         gpa: gpa_t,
         new: *const u8,
-        bytes: core::ffi::c_int,
+        bytes: kernel::ffi::c_int,
         node: *mut kvm_page_track_notifier_node,
     )>,
 
@@ -44,7 +44,7 @@ pub struct kvm_page_track_notifier_node {
     // @node:      this node
     pub track_remove_region: Option<unsafe extern "C" fn(
         gfn: gfn_t,
-        nr_pages: core::ffi::c_ulong,
+        nr_pages: kernel::ffi::c_ulong,
         node: *mut kvm_page_track_notifier_node,
     )>,
 }
@@ -54,14 +54,14 @@ unsafe extern "C" {
     pub fn kvm_page_track_register_notifier(
         kvm: *mut kvm,
         n: *mut kvm_page_track_notifier_node,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn kvm_page_track_unregister_notifier(
         kvm: *mut kvm,
         n: *mut kvm_page_track_notifier_node,
     );
 
-    pub fn kvm_write_track_add_gfn(kvm: *mut kvm, gfn: gfn_t) -> core::ffi::c_int;
-    pub fn kvm_write_track_remove_gfn(kvm: *mut kvm, gfn: gfn_t) -> core::ffi::c_int;
+    pub fn kvm_write_track_add_gfn(kvm: *mut kvm, gfn: gfn_t) -> kernel::ffi::c_int;
+    pub fn kvm_write_track_remove_gfn(kvm: *mut kvm, gfn: gfn_t) -> kernel::ffi::c_int;
 }
 
 // Allow defining a node in a structure even if page tracking is disabled, e.g.

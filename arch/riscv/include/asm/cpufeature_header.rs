@@ -7,15 +7,15 @@
 
 #[repr(C)]
 pub struct riscv_cpuinfo {
-    pub mvendorid: ::core::ffi::c_ulong,
-    pub marchid: ::core::ffi::c_ulong,
-    pub mimpid: ::core::ffi::c_ulong,
+    pub mvendorid: ::kernel::ffi::c_ulong,
+    pub marchid: ::kernel::ffi::c_ulong,
+    pub mimpid: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct riscv_isainfo {
     /* DECLARE_BITMAP(isa, RISCV_ISA_EXT_MAX); */
-    pub isa: [::core::ffi::c_ulong; 0],
+    pub isa: [::kernel::ffi::c_ulong; 0],
 }
 
 extern "C" {
@@ -28,16 +28,16 @@ extern "C" {
 
     pub fn check_unaligned_access_emulated_all_cpus() -> bool;
     pub fn unaligned_access_init();
-    pub fn cpu_online_unaligned_access_init(cpu: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    pub fn cpu_online_unaligned_access_init(cpu: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
     pub fn check_vector_unaligned_access_emulated_all_cpus() -> bool;
-    pub fn riscv_get_elf_hwcap() -> ::core::ffi::c_ulong;
+    pub fn riscv_get_elf_hwcap() -> ::kernel::ffi::c_ulong;
 
     pub static riscv_isa_ext: riscv_isa_ext_data;
     pub static riscv_isa_ext_count: usize;
     pub static mut riscv_isa_fallback: bool;
 
-    pub fn riscv_isa_extension_base(isa_bitmap: *const ::core::ffi::c_ulong)
-        -> ::core::ffi::c_ulong;
+    pub fn riscv_isa_extension_base(isa_bitmap: *const ::kernel::ffi::c_ulong)
+        -> ::kernel::ffi::c_ulong;
 }
 
 /* Types and constants are supplied by the corresponding kernel dependencies. */
@@ -47,21 +47,21 @@ extern "C" {
 
 /* Per-cpu declarations from DECLARE_PER_CPU. */
 extern "C" {
-    pub static mut misaligned_access_speed: ::core::ffi::c_long;
-    pub static mut vector_misaligned_access: ::core::ffi::c_long;
+    pub static mut misaligned_access_speed: ::kernel::ffi::c_long;
+    pub static mut vector_misaligned_access: ::kernel::ffi::c_long;
 }
 
 #[repr(C)]
 pub struct riscv_isa_ext_data {
-    pub id: ::core::ffi::c_uint,
-    pub name: *const ::core::ffi::c_char,
-    pub property: *const ::core::ffi::c_char,
-    pub subset_ext_ids: *const ::core::ffi::c_uint,
-    pub subset_ext_size: ::core::ffi::c_uint,
+    pub id: ::kernel::ffi::c_uint,
+    pub name: *const ::kernel::ffi::c_char,
+    pub property: *const ::kernel::ffi::c_char,
+    pub subset_ext_ids: *const ::kernel::ffi::c_uint,
+    pub subset_ext_size: ::kernel::ffi::c_uint,
     pub validate: Option<unsafe extern "C" fn(
         data: *const riscv_isa_ext_data,
-        isa_bitmap: *const ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int>,
+        isa_bitmap: *const ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int>,
 }
 
 #[macro_export]
@@ -69,8 +69,8 @@ macro_rules! _RISCV_ISA_EXT_DATA {
     ($name:ident, $id:expr, $subset_exts:expr, $subset_exts_size:expr, $validate:expr) => {
         riscv_isa_ext_data {
             id: $id,
-            name: ::core::concat_idents!("", stringify!($name)).as_ptr() as *const ::core::ffi::c_char,
-            property: ::core::concat_idents!("", stringify!($name)).as_ptr() as *const ::core::ffi::c_char,
+            name: ::core::concat_idents!("", stringify!($name)).as_ptr() as *const ::kernel::ffi::c_char,
+            property: ::core::concat_idents!("", stringify!($name)).as_ptr() as *const ::kernel::ffi::c_char,
             subset_ext_ids: $subset_exts,
             subset_ext_size: $subset_exts_size,
             validate: $validate,
@@ -110,8 +110,8 @@ pub unsafe fn has_fast_unaligned_accesses() -> bool {
 extern "C" {
     pub static fast_unaligned_access_speed_key: static_key_false;
     pub fn static_branch_likely(key: *const static_key_false) -> bool;
-    pub fn riscv_cpu_has_extension_likely(cpu: ::core::ffi::c_int, ext: ::core::ffi::c_ulong) -> bool;
-    pub fn riscv_cpu_has_extension_unlikely(cpu: ::core::ffi::c_int, ext: ::core::ffi::c_ulong) -> bool;
+    pub fn riscv_cpu_has_extension_likely(cpu: ::kernel::ffi::c_int, ext: ::kernel::ffi::c_ulong) -> bool;
+    pub fn riscv_cpu_has_extension_unlikely(cpu: ::kernel::ffi::c_int, ext: ::kernel::ffi::c_ulong) -> bool;
     pub fn cpu_supports_shadow_stack() -> bool;
     pub fn cpu_supports_indirect_br_lp_instr() -> bool;
 }

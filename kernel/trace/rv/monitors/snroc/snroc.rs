@@ -13,80 +13,80 @@ pub struct task_struct {
 
 #[repr(C)]
 pub struct rv_monitor {
-    pub name: *const core::ffi::c_char,
-    pub description: *const core::ffi::c_char,
-    pub enable: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
+    pub name: *const kernel::ffi::c_char,
+    pub description: *const kernel::ffi::c_char,
+    pub enable: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
     pub disable: Option<unsafe extern "C" fn()>,
     pub reset: Option<unsafe extern "C" fn()>,
-    pub enabled: core::ffi::c_int,
+    pub enabled: kernel::ffi::c_int,
 }
 
 extern "C" {
-    static mut rv_sched: core::ffi::c_void;
+    static mut rv_sched: kernel::ffi::c_void;
 
-    fn da_monitor_init() -> core::ffi::c_int;
+    fn da_monitor_init() -> kernel::ffi::c_int;
     fn da_monitor_destroy();
     fn da_monitor_reset_all();
-    fn da_handle_event(tsk: *mut task_struct, event: core::ffi::c_int);
-    fn da_handle_start_event(tsk: *mut task_struct, event: core::ffi::c_int);
+    fn da_handle_event(tsk: *mut task_struct, event: kernel::ffi::c_int);
+    fn da_handle_start_event(tsk: *mut task_struct, event: kernel::ffi::c_int);
 
     fn rv_attach_trace_probe(
-        name: *const core::ffi::c_char,
-        probe: *const core::ffi::c_void,
-        handler: *const core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        probe: *const kernel::ffi::c_void,
+        handler: *const kernel::ffi::c_void,
     );
     fn rv_detach_trace_probe(
-        name: *const core::ffi::c_char,
-        probe: *const core::ffi::c_void,
-        handler: *const core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        probe: *const kernel::ffi::c_void,
+        handler: *const kernel::ffi::c_void,
     );
     fn rv_register_monitor(
         monitor: *mut rv_monitor,
-        sched: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        sched: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
     fn rv_unregister_monitor(monitor: *mut rv_monitor);
 
-    static sched_set_state_tp: core::ffi::c_void;
-    static sched_switch: core::ffi::c_void;
-    static sched_set_state_snroc: core::ffi::c_int;
-    static sched_switch_out_snroc: core::ffi::c_int;
-    static sched_switch_in_snroc: core::ffi::c_int;
+    static sched_set_state_tp: kernel::ffi::c_void;
+    static sched_switch: kernel::ffi::c_void;
+    static sched_set_state_snroc: kernel::ffi::c_int;
+    static sched_switch_out_snroc: kernel::ffi::c_int;
+    static sched_switch_in_snroc: kernel::ffi::c_int;
 }
 
 unsafe extern "C" fn handle_sched_set_state(
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
     tsk: *mut task_struct,
-    _state: core::ffi::c_int,
+    _state: kernel::ffi::c_int,
 ) {
     da_handle_event(tsk, sched_set_state_snroc);
 }
 
 unsafe extern "C" fn handle_sched_switch(
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
     _preempt: bool,
     prev: *mut task_struct,
     next: *mut task_struct,
-    _prev_state: core::ffi::c_uint,
+    _prev_state: kernel::ffi::c_uint,
 ) {
     da_handle_start_event(prev, sched_switch_out_snroc);
     da_handle_event(next, sched_switch_in_snroc);
 }
 
-unsafe extern "C" fn enable_snroc() -> core::ffi::c_int {
+unsafe extern "C" fn enable_snroc() -> kernel::ffi::c_int {
     let retval = da_monitor_init();
     if retval != 0 {
         return retval;
     }
 
     rv_attach_trace_probe(
-        b"snroc\0".as_ptr() as *const core::ffi::c_char,
-        &sched_set_state_tp as *const _ as *const core::ffi::c_void,
-        handle_sched_set_state as *const () as *const core::ffi::c_void,
+        b"snroc\0".as_ptr() as *const kernel::ffi::c_char,
+        &sched_set_state_tp as *const _ as *const kernel::ffi::c_void,
+        handle_sched_set_state as *const () as *const kernel::ffi::c_void,
     );
     rv_attach_trace_probe(
-        b"snroc\0".as_ptr() as *const core::ffi::c_char,
-        &sched_switch as *const _ as *const core::ffi::c_void,
-        handle_sched_switch as *const () as *const core::ffi::c_void,
+        b"snroc\0".as_ptr() as *const kernel::ffi::c_char,
+        &sched_switch as *const _ as *const kernel::ffi::c_void,
+        handle_sched_switch as *const () as *const kernel::ffi::c_void,
     );
 
     0
@@ -96,30 +96,30 @@ unsafe extern "C" fn disable_snroc() {
     rv_this.enabled = 0;
 
     rv_detach_trace_probe(
-        b"snroc\0".as_ptr() as *const core::ffi::c_char,
-        &sched_set_state_tp as *const _ as *const core::ffi::c_void,
-        handle_sched_set_state as *const () as *const core::ffi::c_void,
+        b"snroc\0".as_ptr() as *const kernel::ffi::c_char,
+        &sched_set_state_tp as *const _ as *const kernel::ffi::c_void,
+        handle_sched_set_state as *const () as *const kernel::ffi::c_void,
     );
     rv_detach_trace_probe(
-        b"snroc\0".as_ptr() as *const core::ffi::c_char,
-        &sched_switch as *const _ as *const core::ffi::c_void,
-        handle_sched_switch as *const () as *const core::ffi::c_void,
+        b"snroc\0".as_ptr() as *const kernel::ffi::c_char,
+        &sched_switch as *const _ as *const kernel::ffi::c_void,
+        handle_sched_switch as *const () as *const kernel::ffi::c_void,
     );
 
     da_monitor_destroy();
 }
 
 static mut rv_this: rv_monitor = rv_monitor {
-    name: b"snroc\0".as_ptr() as *const core::ffi::c_char,
+    name: b"snroc\0".as_ptr() as *const kernel::ffi::c_char,
     description: b"set non runnable on its own context.\0".as_ptr()
-        as *const core::ffi::c_char,
+        as *const kernel::ffi::c_char,
     enable: Some(enable_snroc),
     disable: Some(disable_snroc),
     reset: Some(da_monitor_reset_all),
     enabled: 0,
 };
 
-unsafe extern "C" fn register_snroc() -> core::ffi::c_int {
+unsafe extern "C" fn register_snroc() -> kernel::ffi::c_int {
     rv_register_monitor(&mut rv_this, &mut rv_sched);
 }
 

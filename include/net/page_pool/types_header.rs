@@ -29,23 +29,23 @@ pub struct pp_alloc_cache {
 
 #[repr(C)]
 pub struct page_pool_params_fast {
-    pub order: core::ffi::c_uint,
-    pub pool_size: core::ffi::c_uint,
-    pub nid: core::ffi::c_int,
+    pub order: kernel::ffi::c_uint,
+    pub pool_size: kernel::ffi::c_uint,
+    pub nid: kernel::ffi::c_int,
     pub dev: *mut device,
     pub napi: *mut napi_struct,
     pub dma_dir: dma_data_direction,
-    pub max_len: core::ffi::c_uint,
-    pub offset: core::ffi::c_uint,
+    pub max_len: kernel::ffi::c_uint,
+    pub offset: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct page_pool_params_slow {
     pub netdev: *mut net_device,
-    pub queue_idx: core::ffi::c_uint,
-    pub flags: core::ffi::c_uint,
-    pub init_callback: Option<unsafe extern "C" fn(netmem_ref, *mut core::ffi::c_void)>,
-    pub init_arg: *mut core::ffi::c_void,
+    pub queue_idx: kernel::ffi::c_uint,
+    pub flags: kernel::ffi::c_uint,
+    pub init_callback: Option<unsafe extern "C" fn(netmem_ref, *mut kernel::ffi::c_void)>,
+    pub init_arg: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -82,11 +82,11 @@ pub struct page_pool_stats {
     pub recycle_stats: page_pool_recycle_stats,
 }
 
-pub const PAGE_POOL_FRAG_GROUP_ALIGN: usize = 4 * core::mem::size_of::<core::ffi::c_long>();
+pub const PAGE_POOL_FRAG_GROUP_ALIGN: usize = 4 * core::mem::size_of::<kernel::ffi::c_long>();
 
 #[repr(C)]
 pub struct pp_memory_provider_params {
-    pub mp_priv: *mut core::ffi::c_void,
+    pub mp_priv: *mut kernel::ffi::c_void,
     pub mp_ops: *const memory_provider_ops,
     pub rx_page_size: u32,
 }
@@ -94,7 +94,7 @@ pub struct pp_memory_provider_params {
 #[repr(C)]
 pub struct page_pool {
     pub p: page_pool_params_fast,
-    pub cpuid: core::ffi::c_int,
+    pub cpuid: kernel::ffi::c_int,
     pub pages_state_hold_cnt: u32,
     pub has_init_callback: bool,
     pub dma_map: bool,
@@ -102,19 +102,19 @@ pub struct page_pool {
     pub dma_sync_for_cpu: bool,
     #[cfg(CONFIG_PAGE_POOL_STATS)]
     pub system: bool,
-    pub frag_users: core::ffi::c_long,
+    pub frag_users: kernel::ffi::c_long,
     pub frag_page: netmem_ref,
-    pub frag_offset: core::ffi::c_uint,
+    pub frag_offset: kernel::ffi::c_uint,
     pub release_dw: delayed_work,
-    pub disconnect: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
-    pub defer_start: core::ffi::c_ulong,
-    pub defer_warn: core::ffi::c_ulong,
+    pub disconnect: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
+    pub defer_start: kernel::ffi::c_ulong,
+    pub defer_warn: kernel::ffi::c_ulong,
     #[cfg(CONFIG_PAGE_POOL_STATS)]
     pub alloc_stats: page_pool_alloc_stats,
     pub xdp_mem_id: u32,
     pub alloc: pp_alloc_cache,
     pub ring: ptr_ring,
-    pub mp_priv: *mut core::ffi::c_void,
+    pub mp_priv: *mut kernel::ffi::c_void,
     pub mp_ops: *const memory_provider_ops,
     pub dma_mapped: xarray,
     #[cfg(CONFIG_PAGE_POOL_STATS)]
@@ -141,10 +141,10 @@ pub struct xdp_mem_info;
 extern "C" {
     pub fn page_pool_alloc_pages(pool: *mut page_pool, gfp: gfp_t) -> *mut page;
     pub fn page_pool_alloc_netmems(pool: *mut page_pool, gfp: gfp_t) -> netmem_ref;
-    pub fn page_pool_alloc_frag(pool: *mut page_pool, offset: *mut core::ffi::c_uint, size: core::ffi::c_uint, gfp: gfp_t) -> *mut page;
-    pub fn page_pool_alloc_frag_netmem(pool: *mut page_pool, offset: *mut core::ffi::c_uint, size: core::ffi::c_uint, gfp: gfp_t) -> netmem_ref;
+    pub fn page_pool_alloc_frag(pool: *mut page_pool, offset: *mut kernel::ffi::c_uint, size: kernel::ffi::c_uint, gfp: gfp_t) -> *mut page;
+    pub fn page_pool_alloc_frag_netmem(pool: *mut page_pool, offset: *mut kernel::ffi::c_uint, size: kernel::ffi::c_uint, gfp: gfp_t) -> netmem_ref;
     pub fn page_pool_create(params: *const page_pool_params) -> *mut page_pool;
-    pub fn page_pool_create_percpu(params: *const page_pool_params, cpuid: core::ffi::c_int) -> *mut page_pool;
+    pub fn page_pool_create_percpu(params: *const page_pool_params, cpuid: kernel::ffi::c_int) -> *mut page_pool;
 
     #[cfg(CONFIG_PAGE_POOL)]
     pub fn page_pool_enable_direct_recycling(pool: *mut page_pool, napi: *mut napi_struct);
@@ -153,19 +153,19 @@ extern "C" {
     #[cfg(CONFIG_PAGE_POOL)]
     pub fn page_pool_destroy(pool: *mut page_pool);
     #[cfg(CONFIG_PAGE_POOL)]
-    pub fn page_pool_use_xdp_mem(pool: *mut page_pool, disconnect: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>, mem: *const xdp_mem_info);
+    pub fn page_pool_use_xdp_mem(pool: *mut page_pool, disconnect: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>, mem: *const xdp_mem_info);
     #[cfg(CONFIG_PAGE_POOL)]
     pub fn page_pool_put_netmem_bulk(data: *mut netmem_ref, count: u32);
 
-    pub fn page_pool_put_unrefed_netmem(pool: *mut page_pool, netmem: netmem_ref, dma_sync_size: core::ffi::c_uint, allow_direct: bool);
-    pub fn page_pool_put_unrefed_page(pool: *mut page_pool, page: *mut page, dma_sync_size: core::ffi::c_uint, allow_direct: bool);
-    pub fn page_pool_update_nid(pool: *mut page_pool, new_nid: core::ffi::c_int);
+    pub fn page_pool_put_unrefed_netmem(pool: *mut page_pool, netmem: netmem_ref, dma_sync_size: kernel::ffi::c_uint, allow_direct: bool);
+    pub fn page_pool_put_unrefed_page(pool: *mut page_pool, page: *mut page, dma_sync_size: kernel::ffi::c_uint, allow_direct: bool);
+    pub fn page_pool_update_nid(pool: *mut page_pool, new_nid: kernel::ffi::c_int);
 }
 
 #[cfg(not(CONFIG_PAGE_POOL))]
 pub unsafe fn page_pool_destroy(_pool: *mut page_pool) {}
 #[cfg(not(CONFIG_PAGE_POOL))]
-pub unsafe fn page_pool_use_xdp_mem(_pool: *mut page_pool, _disconnect: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>, _mem: *const xdp_mem_info) {}
+pub unsafe fn page_pool_use_xdp_mem(_pool: *mut page_pool, _disconnect: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>, _mem: *const xdp_mem_info) {}
 #[cfg(not(CONFIG_PAGE_POOL))]
 pub unsafe fn page_pool_put_netmem_bulk(_data: *mut netmem_ref, _count: u32) {}
 

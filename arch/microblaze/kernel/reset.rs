@@ -24,7 +24,7 @@ pub unsafe fn machine_power_off() {
     loop {}
 }
 
-pub unsafe fn machine_restart(cmd: *mut core::ffi::c_char) {
+pub unsafe fn machine_restart(cmd: *mut kernel::ffi::c_char) {
     do_kernel_restart(cmd);
     /* Give the restart hook 1 s to take us down */
     mdelay(1000);

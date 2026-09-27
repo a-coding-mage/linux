@@ -2,7 +2,7 @@
 
 // Kernel dependencies supplied by the surrounding tree.
 
-const DEVICE_NAME: *const core::ffi::c_char = c"test".as_ptr();
+const DEVICE_NAME: *const kernel::ffi::c_char = c"test".as_ptr();
 
 #[repr(C)]
 struct test_priv {
@@ -18,17 +18,17 @@ unsafe fn platform_device_devm_init(test: *mut kunit) -> i32 {
     KUNIT_ASSERT_NOT_ERR_OR_NULL(test, priv_);
     init_waitqueue_head(&mut (*priv_).probe_wq);
     init_waitqueue_head(&mut (*priv_).release_wq);
-    (*test).priv_ = priv_ as *mut core::ffi::c_void;
+    (*test).priv_ = priv_ as *mut kernel::ffi::c_void;
     0
 }
 
-unsafe fn devm_device_action(ptr: *mut core::ffi::c_void) {
+unsafe fn devm_device_action(ptr: *mut kernel::ffi::c_void) {
     let priv_: *mut test_priv = ptr as *mut test_priv;
     (*priv_).release_done = true;
     wake_up_interruptible(&mut (*priv_).release_wq);
 }
 
-unsafe fn devm_put_device_action(ptr: *mut core::ffi::c_void) {
+unsafe fn devm_put_device_action(ptr: *mut kernel::ffi::c_void) {
     let priv_: *mut test_priv = ptr as *mut test_priv;
     put_device((*priv_).dev);
     (*priv_).release_done = true;
@@ -44,7 +44,7 @@ unsafe fn platform_device_devm_register_unregister_test(test: *mut kunit) {
     KUNIT_ASSERT_EQ(test, ret, 0);
     let priv_: *mut test_priv = (*test).priv_ as *mut test_priv;
     (*priv_).dev = &mut (*pdev).dev;
-    ret = devm_add_action_or_reset((*priv_).dev, devm_device_action, priv_ as *mut core::ffi::c_void);
+    ret = devm_add_action_or_reset((*priv_).dev, devm_device_action, priv_ as *mut kernel::ffi::c_void);
     KUNIT_ASSERT_EQ(test, ret, 0);
     platform_device_unregister(pdev);
     ret = wait_event_interruptible_timeout(&mut (*priv_).release_wq, (*priv_).release_done, msecs_to_jiffies(RELEASE_TIMEOUT_MS));
@@ -59,7 +59,7 @@ unsafe fn platform_device_devm_register_get_unregister_with_devm_test(test: *mut
     let priv_: *mut test_priv = (*test).priv_ as *mut test_priv;
     (*priv_).dev = &mut (*pdev).dev;
     get_device((*priv_).dev);
-    ret = devm_add_action_or_reset((*priv_).dev, devm_put_device_action, priv_ as *mut core::ffi::c_void);
+    ret = devm_add_action_or_reset((*priv_).dev, devm_put_device_action, priv_ as *mut kernel::ffi::c_void);
     KUNIT_ASSERT_EQ(test, ret, 0);
     platform_device_unregister(pdev);
     ret = wait_event_interruptible_timeout(&mut (*priv_).release_wq, (*priv_).release_done, msecs_to_jiffies(RELEASE_TIMEOUT_MS));
@@ -85,12 +85,12 @@ unsafe fn probed_platform_device_devm_register_unregister_test(test: *mut kunit)
     KUNIT_ASSERT_NOT_ERR_OR_NULL(test, pdev);
     let priv_: *mut test_priv = (*test).priv_ as *mut test_priv;
     (*priv_).dev = &mut (*pdev).dev;
-    platform_set_drvdata(pdev, priv_ as *mut core::ffi::c_void);
+    platform_set_drvdata(pdev, priv_ as *mut kernel::ffi::c_void);
     ret = platform_device_add(pdev);
     KUNIT_ASSERT_EQ(test, ret, 0);
     ret = wait_event_interruptible_timeout(&mut (*priv_).probe_wq, (*priv_).probe_done, msecs_to_jiffies(RELEASE_TIMEOUT_MS));
     KUNIT_ASSERT_GT(test, ret, 0);
-    ret = devm_add_action_or_reset((*priv_).dev, devm_device_action, priv_ as *mut core::ffi::c_void);
+    ret = devm_add_action_or_reset((*priv_).dev, devm_device_action, priv_ as *mut kernel::ffi::c_void);
     KUNIT_ASSERT_EQ(test, ret, 0);
     platform_device_unregister(pdev);
     ret = wait_event_interruptible_timeout(&mut (*priv_).release_wq, (*priv_).release_done, msecs_to_jiffies(RELEASE_TIMEOUT_MS));
@@ -105,13 +105,13 @@ unsafe fn probed_platform_device_devm_register_get_unregister_with_devm_test(tes
     KUNIT_ASSERT_NOT_ERR_OR_NULL(test, pdev);
     let priv_: *mut test_priv = (*test).priv_ as *mut test_priv;
     (*priv_).dev = &mut (*pdev).dev;
-    platform_set_drvdata(pdev, priv_ as *mut core::ffi::c_void);
+    platform_set_drvdata(pdev, priv_ as *mut kernel::ffi::c_void);
     ret = platform_device_add(pdev);
     KUNIT_ASSERT_EQ(test, ret, 0);
     ret = wait_event_interruptible_timeout(&mut (*priv_).probe_wq, (*priv_).probe_done, msecs_to_jiffies(RELEASE_TIMEOUT_MS));
     KUNIT_ASSERT_GT(test, ret, 0);
     get_device((*priv_).dev);
-    ret = devm_add_action_or_reset((*priv_).dev, devm_put_device_action, priv_ as *mut core::ffi::c_void);
+    ret = devm_add_action_or_reset((*priv_).dev, devm_put_device_action, priv_ as *mut kernel::ffi::c_void);
     KUNIT_ASSERT_EQ(test, ret, 0);
     platform_device_unregister(pdev);
     ret = wait_event_interruptible_timeout(&mut (*priv_).release_wq, (*priv_).release_done, msecs_to_jiffies(RELEASE_TIMEOUT_MS));

@@ -79,7 +79,7 @@ pub const WM8904_EQ_REGS: usize = 24;
  */
 #[repr(C)]
 pub struct wm8904_drc_cfg {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub regs: [u16; WM8904_DRC_REGS],
 }
 
@@ -92,16 +92,16 @@ pub struct wm8904_drc_cfg {
  */
 #[repr(C)]
 pub struct wm8904_retune_mobile_cfg {
-    pub name: *const core::ffi::c_char,
-    pub rate: core::ffi::c_uint,
+    pub name: *const kernel::ffi::c_char,
+    pub rate: kernel::ffi::c_uint,
     pub regs: [u16; WM8904_EQ_REGS],
 }
 
 #[repr(C)]
 pub struct wm8904_pdata {
-    pub num_drc_cfgs: core::ffi::c_int,
+    pub num_drc_cfgs: kernel::ffi::c_int,
     pub drc_cfgs: *mut wm8904_drc_cfg,
-    pub num_retune_mobile_cfgs: core::ffi::c_int,
+    pub num_retune_mobile_cfgs: kernel::ffi::c_int,
     pub retune_mobile_cfgs: *mut wm8904_retune_mobile_cfg,
     pub in1l_as_dmicdat1: bool,
     pub in1r_as_dmicdat2: bool,

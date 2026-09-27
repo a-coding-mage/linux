@@ -28,8 +28,8 @@ extern "C" {
     fn cpu_logical_map(cpu: u32) -> i32;
     fn mvebu_pmsu_set_cpu_boot_addr(cpu: i32, entry: unsafe extern "C" fn());
     fn armada_xp_secondary_startup();
-    fn arch_send_wakeup_ipi_mask(mask: *const core::ffi::c_void);
-    fn cpumask_of(cpu: u32) -> *const core::ffi::c_void;
+    fn arch_send_wakeup_ipi_mask(mask: *const kernel::ffi::c_void);
+    fn cpumask_of(cpu: u32) -> *const kernel::ffi::c_void;
     fn mvebu_cpu_reset_deassert(cpu: i32) -> i32;
     fn mvebu_v7_pmsu_idle_exit();
     fn num_possible_cpus() -> usize;
@@ -39,10 +39,10 @@ extern "C" {
     fn clk_prepare_enable(clk: *mut clk) -> i32;
     fn clk_set_rate(clk: *mut clk, rate: u64) -> i32;
     fn clk_get_rate(clk: *mut clk) -> u64;
-    fn panic(msg: *const core::ffi::c_char) -> !;
+    fn panic(msg: *const kernel::ffi::c_char) -> !;
     fn armada_370_xp_pmsu_idle_enter(deep: bool);
-    fn of_io_request_and_map(np: *mut device_node, index: i32, name: *const core::ffi::c_char) -> *mut u8;
-    fn of_node_full_name(np: *mut device_node) -> *const core::ffi::c_char;
+    fn of_io_request_and_map(np: *mut device_node, index: i32, name: *const kernel::ffi::c_char) -> *mut u8;
+    fn of_node_full_name(np: *mut device_node) -> *const kernel::ffi::c_char;
     fn of_node_put(np: *mut device_node);
     fn writel(value: u32, addr: *mut u8);
     fn __pa_symbol(addr: unsafe extern "C" fn()) -> usize;
@@ -113,7 +113,7 @@ const MV98DX3236_CPU_RESUME_ADDR_REG: usize = 0x04;
 
 #[repr(C)]
 struct of_device_id {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 static OF_MV98DX3236_RESUME_TABLE: &[of_device_id] = &[
@@ -121,7 +121,7 @@ static OF_MV98DX3236_RESUME_TABLE: &[of_device_id] = &[
     of_device_id { compatible: core::ptr::null() },
 ];
 
-unsafe extern "C" fn mv98dx3236_resume_set_cpu_boot_addr(hw_cpu: i32, boot_addr: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn mv98dx3236_resume_set_cpu_boot_addr(hw_cpu: i32, boot_addr: *mut kernel::ffi::c_void) -> i32 {
     if hw_cpu != 1 { /* WARN_ON(hw_cpu != 1) */ }
     // of_find_matching_node/of_address mapping are supplied by the kernel.
     let _ = (boot_addr, OF_MV98DX3236_RESUME_TABLE.as_ptr(), MV98DX3236_CPU_RESUME_CTRL_REG,

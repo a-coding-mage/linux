@@ -104,13 +104,13 @@ pub struct minix3_super_block {
 #[repr(C)]
 pub struct minix_dir_entry {
     pub inode: u16,
-    pub name: [core::ffi::c_char; 0],
+    pub name: [kernel::ffi::c_char; 0],
 }
 
 #[repr(C)]
 pub struct minix3_dir_entry {
     pub inode: u32,
-    pub name: [core::ffi::c_char; 0],
+    pub name: [kernel::ffi::c_char; 0],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

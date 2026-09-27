@@ -14,25 +14,25 @@
 // Linux and architecture headers from the original source supply the
 // declarations referenced by this translation.
 
-pub static mut irq_err_count: ::core::ffi::c_ulong = 0;
+pub static mut irq_err_count: ::kernel::ffi::c_ulong = 0;
 // DEFINE_PER_CPU(unsigned long, irq_pmi_count);
 extern "C" {
-    static mut irq_pmi_count: ::core::ffi::c_ulong;
+    static mut irq_pmi_count: ::kernel::ffi::c_ulong;
 }
 
-pub unsafe fn ack_bad_irq(irq: ::core::ffi::c_uint) {
+pub unsafe fn ack_bad_irq(irq: ::kernel::ffi::c_uint) {
     irq_err_count = irq_err_count.wrapping_add(1);
     printk(KERN_CRIT, b"Unexpected IRQ trap at vector %u\n\0".as_ptr(), irq);
 }
 
 #[cfg(CONFIG_SMP)]
-static mut irq_user_affinity: [::core::ffi::c_char; NR_IRQS as usize] = [0; NR_IRQS as usize];
+static mut irq_user_affinity: [::kernel::ffi::c_char; NR_IRQS as usize] = [0; NR_IRQS as usize];
 
 #[cfg(CONFIG_SMP)]
-pub unsafe fn irq_select_affinity(irq: ::core::ffi::c_uint) -> ::core::ffi::c_int {
+pub unsafe fn irq_select_affinity(irq: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int {
     let data = irq_get_irq_data(irq);
     let chip: *mut irq_chip;
-    static mut last_cpu: ::core::ffi::c_int = 0;
+    static mut last_cpu: ::kernel::ffi::c_int = 0;
     let mut cpu = last_cpu + 1;
 
     if data.is_null() {
@@ -58,9 +58,9 @@ pub unsafe fn irq_select_affinity(irq: ::core::ffi::c_uint) -> ::core::ffi::c_in
 
 pub unsafe fn arch_show_interrupts(
     p: *mut seq_file,
-    _prec: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let mut j: ::core::ffi::c_int;
+    _prec: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
+    let mut j: ::kernel::ffi::c_int;
 
     #[cfg(CONFIG_SMP)]
     {
@@ -68,7 +68,7 @@ pub unsafe fn arch_show_interrupts(
         for_each_online_cpu!(j, {
             seq_printf(p, b"%10lu \0".as_ptr() as *const _, cpu_data[j as usize].ipi_count);
         });
-        seq_putc(p, b'\n' as ::core::ffi::c_int);
+        seq_putc(p, b'\n' as ::kernel::ffi::c_int);
     }
     seq_puts(p, b" PMI: \0".as_ptr() as *const _);
     for_each_online_cpu!(j, {
@@ -85,9 +85,9 @@ pub unsafe fn arch_show_interrupts(
  * handlers).
  */
 
-pub const MAX_ILLEGAL_IRQS: ::core::ffi::c_uint = 16;
+pub const MAX_ILLEGAL_IRQS: ::kernel::ffi::c_uint = 16;
 
-pub unsafe fn handle_irq(irq: ::core::ffi::c_int) {
+pub unsafe fn handle_irq(irq: ::kernel::ffi::c_int) {
     /*
      * We ack quickly, we don't want the irq controller
      * thinking we're snobs just because some other CPU has
@@ -98,11 +98,11 @@ pub unsafe fn handle_irq(irq: ::core::ffi::c_int) {
      * 0 return value means that this irq is already being
      * handled by some other CPU. (or is disabled)
      */
-    static mut illegal_count: ::core::ffi::c_uint = 0;
+    static mut illegal_count: ::kernel::ffi::c_uint = 0;
     let desc = irq_to_desc(irq);
 
     if desc.is_null()
-        || ((irq as ::core::ffi::c_uint) > ACTUAL_NR_IRQS
+        || ((irq as ::kernel::ffi::c_uint) > ACTUAL_NR_IRQS
             && illegal_count < MAX_ILLEGAL_IRQS)
     {
         irq_err_count = irq_err_count.wrapping_add(1);

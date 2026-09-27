@@ -70,7 +70,7 @@ pub struct frl_cap_chk_params_fixed31_32 {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct dc_versions {
-    pub dc_ver: *const core::ffi::c_char,
+    pub dc_ver: *const kernel::ffi::c_char,
     pub dmcu_version: dmcu_version,
 }
 

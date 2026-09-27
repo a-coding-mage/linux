@@ -8,7 +8,7 @@
 //! The C header includes Linux clock-provider, errno, kconfig, regmap, and
 //! types definitions.  Those dependencies are supplied externally.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Opaque types supplied by the included Linux headers.
 pub struct clk_hw;

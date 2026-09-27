@@ -21,21 +21,21 @@ pub const pci_post_reset_delay: u32 = 50;
 /* Dependency-supplied types: parisc_device, pci_bus, resource, and ioc. */
 #[repr(C)]
 pub struct pci_hba_data {
-    pub base_addr: *mut core::ffi::c_void,
+    pub base_addr: *mut kernel::ffi::c_void,
     pub dev: *const parisc_device,
     pub hba_bus: *mut pci_bus,
-    pub hba_num: core::ffi::c_int,
+    pub hba_num: kernel::ffi::c_int,
     pub bus_num: resource,
     pub io_space: resource,
     pub lmmio_space: resource,
     pub elmmio_space: resource,
     pub gmmio_space: resource,
-    pub lmmio_space_offset: core::ffi::c_ulong,
+    pub lmmio_space_offset: kernel::ffi::c_ulong,
     pub iommu: *mut ioc,
-    pub io_name: [core::ffi::c_char; HBA_NAME_SIZE],
-    pub lmmio_name: [core::ffi::c_char; HBA_NAME_SIZE],
-    pub elmmio_name: [core::ffi::c_char; HBA_NAME_SIZE],
-    pub gmmio_name: [core::ffi::c_char; HBA_NAME_SIZE],
+    pub io_name: [kernel::ffi::c_char; HBA_NAME_SIZE],
+    pub lmmio_name: [kernel::ffi::c_char; HBA_NAME_SIZE],
+    pub elmmio_name: [kernel::ffi::c_char; HBA_NAME_SIZE],
+    pub gmmio_name: [kernel::ffi::c_char; HBA_NAME_SIZE],
 }
 
 pub const DINO_MAX_LMMIO_RESOURCES: usize = 3;

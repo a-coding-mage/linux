@@ -5,160 +5,255 @@
  * the compiler cannot emit for: KASAN, KCSAN, KMSAN.
  */
 
-use core::ffi::c_void;
+/* Depends on: linux/bug.h, linux/compiler.h, linux/kasan-checks.h,
+ * linux/kcsan-checks.h, linux/kmsan-checks.h, linux/types.h */
 
-extern "C" {
-    fn kasan_check_read(v: *const c_void, size: usize);
-    fn kasan_check_write(v: *const c_void, size: usize);
-    fn kcsan_check_read(v: *const c_void, size: usize);
-    fn kcsan_check_write(v: *const c_void, size: usize);
-    fn kcsan_check_read_write(v: *const c_void, size: usize);
-    fn kcsan_check_atomic_read(v: *const c_void, size: usize);
-    fn kcsan_check_atomic_write(v: *const c_void, size: usize);
-    fn kcsan_check_atomic_read_write(v: *const c_void, size: usize);
-    fn kmsan_copy_to_user(to: *mut c_void, from: *const c_void, n: usize, left: usize);
-    fn kmsan_unpoison_memory(v: *const c_void, size: usize);
-    fn kmsan_memmove(to: *mut c_void, from: *const c_void, n: usize);
+/**
+ * instrument_read - instrument regular read access
+ * @v: address of access
+ * @size: size of access
+ *
+ * Instrument a regular read access. The instrumentation should be inserted
+ * before the actual read happens.
+ */
+#[inline(always)]
+pub unsafe fn instrument_read(v: *const core::ffi::c_void, size: usize) {
+    unsafe { kasan_check_read(v, size as u32) };
+    kcsan_check_read!(v, size);
 }
 
-/// Instrument a regular read access.
+/**
+ * instrument_write - instrument regular write access
+ * @v: address of access
+ * @size: size of access
+ *
+ * Instrument a regular write access. The instrumentation should be inserted
+ * before the actual write happens.
+ */
 #[inline(always)]
-pub unsafe fn instrument_read(v: *const c_void, size: usize) {
-    kasan_check_read(v, size);
-    kcsan_check_read(v, size);
+pub unsafe fn instrument_write(v: *const core::ffi::c_void, size: usize) {
+    unsafe { kasan_check_write(v, size as u32) };
+    kcsan_check_write!(v, size);
 }
 
-/// Instrument a regular write access.
+/**
+ * instrument_read_write - instrument regular read-write access
+ * @v: address of access
+ * @size: size of access
+ *
+ * Instrument a regular write access. The instrumentation should be inserted
+ * before the actual write happens.
+ */
 #[inline(always)]
-pub unsafe fn instrument_write(v: *const c_void, size: usize) {
-    kasan_check_write(v, size);
-    kcsan_check_write(v, size);
+pub unsafe fn instrument_read_write(v: *const core::ffi::c_void, size: usize) {
+    unsafe { kasan_check_write(v, size as u32) };
+    kcsan_check_read_write!(v, size);
 }
 
-/// Instrument a regular read-write access.
 #[inline(always)]
-pub unsafe fn instrument_read_write(v: *const c_void, size: usize) {
-    kasan_check_write(v, size);
-    kcsan_check_read_write(v, size);
-}
-
-#[inline(always)]
-pub unsafe fn instrument_atomic_check_alignment(v: *const c_void, size: usize) {
-    // The C implementation performs this block only when exports are enabled
-    // and CONFIG_DEBUG_ATOMIC is enabled.
-    #[cfg(feature = "debug_atomic")]
+pub unsafe fn instrument_atomic_check_alignment(v: *const core::ffi::c_void, size: usize) {
+    #[cfg(all(not(__DISABLE_EXPORTS), CONFIG_DEBUG_ATOMIC))]
     {
-        let mut mask = size.wrapping_sub(1);
-        #[cfg(feature = "debug_atomic_largest_align")]
-        {
-            mask &= core::mem::align_of::<isize>().wrapping_sub(1);
+        #[allow(unused_mut)]
+        let mut mask = (size as kernel::ffi::c_uint).wrapping_sub(1);
+
+        #[repr(C, align(16))]
+        struct __aligned_largest {
+            x: kernel::ffi::c_long,
         }
-        // Equivalent to WARN_ON_ONCE((unsigned long)v & mask).
-        let _ = (v as usize) & mask;
+        #[cfg(CONFIG_DEBUG_ATOMIC_LARGEST_ALIGN)]
+        {
+            mask &= core::mem::size_of::<__aligned_largest>() as kernel::ffi::c_uint - 1;
+        }
+        WARN_ON_ONCE!((v as kernel::ffi::c_ulong) & mask as kernel::ffi::c_ulong != 0);
     }
+    #[cfg(not(all(not(__DISABLE_EXPORTS), CONFIG_DEBUG_ATOMIC)))]
+    let _ = (v, size);
 }
 
-/// Instrument an atomic read access.
+/**
+ * instrument_atomic_read - instrument atomic read access
+ * @v: address of access
+ * @size: size of access
+ *
+ * Instrument an atomic read access. The instrumentation should be inserted
+ * before the actual read happens.
+ */
 #[inline(always)]
-pub unsafe fn instrument_atomic_read(v: *const c_void, size: usize) {
-    kasan_check_read(v, size);
-    kcsan_check_atomic_read(v, size);
-    instrument_atomic_check_alignment(v, size);
+pub unsafe fn instrument_atomic_read(v: *const core::ffi::c_void, size: usize) {
+    unsafe { kasan_check_read(v, size as u32) };
+    kcsan_check_atomic_read!(v, size);
+    unsafe { instrument_atomic_check_alignment(v, size) };
 }
 
-/// Instrument an atomic write access.
+/**
+ * instrument_atomic_write - instrument atomic write access
+ * @v: address of access
+ * @size: size of access
+ *
+ * Instrument an atomic write access. The instrumentation should be inserted
+ * before the actual write happens.
+ */
 #[inline(always)]
-pub unsafe fn instrument_atomic_write(v: *const c_void, size: usize) {
-    kasan_check_write(v, size);
-    kcsan_check_atomic_write(v, size);
-    instrument_atomic_check_alignment(v, size);
+pub unsafe fn instrument_atomic_write(v: *const core::ffi::c_void, size: usize) {
+    unsafe { kasan_check_write(v, size as u32) };
+    kcsan_check_atomic_write!(v, size);
+    unsafe { instrument_atomic_check_alignment(v, size) };
 }
 
-/// Instrument an atomic read-write access.
+/**
+ * instrument_atomic_read_write - instrument atomic read-write access
+ * @v: address of access
+ * @size: size of access
+ *
+ * Instrument an atomic read-write access. The instrumentation should be
+ * inserted before the actual write happens.
+ */
 #[inline(always)]
-pub unsafe fn instrument_atomic_read_write(v: *const c_void, size: usize) {
-    kasan_check_write(v, size);
-    kcsan_check_atomic_read_write(v, size);
-    instrument_atomic_check_alignment(v, size);
+pub unsafe fn instrument_atomic_read_write(v: *const core::ffi::c_void, size: usize) {
+    unsafe { kasan_check_write(v, size as u32) };
+    kcsan_check_atomic_read_write!(v, size);
+    unsafe { instrument_atomic_check_alignment(v, size) };
 }
 
-/// Instrument reads from kernel memory due to copy_to_user.
+/**
+ * instrument_copy_to_user - instrument reads of copy_to_user
+ * @to: destination address
+ * @from: source address
+ * @n: number of bytes to copy
+ *
+ * Instrument reads from kernel memory, that are due to copy_to_user (and
+ * variants). The instrumentation must be inserted before the accesses.
+ */
 #[inline(always)]
-pub unsafe fn instrument_copy_to_user(to: *mut c_void, from: *const c_void, n: usize) {
-    kasan_check_read(from, n);
-    kcsan_check_read(from, n);
-    kmsan_copy_to_user(to, from, n, 0);
+pub unsafe fn instrument_copy_to_user(
+    to: *mut core::ffi::c_void,
+    from: *const core::ffi::c_void,
+    n: kernel::ffi::c_ulong,
+) {
+    unsafe { kasan_check_read(from, n as u32) };
+    kcsan_check_read!(from, n);
+    kmsan_copy_to_user(to, from, n as usize, 0);
 }
 
-/// Instrument writes to kernel memory before copy_from_user.
+/**
+ * instrument_copy_from_user_before - add instrumentation before copy_from_user
+ * @to: destination address
+ * @from: source address
+ * @n: number of bytes to copy
+ *
+ * Instrument writes to kernel memory, that are due to copy_from_user (and
+ * variants). The instrumentation should be inserted before the accesses.
+ */
 #[inline(always)]
 pub unsafe fn instrument_copy_from_user_before(
-    to: *const c_void,
-    _from: *const c_void,
-    n: usize,
+    to: *const core::ffi::c_void,
+    _from: *const core::ffi::c_void,
+    n: kernel::ffi::c_ulong,
 ) {
-    kasan_check_write(to, n);
-    kcsan_check_write(to, n);
+    unsafe { kasan_check_write(to, n as u32) };
+    kcsan_check_write!(to, n);
 }
 
-/// Instrument writes to kernel memory after copy_from_user.
+/**
+ * instrument_copy_from_user_after - add instrumentation after copy_from_user
+ * @to: destination address
+ * @from: source address
+ * @n: number of bytes to copy
+ * @left: number of bytes not copied (as returned by copy_from_user)
+ *
+ * Instrument writes to kernel memory, that are due to copy_from_user (and
+ * variants). The instrumentation should be inserted after the accesses.
+ */
 #[inline(always)]
 pub unsafe fn instrument_copy_from_user_after(
-    to: *const c_void,
-    _from: *const c_void,
-    n: usize,
-    left: usize,
+    to: *const core::ffi::c_void,
+    _from: *const core::ffi::c_void,
+    n: kernel::ffi::c_ulong,
+    left: kernel::ffi::c_ulong,
 ) {
-    kmsan_unpoison_memory(to, n.wrapping_sub(left));
+    kmsan_unpoison_memory(to, (n - left) as usize);
 }
 
-/// Instrument memory accesses before a non-instrumented memcpy.
+/**
+ * instrument_memcpy_before - add instrumentation before non-instrumented memcpy
+ * @to: destination address
+ * @from: source address
+ * @n: number of bytes to copy
+ *
+ * Instrument memory accesses that happen in custom memcpy implementations. The
+ * instrumentation should be inserted before the memcpy call.
+ */
 #[inline(always)]
-pub unsafe fn instrument_memcpy_before(to: *mut c_void, from: *const c_void, n: usize) {
-    kasan_check_write(to as *const c_void, n);
-    kasan_check_read(from, n);
-    kcsan_check_write(to as *const c_void, n);
-    kcsan_check_read(from, n);
+pub unsafe fn instrument_memcpy_before(
+    to: *mut core::ffi::c_void,
+    from: *const core::ffi::c_void,
+    n: kernel::ffi::c_ulong,
+) {
+    unsafe {
+        kasan_check_write(to, n as u32);
+        kasan_check_read(from, n as u32);
+    }
+    kcsan_check_write!(to, n);
+    kcsan_check_read!(from, n);
 }
 
-/// Instrument memory accesses after a non-instrumented memcpy.
+/**
+ * instrument_memcpy_after - add instrumentation after non-instrumented memcpy
+ * @to: destination address
+ * @from: source address
+ * @n: number of bytes to copy
+ * @left: number of bytes not copied (if known)
+ *
+ * Instrument memory accesses that happen in custom memcpy implementations. The
+ * instrumentation should be inserted after the memcpy call.
+ */
 #[inline(always)]
 pub unsafe fn instrument_memcpy_after(
-    to: *mut c_void,
-    from: *const c_void,
-    n: usize,
-    left: usize,
+    to: *mut core::ffi::c_void,
+    from: *const core::ffi::c_void,
+    n: kernel::ffi::c_ulong,
+    left: kernel::ffi::c_ulong,
 ) {
-    kmsan_memmove(to, from, n.wrapping_sub(left));
+    kmsan_memmove(to, from, (n - left) as usize);
 }
 
-/// Add instrumentation to get_user()-like operations.
+/**
+ * instrument_get_user() - add instrumentation to get_user()-like macros
+ * @to: destination variable, may not be address-taken
+ *
+ * get_user() and friends are fragile, so it may depend on the implementation
+ * whether the instrumentation happens before or after the data is copied from
+ * the userspace.
+ */
 #[macro_export]
 macro_rules! instrument_get_user {
     ($to:expr) => {{
-        let mut __tmp: u64 = ($to) as u64;
-        unsafe {
-            $crate::kmsan_unpoison_memory(
-                (&mut __tmp as *mut u64).cast::<core::ffi::c_void>(),
-                core::mem::size_of::<u64>(),
-            );
-        }
-        $to = __tmp;
+        let __tmp: u64 = ($to) as u64;
+        kmsan_unpoison_memory((&raw const __tmp).cast(), core::mem::size_of::<u64>());
+        $to = __tmp as _;
     }};
 }
 
-/// Add instrumentation to put_user()-like operations.
+/**
+ * instrument_put_user() - add instrumentation to put_user()-like macros
+ * @from: source address
+ * @ptr: userspace pointer to copy to
+ * @size: number of bytes to copy
+ *
+ * put_user() and friends are fragile, so it may depend on the implementation
+ * whether the instrumentation happens before or after the data is copied from
+ * the userspace.
+ */
 #[macro_export]
 macro_rules! instrument_put_user {
     ($from:expr, $ptr:expr, $size:expr) => {{
-        unsafe {
-            $crate::kmsan_copy_to_user(
-                ($ptr).cast::<core::ffi::c_void>(),
-                (&$from as *const _).cast::<core::ffi::c_void>(),
-                core::mem::size_of_val(&$from),
-                0,
-            );
-        }
+        kmsan_copy_to_user(
+            ($ptr).cast(),
+            (&raw const $from).cast(),
+            core::mem::size_of_val(&$from),
+            0,
+        );
     }};
 }
 

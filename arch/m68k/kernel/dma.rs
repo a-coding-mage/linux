@@ -10,7 +10,7 @@ extern "C" {
     fn cache_clear(addr: phys_addr_t, size: usize);
     fn page_to_phys(page: *mut page) -> phys_addr_t;
     fn pgprot_val(prot: *mut pgprot_t) -> *mut usize;
-    fn pr_err_ratelimited(fmt: *const core::ffi::c_char, ...);
+    fn pr_err_ratelimited(fmt: *const kernel::ffi::c_char, ...);
 }
 
 // Types and constants supplied by the surrounding kernel translation.
@@ -65,7 +65,7 @@ pub unsafe fn arch_sync_dma_for_device(
         _ => {
             pr_err_ratelimited(
                 b"dma_sync_single_for_device: unsupported dir %u\n\0".as_ptr()
-                    as *const core::ffi::c_char,
+                    as *const kernel::ffi::c_char,
                 dir,
             );
         }

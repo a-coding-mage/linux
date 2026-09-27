@@ -26,14 +26,14 @@ pub struct kunit {
 
 #[repr(C)]
 pub struct kprobe {
-    pub symbol_name: *const core::ffi::c_char,
-    pub addr: *mut core::ffi::c_void,
+    pub symbol_name: *const kernel::ffi::c_char,
+    pub addr: *mut kernel::ffi::c_void,
 }
 
 extern "C" {
     fn register_kprobe(kp: *mut kprobe) -> i32;
     fn unregister_kprobe(kp: *mut kprobe);
-    fn kallsyms_lookup_name(name: *const core::ffi::c_char) -> usize;
+    fn kallsyms_lookup_name(name: *const kernel::ffi::c_char) -> usize;
 }
 
 unsafe fn test_longest_symbol(test: *mut kunit) {
@@ -48,7 +48,7 @@ unsafe fn test_longest_symbol(test: *mut kunit) {
 unsafe fn test_longest_symbol_kallsyms(test: *mut kunit) {
     let _ = test;
     let mut kp = kprobe {
-        symbol_name: b"kallsyms_lookup_name\\0".as_ptr() as *const core::ffi::c_char,
+        symbol_name: b"kallsyms_lookup_name\\0".as_ptr() as *const kernel::ffi::c_char,
         addr: core::ptr::null_mut(),
     };
 
@@ -59,13 +59,13 @@ unsafe fn test_longest_symbol_kallsyms(test: *mut kunit) {
     }
 
     // kunit_warn(test, "test_longest_symbol kallsyms: kprobe registered\\n");
-    let lookup: unsafe extern "C" fn(*const core::ffi::c_char) -> usize =
+    let lookup: unsafe extern "C" fn(*const kernel::ffi::c_char) -> usize =
         core::mem::transmute(kp.addr);
     unregister_kprobe(&mut kp);
 
     let name = stringify_longest_symbol_name();
     let longest_sym: unsafe extern "C" fn() -> i32 =
-        core::mem::transmute(lookup(name.as_ptr() as *const core::ffi::c_char));
+        core::mem::transmute(lookup(name.as_ptr() as *const kernel::ffi::c_char));
     if longest_sym() != RETURN_LONGEST_SYM {
         core::panic!("KUNIT_EXPECT_EQ failed");
     }

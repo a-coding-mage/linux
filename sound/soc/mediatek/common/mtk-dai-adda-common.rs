@@ -15,7 +15,7 @@
 
 #[repr(C)]
 pub struct mtk_base_afe {
-    pub dev: *mut core::ffi::c_void,
+    pub dev: *mut kernel::ffi::c_void,
 }
 
 extern "C" {
@@ -38,14 +38,14 @@ extern "C" {
     static MTK_AFE_ADDA_UL_RATE_96K: u32;
     static MTK_AFE_ADDA_UL_RATE_192K: u32;
 
-    fn dev_info(dev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
+    fn dev_info(dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn mtk_adda_dl_rate_transform(
     afe: *mut mtk_base_afe,
     rate: u32,
-) -> core::ffi::c_uint {
+) -> kernel::ffi::c_uint {
     match rate {
         8000 => MTK_AFE_ADDA_DL_RATE_8K,
         11025 => MTK_AFE_ADDA_DL_RATE_11K,
@@ -61,8 +61,8 @@ pub unsafe extern "C" fn mtk_adda_dl_rate_transform(
         _ => {
             dev_info(
                 (*afe).dev,
-                b"%s(), rate %d invalid, use 48kHz!!!\n\0".as_ptr() as *const core::ffi::c_char,
-                b"mtk_adda_dl_rate_transform\0".as_ptr() as *const core::ffi::c_char,
+                b"%s(), rate %d invalid, use 48kHz!!!\n\0".as_ptr() as *const kernel::ffi::c_char,
+                b"mtk_adda_dl_rate_transform\0".as_ptr() as *const kernel::ffi::c_char,
                 rate,
             );
             MTK_AFE_ADDA_DL_RATE_48K
@@ -76,7 +76,7 @@ pub unsafe extern "C" fn mtk_adda_dl_rate_transform(
 pub unsafe extern "C" fn mtk_adda_ul_rate_transform(
     afe: *mut mtk_base_afe,
     rate: u32,
-) -> core::ffi::c_uint {
+) -> kernel::ffi::c_uint {
     match rate {
         8000 => MTK_AFE_ADDA_UL_RATE_8K,
         16000 => MTK_AFE_ADDA_UL_RATE_16K,
@@ -87,8 +87,8 @@ pub unsafe extern "C" fn mtk_adda_ul_rate_transform(
         _ => {
             dev_info(
                 (*afe).dev,
-                b"%s(), rate %d invalid, use 48kHz!!!\n\0".as_ptr() as *const core::ffi::c_char,
-                b"mtk_adda_ul_rate_transform\0".as_ptr() as *const core::ffi::c_char,
+                b"%s(), rate %d invalid, use 48kHz!!!\n\0".as_ptr() as *const kernel::ffi::c_char,
+                b"mtk_adda_ul_rate_transform\0".as_ptr() as *const kernel::ffi::c_char,
                 rate,
             );
             MTK_AFE_ADDA_UL_RATE_48K

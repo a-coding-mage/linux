@@ -12,7 +12,7 @@
 
 extern "C" {
     fn tauros2_init(value: i32);
-    fn of_clk_init(data: *const core::ffi::c_void);
+    fn of_clk_init(data: *const kernel::ffi::c_void);
     fn timer_probe();
     fn mmp2_map_io();
 }
@@ -28,7 +28,7 @@ unsafe fn mmp_init_time() {
 }
 
 #[repr(C)]
-pub static MMP2_DT_BOARD_COMPAT: [*const core::ffi::c_char; 2] = [
+pub static MMP2_DT_BOARD_COMPAT: [*const kernel::ffi::c_char; 2] = [
     c"mrvl,mmp2".as_ptr(),
     core::ptr::null(),
 ];

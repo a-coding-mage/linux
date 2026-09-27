@@ -13,7 +13,7 @@ pub struct mempolicy {
     pub mode: u16,
     pub flags: u16,
     pub nodes: nodemask_t,
-    pub home_node: ::core::ffi::c_int,
+    pub home_node: ::kernel::ffi::c_int,
     pub w: mempolicy_w,
     pub rcu: rcu_head,
 }
@@ -40,8 +40,8 @@ pub unsafe fn mpol_put(pol: *mut mempolicy) {
 
 #[cfg(CONFIG_NUMA)]
 #[inline]
-pub unsafe fn mpol_needs_cond_ref(pol: *mut mempolicy) -> ::core::ffi::c_int {
-    ( (!pol.is_null()) && ((*pol).flags & MPOL_F_SHARED != 0) ) as ::core::ffi::c_int
+pub unsafe fn mpol_needs_cond_ref(pol: *mut mempolicy) -> ::kernel::ffi::c_int {
+    ( (!pol.is_null()) && ((*pol).flags & MPOL_F_SHARED != 0) ) as ::kernel::ffi::c_int
 }
 
 #[cfg(CONFIG_NUMA)]
@@ -84,31 +84,31 @@ pub struct sp_node {
 
 #[cfg(CONFIG_NUMA)]
 extern "C" {
-    pub fn vma_dup_policy(src: *mut vm_area_struct, dst: *mut vm_area_struct) -> ::core::ffi::c_int;
+    pub fn vma_dup_policy(src: *mut vm_area_struct, dst: *mut vm_area_struct) -> ::kernel::ffi::c_int;
     pub fn mpol_shared_policy_init(sp: *mut shared_policy, mpol: *mut mempolicy);
-    pub fn mpol_set_shared_policy(sp: *mut shared_policy, vma: *mut vm_area_struct, mpol: *mut mempolicy) -> ::core::ffi::c_int;
+    pub fn mpol_set_shared_policy(sp: *mut shared_policy, vma: *mut vm_area_struct, mpol: *mut mempolicy) -> ::kernel::ffi::c_int;
     pub fn mpol_free_shared_policy(sp: *mut shared_policy);
     pub fn mpol_shared_policy_lookup(sp: *mut shared_policy, idx: pgoff_t) -> *mut mempolicy;
     pub fn get_task_policy(p: *mut task_struct) -> *mut mempolicy;
-    pub fn __get_vma_policy(vma: *mut vm_area_struct, addr: ::core::ffi::c_ulong, ilx: *mut pgoff_t) -> *mut mempolicy;
-    pub fn get_vma_policy(vma: *mut vm_area_struct, addr: ::core::ffi::c_ulong, order: ::core::ffi::c_int, ilx: *mut pgoff_t) -> *mut mempolicy;
+    pub fn __get_vma_policy(vma: *mut vm_area_struct, addr: ::kernel::ffi::c_ulong, ilx: *mut pgoff_t) -> *mut mempolicy;
+    pub fn get_vma_policy(vma: *mut vm_area_struct, addr: ::kernel::ffi::c_ulong, order: ::kernel::ffi::c_int, ilx: *mut pgoff_t) -> *mut mempolicy;
     pub fn vma_policy_mof(vma: *mut vm_area_struct) -> bool;
     pub fn numa_default_policy();
     pub fn numa_policy_init();
     pub fn mpol_rebind_task(tsk: *mut task_struct, new: *const nodemask_t);
     pub fn mpol_rebind_mm(mm: *mut mm_struct, new: *mut nodemask_t);
-    pub fn huge_node(vma: *mut vm_area_struct, addr: ::core::ffi::c_ulong, gfp_flags: gfp_t, mpol: *mut *mut mempolicy, nodemask: *mut *mut nodemask_t) -> ::core::ffi::c_int;
+    pub fn huge_node(vma: *mut vm_area_struct, addr: ::kernel::ffi::c_ulong, gfp_flags: gfp_t, mpol: *mut *mut mempolicy, nodemask: *mut *mut nodemask_t) -> ::kernel::ffi::c_int;
     pub fn init_nodemask_of_mempolicy(mask: *mut nodemask_t) -> bool;
     pub fn mempolicy_in_oom_domain(tsk: *mut task_struct, mask: *const nodemask_t) -> bool;
-    pub fn mempolicy_slab_node() -> ::core::ffi::c_uint;
+    pub fn mempolicy_slab_node() -> ::kernel::ffi::c_uint;
     pub static mut policy_zone: zone_type;
-    pub fn do_migrate_pages(mm: *mut mm_struct, from: *const nodemask_t, to: *const nodemask_t, flags: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn mpol_to_str(buffer: *mut ::core::ffi::c_char, maxlen: ::core::ffi::c_int, pol: *mut mempolicy);
+    pub fn do_migrate_pages(mm: *mut mm_struct, from: *const nodemask_t, to: *const nodemask_t, flags: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn mpol_to_str(buffer: *mut ::kernel::ffi::c_char, maxlen: ::kernel::ffi::c_int, pol: *mut mempolicy);
     pub fn vma_migratable(vma: *mut vm_area_struct) -> bool;
-    pub fn mpol_misplaced(folio: *mut folio, vmf: *mut vm_fault, addr: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn mpol_misplaced(folio: *mut folio, vmf: *mut vm_fault, addr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
     pub fn mpol_put_task_policy(task: *mut task_struct);
     pub fn apply_policy_zone(policy: *mut mempolicy, zone: zone_type) -> bool;
-    pub fn mempolicy_set_node_perf(node: ::core::ffi::c_uint, coords: *mut access_coordinate) -> ::core::ffi::c_int;
+    pub fn mempolicy_set_node_perf(node: ::kernel::ffi::c_uint, coords: *mut access_coordinate) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_NUMA))]
@@ -135,9 +135,9 @@ pub struct mempolicy {}
 #[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_shared_policy_lookup(_: *mut shared_policy, _: pgoff_t) -> *mut mempolicy { core::ptr::null_mut() }
 #[cfg(not(CONFIG_NUMA))]
-#[inline] pub unsafe fn get_vma_policy(_: *mut vm_area_struct, _: ::core::ffi::c_ulong, _: ::core::ffi::c_int, ilx: *mut pgoff_t) -> *mut mempolicy { *ilx = 0; core::ptr::null_mut() }
+#[inline] pub unsafe fn get_vma_policy(_: *mut vm_area_struct, _: ::kernel::ffi::c_ulong, _: ::kernel::ffi::c_int, ilx: *mut pgoff_t) -> *mut mempolicy { *ilx = 0; core::ptr::null_mut() }
 #[cfg(not(CONFIG_NUMA))]
-#[inline] pub unsafe fn vma_dup_policy(_: *mut vm_area_struct, _: *mut vm_area_struct) -> ::core::ffi::c_int { 0 }
+#[inline] pub unsafe fn vma_dup_policy(_: *mut vm_area_struct, _: *mut vm_area_struct) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn numa_policy_init() {}
 #[cfg(not(CONFIG_NUMA))]
@@ -147,15 +147,15 @@ pub struct mempolicy {}
 #[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_rebind_mm(_: *mut mm_struct, _: *mut nodemask_t) {}
 #[cfg(not(CONFIG_NUMA))]
-#[inline] pub unsafe fn huge_node(_: *mut vm_area_struct, _: ::core::ffi::c_ulong, _: gfp_t, mpol: *mut *mut mempolicy, nodemask: *mut *mut nodemask_t) -> ::core::ffi::c_int { *mpol = core::ptr::null_mut(); *nodemask = core::ptr::null_mut(); 0 }
+#[inline] pub unsafe fn huge_node(_: *mut vm_area_struct, _: ::kernel::ffi::c_ulong, _: gfp_t, mpol: *mut *mut mempolicy, nodemask: *mut *mut nodemask_t) -> ::kernel::ffi::c_int { *mpol = core::ptr::null_mut(); *nodemask = core::ptr::null_mut(); 0 }
 #[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn init_nodemask_of_mempolicy(_: *mut nodemask_t) -> bool { false }
 #[cfg(not(CONFIG_NUMA))]
-#[inline] pub unsafe fn do_migrate_pages(_: *mut mm_struct, _: *const nodemask_t, _: *const nodemask_t, _: ::core::ffi::c_int) -> ::core::ffi::c_int { 0 }
+#[inline] pub unsafe fn do_migrate_pages(_: *mut mm_struct, _: *const nodemask_t, _: *const nodemask_t, _: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_NUMA))]
-#[inline] pub unsafe fn check_highest_zone(_: ::core::ffi::c_int) {}
+#[inline] pub unsafe fn check_highest_zone(_: ::kernel::ffi::c_int) {}
 #[cfg(not(CONFIG_NUMA))]
-#[inline] pub unsafe fn mpol_misplaced(_: *mut folio, _: *mut vm_fault, _: ::core::ffi::c_ulong) -> ::core::ffi::c_int { -1 }
+#[inline] pub unsafe fn mpol_misplaced(_: *mut folio, _: *mut vm_fault, _: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int { -1 }
 #[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_put_task_policy(_: *mut task_struct) {}
 #[cfg(not(CONFIG_NUMA))]

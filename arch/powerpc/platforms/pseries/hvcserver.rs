@@ -19,7 +19,7 @@ const HVCS_ARCH_VERSION: &str = "1.0.0";
  * functions aren't performance sensitive, so this conversion isn't an
  * issue.
  */
-unsafe fn hvcs_convert(to_convert: libc::c_long) -> libc::c_int {
+unsafe fn hvcs_convert(to_convert: kernel::ffi::c_long) -> kernel::ffi::c_int {
     match to_convert {
         H_SUCCESS => 0,
         H_PARAMETER => -EINVAL,
@@ -45,7 +45,7 @@ unsafe fn hvcs_convert(to_convert: libc::c_long) -> libc::c_int {
  * calling hvcs_get_partner_info().
  */
 #[no_mangle]
-pub unsafe extern "C" fn hvcs_free_partner_info(head: *mut list_head) -> libc::c_int {
+pub unsafe extern "C" fn hvcs_free_partner_info(head: *mut list_head) -> kernel::ffi::c_int {
     let mut element: *mut list_head;
 
     if head.is_null() {
@@ -56,7 +56,7 @@ pub unsafe extern "C" fn hvcs_free_partner_info(head: *mut list_head) -> libc::c
         element = (*head).next;
         let pi = list_entry(element, hvcs_partner_info, node);
         list_del(element);
-        kfree(pi as *mut libc::c_void);
+        kfree(pi as *mut kernel::ffi::c_void);
     }
 
     0
@@ -65,13 +65,13 @@ pub unsafe extern "C" fn hvcs_free_partner_info(head: *mut list_head) -> libc::c
 /* Helper function for hvcs_get_partner_info */
 unsafe fn hvcs_next_partner(
     unit_address: u32,
-    last_p_partition_ID: libc::c_ulong,
-    last_p_unit_address: libc::c_ulong,
-    pi_buff: *mut libc::c_ulong,
-) -> libc::c_int {
+    last_p_partition_ID: kernel::ffi::c_ulong,
+    last_p_unit_address: kernel::ffi::c_ulong,
+    pi_buff: *mut kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let retval = plpar_hcall_norets(
         H_VTERM_PARTNER_INFO,
-        unit_address as libc::c_ulong,
+        unit_address as kernel::ffi::c_ulong,
         last_p_partition_ID,
         last_p_unit_address,
         virt_to_phys(pi_buff),
@@ -108,20 +108,20 @@ unsafe fn hvcs_next_partner(
 pub unsafe extern "C" fn hvcs_get_partner_info(
     unit_address: u32,
     head: *mut list_head,
-    pi_buff: *mut libc::c_ulong,
-) -> libc::c_int {
-    let mut last_p_partition_ID: libc::c_ulong;
-    let mut last_p_unit_address: libc::c_ulong;
+    pi_buff: *mut kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
+    let mut last_p_partition_ID: kernel::ffi::c_ulong;
+    let mut last_p_unit_address: kernel::ffi::c_ulong;
     let mut next_partner_info: *mut hvcs_partner_info = core::ptr::null_mut();
     let more = 1;
-    let mut retval: libc::c_int;
+    let mut retval: kernel::ffi::c_int;
 
     /* invalid parameters */
     if head.is_null() || pi_buff.is_null() {
         return -EINVAL;
     }
 
-    memset(pi_buff as *mut libc::c_void, 0x00, PAGE_SIZE);
+    memset(pi_buff as *mut kernel::ffi::c_void, 0x00, PAGE_SIZE);
     last_p_partition_ID = !0;
     last_p_unit_address = !0;
     INIT_LIST_HEAD(head);
@@ -160,7 +160,7 @@ pub unsafe extern "C" fn hvcs_get_partner_info(
         /* copy the Null-term char too */
         strscpy(
             (*next_partner_info).location_code.as_mut_ptr(),
-            (pi_buff.add(2)) as *const libc::c_char,
+            (pi_buff.add(2)) as *const kernel::ffi::c_char,
             core::mem::size_of_val(&(*next_partner_info).location_code),
         );
 
@@ -180,12 +180,12 @@ pub unsafe extern "C" fn hvcs_register_connection(
     unit_address: u32,
     p_partition_ID: u32,
     p_unit_address: u32,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let retval = plpar_hcall_norets(
         H_REGISTER_VTERM,
-        unit_address as libc::c_ulong,
-        p_partition_ID as libc::c_ulong,
-        p_unit_address as libc::c_ulong,
+        unit_address as kernel::ffi::c_ulong,
+        p_partition_ID as kernel::ffi::c_ulong,
+        p_unit_address as kernel::ffi::c_ulong,
     );
     hvcs_convert(retval)
 }
@@ -194,8 +194,8 @@ pub unsafe extern "C" fn hvcs_register_connection(
  * hvcs_free_connection - free the connection between a vty-server and vty
  */
 #[no_mangle]
-pub unsafe extern "C" fn hvcs_free_connection(unit_address: u32) -> libc::c_int {
-    let retval = plpar_hcall_norets(H_FREE_VTERM, unit_address as libc::c_ulong);
+pub unsafe extern "C" fn hvcs_free_connection(unit_address: u32) -> kernel::ffi::c_int {
+    let retval = plpar_hcall_norets(H_FREE_VTERM, unit_address as kernel::ffi::c_ulong);
     hvcs_convert(retval)
 }
 

@@ -9,7 +9,7 @@
 static mut fail_io_timeout: FaultAttr = DECLARE_FAULT_ATTR!();
 
 #[cfg(CONFIG_FAIL_IO_TIMEOUT)]
-unsafe extern "C" fn setup_fail_io_timeout(str_: *mut core::ffi::c_char) -> i32 {
+unsafe extern "C" fn setup_fail_io_timeout(str_: *mut kernel::ffi::c_char) -> i32 {
     setup_fault_attr(&raw mut fail_io_timeout, str_)
 }
 
@@ -39,7 +39,7 @@ unsafe extern "C" fn fail_io_timeout_debugfs() -> i32 {
 pub unsafe extern "C" fn part_timeout_show(
     dev: *mut device,
     attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let disk: *mut gendisk = dev_to_disk(dev);
     let set: i32 = test_bit(QUEUE_FLAG_FAIL_IO, (*(*disk).queue).queue_flags.as_ptr());
@@ -51,7 +51,7 @@ pub unsafe extern "C" fn part_timeout_show(
 pub unsafe extern "C" fn part_timeout_store(
     dev: *mut device,
     attr: *mut device_attribute,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     count: usize,
 ) -> usize {
     let disk: *mut gendisk = dev_to_disk(dev);
@@ -59,7 +59,7 @@ pub unsafe extern "C" fn part_timeout_store(
 
     if count != 0 {
         let q: *mut request_queue = (*disk).queue;
-        let mut p: *mut core::ffi::c_char = buf as *mut core::ffi::c_char;
+        let mut p: *mut kernel::ffi::c_char = buf as *mut kernel::ffi::c_char;
 
         val = simple_strtoul(p, &mut p, 10) as i32;
         if val != 0 {

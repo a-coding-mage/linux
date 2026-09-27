@@ -3,7 +3,7 @@
 
 // Dependencies supplied by the surrounding kernel/NFS implementation are intentionally external.
 
-const NFSDDBG_FACILITY: _ = NFSDDBG_PROC;
+const NFSDDBG_FACILITY: u32 = NFSDDBG_PROC;
 
 unsafe fn nfsd_map_status(mut status: __be32) -> __be32 {
     match status {

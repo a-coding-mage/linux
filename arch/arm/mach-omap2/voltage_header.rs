@@ -48,7 +48,7 @@ pub struct omap_vfsm_instance {
  */
 #[repr(C)]
 pub struct voltagedomain {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub scalable: bool,
     pub node: list_head,
     pub vc: *mut omap_vc_channel,
@@ -68,7 +68,7 @@ pub struct voltagedomain {
 
 #[repr(C)]
 pub union voltagedomain_sys_clk {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub rate: u32,
 }
 
@@ -122,14 +122,14 @@ extern "C" {
     pub fn omap3xxx_voltagedomains_init();
     pub fn omap44xx_voltagedomains_init();
     pub fn omap54xx_voltagedomains_init();
-    pub fn voltdm_lookup(name: *const core::ffi::c_char) -> *mut voltagedomain;
+    pub fn voltdm_lookup(name: *const kernel::ffi::c_char) -> *mut voltagedomain;
     pub fn voltdm_init(voltdm_list: *mut *mut voltagedomain);
     pub fn voltdm_reset(voltdm: *mut voltagedomain);
     pub fn voltdm_get_voltage(voltdm: *mut voltagedomain) -> c_ulong;
 }
 
 // Types supplied by the included kernel headers.
-pub type c_ulong = core::ffi::c_ulong;
+pub type c_ulong = kernel::ffi::c_ulong;
 extern "C" {
     pub type list_head;
     pub type omap_vc_channel;

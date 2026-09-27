@@ -115,7 +115,7 @@ pub struct arpreq {
     pub arp_ha: sockaddr,
     pub arp_flags: i32,
     pub arp_netmask: sockaddr,
-    pub arp_dev: [::core::ffi::c_char; IFNAMSIZ],
+    pub arp_dev: [::kernel::ffi::c_char; IFNAMSIZ],
 }
 
 #[repr(C)]

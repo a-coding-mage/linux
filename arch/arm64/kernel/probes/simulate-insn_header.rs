@@ -7,7 +7,7 @@
 
 // C header guard: _ARM_KERNEL_KPROBES_SIMULATE_INSN_H
 
-use core::ffi::c_long;
+use kernel::ffi::c_long;
 
 #[repr(C)]
 pub struct pt_regs {

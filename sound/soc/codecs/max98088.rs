@@ -35,7 +35,7 @@ pub struct max98088_priv {
     pub sysclk: c_uint,
     pub dai: [max98088_cdata; 2],
     pub eq_textcnt: c_int,
-    pub eq_texts: *mut *const ::core::ffi::c_char,
+    pub eq_texts: *mut *const ::kernel::ffi::c_char,
     pub eq_enum: soc_enum,
     pub ina_state: u8,
     pub inb_state: u8,

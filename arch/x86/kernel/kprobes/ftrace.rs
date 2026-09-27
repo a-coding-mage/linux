@@ -11,8 +11,8 @@
 
 /* Ftrace callback handler for kprobes -- called under preempt disabled */
 pub unsafe fn kprobe_ftrace_handler(
-    ip: ::core::ffi::c_ulong,
-    parent_ip: ::core::ffi::c_ulong,
+    ip: ::kernel::ffi::c_ulong,
+    parent_ip: ::kernel::ffi::c_ulong,
     ops: *mut ftrace_ops,
     fregs: *mut ftrace_regs,
 ) {
@@ -42,7 +42,7 @@ pub unsafe fn kprobe_ftrace_handler(
     if kprobe_running() {
         kprobes_inc_nmissed_count(p);
     } else {
-        let orig_ip: ::core::ffi::c_ulong = instruction_pointer(regs);
+        let orig_ip: ::kernel::ffi::c_ulong = instruction_pointer(regs);
 
         /* Kprobe handler expects regs->ip = ip + 1 as breakpoint hit */
         instruction_pointer_set(regs, ip.wrapping_add(INT3_INSN_SIZE));

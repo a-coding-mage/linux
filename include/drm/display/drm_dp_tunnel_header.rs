@@ -5,7 +5,7 @@
 
 // C header dependencies: linux/err.h, linux/errno.h, linux/types.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct drm_dp_aux {
@@ -106,7 +106,7 @@ pub unsafe fn drm_dp_tunnel_ref_put(tunnel_ref: *mut drm_dp_tunnel_ref) {
 // intent; the external helper and errno constants are supplied by dependencies.
 #[cfg(not(CONFIG_DRM_DISPLAY_DP_TUNNEL))]
 extern "C" {
-    fn ERR_PTR(error: isize) -> *mut core::ffi::c_void;
+    fn ERR_PTR(error: isize) -> *mut kernel::ffi::c_void;
 }
 
 #[cfg(not(CONFIG_DRM_DISPLAY_DP_TUNNEL))]

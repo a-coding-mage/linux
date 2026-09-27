@@ -19,39 +19,39 @@ const MPC86XX_MCM_OFFSET: usize = 0x1000;
 const MPC86XX_MCM_SIZE: usize = 0x1000;
 
 unsafe extern "C" {
-    static mut __secondary_hold_acknowledge: ::core::ffi::c_int;
+    static mut __secondary_hold_acknowledge: ::kernel::ffi::c_int;
 
     fn get_immrbase() -> usize;
     fn ioremap(addr: usize, size: usize) -> *mut u32;
     fn iounmap(addr: *mut u32);
-    fn in_be32(addr: *const u32) -> ::core::ffi::c_ulong;
-    fn out_be32(addr: *mut u32, value: ::core::ffi::c_ulong);
-    fn patch_branch(addr: *mut u32, target: ::core::ffi::c_ulong, flags: ::core::ffi::c_ulong);
+    fn in_be32(addr: *const u32) -> ::kernel::ffi::c_ulong;
+    fn out_be32(addr: *mut u32, value: ::kernel::ffi::c_ulong);
+    fn patch_branch(addr: *mut u32, target: ::kernel::ffi::c_ulong, flags: ::kernel::ffi::c_ulong);
     fn patch_instruction(addr: *mut u32, instruction: u32);
     fn ppc_inst(value: u32) -> u32;
-    fn local_irq_save(flags: *mut ::core::ffi::c_ulong);
-    fn local_irq_restore(flags: ::core::ffi::c_ulong);
-    fn mdelay(milliseconds: ::core::ffi::c_uint);
+    fn local_irq_save(flags: *mut ::kernel::ffi::c_ulong);
+    fn local_irq_restore(flags: ::kernel::ffi::c_ulong);
+    fn mdelay(milliseconds: ::kernel::ffi::c_uint);
     fn mpic_setup_this_cpu();
     fn smp_mpic_message_pass();
     fn smp_mpic_probe();
     fn smp_generic_take_timebase();
     fn smp_generic_give_timebase();
-    fn pr_debug(format: *const ::core::ffi::c_char, ...);
+    fn pr_debug(format: *const ::kernel::ffi::c_char, ...);
 }
 
-const NR_CPUS: ::core::ffi::c_int = 0; // Supplied by the kernel configuration.
+const NR_CPUS: ::kernel::ffi::c_int = 0; // Supplied by the kernel configuration.
 const KERNELBASE: usize = 0; // Supplied by the platform headers.
-const BRANCH_SET_LINK: ::core::ffi::c_ulong = 0; // Supplied by the instruction headers.
-const ENOENT: ::core::ffi::c_int = 2;
+const BRANCH_SET_LINK: ::kernel::ffi::c_ulong = 0; // Supplied by the instruction headers.
+const ENOENT: ::kernel::ffi::c_int = 2;
 
 #[repr(C)]
 pub struct smp_ops_t {
-    pub cause_nmi_ipi: *mut ::core::ffi::c_void,
+    pub cause_nmi_ipi: *mut ::kernel::ffi::c_void,
     pub message_pass: Option<unsafe extern "C" fn()>,
     pub probe: Option<unsafe extern "C" fn()>,
-    pub kick_cpu: Option<unsafe extern "C" fn(::core::ffi::c_int) -> ::core::ffi::c_int>,
-    pub setup_cpu: Option<unsafe extern "C" fn(::core::ffi::c_int)>,
+    pub kick_cpu: Option<unsafe extern "C" fn(::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
+    pub setup_cpu: Option<unsafe extern "C" fn(::kernel::ffi::c_int)>,
     pub take_timebase: Option<unsafe extern "C" fn()>,
     pub give_timebase: Option<unsafe extern "C" fn()>,
 }
@@ -60,9 +60,9 @@ unsafe extern "C" {
     static mut smp_ops: *mut smp_ops_t;
 }
 
-unsafe fn smp_86xx_release_core(nr: ::core::ffi::c_int) {
+unsafe fn smp_86xx_release_core(nr: ::kernel::ffi::c_int) {
     let mcm_vaddr: *mut u32;
-    let mut pcr: ::core::ffi::c_ulong;
+    let mut pcr: ::kernel::ffi::c_ulong;
 
     if nr < 0 || nr >= NR_CPUS {
         return;
@@ -79,11 +79,11 @@ unsafe fn smp_86xx_release_core(nr: ::core::ffi::c_int) {
     iounmap(mcm_vaddr);
 }
 
-unsafe fn smp_86xx_kick_cpu(nr: ::core::ffi::c_int) -> ::core::ffi::c_int {
+unsafe fn smp_86xx_kick_cpu(nr: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     let save_vector: u32;
-    let target: ::core::ffi::c_ulong;
-    let mut flags: ::core::ffi::c_ulong = 0;
-    let mut n: ::core::ffi::c_int = 0;
+    let target: ::kernel::ffi::c_ulong;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
+    let mut n: ::kernel::ffi::c_int = 0;
     let vector = (KERNELBASE + 0x100) as *mut u32;
 
     if nr < 0 || nr >= NR_CPUS {
@@ -98,7 +98,7 @@ unsafe fn smp_86xx_kick_cpu(nr: ::core::ffi::c_int) -> ::core::ffi::c_int {
     save_vector = *vector;
 
     /* Setup fake reset vector to call __secondary_start_mpc86xx. */
-    target = __secondary_start_mpc86xx as *const () as usize as ::core::ffi::c_ulong;
+    target = __secondary_start_mpc86xx as *const () as usize as ::kernel::ffi::c_ulong;
     patch_branch(vector, target, BRANCH_SET_LINK);
 
     /* Kick that CPU */
@@ -123,7 +123,7 @@ unsafe fn smp_86xx_kick_cpu(nr: ::core::ffi::c_int) -> ::core::ffi::c_int {
     0
 }
 
-unsafe fn smp_86xx_setup_cpu(_cpu_nr: ::core::ffi::c_int) {
+unsafe fn smp_86xx_setup_cpu(_cpu_nr: ::kernel::ffi::c_int) {
     mpic_setup_this_cpu();
 }
 

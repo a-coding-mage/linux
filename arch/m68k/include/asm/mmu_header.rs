@@ -2,7 +2,7 @@
 
 /* CONFIG_MMU */
 #[cfg(CONFIG_MMU)]
-pub type mm_context_t = core::ffi::c_ulong;
+pub type mm_context_t = kernel::ffi::c_ulong;
 
 /*
  * When CONFIG_MMU is not enabled, the C header includes

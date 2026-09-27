@@ -15,8 +15,8 @@
 // <asm/bitsperlong.h> and <asm/sockios.h> are external dependencies.
 
 /* Linux-specific socket ioctls */
-pub const SIOCINQ: _ = FIONREAD;
-pub const SIOCOUTQ: _ = TIOCOUTQ; /* output queue size (not sent + not acked) */
+pub const SIOCINQ: u32 = FIONREAD;
+pub const SIOCOUTQ: u32 = TIOCOUTQ; /* output queue size (not sent + not acked) */
 
 pub const SOCK_IOC_TYPE: u32 = 0x89;
 
@@ -25,15 +25,15 @@ pub const SOCK_IOC_TYPE: u32 = 0x89;
  * so we need to cover both possible versions on 32-bit.
  */
 /* Get stamp (timeval) */
-pub const SIOCGSTAMP_NEW: _ = _IOR!(SOCK_IOC_TYPE, 0x06, [i64; 2]);
+pub const SIOCGSTAMP_NEW: u32 = _IOR!(SOCK_IOC_TYPE, 0x06, [i64; 2]);
 /* Get stamp (timespec) */
-pub const SIOCGSTAMPNS_NEW: _ = _IOR!(SOCK_IOC_TYPE, 0x07, [i64; 2]);
+pub const SIOCGSTAMPNS_NEW: u32 = _IOR!(SOCK_IOC_TYPE, 0x07, [i64; 2]);
 
 /* The source condition depends on target ABI configuration. */
 #[cfg(any(target_pointer_width = "64", target_arch = "x86_64"))]
-pub const SIOCGSTAMP: _ = SIOCGSTAMP_OLD;
+pub const SIOCGSTAMP: i32 = SIOCGSTAMP_OLD;
 #[cfg(any(target_pointer_width = "64", target_arch = "x86_64"))]
-pub const SIOCGSTAMPNS: _ = SIOCGSTAMPNS_OLD;
+pub const SIOCGSTAMPNS: i32 = SIOCGSTAMPNS_OLD;
 #[cfg(not(any(target_pointer_width = "64", target_arch = "x86_64")))]
 pub const SIOCGSTAMP: _ = if core::mem::size_of::<libc::timeval>() == 8 {
     SIOCGSTAMP_OLD

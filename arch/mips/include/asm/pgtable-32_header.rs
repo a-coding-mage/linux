@@ -8,20 +8,20 @@
 // Dependencies supplied by the surrounding kernel translation are intentionally
 // left external. Build-time CONFIG_* conditions from the C header are preserved.
 
-pub static mut temp_tlb_entry: ::core::ffi::c_int = 0;
+pub static mut temp_tlb_entry: ::kernel::ffi::c_int = 0;
 
 pub unsafe extern "C" fn add_temporary_entry(
-    entrylo0: ::core::ffi::c_ulong,
-    entrylo1: ::core::ffi::c_ulong,
-    entryhi: ::core::ffi::c_ulong,
-    pagemask: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int;
+    entrylo0: ::kernel::ffi::c_ulong,
+    entrylo1: ::kernel::ffi::c_ulong,
+    entryhi: ::kernel::ffi::c_ulong,
+    pagemask: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int;
 
 // CONFIG_MIPS_HUGE_TLB_SUPPORT && !CONFIG_PHYS_ADDR_T_64BIT:
 // const PGDIR_SHIFT = 2 * PAGE_SHIFT - PTE_T_LOG2 - 1;
 // Otherwise: const PGDIR_SHIFT = 2 * PAGE_SHIFT - PTE_T_LOG2;
-pub const PGDIR_SIZE: ::core::ffi::c_ulong = 1u64 << PGDIR_SHIFT;
-pub const PGDIR_MASK: ::core::ffi::c_ulong = !(PGDIR_SIZE - 1);
+pub const PGDIR_SIZE: ::kernel::ffi::c_ulong = 1u64 << PGDIR_SHIFT;
+pub const PGDIR_MASK: ::kernel::ffi::c_ulong = !(PGDIR_SIZE - 1);
 
 // The selected __PGD_TABLE_ORDER follows the same CONFIG_* condition above.
 pub const PGD_TABLE_ORDER: usize = if __PGD_TABLE_ORDER >= 0 { __PGD_TABLE_ORDER as usize } else { 0 };
@@ -31,23 +31,23 @@ pub const PMD_TABLE_ORDER: usize = aieeee_attempt_to_allocate_pmd;
 pub const PTRS_PER_PGD: usize = USER_PTRS_PER_PGD * 2;
 // CONFIG_MIPS_HUGE_TLB_SUPPORT && !CONFIG_PHYS_ADDR_T_64BIT uses the / 2 form.
 pub const PTRS_PER_PTE: usize = PAGE_SIZE / core::mem::size_of::<pte_t>();
-pub const USER_PTRS_PER_PGD: ::core::ffi::c_ulong = 0x80000000u64 / PGDIR_SIZE;
+pub const USER_PTRS_PER_PGD: ::kernel::ffi::c_ulong = 0x80000000u64 / PGDIR_SIZE;
 pub const VMALLOC_START: usize = MAP_BASE;
 pub const PKMAP_END: usize = FIXADDR_START & !((LAST_PKMAP << PAGE_SHIFT) - 1);
 pub const PKMAP_BASE: usize = PKMAP_END - PAGE_SIZE * LAST_PKMAP;
 // CONFIG_HIGHMEM: VMALLOC_END = PKMAP_BASE - 2 * PAGE_SIZE; otherwise FIXADDR_START - 2 * PAGE_SIZE.
 
-pub unsafe extern "C" fn load_pgd(pg_dir: ::core::ffi::c_ulong);
+pub unsafe extern "C" fn load_pgd(pg_dir: ::kernel::ffi::c_ulong);
 
 pub static mut invalid_pte_table: [pte_t; PTRS_PER_PTE] = [unsafe { core::mem::zeroed() }; PTRS_PER_PTE];
 
 #[inline]
-pub unsafe fn pmd_none(pmd: pmd_t) -> ::core::ffi::c_int {
-    (pmd_val(pmd) == invalid_pte_table.as_ptr() as ::core::ffi::c_ulong) as ::core::ffi::c_int
+pub unsafe fn pmd_none(pmd: pmd_t) -> ::kernel::ffi::c_int {
+    (pmd_val(pmd) == invalid_pte_table.as_ptr() as ::kernel::ffi::c_ulong) as ::kernel::ffi::c_int
 }
 
 #[inline]
-pub unsafe fn pmd_bad(pmd: pmd_t) -> ::core::ffi::c_int {
+pub unsafe fn pmd_bad(pmd: pmd_t) -> ::kernel::ffi::c_int {
     // CONFIG_MIPS_HUGE_TLB_SUPPORT: pmd_leaf(pmd) is inlined here.
     if (pmd_val(pmd) & _PAGE_HUGE) != 0 { return 0; }
     if (pmd_val(pmd) & !PAGE_MASK) != 0 { return 1; }
@@ -55,30 +55,30 @@ pub unsafe fn pmd_bad(pmd: pmd_t) -> ::core::ffi::c_int {
 }
 
 #[inline]
-pub unsafe fn pmd_present(pmd: pmd_t) -> ::core::ffi::c_int {
-    (pmd_val(pmd) != invalid_pte_table.as_ptr() as ::core::ffi::c_ulong) as ::core::ffi::c_int
+pub unsafe fn pmd_present(pmd: pmd_t) -> ::kernel::ffi::c_int {
+    (pmd_val(pmd) != invalid_pte_table.as_ptr() as ::kernel::ffi::c_ulong) as ::kernel::ffi::c_int
 }
 
 #[inline]
 pub unsafe fn pmd_clear(pmdp: *mut pmd_t) {
-    pmd_val(*pmdp) = invalid_pte_table.as_ptr() as ::core::ffi::c_ulong;
+    pmd_val(*pmdp) = invalid_pte_table.as_ptr() as ::kernel::ffi::c_ulong;
 }
 
 // CONFIG_XPA
 pub const MAX_POSSIBLE_PHYSMEM_BITS: usize = 32;
 
 #[inline]
-pub unsafe fn pte_pfn(x: pte_t) -> ::core::ffi::c_ulong {
-    (x.pte >> PFN_PTE_SHIFT) as ::core::ffi::c_ulong
+pub unsafe fn pte_pfn(x: pte_t) -> ::kernel::ffi::c_ulong {
+    (x.pte >> PFN_PTE_SHIFT) as ::kernel::ffi::c_ulong
 }
 
 #[inline]
-pub unsafe fn pfn_pte(pfn: ::core::ffi::c_ulong, prot: pgprot_t) -> pte_t {
+pub unsafe fn pfn_pte(pfn: ::kernel::ffi::c_ulong, prot: pgprot_t) -> pte_t {
     __pte(((pfn as u64) << PFN_PTE_SHIFT) | pgprot_val(prot) as u64)
 }
 
 #[inline]
-pub unsafe fn pfn_pmd(pfn: ::core::ffi::c_ulong, prot: pgprot_t) -> pmd_t {
+pub unsafe fn pfn_pmd(pfn: ::kernel::ffi::c_ulong, prot: pgprot_t) -> pmd_t {
     __pmd(((pfn as u64) << PFN_PTE_SHIFT) | pgprot_val(prot) as u64)
 }
 

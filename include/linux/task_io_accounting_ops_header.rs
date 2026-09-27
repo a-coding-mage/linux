@@ -17,8 +17,8 @@ pub unsafe fn task_io_account_read(bytes: usize) {
  */
 #[cfg(CONFIG_TASK_IO_ACCOUNTING)]
 #[inline]
-pub unsafe fn task_io_get_inblock(p: *const task_struct) -> ::core::ffi::c_ulong {
-    ((*p).ioac.read_bytes >> 9) as ::core::ffi::c_ulong
+pub unsafe fn task_io_get_inblock(p: *const task_struct) -> ::kernel::ffi::c_ulong {
+    ((*p).ioac.read_bytes >> 9) as ::kernel::ffi::c_ulong
 }
 
 #[cfg(CONFIG_TASK_IO_ACCOUNTING)]
@@ -33,8 +33,8 @@ pub unsafe fn task_io_account_write(bytes: usize) {
  */
 #[cfg(CONFIG_TASK_IO_ACCOUNTING)]
 #[inline]
-pub unsafe fn task_io_get_oublock(p: *const task_struct) -> ::core::ffi::c_ulong {
-    ((*p).ioac.write_bytes >> 9) as ::core::ffi::c_ulong
+pub unsafe fn task_io_get_oublock(p: *const task_struct) -> ::kernel::ffi::c_ulong {
+    ((*p).ioac.write_bytes >> 9) as ::kernel::ffi::c_ulong
 }
 
 #[cfg(CONFIG_TASK_IO_ACCOUNTING)]
@@ -69,7 +69,7 @@ pub unsafe fn task_io_account_read(_bytes: usize) {}
 
 #[cfg(not(CONFIG_TASK_IO_ACCOUNTING))]
 #[inline]
-pub unsafe fn task_io_get_inblock(_p: *const task_struct) -> ::core::ffi::c_ulong {
+pub unsafe fn task_io_get_inblock(_p: *const task_struct) -> ::kernel::ffi::c_ulong {
     0
 }
 
@@ -79,7 +79,7 @@ pub unsafe fn task_io_account_write(_bytes: usize) {}
 
 #[cfg(not(CONFIG_TASK_IO_ACCOUNTING))]
 #[inline]
-pub unsafe fn task_io_get_oublock(_p: *const task_struct) -> ::core::ffi::c_ulong {
+pub unsafe fn task_io_get_oublock(_p: *const task_struct) -> ::kernel::ffi::c_ulong {
     0
 }
 

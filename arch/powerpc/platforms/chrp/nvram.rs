@@ -7,7 +7,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-static mut nvram_size: core::ffi::c_uint = 0;
+static mut nvram_size: kernel::ffi::c_uint = 0;
 static mut nvram_buf: [u8; 4] = [0; 4];
 static mut nvram_lock: SpinLock = SpinLock::new();
 
@@ -16,29 +16,29 @@ extern "C" {
     static mut current: *mut TaskStruct;
     static mut ppc_md: PpcMd;
 
-    fn printk(fmt: *const core::ffi::c_char, ...) -> core::ffi::c_int;
-    fn spin_lock_irqsave(lock: *mut SpinLock, flags: *mut core::ffi::c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut SpinLock, flags: core::ffi::c_ulong);
-    fn rtas_function_token(function: core::ffi::c_uint) -> core::ffi::c_int;
+    fn printk(fmt: *const kernel::ffi::c_char, ...) -> kernel::ffi::c_int;
+    fn spin_lock_irqsave(lock: *mut SpinLock, flags: *mut kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut SpinLock, flags: kernel::ffi::c_ulong);
+    fn rtas_function_token(function: kernel::ffi::c_uint) -> kernel::ffi::c_int;
     fn rtas_call(
-        token: core::ffi::c_int,
-        nargs: core::ffi::c_int,
-        nret: core::ffi::c_int,
-        retbuf: *mut core::ffi::c_uint,
+        token: kernel::ffi::c_int,
+        nargs: kernel::ffi::c_int,
+        nret: kernel::ffi::c_int,
+        retbuf: *mut kernel::ffi::c_uint,
         ...,
-    ) -> core::ffi::c_int;
-    fn __pa(addr: *const u8) -> core::ffi::c_ulong;
+    ) -> kernel::ffi::c_int;
+    fn __pa(addr: *const u8) -> kernel::ffi::c_ulong;
     fn of_find_node_by_type(
         from: *mut DeviceNode,
-        type_: *const core::ffi::c_char,
+        type_: *const kernel::ffi::c_char,
     ) -> *mut DeviceNode;
     fn of_get_property(
         node: *mut DeviceNode,
-        name: *const core::ffi::c_char,
-        lenp: *mut core::ffi::c_uint,
+        name: *const kernel::ffi::c_char,
+        lenp: *mut kernel::ffi::c_uint,
     ) -> *const Be32;
     fn of_node_put(node: *mut DeviceNode);
-    fn be32_to_cpup(value: *const Be32) -> core::ffi::c_uint;
+    fn be32_to_cpup(value: *const Be32) -> kernel::ffi::c_uint;
 }
 
 // These declarations correspond to types and constants provided by included headers.
@@ -49,23 +49,23 @@ pub struct SpinLock {
 impl SpinLock {
     const fn new() -> Self { Self { _private: [] } }
 }
-#[repr(C)] pub struct TaskStruct { pub comm: [core::ffi::c_char; 16] }
+#[repr(C)] pub struct TaskStruct { pub comm: [kernel::ffi::c_char; 16] }
 #[repr(C)] pub struct DeviceNode { _private: [u8; 0] }
 #[repr(transparent)] pub struct Be32(pub u32);
 #[repr(C)] pub struct PpcMd {
-    pub nvram_read_val: Option<unsafe extern "C" fn(core::ffi::c_int) -> u8>,
-    pub nvram_write_val: Option<unsafe extern "C" fn(core::ffi::c_int, u8)>,
+    pub nvram_read_val: Option<unsafe extern "C" fn(kernel::ffi::c_int) -> u8>,
+    pub nvram_write_val: Option<unsafe extern "C" fn(kernel::ffi::c_int, u8)>,
     pub nvram_size: Option<unsafe extern "C" fn() -> isize>,
 }
-const RTAS_FN_NVRAM_FETCH: core::ffi::c_uint = 0;
-const RTAS_FN_NVRAM_STORE: core::ffi::c_uint = 0;
+const RTAS_FN_NVRAM_FETCH: kernel::ffi::c_uint = 0;
+const RTAS_FN_NVRAM_STORE: kernel::ffi::c_uint = 0;
 
-unsafe fn chrp_nvram_read_val(addr: core::ffi::c_int) -> u8 {
-    let mut done: core::ffi::c_uint;
-    let mut flags: core::ffi::c_ulong = 0;
+unsafe fn chrp_nvram_read_val(addr: kernel::ffi::c_int) -> u8 {
+    let mut done: kernel::ffi::c_uint;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let ret: u8;
 
-    if addr >= nvram_size as core::ffi::c_int {
+    if addr >= nvram_size as kernel::ffi::c_int {
         printk(b"%s: read addr %d > nvram_size %u\n\0".as_ptr() as _, (*current).comm.as_ptr(), addr, nvram_size);
         return 0xff;
     }
@@ -80,11 +80,11 @@ unsafe fn chrp_nvram_read_val(addr: core::ffi::c_int) -> u8 {
     ret
 }
 
-unsafe fn chrp_nvram_write_val(addr: core::ffi::c_int, val: u8) {
-    let mut done: core::ffi::c_uint;
-    let mut flags: core::ffi::c_ulong = 0;
+unsafe fn chrp_nvram_write_val(addr: kernel::ffi::c_int, val: u8) {
+    let mut done: kernel::ffi::c_uint;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
-    if addr >= nvram_size as core::ffi::c_int {
+    if addr >= nvram_size as kernel::ffi::c_int {
         printk(b"%s: write addr %d > nvram_size %u\n\0".as_ptr() as _, (*current).comm.as_ptr(), addr, nvram_size);
         return;
     }
@@ -104,13 +104,13 @@ unsafe fn chrp_nvram_size() -> isize {
 pub unsafe extern "C" fn chrp_nvram_init() {
     let nvram: *mut DeviceNode;
     let nbytes_p: *const Be32;
-    let mut proplen: core::ffi::c_uint;
+    let mut proplen: kernel::ffi::c_uint;
 
     nvram = of_find_node_by_type(core::ptr::null_mut(), b"nvram\0".as_ptr() as _);
     if nvram.is_null() { return; }
 
     nbytes_p = of_get_property(nvram, b"#bytes\0".as_ptr() as _, &mut proplen);
-    if nbytes_p.is_null() || proplen != core::mem::size_of::<core::ffi::c_uint>() as core::ffi::c_uint {
+    if nbytes_p.is_null() || proplen != core::mem::size_of::<kernel::ffi::c_uint>() as kernel::ffi::c_uint {
         of_node_put(nvram);
         return;
     }

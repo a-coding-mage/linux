@@ -24,8 +24,8 @@ const fn md_clk(x: u16) -> u16 {
  */
 
 unsafe fn rz_cpg_read_mode_pins() -> u16 {
-    let ppr0: *mut core::ffi::c_void = ioremap(PPR0, 2);
-    let pibc0: *mut core::ffi::c_void = ioremap(PIBC0, 2);
+    let ppr0: *mut kernel::ffi::c_void = ioremap(PPR0, 2);
+    let pibc0: *mut kernel::ffi::c_void = ioremap(PIBC0, 2);
     bug_on(ppr0.is_null() || pibc0.is_null());
     iowrite16(4, pibc0); // enable input buffer
     let modes = ioread16(ppr0);
@@ -37,8 +37,8 @@ unsafe fn rz_cpg_read_mode_pins() -> u16 {
 
 unsafe fn rz_cpg_register_clock(
     np: *mut device_node,
-    base: *mut core::ffi::c_void,
-    name: *const core::ffi::c_char,
+    base: *mut kernel::ffi::c_void,
+    name: *const kernel::ffi::c_char,
 ) -> *mut clk {
     let mut val: u32;
     static FRQCR_TAB: [u32; 4] = [3, 2, 0, 1];
@@ -75,7 +75,7 @@ unsafe fn rz_cpg_register_clock(
 unsafe fn rz_cpg_clocks_init(np: *mut device_node) {
     let mut data: *mut clk_onecell_data;
     let mut clks: *mut *mut clk;
-    let base: *mut core::ffi::c_void;
+    let base: *mut kernel::ffi::c_void;
     let num_clks: i32;
 
     num_clks = of_property_count_strings(np, c"clock-output-names".as_ptr());
@@ -93,7 +93,7 @@ unsafe fn rz_cpg_clocks_init(np: *mut device_node) {
     base = of_iomap(np, 0);
 
     for i in 0..num_clks as usize {
-        let mut name: *const core::ffi::c_char = core::ptr::null();
+        let mut name: *const kernel::ffi::c_char = core::ptr::null();
         let clk: *mut clk;
 
         of_property_read_string_index(np, c"clock-output-names".as_ptr(), i, &mut name);

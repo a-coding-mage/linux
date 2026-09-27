@@ -29,7 +29,7 @@ pub const fn swap_entry_order(_order: usize) -> usize { 0 }
 
 extern "C" {
     pub static mut swap_info: *mut *mut swap_info_struct;
-    pub static mut vm_swappiness: ::core::ffi::c_int;
+    pub static mut vm_swappiness: ::kernel::ffi::c_int;
 }
 
 pub enum mempolicy {}
@@ -48,7 +48,7 @@ pub struct swap_cluster_info {
     #[cfg(CONFIG_MEMCG)]
     pub memcg_table: *mut swap_memcg_table,
     #[cfg(not(feature = "SWAP_TABLE_HAS_ZEROFLAG"))]
-    pub zero_bitmap: *mut ::core::ffi::c_ulong,
+    pub zero_bitmap: *mut ::kernel::ffi::c_ulong,
     pub list: list_head,
 }
 
@@ -66,44 +66,44 @@ pub enum swap_cluster_flags {
 
 #[cfg(CONFIG_SWAP)]
 extern "C" {
-    pub fn swap_retry_table_alloc(entry: swp_entry_t, gfp: gfp_t) -> ::core::ffi::c_int;
-    pub fn folio_alloc_swap(folio: *mut folio) -> ::core::ffi::c_int;
-    pub fn folio_dup_swap(folio: *mut folio, page: *mut page) -> ::core::ffi::c_int;
+    pub fn swap_retry_table_alloc(entry: swp_entry_t, gfp: gfp_t) -> ::kernel::ffi::c_int;
+    pub fn folio_alloc_swap(folio: *mut folio) -> ::kernel::ffi::c_int;
+    pub fn folio_dup_swap(folio: *mut folio, page: *mut page) -> ::kernel::ffi::c_int;
     pub fn folio_put_swap(folio: *mut folio, page: *mut page);
-    pub fn sio_pool_init() -> ::core::ffi::c_int;
+    pub fn sio_pool_init() -> ::kernel::ffi::c_int;
     pub fn swap_read_folio(ctx: *mut swap_io_ctx, folio: *mut folio);
     pub fn swap_read_submit(ctx: *mut swap_io_ctx);
     pub fn swap_write_submit(ctx: *mut swap_io_ctx);
-    pub fn swap_writeout(ctx: *mut swap_io_ctx, folio: *mut folio) -> ::core::ffi::c_int;
+    pub fn swap_writeout(ctx: *mut swap_io_ctx, folio: *mut folio) -> ::kernel::ffi::c_int;
     pub fn __swap_writepage(ctx: *mut swap_io_ctx, folio: *mut folio);
     pub static mut swap_space: address_space;
     pub fn swap_cache_has_folio(entry: swp_entry_t) -> bool;
     pub fn swap_cache_get_folio(entry: swp_entry_t) -> *mut folio;
-    pub fn swap_cache_get_shadow(entry: swp_entry_t) -> *mut ::core::ffi::c_void;
+    pub fn swap_cache_get_shadow(entry: swp_entry_t) -> *mut ::kernel::ffi::c_void;
     pub fn swap_cache_del_folio(folio: *mut folio);
-    pub fn swap_cache_alloc_folio(target_entry: swp_entry_t, gfp_mask: gfp_t, orders: ::core::ffi::c_ulong, vmf: *mut vm_fault, mpol: *mut mempolicy, ilx: pgoff_t) -> *mut folio;
+    pub fn swap_cache_alloc_folio(target_entry: swp_entry_t, gfp_mask: gfp_t, orders: ::kernel::ffi::c_ulong, vmf: *mut vm_fault, mpol: *mut mempolicy, ilx: pgoff_t) -> *mut folio;
     pub fn __swap_cache_add_folio(ci: *mut swap_cluster_info, folio: *mut folio, entry: swp_entry_t);
-    pub fn __swap_cache_del_folio(ci: *mut swap_cluster_info, folio: *mut folio, entry: swp_entry_t, shadow: *mut ::core::ffi::c_void);
+    pub fn __swap_cache_del_folio(ci: *mut swap_cluster_info, folio: *mut folio, entry: swp_entry_t, shadow: *mut ::kernel::ffi::c_void);
     pub fn __swap_cache_replace_folio(ci: *mut swap_cluster_info, old: *mut folio, new: *mut folio);
     pub fn show_swap_cache_info();
-    pub fn swapcache_clear(si: *mut swap_info_struct, entry: swp_entry_t, nr: ::core::ffi::c_int);
-    pub fn read_swap_cache_async(ctx: *mut swap_io_ctx, entry: swp_entry_t, gfp_mask: gfp_t, vma: *mut vm_area_struct, addr: ::core::ffi::c_ulong) -> *mut folio;
+    pub fn swapcache_clear(si: *mut swap_info_struct, entry: swp_entry_t, nr: ::kernel::ffi::c_int);
+    pub fn read_swap_cache_async(ctx: *mut swap_io_ctx, entry: swp_entry_t, gfp_mask: gfp_t, vma: *mut vm_area_struct, addr: ::kernel::ffi::c_ulong) -> *mut folio;
     pub fn swap_cluster_readahead(entry: swp_entry_t, flag: gfp_t, mpol: *mut mempolicy, ilx: pgoff_t) -> *mut folio;
     pub fn swapin_readahead(entry: swp_entry_t, flag: gfp_t, vmf: *mut vm_fault) -> *mut folio;
-    pub fn swapin_sync(entry: swp_entry_t, flag: gfp_t, orders: ::core::ffi::c_ulong, vmf: *mut vm_fault, mpol: *mut mempolicy, ilx: pgoff_t) -> *mut folio;
-    pub fn swap_update_readahead(folio: *mut folio, vma: *mut vm_area_struct, addr: ::core::ffi::c_ulong);
+    pub fn swapin_sync(entry: swp_entry_t, flag: gfp_t, orders: ::kernel::ffi::c_ulong, vmf: *mut vm_fault, mpol: *mut mempolicy, ilx: pgoff_t) -> *mut folio;
+    pub fn swap_update_readahead(folio: *mut folio, vma: *mut vm_area_struct, addr: ::kernel::ffi::c_ulong);
 }
 
 #[cfg(not(CONFIG_SWAP))]
-#[inline] pub fn folio_alloc_swap(_folio: *mut folio) -> ::core::ffi::c_int { -EINVAL }
+#[inline] pub fn folio_alloc_swap(_folio: *mut folio) -> ::kernel::ffi::c_int { -EINVAL }
 #[cfg(not(CONFIG_SWAP))]
-#[inline] pub fn folio_dup_swap(_folio: *mut folio, _page: *mut page) -> ::core::ffi::c_int { -EINVAL }
+#[inline] pub fn folio_dup_swap(_folio: *mut folio, _page: *mut page) -> ::kernel::ffi::c_int { -EINVAL }
 #[cfg(not(CONFIG_SWAP))]
 #[inline] pub fn folio_put_swap(_folio: *mut folio, _page: *mut page) {}
 #[cfg(not(CONFIG_SWAP))]
-#[inline] pub fn swap_writeout(_ctx: *mut swap_io_ctx, _folio: *mut folio) -> ::core::ffi::c_int { 0 }
+#[inline] pub fn swap_writeout(_ctx: *mut swap_io_ctx, _folio: *mut folio) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_SWAP))]
-#[inline] pub fn swap_retry_table_alloc(_entry: swp_entry_t, _gfp: gfp_t) -> ::core::ffi::c_int { -EINVAL }
+#[inline] pub fn swap_retry_table_alloc(_entry: swp_entry_t, _gfp: gfp_t) -> ::kernel::ffi::c_int { -EINVAL }
 #[cfg(not(CONFIG_SWAP))]
 #[inline] pub fn swap_cache_has_folio(_entry: swp_entry_t) -> bool { false }
 #[cfg(not(CONFIG_SWAP))]
@@ -131,23 +131,23 @@ extern "C" {
 #[cfg(not(CONFIG_SWAP))]
 #[inline] pub fn swapin_readahead(_entry: swp_entry_t, _gfp: gfp_t, _vmf: *mut vm_fault) -> *mut folio { core::ptr::null_mut() }
 #[cfg(not(CONFIG_SWAP))]
-#[inline] pub fn swapin_sync(_entry: swp_entry_t, _flag: gfp_t, _orders: ::core::ffi::c_ulong, _vmf: *mut vm_fault, _mpol: *mut mempolicy, _ilx: pgoff_t) -> *mut folio { core::ptr::null_mut() }
+#[inline] pub fn swapin_sync(_entry: swp_entry_t, _flag: gfp_t, _orders: ::kernel::ffi::c_ulong, _vmf: *mut vm_fault, _mpol: *mut mempolicy, _ilx: pgoff_t) -> *mut folio { core::ptr::null_mut() }
 #[cfg(not(CONFIG_SWAP))]
-#[inline] pub fn swap_update_readahead(_folio: *mut folio, _vma: *mut vm_area_struct, _addr: ::core::ffi::c_ulong) {}
+#[inline] pub fn swap_update_readahead(_folio: *mut folio, _vma: *mut vm_area_struct, _addr: ::kernel::ffi::c_ulong) {}
 #[cfg(not(CONFIG_SWAP))]
 #[inline] pub fn swap_cache_get_folio(_entry: swp_entry_t) -> *mut folio { core::ptr::null_mut() }
 #[cfg(not(CONFIG_SWAP))]
-#[inline] pub fn swap_cache_get_shadow(_entry: swp_entry_t) -> *mut ::core::ffi::c_void { core::ptr::null_mut() }
+#[inline] pub fn swap_cache_get_shadow(_entry: swp_entry_t) -> *mut ::kernel::ffi::c_void { core::ptr::null_mut() }
 #[cfg(not(CONFIG_SWAP))]
 #[inline] pub fn swap_cache_del_folio(_folio: *mut folio) {}
 #[cfg(not(CONFIG_SWAP))]
-#[inline] pub fn __swap_cache_del_folio(_ci: *mut swap_cluster_info, _folio: *mut folio, _entry: swp_entry_t, _shadow: *mut ::core::ffi::c_void) {}
+#[inline] pub fn __swap_cache_del_folio(_ci: *mut swap_cluster_info, _folio: *mut folio, _entry: swp_entry_t, _shadow: *mut ::kernel::ffi::c_void) {}
 #[cfg(not(CONFIG_SWAP))]
 #[inline] pub fn __swap_cache_replace_folio(_ci: *mut swap_cluster_info, _old: *mut folio, _new: *mut folio) {}
 
 extern "C" {
     pub static swap_bdev_ops: swap_ops;
-    pub fn shmem_writeout(ctx: *mut swap_io_ctx, folio: *mut folio, folio_list: *mut list_head) -> ::core::ffi::c_int;
+    pub fn shmem_writeout(ctx: *mut swap_io_ctx, folio: *mut folio, folio_list: *mut list_head) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

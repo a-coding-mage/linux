@@ -18,11 +18,11 @@ pub struct mm_id {
 }
 
 extern "C" {
-    pub static mut using_seccomp: ::core::ffi::c_int;
+    pub static mut using_seccomp: ::kernel::ffi::c_int;
 
     pub fn new_thread_handler();
     pub fn handle_syscall(regs: *mut uml_pt_regs);
-    pub fn current_stub_stack() -> ::core::ffi::c_ulong;
+    pub fn current_stub_stack() -> ::kernel::ffi::c_ulong;
     pub fn current_mm_id() -> *mut mm_id;
     pub fn current_mm_sync();
     pub fn initial_jmpbuf_lock();

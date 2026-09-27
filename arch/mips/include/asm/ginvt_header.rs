@@ -25,7 +25,7 @@ const _ASM_SET_GINV: &str = ""; // _ASM_MACRO_1R1I / _ASM_INSN_IF_MIPS / _ASM_IN
 const _ASM_UNSET_GINV: &str = ".purgem ginvt\n";
 
 #[inline(always)]
-pub unsafe fn ginvt(addr: ::core::ffi::c_ulong, type_: u32) {
+pub unsafe fn ginvt(addr: ::kernel::ffi::c_ulong, type_: u32) {
     ::core::arch::asm!(
         ".set\tpush",
         "{set_ginv}\\n",
@@ -46,7 +46,7 @@ pub unsafe fn ginvt_full() {
 }
 
 #[inline]
-pub unsafe fn ginvt_va(mut addr: ::core::ffi::c_ulong) {
+pub unsafe fn ginvt_va(mut addr: ::kernel::ffi::c_ulong) {
     // PAGE_MASK is supplied by the surrounding MIPS environment.
     addr &= PAGE_MASK << 1;
     ginvt(addr, ginvt_type::GINVT_VA as u32);
@@ -58,7 +58,7 @@ pub unsafe fn ginvt_mmid() {
 }
 
 #[inline]
-pub unsafe fn ginvt_va_mmid(mut addr: ::core::ffi::c_ulong) {
+pub unsafe fn ginvt_va_mmid(mut addr: ::kernel::ffi::c_ulong) {
     // PAGE_MASK is supplied by the surrounding MIPS environment.
     addr &= PAGE_MASK << 1;
     ginvt(

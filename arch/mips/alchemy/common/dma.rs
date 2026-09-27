@@ -23,15 +23,15 @@ struct DmaDev {
 pub struct DmaChan {
     pub dev_id: i32,
     pub irq: i32,
-    pub irq_dev: *mut core::ffi::c_void,
-    pub io: *mut core::ffi::c_void,
-    pub dev_str: *const core::ffi::c_char,
+    pub irq_dev: *mut kernel::ffi::c_void,
+    pub io: *mut kernel::ffi::c_void,
+    pub dev_str: *const kernel::ffi::c_char,
     pub fifo_addr: u32,
     pub mode: u32,
 }
 
 extern "C" {
-    static mut au1000_dma_spin_lock: core::ffi::c_void;
+    static mut au1000_dma_spin_lock: kernel::ffi::c_void;
 
     static AU1000_UART0_PHYS_ADDR: u32;
     static AU1000_AC97_PHYS_ADDR: u32;
@@ -59,11 +59,11 @@ extern "C" {
 
     fn alchemy_get_cputype() -> i32;
     fn get_dma_chan(dmanr: i32) -> *mut DmaChan;
-    fn request_irq(irq: i32, handler: Option<unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> i32>, flags: usize, name: *const core::ffi::c_char, dev: *mut core::ffi::c_void) -> i32;
-    fn free_irq(irq: i32, dev: *mut core::ffi::c_void);
+    fn request_irq(irq: i32, handler: Option<unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> i32>, flags: usize, name: *const kernel::ffi::c_char, dev: *mut kernel::ffi::c_void) -> i32;
+    fn free_irq(irq: i32, dev: *mut kernel::ffi::c_void);
     fn init_dma(dmanr: i32);
     fn disable_dma(dmanr: i32);
-    fn printk(fmt: *const core::ffi::c_char, ...) -> i32;
+    fn printk(fmt: *const kernel::ffi::c_char, ...) -> i32;
 }
 
 #[no_mangle]
@@ -95,7 +95,7 @@ static mut DMA_DEV_TABLE_BANK2: [DmaDev; 4] = [
 ];
 
 pub unsafe extern "C" fn au1000_dma_read_proc(buf: *mut i8, start: *mut *mut i8,
-    fpos: isize, length: i32, eof: *mut i32, _data: *mut core::ffi::c_void) -> i32 {
+    fpos: isize, length: i32, eof: *mut i32, _data: *mut kernel::ffi::c_void) -> i32 {
     let mut i = 0;
     let mut len = 0;
     while i < 8 {
@@ -121,8 +121,8 @@ pub unsafe extern "C" fn au1000_dma_read_proc(buf: *mut i8, start: *mut *mut i8,
 extern "C" { fn sprintf(buf: *mut i8, fmt: *const i8, ...) -> i32; }
 
 pub unsafe extern "C" fn request_au1000_dma(dev_id: i32, dev_str: *const i8,
-    irqhandler: Option<unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> i32>,
-    irqflags: usize, irq_dev_id: *mut core::ffi::c_void) -> i32 {
+    irqhandler: Option<unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> i32>,
+    irqflags: usize, irq_dev_id: *mut kernel::ffi::c_void) -> i32 {
     let ndev = if alchemy_get_cputype() == ALCHEMY_CPU_AU1100 { 20 } else { 16 };
     if dev_id < 0 || dev_id >= ndev { return -22; }
     let mut i = 0;
@@ -135,7 +135,7 @@ pub unsafe extern "C" fn request_au1000_dma(dev_id: i32, dev_str: *const i8,
         if ret != 0 { (*chan).irq_dev = core::ptr::null_mut(); return ret; }
     } else { (*chan).irq_dev = core::ptr::null_mut(); }
     let _dev = if dev_id >= 16 { &DMA_DEV_TABLE_BANK2[(dev_id - 16) as usize] } else { &DMA_DEV_TABLE[dev_id as usize] };
-    (*chan).io = (0usize + (i as usize) * DMA_CHANNEL_LEN) as *mut core::ffi::c_void;
+    (*chan).io = (0usize + (i as usize) * DMA_CHANNEL_LEN) as *mut kernel::ffi::c_void;
     (*chan).dev_id = if dev_id >= 16 { dev_id - 16 } else { dev_id };
     (*chan).dev_str = dev_str;
     (*chan).fifo_addr = (*_dev).fifo_addr;

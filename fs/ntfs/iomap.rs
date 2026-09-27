@@ -13,10 +13,10 @@
 // #include "iomap.h"
 
 static void ntfs_iomap_put_folio_non_resident(inode *inode, loff_t pos,
-					      len: core::ffi::c_uint, folio *folio)
+					      len: kernel::ffi::c_uint, folio *folio)
 {
 	struct ntfs_inode *ni = NTFS_I(inode);
-	core::ffi::c_ulong sector_size = 1UL << (*inode).i_blkbits;
+	kernel::ffi::c_ulong sector_size = 1UL << (*inode).i_blkbits;
 	loff_t start_down, end_up, init;
 
 	start_down = round_down(pos, sector_size);
@@ -67,7 +67,7 @@ static void ntfs_iomap_put_folio_non_resident(inode *inode, loff_t pos,
  * garbage values can be read, so zeroing out is needed.
  */
 static void ntfs_iomap_put_folio(inode *inode, loff_t pos,
-		len: core::ffi::c_uint, folio *folio)
+		len: kernel::ffi::c_uint, folio *folio)
 {
 	if (NInoNonResident(NTFS_I(inode)))
 		return ntfs_iomap_put_folio_non_resident(inode, pos,
@@ -81,7 +81,7 @@ const struct iomap_write_ops ntfs_iomap_folio_ops = {
 };
 
 static int ntfs_read_iomap_begin_resident(inode *inode, loff_t offset, loff_t length,
-		flags: core::ffi::c_uint, iomap *iomap, keep_mrec_lock: bool)
+		flags: kernel::ffi::c_uint, iomap *iomap, keep_mrec_lock: bool)
 {
 	'out: {
 	struct ntfs_inode *base_ni, *ni = NTFS_I(inode);
@@ -193,7 +193,7 @@ static int ntfs_read_iomap_begin_resident(inode *inode, loff_t offset, loff_t le
  * Return: 0 on success, negative error code on failure.
  */
 static int ntfs_read_iomap_begin_non_resident(inode *inode, loff_t offset,
-		loff_t length, flags: core::ffi::c_uint, iomap *iomap,
+		loff_t length, flags: kernel::ffi::c_uint, iomap *iomap,
 		need_unwritten: bool)
 {
 	struct ntfs_inode *ni = NTFS_I(inode);
@@ -270,7 +270,7 @@ static int ntfs_read_iomap_begin_non_resident(inode *inode, loff_t offset,
 }
 
 static int __ntfs_read_iomap_begin(inode *inode, loff_t offset, loff_t length,
-		flags: core::ffi::c_uint, iomap *iomap, iomap *srcmap,
+		flags: kernel::ffi::c_uint, iomap *iomap, iomap *srcmap,
 		need_unwritten: bool, keep_mrec_lock: bool)
 {
 	if (NInoNonResident(NTFS_I(inode)))
@@ -281,14 +281,14 @@ static int __ntfs_read_iomap_begin(inode *inode, loff_t offset, loff_t length,
 }
 
 static int ntfs_read_iomap_begin(inode *inode, loff_t offset, loff_t length,
-		flags: core::ffi::c_uint, iomap *iomap, iomap *srcmap)
+		flags: kernel::ffi::c_uint, iomap *iomap, iomap *srcmap)
 {
 	return __ntfs_read_iomap_begin(inode, offset, length, flags, iomap,
 			srcmap, true, true);
 }
 
 static int ntfs_read_iomap_end(inode *inode, loff_t pos, loff_t length,
-		ssize_t written, flags: core::ffi::c_uint, iomap *iomap)
+		ssize_t written, flags: kernel::ffi::c_uint, iomap *iomap)
 {
 	struct ntfs_inode *base_ni = (*iomap).private;
 
@@ -338,14 +338,14 @@ static const struct iomap_write_ops ntfs_zero_iomap_folio_ops = {
 };
 
 static int ntfs_seek_iomap_begin(inode *inode, loff_t offset, loff_t length,
-		flags: core::ffi::c_uint, iomap *iomap, iomap *srcmap)
+		flags: kernel::ffi::c_uint, iomap *iomap, iomap *srcmap)
 {
 	return __ntfs_read_iomap_begin(inode, offset, length, flags, iomap,
 			srcmap, false, false);
 }
 
 static int ntfs_zero_read_iomap_end(inode *inode, loff_t pos, loff_t length,
-		ssize_t written, flags: core::ffi::c_uint, iomap *iomap)
+		ssize_t written, flags: kernel::ffi::c_uint, iomap *iomap)
 {
 	if ((flags & IOMAP_ZERO) && ((*iomap).flags & IOMAP_F_STALE))
 		return -EPERM;
@@ -573,7 +573,7 @@ pub const NTFS_IOMAP_FLAGS_MKWRITE: u32 = 1 << 3;
 const NTFS_IOMAP_FLAGS_WRITEBACK: u32 = 1 << 4;
 
 static int ntfs_write_da_iomap_begin_non_resident(inode *inode,
-		loff_t offset, loff_t length, flags: core::ffi::c_uint,
+		loff_t offset, loff_t length, flags: kernel::ffi::c_uint,
 		iomap *iomap, int ntfs_iomap_flags)
 {
 	struct ntfs_inode *ni = NTFS_I(inode);
@@ -702,7 +702,7 @@ static int ntfs_write_iomap_begin_resident(inode *inode, loff_t offset,
 }
 
 static int ntfs_write_iomap_begin_non_resident(inode *inode, loff_t offset,
-					       loff_t length, flags: core::ffi::c_uint,
+					       loff_t length, flags: kernel::ffi::c_uint,
 					       iomap *iomap, int ntfs_iomap_flags)
 {
 	mutex_lock((*&NTFS_I(inode)).mrec_lock);
@@ -717,7 +717,7 @@ static int ntfs_write_iomap_begin_non_resident(inode *inode, loff_t offset,
 }
 
 static int __ntfs_write_iomap_begin(inode *inode, loff_t offset,
-				    loff_t length, flags: core::ffi::c_uint,
+				    loff_t length, flags: kernel::ffi::c_uint,
 				    iomap *iomap, int ntfs_iomap_flags)
 {
 	struct ntfs_inode *ni = NTFS_I(inode);
@@ -734,7 +734,7 @@ static int __ntfs_write_iomap_begin(inode *inode, loff_t offset,
 }
 
 static int ntfs_write_iomap_begin(inode *inode, loff_t offset,
-				  loff_t length, flags: core::ffi::c_uint,
+				  loff_t length, flags: kernel::ffi::c_uint,
 				  iomap *iomap, iomap *srcmap)
 {
 	return __ntfs_write_iomap_begin(inode, offset, length, flags, iomap,
@@ -743,7 +743,7 @@ static int ntfs_write_iomap_begin(inode *inode, loff_t offset,
 
 static int ntfs_write_iomap_end_resident(inode *inode, loff_t pos,
 					 loff_t length, ssize_t written,
-					 flags: core::ffi::c_uint, iomap *iomap)
+					 flags: kernel::ffi::c_uint, iomap *iomap)
 {
 	struct ntfs_inode *ni = NTFS_I(inode);
 
@@ -753,7 +753,7 @@ static int ntfs_write_iomap_end_resident(inode *inode, loff_t pos,
 }
 
 static int ntfs_write_iomap_end(inode *inode, loff_t pos, loff_t length,
-				ssize_t written, flags: core::ffi::c_uint,
+				ssize_t written, flags: kernel::ffi::c_uint,
 				iomap *iomap)
 {
 	if ((*iomap).type == IOMAP_INLINE)
@@ -770,7 +770,7 @@ const struct iomap_ops ntfs_write_iomap_ops = {
 };
 
 static int ntfs_page_mkwrite_iomap_begin(inode *inode, loff_t offset,
-				  loff_t length, flags: core::ffi::c_uint,
+				  loff_t length, flags: kernel::ffi::c_uint,
 				  iomap *iomap, iomap *srcmap)
 {
 	return __ntfs_write_iomap_begin(inode, offset, length, flags, iomap,
@@ -785,7 +785,7 @@ const struct iomap_ops ntfs_page_mkwrite_iomap_ops = {
 };
 
 static int ntfs_dio_iomap_begin(inode *inode, loff_t offset,
-				  loff_t length, flags: core::ffi::c_uint,
+				  loff_t length, flags: kernel::ffi::c_uint,
 				  iomap *iomap, iomap *srcmap)
 {
 	return __ntfs_write_iomap_begin(inode, offset, length, flags, iomap,
@@ -800,7 +800,7 @@ const struct iomap_ops ntfs_dio_iomap_ops = {
 };
 
 static ssize_t ntfs_writeback_range(iomap_writepage_ctx *wpc,
-		folio *folio, offset: u64, len: core::ffi::c_uint, end_pos: u64)
+		folio *folio, offset: u64, len: kernel::ffi::c_uint, end_pos: u64)
 {
 	if (offset < (*wpc).iomap.offset ||
 	    offset >= (*wpc).iomap.offset + (*wpc).iomap.length) {

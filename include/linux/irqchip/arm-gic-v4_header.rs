@@ -15,10 +15,10 @@ pub struct its_vm {
     pub domain: *mut irq_domain,
     pub vprop_page: *mut page,
     pub vpes: *mut *mut its_vpe,
-    pub nr_vpes: ::core::ffi::c_int,
+    pub nr_vpes: ::kernel::ffi::c_int,
     pub db_lpi_base: irq_hw_number_t,
-    pub db_bitmap: *mut ::core::ffi::c_ulong,
-    pub nr_db_lpis: ::core::ffi::c_int,
+    pub db_bitmap: *mut ::kernel::ffi::c_ulong,
+    pub nr_db_lpis: ::kernel::ffi::c_int,
     pub vmapp_lock: raw_spinlock_t,
     pub vlpi_count: [u32; GICv4_ITS_LIST_MAX],
 }
@@ -28,7 +28,7 @@ pub struct its_vpe {
     pub vpt_page: *mut page,
     pub its_vm: *mut its_vm,
     pub vlpi_count: atomic_t,
-    pub irq: ::core::ffi::c_int,
+    pub irq: ::kernel::ffi::c_int,
     pub vpe_db_lpi: irq_hw_number_t,
     pub resident: bool,
     pub ready: bool,
@@ -48,7 +48,7 @@ pub union its_vpe_impl {
 
 #[repr(C)]
 pub struct its_vpe_gicv4_0 {
-    pub vpe_proxy_event: ::core::ffi::c_int,
+    pub vpe_proxy_event: ::kernel::ffi::c_int,
     pub idai: bool,
 }
 
@@ -120,22 +120,22 @@ pub struct its_cmd_info {
 }
 
 extern "C" {
-    pub fn its_alloc_vcpu_irqs(vm: *mut its_vm) -> ::core::ffi::c_int;
+    pub fn its_alloc_vcpu_irqs(vm: *mut its_vm) -> ::kernel::ffi::c_int;
     pub fn its_free_vcpu_irqs(vm: *mut its_vm);
-    pub fn its_make_vpe_resident(vpe: *mut its_vpe, g0en: bool, g1en: bool) -> ::core::ffi::c_int;
-    pub fn its_make_vpe_non_resident(vpe: *mut its_vpe, db: bool) -> ::core::ffi::c_int;
-    pub fn its_commit_vpe(vpe: *mut its_vpe) -> ::core::ffi::c_int;
-    pub fn its_invall_vpe(vpe: *mut its_vpe) -> ::core::ffi::c_int;
-    pub fn its_map_vlpi(irq: ::core::ffi::c_int, map: *mut its_vlpi_map) -> ::core::ffi::c_int;
-    pub fn its_get_vlpi(irq: ::core::ffi::c_int, map: *mut its_vlpi_map) -> ::core::ffi::c_int;
-    pub fn its_unmap_vlpi(irq: ::core::ffi::c_int);
-    pub fn its_prop_update_vlpi(irq: ::core::ffi::c_int, config: u8, inv: bool) -> ::core::ffi::c_int;
-    pub fn its_prop_update_vsgi(irq: ::core::ffi::c_int, priority: u8, group: bool) -> ::core::ffi::c_int;
+    pub fn its_make_vpe_resident(vpe: *mut its_vpe, g0en: bool, g1en: bool) -> ::kernel::ffi::c_int;
+    pub fn its_make_vpe_non_resident(vpe: *mut its_vpe, db: bool) -> ::kernel::ffi::c_int;
+    pub fn its_commit_vpe(vpe: *mut its_vpe) -> ::kernel::ffi::c_int;
+    pub fn its_invall_vpe(vpe: *mut its_vpe) -> ::kernel::ffi::c_int;
+    pub fn its_map_vlpi(irq: ::kernel::ffi::c_int, map: *mut its_vlpi_map) -> ::kernel::ffi::c_int;
+    pub fn its_get_vlpi(irq: ::kernel::ffi::c_int, map: *mut its_vlpi_map) -> ::kernel::ffi::c_int;
+    pub fn its_unmap_vlpi(irq: ::kernel::ffi::c_int);
+    pub fn its_prop_update_vlpi(irq: ::kernel::ffi::c_int, config: u8, inv: bool) -> ::kernel::ffi::c_int;
+    pub fn its_prop_update_vsgi(irq: ::kernel::ffi::c_int, priority: u8, group: bool) -> ::kernel::ffi::c_int;
     pub fn its_init_v4(
         domain: *mut irq_domain,
         vpe_ops: *const irq_domain_ops,
         sgi_ops: *const irq_domain_ops,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn gic_cpuif_has_vsgi() -> bool;
 }
 

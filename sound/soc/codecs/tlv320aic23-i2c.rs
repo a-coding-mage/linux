@@ -62,12 +62,12 @@ pub struct of_device_id {
     pub name: [u8; 32],
     pub type_: [u8; 32],
     pub compatible: [u8; 128],
-    pub data: *const core::ffi::c_void,
+    pub data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
@@ -79,7 +79,7 @@ pub struct i2c_driver {
 }
 
 #[allow(non_camel_case_types)]
-pub type kernel_ulong_t = core::ffi::c_ulong;
+pub type kernel_ulong_t = kernel::ffi::c_ulong;
 
 unsafe extern "C" fn tlv320aic23_i2c_probe(i2c: *mut i2c_client) -> i32 {
     let regmap: *mut regmap;
@@ -156,7 +156,7 @@ module_device_table!(of, tlv320aic23_of_match);
 
 static mut tlv320aic23_i2c_driver: i2c_driver = i2c_driver {
     driver: device_driver {
-        name: b"tlv320aic23-codec\0".as_ptr() as *const core::ffi::c_char,
+        name: b"tlv320aic23-codec\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: of_match_ptr!(tlv320aic23_of_match),
     },
     probe: Some(tlv320aic23_i2c_probe),

@@ -6,7 +6,7 @@
 
 /* Translated from linux/iio/buffer-dmaengine.h. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* Types supplied by linux/iio/buffer.h and other dependencies. */
 #[repr(C)]

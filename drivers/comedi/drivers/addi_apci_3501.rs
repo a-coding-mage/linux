@@ -46,7 +46,7 @@ const EEPROM_TIMER_WATCHDOG_COUNTER: u8 = 10;
 
 #[repr(C)]
 struct apci3501_private {
-    amcc: ::core::ffi::c_ulong,
+    amcc: ::kernel::ffi::c_ulong,
     timer_mode: u8,
 }
 
@@ -58,7 +58,7 @@ static mut apci3501_ao_range: comedi_lrange = comedi_lrange {
 unsafe fn apci3501_wait_for_dac(dev: *mut comedi_device) -> i32 {
     let mut status: u32;
     loop {
-        status = inl((*dev).iobase + APCI3501_AO_CTRL_STATUS_REG as ::core::ffi::c_ulong);
+        status = inl((*dev).iobase + APCI3501_AO_CTRL_STATUS_REG as ::kernel::ffi::c_ulong);
         if status & APCI3501_AO_STATUS_READY != 0 { break; }
     }
     0
@@ -70,10 +70,10 @@ unsafe fn apci3501_ao_insn_write(dev: *mut comedi_device, s: *mut comedi_subdevi
     let range = CR_RANGE((*insn).chanspec);
     let mut cfg = apci3501_ao_data_chan(chan);
     if range != 0 {
-        outl(0, (*dev).iobase + APCI3501_AO_CTRL_STATUS_REG as ::core::ffi::c_ulong);
+        outl(0, (*dev).iobase + APCI3501_AO_CTRL_STATUS_REG as ::kernel::ffi::c_ulong);
     } else {
         cfg |= APCI3501_AO_DATA_BIPOLAR;
-        outl(APCI3501_AO_CTRL_BIPOLAR, (*dev).iobase + APCI3501_AO_CTRL_STATUS_REG as ::core::ffi::c_ulong);
+        outl(APCI3501_AO_CTRL_BIPOLAR, (*dev).iobase + APCI3501_AO_CTRL_STATUS_REG as ::kernel::ffi::c_ulong);
     }
     for i in 0..(*insn).n {
         let val = *data.add(i as usize);
@@ -83,7 +83,7 @@ unsafe fn apci3501_ao_insn_write(dev: *mut comedi_device, s: *mut comedi_subdevi
         }
         let ret = apci3501_wait_for_dac(dev);
         if ret != 0 { return ret; }
-        outl(cfg | apci3501_ao_data_val(val), (*dev).iobase + APCI3501_AO_DATA_REG as ::core::ffi::c_ulong);
+        outl(cfg | apci3501_ao_data_val(val), (*dev).iobase + APCI3501_AO_DATA_REG as ::kernel::ffi::c_ulong);
         (*s).readback[chan as usize] = val;
     }
     (*insn).n as i32
@@ -91,43 +91,43 @@ unsafe fn apci3501_ao_insn_write(dev: *mut comedi_device, s: *mut comedi_subdevi
 
 unsafe fn apci3501_di_insn_bits(dev: *mut comedi_device, _s: *mut comedi_subdevice,
                                 insn: *mut comedi_insn, data: *mut u32) -> i32 {
-    *data.add(1) = inl((*dev).iobase + APCI3501_DI_REG as ::core::ffi::c_ulong) & 0x3;
+    *data.add(1) = inl((*dev).iobase + APCI3501_DI_REG as ::kernel::ffi::c_ulong) & 0x3;
     (*insn).n as i32
 }
 
 unsafe fn apci3501_do_insn_bits(dev: *mut comedi_device, s: *mut comedi_subdevice,
                                 insn: *mut comedi_insn, data: *mut u32) -> i32 {
-    (*s).state = inl((*dev).iobase + APCI3501_DO_REG as ::core::ffi::c_ulong);
+    (*s).state = inl((*dev).iobase + APCI3501_DO_REG as ::kernel::ffi::c_ulong);
     if comedi_dio_update_state(s, data) != 0 {
-        outl((*s).state, (*dev).iobase + APCI3501_DO_REG as ::core::ffi::c_ulong);
+        outl((*s).state, (*dev).iobase + APCI3501_DO_REG as ::kernel::ffi::c_ulong);
     }
     *data.add(1) = (*s).state;
     (*insn).n as i32
 }
 
-unsafe fn apci3501_eeprom_wait(iobase: ::core::ffi::c_ulong) {
+unsafe fn apci3501_eeprom_wait(iobase: ::kernel::ffi::c_ulong) {
     let mut val: u8;
     loop {
-        val = inb(iobase + AMCC_OP_REG_MCSR_NVCMD as ::core::ffi::c_ulong);
+        val = inb(iobase + AMCC_OP_REG_MCSR_NVCMD as ::kernel::ffi::c_ulong);
         if val & 0x80 == 0 { break; }
     }
 }
 
-unsafe fn apci3501_eeprom_readw(iobase: ::core::ffi::c_ulong, mut addr: u16) -> u16 {
+unsafe fn apci3501_eeprom_readw(iobase: ::kernel::ffi::c_ulong, mut addr: u16) -> u16 {
     let mut val: u16 = 0;
     addr = addr.wrapping_add(NVRAM_USER_DATA_START);
     for i in 0..2u16 {
-        outb(NVCMD_LOAD_LOW, iobase + AMCC_OP_REG_MCSR_NVCMD as ::core::ffi::c_ulong);
+        outb(NVCMD_LOAD_LOW, iobase + AMCC_OP_REG_MCSR_NVCMD as ::kernel::ffi::c_ulong);
         apci3501_eeprom_wait(iobase);
-        outb(((addr + i) & 0xff) as u8, iobase + AMCC_OP_REG_MCSR_NVDATA as ::core::ffi::c_ulong);
+        outb(((addr + i) & 0xff) as u8, iobase + AMCC_OP_REG_MCSR_NVDATA as ::kernel::ffi::c_ulong);
         apci3501_eeprom_wait(iobase);
-        outb(NVCMD_LOAD_HIGH, iobase + AMCC_OP_REG_MCSR_NVCMD as ::core::ffi::c_ulong);
+        outb(NVCMD_LOAD_HIGH, iobase + AMCC_OP_REG_MCSR_NVCMD as ::kernel::ffi::c_ulong);
         apci3501_eeprom_wait(iobase);
-        outb((((addr + i) >> 8) & 0xff) as u8, iobase + AMCC_OP_REG_MCSR_NVDATA as ::core::ffi::c_ulong);
+        outb((((addr + i) >> 8) & 0xff) as u8, iobase + AMCC_OP_REG_MCSR_NVDATA as ::kernel::ffi::c_ulong);
         apci3501_eeprom_wait(iobase);
-        outb(NVCMD_BEGIN_READ, iobase + AMCC_OP_REG_MCSR_NVCMD as ::core::ffi::c_ulong);
+        outb(NVCMD_BEGIN_READ, iobase + AMCC_OP_REG_MCSR_NVCMD as ::kernel::ffi::c_ulong);
         apci3501_eeprom_wait(iobase);
-        let tmp = inb(iobase + AMCC_OP_REG_MCSR_NVDATA as ::core::ffi::c_ulong);
+        let tmp = inb(iobase + AMCC_OP_REG_MCSR_NVDATA as ::kernel::ffi::c_ulong);
         apci3501_eeprom_wait(iobase);
         if i == 0 { val |= tmp as u16; } else { val |= (tmp as u16) << 8; }
     }
@@ -161,20 +161,20 @@ unsafe fn apci3501_eeprom_insn_read(dev: *mut comedi_device, _s: *mut comedi_sub
 }
 
 unsafe fn apci3501_reset(dev: *mut comedi_device) -> i32 {
-    outl(0, (*dev).iobase + APCI3501_DO_REG as ::core::ffi::c_ulong);
-    outl(APCI3501_AO_CTRL_BIPOLAR, (*dev).iobase + APCI3501_AO_CTRL_STATUS_REG as ::core::ffi::c_ulong);
+    outl(0, (*dev).iobase + APCI3501_DO_REG as ::kernel::ffi::c_ulong);
+    outl(APCI3501_AO_CTRL_BIPOLAR, (*dev).iobase + APCI3501_AO_CTRL_STATUS_REG as ::kernel::ffi::c_ulong);
     let val = APCI3501_AO_DATA_BIPOLAR | apci3501_ao_data_val(0);
     for chan in 0..8 {
         if apci3501_wait_for_dac(dev) != 0 {
             dev_warn((*dev).class_dev, "%s: DAC not-ready for channel %i\n", __func__, chan);
         } else {
-            outl(val | apci3501_ao_data_chan(chan), (*dev).iobase + APCI3501_AO_DATA_REG as ::core::ffi::c_ulong);
+            outl(val | apci3501_ao_data_chan(chan), (*dev).iobase + APCI3501_AO_DATA_REG as ::kernel::ffi::c_ulong);
         }
     }
     0
 }
 
-unsafe fn apci3501_auto_attach(dev: *mut comedi_device, _context_unused: ::core::ffi::c_ulong) -> i32 {
+unsafe fn apci3501_auto_attach(dev: *mut comedi_device, _context_unused: ::kernel::ffi::c_ulong) -> i32 {
     let pcidev = comedi_to_pci_dev(dev);
     let devpriv = comedi_alloc_devpriv(dev, core::mem::size_of::<apci3501_private>()) as *mut apci3501_private;
     if devpriv.is_null() { return -ENOMEM; }

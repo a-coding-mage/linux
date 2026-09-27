@@ -11,7 +11,7 @@ unsafe fn acpi_ex_convert_to_object_type_string(
     result_desc: *mut *mut acpi_operand_object,
 ) -> acpi_status {
     let mut return_desc: *mut acpi_operand_object;
-    let type_string: *const core::ffi::c_char;
+    let type_string: *const kernel::ffi::c_char;
 
     type_string = acpi_ut_get_type_name((*obj_desc).common.type_);
 
@@ -40,7 +40,7 @@ pub unsafe fn acpi_ex_do_concatenate(
     let mut local_operand1 = operand1;
     let mut temp_operand1: *mut acpi_operand_object = core::ptr::null_mut();
     let return_desc: *mut acpi_operand_object;
-    let buffer: *mut core::ffi::c_char;
+    let buffer: *mut kernel::ffi::c_char;
     let operand0_type: acpi_object_type;
     let operand1_type: acpi_object_type;
     let mut status: acpi_status;

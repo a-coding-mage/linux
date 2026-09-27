@@ -83,11 +83,11 @@ pub struct peri_clk_data {
     pub policy: bcm_clk_policy, pub gate: bcm_clk_gate, pub hyst: bcm_clk_hyst,
     pub pre_trig: bcm_clk_trig, pub pre_div: bcm_clk_div,
     pub trig: bcm_clk_trig, pub div: bcm_clk_div, pub sel: bcm_clk_sel,
-    pub clocks: [*const core::ffi::c_char; 0],
+    pub clocks: [*const kernel::ffi::c_char; 0],
 }
 
 #[repr(C)]
-pub union kona_clk_u { pub data: *mut core::ffi::c_void, pub peri: *mut peri_clk_data }
+pub union kona_clk_u { pub data: *mut kernel::ffi::c_void, pub peri: *mut peri_clk_data }
 #[repr(C)]
 pub struct kona_clk {
     pub hw: clk_hw, pub init_data: clk_init_data, pub ccu: *mut ccu_data,
@@ -105,9 +105,9 @@ pub struct ccu_policy { pub enable: bcm_lvm_en, pub control: bcm_policy_ctl }
 
 #[repr(C)]
 pub struct ccu_data {
-    pub base: *mut core::ffi::c_void, pub lock: spinlock_t, pub write_enabled: bool,
+    pub base: *mut kernel::ffi::c_void, pub lock: spinlock_t, pub write_enabled: bool,
     pub policy: ccu_policy, pub node: *mut device_node, pub clk_num: usize,
-    pub name: *const core::ffi::c_char, pub range: u32,
+    pub name: *const kernel::ffi::c_char, pub range: u32,
     pub kona_clks: [kona_clk; 0],
 }
 

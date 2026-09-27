@@ -3,13 +3,13 @@
  * Copyright (C) 2006 Michael Ellerman, IBM Corporation.
  */
 
-use core::ffi::{c_char, c_int};
+use kernel::ffi::{c_char, c_int};
 
 unsafe extern "C" {
     pub fn print_address(memaddr: c_ulong);
 }
 
-pub type c_ulong = core::ffi::c_ulong;
+pub type c_ulong = kernel::ffi::c_ulong;
 
 /* CONFIG_XMON_DISASSEMBLY is a build-time condition from the original header. */
 #[cfg(CONFIG_XMON_DISASSEMBLY)]

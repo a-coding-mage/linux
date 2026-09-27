@@ -9,11 +9,11 @@
 pub struct mm_context_t {
     /* The following fields follow the C build-time CONFIG_MMU selection. */
     #[cfg(not(CONFIG_MMU))]
-    pub end_brk: libc::c_ulong,
+    pub end_brk: kernel::ffi::c_ulong,
     #[cfg(CONFIG_MMU)]
     pub id: atomic_long_t,
 
-    pub vdso: *mut core::ffi::c_void,
+    pub vdso: *mut kernel::ffi::c_void,
 
     /* CONFIG_SMP */
     #[cfg(CONFIG_SMP)]
@@ -23,11 +23,11 @@ pub struct mm_context_t {
 
     /* CONFIG_BINFMT_ELF_FDPIC */
     #[cfg(CONFIG_BINFMT_ELF_FDPIC)]
-    pub exec_fdpic_loadmap: libc::c_ulong,
+    pub exec_fdpic_loadmap: kernel::ffi::c_ulong,
     #[cfg(CONFIG_BINFMT_ELF_FDPIC)]
-    pub interp_fdpic_loadmap: libc::c_ulong,
+    pub interp_fdpic_loadmap: kernel::ffi::c_ulong,
 
-    pub flags: libc::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
 
     /* CONFIG_RISCV_ISA_SUPM */
     #[cfg(CONFIG_RISCV_ISA_SUPM)]

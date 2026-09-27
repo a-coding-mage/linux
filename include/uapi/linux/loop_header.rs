@@ -40,10 +40,10 @@ pub struct loop_info {
     pub lo_encrypt_type: i32, /* obsolete, ignored */
     pub lo_encrypt_key_size: i32, /* ioctl w/o */
     pub lo_flags: i32,
-    pub lo_name: [core::ffi::c_char; LO_NAME_SIZE],
+    pub lo_name: [kernel::ffi::c_char; LO_NAME_SIZE],
     pub lo_encrypt_key: [u8; LO_KEY_SIZE], /* ioctl w/o */
     pub lo_init: [usize; 2],
-    pub reserved: [core::ffi::c_char; 4],
+    pub reserved: [kernel::ffi::c_char; 4],
 }
 
 #[repr(C)]

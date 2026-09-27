@@ -15,42 +15,42 @@
 pub struct shmid64_ds {
     pub shm_perm: ipc64_perm, /* operation perms */
     #[cfg(all(target_arch = "sparc", target_pointer_width = "64"))]
-    pub shm_atime: libc::c_long, /* last attach time */
+    pub shm_atime: kernel::ffi::c_long, /* last attach time */
     #[cfg(all(target_arch = "sparc", target_pointer_width = "64"))]
-    pub shm_dtime: libc::c_long, /* last detach time */
+    pub shm_dtime: kernel::ffi::c_long, /* last detach time */
     #[cfg(all(target_arch = "sparc", target_pointer_width = "64"))]
-    pub shm_ctime: libc::c_long, /* last change time */
+    pub shm_ctime: kernel::ffi::c_long, /* last change time */
     #[cfg(not(all(target_arch = "sparc", target_pointer_width = "64")))]
-    pub shm_atime_high: libc::c_ulong,
+    pub shm_atime_high: kernel::ffi::c_ulong,
     #[cfg(not(all(target_arch = "sparc", target_pointer_width = "64")))]
-    pub shm_atime: libc::c_ulong, /* last attach time */
+    pub shm_atime: kernel::ffi::c_ulong, /* last attach time */
     #[cfg(not(all(target_arch = "sparc", target_pointer_width = "64")))]
-    pub shm_dtime_high: libc::c_ulong,
+    pub shm_dtime_high: kernel::ffi::c_ulong,
     #[cfg(not(all(target_arch = "sparc", target_pointer_width = "64")))]
-    pub shm_dtime: libc::c_ulong, /* last detach time */
+    pub shm_dtime: kernel::ffi::c_ulong, /* last detach time */
     #[cfg(not(all(target_arch = "sparc", target_pointer_width = "64")))]
-    pub shm_ctime_high: libc::c_ulong,
+    pub shm_ctime_high: kernel::ffi::c_ulong,
     #[cfg(not(all(target_arch = "sparc", target_pointer_width = "64")))]
-    pub shm_ctime: libc::c_ulong, /* last change time */
+    pub shm_ctime: kernel::ffi::c_ulong, /* last change time */
     pub shm_segsz: __kernel_size_t, /* size of segment (bytes) */
     pub shm_cpid: __kernel_pid_t, /* pid of creator */
     pub shm_lpid: __kernel_pid_t, /* pid of last operator */
-    pub shm_nattch: libc::c_ulong, /* no. of current attaches */
-    pub __unused1: libc::c_ulong,
-    pub __unused2: libc::c_ulong,
+    pub shm_nattch: kernel::ffi::c_ulong, /* no. of current attaches */
+    pub __unused1: kernel::ffi::c_ulong,
+    pub __unused2: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct shminfo64 {
-    pub shmmax: libc::c_ulong,
-    pub shmmin: libc::c_ulong,
-    pub shmmni: libc::c_ulong,
-    pub shmseg: libc::c_ulong,
-    pub shmall: libc::c_ulong,
-    pub __unused1: libc::c_ulong,
-    pub __unused2: libc::c_ulong,
-    pub __unused3: libc::c_ulong,
-    pub __unused4: libc::c_ulong,
+    pub shmmax: kernel::ffi::c_ulong,
+    pub shmmin: kernel::ffi::c_ulong,
+    pub shmmni: kernel::ffi::c_ulong,
+    pub shmseg: kernel::ffi::c_ulong,
+    pub shmall: kernel::ffi::c_ulong,
+    pub __unused1: kernel::ffi::c_ulong,
+    pub __unused2: kernel::ffi::c_ulong,
+    pub __unused3: kernel::ffi::c_ulong,
+    pub __unused4: kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

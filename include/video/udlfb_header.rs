@@ -12,12 +12,12 @@ pub const DLFB_IOCTL_REPORT_DAMAGE: u32 = 0xAA;
 
 #[repr(C)]
 pub struct dloarea {
-    pub x: ::core::ffi::c_int,
-    pub y: ::core::ffi::c_int,
-    pub w: ::core::ffi::c_int,
-    pub h: ::core::ffi::c_int,
-    pub x2: ::core::ffi::c_int,
-    pub y2: ::core::ffi::c_int,
+    pub x: ::kernel::ffi::c_int,
+    pub y: ::kernel::ffi::c_int,
+    pub w: ::kernel::ffi::c_int,
+    pub h: ::kernel::ffi::c_int,
+    pub x2: ::kernel::ffi::c_int,
+    pub y2: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -32,8 +32,8 @@ pub struct urb_list {
     pub list: list_head,
     pub lock: spinlock_t,
     pub limit_sem: semaphore,
-    pub available: ::core::ffi::c_int,
-    pub count: ::core::ffi::c_int,
+    pub available: ::kernel::ffi::c_int,
+    pub count: ::kernel::ffi::c_int,
     pub size: usize,
 }
 
@@ -42,23 +42,23 @@ pub struct dlfb_data {
     pub udev: *mut usb_device,
     pub info: *mut fb_info,
     pub urbs: urb_list,
-    pub backing_buffer: *mut ::core::ffi::c_char,
-    pub fb_count: ::core::ffi::c_int,
+    pub backing_buffer: *mut ::kernel::ffi::c_char,
+    pub fb_count: ::kernel::ffi::c_int,
     pub virtualized: bool, /* true when physical usb device not present */
     pub usb_active: atomic_t, /* 0 = update virtual buffer, but no usb traffic */
     pub lost_pixels: atomic_t, /* 1 = a render op failed. Need screen refresh */
-    pub edid: *mut ::core::ffi::c_char, /* null until we read edid from hw or get from sysfs */
+    pub edid: *mut ::kernel::ffi::c_char, /* null until we read edid from hw or get from sysfs */
     pub edid_size: usize,
-    pub sku_pixel_limit: ::core::ffi::c_int,
-    pub base16: ::core::ffi::c_int,
-    pub base8: ::core::ffi::c_int,
+    pub sku_pixel_limit: ::kernel::ffi::c_int,
+    pub base16: ::kernel::ffi::c_int,
+    pub base8: ::kernel::ffi::c_int,
     pub pseudo_palette: [u32; 256],
-    pub blank_mode: ::core::ffi::c_int, /* one of FB_BLANK_ */
+    pub blank_mode: ::kernel::ffi::c_int, /* one of FB_BLANK_ */
     pub render_mutex: mutex,
-    pub damage_x: ::core::ffi::c_int,
-    pub damage_y: ::core::ffi::c_int,
-    pub damage_x2: ::core::ffi::c_int,
-    pub damage_y2: ::core::ffi::c_int,
+    pub damage_x: ::kernel::ffi::c_int,
+    pub damage_y: ::kernel::ffi::c_int,
+    pub damage_x2: ::kernel::ffi::c_int,
+    pub damage_y2: ::kernel::ffi::c_int,
     pub damage_lock: spinlock_t,
     pub damage_work: work_struct,
     pub ops: fb_ops,

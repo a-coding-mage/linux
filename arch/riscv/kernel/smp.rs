@@ -35,7 +35,7 @@ static ipi_names: [&'static str; IPI_MAX as usize] = [
     "KGDB roundup interrupts",
 ];
 
-static mut __cpuid_to_hartid_map: [::core::ffi::c_ulong; NR_CPUS] = [INVALID_HARTID; NR_CPUS];
+static mut __cpuid_to_hartid_map: [::kernel::ffi::c_ulong; NR_CPUS] = [INVALID_HARTID; NR_CPUS];
 
 pub unsafe extern "C" fn smp_setup_processor_id() {
     cpuid_to_hartid_map(0) = boot_cpu_hartid;
@@ -47,7 +47,7 @@ static mut ipi_virq_base: i32 = 0;
 static mut nr_ipi: i32 = IPI_MAX as i32;
 static mut ipi_desc: [*mut irq_desc; IPI_MAX as usize] = [core::ptr::null_mut(); IPI_MAX as usize];
 
-pub unsafe extern "C" fn riscv_hartid_to_cpuid(hartid: ::core::ffi::c_ulong) -> i32 {
+pub unsafe extern "C" fn riscv_hartid_to_cpuid(hartid: ::kernel::ffi::c_ulong) -> i32 {
     let mut i = 0;
     while i < NR_CPUS as i32 {
         if cpuid_to_hartid_map(i) == hartid { return i; }
@@ -88,7 +88,7 @@ unsafe fn send_ipi_single(cpu: i32, op: ipi_message_type) {
 #[cfg(CONFIG_IRQ_WORK)]
 pub unsafe extern "C" fn arch_irq_work_raise() { send_ipi_single(smp_processor_id(), IPI_IRQ_WORK); }
 
-unsafe extern "C" fn handle_IPI(irq: i32, _data: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn handle_IPI(irq: i32, _data: *mut kernel::ffi::c_void) -> irqreturn_t {
     let cpu = smp_processor_id();
     let ipi = irq - ipi_virq_base;
     match ipi {
@@ -147,7 +147,7 @@ pub unsafe extern "C" fn arch_send_call_function_single_ipi(cpu: i32) { send_ipi
 pub unsafe extern "C" fn tick_broadcast(mask: *const cpumask) { send_ipi_mask(mask, IPI_TIMER); }
 
 pub unsafe extern "C" fn smp_send_stop() {
-    let mut timeout: ::core::ffi::c_ulong;
+    let mut timeout: ::kernel::ffi::c_ulong;
     if num_online_cpus() > 1 {
         let mut mask: cpumask_t = core::mem::zeroed();
         cpumask_copy(&mut mask, cpu_online_mask);
@@ -167,7 +167,7 @@ unsafe fn num_other_online_cpus() -> u32 { num_online_cpus() - cpu_online(smp_pr
 pub unsafe extern "C" fn crash_smp_send_stop() {
     static mut cpus_stopped: i32 = 0;
     let mut mask: cpumask_t = core::mem::zeroed();
-    let mut timeout: ::core::ffi::c_ulong;
+    let mut timeout: ::kernel::ffi::c_ulong;
     if cpus_stopped != 0 { return; }
     cpus_stopped = 1;
     if num_other_online_cpus() == 0 { return; }

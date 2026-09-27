@@ -119,7 +119,7 @@ pub unsafe fn regs_set_return_value(regs: *mut pt_regs, val: usize) {
 }
 
 unsafe extern "C" {
-    pub fn regs_query_register_offset(name: *const core::ffi::c_char) -> i32;
+    pub fn regs_query_register_offset(name: *const kernel::ffi::c_char) -> i32;
     pub fn regs_get_kernel_stack_nth(regs: *mut pt_regs, n: u32) -> usize;
     pub fn prepare_ftrace_return(parent: *mut usize, self_addr: usize, frame_pointer: usize);
 }

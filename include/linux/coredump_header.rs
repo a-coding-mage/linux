@@ -6,11 +6,11 @@
 #[cfg(CONFIG_COREDUMP)]
 #[repr(C)]
 pub struct core_vma_metadata {
-    pub start: ::core::ffi::c_ulong,
-    pub end: ::core::ffi::c_ulong,
+    pub start: ::kernel::ffi::c_ulong,
+    pub end: ::kernel::ffi::c_ulong,
     pub flags: vm_flags_t,
-    pub dump_size: ::core::ffi::c_ulong,
-    pub pgoff: ::core::ffi::c_ulong,
+    pub dump_size: ::kernel::ffi::c_ulong,
+    pub pgoff: ::kernel::ffi::c_ulong,
     pub file: *mut file,
 }
 
@@ -19,16 +19,16 @@ pub struct core_vma_metadata {
 pub struct coredump_params {
     pub siginfo: *const kernel_siginfo_t,
     pub file: *mut file,
-    pub limit: ::core::ffi::c_ulong,
+    pub limit: ::kernel::ffi::c_ulong,
     // MMF_DUMP_FILTER_* bits, snapshot of mm->flags at dump start.
-    pub mm_flags: ::core::ffi::c_ulong,
+    pub mm_flags: ::kernel::ffi::c_ulong,
     // Snapshot of dumpable at dump start.
     pub dumpable: task_dumpable,
-    pub cpu: ::core::ffi::c_int,
+    pub cpu: ::kernel::ffi::c_int,
     pub written: loff_t,
     pub pos: loff_t,
     pub to_skip: loff_t,
-    pub vma_count: ::core::ffi::c_int,
+    pub vma_count: ::kernel::ffi::c_int,
     pub vma_data_size: usize,
     pub vma_meta: *mut core_vma_metadata,
     pub pid: *mut pid,
@@ -36,24 +36,24 @@ pub struct coredump_params {
 
 #[cfg(CONFIG_COREDUMP)]
 unsafe extern "C" {
-    pub static mut core_file_note_size_limit: ::core::ffi::c_uint;
+    pub static mut core_file_note_size_limit: ::kernel::ffi::c_uint;
 
     // These are the only things you should do on a core-file: use only these
     // functions to write out all the necessary info.
-    pub fn dump_skip_to(cprm: *mut coredump_params, to: ::core::ffi::c_ulong);
+    pub fn dump_skip_to(cprm: *mut coredump_params, to: ::kernel::ffi::c_ulong);
     pub fn dump_skip(cprm: *mut coredump_params, nr: usize);
     pub fn dump_emit(
         cprm: *mut coredump_params,
-        addr: *const ::core::ffi::c_void,
-        nr: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    pub fn dump_align(cprm: *mut coredump_params, align: ::core::ffi::c_int)
-        -> ::core::ffi::c_int;
+        addr: *const ::kernel::ffi::c_void,
+        nr: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
+    pub fn dump_align(cprm: *mut coredump_params, align: ::kernel::ffi::c_int)
+        -> ::kernel::ffi::c_int;
     pub fn dump_user_range(
         cprm: *mut coredump_params,
-        start: ::core::ffi::c_ulong,
-        len: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        start: ::kernel::ffi::c_ulong,
+        len: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
     pub fn vfs_coredump(siginfo: *const kernel_siginfo_t);
 }
 

@@ -12,9 +12,9 @@ unsafe fn kvm_sbi_ext_susp_handler(
     retdata: *mut kvm_vcpu_sbi_return,
 ) -> i32 {
     let cp: *mut kvm_cpu_context = unsafe { &mut (*vcpu).arch.guest_context };
-    let funcid: libc::c_ulong = unsafe { (*cp).a6 };
-    let mut hva: libc::c_ulong;
-    let mut i: libc::c_ulong;
+    let funcid: kernel::ffi::c_ulong = unsafe { (*cp).a6 };
+    let mut hva: kernel::ffi::c_ulong;
+    let mut i: kernel::ffi::c_ulong;
     let mut tmp: *mut kvm_vcpu;
 
     match funcid {

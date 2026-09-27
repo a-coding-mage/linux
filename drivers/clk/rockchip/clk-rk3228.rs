@@ -661,7 +661,7 @@ static rk3228_critical_clocks: &[&str] = {
 static void  rk3228_clk_init(device_node *np)
 {
 	struct rockchip_clk_provider *ctx;
-	core::ffi::c_ulong clk_nr_clks;
+	kernel::ffi::c_ulong clk_nr_clks;
 	void __iomem *reg_base;
 
 	reg_base = of_iomap(np, 0);

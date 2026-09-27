@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 // Copyright 2021 Jonathan Neuschäfer
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Translated from the dependency supplied by <asm/mach/arch.h>.
 static wpcm450_dt_match: [*const c_char; 2] = [

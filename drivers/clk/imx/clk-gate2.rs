@@ -11,7 +11,7 @@
 #[repr(C)]
 pub struct clk_gate2 {
     pub hw: clk_hw,
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub bit_idx: u8,
     pub cgr_val: u8,
     pub cgr_mask: u8,
@@ -39,7 +39,7 @@ unsafe fn clk_gate2_do_shared_clks(hw: *mut clk_hw, enable: bool) {
 
 unsafe fn clk_gate2_enable(hw: *mut clk_hw) -> i32 {
     let gate = &mut *to_clk_gate2(hw);
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     spin_lock_irqsave(gate.lock, &mut flags);
 
@@ -60,7 +60,7 @@ unsafe fn clk_gate2_enable(hw: *mut clk_hw) -> i32 {
 
 unsafe fn clk_gate2_disable(hw: *mut clk_hw) {
     let gate = &mut *to_clk_gate2(hw);
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     spin_lock_irqsave(gate.lock, &mut flags);
 
@@ -82,7 +82,7 @@ unsafe fn clk_gate2_disable(hw: *mut clk_hw) {
     spin_unlock_irqrestore(gate.lock, flags);
 }
 
-unsafe fn clk_gate2_reg_is_enabled(reg: *mut core::ffi::c_void, bit_idx: u8,
+unsafe fn clk_gate2_reg_is_enabled(reg: *mut kernel::ffi::c_void, bit_idx: u8,
                                    cgr_val: u8, cgr_mask: u8) -> i32 {
     let val = readl(reg);
 
@@ -94,7 +94,7 @@ unsafe fn clk_gate2_reg_is_enabled(reg: *mut core::ffi::c_void, bit_idx: u8,
 
 unsafe fn clk_gate2_is_enabled(hw: *mut clk_hw) -> i32 {
     let gate = &mut *to_clk_gate2(hw);
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let ret: i32;
 
     spin_lock_irqsave(gate.lock, &mut flags);
@@ -105,7 +105,7 @@ unsafe fn clk_gate2_is_enabled(hw: *mut clk_hw) -> i32 {
 
 unsafe fn clk_gate2_disable_unused(hw: *mut clk_hw) {
     let gate = &mut *to_clk_gate2(hw);
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     spin_lock_irqsave(gate.lock, &mut flags);
     if gate.share_count.is_null() || *gate.share_count == 0 {
@@ -122,8 +122,8 @@ static clk_gate2_ops: clk_ops = clk_ops {
 };
 
 pub unsafe fn clk_hw_register_gate2(
-    dev: *mut device, name: *const core::ffi::c_char, parent_name: *const core::ffi::c_char,
-    flags: core::ffi::c_ulong, reg: *mut core::ffi::c_void, bit_idx: u8, cgr_val: u8,
+    dev: *mut device, name: *const kernel::ffi::c_char, parent_name: *const kernel::ffi::c_char,
+    flags: kernel::ffi::c_ulong, reg: *mut kernel::ffi::c_void, bit_idx: u8, cgr_val: u8,
     cgr_mask: u8, clk_gate2_flags: u8, lock: *mut spinlock_t, share_count: *mut u32,
 ) -> *mut clk_hw {
     let gate = kzalloc_obj::<clk_gate2>();
@@ -151,7 +151,7 @@ pub unsafe fn clk_hw_register_gate2(
 
     let ret = clk_hw_register(dev, hw);
     if ret != 0 {
-        kfree(gate as *mut core::ffi::c_void);
+        kfree(gate as *mut kernel::ffi::c_void);
         return ERR_PTR(ret);
     }
     hw

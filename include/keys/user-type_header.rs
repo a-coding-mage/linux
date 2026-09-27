@@ -11,25 +11,25 @@
 pub struct user_key_payload {
     pub rcu: rcu_head,
     pub datalen: u16,
-    pub data: [core::ffi::c_char; 0],
+    pub data: [kernel::ffi::c_char; 0],
 }
 
 extern "C" {
     pub static mut key_type_user: key_type;
     pub static mut key_type_logon: key_type;
 
-    pub fn user_preparse(prep: *mut key_preparsed_payload) -> core::ffi::c_int;
+    pub fn user_preparse(prep: *mut key_preparsed_payload) -> kernel::ffi::c_int;
     pub fn user_free_preparse(prep: *mut key_preparsed_payload);
     pub fn user_update(
         key: *mut key,
         prep: *mut key_preparsed_payload,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn user_revoke(key: *mut key);
     pub fn user_destroy(key: *mut key);
     pub fn user_describe(user: *const key, m: *mut seq_file);
     pub fn user_read(
         key: *const key,
-        buffer: *mut core::ffi::c_char,
+        buffer: *mut kernel::ffi::c_char,
         buflen: usize,
     ) -> isize;
 }

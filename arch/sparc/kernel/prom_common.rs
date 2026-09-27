@@ -16,34 +16,34 @@
 
 extern "C" {
     pub static mut of_console_device: *mut device_node;
-    pub static mut of_console_path: *mut core::ffi::c_char;
-    pub static mut of_console_options: *mut core::ffi::c_char;
+    pub static mut of_console_path: *mut kernel::ffi::c_char;
+    pub static mut of_console_options: *mut kernel::ffi::c_char;
     pub static mut of_set_property_mutex: mutex;
     pub static mut devtree_lock: raw_spinlock;
     pub static mut prom_early_allocated: u32;
 
-    fn of_find_property(np: *mut device_node, name: *const core::ffi::c_char,
+    fn of_find_property(np: *mut device_node, name: *const kernel::ffi::c_char,
                         len: *mut i32) -> *mut property;
-    fn kmemdup(src: *const core::ffi::c_void, len: usize, flags: u32)
-        -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn strcasecmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
-    fn prom_setprop(node: phandle, name: *const core::ffi::c_char,
-                    val: *const core::ffi::c_void, len: i32) -> i32;
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
-    fn strlen(s: *const core::ffi::c_char) -> usize;
-    fn strscpy(dst: *mut core::ffi::c_char, src: *const core::ffi::c_char,
+    fn kmemdup(src: *const kernel::ffi::c_void, len: usize, flags: u32)
+        -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn strcasecmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
+    fn prom_setprop(node: phandle, name: *const kernel::ffi::c_char,
+                    val: *const kernel::ffi::c_void, len: i32) -> i32;
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
+    fn strlen(s: *const kernel::ffi::c_char) -> usize;
+    fn strscpy(dst: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char,
                size: usize) -> isize;
-    fn prom_nextprop(node: phandle, prev: *mut core::ffi::c_char,
-                     buf: *mut core::ffi::c_char) -> *const core::ffi::c_char;
-    fn prom_getproplen(node: phandle, name: *const core::ffi::c_char) -> i32;
-    fn prom_getproperty(node: phandle, name: *const core::ffi::c_char,
-                        val: *mut core::ffi::c_void, len: i32) -> i32;
+    fn prom_nextprop(node: phandle, prev: *mut kernel::ffi::c_char,
+                     buf: *mut kernel::ffi::c_char) -> *const kernel::ffi::c_char;
+    fn prom_getproplen(node: phandle, name: *const kernel::ffi::c_char) -> i32;
+    fn prom_getproperty(node: phandle, name: *const kernel::ffi::c_char,
+                        val: *mut kernel::ffi::c_void, len: i32) -> i32;
     fn prom_getchild(node: phandle) -> phandle;
     fn prom_getsibling(node: phandle) -> phandle;
     fn of_pdt_build_devicetree(root: phandle, ops: *const of_pdt_ops);
     fn of_console_init();
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
     fn mutex_lock(lock: *mut mutex);
     fn mutex_unlock(lock: *mut mutex);
     fn raw_spin_lock_irqsave(lock: *mut raw_spinlock, flags: *mut usize);
@@ -54,9 +54,9 @@ extern "C" {
 pub struct device_node { pub properties: *mut property, pub phandle: phandle }
 #[repr(C)]
 pub struct property {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub length: i32,
-    pub value: *mut core::ffi::c_void,
+    pub value: *mut kernel::ffi::c_void,
     pub next: *mut property,
 }
 #[repr(C)]
@@ -66,9 +66,9 @@ pub struct raw_spinlock { _private: [u8; 0] }
 pub type phandle = u32;
 #[repr(C)]
 pub struct of_pdt_ops {
-    pub nextprop: Option<unsafe extern "C" fn(*mut core::ffi::c_char, *const core::ffi::c_char) -> i32>,
-    pub getproplen: Option<unsafe extern "C" fn(phandle, *const core::ffi::c_char) -> i32>,
-    pub getproperty: Option<unsafe extern "C" fn(phandle, *const core::ffi::c_char, *mut core::ffi::c_void, i32) -> i32>,
+    pub nextprop: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char, *const kernel::ffi::c_char) -> i32>,
+    pub getproplen: Option<unsafe extern "C" fn(phandle, *const kernel::ffi::c_char) -> i32>,
+    pub getproperty: Option<unsafe extern "C" fn(phandle, *const kernel::ffi::c_char, *mut kernel::ffi::c_void, i32) -> i32>,
     pub getchild: Option<unsafe extern "C" fn(phandle) -> phandle>,
     pub getsibling: Option<unsafe extern "C" fn(phandle) -> phandle>,
 }
@@ -77,15 +77,15 @@ const ENOMEM: i32 = 12;
 const ENODEV: i32 = 19;
 const EINVAL: i32 = 22;
 
-pub unsafe fn of_getintprop_default(np: *mut device_node, name: *const core::ffi::c_char, def: i32) -> i32 {
+pub unsafe fn of_getintprop_default(np: *mut device_node, name: *const kernel::ffi::c_char, def: i32) -> i32 {
     let mut len = 0;
     let prop = of_find_property(np, name, &mut len);
     if prop.is_null() || len != 4 { return def; }
     *( (*prop).value as *const i32 )
 }
 
-pub unsafe fn of_set_property(dp: *mut device_node, name: *const core::ffi::c_char,
-                              val: *mut core::ffi::c_void, len: i32) -> i32 {
+pub unsafe fn of_set_property(dp: *mut device_node, name: *const kernel::ffi::c_char,
+                              val: *mut kernel::ffi::c_void, len: i32) -> i32 {
     let new_val = kmemdup(val, len as usize, 0);
     if new_val.is_null() { return -ENOMEM; }
     let mut err = -ENODEV;
@@ -117,8 +117,8 @@ pub unsafe fn of_set_property(dp: *mut device_node, name: *const core::ffi::c_ch
     err
 }
 
-pub unsafe fn of_find_in_proplist(mut list: *const core::ffi::c_char,
-                                  match_: *const core::ffi::c_char, mut len: i32) -> i32 {
+pub unsafe fn of_find_in_proplist(mut list: *const kernel::ffi::c_char,
+                                  match_: *const kernel::ffi::c_char, mut len: i32) -> i32 {
     while len > 0 {
         if strcmp(list, match_) == 0 { return 1; }
         let l = strlen(list) + 1;
@@ -128,15 +128,15 @@ pub unsafe fn of_find_in_proplist(mut list: *const core::ffi::c_char,
     0
 }
 
-unsafe fn handle_nextprop_quirks(buf: *mut core::ffi::c_char, name: *const core::ffi::c_char) -> i32 {
+unsafe fn handle_nextprop_quirks(buf: *mut kernel::ffi::c_char, name: *const kernel::ffi::c_char) -> i32 {
     let name_len = if name.is_null() { 0 } else { strlen(name) };
     if name_len == 0 { return -1; }
     // CONFIG_SPARC32: strscpy(buf, name, name_len + 1)
     0
 }
 
-unsafe fn prom_common_nextprop(node: phandle, prev: *mut core::ffi::c_char,
-                               buf: *mut core::ffi::c_char) -> i32 {
+unsafe fn prom_common_nextprop(node: phandle, prev: *mut kernel::ffi::c_char,
+                               buf: *mut kernel::ffi::c_char) -> i32 {
     *buf = 0;
     let name = prom_nextprop(node, prev, buf);
     handle_nextprop_quirks(buf, name)

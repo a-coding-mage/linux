@@ -10,8 +10,8 @@ extern "C" {
     fn preempt_disable();
     fn enable_kernel_altivec();
     fn xor_gen_altivec_inner(
-        dest: *mut core::ffi::c_void,
-        srcs: *mut *mut core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        srcs: *mut *mut kernel::ffi::c_void,
         src_cnt: u32,
         bytes: u32,
     );
@@ -21,18 +21,18 @@ extern "C" {
 
 #[repr(C)]
 pub struct xor_block_template {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub xor_gen: Option<unsafe extern "C" fn(
-        dest: *mut core::ffi::c_void,
-        srcs: *mut *mut core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        srcs: *mut *mut kernel::ffi::c_void,
         src_cnt: u32,
         bytes: u32,
     )>,
 }
 
 unsafe extern "C" fn xor_gen_altivec(
-    dest: *mut core::ffi::c_void,
-    srcs: *mut *mut core::ffi::c_void,
+    dest: *mut kernel::ffi::c_void,
+    srcs: *mut *mut kernel::ffi::c_void,
     src_cnt: u32,
     bytes: u32,
 ) {
@@ -47,7 +47,7 @@ unsafe extern "C" fn xor_gen_altivec(
 
 #[no_mangle]
 pub static mut xor_block_altivec: xor_block_template = xor_block_template {
-    name: b"altivec\0".as_ptr() as *const core::ffi::c_char,
+    name: b"altivec\0".as_ptr() as *const kernel::ffi::c_char,
     xor_gen: Some(xor_gen_altivec),
 };
 

@@ -24,46 +24,46 @@
  */
 
 extern "C" {
-    fn sa1100_finish_suspend(arg: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    fn sa1100_finish_suspend(arg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
     fn cpu_resume();
-    fn __pa_symbol(symbol: unsafe extern "C" fn()) -> ::core::ffi::c_ulong;
-    fn cpu_suspend(arg: ::core::ffi::c_ulong, fn_ptr: unsafe extern "C" fn(::core::ffi::c_ulong) -> ::core::ffi::c_int) -> ::core::ffi::c_int;
+    fn __pa_symbol(symbol: unsafe extern "C" fn()) -> ::kernel::ffi::c_ulong;
+    fn cpu_suspend(arg: ::kernel::ffi::c_ulong, fn_ptr: unsafe extern "C" fn(::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
     fn suspend_set_ops(ops: *const platform_suspend_ops);
     fn suspend_valid_only_mem(state: suspend_state_t) -> bool;
 }
 
 /* Register symbols and constants are supplied by the architecture headers. */
 extern {
-    static mut GPLR: ::core::ffi::c_ulong;
-    static mut GPDR: ::core::ffi::c_ulong;
-    static mut GAFR: ::core::ffi::c_ulong;
-    static mut PPDR: ::core::ffi::c_ulong;
-    static mut PPSR: ::core::ffi::c_ulong;
-    static mut PPAR: ::core::ffi::c_ulong;
-    static mut PSDR: ::core::ffi::c_ulong;
-    static mut Ser1SDCR0: ::core::ffi::c_ulong;
-    static mut RCSR: ::core::ffi::c_ulong;
-    static mut PSPR: ::core::ffi::c_ulong;
-    static mut ICLR: ::core::ffi::c_ulong;
-    static mut ICCR: ::core::ffi::c_ulong;
-    static mut ICMR: ::core::ffi::c_ulong;
-    static mut GPSR: ::core::ffi::c_ulong;
-    static mut GPCR: ::core::ffi::c_ulong;
-    static mut PSSR: ::core::ffi::c_ulong;
-    static RCSR_HWR: ::core::ffi::c_ulong;
-    static RCSR_SWR: ::core::ffi::c_ulong;
-    static RCSR_WDR: ::core::ffi::c_ulong;
-    static RCSR_SMR: ::core::ffi::c_ulong;
-    static PSSR_PH: ::core::ffi::c_ulong;
+    static mut GPLR: ::kernel::ffi::c_ulong;
+    static mut GPDR: ::kernel::ffi::c_ulong;
+    static mut GAFR: ::kernel::ffi::c_ulong;
+    static mut PPDR: ::kernel::ffi::c_ulong;
+    static mut PPSR: ::kernel::ffi::c_ulong;
+    static mut PPAR: ::kernel::ffi::c_ulong;
+    static mut PSDR: ::kernel::ffi::c_ulong;
+    static mut Ser1SDCR0: ::kernel::ffi::c_ulong;
+    static mut RCSR: ::kernel::ffi::c_ulong;
+    static mut PSPR: ::kernel::ffi::c_ulong;
+    static mut ICLR: ::kernel::ffi::c_ulong;
+    static mut ICCR: ::kernel::ffi::c_ulong;
+    static mut ICMR: ::kernel::ffi::c_ulong;
+    static mut GPSR: ::kernel::ffi::c_ulong;
+    static mut GPCR: ::kernel::ffi::c_ulong;
+    static mut PSSR: ::kernel::ffi::c_ulong;
+    static RCSR_HWR: ::kernel::ffi::c_ulong;
+    static RCSR_SWR: ::kernel::ffi::c_ulong;
+    static RCSR_WDR: ::kernel::ffi::c_ulong;
+    static RCSR_SMR: ::kernel::ffi::c_ulong;
+    static PSSR_PH: ::kernel::ffi::c_ulong;
 }
 
 #[repr(C)]
 pub struct platform_suspend_ops {
-    pub enter: Option<unsafe extern "C" fn(suspend_state_t) -> ::core::ffi::c_int>,
+    pub enter: Option<unsafe extern "C" fn(suspend_state_t) -> ::kernel::ffi::c_int>,
     pub valid: Option<unsafe extern "C" fn(suspend_state_t) -> bool>,
 }
 
-pub type suspend_state_t = ::core::ffi::c_uint;
+pub type suspend_state_t = ::kernel::ffi::c_uint;
 
 /*
  * List of global SA11x0 peripheral registers to preserve.
@@ -79,9 +79,9 @@ pub const SLEEP_SAVE_PSDR: usize = 5;
 pub const SLEEP_SAVE_SER1SDCR0: usize = 6;
 pub const SLEEP_SAVE_COUNT: usize = 7;
 
-unsafe fn sa11x0_pm_enter(_state: suspend_state_t) -> ::core::ffi::c_int {
-    let mut gpio: ::core::ffi::c_ulong;
-    let mut sleep_save = [0 as ::core::ffi::c_ulong; SLEEP_SAVE_COUNT];
+unsafe fn sa11x0_pm_enter(_state: suspend_state_t) -> ::kernel::ffi::c_int {
+    let mut gpio: ::kernel::ffi::c_ulong;
+    let mut sleep_save = [0 as ::kernel::ffi::c_ulong; SLEEP_SAVE_COUNT];
 
     gpio = GPLR;
 
@@ -146,7 +146,7 @@ static SA11X0_PM_OPS: platform_suspend_ops = platform_suspend_ops {
     valid: Some(suspend_valid_only_mem),
 };
 
-pub unsafe extern "C" fn sa11x0_pm_init() -> ::core::ffi::c_int {
+pub unsafe extern "C" fn sa11x0_pm_init() -> ::kernel::ffi::c_int {
     suspend_set_ops(&SA11X0_PM_OPS);
     0
 }

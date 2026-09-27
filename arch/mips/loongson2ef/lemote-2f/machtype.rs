@@ -5,7 +5,7 @@
  */
 
 // C dependencies supplied by the surrounding kernel translation.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     static mut arcs_cmdline: *mut c_char;

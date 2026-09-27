@@ -12,14 +12,14 @@ pub struct pid_namespace;
 
 #[cfg(CONFIG_BSD_PROCESS_ACCT)]
 unsafe extern "C" {
-    pub fn acct_collect(exitcode: ::core::ffi::c_long, group_dead: ::core::ffi::c_int);
+    pub fn acct_collect(exitcode: ::kernel::ffi::c_long, group_dead: ::kernel::ffi::c_int);
     pub fn acct_process();
     pub fn acct_exit_ns(ns: *mut pid_namespace);
 }
 
 #[cfg(not(CONFIG_BSD_PROCESS_ACCT))]
 #[inline]
-pub unsafe fn acct_collect(_x: ::core::ffi::c_long, _y: ::core::ffi::c_int) {}
+pub unsafe fn acct_collect(_x: ::kernel::ffi::c_long, _y: ::kernel::ffi::c_int) {}
 
 #[cfg(not(CONFIG_BSD_PROCESS_ACCT))]
 #[inline]
@@ -27,7 +27,7 @@ pub unsafe fn acct_process() {}
 
 #[cfg(not(CONFIG_BSD_PROCESS_ACCT))]
 #[inline]
-pub unsafe fn acct_exit_ns(_ns: *mut ::core::ffi::c_void) {}
+pub unsafe fn acct_exit_ns(_ns: *mut ::kernel::ffi::c_void) {}
 
 /*
  * ACCT_VERSION numbers as yet defined:
@@ -60,12 +60,12 @@ pub type acct_t = acct;
 /* HZ, USER_HZ, TICK_NSEC, and NSEC_PER_SEC are supplied externally. */
 
 #[inline]
-pub fn jiffies_to_AHZ(x: ::core::ffi::c_ulong) -> u32 {
+pub fn jiffies_to_AHZ(x: ::kernel::ffi::c_ulong) -> u32 {
     #[cfg(all(TICK_NSEC_DIVISIBLE_BY_NSEC_PER_AHZ, HZ_LT_AHZ))]
-    { x.wrapping_mul(AHZ as ::core::ffi::c_ulong / HZ as ::core::ffi::c_ulong) as u32 }
+    { x.wrapping_mul(AHZ as ::kernel::ffi::c_ulong / HZ as ::kernel::ffi::c_ulong) as u32 }
 
     #[cfg(all(TICK_NSEC_DIVISIBLE_BY_NSEC_PER_AHZ, not(HZ_LT_AHZ)))]
-    { (x / (HZ as ::core::ffi::c_ulong / AHZ as ::core::ffi::c_ulong)) as u32 }
+    { (x / (HZ as ::kernel::ffi::c_ulong / AHZ as ::kernel::ffi::c_ulong)) as u32 }
 
     #[cfg(not(TICK_NSEC_DIVISIBLE_BY_NSEC_PER_AHZ))]
     {

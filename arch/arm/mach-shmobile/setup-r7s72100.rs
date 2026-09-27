@@ -16,7 +16,7 @@ unsafe extern "C" {
 
 #[used]
 #[link_section = ".init.rodata"]
-static R7S72100_BOARDS_COMPAT_DT: [*const core::ffi::c_char; 2] = [
+static R7S72100_BOARDS_COMPAT_DT: [*const kernel::ffi::c_char; 2] = [
     c"renesas,r7s72100".as_ptr(),
     core::ptr::null(),
 ];
@@ -30,7 +30,7 @@ pub struct R7s72100DtMachine {
     pub l2c_aux_mask: u32,
     pub init_early: Option<unsafe extern "C" fn()>,
     pub init_late: Option<unsafe extern "C" fn()>,
-    pub dt_compat: *const *const core::ffi::c_char,
+    pub dt_compat: *const *const kernel::ffi::c_char,
 }
 
 #[used]

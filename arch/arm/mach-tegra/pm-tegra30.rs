@@ -9,7 +9,7 @@
 extern "C" {
     static mut tegra30_iram_start: u32;
     static mut tegra30_iram_end: u32;
-    fn tegra30_sleep_core_finish(arg: ::core::ffi::c_ulong);
+    fn tegra30_sleep_core_finish(arg: ::kernel::ffi::c_ulong);
 }
 
 #[cfg(CONFIG_PM_SLEEP)]
@@ -22,7 +22,7 @@ pub struct TegraLp1Iram {
 #[cfg(CONFIG_PM_SLEEP)]
 extern "C" {
     static mut tegra_lp1_iram: TegraLp1Iram;
-    static mut tegra_sleep_core_finish: unsafe extern "C" fn(::core::ffi::c_ulong);
+    static mut tegra_sleep_core_finish: unsafe extern "C" fn(::kernel::ffi::c_ulong);
 }
 
 #[cfg(CONFIG_PM_SLEEP)]

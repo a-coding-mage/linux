@@ -28,7 +28,7 @@ pub const SVC_FCS_REQUEST_TIMEOUT_MS: u32 = 2000;
 pub const SVC_COMPLETED_TIMEOUT_MS: u32 = 30000;
 pub const SVC_HWMON_REQUEST_TIMEOUT_MS: u32 = 2000;
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -110,7 +110,7 @@ pub type async_callback_t = Option<unsafe extern "C" fn(cb_arg: *mut c_void)>;
 extern "C" {
     pub fn stratix10_svc_request_channel_byname(
         client: *mut stratix10_svc_client,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> *mut stratix10_svc_chan;
     pub fn stratix10_svc_free_channel(chan: *mut stratix10_svc_chan);
     pub fn stratix10_svc_allocate_memory(

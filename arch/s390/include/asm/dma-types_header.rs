@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* Dependencies supplied by the surrounding kernel translation. */
 unsafe extern "C" {
     fn __pa32(addr: *const c_void) -> u32;
     fn __pa(addr: *const c_void) -> u64;
-    fn __va(addr: core::ffi::c_ulong) -> *mut c_void;
+    fn __va(addr: kernel::ffi::c_ulong) -> *mut c_void;
 }
 
 /*
@@ -45,7 +45,7 @@ pub unsafe fn virt_to_dma32(ptr: *mut c_void) -> dma32_t {
 
 #[inline]
 pub unsafe fn dma32_to_virt(addr: dma32_t) -> *mut c_void {
-    unsafe { __va(addr as core::ffi::c_ulong) }
+    unsafe { __va(addr as kernel::ffi::c_ulong) }
 }
 
 #[inline]
@@ -80,7 +80,7 @@ pub unsafe fn virt_to_dma64(ptr: *mut c_void) -> dma64_t {
 
 #[inline]
 pub unsafe fn dma64_to_virt(addr: dma64_t) -> *mut c_void {
-    unsafe { __va(addr as core::ffi::c_ulong) }
+    unsafe { __va(addr as kernel::ffi::c_ulong) }
 }
 
 #[inline]

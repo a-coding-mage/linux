@@ -13,10 +13,10 @@
 
 #[repr(C)]
 pub struct map_desc {
-    pub virtual_: ::core::ffi::c_ulong,
-    pub pfn: ::core::ffi::c_ulong,
-    pub length: ::core::ffi::c_ulong,
-    pub type_: ::core::ffi::c_int,
+    pub virtual_: ::kernel::ffi::c_ulong,
+    pub pfn: ::kernel::ffi::c_ulong,
+    pub length: ::kernel::ffi::c_ulong,
+    pub type_: ::kernel::ffi::c_int,
 }
 
 extern "C" {
@@ -27,25 +27,25 @@ extern "C" {
 // These constants and conversion function are provided by board/iomap and
 // the architecture headers in the surrounding kernel tree.
 extern "C" {
-    static IO_PPSB_VIRT: ::core::ffi::c_ulong;
-    static IO_PPSB_PHYS: ::core::ffi::c_ulong;
-    static IO_PPSB_SIZE: ::core::ffi::c_ulong;
-    static IO_APB_VIRT: ::core::ffi::c_ulong;
-    static IO_APB_PHYS: ::core::ffi::c_ulong;
-    static IO_APB_SIZE: ::core::ffi::c_ulong;
-    static IO_CPU_VIRT: ::core::ffi::c_ulong;
-    static IO_CPU_PHYS: ::core::ffi::c_ulong;
-    static IO_CPU_SIZE: ::core::ffi::c_ulong;
-    static IO_IRAM_VIRT: ::core::ffi::c_ulong;
-    static IO_IRAM_PHYS: ::core::ffi::c_ulong;
-    static IO_IRAM_SIZE: ::core::ffi::c_ulong;
-    static MT_DEVICE: ::core::ffi::c_int;
+    static IO_PPSB_VIRT: ::kernel::ffi::c_ulong;
+    static IO_PPSB_PHYS: ::kernel::ffi::c_ulong;
+    static IO_PPSB_SIZE: ::kernel::ffi::c_ulong;
+    static IO_APB_VIRT: ::kernel::ffi::c_ulong;
+    static IO_APB_PHYS: ::kernel::ffi::c_ulong;
+    static IO_APB_SIZE: ::kernel::ffi::c_ulong;
+    static IO_CPU_VIRT: ::kernel::ffi::c_ulong;
+    static IO_CPU_PHYS: ::kernel::ffi::c_ulong;
+    static IO_CPU_SIZE: ::kernel::ffi::c_ulong;
+    static IO_IRAM_VIRT: ::kernel::ffi::c_ulong;
+    static IO_IRAM_PHYS: ::kernel::ffi::c_ulong;
+    static IO_IRAM_SIZE: ::kernel::ffi::c_ulong;
+    static MT_DEVICE: ::kernel::ffi::c_int;
 }
 
 // `__phys_to_pfn` is a build-time architecture macro in the C source; its
 // equivalent is retained here as an external dependency.
 extern "C" {
-    fn __phys_to_pfn(phys: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
+    fn __phys_to_pfn(phys: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
 }
 
 // C `__initdata`; initialization is expressed through the corresponding

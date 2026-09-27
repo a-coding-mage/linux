@@ -58,7 +58,7 @@ macro_rules! X86_MATCH_CPU {
             feature: $feature,
             flags: $crate::X86_CPU_ID_FLAG_ENTRY_VALID,
             type_: $type,
-            driver_data: $data as ::core::ffi::c_ulong,
+            driver_data: $data as ::kernel::ffi::c_ulong,
         }
     };
 }

@@ -11,9 +11,9 @@ pub const THREAD_SIZE: usize = (1usize << CONFIG_KERNEL_STACK_ORDER) * PAGE_SIZE
 /* The following declarations depend on symbols supplied by the included headers. */
 #[repr(C)]
 pub struct thread_info {
-    pub flags: ::core::ffi::c_ulong, /* low level flags */
+    pub flags: ::kernel::ffi::c_ulong, /* low level flags */
     pub cpu: u32,                    /* current CPU */
-    pub preempt_count: ::core::ffi::c_int, /* 0 => preemptable, <0 => BUG */
+    pub preempt_count: ::kernel::ffi::c_int, /* 0 => preemptable, <0 => BUG */
 }
 
 #[macro_export]

@@ -17,7 +17,7 @@ unsafe extern "C" {
     fn arch_clk_init() -> i32;
     fn recalculate_root_clocks();
     fn clk_enable_init_clocks();
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]

@@ -972,7 +972,7 @@ struct btusb_data {
 	struct usb_interface *diag;
 	unsigned isoc_ifnum;
 
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	bool poll_sync;
 	int intr_interval;
@@ -1011,8 +1011,8 @@ struct btusb_data {
 	__u8 cmdreq_type;
 	__u8 cmdreq;
 
-	core::ffi::c_uint sco_num;
-	core::ffi::c_uint air_mode;
+	kernel::ffi::c_uint sco_num;
+	kernel::ffi::c_uint air_mode;
 	bool usb_alt6_packet_flow;
 	int isoc_altsetting;
 	int suspend_count;
@@ -1225,7 +1225,7 @@ unsafe fn  btusb_classify_qca_pkt_type(hci_dev *hdev, sk_buff *skb)
 
 unsafe fn btusb_free_frags(btusb_data *data)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave((*&data).rxlock, flags);
 
@@ -1256,7 +1256,7 @@ unsafe fn  btusb_recv_event(hci_dev *hdev, sk_buff *skb)
 unsafe fn  btusb_recv_intr(btusb_data *data, void *buffer, int count)
 {
 	struct sk_buff *skb;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int err = 0;
 
 	spin_lock_irqsave((*&data).rxlock, flags);
@@ -1340,7 +1340,7 @@ unsafe fn  btusb_recv_acl(hci_dev *hdev, sk_buff *skb)
 unsafe fn  btusb_recv_bulk(btusb_data *data, void *buffer, int count)
 {
 	struct sk_buff *skb;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int err = 0;
 
 	spin_lock_irqsave((*&data).rxlock, flags);
@@ -1424,7 +1424,7 @@ static mut  btusb_validate_sco_handle(hci_dev *hdev,
 unsafe fn  btusb_recv_isoc(btusb_data *data, void *buffer, int count)
 {
 	struct sk_buff *skb;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int err = 0;
 
 	spin_lock_irqsave((*&data).rxlock, flags);
@@ -1530,8 +1530,8 @@ unsafe fn  btusb_submit_intr_urb(hci_dev *hdev, gfp_t mem_flags)
 	'done: {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
-	core::ffi::c_uchar *buf;
-	core::ffi::c_uint pipe;
+	kernel::ffi::c_uchar *buf;
+	kernel::ffi::c_uint pipe;
 	int err, size;
 
 	BT_DBG("%s", (*hdev).name);
@@ -1652,8 +1652,8 @@ unsafe fn  btusb_submit_bulk_urb(hci_dev *hdev, gfp_t mem_flags)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
-	core::ffi::c_uchar *buf;
-	core::ffi::c_uint pipe;
+	kernel::ffi::c_uchar *buf;
+	kernel::ffi::c_uint pipe;
 	int err, size = HCI_MAX_FRAME_SIZE;
 
 	BT_DBG("%s", (*hdev).name);
@@ -1708,8 +1708,8 @@ unsafe fn  btusb_isoc_complete(urb *urb)
 
 	if ((*urb).status == 0) {
 		for (i = 0; i < (*urb).number_of_packets; i++) {
-			core::ffi::c_uint offset = (*urb).iso_frame_desc[i].offset;
-			core::ffi::c_uint length = (*urb).iso_frame_desc[i].actual_length;
+			kernel::ffi::c_uint offset = (*urb).iso_frame_desc[i].offset;
+			kernel::ffi::c_uint length = (*urb).iso_frame_desc[i].actual_length;
 
 			if ((*urb).iso_frame_desc[i].status)
 				continue;
@@ -1749,7 +1749,7 @@ unsafe fn __fill_isoc_descriptor_msbc(urb *urb, int len,
 {
 	'ignore_usb_alt6_packet_flow: {
 	int i = 0, offset = 0;
-	core::ffi::c_uint interval;
+	kernel::ffi::c_uint interval;
 
 	BT_DBG("len %d mtu %d", len, mtu);
 
@@ -1813,8 +1813,8 @@ unsafe fn  btusb_submit_isoc_urb(hci_dev *hdev, gfp_t mem_flags)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
-	core::ffi::c_uchar *buf;
-	core::ffi::c_uint pipe;
+	kernel::ffi::c_uchar *buf;
+	kernel::ffi::c_uint pipe;
 	int err, size;
 
 	BT_DBG("%s", (*hdev).name);
@@ -1905,8 +1905,8 @@ unsafe fn  btusb_submit_diag_urb(hci_dev *hdev, gfp_t mem_flags)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
-	core::ffi::c_uchar *buf;
-	core::ffi::c_uint pipe;
+	kernel::ffi::c_uchar *buf;
+	kernel::ffi::c_uint pipe;
 	int err, size = HCI_MAX_FRAME_SIZE;
 
 	BT_DBG("%s", (*hdev).name);
@@ -1953,7 +1953,7 @@ unsafe fn  btusb_tx_complete(urb *urb)
 	struct sk_buff *skb = (*urb).context;
 	struct hci_dev *hdev = (*(hci_dev *)skb).dev;
 	struct btusb_data *data = hci_get_drvdata(hdev);
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	BT_DBG("%s urb %p status %d count %d", (*hdev).name, urb, (*urb).status,
 	       (*urb).actual_length);
@@ -2137,7 +2137,7 @@ static mut  urb *alloc_ctrl_urb(hci_dev *hdev, sk_buff *skb)
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct usb_ctrlrequest *dr;
 	struct urb *urb;
-	core::ffi::c_uint pipe;
+	kernel::ffi::c_uint pipe;
 
 	urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!urb)
@@ -2169,7 +2169,7 @@ static mut  urb *alloc_bulk_urb(hci_dev *hdev, sk_buff *skb)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
-	core::ffi::c_uint pipe;
+	kernel::ffi::c_uint pipe;
 
 	if (!data->bulk_tx_ep)
 		return ERR_PTR(-ENODEV);
@@ -2192,7 +2192,7 @@ static mut  urb *alloc_isoc_urb(hci_dev *hdev, sk_buff *skb)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
-	core::ffi::c_uint pipe;
+	kernel::ffi::c_uint pipe;
 
 	if (!data->isoc_tx_ep)
 		return ERR_PTR(-ENODEV);
@@ -2246,7 +2246,7 @@ unsafe fn  submit_tx_urb(hci_dev *hdev, urb *urb)
 unsafe fn  submit_or_queue_tx_urb(hci_dev *hdev, urb *urb)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	bool suspending;
 
 	spin_lock_irqsave(&data->txlock, flags);
@@ -2311,7 +2311,7 @@ unsafe fn  btusb_send_frame(hci_dev *hdev, sk_buff *skb)
 	return -EILSEQ;
 }
 
-unsafe fn  btusb_notify(hci_dev *hdev, evt: core::ffi::c_uint)
+unsafe fn  btusb_notify(hci_dev *hdev, evt: kernel::ffi::c_uint)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 
@@ -2373,7 +2373,7 @@ unsafe fn  btusb_switch_alt_setting(hci_dev *hdev, int new_alts)
 	int err;
 
 	if (data->isoc_altsetting != new_alts) {
-		core::ffi::c_ulong flags;
+		kernel::ffi::c_ulong flags;
 
 		clear_bit(BTUSB_ISOC_RUNNING, &data->flags);
 		usb_kill_anchored_urbs(&data->isoc_anchor);
@@ -2448,9 +2448,9 @@ unsafe fn  btusb_work(work_struct *work)
 		if (data->air_mode == HCI_NOTIFY_ENABLE_SCO_CVSD) {
 			if (hdev->voice_setting & 0x0020) {
 				static const int alts[3] = { 2, 4, 5 };
-				core::ffi::c_uint sco_idx;
+				kernel::ffi::c_uint sco_idx;
 
-				sco_idx = min_t(core::ffi::c_uint, data->sco_num - 1,
+				sco_idx = min_t(kernel::ffi::c_uint, data->sco_num - 1,
 						ARRAY_SIZE(alts) - 1);
 				new_alts = alts[sco_idx];
 			} else {
@@ -3180,7 +3180,7 @@ unsafe fn  handle_dump_pkt_qca(hci_dev *hdev, sk_buff *skb)
 {
 	'out: {
 	int ret = 0;
-	core::ffi::c_uint skip = 0;
+	kernel::ffi::c_uint skip = 0;
 	u8 pkt_type;
 	u16 seqno;
 	u32 dump_size;
@@ -3787,7 +3787,7 @@ static mut  urb *alloc_diag_urb(hci_dev *hdev, enable: bool)
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct sk_buff *skb;
 	struct urb *urb;
-	core::ffi::c_uint pipe;
+	kernel::ffi::c_uint pipe;
 
 	if (!data->diag_tx_ep)
 		return ERR_PTR(-ENODEV);

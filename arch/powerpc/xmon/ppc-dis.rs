@@ -8,7 +8,7 @@ This file is part of GDB, GAS, and the GNU binutils.
 
 // Dependencies supplied by the surrounding PowerPC disassembler implementation.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub type ppc_cpu_t = u32;
 
@@ -27,7 +27,7 @@ pub struct powerpc_opcode {
     pub flags: u32,
     pub deprecated: u32,
     pub operands: *const u8,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 extern "C" {
@@ -38,7 +38,7 @@ extern "C" {
     fn ppc_optional_operand_value(operand: *const powerpc_operand) -> i64;
     fn cpu_has_feature(feature: u32) -> bool;
     fn print_address(address: u64);
-    fn printf(format: *const core::ffi::c_char, ...);
+    fn printf(format: *const kernel::ffi::c_char, ...);
 }
 
 // Constants and feature predicates are provided by the corresponding headers.

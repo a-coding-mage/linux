@@ -7,7 +7,7 @@
 
 // #include dependencies are supplied by the surrounding kernel translation.
 
-pub const ARCH_VM_PKEY_FLAGS: _ = VM_PKEY_BIT0 | VM_PKEY_BIT1 | VM_PKEY_BIT2;
+pub const ARCH_VM_PKEY_FLAGS: vm_flags_t = VM_PKEY_BIT0 | VM_PKEY_BIT1 | VM_PKEY_BIT2;
 
 #[inline]
 pub const fn arch_max_pkey() -> i32 {
@@ -15,7 +15,7 @@ pub const fn arch_max_pkey() -> i32 {
 }
 
 extern "C" {
-    pub fn arch_set_user_pkey_access(pkey: i32, init_val: ::core::ffi::c_ulong) -> i32;
+    pub fn arch_set_user_pkey_access(pkey: i32, init_val: ::kernel::ffi::c_ulong) -> i32;
 }
 
 #[inline]

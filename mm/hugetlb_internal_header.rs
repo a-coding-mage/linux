@@ -108,13 +108,13 @@ unsafe extern "C" {
     pub fn demote_pool_huge_page(
         src: *mut hstate,
         nodes_allowed: *mut nodemask_t,
-        nr_to_demote: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_long;
+        nr_to_demote: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_long;
     pub fn __nr_hugepages_store_common(
         obey_mempolicy: bool,
         h: *mut hstate,
         nid: i32,
-        count: ::core::ffi::c_ulong,
+        count: ::kernel::ffi::c_ulong,
         len: usize,
     ) -> isize;
     pub fn hugetlb_sysfs_init(); // C __init annotation

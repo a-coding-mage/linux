@@ -40,7 +40,7 @@ struct Lp3943Gpio {
 #[repr(C)]
 struct GpioChip {
     label: *const u8,
-    owner: *mut core::ffi::c_void,
+    owner: *mut kernel::ffi::c_void,
     request: Option<unsafe extern "C" fn(*mut GpioChip, u32) -> i32>,
     free: Option<unsafe extern "C" fn(*mut GpioChip, u32)>,
     direction_input: Option<unsafe extern "C" fn(*mut GpioChip, u32) -> i32>,
@@ -53,7 +53,7 @@ struct GpioChip {
     parent: *mut Device,
 }
 
-#[repr(C)] struct Lp3943 { pin_used: core::ffi::c_ulong, mux_cfg: *const Lp3943RegCfg }
+#[repr(C)] struct Lp3943 { pin_used: kernel::ffi::c_ulong, mux_cfg: *const Lp3943RegCfg }
 #[repr(C)] struct Lp3943RegCfg { reg: u8, mask: u8, shift: u8 }
 #[repr(C)] struct PlatformDevice { dev: Device }
 #[repr(C)] struct Device { parent: *mut Device }
@@ -69,8 +69,8 @@ const LP3943_GPIO_OUT_LOW: u8 = 0;
 
 extern "C" {
     fn gpiochip_get_data(chip: *mut GpioChip) -> *mut Lp3943Gpio;
-    fn test_and_set_bit(offset: u32, address: *mut core::ffi::c_ulong) -> bool;
-    fn clear_bit(offset: u32, address: *mut core::ffi::c_ulong);
+    fn test_and_set_bit(offset: u32, address: *mut kernel::ffi::c_ulong) -> bool;
+    fn clear_bit(offset: u32, address: *mut kernel::ffi::c_ulong);
     fn lp3943_update_bits(lp3943: *mut Lp3943, reg: u8, mask: u8, val: u8) -> i32;
     fn lp3943_read_byte(lp3943: *mut Lp3943, addr: u8, read: *mut u8) -> i32;
 }

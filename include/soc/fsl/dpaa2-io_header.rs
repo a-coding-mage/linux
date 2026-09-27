@@ -134,15 +134,15 @@ extern "C" {
         d: *mut dpaa2_io,
         bpid: u16,
         buffers: *const u64,
-        num_buffers: libc::c_uint,
+        num_buffers: core::ffi::c_uint,
     ) -> i32;
     pub fn dpaa2_io_service_acquire(
         d: *mut dpaa2_io,
         bpid: u16,
         buffers: *mut u64,
-        num_buffers: libc::c_uint,
+        num_buffers: core::ffi::c_uint,
     ) -> i32;
-    pub fn dpaa2_io_store_create(max_frames: libc::c_uint, dev: *mut device) -> *mut dpaa2_io_store;
+    pub fn dpaa2_io_store_create(max_frames: core::ffi::c_uint, dev: *mut device) -> *mut dpaa2_io_store;
     pub fn dpaa2_io_store_destroy(s: *mut dpaa2_io_store);
     pub fn dpaa2_io_store_next(s: *mut dpaa2_io_store, is_last: *mut i32) -> *mut dpaa2_dq;
     pub fn dpaa2_io_query_fq_count(

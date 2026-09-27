@@ -8,9 +8,9 @@
 
 // Kernel and architecture dependencies are supplied by the surrounding tree.
 
-pub static mut show_unhandled_signals: ::core::ffi::c_int = 1;
+pub static mut show_unhandled_signals: ::kernel::ffi::c_int = 1;
 
-unsafe fn spurious_fault(write: libc::c_ulong, address: libc::c_ulong) -> libc::c_int {
+unsafe fn spurious_fault(write: kernel::ffi::c_ulong, address: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     let mut pgd: *mut pgd_t;
     let mut p4d: *mut p4d_t;
     let mut pud: *mut pud_t;
@@ -36,8 +36,8 @@ unsafe fn spurious_fault(write: libc::c_ulong, address: libc::c_ulong) -> libc::
     }
 }
 
-unsafe fn no_context(regs: *mut pt_regs, write: libc::c_ulong, address: libc::c_ulong) {
-    let field: libc::c_int = (core::mem::size_of::<libc::c_ulong>() * 2) as libc::c_int;
+unsafe fn no_context(regs: *mut pt_regs, write: kernel::ffi::c_ulong, address: kernel::ffi::c_ulong) {
+    let field: kernel::ffi::c_int = (core::mem::size_of::<kernel::ffi::c_ulong>() * 2) as kernel::ffi::c_int;
     if spurious_fault(write, address) != 0 { return; }
     if fixup_exception(regs) != 0 { return; }
     if kfence_handle_page_fault(address, write, regs) != 0 { return; }
@@ -46,20 +46,20 @@ unsafe fn no_context(regs: *mut pt_regs, write: libc::c_ulong, address: libc::c_
     die(c"Oops", regs);
 }
 
-unsafe fn do_out_of_memory(regs: *mut pt_regs, write: libc::c_ulong, address: libc::c_ulong) {
+unsafe fn do_out_of_memory(regs: *mut pt_regs, write: kernel::ffi::c_ulong, address: kernel::ffi::c_ulong) {
     if user_mode(regs) == 0 { no_context(regs, write, address); return; }
     pagefault_out_of_memory();
 }
 
-unsafe fn do_sigbus(regs: *mut pt_regs, write: libc::c_ulong, address: libc::c_ulong, si_code: libc::c_int) {
+unsafe fn do_sigbus(regs: *mut pt_regs, write: kernel::ffi::c_ulong, address: kernel::ffi::c_ulong, si_code: kernel::ffi::c_int) {
     if user_mode(regs) == 0 { no_context(regs, write, address); return; }
     (*current).thread.csr_badvaddr = address;
     (*current).thread.trap_nr = read_csr_excode();
-    force_sig_fault(SIGBUS, BUS_ADRERR, address as *mut core::ffi::c_void);
+    force_sig_fault(SIGBUS, BUS_ADRERR, address as *mut kernel::ffi::c_void);
 }
 
-unsafe fn do_sigsegv(regs: *mut pt_regs, write: libc::c_ulong, address: libc::c_ulong, si_code: libc::c_int) {
-    let field: libc::c_int = (core::mem::size_of::<libc::c_ulong>() * 2) as libc::c_int;
+unsafe fn do_sigsegv(regs: *mut pt_regs, write: kernel::ffi::c_ulong, address: kernel::ffi::c_ulong, si_code: kernel::ffi::c_int) {
+    let field: kernel::ffi::c_int = (core::mem::size_of::<kernel::ffi::c_ulong>() * 2) as kernel::ffi::c_int;
     static mut ratelimit_state: ratelimit_state = DEFINE_RATELIMIT_STATE!("ratelimit_state", 5 * HZ, 10);
     if user_mode(regs) == 0 { no_context(regs, write, address); return; }
     (*current).thread.csr_badvaddr = address;
@@ -67,17 +67,17 @@ unsafe fn do_sigsegv(regs: *mut pt_regs, write: libc::c_ulong, address: libc::c_
     (*current).thread.trap_nr = read_csr_excode();
     if show_unhandled_signals != 0 && unhandled_signal(current, SIGSEGV) != 0 && __ratelimit(&mut ratelimit_state) != 0 {
         pr_info!("do_page_fault(): sending SIGSEGV to %s for invalid %s %0*lx\n", (*current).comm, if write != 0 { "write access to" } else { "read access from" }, field, address);
-        pr_info!("era = %0*lx in", field, (*regs).csr_era as libc::c_ulong);
+        pr_info!("era = %0*lx in", field, (*regs).csr_era as kernel::ffi::c_ulong);
         print_vma_addr(c"\x01c ".as_ptr(), (*regs).csr_era);
         pr_cont!("\n");
-        pr_info!("ra  = %0*lx in", field, (*regs).regs[1] as libc::c_ulong);
+        pr_info!("ra  = %0*lx in", field, (*regs).regs[1] as kernel::ffi::c_ulong);
         print_vma_addr(c"\x01c ".as_ptr(), (*regs).regs[1]);
         pr_cont!("\n");
     }
-    force_sig_fault(SIGSEGV, si_code, address as *mut core::ffi::c_void);
+    force_sig_fault(SIGSEGV, si_code, address as *mut kernel::ffi::c_void);
 }
 
-unsafe fn __do_page_fault(regs: *mut pt_regs, write: libc::c_ulong, address: libc::c_ulong) {
+unsafe fn __do_page_fault(regs: *mut pt_regs, write: kernel::ffi::c_ulong, address: kernel::ffi::c_ulong) {
     let mut si_code = SEGV_MAPERR;
     let mut flags = FAULT_FLAG_DEFAULT;
     let tsk = current;
@@ -119,7 +119,7 @@ unsafe fn __do_page_fault(regs: *mut pt_regs, write: libc::c_ulong, address: lib
     if fault & VM_FAULT_ERROR != 0 { if fault & VM_FAULT_OOM != 0 { do_out_of_memory(regs, write, address); return; } else if fault & VM_FAULT_SIGSEGV != 0 { do_sigsegv(regs, write, address, si_code); return; } else if fault & (VM_FAULT_SIGBUS | VM_FAULT_HWPOISON | VM_FAULT_HWPOISON_LARGE) != 0 { do_sigbus(regs, write, address, si_code); return; } BUG!(); }
 }
 
-pub unsafe fn do_page_fault(regs: *mut pt_regs, write: libc::c_ulong, address: libc::c_ulong) {
+pub unsafe fn do_page_fault(regs: *mut pt_regs, write: kernel::ffi::c_ulong, address: kernel::ffi::c_ulong) {
     let state = irqentry_enter(regs);
     if (*regs).csr_prmd & CSR_PRMD_PIE != 0 { local_irq_enable(); }
     __do_page_fault(regs, write, address);

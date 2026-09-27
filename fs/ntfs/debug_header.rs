@@ -5,7 +5,7 @@
  * Copyright (c) 2001-2004 Anton Altaparmakov
  */
 
-use core::ffi::{c_char, c_int, c_void};
+use kernel::ffi::{c_char, c_int, c_void};
 
 /* Supplied by the corresponding translated kernel and runlist code. */
 #[repr(C)]
@@ -40,9 +40,9 @@ macro_rules! ntfs_debug {
     ($f:expr $(, $a:expr)*) => {
         unsafe {
             $crate::__ntfs_debug(
-                concat!(file!(), "\0").as_ptr() as *const core::ffi::c_char,
-                line!() as core::ffi::c_int,
-                concat!(module_path!(), "\0").as_ptr() as *const core::ffi::c_char,
+                concat!(file!(), "\0").as_ptr() as *const kernel::ffi::c_char,
+                line!() as kernel::ffi::c_int,
+                concat!(module_path!(), "\0").as_ptr() as *const kernel::ffi::c_char,
                 $f,
                 $($a),*
             )
@@ -102,7 +102,7 @@ macro_rules! ntfs_warning {
     ($sb:expr, $f:expr $(, $a:expr)*) => {
         unsafe {
             $crate::__ntfs_warning(
-                concat!(module_path!(), "\0").as_ptr() as *const core::ffi::c_char,
+                concat!(module_path!(), "\0").as_ptr() as *const kernel::ffi::c_char,
                 $sb,
                 $f,
                 $($a),*
@@ -116,7 +116,7 @@ macro_rules! ntfs_error {
     ($sb:expr, $f:expr $(, $a:expr)*) => {
         unsafe {
             $crate::__ntfs_error(
-                concat!(module_path!(), "\0").as_ptr() as *const core::ffi::c_char,
+                concat!(module_path!(), "\0").as_ptr() as *const kernel::ffi::c_char,
                 $sb,
                 $f,
                 $($a),*

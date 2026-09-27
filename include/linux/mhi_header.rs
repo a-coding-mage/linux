@@ -3,7 +3,7 @@
 
 #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, dead_code)]
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub const MHI_MAX_OEM_PK_HASH_SEGMENTS: usize = 16;
 
@@ -55,12 +55,12 @@ pub enum mhi_device_type { MHI_DEVICE_XFER, MHI_DEVICE_CONTROLLER }
 pub enum mhi_ch_type { MHI_CH_TYPE_INVALID = 0, MHI_CH_TYPE_OUTBOUND = DMA_TO_DEVICE as isize, MHI_CH_TYPE_INBOUND = DMA_FROM_DEVICE as isize, MHI_CH_TYPE_INBOUND_COALESCED = 3 }
 
 #[repr(C)]
-pub struct mhi_buf { pub buf: *mut c_void, pub name: *const core::ffi::c_char, pub dma_addr: dma_addr_t, pub len: usize }
+pub struct mhi_buf { pub buf: *mut c_void, pub name: *const kernel::ffi::c_char, pub dma_addr: dma_addr_t, pub len: usize }
 
 #[repr(C)]
 pub struct image_info { pub bhi_vec: *mut bhi_vec_entry, pub entries: u32, pub mhi_buf: [mhi_buf; 0] }
 
-#[repr(C)] pub struct mhi_link_info { pub target_link_speed: core::ffi::c_uint, pub target_link_width: core::ffi::c_uint }
+#[repr(C)] pub struct mhi_link_info { pub target_link_speed: kernel::ffi::c_uint, pub target_link_width: kernel::ffi::c_uint }
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -78,7 +78,7 @@ pub enum mhi_ch_ee_mask { MHI_CH_EE_PBL = 1, MHI_CH_EE_SBL = 2, MHI_CH_EE_AMSS =
 #[repr(C)] #[derive(Copy, Clone)] pub enum mhi_db_brst_mode { MHI_DB_BRST_DISABLE = 2, MHI_DB_BRST_ENABLE = 3 }
 
 #[repr(C)]
-pub struct mhi_channel_config { pub name: *mut core::ffi::c_char, pub num: u32, pub num_elements: u32, pub local_elements: u32, pub event_ring: u32, pub dir: dma_data_direction, pub type_: mhi_ch_type, pub ee_mask: u32, pub pollcfg: u32, pub doorbell: mhi_db_brst_mode, pub lpm_notify: bool, pub offload_channel: bool, pub doorbell_mode_switch: bool, pub wake_capable: bool }
+pub struct mhi_channel_config { pub name: *mut kernel::ffi::c_char, pub num: u32, pub num_elements: u32, pub local_elements: u32, pub event_ring: u32, pub dir: dma_data_direction, pub type_: mhi_ch_type, pub ee_mask: u32, pub pollcfg: u32, pub doorbell: mhi_db_brst_mode, pub lpm_notify: bool, pub offload_channel: bool, pub doorbell_mode_switch: bool, pub wake_capable: bool }
 
 #[repr(C)]
 pub struct mhi_event_config { pub num_elements: u32, pub irq_moderation_ms: u32, pub irq: u32, pub channel: u32, pub priority: u32, pub mode: mhi_db_brst_mode, pub data_type: mhi_er_data_type, pub hardware_event: bool, pub client_managed: bool, pub offload_channel: bool }
@@ -88,15 +88,15 @@ pub struct mhi_controller_config { pub max_channels: u32, pub timeout_ms: u32, p
 
 #[repr(C)]
 pub struct mhi_controller {
-    pub name: *const core::ffi::c_char, pub cntrl_dev: *mut device, pub mhi_dev: *mut mhi_device, pub debugfs_dentry: *mut dentry, pub regs: *mut c_void, pub bhi: *mut c_void, pub bhie: *mut c_void, pub wake_db: *mut c_void,
-    pub iova_start: dma_addr_t, pub iova_stop: dma_addr_t, pub fw_image: *const core::ffi::c_char, pub fw_data: *const u8, pub fw_sz: usize, pub edl_image: *const core::ffi::c_char, pub rddm_size: usize, pub sbl_size: usize, pub seg_len: usize, pub reg_len: usize, pub fbc_image: *mut image_info, pub rddm_image: *mut image_info, pub mhi_chan: *mut mhi_chan, pub lpm_chans: list_head, pub irq: *mut i32, pub max_chan: u32, pub total_ev_rings: u32, pub hw_ev_rings: u32, pub sw_ev_rings: u32, pub nr_irqs: u32, pub serial_number: u32,
+    pub name: *const kernel::ffi::c_char, pub cntrl_dev: *mut device, pub mhi_dev: *mut mhi_device, pub debugfs_dentry: *mut dentry, pub regs: *mut c_void, pub bhi: *mut c_void, pub bhie: *mut c_void, pub wake_db: *mut c_void,
+    pub iova_start: dma_addr_t, pub iova_stop: dma_addr_t, pub fw_image: *const kernel::ffi::c_char, pub fw_data: *const u8, pub fw_sz: usize, pub edl_image: *const kernel::ffi::c_char, pub rddm_size: usize, pub sbl_size: usize, pub seg_len: usize, pub reg_len: usize, pub fbc_image: *mut image_info, pub rddm_image: *mut image_info, pub mhi_chan: *mut mhi_chan, pub lpm_chans: list_head, pub irq: *mut i32, pub max_chan: u32, pub total_ev_rings: u32, pub hw_ev_rings: u32, pub sw_ev_rings: u32, pub nr_irqs: u32, pub serial_number: u32,
     pub mhi_event: *mut mhi_event, pub mhi_cmd: *mut mhi_cmd, pub mhi_ctxt: *mut mhi_ctxt, pub pm_mutex: mutex, pub pm_lock: rwlock_t, pub timeout_ms: u32, pub ready_timeout_ms: u32, pub pm_state: u32, pub db_access: u32, pub ee: mhi_ee_type, pub dev_state: mhi_state, pub dev_wake: atomic_t, pub pending_pkts: atomic_t, pub M0: u32, pub M2: u32, pub M3: u32, pub transition_list: list_head, pub transition_lock: spinlock_t, pub wlock: spinlock_t, pub mhi_link_info: mhi_link_info, pub st_worker: work_struct, pub hiprio_wq: *mut workqueue_struct, pub state_event: wait_queue_head_t,
     pub status_cb: Option<unsafe extern "C" fn(*mut mhi_controller, mhi_callback)>, pub wake_get: Option<unsafe extern "C" fn(*mut mhi_controller, bool)>, pub wake_put: Option<unsafe extern "C" fn(*mut mhi_controller, bool)>, pub wake_toggle: Option<unsafe extern "C" fn(*mut mhi_controller)>, pub runtime_get: Option<unsafe extern "C" fn(*mut mhi_controller) -> i32>, pub runtime_put: Option<unsafe extern "C" fn(*mut mhi_controller)>, pub map_single: Option<unsafe extern "C" fn(*mut mhi_controller, *mut mhi_buf_info) -> i32>, pub unmap_single: Option<unsafe extern "C" fn(*mut mhi_controller, *mut mhi_buf_info)>, pub read_reg: Option<unsafe extern "C" fn(*mut mhi_controller, *mut c_void, *mut u32) -> i32>, pub write_reg: Option<unsafe extern "C" fn(*mut mhi_controller, *mut c_void, u32)>, pub reset: Option<unsafe extern "C" fn(*mut mhi_controller)>, pub edl_trigger: Option<unsafe extern "C" fn(*mut mhi_controller) -> i32>,
     pub buffer_len: usize, pub index: i32, pub bounce_buf: bool, pub fbc_download: bool, pub wake_set: bool, pub no_m3: bool, pub irq_flags: usize, pub mru: u32,
 }
 
 #[repr(C)]
-pub struct mhi_device { pub id: *const mhi_device_id, pub name: *const core::ffi::c_char, pub mhi_cntrl: *mut mhi_controller, pub ul_chan: *mut mhi_chan, pub dl_chan: *mut mhi_chan, pub dev: device, pub dev_type: mhi_device_type, pub ul_chan_id: i32, pub dl_chan_id: i32, pub dev_wake: u32 }
+pub struct mhi_device { pub id: *const mhi_device_id, pub name: *const kernel::ffi::c_char, pub mhi_cntrl: *mut mhi_controller, pub ul_chan: *mut mhi_chan, pub dl_chan: *mut mhi_chan, pub dev: device, pub dev_type: mhi_device_type, pub ul_chan_id: i32, pub dl_chan_id: i32, pub dev_wake: u32 }
 
 #[repr(C)] pub struct mhi_result { pub buf_addr: *mut c_void, pub bytes_xferd: usize, pub dir: dma_data_direction, pub transaction_status: i32 }
 

@@ -5,7 +5,7 @@
  *   Documentation/trace/rv/deterministic_automata.rst
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const MONITOR_NAME: &str = "sco";
 

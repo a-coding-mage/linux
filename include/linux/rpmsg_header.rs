@@ -17,7 +17,7 @@ pub struct rpmsg_endpoint_ops;
 
 #[repr(C)]
 pub struct rpmsg_channel_info {
-    pub name: [core::ffi::c_char; RPMSG_NAME_SIZE as usize],
+    pub name: [kernel::ffi::c_char; RPMSG_NAME_SIZE as usize],
     pub src: u32,
     pub dst: u32,
 }
@@ -34,8 +34,8 @@ pub struct rpmsg_device {
     pub ops: *const rpmsg_device_ops,
 }
 
-pub type rpmsg_rx_cb_t = Option<unsafe extern "C" fn(*mut rpmsg_device, *mut core::ffi::c_void, i32, *mut core::ffi::c_void, u32) -> i32>;
-pub type rpmsg_flowcontrol_cb_t = Option<unsafe extern "C" fn(*mut rpmsg_device, *mut core::ffi::c_void, bool) -> i32>;
+pub type rpmsg_rx_cb_t = Option<unsafe extern "C" fn(*mut rpmsg_device, *mut kernel::ffi::c_void, i32, *mut kernel::ffi::c_void, u32) -> i32>;
+pub type rpmsg_flowcontrol_cb_t = Option<unsafe extern "C" fn(*mut rpmsg_device, *mut kernel::ffi::c_void, bool) -> i32>;
 
 #[repr(C)]
 pub struct rpmsg_endpoint {
@@ -45,7 +45,7 @@ pub struct rpmsg_endpoint {
     pub flow_cb: rpmsg_flowcontrol_cb_t,
     pub cb_lock: mutex,
     pub addr: u32,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
     pub ops: *const rpmsg_endpoint_ops,
 }
 
@@ -55,8 +55,8 @@ pub struct rpmsg_driver {
     pub id_table: *const rpmsg_device_id,
     pub probe: Option<unsafe extern "C" fn(*mut rpmsg_device) -> i32>,
     pub remove: Option<unsafe extern "C" fn(*mut rpmsg_device)>,
-    pub callback: Option<unsafe extern "C" fn(*mut rpmsg_device, *mut core::ffi::c_void, i32, *mut core::ffi::c_void, u32) -> i32>,
-    pub flowcontrol: Option<unsafe extern "C" fn(*mut rpmsg_device, *mut core::ffi::c_void, bool) -> i32>,
+    pub callback: Option<unsafe extern "C" fn(*mut rpmsg_device, *mut kernel::ffi::c_void, i32, *mut kernel::ffi::c_void, u32) -> i32>,
+    pub flowcontrol: Option<unsafe extern "C" fn(*mut rpmsg_device, *mut kernel::ffi::c_void, bool) -> i32>,
 }
 
 #[inline]
@@ -116,17 +116,17 @@ pub unsafe fn cpu_to_rpmsg64(rpdev: *mut rpmsg_device, val: u64) -> __rpmsg64 {
 // The C header selects these declarations when CONFIG_RPMSG is enabled.
 #[cfg(CONFIG_RPMSG)]
 extern "C" {
-    pub fn rpmsg_register_device_override(rpdev: *mut rpmsg_device, driver_override: *const core::ffi::c_char) -> i32;
+    pub fn rpmsg_register_device_override(rpdev: *mut rpmsg_device, driver_override: *const kernel::ffi::c_char) -> i32;
     pub fn rpmsg_register_device(rpdev: *mut rpmsg_device) -> i32;
     pub fn rpmsg_unregister_device(parent: *mut device, chinfo: *mut rpmsg_channel_info) -> i32;
     pub fn __register_rpmsg_driver(drv: *mut rpmsg_driver, owner: *mut module) -> i32;
     pub fn unregister_rpmsg_driver(drv: *mut rpmsg_driver);
     pub fn rpmsg_destroy_ept(ept: *mut rpmsg_endpoint);
-    pub fn rpmsg_create_ept(rpdev: *mut rpmsg_device, cb: rpmsg_rx_cb_t, priv_: *mut core::ffi::c_void, chinfo: rpmsg_channel_info) -> *mut rpmsg_endpoint;
-    pub fn rpmsg_send(ept: *mut rpmsg_endpoint, data: *const core::ffi::c_void, len: i32) -> i32;
-    pub fn rpmsg_sendto(ept: *mut rpmsg_endpoint, data: *const core::ffi::c_void, len: i32, dst: u32) -> i32;
-    pub fn rpmsg_trysend(ept: *mut rpmsg_endpoint, data: *const core::ffi::c_void, len: i32) -> i32;
-    pub fn rpmsg_trysendto(ept: *mut rpmsg_endpoint, data: *const core::ffi::c_void, len: i32, dst: u32) -> i32;
+    pub fn rpmsg_create_ept(rpdev: *mut rpmsg_device, cb: rpmsg_rx_cb_t, priv_: *mut kernel::ffi::c_void, chinfo: rpmsg_channel_info) -> *mut rpmsg_endpoint;
+    pub fn rpmsg_send(ept: *mut rpmsg_endpoint, data: *const kernel::ffi::c_void, len: i32) -> i32;
+    pub fn rpmsg_sendto(ept: *mut rpmsg_endpoint, data: *const kernel::ffi::c_void, len: i32, dst: u32) -> i32;
+    pub fn rpmsg_trysend(ept: *mut rpmsg_endpoint, data: *const kernel::ffi::c_void, len: i32) -> i32;
+    pub fn rpmsg_trysendto(ept: *mut rpmsg_endpoint, data: *const kernel::ffi::c_void, len: i32, dst: u32) -> i32;
     pub fn rpmsg_poll(ept: *mut rpmsg_endpoint, filp: *mut file, wait: *mut poll_table) -> __poll_t;
     pub fn rpmsg_get_mtu(ept: *mut rpmsg_endpoint) -> isize;
     pub fn rpmsg_set_flow_control(ept: *mut rpmsg_endpoint, pause: bool, dst: u32) -> i32;
@@ -135,7 +135,7 @@ extern "C" {
 // When CONFIG_RPMSG is disabled, the C inline functions warn and return -ENXIO
 // (or NULL for rpmsg_create_ept); these stubs preserve that interface.
 #[cfg(not(CONFIG_RPMSG))]
-pub unsafe fn rpmsg_register_device_override(_: *mut rpmsg_device, _: *const core::ffi::c_char) -> i32 { -ENXIO }
+pub unsafe fn rpmsg_register_device_override(_: *mut rpmsg_device, _: *const kernel::ffi::c_char) -> i32 { -ENXIO }
 #[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_register_device(_: *mut rpmsg_device) -> i32 { -ENXIO }
 #[cfg(not(CONFIG_RPMSG))]
@@ -147,15 +147,15 @@ pub unsafe fn unregister_rpmsg_driver(_: *mut rpmsg_driver) { WARN_ON(1); }
 #[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_destroy_ept(_: *mut rpmsg_endpoint) { WARN_ON(1); }
 #[cfg(not(CONFIG_RPMSG))]
-pub unsafe fn rpmsg_create_ept(_: *mut rpmsg_device, _: rpmsg_rx_cb_t, _: *mut core::ffi::c_void, _: rpmsg_channel_info) -> *mut rpmsg_endpoint { WARN_ON(1); core::ptr::null_mut() }
+pub unsafe fn rpmsg_create_ept(_: *mut rpmsg_device, _: rpmsg_rx_cb_t, _: *mut kernel::ffi::c_void, _: rpmsg_channel_info) -> *mut rpmsg_endpoint { WARN_ON(1); core::ptr::null_mut() }
 #[cfg(not(CONFIG_RPMSG))]
-pub unsafe fn rpmsg_send(_: *mut rpmsg_endpoint, _: *const core::ffi::c_void, _: i32) -> i32 { WARN_ON(1); -ENXIO }
+pub unsafe fn rpmsg_send(_: *mut rpmsg_endpoint, _: *const kernel::ffi::c_void, _: i32) -> i32 { WARN_ON(1); -ENXIO }
 #[cfg(not(CONFIG_RPMSG))]
-pub unsafe fn rpmsg_sendto(_: *mut rpmsg_endpoint, _: *const core::ffi::c_void, _: i32, _: u32) -> i32 { WARN_ON(1); -ENXIO }
+pub unsafe fn rpmsg_sendto(_: *mut rpmsg_endpoint, _: *const kernel::ffi::c_void, _: i32, _: u32) -> i32 { WARN_ON(1); -ENXIO }
 #[cfg(not(CONFIG_RPMSG))]
-pub unsafe fn rpmsg_trysend(_: *mut rpmsg_endpoint, _: *const core::ffi::c_void, _: i32) -> i32 { WARN_ON(1); -ENXIO }
+pub unsafe fn rpmsg_trysend(_: *mut rpmsg_endpoint, _: *const kernel::ffi::c_void, _: i32) -> i32 { WARN_ON(1); -ENXIO }
 #[cfg(not(CONFIG_RPMSG))]
-pub unsafe fn rpmsg_trysendto(_: *mut rpmsg_endpoint, _: *const core::ffi::c_void, _: i32, _: u32) -> i32 { WARN_ON(1); -ENXIO }
+pub unsafe fn rpmsg_trysendto(_: *mut rpmsg_endpoint, _: *const kernel::ffi::c_void, _: i32, _: u32) -> i32 { WARN_ON(1); -ENXIO }
 #[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_poll(_: *mut rpmsg_endpoint, _: *mut file, _: *mut poll_table) -> __poll_t { WARN_ON(1); 0 }
 #[cfg(not(CONFIG_RPMSG))]

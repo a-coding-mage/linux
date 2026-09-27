@@ -4,7 +4,7 @@
  *          anywhere else.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 type Phandle = i32;
 

@@ -84,7 +84,7 @@ pub struct i40e_info {
     pub hw_addr: *mut u8,
     pub fid: u8, /* function id, PF id or VF id */
     pub ftype: u8, /* function type, PF or VF */
-    pub pf: *mut core::ffi::c_void,
+    pub pf: *mut kernel::ffi::c_void,
     pub qvlist_info: *mut i40e_qvlist_info,
     pub params: i40e_params,
     pub ops: *mut i40e_ops,
@@ -139,7 +139,7 @@ pub struct i40e_client_instance {
 #[repr(C)]
 pub struct i40e_client {
     pub list: list_head,
-    pub name: [core::ffi::c_char; I40E_CLIENT_STR_LENGTH],
+    pub name: [kernel::ffi::c_char; I40E_CLIENT_STR_LENGTH],
     pub version: i40e_client_version,
     pub state: usize,
     pub ref_cnt: atomic_t,

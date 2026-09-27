@@ -8,7 +8,7 @@
 // Translated from the Linux kernel implementation. External kernel and OPAL
 // declarations are supplied by the surrounding Rust translation environment.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     static mut sg_mutex: mutex;
@@ -38,7 +38,7 @@ extern "C" {
     fn of_node_put(node: *mut device_node);
     fn kobject_create_and_add(name: *const c_char, parent: *mut kobject) -> *mut kobject;
     fn kobject_put(kobj: *mut kobject);
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn sprintf(dst: *mut c_char, fmt: *const c_char, ...) -> i32;
 
     static mut opal_kobj: *mut kobject;

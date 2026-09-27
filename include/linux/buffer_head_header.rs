@@ -34,14 +34,14 @@ pub union buffer_head_page_or_folio {
 
 #[repr(C)]
 pub struct buffer_head {
-    pub b_state: ::core::ffi::c_ulong,
+    pub b_state: ::kernel::ffi::c_ulong,
     pub b_this_page: *mut buffer_head,
     pub page_or_folio: buffer_head_page_or_folio,
     pub b_blocknr: sector_t,
     pub b_size: usize,
-    pub b_data: *mut ::core::ffi::c_char,
+    pub b_data: *mut ::kernel::ffi::c_char,
     pub b_bdev: *mut block_device,
-    pub b_private: *mut ::core::ffi::c_void,
+    pub b_private: *mut ::kernel::ffi::c_void,
     pub b_assoc_buffers: list_head,
     pub b_mmb: *mut mapping_metadata_bhs,
     pub b_count: atomic_t,
@@ -81,7 +81,7 @@ define_buffer_helpers!(BH_Defer_Completion, set_buffer_defer_completion, clear_b
 #[inline(always)] pub unsafe fn clear_buffer_uptodate(bh: *mut buffer_head) { clear_bit(BH_Uptodate as _, &mut (*bh).b_state); }
 #[inline(always)] pub unsafe fn buffer_uptodate(bh: *const buffer_head) -> i32 { test_bit_acquire(BH_Uptodate as _, &(*bh).b_state) }
 
-#[inline] pub unsafe fn bh_offset(bh: *const buffer_head) -> ::core::ffi::c_ulong { (*bh).b_data as ::core::ffi::c_ulong & (page_size((*bh).page_or_folio.b_page) - 1) }
+#[inline] pub unsafe fn bh_offset(bh: *const buffer_head) -> ::kernel::ffi::c_ulong { (*bh).b_data as ::kernel::ffi::c_ulong & (page_size((*bh).page_or_folio.b_page) - 1) }
 
 pub unsafe fn page_buffers(page: *mut page) -> *mut buffer_head { BUG_ON(!PagePrivate(page)); page_private(page) as *mut buffer_head }
 pub unsafe fn folio_buffers(folio: *mut folio) -> *mut buffer_head { folio_get_private(folio) as *mut buffer_head }
@@ -91,10 +91,10 @@ extern "C" {
     pub fn mark_buffer_dirty(bh: *mut buffer_head);
     pub fn mark_buffer_write_io_error(bh: *mut buffer_head);
     pub fn touch_buffer(bh: *mut buffer_head);
-    pub fn folio_set_bh(bh: *mut buffer_head, folio: *mut folio, offset: ::core::ffi::c_ulong);
-    pub fn folio_alloc_buffers(folio: *mut folio, size: ::core::ffi::c_ulong, gfp: gfp_t) -> *mut buffer_head;
-    pub fn alloc_page_buffers(page: *mut page, size: ::core::ffi::c_ulong) -> *mut buffer_head;
-    pub fn create_empty_buffers(folio: *mut folio, blocksize: ::core::ffi::c_ulong, b_state: ::core::ffi::c_ulong) -> *mut buffer_head;
+    pub fn folio_set_bh(bh: *mut buffer_head, folio: *mut folio, offset: ::kernel::ffi::c_ulong);
+    pub fn folio_alloc_buffers(folio: *mut folio, size: ::kernel::ffi::c_ulong, gfp: gfp_t) -> *mut buffer_head;
+    pub fn alloc_page_buffers(page: *mut page, size: ::kernel::ffi::c_ulong) -> *mut buffer_head;
+    pub fn create_empty_buffers(folio: *mut folio, blocksize: ::kernel::ffi::c_ulong, b_state: ::kernel::ffi::c_ulong) -> *mut buffer_head;
     pub fn end_buffer_read_sync(bh: *mut buffer_head, uptodate: i32);
     pub fn bio_endio_bh(bio: *mut bio, bhp: *mut *mut buffer_head) -> bool;
     pub fn bh_end_read(bio: *mut bio);
@@ -104,13 +104,13 @@ extern "C" {
     pub fn clean_bdev_aliases(bdev: *mut block_device, block: sector_t, len: sector_t);
     pub fn __wait_on_buffer(bh: *mut buffer_head);
     pub fn bh_waitq_head(bh: *mut buffer_head) -> *mut wait_queue_head_t;
-    pub fn __find_get_block(bdev: *mut block_device, block: sector_t, size: ::core::ffi::c_uint) -> *mut buffer_head;
-    pub fn __find_get_block_nonatomic(bdev: *mut block_device, block: sector_t, size: ::core::ffi::c_uint) -> *mut buffer_head;
-    pub fn bdev_getblk(bdev: *mut block_device, block: sector_t, size: ::core::ffi::c_uint, gfp: gfp_t) -> *mut buffer_head;
+    pub fn __find_get_block(bdev: *mut block_device, block: sector_t, size: ::kernel::ffi::c_uint) -> *mut buffer_head;
+    pub fn __find_get_block_nonatomic(bdev: *mut block_device, block: sector_t, size: ::kernel::ffi::c_uint) -> *mut buffer_head;
+    pub fn bdev_getblk(bdev: *mut block_device, block: sector_t, size: ::kernel::ffi::c_uint, gfp: gfp_t) -> *mut buffer_head;
     pub fn __brelse(bh: *mut buffer_head);
     pub fn __bforget(bh: *mut buffer_head);
-    pub fn __breadahead(bdev: *mut block_device, block: sector_t, size: ::core::ffi::c_uint);
-    pub fn __bread_gfp(bdev: *mut block_device, block: sector_t, size: ::core::ffi::c_uint, gfp: gfp_t) -> *mut buffer_head;
+    pub fn __breadahead(bdev: *mut block_device, block: sector_t, size: ::kernel::ffi::c_uint);
+    pub fn __bread_gfp(bdev: *mut block_device, block: sector_t, size: ::kernel::ffi::c_uint, gfp: gfp_t) -> *mut buffer_head;
     pub fn alloc_buffer_head(gfp: gfp_t) -> *mut buffer_head;
     pub fn free_buffer_head(bh: *mut buffer_head);
     pub fn unlock_buffer(bh: *mut buffer_head);

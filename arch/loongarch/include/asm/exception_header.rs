@@ -2,7 +2,7 @@
 
 // C dependencies: <asm/ptrace.h>, <linux/kprobes.h>
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 // `struct pt_regs` is supplied by the translated ptrace dependency.
 type PtRegs = crate::pt_regs;
@@ -48,6 +48,6 @@ unsafe extern "C" {
     pub fn handle_loongarch_irq(regs: *mut PtRegs);
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

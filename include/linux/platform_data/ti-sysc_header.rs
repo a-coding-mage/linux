@@ -21,8 +21,8 @@ pub enum ti_sysc_module_type {
 
 #[repr(C)]
 pub struct ti_sysc_cookie {
-    pub data: *mut core::ffi::c_void,
-    pub clkdm: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
+    pub clkdm: *mut kernel::ffi::c_void,
 }
 
 /**
@@ -142,7 +142,7 @@ pub enum sysc_registers {
  */
 #[repr(C)]
 pub struct ti_sysc_module_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub module_pa: u64,
     pub module_size: u32,
     pub offsets: *mut i32,

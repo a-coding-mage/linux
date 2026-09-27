@@ -10,24 +10,24 @@
 // Kernel and architecture dependencies are supplied by the surrounding tree.
 
 #[cfg(CONFIG_CPU_FREQ)]
-static mut PCP_LPJ_REF: *mut ::core::ffi::c_ulong = core::ptr::null_mut();
+static mut PCP_LPJ_REF: *mut ::kernel::ffi::c_ulong = core::ptr::null_mut();
 #[cfg(CONFIG_CPU_FREQ)]
-static mut PCP_LPJ_REF_FREQ: *mut ::core::ffi::c_ulong = core::ptr::null_mut();
+static mut PCP_LPJ_REF_FREQ: *mut ::kernel::ffi::c_ulong = core::ptr::null_mut();
 #[cfg(CONFIG_CPU_FREQ)]
-static mut GLB_LPJ_REF: ::core::ffi::c_ulong = 0;
+static mut GLB_LPJ_REF: ::kernel::ffi::c_ulong = 0;
 #[cfg(CONFIG_CPU_FREQ)]
-static mut GLB_LPJ_REF_FREQ: ::core::ffi::c_ulong = 0;
+static mut GLB_LPJ_REF_FREQ: ::kernel::ffi::c_ulong = 0;
 
 #[cfg(CONFIG_CPU_FREQ)]
 unsafe fn cpufreq_callback(
     _nb: *mut notifier_block,
-    val: ::core::ffi::c_ulong,
-    data: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int {
+    val: ::kernel::ffi::c_ulong,
+    data: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int {
     let freq = data as *mut cpufreq_freqs;
     let cpus = (*(*freq).policy).cpus;
-    let mut lpj: ::core::ffi::c_ulong;
-    let mut cpu: ::core::ffi::c_int;
+    let mut lpj: ::kernel::ffi::c_ulong;
+    let mut cpu: ::kernel::ffi::c_int;
 
     /*
      * Skip lpj numbers adjustment if the CPU-freq transition is safe for
@@ -39,7 +39,7 @@ unsafe fn cpufreq_callback(
 
     /* Save the initial values of the lpjes for future scaling. */
     if GLB_LPJ_REF == 0 {
-        GLB_LPJ_REF = boot_cpu_data.udelay_val as ::core::ffi::c_ulong;
+        GLB_LPJ_REF = boot_cpu_data.udelay_val as ::kernel::ffi::c_ulong;
         GLB_LPJ_REF_FREQ = (*freq).old;
 
         for_each_online_cpu!(cpu, {
@@ -63,7 +63,7 @@ unsafe fn cpufreq_callback(
                 *PCP_LPJ_REF_FREQ.add(cpu as usize),
                 (*freq).new,
             );
-            cpu_data[cpu as usize].udelay_val = lpj as ::core::ffi::c_uint;
+            cpu_data[cpu as usize].udelay_val = lpj as ::kernel::ffi::c_uint;
         });
     }
 
@@ -76,7 +76,7 @@ static mut CPUFREQ_NOTIFIER: notifier_block = notifier_block {
 };
 
 #[cfg(CONFIG_CPU_FREQ)]
-unsafe fn register_cpufreq_notifier() -> ::core::ffi::c_int {
+unsafe fn register_cpufreq_notifier() -> ::kernel::ffi::c_int {
     cpufreq_register_notifier(&mut CPUFREQ_NOTIFIER, CPUFREQ_TRANSITION_NOTIFIER)
 }
 
@@ -85,11 +85,11 @@ unsafe fn register_cpufreq_notifier() -> ::core::ffi::c_int {
 /* forward reference */
 pub static mut rtc_lock: spinlock_t = spinlock_t::new();
 
-unsafe fn null_perf_irq() -> ::core::ffi::c_int {
+unsafe fn null_perf_irq() -> ::kernel::ffi::c_int {
     0
 }
 
-pub static mut perf_irq: unsafe fn() -> ::core::ffi::c_int = null_perf_irq;
+pub static mut perf_irq: unsafe fn() -> ::kernel::ffi::c_int = null_perf_irq;
 
 /*
  * time_init() - it does the following things.
@@ -102,7 +102,7 @@ pub static mut perf_irq: unsafe fn() -> ::core::ffi::c_int = null_perf_irq;
  * 2) calculate a couple of cached variables for later usage
  */
 
-pub static mut mips_hpt_frequency: ::core::ffi::c_uint = 0;
+pub static mut mips_hpt_frequency: ::kernel::ffi::c_uint = 0;
 
 unsafe fn cpu_has_mfc0_count_bug() -> bool {
     match current_cpu_type() {

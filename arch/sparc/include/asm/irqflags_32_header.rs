@@ -12,7 +12,7 @@
 // The C header guard and __ASSEMBLER__ conditional are represented by this
 // Rust source file being compiled only for the non-assembler interface.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 extern "C" {
     pub fn arch_local_irq_restore(flags: c_ulong);

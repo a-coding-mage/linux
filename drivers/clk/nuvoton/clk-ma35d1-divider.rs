@@ -10,7 +10,7 @@
 #[repr(C)]
 pub struct ma35d1_adc_clk_div {
     pub hw: clk_hw,
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub shift: u8,
     pub width: u8,
     pub mask: u32,
@@ -28,8 +28,8 @@ unsafe fn to_ma35d1_adc_clk_div(hw: *mut clk_hw) -> *mut ma35d1_adc_clk_div {
 
 unsafe fn ma35d1_clkdiv_recalc_rate(
     hw: *mut clk_hw,
-    parent_rate: libc::c_ulong,
-) -> libc::c_ulong {
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     let dclk = to_ma35d1_adc_clk_div(hw);
     let mut val: u32 = readl_relaxed((*dclk).reg) >> (*dclk).shift;
     val &= clk_div_mask((*dclk).width);
@@ -47,7 +47,7 @@ unsafe fn ma35d1_clkdiv_recalc_rate(
 unsafe fn ma35d1_clkdiv_determine_rate(
     hw: *mut clk_hw,
     req: *mut clk_rate_request,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let dclk = to_ma35d1_adc_clk_div(hw);
     divider_determine_rate(
         hw,
@@ -60,9 +60,9 @@ unsafe fn ma35d1_clkdiv_determine_rate(
 
 unsafe fn ma35d1_clkdiv_set_rate(
     hw: *mut clk_hw,
-    rate: libc::c_ulong,
-    parent_rate: libc::c_ulong,
-) -> libc::c_int {
+    rate: kernel::ffi::c_ulong,
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let dclk = to_ma35d1_adc_clk_div(hw);
     let value = divider_get_val(
         rate,
@@ -71,7 +71,7 @@ unsafe fn ma35d1_clkdiv_set_rate(
         (*dclk).width,
         CLK_DIVIDER_ROUND_CLOSEST,
     );
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     spin_lock_irqsave((*dclk).lock, &mut flags);
     let mut data = readl_relaxed((*dclk).reg);
@@ -91,11 +91,11 @@ static ma35d1_adc_clkdiv_ops: clk_ops = clk_ops {
 
 pub unsafe fn ma35d1_reg_adc_clkdiv(
     dev: *mut device,
-    name: *const libc::c_char,
+    name: *const kernel::ffi::c_char,
     parent_hw: *mut clk_hw,
     lock: *mut spinlock_t,
-    flags: libc::c_ulong,
-    reg: *mut core::ffi::c_void,
+    flags: kernel::ffi::c_ulong,
+    reg: *mut kernel::ffi::c_void,
     shift: u8,
     width: u8,
     mask_bit: u32,

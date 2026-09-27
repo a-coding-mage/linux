@@ -79,20 +79,20 @@ pub const XFS_TRANS_DQ_DELRTBCOUNT: u32 = XFS_QMOPT_DELRTBCOUNT;
 extern "C" {
     pub fn xfs_dquot_verify(mp: *mut xfs_mount, ddq: *mut xfs_disk_dquot, id: xfs_dqid_t) -> xfs_failaddr_t;
     pub fn xfs_dqblk_verify(mp: *mut xfs_mount, dqb: *mut xfs_dqblk, id: xfs_dqid_t) -> xfs_failaddr_t;
-    pub fn xfs_calc_dquots_per_chunk(nbblks: core::ffi::c_uint) -> core::ffi::c_uint;
+    pub fn xfs_calc_dquots_per_chunk(nbblks: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
     pub fn xfs_dqblk_repair(mp: *mut xfs_mount, dqb: *mut xfs_dqblk, id: xfs_dqid_t, type_: xfs_dqtype_t);
-    pub fn xfs_dqinode_sick_mask(type_: xfs_dqtype_t) -> core::ffi::c_uint;
-    pub fn xfs_dqinode_load(tp: *mut xfs_trans, dp: *mut xfs_inode, type_: xfs_dqtype_t, ipp: *mut *mut xfs_inode) -> core::ffi::c_int;
-    pub fn xfs_dqinode_metadir_create(dp: *mut xfs_inode, type_: xfs_dqtype_t, ipp: *mut *mut xfs_inode) -> core::ffi::c_int;
-    pub fn xfs_dqinode_metadir_link(dp: *mut xfs_inode, type_: xfs_dqtype_t, ip: *mut xfs_inode) -> core::ffi::c_int;
-    pub fn xfs_dqinode_mkdir_parent(mp: *mut xfs_mount, dpp: *mut *mut xfs_inode) -> core::ffi::c_int;
-    pub fn xfs_dqinode_load_parent(tp: *mut xfs_trans, dpp: *mut *mut xfs_inode) -> core::ffi::c_int;
+    pub fn xfs_dqinode_sick_mask(type_: xfs_dqtype_t) -> kernel::ffi::c_uint;
+    pub fn xfs_dqinode_load(tp: *mut xfs_trans, dp: *mut xfs_inode, type_: xfs_dqtype_t, ipp: *mut *mut xfs_inode) -> kernel::ffi::c_int;
+    pub fn xfs_dqinode_metadir_create(dp: *mut xfs_inode, type_: xfs_dqtype_t, ipp: *mut *mut xfs_inode) -> kernel::ffi::c_int;
+    pub fn xfs_dqinode_metadir_link(dp: *mut xfs_inode, type_: xfs_dqtype_t, ip: *mut xfs_inode) -> kernel::ffi::c_int;
+    pub fn xfs_dqinode_mkdir_parent(mp: *mut xfs_mount, dpp: *mut *mut xfs_inode) -> kernel::ffi::c_int;
+    pub fn xfs_dqinode_load_parent(tp: *mut xfs_trans, dpp: *mut *mut xfs_inode) -> kernel::ffi::c_int;
     pub fn xfs_dquot_from_disk_ts(ddq: *mut xfs_disk_dquot, dtimer: __be32) -> time64_t;
     pub fn xfs_dquot_to_disk_ts(ddq: *mut xfs_dquot, timer: time64_t) -> __be32;
 }
 
 #[inline]
-pub unsafe fn xfs_dqinode_path(type_: xfs_dqtype_t) -> *const core::ffi::c_char {
+pub unsafe fn xfs_dqinode_path(type_: xfs_dqtype_t) -> *const kernel::ffi::c_char {
     match type_ {
         XFS_DQTYPE_USER => b"user\0".as_ptr() as *const _,
         XFS_DQTYPE_GROUP => b"group\0".as_ptr() as *const _,

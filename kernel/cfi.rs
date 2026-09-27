@@ -11,21 +11,21 @@ pub static mut cfi_warn: bool = cfg!(CONFIG_CFI_PERMISSIVE);
 
 pub unsafe fn report_cfi_failure(
     regs: *mut pt_regs,
-    addr: libc::c_ulong,
-    target: *mut libc::c_ulong,
+    addr: kernel::ffi::c_ulong,
+    target: *mut kernel::ffi::c_ulong,
     type_: u32,
 ) -> bug_trap_type {
     if !target.is_null() {
         pr_err(
             "CFI failure at %pS (target: %pS; expected type: 0x%08x)\n",
-            addr as *mut libc::c_void,
-            *target as *mut libc::c_void,
+            addr as *mut kernel::ffi::c_void,
+            *target as *mut kernel::ffi::c_void,
             type_,
         );
     } else {
         pr_err(
             "CFI failure at %pS (no target information)\n",
-            addr as *mut libc::c_void,
+            addr as *mut kernel::ffi::c_void,
         );
     }
 
@@ -33,7 +33,7 @@ pub unsafe fn report_cfi_failure(
         __warn(
             core::ptr::null_mut(),
             0,
-            addr as *mut libc::c_void,
+            addr as *mut kernel::ffi::c_void,
             0,
             regs,
             core::ptr::null_mut(),
@@ -60,13 +60,13 @@ extern "C" {
 // DEFINE_CFI_TYPE(cfi_bpf_subprog_hash, __bpf_callback_fn);
 
 #[cfg(CONFIG_ARCH_USES_CFI_TRAPS)]
-unsafe fn trap_address(p: *mut i32) -> libc::c_ulong {
-    (p as libc::c_long).wrapping_add(*p as libc::c_long) as libc::c_ulong
+unsafe fn trap_address(p: *mut i32) -> kernel::ffi::c_ulong {
+    (p as kernel::ffi::c_long).wrapping_add(*p as kernel::ffi::c_long) as kernel::ffi::c_ulong
 }
 
 #[cfg(CONFIG_ARCH_USES_CFI_TRAPS)]
 unsafe fn is_trap(
-    addr: libc::c_ulong,
+    addr: kernel::ffi::c_ulong,
     mut start: *mut i32,
     end: *mut i32,
 ) -> bool {
@@ -89,13 +89,13 @@ pub unsafe fn module_cfi_finalize(
     (*mod_).kcfi_traps_end = core::ptr::null_mut();
 
     let secstrings = (hdr as *const u8).add((*sechdrs.add((*hdr).e_shstrndx as usize)).sh_offset as usize)
-        as *mut libc::c_char;
+        as *mut kernel::ffi::c_char;
 
     let mut i = 1;
     while i < (*hdr).e_shnum as usize {
         if strcmp(
             secstrings.add((*sechdrs.add(i)).sh_name as usize),
-            b"__kcfi_traps\0".as_ptr() as *const libc::c_char,
+            b"__kcfi_traps\0".as_ptr() as *const kernel::ffi::c_char,
         ) != 0 {
             i += 1;
             continue;
@@ -108,7 +108,7 @@ pub unsafe fn module_cfi_finalize(
 }
 
 #[cfg(all(CONFIG_ARCH_USES_CFI_TRAPS, CONFIG_MODULES))]
-unsafe fn is_module_cfi_trap(addr: libc::c_ulong) -> bool {
+unsafe fn is_module_cfi_trap(addr: kernel::ffi::c_ulong) -> bool {
     let mod_ = __module_address(addr);
     if !mod_.is_null() {
         return is_trap(addr, (*mod_).kcfi_traps, (*mod_).kcfi_traps_end);
@@ -117,7 +117,7 @@ unsafe fn is_module_cfi_trap(addr: libc::c_ulong) -> bool {
 }
 
 #[cfg(all(CONFIG_ARCH_USES_CFI_TRAPS, not(CONFIG_MODULES)))]
-unsafe fn is_module_cfi_trap(_addr: libc::c_ulong) -> bool {
+unsafe fn is_module_cfi_trap(_addr: kernel::ffi::c_ulong) -> bool {
     false
 }
 
@@ -128,7 +128,7 @@ extern "C" {
 }
 
 #[cfg(CONFIG_ARCH_USES_CFI_TRAPS)]
-pub unsafe fn is_cfi_trap(addr: libc::c_ulong) -> bool {
+pub unsafe fn is_cfi_trap(addr: kernel::ffi::c_ulong) -> bool {
     if is_trap(
         addr,
         &raw mut __start___kcfi_traps,

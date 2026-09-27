@@ -30,21 +30,21 @@ pub struct js_event {
 
 // IOCTL commands for joystick driver. _IOR, _IOW, _IOC and the referenced
 // Linux input constants are supplied by the corresponding UAPI dependencies.
-pub const JSIOCGVERSION: _ = _IOR('j', 0x01, u32); // get driver version
-pub const JSIOCGAXES: _ = _IOR('j', 0x11, u8); // get number of axes
-pub const JSIOCGBUTTONS: _ = _IOR('j', 0x12, u8); // get number of buttons
+pub const JSIOCGVERSION: u32 = _IOR('j', 0x01, u32); // get driver version
+pub const JSIOCGAXES: u32 = _IOR('j', 0x11, u8); // get number of axes
+pub const JSIOCGBUTTONS: u32 = _IOR('j', 0x12, u8); // get number of buttons
 
 #[macro_export]
 macro_rules! JSIOCGNAME {
     ($len:expr) => { _IOC(_IOC_READ, 'j', 0x13, $len) };
 }
 
-pub const JSIOCSCORR: _ = _IOW('j', 0x21, js_corr); // set correction values
-pub const JSIOCGCORR: _ = _IOR('j', 0x22, js_corr); // get correction values
-pub const JSIOCSAXMAP: _ = _IOW('j', 0x31, [u8; ABS_CNT]); // set axis mapping
-pub const JSIOCGAXMAP: _ = _IOR('j', 0x32, [u8; ABS_CNT]); // get axis mapping
-pub const JSIOCSBTNMAP: _ = _IOW('j', 0x33, [u16; KEY_MAX - BTN_MISC + 1]); // set button mapping
-pub const JSIOCGBTNMAP: _ = _IOR('j', 0x34, [u16; KEY_MAX - BTN_MISC + 1]); // get button mapping
+pub const JSIOCSCORR: u32 = _IOW('j', 0x21, js_corr); // set correction values
+pub const JSIOCGCORR: u32 = _IOR('j', 0x22, js_corr); // get correction values
+pub const JSIOCSAXMAP: u32 = _IOW('j', 0x31, [u8; ABS_CNT]); // set axis mapping
+pub const JSIOCGAXMAP: u32 = _IOR('j', 0x32, [u8; ABS_CNT]); // get axis mapping
+pub const JSIOCSBTNMAP: u32 = _IOW('j', 0x33, [u16; KEY_MAX - BTN_MISC + 1]); // set button mapping
+pub const JSIOCGBTNMAP: u32 = _IOR('j', 0x34, [u16; KEY_MAX - BTN_MISC + 1]); // get button mapping
 
 pub const JS_CORR_NONE: u8 = 0x00; // returns raw values
 pub const JS_CORR_BROKEN: u8 = 0x01; // broken line

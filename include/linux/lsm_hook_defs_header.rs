@@ -46,7 +46,7 @@ LSM_HOOK!(int, 0, binder_transfer_binder, const struct cred *from,
 LSM_HOOK!(int, 0, binder_transfer_file, const struct cred *from,
 	 const struct cred *to, const struct file *file)
 LSM_HOOK!(int, 0, ptrace_access_check, task_struct *child,
-	 mode: core::ffi::c_uint)
+	 mode: kernel::ffi::c_uint)
 LSM_HOOK!(int, 0, ptrace_traceme, task_struct *parent);
 LSM_HOOK!(int, 0, capget, const struct task_struct *target, kernel_cap_t *effective,
 	 kernel_cap_t *inheritable, kernel_cap_t *permitted)
@@ -54,7 +54,7 @@ LSM_HOOK!(int, 0, capset, cred *new, const struct cred *old,
 	 const kernel_cap_t *effective, const kernel_cap_t *inheritable,
 	 const kernel_cap_t *permitted)
 LSM_HOOK!(int, 0, capable, const struct cred *cred, user_namespace *ns,
-	 int cap, opts: core::ffi::c_uint)
+	 int cap, opts: kernel::ffi::c_uint)
 LSM_HOOK!(int, 0, quotactl, int cmds, int type, int id, const struct super_block *sb);
 LSM_HOOK!(int, 0, quota_on, dentry *dentry);
 LSM_HOOK!(int, 0, syslog, int type);
@@ -82,15 +82,15 @@ LSM_HOOK!(int, 0, sb_kern_mount, const struct super_block *sb);
 LSM_HOOK!(int, 0, sb_show_options, seq_file *m, super_block *sb);
 LSM_HOOK!(int, 0, sb_statfs, dentry *dentry);
 LSM_HOOK!(int, 0, sb_mount, const char *dev_name, const struct path *path,
-	 const char *type, flags: core::ffi::c_ulong, void *data)
+	 const char *type, flags: kernel::ffi::c_ulong, void *data)
 LSM_HOOK!(int, 0, sb_umount, vfsmount *mnt, int flags);
 LSM_HOOK!(int, 0, sb_pivotroot, const struct path *old_path,
 	 const struct path *new_path)
 LSM_HOOK!(int, 0, sb_set_mnt_opts, super_block *sb, void *mnt_opts,
-	 kern_flags: core::ffi::c_ulong, core::ffi::c_ulong *set_kern_flags)
+	 kern_flags: kernel::ffi::c_ulong, kernel::ffi::c_ulong *set_kern_flags)
 LSM_HOOK!(int, 0, sb_clone_mnt_opts, const struct super_block *oldsb,
-	 super_block *newsb, kern_flags: core::ffi::c_ulong,
-	 core::ffi::c_ulong *set_kern_flags)
+	 super_block *newsb, kern_flags: kernel::ffi::c_ulong,
+	 kernel::ffi::c_ulong *set_kern_flags)
 LSM_HOOK!(int, 0, move_mount, const struct path *from_path,
 	 const struct path *to_path)
 LSM_HOOK!(int, -EOPNOTSUPP, dentry_init_security, dentry *dentry,
@@ -105,7 +105,7 @@ LSM_HOOK!(int, 0, path_mkdir, const struct path *dir, dentry *dentry,
 	 umode_t mode)
 LSM_HOOK!(int, 0, path_rmdir, const struct path *dir, dentry *dentry);
 LSM_HOOK!(int, 0, path_mknod, const struct path *dir, dentry *dentry,
-	 umode_t mode, dev: core::ffi::c_uint)
+	 umode_t mode, dev: kernel::ffi::c_uint)
 LSM_HOOK!(void, LSM_RET_VOID, path_post_mknod, mnt_idmap *idmap,
 	 dentry *dentry)
 LSM_HOOK!(int, 0, path_truncate, const struct path *path);
@@ -115,7 +115,7 @@ LSM_HOOK!(int, 0, path_link, dentry *old_dentry,
 	 const struct path *new_dir, dentry *new_dentry)
 LSM_HOOK!(int, 0, path_rename, const struct path *old_dir,
 	 dentry *old_dentry, const struct path *new_dir,
-	 dentry *new_dentry, flags: core::ffi::c_uint)
+	 dentry *new_dentry, flags: kernel::ffi::c_uint)
 LSM_HOOK!(int, 0, path_chmod, const struct path *path, umode_t mode);
 LSM_HOOK!(int, 0, path_chown, const struct path *path, kuid_t uid, kgid_t gid);
 LSM_HOOK!(int, 0, path_chroot, const struct path *path);
@@ -123,7 +123,7 @@ LSM_HOOK!(int, 0, path_chroot, const struct path *path);
 
 /* Needed for inode based security check */
 LSM_HOOK!(int, 0, path_notify, const struct path *path, mask: u64,
-	 obj_type: core::ffi::c_uint)
+	 obj_type: kernel::ffi::c_uint)
 LSM_HOOK!(int, 0, inode_alloc_security, inode *inode);
 LSM_HOOK!(void, LSM_RET_VOID, inode_free_security, inode *inode);
 LSM_HOOK!(void, LSM_RET_VOID, inode_free_security_rcu, void *inode_security);
@@ -206,20 +206,20 @@ LSM_HOOK!(void, LSM_RET_VOID, file_free_security, file *file);
 LSM_HOOK!(int, 0, backing_file_alloc, file *backing_file,
 	 const struct file *user_file)
 LSM_HOOK!(void, LSM_RET_VOID, backing_file_free, file *backing_file);
-LSM_HOOK!(int, 0, file_ioctl, file *file, cmd: core::ffi::c_uint,
-	 arg: core::ffi::c_ulong)
-LSM_HOOK!(int, 0, file_ioctl_compat, file *file, cmd: core::ffi::c_uint,
-	 arg: core::ffi::c_ulong)
-LSM_HOOK!(int, 0, mmap_addr, addr: core::ffi::c_ulong);
-LSM_HOOK!(int, 0, mmap_file, file *file, reqprot: core::ffi::c_ulong,
-	 prot: core::ffi::c_ulong, flags: core::ffi::c_ulong)
+LSM_HOOK!(int, 0, file_ioctl, file *file, cmd: kernel::ffi::c_uint,
+	 arg: kernel::ffi::c_ulong)
+LSM_HOOK!(int, 0, file_ioctl_compat, file *file, cmd: kernel::ffi::c_uint,
+	 arg: kernel::ffi::c_ulong)
+LSM_HOOK!(int, 0, mmap_addr, addr: kernel::ffi::c_ulong);
+LSM_HOOK!(int, 0, mmap_file, file *file, reqprot: kernel::ffi::c_ulong,
+	 prot: kernel::ffi::c_ulong, flags: kernel::ffi::c_ulong)
 LSM_HOOK!(int, 0, mmap_backing_file, vm_area_struct *vma,
 	 file *backing_file, file *user_file)
 LSM_HOOK!(int, 0, file_mprotect, vm_area_struct *vma,
-	 reqprot: core::ffi::c_ulong, prot: core::ffi::c_ulong)
-LSM_HOOK!(int, 0, file_lock, file *file, cmd: core::ffi::c_uint);
-LSM_HOOK!(int, 0, file_fcntl, file *file, cmd: core::ffi::c_uint,
-	 arg: core::ffi::c_ulong)
+	 reqprot: kernel::ffi::c_ulong, prot: kernel::ffi::c_ulong)
+LSM_HOOK!(int, 0, file_lock, file *file, cmd: kernel::ffi::c_uint);
+LSM_HOOK!(int, 0, file_fcntl, file *file, cmd: kernel::ffi::c_uint,
+	 arg: kernel::ffi::c_ulong)
 LSM_HOOK!(void, LSM_RET_VOID, file_set_fowner, file *file);
 LSM_HOOK!(int, 0, file_send_sigiotask, task_struct *tsk,
 	 fown_struct *fown, int sig)
@@ -264,16 +264,16 @@ LSM_HOOK!(int, 0, task_setnice, task_struct *p, int nice);
 LSM_HOOK!(int, 0, task_setioprio, task_struct *p, int ioprio);
 LSM_HOOK!(int, 0, task_getioprio, task_struct *p);
 LSM_HOOK!(int, 0, task_prlimit, const struct cred *cred,
-	 const struct cred *tcred, flags: core::ffi::c_uint)
-LSM_HOOK!(int, 0, task_setrlimit, task_struct *p, resource: core::ffi::c_uint,
+	 const struct cred *tcred, flags: kernel::ffi::c_uint)
+LSM_HOOK!(int, 0, task_setrlimit, task_struct *p, resource: kernel::ffi::c_uint,
 	 rlimit *new_rlim)
 LSM_HOOK!(int, 0, task_setscheduler, task_struct *p);
 LSM_HOOK!(int, 0, task_getscheduler, task_struct *p);
 LSM_HOOK!(int, 0, task_movememory, task_struct *p);
 LSM_HOOK!(int, 0, task_kill, task_struct *p, kernel_siginfo *info,
 	 int sig, const struct cred *cred)
-LSM_HOOK!(int, -ENOSYS, task_prctl, int option, arg2: core::ffi::c_ulong,
-	 arg3: core::ffi::c_ulong, arg4: core::ffi::c_ulong, arg5: core::ffi::c_ulong)
+LSM_HOOK!(int, -ENOSYS, task_prctl, int option, arg2: kernel::ffi::c_ulong,
+	 arg3: kernel::ffi::c_ulong, arg4: kernel::ffi::c_ulong, arg5: kernel::ffi::c_ulong)
 LSM_HOOK!(void, LSM_RET_VOID, task_to_inode, task_struct *p,
 	 inode *inode)
 LSM_HOOK!(int, 0, userns_create, const struct cred *cred);
@@ -306,9 +306,9 @@ LSM_HOOK!(int, 0, sem_semop, kern_ipc_perm *perm, sembuf *sops,
 LSM_HOOK!(int, 0, netlink_send, sock *sk, sk_buff *skb);
 LSM_HOOK!(void, LSM_RET_VOID, d_instantiate, dentry *dentry,
 	 inode *inode)
-LSM_HOOK!(int, -EOPNOTSUPP, getselfattr, attr: core::ffi::c_uint,
+LSM_HOOK!(int, -EOPNOTSUPP, getselfattr, attr: kernel::ffi::c_uint,
 	 lsm_ctx __user *ctx, u32 *size, flags: u32)
-LSM_HOOK!(int, -EOPNOTSUPP, setselfattr, attr: core::ffi::c_uint,
+LSM_HOOK!(int, -EOPNOTSUPP, setselfattr, attr: kernel::ffi::c_uint,
 	 lsm_ctx *ctx, size: u32, flags: u32)
 LSM_HOOK!(int, -EINVAL, getprocattr, task_struct *p, const char *name,
 	 char **value)
@@ -364,7 +364,7 @@ LSM_HOOK!(int, 0, socket_setsockopt, socket *sock, int level, int optname);
 LSM_HOOK!(int, 0, socket_shutdown, socket *sock, int how);
 LSM_HOOK!(int, 0, socket_sock_rcv_skb, sock *sk, sk_buff *skb);
 LSM_HOOK!(int, -ENOPROTOOPT, socket_getpeersec_stream, socket *sock,
-	 sockptr_t optval, sockptr_t optlen, len: core::ffi::c_uint)
+	 sockptr_t optval, sockptr_t optlen, len: kernel::ffi::c_uint)
 LSM_HOOK!(int, -ENOPROTOOPT, socket_getpeersec_dgram, socket *sock,
 	 sk_buff *skb, u32 *secid)
 LSM_HOOK!(int, 0, sk_alloc_security, sock *sk, int family, gfp_t priority);
@@ -431,13 +431,13 @@ LSM_HOOK!(int, 0, xfrm_decode_session, sk_buff *skb, u32 *secid,
 /* key management security hooks */
 // #ifdef CONFIG_KEYS
 LSM_HOOK!(int, 0, key_alloc, key *key, const struct cred *cred,
-	 flags: core::ffi::c_ulong)
+	 flags: kernel::ffi::c_ulong)
 LSM_HOOK!(int, 0, key_permission, key_ref_t key_ref, const struct cred *cred,
 	 key_need_perm need_perm)
 LSM_HOOK!(int, 0, key_getsecurity, key *key, char **buffer);
 LSM_HOOK!(void, LSM_RET_VOID, key_post_create_or_update, key *keyring,
 	 key *key, const void *payload, size_t payload_len,
-	 flags: core::ffi::c_ulong, create: bool)
+	 flags: kernel::ffi::c_ulong, create: bool)
 // #endif /* CONFIG_KEYS */
 
 // #ifdef CONFIG_AUDIT
@@ -450,7 +450,7 @@ LSM_HOOK!(void, LSM_RET_VOID, audit_rule_free, void *lsmrule);
 // #endif /* CONFIG_AUDIT */
 
 // #ifdef CONFIG_BPF_SYSCALL
-LSM_HOOK!(int, 0, bpf, int cmd, bpf_attr *attr, size: core::ffi::c_uint, kernel: bool);
+LSM_HOOK!(int, 0, bpf, int cmd, bpf_attr *attr, size: kernel::ffi::c_uint, kernel: bool);
 LSM_HOOK!(int, 0, bpf_map, bpf_map *map, fmode_t fmode);
 LSM_HOOK!(int, 0, bpf_prog, bpf_prog *prog);
 LSM_HOOK!(int, 0, bpf_map_create, bpf_map *map, bpf_attr *attr,

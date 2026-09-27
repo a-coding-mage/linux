@@ -415,7 +415,7 @@ static void kvm_recalculate_apic_map(kvm *kvm)
 	'out: {
 	struct kvm_apic_map *new, *old = NULL;
 	struct kvm_vcpu *vcpu;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 	u32 max_id = 255; /* enough space for any xAPIC ID */
 	bool xapic_id_mismatch;
 	int r;
@@ -647,7 +647,7 @@ void kvm_apic_after_set_mcg_cap(kvm_vcpu *vcpu)
 	kvm_apic_set_version(vcpu);
 }
 
-static core::ffi::c_uint apic_lvt_mask[KVM_APIC_MAX_NR_LVT_ENTRIES] = {
+static kernel::ffi::c_uint apic_lvt_mask[KVM_APIC_MAX_NR_LVT_ENTRIES] = {
 	[LVT_TIMER] = LVT_MASK,      /* timer mode mask added at runtime */
 	[LVT_THERMAL_MONITOR] = LVT_MASK | APIC_MODE_MASK,
 	[LVT_PERFORMANCE_COUNTER] = LVT_MASK | APIC_MODE_MASK,
@@ -671,9 +671,9 @@ static u8 count_vectors(void *bitmap)
 	return count;
 }
 
-bool __kvm_apic_update_irr(core::ffi::c_ulong *pir, void *regs, int *max_irr)
+bool __kvm_apic_update_irr(kernel::ffi::c_ulong *pir, void *regs, int *max_irr)
 {
-	core::ffi::c_ulong pir_vals[NR_PIR_WORDS];
+	kernel::ffi::c_ulong pir_vals[NR_PIR_WORDS];
 	u32 *__pir = (void *)pir_vals;
 	i: u32, vec;
 	irr_val: u32, prev_irr_val;
@@ -710,7 +710,7 @@ bool __kvm_apic_update_irr(core::ffi::c_ulong *pir, void *regs, int *max_irr)
 }
 EXPORT_SYMBOL_FOR_KVM_INTERNAL(__kvm_apic_update_irr);
 
-bool kvm_apic_update_irr(kvm_vcpu *vcpu, core::ffi::c_ulong *pir, int *max_irr)
+bool kvm_apic_update_irr(kvm_vcpu *vcpu, kernel::ffi::c_ulong *pir, int *max_irr)
 {
 	struct kvm_lapic *apic = (*vcpu).arch.apic;
 	bool max_irr_is_from_pir;
@@ -847,7 +847,7 @@ int kvm_apic_set_irq(kvm_vcpu *vcpu, kvm_lapic_irq *irq,
 				 (*irq).level, (*irq).trig_mode, rtc_status);
 }
 
-static int __pv_send_ipi(core::ffi::c_ulong *ipi_bitmap, kvm_apic_map *map,
+static int __pv_send_ipi(kernel::ffi::c_ulong *ipi_bitmap, kvm_apic_map *map,
 			 kvm_lapic_irq *irq, min: u32)
 {
 	int i, count = 0;
@@ -869,9 +869,9 @@ static int __pv_send_ipi(core::ffi::c_ulong *ipi_bitmap, kvm_apic_map *map,
 	return count;
 }
 
-int kvm_pv_send_ipi(kvm *kvm, ipi_bitmap_low: core::ffi::c_ulong,
-		    ipi_bitmap_high: core::ffi::c_ulong, min: u32,
-		    icr: core::ffi::c_ulong, int op_64_bit)
+int kvm_pv_send_ipi(kvm *kvm, ipi_bitmap_low: kernel::ffi::c_ulong,
+		    ipi_bitmap_high: kernel::ffi::c_ulong, min: u32,
+		    icr: kernel::ffi::c_ulong, int op_64_bit)
 {
 	struct kvm_apic_map *map;
 	struct kvm_lapic_irq irq = {0};
@@ -1073,7 +1073,7 @@ static bool kvm_apic_match_logical_addr(kvm_lapic *apic, mda: u32)
  * important when userspace wants to use x2APIC-format MSIs, because
  * APIC_BROADCAST (0xff) is a legal route for "cluster 0, CPUs 0-7".
  */
-static u32 kvm_apic_mda(kvm_vcpu *vcpu, dest_id: core::ffi::c_uint,
+static u32 kvm_apic_mda(kvm_vcpu *vcpu, dest_id: kernel::ffi::c_uint,
 		kvm_lapic *source, kvm_lapic *target)
 {
 	bool ipi = source != NULL;
@@ -1086,7 +1086,7 @@ static u32 kvm_apic_mda(kvm_vcpu *vcpu, dest_id: core::ffi::c_uint,
 }
 
 bool kvm_apic_match_dest(kvm_vcpu *vcpu, kvm_lapic *source,
-			   int shorthand, dest: core::ffi::c_uint, int dest_mode)
+			   int shorthand, dest: kernel::ffi::c_uint, int dest_mode)
 {
 	struct kvm_lapic *target = (*vcpu).arch.apic;
 	u32 mda = kvm_apic_mda(vcpu, dest, source, target);
@@ -1110,7 +1110,7 @@ bool kvm_apic_match_dest(kvm_vcpu *vcpu, kvm_lapic *source,
 EXPORT_SYMBOL_FOR_KVM_INTERNAL(kvm_apic_match_dest);
 
 static int kvm_vector_to_index(vector: u32, dest_vcpus: u32,
-			       const core::ffi::c_ulong *bitmap, bitmap_size: u32)
+			       const kernel::ffi::c_ulong *bitmap, bitmap_size: u32)
 {
 	int idx = find_nth_bit(bitmap, bitmap_size, vector % dest_vcpus);
 
@@ -1165,7 +1165,7 @@ static int kvm_apic_compare_prio(kvm_vcpu *vcpu1, kvm_vcpu *vcpu2)
 bool kvm_apic_map_get_dest_lapic(kvm *kvm,
 		kvm_lapic **src, kvm_lapic_irq *irq,
 		kvm_apic_map *map, kvm_lapic ***dst,
-		core::ffi::c_ulong *bitmap)
+		kernel::ffi::c_ulong *bitmap)
 {
 	int i, lowest;
 
@@ -1233,7 +1233,7 @@ static bool __kvm_irq_delivery_to_apic_fast(kvm *kvm, kvm_lapic *src,
 					    rtc_status *rtc_status)
 {
 	struct kvm_apic_map *map;
-	core::ffi::c_ulong bitmap;
+	kernel::ffi::c_ulong bitmap;
 	struct kvm_lapic **dst = NULL;
 	int i;
 	bool ret;
@@ -1292,7 +1292,7 @@ static bool kvm_intr_is_single_vcpu_fast(kvm *kvm,
 					 kvm_vcpu **dest_vcpu)
 {
 	struct kvm_apic_map *map;
-	core::ffi::c_ulong bitmap;
+	kernel::ffi::c_ulong bitmap;
 	struct kvm_lapic **dst = NULL;
 	bool ret = false;
 
@@ -1304,7 +1304,7 @@ static bool kvm_intr_is_single_vcpu_fast(kvm *kvm,
 
 	if (kvm_apic_map_get_dest_lapic(kvm, NULL, irq, map, &dst, &bitmap) &&
 			hweight16(bitmap) == 1) {
-		core::ffi::c_ulong i = find_first_bit(&bitmap, 16);
+		kernel::ffi::c_ulong i = find_first_bit(&bitmap, 16);
 
 		if (dst[i]) {
 			*dest_vcpu = (*dst[i]).vcpu;
@@ -1320,7 +1320,7 @@ bool kvm_intr_is_single_vcpu(kvm *kvm, kvm_lapic_irq *irq,
 			     kvm_vcpu **dest_vcpu)
 {
 	int r = 0;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 	struct kvm_vcpu *vcpu;
 
 	if (kvm_intr_is_single_vcpu_fast(kvm, irq, dest_vcpu))
@@ -1350,8 +1350,8 @@ int __kvm_irq_delivery_to_apic(kvm *kvm, kvm_lapic *src,
 {
 	int r = -1;
 	struct kvm_vcpu *vcpu, *lowest = NULL;
-	i: core::ffi::c_ulong, dest_vcpu_bitmap[BITS_TO_LONGS(KVM_MAX_VCPUS)];
-	core::ffi::c_uint dest_vcpus = 0;
+	i: kernel::ffi::c_ulong, dest_vcpu_bitmap[BITS_TO_LONGS(KVM_MAX_VCPUS)];
+	kernel::ffi::c_uint dest_vcpus = 0;
 
 	if (__kvm_irq_delivery_to_apic_fast(kvm, src, irq, &r, rtc_status))
 		return r;
@@ -1509,13 +1509,13 @@ static int __apic_accept_irq(kvm_lapic *apic, int delivery_mode,
  * each available vcpu to identify the same.
  */
 void kvm_bitmap_or_dest_vcpus(kvm *kvm, kvm_lapic_irq *irq,
-			      core::ffi::c_ulong *vcpu_bitmap)
+			      kernel::ffi::c_ulong *vcpu_bitmap)
 {
 	struct kvm_lapic **dest_vcpu = NULL;
 	struct kvm_lapic *src = NULL;
 	struct kvm_apic_map *map;
 	struct kvm_vcpu *vcpu;
-	bitmap: core::ffi::c_ulong, i;
+	bitmap: kernel::ffi::c_ulong, i;
 	int vcpu_idx;
 	bool ret;
 
@@ -1699,7 +1699,7 @@ void report_tpr_access(kvm_lapic *apic, write: bool)
 		__report_tpr_access(apic, write);
 }
 
-static u32 __apic_read(kvm_lapic *apic, offset: core::ffi::c_uint)
+static u32 __apic_read(kvm_lapic *apic, offset: kernel::ffi::c_uint)
 {
 	u32 val = 0;
 
@@ -1798,7 +1798,7 @@ EXPORT_SYMBOL_FOR_KVM_INTERNAL(kvm_x2apic_disable_read_intercept_reg_mask);
 static int kvm_lapic_reg_read(kvm_lapic *apic, offset: u32, int len,
 			      void *data)
 {
-	core::ffi::c_uchar alignment = offset & 0xf;
+	kernel::ffi::c_uchar alignment = offset & 0xf;
 	u32 result;
 
 	/*
@@ -2094,7 +2094,7 @@ static void start_sw_tscdeadline(kvm_lapic *apic)
 	ktime_t expire;
 	struct kvm_vcpu *vcpu = apic->vcpu;
 	u32 this_tsc_khz = vcpu->arch.virtual_tsc_khz;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	ktime_t now;
 
 	if (unlikely(!tscdeadline || !this_tsc_khz))
@@ -2589,7 +2589,7 @@ static int apic_mmio_write(kvm_vcpu *vcpu, kvm_io_device *this,
 			    gpa_t address, int len, const void *data)
 {
 	struct kvm_lapic *apic = to_lapic(this);
-	core::ffi::c_uint offset = address - apic->base_address;
+	kernel::ffi::c_uint offset = address - apic->base_address;
 	u32 val;
 
 	if (!apic_mmio_in_range(apic, address))
@@ -2728,7 +2728,7 @@ void kvm_free_lapic(kvm_vcpu *vcpu)
 		static_branch_slow_dec_deferred(&apic_sw_disabled);
 
 	if (apic->regs)
-		free_page((core::ffi::c_ulong)apic->regs);
+		free_page((kernel::ffi::c_ulong)apic->regs);
 
 	kfree(apic);
 }
@@ -2760,7 +2760,7 @@ void kvm_set_lapic_tscdeadline_msr(kvm_vcpu *vcpu, data: u64)
 	start_apic_timer(apic);
 }
 
-void kvm_lapic_set_tpr(kvm_vcpu *vcpu, cr8: core::ffi::c_ulong)
+void kvm_lapic_set_tpr(kvm_vcpu *vcpu, cr8: kernel::ffi::c_ulong)
 {
 	apic_set_tpr(vcpu->arch.apic, (cr8 & 0x0f) << 4);
 }
@@ -3564,11 +3564,11 @@ int kvm_hv_vapic_msr_read(kvm_vcpu *vcpu, reg: u32, u64 *data)
 	return kvm_lapic_msr_read(vcpu->arch.apic, reg, data);
 }
 
-int kvm_lapic_set_pv_eoi(kvm_vcpu *vcpu, data: u64, len: core::ffi::c_ulong)
+int kvm_lapic_set_pv_eoi(kvm_vcpu *vcpu, data: u64, len: kernel::ffi::c_ulong)
 {
 	u64 addr = data & ~KVM_MSR_ENABLED;
 	struct gfn_to_hva_cache *ghc = &vcpu->arch.pv_eoi.data;
-	core::ffi::c_ulong new_len;
+	kernel::ffi::c_ulong new_len;
 	int ret;
 
 	if (!IS_ALIGNED(addr, 4))

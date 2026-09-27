@@ -18,11 +18,11 @@ pub struct MtkGateRegs {
 #[repr(C)]
 pub struct MtkGate {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char,
     pub regs: *const MtkGateRegs,
     pub shift: u32,
-    pub ops: *const core::ffi::c_void,
+    pub ops: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -33,27 +33,27 @@ pub struct MtkClkDesc {
 
 #[repr(C)]
 pub struct OfDeviceId {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct PlatformDriver {
-    pub probe: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
-    pub remove: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
+    pub probe: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
+    pub remove: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
     pub driver: Driver,
 }
 
 #[repr(C)]
 pub struct Driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const OfDeviceId,
 }
 
 extern "C" {
-    pub static mtk_clk_gate_ops_setclr: core::ffi::c_void;
-    pub fn mtk_clk_simple_probe(device: *mut core::ffi::c_void) -> i32;
-    pub fn mtk_clk_simple_remove(device: *mut core::ffi::c_void) -> i32;
+    pub static mtk_clk_gate_ops_setclr: kernel::ffi::c_void;
+    pub fn mtk_clk_simple_probe(device: *mut kernel::ffi::c_void) -> i32;
+    pub fn mtk_clk_simple_remove(device: *mut kernel::ffi::c_void) -> i32;
 }
 
 const CLK_IMG_LARB5: u32 = 0;
@@ -72,11 +72,11 @@ macro_rules! gate_mtk {
     ($id:expr, $name:expr, $parent:expr, $regs:expr, $shift:expr, $ops:expr) => {
         MtkGate {
             id: $id,
-            name: concat!($name, "\0").as_ptr() as *const core::ffi::c_char,
-            parent_name: concat!($parent, "\0").as_ptr() as *const core::ffi::c_char,
+            name: concat!($name, "\0").as_ptr() as *const kernel::ffi::c_char,
+            parent_name: concat!($parent, "\0").as_ptr() as *const kernel::ffi::c_char,
             regs: $regs,
             shift: $shift,
-            ops: $ops as *const _ as *const core::ffi::c_void,
+            ops: $ops as *const _ as *const kernel::ffi::c_void,
         }
     };
 }
@@ -104,8 +104,8 @@ static IMG_DESC: MtkClkDesc = MtkClkDesc {
 
 static OF_MATCH_CLK_MT6779_IMG: [OfDeviceId; 2] = [
     OfDeviceId {
-        compatible: b"mediatek,mt6779-imgsys\0".as_ptr() as *const core::ffi::c_char,
-        data: &IMG_DESC as *const MtkClkDesc as *const core::ffi::c_void,
+        compatible: b"mediatek,mt6779-imgsys\0".as_ptr() as *const kernel::ffi::c_char,
+        data: &IMG_DESC as *const MtkClkDesc as *const kernel::ffi::c_void,
     },
     OfDeviceId {
         // sentinel
@@ -118,7 +118,7 @@ static mut CLK_MT6779_IMG_DRV: PlatformDriver = PlatformDriver {
     probe: Some(mtk_clk_simple_probe),
     remove: Some(mtk_clk_simple_remove),
     driver: Driver {
-        name: b"clk-mt6779-img\0".as_ptr() as *const core::ffi::c_char,
+        name: b"clk-mt6779-img\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: OF_MATCH_CLK_MT6779_IMG.as_ptr(),
     },
 };

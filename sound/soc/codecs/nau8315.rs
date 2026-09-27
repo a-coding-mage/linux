@@ -16,40 +16,40 @@
 #[repr(C)]
 pub struct nau8315_priv {
     pub enable: *mut gpio_desc,
-    pub enpin_switch: ::core::ffi::c_int,
+    pub enpin_switch: ::kernel::ffi::c_int,
 }
 
 extern "C" {
-    fn snd_soc_component_get_drvdata(component: *mut snd_soc_component) -> *mut ::core::ffi::c_void;
-    fn gpiod_set_value(desc: *mut gpio_desc, value: ::core::ffi::c_int);
-    fn dev_dbg(dev: *mut device, fmt: *const ::core::ffi::c_char, ...);
+    fn snd_soc_component_get_drvdata(component: *mut snd_soc_component) -> *mut ::kernel::ffi::c_void;
+    fn gpiod_set_value(desc: *mut gpio_desc, value: ::kernel::ffi::c_int);
+    fn dev_dbg(dev: *mut device, fmt: *const ::kernel::ffi::c_char, ...);
     fn snd_soc_dapm_to_component(dapm: *mut snd_soc_dapm_context) -> *mut snd_soc_component;
     fn devm_kzalloc(
         dev: *mut device,
         size: usize,
         flags: gfp_t,
-    ) -> *mut ::core::ffi::c_void;
+    ) -> *mut ::kernel::ffi::c_void;
     fn devm_gpiod_get_optional(
         dev: *mut device,
-        con_id: *const ::core::ffi::c_char,
+        con_id: *const ::kernel::ffi::c_char,
         flags: gpiod_flags,
     ) -> *mut gpio_desc;
-    fn IS_ERR(ptr: *const ::core::ffi::c_void) -> bool;
-    fn PTR_ERR(ptr: *const ::core::ffi::c_void) -> ::core::ffi::c_long;
-    fn dev_set_drvdata(dev: *mut device, data: *mut ::core::ffi::c_void);
+    fn IS_ERR(ptr: *const ::kernel::ffi::c_void) -> bool;
+    fn PTR_ERR(ptr: *const ::kernel::ffi::c_void) -> ::kernel::ffi::c_long;
+    fn dev_set_drvdata(dev: *mut device, data: *mut ::kernel::ffi::c_void);
     fn devm_snd_soc_register_component(
         dev: *mut device,
         component_driver: *const snd_soc_component_driver,
         dai_drv: *mut snd_soc_dai_driver,
-        num_dai: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        num_dai: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 pub unsafe extern "C" fn nau8315_daiops_trigger(
     substream: *mut snd_pcm_substream,
-    cmd: ::core::ffi::c_int,
+    cmd: ::kernel::ffi::c_int,
     dai: *mut snd_soc_dai,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
     let nau8315: *mut nau8315_priv =
         snd_soc_component_get_drvdata(component) as *mut nau8315_priv;
@@ -78,8 +78,8 @@ pub unsafe extern "C" fn nau8315_daiops_trigger(
 pub unsafe extern "C" fn nau8315_enpin_event(
     w: *mut snd_soc_dapm_widget,
     kcontrol: *mut snd_kcontrol,
-    event: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    event: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let component: *mut snd_soc_component = snd_soc_dapm_to_component((*(*w).dapm));
     let nau8315: *mut nau8315_priv =
         snd_soc_component_get_drvdata(component) as *mut nau8315_priv;
@@ -151,7 +151,7 @@ pub static mut nau8315_dai_driver: snd_soc_dai_driver = snd_soc_dai_driver {
 
 pub unsafe extern "C" fn nau8315_platform_probe(
     pdev: *mut platform_device,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let mut nau8315: *mut nau8315_priv;
 
     nau8315 = devm_kzalloc(
@@ -168,13 +168,13 @@ pub unsafe extern "C" fn nau8315_platform_probe(
         c"enable".as_ptr(),
         GPIOD_OUT_LOW,
     );
-    if IS_ERR((*nau8315).enable as *const ::core::ffi::c_void) {
-        return PTR_ERR((*nau8315).enable as *const ::core::ffi::c_void) as ::core::ffi::c_int;
+    if IS_ERR((*nau8315).enable as *const ::kernel::ffi::c_void) {
+        return PTR_ERR((*nau8315).enable as *const ::kernel::ffi::c_void) as ::kernel::ffi::c_int;
     }
 
     dev_set_drvdata(
         &mut (*pdev).dev,
-        nau8315 as *mut ::core::ffi::c_void,
+        nau8315 as *mut ::kernel::ffi::c_void,
     );
 
     devm_snd_soc_register_component(

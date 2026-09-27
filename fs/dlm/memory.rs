@@ -73,7 +73,7 @@ pub unsafe fn dlm_memory_init() -> i32 {
         core::mem::align_of::<dlm_callback>(),
         0,
         core::mem::offset_of!(dlm_callback, lvbptr),
-        core::mem::size_of::<*mut core::ffi::c_char>(),
+        core::mem::size_of::<*mut kernel::ffi::c_char>(),
         core::ptr::null_mut(),
     );
     if cb_cache.is_null() {
@@ -99,11 +99,11 @@ pub unsafe fn dlm_memory_exit() {
     kmem_cache_destroy(cb_cache);
 }
 
-pub unsafe fn dlm_allocate_lvb(ls: *mut dlm_ls) -> *mut core::ffi::c_char {
+pub unsafe fn dlm_allocate_lvb(ls: *mut dlm_ls) -> *mut kernel::ffi::c_char {
     kzalloc((*ls).ls_lvblen, GFP_ATOMIC)
 }
 
-pub unsafe fn dlm_free_lvb(p: *mut core::ffi::c_char) {
+pub unsafe fn dlm_free_lvb(p: *mut kernel::ffi::c_char) {
     kfree(p);
 }
 

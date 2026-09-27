@@ -5,21 +5,21 @@
 #[cfg(CONFIG_FRAME_POINTER)]
 #[repr(C)]
 struct stackframe {
-    fp: ::core::ffi::c_ulong,
-    ra: ::core::ffi::c_ulong,
+    fp: ::kernel::ffi::c_ulong,
+    ra: ::kernel::ffi::c_ulong,
 }
 
 #[cfg(CONFIG_FRAME_POINTER)]
 pub unsafe fn walk_stackframe(
     task: *mut task_struct,
     regs: *mut pt_regs,
-    fn_: Option<unsafe extern "C" fn(::core::ffi::c_ulong, *mut ::core::ffi::c_void) -> bool>,
-    arg: *mut ::core::ffi::c_void,
+    fn_: Option<unsafe extern "C" fn(::kernel::ffi::c_ulong, *mut ::kernel::ffi::c_void) -> bool>,
+    arg: *mut ::kernel::ffi::c_void,
 ) {
     let (mut fp, mut sp, mut pc): (
-        ::core::ffi::c_ulong,
-        ::core::ffi::c_ulong,
-        ::core::ffi::c_ulong,
+        ::kernel::ffi::c_ulong,
+        ::kernel::ffi::c_ulong,
+        ::kernel::ffi::c_ulong,
     );
 
     if !regs.is_null() {
@@ -27,11 +27,11 @@ pub unsafe fn walk_stackframe(
         sp = user_stack_pointer(regs);
         pc = instruction_pointer(regs);
     } else if task.is_null() || task == current {
-        let current_fp: ::core::ffi::c_ulong;
+        let current_fp: ::kernel::ffi::c_ulong;
         core::arch::asm!("", out("r8") current_fp);
         fp = current_fp;
         sp = current_stack_pointer;
-        pc = walk_stackframe as usize as ::core::ffi::c_ulong;
+        pc = walk_stackframe as usize as ::kernel::ffi::c_ulong;
     } else {
         // task blocked in __switch_to
         fp = thread_saved_fp(task);
@@ -40,8 +40,8 @@ pub unsafe fn walk_stackframe(
     }
 
     loop {
-        let low: ::core::ffi::c_ulong;
-        let high: ::core::ffi::c_ulong;
+        let low: ::kernel::ffi::c_ulong;
+        let high: ::kernel::ffi::c_ulong;
         let frame: *mut stackframe;
 
         if !__kernel_text_address(pc) || fn_.unwrap()(pc, arg) {
@@ -62,7 +62,7 @@ pub unsafe fn walk_stackframe(
             current,
             core::ptr::null_mut(),
             (*frame).ra,
-            (fp.wrapping_sub(8)) as *mut ::core::ffi::c_ulong,
+            (fp.wrapping_sub(8)) as *mut ::kernel::ffi::c_ulong,
         );
     }
 }
@@ -72,18 +72,18 @@ pub unsafe fn walk_stackframe(
 unsafe fn walk_stackframe(
     task: *mut task_struct,
     regs: *mut pt_regs,
-    fn_: Option<unsafe extern "C" fn(::core::ffi::c_ulong, *mut ::core::ffi::c_void) -> bool>,
-    arg: *mut ::core::ffi::c_void,
+    fn_: Option<unsafe extern "C" fn(::kernel::ffi::c_ulong, *mut ::kernel::ffi::c_void) -> bool>,
+    arg: *mut ::kernel::ffi::c_void,
 ) {
-    let (mut sp, mut pc): (::core::ffi::c_ulong, ::core::ffi::c_ulong);
-    let mut ksp: *mut ::core::ffi::c_ulong;
+    let (mut sp, mut pc): (::kernel::ffi::c_ulong, ::kernel::ffi::c_ulong);
+    let mut ksp: *mut ::kernel::ffi::c_ulong;
 
     if !regs.is_null() {
         sp = user_stack_pointer(regs);
         pc = instruction_pointer(regs);
     } else if task.is_null() || task == current {
         sp = current_stack_pointer;
-        pc = walk_stackframe as usize as ::core::ffi::c_ulong;
+        pc = walk_stackframe as usize as ::kernel::ffi::c_ulong;
     } else {
         // task blocked in __switch_to
         sp = thread_saved_sp(task);
@@ -94,7 +94,7 @@ unsafe fn walk_stackframe(
         return;
     }
 
-    ksp = sp as *mut ::core::ffi::c_ulong;
+    ksp = sp as *mut ::kernel::ffi::c_ulong;
     while !kstack_end(ksp) {
         if __kernel_text_address(pc) && fn_.unwrap()(pc, arg) {
             break;
@@ -105,43 +105,43 @@ unsafe fn walk_stackframe(
 }
 
 unsafe extern "C" fn print_trace_address(
-    pc: ::core::ffi::c_ulong,
-    arg: *mut ::core::ffi::c_void,
+    pc: ::kernel::ffi::c_ulong,
+    arg: *mut ::kernel::ffi::c_void,
 ) -> bool {
-    print_ip_sym(arg as *const ::core::ffi::c_char, pc);
+    print_ip_sym(arg as *const ::kernel::ffi::c_char, pc);
     false
 }
 
 pub unsafe fn show_stack(
     task: *mut task_struct,
-    _sp: *mut ::core::ffi::c_ulong,
-    loglvl: *const ::core::ffi::c_char,
+    _sp: *mut ::kernel::ffi::c_ulong,
+    loglvl: *const ::kernel::ffi::c_char,
 ) {
     pr_cont("Call Trace:\n");
     walk_stackframe(task, core::ptr::null_mut(), Some(print_trace_address), loglvl as *mut _);
 }
 
 unsafe extern "C" fn save_wchan(
-    pc: ::core::ffi::c_ulong,
-    arg: *mut ::core::ffi::c_void,
+    pc: ::kernel::ffi::c_ulong,
+    arg: *mut ::kernel::ffi::c_void,
 ) -> bool {
     if !in_sched_functions(pc) {
-        *(arg as *mut ::core::ffi::c_ulong) = pc;
+        *(arg as *mut ::kernel::ffi::c_ulong) = pc;
         return true;
     }
     false
 }
 
-pub unsafe fn __get_wchan(task: *mut task_struct) -> ::core::ffi::c_ulong {
-    let mut pc: ::core::ffi::c_ulong = 0;
+pub unsafe fn __get_wchan(task: *mut task_struct) -> ::kernel::ffi::c_ulong {
+    let mut pc: ::kernel::ffi::c_ulong = 0;
     walk_stackframe(task, core::ptr::null_mut(), Some(save_wchan), &mut pc as *mut _ as *mut _);
     pc
 }
 
 #[cfg(CONFIG_STACKTRACE)]
 unsafe fn __save_trace(
-    pc: ::core::ffi::c_ulong,
-    arg: *mut ::core::ffi::c_void,
+    pc: ::kernel::ffi::c_ulong,
+    arg: *mut ::kernel::ffi::c_void,
     nosched: bool,
 ) -> bool {
     let trace = &mut *(arg as *mut stack_trace);
@@ -161,8 +161,8 @@ unsafe fn __save_trace(
 
 #[cfg(CONFIG_STACKTRACE)]
 unsafe extern "C" fn save_trace(
-    pc: ::core::ffi::c_ulong,
-    arg: *mut ::core::ffi::c_void,
+    pc: ::kernel::ffi::c_ulong,
+    arg: *mut ::kernel::ffi::c_void,
 ) -> bool {
     __save_trace(pc, arg, false)
 }

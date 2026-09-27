@@ -12,12 +12,12 @@
 
 #[repr(C)]
 pub struct acpi_platform_list {
-    pub oem_id: *const core::ffi::c_char,
-    pub oem_table_id: *const core::ffi::c_char,
+    pub oem_id: *const kernel::ffi::c_char,
+    pub oem_table_id: *const kernel::ffi::c_char,
     pub oem_revision: u32,
-    pub signature: *const core::ffi::c_char,
+    pub signature: *const kernel::ffi::c_char,
     pub compare: Option<unsafe extern "C" fn(u32, u32) -> bool>,
-    pub reason: *const core::ffi::c_char,
+    pub reason: *const kernel::ffi::c_char,
     pub data: i32,
 }
 
@@ -25,7 +25,7 @@ pub struct acpi_platform_list {
 #[repr(C)]
 pub struct dmi_system_id {
     pub callback: Option<unsafe extern "C" fn(*const dmi_system_id) -> i32>,
-    pub ident: *const core::ffi::c_char,
+    pub ident: *const kernel::ffi::c_char,
     pub matches: [dmi_strmatch; 2],
 }
 
@@ -33,19 +33,19 @@ pub struct dmi_system_id {
 #[repr(C)]
 pub struct dmi_strmatch {
     pub slot: i32,
-    pub substr: *const core::ffi::c_char,
+    pub substr: *const kernel::ffi::c_char,
 }
 
 unsafe extern "C" {
     fn acpi_match_platform_list(list: *const acpi_platform_list) -> i32;
     fn early_acpi_osi_init() -> i32;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
     #[cfg(CONFIG_ACPI_REV_OVERRIDE_POSSIBLE)]
-    fn pr_notice(fmt: *const core::ffi::c_char, ...);
+    fn pr_notice(fmt: *const kernel::ffi::c_char, ...);
     #[cfg(CONFIG_DMI)]
     fn dmi_check_system(list: *const dmi_system_id) -> i32;
     #[cfg(CONFIG_ACPI_REV_OVERRIDE_POSSIBLE)]
-    fn acpi_rev_override_setup(arg: *const core::ffi::c_char);
+    fn acpi_rev_override_setup(arg: *const kernel::ffi::c_char);
 }
 
 static ACPI_SIG_DSDT: &[u8] = b"DSDT\0";

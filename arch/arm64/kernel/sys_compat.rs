@@ -9,8 +9,8 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-unsafe fn __do_compat_cache_op(mut start: libc::c_ulong, end: libc::c_ulong) -> libc::c_long {
-    let mut ret: libc::c_long;
+unsafe fn __do_compat_cache_op(mut start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong) -> kernel::ffi::c_long {
+    let mut ret: kernel::ffi::c_long;
 
     loop {
         let chunk = if PAGE_SIZE < end.wrapping_sub(start) {
@@ -28,7 +28,7 @@ unsafe fn __do_compat_cache_op(mut start: libc::c_ulong, end: libc::c_ulong) -> 
              * The workaround requires an inner-shareable tlbi.
              * We pick the reserved-ASID to minimise the impact.
              */
-            __tlbi(aside1is, 0 as libc::c_ulong);
+            __tlbi(aside1is, 0 as kernel::ffi::c_ulong);
             __tlbi_sync_s1ish((*current).mm);
         }
 
@@ -48,15 +48,15 @@ unsafe fn __do_compat_cache_op(mut start: libc::c_ulong, end: libc::c_ulong) -> 
 }
 
 unsafe fn do_compat_cache_op(
-    start: libc::c_ulong,
-    end: libc::c_ulong,
-    flags: libc::c_int,
-) -> libc::c_long {
+    start: kernel::ffi::c_ulong,
+    end: kernel::ffi::c_ulong,
+    flags: kernel::ffi::c_int,
+) -> kernel::ffi::c_long {
     if end < start || flags != 0 {
         return -EINVAL;
     }
 
-    if !access_ok(start as *const libc::c_void, end.wrapping_sub(start)) {
+    if !access_ok(start as *const kernel::ffi::c_void, end.wrapping_sub(start)) {
         return -EFAULT;
     }
 
@@ -66,8 +66,8 @@ unsafe fn do_compat_cache_op(
 /*
  * Handle all unrecognised system calls.
  */
-pub unsafe fn compat_arm_syscall(regs: *mut pt_regs, scno: libc::c_int) -> libc::c_long {
-    let mut addr: libc::c_ulong;
+pub unsafe fn compat_arm_syscall(regs: *mut pt_regs, scno: kernel::ffi::c_int) -> kernel::ffi::c_long {
+    let mut addr: kernel::ffi::c_ulong;
 
     match scno {
         /*
@@ -85,7 +85,7 @@ pub unsafe fn compat_arm_syscall(regs: *mut pt_regs, scno: libc::c_int) -> libc:
          * the specified region).
          */
         __ARM_NR_compat_cacheflush => {
-            return do_compat_cache_op((*regs).regs[0], (*regs).regs[1], (*regs).regs[2] as libc::c_int);
+            return do_compat_cache_op((*regs).regs[0], (*regs).regs[1], (*regs).regs[2] as kernel::ffi::c_int);
         }
 
         __ARM_NR_compat_set_tls => {

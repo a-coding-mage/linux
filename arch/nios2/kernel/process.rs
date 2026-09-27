@@ -28,7 +28,7 @@ pub unsafe extern "C" fn arch_cpu_idle() {}
  * cpu reset address and let the boot loader or the code in head.S take care of
  * resetting peripherals.
  */
-pub unsafe extern "C" fn machine_restart(__unused: *mut core::ffi::c_char) {
+pub unsafe extern "C" fn machine_restart(__unused: *mut kernel::ffi::c_char) {
     pr_notice!("Machine restart (%08x)...\n", cpuinfo.reset_addr);
     local_irq_disable();
     core::arch::asm!("jmp {0}", in(reg) cpuinfo.reset_addr, clobber_abi("C"));

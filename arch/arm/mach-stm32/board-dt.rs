@@ -10,7 +10,7 @@
 // <asm/mach/arch.h>
 // <asm/v7m.h>
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 static STM32_COMPAT_STM32F429: &[u8] = b"st,stm32f429\0";
 static STM32_COMPAT_STM32F469: &[u8] = b"st,stm32f469\0";

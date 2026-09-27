@@ -6,7 +6,7 @@
 // Dependencies supplied by the surrounding kernel translation:
 // uapi/linux/audit.h, linux/compat.h, and linux/err.h.
 
-pub type SyscallFnT = unsafe extern "C" fn(regs: *const pt_regs) -> ::core::ffi::c_long;
+pub type SyscallFnT = unsafe extern "C" fn(regs: *const pt_regs) -> ::kernel::ffi::c_long;
 
 extern "C" {
     pub static sys_call_table: *const SyscallFnT;
@@ -17,7 +17,7 @@ extern "C" {
     pub static compat_sys_call_table: *const SyscallFnT;
 }
 
-pub unsafe fn syscall_get_nr(_task: *mut task_struct, regs: *mut pt_regs) -> ::core::ffi::c_int {
+pub unsafe fn syscall_get_nr(_task: *mut task_struct, regs: *mut pt_regs) -> ::kernel::ffi::c_int {
     (*regs).syscallno
 }
 
@@ -28,24 +28,24 @@ pub unsafe fn syscall_rollback(_task: *mut task_struct, regs: *mut pt_regs) {
 pub unsafe fn syscall_get_return_value(
     task: *mut task_struct,
     regs: *mut pt_regs,
-) -> ::core::ffi::c_long {
-    let mut val: ::core::ffi::c_ulong = (*regs).regs[0];
+) -> ::kernel::ffi::c_long {
+    let mut val: ::kernel::ffi::c_ulong = (*regs).regs[0];
 
     if is_compat_thread(task_thread_info(task)) {
         val = sign_extend64(val, 31);
     }
 
-    val as ::core::ffi::c_long
+    val as ::kernel::ffi::c_long
 }
 
 pub unsafe fn syscall_get_error(
     task: *mut task_struct,
     regs: *mut pt_regs,
-) -> ::core::ffi::c_long {
-    let error: ::core::ffi::c_ulong = syscall_get_return_value(task, regs) as ::core::ffi::c_ulong;
+) -> ::kernel::ffi::c_long {
+    let error: ::kernel::ffi::c_ulong = syscall_get_return_value(task, regs) as ::kernel::ffi::c_ulong;
 
     if IS_ERR_VALUE(error) {
-        error as ::core::ffi::c_long
+        error as ::kernel::ffi::c_long
     } else {
         0
     }
@@ -54,24 +54,24 @@ pub unsafe fn syscall_get_error(
 pub unsafe fn syscall_set_return_value(
     task: *mut task_struct,
     regs: *mut pt_regs,
-    error: ::core::ffi::c_int,
-    mut val: ::core::ffi::c_long,
+    error: ::kernel::ffi::c_int,
+    mut val: ::kernel::ffi::c_long,
 ) {
     if error != 0 {
-        val = error as ::core::ffi::c_long;
+        val = error as ::kernel::ffi::c_long;
     }
 
     if is_compat_thread(task_thread_info(task)) {
-        val = lower_32_bits(val) as ::core::ffi::c_long;
+        val = lower_32_bits(val) as ::kernel::ffi::c_long;
     }
 
-    (*regs).regs[0] = val as ::core::ffi::c_ulong;
+    (*regs).regs[0] = val as ::kernel::ffi::c_ulong;
 }
 
 pub unsafe fn syscall_set_nr(
     task: *mut task_struct,
     regs: *mut pt_regs,
-    nr: ::core::ffi::c_int,
+    nr: ::kernel::ffi::c_int,
 ) {
     (*regs).syscallno = nr;
     if nr == -1 {
@@ -88,7 +88,7 @@ pub unsafe fn syscall_set_nr(
 pub unsafe fn syscall_get_arguments(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    args: *mut ::core::ffi::c_ulong,
+    args: *mut ::kernel::ffi::c_ulong,
 ) {
     *args.add(0) = (*regs).orig_x0;
     *args.add(1) = (*regs).regs[1];
@@ -101,7 +101,7 @@ pub unsafe fn syscall_get_arguments(
 pub unsafe fn syscall_set_arguments(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    args: *const ::core::ffi::c_ulong,
+    args: *const ::kernel::ffi::c_ulong,
 ) {
     (*regs).regs[0] = *args.add(0);
     (*regs).regs[1] = *args.add(1);
@@ -122,7 +122,7 @@ pub unsafe fn syscall_set_arguments(
  * We don't care about endianness (__AUDIT_ARCH_LE bit) here because
  * AArch64 has the same system calls both on little- and big- endian.
  */
-pub unsafe fn syscall_get_arch(task: *mut task_struct) -> ::core::ffi::c_int {
+pub unsafe fn syscall_get_arch(task: *mut task_struct) -> ::kernel::ffi::c_int {
     if is_compat_thread(task_thread_info(task)) {
         return AUDIT_ARCH_ARM;
     }
@@ -131,7 +131,7 @@ pub unsafe fn syscall_get_arch(task: *mut task_struct) -> ::core::ffi::c_int {
 }
 
 extern "C" {
-    pub fn syscall_trace_enter(regs: *mut pt_regs) -> ::core::ffi::c_int;
+    pub fn syscall_trace_enter(regs: *mut pt_regs) -> ::kernel::ffi::c_int;
     pub fn syscall_trace_exit(regs: *mut pt_regs);
 }
 

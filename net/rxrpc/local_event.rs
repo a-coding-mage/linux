@@ -9,7 +9,7 @@
 // Linux module, networking, socket, AF_RXRPC, generated release, and
 // ar-internal declarations are supplied by other translation units.
 
-static mut RXRPC_VERSION_STRING: [core::ffi::c_char; 65] = [0; 65];
+static mut RXRPC_VERSION_STRING: [kernel::ffi::c_char; 65] = [0; 65];
 
 /*
  * Generate the VERSION packet string.
@@ -17,7 +17,7 @@ static mut RXRPC_VERSION_STRING: [core::ffi::c_char; 65] = [0; 65];
 pub unsafe fn rxrpc_gen_version_string() {
     snprintf(
         RXRPC_VERSION_STRING.as_mut_ptr(),
-        core::mem::size_of::<[core::ffi::c_char; 65]>(),
+        core::mem::size_of::<[kernel::ffi::c_char; 65]>(),
         c"linux-%.49s AF_RXRPC".as_ptr(),
         UTS_RELEASE,
     );
@@ -45,7 +45,7 @@ pub unsafe fn rxrpc_send_version_request(
         return;
     }
 
-    msg.msg_name = (&mut srx.transport) as *mut _ as *mut core::ffi::c_void;
+    msg.msg_name = (&mut srx.transport) as *mut _ as *mut kernel::ffi::c_void;
     msg.msg_namelen = srx.transport_len;
     msg.msg_control = core::ptr::null_mut();
     msg.msg_controllen = 0;
@@ -63,10 +63,10 @@ pub unsafe fn rxrpc_send_version_request(
     whdr._rsvd = 0;
     whdr.serviceId = htons((*sp).hdr.serviceId);
 
-    iov[0].iov_base = &mut whdr as *mut _ as *mut core::ffi::c_void;
+    iov[0].iov_base = &mut whdr as *mut _ as *mut kernel::ffi::c_void;
     iov[0].iov_len = core::mem::size_of::<rxrpc_wire_header>();
-    iov[1].iov_base = RXRPC_VERSION_STRING.as_mut_ptr() as *mut core::ffi::c_void;
-    iov[1].iov_len = core::mem::size_of::<[core::ffi::c_char; 65]>();
+    iov[1].iov_base = RXRPC_VERSION_STRING.as_mut_ptr() as *mut kernel::ffi::c_void;
+    iov[1].iov_len = core::mem::size_of::<[kernel::ffi::c_char; 65]>();
 
     len = iov[0].iov_len + iov[1].iov_len;
 

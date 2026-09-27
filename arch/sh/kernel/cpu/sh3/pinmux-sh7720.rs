@@ -10,10 +10,10 @@
 
 extern "C" {
     fn sh_pfc_register(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         resources: *mut crate::resource,
         resource_count: usize,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 static mut sh7720_pfc_resources: [crate::resource; 1] = [crate::resource {
@@ -23,9 +23,9 @@ static mut sh7720_pfc_resources: [crate::resource; 1] = [crate::resource {
 }];
 
 #[no_mangle]
-pub unsafe extern "C" fn plat_pinmux_setup() -> core::ffi::c_int {
+pub unsafe extern "C" fn plat_pinmux_setup() -> kernel::ffi::c_int {
     sh_pfc_register(
-        b"pfc-sh7720\0".as_ptr() as *const core::ffi::c_char,
+        b"pfc-sh7720\0".as_ptr() as *const kernel::ffi::c_char,
         sh7720_pfc_resources.as_mut_ptr(),
         sh7720_pfc_resources.len(),
     )

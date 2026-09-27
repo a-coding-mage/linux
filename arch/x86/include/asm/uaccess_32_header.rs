@@ -8,34 +8,34 @@
 
 extern "C" {
     pub fn __copy_user_ll(
-        to: *mut core::ffi::c_void,
-        from: *const core::ffi::c_void,
+        to: *mut kernel::ffi::c_void,
+        from: *const kernel::ffi::c_void,
         n: c_ulong,
     ) -> c_ulong;
 
     pub fn __copy_from_user_ll_nocache_nozero(
-        to: *mut core::ffi::c_void,
-        from: *const core::ffi::c_void,
+        to: *mut kernel::ffi::c_void,
+        from: *const kernel::ffi::c_void,
         n: c_ulong,
     ) -> c_ulong;
 
     pub fn copy_from_user_inatomic_nontemporal(
-        to: *mut core::ffi::c_void,
-        from: *const core::ffi::c_void,
+        to: *mut kernel::ffi::c_void,
+        from: *const kernel::ffi::c_void,
         n: c_ulong,
     ) -> c_ulong;
 
-    pub fn clear_user(mem: *mut core::ffi::c_void, len: c_ulong) -> c_ulong;
-    pub fn __clear_user(mem: *mut core::ffi::c_void, len: c_ulong) -> c_ulong;
+    pub fn clear_user(mem: *mut kernel::ffi::c_void, len: c_ulong) -> c_ulong;
+    pub fn __clear_user(mem: *mut kernel::ffi::c_void, len: c_ulong) -> c_ulong;
 }
 
 /* `unsigned long` from the C ABI. */
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 #[inline(always)]
 pub unsafe fn raw_copy_to_user(
-    to: *mut core::ffi::c_void,
-    from: *const core::ffi::c_void,
+    to: *mut kernel::ffi::c_void,
+    from: *const kernel::ffi::c_void,
     n: c_ulong,
 ) -> c_ulong {
     __copy_user_ll(to, from, n)
@@ -43,8 +43,8 @@ pub unsafe fn raw_copy_to_user(
 
 #[inline(always)]
 pub unsafe fn raw_copy_from_user(
-    to: *mut core::ffi::c_void,
-    from: *const core::ffi::c_void,
+    to: *mut kernel::ffi::c_void,
+    from: *const kernel::ffi::c_void,
     n: c_ulong,
 ) -> c_ulong {
     __copy_user_ll(to, from, n)

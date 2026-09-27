@@ -13,10 +13,10 @@
 // Original C header guard: __ASM_COBALT_H
 
 unsafe extern "C" {
-    pub static mut cobalt_board_id: ::core::ffi::c_int;
+    pub static mut cobalt_board_id: ::kernel::ffi::c_int;
 
     pub fn cobalt_machine_halt();
-    pub fn cobalt_machine_restart(command: *mut ::core::ffi::c_char);
+    pub fn cobalt_machine_restart(command: *mut ::kernel::ffi::c_char);
 }
 
 pub const COBALT_BRD_ID_QUBE1: i32 = 0x3;

@@ -16,30 +16,30 @@ extern "C" {
 }
 
 /// Direct translation of the C `static inline` helper.
-pub unsafe fn arch_parse_debug_rodata(arg: *mut core::ffi::c_char) -> bool {
+pub unsafe fn arch_parse_debug_rodata(arg: *mut kernel::ffi::c_char) -> bool {
     extern "C" {
         static mut rodata_enabled: bool;
         static mut rodata_full: bool;
-        fn strcmp(lhs: *const core::ffi::c_char, rhs: *const core::ffi::c_char) -> core::ffi::c_int;
+        fn strcmp(lhs: *const kernel::ffi::c_char, rhs: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
     }
 
     if arg.is_null() {
         return false;
     }
 
-    if strcmp(arg as *const core::ffi::c_char, b"on\0".as_ptr() as *const core::ffi::c_char) == 0 {
+    if strcmp(arg as *const kernel::ffi::c_char, b"on\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
         rodata_enabled = true;
         rodata_full = true;
         return true;
     }
 
-    if strcmp(arg as *const core::ffi::c_char, b"off\0".as_ptr() as *const core::ffi::c_char) == 0 {
+    if strcmp(arg as *const kernel::ffi::c_char, b"off\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
         rodata_enabled = false;
         rodata_full = false;
         return true;
     }
 
-    if strcmp(arg as *const core::ffi::c_char, b"noalias\0".as_ptr() as *const core::ffi::c_char) == 0 {
+    if strcmp(arg as *const kernel::ffi::c_char, b"noalias\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
         rodata_enabled = true;
         rodata_full = false;
         return true;

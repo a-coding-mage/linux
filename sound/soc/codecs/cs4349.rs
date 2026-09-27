@@ -16,8 +16,8 @@
 pub struct cs4349_private {
     pub regmap: *mut regmap,
     pub reset_gpio: *mut gpio_desc,
-    pub mode: ::core::ffi::c_uint,
-    pub rate: ::core::ffi::c_int,
+    pub mode: ::kernel::ffi::c_uint,
+    pub rate: ::kernel::ffi::c_int,
 }
 
 static cs4349_reg_defaults: [reg_default; 7] = [
@@ -32,7 +32,7 @@ static cs4349_reg_defaults: [reg_default; 7] = [
 
 unsafe extern "C" fn cs4349_readable_register(
     _dev: *mut device,
-    reg: ::core::ffi::c_uint,
+    reg: ::kernel::ffi::c_uint,
 ) -> bool {
     match reg {
         CS4349_CHIPID..=CS4349_MISC => true,
@@ -42,7 +42,7 @@ unsafe extern "C" fn cs4349_readable_register(
 
 unsafe extern "C" fn cs4349_writeable_register(
     _dev: *mut device,
-    reg: ::core::ffi::c_uint,
+    reg: ::kernel::ffi::c_uint,
 ) -> bool {
     match reg {
         CS4349_MODE..=CS4349_MISC => true,
@@ -52,12 +52,12 @@ unsafe extern "C" fn cs4349_writeable_register(
 
 unsafe extern "C" fn cs4349_set_dai_fmt(
     codec_dai: *mut snd_soc_dai,
-    format: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    format: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*codec_dai).component;
     let cs4349: *mut cs4349_private =
         snd_soc_component_get_drvdata(component) as *mut cs4349_private;
-    let fmt: ::core::ffi::c_uint;
+    let fmt: ::kernel::ffi::c_uint;
 
     fmt = format & SND_SOC_DAIFMT_FORMAT_MASK;
 
@@ -75,12 +75,12 @@ unsafe extern "C" fn cs4349_pcm_hw_params(
     _substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
     let cs4349: *mut cs4349_private =
         snd_soc_component_get_drvdata(component) as *mut cs4349_private;
-    let fmt: ::core::ffi::c_int;
-    let ret: ::core::ffi::c_int;
+    let fmt: ::kernel::ffi::c_int;
+    let ret: ::kernel::ffi::c_int;
 
     (*cs4349).rate = params_rate(params);
 
@@ -120,11 +120,11 @@ unsafe extern "C" fn cs4349_pcm_hw_params(
 
 unsafe extern "C" fn cs4349_mute(
     dai: *mut snd_soc_dai,
-    mute: ::core::ffi::c_int,
-    _direction: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    mute: ::kernel::ffi::c_int,
+    _direction: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
-    let mut reg: ::core::ffi::c_int;
+    let mut reg: ::kernel::ffi::c_int;
 
     reg = 0;
     if mute != 0 {
@@ -134,9 +134,9 @@ unsafe extern "C" fn cs4349_mute(
     snd_soc_component_update_bits(component, CS4349_MUTE, MUTE_AB_MASK, reg)
 }
 
-static dig_tlv: [::core::ffi::c_uint; 4] = TLV_DB_SCALE_ITEM(-12750, 50, 0);
+static dig_tlv: [::kernel::ffi::c_uint; 4] = TLV_DB_SCALE_ITEM(-12750, 50, 0);
 
-static chan_mix_texts: [*const ::core::ffi::c_char; 16] = [
+static chan_mix_texts: [*const ::kernel::ffi::c_char; 16] = [
     c"Mute".as_ptr(),
     c"MuteA".as_ptr(),
     c"MuteA SwapB".as_ptr(),
@@ -156,30 +156,30 @@ static chan_mix_texts: [*const ::core::ffi::c_char; 16] = [
     /*Normal == Channel A = Left, Channel B = Right*/
 ];
 
-static fm_texts: [*const ::core::ffi::c_char; 4] = [
+static fm_texts: [*const ::kernel::ffi::c_char; 4] = [
     c"Auto".as_ptr(),
     c"Single".as_ptr(),
     c"Double".as_ptr(),
     c"Quad".as_ptr(),
 ];
 
-static deemph_texts: [*const ::core::ffi::c_char; 4] = [
+static deemph_texts: [*const ::kernel::ffi::c_char; 4] = [
     c"None".as_ptr(),
     c"44.1k".as_ptr(),
     c"48k".as_ptr(),
     c"32k".as_ptr(),
 ];
 
-static softr_zeroc_texts: [*const ::core::ffi::c_char; 4] = [
+static softr_zeroc_texts: [*const ::kernel::ffi::c_char; 4] = [
     c"Immediate".as_ptr(),
     c"Zero Cross".as_ptr(),
     c"Soft Ramp".as_ptr(),
     c"SR on ZC".as_ptr(),
 ];
 
-static mut deemph_values: [::core::ffi::c_int; 4] = [0, 4, 8, 12];
+static mut deemph_values: [::kernel::ffi::c_int; 4] = [0, 4, 8, 12];
 
-static mut softr_zeroc_values: [::core::ffi::c_int; 4] = [0, 64, 128, 192];
+static mut softr_zeroc_values: [::kernel::ffi::c_int; 4] = [0, 64, 128, 192];
 
 static chan_mix_enum: soc_enum =
     SOC_ENUM_SINGLE(CS4349_VMI, 0, ARRAY_SIZE(&chan_mix_texts), &chan_mix_texts);
@@ -260,7 +260,7 @@ static cs4349_routes: [snd_soc_dapm_route; 4] = [
     },
 ];
 
-const CS4349_PCM_FORMATS: ::core::ffi::c_uint = SNDRV_PCM_FMTBIT_S8
+const CS4349_PCM_FORMATS: ::kernel::ffi::c_uint = SNDRV_PCM_FMTBIT_S8
     | SNDRV_PCM_FMTBIT_S16_LE
     | SNDRV_PCM_FMTBIT_S18_3LE
     | SNDRV_PCM_FMTBIT_S20_3LE
@@ -268,7 +268,7 @@ const CS4349_PCM_FORMATS: ::core::ffi::c_uint = SNDRV_PCM_FMTBIT_S8
     | SNDRV_PCM_FMTBIT_S24_LE
     | SNDRV_PCM_FMTBIT_S32_LE;
 
-const CS4349_PCM_RATES: ::core::ffi::c_uint = SNDRV_PCM_RATE_8000_192000;
+const CS4349_PCM_RATES: ::kernel::ffi::c_uint = SNDRV_PCM_RATE_8000_192000;
 
 static cs4349_dai_ops: snd_soc_dai_ops = snd_soc_dai_ops {
     hw_params: Some(cs4349_pcm_hw_params),
@@ -313,9 +313,9 @@ static cs4349_regmap: regmap_config = regmap_config {
     cache_type: REGCACHE_MAPLE,
 };
 
-unsafe extern "C" fn cs4349_i2c_probe(client: *mut i2c_client) -> ::core::ffi::c_int {
+unsafe extern "C" fn cs4349_i2c_probe(client: *mut i2c_client) -> ::kernel::ffi::c_int {
     let cs4349: *mut cs4349_private;
-    let ret: ::core::ffi::c_int;
+    let ret: ::kernel::ffi::c_int;
 
     cs4349 = devm_kzalloc(
         &mut (*client).dev,
@@ -327,8 +327,8 @@ unsafe extern "C" fn cs4349_i2c_probe(client: *mut i2c_client) -> ::core::ffi::c
     }
 
     (*cs4349).regmap = devm_regmap_init_i2c(client, &cs4349_regmap);
-    if IS_ERR((*cs4349).regmap as *const ::core::ffi::c_void) {
-        ret = PTR_ERR((*cs4349).regmap as *const ::core::ffi::c_void);
+    if IS_ERR((*cs4349).regmap as *const ::kernel::ffi::c_void) {
+        ret = PTR_ERR((*cs4349).regmap as *const ::kernel::ffi::c_void);
         dev_err(
             &mut (*client).dev,
             c"regmap_init() failed: %d\n".as_ptr(),
@@ -340,13 +340,13 @@ unsafe extern "C" fn cs4349_i2c_probe(client: *mut i2c_client) -> ::core::ffi::c
     /* Reset the Device */
     (*cs4349).reset_gpio =
         devm_gpiod_get_optional(&mut (*client).dev, c"reset".as_ptr(), GPIOD_OUT_LOW);
-    if IS_ERR((*cs4349).reset_gpio as *const ::core::ffi::c_void) {
-        return PTR_ERR((*cs4349).reset_gpio as *const ::core::ffi::c_void);
+    if IS_ERR((*cs4349).reset_gpio as *const ::kernel::ffi::c_void) {
+        return PTR_ERR((*cs4349).reset_gpio as *const ::kernel::ffi::c_void);
     }
 
     gpiod_set_value_cansleep((*cs4349).reset_gpio, 1);
 
-    i2c_set_clientdata(client, cs4349 as *mut ::core::ffi::c_void);
+    i2c_set_clientdata(client, cs4349 as *mut ::kernel::ffi::c_void);
 
     devm_snd_soc_register_component(
         &mut (*client).dev,
@@ -363,9 +363,9 @@ unsafe extern "C" fn cs4349_i2c_remove(client: *mut i2c_client) {
     gpiod_set_value_cansleep((*cs4349).reset_gpio, 0);
 }
 
-unsafe extern "C" fn cs4349_runtime_suspend(dev: *mut device) -> ::core::ffi::c_int {
+unsafe extern "C" fn cs4349_runtime_suspend(dev: *mut device) -> ::kernel::ffi::c_int {
     let cs4349: *mut cs4349_private = dev_get_drvdata(dev) as *mut cs4349_private;
-    let ret: ::core::ffi::c_int;
+    let ret: ::kernel::ffi::c_int;
 
     ret = regmap_update_bits((*cs4349).regmap, CS4349_MISC, PWR_DWN, PWR_DWN);
     if ret < 0 {
@@ -380,9 +380,9 @@ unsafe extern "C" fn cs4349_runtime_suspend(dev: *mut device) -> ::core::ffi::c_
     0
 }
 
-unsafe extern "C" fn cs4349_runtime_resume(dev: *mut device) -> ::core::ffi::c_int {
+unsafe extern "C" fn cs4349_runtime_resume(dev: *mut device) -> ::kernel::ffi::c_int {
     let cs4349: *mut cs4349_private = dev_get_drvdata(dev) as *mut cs4349_private;
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     ret = regmap_update_bits((*cs4349).regmap, CS4349_MISC, PWR_DWN, 0);
     if ret < 0 {

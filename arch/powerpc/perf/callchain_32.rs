@@ -34,18 +34,18 @@ type CompatSiginfoT = compat_siginfo_t;
 
 #[repr(C)]
 pub struct signal_frame_32 {
-    pub dummy: [core::ffi::c_char; SignalFramesize32],
+    pub dummy: [kernel::ffi::c_char; SignalFramesize32],
     pub sctx: Sigcontext32,
     pub mctx: Mcontext32,
-    pub abigap: [core::ffi::c_int; 56],
+    pub abigap: [kernel::ffi::c_int; 56],
 }
 
 #[repr(C)]
 pub struct rt_signal_frame_32 {
-    pub dummy: [core::ffi::c_char; SignalFramesize32 + 16],
+    pub dummy: [kernel::ffi::c_char; SignalFramesize32 + 16],
     pub info: CompatSiginfoT,
     pub uc: Ucontext32,
-    pub abigap: [core::ffi::c_int; 56],
+    pub abigap: [kernel::ffi::c_int; 56],
 }
 
 unsafe fn read_user_stack_32(ptr: *const u32, ret: *mut u32) -> i32 {

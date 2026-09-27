@@ -4,7 +4,7 @@
 
 #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, dead_code)]
 
-use core::ffi::{c_char, c_int, c_long, c_uint, c_ushort, c_void};
+use kernel::ffi::{c_char, c_int, c_long, c_uint, c_ushort, c_void};
 
 pub const DEVICE_NAME: &[u8] = b"ipmi_ssif\0";
 pub const IPMI_GET_SYSTEM_INTERFACE_CAPABILITIES_CMD: u8 = 0x57;
@@ -32,7 +32,7 @@ pub const RECEIVE_MSG_AVAIL: u8 = 0x01;
 pub const EVENT_MSG_BUFFER_FULL: u8 = 0x02;
 pub const WDT_PRE_TIMEOUT_INT: u8 = 0x08;
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 #[repr(C)] pub struct i2c_board_info { pub addr: u16, pub platform_data: *mut c_void, pub type_: [c_char; 20] }
 #[repr(C)] pub struct device { _private: [u8; 0] }
 #[repr(C)] pub struct i2c_client { pub dev: device, pub adapter: *mut c_void, pub addr: u16, pub flags: u16 }

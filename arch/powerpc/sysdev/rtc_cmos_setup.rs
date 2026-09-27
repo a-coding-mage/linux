@@ -11,7 +11,7 @@
 
 // Dependencies are supplied by the surrounding kernel translation.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct device_node {
@@ -37,7 +37,7 @@ pub struct resource {
 }
 
 extern "C" {
-    fn memset(s: *mut core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void;
+    fn memset(s: *mut kernel::ffi::c_void, c: i32, n: usize) -> *mut kernel::ffi::c_void;
     fn of_find_compatible_node(
         from: *mut device_node,
         type_: *const c_char,
@@ -67,7 +67,7 @@ unsafe extern "C" fn add_rtc() -> i32 {
     let ret: i32;
 
     memset(
-        res.as_mut_ptr() as *mut core::ffi::c_void,
+        res.as_mut_ptr() as *mut kernel::ffi::c_void,
         0,
         core::mem::size_of::<[resource; 2]>(),
     );

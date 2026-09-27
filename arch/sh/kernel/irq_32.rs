@@ -8,12 +8,12 @@
 // Dependency supplied by linux/irqflags.h.
 // Build-time configuration may provide this constant.
 extern "C" {
-    static ARCH_IRQ_DISABLED: ::core::ffi::c_ulong;
+    static ARCH_IRQ_DISABLED: ::kernel::ffi::c_ulong;
 }
 
 #[inline(never)]
-pub unsafe extern "C" fn arch_local_irq_restore(flags: ::core::ffi::c_ulong) {
-    let mut dummy0: ::core::ffi::c_ulong;
+pub unsafe extern "C" fn arch_local_irq_restore(flags: ::kernel::ffi::c_ulong) {
+    let mut dummy0: ::kernel::ffi::c_ulong;
 
     if flags == ARCH_IRQ_DISABLED {
         ::core::arch::asm!(
@@ -44,8 +44,8 @@ pub unsafe extern "C" fn arch_local_irq_restore(flags: ::core::ffi::c_ulong) {
 // EXPORT_SYMBOL(arch_local_irq_restore);
 
 #[inline(never)]
-pub unsafe extern "C" fn arch_local_save_flags() -> ::core::ffi::c_ulong {
-    let mut flags: ::core::ffi::c_ulong;
+pub unsafe extern "C" fn arch_local_save_flags() -> ::kernel::ffi::c_ulong {
+    let mut flags: ::kernel::ffi::c_ulong;
 
     ::core::arch::asm!(
         "stc sr, {0}",

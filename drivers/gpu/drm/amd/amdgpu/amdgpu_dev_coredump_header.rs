@@ -63,11 +63,11 @@ pub struct amdgpu_coredump_info {
 	 * reading it (see drm_coredump_printer's documentation).
 	 */
 	pub formatted_size: ssize_t,
-	pub formatted: *mut core::ffi::c_char,
+	pub formatted: *mut kernel::ffi::c_char,
 
-	pub pasid: core::ffi::c_uint,
-	pub vmid: core::ffi::c_uint,
-	pub num_ibs: core::ffi::c_int,
+	pub pasid: kernel::ffi::c_uint,
+	pub vmid: kernel::ffi::c_uint,
+	pub num_ibs: kernel::ffi::c_int,
 	// C flexible array member: ibs[] __counted_by(num_ibs).
 	pub ibs: [amdgpu_coredump_ib_info; 0],
 }

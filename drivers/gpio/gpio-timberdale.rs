@@ -20,7 +20,7 @@ const TGPIO_BFLR: usize = 0x24;
 
 #[repr(C)]
 struct Timbgpio {
-    membase: *mut core::ffi::c_void,
+    membase: *mut kernel::ffi::c_void,
     lock: Spinlock,
     gpio: GpioChip,
     irq_base: i32,
@@ -28,7 +28,7 @@ struct Timbgpio {
 }
 
 #[repr(C)] struct Spinlock { _private: [u8; 0] }
-#[repr(C)] struct GpioChip { ngpio: u32, base: i32, label: *const core::ffi::c_char, owner: *mut core::ffi::c_void, parent: *mut Device }
+#[repr(C)] struct GpioChip { ngpio: u32, base: i32, label: *const kernel::ffi::c_char, owner: *mut kernel::ffi::c_void, parent: *mut Device }
 #[repr(C)] struct Device;
 #[repr(C)] struct PlatformDevice { dev: Device }
 #[repr(C)] struct IrqData { irq: i32 }

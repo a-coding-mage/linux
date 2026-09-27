@@ -76,14 +76,14 @@ pub struct gtp_pdu_session_info {
 /* The net_device and rtnl_link_ops definitions, and strcmp, are external
  * dependencies supplied by the surrounding translation unit. */
 extern "C" {
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
 }
 
 pub unsafe fn netif_is_gtp(dev: *const net_device) -> bool {
     !(*dev).rtnl_link_ops.is_null()
         && strcmp(
             (*(*dev).rtnl_link_ops).kind,
-            b"gtp\0".as_ptr() as *const core::ffi::c_char,
+            b"gtp\0".as_ptr() as *const kernel::ffi::c_char,
         ) == 0
 }
 

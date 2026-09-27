@@ -41,7 +41,7 @@ pub struct task_struct;
 #[repr(C)]
 pub struct thread_struct {
     /* Floating point control status register. */
-    pub fpcsr: libc::c_long,
+    pub fpcsr: kernel::ffi::c_long,
 }
 
 /*
@@ -53,7 +53,7 @@ pub struct thread_struct {
  * for running signal handler)
  */
 #[inline]
-pub unsafe fn user_regs(thread_info: *mut core::ffi::c_void) -> *mut pt_regs {
+pub unsafe fn user_regs(thread_info: *mut kernel::ffi::c_void) -> *mut pt_regs {
     (((thread_info as usize) + THREAD_SIZE - STACK_FRAME_OVERHEAD) as *mut pt_regs).sub(1)
 }
 

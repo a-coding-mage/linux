@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* 9P protocol definitions. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub type p9_debug_flags = u32;
 pub const P9_DEBUG_ERROR: p9_debug_flags = 1 << 0;

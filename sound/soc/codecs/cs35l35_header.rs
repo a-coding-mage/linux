@@ -315,9 +315,9 @@ pub struct cs35l35_private {
     pub pdn_done: completion,
 }
 
-pub static cs35l35_supplies: [*const core::ffi::c_char; 2] = [
-    b"VA\0".as_ptr() as *const core::ffi::c_char,
-    b"VP\0".as_ptr() as *const core::ffi::c_char,
+pub static cs35l35_supplies: [*const kernel::ffi::c_char; 2] = [
+    b"VA\0".as_ptr() as *const kernel::ffi::c_char,
+    b"VP\0".as_ptr() as *const kernel::ffi::c_char,
 ];
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

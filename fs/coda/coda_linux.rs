@@ -11,22 +11,22 @@
 // Linux kernel headers and local Coda headers are supplied by other files.
 
 /* initialize the debugging variables */
-pub static mut coda_fake_statfs: ::core::ffi::c_int = 0;
+pub static mut coda_fake_statfs: ::kernel::ffi::c_int = 0;
 
 /* print a fid */
-pub unsafe fn coda_f2s(f: *mut CodaFid) -> *mut ::core::ffi::c_char {
-    static mut S: [::core::ffi::c_char; 60] = [0; 60];
+pub unsafe fn coda_f2s(f: *mut CodaFid) -> *mut ::kernel::ffi::c_char {
+    static mut S: [::kernel::ffi::c_char; 60] = [0; 60];
     unsafe extern "C" {
         fn sprintf(
-            s: *mut ::core::ffi::c_char,
-            format: *const ::core::ffi::c_char,
+            s: *mut ::kernel::ffi::c_char,
+            format: *const ::kernel::ffi::c_char,
             ...,
-        ) -> ::core::ffi::c_int;
+        ) -> ::kernel::ffi::c_int;
     }
     static FORMAT: &[u8] = b"(%08x.%08x.%08x.%08x)\0";
     sprintf(
         S.as_mut_ptr(),
-        FORMAT.as_ptr() as *const ::core::ffi::c_char,
+        FORMAT.as_ptr() as *const ::kernel::ffi::c_char,
         (*f).opaque[0],
         (*f).opaque[1],
         (*f).opaque[2],
@@ -36,16 +36,16 @@ pub unsafe fn coda_f2s(f: *mut CodaFid) -> *mut ::core::ffi::c_char {
 }
 
 /* recognize special .CONTROL name */
-pub unsafe fn coda_iscontrol(name: *const ::core::ffi::c_char, length: usize) -> ::core::ffi::c_int {
+pub unsafe fn coda_iscontrol(name: *const ::kernel::ffi::c_char, length: usize) -> ::kernel::ffi::c_int {
     unsafe extern "C" {
         fn strncmp(
-            lhs: *const ::core::ffi::c_char,
-            rhs: *const ::core::ffi::c_char,
+            lhs: *const ::kernel::ffi::c_char,
+            rhs: *const ::kernel::ffi::c_char,
             count: usize,
-        ) -> ::core::ffi::c_int;
+        ) -> ::kernel::ffi::c_int;
     }
     ((CODA_CONTROLLEN == length)
-        && (strncmp(name, CODA_CONTROL.as_ptr() as *const ::core::ffi::c_char, CODA_CONTROLLEN) == 0)) as ::core::ffi::c_int
+        && (strncmp(name, CODA_CONTROL.as_ptr() as *const ::kernel::ffi::c_char, CODA_CONTROLLEN) == 0)) as ::kernel::ffi::c_int
 }
 
 pub fn coda_flags_to_cflags(flags: u16) -> u16 {

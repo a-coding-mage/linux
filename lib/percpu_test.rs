@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 // Translated from the Linux kernel percpu test implementation.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // These symbols/macros are supplied by the kernel environment.
 extern "C" {

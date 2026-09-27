@@ -2,17 +2,17 @@
 
 // Dependencies supplied by the surrounding kernel translation unit.
 
-unsafe fn validate_of_partition(np: *mut device_node, _slot: ::core::ffi::c_int) -> ::core::ffi::c_int {
+unsafe fn validate_of_partition(np: *mut device_node, _slot: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     let mut offset: u64;
     let mut size: u64;
-    let mut len: ::core::ffi::c_int = 0;
+    let mut len: ::kernel::ffi::c_int = 0;
 
-    let reg: *const __be32 = of_get_property(np, b"reg\0".as_ptr() as *const ::core::ffi::c_char, &mut len);
-    let a_cells: ::core::ffi::c_int = of_n_addr_cells(np);
-    let s_cells: ::core::ffi::c_int = of_n_size_cells(np);
+    let reg: *const __be32 = of_get_property(np, b"reg\0".as_ptr() as *const ::kernel::ffi::c_char, &mut len);
+    let a_cells: ::kernel::ffi::c_int = of_n_addr_cells(np);
+    let s_cells: ::kernel::ffi::c_int = of_n_size_cells(np);
 
     /* Make sure reg len match the expected addr and size cells */
-    if len / ::core::mem::size_of::<__be32>() as ::core::ffi::c_int != a_cells + s_cells {
+    if len / ::core::mem::size_of::<__be32>() as ::kernel::ffi::c_int != a_cells + s_cells {
         return -EINVAL;
     }
 
@@ -33,16 +33,16 @@ unsafe fn validate_of_partition(np: *mut device_node, _slot: ::core::ffi::c_int)
 
 unsafe fn add_of_partition(
     state: *mut parsed_partitions,
-    slot: ::core::ffi::c_int,
+    slot: ::kernel::ffi::c_int,
     np: *mut device_node,
 ) {
     let info: *mut partition_meta_info;
-    let mut partname: *const ::core::ffi::c_char;
-    let mut len: ::core::ffi::c_int = 0;
+    let mut partname: *const ::kernel::ffi::c_char;
+    let mut len: ::kernel::ffi::c_int = 0;
 
-    let reg: *const __be32 = of_get_property(np, b"reg\0".as_ptr() as *const ::core::ffi::c_char, &mut len);
-    let a_cells: ::core::ffi::c_int = of_n_addr_cells(np);
-    let s_cells: ::core::ffi::c_int = of_n_size_cells(np);
+    let reg: *const __be32 = of_get_property(np, b"reg\0".as_ptr() as *const ::kernel::ffi::c_char, &mut len);
+    let a_cells: ::kernel::ffi::c_int = of_n_addr_cells(np);
+    let s_cells: ::kernel::ffi::c_int = of_n_size_cells(np);
 
     /* Convert bytes to sector size */
     let offset: u64 = of_read_number(reg, a_cells) / SECTOR_SIZE;
@@ -50,7 +50,7 @@ unsafe fn add_of_partition(
 
     put_partition(state, slot, offset, size);
 
-    if of_property_read_bool(np, b"read-only\0".as_ptr() as *const ::core::ffi::c_char) {
+    if of_property_read_bool(np, b"read-only\0".as_ptr() as *const ::kernel::ffi::c_char) {
         (*state).parts[slot as usize].flags |= ADDPART_FLAG_READONLY;
     }
 
@@ -59,26 +59,26 @@ unsafe fn add_of_partition(
      * fallback to node name if not found.
      */
     info = &mut (*state).parts[slot as usize].info;
-    partname = of_get_property(np, b"label\0".as_ptr() as *const ::core::ffi::c_char, &mut len);
+    partname = of_get_property(np, b"label\0".as_ptr() as *const ::kernel::ffi::c_char, &mut len);
     if partname.is_null() {
-        partname = of_get_property(np, b"name\0".as_ptr() as *const ::core::ffi::c_char, &mut len);
+        partname = of_get_property(np, b"name\0".as_ptr() as *const ::kernel::ffi::c_char, &mut len);
     }
     strscpy((*info).volname.as_mut_ptr(), partname, ::core::mem::size_of_val(&(*info).volname));
 
-    seq_buf_printf(&mut (*state).pp_buf, b"(%s)\0".as_ptr() as *const ::core::ffi::c_char, (*info).volname.as_ptr());
+    seq_buf_printf(&mut (*state).pp_buf, b"(%s)\0".as_ptr() as *const ::kernel::ffi::c_char, (*info).volname.as_ptr());
 }
 
-pub unsafe fn of_partition(state: *mut parsed_partitions) -> ::core::ffi::c_int {
+pub unsafe fn of_partition(state: *mut parsed_partitions) -> ::kernel::ffi::c_int {
     let ddev: *mut device = disk_to_dev((*state).disk);
     let mut np: *mut device_node;
-    let mut slot: ::core::ffi::c_int;
+    let mut slot: ::kernel::ffi::c_int;
 
     let partitions_np: *mut device_node = of_node_get((*ddev).of_node);
 
     if partitions_np.is_null()
         || !of_device_is_compatible(
             partitions_np,
-            b"fixed-partitions\0".as_ptr() as *const ::core::ffi::c_char,
+            b"fixed-partitions\0".as_ptr() as *const ::kernel::ffi::c_char,
         )
     {
         of_node_put(partitions_np);
@@ -112,7 +112,7 @@ pub unsafe fn of_partition(state: *mut parsed_partitions) -> ::core::ffi::c_int 
         np = of_get_next_child(partitions_np, np);
     }
 
-    seq_buf_puts(&mut (*state).pp_buf, b"\n\0".as_ptr() as *const ::core::ffi::c_char);
+    seq_buf_puts(&mut (*state).pp_buf, b"\n\0".as_ptr() as *const ::kernel::ffi::c_char);
 
     of_node_put(partitions_np);
     1

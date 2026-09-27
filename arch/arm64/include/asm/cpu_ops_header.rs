@@ -32,27 +32,27 @@
  */
 #[repr(C)]
 pub struct cpu_operations {
-    pub name: *const core::ffi::c_char,
-    pub cpu_init: Option<unsafe extern "C" fn(_: core::ffi::c_uint) -> core::ffi::c_int>,
-    pub cpu_prepare: Option<unsafe extern "C" fn(_: core::ffi::c_uint) -> core::ffi::c_int>,
-    pub cpu_boot: Option<unsafe extern "C" fn(_: core::ffi::c_uint) -> core::ffi::c_int>,
+    pub name: *const kernel::ffi::c_char,
+    pub cpu_init: Option<unsafe extern "C" fn(_: kernel::ffi::c_uint) -> kernel::ffi::c_int>,
+    pub cpu_prepare: Option<unsafe extern "C" fn(_: kernel::ffi::c_uint) -> kernel::ffi::c_int>,
+    pub cpu_boot: Option<unsafe extern "C" fn(_: kernel::ffi::c_uint) -> kernel::ffi::c_int>,
     pub cpu_postboot: Option<unsafe extern "C" fn()>,
     #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_can_disable:
-        Option<unsafe extern "C" fn(cpu: core::ffi::c_uint) -> bool>,
+        Option<unsafe extern "C" fn(cpu: kernel::ffi::c_uint) -> bool>,
     #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_disable:
-        Option<unsafe extern "C" fn(cpu: core::ffi::c_uint) -> core::ffi::c_int>,
+        Option<unsafe extern "C" fn(cpu: kernel::ffi::c_uint) -> kernel::ffi::c_int>,
     #[cfg(CONFIG_HOTPLUG_CPU)]
-    pub cpu_die: Option<unsafe extern "C" fn(cpu: core::ffi::c_uint)>,
+    pub cpu_die: Option<unsafe extern "C" fn(cpu: kernel::ffi::c_uint)>,
     #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_kill:
-        Option<unsafe extern "C" fn(cpu: core::ffi::c_uint) -> core::ffi::c_int>,
+        Option<unsafe extern "C" fn(cpu: kernel::ffi::c_uint) -> kernel::ffi::c_int>,
 }
 
-pub unsafe extern "C" fn init_cpu_ops(cpu: core::ffi::c_int) -> core::ffi::c_int;
+pub unsafe extern "C" fn init_cpu_ops(cpu: kernel::ffi::c_int) -> kernel::ffi::c_int;
 pub unsafe extern "C" fn get_cpu_ops(
-    cpu: core::ffi::c_int,
+    cpu: kernel::ffi::c_int,
 ) -> *const cpu_operations;
 
 pub unsafe extern "C" fn init_bootcpu_ops() {

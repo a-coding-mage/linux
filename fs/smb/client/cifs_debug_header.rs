@@ -14,14 +14,14 @@ macro_rules! pr_fmt {
 }
 
 extern "C" {
-    pub fn cifs_dump_mem(label: *mut ::core::ffi::c_char,
-                         data: *mut ::core::ffi::c_void,
-                         length: ::core::ffi::c_int);
+    pub fn cifs_dump_mem(label: *mut ::kernel::ffi::c_char,
+                         data: *mut ::kernel::ffi::c_void,
+                         length: ::kernel::ffi::c_int);
     pub fn cifs_dump_mids(server: *mut TCP_Server_Info);
     pub static mut traceSMB: bool;
-    pub fn dump_smb(buf: *mut ::core::ffi::c_void,
-                    smb_buf_length: ::core::ffi::c_int);
-    pub static mut cifsFYI: ::core::ffi::c_int;
+    pub fn dump_smb(buf: *mut ::kernel::ffi::c_void,
+                    smb_buf_length: ::kernel::ffi::c_int);
+    pub static mut cifsFYI: ::kernel::ffi::c_int;
 }
 
 /* Supplied by the surrounding implementation. */
@@ -30,17 +30,17 @@ pub struct TCP_Server_Info {
     _private: [u8; 0],
 }
 
-pub const CIFS_INFO: ::core::ffi::c_int = 0x01;
-pub const CIFS_RC: ::core::ffi::c_int = 0x02;
-pub const CIFS_TIMER: ::core::ffi::c_int = 0x04;
-pub const VFS: ::core::ffi::c_int = 1;
-pub const FYI: ::core::ffi::c_int = 2;
+pub const CIFS_INFO: ::kernel::ffi::c_int = 0x01;
+pub const CIFS_RC: ::kernel::ffi::c_int = 0x02;
+pub const CIFS_TIMER: ::kernel::ffi::c_int = 0x04;
+pub const VFS: ::kernel::ffi::c_int = 1;
+pub const FYI: ::kernel::ffi::c_int = 2;
 
 #[cfg(CONFIG_CIFS_DEBUG2)]
-pub const NOISY: ::core::ffi::c_int = 4;
+pub const NOISY: ::kernel::ffi::c_int = 4;
 #[cfg(not(CONFIG_CIFS_DEBUG2))]
-pub const NOISY: ::core::ffi::c_int = 0;
-pub const ONCE: ::core::ffi::c_int = 8;
+pub const NOISY: ::kernel::ffi::c_int = 0;
+pub const ONCE: ::kernel::ffi::c_int = 8;
 
 /* The following macros correspond to the CONFIG_CIFS_DEBUG branch. */
 #[cfg(CONFIG_CIFS_DEBUG)]

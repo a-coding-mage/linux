@@ -21,12 +21,12 @@ pub const __NR_seccomp_sigreturn_32: _ = __NR_compat32_rt_sigreturn;
 // Declarations supplied by <asm-generic/seccomp.h> remain external
 // dependencies of this header translation.
 
-pub const SECCOMP_ARCH_NATIVE: _ = AUDIT_ARCH_AARCH64;
-pub const SECCOMP_ARCH_NATIVE_NR: _ = NR_syscalls;
+pub const SECCOMP_ARCH_NATIVE: u32 = AUDIT_ARCH_AARCH64;
+pub const SECCOMP_ARCH_NATIVE_NR: usize = NR_syscalls;
 pub const SECCOMP_ARCH_NATIVE_NAME: &str = "aarch64";
 
 #[cfg(CONFIG_COMPAT)]
-pub const SECCOMP_ARCH_COMPAT: _ = AUDIT_ARCH_ARM;
+pub const SECCOMP_ARCH_COMPAT: u32 = AUDIT_ARCH_ARM;
 #[cfg(CONFIG_COMPAT)]
 pub const SECCOMP_ARCH_COMPAT_NR: _ = __NR_compat32_syscalls;
 #[cfg(CONFIG_COMPAT)]

@@ -26,8 +26,8 @@ pub type __u64 = u64;
 extern "C" {
     pub fn get_epoll_tfile_raw_ptr(
         file: *mut file,
-        tfd: core::ffi::c_int,
-        toff: core::ffi::c_ulong,
+        tfd: kernel::ffi::c_int,
+        toff: kernel::ffi::c_ulong,
     ) -> *mut file;
 }
 
@@ -37,29 +37,29 @@ extern "C" {
     pub fn epoll_sendevents(
         file: *mut file,
         events: *mut epoll_event,
-        maxevents: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        maxevents: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
     pub fn do_epoll_ctl_file(
         f: *mut file,
-        op: core::ffi::c_int,
+        op: kernel::ffi::c_int,
         tf: *mut epoll_key,
         epds: *mut epoll_event,
         nonblock: bool,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn do_epoll_ctl(
-        epfd: core::ffi::c_int,
-        op: core::ffi::c_int,
-        fd: core::ffi::c_int,
+        epfd: kernel::ffi::c_int,
+        op: kernel::ffi::c_int,
+        fd: kernel::ffi::c_int,
         epds: *mut epoll_event,
         nonblock: bool,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn is_file_epoll(f: *mut file) -> bool;
 }
 
 #[repr(C, packed)]
 pub struct epoll_key {
     pub file: *mut file,
-    pub fd: core::ffi::c_int,
+    pub fd: kernel::ffi::c_int,
 }
 
 #[cfg(CONFIG_EPOLL)]
@@ -78,12 +78,12 @@ pub unsafe fn eventpoll_release(_file: *mut file) {}
 
 #[cfg(CONFIG_EPOLL)]
 #[inline]
-pub const fn ep_op_has_event(op: core::ffi::c_int) -> bool {
+pub const fn ep_op_has_event(op: kernel::ffi::c_int) -> bool {
     op != EPOLL_CTL_DEL
 }
 
 /* Supplied by uapi/linux/eventpoll.h. */
-pub const EPOLL_CTL_DEL: core::ffi::c_int = 2;
+pub const EPOLL_CTL_DEL: kernel::ffi::c_int = 2;
 
 #[cfg(all(target_arch = "arm", CONFIG_OABI_COMPAT))]
 extern "C" {

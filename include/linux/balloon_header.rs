@@ -40,7 +40,7 @@
 
 #[repr(C)]
 pub struct balloon_dev_info {
-    pub isolated_pages: ::core::ffi::c_ulong,
+    pub isolated_pages: ::kernel::ffi::c_ulong,
     pub pages: crate::list_head,
     pub migratepage: Option<unsafe extern "C" fn(
         *mut balloon_dev_info,

@@ -13,15 +13,15 @@ pub enum pinctrl_map_type {
 
 #[repr(C)]
 pub struct pinctrl_map_mux {
-    pub group: *const ::core::ffi::c_char,
-    pub function: *const ::core::ffi::c_char,
+    pub group: *const ::kernel::ffi::c_char,
+    pub function: *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct pinctrl_map_configs {
-    pub group_or_pin: *const ::core::ffi::c_char,
-    pub configs: *mut ::core::ffi::c_ulong,
-    pub num_configs: ::core::ffi::c_uint,
+    pub group_or_pin: *const ::kernel::ffi::c_char,
+    pub configs: *mut ::kernel::ffi::c_ulong,
+    pub num_configs: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -32,10 +32,10 @@ pub union pinctrl_map_data {
 
 #[repr(C)]
 pub struct pinctrl_map {
-    pub dev_name: *const ::core::ffi::c_char,
-    pub name: *const ::core::ffi::c_char,
+    pub dev_name: *const ::kernel::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub type_: pinctrl_map_type,
-    pub ctrl_dev_name: *const ::core::ffi::c_char,
+    pub ctrl_dev_name: *const ::kernel::ffi::c_char,
     pub data: pinctrl_map_data,
 }
 
@@ -97,7 +97,7 @@ macro_rules! PIN_MAP_CONFIGS_PIN {
             type_: $crate::pinctrl_map_type::PIN_MAP_TYPE_CONFIGS_PIN,
             ctrl_dev_name: $pinctrl,
             data: $crate::pinctrl_map_data { configs: $crate::pinctrl_map_configs {
-                group_or_pin: $pin, configs: $cfgs, num_configs: $cfgs.len() as ::core::ffi::c_uint
+                group_or_pin: $pin, configs: $cfgs, num_configs: $cfgs.len() as ::kernel::ffi::c_uint
             } },
         }
     };
@@ -117,7 +117,7 @@ macro_rules! PIN_MAP_CONFIGS_GROUP {
             type_: $crate::pinctrl_map_type::PIN_MAP_TYPE_CONFIGS_GROUP,
             ctrl_dev_name: $pinctrl,
             data: $crate::pinctrl_map_data { configs: $crate::pinctrl_map_configs {
-                group_or_pin: $grp, configs: $cfgs, num_configs: $cfgs.len() as ::core::ffi::c_uint
+                group_or_pin: $grp, configs: $cfgs, num_configs: $cfgs.len() as ::kernel::ffi::c_uint
             } },
         }
     };
@@ -135,16 +135,16 @@ pub struct device;
 /* CONFIG_PINCTRL conditional declarations. */
 #[cfg(CONFIG_PINCTRL)]
 extern "C" {
-    pub fn pinctrl_register_mappings(map: *const pinctrl_map, num_maps: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn devm_pinctrl_register_mappings(dev: *mut device, map: *const pinctrl_map, num_maps: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    pub fn pinctrl_register_mappings(map: *const pinctrl_map, num_maps: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn devm_pinctrl_register_mappings(dev: *mut device, map: *const pinctrl_map, num_maps: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
     pub fn pinctrl_unregister_mappings(map: *const pinctrl_map);
     pub fn pinctrl_provide_dummies();
 }
 
 #[cfg(not(CONFIG_PINCTRL))]
-pub unsafe fn pinctrl_register_mappings(_map: *const pinctrl_map, _num_maps: ::core::ffi::c_uint) -> ::core::ffi::c_int { 0 }
+pub unsafe fn pinctrl_register_mappings(_map: *const pinctrl_map, _num_maps: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_PINCTRL))]
-pub unsafe fn devm_pinctrl_register_mappings(_dev: *mut device, _map: *const pinctrl_map, _num_maps: ::core::ffi::c_uint) -> ::core::ffi::c_int { 0 }
+pub unsafe fn devm_pinctrl_register_mappings(_dev: *mut device, _map: *const pinctrl_map, _num_maps: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_unregister_mappings(_map: *const pinctrl_map) {}
 #[cfg(not(CONFIG_PINCTRL))]

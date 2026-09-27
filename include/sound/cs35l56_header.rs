@@ -264,7 +264,7 @@ pub const unsafe fn cs35l56_is_otp_register(reg: u32) -> bool { (reg >> 16) == 3
 // Direct equivalents of the header's inline helpers; allocator/configuration
 // primitives are supplied by the kernel-facing translation.
 extern "C" {
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
 }
 pub const GFP_KERNEL: u32 = 0;
 pub const GFP_DMA: u32 = 0;
@@ -290,8 +290,8 @@ extern "C" {
     pub static cs35l63_regmap_i2c: regmap_config;
     pub static cs35l63_regmap_sdw: regmap_config;
     pub static cs35l56_calibration_controls: cirrus_amp_cal_controls;
-    pub static cs35l56_cal_set_status_text: [*const core::ffi::c_char; 3];
-    pub static cs35l56_tx_input_texts: [*const core::ffi::c_char; CS35L56_NUM_INPUT_SRC];
+    pub static cs35l56_cal_set_status_text: [*const kernel::ffi::c_char; 3];
+    pub static cs35l56_tx_input_texts: [*const kernel::ffi::c_char; CS35L56_NUM_INPUT_SRC];
     pub static cs35l56_tx_input_values: [u32; CS35L56_NUM_INPUT_SRC];
 }
 
@@ -311,10 +311,10 @@ extern "C" {
     pub fn cs35l56_init_cs_dsp(base: *mut Cs35l56Base, dsp: *mut cs_dsp);
     pub fn cs35l56_get_calibration(base: *mut Cs35l56Base) -> i32;
     pub fn cs35l56_stash_calibration(base: *mut Cs35l56Base, data: *const cirrus_amp_cal_data) -> i32;
-    pub fn cs35l56_calibrate_debugfs_write(base: *mut Cs35l56Base, from: *const core::ffi::c_char, count: usize, ppos: *mut i64) -> isize;
-    pub fn cs35l56_cal_ambient_debugfs_write(base: *mut Cs35l56Base, from: *const core::ffi::c_char, count: usize, ppos: *mut i64) -> isize;
-    pub fn cs35l56_cal_data_debugfs_read(base: *mut Cs35l56Base, to: *mut core::ffi::c_char, count: usize, ppos: *mut i64) -> isize;
-    pub fn cs35l56_cal_data_debugfs_write(base: *mut Cs35l56Base, from: *const core::ffi::c_char, count: usize, ppos: *mut i64) -> isize;
+    pub fn cs35l56_calibrate_debugfs_write(base: *mut Cs35l56Base, from: *const kernel::ffi::c_char, count: usize, ppos: *mut i64) -> isize;
+    pub fn cs35l56_cal_ambient_debugfs_write(base: *mut Cs35l56Base, from: *const kernel::ffi::c_char, count: usize, ppos: *mut i64) -> isize;
+    pub fn cs35l56_cal_data_debugfs_read(base: *mut Cs35l56Base, to: *mut kernel::ffi::c_char, count: usize, ppos: *mut i64) -> isize;
+    pub fn cs35l56_cal_data_debugfs_write(base: *mut Cs35l56Base, from: *const kernel::ffi::c_char, count: usize, ppos: *mut i64) -> isize;
     pub fn cs35l56_factory_calibrate(base: *mut Cs35l56Base) -> i32;
     pub fn cs35l56_create_cal_debugfs(base: *mut Cs35l56Base, fops: *const Cs35l56CalDebugfsFops);
     pub fn cs35l56_remove_cal_debugfs(base: *mut Cs35l56Base);

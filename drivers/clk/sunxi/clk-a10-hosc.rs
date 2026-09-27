@@ -16,7 +16,7 @@ unsafe fn sun4i_osc_clk_setup(node: *mut device_node) {
     let mut clk: *mut clk;
     let fixed: *mut clk_fixed_rate;
     let gate: *mut clk_gate;
-    let mut clk_name: *const ::core::ffi::c_char = (*node).name;
+    let mut clk_name: *const ::kernel::ffi::c_char = (*node).name;
     let mut rate: u32 = 0;
 
     if of_property_read_u32(node, b"clock-frequency\0".as_ptr() as *const _, &mut rate) != 0 {

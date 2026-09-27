@@ -2467,7 +2467,7 @@ pub unsafe fn bool ieee80211_is_group_privacy_action(struct *sk_buff skb)
  * ieee80211_tu_to_usec - convert time units (TU) to microseconds
  * @tu: the *TUs Return: the time value converted to microseconds
  */
-pub unsafe fn core::ffi::c_ulong ieee80211_tu_to_usec(tu: core::ffi::c_ulong)
+pub unsafe fn kernel::ffi::c_ulong ieee80211_tu_to_usec(tu: kernel::ffi::c_ulong)
 {
 	return 1024 * tu;
 }

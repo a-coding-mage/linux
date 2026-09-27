@@ -16,8 +16,8 @@ static mut apc_no_idle: i32 = 0;
 
 // Specify "apc=noidle" on the kernel command line to disable APC CPU standby
 // support. Certain prototype systems do not play well with APC CPU idle.
-unsafe fn apc_setup(str_: *const core::ffi::c_char) -> i32 {
-    if strncmp(str_, b"noidle\0".as_ptr() as *const core::ffi::c_char, strlen(b"noidle\0".as_ptr() as *const core::ffi::c_char)) == 0 {
+unsafe fn apc_setup(str_: *const kernel::ffi::c_char) -> i32 {
+    if strncmp(str_, b"noidle\0".as_ptr() as *const kernel::ffi::c_char, strlen(b"noidle\0".as_ptr() as *const kernel::ffi::c_char)) == 0 {
         apc_no_idle = 1;
         return 1;
     }
@@ -91,14 +91,14 @@ static mut apc_fops: file_operations = file_operations {
 
 static mut apc_miscdev: miscdevice = miscdevice {
     minor: MISC_DYNAMIC_MINOR,
-    name: APC_DEVNAME.as_ptr() as *const core::ffi::c_char,
+    name: APC_DEVNAME.as_ptr() as *const kernel::ffi::c_char,
     fops: &mut apc_fops,
 };
 
 unsafe extern "C" fn apc_probe(op: *mut platform_device) -> i32 {
     let err: i32;
 
-    regs = of_ioremap(&mut (*op).resource[0], 0, resource_size(&(*op).resource[0]), APC_OBPNAME.as_ptr() as *const core::ffi::c_char);
+    regs = of_ioremap(&mut (*op).resource[0], 0, resource_size(&(*op).resource[0]), APC_OBPNAME.as_ptr() as *const kernel::ffi::c_char);
     if regs.is_null() {
         printk(KERN_ERR, b"%s: unable to map registers\n\0".as_ptr(), APC_DEVNAME.as_ptr());
         return -ENODEV;
@@ -121,13 +121,13 @@ unsafe extern "C" fn apc_probe(op: *mut platform_device) -> i32 {
 }
 
 static mut apc_match: [of_device_id; 2] = [
-    of_device_id { name: APC_OBPNAME.as_ptr() as *const core::ffi::c_char },
+    of_device_id { name: APC_OBPNAME.as_ptr() as *const kernel::ffi::c_char },
     of_device_id { name: core::ptr::null() },
 ];
 
 static mut apc_driver: platform_driver = platform_driver {
     driver: driver {
-        name: b"apc\0".as_ptr() as *const core::ffi::c_char,
+        name: b"apc\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: apc_match.as_ptr(),
     },
     probe: Some(apc_probe),

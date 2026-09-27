@@ -9,7 +9,7 @@ pub struct task_struct {
 
 extern "C" {
     pub fn alpha_switch_to(
-        arg: ::core::ffi::c_ulong,
+        arg: ::kernel::ffi::c_ulong,
         task: *mut task_struct,
     ) -> *mut task_struct;
 }

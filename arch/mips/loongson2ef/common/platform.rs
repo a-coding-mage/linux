@@ -9,7 +9,7 @@
 
 #[repr(C)]
 pub struct platform_device {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: i32,
 }
 
@@ -28,7 +28,7 @@ pub const PRID_REV_LOONGSON2F: u32 = 0x2;
 pub const ENODEV: i32 = 19;
 
 static mut loongson2_cpufreq_device: platform_device = platform_device {
-    name: b"loongson2_cpufreq\0".as_ptr() as *const core::ffi::c_char,
+    name: b"loongson2_cpufreq\0".as_ptr() as *const kernel::ffi::c_char,
     id: -1,
 };
 

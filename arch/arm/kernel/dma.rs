@@ -37,24 +37,24 @@ pub struct dma_t {
     pub d_ops: *mut dma_ops,
     pub buf: scatterlist,
     pub lock: i32,
-    pub device_id: *const core::ffi::c_char,
+    pub device_id: *const kernel::ffi::c_char,
     pub active: i32,
     pub invalid: i32,
     pub sg: *mut scatterlist,
     pub sgcount: i32,
-    pub addr: *mut core::ffi::c_void,
+    pub addr: *mut kernel::ffi::c_void,
     pub count: u64,
     pub dma_mode: u32,
     pub speed: i32,
 }
 
 extern "C" {
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
     fn BUG() -> !;
     fn sg_init_table(sg: *mut scatterlist, nents: usize);
-    fn proc_create_single(name: *const core::ffi::c_char, mode: u32, parent: *mut core::ffi::c_void,
-                          show: unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void) -> i32) -> *mut core::ffi::c_void;
-    fn seq_printf(m: *mut seq_file, fmt: *const core::ffi::c_char, ...);
+    fn proc_create_single(name: *const kernel::ffi::c_char, mode: u32, parent: *mut kernel::ffi::c_void,
+                          show: unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void) -> i32) -> *mut kernel::ffi::c_void;
+    fn seq_printf(m: *mut seq_file, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[no_mangle]
@@ -76,7 +76,7 @@ pub unsafe extern "C" fn isa_dma_add(chan: u32, dma: *mut dma_t) -> i32 {
     0
 }
 
-pub unsafe extern "C" fn request_dma(chan: u32, device_id: *const core::ffi::c_char) -> i32 {
+pub unsafe extern "C" fn request_dma(chan: u32, device_id: *const kernel::ffi::c_char) -> i32 {
     let dma = dma_channel(chan);
     if dma.is_null() { pr_err(b"dma: trying to allocate DMA%d\0".as_ptr() as _, chan); return -22; }
     if core::ptr::replace(&mut (*dma).lock, 1) != 0 { return -16; }
@@ -96,7 +96,7 @@ pub unsafe extern "C" fn free_dma(chan: u32) {
 }
 
 pub unsafe extern "C" fn set_dma_sg(chan: u32, sg: *mut scatterlist, nr_sg: i32) { let dma=dma_channel(chan); if (*dma).active!=0 { pr_err(b"dma%d: altering DMA SG while DMA active\n\0".as_ptr() as _,chan); } (*dma).sg=sg; (*dma).sgcount=nr_sg; (*dma).invalid=1; }
-pub unsafe extern "C" fn __set_dma_addr(chan: u32, addr: *mut core::ffi::c_void) { let dma=dma_channel(chan); if (*dma).active!=0 { pr_err(b"dma%d: altering DMA address while DMA active\n\0".as_ptr() as _,chan); } (*dma).sg=core::ptr::null_mut(); (*dma).addr=addr; (*dma).invalid=1; }
+pub unsafe extern "C" fn __set_dma_addr(chan: u32, addr: *mut kernel::ffi::c_void) { let dma=dma_channel(chan); if (*dma).active!=0 { pr_err(b"dma%d: altering DMA address while DMA active\n\0".as_ptr() as _,chan); } (*dma).sg=core::ptr::null_mut(); (*dma).addr=addr; (*dma).invalid=1; }
 pub unsafe extern "C" fn set_dma_count(chan: u32, count: u64) { let dma=dma_channel(chan); if (*dma).active!=0 { pr_err(b"dma%d: altering DMA count while DMA active\n\0".as_ptr() as _,chan); } (*dma).sg=core::ptr::null_mut(); (*dma).count=count; (*dma).invalid=1; }
 pub unsafe extern "C" fn set_dma_mode(chan: u32, mode: u32) { let dma=dma_channel(chan); if (*dma).active!=0 { pr_err(b"dma%d: altering DMA mode while DMA active\n\0".as_ptr() as _,chan); } (*dma).dma_mode=mode; (*dma).invalid=1; }
 
@@ -109,7 +109,7 @@ pub unsafe extern "C" fn get_dma_residue(chan:u32)->i32 { let dma=dma_channel(ch
 
 // CONFIG_PROC_FS controls this section in the kernel build.
 #[cfg(CONFIG_PROC_FS)]
-pub unsafe extern "C" fn proc_dma_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
+pub unsafe extern "C" fn proc_dma_show(m: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
     for i in 0..MAX_DMA_CHANNELS {
         let dma = dma_channel(i as u32);
         if !dma.is_null() && (*dma).lock != 0 {

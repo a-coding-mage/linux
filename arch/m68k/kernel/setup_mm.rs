@@ -10,24 +10,24 @@
 // C headers and configuration-provided symbols are supplied by the surrounding
 // translation unit/build environment.
 
-pub static mut m68k_machtype: ::core::ffi::c_ulong = 0;
-pub static mut m68k_cputype: ::core::ffi::c_ulong = 0;
-pub static mut m68k_fputype: ::core::ffi::c_ulong = 0;
-pub static mut m68k_mmutype: ::core::ffi::c_ulong = 0;
-pub static mut m68k_is040or060: ::core::ffi::c_int = 0;
+pub static mut m68k_machtype: ::kernel::ffi::c_ulong = 0;
+pub static mut m68k_cputype: ::kernel::ffi::c_ulong = 0;
+pub static mut m68k_fputype: ::kernel::ffi::c_ulong = 0;
+pub static mut m68k_mmutype: ::kernel::ffi::c_ulong = 0;
+pub static mut m68k_is040or060: ::kernel::ffi::c_int = 0;
 extern "C" {
-    static mut availmem: ::core::ffi::c_ulong;
+    static mut availmem: ::kernel::ffi::c_ulong;
 }
-pub static mut m68k_num_memory: ::core::ffi::c_int = 0;
-pub static mut m68k_realnum_memory: ::core::ffi::c_int = 0;
-pub static mut m68k_memoffset: ::core::ffi::c_ulong = 0;
+pub static mut m68k_num_memory: ::kernel::ffi::c_int = 0;
+pub static mut m68k_realnum_memory: ::kernel::ffi::c_int = 0;
+pub static mut m68k_memoffset: ::kernel::ffi::c_ulong = 0;
 pub static mut m68k_memory: [m68k_mem_info; NUM_MEMINFO as usize] = [m68k_mem_info { addr: 0, size: 0 }; NUM_MEMINFO as usize];
 static mut m68k_ramdisk: m68k_mem_info = m68k_mem_info { addr: 0, size: 0 };
-static mut m68k_command_line: [::core::ffi::c_char; CL_SIZE as usize] = [0; CL_SIZE as usize];
+static mut m68k_command_line: [::kernel::ffi::c_char; CL_SIZE as usize] = [0; CL_SIZE as usize];
 
 pub static mut mach_sched_init: Option<unsafe extern "C" fn()> = None;
 pub static mut mach_init_IRQ: Option<unsafe extern "C" fn()> = None;
-pub static mut mach_get_model: Option<unsafe extern "C" fn(*mut ::core::ffi::c_char)> = None;
+pub static mut mach_get_model: Option<unsafe extern "C" fn(*mut ::kernel::ffi::c_char)> = None;
 pub static mut mach_get_hardware_list: Option<unsafe extern "C" fn(*mut seq_file)> = None;
 pub static mut mach_reset: Option<unsafe extern "C" fn()> = None;
 pub static mut mach_halt: Option<unsafe extern "C" fn()> = None;
@@ -61,7 +61,7 @@ unsafe fn m68k_parse_bootinfo(mut record: *const bi_record) {
             BI_RNG_SEED => {
                 let len = be16_to_cpup(data);
                 add_bootloader_randomness(data.add(2), len);
-                memzero_explicit(data as *mut ::core::ffi::c_void, len as usize + 2);
+                memzero_explicit(data as *mut ::kernel::ffi::c_void, len as usize + 2);
             }
             _ => {
                 unknown = if MACH_IS_AMIGA { amiga_parse_bootinfo(record) != 0 }
@@ -86,7 +86,7 @@ unsafe fn m68k_parse_bootinfo(mut record: *const bi_record) {
     if m68k_num_memory > 1 { m68k_num_memory = 1; }
 }
 
-pub unsafe extern "C" fn setup_arch(cmdline_p: *mut *mut ::core::ffi::c_char) {
+pub unsafe extern "C" fn setup_arch(cmdline_p: *mut *mut ::kernel::ffi::c_char) {
     if !CPU_IS_COLDFIRE { m68k_parse_bootinfo(_end as *const bi_record); }
     if CPU_IS_040 { m68k_is040or060 = 4; } else if CPU_IS_060 { m68k_is040or060 = 6; }
     setup_initial_init_mm(PAGE_OFFSET as *mut _, _etext, _edata, _end);
@@ -115,7 +115,7 @@ pub unsafe extern "C" fn setup_arch(cmdline_p: *mut *mut ::core::ffi::c_char) {
     if MACH_IS_SUN3X { dvma_init(); }
 }
 
-unsafe fn show_cpuinfo(m: *mut seq_file, _v: *mut ::core::ffi::c_void) -> ::core::ffi::c_int {
+unsafe fn show_cpuinfo(m: *mut seq_file, _v: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int {
     let (cpu, factor) = if CPU_IS_020 { ("68020", 8) } else if CPU_IS_030 { ("68030", 8) }
         else if CPU_IS_040 { ("68040", 3) } else if CPU_IS_060 { ("68060", 1) }
         else if CPU_IS_COLDFIRE { ("ColdFire", 2) } else { ("680x0", 0) };
@@ -130,13 +130,13 @@ unsafe fn show_cpuinfo(m: *mut seq_file, _v: *mut ::core::ffi::c_void) -> ::core
     let _ = factor; 0
 }
 
-unsafe fn c_start(_m: *mut seq_file, pos: *mut loff_t) -> *mut ::core::ffi::c_void { if *pos < 1 { 1 as *mut _ } else { core::ptr::null_mut() } }
-unsafe fn c_next(_m: *mut seq_file, _v: *mut ::core::ffi::c_void, pos: *mut loff_t) -> *mut ::core::ffi::c_void { *pos += 1; core::ptr::null_mut() }
-unsafe fn c_stop(_m: *mut seq_file, _v: *mut ::core::ffi::c_void) {}
+unsafe fn c_start(_m: *mut seq_file, pos: *mut loff_t) -> *mut ::kernel::ffi::c_void { if *pos < 1 { 1 as *mut _ } else { core::ptr::null_mut() } }
+unsafe fn c_next(_m: *mut seq_file, _v: *mut ::kernel::ffi::c_void, pos: *mut loff_t) -> *mut ::kernel::ffi::c_void { *pos += 1; core::ptr::null_mut() }
+unsafe fn c_stop(_m: *mut seq_file, _v: *mut ::kernel::ffi::c_void) {}
 
 #[cfg(CONFIG_PROC_HARDWARE)]
-unsafe fn hardware_proc_show(m: *mut seq_file, _v: *mut ::core::ffi::c_void) -> ::core::ffi::c_int {
-    let mut model = [0 as ::core::ffi::c_char; 80];
+unsafe fn hardware_proc_show(m: *mut seq_file, _v: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int {
+    let mut model = [0 as ::kernel::ffi::c_char; 80];
     if let Some(f) = mach_get_model { f(model.as_mut_ptr()); } else { strscpy(model.as_mut_ptr(), b"Unknown m68k\0".as_ptr() as *const _); }
     seq_printf!(m, "Model:\t\t{}\n", model.as_ptr());
     let mut mem: usize = 0;
@@ -153,22 +153,22 @@ unsafe fn m68k_nvram_get_size() -> isize {
 }
 
 #[cfg(CONFIG_MAC)]
-unsafe fn m68k_nvram_read_byte(addr: ::core::ffi::c_int) -> u8 { if MACH_IS_MAC { mac_pram_read_byte(addr) } else { 0xff } }
+unsafe fn m68k_nvram_read_byte(addr: ::kernel::ffi::c_int) -> u8 { if MACH_IS_MAC { mac_pram_read_byte(addr) } else { 0xff } }
 #[cfg(CONFIG_MAC)]
-unsafe fn m68k_nvram_write_byte(val: u8, addr: ::core::ffi::c_int) { if MACH_IS_MAC { mac_pram_write_byte(val, addr); } }
+unsafe fn m68k_nvram_write_byte(val: u8, addr: ::kernel::ffi::c_int) { if MACH_IS_MAC { mac_pram_write_byte(val, addr); } }
 
 #[cfg(CONFIG_ATARI)]
-unsafe fn m68k_nvram_read(buf: *mut ::core::ffi::c_char, count: usize, pos: *mut loff_t) -> isize {
+unsafe fn m68k_nvram_read(buf: *mut ::kernel::ffi::c_char, count: usize, pos: *mut loff_t) -> isize {
     if MACH_IS_ATARI { atari_nvram_read(buf, count, pos) } else if MACH_IS_MAC { nvram_read_bytes(buf, count, pos) } else { -EINVAL as isize }
 }
 #[cfg(CONFIG_ATARI)]
-unsafe fn m68k_nvram_write(buf: *mut ::core::ffi::c_char, count: usize, pos: *mut loff_t) -> isize {
+unsafe fn m68k_nvram_write(buf: *mut ::kernel::ffi::c_char, count: usize, pos: *mut loff_t) -> isize {
     if MACH_IS_ATARI { atari_nvram_write(buf, count, pos) } else if MACH_IS_MAC { nvram_write_bytes(buf, count, pos) } else { -EINVAL as isize }
 }
 #[cfg(CONFIG_ATARI)]
-unsafe fn m68k_nvram_set_checksum() -> ::core::ffi::c_long { if MACH_IS_ATARI { atari_nvram_set_checksum() } else { -EINVAL as _ } }
+unsafe fn m68k_nvram_set_checksum() -> ::kernel::ffi::c_long { if MACH_IS_ATARI { atari_nvram_set_checksum() } else { -EINVAL as _ } }
 #[cfg(CONFIG_ATARI)]
-unsafe fn m68k_nvram_initialize() -> ::core::ffi::c_long { if MACH_IS_ATARI { atari_nvram_initialize() } else { -EINVAL as _ } }
+unsafe fn m68k_nvram_initialize() -> ::kernel::ffi::c_long { if MACH_IS_ATARI { atari_nvram_initialize() } else { -EINVAL as _ } }
 
 pub unsafe extern "C" fn arch_cpu_finalize_init() {
     if m68k_fputype == 0 { pr_emerg!("*** YOU DO NOT HAVE A FLOATING POINT UNIT, WHICH IS REQUIRED BY LINUX/M68K ***\n"); panic!("no FPU"); }

@@ -30,13 +30,13 @@ pub const ELF_CLASS: u8 = ELFCLASS32;
 /* ELF register definitions. */
 // Dependencies: <asm/ptrace.h>, <asm/byteorder.h>
 
-pub type elf_greg_t = core::ffi::c_ulong;
+pub type elf_greg_t = kernel::ffi::c_ulong;
 pub const ELF_NGREG: usize = core::mem::size_of::<crate::pt_regs>() / core::mem::size_of::<elf_greg_t>();
 pub type elf_gregset_t = [elf_greg_t; ELF_NGREG];
 
 /* TBD */
 pub const ELF_NFPREG: usize = 33; /* includes fsr */
-pub type elf_fpreg_t = core::ffi::c_ulong;
+pub type elf_fpreg_t = kernel::ffi::c_ulong;
 pub type elf_fpregset_t = [elf_fpreg_t; ELF_NFPREG];
 
 /*
@@ -73,7 +73,7 @@ pub const ELF_HWCAP: u32 = 0;
 
 /* This yields a string that ld.so will use to load implementation specific
  * libraries for optimization. */
-pub const ELF_PLATFORM: *const core::ffi::c_char = core::ptr::null();
+pub const ELF_PLATFORM: *const kernel::ffi::c_char = core::ptr::null();
 
 /* Added _f parameter. Is this definition correct: TBD */
 #[macro_export]

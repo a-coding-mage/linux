@@ -33,7 +33,7 @@ unsafe fn snd_ak4113_free(chip: *mut ak4113) {
     unsafe {
         atomic_inc(&mut (*chip).wq_processing); /* don't schedule new work */
         cancel_delayed_work_sync(&mut (*chip).work);
-        kfree(chip as *mut core::ffi::c_void);
+        kfree(chip as *mut kernel::ffi::c_void);
     }
 }
 
@@ -51,7 +51,7 @@ pub unsafe extern "C" fn snd_ak4113_create(
     read: ak4113_read_t,
     write: ak4113_write_t,
     pgm: *const u8,
-    private_data: *mut core::ffi::c_void,
+    private_data: *mut kernel::ffi::c_void,
     r_ak4113: *mut *mut ak4113,
 ) -> i32 {
     unsafe {
@@ -85,7 +85,7 @@ pub unsafe extern "C" fn snd_ak4113_create(
         (*chip).rcs0 = reg_read(chip, AK4113_REG_RCS0) & !(AK4113_QINT | AK4113_CINT | AK4113_STC);
         (*chip).rcs1 = reg_read(chip, AK4113_REG_RCS1);
         (*chip).rcs2 = reg_read(chip, AK4113_REG_RCS2);
-        err = snd_device_new(card, SNDRV_DEV_CODEC, chip as *mut core::ffi::c_void, &OPS);
+        err = snd_device_new(card, SNDRV_DEV_CODEC, chip as *mut kernel::ffi::c_void, &OPS);
         if err < 0 {
             snd_ak4113_free(chip);
             return err;
@@ -333,7 +333,7 @@ unsafe extern "C" fn snd_ak4113_spdif_mask_get(
 ) -> i32 {
     unsafe {
         memset(
-            (*ucontrol).value.iec958.status.as_mut_ptr() as *mut core::ffi::c_void,
+            (*ucontrol).value.iec958.status.as_mut_ptr() as *mut kernel::ffi::c_void,
             0xff,
             AK4113_REG_RXCSB_SIZE as usize,
         );
@@ -541,7 +541,7 @@ unsafe fn snd_ak4113_proc_init(ak4113: *mut ak4113) {
         snd_card_ro_proc_new(
             (*ak4113).card,
             c"ak4113".as_ptr(),
-            ak4113 as *mut core::ffi::c_void,
+            ak4113 as *mut kernel::ffi::c_void,
             Some(snd_ak4113_proc_regs_read),
         );
     }
@@ -563,7 +563,7 @@ pub unsafe extern "C" fn snd_ak4113_build(
         (*ak4113).substream = cap_substream;
         idx = 0;
         while idx < AK4113_CONTROLS {
-            kctl = snd_ctl_new1(&SND_AK4113_IEC958_CONTROLS[idx as usize], ak4113 as *mut core::ffi::c_void);
+            kctl = snd_ctl_new1(&SND_AK4113_IEC958_CONTROLS[idx as usize], ak4113 as *mut kernel::ffi::c_void);
             if kctl.is_null() {
                 return -ENOMEM;
             }
@@ -606,7 +606,7 @@ pub unsafe extern "C" fn snd_ak4113_check_rate_and_errors(
         } else {
             core::ptr::null_mut()
         };
-        let mut _flags: core::ffi::c_ulong = 0;
+        let mut _flags: kernel::ffi::c_ulong = 0;
         let mut res: i32 = 0;
         let mut rcs0: u8 = 0;
         let rcs1: u8;

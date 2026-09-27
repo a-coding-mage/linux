@@ -12,7 +12,7 @@
 // user.h, and config.h.
 
 extern "C" {
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
     fn test_bit(nr: i32, addr: *const usize) -> i32;
     fn test_and_clear_bit(nr: i32, addr: *mut usize) -> i32;
     fn dlm_iflags_val(lkb: *const dlm_lkb) -> i32;
@@ -40,7 +40,7 @@ pub struct dlm_lkb {
     pub lkb_recover_seq: u64,
     pub lkb_sbflags: usize,
     pub lkb_iflags: usize,
-    pub lkb_lksb: *mut core::ffi::c_void,
+    pub lkb_lksb: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]

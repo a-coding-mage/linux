@@ -8,7 +8,7 @@ pub struct tcp_fastopen_metrics {
     pub mss: u16,
     pub syn_loss: u16,
     pub try_exp: u16,
-    pub last_syn_loss: ::core::ffi::c_ulong,
+    pub last_syn_loss: ::kernel::ffi::c_ulong,
     pub cookie: tcp_fastopen_cookie,
 }
 
@@ -18,7 +18,7 @@ pub struct tcp_metrics_block {
     pub tcpm_net: *mut net,
     pub tcpm_saddr: inetpeer_addr,
     pub tcpm_daddr: inetpeer_addr,
-    pub tcpm_stamp: ::core::ffi::c_ulong,
+    pub tcpm_stamp: ::kernel::ffi::c_ulong,
     pub tcpm_lock: u32,
     pub tcpm_vals: [u32; TCP_METRIC_MAX_KERNEL + 1],
     pub tcpm_fastopen: tcp_fastopen_metrics,
@@ -83,7 +83,7 @@ unsafe fn tcpm_suck_dst(tm: *mut tcp_metrics_block, dst: *const dst_entry, fasto
     }
 }
 
-const TCP_METRICS_TIMEOUT: ::core::ffi::c_ulong = 60 * 60 * HZ;
+const TCP_METRICS_TIMEOUT: ::kernel::ffi::c_ulong = 60 * 60 * HZ;
 unsafe fn tcpm_check_stamp(tm: *mut tcp_metrics_block, dst: *const dst_entry) {
     if tm.is_null() { return; }
     let limit = READ_ONCE((*tm).tcpm_stamp) + TCP_METRICS_TIMEOUT;

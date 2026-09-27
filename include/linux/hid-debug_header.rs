@@ -34,19 +34,19 @@ extern "C" {
     pub fn hid_dump_report(hdev: *mut hid_device, report_type: i32, data: *mut u8, size: i32);
     pub fn hid_dump_device(hdev: *mut hid_device, f: *mut seq_file);
     pub fn hid_dump_field(field: *mut hid_field, n: i32, f: *mut seq_file);
-    pub fn hid_resolv_usage(usage: u32, f: *mut seq_file) -> *mut core::ffi::c_char;
-    pub fn hid_debug_register(hdev: *mut hid_device, name: *const core::ffi::c_char);
+    pub fn hid_resolv_usage(usage: u32, f: *mut seq_file) -> *mut kernel::ffi::c_char;
+    pub fn hid_debug_register(hdev: *mut hid_device, name: *const kernel::ffi::c_char);
     pub fn hid_debug_unregister(hdev: *mut hid_device);
     pub fn hid_debug_init();
     pub fn hid_debug_exit();
-    pub fn hid_debug_event(hdev: *mut hid_device, buf: *mut core::ffi::c_char);
+    pub fn hid_debug_event(hdev: *mut hid_device, buf: *mut kernel::ffi::c_char);
 }
 
 #[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)]
 pub struct hid_debug_list {
     /* DECLARE_KFIFO_PTR(hid_debug_fifo, char); */
-    pub hid_debug_fifo: *mut core::ffi::c_void,
+    pub hid_debug_fifo: *mut kernel::ffi::c_void,
     pub fasync: *mut fasync_struct,
     pub hdev: *mut hid_device,
     pub node: *mut list_head,
@@ -56,25 +56,25 @@ pub struct hid_debug_list {
 /* CONFIG_DEBUG_FS disabled: the C macros expand to no-op statements. */
 #[cfg(not(CONFIG_DEBUG_FS))]
 #[inline(always)]
-pub unsafe fn hid_dump_input(_a: *mut core::ffi::c_void, _b: *mut core::ffi::c_void, _c: i32) {}
+pub unsafe fn hid_dump_input(_a: *mut kernel::ffi::c_void, _b: *mut kernel::ffi::c_void, _c: i32) {}
 #[cfg(not(CONFIG_DEBUG_FS))]
 #[inline(always)]
-pub unsafe fn hid_dump_report(_a: *mut core::ffi::c_void, _b: i32, _c: *mut u8, _d: i32) {}
+pub unsafe fn hid_dump_report(_a: *mut kernel::ffi::c_void, _b: i32, _c: *mut u8, _d: i32) {}
 #[cfg(not(CONFIG_DEBUG_FS))]
 #[inline(always)]
-pub unsafe fn hid_dump_device(_a: *mut core::ffi::c_void, _b: *mut core::ffi::c_void) {}
+pub unsafe fn hid_dump_device(_a: *mut kernel::ffi::c_void, _b: *mut kernel::ffi::c_void) {}
 #[cfg(not(CONFIG_DEBUG_FS))]
 #[inline(always)]
-pub unsafe fn hid_dump_field(_a: *mut core::ffi::c_void, _b: i32, _c: *mut core::ffi::c_void) {}
+pub unsafe fn hid_dump_field(_a: *mut kernel::ffi::c_void, _b: i32, _c: *mut kernel::ffi::c_void) {}
 #[cfg(not(CONFIG_DEBUG_FS))]
 #[inline(always)]
-pub unsafe fn hid_resolv_usage(_a: u32, _b: *mut core::ffi::c_void) {}
+pub unsafe fn hid_resolv_usage(_a: u32, _b: *mut kernel::ffi::c_void) {}
 #[cfg(not(CONFIG_DEBUG_FS))]
 #[inline(always)]
-pub unsafe fn hid_debug_register(_a: *mut core::ffi::c_void, _b: *const core::ffi::c_char) {}
+pub unsafe fn hid_debug_register(_a: *mut kernel::ffi::c_void, _b: *const kernel::ffi::c_char) {}
 #[cfg(not(CONFIG_DEBUG_FS))]
 #[inline(always)]
-pub unsafe fn hid_debug_unregister(_a: *mut core::ffi::c_void) {}
+pub unsafe fn hid_debug_unregister(_a: *mut kernel::ffi::c_void) {}
 #[cfg(not(CONFIG_DEBUG_FS))]
 #[inline(always)]
 pub unsafe fn hid_debug_init() {}
@@ -83,6 +83,6 @@ pub unsafe fn hid_debug_init() {}
 pub unsafe fn hid_debug_exit() {}
 #[cfg(not(CONFIG_DEBUG_FS))]
 #[inline(always)]
-pub unsafe fn hid_debug_event(_a: *mut core::ffi::c_void, _b: *mut core::ffi::c_char) {}
+pub unsafe fn hid_debug_event(_a: *mut kernel::ffi::c_void, _b: *mut kernel::ffi::c_char) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

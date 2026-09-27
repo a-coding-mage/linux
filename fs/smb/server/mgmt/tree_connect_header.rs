@@ -6,7 +6,7 @@
 // The C header guard and include directives are omitted.  Types supplied by
 // the included headers are referenced through the crate's corresponding names.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const TREE_NEW: i32 = 0;
 pub const TREE_CONNECTED: i32 = 1;

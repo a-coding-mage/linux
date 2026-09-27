@@ -10,8 +10,8 @@
 pub struct uniphier_clk_gate {
     pub hw: clk_hw,
     pub regmap: *mut regmap,
-    pub reg: ::core::ffi::c_uint,
-    pub bit: ::core::ffi::c_uint,
+    pub reg: ::kernel::ffi::c_uint,
+    pub bit: ::kernel::ffi::c_uint,
 }
 
 #[inline]
@@ -20,7 +20,7 @@ unsafe fn to_uniphier_clk_gate(hw: *mut clk_hw) -> *mut uniphier_clk_gate {
     hw as *mut uniphier_clk_gate
 }
 
-unsafe fn uniphier_clk_gate_endisable(hw: *mut clk_hw, enable: ::core::ffi::c_int) -> ::core::ffi::c_int {
+unsafe fn uniphier_clk_gate_endisable(hw: *mut clk_hw, enable: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     let gate = &mut *to_uniphier_clk_gate(hw);
 
     regmap_write_bits(
@@ -31,7 +31,7 @@ unsafe fn uniphier_clk_gate_endisable(hw: *mut clk_hw, enable: ::core::ffi::c_in
     )
 }
 
-unsafe fn uniphier_clk_gate_enable(hw: *mut clk_hw) -> ::core::ffi::c_int {
+unsafe fn uniphier_clk_gate_enable(hw: *mut clk_hw) -> ::kernel::ffi::c_int {
     uniphier_clk_gate_endisable(hw, 1)
 }
 
@@ -41,9 +41,9 @@ unsafe fn uniphier_clk_gate_disable(hw: *mut clk_hw) {
     }
 }
 
-unsafe fn uniphier_clk_gate_is_enabled(hw: *mut clk_hw) -> ::core::ffi::c_int {
+unsafe fn uniphier_clk_gate_is_enabled(hw: *mut clk_hw) -> ::kernel::ffi::c_int {
     let gate = &mut *to_uniphier_clk_gate(hw);
-    let mut val: ::core::ffi::c_uint = 0;
+    let mut val: ::kernel::ffi::c_uint = 0;
 
     if regmap_read(gate.regmap, gate.reg, &mut val) < 0 {
         pr_warn!("is_enabled() may return wrong result\n");
@@ -61,12 +61,12 @@ static uniphier_clk_gate_ops: clk_ops = clk_ops {
 pub unsafe fn uniphier_clk_register_gate(
     dev: *mut device,
     regmap: *mut regmap,
-    name: *const ::core::ffi::c_char,
+    name: *const ::kernel::ffi::c_char,
     data: *const uniphier_clk_gate_data,
 ) -> *mut clk_hw {
     let gate: *mut uniphier_clk_gate;
     let mut init: clk_init_data;
-    let ret: ::core::ffi::c_int;
+    let ret: ::kernel::ffi::c_int;
 
     gate = devm_kzalloc(dev, ::core::mem::size_of::<uniphier_clk_gate>(), GFP_KERNEL) as *mut uniphier_clk_gate;
     if gate.is_null() {

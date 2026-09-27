@@ -9,7 +9,7 @@ const ADF_ARB_REG_SIZE: usize = 0x4;
 
 #[inline]
 unsafe fn write_csr_arb_sarconfig(
-    csr_addr: *mut core::ffi::c_void,
+    csr_addr: *mut kernel::ffi::c_void,
     arb_offset: u32,
     index: usize,
     value: u32,
@@ -23,7 +23,7 @@ unsafe fn write_csr_arb_sarconfig(
 
 #[inline]
 unsafe fn write_csr_arb_wt2sam(
-    csr_addr: *mut core::ffi::c_void,
+    csr_addr: *mut kernel::ffi::c_void,
     arb_offset: u32,
     wt_offset: u32,
     index: usize,
@@ -39,7 +39,7 @@ unsafe fn write_csr_arb_wt2sam(
 pub unsafe fn adf_init_arb(accel_dev: *mut adf_accel_dev) -> i32 {
     let hw_data = (*accel_dev).hw_device;
     let csr = (*(*accel_dev).transport).banks[0].csr_addr;
-    let ae_mask: libc::c_ulong = (*hw_data).ae_mask;
+    let ae_mask: kernel::ffi::c_ulong = (*hw_data).ae_mask;
     let (mut arb_off, mut wt_off, mut arb_cfg): (u32, u32, u32);
     let thd_2_arb_cfg: *const u32;
     let mut info = arb_info::default();
@@ -59,7 +59,7 @@ pub unsafe fn adf_init_arb(accel_dev: *mut adf_accel_dev) -> i32 {
     thd_2_arb_cfg = ((*hw_data).get_arb_mapping)(accel_dev);
 
     for i in 0..(*hw_data).num_engines as usize {
-        if (ae_mask & ((1 as libc::c_ulong) << i)) != 0 {
+        if (ae_mask & ((1 as kernel::ffi::c_ulong) << i)) != 0 {
             write_csr_arb_wt2sam(csr, arb_off, wt_off, i, *thd_2_arb_cfg.add(i));
         }
     }
@@ -101,7 +101,7 @@ pub unsafe fn adf_exit_arb(accel_dev: *mut adf_accel_dev) {
     let csr_ops = GET_CSR_OPS!(accel_dev);
     let (mut arb_off, mut wt_off): (u32, u32);
     let mut info = arb_info::default();
-    let csr: *mut core::ffi::c_void;
+    let csr: *mut kernel::ffi::c_void;
 
     ((*hw_data).get_arb_info)(&mut info);
     arb_off = info.arb_offset;

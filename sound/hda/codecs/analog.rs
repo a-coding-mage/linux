@@ -21,17 +21,17 @@ const MODEL_AD1988: i32 = 5;
 #[repr(C)]
 pub struct ad198x_spec {
     pub gen: hda_gen_spec,
-    pub model: ::core::ffi::c_int,
+    pub model: ::kernel::ffi::c_int,
 
     /* for auto parser */
-    pub smux_paths: [::core::ffi::c_int; 4],
-    pub cur_smux: ::core::ffi::c_uint,
+    pub smux_paths: [::kernel::ffi::c_int; 4],
+    pub cur_smux: ::kernel::ffi::c_uint,
     pub eapd_nid: hda_nid_t,
 
-    pub beep_amp: ::core::ffi::c_uint, /* beep amp value, set via set_beep_amp() */
-    pub num_smux_conns: ::core::ffi::c_int,
+    pub beep_amp: ::kernel::ffi::c_uint, /* beep amp value, set via set_beep_amp() */
+    pub num_smux_conns: ::kernel::ffi::c_int,
 
-    pub gpio_data: ::core::ffi::c_uint,
+    pub gpio_data: ::kernel::ffi::c_uint,
 }
 
 // CONFIG_SND_HDA_INPUT_BEEP: additional beep mixers; the actual parameters are overwritten at build.
@@ -43,17 +43,17 @@ static ad_beep_mixer: [snd_kcontrol_new; 3] = [
 ];
 
 #[cfg(CONFIG_SND_HDA_INPUT_BEEP)]
-unsafe fn set_beep_amp(spec: *mut ad198x_spec, nid: hda_nid_t, idx: ::core::ffi::c_int, dir: ::core::ffi::c_int) {
+unsafe fn set_beep_amp(spec: *mut ad198x_spec, nid: hda_nid_t, idx: ::kernel::ffi::c_int, dir: ::kernel::ffi::c_int) {
     (*spec).beep_amp = HDA_COMPOSE_AMP_VAL(nid, 1, idx, dir); /* mono */
 }
 
 #[cfg(not(CONFIG_SND_HDA_INPUT_BEEP))]
-unsafe fn set_beep_amp(_spec: *mut ad198x_spec, _nid: hda_nid_t, _idx: ::core::ffi::c_int, _dir: ::core::ffi::c_int) {
+unsafe fn set_beep_amp(_spec: *mut ad198x_spec, _nid: hda_nid_t, _idx: ::kernel::ffi::c_int, _dir: ::kernel::ffi::c_int) {
     /* NOP */
 }
 
 #[cfg(CONFIG_SND_HDA_INPUT_BEEP)]
-unsafe fn create_beep_ctls(codec: *mut hda_codec) -> ::core::ffi::c_int {
+unsafe fn create_beep_ctls(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     let spec = (*codec).spec as *mut ad198x_spec;
     let mut knew = ad_beep_mixer.as_ptr();
 
@@ -62,9 +62,9 @@ unsafe fn create_beep_ctls(codec: *mut hda_codec) -> ::core::ffi::c_int {
     }
 
     while !(*knew).name.is_null() {
-        let err: ::core::ffi::c_int;
+        let err: ::kernel::ffi::c_int;
         let kctl: *mut snd_kcontrol;
-        kctl = snd_ctl_new1(knew, codec as *mut ::core::ffi::c_void);
+        kctl = snd_ctl_new1(knew, codec as *mut ::kernel::ffi::c_void);
         if kctl.is_null() {
             return -ENOMEM;
         }
@@ -79,7 +79,7 @@ unsafe fn create_beep_ctls(codec: *mut hda_codec) -> ::core::ffi::c_int {
 }
 
 #[cfg(not(CONFIG_SND_HDA_INPUT_BEEP))]
-unsafe fn create_beep_ctls(_codec: *mut hda_codec) -> ::core::ffi::c_int {
+unsafe fn create_beep_ctls(_codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -106,14 +106,14 @@ unsafe fn ad198x_power_eapd(codec: *mut hda_codec) {
     }
 }
 
-unsafe fn ad_codec_suspend(codec: *mut hda_codec) -> ::core::ffi::c_int {
+unsafe fn ad_codec_suspend(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     snd_hda_shutup_pins(codec);
     ad198x_power_eapd(codec);
     0
 }
 
 /* follow EAPD via vmaster hook */
-unsafe extern "C" fn ad_vmaster_eapd_hook(private_data: *mut ::core::ffi::c_void, mut enabled: ::core::ffi::c_int) {
+unsafe extern "C" fn ad_vmaster_eapd_hook(private_data: *mut ::kernel::ffi::c_void, mut enabled: ::kernel::ffi::c_int) {
     let codec = private_data as *mut hda_codec;
     let spec = (*codec).spec as *mut ad198x_spec;
 
@@ -132,8 +132,8 @@ unsafe extern "C" fn ad_vmaster_eapd_hook(private_data: *mut ::core::ffi::c_void
  * Automatic parse of I/O pins from the BIOS configuration
  */
 
-unsafe fn ad_codec_build_controls(codec: *mut hda_codec) -> ::core::ffi::c_int {
-    let mut err: ::core::ffi::c_int;
+unsafe fn ad_codec_build_controls(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
+    let mut err: ::kernel::ffi::c_int;
 
     err = snd_hda_gen_build_controls(codec);
     if err < 0 {
@@ -146,10 +146,10 @@ unsafe fn ad_codec_build_controls(codec: *mut hda_codec) -> ::core::ffi::c_int {
     0
 }
 
-unsafe fn ad198x_parse_auto_config(codec: *mut hda_codec, indep_hp: bool) -> ::core::ffi::c_int {
+unsafe fn ad198x_parse_auto_config(codec: *mut hda_codec, indep_hp: bool) -> ::kernel::ffi::c_int {
     let spec = (*codec).spec as *mut ad198x_spec;
     let cfg = &mut (*spec).gen.autocfg as *mut auto_pin_cfg;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     (*codec).spdif_status_reset = 1;
     (*codec).no_trigger_sense = 1;
@@ -176,14 +176,14 @@ unsafe fn ad198x_parse_auto_config(codec: *mut hda_codec, indep_hp: bool) -> ::c
  * AD1986A specific
  */
 
-unsafe fn alloc_ad_spec(codec: *mut hda_codec) -> ::core::ffi::c_int {
+unsafe fn alloc_ad_spec(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     let spec: *mut ad198x_spec;
 
     spec = kzalloc_obj::<ad198x_spec>();
     if spec.is_null() {
         return -ENOMEM;
     }
-    (*codec).spec = spec as *mut ::core::ffi::c_void;
+    (*codec).spec = spec as *mut ::kernel::ffi::c_void;
     snd_hda_gen_spec_init(&mut (*spec).gen);
     0
 }
@@ -195,7 +195,7 @@ unsafe fn alloc_ad_spec(codec: *mut hda_codec) -> ::core::ffi::c_int {
 /* Lenovo N100 seems to report the reversed bit for HP jack-sensing */
 unsafe extern "C" fn ad_fixup_inv_jack_detect(codec: *mut hda_codec,
                                              _fix: *const hda_fixup,
-                                             action: ::core::ffi::c_int) {
+                                             action: ::kernel::ffi::c_int) {
     let spec = (*codec).spec as *mut ad198x_spec;
 
     if action == HDA_FIXUP_ACT_PRE_PROBE {
@@ -209,7 +209,7 @@ unsafe extern "C" fn ad_fixup_inv_jack_detect(codec: *mut hda_codec,
 /* Toshiba Satellite L40 implements EAPD in a standard way unlike others */
 unsafe extern "C" fn ad1986a_fixup_eapd(codec: *mut hda_codec,
                                         _fix: *const hda_fixup,
-                                        action: ::core::ffi::c_int) {
+                                        action: ::kernel::ffi::c_int) {
     let spec = (*codec).spec as *mut ad198x_spec;
 
     if action == HDA_FIXUP_ACT_PRE_PROBE {
@@ -222,7 +222,7 @@ unsafe extern "C" fn ad1986a_fixup_eapd(codec: *mut hda_codec,
 /* enable stereo-mix input for avoiding regression on KDE (bko#88251) */
 unsafe extern "C" fn ad1986a_fixup_eapd_mix_in(codec: *mut hda_codec,
                                                fix: *const hda_fixup,
-                                               action: ::core::ffi::c_int) {
+                                               action: ::kernel::ffi::c_int) {
     let spec = (*codec).spec as *mut ad198x_spec;
 
     if action == HDA_FIXUP_ACT_PRE_PROBE {
@@ -328,8 +328,8 @@ static ad1986a_fixup_models: &[hda_model_fixup] = &[
 
 /*
  */
-unsafe fn ad1986a_probe(codec: *mut hda_codec) -> ::core::ffi::c_int {
-    let mut err: ::core::ffi::c_int;
+unsafe fn ad1986a_probe(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
+    let mut err: ::kernel::ffi::c_int;
     let spec = (*codec).spec as *mut ad198x_spec;
     static preferred_pairs: [hda_nid_t; 11] = [
         0x1a, 0x03,
@@ -382,11 +382,11 @@ unsafe fn ad1986a_probe(codec: *mut hda_codec) -> ::core::ffi::c_int {
  * SPDIF mux control for AD1983 auto-parser
  */
 unsafe extern "C" fn ad1983_auto_smux_enum_info(kcontrol: *mut snd_kcontrol,
-                                                uinfo: *mut snd_ctl_elem_info) -> ::core::ffi::c_int {
+                                                uinfo: *mut snd_ctl_elem_info) -> ::kernel::ffi::c_int {
     let codec = snd_kcontrol_chip(kcontrol) as *mut hda_codec;
     let spec = (*codec).spec as *mut ad198x_spec;
-    static texts2: [*const ::core::ffi::c_char; 2] = [c"PCM".as_ptr(), c"ADC".as_ptr()];
-    static texts3: [*const ::core::ffi::c_char; 3] = [c"PCM".as_ptr(), c"ADC1".as_ptr(), c"ADC2".as_ptr()];
+    static texts2: [*const ::kernel::ffi::c_char; 2] = [c"PCM".as_ptr(), c"ADC".as_ptr()];
+    static texts3: [*const ::kernel::ffi::c_char; 3] = [c"PCM".as_ptr(), c"ADC1".as_ptr(), c"ADC2".as_ptr()];
     let num_conns = (*spec).num_smux_conns;
 
     if num_conns == 2 {
@@ -399,7 +399,7 @@ unsafe extern "C" fn ad1983_auto_smux_enum_info(kcontrol: *mut snd_kcontrol,
 }
 
 unsafe extern "C" fn ad1983_auto_smux_enum_get(kcontrol: *mut snd_kcontrol,
-                                               ucontrol: *mut snd_ctl_elem_value) -> ::core::ffi::c_int {
+                                               ucontrol: *mut snd_ctl_elem_value) -> ::kernel::ffi::c_int {
     let codec = snd_kcontrol_chip(kcontrol) as *mut hda_codec;
     let spec = (*codec).spec as *mut ad198x_spec;
 
@@ -408,14 +408,14 @@ unsafe extern "C" fn ad1983_auto_smux_enum_get(kcontrol: *mut snd_kcontrol,
 }
 
 unsafe extern "C" fn ad1983_auto_smux_enum_put(kcontrol: *mut snd_kcontrol,
-                                               ucontrol: *mut snd_ctl_elem_value) -> ::core::ffi::c_int {
+                                               ucontrol: *mut snd_ctl_elem_value) -> ::kernel::ffi::c_int {
     let codec = snd_kcontrol_chip(kcontrol) as *mut hda_codec;
     let spec = (*codec).spec as *mut ad198x_spec;
     let val = (*ucontrol).value.enumerated.item[0];
     let dig_out = (*spec).gen.multiout.dig_out_nid;
     let num_conns = (*spec).num_smux_conns;
 
-    if val >= num_conns as ::core::ffi::c_uint {
+    if val >= num_conns as ::kernel::ffi::c_uint {
         return -EINVAL;
     }
     if (*spec).cur_smux == val {
@@ -436,10 +436,10 @@ static ad1983_auto_smux_mixer: snd_kcontrol_new = snd_kcontrol_new {
     ..snd_kcontrol_new::default()
 };
 
-unsafe fn ad1983_add_spdif_mux_ctl(codec: *mut hda_codec) -> ::core::ffi::c_int {
+unsafe fn ad1983_add_spdif_mux_ctl(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     let spec = (*codec).spec as *mut ad198x_spec;
     let dig_out = (*spec).gen.multiout.dig_out_nid;
-    let num_conns: ::core::ffi::c_int;
+    let num_conns: ::kernel::ffi::c_int;
 
     if dig_out == 0 {
         return 0;
@@ -455,11 +455,11 @@ unsafe fn ad1983_add_spdif_mux_ctl(codec: *mut hda_codec) -> ::core::ffi::c_int 
     0
 }
 
-unsafe fn ad1983_probe(codec: *mut hda_codec) -> ::core::ffi::c_int {
+unsafe fn ad1983_probe(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     static conn_0c: [hda_nid_t; 1] = [0x08];
     static conn_0d: [hda_nid_t; 1] = [0x09];
     let spec = (*codec).spec as *mut ad198x_spec;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     (*spec).gen.mixer_nid = 0x0e;
     (*spec).gen.beep_nid = 0x10;
@@ -486,7 +486,7 @@ unsafe fn ad1983_probe(codec: *mut hda_codec) -> ::core::ffi::c_int {
 
 unsafe extern "C" fn ad1981_fixup_hp_eapd(codec: *mut hda_codec,
                                           _fix: *const hda_fixup,
-                                          action: ::core::ffi::c_int) {
+                                          action: ::kernel::ffi::c_int) {
     let spec = (*codec).spec as *mut ad198x_spec;
 
     if action == HDA_FIXUP_ACT_PRE_PROBE {
@@ -500,7 +500,7 @@ unsafe extern "C" fn ad1981_fixup_hp_eapd(codec: *mut hda_codec,
  */
 unsafe extern "C" fn ad1981_fixup_amp_override(codec: *mut hda_codec,
                                                _fix: *const hda_fixup,
-                                               action: ::core::ffi::c_int) {
+                                               action: ::kernel::ffi::c_int) {
     if action == HDA_FIXUP_ACT_PRE_PROBE {
         snd_hda_override_amp_caps(codec, 0x11, HDA_INPUT,
                                   (0x17 << AC_AMPCAP_OFFSET_SHIFT) |
@@ -527,9 +527,9 @@ static ad1981_fixup_tbl: &[hda_quirk] = &[
     hda_quirk::default(),
 ];
 
-unsafe fn ad1981_probe(codec: *mut hda_codec) -> ::core::ffi::c_int {
+unsafe fn ad1981_probe(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     let spec = (*codec).spec as *mut ad198x_spec;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     (*spec).gen.mixer_nid = 0x0e;
     (*spec).gen.beep_nid = 0x10;
@@ -638,10 +638,10 @@ unsafe fn ad1981_probe(codec: *mut hda_codec) -> ::core::ffi::c_int {
  */
 
 unsafe extern "C" fn ad1988_auto_smux_enum_info(kcontrol: *mut snd_kcontrol,
-                                                uinfo: *mut snd_ctl_elem_info) -> ::core::ffi::c_int {
+                                                uinfo: *mut snd_ctl_elem_info) -> ::kernel::ffi::c_int {
     let codec = snd_kcontrol_chip(kcontrol) as *mut hda_codec;
     let spec = (*codec).spec as *mut ad198x_spec;
-    static texts: [*const ::core::ffi::c_char; 4] = [
+    static texts: [*const ::kernel::ffi::c_char; 4] = [
         c"PCM".as_ptr(), c"ADC1".as_ptr(), c"ADC2".as_ptr(), c"ADC3".as_ptr(),
     ];
     let mut num_conns = (*spec).num_smux_conns;
@@ -653,7 +653,7 @@ unsafe extern "C" fn ad1988_auto_smux_enum_info(kcontrol: *mut snd_kcontrol,
 }
 
 unsafe extern "C" fn ad1988_auto_smux_enum_get(kcontrol: *mut snd_kcontrol,
-                                               ucontrol: *mut snd_ctl_elem_value) -> ::core::ffi::c_int {
+                                               ucontrol: *mut snd_ctl_elem_value) -> ::kernel::ffi::c_int {
     let codec = snd_kcontrol_chip(kcontrol) as *mut hda_codec;
     let spec = (*codec).spec as *mut ad198x_spec;
 
@@ -662,14 +662,14 @@ unsafe extern "C" fn ad1988_auto_smux_enum_get(kcontrol: *mut snd_kcontrol,
 }
 
 unsafe extern "C" fn ad1988_auto_smux_enum_put(kcontrol: *mut snd_kcontrol,
-                                               ucontrol: *mut snd_ctl_elem_value) -> ::core::ffi::c_int {
+                                               ucontrol: *mut snd_ctl_elem_value) -> ::kernel::ffi::c_int {
     let codec = snd_kcontrol_chip(kcontrol) as *mut hda_codec;
     let spec = (*codec).spec as *mut ad198x_spec;
     let val = (*ucontrol).value.enumerated.item[0];
     let mut path: *mut nid_path;
     let num_conns = (*spec).num_smux_conns;
 
-    if val >= num_conns as ::core::ffi::c_uint {
+    if val >= num_conns as ::kernel::ffi::c_uint {
         return -EINVAL;
     }
     if (*spec).cur_smux == val {
@@ -698,10 +698,10 @@ static ad1988_auto_smux_mixer: snd_kcontrol_new = snd_kcontrol_new {
     ..snd_kcontrol_new::default()
 };
 
-unsafe fn ad_codec_init(codec: *mut hda_codec) -> ::core::ffi::c_int {
+unsafe fn ad_codec_init(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     let spec = (*codec).spec as *mut ad198x_spec;
-    let mut i: ::core::ffi::c_int;
-    let err: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
+    let err: ::kernel::ffi::c_int;
 
     err = snd_hda_gen_init(codec);
     if err < 0 {
@@ -727,10 +727,10 @@ unsafe fn ad_codec_init(codec: *mut hda_codec) -> ::core::ffi::c_int {
     0
 }
 
-unsafe fn ad1988_add_spdif_mux_ctl(codec: *mut hda_codec) -> ::core::ffi::c_int {
+unsafe fn ad1988_add_spdif_mux_ctl(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     let spec = (*codec).spec as *mut ad198x_spec;
-    let mut i: ::core::ffi::c_int;
-    let num_conns: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
+    let num_conns: ::kernel::ffi::c_int;
     /* we create four static faked paths, since AD codecs have odd
      * widget connections regarding the SPDIF out source
      */
@@ -799,9 +799,9 @@ static ad1988_fixup_models: &[hda_model_fixup] = &[
     hda_model_fixup::default(),
 ];
 
-unsafe fn ad1988_probe(codec: *mut hda_codec) -> ::core::ffi::c_int {
+unsafe fn ad1988_probe(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     let spec = (*codec).spec as *mut ad198x_spec;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     (*spec).gen.mixer_nid = 0x20;
     (*spec).gen.mixer_merge_nid = 0x21;
@@ -856,7 +856,7 @@ unsafe fn ad1988_probe(codec: *mut hda_codec) -> ::core::ffi::c_int {
  */
 unsafe extern "C" fn ad1884_fixup_amp_override(codec: *mut hda_codec,
                                                _fix: *const hda_fixup,
-                                               action: ::core::ffi::c_int) {
+                                               action: ::kernel::ffi::c_int) {
     if action == HDA_FIXUP_ACT_PRE_PROBE {
         snd_hda_override_amp_caps(codec, 0x20, HDA_INPUT,
                                   (0x17 << AC_AMPCAP_OFFSET_SHIFT) |
@@ -867,8 +867,8 @@ unsafe extern "C" fn ad1884_fixup_amp_override(codec: *mut hda_codec,
 }
 
 /* toggle GPIO1 according to the mute state */
-unsafe extern "C" fn ad1884_vmaster_hp_gpio_hook(private_data: *mut ::core::ffi::c_void,
-                                                 enabled: ::core::ffi::c_int) {
+unsafe extern "C" fn ad1884_vmaster_hp_gpio_hook(private_data: *mut ::kernel::ffi::c_void,
+                                                 enabled: ::kernel::ffi::c_int) {
     let codec = private_data as *mut hda_codec;
     let spec = (*codec).spec as *mut ad198x_spec;
 
@@ -882,7 +882,7 @@ unsafe extern "C" fn ad1884_vmaster_hp_gpio_hook(private_data: *mut ::core::ffi:
 
 unsafe extern "C" fn ad1884_fixup_hp_eapd(codec: *mut hda_codec,
                                           _fix: *const hda_fixup,
-                                          action: ::core::ffi::c_int) {
+                                          action: ::kernel::ffi::c_int) {
     let spec = (*codec).spec as *mut ad198x_spec;
 
     match action {
@@ -907,7 +907,7 @@ unsafe extern "C" fn ad1884_fixup_hp_eapd(codec: *mut hda_codec,
 
 unsafe extern "C" fn ad1884_fixup_thinkpad(codec: *mut hda_codec,
                                            _fix: *const hda_fixup,
-                                           action: ::core::ffi::c_int) {
+                                           action: ::kernel::ffi::c_int) {
     let spec = (*codec).spec as *mut ad198x_spec;
 
     if action == HDA_FIXUP_ACT_PRE_PROBE {
@@ -948,9 +948,9 @@ static ad1884_fixup_tbl: &[hda_quirk] = &[
     hda_quirk::default(),
 ];
 
-unsafe fn ad1884_probe(codec: *mut hda_codec) -> ::core::ffi::c_int {
+unsafe fn ad1884_probe(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     let spec = (*codec).spec as *mut ad198x_spec;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     (*spec).gen.mixer_nid = 0x20;
     (*spec).gen.mixer_merge_nid = 0x21;
@@ -986,9 +986,9 @@ unsafe fn ad1884_probe(codec: *mut hda_codec) -> ::core::ffi::c_int {
  * port-G - rear clfe-out (6stack)
  */
 
-unsafe fn ad1882_probe(codec: *mut hda_codec) -> ::core::ffi::c_int {
+unsafe fn ad1882_probe(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     let spec = (*codec).spec as *mut ad198x_spec;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     (*spec).gen.mixer_nid = 0x20;
     (*spec).gen.mixer_merge_nid = 0x21;
@@ -1009,16 +1009,16 @@ unsafe fn ad1882_probe(codec: *mut hda_codec) -> ::core::ffi::c_int {
  * driver entries
  */
 unsafe extern "C" fn ad_codec_probe(codec: *mut hda_codec,
-                                    id: *const hda_device_id) -> ::core::ffi::c_int {
+                                    id: *const hda_device_id) -> ::kernel::ffi::c_int {
     let spec: *mut ad198x_spec;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     err = alloc_ad_spec(codec);
     if err < 0 {
         return -ENOMEM;
     }
     spec = (*codec).spec as *mut ad198x_spec;
-    (*spec).model = (*id).driver_data as ::core::ffi::c_int;
+    (*spec).model = (*id).driver_data as ::kernel::ffi::c_int;
 
     match (*spec).model {
         MODEL_AD1882 => err = ad1882_probe(codec),

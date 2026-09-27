@@ -12,7 +12,7 @@ const MSC313_GPIO_BITSTOSAVE: u8 = MSC313_GPIO_OUT | MSC313_GPIO_OEN;
 
 #[repr(C)]
 struct Msc313GpioData {
-    names: *const *const core::ffi::c_char,
+    names: *const *const kernel::ffi::c_char,
     offsets: *const u32,
     num: usize,
 }

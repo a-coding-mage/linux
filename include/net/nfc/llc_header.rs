@@ -15,9 +15,9 @@ pub const LLC_SHDLC_NAME: &str = "shdlc";
 pub type RcvToHciT =
     unsafe extern "C" fn(hdev: *mut NfcHciDev, skb: *mut SkBuff);
 pub type XmitToDrvT =
-    unsafe extern "C" fn(hdev: *mut NfcHciDev, skb: *mut SkBuff) -> ::core::ffi::c_int;
+    unsafe extern "C" fn(hdev: *mut NfcHciDev, skb: *mut SkBuff) -> ::kernel::ffi::c_int;
 pub type LlcFailureT =
-    unsafe extern "C" fn(hdev: *mut NfcHciDev, err: ::core::ffi::c_int);
+    unsafe extern "C" fn(hdev: *mut NfcHciDev, err: ::kernel::ffi::c_int);
 
 #[repr(C)]
 pub struct NfcHciDev {
@@ -36,25 +36,25 @@ pub struct NfcLlc {
 
 unsafe extern "C" {
     pub fn nfc_llc_allocate(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         hdev: *mut NfcHciDev,
         xmit_to_drv: Option<XmitToDrvT>,
         rcv_to_hci: Option<RcvToHciT>,
-        tx_headroom: ::core::ffi::c_int,
-        tx_tailroom: ::core::ffi::c_int,
+        tx_headroom: ::kernel::ffi::c_int,
+        tx_tailroom: ::kernel::ffi::c_int,
         llc_failure: Option<LlcFailureT>,
     ) -> *mut NfcLlc;
     pub fn nfc_llc_free(llc: *mut NfcLlc);
 
-    pub fn nfc_llc_start(llc: *mut NfcLlc) -> ::core::ffi::c_int;
-    pub fn nfc_llc_stop(llc: *mut NfcLlc) -> ::core::ffi::c_int;
+    pub fn nfc_llc_start(llc: *mut NfcLlc) -> ::kernel::ffi::c_int;
+    pub fn nfc_llc_stop(llc: *mut NfcLlc) -> ::kernel::ffi::c_int;
     pub fn nfc_llc_rcv_from_drv(llc: *mut NfcLlc, skb: *mut SkBuff);
     pub fn nfc_llc_xmit_from_hci(
         llc: *mut NfcLlc,
         skb: *mut SkBuff,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
-    pub fn nfc_llc_init() -> ::core::ffi::c_int;
+    pub fn nfc_llc_init() -> ::kernel::ffi::c_int;
     pub fn nfc_llc_exit();
 }
 

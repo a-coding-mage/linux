@@ -10,10 +10,10 @@
 
 /// Device-tree compatibility strings for the LPC18xx/43xx boards.
 #[allow(non_upper_case_globals)]
-static lpc18xx_43xx_compat: [*const core::ffi::c_char; 4] = [
-    b"nxp,lpc1850\0".as_ptr() as *const core::ffi::c_char,
-    b"nxp,lpc4350\0".as_ptr() as *const core::ffi::c_char,
-    b"nxp,lpc4370\0".as_ptr() as *const core::ffi::c_char,
+static lpc18xx_43xx_compat: [*const kernel::ffi::c_char; 4] = [
+    b"nxp,lpc1850\0".as_ptr() as *const kernel::ffi::c_char,
+    b"nxp,lpc4350\0".as_ptr() as *const kernel::ffi::c_char,
+    b"nxp,lpc4370\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 

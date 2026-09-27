@@ -33,17 +33,17 @@
 extern "C" {
     /** Convert an interface mode into a human readable string. */
     pub fn cvmx_helper_interface_mode_to_string(
-        mode: cvmx_helper_interface_mode) -> *const ::core::ffi::c_char;
+        mode: cvmx_helper_interface_mode) -> *const ::kernel::ffi::c_char;
     pub fn cvmx_helper_setup_red(pass_thresh: i32, drop_thresh: i32) -> i32;
-    pub fn cvmx_helper_get_version() -> *const ::core::ffi::c_char;
+    pub fn cvmx_helper_get_version() -> *const ::kernel::ffi::c_char;
     pub fn __cvmx_helper_setup_gmx(interface: i32, num_ports: i32) -> i32;
     pub fn cvmx_helper_get_ipd_port(interface: i32, port: i32) -> i32;
     pub fn cvmx_helper_get_interface_num(ipd_port: i32) -> i32;
     pub fn cvmx_helper_get_interface_index_num(ipd_port: i32) -> i32;
     pub fn cvmx_helper_ports_on_interface(interface: i32) -> i32;
-    pub fn cvmx_ptr_to_phys(ptr: *const ::core::ffi::c_void) -> u64;
-    pub fn cvmx_phys_to_ptr(phys: u64) -> *mut ::core::ffi::c_void;
-    pub fn cvmx_fpa_free(ptr: *mut ::core::ffi::c_void, pool: u64, back: i32);
+    pub fn cvmx_ptr_to_phys(ptr: *const ::kernel::ffi::c_void) -> u64;
+    pub fn cvmx_phys_to_ptr(phys: u64) -> *mut ::kernel::ffi::c_void;
+    pub fn cvmx_fpa_free(ptr: *mut ::kernel::ffi::c_void, pool: u64, back: i32);
 }
 
 #[inline]
@@ -83,7 +83,7 @@ pub unsafe fn cvmx_helper_free_packet_data(work: *mut cvmx_wqe) {
          * freed
          */
         start_of_buffer = ((buffer_ptr.s.addr >> 7) - buffer_ptr.s.back) << 7;
-        if cvmx_ptr_to_phys(work as *const ::core::ffi::c_void) == start_of_buffer {
+        if cvmx_ptr_to_phys(work as *const ::kernel::ffi::c_void) == start_of_buffer {
             next_buffer_ptr = *(cvmx_phys_to_ptr(buffer_ptr.s.addr - 8) as *const cvmx_buf_ptr);
             buffer_ptr = next_buffer_ptr;
             number_buffers -= 1;

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-use core::ffi::{c_char, c_void};
+use kernel::ffi::{c_char, c_void};
 
 // Dependency supplied by asm/hypervisor.h in the C header.
 extern "C" {
@@ -50,7 +50,7 @@ pub struct ldc_channel {
 
 extern "C" {
     pub fn ldc_alloc(
-        id: libc::c_ulong,
+        id: kernel::ffi::c_ulong,
         cfgp: *const ldc_channel_config,
         event_arg: *mut c_void,
         name: *const c_char,
@@ -105,7 +105,7 @@ extern "C" {
     pub fn ldc_unmap(lp: *mut ldc_channel, cookies: *mut ldc_trans_cookie, ncookies: i32);
     pub fn ldc_copy(
         lp: *mut ldc_channel, copy_dir: i32, buf: *mut c_void, len: u32,
-        offset: libc::c_ulong, cookies: *mut ldc_trans_cookie, ncookies: i32,
+        offset: kernel::ffi::c_ulong, cookies: *mut ldc_trans_cookie, ncookies: i32,
     ) -> i32;
     pub fn ldc_alloc_exp_dring(
         lp: *mut ldc_channel, len: u32, cookies: *mut ldc_trans_cookie,
@@ -118,14 +118,14 @@ extern "C" {
 }
 
 pub unsafe fn ldc_get_dring_entry(
-    lp: *mut ldc_channel, buf: *mut c_void, len: u32, offset: libc::c_ulong,
+    lp: *mut ldc_channel, buf: *mut c_void, len: u32, offset: kernel::ffi::c_ulong,
     cookies: *mut ldc_trans_cookie, ncookies: i32,
 ) -> i32 {
     ldc_copy(lp, LDC_COPY_IN, buf, len, offset, cookies, ncookies)
 }
 
 pub unsafe fn ldc_put_dring_entry(
-    lp: *mut ldc_channel, buf: *mut c_void, len: u32, offset: libc::c_ulong,
+    lp: *mut ldc_channel, buf: *mut c_void, len: u32, offset: kernel::ffi::c_ulong,
     cookies: *mut ldc_trans_cookie, ncookies: i32,
 ) -> i32 {
     ldc_copy(lp, LDC_COPY_OUT, buf, len, offset, cookies, ncookies)

@@ -8,13 +8,13 @@
  * The condition is supplied by the surrounding build configuration. */
 #[cfg(CONFIG_MAC80211_MESSAGE_TRACING)]
 mod mac80211_message_tracing {
-    use core::ffi::c_char;
+    use kernel::ffi::c_char;
 
     /* Supplied by the Linux tracing and mac80211 headers. */
     #[repr(C)]
     pub struct va_format {
         pub fmt: *const c_char,
-        pub va: *mut core::ffi::c_void,
+        pub va: *mut kernel::ffi::c_void,
     }
 
     /*

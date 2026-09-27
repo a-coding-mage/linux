@@ -9,9 +9,9 @@
 // by the surrounding translation unit.
 
 extern "C" {
-    fn aria_gfni_avx512_encrypt_64way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    fn aria_gfni_avx512_decrypt_64way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    fn aria_gfni_avx512_ctr_crypt_64way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8, keystream: *mut u8, iv: *mut u8);
+    fn aria_gfni_avx512_encrypt_64way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    fn aria_gfni_avx512_decrypt_64way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    fn aria_gfni_avx512_ctr_crypt_64way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8, keystream: *mut u8, iv: *mut u8);
 }
 
 static mut aria_ops: aria_avx_ops = aria_avx_ops {
@@ -126,7 +126,7 @@ static mut aria_algs: [skcipher_alg; 2] = [
 ];
 
 unsafe fn aria_avx512_init() -> i32 {
-    let mut feature_name: *const core::ffi::c_char = core::ptr::null();
+    let mut feature_name: *const kernel::ffi::c_char = core::ptr::null();
     if !boot_cpu_has(X86_FEATURE_AVX) || !boot_cpu_has(X86_FEATURE_AVX2) || !boot_cpu_has(X86_FEATURE_AVX512F) || !boot_cpu_has(X86_FEATURE_AVX512VL) || !boot_cpu_has(X86_FEATURE_GFNI) || !boot_cpu_has(X86_FEATURE_OSXSAVE) {
         pr_info!("AVX512/GFNI instructions are not detected.\n");
         return -ENODEV;

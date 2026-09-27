@@ -32,8 +32,8 @@ pub struct compat_rt_sigframe {
 unsafe fn compat_restore_fp_state(
     regs: *mut pt_regs,
     sc_fpregs: *mut __riscv_fp_state,
-) -> core::ffi::c_long {
-    let mut err: core::ffi::c_long;
+) -> kernel::ffi::c_long {
+    let mut err: kernel::ffi::c_long;
     let state = &mut (*sc_fpregs).d as *mut __riscv_d_ext_state;
     let mut i: usize = 0;
 
@@ -63,8 +63,8 @@ unsafe fn compat_restore_fp_state(
 unsafe fn compat_save_fp_state(
     regs: *mut pt_regs,
     sc_fpregs: *mut __riscv_fp_state,
-) -> core::ffi::c_long {
-    let mut err: core::ffi::c_long;
+) -> kernel::ffi::c_long {
+    let mut err: kernel::ffi::c_long;
     let state = &mut (*sc_fpregs).d as *mut __riscv_d_ext_state;
     let mut i: usize = 0;
 
@@ -86,15 +86,15 @@ unsafe fn compat_save_fp_state(
 }
 
 #[cfg(not(CONFIG_FPU))]
-unsafe fn compat_restore_fp_state(_regs: *mut pt_regs, _sc_fpregs: *mut __riscv_fp_state) -> core::ffi::c_long { 0 }
+unsafe fn compat_restore_fp_state(_regs: *mut pt_regs, _sc_fpregs: *mut __riscv_fp_state) -> kernel::ffi::c_long { 0 }
 
 #[cfg(not(CONFIG_FPU))]
-unsafe fn compat_save_fp_state(_regs: *mut pt_regs, _sc_fpregs: *mut __riscv_fp_state) -> core::ffi::c_long { 0 }
+unsafe fn compat_save_fp_state(_regs: *mut pt_regs, _sc_fpregs: *mut __riscv_fp_state) -> kernel::ffi::c_long { 0 }
 
 unsafe fn compat_restore_sigcontext(
     regs: *mut pt_regs,
     sc: *mut compat_sigcontext,
-) -> core::ffi::c_long {
+) -> kernel::ffi::c_long {
     let mut cregs: compat_user_regs_struct = core::mem::zeroed();
     let mut err = __copy_from_user(&mut cregs, &(*sc).sc_regs, core::mem::size_of::<compat_user_regs_struct>());
     if err != 0 {
@@ -107,7 +107,7 @@ unsafe fn compat_restore_sigcontext(
     err
 }
 
-pub unsafe fn rt_sigreturn() -> core::ffi::c_long {
+pub unsafe fn rt_sigreturn() -> kernel::ffi::c_long {
     let regs = current_pt_regs();
     let frame = regs.sp as *mut compat_rt_sigframe;
     let mut set: sigset_t = core::mem::zeroed();
@@ -125,10 +125,10 @@ pub unsafe fn rt_sigreturn() -> core::ffi::c_long {
         force_sig(SIGSEGV);
         return 0;
     }
-    regs.a0 as core::ffi::c_long
+    regs.a0 as kernel::ffi::c_long
 }
 
-unsafe fn compat_setup_sigcontext(frame: *mut compat_rt_sigframe, regs: *mut pt_regs) -> core::ffi::c_long {
+unsafe fn compat_setup_sigcontext(frame: *mut compat_rt_sigframe, regs: *mut pt_regs) -> kernel::ffi::c_long {
     let sc = &mut (*frame).uc.uc_mcontext;
     let mut cregs: compat_user_regs_struct = core::mem::zeroed();
     regs_to_cregs(&mut cregs, regs);
@@ -137,7 +137,7 @@ unsafe fn compat_setup_sigcontext(frame: *mut compat_rt_sigframe, regs: *mut pt_
     err
 }
 
-unsafe fn compat_get_sigframe(ksig: *mut ksignal, regs: *mut pt_regs, framesize: usize) -> *mut core::ffi::c_void {
+unsafe fn compat_get_sigframe(ksig: *mut ksignal, regs: *mut pt_regs, framesize: usize) -> *mut kernel::ffi::c_void {
     let mut sp = (*regs).sp;
     if on_sig_stack(sp) && !on_sig_stack(sp.wrapping_sub(framesize)) { return (-1isize) as *mut _; }
     sp = sigsp(sp, ksig).wrapping_sub(framesize) & !0xf;
@@ -147,7 +147,7 @@ unsafe fn compat_get_sigframe(ksig: *mut ksignal, regs: *mut pt_regs, framesize:
 pub unsafe fn compat_setup_rt_frame(ksig: *mut ksignal, set: *mut sigset_t, regs: *mut pt_regs) -> i32 {
     let frame = compat_get_sigframe(ksig, regs, core::mem::size_of::<compat_rt_sigframe>()) as *mut compat_rt_sigframe;
     if !access_ok(frame, core::mem::size_of::<compat_rt_sigframe>()) { return -EFAULT; }
-    let mut err: core::ffi::c_long = copy_siginfo_to_user32(&mut (*frame).info, &(*ksig).info);
+    let mut err: kernel::ffi::c_long = copy_siginfo_to_user32(&mut (*frame).info, &(*ksig).info);
     err |= __put_user(0, &mut (*frame).uc.uc_flags);
     err |= __put_user(core::ptr::null_mut(), &mut (*frame).uc.uc_link);
     err |= __compat_save_altstack(&mut (*frame).uc.uc_stack, (*regs).sp);

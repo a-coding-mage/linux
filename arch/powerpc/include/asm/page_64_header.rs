@@ -42,12 +42,12 @@ pub const fn GET_ESID_1T(x: u64) -> u64 {
 }
 
 /* Dependency: asm/cache.h */
-pub type pte_basic_t = ::core::ffi::c_ulong;
+pub type pte_basic_t = ::kernel::ffi::c_ulong;
 
 #[inline]
-pub unsafe fn clear_page(mut addr: *mut ::core::ffi::c_void) {
-    let iterations: ::core::ffi::c_ulong = ppc64_caches.l1d.blocks_per_page / 8;
-    let onex: ::core::ffi::c_ulong = ppc64_caches.l1d.block_size;
+pub unsafe fn clear_page(mut addr: *mut ::kernel::ffi::c_void) {
+    let iterations: ::kernel::ffi::c_ulong = ppc64_caches.l1d.blocks_per_page / 8;
+    let onex: ::kernel::ffi::c_ulong = ppc64_caches.l1d.block_size;
     let twox = onex << 1;
     let fourx = onex << 2;
     let eightx = onex << 3;
@@ -86,7 +86,7 @@ pub unsafe fn clear_page(mut addr: *mut ::core::ffi::c_void) {
 }
 
 unsafe extern "C" {
-    pub fn copy_page(to: *mut ::core::ffi::c_void, from: *mut ::core::ffi::c_void);
+    pub fn copy_page(to: *mut ::kernel::ffi::c_void, from: *mut ::kernel::ffi::c_void);
 
     /* Log 2 of page table size */
     pub static mut ppc64_pft_size: u64;

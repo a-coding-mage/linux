@@ -24,7 +24,7 @@ pub enum qcom_ssr_notify_type {
 
 #[repr(C)]
 pub struct qcom_ssr_notify_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub crashed: bool,
 }
 
@@ -32,29 +32,29 @@ pub struct qcom_ssr_notify_data {
 #[cfg(CONFIG_QCOM_RPROC_COMMON)]
 unsafe extern "C" {
     pub fn qcom_register_ssr_notifier(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         nb: *mut notifier_block,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 
     pub fn qcom_unregister_ssr_notifier(
-        notify: *mut core::ffi::c_void,
+        notify: *mut kernel::ffi::c_void,
         nb: *mut notifier_block,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_QCOM_RPROC_COMMON))]
 pub unsafe fn qcom_register_ssr_notifier(
-    _name: *const core::ffi::c_char,
+    _name: *const kernel::ffi::c_char,
     _nb: *mut notifier_block,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     core::ptr::null_mut()
 }
 
 #[cfg(not(CONFIG_QCOM_RPROC_COMMON))]
 pub unsafe fn qcom_unregister_ssr_notifier(
-    _notify: *mut core::ffi::c_void,
+    _notify: *mut kernel::ffi::c_void,
     _nb: *mut notifier_block,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     0
 }
 

@@ -64,8 +64,8 @@ unsafe extern "C" {
 pub struct comedi_device {
     pub private: *mut pc236_private,
     pub board_ptr: *const pc236_board,
-    pub board_name: *const core::ffi::c_char,
-    pub class_dev: *mut core::ffi::c_void,
+    pub board_name: *const kernel::ffi::c_char,
+    pub class_dev: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -76,7 +76,7 @@ pub struct pc236_private {
 
 #[repr(C)]
 pub struct pc236_board {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub intr_update_cb: Option<unsafe extern "C" fn(*mut comedi_device, bool)>,
     pub intr_chk_clr_cb: Option<unsafe extern "C" fn(*mut comedi_device) -> bool>,
 }
@@ -106,8 +106,8 @@ unsafe extern "C" {
 
 #[repr(C)]
 pub struct comedi_driver {
-    pub driver_name: *const core::ffi::c_char,
-    pub module: *mut core::ffi::c_void,
+    pub driver_name: *const kernel::ffi::c_char,
+    pub module: *mut kernel::ffi::c_void,
     pub auto_attach: Option<unsafe extern "C" fn(*mut comedi_device, usize) -> i32>,
     pub detach: Option<unsafe extern "C" fn(*mut comedi_device) -> i32>,
 }
@@ -169,7 +169,7 @@ unsafe extern "C" fn amplc_pci236_pci_probe(dev: *mut pci_dev, id: *const pci_de
 
 #[repr(C)]
 pub struct pci_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id_table: *const pci_device_id,
     pub probe: Option<unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> i32>,
     pub remove: Option<unsafe extern "C" fn(*mut pci_dev)>,

@@ -14,7 +14,7 @@
 // XCHAL_HAVE_TLBS must equal 1: Linux must have an MMU.
 
 extern "C" {
-    static mut asid_cache: [::core::ffi::c_ulong; 0];
+    static mut asid_cache: [::kernel::ffi::c_ulong; 0];
     fn init_mmu();
     fn init_kio();
     fn local_flush_tlb_all();
@@ -52,7 +52,7 @@ pub const fn asid_insert(x: u32) -> u32 {
 }
 
 #[inline]
-unsafe fn set_rasid_register(val: ::core::ffi::c_ulong) {
+unsafe fn set_rasid_register(val: ::kernel::ffi::c_ulong) {
     ::core::arch::asm!(
         "wsr {0}, rasid",
         "isync",
@@ -62,8 +62,8 @@ unsafe fn set_rasid_register(val: ::core::ffi::c_ulong) {
 }
 
 #[inline]
-unsafe fn get_rasid_register() -> ::core::ffi::c_ulong {
-    let tmp: ::core::ffi::c_ulong;
+unsafe fn get_rasid_register() -> ::kernel::ffi::c_ulong {
+    let tmp: ::kernel::ffi::c_ulong;
     ::core::arch::asm!("rsr {0}, rasid", out("a2") tmp, options(nostack));
     tmp
 }

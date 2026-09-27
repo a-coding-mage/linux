@@ -13,7 +13,7 @@
  */
 #[repr(C)]
 pub struct videomode {
-	pub pixelclock: ::core::ffi::c_ulong, /* pixelclock in Hz */
+	pub pixelclock: ::kernel::ffi::c_ulong, /* pixelclock in Hz */
 
 	pub hactive: u32,
 	pub hfront_porch: u32,
@@ -53,8 +53,8 @@ unsafe extern "C" {
 	pub fn videomode_from_timings(
 		disp: *const display_timings,
 		vm: *mut videomode,
-		index: ::core::ffi::c_uint,
-	) -> ::core::ffi::c_int;
+		index: ::kernel::ffi::c_uint,
+	) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

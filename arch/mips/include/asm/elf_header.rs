@@ -95,7 +95,7 @@ pub const MIPS_ABI_FP_64: i32 = 6; pub const MIPS_ABI_FP_64A: i32 = 7;
 #[repr(C)]
 pub struct mips_elf_abiflags_v0 { pub version: u16, pub isa_level: u8, pub isa_rev: u8, pub gpr_size: u8, pub cpr1_size: u8, pub cpr2_size: u8, pub fp_abi: u8, pub isa_ext: u32, pub ases: u32, pub flags1: u32, pub flags2: u32 }
 pub const ELF_NGREG: usize = 45; pub const ELF_NFPREG: usize = 33;
-pub type elf_greg_t = ::core::ffi::c_ulong; pub type elf_gregset_t = [elf_greg_t; ELF_NGREG];
+pub type elf_greg_t = ::kernel::ffi::c_ulong; pub type elf_gregset_t = [elf_greg_t; ELF_NGREG];
 pub type elf_fpreg_t = f64; pub type elf_fpregset_t = [elf_fpreg_t; ELF_NFPREG];
 
 extern "C" { pub fn mips_dump_regs32(uregs: *mut u32, regs: *const pt_regs); pub fn mips_dump_regs64(uregs: *mut u64, regs: *const pt_regs); }
@@ -110,16 +110,16 @@ pub const MIPS_ABI_FP_UNKNOWN: i32 = -1;
 
 extern "C" {
     pub static mut elf_hwcap: u32;
-    pub static __elf_platform: *const ::core::ffi::c_char;
-    pub static __elf_base_platform: *const ::core::ffi::c_char;
+    pub static __elf_platform: *const ::kernel::ffi::c_char;
+    pub static __elf_base_platform: *const ::kernel::ffi::c_char;
     pub static mut mips_use_nan_legacy: bool;
     pub static mut mips_use_nan_2008: bool;
     pub fn arch_setup_additional_pages(bprm: *mut linux_binprm, uses_interp: i32) -> i32;
-    pub fn arch_elf_pt_proc(ehdr: *mut ::core::ffi::c_void, phdr: *mut ::core::ffi::c_void, elf: *mut file, is_interp: bool, state: *mut arch_elf_state) -> i32;
-    pub fn arch_check_elf(ehdr: *mut ::core::ffi::c_void, has_interpreter: bool, interp_ehdr: *mut ::core::ffi::c_void, state: *mut arch_elf_state) -> i32;
+    pub fn arch_elf_pt_proc(ehdr: *mut ::kernel::ffi::c_void, phdr: *mut ::kernel::ffi::c_void, elf: *mut file, is_interp: bool, state: *mut arch_elf_state) -> i32;
+    pub fn arch_check_elf(ehdr: *mut ::kernel::ffi::c_void, has_interpreter: bool, interp_ehdr: *mut ::kernel::ffi::c_void, state: *mut arch_elf_state) -> i32;
     pub fn mips_set_personality_nan(state: *mut arch_elf_state);
     pub fn mips_set_personality_fp(state: *mut arch_elf_state);
-    pub fn mips_elf_read_implies_exec(elf_ex: *mut ::core::ffi::c_void, exstack: i32) -> i32;
+    pub fn mips_elf_read_implies_exec(elf_ex: *mut ::kernel::ffi::c_void, exstack: i32) -> i32;
     pub static mut mips_abi: mips_abi;
     pub static mut mips_abi_32: mips_abi;
     pub static mut mips_abi_n32: mips_abi;

@@ -22,12 +22,12 @@ const SLEEP_SAVE_PSTR: usize = 0;
 const SLEEP_SAVE_COUNT: usize = 1;
 
 #[cfg(CONFIG_PM)]
-unsafe fn pxa25x_cpu_pm_save(sleep_save: *mut libc::c_ulong) {
+unsafe fn pxa25x_cpu_pm_save(sleep_save: *mut kernel::ffi::c_ulong) {
     *sleep_save.add(SLEEP_SAVE_PSTR) = PSTR;
 }
 
 #[cfg(CONFIG_PM)]
-unsafe fn pxa25x_cpu_pm_restore(sleep_save: *mut libc::c_ulong) {
+unsafe fn pxa25x_cpu_pm_restore(sleep_save: *mut kernel::ffi::c_ulong) {
     PSTR = *sleep_save.add(SLEEP_SAVE_PSTR);
 }
 
@@ -43,7 +43,7 @@ unsafe fn pxa25x_cpu_pm_enter(state: suspend_state_t) {
 }
 
 #[cfg(CONFIG_PM)]
-unsafe fn pxa25x_cpu_pm_prepare() -> libc::c_int {
+unsafe fn pxa25x_cpu_pm_prepare() -> kernel::ffi::c_int {
     // set resume return address
     PSPR = __pa_symbol(cpu_resume);
     0
@@ -76,7 +76,7 @@ unsafe fn pxa25x_init_pm() {
 unsafe fn pxa25x_init_pm() {}
 
 // PXA25x: supports wakeup from GPIO0..GPIO15 and RTC alarm
-unsafe fn pxa25x_set_wake(d: *mut irq_data, on: libc::c_uint) -> libc::c_int {
+unsafe fn pxa25x_set_wake(d: *mut irq_data, on: kernel::ffi::c_uint) -> kernel::ffi::c_int {
     let gpio = pxa_irq_to_gpio((*d).irq);
     let mut mask: u32 = 0;
 
@@ -107,7 +107,7 @@ unsafe fn pxa25x_init_irq() {
 unsafe fn pxa25x_dt_init_irq(
     node: *mut device_node,
     parent: *mut device_node,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let _ = (node, parent);
     pxa_dt_irq_init(pxa25x_set_wake);
     set_handle_irq(icip_handle_irq);
@@ -119,7 +119,7 @@ IRQCHIP_DECLARE!(pxa25x_intc, "marvell,pxa-intc", pxa25x_dt_init_irq);
 static mut PXA25X_IO_DESC: [map_desc; 2] = [
     map_desc {
         // Mem Ctl
-        virtual_: SMEMC_VIRT as libc::c_ulong,
+        virtual_: SMEMC_VIRT as kernel::ffi::c_ulong,
         pfn: __phys_to_pfn(PXA2XX_SMEMC_BASE),
         length: SMEMC_SIZE,
         type_: MT_DEVICE,
@@ -182,8 +182,8 @@ static mut PXA25X_DMA_PDATA: mmp_dma_platdata = mmp_dma_platdata {
     slave_map_cnt: PXA25X_SLAVE_MAP.len(),
 };
 
-unsafe fn pxa25x_init() -> libc::c_int {
-    let mut ret: libc::c_int = 0;
+unsafe fn pxa25x_init() -> kernel::ffi::c_int {
+    let mut ret: kernel::ffi::c_int = 0;
 
     if cpu_is_pxa25x() {
         pxa_register_wdt(RCSR);

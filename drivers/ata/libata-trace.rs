@@ -14,15 +14,15 @@ pub struct trace_seq {
 }
 
 extern "C" {
-    fn trace_seq_buffer_ptr(p: *mut trace_seq) -> *const core::ffi::c_char;
-    fn trace_seq_printf(p: *mut trace_seq, fmt: *const core::ffi::c_char, ...);
-    fn trace_seq_putc(p: *mut trace_seq, c: core::ffi::c_int);
+    fn trace_seq_buffer_ptr(p: *mut trace_seq) -> *const kernel::ffi::c_char;
+    fn trace_seq_printf(p: *mut trace_seq, fmt: *const kernel::ffi::c_char, ...);
+    fn trace_seq_putc(p: *mut trace_seq, c: kernel::ffi::c_int);
 }
 
 pub unsafe fn libata_trace_parse_status(
     p: *mut trace_seq,
     status: u8,
-) -> *const core::ffi::c_char {
+) -> *const kernel::ffi::c_char {
     let ret = trace_seq_buffer_ptr(p);
 
     trace_seq_printf(p, c"{ ".as_ptr());
@@ -39,7 +39,7 @@ pub unsafe fn libata_trace_parse_status(
     ret
 }
 
-pub unsafe fn libata_trace_parse_host_stat(p: *mut trace_seq, host_stat: u8) -> *const core::ffi::c_char {
+pub unsafe fn libata_trace_parse_host_stat(p: *mut trace_seq, host_stat: u8) -> *const kernel::ffi::c_char {
     let ret = trace_seq_buffer_ptr(p);
     trace_seq_printf(p, c"{ ".as_ptr());
     if host_stat & ATA_DMA_INTR as u8 != 0 { trace_seq_printf(p, c"INTR ".as_ptr()); }
@@ -50,7 +50,7 @@ pub unsafe fn libata_trace_parse_host_stat(p: *mut trace_seq, host_stat: u8) -> 
     ret
 }
 
-pub unsafe fn libata_trace_parse_eh_action(p: *mut trace_seq, eh_action: u32) -> *const core::ffi::c_char {
+pub unsafe fn libata_trace_parse_eh_action(p: *mut trace_seq, eh_action: u32) -> *const kernel::ffi::c_char {
     let ret = trace_seq_buffer_ptr(p);
     trace_seq_printf(p, c"%x".as_ptr(), eh_action);
     if eh_action != 0 {
@@ -67,7 +67,7 @@ pub unsafe fn libata_trace_parse_eh_action(p: *mut trace_seq, eh_action: u32) ->
     ret
 }
 
-pub unsafe fn libata_trace_parse_eh_err_mask(p: *mut trace_seq, eh_err_mask: u32) -> *const core::ffi::c_char {
+pub unsafe fn libata_trace_parse_eh_err_mask(p: *mut trace_seq, eh_err_mask: u32) -> *const kernel::ffi::c_char {
     let ret = trace_seq_buffer_ptr(p);
     trace_seq_printf(p, c"%x".as_ptr(), eh_err_mask);
     if eh_err_mask != 0 {
@@ -89,7 +89,7 @@ pub unsafe fn libata_trace_parse_eh_err_mask(p: *mut trace_seq, eh_err_mask: u32
     ret
 }
 
-pub unsafe fn libata_trace_parse_qc_flags(p: *mut trace_seq, qc_flags: u32) -> *const core::ffi::c_char {
+pub unsafe fn libata_trace_parse_qc_flags(p: *mut trace_seq, qc_flags: u32) -> *const kernel::ffi::c_char {
     let ret = trace_seq_buffer_ptr(p);
     trace_seq_printf(p, c"%x".as_ptr(), qc_flags);
     if qc_flags != 0 {
@@ -110,7 +110,7 @@ pub unsafe fn libata_trace_parse_qc_flags(p: *mut trace_seq, qc_flags: u32) -> *
     ret
 }
 
-pub unsafe fn libata_trace_parse_tf_flags(p: *mut trace_seq, tf_flags: u32) -> *const core::ffi::c_char {
+pub unsafe fn libata_trace_parse_tf_flags(p: *mut trace_seq, tf_flags: u32) -> *const kernel::ffi::c_char {
     let ret = trace_seq_buffer_ptr(p);
     trace_seq_printf(p, c"%x".as_ptr(), tf_flags);
     if tf_flags != 0 {
@@ -128,7 +128,7 @@ pub unsafe fn libata_trace_parse_tf_flags(p: *mut trace_seq, tf_flags: u32) -> *
     ret
 }
 
-pub unsafe fn libata_trace_parse_subcmd(p: *mut trace_seq, cmd: u8, feature: u8, hob_nsect: u8) -> *const core::ffi::c_char {
+pub unsafe fn libata_trace_parse_subcmd(p: *mut trace_seq, cmd: u8, feature: u8, hob_nsect: u8) -> *const kernel::ffi::c_char {
     let ret = trace_seq_buffer_ptr(p);
     match cmd {
         ATA_CMD_FPDMA_RECV => match hob_nsect & 0x5f {

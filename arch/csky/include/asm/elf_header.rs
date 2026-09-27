@@ -24,7 +24,7 @@ pub const R_CSKY_ADDR_HI16: u32 = 24;
 pub const R_CSKY_ADDR_LO16: u32 = 25;
 pub const R_CSKY_PCRELJSR_IMM26BY2: u32 = 40;
 
-pub type elf_greg_t = ::core::ffi::c_ulong;
+pub type elf_greg_t = ::kernel::ffi::c_ulong;
 pub type elf_fpregset_t = user_fp;
 
 /*
@@ -60,7 +60,7 @@ pub const ELF_DATA: u8 = ELFDATA2MSB;
 pub const ELF_DATA: u8 = ELFDATA2LSB;
 
 /* This is the location that an ET_DYN program is loaded if exec'ed. */
-pub const ELF_ET_DYN_BASE: ::core::ffi::c_ulong = 0x0;
+pub const ELF_ET_DYN_BASE: ::kernel::ffi::c_ulong = 0x0;
 
 /* Similar, but for a thread other than current. */
 #[repr(C)]
@@ -69,14 +69,14 @@ pub struct task_struct {
 }
 
 unsafe extern "C" {
-    pub fn dump_task_regs(tsk: *mut task_struct, elf_regs: *mut elf_gregset_t) -> ::core::ffi::c_int;
+    pub fn dump_task_regs(tsk: *mut task_struct, elf_regs: *mut elf_gregset_t) -> ::kernel::ffi::c_int;
 }
 
 #[inline]
 pub unsafe fn ELF_CORE_COPY_TASK_REGS(
     tsk: *mut task_struct,
     elf_regs: *mut elf_gregset_t,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     dump_task_regs(tsk, elf_regs)
 }
 
@@ -87,7 +87,7 @@ pub const ELF_HWCAP: u32 = 0;
  * libraries for optimization. This is more specific in intent than poking
  * at uname or /proc/cpuinfo.
  */
-pub const ELF_PLATFORM: *const ::core::ffi::c_void = ::core::ptr::null();
+pub const ELF_PLATFORM: *const ::kernel::ffi::c_void = ::core::ptr::null();
 
 #[inline]
 pub unsafe fn SET_PERSONALITY(_ex: usize) {
@@ -104,8 +104,8 @@ pub struct linux_binprm {
 unsafe extern "C" {
     pub fn arch_setup_additional_pages(
         bprm: *mut linux_binprm,
-        uses_interp: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        uses_interp: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -5,7 +5,7 @@
 unsafe extern "C" {
     pub fn dmub_cacp_init(
         abm: *mut crate::abm,
-        src: *const core::ffi::c_char,
+        src: *const kernel::ffi::c_char,
         bytes: u32,
         panel_inst: u32,
     );

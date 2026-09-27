@@ -25,7 +25,7 @@ pub const _PAGE_SWP_EXCLUSIVE: usize = 0x800;
 extern "C" {
     pub static mut m68k_pgtable_cachemode: i32;
     pub static mut m68k_supervisor_cachemode: i32;
-    pub static mut mm_cachebits: libc::c_ulong;
+    pub static mut mm_cachebits: kernel::ffi::c_ulong;
     pub static mut kernel_pg_dir: [pgd_t; 128];
     pub static mut mem_map: *mut page;
 }
@@ -49,8 +49,8 @@ pub unsafe fn pud_set(pudp: *mut pud_t, pmdp: *mut pmd_t) {
     (*pudp).val = _PAGE_TABLE | _PAGE_ACCESSED | __pa(pmdp);
 }
 
-pub unsafe fn __pte_page(pte: pte_t) -> libc::c_ulong { __va(pte.val & PAGE_MASK) as libc::c_ulong }
-pub unsafe fn pmd_page_vaddr(pmd: pmd_t) -> libc::c_ulong { __va(pmd.val & _TABLE_MASK) as libc::c_ulong }
+pub unsafe fn __pte_page(pte: pte_t) -> kernel::ffi::c_ulong { __va(pte.val & PAGE_MASK) as kernel::ffi::c_ulong }
+pub unsafe fn pmd_page_vaddr(pmd: pmd_t) -> kernel::ffi::c_ulong { __va(pmd.val & _TABLE_MASK) as kernel::ffi::c_ulong }
 pub unsafe fn pud_pgtable(pud: pud_t) -> *mut pmd_t { __va((pud.val & _TABLE_MASK) as usize) as *mut pmd_t }
 
 pub const PFN_PTE_SHIFT: usize = PAGE_SHIFT;

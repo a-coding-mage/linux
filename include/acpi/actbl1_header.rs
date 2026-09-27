@@ -925,8 +925,8 @@ pub acpi_dmar_andd {
 	u8: device_number;
 
 pub union __AcpiAnonymousUnion {
-		__pad: core::ffi::c_char;
-		 device_name: [core::ffi::c_char; 0]
+		__pad: kernel::ffi::c_char;
+		 device_name: [kernel::ffi::c_char; 0]
 	}
 };
 

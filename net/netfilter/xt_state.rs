@@ -8,7 +8,7 @@
 // Kernel headers and module metadata are supplied by external dependencies.
 
 extern "C" {
-    static THIS_MODULE: *mut core::ffi::c_void;
+    static THIS_MODULE: *mut kernel::ffi::c_void;
 
     fn nf_ct_get(
         skb: *const sk_buff,
@@ -42,7 +42,7 @@ pub struct xt_state_info {
 
 #[repr(C)]
 pub struct xt_action_param {
-    pub matchinfo: *const core::ffi::c_void,
+    pub matchinfo: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -59,13 +59,13 @@ pub struct xt_mtdtor_param {
 
 #[repr(C)]
 pub struct xt_match {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub family: u16,
     pub checkentry: Option<unsafe extern "C" fn(*const xt_mtchk_param) -> i32>,
     pub match_: Option<unsafe extern "C" fn(*const sk_buff, *mut xt_action_param) -> bool>,
     pub destroy: Option<unsafe extern "C" fn(*const xt_mtdtor_param)>,
     pub matchsize: usize,
-    pub me: *mut core::ffi::c_void,
+    pub me: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -114,7 +114,7 @@ unsafe extern "C" fn state_mt_destroy(par: *const xt_mtdtor_param) {
 
 #[repr(C)]
 static mut state_mt_reg: xt_match = xt_match {
-    name: b"state\0".as_ptr() as *const core::ffi::c_char,
+    name: b"state\0".as_ptr() as *const kernel::ffi::c_char,
     family: NFPROTO_UNSPEC,
     checkentry: Some(state_mt_check),
     match_: Some(state_mt),

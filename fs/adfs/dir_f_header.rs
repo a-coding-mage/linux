@@ -26,7 +26,7 @@ pub const ADFS_F_NAME_LEN: usize = 10;
 
 #[repr(C, packed)]
 pub struct adfs_direntry {
-    pub dirobname: [core::ffi::c_char; ADFS_F_NAME_LEN],
+    pub dirobname: [kernel::ffi::c_char; ADFS_F_NAME_LEN],
     pub dirload: [__u8; 4],
     pub direxec: [__u8; 4],
     pub dirlen: [__u8; 4],
@@ -40,9 +40,9 @@ pub struct adfs_direntry {
 #[repr(C, packed)]
 pub struct adfs_olddirtail {
     pub dirlastmask: __u8,
-    pub dirname: [core::ffi::c_char; 10],
+    pub dirname: [kernel::ffi::c_char; 10],
     pub dirparent: [__u8; 3],
-    pub dirtitle: [core::ffi::c_char; 19],
+    pub dirtitle: [kernel::ffi::c_char; 19],
     pub reserved: [__u8; 14],
     pub endmasseq: __u8,
     pub endname: [__u8; 4],
@@ -54,8 +54,8 @@ pub struct adfs_newdirtail {
     pub dirlastmask: __u8,
     pub reserved: [__u8; 2],
     pub dirparent: [__u8; 3],
-    pub dirtitle: [core::ffi::c_char; 19],
-    pub dirname: [core::ffi::c_char; 10],
+    pub dirtitle: [kernel::ffi::c_char; 19],
+    pub dirname: [kernel::ffi::c_char; 10],
     pub endmasseq: __u8,
     pub endname: [__u8; 4],
     pub dircheckbyte: __u8,

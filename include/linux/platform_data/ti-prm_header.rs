@@ -7,7 +7,7 @@
  * Tero Kristo <t-kristo@ti.com>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct clockdomain {

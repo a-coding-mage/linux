@@ -115,8 +115,8 @@ unsafe extern "C" {
 
     pub fn qcom_cc_register_board_clk(
         dev: *mut device,
-        path: *const core::ffi::c_char,
-        name: *const core::ffi::c_char,
+        path: *const kernel::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         rate: u64,
     ) -> i32;
     pub fn qcom_cc_register_sleep_clk(dev: *mut device) -> i32;

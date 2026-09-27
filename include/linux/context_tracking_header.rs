@@ -5,7 +5,7 @@
 
 #[cfg(CONFIG_CONTEXT_TRACKING_USER)]
 extern "C" {
-    pub fn ct_cpu_track_user(cpu: ::core::ffi::c_int);
+    pub fn ct_cpu_track_user(cpu: ::kernel::ffi::c_int);
 
     // Called with interrupts disabled.
     pub fn __ct_user_enter(state: ctx_state);
@@ -113,16 +113,16 @@ pub fn user_enter_irqoff() {}
 pub fn user_exit_irqoff() {}
 #[cfg(not(CONFIG_CONTEXT_TRACKING_USER))]
 #[inline]
-pub fn exception_enter() -> ::core::ffi::c_int { 0 }
+pub fn exception_enter() -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_CONTEXT_TRACKING_USER))]
 #[inline]
 pub fn exception_exit(_prev_ctx: ctx_state) {}
 #[cfg(not(CONFIG_CONTEXT_TRACKING_USER))]
 #[inline]
-pub fn ct_state() -> ::core::ffi::c_int { -1 }
+pub fn ct_state() -> ::kernel::ffi::c_int { -1 }
 #[cfg(not(CONFIG_CONTEXT_TRACKING_USER))]
 #[inline]
-pub fn __ct_state() -> ::core::ffi::c_int { -1 }
+pub fn __ct_state() -> ::kernel::ffi::c_int { -1 }
 #[cfg(not(CONFIG_CONTEXT_TRACKING_USER))]
 #[inline(always)]
 pub fn context_tracking_guest_enter() -> bool { false }
@@ -152,7 +152,7 @@ pub unsafe fn rcu_is_watching_curr_cpu() -> bool {
 
 #[cfg(CONFIG_CONTEXT_TRACKING_IDLE)]
 #[inline(always)]
-pub unsafe fn ct_state_inc(incby: ::core::ffi::c_int) -> ::core::ffi::c_ulong {
+pub unsafe fn ct_state_inc(incby: ::kernel::ffi::c_int) -> ::kernel::ffi::c_ulong {
     raw_atomic_add_return(incby, this_cpu_ptr(&context_tracking.state))
 }
 

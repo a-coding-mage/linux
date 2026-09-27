@@ -9,19 +9,19 @@
 // structure types are supplied by the surrounding UAPI translation.
 
 /// NE_CREATE_VM - Create a slot associated with an enclave VM.
-pub const NE_CREATE_VM: _ = _IOR(0xAE, 0x20, u64);
+pub const NE_CREATE_VM: u32 = _IOR(0xAE, 0x20, u64);
 
 /// NE_ADD_VCPU - Set a vCPU for an enclave.
-pub const NE_ADD_VCPU: _ = _IOWR(0xAE, 0x21, u32);
+pub const NE_ADD_VCPU: u32 = _IOWR(0xAE, 0x21, u32);
 
 /// NE_GET_IMAGE_LOAD_INFO - Get information needed for in-memory image loading.
-pub const NE_GET_IMAGE_LOAD_INFO: _ = _IOWR(0xAE, 0x22, ne_image_load_info);
+pub const NE_GET_IMAGE_LOAD_INFO: u32 = _IOWR(0xAE, 0x22, ne_image_load_info);
 
 /// NE_SET_USER_MEMORY_REGION - Set a userspace-backed memory region.
-pub const NE_SET_USER_MEMORY_REGION: _ = _IOW(0xAE, 0x23, ne_user_memory_region);
+pub const NE_SET_USER_MEMORY_REGION: u32 = _IOW(0xAE, 0x23, ne_user_memory_region);
 
 /// NE_START_ENCLAVE - Trigger enclave start after resources have been set.
-pub const NE_START_ENCLAVE: _ = _IOWR(0xAE, 0x24, ne_enclave_start_info);
+pub const NE_START_ENCLAVE: u32 = _IOWR(0xAE, 0x24, ne_enclave_start_info);
 
 /// DOC: NE specific error codes
 pub const NE_ERR_VCPU_ALREADY_USED: i32 = 256;

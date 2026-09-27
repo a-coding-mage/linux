@@ -11,7 +11,7 @@
 
 /* Dependencies supplied by the surrounding kernel translation. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]

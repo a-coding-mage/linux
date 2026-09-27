@@ -411,7 +411,7 @@ static void a3dsrc_GetGainCurrent(a3dsrc_t * a, short *left, short *right)
 }
 
 / * CA3dIO this func seems to be inlined all over this place. */
-static void CA3dIO_WriteReg(a3dsrc_t * a, addr: core::ffi::c_ulong, short aa, short b)
+static void CA3dIO_WriteReg(a3dsrc_t * a, addr: kernel::ffi::c_ulong, short aa, short b)
 {
 	vortex_t *vortex = (vortex_t *) ((*a).vortex);
 	hwwrite((*vortex).mmio, addr, (aa << 0x10) | b);

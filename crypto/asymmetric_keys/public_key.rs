@@ -25,16 +25,16 @@ pub unsafe fn public_key_free(key: *mut public_key) {
     }
 }
 
-unsafe fn public_key_destroy(payload0: *mut core::ffi::c_void, payload3: *mut core::ffi::c_void) {
+unsafe fn public_key_destroy(payload0: *mut kernel::ffi::c_void, payload3: *mut kernel::ffi::c_void) {
     public_key_free(payload0 as *mut public_key);
     public_key_signature_free(payload3 as *mut public_key_signature);
 }
 
 unsafe fn software_key_determine_akcipher(
     pkey: *const public_key,
-    encoding: *const core::ffi::c_char,
-    hash_algo: *const core::ffi::c_char,
-    alg_name: *mut core::ffi::c_char,
+    encoding: *const kernel::ffi::c_char,
+    hash_algo: *const kernel::ffi::c_char,
+    alg_name: *mut kernel::ffi::c_char,
     sig: *mut bool,
     op: kernel_pkey_operation,
 ) -> i32 {
@@ -81,7 +81,7 @@ unsafe fn pkey_pack_u32(dst: *mut u8, val: u32) -> *mut u8 {
 // The remaining operations retain the C control flow and call the corresponding
 // kernel crypto interfaces supplied by other translation units.
 unsafe fn software_key_query(params: *const kernel_pkey_params, info: *mut kernel_pkey_query) -> i32 { todo!() }
-unsafe fn software_key_eds_op(params: *mut kernel_pkey_params, _in: *const core::ffi::c_void, _out: *mut core::ffi::c_void) -> i32 { todo!() }
+unsafe fn software_key_eds_op(params: *mut kernel_pkey_params, _in: *const kernel::ffi::c_void, _out: *mut kernel::ffi::c_void) -> i32 { todo!() }
 pub unsafe fn public_key_verify_signature(pkey: *const public_key, sig: *const public_key_signature) -> i32 { todo!() }
 unsafe fn public_key_verify_signature_2(key: *const key, sig: *const public_key_signature) -> i32 { public_key_verify_signature((*key).payload.data[asym_crypto as usize] as *const public_key, sig) }
 

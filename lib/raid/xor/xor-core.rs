@@ -20,13 +20,13 @@ extern "C" {
 #[repr(C)]
 pub struct xor_block_template {
     pub next: *mut xor_block_template,
-    pub xor_gen: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut *mut core::ffi::c_void, u32, u32)>,
+    pub xor_gen: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut *mut kernel::ffi::c_void, u32, u32)>,
     pub speed: u64,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 // DEFINE_STATIC_CALL_NULL(xor_gen_impl, *xor_block_8regs.xor_gen)
-static mut xor_gen_impl: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut *mut core::ffi::c_void, u32, u32)> = None;
+static mut xor_gen_impl: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut *mut kernel::ffi::c_void, u32, u32)> = None;
 
 /// xor_gen - generate RAID-style XOR information
 /// @dest: destination vector
@@ -34,8 +34,8 @@ static mut xor_gen_impl: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mu
 /// @src_cnt: number of source vectors
 /// @bytes: length in bytes of each vector
 pub unsafe extern "C" fn xor_gen(
-    dest: *mut core::ffi::c_void,
-    srcs: *mut *mut core::ffi::c_void,
+    dest: *mut kernel::ffi::c_void,
+    srcs: *mut *mut kernel::ffi::c_void,
     src_cnt: u32,
     bytes: u32,
 ) {
@@ -66,8 +66,8 @@ const REPS: u32 = 800;
 
 unsafe fn do_xor_speed(
     tmpl: *mut xor_block_template,
-    dest: *mut core::ffi::c_void,
-    srcs: *mut *mut core::ffi::c_void,
+    dest: *mut kernel::ffi::c_void,
+    srcs: *mut *mut kernel::ffi::c_void,
 ) {
     let mut t: u64;
     // preempt_disable();
@@ -93,9 +93,9 @@ unsafe fn do_xor_speed(
 unsafe fn calibrate_xor_blocks() -> i32 {
     let mut f: *mut xor_block_template;
     let mut fastest: *mut xor_block_template;
-    let mut srcs: [*mut core::ffi::c_void; NR_SRCS] = [core::ptr::null_mut(); NR_SRCS];
-    let buf: *mut core::ffi::c_void;
-    let dest: *mut core::ffi::c_void;
+    let mut srcs: [*mut kernel::ffi::c_void; NR_SRCS] = [core::ptr::null_mut(); NR_SRCS];
+    let buf: *mut kernel::ffi::c_void;
+    let dest: *mut kernel::ffi::c_void;
 
     if !forced_template.is_null() {
         return 0;
@@ -109,7 +109,7 @@ unsafe fn calibrate_xor_blocks() -> i32 {
     get_random_bytes(buf, BENCH_SIZE as usize * (NR_SRCS + 1));
     dest = buf;
     for i in 0..NR_SRCS {
-        srcs[i] = (buf as *mut u8).add((i + 1) * BENCH_SIZE as usize) as *mut core::ffi::c_void;
+        srcs[i] = (buf as *mut u8).add((i + 1) * BENCH_SIZE as usize) as *mut kernel::ffi::c_void;
     }
 
     // pr_info("xor: measuring software checksum speed\n");
@@ -149,11 +149,11 @@ unsafe fn xor_init() -> i32 {
         return 0;
     }
 
-    #[cfg(feature = "MODULE")]
+    #[cfg(MODULE)]
     {
         return calibrate_xor_blocks();
     }
-    #[cfg(not(feature = "MODULE"))]
+    #[cfg(not(MODULE))]
     {
         xor_gen_impl = (*template_list).xor_gen;
         return 0;

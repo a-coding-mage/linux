@@ -16,7 +16,7 @@
 /* Room for two PTE table pointers, usually the kernel and current user
  * pointer to their respective root page table (pgdir).
  */
-pub static mut abatron_pteptrs: [*mut core::ffi::c_void; 2] = [core::ptr::null_mut(); 2];
+pub static mut abatron_pteptrs: [*mut kernel::ffi::c_void; 2] = [core::ptr::null_mut(); 2];
 
 // Configuration selects LAST_CONTEXT: 16 for PPC_8xx, 65535 for PPC_47x,
 // and 255 otherwise.
@@ -30,12 +30,12 @@ const LAST_CONTEXT: u32 = 255;
 
 static mut next_context: u32 = 0;
 static mut nr_free_contexts: u32 = 0;
-static mut context_map: *mut libc::c_ulong = core::ptr::null_mut();
-static mut stale_map: [*mut libc::c_ulong; NR_CPUS] = [core::ptr::null_mut(); NR_CPUS];
+static mut context_map: *mut kernel::ffi::c_ulong = core::ptr::null_mut();
+static mut stale_map: [*mut kernel::ffi::c_ulong; NR_CPUS] = [core::ptr::null_mut(); NR_CPUS];
 static mut context_mm: *mut *mut mm_struct = core::ptr::null_mut();
 static mut context_lock: raw_spinlock_t = RAW_SPINLOCK_INIT;
 
-const CTX_MAP_SIZE: usize = core::mem::size_of::<libc::c_ulong>()
+const CTX_MAP_SIZE: usize = core::mem::size_of::<kernel::ffi::c_ulong>()
     * (LAST_CONTEXT as usize / BITS_PER_LONG + 1);
 
 /* Steal a context from a task that has one at the moment. */
@@ -116,7 +116,7 @@ pub unsafe fn switch_mmu_context(prev: *mut mm_struct, next: *mut mm_struct,
     let mut id: u32;
     let mut i: u32;
     let cpu = smp_processor_id();
-    let map: *mut libc::c_ulong;
+    let map: *mut kernel::ffi::c_ulong;
 
     raw_spin_lock(&mut context_lock);
     if IS_ENABLED!(CONFIG_SMP) {
@@ -161,7 +161,7 @@ pub unsafe fn switch_mmu_context(prev: *mut mm_struct, next: *mut mm_struct,
             i += 1;
         }
     }
-    if IS_ENABLED!(CONFIG_BDI_SWITCH) { abatron_pteptrs[1] = (*next).pgd as *mut core::ffi::c_void; }
+    if IS_ENABLED!(CONFIG_BDI_SWITCH) { abatron_pteptrs[1] = (*next).pgd as *mut kernel::ffi::c_void; }
     set_context(id as u64, (*next).pgd);
     #[cfg(all(CONFIG_BOOKE, CONFIG_PPC_KUAP))]
     { (*tsk).thread.pid = id; }
@@ -178,7 +178,7 @@ pub unsafe fn init_new_context(_t: *mut task_struct, mm: *mut mm_struct) -> i32 
 pub unsafe fn destroy_context(mm: *mut mm_struct) {
     if (*mm).context.id == MMU_NO_CONTEXT { return; }
     WARN_ON((*mm).context.active != 0);
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     raw_spin_lock_irqsave(&mut context_lock, &mut flags);
     let id = (*mm).context.id;
     if id != MMU_NO_CONTEXT {
@@ -210,15 +210,15 @@ unsafe fn mmu_ctx_cpu_dead(cpu: u32) -> i32 {
 pub unsafe fn mmu_context_init() {
     init_mm.context.active = NR_CPUS;
     context_map = memblock_alloc_or_panic(CTX_MAP_SIZE, SMP_CACHE_BYTES);
-    context_mm = memblock_alloc_or_panic(core::mem::size_of::<*mut core::ffi::c_void>() * (LAST_CONTEXT as usize + 1), SMP_CACHE_BYTES);
+    context_mm = memblock_alloc_or_panic(core::mem::size_of::<*mut kernel::ffi::c_void>() * (LAST_CONTEXT as usize + 1), SMP_CACHE_BYTES);
     if IS_ENABLED!(CONFIG_SMP) {
         stale_map[boot_cpuid as usize] = memblock_alloc_or_panic(CTX_MAP_SIZE, SMP_CACHE_BYTES);
         cpuhp_setup_state_nocalls(CPUHP_POWERPC_MMU_CTX_PREPARE, "powerpc/mmu/ctx:prepare", mmu_ctx_cpu_prepare, mmu_ctx_cpu_dead);
     }
     printk!(KERN_INFO, "MMU: Allocated %zu bytes of context maps for %d contexts\n",
-        2 * CTX_MAP_SIZE + core::mem::size_of::<*mut core::ffi::c_void>() * (LAST_CONTEXT as usize + 1),
+        2 * CTX_MAP_SIZE + core::mem::size_of::<*mut kernel::ffi::c_void>() * (LAST_CONTEXT as usize + 1),
         LAST_CONTEXT - FIRST_CONTEXT + 1);
-    *context_map = (1usize << FIRST_CONTEXT) as libc::c_ulong - 1;
+    *context_map = (1usize << FIRST_CONTEXT) as kernel::ffi::c_ulong - 1;
     next_context = FIRST_CONTEXT;
     nr_free_contexts = LAST_CONTEXT - FIRST_CONTEXT + 1;
 }

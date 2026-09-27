@@ -47,20 +47,20 @@ pub enum vlan_name_types {
 
 #[repr(C)]
 pub union vlan_ioctl_args_u {
-    pub device2: [core::ffi::c_char; 24],
-    pub VID: core::ffi::c_int,
-    pub skb_priority: core::ffi::c_uint,
-    pub name_type: core::ffi::c_uint,
-    pub bind_type: core::ffi::c_uint,
-    pub flag: core::ffi::c_uint, /* Matches vlan_dev_priv flags */
+    pub device2: [kernel::ffi::c_char; 24],
+    pub VID: kernel::ffi::c_int,
+    pub skb_priority: kernel::ffi::c_uint,
+    pub name_type: kernel::ffi::c_uint,
+    pub bind_type: kernel::ffi::c_uint,
+    pub flag: kernel::ffi::c_uint, /* Matches vlan_dev_priv flags */
 }
 
 #[repr(C)]
 pub struct vlan_ioctl_args {
-    pub cmd: core::ffi::c_int, /* Should be one of the vlan_ioctl_cmds enum above. */
-    pub device1: [core::ffi::c_char; 24],
+    pub cmd: kernel::ffi::c_int, /* Should be one of the vlan_ioctl_cmds enum above. */
+    pub device1: [kernel::ffi::c_char; 24],
     pub u: vlan_ioctl_args_u,
-    pub vlan_qos: core::ffi::c_short,
+    pub vlan_qos: kernel::ffi::c_short,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

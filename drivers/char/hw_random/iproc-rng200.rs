@@ -31,14 +31,14 @@ const RNG_FIFO_COUNT_RNG_FIFO_COUNT_MASK: u32 = 0x0000_00ff;
 #[repr(C)]
 pub struct IprocRng200Dev {
     pub rng: Hwrng,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
 }
 
 // External kernel types and functions are provided by other translation units.
 #[repr(C)]
 pub struct Hwrng {
-    pub name: *const core::ffi::c_char,
-    pub read: Option<unsafe extern "C" fn(*mut Hwrng, *mut core::ffi::c_void, usize, bool) -> isize>,
+    pub name: *const kernel::ffi::c_char,
+    pub read: Option<unsafe extern "C" fn(*mut Hwrng, *mut kernel::ffi::c_void, usize, bool) -> isize>,
     pub init: Option<unsafe extern "C" fn(*mut Hwrng) -> i32>,
     pub cleanup: Option<unsafe extern "C" fn(*mut Hwrng)>,
 }
@@ -47,7 +47,7 @@ unsafe fn to_rng_priv(rng: *mut Hwrng) -> *mut IprocRng200Dev {
     (rng as *mut u8).sub(core::mem::offset_of!(IprocRng200Dev, rng)) as *mut IprocRng200Dev
 }
 
-unsafe fn iproc_rng200_enable_set(rng_base: *mut core::ffi::c_void, enable: bool) {
+unsafe fn iproc_rng200_enable_set(rng_base: *mut kernel::ffi::c_void, enable: bool) {
     let mut val = ioread32(rng_base.add(RNG_CTRL_OFFSET));
     val &= !RNG_CTRL_RNG_RBGEN_MASK;
     if enable {
@@ -56,7 +56,7 @@ unsafe fn iproc_rng200_enable_set(rng_base: *mut core::ffi::c_void, enable: bool
     iowrite32(val, rng_base.add(RNG_CTRL_OFFSET));
 }
 
-unsafe fn iproc_rng200_restart(rng_base: *mut core::ffi::c_void) {
+unsafe fn iproc_rng200_restart(rng_base: *mut kernel::ffi::c_void) {
     iproc_rng200_enable_set(rng_base, false);
     iowrite32(0xffff_ffff, rng_base.add(RNG_INT_STATUS_OFFSET));
 
@@ -78,7 +78,7 @@ unsafe fn iproc_rng200_restart(rng_base: *mut core::ffi::c_void) {
     iproc_rng200_enable_set(rng_base, true);
 }
 
-unsafe extern "C" fn iproc_rng200_read(rng: *mut Hwrng, mut buf: *mut core::ffi::c_void, max: usize, wait: bool) -> isize {
+unsafe extern "C" fn iproc_rng200_read(rng: *mut Hwrng, mut buf: *mut kernel::ffi::c_void, max: usize, wait: bool) -> isize {
     let priv_ = &mut *to_rng_priv(rng);
     let mut num_remaining = max as u32;
     let mut num_resets = 0u32;
@@ -133,20 +133,20 @@ unsafe extern "C" fn iproc_rng200_probe(pdev: *mut PlatformDevice) -> i32 {
     if priv_.is_null() { return -12; }
     (*priv_).base = devm_platform_ioremap_resource(pdev, 0);
     if (*priv_).base as isize == -1 {
-        dev_err(dev, b"failed to remap rng regs\0".as_ptr() as *const core::ffi::c_char);
+        dev_err(dev, b"failed to remap rng regs\0".as_ptr() as *const kernel::ffi::c_char);
         return -1;
     }
-    dev_set_drvdata(dev, priv_ as *mut core::ffi::c_void);
-    (*priv_).rng.name = b"iproc-rng200\0".as_ptr() as *const core::ffi::c_char;
+    dev_set_drvdata(dev, priv_ as *mut kernel::ffi::c_void);
+    (*priv_).rng.name = b"iproc-rng200\0".as_ptr() as *const kernel::ffi::c_char;
     (*priv_).rng.read = Some(iproc_rng200_read);
     (*priv_).rng.init = Some(iproc_rng200_init);
     (*priv_).rng.cleanup = Some(iproc_rng200_cleanup);
     let ret = devm_hwrng_register(dev, &mut (*priv_).rng);
     if ret != 0 {
-        dev_err(dev, b"hwrng registration failed\0".as_ptr() as *const core::ffi::c_char);
+        dev_err(dev, b"hwrng registration failed\0".as_ptr() as *const kernel::ffi::c_char);
         return ret;
     }
-    dev_info(dev, b"hwrng registered\0".as_ptr() as *const core::ffi::c_char);
+    dev_info(dev, b"hwrng registered\0".as_ptr() as *const kernel::ffi::c_char);
     0
 }
 
@@ -173,7 +173,7 @@ static iproc_rng200_pm_ops: DevPmOps = DevPmOps {
 };
 
 #[repr(C)]
-pub struct OfDeviceId { pub compatible: *const core::ffi::c_char }
+pub struct OfDeviceId { pub compatible: *const kernel::ffi::c_char }
 static iproc_rng200_of_match: [OfDeviceId; 5] = [
     OfDeviceId { compatible: b"brcm,bcm2711-rng200\0".as_ptr() as *const _ },
     OfDeviceId { compatible: b"brcm,bcm7211-rng200\0".as_ptr() as *const _ },
@@ -183,25 +183,25 @@ static iproc_rng200_of_match: [OfDeviceId; 5] = [
 ];
 
 #[repr(C)]
-pub struct PlatformDriver { pub name: *const core::ffi::c_char, pub probe: Option<unsafe extern "C" fn(*mut PlatformDevice) -> i32> }
+pub struct PlatformDriver { pub name: *const kernel::ffi::c_char, pub probe: Option<unsafe extern "C" fn(*mut PlatformDevice) -> i32> }
 static iproc_rng200_driver: PlatformDriver = PlatformDriver {
     name: b"iproc-rng200\0".as_ptr() as *const _, probe: Some(iproc_rng200_probe)
 };
 
 // The remaining platform-driver registration declarations are supplied by the kernel bindings.
 extern "C" {
-    fn ioread32(addr: *mut core::ffi::c_void) -> u32;
-    fn iowrite32(value: u32, addr: *mut core::ffi::c_void);
+    fn ioread32(addr: *mut kernel::ffi::c_void) -> u32;
+    fn iowrite32(value: u32, addr: *mut kernel::ffi::c_void);
     fn jiffies() -> u64;
     fn time_before(a: u64, b: u64) -> bool;
     fn usleep_range(min: u32, max: u32);
     fn devm_kzalloc(dev: *mut Device, size: usize) -> *mut IprocRng200Dev;
-    fn devm_platform_ioremap_resource(pdev: *mut PlatformDevice, index: u32) -> *mut core::ffi::c_void;
-    fn dev_set_drvdata(dev: *mut Device, data: *mut core::ffi::c_void);
-    fn dev_get_drvdata(dev: *mut Device) -> *mut core::ffi::c_void;
+    fn devm_platform_ioremap_resource(pdev: *mut PlatformDevice, index: u32) -> *mut kernel::ffi::c_void;
+    fn dev_set_drvdata(dev: *mut Device, data: *mut kernel::ffi::c_void);
+    fn dev_get_drvdata(dev: *mut Device) -> *mut kernel::ffi::c_void;
     fn devm_hwrng_register(dev: *mut Device, rng: *mut Hwrng) -> i32;
-    fn dev_err(dev: *mut Device, fmt: *const core::ffi::c_char);
-    fn dev_info(dev: *mut Device, fmt: *const core::ffi::c_char);
+    fn dev_err(dev: *mut Device, fmt: *const kernel::ffi::c_char);
+    fn dev_info(dev: *mut Device, fmt: *const kernel::ffi::c_char);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

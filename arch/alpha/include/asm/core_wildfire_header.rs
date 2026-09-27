@@ -8,28 +8,28 @@ pub const WILDFIRE_NR_IRQS: usize = WILDFIRE_MAX_QBB * WILDFIRE_PCA_PER_QBB * WI
 extern "C" {
     pub static mut wildfire_hard_qbb_map: [u8; WILDFIRE_MAX_QBB];
     pub static mut wildfire_soft_qbb_map: [u8; WILDFIRE_MAX_QBB];
-    pub static mut wildfire_hard_qbb_mask: libc::c_ulong;
-    pub static mut wildfire_soft_qbb_mask: libc::c_ulong;
-    pub static mut wildfire_gp_mask: libc::c_ulong;
-    pub static mut wildfire_hs_mask: libc::c_ulong;
-    pub static mut wildfire_iop_mask: libc::c_ulong;
-    pub static mut wildfire_ior_mask: libc::c_ulong;
-    pub static mut wildfire_pca_mask: libc::c_ulong;
-    pub static mut wildfire_cpu_mask: libc::c_ulong;
-    pub static mut wildfire_mem_mask: libc::c_ulong;
+    pub static mut wildfire_hard_qbb_mask: kernel::ffi::c_ulong;
+    pub static mut wildfire_soft_qbb_mask: kernel::ffi::c_ulong;
+    pub static mut wildfire_gp_mask: kernel::ffi::c_ulong;
+    pub static mut wildfire_hs_mask: kernel::ffi::c_ulong;
+    pub static mut wildfire_iop_mask: kernel::ffi::c_ulong;
+    pub static mut wildfire_ior_mask: kernel::ffi::c_ulong;
+    pub static mut wildfire_pca_mask: kernel::ffi::c_ulong;
+    pub static mut wildfire_cpu_mask: kernel::ffi::c_ulong;
+    pub static mut wildfire_mem_mask: kernel::ffi::c_ulong;
 }
 
 pub const QBB_MAP_EMPTY: u8 = 0xff;
-pub unsafe fn WILDFIRE_QBB_EXISTS(qbbno: libc::c_ulong) -> libc::c_ulong { wildfire_soft_qbb_mask & (1 << qbbno) }
-pub unsafe fn WILDFIRE_MEM_EXISTS(qbbno: libc::c_ulong) -> libc::c_ulong { wildfire_mem_mask & (0xf << (qbbno << 2)) }
-pub unsafe fn WILDFIRE_PCA_EXISTS(qbbno: libc::c_ulong, pcano: libc::c_ulong) -> libc::c_ulong { wildfire_pca_mask & (1 << ((qbbno << 2) + pcano)) }
+pub unsafe fn WILDFIRE_QBB_EXISTS(qbbno: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong { wildfire_soft_qbb_mask & (1 << qbbno) }
+pub unsafe fn WILDFIRE_MEM_EXISTS(qbbno: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong { wildfire_mem_mask & (0xf << (qbbno << 2)) }
+pub unsafe fn WILDFIRE_PCA_EXISTS(qbbno: kernel::ffi::c_ulong, pcano: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong { wildfire_pca_mask & (1 << ((qbbno << 2) + pcano)) }
 
 #[repr(C, align(64))]
-pub struct wildfire_64 { pub csr: libc::c_ulong }
+pub struct wildfire_64 { pub csr: kernel::ffi::c_ulong }
 #[repr(C, align(256))]
-pub struct wildfire_256 { pub csr: libc::c_ulong }
+pub struct wildfire_256 { pub csr: kernel::ffi::c_ulong }
 #[repr(C, align(2048))]
-pub struct wildfire_2k { pub csr: libc::c_ulong }
+pub struct wildfire_2k { pub csr: kernel::ffi::c_ulong }
 
 #[repr(C)] pub struct wildfire_qsd {
     pub qsd_whami: wildfire_64, pub qsd_rev: wildfire_64, pub qsd_port_present: wildfire_64, pub qsd_port_active: wildfire_64,
@@ -57,41 +57,41 @@ pub struct wildfire_2k { pub csr: libc::c_ulong }
 #[repr(C)] pub struct wildfire_pci { pub pci_io_addr_ext: wildfire_64, pub pci_ctrl: wildfire_64, pub pci_err_sum: wildfire_64, pub pci_err_addr: wildfire_64, pub pci_stall_cnt: wildfire_64, pub pci_iack_special: wildfire_64, pub __pad1: [wildfire_64; 2], pub pci_pend_int: wildfire_64, pub pci_sent_int: wildfire_64, pub __pad2: [wildfire_64; 54], pub pci_window: [wildfire_pci_window; 4], pub pci_flush_tlb: wildfire_64, pub pci_perf_mon: wildfire_64 }
 #[repr(C)] pub struct wildfire_pci_window { pub wbase: wildfire_64, pub wmask: wildfire_64, pub tbase: wildfire_64 }
 
-pub const WILDFIRE_ENTITY_SHIFT: libc::c_ulong = 18;
-pub const WILDFIRE_GP_ENTITY: libc::c_ulong = 0x10 << WILDFIRE_ENTITY_SHIFT;
-pub const WILDFIRE_IOP_ENTITY: libc::c_ulong = 0x08 << WILDFIRE_ENTITY_SHIFT;
-pub const WILDFIRE_QSA_ENTITY: libc::c_ulong = 0x04 << WILDFIRE_ENTITY_SHIFT;
-pub const WILDFIRE_QSD_ENTITY_SLOW: libc::c_ulong = 0x05 << WILDFIRE_ENTITY_SHIFT;
-pub const WILDFIRE_QSD_ENTITY_FAST: libc::c_ulong = 0x01 << WILDFIRE_ENTITY_SHIFT;
-pub unsafe fn WILDFIRE_PCA_ENTITY(pca: libc::c_ulong) -> libc::c_ulong { (0xc | pca) << WILDFIRE_ENTITY_SHIFT }
+pub const WILDFIRE_ENTITY_SHIFT: kernel::ffi::c_ulong = 18;
+pub const WILDFIRE_GP_ENTITY: kernel::ffi::c_ulong = 0x10 << WILDFIRE_ENTITY_SHIFT;
+pub const WILDFIRE_IOP_ENTITY: kernel::ffi::c_ulong = 0x08 << WILDFIRE_ENTITY_SHIFT;
+pub const WILDFIRE_QSA_ENTITY: kernel::ffi::c_ulong = 0x04 << WILDFIRE_ENTITY_SHIFT;
+pub const WILDFIRE_QSD_ENTITY_SLOW: kernel::ffi::c_ulong = 0x05 << WILDFIRE_ENTITY_SHIFT;
+pub const WILDFIRE_QSD_ENTITY_FAST: kernel::ffi::c_ulong = 0x01 << WILDFIRE_ENTITY_SHIFT;
+pub unsafe fn WILDFIRE_PCA_ENTITY(pca: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong { (0xc | pca) << WILDFIRE_ENTITY_SHIFT }
 /* IDENT_ADDR is supplied by the Alpha platform dependencies. */
-pub const WILDFIRE_BASE: libc::c_ulong = IDENT_ADDR | (1 << 40);
-pub const WILDFIRE_QBB_MASK: libc::c_ulong = 0x0f;
-pub unsafe fn WILDFIRE_QBB(q: libc::c_long) -> libc::c_ulong { ((!q) as libc::c_ulong & WILDFIRE_QBB_MASK) << 36 }
-pub unsafe fn WILDFIRE_HOSE(h: libc::c_long) -> libc::c_ulong { (h as libc::c_ulong) << 33 }
-pub unsafe fn WILDFIRE_QBB_IO(q: libc::c_long) -> libc::c_ulong { WILDFIRE_BASE | WILDFIRE_QBB(q) }
-pub unsafe fn WILDFIRE_QBB_HOSE(q: libc::c_long, h: libc::c_long) -> libc::c_ulong { WILDFIRE_QBB_IO(q) | WILDFIRE_HOSE(h) }
-pub unsafe fn WILDFIRE_MEM(q: libc::c_long, h: libc::c_long) -> libc::c_ulong { WILDFIRE_QBB_HOSE(q,h) | 0x000000000 }
-pub unsafe fn WILDFIRE_CONF(q: libc::c_long, h: libc::c_long) -> libc::c_ulong { WILDFIRE_QBB_HOSE(q,h) | 0x1FE000000 }
-pub unsafe fn WILDFIRE_IO(q: libc::c_long, h: libc::c_long) -> libc::c_ulong { WILDFIRE_QBB_HOSE(q,h) | 0x1FF000000 }
-pub unsafe fn WILDFIRE_qsd(q: libc::c_long) -> *mut wildfire_qsd { (WILDFIRE_QBB_IO(q) | WILDFIRE_QSD_ENTITY_SLOW | (((1 << 13) - 1) << 23)) as *mut wildfire_qsd }
+pub const WILDFIRE_BASE: kernel::ffi::c_ulong = IDENT_ADDR | (1 << 40);
+pub const WILDFIRE_QBB_MASK: kernel::ffi::c_ulong = 0x0f;
+pub unsafe fn WILDFIRE_QBB(q: kernel::ffi::c_long) -> kernel::ffi::c_ulong { ((!q) as kernel::ffi::c_ulong & WILDFIRE_QBB_MASK) << 36 }
+pub unsafe fn WILDFIRE_HOSE(h: kernel::ffi::c_long) -> kernel::ffi::c_ulong { (h as kernel::ffi::c_ulong) << 33 }
+pub unsafe fn WILDFIRE_QBB_IO(q: kernel::ffi::c_long) -> kernel::ffi::c_ulong { WILDFIRE_BASE | WILDFIRE_QBB(q) }
+pub unsafe fn WILDFIRE_QBB_HOSE(q: kernel::ffi::c_long, h: kernel::ffi::c_long) -> kernel::ffi::c_ulong { WILDFIRE_QBB_IO(q) | WILDFIRE_HOSE(h) }
+pub unsafe fn WILDFIRE_MEM(q: kernel::ffi::c_long, h: kernel::ffi::c_long) -> kernel::ffi::c_ulong { WILDFIRE_QBB_HOSE(q,h) | 0x000000000 }
+pub unsafe fn WILDFIRE_CONF(q: kernel::ffi::c_long, h: kernel::ffi::c_long) -> kernel::ffi::c_ulong { WILDFIRE_QBB_HOSE(q,h) | 0x1FE000000 }
+pub unsafe fn WILDFIRE_IO(q: kernel::ffi::c_long, h: kernel::ffi::c_long) -> kernel::ffi::c_ulong { WILDFIRE_QBB_HOSE(q,h) | 0x1FF000000 }
+pub unsafe fn WILDFIRE_qsd(q: kernel::ffi::c_long) -> *mut wildfire_qsd { (WILDFIRE_QBB_IO(q) | WILDFIRE_QSD_ENTITY_SLOW | (((1 << 13) - 1) << 23)) as *mut wildfire_qsd }
 pub unsafe fn WILDFIRE_fast_qsd() -> *mut wildfire_fast_qsd { (WILDFIRE_QBB_IO(0) | WILDFIRE_QSD_ENTITY_FAST | (((1 << 13) - 1) << 23)) as *mut wildfire_fast_qsd }
-pub unsafe fn WILDFIRE_qsa(q: libc::c_long) -> *mut wildfire_qsa { (WILDFIRE_QBB_IO(q) | WILDFIRE_QSA_ENTITY | (((1 << 13) - 1) << 23)) as *mut wildfire_qsa }
-pub unsafe fn WILDFIRE_iop(q: libc::c_long) -> *mut wildfire_iop { (WILDFIRE_QBB_IO(q) | WILDFIRE_IOP_ENTITY | (((1 << 13) - 1) << 23)) as *mut wildfire_iop }
-pub unsafe fn WILDFIRE_gp(q: libc::c_long) -> *mut wildfire_gp { (WILDFIRE_QBB_IO(q) | WILDFIRE_GP_ENTITY | (((1 << 13) - 1) << 23)) as *mut wildfire_gp }
-pub unsafe fn WILDFIRE_pca(q: libc::c_long, pca: libc::c_ulong) -> *mut wildfire_pca { (WILDFIRE_QBB_IO(q) | WILDFIRE_PCA_ENTITY(pca) | (((1 << 13) - 1) << 23)) as *mut wildfire_pca }
-pub unsafe fn WILDFIRE_ne(q: libc::c_long, pca: libc::c_ulong) -> *mut wildfire_ne { (WILDFIRE_QBB_IO(q) | WILDFIRE_PCA_ENTITY(pca) | (((1 << 13) - 1) << 23) | (1 << 16)) as *mut wildfire_ne }
-pub unsafe fn WILDFIRE_fe(q: libc::c_long, pca: libc::c_ulong) -> *mut wildfire_fe { (WILDFIRE_QBB_IO(q) | WILDFIRE_PCA_ENTITY(pca) | (((1 << 13) - 1) << 23) | (3 << 15)) as *mut wildfire_fe }
-pub unsafe fn WILDFIRE_pci(q: libc::c_long, h: libc::c_ulong) -> *mut wildfire_pci { (WILDFIRE_QBB_IO(q) | WILDFIRE_PCA_ENTITY((h & 6) >> 1) | ((((h & 1) | 2) << 16)) | (((1 << 13) - 1) << 23)) as *mut wildfire_pci }
-pub const WILDFIRE_IO_SPACE: libc::c_ulong = 8 * 1024 * 1024;
+pub unsafe fn WILDFIRE_qsa(q: kernel::ffi::c_long) -> *mut wildfire_qsa { (WILDFIRE_QBB_IO(q) | WILDFIRE_QSA_ENTITY | (((1 << 13) - 1) << 23)) as *mut wildfire_qsa }
+pub unsafe fn WILDFIRE_iop(q: kernel::ffi::c_long) -> *mut wildfire_iop { (WILDFIRE_QBB_IO(q) | WILDFIRE_IOP_ENTITY | (((1 << 13) - 1) << 23)) as *mut wildfire_iop }
+pub unsafe fn WILDFIRE_gp(q: kernel::ffi::c_long) -> *mut wildfire_gp { (WILDFIRE_QBB_IO(q) | WILDFIRE_GP_ENTITY | (((1 << 13) - 1) << 23)) as *mut wildfire_gp }
+pub unsafe fn WILDFIRE_pca(q: kernel::ffi::c_long, pca: kernel::ffi::c_ulong) -> *mut wildfire_pca { (WILDFIRE_QBB_IO(q) | WILDFIRE_PCA_ENTITY(pca) | (((1 << 13) - 1) << 23)) as *mut wildfire_pca }
+pub unsafe fn WILDFIRE_ne(q: kernel::ffi::c_long, pca: kernel::ffi::c_ulong) -> *mut wildfire_ne { (WILDFIRE_QBB_IO(q) | WILDFIRE_PCA_ENTITY(pca) | (((1 << 13) - 1) << 23) | (1 << 16)) as *mut wildfire_ne }
+pub unsafe fn WILDFIRE_fe(q: kernel::ffi::c_long, pca: kernel::ffi::c_ulong) -> *mut wildfire_fe { (WILDFIRE_QBB_IO(q) | WILDFIRE_PCA_ENTITY(pca) | (((1 << 13) - 1) << 23) | (3 << 15)) as *mut wildfire_fe }
+pub unsafe fn WILDFIRE_pci(q: kernel::ffi::c_long, h: kernel::ffi::c_ulong) -> *mut wildfire_pci { (WILDFIRE_QBB_IO(q) | WILDFIRE_PCA_ENTITY((h & 6) >> 1) | ((((h & 1) | 2) << 16)) | (((1 << 13) - 1) << 23)) as *mut wildfire_pci }
+pub const WILDFIRE_IO_SPACE: kernel::ffi::c_ulong = 8 * 1024 * 1024;
 
-pub const WILDFIRE_IO_BIAS: libc::c_ulong = unsafe { WILDFIRE_IO(0, 0) };
-pub const WILDFIRE_MEM_BIAS: libc::c_ulong = unsafe { WILDFIRE_MEM(0, 0) };
+pub const WILDFIRE_IO_BIAS: kernel::ffi::c_ulong = unsafe { WILDFIRE_IO(0, 0) };
+pub const WILDFIRE_MEM_BIAS: kernel::ffi::c_ulong = unsafe { WILDFIRE_MEM(0, 0) };
 
 /* Kernel-only inline mappings; __iomem and asm/io_trivial.h are external dependencies. */
-pub unsafe fn wildfire_ioportmap(addr: libc::c_ulong) -> *mut core::ffi::c_void { (addr + WILDFIRE_IO_BIAS) as *mut core::ffi::c_void }
-pub unsafe fn wildfire_ioremap(addr: libc::c_ulong, _size: libc::c_ulong) -> *mut core::ffi::c_void { (addr + WILDFIRE_MEM_BIAS) as *mut core::ffi::c_void }
-pub unsafe fn wildfire_is_ioaddr(addr: libc::c_ulong) -> libc::c_int { (addr >= WILDFIRE_BASE) as libc::c_int }
-pub unsafe fn wildfire_is_mmio(xaddr: *const core::ffi::c_void) -> libc::c_int { ((xaddr as libc::c_ulong & 0x100000000) == 0) as libc::c_int }
+pub unsafe fn wildfire_ioportmap(addr: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void { (addr + WILDFIRE_IO_BIAS) as *mut kernel::ffi::c_void }
+pub unsafe fn wildfire_ioremap(addr: kernel::ffi::c_ulong, _size: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void { (addr + WILDFIRE_MEM_BIAS) as *mut kernel::ffi::c_void }
+pub unsafe fn wildfire_is_ioaddr(addr: kernel::ffi::c_ulong) -> kernel::ffi::c_int { (addr >= WILDFIRE_BASE) as kernel::ffi::c_int }
+pub unsafe fn wildfire_is_mmio(xaddr: *const kernel::ffi::c_void) -> kernel::ffi::c_int { ((xaddr as kernel::ffi::c_ulong & 0x100000000) == 0) as kernel::ffi::c_int }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

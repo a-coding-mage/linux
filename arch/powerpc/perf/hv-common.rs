@@ -11,11 +11,11 @@ struct P {
 
 #[repr(C)]
 extern "C" {
-    fn plpar_hcall_norets(token: ::core::ffi::c_ulong, arg: ::core::ffi::c_ulong, size: u64) -> ::core::ffi::c_ulong;
-    fn virt_to_phys(addr: *const core::ffi::c_void) -> ::core::ffi::c_ulong;
+    fn plpar_hcall_norets(token: ::kernel::ffi::c_ulong, arg: ::kernel::ffi::c_ulong, size: u64) -> ::kernel::ffi::c_ulong;
+    fn virt_to_phys(addr: *const kernel::ffi::c_void) -> ::kernel::ffi::c_ulong;
 }
 
-pub unsafe fn hv_perf_caps_get(caps: *mut hv_perf_caps) -> ::core::ffi::c_ulong {
+pub unsafe fn hv_perf_caps_get(caps: *mut hv_perf_caps) -> ::kernel::ffi::c_ulong {
     let mut arg = P {
         params: hv_get_perf_counter_info_params {
             counter_request: cpu_to_be32(HV_GPCI_system_performance_capabilities),
@@ -28,7 +28,7 @@ pub unsafe fn hv_perf_caps_get(caps: *mut hv_perf_caps) -> ::core::ffi::c_ulong 
 
     let r = plpar_hcall_norets(
         H_GET_PERF_COUNTER_INFO,
-        virt_to_phys((&mut arg as *mut P).cast::<core::ffi::c_void>()),
+        virt_to_phys((&mut arg as *mut P).cast::<kernel::ffi::c_void>()),
         core::mem::size_of::<P>() as u64,
     );
 

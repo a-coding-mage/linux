@@ -43,8 +43,8 @@ pub const RTC_GSI: u32 = 8;
 #[cfg(CONFIG_KVM_IOAPIC)]
 #[repr(C)]
 pub struct rtc_status {
-    pub pending_eoi: ::core::ffi::c_int,
-    pub map: [::core::ffi::c_ulong; (KVM_MAX_VCPU_IDS + (usize::BITS as usize) - 1) / (usize::BITS as usize)],
+    pub pending_eoi: ::kernel::ffi::c_int,
+    pub map: [::kernel::ffi::c_ulong; (KVM_MAX_VCPU_IDS + (usize::BITS as usize) - 1) / (usize::BITS as usize)],
     pub vectors: [u8; KVM_MAX_VCPU_IDS],
 }
 
@@ -74,7 +74,7 @@ pub struct kvm_ioapic {
     pub irr: u32,
     pub pad: u32,
     pub redirtbl: [kvm_ioapic_redirect_entry; IOAPIC_NUM_PINS],
-    pub irq_states: [::core::ffi::c_ulong; IOAPIC_NUM_PINS],
+    pub irq_states: [::kernel::ffi::c_ulong; IOAPIC_NUM_PINS],
     pub dev: kvm_io_device,
     pub kvm: *mut kvm,
     pub lock: spinlock_t,
@@ -89,30 +89,30 @@ pub struct kvm_ioapic {
 #[repr(C)]
 pub struct kvm_irq_mask_notifier {
     pub func: Option<unsafe extern "C" fn(*mut kvm_irq_mask_notifier, bool)>,
-    pub irq: ::core::ffi::c_int,
+    pub irq: ::kernel::ffi::c_int,
     pub link: hlist_node,
 }
 
 extern "C" {
-    pub fn kvm_register_irq_mask_notifier(kvm: *mut kvm, irq: ::core::ffi::c_int, kimn: *mut kvm_irq_mask_notifier);
-    pub fn kvm_unregister_irq_mask_notifier(kvm: *mut kvm, irq: ::core::ffi::c_int, kimn: *mut kvm_irq_mask_notifier);
+    pub fn kvm_register_irq_mask_notifier(kvm: *mut kvm, irq: ::kernel::ffi::c_int, kimn: *mut kvm_irq_mask_notifier);
+    pub fn kvm_unregister_irq_mask_notifier(kvm: *mut kvm, irq: ::kernel::ffi::c_int, kimn: *mut kvm_irq_mask_notifier);
     pub fn kvm_fire_mask_notifiers(kvm: *mut kvm, unsigned: u32, pin: u32, mask: bool);
     pub fn kvm_rtc_eoi_tracking_restore_one(vcpu: *mut kvm_vcpu);
-    pub fn kvm_ioapic_update_eoi(vcpu: *mut kvm_vcpu, vector: ::core::ffi::c_int, trigger_mode: ::core::ffi::c_int);
-    pub fn kvm_ioapic_init(kvm: *mut kvm) -> ::core::ffi::c_int;
+    pub fn kvm_ioapic_update_eoi(vcpu: *mut kvm_vcpu, vector: ::kernel::ffi::c_int, trigger_mode: ::kernel::ffi::c_int);
+    pub fn kvm_ioapic_init(kvm: *mut kvm) -> ::kernel::ffi::c_int;
     pub fn kvm_ioapic_destroy(kvm: *mut kvm);
-    pub fn kvm_ioapic_set_irq(e: *mut kvm_kernel_irq_routing_entry, kvm: *mut kvm, irq_source_id: ::core::ffi::c_int, level: ::core::ffi::c_int, line_status: bool) -> ::core::ffi::c_int;
+    pub fn kvm_ioapic_set_irq(e: *mut kvm_kernel_irq_routing_entry, kvm: *mut kvm, irq_source_id: ::kernel::ffi::c_int, level: ::kernel::ffi::c_int, line_status: bool) -> ::kernel::ffi::c_int;
     pub fn kvm_get_ioapic(kvm: *mut kvm, state: *mut kvm_ioapic_state);
     pub fn kvm_set_ioapic(kvm: *mut kvm, state: *mut kvm_ioapic_state);
     pub fn kvm_ioapic_scan_entry(vcpu: *mut kvm_vcpu, ioapic_handled_vectors: *mut ulong);
     pub fn kvm_scan_ioapic_routes(vcpu: *mut kvm_vcpu, ioapic_handled_vectors: *mut ulong);
-    pub fn kvm_scan_ioapic_irq(vcpu: *mut kvm_vcpu, dest_id: u32, dest_mode: u16, vector: u8, ioapic_handled_vectors: *mut ::core::ffi::c_ulong);
+    pub fn kvm_scan_ioapic_irq(vcpu: *mut kvm_vcpu, dest_id: u32, dest_mode: u16, vector: u8, ioapic_handled_vectors: *mut ::kernel::ffi::c_ulong);
 }
 
 #[cfg(CONFIG_KVM_IOAPIC)]
-pub unsafe fn __kvm_irq_line_state(irq_state: *mut ::core::ffi::c_ulong, irq_source_id: ::core::ffi::c_int, level: ::core::ffi::c_int) -> ::core::ffi::c_int {
+pub unsafe fn __kvm_irq_line_state(irq_state: *mut ::kernel::ffi::c_ulong, irq_source_id: ::kernel::ffi::c_int, level: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     if level != 0 { __set_bit(irq_source_id, irq_state); } else { __clear_bit(irq_source_id, irq_state); }
-    (*irq_state != 0) as ::core::ffi::c_int
+    (*irq_state != 0) as ::kernel::ffi::c_int
 }
 
 pub unsafe fn ioapic_in_kernel(kvm: *mut kvm) -> bool { irqchip_full(kvm) }

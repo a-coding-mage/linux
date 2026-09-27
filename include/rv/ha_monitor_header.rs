@@ -25,7 +25,7 @@ extern "C" {
     fn da_monitor_handling_event(da_mon: *mut da_monitor) -> bool;
     fn da_monitor_reset(da_mon: *mut da_monitor);
     fn da_get_monitor(/* source-specific arguments */) -> *mut da_monitor;
-    fn da_get_target(da_mon: *mut da_monitor) -> *mut core::ffi::c_void;
+    fn da_get_target(da_mon: *mut da_monitor) -> *mut kernel::ffi::c_void;
     fn da_get_id(da_mon: *mut da_monitor) -> da_id_type;
     fn synchronize_rcu();
     fn ktime_get_ns() -> u64;
@@ -48,7 +48,7 @@ pub struct ha_monitor {
 
 #[repr(C)]
 pub struct seq_buf {
-    pub buffer: *mut core::ffi::c_char,
+    pub buffer: *mut kernel::ffi::c_char,
     // Remaining fields are supplied by linux/seq_buf.h.
 }
 
@@ -68,9 +68,9 @@ extern "C" {
         next_state: states,
         time_ns: u64,
     ) -> bool;
-    fn model_get_state_name(state: states) -> *mut core::ffi::c_char;
-    fn model_get_event_name(event: events) -> *mut core::ffi::c_char;
-    fn model_get_env_name_external(env: envs) -> *mut core::ffi::c_char;
+    fn model_get_state_name(state: states) -> *mut kernel::ffi::c_char;
+    fn model_get_event_name(event: events) -> *mut kernel::ffi::c_char;
+    fn model_get_env_name_external(env: envs) -> *mut kernel::ffi::c_char;
 }
 
 #[inline]
@@ -120,7 +120,7 @@ pub unsafe fn ha_get_env_string(
     }
 }
 
-unsafe fn ha_react(_curr_state: states, _event: events, _env: *mut core::ffi::c_char) {
+unsafe fn ha_react(_curr_state: states, _event: events, _env: *mut kernel::ffi::c_char) {
     // CONFIG_RV_REACTORS: rv_react(&rv_this, ...); otherwise this is empty.
 }
 

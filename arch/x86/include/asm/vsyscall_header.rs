@@ -15,9 +15,9 @@ unsafe extern "C" {
      * Returns true if handled.
      */
     pub fn emulate_vsyscall_pf(
-        error_code: ::core::ffi::c_ulong,
+        error_code: ::kernel::ffi::c_ulong,
         regs: *mut pt_regs,
-        address: ::core::ffi::c_ulong,
+        address: ::kernel::ffi::c_ulong,
     ) -> bool;
     pub fn emulate_vsyscall_gp(regs: *mut pt_regs) -> bool;
 }
@@ -29,9 +29,9 @@ pub fn map_vsyscall() {}
 #[cfg(not(CONFIG_X86_VSYSCALL_EMULATION))]
 #[inline]
 pub fn emulate_vsyscall_pf(
-    _error_code: ::core::ffi::c_ulong,
+    _error_code: ::kernel::ffi::c_ulong,
     _regs: *mut pt_regs,
-    _address: ::core::ffi::c_ulong,
+    _address: ::kernel::ffi::c_ulong,
 ) -> bool {
     false
 }
@@ -47,7 +47,7 @@ pub fn emulate_vsyscall_gp(_regs: *mut pt_regs) -> bool {
  * of the address space that has user-accessible permissions.
  */
 #[inline]
-pub fn is_vsyscall_vaddr(vaddr: ::core::ffi::c_ulong) -> bool {
+pub fn is_vsyscall_vaddr(vaddr: ::kernel::ffi::c_ulong) -> bool {
     // C's unlikely() branch prediction hint has no required Rust equivalent.
     (vaddr & PAGE_MASK) == VSYSCALL_ADDR
 }

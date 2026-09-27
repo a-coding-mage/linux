@@ -11,7 +11,7 @@
 // C dependencies supplied by the surrounding kernel translation.
 use crate::*;
 
-pub static mut PARAM_GOVERNOR: [core::ffi::c_char; CPUIDLE_NAME_LEN] =
+pub static mut PARAM_GOVERNOR: [kernel::ffi::c_char; CPUIDLE_NAME_LEN] =
     [0; CPUIDLE_NAME_LEN];
 
 pub static mut CPUIDLE_GOVERNORS: ListHead = ListHead::new();
@@ -24,7 +24,7 @@ pub static mut CPUIDLE_PREV_GOVERNOR: *mut CpuidleGovernor = core::ptr::null_mut
  *
  * Must be called with cpuidle_lock acquired.
  */
-pub unsafe fn cpuidle_find_governor(str_: *const core::ffi::c_char) -> *mut CpuidleGovernor {
+pub unsafe fn cpuidle_find_governor(str_: *const kernel::ffi::c_char) -> *mut CpuidleGovernor {
     let mut gov: *mut CpuidleGovernor;
 
     list_for_each_entry!(gov, &mut CPUIDLE_GOVERNORS, governor_list, {

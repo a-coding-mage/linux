@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 // Dependencies corresponding to the C includes are supplied by other files.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn memparse(ptr: *const c_char, retptr: *mut *mut c_char) -> usize;

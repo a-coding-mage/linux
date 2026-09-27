@@ -5,20 +5,20 @@
 
 #[cfg(CONFIG_X86_LOCAL_APIC)]
 extern "C" {
-    pub fn reserve_perfctr_nmi(counter: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn release_perfctr_nmi(counter: ::core::ffi::c_uint);
-    pub fn reserve_evntsel_nmi(counter: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn release_evntsel_nmi(counter: ::core::ffi::c_uint);
+    pub fn reserve_perfctr_nmi(counter: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn release_perfctr_nmi(counter: ::kernel::ffi::c_uint);
+    pub fn reserve_evntsel_nmi(counter: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn release_evntsel_nmi(counter: ::kernel::ffi::c_uint);
 }
 
 extern "C" {
-    pub static mut unknown_nmi_panic: ::core::ffi::c_int;
-    pub static mut panic_on_unrecovered_nmi: ::core::ffi::c_int;
-    pub static mut panic_on_io_nmi: ::core::ffi::c_int;
+    pub static mut unknown_nmi_panic: ::kernel::ffi::c_int;
+    pub static mut panic_on_unrecovered_nmi: ::kernel::ffi::c_int;
+    pub static mut panic_on_io_nmi: ::kernel::ffi::c_int;
 }
 
 /* NMI handler flags */
-pub const NMI_FLAG_FIRST: ::core::ffi::c_ulong = 1;
+pub const NMI_FLAG_FIRST: ::kernel::ffi::c_ulong = 1;
 
 /**
  * enum - NMI types.
@@ -41,22 +41,22 @@ pub enum NmiType {
 }
 
 /* NMI handler return values */
-pub const NMI_DONE: ::core::ffi::c_int = 0;
-pub const NMI_HANDLED: ::core::ffi::c_int = 1;
+pub const NMI_DONE: ::kernel::ffi::c_int = 0;
+pub const NMI_HANDLED: ::kernel::ffi::c_int = 1;
 
 // `struct pt_regs` and `struct list_head` are supplied by other headers.
 pub type nmi_handler_t = unsafe extern "C" fn(
-    ::core::ffi::c_uint,
+    ::kernel::ffi::c_uint,
     *mut pt_regs,
-) -> ::core::ffi::c_int;
+) -> ::kernel::ffi::c_int;
 
 #[repr(C)]
 pub struct nmiaction {
     pub list: list_head,
     pub handler: nmi_handler_t,
     pub max_duration: u64,
-    pub flags: ::core::ffi::c_ulong,
-    pub name: *const ::core::ffi::c_char,
+    pub flags: ::kernel::ffi::c_ulong,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 /**
@@ -94,15 +94,15 @@ macro_rules! register_nmi_handler {
 
 extern "C" {
     pub fn __register_nmi_handler(
-        ty: ::core::ffi::c_uint,
+        ty: ::kernel::ffi::c_uint,
         action: *mut nmiaction,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn unregister_nmi_handler(
-        ty: ::core::ffi::c_uint,
-        name: *const ::core::ffi::c_char,
+        ty: ::kernel::ffi::c_uint,
+        name: *const ::kernel::ffi::c_char,
     );
     pub fn set_emergency_nmi_handler(
-        ty: ::core::ffi::c_uint,
+        ty: ::kernel::ffi::c_uint,
         handler: nmi_handler_t,
     );
     pub fn stop_nmi();

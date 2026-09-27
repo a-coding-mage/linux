@@ -7,7 +7,7 @@
 // <asm/mach/arch.h>
 // <linux/init.h>
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /// Device-tree compatibility strings for the ZTE zx297520v3 machine.
 #[allow(non_upper_case_globals)]

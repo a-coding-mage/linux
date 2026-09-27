@@ -13,7 +13,7 @@ pub unsafe fn nilfs_bmap_get_dat(bmap: *const nilfs_bmap) -> *mut the_nilfs {
     (*(*bmap).b_inode).i_sb.as_ref().unwrap().s_fs_info
 }
 
-unsafe fn nilfs_bmap_convert_error(bmap: *mut nilfs_bmap, fname: *const core::ffi::c_char, mut err: i32) -> i32 {
+unsafe fn nilfs_bmap_convert_error(bmap: *mut nilfs_bmap, fname: *const kernel::ffi::c_char, mut err: i32) -> i32 {
     let inode = (*bmap).b_inode;
     if err == -EINVAL {
         __nilfs_error((*inode).i_sb, fname, c"broken bmap (inode number=%llu)".as_ptr(), (*inode).i_ino);

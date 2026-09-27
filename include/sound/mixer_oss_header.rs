@@ -39,7 +39,7 @@ pub struct snd_mixer_oss_slot {
         active: i32,
     ) -> i32>,
     pub private_value: usize,
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
     pub private_free: Option<unsafe extern "C" fn(slot: *mut snd_mixer_oss_slot)>,
     pub volume: [i32; 2],
 }
@@ -47,8 +47,8 @@ pub struct snd_mixer_oss_slot {
 #[repr(C)]
 pub struct snd_mixer_oss {
     pub card: *mut snd_card,
-    pub id: [core::ffi::c_char; 16],
-    pub name: [core::ffi::c_char; 32],
+    pub id: [kernel::ffi::c_char; 16],
+    pub name: [kernel::ffi::c_char; 32],
     pub slots: [snd_mixer_oss_slot; SNDRV_OSS_MAX_MIXERS], /* OSS mixer slots */
     pub mask_recsrc: u32,                                  /* exclusive recsrc mask */
     pub get_recsrc: Option<unsafe extern "C" fn(
@@ -59,7 +59,7 @@ pub struct snd_mixer_oss {
         fmixer: *mut snd_mixer_oss_file,
         active_index: u32,
     ) -> i32>,
-    pub private_data_recsrc: *mut core::ffi::c_void,
+    pub private_data_recsrc: *mut kernel::ffi::c_void,
     pub private_free_recsrc: Option<unsafe extern "C" fn(mixer: *mut snd_mixer_oss)>,
     pub reg_mutex: mutex,
     pub proc_entry: *mut snd_info_entry,

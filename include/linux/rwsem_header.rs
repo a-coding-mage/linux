@@ -13,7 +13,7 @@ pub struct rw_semaphore {
     pub wait_lock: raw_spinlock_t,
     pub first_waiter: *mut rwsem_waiter,
     #[cfg(feature = "debug_rwsems")]
-    pub magic: *mut core::ffi::c_void,
+    pub magic: *mut kernel::ffi::c_void,
     #[cfg(feature = "debug_lock_alloc")]
     pub dep_map: lockdep_map,
 }
@@ -97,7 +97,7 @@ pub unsafe fn rwsem_assert_held_write(sem: *const rw_semaphore) {
 }
 
 extern "C" {
-    pub fn __init_rwsem(sem: *mut rw_semaphore, name: *const core::ffi::c_char, key: *mut lock_class_key);
+    pub fn __init_rwsem(sem: *mut rw_semaphore, name: *const kernel::ffi::c_char, key: *mut lock_class_key);
     pub fn down_read(sem: *mut rw_semaphore);
     pub fn down_read_interruptible(sem: *mut rw_semaphore) -> i32;
     pub fn down_read_killable(sem: *mut rw_semaphore) -> i32;

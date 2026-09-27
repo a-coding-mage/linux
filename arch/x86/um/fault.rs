@@ -8,21 +8,21 @@
 /* These two are from asm-um/uaccess.h and linux/module.h, check them. */
 #[repr(C)]
 pub struct exception_table_entry {
-    pub insn: libc::c_ulong,
-    pub fixup: libc::c_ulong,
+    pub insn: kernel::ffi::c_ulong,
+    pub fixup: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct uml_pt_regs {
-    pub ip: libc::c_ulong,
+    pub ip: kernel::ffi::c_ulong,
 }
 
 unsafe extern "C" {
-    pub fn search_exception_tables(add: libc::c_ulong) -> *const exception_table_entry;
+    pub fn search_exception_tables(add: kernel::ffi::c_ulong) -> *const exception_table_entry;
 }
 
 /* Compare this to arch/i386/mm/extable.c:fixup_exception() */
-pub unsafe fn arch_fixup(address: libc::c_ulong, regs: *mut uml_pt_regs) -> libc::c_int {
+pub unsafe fn arch_fixup(address: kernel::ffi::c_ulong, regs: *mut uml_pt_regs) -> kernel::ffi::c_int {
     let fixup: *const exception_table_entry;
 
     fixup = search_exception_tables(address);

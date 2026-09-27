@@ -25,10 +25,10 @@
  */
 #[repr(C)]
 pub struct machine_desc {
-    pub name: *const core::ffi::c_char,
-    pub dt_compat: *const *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub dt_compat: *const *const kernel::ffi::c_char,
     pub init_early: Option<unsafe extern "C" fn()>,
-    pub init_per_cpu: Option<unsafe extern "C" fn(core::ffi::c_uint)>,
+    pub init_per_cpu: Option<unsafe extern "C" fn(kernel::ffi::c_uint)>,
     pub init_machine: Option<unsafe extern "C" fn()>,
     pub init_late: Option<unsafe extern "C" fn()>,
 }
@@ -74,7 +74,7 @@ macro_rules! MACHINE_END {
 }
 
 unsafe extern "C" {
-    pub fn setup_machine_fdt(dt: *mut core::ffi::c_void) -> *const machine_desc;
+    pub fn setup_machine_fdt(dt: *mut kernel::ffi::c_void) -> *const machine_desc;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

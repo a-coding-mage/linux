@@ -35,12 +35,12 @@ pub const CPORT_ID_BAD: u16 = u16::MAX;
 
 #[repr(C)]
 pub struct greybus_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 
     pub probe: Option<unsafe extern "C" fn(
         bundle: *mut gb_bundle,
         id: *const greybus_bundle_id,
-    ) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
     pub disconnect: Option<unsafe extern "C" fn(bundle: *mut gb_bundle)>,
 
     pub id_table: *const greybus_bundle_id,
@@ -55,12 +55,12 @@ pub unsafe fn to_greybus_driver(d: *const device_driver) -> *const greybus_drive
 }
 
 #[inline]
-pub unsafe fn greybus_set_drvdata(bundle: *mut gb_bundle, data: *mut core::ffi::c_void) {
+pub unsafe fn greybus_set_drvdata(bundle: *mut gb_bundle, data: *mut kernel::ffi::c_void) {
     dev_set_drvdata(&mut (*bundle).dev, data);
 }
 
 #[inline]
-pub unsafe fn greybus_get_drvdata(bundle: *mut gb_bundle) -> *mut core::ffi::c_void {
+pub unsafe fn greybus_get_drvdata(bundle: *mut gb_bundle) -> *mut kernel::ffi::c_void {
     dev_get_drvdata(&mut (*bundle).dev)
 }
 
@@ -69,8 +69,8 @@ extern "C" {
     pub fn greybus_register_driver(
         driver: *mut greybus_driver,
         module: *mut module,
-        mod_name: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        mod_name: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
     pub fn greybus_deregister_driver(driver: *mut greybus_driver);
 }
 

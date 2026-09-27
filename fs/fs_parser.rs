@@ -5,7 +5,7 @@
  * Written by David Howells (dhowells@redhat.com)
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn strcmp(a: *const c_char, b: *const c_char) -> i32;
@@ -17,7 +17,7 @@ extern "C" {
     fn is_err(ptr: *const filename) -> bool;
     fn ptr_err(ptr: *const filename) -> i32;
     fn filename_lookup(dirfd: i32, f: *mut filename, flags: u32,
-                       path: *mut path, audit: *mut core::ffi::c_void) -> i32;
+                       path: *mut path, audit: *mut kernel::ffi::c_void) -> i32;
     fn path_put(path: *mut path);
     fn putname(f: *mut filename);
     fn d_backing_inode(dentry: *mut dentry) -> *mut inode;

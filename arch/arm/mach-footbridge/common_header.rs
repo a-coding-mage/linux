@@ -2,7 +2,7 @@
 
 // Dependency intent: <linux/reboot.h> provides `enum reboot_mode`.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 unsafe extern "C" {
     pub fn footbridge_timer_init();
@@ -21,6 +21,6 @@ unsafe extern "C" {
 
 // External dependency supplied by the Linux reboot interface.
 #[allow(non_camel_case_types)]
-pub type reboot_mode = core::ffi::c_int;
+pub type reboot_mode = kernel::ffi::c_int;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

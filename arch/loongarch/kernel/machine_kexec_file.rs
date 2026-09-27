@@ -29,46 +29,46 @@ pub unsafe fn arch_kimage_file_post_load_cleanup(image: *mut Kimage) -> i32 {
 }
 
 /* Add the "kexec_file" command line parameter to command line. */
-unsafe fn cmdline_add_loader(cmdline_tmplen: *mut libc::c_ulong, modified_cmdline: *mut libc::c_char) {
-    let loader_strlen: libc::c_int = sprintf(
+unsafe fn cmdline_add_loader(cmdline_tmplen: *mut kernel::ffi::c_ulong, modified_cmdline: *mut kernel::ffi::c_char) {
+    let loader_strlen: kernel::ffi::c_int = sprintf(
         modified_cmdline.add(*cmdline_tmplen as usize),
-        b"kexec_file \0".as_ptr() as *const libc::c_char,
+        b"kexec_file \0".as_ptr() as *const kernel::ffi::c_char,
     );
-    *cmdline_tmplen += loader_strlen as libc::c_ulong;
+    *cmdline_tmplen += loader_strlen as kernel::ffi::c_ulong;
 }
 
 /* Add the "initrd=start,size" command line parameter to command line. */
 unsafe fn cmdline_add_initrd(
     image: *mut Kimage,
-    cmdline_tmplen: *mut libc::c_ulong,
-    modified_cmdline: *mut libc::c_char,
-    initrd: libc::c_ulong,
+    cmdline_tmplen: *mut kernel::ffi::c_ulong,
+    modified_cmdline: *mut kernel::ffi::c_char,
+    initrd: kernel::ffi::c_ulong,
 ) {
-    let initrd_strlen: libc::c_int = sprintf(
+    let initrd_strlen: kernel::ffi::c_int = sprintf(
         modified_cmdline.add(*cmdline_tmplen as usize),
-        b"initrd=0x%lx,0x%lx \0".as_ptr() as *const libc::c_char,
+        b"initrd=0x%lx,0x%lx \0".as_ptr() as *const kernel::ffi::c_char,
         initrd,
         (*image).initrd_buf_len,
     );
-    *cmdline_tmplen += initrd_strlen as libc::c_ulong;
+    *cmdline_tmplen += initrd_strlen as kernel::ffi::c_ulong;
 }
 
 // The following declarations and definitions are enabled by CONFIG_CRASH_DUMP.
 #[cfg(CONFIG_CRASH_DUMP)]
-pub unsafe fn arch_get_system_nr_ranges() -> libc::c_uint {
-    let mut nr_ranges: libc::c_int = 2; /* for exclusion of crashkernel region */
+pub unsafe fn arch_get_system_nr_ranges() -> kernel::ffi::c_uint {
+    let mut nr_ranges: kernel::ffi::c_int = 2; /* for exclusion of crashkernel region */
     let mut start: PhysAddr = 0;
     let mut end: PhysAddr = 0;
     let mut i: u64 = 0;
 
     for_each_mem_range(&mut i, &mut start, &mut end);
-    nr_ranges += i as libc::c_int;
+    nr_ranges += i as kernel::ffi::c_int;
 
-    nr_ranges as libc::c_uint
+    nr_ranges as kernel::ffi::c_uint
 }
 
 #[cfg(CONFIG_CRASH_DUMP)]
-pub unsafe fn arch_crash_populate_cmem(cmem: *mut CrashMem) -> libc::c_int {
+pub unsafe fn arch_crash_populate_cmem(cmem: *mut CrashMem) -> kernel::ffi::c_int {
     let mut start: PhysAddr = 0;
     let mut end: PhysAddr = 0;
     let mut i: u64 = 0;
@@ -87,25 +87,25 @@ pub unsafe fn arch_crash_populate_cmem(cmem: *mut CrashMem) -> libc::c_int {
  * memory region the new kernel can use to boot into.
  */
 #[cfg(CONFIG_CRASH_DUMP)]
-unsafe fn cmdline_add_mem(cmdline_tmplen: *mut libc::c_ulong, modified_cmdline: *mut libc::c_char) {
-    let mut mem_strlen: libc::c_int = 0;
+unsafe fn cmdline_add_mem(cmdline_tmplen: *mut kernel::ffi::c_ulong, modified_cmdline: *mut kernel::ffi::c_char) {
+    let mut mem_strlen: kernel::ffi::c_int = 0;
 
     mem_strlen = sprintf(
         modified_cmdline.add(*cmdline_tmplen as usize),
-        b"mem=0x%llx@0x%llx \0".as_ptr() as *const libc::c_char,
+        b"mem=0x%llx@0x%llx \0".as_ptr() as *const kernel::ffi::c_char,
         crashk_res.end - crashk_res.start + 1,
         crashk_res.start,
     );
-    *cmdline_tmplen += mem_strlen as libc::c_ulong;
+    *cmdline_tmplen += mem_strlen as kernel::ffi::c_ulong;
 
     if crashk_low_res.end != 0 {
         mem_strlen = sprintf(
             modified_cmdline.add(*cmdline_tmplen as usize),
-            b"mem=0x%llx@0x%llx \0".as_ptr() as *const libc::c_char,
+            b"mem=0x%llx@0x%llx \0".as_ptr() as *const kernel::ffi::c_char,
             crashk_low_res.end - crashk_low_res.start + 1,
             crashk_low_res.start,
         );
-        *cmdline_tmplen += mem_strlen as libc::c_ulong;
+        *cmdline_tmplen += mem_strlen as kernel::ffi::c_ulong;
     }
 }
 
@@ -113,17 +113,17 @@ unsafe fn cmdline_add_mem(cmdline_tmplen: *mut libc::c_ulong, modified_cmdline: 
 #[cfg(CONFIG_CRASH_DUMP)]
 unsafe fn cmdline_add_elfcorehdr(
     image: *mut Kimage,
-    cmdline_tmplen: *mut libc::c_ulong,
-    modified_cmdline: *mut libc::c_char,
-    elfcorehdr_sz: libc::c_ulong,
+    cmdline_tmplen: *mut kernel::ffi::c_ulong,
+    modified_cmdline: *mut kernel::ffi::c_char,
+    elfcorehdr_sz: kernel::ffi::c_ulong,
 ) {
     let elfcorehdr_strlen = sprintf(
         modified_cmdline.add(*cmdline_tmplen as usize),
-        b"elfcorehdr=0x%lx@0x%lx \0".as_ptr() as *const libc::c_char,
+        b"elfcorehdr=0x%lx@0x%lx \0".as_ptr() as *const kernel::ffi::c_char,
         elfcorehdr_sz,
         (*image).elf_load_addr,
     );
-    *cmdline_tmplen += elfcorehdr_strlen as libc::c_ulong;
+    *cmdline_tmplen += elfcorehdr_strlen as kernel::ffi::c_ulong;
 }
 
 /*
@@ -132,18 +132,18 @@ unsafe fn cmdline_add_elfcorehdr(
  */
 pub unsafe fn load_other_segments(
     image: *mut Kimage,
-    kernel_load_addr: libc::c_ulong,
-    kernel_size: libc::c_ulong,
-    mut initrd: *mut libc::c_char,
-    initrd_len: libc::c_ulong,
-    mut cmdline: *mut libc::c_char,
-    cmdline_len: libc::c_ulong,
-) -> libc::c_int {
-    let mut ret: libc::c_int = 0;
-    let mut cmdline_tmplen: libc::c_ulong = 0;
-    let mut initrd_load_addr: libc::c_ulong = 0;
+    kernel_load_addr: kernel::ffi::c_ulong,
+    kernel_size: kernel::ffi::c_ulong,
+    mut initrd: *mut kernel::ffi::c_char,
+    initrd_len: kernel::ffi::c_ulong,
+    mut cmdline: *mut kernel::ffi::c_char,
+    cmdline_len: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
+    let mut ret: kernel::ffi::c_int = 0;
+    let mut cmdline_tmplen: kernel::ffi::c_ulong = 0;
+    let mut initrd_load_addr: kernel::ffi::c_ulong = 0;
     let orig_segments = (*image).nr_segments;
-    let mut modified_cmdline: *mut libc::c_char = core::ptr::null_mut();
+    let mut modified_cmdline: *mut kernel::ffi::c_char = core::ptr::null_mut();
     let mut kbuf: KexecBuf = core::mem::zeroed();
     'out_err: {
 
@@ -162,8 +162,8 @@ pub unsafe fn load_other_segments(
 
     #[cfg(CONFIG_CRASH_DUMP)]
     if (*image).type_ == KEXEC_TYPE_CRASH {
-        let mut headers: *mut core::ffi::c_void = core::ptr::null_mut();
-        let mut headers_sz: libc::c_ulong = 0;
+        let mut headers: *mut kernel::ffi::c_void = core::ptr::null_mut();
+        let mut headers_sz: kernel::ffi::c_ulong = 0;
 
         ret = crash_prepare_headers(true, &mut headers, &mut headers_sz, core::ptr::null_mut());
         if ret < 0 {
@@ -198,7 +198,7 @@ pub unsafe fn load_other_segments(
 
     /* Load initrd */
     if !initrd.is_null() {
-        kbuf.buffer = initrd as *mut core::ffi::c_void;
+        kbuf.buffer = initrd as *mut kernel::ffi::c_void;
         kbuf.bufsz = initrd_len;
         kbuf.mem = KEXEC_BUF_MEM_UNKNOWN;
         kbuf.memsz = initrd_len;
@@ -232,7 +232,7 @@ pub unsafe fn load_other_segments(
         cmdline_len as usize,
     );
     cmdline = modified_cmdline;
-    (*image).arch.cmdline_ptr = cmdline as libc::c_ulong;
+    (*image).arch.cmdline_ptr = cmdline as kernel::ffi::c_ulong;
     return 0;
 
     // C goto target: restore the original segment count and free the command line.

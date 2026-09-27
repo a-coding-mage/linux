@@ -18,7 +18,7 @@ extern "C" {
 
 #[repr(C)]
 pub struct amd_ip_funcs {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub early_init: Option<unsafe extern "C" fn(*mut amdgpu_ip_block) -> i32>,
     pub late_init: Option<unsafe extern "C" fn(*mut amdgpu_ip_block) -> i32>,
     pub sw_init: Option<unsafe extern "C" fn(*mut amdgpu_ip_block) -> i32>,

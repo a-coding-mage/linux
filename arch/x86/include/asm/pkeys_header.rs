@@ -11,7 +11,7 @@ pub unsafe fn arch_max_pkey() -> i32 {
 }
 
 extern "C" {
-    pub fn arch_set_user_pkey_access(pkey: i32, init_val: ::core::ffi::c_ulong) -> i32;
+    pub fn arch_set_user_pkey_access(pkey: i32, init_val: ::kernel::ffi::c_ulong) -> i32;
 }
 
 #[inline]
@@ -57,7 +57,7 @@ pub unsafe fn arch_override_mprotect_pkey(
     __arch_override_mprotect_pkey(vma, prot, pkey)
 }
 
-pub const ARCH_VM_PKEY_FLAGS: ::core::ffi::c_ulong =
+pub const ARCH_VM_PKEY_FLAGS: ::kernel::ffi::c_ulong =
     VM_PKEY_BIT0 | VM_PKEY_BIT1 | VM_PKEY_BIT2 | VM_PKEY_BIT3;
 
 #[inline]
@@ -146,7 +146,7 @@ pub unsafe fn mm_pkey_free(mm: *mut mm_struct, pkey: i32) -> i32 {
 
 #[inline]
 pub unsafe fn vma_pkey(vma: *mut vm_area_struct) -> i32 {
-    let vma_pkey_mask: ::core::ffi::c_ulong =
+    let vma_pkey_mask: ::kernel::ffi::c_ulong =
         VM_PKEY_BIT0 | VM_PKEY_BIT1 | VM_PKEY_BIT2 | VM_PKEY_BIT3;
 
     (((*vma).vm_flags & vma_pkey_mask) >> VM_PKEY_SHIFT) as i32

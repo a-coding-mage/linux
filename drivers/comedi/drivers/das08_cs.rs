@@ -45,12 +45,12 @@ static const das08_board_struct das08_cs_boards: [das08_board_struct; 1] = [
 
 unsafe extern "C" fn das08_cs_auto_attach(
     dev: *mut comedi_device,
-    _context: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    _context: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     let link: *mut pcmcia_device = comedi_to_pcmcia_dev(dev);
     let mut devpriv: *mut das08_private_struct;
-    let mut iobase: ::core::ffi::c_ulong;
-    let ret: ::core::ffi::c_int;
+    let mut iobase: ::kernel::ffi::c_ulong;
+    let ret: ::kernel::ffi::c_int;
 
     /* The das08 driver needs the board_ptr */
     (*dev).board_ptr = &das08_cs_boards[0] as *const _ as *mut _;
@@ -82,7 +82,7 @@ static mut driver_das08_cs: comedi_driver = comedi_driver {
 
 unsafe extern "C" fn das08_pcmcia_attach(
     link: *mut pcmcia_device,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     comedi_pcmcia_auto_config(link, &mut driver_das08_cs)
 }
 

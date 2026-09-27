@@ -10,7 +10,7 @@ unsafe extern "C" {
     pub static mut irq_err_count: atomic_t;
 }
 
-pub const ARCH_IRQ_INIT_FLAGS: _ = IRQ_NOPROBE;
+pub const ARCH_IRQ_INIT_FLAGS: u32 = IRQ_NOPROBE;
 
 /*
  * interrupt-retrigger: NOP for now. This may not be appropriate for all

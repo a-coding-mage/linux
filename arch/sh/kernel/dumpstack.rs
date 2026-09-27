@@ -9,8 +9,8 @@
 // Dependencies supplied by the surrounding kernel translation unit.
 
 extern "C" {
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn pr_cont(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_cont(fmt: *const kernel::ffi::c_char, ...);
     fn __get_user(val: *mut u32, ptr: *const u32) -> i32;
     fn __kernel_text_address(addr: usize) -> bool;
     fn kstack_end(sp: *mut usize) -> bool;
@@ -20,10 +20,10 @@ extern "C" {
         regs: *mut pt_regs,
         sp: *mut usize,
         ops: *const stacktrace_ops,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     );
     fn debug_show_held_locks(tsk: *mut task_struct);
-    fn task_stack_page(tsk: *mut task_struct) -> *mut core::ffi::c_void;
+    fn task_stack_page(tsk: *mut task_struct) -> *mut kernel::ffi::c_void;
     fn ftrace_graph_get_ret_stack(
         task: *mut task_struct,
         graph: i32,
@@ -35,7 +35,7 @@ extern "C" {
 
 #[repr(C)]
 pub struct stacktrace_ops {
-    pub address: Option<unsafe extern "C" fn(*mut core::ffi::c_void, usize, i32)>,
+    pub address: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, usize, i32)>,
 }
 
 #[repr(C)]
@@ -67,8 +67,8 @@ pub struct pt_regs {
 pub const THREAD_SIZE: usize = 0; // Supplied by the architecture configuration.
 
 pub unsafe fn dump_mem(
-    str_: *const core::ffi::c_char,
-    loglvl: *const core::ffi::c_char,
+    str_: *const kernel::ffi::c_char,
+    loglvl: *const kernel::ffi::c_char,
     bottom: usize,
     top: usize,
 ) {
@@ -113,20 +113,20 @@ pub unsafe fn dump_mem(
 pub unsafe fn printk_address(address: usize, reliable: i32) {
     pr_cont(
         b" [<%px>] %s%pS\n\0".as_ptr() as *const _,
-        address as *mut core::ffi::c_void,
+        address as *mut kernel::ffi::c_void,
         if reliable != 0 {
             b"\0".as_ptr() as *const _
         } else {
             b"? \0".as_ptr() as *const _
         },
-        address as *mut core::ffi::c_void,
+        address as *mut kernel::ffi::c_void,
     );
 }
 
 #[cfg(CONFIG_FUNCTION_GRAPH_TRACER)]
 unsafe fn print_ftrace_graph_addr(
     addr: usize,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
     ops: *const stacktrace_ops,
     tinfo: *mut thread_info,
     graph: *mut i32,
@@ -152,7 +152,7 @@ unsafe fn print_ftrace_graph_addr(
 #[cfg(not(CONFIG_FUNCTION_GRAPH_TRACER))]
 unsafe fn print_ftrace_graph_addr(
     _addr: usize,
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
     _ops: *const stacktrace_ops,
     _tinfo: *mut thread_info,
     _graph: *mut i32,
@@ -164,7 +164,7 @@ pub unsafe fn stack_reader_dump(
     regs: *mut pt_regs,
     sp: *mut usize,
     ops: *const stacktrace_ops,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) {
     let context = ((sp as usize) & !(THREAD_SIZE - 1)) as *mut thread_info;
     let mut graph: i32 = 0;
@@ -182,8 +182,8 @@ pub unsafe fn stack_reader_dump(
     }
 }
 
-unsafe fn print_trace_address(data: *mut core::ffi::c_void, addr: usize, reliable: i32) {
-    printk(b"%s\0".as_ptr() as *const _, data as *const core::ffi::c_char);
+unsafe fn print_trace_address(data: *mut kernel::ffi::c_void, addr: usize, reliable: i32) {
+    printk(b"%s\0".as_ptr() as *const _, data as *const kernel::ffi::c_char);
     printk_address(addr, reliable);
 }
 
@@ -195,7 +195,7 @@ pub unsafe fn show_trace(
     tsk: *mut task_struct,
     sp: *mut usize,
     regs: *mut pt_regs,
-    loglvl: *const core::ffi::c_char,
+    loglvl: *const kernel::ffi::c_char,
 ) {
     if !regs.is_null() && user_mode(regs) {
         return;
@@ -214,7 +214,7 @@ pub unsafe fn show_trace(
 pub unsafe fn show_stack(
     mut tsk: *mut task_struct,
     mut sp: *mut usize,
-    loglvl: *const core::ffi::c_char,
+    loglvl: *const kernel::ffi::c_char,
 ) {
     if tsk.is_null() {
         tsk = current;

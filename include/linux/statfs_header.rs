@@ -5,18 +5,18 @@
 
 #[repr(C)]
 pub struct kstatfs {
-    pub f_type: ::core::ffi::c_long,
-    pub f_bsize: ::core::ffi::c_long,
+    pub f_type: ::kernel::ffi::c_long,
+    pub f_bsize: ::kernel::ffi::c_long,
     pub f_blocks: u64,
     pub f_bfree: u64,
     pub f_bavail: u64,
     pub f_files: u64,
     pub f_ffree: u64,
     pub f_fsid: __kernel_fsid_t,
-    pub f_namelen: ::core::ffi::c_long,
-    pub f_frsize: ::core::ffi::c_long,
-    pub f_flags: ::core::ffi::c_long,
-    pub f_spare: [::core::ffi::c_long; 4],
+    pub f_namelen: ::kernel::ffi::c_long,
+    pub f_frsize: ::kernel::ffi::c_long,
+    pub f_flags: ::kernel::ffi::c_long,
+    pub f_spare: [::kernel::ffi::c_long; 4],
 }
 
 /* Definitions for the flag in f_flag.
@@ -46,8 +46,8 @@ pub struct dentry {
 }
 
 unsafe extern "C" {
-    pub fn vfs_get_fsid(dentry: *mut dentry, fsid: *mut __kernel_fsid_t) -> ::core::ffi::c_int;
-    pub fn le64_to_cpup(p: *const ::core::ffi::c_void) -> u64;
+    pub fn vfs_get_fsid(dentry: *mut dentry, fsid: *mut __kernel_fsid_t) -> ::kernel::ffi::c_int;
+    pub fn le64_to_cpup(p: *const ::kernel::ffi::c_void) -> u64;
 }
 
 #[inline]
@@ -61,8 +61,8 @@ pub unsafe fn u64_to_fsid(v: u64) -> __kernel_fsid_t {
 #[inline]
 pub unsafe fn uuid_to_fsid(uuid: *mut u8) -> __kernel_fsid_t {
     u64_to_fsid(
-        le64_to_cpup(uuid as *const ::core::ffi::c_void)
-            ^ le64_to_cpup(uuid.add(::core::mem::size_of::<u64>()) as *const ::core::ffi::c_void),
+        le64_to_cpup(uuid as *const ::kernel::ffi::c_void)
+            ^ le64_to_cpup(uuid.add(::core::mem::size_of::<u64>()) as *const ::kernel::ffi::c_void),
     )
 }
 

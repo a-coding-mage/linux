@@ -17,8 +17,8 @@ pub struct cpufreq_policy {
     pub cpus: cpumask_var_t, pub related_cpus: cpumask_var_t, pub real_cpus: cpumask_var_t,
     pub shared_type: u32, pub cpu: u32, pub clk: *mut clk, pub cpuinfo: cpufreq_cpuinfo,
     pub min: u32, pub max: u32, pub cur: u32, pub suspend_freq: u32, pub policy: u32,
-    pub last_policy: u32, pub governor: *mut cpufreq_governor, pub governor_data: *mut core::ffi::c_void,
-    pub last_governor: [core::ffi::c_char; CPUFREQ_NAME_LEN], pub update: work_struct,
+    pub last_policy: u32, pub governor: *mut cpufreq_governor, pub governor_data: *mut kernel::ffi::c_void,
+    pub last_governor: [kernel::ffi::c_char; CPUFREQ_NAME_LEN], pub update: work_struct,
     pub constraints: freq_constraints, pub min_freq_req: freq_qos_request, pub max_freq_req: freq_qos_request,
     pub boost_freq_req: freq_qos_request, pub freq_table: *mut cpufreq_frequency_table,
     pub freq_table_sorted: cpufreq_table_sorting, pub policy_list: list_head, pub kobj: kobject,
@@ -28,7 +28,7 @@ pub struct cpufreq_policy {
     pub boost_supported: bool, pub update_limits: bool, pub cached_target_freq: u32,
     pub cached_resolved_idx: u32, pub transition_ongoing: bool, pub transition_lock: spinlock_t,
     pub transition_wait: wait_queue_head_t, pub transition_task: *mut task_struct,
-    pub stats: *mut cpufreq_stats, pub driver_data: *mut core::ffi::c_void,
+    pub stats: *mut cpufreq_stats, pub driver_data: *mut kernel::ffi::c_void,
     pub cdev: *mut thermal_cooling_device, pub nb_min: notifier_block, pub nb_max: notifier_block,
 }
 
@@ -39,9 +39,9 @@ pub const CPUFREQ_SHARED_TYPE_NONE: u32=0; pub const CPUFREQ_SHARED_TYPE_HW:u32=
 pub const CPUFREQ_RELATION_L:u32=0; pub const CPUFREQ_RELATION_H:u32=1; pub const CPUFREQ_RELATION_C:u32=2;
 pub const CPUFREQ_RELATION_E:u32=BIT(2); pub const CPUFREQ_RELATION_LE:u32=CPUFREQ_RELATION_L|CPUFREQ_RELATION_E; pub const CPUFREQ_RELATION_HE:u32=CPUFREQ_RELATION_H|CPUFREQ_RELATION_E; pub const CPUFREQ_RELATION_CE:u32=CPUFREQ_RELATION_C|CPUFREQ_RELATION_E;
 
-#[repr(C)] pub struct freq_attr { pub attr: attribute, pub show: Option<unsafe extern "C" fn(*mut cpufreq_policy,*mut core::ffi::c_char)->isize>, pub store: Option<unsafe extern "C" fn(*mut cpufreq_policy,*const core::ffi::c_char,usize)->isize> }
+#[repr(C)] pub struct freq_attr { pub attr: attribute, pub show: Option<unsafe extern "C" fn(*mut cpufreq_policy,*mut kernel::ffi::c_char)->isize>, pub store: Option<unsafe extern "C" fn(*mut cpufreq_policy,*const kernel::ffi::c_char,usize)->isize> }
 #[repr(C)] pub struct cpufreq_driver {
- pub name:[core::ffi::c_char;CPUFREQ_NAME_LEN], pub flags:u16, pub driver_data:*mut core::ffi::c_void,
+ pub name:[kernel::ffi::c_char;CPUFREQ_NAME_LEN], pub flags:u16, pub driver_data:*mut kernel::ffi::c_void,
  pub init:Option<unsafe extern "C" fn(*mut cpufreq_policy)->i32>, pub verify:Option<unsafe extern "C" fn(*mut cpufreq_policy_data)->i32>,
  pub setpolicy:Option<unsafe extern "C" fn(*mut cpufreq_policy)->i32>, pub target:Option<unsafe extern "C" fn(*mut cpufreq_policy,u32,u32)->i32>, pub target_index:Option<unsafe extern "C" fn(*mut cpufreq_policy,u32)->i32>, pub fast_switch:Option<unsafe extern "C" fn(*mut cpufreq_policy,u32)->u32>,
  pub adjust_perf:Option<unsafe extern "C" fn(*mut cpufreq_policy,usize,usize,usize,usize)>, pub get_intermediate:Option<unsafe extern "C" fn(*mut cpufreq_policy,u32)->u32>, pub target_intermediate:Option<unsafe extern "C" fn(*mut cpufreq_policy,u32)->i32>, pub get:Option<unsafe extern "C" fn(u32)->u32>, pub update_limits:Option<unsafe extern "C" fn(*mut cpufreq_policy)>, pub bios_limit:Option<unsafe extern "C" fn(i32,*mut u32)->i32>, pub online:Option<unsafe extern "C" fn(*mut cpufreq_policy)->i32>, pub offline:Option<unsafe extern "C" fn(*mut cpufreq_policy)->i32>, pub exit:Option<unsafe extern "C" fn(*mut cpufreq_policy)>, pub suspend:Option<unsafe extern "C" fn(*mut cpufreq_policy)->i32>, pub resume:Option<unsafe extern "C" fn(*mut cpufreq_policy)->i32>, pub ready:Option<unsafe extern "C" fn(*mut cpufreq_policy)>, pub attr:*mut *mut freq_attr, pub boost_enabled:bool, pub set_boost:Option<unsafe extern "C" fn(*mut cpufreq_policy,i32)->i32>, pub register_em:Option<unsafe extern "C" fn(*mut cpufreq_policy)>

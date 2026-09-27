@@ -18,13 +18,13 @@ static mut x3proto_irq_domain: *mut irq_domain = core::ptr::null_mut();
 
 unsafe fn x3proto_gpio_direction_input(
     _chip: *mut gpio_chip,
-    gpio: core::ffi::c_uint,
-) -> core::ffi::c_int {
-    let mut flags: core::ffi::c_ulong = 0;
-    let mut data: core::ffi::c_uint;
+    gpio: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
+    let mut flags: kernel::ffi::c_ulong = 0;
+    let mut data: kernel::ffi::c_uint;
 
     spin_lock_irqsave(&mut X3PROTO_GPIO_LOCK, &mut flags);
-    data = __raw_readw(KEYCTLR) as core::ffi::c_uint;
+    data = __raw_readw(KEYCTLR) as kernel::ffi::c_uint;
     data |= 1u32.wrapping_shl(gpio);
     __raw_writew(data as u16, KEYCTLR);
     spin_unlock_irqrestore(&mut X3PROTO_GPIO_LOCK, flags);
@@ -34,16 +34,16 @@ unsafe fn x3proto_gpio_direction_input(
 
 unsafe fn x3proto_gpio_get(
     _chip: *mut gpio_chip,
-    gpio: core::ffi::c_uint,
-) -> core::ffi::c_int {
-    ((__raw_readw(KEYDETR) as core::ffi::c_uint
-        & 1u32.wrapping_shl(gpio)) != 0) as core::ffi::c_int
+    gpio: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
+    ((__raw_readw(KEYDETR) as kernel::ffi::c_uint
+        & 1u32.wrapping_shl(gpio)) != 0) as kernel::ffi::c_int
 }
 
 unsafe fn x3proto_gpio_to_irq(
     chip: *mut gpio_chip,
-    gpio: core::ffi::c_uint,
-) -> core::ffi::c_int {
+    gpio: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     if gpio < (*chip).ngpio {
         irq_create_mapping(x3proto_irq_domain, gpio as irq_hw_number_t)
     } else {
@@ -54,7 +54,7 @@ unsafe fn x3proto_gpio_to_irq(
 unsafe extern "C" fn x3proto_gpio_irq_handler(desc: *mut irq_desc) {
     let data = irq_desc_get_irq_data(desc);
     let chip = irq_data_get_irq_chip(data);
-    let mask = __raw_readw(KEYDETR) as core::ffi::c_ulong;
+    let mask = __raw_readw(KEYDETR) as kernel::ffi::c_ulong;
 
     ((*chip).irq_mask_ack)(data);
     for pin in 0..NR_BASEBOARD_GPIOS {
@@ -67,7 +67,7 @@ unsafe extern "C" fn x3proto_gpio_irq_handler(desc: *mut irq_desc) {
 
 #[no_mangle]
 pub static mut x3proto_gpio_chip: gpio_chip = gpio_chip {
-    label: b"x3proto-gpio\0".as_ptr() as *const core::ffi::c_char,
+    label: b"x3proto-gpio\0".as_ptr() as *const kernel::ffi::c_char,
     direction_input: Some(x3proto_gpio_direction_input),
     get: Some(x3proto_gpio_get),
     to_irq: Some(x3proto_gpio_to_irq),
@@ -77,14 +77,14 @@ pub static mut x3proto_gpio_chip: gpio_chip = gpio_chip {
 
 unsafe extern "C" fn x3proto_gpio_irq_map(
     _domain: *mut irq_domain,
-    virq: core::ffi::c_uint,
+    virq: kernel::ffi::c_uint,
     _hwirq: irq_hw_number_t,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     irq_set_chip_and_handler_name(
         virq,
         &mut dummy_irq_chip,
         handle_simple_irq,
-        b"gpio\0".as_ptr() as *const core::ffi::c_char,
+        b"gpio\0".as_ptr() as *const kernel::ffi::c_char,
     );
 
     0
@@ -95,9 +95,9 @@ static mut x3proto_gpio_irq_ops: irq_domain_ops = irq_domain_ops {
     xlate: Some(irq_domain_xlate_twocell),
 };
 
-pub unsafe extern "C" fn x3proto_gpio_setup() -> core::ffi::c_int {
-    let ilsel: core::ffi::c_int;
-    let mut ret: core::ffi::c_int;
+pub unsafe extern "C" fn x3proto_gpio_setup() -> kernel::ffi::c_int {
+    let ilsel: kernel::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     ilsel = ilsel_enable(ILSEL_KEY);
     if ilsel < 0 {
@@ -126,10 +126,10 @@ pub unsafe extern "C" fn x3proto_gpio_setup() -> core::ffi::c_int {
 
     pr_info(
         b"registering '%s' support, handling GPIOs %u -> %u, bound to IRQ %u\n\0".as_ptr()
-            as *const core::ffi::c_char,
+            as *const kernel::ffi::c_char,
         x3proto_gpio_chip.label,
         x3proto_gpio_chip.base,
-        x3proto_gpio_chip.base + x3proto_gpio_chip.ngpio as core::ffi::c_int,
+        x3proto_gpio_chip.base + x3proto_gpio_chip.ngpio as kernel::ffi::c_int,
         ilsel,
     );
 
@@ -139,7 +139,7 @@ pub unsafe extern "C" fn x3proto_gpio_setup() -> core::ffi::c_int {
     0
 }
 
-unsafe fn goto_err_gpio(ilsel: core::ffi::c_int, _ret: core::ffi::c_int) {
+unsafe fn goto_err_gpio(ilsel: kernel::ffi::c_int, _ret: kernel::ffi::c_int) {
     synchronize_irq(ilsel);
     ilsel_disable(ILSEL_KEY);
 }

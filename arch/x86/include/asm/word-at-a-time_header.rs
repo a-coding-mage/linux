@@ -5,8 +5,8 @@
 
 #[repr(C)]
 pub struct word_at_a_time {
-    pub one_bits: ::core::ffi::c_ulong,
-    pub high_bits: ::core::ffi::c_ulong,
+    pub one_bits: ::kernel::ffi::c_ulong,
+    pub high_bits: ::kernel::ffi::c_ulong,
 }
 
 // #define WORD_AT_A_TIME_CONSTANTS { REPEAT_BYTE(0x01), REPEAT_BYTE(0x80) }
@@ -14,10 +14,10 @@ pub struct word_at_a_time {
 
 #[inline]
 pub unsafe fn has_zero(
-    a: ::core::ffi::c_ulong,
-    bits: *mut ::core::ffi::c_ulong,
+    a: ::kernel::ffi::c_ulong,
+    bits: *mut ::kernel::ffi::c_ulong,
     c: *const word_at_a_time,
-) -> ::core::ffi::c_ulong {
+) -> ::kernel::ffi::c_ulong {
     let mask = a.wrapping_sub((*c).one_bits) & !a & (*c).high_bits;
     *bits = mask;
     mask
@@ -25,59 +25,59 @@ pub unsafe fn has_zero(
 
 #[inline]
 pub unsafe fn prep_zero_mask(
-    _a: ::core::ffi::c_ulong,
-    bits: ::core::ffi::c_ulong,
+    _a: ::kernel::ffi::c_ulong,
+    bits: ::kernel::ffi::c_ulong,
     _c: *const word_at_a_time,
-) -> ::core::ffi::c_ulong {
+) -> ::kernel::ffi::c_ulong {
     bits
 }
 
 #[cfg(target_pointer_width = "64")]
 #[inline]
-pub fn create_zero_mask(bits: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub fn create_zero_mask(bits: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     bits
 }
 
 #[cfg(target_pointer_width = "64")]
 #[inline]
-pub fn zero_bytemask(mut bits: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub fn zero_bytemask(mut bits: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     bits = bits.wrapping_sub(1) & !bits;
     bits >> 7
 }
 
 #[cfg(target_pointer_width = "64")]
 #[inline]
-pub fn find_zero(bits: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub fn find_zero(bits: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     // __ffs(bits) >> 3; __ffs is supplied by the external bitops implementation.
-    unsafe { (__ffs(bits) >> 3) as ::core::ffi::c_ulong }
+    unsafe { (__ffs(bits) >> 3) as ::kernel::ffi::c_ulong }
 }
 
 #[cfg(target_pointer_width = "64")]
 unsafe extern "C" {
-    fn __ffs(x: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    fn __ffs(x: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(target_pointer_width = "32")]
 #[inline]
-pub fn create_zero_mask(mut bits: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub fn create_zero_mask(mut bits: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     bits = bits.wrapping_sub(1) & !bits;
     bits >> 7
 }
 
 #[cfg(target_pointer_width = "32")]
 #[inline]
-pub fn zero_bytemask(mask: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub fn zero_bytemask(mask: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     mask
 }
 
 /* Carl Chatfield / Jan Achrenius G+ version for 32-bit */
 #[cfg(target_pointer_width = "32")]
 #[inline]
-pub fn find_zero(mask: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub fn find_zero(mask: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     /* (000000 0000ff 00ffff ffffff) -> ( 1 1 2 3 ) */
-    let a = (0x0ff0001u32.wrapping_add(mask as u32) >> 23) as ::core::ffi::c_long;
+    let a = (0x0ff0001u32.wrapping_add(mask as u32) >> 23) as ::kernel::ffi::c_long;
     /* Fix the 1 for 00 case */
-    (a as ::core::ffi::c_ulong) & mask
+    (a as ::kernel::ffi::c_ulong) & mask
 }
 
 /*
@@ -91,8 +91,8 @@ pub fn find_zero(mask: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
  * inline assembly (_ASM_EXTABLE_TYPE); that dependency is preserved here.
  */
 #[inline]
-pub unsafe fn load_unaligned_zeropad(addr: *const ::core::ffi::c_void) -> ::core::ffi::c_ulong {
-    let mut ret: ::core::ffi::c_ulong;
+pub unsafe fn load_unaligned_zeropad(addr: *const ::kernel::ffi::c_void) -> ::kernel::ffi::c_ulong {
+    let mut ret: ::kernel::ffi::c_ulong;
     ::core::arch::asm!(
         "mov {ret}, [{mem}]",
         ret = out(reg) ret,

@@ -18,7 +18,7 @@ static mut op_cache: *mut kmem_cache = core::ptr::null_mut();
 
 pub unsafe fn op_cache_initialize() -> i32 {
     op_cache = kmem_cache_create_usercopy(
-        b"orangefs_op_cache\0".as_ptr() as *const core::ffi::c_char,
+        b"orangefs_op_cache\0".as_ptr() as *const kernel::ffi::c_char,
         core::mem::size_of::<orangefs_kernel_op_s>(),
         0,
         0,
@@ -30,7 +30,7 @@ pub unsafe fn op_cache_initialize() -> i32 {
     );
 
     if op_cache.is_null() {
-        gossip_err(b"Cannot create orangefs_op_cache\n\0".as_ptr() as *const core::ffi::c_char);
+        gossip_err(b"Cannot create orangefs_op_cache\n\0".as_ptr() as *const kernel::ffi::c_char);
         return -ENOMEM;
     }
 
@@ -46,7 +46,7 @@ pub unsafe fn op_cache_finalize() -> i32 {
     0
 }
 
-pub unsafe fn get_opname_string(new_op: *mut orangefs_kernel_op_s) -> *const core::ffi::c_char {
+pub unsafe fn get_opname_string(new_op: *mut orangefs_kernel_op_s) -> *const kernel::ffi::c_char {
     if !new_op.is_null() {
         let type_ = (*new_op).upcall.type_;
 

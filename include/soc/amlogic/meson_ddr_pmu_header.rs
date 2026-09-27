@@ -57,10 +57,10 @@ pub struct dmc_hw_info {
 #[repr(C)]
 pub struct dmc_info {
     pub hw_info: *const dmc_hw_info,
-    pub ddr_reg: [*mut core::ffi::c_void; 4],
+    pub ddr_reg: [*mut kernel::ffi::c_void; 4],
     /// Timer value in TIMER register
-    pub timer_value: core::ffi::c_ulong,
-    pub pll_reg: *mut core::ffi::c_void,
+    pub timer_value: kernel::ffi::c_ulong,
+    pub pll_reg: *mut kernel::ffi::c_void,
     /// irq vector number
     pub irq_num: i32,
 }

@@ -93,7 +93,7 @@
 # 	s8			rssi;
 # 	u16			uuid_count;
 # 	u8			(*uuids)[16];
-# 	core::ffi::c_ulong		name_resolve_timeout;
+# 	kernel::ffi::c_ulong		name_resolve_timeout;
 # 	spinlock_t		lock;
 # };
 # 
@@ -126,13 +126,13 @@
 # 
 # struct hci_conn_hash {
 # 	struct list_head list;
-# 	core::ffi::c_uint     acl_num;
-# 	core::ffi::c_uint     sco_num;
-# 	core::ffi::c_uint     cis_num;
-# 	core::ffi::c_uint     bis_num;
-# 	core::ffi::c_uint     pa_num;
-# 	core::ffi::c_uint     le_num;
-# 	core::ffi::c_uint     le_num_peripheral;
+# 	kernel::ffi::c_uint     acl_num;
+# 	kernel::ffi::c_uint     sco_num;
+# 	kernel::ffi::c_uint     cis_num;
+# 	kernel::ffi::c_uint     bis_num;
+# 	kernel::ffi::c_uint     pa_num;
+# 	kernel::ffi::c_uint     le_num;
+# 	kernel::ffi::c_uint     le_num_peripheral;
 # };
 # 
 # struct bdaddr_list {
@@ -271,8 +271,8 @@
 # 
 # struct tx_queue {
 # 	struct sk_buff_head queue;
-# 	core::ffi::c_uint extra;
-# 	core::ffi::c_uint tracked;
+# 	kernel::ffi::c_uint extra;
+# 	kernel::ffi::c_uint tracked;
 # };
 # 
 # #define HCI_MAX_ADV_INSTANCES		5
@@ -359,7 +359,7 @@
 # 	struct ida	unset_handle_ida;
 # 
 # 	const char	*name;
-# 	core::ffi::c_ulong	flags;
+# 	kernel::ffi::c_ulong	flags;
 # 	__u16		id;
 # 	__u8		bus;
 # 	bdaddr_t	bdaddr;
@@ -468,28 +468,28 @@
 # 	__u16		sniff_min_interval;
 # 	__u16		sniff_max_interval;
 # 
-# 	core::ffi::c_uint	auto_accept_delay;
+# 	kernel::ffi::c_uint	auto_accept_delay;
 # 
 # 	DECLARE_BITMAP(quirk_flags, __HCI_NUM_QUIRKS);
 # 
 # 	atomic_t	cmd_cnt;
-# 	core::ffi::c_uint	acl_cnt;
-# 	core::ffi::c_uint	sco_cnt;
-# 	core::ffi::c_uint	le_cnt;
-# 	core::ffi::c_uint	iso_cnt;
+# 	kernel::ffi::c_uint	acl_cnt;
+# 	kernel::ffi::c_uint	sco_cnt;
+# 	kernel::ffi::c_uint	le_cnt;
+# 	kernel::ffi::c_uint	iso_cnt;
 # 
-# 	core::ffi::c_uint	acl_mtu;
-# 	core::ffi::c_uint	sco_mtu;
-# 	core::ffi::c_uint	le_mtu;
-# 	core::ffi::c_uint	iso_mtu;
-# 	core::ffi::c_uint	acl_pkts;
-# 	core::ffi::c_uint	sco_pkts;
-# 	core::ffi::c_uint	le_pkts;
-# 	core::ffi::c_uint	iso_pkts;
+# 	kernel::ffi::c_uint	acl_mtu;
+# 	kernel::ffi::c_uint	sco_mtu;
+# 	kernel::ffi::c_uint	le_mtu;
+# 	kernel::ffi::c_uint	iso_mtu;
+# 	kernel::ffi::c_uint	acl_pkts;
+# 	kernel::ffi::c_uint	sco_pkts;
+# 	kernel::ffi::c_uint	le_pkts;
+# 	kernel::ffi::c_uint	iso_pkts;
 # 
-# 	core::ffi::c_ulong	acl_last_tx;
-# 	core::ffi::c_ulong	le_last_tx;
-# 	core::ffi::c_ulong	iso_last_tx;
+# 	kernel::ffi::c_ulong	acl_last_tx;
+# 	kernel::ffi::c_ulong	le_last_tx;
+# 	kernel::ffi::c_ulong	iso_last_tx;
 # 
 # 	__u8		le_tx_def_phys;
 # 	__u8		le_rx_def_phys;
@@ -599,13 +599,13 @@
 # 	__u8			per_adv_data_len;
 # 
 # 	struct list_head	adv_instances;
-# 	core::ffi::c_uint		adv_instance_cnt;
+# 	kernel::ffi::c_uint		adv_instance_cnt;
 # 	__u8			cur_adv_instance;
 # 	__u16			adv_instance_timeout;
 # 	struct delayed_work	adv_instance_expire;
 # 
 # 	struct idr		adv_monitors_idr;
-# 	core::ffi::c_uint		adv_monitors_cnt;
+# 	kernel::ffi::c_uint		adv_monitors_cnt;
 # 
 # 	__u8			irk[16];
 # 	__u32			rpa_timeout;
@@ -650,7 +650,7 @@
 # 	int (*send)(hci_dev *hdev, sk_buff *skb);
 # 	/* Handle HCI_EV_VENDOR; return true if handled, false otherwise */
 # 	bool (*handle_ev_vendor)(hci_dev *hdev, sk_buff *skb);
-# 	void (*notify)(hci_dev *hdev, evt: core::ffi::c_uint);
+# 	void (*notify)(hci_dev *hdev, evt: kernel::ffi::c_uint);
 # 	void (*hw_error)(hci_dev *hdev, code: u8);
 # 	int (*post_init)(hci_dev *hdev);
 # 	int (*set_diag)(hci_dev *hdev, enable: bool);
@@ -748,7 +748,7 @@
 # 	__u8		num_bis;
 # 	__u8		bis[HCI_MAX_ISO_BIS];
 # 
-# 	core::ffi::c_ulong	flags;
+# 	kernel::ffi::c_ulong	flags;
 # 
 # 	enum conn_reasons conn_reason;
 # 	__u8		abort_reason;
@@ -756,12 +756,12 @@
 # 	__u32		clock;
 # 	__u16		clock_accuracy;
 # 
-# 	core::ffi::c_ulong	conn_info_timestamp;
+# 	kernel::ffi::c_ulong	conn_info_timestamp;
 # 
 # 	__u8		remote_cap;
 # 	__u8		remote_auth;
 # 
-# 	core::ffi::c_uint	sent;
+# 	kernel::ffi::c_uint	sent;
 # 
 # 	struct sk_buff_head data_q;
 # 	struct list_head chan_list;
@@ -806,7 +806,7 @@
 # 	__u16 handle;
 # 	struct hci_conn *conn;
 # 	struct sk_buff_head data_q;
-# 	core::ffi::c_uint	sent;
+# 	kernel::ffi::c_uint	sent;
 # 	__u8		state;
 # };
 # 
@@ -1090,7 +1090,7 @@
 # 	}
 # }
 # 
-# static inline core::ffi::c_uint hci_conn_num(hci_dev *hdev, __u8 type)
+# static inline kernel::ffi::c_uint hci_conn_num(hci_dev *hdev, __u8 type)
 # {
 # 	struct hci_conn_hash *h = (*&hdev).conn_hash;
 # 	switch (type) {
@@ -1112,7 +1112,7 @@
 # 	}
 # }
 # 
-# static inline core::ffi::c_uint hci_conn_count(hci_dev *hdev)
+# static inline kernel::ffi::c_uint hci_conn_count(hci_dev *hdev)
 # {
 # 	struct hci_conn_hash *c = (*&hdev).conn_hash;
 # 
@@ -1120,7 +1120,7 @@
 # 		(*c).pa_num;
 # }
 # 
-# static inline core::ffi::c_uint hci_iso_count(hci_dev *hdev)
+# static inline kernel::ffi::c_uint hci_iso_count(hci_dev *hdev)
 # {
 # 	struct hci_conn_hash *c = (*&hdev).conn_hash;
 # 
@@ -1706,7 +1706,7 @@
 # 	BT_DBG("hcon %p orig refcnt %d", conn, atomic_read((*&conn).refcnt));
 # 
 # 	if (atomic_dec_and_test((*&conn).refcnt)) {
-# 		core::ffi::c_ulong timeo;
+# 		kernel::ffi::c_ulong timeo;
 # 
 # 		switch ((*conn).type) {
 # 		case ACL_LINK:
@@ -1829,7 +1829,7 @@
 # int hci_dev_do_close(hci_dev *hdev);
 # int hci_dev_reset(__u16 dev);
 # int hci_dev_reset_stat(__u16 dev);
-# int hci_dev_cmd(cmd: core::ffi::c_uint, void __user *arg);
+# int hci_dev_cmd(cmd: kernel::ffi::c_uint, void __user *arg);
 # int hci_get_dev_list(void __user *arg);
 # int hci_get_dev_info(void __user *arg);
 # int hci_get_conn_list(void __user *arg);
@@ -2375,7 +2375,7 @@
 # 
 # /* ----- HCI Sockets ----- */
 # void hci_send_to_sock(hci_dev *hdev, sk_buff *skb);
-# void hci_send_to_channel(channel: core::ffi::c_ushort, sk_buff *skb,
+# void hci_send_to_channel(channel: kernel::ffi::c_ushort, sk_buff *skb,
 # 			 int flag, sock *skip_sk);
 # void hci_send_to_monitor(hci_dev *hdev, sk_buff *skb);
 # void hci_send_monitor_ctrl_event(hci_dev *hdev, event: u16,
@@ -2394,12 +2394,12 @@
 # 	int (*func) (sock *sk, hci_dev *hdev, void *data,
 # 		     u16 data_len);
 # 	size_t data_len;
-# 	core::ffi::c_ulong flags;
+# 	kernel::ffi::c_ulong flags;
 # };
 # 
 # struct hci_mgmt_chan {
 # 	struct list_head list;
-# 	core::ffi::c_ushort channel;
+# 	kernel::ffi::c_ushort channel;
 # 	size_t handler_count;
 # 	const struct hci_mgmt_handler *handlers;
 # 	void (*hdev_init) (sock *sk, hci_dev *hdev);

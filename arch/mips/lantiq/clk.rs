@@ -10,41 +10,41 @@
 
 #[repr(C)]
 pub struct ClkLookup {
-    pub dev_id: *const core::ffi::c_char,
-    pub con_id: *const core::ffi::c_char,
+    pub dev_id: *const kernel::ffi::c_char,
+    pub con_id: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct Clk {
-    pub rate: libc::c_ulong,
-    pub get_rate: Option<unsafe extern "C" fn() -> libc::c_ulong>,
-    pub rates: *mut libc::c_ulong,
+    pub rate: kernel::ffi::c_ulong,
+    pub get_rate: Option<unsafe extern "C" fn() -> kernel::ffi::c_ulong>,
+    pub rates: *mut kernel::ffi::c_ulong,
     pub cl: ClkLookup,
-    pub enable: Option<unsafe extern "C" fn(*mut Clk) -> libc::c_int>,
+    pub enable: Option<unsafe extern "C" fn(*mut Clk) -> kernel::ffi::c_int>,
     pub disable: Option<unsafe extern "C" fn(*mut Clk)>,
-    pub activate: Option<unsafe extern "C" fn(*mut Clk) -> libc::c_int>,
+    pub activate: Option<unsafe extern "C" fn(*mut Clk) -> kernel::ffi::c_int>,
     pub deactivate: Option<unsafe extern "C" fn(*mut Clk)>,
 }
 
 extern "C" {
-    fn IS_ERR(ptr: *const core::ffi::c_void) -> bool;
-    fn pr_err(fmt: *const core::ffi::c_char, ...) -> libc::c_int;
-    fn pr_info(fmt: *const core::ffi::c_char, ...) -> libc::c_int;
+    fn IS_ERR(ptr: *const kernel::ffi::c_void) -> bool;
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...) -> kernel::ffi::c_int;
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...) -> kernel::ffi::c_int;
     fn clk_put(clk: *mut Clk);
     fn ltq_soc_init();
     fn read_c0_count() -> u32;
     fn write_c0_compare(value: u32);
-    static mut mips_hpt_frequency: libc::c_ulong;
+    static mut mips_hpt_frequency: kernel::ffi::c_ulong;
 }
 
 // lantiq socs have 3 static clocks
 static mut cpu_clk_generic: [Clk; 4] = unsafe { core::mem::zeroed() };
 
 pub unsafe extern "C" fn clkdev_add_static(
-    cpu: libc::c_ulong,
-    fpi: libc::c_ulong,
-    io: libc::c_ulong,
-    ppe: libc::c_ulong,
+    cpu: kernel::ffi::c_ulong,
+    fpi: kernel::ffi::c_ulong,
+    io: kernel::ffi::c_ulong,
+    ppe: kernel::ffi::c_ulong,
 ) {
     cpu_clk_generic[0].rate = cpu;
     cpu_clk_generic[1].rate = fpi;
@@ -73,14 +73,14 @@ unsafe fn clk_good(clk: *mut Clk) -> bool {
     !clk.is_null() && !IS_ERR(clk.cast())
 }
 
-pub unsafe extern "C" fn clk_get_rate(clk: *mut Clk) -> libc::c_ulong {
+pub unsafe extern "C" fn clk_get_rate(clk: *mut Clk) -> kernel::ffi::c_ulong {
     if !clk_good(clk) { return 0; }
     if (*clk).rate != 0 { return (*clk).rate; }
     if let Some(get_rate) = (*clk).get_rate { return get_rate(); }
     0
 }
 
-pub unsafe extern "C" fn clk_set_rate(clk: *mut Clk, rate: libc::c_ulong) -> libc::c_int {
+pub unsafe extern "C" fn clk_set_rate(clk: *mut Clk, rate: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     if !clk_good(clk) { return 0; }
     if !(*clk).rates.is_null() && *(*clk).rates != 0 {
         let mut r = (*clk).rates;
@@ -95,17 +95,17 @@ pub unsafe extern "C" fn clk_set_rate(clk: *mut Clk, rate: libc::c_ulong) -> lib
     0
 }
 
-pub unsafe extern "C" fn clk_round_rate(clk: *mut Clk, rate: libc::c_ulong) -> libc::c_long {
+pub unsafe extern "C" fn clk_round_rate(clk: *mut Clk, rate: kernel::ffi::c_ulong) -> kernel::ffi::c_long {
     if !clk_good(clk) { return 0; }
     if !(*clk).rates.is_null() && *(*clk).rates != 0 {
         let mut r = (*clk).rates;
         while *r != 0 && *r != rate { r = r.add(1); }
-        if *r == 0 { return (*clk).rate as libc::c_long; }
+        if *r == 0 { return (*clk).rate as kernel::ffi::c_long; }
     }
-    rate as libc::c_long
+    rate as kernel::ffi::c_long
 }
 
-pub unsafe extern "C" fn clk_enable(clk: *mut Clk) -> libc::c_int {
+pub unsafe extern "C" fn clk_enable(clk: *mut Clk) -> kernel::ffi::c_int {
     if !clk_good(clk) { return -1; }
     if let Some(enable) = (*clk).enable { return enable(clk); }
     -1
@@ -116,7 +116,7 @@ pub unsafe extern "C" fn clk_disable(clk: *mut Clk) {
     if let Some(disable) = (*clk).disable { disable(clk); }
 }
 
-pub unsafe extern "C" fn clk_activate(clk: *mut Clk) -> libc::c_int {
+pub unsafe extern "C" fn clk_activate(clk: *mut Clk) -> kernel::ffi::c_int {
     if !clk_good(clk) { return -1; }
     if let Some(activate) = (*clk).activate { return activate(clk); }
     -1
@@ -129,7 +129,7 @@ pub unsafe extern "C" fn clk_deactivate(clk: *mut Clk) {
 
 pub unsafe extern "C" fn clk_get_parent(_clk: *mut Clk) -> *mut Clk { core::ptr::null_mut() }
 
-pub unsafe extern "C" fn clk_set_parent(_clk: *mut Clk, _parent: *mut Clk) -> libc::c_int { 0 }
+pub unsafe extern "C" fn clk_set_parent(_clk: *mut Clk, _parent: *mut Clk) -> kernel::ffi::c_int { 0 }
 
 #[inline]
 unsafe fn get_counter_resolution() -> u32 {
@@ -145,7 +145,7 @@ unsafe fn get_counter_resolution() -> u32 {
 pub unsafe extern "C" fn plat_time_init() {
     ltq_soc_init();
     let clk = clk_get_cpu();
-    mips_hpt_frequency = clk_get_rate(clk) / get_counter_resolution() as libc::c_ulong;
+    mips_hpt_frequency = clk_get_rate(clk) / get_counter_resolution() as kernel::ffi::c_ulong;
     write_c0_compare(read_c0_count());
     pr_info(b"CPU Clock: %ldMHz\n\0".as_ptr().cast(), clk_get_rate(clk) / 1_000_000);
     clk_put(clk);

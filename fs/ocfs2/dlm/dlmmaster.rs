@@ -56,7 +56,7 @@ static void dlm_deref_lockres_worker(dlm_work_item *item, void *data);
 int dlm_mle_equal(dlm_ctxt *dlm,
 				dlm_master_list_entry *mle,
 				const char *name,
-				namelen: core::ffi::c_uint)
+				namelen: kernel::ffi::c_uint)
 {
 	if (dlm != (*mle).dlm)
 		return 0;
@@ -78,12 +78,12 @@ static void dlm_init_mle(dlm_master_list_entry *mle,
 			dlm_ctxt *dlm,
 			dlm_lock_resource *res,
 			const char *name,
-			namelen: core::ffi::c_uint);
+			namelen: kernel::ffi::c_uint);
 static void dlm_put_mle(dlm_master_list_entry *mle);
 static void __dlm_put_mle(dlm_master_list_entry *mle);
 static int dlm_find_mle(dlm_ctxt *dlm,
 			dlm_master_list_entry **mle,
-			char *name, namelen: core::ffi::c_uint);
+			char *name, namelen: kernel::ffi::c_uint);
 
 static int dlm_do_master_request(dlm_lock_resource *res,
 				 dlm_master_list_entry *mle, int to);
@@ -101,7 +101,7 @@ static int dlm_add_migration_mle(dlm_ctxt *dlm,
 				 dlm_lock_resource *res,
 				 dlm_master_list_entry *mle,
 				 dlm_master_list_entry **oldmle,
-				 const char *name, namelen: core::ffi::c_uint,
+				 const char *name, namelen: kernel::ffi::c_uint,
 				 new_master: u8, master: u8);
 
 static u8 dlm_pick_migration_target(dlm_ctxt *dlm,
@@ -253,7 +253,7 @@ static void dlm_init_mle(dlm_master_list_entry *mle,
 			dlm_ctxt *dlm,
 			dlm_lock_resource *res,
 			const char *name,
-			namelen: core::ffi::c_uint)
+			namelen: kernel::ffi::c_uint)
 {
 	assert_spin_locked((*&dlm).spinlock);
 
@@ -324,11 +324,11 @@ void __dlm_insert_mle(dlm_ctxt *dlm, dlm_master_list_entry *mle)
 /* returns 1 if found, 0 if not */
 static int dlm_find_mle(dlm_ctxt *dlm,
 			dlm_master_list_entry **mle,
-			char *name, namelen: core::ffi::c_uint)
+			char *name, namelen: kernel::ffi::c_uint)
 {
 	struct dlm_master_list_entry *tmpmle;
 	struct hlist_head *bucket;
-	core::ffi::c_uint hash;
+	kernel::ffi::c_uint hash;
 
 	assert_spin_locked((*&dlm).master_lock);
 
@@ -527,7 +527,7 @@ void dlm_lockres_put(dlm_lock_resource *res)
 
 static void dlm_init_lockres(dlm_ctxt *dlm,
 			     dlm_lock_resource *res,
-			     const char *name, namelen: core::ffi::c_uint)
+			     const char *name, namelen: kernel::ffi::c_uint)
 {
 	char *qname;
 
@@ -582,7 +582,7 @@ static void dlm_init_lockres(dlm_ctxt *dlm,
 
 struct dlm_lock_resource *dlm_new_lockres(dlm_ctxt *dlm,
 				   const char *name,
-				   namelen: core::ffi::c_uint)
+				   namelen: kernel::ffi::c_uint)
 {
 	'error: {
 	struct dlm_lock_resource *res = NULL;
@@ -719,7 +719,7 @@ struct dlm_lock_resource * dlm_get_lock_resource(dlm_ctxt *dlm,
 	int blocked = 0;
 	int ret, nodenum;
 	struct dlm_node_iter iter;
-	core::ffi::c_uint hash;
+	kernel::ffi::c_uint hash;
 	int tries = 0;
 	int bit, wait_on_recovery = 0;
 
@@ -1110,7 +1110,7 @@ static int dlm_wait_for_lock_mastery!(dlm_ctxt *dlm,
 
 	/* sleep if we haven't finished voting yet */
 	if (sleep) {
-		core::ffi::c_ulong timeo = msecs_to_jiffies(DLM_MASTERY_TIMEOUT_MS);
+		kernel::ffi::c_ulong timeo = msecs_to_jiffies(DLM_MASTERY_TIMEOUT_MS);
 		atomic_set(&mle->woken, 0);
 		(void)wait_event_timeout(mle->wq,
 					 (atomic_read(&mle->woken) == 1),
@@ -1160,9 +1160,9 @@ static int dlm_wait_for_lock_mastery!(dlm_ctxt *dlm,
 struct dlm_bitmap_diff_iter
 {
 	int curnode;
-	core::ffi::c_ulong *orig_bm;
-	core::ffi::c_ulong *cur_bm;
-	core::ffi::c_ulong diff_bm[BITS_TO_LONGS(O2NM_MAX_NODES)];
+	kernel::ffi::c_ulong *orig_bm;
+	kernel::ffi::c_ulong *cur_bm;
+	kernel::ffi::c_ulong diff_bm[BITS_TO_LONGS(O2NM_MAX_NODES)];
 };
 
 enum dlm_node_state_change
@@ -1173,10 +1173,10 @@ enum dlm_node_state_change
 };
 
 static void dlm_bitmap_diff_iter_init(dlm_bitmap_diff_iter *iter,
-				      core::ffi::c_ulong *orig_bm,
-				      core::ffi::c_ulong *cur_bm)
+				      kernel::ffi::c_ulong *orig_bm,
+				      kernel::ffi::c_ulong *cur_bm)
 {
-	p1: core::ffi::c_ulong, p2;
+	p1: kernel::ffi::c_ulong, p2;
 	int i;
 
 	iter->curnode = -1;
@@ -1421,7 +1421,7 @@ int dlm_master_request_handler(o2net_msg *msg, len: u32, void *data,
 	struct dlm_master_request *request = (dlm_master_request *) msg->buf;
 	struct dlm_master_list_entry *mle = NULL, *tmpmle = NULL;
 	char *name;
-	namelen: core::ffi::c_uint, hash;
+	namelen: kernel::ffi::c_uint, hash;
 	int found, ret;
 	int set_maybe;
 	int dispatch_assert = 0;
@@ -1666,7 +1666,7 @@ static int dlm_do_assert_master(dlm_ctxt *dlm,
 	int ret = 0;
 	int reassert;
 	const char *lockname = res->lockname.name;
-	core::ffi::c_uint namelen = res->lockname.len;
+	kernel::ffi::c_uint namelen = res->lockname.len;
 
 	BUG_ON(namelen > O2NM_MAX_NAME_LEN);
 
@@ -1777,7 +1777,7 @@ int dlm_assert_master_handler(o2net_msg *msg, len: u32, void *data,
 	struct dlm_assert_master *assert = (dlm_assert_master *)msg->buf;
 	struct dlm_lock_resource *res = NULL;
 	char *name;
-	namelen: core::ffi::c_uint, hash;
+	namelen: kernel::ffi::c_uint, hash;
 	u32 flags;
 	int master_request = 0, have_lockres_ref = 0;
 	int ret = 0;
@@ -2095,7 +2095,7 @@ static void dlm_assert_master_worker(dlm_work_item *item, void *data)
 	struct dlm_ctxt *dlm = data;
 	int ret = 0;
 	struct dlm_lock_resource *res;
-	core::ffi::c_ulong nodemap[BITS_TO_LONGS(O2NM_MAX_NODES)];
+	kernel::ffi::c_ulong nodemap[BITS_TO_LONGS(O2NM_MAX_NODES)];
 	int ignore_higher;
 	int bit;
 	u8 request_from;
@@ -2231,7 +2231,7 @@ int dlm_drop_lockres_ref(dlm_ctxt *dlm, dlm_lock_resource *res)
 	struct dlm_deref_lockres deref;
 	int ret = 0, r;
 	const char *lockname;
-	core::ffi::c_uint namelen;
+	kernel::ffi::c_uint namelen;
 
 	lockname = res->lockname.name;
 	namelen = res->lockname.len;
@@ -2268,10 +2268,10 @@ int dlm_deref_lockres_handler(o2net_msg *msg, len: u32, void *data,
 	struct dlm_deref_lockres *deref = (dlm_deref_lockres *)msg->buf;
 	struct dlm_lock_resource *res = NULL;
 	char *name;
-	core::ffi::c_uint namelen;
+	kernel::ffi::c_uint namelen;
 	int ret = -EINVAL;
 	u8 node;
-	core::ffi::c_uint hash;
+	kernel::ffi::c_uint hash;
 	struct dlm_work_item *item;
 	int cleared = 0;
 	int dispatch = 0;
@@ -2364,10 +2364,10 @@ int dlm_deref_lockres_done_handler(o2net_msg *msg, len: u32, void *data,
 			= (dlm_deref_lockres_done *)msg->buf;
 	struct dlm_lock_resource *res = NULL;
 	char *name;
-	core::ffi::c_uint namelen;
+	kernel::ffi::c_uint namelen;
 	int ret = -EINVAL;
 	u8 node;
-	core::ffi::c_uint hash;
+	kernel::ffi::c_uint hash;
 
 	if (!dlm_grab(dlm))
 		return 0;
@@ -2428,7 +2428,7 @@ static void dlm_drop_lockres_ref_done(dlm_ctxt *dlm,
 	struct dlm_deref_lockres_done deref;
 	int ret = 0, r;
 	const char *lockname;
-	core::ffi::c_uint namelen;
+	kernel::ffi::c_uint namelen;
 
 	lockname = res->lockname.name;
 	namelen = res->lockname.len;
@@ -2564,7 +2564,7 @@ static int dlm_migrate_lockres(dlm_ctxt *dlm,
  	struct dlm_migratable_lockres *mres = NULL;
 	int ret = 0;
 	const char *name;
-	core::ffi::c_uint namelen;
+	kernel::ffi::c_uint namelen;
 	int mle_added = 0;
 	int wake = 0;
 
@@ -3129,7 +3129,7 @@ int dlm_migrate_request_handler(o2net_msg *msg, len: u32, void *data,
 	struct dlm_migrate_request *migrate = (dlm_migrate_request *) msg->buf;
 	struct dlm_master_list_entry *mle = NULL, *oldmle = NULL;
 	const char *name;
-	namelen: core::ffi::c_uint, hash;
+	namelen: kernel::ffi::c_uint, hash;
 	int ret = 0;
 
 	if (!dlm_grab(dlm))
@@ -3213,7 +3213,7 @@ static int dlm_add_migration_mle(dlm_ctxt *dlm,
 				 dlm_lock_resource *res,
 				 dlm_master_list_entry *mle,
 				 dlm_master_list_entry **oldmle,
-				 const char *name, namelen: core::ffi::c_uint,
+				 const char *name, namelen: kernel::ffi::c_uint,
 				 new_master: u8, master: u8)
 {
 	int found;
@@ -3363,7 +3363,7 @@ void dlm_clean_master_list(dlm_ctxt *dlm, dead_node: u8)
 	struct dlm_lock_resource *res;
 	struct hlist_head *bucket;
 	struct hlist_node *tmp;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	mlog(0, "dlm=%s, dead node=%u\n", dlm->name, dead_node);
 top:

@@ -19,40 +19,40 @@ pub struct xfs_inogrp {
 }
 
 extern "C" {
-    pub fn xfs_ioc_swapext(sxp: *mut xfs_swapext_t) -> ::core::ffi::c_int;
+    pub fn xfs_ioc_swapext(sxp: *mut xfs_swapext_t) -> ::kernel::ffi::c_int;
 
     pub fn xfs_fileattr_get(
         dentry: *mut dentry,
         fa: *mut file_kattr,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn xfs_fileattr_set(
         idmap: *mut mnt_idmap,
         dentry: *mut dentry,
         fa: *mut file_kattr,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn xfs_file_ioctl(
         filp: *mut file,
-        cmd: ::core::ffi::c_uint,
-        p: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_long;
+        cmd: ::kernel::ffi::c_uint,
+        p: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_long;
 
     pub fn xfs_file_compat_ioctl(
         file: *mut file,
-        cmd: ::core::ffi::c_uint,
-        arg: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_long;
+        cmd: ::kernel::ffi::c_uint,
+        arg: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_long;
 
     pub fn xfs_fsbulkstat_one_fmt(
         breq: *mut xfs_ibulk,
         bstat: *const xfs_bulkstat,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn xfs_fsinumbers_fmt(
         breq: *mut xfs_ibulk,
         igrp: *const xfs_inumbers,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

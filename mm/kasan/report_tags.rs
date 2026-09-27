@@ -11,7 +11,7 @@ extern "C" {
     static mut stack_ring: kasan_stack_ring;
 }
 
-unsafe fn get_common_bug_type(info: *mut kasan_report_info) -> *const core::ffi::c_char {
+unsafe fn get_common_bug_type(info: *mut kasan_report_info) -> *const kernel::ffi::c_char {
     /*
      * If access_size is a negative number, then it has reason to be
      * defined as out-of-bounds bug type.
@@ -21,10 +21,10 @@ unsafe fn get_common_bug_type(info: *mut kasan_report_info) -> *const core::ffi:
      * so that this can qualify as out-of-bounds.
      */
     if (*info).access_addr.wrapping_add((*info).access_size) < (*info).access_addr {
-        return b"out-of-bounds\0".as_ptr() as *const core::ffi::c_char;
+        return b"out-of-bounds\0".as_ptr() as *const kernel::ffi::c_char;
     }
 
-    b"invalid-access\0".as_ptr() as *const core::ffi::c_char
+    b"invalid-access\0".as_ptr() as *const kernel::ffi::c_char
 }
 
 pub unsafe fn kasan_complete_mode_report_info(info: *mut kasan_report_info) {
@@ -83,7 +83,7 @@ pub unsafe fn kasan_complete_mode_report_info(info: *mut kasan_report_info) {
 
             /* If a free entry is found first, the bug is likely to be a use-after-free. */
             if (*info).bug_type.is_null() {
-                (*info).bug_type = b"slab-use-after-free\0".as_ptr() as *const core::ffi::c_char;
+                (*info).bug_type = b"slab-use-after-free\0".as_ptr() as *const kernel::ffi::c_char;
             }
         } else {
             /* Second alloc of the same object. Give up. */
@@ -100,7 +100,7 @@ pub unsafe fn kasan_complete_mode_report_info(info: *mut kasan_report_info) {
 
             /* If an alloc entry is found first, the bug is likely to be an out-of-bounds. */
             if (*info).bug_type.is_null() {
-                (*info).bug_type = b"slab-out-of-bounds\0".as_ptr() as *const core::ffi::c_char;
+                (*info).bug_type = b"slab-out-of-bounds\0".as_ptr() as *const kernel::ffi::c_char;
             }
         }
 

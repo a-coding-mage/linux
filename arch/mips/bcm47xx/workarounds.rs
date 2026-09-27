@@ -3,30 +3,30 @@
 // bcm47xx_board.h, and bcm47xx.h are referenced externally.
 
 unsafe extern "C" {
-    fn gpio_request_one(gpio: ::core::ffi::c_int, flags: ::core::ffi::c_ulong, label: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn gpio_free(gpio: ::core::ffi::c_uint);
+    fn gpio_request_one(gpio: ::kernel::ffi::c_int, flags: ::kernel::ffi::c_ulong, label: *const ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
+    fn gpio_free(gpio: ::kernel::ffi::c_uint);
     fn bcm47xx_board_get() -> bcm47xx_board;
 }
 
 // C enum bcm47xx_board, GPIOF_OUT_INIT_HIGH, and bcm47xx board constants are
 // supplied by the corresponding external headers.
-type bcm47xx_board = ::core::ffi::c_int;
+type bcm47xx_board = ::kernel::ffi::c_int;
 
-unsafe fn bcm47xx_workarounds_enable_usb_power(usb_power: ::core::ffi::c_int) {
-    let err: ::core::ffi::c_int;
+unsafe fn bcm47xx_workarounds_enable_usb_power(usb_power: ::kernel::ffi::c_int) {
+    let err: ::kernel::ffi::c_int;
 
     err = unsafe {
         gpio_request_one(
             usb_power,
             GPIOF_OUT_INIT_HIGH,
-            b"usb_power\0".as_ptr() as *const ::core::ffi::c_char,
+            b"usb_power\0".as_ptr() as *const ::kernel::ffi::c_char,
         )
     };
     if err != 0 {
         // Equivalent of pr_err("Failed to request USB power gpio: %d\n", err).
         pr_err!("Failed to request USB power gpio: {}\n", err);
     } else {
-        unsafe { gpio_free(usb_power as ::core::ffi::c_uint) };
+        unsafe { gpio_free(usb_power as ::kernel::ffi::c_uint) };
     }
 }
 

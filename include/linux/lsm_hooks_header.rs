@@ -26,13 +26,13 @@
 // hook-specific declarations.
 #[repr(C)]
 pub union security_list_options {
-    pub lsm_func_addr: *mut core::ffi::c_void,
+    pub lsm_func_addr: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct lsm_static_call {
     pub key: *mut static_call_key,
-    pub trampoline: *mut core::ffi::c_void,
+    pub trampoline: *mut kernel::ffi::c_void,
     pub hl: *mut security_hook_list,
     pub active: *mut static_key_false,
 }
@@ -44,7 +44,7 @@ pub struct lsm_static_calls_table {
 
 #[repr(C)]
 pub struct lsm_id {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: u64,
 }
 
@@ -57,24 +57,24 @@ pub struct security_hook_list {
 
 #[repr(C)]
 pub struct lsm_blob_sizes {
-    pub lbs_cred: core::ffi::c_uint,
-    pub lbs_file: core::ffi::c_uint,
-    pub lbs_backing_file: core::ffi::c_uint,
-    pub lbs_ib: core::ffi::c_uint,
-    pub lbs_inode: core::ffi::c_uint,
-    pub lbs_sock: core::ffi::c_uint,
-    pub lbs_superblock: core::ffi::c_uint,
-    pub lbs_ipc: core::ffi::c_uint,
-    pub lbs_key: core::ffi::c_uint,
-    pub lbs_msg_msg: core::ffi::c_uint,
-    pub lbs_perf_event: core::ffi::c_uint,
-    pub lbs_task: core::ffi::c_uint,
-    pub lbs_xattr_count: core::ffi::c_uint,
-    pub lbs_tun_dev: core::ffi::c_uint,
-    pub lbs_bdev: core::ffi::c_uint,
-    pub lbs_bpf_map: core::ffi::c_uint,
-    pub lbs_bpf_prog: core::ffi::c_uint,
-    pub lbs_bpf_token: core::ffi::c_uint,
+    pub lbs_cred: kernel::ffi::c_uint,
+    pub lbs_file: kernel::ffi::c_uint,
+    pub lbs_backing_file: kernel::ffi::c_uint,
+    pub lbs_ib: kernel::ffi::c_uint,
+    pub lbs_inode: kernel::ffi::c_uint,
+    pub lbs_sock: kernel::ffi::c_uint,
+    pub lbs_superblock: kernel::ffi::c_uint,
+    pub lbs_ipc: kernel::ffi::c_uint,
+    pub lbs_key: kernel::ffi::c_uint,
+    pub lbs_msg_msg: kernel::ffi::c_uint,
+    pub lbs_perf_event: kernel::ffi::c_uint,
+    pub lbs_task: kernel::ffi::c_uint,
+    pub lbs_xattr_count: kernel::ffi::c_uint,
+    pub lbs_tun_dev: kernel::ffi::c_uint,
+    pub lbs_bdev: kernel::ffi::c_uint,
+    pub lbs_bpf_map: kernel::ffi::c_uint,
+    pub lbs_bpf_prog: kernel::ffi::c_uint,
+    pub lbs_bpf_token: kernel::ffi::c_uint,
 }
 
 // LSM_RET_VOID is the default value for void LSM hooks.
@@ -86,13 +86,13 @@ pub const LSM_RET_VOID: () = ();
 extern "C" {
     pub fn security_add_hooks(
         hooks: *mut security_hook_list,
-        count: core::ffi::c_int,
+        count: kernel::ffi::c_int,
         lsmid: *const lsm_id,
     );
 }
 
-pub const LSM_FLAG_LEGACY_MAJOR: core::ffi::c_ulong = 1u64 << 0;
-pub const LSM_FLAG_EXCLUSIVE: core::ffi::c_ulong = 1u64 << 1;
+pub const LSM_FLAG_LEGACY_MAJOR: kernel::ffi::c_ulong = 1u64 << 0;
+pub const LSM_FLAG_EXCLUSIVE: kernel::ffi::c_ulong = 1u64 << 1;
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -106,18 +106,18 @@ pub enum lsm_order {
 pub struct lsm_info {
     pub id: *const lsm_id,
     pub order: lsm_order,
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub blobs: *mut lsm_blob_sizes,
-    pub enabled: *mut core::ffi::c_int,
-    pub init: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
-    pub initcall_pure: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
-    pub initcall_early: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
-    pub initcall_core: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
-    pub initcall_subsys: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
-    pub initcall_fs: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
-    pub initcall_device: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
-    pub initcall_late: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
-    pub initcall_late_sync: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
+    pub enabled: *mut kernel::ffi::c_int,
+    pub init: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
+    pub initcall_pure: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
+    pub initcall_early: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
+    pub initcall_core: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
+    pub initcall_subsys: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
+    pub initcall_fs: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
+    pub initcall_device: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
+    pub initcall_late: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
+    pub initcall_late_sync: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
 }
 
 // DEFINE_LSM and DEFINE_EARLY_LSM emit static lsm_info objects into linker
@@ -131,7 +131,7 @@ extern "C" {
 #[inline]
 pub unsafe fn lsm_get_xattr_slot(
     xattrs: *mut xattr,
-    xattr_count: *mut core::ffi::c_int,
+    xattr_count: *mut kernel::ffi::c_int,
 ) -> *mut xattr {
     if xattrs.is_null() {
         return core::ptr::null_mut();

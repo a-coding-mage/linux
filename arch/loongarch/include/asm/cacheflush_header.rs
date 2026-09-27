@@ -22,8 +22,8 @@ pub unsafe fn cache_inclusive(cdesc: *const crate::cache_desc) -> bool {
 }
 
 #[inline]
-pub unsafe fn cpu_last_level_cache_line_size() -> ::core::ffi::c_uint {
-    let cache_present: ::core::ffi::c_int = boot_cpu_data.cache_leaves_present;
+pub unsafe fn cpu_last_level_cache_line_size() -> ::kernel::ffi::c_uint {
+    let cache_present: ::kernel::ffi::c_int = boot_cpu_data.cache_leaves_present;
     boot_cpu_data.cache_leaves[(cache_present - 1) as usize].linesz
 }
 
@@ -41,7 +41,7 @@ pub unsafe fn local_flush_icache_all() {
 }
 
 #[inline]
-pub unsafe fn local_flush_icache_range(_start: ::core::ffi::c_ulong, _end: ::core::ffi::c_ulong) {
+pub unsafe fn local_flush_icache_range(_start: ::kernel::ffi::c_ulong, _end: ::kernel::ffi::c_ulong) {
     core::arch::asm!("ibar\t0", options(nostack));
 }
 
@@ -59,19 +59,19 @@ pub fn flush_cache_mm(_mm: *mut crate::mm_struct) {}
 pub fn flush_cache_dup_mm(_mm: *mut crate::mm_struct) {}
 
 #[inline]
-pub fn flush_cache_range(_vma: *mut crate::vm_area_struct, _start: ::core::ffi::c_ulong, _end: ::core::ffi::c_ulong) {}
+pub fn flush_cache_range(_vma: *mut crate::vm_area_struct, _start: ::kernel::ffi::c_ulong, _end: ::kernel::ffi::c_ulong) {}
 
 #[inline]
-pub fn flush_cache_page(_vma: *mut crate::vm_area_struct, _vmaddr: ::core::ffi::c_ulong, _pfn: ::core::ffi::c_ulong) {}
+pub fn flush_cache_page(_vma: *mut crate::vm_area_struct, _vmaddr: ::kernel::ffi::c_ulong, _pfn: ::kernel::ffi::c_ulong) {}
 
 #[inline]
-pub fn flush_cache_vmap(_start: ::core::ffi::c_ulong, _end: ::core::ffi::c_ulong) {}
+pub fn flush_cache_vmap(_start: ::kernel::ffi::c_ulong, _end: ::kernel::ffi::c_ulong) {}
 
 #[inline]
-pub fn flush_cache_vunmap(_start: ::core::ffi::c_ulong, _end: ::core::ffi::c_ulong) {}
+pub fn flush_cache_vunmap(_start: ::kernel::ffi::c_ulong, _end: ::kernel::ffi::c_ulong) {}
 
 #[inline]
-pub fn flush_icache_user_page(_vma: *mut crate::vm_area_struct, _page: *mut crate::page, _addr: ::core::ffi::c_ulong, _len: ::core::ffi::c_ulong) {}
+pub fn flush_icache_user_page(_vma: *mut crate::vm_area_struct, _page: *mut crate::page, _addr: ::kernel::ffi::c_ulong, _len: ::kernel::ffi::c_ulong) {}
 
 #[inline]
 pub fn flush_dcache_mmap_lock(_mapping: *mut crate::address_space) {}
@@ -80,12 +80,12 @@ pub fn flush_dcache_mmap_lock(_mapping: *mut crate::address_space) {}
 pub fn flush_dcache_mmap_unlock(_mapping: *mut crate::address_space) {}
 
 #[inline]
-pub unsafe fn cache_op(op: ::core::ffi::c_int, addr: ::core::ffi::c_ulong) {
+pub unsafe fn cache_op(op: ::kernel::ffi::c_int, addr: ::kernel::ffi::c_ulong) {
     core::arch::asm!("cacop {0}, {1}", in(reg) op, in(reg) addr, options(nostack));
 }
 
 #[inline]
-pub unsafe fn flush_cache_line(leaf: ::core::ffi::c_int, addr: ::core::ffi::c_ulong) {
+pub unsafe fn flush_cache_line(leaf: ::kernel::ffi::c_int, addr: ::kernel::ffi::c_ulong) {
     match leaf {
         Cache_LEAF0 => cache_op(Index_Writeback_Inv_LEAF0, addr),
         Cache_LEAF1 => cache_op(Index_Writeback_Inv_LEAF1, addr),

@@ -61,6 +61,6 @@ pub const ELF_HWCAP: usize = 0;
 
    For the moment, we have only optimizations for the Intel generations,
    but that could change... */
-pub const ELF_PLATFORM: *const core::ffi::c_char = core::ptr::null();
+pub const ELF_PLATFORM: *const kernel::ffi::c_char = core::ptr::null();
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

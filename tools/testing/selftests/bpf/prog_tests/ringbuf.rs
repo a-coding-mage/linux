@@ -602,7 +602,7 @@ unsafe fn ringbuf_subtest() {
      * samples, so consume them here to collect all the samples
      */
     err = ring_buffer__consume(ringbuf);
-    CHECK!(err < 0, "rb_consume\0".as_ptr() as *const i8, "failed: %d\b\0".as_ptr() as *const i8, err);
+    CHECK!(err < 0, "rb_consume\0".as_ptr() as *const i8, "failed: %d\x08\0".as_ptr() as *const i8, err);
 
     /* also consume using ring__consume to make sure it works the same */
     err = ring__consume(ring);

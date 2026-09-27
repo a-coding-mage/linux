@@ -15,8 +15,8 @@
 
 #[repr(C)]
 struct addi_watchdog_private {
-    iobase: ::core::ffi::c_ulong,
-    wdog_ctrl: ::core::ffi::c_uint,
+    iobase: ::kernel::ffi::c_ulong,
+    wdog_ctrl: ::kernel::ffi::c_uint,
 }
 
 /*
@@ -33,16 +33,16 @@ unsafe fn addi_watchdog_insn_config(
     dev: *mut comedi_device,
     s: *mut comedi_subdevice,
     insn: *mut comedi_insn,
-    data: *mut ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    data: *mut ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let spriv = (*s).private as *mut addi_watchdog_private;
-    let mut reload: ::core::ffi::c_uint;
+    let mut reload: ::kernel::ffi::c_uint;
 
     match *data.add(0) {
         INSN_CONFIG_ARM => {
             (*spriv).wdog_ctrl = ADDI_TCW_CTRL_ENA;
             reload = *data.add(1) & (*s).maxdata;
-            outl(reload, (*spriv).iobase + ADDI_TCW_RELOAD_REG as ::core::ffi::c_ulong);
+            outl(reload, (*spriv).iobase + ADDI_TCW_RELOAD_REG as ::kernel::ffi::c_ulong);
 
             /* Time base is 20ms, let the user know the timeout */
             dev_info(
@@ -59,39 +59,39 @@ unsafe fn addi_watchdog_insn_config(
 
     outl(
         (*spriv).wdog_ctrl,
-        (*spriv).iobase + ADDI_TCW_CTRL_REG as ::core::ffi::c_ulong,
+        (*spriv).iobase + ADDI_TCW_CTRL_REG as ::kernel::ffi::c_ulong,
     );
 
-    (*insn).n as ::core::ffi::c_int
+    (*insn).n as ::kernel::ffi::c_int
 }
 
 unsafe fn addi_watchdog_insn_read(
     _dev: *mut comedi_device,
     s: *mut comedi_subdevice,
     insn: *mut comedi_insn,
-    data: *mut ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    data: *mut ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let spriv = (*s).private as *mut addi_watchdog_private;
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: ::kernel::ffi::c_int = 0;
 
-    while i < (*insn).n as ::core::ffi::c_int {
+    while i < (*insn).n as ::kernel::ffi::c_int {
         *data.add(i as usize) = inl(
-            (*spriv).iobase + ADDI_TCW_STATUS_REG as ::core::ffi::c_ulong,
+            (*spriv).iobase + ADDI_TCW_STATUS_REG as ::kernel::ffi::c_ulong,
         );
         i += 1;
     }
 
-    (*insn).n as ::core::ffi::c_int
+    (*insn).n as ::kernel::ffi::c_int
 }
 
 unsafe fn addi_watchdog_insn_write(
     dev: *mut comedi_device,
     s: *mut comedi_subdevice,
     insn: *mut comedi_insn,
-    _data: *mut ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    _data: *mut ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let spriv = (*s).private as *mut addi_watchdog_private;
-    let mut i: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
 
     if (*spriv).wdog_ctrl == 0 {
         dev_warn((*dev).class_dev, "watchdog is disabled\n");
@@ -100,26 +100,26 @@ unsafe fn addi_watchdog_insn_write(
 
     /* "ping" the watchdog */
     i = 0;
-    while i < (*insn).n as ::core::ffi::c_int {
+    while i < (*insn).n as ::kernel::ffi::c_int {
         outl(
             (*spriv).wdog_ctrl | ADDI_TCW_CTRL_TRIG,
-            (*spriv).iobase + ADDI_TCW_CTRL_REG as ::core::ffi::c_ulong,
+            (*spriv).iobase + ADDI_TCW_CTRL_REG as ::kernel::ffi::c_ulong,
         );
         i += 1;
     }
 
-    (*insn).n as ::core::ffi::c_int
+    (*insn).n as ::kernel::ffi::c_int
 }
 
-pub unsafe fn addi_watchdog_reset(iobase: ::core::ffi::c_ulong) {
-    outl(0x0, iobase + ADDI_TCW_CTRL_REG as ::core::ffi::c_ulong);
-    outl(0x0, iobase + ADDI_TCW_RELOAD_REG as ::core::ffi::c_ulong);
+pub unsafe fn addi_watchdog_reset(iobase: ::kernel::ffi::c_ulong) {
+    outl(0x0, iobase + ADDI_TCW_CTRL_REG as ::kernel::ffi::c_ulong);
+    outl(0x0, iobase + ADDI_TCW_RELOAD_REG as ::kernel::ffi::c_ulong);
 }
 
 pub unsafe fn addi_watchdog_init(
     s: *mut comedi_subdevice,
-    iobase: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    iobase: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     let spriv: *mut addi_watchdog_private;
 
     spriv = comedi_alloc_spriv(s, ::core::mem::size_of::<addi_watchdog_private>())

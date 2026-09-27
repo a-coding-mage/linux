@@ -14,19 +14,19 @@
 #[cfg(CONFIG_SPARSEMEM)]
 extern "C" {
     pub fn sparse_init();
-    pub fn sparse_index_init(section_nr: ::core::ffi::c_ulong, nid: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn sparse_index_init(section_nr: ::kernel::ffi::c_ulong, nid: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_SPARSEMEM)]
 #[inline]
 pub unsafe fn sparse_init_one_section(
     ms: *mut mem_section,
-    pnum: ::core::ffi::c_ulong,
+    pnum: ::kernel::ffi::c_ulong,
     mem_map: *mut page,
     usage: *mut mem_section_usage,
-    flags: ::core::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
 ) {
-    let coded_mem_map: ::core::ffi::c_ulong;
+    let coded_mem_map: ::kernel::ffi::c_ulong;
 
     // BUILD_BUG_ON(SECTION_MAP_LAST_BIT > PFN_SECTION_SHIFT);
 
@@ -35,7 +35,7 @@ pub unsafe fn sparse_init_one_section(
      * page_to_pfn() on !CONFIG_SPARSEMEM_VMEMMAP can simply subtract it
      * from the page pointer to obtain the PFN.
      */
-    coded_mem_map = mem_map.offset(-(section_nr_to_pfn(pnum) as isize)) as ::core::ffi::c_ulong;
+    coded_mem_map = mem_map.offset(-(section_nr_to_pfn(pnum) as isize)) as ::kernel::ffi::c_ulong;
     // VM_WARN_ON_ONCE(coded_mem_map & !SECTION_MAP_MASK);
 
     (*ms).section_mem_map &= !SECTION_MAP_MASK;
@@ -48,7 +48,7 @@ pub unsafe fn sparse_init_one_section(
 #[inline]
 pub unsafe fn __section_mark_present(
     ms: *mut mem_section,
-    section_nr: ::core::ffi::c_ulong,
+    section_nr: ::kernel::ffi::c_ulong,
 ) {
     if section_nr > __highest_present_section_nr {
         __highest_present_section_nr = section_nr;

@@ -2450,7 +2450,7 @@ static void  rk3588_clk_early_init(device_node *np)
 {
 	struct rockchip_clk_provider *ctx;
 	struct regmap *sys_grf;
-	clk_nr_clks: core::ffi::c_ulong, max_clk_id1, max_clk_id2;
+	clk_nr_clks: kernel::ffi::c_ulong, max_clk_id1, max_clk_id2;
 	void __iomem *reg_base;
 
 	max_clk_id1 = rockchip_clk_find_max_clk_id(rk3588_clk_branches,

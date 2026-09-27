@@ -35,7 +35,7 @@ unsafe fn () rdev_set_wakeup(*mut cfg80211_registered_devicerdev,
 	trace_rdev_return_void(&(*rdev).wiphy);
 }
 
-unsafe fn *mut wireless_devrdev_add_virtual_intf(*mut cfg80211_registered_devicerdev, name: *mut core::ffi::c_char,
+unsafe fn *mut wireless_devrdev_add_virtual_intf(*mut cfg80211_registered_devicerdev, name: *mut kernel::ffi::c_char,
 		       name_assign_type: u8,
 		       nl80211_iftype type,
 		       *mut vif_paramsparams)
@@ -765,7 +765,7 @@ unsafe fn int rdev_mgmt_tx(*mut cfg80211_registered_devicerdev,
 
 unsafe fn int rdev_tx_control_port(*mut cfg80211_registered_devicerdev,
 				       *mut net_devicedev,
-				       buf: *const core::ffi::c_void, len: usize,
+				       buf: *const kernel::ffi::c_void, len: usize,
 				       dest: *const u8, __be16 proto,
 				       const bool noencrypt, int link,
 				       cookie: u64)
@@ -1398,7 +1398,7 @@ unsafe fn int rdev_update_owe_info(*mut cfg80211_registered_devicerdev,
 unsafe fn int
 rdev_probe_mesh_link(*mut cfg80211_registered_devicerdev,
 		     *mut net_devicedev, dest: *const u8,
-		     buf: *const core::ffi::c_void, len: usize)
+		     buf: *const kernel::ffi::c_void, len: usize)
 {
 	int ret;
 

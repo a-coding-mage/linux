@@ -1,4 +1,4 @@
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Declared with the Linux __initconst attribute in C.
 extern "C" {

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[cfg(any(CONFIG_UBSAN_TRAP, CONFIG_UBSAN_KVM_EL2))]
 unsafe extern "C" {

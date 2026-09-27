@@ -35,7 +35,7 @@ TRACE_EVENT!(mhi_gen_tre,
     TP_STRUCT__entry!(
         __string!(name, (*mhi_cntrl).mhi_dev.name),
         __field!(i32, ch_num),
-        __field!(*mut core::ffi::c_void, wp),
+        __field!(*mut kernel::ffi::c_void, wp),
         __field!(u64, tre_ptr),
         __field!(u32, dword0),
         __field!(u32, dword1)
@@ -43,7 +43,7 @@ TRACE_EVENT!(mhi_gen_tre,
     TP_fast_assign!({
         __assign_str!(name);
         __entry.ch_num = (*mhi_chan).chan;
-        __entry.wp = mhi_tre as *mut core::ffi::c_void;
+        __entry.wp = mhi_tre as *mut kernel::ffi::c_void;
         __entry.tre_ptr = le64_to_cpu((*mhi_tre).ptr);
         __entry.dword0 = le32_to_cpu((*mhi_tre).dword[0]);
         __entry.dword1 = le32_to_cpu((*mhi_tre).dword[1]);
@@ -94,10 +94,10 @@ DECLARE_EVENT_CLASS!(mhi_process_event_ring,
     TP_STRUCT__entry!(
         __string!(name, (*mhi_cntrl).mhi_dev.name), __field!(u32, dword0),
         __field!(u32, dword1), __field!(i32, state), __field!(u64, ptr),
-        __field!(*mut core::ffi::c_void, rp)
+        __field!(*mut kernel::ffi::c_void, rp)
     ),
     TP_fast_assign!({
-        __assign_str!(name); __entry.rp = rp as *mut core::ffi::c_void;
+        __assign_str!(name); __entry.rp = rp as *mut kernel::ffi::c_void;
         __entry.ptr = le64_to_cpu((*rp).ptr);
         __entry.dword0 = le32_to_cpu((*rp).dword[0]);
         __entry.dword1 = le32_to_cpu((*rp).dword[1]);
@@ -115,11 +115,11 @@ DEFINE_EVENT!(mhi_process_event_ring, mhi_ctrl_event,
 
 DECLARE_EVENT_CLASS!(mhi_update_channel_state,
     TP_PROTO!(mhi_cntrl: *mut mhi_controller, mhi_chan: *mut mhi_chan,
-              state: i32, reason: *const core::ffi::c_char),
+              state: i32, reason: *const kernel::ffi::c_char),
     TP_ARGS!(mhi_cntrl, mhi_chan, state, reason),
     TP_STRUCT__entry!(
         __string!(name, (*mhi_cntrl).mhi_dev.name), __field!(i32, ch_num),
-        __field!(i32, state), __field!(*const core::ffi::c_char, reason)
+        __field!(i32, state), __field!(*const kernel::ffi::c_char, reason)
     ),
     TP_fast_assign!({
         __assign_str!(name); __entry.ch_num = (*mhi_chan).chan;
@@ -132,10 +132,10 @@ DECLARE_EVENT_CLASS!(mhi_update_channel_state,
 
 DEFINE_EVENT!(mhi_update_channel_state, mhi_channel_command_start,
     TP_PROTO!(mhi_cntrl: *mut mhi_controller, mhi_chan: *mut mhi_chan, state: i32,
-              reason: *const core::ffi::c_char), TP_ARGS!(mhi_cntrl, mhi_chan, state, reason));
+              reason: *const kernel::ffi::c_char), TP_ARGS!(mhi_cntrl, mhi_chan, state, reason));
 DEFINE_EVENT!(mhi_update_channel_state, mhi_channel_command_end,
     TP_PROTO!(mhi_cntrl: *mut mhi_controller, mhi_chan: *mut mhi_chan, state: i32,
-              reason: *const core::ffi::c_char), TP_ARGS!(mhi_cntrl, mhi_chan, state, reason));
+              reason: *const kernel::ffi::c_char), TP_ARGS!(mhi_cntrl, mhi_chan, state, reason));
 
 TRACE_EVENT!(mhi_pm_st_transition,
     TP_PROTO!(mhi_cntrl: *mut mhi_controller, state: i32),

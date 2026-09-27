@@ -6,7 +6,7 @@
  * Rust translation of srcutree.h.
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 /* Supplied by linux/rcu_node_tree.h and linux/completion.h. */
 pub struct raw_spinlock_t;
@@ -39,7 +39,7 @@ pub struct srcu_ctr {
 #[repr(C)]
 pub struct srcu_data {
     pub srcu_ctrs: [srcu_ctr; 2],
-    pub srcu_reader_flavor: core::ffi::c_int,
+    pub srcu_reader_flavor: kernel::ffi::c_int,
     pub lock: raw_spinlock_t,
     pub srcu_cblist: rcu_segcblist,
     pub srcu_gp_seq_needed: c_ulong,
@@ -49,10 +49,10 @@ pub struct srcu_data {
     pub work: work_struct,
     pub srcu_barrier_head: rcu_head,
     pub srcu_ec_head: rcu_head,
-    pub srcu_ec_state: core::ffi::c_int,
+    pub srcu_ec_state: kernel::ffi::c_int,
     pub mynode: *mut srcu_node,
     pub grpmask: c_ulong,
-    pub cpu: core::ffi::c_int,
+    pub cpu: kernel::ffi::c_int,
     pub ssp: *mut srcu_struct,
 }
 
@@ -63,15 +63,15 @@ pub struct srcu_node {
     pub srcu_data_have_cbs: [c_ulong; 4],
     pub srcu_gp_seq_needed_exp: c_ulong,
     pub srcu_parent: *mut srcu_node,
-    pub grplo: core::ffi::c_int,
-    pub grphi: core::ffi::c_int,
+    pub grplo: kernel::ffi::c_int,
+    pub grphi: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct srcu_usage {
     pub node: *mut srcu_node,
     pub level: [*mut srcu_node; RCU_NUM_LVLS + 1],
-    pub srcu_size_state: core::ffi::c_int,
+    pub srcu_size_state: kernel::ffi::c_int,
     pub srcu_cb_mutex: mutex,
     pub lock: raw_spinlock_t,
     pub srcu_gp_mutex: mutex,
@@ -181,7 +181,7 @@ macro_rules! DEFINE_SRCU_FAST_UPDOWN { ($name:ident) => { __DEFINE_SRCU!($name, 
 macro_rules! DEFINE_STATIC_SRCU_FAST_UPDOWN { ($name:ident) => { __DEFINE_SRCU!($name, SRCU_READ_FLAVOR_FAST_UPDOWN, true) }; }
 
 extern "C" {
-    pub fn __srcu_read_lock(ssp: *mut srcu_struct) -> core::ffi::c_int;
+    pub fn __srcu_read_lock(ssp: *mut srcu_struct) -> kernel::ffi::c_int;
     pub fn synchronize_srcu_expedited(ssp: *mut srcu_struct);
     pub fn srcu_barrier(ssp: *mut srcu_struct);
     pub fn srcu_expedite_current(ssp: *mut srcu_struct);

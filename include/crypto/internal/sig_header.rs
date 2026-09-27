@@ -23,7 +23,7 @@ pub union SigInstanceVariant {
 #[repr(C)]
 pub struct SigInstanceCommon {
     // C uses char head[offsetof(struct sig_alg, base)] as padding.
-    pub head: [core::ffi::c_char; 0],
+    pub head: [kernel::ffi::c_char; 0],
     pub base: CryptoInstance,
 }
 
@@ -33,7 +33,7 @@ pub struct CryptoSigSpawn {
 }
 
 #[inline]
-pub unsafe fn crypto_sig_ctx(tfm: *mut CryptoSig) -> *mut core::ffi::c_void {
+pub unsafe fn crypto_sig_ctx(tfm: *mut CryptoSig) -> *mut kernel::ffi::c_void {
     crypto_tfm_ctx(unsafe { &mut (*tfm).base })
 }
 
@@ -46,7 +46,7 @@ pub unsafe fn crypto_sig_ctx(tfm: *mut CryptoSig) -> *mut core::ffi::c_void {
  *
  * Return: zero on success; error code in case of error
  */
-pub unsafe extern "C" fn crypto_register_sig(alg: *mut SigAlg) -> core::ffi::c_int;
+pub unsafe extern "C" fn crypto_register_sig(alg: *mut SigAlg) -> kernel::ffi::c_int;
 
 /**
  * crypto_unregister_sig() -- Unregister public key signature algorithm
@@ -60,7 +60,7 @@ pub unsafe extern "C" fn crypto_unregister_sig(alg: *mut SigAlg);
 pub unsafe extern "C" fn sig_register_instance(
     tmpl: *mut CryptoTemplate,
     inst: *mut SigInstance,
-) -> core::ffi::c_int;
+) -> kernel::ffi::c_int;
 
 #[inline]
 pub unsafe fn sig_instance(inst: *mut CryptoInstance) -> *mut SigInstance {
@@ -78,17 +78,17 @@ pub unsafe fn sig_crypto_instance(inst: *mut SigInstance) -> *mut CryptoInstance
 }
 
 #[inline]
-pub unsafe fn sig_instance_ctx(inst: *mut SigInstance) -> *mut core::ffi::c_void {
+pub unsafe fn sig_instance_ctx(inst: *mut SigInstance) -> *mut kernel::ffi::c_void {
     crypto_instance_ctx(sig_crypto_instance(inst))
 }
 
 pub unsafe extern "C" fn crypto_grab_sig(
     spawn: *mut CryptoSigSpawn,
     inst: *mut CryptoInstance,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     type_: u32,
     mask: u32,
-) -> core::ffi::c_int;
+) -> kernel::ffi::c_int;
 
 #[inline]
 pub unsafe fn crypto_spawn_sig(spawn: *mut CryptoSigSpawn) -> *mut CryptoSig {

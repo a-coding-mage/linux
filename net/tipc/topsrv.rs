@@ -17,7 +17,7 @@ pub struct tipc_topsrv {
     pub rcv_wq: *mut workqueue_struct,
     pub send_wq: *mut workqueue_struct,
     pub listener: *mut socket,
-    pub name: [core::ffi::c_char; TIPC_SERVER_NAME_LEN],
+    pub name: [kernel::ffi::c_char; TIPC_SERVER_NAME_LEN],
 }
 #[repr(C)]
 pub struct tipc_conn {

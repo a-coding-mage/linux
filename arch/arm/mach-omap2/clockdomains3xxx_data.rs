@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /* OMAP3xxx clockdomains -- direct Rust translation of clockdomains3xxx_data.c. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Definitions supplied by the surrounding kernel translation.
 extern "C" {

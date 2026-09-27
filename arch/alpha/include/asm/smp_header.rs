@@ -20,13 +20,13 @@ pub unsafe fn __hard_smp_processor_id() -> u8 {
 #[cfg(CONFIG_SMP)]
 #[repr(C, align(64))]
 pub struct cpuinfo_alpha {
-    pub loops_per_jiffy: libc::c_ulong,
-    pub last_asn: libc::c_ulong,
-    pub need_new_asn: libc::c_int,
-    pub asn_lock: libc::c_int,
-    pub ipi_count: libc::c_ulong,
-    pub prof_multiplier: libc::c_ulong,
-    pub prof_counter: libc::c_ulong,
+    pub loops_per_jiffy: kernel::ffi::c_ulong,
+    pub last_asn: kernel::ffi::c_ulong,
+    pub need_new_asn: kernel::ffi::c_int,
+    pub asn_lock: kernel::ffi::c_int,
+    pub ipi_count: kernel::ffi::c_ulong,
+    pub prof_multiplier: kernel::ffi::c_ulong,
+    pub prof_counter: kernel::ffi::c_ulong,
     pub mcheck_expected: u8,
     pub mcheck_taken: u8,
     pub mcheck_extra: u8,
@@ -36,26 +36,26 @@ pub struct cpuinfo_alpha {
 extern "C" {
     pub static mut cpu_data: [cpuinfo_alpha; NR_CPUS];
 
-    pub static mut smp_num_cpus: libc::c_int;
-    pub fn arch_send_call_function_single_ipi(cpu: libc::c_int);
+    pub static mut smp_num_cpus: kernel::ffi::c_int;
+    pub fn arch_send_call_function_single_ipi(cpu: kernel::ffi::c_int);
     pub fn arch_send_call_function_ipi_mask(mask: *const struct_cpumask);
 }
 
 #[cfg(CONFIG_SMP)]
 #[inline]
-pub unsafe fn hard_smp_processor_id() -> libc::c_int {
-    __hard_smp_processor_id() as libc::c_int
+pub unsafe fn hard_smp_processor_id() -> kernel::ffi::c_int {
+    __hard_smp_processor_id() as kernel::ffi::c_int
 }
 
 #[cfg(CONFIG_SMP)]
 #[inline]
-pub unsafe fn raw_smp_processor_id() -> libc::c_int {
+pub unsafe fn raw_smp_processor_id() -> kernel::ffi::c_int {
     (*current_thread_info()).cpu
 }
 
 #[cfg(not(CONFIG_SMP))]
 #[inline]
-pub const fn hard_smp_processor_id() -> libc::c_int {
+pub const fn hard_smp_processor_id() -> kernel::ffi::c_int {
     0
 }
 
@@ -67,6 +67,6 @@ macro_rules! smp_call_function_on_cpu {
     }};
 }
 
-pub const NO_PROC_ID: libc::c_int = -1;
+pub const NO_PROC_ID: kernel::ffi::c_int = -1;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

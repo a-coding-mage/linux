@@ -12,7 +12,7 @@
 #[repr(C)]
 pub struct string_stream_fragment {
     pub node: list_head,
-    pub fragment: *mut ::core::ffi::c_char,
+    pub fragment: *mut ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -40,27 +40,27 @@ extern "C" {
     /* __printf(2, 3) */
     pub fn string_stream_add(
         stream: *mut string_stream,
-        fmt: *const ::core::ffi::c_char,
+        fmt: *const ::kernel::ffi::c_char,
         ...,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     /* __printf(2, 0) */
     pub fn string_stream_vadd(
         stream: *mut string_stream,
-        fmt: *const ::core::ffi::c_char,
+        fmt: *const ::kernel::ffi::c_char,
         args: va_list,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn string_stream_clear(stream: *mut string_stream);
 
     pub fn string_stream_get_string(
         stream: *mut string_stream,
-    ) -> *mut ::core::ffi::c_char;
+    ) -> *mut ::kernel::ffi::c_char;
 
     pub fn string_stream_append(
         stream: *mut string_stream,
         other: *mut string_stream,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn string_stream_is_empty(stream: *mut string_stream) -> bool;
 

@@ -12,25 +12,25 @@
 // Dependencies supplied by the surrounding kernel translation.
 
 /* 32-bit compatibility types */
-pub type __sighandler32_t = ::core::ffi::c_uint;
+pub type __sighandler32_t = ::kernel::ffi::c_uint;
 pub type vfptr_t = unsafe extern "C" fn();
 
 /*
  * Atomically swap in the new signal mask, and wait for a signal.
  */
-pub unsafe fn sys32_sigsuspend(uset: *mut compat_sigset_t) -> ::core::ffi::c_int {
+pub unsafe fn sys32_sigsuspend(uset: *mut compat_sigset_t) -> ::kernel::ffi::c_int {
     compat_sys_rt_sigsuspend(uset, core::mem::size_of::<compat_sigset_t>())
 }
 
 pub unsafe fn sys_32_sigaction(
-    sig: ::core::ffi::c_long,
+    sig: ::kernel::ffi::c_long,
     act: *const compat_sigaction,
     oact: *mut compat_sigaction,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let mut new_ka: k_sigaction = core::mem::zeroed();
     let mut old_ka: k_sigaction = core::mem::zeroed();
-    let mut ret: ::core::ffi::c_int;
-    let mut err: ::core::ffi::c_int = 0;
+    let mut ret: ::kernel::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int = 0;
 
     if !act.is_null() {
         let mut mask: old_sigset_t = 0;

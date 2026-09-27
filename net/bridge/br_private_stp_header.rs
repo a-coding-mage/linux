@@ -41,9 +41,9 @@ pub struct br_config_bpdu {
 /* called under bridge lock */
 #[inline]
 pub unsafe fn br_is_designated_port(p: *const net_bridge_port) -> i32 {
-    (libc::memcmp(
-        &(*p).designated_bridge as *const _ as *const libc::c_void,
-        &(*(*p).br).bridge_id as *const _ as *const libc::c_void,
+    (memcmp(
+        &(*p).designated_bridge as *const _ as *const core::ffi::c_void,
+        &(*(*p).br).bridge_id as *const _ as *const core::ffi::c_void,
         8,
     ) == 0) as i32
         & (((*p).designated_port == (*p).port_id) as i32)

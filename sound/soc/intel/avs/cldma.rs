@@ -10,13 +10,13 @@
 #![allow(non_upper_case_globals)]
 #![allow(dead_code)]
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 type u8 = ::core::primitive::u8;
 type u32 = ::core::primitive::u32;
-type c_int = ::core::ffi::c_int;
-type c_uint = ::core::ffi::c_uint;
-type c_ulong = ::core::ffi::c_ulong;
+type c_int = ::kernel::ffi::c_int;
+type c_uint = ::kernel::ffi::c_uint;
+type c_ulong = ::kernel::ffi::c_ulong;
 type dma_addr_t = usize;
 type phys_addr_t = usize;
 type __le32 = u32;

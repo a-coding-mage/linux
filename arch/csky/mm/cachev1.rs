@@ -3,7 +3,7 @@
 
 /* Dependencies supplied by the surrounding kernel translation. */
 extern "C" {
-    fn mtcr(reg: *const core::ffi::c_char, value: u32);
+    fn mtcr(reg: *const kernel::ffi::c_char, value: u32);
     fn mfcr_ccr2() -> u32;
     fn mb();
     fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut usize);
@@ -33,17 +33,17 @@ const CR22_WAY_SHIFT_L2: u32 = 29;
 static mut cache_lock: core::mem::MaybeUninit<spinlock_t> = core::mem::MaybeUninit::uninit();
 
 unsafe fn cache_op_line(i: usize, val: u32) {
-    mtcr(b"cr22\0".as_ptr() as *const core::ffi::c_char, i as u32);
-    mtcr(b"cr17\0".as_ptr() as *const core::ffi::c_char, val);
+    mtcr(b"cr22\0".as_ptr() as *const kernel::ffi::c_char, i as u32);
+    mtcr(b"cr17\0".as_ptr() as *const kernel::ffi::c_char, val);
 }
 
 const CCR2_L2E: u32 = 1 << 3;
 unsafe fn cache_op_all(value: u32, l2: u32) {
-    mtcr(b"cr17\0".as_ptr() as *const core::ffi::c_char, value | CACHE_CLR);
+    mtcr(b"cr17\0".as_ptr() as *const kernel::ffi::c_char, value | CACHE_CLR);
     mb();
 
     if l2 != 0 && (mfcr_ccr2() & CCR2_L2E) != 0 {
-        mtcr(b"cr24\0".as_ptr() as *const core::ffi::c_char, value | CACHE_CLR);
+        mtcr(b"cr24\0".as_ptr() as *const kernel::ffi::c_char, value | CACHE_CLR);
         mb();
     }
 }
@@ -70,7 +70,7 @@ unsafe fn cache_op_range(start: u32, end: u32, value: u32, l2: u32) {
         cache_op_line(i, val);
         if l2_sync {
             mb();
-            mtcr(b"cr24\0".as_ptr() as *const core::ffi::c_char, val);
+            mtcr(b"cr24\0".as_ptr() as *const kernel::ffi::c_char, val);
         }
         i += L1_CACHE_BYTES as usize;
     }
@@ -91,7 +91,7 @@ pub unsafe fn icache_inv_range(start: usize, end: usize) {
 
 pub unsafe fn icache_inv_all() { cache_op_all(INS_CACHE | CACHE_INV, 0); }
 
-pub unsafe fn local_icache_inv_all(_priv: *mut core::ffi::c_void) {
+pub unsafe fn local_icache_inv_all(_priv: *mut kernel::ffi::c_void) {
     cache_op_all(INS_CACHE | CACHE_INV, 0);
 }
 

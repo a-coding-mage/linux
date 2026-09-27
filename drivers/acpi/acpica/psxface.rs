@@ -16,7 +16,7 @@
 unsafe fn acpi_ps_update_parameter_list(info: *mut acpi_evaluate_info, action: u16);
 
 pub unsafe fn acpi_debug_trace(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     debug_level: u32,
     debug_layer: u32,
     flags: u32,

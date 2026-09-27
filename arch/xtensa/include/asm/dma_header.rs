@@ -48,7 +48,7 @@ pub const MAX_DMA_ADDRESS: usize = PAGE_OFFSET + XCHAL_KIO_SIZE - 1;
 
 /* Reserve and release a DMA channel */
 unsafe extern "C" {
-    pub fn request_dma(dmanr: u32, device_id: *const core::ffi::c_char) -> core::ffi::c_int;
+    pub fn request_dma(dmanr: u32, device_id: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
     pub fn free_dma(dmanr: u32);
 }
 

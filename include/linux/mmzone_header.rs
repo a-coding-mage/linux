@@ -23,8 +23,8 @@ pub enum migratetype { MIGRATE_UNMOVABLE, MIGRATE_MOVABLE, MIGRATE_RECLAIMABLE,
     MIGRATE_ISOLATE, MIGRATE_TYPES }
 
 extern "C" {
-    pub static migratetype_names: [*const core::ffi::c_char; MIGRATE_TYPES as usize];
-    pub static mut page_group_by_mobility_disabled: core::ffi::c_int;
+    pub static migratetype_names: [*const kernel::ffi::c_char; MIGRATE_TYPES as usize];
+    pub static mut page_group_by_mobility_disabled: kernel::ffi::c_int;
 }
 
 pub const fn is_migrate_movable(mt: migratetype) -> bool { mt == migratetype::MIGRATE_MOVABLE }
@@ -119,7 +119,7 @@ extern "C" {
 #[inline] pub unsafe fn zonelist_node_idx(z: *const zoneref) -> c_int { 0 }
 
 /* External kernel types referenced by this header. */
-pub type c_ulong = core::ffi::c_ulong; pub type c_long = core::ffi::c_long; pub type c_int = core::ffi::c_int; pub type c_char = core::ffi::c_char;
+pub type c_ulong = kernel::ffi::c_ulong; pub type c_long = kernel::ffi::c_long; pub type c_int = kernel::ffi::c_int; pub type c_char = kernel::ffi::c_char;
 pub enum list_head {} pub enum hlist_nulls_node {} pub enum hlist_nulls_head {} pub enum spinlock_t {} pub enum atomic_long_t {} pub enum atomic_t {} pub enum zswap_lruvec_state {} pub enum page {} pub enum nodemask_t {} pub enum mem_cgroup {} pub enum page_ext {} pub enum rcu_head {} pub enum dev_pagemap {} pub type memdesc_flags_t = c_ulong;
 pub const MAX_NR_ZONES: usize = 1; pub const MAX_NUMNODES: usize = 1;
 

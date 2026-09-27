@@ -7,7 +7,7 @@ pub struct mod_arch_specific {
     pub gotsecindex: core::ffi::c_uint,
 }
 
-pub const ARCH_SHF_SMALL: _ = SHF_ALPHA_GPREL;
+pub const ARCH_SHF_SMALL: u32 = SHF_ALPHA_GPREL;
 
 // When MODULE is defined, the original header emits:
 // .section .got,"aws",@progbits; .align 3; .previous

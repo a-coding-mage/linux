@@ -65,7 +65,7 @@ pub const R_XTENSA_SLOT13_ALT: u32 = 48;
 pub const R_XTENSA_SLOT14_ALT: u32 = 49;
 
 /* ELF register definitions. This is needed for core dump support. */
-pub type elf_greg_t = ::core::ffi::c_ulong;
+pub type elf_greg_t = ::kernel::ffi::c_ulong;
 pub type xtensa_gregset_t = user_pt_regs;
 pub const ELF_NGREG: usize = ::core::mem::size_of::<xtensa_gregset_t>()
     / ::core::mem::size_of::<elf_greg_t>();
@@ -104,7 +104,7 @@ pub const ELF_EXEC_PAGESIZE: usize = PAGE_SIZE;
 
 pub const ELF_ET_DYN_BASE: usize = (2 * TASK_SIZE) / 3;
 pub const ELF_HWCAP: u32 = 0;
-pub const ELF_PLATFORM: *const core::ffi::c_char = core::ptr::null();
+pub const ELF_PLATFORM: *const kernel::ffi::c_char = core::ptr::null();
 
 macro_rules! ELF_PLAT_INIT {
     ($r:expr, $load_addr:expr) => {{

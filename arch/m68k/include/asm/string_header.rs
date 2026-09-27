@@ -8,7 +8,7 @@ pub const __HAVE_ARCH_STRNLEN: bool = true;
 ///
 /// This preserves the original raw-pointer and byte-scanning behavior.
 #[inline]
-pub unsafe fn strnlen(s: *const core::ffi::c_char, mut count: usize) -> usize {
+pub unsafe fn strnlen(s: *const kernel::ffi::c_char, mut count: usize) -> usize {
     let mut sc = s;
 
     while count != 0 {
@@ -28,28 +28,28 @@ pub const __HAVE_ARCH_MEMMOVE: bool = true;
 
 unsafe extern "C" {
     pub fn memmove(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 
     pub fn memcmp(
-        dest: *const core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *const kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: usize,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn memset(
-        dest: *mut core::ffi::c_void,
-        c: core::ffi::c_int,
+        dest: *mut kernel::ffi::c_void,
+        c: kernel::ffi::c_int,
         n: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 
     pub fn memcpy(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 pub const __HAVE_ARCH_MEMSET: bool = true;

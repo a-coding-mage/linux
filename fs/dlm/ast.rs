@@ -14,10 +14,10 @@ unsafe fn dlm_run_callback(
     sb_flags: u8,
     sb_status: i32,
     lksb: *mut dlm_lksb,
-    astfn: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
-    bastfn: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32)>,
-    astparam: *mut core::ffi::c_void,
-    res_name: *const core::ffi::c_char,
+    astfn: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
+    bastfn: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, i32)>,
+    astparam: *mut kernel::ffi::c_void,
+    res_name: *const kernel::ffi::c_char,
     res_length: usize,
 ) {
     if flags & DLM_CB_BAST != 0 {

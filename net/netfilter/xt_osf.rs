@@ -13,9 +13,9 @@ unsafe extern "C" {
         hooknum: u32,
         in_: *const net_device,
         out: *const net_device,
-        matchinfo: *const core::ffi::c_void,
+        matchinfo: *const kernel::ffi::c_void,
         net: *const net,
-        fingers: *const core::ffi::c_void,
+        fingers: *const kernel::ffi::c_void,
     ) -> bool;
 
     fn xt_register_match(m: *mut xt_match) -> i32;
@@ -23,7 +23,7 @@ unsafe extern "C" {
 }
 
 unsafe extern "C" {
-    static mut nf_osf_fingers: *const core::ffi::c_void;
+    static mut nf_osf_fingers: *const kernel::ffi::c_void;
 }
 
 unsafe fn xt_osf_match_packet(
@@ -47,7 +47,7 @@ unsafe fn xt_osf_match_packet(
 }
 
 static mut xt_osf_match: xt_match = xt_match {
-    name: b"osf\0".as_ptr() as *const core::ffi::c_char,
+    name: b"osf\0".as_ptr() as *const kernel::ffi::c_char,
     revision: 0,
     family: NFPROTO_IPV4,
     proto: IPPROTO_TCP,

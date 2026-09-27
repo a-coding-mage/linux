@@ -55,11 +55,11 @@ unsafe fn tcf_ct_add_mangle_action(action: *mut flow_action, htype: flow_action_
 unsafe fn tcf_ct_flow_table_add_action_nat_ipv4(tuple: *const nf_conntrack_tuple,
                                                 target: nf_conntrack_tuple,
                                                 action: *mut flow_action) {
-    if libc::memcmp(&(*(&target.src.u3 as *const _ as *const u8)), &(*(&(*tuple).src.u3 as *const _ as *const u8)), mem::size_of_val(&target.src.u3)) != 0 {
+    if memcmp(&(*(&target.src.u3 as *const _ as *const u8)), &(*(&(*tuple).src.u3 as *const _ as *const u8)), mem::size_of_val(&target.src.u3)) != 0 {
         tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_IP4,
             mem::offset_of!(iphdr, saddr) as u32, 0xffff_ffff, be32_to_cpu(target.src.u3.ip));
     }
-    if libc::memcmp(&(*(&target.dst.u3 as *const _ as *const u8)), &(*(&(*tuple).dst.u3 as *const _ as *const u8)), mem::size_of_val(&target.dst.u3)) != 0 {
+    if memcmp(&(*(&target.dst.u3 as *const _ as *const u8)), &(*(&(*tuple).dst.u3 as *const _ as *const u8)), mem::size_of_val(&target.dst.u3)) != 0 {
         tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_IP4,
             mem::offset_of!(iphdr, daddr) as u32, 0xffff_ffff, be32_to_cpu(target.dst.u3.ip));
     }

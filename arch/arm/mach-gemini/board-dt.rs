@@ -65,8 +65,8 @@ unsafe extern "C" fn gemini_init_machine() {
     arm_pm_idle = Some(gemini_idle);
 }
 
-static mut gemini_board_compat: [*const core::ffi::c_char; 2] = [
-    b"cortina,gemini\0".as_ptr() as *const core::ffi::c_char,
+static mut gemini_board_compat: [*const kernel::ffi::c_char; 2] = [
+    b"cortina,gemini\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -79,7 +79,7 @@ static mut gemini_board_compat: [*const core::ffi::c_char; 2] = [
 struct GeminiDtMachine {
     map_io: Option<unsafe fn()>,
     init_machine: unsafe extern "C" fn(),
-    dt_compat: *mut *const core::ffi::c_char,
+    dt_compat: *mut *const kernel::ffi::c_char,
 }
 
 #[cfg(CONFIG_DEBUG_GEMINI)]

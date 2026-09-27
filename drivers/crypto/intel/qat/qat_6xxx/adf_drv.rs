@@ -11,19 +11,19 @@ static mut BAR_MAP: [i32; 3] = [
     4, // ETR
 ];
 
-unsafe fn adf_device_down(accel_dev: *mut core::ffi::c_void) {
+unsafe fn adf_device_down(accel_dev: *mut kernel::ffi::c_void) {
     adf_dev_down(accel_dev);
 }
 
-unsafe fn adf_dbgfs_cleanup(accel_dev: *mut core::ffi::c_void) {
+unsafe fn adf_dbgfs_cleanup(accel_dev: *mut kernel::ffi::c_void) {
     adf_dbgfs_exit(accel_dev);
 }
 
-unsafe fn adf_cfg_device_remove(accel_dev: *mut core::ffi::c_void) {
+unsafe fn adf_cfg_device_remove(accel_dev: *mut kernel::ffi::c_void) {
     adf_cfg_dev_remove(accel_dev);
 }
 
-unsafe fn adf_cleanup_hw_data(accel_dev: *mut core::ffi::c_void) {
+unsafe fn adf_cleanup_hw_data(accel_dev: *mut kernel::ffi::c_void) {
     let accel_device = accel_dev as *mut adf_accel_dev;
 
     if !(*accel_device).hw_device.is_null() {
@@ -32,12 +32,12 @@ unsafe fn adf_cleanup_hw_data(accel_dev: *mut core::ffi::c_void) {
     }
 }
 
-unsafe fn adf_devmgr_remove(accel_dev: *mut core::ffi::c_void) {
+unsafe fn adf_devmgr_remove(accel_dev: *mut kernel::ffi::c_void) {
     adf_devmgr_rm_dev(accel_dev, core::ptr::null_mut());
 }
 
 unsafe fn adf_gen6_cfg_dev_init(accel_dev: *mut adf_accel_dev) -> i32 {
-    let config: *const core::ffi::c_char;
+    let config: *const kernel::ffi::c_char;
 
     /*
      * Wireless SKU - symmetric crypto service only

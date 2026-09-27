@@ -8,9 +8,9 @@
 
 unsafe fn pin_control_gpio_get_direction(
     gc: *mut gpio_chip,
-    offset: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
-    let mut config: ::core::ffi::c_ulong = PIN_CONFIG_OUTPUT_ENABLE;
+    offset: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
+    let mut config: ::kernel::ffi::c_ulong = PIN_CONFIG_OUTPUT_ENABLE;
     let ret = pinctrl_gpio_get_config(gc, offset, &mut config);
     if ret != 0 {
         return ret;
@@ -24,31 +24,31 @@ unsafe fn pin_control_gpio_get_direction(
 
 unsafe fn pin_control_gpio_get(
     chip: *mut gpio_chip,
-    offset: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
-    let mut config: ::core::ffi::c_ulong = PIN_CONFIG_LEVEL;
+    offset: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
+    let mut config: ::kernel::ffi::c_ulong = PIN_CONFIG_LEVEL;
     let ret = pinctrl_gpio_get_config(chip, offset, &mut config);
     if ret != 0 {
         return ret;
     }
 
-    (config != 0) as ::core::ffi::c_int
+    (config != 0) as ::kernel::ffi::c_int
 }
 
 unsafe fn pin_control_gpio_set(
     chip: *mut gpio_chip,
-    offset: ::core::ffi::c_uint,
-    val: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    offset: ::kernel::ffi::c_uint,
+    val: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let config = pinconf_to_config_packed(PIN_CONFIG_LEVEL, val);
     pinctrl_gpio_set_config(chip, offset, config)
 }
 
 unsafe fn pin_control_gpio_direction_output(
     chip: *mut gpio_chip,
-    offset: ::core::ffi::c_uint,
-    val: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    offset: ::kernel::ffi::c_uint,
+    val: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let ret = pin_control_gpio_set(chip, offset, val);
     if ret != 0 {
         return ret;
@@ -59,7 +59,7 @@ unsafe fn pin_control_gpio_direction_output(
 
 unsafe fn pin_control_gpio_probe(
     pdev: *mut platform_device,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let dev: *mut device = &mut (*pdev).dev;
     let chip = devm_kzalloc(dev, core::mem::size_of::<gpio_chip>(), GFP_KERNEL)
         as *mut gpio_chip;

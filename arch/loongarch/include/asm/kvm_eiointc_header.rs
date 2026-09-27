@@ -74,13 +74,13 @@ pub struct loongarch_eiointc {
     pub coremap: [u64; EIOINTC_IRQS / 8],
 
     pub sw_coreisr:
-        [[[core::ffi::c_ulong; (EIOINTC_IRQS + (core::mem::size_of::<core::ffi::c_ulong>() * 8) - 1) / (core::mem::size_of::<core::ffi::c_ulong>() * 8)]; LOONGSON_IP_NUM]; EIOINTC_ROUTE_MAX_VCPUS],
+        [[[kernel::ffi::c_ulong; (EIOINTC_IRQS + (core::mem::size_of::<kernel::ffi::c_ulong>() * 8) - 1) / (core::mem::size_of::<kernel::ffi::c_ulong>() * 8)]; LOONGSON_IP_NUM]; EIOINTC_ROUTE_MAX_VCPUS],
     pub sw_coremap: [u8; EIOINTC_IRQS],
 }
 
 extern "C" {
-    pub fn kvm_loongarch_register_eiointc_device() -> core::ffi::c_int;
-    pub fn eiointc_set_irq(s: *mut loongarch_eiointc, irq: core::ffi::c_int, level: core::ffi::c_int);
+    pub fn kvm_loongarch_register_eiointc_device() -> kernel::ffi::c_int;
+    pub fn eiointc_set_irq(s: *mut loongarch_eiointc, irq: kernel::ffi::c_int, level: kernel::ffi::c_int);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

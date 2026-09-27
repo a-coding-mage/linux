@@ -47,30 +47,30 @@ pub const unsafe fn gpio_is_valid(number: i32) -> bool {
  * or when sleeping may be involved.
  */
 extern "C" {
-    pub fn gpio_request(gpio: u32, label: *const core::ffi::c_char) -> i32;
+    pub fn gpio_request(gpio: u32, label: *const kernel::ffi::c_char) -> i32;
     pub fn gpio_free(gpio: u32);
     pub fn gpio_request_one(
         gpio: u32,
-        flags: core::ffi::c_ulong,
-        label: *const core::ffi::c_char,
+        flags: kernel::ffi::c_ulong,
+        label: *const kernel::ffi::c_char,
     ) -> i32;
     pub fn devm_gpio_request_one(
         dev: *mut device,
         gpio: u32,
-        flags: core::ffi::c_ulong,
-        label: *const core::ffi::c_char,
+        flags: kernel::ffi::c_ulong,
+        label: *const kernel::ffi::c_char,
     ) -> i32;
 }
 
 extern "C" {
-    fn gpiod_direction_input(desc: *mut core::ffi::c_void) -> i32;
-    fn gpiod_direction_output_raw(desc: *mut core::ffi::c_void, value: i32) -> i32;
-    fn gpiod_get_raw_value_cansleep(desc: *mut core::ffi::c_void) -> i32;
-    fn gpiod_set_raw_value_cansleep(desc: *mut core::ffi::c_void, value: i32);
-    fn gpiod_get_raw_value(desc: *mut core::ffi::c_void) -> i32;
-    fn gpiod_set_raw_value(desc: *mut core::ffi::c_void, value: i32);
-    fn gpiod_to_irq(desc: *mut core::ffi::c_void) -> i32;
-    fn gpio_to_desc(gpio: u32) -> *mut core::ffi::c_void;
+    fn gpiod_direction_input(desc: *mut kernel::ffi::c_void) -> i32;
+    fn gpiod_direction_output_raw(desc: *mut kernel::ffi::c_void, value: i32) -> i32;
+    fn gpiod_get_raw_value_cansleep(desc: *mut kernel::ffi::c_void) -> i32;
+    fn gpiod_set_raw_value_cansleep(desc: *mut kernel::ffi::c_void, value: i32);
+    fn gpiod_get_raw_value(desc: *mut kernel::ffi::c_void) -> i32;
+    fn gpiod_set_raw_value(desc: *mut kernel::ffi::c_void, value: i32);
+    fn gpiod_to_irq(desc: *mut kernel::ffi::c_void) -> i32;
+    fn gpio_to_desc(gpio: u32) -> *mut kernel::ffi::c_void;
 }
 
 #[inline]
@@ -117,9 +117,9 @@ pub unsafe fn gpio_to_irq(gpio: u32) -> i32 {
 #[inline]
 pub unsafe fn gpio_is_valid_no_gpiolib(_number: i32) -> bool { false }
 #[inline]
-pub unsafe fn gpio_request_no_gpiolib(_gpio: u32, _label: *const core::ffi::c_char) -> i32 { -38 }
+pub unsafe fn gpio_request_no_gpiolib(_gpio: u32, _label: *const kernel::ffi::c_char) -> i32 { -38 }
 #[inline]
-pub unsafe fn gpio_request_one_no_gpiolib(_gpio: u32, _flags: core::ffi::c_ulong, _label: *const core::ffi::c_char) -> i32 { -38 }
+pub unsafe fn gpio_request_one_no_gpiolib(_gpio: u32, _flags: kernel::ffi::c_ulong, _label: *const kernel::ffi::c_char) -> i32 { -38 }
 #[inline]
 pub unsafe fn gpio_free_no_gpiolib(_gpio: u32) { /* might_sleep(); WARN_ON(1); */ }
 #[inline]
@@ -137,7 +137,7 @@ pub unsafe fn gpio_set_value_cansleep_no_gpiolib(_gpio: u32, _value: i32) { /* W
 #[inline]
 pub unsafe fn gpio_to_irq_no_gpiolib(_gpio: u32) -> i32 { /* WARN_ON(1); */ -22 }
 #[inline]
-pub unsafe fn devm_gpio_request_one_no_gpiolib(_dev: *mut device, _gpio: u32, _flags: core::ffi::c_ulong, _label: *const core::ffi::c_char) -> i32 { /* WARN_ON(1); */ -22 }
+pub unsafe fn devm_gpio_request_one_no_gpiolib(_dev: *mut device, _gpio: u32, _flags: kernel::ffi::c_ulong, _label: *const kernel::ffi::c_char) -> i32 { /* WARN_ON(1); */ -22 }
 */
 
 /* C header guard end: CONFIG_GPIOLIB_LEGACY, __LINUX_GPIO_LEGAGY_H */

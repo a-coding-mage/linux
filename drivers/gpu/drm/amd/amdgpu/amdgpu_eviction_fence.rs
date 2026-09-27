@@ -22,13 +22,13 @@ use crate::*;
 
 unsafe extern "C" fn amdgpu_eviction_fence_get_driver_name(
     _fence: *mut dma_fence,
-) -> *const core::ffi::c_char {
+) -> *const kernel::ffi::c_char {
     c"amdgpu_eviction_fence".as_ptr()
 }
 
 unsafe extern "C" fn amdgpu_eviction_fence_get_timeline_name(
     f: *mut dma_fence,
-) -> *const core::ffi::c_char {
+) -> *const kernel::ffi::c_char {
     let ef = container_of!(f, amdgpu_eviction_fence, base);
     (*ef).timeline_name.as_ptr()
 }

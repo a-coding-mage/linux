@@ -11,9 +11,9 @@
 unsafe extern "C" {
     pub fn ipmi_dmi_get_slave_addr(
         si_type: si_type,
-        space: ::core::ffi::c_uint,
-        base_addr: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        space: ::kernel::ffi::c_uint,
+        base_addr: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

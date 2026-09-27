@@ -6,7 +6,7 @@ pub const SYSCALL_FLAG_PER_TRAP: u32 = 1;
 // Declarations supplied by the Linux kernel and architecture-specific headers.
 
 unsafe extern "C" {
-    pub static mut restart_stack: *mut core::ffi::c_void;
+    pub static mut restart_stack: *mut kernel::ffi::c_void;
 
     pub fn system_call();
     pub fn pgm_check_handler();
@@ -21,8 +21,8 @@ unsafe extern "C" {
         next: *mut task_struct,
     ) -> *mut task_struct;
     pub fn __ret_from_fork(prev: *mut task_struct, regs: *mut pt_regs);
-    pub fn __do_pgm_check(regs: *mut pt_regs, flags: core::ffi::c_ulong);
-    pub fn __do_syscall(regs: *mut pt_regs, flags: core::ffi::c_ulong);
+    pub fn __do_pgm_check(regs: *mut pt_regs, flags: kernel::ffi::c_ulong);
+    pub fn __do_syscall(regs: *mut pt_regs, flags: kernel::ffi::c_ulong);
     pub fn __do_early_pgm_check(regs: *mut pt_regs);
 
     pub fn do_protection_exception(regs: *mut pt_regs);
@@ -32,9 +32,9 @@ unsafe extern "C" {
     pub fn do_secure_storage_violation(regs: *mut pt_regs);
     pub fn do_report_trap(
         regs: *mut pt_regs,
-        si_signo: core::ffi::c_int,
-        si_code: core::ffi::c_int,
-        str_: *const core::ffi::c_char,
+        si_signo: kernel::ffi::c_int,
+        si_code: kernel::ffi::c_int,
+        str_: *const kernel::ffi::c_char,
     );
     pub fn kernel_stack_invalid(regs: *mut pt_regs);
     pub fn handle_signal32(
@@ -45,46 +45,46 @@ unsafe extern "C" {
 
     pub fn do_io_irq(regs: *mut pt_regs);
     pub fn do_ext_irq(regs: *mut pt_regs);
-    pub fn do_restart(arg: *mut core::ffi::c_void);
+    pub fn do_restart(arg: *mut kernel::ffi::c_void);
     pub fn startup_init();
-    pub fn die(regs: *mut pt_regs, str_: *const core::ffi::c_char);
-    pub fn setup_profiling_timer(multiplier: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn die(regs: *mut pt_regs, str_: *const kernel::ffi::c_char);
+    pub fn setup_profiling_timer(multiplier: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 
-    pub fn sys_rt_sigreturn() -> core::ffi::c_long;
-    pub fn sys_sigreturn() -> core::ffi::c_long;
+    pub fn sys_rt_sigreturn() -> kernel::ffi::c_long;
+    pub fn sys_sigreturn() -> kernel::ffi::c_long;
 
-    pub fn sys_s390_personality(personality: core::ffi::c_uint) -> core::ffi::c_long;
-    pub fn sys_s390_runtime_instr(command: core::ffi::c_int, signum: core::ffi::c_int) -> core::ffi::c_long;
-    pub fn sys_s390_guarded_storage(command: core::ffi::c_int, cb: *mut gs_cb) -> core::ffi::c_long;
+    pub fn sys_s390_personality(personality: kernel::ffi::c_uint) -> kernel::ffi::c_long;
+    pub fn sys_s390_runtime_instr(command: kernel::ffi::c_int, signum: kernel::ffi::c_int) -> kernel::ffi::c_long;
+    pub fn sys_s390_guarded_storage(command: kernel::ffi::c_int, cb: *mut gs_cb) -> kernel::ffi::c_long;
     pub fn sys_s390_pci_mmio_write(
-        offset: core::ffi::c_ulong,
-        buf: *const core::ffi::c_void,
+        offset: kernel::ffi::c_ulong,
+        buf: *const kernel::ffi::c_void,
         size: usize,
-    ) -> core::ffi::c_long;
+    ) -> kernel::ffi::c_long;
     pub fn sys_s390_pci_mmio_read(
-        offset: core::ffi::c_ulong,
-        buf: *mut core::ffi::c_void,
+        offset: kernel::ffi::c_ulong,
+        buf: *mut kernel::ffi::c_void,
         size: usize,
-    ) -> core::ffi::c_long;
+    ) -> kernel::ffi::c_long;
     pub fn sys_s390_sthyi(
-        function_code: core::ffi::c_ulong,
-        buffer: *mut core::ffi::c_void,
+        function_code: kernel::ffi::c_ulong,
+        buffer: *mut kernel::ffi::c_void,
         return_code: *mut u64,
-        flags: core::ffi::c_ulong,
-    ) -> core::ffi::c_long;
+        flags: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_long;
 
-    pub fn stack_alloc() -> core::ffi::c_ulong;
-    pub fn stack_free(stack: core::ffi::c_ulong);
+    pub fn stack_alloc() -> kernel::ffi::c_ulong;
+    pub fn stack_free(stack: kernel::ffi::c_ulong);
 
-    pub static mut kprobes_insn_page: [core::ffi::c_char; 0];
-    pub static mut _samode31: [core::ffi::c_char; 0];
-    pub static mut _eamode31: [core::ffi::c_char; 0];
-    pub static mut _stext_amode31: [core::ffi::c_char; 0];
-    pub static mut _etext_amode31: [core::ffi::c_char; 0];
+    pub static mut kprobes_insn_page: [kernel::ffi::c_char; 0];
+    pub static mut _samode31: [kernel::ffi::c_char; 0];
+    pub static mut _eamode31: [kernel::ffi::c_char; 0];
+    pub static mut _stext_amode31: [kernel::ffi::c_char; 0];
+    pub static mut _etext_amode31: [kernel::ffi::c_char; 0];
     pub static mut _start_amode31_ex_table: [exception_table_entry; 0];
     pub static mut _stop_amode31_ex_table: [exception_table_entry; 0];
-    pub static mut _start_amode31_refs: [core::ffi::c_long; 0];
-    pub static mut _end_amode31_refs: [core::ffi::c_long; 0];
+    pub static mut _start_amode31_refs: [kernel::ffi::c_long; 0];
+    pub static mut _end_amode31_refs: [kernel::ffi::c_long; 0];
 }
 
 // C forward declarations and externally supplied types.

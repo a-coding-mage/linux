@@ -9,9 +9,9 @@
 
 // C includes and build-time configuration are supplied by the surrounding kernel.
 
-pub static mut primary_display_table: ::core::ffi::c_ulong = EFI_INVALID_TABLE_ADDR;
+pub static mut primary_display_table: ::kernel::ffi::c_ulong = EFI_INVALID_TABLE_ADDR;
 
-unsafe fn is_memory(md: *mut efi_memory_desc_t) -> ::core::ffi::c_int {
+unsafe fn is_memory(md: *mut efi_memory_desc_t) -> ::kernel::ffi::c_int {
     if (*md).attribute & (EFI_MEMORY_WB | EFI_MEMORY_WT | EFI_MEMORY_WC) != 0 {
         return 1;
     }
@@ -23,7 +23,7 @@ unsafe fn is_memory(md: *mut efi_memory_desc_t) -> ::core::ffi::c_int {
  * as some data members of the EFI system table are virtually remapped after
  * SetVirtualAddressMap() has been called.
  */
-unsafe fn efi_to_phys(addr: ::core::ffi::c_ulong) -> phys_addr_t {
+unsafe fn efi_to_phys(addr: ::kernel::ffi::c_ulong) -> phys_addr_t {
     let mut md: *mut efi_memory_desc_t;
     // for_each_efi_memory_desc(md)
     for_each_efi_memory_desc!(md, {
@@ -78,11 +78,11 @@ unsafe fn init_primary_display() {
     }
 }
 
-unsafe fn uefi_init(efi_system_table: u64) -> ::core::ffi::c_int {
+unsafe fn uefi_init(efi_system_table: u64) -> ::kernel::ffi::c_int {
     let mut config_tables: *mut efi_config_table_t;
     let mut systab: *mut efi_system_table_t;
     let table_size: usize;
-    let mut retval: ::core::ffi::c_int;
+    let mut retval: ::kernel::ffi::c_int;
 
     systab = early_memremap_ro(efi_system_table, ::core::mem::size_of::<efi_system_table_t>());
     if systab.is_null() {

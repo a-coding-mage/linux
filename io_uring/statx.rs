@@ -5,9 +5,9 @@
 #[repr(C)]
 pub struct io_statx {
     pub file: *mut file,
-    pub dfd: ::core::ffi::c_int,
-    pub mask: ::core::ffi::c_uint,
-    pub flags: ::core::ffi::c_uint,
+    pub dfd: ::kernel::ffi::c_int,
+    pub mask: ::kernel::ffi::c_uint,
+    pub flags: ::kernel::ffi::c_uint,
     pub filename: delayed_filename,
     pub buffer: *mut statx,
 }
@@ -15,10 +15,10 @@ pub struct io_statx {
 pub unsafe fn io_statx_prep(
     req: *mut io_kiocb,
     sqe: *const io_uring_sqe,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let sx: *mut io_statx = io_kiocb_to_cmd(req);
-    let mut path: *const ::core::ffi::c_char;
-    let mut ret: ::core::ffi::c_int;
+    let mut path: *const ::kernel::ffi::c_char;
+    let mut ret: ::kernel::ffi::c_int;
 
     if (*sqe).buf_index != 0 || (*sqe).splice_fd_in != 0 {
         return -EINVAL;
@@ -46,11 +46,11 @@ pub unsafe fn io_statx_prep(
 
 pub unsafe fn io_statx(
     req: *mut io_kiocb,
-    issue_flags: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    issue_flags: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let sx: *mut io_statx = io_kiocb_to_cmd(req);
     let name = filename_complete_delayed(&mut (*sx).filename);
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     WARN_ON_ONCE(issue_flags & IO_URING_F_NONBLOCK != 0);
 

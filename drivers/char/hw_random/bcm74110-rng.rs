@@ -21,17 +21,17 @@ const FIFO_DELAY_MAX_COUNT: u32 = 10;
 
 #[repr(C)]
 pub struct bcm74110_priv {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
 }
 
 #[inline]
-unsafe fn bcm74110_rng_fifo_count(mem: *mut core::ffi::c_void) -> u32 {
+unsafe fn bcm74110_rng_fifo_count(mem: *mut kernel::ffi::c_void) -> u32 {
     (readl_relaxed(mem) & HOST_FIFO_COUNT_MASK) as u32
 }
 
 unsafe fn bcm74110_rng_read(
     rng: *mut hwrng,
-    buf: *mut core::ffi::c_void,
+    buf: *mut kernel::ffi::c_void,
     max: usize,
     wait: bool,
 ) -> usize {
@@ -48,7 +48,7 @@ unsafe fn bcm74110_rng_read(
      * there aren't any, we need to wait for some to become available.
      */
     loop {
-        num_words = bcm74110_rng_fifo_count(fc_addr as *mut core::ffi::c_void);
+        num_words = bcm74110_rng_fifo_count(fc_addr as *mut kernel::ffi::c_void);
         if num_words != 0 {
             break;
         }
@@ -74,10 +74,10 @@ unsafe fn bcm74110_rng_read(
     /* Bail early if we run out of random numbers unexpectedly */
     i = 0;
     while i < num_words
-        && bcm74110_rng_fifo_count(fc_addr as *mut core::ffi::c_void) > 0
+        && bcm74110_rng_fifo_count(fc_addr as *mut kernel::ffi::c_void) > 0
     {
         *((buf as *mut u32).add(i as usize)) =
-            readl_relaxed(fd_addr as *mut core::ffi::c_void);
+            readl_relaxed(fd_addr as *mut kernel::ffi::c_void);
         i = i.wrapping_add(1);
     }
 
@@ -88,11 +88,11 @@ unsafe fn bcm74110_rng_read(
 pub struct hwrng {
     pub read: Option<unsafe extern "C" fn(
         rng: *mut hwrng,
-        buf: *mut core::ffi::c_void,
+        buf: *mut kernel::ffi::c_void,
         max: usize,
         wait: bool,
     ) -> usize>,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub priv_: usize,
 }
 
@@ -132,7 +132,7 @@ unsafe fn bcm74110_rng_probe(pdev: *mut platform_device) -> i32 {
 
 #[repr(C)]
 struct of_device_id {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 static bcm74110_rng_match: [of_device_id; 2] = [
@@ -148,7 +148,7 @@ struct platform_driver {
 
 #[repr(C)]
 struct driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     of_match_table: *const of_device_id,
 }
 

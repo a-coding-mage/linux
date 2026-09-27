@@ -7,22 +7,22 @@
 pub const CL_SIZE: usize = COMMAND_LINE_SIZE;
 
 unsafe extern "C" {
-    pub static mut m68k_machtype: ::core::ffi::c_ulong;
-    pub static mut m68k_cputype: ::core::ffi::c_ulong;
-    pub static mut m68k_fputype: ::core::ffi::c_ulong;
-    pub static mut m68k_mmutype: ::core::ffi::c_ulong;
+    pub static mut m68k_machtype: ::kernel::ffi::c_ulong;
+    pub static mut m68k_cputype: ::kernel::ffi::c_ulong;
+    pub static mut m68k_fputype: ::kernel::ffi::c_ulong;
+    pub static mut m68k_mmutype: ::kernel::ffi::c_ulong;
     #[cfg(CONFIG_VME)]
-    pub static mut vme_brdtype: ::core::ffi::c_ulong;
-    pub static mut m68k_is040or060: ::core::ffi::c_int;
-    pub static mut m68k_num_memory: ::core::ffi::c_int;
-    pub static mut m68k_realnum_memory: ::core::ffi::c_int;
+    pub static mut vme_brdtype: ::kernel::ffi::c_ulong;
+    pub static mut m68k_is040or060: ::kernel::ffi::c_int;
+    pub static mut m68k_num_memory: ::kernel::ffi::c_int;
+    pub static mut m68k_realnum_memory: ::kernel::ffi::c_int;
     pub static mut m68k_memory: [m68k_mem_info; NUM_MEMINFO];
 }
 
 #[repr(C)]
 pub struct m68k_mem_info {
-    pub addr: ::core::ffi::c_ulong,
-    pub size: ::core::ffi::c_ulong,
+    pub addr: ::kernel::ffi::c_ulong,
+    pub size: ::kernel::ffi::c_ulong,
 }
 
 pub const NUM_MEMINFO: usize = 4;

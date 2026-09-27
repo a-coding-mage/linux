@@ -142,7 +142,7 @@ struct piix_host_priv {
 	void __iomem *sidpr;
 };
 
-static core::ffi::c_uint in_module_init = 1;
+static kernel::ffi::c_uint in_module_init = 1;
 
 static const struct pci_device_id piix_pci_tbl[] = {
 	/* Intel PIIX3 for the 430HX etc */
@@ -707,7 +707,7 @@ static int ich_pata_cable_detect(ata_port *ap)
  *	LOCKING:
  *	None (inherited from caller).
  */
-static int piix_pata_prereset(ata_link *link, deadline: core::ffi::c_ulong)
+static int piix_pata_prereset(ata_link *link, deadline: kernel::ffi::c_ulong)
 {
 	struct ata_port *ap = (*link).ap;
 	struct pci_dev *pdev = to_pci_dev((*(*ap).host).dev);
@@ -723,10 +723,10 @@ static void piix_set_timings(ata_port *ap, ata_device *adev,
 			     pio: u8)
 {
 	struct pci_dev *dev	= to_pci_dev((*(*ap).host).dev);
-	core::ffi::c_ulong flags;
-	core::ffi::c_uint is_slave	= ((*adev).devno != 0);
-	core::ffi::c_uint master_port= (*ap).port_no ? 0x42 : 0x40;
-	core::ffi::c_uint slave_port	= 0x44;
+	kernel::ffi::c_ulong flags;
+	kernel::ffi::c_uint is_slave	= ((*adev).devno != 0);
+	kernel::ffi::c_uint master_port= (*ap).port_no ? 0x42 : 0x40;
+	kernel::ffi::c_uint slave_port	= 0x44;
 	u16 master_data;
 	u8 slave_data;
 	u8 udma_enable;
@@ -836,13 +836,13 @@ static void piix_set_piomode(ata_port *ap, ata_device *adev)
 static void do_pata_set_dmamode(ata_port *ap, ata_device *adev, int isich)
 {
 	struct pci_dev *dev	= to_pci_dev((*(*ap).host).dev);
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u8 speed		= (*adev).dma_mode;
 	int devid		= (*adev).devno + 2 * (*ap).port_no;
 	u8 udma_enable		= 0;
 
 	if (speed >= XFER_UDMA_0) {
-		core::ffi::c_uint udma = speed - XFER_UDMA_0;
+		kernel::ffi::c_uint udma = speed - XFER_UDMA_0;
 		u16 udma_timing;
 		u16 ideconf;
 		int u_clock, u_speed;
@@ -889,8 +889,8 @@ static void do_pata_set_dmamode(ata_port *ap, ata_device *adev, int isich)
 		spin_unlock_irqrestore(&piix_lock, flags);
 	} else {
 		/* MWDMA is driven by the PIO timings. */
-		core::ffi::c_uint mwdma = speed - XFER_MW_DMA_0;
-		const core::ffi::c_uint needed_pio[3] = {
+		kernel::ffi::c_uint mwdma = speed - XFER_MW_DMA_0;
+		const kernel::ffi::c_uint needed_pio[3] = {
 			XFER_PIO_0, XFER_PIO_3, XFER_PIO_4
 		};
 		int pio = needed_pio[mwdma] - XFER_PIO_0;
@@ -946,7 +946,7 @@ static const int piix_sidx_map[] = {
 	[SCR_CONTROL]	= 1,
 };
 
-static void piix_sidpr_sel(ata_link *link, reg: core::ffi::c_uint)
+static void piix_sidpr_sel(ata_link *link, reg: kernel::ffi::c_uint)
 {
 	struct ata_port *ap = (*link).ap;
 	struct piix_host_priv *hpriv = (*(*ap).host).private_data;
@@ -956,7 +956,7 @@ static void piix_sidpr_sel(ata_link *link, reg: core::ffi::c_uint)
 }
 
 static int piix_sidpr_scr_read(ata_link *link,
-			       reg: core::ffi::c_uint, u32 *val)
+			       reg: kernel::ffi::c_uint, u32 *val)
 {
 	struct piix_host_priv *hpriv = (*(*(*link).ap).host).private_data;
 
@@ -969,7 +969,7 @@ static int piix_sidpr_scr_read(ata_link *link,
 }
 
 static int piix_sidpr_scr_write(ata_link *link,
-				reg: core::ffi::c_uint, val: u32)
+				reg: kernel::ffi::c_uint, val: u32)
 {
 	struct piix_host_priv *hpriv = (*(*(*link).ap).host).private_data;
 
@@ -989,7 +989,7 @@ static int piix_sidpr_set_lpm(ata_link *link, ata_lpm_policy policy,
 
 static bool piix_irq_check(ata_port *ap)
 {
-	core::ffi::c_uchar host_stat;
+	kernel::ffi::c_uchar host_stat;
 
 	if (unlikely((*!ap).ioaddr.bmdma_addr))
 		return false;
@@ -1164,7 +1164,7 @@ static int piix_broken_suspend(void)
 static int piix_pci_device_suspend(pci_dev *pdev, pm_message_t mesg)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	ata_host_suspend(host, mesg);
 
@@ -1196,7 +1196,7 @@ static int piix_pci_device_suspend(pci_dev *pdev, pm_message_t mesg)
 static int piix_pci_device_resume(pci_dev *pdev)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int rc;
 
 	if ((*host).flags & PIIX_HOST_BROKEN_SUSPEND) {
@@ -1733,7 +1733,7 @@ static bool piix_broken_system_poweroff(pci_dev *pdev)
 	const struct dmi_system_id *dmi = dmi_first_match(broken_systems);
 
 	if (dmi) {
-		core::ffi::c_ulong slot = (*(core::ffi::c_ulong)dmi).driver_data;
+		kernel::ffi::c_ulong slot = (*(kernel::ffi::c_ulong)dmi).driver_data;
 		/* apply the quirk only to on-board controllers */
 		return slot == PCI_SLOT((*pdev).devfn);
 	}
@@ -1818,7 +1818,7 @@ static int piix_init_one(pci_dev *pdev, const struct pci_device_id *ent)
 	struct ata_port_info port_info[2];
 	const struct ata_port_info *ppi[] = { &port_info[0], &port_info[1] };
 	const struct scsi_host_template *sht = &piix_sht;
-	core::ffi::c_ulong port_flags;
+	kernel::ffi::c_ulong port_flags;
 	struct ata_host *host;
 	struct piix_host_priv *hpriv;
 	int rc;

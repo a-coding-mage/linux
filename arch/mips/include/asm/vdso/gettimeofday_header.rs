@@ -22,10 +22,10 @@ pub const VDSO_HAS_CLOCK_GETRES: i32 = 1;
 pub unsafe fn gettimeofday_fallback(
     _tv: *mut __kernel_old_timeval,
     _tz: *mut timezone,
-) -> libc::c_long {
-    let mut ret: libc::c_long;
-    let mut error: libc::c_long;
-    let nr: libc::c_long = __NR_gettimeofday as libc::c_long;
+) -> core::ffi::c_long {
+    let mut ret: core::ffi::c_long;
+    let mut error: core::ffi::c_long;
+    let nr: core::ffi::c_long = __NR_gettimeofday as core::ffi::c_long;
     core::arch::asm!(
         "syscall",
         in("a0") _tv,
@@ -46,12 +46,12 @@ pub unsafe fn gettimeofday_fallback(
 pub unsafe fn clock_gettime_fallback(
     _clkid: clockid_t,
     _ts: *mut __kernel_timespec,
-) -> libc::c_long {
-    let mut ret: libc::c_long;
-    let mut error: libc::c_long;
+) -> core::ffi::c_long {
+    let mut ret: core::ffi::c_long;
+    let mut error: core::ffi::c_long;
     // _MIPS_SIM == _MIPS_SIM_ABI64 selects __NR_clock_gettime;
     // other ABIs select __NR_clock_gettime64.
-    let nr: libc::c_long = __NR_clock_gettime as libc::c_long;
+    let nr: core::ffi::c_long = __NR_clock_gettime as core::ffi::c_long;
     core::arch::asm!(
         "syscall", in("a0") _clkid, in("a1") _ts, in("v0") nr,
         lateout("v0") ret, lateout("a3") error,
@@ -65,10 +65,10 @@ pub unsafe fn clock_gettime_fallback(
 }
 
 #[inline(always)]
-pub unsafe fn clock_getres_fallback(_clkid: clockid_t, _ts: *mut __kernel_timespec) -> libc::c_int {
-    let mut ret: libc::c_long;
-    let mut error: libc::c_long;
-    let nr: libc::c_long = __NR_clock_getres as libc::c_long;
+pub unsafe fn clock_getres_fallback(_clkid: clockid_t, _ts: *mut __kernel_timespec) -> core::ffi::c_int {
+    let mut ret: core::ffi::c_long;
+    let mut error: core::ffi::c_long;
+    let nr: core::ffi::c_long = __NR_clock_getres as core::ffi::c_long;
     core::arch::asm!(
         "syscall", in("a0") _clkid, in("a1") _ts, in("v0") nr,
         lateout("v0") ret, lateout("a3") error,
@@ -78,15 +78,15 @@ pub unsafe fn clock_getres_fallback(_clkid: clockid_t, _ts: *mut __kernel_timesp
         lateout("$15") _, lateout("$24") _, lateout("$25") _,
         options(nostack)
     );
-    (if error != 0 { -ret } else { ret }) as libc::c_int
+    (if error != 0 { -ret } else { ret }) as core::ffi::c_int
 }
 
 // Present only when _MIPS_SIM != _MIPS_SIM_ABI64.
 #[inline(always)]
-pub unsafe fn clock_gettime32_fallback(_clkid: clockid_t, _ts: *mut old_timespec32) -> libc::c_long {
-    let mut ret: libc::c_long;
-    let mut error: libc::c_long;
-    let nr: libc::c_long = __NR_clock_gettime as libc::c_long;
+pub unsafe fn clock_gettime32_fallback(_clkid: clockid_t, _ts: *mut old_timespec32) -> core::ffi::c_long {
+    let mut ret: core::ffi::c_long;
+    let mut error: core::ffi::c_long;
+    let nr: core::ffi::c_long = __NR_clock_gettime as core::ffi::c_long;
     core::arch::asm!(
         "syscall", in("a0") _clkid, in("a1") _ts, in("v0") nr,
         lateout("v0") ret, lateout("a3") error,
@@ -100,10 +100,10 @@ pub unsafe fn clock_gettime32_fallback(_clkid: clockid_t, _ts: *mut old_timespec
 }
 
 #[inline(always)]
-pub unsafe fn clock_getres32_fallback(_clkid: clockid_t, _ts: *mut old_timespec32) -> libc::c_int {
-    let mut ret: libc::c_long;
-    let mut error: libc::c_long;
-    let nr: libc::c_long = __NR_clock_getres as libc::c_long;
+pub unsafe fn clock_getres32_fallback(_clkid: clockid_t, _ts: *mut old_timespec32) -> core::ffi::c_int {
+    let mut ret: core::ffi::c_long;
+    let mut error: core::ffi::c_long;
+    let nr: core::ffi::c_long = __NR_clock_getres as core::ffi::c_long;
     core::arch::asm!(
         "syscall", in("a0") _clkid, in("a1") _ts, in("v0") nr,
         lateout("v0") ret, lateout("a3") error,
@@ -113,7 +113,7 @@ pub unsafe fn clock_getres32_fallback(_clkid: clockid_t, _ts: *mut old_timespec3
         lateout("$15") _, lateout("$24") _, lateout("$25") _,
         options(nostack)
     );
-    (if error != 0 { -ret } else { ret }) as libc::c_int
+    (if error != 0 { -ret } else { ret }) as core::ffi::c_int
 }
 
 #[inline(always)]

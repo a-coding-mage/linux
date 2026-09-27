@@ -13,7 +13,7 @@ pub const XFS_CRC_SEED: u32 = !0u32;
  * hence we have to split the CRC calculation across the cksum_offset.
  */
 pub unsafe fn xfs_start_cksum_safe(
-    buffer: *mut core::ffi::c_char,
+    buffer: *mut kernel::ffi::c_char,
     length: usize,
     cksum_offset: usize,
 ) -> u32 {
@@ -26,7 +26,7 @@ pub unsafe fn xfs_start_cksum_safe(
     /* Skip checksum field */
     crc = crc32c(
         crc,
-        (&zero as *const u32).cast::<core::ffi::c_void>(),
+        (&zero as *const u32).cast::<kernel::ffi::c_void>(),
         core::mem::size_of::<u32>(),
     );
 
@@ -43,7 +43,7 @@ pub unsafe fn xfs_start_cksum_safe(
  * access to the buffer while the calculation takes place.
  */
 pub unsafe fn xfs_start_cksum_update(
-    buffer: *mut core::ffi::c_char,
+    buffer: *mut kernel::ffi::c_char,
     length: usize,
     cksum_offset: usize,
 ) -> u32 {
@@ -72,7 +72,7 @@ pub unsafe fn xfs_end_cksum(crc: u32) -> __le32 {
  * access to the buffer while the calculation takes place.
  */
 pub unsafe fn xfs_update_cksum(
-    buffer: *mut core::ffi::c_char,
+    buffer: *mut kernel::ffi::c_char,
     length: usize,
     cksum_offset: usize,
 ) {
@@ -85,7 +85,7 @@ pub unsafe fn xfs_update_cksum(
  * Helper to verify the checksum for a buffer.
  */
 pub unsafe fn xfs_verify_cksum(
-    buffer: *mut core::ffi::c_char,
+    buffer: *mut kernel::ffi::c_char,
     length: usize,
     cksum_offset: usize,
 ) -> i32 {

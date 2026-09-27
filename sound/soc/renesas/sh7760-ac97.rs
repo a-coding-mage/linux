@@ -18,15 +18,15 @@ const ENOMEM: i32 = 12;
 
 #[repr(C)]
 pub struct snd_soc_dai_link {
-    pub name: *const core::ffi::c_char,
-    pub stream_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub stream_name: *const kernel::ffi::c_char,
     // SND_SOC_DAILINK_REG(ac97)
 }
 
 #[repr(C)]
 pub struct snd_soc_card {
-    pub name: *const core::ffi::c_char,
-    pub owner: *mut core::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
+    pub owner: *mut kernel::ffi::c_void,
     pub dai_link: *mut snd_soc_dai_link,
     pub num_links: i32,
 }
@@ -37,18 +37,18 @@ pub struct platform_device {
 }
 
 unsafe extern "C" {
-    static mut THIS_MODULE: *mut core::ffi::c_void;
+    static mut THIS_MODULE: *mut kernel::ffi::c_void;
 
     fn __raw_readw(addr: usize) -> u16;
     fn __raw_writew(value: u16, addr: usize);
 
     fn platform_device_alloc(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         id: i32,
     ) -> *mut platform_device;
     fn platform_set_drvdata(
         pdev: *mut platform_device,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     );
     fn platform_device_add(pdev: *mut platform_device) -> i32;
     fn platform_device_put(pdev: *mut platform_device);
@@ -93,7 +93,7 @@ unsafe fn sh7760_ac97_init() -> i32 {
     unsafe {
         platform_set_drvdata(
             sh7760_ac97_snd_device,
-            core::ptr::addr_of_mut!(sh7760_ac97_soc_machine) as *mut core::ffi::c_void,
+            core::ptr::addr_of_mut!(sh7760_ac97_soc_machine) as *mut kernel::ffi::c_void,
         );
         ret = platform_device_add(sh7760_ac97_snd_device);
     }

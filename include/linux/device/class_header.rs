@@ -2,7 +2,7 @@
 /* The class-specific portions of the driver model. */
 // C dependencies are supplied by other translated headers.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct class {
@@ -49,13 +49,13 @@ extern "C" {
     pub fn class_for_each_device(
         class: *const class,
         start: *const device,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         fn_: device_iter_t,
     ) -> i32;
     pub fn class_find_device(
         class: *const class,
         start: *const device,
-        data: *const core::ffi::c_void,
+        data: *const kernel::ffi::c_void,
         r#match: device_match_t,
     ) -> *mut device;
 }
@@ -73,7 +73,7 @@ pub unsafe fn class_find_device_by_fwnode(class: *const class, fwnode: *const fw
 }
 
 pub unsafe fn class_find_device_by_devt(class: *const class, devt: dev_t) -> *mut device {
-    class_find_device(class, core::ptr::null(), &devt as *const dev_t as *const core::ffi::c_void, device_match_devt)
+    class_find_device(class, core::ptr::null(), &devt as *const dev_t as *const kernel::ffi::c_void, device_match_devt)
 }
 
 #[cfg(CONFIG_ACPI)]
@@ -82,7 +82,7 @@ pub unsafe fn class_find_device_by_acpi_dev(class: *const class, adev: *const ac
 }
 
 #[cfg(not(CONFIG_ACPI))]
-pub unsafe fn class_find_device_by_acpi_dev(class: *const class, _adev: *const core::ffi::c_void) -> *mut device {
+pub unsafe fn class_find_device_by_acpi_dev(class: *const class, _adev: *const kernel::ffi::c_void) -> *mut device {
     core::ptr::null_mut()
 }
 

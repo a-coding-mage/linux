@@ -19,7 +19,7 @@ const AMDGPU_MAX_LAST_UNSIGNALED_THRESHOLD_US: u64 = 10000;
 #[repr(C)]
 struct RingInfo {
     hw_pio: u32,
-    ring_name: *const core::ffi::c_char,
+    ring_name: *const kernel::ffi::c_char,
 }
 
 static SW_RING_INFO: [RingInfo; 2] = [
@@ -138,7 +138,7 @@ pub unsafe fn amdgpu_sw_ring_get_rptr_gfx(ring: *mut amdgpu_ring) -> u64 { WARN_
 pub unsafe fn amdgpu_sw_ring_get_wptr_gfx(ring: *mut amdgpu_ring) -> u64 { WARN_ON!(!(*ring).is_sw_ring); amdgpu_ring_mux_get_wptr(&mut (*(*ring).adev).gfx.muxer, ring) }
 pub unsafe fn amdgpu_sw_ring_set_wptr_gfx(ring: *mut amdgpu_ring) { WARN_ON!(!(*ring).is_sw_ring); amdgpu_ring_mux_set_wptr(&mut (*(*ring).adev).gfx.muxer, ring, (*ring).wptr); }
 pub unsafe fn amdgpu_sw_ring_insert_nop(ring: *mut amdgpu_ring, _count: u32) { WARN_ON!(!(*ring).is_sw_ring); }
-pub unsafe fn amdgpu_sw_ring_name(idx: usize) -> *const core::ffi::c_char { if idx < SW_RING_INFO.len() { SW_RING_INFO[idx].ring_name } else { core::ptr::null() } }
+pub unsafe fn amdgpu_sw_ring_name(idx: usize) -> *const kernel::ffi::c_char { if idx < SW_RING_INFO.len() { SW_RING_INFO[idx].ring_name } else { core::ptr::null() } }
 pub unsafe fn amdgpu_sw_ring_priority(idx: usize) -> u32 { if idx < SW_RING_INFO.len() { SW_RING_INFO[idx].hw_pio } else { AMDGPU_RING_PRIO_DEFAULT } }
 
 unsafe fn amdgpu_mcbp_scan(mux: *mut amdgpu_ring_mux) -> i32 { let mut need_preempt = 0; for i in 0..(*mux).num_ring_entries { let ring = (*mux).ring_entry.add(i).as_ref().unwrap().ring; if (*ring).hw_prio > AMDGPU_RING_PRIO_DEFAULT && amdgpu_fence_count_emitted(ring) > 0 { return 0; } if (*ring).hw_prio <= AMDGPU_RING_PRIO_DEFAULT && amdgpu_fence_last_unsignaled_time_us(ring) > AMDGPU_MAX_LAST_UNSIGNALED_THRESHOLD_US { need_preempt = 1; } } if need_preempt != 0 && !(*mux).s_resubmit { 1 } else { 0 } }

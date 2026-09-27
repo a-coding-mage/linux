@@ -1024,7 +1024,7 @@ static mut rockchip_clk_branch rk3562_clk_branches[] = {
 static void __init rk3562_clk_init(device_node *np)
 {
 	struct rockchip_clk_provider *ctx;
-	core::ffi::c_ulong clk_nr_clks;
+	kernel::ffi::c_ulong clk_nr_clks;
 	void __iomem *reg_base;
 
 	clk_nr_clks = rockchip_clk_find_max_clk_id(rk3562_clk_branches,

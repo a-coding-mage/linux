@@ -21,25 +21,25 @@ pub const CSP_PROGRAM_COUNT: usize = 5;
  */
 #[repr(C)]
 pub struct snd_sb_csp_ops {
-    pub csp_use: Option<unsafe extern "C" fn(p: *mut snd_sb_csp) -> ::core::ffi::c_int>,
-    pub csp_unuse: Option<unsafe extern "C" fn(p: *mut snd_sb_csp) -> ::core::ffi::c_int>,
+    pub csp_use: Option<unsafe extern "C" fn(p: *mut snd_sb_csp) -> ::kernel::ffi::c_int>,
+    pub csp_unuse: Option<unsafe extern "C" fn(p: *mut snd_sb_csp) -> ::kernel::ffi::c_int>,
     pub csp_autoload: Option<
         unsafe extern "C" fn(
             p: *mut snd_sb_csp,
             pcm_sfmt: snd_pcm_format_t,
-            play_rec_mode: ::core::ffi::c_int,
-        ) -> ::core::ffi::c_int,
+            play_rec_mode: ::kernel::ffi::c_int,
+        ) -> ::kernel::ffi::c_int,
     >,
     pub csp_start: Option<
         unsafe extern "C" fn(
             p: *mut snd_sb_csp,
-            sample_width: ::core::ffi::c_int,
-            channels: ::core::ffi::c_int,
-        ) -> ::core::ffi::c_int,
+            sample_width: ::kernel::ffi::c_int,
+            channels: ::kernel::ffi::c_int,
+        ) -> ::kernel::ffi::c_int,
     >,
-    pub csp_stop: Option<unsafe extern "C" fn(p: *mut snd_sb_csp) -> ::core::ffi::c_int>,
+    pub csp_stop: Option<unsafe extern "C" fn(p: *mut snd_sb_csp) -> ::kernel::ffi::c_int>,
     pub csp_qsound_transfer:
-        Option<unsafe extern "C" fn(p: *mut snd_sb_csp) -> ::core::ffi::c_int>,
+        Option<unsafe extern "C" fn(p: *mut snd_sb_csp) -> ::kernel::ffi::c_int>,
 }
 
 /*
@@ -48,26 +48,26 @@ pub struct snd_sb_csp_ops {
 #[repr(C)]
 pub struct snd_sb_csp {
     pub chip: *mut snd_sb, /* SB16 DSP */
-    pub used: ::core::ffi::c_int, /* usage flag - exclusive */
-    pub codec_name: [::core::ffi::c_char; 16], /* name of codec */
+    pub used: ::kernel::ffi::c_int, /* usage flag - exclusive */
+    pub codec_name: [::kernel::ffi::c_char; 16], /* name of codec */
     pub func_nr: u16, /* function number */
-    pub acc_format: ::core::ffi::c_uint, /* accepted PCM formats */
-    pub acc_channels: ::core::ffi::c_int, /* accepted channels */
-    pub acc_width: ::core::ffi::c_int, /* accepted sample width */
-    pub acc_rates: ::core::ffi::c_int, /* accepted sample rates */
-    pub mode: ::core::ffi::c_int, /* MODE */
-    pub run_channels: ::core::ffi::c_int, /* current CSP channels */
-    pub run_width: ::core::ffi::c_int, /* current sample width */
-    pub version: ::core::ffi::c_int, /* CSP version (0x10 - 0x1f) */
-    pub running: ::core::ffi::c_int, /* running state */
+    pub acc_format: ::kernel::ffi::c_uint, /* accepted PCM formats */
+    pub acc_channels: ::kernel::ffi::c_int, /* accepted channels */
+    pub acc_width: ::kernel::ffi::c_int, /* accepted sample width */
+    pub acc_rates: ::kernel::ffi::c_int, /* accepted sample rates */
+    pub mode: ::kernel::ffi::c_int, /* MODE */
+    pub run_channels: ::kernel::ffi::c_int, /* current CSP channels */
+    pub run_width: ::kernel::ffi::c_int, /* current sample width */
+    pub version: ::kernel::ffi::c_int, /* CSP version (0x10 - 0x1f) */
+    pub running: ::kernel::ffi::c_int, /* running state */
 
     pub ops: snd_sb_csp_ops, /* operators */
 
     pub q_lock: spinlock_t, /* locking */
-    pub q_enabled: ::core::ffi::c_int, /* enabled flag */
-    pub qpos_left: ::core::ffi::c_int, /* left position */
-    pub qpos_right: ::core::ffi::c_int, /* right position */
-    pub qpos_changed: ::core::ffi::c_int, /* position changed flag */
+    pub q_enabled: ::kernel::ffi::c_int, /* enabled flag */
+    pub qpos_left: ::kernel::ffi::c_int, /* left position */
+    pub qpos_right: ::kernel::ffi::c_int, /* right position */
+    pub qpos_changed: ::kernel::ffi::c_int, /* position changed flag */
 
     pub qsound_switch: *mut snd_kcontrol,
     pub qsound_space: *mut snd_kcontrol,
@@ -79,8 +79,8 @@ pub struct snd_sb_csp {
 
 pub unsafe extern "C" fn snd_sb_csp_new(
     chip: *mut snd_sb,
-    device: ::core::ffi::c_int,
+    device: ::kernel::ffi::c_int,
     rhwdep: *mut *mut snd_hwdep,
-) -> ::core::ffi::c_int;
+) -> ::kernel::ffi::c_int;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

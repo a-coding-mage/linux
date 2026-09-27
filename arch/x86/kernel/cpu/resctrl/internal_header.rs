@@ -62,10 +62,10 @@ pub struct msr_param {
 pub struct rdt_hw_resource {
     pub r_resctrl: rdt_resource,
     pub num_closid: u32,
-    pub msr_base: libc::c_uint,
+    pub msr_base: kernel::ffi::c_uint,
     pub msr_update: Option<unsafe extern "C" fn(m: *mut msr_param)>,
-    pub mon_scale: libc::c_uint,
-    pub mbm_width: libc::c_uint,
+    pub mon_scale: kernel::ffi::c_uint,
+    pub mbm_width: kernel::ffi::c_uint,
     pub cdp_enabled: bool,
     pub mbm_cntr_assign_enabled: bool,
     pub sdciae_enabled: bool,
@@ -84,59 +84,59 @@ unsafe extern "C" {
 #[repr(C)]
 pub union cpuid_0x10_1_eax {
     pub split: cpuid_0x10_1_eax_split,
-    pub full: libc::c_uint,
+    pub full: kernel::ffi::c_uint,
 }
 #[repr(C)]
-pub struct cpuid_0x10_1_eax_split { pub cbm_len: libc::c_uint }
+pub struct cpuid_0x10_1_eax_split { pub cbm_len: kernel::ffi::c_uint }
 
 #[repr(C)]
 pub union cpuid_0x10_3_eax {
     pub split: cpuid_0x10_3_eax_split,
-    pub full: libc::c_uint,
+    pub full: kernel::ffi::c_uint,
 }
 #[repr(C)]
-pub struct cpuid_0x10_3_eax_split { pub max_delay: libc::c_uint }
+pub struct cpuid_0x10_3_eax_split { pub max_delay: kernel::ffi::c_uint }
 
 #[repr(C)]
 pub union cpuid_0x10_x_ecx {
     pub split: cpuid_0x10_x_ecx_split,
-    pub full: libc::c_uint,
+    pub full: kernel::ffi::c_uint,
 }
 #[repr(C)]
 pub struct cpuid_0x10_x_ecx_split {
-    pub reserved: libc::c_uint,
-    pub noncont: libc::c_uint,
+    pub reserved: kernel::ffi::c_uint,
+    pub noncont: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub union cpuid_0x10_x_edx {
     pub split: cpuid_0x10_x_edx_split,
-    pub full: libc::c_uint,
+    pub full: kernel::ffi::c_uint,
 }
 #[repr(C)]
-pub struct cpuid_0x10_x_edx_split { pub cos_max: libc::c_uint }
+pub struct cpuid_0x10_x_edx_split { pub cos_max: kernel::ffi::c_uint }
 
 #[repr(C)]
 pub union l3_qos_abmc_cfg {
     pub split: l3_qos_abmc_cfg_split,
-    pub full: libc::c_ulong,
+    pub full: kernel::ffi::c_ulong,
 }
 #[repr(C)]
 pub struct l3_qos_abmc_cfg_split {
-    pub bw_type: libc::c_ulong,
-    pub bw_src: libc::c_ulong,
-    pub reserved1: libc::c_ulong,
-    pub is_clos: libc::c_ulong,
-    pub cntr_id: libc::c_ulong,
-    pub reserved: libc::c_ulong,
-    pub cntr_en: libc::c_ulong,
-    pub cfg_en: libc::c_ulong,
+    pub bw_type: kernel::ffi::c_ulong,
+    pub bw_src: kernel::ffi::c_ulong,
+    pub reserved1: kernel::ffi::c_ulong,
+    pub is_clos: kernel::ffi::c_ulong,
+    pub cntr_id: kernel::ffi::c_ulong,
+    pub reserved: kernel::ffi::c_ulong,
+    pub cntr_en: kernel::ffi::c_ulong,
+    pub cfg_en: kernel::ffi::c_ulong,
 }
 
 unsafe extern "C" {
-    pub fn rdt_ctrl_update(arg: *mut libc::c_void);
-    pub fn rdt_get_l3_mon_config(r: *mut rdt_resource) -> libc::c_int;
-    pub fn rdt_cpu_has(flag: libc::c_int) -> bool;
+    pub fn rdt_ctrl_update(arg: *mut kernel::ffi::c_void);
+    pub fn rdt_get_l3_mon_config(r: *mut rdt_resource) -> kernel::ffi::c_int;
+    pub fn rdt_cpu_has(flag: kernel::ffi::c_int) -> bool;
     pub fn intel_rdt_mbm_apply_quirk();
     pub fn rdt_domain_reconfigure_cdp(r: *mut rdt_resource);
     pub fn resctrl_arch_mbm_cntr_assign_set_one(r: *mut rdt_resource);
@@ -146,9 +146,9 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn intel_aet_get_events() -> bool;
     pub fn intel_aet_exit();
-    pub fn intel_aet_read_event(domid: libc::c_int, rmid: u32, arch_priv: *mut libc::c_void, val: *mut u64) -> libc::c_int;
-    pub fn intel_aet_mon_domain_setup(cpu: libc::c_int, id: libc::c_int, r: *mut rdt_resource, add_pos: *mut list_head);
-    pub fn intel_handle_aet_option(force_off: bool, tok: *mut libc::c_char) -> bool;
+    pub fn intel_aet_read_event(domid: kernel::ffi::c_int, rmid: u32, arch_priv: *mut kernel::ffi::c_void, val: *mut u64) -> kernel::ffi::c_int;
+    pub fn intel_aet_mon_domain_setup(cpu: kernel::ffi::c_int, id: kernel::ffi::c_int, r: *mut rdt_resource, add_pos: *mut list_head);
+    pub fn intel_handle_aet_option(force_off: bool, tok: *mut kernel::ffi::c_char) -> bool;
 }
 
 #[cfg(not(CONFIG_X86_CPU_RESCTRL_INTEL_AET))]
@@ -159,12 +159,12 @@ pub fn intel_aet_get_events() -> bool { false }
 pub fn intel_aet_exit() {}
 #[cfg(not(CONFIG_X86_CPU_RESCTRL_INTEL_AET))]
 #[inline]
-pub fn intel_aet_read_event(_domid: libc::c_int, _rmid: u32, _arch_priv: *mut libc::c_void, _val: *mut u64) -> libc::c_int { -22 }
+pub fn intel_aet_read_event(_domid: kernel::ffi::c_int, _rmid: u32, _arch_priv: *mut kernel::ffi::c_void, _val: *mut u64) -> kernel::ffi::c_int { -22 }
 #[cfg(not(CONFIG_X86_CPU_RESCTRL_INTEL_AET))]
 #[inline]
-pub fn intel_aet_mon_domain_setup(_cpu: libc::c_int, _id: libc::c_int, _r: *mut rdt_resource, _add_pos: *mut list_head) {}
+pub fn intel_aet_mon_domain_setup(_cpu: kernel::ffi::c_int, _id: kernel::ffi::c_int, _r: *mut rdt_resource, _add_pos: *mut list_head) {}
 #[cfg(not(CONFIG_X86_CPU_RESCTRL_INTEL_AET))]
 #[inline]
-pub fn intel_handle_aet_option(_force_off: bool, _tok: *mut libc::c_char) -> bool { false }
+pub fn intel_handle_aet_option(_force_off: bool, _tok: *mut kernel::ffi::c_char) -> bool { false }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -28,20 +28,20 @@ extern "C" {
     pub fn setup_bios_corruption_check();
     pub fn early_platform_quirks();
 
-    pub static mut saved_video_mode: ::core::ffi::c_ulong;
-    pub static mut acpi_realmode_flags: ::core::ffi::c_ulong;
+    pub static mut saved_video_mode: ::kernel::ffi::c_ulong;
+    pub static mut acpi_realmode_flags: ::kernel::ffi::c_ulong;
 
     pub fn reserve_standard_io_resources();
     pub fn i386_reserve_resources();
     pub fn __startup_64(
-        p2v_offset: ::core::ffi::c_ulong,
+        p2v_offset: ::kernel::ffi::c_ulong,
         bp: *mut boot_params,
-    ) -> ::core::ffi::c_ulong;
+    ) -> ::kernel::ffi::c_ulong;
     pub fn startup_64_setup_gdt_idt();
-    pub fn startup_64_load_idt(vc_handler: *mut ::core::ffi::c_void);
-    pub fn __pi_startup_64_load_idt(vc_handler: *mut ::core::ffi::c_void);
+    pub fn startup_64_load_idt(vc_handler: *mut ::kernel::ffi::c_void);
+    pub fn __pi_startup_64_load_idt(vc_handler: *mut ::kernel::ffi::c_void);
     pub fn early_setup_idt();
-    pub fn do_early_exception(regs: *mut pt_regs, trapnr: ::core::ffi::c_int);
+    pub fn do_early_exception(regs: *mut pt_regs, trapnr: ::kernel::ffi::c_int);
 }
 
 /* CONFIG_X86_INTEL_MID: declare x86_intel_mid_early_setup; otherwise an empty inline. */
@@ -65,9 +65,9 @@ pub fn x86_ce4100_early_setup() {}
 /* Declarations below are omitted from assembler builds in the C header. */
 extern "C" {
     pub static mut boot_params: boot_params;
-    pub static mut _text: [::core::ffi::c_char; 0];
-    pub static mut _brk_end: ::core::ffi::c_ulong;
-    pub fn extend_brk(size: usize, align: usize) -> *mut ::core::ffi::c_void;
+    pub static mut _text: [::kernel::ffi::c_char; 0];
+    pub static mut _brk_end: ::kernel::ffi::c_ulong;
+    pub fn extend_brk(size: usize, align: usize) -> *mut ::kernel::ffi::c_void;
     pub fn probe_roms();
     pub fn clear_bss();
 }
@@ -85,8 +85,8 @@ pub unsafe fn kaslr_memory_enabled() -> bool {
 }
 
 #[inline]
-pub unsafe fn kaslr_offset() -> ::core::ffi::c_ulong {
-    (_text.as_ptr() as usize as ::core::ffi::c_ulong).wrapping_sub(__START_KERNEL)
+pub unsafe fn kaslr_offset() -> ::kernel::ffi::c_ulong {
+    (_text.as_ptr() as usize as ::kernel::ffi::c_ulong).wrapping_sub(__START_KERNEL)
 }
 
 /* Do NOT EVER look at the BIOS memory size location. */
@@ -102,8 +102,8 @@ extern "C" {
 
 #[cfg(not(target_arch = "x86"))]
 extern "C" {
-    pub fn x86_64_start_kernel(real_mode: *mut ::core::ffi::c_char) -> !;
-    pub fn x86_64_start_reservations(real_mode_data: *mut ::core::ffi::c_char) -> !;
+    pub fn x86_64_start_kernel(real_mode: *mut ::kernel::ffi::c_char) -> !;
+    pub fn x86_64_start_reservations(real_mode_data: *mut ::kernel::ffi::c_char) -> !;
 }
 
 #[cfg(CONFIG_CMDLINE_BOOL)]

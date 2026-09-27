@@ -6,7 +6,7 @@
  * Copyright (c) 2013-2014 Takashi Sakamoto
  */
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 use core::ptr;
 
 // Rust translation of declarations supplied by "fireworks.h" and other kernel
@@ -127,7 +127,7 @@ unsafe extern "C" {
 }
 
 #[allow(non_camel_case_types)]
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 #[inline]
 unsafe fn container_of_substream_list(ptr: *mut list_head) -> *mut snd_rawmidi_substream {

@@ -27,12 +27,12 @@ pub const TXX9_IRQ_BASE: usize = 0;
 pub const TXx9_MAX_IR: usize = 32;
 
 extern "C" {
-    pub fn txx9_irq_init(baseaddr: core::ffi::c_ulong);
-    pub fn txx9_irq() -> core::ffi::c_int;
+    pub fn txx9_irq_init(baseaddr: kernel::ffi::c_ulong);
+    pub fn txx9_irq() -> kernel::ffi::c_int;
     pub fn txx9_irq_set_pri(
-        irc_irq: core::ffi::c_int,
-        new_pri: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        irc_irq: kernel::ffi::c_int,
+        new_pri: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

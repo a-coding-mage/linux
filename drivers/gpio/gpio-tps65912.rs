@@ -18,22 +18,22 @@ pub struct tps65912_gpio {
 }
 
 extern "C" {
-    pub fn gpiochip_get_data(gc: *mut gpio_chip) -> *mut core::ffi::c_void;
+    pub fn gpiochip_get_data(gc: *mut gpio_chip) -> *mut kernel::ffi::c_void;
     pub fn regmap_read(regmap: *mut regmap, reg: u32, val: *mut i32) -> i32;
     pub fn regmap_update_bits(regmap: *mut regmap, reg: u32, mask: u32, val: u32) -> i32;
-    pub fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
-    pub fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    pub fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
+    pub fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     pub fn devm_gpiochip_add_data(
         dev: *mut device,
         chip: *mut gpio_chip,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
 }
 
 #[repr(C)]
 pub struct gpio_chip {
-    pub label: *const core::ffi::c_char,
-    pub owner: *mut core::ffi::c_void,
+    pub label: *const kernel::ffi::c_char,
+    pub owner: *mut kernel::ffi::c_void,
     pub get_direction: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>,
     pub direction_input: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>,
     pub direction_output: Option<unsafe extern "C" fn(*mut gpio_chip, u32, i32) -> i32>,
@@ -61,11 +61,11 @@ pub struct platform_device {
 }
 #[repr(C)]
 pub struct platform_device_id {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 #[repr(C)]
 pub struct platform_driver {
@@ -154,7 +154,7 @@ unsafe extern "C" fn tps65912_gpio_set(gc: *mut gpio_chip, offset: u32, value: i
 }
 
 static mut template_chip: gpio_chip = gpio_chip {
-    label: b"tps65912-gpio\0".as_ptr() as *const core::ffi::c_char,
+    label: b"tps65912-gpio\0".as_ptr() as *const kernel::ffi::c_char,
     owner: core::ptr::null_mut(),
     get_direction: Some(tps65912_gpio_get_direction),
     direction_input: Some(tps65912_gpio_direction_input),
@@ -178,16 +178,16 @@ unsafe extern "C" fn tps65912_gpio_probe(pdev: *mut platform_device) -> i32 {
     (*gpio).tps = dev_get_drvdata(parent) as *mut tps65912;
     (*gpio).gpio_chip = template_chip;
     (*gpio).gpio_chip.parent = (*tps).dev;
-    devm_gpiochip_add_data(&mut (*pdev).dev, &mut (*gpio).gpio_chip, gpio as *mut core::ffi::c_void)
+    devm_gpiochip_add_data(&mut (*pdev).dev, &mut (*gpio).gpio_chip, gpio as *mut kernel::ffi::c_void)
 }
 
 static tps65912_gpio_id_table: [platform_device_id; 2] = [
-    platform_device_id { name: b"tps65912-gpio\0".as_ptr() as *const core::ffi::c_char },
+    platform_device_id { name: b"tps65912-gpio\0".as_ptr() as *const kernel::ffi::c_char },
     platform_device_id { name: core::ptr::null() },
 ];
 
 static mut tps65912_gpio_driver: platform_driver = platform_driver {
-    driver: device_driver { name: b"tps65912-gpio\0".as_ptr() as *const core::ffi::c_char },
+    driver: device_driver { name: b"tps65912-gpio\0".as_ptr() as *const kernel::ffi::c_char },
     probe: Some(tps65912_gpio_probe),
     id_table: tps65912_gpio_id_table.as_ptr(),
 };

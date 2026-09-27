@@ -42,7 +42,7 @@ pub enum apple_gmux_type {
 }
 
 #[cfg(CONFIG_APPLE_GMUX)]
-pub unsafe fn apple_gmux_is_indexed(iostart: libc::c_ulong) -> bool {
+pub unsafe fn apple_gmux_is_indexed(iostart: kernel::ffi::c_ulong) -> bool {
     let val: u16;
     outb(0xaa, iostart + 0xcc);
     outb(0x55, iostart + 0xcd);
@@ -52,7 +52,7 @@ pub unsafe fn apple_gmux_is_indexed(iostart: libc::c_ulong) -> bool {
 }
 
 #[cfg(CONFIG_APPLE_GMUX)]
-pub unsafe fn apple_gmux_is_mmio(iostart: libc::c_ulong) -> bool {
+pub unsafe fn apple_gmux_is_mmio(iostart: kernel::ffi::c_ulong) -> bool {
     let iomem_base = ioremap(iostart, 16);
     if iomem_base.is_null() {
         return false;

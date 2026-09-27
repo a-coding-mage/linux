@@ -12,29 +12,29 @@
 
 // C dependencies: linux/zlib.h, linux/string.h, and linux/kernel.h.
 
-pub type uch = ::core::ffi::c_uchar;
-pub type ush = ::core::ffi::c_ushort;
-pub type ulg = ::core::ffi::c_ulong;
+pub type uch = ::kernel::ffi::c_uchar;
+pub type ush = ::kernel::ffi::c_ushort;
+pub type ulg = ::kernel::ffi::c_ulong;
 
 /* common constants */
 
-pub const STORED_BLOCK: ::core::ffi::c_int = 0;
-pub const STATIC_TREES: ::core::ffi::c_int = 1;
-pub const DYN_TREES: ::core::ffi::c_int = 2;
+pub const STORED_BLOCK: ::kernel::ffi::c_int = 0;
+pub const STATIC_TREES: ::kernel::ffi::c_int = 1;
+pub const DYN_TREES: ::kernel::ffi::c_int = 2;
 /* The three kinds of block type */
 
-pub const MIN_MATCH: ::core::ffi::c_int = 3;
-pub const MAX_MATCH: ::core::ffi::c_int = 258;
+pub const MIN_MATCH: ::kernel::ffi::c_int = 3;
+pub const MAX_MATCH: ::kernel::ffi::c_int = 258;
 /* The minimum and maximum match lengths */
 
-pub const PRESET_DICT: ::core::ffi::c_int = 0x20; /* preset dictionary flag in zlib header */
+pub const PRESET_DICT: ::kernel::ffi::c_int = 0x20; /* preset dictionary flag in zlib header */
 
 /* target dependencies */
 
 /* Common defaults */
 
 // #ifndef OS_CODE
-pub const OS_CODE: ::core::ffi::c_int = 0x03; /* assume Unix */
+pub const OS_CODE: ::kernel::ffi::c_int = 0x03; /* assume Unix */
 // #endif
 
 /* functions */
@@ -47,8 +47,8 @@ pub type check_func = Option<unsafe extern "C" fn(
 
 /* checksum functions */
 
-pub const BASE: ::core::ffi::c_long = 65521; /* largest prime smaller than 65536 */
-pub const NMAX: ::core::ffi::c_int = 5552;
+pub const BASE: ::kernel::ffi::c_long = 65521; /* largest prime smaller than 65536 */
+pub const NMAX: ::kernel::ffi::c_int = 5552;
 /* NMAX is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1 */
 
 macro_rules! DO1 {
@@ -84,8 +84,8 @@ macro_rules! DO16 {
 */
 #[inline]
 pub unsafe fn zlib_adler32(mut adler: uLong, mut buf: *const Byte, mut len: uInt) -> uLong {
-    let mut s1: ::core::ffi::c_ulong = (adler as ::core::ffi::c_ulong) & 0xffff;
-    let mut s2: ::core::ffi::c_ulong = ((adler as ::core::ffi::c_ulong) >> 16) & 0xffff;
+    let mut s1: ::kernel::ffi::c_ulong = (adler as ::kernel::ffi::c_ulong) & 0xffff;
+    let mut s2: ::kernel::ffi::c_ulong = ((adler as ::kernel::ffi::c_ulong) >> 16) & 0xffff;
     let mut k: uInt;
 
     if buf.is_null() { return 1 as uLong; }
@@ -107,8 +107,8 @@ pub unsafe fn zlib_adler32(mut adler: uLong, mut buf: *const Byte, mut len: uInt
                 if k == 0 { break; }
             }
         }
-        s1 %= BASE as ::core::ffi::c_ulong;
-        s2 %= BASE as ::core::ffi::c_ulong;
+        s1 %= BASE as ::kernel::ffi::c_ulong;
+        s2 %= BASE as ::kernel::ffi::c_ulong;
     }
     ((s2 << 16) | s1) as uLong
 }

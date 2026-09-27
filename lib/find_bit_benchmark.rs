@@ -37,10 +37,10 @@ extern "C" {
     fn find_next_and_bit(addr1: *const usize, addr2: *const usize, size: usize, offset: usize) -> usize;
     fn bitmap_find_next_zero_area_off(addr: *mut usize, size: usize, start: usize, nr: usize, align_mask: usize, align_offset: usize) -> usize;
     fn bitmap_weight(addr: *const usize, nbits: usize) -> usize;
-    fn get_random_bytes(buf: *mut core::ffi::c_void, nbytes: usize);
+    fn get_random_bytes(buf: *mut kernel::ffi::c_void, nbytes: usize);
     fn get_random_u32_below(n: u32) -> u32;
     fn warn_on(condition: bool) -> bool;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
 }
 
 unsafe fn clear_bit(nr: usize, addr: *mut usize) {

@@ -7,33 +7,33 @@
 #[cfg(any(feature = "kernel", feature = "define_bsd_termios"))]
 #[repr(C)]
 pub struct Sgttyb {
-    pub sg_ispeed: core::ffi::c_char,
-    pub sg_ospeed: core::ffi::c_char,
-    pub sg_erase: core::ffi::c_char,
-    pub sg_kill: core::ffi::c_char,
+    pub sg_ispeed: kernel::ffi::c_char,
+    pub sg_ospeed: kernel::ffi::c_char,
+    pub sg_erase: kernel::ffi::c_char,
+    pub sg_kill: kernel::ffi::c_char,
     pub sg_flags: i16,
 }
 
 #[cfg(any(feature = "kernel", feature = "define_bsd_termios"))]
 #[repr(C)]
 pub struct Tchars {
-    pub t_intrc: core::ffi::c_char,
-    pub t_quitc: core::ffi::c_char,
-    pub t_startc: core::ffi::c_char,
-    pub t_stopc: core::ffi::c_char,
-    pub t_eofc: core::ffi::c_char,
-    pub t_brkc: core::ffi::c_char,
+    pub t_intrc: kernel::ffi::c_char,
+    pub t_quitc: kernel::ffi::c_char,
+    pub t_startc: kernel::ffi::c_char,
+    pub t_stopc: kernel::ffi::c_char,
+    pub t_eofc: kernel::ffi::c_char,
+    pub t_brkc: kernel::ffi::c_char,
 }
 
 #[cfg(any(feature = "kernel", feature = "define_bsd_termios"))]
 #[repr(C)]
 pub struct Ltchars {
-    pub t_suspc: core::ffi::c_char,
-    pub t_dsuspc: core::ffi::c_char,
-    pub t_rprntc: core::ffi::c_char,
-    pub t_flushc: core::ffi::c_char,
-    pub t_werasc: core::ffi::c_char,
-    pub t_lnextc: core::ffi::c_char,
+    pub t_suspc: kernel::ffi::c_char,
+    pub t_dsuspc: kernel::ffi::c_char,
+    pub t_rprntc: kernel::ffi::c_char,
+    pub t_flushc: kernel::ffi::c_char,
+    pub t_werasc: kernel::ffi::c_char,
+    pub t_lnextc: kernel::ffi::c_char,
 }
 
 #[repr(C)]

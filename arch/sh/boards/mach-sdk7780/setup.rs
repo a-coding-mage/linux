@@ -64,7 +64,7 @@ unsafe extern "C" fn sdk7780_devices_setup() -> i32 {
 
 // C: device_initcall(sdk7780_devices_setup);
 
-unsafe extern "C" fn sdk7780_setup(cmdline_p: *mut *mut core::ffi::c_char) {
+unsafe extern "C" fn sdk7780_setup(cmdline_p: *mut *mut kernel::ffi::c_char) {
     let ver: u16 = __raw_readw(FPGA_FPVERR);
     let date_stamp: u16 = __raw_readw(FPGA_FPDATER);
 

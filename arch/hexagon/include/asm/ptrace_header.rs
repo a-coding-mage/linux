@@ -9,8 +9,8 @@
 
 /* kprobe-based event tracer support */
 unsafe extern "C" {
-    pub fn regs_query_register_offset(name: *const core::ffi::c_char) -> core::ffi::c_int;
-    pub fn regs_query_register_name(offset: core::ffi::c_uint) -> *const core::ffi::c_char;
+    pub fn regs_query_register_offset(name: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    pub fn regs_query_register_name(offset: kernel::ffi::c_uint) -> *const kernel::ffi::c_char;
 }
 
 /// Equivalent of the `current_pt_regs()` macro.
@@ -22,6 +22,6 @@ pub unsafe fn current_pt_regs() -> *mut crate::pt_regs {
 
 // Equivalent of: #if CONFIG_HEXAGON_ARCH_VERSION >= 4
 #[cfg(CONFIG_HEXAGON_ARCH_VERSION_GE_4)]
-pub const ARCH_HAS_SINGLE_STEP: core::ffi::c_int = 1;
+pub const ARCH_HAS_SINGLE_STEP: kernel::ffi::c_int = 1;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

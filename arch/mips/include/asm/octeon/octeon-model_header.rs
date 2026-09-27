@@ -36,7 +36,7 @@ octeon_consts! {
 extern "C" {
     pub fn cvmx_get_proc_id() -> u32;
     pub fn cvmx_read_csr(csr_addr: u64) -> u64;
-    pub fn octeon_model_get_string(chip_id: u32) -> *const core::ffi::c_char;
+    pub fn octeon_model_get_string(chip_id: u32) -> *const kernel::ffi::c_char;
 }
 
 #[inline]

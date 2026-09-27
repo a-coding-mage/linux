@@ -1257,7 +1257,7 @@ static mut eswin_clk_info eic7700_clks[] = {
  * the clk_pll_cpu rate is completed.
  */
 unsafe fn eic7700_clk_pll_cpu_notifier_cb(notifier_block *nb,
-					   action: core::ffi::c_ulong, void *data)
+					   action: kernel::ffi::c_ulong, void *data)
 {
 	struct eswin_clock_data *pdata;
 	struct clk_hw *mux_clk;

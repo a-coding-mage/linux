@@ -21,10 +21,10 @@ extern "C" {
         flags: u64,
         start: u64,
         end: u64,
-        arg: *mut core::ffi::c_void,
-        callback: unsafe fn(*mut resource, *mut core::ffi::c_void) -> i32,
+        arg: *mut kernel::ffi::c_void,
+        callback: unsafe fn(*mut resource, *mut kernel::ffi::c_void) -> i32,
     ) -> i32;
-    fn platform_device_alloc(name: *const core::ffi::c_char, id: i32) -> *mut platform_device;
+    fn platform_device_alloc(name: *const kernel::ffi::c_char, id: i32) -> *mut platform_device;
     fn platform_device_add(pdev: *mut platform_device) -> i32;
     fn platform_device_put(pdev: *mut platform_device);
 }
@@ -34,7 +34,7 @@ const IORES_DESC_PERSISTENT_MEMORY_LEGACY: u64 = 12;
 const IORESOURCE_MEM: u64 = 0x0000_0200;
 const ENOMEM: i32 = 12;
 
-unsafe fn found(_res: *mut resource, _data: *mut core::ffi::c_void) -> i32 {
+unsafe fn found(_res: *mut resource, _data: *mut kernel::ffi::c_void) -> i32 {
     1
 }
 
@@ -58,7 +58,7 @@ unsafe fn register_e820_pmem() -> i32 {
      * See drivers/nvdimm/e820.c for the implementation, this is
      * simply here to trigger the module to load on demand.
      */
-    pdev = platform_device_alloc(b"e820_pmem\0".as_ptr() as *const core::ffi::c_char, -1);
+    pdev = platform_device_alloc(b"e820_pmem\0".as_ptr() as *const kernel::ffi::c_char, -1);
     if pdev.is_null() {
         return -ENOMEM;
     }

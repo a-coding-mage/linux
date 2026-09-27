@@ -35,23 +35,23 @@ extern "C" {
     pub static mut ath25_board: ar231x_board_config;
     pub static mut ath25_irq_dispatch: Option<unsafe extern "C" fn()>;
 
-    pub fn ath25_find_config(offset: phys_addr_t, size: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn ath25_find_config(offset: phys_addr_t, size: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
     pub fn ath25_serial_setup(
         mapbase: u32,
-        irq: ::core::ffi::c_int,
-        uartclk: ::core::ffi::c_uint,
+        irq: ::kernel::ffi::c_int,
+        uartclk: ::kernel::ffi::c_uint,
     );
     pub fn ath25_add_wmac(
-        nr: ::core::ffi::c_int,
+        nr: ::kernel::ffi::c_int,
         base: u32,
-        irq: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        irq: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // Type and constant supplied by <linux/cpu.h>.
 extern "C" {
     pub static current_cpu_data: CpuData;
-    pub static CPU_4KEC: ::core::ffi::c_int;
+    pub static CPU_4KEC: ::kernel::ffi::c_int;
 }
 
 #[inline]

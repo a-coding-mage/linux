@@ -10,17 +10,17 @@
 
 // Linux and architecture headers supplying the declarations used below.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn opal_xscom_read(chip: u32, reg: u64, value: u64) -> i64;
     fn opal_xscom_write(chip: u32, reg: u64, value: u64) -> i64;
-    fn __pa(addr: *const core::ffi::c_void) -> u64;
+    fn __pa(addr: *const kernel::ffi::c_void) -> u64;
     fn be64_to_cpu(value: u64) -> u64;
     fn put_user(value: u64, ptr: *mut u64) -> i32;
     fn get_user(value: *mut u64, ptr: *const u64) -> i32;
     fn kzalloc_obj<T>() -> *mut T;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn kasprintf(flags: u32, format: *const c_char, ...) -> *mut c_char;
     fn strlen(value: *const c_char) -> usize;
     fn debugfs_create_dir(name: *const c_char, parent: *mut dentry) -> *mut dentry;
@@ -46,11 +46,11 @@ pub struct device_node { _private: [u8; 0] }
 #[repr(C)]
 pub struct inode { _private: [u8; 0] }
 #[repr(C)]
-pub struct file { pub private_data: *mut core::ffi::c_void }
+pub struct file { pub private_data: *mut kernel::ffi::c_void }
 
 #[repr(C)]
 pub struct debugfs_blob_wrapper {
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
     pub size: usize,
 }
 

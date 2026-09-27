@@ -23,10 +23,10 @@ enum IngenicRngVersion {
 // External kernel definitions.
 #[repr(C)]
 pub struct Hwrng {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub init: Option<unsafe extern "C" fn(*mut Hwrng) -> i32>,
     pub cleanup: Option<unsafe extern "C" fn(*mut Hwrng)>,
-    pub read: Option<unsafe extern "C" fn(*mut Hwrng, *mut core::ffi::c_void, usize, bool) -> i32>,
+    pub read: Option<unsafe extern "C" fn(*mut Hwrng, *mut kernel::ffi::c_void, usize, bool) -> i32>,
 }
 
 #[repr(C)]
@@ -34,14 +34,14 @@ pub struct Device;
 #[repr(C)]
 pub struct PlatformDevice {
     pub dev: Device,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 #[repr(C)]
 pub struct OfDeviceId;
 #[repr(C)]
 pub struct PlatformDriver;
 
-type IoMem = core::ffi::c_void;
+type IoMem = kernel::ffi::c_void;
 
 #[repr(C)]
 struct IngenicRng {
@@ -55,16 +55,16 @@ unsafe extern "C" {
     fn readl(address: *mut IoMem) -> u32;
     fn readl_poll_timeout(address: *mut IoMem, value: *mut u32, condition: u32, delay: u32, timeout: u32) -> i32;
     fn udelay(usecs: u32);
-    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_platform_ioremap_resource(pdev: *mut PlatformDevice, index: u32) -> *mut IoMem;
-    fn of_device_get_match_data(dev: *mut Device) -> *const core::ffi::c_void;
+    fn of_device_get_match_data(dev: *mut Device) -> *const kernel::ffi::c_void;
     fn hwrng_register(rng: *mut Hwrng) -> i32;
     fn hwrng_unregister(rng: *mut Hwrng);
-    fn platform_set_drvdata(pdev: *mut PlatformDevice, data: *mut core::ffi::c_void);
+    fn platform_set_drvdata(pdev: *mut PlatformDevice, data: *mut kernel::ffi::c_void);
     fn platform_get_drvdata(pdev: *mut PlatformDevice) -> *mut IngenicRng;
-    fn pr_err(format: *const core::ffi::c_char, ...);
-    fn dev_err(dev: *mut Device, format: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut Device, format: *const core::ffi::c_char, ...);
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
+    fn dev_err(dev: *mut Device, format: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut Device, format: *const kernel::ffi::c_char, ...);
 }
 
 const GFP_KERNEL: u32 = 0;
@@ -83,7 +83,7 @@ unsafe extern "C" fn ingenic_rng_cleanup(rng: *mut Hwrng) {
     writel(0, (*priv_).base.add(RNG_REG_ERNG_OFFSET));
 }
 
-unsafe extern "C" fn ingenic_rng_read(rng: *mut Hwrng, buf: *mut core::ffi::c_void, _max: usize, _wait: bool) -> i32 {
+unsafe extern "C" fn ingenic_rng_read(rng: *mut Hwrng, buf: *mut kernel::ffi::c_void, _max: usize, _wait: bool) -> i32 {
     let priv_ = (rng as *mut u8).sub(core::mem::offset_of!(IngenicRng, rng)) as *mut IngenicRng;
     let data = buf as *mut u32;
     let mut status = 0u32;
@@ -127,7 +127,7 @@ unsafe extern "C" fn ingenic_rng_probe(pdev: *mut PlatformDevice) -> i32 {
         dev_err(&mut (*pdev).dev, c"Failed to register hwrng\n".as_ptr());
         return ret;
     }
-    platform_set_drvdata(pdev, priv_ as *mut core::ffi::c_void);
+    platform_set_drvdata(pdev, priv_ as *mut kernel::ffi::c_void);
     dev_info(&mut (*pdev).dev, c"Ingenic RNG driver registered\n".as_ptr());
     0
 }

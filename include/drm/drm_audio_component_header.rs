@@ -25,19 +25,19 @@ pub struct drm_audio_component_ops {
     ///
     /// Returns a wakeref cookie to be passed back to the corresponding
     /// call to `put_power`.
-    pub get_power: Option<unsafe extern "C" fn(*mut device) -> libc::c_ulong>,
+    pub get_power: Option<unsafe extern "C" fn(*mut device) -> kernel::ffi::c_ulong>,
     /// Allow the POWER_DOMAIN_AUDIO power well to be turned off.
-    pub put_power: Option<unsafe extern "C" fn(*mut device, libc::c_ulong)>,
+    pub put_power: Option<unsafe extern "C" fn(*mut device, kernel::ffi::c_ulong)>,
     /// Enable/disable codec wake signal.
     pub codec_wake_override: Option<unsafe extern "C" fn(*mut device, bool)>,
     /// Get the Core Display Clock in kHz.
-    pub get_cdclk_freq: Option<unsafe extern "C" fn(*mut device) -> libc::c_int>,
+    pub get_cdclk_freq: Option<unsafe extern "C" fn(*mut device) -> kernel::ffi::c_int>,
     /// Set n/cts based on the sample rate.
     ///
     /// Called from audio driver. After audio driver sets the
     /// sample rate, it will call this function to set n/cts.
     pub sync_audio_rate:
-        Option<unsafe extern "C" fn(*mut device, libc::c_int, libc::c_int, libc::c_int) -> libc::c_int>,
+        Option<unsafe extern "C" fn(*mut device, kernel::ffi::c_int, kernel::ffi::c_int, kernel::ffi::c_int) -> kernel::ffi::c_int>,
     /// Fill the audio state and ELD bytes for the given port.
     ///
     /// Called from audio driver to get the HDMI/DP audio state of the given
@@ -50,36 +50,36 @@ pub struct drm_audio_component_ops {
     /// implies that only a part of ELD has been copied to the buffer.
     pub get_eld: Option<unsafe extern "C" fn(
         *mut device,
-        libc::c_int,
-        libc::c_int,
+        kernel::ffi::c_int,
+        kernel::ffi::c_int,
         *mut bool,
-        *mut libc::c_uchar,
-        libc::c_int,
-    ) -> libc::c_int>,
+        *mut kernel::ffi::c_uchar,
+        kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct drm_audio_component_audio_ops {
     /// Pointer to be used in call to pin_eld_notify.
-    pub audio_ptr: *mut libc::c_void,
+    pub audio_ptr: *mut kernel::ffi::c_void,
     /// Notify the HDA driver that pin sense and/or ELD information has changed.
     ///
     /// Called when the DRM driver has set up audio pipeline or has just
     /// begun to tear it down. This allows the HDA driver to update its
     /// status accordingly (even when the HDA controller is in power save
     /// mode).
-    pub pin_eld_notify: Option<unsafe extern "C" fn(*mut libc::c_void, libc::c_int, libc::c_int)>,
+    pub pin_eld_notify: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, kernel::ffi::c_int, kernel::ffi::c_int)>,
     /// Check and convert from pin node to port number.
     ///
     /// Called by HDA driver to check and convert from the pin widget node
     /// number to a port number in the graphics side.
-    pub pin2port: Option<unsafe extern "C" fn(*mut libc::c_void, libc::c_int) -> libc::c_int>,
+    pub pin2port: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, kernel::ffi::c_int) -> kernel::ffi::c_int>,
     /// (Optional) component master bind callback.
     ///
     /// Called at binding master component, for HDA codec-specific
     /// handling of dynamic binding.
     pub master_bind:
-        Option<unsafe extern "C" fn(*mut device, *mut drm_audio_component) -> libc::c_int>,
+        Option<unsafe extern "C" fn(*mut device, *mut drm_audio_component) -> kernel::ffi::c_int>,
     /// (Optional) component master unbind callback.
     ///
     /// Called at unbinding master component, for HDA codec-specific

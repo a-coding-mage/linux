@@ -19,7 +19,7 @@ pub static mut sun4m_irq_global: *mut sun4m_irq_global = core::ptr::null_mut();
 #[repr(C)]
 pub struct sun4m_handler_data {
     pub percpu: bool,
-    pub mask: core::ffi::c_long,
+    pub mask: kernel::ffi::c_long,
 }
 
 pub const SUN4M_INT_ENABLE: u32 = 0x80000000;
@@ -84,8 +84,8 @@ unsafe fn sun4m_build_device_irq(_op: *mut platform_device, real_irq: u32) -> u3
     let mut h = irq_get_handler_data(irq) as *mut sun4m_handler_data;
     if !h.is_null() { return irq; }
     h = kzalloc_obj::<sun4m_handler_data>(GFP_ATOMIC); if h.is_null() { prom_printf("IRQ: kzalloc(sun4m_handler_data) failed.\n"); prom_halt(); }
-    (*h).mask = sun4m_imask[real_irq as usize] as core::ffi::c_long; (*h).percpu = real_irq < OBP_INT_LEVEL_ONBOARD;
-    irq_set_chip_and_handler_name(irq, &mut sun4m_irq, handle_level_irq, "level"); irq_set_handler_data(irq, h as *mut core::ffi::c_void); irq
+    (*h).mask = sun4m_imask[real_irq as usize] as kernel::ffi::c_long; (*h).percpu = real_irq < OBP_INT_LEVEL_ONBOARD;
+    irq_set_chip_and_handler_name(irq, &mut sun4m_irq, handle_level_irq, "level"); irq_set_handler_data(irq, h as *mut kernel::ffi::c_void); irq
 }
 
 #[repr(C)] pub struct sun4m_timer_percpu { pub l14_limit: u32, pub l14_count: u32, pub l14_limit_noclear: u32, pub user_timer_start_stop: u32 }

@@ -19,11 +19,11 @@ extern "C" {
     fn expand_stack(mm: *mut mm_struct, address: usize) -> *mut vm_area_struct;
     fn handle_mm_fault(vma: *mut vm_area_struct, address: usize, flags: u32, regs: *mut pt_regs) -> u32;
     fn fault_signal_pending(fault: u32, regs: *mut pt_regs) -> bool;
-    fn force_sig_fault(sig: i32, code: i32, address: *mut core::ffi::c_void);
+    fn force_sig_fault(sig: i32, code: i32, address: *mut kernel::ffi::c_void);
     fn search_exception_tables(pc: usize) -> *const exception_table_entry;
     fn pagefault_out_of_memory();
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn die(name: *const core::ffi::c_char, regs: *mut pt_regs, write_acc: i32) -> !;
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn die(name: *const kernel::ffi::c_char, regs: *mut pt_regs, write_acc: i32) -> !;
     fn pgd_index(address: usize) -> isize;
     fn p4d_offset(pgd: *mut pgd_t, address: usize) -> *mut p4d_t;
     fn pud_offset(p4d: *mut p4d_t, address: usize) -> *mut pud_t;

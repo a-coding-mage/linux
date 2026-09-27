@@ -3,7 +3,7 @@
 // Translated from drm_managed.h. C preprocessor includes and header guards
 // are omitted; the referenced types and symbols are supplied by dependencies.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub type size_t = usize;
 pub type gfp_t = usize;
@@ -18,13 +18,13 @@ pub struct mutex {
     _private: [u8; 0],
 }
 
-pub type drmres_release_t = Option<unsafe extern "C" fn(*mut drm_device, *mut core::ffi::c_void)>;
+pub type drmres_release_t = Option<unsafe extern "C" fn(*mut drm_device, *mut kernel::ffi::c_void)>;
 
 // drmm_add_action - add a managed release action to a drm_device.
 #[macro_export]
 macro_rules! drmm_add_action {
     ($dev:expr, $action:expr, $data:expr) => {
-        unsafe { $crate::__drmm_add_action($dev, $action, $data, stringify!($action).as_ptr() as *const core::ffi::c_char) }
+        unsafe { $crate::__drmm_add_action($dev, $action, $data, concat!(stringify!($action), "\0").as_ptr() as *const kernel::ffi::c_char) }
     };
 }
 
@@ -32,7 +32,7 @@ unsafe extern "C" {
     pub fn __drmm_add_action(
         dev: *mut drm_device,
         action: drmres_release_t,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         name: *const c_char,
     ) -> i32;
 }
@@ -41,7 +41,7 @@ unsafe extern "C" {
 #[macro_export]
 macro_rules! drmm_add_action_or_reset {
     ($dev:expr, $action:expr, $data:expr) => {
-        unsafe { $crate::__drmm_add_action_or_reset($dev, $action, $data, stringify!($action).as_ptr() as *const core::ffi::c_char) }
+        unsafe { $crate::__drmm_add_action_or_reset($dev, $action, $data, concat!(stringify!($action), "\0").as_ptr() as *const kernel::ffi::c_char) }
     };
 }
 
@@ -49,30 +49,30 @@ unsafe extern "C" {
     pub fn __drmm_add_action_or_reset(
         dev: *mut drm_device,
         action: drmres_release_t,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         name: *const c_char,
     ) -> i32;
 
     pub fn drmm_release_action(
         dev: *mut drm_device,
         action: drmres_release_t,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     );
 
-    pub fn drmm_kmalloc(dev: *mut drm_device, size: size_t, gfp: gfp_t) -> *mut core::ffi::c_void;
+    pub fn drmm_kmalloc(dev: *mut drm_device, size: size_t, gfp: gfp_t) -> *mut kernel::ffi::c_void;
 
     pub fn drmm_kstrdup(dev: *mut drm_device, s: *const c_char, gfp: gfp_t) -> *mut c_char;
 
-    pub fn drmm_kfree(dev: *mut drm_device, data: *mut core::ffi::c_void);
+    pub fn drmm_kfree(dev: *mut drm_device, data: *mut kernel::ffi::c_void);
 
-    pub fn __drmm_mutex_release(dev: *mut drm_device, res: *mut core::ffi::c_void);
+    pub fn __drmm_mutex_release(dev: *mut drm_device, res: *mut kernel::ffi::c_void);
 
-    pub fn __drmm_workqueue_release(device: *mut drm_device, wq: *mut core::ffi::c_void);
+    pub fn __drmm_workqueue_release(device: *mut drm_device, wq: *mut kernel::ffi::c_void);
 }
 
 // drmm_kzalloc - drm_device managed kzalloc().
 #[inline]
-pub unsafe fn drmm_kzalloc(dev: *mut drm_device, size: size_t, gfp: gfp_t) -> *mut core::ffi::c_void {
+pub unsafe fn drmm_kzalloc(dev: *mut drm_device, size: size_t, gfp: gfp_t) -> *mut kernel::ffi::c_void {
     drmm_kmalloc(dev, size, gfp | __GFP_ZERO)
 }
 
@@ -83,7 +83,7 @@ pub unsafe fn drmm_kmalloc_array(
     n: size_t,
     size: size_t,
     flags: gfp_t,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     match n.checked_mul(size) {
         Some(bytes) => drmm_kmalloc(dev, bytes, flags),
         None => core::ptr::null_mut(),
@@ -97,7 +97,7 @@ pub unsafe fn drmm_kcalloc(
     n: size_t,
     size: size_t,
     flags: gfp_t,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     drmm_kmalloc_array(dev, n, size, flags | __GFP_ZERO)
 }
 
@@ -111,7 +111,7 @@ macro_rules! drmm_mutex_init {
 
 unsafe extern "C" {
     pub fn mutex_init(lock: *mut mutex);
-    pub fn alloc_ordered_workqueue(fmt: *const c_char, flags: u32, ...) -> *mut core::ffi::c_void;
+    pub fn alloc_ordered_workqueue(fmt: *const c_char, flags: u32, ...) -> *mut kernel::ffi::c_void;
 }
 
 pub const __GFP_ZERO: gfp_t = 0x8000;

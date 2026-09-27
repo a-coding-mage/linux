@@ -27,19 +27,19 @@ pub struct rfkill;
 
 #[repr(C)]
 pub struct rfkill_ops {
-    pub poll: Option<unsafe extern "C" fn(rfkill: *mut rfkill, data: *mut core::ffi::c_void)>,
-    pub query: Option<unsafe extern "C" fn(rfkill: *mut rfkill, data: *mut core::ffi::c_void)>,
-    pub set_block: Option<unsafe extern "C" fn(data: *mut core::ffi::c_void, blocked: bool) -> i32>,
+    pub poll: Option<unsafe extern "C" fn(rfkill: *mut rfkill, data: *mut kernel::ffi::c_void)>,
+    pub query: Option<unsafe extern "C" fn(rfkill: *mut rfkill, data: *mut kernel::ffi::c_void)>,
+    pub set_block: Option<unsafe extern "C" fn(data: *mut kernel::ffi::c_void, blocked: bool) -> i32>,
 }
 
 // CONFIG_RFKILL or CONFIG_RFKILL_MODULE
 extern "C" {
     pub fn rfkill_alloc(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         parent: *mut device,
         type_: rfkill_type,
         ops: *const rfkill_ops,
-        ops_data: *mut core::ffi::c_void,
+        ops_data: *mut kernel::ffi::c_void,
     ) -> *mut rfkill;
     pub fn rfkill_register(rfkill: *mut rfkill) -> i32;
     pub fn rfkill_pause_polling(rfkill: *mut rfkill);
@@ -56,7 +56,7 @@ extern "C" {
     pub fn rfkill_set_states(rfkill: *mut rfkill, sw: bool, hw: bool);
     pub fn rfkill_blocked(rfkill: *mut rfkill) -> bool;
     pub fn rfkill_soft_blocked(rfkill: *mut rfkill) -> bool;
-    pub fn rfkill_find_type(name: *const core::ffi::c_char) -> rfkill_type;
+    pub fn rfkill_find_type(name: *const kernel::ffi::c_char) -> rfkill_type;
 }
 
 #[inline]
@@ -85,26 +85,26 @@ pub unsafe fn rfkill_blocked_disabled(_rfkill: *mut rfkill) -> bool { false }
 pub unsafe fn rfkill_soft_blocked_disabled(_rfkill: *mut rfkill) -> bool { false }
 
 #[inline]
-pub unsafe fn rfkill_find_type_disabled(_name: *const core::ffi::c_char) -> rfkill_type {
+pub unsafe fn rfkill_find_type_disabled(_name: *const kernel::ffi::c_char) -> rfkill_type {
     RFKILL_TYPE_ALL
 }
 
 // CONFIG_RFKILL_LEDS
 extern "C" {
-    pub fn rfkill_get_led_trigger_name(rfkill: *mut rfkill) -> *const core::ffi::c_char;
-    pub fn rfkill_set_led_trigger_name(rfkill: *mut rfkill, name: *const core::ffi::c_char);
+    pub fn rfkill_get_led_trigger_name(rfkill: *mut rfkill) -> *const kernel::ffi::c_char;
+    pub fn rfkill_set_led_trigger_name(rfkill: *mut rfkill, name: *const kernel::ffi::c_char);
 }
 
 // CONFIG_RFKILL_LEDS disabled fallbacks:
 #[inline]
 pub unsafe fn rfkill_get_led_trigger_name_disabled(
     _rfkill: *mut rfkill,
-) -> *const core::ffi::c_char { core::ptr::null() }
+) -> *const kernel::ffi::c_char { core::ptr::null() }
 
 #[inline]
 pub unsafe fn rfkill_set_led_trigger_name_disabled(
     _rfkill: *mut rfkill,
-    _name: *const core::ffi::c_char,
+    _name: *const kernel::ffi::c_char,
 ) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

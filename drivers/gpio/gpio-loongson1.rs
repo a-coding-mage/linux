@@ -29,9 +29,9 @@ struct GpioChip {
 struct GpioGenericChipConfig {
     dev: *mut Device,
     sz: u32,
-    dat: *mut core::ffi::c_void,
-    set: *mut core::ffi::c_void,
-    dirin: *mut core::ffi::c_void,
+    dat: *mut kernel::ffi::c_void,
+    set: *mut kernel::ffi::c_void,
+    dirin: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -50,7 +50,7 @@ struct PlatformDevice {
 struct Module;
 #[repr(C)]
 struct OfDeviceId {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 #[repr(C)]
 struct PlatformDriver {
@@ -59,7 +59,7 @@ struct PlatformDriver {
 }
 #[repr(C)]
 struct Driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     of_match_table: *const OfDeviceId,
 }
 
@@ -75,8 +75,8 @@ extern "C" {
     fn platform_set_drvdata(pdev: *mut PlatformDevice, data: *mut Ls1xGpioChip);
     fn __raw_readl(addr: *mut u8) -> u32;
     fn __raw_writel(value: u32, addr: *mut u8);
-    fn dev_info(dev: *mut Device, fmt: *const core::ffi::c_char, ...);
-    fn dev_err(dev: *mut Device, fmt: *const core::ffi::c_char, ...);
+    fn dev_info(dev: *mut Device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_err(dev: *mut Device, fmt: *const kernel::ffi::c_char, ...);
     fn gpio_generic_lock_irqsave(chip: *mut GpioGenericChip);
     fn gpio_generic_unlock_irqrestore(chip: *mut GpioGenericChip);
 }
@@ -117,9 +117,9 @@ unsafe fn ls1x_gpio_probe(pdev: *mut PlatformDevice) -> i32 {
     let config = GpioGenericChipConfig {
         dev,
         sz: 4,
-        dat: (*ls1x_gc).reg_base.add(GPIO_DATA) as *mut core::ffi::c_void,
-        set: (*ls1x_gc).reg_base.add(GPIO_OUTPUT) as *mut core::ffi::c_void,
-        dirin: (*ls1x_gc).reg_base.add(GPIO_DIR) as *mut core::ffi::c_void,
+        dat: (*ls1x_gc).reg_base.add(GPIO_DATA) as *mut kernel::ffi::c_void,
+        set: (*ls1x_gc).reg_base.add(GPIO_OUTPUT) as *mut kernel::ffi::c_void,
+        dirin: (*ls1x_gc).reg_base.add(GPIO_DIR) as *mut kernel::ffi::c_void,
     };
 
     let mut ret = gpio_generic_chip_init(&mut (*ls1x_gc).chip, &mut { config });

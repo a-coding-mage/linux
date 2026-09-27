@@ -119,8 +119,8 @@ pub struct leon3_cacheregs { pub ccr: usize, pub iccr: usize, pub dccr: usize }
 
 extern "C" {
     pub fn leon_flush_pcache_all(vma: *mut vm_area_struct, page: usize);
-    pub fn leon_build_device_irq(real_irq: u32, flow_handler: irq_flow_handler_t, name: *const core::ffi::c_char, do_ack: i32) -> u32;
-    pub fn leon_update_virq_handling(virq: u32, flow_handler: irq_flow_handler_t, name: *const core::ffi::c_char, do_ack: i32);
+    pub fn leon_build_device_irq(real_irq: u32, flow_handler: irq_flow_handler_t, name: *const kernel::ffi::c_char, do_ack: i32) -> u32;
+    pub fn leon_update_virq_handling(virq: u32, flow_handler: irq_flow_handler_t, name: *const kernel::ffi::c_char, do_ack: i32);
     pub fn leon_init_timers();
     pub fn leon_node_init(dp: *mut device_node, nextp: *mut *mut *mut device_node);
     pub fn init_leon();

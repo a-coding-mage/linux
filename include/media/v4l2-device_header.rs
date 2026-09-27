@@ -3,7 +3,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub struct device;
 pub struct media_device;
@@ -21,7 +21,7 @@ pub struct v4l2_device {
     pub mdev: *mut media_device,
     pub subdevs: list_head,
     pub lock: spinlock_t,
-    pub name: [core::ffi::c_char; 36],
+    pub name: [kernel::ffi::c_char; 36],
     pub notify: Option<unsafe extern "C" fn(*mut v4l2_subdev, u32, *mut c_void)>,
     pub ctrl_handler: *mut v4l2_ctrl_handler,
     pub prio: v4l2_prio_state,
@@ -35,7 +35,7 @@ extern "C" {
     pub fn kref_get(kref: *mut kref);
     pub fn v4l2_device_put(v4l2_dev: *mut v4l2_device) -> i32;
     pub fn v4l2_device_register(dev: *mut device, v4l2_dev: *mut v4l2_device) -> i32;
-    pub fn v4l2_device_set_name(v4l2_dev: *mut v4l2_device, basename: *const core::ffi::c_char,
+    pub fn v4l2_device_set_name(v4l2_dev: *mut v4l2_device, basename: *const kernel::ffi::c_char,
                                 instance: *mut atomic_t) -> i32;
     pub fn v4l2_device_disconnect(v4l2_dev: *mut v4l2_device);
     pub fn v4l2_device_unregister(v4l2_dev: *mut v4l2_device);

@@ -28,14 +28,14 @@ extern "C" {
 
 #[repr(C)]
 struct dmi_system_id {
-    ident: *const core::ffi::c_char,
+    ident: *const kernel::ffi::c_char,
     matches: [dmi_match; 3],
 }
 
 #[repr(C)]
 struct dmi_match {
     slot: u32,
-    substr: *const core::ffi::c_char,
+    substr: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -47,7 +47,7 @@ struct pci_bits {
 }
 
 extern "C" {
-    fn to_pci_dev(dev: *mut core::ffi::c_void) -> *mut pci_dev;
+    fn to_pci_dev(dev: *mut kernel::ffi::c_void) -> *mut pci_dev;
     fn dmi_check_system(table: *const dmi_system_id) -> i32;
     fn pci_read_config_byte(dev: *mut pci_dev, where_: u32, val: *mut u8) -> i32;
     fn pci_read_config_word(dev: *mut pci_dev, where_: u32, val: *mut u16) -> i32;
@@ -61,7 +61,7 @@ extern "C" {
     fn ata_bmdma_stop(qc: *mut ata_queued_cmd);
     fn ata_bmdma_dumb_qc_prep(qc: *mut ata_queued_cmd);
     fn ata_pci_bmdma_init_one(pdev: *mut pci_dev, ppi: *const *const ata_port_info,
-                              sht: *const scsi_host_template, private_data: *mut core::ffi::c_void,
+                              sht: *const scsi_host_template, private_data: *mut kernel::ffi::c_void,
                               flags: u32) -> i32;
     fn ata_pci_remove_one(pdev: *mut pci_dev);
     fn ata_pci_device_resume(dev: *mut pci_dev) -> i32;
@@ -75,9 +75,9 @@ type c_long = isize;
 type c_ulonglong = u64;
 type c_int = i32;
 
-#[repr(C)] struct pci_dev { device: u16, host: *mut core::ffi::c_void }
+#[repr(C)] struct pci_dev { device: u16, host: *mut kernel::ffi::c_void }
 #[repr(C)] struct ata_port { host: *mut ata_host, port_no: u32 }
-#[repr(C)] struct ata_host { dev: *mut core::ffi::c_void }
+#[repr(C)] struct ata_host { dev: *mut kernel::ffi::c_void }
 #[repr(C)] struct ata_link { ap: *mut ata_port }
 #[repr(C)] struct ata_device { devno: u32, pio_mode: i32, dma_mode: i32 }
 #[repr(C)] struct ata_queued_cmd { ap: *mut ata_port, dev: *mut ata_device }
@@ -95,7 +95,7 @@ type c_int = i32;
 }
 #[repr(C)] struct ata_port_info { flags: u32, pio_mask: u32, mwdma_mask: u32, udma_mask: u32, port_ops: *const ata_port_operations }
 #[repr(C)] struct pci_device_id { vendor: u32, device: u32 }
-#[repr(C)] struct pci_driver { name: *const core::ffi::c_char, id_table: *const pci_device_id }
+#[repr(C)] struct pci_driver { name: *const kernel::ffi::c_char, id_table: *const pci_device_id }
 
 const XFER_PIO_0: i32 = 0;
 const XFER_UDMA_0: i32 = 0x40;

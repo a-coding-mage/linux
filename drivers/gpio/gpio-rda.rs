@@ -30,14 +30,14 @@ const RDA_GPIO_BANK_NR: usize = 32;
 #[repr(C)]
 struct RdaGpio {
     chip: GpioGenericChip,
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     lock: Spinlock,
     irq: i32,
 }
 
 // External kernel types and functions are supplied by other translation units.
 #[repr(C)] struct GpioGenericChip { gc: GpioChip }
-#[repr(C)] struct GpioChip { label: *const core::ffi::c_char, ngpio: u32, base: i32, irq: GpioIrqChip }
+#[repr(C)] struct GpioChip { label: *const kernel::ffi::c_char, ngpio: u32, base: i32, irq: GpioIrqChip }
 #[repr(C)] struct GpioIrqChip { _private: [u8; 0] }
 #[repr(C)] struct Spinlock { _private: [u8; 0] }
 #[repr(C)] struct IrqData { _private: [u8; 0] }

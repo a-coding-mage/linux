@@ -8,11 +8,11 @@
  */
 /* Dependencies are supplied by the surrounding kernel translation. */
 
-pub static mut shm_align_mask: libc::c_ulong = PAGE_SIZE - 1; /* Sane caches */
+pub static mut shm_align_mask: kernel::ffi::c_ulong = PAGE_SIZE - 1; /* Sane caches */
 /* EXPORT_SYMBOL(shm_align_mask); */
 
 #[inline]
-unsafe fn colour_align(addr: libc::c_ulong, pgoff: libc::c_ulong) -> libc::c_ulong {
+unsafe fn colour_align(addr: kernel::ffi::c_ulong, pgoff: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     ((addr.wrapping_add(shm_align_mask) & !shm_align_mask)
         .wrapping_add((pgoff << PAGE_SHIFT) & shm_align_mask))
 }
@@ -26,26 +26,26 @@ enum mmap_allocation_direction {
 
 unsafe fn arch_get_unmapped_area_common(
     filp: *mut file,
-    addr0: libc::c_ulong,
-    len: libc::c_ulong,
-    pgoff: libc::c_ulong,
-    flags: libc::c_ulong,
+    addr0: kernel::ffi::c_ulong,
+    len: kernel::ffi::c_ulong,
+    pgoff: kernel::ffi::c_ulong,
+    flags: kernel::ffi::c_ulong,
     dir: mmap_allocation_direction,
-) -> libc::c_ulong {
+) -> kernel::ffi::c_ulong {
     let mm: *mut mm_struct = (*current).mm;
     let mut vma: *mut vm_area_struct;
     let mut addr = addr0;
-    let mut do_color_align: libc::c_int;
+    let mut do_color_align: kernel::ffi::c_int;
     let mut info: vm_unmapped_area_info = core::mem::zeroed();
 
     if unlikely(len > TASK_SIZE) {
-        return -ENOMEM as libc::c_ulong;
+        return -ENOMEM as kernel::ffi::c_ulong;
     }
 
     if flags & MAP_FIXED != 0 {
         /* Even MAP_FIXED mappings must reside within TASK_SIZE */
         if TASK_SIZE - len < addr {
-            return -EINVAL as libc::c_ulong;
+            return -EINVAL as kernel::ffi::c_ulong;
         }
 
         /*
@@ -55,7 +55,7 @@ unsafe fn arch_get_unmapped_area_common(
         if flags & MAP_SHARED != 0
             && ((addr.wrapping_sub(pgoff << PAGE_SHIFT)) & shm_align_mask) != 0
         {
-            return -EINVAL as libc::c_ulong;
+            return -EINVAL as kernel::ffi::c_ulong;
         }
         return addr;
     }
@@ -110,12 +110,12 @@ unsafe fn arch_get_unmapped_area_common(
 
 pub unsafe fn arch_get_unmapped_area(
     filp: *mut file,
-    addr0: libc::c_ulong,
-    len: libc::c_ulong,
-    pgoff: libc::c_ulong,
-    flags: libc::c_ulong,
+    addr0: kernel::ffi::c_ulong,
+    len: kernel::ffi::c_ulong,
+    pgoff: kernel::ffi::c_ulong,
+    flags: kernel::ffi::c_ulong,
     _vm_flags: vm_flags_t,
-) -> libc::c_ulong {
+) -> kernel::ffi::c_ulong {
     arch_get_unmapped_area_common(filp, addr0, len, pgoff, flags, mmap_allocation_direction::UP)
 }
 
@@ -125,17 +125,17 @@ pub unsafe fn arch_get_unmapped_area(
  */
 pub unsafe fn arch_get_unmapped_area_topdown(
     filp: *mut file,
-    addr0: libc::c_ulong,
-    len: libc::c_ulong,
-    pgoff: libc::c_ulong,
-    flags: libc::c_ulong,
+    addr0: kernel::ffi::c_ulong,
+    len: kernel::ffi::c_ulong,
+    pgoff: kernel::ffi::c_ulong,
+    flags: kernel::ffi::c_ulong,
     _vm_flags: vm_flags_t,
-) -> libc::c_ulong {
+) -> kernel::ffi::c_ulong {
     arch_get_unmapped_area_common(filp, addr0, len, pgoff, flags, mmap_allocation_direction::DOWN)
 }
 
-pub unsafe fn __virt_addr_valid(kaddr: *const core::ffi::c_void) -> bool {
-    let vaddr = kaddr as libc::c_ulong;
+pub unsafe fn __virt_addr_valid(kaddr: *const kernel::ffi::c_void) -> bool {
+    let vaddr = kaddr as kernel::ffi::c_ulong;
 
     if vaddr < PAGE_OFFSET || vaddr >= MAP_BASE {
         return false;

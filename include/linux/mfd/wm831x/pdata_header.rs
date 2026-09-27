@@ -77,8 +77,8 @@ pub enum wm831x_status_src {
 #[repr(C)]
 pub struct wm831x_status_pdata {
     pub default_src: wm831x_status_src,
-    pub name: *const core::ffi::c_char,
-    pub default_trigger: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub default_trigger: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]

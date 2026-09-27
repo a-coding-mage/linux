@@ -12,8 +12,8 @@ pub struct PageCacheRaUnboundedEntry {
     pub i_ino: u64,
     pub s_dev: dev_t,
     pub index: pgoff_t,
-    pub nr_to_read: ::core::ffi::c_ulong,
-    pub lookahead_size: ::core::ffi::c_ulong,
+    pub nr_to_read: ::kernel::ffi::c_ulong,
+    pub lookahead_size: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -21,10 +21,10 @@ pub struct PageCacheRaOrderEntry {
     pub i_ino: u64,
     pub s_dev: dev_t,
     pub index: pgoff_t,
-    pub order: ::core::ffi::c_uint,
-    pub size: ::core::ffi::c_uint,
-    pub async_size: ::core::ffi::c_uint,
-    pub ra_pages: ::core::ffi::c_uint,
+    pub order: ::kernel::ffi::c_uint,
+    pub size: ::kernel::ffi::c_uint,
+    pub async_size: ::kernel::ffi::c_uint,
+    pub ra_pages: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -32,13 +32,13 @@ pub struct PageCacheRaOpEntry {
     pub i_ino: u64,
     pub prev_pos: loff_t,
     pub index: pgoff_t,
-    pub req_count: ::core::ffi::c_ulong,
+    pub req_count: ::kernel::ffi::c_ulong,
     pub s_dev: dev_t,
-    pub order: ::core::ffi::c_uint,
-    pub size: ::core::ffi::c_uint,
-    pub async_size: ::core::ffi::c_uint,
-    pub ra_pages: ::core::ffi::c_uint,
-    pub mmap_miss: ::core::ffi::c_uint,
+    pub order: ::kernel::ffi::c_uint,
+    pub size: ::kernel::ffi::c_uint,
+    pub async_size: ::kernel::ffi::c_uint,
+    pub ra_pages: ::kernel::ffi::c_uint,
+    pub mmap_miss: ::kernel::ffi::c_uint,
 }
 
 /* Linux types supplied by the corresponding kernel headers. */

@@ -20,15 +20,15 @@ extern "C" {
     fn integrity_init_keyring(id: i32) -> i32;
     fn integrity_load_cert(
         id: i32,
-        source: *const core::ffi::c_char,
-        data: *const core::ffi::c_void,
+        source: *const kernel::ffi::c_char,
+        data: *const kernel::ffi::c_void,
         len: size_t,
         perm: key_perm_t,
     ) -> i32;
     fn efi_enabled(feature: i32) -> bool;
-    fn efi_mokvar_entry_find(name: *const core::ffi::c_char) -> *mut efi_mokvar_table_entry;
-    fn pr_notice(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn efi_mokvar_entry_find(name: *const kernel::ffi::c_char) -> *mut efi_mokvar_table_entry;
+    fn pr_notice(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 // Constants/macros provided by the surrounding kernel translation:
@@ -51,8 +51,8 @@ unsafe fn machine_keyring_init() -> i32 {
 // device_initcall(machine_keyring_init);
 
 pub unsafe fn add_to_machine_keyring(
-    source: *const core::ffi::c_char,
-    data: *const core::ffi::c_void,
+    source: *const kernel::ffi::c_char,
+    data: *const kernel::ffi::c_void,
     len: size_t,
 ) {
     let perm: key_perm_t;

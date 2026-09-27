@@ -29,30 +29,30 @@ extern "C" {
 
     fn edac_device_printk(
         ed: *mut edac_device_ctl_info,
-        level: *const core::ffi::c_char,
-        fmt: *const core::ffi::c_char,
+        level: *const kernel::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
         ...
     );
     fn edac_device_handle_ce(
         ed: *mut edac_device_ctl_info,
         cpu: u32,
         layer: u32,
-        location: *const core::ffi::c_char,
+        location: *const kernel::ffi::c_char,
     );
     fn edac_device_handle_ue(
         ed: *mut edac_device_ctl_info,
         cpu: u32,
         layer: u32,
-        location: *const core::ffi::c_char,
+        location: *const kernel::ffi::c_char,
     );
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut core::ffi::c_void);
-    fn edac_device_alloc_ctl_info(a: u32, name: *const core::ffi::c_char, cpus: u32, cache: *const core::ffi::c_char, layers: u32, instances: u32, index: u32) -> *mut edac_device_ctl_info;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut kernel::ffi::c_void);
+    fn edac_device_alloc_ctl_info(a: u32, name: *const kernel::ffi::c_char, cpus: u32, cache: *const kernel::ffi::c_char, layers: u32, instances: u32, index: u32) -> *mut edac_device_ctl_info;
     fn edac_device_alloc_index() -> u32;
     fn edac_device_add_device(ed: *mut edac_device_ctl_info) -> i32;
     fn edac_device_free_ctl_info(ed: *mut edac_device_ctl_info);
     fn edac_device_del_device(dev: *mut device);
-    fn platform_get_drvdata(pdev: *mut platform_device) -> *mut core::ffi::c_void;
+    fn platform_get_drvdata(pdev: *mut platform_device) -> *mut kernel::ffi::c_void;
 }
 
 const NR_CPUS: usize = 1; // Supplied by the kernel build configuration.
@@ -63,7 +63,7 @@ const GFP_KERNEL: u32 = 0;
 
 #[repr(C)]
 pub struct notifier_block {
-    pub notifier_call: Option<unsafe extern "C" fn(*mut notifier_block, u64, *mut core::ffi::c_void) -> i32>,
+    pub notifier_call: Option<unsafe extern "C" fn(*mut notifier_block, u64, *mut kernel::ffi::c_void) -> i32>,
 }
 
 #[repr(C)]
@@ -77,16 +77,16 @@ pub struct platform_device {
 #[repr(C)]
 pub struct edac_device_ctl_info {
     pub dev: *mut device,
-    pub dev_name: *const core::ffi::c_char,
-    pub mod_name: *const core::ffi::c_char,
-    pub ctl_name: *const core::ffi::c_char,
+    pub dev_name: *const kernel::ffi::c_char,
+    pub mod_name: *const kernel::ffi::c_char,
+    pub ctl_name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct platform_driver {
     pub probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32>,
     pub remove: Option<unsafe extern "C" fn(*mut platform_device)>,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -98,7 +98,7 @@ struct co_cache_error {
 unsafe extern "C" fn co_cache_error_event(
     this: *mut notifier_block,
     event: u64,
-    _ptr: *mut core::ffi::c_void,
+    _ptr: *mut kernel::ffi::c_void,
 ) -> i32 {
     let p = (this as *mut u8).sub(core::mem::offset_of!(co_cache_error, notifier))
         as *mut co_cache_error;

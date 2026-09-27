@@ -277,8 +277,8 @@ pub enum Rn5t618Irq {
 pub struct rn5t618 {
     pub regmap: *mut Regmap,
     pub dev: *mut Device,
-    pub variant: core::ffi::c_long,
-    pub irq: core::ffi::c_int,
+    pub variant: kernel::ffi::c_long,
+    pub irq: kernel::ffi::c_int,
     pub irq_data: *mut RegmapIrqChipData,
 }
 

@@ -3,7 +3,7 @@
 // Dependencies supplied by the corresponding kernel headers and local
 // translation units are intentionally referenced here but not implemented.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn gpio_request(gpio: i32, label: *const c_char) -> i32;

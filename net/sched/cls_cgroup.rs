@@ -39,7 +39,7 @@ pub unsafe fn cls_cgroup_classify(
     tcf_exts_exec(skb, &mut (*head).exts, res)
 }
 
-unsafe fn cls_cgroup_get(_tp: *mut tcf_proto, _handle: u32) -> *mut core::ffi::c_void {
+unsafe fn cls_cgroup_get(_tp: *mut tcf_proto, _handle: u32) -> *mut kernel::ffi::c_void {
     core::ptr::null_mut()
 }
 
@@ -57,7 +57,7 @@ unsafe fn __cls_cgroup_destroy(head: *mut cls_cgroup_head) {
     tcf_exts_destroy(&mut (*head).exts);
     tcf_em_tree_destroy(&mut (*head).ematches);
     tcf_exts_put_net(&mut (*head).exts);
-    kfree(head as *mut core::ffi::c_void);
+    kfree(head as *mut kernel::ffi::c_void);
 }
 
 unsafe fn cls_cgroup_destroy_work(work: *mut work_struct) {
@@ -74,10 +74,10 @@ unsafe fn cls_cgroup_change(
     net: *mut net,
     in_skb: *mut sk_buff,
     tp: *mut tcf_proto,
-    base: core::ffi::c_ulong,
+    base: kernel::ffi::c_ulong,
     handle: u32,
     tca: *mut *mut nlattr,
-    arg: *mut *mut core::ffi::c_void,
+    arg: *mut *mut kernel::ffi::c_void,
     flags: u32,
     extack: *mut netlink_ext_ack,
 ) -> i32 {
@@ -139,7 +139,7 @@ unsafe fn cls_cgroup_change(
 
 unsafe fn goto_errout(new: *mut cls_cgroup_head, err: i32) -> ! {
     tcf_exts_destroy(&mut (*new).exts);
-    kfree(new as *mut core::ffi::c_void);
+    kfree(new as *mut kernel::ffi::c_void);
     panic!("C goto errout: {}", err);
 }
 
@@ -160,7 +160,7 @@ unsafe fn cls_cgroup_destroy(
 }
 
 unsafe fn cls_cgroup_delete(
-    _tp: *mut tcf_proto, _arg: *mut core::ffi::c_void, _last: *mut bool,
+    _tp: *mut tcf_proto, _arg: *mut kernel::ffi::c_void, _last: *mut bool,
     _rtnl_held: bool, _extack: *mut netlink_ext_ack,
 ) -> i32 {
     -EOPNOTSUPP
@@ -175,7 +175,7 @@ unsafe fn cls_cgroup_walk(tp: *mut tcf_proto, arg: *mut tcf_walker, _rtnl_held: 
     if head.is_null() {
         return;
     }
-    if ((*arg).fn_)(tp, head as *mut core::ffi::c_void, arg) < 0 {
+    if ((*arg).fn_)(tp, head as *mut kernel::ffi::c_void, arg) < 0 {
         (*arg).stop = 1;
         return;
     }
@@ -183,7 +183,7 @@ unsafe fn cls_cgroup_walk(tp: *mut tcf_proto, arg: *mut tcf_walker, _rtnl_held: 
 }
 
 unsafe fn cls_cgroup_dump(
-    _net: *mut net, tp: *mut tcf_proto, _fh: *mut core::ffi::c_void,
+    _net: *mut net, tp: *mut tcf_proto, _fh: *mut kernel::ffi::c_void,
     skb: *mut sk_buff, t: *mut tcmsg, _rtnl_held: bool,
 ) -> i32 {
     let head = rtnl_dereference((*tp).root) as *mut cls_cgroup_head;

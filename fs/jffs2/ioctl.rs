@@ -18,14 +18,14 @@ pub struct file {
 
 // ENOTTY is supplied by the target Linux environment.
 unsafe extern "C" {
-    pub static ENOTTY: core::ffi::c_long;
+    pub static ENOTTY: kernel::ffi::c_long;
 }
 
 pub unsafe extern "C" fn jffs2_ioctl(
     filp: *mut file,
-    cmd: core::ffi::c_uint,
-    arg: core::ffi::c_ulong,
-) -> core::ffi::c_long {
+    cmd: kernel::ffi::c_uint,
+    arg: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_long {
     // Later, this will provide for lsattr.jffs2 and chattr.jffs2, which
     // will include compression support etc.
     let _ = (filp, cmd, arg);

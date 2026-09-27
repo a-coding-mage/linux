@@ -33,10 +33,10 @@ extern "C" {
     fn dlm_user_exit();
     fn dlm_plock_init() -> i32;
     fn dlm_plock_exit();
-    fn alloc_workqueue(name: *const core::ffi::c_char, flags: u32, max_active: u32)
+    fn alloc_workqueue(name: *const kernel::ffi::c_char, flags: u32, max_active: u32)
         -> *mut workqueue_struct;
     fn destroy_workqueue(wq: *mut workqueue_struct);
-    fn printk(format: *const core::ffi::c_char, ...);
+    fn printk(format: *const kernel::ffi::c_char, ...);
 }
 
 // WQ_PERCPU and -ENOMEM are supplied by the kernel headers.
@@ -96,7 +96,7 @@ pub unsafe extern "C" fn init_dlm() -> i32 {
         return error;
     }
 
-    dlm_wq = alloc_workqueue(b"dlm_wq\0".as_ptr() as *const core::ffi::c_char, WQ_PERCPU, 0);
+    dlm_wq = alloc_workqueue(b"dlm_wq\0".as_ptr() as *const kernel::ffi::c_char, WQ_PERCPU, 0);
     if dlm_wq.is_null() {
         error = -12; // -ENOMEM
         dlm_plock_exit();
@@ -109,7 +109,7 @@ pub unsafe extern "C" fn init_dlm() -> i32 {
         return error;
     }
 
-    printk(b"DLM installed\n\0".as_ptr() as *const core::ffi::c_char);
+    printk(b"DLM installed\n\0".as_ptr() as *const kernel::ffi::c_char);
 
     0
 }

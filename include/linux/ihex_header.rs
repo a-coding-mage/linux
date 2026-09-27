@@ -22,11 +22,11 @@ extern "C" {
     fn be16_to_cpu(value: __be16) -> u16;
     fn request_firmware(
         fw: *mut *const firmware,
-        fw_name: *const core::ffi::c_char,
+        fw_name: *const kernel::ffi::c_char,
         dev: *mut device,
     ) -> i32;
     fn release_firmware(fw: *const firmware);
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -88,7 +88,7 @@ pub unsafe fn ihex_validate_fw(fw: *const firmware) -> i32 {
 #[inline]
 pub unsafe fn request_ihex_firmware(
     fw: *mut *const firmware,
-    fw_name: *const core::ffi::c_char,
+    fw_name: *const kernel::ffi::c_char,
     dev: *mut device,
 ) -> i32 {
     let mut lfw: *const firmware = core::ptr::null();

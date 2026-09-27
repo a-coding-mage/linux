@@ -21,11 +21,11 @@ pub const THREAD_SIZE: usize = PAGE_SIZE << THREAD_SIZE_ORDER;
 #[repr(C)]
 pub struct thread_info {
     pub task: *mut task_struct,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub cpu: __u32,
     pub preempt_count: __s32,
     pub supervisor_stack: [__u8; 0],
-    pub ksp: ::core::ffi::c_ulong,
+    pub ksp: ::kernel::ffi::c_ulong,
 }
 
 /*

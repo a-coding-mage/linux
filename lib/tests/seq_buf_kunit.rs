@@ -23,19 +23,19 @@ extern "C" {
     fn seq_buf_has_overflowed(s: *const seq_buf) -> bool;
     fn seq_buf_buffer_left(s: *const seq_buf) -> usize;
     fn seq_buf_used(s: *const seq_buf) -> usize;
-    fn seq_buf_str(s: *const seq_buf) -> *const core::ffi::c_char;
+    fn seq_buf_str(s: *const seq_buf) -> *const kernel::ffi::c_char;
     fn seq_buf_clear(s: *mut seq_buf);
-    fn seq_buf_puts(s: *mut seq_buf, text: *const core::ffi::c_char);
+    fn seq_buf_puts(s: *mut seq_buf, text: *const kernel::ffi::c_char);
     fn seq_buf_putc(s: *mut seq_buf, c: i32);
-    fn seq_buf_printf(s: *mut seq_buf, format: *const core::ffi::c_char, ...);
-    fn seq_buf_get_buf(s: *mut seq_buf, buf: *mut *mut core::ffi::c_char) -> usize;
+    fn seq_buf_printf(s: *mut seq_buf, format: *const kernel::ffi::c_char, ...);
+    fn seq_buf_get_buf(s: *mut seq_buf, buf: *mut *mut kernel::ffi::c_char) -> usize;
     fn seq_buf_commit(s: *mut seq_buf, num: isize);
     fn seq_buf_putmem_hex(s: *mut seq_buf, data: *const u8, len: usize) -> i32;
 }
 
 extern "C" {
-    fn memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, count: usize);
-    fn strlen(s: *const core::ffi::c_char) -> usize;
+    fn memcpy(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, count: usize);
+    fn strlen(s: *const kernel::ffi::c_char) -> usize;
 }
 
 // KUNIT_EXPECT_* and KUNIT_CASE are kernel macros; their invocations are
@@ -157,7 +157,7 @@ struct kunit_case {
 
 #[repr(C)]
 struct kunit_suite {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     test_cases: *mut kunit_case,
 }
 

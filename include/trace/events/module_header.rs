@@ -18,34 +18,34 @@ pub struct module {
 #[cfg(feature = "config_modules")]
 #[repr(C)]
 pub struct module_load_entry {
-    pub taints: ::core::ffi::c_uint,
+    pub taints: ::kernel::ffi::c_uint,
     // __string(name, mod->name) is a dynamically allocated trace string.
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 #[cfg(feature = "config_modules")]
 #[repr(C)]
 pub struct module_free_entry {
     // __string(name, mod->name) is a dynamically allocated trace string.
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 #[cfg(all(feature = "config_modules", feature = "config_module_unload"))]
 #[repr(C)]
 pub struct module_refcnt_entry {
-    pub ip: ::core::ffi::c_ulong,
-    pub refcnt: ::core::ffi::c_int,
+    pub ip: ::kernel::ffi::c_ulong,
+    pub refcnt: ::kernel::ffi::c_int,
     // __string(name, mod->name) is a dynamically allocated trace string.
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 #[cfg(feature = "config_modules")]
 #[repr(C)]
 pub struct module_request_entry {
-    pub ip: ::core::ffi::c_ulong,
+    pub ip: ::kernel::ffi::c_ulong,
     pub wait: bool,
     // __string(name, name) is a dynamically allocated trace string.
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 #[cfg(feature = "config_modules")]

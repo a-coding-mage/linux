@@ -11,16 +11,16 @@ pub static mut soc_type: u32 = 0;
 pub static mut periph_rev: u32 = 0;
 pub static mut zbbus_mhz: u32 = 0;
 
-static mut soc_str: *mut core::ffi::c_char = core::ptr::null_mut();
-static mut pass_str: *mut core::ffi::c_char = core::ptr::null_mut();
+static mut soc_str: *mut kernel::ffi::c_char = core::ptr::null_mut();
+static mut pass_str: *mut kernel::ffi::c_char = core::ptr::null_mut();
 static mut war_pass: u32 = 0; // XXXKW don't overload PASS defines?
 
 unsafe extern "C" {
-    fn printk(fmt: *const core::ffi::c_char, ...) -> i32;
-    fn machine_restart(cmd: *const core::ffi::c_char) -> !;
+    fn printk(fmt: *const kernel::ffi::c_char, ...) -> i32;
+    fn machine_restart(cmd: *const kernel::ffi::c_char) -> !;
     fn read_c0_prid() -> u32;
     fn __raw_readq(addr: usize) -> u64;
-    fn get_system_type() -> *const core::ffi::c_char;
+    fn get_system_type() -> *const kernel::ffi::c_char;
 }
 
 unsafe fn setup_bcm1250() -> i32 {

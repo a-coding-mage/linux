@@ -33,7 +33,7 @@ extern "C" {
     fn kernel_fpu_end();
     fn warn_on_once(condition: bool);
     fn bug_on(condition: bool);
-    fn trace_dcn_fpu(enabled: bool, function_name: *const core::ffi::c_char, line: i32, depth: i32);
+    fn trace_dcn_fpu(enabled: bool, function_name: *const kernel::ffi::c_char, line: i32, depth: i32);
 }
 
 // DEFINE_PER_CPU(int, fpu_recursion_depth)
@@ -57,7 +57,7 @@ pub unsafe fn dc_is_fp_enabled() -> bool {
 }
 
 /// Enables FPU protection.
-pub unsafe fn dc_fpu_begin(function_name: *const core::ffi::c_char, line: i32) {
+pub unsafe fn dc_fpu_begin(function_name: *const kernel::ffi::c_char, line: i32) {
     warn_on_once(!in_task());
     preempt_disable();
     FPU_RECURSION_DEPTH = FPU_RECURSION_DEPTH.wrapping_add(1);
@@ -71,7 +71,7 @@ pub unsafe fn dc_fpu_begin(function_name: *const core::ffi::c_char, line: i32) {
 }
 
 /// Disable FPU protection.
-pub unsafe fn dc_fpu_end(function_name: *const core::ffi::c_char, line: i32) {
+pub unsafe fn dc_fpu_end(function_name: *const kernel::ffi::c_char, line: i32) {
     FPU_RECURSION_DEPTH = FPU_RECURSION_DEPTH.wrapping_sub(1);
     let depth: i32 = FPU_RECURSION_DEPTH;
     if depth == 0 {

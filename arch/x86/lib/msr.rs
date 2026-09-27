@@ -14,7 +14,7 @@ extern "C" {
     fn free_percpu(ptr: *mut msr);
     fn rdmsrq_safe(msr: u32, val: *mut u64) -> i32;
     fn wrmsrq_safe(msr: u32, val: u64) -> i32;
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
 
     #[cfg(feature = "config_tracepoints")]
     fn trace_write_msr(msr: u32, val: u64, failed: i32);

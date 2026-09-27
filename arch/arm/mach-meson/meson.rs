@@ -3,7 +3,7 @@
  * Copyright (C) 2014 Carlo Caione <carlo@caione.org>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Translated from <asm/mach/arch.h>.  The DT_MACHINE_START/MACHINE_END
 // macros define the platform machine descriptor in the surrounding kernel.

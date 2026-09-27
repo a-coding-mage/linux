@@ -24,9 +24,9 @@ pub struct dm_ioctl {
     pub event_nr: u32,
     pub padding: u32,
     pub dev: u64,
-    pub name: [core::ffi::c_char; DM_NAME_LEN],
-    pub uuid: [core::ffi::c_char; DM_UUID_LEN],
-    pub data: [core::ffi::c_char; 7],
+    pub name: [kernel::ffi::c_char; DM_NAME_LEN],
+    pub uuid: [kernel::ffi::c_char; DM_UUID_LEN],
+    pub data: [kernel::ffi::c_char; 7],
 }
 
 #[repr(C)]
@@ -35,7 +35,7 @@ pub struct dm_target_spec {
     pub length: u64,
     pub status: i32,
     pub next: u32,
-    pub target_type: [core::ffi::c_char; DM_MAX_TYPE_NAME],
+    pub target_type: [kernel::ffi::c_char; DM_MAX_TYPE_NAME],
 }
 
 #[repr(C)]
@@ -49,7 +49,7 @@ pub struct dm_target_deps {
 pub struct dm_name_list {
     pub dev: u64,
     pub next: u32,
-    pub name: [core::ffi::c_char; 0],
+    pub name: [kernel::ffi::c_char; 0],
 }
 
 pub const DM_NAME_LIST_FLAG_HAS_UUID: u32 = 1;
@@ -59,13 +59,13 @@ pub const DM_NAME_LIST_FLAG_DOESNT_HAVE_UUID: u32 = 2;
 pub struct dm_target_versions {
     pub next: u32,
     pub version: [u32; 3],
-    pub name: [core::ffi::c_char; 0],
+    pub name: [kernel::ffi::c_char; 0],
 }
 
 #[repr(C)]
 pub struct dm_target_msg {
     pub sector: u64,
-    pub message: [core::ffi::c_char; 0],
+    pub message: [kernel::ffi::c_char; 0],
 }
 
 #[repr(u32)]

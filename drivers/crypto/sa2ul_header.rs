@@ -92,7 +92,7 @@ pub const SA_UNSAFE_DATA_SZ_MAX: u32 = 255;
 
 #[repr(C)]
 pub struct sa_crypto_data {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub match_data: *const sa_match_data,
     pub pdev: *mut platform_device,
     pub sc_pool: *mut dma_pool,
@@ -101,7 +101,7 @@ pub struct sa_crypto_data {
     pub sc_id_start: u16,
     pub sc_id_end: u16,
     pub sc_id: u16,
-    pub ctx_bm: [core::ffi::c_ulong; (SA_MAX_NUM_CTX + (core::mem::size_of::<core::ffi::c_ulong>() * 8) - 1) / (core::mem::size_of::<core::ffi::c_ulong>() * 8)],
+    pub ctx_bm: [kernel::ffi::c_ulong; (SA_MAX_NUM_CTX + (core::mem::size_of::<kernel::ffi::c_ulong>() * 8) - 1) / (core::mem::size_of::<kernel::ffi::c_ulong>() * 8)],
     pub ctx: *mut sa_tfm_ctx,
     pub dma_rx1: *mut dma_chan,
     pub dma_rx2: *mut dma_chan,
@@ -144,7 +144,7 @@ pub union sa_tfm_ctx_fallback {
 #[repr(C)]
 pub struct sa_tfm_ctx {
     pub dev_data: *mut sa_crypto_data, pub enc: sa_ctx_info, pub dec: sa_ctx_info,
-    pub auth: sa_ctx_info, pub keylen: core::ffi::c_int, pub iv_idx: core::ffi::c_int,
+    pub auth: sa_ctx_info, pub keylen: kernel::ffi::c_int, pub iv_idx: kernel::ffi::c_int,
     pub key: [u32; 256 / core::mem::size_of::<u32>()], pub authkey: [u8; SHA512_BLOCK_SIZE],
     pub shash: *mut crypto_shash, pub fallback: sa_tfm_ctx_fallback,
 }

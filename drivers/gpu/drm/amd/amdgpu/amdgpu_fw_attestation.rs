@@ -43,7 +43,7 @@ struct FW_ATT_RECORD {
 
 unsafe fn amdgpu_fw_attestation_debugfs_read(
     f: *mut file,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     size: usize,
     pos: *mut loff_t,
 ) -> ssize_t {
@@ -99,7 +99,7 @@ unsafe fn amdgpu_fw_attestation_debugfs_read(
         return 0;
     }
 
-    if copy_to_user(buf as *mut core::ffi::c_void, &fw_att_record as *const FW_ATT_RECORD as *const core::ffi::c_void, core::mem::size_of::<FW_ATT_RECORD>()) != 0 {
+    if copy_to_user(buf as *mut kernel::ffi::c_void, &fw_att_record as *const FW_ATT_RECORD as *const kernel::ffi::c_void, core::mem::size_of::<FW_ATT_RECORD>()) != 0 {
         return -EINVAL;
     }
 
@@ -141,7 +141,7 @@ pub unsafe fn amdgpu_fw_attestation_debugfs_init(adev: *mut amdgpu_device) {
         "amdgpu_fw_attestation",
         0o400,
         (*adev_to_drm(adev)).primary.debugfs_root,
-        adev as *mut core::ffi::c_void,
+        adev as *mut kernel::ffi::c_void,
         &amdgpu_fw_attestation_debugfs_ops,
     );
 }

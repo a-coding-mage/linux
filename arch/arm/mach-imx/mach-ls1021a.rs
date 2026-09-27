@@ -7,7 +7,7 @@
 // #include <asm/mach/arch.h>
 // #include "common.h"
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /// Device-tree compatibility strings for the LS1021A machine.
 #[used]
@@ -21,7 +21,7 @@ static LS1021A_DT_COMPAT: [*const c_char; 2] = [
 // `smp_ops(ls1021a_smp_ops)` supplies the SMP operations and
 // `LS1021A_DT_COMPAT` supplies the device-tree compatibility table.
 unsafe extern "C" {
-    static ls1021a_smp_ops: core::ffi::c_void;
+    static ls1021a_smp_ops: kernel::ffi::c_void;
 }
 
 // Equivalent registration intent:

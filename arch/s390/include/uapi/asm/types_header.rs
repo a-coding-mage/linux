@@ -10,8 +10,8 @@
 
 /* The declarations below are excluded when compiling as an assembler source. */
 
-pub type addr_t = core::ffi::c_ulong;
-pub type saddr_t = core::ffi::c_long;
+pub type addr_t = kernel::ffi::c_ulong;
+pub type saddr_t = kernel::ffi::c_long;
 
 #[repr(C)]
 pub struct __vector128_high_low {

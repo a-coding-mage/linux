@@ -65,11 +65,11 @@ unsafe fn find_unwind_entry(addr: usize) -> *const unwind_table_entry {
 
 unsafe fn unwind_table_init(
     table: *mut unwind_table,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     base_addr: usize,
     gp: usize,
-    table_start: *mut core::ffi::c_void,
-    table_end: *mut core::ffi::c_void,
+    table_start: *mut kernel::ffi::c_void,
+    table_end: *mut kernel::ffi::c_void,
 ) {
     let mut start = table_start as *mut unwind_table_entry;
     let end = (table_end as *mut unwind_table_entry).sub(1);

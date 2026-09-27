@@ -17,7 +17,7 @@ pub struct Crime {
 unsafe extern "C" {
     pub fn crime_init();
     pub static mut crime: *mut Crime;
-    pub fn printk(fmt: *const core::ffi::c_char, ...) -> i32;
+    pub fn printk(fmt: *const kernel::ffi::c_char, ...) -> i32;
     pub fn memblock_add(base: u64, size: u64) -> i32;
 }
 
@@ -53,7 +53,7 @@ pub unsafe fn prom_meminit() {
 
         printk(
             b"CRIME MC: bank %u base 0x%016Lx size %LuMiB\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
             bank as u32,
             base,
             size >> 20,

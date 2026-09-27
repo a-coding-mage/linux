@@ -36,7 +36,7 @@ pub struct pardev_cb {
 
 #[repr(C)]
 pub struct parport_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub match_port: Option<unsafe extern "C" fn(*mut parport)>,
     pub detach: Option<unsafe extern "C" fn(*mut parport)>,
 }
@@ -45,10 +45,10 @@ extern "C" {
     fn parport_write_data(port: *mut parport, byte: u8);
     fn parport_write_control(port: *mut parport, byte: u8);
     fn udelay(delay: u32);
-    fn memset(dest: *mut core::ffi::c_void, value: i32, count: usize) -> *mut core::ffi::c_void;
+    fn memset(dest: *mut kernel::ffi::c_void, value: i32, count: usize) -> *mut kernel::ffi::c_void;
     fn parport_register_dev_model(
         port: *mut parport,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         cb: *mut pardev_cb,
         index: i32,
     ) -> *mut pardevice;
@@ -113,14 +113,14 @@ unsafe extern "C" fn ks0108_parport_attach(port: *mut parport) {
     }
 
     memset(
-        &mut ks0108_cb as *mut pardev_cb as *mut core::ffi::c_void,
+        &mut ks0108_cb as *mut pardev_cb as *mut kernel::ffi::c_void,
         0,
         core::mem::size_of::<pardev_cb>(),
     );
     ks0108_cb.flags = PARPORT_DEV_EXCL;
     ks0108_pardevice = parport_register_dev_model(
         port,
-        KS0108_NAME.as_ptr() as *const core::ffi::c_char,
+        KS0108_NAME.as_ptr() as *const kernel::ffi::c_char,
         &mut ks0108_cb,
         0,
     );
@@ -156,7 +156,7 @@ unsafe extern "C" fn ks0108_parport_detach(port: *mut parport) {
 }
 
 static mut ks0108_parport_driver: parport_driver = parport_driver {
-    name: b"ks0108\0".as_ptr() as *const core::ffi::c_char,
+    name: b"ks0108\0".as_ptr() as *const kernel::ffi::c_char,
     match_port: Some(ks0108_parport_attach),
     detach: Some(ks0108_parport_detach),
 };

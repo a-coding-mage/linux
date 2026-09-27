@@ -7,11 +7,11 @@
 
 #[repr(C)]
 pub struct MdioAccessEntry {
-    pub busid: [core::ffi::c_char; MII_BUS_ID_SIZE],
-    pub read: core::ffi::c_char,
+    pub busid: [kernel::ffi::c_char; MII_BUS_ID_SIZE],
+    pub read: kernel::ffi::c_char,
     pub addr: u8,
     pub val: u16,
-    pub regnum: core::ffi::c_uint,
+    pub regnum: kernel::ffi::c_uint,
 }
 
 // TRACE_EVENT_CONDITION(mdio_access, ...)
@@ -22,11 +22,11 @@ pub struct MdioAccessEntry {
 extern "C" {
     pub fn trace_mdio_access(
         bus: *mut MiiBus,
-        read: core::ffi::c_char,
+        read: kernel::ffi::c_char,
         addr: u8,
-        regnum: core::ffi::c_uint,
+        regnum: kernel::ffi::c_uint,
         val: u16,
-        err: core::ffi::c_int,
+        err: kernel::ffi::c_int,
     );
 }
 

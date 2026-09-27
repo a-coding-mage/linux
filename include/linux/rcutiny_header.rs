@@ -27,7 +27,7 @@ pub unsafe fn same_state_synchronize_rcu_full(
 }
 
 extern "C" {
-    pub fn get_state_synchronize_rcu() -> ::core::ffi::c_ulong;
+    pub fn get_state_synchronize_rcu() -> ::kernel::ffi::c_ulong;
 }
 
 pub unsafe fn get_state_synchronize_rcu_full(gsp: *mut rcu_gp_seq) {
@@ -35,7 +35,7 @@ pub unsafe fn get_state_synchronize_rcu_full(gsp: *mut rcu_gp_seq) {
 }
 
 extern "C" {
-    pub fn start_poll_synchronize_rcu() -> ::core::ffi::c_ulong;
+    pub fn start_poll_synchronize_rcu() -> ::kernel::ffi::c_ulong;
 }
 
 pub unsafe fn start_poll_synchronize_rcu_full(gsp: *mut rcu_gp_seq) {
@@ -43,7 +43,7 @@ pub unsafe fn start_poll_synchronize_rcu_full(gsp: *mut rcu_gp_seq) {
 }
 
 extern "C" {
-    pub fn poll_state_synchronize_rcu(oldstate: ::core::ffi::c_ulong) -> bool;
+    pub fn poll_state_synchronize_rcu(oldstate: ::kernel::ffi::c_ulong) -> bool;
     pub fn might_sleep();
     pub fn synchronize_rcu();
     pub fn rcu_barrier();
@@ -56,7 +56,7 @@ pub unsafe fn poll_state_synchronize_rcu_full(gsp: *mut rcu_gp_seq) -> bool {
     unsafe { poll_state_synchronize_rcu((*gsp).norm) }
 }
 
-pub unsafe fn cond_synchronize_rcu(_oldstate: ::core::ffi::c_ulong) {
+pub unsafe fn cond_synchronize_rcu(_oldstate: ::kernel::ffi::c_ulong) {
     unsafe { might_sleep(); }
 }
 
@@ -64,7 +64,7 @@ pub unsafe fn cond_synchronize_rcu_full(gsp: *mut rcu_gp_seq) {
     unsafe { cond_synchronize_rcu((*gsp).norm); }
 }
 
-pub unsafe fn start_poll_synchronize_rcu_expedited() -> ::core::ffi::c_ulong {
+pub unsafe fn start_poll_synchronize_rcu_expedited() -> ::kernel::ffi::c_ulong {
     unsafe { start_poll_synchronize_rcu() }
 }
 
@@ -72,7 +72,7 @@ pub unsafe fn start_poll_synchronize_rcu_expedited_full(gsp: *mut rcu_gp_seq) {
     unsafe { (*gsp).norm = start_poll_synchronize_rcu_expedited(); }
 }
 
-pub unsafe fn cond_synchronize_rcu_expedited(oldstate: ::core::ffi::c_ulong) {
+pub unsafe fn cond_synchronize_rcu_expedited(oldstate: ::kernel::ffi::c_ulong) {
     unsafe { cond_synchronize_rcu(oldstate); }
 }
 
@@ -98,12 +98,12 @@ macro_rules! rcu_note_context_switch {
     }};
 }
 
-pub const fn rcu_needs_cpu() -> ::core::ffi::c_int { 0 }
+pub const fn rcu_needs_cpu() -> ::kernel::ffi::c_int { 0 }
 
 pub unsafe fn rcu_request_urgent_qs_task(_t: *mut task_struct) {}
 pub unsafe fn rcu_virt_note_context_switch() {}
 pub unsafe fn rcu_cpu_stall_reset() {}
-pub const fn rcu_jiffies_till_stall_check() -> ::core::ffi::c_int { 21 * HZ as ::core::ffi::c_int }
+pub const fn rcu_jiffies_till_stall_check() -> ::kernel::ffi::c_int { 21 * HZ as ::kernel::ffi::c_int }
 pub unsafe fn rcu_irq_exit_check_preempt() {}
 pub unsafe fn exit_rcu() {}
 pub unsafe fn rcu_preempt_need_deferred_qs(_t: *mut task_struct) -> bool { false }
@@ -117,11 +117,11 @@ pub unsafe fn rcu_momentary_eqs() {}
 pub unsafe fn rcu_all_qs() { unsafe { barrier(); } }
 
 /* RCUtree hotplug events */
-pub const rcutree_prepare_cpu: *mut ::core::ffi::c_void = ::core::ptr::null_mut();
-pub const rcutree_online_cpu: *mut ::core::ffi::c_void = ::core::ptr::null_mut();
-pub const rcutree_offline_cpu: *mut ::core::ffi::c_void = ::core::ptr::null_mut();
-pub const rcutree_dead_cpu: *mut ::core::ffi::c_void = ::core::ptr::null_mut();
-pub const rcutree_dying_cpu: *mut ::core::ffi::c_void = ::core::ptr::null_mut();
-pub unsafe fn rcutree_report_cpu_starting(_cpu: ::core::ffi::c_uint) {}
+pub const rcutree_prepare_cpu: *mut ::kernel::ffi::c_void = ::core::ptr::null_mut();
+pub const rcutree_online_cpu: *mut ::kernel::ffi::c_void = ::core::ptr::null_mut();
+pub const rcutree_offline_cpu: *mut ::kernel::ffi::c_void = ::core::ptr::null_mut();
+pub const rcutree_dead_cpu: *mut ::kernel::ffi::c_void = ::core::ptr::null_mut();
+pub const rcutree_dying_cpu: *mut ::kernel::ffi::c_void = ::core::ptr::null_mut();
+pub unsafe fn rcutree_report_cpu_starting(_cpu: ::kernel::ffi::c_uint) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

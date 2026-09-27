@@ -304,7 +304,7 @@ pub mod migrate_translation {
         }
         
         static bool try_to_map_unused_to_zeropage(page_vma_mapped_walk *pvmw,
-        		folio *folio, pte_t old_pte, idx: core::ffi::c_ulong)
+        		folio *folio, pte_t old_pte, idx: kernel::ffi::c_ulong)
         {
         	struct page *page = folio_page(folio, idx);
         	pte_t newpte;
@@ -356,14 +356,14 @@ pub mod migrate_translation {
          * Restore a potential migration pte to a working pte entry
          */
         static bool remove_migration_pte(folio *folio,
-        		vm_area_struct *vma, addr: core::ffi::c_ulong, void *arg)
+        		vm_area_struct *vma, addr: kernel::ffi::c_ulong, void *arg)
         {
         	struct rmap_walk_arg *rmap_walk_arg = arg;
         	DEFINE_FOLIO_VMA_WALK(pvmw, rmap_walk_arg->folio, vma, addr, PVMW_SYNC | PVMW_MIGRATION);
         
         	while (page_vma_mapped_walk(&pvmw)) {
         		rmap_t rmap_flags = RMAP_NONE;
-        		core::ffi::c_ulong idx = 0;
+        		kernel::ffi::c_ulong idx = 0;
         		softleaf_t entry;
         		struct page *new;
         		pte_t old_pte;
@@ -433,8 +433,8 @@ pub mod migrate_translation {
         #ifdef CONFIG_HUGETLB_PAGE
         		if (folio_test_hugetlb(folio)) {
         			struct hstate *h = hstate_vma(vma);
-        			core::ffi::c_uint shift = huge_page_shift(h);
-        			core::ffi::c_ulong psize = huge_page_size(h);
+        			kernel::ffi::c_uint shift = huge_page_shift(h);
+        			kernel::ffi::c_ulong psize = huge_page_size(h);
         
         			pte = arch_make_huge_pte(pte, shift, vma->vm_flags);
         			if (folio_test_anon(folio))
@@ -498,7 +498,7 @@ pub mod migrate_translation {
          * When we return from this function the fault will be retried.
          */
         void migration_entry_wait(mm_struct *mm, pmd_t *pmd,
-        			  address: core::ffi::c_ulong)
+        			  address: kernel::ffi::c_ulong)
         {
         	spinlock_t *ptl;
         	pte_t *ptep;
@@ -532,7 +532,7 @@ pub mod migrate_translation {
          *
          * This function will release the vma lock before returning.
          */
-        void migration_entry_wait_huge(vm_area_struct *vma, addr: core::ffi::c_ulong, pte_t *ptep)
+        void migration_entry_wait_huge(vm_area_struct *vma, addr: kernel::ffi::c_ulong, pte_t *ptep)
         {
         	spinlock_t *ptl = huge_pte_lockptr(hstate_vma(vma), vma->vm_mm, ptep);
         	softleaf_t entry;
@@ -1161,13 +1161,13 @@ pub mod migrate_translation {
         static void __migrate_folio_record(folio *dst,
         		int old_folio_state, anon_vma *anon_vma)
         {
-        	dst->migrate_info = (core::ffi::c_ulong)anon_vma | old_folio_state;
+        	dst->migrate_info = (kernel::ffi::c_ulong)anon_vma | old_folio_state;
         }
         
         static void __migrate_folio_extract(folio *dst,
         		int *old_folio_state, anon_vma **anon_vmap)
         {
-        	core::ffi::c_ulong info = dst->migrate_info;
+        	kernel::ffi::c_ulong info = dst->migrate_info;
         
         	*anon_vmap = (anon_vma *)(info & ~FOLIO_OLD_STATES);
         	*old_folio_state = info & FOLIO_OLD_STATES;
@@ -1191,7 +1191,7 @@ pub mod migrate_translation {
         
         /* Restore the destination folio to the original state upon failure */
         static void migrate_folio_undo_dst(folio *dst, locked: bool,
-        		free_folio_t put_new_folio, private: core::ffi::c_ulong)
+        		free_folio_t put_new_folio, private: kernel::ffi::c_ulong)
         {
         	if (locked)
         		folio_unlock(dst);
@@ -1216,7 +1216,7 @@ pub mod migrate_translation {
         
         /* Obtain the lock on page, remove all ptes. */
         static int migrate_folio_unmap(new_folio_t get_new_folio,
-        		free_folio_t put_new_folio, private: core::ffi::c_ulong,
+        		free_folio_t put_new_folio, private: kernel::ffi::c_ulong,
         		folio *src, folio **dstp, migrate_mode mode,
         		list_head *ret)
         {
@@ -1365,7 +1365,7 @@ pub mod migrate_translation {
         }
         
         /* Migrate the folio to the newly allocated folio in dst. */
-        static int migrate_folio_move(free_folio_t put_new_folio, private: core::ffi::c_ulong,
+        static int migrate_folio_move(free_folio_t put_new_folio, private: kernel::ffi::c_ulong,
         			      folio *src, folio *dst,
         			      migrate_mode mode, migrate_reason reason,
         			      list_head *ret)
@@ -1483,7 +1483,7 @@ pub mod migrate_translation {
          * will wait in the page fault for migration to complete.
          */
         static int unmap_and_move_hugetlb_folio(new_folio_t get_new_folio,
-        		free_folio_t put_new_folio, private: core::ffi::c_ulong,
+        		free_folio_t put_new_folio, private: kernel::ffi::c_ulong,
         		folio *src, int force, migrate_mode mode,
         		migrate_reason reason, list_head *ret)
         {
@@ -1641,7 +1641,7 @@ pub mod migrate_translation {
          * only if ret != 0.
          */
         static int migrate_hugetlbs(list_head *from, new_folio_t get_new_folio,
-        			    free_folio_t put_new_folio, private: core::ffi::c_ulong,
+        			    free_folio_t put_new_folio, private: kernel::ffi::c_ulong,
         			    migrate_mode mode, migrate_reason reason,
         			    migrate_pages_stats *stats,
         			    list_head *ret_folios)
@@ -1731,7 +1731,7 @@ pub mod migrate_translation {
         
         static void migrate_folios_move(list_head *src_folios,
         		list_head *dst_folios,
-        		free_folio_t put_new_folio, private: core::ffi::c_ulong,
+        		free_folio_t put_new_folio, private: kernel::ffi::c_ulong,
         		migrate_mode mode, migrate_reason reason,
         		list_head *ret_folios,
         		migrate_pages_stats *stats,
@@ -1783,7 +1783,7 @@ pub mod migrate_translation {
         
         static void migrate_folios_undo(list_head *src_folios,
         		list_head *dst_folios,
-        		free_folio_t put_new_folio, private: core::ffi::c_ulong,
+        		free_folio_t put_new_folio, private: kernel::ffi::c_ulong,
         		list_head *ret_folios)
         {
         	struct folio *folio, *folio2, *dst, *dst2;
@@ -1815,7 +1815,7 @@ pub mod migrate_translation {
          */
         static int migrate_pages_batch(list_head *from,
         		new_folio_t get_new_folio, free_folio_t put_new_folio,
-        		private: core::ffi::c_ulong, migrate_mode mode, migrate_reason reason,
+        		private: kernel::ffi::c_ulong, migrate_mode mode, migrate_reason reason,
         		list_head *ret_folios, list_head *split_folios,
         		migrate_pages_stats *stats, int nr_pass)
         {
@@ -2026,7 +2026,7 @@ pub mod migrate_translation {
         }
         
         static int migrate_pages_sync(list_head *from, new_folio_t get_new_folio,
-        		free_folio_t put_new_folio, private: core::ffi::c_ulong,
+        		free_folio_t put_new_folio, private: kernel::ffi::c_ulong,
         		migrate_mode mode, migrate_reason reason,
         		list_head *ret_folios, list_head *split_folios,
         		migrate_pages_stats *stats)
@@ -2103,8 +2103,8 @@ pub mod migrate_translation {
          * split folios of the large folio are migrated successfully.
          */
         int migrate_pages(list_head *from, new_folio_t get_new_folio,
-        		free_folio_t put_new_folio, private: core::ffi::c_ulong,
-        		migrate_mode mode, migrate_reason reason, core::ffi::c_uint *ret_succeeded)
+        		free_folio_t put_new_folio, private: kernel::ffi::c_ulong,
+        		migrate_mode mode, migrate_reason reason, kernel::ffi::c_uint *ret_succeeded)
         {
         	int rc, rc_gather;
         	int nr_pages;
@@ -2199,11 +2199,11 @@ pub mod migrate_translation {
         	return rc_gather;
         }
         
-        struct folio *alloc_migration_target(folio *src, private: core::ffi::c_ulong)
+        struct folio *alloc_migration_target(folio *src, private: kernel::ffi::c_ulong)
         {
         	struct migration_target_control *mtc;
         	gfp_t gfp_mask;
-        	core::ffi::c_uint order = 0;
+        	kernel::ffi::c_uint order = 0;
         	int nid;
         	enum zone_type zidx;
         
@@ -2260,7 +2260,7 @@ pub mod migrate_translation {
         	};
         
         	err = migrate_pages(pagelist, alloc_migration_target, NULL,
-        		(core::ffi::c_ulong)&mtc, MIGRATE_SYNC, MR_SYSCALL, NULL);
+        		(kernel::ffi::c_ulong)&mtc, MIGRATE_SYNC, MR_SYSCALL, NULL);
         	if (err)
         		putback_movable_pages(pagelist);
         	return err;
@@ -2307,11 +2307,11 @@ pub mod migrate_translation {
         	struct vm_area_struct *vma;
         	struct folio_walk fw;
         	struct folio *folio;
-        	core::ffi::c_ulong addr;
+        	kernel::ffi::c_ulong addr;
         	int err = -EFAULT;
         
         	mmap_read_lock(mm);
-        	addr = (core::ffi::c_ulong)untagged_addr_remote(mm, p);
+        	addr = (kernel::ffi::c_ulong)untagged_addr_remote(mm, p);
         
         	vma = vma_lookup(mm, addr);
         	if (vma && vma_migratable(vma)) {
@@ -2330,7 +2330,7 @@ pub mod migrate_translation {
         
         static int move_pages_and_store_status(int node,
         		list_head *pagelist, int __user *status,
-        		int start, int i, nr_pages: core::ffi::c_ulong)
+        		int start, int i, nr_pages: kernel::ffi::c_ulong)
         {
         	int err;
         
@@ -2359,7 +2359,7 @@ pub mod migrate_translation {
          * the corresponding array of status.
          */
         static int do_pages_move(mm_struct *mm, nodemask_t task_nodes,
-        			 nr_pages: core::ffi::c_ulong,
+        			 nr_pages: kernel::ffi::c_ulong,
         			 const void __user * __user *pages,
         			 const int __user *nodes,
         			 int __user *status, int flags)
@@ -2457,15 +2457,15 @@ pub mod migrate_translation {
         /*
          * Determine the nodes of an array of pages and store it in an array of status.
          */
-        static void do_pages_stat_array(mm_struct *mm, nr_pages: core::ffi::c_ulong,
+        static void do_pages_stat_array(mm_struct *mm, nr_pages: kernel::ffi::c_ulong,
         				const void __user **pages, int *status)
         {
-        	core::ffi::c_ulong i;
+        	kernel::ffi::c_ulong i;
         
         	mmap_read_lock(mm);
         
         	for (i = 0; i < nr_pages; i++) {
-        		core::ffi::c_ulong addr = (core::ffi::c_ulong)(*pages);
+        		kernel::ffi::c_ulong addr = (kernel::ffi::c_ulong)(*pages);
         		struct vm_area_struct *vma;
         		struct folio_walk fw;
         		struct folio *folio;
@@ -2499,8 +2499,8 @@ pub mod migrate_translation {
         
         static int get_compat_pages_array(const void __user *chunk_pages[],
         				  const void __user * __user *pages,
-        				  chunk_offset: core::ffi::c_ulong,
-        				  chunk_nr: core::ffi::c_ulong)
+        				  chunk_offset: kernel::ffi::c_ulong,
+        				  chunk_nr: kernel::ffi::c_ulong)
         {
         	compat_uptr_t __user *pages32 = (compat_uptr_t __user *)pages;
         	compat_uptr_t p;
@@ -2519,17 +2519,17 @@ pub mod migrate_translation {
          * Determine the nodes of a user array of pages and store it in
          * a user array of status.
          */
-        static int do_pages_stat(mm_struct *mm, nr_pages: core::ffi::c_ulong,
+        static int do_pages_stat(mm_struct *mm, nr_pages: kernel::ffi::c_ulong,
         			 const void __user * __user *pages,
         			 int __user *status)
         {
         pub const DO_PAGES_STAT_CHUNK_NR: u64 = 16;
         	const void __user *chunk_pages[DO_PAGES_STAT_CHUNK_NR];
         	int chunk_status[DO_PAGES_STAT_CHUNK_NR];
-        	core::ffi::c_ulong chunk_offset = 0;
+        	kernel::ffi::c_ulong chunk_offset = 0;
         
         	while (nr_pages) {
-        		core::ffi::c_ulong chunk_nr = min(nr_pages, DO_PAGES_STAT_CHUNK_NR);
+        		kernel::ffi::c_ulong chunk_nr = min(nr_pages, DO_PAGES_STAT_CHUNK_NR);
         
         		if (in_compat_syscall()) {
         			if (get_compat_pages_array(chunk_pages, pages,
@@ -2603,7 +2603,7 @@ pub mod migrate_translation {
          * Move a list of pages in the address space of the currently executing
          * process.
          */
-        static int kernel_move_pages(pid_t pid, nr_pages: core::ffi::c_ulong,
+        static int kernel_move_pages(pid_t pid, nr_pages: kernel::ffi::c_ulong,
         			     const void __user * __user *pages,
         			     const int __user *nodes,
         			     int __user *status, int flags)
@@ -2633,7 +2633,7 @@ pub mod migrate_translation {
         	return err;
         }
         
-        SYSCALL_DEFINE6(move_pages, pid_t, pid, core::ffi::c_ulong, nr_pages,
+        SYSCALL_DEFINE6(move_pages, pid_t, pid, kernel::ffi::c_ulong, nr_pages,
         		const void __user * __user *, pages,
         		const int __user *, nodes,
         		int __user *, status, int, flags)
@@ -2648,7 +2648,7 @@ pub mod migrate_translation {
          * pages. Currently it only checks the watermarks which is crude.
          */
         static bool migrate_balanced_pgdat(pglist_data *pgdat,
-        				   nr_migrate_pages: core::ffi::c_ulong)
+        				   nr_migrate_pages: kernel::ffi::c_ulong)
         {
         	int z;
         
@@ -2670,7 +2670,7 @@ pub mod migrate_translation {
         }
         
         static struct folio *alloc_misplaced_dst_folio(folio *src,
-        					   data: core::ffi::c_ulong)
+        					   data: kernel::ffi::c_ulong)
         {
         	int nid = (int) data;
         	int order = folio_order(src);
@@ -2759,7 +2759,7 @@ pub mod migrate_translation {
         {
         	pg_data_t *pgdat = NODE_DATA(node);
         	int nr_remaining;
-        	core::ffi::c_uint nr_succeeded;
+        	kernel::ffi::c_uint nr_succeeded;
         	LIST_HEAD(migratepages);
         	struct mem_cgroup *memcg = get_mem_cgroup_from_folio(folio);
         	struct lruvec *lruvec = mem_cgroup_lruvec(memcg, pgdat);

@@ -47,9 +47,9 @@ pub const NODE_ID_LEN: usize = 16;
 pub const NODE_ID_STR_LEN: usize = NODE_ID_LEN * 2 + 1;
 
 extern "C" {
-    pub static mut tipc_net_id: ::core::ffi::c_uint;
-    pub static mut sysctl_tipc_rmem: [::core::ffi::c_int; 3];
-    pub static mut sysctl_tipc_named_timeout: ::core::ffi::c_int;
+    pub static mut tipc_net_id: ::kernel::ffi::c_uint;
+    pub static mut sysctl_tipc_rmem: [::kernel::ffi::c_int; 3];
+    pub static mut sysctl_tipc_named_timeout: ::kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -57,10 +57,10 @@ pub struct tipc_net {
     pub node_id: [u8; NODE_ID_LEN],
     pub node_addr: u32,
     pub trial_addr: u32,
-    pub addr_trial_end: ::core::ffi::c_ulong,
-    pub node_id_string: [::core::ffi::c_char; NODE_ID_STR_LEN],
-    pub net_id: ::core::ffi::c_int,
-    pub random: ::core::ffi::c_int,
+    pub addr_trial_end: ::kernel::ffi::c_ulong,
+    pub node_id_string: [::kernel::ffi::c_char; NODE_ID_STR_LEN],
+    pub net_id: ::kernel::ffi::c_int,
+    pub random: ::kernel::ffi::c_int,
     pub legacy_addr_format: bool,
     pub node_list_lock: spinlock_t,
     pub node_htable: [hlist_head; NODE_HTABLE_SIZE],
@@ -68,7 +68,7 @@ pub struct tipc_net {
     pub num_nodes: u32,
     pub num_links: u32,
     pub monitors: [*mut tipc_monitor; MAX_BEARERS],
-    pub mon_threshold: ::core::ffi::c_int,
+    pub mon_threshold: ::kernel::ffi::c_int,
     pub bearer_list: [*mut tipc_bearer; MAX_BEARERS + 1],
     pub bclock: spinlock_t,
     pub bcbase: *mut tipc_bc_base,
@@ -92,7 +92,7 @@ pub unsafe fn tipc_net(net: *mut net) -> *mut tipc_net {
 }
 
 #[inline]
-pub unsafe fn tipc_netid(net: *mut net) -> ::core::ffi::c_int {
+pub unsafe fn tipc_netid(net: *mut net) -> ::kernel::ffi::c_int {
     (*tipc_net(net)).net_id
 }
 
@@ -138,12 +138,12 @@ pub const fn tipc_in_range(val: u16, min: u16, max: u16) -> bool {
 }
 
 #[inline]
-pub unsafe fn tipc_net_hash_mixes(net: *mut net, tn_rand: ::core::ffi::c_int) -> u32 {
+pub unsafe fn tipc_net_hash_mixes(net: *mut net, tn_rand: ::kernel::ffi::c_int) -> u32 {
     net_hash_mix(&init_net) ^ net_hash_mix(net) ^ tn_rand as u32
 }
 
 #[inline]
-pub unsafe fn hash128to32(bytes: *mut ::core::ffi::c_char) -> u32 {
+pub unsafe fn hash128to32(bytes: *mut ::kernel::ffi::c_char) -> u32 {
     let tmp = bytes as *mut __be32;
     let res = ntohl(*tmp ^ *tmp.add(1) ^ *tmp.add(2) ^ *tmp.add(3));
     if res != 0 { return res; }
@@ -152,13 +152,13 @@ pub unsafe fn hash128to32(bytes: *mut ::core::ffi::c_char) -> u32 {
 
 #[cfg(CONFIG_SYSCTL)]
 extern "C" {
-    pub fn tipc_register_sysctl() -> ::core::ffi::c_int;
+    pub fn tipc_register_sysctl() -> ::kernel::ffi::c_int;
     pub fn tipc_unregister_sysctl();
 }
 
 #[cfg(not(CONFIG_SYSCTL))]
 #[inline]
-pub const fn tipc_register_sysctl() -> ::core::ffi::c_int { 0 }
+pub const fn tipc_register_sysctl() -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_SYSCTL))]
 #[inline]
 pub const fn tipc_unregister_sysctl() {}

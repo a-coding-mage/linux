@@ -5,13 +5,13 @@
  */
 
 unsafe extern "C" {
-    pub static mut rkpm_bootdata_cpusp: ::core::ffi::c_ulong;
-    pub static mut rkpm_bootdata_cpu_code: ::core::ffi::c_ulong;
-    pub static mut rkpm_bootdata_l2ctlr_f: ::core::ffi::c_ulong;
-    pub static mut rkpm_bootdata_l2ctlr: ::core::ffi::c_ulong;
-    pub static mut rkpm_bootdata_ddr_code: ::core::ffi::c_ulong;
-    pub static mut rkpm_bootdata_ddr_data: ::core::ffi::c_ulong;
-    pub static mut rk3288_bootram_sz: ::core::ffi::c_ulong;
+    pub static mut rkpm_bootdata_cpusp: ::kernel::ffi::c_ulong;
+    pub static mut rkpm_bootdata_cpu_code: ::kernel::ffi::c_ulong;
+    pub static mut rkpm_bootdata_l2ctlr_f: ::kernel::ffi::c_ulong;
+    pub static mut rkpm_bootdata_l2ctlr: ::kernel::ffi::c_ulong;
+    pub static mut rkpm_bootdata_ddr_code: ::kernel::ffi::c_ulong;
+    pub static mut rkpm_bootdata_ddr_data: ::kernel::ffi::c_ulong;
+    pub static mut rk3288_bootram_sz: ::kernel::ffi::c_ulong;
 
     pub fn rockchip_slp_cpu_resume();
 }

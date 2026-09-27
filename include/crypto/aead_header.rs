@@ -15,7 +15,7 @@ pub struct aead_request {
     pub iv: *mut u8,
     pub src: *mut scatterlist,
     pub dst: *mut scatterlist,
-    pub __ctx: [core::ffi::c_void; 0],
+    pub __ctx: [kernel::ffi::c_void; 0],
 }
 
 #[repr(C)]
@@ -47,10 +47,10 @@ pub struct crypto_sync_aead {
 pub const MAX_SYNC_AEAD_REQSIZE: usize = 384;
 
 unsafe extern "C" {
-    pub fn crypto_alloc_aead(alg_name: *const core::ffi::c_char, type_: u32, mask: u32) -> *mut crypto_aead;
-    pub fn crypto_alloc_sync_aead(alg_name: *const core::ffi::c_char, type_: u32, mask: u32) -> *mut crypto_sync_aead;
+    pub fn crypto_alloc_aead(alg_name: *const kernel::ffi::c_char, type_: u32, mask: u32) -> *mut crypto_aead;
+    pub fn crypto_alloc_sync_aead(alg_name: *const kernel::ffi::c_char, type_: u32, mask: u32) -> *mut crypto_sync_aead;
     pub fn crypto_destroy_tfm(tfm: *mut crypto_aead, base: *mut crypto_tfm);
-    pub fn crypto_has_aead(alg_name: *const core::ffi::c_char, type_: u32, mask: u32) -> i32;
+    pub fn crypto_has_aead(alg_name: *const kernel::ffi::c_char, type_: u32, mask: u32) -> i32;
     pub fn crypto_aead_setkey(tfm: *mut crypto_aead, key: *const u8, keylen: u32) -> i32;
     pub fn crypto_aead_setauthsize(tfm: *mut crypto_aead, authsize: u32) -> i32;
     pub fn crypto_aead_encrypt(req: *mut aead_request) -> i32;
@@ -103,7 +103,7 @@ pub unsafe fn crypto_sync_aead_maxauthsize(tfm: *mut crypto_sync_aead) -> u32 { 
 pub unsafe fn crypto_aead_reqsize(tfm: *mut crypto_aead) -> u32 { (*(tfm as *mut crypto_aead_object)).reqsize }
 
 #[inline]
-pub unsafe fn crypto_aead_driver_name(_tfm: *mut crypto_aead) -> *const core::ffi::c_char { core::ptr::null() }
+pub unsafe fn crypto_aead_driver_name(_tfm: *mut crypto_aead) -> *const kernel::ffi::c_char { core::ptr::null() }
 #[inline]
 pub unsafe fn crypto_aead_blocksize(_tfm: *mut crypto_aead) -> u32 { 0 }
 #[inline]

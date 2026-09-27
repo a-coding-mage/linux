@@ -37,24 +37,24 @@ const BT8XXGPIO_NR_GPIOS: u32 = 24; /* We have 24 GPIO pins */
 #[repr(C)]
 struct Bt8xxgpio {
     lock: SpinlockT,
-    mmio: *mut core::ffi::c_void,
+    mmio: *mut kernel::ffi::c_void,
     pdev: *mut PciDev,
     gpio: GpioChip,
     saved_outen: u32,
     saved_data: u32,
 }
 
-type SpinlockT = core::ffi::c_void;
+type SpinlockT = kernel::ffi::c_void;
 #[repr(C)] struct PciDev { _private: [u8; 0] }
 #[repr(C)] struct Device { _private: [u8; 0] }
 #[repr(C)] struct GpioChip {
-    label: *const core::ffi::c_char,
-    owner: *mut core::ffi::c_void,
+    label: *const kernel::ffi::c_char,
+    owner: *mut kernel::ffi::c_void,
     direction_input: Option<unsafe extern "C" fn(*mut GpioChip, u32) -> i32>,
     get: Option<unsafe extern "C" fn(*mut GpioChip, u32) -> i32>,
     direction_output: Option<unsafe extern "C" fn(*mut GpioChip, u32, i32) -> i32>,
     set: Option<unsafe extern "C" fn(*mut GpioChip, u32, i32)>,
-    dbg_show: *mut core::ffi::c_void,
+    dbg_show: *mut kernel::ffi::c_void,
     base: i32,
     ngpio: u32,
     can_sleep: bool,
@@ -62,24 +62,24 @@ type SpinlockT = core::ffi::c_void;
 
 #[repr(C)] struct PciDeviceId { vendor: u32, device: u32 }
 #[repr(C)] struct PciDriver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     id_table: *const PciDeviceId,
     probe: Option<unsafe extern "C" fn(*mut PciDev, *const PciDeviceId) -> i32>,
     remove: Option<unsafe extern "C" fn(*mut PciDev)>,
-    pm: *const core::ffi::c_void,
+    pm: *const kernel::ffi::c_void,
 }
 
 extern "C" {
     static mut modparam_gpiobase: i32;
-    static THIS_MODULE: core::ffi::c_void;
+    static THIS_MODULE: kernel::ffi::c_void;
     fn gpiochip_get_data(gpio: *mut GpioChip) -> *mut Bt8xxgpio;
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn dev_name(dev: *mut Device) -> *const core::ffi::c_char;
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn dev_name(dev: *mut Device) -> *const kernel::ffi::c_char;
     fn pci_resource_n(dev: *mut PciDev, bar: u32) -> u64;
-    fn devm_ioremap_resource(dev: *mut Device, resource: u64) -> *mut core::ffi::c_void;
-    fn is_err(ptr: *mut core::ffi::c_void) -> bool;
-    fn ptr_err(ptr: *mut core::ffi::c_void) -> i32;
+    fn devm_ioremap_resource(dev: *mut Device, resource: u64) -> *mut kernel::ffi::c_void;
+    fn is_err(ptr: *mut kernel::ffi::c_void) -> bool;
+    fn ptr_err(ptr: *mut kernel::ffi::c_void) -> i32;
     fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut Bt8xxgpio;
     fn spin_lock_init(lock: *mut SpinlockT);
     fn pci_enable_device(dev: *mut PciDev) -> i32;

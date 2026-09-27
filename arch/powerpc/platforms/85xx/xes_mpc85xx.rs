@@ -17,41 +17,41 @@ const MPC85XX_L2CTL_L2SIZ_MASK: u32 = 0x3000_0000; // L2 SRAM size (R/O)
 
 extern "C" {
     fn mpic_alloc(
-        node: *mut core::ffi::c_void,
+        node: *mut kernel::ffi::c_void,
         flags: i32,
         reg_type: i32,
         irq_offset: i32,
         irq_count: i32,
-        name: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_void;
-    fn mpic_init(mpic: *mut core::ffi::c_void);
-    fn of_machine_is_compatible(compat: *const core::ffi::c_char) -> bool;
+        name: *const kernel::ffi::c_char,
+    ) -> *mut kernel::ffi::c_void;
+    fn mpic_init(mpic: *mut kernel::ffi::c_void);
+    fn of_machine_is_compatible(compat: *const kernel::ffi::c_char) -> bool;
     fn in_be32(addr: *const u32) -> u32;
     fn out_be32(addr: *mut u32, value: u32);
-    fn printk(format: *const core::ffi::c_char, ...);
+    fn printk(format: *const kernel::ffi::c_char, ...);
     fn of_device_is_compatible(
-        node: *mut core::ffi::c_void,
-        compat: *const core::ffi::c_char,
+        node: *mut kernel::ffi::c_void,
+        compat: *const kernel::ffi::c_char,
     ) -> bool;
     fn of_address_to_resource(
-        node: *mut core::ffi::c_void,
+        node: *mut kernel::ffi::c_void,
         index: i32,
         resource: *mut Resource,
     ) -> i32;
     fn ioremap(addr: u64, size: u64) -> *mut u32;
-    fn of_find_node_by_path(path: *const core::ffi::c_char) -> *mut core::ffi::c_void;
+    fn of_find_node_by_path(path: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
     fn of_get_property(
-        node: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
+        node: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
         length: *mut i32,
-    ) -> *const core::ffi::c_char;
-    fn strlen(string: *const core::ffi::c_char) -> usize;
+    ) -> *const kernel::ffi::c_char;
+    fn strlen(string: *const kernel::ffi::c_char) -> usize;
     fn mpc85xx_smp_init();
     fn fsl_pci_assign_primary();
     fn mpic_get_irq() -> i32;
-    fn udbg_progress(message: *const core::ffi::c_char, value: u16);
-    fn fsl_pcibios_fixup_bus(bus: *mut core::ffi::c_void);
-    fn fsl_pcibios_fixup_phb(phb: *mut core::ffi::c_void);
+    fn udbg_progress(message: *const kernel::ffi::c_char, value: u16);
+    fn fsl_pcibios_fixup_bus(bus: *mut kernel::ffi::c_void);
+    fn fsl_pcibios_fixup_phb(phb: *mut kernel::ffi::c_void);
     fn mpc85xx_common_publish_devices() -> i32;
 }
 
@@ -74,7 +74,7 @@ unsafe fn xes_mpc85xx_pic_init() {
         MPIC_BIG_ENDIAN,
         0,
         256,
-        b" OpenPIC  \0".as_ptr() as *const core::ffi::c_char,
+        b" OpenPIC  \0".as_ptr() as *const kernel::ffi::c_char,
     );
     if mpic.is_null() {
         // BUG_ON(mpic == NULL)
@@ -113,7 +113,7 @@ unsafe fn xes_mpc85xx_configure_l2(l2_base: *mut u32) {
 }
 
 unsafe fn xes_mpc85xx_fixups() {
-    let mut np: *mut core::ffi::c_void;
+    let mut np: *mut kernel::ffi::c_void;
     let mut err: i32;
 
     // for_each_node_by_name(np, "l2-cache-controller")
@@ -146,7 +146,7 @@ unsafe fn xes_mpc85xx_fixups() {
 
 unsafe fn xes_mpc85xx_setup_arch() {
     let root = of_find_node_by_path(b"/\0".as_ptr() as *const _);
-    let mut model = b"Unknown\0".as_ptr() as *const core::ffi::c_char;
+    let mut model = b"Unknown\0".as_ptr() as *const kernel::ffi::c_char;
 
     if root.is_null() {
         return;
@@ -212,15 +212,15 @@ pub struct MachineDescription {
     pub setup_arch: Option<unsafe fn()>,
     pub init_irq: Option<unsafe fn()>,
     pub get_irq: Option<unsafe extern "C" fn() -> i32>,
-    pub progress: Option<unsafe extern "C" fn(*const core::ffi::c_char, u16)>,
+    pub progress: Option<unsafe extern "C" fn(*const kernel::ffi::c_char, u16)>,
 }
 
 extern "C" {
-    fn for_each_node_by_name(name: *const core::ffi::c_char) -> *mut core::ffi::c_void;
+    fn for_each_node_by_name(name: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
     fn of_node_next_by_name(
-        node: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_void;
+        node: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+    ) -> *mut kernel::ffi::c_void;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -11,7 +11,7 @@ extern "C" {
     fn synchronize_net();
     fn list_add_rcu(new: *mut list_head, prev: *mut list_head);
     fn list_del_rcu(entry: *mut list_head);
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
     fn skb_shinfo(skb: *mut sk_buff) -> *mut skb_shared_info;
     fn skb_gro_offset(skb: *const sk_buff) -> u32;
     fn skb_headlen(skb: *const sk_buff) -> u32;
@@ -20,9 +20,9 @@ extern "C" {
     fn netif_get_gro_max_size(dev: *mut net_device, skb: *mut sk_buff) -> u32;
     fn skb_end_offset(skb: *const sk_buff) -> u32;
     fn virt_to_head_page(addr: *mut u8) -> *mut page;
-    fn page_address(page: *mut page) -> *mut core::ffi::c_void;
-    fn memcpy(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize);
-    fn memmove(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize);
+    fn page_address(page: *mut page) -> *mut kernel::ffi::c_void;
+    fn memcpy(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize);
+    fn memmove(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize);
     fn __skb_pull(skb: *mut sk_buff, len: u32);
     fn __skb_header_release(skb: *mut sk_buff);
     fn pskb_may_pull(skb: *mut sk_buff, len: u32) -> bool;
@@ -35,7 +35,7 @@ extern "C" {
     fn skb_metadata_differs(a: *const sk_buff, b: *const sk_buff) -> u32;
     fn compare_ether_header(a: *const u8, b: *const u8) -> u32;
     fn skb_mac_header(skb: *const sk_buff) -> *const u8;
-    fn memcmp(a: *const core::ffi::c_void, b: *const core::ffi::c_void, n: usize) -> i32;
+    fn memcmp(a: *const kernel::ffi::c_void, b: *const kernel::ffi::c_void, n: usize) -> i32;
     fn skb_metadata_dst_cmp(a: *const sk_buff, b: *const sk_buff) -> u32;
     fn skb_get_nfct(skb: *const sk_buff) -> u32;
     fn __psp_skb_coalesce_diff(a: *const sk_buff, b: *const sk_buff, d: u32) -> u32;
@@ -76,7 +76,7 @@ extern "C" {
 #[repr(C)] pub struct skb_frag_t { _private: [u8; 0] }
 #[repr(C)] pub struct skb_shared_info { pub nr_frags: u16, pub flags: u32, pub gso_size: u16, pub frags: [skb_frag_t; 17], pub hwtstamps: hwtstamps }
 #[repr(C)] pub struct hwtstamps { pub hwtstamp: u64 }
-#[repr(C)] pub struct sk_buff { pub pp_recycle: bool, pub len: u32, pub data_len: u32, pub truesize: u32, pub data: *mut u8, pub head: *mut u8, pub tail: u32, pub end: u32, pub head_frag: bool, pub destructor: Option<unsafe extern "C" fn()>, pub sk: *mut core::ffi::c_void, pub next: *mut sk_buff, pub list: list_head, pub dev: *mut net_device, pub protocol: u16, pub encapsulation: bool, pub ip_summed: i32, pub csum: u32, pub csum_complete_sw: bool, pub csum_level: u8, pub vlan_all: u32, pub slow_gro: bool, pub pfmemalloc: bool, pub skb_iif: u32, pub pkt_type: i32, pub fclone: i32 }
+#[repr(C)] pub struct sk_buff { pub pp_recycle: bool, pub len: u32, pub data_len: u32, pub truesize: u32, pub data: *mut u8, pub head: *mut u8, pub tail: u32, pub end: u32, pub head_frag: bool, pub destructor: Option<unsafe extern "C" fn()>, pub sk: *mut kernel::ffi::c_void, pub next: *mut sk_buff, pub list: list_head, pub dev: *mut net_device, pub protocol: u16, pub encapsulation: bool, pub ip_summed: i32, pub csum: u32, pub csum_complete_sw: bool, pub csum_level: u8, pub vlan_all: u32, pub slow_gro: bool, pub pfmemalloc: bool, pub skb_iif: u32, pub pkt_type: i32, pub fclone: i32 }
 #[repr(C)] pub struct gro_node { pub hash: *mut gro_list, pub bitmask: usize, pub cached_napi_id: u32, pub rx_list: list_head, pub rx_count: u32 }
 #[repr(C)] pub struct gro_list { pub list: list_head, pub count: u32 }
 #[repr(C)] pub struct napi_struct { pub dev: *mut net_device, pub skb: *mut sk_buff, pub gro: gro_node }

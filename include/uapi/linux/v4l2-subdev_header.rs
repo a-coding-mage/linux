@@ -144,33 +144,33 @@ pub struct v4l2_subdev_client_capability {
 pub use v4l2_edid as v4l2_subdev_edid;
 
 /* Ioctl values retain the source header's external _IOR/_IOW/_IOWR definitions. */
-pub const VIDIOC_SUBDEV_QUERYCAP: _ = _IOR!('V', 0, v4l2_subdev_capability);
-pub const VIDIOC_SUBDEV_G_FMT: _ = _IOWR!('V', 4, v4l2_subdev_format);
-pub const VIDIOC_SUBDEV_S_FMT: _ = _IOWR!('V', 5, v4l2_subdev_format);
-pub const VIDIOC_SUBDEV_G_FRAME_INTERVAL: _ = _IOWR!('V', 21, v4l2_subdev_frame_interval);
-pub const VIDIOC_SUBDEV_S_FRAME_INTERVAL: _ = _IOWR!('V', 22, v4l2_subdev_frame_interval);
-pub const VIDIOC_SUBDEV_ENUM_MBUS_CODE: _ = _IOWR!('V', 2, v4l2_subdev_mbus_code_enum);
-pub const VIDIOC_SUBDEV_ENUM_FRAME_SIZE: _ = _IOWR!('V', 74, v4l2_subdev_frame_size_enum);
-pub const VIDIOC_SUBDEV_ENUM_FRAME_INTERVAL: _ = _IOWR!('V', 75, v4l2_subdev_frame_interval_enum);
-pub const VIDIOC_SUBDEV_G_CROP: _ = _IOWR!('V', 59, v4l2_subdev_crop);
-pub const VIDIOC_SUBDEV_S_CROP: _ = _IOWR!('V', 60, v4l2_subdev_crop);
-pub const VIDIOC_SUBDEV_G_SELECTION: _ = _IOWR!('V', 61, v4l2_subdev_selection);
-pub const VIDIOC_SUBDEV_S_SELECTION: _ = _IOWR!('V', 62, v4l2_subdev_selection);
-pub const VIDIOC_SUBDEV_G_ROUTING: _ = _IOWR!('V', 38, v4l2_subdev_routing);
-pub const VIDIOC_SUBDEV_S_ROUTING: _ = _IOWR!('V', 39, v4l2_subdev_routing);
-pub const VIDIOC_SUBDEV_G_CLIENT_CAP: _ = _IOR!('V', 101, v4l2_subdev_client_capability);
-pub const VIDIOC_SUBDEV_S_CLIENT_CAP: _ = _IOWR!('V', 102, v4l2_subdev_client_capability);
+pub const VIDIOC_SUBDEV_QUERYCAP: u32 = _IOR!('V', 0, v4l2_subdev_capability);
+pub const VIDIOC_SUBDEV_G_FMT: u32 = _IOWR!('V', 4, v4l2_subdev_format);
+pub const VIDIOC_SUBDEV_S_FMT: u32 = _IOWR!('V', 5, v4l2_subdev_format);
+pub const VIDIOC_SUBDEV_G_FRAME_INTERVAL: u32 = _IOWR!('V', 21, v4l2_subdev_frame_interval);
+pub const VIDIOC_SUBDEV_S_FRAME_INTERVAL: u32 = _IOWR!('V', 22, v4l2_subdev_frame_interval);
+pub const VIDIOC_SUBDEV_ENUM_MBUS_CODE: u32 = _IOWR!('V', 2, v4l2_subdev_mbus_code_enum);
+pub const VIDIOC_SUBDEV_ENUM_FRAME_SIZE: u32 = _IOWR!('V', 74, v4l2_subdev_frame_size_enum);
+pub const VIDIOC_SUBDEV_ENUM_FRAME_INTERVAL: u32 = _IOWR!('V', 75, v4l2_subdev_frame_interval_enum);
+pub const VIDIOC_SUBDEV_G_CROP: u32 = _IOWR!('V', 59, v4l2_subdev_crop);
+pub const VIDIOC_SUBDEV_S_CROP: u32 = _IOWR!('V', 60, v4l2_subdev_crop);
+pub const VIDIOC_SUBDEV_G_SELECTION: u32 = _IOWR!('V', 61, v4l2_subdev_selection);
+pub const VIDIOC_SUBDEV_S_SELECTION: u32 = _IOWR!('V', 62, v4l2_subdev_selection);
+pub const VIDIOC_SUBDEV_G_ROUTING: u32 = _IOWR!('V', 38, v4l2_subdev_routing);
+pub const VIDIOC_SUBDEV_S_ROUTING: u32 = _IOWR!('V', 39, v4l2_subdev_routing);
+pub const VIDIOC_SUBDEV_G_CLIENT_CAP: u32 = _IOR!('V', 101, v4l2_subdev_client_capability);
+pub const VIDIOC_SUBDEV_S_CLIENT_CAP: u32 = _IOWR!('V', 102, v4l2_subdev_client_capability);
 
-pub const VIDIOC_SUBDEV_G_STD: _ = _IOR!('V', 23, v4l2_std_id);
-pub const VIDIOC_SUBDEV_S_STD: _ = _IOW!('V', 24, v4l2_std_id);
-pub const VIDIOC_SUBDEV_ENUMSTD: _ = _IOWR!('V', 25, v4l2_standard);
-pub const VIDIOC_SUBDEV_G_EDID: _ = _IOWR!('V', 40, v4l2_edid);
-pub const VIDIOC_SUBDEV_S_EDID: _ = _IOWR!('V', 41, v4l2_edid);
-pub const VIDIOC_SUBDEV_QUERYSTD: _ = _IOR!('V', 63, v4l2_std_id);
-pub const VIDIOC_SUBDEV_S_DV_TIMINGS: _ = _IOWR!('V', 87, v4l2_dv_timings);
-pub const VIDIOC_SUBDEV_G_DV_TIMINGS: _ = _IOWR!('V', 88, v4l2_dv_timings);
-pub const VIDIOC_SUBDEV_ENUM_DV_TIMINGS: _ = _IOWR!('V', 98, v4l2_enum_dv_timings);
-pub const VIDIOC_SUBDEV_QUERY_DV_TIMINGS: _ = _IOR!('V', 99, v4l2_dv_timings);
-pub const VIDIOC_SUBDEV_DV_TIMINGS_CAP: _ = _IOWR!('V', 100, v4l2_dv_timings_cap);
+pub const VIDIOC_SUBDEV_G_STD: u32 = _IOR!('V', 23, v4l2_std_id);
+pub const VIDIOC_SUBDEV_S_STD: u32 = _IOW!('V', 24, v4l2_std_id);
+pub const VIDIOC_SUBDEV_ENUMSTD: u32 = _IOWR!('V', 25, v4l2_standard);
+pub const VIDIOC_SUBDEV_G_EDID: u32 = _IOWR!('V', 40, v4l2_edid);
+pub const VIDIOC_SUBDEV_S_EDID: u32 = _IOWR!('V', 41, v4l2_edid);
+pub const VIDIOC_SUBDEV_QUERYSTD: u32 = _IOR!('V', 63, v4l2_std_id);
+pub const VIDIOC_SUBDEV_S_DV_TIMINGS: u32 = _IOWR!('V', 87, v4l2_dv_timings);
+pub const VIDIOC_SUBDEV_G_DV_TIMINGS: u32 = _IOWR!('V', 88, v4l2_dv_timings);
+pub const VIDIOC_SUBDEV_ENUM_DV_TIMINGS: u32 = _IOWR!('V', 98, v4l2_enum_dv_timings);
+pub const VIDIOC_SUBDEV_QUERY_DV_TIMINGS: u32 = _IOR!('V', 99, v4l2_dv_timings);
+pub const VIDIOC_SUBDEV_DV_TIMINGS_CAP: u32 = _IOWR!('V', 100, v4l2_dv_timings_cap);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -33,20 +33,20 @@ unsafe fn err_ptr<T>(error: isize) -> *mut T {
 extern "C" {
     pub fn device_node_to_regmap(np: *mut device_node) -> *mut regmap;
     pub fn syscon_node_to_regmap(np: *mut device_node) -> *mut regmap;
-    pub fn syscon_regmap_lookup_by_compatible(s: *const core::ffi::c_char) -> *mut regmap;
+    pub fn syscon_regmap_lookup_by_compatible(s: *const kernel::ffi::c_char) -> *mut regmap;
     pub fn syscon_regmap_lookup_by_phandle(
         np: *mut device_node,
-        property: *const core::ffi::c_char,
+        property: *const kernel::ffi::c_char,
     ) -> *mut regmap;
     pub fn syscon_regmap_lookup_by_phandle_args(
         np: *mut device_node,
-        property: *const core::ffi::c_char,
+        property: *const kernel::ffi::c_char,
         arg_count: i32,
         out_args: *mut u32,
     ) -> *mut regmap;
     pub fn syscon_regmap_lookup_by_phandle_optional(
         np: *mut device_node,
-        property: *const core::ffi::c_char,
+        property: *const kernel::ffi::c_char,
     ) -> *mut regmap;
     pub fn of_syscon_register_regmap(np: *mut device_node, regmap: *mut regmap) -> i32;
 }
@@ -66,7 +66,7 @@ pub unsafe fn syscon_node_to_regmap(_np: *mut device_node) -> *mut regmap {
 #[cfg(not(CONFIG_MFD_SYSCON))]
 #[inline]
 pub unsafe fn syscon_regmap_lookup_by_compatible(
-    _s: *const core::ffi::c_char,
+    _s: *const kernel::ffi::c_char,
 ) -> *mut regmap {
     err_ptr(-ENOTSUPP)
 }
@@ -75,7 +75,7 @@ pub unsafe fn syscon_regmap_lookup_by_compatible(
 #[inline]
 pub unsafe fn syscon_regmap_lookup_by_phandle(
     _np: *mut device_node,
-    _property: *const core::ffi::c_char,
+    _property: *const kernel::ffi::c_char,
 ) -> *mut regmap {
     err_ptr(-ENOTSUPP)
 }
@@ -84,7 +84,7 @@ pub unsafe fn syscon_regmap_lookup_by_phandle(
 #[inline]
 pub unsafe fn syscon_regmap_lookup_by_phandle_args(
     _np: *mut device_node,
-    _property: *const core::ffi::c_char,
+    _property: *const kernel::ffi::c_char,
     _arg_count: i32,
     _out_args: *mut u32,
 ) -> *mut regmap {
@@ -95,7 +95,7 @@ pub unsafe fn syscon_regmap_lookup_by_phandle_args(
 #[inline]
 pub unsafe fn syscon_regmap_lookup_by_phandle_optional(
     _np: *mut device_node,
-    _property: *const core::ffi::c_char,
+    _property: *const kernel::ffi::c_char,
 ) -> *mut regmap {
     core::ptr::null_mut()
 }

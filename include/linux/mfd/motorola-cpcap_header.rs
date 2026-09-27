@@ -39,7 +39,7 @@ cpcap_regs! {
 
 extern "C" {
     pub fn regmap_read(regmap: *mut regmap, reg: u32, val: *mut u32) -> i32;
-    pub fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    pub fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     pub fn cpcap_sense_virq(regmap: *mut regmap, virq: i32) -> i32;
 }
 

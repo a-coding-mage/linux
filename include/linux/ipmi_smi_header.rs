@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /* Rust translation of ipmi_smi.h. */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* Dependencies supplied by the surrounding kernel translation. */
 extern "C" {
@@ -39,11 +39,11 @@ pub enum ipmi_smi_msg_type {
 pub struct ipmi_smi_msg {
     pub link: list_head,
     pub type_: ipmi_smi_msg_type,
-    pub msgid: libc::c_long,
+    pub msgid: kernel::ffi::c_long,
     pub recv_msg: *mut ipmi_recv_msg,
-    pub data_size: libc::c_int,
+    pub data_size: kernel::ffi::c_int,
     pub data: [u8; IPMI_MAX_MSG_LENGTH as usize],
-    pub rsp_size: libc::c_int,
+    pub rsp_size: kernel::ffi::c_int,
     pub rsp: [u8; IPMI_MAX_MSG_LENGTH as usize],
     pub done: Option<unsafe extern "C" fn(msg: *mut ipmi_smi_msg)>,
 }
@@ -54,10 +54,10 @@ pub const IPMI_SMI_CAN_HANDLE_IPMB_DIRECT: u32 = 1 << 0;
 pub struct ipmi_smi_handlers {
     pub owner: *mut module,
     pub flags: u32,
-    pub start_processing: Option<unsafe extern "C" fn(*mut c_void, *mut ipmi_smi) -> libc::c_int>,
+    pub start_processing: Option<unsafe extern "C" fn(*mut c_void, *mut ipmi_smi) -> kernel::ffi::c_int>,
     pub shutdown: Option<unsafe extern "C" fn(*mut c_void)>,
-    pub get_smi_info: Option<unsafe extern "C" fn(*mut c_void, *mut ipmi_smi_info) -> libc::c_int>,
-    pub sender: Option<unsafe extern "C" fn(*mut c_void, *mut ipmi_smi_msg) -> libc::c_int>,
+    pub get_smi_info: Option<unsafe extern "C" fn(*mut c_void, *mut ipmi_smi_info) -> kernel::ffi::c_int>,
+    pub sender: Option<unsafe extern "C" fn(*mut c_void, *mut ipmi_smi_msg) -> kernel::ffi::c_int>,
     pub request_events: Option<unsafe extern "C" fn(*mut c_void)>,
     pub set_need_watch: Option<unsafe extern "C" fn(*mut c_void, u32)>,
     pub flush_messages: Option<unsafe extern "C" fn(*mut c_void)>,
@@ -88,7 +88,7 @@ pub unsafe fn ipmi_version_minor(v: *const ipmi_device_id) -> u8 { (*v).ipmi_ver
 #[inline]
 pub unsafe fn ipmi_demangle_device_id(
     netfn: u8, cmd: u8, data: *const u8, data_len: u32, id: *mut ipmi_device_id,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     if data_len < 7 || netfn != IPMI_NETFN_APP_RESPONSE || cmd != IPMI_GET_DEVICE_ID_CMD || *data != 0 {
         return -EINVAL;
     }
@@ -117,7 +117,7 @@ pub unsafe fn ipmi_demangle_device_id(
 }
 
 extern "C" {
-    pub fn ipmi_add_smi(owner: *mut module, handlers: *const ipmi_smi_handlers, send_info: *mut c_void, dev: *mut device, slave_addr: u8) -> libc::c_int;
+    pub fn ipmi_add_smi(owner: *mut module, handlers: *const ipmi_smi_handlers, send_info: *mut c_void, dev: *mut device, slave_addr: u8) -> kernel::ffi::c_int;
     pub fn ipmi_unregister_smi(intf: *mut ipmi_smi);
     pub fn ipmi_smi_msg_received(intf: *mut ipmi_smi, msg: *mut ipmi_smi_msg);
     pub fn ipmi_smi_watchdog_pretimeout(intf: *mut ipmi_smi);

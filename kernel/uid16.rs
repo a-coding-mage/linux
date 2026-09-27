@@ -8,9 +8,9 @@
  */
 
 extern "C" {
-    fn ksys_chown(filename: *const core::ffi::c_char, user: uid_t, group: gid_t) -> long;
-    fn ksys_lchown(filename: *const core::ffi::c_char, user: uid_t, group: gid_t) -> long;
-    fn ksys_fchown(fd: core::ffi::c_uint, user: uid_t, group: gid_t) -> long;
+    fn ksys_chown(filename: *const kernel::ffi::c_char, user: uid_t, group: gid_t) -> long;
+    fn ksys_lchown(filename: *const kernel::ffi::c_char, user: uid_t, group: gid_t) -> long;
+    fn ksys_fchown(fd: kernel::ffi::c_uint, user: uid_t, group: gid_t) -> long;
     fn __sys_setregid(rgid: gid_t, egid: gid_t) -> long;
     fn __sys_setgid(gid: gid_t) -> long;
     fn __sys_setreuid(ruid: uid_t, euid: uid_t) -> long;
@@ -77,15 +77,15 @@ const EPERM: int = 1;
 const ENOMEM: int = 12;
 const NGROUPS_MAX: u32 = 65536;
 
-pub unsafe fn chown16(filename: *const core::ffi::c_char, user: old_uid_t, group: old_gid_t) -> long {
+pub unsafe fn chown16(filename: *const kernel::ffi::c_char, user: old_uid_t, group: old_gid_t) -> long {
     ksys_chown(filename, low2highuid(user), low2highgid(group))
 }
 
-pub unsafe fn lchown16(filename: *const core::ffi::c_char, user: old_uid_t, group: old_gid_t) -> long {
+pub unsafe fn lchown16(filename: *const kernel::ffi::c_char, user: old_uid_t, group: old_gid_t) -> long {
     ksys_lchown(filename, low2highuid(user), low2highgid(group))
 }
 
-pub unsafe fn fchown16(fd: core::ffi::c_uint, user: old_uid_t, group: old_gid_t) -> long {
+pub unsafe fn fchown16(fd: kernel::ffi::c_uint, user: old_uid_t, group: old_gid_t) -> long {
     ksys_fchown(fd, low2highuid(user), low2highgid(group))
 }
 

@@ -57,7 +57,7 @@ unsafe fn pkcs7_validate_trust_one(
                      * the signature on the descendant.
                      */
                     pr_devel!(
-                        "PKCS7: sinfo {}: Cert {} as key {:x}\n",
+                        "PKCS7: sinfo %u: Cert %u as key %x\n",
                         (*sinfo).index,
                         (*x509).index,
                         key_serial(key)
@@ -98,7 +98,7 @@ unsafe fn pkcs7_validate_trust_one(
                 if !IS_ERR(key.cast()) {
                     x509 = last;
                     pr_devel!(
-                        "PKCS7: sinfo {}: Root cert {} signer is key {:x}\n",
+                        "PKCS7: sinfo %u: Root cert %u signer is key %x\n",
                         (*sinfo).index,
                         (*x509).index,
                         key_serial(key)
@@ -115,7 +115,7 @@ unsafe fn pkcs7_validate_trust_one(
              */
             key = find_asymmetric_key(trust_keyring, (*(*sinfo).sig).auth_ids[0], null_mut(), null_mut(), false);
             if !IS_ERR(key.cast()) {
-                pr_devel!("PKCS7: sinfo {}: Direct signer is key {:x}\n", (*sinfo).index, key_serial(key));
+                pr_devel!("PKCS7: sinfo %u: Direct signer is key %x\n", (*sinfo).index, key_serial(key));
                 x509 = null_mut();
                 sig = (*sinfo).sig;
                 break 'matched;

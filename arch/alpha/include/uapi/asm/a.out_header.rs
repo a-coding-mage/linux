@@ -43,7 +43,7 @@ pub struct aouthdr {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct scnhdr {
-    pub s_name: [core::ffi::c_char; 8],
+    pub s_name: [kernel::ffi::c_char; 8],
     pub s_paddr: u64,
     pub s_vaddr: u64,
     pub s_size: u64,

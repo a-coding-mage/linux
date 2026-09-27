@@ -5,7 +5,7 @@
 pub struct perf_msr {
     pub msr: u64,
     pub grp: *mut attribute_group,
-    pub test: Option<unsafe extern "C" fn(idx: i32, data: *mut core::ffi::c_void) -> bool>,
+    pub test: Option<unsafe extern "C" fn(idx: i32, data: *mut kernel::ffi::c_void) -> bool>,
     pub no_check: bool,
     pub mask: u64,
 }
@@ -15,8 +15,8 @@ unsafe extern "C" {
         msr: *mut perf_msr,
         cnt: i32,
         no_zero: bool,
-        data: *mut core::ffi::c_void,
-    ) -> core::ffi::c_ulong;
+        data: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_ulong;
 }
 
 /*
@@ -40,7 +40,7 @@ macro_rules! PMU_EVENT_GROUP {
     ($grp:ident, $name:ident, $attrs:ident, $group:ident) => {
         $crate::__PMU_EVENT_GROUP!($name, $attrs);
         static mut $group: attribute_group = attribute_group {
-            name: stringify!($grp).as_ptr() as *const core::ffi::c_char,
+            name: concat!(stringify!($grp), "\0").as_ptr() as *const kernel::ffi::c_char,
             attrs: $attrs.as_mut_ptr(),
         };
     };

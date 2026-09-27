@@ -1,17 +1,17 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* Types and helpers below are supplied by the corresponding Linux headers. */
 
 #[repr(C)]
 pub struct vmem_altmap {
-    pub base_pfn: ::core::ffi::c_ulong,
-    pub end_pfn: ::core::ffi::c_ulong,
-    pub reserve: ::core::ffi::c_ulong,
-    pub free: ::core::ffi::c_ulong,
-    pub align: ::core::ffi::c_ulong,
-    pub alloc: ::core::ffi::c_ulong,
+    pub base_pfn: ::kernel::ffi::c_ulong,
+    pub end_pfn: ::kernel::ffi::c_ulong,
+    pub reserve: ::kernel::ffi::c_ulong,
+    pub free: ::kernel::ffi::c_ulong,
+    pub align: ::kernel::ffi::c_ulong,
+    pub alloc: ::kernel::ffi::c_ulong,
 }
 
 #[repr(i32)]
@@ -29,8 +29,8 @@ pub struct dev_pagemap_ops {
     pub migrate_to_ram: Option<unsafe extern "C" fn(vmf: *mut vm_fault) -> vm_fault_t>,
     pub memory_failure: Option<unsafe extern "C" fn(
         pgmap: *mut dev_pagemap,
-        pfn: ::core::ffi::c_ulong,
-        nr_pages: ::core::ffi::c_ulong,
+        pfn: ::kernel::ffi::c_ulong,
+        nr_pages: ::kernel::ffi::c_ulong,
         mf_flags: i32,
     ) -> i32>,
     pub folio_split: Option<unsafe extern "C" fn(head: *mut folio, tail: *mut folio)>,
@@ -51,7 +51,7 @@ pub struct dev_pagemap {
     pub done: completion,
     pub type_: memory_type,
     pub flags: u32,
-    pub vmemmap_shift: ::core::ffi::c_ulong,
+    pub vmemmap_shift: ::kernel::ffi::c_ulong,
     pub ops: *const dev_pagemap_ops,
     pub owner: *mut c_void,
     pub nr_range: i32,
@@ -73,7 +73,7 @@ pub unsafe fn pgmap_altmap(pgmap: *mut dev_pagemap) -> *mut vmem_altmap {
 }
 
 #[inline]
-pub unsafe fn pgmap_vmemmap_nr(pgmap: *mut dev_pagemap) -> ::core::ffi::c_ulong {
+pub unsafe fn pgmap_vmemmap_nr(pgmap: *mut dev_pagemap) -> ::kernel::ffi::c_ulong {
     1 << (*pgmap).vmemmap_shift
 }
 
@@ -140,9 +140,9 @@ extern "C" {
     pub fn memunmap_pages(pgmap: *mut dev_pagemap);
     pub fn devm_memremap_pages(dev: *mut device, pgmap: *mut dev_pagemap) -> *mut c_void;
     pub fn devm_memunmap_pages(dev: *mut device, pgmap: *mut dev_pagemap);
-    pub fn get_dev_pagemap(pfn: ::core::ffi::c_ulong) -> *mut dev_pagemap;
-    pub fn pgmap_pfn_valid(pgmap: *mut dev_pagemap, pfn: ::core::ffi::c_ulong) -> bool;
-    pub fn memremap_compat_align() -> ::core::ffi::c_ulong;
+    pub fn get_dev_pagemap(pfn: ::kernel::ffi::c_ulong) -> *mut dev_pagemap;
+    pub fn pgmap_pfn_valid(pgmap: *mut dev_pagemap, pfn: ::kernel::ffi::c_ulong) -> bool;
+    pub fn memremap_compat_align() -> ::kernel::ffi::c_ulong;
 }
 
 #[inline]
@@ -180,13 +180,13 @@ pub unsafe fn devm_memremap_pages_disabled(_dev: *mut device, _pgmap: *mut dev_p
 pub unsafe fn devm_memunmap_pages_disabled(_dev: *mut device, _pgmap: *mut dev_pagemap) {}
 
 #[inline]
-pub unsafe fn get_dev_pagemap_disabled(_pfn: ::core::ffi::c_ulong) -> *mut dev_pagemap { core::ptr::null_mut() }
+pub unsafe fn get_dev_pagemap_disabled(_pfn: ::kernel::ffi::c_ulong) -> *mut dev_pagemap { core::ptr::null_mut() }
 
 #[inline]
-pub unsafe fn pgmap_pfn_valid_disabled(_pgmap: *mut dev_pagemap, _pfn: ::core::ffi::c_ulong) -> bool { false }
+pub unsafe fn pgmap_pfn_valid_disabled(_pgmap: *mut dev_pagemap, _pfn: ::kernel::ffi::c_ulong) -> bool { false }
 
 #[inline]
-pub unsafe fn memremap_compat_align_disabled() -> ::core::ffi::c_ulong { PAGE_SIZE }
+pub unsafe fn memremap_compat_align_disabled() -> ::kernel::ffi::c_ulong { PAGE_SIZE }
 
 #[inline]
 pub unsafe fn zone_device_private_split_cb_disabled(_original_folio: *mut folio, _new_folio: *mut folio) {}

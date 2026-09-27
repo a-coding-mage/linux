@@ -32,10 +32,10 @@
 
 pub unsafe fn amdgpu_kms_compat_ioctl(
     filp: *mut file,
-    cmd: ::core::ffi::c_uint,
-    arg: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_long {
-    let nr: ::core::ffi::c_uint = DRM_IOCTL_NR(cmd);
+    cmd: ::kernel::ffi::c_uint,
+    arg: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_long {
+    let nr: ::kernel::ffi::c_uint = DRM_IOCTL_NR(cmd);
 
     if nr < DRM_COMMAND_BASE {
         return drm_compat_ioctl(filp, cmd, arg);

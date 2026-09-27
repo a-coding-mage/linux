@@ -6,23 +6,23 @@
 
 #[repr(C)]
 pub struct ip_conntrack_stat {
-    pub found: ::core::ffi::c_uint,
-    pub invalid: ::core::ffi::c_uint,
-    pub insert: ::core::ffi::c_uint,
-    pub insert_failed: ::core::ffi::c_uint,
-    pub clash_resolve: ::core::ffi::c_uint,
-    pub drop: ::core::ffi::c_uint,
-    pub early_drop: ::core::ffi::c_uint,
-    pub error: ::core::ffi::c_uint,
-    pub expect_new: ::core::ffi::c_uint,
-    pub expect_create: ::core::ffi::c_uint,
-    pub expect_delete: ::core::ffi::c_uint,
-    pub search_restart: ::core::ffi::c_uint,
-    pub chaintoolong: ::core::ffi::c_uint,
+    pub found: ::kernel::ffi::c_uint,
+    pub invalid: ::kernel::ffi::c_uint,
+    pub insert: ::kernel::ffi::c_uint,
+    pub insert_failed: ::kernel::ffi::c_uint,
+    pub clash_resolve: ::kernel::ffi::c_uint,
+    pub drop: ::kernel::ffi::c_uint,
+    pub early_drop: ::kernel::ffi::c_uint,
+    pub error: ::kernel::ffi::c_uint,
+    pub expect_new: ::kernel::ffi::c_uint,
+    pub expect_create: ::kernel::ffi::c_uint,
+    pub expect_delete: ::kernel::ffi::c_uint,
+    pub search_restart: ::kernel::ffi::c_uint,
+    pub chaintoolong: ::kernel::ffi::c_uint,
 }
 
-pub const NFCT_INFOMASK: ::core::ffi::c_ulong = 7;
-pub const NFCT_PTRMASK: ::core::ffi::c_ulong = !NFCT_INFOMASK;
+pub const NFCT_INFOMASK: ::kernel::ffi::c_ulong = 7;
+pub const NFCT_PTRMASK: ::kernel::ffi::c_ulong = !NFCT_INFOMASK;
 
 #[repr(C)]
 pub struct nf_conntrack {

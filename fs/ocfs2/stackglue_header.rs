@@ -16,7 +16,7 @@ pub struct ocfs2_protocol_version {
 #[repr(C)]
 pub struct fsdlm_lksb_plus_lvb {
     pub lksb: dlm_lksb,
-    pub lvb: [core::ffi::c_char; DLM_LVB_LEN as usize],
+    pub lvb: [kernel::ffi::c_char; DLM_LVB_LEN as usize],
 }
 
 #[repr(C)]
@@ -42,16 +42,16 @@ pub struct ocfs2_locking_protocol {
 
 #[repr(C)]
 pub struct ocfs2_cluster_connection {
-    pub cc_name: [core::ffi::c_char; GROUP_NAME_MAX + 1],
+    pub cc_name: [kernel::ffi::c_char; GROUP_NAME_MAX + 1],
     pub cc_namelen: i32,
-    pub cc_cluster_name: [core::ffi::c_char; CLUSTER_NAME_MAX + 1],
+    pub cc_cluster_name: [kernel::ffi::c_char; CLUSTER_NAME_MAX + 1],
     pub cc_cluster_name_len: i32,
     pub cc_version: ocfs2_protocol_version,
     pub cc_proto: *mut ocfs2_locking_protocol,
-    pub cc_recovery_handler: Option<unsafe extern "C" fn(i32, *mut core::ffi::c_void)>,
-    pub cc_recovery_data: *mut core::ffi::c_void,
-    pub cc_lockspace: *mut core::ffi::c_void,
-    pub cc_private: *mut core::ffi::c_void,
+    pub cc_recovery_handler: Option<unsafe extern "C" fn(i32, *mut kernel::ffi::c_void)>,
+    pub cc_recovery_data: *mut kernel::ffi::c_void,
+    pub cc_lockspace: *mut kernel::ffi::c_void,
+    pub cc_private: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -59,18 +59,18 @@ pub struct ocfs2_stack_operations {
     pub connect: Option<unsafe extern "C" fn(*mut ocfs2_cluster_connection) -> i32>,
     pub disconnect: Option<unsafe extern "C" fn(*mut ocfs2_cluster_connection) -> i32>,
     pub this_node: Option<unsafe extern "C" fn(*mut ocfs2_cluster_connection, *mut u32) -> i32>,
-    pub dlm_lock: Option<unsafe extern "C" fn(*mut ocfs2_cluster_connection, i32, *mut ocfs2_dlm_lksb, u32, *mut core::ffi::c_void, u32) -> i32>,
+    pub dlm_lock: Option<unsafe extern "C" fn(*mut ocfs2_cluster_connection, i32, *mut ocfs2_dlm_lksb, u32, *mut kernel::ffi::c_void, u32) -> i32>,
     pub dlm_unlock: Option<unsafe extern "C" fn(*mut ocfs2_cluster_connection, *mut ocfs2_dlm_lksb, u32) -> i32>,
     pub lock_status: Option<unsafe extern "C" fn(*mut ocfs2_dlm_lksb) -> i32>,
     pub lvb_valid: Option<unsafe extern "C" fn(*mut ocfs2_dlm_lksb) -> i32>,
-    pub lock_lvb: Option<unsafe extern "C" fn(*mut ocfs2_dlm_lksb) -> *mut core::ffi::c_void>,
+    pub lock_lvb: Option<unsafe extern "C" fn(*mut ocfs2_dlm_lksb) -> *mut kernel::ffi::c_void>,
     pub plock: Option<unsafe extern "C" fn(*mut ocfs2_cluster_connection, u64, *mut file, i32, *mut file_lock) -> i32>,
     pub dump_lksb: Option<unsafe extern "C" fn(*mut ocfs2_dlm_lksb)>,
 }
 
 #[repr(C)]
 pub struct ocfs2_stack_plugin {
-    pub sp_name: *mut core::ffi::c_char,
+    pub sp_name: *mut kernel::ffi::c_char,
     pub sp_ops: *const ocfs2_stack_operations,
     pub sp_owner: *mut module,
     pub sp_list: list_head,
@@ -79,16 +79,16 @@ pub struct ocfs2_stack_plugin {
 }
 
 extern "C" {
-    pub fn ocfs2_cluster_connect(stack_name: *const core::ffi::c_char, cluster_name: *const core::ffi::c_char, cluster_name_len: i32, group: *const core::ffi::c_char, grouplen: i32, lproto: *mut ocfs2_locking_protocol, recovery_handler: Option<unsafe extern "C" fn(i32, *mut core::ffi::c_void)>, recovery_data: *mut core::ffi::c_void, conn: *mut *mut ocfs2_cluster_connection) -> i32;
-    pub fn ocfs2_cluster_connect_agnostic(group: *const core::ffi::c_char, grouplen: i32, lproto: *mut ocfs2_locking_protocol, recovery_handler: Option<unsafe extern "C" fn(i32, *mut core::ffi::c_void)>, recovery_data: *mut core::ffi::c_void, conn: *mut *mut ocfs2_cluster_connection) -> i32;
+    pub fn ocfs2_cluster_connect(stack_name: *const kernel::ffi::c_char, cluster_name: *const kernel::ffi::c_char, cluster_name_len: i32, group: *const kernel::ffi::c_char, grouplen: i32, lproto: *mut ocfs2_locking_protocol, recovery_handler: Option<unsafe extern "C" fn(i32, *mut kernel::ffi::c_void)>, recovery_data: *mut kernel::ffi::c_void, conn: *mut *mut ocfs2_cluster_connection) -> i32;
+    pub fn ocfs2_cluster_connect_agnostic(group: *const kernel::ffi::c_char, grouplen: i32, lproto: *mut ocfs2_locking_protocol, recovery_handler: Option<unsafe extern "C" fn(i32, *mut kernel::ffi::c_void)>, recovery_data: *mut kernel::ffi::c_void, conn: *mut *mut ocfs2_cluster_connection) -> i32;
     pub fn ocfs2_cluster_disconnect(conn: *mut ocfs2_cluster_connection, hangup_pending: i32) -> i32;
-    pub fn ocfs2_cluster_hangup(group: *const core::ffi::c_char, grouplen: i32);
+    pub fn ocfs2_cluster_hangup(group: *const kernel::ffi::c_char, grouplen: i32);
     pub fn ocfs2_cluster_this_node(conn: *mut ocfs2_cluster_connection, node: *mut u32) -> i32;
-    pub fn ocfs2_dlm_lock(conn: *mut ocfs2_cluster_connection, mode: i32, lksb: *mut ocfs2_dlm_lksb, flags: u32, name: *mut core::ffi::c_void, namelen: u32) -> i32;
+    pub fn ocfs2_dlm_lock(conn: *mut ocfs2_cluster_connection, mode: i32, lksb: *mut ocfs2_dlm_lksb, flags: u32, name: *mut kernel::ffi::c_void, namelen: u32) -> i32;
     pub fn ocfs2_dlm_unlock(conn: *mut ocfs2_cluster_connection, lksb: *mut ocfs2_dlm_lksb, flags: u32) -> i32;
     pub fn ocfs2_dlm_lock_status(lksb: *mut ocfs2_dlm_lksb) -> i32;
     pub fn ocfs2_dlm_lvb_valid(lksb: *mut ocfs2_dlm_lksb) -> i32;
-    pub fn ocfs2_dlm_lvb(lksb: *mut ocfs2_dlm_lksb) -> *mut core::ffi::c_void;
+    pub fn ocfs2_dlm_lvb(lksb: *mut ocfs2_dlm_lksb) -> *mut kernel::ffi::c_void;
     pub fn ocfs2_dlm_dump_lksb(lksb: *mut ocfs2_dlm_lksb);
     pub fn ocfs2_stack_supports_plocks() -> i32;
     pub fn ocfs2_plock(conn: *mut ocfs2_cluster_connection, ino: u64, file: *mut file, cmd: i32, fl: *mut file_lock) -> i32;

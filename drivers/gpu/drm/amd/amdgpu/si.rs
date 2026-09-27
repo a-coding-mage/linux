@@ -1026,7 +1026,7 @@ static int si_query_video_codecs(amdgpu_device *adev, encode: bool,
 
 static u32 si_pcie_rreg(amdgpu_device *adev, reg: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u32 r;
 
 	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
@@ -1039,7 +1039,7 @@ static u32 si_pcie_rreg(amdgpu_device *adev, reg: u32)
 
 static void si_pcie_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
 	WREG32(AMDGPU_PCIE_INDEX, reg);
@@ -1051,7 +1051,7 @@ static void si_pcie_wreg(amdgpu_device *adev, reg: u32, v: u32)
 
 static u32 si_pciep_rreg(amdgpu_device *adev, reg: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u32 r;
 
 	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
@@ -1064,7 +1064,7 @@ static u32 si_pciep_rreg(amdgpu_device *adev, reg: u32)
 
 static void si_pciep_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
 	WREG32(PCIE_PORT_INDEX, ((reg) & 0xff));
@@ -1076,7 +1076,7 @@ static void si_pciep_wreg(amdgpu_device *adev, reg: u32, v: u32)
 
 static u32 si_smc_rreg(amdgpu_device *adev, reg: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u32 r;
 
 	spin_lock_irqsave((*&adev).reg.smc.lock, flags);
@@ -1088,7 +1088,7 @@ static u32 si_smc_rreg(amdgpu_device *adev, reg: u32)
 
 static void si_smc_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave((*&adev).reg.smc.lock, flags);
 	WREG32(mmSMC_IND_INDEX_0, (reg));
@@ -1098,7 +1098,7 @@ static void si_smc_wreg(amdgpu_device *adev, reg: u32, v: u32)
 
 static u32 si_uvd_ctx_rreg(amdgpu_device *adev, reg: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u32 r;
 
 	spin_lock_irqsave((*&adev).reg.uvd_ctx.lock, flags);
@@ -1110,7 +1110,7 @@ static u32 si_uvd_ctx_rreg(amdgpu_device *adev, reg: u32)
 
 static void si_uvd_ctx_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave((*&adev).reg.uvd_ctx.lock, flags);
 	WREG32(mmUVD_CTX_INDEX, ((reg) & 0x1ff));
@@ -2372,7 +2372,7 @@ static void si_pcie_gen3_enable(amdgpu_device *adev)
 
 u32 si_pif_phy0_rreg(amdgpu_device *adev, reg: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u32 r;
 
 	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
@@ -2384,7 +2384,7 @@ u32 si_pif_phy0_rreg(amdgpu_device *adev, reg: u32)
 
 void si_pif_phy0_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
 	WREG32(EVERGREEN_PIF_PHY0_INDEX, ((reg) & 0xffff));
@@ -2394,7 +2394,7 @@ void si_pif_phy0_wreg(amdgpu_device *adev, reg: u32, v: u32)
 
 u32 si_pif_phy1_rreg(amdgpu_device *adev, reg: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u32 r;
 
 	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
@@ -2406,7 +2406,7 @@ u32 si_pif_phy1_rreg(amdgpu_device *adev, reg: u32)
 
 void si_pif_phy1_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
 	WREG32(EVERGREEN_PIF_PHY1_INDEX, ((reg) & 0xffff));

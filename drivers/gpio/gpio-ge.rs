@@ -28,15 +28,15 @@ const GEF_GPIO_MODE: usize = 0x20;
 static gef_gpio_ids: [of_device_id; 4] = [
     of_device_id {
         compatible: c"gef,sbc610-gpio".as_ptr(),
-        data: 19 as *const core::ffi::c_void,
+        data: 19 as *const kernel::ffi::c_void,
     },
     of_device_id {
         compatible: c"gef,sbc310-gpio".as_ptr(),
-        data: 6 as *const core::ffi::c_void,
+        data: 6 as *const kernel::ffi::c_void,
     },
     of_device_id {
         compatible: c"ge,imp3a-gpio".as_ptr(),
-        data: 16 as *const core::ffi::c_void,
+        data: 16 as *const kernel::ffi::c_void,
     },
     of_device_id {
         compatible: core::ptr::null(),
@@ -45,27 +45,27 @@ static gef_gpio_ids: [of_device_id; 4] = [
 ];
 
 unsafe extern "C" {
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: gfp_t) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: gfp_t) -> *mut kernel::ffi::c_void;
     fn devm_platform_ioremap_resource(
         pdev: *mut platform_device,
         index: u32,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     fn gpio_generic_chip_init(
         chip: *mut gpio_generic_chip,
         config: *mut gpio_generic_chip_config,
     ) -> i32;
-    fn dev_err_probe(dev: *mut device, err: i32, fmt: *const core::ffi::c_char) -> i32;
+    fn dev_err_probe(dev: *mut device, err: i32, fmt: *const kernel::ffi::c_char) -> i32;
     fn devm_kasprintf(
         dev: *mut device,
         flags: gfp_t,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
         ...,
-    ) -> *mut core::ffi::c_char;
+    ) -> *mut kernel::ffi::c_char;
     fn dev_fwnode(dev: *mut device) -> *mut fwnode_handle;
     fn devm_gpiochip_add_data(
         dev: *mut device,
         gc: *mut gpio_chip,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
 }
 
@@ -75,7 +75,7 @@ unsafe fn gef_gpio_probe(pdev: *mut platform_device) -> i32 {
     let dev: *mut device = &mut (*pdev).dev;
     let chip: *mut gpio_generic_chip;
     let gc: *mut gpio_chip;
-    let regs: *mut core::ffi::c_void;
+    let regs: *mut kernel::ffi::c_void;
     let ret: i32;
 
     chip = devm_kzalloc(dev, core::mem::size_of::<gpio_generic_chip>(), GFP_KERNEL);

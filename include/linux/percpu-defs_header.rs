@@ -94,9 +94,9 @@ macro_rules! put_cpu_ptr { ($var:expr) => {{ let _ = $var; preempt_enable(); }};
 
 extern "C" { pub fn __bad_size_call_parameter(); }
 #[cfg(feature = "config_debug_preempt")]
-extern "C" { pub fn __this_cpu_preempt_check(op: *const core::ffi::c_char); }
+extern "C" { pub fn __this_cpu_preempt_check(op: *const kernel::ffi::c_char); }
 #[cfg(not(feature = "config_debug_preempt"))]
-#[inline(always)] pub unsafe fn __this_cpu_preempt_check(_op: *const core::ffi::c_char) {}
+#[inline(always)] pub unsafe fn __this_cpu_preempt_check(_op: *const kernel::ffi::c_char) {}
 
 // Size-dispatch operations retain the C ABI's externally supplied per-size
 // operations.  The following wrappers preserve argument ordering and naming.

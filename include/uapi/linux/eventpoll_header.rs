@@ -15,7 +15,7 @@
 // linux/fcntl.h, linux/types.h, O_CLOEXEC, __poll_t, _IOW, and _IOR.
 
 /* Flags for epoll_create1. */
-pub const EPOLL_CLOEXEC: _ = O_CLOEXEC;
+pub const EPOLL_CLOEXEC: u32 = O_CLOEXEC;
 
 /* Valid opcodes to issue to sys_epoll_ctl() */
 pub const EPOLL_CTL_ADD: i32 = 1;
@@ -79,7 +79,7 @@ pub struct epoll_params {
 }
 
 pub const EPOLL_IOC_TYPE: u8 = 0x8A;
-pub const EPIOCSPARAMS: _ = _IOW(EPOLL_IOC_TYPE, 0x01, epoll_params);
-pub const EPIOCGPARAMS: _ = _IOR(EPOLL_IOC_TYPE, 0x02, epoll_params);
+pub const EPIOCSPARAMS: u32 = _IOW(EPOLL_IOC_TYPE, 0x01, epoll_params);
+pub const EPIOCGPARAMS: u32 = _IOR(EPOLL_IOC_TYPE, 0x02, epoll_params);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

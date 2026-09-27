@@ -13,22 +13,22 @@
 struct firmware_map_entry {
     start: u64,
     end: u64,
-    type_: *const core::ffi::c_char,
+    type_: *const kernel::ffi::c_char,
     list: list_head,
     kobj: kobject,
 }
 
 /* Forward declarations. */
-unsafe fn memmap_attr_show(kobj: *mut kobject, attr: *mut attribute, buf: *mut core::ffi::c_char) -> ssize_t;
-unsafe fn start_show(entry: *mut firmware_map_entry, buf: *mut core::ffi::c_char) -> ssize_t;
-unsafe fn end_show(entry: *mut firmware_map_entry, buf: *mut core::ffi::c_char) -> ssize_t;
-unsafe fn type_show(entry: *mut firmware_map_entry, buf: *mut core::ffi::c_char) -> ssize_t;
-unsafe fn firmware_map_find_entry(start: u64, end: u64, type_: *const core::ffi::c_char) -> *mut firmware_map_entry;
+unsafe fn memmap_attr_show(kobj: *mut kobject, attr: *mut attribute, buf: *mut kernel::ffi::c_char) -> ssize_t;
+unsafe fn start_show(entry: *mut firmware_map_entry, buf: *mut kernel::ffi::c_char) -> ssize_t;
+unsafe fn end_show(entry: *mut firmware_map_entry, buf: *mut kernel::ffi::c_char) -> ssize_t;
+unsafe fn type_show(entry: *mut firmware_map_entry, buf: *mut kernel::ffi::c_char) -> ssize_t;
+unsafe fn firmware_map_find_entry(start: u64, end: u64, type_: *const kernel::ffi::c_char) -> *mut firmware_map_entry;
 
 #[repr(C)]
 struct memmap_attribute {
     attr: attribute,
-    show: Option<unsafe fn(*mut firmware_map_entry, *mut core::ffi::c_char) -> ssize_t>,
+    show: Option<unsafe fn(*mut firmware_map_entry, *mut kernel::ffi::c_char) -> ssize_t>,
 }
 
 /* __ATTR_RO(start), __ATTR_RO(end), and __ATTR_RO(type). */
@@ -64,12 +64,12 @@ unsafe fn release_firmware_map_entry(kobj: *mut kobject) {
         spin_unlock(&raw mut map_entries_bootmem_lock);
         return;
     }
-    kfree(entry as *mut core::ffi::c_void);
+    kfree(entry as *mut kernel::ffi::c_void);
 }
 
 /* static const struct kobj_type memmap_ktype = ...; */
 
-unsafe fn firmware_map_add_entry(start: u64, end: u64, type_: *const core::ffi::c_char,
+unsafe fn firmware_map_add_entry(start: u64, end: u64, type_: *const kernel::ffi::c_char,
                                  entry: *mut firmware_map_entry) -> i32 {
     BUG_ON!(start > end);
     (*entry).start = start;
@@ -103,7 +103,7 @@ unsafe fn add_sysfs_fw_map_entry(entry: *mut firmware_map_entry) -> i32 {
 
 unsafe fn remove_sysfs_fw_map_entry(entry: *mut firmware_map_entry) { kobject_put(&raw mut (*entry).kobj); }
 
-unsafe fn firmware_map_find_entry_in_list(start: u64, end: u64, type_: *const core::ffi::c_char,
+unsafe fn firmware_map_find_entry_in_list(start: u64, end: u64, type_: *const kernel::ffi::c_char,
                                           list: *mut list_head) -> *mut firmware_map_entry {
     let mut entry: *mut firmware_map_entry = core::ptr::null_mut();
     list_for_each_entry!(entry, list, list, {
@@ -112,11 +112,11 @@ unsafe fn firmware_map_find_entry_in_list(start: u64, end: u64, type_: *const co
     core::ptr::null_mut()
 }
 
-unsafe fn firmware_map_find_entry_bootmem(start: u64, end: u64, type_: *const core::ffi::c_char) -> *mut firmware_map_entry {
+unsafe fn firmware_map_find_entry_bootmem(start: u64, end: u64, type_: *const kernel::ffi::c_char) -> *mut firmware_map_entry {
     firmware_map_find_entry_in_list(start, end, type_, &raw mut map_entries_bootmem)
 }
 
-pub unsafe fn firmware_map_add_hotplug(start: u64, end: u64, type_: *const core::ffi::c_char) -> i32 {
+pub unsafe fn firmware_map_add_hotplug(start: u64, end: u64, type_: *const kernel::ffi::c_char) -> i32 {
     let mut entry = firmware_map_find_entry(start, end.wrapping_sub(1), type_);
     if !entry.is_null() { return 0; }
     entry = firmware_map_find_entry_bootmem(start, end.wrapping_sub(1), type_);
@@ -134,13 +134,13 @@ pub unsafe fn firmware_map_add_hotplug(start: u64, end: u64, type_: *const core:
     0
 }
 
-pub unsafe fn firmware_map_add_early(start: u64, end: u64, type_: *const core::ffi::c_char) -> i32 {
+pub unsafe fn firmware_map_add_early(start: u64, end: u64, type_: *const kernel::ffi::c_char) -> i32 {
     let entry = memblock_alloc(core::mem::size_of::<firmware_map_entry>(), SMP_CACHE_BYTES) as *mut firmware_map_entry;
     if WARN_ON(entry.is_null()) { return -ENOMEM; }
     firmware_map_add_entry(start, end, type_, entry)
 }
 
-pub unsafe fn firmware_map_remove(start: u64, end: u64, type_: *const core::ffi::c_char) -> i32 {
+pub unsafe fn firmware_map_remove(start: u64, end: u64, type_: *const kernel::ffi::c_char) -> i32 {
     spin_lock(&raw mut map_entries_lock);
     let entry = firmware_map_find_entry(start, end.wrapping_sub(1), type_);
     if entry.is_null() { spin_unlock(&raw mut map_entries_lock); return -EINVAL; }
@@ -150,11 +150,11 @@ pub unsafe fn firmware_map_remove(start: u64, end: u64, type_: *const core::ffi:
     0
 }
 
-unsafe fn start_show(entry: *mut firmware_map_entry, buf: *mut core::ffi::c_char) -> ssize_t { snprintf(buf, PAGE_SIZE, b"0x%llx\n\0".as_ptr() as _, (*entry).start) }
-unsafe fn end_show(entry: *mut firmware_map_entry, buf: *mut core::ffi::c_char) -> ssize_t { snprintf(buf, PAGE_SIZE, b"0x%llx\n\0".as_ptr() as _, (*entry).end) }
-unsafe fn type_show(entry: *mut firmware_map_entry, buf: *mut core::ffi::c_char) -> ssize_t { snprintf(buf, PAGE_SIZE, b"%s\n\0".as_ptr() as _, (*entry).type_) }
+unsafe fn start_show(entry: *mut firmware_map_entry, buf: *mut kernel::ffi::c_char) -> ssize_t { snprintf(buf, PAGE_SIZE, b"0x%llx\n\0".as_ptr() as _, (*entry).start) }
+unsafe fn end_show(entry: *mut firmware_map_entry, buf: *mut kernel::ffi::c_char) -> ssize_t { snprintf(buf, PAGE_SIZE, b"0x%llx\n\0".as_ptr() as _, (*entry).end) }
+unsafe fn type_show(entry: *mut firmware_map_entry, buf: *mut kernel::ffi::c_char) -> ssize_t { snprintf(buf, PAGE_SIZE, b"%s\n\0".as_ptr() as _, (*entry).type_) }
 unsafe fn to_memmap_attr(attr: *mut attribute) -> *mut memmap_attribute { container_of!(attr, memmap_attribute, attr) }
-unsafe fn memmap_attr_show(kobj: *mut kobject, attr: *mut attribute, buf: *mut core::ffi::c_char) -> ssize_t {
+unsafe fn memmap_attr_show(kobj: *mut kobject, attr: *mut attribute, buf: *mut kernel::ffi::c_char) -> ssize_t {
     let entry = to_memmap_entry(kobj); let memmap_attr = to_memmap_attr(attr); ((*memmap_attr).show.unwrap())(entry, buf)
 }
 

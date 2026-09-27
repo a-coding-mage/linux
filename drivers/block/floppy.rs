@@ -227,7 +227,7 @@ static int use_virtual_dma;
 
 static DEFINE_SPINLOCK(floppy_lock);
 
-static core::ffi::c_ushort virtual_dma_port = 0x3f0;
+static kernel::ffi::c_ushort virtual_dma_port = 0x3f0;
 irqreturn_t floppy_interrupt(int irq, void *dev_id);
 static int set_dor(int fdc, char mask, char data);
 
@@ -290,7 +290,7 @@ void fallback_on_nodma_alloc(char **addr, size_t l)
 
 /* End dma memory related stuff */
 
-static core::ffi::c_ulong fake_change;
+static kernel::ffi::c_ulong fake_change;
 static bool initialized;
 
 // #define ITYPE(x)	(((x) >> 2) & 0x1f)
@@ -332,7 +332,7 @@ static bool initialized;
 /*
  * globals used by 'result()'
  */
-static core::ffi::c_uchar reply_buffer[FD_RAW_REPLY_SIZE];
+static kernel::ffi::c_uchar reply_buffer[FD_RAW_REPLY_SIZE];
 static int inr;		/* size of reply buffer, when called from interrupt */
 // #define ST0		0
 // #define ST1		1
@@ -501,7 +501,7 @@ static int probing;
 // #define FD_COMMAND_OKAY		3
 
 static volatile int command_status = FD_COMMAND_NONE;
-static core::ffi::c_ulong fdc_busy;
+static kernel::ffi::c_ulong fdc_busy;
 static DECLARE_WAIT_QUEUE_HEAD(fdc_wait);
 static DECLARE_WAIT_QUEUE_HEAD(command_done);
 
@@ -581,18 +581,18 @@ static int current_fdc;			/* current fdc */
 static struct workqueue_struct *floppy_wq;
 
 static struct floppy_struct *_floppy = floppy_type;
-static core::ffi::c_uchar current_drive;
+static kernel::ffi::c_uchar current_drive;
 static long current_count_sectors;
-static core::ffi::c_uchar fsector_t;	/* sector in track */
-static core::ffi::c_uchar in_sector_offset;	/* offset within physical sector,
+static kernel::ffi::c_uchar fsector_t;	/* sector in track */
+static kernel::ffi::c_uchar in_sector_offset;	/* offset within physical sector,
 					 * expressed in units of 512 bytes */
 
-core::ffi::c_uchar fdc_inb(int fdc, int reg)
+kernel::ffi::c_uchar fdc_inb(int fdc, int reg)
 {
 	return fd_inb(fdc_state[fdc].address, reg);
 }
 
-void fdc_outb(value: core::ffi::c_uchar, int fdc, int reg)
+void fdc_outb(value: kernel::ffi::c_uchar, int fdc, int reg)
 {
 	fd_outb(value, fdc_state[fdc].address, reg);
 }
@@ -649,15 +649,15 @@ static void (*do_floppy)(void) = NULL;
 // #define OLOGSIZE 20
 
 static void (*lasthandler)(void);
-static core::ffi::c_ulong interruptjiffies;
-static core::ffi::c_ulong resultjiffies;
+static kernel::ffi::c_ulong interruptjiffies;
+static kernel::ffi::c_ulong resultjiffies;
 static int resultsize;
-static core::ffi::c_ulong lastredo;
+static kernel::ffi::c_ulong lastredo;
 
 static struct output_log {
-	core::ffi::c_uchar data;
-	core::ffi::c_uchar status;
-	core::ffi::c_ulong jiffies;
+	kernel::ffi::c_uchar data;
+	kernel::ffi::c_uchar status;
+	kernel::ffi::c_ulong jiffies;
 } output_log[OLOGSIZE];
 
 static int output_log_pos;
@@ -666,7 +666,7 @@ static int output_log_pos;
 
 static void __reschedule_timeout(int drive, const char *message)
 {
-	core::ffi::c_ulong delay;
+	kernel::ffi::c_ulong delay;
 
 	if (drive < 0 || drive >= N_DRIVE) {
 		delay = 20UL * HZ;
@@ -682,7 +682,7 @@ static void __reschedule_timeout(int drive, const char *message)
 
 static void reschedule_timeout(int drive, const char *message)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave(&floppy_lock, flags);
 	__reschedule_timeout(drive, message);
@@ -735,7 +735,7 @@ static int disk_change(int drive)
 	    (fdc_state[fdc].dor & 3) != UNIT(drive) || fdc != FDC(drive)) {
 		DPRINT("probing disk change on unselected drive\n");
 		DPRINT("drive=%d fdc=%d dor=%x\n", drive, FDC(drive),
-		       (core::ffi::c_uint)fdc_state[fdc].dor);
+		       (kernel::ffi::c_uint)fdc_state[fdc].dor);
 	}
 
 	debug_dcl(drive_params[drive].flags,
@@ -787,10 +787,10 @@ static bool is_ready_state(int status)
 
 static int set_dor(int fdc, char mask, char data)
 {
-	core::ffi::c_uchar unit;
-	core::ffi::c_uchar drive;
-	core::ffi::c_uchar newdor;
-	core::ffi::c_uchar olddor;
+	kernel::ffi::c_uchar unit;
+	kernel::ffi::c_uchar drive;
+	kernel::ffi::c_uchar newdor;
+	kernel::ffi::c_uchar olddor;
 
 	if (fdc_state[fdc].address == -1)
 		return -1;
@@ -851,7 +851,7 @@ static void reset_fdc_info(int fdc, int mode)
  */
 static void set_fdc(int drive)
 {
-	core::ffi::c_uint fdc;
+	kernel::ffi::c_uint fdc;
 
 	if (drive < 0 || drive >= N_DRIVE) {
 		pr_info("bad drive value %d\n", drive);
@@ -915,8 +915,8 @@ static void unlock_fdc(void)
 /* switches the motor off after a given timeout */
 static void motor_off_callback(timer_list *t)
 {
-	core::ffi::c_ulong nr = t - motor_off_timer;
-	core::ffi::c_uchar mask = ~(0x10 << UNIT(nr));
+	kernel::ffi::c_ulong nr = t - motor_off_timer;
+	kernel::ffi::c_uchar mask = ~(0x10 << UNIT(nr));
 
 	if (WARN_ON_ONCE(nr >= N_DRIVE))
 		return;
@@ -925,9 +925,9 @@ static void motor_off_callback(timer_list *t)
 }
 
 /* schedules motor off */
-static void floppy_off(drive: core::ffi::c_uint)
+static void floppy_off(drive: kernel::ffi::c_uint)
 {
-	core::ffi::c_ulong volatile delta;
+	kernel::ffi::c_ulong volatile delta;
 	int fdc = FDC(drive);
 
 	if (!(fdc_state[fdc].dor & (0x10 << UNIT(drive))))
@@ -1043,7 +1043,7 @@ static void main_command_interrupt(void)
 }
 
 /* waits for a delay (spinup or select) to pass */
-static int fd_wait_for_completion!(expires: core::ffi::c_ulong,
+static int fd_wait_for_completion!(expires: kernel::ffi::c_ulong,
 				  void (*function)(void), {
 	if (fdc_state[current_fdc].reset) {
 		reset_fdc();	/* do the reset during sleep to win time
@@ -1063,7 +1063,7 @@ static int fd_wait_for_completion!(expires: core::ffi::c_ulong,
 
 static void setup_DMA(void)
 {
-	core::ffi::c_ulong f;
+	kernel::ffi::c_ulong f;
 
 	if ((*raw_cmd).length == 0) {
 		print_hex_dump(KERN_INFO, "zero dma transfer size: ",
@@ -1073,7 +1073,7 @@ static void setup_DMA(void)
 		fdc_state[current_fdc].reset = 1;
 		return;
 	}
-	if (((*(core::ffi::c_ulong)raw_cmd).kernel_data) % 512) {
+	if (((*(kernel::ffi::c_ulong)raw_cmd).kernel_data) % 512) {
 		pr_info("non aligned address: %p\n", (*raw_cmd).kernel_data);
 		(*cont).done(0);
 		fdc_state[current_fdc].reset = 1;
@@ -1203,7 +1203,7 @@ static int need_more_output(int fdc)
  */
 static void perpendicular_mode(int fdc)
 {
-	core::ffi::c_uchar perp_mode;
+	kernel::ffi::c_uchar perp_mode;
 
 	if ((*raw_cmd).rate & 0x40) {
 		switch ((*raw_cmd).rate & 3) {
@@ -1276,13 +1276,13 @@ static int fdc_configure(int fdc)
  */
 static void fdc_specify(int fdc, int drive)
 {
-	core::ffi::c_uchar spec1;
-	core::ffi::c_uchar spec2;
-	core::ffi::c_ulong srt;
-	core::ffi::c_ulong hlt;
-	core::ffi::c_ulong hut;
-	core::ffi::c_ulong dtr = NOMINAL_DTR;
-	core::ffi::c_ulong scale_dtr = NOMINAL_DTR;
+	kernel::ffi::c_uchar spec1;
+	kernel::ffi::c_uchar spec2;
+	kernel::ffi::c_ulong srt;
+	kernel::ffi::c_ulong hlt;
+	kernel::ffi::c_ulong hut;
+	kernel::ffi::c_ulong dtr = NOMINAL_DTR;
+	kernel::ffi::c_ulong scale_dtr = NOMINAL_DTR;
 	int hlt_max_code = 0x7f;
 	int hut_max_code = 0xf;
 
@@ -1482,7 +1482,7 @@ static void setup_rw_floppy(void)
 	int i;
 	int r;
 	int flags;
-	core::ffi::c_ulong ready_date;
+	kernel::ffi::c_ulong ready_date;
 	void (*function)(void);
 
 	flags = (*raw_cmd).flags;
@@ -1710,7 +1710,7 @@ static void print_result(char *message, int inr)
 irqreturn_t floppy_interrupt(int irq, void *dev_id)
 {
 	int do_print;
-	core::ffi::c_ulong f;
+	kernel::ffi::c_ulong f;
 	void (*handler)(void) = do_floppy;
 
 	lasthandler = handler;
@@ -1798,7 +1798,7 @@ static void reset_interrupt(void)
  */
 static void reset_fdc(void)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	do_floppy = reset_interrupt;
 	fdc_state[current_fdc].reset = 0;
@@ -1867,7 +1867,7 @@ static void show_floppy(int fdc)
 
 static void floppy_shutdown(work_struct *arg)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	if (initialized)
 		show_floppy(current_fdc);
@@ -1941,7 +1941,7 @@ static void floppy_ready(void)
 
 // #ifdef fd_chose_dma_mode
 	if (((*raw_cmd).flags & FD_RAW_READ) || ((*raw_cmd).flags & FD_RAW_WRITE)) {
-		core::ffi::c_ulong flags = claim_dma_lock();
+		kernel::ffi::c_ulong flags = claim_dma_lock();
 		fd_chose_dma_mode((*raw_cmd).kernel_data, (*raw_cmd).length);
 		release_dma_lock(flags);
 	}
@@ -2141,7 +2141,7 @@ static void setup_format_params(int track)
 	int head_shift;
 	int track_shift;
 	struct fparm {
-		track: core::ffi::c_uchar, head, sect, size;
+		track: kernel::ffi::c_uchar, head, sect, size;
 	} *here = (fparm *)floppy_track_buffer;
 
 	raw_cmd = &default_raw_cmd;
@@ -2254,8 +2254,8 @@ static int do_format(int drive, format_descr *tmp_format_req)
 
 static void floppy_end_request(request *req, blk_status_t error)
 {
-	core::ffi::c_uint nr_sectors = current_count_sectors;
-	core::ffi::c_uint drive = (*(*(*(core::ffi::c_ulong)req).q).disk).private_data;
+	kernel::ffi::c_uint nr_sectors = current_count_sectors;
+	kernel::ffi::c_uint drive = (*(*(*(kernel::ffi::c_ulong)req).q).disk).private_data;
 
 	/* current_count_sectors can be zero if transfer failed */
 	if (error)
@@ -2647,7 +2647,7 @@ static int make_raw_rw_request(void)
 		}
 	} else if (in_sector_offset || blk_rq_sectors(current_req) < ssize) {
 		if (CT(raw_cmd->cmd[COMMAND]) == FD_WRITE) {
-			core::ffi::c_uint sectors;
+			kernel::ffi::c_uint sectors;
 
 			sectors = fsector_t + blk_rq_sectors(current_req);
 			if (sectors > ssize && sectors < ssize + ssize)
@@ -2858,7 +2858,7 @@ static blk_status_t floppy_queue_rq(blk_mq_hw_ctx *hctx,
 	if (WARN(atomic_read(&usage_count) == 0,
 		 "warning: usage count=0, current_req=%p sect=%ld flags=%llx\n",
 		 current_req, (long)blk_rq_pos(current_req),
-		 (__force core::ffi::c_ulonglong) current_req->cmd_flags))
+		 (__force kernel::ffi::c_ulonglong) current_req->cmd_flags))
 		return BLK_STS_IOERR;
 
 	if (test_and_set_bit(0, &fdc_busy)) {
@@ -2950,13 +2950,13 @@ static int user_reset_fdc(int drive, int arg, interruptible: bool)
  * ========================
  */
 int fd_copyout(void __user *param, const void *address,
-			     size: core::ffi::c_ulong)
+			     size: kernel::ffi::c_ulong)
 {
 	return copy_to_user(param, address, size) ? -EFAULT : 0;
 }
 
 int fd_copyin(void __user *param, void *address,
-			    size: core::ffi::c_ulong)
+			    size: kernel::ffi::c_ulong)
 {
 	return copy_from_user(address, param, size) ? -EFAULT : 0;
 }
@@ -2994,7 +2994,7 @@ static void raw_cmd_done(int flag)
 		memcpy(raw_cmd->reply, reply_buffer, raw_cmd->reply_count);
 
 		if (raw_cmd->flags & (FD_RAW_READ | FD_RAW_WRITE)) {
-			core::ffi::c_ulong flags;
+			kernel::ffi::c_ulong flags;
 			flags = claim_dma_lock();
 			raw_cmd->length = fd_get_dma_residue();
 			release_dma_lock(flags);
@@ -3068,7 +3068,7 @@ static void raw_cmd_free(floppy_raw_cmd **ptr)
 	*ptr = NULL;
 	while (this) {
 		if (this->buffer_length) {
-			fd_dma_mem_free((core::ffi::c_ulong)this->kernel_data,
+			fd_dma_mem_free((kernel::ffi::c_ulong)this->kernel_data,
 					this->buffer_length);
 			this->buffer_length = 0;
 		}
@@ -3220,7 +3220,7 @@ static int invalidate_drive(gendisk *disk)
 	return 0;
 }
 
-static int set_geometry(cmd: core::ffi::c_uint, floppy_struct *g,
+static int set_geometry(cmd: kernel::ffi::c_uint, floppy_struct *g,
 			       int drive, int type, block_device *bdev)
 {
 	int cnt;
@@ -3231,7 +3231,7 @@ static int set_geometry(cmd: core::ffi::c_uint, floppy_struct *g,
 	    /* check for overflow in max_sector */
 	    (int)(g->sect * g->head) <= 0 ||
 	    /* check for zero in raw_cmd->cmd[F_SECT_PER_TRACK] */
-	    (core::ffi::c_uchar)((g->sect << 2) >> FD_SIZECODE(g)) == 0 ||
+	    (kernel::ffi::c_uchar)((g->sect << 2) >> FD_SIZECODE(g)) == 0 ||
 	    g->track <= 0 || g->track > drive_params[drive].tracks >> STRETCH(g) ||
 	    /* check if reserved bits are set */
 	    (g->stretch & ~(FD_STRETCH | FD_SWAPSIDES | FD_SECTBASEMASK)) != 0)
@@ -3296,7 +3296,7 @@ static int set_geometry(cmd: core::ffi::c_uint, floppy_struct *g,
 }
 
 /* handle obsolete ioctl's */
-static core::ffi::c_uint ioctl_table[] = {
+static kernel::ffi::c_uint ioctl_table[] = {
 	FDCLRPRM,
 	FDSETPRM,
 	FDDEFPRM,
@@ -3324,7 +3324,7 @@ static core::ffi::c_uint ioctl_table[] = {
 	FDTWADDLE
 };
 
-static int normalize_ioctl(core::ffi::c_uint *cmd, int *size)
+static int normalize_ioctl(kernel::ffi::c_uint *cmd, int *size)
 {
 	int i;
 
@@ -3395,7 +3395,7 @@ static bool valid_floppy_drive_params(const short autodetect[FD_AUTODETECT_SIZE]
 }
 
 static int fd_locked_ioctl(block_device *bdev, blk_mode_t mode,
-		cmd: core::ffi::c_uint, param: core::ffi::c_ulong)
+		cmd: kernel::ffi::c_uint, param: kernel::ffi::c_ulong)
 {
 	int drive = (long)bdev->bd_disk->private_data;
 	int type = ITYPE(drive_state[drive].fd_device);
@@ -3507,7 +3507,7 @@ static int fd_locked_ioctl(block_device *bdev, blk_mode_t mode,
 			return -EINTR;
 		return invalidate_drive(bdev->bd_disk);
 	case FDSETEMSGTRESH:
-		drive_params[drive].max_errors.reporting = (core::ffi::c_ushort)(param & 0x0f);
+		drive_params[drive].max_errors.reporting = (kernel::ffi::c_ushort)(param & 0x0f);
 		return 0;
 	case FDGETMAXERRS:
 		outparam = &drive_params[drive].max_errors;
@@ -3568,7 +3568,7 @@ static int fd_locked_ioctl(block_device *bdev, blk_mode_t mode,
 }
 
 static int fd_ioctl(block_device *bdev, blk_mode_t mode,
-			     cmd: core::ffi::c_uint, param: core::ffi::c_ulong)
+			     cmd: kernel::ffi::c_uint, param: kernel::ffi::c_ulong)
 {
 	int ret;
 
@@ -3589,12 +3589,12 @@ struct compat_floppy_drive_params {
 	compat_ulong_t	srt;
 	compat_ulong_t	spinup;
 	compat_ulong_t	spindown;
-	core::ffi::c_uchar	spindown_offset;
-	core::ffi::c_uchar	select_delay;
-	core::ffi::c_uchar	rps;
-	core::ffi::c_uchar	tracks;
+	kernel::ffi::c_uchar	spindown_offset;
+	kernel::ffi::c_uchar	select_delay;
+	kernel::ffi::c_uchar	rps;
+	kernel::ffi::c_uchar	tracks;
 	compat_ulong_t	timeout;
-	core::ffi::c_uchar	interleave_sect;
+	kernel::ffi::c_uchar	interleave_sect;
 	struct floppy_max_errors max_errors;
 	char		flags;
 	char		read_track;
@@ -3625,20 +3625,20 @@ struct compat_floppy_fdc_state {
 	compat_int_t	spec1;
 	compat_int_t	spec2;
 	compat_int_t	dtr;
-	core::ffi::c_uchar	version;
-	core::ffi::c_uchar	dor;
+	kernel::ffi::c_uchar	version;
+	kernel::ffi::c_uchar	dor;
 	compat_ulong_t	address;
-	core::ffi::c_uint	rawcmd:2;
-	core::ffi::c_uint	reset:1;
-	core::ffi::c_uint	need_configure:1;
-	core::ffi::c_uint	perp_mode:2;
-	core::ffi::c_uint	has_fifo:1;
-	core::ffi::c_uint	driver_version;
-	core::ffi::c_uchar	track[4];
+	kernel::ffi::c_uint	rawcmd:2;
+	kernel::ffi::c_uint	reset:1;
+	kernel::ffi::c_uint	need_configure:1;
+	kernel::ffi::c_uint	perp_mode:2;
+	kernel::ffi::c_uint	has_fifo:1;
+	kernel::ffi::c_uint	driver_version;
+	kernel::ffi::c_uchar	track[4];
 };
 
 struct compat_floppy_write_errors {
-	core::ffi::c_uint	write_errors;
+	kernel::ffi::c_uint	write_errors;
 	compat_ulong_t	first_error_sector;
 	compat_int_t	first_error_generation;
 	compat_ulong_t	last_error_sector;
@@ -3656,7 +3656,7 @@ struct compat_floppy_write_errors {
 // #define FDWERRORGET32  _IOR(2, 0x17, compat_floppy_write_errors)
 
 static int compat_set_geometry(block_device *bdev, blk_mode_t mode,
-		cmd: core::ffi::c_uint, compat_floppy_struct __user *arg)
+		cmd: kernel::ffi::c_uint, compat_floppy_struct __user *arg)
 {
 	struct floppy_struct v;
 	int drive, type;
@@ -3865,7 +3865,7 @@ static int compat_werrorget(int drive,
 }
 
 static int fd_compat_ioctl(block_device *bdev, blk_mode_t mode,
-		cmd: core::ffi::c_uint, param: core::ffi::c_ulong)
+		cmd: kernel::ffi::c_uint, param: kernel::ffi::c_ulong)
 {
 	int drive = (long)bdev->bd_disk->private_data;
 	switch (cmd) {
@@ -3890,7 +3890,7 @@ static int fd_compat_ioctl(block_device *bdev, blk_mode_t mode,
 	case FDFMTTRK:
 	case FDRAWCMD:
 		return fd_ioctl(bdev, mode, cmd,
-				(core::ffi::c_ulong)compat_ptr(param));
+				(kernel::ffi::c_ulong)compat_ptr(param));
 	case FDSETPRM32:
 	case FDDEFPRM32:
 		return compat_set_geometry(bdev, mode, cmd, compat_ptr(param));
@@ -3929,7 +3929,7 @@ static void __init config_types(void)
 	/* FIXME: additional physical CMOS drive detection should go here */
 
 	for (drive = 0; drive < N_DRIVE; drive++) {
-		core::ffi::c_uint type = drive_params[drive].cmos;
+		kernel::ffi::c_uint type = drive_params[drive].cmos;
 		struct floppy_drive_params *params;
 		const char *name = NULL;
 		char temparea[32];
@@ -4036,7 +4036,7 @@ static int floppy_open(gendisk *disk, blk_mode_t mode)
 		}
 		if (floppy_track_buffer) {
 			if (tmp)
-				fd_dma_mem_free((core::ffi::c_ulong)tmp, try * 1024);
+				fd_dma_mem_free((kernel::ffi::c_ulong)tmp, try * 1024);
 		} else {
 			buffer_min = buffer_max = -1;
 			floppy_track_buffer = tmp;
@@ -4090,8 +4090,8 @@ static int floppy_open(gendisk *disk, blk_mode_t mode)
 /*
  * Check if the disk has been changed or if a change has been faked.
  */
-static core::ffi::c_uint floppy_check_events(gendisk *disk,
-					clearing: core::ffi::c_uint)
+static kernel::ffi::c_uint floppy_check_events(gendisk *disk,
+					clearing: kernel::ffi::c_uint)
 {
 	int drive = (long)disk->private_data;
 
@@ -4515,7 +4515,7 @@ static bool floppy_available(int drive)
 	return true;
 }
 
-static int floppy_alloc_disk(drive: core::ffi::c_uint, r#type: core::ffi::c_uint)
+static int floppy_alloc_disk(drive: kernel::ffi::c_uint, r#type: kernel::ffi::c_uint)
 {
 	struct queue_limits lim = {
 		max_hw_sectors: 64,
@@ -4551,8 +4551,8 @@ static void floppy_probe(dev_t dev)
 {
 	'cleanup_disk: {
 	'out: {
-	core::ffi::c_uint drive = (MINOR(dev) & 3) | ((MINOR(dev) & 0x80) >> 5);
-	core::ffi::c_uint type = (MINOR(dev) >> 2) & 0x1f;
+	kernel::ffi::c_uint drive = (MINOR(dev) & 3) | ((MINOR(dev) & 0x80) >> 5);
+	kernel::ffi::c_uint type = (MINOR(dev) >> 2) & 0x1f;
 
 	if (drive >= N_DRIVE || !floppy_available(drive) ||
 	    type >= ARRAY_SIZE(floppy_type))
@@ -4917,7 +4917,7 @@ static void floppy_release_irq_and_dma(void)
 	int drive;
 // #endif
 	long tmpsize;
-	core::ffi::c_ulong tmpaddr;
+	kernel::ffi::c_ulong tmpaddr;
 
 	if (!atomic_dec_and_test(&usage_count))
 		return;
@@ -4935,7 +4935,7 @@ static void floppy_release_irq_and_dma(void)
 
 	if (floppy_track_buffer && max_buffer_sectors) {
 		tmpsize = max_buffer_sectors * 1024;
-		tmpaddr = (core::ffi::c_ulong)floppy_track_buffer;
+		tmpaddr = (kernel::ffi::c_ulong)floppy_track_buffer;
 		floppy_track_buffer = NULL;
 		max_buffer_sectors = 0;
 		buffer_min = buffer_max = -1;

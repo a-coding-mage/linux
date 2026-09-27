@@ -14,9 +14,9 @@ pub struct kmem_cache {
 }
 
 extern "C" {
-    fn kasan_reset_tag(addr: *const core::ffi::c_void) -> *const core::ffi::c_void;
-    fn hw_get_mem_tag(addr: *mut core::ffi::c_void) -> u8;
-    fn pr_err(format: *const core::ffi::c_char, ...);
+    fn kasan_reset_tag(addr: *const kernel::ffi::c_void) -> *const kernel::ffi::c_void;
+    fn hw_get_mem_tag(addr: *mut kernel::ffi::c_void) -> u8;
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
 }
 
 extern "C" {
@@ -26,9 +26,9 @@ extern "C" {
 }
 
 pub unsafe fn kasan_find_first_bad_addr(
-    addr: *const core::ffi::c_void,
+    addr: *const kernel::ffi::c_void,
     _size: usize,
-) -> *const core::ffi::c_void {
+) -> *const kernel::ffi::c_void {
     /*
      * Hardware Tag-Based KASAN only calls this function for normal memory
      * accesses, and thus addr points precisely to the first bad address
@@ -39,7 +39,7 @@ pub unsafe fn kasan_find_first_bad_addr(
     kasan_reset_tag(addr)
 }
 
-pub unsafe fn kasan_get_alloc_size(object: *mut core::ffi::c_void, cache: *const kmem_cache) -> usize {
+pub unsafe fn kasan_get_alloc_size(object: *mut kernel::ffi::c_void, cache: *const kmem_cache) -> usize {
     let mut size: usize = 0;
     let mut i: i32 = 0;
     let mut memory_tag: u8;
@@ -66,25 +66,25 @@ pub unsafe fn kasan_get_alloc_size(object: *mut core::ffi::c_void, cache: *const
     (*cache).object_size
 }
 
-pub unsafe fn kasan_metadata_fetch_row(buffer: *mut core::ffi::c_char, row: *mut core::ffi::c_void) {
+pub unsafe fn kasan_metadata_fetch_row(buffer: *mut kernel::ffi::c_char, row: *mut kernel::ffi::c_void) {
     let mut i: i32;
 
     i = 0;
     while i < META_BYTES_PER_ROW {
         *buffer.add(i as usize) = hw_get_mem_tag(
             row.add((i as usize).wrapping_mul(KASAN_GRANULE_SIZE)),
-        ) as core::ffi::c_char;
+        ) as kernel::ffi::c_char;
         i += 1;
     }
 }
 
-pub unsafe fn kasan_print_tags(addr_tag: u8, addr: *const core::ffi::c_void) {
-    let memory_tag: u8 = hw_get_mem_tag(addr as *mut core::ffi::c_void);
+pub unsafe fn kasan_print_tags(addr_tag: u8, addr: *const kernel::ffi::c_void) {
+    let memory_tag: u8 = hw_get_mem_tag(addr as *mut kernel::ffi::c_void);
 
     pr_err(
-        b"Pointer tag: [%02x], memory tag: [%02x]\n\0".as_ptr() as *const core::ffi::c_char,
-        addr_tag as core::ffi::c_int,
-        memory_tag as core::ffi::c_int,
+        b"Pointer tag: [%02x], memory tag: [%02x]\n\0".as_ptr() as *const kernel::ffi::c_char,
+        addr_tag as kernel::ffi::c_int,
+        memory_tag as kernel::ffi::c_int,
     );
 }
 

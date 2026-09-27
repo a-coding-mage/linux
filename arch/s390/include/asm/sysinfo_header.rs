@@ -1,20 +1,20 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /* Rust translation of s390/include/asm/sysinfo.h. */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* External kernel-provided types and functions are supplied by other units. */
 extern "C" {
-    pub static mut topology_max_mnest: core::ffi::c_int;
-    pub fn register_service_level(level: *mut service_level) -> core::ffi::c_int;
-    pub fn unregister_service_level(level: *mut service_level) -> core::ffi::c_int;
-    pub fn sthyi_fill(dst: *mut c_void, rc: *mut u64) -> core::ffi::c_int;
+    pub static mut topology_max_mnest: kernel::ffi::c_int;
+    pub fn register_service_level(level: *mut service_level) -> kernel::ffi::c_int;
+    pub fn unregister_service_level(level: *mut service_level) -> kernel::ffi::c_int;
+    pub fn sthyi_fill(dst: *mut c_void, rc: *mut u64) -> kernel::ffi::c_int;
 }
 
 /* stsi is implemented by the s390 inline assembly in the original header. */
 #[inline]
-pub unsafe fn stsi(sysinfo: *mut c_void, fc: core::ffi::c_int,
-                   sel1: core::ffi::c_int, sel2: core::ffi::c_int) -> core::ffi::c_int {
+pub unsafe fn stsi(sysinfo: *mut c_void, fc: kernel::ffi::c_int,
+                   sel1: kernel::ffi::c_int, sel2: kernel::ffi::c_int) -> kernel::ffi::c_int {
     let _ = (sysinfo, fc, sel1, sel2);
     /* The CC_IPM/CC_OUT/CC_CLOBBER_LIST kernel assembly interface is external. */
     unimplemented!("s390 stsi inline assembly")
@@ -27,7 +27,7 @@ pub struct sysinfo_1_1_1 {
     pub ccr: u8,
     pub cai: u8,
     pub reserved_0: [i8; 20],
-    pub lic: core::ffi::c_ulong,
+    pub lic: kernel::ffi::c_ulong,
     pub manufacturer: [i8; 16],
     pub type_: [i8; 4],
     pub reserved_1: [i8; 12],
@@ -95,7 +95,7 @@ pub struct sysinfo_3_2_2 {
 
 #[inline] pub unsafe fn topology_mnest_limit() -> u8 { core::cmp::min(topology_max_mnest as u8, 4) }
 pub const TOPOLOGY_NR_MAG: usize = 6;
-#[repr(C)] pub struct topology_core { pub nl: u8, pub reserved0: [u8; 3], pub flags: u8, pub reserved1: u8, pub origin: u16, pub mask: core::ffi::c_ulong }
+#[repr(C)] pub struct topology_core { pub nl: u8, pub reserved0: [u8; 3], pub flags: u8, pub reserved1: u8, pub origin: u16, pub mask: kernel::ffi::c_ulong }
 #[repr(C)] pub struct topology_container { pub nl: u8, pub reserved: [u8; 6], pub id: u8 }
 #[repr(C)] pub union topology_entry { pub nl: u8, pub cpu: topology_core, pub container: topology_container }
 #[repr(C)] pub struct sysinfo_15_1_x { pub reserved0: [u8; 2], pub length: u16, pub mag: [u8; TOPOLOGY_NR_MAG], pub reserved1: u8, pub mnest: u8, pub reserved2: [u8; 4], pub tle: [topology_entry; 0] }

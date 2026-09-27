@@ -9,17 +9,17 @@
 #[cfg(feature = "config_da_mon_events_implicit")]
 #[repr(C)]
 pub struct EventDaMonitor {
-    pub state: *mut core::ffi::c_char,
-    pub event: *mut core::ffi::c_char,
-    pub next_state: *mut core::ffi::c_char,
+    pub state: *mut kernel::ffi::c_char,
+    pub event: *mut kernel::ffi::c_char,
+    pub next_state: *mut kernel::ffi::c_char,
     pub final_state: bool,
 }
 
 #[cfg(feature = "config_da_mon_events_implicit")]
 #[repr(C)]
 pub struct ErrorDaMonitor {
-    pub state: *mut core::ffi::c_char,
-    pub event: *mut core::ffi::c_char,
+    pub state: *mut kernel::ffi::c_char,
+    pub event: *mut kernel::ffi::c_char,
 }
 
 // Original monitor declarations:
@@ -30,9 +30,9 @@ pub struct ErrorDaMonitor {
 #[cfg(feature = "config_ha_mon_events_implicit")]
 #[repr(C)]
 pub struct ErrorEnvDaMonitor {
-    pub state: *mut core::ffi::c_char,
-    pub event: *mut core::ffi::c_char,
-    pub env: *mut core::ffi::c_char,
+    pub state: *mut kernel::ffi::c_char,
+    pub event: *mut kernel::ffi::c_char,
+    pub env: *mut kernel::ffi::c_char,
 }
 
 // Original monitor declaration: <monitors/opid/opid_trace.h>
@@ -41,9 +41,9 @@ pub struct ErrorEnvDaMonitor {
 #[repr(C)]
 pub struct EventDaMonitorId {
     pub id: i32,
-    pub state: *mut core::ffi::c_char,
-    pub event: *mut core::ffi::c_char,
-    pub next_state: *mut core::ffi::c_char,
+    pub state: *mut kernel::ffi::c_char,
+    pub event: *mut kernel::ffi::c_char,
+    pub next_state: *mut kernel::ffi::c_char,
     pub final_state: bool,
 }
 
@@ -51,8 +51,8 @@ pub struct EventDaMonitorId {
 #[repr(C)]
 pub struct ErrorDaMonitorId {
     pub id: i32,
-    pub state: *mut core::ffi::c_char,
-    pub event: *mut core::ffi::c_char,
+    pub state: *mut kernel::ffi::c_char,
+    pub event: *mut kernel::ffi::c_char,
 }
 
 // Original monitor declarations:
@@ -63,9 +63,9 @@ pub struct ErrorDaMonitorId {
 #[repr(C)]
 pub struct ErrorEnvDaMonitorId {
     pub id: i32,
-    pub state: *mut core::ffi::c_char,
-    pub event: *mut core::ffi::c_char,
-    pub env: *mut core::ffi::c_char,
+    pub state: *mut kernel::ffi::c_char,
+    pub event: *mut kernel::ffi::c_char,
+    pub env: *mut kernel::ffi::c_char,
 }
 
 // Original monitor declarations:
@@ -75,18 +75,18 @@ pub struct ErrorEnvDaMonitorId {
 #[repr(C)]
 pub struct EventLtlMonitorId {
     // task->comm and task->pid are copied by the original TP_fast_assign.
-    pub comm: *mut core::ffi::c_char,
+    pub comm: *mut kernel::ffi::c_char,
     pub pid: i32,
-    pub states: *mut core::ffi::c_char,
-    pub atoms: *mut core::ffi::c_char,
-    pub next: *mut core::ffi::c_char,
+    pub states: *mut kernel::ffi::c_char,
+    pub atoms: *mut kernel::ffi::c_char,
+    pub next: *mut kernel::ffi::c_char,
 }
 
 #[cfg(feature = "config_ltl_mon_events_id")]
 #[repr(C)]
 pub struct ErrorLtlMonitorId {
     // task->comm and task->pid are copied by the original TP_fast_assign.
-    pub comm: *mut core::ffi::c_char,
+    pub comm: *mut kernel::ffi::c_char,
     pub pid: i32,
 }
 
@@ -97,8 +97,8 @@ pub struct ErrorLtlMonitorId {
 #[cfg(feature = "config_rv_monitor_maintenance_events")]
 #[repr(C)]
 pub struct RvRetriesError {
-    pub name: *mut core::ffi::c_char,
-    pub event: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
+    pub event: *mut kernel::ffi::c_char,
 }
 
 #[cfg(feature = "config_rv_monitor_maintenance_events")]
@@ -106,8 +106,8 @@ extern "C" {
     /// Tracepoint: MAX_DA_RETRY_RACING_EVENTS retries reached for an event,
     /// resetting monitor. The tracepoint implementation is external.
     pub fn trace_rv_retries_error(
-        name: *mut core::ffi::c_char,
-        event: *mut core::ffi::c_char,
+        name: *mut kernel::ffi::c_char,
+        event: *mut kernel::ffi::c_char,
     );
 }
 

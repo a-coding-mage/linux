@@ -54,9 +54,9 @@ pub struct compat_xfs_fsop_bulkreq {
     pub ocount: compat_uptr_t,
 }
 
-pub const XFS_IOC_FSBULKSTAT_32: _ = _IOWR('X' as u32, 101, compat_xfs_fsop_bulkreq);
-pub const XFS_IOC_FSBULKSTAT_SINGLE_32: _ = _IOWR('X' as u32, 102, compat_xfs_fsop_bulkreq);
-pub const XFS_IOC_FSINUMBERS_32: _ = _IOWR('X' as u32, 103, compat_xfs_fsop_bulkreq);
+pub const XFS_IOC_FSBULKSTAT_32: u32 = _IOWR('X' as u32, 101, compat_xfs_fsop_bulkreq);
+pub const XFS_IOC_FSBULKSTAT_SINGLE_32: u32 = _IOWR('X' as u32, 102, compat_xfs_fsop_bulkreq);
+pub const XFS_IOC_FSINUMBERS_32: u32 = _IOWR('X' as u32, 103, compat_xfs_fsop_bulkreq);
 
 #[repr(C)]
 pub struct compat_xfs_fsop_handlereq {
@@ -70,11 +70,11 @@ pub struct compat_xfs_fsop_handlereq {
 }
 pub type compat_xfs_fsop_handlereq_t = compat_xfs_fsop_handlereq;
 
-pub const XFS_IOC_PATH_TO_FSHANDLE_32: _ = _IOWR('X' as u32, 104, compat_xfs_fsop_handlereq);
-pub const XFS_IOC_PATH_TO_HANDLE_32: _ = _IOWR('X' as u32, 105, compat_xfs_fsop_handlereq);
-pub const XFS_IOC_FD_TO_HANDLE_32: _ = _IOWR('X' as u32, 106, compat_xfs_fsop_handlereq);
-pub const XFS_IOC_OPEN_BY_HANDLE_32: _ = _IOWR('X' as u32, 107, compat_xfs_fsop_handlereq);
-pub const XFS_IOC_READLINK_BY_HANDLE_32: _ = _IOWR('X' as u32, 108, compat_xfs_fsop_handlereq);
+pub const XFS_IOC_PATH_TO_FSHANDLE_32: u32 = _IOWR('X' as u32, 104, compat_xfs_fsop_handlereq);
+pub const XFS_IOC_PATH_TO_HANDLE_32: u32 = _IOWR('X' as u32, 105, compat_xfs_fsop_handlereq);
+pub const XFS_IOC_FD_TO_HANDLE_32: u32 = _IOWR('X' as u32, 106, compat_xfs_fsop_handlereq);
+pub const XFS_IOC_OPEN_BY_HANDLE_32: u32 = _IOWR('X' as u32, 107, compat_xfs_fsop_handlereq);
+pub const XFS_IOC_READLINK_BY_HANDLE_32: u32 = _IOWR('X' as u32, 108, compat_xfs_fsop_handlereq);
 
 #[repr(C, packed)]
 pub struct compat_xfs_swapext {
@@ -83,11 +83,11 @@ pub struct compat_xfs_swapext {
     pub sx_fdtmp: i64,
     pub sx_offset: xfs_off_t,
     pub sx_length: xfs_off_t,
-    pub sx_pad: [core::ffi::c_char; 16],
+    pub sx_pad: [kernel::ffi::c_char; 16],
     pub sx_stat: compat_xfs_bstat,
 }
 
-pub const XFS_IOC_SWAPEXT_32: _ = _IOWR('X' as u32, 109, compat_xfs_swapext);
+pub const XFS_IOC_SWAPEXT_32: u32 = _IOWR('X' as u32, 109, compat_xfs_swapext);
 
 #[repr(C, packed)]
 pub struct compat_xfs_fsop_attrlist_handlereq {
@@ -99,7 +99,7 @@ pub struct compat_xfs_fsop_attrlist_handlereq {
 }
 pub type compat_xfs_fsop_attrlist_handlereq_t = compat_xfs_fsop_attrlist_handlereq;
 
-pub const XFS_IOC_ATTRLIST_BY_HANDLE_32: _ = _IOW('X' as u32, 122, compat_xfs_fsop_attrlist_handlereq);
+pub const XFS_IOC_ATTRLIST_BY_HANDLE_32: u32 = _IOW('X' as u32, 122, compat_xfs_fsop_attrlist_handlereq);
 
 #[repr(C)]
 pub struct compat_xfs_attr_multiop {
@@ -120,7 +120,7 @@ pub struct compat_xfs_fsop_attrmulti_handlereq {
 }
 pub type compat_xfs_fsop_attrmulti_handlereq_t = compat_xfs_fsop_attrmulti_handlereq;
 
-pub const XFS_IOC_ATTRMULTI_BY_HANDLE_32: _ = _IOW('X' as u32, 123, compat_xfs_fsop_attrmulti_handlereq);
+pub const XFS_IOC_ATTRMULTI_BY_HANDLE_32: u32 = _IOW('X' as u32, 123, compat_xfs_fsop_attrmulti_handlereq);
 
 #[cfg(target_arch = "x86_64")]
 #[repr(C, packed)]
@@ -135,7 +135,7 @@ pub struct compat_xfs_fsop_geom_v1 {
 pub type compat_xfs_fsop_geom_v1_t = compat_xfs_fsop_geom_v1;
 
 #[cfg(target_arch = "x86_64")]
-pub const XFS_IOC_FSGEOMETRY_V1_32: _ = _IOR('X' as u32, 100, compat_xfs_fsop_geom_v1);
+pub const XFS_IOC_FSGEOMETRY_V1_32: u32 = _IOR('X' as u32, 100, compat_xfs_fsop_geom_v1);
 
 #[cfg(target_arch = "x86_64")]
 #[repr(C, packed)]
@@ -164,8 +164,8 @@ pub struct compat_xfs_growfs_rt {
 pub type compat_xfs_growfs_rt_t = compat_xfs_growfs_rt;
 
 #[cfg(target_arch = "x86_64")]
-pub const XFS_IOC_FSGROWFSDATA_32: _ = _IOW('X' as u32, 110, compat_xfs_growfs_data);
+pub const XFS_IOC_FSGROWFSDATA_32: u32 = _IOW('X' as u32, 110, compat_xfs_growfs_data);
 #[cfg(target_arch = "x86_64")]
-pub const XFS_IOC_FSGROWFSRT_32: _ = _IOW('X' as u32, 112, compat_xfs_growfs_rt);
+pub const XFS_IOC_FSGROWFSRT_32: u32 = _IOW('X' as u32, 112, compat_xfs_growfs_rt);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

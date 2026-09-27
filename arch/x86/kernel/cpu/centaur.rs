@@ -4,9 +4,9 @@
 // asm/cpufeature.h, asm/cpuid/api.h, asm/e820/api.h, asm/mtrr.h, asm/msr.h,
 // "cpu.h".
 
-use core::ffi::c_uint;
+use kernel::ffi::c_uint;
 #[cfg(CONFIG_X86_32)]
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 const ACE_PRESENT: u32 = 1 << 6;
 const ACE_ENABLED: u32 = 1 << 7;
@@ -141,11 +141,11 @@ unsafe fn init_winchip(c: *mut cpuinfo_x86) {
     let newlo: u32 = (lo | fcr_set) & !fcr_clr;
 
     if newlo != lo {
-        pr_info!("Centaur FCR was 0x{:X} now 0x{:X}\n", lo, newlo);
+        pr_info!("Centaur FCR was 0x%X now 0x%X\n", lo, newlo);
         val = (val & !0xffff_ffff) | newlo as u64;
         wrmsrq(MSR_IDT_FCR1, val);
     } else {
-        pr_info!("Centaur FCR is 0x{:X}\n", lo);
+        pr_info!("Centaur FCR is 0x%X\n", lo);
     }
     /* Emulate MTRRs using Centaur's MCR. */
     set_cpu_cap(c, X86_FEATURE_CENTAUR_MCR);

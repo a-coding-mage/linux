@@ -44,7 +44,7 @@ unsafe fn lite5200_fix_clock_config() {
     } else {
         out_be16(core::ptr::addr_of_mut!((*cdm).fd_counters), 0x5555);
     }
-    iounmap(cdm as *mut core::ffi::c_void);
+    iounmap(cdm as *mut kernel::ffi::c_void);
 }
 
 unsafe fn lite5200_fix_port_config() {
@@ -69,7 +69,7 @@ unsafe fn lite5200_fix_port_config() {
 
     pr_debug!("port_config: old:%x new:%x\n", in_be32(core::ptr::addr_of!((*gpio).port_config)), port_config);
     out_be32(core::ptr::addr_of_mut!((*gpio).port_config), port_config);
-    iounmap(gpio as *mut core::ffi::c_void);
+    iounmap(gpio as *mut kernel::ffi::c_void);
 }
 
 #[cfg(CONFIG_PM)]
@@ -103,7 +103,7 @@ unsafe fn lite5200_setup_arch() {
     }
 }
 
-static board: [*const core::ffi::c_char; 3] = [c"fsl,lite5200".as_ptr(), c"fsl,lite5200b".as_ptr(), core::ptr::null()];
+static board: [*const kernel::ffi::c_char; 3] = [c"fsl,lite5200".as_ptr(), c"fsl,lite5200b".as_ptr(), core::ptr::null()];
 
 define_machine!(lite5200 {
     name: c"lite5200".as_ptr(),

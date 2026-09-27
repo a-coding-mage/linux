@@ -9,7 +9,7 @@
 
 #[repr(C)]
 pub struct bcma_sflash_tbl_e {
-    pub name: *mut ::core::ffi::c_char,
+    pub name: *mut ::kernel::ffi::c_char,
     pub id: u32,
     pub blocksize: u32,
     pub numblocks: u16,
@@ -18,8 +18,8 @@ pub struct bcma_sflash_tbl_e {
 extern "C" {
     fn bcma_cc_write32(cc: *mut bcma_drv_cc, offset: u32, value: u32);
     fn bcma_cc_read32(cc: *mut bcma_drv_cc, offset: u32) -> u32;
-    fn bcma_err(bus: *mut bcma_bus, fmt: *const ::core::ffi::c_char, ...);
-    fn bcma_info(bus: *mut bcma_bus, fmt: *const ::core::ffi::c_char, ...);
+    fn bcma_err(bus: *mut bcma_bus, fmt: *const ::kernel::ffi::c_char, ...);
+    fn bcma_info(bus: *mut bcma_bus, fmt: *const ::kernel::ffi::c_char, ...);
     fn cpu_relax();
 }
 
@@ -50,7 +50,7 @@ pub struct bcma_bus {
 
 #[repr(C)]
 pub struct resource {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub start: u64,
     pub end: u64,
     pub flags: u64,
@@ -58,12 +58,12 @@ pub struct resource {
 
 #[repr(C)]
 pub struct device {
-    pub platform_data: *mut ::core::ffi::c_void,
+    pub platform_data: *mut ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct platform_device {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub resource: *mut resource,
     pub num_resources: u32,
     pub dev: device,

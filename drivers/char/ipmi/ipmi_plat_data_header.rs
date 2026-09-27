@@ -16,21 +16,21 @@ pub enum ipmi_plat_interface_type {
 #[repr(C)]
 pub struct ipmi_plat_data {
     pub iftype: ipmi_plat_interface_type,
-    pub r#type: ::core::ffi::c_uint, /* si_type for si, SI_INVALID for others */
-    pub space: ::core::ffi::c_uint, /* addr_space for si, intf# for ssif. */
-    pub addr: ::core::ffi::c_ulong,
-    pub regspacing: ::core::ffi::c_uint,
-    pub regsize: ::core::ffi::c_uint,
-    pub regshift: ::core::ffi::c_uint,
-    pub irq: ::core::ffi::c_uint,
-    pub slave_addr: ::core::ffi::c_uint,
+    pub r#type: ::kernel::ffi::c_uint, /* si_type for si, SI_INVALID for others */
+    pub space: ::kernel::ffi::c_uint, /* addr_space for si, intf# for ssif. */
+    pub addr: ::kernel::ffi::c_ulong,
+    pub regspacing: ::kernel::ffi::c_uint,
+    pub regsize: ::kernel::ffi::c_uint,
+    pub regshift: ::kernel::ffi::c_uint,
+    pub irq: ::kernel::ffi::c_uint,
+    pub slave_addr: ::kernel::ffi::c_uint,
     pub addr_source: ipmi_addr_src,
 }
 
 extern "C" {
     pub fn ipmi_platform_add(
-        name: *const ::core::ffi::c_char,
-        inst: ::core::ffi::c_uint,
+        name: *const ::kernel::ffi::c_char,
+        inst: ::kernel::ffi::c_uint,
         p: *mut ipmi_plat_data,
     ) -> *mut platform_device;
 }

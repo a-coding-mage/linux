@@ -9,7 +9,7 @@ pub const HCI_DEVCD_HDR_END_MARKER: &str = "--- Start dump ---\n";
 
 pub type CoredumpT = unsafe extern "C" fn(hdev: *mut HciDev);
 pub type DmpHdrT = unsafe extern "C" fn(hdev: *mut HciDev, skb: *mut SkBuff);
-pub type NotifyChangeT = unsafe extern "C" fn(hdev: *mut HciDev, state: ::core::ffi::c_int);
+pub type NotifyChangeT = unsafe extern "C" fn(hdev: *mut HciDev, state: ::kernel::ffi::c_int);
 
 /* struct hci_devcoredump - Devcoredump state
  *
@@ -34,11 +34,11 @@ pub type NotifyChangeT = unsafe extern "C" fn(hdev: *mut HciDev, state: ::core::
 pub struct HciDevcoredump {
     pub supported: bool,
     pub state: DevcoredumpState,
-    pub timeout: ::core::ffi::c_ulong,
+    pub timeout: ::kernel::ffi::c_ulong,
     pub alloc_size: usize,
-    pub head: *mut ::core::ffi::c_char,
-    pub tail: *mut ::core::ffi::c_char,
-    pub end: *mut ::core::ffi::c_char,
+    pub head: *mut ::kernel::ffi::c_char,
+    pub tail: *mut ::kernel::ffi::c_char,
+    pub end: *mut ::kernel::ffi::c_char,
     pub dump_q: SkBuffHead,
     pub dump_rx: WorkStruct,
     pub dump_timeout: DelayedWork,
@@ -59,7 +59,7 @@ pub enum DevcoredumpState {
 
 #[cfg(CONFIG_DEV_COREDUMP)]
 extern "C" {
-    pub fn hci_devcd_state_name(state: DevcoredumpState) -> *const ::core::ffi::c_char;
+    pub fn hci_devcd_state_name(state: DevcoredumpState) -> *const ::kernel::ffi::c_char;
     pub fn hci_devcd_reset(hdev: *mut HciDev);
     pub fn hci_devcd_rx(work: *mut WorkStruct);
     pub fn hci_devcd_timeout(work: *mut WorkStruct);
@@ -68,21 +68,21 @@ extern "C" {
         coredump: Option<CoredumpT>,
         dmp_hdr: Option<DmpHdrT>,
         notify_change: Option<NotifyChangeT>,
-    ) -> ::core::ffi::c_int;
-    pub fn hci_devcd_init(hdev: *mut HciDev, dump_size: u32) -> ::core::ffi::c_int;
-    pub fn hci_devcd_append(hdev: *mut HciDev, skb: *mut SkBuff) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn hci_devcd_init(hdev: *mut HciDev, dump_size: u32) -> ::kernel::ffi::c_int;
+    pub fn hci_devcd_append(hdev: *mut HciDev, skb: *mut SkBuff) -> ::kernel::ffi::c_int;
     pub fn hci_devcd_append_pattern(
         hdev: *mut HciDev,
         pattern: u8,
         len: u32,
-    ) -> ::core::ffi::c_int;
-    pub fn hci_devcd_complete(hdev: *mut HciDev) -> ::core::ffi::c_int;
-    pub fn hci_devcd_abort(hdev: *mut HciDev) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn hci_devcd_complete(hdev: *mut HciDev) -> ::kernel::ffi::c_int;
+    pub fn hci_devcd_abort(hdev: *mut HciDev) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_DEV_COREDUMP))]
-pub unsafe fn hci_devcd_state_name(_state: DevcoredumpState) -> *const ::core::ffi::c_char {
-    b"\0".as_ptr() as *const ::core::ffi::c_char
+pub unsafe fn hci_devcd_state_name(_state: DevcoredumpState) -> *const ::kernel::ffi::c_char {
+    b"\0".as_ptr() as *const ::kernel::ffi::c_char
 }
 
 #[cfg(not(CONFIG_DEV_COREDUMP))]
@@ -100,17 +100,17 @@ pub unsafe fn hci_devcd_register(
     _coredump: Option<CoredumpT>,
     _dmp_hdr: Option<DmpHdrT>,
     _notify_change: Option<NotifyChangeT>,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     -EOPNOTSUPP
 }
 
 #[cfg(not(CONFIG_DEV_COREDUMP))]
-pub unsafe fn hci_devcd_init(_hdev: *mut HciDev, _dump_size: u32) -> ::core::ffi::c_int {
+pub unsafe fn hci_devcd_init(_hdev: *mut HciDev, _dump_size: u32) -> ::kernel::ffi::c_int {
     -EOPNOTSUPP
 }
 
 #[cfg(not(CONFIG_DEV_COREDUMP))]
-pub unsafe fn hci_devcd_append(_hdev: *mut HciDev, _skb: *mut SkBuff) -> ::core::ffi::c_int {
+pub unsafe fn hci_devcd_append(_hdev: *mut HciDev, _skb: *mut SkBuff) -> ::kernel::ffi::c_int {
     -EOPNOTSUPP
 }
 
@@ -119,17 +119,17 @@ pub unsafe fn hci_devcd_append_pattern(
     _hdev: *mut HciDev,
     _pattern: u8,
     _len: u32,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     -EOPNOTSUPP
 }
 
 #[cfg(not(CONFIG_DEV_COREDUMP))]
-pub unsafe fn hci_devcd_complete(_hdev: *mut HciDev) -> ::core::ffi::c_int {
+pub unsafe fn hci_devcd_complete(_hdev: *mut HciDev) -> ::kernel::ffi::c_int {
     -EOPNOTSUPP
 }
 
 #[cfg(not(CONFIG_DEV_COREDUMP))]
-pub unsafe fn hci_devcd_abort(_hdev: *mut HciDev) -> ::core::ffi::c_int {
+pub unsafe fn hci_devcd_abort(_hdev: *mut HciDev) -> ::kernel::ffi::c_int {
     -EOPNOTSUPP
 }
 

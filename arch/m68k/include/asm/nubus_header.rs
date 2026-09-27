@@ -3,9 +3,9 @@
 // Translated from <asm/nubus.h>.
 // Dependencies supplied by asm/raw_io.h and asm/kmap.h remain external.
 
-use core::ffi::c_void;
-use core::ffi::c_ulong;
-use core::ffi::c_uint;
+use kernel::ffi::c_void;
+use kernel::ffi::c_ulong;
+use kernel::ffi::c_uint;
 
 unsafe extern "C" {
     fn raw_inb(addr: c_ulong) -> u8;

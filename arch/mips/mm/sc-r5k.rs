@@ -10,15 +10,15 @@
 // asm/mmu_context.h, asm/r4kcache.h.
 
 /* Secondary cache size in bytes, if present. */
-static mut scache_size: ::core::ffi::c_ulong = 0;
+static mut scache_size: ::kernel::ffi::c_ulong = 0;
 
-const SC_LINE: ::core::ffi::c_ulong = 32;
-const SC_PAGE: ::core::ffi::c_ulong = 128 * SC_LINE;
+const SC_LINE: ::kernel::ffi::c_ulong = 32;
+const SC_PAGE: ::kernel::ffi::c_ulong = 128 * SC_LINE;
 
 #[inline]
 unsafe fn blast_r5000_scache() {
-    let mut start: ::core::ffi::c_ulong = INDEX_BASE;
-    let end: ::core::ffi::c_ulong = start.wrapping_add(scache_size);
+    let mut start: ::kernel::ffi::c_ulong = INDEX_BASE;
+    let end: ::kernel::ffi::c_ulong = start.wrapping_add(scache_size);
 
     while start < end {
         cache_op(R5K_Page_Invalidate_S, start);
@@ -27,11 +27,11 @@ unsafe fn blast_r5000_scache() {
 }
 
 unsafe fn r5k_dma_cache_inv_sc(
-    addr: ::core::ffi::c_ulong,
-    size: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
+    size: ::kernel::ffi::c_ulong,
 ) {
-    let end: ::core::ffi::c_ulong;
-    let mut a: ::core::ffi::c_ulong;
+    let end: ::kernel::ffi::c_ulong;
+    let mut a: ::kernel::ffi::c_ulong;
 
     /* Catch bad driver code */
     BUG_ON(size == 0);
@@ -54,7 +54,7 @@ unsafe fn r5k_dma_cache_inv_sc(
 }
 
 unsafe fn r5k_sc_enable() {
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
 
     local_irq_save(&mut flags);
     set_c0_config(R5K_CONF_SE);
@@ -63,7 +63,7 @@ unsafe fn r5k_sc_enable() {
 }
 
 unsafe fn r5k_sc_disable() {
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
 
     local_irq_save(&mut flags);
     blast_r5000_scache();
@@ -72,8 +72,8 @@ unsafe fn r5k_sc_disable() {
 }
 
 #[inline]
-unsafe fn r5k_sc_probe() -> ::core::ffi::c_int {
-    let config: ::core::ffi::c_ulong = read_c0_config();
+unsafe fn r5k_sc_probe() -> ::kernel::ffi::c_int {
+    let config: ::kernel::ffi::c_ulong = read_c0_config();
 
     if config & CONF_SC != 0 {
         return 0;

@@ -53,8 +53,8 @@ struct adq12b_private {
 
 unsafe fn adq12b_ai_eoc(
     dev: *mut comedi_device, _s: *mut comedi_subdevice,
-    _insn: *mut comedi_insn, _context: libc::c_ulong,
-) -> libc::c_int {
+    _insn: *mut comedi_insn, _context: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let status = inb((*dev).iobase + ADQ12B_STINR);
     if status & ADQ12B_STINR_EOC != 0 { 0 } else { -EBUSY }
 }
@@ -62,7 +62,7 @@ unsafe fn adq12b_ai_eoc(
 unsafe fn adq12b_ai_insn_read(
     dev: *mut comedi_device, s: *mut comedi_subdevice,
     insn: *mut comedi_insn, data: *mut u32,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let devpriv = (*dev).private as *mut adq12b_private;
     let chan = CR_CHAN((*insn).chanspec);
     let range = CR_RANGE((*insn).chanspec);
@@ -80,21 +80,21 @@ unsafe fn adq12b_ai_insn_read(
             | inb((*dev).iobase + ADQ12B_ADLOW) as u32;
         *data.add(i as usize) = value;
     }
-    (*insn).n as libc::c_int
+    (*insn).n as kernel::ffi::c_int
 }
 
 unsafe fn adq12b_di_insn_bits(
     dev: *mut comedi_device, _s: *mut comedi_subdevice,
     insn: *mut comedi_insn, data: *mut u32,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     *data.add(1) = inb((*dev).iobase + ADQ12B_STINR) & ADQ12B_STINR_IN_MASK;
-    (*insn).n as libc::c_int
+    (*insn).n as kernel::ffi::c_int
 }
 
 unsafe fn adq12b_do_insn_bits(
     dev: *mut comedi_device, s: *mut comedi_subdevice,
     insn: *mut comedi_insn, data: *mut u32,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let mask = comedi_dio_update_state(s, data);
     if mask != 0 {
         for chan in 0..8u32 {
@@ -105,10 +105,10 @@ unsafe fn adq12b_do_insn_bits(
         }
     }
     *data.add(1) = (*s).state;
-    (*insn).n as libc::c_int
+    (*insn).n as kernel::ffi::c_int
 }
 
-unsafe fn adq12b_attach(dev: *mut comedi_device, it: *mut comedi_devconfig) -> libc::c_int {
+unsafe fn adq12b_attach(dev: *mut comedi_device, it: *mut comedi_devconfig) -> kernel::ffi::c_int {
     let ret = comedi_check_request_region(dev, (*it).options[0], 0x10, 0x300, 0x3af, 0x20);
     if ret != 0 { return ret; }
     let devpriv = comedi_alloc_devpriv(dev, core::mem::size_of::<adq12b_private>()) as *mut adq12b_private;

@@ -437,11 +437,11 @@ pub const ASRC_WIDTH_8_BIT: asrc_word_width = 2;
 #[repr(C)]
 pub struct asrc_config {
     pub pair: asrc_pair_index,
-    pub channel_num: ::core::ffi::c_uint,
-    pub buffer_num: ::core::ffi::c_uint,
-    pub dma_buffer_size: ::core::ffi::c_uint,
-    pub input_sample_rate: ::core::ffi::c_uint,
-    pub output_sample_rate: ::core::ffi::c_uint,
+    pub channel_num: ::kernel::ffi::c_uint,
+    pub buffer_num: ::kernel::ffi::c_uint,
+    pub dma_buffer_size: ::kernel::ffi::c_uint,
+    pub input_sample_rate: ::kernel::ffi::c_uint,
+    pub output_sample_rate: ::kernel::ffi::c_uint,
     pub input_format: snd_pcm_format_t,
     pub output_format: snd_pcm_format_t,
     pub inclk: asrc_inclk,
@@ -450,31 +450,31 @@ pub struct asrc_config {
 
 #[repr(C)]
 pub struct asrc_req {
-    pub chn_num: ::core::ffi::c_uint,
+    pub chn_num: ::kernel::ffi::c_uint,
     pub index: asrc_pair_index,
 }
 
 #[repr(C)]
 pub struct asrc_querybuf {
-    pub buffer_index: ::core::ffi::c_uint,
-    pub input_length: ::core::ffi::c_uint,
-    pub output_length: ::core::ffi::c_uint,
-    pub input_offset: ::core::ffi::c_ulong,
-    pub output_offset: ::core::ffi::c_ulong,
+    pub buffer_index: ::kernel::ffi::c_uint,
+    pub input_length: ::kernel::ffi::c_uint,
+    pub output_length: ::kernel::ffi::c_uint,
+    pub input_offset: ::kernel::ffi::c_ulong,
+    pub output_offset: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct asrc_convert_buffer {
-    pub input_buffer_vaddr: *mut ::core::ffi::c_void,
-    pub output_buffer_vaddr: *mut ::core::ffi::c_void,
-    pub input_buffer_length: ::core::ffi::c_uint,
-    pub output_buffer_length: ::core::ffi::c_uint,
+    pub input_buffer_vaddr: *mut ::kernel::ffi::c_void,
+    pub output_buffer_vaddr: *mut ::kernel::ffi::c_void,
+    pub input_buffer_length: ::kernel::ffi::c_uint,
+    pub output_buffer_length: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct asrc_status_flags {
     pub index: asrc_pair_index,
-    pub overload_error: ::core::ffi::c_uint,
+    pub overload_error: ::kernel::ffi::c_uint,
 }
 
 pub type asrc_error_status = u32;
@@ -487,8 +487,8 @@ pub const ASRC_INPUT_BUFFER_UNDERRUN: asrc_error_status = 0x10;
 #[repr(C)]
 pub struct dma_block {
     pub dma_paddr: dma_addr_t,
-    pub dma_vaddr: *mut ::core::ffi::c_void,
-    pub length: ::core::ffi::c_uint,
+    pub dma_vaddr: *mut ::kernel::ffi::c_void,
+    pub length: ::kernel::ffi::c_uint,
 }
 
 /**
@@ -501,7 +501,7 @@ pub struct dma_block {
 #[repr(C)]
 pub struct fsl_asrc_soc_data {
     pub use_edma: bool,
-    pub channel_bits: ::core::ffi::c_uint,
+    pub channel_bits: ::kernel::ffi::c_uint,
     pub start_before_dma: bool,
 }
 
@@ -527,7 +527,7 @@ pub struct fsl_asrc_pair_priv {
 pub struct fsl_asrc_priv {
     pub asrck_clk: [*mut clk; ASRC_CLK_MAX_NUM],
     pub soc: *const fsl_asrc_soc_data,
-    pub clk_map: [*mut ::core::ffi::c_uchar; 2],
+    pub clk_map: [*mut ::kernel::ffi::c_uchar; 2],
     pub regcache_cfg: u32,
 }
 

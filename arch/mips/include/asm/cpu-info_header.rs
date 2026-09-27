@@ -14,8 +14,8 @@
 
 #[repr(C)]
 pub struct cache_desc {
-    pub waysize: ::core::ffi::c_uint,
-    pub sets: ::core::ffi::c_ushort,
+    pub waysize: ::kernel::ffi::c_uint,
+    pub sets: ::kernel::ffi::c_ushort,
     pub ways: u8,
     pub linesz: u8,
     pub waybit: u8,
@@ -24,11 +24,11 @@ pub struct cache_desc {
 
 #[repr(C)]
 pub struct guest_info {
-    pub ases: ::core::ffi::c_ulong,
-    pub ases_dyn: ::core::ffi::c_ulong,
+    pub ases: ::kernel::ffi::c_ulong,
+    pub ases_dyn: ::kernel::ffi::c_ulong,
     pub options: u64,
     pub options_dyn: u64,
-    pub tlbsize: ::core::ffi::c_int,
+    pub tlbsize: ::kernel::ffi::c_int,
     pub conf: u8,
     pub kscratch_mask: u8,
 }
@@ -45,41 +45,41 @@ pub struct cpuinfo_mips {
     pub asid_cache: u64,
     // CONFIG_MIPS_ASID_BITS_VARIABLE
     #[cfg(CONFIG_MIPS_ASID_BITS_VARIABLE)]
-    pub asid_mask: ::core::ffi::c_ulong,
-    pub ases: ::core::ffi::c_ulong,
+    pub asid_mask: ::kernel::ffi::c_ulong,
+    pub ases: ::kernel::ffi::c_ulong,
     pub options: u64,
-    pub udelay_val: ::core::ffi::c_uint,
-    pub processor_id: ::core::ffi::c_uint,
-    pub fpu_id: ::core::ffi::c_uint,
-    pub fpu_csr31: ::core::ffi::c_uint,
-    pub fpu_msk31: ::core::ffi::c_uint,
-    pub msa_id: ::core::ffi::c_uint,
-    pub cputype: ::core::ffi::c_uint,
-    pub isa_level: ::core::ffi::c_int,
-    pub tlbsize: ::core::ffi::c_int,
-    pub tlbsizevtlb: ::core::ffi::c_int,
-    pub tlbsizeftlbsets: ::core::ffi::c_int,
-    pub tlbsizeftlbways: ::core::ffi::c_int,
+    pub udelay_val: ::kernel::ffi::c_uint,
+    pub processor_id: ::kernel::ffi::c_uint,
+    pub fpu_id: ::kernel::ffi::c_uint,
+    pub fpu_csr31: ::kernel::ffi::c_uint,
+    pub fpu_msk31: ::kernel::ffi::c_uint,
+    pub msa_id: ::kernel::ffi::c_uint,
+    pub cputype: ::kernel::ffi::c_uint,
+    pub isa_level: ::kernel::ffi::c_int,
+    pub tlbsize: ::kernel::ffi::c_int,
+    pub tlbsizevtlb: ::kernel::ffi::c_int,
+    pub tlbsizeftlbsets: ::kernel::ffi::c_int,
+    pub tlbsizeftlbways: ::kernel::ffi::c_int,
     pub icache: cache_desc,
     pub dcache: cache_desc,
     pub vcache: cache_desc,
     pub scache: cache_desc,
     pub tcache: cache_desc,
-    pub srsets: ::core::ffi::c_int,
-    pub package: ::core::ffi::c_int,
-    pub globalnumber: ::core::ffi::c_uint,
-    pub vmbits: ::core::ffi::c_int,
-    pub data: *mut ::core::ffi::c_void,
-    pub watch_reg_count: ::core::ffi::c_uint,
-    pub watch_reg_use_cnt: ::core::ffi::c_uint,
+    pub srsets: ::kernel::ffi::c_int,
+    pub package: ::kernel::ffi::c_int,
+    pub globalnumber: ::kernel::ffi::c_uint,
+    pub vmbits: ::kernel::ffi::c_int,
+    pub data: *mut ::kernel::ffi::c_void,
+    pub watch_reg_count: ::kernel::ffi::c_uint,
+    pub watch_reg_use_cnt: ::kernel::ffi::c_uint,
     pub watch_reg_masks: [u16; 4],
-    pub kscratch_mask: ::core::ffi::c_uint,
-    pub writecombine: ::core::ffi::c_uint,
-    pub htw_seq: ::core::ffi::c_uint,
+    pub kscratch_mask: ::kernel::ffi::c_uint,
+    pub writecombine: ::kernel::ffi::c_uint,
+    pub htw_seq: ::kernel::ffi::c_uint,
     pub guest: guest_info,
-    pub gtoffset_mask: ::core::ffi::c_uint,
-    pub guestid_mask: ::core::ffi::c_uint,
-    pub guestid_cache: ::core::ffi::c_uint,
+    pub gtoffset_mask: ::kernel::ffi::c_uint,
+    pub guestid_mask: ::kernel::ffi::c_uint,
+    pub guestid_cache: ::kernel::ffi::c_uint,
     // CONFIG_CPU_LOONGSON3_CPUCFG_EMULATION
     #[cfg(CONFIG_CPU_LOONGSON3_CPUCFG_EMULATION)]
     pub loongson3_cpucfg_data: [u32; 3],
@@ -90,9 +90,9 @@ extern "C" {
     pub fn cpu_probe();
     pub fn cpu_report();
     pub fn cpu_disable_mmid();
-    pub static __cpu_name: [*const ::core::ffi::c_char; 0];
-    pub fn register_proc_cpuinfo_notifier(nb: *mut notifier_block) -> ::core::ffi::c_int;
-    pub fn proc_cpuinfo_notifier_call_chain(val: ::core::ffi::c_ulong, v: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
+    pub static __cpu_name: [*const ::kernel::ffi::c_char; 0];
+    pub fn register_proc_cpuinfo_notifier(nb: *mut notifier_block) -> ::kernel::ffi::c_int;
+    pub fn proc_cpuinfo_notifier_call_chain(val: ::kernel::ffi::c_ulong, v: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
 }
 
 pub struct seq_file;
@@ -101,7 +101,7 @@ pub struct notifier_block;
 #[repr(C)]
 pub struct proc_cpuinfo_notifier_args {
     pub m: *mut seq_file,
-    pub n: ::core::ffi::c_ulong,
+    pub n: ::kernel::ffi::c_ulong,
 }
 
 // The C notifier macro creates a static notifier_block and registers it.
@@ -139,7 +139,7 @@ extern "C" {
 }
 
 #[inline]
-pub unsafe fn cpus_are_siblings(cpua: ::core::ffi::c_int, cpub: ::core::ffi::c_int) -> bool {
+pub unsafe fn cpus_are_siblings(cpua: ::kernel::ffi::c_int, cpub: ::kernel::ffi::c_int) -> bool {
     let infoa = &cpu_data[cpua as usize];
     let infob = &cpu_data[cpub as usize];
     if infoa.package != infob.package { return false; }
@@ -150,17 +150,17 @@ pub unsafe fn cpus_are_siblings(cpua: ::core::ffi::c_int, cpub: ::core::ffi::c_i
 }
 
 #[inline]
-pub const fn cpu_asid_inc() -> ::core::ffi::c_ulong { 1 << CONFIG_MIPS_ASID_SHIFT }
+pub const fn cpu_asid_inc() -> ::kernel::ffi::c_ulong { 1 << CONFIG_MIPS_ASID_SHIFT }
 
 #[inline]
-pub unsafe fn cpu_asid_mask(cpuinfo: *mut cpuinfo_mips) -> ::core::ffi::c_ulong {
+pub unsafe fn cpu_asid_mask(cpuinfo: *mut cpuinfo_mips) -> ::kernel::ffi::c_ulong {
     #[cfg(CONFIG_MIPS_ASID_BITS_VARIABLE)]
     { return (*cpuinfo).asid_mask; }
     ((1 << CONFIG_MIPS_ASID_BITS) - 1) << CONFIG_MIPS_ASID_SHIFT
 }
 
 #[inline]
-pub unsafe fn set_cpu_asid_mask(cpuinfo: *mut cpuinfo_mips, asid_mask: ::core::ffi::c_ulong) {
+pub unsafe fn set_cpu_asid_mask(cpuinfo: *mut cpuinfo_mips, asid_mask: ::kernel::ffi::c_ulong) {
     #[cfg(CONFIG_MIPS_ASID_BITS_VARIABLE)]
     { (*cpuinfo).asid_mask = asid_mask; }
 }

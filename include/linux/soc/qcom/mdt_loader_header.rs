@@ -29,9 +29,9 @@ extern "C" {
     pub fn qcom_mdt_load(
         dev: *mut device,
         fw: *const firmware,
-        fw_name: *const core::ffi::c_char,
+        fw_name: *const kernel::ffi::c_char,
         pas_id: i32,
-        mem_region: *mut core::ffi::c_void,
+        mem_region: *mut kernel::ffi::c_void,
         mem_phys: u64,
         mem_size: usize,
         reloc_base: *mut u64,
@@ -40,15 +40,15 @@ extern "C" {
     pub fn qcom_mdt_pas_load(
         ctx: *mut qcom_pas_context,
         fw: *const firmware,
-        firmware: *const core::ffi::c_char,
+        firmware: *const kernel::ffi::c_char,
         reloc_base: *mut u64,
     ) -> i32;
 
     pub fn qcom_mdt_load_no_init(
         dev: *mut device,
         fw: *const firmware,
-        fw_name: *const core::ffi::c_char,
-        mem_region: *mut core::ffi::c_void,
+        fw_name: *const kernel::ffi::c_char,
+        mem_region: *mut kernel::ffi::c_void,
         mem_phys: u64,
         mem_size: usize,
         reloc_base: *mut u64,
@@ -57,9 +57,9 @@ extern "C" {
     pub fn qcom_mdt_read_metadata(
         fw: *const firmware,
         data_len: *mut usize,
-        fw_name: *const core::ffi::c_char,
+        fw_name: *const kernel::ffi::c_char,
         dev: *mut device,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 /* !IS_ENABLED(CONFIG_QCOM_MDT_LOADER): the kernel's ENODEV error value. */
@@ -72,9 +72,9 @@ pub unsafe fn qcom_mdt_get_size(_fw: *const firmware) -> isize {
 pub unsafe fn qcom_mdt_load(
     _dev: *mut device,
     _fw: *const firmware,
-    _fw_name: *const core::ffi::c_char,
+    _fw_name: *const kernel::ffi::c_char,
     _pas_id: i32,
-    _mem_region: *mut core::ffi::c_void,
+    _mem_region: *mut kernel::ffi::c_void,
     _mem_phys: u64,
     _mem_size: usize,
     _reloc_base: *mut u64,
@@ -86,7 +86,7 @@ pub unsafe fn qcom_mdt_load(
 pub unsafe fn qcom_mdt_pas_load(
     _ctx: *mut qcom_pas_context,
     _fw: *const firmware,
-    _firmware: *const core::ffi::c_char,
+    _firmware: *const kernel::ffi::c_char,
     _reloc_base: *mut u64,
 ) -> i32 {
     -19
@@ -96,8 +96,8 @@ pub unsafe fn qcom_mdt_pas_load(
 pub unsafe fn qcom_mdt_load_no_init(
     _dev: *mut device,
     _fw: *const firmware,
-    _fw_name: *const core::ffi::c_char,
-    _mem_region: *mut core::ffi::c_void,
+    _fw_name: *const kernel::ffi::c_char,
+    _mem_region: *mut kernel::ffi::c_void,
     _mem_phys: u64,
     _mem_size: usize,
     _reloc_base: *mut u64,
@@ -109,10 +109,10 @@ pub unsafe fn qcom_mdt_load_no_init(
 pub unsafe fn qcom_mdt_read_metadata(
     _fw: *const firmware,
     _data_len: *mut usize,
-    _fw_name: *const core::ffi::c_char,
+    _fw_name: *const kernel::ffi::c_char,
     _dev: *mut device,
-) -> *mut core::ffi::c_void {
-    (-19isize) as *mut core::ffi::c_void
+) -> *mut kernel::ffi::c_void {
+    (-19isize) as *mut kernel::ffi::c_void
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

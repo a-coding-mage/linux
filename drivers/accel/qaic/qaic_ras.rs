@@ -32,18 +32,18 @@ struct RasData { magic: u16, ver: u16, seq_num: u32, type_: u8, id: u8, len: u16
 
 extern "C" {
     fn le16_to_cpus(x: *mut u16); fn le32_to_cpus(x: *mut u32); fn le64_to_cpus(x: *mut u64);
-    fn pci_warn(pdev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
-    fn dev_printk(level: *const core::ffi::c_char, dev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
-    fn printk(level: *const core::ffi::c_char, fmt: *const core::ffi::c_char, ...);
-    fn pr_warn(fmt: *const core::ffi::c_char, ...); fn mhi_soc_reset(ctrl: *mut core::ffi::c_void);
+    fn pci_warn(pdev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_printk(level: *const kernel::ffi::c_char, dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
+    fn printk(level: *const kernel::ffi::c_char, fmt: *const kernel::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...); fn mhi_soc_reset(ctrl: *mut kernel::ffi::c_void);
     fn mhi_driver_register(driver: *mut MhiDriver) -> i32; fn mhi_driver_unregister(driver: *mut MhiDriver);
 }
 
-#[repr(C)] struct QaicDevice { pdev: *mut core::ffi::c_void, mhi_cntrl: *mut core::ffi::c_void, ce_count: u32, ue_count: u32, ue_nf_count: u32, ras_ch: *mut core::ffi::c_void }
+#[repr(C)] struct QaicDevice { pdev: *mut kernel::ffi::c_void, mhi_cntrl: *mut kernel::ffi::c_void, ce_count: u32, ue_count: u32, ue_nf_count: u32, ras_ch: *mut kernel::ffi::c_void }
 #[repr(C)] struct MhiDevice { mhi_cntrl: *mut MhiController }
-#[repr(C)] struct MhiController { cntrl_dev: *mut core::ffi::c_void }
+#[repr(C)] struct MhiController { cntrl_dev: *mut kernel::ffi::c_void }
 #[repr(C)] struct MhiResult { transaction_status: i32, buf_addr: *mut RasData }
-#[repr(C)] struct MhiDeviceId { chan: *const core::ffi::c_char }
+#[repr(C)] struct MhiDeviceId { chan: *const kernel::ffi::c_char }
 #[repr(C)] struct MhiDriver { id_table: *const MhiDeviceId, remove: Option<unsafe extern "C" fn(*mut MhiDevice)>, probe: Option<unsafe extern "C" fn(*mut MhiDevice, *const MhiDeviceId) -> i32>, ul_xfer_cb: Option<unsafe extern "C" fn(*mut MhiDevice, *mut MhiResult)>, dl_xfer_cb: Option<unsafe extern "C" fn(*mut MhiDevice, *mut MhiResult)> }
 
 unsafe fn ras_msg_to_cpu(msg: *mut RasData) {

@@ -4,7 +4,7 @@
  * Author: Darrick J. Wong <djwong@kernel.org>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     pub fn xfs_metafile_type_str(

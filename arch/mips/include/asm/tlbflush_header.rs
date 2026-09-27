@@ -24,18 +24,18 @@ unsafe extern "C" {
     pub fn local_flush_tlb_all();
     pub fn local_flush_tlb_range(
         vma: *mut vm_area_struct,
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
     );
     pub fn local_flush_tlb_kernel_range(
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
     );
     pub fn local_flush_tlb_page(
         vma: *mut vm_area_struct,
-        page: ::core::ffi::c_ulong,
+        page: ::kernel::ffi::c_ulong,
     );
-    pub fn local_flush_tlb_one(vaddr: ::core::ffi::c_ulong);
+    pub fn local_flush_tlb_one(vaddr: ::kernel::ffi::c_ulong);
 
     /* CONFIG_SMP declarations. */
     #[cfg(CONFIG_SMP)]
@@ -45,18 +45,18 @@ unsafe extern "C" {
     #[cfg(CONFIG_SMP)]
     pub fn flush_tlb_range(
         vma: *mut vm_area_struct,
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
     );
     #[cfg(CONFIG_SMP)]
     pub fn flush_tlb_kernel_range(
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
     );
     #[cfg(CONFIG_SMP)]
-    pub fn flush_tlb_page(vma: *mut vm_area_struct, page: ::core::ffi::c_ulong);
+    pub fn flush_tlb_page(vma: *mut vm_area_struct, page: ::kernel::ffi::c_ulong);
     #[cfg(CONFIG_SMP)]
-    pub fn flush_tlb_one(vaddr: ::core::ffi::c_ulong);
+    pub fn flush_tlb_one(vaddr: ::kernel::ffi::c_ulong);
 
     /* Supplied by asm/mmu_context.h. */
     pub fn drop_mmu_context(mm: *mut mm_struct);
@@ -79,8 +79,8 @@ pub unsafe fn flush_tlb_mm(mm: *mut mm_struct) {
 #[inline(always)]
 pub unsafe fn flush_tlb_range(
     vma: *mut vm_area_struct,
-    vmaddr: ::core::ffi::c_ulong,
-    end: ::core::ffi::c_ulong,
+    vmaddr: ::kernel::ffi::c_ulong,
+    end: ::kernel::ffi::c_ulong,
 ) {
     local_flush_tlb_range(vma, vmaddr, end);
 }
@@ -88,21 +88,21 @@ pub unsafe fn flush_tlb_range(
 #[cfg(not(CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn flush_tlb_kernel_range(
-    vmaddr: ::core::ffi::c_ulong,
-    end: ::core::ffi::c_ulong,
+    vmaddr: ::kernel::ffi::c_ulong,
+    end: ::kernel::ffi::c_ulong,
 ) {
     local_flush_tlb_kernel_range(vmaddr, end);
 }
 
 #[cfg(not(CONFIG_SMP))]
 #[inline(always)]
-pub unsafe fn flush_tlb_page(vma: *mut vm_area_struct, page: ::core::ffi::c_ulong) {
+pub unsafe fn flush_tlb_page(vma: *mut vm_area_struct, page: ::kernel::ffi::c_ulong) {
     local_flush_tlb_page(vma, page);
 }
 
 #[cfg(not(CONFIG_SMP))]
 #[inline(always)]
-pub unsafe fn flush_tlb_one(vaddr: ::core::ffi::c_ulong) {
+pub unsafe fn flush_tlb_one(vaddr: ::kernel::ffi::c_ulong) {
     local_flush_tlb_one(vaddr);
 }
 

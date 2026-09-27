@@ -34,7 +34,7 @@ pub struct acpi_fan_fps {
     pub speed: u64,
     pub noise_level: u64,
     pub power: u64,
-    pub name: [core::ffi::c_char; ACPI_FPS_NAME_LEN],
+    pub name: [kernel::ffi::c_char; ACPI_FPS_NAME_LEN],
     pub dev_attr: device_attribute,
 }
 
@@ -60,7 +60,7 @@ pub struct acpi_fan {
     pub has_fst: bool,
     pub fif: acpi_fan_fif,
     pub fps: *mut acpi_fan_fps,
-    pub fps_count: core::ffi::c_int,
+    pub fps_count: kernel::ffi::c_int,
     // A value of 0 means that trippoint-related functions are not supported
     pub fan_trip_granularity: u32,
     // Conditional on IS_REACHABLE(CONFIG_HWMON) in the C source.
@@ -88,21 +88,21 @@ pub fn acpi_fan_power_valid(power: u64) -> bool {
 }
 
 unsafe extern "C" {
-    pub fn acpi_fan_get_fst(handle: acpi_handle, fst: *mut acpi_fan_fst) -> core::ffi::c_int;
-    pub fn acpi_fan_create_attributes(device: *mut acpi_device) -> core::ffi::c_int;
+    pub fn acpi_fan_get_fst(handle: acpi_handle, fst: *mut acpi_fan_fst) -> kernel::ffi::c_int;
+    pub fn acpi_fan_create_attributes(device: *mut acpi_device) -> kernel::ffi::c_int;
     pub fn acpi_fan_delete_attributes(device: *mut acpi_device);
 }
 
 // Conditional on IS_REACHABLE(CONFIG_HWMON) in the C source.
 #[cfg(CONFIG_HWMON)]
 unsafe extern "C" {
-    pub fn devm_acpi_fan_create_hwmon(dev: *mut device) -> core::ffi::c_int;
+    pub fn devm_acpi_fan_create_hwmon(dev: *mut device) -> kernel::ffi::c_int;
     pub fn acpi_fan_notify_hwmon(dev: *mut device);
 }
 
 #[cfg(not(CONFIG_HWMON))]
 #[inline]
-pub unsafe fn devm_acpi_fan_create_hwmon(_dev: *mut device) -> core::ffi::c_int {
+pub unsafe fn devm_acpi_fan_create_hwmon(_dev: *mut device) -> kernel::ffi::c_int {
     0
 }
 

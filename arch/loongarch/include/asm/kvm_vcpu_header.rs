@@ -71,7 +71,7 @@ extern "C" {
     pub fn kvm_save_fpu(fpu: *mut loongarch_fpu);
     pub fn kvm_restore_fpu(fpu: *mut loongarch_fpu);
     pub fn kvm_restore_fcsr(fpu: *mut loongarch_fpu);
-    pub fn kvm_init_timer(vcpu: *mut kvm_vcpu, hz: libc::c_ulong);
+    pub fn kvm_init_timer(vcpu: *mut kvm_vcpu, hz: kernel::ffi::c_ulong);
     pub fn kvm_save_timer(vcpu: *mut kvm_vcpu);
     pub fn kvm_restore_timer(vcpu: *mut kvm_vcpu);
     pub fn kvm_vcpu_ioctl_interrupt(vcpu: *mut kvm_vcpu, irq: *mut kvm_interrupt) -> i32;
@@ -98,8 +98,8 @@ pub unsafe fn kvm_dequeue_irq(vcpu: *mut kvm_vcpu, irq: u32) { clear_bit(irq, &m
 pub unsafe fn kvm_queue_exception(vcpu: *mut kvm_vcpu, code: u32, subcode: u32) -> i32 {
     if !(*vcpu).arch.exception_pending { set_bit(code, &mut (*vcpu).arch.exception_pending); (*vcpu).arch.esubcode = subcode; 0 } else { -1 }
 }
-pub unsafe fn kvm_read_reg(vcpu: *mut kvm_vcpu, num: i32) -> libc::c_ulong { (*vcpu).arch.gprs[num as usize] }
-pub unsafe fn kvm_write_reg(vcpu: *mut kvm_vcpu, num: i32, val: libc::c_ulong) { (*vcpu).arch.gprs[num as usize] = val; }
+pub unsafe fn kvm_read_reg(vcpu: *mut kvm_vcpu, num: i32) -> kernel::ffi::c_ulong { (*vcpu).arch.gprs[num as usize] }
+pub unsafe fn kvm_write_reg(vcpu: *mut kvm_vcpu, num: i32, val: kernel::ffi::c_ulong) { (*vcpu).arch.gprs[num as usize] = val; }
 pub unsafe fn kvm_pvtime_supported() -> bool { sched_info_on() != 0 }
 pub unsafe fn kvm_guest_has_pv_feature(vcpu: *mut kvm_vcpu, feature: u32) -> bool { (*vcpu).kvm.arch.pv_features & (1usize << feature) != 0 }
 

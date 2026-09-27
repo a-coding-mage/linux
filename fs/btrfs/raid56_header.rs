@@ -28,7 +28,7 @@ pub struct btrfs_raid_bio {
     pub bio_list: bio_list,
     pub bio_list_lock: spinlock_t,
     pub plug_list: list_head,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub operation: btrfs_rbio_ops,
     pub nr_pages: u16,
     pub nr_sectors: u16,
@@ -38,20 +38,20 @@ pub struct btrfs_raid_bio {
     pub stripe_nsectors: u8,
     pub sector_nsteps: u8,
     pub scrubp: u8,
-    pub bio_list_bytes: ::core::ffi::c_int,
+    pub bio_list_bytes: ::kernel::ffi::c_int,
     pub refs: refcount_t,
     pub stripes_pending: atomic_t,
     pub io_wait: wait_queue_head_t,
-    pub dbitmap: ::core::ffi::c_ulong,
-    pub finish_pbitmap: ::core::ffi::c_ulong,
+    pub dbitmap: ::kernel::ffi::c_ulong,
+    pub finish_pbitmap: ::kernel::ffi::c_ulong,
     pub stripe_pages: *mut *mut page,
     pub bio_paddrs: *mut phys_addr_t,
     pub stripe_paddrs: *mut phys_addr_t,
-    pub stripe_uptodate_bitmap: *mut ::core::ffi::c_ulong,
-    pub finish_pointers: *mut *mut ::core::ffi::c_void,
-    pub error_bitmap: *mut ::core::ffi::c_ulong,
+    pub stripe_uptodate_bitmap: *mut ::kernel::ffi::c_ulong,
+    pub finish_pointers: *mut *mut ::kernel::ffi::c_void,
+    pub error_bitmap: *mut ::kernel::ffi::c_ulong,
     pub csum_buf: *mut u8,
-    pub csum_bitmap: *mut ::core::ffi::c_ulong,
+    pub csum_bitmap: *mut ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -62,12 +62,12 @@ pub struct raid56_bio_trace_info {
 }
 
 #[inline]
-pub unsafe fn nr_data_stripes(map: *const btrfs_chunk_map) -> ::core::ffi::c_int {
+pub unsafe fn nr_data_stripes(map: *const btrfs_chunk_map) -> ::kernel::ffi::c_int {
     (*map).num_stripes - btrfs_nr_parity_stripes((*map).type_)
 }
 
 #[inline]
-pub unsafe fn nr_bioc_data_stripes(bioc: *const btrfs_io_context) -> ::core::ffi::c_int {
+pub unsafe fn nr_bioc_data_stripes(bioc: *const btrfs_io_context) -> ::kernel::ffi::c_int {
     (*bioc).num_stripes - btrfs_nr_parity_stripes((*bioc).map_type)
 }
 
@@ -83,7 +83,7 @@ extern "C" {
     pub fn raid56_parity_recover(
         bio: *mut bio,
         bioc: *mut btrfs_io_context,
-        mirror_num: ::core::ffi::c_int,
+        mirror_num: ::kernel::ffi::c_int,
     );
     pub fn raid56_parity_write(bio: *mut bio, bioc: *mut btrfs_io_context);
 
@@ -91,18 +91,18 @@ extern "C" {
         bio: *mut bio,
         bioc: *mut btrfs_io_context,
         scrub_dev: *mut btrfs_device,
-        dbitmap: *mut ::core::ffi::c_ulong,
-        stripe_nsectors: ::core::ffi::c_int,
+        dbitmap: *mut ::kernel::ffi::c_ulong,
+        stripe_nsectors: ::kernel::ffi::c_int,
     ) -> *mut btrfs_raid_bio;
     pub fn raid56_parity_submit_scrub_rbio(rbio: *mut btrfs_raid_bio);
 
     pub fn raid56_parity_cache_data_folios(
         rbio: *mut btrfs_raid_bio,
-        vaddr: *mut ::core::ffi::c_void,
+        vaddr: *mut ::kernel::ffi::c_void,
         data_logical: u64,
     );
 
-    pub fn btrfs_alloc_stripe_hash_table(info: *mut btrfs_fs_info) -> ::core::ffi::c_int;
+    pub fn btrfs_alloc_stripe_hash_table(info: *mut btrfs_fs_info) -> ::kernel::ffi::c_int;
     pub fn btrfs_free_stripe_hash_table(info: *mut btrfs_fs_info);
 }
 

@@ -16,30 +16,30 @@
 // DEBUG is undefined in the source; the DBG macro is therefore a no-op.
 
 extern "C" {
-    static mut sbc310_regs: *mut core::ffi::c_void;
+    static mut sbc310_regs: *mut kernel::ffi::c_void;
 
     fn mpc86xx_init_irq();
     fn of_find_compatible_node(
         from: *mut device_node,
-        typ: *const core::ffi::c_char,
-        compatible: *const core::ffi::c_char,
+        typ: *const kernel::ffi::c_char,
+        compatible: *const kernel::ffi::c_char,
     ) -> *mut device_node;
-    fn printk(format: *const core::ffi::c_char, ...);
+    fn printk(format: *const kernel::ffi::c_char, ...);
     fn gef_pic_init(node: *mut device_node);
     fn of_node_put(node: *mut device_node);
     fn mpc86xx_smp_init();
     fn fsl_pci_assign_primary();
-    fn of_iomap(node: *mut device_node, index: i32) -> *mut core::ffi::c_void;
+    fn of_iomap(node: *mut device_node, index: i32) -> *mut kernel::ffi::c_void;
     fn mmio_nvram_init();
-    fn ioread32(addr: *mut core::ffi::c_void) -> u32;
+    fn ioread32(addr: *mut kernel::ffi::c_void) -> u32;
     fn mfspr(spr: u32) -> u32;
-    fn seq_printf(m: *mut seq_file, format: *const core::ffi::c_char, ...);
+    fn seq_printf(m: *mut seq_file, format: *const kernel::ffi::c_char, ...);
     fn machine_is(machine: machine_id) -> bool;
     fn pci_read_config_dword(dev: *mut pci_dev, offset: u32, value: *mut u32) -> i32;
     fn pci_write_config_dword(dev: *mut pci_dev, offset: u32, value: u32) -> i32;
     fn mpic_get_irq(regs: *mut pt_regs) -> i32;
     fn mpc86xx_time_init();
-    fn udbg_progress(message: *const core::ffi::c_char, value: u32);
+    fn udbg_progress(message: *const kernel::ffi::c_char, value: u32);
     fn fsl_pcibios_fixup_bus(bus: *mut pci_bus);
     fn mpc86xx_common_publish_devices() -> i32;
 
@@ -75,10 +75,10 @@ unsafe fn gef_sbc310_init_irq() {
     cascade_node = of_find_compatible_node(
         core::ptr::null_mut(),
         core::ptr::null(),
-        b"gef,fpga-pic\0".as_ptr() as *const core::ffi::c_char,
+        b"gef,fpga-pic\0".as_ptr() as *const kernel::ffi::c_char,
     );
     if cascade_node.is_null() {
-        printk(b"SBC310: No FPGA PIC\0".as_ptr() as *const core::ffi::c_char);
+        printk(b"SBC310: No FPGA PIC\0".as_ptr() as *const kernel::ffi::c_char);
         return;
     }
 
@@ -88,7 +88,7 @@ unsafe fn gef_sbc310_init_irq() {
 
 unsafe fn gef_sbc310_setup_arch() {
     let regs: *mut device_node;
-    printk(b"GE Intelligent Platforms SBC310 6U VPX SBC\n\0".as_ptr() as *const core::ffi::c_char);
+    printk(b"GE Intelligent Platforms SBC310 6U VPX SBC\n\0".as_ptr() as *const kernel::ffi::c_char);
 
     // CONFIG_SMP conditional from the C source.
     #[cfg(CONFIG_SMP)]
@@ -100,12 +100,12 @@ unsafe fn gef_sbc310_setup_arch() {
     regs = of_find_compatible_node(
         core::ptr::null_mut(),
         core::ptr::null(),
-        b"gef,fpga-regs\0".as_ptr() as *const core::ffi::c_char,
+        b"gef,fpga-regs\0".as_ptr() as *const kernel::ffi::c_char,
     );
     if !regs.is_null() {
         sbc310_regs = of_iomap(regs, 0);
         if sbc310_regs.is_null() {
-            printk(b"Unable to map board registers\n\0".as_ptr() as *const core::ffi::c_char);
+            printk(b"Unable to map board registers\n\0".as_ptr() as *const kernel::ffi::c_char);
         }
         of_node_put(regs);
     }
@@ -142,16 +142,16 @@ unsafe fn gef_sbc310_get_fpga_rev() -> u32 {
 unsafe fn gef_sbc310_show_cpuinfo(m: *mut seq_file) {
     let svid = mfspr(SPRN_SVR);
 
-    seq_printf(m, b"Vendor\t\t: GE Intelligent Platforms\n\0".as_ptr() as *const core::ffi::c_char);
-    seq_printf(m, b"Board ID\t: 0x%2.2x\n\0".as_ptr() as *const core::ffi::c_char, gef_sbc310_get_board_id());
+    seq_printf(m, b"Vendor\t\t: GE Intelligent Platforms\n\0".as_ptr() as *const kernel::ffi::c_char);
+    seq_printf(m, b"Board ID\t: 0x%2.2x\n\0".as_ptr() as *const kernel::ffi::c_char, gef_sbc310_get_board_id());
     seq_printf(
         m,
-        b"Revision\t: %u%c\n\0".as_ptr() as *const core::ffi::c_char,
+        b"Revision\t: %u%c\n\0".as_ptr() as *const kernel::ffi::c_char,
         gef_sbc310_get_pcb_rev(),
         ('A' as u32).wrapping_add(gef_sbc310_get_board_rev()).wrapping_sub(1),
     );
-    seq_printf(m, b"FPGA Revision\t: %u\n\0".as_ptr() as *const core::ffi::c_char, gef_sbc310_get_fpga_rev());
-    seq_printf(m, b"SVR\t\t: 0x%x\n\0".as_ptr() as *const core::ffi::c_char, svid);
+    seq_printf(m, b"FPGA Revision\t: %u\n\0".as_ptr() as *const kernel::ffi::c_char, gef_sbc310_get_fpga_rev());
+    seq_printf(m, b"SVR\t\t: 0x%x\n\0".as_ptr() as *const kernel::ffi::c_char, svid);
 }
 
 unsafe fn gef_sbc310_nec_fixup(pdev: *mut pci_dev) {
@@ -162,7 +162,7 @@ unsafe fn gef_sbc310_nec_fixup(pdev: *mut pci_dev) {
         return;
     }
 
-    printk(b"Running NEC uPD720101 Fixup\n\0".as_ptr() as *const core::ffi::c_char);
+    printk(b"Running NEC uPD720101 Fixup\n\0".as_ptr() as *const kernel::ffi::c_char);
 
     /* Ensure only ports 1 & 2 are enabled */
     pci_read_config_dword(pdev, 0xe0, &mut val);

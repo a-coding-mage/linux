@@ -25,7 +25,7 @@ unsafe extern "C" {
 /// The original implementation uses s390 `tr` instructions through inline
 /// assembly.  This preserves the same byte-wise volatile memory behavior.
 #[inline]
-pub unsafe fn codepage_convert(codepage: *const u8, addr: *mut core::ffi::c_char, nr: usize) {
+pub unsafe fn codepage_convert(codepage: *const u8, addr: *mut kernel::ffi::c_char, nr: usize) {
     let mut i = 0usize;
     while i < nr {
         let p = addr.add(i);

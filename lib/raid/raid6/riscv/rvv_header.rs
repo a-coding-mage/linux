@@ -23,39 +23,39 @@ macro_rules! RAID6_RVV_WRAPPER {
         extern "C" {
             fn kernel_vector_begin();
             fn kernel_vector_end();
-            fn $gen_syndrome_real(d: ::core::ffi::c_int, b: ::core::ffi::c_ulong, p: *mut *mut ::core::ffi::c_void);
+            fn $gen_syndrome_real(d: ::kernel::ffi::c_int, b: ::kernel::ffi::c_ulong, p: *mut *mut ::kernel::ffi::c_void);
             fn $xor_syndrome_real(
-                d: ::core::ffi::c_int,
-                s1: ::core::ffi::c_int,
-                s2: ::core::ffi::c_int,
-                b: ::core::ffi::c_ulong,
-                p: *mut *mut ::core::ffi::c_void,
+                d: ::kernel::ffi::c_int,
+                s1: ::kernel::ffi::c_int,
+                s2: ::kernel::ffi::c_int,
+                b: ::kernel::ffi::c_ulong,
+                p: *mut *mut ::kernel::ffi::c_void,
             );
         }
 
         unsafe fn $gen_syndrome(
-            disks: ::core::ffi::c_int,
+            disks: ::kernel::ffi::c_int,
             bytes: usize,
-            ptrs: *mut *mut ::core::ffi::c_void,
+            ptrs: *mut *mut ::kernel::ffi::c_void,
         ) {
             kernel_vector_begin();
-            $gen_syndrome_real(disks, bytes as ::core::ffi::c_ulong, ptrs);
+            $gen_syndrome_real(disks, bytes as ::kernel::ffi::c_ulong, ptrs);
             kernel_vector_end();
         }
 
         unsafe fn $xor_syndrome(
-            disks: ::core::ffi::c_int,
-            start: ::core::ffi::c_int,
-            stop: ::core::ffi::c_int,
+            disks: ::kernel::ffi::c_int,
+            start: ::kernel::ffi::c_int,
+            stop: ::kernel::ffi::c_int,
             bytes: usize,
-            ptrs: *mut *mut ::core::ffi::c_void,
+            ptrs: *mut *mut ::kernel::ffi::c_void,
         ) {
             kernel_vector_begin();
             $xor_syndrome_real(
                 disks,
                 start,
                 stop,
-                bytes as ::core::ffi::c_ulong,
+                bytes as ::kernel::ffi::c_ulong,
                 ptrs,
             );
             kernel_vector_end();

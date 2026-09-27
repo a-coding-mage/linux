@@ -33,7 +33,7 @@ unsafe fn qnx4_statfs(dentry: *mut dentry, buf: *mut kstatfs) -> i32 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn qnx4_iget(sb: *mut super_block, ino: ::core::ffi::c_ulong) -> *mut inode {
+pub unsafe extern "C" fn qnx4_iget(sb: *mut super_block, ino: ::kernel::ffi::c_ulong) -> *mut inode {
     let inode = iget_locked(sb, ino);
     if inode.is_null() { return ERR_PTR(-ENOMEM); }
     if inode_state_read_once(inode) & I_NEW == 0 { return inode; }
@@ -68,7 +68,7 @@ unsafe fn qnx4_alloc_inode(sb: *mut super_block) -> *mut inode {
     &mut (*ei).vfs_inode
 }
 unsafe fn qnx4_free_inode(inode: *mut inode) { kmem_cache_free(qnx4_inode_cachep, qnx4_i(inode)); }
-unsafe extern "C" fn init_once(foo: *mut ::core::ffi::c_void) { inode_init_once(&mut (*(foo as *mut qnx4_inode_info)).vfs_inode); }
+unsafe extern "C" fn init_once(foo: *mut ::kernel::ffi::c_void) { inode_init_once(&mut (*(foo as *mut qnx4_inode_info)).vfs_inode); }
 unsafe fn init_inodecache() -> i32 {
     qnx4_inode_cachep = kmem_cache_create(b"qnx4_inode_cache\0".as_ptr() as _, core::mem::size_of::<qnx4_inode_info>(), 0, SLAB_RECLAIM_ACCOUNT | SLAB_ACCOUNT, Some(init_once));
     if qnx4_inode_cachep.is_null() { -ENOMEM } else { 0 }
@@ -95,9 +95,9 @@ static mut qnx4_fs_type: file_system_type = file_system_type {
 extern "C" {
     fn qnx4_sb(sb: *mut super_block) -> *mut qnx4_sb_info;
     fn qnx4_raw_inode(inode: *mut inode) -> *mut qnx4_inode_entry;
-    fn qnx4_block_map(inode: *mut inode, iblock: ::core::ffi::c_long) -> ::core::ffi::c_ulong;
+    fn qnx4_block_map(inode: *mut inode, iblock: ::kernel::ffi::c_long) -> ::kernel::ffi::c_ulong;
     fn qnx4_count_free_blocks(sb: *mut super_block) -> u64;
-    fn qnx4_iget(sb: *mut super_block, ino: ::core::ffi::c_ulong) -> *mut inode;
+    fn qnx4_iget(sb: *mut super_block, ino: ::kernel::ffi::c_ulong) -> *mut inode;
 }
 
 #[inline]
@@ -112,9 +112,9 @@ unsafe fn try_extent(extent: *mut qnx4_xtnt_t, offset: *mut u32) -> u32 {
 
 #[no_mangle]
 pub unsafe extern "C" fn qnx4_get_block(
-    inode: *mut inode, iblock: sector_t, bh: *mut buffer_head, _create: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let phys = qnx4_block_map(inode, iblock as ::core::ffi::c_long);
+    inode: *mut inode, iblock: sector_t, bh: *mut buffer_head, _create: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
+    let phys = qnx4_block_map(inode, iblock as ::kernel::ffi::c_long);
     if phys != 0 {
         map_bh(bh, (*inode).i_sb, phys);
     }
@@ -123,10 +123,10 @@ pub unsafe extern "C" fn qnx4_get_block(
 
 #[no_mangle]
 pub unsafe extern "C" fn qnx4_block_map(
-    inode: *mut inode, iblock: ::core::ffi::c_long,
-) -> ::core::ffi::c_ulong {
-    let mut ix: ::core::ffi::c_int;
-    let mut i_xblk: ::core::ffi::c_long;
+    inode: *mut inode, iblock: ::kernel::ffi::c_long,
+) -> ::kernel::ffi::c_ulong {
+    let mut ix: ::kernel::ffi::c_int;
+    let mut i_xblk: ::kernel::ffi::c_long;
     let mut bh: *mut buffer_head = core::ptr::null_mut();
     let mut xblk: *mut qnx4_xblk = core::ptr::null_mut();
     let qnx4_inode = qnx4_raw_inode(inode);
@@ -135,14 +135,14 @@ pub unsafe extern "C" fn qnx4_block_map(
     let mut block = try_extent(&mut (*qnx4_inode).di_first_xtnt, &mut offset);
 
     if block == 0 {
-        i_xblk = u32::from_le((*qnx4_inode).di_xblk) as ::core::ffi::c_long;
+        i_xblk = u32::from_le((*qnx4_inode).di_xblk) as ::kernel::ffi::c_long;
         ix = 0;
         while { nxtnt -= 1; nxtnt > 0 } {
             if ix == 0 {
                 bh = sb_bread((*inode).i_sb, (i_xblk - 1) as sector_t);
                 if bh.is_null() { return (-EIO) as _; }
                 xblk = (*bh).b_data as *mut qnx4_xblk;
-                if libc::memcmp((*xblk).xblk_signature.as_ptr() as _, b"IamXblk".as_ptr() as _, 7) != 0 {
+                if memcmp((*xblk).xblk_signature.as_ptr() as _, b"IamXblk".as_ptr() as _, 7) != 0 {
                     return (-EIO) as _;
                 }
             }
@@ -161,7 +161,7 @@ pub unsafe extern "C" fn qnx4_block_map(
     block as _
 }
 
-unsafe fn qnx4_checkroot(sb: *mut super_block, s: *mut qnx4_super_block) -> *const ::core::ffi::c_char {
+unsafe fn qnx4_checkroot(sb: *mut super_block, s: *mut qnx4_super_block) -> *const ::kernel::ffi::c_char {
     let mut bh: *mut buffer_head;
     if (*s).RootDir.di_fname[0] != b'/' as _ || (*s).RootDir.di_fname[1] != 0 { return b"no qnx4 filesystem (no root dir).\0".as_ptr() as _; }
     let rd = u32::from_le((*s).RootDir.di_first_xtnt.xtnt_blk) as i32 - 1;
@@ -171,7 +171,7 @@ unsafe fn qnx4_checkroot(sb: *mut super_block, s: *mut qnx4_super_block) -> *con
         if bh.is_null() { return b"unable to read root entry.\0".as_ptr() as _; }
         let mut rootdir = (*bh).b_data as *mut qnx4_inode_entry;
         for _ in 0..QNX4_INODES_PER_BLOCK {
-            if libc::strcmp((*rootdir).di_fname.as_ptr() as _, QNX4_BMNAME.as_ptr() as _) == 0 {
+            if strcmp((*rootdir).di_fname.as_ptr() as _, QNX4_BMNAME.as_ptr() as _) == 0 {
                 (*qnx4_sb(sb)).BitMap = kmemdup(rootdir as _, core::mem::size_of::<qnx4_inode_entry>(), GFP_KERNEL);
                 brelse(bh);
                 if (*qnx4_sb(sb)).BitMap.is_null() { return b"not enough memory for bitmap inode\0".as_ptr() as _; }
@@ -186,11 +186,11 @@ unsafe fn qnx4_checkroot(sb: *mut super_block, s: *mut qnx4_super_block) -> *con
 
 // The remaining filesystem operations retain the C ABI and kernel object layout.
 unsafe extern "C" {
-    fn qnx4_fill_super(s: *mut super_block, fc: *mut fs_context) -> ::core::ffi::c_int;
-    fn qnx4_get_tree(fc: *mut fs_context) -> ::core::ffi::c_int;
-    fn qnx4_init_fs_context(fc: *mut fs_context) -> ::core::ffi::c_int;
+    fn qnx4_fill_super(s: *mut super_block, fc: *mut fs_context) -> ::kernel::ffi::c_int;
+    fn qnx4_get_tree(fc: *mut fs_context) -> ::kernel::ffi::c_int;
+    fn qnx4_init_fs_context(fc: *mut fs_context) -> ::kernel::ffi::c_int;
     fn qnx4_kill_sb(sb: *mut super_block);
-    fn qnx4_read_folio(file: *mut file, folio: *mut folio) -> ::core::ffi::c_int;
+    fn qnx4_read_folio(file: *mut file, folio: *mut folio) -> ::kernel::ffi::c_int;
     fn qnx4_bmap(mapping: *mut address_space, block: sector_t) -> sector_t;
 }
 

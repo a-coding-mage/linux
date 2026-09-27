@@ -35,7 +35,7 @@ extern "C" {
     pub fn orion5x_init_early();
     pub fn orion5x_init_irq();
     pub fn orion5x_init();
-    pub fn orion5x_id(dev: *mut u32, rev: *mut u32, dev_name: *mut *mut core::ffi::c_char);
+    pub fn orion5x_id(dev: *mut u32, rev: *mut u32, dev_name: *mut *mut kernel::ffi::c_char);
     pub fn clk_init();
     pub static mut orion5x_tclk: i32;
     pub fn orion5x_timer_init();
@@ -49,7 +49,7 @@ extern "C" {
     pub fn orion5x_uart0_init();
     pub fn orion5x_uart1_init();
     pub fn orion5x_xor_init();
-    pub fn orion5x_restart(mode: reboot_mode, cmd: *const core::ffi::c_char);
+    pub fn orion5x_restart(mode: reboot_mode, cmd: *const kernel::ffi::c_char);
 }
 
 /* PCIe/PCI functions. */
@@ -67,7 +67,7 @@ extern "C" {
     pub fn orion5x_pci_sys_setup(nr: i32, sys: *mut pci_sys_data) -> i32;
     pub fn orion5x_pci_sys_scan_bus(nr: i32, bridge: *mut pci_host_bridge) -> i32;
     pub fn orion5x_pci_map_irq(dev: *const pci_dev, slot: u8, pin: u8) -> i32;
-    pub fn tag_fixup_mem32(tag: *mut tag, cmdline: *mut *mut core::ffi::c_char);
+    pub fn tag_fixup_mem32(tag: *mut tag, cmdline: *mut *mut kernel::ffi::c_char);
 }
 
 /* Build-time configuration selects the external implementation. */
@@ -83,15 +83,15 @@ extern "C" { pub fn d2net_init(); }
 
 /* These are not preempt-safe. Locks, if needed, must be taken by the caller. */
 extern "C" {
-    pub fn readl(addr: *const core::ffi::c_void) -> u32;
-    pub fn writel(value: u32, addr: *mut core::ffi::c_void);
+    pub fn readl(addr: *const kernel::ffi::c_void) -> u32;
+    pub fn writel(value: u32, addr: *mut kernel::ffi::c_void);
 }
 #[inline]
-pub unsafe fn orion5x_setbits(r: *mut core::ffi::c_void, mask: u32) {
+pub unsafe fn orion5x_setbits(r: *mut kernel::ffi::c_void, mask: u32) {
     writel(readl(r) | mask, r);
 }
 #[inline]
-pub unsafe fn orion5x_clrbits(r: *mut core::ffi::c_void, mask: u32) {
+pub unsafe fn orion5x_clrbits(r: *mut kernel::ffi::c_void, mask: u32) {
     writel(readl(r) & !mask, r);
 }
 

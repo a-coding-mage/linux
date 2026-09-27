@@ -359,7 +359,7 @@ pub fn snd_usb_caiaq_send_command(
     let usb_dev: *mut usb_device = (*cdev).chip.dev;
 
     if usb_dev.is_null() {
-        return -libc::EIO;
+        return -EIO;
     }
 
     let mut len = len;
@@ -397,7 +397,7 @@ pub fn snd_usb_caiaq_send_command_bank(
     let usb_dev: *mut usb_device = (*cdev).chip.dev;
 
     if usb_dev.is_null() {
-        return -libc::EIO;
+        return -EIO;
     }
 
     let mut len = len;
@@ -442,13 +442,13 @@ pub fn snd_usb_caiaq_set_audio_params(
         88200 => SAMPLERATE_88200,
         96000 => SAMPLERATE_96000,
         192000 => SAMPLERATE_192000,
-        _ => return -libc::EINVAL,
+        _ => return -EINVAL,
     };
 
     tmp[1] = match depth {
         16 => DEPTH_16,
         24 => DEPTH_24,
-        _ => return -libc::EINVAL,
+        _ => return -EINVAL,
     };
 
     tmp[2] = (bpp & 0xff) as u8;
@@ -478,7 +478,7 @@ pub fn snd_usb_caiaq_set_audio_params(
         HZ,
     ) == 0
     {
-        return -libc::EPIPE;
+        return -EPIPE;
     }
 
     if (*cdev).audio_parm_answer != 1 {
@@ -495,7 +495,7 @@ pub fn snd_usb_caiaq_set_audio_params(
     if (*cdev).audio_parm_answer == 1 {
         0
     } else {
-        -libc::EINVAL
+        -EINVAL
     }
 }
 
@@ -544,7 +544,7 @@ unsafe fn setup_card(cdev: *mut snd_usb_caiaqdev) -> i32 {
             ) == 0
             {
                 dev_err(dev, b"Read timeout for control state\n\0".as_ptr() as *const c_char);
-                return -libc::EINVAL;
+                return -EINVAL;
             }
 
             if ((*cdev).control_state[1] != 2)
@@ -587,7 +587,7 @@ unsafe fn setup_card(cdev: *mut snd_usb_caiaqdev) -> i32 {
     #[cfg(CONFIG_SND_USB_CAIAQ_INPUT)]
     {
         ret = snd_usb_caiaq_input_init(cdev);
-        if ret < 0 && ret != -libc::ENODEV {
+        if ret < 0 && ret != -ENODEV {
             dev_err(dev, b"Unable to set up input system (ret=%d)\n\0".as_ptr() as *const c_char, ret);
             return ret;
         }
@@ -638,7 +638,7 @@ unsafe fn create_card(
     }
 
     if devnum >= SNDRV_CARDS {
-        return -libc::ENODEV;
+        return -ENODEV;
     }
 
     err = snd_card_new(
@@ -678,7 +678,7 @@ unsafe fn init_card(cdev: *mut snd_usb_caiaqdev) -> i32 {
 
     if usb_set_interface(usb_dev, 0, 1) != 0 {
         dev_err(dev, b"can\'t set alt interface.\n\0".as_ptr() as *const c_char);
-        return -libc::EIO;
+        return -EIO;
     }
 
     usb_init_urb(&mut (*cdev).ep1_in_urb);
@@ -708,14 +708,14 @@ unsafe fn init_card(cdev: *mut snd_usb_caiaqdev) -> i32 {
         || usb_urb_ep_type_check(&mut (*cdev).midi_out_urb) != 0
     {
         dev_err(dev, b"invalid EPs\n\0".as_ptr() as *const c_char);
-        return -libc::EINVAL;
+        return -EINVAL;
     }
 
     init_waitqueue_head(&mut (*cdev).ep1_wait_queue as *mut _ as *mut c_char);
     init_waitqueue_head(&mut (*cdev).prepare_wait_queue as *mut _ as *mut c_char);
 
     if usb_submit_urb(&mut (*cdev).ep1_in_urb, GFP_KERNEL) != 0 {
-        return -libc::EIO;
+        return -EIO;
     }
 
     err = snd_usb_caiaq_send_command(cdev, EP1_CMD_GET_DEVICE_INFO, std::ptr::null(), 0);
@@ -731,7 +731,7 @@ unsafe fn init_card(cdev: *mut snd_usb_caiaqdev) -> i32 {
     ) == 0
     {
         goto_err_kill_urb(cdev);
-        return -libc::ENODEV;
+        return -ENODEV;
     }
 
     usb_string(

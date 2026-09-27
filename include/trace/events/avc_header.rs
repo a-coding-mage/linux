@@ -12,19 +12,19 @@ trace_event!(
     selinux_audited,
     proto(
         sad: *mut selinux_audit_data,
-        scontext: *mut core::ffi::c_char,
-        tcontext: *mut core::ffi::c_char,
-        tclass: *const core::ffi::c_char,
+        scontext: *mut kernel::ffi::c_char,
+        tcontext: *mut kernel::ffi::c_char,
+        tclass: *const kernel::ffi::c_char,
     ),
     args(sad, scontext, tcontext, tclass),
     entry {
         requested: u32,
         denied: u32,
         audited: u32,
-        result: core::ffi::c_int,
-        scontext: *mut core::ffi::c_char,
-        tcontext: *mut core::ffi::c_char,
-        tclass: *const core::ffi::c_char,
+        result: kernel::ffi::c_int,
+        scontext: *mut kernel::ffi::c_char,
+        tcontext: *mut kernel::ffi::c_char,
+        tclass: *const kernel::ffi::c_char,
     },
     fast_assign |entry: &mut SelinuxAuditedEntry, sad, scontext, tcontext, tclass| unsafe {
         entry.requested = (*sad).requested;
@@ -56,10 +56,10 @@ pub struct SelinuxAuditedEntry {
     pub requested: u32,
     pub denied: u32,
     pub audited: u32,
-    pub result: core::ffi::c_int,
-    pub scontext: *mut core::ffi::c_char,
-    pub tcontext: *mut core::ffi::c_char,
-    pub tclass: *const core::ffi::c_char,
+    pub result: kernel::ffi::c_int,
+    pub scontext: *mut kernel::ffi::c_char,
+    pub tcontext: *mut kernel::ffi::c_char,
+    pub tclass: *const kernel::ffi::c_char,
 }
 
 // <trace/define_trace.h> is intentionally represented by the trace_event!

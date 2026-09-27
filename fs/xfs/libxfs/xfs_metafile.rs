@@ -13,14 +13,14 @@ static XFS_METAFILE_TYPE_STRS: &[XfsMetafileTypeStr] = &[
 #[repr(C)]
 struct XfsMetafileTypeStr {
     mtype: XfsMetafileType,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 extern "C" {
     static XFS_METAFILE_TYPE_STR: XfsMetafileTypeStr;
 }
 
-pub unsafe fn xfs_metafile_type_str(metatype: XfsMetafileType) -> *const core::ffi::c_char {
+pub unsafe fn xfs_metafile_type_str(metatype: XfsMetafileType) -> *const kernel::ffi::c_char {
     let mut i: usize = 0;
 
     while i < XFS_METAFILE_TYPE_STRS.len() {

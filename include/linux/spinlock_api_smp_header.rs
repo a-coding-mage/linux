@@ -2,23 +2,23 @@
 
 /* The following declarations are supplied by the surrounding kernel crate. */
 extern "C" {
-    pub fn in_lock_functions(addr: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn in_lock_functions(addr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
     pub fn _raw_spin_lock(lock: *mut raw_spinlock_t);
-    pub fn _raw_spin_lock_nested(lock: *mut raw_spinlock_t, subclass: ::core::ffi::c_int);
+    pub fn _raw_spin_lock_nested(lock: *mut raw_spinlock_t, subclass: ::kernel::ffi::c_int);
     pub fn _raw_spin_lock_nest_lock(lock: *mut raw_spinlock_t, map: *mut lockdep_map);
     pub fn _raw_spin_lock_bh(lock: *mut raw_spinlock_t);
     pub fn _raw_spin_lock_irq(lock: *mut raw_spinlock_t);
     pub fn _raw_spin_lock_irq_disable(lock: *mut raw_spinlock_t);
-    pub fn _raw_spin_lock_irqsave(lock: *mut raw_spinlock_t) -> ::core::ffi::c_ulong;
-    pub fn _raw_spin_lock_irqsave_nested(lock: *mut raw_spinlock_t, subclass: ::core::ffi::c_int)
-        -> ::core::ffi::c_ulong;
-    pub fn _raw_spin_trylock(lock: *mut raw_spinlock_t) -> ::core::ffi::c_int;
-    pub fn _raw_spin_trylock_bh(lock: *mut raw_spinlock_t) -> ::core::ffi::c_int;
+    pub fn _raw_spin_lock_irqsave(lock: *mut raw_spinlock_t) -> ::kernel::ffi::c_ulong;
+    pub fn _raw_spin_lock_irqsave_nested(lock: *mut raw_spinlock_t, subclass: ::kernel::ffi::c_int)
+        -> ::kernel::ffi::c_ulong;
+    pub fn _raw_spin_trylock(lock: *mut raw_spinlock_t) -> ::kernel::ffi::c_int;
+    pub fn _raw_spin_trylock_bh(lock: *mut raw_spinlock_t) -> ::kernel::ffi::c_int;
     pub fn _raw_spin_unlock(lock: *mut raw_spinlock_t);
     pub fn _raw_spin_unlock_bh(lock: *mut raw_spinlock_t);
     pub fn _raw_spin_unlock_irq(lock: *mut raw_spinlock_t);
     pub fn _raw_spin_unlock_irq_enable(lock: *mut raw_spinlock_t);
-    pub fn _raw_spin_unlock_irqrestore(lock: *mut raw_spinlock_t, flags: ::core::ffi::c_ulong);
+    pub fn _raw_spin_unlock_irqrestore(lock: *mut raw_spinlock_t, flags: ::kernel::ffi::c_ulong);
 }
 
 /* assert_raw_spin_locked(x) expands to BUG_ON(!raw_spin_is_locked(x)). */
@@ -32,7 +32,7 @@ extern "C" {
 
 /* !CONFIG_GENERIC_LOCKBREAK || CONFIG_DEBUG_LOCK_ALLOC */
 #[inline]
-pub unsafe fn __raw_spin_trylock(lock: *mut raw_spinlock_t) -> ::core::ffi::c_int {
+pub unsafe fn __raw_spin_trylock(lock: *mut raw_spinlock_t) -> ::kernel::ffi::c_int {
     preempt_disable();
     if do_raw_spin_trylock(lock) != 0 {
         spin_acquire(&mut (*lock).dep_map, 0, 1, _RET_IP_());
@@ -62,7 +62,7 @@ pub unsafe fn _raw_spin_trylock_irq_disable(lock: *mut raw_spinlock_t) -> bool {
 
 #[inline(always)]
 pub unsafe fn _raw_spin_trylock_irqsave(
-    lock: *mut raw_spinlock_t, flags: *mut ::core::ffi::c_ulong,
+    lock: *mut raw_spinlock_t, flags: *mut ::kernel::ffi::c_ulong,
 ) -> bool {
     local_irq_save(flags);
     if __raw_spin_trylock(lock) != 0 { true } else {
@@ -72,7 +72,7 @@ pub unsafe fn _raw_spin_trylock_irqsave(
 }
 
 #[inline]
-pub unsafe fn __raw_spin_lock_irqsave(lock: *mut raw_spinlock_t) -> ::core::ffi::c_ulong {
+pub unsafe fn __raw_spin_lock_irqsave(lock: *mut raw_spinlock_t) -> ::kernel::ffi::c_ulong {
     let mut flags = 0;
     local_irq_save(&mut flags);
     preempt_disable();
@@ -119,7 +119,7 @@ pub unsafe fn __raw_spin_unlock(lock: *mut raw_spinlock_t) {
 }
 
 #[inline]
-pub unsafe fn __raw_spin_unlock_irqrestore(lock: *mut raw_spinlock_t, flags: ::core::ffi::c_ulong) {
+pub unsafe fn __raw_spin_unlock_irqrestore(lock: *mut raw_spinlock_t, flags: ::kernel::ffi::c_ulong) {
     spin_release(&mut (*lock).dep_map, _RET_IP_());
     do_raw_spin_unlock(lock);
     local_irq_restore(flags);
@@ -150,7 +150,7 @@ pub unsafe fn __raw_spin_unlock_bh(lock: *mut raw_spinlock_t) {
 }
 
 #[inline]
-pub unsafe fn __raw_spin_trylock_bh(lock: *mut raw_spinlock_t) -> ::core::ffi::c_int {
+pub unsafe fn __raw_spin_trylock_bh(lock: *mut raw_spinlock_t) -> ::kernel::ffi::c_int {
     __local_bh_disable_ip(_RET_IP_(), SOFTIRQ_LOCK_OFFSET);
     if do_raw_spin_trylock(lock) != 0 {
         spin_acquire(&mut (*lock).dep_map, 0, 1, _RET_IP_());

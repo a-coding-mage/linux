@@ -27,7 +27,7 @@
 pub struct amdgpu_eviction_fence {
     pub base: dma_fence,
     pub lock: spinlock_t,
-    pub timeline_name: [core::ffi::c_char; TASK_COMM_LEN],
+    pub timeline_name: [kernel::ffi::c_char; TASK_COMM_LEN],
     pub evf_mgr: *mut amdgpu_eviction_fence_mgr,
 }
 

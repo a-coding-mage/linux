@@ -44,12 +44,12 @@ pub const R_NIOS2_ALIGN: u32 = 21;
 /* Keep this the last entry. */
 pub const R_NIOS2_NUM: u32 = 22;
 
-pub type elf_greg_t = ::core::ffi::c_ulong;
+pub type elf_greg_t = ::kernel::ffi::c_ulong;
 
 pub const ELF_NGREG: usize = 49;
 pub type elf_gregset_t = [elf_greg_t; ELF_NGREG];
 
-pub type elf_fpregset_t = ::core::ffi::c_ulong;
+pub type elf_fpregset_t = ::kernel::ffi::c_ulong;
 
 /*
  * These are used to set parameters in the core dumps.

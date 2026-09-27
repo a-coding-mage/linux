@@ -66,10 +66,10 @@ pub struct GpioRegs {
 }
 
 #[repr(C)] pub struct ZynqGpio {
-    pub chip: gpio_chip, pub base_addr: *mut core::ffi::c_void, pub clk: *mut clk,
+    pub chip: gpio_chip, pub base_addr: *mut kernel::ffi::c_void, pub clk: *mut clk,
     pub irq: i32, pub p_data: *const ZynqPlatformData, pub context: GpioRegs, pub dirlock: spinlock_t,
 }
-#[repr(C)] pub struct ZynqPlatformData { pub label: *const core::ffi::c_char, pub quirks: u32, pub ngpio: u16, pub max_bank: usize, pub bank_min: [usize; ZYNQMP_GPIO_MAX_BANK], pub bank_max: [usize; ZYNQMP_GPIO_MAX_BANK] }
+#[repr(C)] pub struct ZynqPlatformData { pub label: *const kernel::ffi::c_char, pub quirks: u32, pub ngpio: u16, pub max_bank: usize, pub bank_min: [usize; ZYNQMP_GPIO_MAX_BANK], pub bank_max: [usize; ZYNQMP_GPIO_MAX_BANK] }
 
 extern "C" {
     static zynq_gpio_level_irqchip: irq_chip;

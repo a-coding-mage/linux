@@ -61,7 +61,7 @@ pub const fn OV772X_MANUAL_EDGECTRL(s: u8, t: u8) -> ov772x_edge_ctrl {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ov772x_camera_info {
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub edgectrl: ov772x_edge_ctrl,
 }
 

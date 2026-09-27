@@ -5,7 +5,7 @@
  * Copyright (C) 2008 Robert Jarzmik
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Dependency supplied by linux/regulator/machine.h.
 #[repr(C)]

@@ -9,7 +9,7 @@
 
 /* Dependencies supplied by the surrounding kernel translation. */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct device {

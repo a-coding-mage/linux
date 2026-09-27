@@ -17,18 +17,18 @@ pub type key_serial_t = i32;
 extern "C" {
     pub fn nvme_tls_psk_refresh(
         keyring: *mut key,
-        hostnqn: *const core::ffi::c_char,
-        subnqn: *const core::ffi::c_char,
+        hostnqn: *const kernel::ffi::c_char,
+        subnqn: *const kernel::ffi::c_char,
         hmac_id: u8,
         data: *mut u8,
         data_len: usize,
-        digest: *const core::ffi::c_char,
+        digest: *const kernel::ffi::c_char,
     ) -> *mut key;
 
     pub fn nvme_tls_psk_default(
         keyring: *mut key,
-        hostnqn: *const core::ffi::c_char,
-        subnqn: *const core::ffi::c_char,
+        hostnqn: *const kernel::ffi::c_char,
+        subnqn: *const kernel::ffi::c_char,
     ) -> key_serial_t;
 
     pub fn nvme_keyring_id() -> key_serial_t;
@@ -41,12 +41,12 @@ extern "C" {
 #[inline]
 pub unsafe fn nvme_tls_psk_refresh(
     _keyring: *mut key,
-    _hostnqn: *const core::ffi::c_char,
-    _subnqn: *mut core::ffi::c_char,
+    _hostnqn: *const kernel::ffi::c_char,
+    _subnqn: *mut kernel::ffi::c_char,
     _hmac_id: u8,
     _data: *mut u8,
     _data_len: usize,
-    _digest: *const core::ffi::c_char,
+    _digest: *const kernel::ffi::c_char,
 ) -> *mut key {
     /* ERR_PTR(-ENOTSUPP) */
     (-524isize) as *mut key
@@ -56,8 +56,8 @@ pub unsafe fn nvme_tls_psk_refresh(
 #[inline]
 pub unsafe fn nvme_tls_psk_default(
     _keyring: *mut key,
-    _hostnqn: *const core::ffi::c_char,
-    _subnqn: *const core::ffi::c_char,
+    _hostnqn: *const kernel::ffi::c_char,
+    _subnqn: *const kernel::ffi::c_char,
 ) -> key_serial_t {
     0
 }

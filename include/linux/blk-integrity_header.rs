@@ -13,7 +13,7 @@ pub enum blk_integrity_flags {
 }
 
 extern "C" {
-    pub fn blk_integrity_profile_name(bi: *mut blk_integrity) -> *const ::core::ffi::c_char;
+    pub fn blk_integrity_profile_name(bi: *mut blk_integrity) -> *const ::kernel::ffi::c_char;
     pub fn queue_limits_stack_integrity(t: *mut queue_limits, b: *mut queue_limits) -> bool;
 }
 
@@ -25,10 +25,10 @@ pub unsafe fn queue_limits_stack_integrity_bdev(t: *mut queue_limits, bdev: *mut
 // CONFIG_BLK_DEV_INTEGRITY conditional declarations are preserved with cfg attributes.
 #[cfg(CONFIG_BLK_DEV_INTEGRITY)]
 extern "C" {
-    pub fn blk_rq_map_integrity_sg(rq: *mut request, s: *mut scatterlist) -> ::core::ffi::c_int;
-    pub fn blk_rq_count_integrity_sg(q: *mut request_queue, b: *mut bio) -> ::core::ffi::c_int;
-    pub fn blk_rq_integrity_map_user(rq: *mut request, ubuf: *mut ::core::ffi::c_void, bytes: isize) -> ::core::ffi::c_int;
-    pub fn blk_get_meta_cap(bdev: *mut block_device, cmd: ::core::ffi::c_uint, argp: *mut logical_block_metadata_cap) -> ::core::ffi::c_int;
+    pub fn blk_rq_map_integrity_sg(rq: *mut request, s: *mut scatterlist) -> ::kernel::ffi::c_int;
+    pub fn blk_rq_count_integrity_sg(q: *mut request_queue, b: *mut bio) -> ::kernel::ffi::c_int;
+    pub fn blk_rq_integrity_map_user(rq: *mut request, ubuf: *mut ::kernel::ffi::c_void, bytes: isize) -> ::kernel::ffi::c_int;
+    pub fn blk_get_meta_cap(bdev: *mut block_device, cmd: ::kernel::ffi::c_uint, argp: *mut logical_block_metadata_cap) -> ::kernel::ffi::c_int;
     pub fn blk_rq_integrity_dma_map_iter_start(req: *mut request, dma_dev: *mut device, state: *mut dma_iova_state, iter: *mut blk_dma_iter) -> bool;
     pub fn blk_rq_integrity_dma_map_iter_next(req: *mut request, dma_dev: *mut device, iter: *mut blk_dma_iter) -> bool;
 }
@@ -53,10 +53,10 @@ pub unsafe fn queue_max_integrity_segments(q: *const request_queue) -> u16 { (*q
 
 #[cfg(CONFIG_BLK_DEV_INTEGRITY)]
 #[inline]
-pub unsafe fn bio_integrity_intervals(bi: *mut blk_integrity, sectors: ::core::ffi::c_uint) -> ::core::ffi::c_uint { sectors >> ((*bi).interval_exp - 9) }
+pub unsafe fn bio_integrity_intervals(bi: *mut blk_integrity, sectors: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint { sectors >> ((*bi).interval_exp - 9) }
 #[cfg(CONFIG_BLK_DEV_INTEGRITY)]
 #[inline]
-pub unsafe fn bio_integrity_bytes(bi: *mut blk_integrity, sectors: ::core::ffi::c_uint) -> ::core::ffi::c_uint { bio_integrity_intervals(bi, sectors) * (*bi).metadata_size }
+pub unsafe fn bio_integrity_bytes(bi: *mut blk_integrity, sectors: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint { bio_integrity_intervals(bi, sectors) * (*bi).metadata_size }
 #[cfg(CONFIG_BLK_DEV_INTEGRITY)]
 #[inline]
 pub unsafe fn blk_integrity_rq(rq: *const request) -> bool { (*rq).cmd_flags & REQ_INTEGRITY != 0 }
@@ -65,13 +65,13 @@ pub unsafe fn blk_integrity_rq(rq: *const request) -> bool { (*rq).cmd_flags & R
 pub unsafe fn rq_integrity_vec(rq: *mut request) -> bio_vec { mp_bvec_iter_bvec((*(*rq).bio).bi_integrity.bip_vec, (*(*rq).bio).bi_integrity.bip_iter) }
 
 #[cfg(not(CONFIG_BLK_DEV_INTEGRITY))]
-#[inline] pub unsafe fn blk_get_meta_cap(_: *mut block_device, _: ::core::ffi::c_uint, _: *mut logical_block_metadata_cap) -> ::core::ffi::c_int { -ENOIOCTLCMD }
+#[inline] pub unsafe fn blk_get_meta_cap(_: *mut block_device, _: ::kernel::ffi::c_uint, _: *mut logical_block_metadata_cap) -> ::kernel::ffi::c_int { -ENOIOCTLCMD }
 #[cfg(not(CONFIG_BLK_DEV_INTEGRITY))]
-#[inline] pub unsafe fn blk_rq_count_integrity_sg(_: *mut request_queue, _: *mut bio) -> ::core::ffi::c_int { 0 }
+#[inline] pub unsafe fn blk_rq_count_integrity_sg(_: *mut request_queue, _: *mut bio) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_BLK_DEV_INTEGRITY))]
-#[inline] pub unsafe fn blk_rq_map_integrity_sg(_: *mut request, _: *mut scatterlist) -> ::core::ffi::c_int { 0 }
+#[inline] pub unsafe fn blk_rq_map_integrity_sg(_: *mut request, _: *mut scatterlist) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_BLK_DEV_INTEGRITY))]
-#[inline] pub unsafe fn blk_rq_integrity_map_user(_: *mut request, _: *mut ::core::ffi::c_void, _: isize) -> ::core::ffi::c_int { -EINVAL }
+#[inline] pub unsafe fn blk_rq_integrity_map_user(_: *mut request, _: *mut ::kernel::ffi::c_void, _: isize) -> ::kernel::ffi::c_int { -EINVAL }
 #[cfg(not(CONFIG_BLK_DEV_INTEGRITY))]
 #[inline] pub unsafe fn blk_rq_integrity_dma_map_iter_start(_: *mut request, _: *mut device, _: *mut dma_iova_state, _: *mut blk_dma_iter) -> bool { false }
 #[cfg(not(CONFIG_BLK_DEV_INTEGRITY))]
@@ -85,9 +85,9 @@ pub unsafe fn rq_integrity_vec(rq: *mut request) -> bio_vec { mp_bvec_iter_bvec(
 #[cfg(not(CONFIG_BLK_DEV_INTEGRITY))]
 #[inline] pub unsafe fn queue_max_integrity_segments(_: *const request_queue) -> u16 { 0 }
 #[cfg(not(CONFIG_BLK_DEV_INTEGRITY))]
-#[inline] pub unsafe fn bio_integrity_intervals(_: *mut blk_integrity, _: ::core::ffi::c_uint) -> ::core::ffi::c_uint { 0 }
+#[inline] pub unsafe fn bio_integrity_intervals(_: *mut blk_integrity, _: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint { 0 }
 #[cfg(not(CONFIG_BLK_DEV_INTEGRITY))]
-#[inline] pub unsafe fn bio_integrity_bytes(_: *mut blk_integrity, _: ::core::ffi::c_uint) -> ::core::ffi::c_uint { 0 }
+#[inline] pub unsafe fn bio_integrity_bytes(_: *mut blk_integrity, _: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint { 0 }
 #[cfg(not(CONFIG_BLK_DEV_INTEGRITY))]
 #[inline] pub unsafe fn blk_integrity_rq(_: *const request) -> bool { false }
 #[cfg(not(CONFIG_BLK_DEV_INTEGRITY))]
@@ -101,9 +101,9 @@ pub enum bio_integrity_action {
     BI_ACT_ZERO = 1u32 << 2,
 }
 
-extern "C" { pub fn __bio_integrity_action(bio: *mut bio) -> ::core::ffi::c_uint; }
+extern "C" { pub fn __bio_integrity_action(bio: *mut bio) -> ::kernel::ffi::c_uint; }
 #[inline]
-pub unsafe fn bio_integrity_action(bio: *mut bio) -> ::core::ffi::c_uint {
+pub unsafe fn bio_integrity_action(bio: *mut bio) -> ::kernel::ffi::c_uint {
     if blk_get_integrity((*(*bio).bi_bdev).bd_disk).is_null() || bio_integrity(bio) { 0 } else { __bio_integrity_action(bio) }
 }
 

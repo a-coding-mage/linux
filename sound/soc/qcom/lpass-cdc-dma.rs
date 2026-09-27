@@ -15,7 +15,7 @@
 // lpass-lpaif-reg.h
 // lpass.h
 
-const CODEC_MEM_HZ_NORMAL: core::ffi::c_ulong = 153600000;
+const CODEC_MEM_HZ_NORMAL: kernel::ffi::c_ulong = 153600000;
 
 #[repr(C)]
 enum codec_dma_interfaces {
@@ -32,48 +32,48 @@ enum codec_dma_interfaces {
 }
 
 extern "C" {
-    static LPASS_CDC_DMA_RX0: core::ffi::c_int;
-    static LPASS_CDC_DMA_RX1: core::ffi::c_int;
-    static LPASS_CDC_DMA_RX2: core::ffi::c_int;
-    static LPASS_CDC_DMA_RX3: core::ffi::c_int;
-    static LPASS_CDC_DMA_RX4: core::ffi::c_int;
-    static LPASS_CDC_DMA_RX5: core::ffi::c_int;
-    static LPASS_CDC_DMA_RX6: core::ffi::c_int;
-    static LPASS_CDC_DMA_RX7: core::ffi::c_int;
-    static LPASS_CDC_DMA_RX8: core::ffi::c_int;
-    static LPASS_CDC_DMA_RX9: core::ffi::c_int;
-    static LPASS_CDC_DMA_TX0: core::ffi::c_int;
-    static LPASS_CDC_DMA_TX1: core::ffi::c_int;
-    static LPASS_CDC_DMA_TX2: core::ffi::c_int;
-    static LPASS_CDC_DMA_TX3: core::ffi::c_int;
-    static LPASS_CDC_DMA_TX4: core::ffi::c_int;
-    static LPASS_CDC_DMA_TX5: core::ffi::c_int;
-    static LPASS_CDC_DMA_TX6: core::ffi::c_int;
-    static LPASS_CDC_DMA_TX7: core::ffi::c_int;
-    static LPASS_CDC_DMA_TX8: core::ffi::c_int;
-    static LPASS_CDC_DMA_VA_TX0: core::ffi::c_int;
-    static LPASS_CDC_DMA_VA_TX1: core::ffi::c_int;
-    static LPASS_CDC_DMA_VA_TX2: core::ffi::c_int;
-    static LPASS_CDC_DMA_VA_TX3: core::ffi::c_int;
-    static LPASS_CDC_DMA_VA_TX4: core::ffi::c_int;
-    static LPASS_CDC_DMA_VA_TX5: core::ffi::c_int;
-    static LPASS_CDC_DMA_VA_TX6: core::ffi::c_int;
-    static LPASS_CDC_DMA_VA_TX7: core::ffi::c_int;
-    static LPASS_CDC_DMA_VA_TX8: core::ffi::c_int;
-    static EINVAL: core::ffi::c_int;
-    static LPAIF_DMACTL_ENABLE_ON: core::ffi::c_uint;
-    static LPAIF_DMACTL_ENABLE_OFF: core::ffi::c_uint;
-    static LPASS_CDC_DMA_INTF_ONE_CHANNEL: core::ffi::c_uint;
-    static LPASS_CDC_DMA_INTF_TWO_CHANNEL: core::ffi::c_uint;
-    static LPASS_CDC_DMA_INTF_FOUR_CHANNEL: core::ffi::c_uint;
-    static LPASS_CDC_DMA_INTF_SIX_CHANNEL: core::ffi::c_uint;
-    static LPASS_CDC_DMA_INTF_EIGHT_CHANNEL: core::ffi::c_uint;
-    static SNDRV_PCM_TRIGGER_START: core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_RESUME: core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_PAUSE_RELEASE: core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_STOP: core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_SUSPEND: core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_PAUSE_PUSH: core::ffi::c_int;
+    static LPASS_CDC_DMA_RX0: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_RX1: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_RX2: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_RX3: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_RX4: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_RX5: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_RX6: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_RX7: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_RX8: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_RX9: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_TX0: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_TX1: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_TX2: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_TX3: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_TX4: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_TX5: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_TX6: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_TX7: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_TX8: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_VA_TX0: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_VA_TX1: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_VA_TX2: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_VA_TX3: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_VA_TX4: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_VA_TX5: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_VA_TX6: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_VA_TX7: kernel::ffi::c_int;
+    static LPASS_CDC_DMA_VA_TX8: kernel::ffi::c_int;
+    static EINVAL: kernel::ffi::c_int;
+    static LPAIF_DMACTL_ENABLE_ON: kernel::ffi::c_uint;
+    static LPAIF_DMACTL_ENABLE_OFF: kernel::ffi::c_uint;
+    static LPASS_CDC_DMA_INTF_ONE_CHANNEL: kernel::ffi::c_uint;
+    static LPASS_CDC_DMA_INTF_TWO_CHANNEL: kernel::ffi::c_uint;
+    static LPASS_CDC_DMA_INTF_FOUR_CHANNEL: kernel::ffi::c_uint;
+    static LPASS_CDC_DMA_INTF_SIX_CHANNEL: kernel::ffi::c_uint;
+    static LPASS_CDC_DMA_INTF_EIGHT_CHANNEL: kernel::ffi::c_uint;
+    static SNDRV_PCM_TRIGGER_START: kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_RESUME: kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_PAUSE_RELEASE: kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_STOP: kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_SUSPEND: kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_PAUSE_PUSH: kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -83,18 +83,18 @@ pub struct snd_pcm_substream {
 
 #[repr(C)]
 pub struct snd_pcm_runtime {
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct snd_soc_dai {
-    pub id: core::ffi::c_int,
+    pub id: kernel::ffi::c_int,
     pub driver: *mut snd_soc_dai_driver,
 }
 
 #[repr(C)]
 pub struct snd_soc_dai_driver {
-    pub id: core::ffi::c_uint,
+    pub id: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -119,13 +119,13 @@ pub struct lpass_data {
 
 #[repr(C)]
 pub struct lpass_pcm_data {
-    pub dma_ch: core::ffi::c_int,
+    pub dma_ch: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct lpass_variant {
-    pub rxtx_wrdma_channel_start: core::ffi::c_int,
-    pub va_wrdma_channel_start: core::ffi::c_int,
+    pub rxtx_wrdma_channel_start: kernel::ffi::c_int,
+    pub va_wrdma_channel_start: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -156,7 +156,7 @@ pub struct clk {
 #[repr(C)]
 pub struct snd_soc_dai_ops {
     pub startup: Option<
-        unsafe extern "C" fn(*mut snd_pcm_substream, *mut snd_soc_dai) -> core::ffi::c_int,
+        unsafe extern "C" fn(*mut snd_pcm_substream, *mut snd_soc_dai) -> kernel::ffi::c_int,
     >,
     pub shutdown: Option<unsafe extern "C" fn(*mut snd_pcm_substream, *mut snd_soc_dai)>,
     pub hw_params: Option<
@@ -164,14 +164,14 @@ pub struct snd_soc_dai_ops {
             *mut snd_pcm_substream,
             *mut snd_pcm_hw_params,
             *mut snd_soc_dai,
-        ) -> core::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
     pub trigger: Option<
         unsafe extern "C" fn(
             *mut snd_pcm_substream,
-            core::ffi::c_int,
+            kernel::ffi::c_int,
             *mut snd_soc_dai,
-        ) -> core::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
 }
 
@@ -179,35 +179,35 @@ extern "C" {
     fn snd_soc_substream_to_rtd(substream: *mut snd_pcm_substream) -> *mut snd_soc_pcm_runtime;
     fn snd_soc_rtd_to_cpu(
         rtd: *mut snd_soc_pcm_runtime,
-        num: core::ffi::c_int,
+        num: kernel::ffi::c_int,
     ) -> *mut snd_soc_dai;
     fn snd_soc_dai_get_drvdata(dai: *mut snd_soc_dai) -> *mut lpass_data;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     fn regmap_fields_write(
         fields: *mut regmap_field,
-        id: core::ffi::c_int,
-        val: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
-    fn clk_set_rate(clk: *mut clk, rate: core::ffi::c_ulong) -> core::ffi::c_int;
-    fn clk_prepare_enable(clk: *mut clk) -> core::ffi::c_int;
+        id: kernel::ffi::c_int,
+        val: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
+    fn clk_set_rate(clk: *mut clk, rate: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+    fn clk_prepare_enable(clk: *mut clk) -> kernel::ffi::c_int;
     fn clk_disable_unprepare(clk: *mut clk);
-    fn params_channels(params: *mut snd_pcm_hw_params) -> core::ffi::c_uint;
+    fn params_channels(params: *mut snd_pcm_hw_params) -> kernel::ffi::c_uint;
 }
 
 #[inline]
 unsafe fn c_range(
-    value: core::ffi::c_uint,
-    start: core::ffi::c_int,
-    end: core::ffi::c_int,
+    value: kernel::ffi::c_uint,
+    start: kernel::ffi::c_int,
+    end: kernel::ffi::c_int,
 ) -> bool {
-    value >= start as core::ffi::c_uint && value <= end as core::ffi::c_uint
+    value >= start as kernel::ffi::c_uint && value <= end as kernel::ffi::c_uint
 }
 
 #[inline]
 unsafe fn c_range_i(
-    value: core::ffi::c_int,
-    start: core::ffi::c_int,
-    end: core::ffi::c_int,
+    value: kernel::ffi::c_int,
+    start: kernel::ffi::c_int,
+    end: kernel::ffi::c_int,
 ) -> bool {
     value >= start && value <= end
 }
@@ -216,7 +216,7 @@ unsafe extern "C" fn __lpass_get_dmactl_handle(
     substream: *mut snd_pcm_substream,
     dai: *mut snd_soc_dai,
     dmactl: *mut *mut lpaif_dmactl,
-    id: *mut core::ffi::c_int,
+    id: *mut kernel::ffi::c_int,
 ) {
     let soc_runtime = snd_soc_substream_to_rtd(substream);
     let cpu_dai = snd_soc_rtd_to_cpu(soc_runtime, 0);
@@ -242,62 +242,62 @@ unsafe extern "C" fn __lpass_get_dmactl_handle(
     } else {
         dev_err(
             (*soc_runtime).dev,
-            b"invalid dai id for dma ctl: %d\n\0".as_ptr() as *const core::ffi::c_char,
+            b"invalid dai id for dma ctl: %d\n\0".as_ptr() as *const kernel::ffi::c_char,
             dai_id,
         );
     }
 }
 
 unsafe extern "C" fn __lpass_get_codec_dma_intf_type(
-    dai_id: core::ffi::c_int,
-) -> core::ffi::c_int {
-    let ret: core::ffi::c_int;
+    dai_id: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
+    let ret: kernel::ffi::c_int;
 
     if dai_id == LPASS_CDC_DMA_RX0 || dai_id == LPASS_CDC_DMA_TX0 || dai_id == LPASS_CDC_DMA_VA_TX0
     {
-        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE1 as core::ffi::c_int;
+        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE1 as kernel::ffi::c_int;
     } else if dai_id == LPASS_CDC_DMA_RX1
         || dai_id == LPASS_CDC_DMA_TX1
         || dai_id == LPASS_CDC_DMA_VA_TX1
     {
-        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE2 as core::ffi::c_int;
+        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE2 as kernel::ffi::c_int;
     } else if dai_id == LPASS_CDC_DMA_RX2
         || dai_id == LPASS_CDC_DMA_TX2
         || dai_id == LPASS_CDC_DMA_VA_TX2
     {
-        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE3 as core::ffi::c_int;
+        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE3 as kernel::ffi::c_int;
     } else if dai_id == LPASS_CDC_DMA_RX3
         || dai_id == LPASS_CDC_DMA_TX3
         || dai_id == LPASS_CDC_DMA_VA_TX3
     {
-        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE4 as core::ffi::c_int;
+        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE4 as kernel::ffi::c_int;
     } else if dai_id == LPASS_CDC_DMA_RX4
         || dai_id == LPASS_CDC_DMA_TX4
         || dai_id == LPASS_CDC_DMA_VA_TX4
     {
-        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE5 as core::ffi::c_int;
+        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE5 as kernel::ffi::c_int;
     } else if dai_id == LPASS_CDC_DMA_RX5
         || dai_id == LPASS_CDC_DMA_TX5
         || dai_id == LPASS_CDC_DMA_VA_TX5
     {
-        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE6 as core::ffi::c_int;
+        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE6 as kernel::ffi::c_int;
     } else if dai_id == LPASS_CDC_DMA_RX6
         || dai_id == LPASS_CDC_DMA_TX6
         || dai_id == LPASS_CDC_DMA_VA_TX6
     {
-        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE7 as core::ffi::c_int;
+        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE7 as kernel::ffi::c_int;
     } else if dai_id == LPASS_CDC_DMA_RX7
         || dai_id == LPASS_CDC_DMA_TX7
         || dai_id == LPASS_CDC_DMA_VA_TX7
     {
-        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE8 as core::ffi::c_int;
+        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE8 as kernel::ffi::c_int;
     } else if dai_id == LPASS_CDC_DMA_RX8
         || dai_id == LPASS_CDC_DMA_TX8
         || dai_id == LPASS_CDC_DMA_VA_TX8
     {
-        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE9 as core::ffi::c_int;
+        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE9 as kernel::ffi::c_int;
     } else if dai_id == LPASS_CDC_DMA_RX9 {
-        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE10 as core::ffi::c_int;
+        ret = codec_dma_interfaces::LPASS_CDC_DMA_INTERFACE10 as kernel::ffi::c_int;
     } else {
         ret = -EINVAL;
     }
@@ -307,21 +307,21 @@ unsafe extern "C" fn __lpass_get_codec_dma_intf_type(
 unsafe extern "C" fn __lpass_platform_codec_intf_init(
     dai: *mut snd_soc_dai,
     substream: *mut snd_pcm_substream,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let soc_runtime = snd_soc_substream_to_rtd(substream);
     let cpu_dai = snd_soc_rtd_to_cpu(soc_runtime, 0);
     let mut dmactl: *mut lpaif_dmactl = core::ptr::null_mut();
     let dev = (*soc_runtime).dev;
-    let mut ret: core::ffi::c_int;
-    let mut id: core::ffi::c_int = 0;
-    let codec_intf: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
+    let mut id: kernel::ffi::c_int = 0;
+    let codec_intf: kernel::ffi::c_int;
     let dai_id = (*(*cpu_dai).driver).id;
 
-    codec_intf = __lpass_get_codec_dma_intf_type(dai_id as core::ffi::c_int);
+    codec_intf = __lpass_get_codec_dma_intf_type(dai_id as kernel::ffi::c_int);
     if codec_intf < 0 {
         dev_err(
             dev,
-            b"failed to get codec_intf: %d\n\0".as_ptr() as *const core::ffi::c_char,
+            b"failed to get codec_intf: %d\n\0".as_ptr() as *const kernel::ffi::c_char,
             codec_intf,
         );
         return codec_intf;
@@ -332,12 +332,12 @@ unsafe extern "C" fn __lpass_platform_codec_intf_init(
         return -EINVAL;
     }
 
-    ret = regmap_fields_write((*dmactl).codec_intf, id, codec_intf as core::ffi::c_uint);
+    ret = regmap_fields_write((*dmactl).codec_intf, id, codec_intf as kernel::ffi::c_uint);
     if ret != 0 {
         dev_err(
             dev,
             b"error writing to dmactl codec_intf reg field: %d\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
             ret,
         );
         return ret;
@@ -347,7 +347,7 @@ unsafe extern "C" fn __lpass_platform_codec_intf_init(
         dev_err(
             dev,
             b"error writing to dmactl codec_fs_sel reg field: %d\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
             ret,
         );
         return ret;
@@ -357,7 +357,7 @@ unsafe extern "C" fn __lpass_platform_codec_intf_init(
         dev_err(
             dev,
             b"error writing to dmactl codec_fs_delay reg field: %d\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
             ret,
         );
         return ret;
@@ -367,7 +367,7 @@ unsafe extern "C" fn __lpass_platform_codec_intf_init(
         dev_err(
             dev,
             b"error writing to dmactl codec_pack reg field: %d\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
             ret,
         );
         return ret;
@@ -377,7 +377,7 @@ unsafe extern "C" fn __lpass_platform_codec_intf_init(
         dev_err(
             dev,
             b"error writing to dmactl codec_enable reg field: %d\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
             ret,
         );
         return ret;
@@ -388,7 +388,7 @@ unsafe extern "C" fn __lpass_platform_codec_intf_init(
 unsafe extern "C" fn lpass_cdc_dma_daiops_startup(
     substream: *mut snd_pcm_substream,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let drvdata = snd_soc_dai_get_drvdata(dai);
     let soc_runtime = snd_soc_substream_to_rtd(substream);
 
@@ -403,8 +403,8 @@ unsafe extern "C" fn lpass_cdc_dma_daiops_startup(
     } else {
         dev_err(
             (*soc_runtime).dev,
-            b"%s: invalid  interface: %d\n\0".as_ptr() as *const core::ffi::c_char,
-            b"lpass_cdc_dma_daiops_startup\0".as_ptr() as *const core::ffi::c_char,
+            b"%s: invalid  interface: %d\n\0".as_ptr() as *const kernel::ffi::c_char,
+            b"lpass_cdc_dma_daiops_startup\0".as_ptr() as *const kernel::ffi::c_char,
             (*dai).id,
         );
     }
@@ -427,8 +427,8 @@ unsafe extern "C" fn lpass_cdc_dma_daiops_shutdown(
     } else {
         dev_err(
             (*soc_runtime).dev,
-            b"%s: invalid  interface: %d\n\0".as_ptr() as *const core::ffi::c_char,
-            b"lpass_cdc_dma_daiops_shutdown\0".as_ptr() as *const core::ffi::c_char,
+            b"%s: invalid  interface: %d\n\0".as_ptr() as *const kernel::ffi::c_char,
+            b"lpass_cdc_dma_daiops_shutdown\0".as_ptr() as *const kernel::ffi::c_char,
             (*dai).id,
         );
     }
@@ -438,13 +438,13 @@ unsafe extern "C" fn lpass_cdc_dma_daiops_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let soc_runtime = snd_soc_substream_to_rtd(substream);
     let mut dmactl: *mut lpaif_dmactl = core::ptr::null_mut();
-    let regval: core::ffi::c_uint;
+    let regval: kernel::ffi::c_uint;
     let channels = params_channels(params);
-    let ret: core::ffi::c_int;
-    let mut id: core::ffi::c_int = 0;
+    let ret: kernel::ffi::c_int;
+    let mut id: kernel::ffi::c_int = 0;
 
     match channels {
         1 => {
@@ -465,7 +465,7 @@ unsafe extern "C" fn lpass_cdc_dma_daiops_hw_params(
         _ => {
             dev_err(
                 (*soc_runtime).dev,
-                b"invalid PCM config\n\0".as_ptr() as *const core::ffi::c_char,
+                b"invalid PCM config\n\0".as_ptr() as *const kernel::ffi::c_char,
             );
             return -EINVAL;
         }
@@ -481,7 +481,7 @@ unsafe extern "C" fn lpass_cdc_dma_daiops_hw_params(
         dev_err(
             (*soc_runtime).dev,
             b"error writing to dmactl codec_channel reg field: %d\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
             ret,
         );
         return ret;
@@ -491,13 +491,13 @@ unsafe extern "C" fn lpass_cdc_dma_daiops_hw_params(
 
 unsafe extern "C" fn lpass_cdc_dma_daiops_trigger(
     substream: *mut snd_pcm_substream,
-    cmd: core::ffi::c_int,
+    cmd: kernel::ffi::c_int,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let soc_runtime = snd_soc_substream_to_rtd(substream);
     let mut dmactl: *mut lpaif_dmactl = core::ptr::null_mut();
-    let mut ret: core::ffi::c_int = 0;
-    let mut id: core::ffi::c_int = 0;
+    let mut ret: kernel::ffi::c_int = 0;
+    let mut id: kernel::ffi::c_int = 0;
 
     if cmd == SNDRV_PCM_TRIGGER_START
         || cmd == SNDRV_PCM_TRIGGER_RESUME
@@ -518,7 +518,7 @@ unsafe extern "C" fn lpass_cdc_dma_daiops_trigger(
             dev_err(
                 (*soc_runtime).dev,
                 b"error writing to dmactl codec_enable reg: %d\n\0".as_ptr()
-                    as *const core::ffi::c_char,
+                    as *const kernel::ffi::c_char,
                 ret,
             );
             return ret;
@@ -527,8 +527,8 @@ unsafe extern "C" fn lpass_cdc_dma_daiops_trigger(
         ret = -EINVAL;
         dev_err(
             (*soc_runtime).dev,
-            b"%s: invalid %d interface\n\0".as_ptr() as *const core::ffi::c_char,
-            b"lpass_cdc_dma_daiops_trigger\0".as_ptr() as *const core::ffi::c_char,
+            b"%s: invalid %d interface\n\0".as_ptr() as *const kernel::ffi::c_char,
+            b"lpass_cdc_dma_daiops_trigger\0".as_ptr() as *const kernel::ffi::c_char,
             cmd,
         );
     }

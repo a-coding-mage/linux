@@ -10,19 +10,19 @@
 // linux/of_fdt.h, asm/mach_desc.h, and asm/serial.h.
 
 #[cfg(CONFIG_SERIAL_EARLYCON)]
-static mut arc_base_baud: ::core::ffi::c_uint = 0;
+static mut arc_base_baud: ::kernel::ffi::c_uint = 0;
 
 #[cfg(CONFIG_SERIAL_EARLYCON)]
-pub unsafe fn arc_early_base_baud() -> ::core::ffi::c_uint {
+pub unsafe fn arc_early_base_baud() -> ::kernel::ffi::c_uint {
     arc_base_baud / 16
 }
 
 #[cfg(CONFIG_SERIAL_EARLYCON)]
-unsafe fn arc_set_early_base_baud(dt_root: ::core::ffi::c_ulong) {
-    if of_flat_dt_is_compatible(dt_root, b"abilis,arc-tb10x\0".as_ptr() as *const ::core::ffi::c_char) != 0 {
+unsafe fn arc_set_early_base_baud(dt_root: ::kernel::ffi::c_ulong) {
+    if of_flat_dt_is_compatible(dt_root, b"abilis,arc-tb10x\0".as_ptr() as *const ::kernel::ffi::c_char) != 0 {
         arc_base_baud = 166666666; /* Fixed 166.6MHz clk (TB10x) */
-    } else if of_flat_dt_is_compatible(dt_root, b"snps,arc-sdp\0".as_ptr() as *const ::core::ffi::c_char) != 0
-        || of_flat_dt_is_compatible(dt_root, b"snps,hsdk\0".as_ptr() as *const ::core::ffi::c_char) != 0
+    } else if of_flat_dt_is_compatible(dt_root, b"snps,arc-sdp\0".as_ptr() as *const ::kernel::ffi::c_char) != 0
+        || of_flat_dt_is_compatible(dt_root, b"snps,hsdk\0".as_ptr() as *const ::kernel::ffi::c_char) != 0
     {
         arc_base_baud = 33333333; /* Fixed 33MHz clk (AXS10x & HSDK) */
     } else {
@@ -31,32 +31,32 @@ unsafe fn arc_set_early_base_baud(dt_root: ::core::ffi::c_ulong) {
 }
 
 #[cfg(not(CONFIG_SERIAL_EARLYCON))]
-unsafe fn arc_set_early_base_baud(_dt_root: ::core::ffi::c_ulong) {}
+unsafe fn arc_set_early_base_baud(_dt_root: ::kernel::ffi::c_ulong) {}
 
 unsafe extern "C" {
     static __arch_info_begin: *const machine_desc;
     static __arch_info_end: *const machine_desc;
 
     fn of_flat_dt_is_compatible(
-        root: ::core::ffi::c_ulong,
-        compatible: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
-    fn early_init_dt_scan(dt: *mut ::core::ffi::c_void, pa: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    fn __pa(addr: *mut ::core::ffi::c_void) -> ::core::ffi::c_ulong;
+        root: ::kernel::ffi::c_ulong,
+        compatible: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
+    fn early_init_dt_scan(dt: *mut ::kernel::ffi::c_void, pa: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    fn __pa(addr: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_ulong;
     fn of_flat_dt_match_machine(
-        default_match: *const *const ::core::ffi::c_char,
-        get_next_compat: unsafe fn(*mut *const *const ::core::ffi::c_char) -> *const ::core::ffi::c_void,
+        default_match: *const *const ::kernel::ffi::c_char,
+        get_next_compat: unsafe fn(*mut *const *const ::kernel::ffi::c_char) -> *const ::kernel::ffi::c_void,
     ) -> *const machine_desc;
-    fn of_get_flat_dt_root() -> ::core::ffi::c_ulong;
+    fn of_get_flat_dt_root() -> ::kernel::ffi::c_ulong;
     fn machine_halt() -> !;
 }
 
 #[repr(C)]
 pub struct machine_desc {
-    pub dt_compat: *const *const ::core::ffi::c_char,
+    pub dt_compat: *const *const ::kernel::ffi::c_char,
 }
 
-unsafe fn arch_get_next_mach(match_: *mut *const *const ::core::ffi::c_char) -> *const ::core::ffi::c_void {
+unsafe fn arch_get_next_mach(match_: *mut *const *const ::kernel::ffi::c_char) -> *const ::kernel::ffi::c_void {
     static mut mdesc: *const machine_desc = unsafe { __arch_info_begin };
     let m = mdesc;
 
@@ -66,7 +66,7 @@ unsafe fn arch_get_next_mach(match_: *mut *const *const ::core::ffi::c_char) -> 
 
     mdesc = unsafe { mdesc.add(1) };
     unsafe { *match_ = (*m).dt_compat };
-    m as *const ::core::ffi::c_void
+    m as *const ::kernel::ffi::c_void
 }
 
 /**
@@ -76,9 +76,9 @@ unsafe fn arch_get_next_mach(match_: *mut *const *const ::core::ffi::c_char) -> 
  * If a dtb was passed to the kernel, then use it to choose the correct
  * machine_desc and to setup the system.
  */
-pub unsafe fn setup_machine_fdt(dt: *mut ::core::ffi::c_void) -> *const machine_desc {
+pub unsafe fn setup_machine_fdt(dt: *mut ::kernel::ffi::c_void) -> *const machine_desc {
     let mdesc: *const machine_desc;
-    let dt_root: ::core::ffi::c_ulong;
+    let dt_root: ::kernel::ffi::c_ulong;
 
     if early_init_dt_scan(dt, __pa(dt)) == 0 {
         return core::ptr::null();

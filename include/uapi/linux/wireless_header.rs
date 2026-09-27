@@ -75,7 +75,7 @@ pub const IW_EVENT_CAPA_K_0:u32 = IW_EVENT_CAPA_MASK(0x8B04)|IW_EVENT_CAPA_MASK(
 pub const IW_EVENT_CAPA_K_1:u32 = IW_EVENT_CAPA_MASK(0x8B2A);
 
 #[repr(C)] pub struct iw_param { pub value: __s32, pub fixed: __u8, pub disabled: __u8, pub flags: __u16 }
-#[repr(C)] pub struct iw_point { pub pointer: *mut core::ffi::c_void, pub length: __u16, pub flags: __u16 }
+#[repr(C)] pub struct iw_point { pub pointer: *mut kernel::ffi::c_void, pub length: __u16, pub flags: __u16 }
 #[repr(C)] pub struct iw_freq { pub m: __s32, pub e: __s16, pub i: __u8, pub flags: __u8 }
 #[repr(C)] pub struct iw_quality { pub qual: __u8, pub level: __u8, pub noise: __u8, pub updated: __u8 }
 #[repr(C)] pub struct iw_discarded { pub nwid: __u32, pub code: __u32, pub fragment: __u32, pub retries: __u32, pub misc: __u32 }
@@ -89,11 +89,11 @@ pub const IW_EVENT_CAPA_K_1:u32 = IW_EVENT_CAPA_MASK(0x8B2A);
 #[repr(C)] pub struct iw_pmkid_cand { pub flags: __u32, pub index: __u32, pub bssid: sockaddr }
 #[repr(C)] pub struct iw_statistics { pub status: __u16, pub qual: iw_quality, pub discard: iw_discarded, pub miss: iw_missed }
 
-#[repr(C)] pub union iwreq_data { pub name: [core::ffi::c_char; IFNAMSIZ], pub essid: iw_point, pub nwid: iw_param, pub freq: iw_freq, pub sens: iw_param, pub bitrate: iw_param, pub txpower: iw_param, pub rts: iw_param, pub frag: iw_param, pub mode: __u32, pub retry: iw_param, pub encoding: iw_point, pub power: iw_param, pub qual: iw_quality, pub ap_addr: sockaddr, pub addr: sockaddr, pub param: iw_param, pub data: iw_point }
-#[repr(C)] pub union iwreq_ifrn { pub ifrn_name: [core::ffi::c_char; IFNAMSIZ] }
+#[repr(C)] pub union iwreq_data { pub name: [kernel::ffi::c_char; IFNAMSIZ], pub essid: iw_point, pub nwid: iw_param, pub freq: iw_freq, pub sens: iw_param, pub bitrate: iw_param, pub txpower: iw_param, pub rts: iw_param, pub frag: iw_param, pub mode: __u32, pub retry: iw_param, pub encoding: iw_point, pub power: iw_param, pub qual: iw_quality, pub ap_addr: sockaddr, pub addr: sockaddr, pub param: iw_param, pub data: iw_point }
+#[repr(C)] pub union iwreq_ifrn { pub ifrn_name: [kernel::ffi::c_char; IFNAMSIZ] }
 #[repr(C)] pub struct iwreq { pub ifr_ifrn: iwreq_ifrn, pub u: iwreq_data }
 #[repr(C)] pub struct iw_range { pub throughput: __u32, pub min_nwid: __u32, pub max_nwid: __u32, pub old_num_channels: __u16, pub old_num_frequency: __u8, pub scan_capa: __u8, pub event_capa: [__u32;6], pub sensitivity: __s32, pub max_qual: iw_quality, pub avg_qual: iw_quality, pub num_bitrates: __u8, pub bitrate: [__s32;IW_MAX_BITRATES], pub min_rts: __s32, pub max_rts: __s32, pub min_frag: __s32, pub max_frag: __s32, pub min_pmp: __s32, pub max_pmp: __s32, pub min_pmt: __s32, pub max_pmt: __s32, pub pmp_flags: __u16, pub pmt_flags: __u16, pub pm_capa: __u16, pub encoding_size: [__u16;IW_MAX_ENCODING_SIZES], pub num_encoding_sizes: __u8, pub max_encoding_tokens: __u8, pub encoding_login_index: __u8, pub txpower_capa: __u16, pub num_txpower: __u8, pub txpower: [__s32;IW_MAX_TXPOWER], pub we_version_compiled: __u8, pub we_version_source: __u8, pub retry_capa: __u16, pub retry_flags: __u16, pub r_time_flags: __u16, pub min_retry: __s32, pub max_retry: __s32, pub min_r_time: __s32, pub max_r_time: __s32, pub num_channels: __u16, pub num_frequency: __u8, pub freq: [iw_freq;IW_MAX_FREQUENCIES], pub enc_capa: __u32 }
-#[repr(C)] pub struct iw_priv_args { pub cmd: __u32, pub set_args: __u16, pub get_args: __u16, pub name: [core::ffi::c_char;IFNAMSIZ] }
+#[repr(C)] pub struct iw_priv_args { pub cmd: __u32, pub set_args: __u16, pub get_args: __u16, pub name: [kernel::ffi::c_char;IFNAMSIZ] }
 #[repr(C)] pub struct iw_event { pub len: __u16, pub cmd: __u16, pub u: iwreq_data }
 
 pub const IW_EV_LCP_PK_LEN:usize=4;

@@ -32,8 +32,8 @@
 
 type c_int = i32;
 type c_char = i8;
-type c_void = core::ffi::c_void;
-type kernel_ulong_t = core::ffi::c_ulong;
+type c_void = kernel::ffi::c_void;
+type kernel_ulong_t = kernel::ffi::c_ulong;
 
 const EINVAL: c_int = 22;
 

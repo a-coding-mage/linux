@@ -9,7 +9,7 @@
 #[repr(C)]
 pub struct clk_sp810 {
     pub node: *mut device_node,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub lock: spinlock_t,
     pub timerclken: [clk_sp810_timerclken; 4],
 }
@@ -19,7 +19,7 @@ pub struct clk_sp810_timerclken {
     pub hw: clk_hw,
     pub clk: *mut clk,
     pub sp810: *mut clk_sp810,
-    pub channel: core::ffi::c_int,
+    pub channel: kernel::ffi::c_int,
 }
 
 unsafe fn to_clk_sp810_timerclken(hw: *mut clk_hw) -> *mut clk_sp810_timerclken {
@@ -35,11 +35,11 @@ unsafe fn clk_sp810_timerclken_get_parent(hw: *mut clk_hw) -> u8 {
     ((val & (1u32 << SCCTRL_TIMERENnSEL_SHIFT((*timerclken).channel))) != 0) as u8
 }
 
-unsafe fn clk_sp810_timerclken_set_parent(hw: *mut clk_hw, index: u8) -> core::ffi::c_int {
+unsafe fn clk_sp810_timerclken_set_parent(hw: *mut clk_hw, index: u8) -> kernel::ffi::c_int {
     let timerclken = to_clk_sp810_timerclken(hw);
     let sp810 = (*timerclken).sp810;
     let shift = SCCTRL_TIMERENnSEL_SHIFT((*timerclken).channel);
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     if WARN_ON(index > 1) {
         return -EINVAL;
@@ -59,9 +59,9 @@ unsafe fn clk_sp810_timerclken_set_parent(hw: *mut clk_hw, index: u8) -> core::f
 
 #[repr(C)]
 pub struct clk_ops {
-    pub determine_rate: Option<unsafe extern "C" fn(*mut clk_hw, *mut clk_rate_request) -> core::ffi::c_int>,
+    pub determine_rate: Option<unsafe extern "C" fn(*mut clk_hw, *mut clk_rate_request) -> kernel::ffi::c_int>,
     pub get_parent: Option<unsafe fn(*mut clk_hw) -> u8>,
-    pub set_parent: Option<unsafe fn(*mut clk_hw, u8) -> core::ffi::c_int>,
+    pub set_parent: Option<unsafe fn(*mut clk_hw, u8) -> kernel::ffi::c_int>,
 }
 
 static CLK_SP810_TIMERCLKEN_OPS: clk_ops = clk_ops {
@@ -72,7 +72,7 @@ static CLK_SP810_TIMERCLKEN_OPS: clk_ops = clk_ops {
 
 unsafe fn clk_sp810_timerclken_of_get(
     clkspec: *mut of_phandle_args,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) -> *mut clk {
     let sp810 = data as *mut clk_sp810;
 
@@ -86,11 +86,11 @@ unsafe fn clk_sp810_timerclken_of_get(
 
 unsafe extern "C" fn clk_sp810_of_setup(node: *mut device_node) {
     let sp810 = kzalloc_obj::<clk_sp810>();
-    let mut parent_names: [*const core::ffi::c_char; 2] = [core::ptr::null(); 2];
-    let num = parent_names.len() as core::ffi::c_int;
+    let mut parent_names: [*const kernel::ffi::c_char; 2] = [core::ptr::null(); 2];
+    let num = parent_names.len() as kernel::ffi::c_int;
     let mut name = [0i8; 12];
     let mut init: clk_init_data = core::mem::zeroed();
-    static mut INSTANCE: core::ffi::c_int = 0;
+    static mut INSTANCE: kernel::ffi::c_int = 0;
     let mut deprecated: bool;
 
     if sp810.is_null() {
@@ -99,7 +99,7 @@ unsafe extern "C" fn clk_sp810_of_setup(node: *mut device_node) {
 
     if of_clk_parent_fill(node, parent_names.as_mut_ptr(), num) != num {
         pr_warn!("Failed to obtain parent clocks for SP810!\n");
-        kfree(sp810 as *mut core::ffi::c_void);
+        kfree(sp810 as *mut kernel::ffi::c_void);
         return;
     }
 
@@ -119,7 +119,7 @@ unsafe extern "C" fn clk_sp810_of_setup(node: *mut device_node) {
         snprintf!(name.as_mut_ptr(), name.len(), "sp810_%d_%d", INSTANCE, i);
 
         (*sp810).timerclken[i].sp810 = sp810;
-        (*sp810).timerclken[i].channel = i as core::ffi::c_int;
+        (*sp810).timerclken[i].channel = i as kernel::ffi::c_int;
         (*sp810).timerclken[i].hw.init = &init;
 
         /*
@@ -136,7 +136,7 @@ unsafe extern "C" fn clk_sp810_of_setup(node: *mut device_node) {
         WARN_ON(IS_ERR((*sp810).timerclken[i].clk));
     }
 
-    of_clk_add_provider(node, Some(clk_sp810_timerclken_of_get), sp810 as *mut core::ffi::c_void);
+    of_clk_add_provider(node, Some(clk_sp810_timerclken_of_get), sp810 as *mut kernel::ffi::c_void);
     INSTANCE += 1;
 }
 

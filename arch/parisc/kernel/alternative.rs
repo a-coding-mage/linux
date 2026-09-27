@@ -9,7 +9,7 @@
 
 static mut no_alternatives: i32 = 0;
 
-unsafe fn setup_no_alternatives(_str: *mut core::ffi::c_char) -> i32 {
+unsafe fn setup_no_alternatives(_str: *mut kernel::ffi::c_char) -> i32 {
     no_alternatives = 1;
     1
 }
@@ -19,7 +19,7 @@ unsafe fn setup_no_alternatives(_str: *mut core::ffi::c_char) -> i32 {
 pub unsafe fn apply_alternatives(
     mut start: *mut alt_instr,
     end: *mut alt_instr,
-    module_name: *const core::ffi::c_char,
+    module_name: *const kernel::ffi::c_char,
 ) {
     let mut entry: *mut alt_instr;
     let mut index: i32 = 0;

@@ -181,7 +181,7 @@ pub struct mt8186_afe_private {
 
     /* dai */
     pub dai_on: [bool; MT8186_DAI_NUM as usize],
-    pub dai_priv: [*mut ::core::ffi::c_void; MT8186_DAI_NUM as usize],
+    pub dai_priv: [*mut ::kernel::ffi::c_void; MT8186_DAI_NUM as usize],
 
     /* adda */
     pub mtkaif_calibration_ok: bool,
@@ -214,15 +214,15 @@ unsafe extern "C" {
 
     pub fn mt8186_dai_i2s_set_share(
         afe: *mut mtk_base_afe,
-        main_i2s_name: *const ::core::ffi::c_char,
-        secondary_i2s_name: *const ::core::ffi::c_char,
+        main_i2s_name: *const ::kernel::ffi::c_char,
+        secondary_i2s_name: *const ::kernel::ffi::c_char,
     ) -> i32;
 
     pub fn mt8186_dai_set_priv(
         afe: *mut mtk_base_afe,
         id: i32,
         priv_size: i32,
-        priv_data: *const ::core::ffi::c_void,
+        priv_data: *const ::kernel::ffi::c_void,
     ) -> i32;
 }
 

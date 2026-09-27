@@ -37,12 +37,12 @@ macro_rules! PM_INFO_REGSET_ENTRY32 {
 pub struct pm_status_row {
     pub reg_offset: i32,
     pub field_mask: u32,
-    pub key: *const ::core::ffi::c_char,
+    pub key: *const ::kernel::ffi::c_char,
 }
 
 unsafe extern "C" {
     pub fn adf_pm_scnprint_table_upper_keys(
-        buff: *mut ::core::ffi::c_char,
+        buff: *mut ::kernel::ffi::c_char,
         table: *const pm_status_row,
         pm_info_regs: *mut u32,
         buff_size: usize,
@@ -50,7 +50,7 @@ unsafe extern "C" {
     ) -> i32;
 
     pub fn adf_pm_scnprint_table_lower_keys(
-        buff: *mut ::core::ffi::c_char,
+        buff: *mut ::kernel::ffi::c_char,
         table: *const pm_status_row,
         pm_info_regs: *mut u32,
         buff_size: usize,

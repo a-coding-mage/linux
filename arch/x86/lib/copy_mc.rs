@@ -10,7 +10,7 @@ static COPY_MC_FRAGILE_KEY: core::sync::atomic::AtomicBool =
 
 #[cfg(CONFIG_X86_MCE)]
 extern "C" {
-    fn copy_mc_fragile(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, len: usize) -> usize;
+    fn copy_mc_fragile(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, len: usize) -> usize;
 }
 
 #[cfg(CONFIG_X86_MCE)]
@@ -27,14 +27,14 @@ unsafe fn copy_mc_fragile_enabled() -> bool {
 #[cfg(CONFIG_X86_MCE)]
 #[no_mangle]
 pub unsafe extern "C" fn copy_mc_fragile_handle_tail(
-    mut to: *mut core::ffi::c_char,
-    mut from: *mut core::ffi::c_char,
+    mut to: *mut kernel::ffi::c_char,
+    mut from: *mut kernel::ffi::c_char,
     mut len: u32,
 ) -> usize {
     while len != 0 {
         if copy_mc_fragile(
-            to.cast::<core::ffi::c_void>(),
-            from.cast::<core::ffi::c_void>(),
+            to.cast::<kernel::ffi::c_void>(),
+            from.cast::<kernel::ffi::c_void>(),
             1,
         ) != 0
         {
@@ -58,22 +58,22 @@ unsafe fn copy_mc_fragile_enabled() -> bool {
 
 extern "C" {
     fn copy_mc_enhanced_fast_string(
-        dst: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dst: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         len: u32,
     ) -> usize;
     fn cpu_feature_enabled(feature: u32) -> bool;
-    fn instrument_memcpy_before(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, len: usize);
+    fn instrument_memcpy_before(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, len: usize);
     fn instrument_memcpy_after(
-        dst: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dst: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         len: usize,
         ret: usize,
     );
-    fn instrument_copy_to_user(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, len: usize);
+    fn instrument_copy_to_user(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, len: usize);
     fn __uaccess_begin();
     fn __uaccess_end();
-    fn copy_user_generic(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, len: u32) -> usize;
+    fn copy_user_generic(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, len: u32) -> usize;
 }
 
 // X86_FEATURE_ERMS, supplied by the architecture headers.
@@ -81,8 +81,8 @@ const X86_FEATURE_ERMS: u32 = 0;
 
 #[no_mangle]
 pub unsafe extern "C" fn copy_mc_to_kernel(
-    dst: *mut core::ffi::c_void,
-    src: *const core::ffi::c_void,
+    dst: *mut kernel::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     len: u32,
 ) -> usize {
     let ret: usize;
@@ -108,8 +108,8 @@ pub unsafe extern "C" fn copy_mc_to_kernel(
 
 #[no_mangle]
 pub unsafe extern "C" fn copy_mc_to_user(
-    dst: *mut core::ffi::c_void,
-    src: *const core::ffi::c_void,
+    dst: *mut kernel::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     len: u32,
 ) -> usize {
     let ret: usize;

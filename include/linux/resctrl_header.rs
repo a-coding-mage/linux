@@ -53,7 +53,7 @@ pub struct pseudo_lock_region {
     pub cpu: i32,
     pub line_size: u32,
     pub size: u32,
-    pub kmem: *mut core::ffi::c_void,
+    pub kmem: *mut kernel::ffi::c_void,
     pub minor: u32,
     pub debugfs_dir: *mut dentry,
     pub pm_reqs: list_head,
@@ -185,7 +185,7 @@ pub struct rdt_resource {
     pub mon: resctrl_mon,
     pub ctrl_domains: list_head,
     pub mon_domains: list_head,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub schema_fmt: resctrl_schema_fmt,
     pub cdp_capable: bool,
 }
@@ -197,8 +197,8 @@ extern "C" {
 #[repr(C)]
 pub struct resctrl_schema {
     pub list: list_head,
-    pub name: [core::ffi::c_char; 8],
-    pub fmt_str: *const core::ffi::c_char,
+    pub name: [kernel::ffi::c_char; 8],
+    pub fmt_str: *const kernel::ffi::c_char,
     pub conf_type: resctrl_conf_type,
     pub res: *mut rdt_resource,
     pub num_closid: u32,
@@ -228,16 +228,16 @@ pub unsafe fn resctrl_get_default_ctrl(r: *mut rdt_resource) -> u32 {
 }
 
 extern "C" {
-    pub fn resctrl_arch_sync_cpu_closid_rmid(info: *mut core::ffi::c_void);
+    pub fn resctrl_arch_sync_cpu_closid_rmid(info: *mut kernel::ffi::c_void);
     pub fn resctrl_arch_get_num_closid(r: *mut rdt_resource) -> u32;
     pub fn resctrl_arch_system_num_rmid_idx() -> u32;
     pub fn resctrl_arch_update_domains(r: *mut rdt_resource, closid: u32) -> i32;
-    pub fn resctrl_enable_mon_event(eventid: resctrl_event_id, any_cpu: bool, binary_bits: u32, arch_priv: *mut core::ffi::c_void) -> bool;
+    pub fn resctrl_enable_mon_event(eventid: resctrl_event_id, any_cpu: bool, binary_bits: u32, arch_priv: *mut kernel::ffi::c_void) -> bool;
     pub fn resctrl_is_mon_event_enabled(eventid: resctrl_event_id) -> bool;
     pub fn resctrl_arch_is_evt_configurable(evt: resctrl_event_id) -> bool;
     pub fn resctrl_get_mon_evt_cfg(eventid: resctrl_event_id) -> u32;
-    pub fn resctrl_arch_mon_event_config_write(config_info: *mut core::ffi::c_void);
-    pub fn resctrl_arch_mon_event_config_read(config_info: *mut core::ffi::c_void);
+    pub fn resctrl_arch_mon_event_config_write(config_info: *mut kernel::ffi::c_void);
+    pub fn resctrl_arch_mon_event_config_read(config_info: *mut kernel::ffi::c_void);
     pub fn resctrl_arch_get_cdp_enabled(l: resctrl_res_level) -> bool;
     pub fn resctrl_arch_set_cdp_enabled(l: resctrl_res_level, enable: bool) -> i32;
     pub fn resctrl_arch_mbm_cntr_assign_enabled(r: *mut rdt_resource) -> bool;

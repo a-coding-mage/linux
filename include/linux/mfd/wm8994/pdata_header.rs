@@ -39,7 +39,7 @@ pub const WM8958_ENH_EQ_REGS: usize = 32;
  */
 #[repr(C)]
 pub struct wm8994_drc_cfg {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub regs: [u16; WM8994_DRC_REGS],
 }
 
@@ -52,8 +52,8 @@ pub struct wm8994_drc_cfg {
  */
 #[repr(C)]
 pub struct wm8994_retune_mobile_cfg {
-    pub name: *const ::core::ffi::c_char,
-    pub rate: ::core::ffi::c_uint,
+    pub name: *const ::kernel::ffi::c_char,
+    pub rate: ::kernel::ffi::c_uint,
     pub regs: [u16; WM8994_EQ_REGS],
 }
 
@@ -65,7 +65,7 @@ pub struct wm8994_retune_mobile_cfg {
  */
 #[repr(C)]
 pub struct wm8958_mbc_cfg {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub cutoff_regs: [u16; WM8958_MBC_CUTOFF_REGS],
     pub coeff_regs: [u16; WM8958_MBC_COEFF_REGS],
     /* Coefficient layout when using MBC+VSS firmware */
@@ -75,78 +75,78 @@ pub struct wm8958_mbc_cfg {
 /** VSS HPF configurations are specified with a label and two values to write. */
 #[repr(C)]
 pub struct wm8958_vss_hpf_cfg {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub regs: [u16; WM8958_VSS_HPF_REGS],
 }
 
 /** VSS configurations are specified with a label and array of values to write. */
 #[repr(C)]
 pub struct wm8958_vss_cfg {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub regs: [u16; WM8958_VSS_REGS],
 }
 
 /** Enhanced EQ configurations are specified with a label and array of values to write. */
 #[repr(C)]
 pub struct wm8958_enh_eq_cfg {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub regs: [u16; WM8958_ENH_EQ_REGS],
 }
 
 /** Microphone detection rates, used to tune response rates and power consumption. */
 #[repr(C)]
 pub struct wm8958_micd_rate {
-    pub sysclk: ::core::ffi::c_int,
+    pub sysclk: ::kernel::ffi::c_int,
     pub idle: bool,
-    pub start: ::core::ffi::c_int,
-    pub rate: ::core::ffi::c_int,
+    pub start: ::kernel::ffi::c_int,
+    pub rate: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct wm8994_pdata {
-    pub gpio_base: ::core::ffi::c_int,
+    pub gpio_base: ::kernel::ffi::c_int,
     /** Default values for GPIOs if non-zero; WM8994_CONFIGURE_GPIO can be used for all zero values. */
-    pub gpio_defaults: [::core::ffi::c_int; WM8994_NUM_GPIO],
+    pub gpio_defaults: [::kernel::ffi::c_int; WM8994_NUM_GPIO],
     pub ldo: [wm8994_ldo_pdata; WM8994_NUM_LDO],
-    pub irq_base: ::core::ffi::c_int,
-    pub irq_flags: ::core::ffi::c_ulong,
-    pub num_drc_cfgs: ::core::ffi::c_int,
+    pub irq_base: ::kernel::ffi::c_int,
+    pub irq_flags: ::kernel::ffi::c_ulong,
+    pub num_drc_cfgs: ::kernel::ffi::c_int,
     pub drc_cfgs: *mut wm8994_drc_cfg,
-    pub num_retune_mobile_cfgs: ::core::ffi::c_int,
+    pub num_retune_mobile_cfgs: ::kernel::ffi::c_int,
     pub retune_mobile_cfgs: *mut wm8994_retune_mobile_cfg,
-    pub num_mbc_cfgs: ::core::ffi::c_int,
+    pub num_mbc_cfgs: ::kernel::ffi::c_int,
     pub mbc_cfgs: *mut wm8958_mbc_cfg,
-    pub num_vss_cfgs: ::core::ffi::c_int,
+    pub num_vss_cfgs: ::kernel::ffi::c_int,
     pub vss_cfgs: *mut wm8958_vss_cfg,
-    pub num_vss_hpf_cfgs: ::core::ffi::c_int,
+    pub num_vss_hpf_cfgs: ::kernel::ffi::c_int,
     pub vss_hpf_cfgs: *mut wm8958_vss_hpf_cfg,
-    pub num_enh_eq_cfgs: ::core::ffi::c_int,
+    pub num_enh_eq_cfgs: ::kernel::ffi::c_int,
     pub enh_eq_cfgs: *mut wm8958_enh_eq_cfg,
-    pub num_micd_rates: ::core::ffi::c_int,
+    pub num_micd_rates: ::kernel::ffi::c_int,
     pub micd_rates: *mut wm8958_micd_rate,
     /* Power up delays to add after microphone bias power up (ms) */
-    pub micb1_delay: ::core::ffi::c_int,
-    pub micb2_delay: ::core::ffi::c_int,
+    pub micb1_delay: ::kernel::ffi::c_int,
+    pub micb2_delay: ::kernel::ffi::c_int,
     /* LINEOUT can be differential or single ended; bitfields are represented by their containing word. */
     pub lineout1_diff: u32,
     pub lineout2_diff: u32,
     /* Common mode feedback */
     pub lineout1fb: u32,
     pub lineout2fb: u32,
-    pub micdet_delay: ::core::ffi::c_int,
-    pub mic_id_delay: ::core::ffi::c_int,
-    pub micdet_irq: ::core::ffi::c_int,
+    pub micdet_delay: ::kernel::ffi::c_int,
+    pub mic_id_delay: ::kernel::ffi::c_int,
+    pub micdet_irq: ::kernel::ffi::c_int,
     pub micbias1_lvl: u32,
     pub micbias2_lvl: u32,
     pub jd_scthr: u32,
     pub jd_thr: u32,
     pub jd_ext_cap: u32,
-    pub micbias: [::core::ffi::c_int; 2],
+    pub micbias: [::kernel::ffi::c_int; 2],
     pub micd_lvl_sel: u16,
     pub ldo_ena_always_driven: bool,
     pub spkmode_pu: bool,
     pub csnaddr_pd: bool,
-    pub max_channels_clocked: [::core::ffi::c_int; WM8994_NUM_AIF],
+    pub max_channels_clocked: [::kernel::ffi::c_int; WM8994_NUM_AIF],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

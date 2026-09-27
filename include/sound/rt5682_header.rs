@@ -5,7 +5,7 @@
  * Copyright 2018 Realtek Microelectronics
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]

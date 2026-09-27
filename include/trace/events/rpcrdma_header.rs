@@ -58,22 +58,22 @@ pub mod rpcrdma_trace {
         pub xid: u32,
         pub version: u32,
         pub proc: u32,
-        pub addr: *const core::ffi::c_char,
-        pub port: *const core::ffi::c_char,
+        pub addr: *const kernel::ffi::c_char,
+        pub port: *const kernel::ffi::c_char,
     }
 
     #[repr(C)]
     pub struct xprtrdma_rxprt {
-        pub addr: *const core::ffi::c_char,
-        pub port: *const core::ffi::c_char,
+        pub addr: *const kernel::ffi::c_char,
+        pub port: *const kernel::ffi::c_char,
     }
 
     #[repr(C)]
     pub struct xprtrdma_connect_class {
         pub rc: i32,
         pub connect_status: i32,
-        pub addr: *const core::ffi::c_char,
-        pub port: *const core::ffi::c_char,
+        pub addr: *const kernel::ffi::c_char,
+        pub port: *const kernel::ffi::c_char,
     }
 
     #[repr(C)]
@@ -115,8 +115,8 @@ pub mod rpcrdma_trace {
     #[repr(C)]
     pub struct xprtrdma_callback_class {
         pub xid: u32,
-        pub addr: *const core::ffi::c_char,
-        pub port: *const core::ffi::c_char,
+        pub addr: *const kernel::ffi::c_char,
+        pub port: *const kernel::ffi::c_char,
     }
 
     #[repr(C)]
@@ -131,15 +131,15 @@ pub mod rpcrdma_trace {
 
     #[repr(C)]
     pub struct xprtrdma_device_removal {
-        pub name: *const core::ffi::c_char,
+        pub name: *const kernel::ffi::c_char,
         pub addr: [u8; 28],
     }
 
     #[repr(C)]
     pub struct xprtrdma_op_connect {
         pub delay: usize,
-        pub addr: *const core::ffi::c_char,
-        pub port: *const core::ffi::c_char,
+        pub addr: *const kernel::ffi::c_char,
+        pub port: *const kernel::ffi::c_char,
     }
 
     // Preserve the source tracepoint/event declaration surface.

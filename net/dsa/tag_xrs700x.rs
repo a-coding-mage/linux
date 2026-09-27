@@ -7,7 +7,7 @@
 
 // Dependencies supplied by the surrounding kernel/DSA sources.
 
-const XRS700X_NAME: *const core::ffi::c_char = c"xrs700x".as_ptr();
+const XRS700X_NAME: *const kernel::ffi::c_char = c"xrs700x".as_ptr();
 
 unsafe extern "C" {
     fn skb_put(skb: *mut sk_buff, len: usize) -> *mut u8;
@@ -37,7 +37,7 @@ pub struct net_device {
 
 #[repr(C)]
 pub struct dsa_device_ops {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub proto: i32,
     pub xmit: Option<unsafe extern "C" fn(*mut sk_buff, *mut net_device) -> *mut sk_buff>,
     pub rcv: Option<unsafe extern "C" fn(*mut sk_buff, *mut net_device) -> *mut sk_buff>,

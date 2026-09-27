@@ -15,12 +15,12 @@
 // MODULE_LICENSE("GPL");
 // MODULE_ALIAS("platform:pcspkr");
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 use core::ptr;
 
 extern "C" {
     static mut hrtimer_resolution: c_uint;
-    static mut loops_per_jiffy: libc::c_long;
+    static mut loops_per_jiffy: kernel::ffi::c_long;
     static THIS_MODULE: *mut c_void;
 
     fn dev_err(dev: *mut device, fmt: *const c_char, ...) -> c_int;
@@ -67,7 +67,7 @@ const SNDRV_DEFAULT_ENABLE1: bool = true;
 
 const PCSP_MAX_PERIOD_NS: c_uint = 60_000;
 const PCSP_MIN_PERIOD_NS: c_uint = 21_000;
-const PCSP_MIN_LPJ: libc::c_long = 1_000_000;
+const PCSP_MIN_LPJ: kernel::ffi::c_long = 1_000_000;
 const MIN_DIV: c_int = 64;
 const MAX_DIV: c_int = 256;
 const PCSP_MAX_TREBLE: c_int = 4;

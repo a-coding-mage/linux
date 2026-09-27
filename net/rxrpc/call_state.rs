@@ -12,7 +12,7 @@ extern "C" {
     fn __rxrpc_call_state(call: *mut rxrpc_call) -> rxrpc_call_state;
     fn rxrpc_set_call_state(call: *mut rxrpc_call, state: rxrpc_call_state);
     fn trace_rxrpc_call_complete(call: *mut rxrpc_call);
-    fn wake_up(waitq: *mut core::ffi::c_void);
+    fn wake_up(waitq: *mut kernel::ffi::c_void);
     fn rxrpc_notify_socket(call: *mut rxrpc_call);
     fn trace_rxrpc_abort(
         debug_id: u32,
@@ -24,8 +24,8 @@ extern "C" {
         error: i32,
     );
     fn rxrpc_send_abort_packet(call: *mut rxrpc_call);
-    fn test_bit(bit: u32, addr: *const core::ffi::c_ulong) -> bool;
-    fn __test_and_set_bit(bit: u32, addr: *mut core::ffi::c_ulong) -> bool;
+    fn test_bit(bit: u32, addr: *const kernel::ffi::c_ulong) -> bool;
+    fn __test_and_set_bit(bit: u32, addr: *mut kernel::ffi::c_ulong) -> bool;
     fn WARN_ON_ONCE(condition: bool) -> bool;
 }
 
@@ -48,7 +48,7 @@ pub unsafe fn rxrpc_set_call_completion(
     /* Allow reader of completion state to operate locklessly */
     rxrpc_set_call_state(call, RXRPC_CALL_COMPLETE);
     trace_rxrpc_call_complete(call);
-    wake_up(&mut (*call).waitq as *mut _ as *mut core::ffi::c_void);
+    wake_up(&mut (*call).waitq as *mut _ as *mut kernel::ffi::c_void);
     rxrpc_notify_socket(call);
     true
 }

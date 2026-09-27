@@ -265,7 +265,7 @@ unsafe fn terminate_voice(vp: *mut snd_emux_voice) {
 
 unsafe fn sysex(
     emu: *mut snd_emux,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     len: i32,
     parsed: i32,
     chset: *mut snd_midi_channel_set,
@@ -328,7 +328,7 @@ unsafe fn load_fx(
     emu: *mut snd_emux,
     type_: i32,
     mode: i32,
-    buf: *const core::ffi::c_void,
+    buf: *const kernel::ffi::c_void,
     mut len: i64,
 ) -> i32 {
     let hw: *mut snd_emu8000;
@@ -341,10 +341,10 @@ unsafe fn load_fx(
 
     match type_ {
         SNDRV_EMU8000_LOAD_CHORUS_FX => {
-            return snd_emu8000_load_chorus_fx(hw, mode, buf as *const core::ffi::c_void, len);
+            return snd_emu8000_load_chorus_fx(hw, mode, buf as *const kernel::ffi::c_void, len);
         }
         SNDRV_EMU8000_LOAD_REVERB_FX => {
-            return snd_emu8000_load_reverb_fx(hw, mode, buf as *const core::ffi::c_void, len);
+            return snd_emu8000_load_reverb_fx(hw, mode, buf as *const kernel::ffi::c_void, len);
         }
         _ => {}
     }

@@ -10,11 +10,11 @@
  */
 
 extern "C" {
-    pub fn mpc8xx_restart(cmd: *mut ::core::ffi::c_char) -> !;
+    pub fn mpc8xx_restart(cmd: *mut ::kernel::ffi::c_char) -> !;
     pub fn mpc8xx_calibrate_decr();
-    pub fn mpc8xx_set_rtc_time(tm: *mut rtc_time) -> ::core::ffi::c_int;
+    pub fn mpc8xx_set_rtc_time(tm: *mut rtc_time) -> ::kernel::ffi::c_int;
     pub fn mpc8xx_get_rtc_time(tm: *mut rtc_time);
-    pub fn mpc8xx_get_irq() -> ::core::ffi::c_uint;
+    pub fn mpc8xx_get_irq() -> ::kernel::ffi::c_uint;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

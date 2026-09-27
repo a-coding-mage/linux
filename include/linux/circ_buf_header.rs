@@ -5,7 +5,7 @@
 
 #[repr(C)]
 pub struct circ_buf {
-    pub buf: *mut core::ffi::c_char,
+    pub buf: *mut kernel::ffi::c_char,
     pub head: i32,
     pub tail: i32,
 }

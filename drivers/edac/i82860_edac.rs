@@ -25,13 +25,13 @@ const PCI_DEVICE_ID_INTEL_82860_0: u16 = 0x2531;
 enum i82860_chips { I82860 = 0 }
 
 #[repr(C)]
-struct i82860_dev_info { ctl_name: *const core::ffi::c_char }
+struct i82860_dev_info { ctl_name: *const kernel::ffi::c_char }
 
 #[repr(C)]
 struct i82860_error_info { errsts: u16, eap: u32, derrsyn: u16, errsts2: u16 }
 
 static I82860_DEVS: [i82860_dev_info; 1] = [i82860_dev_info {
-    ctl_name: b"i82860\0".as_ptr() as *const core::ffi::c_char,
+    ctl_name: b"i82860\0".as_ptr() as *const kernel::ffi::c_char,
 }];
 
 static mut mci_pdev: *mut pci_dev = core::ptr::null_mut();

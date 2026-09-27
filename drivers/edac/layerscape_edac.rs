@@ -19,39 +19,39 @@
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const ::core::ffi::c_char,
-    pub data: *const ::core::ffi::c_void,
+    pub compatible: *const ::kernel::ffi::c_char,
+    pub data: *const ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct platform_driver_driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
 #[repr(C)]
 pub struct platform_driver {
-    pub probe: Option<unsafe extern "C" fn() -> ::core::ffi::c_int>,
-    pub remove: Option<unsafe extern "C" fn() -> ::core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_int>,
+    pub remove: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_int>,
     pub driver: platform_driver_driver,
 }
 
 extern "C" {
-    static mut edac_op_state: ::core::ffi::c_int;
+    static mut edac_op_state: ::kernel::ffi::c_int;
     fn ghes_get_devices() -> bool;
-    fn fsl_mc_err_probe() -> ::core::ffi::c_int;
-    fn fsl_mc_err_remove() -> ::core::ffi::c_int;
-    fn platform_driver_register(driver: *mut platform_driver) -> ::core::ffi::c_int;
+    fn fsl_mc_err_probe() -> ::kernel::ffi::c_int;
+    fn fsl_mc_err_remove() -> ::kernel::ffi::c_int;
+    fn platform_driver_register(driver: *mut platform_driver) -> ::kernel::ffi::c_int;
     fn platform_driver_unregister(driver: *mut platform_driver);
-    fn pr_err(fmt: *const ::core::ffi::c_char, ...);
+    fn pr_err(fmt: *const ::kernel::ffi::c_char, ...);
 }
 
 // Values are supplied by the EDAC dependency headers.
-const EBUSY: ::core::ffi::c_int = 16;
-const EDAC_OPSTATE_POLL: ::core::ffi::c_int = 0;
-const EDAC_OPSTATE_INT: ::core::ffi::c_int = 2;
+const EBUSY: ::kernel::ffi::c_int = 16;
+const EDAC_OPSTATE_POLL: ::kernel::ffi::c_int = 0;
+const EDAC_OPSTATE_INT: ::kernel::ffi::c_int = 2;
 extern "C" {
-    static TYPE_IMX9: ::core::ffi::c_int;
+    static TYPE_IMX9: ::kernel::ffi::c_int;
 }
 
 static mut fsl_ddr_mc_err_of_match: [of_device_id; 3] = [
@@ -61,7 +61,7 @@ static mut fsl_ddr_mc_err_of_match: [of_device_id; 3] = [
     },
     of_device_id {
         compatible: b"nxp,imx9-memory-controller\0".as_ptr() as *const _,
-        data: unsafe { &TYPE_IMX9 as *const _ as *const ::core::ffi::c_void },
+        data: unsafe { &TYPE_IMX9 as *const _ as *const ::kernel::ffi::c_void },
     },
     of_device_id {
         compatible: ::core::ptr::null(),
@@ -79,8 +79,8 @@ static mut fsl_ddr_mc_err_driver: platform_driver = platform_driver {
 };
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn fsl_ddr_mc_init() -> ::core::ffi::c_int {
-    let res: ::core::ffi::c_int;
+pub unsafe extern "C" fn fsl_ddr_mc_init() -> ::kernel::ffi::c_int {
+    let res: ::kernel::ffi::c_int;
 
     if ghes_get_devices() {
         return -EBUSY;

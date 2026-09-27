@@ -9,10 +9,10 @@
 pub type func_desc_t = func_desc;
 
 extern "C" {
-    pub static mut __head_end: [core::ffi::c_char; 0];
-    pub static mut __srwx_boundary: [core::ffi::c_char; 0];
-    pub static mut __exittext_begin: [core::ffi::c_char; 0];
-    pub static mut __exittext_end: [core::ffi::c_char; 0];
+    pub static mut __head_end: [kernel::ffi::c_char; 0];
+    pub static mut __srwx_boundary: [kernel::ffi::c_char; 0];
+    pub static mut __exittext_begin: [kernel::ffi::c_char; 0];
+    pub static mut __exittext_end: [kernel::ffi::c_char; 0];
 
     /* Patch sites */
     pub static mut patch__call_flush_branch_caches1: i32;
@@ -25,22 +25,22 @@ extern "C" {
     pub static mut patch__memset_nocache: i32;
     pub static mut patch__memcpy_nocache: i32;
 
-    pub static mut flush_branch_caches: core::ffi::c_long;
-    pub static mut kvm_flush_link_stack: core::ffi::c_long;
+    pub static mut flush_branch_caches: kernel::ffi::c_long;
+    pub static mut kvm_flush_link_stack: kernel::ffi::c_long;
 
     #[cfg(target_pointer_width = "64")]
-    pub static mut __start_interrupts: [core::ffi::c_char; 0];
+    pub static mut __start_interrupts: [kernel::ffi::c_char; 0];
     #[cfg(target_pointer_width = "64")]
-    pub static mut __end_interrupts: [core::ffi::c_char; 0];
+    pub static mut __end_interrupts: [kernel::ffi::c_char; 0];
 
     #[cfg(all(target_pointer_width = "64", CONFIG_PPC_POWERNV))]
-    pub static mut start_real_trampolines: [core::ffi::c_char; 0];
+    pub static mut start_real_trampolines: [kernel::ffi::c_char; 0];
     #[cfg(all(target_pointer_width = "64", CONFIG_PPC_POWERNV))]
-    pub static mut end_real_trampolines: [core::ffi::c_char; 0];
+    pub static mut end_real_trampolines: [kernel::ffi::c_char; 0];
     #[cfg(all(target_pointer_width = "64", CONFIG_PPC_POWERNV))]
-    pub static mut start_virt_trampolines: [core::ffi::c_char; 0];
+    pub static mut start_virt_trampolines: [kernel::ffi::c_char; 0];
     #[cfg(all(target_pointer_width = "64", CONFIG_PPC_POWERNV))]
-    pub static mut end_virt_trampolines: [core::ffi::c_char; 0];
+    pub static mut end_virt_trampolines: [kernel::ffi::c_char; 0];
 }
 
 /* This assumes the kernel is never compiled -mcmodel=small or the total

@@ -27,7 +27,7 @@ extern "C" {
     type sh_machine_vector;
 }
 
-unsafe extern "C" fn dreamcast_setup(_cmdline_p: *mut *mut core::ffi::c_char) {
+unsafe extern "C" fn dreamcast_setup(_cmdline_p: *mut *mut kernel::ffi::c_char) {
     /* GAPS PCI bridge assumes P2 area relative addresses. */
     __set_io_port_base(P2SEG);
 }

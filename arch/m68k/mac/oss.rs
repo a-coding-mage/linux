@@ -22,7 +22,7 @@ extern "C" {
 
     static mut macintosh_config: *mut mac_config;
 
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
     fn generic_handle_irq(irq: i32);
     fn irq_set_chained_handler(irq: i32, handler: unsafe extern "C" fn(*mut irq_desc));
     fn via1_irq(desc: *mut irq_desc);
@@ -63,7 +63,7 @@ pub unsafe extern "C" fn oss_init() {
     }
 
     oss = OSS_BASE as *mut mac_oss;
-    pr_debug(b"OSS detected at %p\0".as_ptr() as *const core::ffi::c_char, oss);
+    pr_debug(b"OSS detected at %p\0".as_ptr() as *const kernel::ffi::c_char, oss);
     oss_present = 1;
 
     /* Disable all interrupts. Unlike a VIA it looks like we */

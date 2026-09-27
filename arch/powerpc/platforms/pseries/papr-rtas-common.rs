@@ -20,29 +20,29 @@ pub unsafe fn papr_rtas_blob_has_data(blob: *const papr_rtas_blob) -> bool {
 
 pub unsafe fn papr_rtas_blob_free(blob: *const papr_rtas_blob) {
     if !blob.is_null() {
-        kvfree((*blob).data as *mut core::ffi::c_void);
-        kfree(blob as *mut core::ffi::c_void);
+        kvfree((*blob).data as *mut kernel::ffi::c_void);
+        kfree(blob as *mut kernel::ffi::c_void);
     }
 }
 
 /* Append data to a papr_rtas_blob. May sleep. */
 unsafe fn papr_rtas_blob_extend(
     blob: *mut papr_rtas_blob,
-    data: *const core::ffi::c_char,
+    data: *const kernel::ffi::c_char,
     len: usize,
 ) -> i32 {
     let new_len = (*blob).len.wrapping_add(len);
     let old_len = (*blob).len;
     let old_ptr = (*blob).data;
-    let new_ptr = kvrealloc(old_ptr as *mut core::ffi::c_void, new_len, GFP_KERNEL_ACCOUNT)
-        as *mut core::ffi::c_char;
+    let new_ptr = kvrealloc(old_ptr as *mut kernel::ffi::c_void, new_len, GFP_KERNEL_ACCOUNT)
+        as *mut kernel::ffi::c_char;
 
     if new_ptr.is_null() {
         return -ENOMEM;
     }
 
-    memcpy(new_ptr.add(old_len) as *mut core::ffi::c_void,
-           data as *const core::ffi::c_void, len);
+    memcpy(new_ptr.add(old_len) as *mut kernel::ffi::c_void,
+           data as *const kernel::ffi::c_void, len);
     (*blob).data = new_ptr;
     (*blob).len = new_len;
     0
@@ -64,7 +64,7 @@ unsafe fn papr_rtas_blob_generate(
 
     let mut len: usize = 0;
     let mut err: i32 = 0;
-    let mut buf: *const core::ffi::c_char;
+    let mut buf: *const kernel::ffi::c_char;
     while err == 0 {
         buf = ((*seq).work.unwrap())(seq, &mut len);
         if buf.is_null() {
@@ -129,7 +129,7 @@ pub unsafe fn papr_rtas_retrieve(seq: *mut papr_rtas_sequence) -> *const papr_rt
 pub unsafe fn papr_rtas_setup_file_interface(
     seq: *mut papr_rtas_sequence,
     fops: *const file_operations,
-    name: *mut core::ffi::c_char,
+    name: *mut kernel::ffi::c_char,
 ) -> isize {
     let blob = papr_rtas_retrieve(seq);
     if IS_ERR(blob) {
@@ -137,7 +137,7 @@ pub unsafe fn papr_rtas_setup_file_interface(
     }
 
     let fd = FD_ADD(O_RDONLY | O_CLOEXEC,
-        anon_inode_getfile_fmode(name, fops, blob as *mut core::ffi::c_void,
+        anon_inode_getfile_fmode(name, fops, blob as *mut kernel::ffi::c_void,
                                   O_RDONLY, FMODE_LSEEK | FMODE_PREAD));
     if fd < 0 {
         papr_rtas_blob_free(blob);
@@ -164,7 +164,7 @@ pub unsafe fn papr_rtas_sequence_should_stop(
 
 pub unsafe fn papr_rtas_common_handle_read(
     file: *mut file,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     size: usize,
     off: *mut loff_t,
 ) -> isize {
@@ -173,7 +173,7 @@ pub unsafe fn papr_rtas_common_handle_read(
         pr_err_once!("handle without data\n");
         return -EIO;
     }
-    simple_read_from_buffer(buf, size, off, (*blob).data as *const core::ffi::c_void, (*blob).len)
+    simple_read_from_buffer(buf, size, off, (*blob).data as *const kernel::ffi::c_void, (*blob).len)
 }
 
 pub unsafe fn papr_rtas_common_handle_release(

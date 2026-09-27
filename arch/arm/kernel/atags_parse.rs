@@ -16,7 +16,7 @@
 
 // C headers and build-time configuration are supplied by other translation units.
 
-static mut default_command_line: [core::ffi::c_char; COMMAND_LINE_SIZE] = CONFIG_CMDLINE;
+static mut default_command_line: [kernel::ffi::c_char; COMMAND_LINE_SIZE] = CONFIG_CMDLINE;
 
 #[cfg(not(MEM_SIZE))]
 const MEM_SIZE: usize = 16 * 1024 * 1024;
@@ -159,7 +159,7 @@ unsafe fn squash_mem_tags(mut tag: *mut tag) {
     }
 }
 
-unsafe fn setup_machine_tags(atags_vaddr: *mut core::ffi::c_void, machine_nr: u32) -> *const machine_desc {
+unsafe fn setup_machine_tags(atags_vaddr: *mut kernel::ffi::c_void, machine_nr: u32) -> *const machine_desc {
     let mut tags: *mut tag = &raw mut default_tags as *mut DefaultTags as *mut tag;
     let mut mdesc: *const machine_desc = core::ptr::null();
     let mut from = default_command_line.as_mut_ptr();

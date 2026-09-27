@@ -100,7 +100,7 @@ pub unsafe fn aead_decrypt(
 }
 
 pub unsafe fn aead_key_setup_encrypt(
-    alg: *const core::ffi::c_char,
+    alg: *const kernel::ffi::c_char,
     key: *const u8,
     key_len: usize,
     mic_len: usize,

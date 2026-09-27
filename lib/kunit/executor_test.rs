@@ -203,7 +203,7 @@ kunit_test_suites!(EXECUTOR_TEST_SUITE);
 
 /* Test helpers */
 
-unsafe fn free_suite_set(suite_set: *mut core::ffi::c_void) {
+unsafe fn free_suite_set(suite_set: *mut kernel::ffi::c_void) {
     kunit_free_suite_set(*(suite_set as *mut kunit_suite_set));
     kfree(suite_set);
 }
@@ -211,7 +211,7 @@ unsafe fn free_suite_set(suite_set: *mut core::ffi::c_void) {
 /* Use the resource API to register a call to free_suite_set.
  * Since we never actually use the resource, it's safe to use on const data.
  */
-unsafe fn free_suite_set_at_end(test: *mut kunit, to_free: *const core::ffi::c_void) {
+unsafe fn free_suite_set_at_end(test: *mut kunit, to_free: *const kernel::ffi::c_void) {
     if !(*(to_free as *const kunit_suite_set)).start.is_null() {
         let free = kzalloc_obj::<kunit_suite_set>();
         *free = *(to_free as *const kunit_suite_set);
@@ -219,7 +219,7 @@ unsafe fn free_suite_set_at_end(test: *mut kunit, to_free: *const core::ffi::c_v
     }
 }
 
-unsafe fn alloc_fake_suite(test: *mut kunit, suite_name: *const core::ffi::c_char, test_cases: *mut kunit_case) -> *mut kunit_suite {
+unsafe fn alloc_fake_suite(test: *mut kunit, suite_name: *const kernel::ffi::c_char, test_cases: *mut kunit_case) -> *mut kunit_suite {
     // We normally never expect to allocate suites, hence the non-const cast.
     let suite = kunit_kzalloc(test, core::mem::size_of::<kunit_suite>(), GFP_KERNEL) as *mut kunit_suite;
     strscpy((*suite).name as *mut _, suite_name, core::mem::size_of_val(&(*suite).name));

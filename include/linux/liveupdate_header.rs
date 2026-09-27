@@ -9,7 +9,7 @@
 // linux/mutex.h, linux/refcount.h, linux/rwsem.h, linux/types.h, and
 // uapi/linux/liveupdate.h.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct liveupdate_file_op_args {
@@ -17,7 +17,7 @@ pub struct liveupdate_file_op_args {
     pub retrieve_status: i32,
     pub file: *mut file,
     pub serialized_data: u64,
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -37,7 +37,7 @@ pub struct liveupdate_file_ops {
 #[repr(C)]
 pub struct liveupdate_file_handler {
     pub ops: *const liveupdate_file_ops,
-    pub compatible: [core::ffi::c_char; LIVEUPDATE_HNDL_COMPAT_LENGTH],
+    pub compatible: [kernel::ffi::c_char; LIVEUPDATE_HNDL_COMPAT_LENGTH],
     pub list: list_head,
     pub flb_list: list_head,
 }
@@ -46,7 +46,7 @@ pub struct liveupdate_file_handler {
 pub struct liveupdate_flb_op_args {
     pub flb: *mut liveupdate_flb,
     pub data: u64,
-    pub obj: *mut core::ffi::c_void,
+    pub obj: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -62,7 +62,7 @@ pub struct liveupdate_flb_ops {
 pub struct luo_flb_private_state {
     pub count: refcount_t,
     pub data: u64,
-    pub obj: *mut core::ffi::c_void,
+    pub obj: *mut kernel::ffi::c_void,
     pub lock: mutex,
     pub finished: bool,
     pub retrieve_status: i32,
@@ -80,7 +80,7 @@ pub struct luo_flb_private {
 #[repr(C)]
 pub struct liveupdate_flb {
     pub ops: *const liveupdate_flb_ops,
-    pub compatible: [core::ffi::c_char; LIVEUPDATE_FLB_COMPAT_LENGTH],
+    pub compatible: [kernel::ffi::c_char; LIVEUPDATE_FLB_COMPAT_LENGTH],
     pub private: luo_flb_private,
 }
 
@@ -93,9 +93,9 @@ extern "C" {
     pub fn liveupdate_unregister_file_handler(fh: *mut liveupdate_file_handler);
     pub fn liveupdate_register_flb(fh: *mut liveupdate_file_handler, flb: *mut liveupdate_flb) -> i32;
     pub fn liveupdate_unregister_flb(fh: *mut liveupdate_file_handler, flb: *mut liveupdate_flb);
-    pub fn liveupdate_flb_get_incoming(flb: *mut liveupdate_flb, objp: *mut *mut core::ffi::c_void) -> i32;
+    pub fn liveupdate_flb_get_incoming(flb: *mut liveupdate_flb, objp: *mut *mut kernel::ffi::c_void) -> i32;
     pub fn liveupdate_flb_put_incoming(flb: *mut liveupdate_flb);
-    pub fn liveupdate_flb_get_outgoing(flb: *mut liveupdate_flb, objp: *mut *mut core::ffi::c_void) -> i32;
+    pub fn liveupdate_flb_get_outgoing(flb: *mut liveupdate_flb, objp: *mut *mut kernel::ffi::c_void) -> i32;
     pub fn liveupdate_flb_put_outgoing(flb: *mut liveupdate_flb);
 }
 
@@ -112,11 +112,11 @@ pub unsafe fn liveupdate_register_flb(_: *mut liveupdate_file_handler, _: *mut l
 #[cfg(not(CONFIG_LIVEUPDATE))]
 pub unsafe fn liveupdate_unregister_flb(_: *mut liveupdate_file_handler, _: *mut liveupdate_flb) {}
 #[cfg(not(CONFIG_LIVEUPDATE))]
-pub unsafe fn liveupdate_flb_get_incoming(_: *mut liveupdate_flb, _: *mut *mut core::ffi::c_void) -> i32 { -EOPNOTSUPP }
+pub unsafe fn liveupdate_flb_get_incoming(_: *mut liveupdate_flb, _: *mut *mut kernel::ffi::c_void) -> i32 { -EOPNOTSUPP }
 #[cfg(not(CONFIG_LIVEUPDATE))]
 pub unsafe fn liveupdate_flb_put_incoming(_: *mut liveupdate_flb) {}
 #[cfg(not(CONFIG_LIVEUPDATE))]
-pub unsafe fn liveupdate_flb_get_outgoing(_: *mut liveupdate_flb, _: *mut *mut core::ffi::c_void) -> i32 { -EOPNOTSUPP }
+pub unsafe fn liveupdate_flb_get_outgoing(_: *mut liveupdate_flb, _: *mut *mut kernel::ffi::c_void) -> i32 { -EOPNOTSUPP }
 #[cfg(not(CONFIG_LIVEUPDATE))]
 pub unsafe fn liveupdate_flb_put_outgoing(_: *mut liveupdate_flb) {}
 

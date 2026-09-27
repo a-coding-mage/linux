@@ -6,7 +6,7 @@
 // TRACE_SYSTEM is `clk`; the Linux tracepoint header and define_trace header
 // are supplied by the surrounding kernel integration.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct clk_core {

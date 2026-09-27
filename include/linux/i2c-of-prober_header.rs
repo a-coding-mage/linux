@@ -5,7 +5,7 @@
  * Copyright (C) 2024 Google LLC
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* C forward declarations. */
 #[repr(C)]
@@ -51,7 +51,7 @@ pub struct i2c_of_probe_ops {
 #[repr(C)]
 pub struct i2c_of_probe_cfg {
     pub ops: *const i2c_of_probe_ops,
-    pub r#type: *const core::ffi::c_char,
+    pub r#type: *const kernel::ffi::c_char,
 }
 
 /* Preserved build-time condition: declarations are available when CONFIG_OF_DYNAMIC is enabled. */
@@ -66,9 +66,9 @@ extern "C" {
 /** Options for simple I2C component prober callbacks. */
 #[repr(C)]
 pub struct i2c_of_probe_simple_opts {
-    pub res_node_compatible: *const core::ffi::c_char,
-    pub supply_name: *const core::ffi::c_char,
-    pub gpio_name: *const core::ffi::c_char,
+    pub res_node_compatible: *const kernel::ffi::c_char,
+    pub supply_name: *const kernel::ffi::c_char,
+    pub gpio_name: *const kernel::ffi::c_char,
     pub post_power_on_delay_ms: u32,
     pub post_gpio_config_delay_ms: u32,
     pub gpio_assert_to_enable: bool,

@@ -29,8 +29,8 @@ unsafe fn csky_cmpxchg_fixup(_regs: *mut pt_regs) {
 
 #[cfg(not(CONFIG_CPU_HAS_LDSTEX))]
 extern "C" {
-    static mut csky_cmpxchg_ldw: ::core::ffi::c_ulong;
-    static mut csky_cmpxchg_stw: ::core::ffi::c_ulong;
+    static mut csky_cmpxchg_ldw: ::kernel::ffi::c_ulong;
+    static mut csky_cmpxchg_stw: ::kernel::ffi::c_ulong;
 }
 
 #[cfg(not(CONFIG_CPU_HAS_LDSTEX))]
@@ -39,12 +39,12 @@ unsafe fn csky_cmpxchg_fixup(regs: *mut pt_regs) {
         return;
     }
 
-    if instruction_pointer(regs) == (&csky_cmpxchg_stw as *const _ as ::core::ffi::c_ulong) {
-        instruction_pointer_set(regs, &csky_cmpxchg_ldw as *const _ as ::core::ffi::c_ulong);
+    if instruction_pointer(regs) == (&csky_cmpxchg_stw as *const _ as ::kernel::ffi::c_ulong) {
+        instruction_pointer_set(regs, &csky_cmpxchg_ldw as *const _ as ::kernel::ffi::c_ulong);
     }
 }
 
-unsafe fn no_context(regs: *mut pt_regs, addr: ::core::ffi::c_ulong) {
+unsafe fn no_context(regs: *mut pt_regs, addr: ::kernel::ffi::c_ulong) {
     (*current).thread.trap_no = trap_no(regs);
 
     /* Are we prepared to handle this kernel fault? */
@@ -62,7 +62,7 @@ unsafe fn no_context(regs: *mut pt_regs, addr: ::core::ffi::c_ulong) {
     make_task_dead(SIGKILL);
 }
 
-unsafe fn mm_fault_error(regs: *mut pt_regs, addr: ::core::ffi::c_ulong, fault: vm_fault_t) {
+unsafe fn mm_fault_error(regs: *mut pt_regs, addr: ::kernel::ffi::c_ulong, fault: vm_fault_t) {
     (*current).thread.trap_no = trap_no(regs);
 
     if fault & VM_FAULT_OOM != 0 {
@@ -92,7 +92,7 @@ unsafe fn bad_area_nosemaphore(
     regs: *mut pt_regs,
     _mm: *mut mm_struct,
     code: i32,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
 ) {
     /*
      * Something tried to access memory that isn't in our memory map.
@@ -107,7 +107,7 @@ unsafe fn bad_area_nosemaphore(
     no_context(regs, addr);
 }
 
-unsafe fn vmalloc_fault(regs: *mut pt_regs, code: i32, addr: ::core::ffi::c_ulong) {
+unsafe fn vmalloc_fault(regs: *mut pt_regs, code: i32, addr: ::kernel::ffi::c_ulong) {
     let mut pgd: *mut pgd_t;
     let mut pgd_k: *mut pgd_t;
     let mut pud: *mut pud_t;
@@ -178,8 +178,8 @@ pub unsafe extern "C" fn do_page_fault(regs: *mut pt_regs) {
     let tsk: *mut task_struct;
     let mut vma: *mut vm_area_struct;
     let mm: *mut mm_struct;
-    let addr: ::core::ffi::c_ulong = read_mmu_entryhi() & PAGE_MASK;
-    let mut flags: ::core::ffi::c_uint = FAULT_FLAG_DEFAULT;
+    let addr: ::kernel::ffi::c_ulong = read_mmu_entryhi() & PAGE_MASK;
+    let mut flags: ::kernel::ffi::c_uint = FAULT_FLAG_DEFAULT;
     let mut code: i32 = SEGV_MAPERR;
     let fault: vm_fault_t;
 

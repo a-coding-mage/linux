@@ -2,11 +2,11 @@
 // Rust translation of riscv/kvm/vcpu_onereg.c.  Kernel-provided types,
 // constants, macros, and external routines are intentionally unresolved here.
 
-const KVM_RISCV_BASE_ISA_MASK: ::core::ffi::c_ulong = (1 << 26) - 1;
+const KVM_RISCV_BASE_ISA_MASK: ::kernel::ffi::c_ulong = (1 << 26) - 1;
 
 pub unsafe fn kvm_riscv_vcpu_setup_isa(vcpu: *mut kvm_vcpu) {
-    let mut guest_ext = 0 as ::core::ffi::c_ulong;
-    let mut i = 0 as ::core::ffi::c_ulong;
+    let mut guest_ext = 0 as ::kernel::ffi::c_ulong;
+    let mut i = 0 as ::kernel::ffi::c_ulong;
     while i < KVM_RISCV_ISA_EXT_MAX as _ {
         if __kvm_riscv_isa_check_host(i, &mut guest_ext) != 0 { i += 1; continue; }
         if kvm_riscv_isa_enable_allowed(i) != 0 { set_bit(guest_ext, (*vcpu).arch.isa.as_mut_ptr()); }
@@ -15,9 +15,9 @@ pub unsafe fn kvm_riscv_vcpu_setup_isa(vcpu: *mut kvm_vcpu) {
 }
 
 unsafe fn kvm_riscv_vcpu_get_reg_config(vcpu: *mut kvm_vcpu, reg: *const kvm_one_reg) -> i32 {
-    let uaddr = (*reg).addr as *mut ::core::ffi::c_ulong;
+    let uaddr = (*reg).addr as *mut ::kernel::ffi::c_ulong;
     let reg_num = (*reg).id & !(KVM_REG_ARCH_MASK | KVM_REG_SIZE_MASK | KVM_REG_RISCV_CONFIG);
-    if KVM_REG_SIZE((*reg).id) != core::mem::size_of::<::core::ffi::c_ulong>() as _ { return -EINVAL; }
+    if KVM_REG_SIZE((*reg).id) != core::mem::size_of::<::kernel::ffi::c_ulong>() as _ { return -EINVAL; }
     let reg_val = match reg_num {
         KVM_REG_RISCV_CONFIG_REG!(isa) => (*vcpu).arch.isa[0] & KVM_RISCV_BASE_ISA_MASK,
         KVM_REG_RISCV_CONFIG_REG!(zicbom_block_size) => if kvm_riscv_isa_check_host(ZICBOM) != 0 { 0 } else { riscv_cbom_block_size },
@@ -33,9 +33,9 @@ unsafe fn kvm_riscv_vcpu_get_reg_config(vcpu: *mut kvm_vcpu, reg: *const kvm_one
 }
 
 unsafe fn kvm_riscv_vcpu_set_reg_config(vcpu: *mut kvm_vcpu, reg: *const kvm_one_reg) -> i32 {
-    let uaddr = (*reg).addr as *const ::core::ffi::c_ulong;
+    let uaddr = (*reg).addr as *const ::kernel::ffi::c_ulong;
     let reg_num = (*reg).id & !(KVM_REG_ARCH_MASK | KVM_REG_SIZE_MASK | KVM_REG_RISCV_CONFIG);
-    if KVM_REG_SIZE((*reg).id) != core::mem::size_of::<::core::ffi::c_ulong>() as _ { return -EINVAL; }
+    if KVM_REG_SIZE((*reg).id) != core::mem::size_of::<::kernel::ffi::c_ulong>() as _ { return -EINVAL; }
     let mut reg_val = 0;
     if copy_from_user(&mut reg_val, uaddr, KVM_REG_SIZE((*reg).id)) != 0 { return -EFAULT; }
     match reg_num {

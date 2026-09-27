@@ -7,9 +7,9 @@
 
 // Declarations supplied by the surrounding kernel sources.
 extern "C" {
-    fn pdc_iodc_print(s: *const core::ffi::c_char, count: u32) -> i32;
+    fn pdc_iodc_print(s: *const kernel::ffi::c_char, count: u32) -> i32;
     fn pdc_iodc_getc() -> i32;
-    fn memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void;
+    fn memcpy(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize) -> *mut kernel::ffi::c_void;
     fn kgdb_register_io_module(ops: *mut kgdb_io) -> i32;
 }
 
@@ -23,7 +23,7 @@ const NO_POLL_CHAR: i32 = -1;
 
 #[repr(C)]
 pub struct console {
-    pub write: Option<unsafe extern "C" fn(*mut console, *const core::ffi::c_char, u32)>,
+    pub write: Option<unsafe extern "C" fn(*mut console, *const kernel::ffi::c_char, u32)>,
 }
 
 #[repr(C)]
@@ -39,7 +39,7 @@ pub struct serial_port {
 
 #[repr(C)]
 pub struct kgdb_io {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub read_char: Option<unsafe extern "C" fn() -> i32>,
     pub write_char: Option<unsafe extern "C" fn(u8)>,
 }
@@ -55,7 +55,7 @@ pub struct mem_cons {
     pub cl_class: i32,
 }
 
-unsafe extern "C" fn pdc_console_write(co: *mut console, s: *const core::ffi::c_char, count: u32) {
+unsafe extern "C" fn pdc_console_write(co: *mut console, s: *const kernel::ffi::c_char, count: u32) {
     let _ = co;
     let mut i: u32 = 0;
 
@@ -83,19 +83,19 @@ unsafe extern "C" fn kgdb_pdc_write_char(chr: u8) {
 
 #[cfg(CONFIG_KGDB)]
 static mut kgdb_pdc_io_ops: kgdb_io = kgdb_io {
-    name: b"kgdb_pdc\0".as_ptr() as *const core::ffi::c_char,
+    name: b"kgdb_pdc\0".as_ptr() as *const kernel::ffi::c_char,
     read_char: Some(kgdb_pdc_read_char),
     write_char: Some(kgdb_pdc_write_char),
 };
 
-unsafe extern "C" fn pdc_earlycon_setup(device: *mut earlycon_device, opt: *const core::ffi::c_char) -> i32 {
+unsafe extern "C" fn pdc_earlycon_setup(device: *mut earlycon_device, opt: *const kernel::ffi::c_char) -> i32 {
     let _ = opt;
 
     // If the console is duplex then copy the COUT parameters to CIN.
     if (*PAGE0).mem_cons.cl_class == CL_DUPLEX {
         memcpy(
-            &mut (*PAGE0).mem_kbd as *mut mem_cons as *mut core::ffi::c_void,
-            &(*PAGE0).mem_cons as *const mem_cons as *const core::ffi::c_void,
+            &mut (*PAGE0).mem_kbd as *mut mem_cons as *mut kernel::ffi::c_void,
+            &(*PAGE0).mem_cons as *const mem_cons as *const kernel::ffi::c_void,
             core::mem::size_of::<mem_cons>(),
         );
     }

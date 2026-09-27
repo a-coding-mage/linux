@@ -25,7 +25,7 @@ macro_rules! STD_USER { ($sr:expr, $x:expr, $ptr:expr) => { __put_user_asm!($sr,
 
 macro_rules! __get_user_internal {
     ($sr:expr, $val:expr, $ptr:expr) => {{
-        let mut __gu_err: libc::c_long = 0;
+        let mut __gu_err: kernel::ffi::c_long = 0;
         match core::mem::size_of_val(unsafe { &*$ptr }) {
             1 => __get_user_asm!($sr, $val, "ldb", $ptr),
             2 => __get_user_asm!($sr, $val, "ldh", $ptr),
@@ -51,7 +51,7 @@ macro_rules! __probe_user_internal {
 
 macro_rules! __get_user {
     ($val:expr, $ptr:expr) => {{
-        let mut __gu_err: libc::c_long = __get_user_internal!(SR_USER, $val, $ptr);
+        let mut __gu_err: kernel::ffi::c_long = __get_user_internal!(SR_USER, $val, $ptr);
         if likely(__gu_err == 0) {
             __probe_user_internal!(SR_USER, __gu_err, $ptr);
         }
@@ -61,7 +61,7 @@ macro_rules! __get_user {
 
 macro_rules! __get_user_asm {
     ($sr:expr, $val:expr, $ldx:expr, $ptr:expr) => {{
-        let mut __gu_val: libc::c_long;
+        let mut __gu_val: kernel::ffi::c_long;
         core::arch::asm!(
             "1: {ldx} 0(%%sr{sr},{ptr})",
             "9:",
@@ -83,7 +83,7 @@ macro_rules! __get_kernel_nofault {
 
 macro_rules! __put_user_internal {
     ($sr:expr, $x:expr, $ptr:expr) => {{
-        let mut __pu_err: libc::c_long = 0;
+        let mut __pu_err: kernel::ffi::c_long = 0;
         match core::mem::size_of_val(unsafe { &*$ptr }) {
             1 => __put_user_asm!($sr, "stb", $x, $ptr),
             2 => __put_user_asm!($sr, "sth", $x, $ptr),
@@ -122,11 +122,11 @@ macro_rules! __put_user_asm {
 
 /* Complex access routines -- external declarations */
 extern "C" {
-    pub fn strncpy_from_user(dst: *mut libc::c_char, src: *const libc::c_char, count: libc::c_long) -> libc::c_long;
-    pub fn lclear_user(dst: *mut core::ffi::c_void, count: libc::c_ulong) -> libc::c_uint;
-    pub fn strnlen_user(src: *const libc::c_char, n: libc::c_long) -> libc::c_long;
-    pub fn raw_copy_to_user(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, len: libc::c_ulong) -> libc::c_ulong;
-    pub fn raw_copy_from_user(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, len: libc::c_ulong) -> libc::c_ulong;
+    pub fn strncpy_from_user(dst: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char, count: kernel::ffi::c_long) -> kernel::ffi::c_long;
+    pub fn lclear_user(dst: *mut kernel::ffi::c_void, count: kernel::ffi::c_ulong) -> kernel::ffi::c_uint;
+    pub fn strnlen_user(src: *const kernel::ffi::c_char, n: kernel::ffi::c_long) -> kernel::ffi::c_long;
+    pub fn raw_copy_to_user(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, len: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
+    pub fn raw_copy_from_user(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, len: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
 }
 
 pub use lclear_user as clear_user;

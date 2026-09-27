@@ -76,9 +76,9 @@ extern "C" {
 }
 
 extern "C" {
-    pub fn devmem_is_allowed(pagenr: libc::c_ulong) -> libc::c_int;
-    pub static mut max_low_pfn_mapped: libc::c_ulong;
-    pub static mut max_pfn_mapped: libc::c_ulong;
+    pub fn devmem_is_allowed(pagenr: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+    pub static mut max_low_pfn_mapped: kernel::ffi::c_ulong;
+    pub static mut max_pfn_mapped: kernel::ffi::c_ulong;
 }
 
 #[inline]
@@ -87,7 +87,7 @@ pub unsafe fn get_max_mapped() -> phys_addr_t {
 }
 
 extern "C" {
-    pub fn pfn_range_is_mapped(start_pfn: libc::c_ulong, end_pfn: libc::c_ulong) -> bool;
+    pub fn pfn_range_is_mapped(start_pfn: kernel::ffi::c_ulong, end_pfn: kernel::ffi::c_ulong) -> bool;
     pub fn initmem_init();
 }
 

@@ -15,7 +15,7 @@ pub struct clk {
     _private: [u8; 0],
 }
 
-pub type u32 = ::core::ffi::c_uint;
+pub type u32 = ::kernel::ffi::c_uint;
 
 #[allow(non_camel_case_types)]
 #[repr(C)]
@@ -25,14 +25,14 @@ pub enum samsung_usb_phy_type {
 }
 
 extern "C" {
-    fn readl(addr: *const core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn clk_get(dev: *mut core::ffi::c_void, id: *const core::ffi::c_char) -> *mut clk;
+    fn readl(addr: *const kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn clk_get(dev: *mut kernel::ffi::c_void, id: *const kernel::ffi::c_char) -> *mut clk;
     fn clk_get_rate(clk: *mut clk) -> u64;
     fn clk_put(clk: *mut clk);
     fn mdelay(ms: u32);
     fn udelay(us: u32);
-    fn is_err(ptr: *const core::ffi::c_void) -> bool;
+    fn is_err(ptr: *const kernel::ffi::c_void) -> bool;
 }
 
 unsafe fn s3c_usb_otgphy_init(pdev: *mut platform_device) -> i32 {
@@ -47,8 +47,8 @@ unsafe fn s3c_usb_otgphy_init(pdev: *mut platform_device) -> i32 {
     /* set clock frequency for PLL */
     phyclk = readl(S3C_PHYCLK) & !S3C_PHYCLK_CLKSEL_MASK;
 
-    xusbxti = clk_get(pdev as *mut core::ffi::c_void, c"xusbxti".as_ptr());
-    if !is_err(xusbxti as *const core::ffi::c_void) {
+    xusbxti = clk_get(pdev as *mut kernel::ffi::c_void, c"xusbxti".as_ptr());
+    if !is_err(xusbxti as *const kernel::ffi::c_void) {
         match clk_get_rate(xusbxti) {
             case if case == 12 * MHZ as u64 => phyclk |= S3C_PHYCLK_CLKSEL_12M,
             case if case == 24 * MHZ as u64 => phyclk |= S3C_PHYCLK_CLKSEL_24M,

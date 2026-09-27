@@ -7,32 +7,32 @@
 // intended to be included through <linux/bitops.h>.
 
 #[inline(always)]
-unsafe fn generic___set_bit(nr: libc::c_ulong, addr: *mut libc::c_ulong) {
-    let mask: libc::c_ulong = (1 as libc::c_ulong) << (nr & (BITS_PER_LONG - 1));
+unsafe fn generic___set_bit(nr: kernel::ffi::c_ulong, addr: *mut kernel::ffi::c_ulong) {
+    let mask: kernel::ffi::c_ulong = (1 as kernel::ffi::c_ulong) << (nr & (BITS_PER_LONG - 1));
     let p = addr.add((nr / BITS_PER_LONG) as usize);
 
     *p |= mask;
 }
 
 #[inline(always)]
-unsafe fn generic___clear_bit(nr: libc::c_ulong, addr: *mut libc::c_ulong) {
-    let mask: libc::c_ulong = (1 as libc::c_ulong) << (nr & (BITS_PER_LONG - 1));
+unsafe fn generic___clear_bit(nr: kernel::ffi::c_ulong, addr: *mut kernel::ffi::c_ulong) {
+    let mask: kernel::ffi::c_ulong = (1 as kernel::ffi::c_ulong) << (nr & (BITS_PER_LONG - 1));
     let p = addr.add((nr / BITS_PER_LONG) as usize);
 
     *p &= !mask;
 }
 
 #[inline(always)]
-unsafe fn generic___change_bit(nr: libc::c_ulong, addr: *mut libc::c_ulong) {
-    let mask: libc::c_ulong = (1 as libc::c_ulong) << (nr & (BITS_PER_LONG - 1));
+unsafe fn generic___change_bit(nr: kernel::ffi::c_ulong, addr: *mut kernel::ffi::c_ulong) {
+    let mask: kernel::ffi::c_ulong = (1 as kernel::ffi::c_ulong) << (nr & (BITS_PER_LONG - 1));
     let p = addr.add((nr / BITS_PER_LONG) as usize);
 
     *p ^= mask;
 }
 
 #[inline(always)]
-unsafe fn generic___test_and_set_bit(nr: libc::c_ulong, addr: *mut libc::c_ulong) -> bool {
-    let mask: libc::c_ulong = (1 as libc::c_ulong) << (nr & (BITS_PER_LONG - 1));
+unsafe fn generic___test_and_set_bit(nr: kernel::ffi::c_ulong, addr: *mut kernel::ffi::c_ulong) -> bool {
+    let mask: kernel::ffi::c_ulong = (1 as kernel::ffi::c_ulong) << (nr & (BITS_PER_LONG - 1));
     let p = addr.add((nr / BITS_PER_LONG) as usize);
     let old = *p;
 
@@ -41,8 +41,8 @@ unsafe fn generic___test_and_set_bit(nr: libc::c_ulong, addr: *mut libc::c_ulong
 }
 
 #[inline(always)]
-unsafe fn generic___test_and_clear_bit(nr: libc::c_ulong, addr: *mut libc::c_ulong) -> bool {
-    let mask: libc::c_ulong = (1 as libc::c_ulong) << (nr & (BITS_PER_LONG - 1));
+unsafe fn generic___test_and_clear_bit(nr: kernel::ffi::c_ulong, addr: *mut kernel::ffi::c_ulong) -> bool {
+    let mask: kernel::ffi::c_ulong = (1 as kernel::ffi::c_ulong) << (nr & (BITS_PER_LONG - 1));
     let p = addr.add((nr / BITS_PER_LONG) as usize);
     let old = *p;
 
@@ -52,8 +52,8 @@ unsafe fn generic___test_and_clear_bit(nr: libc::c_ulong, addr: *mut libc::c_ulo
 
 // WARNING: non atomic and it can be reordered!
 #[inline(always)]
-unsafe fn generic___test_and_change_bit(nr: libc::c_ulong, addr: *mut libc::c_ulong) -> bool {
-    let mask: libc::c_ulong = (1 as libc::c_ulong) << (nr & (BITS_PER_LONG - 1));
+unsafe fn generic___test_and_change_bit(nr: kernel::ffi::c_ulong, addr: *mut kernel::ffi::c_ulong) -> bool {
+    let mask: kernel::ffi::c_ulong = (1 as kernel::ffi::c_ulong) << (nr & (BITS_PER_LONG - 1));
     let p = addr.add((nr / BITS_PER_LONG) as usize);
     let old = *p;
 
@@ -62,27 +62,27 @@ unsafe fn generic___test_and_change_bit(nr: libc::c_ulong, addr: *mut libc::c_ul
 }
 
 #[inline(always)]
-unsafe fn generic_test_bit(nr: libc::c_ulong, addr: *const libc::c_ulong) -> bool {
+unsafe fn generic_test_bit(nr: kernel::ffi::c_ulong, addr: *const kernel::ffi::c_ulong) -> bool {
     /*
      * Unlike the bitops with the '__' prefix above, this one *is* atomic,
      * so `volatile` must always stay here with no cast-aways. See
      * `Documentation/atomic_bitops.txt` for the details.
      */
-    1 as libc::c_ulong & (*addr.add((nr / BITS_PER_LONG) as usize) >> (nr & (BITS_PER_LONG - 1))) != 0
+    1 as kernel::ffi::c_ulong & (*addr.add((nr / BITS_PER_LONG) as usize) >> (nr & (BITS_PER_LONG - 1))) != 0
 }
 
 #[inline(always)]
-unsafe fn generic_test_bit_acquire(nr: libc::c_ulong, addr: *const libc::c_ulong) -> bool {
+unsafe fn generic_test_bit_acquire(nr: kernel::ffi::c_ulong, addr: *const kernel::ffi::c_ulong) -> bool {
     let p = addr.add((nr / BITS_PER_LONG) as usize);
-    1 as libc::c_ulong & smp_load_acquire(p) >> (nr & (BITS_PER_LONG - 1)) != 0
+    1 as kernel::ffi::c_ulong & smp_load_acquire(p) >> (nr & (BITS_PER_LONG - 1)) != 0
 }
 
 // const_*() definitions provide good compile-time optimizations when the
 // passed arguments can be resolved at compile time.
 #[inline(always)]
-unsafe fn const_test_bit(nr: libc::c_ulong, addr: *const libc::c_ulong) -> bool {
+unsafe fn const_test_bit(nr: kernel::ffi::c_ulong, addr: *const kernel::ffi::c_ulong) -> bool {
     let p = addr.add((nr / BITS_PER_LONG) as usize);
-    let mask: libc::c_ulong = (1 as libc::c_ulong) << (nr & (BITS_PER_LONG - 1));
+    let mask: kernel::ffi::c_ulong = (1 as kernel::ffi::c_ulong) << (nr & (BITS_PER_LONG - 1));
     let val = *p;
 
     (val & mask) != 0

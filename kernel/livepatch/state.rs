@@ -8,7 +8,7 @@
 // The declarations below are provided by the corresponding livepatch headers
 // and other translation units in the kernel build.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct klp_state {

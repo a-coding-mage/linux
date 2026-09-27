@@ -56,32 +56,32 @@ pub struct os_info {
 
 extern "C" {
     pub fn os_info_init();
-    pub fn os_info_entry_add_data(nr: i32, ptr: *mut core::ffi::c_void, len: u64);
+    pub fn os_info_entry_add_data(nr: i32, ptr: *mut kernel::ffi::c_void, len: u64);
     pub fn os_info_entry_add_val(nr: i32, val: u64);
-    pub fn os_info_crashkernel_add(base: core::ffi::c_ulong, size: core::ffi::c_ulong);
+    pub fn os_info_crashkernel_add(base: kernel::ffi::c_ulong, size: kernel::ffi::c_ulong);
     pub fn os_info_csum(os_info: *mut os_info) -> u32;
 }
 
 // CONFIG_CRASH_DUMP conditional from the original header.
 #[cfg(CONFIG_CRASH_DUMP)]
 extern "C" {
-    pub fn os_info_old_entry(nr: i32, size: *mut core::ffi::c_ulong) -> *mut core::ffi::c_void;
+    pub fn os_info_old_entry(nr: i32, size: *mut kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void;
 }
 
 #[cfg(CONFIG_CRASH_DUMP)]
 #[inline]
-pub unsafe fn os_info_old_value(nr: i32) -> core::ffi::c_ulong {
-    let mut size: core::ffi::c_ulong = 0;
+pub unsafe fn os_info_old_value(nr: i32) -> kernel::ffi::c_ulong {
+    let mut size: kernel::ffi::c_ulong = 0;
     os_info_old_entry(nr, &mut size)
-        as usize as core::ffi::c_ulong
+        as usize as kernel::ffi::c_ulong
 }
 
 #[cfg(not(CONFIG_CRASH_DUMP))]
 #[inline]
 pub unsafe fn os_info_old_entry(
     _nr: i32,
-    _size: *mut core::ffi::c_ulong,
-) -> *mut core::ffi::c_void {
+    _size: *mut kernel::ffi::c_ulong,
+) -> *mut kernel::ffi::c_void {
     core::ptr::null_mut()
 }
 

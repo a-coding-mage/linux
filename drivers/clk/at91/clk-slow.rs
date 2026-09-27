@@ -19,7 +19,7 @@ unsafe fn to_clk_sam9260_slow(hw: *mut crate::clk_hw) -> *mut clk_sam9260_slow {
 
 unsafe fn clk_sam9260_slow_get_parent(hw: *mut crate::clk_hw) -> u8 {
     let slowck = &mut *to_clk_sam9260_slow(hw);
-    let mut status: core::ffi::c_uint = 0;
+    let mut status: kernel::ffi::c_uint = 0;
 
     crate::regmap_read(slowck.regmap, crate::AT91_PMC_SR, &mut status);
 
@@ -32,9 +32,9 @@ pub static sam9260_slow_ops: crate::clk_ops = crate::clk_ops {
 
 pub unsafe extern "C" fn at91_clk_register_sam9260_slow(
     regmap: *mut crate::regmap,
-    name: *const core::ffi::c_char,
-    parent_names: *const *const core::ffi::c_char,
-    num_parents: core::ffi::c_int,
+    name: *const kernel::ffi::c_char,
+    parent_names: *const *const kernel::ffi::c_char,
+    num_parents: kernel::ffi::c_int,
 ) -> *mut crate::clk_hw {
     if name.is_null() {
         return crate::ERR_PTR(-crate::EINVAL);

@@ -16,14 +16,14 @@ pub struct jffs2_sb_info {
     pub erase_pending_list: list_head, pub erasable_pending_wbuf_list: list_head,
     pub erase_complete_list: list_head, pub free_list: list_head,
     pub bad_list: list_head, pub bad_used_list: list_head,
-    pub highest_ino: u32, pub summary: *mut core::ffi::c_void,
+    pub highest_ino: u32, pub summary: *mut kernel::ffi::c_void,
     pub resv_blocks_deletion: u32, pub resv_blocks_write: u32,
     pub resv_blocks_gctrigger: u32, pub resv_blocks_gcmerge: u32,
     pub resv_blocks_gcbad: u32, pub vdirty_blocks_gctrigger: u32,
     pub nospc_dirty_size: u32,
 }
 #[repr(C)] pub struct jffs2_inode_cache { pub ino: u32, pub next: *mut jffs2_inode_cache, pub scan_dents: *mut jffs2_full_dirent, pub pino_nlink: u32, pub flags: u32, pub nodes: *mut jffs2_raw_node_ref }
-#[repr(C)] pub struct jffs2_full_dirent { pub next: *mut jffs2_full_dirent, pub ino: u32, pub type_: u8, pub name: *const core::ffi::c_char, pub ic: *mut jffs2_inode_cache, pub raw: *mut core::ffi::c_void }
+#[repr(C)] pub struct jffs2_full_dirent { pub next: *mut jffs2_full_dirent, pub ino: u32, pub type_: u8, pub name: *const kernel::ffi::c_char, pub ic: *mut jffs2_inode_cache, pub raw: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct jffs2_raw_node_ref { pub next_in_ino: *mut jffs2_raw_node_ref }
 #[repr(C)] pub struct jffs2_eraseblock { pub list: list_head, pub offset: u32, pub free_size: u32 }
 #[repr(C)] pub struct list_head { pub next: *mut list_head, pub prev: *mut list_head }
@@ -31,7 +31,7 @@ pub struct jffs2_sb_info {
 extern "C" {
     fn jffs2_scan_medium(c: *mut jffs2_sb_info) -> i32;
     fn jffs2_get_ino_cache(c: *mut jffs2_sb_info, ino: u32) -> *mut jffs2_inode_cache;
-    fn jffs2_mark_node_obsolete(c: *mut jffs2_sb_info, raw: *mut core::ffi::c_void);
+    fn jffs2_mark_node_obsolete(c: *mut jffs2_sb_info, raw: *mut kernel::ffi::c_void);
     fn jffs2_free_full_dirent(fd: *mut jffs2_full_dirent);
     fn jffs2_build_xattr_subsystem(c: *mut jffs2_sb_info) -> i32;
     fn jffs2_clear_xattr_subsystem(c: *mut jffs2_sb_info);
@@ -44,7 +44,7 @@ extern "C" {
     fn jffs2_can_mark_obsolete(c: *mut jffs2_sb_info) -> bool;
     fn jffs2_dbg_dump_block_lists_nolock(c: *mut jffs2_sb_info);
     fn cond_resched();
-    fn kvfree(p: *mut core::ffi::c_void);
+    fn kvfree(p: *mut kernel::ffi::c_void);
 }
 
 const JFFS2_SB_FLAG_SCANNING: u32 = 1 << 0;
@@ -93,7 +93,7 @@ unsafe fn jffs2_build_remove_unlinked_inode(c: *mut jffs2_sb_info, ic: *mut jffs
     let mut raw = (*ic).nodes;
     while raw != ic as *mut jffs2_raw_node_ref {
         let next = (*raw).next_in_ino;
-        jffs2_mark_node_obsolete(c, raw as *mut core::ffi::c_void);
+        jffs2_mark_node_obsolete(c, raw as *mut kernel::ffi::c_void);
         raw = next;
     }
     while !(*ic).scan_dents.is_null() {

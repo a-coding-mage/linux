@@ -5,7 +5,7 @@
 
 #![allow(non_camel_case_types, non_snake_case, dead_code, unused_variables)]
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub const EP_MAX_NESTS: usize = 4;
 pub const PATH_ARR_SIZE: usize = 5;
@@ -63,7 +63,7 @@ pub struct ep_pqueue {
     pub epi: *mut epitem,
 }
 
-static mut max_user_watches: libc::c_long = 0;
+static mut max_user_watches: kernel::ffi::c_long = 0;
 static mut epi_cache: *mut kmem_cache = core::ptr::null_mut();
 static mut pwq_cache: *mut kmem_cache = core::ptr::null_mut();
 static mut ephead_cache: *mut kmem_cache = core::ptr::null_mut();

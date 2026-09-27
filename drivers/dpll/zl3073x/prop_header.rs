@@ -15,7 +15,7 @@ pub struct fwnode_handle;
 pub struct zl3073x_pin_props {
     pub fwnode: *mut fwnode_handle,
     pub dpll_props: dpll_pin_properties,
-    pub package_label: [core::ffi::c_char; 8],
+    pub package_label: [kernel::ffi::c_char; 8],
     pub esync_control: bool,
 }
 

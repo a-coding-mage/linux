@@ -3,7 +3,7 @@
  * Alchemy DB/PB1xxx board support.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Dependencies supplied by the surrounding kernel sources.
 extern "C" {

@@ -23,13 +23,13 @@ pub struct ucounts;
 #[repr(C)]
 pub struct sigqueue {
     pub list: list_head,
-    pub flags: ::core::ffi::c_int,
+    pub flags: ::kernel::ffi::c_int,
     pub info: kernel_siginfo_t,
     pub ucounts: *mut ucounts,
 }
 
 /* flags values. */
-pub const SIGQUEUE_PREALLOC: ::core::ffi::c_int = 1;
+pub const SIGQUEUE_PREALLOC: ::kernel::ffi::c_int = 1;
 
 #[repr(C)]
 pub struct sigpending {
@@ -43,9 +43,9 @@ pub struct sigaction {
     #[cfg(not(feature = "__ARCH_HAS_IRIX_SIGACTION"))]
     pub sa_handler: __sighandler_t,
     #[cfg(not(feature = "__ARCH_HAS_IRIX_SIGACTION"))]
-    pub sa_flags: ::core::ffi::c_ulong,
+    pub sa_flags: ::kernel::ffi::c_ulong,
     #[cfg(feature = "__ARCH_HAS_IRIX_SIGACTION")]
-    pub sa_flags: ::core::ffi::c_uint,
+    pub sa_flags: ::kernel::ffi::c_uint,
     #[cfg(feature = "__ARCH_HAS_IRIX_SIGACTION")]
     pub sa_handler: __sighandler_t,
     #[cfg(feature = "__ARCH_HAS_SA_RESTORER")]
@@ -65,7 +65,7 @@ pub struct k_sigaction {
 pub struct old_sigaction {
     pub sa_handler: __sighandler_t,
     pub sa_mask: old_sigset_t,
-    pub sa_flags: ::core::ffi::c_ulong,
+    pub sa_flags: ::kernel::ffi::c_ulong,
     pub sa_restorer: __sigrestore_t,
 }
 
@@ -73,19 +73,19 @@ pub struct old_sigaction {
 pub struct ksignal {
     pub ka: k_sigaction,
     pub info: kernel_siginfo_t,
-    pub sig: ::core::ffi::c_int,
+    pub sig: ::kernel::ffi::c_int,
 }
 
 /* Used to kill the race between sigaction and forced signals. */
-pub const SA_IMMUTABLE: ::core::ffi::c_ulong = 0x00800000;
+pub const SA_IMMUTABLE: ::kernel::ffi::c_ulong = 0x00800000;
 
 /* __ARCH_UAPI_SA_FLAGS is supplied by the architecture/UAPI configuration. */
 #[cfg(feature = "__ARCH_UAPI_SA_FLAGS")]
-pub const __ARCH_UAPI_SA_FLAGS: _ = __ARCH_UAPI_SA_FLAGS;
+pub const __ARCH_UAPI_SA_FLAGS: ::kernel::ffi::c_ulong = __ARCH_UAPI_SA_FLAGS;
 #[cfg(not(feature = "__ARCH_UAPI_SA_FLAGS"))]
-pub const __ARCH_UAPI_SA_FLAGS: ::core::ffi::c_ulong = 0;
+pub const __ARCH_UAPI_SA_FLAGS: ::kernel::ffi::c_ulong = 0;
 
-pub const UAPI_SA_FLAGS: _ =
+pub const UAPI_SA_FLAGS: u32 =
     SA_NOCLDSTOP | SA_NOCLDWAIT | SA_SIGINFO | SA_ONSTACK | SA_RESTART |
     SA_NODEFER | SA_RESETHAND | SA_EXPOSE_TAGBITS | __ARCH_UAPI_SA_FLAGS;
 

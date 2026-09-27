@@ -28,36 +28,36 @@ const LPC32XX_TIMER_CTCR: usize = 0x070;
 #[repr(C)]
 struct lpc32xx_clock_event_ddata {
     evtdev: clock_event_device,
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     ticks_per_jiffy: u32,
 }
 
 // Needed for the sched clock
-static mut clocksource_timer_counter: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut clocksource_timer_counter: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 unsafe extern "C" {
-    fn readl(addr: *const core::ffi::c_void) -> u32;
-    fn writel_relaxed(value: u32, addr: *mut core::ffi::c_void);
-    fn of_clk_get_by_name(np: *mut device_node, name: *const core::ffi::c_char) -> *mut clk;
+    fn readl(addr: *const kernel::ffi::c_void) -> u32;
+    fn writel_relaxed(value: u32, addr: *mut kernel::ffi::c_void);
+    fn of_clk_get_by_name(np: *mut device_node, name: *const kernel::ffi::c_char) -> *mut clk;
     fn clk_prepare_enable(clk: *mut clk) -> i32;
     fn clk_get_rate(clk: *mut clk) -> usize;
     fn clk_disable_unprepare(clk: *mut clk);
     fn clk_put(clk: *mut clk);
-    fn of_iomap(np: *mut device_node, index: i32) -> *mut core::ffi::c_void;
-    fn iounmap(addr: *mut core::ffi::c_void);
-    fn clocksource_mmio_init(base: *mut core::ffi::c_void, name: *const core::ffi::c_char,
-                             rate: usize, rating: u32, bits: u32, read: unsafe extern "C" fn(*mut core::ffi::c_void) -> u32) -> i32;
-    fn clocksource_mmio_readl_up(base: *mut core::ffi::c_void) -> u32;
+    fn of_iomap(np: *mut device_node, index: i32) -> *mut kernel::ffi::c_void;
+    fn iounmap(addr: *mut kernel::ffi::c_void);
+    fn clocksource_mmio_init(base: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char,
+                             rate: usize, rating: u32, bits: u32, read: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> u32) -> i32;
+    fn clocksource_mmio_readl_up(base: *mut kernel::ffi::c_void) -> u32;
     fn register_current_timer_delay(timer: *mut delay_timer);
     fn sched_clock_register(read: unsafe extern "C" fn() -> u64, bits: u32, rate: usize);
     fn irq_of_parse_and_map(np: *mut device_node, index: i32) -> u32;
     fn clockevents_config_and_register(evtdev: *mut clock_event_device, rate: usize, min_delta: u32, max_delta: i32);
-    fn request_irq(irq: u32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t,
-                   flags: u32, name: *const core::ffi::c_char, dev_id: *mut core::ffi::c_void) -> i32;
+    fn request_irq(irq: u32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t,
+                   flags: u32, name: *const kernel::ffi::c_char, dev_id: *mut kernel::ffi::c_void) -> i32;
 }
 
 #[repr(C)] struct clock_event_device {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     features: u32,
     rating: u32,
     set_next_event: Option<unsafe extern "C" fn(usize, *mut clock_event_device) -> i32>,
@@ -119,7 +119,7 @@ unsafe extern "C" fn lpc32xx_clkevt_periodic(evtdev: *mut clock_event_device) ->
     0
 }
 
-unsafe extern "C" fn lpc32xx_clock_event_handler(_irq: i32, dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn lpc32xx_clock_event_handler(_irq: i32, dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     let ddata = dev_id as *mut lpc32xx_clock_event_ddata;
     writel_relaxed(LPC32XX_TIMER_IR_MR0INT, (*ddata).base.add(LPC32XX_TIMER_IR));
     0 // (*ddata).evtdev.event_handler(&mut (*ddata).evtdev)

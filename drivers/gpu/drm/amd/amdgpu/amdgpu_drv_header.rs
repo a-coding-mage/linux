@@ -38,15 +38,15 @@ unsafe extern "C" {
 
     pub fn amdgpu_drm_ioctl(
         filp: *mut file,
-        cmd: core::ffi::c_uint,
-        arg: core::ffi::c_ulong,
-    ) -> core::ffi::c_long;
+        cmd: kernel::ffi::c_uint,
+        arg: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_long;
 
     pub fn amdgpu_kms_compat_ioctl(
         filp: *mut file,
-        cmd: core::ffi::c_uint,
-        arg: core::ffi::c_ulong,
-    ) -> core::ffi::c_long;
+        cmd: kernel::ffi::c_uint,
+        arg: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_long;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

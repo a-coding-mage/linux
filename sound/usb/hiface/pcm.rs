@@ -501,10 +501,10 @@ pub unsafe fn hiface_pcm_init_urb(
         &mut (*urb).instance,
         (*chip).dev,
         usb_sndbulkpipe((*chip).dev, ep),
-        (*urb).buffer as *mut libc::c_void,
+        (*urb).buffer as *mut core::ffi::c_void,
         PCM_PACKET_SIZE,
         handler,
-        urb as *mut libc::c_void,
+        urb as *mut core::ffi::c_void,
     );
     if usb_urb_ep_type_check(&mut (*urb).instance) != 0 {
         return -22; /* EINVAL */
@@ -530,10 +530,10 @@ unsafe fn hiface_pcm_destroy(chip: *mut HifaceChip) {
     let rt = (*chip).pcm;
 
     for i in 0..PCM_N_URBS {
-        kfree((*rt).out_urbs[i].buffer as *mut libc::c_void);
+        kfree((*rt).out_urbs[i].buffer as *mut core::ffi::c_void);
     }
 
-    kfree(rt as *mut libc::c_void);
+    kfree(rt as *mut core::ffi::c_void);
     (*chip).pcm = std::ptr::null_mut();
 }
 
@@ -585,7 +585,7 @@ pub unsafe fn hiface_pcm_init(chip: *mut HifaceChip, extra_freq: u8) -> i32 {
         return ret;
     }
 
-    (*pcm).private_data = rt as *mut libc::c_void;
+    (*pcm).private_data = rt as *mut core::ffi::c_void;
     (*pcm).private_free = Some(hiface_pcm_free);
 
     strscpy((*pcm).name.as_mut_ptr(), "USB-SPDIF Audio\0".as_ptr() as *const i8, 32);
@@ -601,9 +601,9 @@ pub unsafe fn hiface_pcm_init(chip: *mut HifaceChip, extra_freq: u8) -> i32 {
 fn goto_error(chip: *mut HifaceChip, rt: *mut PcmRuntime, start_i: usize) {
     unsafe {
         for i in start_i..PCM_N_URBS {
-            kfree((*rt).out_urbs[i].buffer as *mut libc::c_void);
+            kfree((*rt).out_urbs[i].buffer as *mut core::ffi::c_void);
         }
-        kfree(rt as *mut libc::c_void);
+        kfree(rt as *mut core::ffi::c_void);
     }
 }
 
@@ -621,16 +621,16 @@ extern "C" {
     pub type WaitQueueHeadT;
     pub type SndPcmUframes;
 
-    fn snd_pcm_substream_chip(substream: *mut SndPcmSubstream) -> *mut libc::c_void;
+    fn snd_pcm_substream_chip(substream: *mut SndPcmSubstream) -> *mut core::ffi::c_void;
     fn usb_wait_anchor_empty_timeout(anchor: *mut UsbAnchor, timeout: i32) -> i32;
     fn usb_kill_anchored_urbs(anchor: *mut UsbAnchor);
     fn usb_kill_urb(urb: *mut Urb);
-    fn memset(s: *mut libc::c_void, c: i32, n: usize) -> *mut libc::c_void;
+    fn memset(s: *mut core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void;
     fn usb_anchor_urb(urb: *mut Urb, anchor: *mut UsbAnchor);
     fn usb_submit_urb(urb: *mut Urb, mem_flags: u32) -> i32;
     fn wait_event_timeout(wq: *mut WaitQueueHeadT, cond: *mut bool, timeout: u32) -> i32;
-    fn dev_dbg_external(device: *mut libc::c_void, fmt: *const i8, ...);
-    fn dev_err_external(device: *mut libc::c_void, fmt: *const i8, ...);
+    fn dev_dbg_external(device: *mut core::ffi::c_void, fmt: *const i8, ...);
+    fn dev_err_external(device: *mut core::ffi::c_void, fmt: *const i8, ...);
     fn snd_pcm_lib_buffer_bytes(substream: *mut SndPcmSubstream) -> usize;
     fn swahw32(value: u32) -> u32;
     fn snd_pcm_period_elapsed(substream: *mut SndPcmSubstream);
@@ -660,17 +660,17 @@ extern "C" {
         flags: u32,
     ) -> i32;
     fn usb_init_urb(urb: *mut Urb);
-    fn kzalloc(size: usize, flags: u32) -> *mut libc::c_void;
-    fn kfree(p: *mut libc::c_void);
+    fn kzalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn kfree(p: *mut core::ffi::c_void);
     fn usb_sndbulkpipe(dev: *mut UsbDevice, endpoint: u32) -> u32;
     fn usb_fill_bulk_urb(
         urb: *mut Urb,
         dev: *mut UsbDevice,
         pipe: u32,
-        transfer_buffer: *mut libc::c_void,
+        transfer_buffer: *mut core::ffi::c_void,
         buffer_length: usize,
         complete: unsafe extern "C" fn(*mut Urb),
-        context: *mut libc::c_void,
+        context: *mut core::ffi::c_void,
     );
     fn usb_urb_ep_type_check(urb: *mut Urb) -> i32;
     fn init_usb_anchor(anchor: *mut UsbAnchor);
@@ -678,7 +678,7 @@ extern "C" {
     fn mutex_init(mutex: *mut MutexT);
     fn spin_lock_init(lock: *mut SpinlockT);
     fn snd_pcm_new(
-        card: *mut libc::c_void,
+        card: *mut core::ffi::c_void,
         id: *const i8,
         device: i32,
         playback_count: i32,
@@ -690,7 +690,7 @@ extern "C" {
     fn snd_pcm_set_managed_buffer_all(
         pcm: *mut SndPcm,
         type_: i32,
-        device: *mut libc::c_void,
+        device: *mut core::ffi::c_void,
         size: usize,
         max_size: usize,
     );
@@ -700,7 +700,7 @@ extern "C" {
 macro_rules! dev_dbg_external {
     ($dev:expr, $fmt:expr, $($arg:expr),*) => {
         unsafe {
-            dev_dbg_external($dev as *mut libc::c_void, concat!($fmt, "\0").as_ptr() as *const i8, $($arg),*);
+            dev_dbg_external($dev as *mut core::ffi::c_void, concat!($fmt, "\0").as_ptr() as *const i8, $($arg),*);
         }
     };
 }
@@ -708,7 +708,7 @@ macro_rules! dev_dbg_external {
 macro_rules! dev_err_external {
     ($dev:expr, $fmt:expr, $($arg:expr),*) => {
         unsafe {
-            dev_err_external($dev as *mut libc::c_void, concat!($fmt, "\0").as_ptr() as *const i8, $($arg),*);
+            dev_err_external($dev as *mut core::ffi::c_void, concat!($fmt, "\0").as_ptr() as *const i8, $($arg),*);
         }
     };
 }

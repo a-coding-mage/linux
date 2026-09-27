@@ -77,7 +77,7 @@ macro_rules! flush_cache_page {
  * This works around some PIO based drivers which don't call flush_dcache_page
  * to record that they dirtied the dcache
  */
-pub const PG_dc_clean: _ = PG_arch_1;
+pub const PG_dc_clean: c_ulong = PG_arch_1;
 
 macro_rules! copy_to_user_page {
     ($vma:expr, $page:expr, $vaddr:expr, $dst:expr, $src:expr, $len:expr) => {{

@@ -42,7 +42,7 @@ pub unsafe fn udf_get_last_session(sb: *mut super_block) -> u32 {
 
 pub unsafe fn udf_get_last_block(sb: *mut super_block) -> udf_pblk_t {
     let cdi = disk_to_cdi((*(*sb).s_bdev).bd_disk);
-    let mut lblock: libc::c_ulong = 0;
+    let mut lblock: kernel::ffi::c_ulong = 0;
 
     /*
      * The cdrom layer call failed or returned obviously bogus value?

@@ -11,12 +11,12 @@
 
 #[repr(C)]
 pub struct simple_util_info {
-    pub name: *const core::ffi::c_char,
-    pub card: *const core::ffi::c_char,
-    pub codec: *const core::ffi::c_char,
-    pub platform: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub card: *const kernel::ffi::c_char,
+    pub codec: *const kernel::ffi::c_char,
+    pub platform: *const kernel::ffi::c_char,
 
-    pub daifmt: core::ffi::c_uint,
+    pub daifmt: kernel::ffi::c_uint,
     pub cpu_dai: simple_util_dai,
     pub codec_dai: simple_util_dai,
 }

@@ -9,7 +9,7 @@
  *
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub type u_char = u8;
 pub type loff_t = i64;
@@ -36,35 +36,35 @@ extern "C" {
     fn jffs2_sum_add_kvec(
         c: *mut jffs2_sb_info,
         vecs: *const kvec,
-        count: libc::c_ulong,
+        count: kernel::ffi::c_ulong,
         ofs: u32,
-    ) -> libc::c_int;
+    ) -> kernel::ffi::c_int;
     fn mtd_writev(
         mtd: *mut mtd_info,
         vecs: *const kvec,
-        count: libc::c_ulong,
+        count: kernel::ffi::c_ulong,
         to: loff_t,
         retlen: *mut usize,
-    ) -> libc::c_int;
+    ) -> kernel::ffi::c_int;
     fn mtd_write(
         mtd: *mut mtd_info,
         ofs: loff_t,
         len: usize,
         retlen: *mut usize,
         buf: *const u_char,
-    ) -> libc::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 pub unsafe fn jffs2_flash_direct_writev(
     c: *mut jffs2_sb_info,
     vecs: *const kvec,
-    count: libc::c_ulong,
+    count: kernel::ffi::c_ulong,
     to: loff_t,
     retlen: *mut usize,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     if !jffs2_is_writebuffered(c) {
         if jffs2_sum_active() {
-            let res: libc::c_int;
+            let res: kernel::ffi::c_int;
             res = jffs2_sum_add_kvec(c, vecs, count, to as u32);
             if res != 0 {
                 return res;
@@ -81,8 +81,8 @@ pub unsafe fn jffs2_flash_direct_write(
     len: usize,
     retlen: *mut usize,
     buf: *const u_char,
-) -> libc::c_int {
-    let ret: libc::c_int;
+) -> kernel::ffi::c_int {
+    let ret: kernel::ffi::c_int;
     ret = mtd_write((*c).mtd, ofs, len, retlen, buf);
 
     if jffs2_sum_active() {
@@ -90,7 +90,7 @@ pub unsafe fn jffs2_flash_direct_write(
             iov_base: core::ptr::null_mut(),
             iov_len: 0,
         }];
-        let res: libc::c_int;
+        let res: kernel::ffi::c_int;
 
         vecs[0].iov_base = buf as *mut c_void;
         vecs[0].iov_len = len;

@@ -16,7 +16,7 @@ pub fn arch_kfence_init_pool() -> bool {
 
 /* Protect the given page and flush TLB. */
 #[inline]
-pub unsafe fn kfence_protect_page(addr: ::core::ffi::c_ulong, protect: bool) -> bool {
+pub unsafe fn kfence_protect_page(addr: ::kernel::ffi::c_ulong, protect: bool) -> bool {
     let pte: *mut crate::pte_t = crate::virt_to_kpte(addr);
 
     if crate::WARN_ON(pte.is_null()) {

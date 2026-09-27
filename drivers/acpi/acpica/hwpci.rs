@@ -19,7 +19,7 @@ unsafe extern "C" {
     fn acpi_get_parent(object: acpi_handle, out: *mut acpi_handle) -> acpi_status;
     fn acpi_get_type(object: acpi_handle, out: *mut acpi_object_type) -> acpi_status;
     fn acpi_ut_evaluate_numeric_object(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         object: acpi_handle,
         value: *mut u64,
     ) -> acpi_status;
@@ -29,8 +29,8 @@ unsafe extern "C" {
         value: *mut u64,
         width: u32,
     ) -> acpi_status;
-    fn ACPI_ALLOCATE(size: usize) -> *mut core::ffi::c_void;
-    fn ACPI_FREE(ptr: *mut core::ffi::c_void);
+    fn ACPI_ALLOCATE(size: usize) -> *mut kernel::ffi::c_void;
+    fn ACPI_FREE(ptr: *mut kernel::ffi::c_void);
 }
 
 unsafe fn acpi_hw_delete_pci_list(mut list_head: *mut acpi_pci_device) {
@@ -88,7 +88,7 @@ unsafe fn acpi_hw_get_pci_device_info(
     if object_type != ACPI_TYPE_DEVICE { return AE_OK; }
 
     status = acpi_ut_evaluate_numeric_object(
-        METHOD_NAME__ADR.as_ptr() as *const core::ffi::c_char,
+        METHOD_NAME__ADR.as_ptr() as *const kernel::ffi::c_char,
         pci_device, &mut return_value);
     if ACPI_FAILURE(status) { return AE_OK; }
 

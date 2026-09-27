@@ -3,7 +3,7 @@
 // The C tracepoint declarations below are represented as Rust data layouts and
 // assignment/formatting helpers; tracepoint registration is supplied externally.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // I_CTIME_QUERIED and the kernel inode/timespec64 definitions are supplied by
 // the corresponding kernel dependencies.

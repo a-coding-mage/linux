@@ -34,7 +34,7 @@ extern "C" {
     pub fn gtm_get_timer16() -> *mut gtm_timer;
     pub fn gtm_get_specific_timer16(gtm: *mut gtm, timer: u32) -> *mut gtm_timer;
     pub fn gtm_put_timer16(tmr: *mut gtm_timer);
-    pub fn gtm_set_timer16(tmr: *mut gtm_timer, usec: core::ffi::c_ulong, reload: bool) -> i32;
+    pub fn gtm_set_timer16(tmr: *mut gtm_timer, usec: kernel::ffi::c_ulong, reload: bool) -> i32;
     pub fn gtm_set_exact_timer16(tmr: *mut gtm_timer, usec: u16, reload: bool) -> i32;
     pub fn gtm_stop_timer16(tmr: *mut gtm_timer);
     pub fn gtm_ack_timer16(tmr: *mut gtm_timer, events: u16);

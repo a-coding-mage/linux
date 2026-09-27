@@ -47,7 +47,7 @@ unsafe fn omap_prcm_irq_handler(desc: *mut irq_desc) {
     ((*prcm_irq_setup).ocp_barrier)();
 }
 
-pub unsafe fn omap_prcm_event_to_irq(name: *const core::ffi::c_char) -> i32 {
+pub unsafe fn omap_prcm_event_to_irq(name: *const kernel::ffi::c_char) -> i32 {
     if prcm_irq_setup.is_null() || name.is_null() { return -ENOENT; }
     for i in 0..(*prcm_irq_setup).nr_irqs as usize {
         if strcmp((*prcm_irq_setup).irqs.add(i).name, name) == 0 {
@@ -64,10 +64,10 @@ unsafe fn omap_prcm_irq_cleanup() {
             if !(*prcm_irq_chips.add(i)).is_null() { irq_remove_generic_chip(*prcm_irq_chips.add(i), 0xffffffff, 0, 0); }
             *prcm_irq_chips.add(i) = core::ptr::null_mut();
         }
-        kfree(prcm_irq_chips as *mut core::ffi::c_void); prcm_irq_chips = core::ptr::null_mut();
+        kfree(prcm_irq_chips as *mut kernel::ffi::c_void); prcm_irq_chips = core::ptr::null_mut();
     }
-    kfree((*prcm_irq_setup).saved_mask as *mut core::ffi::c_void); (*prcm_irq_setup).saved_mask = core::ptr::null_mut();
-    kfree((*prcm_irq_setup).priority_mask as *mut core::ffi::c_void); (*prcm_irq_setup).priority_mask = core::ptr::null_mut();
+    kfree((*prcm_irq_setup).saved_mask as *mut kernel::ffi::c_void); (*prcm_irq_setup).saved_mask = core::ptr::null_mut();
+    kfree((*prcm_irq_setup).priority_mask as *mut kernel::ffi::c_void); (*prcm_irq_setup).priority_mask = core::ptr::null_mut();
     irq_set_chained_handler((*prcm_irq_setup).irq, None);
     if (*prcm_irq_setup).base_irq > 0 { irq_free_descs((*prcm_irq_setup).base_irq, (*prcm_irq_setup).nr_regs * 32); }
     (*prcm_irq_setup).base_irq = 0;

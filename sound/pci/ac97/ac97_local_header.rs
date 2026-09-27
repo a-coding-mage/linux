@@ -12,17 +12,17 @@ use crate::{snd_ac97, snd_ac97_bus};
 unsafe extern "C" {
     pub fn snd_ac97_get_name(
         ac97: *mut snd_ac97,
-        id: ::core::ffi::c_uint,
-        name: *mut ::core::ffi::c_char,
+        id: ::kernel::ffi::c_uint,
+        name: *mut ::kernel::ffi::c_char,
         maxlen: usize,
-        modem: ::core::ffi::c_int,
+        modem: ::kernel::ffi::c_int,
     );
     pub fn snd_ac97_update_bits_nolock(
         ac97: *mut snd_ac97,
-        reg: ::core::ffi::c_ushort,
-        mask: ::core::ffi::c_ushort,
-        value: ::core::ffi::c_ushort,
-    ) -> ::core::ffi::c_int;
+        reg: ::kernel::ffi::c_ushort,
+        mask: ::kernel::ffi::c_ushort,
+        value: ::kernel::ffi::c_ushort,
+    ) -> ::kernel::ffi::c_int;
 }
 
 /* ac97_proc.c */

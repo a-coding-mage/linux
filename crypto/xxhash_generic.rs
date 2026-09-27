@@ -123,13 +123,13 @@ pub struct shash_alg {
 
 #[repr(C)]
 pub struct crypto_alg {
-    pub cra_name: *const core::ffi::c_char,
-    pub cra_driver_name: *const core::ffi::c_char,
+    pub cra_name: *const kernel::ffi::c_char,
+    pub cra_driver_name: *const kernel::ffi::c_char,
     pub cra_priority: i32,
     pub cra_flags: u32,
     pub cra_blocksize: usize,
     pub cra_ctxsize: usize,
-    pub cra_module: *mut core::ffi::c_void,
+    pub cra_module: *mut kernel::ffi::c_void,
 }
 
 // CRYPTO_ALG_OPTIONAL_KEY and THIS_MODULE are supplied by the kernel headers.
@@ -145,8 +145,8 @@ pub static mut alg: shash_alg = shash_alg {
     digest: Some(xxhash64_digest),
     descsize: core::mem::size_of::<xxhash64_desc_ctx>(),
     base: crypto_alg {
-        cra_name: b"xxhash64\0".as_ptr() as *const core::ffi::c_char,
-        cra_driver_name: b"xxhash64-generic\0".as_ptr() as *const core::ffi::c_char,
+        cra_name: b"xxhash64\0".as_ptr() as *const kernel::ffi::c_char,
+        cra_driver_name: b"xxhash64-generic\0".as_ptr() as *const kernel::ffi::c_char,
         cra_priority: 100,
         cra_flags: CRYPTO_ALG_OPTIONAL_KEY,
         cra_blocksize: XXHASH64_BLOCK_SIZE,

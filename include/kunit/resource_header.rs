@@ -14,7 +14,7 @@
 
 pub struct kunit_resource;
 
-pub type kunit_resource_init_t = unsafe extern "C" fn(*mut kunit_resource, *mut core::ffi::c_void) -> i32;
+pub type kunit_resource_init_t = unsafe extern "C" fn(*mut kunit_resource, *mut kernel::ffi::c_void) -> i32;
 pub type kunit_resource_free_t = unsafe extern "C" fn(*mut kunit_resource);
 
 /**
@@ -25,8 +25,8 @@ pub type kunit_resource_free_t = unsafe extern "C" fn(*mut kunit_resource);
  */
 #[repr(C)]
 pub struct kunit_resource {
-    pub data: *mut core::ffi::c_void,
-    pub name: *const core::ffi::c_char,
+    pub data: *mut kernel::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
     pub free: Option<kunit_resource_free_t>,
     // private: internal use only.
     pub refcount: kref,
@@ -46,7 +46,7 @@ pub unsafe extern "C" fn kunit_release_resource(kref: *mut kref) {
         unsafe { free(res) };
     }
     if unsafe { (*res).should_kfree } {
-        unsafe { kfree(res as *mut core::ffi::c_void) };
+        unsafe { kfree(res as *mut kernel::ffi::c_void) };
     }
 }
 
@@ -59,7 +59,7 @@ pub unsafe extern "C" fn __kunit_add_resource(
     init: Option<kunit_resource_init_t>,
     free: Option<kunit_resource_free_t>,
     res: *mut kunit_resource,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) -> i32;
 
 pub unsafe fn kunit_add_resource(
@@ -67,21 +67,21 @@ pub unsafe fn kunit_add_resource(
     init: Option<kunit_resource_init_t>,
     free: Option<kunit_resource_free_t>,
     res: *mut kunit_resource,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) -> i32 {
     unsafe { (*res).should_kfree = false; }
     unsafe { __kunit_add_resource(test, init, free, res, data) }
 }
 
-pub unsafe fn kunit_find_named_resource(test: *mut kunit, name: *const core::ffi::c_char) -> *mut kunit_resource;
+pub unsafe fn kunit_find_named_resource(test: *mut kunit, name: *const kernel::ffi::c_char) -> *mut kunit_resource;
 
 pub unsafe fn kunit_add_named_resource(
     test: *mut kunit,
     init: Option<kunit_resource_init_t>,
     free: Option<kunit_resource_free_t>,
     res: *mut kunit_resource,
-    name: *const core::ffi::c_char,
-    data: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    data: *mut kernel::ffi::c_void,
 ) -> i32 {
     if name.is_null() { return -EINVAL; }
     let existing = unsafe { kunit_find_named_resource(test, name) };
@@ -95,7 +95,7 @@ pub unsafe fn kunit_add_named_resource(
 
 pub unsafe fn kunit_alloc_and_get_resource(
     test: *mut kunit, init: Option<kunit_resource_init_t>, free: Option<kunit_resource_free_t>,
-    internal_gfp: gfp_t, context: *mut core::ffi::c_void,
+    internal_gfp: gfp_t, context: *mut kernel::ffi::c_void,
 ) -> *mut kunit_resource {
     let res = unsafe { kzalloc_obj::<kunit_resource>(internal_gfp) };
     if res.is_null() { return core::ptr::null_mut(); }
@@ -109,8 +109,8 @@ pub unsafe fn kunit_alloc_and_get_resource(
 
 pub unsafe fn kunit_alloc_resource(
     test: *mut kunit, init: Option<kunit_resource_init_t>, free: Option<kunit_resource_free_t>,
-    internal_gfp: gfp_t, context: *mut core::ffi::c_void,
-) -> *mut core::ffi::c_void {
+    internal_gfp: gfp_t, context: *mut kernel::ffi::c_void,
+) -> *mut kernel::ffi::c_void {
     let res = unsafe { kzalloc_obj::<kunit_resource>(internal_gfp) };
     if res.is_null() { return core::ptr::null_mut(); }
     unsafe { (*res).should_kfree = true; }
@@ -120,33 +120,33 @@ pub unsafe fn kunit_alloc_resource(
     core::ptr::null_mut()
 }
 
-pub type kunit_resource_match_t = unsafe extern "C" fn(*mut kunit, *mut kunit_resource, *mut core::ffi::c_void) -> bool;
+pub type kunit_resource_match_t = unsafe extern "C" fn(*mut kunit, *mut kunit_resource, *mut kernel::ffi::c_void) -> bool;
 
-pub unsafe fn kunit_resource_name_match(_test: *mut kunit, res: *mut kunit_resource, match_name: *mut core::ffi::c_void) -> bool {
-    unsafe { !(*res).name.is_null() && strcmp((*res).name, match_name as *const core::ffi::c_char) == 0 }
+pub unsafe fn kunit_resource_name_match(_test: *mut kunit, res: *mut kunit_resource, match_name: *mut kernel::ffi::c_void) -> bool {
+    unsafe { !(*res).name.is_null() && strcmp((*res).name, match_name as *const kernel::ffi::c_char) == 0 }
 }
 
-pub unsafe fn kunit_find_resource(test: *mut kunit, match_fn: kunit_resource_match_t, match_data: *mut core::ffi::c_void) -> *mut kunit_resource;
-pub unsafe fn kunit_destroy_resource(test: *mut kunit, match_fn: kunit_resource_match_t, match_data: *mut core::ffi::c_void) -> i32;
-pub unsafe fn kunit_destroy_named_resource(test: *mut kunit, name: *const core::ffi::c_char) -> i32 { unsafe { kunit_destroy_resource(test, kunit_resource_name_match, name as *mut _) } }
+pub unsafe fn kunit_find_resource(test: *mut kunit, match_fn: kunit_resource_match_t, match_data: *mut kernel::ffi::c_void) -> *mut kunit_resource;
+pub unsafe fn kunit_destroy_resource(test: *mut kunit, match_fn: kunit_resource_match_t, match_data: *mut kernel::ffi::c_void) -> i32;
+pub unsafe fn kunit_destroy_named_resource(test: *mut kunit, name: *const kernel::ffi::c_char) -> i32 { unsafe { kunit_destroy_resource(test, kunit_resource_name_match, name as *mut _) } }
 pub unsafe fn kunit_remove_resource(test: *mut kunit, res: *mut kunit_resource);
 
-pub type kunit_action_t = unsafe extern "C" fn(*mut core::ffi::c_void);
+pub type kunit_action_t = unsafe extern "C" fn(*mut kernel::ffi::c_void);
 
 // KUNIT_DEFINE_ACTION_WRAPPER defines a CFI-safe wrapper around a pointer-sized callback.
 #[macro_export]
 macro_rules! KUNIT_DEFINE_ACTION_WRAPPER {
     ($wrapper:ident, $orig:path, $arg_type:ty) => {
-        unsafe extern "C" fn $wrapper(in_: *mut core::ffi::c_void) {
+        unsafe extern "C" fn $wrapper(in_: *mut kernel::ffi::c_void) {
             let arg = in_ as $arg_type;
             unsafe { $orig(arg); }
         }
     };
 }
 
-pub unsafe fn kunit_add_action(test: *mut kunit, action: kunit_action_t, ctx: *mut core::ffi::c_void) -> i32;
-pub unsafe fn kunit_add_action_or_reset(test: *mut kunit, action: kunit_action_t, ctx: *mut core::ffi::c_void) -> i32;
-pub unsafe fn kunit_remove_action(test: *mut kunit, action: kunit_action_t, ctx: *mut core::ffi::c_void);
-pub unsafe fn kunit_release_action(test: *mut kunit, action: kunit_action_t, ctx: *mut core::ffi::c_void);
+pub unsafe fn kunit_add_action(test: *mut kunit, action: kunit_action_t, ctx: *mut kernel::ffi::c_void) -> i32;
+pub unsafe fn kunit_add_action_or_reset(test: *mut kunit, action: kunit_action_t, ctx: *mut kernel::ffi::c_void) -> i32;
+pub unsafe fn kunit_remove_action(test: *mut kunit, action: kunit_action_t, ctx: *mut kernel::ffi::c_void);
+pub unsafe fn kunit_release_action(test: *mut kunit, action: kunit_action_t, ctx: *mut kernel::ffi::c_void);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -23,49 +23,49 @@
 // #ifndef __HCI_H
 // #define __HCI_H
 
-pub const HCI_MAX_ACL_SIZE: _ = 1024;
-pub const HCI_MAX_SCO_SIZE: _ = 255;
-pub const HCI_MAX_ISO_SIZE: _ = 251;
-pub const HCI_MAX_ISO_BIS: _ = 31;
-pub const HCI_MAX_EVENT_SIZE: _ = 260;
-pub const HCI_MAX_FRAME_SIZE: _ = (HCI_MAX_ACL_SIZE + 4);
+pub const HCI_MAX_ACL_SIZE: u32 = 1024;
+pub const HCI_MAX_SCO_SIZE: u32 = 255;
+pub const HCI_MAX_ISO_SIZE: u32 = 251;
+pub const HCI_MAX_ISO_BIS: u32 = 31;
+pub const HCI_MAX_EVENT_SIZE: u32 = 260;
+pub const HCI_MAX_FRAME_SIZE: u32 = (HCI_MAX_ACL_SIZE + 4);
 
-pub const HCI_LINK_KEY_SIZE: _ = 16;
+pub const HCI_LINK_KEY_SIZE: u32 = 16;
 
-pub const HCI_MAX_CPB_DATA_SIZE: _ = 252;
+pub const HCI_MAX_CPB_DATA_SIZE: u32 = 252;
 
 /* HCI dev events */
-pub const HCI_DEV_REG: _ = 1;
-pub const HCI_DEV_UNREG: _ = 2;
-pub const HCI_DEV_UP: _ = 3;
-pub const HCI_DEV_DOWN: _ = 4;
-pub const HCI_DEV_SUSPEND: _ = 5;
-pub const HCI_DEV_RESUME: _ = 6;
-pub const HCI_DEV_OPEN: _ = 7;
-pub const HCI_DEV_CLOSE: _ = 8;
-pub const HCI_DEV_SETUP: _ = 9;
+pub const HCI_DEV_REG: u32 = 1;
+pub const HCI_DEV_UNREG: u32 = 2;
+pub const HCI_DEV_UP: u32 = 3;
+pub const HCI_DEV_DOWN: u32 = 4;
+pub const HCI_DEV_SUSPEND: u32 = 5;
+pub const HCI_DEV_RESUME: u32 = 6;
+pub const HCI_DEV_OPEN: u32 = 7;
+pub const HCI_DEV_CLOSE: u32 = 8;
+pub const HCI_DEV_SETUP: u32 = 9;
 
 /* HCI notify events */
-pub const HCI_NOTIFY_CONN_ADD: _ = 1;
-pub const HCI_NOTIFY_CONN_DEL: _ = 2;
-pub const HCI_NOTIFY_VOICE_SETTING: _ = 3;
-pub const HCI_NOTIFY_ENABLE_SCO_CVSD: _ = 4;
-pub const HCI_NOTIFY_ENABLE_SCO_TRANSP: _ = 5;
-pub const HCI_NOTIFY_DISABLE_SCO: _ = 6;
+pub const HCI_NOTIFY_CONN_ADD: u32 = 1;
+pub const HCI_NOTIFY_CONN_DEL: u32 = 2;
+pub const HCI_NOTIFY_VOICE_SETTING: u32 = 3;
+pub const HCI_NOTIFY_ENABLE_SCO_CVSD: u32 = 4;
+pub const HCI_NOTIFY_ENABLE_SCO_TRANSP: u32 = 5;
+pub const HCI_NOTIFY_DISABLE_SCO: u32 = 6;
 
 /* HCI bus types */
-pub const HCI_VIRTUAL: _ = 0;
-pub const HCI_USB: _ = 1;
-pub const HCI_PCCARD: _ = 2;
-pub const HCI_UART: _ = 3;
-pub const HCI_RS232: _ = 4;
-pub const HCI_PCI: _ = 5;
-pub const HCI_SDIO: _ = 6;
-pub const HCI_SPI: _ = 7;
-pub const HCI_I2C: _ = 8;
-pub const HCI_SMD: _ = 9;
-pub const HCI_VIRTIO: _ = 10;
-pub const HCI_IPC: _ = 11;
+pub const HCI_VIRTUAL: u32 = 0;
+pub const HCI_USB: u32 = 1;
+pub const HCI_PCCARD: u32 = 2;
+pub const HCI_UART: u32 = 3;
+pub const HCI_RS232: u32 = 4;
+pub const HCI_PCI: u32 = 5;
+pub const HCI_SDIO: u32 = 6;
+pub const HCI_SPI: u32 = 7;
+pub const HCI_I2C: u32 = 8;
+pub const HCI_SMD: u32 = 9;
+pub const HCI_VIRTIO: u32 = 10;
+pub const HCI_IPC: u32 = 11;
 
 /* HCI device quirks */
 pub const HCI_QUIRK_RESET_ON_CLOSE: i32 = 0;
@@ -203,290 +203,290 @@ pub const HCI_LE_CONN_TIMEOUT: _ = msecs_to_jiffies(20000)	/* 20 seconds */;
 pub const HCI_ISO_TX_TIMEOUT: _ = usecs_to_jiffies(0x7fffff) /* 8388607 usecs */;
 
 /* HCI data types */
-pub const HCI_COMMAND_PKT: _ = 0x01;
-pub const HCI_ACLDATA_PKT: _ = 0x02;
-pub const HCI_SCODATA_PKT: _ = 0x03;
-pub const HCI_EVENT_PKT: _ = 0x04;
-pub const HCI_ISODATA_PKT: _ = 0x05;
-pub const HCI_DIAG_PKT: _ = 0xf0;
-pub const HCI_DRV_PKT: _ = 0xf1;
-pub const HCI_VENDOR_PKT: _ = 0xff;
+pub const HCI_COMMAND_PKT: u32 = 0x01;
+pub const HCI_ACLDATA_PKT: u32 = 0x02;
+pub const HCI_SCODATA_PKT: u32 = 0x03;
+pub const HCI_EVENT_PKT: u32 = 0x04;
+pub const HCI_ISODATA_PKT: u32 = 0x05;
+pub const HCI_DIAG_PKT: u32 = 0xf0;
+pub const HCI_DRV_PKT: u32 = 0xf1;
+pub const HCI_VENDOR_PKT: u32 = 0xff;
 
 /* HCI packet types */
-pub const HCI_DM1: _ = 0x0008;
-pub const HCI_DM3: _ = 0x0400;
-pub const HCI_DM5: _ = 0x4000;
-pub const HCI_DH1: _ = 0x0010;
-pub const HCI_DH3: _ = 0x0800;
-pub const HCI_DH5: _ = 0x8000;
+pub const HCI_DM1: u32 = 0x0008;
+pub const HCI_DM3: u32 = 0x0400;
+pub const HCI_DM5: u32 = 0x4000;
+pub const HCI_DH1: u32 = 0x0010;
+pub const HCI_DH3: u32 = 0x0800;
+pub const HCI_DH5: u32 = 0x8000;
 
 /* HCI packet types inverted masks */
-pub const HCI_2DH1: _ = 0x0002;
-pub const HCI_3DH1: _ = 0x0004;
-pub const HCI_2DH3: _ = 0x0100;
-pub const HCI_3DH3: _ = 0x0200;
-pub const HCI_2DH5: _ = 0x1000;
-pub const HCI_3DH5: _ = 0x2000;
+pub const HCI_2DH1: u32 = 0x0002;
+pub const HCI_3DH1: u32 = 0x0004;
+pub const HCI_2DH3: u32 = 0x0100;
+pub const HCI_3DH3: u32 = 0x0200;
+pub const HCI_2DH5: u32 = 0x1000;
+pub const HCI_3DH5: u32 = 0x2000;
 
-pub const HCI_HV1: _ = 0x0020;
-pub const HCI_HV2: _ = 0x0040;
-pub const HCI_HV3: _ = 0x0080;
+pub const HCI_HV1: u32 = 0x0020;
+pub const HCI_HV2: u32 = 0x0040;
+pub const HCI_HV3: u32 = 0x0080;
 
-pub const SCO_PTYPE_MASK: _ = (HCI_HV1 | HCI_HV2 | HCI_HV3);
-pub const ACL_PTYPE_MASK: _ = (~SCO_PTYPE_MASK);
+pub const SCO_PTYPE_MASK: u32 = (HCI_HV1 | HCI_HV2 | HCI_HV3);
+pub const ACL_PTYPE_MASK: u32 = (~SCO_PTYPE_MASK);
 
 /* eSCO packet types */
-pub const ESCO_HV1: _ = 0x0001;
-pub const ESCO_HV2: _ = 0x0002;
-pub const ESCO_HV3: _ = 0x0004;
-pub const ESCO_EV3: _ = 0x0008;
-pub const ESCO_EV4: _ = 0x0010;
-pub const ESCO_EV5: _ = 0x0020;
-pub const ESCO_2EV3: _ = 0x0040;
-pub const ESCO_3EV3: _ = 0x0080;
-pub const ESCO_2EV5: _ = 0x0100;
-pub const ESCO_3EV5: _ = 0x0200;
+pub const ESCO_HV1: u32 = 0x0001;
+pub const ESCO_HV2: u32 = 0x0002;
+pub const ESCO_HV3: u32 = 0x0004;
+pub const ESCO_EV3: u32 = 0x0008;
+pub const ESCO_EV4: u32 = 0x0010;
+pub const ESCO_EV5: u32 = 0x0020;
+pub const ESCO_2EV3: u32 = 0x0040;
+pub const ESCO_3EV3: u32 = 0x0080;
+pub const ESCO_2EV5: u32 = 0x0100;
+pub const ESCO_3EV5: u32 = 0x0200;
 
-pub const SCO_ESCO_MASK: _ = (ESCO_HV1 | ESCO_HV2 | ESCO_HV3);
-pub const EDR_ESCO_MASK: _ = (ESCO_2EV3 | ESCO_3EV3 | ESCO_2EV5 | ESCO_3EV5);
+pub const SCO_ESCO_MASK: u32 = (ESCO_HV1 | ESCO_HV2 | ESCO_HV3);
+pub const EDR_ESCO_MASK: u32 = (ESCO_2EV3 | ESCO_3EV3 | ESCO_2EV5 | ESCO_3EV5);
 
 /* ACL flags */
-pub const ACL_START_NO_FLUSH: _ = 0x00;
-pub const ACL_CONT: _ = 0x01;
-pub const ACL_START: _ = 0x02;
-pub const ACL_COMPLETE: _ = 0x03;
-pub const ACL_ACTIVE_BCAST: _ = 0x04;
-pub const ACL_PICO_BCAST: _ = 0x08;
+pub const ACL_START_NO_FLUSH: u32 = 0x00;
+pub const ACL_CONT: u32 = 0x01;
+pub const ACL_START: u32 = 0x02;
+pub const ACL_COMPLETE: u32 = 0x03;
+pub const ACL_ACTIVE_BCAST: u32 = 0x04;
+pub const ACL_PICO_BCAST: u32 = 0x08;
 
 /* ISO PB flags */
-pub const ISO_START: _ = 0x00;
-pub const ISO_CONT: _ = 0x01;
-pub const ISO_SINGLE: _ = 0x02;
-pub const ISO_END: _ = 0x03;
+pub const ISO_START: u32 = 0x00;
+pub const ISO_CONT: u32 = 0x01;
+pub const ISO_SINGLE: u32 = 0x02;
+pub const ISO_END: u32 = 0x03;
 
 /* ISO TS flags */
-pub const ISO_TS: _ = 0x01;
+pub const ISO_TS: u32 = 0x01;
 
 /* Baseband links */
-pub const SCO_LINK: _ = 0x00;
-pub const ACL_LINK: _ = 0x01;
-pub const ESCO_LINK: _ = 0x02;
+pub const SCO_LINK: u32 = 0x00;
+pub const ACL_LINK: u32 = 0x01;
+pub const ESCO_LINK: u32 = 0x02;
 /* Low Energy links do not have defined link type. Use invented one */
-pub const LE_LINK: _ = 0x80;
-pub const CIS_LINK: _ = 0x82;
-pub const BIS_LINK: _ = 0x83;
-pub const PA_LINK: _ = 0x84;
-pub const INVALID_LINK: _ = 0xff;
+pub const LE_LINK: u32 = 0x80;
+pub const CIS_LINK: u32 = 0x82;
+pub const BIS_LINK: u32 = 0x83;
+pub const PA_LINK: u32 = 0x84;
+pub const INVALID_LINK: u32 = 0xff;
 
 /* LMP features */
-pub const LMP_3SLOT: _ = 0x01;
-pub const LMP_5SLOT: _ = 0x02;
-pub const LMP_ENCRYPT: _ = 0x04;
-pub const LMP_SOFFSET: _ = 0x08;
-pub const LMP_TACCURACY: _ = 0x10;
-pub const LMP_RSWITCH: _ = 0x20;
-pub const LMP_HOLD: _ = 0x40;
-pub const LMP_SNIFF: _ = 0x80;
+pub const LMP_3SLOT: u32 = 0x01;
+pub const LMP_5SLOT: u32 = 0x02;
+pub const LMP_ENCRYPT: u32 = 0x04;
+pub const LMP_SOFFSET: u32 = 0x08;
+pub const LMP_TACCURACY: u32 = 0x10;
+pub const LMP_RSWITCH: u32 = 0x20;
+pub const LMP_HOLD: u32 = 0x40;
+pub const LMP_SNIFF: u32 = 0x80;
 
-pub const LMP_PARK: _ = 0x01;
-pub const LMP_RSSI: _ = 0x02;
-pub const LMP_QUALITY: _ = 0x04;
-pub const LMP_SCO: _ = 0x08;
-pub const LMP_HV2: _ = 0x10;
-pub const LMP_HV3: _ = 0x20;
-pub const LMP_ULAW: _ = 0x40;
-pub const LMP_ALAW: _ = 0x80;
+pub const LMP_PARK: u32 = 0x01;
+pub const LMP_RSSI: u32 = 0x02;
+pub const LMP_QUALITY: u32 = 0x04;
+pub const LMP_SCO: u32 = 0x08;
+pub const LMP_HV2: u32 = 0x10;
+pub const LMP_HV3: u32 = 0x20;
+pub const LMP_ULAW: u32 = 0x40;
+pub const LMP_ALAW: u32 = 0x80;
 
-pub const LMP_CVSD: _ = 0x01;
-pub const LMP_PSCHEME: _ = 0x02;
-pub const LMP_PCONTROL: _ = 0x04;
-pub const LMP_TRANSPARENT: _ = 0x08;
+pub const LMP_CVSD: u32 = 0x01;
+pub const LMP_PSCHEME: u32 = 0x02;
+pub const LMP_PCONTROL: u32 = 0x04;
+pub const LMP_TRANSPARENT: u32 = 0x08;
 
-pub const LMP_EDR_2M: _ = 0x02;
-pub const LMP_EDR_3M: _ = 0x04;
-pub const LMP_RSSI_INQ: _ = 0x40;
-pub const LMP_ESCO: _ = 0x80;
+pub const LMP_EDR_2M: u32 = 0x02;
+pub const LMP_EDR_3M: u32 = 0x04;
+pub const LMP_RSSI_INQ: u32 = 0x40;
+pub const LMP_ESCO: u32 = 0x80;
 
-pub const LMP_EV4: _ = 0x01;
-pub const LMP_EV5: _ = 0x02;
-pub const LMP_NO_BREDR: _ = 0x20;
-pub const LMP_LE: _ = 0x40;
-pub const LMP_EDR_3SLOT: _ = 0x80;
+pub const LMP_EV4: u32 = 0x01;
+pub const LMP_EV5: u32 = 0x02;
+pub const LMP_NO_BREDR: u32 = 0x20;
+pub const LMP_LE: u32 = 0x40;
+pub const LMP_EDR_3SLOT: u32 = 0x80;
 
-pub const LMP_EDR_5SLOT: _ = 0x01;
-pub const LMP_SNIFF_SUBR: _ = 0x02;
-pub const LMP_PAUSE_ENC: _ = 0x04;
-pub const LMP_EDR_ESCO_2M: _ = 0x20;
-pub const LMP_EDR_ESCO_3M: _ = 0x40;
-pub const LMP_EDR_3S_ESCO: _ = 0x80;
+pub const LMP_EDR_5SLOT: u32 = 0x01;
+pub const LMP_SNIFF_SUBR: u32 = 0x02;
+pub const LMP_PAUSE_ENC: u32 = 0x04;
+pub const LMP_EDR_ESCO_2M: u32 = 0x20;
+pub const LMP_EDR_ESCO_3M: u32 = 0x40;
+pub const LMP_EDR_3S_ESCO: u32 = 0x80;
 
-pub const LMP_EXT_INQ: _ = 0x01;
-pub const LMP_SIMUL_LE_BR: _ = 0x02;
-pub const LMP_SIMPLE_PAIR: _ = 0x08;
-pub const LMP_ERR_DATA_REPORTING: _ = 0x20;
-pub const LMP_NO_FLUSH: _ = 0x40;
+pub const LMP_EXT_INQ: u32 = 0x01;
+pub const LMP_SIMUL_LE_BR: u32 = 0x02;
+pub const LMP_SIMPLE_PAIR: u32 = 0x08;
+pub const LMP_ERR_DATA_REPORTING: u32 = 0x20;
+pub const LMP_NO_FLUSH: u32 = 0x40;
 
-pub const LMP_LSTO: _ = 0x01;
-pub const LMP_INQ_TX_PWR: _ = 0x02;
-pub const LMP_EXTFEATURES: _ = 0x80;
+pub const LMP_LSTO: u32 = 0x01;
+pub const LMP_INQ_TX_PWR: u32 = 0x02;
+pub const LMP_EXTFEATURES: u32 = 0x80;
 
 /* Extended LMP features */
-pub const LMP_CPB_CENTRAL: _ = 0x01;
-pub const LMP_CPB_PERIPHERAL: _ = 0x02;
-pub const LMP_SYNC_TRAIN: _ = 0x04;
-pub const LMP_SYNC_SCAN: _ = 0x08;
+pub const LMP_CPB_CENTRAL: u32 = 0x01;
+pub const LMP_CPB_PERIPHERAL: u32 = 0x02;
+pub const LMP_SYNC_TRAIN: u32 = 0x04;
+pub const LMP_SYNC_SCAN: u32 = 0x08;
 
-pub const LMP_SC: _ = 0x01;
-pub const LMP_PING: _ = 0x02;
+pub const LMP_SC: u32 = 0x01;
+pub const LMP_PING: u32 = 0x02;
 
 /* Host features */
-pub const LMP_HOST_SSP: _ = 0x01;
-pub const LMP_HOST_LE: _ = 0x02;
-pub const LMP_HOST_LE_BREDR: _ = 0x04;
-pub const LMP_HOST_SC: _ = 0x08;
+pub const LMP_HOST_SSP: u32 = 0x01;
+pub const LMP_HOST_LE: u32 = 0x02;
+pub const LMP_HOST_LE_BREDR: u32 = 0x04;
+pub const LMP_HOST_SC: u32 = 0x08;
 
 /* LE features */
-pub const HCI_LE_ENCRYPTION: _ = 0x01;
-pub const HCI_LE_CONN_PARAM_REQ_PROC: _ = 0x02;
-pub const HCI_LE_PERIPHERAL_FEATURES: _ = 0x08;
-pub const HCI_LE_PING: _ = 0x10;
-pub const HCI_LE_DATA_LEN_EXT: _ = 0x20;
-pub const HCI_LE_LL_PRIVACY: _ = 0x40;
-pub const HCI_LE_EXT_SCAN_POLICY: _ = 0x80;
-pub const HCI_LE_PHY_2M: _ = 0x01;
-pub const HCI_LE_PHY_CODED: _ = 0x08;
-pub const HCI_LE_EXT_ADV: _ = 0x10;
-pub const HCI_LE_PERIODIC_ADV: _ = 0x20;
-pub const HCI_LE_CHAN_SEL_ALG2: _ = 0x40;
-pub const HCI_LE_PAST_SENDER: _ = 0x01;
-pub const HCI_LE_PAST_RECEIVER: _ = 0x02;
-pub const HCI_LE_CIS_CENTRAL: _ = 0x10;
-pub const HCI_LE_CIS_PERIPHERAL: _ = 0x20;
-pub const HCI_LE_ISO_BROADCASTER: _ = 0x40;
-pub const HCI_LE_ISO_SYNC_RECEIVER: _ = 0x80;
-pub const HCI_LE_LL_EXT_FEATURE: _ = 0x80;
-pub const HCI_LE_CS: _ = 0x40;
-pub const HCI_LE_CS_HOST: _ = 0x80;
-pub const HCI_LE_SCI: _ = 0x01	/* byte 9 - Shorter Connection Intervals */;
-pub const HCI_LE_SCI_HOST: _ = 0x02	/* byte 9 - Shorter Connection Intervals (Host) */;
+pub const HCI_LE_ENCRYPTION: u32 = 0x01;
+pub const HCI_LE_CONN_PARAM_REQ_PROC: u32 = 0x02;
+pub const HCI_LE_PERIPHERAL_FEATURES: u32 = 0x08;
+pub const HCI_LE_PING: u32 = 0x10;
+pub const HCI_LE_DATA_LEN_EXT: u32 = 0x20;
+pub const HCI_LE_LL_PRIVACY: u32 = 0x40;
+pub const HCI_LE_EXT_SCAN_POLICY: u32 = 0x80;
+pub const HCI_LE_PHY_2M: u32 = 0x01;
+pub const HCI_LE_PHY_CODED: u32 = 0x08;
+pub const HCI_LE_EXT_ADV: u32 = 0x10;
+pub const HCI_LE_PERIODIC_ADV: u32 = 0x20;
+pub const HCI_LE_CHAN_SEL_ALG2: u32 = 0x40;
+pub const HCI_LE_PAST_SENDER: u32 = 0x01;
+pub const HCI_LE_PAST_RECEIVER: u32 = 0x02;
+pub const HCI_LE_CIS_CENTRAL: u32 = 0x10;
+pub const HCI_LE_CIS_PERIPHERAL: u32 = 0x20;
+pub const HCI_LE_ISO_BROADCASTER: u32 = 0x40;
+pub const HCI_LE_ISO_SYNC_RECEIVER: u32 = 0x80;
+pub const HCI_LE_LL_EXT_FEATURE: u32 = 0x80;
+pub const HCI_LE_CS: u32 = 0x40;
+pub const HCI_LE_CS_HOST: u32 = 0x80;
+pub const HCI_LE_SCI: u32 = 0x01	/* byte 9 - Shorter Connection Intervals */;
+pub const HCI_LE_SCI_HOST: u32 = 0x02	/* byte 9 - Shorter Connection Intervals (Host) */;
 
 /* Connection modes */
-pub const HCI_CM_ACTIVE: _ = 0x0000;
-pub const HCI_CM_HOLD: _ = 0x0001;
-pub const HCI_CM_SNIFF: _ = 0x0002;
-pub const HCI_CM_PARK: _ = 0x0003;
+pub const HCI_CM_ACTIVE: u32 = 0x0000;
+pub const HCI_CM_HOLD: u32 = 0x0001;
+pub const HCI_CM_SNIFF: u32 = 0x0002;
+pub const HCI_CM_PARK: u32 = 0x0003;
 
 /* Link policies */
-pub const HCI_LP_RSWITCH: _ = 0x0001;
-pub const HCI_LP_HOLD: _ = 0x0002;
-pub const HCI_LP_SNIFF: _ = 0x0004;
-pub const HCI_LP_PARK: _ = 0x0008;
+pub const HCI_LP_RSWITCH: u32 = 0x0001;
+pub const HCI_LP_HOLD: u32 = 0x0002;
+pub const HCI_LP_SNIFF: u32 = 0x0004;
+pub const HCI_LP_PARK: u32 = 0x0008;
 
 /* Link modes */
-pub const HCI_LM_ACCEPT: _ = 0x8000;
-pub const HCI_LM_MASTER: _ = 0x0001;
-pub const HCI_LM_AUTH: _ = 0x0002;
-pub const HCI_LM_ENCRYPT: _ = 0x0004;
-pub const HCI_LM_TRUSTED: _ = 0x0008;
-pub const HCI_LM_RELIABLE: _ = 0x0010;
-pub const HCI_LM_SECURE: _ = 0x0020;
-pub const HCI_LM_FIPS: _ = 0x0040;
+pub const HCI_LM_ACCEPT: u32 = 0x8000;
+pub const HCI_LM_MASTER: u32 = 0x0001;
+pub const HCI_LM_AUTH: u32 = 0x0002;
+pub const HCI_LM_ENCRYPT: u32 = 0x0004;
+pub const HCI_LM_TRUSTED: u32 = 0x0008;
+pub const HCI_LM_RELIABLE: u32 = 0x0010;
+pub const HCI_LM_SECURE: u32 = 0x0020;
+pub const HCI_LM_FIPS: u32 = 0x0040;
 
 /* Authentication types */
-pub const HCI_AT_NO_BONDING: _ = 0x00;
-pub const HCI_AT_NO_BONDING_MITM: _ = 0x01;
-pub const HCI_AT_DEDICATED_BONDING: _ = 0x02;
-pub const HCI_AT_DEDICATED_BONDING_MITM: _ = 0x03;
-pub const HCI_AT_GENERAL_BONDING: _ = 0x04;
-pub const HCI_AT_GENERAL_BONDING_MITM: _ = 0x05;
+pub const HCI_AT_NO_BONDING: u32 = 0x00;
+pub const HCI_AT_NO_BONDING_MITM: u32 = 0x01;
+pub const HCI_AT_DEDICATED_BONDING: u32 = 0x02;
+pub const HCI_AT_DEDICATED_BONDING_MITM: u32 = 0x03;
+pub const HCI_AT_GENERAL_BONDING: u32 = 0x04;
+pub const HCI_AT_GENERAL_BONDING_MITM: u32 = 0x05;
 
 /* I/O capabilities */
-pub const HCI_IO_DISPLAY_ONLY: _ = 0x00;
-pub const HCI_IO_DISPLAY_YESNO: _ = 0x01;
-pub const HCI_IO_KEYBOARD_ONLY: _ = 0x02;
-pub const HCI_IO_NO_INPUT_OUTPUT: _ = 0x03;
+pub const HCI_IO_DISPLAY_ONLY: u32 = 0x00;
+pub const HCI_IO_DISPLAY_YESNO: u32 = 0x01;
+pub const HCI_IO_KEYBOARD_ONLY: u32 = 0x02;
+pub const HCI_IO_NO_INPUT_OUTPUT: u32 = 0x03;
 
 /* Link Key types */
-pub const HCI_LK_COMBINATION: _ = 0x00;
-pub const HCI_LK_LOCAL_UNIT: _ = 0x01;
-pub const HCI_LK_REMOTE_UNIT: _ = 0x02;
-pub const HCI_LK_DEBUG_COMBINATION: _ = 0x03;
-pub const HCI_LK_UNAUTH_COMBINATION_P192: _ = 0x04;
-pub const HCI_LK_AUTH_COMBINATION_P192: _ = 0x05;
-pub const HCI_LK_CHANGED_COMBINATION: _ = 0x06;
-pub const HCI_LK_UNAUTH_COMBINATION_P256: _ = 0x07;
-pub const HCI_LK_AUTH_COMBINATION_P256: _ = 0x08;
+pub const HCI_LK_COMBINATION: u32 = 0x00;
+pub const HCI_LK_LOCAL_UNIT: u32 = 0x01;
+pub const HCI_LK_REMOTE_UNIT: u32 = 0x02;
+pub const HCI_LK_DEBUG_COMBINATION: u32 = 0x03;
+pub const HCI_LK_UNAUTH_COMBINATION_P192: u32 = 0x04;
+pub const HCI_LK_AUTH_COMBINATION_P192: u32 = 0x05;
+pub const HCI_LK_CHANGED_COMBINATION: u32 = 0x06;
+pub const HCI_LK_UNAUTH_COMBINATION_P256: u32 = 0x07;
+pub const HCI_LK_AUTH_COMBINATION_P256: u32 = 0x08;
 
 /* ---- HCI Error Codes ---- */
-pub const HCI_ERROR_UNKNOWN_CONN_ID: _ = 0x02;
-pub const HCI_ERROR_AUTH_FAILURE: _ = 0x05;
-pub const HCI_ERROR_PIN_OR_KEY_MISSING: _ = 0x06;
-pub const HCI_ERROR_MEMORY_EXCEEDED: _ = 0x07;
-pub const HCI_ERROR_CONNECTION_TIMEOUT: _ = 0x08;
-pub const HCI_ERROR_COMMAND_DISALLOWED: _ = 0x0c;
-pub const HCI_ERROR_REJ_LIMITED_RESOURCES: _ = 0x0d;
-pub const HCI_ERROR_REJ_BAD_ADDR: _ = 0x0f;
-pub const HCI_ERROR_INVALID_PARAMETERS: _ = 0x12;
-pub const HCI_ERROR_REMOTE_USER_TERM: _ = 0x13;
-pub const HCI_ERROR_REMOTE_LOW_RESOURCES: _ = 0x14;
-pub const HCI_ERROR_REMOTE_POWER_OFF: _ = 0x15;
-pub const HCI_ERROR_LOCAL_HOST_TERM: _ = 0x16;
-pub const HCI_ERROR_PAIRING_NOT_ALLOWED: _ = 0x18;
-pub const HCI_ERROR_UNSUPPORTED_REMOTE_FEATURE: _ = 0x1a;
-pub const HCI_ERROR_INVALID_LL_PARAMS: _ = 0x1e;
-pub const HCI_ERROR_UNSPECIFIED: _ = 0x1f;
-pub const HCI_ERROR_ADVERTISING_TIMEOUT: _ = 0x3c;
-pub const HCI_ERROR_CANCELLED_BY_HOST: _ = 0x44;
+pub const HCI_ERROR_UNKNOWN_CONN_ID: u32 = 0x02;
+pub const HCI_ERROR_AUTH_FAILURE: u32 = 0x05;
+pub const HCI_ERROR_PIN_OR_KEY_MISSING: u32 = 0x06;
+pub const HCI_ERROR_MEMORY_EXCEEDED: u32 = 0x07;
+pub const HCI_ERROR_CONNECTION_TIMEOUT: u32 = 0x08;
+pub const HCI_ERROR_COMMAND_DISALLOWED: u32 = 0x0c;
+pub const HCI_ERROR_REJ_LIMITED_RESOURCES: u32 = 0x0d;
+pub const HCI_ERROR_REJ_BAD_ADDR: u32 = 0x0f;
+pub const HCI_ERROR_INVALID_PARAMETERS: u32 = 0x12;
+pub const HCI_ERROR_REMOTE_USER_TERM: u32 = 0x13;
+pub const HCI_ERROR_REMOTE_LOW_RESOURCES: u32 = 0x14;
+pub const HCI_ERROR_REMOTE_POWER_OFF: u32 = 0x15;
+pub const HCI_ERROR_LOCAL_HOST_TERM: u32 = 0x16;
+pub const HCI_ERROR_PAIRING_NOT_ALLOWED: u32 = 0x18;
+pub const HCI_ERROR_UNSUPPORTED_REMOTE_FEATURE: u32 = 0x1a;
+pub const HCI_ERROR_INVALID_LL_PARAMS: u32 = 0x1e;
+pub const HCI_ERROR_UNSPECIFIED: u32 = 0x1f;
+pub const HCI_ERROR_ADVERTISING_TIMEOUT: u32 = 0x3c;
+pub const HCI_ERROR_CANCELLED_BY_HOST: u32 = 0x44;
 
 /* Flow control modes */
-pub const HCI_FLOW_CTL_MODE_PACKET_BASED: _ = 0x00;
-pub const HCI_FLOW_CTL_MODE_BLOCK_BASED: _ = 0x01;
+pub const HCI_FLOW_CTL_MODE_PACKET_BASED: u32 = 0x00;
+pub const HCI_FLOW_CTL_MODE_BLOCK_BASED: u32 = 0x01;
 
 /* The core spec defines 127 as the "not available" value */
-pub const HCI_TX_POWER_INVALID: _ = 127;
-pub const HCI_RSSI_INVALID: _ = 127;
+pub const HCI_TX_POWER_INVALID: u32 = 127;
+pub const HCI_RSSI_INVALID: u32 = 127;
 
-pub const HCI_SYNC_HANDLE_INVALID: _ = 0xffff;
-pub const HCI_SID_INVALID: _ = 0xff;
+pub const HCI_SYNC_HANDLE_INVALID: u32 = 0xffff;
+pub const HCI_SID_INVALID: u32 = 0xff;
 
-pub const HCI_ROLE_MASTER: _ = 0x00;
-pub const HCI_ROLE_SLAVE: _ = 0x01;
+pub const HCI_ROLE_MASTER: u32 = 0x00;
+pub const HCI_ROLE_SLAVE: u32 = 0x01;
 
 /* Extended Inquiry Response field types */
-pub const EIR_FLAGS: _ = 0x01 /* flags */;
-pub const EIR_UUID16_SOME: _ = 0x02 /* 16-bit UUID, more available */;
-pub const EIR_UUID16_ALL: _ = 0x03 /* 16-bit UUID, all listed */;
-pub const EIR_UUID32_SOME: _ = 0x04 /* 32-bit UUID, more available */;
-pub const EIR_UUID32_ALL: _ = 0x05 /* 32-bit UUID, all listed */;
-pub const EIR_UUID128_SOME: _ = 0x06 /* 128-bit UUID, more available */;
-pub const EIR_UUID128_ALL: _ = 0x07 /* 128-bit UUID, all listed */;
-pub const EIR_NAME_SHORT: _ = 0x08 /* shortened local name */;
-pub const EIR_NAME_COMPLETE: _ = 0x09 /* complete local name */;
-pub const EIR_TX_POWER: _ = 0x0A /* transmit power level */;
-pub const EIR_CLASS_OF_DEV: _ = 0x0D /* Class of Device */;
-pub const EIR_SSP_HASH_C192: _ = 0x0E /* Simple Pairing Hash C-192 */;
-pub const EIR_SSP_RAND_R192: _ = 0x0F /* Simple Pairing Randomizer R-192 */;
-pub const EIR_DEVICE_ID: _ = 0x10 /* device ID */;
-pub const EIR_APPEARANCE: _ = 0x19 /* Device appearance */;
-pub const EIR_SERVICE_DATA: _ = 0x16 /* Service Data */;
-pub const EIR_LE_BDADDR: _ = 0x1B /* LE Bluetooth device address */;
-pub const EIR_LE_ROLE: _ = 0x1C /* LE role */;
-pub const EIR_SSP_HASH_C256: _ = 0x1D /* Simple Pairing Hash C-256 */;
-pub const EIR_SSP_RAND_R256: _ = 0x1E /* Simple Pairing Rand R-256 */;
-pub const EIR_LE_SC_CONFIRM: _ = 0x22 /* LE SC Confirmation Value */;
-pub const EIR_LE_SC_RANDOM: _ = 0x23 /* LE SC Random Value */;
+pub const EIR_FLAGS: u32 = 0x01 /* flags */;
+pub const EIR_UUID16_SOME: u32 = 0x02 /* 16-bit UUID, more available */;
+pub const EIR_UUID16_ALL: u32 = 0x03 /* 16-bit UUID, all listed */;
+pub const EIR_UUID32_SOME: u32 = 0x04 /* 32-bit UUID, more available */;
+pub const EIR_UUID32_ALL: u32 = 0x05 /* 32-bit UUID, all listed */;
+pub const EIR_UUID128_SOME: u32 = 0x06 /* 128-bit UUID, more available */;
+pub const EIR_UUID128_ALL: u32 = 0x07 /* 128-bit UUID, all listed */;
+pub const EIR_NAME_SHORT: u32 = 0x08 /* shortened local name */;
+pub const EIR_NAME_COMPLETE: u32 = 0x09 /* complete local name */;
+pub const EIR_TX_POWER: u32 = 0x0A /* transmit power level */;
+pub const EIR_CLASS_OF_DEV: u32 = 0x0D /* Class of Device */;
+pub const EIR_SSP_HASH_C192: u32 = 0x0E /* Simple Pairing Hash C-192 */;
+pub const EIR_SSP_RAND_R192: u32 = 0x0F /* Simple Pairing Randomizer R-192 */;
+pub const EIR_DEVICE_ID: u32 = 0x10 /* device ID */;
+pub const EIR_APPEARANCE: u32 = 0x19 /* Device appearance */;
+pub const EIR_SERVICE_DATA: u32 = 0x16 /* Service Data */;
+pub const EIR_LE_BDADDR: u64 = 0x1B /* LE Bluetooth device address */;
+pub const EIR_LE_ROLE: u64 = 0x1C /* LE role */;
+pub const EIR_SSP_HASH_C256: u32 = 0x1D /* Simple Pairing Hash C-256 */;
+pub const EIR_SSP_RAND_R256: u32 = 0x1E /* Simple Pairing Rand R-256 */;
+pub const EIR_LE_SC_CONFIRM: u64 = 0x22 /* LE SC Confirmation Value */;
+pub const EIR_LE_SC_RANDOM: u64 = 0x23 /* LE SC Random Value */;
 
 /* Low Energy Advertising Flags */
-pub const LE_AD_LIMITED: _ = 0x01 /* Limited Discoverable */;
-pub const LE_AD_GENERAL: _ = 0x02 /* General Discoverable */;
-pub const LE_AD_NO_BREDR: _ = 0x04 /* BR/EDR not supported */;
-pub const LE_AD_SIM_LE_BREDR_CTRL: _ = 0x08 /* Simultaneous LE & BR/EDR Controller */;
-pub const LE_AD_SIM_LE_BREDR_HOST: _ = 0x10 /* Simultaneous LE & BR/EDR Host */;
+pub const LE_AD_LIMITED: u32 = 0x01 /* Limited Discoverable */;
+pub const LE_AD_GENERAL: u32 = 0x02 /* General Discoverable */;
+pub const LE_AD_NO_BREDR: u32 = 0x04 /* BR/EDR not supported */;
+pub const LE_AD_SIM_LE_BREDR_CTRL: u64 = 0x08 /* Simultaneous LE & BR/EDR Controller */;
+pub const LE_AD_SIM_LE_BREDR_HOST: u64 = 0x10 /* Simultaneous LE & BR/EDR Host */;
 
 /* -----  HCI Commands ---- */
-pub const HCI_OP_NOP: _ = 0x0000;
+pub const HCI_OP_NOP: u32 = 0x0000;
 
-pub const HCI_OP_INQUIRY: _ = 0x0401;
+pub const HCI_OP_INQUIRY: u32 = 0x0401;
 #[repr(C, packed)]
 pub struct hci_cp_inquiry {
 	u8     lap[3];
@@ -494,13 +494,13 @@ pub struct hci_cp_inquiry {
 	u8     num_rsp;
 } __packed;
 
-pub const HCI_OP_INQUIRY_CANCEL: _ = 0x0402;
+pub const HCI_OP_INQUIRY_CANCEL: u32 = 0x0402;
 
-pub const HCI_OP_PERIODIC_INQ: _ = 0x0403;
+pub const HCI_OP_PERIODIC_INQ: u32 = 0x0403;
 
-pub const HCI_OP_EXIT_PERIODIC_INQ: _ = 0x0404;
+pub const HCI_OP_EXIT_PERIODIC_INQ: u32 = 0x0404;
 
-pub const HCI_OP_CREATE_CONN: _ = 0x0405;
+pub const HCI_OP_CREATE_CONN: u32 = 0x0405;
 #[repr(C, packed)]
 pub struct hci_cp_create_conn {
 	bdaddr_t bdaddr;
@@ -511,54 +511,54 @@ pub struct hci_cp_create_conn {
 	u8     role_switch;
 } __packed;
 
-pub const HCI_OP_DISCONNECT: _ = 0x0406;
+pub const HCI_OP_DISCONNECT: u32 = 0x0406;
 #[repr(C, packed)]
 pub struct hci_cp_disconnect {
 	u16   handle;
 	u8     reason;
 } __packed;
 
-pub const HCI_OP_ADD_SCO: _ = 0x0407;
+pub const HCI_OP_ADD_SCO: u32 = 0x0407;
 #[repr(C, packed)]
 pub struct hci_cp_add_sco {
 	u16   handle;
 	u16   pkt_type;
 } __packed;
 
-pub const HCI_OP_CREATE_CONN_CANCEL: _ = 0x0408;
+pub const HCI_OP_CREATE_CONN_CANCEL: u32 = 0x0408;
 #[repr(C, packed)]
 pub struct hci_cp_create_conn_cancel {
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_OP_ACCEPT_CONN_REQ: _ = 0x0409;
+pub const HCI_OP_ACCEPT_CONN_REQ: u32 = 0x0409;
 #[repr(C, packed)]
 pub struct hci_cp_accept_conn_req {
 	bdaddr_t bdaddr;
 	u8     role;
 } __packed;
 
-pub const HCI_OP_REJECT_CONN_REQ: _ = 0x040a;
+pub const HCI_OP_REJECT_CONN_REQ: u32 = 0x040a;
 #[repr(C, packed)]
 pub struct hci_cp_reject_conn_req {
 	bdaddr_t bdaddr;
 	u8     reason;
 } __packed;
 
-pub const HCI_OP_LINK_KEY_REPLY: _ = 0x040b;
+pub const HCI_OP_LINK_KEY_REPLY: u32 = 0x040b;
 #[repr(C, packed)]
 pub struct hci_cp_link_key_reply {
 	bdaddr_t bdaddr;
 	u8     link_key[HCI_LINK_KEY_SIZE];
 } __packed;
 
-pub const HCI_OP_LINK_KEY_NEG_REPLY: _ = 0x040c;
+pub const HCI_OP_LINK_KEY_NEG_REPLY: u32 = 0x040c;
 #[repr(C, packed)]
 pub struct hci_cp_link_key_neg_reply {
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_OP_PIN_CODE_REPLY: _ = 0x040d;
+pub const HCI_OP_PIN_CODE_REPLY: u32 = 0x040d;
 #[repr(C, packed)]
 pub struct hci_cp_pin_code_reply {
 	bdaddr_t bdaddr;
@@ -571,7 +571,7 @@ pub struct hci_rp_pin_code_reply {
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_OP_PIN_CODE_NEG_REPLY: _ = 0x040e;
+pub const HCI_OP_PIN_CODE_NEG_REPLY: u32 = 0x040e;
 #[repr(C, packed)]
 pub struct hci_cp_pin_code_neg_reply {
 	bdaddr_t bdaddr;
@@ -582,33 +582,33 @@ pub struct hci_rp_pin_code_neg_reply {
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_OP_CHANGE_CONN_PTYPE: _ = 0x040f;
+pub const HCI_OP_CHANGE_CONN_PTYPE: u32 = 0x040f;
 #[repr(C, packed)]
 pub struct hci_cp_change_conn_ptype {
 	u16   handle;
 	u16   pkt_type;
 } __packed;
 
-pub const HCI_OP_AUTH_REQUESTED: _ = 0x0411;
+pub const HCI_OP_AUTH_REQUESTED: u32 = 0x0411;
 #[repr(C, packed)]
 pub struct hci_cp_auth_requested {
 	u16   handle;
 } __packed;
 
-pub const HCI_OP_SET_CONN_ENCRYPT: _ = 0x0413;
+pub const HCI_OP_SET_CONN_ENCRYPT: u32 = 0x0413;
 #[repr(C, packed)]
 pub struct hci_cp_set_conn_encrypt {
 	u16   handle;
 	u8     encrypt;
 } __packed;
 
-pub const HCI_OP_CHANGE_CONN_LINK_KEY: _ = 0x0415;
+pub const HCI_OP_CHANGE_CONN_LINK_KEY: u32 = 0x0415;
 #[repr(C, packed)]
 pub struct hci_cp_change_conn_link_key {
 	u16   handle;
 } __packed;
 
-pub const HCI_OP_REMOTE_NAME_REQ: _ = 0x0419;
+pub const HCI_OP_REMOTE_NAME_REQ: u32 = 0x0419;
 #[repr(C, packed)]
 pub struct hci_cp_remote_name_req {
 	bdaddr_t bdaddr;
@@ -617,7 +617,7 @@ pub struct hci_cp_remote_name_req {
 	u16   clock_offset;
 } __packed;
 
-pub const HCI_OP_REMOTE_NAME_REQ_CANCEL: _ = 0x041a;
+pub const HCI_OP_REMOTE_NAME_REQ_CANCEL: u32 = 0x041a;
 #[repr(C, packed)]
 pub struct hci_cp_remote_name_req_cancel {
 	bdaddr_t bdaddr;
@@ -629,32 +629,32 @@ pub struct hci_rp_remote_name_req_cancel {
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_OP_READ_REMOTE_FEATURES: _ = 0x041b;
+pub const HCI_OP_READ_REMOTE_FEATURES: u32 = 0x041b;
 #[repr(C, packed)]
 pub struct hci_cp_read_remote_features {
 	u16   handle;
 } __packed;
 
-pub const HCI_OP_READ_REMOTE_EXT_FEATURES: _ = 0x041c;
+pub const HCI_OP_READ_REMOTE_EXT_FEATURES: u32 = 0x041c;
 #[repr(C, packed)]
 pub struct hci_cp_read_remote_ext_features {
 	u16   handle;
 	u8     page;
 } __packed;
 
-pub const HCI_OP_READ_REMOTE_VERSION: _ = 0x041d;
+pub const HCI_OP_READ_REMOTE_VERSION: u32 = 0x041d;
 #[repr(C, packed)]
 pub struct hci_cp_read_remote_version {
 	u16   handle;
 } __packed;
 
-pub const HCI_OP_READ_CLOCK_OFFSET: _ = 0x041f;
+pub const HCI_OP_READ_CLOCK_OFFSET: u32 = 0x041f;
 #[repr(C, packed)]
 pub struct hci_cp_read_clock_offset {
 	u16   handle;
 } __packed;
 
-pub const HCI_OP_SETUP_SYNC_CONN: _ = 0x0428;
+pub const HCI_OP_SETUP_SYNC_CONN: u32 = 0x0428;
 #[repr(C, packed)]
 pub struct hci_cp_setup_sync_conn {
 	u16   handle;
@@ -666,7 +666,7 @@ pub struct hci_cp_setup_sync_conn {
 	u16   pkt_type;
 } __packed;
 
-pub const HCI_OP_ACCEPT_SYNC_CONN_REQ: _ = 0x0429;
+pub const HCI_OP_ACCEPT_SYNC_CONN_REQ: u32 = 0x0429;
 #[repr(C, packed)]
 pub struct hci_cp_accept_sync_conn_req {
 	bdaddr_t bdaddr;
@@ -678,14 +678,14 @@ pub struct hci_cp_accept_sync_conn_req {
 	u16   pkt_type;
 } __packed;
 
-pub const HCI_OP_REJECT_SYNC_CONN_REQ: _ = 0x042a;
+pub const HCI_OP_REJECT_SYNC_CONN_REQ: u32 = 0x042a;
 #[repr(C, packed)]
 pub struct hci_cp_reject_sync_conn_req {
 	bdaddr_t bdaddr;
 	u8     reason;
 } __packed;
 
-pub const HCI_OP_IO_CAPABILITY_REPLY: _ = 0x042b;
+pub const HCI_OP_IO_CAPABILITY_REPLY: u32 = 0x042b;
 #[repr(C, packed)]
 pub struct hci_cp_io_capability_reply {
 	bdaddr_t bdaddr;
@@ -694,7 +694,7 @@ pub struct hci_cp_io_capability_reply {
 	u8     authentication;
 } __packed;
 
-pub const HCI_OP_USER_CONFIRM_REPLY: _ = 0x042c;
+pub const HCI_OP_USER_CONFIRM_REPLY: u32 = 0x042c;
 #[repr(C, packed)]
 pub struct hci_cp_user_confirm_reply {
 	bdaddr_t bdaddr;
@@ -705,18 +705,18 @@ pub struct hci_rp_user_confirm_reply {
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_OP_USER_CONFIRM_NEG_REPLY: _ = 0x042d;
+pub const HCI_OP_USER_CONFIRM_NEG_REPLY: u32 = 0x042d;
 
-pub const HCI_OP_USER_PASSKEY_REPLY: _ = 0x042e;
+pub const HCI_OP_USER_PASSKEY_REPLY: u32 = 0x042e;
 #[repr(C, packed)]
 pub struct hci_cp_user_passkey_reply {
 	bdaddr_t bdaddr;
 	u32	passkey;
 } __packed;
 
-pub const HCI_OP_USER_PASSKEY_NEG_REPLY: _ = 0x042f;
+pub const HCI_OP_USER_PASSKEY_NEG_REPLY: u32 = 0x042f;
 
-pub const HCI_OP_REMOTE_OOB_DATA_REPLY: _ = 0x0430;
+pub const HCI_OP_REMOTE_OOB_DATA_REPLY: u32 = 0x0430;
 #[repr(C, packed)]
 pub struct hci_cp_remote_oob_data_reply {
 	bdaddr_t bdaddr;
@@ -724,20 +724,20 @@ pub struct hci_cp_remote_oob_data_reply {
 	u8     rand[16];
 } __packed;
 
-pub const HCI_OP_REMOTE_OOB_DATA_NEG_REPLY: _ = 0x0433;
+pub const HCI_OP_REMOTE_OOB_DATA_NEG_REPLY: u32 = 0x0433;
 #[repr(C, packed)]
 pub struct hci_cp_remote_oob_data_neg_reply {
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_OP_IO_CAPABILITY_NEG_REPLY: _ = 0x0434;
+pub const HCI_OP_IO_CAPABILITY_NEG_REPLY: u32 = 0x0434;
 #[repr(C, packed)]
 pub struct hci_cp_io_capability_neg_reply {
 	bdaddr_t bdaddr;
 	u8     reason;
 } __packed;
 
-pub const HCI_OP_ENHANCED_SETUP_SYNC_CONN: _ = 0x043d;
+pub const HCI_OP_ENHANCED_SETUP_SYNC_CONN: u32 = 0x043d;
 #[repr(C, packed)]
 pub struct hci_coding_format {
 	u8	id;
@@ -780,7 +780,7 @@ pub struct hci_rp_logical_link_cancel {
 	u8     flow_spec_id;
 } __packed;
 
-pub const HCI_OP_SET_CPB: _ = 0x0441;
+pub const HCI_OP_SET_CPB: u32 = 0x0441;
 #[repr(C, packed)]
 pub struct hci_cp_set_cpb {
 	u8	enable;
@@ -798,9 +798,9 @@ pub struct hci_rp_set_cpb {
 	u16	interval;
 } __packed;
 
-pub const HCI_OP_START_SYNC_TRAIN: _ = 0x0443;
+pub const HCI_OP_START_SYNC_TRAIN: u32 = 0x0443;
 
-pub const HCI_OP_REMOTE_OOB_EXT_DATA_REPLY: _ = 0x0445;
+pub const HCI_OP_REMOTE_OOB_EXT_DATA_REPLY: u32 = 0x0445;
 #[repr(C, packed)]
 pub struct hci_cp_remote_oob_ext_data_reply {
 	bdaddr_t bdaddr;
@@ -810,7 +810,7 @@ pub struct hci_cp_remote_oob_ext_data_reply {
 	u8     rand256[16];
 } __packed;
 
-pub const HCI_OP_SNIFF_MODE: _ = 0x0803;
+pub const HCI_OP_SNIFF_MODE: u32 = 0x0803;
 #[repr(C, packed)]
 pub struct hci_cp_sniff_mode {
 	u16   handle;
@@ -820,13 +820,13 @@ pub struct hci_cp_sniff_mode {
 	u16   timeout;
 } __packed;
 
-pub const HCI_OP_EXIT_SNIFF_MODE: _ = 0x0804;
+pub const HCI_OP_EXIT_SNIFF_MODE: u32 = 0x0804;
 #[repr(C, packed)]
 pub struct hci_cp_exit_sniff_mode {
 	u16   handle;
 } __packed;
 
-pub const HCI_OP_ROLE_DISCOVERY: _ = 0x0809;
+pub const HCI_OP_ROLE_DISCOVERY: u32 = 0x0809;
 #[repr(C, packed)]
 pub struct hci_cp_role_discovery {
 	u16   handle;
@@ -838,14 +838,14 @@ pub struct hci_rp_role_discovery {
 	u8     role;
 } __packed;
 
-pub const HCI_OP_SWITCH_ROLE: _ = 0x080b;
+pub const HCI_OP_SWITCH_ROLE: u32 = 0x080b;
 #[repr(C, packed)]
 pub struct hci_cp_switch_role {
 	bdaddr_t bdaddr;
 	u8     role;
 } __packed;
 
-pub const HCI_OP_READ_LINK_POLICY: _ = 0x080c;
+pub const HCI_OP_READ_LINK_POLICY: u32 = 0x080c;
 #[repr(C, packed)]
 pub struct hci_cp_read_link_policy {
 	u16   handle;
@@ -857,7 +857,7 @@ pub struct hci_rp_read_link_policy {
 	u16   policy;
 } __packed;
 
-pub const HCI_OP_WRITE_LINK_POLICY: _ = 0x080d;
+pub const HCI_OP_WRITE_LINK_POLICY: u32 = 0x080d;
 #[repr(C, packed)]
 pub struct hci_cp_write_link_policy {
 	u16   handle;
@@ -869,20 +869,20 @@ pub struct hci_rp_write_link_policy {
 	u16   handle;
 } __packed;
 
-pub const HCI_OP_READ_DEF_LINK_POLICY: _ = 0x080e;
+pub const HCI_OP_READ_DEF_LINK_POLICY: u32 = 0x080e;
 #[repr(C, packed)]
 pub struct hci_rp_read_def_link_policy {
 	u8     status;
 	u16   policy;
 } __packed;
 
-pub const HCI_OP_WRITE_DEF_LINK_POLICY: _ = 0x080f;
+pub const HCI_OP_WRITE_DEF_LINK_POLICY: u32 = 0x080f;
 #[repr(C, packed)]
 pub struct hci_cp_write_def_link_policy {
 	u16   policy;
 } __packed;
 
-pub const HCI_OP_SNIFF_SUBRATE: _ = 0x0811;
+pub const HCI_OP_SNIFF_SUBRATE: u32 = 0x0811;
 #[repr(C, packed)]
 pub struct hci_cp_sniff_subrate {
 	u16   handle;
@@ -891,12 +891,12 @@ pub struct hci_cp_sniff_subrate {
 	u16   min_local_timeout;
 } __packed;
 
-pub const HCI_OP_SET_EVENT_MASK: _ = 0x0c01;
+pub const HCI_OP_SET_EVENT_MASK: u32 = 0x0c01;
 
-pub const HCI_OP_RESET: _ = 0x0c03;
+pub const HCI_OP_RESET: u32 = 0x0c03;
 
-pub const HCI_OP_SET_EVENT_FLT: _ = 0x0c05;
-pub const HCI_SET_EVENT_FLT_SIZE: _ = 9;
+pub const HCI_OP_SET_EVENT_FLT: u32 = 0x0c05;
+pub const HCI_SET_EVENT_FLT_SIZE: u32 = 9;
 #[repr(C, packed)]
 pub struct hci_cp_set_event_filter {
 	u8		flt_type;
@@ -908,21 +908,21 @@ pub struct hci_cp_set_event_filter {
 } __packed;
 
 /* Filter types */
-pub const HCI_FLT_CLEAR_ALL: _ = 0x00;
-pub const HCI_FLT_INQ_RESULT: _ = 0x01;
-pub const HCI_FLT_CONN_SETUP: _ = 0x02;
+pub const HCI_FLT_CLEAR_ALL: u32 = 0x00;
+pub const HCI_FLT_INQ_RESULT: u32 = 0x01;
+pub const HCI_FLT_CONN_SETUP: u32 = 0x02;
 
 /* CONN_SETUP Condition types */
-pub const HCI_CONN_SETUP_ALLOW_ALL: _ = 0x00;
-pub const HCI_CONN_SETUP_ALLOW_CLASS: _ = 0x01;
-pub const HCI_CONN_SETUP_ALLOW_BDADDR: _ = 0x02;
+pub const HCI_CONN_SETUP_ALLOW_ALL: u32 = 0x00;
+pub const HCI_CONN_SETUP_ALLOW_CLASS: u32 = 0x01;
+pub const HCI_CONN_SETUP_ALLOW_BDADDR: u32 = 0x02;
 
 /* CONN_SETUP Conditions */
-pub const HCI_CONN_SETUP_AUTO_OFF: _ = 0x01;
-pub const HCI_CONN_SETUP_AUTO_ON: _ = 0x02;
-pub const HCI_CONN_SETUP_AUTO_ON_WITH_RS: _ = 0x03;
+pub const HCI_CONN_SETUP_AUTO_OFF: u32 = 0x01;
+pub const HCI_CONN_SETUP_AUTO_ON: u32 = 0x02;
+pub const HCI_CONN_SETUP_AUTO_ON_WITH_RS: u32 = 0x03;
 
-pub const HCI_OP_READ_STORED_LINK_KEY: _ = 0x0c0d;
+pub const HCI_OP_READ_STORED_LINK_KEY: u32 = 0x0c0d;
 #[repr(C, packed)]
 pub struct hci_cp_read_stored_link_key {
 	bdaddr_t bdaddr;
@@ -935,7 +935,7 @@ pub struct hci_rp_read_stored_link_key {
 	u16   num_keys;
 } __packed;
 
-pub const HCI_OP_DELETE_STORED_LINK_KEY: _ = 0x0c12;
+pub const HCI_OP_DELETE_STORED_LINK_KEY: u32 = 0x0c12;
 #[repr(C, packed)]
 pub struct hci_cp_delete_stored_link_key {
 	bdaddr_t bdaddr;
@@ -947,70 +947,70 @@ pub struct hci_rp_delete_stored_link_key {
 	u16   num_keys;
 } __packed;
 
-pub const HCI_MAX_NAME_LENGTH: _ = 248;
+pub const HCI_MAX_NAME_LENGTH: u32 = 248;
 
-pub const HCI_OP_WRITE_LOCAL_NAME: _ = 0x0c13;
+pub const HCI_OP_WRITE_LOCAL_NAME: u32 = 0x0c13;
 #[repr(C, packed)]
 pub struct hci_cp_write_local_name {
 	u8     name[HCI_MAX_NAME_LENGTH];
 } __packed;
 
-pub const HCI_OP_READ_LOCAL_NAME: _ = 0x0c14;
+pub const HCI_OP_READ_LOCAL_NAME: u32 = 0x0c14;
 #[repr(C, packed)]
 pub struct hci_rp_read_local_name {
 	u8     status;
 	u8     name[HCI_MAX_NAME_LENGTH];
 } __packed;
 
-pub const HCI_OP_WRITE_CA_TIMEOUT: _ = 0x0c16;
+pub const HCI_OP_WRITE_CA_TIMEOUT: u32 = 0x0c16;
 
-pub const HCI_OP_WRITE_PG_TIMEOUT: _ = 0x0c18;
+pub const HCI_OP_WRITE_PG_TIMEOUT: u32 = 0x0c18;
 
-pub const HCI_OP_WRITE_SCAN_ENABLE: _ = 0x0c1a;
+pub const HCI_OP_WRITE_SCAN_ENABLE: u32 = 0x0c1a;
 	pub const SCAN_DISABLED: u32 = 0x00;
 	pub const SCAN_INQUIRY: u32 = 0x01;
 	pub const SCAN_PAGE: u32 = 0x02;
 
-pub const HCI_OP_READ_AUTH_ENABLE: _ = 0x0c1f;
+pub const HCI_OP_READ_AUTH_ENABLE: u32 = 0x0c1f;
 
-pub const HCI_OP_WRITE_AUTH_ENABLE: _ = 0x0c20;
+pub const HCI_OP_WRITE_AUTH_ENABLE: u32 = 0x0c20;
 	pub const AUTH_DISABLED: u32 = 0x00;
 	pub const AUTH_ENABLED: u32 = 0x01;
 
-pub const HCI_OP_READ_ENCRYPT_MODE: _ = 0x0c21;
+pub const HCI_OP_READ_ENCRYPT_MODE: u32 = 0x0c21;
 
-pub const HCI_OP_WRITE_ENCRYPT_MODE: _ = 0x0c22;
+pub const HCI_OP_WRITE_ENCRYPT_MODE: u32 = 0x0c22;
 	pub const ENCRYPT_DISABLED: u32 = 0x00;
 	pub const ENCRYPT_P2P: u32 = 0x01;
 	pub const ENCRYPT_BOTH: u32 = 0x02;
 
-pub const HCI_OP_READ_CLASS_OF_DEV: _ = 0x0c23;
+pub const HCI_OP_READ_CLASS_OF_DEV: u32 = 0x0c23;
 #[repr(C, packed)]
 pub struct hci_rp_read_class_of_dev {
 	u8     status;
 	u8     dev_class[3];
 } __packed;
 
-pub const HCI_OP_WRITE_CLASS_OF_DEV: _ = 0x0c24;
+pub const HCI_OP_WRITE_CLASS_OF_DEV: u32 = 0x0c24;
 #[repr(C, packed)]
 pub struct hci_cp_write_class_of_dev {
 	u8     dev_class[3];
 } __packed;
 
-pub const HCI_OP_READ_VOICE_SETTING: _ = 0x0c25;
+pub const HCI_OP_READ_VOICE_SETTING: u32 = 0x0c25;
 #[repr(C, packed)]
 pub struct hci_rp_read_voice_setting {
 	u8     status;
 	u16   voice_setting;
 } __packed;
 
-pub const HCI_OP_WRITE_VOICE_SETTING: _ = 0x0c26;
+pub const HCI_OP_WRITE_VOICE_SETTING: u32 = 0x0c26;
 #[repr(C, packed)]
 pub struct hci_cp_write_voice_setting {
 	u16   voice_setting;
 } __packed;
 
-pub const HCI_OP_HOST_BUFFER_SIZE: _ = 0x0c33;
+pub const HCI_OP_HOST_BUFFER_SIZE: u32 = 0x0c33;
 #[repr(C, packed)]
 pub struct hci_cp_host_buffer_size {
 	u16   acl_mtu;
@@ -1019,47 +1019,47 @@ pub struct hci_cp_host_buffer_size {
 	u16   sco_max_pkt;
 } __packed;
 
-pub const HCI_OP_READ_NUM_SUPPORTED_IAC: _ = 0x0c38;
+pub const HCI_OP_READ_NUM_SUPPORTED_IAC: u32 = 0x0c38;
 #[repr(C, packed)]
 pub struct hci_rp_read_num_supported_iac {
 	u8	status;
 	u8	num_iac;
 } __packed;
 
-pub const HCI_OP_READ_CURRENT_IAC_LAP: _ = 0x0c39;
+pub const HCI_OP_READ_CURRENT_IAC_LAP: u32 = 0x0c39;
 
-pub const HCI_OP_WRITE_CURRENT_IAC_LAP: _ = 0x0c3a;
+pub const HCI_OP_WRITE_CURRENT_IAC_LAP: u32 = 0x0c3a;
 #[repr(C, packed)]
 pub struct hci_cp_write_current_iac_lap {
 	u8	num_iac;
 	u8	iac_lap[6];
 } __packed;
 
-pub const HCI_OP_WRITE_INQUIRY_MODE: _ = 0x0c45;
+pub const HCI_OP_WRITE_INQUIRY_MODE: u32 = 0x0c45;
 
-pub const HCI_MAX_EIR_LENGTH: _ = 240;
+pub const HCI_MAX_EIR_LENGTH: u32 = 240;
 
-pub const HCI_OP_WRITE_EIR: _ = 0x0c52;
+pub const HCI_OP_WRITE_EIR: u32 = 0x0c52;
 #[repr(C, packed)]
 pub struct hci_cp_write_eir {
 	u8	fec;
 	u8	data[HCI_MAX_EIR_LENGTH];
 } __packed;
 
-pub const HCI_OP_READ_SSP_MODE: _ = 0x0c55;
+pub const HCI_OP_READ_SSP_MODE: u32 = 0x0c55;
 #[repr(C, packed)]
 pub struct hci_rp_read_ssp_mode {
 	u8     status;
 	u8     mode;
 } __packed;
 
-pub const HCI_OP_WRITE_SSP_MODE: _ = 0x0c56;
+pub const HCI_OP_WRITE_SSP_MODE: u32 = 0x0c56;
 #[repr(C, packed)]
 pub struct hci_cp_write_ssp_mode {
 	u8     mode;
 } __packed;
 
-pub const HCI_OP_READ_LOCAL_OOB_DATA: _ = 0x0c57;
+pub const HCI_OP_READ_LOCAL_OOB_DATA: u32 = 0x0c57;
 #[repr(C, packed)]
 pub struct hci_rp_read_local_oob_data {
 	u8     status;
@@ -1067,14 +1067,14 @@ pub struct hci_rp_read_local_oob_data {
 	u8     rand[16];
 } __packed;
 
-pub const HCI_OP_READ_INQ_RSP_TX_POWER: _ = 0x0c58;
+pub const HCI_OP_READ_INQ_RSP_TX_POWER: u32 = 0x0c58;
 #[repr(C, packed)]
 pub struct hci_rp_read_inq_rsp_tx_power {
 	u8     status;
 	i8     tx_power;
 } __packed;
 
-pub const HCI_OP_READ_DEF_ERR_DATA_REPORTING: _ = 0x0c5a;
+pub const HCI_OP_READ_DEF_ERR_DATA_REPORTING: u32 = 0x0c5a;
 	pub const ERR_DATA_REPORTING_DISABLED: u32 = 0x00;
 	pub const ERR_DATA_REPORTING_ENABLED: u32 = 0x01;
 #[repr(C, packed)]
@@ -1083,31 +1083,31 @@ pub struct hci_rp_read_def_err_data_reporting {
 	u8     err_data_reporting;
 } __packed;
 
-pub const HCI_OP_WRITE_DEF_ERR_DATA_REPORTING: _ = 0x0c5b;
+pub const HCI_OP_WRITE_DEF_ERR_DATA_REPORTING: u32 = 0x0c5b;
 #[repr(C, packed)]
 pub struct hci_cp_write_def_err_data_reporting {
 	u8     err_data_reporting;
 } __packed;
 
-pub const HCI_OP_SET_EVENT_MASK_PAGE_2: _ = 0x0c63;
+pub const HCI_OP_SET_EVENT_MASK_PAGE_2: u32 = 0x0c63;
 
-pub const HCI_OP_READ_LOCATION_DATA: _ = 0x0c64;
+pub const HCI_OP_READ_LOCATION_DATA: u32 = 0x0c64;
 
-pub const HCI_OP_READ_FLOW_CONTROL_MODE: _ = 0x0c66;
+pub const HCI_OP_READ_FLOW_CONTROL_MODE: u32 = 0x0c66;
 #[repr(C, packed)]
 pub struct hci_rp_read_flow_control_mode {
 	u8     status;
 	u8     mode;
 } __packed;
 
-pub const HCI_OP_WRITE_LE_HOST_SUPPORTED: _ = 0x0c6d;
+pub const HCI_OP_WRITE_LE_HOST_SUPPORTED: u32 = 0x0c6d;
 #[repr(C, packed)]
 pub struct hci_cp_write_le_host_supported {
 	u8	le;
 	u8	simul;
 } __packed;
 
-pub const HCI_OP_SET_RESERVED_LT_ADDR: _ = 0x0c74;
+pub const HCI_OP_SET_RESERVED_LT_ADDR: u32 = 0x0c74;
 #[repr(C, packed)]
 pub struct hci_cp_set_reserved_lt_addr {
 	u8	lt_addr;
@@ -1118,7 +1118,7 @@ pub struct hci_rp_set_reserved_lt_addr {
 	u8	lt_addr;
 } __packed;
 
-pub const HCI_OP_DELETE_RESERVED_LT_ADDR: _ = 0x0c75;
+pub const HCI_OP_DELETE_RESERVED_LT_ADDR: u32 = 0x0c75;
 #[repr(C, packed)]
 pub struct hci_cp_delete_reserved_lt_addr {
 	u8	lt_addr;
@@ -1129,7 +1129,7 @@ pub struct hci_rp_delete_reserved_lt_addr {
 	u8	lt_addr;
 } __packed;
 
-pub const HCI_OP_SET_CPB_DATA: _ = 0x0c76;
+pub const HCI_OP_SET_CPB_DATA: u32 = 0x0c76;
 #[repr(C, packed)]
 pub struct hci_cp_set_cpb_data {
 	u8	lt_addr;
@@ -1143,9 +1143,9 @@ pub struct hci_rp_set_cpb_data {
 	u8	lt_addr;
 } __packed;
 
-pub const HCI_OP_READ_SYNC_TRAIN_PARAMS: _ = 0x0c77;
+pub const HCI_OP_READ_SYNC_TRAIN_PARAMS: u32 = 0x0c77;
 
-pub const HCI_OP_WRITE_SYNC_TRAIN_PARAMS: _ = 0x0c78;
+pub const HCI_OP_WRITE_SYNC_TRAIN_PARAMS: u32 = 0x0c78;
 #[repr(C, packed)]
 pub struct hci_cp_write_sync_train_params {
 	u16	interval_min;
@@ -1159,20 +1159,20 @@ pub struct hci_rp_write_sync_train_params {
 	u16	sync_train_int;
 } __packed;
 
-pub const HCI_OP_READ_SC_SUPPORT: _ = 0x0c79;
+pub const HCI_OP_READ_SC_SUPPORT: u32 = 0x0c79;
 #[repr(C, packed)]
 pub struct hci_rp_read_sc_support {
 	u8	status;
 	u8	support;
 } __packed;
 
-pub const HCI_OP_WRITE_SC_SUPPORT: _ = 0x0c7a;
+pub const HCI_OP_WRITE_SC_SUPPORT: u32 = 0x0c7a;
 #[repr(C, packed)]
 pub struct hci_cp_write_sc_support {
 	u8	support;
 } __packed;
 
-pub const HCI_OP_READ_AUTH_PAYLOAD_TO: _ = 0x0c7b;
+pub const HCI_OP_READ_AUTH_PAYLOAD_TO: u32 = 0x0c7b;
 #[repr(C, packed)]
 pub struct hci_cp_read_auth_payload_to {
 	u16  handle;
@@ -1184,7 +1184,7 @@ pub struct hci_rp_read_auth_payload_to {
 	u16  timeout;
 } __packed;
 
-pub const HCI_OP_WRITE_AUTH_PAYLOAD_TO: _ = 0x0c7c;
+pub const HCI_OP_WRITE_AUTH_PAYLOAD_TO: u32 = 0x0c7c;
 #[repr(C, packed)]
 pub struct hci_cp_write_auth_payload_to {
 	u16  handle;
@@ -1196,7 +1196,7 @@ pub struct hci_rp_write_auth_payload_to {
 	u16  handle;
 } __packed;
 
-pub const HCI_OP_READ_LOCAL_OOB_EXT_DATA: _ = 0x0c7d;
+pub const HCI_OP_READ_LOCAL_OOB_EXT_DATA: u32 = 0x0c7d;
 #[repr(C, packed)]
 pub struct hci_rp_read_local_oob_ext_data {
 	u8     status;
@@ -1206,7 +1206,7 @@ pub struct hci_rp_read_local_oob_ext_data {
 	u8     rand256[16];
 } __packed;
 
-pub const HCI_CONFIGURE_DATA_PATH: _ = 0x0c83;
+pub const HCI_CONFIGURE_DATA_PATH: u32 = 0x0c83;
 #[repr(C, packed)]
 pub struct hci_op_configure_data_path {
 	u8	direction;
@@ -1215,7 +1215,7 @@ pub struct hci_op_configure_data_path {
 	u8	vnd_data[];
 } __packed;
 
-pub const HCI_OP_READ_LOCAL_VERSION: _ = 0x1001;
+pub const HCI_OP_READ_LOCAL_VERSION: u32 = 0x1001;
 #[repr(C, packed)]
 pub struct hci_rp_read_local_version {
 	u8     status;
@@ -1226,21 +1226,21 @@ pub struct hci_rp_read_local_version {
 	u16   lmp_subver;
 } __packed;
 
-pub const HCI_OP_READ_LOCAL_COMMANDS: _ = 0x1002;
+pub const HCI_OP_READ_LOCAL_COMMANDS: u32 = 0x1002;
 #[repr(C, packed)]
 pub struct hci_rp_read_local_commands {
 	u8     status;
 	u8     commands[64];
 } __packed;
 
-pub const HCI_OP_READ_LOCAL_FEATURES: _ = 0x1003;
+pub const HCI_OP_READ_LOCAL_FEATURES: u32 = 0x1003;
 #[repr(C, packed)]
 pub struct hci_rp_read_local_features {
 	u8     status;
 	u8     features[8];
 } __packed;
 
-pub const HCI_OP_READ_LOCAL_EXT_FEATURES: _ = 0x1004;
+pub const HCI_OP_READ_LOCAL_EXT_FEATURES: u32 = 0x1004;
 #[repr(C, packed)]
 pub struct hci_cp_read_local_ext_features {
 	u8     page;
@@ -1253,7 +1253,7 @@ pub struct hci_rp_read_local_ext_features {
 	u8     features[8];
 } __packed;
 
-pub const HCI_OP_READ_BUFFER_SIZE: _ = 0x1005;
+pub const HCI_OP_READ_BUFFER_SIZE: u32 = 0x1005;
 #[repr(C, packed)]
 pub struct hci_rp_read_buffer_size {
 	u8     status;
@@ -1263,14 +1263,14 @@ pub struct hci_rp_read_buffer_size {
 	u16   sco_max_pkt;
 } __packed;
 
-pub const HCI_OP_READ_BD_ADDR: _ = 0x1009;
+pub const HCI_OP_READ_BD_ADDR: u32 = 0x1009;
 #[repr(C, packed)]
 pub struct hci_rp_read_bd_addr {
 	u8     status;
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_OP_READ_DATA_BLOCK_SIZE: _ = 0x100a;
+pub const HCI_OP_READ_DATA_BLOCK_SIZE: u32 = 0x100a;
 #[repr(C, packed)]
 pub struct hci_rp_read_data_block_size {
 	u8     status;
@@ -1279,7 +1279,7 @@ pub struct hci_rp_read_data_block_size {
 	u16   num_blocks;
 } __packed;
 
-pub const HCI_OP_READ_LOCAL_CODECS: _ = 0x100b;
+pub const HCI_OP_READ_LOCAL_CODECS: u32 = 0x100b;
 #[repr(C, packed)]
 pub struct hci_std_codecs_hdr {
 	u8	num;
@@ -1312,7 +1312,7 @@ pub struct hci_rp_read_local_supported_codecs {
 	struct hci_vnd_codecs vnd_codecs;
 } __packed;
 
-pub const HCI_OP_READ_LOCAL_PAIRING_OPTS: _ = 0x100c;
+pub const HCI_OP_READ_LOCAL_PAIRING_OPTS: u32 = 0x100c;
 #[repr(C, packed)]
 pub struct hci_rp_read_local_pairing_opts {
 	u8     status;
@@ -1320,7 +1320,7 @@ pub struct hci_rp_read_local_pairing_opts {
 	u8     max_key_size;
 } __packed;
 
-pub const HCI_OP_READ_LOCAL_CODECS_V2: _ = 0x100d;
+pub const HCI_OP_READ_LOCAL_CODECS_V2: u32 = 0x100d;
 #[repr(C, packed)]
 pub struct hci_std_codec_v2 {
 	u8	id;
@@ -1358,7 +1358,7 @@ pub struct hci_rp_read_local_supported_codecs_v2 {
 	struct hci_vnd_codecs_v2 vendor_codecs;
 } __packed;
 
-pub const HCI_OP_READ_LOCAL_CODEC_CAPS: _ = 0x100e;
+pub const HCI_OP_READ_LOCAL_CODEC_CAPS: u32 = 0x100e;
 #[repr(C, packed)]
 pub struct hci_op_read_local_codec_caps {
 	u8	id;
@@ -1380,7 +1380,7 @@ pub struct hci_rp_read_local_codec_caps {
 	u8	num_caps;
 } __packed;
 
-pub const HCI_OP_READ_PAGE_SCAN_ACTIVITY: _ = 0x0c1b;
+pub const HCI_OP_READ_PAGE_SCAN_ACTIVITY: u32 = 0x0c1b;
 #[repr(C, packed)]
 pub struct hci_rp_read_page_scan_activity {
 	u8     status;
@@ -1388,14 +1388,14 @@ pub struct hci_rp_read_page_scan_activity {
 	u16   window;
 } __packed;
 
-pub const HCI_OP_WRITE_PAGE_SCAN_ACTIVITY: _ = 0x0c1c;
+pub const HCI_OP_WRITE_PAGE_SCAN_ACTIVITY: u32 = 0x0c1c;
 #[repr(C, packed)]
 pub struct hci_cp_write_page_scan_activity {
 	u16   interval;
 	u16   window;
 } __packed;
 
-pub const HCI_OP_READ_TX_POWER: _ = 0x0c2d;
+pub const HCI_OP_READ_TX_POWER: u32 = 0x0c2d;
 #[repr(C, packed)]
 pub struct hci_cp_read_tx_power {
 	u16   handle;
@@ -1408,24 +1408,24 @@ pub struct hci_rp_read_tx_power {
 	i8     tx_power;
 } __packed;
 
-pub const HCI_OP_WRITE_SYNC_FLOWCTL: _ = 0x0c2f;
+pub const HCI_OP_WRITE_SYNC_FLOWCTL: u32 = 0x0c2f;
 #[repr(C, packed)]
 pub struct hci_cp_write_sync_flowctl {
 	u8     enable;
 } __packed;
 
-pub const HCI_OP_READ_PAGE_SCAN_TYPE: _ = 0x0c46;
+pub const HCI_OP_READ_PAGE_SCAN_TYPE: u32 = 0x0c46;
 #[repr(C, packed)]
 pub struct hci_rp_read_page_scan_type {
 	u8     status;
 	u8     type;
 } __packed;
 
-pub const HCI_OP_WRITE_PAGE_SCAN_TYPE: _ = 0x0c47;
+pub const HCI_OP_WRITE_PAGE_SCAN_TYPE: u32 = 0x0c47;
 	pub const PAGE_SCAN_TYPE_STANDARD: u32 = 0x00;
 	pub const PAGE_SCAN_TYPE_INTERLACED: u32 = 0x01;
 
-pub const HCI_OP_READ_RSSI: _ = 0x1405;
+pub const HCI_OP_READ_RSSI: u32 = 0x1405;
 #[repr(C, packed)]
 pub struct hci_cp_read_rssi {
 	u16   handle;
@@ -1437,7 +1437,7 @@ pub struct hci_rp_read_rssi {
 	i8     rssi;
 } __packed;
 
-pub const HCI_OP_READ_CLOCK: _ = 0x1407;
+pub const HCI_OP_READ_CLOCK: u32 = 0x1407;
 #[repr(C, packed)]
 pub struct hci_cp_read_clock {
 	u16   handle;
@@ -1451,7 +1451,7 @@ pub struct hci_rp_read_clock {
 	u16   accuracy;
 } __packed;
 
-pub const HCI_OP_READ_ENC_KEY_SIZE: _ = 0x1408;
+pub const HCI_OP_READ_ENC_KEY_SIZE: u32 = 0x1408;
 #[repr(C, packed)]
 pub struct hci_cp_read_enc_key_size {
 	u16   handle;
@@ -1463,13 +1463,13 @@ pub struct hci_rp_read_enc_key_size {
 	u8     key_size;
 } __packed;
 
-pub const HCI_OP_GET_MWS_TRANSPORT_CONFIG: _ = 0x140c;
+pub const HCI_OP_GET_MWS_TRANSPORT_CONFIG: u32 = 0x140c;
 
-pub const HCI_OP_ENABLE_DUT_MODE: _ = 0x1803;
+pub const HCI_OP_ENABLE_DUT_MODE: u32 = 0x1803;
 
-pub const HCI_OP_WRITE_SSP_DEBUG_MODE: _ = 0x1804;
+pub const HCI_OP_WRITE_SSP_DEBUG_MODE: u32 = 0x1804;
 
-pub const HCI_OP_LE_SET_EVENT_MASK: _ = 0x2001;
+pub const HCI_OP_LE_SET_EVENT_MASK: u32 = 0x2001;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_event_mask {
 	u8     mask[8];
@@ -1482,9 +1482,9 @@ pub struct hci_cp_le_set_event_mask {
  * It should use the HCI_Read_Buffer_Size command and mtu is shared
  * between BR/EDR and LE.
  */
-pub const HCI_MIN_LE_MTU: _ = 0x001b;
+pub const HCI_MIN_LE_MTU: u32 = 0x001b;
 
-pub const HCI_OP_LE_READ_BUFFER_SIZE: _ = 0x2002;
+pub const HCI_OP_LE_READ_BUFFER_SIZE: u32 = 0x2002;
 #[repr(C, packed)]
 pub struct hci_rp_le_read_buffer_size {
 	u8     status;
@@ -1492,16 +1492,16 @@ pub struct hci_rp_le_read_buffer_size {
 	u8     le_max_pkt;
 } __packed;
 
-pub const HCI_OP_LE_READ_LOCAL_FEATURES: _ = 0x2003;
+pub const HCI_OP_LE_READ_LOCAL_FEATURES: u32 = 0x2003;
 #[repr(C, packed)]
 pub struct hci_rp_le_read_local_features {
 	u8     status;
 	u8     features[8];
 } __packed;
 
-pub const HCI_OP_LE_SET_RANDOM_ADDR: _ = 0x2005;
+pub const HCI_OP_LE_SET_RANDOM_ADDR: u32 = 0x2005;
 
-pub const HCI_OP_LE_SET_ADV_PARAM: _ = 0x2006;
+pub const HCI_OP_LE_SET_ADV_PARAM: u32 = 0x2006;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_adv_param {
 	u16   min_interval;
@@ -1514,35 +1514,35 @@ pub struct hci_cp_le_set_adv_param {
 	u8     filter_policy;
 } __packed;
 
-pub const HCI_OP_LE_READ_ADV_TX_POWER: _ = 0x2007;
+pub const HCI_OP_LE_READ_ADV_TX_POWER: u32 = 0x2007;
 #[repr(C, packed)]
 pub struct hci_rp_le_read_adv_tx_power {
 	u8	status;
 	i8	tx_power;
 } __packed;
 
-pub const HCI_MAX_AD_LENGTH: _ = 31;
+pub const HCI_MAX_AD_LENGTH: u32 = 31;
 
-pub const HCI_OP_LE_SET_ADV_DATA: _ = 0x2008;
+pub const HCI_OP_LE_SET_ADV_DATA: u32 = 0x2008;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_adv_data {
 	u8	length;
 	u8	data[HCI_MAX_AD_LENGTH];
 } __packed;
 
-pub const HCI_OP_LE_SET_SCAN_RSP_DATA: _ = 0x2009;
+pub const HCI_OP_LE_SET_SCAN_RSP_DATA: u32 = 0x2009;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_scan_rsp_data {
 	u8	length;
 	u8	data[HCI_MAX_AD_LENGTH];
 } __packed;
 
-pub const HCI_OP_LE_SET_ADV_ENABLE: _ = 0x200a;
+pub const HCI_OP_LE_SET_ADV_ENABLE: u32 = 0x200a;
 
-pub const LE_SCAN_PASSIVE: _ = 0x00;
-pub const LE_SCAN_ACTIVE: _ = 0x01;
+pub const LE_SCAN_PASSIVE: u32 = 0x00;
+pub const LE_SCAN_ACTIVE: u32 = 0x01;
 
-pub const HCI_OP_LE_SET_SCAN_PARAM: _ = 0x200b;
+pub const HCI_OP_LE_SET_SCAN_PARAM: u32 = 0x200b;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_scan_param {
 	u8    type;
@@ -1552,22 +1552,22 @@ pub struct hci_cp_le_set_scan_param {
 	u8    filter_policy;
 } __packed;
 
-pub const LE_SCAN_DISABLE: _ = 0x00;
-pub const LE_SCAN_ENABLE: _ = 0x01;
-pub const LE_SCAN_FILTER_DUP_DISABLE: _ = 0x00;
-pub const LE_SCAN_FILTER_DUP_ENABLE: _ = 0x01;
+pub const LE_SCAN_DISABLE: u32 = 0x00;
+pub const LE_SCAN_ENABLE: u32 = 0x01;
+pub const LE_SCAN_FILTER_DUP_DISABLE: u32 = 0x00;
+pub const LE_SCAN_FILTER_DUP_ENABLE: u32 = 0x01;
 
-pub const HCI_OP_LE_SET_SCAN_ENABLE: _ = 0x200c;
+pub const HCI_OP_LE_SET_SCAN_ENABLE: u32 = 0x200c;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_scan_enable {
 	u8     enable;
 	u8     filter_dup;
 } __packed;
 
-pub const HCI_LE_USE_PEER_ADDR: _ = 0x00;
-pub const HCI_LE_USE_ACCEPT_LIST: _ = 0x01;
+pub const HCI_LE_USE_PEER_ADDR: u32 = 0x00;
+pub const HCI_LE_USE_ACCEPT_LIST: u32 = 0x01;
 
-pub const HCI_OP_LE_CREATE_CONN: _ = 0x200d;
+pub const HCI_OP_LE_CREATE_CONN: u32 = 0x200d;
 #[repr(C, packed)]
 pub struct hci_cp_le_create_conn {
 	u16   scan_interval;
@@ -1584,32 +1584,32 @@ pub struct hci_cp_le_create_conn {
 	u16   max_ce_len;
 } __packed;
 
-pub const HCI_OP_LE_CREATE_CONN_CANCEL: _ = 0x200e;
+pub const HCI_OP_LE_CREATE_CONN_CANCEL: u32 = 0x200e;
 
-pub const HCI_OP_LE_READ_ACCEPT_LIST_SIZE: _ = 0x200f;
+pub const HCI_OP_LE_READ_ACCEPT_LIST_SIZE: u32 = 0x200f;
 #[repr(C, packed)]
 pub struct hci_rp_le_read_accept_list_size {
 	u8	status;
 	u8	size;
 } __packed;
 
-pub const HCI_OP_LE_CLEAR_ACCEPT_LIST: _ = 0x2010;
+pub const HCI_OP_LE_CLEAR_ACCEPT_LIST: u32 = 0x2010;
 
-pub const HCI_OP_LE_ADD_TO_ACCEPT_LIST: _ = 0x2011;
+pub const HCI_OP_LE_ADD_TO_ACCEPT_LIST: u32 = 0x2011;
 #[repr(C, packed)]
 pub struct hci_cp_le_add_to_accept_list {
 	u8     bdaddr_type;
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_OP_LE_DEL_FROM_ACCEPT_LIST: _ = 0x2012;
+pub const HCI_OP_LE_DEL_FROM_ACCEPT_LIST: u32 = 0x2012;
 #[repr(C, packed)]
 pub struct hci_cp_le_del_from_accept_list {
 	u8     bdaddr_type;
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_OP_LE_CONN_UPDATE: _ = 0x2013;
+pub const HCI_OP_LE_CONN_UPDATE: u32 = 0x2013;
 #[repr(C, packed)]
 pub struct hci_cp_le_conn_update {
 	u16   handle;
@@ -1621,13 +1621,13 @@ pub struct hci_cp_le_conn_update {
 	u16   max_ce_len;
 } __packed;
 
-pub const HCI_OP_LE_READ_REMOTE_FEATURES: _ = 0x2016;
+pub const HCI_OP_LE_READ_REMOTE_FEATURES: u32 = 0x2016;
 #[repr(C, packed)]
 pub struct hci_cp_le_read_remote_features {
 	u16	 handle;
 } __packed;
 
-pub const HCI_OP_LE_START_ENC: _ = 0x2019;
+pub const HCI_OP_LE_START_ENC: u32 = 0x2019;
 #[repr(C, packed)]
 pub struct hci_cp_le_start_enc {
 	u16	handle;
@@ -1636,7 +1636,7 @@ pub struct hci_cp_le_start_enc {
 	u8	ltk[16];
 } __packed;
 
-pub const HCI_OP_LE_LTK_REPLY: _ = 0x201a;
+pub const HCI_OP_LE_LTK_REPLY: u32 = 0x201a;
 #[repr(C, packed)]
 pub struct hci_cp_le_ltk_reply {
 	u16	handle;
@@ -1648,7 +1648,7 @@ pub struct hci_rp_le_ltk_reply {
 	u16	handle;
 } __packed;
 
-pub const HCI_OP_LE_LTK_NEG_REPLY: _ = 0x201b;
+pub const HCI_OP_LE_LTK_NEG_REPLY: u32 = 0x201b;
 #[repr(C, packed)]
 pub struct hci_cp_le_ltk_neg_reply {
 	u16	handle;
@@ -1659,14 +1659,14 @@ pub struct hci_rp_le_ltk_neg_reply {
 	u16	handle;
 } __packed;
 
-pub const HCI_OP_LE_READ_SUPPORTED_STATES: _ = 0x201c;
+pub const HCI_OP_LE_READ_SUPPORTED_STATES: u32 = 0x201c;
 #[repr(C, packed)]
 pub struct hci_rp_le_read_supported_states {
 	u8	status;
 	u8	le_states[8];
 } __packed;
 
-pub const HCI_OP_LE_CONN_PARAM_REQ_REPLY: _ = 0x2020;
+pub const HCI_OP_LE_CONN_PARAM_REQ_REPLY: u32 = 0x2020;
 #[repr(C, packed)]
 pub struct hci_cp_le_conn_param_req_reply {
 	u16	handle;
@@ -1678,14 +1678,14 @@ pub struct hci_cp_le_conn_param_req_reply {
 	u16	max_ce_len;
 } __packed;
 
-pub const HCI_OP_LE_CONN_PARAM_REQ_NEG_REPLY: _ = 0x2021;
+pub const HCI_OP_LE_CONN_PARAM_REQ_NEG_REPLY: u32 = 0x2021;
 #[repr(C, packed)]
 pub struct hci_cp_le_conn_param_req_neg_reply {
 	u16	handle;
 	u8	reason;
 } __packed;
 
-pub const HCI_OP_LE_SET_DATA_LEN: _ = 0x2022;
+pub const HCI_OP_LE_SET_DATA_LEN: u32 = 0x2022;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_data_len {
 	u16	handle;
@@ -1698,7 +1698,7 @@ pub struct hci_rp_le_set_data_len {
 	u16	handle;
 } __packed;
 
-pub const HCI_OP_LE_READ_DEF_DATA_LEN: _ = 0x2023;
+pub const HCI_OP_LE_READ_DEF_DATA_LEN: u32 = 0x2023;
 #[repr(C, packed)]
 pub struct hci_rp_le_read_def_data_len {
 	u8	status;
@@ -1706,14 +1706,14 @@ pub struct hci_rp_le_read_def_data_len {
 	u16	tx_time;
 } __packed;
 
-pub const HCI_OP_LE_WRITE_DEF_DATA_LEN: _ = 0x2024;
+pub const HCI_OP_LE_WRITE_DEF_DATA_LEN: u32 = 0x2024;
 #[repr(C, packed)]
 pub struct hci_cp_le_write_def_data_len {
 	u16	tx_len;
 	u16	tx_time;
 } __packed;
 
-pub const HCI_OP_LE_ADD_TO_RESOLV_LIST: _ = 0x2027;
+pub const HCI_OP_LE_ADD_TO_RESOLV_LIST: u32 = 0x2027;
 #[repr(C, packed)]
 pub struct hci_cp_le_add_to_resolv_list {
 	u8	 bdaddr_type;
@@ -1722,27 +1722,27 @@ pub struct hci_cp_le_add_to_resolv_list {
 	u8	 local_irk[16];
 } __packed;
 
-pub const HCI_OP_LE_DEL_FROM_RESOLV_LIST: _ = 0x2028;
+pub const HCI_OP_LE_DEL_FROM_RESOLV_LIST: u32 = 0x2028;
 #[repr(C, packed)]
 pub struct hci_cp_le_del_from_resolv_list {
 	u8	 bdaddr_type;
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_OP_LE_CLEAR_RESOLV_LIST: _ = 0x2029;
+pub const HCI_OP_LE_CLEAR_RESOLV_LIST: u32 = 0x2029;
 
-pub const HCI_OP_LE_READ_RESOLV_LIST_SIZE: _ = 0x202a;
+pub const HCI_OP_LE_READ_RESOLV_LIST_SIZE: u32 = 0x202a;
 #[repr(C, packed)]
 pub struct hci_rp_le_read_resolv_list_size {
 	u8	status;
 	u8	size;
 } __packed;
 
-pub const HCI_OP_LE_SET_ADDR_RESOLV_ENABLE: _ = 0x202d;
+pub const HCI_OP_LE_SET_ADDR_RESOLV_ENABLE: u32 = 0x202d;
 
-pub const HCI_OP_LE_SET_RPA_TIMEOUT: _ = 0x202e;
+pub const HCI_OP_LE_SET_RPA_TIMEOUT: u32 = 0x202e;
 
-pub const HCI_OP_LE_READ_MAX_DATA_LEN: _ = 0x202f;
+pub const HCI_OP_LE_READ_MAX_DATA_LEN: u32 = 0x202f;
 #[repr(C, packed)]
 pub struct hci_rp_le_read_max_data_len {
 	u8	status;
@@ -1752,7 +1752,7 @@ pub struct hci_rp_le_read_max_data_len {
 	u16	rx_time;
 } __packed;
 
-pub const HCI_OP_LE_SET_DEFAULT_PHY: _ = 0x2031;
+pub const HCI_OP_LE_SET_DEFAULT_PHY: u32 = 0x2031;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_default_phy {
 	u8    all_phys;
@@ -1760,11 +1760,11 @@ pub struct hci_cp_le_set_default_phy {
 	u8    rx_phys;
 } __packed;
 
-pub const HCI_LE_SET_PHY_1M: _ = 0x01;
-pub const HCI_LE_SET_PHY_2M: _ = 0x02;
-pub const HCI_LE_SET_PHY_CODED: _ = 0x04;
+pub const HCI_LE_SET_PHY_1M: u32 = 0x01;
+pub const HCI_LE_SET_PHY_2M: u32 = 0x02;
+pub const HCI_LE_SET_PHY_CODED: u32 = 0x04;
 
-pub const HCI_OP_LE_SET_PHY: _ = 0x2032;
+pub const HCI_OP_LE_SET_PHY: u32 = 0x2032;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_phy {
 	u16  handle;
@@ -1774,7 +1774,7 @@ pub struct hci_cp_le_set_phy {
 	u16  phy_opts;
 } __packed;
 
-pub const HCI_OP_LE_SET_EXT_SCAN_PARAMS: _ = 0x2041;
+pub const HCI_OP_LE_SET_EXT_SCAN_PARAMS: u32 = 0x2041;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_ext_scan_params {
 	u8    own_addr_type;
@@ -1783,9 +1783,9 @@ pub struct hci_cp_le_set_ext_scan_params {
 	u8    data[];
 } __packed;
 
-pub const LE_SCAN_PHY_1M: _ = 0x01;
-pub const LE_SCAN_PHY_2M: _ = 0x02;
-pub const LE_SCAN_PHY_CODED: _ = 0x04;
+pub const LE_SCAN_PHY_1M: u32 = 0x01;
+pub const LE_SCAN_PHY_2M: u32 = 0x02;
+pub const LE_SCAN_PHY_CODED: u32 = 0x04;
 
 #[repr(C, packed)]
 pub struct hci_cp_le_scan_phy_params {
@@ -1794,7 +1794,7 @@ pub struct hci_cp_le_scan_phy_params {
 	u16  window;
 } __packed;
 
-pub const HCI_OP_LE_SET_EXT_SCAN_ENABLE: _ = 0x2042;
+pub const HCI_OP_LE_SET_EXT_SCAN_ENABLE: u32 = 0x2042;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_ext_scan_enable {
 	u8    enable;
@@ -1803,7 +1803,7 @@ pub struct hci_cp_le_set_ext_scan_enable {
 	u16  period;
 } __packed;
 
-pub const HCI_OP_LE_EXT_CREATE_CONN: _ = 0x2043;
+pub const HCI_OP_LE_EXT_CREATE_CONN: u32 = 0x2043;
 #[repr(C, packed)]
 pub struct hci_cp_le_ext_create_conn {
 	u8      filter_policy;
@@ -1826,7 +1826,7 @@ pub struct hci_cp_le_ext_conn_param {
 	u16 max_ce_len;
 } __packed;
 
-pub const HCI_OP_LE_PA_CREATE_SYNC: _ = 0x2044;
+pub const HCI_OP_LE_PA_CREATE_SYNC: u32 = 0x2044;
 #[repr(C, packed)]
 pub struct hci_cp_le_pa_create_sync {
 	u8      options;
@@ -1838,22 +1838,22 @@ pub struct hci_cp_le_pa_create_sync {
 	u8      sync_cte_type;
 } __packed;
 
-pub const HCI_OP_LE_PA_CREATE_SYNC_CANCEL: _ = 0x2045;
+pub const HCI_OP_LE_PA_CREATE_SYNC_CANCEL: u32 = 0x2045;
 
-pub const HCI_OP_LE_PA_TERM_SYNC: _ = 0x2046;
+pub const HCI_OP_LE_PA_TERM_SYNC: u32 = 0x2046;
 #[repr(C, packed)]
 pub struct hci_cp_le_pa_term_sync {
 	u16    handle;
 } __packed;
 
-pub const HCI_OP_LE_READ_NUM_SUPPORTED_ADV_SETS: _ = 0x203b;
+pub const HCI_OP_LE_READ_NUM_SUPPORTED_ADV_SETS: u32 = 0x203b;
 #[repr(C, packed)]
 pub struct hci_rp_le_read_num_supported_adv_sets {
 	u8  status;
 	u8  num_of_sets;
 } __packed;
 
-pub const HCI_OP_LE_SET_EXT_ADV_PARAMS: _ = 0x2036;
+pub const HCI_OP_LE_SET_EXT_ADV_PARAMS: u32 = 0x2036;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_ext_adv_params {
 	u8      handle;
@@ -1873,9 +1873,9 @@ pub struct hci_cp_le_set_ext_adv_params {
 	u8      notif_enable;
 } __packed;
 
-pub const HCI_ADV_PHY_1M: _ = 0X01;
-pub const HCI_ADV_PHY_2M: _ = 0x02;
-pub const HCI_ADV_PHY_CODED: _ = 0x03;
+pub const HCI_ADV_PHY_1M: u32 = 0X01;
+pub const HCI_ADV_PHY_2M: u32 = 0x02;
+pub const HCI_ADV_PHY_CODED: u32 = 0x03;
 
 #[repr(C, packed)]
 pub struct hci_rp_le_set_ext_adv_params {
@@ -1890,9 +1890,9 @@ pub struct hci_cp_ext_adv_set {
 	u8  max_events;
 } __packed;
 
-pub const HCI_MAX_EXT_AD_LENGTH: _ = 251;
+pub const HCI_MAX_EXT_AD_LENGTH: u32 = 251;
 
-pub const HCI_OP_LE_SET_EXT_ADV_DATA: _ = 0x2037;
+pub const HCI_OP_LE_SET_EXT_ADV_DATA: u32 = 0x2037;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_ext_adv_data {
 	u8  handle;
@@ -1902,7 +1902,7 @@ pub struct hci_cp_le_set_ext_adv_data {
 	u8  data[] __counted_by(length);
 } __packed;
 
-pub const HCI_OP_LE_SET_EXT_SCAN_RSP_DATA: _ = 0x2038;
+pub const HCI_OP_LE_SET_EXT_SCAN_RSP_DATA: u32 = 0x2038;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_ext_scan_rsp_data {
 	u8  handle;
@@ -1912,7 +1912,7 @@ pub struct hci_cp_le_set_ext_scan_rsp_data {
 	u8  data[] __counted_by(length);
 } __packed;
 
-pub const HCI_OP_LE_SET_EXT_ADV_ENABLE: _ = 0x2039;
+pub const HCI_OP_LE_SET_EXT_ADV_ENABLE: u32 = 0x2039;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_ext_adv_enable {
 	u8  enable;
@@ -1920,7 +1920,7 @@ pub struct hci_cp_le_set_ext_adv_enable {
 	u8  data[];
 } __packed;
 
-pub const HCI_OP_LE_SET_PER_ADV_PARAMS: _ = 0x203e;
+pub const HCI_OP_LE_SET_PER_ADV_PARAMS: u32 = 0x203e;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_per_adv_params {
 	u8      handle;
@@ -1929,10 +1929,10 @@ pub struct hci_cp_le_set_per_adv_params {
 	u16    periodic_properties;
 } __packed;
 
-pub const HCI_MAX_PER_AD_LENGTH: _ = 252;
-pub const HCI_MAX_PER_AD_TOT_LEN: _ = 1650;
+pub const HCI_MAX_PER_AD_LENGTH: u32 = 252;
+pub const HCI_MAX_PER_AD_TOT_LEN: u32 = 1650;
 
-pub const HCI_OP_LE_SET_PER_ADV_DATA: _ = 0x203f;
+pub const HCI_OP_LE_SET_PER_ADV_DATA: u32 = 0x203f;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_per_adv_data {
 	u8  handle;
@@ -1941,29 +1941,29 @@ pub struct hci_cp_le_set_per_adv_data {
 	u8  data[] __counted_by(length);
 } __packed;
 
-pub const HCI_OP_LE_SET_PER_ADV_ENABLE: _ = 0x2040;
+pub const HCI_OP_LE_SET_PER_ADV_ENABLE: u32 = 0x2040;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_per_adv_enable {
 	u8  enable;
 	u8  handle;
 } __packed;
 
-pub const LE_SET_ADV_DATA_OP_COMPLETE: _ = 0x03;
+pub const LE_SET_ADV_DATA_OP_COMPLETE: u32 = 0x03;
 
-pub const LE_SET_ADV_DATA_NO_FRAG: _ = 0x01;
+pub const LE_SET_ADV_DATA_NO_FRAG: u32 = 0x01;
 
-pub const HCI_OP_LE_REMOVE_ADV_SET: _ = 0x203c;
+pub const HCI_OP_LE_REMOVE_ADV_SET: u32 = 0x203c;
 
-pub const HCI_OP_LE_CLEAR_ADV_SETS: _ = 0x203d;
+pub const HCI_OP_LE_CLEAR_ADV_SETS: u32 = 0x203d;
 
-pub const HCI_OP_LE_SET_ADV_SET_RAND_ADDR: _ = 0x2035;
+pub const HCI_OP_LE_SET_ADV_SET_RAND_ADDR: u32 = 0x2035;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_adv_set_rand_addr {
 	u8  handle;
 	bdaddr_t  bdaddr;
 } __packed;
 
-pub const HCI_OP_LE_READ_TRANSMIT_POWER: _ = 0x204b;
+pub const HCI_OP_LE_READ_TRANSMIT_POWER: u32 = 0x204b;
 #[repr(C, packed)]
 pub struct hci_rp_le_read_transmit_power {
 	u8  status;
@@ -1971,10 +1971,10 @@ pub struct hci_rp_le_read_transmit_power {
 	i8  max_le_tx_power;
 } __packed;
 
-pub const HCI_NETWORK_PRIVACY: _ = 0x00;
-pub const HCI_DEVICE_PRIVACY: _ = 0x01;
+pub const HCI_NETWORK_PRIVACY: u32 = 0x00;
+pub const HCI_DEVICE_PRIVACY: u32 = 0x01;
 
-pub const HCI_OP_LE_SET_PRIVACY_MODE: _ = 0x204e;
+pub const HCI_OP_LE_SET_PRIVACY_MODE: u32 = 0x204e;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_privacy_mode {
 	u8  bdaddr_type;
@@ -1982,7 +1982,7 @@ pub struct hci_cp_le_set_privacy_mode {
 	u8  mode;
 } __packed;
 
-pub const HCI_OP_LE_PAST: _ = 0x205a;
+pub const HCI_OP_LE_PAST: u32 = 0x205a;
 #[repr(C, packed)]
 pub struct hci_cp_le_past {
 	u16 handle;
@@ -1996,7 +1996,7 @@ pub struct hci_rp_le_past {
 	u16 handle;
 } __packed;
 
-pub const HCI_OP_LE_PAST_SET_INFO: _ = 0x205b;
+pub const HCI_OP_LE_PAST_SET_INFO: u32 = 0x205b;
 #[repr(C, packed)]
 pub struct hci_cp_le_past_set_info {
 	u16 handle;
@@ -2010,7 +2010,7 @@ pub struct hci_rp_le_past_set_info {
 	u16 handle;
 } __packed;
 
-pub const HCI_OP_LE_PAST_PARAMS: _ = 0x205c;
+pub const HCI_OP_LE_PAST_PARAMS: u32 = 0x205c;
 #[repr(C, packed)]
 pub struct hci_cp_le_past_params {
 	u16  handle;
@@ -2026,7 +2026,7 @@ pub struct hci_rp_le_past_params {
 	u16 handle;
 } __packed;
 
-pub const HCI_OP_LE_READ_BUFFER_SIZE_V2: _ = 0x2060;
+pub const HCI_OP_LE_READ_BUFFER_SIZE_V2: u32 = 0x2060;
 #[repr(C, packed)]
 pub struct hci_rp_le_read_buffer_size_v2 {
 	u8    status;
@@ -2036,7 +2036,7 @@ pub struct hci_rp_le_read_buffer_size_v2 {
 	u8    iso_max_pkt;
 } __packed;
 
-pub const HCI_OP_LE_READ_ISO_TX_SYNC: _ = 0x2061;
+pub const HCI_OP_LE_READ_ISO_TX_SYNC: u32 = 0x2061;
 #[repr(C, packed)]
 pub struct hci_cp_le_read_iso_tx_sync {
 	u16  handle;
@@ -2051,7 +2051,7 @@ pub struct hci_rp_le_read_iso_tx_sync {
 	u8    offset[3];
 } __packed;
 
-pub const HCI_OP_LE_SET_CIG_PARAMS: _ = 0x2062;
+pub const HCI_OP_LE_SET_CIG_PARAMS: u32 = 0x2062;
 #[repr(C, packed)]
 pub struct hci_cis_params {
 	u8    cis_id;
@@ -2085,7 +2085,7 @@ pub struct hci_rp_le_set_cig_params {
 	u16  handle[];
 } __packed;
 
-pub const HCI_OP_LE_CREATE_CIS: _ = 0x2064;
+pub const HCI_OP_LE_CREATE_CIS: u32 = 0x2064;
 #[repr(C, packed)]
 pub struct hci_cis {
 	u16  cis_handle;
@@ -2098,26 +2098,26 @@ pub struct hci_cp_le_create_cis {
 	struct hci_cis cis[] __counted_by(num_cis);
 } __packed;
 
-pub const HCI_OP_LE_REMOVE_CIG: _ = 0x2065;
+pub const HCI_OP_LE_REMOVE_CIG: u32 = 0x2065;
 #[repr(C, packed)]
 pub struct hci_cp_le_remove_cig {
 	u8    cig_id;
 } __packed;
 
-pub const HCI_OP_LE_ACCEPT_CIS: _ = 0x2066;
+pub const HCI_OP_LE_ACCEPT_CIS: u32 = 0x2066;
 #[repr(C, packed)]
 pub struct hci_cp_le_accept_cis {
 	u16  handle;
 } __packed;
 
-pub const HCI_OP_LE_REJECT_CIS: _ = 0x2067;
+pub const HCI_OP_LE_REJECT_CIS: u32 = 0x2067;
 #[repr(C, packed)]
 pub struct hci_cp_le_reject_cis {
 	u16  handle;
 	u8    reason;
 } __packed;
 
-pub const HCI_OP_LE_CREATE_BIG: _ = 0x2068;
+pub const HCI_OP_LE_CREATE_BIG: u32 = 0x2068;
 #[repr(C, packed)]
 pub struct hci_bis {
 	u8    sdu_interval[3];
@@ -2139,14 +2139,14 @@ pub struct hci_cp_le_create_big {
 	struct hci_bis bis;
 } __packed;
 
-pub const HCI_OP_LE_TERM_BIG: _ = 0x206a;
+pub const HCI_OP_LE_TERM_BIG: u32 = 0x206a;
 #[repr(C, packed)]
 pub struct hci_cp_le_term_big {
 	u8    handle;
 	u8    reason;
 } __packed;
 
-pub const HCI_OP_LE_BIG_CREATE_SYNC: _ = 0x206b;
+pub const HCI_OP_LE_BIG_CREATE_SYNC: u32 = 0x206b;
 #[repr(C, packed)]
 pub struct hci_cp_le_big_create_sync {
 	u8    handle;
@@ -2159,13 +2159,13 @@ pub struct hci_cp_le_big_create_sync {
 	u8    bis[] __counted_by(num_bis);
 } __packed;
 
-pub const HCI_OP_LE_BIG_TERM_SYNC: _ = 0x206c;
+pub const HCI_OP_LE_BIG_TERM_SYNC: u32 = 0x206c;
 #[repr(C, packed)]
 pub struct hci_cp_le_big_term_sync {
 	u8    handle;
 } __packed;
 
-pub const HCI_OP_LE_SETUP_ISO_PATH: _ = 0x206e;
+pub const HCI_OP_LE_SETUP_ISO_PATH: u32 = 0x206e;
 #[repr(C, packed)]
 pub struct hci_cp_le_setup_iso_path {
 	u16  handle;
@@ -2185,14 +2185,14 @@ pub struct hci_rp_le_setup_iso_path {
 	u16  handle;
 } __packed;
 
-pub const HCI_OP_LE_SET_HOST_FEATURE: _ = 0x2074;
+pub const HCI_OP_LE_SET_HOST_FEATURE: u32 = 0x2074;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_host_feature {
 	u8     bit_number;
 	u8     bit_value;
 } __packed;
 
-pub const HCI_OP_LE_READ_ALL_LOCAL_FEATURES: _ = 0x2087;
+pub const HCI_OP_LE_READ_ALL_LOCAL_FEATURES: u32 = 0x2087;
 #[repr(C, packed)]
 pub struct hci_rp_le_read_all_local_features {
 	u8    status;
@@ -2200,7 +2200,7 @@ pub struct hci_rp_le_read_all_local_features {
 	u8    features[248];
 } __packed;
 
-pub const HCI_OP_LE_READ_ALL_REMOTE_FEATURES: _ = 0x2088;
+pub const HCI_OP_LE_READ_ALL_REMOTE_FEATURES: u32 = 0x2088;
 #[repr(C, packed)]
 pub struct hci_cp_le_read_all_remote_features {
 	u16	 handle;
@@ -2208,7 +2208,7 @@ pub struct hci_cp_le_read_all_remote_features {
 } __packed;
 
 /* Channel Sounding Commands */
-pub const HCI_OP_LE_CS_RD_LOCAL_SUPP_CAP: _ = 0x2089;
+pub const HCI_OP_LE_CS_RD_LOCAL_SUPP_CAP: u32 = 0x2089;
 #[repr(C, packed)]
 pub struct hci_rp_le_cs_rd_local_supp_cap {
 	u8	status;
@@ -2234,13 +2234,13 @@ pub struct hci_rp_le_cs_rd_local_supp_cap {
 	u8	tx_snr_capability;
 } __packed;
 
-pub const HCI_OP_LE_CS_RD_RMT_SUPP_CAP: _ = 0x208A;
+pub const HCI_OP_LE_CS_RD_RMT_SUPP_CAP: u32 = 0x208A;
 #[repr(C, packed)]
 pub struct hci_cp_le_cs_rd_local_supp_cap {
 	u16	handle;
 } __packed;
 
-pub const HCI_OP_LE_CS_WR_CACHED_RMT_SUPP_CAP: _ = 0x208B;
+pub const HCI_OP_LE_CS_WR_CACHED_RMT_SUPP_CAP: u32 = 0x208B;
 #[repr(C, packed)]
 pub struct hci_cp_le_cs_wr_cached_rmt_supp_cap {
 	u16	handle;
@@ -2272,13 +2272,13 @@ pub struct hci_rp_le_cs_wr_cached_rmt_supp_cap {
 	u16	handle;
 } __packed;
 
-pub const HCI_OP_LE_CS_SEC_ENABLE: _ = 0x208C;
+pub const HCI_OP_LE_CS_SEC_ENABLE: u32 = 0x208C;
 #[repr(C, packed)]
 pub struct hci_cp_le_cs_sec_enable {
 	u16	handle;
 } __packed;
 
-pub const HCI_OP_LE_CS_SET_DEFAULT_SETTINGS: _ = 0x208D;
+pub const HCI_OP_LE_CS_SET_DEFAULT_SETTINGS: u32 = 0x208D;
 #[repr(C, packed)]
 pub struct hci_cp_le_cs_set_default_settings {
 	u16	handle;
@@ -2293,13 +2293,13 @@ pub struct hci_rp_le_cs_set_default_settings {
 	u16	handle;
 } __packed;
 
-pub const HCI_OP_LE_CS_RD_RMT_FAE_TABLE: _ = 0x208E;
+pub const HCI_OP_LE_CS_RD_RMT_FAE_TABLE: u32 = 0x208E;
 #[repr(C, packed)]
 pub struct hci_cp_le_cs_rd_rmt_fae_table {
 	u16	handle;
 } __packed;
 
-pub const HCI_OP_LE_CS_WR_CACHED_RMT_FAE_TABLE: _ = 0x208F;
+pub const HCI_OP_LE_CS_WR_CACHED_RMT_FAE_TABLE: u32 = 0x208F;
 #[repr(C, packed)]
 pub struct hci_cp_le_cs_wr_rmt_cached_fae_table {
 	u16	handle;
@@ -2312,7 +2312,7 @@ pub struct hci_rp_le_cs_wr_rmt_cached_fae_table {
 	u16	handle;
 } __packed;
 
-pub const HCI_OP_LE_CS_CREATE_CONFIG: _ = 0x2090;
+pub const HCI_OP_LE_CS_CREATE_CONFIG: u32 = 0x2090;
 #[repr(C, packed)]
 pub struct hci_cp_le_cs_create_config {
 	u16	handle;
@@ -2335,14 +2335,14 @@ pub struct hci_cp_le_cs_create_config {
 	u8	reserved;
 } __packed;
 
-pub const HCI_OP_LE_CS_REMOVE_CONFIG: _ = 0x2091;
+pub const HCI_OP_LE_CS_REMOVE_CONFIG: u32 = 0x2091;
 #[repr(C, packed)]
 pub struct hci_cp_le_cs_remove_config {
 	u16	handle;
 	u8	config_id;
 } __packed;
 
-pub const HCI_OP_LE_CS_SET_CH_CLASSIFICATION: _ = 0x2092;
+pub const HCI_OP_LE_CS_SET_CH_CLASSIFICATION: u32 = 0x2092;
 #[repr(C, packed)]
 pub struct hci_cp_le_cs_set_ch_classification {
 	u8	ch_classification[10];
@@ -2353,7 +2353,7 @@ pub struct hci_rp_le_cs_set_ch_classification {
 	u8	status;
 } __packed;
 
-pub const HCI_OP_LE_CS_SET_PROC_PARAM: _ = 0x2093;
+pub const HCI_OP_LE_CS_SET_PROC_PARAM: u32 = 0x2093;
 #[repr(C, packed)]
 pub struct hci_cp_le_cs_set_proc_param {
 	u16	handle;
@@ -2378,7 +2378,7 @@ pub struct hci_rp_le_cs_set_proc_param {
 	u16	handle;
 } __packed;
 
-pub const HCI_OP_LE_CS_SET_PROC_ENABLE: _ = 0x2094;
+pub const HCI_OP_LE_CS_SET_PROC_ENABLE: u32 = 0x2094;
 #[repr(C, packed)]
 pub struct hci_cp_le_cs_set_proc_enable {
 	u16	handle;
@@ -2386,7 +2386,7 @@ pub struct hci_cp_le_cs_set_proc_enable {
 	u8	enable;
 } __packed;
 
-pub const HCI_OP_LE_CS_TEST: _ = 0x2095;
+pub const HCI_OP_LE_CS_TEST: u32 = 0x2095;
 #[repr(C, packed)]
 pub struct hci_cp_le_cs_test {
 	u8	main_mode_type;
@@ -2422,16 +2422,16 @@ pub struct hci_rp_le_cs_test {
 	u8	status;
 } __packed;
 
-pub const HCI_OP_LE_CS_TEST_END: _ = 0x2096;
+pub const HCI_OP_LE_CS_TEST_END: u32 = 0x2096;
 
-pub const HCI_OP_LE_SET_HOST_FEATURE_V2: _ = 0x2097;
+pub const HCI_OP_LE_SET_HOST_FEATURE_V2: u32 = 0x2097;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_host_feature_v2 {
 	u16	bit_number;
 	u8	bit_value;
 } __packed;
 
-pub const HCI_OP_LE_CONN_RATE: _ = 0x20a1;
+pub const HCI_OP_LE_CONN_RATE: u32 = 0x20a1;
 #[repr(C, packed)]
 pub struct hci_cp_le_conn_rate {
 	u16	handle;
@@ -2446,7 +2446,7 @@ pub struct hci_cp_le_conn_rate {
 	u16	max_ce_len;
 } __packed;
 
-pub const HCI_OP_LE_SET_DEF_RATE: _ = 0x20a2;
+pub const HCI_OP_LE_SET_DEF_RATE: u32 = 0x20a2;
 #[repr(C, packed)]
 pub struct hci_cp_le_set_def_rate {
 	u16	interval_min;
@@ -2460,7 +2460,7 @@ pub struct hci_cp_le_set_def_rate {
 	u16	max_ce_len;
 } __packed;
 
-pub const HCI_OP_LE_READ_CONN_INTERVAL: _ = 0x20a3;
+pub const HCI_OP_LE_READ_CONN_INTERVAL: u32 = 0x20a3;
 #[repr(C, packed)]
 pub struct hci_le_conn_interval_group {
 	u16	min;
@@ -2481,9 +2481,9 @@ pub struct hci_ev_status {
 	u8    status;
 } __packed;
 
-pub const HCI_EV_INQUIRY_COMPLETE: _ = 0x01;
+pub const HCI_EV_INQUIRY_COMPLETE: u32 = 0x01;
 
-pub const HCI_EV_INQUIRY_RESULT: _ = 0x02;
+pub const HCI_EV_INQUIRY_RESULT: u32 = 0x02;
 #[repr(C, packed)]
 pub struct inquiry_info {
 	bdaddr_t bdaddr;
@@ -2500,7 +2500,7 @@ pub struct hci_ev_inquiry_result {
 	struct inquiry_info info[];
 };
 
-pub const HCI_EV_CONN_COMPLETE: _ = 0x03;
+pub const HCI_EV_CONN_COMPLETE: u32 = 0x03;
 #[repr(C, packed)]
 pub struct hci_ev_conn_complete {
 	u8     status;
@@ -2510,7 +2510,7 @@ pub struct hci_ev_conn_complete {
 	u8     encr_mode;
 } __packed;
 
-pub const HCI_EV_CONN_REQUEST: _ = 0x04;
+pub const HCI_EV_CONN_REQUEST: u32 = 0x04;
 #[repr(C, packed)]
 pub struct hci_ev_conn_request {
 	bdaddr_t bdaddr;
@@ -2518,7 +2518,7 @@ pub struct hci_ev_conn_request {
 	u8     link_type;
 } __packed;
 
-pub const HCI_EV_DISCONN_COMPLETE: _ = 0x05;
+pub const HCI_EV_DISCONN_COMPLETE: u32 = 0x05;
 #[repr(C, packed)]
 pub struct hci_ev_disconn_complete {
 	u8     status;
@@ -2526,14 +2526,14 @@ pub struct hci_ev_disconn_complete {
 	u8     reason;
 } __packed;
 
-pub const HCI_EV_AUTH_COMPLETE: _ = 0x06;
+pub const HCI_EV_AUTH_COMPLETE: u32 = 0x06;
 #[repr(C, packed)]
 pub struct hci_ev_auth_complete {
 	u8     status;
 	u16   handle;
 } __packed;
 
-pub const HCI_EV_REMOTE_NAME: _ = 0x07;
+pub const HCI_EV_REMOTE_NAME: u32 = 0x07;
 #[repr(C, packed)]
 pub struct hci_ev_remote_name {
 	u8     status;
@@ -2541,7 +2541,7 @@ pub struct hci_ev_remote_name {
 	u8     name[HCI_MAX_NAME_LENGTH];
 } __packed;
 
-pub const HCI_EV_ENCRYPT_CHANGE: _ = 0x08;
+pub const HCI_EV_ENCRYPT_CHANGE: u32 = 0x08;
 #[repr(C, packed)]
 pub struct hci_ev_encrypt_change {
 	u8     status;
@@ -2549,14 +2549,14 @@ pub struct hci_ev_encrypt_change {
 	u8     encrypt;
 } __packed;
 
-pub const HCI_EV_CHANGE_LINK_KEY_COMPLETE: _ = 0x09;
+pub const HCI_EV_CHANGE_LINK_KEY_COMPLETE: u32 = 0x09;
 #[repr(C, packed)]
 pub struct hci_ev_change_link_key_complete {
 	u8     status;
 	u16   handle;
 } __packed;
 
-pub const HCI_EV_REMOTE_FEATURES: _ = 0x0b;
+pub const HCI_EV_REMOTE_FEATURES: u32 = 0x0b;
 #[repr(C, packed)]
 pub struct hci_ev_remote_features {
 	u8     status;
@@ -2564,7 +2564,7 @@ pub struct hci_ev_remote_features {
 	u8     features[8];
 } __packed;
 
-pub const HCI_EV_REMOTE_VERSION: _ = 0x0c;
+pub const HCI_EV_REMOTE_VERSION: u32 = 0x0c;
 #[repr(C, packed)]
 pub struct hci_ev_remote_version {
 	u8     status;
@@ -2574,7 +2574,7 @@ pub struct hci_ev_remote_version {
 	u16   lmp_subver;
 } __packed;
 
-pub const HCI_EV_QOS_SETUP_COMPLETE: _ = 0x0d;
+pub const HCI_EV_QOS_SETUP_COMPLETE: u32 = 0x0d;
 #[repr(C, packed)]
 pub struct hci_qos {
 	u8     service_type;
@@ -2590,14 +2590,14 @@ pub struct hci_ev_qos_setup_complete {
 	struct   hci_qos qos;
 } __packed;
 
-pub const HCI_EV_CMD_COMPLETE: _ = 0x0e;
+pub const HCI_EV_CMD_COMPLETE: u32 = 0x0e;
 #[repr(C, packed)]
 pub struct hci_ev_cmd_complete {
 	u8     ncmd;
 	u16   opcode;
 } __packed;
 
-pub const HCI_EV_CMD_STATUS: _ = 0x0f;
+pub const HCI_EV_CMD_STATUS: u32 = 0x0f;
 #[repr(C, packed)]
 pub struct hci_ev_cmd_status {
 	u8     status;
@@ -2605,13 +2605,13 @@ pub struct hci_ev_cmd_status {
 	u16   opcode;
 } __packed;
 
-pub const HCI_EV_HARDWARE_ERROR: _ = 0x10;
+pub const HCI_EV_HARDWARE_ERROR: u32 = 0x10;
 #[repr(C, packed)]
 pub struct hci_ev_hardware_error {
 	u8     code;
 } __packed;
 
-pub const HCI_EV_ROLE_CHANGE: _ = 0x12;
+pub const HCI_EV_ROLE_CHANGE: u32 = 0x12;
 #[repr(C, packed)]
 pub struct hci_ev_role_change {
 	u8     status;
@@ -2619,7 +2619,7 @@ pub struct hci_ev_role_change {
 	u8     role;
 } __packed;
 
-pub const HCI_EV_NUM_COMP_PKTS: _ = 0x13;
+pub const HCI_EV_NUM_COMP_PKTS: u32 = 0x13;
 #[repr(C, packed)]
 pub struct hci_comp_pkts_info {
 	u16   handle;
@@ -2632,7 +2632,7 @@ pub struct hci_ev_num_comp_pkts {
 	struct hci_comp_pkts_info handles[];
 } __packed;
 
-pub const HCI_EV_MODE_CHANGE: _ = 0x14;
+pub const HCI_EV_MODE_CHANGE: u32 = 0x14;
 #[repr(C, packed)]
 pub struct hci_ev_mode_change {
 	u8     status;
@@ -2641,19 +2641,19 @@ pub struct hci_ev_mode_change {
 	u16   interval;
 } __packed;
 
-pub const HCI_EV_PIN_CODE_REQ: _ = 0x16;
+pub const HCI_EV_PIN_CODE_REQ: u32 = 0x16;
 #[repr(C, packed)]
 pub struct hci_ev_pin_code_req {
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_EV_LINK_KEY_REQ: _ = 0x17;
+pub const HCI_EV_LINK_KEY_REQ: u32 = 0x17;
 #[repr(C, packed)]
 pub struct hci_ev_link_key_req {
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_EV_LINK_KEY_NOTIFY: _ = 0x18;
+pub const HCI_EV_LINK_KEY_NOTIFY: u32 = 0x18;
 #[repr(C, packed)]
 pub struct hci_ev_link_key_notify {
 	bdaddr_t bdaddr;
@@ -2661,7 +2661,7 @@ pub struct hci_ev_link_key_notify {
 	u8     key_type;
 } __packed;
 
-pub const HCI_EV_CLOCK_OFFSET: _ = 0x1c;
+pub const HCI_EV_CLOCK_OFFSET: u32 = 0x1c;
 #[repr(C, packed)]
 pub struct hci_ev_clock_offset {
 	u8     status;
@@ -2669,7 +2669,7 @@ pub struct hci_ev_clock_offset {
 	u16   clock_offset;
 } __packed;
 
-pub const HCI_EV_PKT_TYPE_CHANGE: _ = 0x1d;
+pub const HCI_EV_PKT_TYPE_CHANGE: u32 = 0x1d;
 #[repr(C, packed)]
 pub struct hci_ev_pkt_type_change {
 	u8     status;
@@ -2677,14 +2677,14 @@ pub struct hci_ev_pkt_type_change {
 	u16   pkt_type;
 } __packed;
 
-pub const HCI_EV_PSCAN_REP_MODE: _ = 0x20;
+pub const HCI_EV_PSCAN_REP_MODE: u32 = 0x20;
 #[repr(C, packed)]
 pub struct hci_ev_pscan_rep_mode {
 	bdaddr_t bdaddr;
 	u8     pscan_rep_mode;
 } __packed;
 
-pub const HCI_EV_INQUIRY_RESULT_WITH_RSSI: _ = 0x22;
+pub const HCI_EV_INQUIRY_RESULT_WITH_RSSI: u32 = 0x22;
 #[repr(C, packed)]
 pub struct inquiry_info_rssi {
 	bdaddr_t bdaddr;
@@ -2710,7 +2710,7 @@ pub struct hci_ev_inquiry_result_rssi {
 	u8     data[];
 } __packed;
 
-pub const HCI_EV_REMOTE_EXT_FEATURES: _ = 0x23;
+pub const HCI_EV_REMOTE_EXT_FEATURES: u32 = 0x23;
 #[repr(C, packed)]
 pub struct hci_ev_remote_ext_features {
 	u8     status;
@@ -2720,7 +2720,7 @@ pub struct hci_ev_remote_ext_features {
 	u8     features[8];
 } __packed;
 
-pub const HCI_EV_SYNC_CONN_COMPLETE: _ = 0x2c;
+pub const HCI_EV_SYNC_CONN_COMPLETE: u32 = 0x2c;
 #[repr(C, packed)]
 pub struct hci_ev_sync_conn_complete {
 	u8     status;
@@ -2734,7 +2734,7 @@ pub struct hci_ev_sync_conn_complete {
 	u8     air_mode;
 } __packed;
 
-pub const HCI_EV_SYNC_CONN_CHANGED: _ = 0x2d;
+pub const HCI_EV_SYNC_CONN_CHANGED: u32 = 0x2d;
 #[repr(C, packed)]
 pub struct hci_ev_sync_conn_changed {
 	u8     status;
@@ -2745,7 +2745,7 @@ pub struct hci_ev_sync_conn_changed {
 	u16   tx_pkt_len;
 } __packed;
 
-pub const HCI_EV_SNIFF_SUBRATE: _ = 0x2e;
+pub const HCI_EV_SNIFF_SUBRATE: u32 = 0x2e;
 #[repr(C, packed)]
 pub struct hci_ev_sniff_subrate {
 	u8     status;
@@ -2756,7 +2756,7 @@ pub struct hci_ev_sniff_subrate {
 	u16   max_local_timeout;
 } __packed;
 
-pub const HCI_EV_EXTENDED_INQUIRY_RESULT: _ = 0x2f;
+pub const HCI_EV_EXTENDED_INQUIRY_RESULT: u32 = 0x2f;
 #[repr(C, packed)]
 pub struct extended_inquiry_info {
 	bdaddr_t bdaddr;
@@ -2774,20 +2774,20 @@ pub struct hci_ev_ext_inquiry_result {
 	struct extended_inquiry_info info[];
 } __packed;
 
-pub const HCI_EV_KEY_REFRESH_COMPLETE: _ = 0x30;
+pub const HCI_EV_KEY_REFRESH_COMPLETE: u32 = 0x30;
 #[repr(C, packed)]
 pub struct hci_ev_key_refresh_complete {
 	u8	status;
 	u16	handle;
 } __packed;
 
-pub const HCI_EV_IO_CAPA_REQUEST: _ = 0x31;
+pub const HCI_EV_IO_CAPA_REQUEST: u32 = 0x31;
 #[repr(C, packed)]
 pub struct hci_ev_io_capa_request {
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_EV_IO_CAPA_REPLY: _ = 0x32;
+pub const HCI_EV_IO_CAPA_REPLY: u32 = 0x32;
 #[repr(C, packed)]
 pub struct hci_ev_io_capa_reply {
 	bdaddr_t bdaddr;
@@ -2796,79 +2796,79 @@ pub struct hci_ev_io_capa_reply {
 	u8     authentication;
 } __packed;
 
-pub const HCI_EV_USER_CONFIRM_REQUEST: _ = 0x33;
+pub const HCI_EV_USER_CONFIRM_REQUEST: u32 = 0x33;
 #[repr(C, packed)]
 pub struct hci_ev_user_confirm_req {
 	bdaddr_t	bdaddr;
 	u32		passkey;
 } __packed;
 
-pub const HCI_EV_USER_PASSKEY_REQUEST: _ = 0x34;
+pub const HCI_EV_USER_PASSKEY_REQUEST: u32 = 0x34;
 #[repr(C, packed)]
 pub struct hci_ev_user_passkey_req {
 	bdaddr_t	bdaddr;
 } __packed;
 
-pub const HCI_EV_REMOTE_OOB_DATA_REQUEST: _ = 0x35;
+pub const HCI_EV_REMOTE_OOB_DATA_REQUEST: u32 = 0x35;
 #[repr(C, packed)]
 pub struct hci_ev_remote_oob_data_request {
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_EV_SIMPLE_PAIR_COMPLETE: _ = 0x36;
+pub const HCI_EV_SIMPLE_PAIR_COMPLETE: u32 = 0x36;
 #[repr(C, packed)]
 pub struct hci_ev_simple_pair_complete {
 	u8     status;
 	bdaddr_t bdaddr;
 } __packed;
 
-pub const HCI_EV_USER_PASSKEY_NOTIFY: _ = 0x3b;
+pub const HCI_EV_USER_PASSKEY_NOTIFY: u32 = 0x3b;
 #[repr(C, packed)]
 pub struct hci_ev_user_passkey_notify {
 	bdaddr_t	bdaddr;
 	u32		passkey;
 } __packed;
 
-pub const HCI_KEYPRESS_STARTED: _ = 0;
-pub const HCI_KEYPRESS_ENTERED: _ = 1;
-pub const HCI_KEYPRESS_ERASED: _ = 2;
-pub const HCI_KEYPRESS_CLEARED: _ = 3;
-pub const HCI_KEYPRESS_COMPLETED: _ = 4;
+pub const HCI_KEYPRESS_STARTED: u32 = 0;
+pub const HCI_KEYPRESS_ENTERED: u32 = 1;
+pub const HCI_KEYPRESS_ERASED: u32 = 2;
+pub const HCI_KEYPRESS_CLEARED: u32 = 3;
+pub const HCI_KEYPRESS_COMPLETED: u32 = 4;
 
-pub const HCI_EV_KEYPRESS_NOTIFY: _ = 0x3c;
+pub const HCI_EV_KEYPRESS_NOTIFY: u32 = 0x3c;
 #[repr(C, packed)]
 pub struct hci_ev_keypress_notify {
 	bdaddr_t	bdaddr;
 	u8		type;
 } __packed;
 
-pub const HCI_EV_REMOTE_HOST_FEATURES: _ = 0x3d;
+pub const HCI_EV_REMOTE_HOST_FEATURES: u32 = 0x3d;
 #[repr(C, packed)]
 pub struct hci_ev_remote_host_features {
 	bdaddr_t bdaddr;
 	u8     features[8];
 } __packed;
 
-pub const HCI_EV_LE_META: _ = 0x3e;
+pub const HCI_EV_LE_META: u32 = 0x3e;
 #[repr(C, packed)]
 pub struct hci_ev_le_meta {
 	u8     subevent;
 } __packed;
 
-pub const HCI_EV_PHY_LINK_COMPLETE: _ = 0x40;
+pub const HCI_EV_PHY_LINK_COMPLETE: u32 = 0x40;
 #[repr(C, packed)]
 pub struct hci_ev_phy_link_complete {
 	u8     status;
 	u8     phy_handle;
 } __packed;
 
-pub const HCI_EV_CHANNEL_SELECTED: _ = 0x41;
+pub const HCI_EV_CHANNEL_SELECTED: u32 = 0x41;
 #[repr(C, packed)]
 pub struct hci_ev_channel_selected {
 	u8     phy_handle;
 } __packed;
 
-pub const HCI_EV_DISCONN_PHY_LINK_COMPLETE: _ = 0x42;
+pub const HCI_EV_DISCONN_PHY_LINK_COMPLETE: u32 = 0x42;
 #[repr(C, packed)]
 pub struct hci_ev_disconn_phy_link_complete {
 	u8     status;
@@ -2876,7 +2876,7 @@ pub struct hci_ev_disconn_phy_link_complete {
 	u8     reason;
 } __packed;
 
-pub const HCI_EV_LOGICAL_LINK_COMPLETE: _ = 0x45;
+pub const HCI_EV_LOGICAL_LINK_COMPLETE: u32 = 0x45;
 #[repr(C, packed)]
 pub struct hci_ev_logical_link_complete {
 	u8     status;
@@ -2885,7 +2885,7 @@ pub struct hci_ev_logical_link_complete {
 	u8     flow_spec_id;
 } __packed;
 
-pub const HCI_EV_DISCONN_LOGICAL_LINK_COMPLETE: _ = 0x46;
+pub const HCI_EV_DISCONN_LOGICAL_LINK_COMPLETE: u32 = 0x46;
 #[repr(C, packed)]
 pub struct hci_ev_disconn_logical_link_complete {
 	u8     status;
@@ -2893,7 +2893,7 @@ pub struct hci_ev_disconn_logical_link_complete {
 	u8     reason;
 } __packed;
 
-pub const HCI_EV_NUM_COMP_BLOCKS: _ = 0x48;
+pub const HCI_EV_NUM_COMP_BLOCKS: u32 = 0x48;
 #[repr(C, packed)]
 pub struct hci_comp_blocks_info {
 	u16   handle;
@@ -2908,15 +2908,15 @@ pub struct hci_ev_num_comp_blocks {
 	struct hci_comp_blocks_info handles[];
 } __packed;
 
-pub const HCI_EV_SYNC_TRAIN_COMPLETE: _ = 0x4F;
+pub const HCI_EV_SYNC_TRAIN_COMPLETE: u32 = 0x4F;
 #[repr(C, packed)]
 pub struct hci_ev_sync_train_complete {
 	u8	status;
 } __packed;
 
-pub const HCI_EV_PERIPHERAL_PAGE_RESP_TIMEOUT: _ = 0x54;
+pub const HCI_EV_PERIPHERAL_PAGE_RESP_TIMEOUT: u32 = 0x54;
 
-pub const HCI_EV_LE_CONN_COMPLETE: _ = 0x01;
+pub const HCI_EV_LE_CONN_COMPLETE: u32 = 0x01;
 #[repr(C, packed)]
 pub struct hci_ev_le_conn_complete {
 	u8     status;
@@ -2931,37 +2931,37 @@ pub struct hci_ev_le_conn_complete {
 } __packed;
 
 /* Advertising report event types */
-pub const LE_ADV_IND: _ = 0x00;
-pub const LE_ADV_DIRECT_IND: _ = 0x01;
-pub const LE_ADV_SCAN_IND: _ = 0x02;
-pub const LE_ADV_NONCONN_IND: _ = 0x03;
-pub const LE_ADV_SCAN_RSP: _ = 0x04;
-pub const LE_ADV_INVALID: _ = 0x05;
+pub const LE_ADV_IND: u32 = 0x00;
+pub const LE_ADV_DIRECT_IND: u32 = 0x01;
+pub const LE_ADV_SCAN_IND: u32 = 0x02;
+pub const LE_ADV_NONCONN_IND: u32 = 0x03;
+pub const LE_ADV_SCAN_RSP: u32 = 0x04;
+pub const LE_ADV_INVALID: u32 = 0x05;
 
 /* Legacy event types in extended adv report */
-pub const LE_LEGACY_ADV_IND: _ = 0x0013;
-pub const LE_LEGACY_ADV_DIRECT_IND: _ = 0x0015;
-pub const LE_LEGACY_ADV_SCAN_IND: _ = 0x0012;
-pub const LE_LEGACY_NONCONN_IND: _ = 0x0010;
-pub const LE_LEGACY_SCAN_RSP_ADV: _ = 0x001b;
-pub const LE_LEGACY_SCAN_RSP_ADV_SCAN: _ = 0x001a;
+pub const LE_LEGACY_ADV_IND: u32 = 0x0013;
+pub const LE_LEGACY_ADV_DIRECT_IND: u32 = 0x0015;
+pub const LE_LEGACY_ADV_SCAN_IND: u32 = 0x0012;
+pub const LE_LEGACY_NONCONN_IND: u32 = 0x0010;
+pub const LE_LEGACY_SCAN_RSP_ADV: u32 = 0x001b;
+pub const LE_LEGACY_SCAN_RSP_ADV_SCAN: u32 = 0x001a;
 
 /* Extended Advertising event types */
-pub const LE_EXT_ADV_NON_CONN_IND: _ = 0x0000;
-pub const LE_EXT_ADV_CONN_IND: _ = 0x0001;
-pub const LE_EXT_ADV_SCAN_IND: _ = 0x0002;
-pub const LE_EXT_ADV_DIRECT_IND: _ = 0x0004;
-pub const LE_EXT_ADV_SCAN_RSP: _ = 0x0008;
-pub const LE_EXT_ADV_LEGACY_PDU: _ = 0x0010;
-pub const LE_EXT_ADV_DATA_STATUS_MASK: _ = 0x0060;
-pub const LE_EXT_ADV_EVT_TYPE_MASK: _ = 0x007f;
+pub const LE_EXT_ADV_NON_CONN_IND: u32 = 0x0000;
+pub const LE_EXT_ADV_CONN_IND: u32 = 0x0001;
+pub const LE_EXT_ADV_SCAN_IND: u32 = 0x0002;
+pub const LE_EXT_ADV_DIRECT_IND: u32 = 0x0004;
+pub const LE_EXT_ADV_SCAN_RSP: u32 = 0x0008;
+pub const LE_EXT_ADV_LEGACY_PDU: u32 = 0x0010;
+pub const LE_EXT_ADV_DATA_STATUS_MASK: u32 = 0x0060;
+pub const LE_EXT_ADV_EVT_TYPE_MASK: u32 = 0x007f;
 
-pub const ADDR_LE_DEV_PUBLIC: _ = 0x00;
-pub const ADDR_LE_DEV_RANDOM: _ = 0x01;
-pub const ADDR_LE_DEV_PUBLIC_RESOLVED: _ = 0x02;
-pub const ADDR_LE_DEV_RANDOM_RESOLVED: _ = 0x03;
+pub const ADDR_LE_DEV_PUBLIC: u32 = 0x00;
+pub const ADDR_LE_DEV_RANDOM: u32 = 0x01;
+pub const ADDR_LE_DEV_PUBLIC_RESOLVED: u32 = 0x02;
+pub const ADDR_LE_DEV_RANDOM_RESOLVED: u32 = 0x03;
 
-pub const HCI_EV_LE_ADVERTISING_REPORT: _ = 0x02;
+pub const HCI_EV_LE_ADVERTISING_REPORT: u32 = 0x02;
 #[repr(C, packed)]
 pub struct hci_ev_le_advertising_info {
 	u8	 type;
@@ -2977,7 +2977,7 @@ pub struct hci_ev_le_advertising_report {
 	struct hci_ev_le_advertising_info info[];
 } __packed;
 
-pub const HCI_EV_LE_CONN_UPDATE_COMPLETE: _ = 0x03;
+pub const HCI_EV_LE_CONN_UPDATE_COMPLETE: u32 = 0x03;
 #[repr(C, packed)]
 pub struct hci_ev_le_conn_update_complete {
 	u8     status;
@@ -2987,7 +2987,7 @@ pub struct hci_ev_le_conn_update_complete {
 	u16   supervision_timeout;
 } __packed;
 
-pub const HCI_EV_LE_REMOTE_FEAT_COMPLETE: _ = 0x04;
+pub const HCI_EV_LE_REMOTE_FEAT_COMPLETE: u32 = 0x04;
 #[repr(C, packed)]
 pub struct hci_ev_le_remote_feat_complete {
 	u8     status;
@@ -2995,7 +2995,7 @@ pub struct hci_ev_le_remote_feat_complete {
 	u8     features[8];
 } __packed;
 
-pub const HCI_EV_LE_LTK_REQ: _ = 0x05;
+pub const HCI_EV_LE_LTK_REQ: u32 = 0x05;
 #[repr(C, packed)]
 pub struct hci_ev_le_ltk_req {
 	u16	handle;
@@ -3003,7 +3003,7 @@ pub struct hci_ev_le_ltk_req {
 	u16	ediv;
 } __packed;
 
-pub const HCI_EV_LE_REMOTE_CONN_PARAM_REQ: _ = 0x06;
+pub const HCI_EV_LE_REMOTE_CONN_PARAM_REQ: u32 = 0x06;
 #[repr(C, packed)]
 pub struct hci_ev_le_remote_conn_param_req {
 	u16 handle;
@@ -3013,7 +3013,7 @@ pub struct hci_ev_le_remote_conn_param_req {
 	u16 timeout;
 } __packed;
 
-pub const HCI_EV_LE_DATA_LEN_CHANGE: _ = 0x07;
+pub const HCI_EV_LE_DATA_LEN_CHANGE: u32 = 0x07;
 #[repr(C, packed)]
 pub struct hci_ev_le_data_len_change {
 	u16	handle;
@@ -3023,7 +3023,7 @@ pub struct hci_ev_le_data_len_change {
 	u16	rx_time;
 } __packed;
 
-pub const HCI_EV_LE_DIRECT_ADV_REPORT: _ = 0x0B;
+pub const HCI_EV_LE_DIRECT_ADV_REPORT: u32 = 0x0B;
 #[repr(C, packed)]
 pub struct hci_ev_le_direct_adv_info {
 	u8	 type;
@@ -3040,7 +3040,7 @@ pub struct hci_ev_le_direct_adv_report {
 	struct hci_ev_le_direct_adv_info info[];
 } __packed;
 
-pub const HCI_EV_LE_PHY_UPDATE_COMPLETE: _ = 0x0c;
+pub const HCI_EV_LE_PHY_UPDATE_COMPLETE: u32 = 0x0c;
 #[repr(C, packed)]
 pub struct hci_ev_le_phy_update_complete {
 	u8  status;
@@ -3049,7 +3049,7 @@ pub struct hci_ev_le_phy_update_complete {
 	u8  rx_phy;
 } __packed;
 
-pub const HCI_EV_LE_EXT_ADV_REPORT: _ = 0x0d;
+pub const HCI_EV_LE_EXT_ADV_REPORT: u32 = 0x0d;
 #[repr(C, packed)]
 pub struct hci_ev_le_ext_adv_info {
 	u16   type;
@@ -3073,7 +3073,7 @@ pub struct hci_ev_le_ext_adv_report {
 	struct hci_ev_le_ext_adv_info info[];
 } __packed;
 
-pub const HCI_EV_LE_PA_SYNC_ESTABLISHED: _ = 0x0e;
+pub const HCI_EV_LE_PA_SYNC_ESTABLISHED: u32 = 0x0e;
 #[repr(C, packed)]
 pub struct hci_ev_le_pa_sync_established {
 	u8      status;
@@ -3086,7 +3086,7 @@ pub struct hci_ev_le_pa_sync_established {
 	u8      clock_accuracy;
 } __packed;
 
-pub const HCI_EV_LE_ENHANCED_CONN_COMPLETE: _ = 0x0a;
+pub const HCI_EV_LE_ENHANCED_CONN_COMPLETE: u32 = 0x0a;
 #[repr(C, packed)]
 pub struct hci_ev_le_enh_conn_complete {
 	u8      status;
@@ -3102,7 +3102,7 @@ pub struct hci_ev_le_enh_conn_complete {
 	u8      clk_accurancy;
 } __packed;
 
-pub const HCI_EV_LE_PER_ADV_REPORT: _ = 0x0f;
+pub const HCI_EV_LE_PER_ADV_REPORT: u32 = 0x0f;
 #[repr(C, packed)]
 pub struct hci_ev_le_per_adv_report {
 	u16	 sync_handle;
@@ -3114,17 +3114,17 @@ pub struct hci_ev_le_per_adv_report {
 	u8     data[];
 } __packed;
 
-pub const HCI_EV_LE_PA_SYNC_LOST: _ = 0x10;
+pub const HCI_EV_LE_PA_SYNC_LOST: u32 = 0x10;
 #[repr(C, packed)]
 pub struct hci_ev_le_pa_sync_lost {
 	u16 handle;
 } __packed;
 
-pub const LE_PA_DATA_COMPLETE: _ = 0x00;
-pub const LE_PA_DATA_MORE_TO_COME: _ = 0x01;
-pub const LE_PA_DATA_TRUNCATED: _ = 0x02;
+pub const LE_PA_DATA_COMPLETE: u32 = 0x00;
+pub const LE_PA_DATA_MORE_TO_COME: u32 = 0x01;
+pub const LE_PA_DATA_TRUNCATED: u32 = 0x02;
 
-pub const HCI_EV_LE_EXT_ADV_SET_TERM: _ = 0x12;
+pub const HCI_EV_LE_EXT_ADV_SET_TERM: u32 = 0x12;
 #[repr(C, packed)]
 pub struct hci_evt_le_ext_adv_set_term {
 	u8	status;
@@ -3133,7 +3133,7 @@ pub struct hci_evt_le_ext_adv_set_term {
 	u8	num_evts;
 } __packed;
 
-pub const HCI_EV_LE_PAST_RECEIVED: _ = 0x18;
+pub const HCI_EV_LE_PAST_RECEIVED: u32 = 0x18;
 #[repr(C, packed)]
 pub struct hci_ev_le_past_received {
 	u8   status;
@@ -3148,7 +3148,7 @@ pub struct hci_ev_le_past_received {
 	u8   clock_accuracy;
 } __packed;
 
-pub const HCI_EVT_LE_CIS_ESTABLISHED: _ = 0x19;
+pub const HCI_EVT_LE_CIS_ESTABLISHED: u32 = 0x19;
 #[repr(C, packed)]
 pub struct hci_evt_le_cis_established {
 	u8  status;
@@ -3169,7 +3169,7 @@ pub struct hci_evt_le_cis_established {
 	u16 interval;
 } __packed;
 
-pub const HCI_EVT_LE_CIS_REQ: _ = 0x1a;
+pub const HCI_EVT_LE_CIS_REQ: u32 = 0x1a;
 #[repr(C, packed)]
 pub struct hci_evt_le_cis_req {
 	u16 acl_handle;
@@ -3178,7 +3178,7 @@ pub struct hci_evt_le_cis_req {
 	u8  cis_id;
 } __packed;
 
-pub const HCI_EVT_LE_CREATE_BIG_COMPLETE: _ = 0x1b;
+pub const HCI_EVT_LE_CREATE_BIG_COMPLETE: u32 = 0x1b;
 #[repr(C, packed)]
 pub struct hci_evt_le_create_big_complete {
 	u8    status;
@@ -3196,7 +3196,7 @@ pub struct hci_evt_le_create_big_complete {
 	u16  bis_handle[];
 } __packed;
 
-pub const HCI_EVT_LE_BIG_SYNC_ESTABLISHED: _ = 0x1d;
+pub const HCI_EVT_LE_BIG_SYNC_ESTABLISHED: u32 = 0x1d;
 #[repr(C, packed)]
 pub struct hci_evt_le_big_sync_established {
 	u8    status;
@@ -3212,14 +3212,14 @@ pub struct hci_evt_le_big_sync_established {
 	u16  bis[];
 } __packed;
 
-pub const HCI_EVT_LE_BIG_SYNC_LOST: _ = 0x1e;
+pub const HCI_EVT_LE_BIG_SYNC_LOST: u32 = 0x1e;
 #[repr(C, packed)]
 pub struct hci_evt_le_big_sync_lost {
 	u8    handle;
 	u8    reason;
 } __packed;
 
-pub const HCI_EVT_LE_BIG_INFO_ADV_REPORT: _ = 0x22;
+pub const HCI_EVT_LE_BIG_INFO_ADV_REPORT: u32 = 0x22;
 #[repr(C, packed)]
 pub struct hci_evt_le_big_info_adv_report {
 	u16  sync_handle;
@@ -3237,7 +3237,7 @@ pub struct hci_evt_le_big_info_adv_report {
 	u8    encryption;
 } __packed;
 
-pub const HCI_EVT_LE_ALL_REMOTE_FEATURES_COMPLETE: _ = 0x2b;
+pub const HCI_EVT_LE_ALL_REMOTE_FEATURES_COMPLETE: u32 = 0x2b;
 #[repr(C, packed)]
 pub struct hci_evt_le_read_all_remote_features_complete {
 	u8    status;
@@ -3248,7 +3248,7 @@ pub struct hci_evt_le_read_all_remote_features_complete {
 } __packed;
 
 /* Channel Sounding Events */
-pub const HCI_EVT_LE_CS_READ_RMT_SUPP_CAP_COMPLETE: _ = 0x2C;
+pub const HCI_EVT_LE_CS_READ_RMT_SUPP_CAP_COMPLETE: u32 = 0x2C;
 #[repr(C, packed)]
 pub struct hci_evt_le_cs_read_rmt_supp_cap_complete {
 	u8	status;
@@ -3275,7 +3275,7 @@ pub struct hci_evt_le_cs_read_rmt_supp_cap_complete {
 	u8	tx_snr_cap;
 } __packed;
 
-pub const HCI_EVT_LE_CS_READ_RMT_FAE_TABLE_COMPLETE: _ = 0x2D;
+pub const HCI_EVT_LE_CS_READ_RMT_FAE_TABLE_COMPLETE: u32 = 0x2D;
 #[repr(C, packed)]
 pub struct hci_evt_le_cs_read_rmt_fae_table_complete {
 	u8	status;
@@ -3283,14 +3283,14 @@ pub struct hci_evt_le_cs_read_rmt_fae_table_complete {
 	u8	remote_fae_table[72];
 } __packed;
 
-pub const HCI_EVT_LE_CS_SECURITY_ENABLE_COMPLETE: _ = 0x2E;
+pub const HCI_EVT_LE_CS_SECURITY_ENABLE_COMPLETE: u32 = 0x2E;
 #[repr(C, packed)]
 pub struct hci_evt_le_cs_security_enable_complete {
 	u8	status;
 	u16	handle;
 } __packed;
 
-pub const HCI_EVT_LE_CS_CONFIG_COMPLETE: _ = 0x2F;
+pub const HCI_EVT_LE_CS_CONFIG_COMPLETE: u32 = 0x2F;
 #[repr(C, packed)]
 pub struct hci_evt_le_cs_config_complete {
 	u8	status;
@@ -3318,7 +3318,7 @@ pub struct hci_evt_le_cs_config_complete {
 	u8	t_pm_time;
 } __packed;
 
-pub const HCI_EVT_LE_CS_PROCEDURE_ENABLE_COMPLETE: _ = 0x30;
+pub const HCI_EVT_LE_CS_PROCEDURE_ENABLE_COMPLETE: u32 = 0x30;
 #[repr(C, packed)]
 pub struct hci_evt_le_cs_procedure_enable_complete {
 	u8	status;
@@ -3336,7 +3336,7 @@ pub struct hci_evt_le_cs_procedure_enable_complete {
 	u16	max_proc_len;
 } __packed;
 
-pub const HCI_EVT_LE_CS_SUBEVENT_RESULT: _ = 0x31;
+pub const HCI_EVT_LE_CS_SUBEVENT_RESULT: u32 = 0x31;
 #[repr(C, packed)]
 pub struct hci_evt_le_cs_subevent_result {
 	u16	handle;
@@ -3356,7 +3356,7 @@ pub struct hci_evt_le_cs_subevent_result {
 	u8	step_data[0]; /* depends on num_steps_reported */
 } __packed;
 
-pub const HCI_EVT_LE_CS_SUBEVENT_RESULT_CONTINUE: _ = 0x32;
+pub const HCI_EVT_LE_CS_SUBEVENT_RESULT_CONTINUE: u32 = 0x32;
 #[repr(C, packed)]
 pub struct hci_evt_le_cs_subevent_result_continue {
 	u16	handle;
@@ -3372,13 +3372,13 @@ pub struct hci_evt_le_cs_subevent_result_continue {
 	u8	step_data[0]; /* depends on num_steps_reported */
 } __packed;
 
-pub const HCI_EVT_LE_CS_TEST_END_COMPLETE: _ = 0x33;
+pub const HCI_EVT_LE_CS_TEST_END_COMPLETE: u32 = 0x33;
 #[repr(C, packed)]
 pub struct hci_evt_le_cs_test_end_complete {
 	u8	status;
 } __packed;
 
-pub const HCI_EVT_LE_CONN_RATE_CHANGE: _ = 0x37;
+pub const HCI_EVT_LE_CONN_RATE_CHANGE: u32 = 0x37;
 #[repr(C, packed)]
 pub struct hci_evt_le_conn_rate_change {
 	u8	status;
@@ -3390,24 +3390,24 @@ pub struct hci_evt_le_conn_rate_change {
 	u16	supv_timeout;
 } __packed;
 
-pub const HCI_EV_VENDOR: _ = 0xff;
+pub const HCI_EV_VENDOR: u32 = 0xff;
 
 /* Internal events generated by Bluetooth stack */
-pub const HCI_EV_STACK_INTERNAL: _ = 0xfd;
+pub const HCI_EV_STACK_INTERNAL: u32 = 0xfd;
 #[repr(C, packed)]
 pub struct hci_ev_stack_internal {
 	u16    type;
 	u8     data[];
 } __packed;
 
-pub const HCI_EV_SI_DEVICE: _ = 0x01;
+pub const HCI_EV_SI_DEVICE: u32 = 0x01;
 #[repr(C, packed)]
 pub struct hci_ev_si_device {
 	u16    event;
 	u16    dev_id;
 } __packed;
 
-pub const HCI_EV_SI_SECURITY: _ = 0x02;
+pub const HCI_EV_SI_SECURITY: u32 = 0x02;
 #[repr(C, packed)]
 pub struct hci_ev_si_security {
 	u16    event;
@@ -3417,12 +3417,12 @@ pub struct hci_ev_si_security {
 } __packed;
 
 /* ---- HCI Packet structures ---- */
-pub const HCI_COMMAND_HDR_SIZE: _ = 3;
-pub const HCI_EVENT_HDR_SIZE: _ = 2;
-pub const HCI_MAX_EVENT_PLEN: _ = 255;
-pub const HCI_ACL_HDR_SIZE: _ = 4;
-pub const HCI_SCO_HDR_SIZE: _ = 3;
-pub const HCI_ISO_HDR_SIZE: _ = 4;
+pub const HCI_COMMAND_HDR_SIZE: u32 = 3;
+pub const HCI_EVENT_HDR_SIZE: u32 = 2;
+pub const HCI_MAX_EVENT_PLEN: u32 = 255;
+pub const HCI_ACL_HDR_SIZE: u32 = 4;
+pub const HCI_SCO_HDR_SIZE: u32 = 3;
+pub const HCI_ISO_HDR_SIZE: u32 = 4;
 
 #[repr(C, packed)]
 pub struct hci_command_hdr {
@@ -3456,18 +3456,18 @@ pub struct hci_iso_hdr {
 } __packed;
 
 /* ISO data packet status flags */
-pub const HCI_ISO_STATUS_VALID: _ = 0x00;
-pub const HCI_ISO_STATUS_INVALID: _ = 0x01;
-pub const HCI_ISO_STATUS_NOP: _ = 0x02;
+pub const HCI_ISO_STATUS_VALID: u32 = 0x00;
+pub const HCI_ISO_STATUS_INVALID: u32 = 0x01;
+pub const HCI_ISO_STATUS_NOP: u32 = 0x02;
 
-pub const HCI_ISO_DATA_HDR_SIZE: _ = 4;
+pub const HCI_ISO_DATA_HDR_SIZE: u32 = 4;
 #[repr(C, packed)]
 pub struct hci_iso_data_hdr {
 	u16	sn;
 	u16	slen;
 };
 
-pub const HCI_ISO_TS_DATA_HDR_SIZE: _ = 8;
+pub const HCI_ISO_TS_DATA_HDR_SIZE: u32 = 8;
 #[repr(C, packed)]
 pub struct hci_iso_ts_data_hdr {
 	u32	ts;
@@ -3527,7 +3527,7 @@ u16 hci_acl_dlen(const struct sk_buff *skb)
 // #define hci_iso_data_flags(h)		((h) >> 14)
 
 /* codec transport types */
-pub const HCI_TRANSPORT_SCO_ESCO: _ = 0x01;
+pub const HCI_TRANSPORT_SCO_ESCO: u32 = 0x01;
 
 /* le24 support */
 void hci_cpu_to_le24(val: u32, u8 dst[3])

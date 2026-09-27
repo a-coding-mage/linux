@@ -88,7 +88,7 @@ pub const PT_TEXT_END_ADDR: u32 = 0x10008;
 // pt_regs declaration is excluded for kernel builds.
 #[repr(C)]
 pub struct pt_regs {
-    pub uregs: [core::ffi::c_long; 18],
+    pub uregs: [kernel::ffi::c_long; 18],
 }
 
 macro_rules! ARM_cpsr { ($regs:expr) => { $regs.uregs[16] }; }

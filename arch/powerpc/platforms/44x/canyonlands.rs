@@ -13,10 +13,10 @@ const BCSR_USB_EN: u8 = 0x11;
 
 #[repr(C)]
 struct OfDeviceId {
-    name: *const core::ffi::c_char,
-    type_: *const core::ffi::c_char,
-    compatible: *const core::ffi::c_char,
-    data: *const core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    type_: *const kernel::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
+    data: *const kernel::ffi::c_void,
 }
 
 static PPC460EX_OF_BUS: [OfDeviceId; 5] = [
@@ -33,20 +33,20 @@ extern "C" {
     fn of_platform_bus_probe(
         root: *mut DeviceNode,
         matches: *const OfDeviceId,
-        parent: *mut core::ffi::c_void,
+        parent: *mut kernel::ffi::c_void,
     ) -> i32;
     fn pci_set_flags(flags: u32);
     fn of_find_compatible_node(
         from: *mut DeviceNode,
-        type_: *const core::ffi::c_char,
-        compatible: *const core::ffi::c_char,
+        type_: *const kernel::ffi::c_char,
+        compatible: *const kernel::ffi::c_char,
     ) -> *mut DeviceNode;
     fn of_iomap(node: *mut DeviceNode, index: i32) -> *mut u8;
     fn of_node_put(node: *mut DeviceNode);
-    fn iounmap(addr: *mut core::ffi::c_void);
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn iounmap(addr: *mut kernel::ffi::c_void);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
     fn msleep(msecs: u32);
-    fn udbg_progress(message: *const core::ffi::c_char, hex: u16);
+    fn udbg_progress(message: *const kernel::ffi::c_char, hex: u16);
     fn uic_init_tree();
     fn uic_get_irq() -> i32;
     fn ppc4xx_reset_system();
@@ -139,10 +139,10 @@ unsafe fn ppc460ex_canyonlands_fixup() -> i32 {
 
 #[repr(C)]
 struct MachineDesc {
-    name: *const core::ffi::c_char,
-    compatible: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
     probe: unsafe fn() -> i32,
-    progress: unsafe extern "C" fn(*const core::ffi::c_char, u16),
+    progress: unsafe extern "C" fn(*const kernel::ffi::c_char, u16),
     init_irq: unsafe extern "C" fn(),
     get_irq: unsafe extern "C" fn() -> i32,
     restart: unsafe extern "C" fn(),

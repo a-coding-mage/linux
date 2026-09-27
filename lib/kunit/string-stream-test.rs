@@ -21,10 +21,10 @@ pub struct string_stream_test_priv {
 // Avoids a cast warning if string_stream_destroy() is passed direct to kunit_add_action().
 // KUNIT_DEFINE_ACTION_WRAPPER(cleanup_raw_stream, string_stream_destroy, struct string_stream *);
 
-unsafe fn get_concatenated_string(test: *mut kunit, stream: *mut string_stream) -> *mut core::ffi::c_char {
+unsafe fn get_concatenated_string(test: *mut kunit, stream: *mut string_stream) -> *mut kernel::ffi::c_char {
     let str_ = string_stream_get_string(stream);
     KUNIT_ASSERT_NOT_ERR_OR_NULL(test, str_);
-    kunit_add_action(test, kfree_wrapper, str_ as *mut core::ffi::c_void);
+    kunit_add_action(test, kfree_wrapper, str_ as *mut kernel::ffi::c_void);
     str_
 }
 
@@ -60,7 +60,7 @@ unsafe fn string_stream_destroy_stub(stream: *mut string_stream) {
     }
     /* Calling string_stream_destroy() will only call this function again because the redirection stub is still active. */
     string_stream_clear(stream);
-    kfree(stream as *const core::ffi::c_void);
+    kfree(stream as *const kernel::ffi::c_void);
 }
 
 /* kunit_free_string_stream() calls string_stream_desrtoy() */

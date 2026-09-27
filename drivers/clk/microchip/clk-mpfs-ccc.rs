@@ -29,15 +29,15 @@ const MPFS_CCC_NUM_CLKS: usize = 16;
 
 #[repr(C)]
 struct mpfs_ccc_data {
-    pll_base: *mut *mut core::ffi::c_void,
+    pll_base: *mut *mut kernel::ffi::c_void,
     dev: *mut device,
     hw_data: clk_hw_onecell_data,
 }
 
 #[repr(C)]
 struct mpfs_ccc_pll_hw_clock {
-    base: *mut core::ffi::c_void,
-    name: *const core::ffi::c_char,
+    base: *mut kernel::ffi::c_void,
+    name: *const kernel::ffi::c_char,
     parents: *const clk_parent_data,
     id: u32,
     reg_offset: u32,
@@ -135,11 +135,11 @@ unsafe extern "C" fn mpfs_ccc_register_plls(dev: *mut device, pll_hws: *mut mpfs
 extern "C" {
     fn platform_driver_register(driver: *mut platform_driver) -> c_int;
     fn platform_driver_unregister(driver: *mut platform_driver);
-    fn devm_of_clk_add_hw_provider(dev: *mut device, get: *const core::ffi::c_void, data: *mut clk_hw_onecell_data) -> c_int;
+    fn devm_of_clk_add_hw_provider(dev: *mut device, get: *const kernel::ffi::c_void, data: *mut clk_hw_onecell_data) -> c_int;
 }
 
 #[repr(C)]
-struct of_device_id { compatible: *const core::ffi::c_char }
+struct of_device_id { compatible: *const kernel::ffi::c_char }
 
 #[repr(C)]
 struct platform_driver {
@@ -149,7 +149,7 @@ struct platform_driver {
 
 #[repr(C)]
 struct driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     of_match_table: *const of_device_id,
 }
 

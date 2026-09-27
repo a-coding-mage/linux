@@ -11,13 +11,13 @@
 //! The original header includes Linux and architecture headers; their symbols
 //! are expected to be supplied by the surrounding translation.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // CONFIG_OF is a build-time C configuration condition.  The two cfg branches
 // below preserve the corresponding declaration/no-op behavior.
 #[cfg(CONFIG_OF)]
 extern "C" {
-    pub static mut of_ioapic: core::ffi::c_int;
+    pub static mut of_ioapic: kernel::ffi::c_int;
     pub static mut initial_dtb: u64;
     pub fn add_dtb(data: u64);
     pub fn x86_of_pci_init();

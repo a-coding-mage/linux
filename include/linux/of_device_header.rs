@@ -3,7 +3,7 @@
 // Dependency supplied by the surrounding kernel translation:
 // #include <linux/device/driver.h>
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct device;

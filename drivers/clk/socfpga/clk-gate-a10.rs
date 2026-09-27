@@ -7,7 +7,7 @@
 
 const SYSMGR_SDMMCGRP_CTRL_OFFSET: u32 = 0x28;
 
-unsafe fn streq(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> bool {
+unsafe fn streq(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> bool {
     // C strcmp(a, b) == 0; strcmp is supplied externally.
     unsafe { strcmp(a, b) == 0 }
 }
@@ -18,19 +18,19 @@ unsafe fn to_socfpga_gate_clk(p: *mut clk_hw) -> *mut socfpga_gate_clk {
 }
 
 unsafe extern "C" {
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
-    fn readl(addr: *const core::ffi::c_void) -> u32;
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
+    fn readl(addr: *const kernel::ffi::c_void) -> u32;
     fn kzalloc_obj<T>() -> *mut T;
-    fn kfree(p: *mut core::ffi::c_void);
+    fn kfree(p: *mut kernel::ffi::c_void);
     fn warn_on(condition: bool) -> bool;
-    fn of_property_read_u32_array(node: *mut device_node, name: *const core::ffi::c_char, out: *mut u32, count: usize) -> i32;
-    fn of_property_read_u32(node: *mut device_node, name: *const core::ffi::c_char, out: *mut u32) -> i32;
-    fn of_property_read_string(node: *mut device_node, name: *const core::ffi::c_char, out: *mut *const core::ffi::c_char) -> i32;
-    fn of_clk_parent_fill(node: *mut device_node, parents: *mut *const core::ffi::c_char, max: usize) -> u8;
+    fn of_property_read_u32_array(node: *mut device_node, name: *const kernel::ffi::c_char, out: *mut u32, count: usize) -> i32;
+    fn of_property_read_u32(node: *mut device_node, name: *const kernel::ffi::c_char, out: *mut u32) -> i32;
+    fn of_property_read_string(node: *mut device_node, name: *const kernel::ffi::c_char, out: *mut *const kernel::ffi::c_char) -> i32;
+    fn of_clk_parent_fill(node: *mut device_node, parents: *mut *const kernel::ffi::c_char, max: usize) -> u8;
     fn clk_hw_register(dev: *mut device, hw: *mut clk_hw) -> i32;
     fn of_clk_add_hw_provider(node: *mut device_node, get: unsafe extern "C" fn(*mut device_node, *const *mut clk_hw) -> *mut clk_hw, hw: *mut clk_hw) -> i32;
     fn clk_hw_unregister(hw: *mut clk_hw);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
 }
 
 unsafe extern "C" {
@@ -57,14 +57,14 @@ struct clk_hw { _opaque: [u8; 0] }
 #[repr(C)]
 struct device { _opaque: [u8; 0] }
 #[repr(C)]
-struct device_node { name: *const core::ffi::c_char }
+struct device_node { name: *const kernel::ffi::c_char }
 #[repr(C)]
 struct clk_init_data {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     ops: *const clk_ops,
     flags: u32,
     num_parents: u8,
-    parent_names: *const *const core::ffi::c_char,
+    parent_names: *const *const kernel::ffi::c_char,
 }
 #[repr(C)]
 struct socfpga_gate_clk {
@@ -88,7 +88,7 @@ unsafe extern "C" fn socfpga_gate_clk_recalc_rate(hwclk: *mut clk_hw, parent_rat
         if (*socfpgaclk).fixed_div != 0 {
             div = (*socfpgaclk).fixed_div;
         } else if !(*socfpgaclk).div_reg.is_null() {
-            val = readl((*socfpgaclk).div_reg as *const core::ffi::c_void) >> (*socfpgaclk).shift;
+            val = readl((*socfpgaclk).div_reg as *const kernel::ffi::c_void) >> (*socfpgaclk).shift;
             val &= (1u32 << (*socfpgaclk).width).wrapping_sub(1);
             div = 1u32 << val;
         }

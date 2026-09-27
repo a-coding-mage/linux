@@ -37,9 +37,9 @@ extern "C" {
 
     fn mips_set_be_handler(handler: unsafe extern "C" fn(*mut pt_regs, i32) -> i32);
     fn vgacon_register_screen(info: *mut screen_info);
-    fn writeb(value: u8, address: *mut core::ffi::c_void);
+    fn writeb(value: u8, address: *mut kernel::ffi::c_void);
     fn __read_64bit_c0_register(reg: i32, sel: i32) -> u64;
-    fn printk(format: *const core::ffi::c_char, ...) -> i32;
+    fn printk(format: *const kernel::ffi::c_char, ...) -> i32;
     fn mktime64(year: i32, month: i32, day: i32, hour: i32, minute: i32, second: i32) -> i64;
 }
 
@@ -58,15 +58,15 @@ pub struct screen_info {
 pub const MIPS_BE_FIXUP: i32 = 0;
 pub const MIPS_BE_FATAL: i32 = 1;
 
-pub unsafe extern "C" fn get_system_type() -> *const core::ffi::c_char {
-    concat!("SiByte ", SIBYTE_BOARD_NAME).as_ptr() as *const core::ffi::c_char
+pub unsafe extern "C" fn get_system_type() -> *const kernel::ffi::c_char {
+    concat!("SiByte ", SIBYTE_BOARD_NAME).as_ptr() as *const kernel::ffi::c_char
 }
 
 pub unsafe extern "C" fn swarm_be_handler(regs: *mut pt_regs, is_fixup: i32) -> i32 {
     if is_fixup == 0 && ((*regs).cp0_cause & 4) != 0 {
         /* Data bus error - print PA */
         printk(
-            b"DBE physical address: %010Lx\n\0".as_ptr() as *const core::ffi::c_char,
+            b"DBE physical address: %010Lx\n\0".as_ptr() as *const kernel::ffi::c_char,
             __read_64bit_c0_register(26, 1),
         );
     }
@@ -139,7 +139,7 @@ pub unsafe extern "C" fn plat_mem_setup() {
 #[cfg(LEDS_PHYS)]
 pub unsafe extern "C" fn setleds(str_: *const u8) {
     for i in 0..4 {
-        let reg = (IOADDR(LEDS_PHYS) as usize + 0x20 + ((3 - i) << 3)) as *mut core::ffi::c_void;
+        let reg = (IOADDR(LEDS_PHYS) as usize + 0x20 + ((3 - i) << 3)) as *mut kernel::ffi::c_void;
         if *str_.add(i as usize) == 0 {
             writeb(b' ', reg);
         } else {

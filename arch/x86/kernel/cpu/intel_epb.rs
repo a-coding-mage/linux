@@ -33,7 +33,7 @@ static mut ENERG_PERF_VALUES: [u8; 5] = [
     ENERGY_PERF_BIAS_POWERSAVE,
 ];
 
-unsafe fn intel_epb_save(_data: *mut core::ffi::c_void) -> i32 {
+unsafe fn intel_epb_save(_data: *mut kernel::ffi::c_void) -> i32 {
     let mut epb: u64 = 0;
 
     rdmsrq(MSR_IA32_ENERGY_PERF_BIAS, &mut epb);
@@ -46,7 +46,7 @@ unsafe fn intel_epb_save(_data: *mut core::ffi::c_void) -> i32 {
     0
 }
 
-unsafe fn intel_epb_restore(_data: *mut core::ffi::c_void) {
+unsafe fn intel_epb_restore(_data: *mut kernel::ffi::c_void) {
     let mut val = SAVED_EPB as u64;
     let mut epb: u64 = 0;
 
@@ -90,7 +90,7 @@ static ENERGY_PERF_STRINGS: [&[u8]; 5] = [
 unsafe fn energy_perf_bias_show(
     dev: *mut Device,
     _attr: *mut DeviceAttribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let cpu = (*dev).id;
     let mut epb: u64 = 0;
@@ -98,13 +98,13 @@ unsafe fn energy_perf_bias_show(
     if ret < 0 {
         return ret as isize;
     }
-    sprintf(buf, b"%llu\n\0".as_ptr() as *const core::ffi::c_char, epb) as isize
+    sprintf(buf, b"%llu\n\0".as_ptr() as *const kernel::ffi::c_char, epb) as isize
 }
 
 unsafe fn energy_perf_bias_store(
     dev: *mut Device,
     _attr: *mut DeviceAttribute,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     count: usize,
 ) -> isize {
     let cpu = (*dev).id;
@@ -190,7 +190,7 @@ unsafe fn intel_epb_init() -> i32 {
 
     ret = cpuhp_setup_state(
         CPUHP_AP_X86_INTEL_EPB_ONLINE,
-        b"x86/intel/epb:online\0".as_ptr() as *const core::ffi::c_char,
+        b"x86/intel/epb:online\0".as_ptr() as *const kernel::ffi::c_char,
         Some(intel_epb_online),
         Some(intel_epb_offline),
     );

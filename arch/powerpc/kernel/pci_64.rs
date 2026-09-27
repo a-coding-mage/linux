@@ -9,38 +9,38 @@
 
 // C headers and build-provided declarations are supplied by the surrounding kernel.
 
-pub static mut pci_io_base: ::core::ffi::c_ulong = 0;
+pub static mut pci_io_base: ::kernel::ffi::c_ulong = 0;
 
 unsafe extern "C" {
     static mut ppc_md: PpcMd;
     static mut hose_list: ListHead;
     static mut pci_root_buses: ListHead;
-    static isa_io_base: ::core::ffi::c_ulong;
+    static isa_io_base: ::kernel::ffi::c_ulong;
 
     fn pci_phys_mem_access_prot() -> Prot;
-    fn pci_add_flags(flags: ::core::ffi::c_uint);
+    fn pci_add_flags(flags: ::kernel::ffi::c_uint);
     fn pcibios_scan_phb(hose: *mut PciController);
     fn pcibios_resource_survey();
     fn pci_bus_add_devices(bus: *mut PciBus);
-    fn __flush_hash_table_range(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
+    fn __flush_hash_table_range(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
     fn pci_bus_to_host(bus: *mut PciBus) -> *mut PciController;
-    fn pci_name(dev: *mut PciDev) -> *const ::core::ffi::c_char;
-    fn iounmap(addr: *mut ::core::ffi::c_void);
-    fn __get_vm_area_caller(size: ::core::ffi::c_ulong, flags: ::core::ffi::c_ulong,
-        start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong,
-        caller: *const ::core::ffi::c_void) -> *mut VmStruct;
-    fn ioremap_page_range(addr: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong,
-        phys: PhysAddr, prot: Prot) -> ::core::ffi::c_int;
+    fn pci_name(dev: *mut PciDev) -> *const ::kernel::ffi::c_char;
+    fn iounmap(addr: *mut ::kernel::ffi::c_void);
+    fn __get_vm_area_caller(size: ::kernel::ffi::c_ulong, flags: ::kernel::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong,
+        caller: *const ::kernel::ffi::c_void) -> *mut VmStruct;
+    fn ioremap_page_range(addr: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong,
+        phys: PhysAddr, prot: Prot) -> ::kernel::ffi::c_int;
     fn pgprot_noncached(prot: Prot) -> Prot;
-    fn vunmap_range(addr: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    fn pcibios_io_space_offset(hose: *mut PciController) -> ::core::ffi::c_ulong;
-    fn of_machine_is_compatible(s: *const ::core::ffi::c_char) -> bool;
+    fn vunmap_range(addr: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    fn pcibios_io_space_offset(hose: *mut PciController) -> ::kernel::ffi::c_ulong;
+    fn of_machine_is_compatible(s: *const ::kernel::ffi::c_char) -> bool;
     fn of_find_compatible_node(a: *mut DeviceNode, b: *mut DeviceNode,
-        c: *const ::core::ffi::c_char) -> *mut DeviceNode;
+        c: *const ::kernel::ffi::c_char) -> *mut DeviceNode;
     fn of_node_put(np: *mut DeviceNode);
 }
 
-pub unsafe fn pcibios_init() -> ::core::ffi::c_int {
+pub unsafe fn pcibios_init() -> ::kernel::ffi::c_int {
     let mut hose: *mut PciController = core::ptr::null_mut();
     let mut tmp: *mut PciController = core::ptr::null_mut();
     printk("PCI: Probing PCI hardware\n");
@@ -56,7 +56,7 @@ pub unsafe fn pcibios_init() -> ::core::ffi::c_int {
     0
 }
 
-pub unsafe fn pcibios_unmap_io_space(bus: *mut PciBus) -> ::core::ffi::c_int {
+pub unsafe fn pcibios_unmap_io_space(bus: *mut PciBus) -> ::kernel::ffi::c_int {
     warn_on(bus.is_null());
     if !(*bus).self_.is_null() {
         pr_debug("IO unmapping for PCI-PCI bridge %s\n", pci_name((*bus).self_));
@@ -73,21 +73,21 @@ pub unsafe fn pcibios_unmap_io_space(bus: *mut PciBus) -> ::core::ffi::c_int {
     0
 }
 
-pub unsafe fn ioremap_phb(paddr: PhysAddr, size: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void {
+pub unsafe fn ioremap_phb(paddr: PhysAddr, size: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void {
     warn_on_once(paddr & !PAGE_MASK != 0);
     warn_on_once(size & !PAGE_MASK != 0);
     let area = __get_vm_area_caller(size, VM_IOREMAP, PHB_IO_BASE, PHB_IO_END,
         core::ptr::addr_of!(ioremap_phb).cast());
     if area.is_null() { return core::ptr::null_mut(); }
-    let addr = (*area).addr as ::core::ffi::c_ulong;
+    let addr = (*area).addr as ::kernel::ffi::c_ulong;
     if ioremap_page_range(addr, addr + size, paddr, pgprot_noncached(PAGE_KERNEL)) != 0 {
         vunmap_range(addr, addr + size);
         return core::ptr::null_mut();
     }
-    addr as *mut ::core::ffi::c_void
+    addr as *mut ::kernel::ffi::c_void
 }
 
-unsafe fn pcibios_map_phb_io_space(hose: *mut PciController) -> ::core::ffi::c_int {
+unsafe fn pcibios_map_phb_io_space(hose: *mut PciController) -> ::kernel::ffi::c_int {
     let phys_page = (*hose).io_base_phys & !(PAGE_SIZE - 1);
     let size_page = ((*hose).pci_io_size + PAGE_SIZE - 1) & !(PAGE_SIZE - 1);
     (*hose).io_base_alloc = core::ptr::null_mut();
@@ -105,7 +105,7 @@ unsafe fn pcibios_map_phb_io_space(hose: *mut PciController) -> ::core::ffi::c_i
     0
 }
 
-pub unsafe fn pcibios_map_io_space(bus: *mut PciBus) -> ::core::ffi::c_int {
+pub unsafe fn pcibios_map_io_space(bus: *mut PciBus) -> ::kernel::ffi::c_int {
     warn_on(bus.is_null());
     if !(*bus).self_.is_null() {
         pr_debug("IO mapping for PCI-PCI bridge %s\n", pci_name((*bus).self_));
@@ -117,14 +117,14 @@ pub unsafe fn pcibios_map_io_space(bus: *mut PciBus) -> ::core::ffi::c_int {
 
 pub unsafe fn pcibios_setup_phb_io_space(hose: *mut PciController) { pcibios_map_phb_io_space(hose); }
 
-pub const IOBASE_BRIDGE_NUMBER: ::core::ffi::c_long = 0;
-pub const IOBASE_MEMORY: ::core::ffi::c_long = 1;
-pub const IOBASE_IO: ::core::ffi::c_long = 2;
-pub const IOBASE_ISA_IO: ::core::ffi::c_long = 3;
-pub const IOBASE_ISA_MEM: ::core::ffi::c_long = 4;
+pub const IOBASE_BRIDGE_NUMBER: ::kernel::ffi::c_long = 0;
+pub const IOBASE_MEMORY: ::kernel::ffi::c_long = 1;
+pub const IOBASE_IO: ::kernel::ffi::c_long = 2;
+pub const IOBASE_ISA_IO: ::kernel::ffi::c_long = 3;
+pub const IOBASE_ISA_MEM: ::kernel::ffi::c_long = 4;
 
-pub unsafe fn pciconfig_iobase(which: ::core::ffi::c_long, mut in_bus: ::core::ffi::c_ulong,
-    _in_devfn: ::core::ffi::c_ulong) -> ::core::ffi::c_long {
+pub unsafe fn pciconfig_iobase(which: ::kernel::ffi::c_long, mut in_bus: ::kernel::ffi::c_ulong,
+    _in_devfn: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_long {
     let mut bus: *mut PciBus = core::ptr::null_mut();
     if in_bus == 0 && of_machine_is_compatible(c"MacRISC4".as_ptr()) {
         let agp = of_find_compatible_node(core::ptr::null_mut(), core::ptr::null_mut(), c"u3-agp".as_ptr());
@@ -147,10 +147,10 @@ pub unsafe fn pciconfig_iobase(which: ::core::ffi::c_long, mut in_bus: ::core::f
 }
 
 #[cfg(CONFIG_NUMA)]
-pub unsafe fn pcibus_to_node(bus: *mut PciBus) -> ::core::ffi::c_int { (*pci_bus_to_host(bus)).node }
+pub unsafe fn pcibus_to_node(bus: *mut PciBus) -> ::kernel::ffi::c_int { (*pci_bus_to_host(bus)).node }
 
 #[cfg(CONFIG_PPC_PMAC)]
-pub unsafe fn pci_device_from_OF_node(np: *mut DeviceNode, bus: *mut u8, devfn: *mut u8) -> ::core::ffi::c_int {
+pub unsafe fn pci_device_from_OF_node(np: *mut DeviceNode, bus: *mut u8, devfn: *mut u8) -> ::kernel::ffi::c_int {
     if PCI_DN(np).is_null() { return -ENODEV; }
     *bus = (*PCI_DN(np)).busno;
     *devfn = (*PCI_DN(np)).devfn;

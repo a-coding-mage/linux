@@ -5,7 +5,7 @@
  * Prototypes for MPC512x shared code
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* __init and __noreturn are kernel build attributes in the C source. */
 unsafe extern "C" {

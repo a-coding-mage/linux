@@ -7,7 +7,7 @@
 // <linux/clk.h>, <linux/clk-provider.h>, <linux/of.h>, <linux/module.h>,
 // <sound/soc.h>, <sound/pcm_params.h>, "i2s.h", "i2s-regs.h".
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 use core::ptr;
 
 type bool_ = bool;
@@ -218,7 +218,7 @@ extern "C" {
     fn platform_get_drvdata(pdev: *mut platform_device) -> *mut c_void;
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 unsafe extern "C" fn odroid_card_fe_startup(substream: *mut snd_pcm_substream) -> c_int {
     let runtime: *mut snd_pcm_runtime = (*substream).runtime;

@@ -10,7 +10,7 @@
 // Dependencies supplied by the surrounding translation unit:
 // asm/irqdomain.h, asm/hw_irq.h, asm/io_apic.h
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub struct MsiMsg;
 pub struct IrqAllocInfo;
@@ -34,10 +34,10 @@ pub struct AmdIommuPiData {
     pub vapic_addr: u64,       /* Physical address of the vCPU's vAPIC. */
     pub ga_tag: u32,
     pub vector: u32,           /* Guest vector of the interrupt */
-    pub cpu: core::ffi::c_int,
+    pub cpu: kernel::ffi::c_int,
     pub ga_log_intr: bool,
     pub is_guest_mode: bool,
-    pub ir_data: *mut core::ffi::c_void,
+    pub ir_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -53,11 +53,11 @@ extern "C" {
 
     pub fn irq_remapping_cap(cap: IrqRemapCap) -> bool;
     pub fn set_irq_remapping_broken();
-    pub fn irq_remapping_prepare() -> core::ffi::c_int;
-    pub fn irq_remapping_enable() -> core::ffi::c_int;
+    pub fn irq_remapping_prepare() -> kernel::ffi::c_int;
+    pub fn irq_remapping_enable() -> kernel::ffi::c_int;
     pub fn irq_remapping_disable();
-    pub fn irq_remapping_reenable(arg: core::ffi::c_int) -> core::ffi::c_int;
-    pub fn irq_remap_enable_fault_handling() -> core::ffi::c_int;
+    pub fn irq_remapping_reenable(arg: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub fn irq_remap_enable_fault_handling() -> kernel::ffi::c_int;
     pub fn panic_if_irq_remap(msg: *const c_char);
 
     pub static mut enable_posted_msi: bool;
@@ -80,15 +80,15 @@ pub unsafe fn irq_remapping_cap(_cap: IrqRemapCap) -> bool { false }
 #[cfg(not(CONFIG_IRQ_REMAP))]
 pub unsafe fn set_irq_remapping_broken() {}
 #[cfg(not(CONFIG_IRQ_REMAP))]
-pub unsafe fn irq_remapping_prepare() -> core::ffi::c_int { -ENODEV }
+pub unsafe fn irq_remapping_prepare() -> kernel::ffi::c_int { -ENODEV }
 #[cfg(not(CONFIG_IRQ_REMAP))]
-pub unsafe fn irq_remapping_enable() -> core::ffi::c_int { -ENODEV }
+pub unsafe fn irq_remapping_enable() -> kernel::ffi::c_int { -ENODEV }
 #[cfg(not(CONFIG_IRQ_REMAP))]
 pub unsafe fn irq_remapping_disable() {}
 #[cfg(not(CONFIG_IRQ_REMAP))]
-pub unsafe fn irq_remapping_reenable(_eim: core::ffi::c_int) -> core::ffi::c_int { -ENODEV }
+pub unsafe fn irq_remapping_reenable(_eim: kernel::ffi::c_int) -> kernel::ffi::c_int { -ENODEV }
 #[cfg(not(CONFIG_IRQ_REMAP))]
-pub unsafe fn irq_remap_enable_fault_handling() -> core::ffi::c_int { -ENODEV }
+pub unsafe fn irq_remap_enable_fault_handling() -> kernel::ffi::c_int { -ENODEV }
 #[cfg(not(CONFIG_IRQ_REMAP))]
 pub unsafe fn panic_if_irq_remap(_msg: *const c_char) {}
 

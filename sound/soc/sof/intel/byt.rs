@@ -41,7 +41,7 @@ unsafe extern "C" {
         num: i32,
     ) -> *mut resource;
     fn resource_size(res: *mut resource) -> u32;
-    fn devm_ioremap(dev: *mut device, offset: u32, size: u32) -> *mut core::ffi::c_void;
+    fn devm_ioremap(dev: *mut device, offset: u32, size: u32) -> *mut kernel::ffi::c_void;
     fn platform_get_irq(pdev: *mut platform_device, num: i32) -> i32;
     fn devm_request_threaded_irq(
         dev: *mut device,
@@ -50,37 +50,37 @@ unsafe extern "C" {
         thread_fn: irq_handler_t,
         irqflags: u64,
         devname: *const i8,
-        dev_id: *mut core::ffi::c_void,
+        dev_id: *mut kernel::ffi::c_void,
     ) -> i32;
 
-    fn atom_irq_handler(irq: i32, context: *mut core::ffi::c_void) -> irqreturn_t;
-    fn atom_irq_thread(irq: i32, context: *mut core::ffi::c_void) -> irqreturn_t;
+    fn atom_irq_handler(irq: i32, context: *mut kernel::ffi::c_void) -> irqreturn_t;
+    fn atom_irq_thread(irq: i32, context: *mut kernel::ffi::c_void) -> irqreturn_t;
     fn atom_run(sdev: *mut snd_sof_dev) -> i32;
     fn atom_reset(sdev: *mut snd_sof_dev) -> i32;
     fn sof_block_read(
         sdev: *mut snd_sof_dev,
         bar: i32,
         offset: u32,
-        dest: *mut core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
         size: usize,
     );
     fn sof_block_write(
         sdev: *mut snd_sof_dev,
         bar: i32,
         offset: u32,
-        src: *const core::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         size: usize,
     );
     fn sof_mailbox_read(
         sdev: *mut snd_sof_dev,
         offset: u32,
-        dest: *mut core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
         size: usize,
     );
     fn sof_mailbox_write(
         sdev: *mut snd_sof_dev,
         offset: u32,
-        src: *const core::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         size: usize,
     );
     fn atom_send_msg(sdev: *mut snd_sof_dev, msg: *mut snd_sof_ipc_msg) -> i32;
@@ -89,13 +89,13 @@ unsafe extern "C" {
     fn sof_ipc_msg_data(
         sdev: *mut snd_sof_dev,
         msg_bytes: *mut snd_sof_ipc_msg,
-        p: *mut core::ffi::c_void,
+        p: *mut kernel::ffi::c_void,
         sz: usize,
     );
     fn sof_set_stream_data_offset(sdev: *mut snd_sof_dev, substream: *mut snd_pcm_substream, posn_offset: usize);
     fn atom_machine_select(sdev: *mut snd_sof_dev) -> *mut snd_soc_acpi_mach;
-    fn sof_machine_register(sdev: *mut snd_sof_dev, pdata: *mut core::ffi::c_void) -> i32;
-    fn sof_machine_unregister(sdev: *mut snd_sof_dev, pdata: *mut core::ffi::c_void);
+    fn sof_machine_register(sdev: *mut snd_sof_dev, pdata: *mut kernel::ffi::c_void) -> i32;
+    fn sof_machine_unregister(sdev: *mut snd_sof_dev, pdata: *mut kernel::ffi::c_void);
     fn atom_set_mach_params(mach: *mut snd_soc_acpi_mach, sdev: *mut snd_sof_dev);
     fn atom_dump(sdev: *mut snd_sof_dev, flags: u32);
     fn snd_sof_debugfs_add_region_item_iomem(
@@ -302,7 +302,7 @@ unsafe extern "C" fn byt_acpi_probe(sdev: *mut snd_sof_dev) -> i32 {
             Some(atom_irq_thread),
             IRQF_SHARED,
             c"AudioDSP".as_ptr(),
-            sdev as *mut core::ffi::c_void,
+            sdev as *mut kernel::ffi::c_void,
         );
         if ret < 0 {
             dev_err((*sdev).dev, c"error: failed to register IRQ %d\n".as_ptr(), (*sdev).ipc_irq);
@@ -564,11 +564,11 @@ static sof_acpi_cherrytrail_desc: sof_dev_desc = sof_dev_desc {
 static sof_baytrail_match: [acpi_device_id; 3] = [
     acpi_device_id {
         id: *b"80860F28\0\0\0\0\0\0\0\0",
-        driver_data: &sof_acpi_baytrail_desc as *const sof_dev_desc as usize as core::ffi::c_ulong,
+        driver_data: &sof_acpi_baytrail_desc as *const sof_dev_desc as usize as kernel::ffi::c_ulong,
     },
     acpi_device_id {
         id: *b"808622A8\0\0\0\0\0\0\0\0",
-        driver_data: &sof_acpi_cherrytrail_desc as *const sof_dev_desc as usize as core::ffi::c_ulong,
+        driver_data: &sof_acpi_cherrytrail_desc as *const sof_dev_desc as usize as kernel::ffi::c_ulong,
     },
     acpi_device_id {
         id: [0; ACPI_ID_LEN],

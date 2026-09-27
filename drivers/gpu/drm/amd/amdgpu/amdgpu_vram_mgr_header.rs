@@ -39,7 +39,7 @@ pub struct amdgpu_vram_mgr {
 #[repr(C)]
 pub struct amdgpu_vres_task {
     pub pid: pid_t,
-    pub comm: [core::ffi::c_char; TASK_COMM_LEN],
+    pub comm: [kernel::ffi::c_char; TASK_COMM_LEN],
 }
 
 #[repr(C)]
@@ -53,7 +53,7 @@ pub struct amdgpu_vram_block_info {
 pub struct amdgpu_vram_mgr_resource {
     pub base: ttm_resource,
     pub blocks: list_head,
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub vres_node: list_head,
     pub task: amdgpu_vres_task,
 }
@@ -93,7 +93,7 @@ unsafe extern "C" {
         mgr: *mut amdgpu_vram_mgr,
         address: u64,
         info: *mut amdgpu_vram_block_info,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

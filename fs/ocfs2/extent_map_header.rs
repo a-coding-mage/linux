@@ -7,7 +7,7 @@
  * Copyright (C) 2004 Oracle.  All rights reserved.
  */
 
-use core::ffi::{c_int, c_uint, c_ulonglong, c_void};
+use kernel::ffi::{c_int, c_uint, c_ulonglong, c_void};
 
 // Types supplied by other headers/dependencies.
 #[repr(C)]
@@ -132,7 +132,7 @@ extern "C" {
         v_cluster: u32,
         num_clusters: *mut u32,
     ) -> c_int;
-    pub fn printk(format: *const core::ffi::c_char, ...) -> c_int;
+    pub fn printk(format: *const kernel::ffi::c_char, ...) -> c_int;
 }
 
 pub const EINVAL: c_int = 22;
@@ -148,7 +148,7 @@ pub unsafe fn ocfs2_read_virt_block(
 
     if bh.is_null() {
         let message = b"ocfs2: bh == NULL\0";
-        printk(message.as_ptr() as *const core::ffi::c_char);
+        printk(message.as_ptr() as *const kernel::ffi::c_char);
         status = -EINVAL;
         return status;
     }

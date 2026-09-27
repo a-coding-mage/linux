@@ -5,7 +5,7 @@
  */
 
 // External declarations supplied by the Linux kernel and platform headers.
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 extern "C" {
     static mut jiffies: c_ulong;

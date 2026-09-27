@@ -50,9 +50,9 @@ struct ocfs2_suballoc_result {
 					     * block.
 					     */
 	u64		sr_blkno;	/* The first allocated block */
-	core::ffi::c_uint	sr_bit_offset;	/* The bit in the bg */
-	core::ffi::c_uint	sr_bits;	/* How many bits we claimed */
-	core::ffi::c_uint	sr_max_contig_bits; /* The length for contiguous
+	kernel::ffi::c_uint	sr_bit_offset;	/* The bit in the bg */
+	kernel::ffi::c_uint	sr_bits;	/* How many bits we claimed */
+	kernel::ffi::c_uint	sr_max_contig_bits; /* The length for contiguous
 					     * free bits, only available
 					     * for cluster group
 					     */
@@ -74,7 +74,7 @@ static int ocfs2_block_group_fill(handle_t *handle,
 				  inode *alloc_inode,
 				  buffer_head *bg_bh,
 				  group_blkno: u64,
-				  group_clusters: core::ffi::c_uint,
+				  group_clusters: kernel::ffi::c_uint,
 				  my_chain: u16,
 				  ocfs2_chain_list *cl);
 static int ocfs2_block_group_alloc(ocfs2_super *osb,
@@ -168,32 +168,32 @@ static int ocfs2_validate_gd_self(super_block *sb,
 
 	if (!OCFS2_IS_VALID_GROUP_DESC(gd)) {
 		do_error("Group descriptor #%llu has bad signature %.*s\n",
-			 (core::ffi::c_ulonglong)bh->b_blocknr, 7,
+			 (kernel::ffi::c_ulonglong)bh->b_blocknr, 7,
 			 gd->bg_signature);
 	}
 
 	if (le64_to_cpu(gd->bg_blkno) != bh->b_blocknr) {
 		do_error("Group descriptor #%llu has an invalid bg_blkno of %llu\n",
-			 (core::ffi::c_ulonglong)bh->b_blocknr,
-			 (core::ffi::c_ulonglong)le64_to_cpu(gd->bg_blkno));
+			 (kernel::ffi::c_ulonglong)bh->b_blocknr,
+			 (kernel::ffi::c_ulonglong)le64_to_cpu(gd->bg_blkno));
 	}
 
 	if (le32_to_cpu(gd->bg_generation) != OCFS2_SB(sb)->fs_generation) {
 		do_error("Group descriptor #%llu has an invalid fs_generation of #%u\n",
-			 (core::ffi::c_ulonglong)bh->b_blocknr,
+			 (kernel::ffi::c_ulonglong)bh->b_blocknr,
 			 le32_to_cpu(gd->bg_generation));
 	}
 
 	if (le16_to_cpu(gd->bg_free_bits_count) > le16_to_cpu(gd->bg_bits)) {
 		do_error("Group descriptor #%llu has bit count %u but claims that %u are free\n",
-			 (core::ffi::c_ulonglong)bh->b_blocknr,
+			 (kernel::ffi::c_ulonglong)bh->b_blocknr,
 			 le16_to_cpu(gd->bg_bits),
 			 le16_to_cpu(gd->bg_free_bits_count));
 	}
 
 	if (le16_to_cpu(gd->bg_bits) > (8 * le16_to_cpu(gd->bg_size))) {
 		do_error("Group descriptor #%llu has bit count %u but max bitmap bits of %u\n",
-			 (core::ffi::c_ulonglong)bh->b_blocknr,
+			 (kernel::ffi::c_ulonglong)bh->b_blocknr,
 			 le16_to_cpu(gd->bg_bits),
 			 8 * le16_to_cpu(gd->bg_size));
 	}
@@ -210,14 +210,14 @@ static int ocfs2_validate_gd_self(super_block *sb,
 
 		if (l_count != max_recs) {
 			do_error("Group descriptor #%llu bad discontig l_count %u expected %u\n",
-				 (core::ffi::c_ulonglong)bh->b_blocknr,
+				 (kernel::ffi::c_ulonglong)bh->b_blocknr,
 				 l_count,
 				 max_recs);
 		}
 
 		if (l_next_free_rec > l_count) {
 			do_error("Group descriptor #%llu bad discontig l_next_free_rec %u max %u\n",
-				 (core::ffi::c_ulonglong)bh->b_blocknr,
+				 (kernel::ffi::c_ulonglong)bh->b_blocknr,
 				 l_next_free_rec,
 				 l_count);
 		}
@@ -231,9 +231,9 @@ static int ocfs2_validate_gd_parent(super_block *sb,
 				    buffer_head *bh,
 				    int resize)
 {
-	core::ffi::c_uint max_bits;
-	core::ffi::c_uint max_bitmap_bits;
-	core::ffi::c_uint max_bitmap_size;
+	kernel::ffi::c_uint max_bits;
+	kernel::ffi::c_uint max_bitmap_bits;
+	kernel::ffi::c_uint max_bitmap_size;
 	int suballocator;
 	struct ocfs2_group_desc *gd = (ocfs2_group_desc *)bh->b_data;
 
@@ -244,21 +244,21 @@ static int ocfs2_validate_gd_parent(super_block *sb,
 
 	if (di->i_blkno != gd->bg_parent_dinode) {
 		do_error("Group descriptor #%llu has bad parent pointer (%llu, expected %llu)\n",
-			 (core::ffi::c_ulonglong)bh->b_blocknr,
-			 (core::ffi::c_ulonglong)le64_to_cpu(gd->bg_parent_dinode),
-			 (core::ffi::c_ulonglong)le64_to_cpu(di->i_blkno));
+			 (kernel::ffi::c_ulonglong)bh->b_blocknr,
+			 (kernel::ffi::c_ulonglong)le64_to_cpu(gd->bg_parent_dinode),
+			 (kernel::ffi::c_ulonglong)le64_to_cpu(di->i_blkno));
 	}
 
 	if (le16_to_cpu(gd->bg_size) > max_bitmap_size) {
 		do_error("Group descriptor #%llu has bitmap size %u but physical max of %u\n",
-			 (core::ffi::c_ulonglong)bh->b_blocknr,
+			 (kernel::ffi::c_ulonglong)bh->b_blocknr,
 			 le16_to_cpu(gd->bg_size),
 			 max_bitmap_size);
 	}
 
 	if (le16_to_cpu(gd->bg_bits) > max_bitmap_bits) {
 		do_error("Group descriptor #%llu has bit count %u but physical max of %u\n",
-			 (core::ffi::c_ulonglong)bh->b_blocknr,
+			 (kernel::ffi::c_ulonglong)bh->b_blocknr,
 			 le16_to_cpu(gd->bg_bits),
 			 max_bitmap_bits);
 	}
@@ -266,7 +266,7 @@ static int ocfs2_validate_gd_parent(super_block *sb,
 	max_bits = le16_to_cpu(di->id2.i_chain.cl_cpg) * le16_to_cpu(di->id2.i_chain.cl_bpc);
 	if (le16_to_cpu(gd->bg_bits) > max_bits) {
 		do_error("Group descriptor #%llu has bit count of %u\n",
-			 (core::ffi::c_ulonglong)bh->b_blocknr,
+			 (kernel::ffi::c_ulonglong)bh->b_blocknr,
 			 le16_to_cpu(gd->bg_bits));
 	}
 
@@ -276,7 +276,7 @@ static int ocfs2_validate_gd_parent(super_block *sb,
 	    ((le16_to_cpu(gd->bg_chain) ==
 	     le16_to_cpu(di->id2.i_chain.cl_next_free_rec)) && !resize)) {
 		do_error("Group descriptor #%llu has bad chain %u\n",
-			 (core::ffi::c_ulonglong)bh->b_blocknr,
+			 (kernel::ffi::c_ulonglong)bh->b_blocknr,
 			 le16_to_cpu(gd->bg_chain));
 	}
 
@@ -307,7 +307,7 @@ int ocfs2_check_group_descriptor(super_block *sb,
 	if (rc) {
 		mlog(ML_ERROR,
 		     "Checksum failed for group descriptor %llu\n",
-		     (core::ffi::c_ulonglong)bh->b_blocknr);
+		     (kernel::ffi::c_ulonglong)bh->b_blocknr);
 	} else
 		rc = ocfs2_validate_gd_self(sb, bh, 1);
 	if (!rc)
@@ -323,7 +323,7 @@ static int ocfs2_validate_group_descriptor(super_block *sb,
 	struct ocfs2_group_desc *gd = (ocfs2_group_desc *)bh->b_data;
 
 	trace_ocfs2_validate_group_descriptor(
-					(core::ffi::c_ulonglong)bh->b_blocknr);
+					(kernel::ffi::c_ulonglong)bh->b_blocknr);
 
 	BUG_ON(!buffer_uptodate(bh));
 
@@ -439,7 +439,7 @@ out:
 static void ocfs2_bg_discontig_add_extent(ocfs2_super *osb,
 					  ocfs2_group_desc *bg,
 					  ocfs2_chain_list *cl,
-					  p_blkno: u64, clusters: core::ffi::c_uint)
+					  p_blkno: u64, clusters: kernel::ffi::c_uint)
 {
 	struct ocfs2_extent_list *el = &bg->bg_list;
 	struct ocfs2_extent_rec *rec;
@@ -462,7 +462,7 @@ static int ocfs2_block_group_fill(handle_t *handle,
 				  inode *alloc_inode,
 				  buffer_head *bg_bh,
 				  group_blkno: u64,
-				  group_clusters: core::ffi::c_uint,
+				  group_clusters: kernel::ffi::c_uint,
 				  my_chain: u16,
 				  ocfs2_chain_list *cl)
 {
@@ -471,11 +471,11 @@ static int ocfs2_block_group_fill(handle_t *handle,
 	struct ocfs2_group_desc *bg = (ocfs2_group_desc *) bg_bh->b_data;
 	struct super_block * sb = alloc_inode->i_sb;
 
-	if (((core::ffi::c_ulonglong) bg_bh->b_blocknr) != group_blkno) {
+	if (((kernel::ffi::c_ulonglong) bg_bh->b_blocknr) != group_blkno) {
 		status = ocfs2_error(alloc_inode->i_sb,
 				     "group block (%llu) != b_blocknr (%llu)\n",
-				     (core::ffi::c_ulonglong)group_blkno,
-				     (core::ffi::c_ulonglong) bg_bh->b_blocknr);
+				     (kernel::ffi::c_ulonglong)group_blkno,
+				     (kernel::ffi::c_ulonglong) bg_bh->b_blocknr);
 		goto bail;
 	}
 
@@ -504,7 +504,7 @@ static int ocfs2_block_group_fill(handle_t *handle,
 					      group_clusters);
 
 	/* set the 1st bit in the bitmap to account for the descriptor block */
-	ocfs2_set_bit(0, (core::ffi::c_ulong *)bg->bg_bitmap);
+	ocfs2_set_bit(0, (kernel::ffi::c_ulong *)bg->bg_bitmap);
 	bg->bg_free_bits_count = cpu_to_le16(le16_to_cpu(bg->bg_bits) - 1);
 
 	ocfs2_journal_dirty(handle, bg_bh);
@@ -544,7 +544,7 @@ ocfs2_block_group_alloc_contig(ocfs2_super *osb, handle_t *handle,
 	bit_off: u32, num_bits;
 	u64 bg_blkno;
 	struct buffer_head *bg_bh;
-	core::ffi::c_uint alloc_rec = ocfs2_find_smallest_chain(cl);
+	kernel::ffi::c_uint alloc_rec = ocfs2_find_smallest_chain(cl);
 
 	status = ocfs2_claim_clusters(handle, ac,
 				      le16_to_cpu(cl->cl_cpg), &bit_off,
@@ -558,7 +558,7 @@ ocfs2_block_group_alloc_contig(ocfs2_super *osb, handle_t *handle,
 	/* setup the group */
 	bg_blkno = ocfs2_clusters_to_blocks(osb->sb, bit_off);
 	trace_ocfs2_block_group_alloc_contig(
-	     (core::ffi::c_ulonglong)bg_blkno, alloc_rec);
+	     (kernel::ffi::c_ulonglong)bg_blkno, alloc_rec);
 
 	bg_bh = sb_getblk(osb->sb, bg_blkno);
 	if (!bg_bh) {
@@ -582,7 +582,7 @@ bail:
 static int ocfs2_block_group_claim_bits(ocfs2_super *osb,
 					handle_t *handle,
 					ocfs2_alloc_context *ac,
-					min_bits: core::ffi::c_uint,
+					min_bits: kernel::ffi::c_uint,
 					u32 *bit_off, u32 *num_bits)
 {
 	int status = 0;
@@ -604,13 +604,13 @@ static int ocfs2_block_group_grow_discontig(handle_t *handle,
 					    buffer_head *bg_bh,
 					    ocfs2_alloc_context *ac,
 					    ocfs2_chain_list *cl,
-					    min_bits: core::ffi::c_uint)
+					    min_bits: kernel::ffi::c_uint)
 {
 	int status;
 	struct ocfs2_super *osb = OCFS2_SB(alloc_inode->i_sb);
 	struct ocfs2_group_desc *bg =
 		(ocfs2_group_desc *)bg_bh->b_data;
-	core::ffi::c_uint needed = le16_to_cpu(cl->cl_cpg) -
+	kernel::ffi::c_uint needed = le16_to_cpu(cl->cl_cpg) -
 			 le16_to_cpu(bg->bg_bits) / le16_to_cpu(cl->cl_bpc);
 	p_cpos: u32, clusters;
 	u64 p_blkno;
@@ -700,9 +700,9 @@ ocfs2_block_group_alloc_discontig(handle_t *handle,
 	int status;
 	bit_off: u32, num_bits;
 	u64 bg_blkno;
-	core::ffi::c_uint min_bits = le16_to_cpu(cl->cl_cpg) >> 1;
+	kernel::ffi::c_uint min_bits = le16_to_cpu(cl->cl_cpg) >> 1;
 	struct buffer_head *bg_bh = NULL;
-	core::ffi::c_uint alloc_rec = ocfs2_find_smallest_chain(cl);
+	kernel::ffi::c_uint alloc_rec = ocfs2_find_smallest_chain(cl);
 	struct ocfs2_super *osb = OCFS2_SB(alloc_inode->i_sb);
 
 	if (!ocfs2_supports_discontig_bg(osb)) {
@@ -738,7 +738,7 @@ ocfs2_block_group_alloc_discontig(handle_t *handle,
 	/* setup the group */
 	bg_blkno = ocfs2_clusters_to_blocks(osb->sb, bit_off);
 	trace_ocfs2_block_group_alloc_discontig(
-				(core::ffi::c_ulonglong)bg_blkno, alloc_rec);
+				(kernel::ffi::c_ulonglong)bg_blkno, alloc_rec);
 
 	bg_bh = sb_getblk(osb->sb, bg_blkno);
 	if (!bg_bh) {
@@ -809,7 +809,7 @@ static int ocfs2_block_group_alloc(ocfs2_super *osb,
 
 	if (last_alloc_group && *last_alloc_group != 0) {
 		trace_ocfs2_block_group_alloc(
-				(core::ffi::c_ulonglong)*last_alloc_group);
+				(kernel::ffi::c_ulonglong)*last_alloc_group);
 		ac->ac_last_group = *last_alloc_group;
 	}
 
@@ -925,7 +925,7 @@ static int ocfs2_reserve_suballoc_bits(ocfs2_super *osb,
 	if (!(fe->i_flags & cpu_to_le32(OCFS2_CHAIN_FL))) {
 		status = ocfs2_error(alloc_inode->i_sb,
 				     "Invalid chain allocator %llu\n",
-				     (core::ffi::c_ulonglong)le64_to_cpu(fe->i_blkno));
+				     (kernel::ffi::c_ulonglong)le64_to_cpu(fe->i_blkno));
 		goto bail;
 	}
 
@@ -1201,7 +1201,7 @@ int ocfs2_reserve_new_inode(ocfs2_super *osb,
 		osb->osb_inode_alloc_group = alloc_group;
 		spin_unlock(&osb->osb_lock);
 		trace_ocfs2_reserve_new_inode_new_group(
-			(core::ffi::c_ulonglong)alloc_group);
+			(kernel::ffi::c_ulonglong)alloc_group);
 
 		/*
 		 * Some inodes must be freed by us, so try to allocate
@@ -1376,7 +1376,7 @@ static int ocfs2_test_bg_bit_allocatable(buffer_head *bg_bh,
 	struct journal_head *jh;
 	int ret;
 
-	if (ocfs2_test_bit(nr, (core::ffi::c_ulong *)bg->bg_bitmap))
+	if (ocfs2_test_bit(nr, (kernel::ffi::c_ulong *)bg->bg_bitmap))
 		return 0;
 
 	jh = jbd2_journal_grab_journal_head(bg_bh);
@@ -1386,7 +1386,7 @@ static int ocfs2_test_bg_bit_allocatable(buffer_head *bg_bh,
 	spin_lock(&jh->b_state_lock);
 	bg = (ocfs2_group_desc *) jh->b_committed_data;
 	if (bg)
-		ret = !ocfs2_test_bit(nr, (core::ffi::c_ulong *)bg->bg_bitmap);
+		ret = !ocfs2_test_bit(nr, (kernel::ffi::c_ulong *)bg->bg_bitmap);
 	else
 		ret = 1;
 	spin_unlock(&jh->b_state_lock);
@@ -1417,8 +1417,8 @@ u16 ocfs2_find_max_contig_free_bits(void *bitmap,
 
 static int ocfs2_block_group_find_clear_bits(ocfs2_super *osb,
 					     buffer_head *bg_bh,
-					     bits_wanted: core::ffi::c_uint,
-					     total_bits: core::ffi::c_uint,
+					     bits_wanted: kernel::ffi::c_uint,
+					     total_bits: kernel::ffi::c_uint,
 					     ocfs2_suballoc_result *res)
 {
 	void *bitmap;
@@ -1481,15 +1481,15 @@ int ocfs2_block_group_set_bits(handle_t *handle,
 					     inode *alloc_inode,
 					     ocfs2_group_desc *bg,
 					     buffer_head *group_bh,
-					     bit_off: core::ffi::c_uint,
-					     num_bits: core::ffi::c_uint,
-					     max_contig_bits: core::ffi::c_uint,
+					     bit_off: kernel::ffi::c_uint,
+					     num_bits: kernel::ffi::c_uint,
+					     max_contig_bits: kernel::ffi::c_uint,
 					     int fastpath)
 {
 	int status;
 	void *bitmap = bg->bg_bitmap;
 	int journal_type = OCFS2_JOURNAL_ACCESS_WRITE;
-	core::ffi::c_uint start = bit_off + num_bits;
+	kernel::ffi::c_uint start = bit_off + num_bits;
 	u16 contig_bits;
 	struct ocfs2_super *osb = OCFS2_SB(alloc_inode->i_sb);
 
@@ -1515,7 +1515,7 @@ int ocfs2_block_group_set_bits(handle_t *handle,
 	le16_add_cpu(&bg->bg_free_bits_count, -num_bits);
 	if (le16_to_cpu(bg->bg_free_bits_count) > le16_to_cpu(bg->bg_bits)) {
 		return ocfs2_error(alloc_inode->i_sb, "Group descriptor # %llu has bit count %u but claims %u are freed. num_bits %d\n",
-				   (core::ffi::c_ulonglong)le64_to_cpu(bg->bg_blkno),
+				   (kernel::ffi::c_ulonglong)le64_to_cpu(bg->bg_blkno),
 				   le16_to_cpu(bg->bg_bits),
 				   le16_to_cpu(bg->bg_free_bits_count),
 				   num_bits);
@@ -1592,9 +1592,9 @@ static int ocfs2_relink_block_group(handle_t *handle,
 	BUG_ON(!OCFS2_IS_VALID_GROUP_DESC(prev_bg));
 
 	trace_ocfs2_relink_block_group(
-		(core::ffi::c_ulonglong)le64_to_cpu(fe->i_blkno), chain,
-		(core::ffi::c_ulonglong)le64_to_cpu(bg->bg_blkno),
-		(core::ffi::c_ulonglong)le64_to_cpu(prev_bg->bg_blkno));
+		(kernel::ffi::c_ulonglong)le64_to_cpu(fe->i_blkno), chain,
+		(kernel::ffi::c_ulonglong)le64_to_cpu(bg->bg_blkno),
+		(kernel::ffi::c_ulonglong)le64_to_cpu(prev_bg->bg_blkno));
 
 	bg_ptr = le64_to_cpu(bg->bg_next_group);
 	prev_bg_ptr = le64_to_cpu(prev_bg->bg_next_group);
@@ -1655,7 +1655,7 @@ static int ocfs2_cluster_group_search(inode *inode,
 	u64 blkoff;
 	struct ocfs2_group_desc *gd = (ocfs2_group_desc *) group_bh->b_data;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
-	max_bits: core::ffi::c_uint, gd_cluster_off;
+	max_bits: kernel::ffi::c_uint, gd_cluster_off;
 
 	BUG_ON(!ocfs2_is_cluster_bitmap(inode));
 
@@ -1679,7 +1679,7 @@ static int ocfs2_cluster_group_search(inode *inode,
 		    OCFS2_I(inode)->ip_clusters) {
 			max_bits = OCFS2_I(inode)->ip_clusters - gd_cluster_off;
 			trace_ocfs2_cluster_group_search_wrong_max_bits(
-				(core::ffi::c_ulonglong)le64_to_cpu(gd->bg_blkno),
+				(kernel::ffi::c_ulonglong)le64_to_cpu(gd->bg_blkno),
 				le16_to_cpu(gd->bg_bits),
 				OCFS2_I(inode)->ip_clusters, max_bits);
 		}
@@ -1696,8 +1696,8 @@ static int ocfs2_cluster_group_search(inode *inode,
 							  res->sr_bit_offset +
 							  res->sr_bits);
 			trace_ocfs2_cluster_group_search_max_block(
-				(core::ffi::c_ulonglong)blkoff,
-				(core::ffi::c_ulonglong)max_block);
+				(kernel::ffi::c_ulonglong)blkoff,
+				(kernel::ffi::c_ulonglong)max_block);
 			if (blkoff > max_block)
 				return -ENOSPC;
 		}
@@ -1735,8 +1735,8 @@ static int ocfs2_block_group_search(inode *inode,
 			blkoff = le64_to_cpu(bg->bg_blkno) +
 				res->sr_bit_offset + res->sr_bits;
 			trace_ocfs2_block_group_search_max_block(
-				(core::ffi::c_ulonglong)blkoff,
-				(core::ffi::c_ulonglong)max_block);
+				(kernel::ffi::c_ulonglong)blkoff,
+				(kernel::ffi::c_ulonglong)max_block);
 			if (blkoff > max_block)
 				ret = -ENOSPC;
 		}
@@ -1791,9 +1791,9 @@ static int ocfs2_bg_discontig_fix_by_rec(ocfs2_suballoc_result *res,
 					 ocfs2_extent_rec *rec,
 					 ocfs2_chain_list *cl)
 {
-	core::ffi::c_uint bpc = le16_to_cpu(cl->cl_bpc);
-	core::ffi::c_uint bitoff = le32_to_cpu(rec->e_cpos) * bpc;
-	core::ffi::c_uint bitcount = le16_to_cpu(rec->e_leaf_clusters) * bpc;
+	kernel::ffi::c_uint bpc = le16_to_cpu(cl->cl_bpc);
+	kernel::ffi::c_uint bitoff = le32_to_cpu(rec->e_cpos) * bpc;
+	kernel::ffi::c_uint bitcount = le16_to_cpu(rec->e_leaf_clusters) * bpc;
 
 	if (res->sr_bit_offset < bitoff)
 		return 0;
@@ -1926,7 +1926,7 @@ static int ocfs2_search_chain(ocfs2_alloc_context *ac,
 
 	chain = ac->ac_chain;
 	trace_ocfs2_search_chain_begin(
-		(core::ffi::c_ulonglong)OCFS2_I(alloc_inode)->ip_blkno,
+		(kernel::ffi::c_ulonglong)OCFS2_I(alloc_inode)->ip_blkno,
 		bits_wanted, chain);
 
 	status = ocfs2_read_group_descriptor(alloc_inode, fe,
@@ -1980,7 +1980,7 @@ static int ocfs2_search_chain(ocfs2_alloc_context *ac,
 	}
 
 	trace_ocfs2_search_chain_succ(
-		(core::ffi::c_ulonglong)le64_to_cpu(bg->bg_blkno), res->sr_bits);
+		(kernel::ffi::c_ulonglong)le64_to_cpu(bg->bg_blkno), res->sr_bits);
 
 	res->sr_bg_blkno = le64_to_cpu(bg->bg_blkno);
 
@@ -2046,7 +2046,7 @@ static int ocfs2_search_chain(ocfs2_alloc_context *ac,
 	}
 
 	trace_ocfs2_search_chain_end(
-			(core::ffi::c_ulonglong)le64_to_cpu(fe->i_blkno),
+			(kernel::ffi::c_ulonglong)le64_to_cpu(fe->i_blkno),
 			res->sr_bits);
 
 out_loc_only:
@@ -2089,7 +2089,7 @@ static int ocfs2_claim_suballoc_bits(ocfs2_alloc_context *ac,
 	    le32_to_cpu(fe->id1.bitmap1.i_total)) {
 		status = ocfs2_error(ac->ac_inode->i_sb,
 				     "Chain allocator dinode %llu has %u used bits but only %u total\n",
-				     (core::ffi::c_ulonglong)le64_to_cpu(fe->i_blkno),
+				     (kernel::ffi::c_ulonglong)le64_to_cpu(fe->i_blkno),
 				     le32_to_cpu(fe->id1.bitmap1.i_used),
 				     le32_to_cpu(fe->id1.bitmap1.i_total));
 		goto bail;
@@ -2123,7 +2123,7 @@ chain_search:
 		status = ocfs2_error(ac->ac_inode->i_sb,
 				     "Chain allocator dinode %llu has invalid next "
 				     "free chain record %u, but only %u total\n",
-				     (core::ffi::c_ulonglong)le64_to_cpu(fe->i_blkno),
+				     (kernel::ffi::c_ulonglong)le64_to_cpu(fe->i_blkno),
 				     le16_to_cpu(cl->cl_next_free_rec),
 				     le16_to_cpu(cl->cl_count));
 		goto bail;
@@ -2205,7 +2205,7 @@ int ocfs2_claim_metadata(handle_t *handle,
 			 bits_wanted: u32,
 			 u64 *suballoc_loc,
 			 u16 *suballoc_bit_start,
-			 core::ffi::c_uint *num_bits,
+			 kernel::ffi::c_uint *num_bits,
 			 u64 *blkno_start)
 {
 	int status;
@@ -2395,7 +2395,7 @@ int ocfs2_claim_new_inode_at_loc(handle_t *handle,
 		goto out;
 	}
 
-	trace_ocfs2_claim_new_inode_at_loc((core::ffi::c_ulonglong)di_blkno,
+	trace_ocfs2_claim_new_inode_at_loc((kernel::ffi::c_ulonglong)di_blkno,
 					   res->sr_bits);
 
 	atomic_inc(&OCFS2_SB(ac->ac_inode->i_sb)->alloc_stats.bg_allocs);
@@ -2525,7 +2525,7 @@ int __ocfs2_claim_clusters(handle_t *handle,
 			   u32 *num_clusters)
 {
 	int status;
-	core::ffi::c_uint bits_wanted = max_clusters;
+	kernel::ffi::c_uint bits_wanted = max_clusters;
 	struct ocfs2_suballoc_result res = { .sr_blkno = 0, };
 	struct ocfs2_super *osb = OCFS2_SB(ac->ac_inode->i_sb);
 
@@ -2595,7 +2595,7 @@ int ocfs2_claim_clusters(handle_t *handle,
 			 u32 *cluster_start,
 			 u32 *num_clusters)
 {
-	core::ffi::c_uint bits_wanted = ac->ac_bits_wanted - ac->ac_bits_given;
+	kernel::ffi::c_uint bits_wanted = ac->ac_bits_wanted - ac->ac_bits_given;
 
 	return __ocfs2_claim_clusters(handle, ac, min_clusters,
 				      bits_wanted, cluster_start, num_clusters);
@@ -2605,14 +2605,14 @@ static int ocfs2_block_group_clear_bits(handle_t *handle,
 					inode *alloc_inode,
 					ocfs2_group_desc *bg,
 					buffer_head *group_bh,
-					bit_off: core::ffi::c_uint,
-					num_bits: core::ffi::c_uint,
-					max_contig_bits: core::ffi::c_uint,
-					void (*undo_fn)(bit: core::ffi::c_uint,
-							core::ffi::c_ulong *bmap))
+					bit_off: kernel::ffi::c_uint,
+					num_bits: kernel::ffi::c_uint,
+					max_contig_bits: kernel::ffi::c_uint,
+					void (*undo_fn)(bit: kernel::ffi::c_uint,
+							kernel::ffi::c_ulong *bmap))
 {
 	int status;
-	core::ffi::c_uint tmp;
+	kernel::ffi::c_uint tmp;
 	u16 contig_bits;
 	struct ocfs2_group_desc *undo_bg = NULL;
 	struct journal_head *jh;
@@ -2644,17 +2644,17 @@ static int ocfs2_block_group_clear_bits(handle_t *handle,
 	tmp = num_bits;
 	while(tmp--) {
 		ocfs2_clear_bit((bit_off + tmp),
-				(core::ffi::c_ulong *) bg->bg_bitmap);
+				(kernel::ffi::c_ulong *) bg->bg_bitmap);
 		if (undo_fn)
 			undo_fn(bit_off + tmp,
-				(core::ffi::c_ulong *) undo_bg->bg_bitmap);
+				(kernel::ffi::c_ulong *) undo_bg->bg_bitmap);
 	}
 	le16_add_cpu(&bg->bg_free_bits_count, num_bits);
 	if (le16_to_cpu(bg->bg_free_bits_count) > le16_to_cpu(bg->bg_bits)) {
 		if (undo_fn)
 			spin_unlock(&jh->b_state_lock);
 		return ocfs2_error(alloc_inode->i_sb, "Group descriptor # %llu has bit count %u but claims %u are freed. num_bits %d\n",
-				   (core::ffi::c_ulonglong)le64_to_cpu(bg->bg_blkno),
+				   (kernel::ffi::c_ulonglong)le64_to_cpu(bg->bg_blkno),
 				   le16_to_cpu(bg->bg_bits),
 				   le16_to_cpu(bg->bg_free_bits_count),
 				   num_bits);
@@ -2705,7 +2705,7 @@ static int _ocfs2_reclaim_suballoc_to_main(handle_t *handle,
 	u16 start_bit;
 	u32 tmp_used;
 	bg_blkno: u64, start_blk;
-	core::ffi::c_uint count;
+	kernel::ffi::c_uint count;
 	struct ocfs2_chain_rec *rec;
 	struct buffer_head *main_bm_bh = NULL;
 	struct inode *main_bm_inode = NULL;
@@ -2880,11 +2880,11 @@ bail:
 static int _ocfs2_free_suballoc_bits(handle_t *handle,
 				     inode *alloc_inode,
 				     buffer_head *alloc_bh,
-				     start_bit: core::ffi::c_uint,
+				     start_bit: kernel::ffi::c_uint,
 				     bg_blkno: u64,
-				     count: core::ffi::c_uint,
-				     void (*undo_fn)(bit: core::ffi::c_uint,
-						     core::ffi::c_ulong *bitmap))
+				     count: kernel::ffi::c_uint,
+				     void (*undo_fn)(bit: kernel::ffi::c_uint,
+						     kernel::ffi::c_ulong *bitmap))
 {
 	int idx, status = 0;
 	u32 tmp_used;
@@ -2904,8 +2904,8 @@ static int _ocfs2_free_suballoc_bits(handle_t *handle,
 	BUG_ON((count + start_bit) > ocfs2_bits_per_group(cl));
 
 	trace_ocfs2_free_suballoc_bits(
-		(core::ffi::c_ulonglong)OCFS2_I(alloc_inode)->ip_blkno,
-		(core::ffi::c_ulonglong)bg_blkno,
+		(kernel::ffi::c_ulonglong)OCFS2_I(alloc_inode)->ip_blkno,
+		(kernel::ffi::c_ulonglong)bg_blkno,
 		start_bit, count);
 
 	status = ocfs2_read_group_descriptor(alloc_inode, fe, bg_blkno,
@@ -2966,9 +2966,9 @@ bail:
 int ocfs2_free_suballoc_bits(handle_t *handle,
 			     inode *alloc_inode,
 			     buffer_head *alloc_bh,
-			     start_bit: core::ffi::c_uint,
+			     start_bit: kernel::ffi::c_uint,
 			     bg_blkno: u64,
-			     count: core::ffi::c_uint)
+			     count: kernel::ffi::c_uint)
 {
 	return _ocfs2_free_suballoc_bits(handle, alloc_inode, alloc_bh,
 					 start_bit, bg_blkno, count, NULL);
@@ -2993,9 +2993,9 @@ static int _ocfs2_free_clusters(handle_t *handle,
 				inode *bitmap_inode,
 				buffer_head *bitmap_bh,
 				start_blk: u64,
-				num_clusters: core::ffi::c_uint,
-				void (*undo_fn)(bit: core::ffi::c_uint,
-						core::ffi::c_ulong *bitmap))
+				num_clusters: kernel::ffi::c_uint,
+				void (*undo_fn)(bit: kernel::ffi::c_uint,
+						kernel::ffi::c_ulong *bitmap))
 {
 	int status;
 	u16 bg_start_bit;
@@ -3014,8 +3014,8 @@ static int _ocfs2_free_clusters(handle_t *handle,
 	ocfs2_block_to_cluster_group(bitmap_inode, start_blk, &bg_blkno,
 				     &bg_start_bit);
 
-	trace_ocfs2_free_clusters((core::ffi::c_ulonglong)bg_blkno,
-			(core::ffi::c_ulonglong)start_blk,
+	trace_ocfs2_free_clusters((kernel::ffi::c_ulonglong)bg_blkno,
+			(kernel::ffi::c_ulonglong)start_blk,
 			bg_start_bit, num_clusters);
 
 	status = _ocfs2_free_suballoc_bits(handle, bitmap_inode, bitmap_bh,
@@ -3037,7 +3037,7 @@ int ocfs2_free_clusters(handle_t *handle,
 			inode *bitmap_inode,
 			buffer_head *bitmap_bh,
 			start_blk: u64,
-			num_clusters: core::ffi::c_uint)
+			num_clusters: kernel::ffi::c_uint)
 {
 	return _ocfs2_free_clusters(handle, bitmap_inode, bitmap_bh,
 				    start_blk, num_clusters,
@@ -3052,7 +3052,7 @@ int ocfs2_release_clusters(handle_t *handle,
 			   inode *bitmap_inode,
 			   buffer_head *bitmap_bh,
 			   start_blk: u64,
-			   num_clusters: core::ffi::c_uint)
+			   num_clusters: kernel::ffi::c_uint)
 {
 	return _ocfs2_free_clusters(handle, bitmap_inode, bitmap_bh,
 				    start_blk, num_clusters,
@@ -3076,7 +3076,7 @@ int ocfs2_lock_allocators(inode *inode,
 			  ocfs2_alloc_context **meta_ac)
 {
 	int ret = 0, num_free_extents;
-	core::ffi::c_uint max_recs_needed = clusters_to_add + 2 * extents_to_split;
+	kernel::ffi::c_uint max_recs_needed = clusters_to_add + 2 * extents_to_split;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
 	*meta_ac = NULL;
@@ -3152,20 +3152,20 @@ static int ocfs2_get_suballoc_slot_bit(ocfs2_super *osb, blkno: u64,
 	struct buffer_head *inode_bh = NULL;
 	struct ocfs2_dinode *inode_fe;
 
-	trace_ocfs2_get_suballoc_slot_bit((core::ffi::c_ulonglong)blkno);
+	trace_ocfs2_get_suballoc_slot_bit((kernel::ffi::c_ulonglong)blkno);
 
 	/* dirty read disk */
 	status = ocfs2_read_blocks_sync(osb, blkno, 1, &inode_bh);
 	if (status < 0) {
 		mlog(ML_ERROR, "read block %llu failed %d\n",
-		     (core::ffi::c_ulonglong)blkno, status);
+		     (kernel::ffi::c_ulonglong)blkno, status);
 		goto bail;
 	}
 
 	inode_fe = (ocfs2_dinode *) inode_bh->b_data;
 	if (!OCFS2_IS_VALID_DINODE(inode_fe)) {
 		mlog(ML_ERROR, "invalid inode %llu requested\n",
-		     (core::ffi::c_ulonglong)blkno);
+		     (kernel::ffi::c_ulonglong)blkno);
 		status = -EINVAL;
 		goto bail;
 	}
@@ -3173,7 +3173,7 @@ static int ocfs2_get_suballoc_slot_bit(ocfs2_super *osb, blkno: u64,
 	if (le16_to_cpu(inode_fe->i_suballoc_slot) != (u16)OCFS2_INVALID_SLOT &&
 	    (u32)le16_to_cpu(inode_fe->i_suballoc_slot) > osb->max_slots - 1) {
 		mlog(ML_ERROR, "inode %llu has invalid suballoc slot %u\n",
-		     (core::ffi::c_ulonglong)blkno,
+		     (kernel::ffi::c_ulonglong)blkno,
 		     (u32)le16_to_cpu(inode_fe->i_suballoc_slot));
 		status = -EINVAL;
 		goto bail;
@@ -3213,13 +3213,13 @@ static int ocfs2_test_suballoc_bit(ocfs2_super *osb,
 	u64 bg_blkno;
 	int status, quiet = 0, released = 0;
 
-	trace_ocfs2_test_suballoc_bit((core::ffi::c_ulonglong)blkno,
-				      (core::ffi::c_uint)bit);
+	trace_ocfs2_test_suballoc_bit((kernel::ffi::c_ulonglong)blkno,
+				      (kernel::ffi::c_uint)bit);
 
 	alloc_di = (ocfs2_dinode *)alloc_bh->b_data;
 	if ((bit + 1) > ocfs2_bits_per_group(&alloc_di->id2.i_chain)) {
 		mlog(ML_ERROR, "suballoc bit %u out of range of %u\n",
-		     (core::ffi::c_uint)bit,
+		     (kernel::ffi::c_uint)bit,
 		     ocfs2_bits_per_group(&alloc_di->id2.i_chain));
 		status = -EINVAL;
 		goto bail;
@@ -3235,12 +3235,12 @@ static int ocfs2_test_suballoc_bit(ocfs2_super *osb,
 		goto bail;
 	} else if (status < 0) {
 		mlog(ML_ERROR, "read group %llu failed %d\n",
-		     (core::ffi::c_ulonglong)bg_blkno, status);
+		     (kernel::ffi::c_ulonglong)bg_blkno, status);
 		goto bail;
 	}
 
 	group = (ocfs2_group_desc *) group_bh->b_data;
-	*res = ocfs2_test_bit(bit, (core::ffi::c_ulong *)group->bg_bitmap);
+	*res = ocfs2_test_bit(bit, (kernel::ffi::c_ulong *)group->bg_bitmap);
 
 bail:
 	brelse(group_bh);
@@ -3271,7 +3271,7 @@ int ocfs2_test_inode_bit(ocfs2_super *osb, blkno: u64, int *res)
 	struct inode *inode_alloc_inode;
 	struct buffer_head *alloc_bh = NULL;
 
-	trace_ocfs2_test_inode_bit((core::ffi::c_ulonglong)blkno);
+	trace_ocfs2_test_inode_bit((kernel::ffi::c_ulonglong)blkno);
 
 	status = ocfs2_get_suballoc_slot_bit(osb, blkno, &suballoc_slot,
 					     &group_blkno, &suballoc_bit);

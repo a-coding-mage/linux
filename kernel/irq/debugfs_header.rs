@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 
 /* The C header includes <linux/debugfs.h>; those declarations are supplied by
  * the surrounding translation unit. */
@@ -18,7 +18,7 @@ macro_rules! BIT_MASK_DESCR {
     ($m:expr) => {
         $crate::irq_bit_descr {
             mask: $m,
-            name: concat!(stringify!($m), "\0").as_ptr() as *mut core::ffi::c_char,
+            name: concat!(stringify!($m), "\0").as_ptr() as *mut kernel::ffi::c_char,
         }
     };
 }

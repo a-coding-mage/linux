@@ -74,10 +74,10 @@ pub const SB_BASE_IOCTL_NR: u32 = 0xF9;
  * IOCTL command for APML messages using generic _IOWR.
  * The _IOWR macro and its dependent definitions are supplied externally.
  */
-pub const SBRMI_IOCTL_MBOX_CMD: _ = _IOWR(SB_BASE_IOCTL_NR, 0, apml_mbox_msg);
-pub const SBRMI_IOCTL_CPUID_CMD: _ = _IOWR(SB_BASE_IOCTL_NR, 1, apml_cpuid_msg);
-pub const SBRMI_IOCTL_MCAMSR_CMD: _ = _IOWR(SB_BASE_IOCTL_NR, 2, apml_mcamsr_msg);
-pub const SBRMI_IOCTL_REG_XFER_CMD: _ = _IOWR(SB_BASE_IOCTL_NR, 3, apml_reg_xfer_msg);
-pub const SBTSI_IOCTL_REG_XFER_CMD: _ = _IOWR(SB_BASE_IOCTL_NR, 4, apml_tsi_xfer_msg);
+pub const SBRMI_IOCTL_MBOX_CMD: u32 = _IOWR(SB_BASE_IOCTL_NR, 0, apml_mbox_msg);
+pub const SBRMI_IOCTL_CPUID_CMD: u32 = _IOWR(SB_BASE_IOCTL_NR, 1, apml_cpuid_msg);
+pub const SBRMI_IOCTL_MCAMSR_CMD: u32 = _IOWR(SB_BASE_IOCTL_NR, 2, apml_mcamsr_msg);
+pub const SBRMI_IOCTL_REG_XFER_CMD: u32 = _IOWR(SB_BASE_IOCTL_NR, 3, apml_reg_xfer_msg);
+pub const SBTSI_IOCTL_REG_XFER_CMD: u32 = _IOWR(SB_BASE_IOCTL_NR, 4, apml_tsi_xfer_msg);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

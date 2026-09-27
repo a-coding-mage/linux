@@ -7,20 +7,20 @@
 
 #[repr(C)]
 pub struct pt_regs {
-    pub msr: ::core::ffi::c_ulong,
-    pub nip: ::core::ffi::c_ulong,
-    pub dar: ::core::ffi::c_ulong,
+    pub msr: ::kernel::ffi::c_ulong,
+    pub nip: ::kernel::ffi::c_ulong,
+    pub dar: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
     fn pr_err(fmt: *const u8, ...);
     fn pr_cont(fmt: *const u8, ...);
-    fn bad_page_fault(regs: *mut pt_regs, sig: ::core::ffi::c_int);
-    static SIGBUS: ::core::ffi::c_int;
+    fn bad_page_fault(regs: *mut pt_regs, sig: ::kernel::ffi::c_int);
+    static SIGBUS: ::kernel::ffi::c_int;
 }
 
-pub unsafe fn machine_check_8xx(regs: *mut pt_regs) -> ::core::ffi::c_int {
-    let reason: ::core::ffi::c_ulong = (*regs).msr;
+pub unsafe fn machine_check_8xx(regs: *mut pt_regs) -> ::kernel::ffi::c_int {
+    let reason: ::kernel::ffi::c_ulong = (*regs).msr;
 
     pr_err(b"Machine check in kernel mode.\n\0".as_ptr());
     pr_err(

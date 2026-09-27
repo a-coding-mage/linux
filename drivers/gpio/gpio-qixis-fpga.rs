@@ -51,7 +51,7 @@ pub struct regmap {
 pub struct gpio_regmap_config {
     pub reg_dat_base: usize,
     pub reg_set_base: usize,
-    pub drvdata: *mut core::ffi::c_void,
+    pub drvdata: *mut kernel::ffi::c_void,
     pub regmap: *mut regmap,
     pub parent: *mut device,
     pub ngpio_per_reg: u32,
@@ -61,13 +61,13 @@ pub struct gpio_regmap_config {
 
 extern "C" {
     fn device_get_match_data(dev: *const device) -> *const qixis_cpld_gpio_config;
-    fn device_property_read_u32(dev: *const device, name: *const core::ffi::c_char, value: *mut u32) -> i32;
-    fn dev_get_regmap(parent: *mut device, name: *const core::ffi::c_char) -> *mut regmap;
-    fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32) -> *mut core::ffi::c_void;
-    fn devm_regmap_init_mmio(dev: *mut device, reg: *mut core::ffi::c_void, config: *const regmap_config) -> *mut regmap;
-    fn devm_gpio_regmap_register(dev: *mut device, config: *mut gpio_regmap_config) -> *mut core::ffi::c_void;
-    fn ptr_err_or_zero(ptr: *mut core::ffi::c_void) -> i32;
-    fn ptr_err(ptr: *mut core::ffi::c_void) -> i32;
+    fn device_property_read_u32(dev: *const device, name: *const kernel::ffi::c_char, value: *mut u32) -> i32;
+    fn dev_get_regmap(parent: *mut device, name: *const kernel::ffi::c_char) -> *mut regmap;
+    fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32) -> *mut kernel::ffi::c_void;
+    fn devm_regmap_init_mmio(dev: *mut device, reg: *mut kernel::ffi::c_void, config: *const regmap_config) -> *mut regmap;
+    fn devm_gpio_regmap_register(dev: *mut device, config: *mut gpio_regmap_config) -> *mut kernel::ffi::c_void;
+    fn ptr_err_or_zero(ptr: *mut kernel::ffi::c_void) -> i32;
+    fn ptr_err(ptr: *mut kernel::ffi::c_void) -> i32;
     fn gpio_regmap_addr(base: u32) -> usize;
 }
 
@@ -76,7 +76,7 @@ unsafe fn qixis_cpld_gpio_probe(pdev: *mut platform_device) -> i32 {
     let cfg: *const qixis_cpld_gpio_config;
     let mut config: gpio_regmap_config = core::mem::zeroed();
     let mut regmap: *mut regmap;
-    let reg: *mut core::ffi::c_void;
+    let reg: *mut kernel::ffi::c_void;
     let mut base: u32 = 0;
     let ret: i32;
     let dev = pdev as *mut device;
@@ -89,7 +89,7 @@ unsafe fn qixis_cpld_gpio_probe(pdev: *mut platform_device) -> i32 {
 
     cfg = device_get_match_data(dev);
 
-    ret = device_property_read_u32(dev, b"reg\0".as_ptr() as *const core::ffi::c_char, &mut base);
+    ret = device_property_read_u32(dev, b"reg\0".as_ptr() as *const kernel::ffi::c_char, &mut base);
     if ret != 0 {
         return ret;
     }
@@ -106,7 +106,7 @@ unsafe fn qixis_cpld_gpio_probe(pdev: *mut platform_device) -> i32 {
 
         regmap = devm_regmap_init_mmio(dev, reg, &regmap_config_8r_8v);
         if regmap.is_null() {
-            return ptr_err(regmap as *mut core::ffi::c_void);
+            return ptr_err(regmap as *mut kernel::ffi::c_void);
         }
 
         /* In this case, the offset of our register is 0 inside the
@@ -117,7 +117,7 @@ unsafe fn qixis_cpld_gpio_probe(pdev: *mut platform_device) -> i32 {
     config.reg_dat_base = gpio_regmap_addr(base);
     config.reg_set_base = gpio_regmap_addr(base);
 
-    config.drvdata = cfg as *mut core::ffi::c_void;
+    config.drvdata = cfg as *mut kernel::ffi::c_void;
     config.regmap = regmap;
     config.parent = dev;
     config.ngpio_per_reg = 8;
@@ -131,18 +131,18 @@ unsafe fn qixis_cpld_gpio_probe(pdev: *mut platform_device) -> i32 {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 static qixis_cpld_gpio_of_match: [of_device_id; 3] = [
     of_device_id {
-        compatible: b"fsl,lx2160ardb-fpga-gpio-sfp\0".as_ptr() as *const core::ffi::c_char,
-        data: &lx2160ardb_sfp_cfg as *const _ as *const core::ffi::c_void,
+        compatible: b"fsl,lx2160ardb-fpga-gpio-sfp\0".as_ptr() as *const kernel::ffi::c_char,
+        data: &lx2160ardb_sfp_cfg as *const _ as *const kernel::ffi::c_void,
     },
     of_device_id {
-        compatible: b"fsl,ls1046aqds-fpga-gpio-stat-pres2\0".as_ptr() as *const core::ffi::c_char,
-        data: &ls1046aqds_stat_pres2_cfg as *const _ as *const core::ffi::c_void,
+        compatible: b"fsl,ls1046aqds-fpga-gpio-stat-pres2\0".as_ptr() as *const kernel::ffi::c_char,
+        data: &ls1046aqds_stat_pres2_cfg as *const _ as *const kernel::ffi::c_void,
     },
     of_device_id {
         compatible: core::ptr::null(),
@@ -154,7 +154,7 @@ static qixis_cpld_gpio_of_match: [of_device_id; 3] = [
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
@@ -167,7 +167,7 @@ pub struct platform_driver {
 static mut qixis_cpld_gpio_driver: platform_driver = platform_driver {
     probe: Some(qixis_cpld_gpio_probe),
     driver: device_driver {
-        name: b"gpio-qixis-cpld\0".as_ptr() as *const core::ffi::c_char,
+        name: b"gpio-qixis-cpld\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: qixis_cpld_gpio_of_match.as_ptr(),
     },
 };

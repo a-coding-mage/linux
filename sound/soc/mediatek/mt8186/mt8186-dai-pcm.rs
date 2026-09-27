@@ -12,10 +12,10 @@
 
 #[repr(C)]
 pub struct mtk_afe_pcm_priv {
-    pub id: ::core::ffi::c_uint,
-    pub fmt: ::core::ffi::c_uint,
-    pub bck_invert: ::core::ffi::c_uint,
-    pub lck_invert: ::core::ffi::c_uint,
+    pub id: ::kernel::ffi::c_uint,
+    pub fmt: ::kernel::ffi::c_uint,
+    pub bck_invert: ::kernel::ffi::c_uint,
+    pub lck_invert: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -126,8 +126,8 @@ pub static mtk_pcm_1_playback_ch2_mix: [snd_kcontrol_new; 3] = [
 pub unsafe extern "C" fn mtk_pcm_en_event(
     w: *mut snd_soc_dapm_widget,
     kcontrol: *mut snd_kcontrol,
-    event: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    event: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let cmpnt: *mut snd_soc_component = snd_soc_dapm_to_component((*w).dapm);
     let afe: *mut mtk_base_afe = snd_soc_component_get_drvdata(cmpnt) as *mut mtk_base_afe;
 
@@ -154,12 +154,12 @@ pub unsafe extern "C" fn mtk_pcm_en_event(
 }
 
 /* pcm in/out lpbk */
-pub static pcm_lpbk_mux_map: [*const ::core::ffi::c_char; 2] = [
+pub static pcm_lpbk_mux_map: [*const ::kernel::ffi::c_char; 2] = [
     c"Normal".as_ptr(),
     c"Lpbk".as_ptr(),
 ];
 
-pub static mut pcm_lpbk_mux_map_value: [::core::ffi::c_int; 2] = [0, 1];
+pub static mut pcm_lpbk_mux_map_value: [::kernel::ffi::c_int; 2] = [0, 1];
 
 SOC_VALUE_ENUM_SINGLE_AUTODISABLE_DECL!(
     pcm_in_lpbk_mux_map_enum,
@@ -251,20 +251,20 @@ pub unsafe extern "C" fn mtk_dai_pcm_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let afe: *mut mtk_base_afe = snd_soc_dai_get_drvdata(dai) as *mut mtk_base_afe;
     let afe_priv: *mut mt8186_afe_private = (*afe).platform_priv as *mut mt8186_afe_private;
     let p: *mut snd_soc_dapm_widget = snd_soc_dai_get_widget_playback(dai);
     let c: *mut snd_soc_dapm_widget = snd_soc_dai_get_widget_capture(dai);
-    let pcm_id: ::core::ffi::c_int = (*dai).id;
+    let pcm_id: ::kernel::ffi::c_int = (*dai).id;
     let pcm_priv: *mut mtk_afe_pcm_priv = (*afe_priv).dai_priv[pcm_id as usize] as *mut mtk_afe_pcm_priv;
-    let rate: ::core::ffi::c_uint = params_rate(params);
-    let rate_reg: ::core::ffi::c_uint = mt8186_rate_transform((*afe).dev, rate, (*dai).id);
+    let rate: ::kernel::ffi::c_uint = params_rate(params);
+    let rate_reg: ::kernel::ffi::c_uint = mt8186_rate_transform((*afe).dev, rate, (*dai).id);
     let format: snd_pcm_format_t = params_format(params);
-    let data_width: ::core::ffi::c_uint = snd_pcm_format_width(format) as ::core::ffi::c_uint;
-    let wlen_width: ::core::ffi::c_uint =
-        snd_pcm_format_physical_width(format) as ::core::ffi::c_uint;
-    let mut pcm_con: ::core::ffi::c_uint = 0;
+    let data_width: ::kernel::ffi::c_uint = snd_pcm_format_width(format) as ::kernel::ffi::c_uint;
+    let wlen_width: ::kernel::ffi::c_uint =
+        snd_pcm_format_physical_width(format) as ::kernel::ffi::c_uint;
+    let mut pcm_con: ::kernel::ffi::c_uint = 0;
 
     dev_dbg!(
         (*afe).dev,
@@ -291,13 +291,13 @@ pub unsafe extern "C" fn mtk_dai_pcm_hw_params(
 
     match (*dai).id {
         MT8186_DAI_PCM => {
-            pcm_con |= (aud_tx_lch_rpt::AUD_TX_LCH_RPT_NO_REPEAT as ::core::ffi::c_uint) << PCM_TX_LCH_RPT_SFT;
-            pcm_con |= (aud_vbt_16k_mode::AUD_VBT_16K_MODE_DISABLE as ::core::ffi::c_uint) << PCM_VBT_16K_MODE_SFT;
-            pcm_con |= (aud_ext_modem::AUD_EXT_MODEM_SELECT_EXTERNAL as ::core::ffi::c_uint) << PCM_EXT_MODEM_SFT;
-            pcm_con |= (aud_pcm_sync_type::AUD_PCM_ONE_BCK_CYCLE_SYNC as ::core::ffi::c_uint) << PCM_SYNC_TYPE_SFT;
-            pcm_con |= (aud_bt_mode::AUD_BT_MODE_DUAL_MIC_ON_TX as ::core::ffi::c_uint) << PCM_BT_MODE_SFT;
-            pcm_con |= (aud_pcm_afifo_src::AUD_PCM_AFIFO_AFIFO as ::core::ffi::c_uint) << PCM_BYP_ASRC_SFT;
-            pcm_con |= (aud_pcm_clock_source::AUD_PCM_CLOCK_MASTER_MODE as ::core::ffi::c_uint) << PCM_SLAVE_SFT;
+            pcm_con |= (aud_tx_lch_rpt::AUD_TX_LCH_RPT_NO_REPEAT as ::kernel::ffi::c_uint) << PCM_TX_LCH_RPT_SFT;
+            pcm_con |= (aud_vbt_16k_mode::AUD_VBT_16K_MODE_DISABLE as ::kernel::ffi::c_uint) << PCM_VBT_16K_MODE_SFT;
+            pcm_con |= (aud_ext_modem::AUD_EXT_MODEM_SELECT_EXTERNAL as ::kernel::ffi::c_uint) << PCM_EXT_MODEM_SFT;
+            pcm_con |= (aud_pcm_sync_type::AUD_PCM_ONE_BCK_CYCLE_SYNC as ::kernel::ffi::c_uint) << PCM_SYNC_TYPE_SFT;
+            pcm_con |= (aud_bt_mode::AUD_BT_MODE_DUAL_MIC_ON_TX as ::kernel::ffi::c_uint) << PCM_BT_MODE_SFT;
+            pcm_con |= (aud_pcm_afifo_src::AUD_PCM_AFIFO_AFIFO as ::kernel::ffi::c_uint) << PCM_BYP_ASRC_SFT;
+            pcm_con |= (aud_pcm_clock_source::AUD_PCM_CLOCK_MASTER_MODE as ::kernel::ffi::c_uint) << PCM_SLAVE_SFT;
             pcm_con |= 0 << PCM_SYNC_LENGTH_SFT;
 
             /* sampling rate */
@@ -308,16 +308,16 @@ pub unsafe extern "C" fn mtk_dai_pcm_hw_params(
 
             /* 24bit data width */
             if data_width > 16 {
-                pcm_con |= (aud_pcm_24bit::AUD_PCM_24BIT_PCM_24_BITS as ::core::ffi::c_uint) << PCM_24BIT_SFT;
+                pcm_con |= (aud_pcm_24bit::AUD_PCM_24BIT_PCM_24_BITS as ::kernel::ffi::c_uint) << PCM_24BIT_SFT;
             } else {
-                pcm_con |= (aud_pcm_24bit::AUD_PCM_24BIT_PCM_16_BITS as ::core::ffi::c_uint) << PCM_24BIT_SFT;
+                pcm_con |= (aud_pcm_24bit::AUD_PCM_24BIT_PCM_16_BITS as ::kernel::ffi::c_uint) << PCM_24BIT_SFT;
             }
 
             /* wlen width*/
             if wlen_width > 16 {
-                pcm_con |= (aud_pcm_wlen::AUD_PCM_WLEN_PCM_64_BCK_CYCLES as ::core::ffi::c_uint) << PCM_WLEN_SFT;
+                pcm_con |= (aud_pcm_wlen::AUD_PCM_WLEN_PCM_64_BCK_CYCLES as ::kernel::ffi::c_uint) << PCM_WLEN_SFT;
             } else {
-                pcm_con |= (aud_pcm_wlen::AUD_PCM_WLEN_PCM_32_BCK_CYCLES as ::core::ffi::c_uint) << PCM_WLEN_SFT;
+                pcm_con |= (aud_pcm_wlen::AUD_PCM_WLEN_PCM_32_BCK_CYCLES as ::kernel::ffi::c_uint) << PCM_WLEN_SFT;
             }
 
             /* clock invert */
@@ -337,8 +337,8 @@ pub unsafe extern "C" fn mtk_dai_pcm_hw_params(
 
 pub unsafe extern "C" fn mtk_dai_pcm_set_fmt(
     dai: *mut snd_soc_dai,
-    fmt: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    fmt: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let afe: *mut mtk_base_afe = snd_soc_dai_get_drvdata(dai) as *mut mtk_base_afe;
     let afe_priv: *mut mt8186_afe_private = (*afe).platform_priv as *mut mt8186_afe_private;
     let pcm_priv: *mut mtk_afe_pcm_priv =
@@ -347,19 +347,19 @@ pub unsafe extern "C" fn mtk_dai_pcm_set_fmt(
     /* DAI mode*/
     match fmt & SND_SOC_DAIFMT_FORMAT_MASK {
         SND_SOC_DAIFMT_I2S => {
-            (*pcm_priv).fmt = aud_pcm_fmt::AUD_PCM_FMT_I2S as ::core::ffi::c_uint;
+            (*pcm_priv).fmt = aud_pcm_fmt::AUD_PCM_FMT_I2S as ::kernel::ffi::c_uint;
         }
         SND_SOC_DAIFMT_LEFT_J => {
-            (*pcm_priv).fmt = aud_pcm_fmt::AUD_PCM_FMT_EIAJ as ::core::ffi::c_uint;
+            (*pcm_priv).fmt = aud_pcm_fmt::AUD_PCM_FMT_EIAJ as ::kernel::ffi::c_uint;
         }
         SND_SOC_DAIFMT_DSP_A => {
-            (*pcm_priv).fmt = aud_pcm_fmt::AUD_PCM_FMT_PCM_MODE_A as ::core::ffi::c_uint;
+            (*pcm_priv).fmt = aud_pcm_fmt::AUD_PCM_FMT_PCM_MODE_A as ::kernel::ffi::c_uint;
         }
         SND_SOC_DAIFMT_DSP_B => {
-            (*pcm_priv).fmt = aud_pcm_fmt::AUD_PCM_FMT_PCM_MODE_B as ::core::ffi::c_uint;
+            (*pcm_priv).fmt = aud_pcm_fmt::AUD_PCM_FMT_PCM_MODE_B as ::kernel::ffi::c_uint;
         }
         _ => {
-            (*pcm_priv).fmt = aud_pcm_fmt::AUD_PCM_FMT_I2S as ::core::ffi::c_uint;
+            (*pcm_priv).fmt = aud_pcm_fmt::AUD_PCM_FMT_I2S as ::kernel::ffi::c_uint;
         }
     }
 
@@ -367,33 +367,33 @@ pub unsafe extern "C" fn mtk_dai_pcm_set_fmt(
     match fmt & SND_SOC_DAIFMT_INV_MASK {
         SND_SOC_DAIFMT_NB_NF => {
             (*pcm_priv).bck_invert =
-                aud_bclk_out_inv::AUD_BCLK_OUT_INV_NO_INVERSE as ::core::ffi::c_uint;
+                aud_bclk_out_inv::AUD_BCLK_OUT_INV_NO_INVERSE as ::kernel::ffi::c_uint;
             (*pcm_priv).lck_invert =
-                aud_lrclk_out_inv::AUD_LRCLK_OUT_INV_NO_INVERSE as ::core::ffi::c_uint;
+                aud_lrclk_out_inv::AUD_LRCLK_OUT_INV_NO_INVERSE as ::kernel::ffi::c_uint;
         }
         SND_SOC_DAIFMT_NB_IF => {
             (*pcm_priv).bck_invert =
-                aud_bclk_out_inv::AUD_BCLK_OUT_INV_NO_INVERSE as ::core::ffi::c_uint;
+                aud_bclk_out_inv::AUD_BCLK_OUT_INV_NO_INVERSE as ::kernel::ffi::c_uint;
             (*pcm_priv).lck_invert =
-                aud_lrclk_out_inv::AUD_LRCLK_OUT_INV_INVERSE as ::core::ffi::c_uint;
+                aud_lrclk_out_inv::AUD_LRCLK_OUT_INV_INVERSE as ::kernel::ffi::c_uint;
         }
         SND_SOC_DAIFMT_IB_NF => {
             (*pcm_priv).bck_invert =
-                aud_bclk_out_inv::AUD_BCLK_OUT_INV_INVERSE as ::core::ffi::c_uint;
+                aud_bclk_out_inv::AUD_BCLK_OUT_INV_INVERSE as ::kernel::ffi::c_uint;
             (*pcm_priv).lck_invert =
-                aud_lrclk_out_inv::AUD_LRCLK_OUT_INV_NO_INVERSE as ::core::ffi::c_uint;
+                aud_lrclk_out_inv::AUD_LRCLK_OUT_INV_NO_INVERSE as ::kernel::ffi::c_uint;
         }
         SND_SOC_DAIFMT_IB_IF => {
             (*pcm_priv).bck_invert =
-                aud_bclk_out_inv::AUD_BCLK_OUT_INV_INVERSE as ::core::ffi::c_uint;
+                aud_bclk_out_inv::AUD_BCLK_OUT_INV_INVERSE as ::kernel::ffi::c_uint;
             (*pcm_priv).lck_invert =
-                aud_lrclk_out_inv::AUD_LRCLK_OUT_INV_INVERSE as ::core::ffi::c_uint;
+                aud_lrclk_out_inv::AUD_LRCLK_OUT_INV_INVERSE as ::kernel::ffi::c_uint;
         }
         _ => {
             (*pcm_priv).bck_invert =
-                aud_bclk_out_inv::AUD_BCLK_OUT_INV_NO_INVERSE as ::core::ffi::c_uint;
+                aud_bclk_out_inv::AUD_BCLK_OUT_INV_NO_INVERSE as ::kernel::ffi::c_uint;
             (*pcm_priv).lck_invert =
-                aud_lrclk_out_inv::AUD_LRCLK_OUT_INV_NO_INVERSE as ::core::ffi::c_uint;
+                aud_lrclk_out_inv::AUD_LRCLK_OUT_INV_NO_INVERSE as ::kernel::ffi::c_uint;
         }
     }
 
@@ -406,10 +406,10 @@ pub static mtk_dai_pcm_ops: snd_soc_dai_ops = snd_soc_dai_ops {
 };
 
 /* dai driver */
-pub const MTK_PCM_RATES: ::core::ffi::c_uint =
+pub const MTK_PCM_RATES: ::kernel::ffi::c_uint =
     SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 | SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000;
 
-pub const MTK_PCM_FORMATS: ::core::ffi::c_ulong =
+pub const MTK_PCM_FORMATS: ::kernel::ffi::c_ulong =
     SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE;
 
 pub static mut mtk_dai_pcm_driver: [snd_soc_dai_driver; 1] = [snd_soc_dai_driver {
@@ -446,19 +446,19 @@ pub unsafe extern "C" fn init_pcm_priv_data(afe: *mut mtk_base_afe) -> *mut mtk_
         return ::core::ptr::null_mut();
     }
 
-    (*pcm_priv).id = MT8186_DAI_PCM as ::core::ffi::c_uint;
-    (*pcm_priv).fmt = aud_pcm_fmt::AUD_PCM_FMT_I2S as ::core::ffi::c_uint;
+    (*pcm_priv).id = MT8186_DAI_PCM as ::kernel::ffi::c_uint;
+    (*pcm_priv).fmt = aud_pcm_fmt::AUD_PCM_FMT_I2S as ::kernel::ffi::c_uint;
     (*pcm_priv).bck_invert =
-        aud_bclk_out_inv::AUD_BCLK_OUT_INV_NO_INVERSE as ::core::ffi::c_uint;
+        aud_bclk_out_inv::AUD_BCLK_OUT_INV_NO_INVERSE as ::kernel::ffi::c_uint;
     (*pcm_priv).lck_invert =
-        aud_lrclk_out_inv::AUD_LRCLK_OUT_INV_NO_INVERSE as ::core::ffi::c_uint;
+        aud_lrclk_out_inv::AUD_LRCLK_OUT_INV_NO_INVERSE as ::kernel::ffi::c_uint;
 
     pcm_priv
 }
 
 pub unsafe extern "C" fn mt8186_dai_pcm_register(
     afe: *mut mtk_base_afe,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let afe_priv: *mut mt8186_afe_private = (*afe).platform_priv as *mut mt8186_afe_private;
     let mut pcm_priv: *mut mtk_afe_pcm_priv;
     let dai: *mut mtk_base_afe_dai;
@@ -484,7 +484,7 @@ pub unsafe extern "C" fn mt8186_dai_pcm_register(
         return -ENOMEM;
     }
 
-    (*afe_priv).dai_priv[MT8186_DAI_PCM as usize] = pcm_priv as *mut ::core::ffi::c_void;
+    (*afe_priv).dai_priv[MT8186_DAI_PCM as usize] = pcm_priv as *mut ::kernel::ffi::c_void;
 
     0
 }

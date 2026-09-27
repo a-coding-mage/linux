@@ -696,7 +696,7 @@ static int check_dir_item(extent_buffer *leaf,
 			char namebuf[MAX(BTRFS_NAME_LEN, XATTR_NAME_MAX)];
 
 			read_extent_buffer(leaf, namebuf,
-					(core::ffi::c_ulong)(di + 1), name_len);
+					(kernel::ffi::c_ulong)(di + 1), name_len);
 			name_hash = btrfs_name_hash(namebuf, name_len);
 			if (unlikely(key->offset != name_hash)) {
 				dir_item_err(leaf, slot,
@@ -898,7 +898,7 @@ static void chunk_err(const struct btrfs_fs_info *fs_info,
 		 */
 		for (i = 0; i < btrfs_header_nritems(leaf); i++) {
 			if (btrfs_item_ptr_offset(leaf, i) ==
-					(core::ffi::c_ulong)chunk) {
+					(kernel::ffi::c_ulong)chunk) {
 				slot = i;
 				break;
 			}
@@ -1511,8 +1511,8 @@ static int check_extent_item(extent_buffer *leaf,
 	struct btrfs_fs_info *fs_info = leaf->fs_info;
 	struct btrfs_extent_item *ei;
 	bool is_tree_block = false;
-	core::ffi::c_ulong ptr;	/* Current pointer inside inline refs */
-	core::ffi::c_ulong end;	/* Extent item end */
+	kernel::ffi::c_ulong ptr;	/* Current pointer inside inline refs */
+	kernel::ffi::c_ulong end;	/* Extent item end */
 	const u32 item_size = btrfs_item_size(leaf, slot);
 	u8 last_type = 0;
 	u64 last_seq = U64_MAX;
@@ -1633,7 +1633,7 @@ static int check_extent_item(extent_buffer *leaf,
 			return -EUCLEAN;
 		}
 	}
-	ptr = (core::ffi::c_ulong)(btrfs_extent_item *)(ei + 1);
+	ptr = (kernel::ffi::c_ulong)(btrfs_extent_item *)(ei + 1);
 
 	/* Check the special case of btrfs_tree_block_info */
 	if (is_tree_block && key->type != BTRFS_METADATA_ITEM_KEY) {
@@ -1647,7 +1647,7 @@ static int check_extent_item(extent_buffer *leaf,
 				   BTRFS_MAX_LEVEL - 1);
 			return -EUCLEAN;
 		}
-		ptr = (core::ffi::c_ulong)(btrfs_tree_block_info *)(info + 1);
+		ptr = (kernel::ffi::c_ulong)(btrfs_tree_block_info *)(info + 1);
 	}
 
 	/* Check inline refs */
@@ -1861,8 +1861,8 @@ static int check_extent_data_ref(extent_buffer *leaf,
 				 btrfs_key *key, int slot)
 {
 	struct btrfs_extent_data_ref *dref;
-	core::ffi::c_ulong ptr = btrfs_item_ptr_offset(leaf, slot);
-	const core::ffi::c_ulong end = ptr + btrfs_item_size(leaf, slot);
+	kernel::ffi::c_ulong ptr = btrfs_item_ptr_offset(leaf, slot);
+	const kernel::ffi::c_ulong end = ptr + btrfs_item_size(leaf, slot);
 
 	if (unlikely(btrfs_item_size(leaf, slot) % sizeof(*dref) != 0)) {
 		generic_err(leaf, slot,
@@ -1925,8 +1925,8 @@ static int check_inode_ref(extent_buffer *leaf,
 			   int slot)
 {
 	struct btrfs_inode_ref *iref;
-	core::ffi::c_ulong ptr;
-	core::ffi::c_ulong end;
+	kernel::ffi::c_ulong ptr;
+	kernel::ffi::c_ulong end;
 
 	if (unlikely(!check_prev_ino(leaf, key, slot, prev_key)))
 		return -EUCLEAN;
@@ -1980,8 +1980,8 @@ static int check_inode_extref(extent_buffer *leaf,
 			      btrfs_key *key, btrfs_key *prev_key,
 			      int slot)
 {
-	core::ffi::c_ulong ptr = btrfs_item_ptr_offset(leaf, slot);
-	core::ffi::c_ulong end = ptr + btrfs_item_size(leaf, slot);
+	kernel::ffi::c_ulong ptr = btrfs_item_ptr_offset(leaf, slot);
+	kernel::ffi::c_ulong end = ptr + btrfs_item_size(leaf, slot);
 
 	if (unlikely(!check_prev_ino(leaf, key, slot, prev_key)))
 		return -EUCLEAN;
@@ -2595,7 +2595,7 @@ ALLOW_ERROR_INJECTION(btrfs_check_leaf, ERRNO);
 enum btrfs_tree_block_status __btrfs_check_node(extent_buffer *node)
 {
 	struct btrfs_fs_info *fs_info = node->fs_info;
-	core::ffi::c_ulong nr = btrfs_header_nritems(node);
+	kernel::ffi::c_ulong nr = btrfs_header_nritems(node);
 	struct btrfs_key key, next_key;
 	int slot;
 	int level = btrfs_header_level(node);

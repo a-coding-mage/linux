@@ -9,7 +9,7 @@
  */
 
 // Dependencies supplied by the corresponding kernel headers and source files.
-pub type u8 = core::ffi::c_uchar;
+pub type u8 = kernel::ffi::c_uchar;
 pub type reboot_mode = i32;
 
 unsafe extern "C" {
@@ -27,7 +27,7 @@ unsafe extern "C" {
  * Resets the SoC.  For @cmd, see the 'reboot' syscall in
  * kernel/sys.c.  No return value.
  */
-pub unsafe fn omap3xxx_restart(mode: reboot_mode, cmd: *const core::ffi::c_char) {
+pub unsafe fn omap3xxx_restart(mode: reboot_mode, cmd: *const kernel::ffi::c_char) {
     let _ = mode;
     omap3_ctrl_write_boot_mode(if !cmd.is_null() {
         *(cmd as *const u8)

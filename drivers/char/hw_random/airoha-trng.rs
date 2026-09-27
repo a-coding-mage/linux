@@ -35,7 +35,7 @@ const BUSY_LOOP_TIMEOUT: u64 = BUSY_LOOP_SLEEP * 10000;
 
 #[repr(C)]
 struct AirohaTrng {
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     rng: Hwrng,
     dev: *mut Device,
     rng_op_done: Completion,
@@ -43,17 +43,17 @@ struct AirohaTrng {
 
 #[repr(C)]
 struct Hwrng {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     init: Option<unsafe extern "C" fn(*mut Hwrng) -> i32>,
     cleanup: Option<unsafe extern "C" fn(*mut Hwrng)>,
-    read: Option<unsafe extern "C" fn(*mut Hwrng, *mut core::ffi::c_void, usize, bool) -> isize>,
+    read: Option<unsafe extern "C" fn(*mut Hwrng, *mut kernel::ffi::c_void, usize, bool) -> isize>,
     quality: u32,
 }
 
 #[repr(C)] struct Device { _private: [u8; 0] }
 #[repr(C)] struct Completion { _private: [u8; 0] }
-#[repr(C)] struct PlatformDevice { dev: Device, name: *const core::ffi::c_char }
-#[repr(C)] struct OfDeviceId { compatible: *const core::ffi::c_char }
+#[repr(C)] struct PlatformDevice { dev: Device, name: *const kernel::ffi::c_char }
+#[repr(C)] struct OfDeviceId { compatible: *const kernel::ffi::c_char }
 #[repr(C)] struct PlatformDriver { _private: [u8; 0] }
 
 extern "C" {
@@ -63,12 +63,12 @@ extern "C" {
     fn complete(done: *mut Completion);
     fn init_completion(done: *mut Completion);
     fn readl_poll_timeout(addr: *mut u8, value: *mut u32, condition: bool, delay: u32, timeout: u32) -> i32;
-    fn dev_err(dev: *mut Device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut Device, fmt: *const kernel::ffi::c_char, ...);
     fn container_of<T, U>(ptr: *mut T, member: *const U) -> *mut AirohaTrng;
     fn platform_get_irq(pdev: *mut PlatformDevice, index: u32) -> i32;
     fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut AirohaTrng;
-    fn devm_platform_ioremap_resource(pdev: *mut PlatformDevice, index: u32) -> *mut core::ffi::c_void;
-    fn devm_request_irq(dev: *mut Device, irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> i32, flags: u32, name: *const core::ffi::c_char, data: *mut core::ffi::c_void) -> i32;
+    fn devm_platform_ioremap_resource(pdev: *mut PlatformDevice, index: u32) -> *mut kernel::ffi::c_void;
+    fn devm_request_irq(dev: *mut Device, irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> i32, flags: u32, name: *const kernel::ffi::c_char, data: *mut kernel::ffi::c_void) -> i32;
     fn devm_hwrng_register(dev: *mut Device, rng: *mut Hwrng) -> i32;
 }
 
@@ -111,7 +111,7 @@ unsafe extern "C" fn airoha_trng_cleanup(rng: *mut Hwrng) {
     writel(SW_RST, (*trng).base.cast::<u8>().add(TRNG_HEALTH_TEST_SW_RST));
 }
 
-unsafe extern "C" fn airoha_trng_read(rng: *mut Hwrng, buf: *mut core::ffi::c_void, _max: usize, _wait: bool) -> isize {
+unsafe extern "C" fn airoha_trng_read(rng: *mut Hwrng, buf: *mut kernel::ffi::c_void, _max: usize, _wait: bool) -> isize {
     let trng = container_of(rng, core::ptr::null());
     let mut status = 0;
     let ret = readl_poll_timeout((*trng).base.cast::<u8>().add(TRNG_HEALTH_TEST_STATUS), &mut status, status & RAW_DATA_VALID != 0, 10, 1000);
@@ -120,7 +120,7 @@ unsafe extern "C" fn airoha_trng_read(rng: *mut Hwrng, buf: *mut core::ffi::c_vo
     4
 }
 
-unsafe extern "C" fn airoha_trng_irq(_irq: i32, priv_: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn airoha_trng_irq(_irq: i32, priv_: *mut kernel::ffi::c_void) -> i32 {
     let trng = priv_ as *mut AirohaTrng;
     airoha_trng_irq_mask(trng);
     // Just complete the task, we will read the value later

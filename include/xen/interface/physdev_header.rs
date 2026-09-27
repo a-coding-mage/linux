@@ -42,7 +42,7 @@ pub const PHYSDEVOP_apic_read: u32 = 8;
 pub const PHYSDEVOP_apic_write: u32 = 9;
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct physdev_apic { pub apic_physbase: ::core::ffi::c_ulong, pub reg: u32, pub value: u32 }
+pub struct physdev_apic { pub apic_physbase: ::kernel::ffi::c_ulong, pub reg: u32, pub value: u32 }
 
 pub const PHYSDEVOP_alloc_irq_vector: u32 = 10;
 pub const PHYSDEVOP_free_irq_vector: u32 = 11;

@@ -19,7 +19,7 @@ pub const NFS4_NO_SLOT: u32 = u32::MAX;
 pub struct nfs4_slot {
     pub table: *mut nfs4_slot_table,
     pub next: *mut nfs4_slot,
-    pub generation: ::core::ffi::c_ulong,
+    pub generation: ::kernel::ffi::c_ulong,
     pub slot_nr: u32,
     pub seq_nr: u32,
     pub seq_nr_last_acked: u32,
@@ -42,7 +42,7 @@ pub const SLOT_TABLE_SZ: usize = ((NFS4_MAX_SLOT_TABLE as usize)
 pub struct nfs4_slot_table {
     pub session: *mut nfs4_session,
     pub slots: *mut nfs4_slot,
-    pub used_slots: [::core::ffi::c_ulong; SLOT_TABLE_SZ],
+    pub used_slots: [::kernel::ffi::c_ulong; SLOT_TABLE_SZ],
     pub slot_tbl_lock: spinlock_t,
     pub slot_tbl_waitq: rpc_wait_queue,
     pub slot_waitq: wait_queue_head_t,
@@ -53,9 +53,9 @@ pub struct nfs4_slot_table {
     pub server_highest_slotid: u32,
     pub d_target_highest_slotid: i32,
     pub d2_target_highest_slotid: i32,
-    pub generation: ::core::ffi::c_ulong,
+    pub generation: ::kernel::ffi::c_ulong,
     pub complete: completion,
-    pub slot_tbl_state: ::core::ffi::c_ulong,
+    pub slot_tbl_state: ::kernel::ffi::c_ulong,
 }
 
 /* Session related parameters */
@@ -63,7 +63,7 @@ pub struct nfs4_slot_table {
 pub struct nfs4_session {
     pub sess_id: nfs4_sessionid,
     pub flags: u32,
-    pub session_state: ::core::ffi::c_ulong,
+    pub session_state: ::kernel::ffi::c_ulong,
     pub hash_alg: u32,
     pub ssv_len: u32,
     /* The fore and back channel */
@@ -81,11 +81,11 @@ pub enum nfs4_session_state {
 }
 
 extern "C" {
-    pub fn nfs4_setup_slot_table(tbl: *mut nfs4_slot_table, max_reqs: u32, queue: *const ::core::ffi::c_char) -> i32;
+    pub fn nfs4_setup_slot_table(tbl: *mut nfs4_slot_table, max_reqs: u32, queue: *const ::kernel::ffi::c_char) -> i32;
     pub fn nfs4_shutdown_slot_table(tbl: *mut nfs4_slot_table);
     pub fn nfs4_alloc_slot(tbl: *mut nfs4_slot_table) -> *mut nfs4_slot;
     pub fn nfs4_lookup_slot(tbl: *mut nfs4_slot_table, slotid: u32) -> *mut nfs4_slot;
-    pub fn nfs4_slot_wait_on_seqid(tbl: *mut nfs4_slot_table, slotid: u32, seq_nr: u32, timeout: ::core::ffi::c_ulong) -> i32;
+    pub fn nfs4_slot_wait_on_seqid(tbl: *mut nfs4_slot_table, slotid: u32, seq_nr: u32, timeout: ::kernel::ffi::c_ulong) -> i32;
     pub fn nfs4_try_to_lock_slot(tbl: *mut nfs4_slot_table, slot: *mut nfs4_slot) -> bool;
     pub fn nfs4_free_slot(tbl: *mut nfs4_slot_table, slot: *mut nfs4_slot);
     pub fn nfs4_slot_tbl_drain_complete(tbl: *mut nfs4_slot_table);
@@ -97,7 +97,7 @@ extern "C" {
     pub fn nfs4_alloc_session(clp: *mut nfs_client) -> *mut nfs4_session;
     pub fn nfs4_destroy_session(session: *mut nfs4_session);
     pub fn nfs4_init_session(clp: *mut nfs_client) -> i32;
-    pub fn nfs4_init_ds_session(clp: *mut nfs_client, lease_time: ::core::ffi::c_ulong, tightly_coupled: bool) -> i32;
+    pub fn nfs4_init_ds_session(clp: *mut nfs_client, lease_time: ::kernel::ffi::c_ulong, tightly_coupled: bool) -> i32;
 }
 
 #[inline]

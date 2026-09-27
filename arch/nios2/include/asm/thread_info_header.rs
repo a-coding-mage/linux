@@ -27,9 +27,9 @@ pub const THREAD_SIZE: usize = 8192; /* 2 * PAGE_SIZE */
 #[repr(C)]
 pub struct thread_info {
     pub task: *mut task_struct,
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub cpu: u32,
-    pub preempt_count: core::ffi::c_int,
+    pub preempt_count: kernel::ffi::c_int,
     pub regs: *mut pt_regs,
 }
 
@@ -49,9 +49,9 @@ macro_rules! INIT_THREAD_INFO {
 
 /* How to get the thread information struct from C. */
 pub unsafe fn current_thread_info() -> *mut thread_info {
-    let sp: core::ffi::c_ulong;
+    let sp: kernel::ffi::c_ulong;
     core::arch::asm!("mov {0}, sp", out(reg) sp);
-    (sp & !(THREAD_SIZE as core::ffi::c_ulong - 1)) as *mut thread_info
+    (sp & !(THREAD_SIZE as kernel::ffi::c_ulong - 1)) as *mut thread_info
 }
 
 /*

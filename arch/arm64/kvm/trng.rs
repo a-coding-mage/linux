@@ -3,13 +3,13 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-const ARM_SMCCC_TRNG_VERSION_1_0: libc::c_ulong = 0x10000;
+const ARM_SMCCC_TRNG_VERSION_1_0: kernel::ffi::c_ulong = 0x10000;
 
 /* Those values are deliberately separate from the generic SMCCC definitions. */
-const TRNG_SUCCESS: libc::c_ulong = 0;
-const TRNG_NOT_SUPPORTED: libc::c_ulong = (-1i64) as libc::c_ulong;
-const TRNG_INVALID_PARAMETER: libc::c_ulong = (-2i64) as libc::c_ulong;
-const TRNG_NO_ENTROPY: libc::c_ulong = (-3i64) as libc::c_ulong;
+const TRNG_SUCCESS: kernel::ffi::c_ulong = 0;
+const TRNG_NOT_SUPPORTED: kernel::ffi::c_ulong = (-1i64) as kernel::ffi::c_ulong;
+const TRNG_INVALID_PARAMETER: kernel::ffi::c_ulong = (-2i64) as kernel::ffi::c_ulong;
+const TRNG_NO_ENTROPY: kernel::ffi::c_ulong = (-3i64) as kernel::ffi::c_ulong;
 
 const TRNG_MAX_BITS64: usize = 192;
 
@@ -17,10 +17,10 @@ static arm_smc_trng_uuid: uuid_t = UUID_INIT!(
     0x0d21e000, 0x4384, 0x11eb, 0x80, 0x70, 0x52, 0x44, 0x55, 0x4e, 0x5a, 0x4c
 );
 
-unsafe fn kvm_trng_do_rnd(vcpu: *mut kvm_vcpu, size: libc::c_int) -> libc::c_int {
-    let mut bits: [libc::c_ulong; 3] = [0; 3];
+unsafe fn kvm_trng_do_rnd(vcpu: *mut kvm_vcpu, size: kernel::ffi::c_int) -> kernel::ffi::c_int {
+    let mut bits: [kernel::ffi::c_ulong; 3] = [0; 3];
     let num_bits: u32 = smccc_get_arg1(vcpu);
-    let mut i: libc::c_int = 0;
+    let mut i: kernel::ffi::c_int = 0;
 
     if num_bits > (3 * size) as u32 {
         smccc_set_retval(vcpu, TRNG_INVALID_PARAMETER, 0, 0, 0);
@@ -28,7 +28,7 @@ unsafe fn kvm_trng_do_rnd(vcpu: *mut kvm_vcpu, size: libc::c_int) -> libc::c_int
     }
 
     /* get as many bits as we need to fulfil the request */
-    while i < ((num_bits as usize + BITS_PER_LONG - 1) / BITS_PER_LONG) as libc::c_int {
+    while i < ((num_bits as usize + BITS_PER_LONG - 1) / BITS_PER_LONG) as kernel::ffi::c_int {
         bits[i as usize] = get_random_long();
         i += 1;
     }
@@ -47,15 +47,15 @@ unsafe fn kvm_trng_do_rnd(vcpu: *mut kvm_vcpu, size: libc::c_int) -> libc::c_int
         smccc_set_retval(vcpu, TRNG_SUCCESS, bits[2], bits[1], bits[0]);
     }
 
-    memzero_explicit(bits.as_mut_ptr() as *mut libc::c_void, core::mem::size_of_val(&bits));
+    memzero_explicit(bits.as_mut_ptr() as *mut kernel::ffi::c_void, core::mem::size_of_val(&bits));
     1
 }
 
-unsafe fn kvm_trng_call(vcpu: *mut kvm_vcpu) -> libc::c_int {
+unsafe fn kvm_trng_call(vcpu: *mut kvm_vcpu) -> kernel::ffi::c_int {
     let u: *const __le32 = (*core::ptr::addr_of!(arm_smc_trng_uuid)).b.as_ptr() as *const __le32;
     let func_id: u32 = smccc_get_function(vcpu);
-    let mut val: libc::c_ulong = TRNG_NOT_SUPPORTED;
-    let mut size: libc::c_int = 64;
+    let mut val: kernel::ffi::c_ulong = TRNG_NOT_SUPPORTED;
+    let mut size: kernel::ffi::c_int = 64;
 
     match func_id {
         ARM_SMCCC_TRNG_VERSION => {

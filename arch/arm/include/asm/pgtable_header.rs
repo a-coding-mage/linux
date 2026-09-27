@@ -11,10 +11,10 @@ pub const LIBRARY_TEXT_START: usize = 0x0c000000;
 
 #[cfg(not(assembly))]
 extern "C" {
-    pub fn __pte_error(file: *const core::ffi::c_char, line: i32, pte: pte_t);
-    pub fn __pmd_error(file: *const core::ffi::c_char, line: i32, pmd: pmd_t);
-    pub fn __pgd_error(file: *const core::ffi::c_char, line: i32, pgd: pgd_t);
-    pub static mut high_memory: *mut core::ffi::c_void;
+    pub fn __pte_error(file: *const kernel::ffi::c_char, line: i32, pte: pte_t);
+    pub fn __pmd_error(file: *const kernel::ffi::c_char, line: i32, pmd: pmd_t);
+    pub fn __pgd_error(file: *const kernel::ffi::c_char, line: i32, pgd: pgd_t);
+    pub static mut high_memory: *mut kernel::ffi::c_void;
     pub static mut pgprot_user: pgprot_t;
     pub static mut pgprot_kernel: pgprot_t;
     pub static mut swapper_pg_dir: [pgd_t; PTRS_PER_PGD];
@@ -70,7 +70,7 @@ pub fn VMALLOC_START() -> usize {
 #[inline] pub fn pud_page(pud: pud_t) -> pmd_t { pmd_page(__pmd(pud_val(pud))) }
 #[inline] pub fn pud_write(pud: pud_t) -> bool { pmd_write(__pmd(pud_val(pud))) }
 #[inline] pub fn pmd_none(pmd: pmd_t) -> bool { pmd_val(pmd) == 0 }
-#[inline] pub fn pmd_page_vaddr(pmd: pmd_t) -> *mut core::ffi::c_void { __va(pmd_val(pmd) & PHYS_MASK & (PAGE_MASK as i32 as u64)) }
+#[inline] pub fn pmd_page_vaddr(pmd: pmd_t) -> *mut kernel::ffi::c_void { __va(pmd_val(pmd) & PHYS_MASK & (PAGE_MASK as i32 as u64)) }
 #[inline] pub fn pmd_page(pmd: pmd_t) -> *mut page { pfn_to_page(__phys_to_pfn(pmd_val(pmd) & PHYS_MASK)) }
 #[inline] pub fn pte_pfn(pte: pte_t) -> u64 { (pte_val(pte) & PHYS_MASK) >> PAGE_SHIFT }
 #[inline] pub fn pfn_pte(pfn: u64, prot: pgprot_t) -> pte_t { __pte(__pfn_to_phys(pfn) | pgprot_val(prot)) }

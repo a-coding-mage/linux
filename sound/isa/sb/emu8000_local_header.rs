@@ -20,15 +20,15 @@ unsafe extern "C" {
         rec: *mut snd_emux,
         sp: *mut snd_sf_sample,
         hdr: *mut snd_util_memhdr,
-        data: *const core::ffi::c_void, /* __user */
-        count: core::ffi::c_long,
-    ) -> core::ffi::c_int;
+        data: *const kernel::ffi::c_void, /* __user */
+        count: kernel::ffi::c_long,
+    ) -> kernel::ffi::c_int;
 
     pub fn snd_emu8000_sample_free(
         rec: *mut snd_emux,
         sp: *mut snd_sf_sample,
         hdr: *mut snd_util_memhdr,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn snd_emu8000_sample_reset(rec: *mut snd_emux);
 
@@ -39,8 +39,8 @@ unsafe extern "C" {
     pub fn snd_emu8000_pcm_new(
         card: *mut snd_card,
         emu: *mut snd_emu8000,
-        index: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        index: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

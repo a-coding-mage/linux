@@ -8,11 +8,11 @@ unsafe extern "C" fn proc_thread_self_get_link(
     dentry: *mut dentry,
     inode: *mut inode,
     done: *mut delayed_call,
-) -> *const core::ffi::c_char {
+) -> *const kernel::ffi::c_char {
     let ns: *mut pid_namespace = proc_pid_ns((*inode).i_sb);
     let tgid: pid_t = task_tgid_nr_ns(current, ns);
     let pid: pid_t = task_pid_nr_ns(current, ns);
-    let mut name: *mut core::ffi::c_char;
+    let mut name: *mut kernel::ffi::c_char;
 
     if pid == 0 {
         return ERR_PTR(-ENOENT);
@@ -20,7 +20,7 @@ unsafe extern "C" fn proc_thread_self_get_link(
     name = kmalloc(
         10 + 6 + 10 + 1,
         if !dentry.is_null() { GFP_KERNEL } else { GFP_ATOMIC },
-    ) as *mut core::ffi::c_char;
+    ) as *mut kernel::ffi::c_char;
     if name.is_null() {
         return if !dentry.is_null() {
             ERR_PTR(-ENOMEM)
@@ -30,7 +30,7 @@ unsafe extern "C" fn proc_thread_self_get_link(
     }
     sprintf(name, c"%u/task/%u", tgid, pid);
     set_delayed_call(done, kfree_link, name);
-    name as *const core::ffi::c_char
+    name as *const kernel::ffi::c_char
 }
 
 static proc_thread_self_inode_operations: inode_operations = inode_operations {

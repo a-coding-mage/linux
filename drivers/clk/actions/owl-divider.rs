@@ -29,14 +29,14 @@ unsafe fn owl_divider_determine_rate(
 pub unsafe fn owl_divider_helper_recalc_rate(
     common: *mut owl_clk_common,
     div_hw: *const owl_divider_hw,
-    parent_rate: libc::c_ulong,
-) -> libc::c_ulong {
-    let mut val: libc::c_ulong;
-    let mut reg: libc::c_uint = 0;
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
+    let mut val: kernel::ffi::c_ulong;
+    let mut reg: kernel::ffi::c_uint = 0;
 
     regmap_read((*common).regmap, (*div_hw).reg, &mut reg);
-    val = (reg >> (*div_hw).shift) as libc::c_ulong;
-    val &= ((1u64 << (*div_hw).width) - 1) as libc::c_ulong;
+    val = (reg >> (*div_hw).shift) as kernel::ffi::c_ulong;
+    val &= ((1u64 << (*div_hw).width) - 1) as kernel::ffi::c_ulong;
 
     divider_recalc_rate(
         &(*common).hw,
@@ -50,8 +50,8 @@ pub unsafe fn owl_divider_helper_recalc_rate(
 
 unsafe fn owl_divider_recalc_rate(
     hw: *mut clk_hw,
-    parent_rate: libc::c_ulong,
-) -> libc::c_ulong {
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     let div: *mut owl_divider = hw_to_owl_divider(hw);
 
     owl_divider_helper_recalc_rate(&mut (*div).common, &(*div).div_hw, parent_rate)
@@ -60,11 +60,11 @@ unsafe fn owl_divider_recalc_rate(
 pub unsafe fn owl_divider_helper_set_rate(
     common: *const owl_clk_common,
     div_hw: *const owl_divider_hw,
-    rate: libc::c_ulong,
-    parent_rate: libc::c_ulong,
+    rate: kernel::ffi::c_ulong,
+    parent_rate: kernel::ffi::c_ulong,
 ) -> i32 {
-    let val: libc::c_ulong;
-    let mut reg: libc::c_uint = 0;
+    let val: kernel::ffi::c_ulong;
+    let mut reg: kernel::ffi::c_uint = 0;
 
     val = divider_get_val(
         rate,
@@ -80,7 +80,7 @@ pub unsafe fn owl_divider_helper_set_rate(
     regmap_write(
         (*common).regmap,
         (*div_hw).reg,
-        reg | ((val << (*div_hw).shift) as libc::c_uint),
+        reg | ((val << (*div_hw).shift) as kernel::ffi::c_uint),
     );
 
     0
@@ -88,8 +88,8 @@ pub unsafe fn owl_divider_helper_set_rate(
 
 unsafe fn owl_divider_set_rate(
     hw: *mut clk_hw,
-    rate: libc::c_ulong,
-    parent_rate: libc::c_ulong,
+    rate: kernel::ffi::c_ulong,
+    parent_rate: kernel::ffi::c_ulong,
 ) -> i32 {
     let div: *mut owl_divider = hw_to_owl_divider(hw);
 

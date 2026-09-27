@@ -24,23 +24,23 @@
  *
  * It doesn't adhere to Linux kernel style and sometimes will do things in odd: *mut ways. Unless there is something clearly wrong with it the code should: *mut remain as-is as it provides us with a guarantee from HW that it is correct.
  */
-const BPP_INVALID: _ = 0;
-const BPP_BLENDED_PIPE: _ = 0xffffffff;
-const DCN31_MAX_DSC_IMAGE_WIDTH: _ = 5184;
-const DCN31_MAX_FMT_420_BUFFER_WIDTH: _ = 4096;
-const DCN3_15_MIN_COMPBUF_SIZE_KB: _ = 128;
-const DCN3_15_MAX_DET_SIZE: _ = 384;
+const BPP_INVALID: u32 = 0;
+const BPP_BLENDED_PIPE: u32 = 0xffffffff;
+const DCN31_MAX_DSC_IMAGE_WIDTH: u32 = 5184;
+const DCN31_MAX_FMT_420_BUFFER_WIDTH: u32 = 4096;
+const DCN3_15_MIN_COMPBUF_SIZE_KB: u32 = 128;
+const DCN3_15_MAX_DET_SIZE: u32 = 384;
 // For DML-C changes that hasn't been propagated to VBA yet
 //#define __DML_VBA_ALLOW_DELTA__
 
 // Move these to ip paramaters/constant
 
 // At which vstartup the DML start to try if the mode can be supported
-const __DML_VBA_MIN_VSTARTUP__: _ = 9;
+const __DML_VBA_MIN_VSTARTUP__: u32 = 9;
 // Delay in DCFCLK from ARB to DET (1st num is ARB to SDPIF, 2nd number is SDPIF to DET)
-const __DML_ARB_TO_RET_DELAY__: _ = (7 + 95);
+const __DML_ARB_TO_RET_DELAY__: u32 = (7 + 95);
 // fudge factor for min dcfclk calclation
-const __DML_MIN_DCFCLK_FACTOR__: _ = 1.15;
+const __DML_MIN_DCFCLK_FACTOR__: u32 = 1.15;
 #[repr(C)]
 pub Pipe {
 	f64 DPPCLK;
@@ -67,8 +67,8 @@ pub Pipe {
 	int BytePerPixelC;
 	bool ProgressiveToInterlaceUnitInOPP;
 }
-const BPP_INVALID: _ = 0;
-const BPP_BLENDED_PIPE: _ = 0xffffffff;
+const BPP_INVALID: u32 = 0;
+const BPP_BLENDED_PIPE: u32 = 0xffffffff;
 unsafe fn DisplayPipeConfiguration(display_mode_lib: *mut mode_lib);
 unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(display_mode_lib: *mut mode_lib);
 static u32 dscceComputeDelay(

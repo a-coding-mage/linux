@@ -18,17 +18,17 @@ pub enum page_walk_lock {
 
 #[repr(C)]
 pub struct mm_walk_ops {
-    pub pgd_entry: Option<unsafe extern "C" fn(*mut pgd_t, libc::c_ulong, libc::c_ulong, *mut mm_walk) -> libc::c_int>,
-    pub p4d_entry: Option<unsafe extern "C" fn(*mut p4d_t, libc::c_ulong, libc::c_ulong, *mut mm_walk) -> libc::c_int>,
-    pub pud_entry: Option<unsafe extern "C" fn(*mut pud_t, libc::c_ulong, libc::c_ulong, *mut mm_walk) -> libc::c_int>,
-    pub pmd_entry: Option<unsafe extern "C" fn(*mut pmd_t, libc::c_ulong, libc::c_ulong, *mut mm_walk) -> libc::c_int>,
-    pub pte_entry: Option<unsafe extern "C" fn(*mut pte_t, libc::c_ulong, libc::c_ulong, *mut mm_walk) -> libc::c_int>,
-    pub pte_hole: Option<unsafe extern "C" fn(libc::c_ulong, libc::c_ulong, libc::c_int, *mut mm_walk) -> libc::c_int>,
-    pub hugetlb_entry: Option<unsafe extern "C" fn(*mut pte_t, libc::c_ulong, libc::c_ulong, libc::c_ulong, *mut mm_walk) -> libc::c_int>,
-    pub test_walk: Option<unsafe extern "C" fn(libc::c_ulong, libc::c_ulong, *mut mm_walk) -> libc::c_int>,
-    pub pre_vma: Option<unsafe extern "C" fn(libc::c_ulong, libc::c_ulong, *mut mm_walk) -> libc::c_int>,
+    pub pgd_entry: Option<unsafe extern "C" fn(*mut pgd_t, kernel::ffi::c_ulong, kernel::ffi::c_ulong, *mut mm_walk) -> kernel::ffi::c_int>,
+    pub p4d_entry: Option<unsafe extern "C" fn(*mut p4d_t, kernel::ffi::c_ulong, kernel::ffi::c_ulong, *mut mm_walk) -> kernel::ffi::c_int>,
+    pub pud_entry: Option<unsafe extern "C" fn(*mut pud_t, kernel::ffi::c_ulong, kernel::ffi::c_ulong, *mut mm_walk) -> kernel::ffi::c_int>,
+    pub pmd_entry: Option<unsafe extern "C" fn(*mut pmd_t, kernel::ffi::c_ulong, kernel::ffi::c_ulong, *mut mm_walk) -> kernel::ffi::c_int>,
+    pub pte_entry: Option<unsafe extern "C" fn(*mut pte_t, kernel::ffi::c_ulong, kernel::ffi::c_ulong, *mut mm_walk) -> kernel::ffi::c_int>,
+    pub pte_hole: Option<unsafe extern "C" fn(kernel::ffi::c_ulong, kernel::ffi::c_ulong, kernel::ffi::c_int, *mut mm_walk) -> kernel::ffi::c_int>,
+    pub hugetlb_entry: Option<unsafe extern "C" fn(*mut pte_t, kernel::ffi::c_ulong, kernel::ffi::c_ulong, kernel::ffi::c_ulong, *mut mm_walk) -> kernel::ffi::c_int>,
+    pub test_walk: Option<unsafe extern "C" fn(kernel::ffi::c_ulong, kernel::ffi::c_ulong, *mut mm_walk) -> kernel::ffi::c_int>,
+    pub pre_vma: Option<unsafe extern "C" fn(kernel::ffi::c_ulong, kernel::ffi::c_ulong, *mut mm_walk) -> kernel::ffi::c_int>,
     pub post_vma: Option<unsafe extern "C" fn(*mut mm_walk)>,
-    pub install_pte: Option<unsafe extern "C" fn(libc::c_ulong, libc::c_ulong, *mut pte_t, *mut mm_walk) -> libc::c_int>,
+    pub install_pte: Option<unsafe extern "C" fn(kernel::ffi::c_ulong, kernel::ffi::c_ulong, *mut pte_t, *mut mm_walk) -> kernel::ffi::c_int>,
     pub walk_lock: page_walk_lock,
 }
 
@@ -51,22 +51,22 @@ pub struct mm_walk {
     pub vma: *mut vm_area_struct,
     pub action: page_walk_action,
     pub no_vma: bool,
-    pub private: *mut libc::c_void,
+    pub private: *mut kernel::ffi::c_void,
 }
 
 unsafe extern "C" {
-    pub fn walk_page_range(mm: *mut mm_struct, start: libc::c_ulong, end: libc::c_ulong,
-        ops: *const mm_walk_ops, private: *mut libc::c_void) -> libc::c_int;
-    pub fn walk_kernel_page_table_range(start: libc::c_ulong, end: libc::c_ulong,
-        ops: *const mm_walk_ops, pgd: *mut pgd_t, private: *mut libc::c_void) -> libc::c_int;
-    pub fn walk_kernel_page_table_range_lockless(start: libc::c_ulong, end: libc::c_ulong,
-        ops: *const mm_walk_ops, pgd: *mut pgd_t, private: *mut libc::c_void) -> libc::c_int;
-    pub fn walk_page_range_vma(vma: *mut vm_area_struct, start: libc::c_ulong, end: libc::c_ulong,
-        ops: *const mm_walk_ops, private: *mut libc::c_void) -> libc::c_int;
+    pub fn walk_page_range(mm: *mut mm_struct, start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong,
+        ops: *const mm_walk_ops, private: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn walk_kernel_page_table_range(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong,
+        ops: *const mm_walk_ops, pgd: *mut pgd_t, private: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn walk_kernel_page_table_range_lockless(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong,
+        ops: *const mm_walk_ops, pgd: *mut pgd_t, private: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn walk_page_range_vma(vma: *mut vm_area_struct, start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong,
+        ops: *const mm_walk_ops, private: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
     pub fn walk_page_vma(vma: *mut vm_area_struct, ops: *const mm_walk_ops,
-        private: *mut libc::c_void) -> libc::c_int;
+        private: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
     pub fn walk_page_mapping(mapping: *mut address_space, first_index: pgoff_t, nr: pgoff_t,
-        ops: *const mm_walk_ops, private: *mut libc::c_void) -> libc::c_int;
+        ops: *const mm_walk_ops, private: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
 }
 
 pub type folio_walk_flags_t = u32;
@@ -110,7 +110,7 @@ pub struct folio_walk {
 
 unsafe extern "C" {
     pub fn folio_walk_start(fw: *mut folio_walk, vma: *mut vm_area_struct,
-        addr: libc::c_ulong, flags: folio_walk_flags_t) -> *mut folio;
+        addr: kernel::ffi::c_ulong, flags: folio_walk_flags_t) -> *mut folio;
 }
 
 /* C macro folio_walk_end(__fw, __vma). */

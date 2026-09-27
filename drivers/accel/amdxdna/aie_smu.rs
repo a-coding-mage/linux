@@ -19,14 +19,14 @@ const AIE_SMU_SET_HARD_DPMLEVEL: u32 = 0x8;
 pub struct smu_device {
     pub ddev: *mut drm_device,
     pub conf: smu_config,
-    pub smu_regs: [*mut core::ffi::c_void; SMU_MAX_REGS],
+    pub smu_regs: [*mut kernel::ffi::c_void; SMU_MAX_REGS],
 }
 
 #[allow(non_camel_case_types)]
 pub struct drm_device;
 #[allow(non_camel_case_types)]
 pub struct smu_config {
-    pub smu_regs: [*mut core::ffi::c_void; SMU_MAX_REGS],
+    pub smu_regs: [*mut kernel::ffi::c_void; SMU_MAX_REGS],
 }
 
 extern "C" {
@@ -34,19 +34,19 @@ extern "C" {
         ddev: *mut drm_device,
         size: usize,
         flags: u32,
-    ) -> *mut core::ffi::c_void;
-    fn drm_err(ddev: *mut drm_device, fmt: *const core::ffi::c_char, ...);
+    ) -> *mut kernel::ffi::c_void;
+    fn drm_err(ddev: *mut drm_device, fmt: *const kernel::ffi::c_char, ...);
     fn readx_poll_timeout(
-        read: unsafe extern "C" fn(*mut core::ffi::c_void) -> u32,
-        addr: *mut core::ffi::c_void,
+        read: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> u32,
+        addr: *mut kernel::ffi::c_void,
         val: *mut u32,
         cond: u32,
         delay: u32,
         timeout: u32,
     ) -> i32;
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn memcpy(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, size: usize);
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn memcpy(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, size: usize);
 }
 
 extern "C" {
@@ -61,7 +61,7 @@ extern "C" {
     static GFP_KERNEL: u32;
 }
 
-unsafe fn smu_reg(s: *mut smu_device, reg: usize) -> *mut core::ffi::c_void {
+unsafe fn smu_reg(s: *mut smu_device, reg: usize) -> *mut kernel::ffi::c_void {
     (*s).smu_regs[reg]
 }
 
@@ -190,8 +190,8 @@ pub unsafe fn aiem_smu_create(
 
     (*smu).ddev = ddev;
     memcpy(
-        (*smu).smu_regs.as_mut_ptr() as *mut core::ffi::c_void,
-        (*conf).smu_regs.as_ptr() as *const core::ffi::c_void,
+        (*smu).smu_regs.as_mut_ptr() as *mut kernel::ffi::c_void,
+        (*conf).smu_regs.as_ptr() as *const kernel::ffi::c_void,
         core::mem::size_of_val(&(*smu).smu_regs),
     );
 

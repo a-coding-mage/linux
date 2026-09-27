@@ -37,14 +37,14 @@ extern "C" {
     pub num_parents: u32,
     pub ops: *const clk_ops,
     pub flags: u32,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub parent_data: *mut clk_parent_data,
 }
 #[repr(C)] pub struct clk_parent_data { pub index: u32 }
-#[repr(C)] pub struct of_device_id { pub compatible: *const core::ffi::c_char, pub data: *const core::ffi::c_void }
+#[repr(C)] pub struct of_device_id { pub compatible: *const kernel::ffi::c_char, pub data: *const kernel::ffi::c_void }
 #[repr(C)] pub struct regmap_config { pub reg_bits: u32, pub reg_stride: u32, pub val_bits: u32, pub max_register: u32 }
 #[repr(C)] pub struct spinlock_t { _private: [u8; 0] }
-#[repr(C)] pub struct platform_driver { pub probe: Option<unsafe fn(*mut platform_device) -> i32>, pub name: *const core::ffi::c_char, pub of_match_table: *const of_device_id }
+#[repr(C)] pub struct platform_driver { pub probe: Option<unsafe fn(*mut platform_device) -> i32>, pub name: *const kernel::ffi::c_char, pub of_match_table: *const of_device_id }
 
 const CLK_IGNORE_UNUSED: u32 = 1 << 6;
 
@@ -88,14 +88,14 @@ static hfpll_regmap_config: regmap_config = regmap_config {
 };
 
 extern "C" {
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn devm_platform_get_and_ioremap_resource(pdev: *mut platform_device, index: u32, res: *mut *mut core::ffi::c_void) -> *mut core::ffi::c_void;
-    fn devm_regmap_init_mmio(dev: *mut device, base: *mut core::ffi::c_void, config: *const regmap_config) -> *mut regmap;
-    fn of_property_read_string_index(node: *mut core::ffi::c_void, propname: *const core::ffi::c_char, index: u32, output: *mut *const core::ffi::c_char) -> i32;
-    fn of_device_get_match_data(dev: *mut device) -> *const core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn devm_platform_get_and_ioremap_resource(pdev: *mut platform_device, index: u32, res: *mut *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+    fn devm_regmap_init_mmio(dev: *mut device, base: *mut kernel::ffi::c_void, config: *const regmap_config) -> *mut regmap;
+    fn of_property_read_string_index(node: *mut kernel::ffi::c_void, propname: *const kernel::ffi::c_char, index: u32, output: *mut *const kernel::ffi::c_char) -> i32;
+    fn of_device_get_match_data(dev: *mut device) -> *const kernel::ffi::c_void;
     fn spin_lock_init(lock: *mut spinlock_t);
     fn devm_clk_register_regmap(dev: *mut device, clk: *mut clk_regmap) -> i32;
-    fn devm_of_clk_add_hw_provider(dev: *mut device, get: *const core::ffi::c_void, data: *mut clk_hw) -> i32;
+    fn devm_of_clk_add_hw_provider(dev: *mut device, get: *const kernel::ffi::c_void, data: *mut clk_hw) -> i32;
 }
 
 unsafe fn qcom_hfpll_probe(pdev: *mut platform_device) -> i32 {

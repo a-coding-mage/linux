@@ -46,18 +46,18 @@ unsafe fn serial_edit_cmdline(mut buf: *mut i8, len: i32, timeout: u32) {
                 }
 
                 /* Test for backspace/delete */
-                if ch == b'\b' as i8 || ch == 0o177i8 {
+                if ch == b'\x08' as i8 || ch == 0o177i8 {
                     if cp != buf {
                         cp = cp.sub(1);
                         count -= 1;
-                        printf(b"\b \b\0".as_ptr() as *const i8);
+                        printf(b"\x08 \x08\0".as_ptr() as *const i8);
                     }
                 /* Test for ^x/^u (and wipe the line) */
                 } else if ch == 0o30i8 || ch == 0o25i8 {
                     while cp != buf {
                         cp = cp.sub(1);
                         count -= 1;
-                        printf(b"\b \b\0".as_ptr() as *const i8);
+                        printf(b"\x08 \x08\0".as_ptr() as *const i8);
                     }
                 } else if count < len {
                     *cp = ch;

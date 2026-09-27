@@ -59,7 +59,7 @@ const INTEL_QEP_CLK_PERIOD_NS: u64 = 10;
 struct intel_qep {
     lock: mutex,
     dev: *mut device,
-    regs: *mut core::ffi::c_void,
+    regs: *mut kernel::ffi::c_void,
     enabled: bool,
     qepcon: u32,
     qepflt: u32,
@@ -250,7 +250,7 @@ static INTEL_QEP_COUNT_EXT: intel_qep_counter_ext = intel_qep_counter_ext {
 #[repr(C)]
 struct intel_qep_count {
     id: u32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     functions_list: *const counter_function,
     num_functions: usize,
     synapses: *mut counter_synapse,

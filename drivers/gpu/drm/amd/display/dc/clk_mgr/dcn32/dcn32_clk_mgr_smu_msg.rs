@@ -30,15 +30,15 @@ extern "C" {
     fn REG_WRITE(reg: u32, value: u32);
     fn msleep(milliseconds: u32);
     fn udelay(microseconds: u32);
-    fn TRACE_SMU_MSG_DELAY(a: u32, b: u32, delay: u32, ctx: *mut core::ffi::c_void);
-    fn TRACE_SMU_MSG(msg_id: u32, param: u32, ctx: *mut core::ffi::c_void);
-    fn DC_LOG_SMU(format: *const core::ffi::c_char, ...);
+    fn TRACE_SMU_MSG_DELAY(a: u32, b: u32, delay: u32, ctx: *mut kernel::ffi::c_void);
+    fn TRACE_SMU_MSG(msg_id: u32, param: u32, ctx: *mut kernel::ffi::c_void);
+    fn DC_LOG_SMU(format: *const kernel::ffi::c_char, ...);
     fn ASICREV_IS_GC_11_0_0(rev: u32) -> bool;
     fn ASICREV_IS_GC_11_0_2(rev: u32) -> bool;
 }
 
 #[allow(non_snake_case)]
-unsafe fn smu_print(_format: *const core::ffi::c_char) {}
+unsafe fn smu_print(_format: *const kernel::ffi::c_char) {}
 
 unsafe fn dcn32_smu_wait_for_response(
     clk_mgr: *mut clk_mgr_internal,

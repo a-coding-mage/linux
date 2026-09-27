@@ -7,7 +7,7 @@
 // #include <asm/mach/arch.h>
 
 // __initconst: this table is intended for initialization-time use.
-pub static DIGICOLOR_DT_COMPAT: [*const core::ffi::c_char; 2] = [
+pub static DIGICOLOR_DT_COMPAT: [*const kernel::ffi::c_char; 2] = [
     c"cnxt,cx92755".as_ptr(),
     core::ptr::null(),
 ];

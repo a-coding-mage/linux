@@ -71,7 +71,7 @@ pub struct buffer_head;
 pub struct qnx6_super_block;
 #[repr(C)]
 pub struct super_block {
-    pub s_fs_info: *mut core::ffi::c_void,
+    pub s_fs_info: *mut kernel::ffi::c_void,
 }
 #[repr(C)]
 pub struct inode;
@@ -82,8 +82,8 @@ pub struct inode_operations;
 #[repr(C)]
 pub struct file_operations;
 
-pub type c_uint = core::ffi::c_uint;
-pub type c_ulong = core::ffi::c_ulong;
+pub type c_uint = kernel::ffi::c_uint;
+pub type c_ulong = kernel::ffi::c_ulong;
 
 #[inline]
 pub unsafe fn QNX6_SB(sb: *mut super_block) -> *mut qnx6_sb_info {
@@ -158,7 +158,7 @@ pub unsafe fn cpu_to_fs16(sbi: *mut qnx6_sb_info, n: u16) -> __fs16 {
 
 extern "C" {
     pub fn qnx6_mmi_fill_super(s: *mut super_block, silent: i32) -> *mut qnx6_super_block;
-    pub fn qnx6_find_ino(len: i32, dir: *mut inode, name: *const core::ffi::c_char) -> c_uint;
+    pub fn qnx6_find_ino(len: i32, dir: *mut inode, name: *const kernel::ffi::c_char) -> c_uint;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

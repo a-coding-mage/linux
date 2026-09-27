@@ -20,13 +20,13 @@ unsafe fn physflat_probe() -> i32 {
     1
 }
 
-unsafe fn physflat_acpi_madt_oem_check(_oem_id: *mut core::ffi::c_char,
-                                       _oem_table_id: *mut core::ffi::c_char) -> i32 {
+unsafe fn physflat_acpi_madt_oem_check(_oem_id: *mut kernel::ffi::c_char,
+                                       _oem_table_id: *mut kernel::ffi::c_char) -> i32 {
     1
 }
 
 static mut apic_physflat: apic = apic {
-    name: b"physical flat\0".as_ptr() as *const core::ffi::c_char,
+    name: b"physical flat\0".as_ptr() as *const kernel::ffi::c_char,
     probe: Some(physflat_probe),
     acpi_madt_oem_check: Some(physflat_acpi_madt_oem_check),
 

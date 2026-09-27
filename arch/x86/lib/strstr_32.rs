@@ -5,9 +5,9 @@
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn strstr(
-    cs: *const core::ffi::c_char,
-    ct: *const core::ffi::c_char,
-) -> *mut core::ffi::c_char {
+    cs: *const kernel::ffi::c_char,
+    ct: *const kernel::ffi::c_char,
+) -> *mut kernel::ffi::c_char {
     // The assembly first computes the length of the search string, excluding
     // its terminating NUL, then compares that many bytes at each position.
     let mut length = 0usize;
@@ -24,7 +24,7 @@ pub unsafe extern "C" fn strstr(
 
         if index == length {
             // This also returns cs for an empty search string.
-            return current as *mut core::ffi::c_char;
+            return current as *mut kernel::ffi::c_char;
         }
 
         if *current == 0 {

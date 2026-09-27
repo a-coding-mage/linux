@@ -54,9 +54,9 @@ pub struct cs_dsp_alg_region {
 pub struct cs_dsp_coeff_ctl {
     pub list: list_head,
     pub dsp: *mut cs_dsp,
-    pub cache: *mut core::ffi::c_void,
-    pub fw_name: *const core::ffi::c_char,
-    pub subname: *const core::ffi::c_char,
+    pub cache: *mut kernel::ffi::c_void,
+    pub fw_name: *const kernel::ffi::c_char,
+    pub subname: *const kernel::ffi::c_char,
     pub subname_len: u32,
     pub offset: u32,
     pub len: u32,
@@ -65,12 +65,12 @@ pub struct cs_dsp_coeff_ctl {
     pub set: u32,
     pub enabled: u32,
     pub alg_region: cs_dsp_alg_region,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct cs_dsp {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub rev: i32,
     pub num: i32,
     pub r#type: i32,
@@ -85,7 +85,7 @@ pub struct cs_dsp {
     pub sysclk_shift: u32,
     pub no_core_startstop: bool,
     pub alg_regions: list_head,
-    pub fw_name: *const core::ffi::c_char,
+    pub fw_name: *const kernel::ffi::c_char,
     pub fw_id: u32,
     pub fw_id_version: u32,
     pub fw_vendor_id: u32,
@@ -101,9 +101,9 @@ pub struct cs_dsp {
     #[cfg(CONFIG_DEBUG_FS)]
     pub debugfs_root: *mut dentry,
     #[cfg(CONFIG_DEBUG_FS)]
-    pub wmfw_file_name: *const core::ffi::c_char,
+    pub wmfw_file_name: *const kernel::ffi::c_char,
     #[cfg(CONFIG_DEBUG_FS)]
-    pub bin_file_name: *const core::ffi::c_char,
+    pub bin_file_name: *const kernel::ffi::c_char,
 }
 
 pub struct cs_dsp_ops;
@@ -124,9 +124,9 @@ extern "C" {
     pub fn cs_dsp_adsp1_init(dsp: *mut cs_dsp) -> i32;
     pub fn cs_dsp_adsp2_init(dsp: *mut cs_dsp) -> i32;
     pub fn cs_dsp_halo_init(dsp: *mut cs_dsp) -> i32;
-    pub fn cs_dsp_adsp1_power_up(dsp: *mut cs_dsp, wmfw_firmware: *const firmware, wmfw_filename: *const core::ffi::c_char, coeff_firmware: *const firmware, coeff_filename: *const core::ffi::c_char, fw_name: *const core::ffi::c_char) -> i32;
+    pub fn cs_dsp_adsp1_power_up(dsp: *mut cs_dsp, wmfw_firmware: *const firmware, wmfw_filename: *const kernel::ffi::c_char, coeff_firmware: *const firmware, coeff_filename: *const kernel::ffi::c_char, fw_name: *const kernel::ffi::c_char) -> i32;
     pub fn cs_dsp_adsp1_power_down(dsp: *mut cs_dsp);
-    pub fn cs_dsp_power_up(dsp: *mut cs_dsp, wmfw_firmware: *const firmware, wmfw_filename: *const core::ffi::c_char, coeff_firmware: *const firmware, coeff_filename: *const core::ffi::c_char, fw_name: *const core::ffi::c_char) -> i32;
+    pub fn cs_dsp_power_up(dsp: *mut cs_dsp, wmfw_firmware: *const firmware, wmfw_filename: *const kernel::ffi::c_char, coeff_firmware: *const firmware, coeff_filename: *const kernel::ffi::c_char, fw_name: *const kernel::ffi::c_char) -> i32;
     pub fn cs_dsp_power_down(dsp: *mut cs_dsp);
     pub fn cs_dsp_run(dsp: *mut cs_dsp) -> i32;
     pub fn cs_dsp_stop(dsp: *mut cs_dsp);
@@ -138,17 +138,17 @@ extern "C" {
     pub fn cs_dsp_init_debugfs(dsp: *mut cs_dsp, debugfs_root: *mut dentry);
     pub fn cs_dsp_cleanup_debugfs(dsp: *mut cs_dsp);
     pub fn cs_dsp_coeff_write_acked_control(ctl: *mut cs_dsp_coeff_ctl, event_id: u32) -> i32;
-    pub fn cs_dsp_coeff_write_ctrl(ctl: *mut cs_dsp_coeff_ctl, off: u32, buf: *const core::ffi::c_void, len: usize) -> i32;
-    pub fn cs_dsp_coeff_lock_and_write_ctrl(ctl: *mut cs_dsp_coeff_ctl, off: u32, buf: *const core::ffi::c_void, len: usize) -> i32;
-    pub fn cs_dsp_coeff_read_ctrl(ctl: *mut cs_dsp_coeff_ctl, off: u32, buf: *mut core::ffi::c_void, len: usize) -> i32;
-    pub fn cs_dsp_coeff_lock_and_read_ctrl(ctl: *mut cs_dsp_coeff_ctl, off: u32, buf: *mut core::ffi::c_void, len: usize) -> i32;
-    pub fn cs_dsp_get_ctl(dsp: *mut cs_dsp, name: *const core::ffi::c_char, r#type: i32, alg: u32) -> *mut cs_dsp_coeff_ctl;
+    pub fn cs_dsp_coeff_write_ctrl(ctl: *mut cs_dsp_coeff_ctl, off: u32, buf: *const kernel::ffi::c_void, len: usize) -> i32;
+    pub fn cs_dsp_coeff_lock_and_write_ctrl(ctl: *mut cs_dsp_coeff_ctl, off: u32, buf: *const kernel::ffi::c_void, len: usize) -> i32;
+    pub fn cs_dsp_coeff_read_ctrl(ctl: *mut cs_dsp_coeff_ctl, off: u32, buf: *mut kernel::ffi::c_void, len: usize) -> i32;
+    pub fn cs_dsp_coeff_lock_and_read_ctrl(ctl: *mut cs_dsp_coeff_ctl, off: u32, buf: *mut kernel::ffi::c_void, len: usize) -> i32;
+    pub fn cs_dsp_get_ctl(dsp: *mut cs_dsp, name: *const kernel::ffi::c_char, r#type: i32, alg: u32) -> *mut cs_dsp_coeff_ctl;
     pub fn cs_dsp_read_raw_data_block(dsp: *mut cs_dsp, mem_type: i32, mem_addr: u32, num_words: u32, data: *mut u32) -> i32;
     pub fn cs_dsp_read_data_word(dsp: *mut cs_dsp, mem_type: i32, mem_addr: u32, data: *mut u32) -> i32;
     pub fn cs_dsp_write_data_word(dsp: *mut cs_dsp, mem_type: i32, mem_addr: u32, data: u32) -> i32;
     pub fn cs_dsp_remove_padding(buf: *mut u32, nwords: i32);
     pub fn cs_dsp_find_alg_region(dsp: *mut cs_dsp, r#type: i32, id: u32) -> *mut cs_dsp_alg_region;
-    pub fn cs_dsp_mem_region_name(r#type: u32) -> *const core::ffi::c_char;
+    pub fn cs_dsp_mem_region_name(r#type: u32) -> *const kernel::ffi::c_char;
 }
 
 #[repr(C)]
@@ -184,7 +184,7 @@ pub unsafe fn cs_dsp_chunk_end(ch: *mut cs_dsp_chunk) -> bool { (*ch).data == (*
 pub unsafe fn cs_dsp_chunk_bytes(ch: *mut cs_dsp_chunk) -> i32 { (*ch).bytes }
 
 #[inline]
-pub unsafe fn cs_dsp_chunk_valid_addr(ch: *mut cs_dsp_chunk, addr: *mut core::ffi::c_void) -> bool {
+pub unsafe fn cs_dsp_chunk_valid_addr(ch: *mut cs_dsp_chunk, addr: *mut kernel::ffi::c_void) -> bool {
     let addr = addr as *mut u8;
     addr >= (*ch).data && addr < (*ch).max
 }

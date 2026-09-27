@@ -14,18 +14,18 @@
 const CAST6_PARALLEL_BLOCKS: usize = 8;
 
 extern "C" {
-    fn cast6_ecb_enc_8way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    fn cast6_ecb_dec_8way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    fn cast6_cbc_dec_8way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
+    fn cast6_ecb_enc_8way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    fn cast6_ecb_dec_8way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    fn cast6_cbc_dec_8way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
 
     fn cast6_setkey(base: *mut crypto_tfm, key: *const u8, keylen: u32) -> i32;
-    fn __cast6_encrypt(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    fn __cast6_decrypt(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
+    fn __cast6_encrypt(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    fn __cast6_decrypt(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
 
     fn crypto_register_skciphers(algs: *mut skcipher_alg, count: usize) -> i32;
     fn crypto_unregister_skciphers(algs: *mut skcipher_alg, count: usize);
-    fn cpu_has_xfeatures(features: u64, feature_name: *mut *const core::ffi::c_char) -> bool;
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn cpu_has_xfeatures(features: u64, feature_name: *mut *const kernel::ffi::c_char) -> bool;
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -97,7 +97,7 @@ unsafe fn cbc_decrypt(req: *mut skcipher_request) -> i32 {
 }
 
 unsafe fn cast6_init() -> i32 {
-    let mut feature_name: *const core::ffi::c_char = core::ptr::null();
+    let mut feature_name: *const kernel::ffi::c_char = core::ptr::null();
     const XFEATURE_MASK_SSE: u64 = 1 << 1;
     const XFEATURE_MASK_YMM: u64 = 1 << 2;
 

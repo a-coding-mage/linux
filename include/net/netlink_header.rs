@@ -12,7 +12,7 @@ pub union nla_policy_validation_data {
     pub strict_start_type: u16,
     pub bitfield32_valid: u32,
     pub mask: u32,
-    pub reject_message: *const core::ffi::c_char,
+    pub reject_message: *const kernel::ffi::c_char,
     pub nested_policy: *const nla_policy,
     pub range: *const netlink_range_validation,
     pub range_signed: *const netlink_range_validation_signed,
@@ -72,8 +72,8 @@ extern "C" {
     pub fn __nla_validate(head: *const nlattr, len: i32, maxtype: i32, policy: *const nla_policy, validate: u32, extack: *mut netlink_ext_ack) -> i32;
     pub fn __nla_parse(tb: *mut *mut nlattr, maxtype: i32, head: *const nlattr, len: i32, policy: *const nla_policy, validate: u32, extack: *mut netlink_ext_ack) -> i32;
     pub fn nla_find(head: *const nlattr, len: i32, attrtype: i32) -> *mut nlattr;
-    pub fn nla_put(skb: *mut sk_buff, attrtype: i32, attrlen: i32, data: *const core::ffi::c_void) -> i32;
-    pub fn nla_put_64bit(skb: *mut sk_buff, attrtype: i32, attrlen: i32, data: *const core::ffi::c_void, padattr: i32) -> i32;
+    pub fn nla_put(skb: *mut sk_buff, attrtype: i32, attrlen: i32, data: *const kernel::ffi::c_void) -> i32;
+    pub fn nla_put_64bit(skb: *mut sk_buff, attrtype: i32, attrlen: i32, data: *const kernel::ffi::c_void, padattr: i32) -> i32;
 }
 
 #[inline] pub unsafe fn nlmsg_msg_size(payload: i32) -> i32 { 16 + payload }

@@ -4,10 +4,10 @@
 
 extern "C" {
     pub fn timekeeping_init();
-    pub static mut timekeeping_suspended: ::core::ffi::c_int;
-    pub fn legacy_timer_tick(ticks: ::core::ffi::c_ulong);
-    pub fn do_settimeofday64(ts: *const timespec64) -> ::core::ffi::c_int;
-    pub fn do_sys_settimeofday64(tv: *const timespec64, tz: *const timezone) -> ::core::ffi::c_int;
+    pub static mut timekeeping_suspended: ::kernel::ffi::c_int;
+    pub fn legacy_timer_tick(ticks: ::kernel::ffi::c_ulong);
+    pub fn do_settimeofday64(ts: *const timespec64) -> ::kernel::ffi::c_int;
+    pub fn do_sys_settimeofday64(tv: *const timespec64, tz: *const timezone) -> ::kernel::ffi::c_int;
     pub fn ktime_get_raw_ts64(ts: *mut timespec64);
     pub fn ktime_get_ts64(ts: *mut timespec64);
     pub fn ktime_get_real_ts64(tv: *mut timespec64);
@@ -15,7 +15,7 @@ extern "C" {
     pub fn ktime_get_coarse_real_ts64(ts: *mut timespec64);
     pub fn ktime_get_coarse_real_ts64_mg(ts: *mut timespec64);
     pub fn ktime_get_real_ts64_mg(ts: *mut timespec64);
-    pub fn timekeeping_get_mg_floor_swaps() -> ::core::ffi::c_ulong;
+    pub fn timekeeping_get_mg_floor_swaps() -> ::kernel::ffi::c_ulong;
     pub fn getboottime64(ts: *mut timespec64);
     pub fn ktime_get_seconds() -> time64_t;
     pub fn __ktime_get_real_seconds() -> time64_t;
@@ -37,17 +37,17 @@ extern "C" {
     pub fn ktime_real_to_base_clock(treal: ktime_t, base_id: clocksource_ids, cycles: *mut u64) -> bool;
     pub fn timekeeping_clocksource_has_base(id: clocksource_ids) -> bool;
     pub fn get_device_system_crosststamp(
-        get_time_fn: Option<unsafe extern "C" fn(*mut ktime_t, *mut system_counterval_t, *mut ::core::ffi::c_void) -> ::core::ffi::c_int>,
-        ctx: *mut ::core::ffi::c_void,
+        get_time_fn: Option<unsafe extern "C" fn(*mut ktime_t, *mut system_counterval_t, *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int>,
+        ctx: *mut ::kernel::ffi::c_void,
         history: *mut system_time_snapshot,
         xtstamp: *mut system_device_crosststamp,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn ktime_get_snapshot_id(clock_id: clockid_t, systime_snapshot: *mut system_time_snapshot);
-    pub static mut persistent_clock_is_local: ::core::ffi::c_int;
+    pub static mut persistent_clock_is_local: ::kernel::ffi::c_int;
     pub fn read_persistent_clock64(ts: *mut timespec64);
     pub fn read_persistent_wall_and_boot_offset(wall_clock: *mut timespec64, boot_offset: *mut timespec64);
     #[cfg(CONFIG_GENERIC_CMOS_UPDATE)]
-    pub fn update_persistent_clock64(now: timespec64) -> ::core::ffi::c_int;
+    pub fn update_persistent_clock64(now: timespec64) -> ::kernel::ffi::c_int;
 }
 
 #[repr(C)]

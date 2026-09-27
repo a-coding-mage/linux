@@ -4,7 +4,7 @@
  */
 
 // Dependencies supplied by the surrounding kernel translation.
-use core::ffi::{c_int, c_ulong, c_void};
+use kernel::ffi::{c_int, c_ulong, c_void};
 
 #[repr(C)]
 pub struct irq_data {
@@ -13,7 +13,7 @@ pub struct irq_data {
 
 #[repr(C)]
 pub struct irq_chip {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub irq_unmask: Option<unsafe extern "C" fn(*mut irq_data)>,
     pub irq_mask: Option<unsafe extern "C" fn(*mut irq_data)>,
     pub irq_mask_ack: Option<unsafe extern "C" fn(*mut irq_data)>,
@@ -65,7 +65,7 @@ unsafe extern "C" fn srm_disable_irq(d: *mut irq_data) {
 /* Handle interrupts from the SRM, assuming no additional weirdness.  */
 #[no_mangle]
 pub static mut srm_irq_type: irq_chip = irq_chip {
-    name: b"SRM\0".as_ptr() as *const core::ffi::c_char,
+    name: b"SRM\0".as_ptr() as *const kernel::ffi::c_char,
     irq_unmask: Some(srm_enable_irq),
     irq_mask: Some(srm_disable_irq),
     irq_mask_ack: Some(srm_disable_irq),

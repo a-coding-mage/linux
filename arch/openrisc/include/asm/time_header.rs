@@ -11,15 +11,15 @@
 extern "C" {
     pub fn openrisc_clockevent_init();
 
-    pub fn openrisc_timer_set(count: core::ffi::c_ulong);
-    pub fn openrisc_timer_set_next(delta: core::ffi::c_ulong);
+    pub fn openrisc_timer_set(count: kernel::ffi::c_ulong);
+    pub fn openrisc_timer_set_next(delta: kernel::ffi::c_ulong);
 
     // Preserved from the CONFIG_SMP build-time condition in the C header.
     #[cfg(CONFIG_SMP)]
-    pub fn synchronise_count_master(cpu: core::ffi::c_int);
+    pub fn synchronise_count_master(cpu: kernel::ffi::c_int);
 
     #[cfg(CONFIG_SMP)]
-    pub fn synchronise_count_slave(cpu: core::ffi::c_int);
+    pub fn synchronise_count_slave(cpu: kernel::ffi::c_int);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

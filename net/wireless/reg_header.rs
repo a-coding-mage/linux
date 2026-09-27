@@ -18,15 +18,15 @@ pub enum ieee80211_regd_source {
 extern "C" {
     pub static cfg80211_regdomain: *const ieee80211_regdomain;
 
-    pub fn reg_is_valid_request(alpha2: *const ::core::ffi::c_char) -> bool;
-    pub fn is_world_regdom(alpha2: *const ::core::ffi::c_char) -> bool;
+    pub fn reg_is_valid_request(alpha2: *const ::kernel::ffi::c_char) -> bool;
+    pub fn is_world_regdom(alpha2: *const ::kernel::ffi::c_char) -> bool;
     pub fn reg_supported_dfs_region(dfs_region: nl80211_dfs_regions) -> bool;
     pub fn reg_get_dfs_region(wiphy: *mut wiphy) -> nl80211_dfs_regions;
 
     pub fn regulatory_hint_user(
-        alpha2: *const ::core::ffi::c_char,
+        alpha2: *const ::kernel::ffi::c_char,
         user_reg_hint_type: nl80211_user_reg_hint_type,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     /**
      * regulatory_hint_indoor - hint operation in indoor env. or not
@@ -45,18 +45,18 @@ extern "C" {
     pub fn wiphy_regulatory_register(wiphy: *mut wiphy);
     pub fn wiphy_regulatory_deregister(wiphy: *mut wiphy);
 
-    pub fn regulatory_init() -> ::core::ffi::c_int;
+    pub fn regulatory_init() -> ::kernel::ffi::c_int;
     pub fn regulatory_exit();
 
     pub fn set_regdom(
         rd: *const ieee80211_regdomain,
         regd_src: ieee80211_regd_source,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn reg_get_max_bandwidth(
         rd: *const ieee80211_regdomain,
         rule: *const ieee80211_reg_rule,
-    ) -> ::core::ffi::c_uint;
+    ) -> ::kernel::ffi::c_uint;
 
     pub fn reg_last_request_cell_base() -> bool;
 
@@ -140,7 +140,7 @@ extern "C" {
      * Return: -EINVAL if freq is invalid, 0 for UNII-1, 1 for UNII-2A,
      * 2 for UNII-2B, 3 for UNII-2C and 4 for UNII-3.
      */
-    pub fn cfg80211_get_unii(freq: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn cfg80211_get_unii(freq: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
 
     /**
      * regulatory_indoor_allowed - is indoor operation allowed
@@ -177,7 +177,7 @@ extern "C" {
      * reg_reload_regdb - reload the regulatory.db firmware file
      * Return: 0 for success, an error code otherwise
      */
-    pub fn reg_reload_regdb() -> ::core::ffi::c_int;
+    pub fn reg_reload_regdb() -> ::kernel::ffi::c_int;
 
     /**
      * reg_check_channels - schedule regulatory enforcement
@@ -185,9 +185,9 @@ extern "C" {
     pub fn reg_check_channels();
 
     pub static shipped_regdb_certs: *const u8;
-    pub static shipped_regdb_certs_len: ::core::ffi::c_uint;
+    pub static shipped_regdb_certs_len: ::kernel::ffi::c_uint;
     pub static extra_regdb_certs: *const u8;
-    pub static extra_regdb_certs_len: ::core::ffi::c_uint;
+    pub static extra_regdb_certs_len: ::kernel::ffi::c_uint;
 }
 
 // Grace period to timeout pre-CAC results on the dfs channels. This timeout

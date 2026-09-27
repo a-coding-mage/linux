@@ -14,12 +14,12 @@
 
 extern "C" {
     pub fn unwind_stack(
-        data: *mut core::ffi::c_void,
-        stack: *mut core::ffi::c_ulong,
+        data: *mut kernel::ffi::c_void,
+        stack: *mut kernel::ffi::c_ulong,
         trace: Option<unsafe extern "C" fn(
-            data: *mut core::ffi::c_void,
-            addr: core::ffi::c_ulong,
-            reliable: core::ffi::c_int,
+            data: *mut kernel::ffi::c_void,
+            addr: kernel::ffi::c_ulong,
+            reliable: kernel::ffi::c_int,
         )>,
     );
 }

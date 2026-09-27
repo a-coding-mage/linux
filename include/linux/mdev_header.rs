@@ -13,8 +13,8 @@
 #[repr(C)]
 pub struct mdev_type {
     /* set by the driver before calling mdev_register parent: */
-    pub sysfs_name: *const ::core::ffi::c_char,
-    pub pretty_name: *const ::core::ffi::c_char,
+    pub sysfs_name: *const ::kernel::ffi::c_char,
+    pub pretty_name: *const ::kernel::ffi::c_char,
 
     /* set by the core, can be used drivers */
     pub parent: *mut mdev_parent,
@@ -42,7 +42,7 @@ pub struct mdev_parent {
     /* Synchronize device creation/removal with parent unregistration */
     pub unreg_sem: rw_semaphore,
     pub types: *mut *mut mdev_type,
-    pub nr_types: ::core::ffi::c_uint,
+    pub nr_types: ::kernel::ffi::c_uint,
     pub available_instances: atomic_t,
 }
 
@@ -56,16 +56,16 @@ pub struct mdev_parent {
 /// @driver: device driver structure
 #[repr(C)]
 pub struct mdev_driver {
-    pub device_api: *const ::core::ffi::c_char,
-    pub max_instances: ::core::ffi::c_uint,
-    pub probe: Option<unsafe extern "C" fn(dev: *mut mdev_device) -> ::core::ffi::c_int>,
+    pub device_api: *const ::kernel::ffi::c_char,
+    pub max_instances: ::kernel::ffi::c_uint,
+    pub probe: Option<unsafe extern "C" fn(dev: *mut mdev_device) -> ::kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(dev: *mut mdev_device)>,
     pub get_available:
-        Option<unsafe extern "C" fn(mtype: *mut mdev_type) -> ::core::ffi::c_uint>,
+        Option<unsafe extern "C" fn(mtype: *mut mdev_type) -> ::kernel::ffi::c_uint>,
     pub show_description: Option<
         unsafe extern "C" fn(
             mtype: *mut mdev_type,
-            buf: *mut ::core::ffi::c_char,
+            buf: *mut ::kernel::ffi::c_char,
         ) -> ssize_t,
     >,
     pub driver: device_driver,
@@ -79,11 +79,11 @@ extern "C" {
         dev: *mut device,
         mdev_driver: *mut mdev_driver,
         types: *mut *mut mdev_type,
-        nr_types: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        nr_types: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
     pub fn mdev_unregister_parent(parent: *mut mdev_parent);
 
-    pub fn mdev_register_driver(drv: *mut mdev_driver) -> ::core::ffi::c_int;
+    pub fn mdev_register_driver(drv: *mut mdev_driver) -> ::kernel::ffi::c_int;
     pub fn mdev_unregister_driver(drv: *mut mdev_driver);
 }
 

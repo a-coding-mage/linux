@@ -7,7 +7,7 @@
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
  */
 
-use core::ffi::{c_char, c_int};
+use kernel::ffi::{c_char, c_int};
 
 // `struct super_block` and `sigset_t` are supplied by the surrounding
 // translation unit/dependencies.
@@ -36,7 +36,7 @@ macro_rules! ocfs2_error {
         unsafe {
             $crate::__ocfs2_error(
                 $sb,
-                concat!(module_path!(), "\0").as_ptr() as *const core::ffi::c_char,
+                concat!(module_path!(), "\0").as_ptr() as *const kernel::ffi::c_char,
                 $fmt,
                 $($arg),*
             )
@@ -50,7 +50,7 @@ macro_rules! ocfs2_abort {
         unsafe {
             $crate::__ocfs2_abort(
                 $sb,
-                concat!(module_path!(), "\0").as_ptr() as *const core::ffi::c_char,
+                concat!(module_path!(), "\0").as_ptr() as *const kernel::ffi::c_char,
                 $fmt,
                 $($arg),*
             )

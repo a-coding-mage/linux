@@ -7,7 +7,7 @@
 
 #[repr(C)]
 pub struct kunit_vm_mmap_resource {
-    pub addr: ::core::ffi::c_ulong,
+    pub addr: ::kernel::ffi::c_ulong,
     pub size: usize,
 }
 
@@ -15,11 +15,11 @@ pub struct kunit_vm_mmap_resource {
 #[repr(C)]
 pub struct kunit_vm_mmap_params {
     pub file: *mut file,
-    pub addr: ::core::ffi::c_ulong,
-    pub len: ::core::ffi::c_ulong,
-    pub prot: ::core::ffi::c_ulong,
-    pub flag: ::core::ffi::c_ulong,
-    pub offset: ::core::ffi::c_ulong,
+    pub addr: ::kernel::ffi::c_ulong,
+    pub len: ::kernel::ffi::c_ulong,
+    pub prot: ::kernel::ffi::c_ulong,
+    pub flag: ::kernel::ffi::c_ulong,
+    pub offset: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -29,12 +29,12 @@ pub struct file {
 
 #[repr(C)]
 pub struct mm_struct {
-    pub task_size: ::core::ffi::c_ulong,
+    pub task_size: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct signal_struct {
-    pub rlim: [::core::ffi::c_ulong; 16],
+    pub rlim: [::kernel::ffi::c_ulong; 16],
 }
 
 #[repr(C)]
@@ -45,7 +45,7 @@ pub struct task_struct {
 
 #[repr(C)]
 pub struct kunit_resource {
-    pub data: *mut ::core::ffi::c_void,
+    pub data: *mut ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -55,41 +55,41 @@ pub struct kunit {
 
 unsafe extern "C" {
     static mut current: *mut task_struct;
-    static TASK_SIZE: ::core::ffi::c_ulong;
+    static TASK_SIZE: ::kernel::ffi::c_ulong;
 
     fn mm_alloc() -> *mut mm_struct;
-    fn arch_pick_mmap_layout(mm: *mut mm_struct, rlim: *const ::core::ffi::c_ulong);
+    fn arch_pick_mmap_layout(mm: *mut mm_struct, rlim: *const ::kernel::ffi::c_ulong);
     fn kthread_use_mm(mm: *mut mm_struct);
     fn vm_mmap(
         file: *mut file,
-        addr: ::core::ffi::c_ulong,
-        len: ::core::ffi::c_ulong,
-        prot: ::core::ffi::c_ulong,
-        flag: ::core::ffi::c_ulong,
-        offset: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_ulong;
-    fn vm_munmap(addr: ::core::ffi::c_ulong, size: ::core::ffi::c_ulong) -> ::core::ffi::c_long;
+        addr: ::kernel::ffi::c_ulong,
+        len: ::kernel::ffi::c_ulong,
+        prot: ::kernel::ffi::c_ulong,
+        flag: ::kernel::ffi::c_ulong,
+        offset: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_ulong;
+    fn vm_munmap(addr: ::kernel::ffi::c_ulong, size: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_long;
     fn kmemdup(
-        src: *const ::core::ffi::c_void,
+        src: *const ::kernel::ffi::c_void,
         size: usize,
-        flags: ::core::ffi::c_ulong,
-    ) -> *mut ::core::ffi::c_void;
-    fn kfree(ptr: *mut ::core::ffi::c_void);
+        flags: ::kernel::ffi::c_ulong,
+    ) -> *mut ::kernel::ffi::c_void;
+    fn kfree(ptr: *mut ::kernel::ffi::c_void);
     fn kunit_alloc_resource(
         test: *mut kunit,
-        init: unsafe extern "C" fn(*mut kunit_resource, *mut ::core::ffi::c_void) -> ::core::ffi::c_int,
+        init: unsafe extern "C" fn(*mut kunit_resource, *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int,
         free: unsafe extern "C" fn(*mut kunit_resource),
-        flags: ::core::ffi::c_ulong,
-        context: *mut ::core::ffi::c_void,
+        flags: ::kernel::ffi::c_ulong,
+        context: *mut ::kernel::ffi::c_void,
     ) -> *mut kunit_resource;
 }
 
-const EINVAL: ::core::ffi::c_int = 22;
-const ENOMEM: ::core::ffi::c_int = 12;
+const EINVAL: ::kernel::ffi::c_int = 22;
+const ENOMEM: ::kernel::ffi::c_int = 12;
 const RLIMIT_STACK: usize = 3;
-const GFP_KERNEL: ::core::ffi::c_ulong = 0;
+const GFP_KERNEL: ::kernel::ffi::c_ulong = 0;
 
-pub unsafe extern "C" fn kunit_attach_mm() -> ::core::ffi::c_int {
+pub unsafe extern "C" fn kunit_attach_mm() -> ::kernel::ffi::c_int {
     let task = current;
 
     if !(*task).mm.is_null() {
@@ -121,8 +121,8 @@ pub unsafe extern "C" fn kunit_attach_mm() -> ::core::ffi::c_int {
 
 unsafe extern "C" fn kunit_vm_mmap_init(
     res: *mut kunit_resource,
-    context: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int {
+    context: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int {
     let p = context as *mut kunit_vm_mmap_params;
     let mut vres = kunit_vm_mmap_resource {
         addr: 0,
@@ -139,12 +139,12 @@ unsafe extern "C" fn kunit_vm_mmap_init(
         return -ENOMEM;
     }
     (*res).data = kmemdup(
-        &vres as *const kunit_vm_mmap_resource as *const ::core::ffi::c_void,
+        &vres as *const kunit_vm_mmap_resource as *const ::kernel::ffi::c_void,
         core::mem::size_of::<kunit_vm_mmap_resource>(),
         GFP_KERNEL,
     );
     if (*res).data.is_null() {
-        vm_munmap(vres.addr, vres.size as ::core::ffi::c_ulong);
+        vm_munmap(vres.addr, vres.size as ::kernel::ffi::c_ulong);
         return -ENOMEM;
     }
 
@@ -168,12 +168,12 @@ unsafe extern "C" fn kunit_vm_mmap_free(res: *mut kunit_resource) {
 pub unsafe extern "C" fn kunit_vm_mmap(
     test: *mut kunit,
     file: *mut file,
-    addr: ::core::ffi::c_ulong,
-    len: ::core::ffi::c_ulong,
-    prot: ::core::ffi::c_ulong,
-    flag: ::core::ffi::c_ulong,
-    offset: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_ulong {
+    addr: ::kernel::ffi::c_ulong,
+    len: ::kernel::ffi::c_ulong,
+    prot: ::kernel::ffi::c_ulong,
+    flag: ::kernel::ffi::c_ulong,
+    offset: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_ulong {
     let mut params = kunit_vm_mmap_params {
         file,
         addr,
@@ -188,7 +188,7 @@ pub unsafe extern "C" fn kunit_vm_mmap(
         kunit_vm_mmap_init,
         kunit_vm_mmap_free,
         GFP_KERNEL,
-        &mut params as *mut kunit_vm_mmap_params as *mut ::core::ffi::c_void,
+        &mut params as *mut kunit_vm_mmap_params as *mut ::kernel::ffi::c_void,
     );
     if !vres.is_null() {
         return (*(vres as *mut kunit_vm_mmap_resource)).addr;

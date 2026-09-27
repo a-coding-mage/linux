@@ -38,8 +38,8 @@ pub const MAX_GATE_MAP: usize = 3;
 pub struct stm32f4_gate_data {
     pub offset: u8,
     pub bit_idx: u8,
-    pub name: *const core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char,
     pub flags: usize,
 }
 
@@ -59,8 +59,8 @@ pub enum stm32f4_pll_ssc_mod_type {
 #[repr(C)]
 pub struct stm32_aux_clk {
     pub idx: i32,
-    pub name: *const core::ffi::c_char,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: i32,
     pub offset_mux: i32,
     pub shift: u8,

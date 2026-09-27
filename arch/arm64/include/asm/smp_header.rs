@@ -20,27 +20,27 @@ pub const CPU_STUCK_REASON_52_BIT_VA: u64 = 1u64 << CPU_STUCK_REASON_SHIFT;
 pub const CPU_STUCK_REASON_NO_GRAN: u64 = 2u64 << CPU_STUCK_REASON_SHIFT;
 
 /* The following declarations depend on the surrounding kernel bindings. */
-pub unsafe fn raw_smp_processor_id() -> ::core::ffi::c_uint {
+pub unsafe fn raw_smp_processor_id() -> ::kernel::ffi::c_uint {
     current_thread_info().cpu
 }
 
 extern "C" {
     pub static mut __cpu_logical_map: [u64; NR_CPUS];
-    pub fn cpu_logical_map(cpu: ::core::ffi::c_uint) -> u64;
+    pub fn cpu_logical_map(cpu: ::kernel::ffi::c_uint) -> u64;
     pub fn smp_init_cpus();
     pub fn set_smp_ipi_range_percpu(
-        ipi_base: ::core::ffi::c_int,
-        nr_ipi: ::core::ffi::c_int,
-        ncpus: ::core::ffi::c_int,
+        ipi_base: ::kernel::ffi::c_int,
+        nr_ipi: ::kernel::ffi::c_int,
+        ncpus: ::kernel::ffi::c_int,
     );
     /* Called from the secondary holding pen, this is the secondary CPU entry point. */
     pub fn secondary_start_kernel();
     pub static mut secondary_data: secondary_data;
-    pub static mut __early_cpu_boot_status: ::core::ffi::c_long;
+    pub static mut __early_cpu_boot_status: ::kernel::ffi::c_long;
     pub fn secondary_entry();
-    pub fn arch_send_call_function_single_ipi(cpu: ::core::ffi::c_int);
+    pub fn arch_send_call_function_single_ipi(cpu: ::kernel::ffi::c_int);
     pub fn arch_send_call_function_ipi_mask(mask: *const cpumask);
-    pub fn __cpu_disable() -> ::core::ffi::c_int;
+    pub fn __cpu_disable() -> ::kernel::ffi::c_int;
     pub fn cpu_die() -> !;
     pub fn cpu_die_early() -> !;
 /*
@@ -58,7 +58,7 @@ pub fn cpus_are_stuck_in_kernel() -> bool;
     pub fn smp_crash_stop_failed() -> bool;
 }
 
-pub unsafe fn set_cpu_logical_map(cpu: ::core::ffi::c_uint, hwid: u64) {
+pub unsafe fn set_cpu_logical_map(cpu: ::kernel::ffi::c_uint, hwid: u64) {
     __cpu_logical_map[cpu as usize] = hwid;
 }
 
@@ -89,28 +89,28 @@ pub struct task_struct;
 #[repr(C)]
 pub struct secondary_data {
     pub task: *mut task_struct,
-    pub status: ::core::ffi::c_long,
+    pub status: ::kernel::ffi::c_long,
 }
 
 #[repr(C)]
 pub struct cpumask;
 
-pub unsafe fn set_smp_ipi_range(ipi_base: ::core::ffi::c_int, n: ::core::ffi::c_int) {
+pub unsafe fn set_smp_ipi_range(ipi_base: ::kernel::ffi::c_int, n: ::kernel::ffi::c_int) {
     set_smp_ipi_range_percpu(ipi_base, n, 0);
 }
 
 /* CONFIG_ARM64_ACPI_PARKING_PROTOCOL selects the external wakeup implementation. */
 #[cfg(CONFIG_ARM64_ACPI_PARKING_PROTOCOL)]
 extern "C" {
-    pub fn arch_send_wakeup_ipi(cpu: ::core::ffi::c_uint);
+    pub fn arch_send_wakeup_ipi(cpu: ::kernel::ffi::c_uint);
 }
 
 #[cfg(not(CONFIG_ARM64_ACPI_PARKING_PROTOCOL))]
-pub unsafe fn arch_send_wakeup_ipi(_cpu: ::core::ffi::c_uint) {
+pub unsafe fn arch_send_wakeup_ipi(_cpu: ::kernel::ffi::c_uint) {
     BUILD_BUG!();
 }
 
-pub unsafe fn __cpu_die(_cpu: ::core::ffi::c_uint) {}
+pub unsafe fn __cpu_die(_cpu: ::kernel::ffi::c_uint) {}
 
 pub unsafe fn cpu_park_loop() -> ! {
     loop {
@@ -119,7 +119,7 @@ pub unsafe fn cpu_park_loop() -> ! {
     }
 }
 
-pub unsafe fn update_cpu_boot_status(val: ::core::ffi::c_int) {
+pub unsafe fn update_cpu_boot_status(val: ::kernel::ffi::c_int) {
     WRITE_ONCE(secondary_data.status, val);
     /* Ensure the visibility of the status update */
     dsb(ishst);

@@ -26,8 +26,8 @@ pub struct v1_disk_dqblk {
     pub dqb_curinodes: u32,  /* current # allocated inodes */
 
     /* below fields differ in length on 32-bit vs 64-bit architectures */
-    pub dqb_btime: core::ffi::c_ulong, /* time limit for excessive disk use */
-    pub dqb_itime: core::ffi::c_ulong, /* time limit for excessive inode use */
+    pub dqb_btime: kernel::ffi::c_ulong, /* time limit for excessive disk use */
+    pub dqb_itime: kernel::ffi::c_ulong, /* time limit for excessive inode use */
 }
 
 #[macro_export]

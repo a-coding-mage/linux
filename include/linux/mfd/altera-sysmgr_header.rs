@@ -24,7 +24,7 @@ pub struct regmap {
 extern "C" {
     pub fn altr_sysmgr_regmap_lookup_by_phandle(
         np: *mut device_node,
-        property: *const ::core::ffi::c_char,
+        property: *const ::kernel::ffi::c_char,
     ) -> *mut regmap;
 }
 
@@ -32,7 +32,7 @@ extern "C" {
 #[inline]
 pub unsafe fn altr_sysmgr_regmap_lookup_by_phandle(
     _np: *mut device_node,
-    _property: *const ::core::ffi::c_char,
+    _property: *const ::kernel::ffi::c_char,
 ) -> *mut regmap {
     // ERR_PTR(-ENOTSUPP); ENOTSUPP is Linux errno 524.
     (-524isize) as *mut regmap

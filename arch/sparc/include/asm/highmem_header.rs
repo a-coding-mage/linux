@@ -27,8 +27,8 @@
 
 /* declarations for highmem.c */
 extern "C" {
-    static mut highstart_pfn: ::core::ffi::c_ulong;
-    static mut highend_pfn: ::core::ffi::c_ulong;
+    static mut highstart_pfn: ::kernel::ffi::c_ulong;
+    static mut highend_pfn: ::kernel::ffi::c_ulong;
     static mut pkmap_page_table: *mut pte_t;
 }
 

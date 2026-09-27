@@ -48,9 +48,9 @@ impl cvmx_fpa_iobdma_data_s {
 /// Structure describing the current state of a FPA pool.
 #[repr(C)]
 pub struct cvmx_fpa_pool_info_t {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub size: u64,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub starting_element_count: u64,
 }
 
@@ -61,9 +61,9 @@ extern "C" {
     pub fn cvmx_read_csr(address: u64) -> u64;
     pub fn cvmx_write_csr(address: u64, value: u64);
     pub fn cvmx_octeon_is_pass1() -> bool;
-    pub fn cvmx_dprintf(fmt: *const core::ffi::c_char, ...);
-    pub fn cvmx_phys_to_ptr(address: u64) -> *mut core::ffi::c_void;
-    pub fn cvmx_ptr_to_phys(ptr: *mut core::ffi::c_void) -> u64;
+    pub fn cvmx_dprintf(fmt: *const kernel::ffi::c_char, ...);
+    pub fn cvmx_phys_to_ptr(address: u64) -> *mut kernel::ffi::c_void;
+    pub fn cvmx_ptr_to_phys(ptr: *mut kernel::ffi::c_void) -> u64;
     pub fn cvmx_send_single(value: u64);
     pub fn cvmx_write_io(address: u64, value: u64);
     pub fn __delay(cycles: u32);
@@ -73,17 +73,17 @@ pub const CVMX_FPA_CTL_STATUS: u64 = 0; // supplied by cvmx-fpa-defs.h
 pub const CVMX_FPA_FPF1_MARKS: u64 = 0; // supplied by cvmx-fpa-defs.h
 
 #[inline]
-pub unsafe fn cvmx_fpa_get_name(pool: u64) -> *const core::ffi::c_char {
+pub unsafe fn cvmx_fpa_get_name(pool: u64) -> *const kernel::ffi::c_char {
     cvmx_fpa_pool_info[pool as usize].name
 }
 
 #[inline]
-pub unsafe fn cvmx_fpa_get_base(pool: u64) -> *mut core::ffi::c_void {
+pub unsafe fn cvmx_fpa_get_base(pool: u64) -> *mut kernel::ffi::c_void {
     cvmx_fpa_pool_info[pool as usize].base
 }
 
 #[inline]
-pub unsafe fn cvmx_fpa_is_member(pool: u64, ptr: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn cvmx_fpa_is_member(pool: u64, ptr: *mut kernel::ffi::c_void) -> i32 {
     let info = &cvmx_fpa_pool_info[pool as usize];
     let start = info.base as usize;
     let p = ptr as usize;
@@ -95,7 +95,7 @@ pub unsafe fn cvmx_fpa_enable() {
     // CVMX_FPA_CTL_STATUS fields are defined by cvmx-fpa-defs.h.
     let mut status = cvmx_read_csr(CVMX_FPA_CTL_STATUS);
     if (status & 1) != 0 {
-        cvmx_dprintf(b"Warning: Enabling FPA when FPA already enabled.\n\0".as_ptr() as *const core::ffi::c_char);
+        cvmx_dprintf(b"Warning: Enabling FPA when FPA already enabled.\n\0".as_ptr() as *const kernel::ffi::c_char);
     }
     if cvmx_octeon_is_pass1() {
         for i in 1u64..8 {
@@ -111,7 +111,7 @@ pub unsafe fn cvmx_fpa_enable() {
 }
 
 #[inline]
-pub unsafe fn cvmx_fpa_alloc(pool: u64) -> *mut core::ffi::c_void {
+pub unsafe fn cvmx_fpa_alloc(pool: u64) -> *mut kernel::ffi::c_void {
     let address = cvmx_read_csr(pool); // CVMX_ADDR_DID(CVMX_FULL_DID(CVMX_OCT_DID_FPA, pool))
     if address != 0 { cvmx_phys_to_ptr(address) } else { core::ptr::null_mut() }
 }
@@ -127,7 +127,7 @@ pub unsafe fn cvmx_fpa_async_alloc(scr_addr: u64, pool: u64) {
 }
 
 #[inline]
-pub unsafe fn cvmx_fpa_free_nosync(ptr: *mut core::ffi::c_void, pool: u64, num_cache_lines: u64) {
+pub unsafe fn cvmx_fpa_free_nosync(ptr: *mut kernel::ffi::c_void, pool: u64, num_cache_lines: u64) {
     let newptr = cvmx_ptr_to_phys(ptr); // cvmx_addr_t with sfilldidspace.didspace set below
     let _ = pool; // CVMX_ADDR_DIDSPACE(CVMX_FULL_DID(CVMX_OCT_DID_FPA, pool))
     core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::SeqCst);
@@ -135,7 +135,7 @@ pub unsafe fn cvmx_fpa_free_nosync(ptr: *mut core::ffi::c_void, pool: u64, num_c
 }
 
 #[inline]
-pub unsafe fn cvmx_fpa_free(ptr: *mut core::ffi::c_void, pool: u64, num_cache_lines: u64) {
+pub unsafe fn cvmx_fpa_free(ptr: *mut kernel::ffi::c_void, pool: u64, num_cache_lines: u64) {
     let newptr = cvmx_ptr_to_phys(ptr);
     let _ = pool; // CVMX_ADDR_DIDSPACE(CVMX_FULL_DID(CVMX_OCT_DID_FPA, pool))
     core::sync::atomic::fence(core::sync::atomic::Ordering::SeqCst);

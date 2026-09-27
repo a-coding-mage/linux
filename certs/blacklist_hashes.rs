@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // `__initconst` is a platform-specific initialization-section annotation.
 // The entries supplied by the C preprocessor include `blacklist_hash_list`,

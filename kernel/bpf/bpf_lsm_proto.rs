@@ -21,10 +21,10 @@ pub struct file {
 #[no_mangle]
 pub unsafe extern "C" fn bpf_lsm_mmap_file(
     file__nullable: *mut file,
-    reqprot: core::ffi::c_ulong,
-    prot: core::ffi::c_ulong,
-    flags: core::ffi::c_ulong,
-) -> core::ffi::c_int {
+    reqprot: kernel::ffi::c_ulong,
+    prot: kernel::ffi::c_ulong,
+    flags: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     0
 }
 

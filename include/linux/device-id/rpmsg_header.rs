@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 // C conditional: this type is declared when __KERNEL__ is defined.
-pub type kernel_ulong_t = ::core::ffi::c_ulong;
+pub type kernel_ulong_t = ::kernel::ffi::c_ulong;
 
 /* rpmsg */
 
@@ -10,7 +10,7 @@ pub const RPMSG_DEVICE_MODALIAS_FMT: &str = "rpmsg:%s";
 
 #[repr(C)]
 pub struct rpmsg_device_id {
-    pub name: [::core::ffi::c_char; RPMSG_NAME_SIZE],
+    pub name: [::kernel::ffi::c_char; RPMSG_NAME_SIZE],
     pub driver_data: kernel_ulong_t,
 }
 

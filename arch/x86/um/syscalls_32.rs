@@ -4,9 +4,9 @@
 
 /// `arch_prctl` system call.
 pub unsafe fn arch_prctl(
-    option: ::core::ffi::c_int,
-    arg2: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    option: ::kernel::ffi::c_int,
+    arg2: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     let _ = (option, arg2);
     -EINVAL
 }

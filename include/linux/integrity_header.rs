@@ -32,7 +32,7 @@ pub fn integrity_load_keys() {}
 #[repr(C)]
 pub struct integrity_inode_attributes {
     pub version: u64, /* track inode changes */
-    pub ino: libc::c_ulong,
+    pub ino: kernel::ffi::c_ulong,
     pub dev: dev_t,
 }
 

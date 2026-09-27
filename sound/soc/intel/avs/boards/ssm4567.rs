@@ -19,33 +19,33 @@ extern "C" {
 
     fn snd_soc_rtd_to_codec(
         rtd: *mut snd_soc_pcm_runtime,
-        num: ::core::ffi::c_int,
+        num: ::kernel::ffi::c_int,
     ) -> *mut snd_soc_dai;
     fn snd_soc_dai_set_tdm_slot(
         dai: *mut snd_soc_dai,
-        tx_mask: ::core::ffi::c_uint,
-        rx_mask: ::core::ffi::c_uint,
-        slots: ::core::ffi::c_int,
-        slot_width: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        tx_mask: ::kernel::ffi::c_uint,
+        rx_mask: ::kernel::ffi::c_uint,
+        slots: ::kernel::ffi::c_int,
+        slot_width: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     fn hw_param_interval(
         p: *mut snd_pcm_hw_params,
-        var: ::core::ffi::c_int,
+        var: ::kernel::ffi::c_int,
     ) -> *mut snd_interval;
-    fn hw_param_mask(p: *mut snd_pcm_hw_params, var: ::core::ffi::c_int) -> *mut snd_mask;
+    fn hw_param_mask(p: *mut snd_pcm_hw_params, var: ::kernel::ffi::c_int) -> *mut snd_mask;
     fn snd_mask_none(mask: *mut snd_mask);
-    fn snd_mask_set_format(mask: *mut snd_mask, val: ::core::ffi::c_int);
+    fn snd_mask_set_format(mask: *mut snd_mask, val: ::kernel::ffi::c_int);
     fn devm_kzalloc(
         dev: *mut device,
         size: usize,
         flags: gfp_t,
-    ) -> *mut ::core::ffi::c_void;
+    ) -> *mut ::kernel::ffi::c_void;
     fn devm_kcalloc(
         dev: *mut device,
         n: usize,
         size: usize,
         flags: gfp_t,
-    ) -> *mut ::core::ffi::c_void;
+    ) -> *mut ::kernel::ffi::c_void;
     fn devm_kasprintf(
         dev: *mut device,
         flags: gfp_t,
@@ -53,18 +53,18 @@ extern "C" {
         ...
     ) -> *mut i8;
     fn dev_name(dev: *const device) -> *const i8;
-    fn dev_get_platdata(dev: *const device) -> *mut ::core::ffi::c_void;
+    fn dev_get_platdata(dev: *const device) -> *mut ::kernel::ffi::c_void;
     fn avs_mach_get_ssp_tdm(
         dev: *mut device,
         mach: *mut snd_soc_acpi_mach,
-        ssp_port: *mut ::core::ffi::c_int,
-        tdm_slot: *mut ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        ssp_port: *mut ::kernel::ffi::c_int,
+        tdm_slot: *mut ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     fn dev_err(dev: *const device, fmt: *const i8, ...);
     fn devm_snd_soc_register_deferrable_card(
         dev: *mut device,
         card: *mut snd_soc_card,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -94,8 +94,8 @@ pub struct snd_mask {
 
 #[repr(C)]
 pub struct snd_interval {
-    pub min: ::core::ffi::c_uint,
-    pub max: ::core::ffi::c_uint,
+    pub min: ::kernel::ffi::c_uint,
+    pub max: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -110,7 +110,7 @@ pub struct platform_device {
 
 #[repr(C)]
 pub struct snd_soc_acpi_mach {
-    pub pdata: *mut ::core::ffi::c_void,
+    pub pdata: *mut ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -134,23 +134,23 @@ pub struct snd_soc_dai_link {
     pub name: *const i8,
     pub stream_name: *const i8,
     pub cpus: *mut snd_soc_dai_link_component,
-    pub num_cpus: ::core::ffi::c_uint,
+    pub num_cpus: ::kernel::ffi::c_uint,
     pub codecs: *mut snd_soc_dai_link_component,
-    pub num_codecs: ::core::ffi::c_uint,
+    pub num_codecs: ::kernel::ffi::c_uint,
     pub platforms: *mut snd_soc_dai_link_component,
-    pub num_platforms: ::core::ffi::c_uint,
-    pub id: ::core::ffi::c_int,
-    pub dai_fmt: ::core::ffi::c_uint,
-    pub init: Option<unsafe extern "C" fn(*mut snd_soc_pcm_runtime) -> ::core::ffi::c_int>,
+    pub num_platforms: ::kernel::ffi::c_uint,
+    pub id: ::kernel::ffi::c_int,
+    pub dai_fmt: ::kernel::ffi::c_uint,
+    pub init: Option<unsafe extern "C" fn(*mut snd_soc_pcm_runtime) -> ::kernel::ffi::c_int>,
     pub be_hw_params_fixup: Option<
         unsafe extern "C" fn(
             *mut snd_soc_pcm_runtime,
             *mut snd_pcm_hw_params,
-        ) -> ::core::ffi::c_int,
+        ) -> ::kernel::ffi::c_int,
     >,
-    pub nonatomic: ::core::ffi::c_uint,
-    pub no_pcm: ::core::ffi::c_uint,
-    pub ignore_pmdown_time: ::core::ffi::c_uint,
+    pub nonatomic: ::kernel::ffi::c_uint,
+    pub no_pcm: ::kernel::ffi::c_uint,
+    pub ignore_pmdown_time: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -184,15 +184,15 @@ pub struct snd_soc_card {
     pub dev: *mut device,
     pub owner: *mut module,
     pub dai_link: *mut snd_soc_dai_link,
-    pub num_links: ::core::ffi::c_int,
+    pub num_links: ::kernel::ffi::c_int,
     pub codec_conf: *mut snd_soc_codec_conf,
-    pub num_configs: ::core::ffi::c_int,
+    pub num_configs: ::kernel::ffi::c_int,
     pub controls: *const snd_kcontrol_new,
-    pub num_controls: ::core::ffi::c_uint,
+    pub num_controls: ::kernel::ffi::c_uint,
     pub dapm_widgets: *const snd_soc_dapm_widget,
-    pub num_dapm_widgets: ::core::ffi::c_uint,
+    pub num_dapm_widgets: ::kernel::ffi::c_uint,
     pub dapm_routes: *const snd_soc_dapm_route,
-    pub num_dapm_routes: ::core::ffi::c_uint,
+    pub num_dapm_routes: ::kernel::ffi::c_uint,
     pub fully_routed: bool,
 }
 
@@ -210,23 +210,23 @@ pub struct device_driver {
 
 #[repr(C)]
 pub struct platform_driver {
-    pub probe: Option<unsafe extern "C" fn(*mut platform_device) -> ::core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(*mut platform_device) -> ::kernel::ffi::c_int>,
     pub driver: device_driver,
     pub id_table: *const platform_device_id,
 }
 
-type gfp_t = ::core::ffi::c_uint;
-type kernel_ulong_t = ::core::ffi::c_ulong;
+type gfp_t = ::kernel::ffi::c_uint;
+type kernel_ulong_t = ::kernel::ffi::c_ulong;
 
 const GFP_KERNEL: gfp_t = 0;
-const ENOMEM: ::core::ffi::c_int = 12;
-const SNDRV_PCM_HW_PARAM_RATE: ::core::ffi::c_int = 0;
-const SNDRV_PCM_HW_PARAM_CHANNELS: ::core::ffi::c_int = 1;
-const SNDRV_PCM_HW_PARAM_FORMAT: ::core::ffi::c_int = 2;
-const SNDRV_PCM_FORMAT_S24_LE: ::core::ffi::c_int = 6;
-const SND_SOC_DAIFMT_DSP_A: ::core::ffi::c_uint = 0;
-const SND_SOC_DAIFMT_IB_NF: ::core::ffi::c_uint = 0;
-const SND_SOC_DAIFMT_CBC_CFC: ::core::ffi::c_uint = 0;
+const ENOMEM: ::kernel::ffi::c_int = 12;
+const SNDRV_PCM_HW_PARAM_RATE: ::kernel::ffi::c_int = 0;
+const SNDRV_PCM_HW_PARAM_CHANNELS: ::kernel::ffi::c_int = 1;
+const SNDRV_PCM_HW_PARAM_FORMAT: ::kernel::ffi::c_int = 2;
+const SNDRV_PCM_FORMAT_S24_LE: ::kernel::ffi::c_int = 6;
+const SND_SOC_DAIFMT_DSP_A: ::kernel::ffi::c_uint = 0;
+const SND_SOC_DAIFMT_IB_NF: ::kernel::ffi::c_uint = 0;
+const SND_SOC_DAIFMT_CBC_CFC: ::kernel::ffi::c_uint = 0;
 
 macro_rules! c_str {
     ($s:literal) => {
@@ -272,8 +272,8 @@ static card_controls: [snd_kcontrol_new; 2] = [
 ];
 
 static card_widgets: [snd_soc_dapm_widget; 2] = [
-    snd_soc_dapm_spk!("Left Speaker", ::core::ptr::null_mut::<::core::ffi::c_void>()),
-    snd_soc_dapm_spk!("Right Speaker", ::core::ptr::null_mut::<::core::ffi::c_void>()),
+    snd_soc_dapm_spk!("Left Speaker", ::core::ptr::null_mut::<::kernel::ffi::c_void>()),
+    snd_soc_dapm_spk!("Right Speaker", ::core::ptr::null_mut::<::kernel::ffi::c_void>()),
 ];
 
 static card_base_routes: [snd_soc_dapm_route; 2] = [
@@ -291,8 +291,8 @@ static card_base_routes: [snd_soc_dapm_route; 2] = [
 
 unsafe extern "C" fn avs_ssm4567_codec_init(
     runtime: *mut snd_soc_pcm_runtime,
-) -> ::core::ffi::c_int {
-    let mut ret: ::core::ffi::c_int;
+) -> ::kernel::ffi::c_int {
+    let mut ret: ::kernel::ffi::c_int;
 
     /* Slot 1 for left */
     ret = snd_soc_dai_set_tdm_slot(snd_soc_rtd_to_codec(runtime, 0), 0x01, 0x01, 2, 48);
@@ -312,7 +312,7 @@ unsafe extern "C" fn avs_ssm4567_codec_init(
 unsafe extern "C" fn avs_ssm4567_be_fixup(
     runrime: *mut snd_soc_pcm_runtime,
     params: *mut snd_pcm_hw_params,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let rate: *mut snd_interval;
     let channels: *mut snd_interval;
     let fmt: *mut snd_mask;
@@ -335,10 +335,10 @@ unsafe extern "C" fn avs_ssm4567_be_fixup(
 
 unsafe extern "C" fn avs_create_dai_link(
     dev: *mut device,
-    ssp_port: ::core::ffi::c_int,
-    tdm_slot: ::core::ffi::c_int,
+    ssp_port: ::kernel::ffi::c_int,
+    tdm_slot: ::kernel::ffi::c_int,
     dai_link: *mut *mut snd_soc_dai_link,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let platform: *mut snd_soc_dai_link_component;
     let dl: *mut snd_soc_dai_link;
 
@@ -417,15 +417,15 @@ unsafe extern "C" fn avs_create_dai_link(
     0
 }
 
-unsafe extern "C" fn avs_ssm4567_probe(pdev: *mut platform_device) -> ::core::ffi::c_int {
+unsafe extern "C" fn avs_ssm4567_probe(pdev: *mut platform_device) -> ::kernel::ffi::c_int {
     let mut dai_link: *mut snd_soc_dai_link = ::core::ptr::null_mut();
     let mach: *mut snd_soc_acpi_mach;
     let pdata: *mut avs_mach_pdata;
     let card: *mut snd_soc_card;
     let dev: *mut device = &mut (*pdev).dev;
-    let mut ssp_port: ::core::ffi::c_int = 0;
-    let mut tdm_slot: ::core::ffi::c_int = 0;
-    let mut ret: ::core::ffi::c_int;
+    let mut ssp_port: ::kernel::ffi::c_int = 0;
+    let mut tdm_slot: ::kernel::ffi::c_int = 0;
+    let mut ret: ::kernel::ffi::c_int;
 
     mach = dev_get_platdata(dev) as *mut snd_soc_acpi_mach;
     pdata = (*mach).pdata as *mut avs_mach_pdata;
@@ -459,13 +459,13 @@ unsafe extern "C" fn avs_ssm4567_probe(pdev: *mut platform_device) -> ::core::ff
     (*card).dai_link = dai_link;
     (*card).num_links = 1;
     (*card).codec_conf = card_codec_conf.as_mut_ptr();
-    (*card).num_configs = card_codec_conf.len() as ::core::ffi::c_int;
+    (*card).num_configs = card_codec_conf.len() as ::kernel::ffi::c_int;
     (*card).controls = card_controls.as_ptr();
-    (*card).num_controls = card_controls.len() as ::core::ffi::c_uint;
+    (*card).num_controls = card_controls.len() as ::kernel::ffi::c_uint;
     (*card).dapm_widgets = card_widgets.as_ptr();
-    (*card).num_dapm_widgets = card_widgets.len() as ::core::ffi::c_uint;
+    (*card).num_dapm_widgets = card_widgets.len() as ::kernel::ffi::c_uint;
     (*card).dapm_routes = card_base_routes.as_ptr();
-    (*card).num_dapm_routes = card_base_routes.len() as ::core::ffi::c_uint;
+    (*card).num_dapm_routes = card_base_routes.len() as ::kernel::ffi::c_uint;
     (*card).fully_routed = true;
 
     devm_snd_soc_register_deferrable_card(dev, card)

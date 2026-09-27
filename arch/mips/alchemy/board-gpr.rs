@@ -9,14 +9,14 @@
 // macros, and functions are external dependencies of this translation.
 
 extern "C" {
-    fn alchemy_uart_putchar(addr: usize, c: core::ffi::c_char);
+    fn alchemy_uart_putchar(addr: usize, c: kernel::ffi::c_char);
     fn alchemy_gpio_direction_output(gpio: u32, value: u32);
     fn raw_local_irq_disable();
     fn udelay(usecs: u32);
     fn alchemy_gpio_set_value(gpio: u32, value: u32);
     fn cpu_wait() -> !;
     fn alchemy_uart_enable(addr: usize);
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
     fn software_node_register_node_group(nodes: *const *const software_node) -> i32;
     fn platform_device_register_full(info: *const platform_device_info) -> *mut platform_device;
     fn platform_device_register(dev: *mut platform_device) -> i32;
@@ -24,15 +24,15 @@ extern "C" {
     fn platform_add_devices(devices: *const *mut platform_device, count: usize) -> i32;
 }
 
-pub unsafe fn get_system_type() -> *const core::ffi::c_char {
-    b"GPR\0".as_ptr() as *const core::ffi::c_char
+pub unsafe fn get_system_type() -> *const kernel::ffi::c_char {
+    b"GPR\0".as_ptr() as *const kernel::ffi::c_char
 }
 
-pub unsafe fn prom_putchar(c: core::ffi::c_char) {
+pub unsafe fn prom_putchar(c: kernel::ffi::c_char) {
     alchemy_uart_putchar(AU1000_UART0_PHYS_ADDR, c);
 }
 
-unsafe fn gpr_reset(_c: *mut core::ffi::c_char) {
+unsafe fn gpr_reset(_c: *mut kernel::ffi::c_char) {
     // switch System-LED to orange (red# and green# on)
     alchemy_gpio_direction_output(4, 0);
     alchemy_gpio_direction_output(5, 0);

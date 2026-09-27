@@ -66,22 +66,22 @@ macro_rules! INT_SOFT_MASK_BUG_ON {
 
 /* C declaration/definition macros, retaining their call sequence and ABI. */
 #[macro_export]
-macro_rules! DECLARE_INTERRUPT_HANDLER_RAW { ($func:ident) => { pub unsafe extern "C" fn $func(regs: *mut pt_regs) -> libc::c_long; }; }
+macro_rules! DECLARE_INTERRUPT_HANDLER_RAW { ($func:ident) => { pub unsafe extern "C" fn $func(regs: *mut pt_regs) -> kernel::ffi::c_long; }; }
 #[macro_export]
 macro_rules! DECLARE_INTERRUPT_HANDLER { ($func:ident) => { pub unsafe extern "C" fn $func(regs: *mut pt_regs); }; }
 #[macro_export]
-macro_rules! DECLARE_INTERRUPT_HANDLER_RET { ($func:ident) => { pub unsafe extern "C" fn $func(regs: *mut pt_regs) -> libc::c_long; }; }
+macro_rules! DECLARE_INTERRUPT_HANDLER_RET { ($func:ident) => { pub unsafe extern "C" fn $func(regs: *mut pt_regs) -> kernel::ffi::c_long; }; }
 #[macro_export]
 macro_rules! DECLARE_INTERRUPT_HANDLER_ASYNC { ($func:ident) => { pub unsafe extern "C" fn $func(regs: *mut pt_regs); }; }
 #[macro_export]
-macro_rules! DECLARE_INTERRUPT_HANDLER_NMI { ($func:ident) => { pub unsafe extern "C" fn $func(regs: *mut pt_regs) -> libc::c_long; }; }
+macro_rules! DECLARE_INTERRUPT_HANDLER_NMI { ($func:ident) => { pub unsafe extern "C" fn $func(regs: *mut pt_regs) -> kernel::ffi::c_long; }; }
 
 /* The DEFINE_* macros are represented with an explicit implementation name because
  * Rust has no token-pasting operator equivalent to C's ____##func. */
 #[macro_export]
 macro_rules! DEFINE_INTERRUPT_HANDLER_RAW { ($func:ident, $inner:ident, $body:block) => {
-    pub unsafe extern "C" fn $func(regs: *mut pt_regs) -> libc::c_long { __hard_RI_enable(); $inner(regs) }
-    unsafe fn $inner(regs: *mut pt_regs) -> libc::c_long $body
+    pub unsafe extern "C" fn $func(regs: *mut pt_regs) -> kernel::ffi::c_long { __hard_RI_enable(); $inner(regs) }
+    unsafe fn $inner(regs: *mut pt_regs) -> kernel::ffi::c_long $body
 }; }
 #[macro_export]
 macro_rules! DEFINE_INTERRUPT_HANDLER { ($func:ident, $inner:ident, $body:block) => {
@@ -90,8 +90,8 @@ macro_rules! DEFINE_INTERRUPT_HANDLER { ($func:ident, $inner:ident, $body:block)
 }; }
 #[macro_export]
 macro_rules! DEFINE_INTERRUPT_HANDLER_RET { ($func:ident, $inner:ident, $body:block) => {
-    pub unsafe extern "C" fn $func(regs: *mut pt_regs) -> libc::c_long { let state = irqentry_enter(regs); instrumentation_begin(); let ret = $inner(regs); instrumentation_end(); irqentry_exit(regs, state); ret }
-    unsafe fn $inner(regs: *mut pt_regs) -> libc::c_long $body
+    pub unsafe extern "C" fn $func(regs: *mut pt_regs) -> kernel::ffi::c_long { let state = irqentry_enter(regs); instrumentation_begin(); let ret = $inner(regs); instrumentation_end(); irqentry_exit(regs, state); ret }
+    unsafe fn $inner(regs: *mut pt_regs) -> kernel::ffi::c_long $body
 }; }
 #[macro_export]
 macro_rules! DEFINE_INTERRUPT_HANDLER_ASYNC { ($func:ident, $inner:ident, $body:block) => {
@@ -100,18 +100,18 @@ macro_rules! DEFINE_INTERRUPT_HANDLER_ASYNC { ($func:ident, $inner:ident, $body:
 }; }
 #[macro_export]
 macro_rules! DEFINE_INTERRUPT_HANDLER_NMI { ($func:ident, $inner:ident, $body:block) => {
-    pub unsafe extern "C" fn $func(regs: *mut pt_regs) -> libc::c_long { let mut nmi_state = interrupt_nmi_state {}; arch_interrupt_nmi_enter_prepare(regs, &mut nmi_state); let state = irqentry_nmi_enter(regs); let ret = $inner(regs); arch_interrupt_nmi_exit_prepare(regs, &mut nmi_state); irqentry_nmi_exit(regs, state); ret }
-    unsafe fn $inner(regs: *mut pt_regs) -> libc::c_long $body
+    pub unsafe extern "C" fn $func(regs: *mut pt_regs) -> kernel::ffi::c_long { let mut nmi_state = interrupt_nmi_state {}; arch_interrupt_nmi_enter_prepare(regs, &mut nmi_state); let state = irqentry_nmi_enter(regs); let ret = $inner(regs); arch_interrupt_nmi_exit_prepare(regs, &mut nmi_state); irqentry_nmi_exit(regs, state); ret }
+    unsafe fn $inner(regs: *mut pt_regs) -> kernel::ffi::c_long $body
 }; }
 
 extern "C" {
     fn unrecoverable_exception(regs: *mut pt_regs) -> !;
     fn replay_system_reset();
     fn replay_soft_interrupts();
-    fn system_call_exception(regs: *mut pt_regs, r0: libc::c_ulong) -> libc::c_long;
-    fn syscall_exit_prepare(r3: libc::c_ulong, regs: *mut pt_regs, scv: libc::c_long) -> libc::c_ulong;
-    fn interrupt_exit_user_prepare(regs: *mut pt_regs) -> libc::c_ulong;
-    fn interrupt_exit_kernel_prepare(regs: *mut pt_regs) -> libc::c_ulong;
+    fn system_call_exception(regs: *mut pt_regs, r0: kernel::ffi::c_ulong) -> kernel::ffi::c_long;
+    fn syscall_exit_prepare(r3: kernel::ffi::c_ulong, regs: *mut pt_regs, scv: kernel::ffi::c_long) -> kernel::ffi::c_ulong;
+    fn interrupt_exit_user_prepare(regs: *mut pt_regs) -> kernel::ffi::c_ulong;
+    fn interrupt_exit_kernel_prepare(regs: *mut pt_regs) -> kernel::ffi::c_ulong;
 }
 
 #[inline]

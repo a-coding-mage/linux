@@ -12,16 +12,16 @@
 
 // Dependencies supplied by the surrounding kernel translation unit.
 
-static mut initcount: ::core::ffi::c_uint = 0;
+static mut initcount: ::kernel::ffi::c_uint = 0;
 static mut count_count_start: atomic_t = ATOMIC_INIT(0);
 static mut count_count_stop: atomic_t = ATOMIC_INIT(0);
 
-const COUNTON: ::core::ffi::c_uint = 100;
-const NR_LOOPS: ::core::ffi::c_int = 3;
+const COUNTON: ::kernel::ffi::c_uint = 100;
+const NR_LOOPS: ::kernel::ffi::c_int = 3;
 
-pub unsafe fn synchronise_count_master(cpu: ::core::ffi::c_int) {
-    let mut i: ::core::ffi::c_int;
-    let mut flags: ::core::ffi::c_ulong;
+pub unsafe fn synchronise_count_master(cpu: ::kernel::ffi::c_int) {
+    let mut i: ::kernel::ffi::c_int;
+    let mut flags: ::kernel::ffi::c_ulong;
 
     pr_info!("Synchronize counters for CPU %u: ", cpu);
 
@@ -87,8 +87,8 @@ pub unsafe fn synchronise_count_master(cpu: ::core::ffi::c_int) {
     pr_cont!("done.\n");
 }
 
-pub unsafe fn synchronise_count_slave(_cpu: ::core::ffi::c_int) {
-    let mut i: ::core::ffi::c_int;
+pub unsafe fn synchronise_count_slave(_cpu: ::kernel::ffi::c_int) {
+    let mut i: ::kernel::ffi::c_int;
 
     /*
      * Not every cpu is online at the time this gets called,

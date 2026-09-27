@@ -65,7 +65,7 @@ unsafe fn bpf_iter_support_resched(seq: *mut seq_file) -> bool {
 
 const MAX_ITER_OBJECTS: i32 = 1000000;
 
-unsafe fn bpf_seq_read(file: *mut file, buf: *mut core::ffi::c_char, size: usize,
+unsafe fn bpf_seq_read(file: *mut file, buf: *mut kernel::ffi::c_char, size: usize,
                        ppos: *mut loff_t) -> isize {
     let seq = (*file).private_data as *mut seq_file;
     let mut n: usize;
@@ -74,7 +74,7 @@ unsafe fn bpf_seq_read(file: *mut file, buf: *mut core::ffi::c_char, size: usize
     let mut err: i32 = 0;
     let mut num_objs: i32 = 0;
     let can_resched: bool;
-    let mut p: *mut core::ffi::c_void;
+    let mut p: *mut kernel::ffi::c_void;
 
     mutex_lock(&mut (*seq).lock);
     if (*seq).buf.is_null() {
@@ -154,7 +154,7 @@ extern "C" {
     pub fn bpf_iter_link_attach(attr: *const bpf_attr, uattr: bpfptr_t, prog: *mut bpf_prog) -> i32;
     pub fn bpf_iter_new_fd(link: *mut bpf_link) -> i32;
     pub fn bpf_iter_get_info(meta: *mut bpf_iter_meta, in_stop: bool) -> *mut bpf_prog;
-    pub fn bpf_iter_run_prog(prog: *mut bpf_prog, ctx: *mut core::ffi::c_void) -> i32;
+    pub fn bpf_iter_run_prog(prog: *mut bpf_prog, ctx: *mut kernel::ffi::c_void) -> i32;
 }
 
 #[repr(C, align(8))]

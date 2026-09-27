@@ -15,7 +15,7 @@ static mut MUX_CFG_PTR: *mut omap_mux_cfg = core::ptr::null_mut();
 
 #[cfg(CONFIG_OMAP_MUX)]
 unsafe fn omap1_cfg_reg(cfg: *const pin_config) -> i32 {
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let mut reg_orig = 0u32;
     let mut reg = 0u32;
     let mut pu_pd_orig = 0u32;
@@ -66,7 +66,7 @@ unsafe fn omap1_cfg_reg(cfg: *const pin_config) -> i32 {
         spin_unlock_irqrestore(&raw mut MUX_SPIN_LOCK, flags);
     }
     #[cfg(CONFIG_OMAP_MUX_WARNINGS)]
-    { if warn != 0 { printk(KERN_WARNING, c"MUX: initialized %s\\0", (*cfg).name); } }
+    { if warn != 0 { printk(c"\x014MUX: initialized %s\\0", (*cfg).name); } }
     #[cfg(CONFIG_OMAP_MUX_WARNINGS)]
     { if warn != 0 { return -ETXTBSY; } }
     0
@@ -75,16 +75,16 @@ unsafe fn omap1_cfg_reg(cfg: *const pin_config) -> i32 {
 #[cfg(CONFIG_OMAP_MUX)]
 pub unsafe extern "C" fn omap_mux_register(cfg: *mut omap_mux_cfg) -> i32 {
     if cfg.is_null() || (*cfg).pins.is_null() || (*cfg).size == 0 || (*cfg).cfg_reg.is_none() {
-        printk(KERN_ERR, c"Invalid pin table\\0"); return -EINVAL;
+        printk(c"\x013Invalid pin table\\0"); return -EINVAL;
     }
     MUX_CFG_PTR = cfg; 0
 }
 
 #[cfg(CONFIG_OMAP_MUX)]
-pub unsafe extern "C" fn omap_cfg_reg(index: core::ffi::c_ulong) -> i32 {
-    if !cpu_class_is_omap1() { printk(KERN_ERR, c"mux: Broken omap_cfg_reg(%lu) entry\\0", index); WARN_ON(1); return -EINVAL; }
-    if MUX_CFG_PTR.is_null() { printk(KERN_ERR, c"Pin mux table not initialized\\0"); return -ENODEV; }
-    if index >= (*MUX_CFG_PTR).size { printk(KERN_ERR, c"Invalid pin mux index: %lu (%lu)\\0", index, (*MUX_CFG_PTR).size); dump_stack(); return -ENODEV; }
+pub unsafe extern "C" fn omap_cfg_reg(index: kernel::ffi::c_ulong) -> i32 {
+    if !cpu_class_is_omap1() { printk(c"\x013mux: Broken omap_cfg_reg(%lu) entry\\0", index); WARN_ON(1); return -EINVAL; }
+    if MUX_CFG_PTR.is_null() { printk(c"\x013Pin mux table not initialized\\0"); return -ENODEV; }
+    if index >= (*MUX_CFG_PTR).size { printk(c"\x013Invalid pin mux index: %lu (%lu)\\0", index, (*MUX_CFG_PTR).size); dump_stack(); return -ENODEV; }
     ((*MUX_CFG_PTR).cfg_reg.unwrap())((*MUX_CFG_PTR).pins.add(index as usize))
 }
 

@@ -38,10 +38,10 @@ pub const GB_OPERATION_MESSAGE_SIZE_MAX: u16 = u16::MAX;
 pub struct gb_message {
     pub operation: *mut gb_operation,
     pub header: *mut gb_operation_msg_hdr,
-    pub payload: *mut core::ffi::c_void,
+    pub payload: *mut kernel::ffi::c_void,
     pub payload_size: usize,
-    pub buffer: *mut core::ffi::c_void,
-    pub hcpriv: *mut core::ffi::c_void,
+    pub buffer: *mut kernel::ffi::c_void,
+    pub hcpriv: *mut kernel::ffi::c_void,
 }
 
 pub const GB_OPERATION_FLAG_INCOMING: usize = 1usize << 0;
@@ -77,58 +77,58 @@ pub struct gb_operation {
     pub connection: *mut gb_connection,
     pub request: *mut gb_message,
     pub response: *mut gb_message,
-    pub flags: libc::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub type_: u8,
     pub id: u16,
-    pub r#errno: libc::c_int,
+    pub r#errno: kernel::ffi::c_int,
     pub work: work_struct,
     pub callback: gb_operation_callback,
     pub completion: completion,
     pub timer: timer_list,
     pub kref: kref,
     pub waiters: atomic_t,
-    pub active: libc::c_int,
+    pub active: kernel::ffi::c_int,
     pub links: list_head,
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
 }
 
 #[inline]
 pub unsafe fn gb_operation_is_incoming(operation: *mut gb_operation) -> bool {
-    ((*operation).flags & GB_OPERATION_FLAG_INCOMING as libc::c_ulong) != 0
+    ((*operation).flags & GB_OPERATION_FLAG_INCOMING as kernel::ffi::c_ulong) != 0
 }
 
 #[inline]
 pub unsafe fn gb_operation_is_unidirectional(operation: *mut gb_operation) -> bool {
-    ((*operation).flags & GB_OPERATION_FLAG_UNIDIRECTIONAL as libc::c_ulong) != 0
+    ((*operation).flags & GB_OPERATION_FLAG_UNIDIRECTIONAL as kernel::ffi::c_ulong) != 0
 }
 
 #[inline]
 pub unsafe fn gb_operation_short_response_allowed(operation: *mut gb_operation) -> bool {
-    ((*operation).flags & GB_OPERATION_FLAG_SHORT_RESPONSE as libc::c_ulong) != 0
+    ((*operation).flags & GB_OPERATION_FLAG_SHORT_RESPONSE as kernel::ffi::c_ulong) != 0
 }
 
 #[inline]
 pub unsafe fn gb_operation_is_core(operation: *mut gb_operation) -> bool {
-    ((*operation).flags & GB_OPERATION_FLAG_CORE as libc::c_ulong) != 0
+    ((*operation).flags & GB_OPERATION_FLAG_CORE as kernel::ffi::c_ulong) != 0
 }
 
 extern "C" {
-    pub fn gb_connection_recv(connection: *mut gb_connection, data: *mut core::ffi::c_void, size: usize);
-    pub fn gb_operation_result(operation: *mut gb_operation) -> libc::c_int;
+    pub fn gb_connection_recv(connection: *mut gb_connection, data: *mut kernel::ffi::c_void, size: usize);
+    pub fn gb_operation_result(operation: *mut gb_operation) -> kernel::ffi::c_int;
     pub fn gb_operation_get_payload_size_max(connection: *mut gb_connection) -> usize;
-    pub fn gb_operation_create_flags(connection: *mut gb_connection, type_: u8, request_size: usize, response_size: usize, flags: libc::c_ulong, gfp: gfp_t) -> *mut gb_operation;
-    pub fn gb_operation_create_core(connection: *mut gb_connection, type_: u8, request_size: usize, response_size: usize, flags: libc::c_ulong, gfp: gfp_t) -> *mut gb_operation;
+    pub fn gb_operation_create_flags(connection: *mut gb_connection, type_: u8, request_size: usize, response_size: usize, flags: kernel::ffi::c_ulong, gfp: gfp_t) -> *mut gb_operation;
+    pub fn gb_operation_create_core(connection: *mut gb_connection, type_: u8, request_size: usize, response_size: usize, flags: kernel::ffi::c_ulong, gfp: gfp_t) -> *mut gb_operation;
     pub fn gb_operation_get(operation: *mut gb_operation);
     pub fn gb_operation_put(operation: *mut gb_operation);
     pub fn gb_operation_response_alloc(operation: *mut gb_operation, response_size: usize, gfp: gfp_t) -> bool;
-    pub fn gb_operation_request_send(operation: *mut gb_operation, callback: gb_operation_callback, timeout: u32, gfp: gfp_t) -> libc::c_int;
-    pub fn gb_operation_request_send_sync_timeout(operation: *mut gb_operation, timeout: u32) -> libc::c_int;
-    pub fn gb_operation_cancel(operation: *mut gb_operation, errno: libc::c_int);
-    pub fn gb_operation_cancel_incoming(operation: *mut gb_operation, errno: libc::c_int);
-    pub fn greybus_message_sent(hd: *mut gb_host_device, message: *mut gb_message, status: libc::c_int);
-    pub fn gb_operation_sync_timeout(connection: *mut gb_connection, type_: libc::c_int, request: *mut core::ffi::c_void, request_size: libc::c_int, response: *mut core::ffi::c_void, response_size: libc::c_int, timeout: u32) -> libc::c_int;
-    pub fn gb_operation_unidirectional_timeout(connection: *mut gb_connection, type_: libc::c_int, request: *mut core::ffi::c_void, request_size: libc::c_int, timeout: u32) -> libc::c_int;
-    pub fn gb_operation_init() -> libc::c_int;
+    pub fn gb_operation_request_send(operation: *mut gb_operation, callback: gb_operation_callback, timeout: u32, gfp: gfp_t) -> kernel::ffi::c_int;
+    pub fn gb_operation_request_send_sync_timeout(operation: *mut gb_operation, timeout: u32) -> kernel::ffi::c_int;
+    pub fn gb_operation_cancel(operation: *mut gb_operation, errno: kernel::ffi::c_int);
+    pub fn gb_operation_cancel_incoming(operation: *mut gb_operation, errno: kernel::ffi::c_int);
+    pub fn greybus_message_sent(hd: *mut gb_host_device, message: *mut gb_message, status: kernel::ffi::c_int);
+    pub fn gb_operation_sync_timeout(connection: *mut gb_connection, type_: kernel::ffi::c_int, request: *mut kernel::ffi::c_void, request_size: kernel::ffi::c_int, response: *mut kernel::ffi::c_void, response_size: kernel::ffi::c_int, timeout: u32) -> kernel::ffi::c_int;
+    pub fn gb_operation_unidirectional_timeout(connection: *mut gb_connection, type_: kernel::ffi::c_int, request: *mut kernel::ffi::c_void, request_size: kernel::ffi::c_int, timeout: u32) -> kernel::ffi::c_int;
+    pub fn gb_operation_init() -> kernel::ffi::c_int;
     pub fn gb_operation_exit();
 }
 
@@ -138,27 +138,27 @@ pub unsafe fn gb_operation_create(connection: *mut gb_connection, type_: u8, req
 }
 
 #[inline]
-pub unsafe fn gb_operation_request_send_sync(operation: *mut gb_operation) -> libc::c_int {
+pub unsafe fn gb_operation_request_send_sync(operation: *mut gb_operation) -> kernel::ffi::c_int {
     gb_operation_request_send_sync_timeout(operation, GB_OPERATION_TIMEOUT_DEFAULT)
 }
 
 #[inline]
-pub unsafe fn gb_operation_sync(connection: *mut gb_connection, type_: libc::c_int, request: *mut core::ffi::c_void, request_size: libc::c_int, response: *mut core::ffi::c_void, response_size: libc::c_int) -> libc::c_int {
+pub unsafe fn gb_operation_sync(connection: *mut gb_connection, type_: kernel::ffi::c_int, request: *mut kernel::ffi::c_void, request_size: kernel::ffi::c_int, response: *mut kernel::ffi::c_void, response_size: kernel::ffi::c_int) -> kernel::ffi::c_int {
     gb_operation_sync_timeout(connection, type_, request, request_size, response, response_size, GB_OPERATION_TIMEOUT_DEFAULT)
 }
 
 #[inline]
-pub unsafe fn gb_operation_unidirectional(connection: *mut gb_connection, type_: libc::c_int, request: *mut core::ffi::c_void, request_size: libc::c_int) -> libc::c_int {
+pub unsafe fn gb_operation_unidirectional(connection: *mut gb_connection, type_: kernel::ffi::c_int, request: *mut kernel::ffi::c_void, request_size: kernel::ffi::c_int) -> kernel::ffi::c_int {
     gb_operation_unidirectional_timeout(connection, type_, request, request_size, GB_OPERATION_TIMEOUT_DEFAULT)
 }
 
 #[inline]
-pub unsafe fn gb_operation_get_data(operation: *mut gb_operation) -> *mut core::ffi::c_void {
+pub unsafe fn gb_operation_get_data(operation: *mut gb_operation) -> *mut kernel::ffi::c_void {
     (*operation).private
 }
 
 #[inline]
-pub unsafe fn gb_operation_set_data(operation: *mut gb_operation, data: *mut core::ffi::c_void) {
+pub unsafe fn gb_operation_set_data(operation: *mut gb_operation, data: *mut kernel::ffi::c_void) {
     (*operation).private = data;
 }
 

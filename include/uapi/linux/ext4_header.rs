@@ -4,40 +4,40 @@
 // referenced here rather than redefined.
 
 /* ext4-specific ioctl commands */
-pub const EXT4_IOC_GETVERSION: _ = _IOR(b'f', 3, core::ffi::c_long);
-pub const EXT4_IOC_SETVERSION: _ = _IOW(b'f', 4, core::ffi::c_long);
+pub const EXT4_IOC_GETVERSION: u32 = _IOR(b'f', 3, kernel::ffi::c_long);
+pub const EXT4_IOC_SETVERSION: u32 = _IOW(b'f', 4, kernel::ffi::c_long);
 pub const EXT4_IOC_GETVERSION_OLD: _ = FS_IOC_GETVERSION;
 pub const EXT4_IOC_SETVERSION_OLD: _ = FS_IOC_SETVERSION;
-pub const EXT4_IOC_GETRSVSZ: _ = _IOR(b'f', 5, core::ffi::c_long);
-pub const EXT4_IOC_SETRSVSZ: _ = _IOW(b'f', 6, core::ffi::c_long);
-pub const EXT4_IOC_GROUP_EXTEND: _ = _IOW(b'f', 7, core::ffi::c_ulong);
-pub const EXT4_IOC_GROUP_ADD: _ = _IOW(b'f', 8, ext4_new_group_input);
-pub const EXT4_IOC_MIGRATE: _ = _IO(b'f', 9);
+pub const EXT4_IOC_GETRSVSZ: u32 = _IOR(b'f', 5, kernel::ffi::c_long);
+pub const EXT4_IOC_SETRSVSZ: u32 = _IOW(b'f', 6, kernel::ffi::c_long);
+pub const EXT4_IOC_GROUP_EXTEND: u32 = _IOW(b'f', 7, kernel::ffi::c_ulong);
+pub const EXT4_IOC_GROUP_ADD: u32 = _IOW(b'f', 8, ext4_new_group_input);
+pub const EXT4_IOC_MIGRATE: u32 = _IO(b'f', 9);
 // ioctl 10 reserved for an early version of the FIEMAP ioctl.
 // ioctl 11 reserved for filesystem-independent FIEMAP ioctl.
-pub const EXT4_IOC_ALLOC_DA_BLKS: _ = _IO(b'f', 12);
-pub const EXT4_IOC_MOVE_EXT: _ = _IOWR(b'f', 15, move_extent);
-pub const EXT4_IOC_RESIZE_FS: _ = _IOW(b'f', 16, u64);
-pub const EXT4_IOC_SWAP_BOOT: _ = _IO(b'f', 17);
-pub const EXT4_IOC_PRECACHE_EXTENTS: _ = _IO(b'f', 18);
+pub const EXT4_IOC_ALLOC_DA_BLKS: u32 = _IO(b'f', 12);
+pub const EXT4_IOC_MOVE_EXT: u32 = _IOWR(b'f', 15, move_extent);
+pub const EXT4_IOC_RESIZE_FS: u32 = _IOW(b'f', 16, u64);
+pub const EXT4_IOC_SWAP_BOOT: u32 = _IO(b'f', 17);
+pub const EXT4_IOC_PRECACHE_EXTENTS: u32 = _IO(b'f', 18);
 // ioctl codes 19--39 are reserved for fscrypt.
-pub const EXT4_IOC_CLEAR_ES_CACHE: _ = _IO(b'f', 40);
-pub const EXT4_IOC_GETSTATE: _ = _IOW(b'f', 41, u32);
-pub const EXT4_IOC_GET_ES_CACHE: _ = _IOWR(b'f', 42, fiemap);
-pub const EXT4_IOC_CHECKPOINT: _ = _IOW(b'f', 43, u32);
-pub const EXT4_IOC_GETFSUUID: _ = _IOR(b'f', 44, fsuuid);
-pub const EXT4_IOC_SETFSUUID: _ = _IOW(b'f', 44, fsuuid);
-pub const EXT4_IOC_GET_TUNE_SB_PARAM: _ = _IOR(b'f', 45, ext4_tune_sb_params);
-pub const EXT4_IOC_SET_TUNE_SB_PARAM: _ = _IOW(b'f', 46, ext4_tune_sb_params);
-pub const EXT4_IOC_SHUTDOWN: _ = _IOR(b'X', 125, u32);
+pub const EXT4_IOC_CLEAR_ES_CACHE: u32 = _IO(b'f', 40);
+pub const EXT4_IOC_GETSTATE: u32 = _IOW(b'f', 41, u32);
+pub const EXT4_IOC_GET_ES_CACHE: u32 = _IOWR(b'f', 42, fiemap);
+pub const EXT4_IOC_CHECKPOINT: u32 = _IOW(b'f', 43, u32);
+pub const EXT4_IOC_GETFSUUID: u32 = _IOR(b'f', 44, fsuuid);
+pub const EXT4_IOC_SETFSUUID: u32 = _IOW(b'f', 44, fsuuid);
+pub const EXT4_IOC_GET_TUNE_SB_PARAM: u32 = _IOR(b'f', 45, ext4_tune_sb_params);
+pub const EXT4_IOC_SET_TUNE_SB_PARAM: u32 = _IOW(b'f', 46, ext4_tune_sb_params);
+pub const EXT4_IOC_SHUTDOWN: u32 = _IOR(b'X', 125, u32);
 
 /* ioctl commands in 32 bit emulation */
-pub const EXT4_IOC32_GETVERSION: _ = _IOR(b'f', 3, i32);
-pub const EXT4_IOC32_SETVERSION: _ = _IOW(b'f', 4, i32);
-pub const EXT4_IOC32_GETRSVSZ: _ = _IOR(b'f', 5, i32);
-pub const EXT4_IOC32_SETRSVSZ: _ = _IOW(b'f', 6, i32);
-pub const EXT4_IOC32_GROUP_EXTEND: _ = _IOW(b'f', 7, u32);
-pub const EXT4_IOC32_GROUP_ADD: _ = _IOW(b'f', 8, compat_ext4_new_group_input);
+pub const EXT4_IOC32_GETVERSION: u32 = _IOR(b'f', 3, i32);
+pub const EXT4_IOC32_SETVERSION: u32 = _IOW(b'f', 4, i32);
+pub const EXT4_IOC32_GETRSVSZ: u32 = _IOR(b'f', 5, i32);
+pub const EXT4_IOC32_SETRSVSZ: u32 = _IOW(b'f', 6, i32);
+pub const EXT4_IOC32_GROUP_EXTEND: u32 = _IOW(b'f', 7, u32);
+pub const EXT4_IOC32_GROUP_ADD: u32 = _IOW(b'f', 8, compat_ext4_new_group_input);
 pub const EXT4_IOC32_GETVERSION_OLD: _ = FS_IOC32_GETVERSION;
 pub const EXT4_IOC32_SETVERSION_OLD: _ = FS_IOC32_SETVERSION;
 

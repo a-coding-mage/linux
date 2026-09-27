@@ -32,23 +32,23 @@ unsafe extern "C" {
         task: *mut task_struct,
         ctx: *mut io_ring_ctx,
     ) -> *mut io_uring_task;
-    pub fn io_uring_del_tctx_node(index: ::core::ffi::c_ulong);
-    pub fn __io_uring_add_tctx_node(ctx: *mut io_ring_ctx) -> ::core::ffi::c_int;
-    pub fn __io_uring_add_tctx_node_from_submit(ctx: *mut io_ring_ctx) -> ::core::ffi::c_int;
+    pub fn io_uring_del_tctx_node(index: ::kernel::ffi::c_ulong);
+    pub fn __io_uring_add_tctx_node(ctx: *mut io_ring_ctx) -> ::kernel::ffi::c_int;
+    pub fn __io_uring_add_tctx_node_from_submit(ctx: *mut io_ring_ctx) -> ::kernel::ffi::c_int;
     pub fn io_uring_clean_tctx(tctx: *mut io_uring_task);
     pub fn io_uring_free_tctx(tsk: *mut task_struct);
 
     pub fn io_uring_unreg_ringfd();
     pub fn io_ringfd_register(
         ctx: *mut io_ring_ctx,
-        arg: *mut ::core::ffi::c_void,
-        nr_args: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        arg: *mut ::kernel::ffi::c_void,
+        nr_args: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
     pub fn io_ringfd_unregister(
         ctx: *mut io_ring_ctx,
-        arg: *mut ::core::ffi::c_void,
-        nr_args: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        arg: *mut ::kernel::ffi::c_void,
+        nr_args: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 
     pub static mut current: *mut task_struct;
 }
@@ -60,7 +60,7 @@ struct task_struct_io_uring_view {
 }
 
 #[inline]
-pub unsafe fn io_uring_add_tctx_node(ctx: *mut io_ring_ctx) -> ::core::ffi::c_int {
+pub unsafe fn io_uring_add_tctx_node(ctx: *mut io_ring_ctx) -> ::kernel::ffi::c_int {
     let tctx = (*(current as *mut task_struct_io_uring_view)).io_uring;
 
     if !tctx.is_null() && (*(tctx as *mut io_uring_task_last_view)).last == ctx {

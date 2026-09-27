@@ -6,7 +6,7 @@
 // Types, constants, and functions referenced below are supplied by the
 // corresponding platform and kernel interfaces.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct block_device {
@@ -31,7 +31,7 @@ pub type req_op = u32;
 unsafe extern "C" {
     fn bio_max_segs(nr_pages: u32) -> u32;
     fn howmany(count: u32, divisor: u32) -> u32;
-    fn is_vmalloc_addr(addr: *const core::ffi::c_void) -> bool;
+    fn is_vmalloc_addr(addr: *const kernel::ffi::c_void) -> bool;
     fn bdev_rw_virt(
         bdev: *mut block_device,
         sector: sector_t,

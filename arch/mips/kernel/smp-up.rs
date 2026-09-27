@@ -21,19 +21,19 @@ pub struct task_struct {
 }
 
 unsafe extern "C" {
-    fn panic(format: *const core::ffi::c_char, ...);
+    fn panic(format: *const kernel::ffi::c_char, ...);
     fn BUG();
 }
 
 /*
  * Send inter-processor interrupt
  */
-unsafe fn up_send_ipi_single(cpu: core::ffi::c_int, action: core::ffi::c_uint) {
+unsafe fn up_send_ipi_single(cpu: kernel::ffi::c_int, action: kernel::ffi::c_uint) {
     let _ = (cpu, action);
     panic(c"%s called".as_ptr(), c"up_send_ipi_single".as_ptr());
 }
 
-unsafe fn up_send_ipi_mask(mask: *const cpumask, action: core::ffi::c_uint) {
+unsafe fn up_send_ipi_mask(mask: *const cpumask, action: kernel::ffi::c_uint) {
     let _ = (mask, action);
     panic(c"%s called".as_ptr(), c"up_send_ipi_mask".as_ptr());
 }
@@ -49,25 +49,25 @@ unsafe fn up_smp_finish() {}
 /*
  * Firmware CPU startup hook
  */
-unsafe fn up_boot_secondary(cpu: core::ffi::c_int, idle: *mut task_struct) -> core::ffi::c_int {
+unsafe fn up_boot_secondary(cpu: kernel::ffi::c_int, idle: *mut task_struct) -> kernel::ffi::c_int {
     let _ = (cpu, idle);
     0
 }
 
 unsafe fn up_smp_setup() {}
 
-unsafe fn up_prepare_cpus(max_cpus: core::ffi::c_uint) {
+unsafe fn up_prepare_cpus(max_cpus: kernel::ffi::c_uint) {
     let _ = max_cpus;
 }
 
 /* CONFIG_HOTPLUG_CPU conditionally includes the following declarations. */
 #[cfg(CONFIG_HOTPLUG_CPU)]
-unsafe fn up_cpu_disable() -> core::ffi::c_int {
+unsafe fn up_cpu_disable() -> kernel::ffi::c_int {
     -38 /* -ENOSYS */
 }
 
 #[cfg(CONFIG_HOTPLUG_CPU)]
-unsafe fn up_cpu_die(cpu: core::ffi::c_uint) {
+unsafe fn up_cpu_die(cpu: kernel::ffi::c_uint) {
     let _ = cpu;
     BUG();
 }
@@ -75,19 +75,19 @@ unsafe fn up_cpu_die(cpu: core::ffi::c_uint) {
 #[repr(C)]
 pub struct plat_smp_ops {
     pub send_ipi_single:
-        unsafe fn(core::ffi::c_int, core::ffi::c_uint),
+        unsafe fn(kernel::ffi::c_int, kernel::ffi::c_uint),
     pub send_ipi_mask:
-        unsafe fn(*const cpumask, core::ffi::c_uint),
+        unsafe fn(*const cpumask, kernel::ffi::c_uint),
     pub init_secondary: unsafe fn(),
     pub smp_finish: unsafe fn(),
     pub boot_secondary:
-        unsafe fn(core::ffi::c_int, *mut task_struct) -> core::ffi::c_int,
+        unsafe fn(kernel::ffi::c_int, *mut task_struct) -> kernel::ffi::c_int,
     pub smp_setup: unsafe fn(),
-    pub prepare_cpus: unsafe fn(core::ffi::c_uint),
+    pub prepare_cpus: unsafe fn(kernel::ffi::c_uint),
     #[cfg(CONFIG_HOTPLUG_CPU)]
-    pub cpu_disable: unsafe fn() -> core::ffi::c_int,
+    pub cpu_disable: unsafe fn() -> kernel::ffi::c_int,
     #[cfg(CONFIG_HOTPLUG_CPU)]
-    pub cpu_die: unsafe fn(core::ffi::c_uint),
+    pub cpu_die: unsafe fn(kernel::ffi::c_uint),
 }
 
 pub static up_smp_ops: plat_smp_ops = plat_smp_ops {

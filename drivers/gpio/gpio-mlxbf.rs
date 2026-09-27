@@ -25,16 +25,16 @@ pub struct mlxbf_gpio_context_save_regs {
 #[repr(C)]
 pub struct mlxbf_gpio_state {
     pub chip: gpio_generic_chip,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub csave_regs: mlxbf_gpio_context_save_regs,
 }
 
 extern "C" {
-    pub fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    pub fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     pub fn devm_platform_ioremap_resource(
         pdev: *mut platform_device,
         index: u32,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn gpio_generic_chip_init(
         chip: *mut gpio_generic_chip,
         config: *mut gpio_generic_chip_config,
@@ -42,12 +42,12 @@ extern "C" {
     pub fn devm_gpiochip_add_data(
         dev: *mut device,
         gc: *mut gpio_chip,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
-    pub fn platform_set_drvdata(pdev: *mut platform_device, data: *mut core::ffi::c_void);
-    pub fn platform_get_drvdata(pdev: *mut platform_device) -> *mut core::ffi::c_void;
-    pub fn readq(addr: *mut core::ffi::c_void) -> u64;
-    pub fn writeq(value: u64, addr: *mut core::ffi::c_void);
+    pub fn platform_set_drvdata(pdev: *mut platform_device, data: *mut kernel::ffi::c_void);
+    pub fn platform_get_drvdata(pdev: *mut platform_device) -> *mut kernel::ffi::c_void;
+    pub fn readq(addr: *mut kernel::ffi::c_void) -> u64;
+    pub fn writeq(value: u64, addr: *mut kernel::ffi::c_void);
 }
 
 #[repr(C)]
@@ -58,7 +58,7 @@ pub struct platform_device {
 }
 #[repr(C)]
 pub struct gpio_chip {
-    pub owner: *mut core::ffi::c_void,
+    pub owner: *mut kernel::ffi::c_void,
     pub ngpio: u32,
 }
 #[repr(C)]
@@ -69,9 +69,9 @@ pub struct gpio_generic_chip {
 pub struct gpio_generic_chip_config {
     pub dev: *mut device,
     pub sz: u32,
-    pub dat: *mut core::ffi::c_void,
-    pub dirout: *mut core::ffi::c_void,
-    pub dirin: *mut core::ffi::c_void,
+    pub dat: *mut kernel::ffi::c_void,
+    pub dirout: *mut kernel::ffi::c_void,
+    pub dirin: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -116,12 +116,12 @@ unsafe fn mlxbf_gpio_probe(pdev: *mut platform_device) -> i32 {
         (*gc).ngpio = MLXBF_GPIO_NR as u32;
     }
 
-    ret = unsafe { devm_gpiochip_add_data(dev, gc, gs as *mut core::ffi::c_void) };
+    ret = unsafe { devm_gpiochip_add_data(dev, gc, gs as *mut kernel::ffi::c_void) };
     if ret != 0 {
         return ret;
     }
 
-    unsafe { platform_set_drvdata(pdev, gs as *mut core::ffi::c_void) };
+    unsafe { platform_set_drvdata(pdev, gs as *mut kernel::ffi::c_void) };
     0
 }
 
@@ -162,7 +162,7 @@ pub struct acpi_device_id {
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub acpi_match_table: *const acpi_device_id,
 }
 
@@ -182,7 +182,7 @@ static MLXBF_GPIO_ACPI_MATCH: [acpi_device_id; 2] = [
 
 static mut mlxbf_gpio_driver: platform_driver = platform_driver {
     driver: device_driver {
-        name: b"mlxbf_gpio\0" as *const u8 as *const core::ffi::c_char,
+        name: b"mlxbf_gpio\0" as *const u8 as *const kernel::ffi::c_char,
         acpi_match_table: MLXBF_GPIO_ACPI_MATCH.as_ptr(),
     },
     probe: Some(mlxbf_gpio_probe),

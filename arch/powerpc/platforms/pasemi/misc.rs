@@ -12,14 +12,14 @@
 
 #[repr(C)]
 pub struct i2c_driver_device {
-    pub of_device: *mut core::ffi::c_char,
-    pub i2c_type: *mut core::ffi::c_char,
+    pub of_device: *mut kernel::ffi::c_char,
+    pub i2c_type: *mut kernel::ffi::c_char,
 }
 
 #[cfg(CONFIG_I2C_BOARDINFO)]
 static mut i2c_devices: [i2c_driver_device; 1] = [i2c_driver_device {
-    of_device: b"dallas,ds1338\0" as *const u8 as *mut core::ffi::c_char,
-    i2c_type: b"ds1338\0" as *const u8 as *mut core::ffi::c_char,
+    of_device: b"dallas,ds1338\0" as *const u8 as *mut kernel::ffi::c_char,
+    i2c_type: b"ds1338\0" as *const u8 as *mut kernel::ffi::c_char,
 }];
 
 #[cfg(CONFIG_I2C_BOARDINFO)]

@@ -3,24 +3,35 @@
 // C dependencies: <vdso/bits.h>, <uapi/linux/bits.h>, <linux/build_bug.h>,
 // <linux/compiler.h>, and <linux/overflow.h>.
 
+#[macro_export]
 macro_rules! BIT_MASK {
-    ($nr:expr) => { (1 as ::core::ffi::c_ulong) << (($nr) % BITS_PER_LONG) };
+    ($nr:expr) => {{
+        let __nr = $nr;
+        (1 as ::kernel::ffi::c_ulong) << (__nr % (if false { __nr } else { BITS_PER_LONG as _ }))
+    }};
 }
 
+#[macro_export]
 macro_rules! BIT_WORD {
-    ($nr:expr) => { (($nr) / BITS_PER_LONG) };
+    ($nr:expr) => {{
+        let __nr = $nr;
+        __nr / (if false { __nr } else { BITS_PER_LONG as _ })
+    }};
 }
 
+#[macro_export]
 macro_rules! BIT_ULL_MASK {
     ($nr:expr) => { (1u64 << (($nr) % BITS_PER_LONG_LONG)) };
 }
 
+#[macro_export]
 macro_rules! BIT_ULL_WORD {
     ($nr:expr) => { (($nr) / BITS_PER_LONG_LONG) };
 }
 
-const BITS_PER_BYTE: usize = 8;
+pub const BITS_PER_BYTE: usize = 8;
 
+#[macro_export]
 macro_rules! BITS_PER_TYPE {
     ($type:ty) => { (::core::mem::size_of::<$type>() * BITS_PER_BYTE) };
 }
@@ -41,12 +52,14 @@ macro_rules! BITS_PER_TYPE {
  * - GENMASK(72, 15): doesn't fit unsigned long
  * - GENMASK_U32(33, 15): doesn't fit in a u32
  */
+#[macro_export]
 macro_rules! GENMASK_INPUT_CHECK {
     ($h:expr, $l:expr) => {
         const { assert!(!(($l) > ($h)), "GENMASK: wrong argument order") }
     };
 }
 
+#[macro_export]
 macro_rules! GENMASK_TYPE {
     ($t:ty, $h:expr, $l:expr) => {{
         GENMASK_INPUT_CHECK!($h, $l);
@@ -54,30 +67,37 @@ macro_rules! GENMASK_TYPE {
     }};
 }
 
+#[macro_export]
 macro_rules! GENMASK {
-    ($h:expr, $l:expr) => { GENMASK_TYPE!(::core::ffi::c_ulong, $h, $l) };
+    ($h:expr, $l:expr) => { GENMASK_TYPE!(::kernel::ffi::c_ulong, $h, $l) };
 }
 
+#[macro_export]
 macro_rules! GENMASK_ULL {
-    ($h:expr, $l:expr) => { GENMASK_TYPE!(::core::ffi::c_ulonglong, $h, $l) };
+    ($h:expr, $l:expr) => { GENMASK_TYPE!(::kernel::ffi::c_ulonglong, $h, $l) };
 }
 
+#[macro_export]
 macro_rules! GENMASK_U8 {
     ($h:expr, $l:expr) => { GENMASK_TYPE!(u8, $h, $l) };
 }
 
+#[macro_export]
 macro_rules! GENMASK_U16 {
     ($h:expr, $l:expr) => { GENMASK_TYPE!(u16, $h, $l) };
 }
 
+#[macro_export]
 macro_rules! GENMASK_U32 {
     ($h:expr, $l:expr) => { GENMASK_TYPE!(u32, $h, $l) };
 }
 
+#[macro_export]
 macro_rules! GENMASK_U64 {
     ($h:expr, $l:expr) => { GENMASK_TYPE!(u64, $h, $l) };
 }
 
+#[macro_export]
 macro_rules! GENMASK_U128 {
     ($h:expr, $l:expr) => { GENMASK_TYPE!(u128, $h, $l) };
 }
@@ -90,12 +110,14 @@ macro_rules! GENMASK_U128 {
  * - BIT_U32(-1)
  * - BIT_U32(40)
  */
+#[macro_export]
 macro_rules! BIT_INPUT_CHECK {
     ($type:ty, $nr:expr) => {
         const { assert!(!(($nr) as i128 >= BITS_PER_TYPE!($type) as i128) && ($nr) as i128 >= 0) }
     };
 }
 
+#[macro_export]
 macro_rules! BIT_TYPE {
     ($type:ty, $nr:expr) => {{
         BIT_INPUT_CHECK!($type, $nr);
@@ -103,18 +125,22 @@ macro_rules! BIT_TYPE {
     }};
 }
 
+#[macro_export]
 macro_rules! BIT_U8 {
     ($nr:expr) => { BIT_TYPE!(u8, $nr) };
 }
 
+#[macro_export]
 macro_rules! BIT_U16 {
     ($nr:expr) => { BIT_TYPE!(u16, $nr) };
 }
 
+#[macro_export]
 macro_rules! BIT_U32 {
     ($nr:expr) => { BIT_TYPE!(u32, $nr) };
 }
 
+#[macro_export]
 macro_rules! BIT_U64 {
     ($nr:expr) => { BIT_TYPE!(u64, $nr) };
 }

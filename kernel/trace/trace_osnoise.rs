@@ -11,7 +11,7 @@
 extern "C" {
     fn trace_osnoise_callback(enter: bool);
     fn osnoise_trace_irq_entry(id: i32);
-    fn osnoise_trace_irq_exit(id: i32, desc: *const core::ffi::c_char);
+    fn osnoise_trace_irq_exit(id: i32, desc: *const kernel::ffi::c_char);
 }
 
 #[repr(C)]

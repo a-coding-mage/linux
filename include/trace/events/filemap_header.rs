@@ -7,31 +7,31 @@
 #[repr(C)]
 pub struct MmFilemapOpPageCacheEntry {
     pub i_ino: u64,
-    pub pfn: ::core::ffi::c_ulong,
-    pub index: ::core::ffi::c_ulong,
-    pub s_dev: ::core::ffi::c_ulong,
+    pub pfn: ::kernel::ffi::c_ulong,
+    pub index: ::kernel::ffi::c_ulong,
+    pub s_dev: ::kernel::ffi::c_ulong,
     pub order: u8,
 }
 
 #[repr(C)]
 pub struct MmFilemapOpPageCacheRangeEntry {
     pub i_ino: u64,
-    pub s_dev: ::core::ffi::c_ulong,
-    pub index: ::core::ffi::c_ulong,
-    pub last_index: ::core::ffi::c_ulong,
+    pub s_dev: ::kernel::ffi::c_ulong,
+    pub index: ::kernel::ffi::c_ulong,
+    pub last_index: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct MmFilemapFaultEntry {
     pub i_ino: u64,
-    pub s_dev: ::core::ffi::c_ulong,
-    pub index: ::core::ffi::c_ulong,
+    pub s_dev: ::kernel::ffi::c_ulong,
+    pub index: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct FilemapSetWbErrEntry {
     pub i_ino: u64,
-    pub s_dev: ::core::ffi::c_ulong,
+    pub s_dev: ::kernel::ffi::c_ulong,
     pub errseq: u32,
 }
 
@@ -39,7 +39,7 @@ pub struct FilemapSetWbErrEntry {
 pub struct FileCheckAndAdvanceWbErrEntry {
     pub i_ino: u64,
     pub file: *mut File,
-    pub s_dev: ::core::ffi::c_ulong,
+    pub s_dev: ::kernel::ffi::c_ulong,
     pub old: u32,
     pub new: u32,
 }
@@ -48,7 +48,7 @@ pub struct FileCheckAndAdvanceWbErrEntry {
 #[repr(C)]
 pub struct Folio {
     pub mapping: *mut AddressSpace,
-    pub index: ::core::ffi::c_ulong,
+    pub index: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -60,12 +60,12 @@ pub struct AddressSpace {
 pub struct Inode {
     pub i_ino: u64,
     pub i_sb: *mut SuperBlock,
-    pub i_rdev: ::core::ffi::c_ulong,
+    pub i_rdev: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct SuperBlock {
-    pub s_dev: ::core::ffi::c_ulong,
+    pub s_dev: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -75,7 +75,7 @@ pub struct File {
 }
 
 extern "C" {
-    pub fn folio_pfn(folio: *const Folio) -> ::core::ffi::c_ulong;
+    pub fn folio_pfn(folio: *const Folio) -> ::kernel::ffi::c_ulong;
     pub fn folio_order(folio: *const Folio) -> u8;
 }
 
@@ -103,8 +103,8 @@ pub unsafe fn mm_filemap_op_page_cache_assign(
 pub unsafe fn mm_filemap_op_page_cache_range_assign(
     entry: *mut MmFilemapOpPageCacheRangeEntry,
     mapping: *mut AddressSpace,
-    index: ::core::ffi::c_ulong,
-    last_index: ::core::ffi::c_ulong,
+    index: ::kernel::ffi::c_ulong,
+    last_index: ::kernel::ffi::c_ulong,
 ) {
     (*entry).i_ino = (*mapping).host.as_ref().unwrap().i_ino;
     let host = (*mapping).host.as_ref().unwrap();
@@ -123,7 +123,7 @@ pub unsafe fn mm_filemap_op_page_cache_range_assign(
 pub unsafe fn mm_filemap_fault_assign(
     entry: *mut MmFilemapFaultEntry,
     mapping: *mut AddressSpace,
-    index: ::core::ffi::c_ulong,
+    index: ::kernel::ffi::c_ulong,
 ) {
     (*entry).i_ino = (*mapping).host.as_ref().unwrap().i_ino;
     let host = (*mapping).host.as_ref().unwrap();

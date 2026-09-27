@@ -16,8 +16,8 @@
  * rate = (parent_rate >> p) / (m + 1);
  */
 unsafe fn sun6i_get_ar100_factors(req: *mut factors_request) {
-    let mut div: libc::c_ulong;
-    let shift: libc::c_int;
+    let mut div: kernel::ffi::c_ulong;
+    let shift: kernel::ffi::c_int;
 
     /* clock only divides */
     if (*req).rate > (*req).parent_rate {
@@ -63,9 +63,9 @@ static sun6i_ar100_data: factors_data = factors_data {
 
 static mut sun6i_ar100_lock: spinlock_t = spinlock_t::new();
 
-unsafe fn sun6i_a31_ar100_clk_probe(pdev: *mut platform_device) -> libc::c_int {
+unsafe fn sun6i_a31_ar100_clk_probe(pdev: *mut platform_device) -> kernel::ffi::c_int {
     let np = (*(*pdev).dev.of_node);
-    let mut reg: *mut core::ffi::c_void;
+    let mut reg: *mut kernel::ffi::c_void;
     let mut clk: *mut clk;
 
     reg = devm_platform_ioremap_resource(pdev, 0);

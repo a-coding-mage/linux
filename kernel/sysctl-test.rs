@@ -12,7 +12,7 @@ unsafe extern "C" {
     fn proc_dointvec(
         table: *mut ctl_table,
         write: i32,
-        buffer: *mut core::ffi::c_void,
+        buffer: *mut kernel::ffi::c_void,
         len: *mut usize,
         pos: *mut loff_t,
     ) -> i32;
@@ -20,7 +20,7 @@ unsafe extern "C" {
         test: *mut kunit,
         size: usize,
         flags: u32,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 type loff_t = i64;
@@ -32,24 +32,24 @@ pub struct kunit {
 
 #[repr(C)]
 pub struct ctl_table {
-    pub procname: *const core::ffi::c_char,
-    pub data: *mut core::ffi::c_void,
+    pub procname: *const kernel::ffi::c_char,
+    pub data: *mut kernel::ffi::c_void,
     pub maxlen: usize,
     pub mode: u16,
     pub proc_handler: Option<unsafe extern "C" fn(
         *mut ctl_table,
         i32,
-        *mut core::ffi::c_void,
+        *mut kernel::ffi::c_void,
         *mut usize,
         *mut loff_t,
     ) -> i32>,
-    pub extra1: *const core::ffi::c_void,
-    pub extra2: *const core::ffi::c_void,
+    pub extra1: *const kernel::ffi::c_void,
+    pub extra2: *const kernel::ffi::c_void,
 }
 
 const GFP_USER: u32 = 0;
-const SYSCTL_ZERO: *const core::ffi::c_void = core::ptr::null();
-const SYSCTL_ONE_HUNDRED: *const core::ffi::c_void = core::ptr::null();
+const SYSCTL_ZERO: *const kernel::ffi::c_void = core::ptr::null();
+const SYSCTL_ONE_HUNDRED: *const kernel::ffi::c_void = core::ptr::null();
 const EINVAL: i32 = 22;
 
 unsafe fn sysctl_test_api_dointvec_null_tbl_data(test: *mut kunit) {

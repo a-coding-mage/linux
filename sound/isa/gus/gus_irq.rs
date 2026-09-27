@@ -26,27 +26,27 @@ macro_rules! STAT_ADD {
 
 extern "C" {
     fn inb(port: u16) -> u8;
-    fn IRQ_RETVAL(x: ::core::ffi::c_int) -> irqreturn_t;
-    fn snd_gf1_i_read8(gus: *mut snd_gus_card, reg: ::core::ffi::c_int) -> u8;
-    fn snd_gf1_i_look8(gus: *mut snd_gus_card, reg: ::core::ffi::c_int) -> u8;
-    fn snd_gf1_i_ctrl_stop(gus: *mut snd_gus_card, reg: ::core::ffi::c_int);
+    fn IRQ_RETVAL(x: ::kernel::ffi::c_int) -> irqreturn_t;
+    fn snd_gf1_i_read8(gus: *mut snd_gus_card, reg: ::kernel::ffi::c_int) -> u8;
+    fn snd_gf1_i_look8(gus: *mut snd_gus_card, reg: ::kernel::ffi::c_int) -> u8;
+    fn snd_gf1_i_ctrl_stop(gus: *mut snd_gus_card, reg: ::kernel::ffi::c_int);
 
     static IRQ_NONE: irqreturn_t;
-    static SNDRV_GF1_GB_VOICES_IRQ: ::core::ffi::c_int;
-    static SNDRV_GF1_VB_ADDRESS_CONTROL: ::core::ffi::c_int;
-    static SNDRV_GF1_VB_VOLUME_CONTROL: ::core::ffi::c_int;
-    static SNDRV_GF1_GB_DRAM_DMA_CONTROL: ::core::ffi::c_int;
-    static SNDRV_GF1_GB_REC_DMA_CONTROL: ::core::ffi::c_int;
+    static SNDRV_GF1_GB_VOICES_IRQ: ::kernel::ffi::c_int;
+    static SNDRV_GF1_VB_ADDRESS_CONTROL: ::kernel::ffi::c_int;
+    static SNDRV_GF1_VB_VOLUME_CONTROL: ::kernel::ffi::c_int;
+    static SNDRV_GF1_GB_DRAM_DMA_CONTROL: ::kernel::ffi::c_int;
+    static SNDRV_GF1_GB_REC_DMA_CONTROL: ::kernel::ffi::c_int;
 }
 
 pub unsafe extern "C" fn snd_gus_interrupt(
-    irq: ::core::ffi::c_int,
-    dev_id: *mut ::core::ffi::c_void,
+    irq: ::kernel::ffi::c_int,
+    dev_id: *mut ::kernel::ffi::c_void,
 ) -> irqreturn_t {
     let gus: *mut snd_gus_card = dev_id as *mut snd_gus_card;
     let mut status: u8;
-    let mut loop_: ::core::ffi::c_int = 100;
-    let mut handled: ::core::ffi::c_int = 0;
+    let mut loop_: ::kernel::ffi::c_int = 100;
+    let mut handled: ::kernel::ffi::c_int = 0;
 
     loop {
         status = inb((*gus).gf1.reg_irqstat);
@@ -67,8 +67,8 @@ pub unsafe extern "C" fn snd_gus_interrupt(
             }
         }
         if status & (0x20 | 0x40) != 0 {
-            let mut already: ::core::ffi::c_uint;
-            let mut _current_: ::core::ffi::c_uint;
+            let mut already: ::kernel::ffi::c_uint;
+            let mut _current_: ::kernel::ffi::c_uint;
             let mut voice_status: u8;
             let mut voice: u8;
             let mut pvoice: *mut snd_gus_voice;
@@ -79,7 +79,7 @@ pub unsafe extern "C" fn snd_gus_interrupt(
                 voice_status & 0xc0 != 0xc0
             } {
                 voice = voice_status & 0x1f;
-                _current_ = 1u32.wrapping_shl(voice as u32) as ::core::ffi::c_uint;
+                _current_ = 1u32.wrapping_shl(voice as u32) as ::kernel::ffi::c_uint;
                 if already & _current_ != 0 {
                     continue; /* multi request */
                 }
@@ -149,10 +149,10 @@ pub unsafe extern "C" fn snd_gus_interrupt(
 
 #[cfg(CONFIG_SND_DEBUG)]
 extern "C" {
-    fn snd_iprintf(buffer: *mut snd_info_buffer, fmt: *const ::core::ffi::c_char, ...);
+    fn snd_iprintf(buffer: *mut snd_info_buffer, fmt: *const ::kernel::ffi::c_char, ...);
     fn snd_card_ro_proc_new(
         card: *mut snd_card,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         private_data: *mut snd_gus_card,
         read: Option<
             unsafe extern "C" fn(entry: *mut snd_info_entry, buffer: *mut snd_info_buffer),
@@ -167,42 +167,42 @@ unsafe extern "C" fn snd_gus_irq_info_read(
 ) {
     let mut gus: *mut snd_gus_card;
     let mut pvoice: *mut snd_gus_voice;
-    let mut idx: ::core::ffi::c_int;
+    let mut idx: ::kernel::ffi::c_int;
 
     gus = (*entry).private_data as *mut snd_gus_card;
     snd_iprintf(
         buffer,
-        b"midi out = %u\n\0".as_ptr() as *const ::core::ffi::c_char,
+        b"midi out = %u\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         (*gus).gf1.interrupt_stat_midi_out,
     );
     snd_iprintf(
         buffer,
-        b"midi in = %u\n\0".as_ptr() as *const ::core::ffi::c_char,
+        b"midi in = %u\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         (*gus).gf1.interrupt_stat_midi_in,
     );
     snd_iprintf(
         buffer,
-        b"timer1 = %u\n\0".as_ptr() as *const ::core::ffi::c_char,
+        b"timer1 = %u\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         (*gus).gf1.interrupt_stat_timer1,
     );
     snd_iprintf(
         buffer,
-        b"timer2 = %u\n\0".as_ptr() as *const ::core::ffi::c_char,
+        b"timer2 = %u\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         (*gus).gf1.interrupt_stat_timer2,
     );
     snd_iprintf(
         buffer,
-        b"dma write = %u\n\0".as_ptr() as *const ::core::ffi::c_char,
+        b"dma write = %u\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         (*gus).gf1.interrupt_stat_dma_write,
     );
     snd_iprintf(
         buffer,
-        b"dma read = %u\n\0".as_ptr() as *const ::core::ffi::c_char,
+        b"dma read = %u\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         (*gus).gf1.interrupt_stat_dma_read,
     );
     snd_iprintf(
         buffer,
-        b"voice lost = %u\n\0".as_ptr() as *const ::core::ffi::c_char,
+        b"voice lost = %u\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         (*gus).gf1.interrupt_stat_voice_lost,
     );
     idx = 0;
@@ -210,7 +210,7 @@ unsafe extern "C" fn snd_gus_irq_info_read(
         pvoice = &mut (*gus).gf1.voices[idx as usize];
         snd_iprintf(
             buffer,
-            b"voice %i: wave = %u, volume = %u\n\0".as_ptr() as *const ::core::ffi::c_char,
+            b"voice %i: wave = %u, volume = %u\n\0".as_ptr() as *const ::kernel::ffi::c_char,
             idx,
             (*pvoice).interrupt_stat_wave,
             (*pvoice).interrupt_stat_volume,
@@ -223,7 +223,7 @@ unsafe extern "C" fn snd_gus_irq_info_read(
 pub unsafe extern "C" fn snd_gus_irq_profile_init(gus: *mut snd_gus_card) {
     snd_card_ro_proc_new(
         (*gus).card,
-        b"gusirq\0".as_ptr() as *const ::core::ffi::c_char,
+        b"gusirq\0".as_ptr() as *const ::kernel::ffi::c_char,
         gus,
         Some(snd_gus_irq_info_read),
     );

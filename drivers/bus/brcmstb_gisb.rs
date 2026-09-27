@@ -38,17 +38,17 @@ static GISB_OFFSETS_BCM7445: [i32; 11] = [0x008, 0x010, -1, 0x1d8, 0x1e0, 0x1e4,
 
 #[repr(C)]
 struct BrcmstbGisbArbDevice {
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     gisb_offsets: *const i32,
     big_endian: bool,
-    lock: core::ffi::c_void,
-    next: core::ffi::c_void,
+    lock: kernel::ffi::c_void,
+    next: kernel::ffi::c_void,
     valid_mask: u32,
-    master_names: [*const core::ffi::c_char; 32],
+    master_names: [*const kernel::ffi::c_char; 32],
     saved_timeout: u32,
 }
 
-static mut BRCMSTB_GISB_ARB_DEVICE_LIST: core::ffi::c_void = core::ffi::c_void;
+static mut BRCMSTB_GISB_ARB_DEVICE_LIST: kernel::ffi::c_void = kernel::ffi::c_void;
 
 unsafe fn gisb_read(gdev: *mut BrcmstbGisbArbDevice, reg: usize) -> u32 {
     let offset = *(*gdev).gisb_offsets.add(reg);
@@ -71,13 +71,13 @@ unsafe fn gisb_write(gdev: *mut BrcmstbGisbArbDevice, val: u32, reg: usize) {
     if (*gdev).big_endian { iowrite32be(val, (*gdev).base.cast::<u8>().add(offset as usize)); } else { iowrite32(val, (*gdev).base.cast::<u8>().add(offset as usize)); }
 }
 
-unsafe fn brcmstb_gisb_master_to_str(gdev: *mut BrcmstbGisbArbDevice, masters: u32) -> *const core::ffi::c_char {
+unsafe fn brcmstb_gisb_master_to_str(gdev: *mut BrcmstbGisbArbDevice, masters: u32) -> *const kernel::ffi::c_char {
     let mask = (*gdev).valid_mask & masters;
     if mask.count_ones() != 1 { return core::ptr::null(); }
     (*gdev).master_names[mask.trailing_zeros() as usize]
 }
 
-unsafe fn brcmstb_gisb_arb_decode_addr(gdev: *mut BrcmstbGisbArbDevice, _reason: *const core::ffi::c_char) -> i32 {
+unsafe fn brcmstb_gisb_arb_decode_addr(gdev: *mut BrcmstbGisbArbDevice, _reason: *const kernel::ffi::c_char) -> i32 {
     let cap_status = gisb_read(gdev, ARB_ERR_CAP_STATUS);
     if cap_status & ARB_ERR_CAP_STATUS_VALID == 0 { return 1; }
     let _arb_addr = gisb_read_address(gdev);
@@ -90,9 +90,9 @@ unsafe fn brcmstb_gisb_arb_decode_addr(gdev: *mut BrcmstbGisbArbDevice, _reason:
 // module-registration declarations retain their source interfaces here. Their
 // implementations depend on the Linux kernel declarations supplied elsewhere.
 unsafe extern "C" {
-    fn brcmstb_gisb_timeout_handler(irq: i32, dev_id: *mut core::ffi::c_void) -> i32;
-    fn brcmstb_gisb_tea_handler(irq: i32, dev_id: *mut core::ffi::c_void) -> i32;
-    fn brcmstb_gisb_bp_handler(irq: i32, dev_id: *mut core::ffi::c_void) -> i32;
+    fn brcmstb_gisb_timeout_handler(irq: i32, dev_id: *mut kernel::ffi::c_void) -> i32;
+    fn brcmstb_gisb_tea_handler(irq: i32, dev_id: *mut kernel::ffi::c_void) -> i32;
+    fn brcmstb_gisb_bp_handler(irq: i32, dev_id: *mut kernel::ffi::c_void) -> i32;
 }
 
 // DEVICE_ATTR(gisb_arb_timeout, S_IWUSR | S_IRUGO, ...)

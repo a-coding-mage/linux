@@ -25,8 +25,8 @@ extern "C" {
     fn idle_task_exit();
     fn cpuhp_ap_report_dead();
     fn bug();
-    fn pr_notice(fmt: *const core::ffi::c_char, ...);
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
+    fn pr_notice(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
 }
 
 // EOPNOTSUPP is supplied by the kernel errno definitions.
@@ -64,7 +64,7 @@ pub unsafe fn __cpu_disable() -> i32 {
 pub unsafe fn arch_cpuhp_cleanup_dead_cpu(cpu: u32) {
     let mut ret: i32 = 0;
 
-    pr_notice(b"CPU%u: off\0".as_ptr() as *const core::ffi::c_char, cpu);
+    pr_notice(b"CPU%u: off\0".as_ptr() as *const kernel::ffi::c_char, cpu);
     clear_tasks_mm_cpumask(cpu);
     /* Verify from the firmware if the cpu is really stopped*/
     if let Some(cpu_is_stopped) = (*cpu_ops).cpu_is_stopped {
@@ -72,7 +72,7 @@ pub unsafe fn arch_cpuhp_cleanup_dead_cpu(cpu: u32) {
     }
     if ret == 0 {
         pr_warn(
-            b"CPU%u may not have stopped\n\0".as_ptr() as *const core::ffi::c_char,
+            b"CPU%u may not have stopped\n\0".as_ptr() as *const kernel::ffi::c_char,
             cpu,
         );
     }

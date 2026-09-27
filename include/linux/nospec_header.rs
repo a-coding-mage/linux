@@ -26,7 +26,7 @@ macro_rules! barrier_nospec {
  * zero for an out of bounds index, or ~0 if within bounds [0, @size).
  */
 #[inline]
-pub fn array_index_mask_nospec(index: libc::c_ulong, size: libc::c_ulong) -> libc::c_ulong {
+pub fn array_index_mask_nospec(index: kernel::ffi::c_ulong, size: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     /*
      * Always calculate and emit the mask even if the compiler
      * thinks the mask is not needed. The compiler does not take
@@ -34,7 +34,7 @@ pub fn array_index_mask_nospec(index: libc::c_ulong, size: libc::c_ulong) -> lib
      */
     // OPTIMIZER_HIDE_VAR(index);
     let value = index | (size.wrapping_sub(1) .wrapping_sub(index));
-    (!(value as libc::c_long) >> (libc::c_ulong::BITS - 1)) as libc::c_ulong
+    (!(value as kernel::ffi::c_long) >> (kernel::ffi::c_ulong::BITS - 1)) as kernel::ffi::c_ulong
 }
 
 /*
@@ -56,7 +56,7 @@ macro_rules! array_index_nospec {
     ($index:expr, $size:expr) => {{
         let _i = $index;
         let _s = $size;
-        let _mask = $crate::array_index_mask_nospec(_i as libc::c_ulong, _s as libc::c_ulong);
+        let _mask = $crate::array_index_mask_nospec(_i as kernel::ffi::c_ulong, _s as kernel::ffi::c_ulong);
 
         // BUILD_BUG_ON(sizeof(_i) > sizeof(long));
         // BUILD_BUG_ON(sizeof(_s) > sizeof(long));
@@ -69,13 +69,13 @@ macro_rules! array_index_nospec {
 extern "C" {
     pub fn arch_prctl_spec_ctrl_get(
         task: *mut task_struct,
-        which: libc::c_ulong,
-    ) -> libc::c_int;
+        which: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
     pub fn arch_prctl_spec_ctrl_set(
         task: *mut task_struct,
-        which: libc::c_ulong,
-        ctrl: libc::c_ulong,
-    ) -> libc::c_int;
+        which: kernel::ffi::c_ulong,
+        ctrl: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
     /* Speculation control for seccomp enforced mitigation */
     pub fn arch_seccomp_spec_mitigate(task: *mut task_struct);
 }

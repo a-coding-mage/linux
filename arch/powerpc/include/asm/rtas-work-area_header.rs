@@ -6,7 +6,7 @@
 #[repr(C)]
 pub struct rtas_work_area {
     /* private: Use the APIs provided below. */
-    pub buf: *mut core::ffi::c_char,
+    pub buf: *mut kernel::ffi::c_char,
     pub size: usize,
 }
 
@@ -50,7 +50,7 @@ extern "C" {
 
 pub unsafe fn rtas_work_area_raw_buf(
     area: *const rtas_work_area,
-) -> *mut core::ffi::c_char {
+) -> *mut kernel::ffi::c_char {
     (*area).buf
 }
 
@@ -78,7 +78,7 @@ pub fn rtas_work_area_reserve_arena(_limit: phys_addr_t) {}
 
 // Supplied by the surrounding PowerPC translation.
 extern "C" {
-    fn __pa(addr: *const core::ffi::c_char) -> phys_addr_t;
+    fn __pa(addr: *const kernel::ffi::c_char) -> phys_addr_t;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

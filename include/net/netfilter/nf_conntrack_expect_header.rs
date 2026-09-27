@@ -7,8 +7,8 @@
  */
 
 extern "C" {
-    pub static mut nf_ct_expect_hsize: ::core::ffi::c_uint;
-    pub static mut nf_ct_expect_max: ::core::ffi::c_uint;
+    pub static mut nf_ct_expect_hsize: ::kernel::ffi::c_uint;
+    pub static mut nf_ct_expect_max: ::kernel::ffi::c_uint;
     pub static mut nf_ct_expect_hash: *mut hlist_head;
 }
 
@@ -37,10 +37,10 @@ pub struct nf_conntrack_expect {
     pub use_: refcount_t,
 
     /* Flags */
-    pub flags: ::core::ffi::c_uint,
+    pub flags: ::kernel::ffi::c_uint,
 
     /* Expectation class */
-    pub class: ::core::ffi::c_uint,
+    pub class: ::kernel::ffi::c_uint,
 
     /* Event filter mask */
     pub event_mask: u16,
@@ -107,24 +107,24 @@ pub const NF_CT_EXP_POLICY_NAME_LEN: usize = 16;
 
 #[repr(C)]
 pub struct nf_conntrack_expect_policy {
-    pub max_expected: ::core::ffi::c_uint,
-    pub timeout: ::core::ffi::c_uint,
-    pub name: [::core::ffi::c_char; NF_CT_EXP_POLICY_NAME_LEN],
+    pub max_expected: ::kernel::ffi::c_uint,
+    pub timeout: ::kernel::ffi::c_uint,
+    pub name: [::kernel::ffi::c_char; NF_CT_EXP_POLICY_NAME_LEN],
 }
 
-pub const NF_CT_EXPECT_CLASS_DEFAULT: ::core::ffi::c_uint = 0;
-pub const NF_CT_EXPECT_MAX_CNT: ::core::ffi::c_uint = 255;
+pub const NF_CT_EXPECT_CLASS_DEFAULT: ::kernel::ffi::c_uint = 0;
+pub const NF_CT_EXPECT_MAX_CNT: ::kernel::ffi::c_uint = 255;
 
 /* Allow to reuse expectations with the same tuples from different master
  * conntracks.
  */
-pub const NF_CT_EXP_F_SKIP_MASTER: ::core::ffi::c_uint = 0x1;
+pub const NF_CT_EXP_F_SKIP_MASTER: ::kernel::ffi::c_uint = 0x1;
 
 extern "C" {
-    pub fn nf_conntrack_expect_pernet_init(net: *mut net) -> ::core::ffi::c_int;
+    pub fn nf_conntrack_expect_pernet_init(net: *mut net) -> ::kernel::ffi::c_int;
     pub fn nf_conntrack_expect_pernet_fini(net: *mut net);
 
-    pub fn nf_conntrack_expect_init() -> ::core::ffi::c_int;
+    pub fn nf_conntrack_expect_init() -> ::kernel::ffi::c_int;
     pub fn nf_conntrack_expect_fini();
 
     pub fn __nf_ct_expect_find(
@@ -146,21 +146,21 @@ extern "C" {
         unlink: bool,
     ) -> *mut nf_conntrack_expect;
 
-    pub fn nf_ct_unlink_expect_report(exp: *mut nf_conntrack_expect, portid: u32, report: ::core::ffi::c_int);
+    pub fn nf_ct_unlink_expect_report(exp: *mut nf_conntrack_expect, portid: u32, report: ::kernel::ffi::c_int);
 
     pub fn nf_ct_remove_expectations(ct: *mut nf_conn);
     pub fn nf_ct_unexpect_related(exp: *mut nf_conntrack_expect);
 
     pub fn nf_ct_expect_iterate_destroy(
-        iter: Option<unsafe extern "C" fn(e: *mut nf_conntrack_expect, data: *mut ::core::ffi::c_void) -> bool>,
-        data: *mut ::core::ffi::c_void,
+        iter: Option<unsafe extern "C" fn(e: *mut nf_conntrack_expect, data: *mut ::kernel::ffi::c_void) -> bool>,
+        data: *mut ::kernel::ffi::c_void,
     );
     pub fn nf_ct_expect_iterate_net(
         net: *mut net,
-        iter: Option<unsafe extern "C" fn(e: *mut nf_conntrack_expect, data: *mut ::core::ffi::c_void) -> bool>,
-        data: *mut ::core::ffi::c_void,
+        iter: Option<unsafe extern "C" fn(e: *mut nf_conntrack_expect, data: *mut ::kernel::ffi::c_void) -> bool>,
+        data: *mut ::kernel::ffi::c_void,
         portid: u32,
-        report: ::core::ffi::c_int,
+        report: ::kernel::ffi::c_int,
     );
 
     /* Allocate space for an expectation: this is mandatory before calling
@@ -168,7 +168,7 @@ extern "C" {
     pub fn nf_ct_expect_alloc(me: *mut nf_conn) -> *mut nf_conntrack_expect;
     pub fn nf_ct_expect_init(
         exp: *mut nf_conntrack_expect,
-        class: ::core::ffi::c_uint,
+        class: ::kernel::ffi::c_uint,
         l3num: u8,
         saddr: *const nf_inet_addr,
         daddr: *const nf_inet_addr,
@@ -180,14 +180,14 @@ extern "C" {
     pub fn nf_ct_expect_related_report(
         expect: *mut nf_conntrack_expect,
         portid: u32,
-        report: ::core::ffi::c_int,
-        flags: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        report: ::kernel::ffi::c_int,
+        flags: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn nf_ct_expect_related_pair(
         expect: *mut *mut nf_conntrack_expect,
-        flag: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        flag: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn nf_ct_expectation_gc(master_help: *mut nf_conn_help);
 }
@@ -200,8 +200,8 @@ pub unsafe fn nf_ct_unlink_expect(exp: *mut nf_conntrack_expect) {
 #[inline]
 pub unsafe fn nf_ct_expect_related(
     expect: *mut nf_conntrack_expect,
-    flags: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    flags: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     nf_ct_expect_related_report(expect, 0, 0, flags)
 }
 

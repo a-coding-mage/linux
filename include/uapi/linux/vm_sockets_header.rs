@@ -60,7 +60,7 @@ pub struct sockaddr_vm {
         - core::mem::size_of::<__u8>()],
 }
 
-pub const IOCTL_VM_SOCKETS_GET_LOCAL_CID: _ = _IO(7, 0xb9);
+pub const IOCTL_VM_SOCKETS_GET_LOCAL_CID: u32 = _IO(7, 0xb9);
 
 pub const SOL_VSOCK: i32 = 287;
 pub const VSOCK_RECVERR: i32 = 1;

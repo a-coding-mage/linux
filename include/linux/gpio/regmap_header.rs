@@ -3,7 +3,7 @@
 // Translated from linux/gpio/regmap.h. Required kernel types are supplied by
 // the surrounding translation unit.
 
-use core::ffi::{c_ulong, c_void};
+use kernel::ffi::{c_ulong, c_void};
 
 #[repr(C)]
 pub struct device {
@@ -56,9 +56,9 @@ pub struct gpio_regmap_config {
     pub regmap: *mut regmap,
     pub fwnode: *mut fwnode_handle,
 
-    pub label: *const core::ffi::c_char,
+    pub label: *const kernel::ffi::c_char,
     pub ngpio: i32,
-    pub names: *const *const core::ffi::c_char,
+    pub names: *const *const kernel::ffi::c_char,
 
     pub reg_dat_base: u32,
     pub reg_set_base: u32,

@@ -14,14 +14,14 @@ pub enum snd_soc_usb_kctl {
 
 #[repr(C)]
 pub struct snd_soc_usb_device {
-    pub card_idx: ::core::ffi::c_int,
-    pub chip_idx: ::core::ffi::c_int,
+    pub card_idx: ::kernel::ffi::c_int,
+    pub chip_idx: ::kernel::ffi::c_int,
 
     // PCM index arrays; capture path is not tested yet.
-    pub cpcm_idx: *mut ::core::ffi::c_uint,
-    pub ppcm_idx: *mut ::core::ffi::c_uint,
-    pub num_capture: ::core::ffi::c_int,
-    pub num_playback: ::core::ffi::c_int,
+    pub cpcm_idx: *mut ::kernel::ffi::c_uint,
+    pub ppcm_idx: *mut ::kernel::ffi::c_uint,
+    pub num_capture: ::kernel::ffi::c_int,
+    pub num_playback: ::kernel::ffi::c_int,
 
     pub list: list_head,
 }
@@ -34,16 +34,16 @@ pub struct snd_soc_usb {
         usb: *mut snd_soc_usb,
         sdev: *mut snd_soc_usb_device,
         connected: bool,
-    ) -> ::core::ffi::c_int>,
+    ) -> ::kernel::ffi::c_int>,
     pub update_offload_route_info: Option<unsafe extern "C" fn(
         component: *mut snd_soc_component,
-        card: ::core::ffi::c_int,
-        pcm: ::core::ffi::c_int,
-        direction: ::core::ffi::c_int,
+        card: ::kernel::ffi::c_int,
+        pcm: ::kernel::ffi::c_int,
+        direction: ::kernel::ffi::c_int,
         path: snd_soc_usb_kctl,
-        route: *mut ::core::ffi::c_long,
-    ) -> ::core::ffi::c_int>,
-    pub priv_data: *mut ::core::ffi::c_void,
+        route: *mut ::kernel::ffi::c_long,
+    ) -> ::kernel::ffi::c_int>,
+    pub priv_data: *mut ::kernel::ffi::c_void,
 }
 
 // External types and constants are supplied by other translated headers.
@@ -72,39 +72,39 @@ pub struct device {
 #[cfg(CONFIG_SND_SOC_USB)]
 extern "C" {
     pub fn snd_soc_usb_find_supported_format(
-        card_idx: ::core::ffi::c_int,
+        card_idx: ::kernel::ffi::c_int,
         params: *mut snd_pcm_hw_params,
-        direction: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    pub fn snd_soc_usb_connect(usbdev: *mut device, sdev: *mut snd_soc_usb_device) -> ::core::ffi::c_int;
-    pub fn snd_soc_usb_disconnect(usbdev: *mut device, sdev: *mut snd_soc_usb_device) -> ::core::ffi::c_int;
-    pub fn snd_soc_usb_find_priv_data(usbdev: *mut device) -> *mut ::core::ffi::c_void;
-    pub fn snd_soc_usb_setup_offload_jack(component: *mut snd_soc_component, jack: *mut snd_soc_jack) -> ::core::ffi::c_int;
+        direction: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
+    pub fn snd_soc_usb_connect(usbdev: *mut device, sdev: *mut snd_soc_usb_device) -> ::kernel::ffi::c_int;
+    pub fn snd_soc_usb_disconnect(usbdev: *mut device, sdev: *mut snd_soc_usb_device) -> ::kernel::ffi::c_int;
+    pub fn snd_soc_usb_find_priv_data(usbdev: *mut device) -> *mut ::kernel::ffi::c_void;
+    pub fn snd_soc_usb_setup_offload_jack(component: *mut snd_soc_component, jack: *mut snd_soc_jack) -> ::kernel::ffi::c_int;
     pub fn snd_soc_usb_update_offload_route(
-        dev: *mut device, card: ::core::ffi::c_int, pcm: ::core::ffi::c_int,
-        direction: ::core::ffi::c_int, path: snd_soc_usb_kctl,
-        route: *mut ::core::ffi::c_long,
-    ) -> ::core::ffi::c_int;
-    pub fn snd_soc_usb_allocate_port(component: *mut snd_soc_component, data: *mut ::core::ffi::c_void) -> *mut snd_soc_usb;
+        dev: *mut device, card: ::kernel::ffi::c_int, pcm: ::kernel::ffi::c_int,
+        direction: ::kernel::ffi::c_int, path: snd_soc_usb_kctl,
+        route: *mut ::kernel::ffi::c_long,
+    ) -> ::kernel::ffi::c_int;
+    pub fn snd_soc_usb_allocate_port(component: *mut snd_soc_component, data: *mut ::kernel::ffi::c_void) -> *mut snd_soc_usb;
     pub fn snd_soc_usb_free_port(usb: *mut snd_soc_usb);
     pub fn snd_soc_usb_add_port(usb: *mut snd_soc_usb);
     pub fn snd_soc_usb_remove_port(usb: *mut snd_soc_usb);
 }
 
 #[cfg(not(CONFIG_SND_SOC_USB))]
-pub unsafe fn snd_soc_usb_find_supported_format(_: ::core::ffi::c_int, _: *mut snd_pcm_hw_params, _: ::core::ffi::c_int) -> ::core::ffi::c_int { -22 }
+pub unsafe fn snd_soc_usb_find_supported_format(_: ::kernel::ffi::c_int, _: *mut snd_pcm_hw_params, _: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int { -22 }
 #[cfg(not(CONFIG_SND_SOC_USB))]
-pub unsafe fn snd_soc_usb_connect(_: *mut device, _: *mut snd_soc_usb_device) -> ::core::ffi::c_int { -19 }
+pub unsafe fn snd_soc_usb_connect(_: *mut device, _: *mut snd_soc_usb_device) -> ::kernel::ffi::c_int { -19 }
 #[cfg(not(CONFIG_SND_SOC_USB))]
-pub unsafe fn snd_soc_usb_disconnect(_: *mut device, _: *mut snd_soc_usb_device) -> ::core::ffi::c_int { -22 }
+pub unsafe fn snd_soc_usb_disconnect(_: *mut device, _: *mut snd_soc_usb_device) -> ::kernel::ffi::c_int { -22 }
 #[cfg(not(CONFIG_SND_SOC_USB))]
-pub unsafe fn snd_soc_usb_find_priv_data(_: *mut device) -> *mut ::core::ffi::c_void { ::core::ptr::null_mut() }
+pub unsafe fn snd_soc_usb_find_priv_data(_: *mut device) -> *mut ::kernel::ffi::c_void { ::core::ptr::null_mut() }
 #[cfg(not(CONFIG_SND_SOC_USB))]
-pub unsafe fn snd_soc_usb_setup_offload_jack(_: *mut snd_soc_component, _: *mut snd_soc_jack) -> ::core::ffi::c_int { 0 }
+pub unsafe fn snd_soc_usb_setup_offload_jack(_: *mut snd_soc_component, _: *mut snd_soc_jack) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_SND_SOC_USB))]
-pub unsafe fn snd_soc_usb_update_offload_route(_: *mut device, _: ::core::ffi::c_int, _: ::core::ffi::c_int, _: ::core::ffi::c_int, _: snd_soc_usb_kctl, _: *mut ::core::ffi::c_long) -> ::core::ffi::c_int { -19 }
+pub unsafe fn snd_soc_usb_update_offload_route(_: *mut device, _: ::kernel::ffi::c_int, _: ::kernel::ffi::c_int, _: ::kernel::ffi::c_int, _: snd_soc_usb_kctl, _: *mut ::kernel::ffi::c_long) -> ::kernel::ffi::c_int { -19 }
 #[cfg(not(CONFIG_SND_SOC_USB))]
-pub unsafe fn snd_soc_usb_allocate_port(_: *mut snd_soc_component, _: *mut ::core::ffi::c_void) -> *mut snd_soc_usb { ::core::ptr::null_mut() }
+pub unsafe fn snd_soc_usb_allocate_port(_: *mut snd_soc_component, _: *mut ::kernel::ffi::c_void) -> *mut snd_soc_usb { ::core::ptr::null_mut() }
 #[cfg(not(CONFIG_SND_SOC_USB))]
 pub unsafe fn snd_soc_usb_free_port(_: *mut snd_soc_usb) {}
 #[cfg(not(CONFIG_SND_SOC_USB))]

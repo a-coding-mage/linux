@@ -19,11 +19,11 @@ pub struct MtkGateRegs {
 #[repr(C)]
 pub struct MtkGate {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char,
     pub regs: *const MtkGateRegs,
     pub shift: u8,
-    pub ops: *const core::ffi::c_void,
+    pub ops: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -34,7 +34,7 @@ pub struct MtkClkDesc {
 
 #[repr(C)]
 pub struct OfDeviceId {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
     pub data: *const MtkClkDesc,
 }
 
@@ -47,18 +47,18 @@ pub struct PlatformDriver {
 
 #[repr(C)]
 pub struct Driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const OfDeviceId,
 }
 
 extern "C" {
-    static mtk_clk_gate_ops_no_setclr: core::ffi::c_void;
+    static mtk_clk_gate_ops_no_setclr: kernel::ffi::c_void;
     fn mtk_clk_simple_probe() -> isize;
     fn mtk_clk_simple_remove() -> isize;
 }
 
-const fn cstr(bytes: &'static [u8]) -> *const core::ffi::c_char {
-    bytes.as_ptr() as *const core::ffi::c_char
+const fn cstr(bytes: &'static [u8]) -> *const kernel::ffi::c_char {
+    bytes.as_ptr() as *const kernel::ffi::c_char
 }
 
 static AUD_CG_REGS: MtkGateRegs = MtkGateRegs {

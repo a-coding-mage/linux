@@ -18,7 +18,7 @@ pub struct ioc_gq {
 
 pub type IocostIocgState = unsafe extern "C" fn(
     iocg: *mut ioc_gq,
-    path: *const core::ffi::c_char,
+    path: *const kernel::ffi::c_char,
     now: *mut ioc_now,
     last_period: u64,
     cur_period: u64,
@@ -27,7 +27,7 @@ pub type IocostIocgState = unsafe extern "C" fn(
 
 pub type IocgInuseUpdate = unsafe extern "C" fn(
     iocg: *mut ioc_gq,
-    path: *const core::ffi::c_char,
+    path: *const kernel::ffi::c_char,
     now: *mut ioc_now,
     old_inuse: u32,
     new_inuse: u32,
@@ -40,13 +40,13 @@ pub type IocostIocVrateAdj = unsafe extern "C" fn(
     new_vrate: u64,
     missed_ppm: *mut u32,
     rq_wait_pct: u32,
-    nr_lagging: core::ffi::c_int,
-    nr_shortages: core::ffi::c_int,
+    nr_lagging: kernel::ffi::c_int,
+    nr_shortages: kernel::ffi::c_int,
 );
 
 pub type IocostIocgForgiveDebt = unsafe extern "C" fn(
     iocg: *mut ioc_gq,
-    path: *const core::ffi::c_char,
+    path: *const kernel::ffi::c_char,
     now: *mut ioc_now,
     usage_pct: u32,
     old_debt: u64,

@@ -53,12 +53,12 @@ pub const F_SETLKW64: i32 = 35;
 // These macros contribute fields to a containing flock structure in C.
 #[macro_export]
 macro_rules! __ARCH_FLOCK_EXTRA_SYSID {
-    () => { l_sysid: core::ffi::c_long, };
+    () => { l_sysid: kernel::ffi::c_long, };
 }
 
 #[macro_export]
 macro_rules! __ARCH_FLOCK_PAD {
-    () => { pad: [core::ffi::c_long; 4], };
+    () => { pad: [kernel::ffi::c_long; 4], };
 }
 
 // Dependency supplied by the original header: asm-generic/fcntl.h.

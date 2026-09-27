@@ -6,7 +6,7 @@
  */
 
 // Dependency supplied by the UAPI architecture header.
-pub const NR_syscalls: _ = __NR_syscalls;
+pub const NR_syscalls: u32 = __NR_syscalls;
 
 // Architecture syscall feature-selection markers from the C preprocessor
 // header. Their presence is represented as unit constants in Rust.

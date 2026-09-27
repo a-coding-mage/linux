@@ -11,7 +11,7 @@
 #[cfg(feature = "kernel")]
 #[repr(C)]
 pub struct arch_hw_breakpoint {
-    pub address: ::core::ffi::c_ulong,
+    pub address: ::kernel::ffi::c_ulong,
     pub type_: u16,
     pub len: u16, /* length of the target data symbol */
     pub hw_len: u16, /* length programmed in hw */
@@ -48,48 +48,48 @@ pub const DABR_MAX_LEN: u32 = 8;
 pub const DAWR_MAX_LEN: u32 = 512;
 
 #[inline]
-pub unsafe fn nr_wp_slots() -> ::core::ffi::c_int {
+pub unsafe fn nr_wp_slots() -> ::kernel::ffi::c_int {
     if cpu_has_feature(CPU_FTR_DAWR1) { 2 } else { 1 }
 }
 
 extern "C" {
-    pub fn cpu_has_feature(feature: ::core::ffi::c_int) -> bool;
+    pub fn cpu_has_feature(feature: ::kernel::ffi::c_int) -> bool;
     pub fn ppc_breakpoint_available() -> bool;
-    pub fn __set_breakpoint(nr: ::core::ffi::c_int, brk: *const arch_hw_breakpoint);
+    pub fn __set_breakpoint(nr: ::kernel::ffi::c_int, brk: *const arch_hw_breakpoint);
 
     pub fn wp_check_constraints(
         regs: *mut pt_regs,
         instr: ppc_inst_t,
-        ea: ::core::ffi::c_ulong,
-        type_: ::core::ffi::c_int,
-        size: ::core::ffi::c_int,
+        ea: ::kernel::ffi::c_ulong,
+        type_: ::kernel::ffi::c_int,
+        size: ::kernel::ffi::c_int,
         info: *mut arch_hw_breakpoint,
     ) -> bool;
     pub fn wp_get_instr_detail(
         regs: *mut pt_regs,
         instr: *mut ppc_inst_t,
-        type_: *mut ::core::ffi::c_int,
-        size: *mut ::core::ffi::c_int,
-        ea: *mut ::core::ffi::c_ulong,
+        type_: *mut ::kernel::ffi::c_int,
+        size: *mut ::kernel::ffi::c_int,
+        ea: *mut ::kernel::ffi::c_ulong,
     );
 }
 
 /* CONFIG_HAVE_HW_BREAKPOINT conditionally provides the following declarations. */
 #[cfg(feature = "have_hw_breakpoint")]
 extern "C" {
-    pub fn hw_breakpoint_slots(type_: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn arch_bp_generic_fields(type_: ::core::ffi::c_int, gen_bp_type: *mut ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn arch_check_bp_in_kernelspace(hw: *mut arch_hw_breakpoint) -> ::core::ffi::c_int;
-    pub fn hw_breakpoint_arch_parse(bp: *mut perf_event, attr: *const perf_event_attr, hw: *mut arch_hw_breakpoint) -> ::core::ffi::c_int;
-    pub fn hw_breakpoint_exceptions_notify(unused: *mut notifier_block, val: ::core::ffi::c_ulong, data: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-    pub fn arch_install_hw_breakpoint(bp: *mut perf_event) -> ::core::ffi::c_int;
+    pub fn hw_breakpoint_slots(type_: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn arch_bp_generic_fields(type_: ::kernel::ffi::c_int, gen_bp_type: *mut ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn arch_check_bp_in_kernelspace(hw: *mut arch_hw_breakpoint) -> ::kernel::ffi::c_int;
+    pub fn hw_breakpoint_arch_parse(bp: *mut perf_event, attr: *const perf_event_attr, hw: *mut arch_hw_breakpoint) -> ::kernel::ffi::c_int;
+    pub fn hw_breakpoint_exceptions_notify(unused: *mut notifier_block, val: ::kernel::ffi::c_ulong, data: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
+    pub fn arch_install_hw_breakpoint(bp: *mut perf_event) -> ::kernel::ffi::c_int;
     pub fn arch_uninstall_hw_breakpoint(bp: *mut perf_event);
     pub fn hw_breakpoint_pmu_read(bp: *mut perf_event);
     pub fn flush_ptrace_hw_breakpoint(tsk: *mut task_struct);
     pub static mut perf_ops_bp: pmu;
     pub fn ptrace_triggered(bp: *mut perf_event, data: *mut perf_sample_data, regs: *mut pt_regs);
     pub fn thread_change_pc(tsk: *mut task_struct, regs: *mut pt_regs);
-    pub fn hw_breakpoint_handler(args: *mut die_args) -> ::core::ffi::c_int;
+    pub fn hw_breakpoint_handler(args: *mut die_args) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(feature = "have_hw_breakpoint")]
@@ -117,13 +117,13 @@ extern "C" { pub static mut dawr_force_enable: bool; }
 #[inline]
 pub unsafe fn dawr_enabled() -> bool { dawr_force_enable }
 #[cfg(feature = "ppc_dawr")]
-extern "C" { pub fn set_dawr(nr: ::core::ffi::c_int, brk: *mut arch_hw_breakpoint) -> ::core::ffi::c_int; }
+extern "C" { pub fn set_dawr(nr: ::kernel::ffi::c_int, brk: *mut arch_hw_breakpoint) -> ::kernel::ffi::c_int; }
 #[cfg(not(feature = "ppc_dawr"))]
 #[inline]
 pub unsafe fn dawr_enabled() -> bool { false }
 #[cfg(not(feature = "ppc_dawr"))]
 #[inline]
-pub unsafe fn set_dawr(_nr: ::core::ffi::c_int, _brk: *mut arch_hw_breakpoint) -> ::core::ffi::c_int { -1 }
+pub unsafe fn set_dawr(_nr: ::kernel::ffi::c_int, _brk: *mut arch_hw_breakpoint) -> ::kernel::ffi::c_int { -1 }
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

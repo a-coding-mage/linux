@@ -3,16 +3,16 @@
 /* C dependencies: <asm/sigcontext.h> and <asm/ptrace.h>. */
 
 extern "C" {
-    pub fn fpu_libc_helper(regs: *mut crate::pt_regs) -> ::core::ffi::c_int;
+    pub fn fpu_libc_helper(regs: *mut crate::pt_regs) -> ::kernel::ffi::c_int;
     pub fn fpu_fpe(regs: *mut crate::pt_regs);
-    pub fn mtcr(register: *const ::core::ffi::c_char, value: ::core::ffi::c_int);
+    pub fn mtcr(register: *const ::kernel::ffi::c_char, value: ::kernel::ffi::c_int);
     pub fn save_to_user_fp(user_fp: *mut crate::user_fp);
     pub fn restore_from_user_fp(user_fp: *mut crate::user_fp);
 }
 
 pub unsafe fn init_fpu() {
     mtcr(
-        b"cr<1, 2>\0".as_ptr() as *const ::core::ffi::c_char,
+        b"cr<1, 2>\0".as_ptr() as *const ::kernel::ffi::c_char,
         0,
     );
 }

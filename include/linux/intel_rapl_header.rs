@@ -80,21 +80,21 @@ pub const PACKAGE_DOMAIN_NAME_LENGTH: usize = 30;
 pub struct rapl_power_limit {
     pub constraint: *mut powercap_zone_constraint,
     pub domain: *mut rapl_domain,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub locked: bool,
     pub last_power_limit: u64,
 }
 
 #[repr(C)]
 pub union rapl_reg {
-    pub mmio: *mut core::ffi::c_void,
+    pub mmio: *mut kernel::ffi::c_void,
     pub msr: u32,
     pub val: u64,
 }
 
 #[repr(C)]
 pub struct rapl_domain {
-    pub name: [core::ffi::c_char; RAPL_DOMAIN_NAME_LENGTH],
+    pub name: [kernel::ffi::c_char; RAPL_DOMAIN_NAME_LENGTH],
     pub id: rapl_domain_type,
     pub regs: [rapl_reg; RAPL_DOMAIN_REG_MAX as usize],
     pub power_zone: powercap_zone,
@@ -132,7 +132,7 @@ pub struct rapl_defaults {
 #[macro_export]
 macro_rules! PRIMITIVE_INFO_INIT {
     ($p:ident, $m:expr, $s:expr, $i:expr, $u:expr, $f:expr) => {
-        rapl_primitive_info { name: concat!(stringify!($p), "\0").as_ptr() as *const core::ffi::c_char,
+        rapl_primitive_info { name: concat!(stringify!($p), "\0").as_ptr() as *const kernel::ffi::c_char,
             mask: $m, shift: $s, id: $i, unit: $u, flag: $f }
     };
 }
@@ -142,7 +142,7 @@ pub enum unit_type { ARBITRARY_UNIT, POWER_UNIT, ENERGY_UNIT, TIME_UNIT }
 
 #[repr(C)]
 pub struct rapl_primitive_info {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub mask: u64,
     pub shift: i32,
     pub id: rapl_domain_reg_id,
@@ -175,7 +175,7 @@ pub struct rapl_package {
     pub plist: list_head,
     pub lead_cpu: i32,
     pub cpumask: cpumask,
-    pub name: [core::ffi::c_char; PACKAGE_DOMAIN_NAME_LENGTH],
+    pub name: [kernel::ffi::c_char; PACKAGE_DOMAIN_NAME_LENGTH],
     pub priv_: *mut rapl_if_priv,
     // CONFIG_PERF_EVENTS fields are present when that build condition is enabled.
     pub has_pmu: bool,

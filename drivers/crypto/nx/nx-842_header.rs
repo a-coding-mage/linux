@@ -61,7 +61,7 @@ pub const fn len_on_page(pa: usize) -> usize {
 
 pub struct crypto_scomp;
 
-pub unsafe fn nx842_get_pa(addr: *mut core::ffi::c_void) -> libc::c_ulong {
+pub unsafe fn nx842_get_pa(addr: *mut kernel::ffi::c_void) -> kernel::ffi::c_ulong {
     if !is_vmalloc_addr(addr) {
         return __pa(addr);
     }
@@ -82,8 +82,8 @@ pub struct nx842_driver {
     pub owner: *mut module,
     pub workmem_size: usize,
     pub constraints: *mut nx842_constraints,
-    pub compress: Option<unsafe extern "C" fn(*const u8, u32, *mut u8, *mut u32, *mut core::ffi::c_void) -> i32>,
-    pub decompress: Option<unsafe extern "C" fn(*const u8, u32, *mut u8, *mut u32, *mut core::ffi::c_void) -> i32>,
+    pub compress: Option<unsafe extern "C" fn(*const u8, u32, *mut u8, *mut u32, *mut kernel::ffi::c_void) -> i32>,
+    pub decompress: Option<unsafe extern "C" fn(*const u8, u32, *mut u8, *mut u32, *mut kernel::ffi::c_void) -> i32>,
 }
 
 #[repr(C, packed)]
@@ -120,12 +120,12 @@ pub struct nx842_crypto_ctx {
 }
 
 extern "C" {
-    pub fn nx842_crypto_alloc_ctx(driver: *mut nx842_driver) -> *mut core::ffi::c_void;
-    pub fn nx842_crypto_free_ctx(ctx: *mut core::ffi::c_void);
+    pub fn nx842_crypto_alloc_ctx(driver: *mut nx842_driver) -> *mut kernel::ffi::c_void;
+    pub fn nx842_crypto_free_ctx(ctx: *mut kernel::ffi::c_void);
     pub fn nx842_crypto_compress(tfm: *mut crypto_scomp, src: *const u8, slen: u32,
-                                 dst: *mut u8, dlen: *mut u32, ctx: *mut core::ffi::c_void) -> i32;
+                                 dst: *mut u8, dlen: *mut u32, ctx: *mut kernel::ffi::c_void) -> i32;
     pub fn nx842_crypto_decompress(tfm: *mut crypto_scomp, src: *const u8, slen: u32,
-                                   dst: *mut u8, dlen: *mut u32, ctx: *mut core::ffi::c_void) -> i32;
+                                   dst: *mut u8, dlen: *mut u32, ctx: *mut kernel::ffi::c_void) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

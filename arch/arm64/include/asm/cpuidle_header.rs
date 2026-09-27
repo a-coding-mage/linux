@@ -6,17 +6,17 @@
 #[cfg(CONFIG_ARM64_PSEUDO_NMI)]
 #[repr(C)]
 pub struct arm_cpuidle_irq_context {
-    pub pmr: ::core::ffi::c_ulong,
-    pub daif_bits: ::core::ffi::c_ulong,
+    pub pmr: ::kernel::ffi::c_ulong,
+    pub daif_bits: ::kernel::ffi::c_ulong,
 }
 
 #[cfg(CONFIG_ARM64_PSEUDO_NMI)]
 extern "C" {
     fn system_uses_irq_prio_masking() -> bool;
-    fn read_sysreg_daif() -> ::core::ffi::c_ulong;
-    fn write_sysreg_daif(value: ::core::ffi::c_ulong);
-    fn gic_read_pmr() -> ::core::ffi::c_ulong;
-    fn gic_write_pmr(value: ::core::ffi::c_ulong);
+    fn read_sysreg_daif() -> ::kernel::ffi::c_ulong;
+    fn write_sysreg_daif(value: ::kernel::ffi::c_ulong);
+    fn gic_read_pmr() -> ::kernel::ffi::c_ulong;
+    fn gic_write_pmr(value: ::kernel::ffi::c_ulong);
 }
 
 #[cfg(CONFIG_ARM64_PSEUDO_NMI)]

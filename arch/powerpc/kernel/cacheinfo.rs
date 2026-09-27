@@ -16,10 +16,10 @@ struct CacheIndexDir { kobj: Kobject, next: *mut CacheIndexDir, cache: *mut Cach
 
 #[repr(C)]
 struct CacheTypeInfo {
-    name: *const core::ffi::c_char,
-    size_prop: *const core::ffi::c_char,
-    line_size_props: [*const core::ffi::c_char; 2],
-    nr_sets_prop: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    size_prop: *const kernel::ffi::c_char,
+    line_size_props: [*const kernel::ffi::c_char; 2],
+    nr_sets_prop: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -44,7 +44,7 @@ static mut CACHE_DIR_PCPU: PerCpu<*mut CacheDir> = PerCpu::new();
 static mut CACHE_LIST: ListHead = ListHead::new();
 
 unsafe fn kobj_to_cache_index_dir(k: *mut Kobject) -> *mut CacheIndexDir { container_of!(k, CacheIndexDir, kobj) }
-unsafe fn cache_type_string(c: *const Cache) -> *const core::ffi::c_char { CACHE_TYPE_INFO[(*c).type_ as usize].name }
+unsafe fn cache_type_string(c: *const Cache) -> *const kernel::ffi::c_char { CACHE_TYPE_INFO[(*c).type_ as usize].name }
 
 unsafe fn cache_init(c: *mut Cache, type_: i32, level: i32, node: *mut DeviceNode, group_id: i32) {
     (*c).type_ = type_; (*c).level = level; (*c).ofnode = of_node_get(node); (*c).group_id = group_id;

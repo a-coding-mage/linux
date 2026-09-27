@@ -10,20 +10,20 @@
 #[repr(C)]
 pub struct mips_machine {
     pub matches: *const of_device_id,
-    pub fdt: *const core::ffi::c_void,
+    pub fdt: *const kernel::ffi::c_void,
     pub detect: Option<unsafe extern "C" fn() -> bool>,
     pub fixup_fdt: Option<
         unsafe extern "C" fn(
-            fdt: *const core::ffi::c_void,
-            match_data: *const core::ffi::c_void,
-        ) -> *const core::ffi::c_void,
+            fdt: *const kernel::ffi::c_void,
+            match_data: *const kernel::ffi::c_void,
+        ) -> *const kernel::ffi::c_void,
     >,
-    pub measure_hpt_freq: Option<unsafe extern "C" fn() -> core::ffi::c_uint>,
+    pub measure_hpt_freq: Option<unsafe extern "C" fn() -> kernel::ffi::c_uint>,
 }
 
 unsafe extern "C" {
-    pub static mut __mips_machines_start: core::ffi::c_long;
-    pub static mut __mips_machines_end: core::ffi::c_long;
+    pub static mut __mips_machines_start: kernel::ffi::c_long;
+    pub static mut __mips_machines_end: kernel::ffi::c_long;
 }
 
 // C macro: declares a used machine descriptor in the .mips.machines.init section.
@@ -66,7 +66,7 @@ macro_rules! for_each_mips_machine {
  */
 pub unsafe fn mips_machine_is_compatible(
     mach: *const mips_machine,
-    fdt: *const core::ffi::c_void,
+    fdt: *const kernel::ffi::c_void,
 ) -> *const of_device_id {
     let mut match_: *const of_device_id;
 
@@ -96,8 +96,8 @@ pub unsafe fn mips_machine_is_compatible(
  */
 #[repr(C)]
 pub struct mips_fdt_fixup {
-    pub apply: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> core::ffi::c_int>,
-    pub description: *const core::ffi::c_char,
+    pub apply: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> kernel::ffi::c_int>,
+    pub description: *const kernel::ffi::c_char,
 }
 
 /**
@@ -115,11 +115,11 @@ pub struct mips_fdt_fixup {
  */
 unsafe extern "C" {
     pub fn apply_mips_fdt_fixups(
-        fdt_out: *mut core::ffi::c_void,
+        fdt_out: *mut kernel::ffi::c_void,
         fdt_out_size: usize,
-        fdt_in: *const core::ffi::c_void,
+        fdt_in: *const kernel::ffi::c_void,
         fixups: *const mips_fdt_fixup,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

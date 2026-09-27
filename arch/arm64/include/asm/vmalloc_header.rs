@@ -19,11 +19,11 @@ pub fn arch_vmap_pmd_supported(prot: pgprot_t) -> bool {
 #[cfg(CONFIG_HAVE_ARCH_HUGE_VMAP)]
 #[inline]
 pub fn arch_vmap_pte_range_map_size(
-    addr: ::core::ffi::c_ulong,
-    end: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
+    end: ::kernel::ffi::c_ulong,
     pfn: u64,
-    max_page_shift: ::core::ffi::c_uint,
-) -> ::core::ffi::c_ulong {
+    max_page_shift: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_ulong {
     /*
      * If the block is at least CONT_PTE_SIZE in size, and is naturally
      * aligned in both virtual and physical space, then we can pte-map the
@@ -51,9 +51,9 @@ pub fn arch_vmap_pte_range_map_size(
 #[cfg(CONFIG_HAVE_ARCH_HUGE_VMAP)]
 #[inline]
 pub unsafe fn arch_vmap_pte_range_unmap_size(
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
-) -> ::core::ffi::c_ulong {
+) -> ::kernel::ffi::c_ulong {
     /*
      * The caller handles alignment so it's sufficient just to check
      * PTE_CONT.
@@ -68,7 +68,7 @@ pub unsafe fn arch_vmap_pte_range_unmap_size(
 
 #[cfg(CONFIG_HAVE_ARCH_HUGE_VMAP)]
 #[inline]
-pub fn arch_vmap_pte_supported_shift(size: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+pub fn arch_vmap_pte_supported_shift(size: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     if size >= CONT_PTE_SIZE {
         CONT_PTE_SHIFT
     } else {

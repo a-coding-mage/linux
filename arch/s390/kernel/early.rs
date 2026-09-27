@@ -6,7 +6,7 @@
 
 // C header dependencies are supplied by the surrounding kernel translation.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // The decompressor consumes these parameters before the kernel starts; retain
 // the early-parameter handlers as declaration-level Rust functions.

@@ -239,7 +239,7 @@ pub struct tegra_se_regs { pub op: u32, pub config: u32, pub last_blk: u32, pub 
 #[repr(C)]
 pub struct tegra_se_hw { pub regs: *const tegra_se_regs, pub init_alg: Option<unsafe extern "C" fn(*mut tegra_se) -> i32>, pub deinit_alg: Option<unsafe extern "C" fn(*mut tegra_se)>, pub support_sm_alg: bool, pub host1x_class: u32, pub kac_ver: u32 }
 #[repr(C)]
-pub struct tegra_se { pub manifest: Option<unsafe extern "C" fn(u32, u32, u32) -> i32>, pub hw: *const tegra_se_hw, pub client: host1x_client, pub channel: *mut host1x_channel, pub cmdbuf: *mut tegra_se_cmdbuf, pub keybuf: *mut tegra_se_cmdbuf, pub engine: *mut crypto_engine, pub syncpt: *mut host1x_syncpt, pub dev: *mut device, pub clk: *mut clk, pub opcode_addr: u32, pub stream_id: u32, pub syncpt_id: u32, pub base: *mut core::ffi::c_void, pub owner: u32 }
+pub struct tegra_se { pub manifest: Option<unsafe extern "C" fn(u32, u32, u32) -> i32>, pub hw: *const tegra_se_hw, pub client: host1x_client, pub channel: *mut host1x_channel, pub cmdbuf: *mut tegra_se_cmdbuf, pub keybuf: *mut tegra_se_cmdbuf, pub engine: *mut crypto_engine, pub syncpt: *mut host1x_syncpt, pub dev: *mut device, pub clk: *mut clk, pub opcode_addr: u32, pub stream_id: u32, pub syncpt_id: u32, pub base: *mut kernel::ffi::c_void, pub owner: u32 }
 #[repr(C)]
 pub struct tegra_se_cmdbuf { pub iova: dma_addr_t, pub addr: *mut u32, pub dev: *mut device, pub ref_: kref, pub bo: host1x_bo, pub size: isize, pub words: u32 }
 #[repr(C)]
@@ -295,7 +295,7 @@ pub const SE_CRYPTO_CFG_XTS_ENCRYPT: u32 = SE_AES_INPUT_SEL_MEMORY | SE_AES_VCTR
 pub const SE_CRYPTO_CFG_XTS_DECRYPT: u32 = SE_AES_INPUT_SEL_MEMORY | SE_AES_VCTRAM_SEL_TWEAK | SE_AES_XOR_POS_BOTH | SE_AES_CORE_SEL_DECRYPT | SE_AES_IV_SEL_REG;
 pub const SE_CRYPTO_CFG_CBC_MAC: u32 = SE_AES_INPUT_SEL_MEMORY | SE_AES_VCTRAM_SEL_AESOUT | SE_AES_XOR_POS_TOP | SE_AES_CORE_SEL_ENCRYPT | SE_AES_HASH_ENABLE | SE_AES_IV_SEL_REG;
 
-pub unsafe fn se_algname_to_algid(name: *const core::ffi::c_char) -> i32 {
+pub unsafe fn se_algname_to_algid(name: *const kernel::ffi::c_char) -> i32 {
     use core::ffi::CStr;
     match CStr::from_ptr(name).to_bytes() {
         b"cbc(aes)" => se_aes_alg::SE_ALG_CBC as i32, b"ecb(aes)" => se_aes_alg::SE_ALG_ECB as i32,

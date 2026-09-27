@@ -5,17 +5,17 @@
 const DEBUGFS_FORMAT_BUFFER_SIZE: usize = 100;
 
 pub unsafe fn mac80211_format_buffer(
-    userbuf: *mut core::ffi::c_char, count: usize, ppos: *mut i64,
-    fmt: *const core::ffi::c_char, mut args: ...,
+    userbuf: *mut kernel::ffi::c_char, count: usize, ppos: *mut i64,
+    fmt: *const kernel::ffi::c_char, mut args: ...,
 ) -> isize {
-    let mut buf = [0 as core::ffi::c_char; DEBUGFS_FORMAT_BUFFER_SIZE];
+    let mut buf = [0 as kernel::ffi::c_char; DEBUGFS_FORMAT_BUFFER_SIZE];
     let res = vscnprintf(buf.as_mut_ptr(), buf.len(), fmt, args);
     simple_read_from_buffer(userbuf, count, ppos, buf.as_ptr(), res)
 }
 
 macro_rules! readonly_file {
     ($name:tt, $fmt:expr, $value:expr) => {
-        unsafe extern "C" fn ::kernel::macros::paste!([<$name _read>])(file: *mut file, userbuf: *mut core::ffi::c_char,
+        unsafe extern "C" fn ::kernel::macros::paste!([<$name _read>])(file: *mut file, userbuf: *mut kernel::ffi::c_char,
                                            count: usize, ppos: *mut i64) -> isize {
             let local = (*file).private_data as *mut ieee80211_local;
             mac80211_format_buffer(userbuf, count, ppos, $fmt, $value)

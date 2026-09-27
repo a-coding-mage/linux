@@ -10,10 +10,10 @@
 // The declarations below correspond to the non-assembler portion of the C header.
 
 unsafe extern "C" {
-    pub static mut _ssbss: [core::ffi::c_char; 0];
-    pub static mut _esbss: [core::ffi::c_char; 0];
-    pub static mut __ivt_start: [core::ffi::c_ulong; 0];
-    pub static mut __ivt_end: [core::ffi::c_ulong; 0];
+    pub static mut _ssbss: [kernel::ffi::c_char; 0];
+    pub static mut _esbss: [kernel::ffi::c_char; 0];
+    pub static mut __ivt_start: [kernel::ffi::c_ulong; 0];
+    pub static mut __ivt_end: [kernel::ffi::c_ulong; 0];
 
     pub static mut _fdt_start: [u32; 0];
     pub static mut _fdt_end: [u32; 0];

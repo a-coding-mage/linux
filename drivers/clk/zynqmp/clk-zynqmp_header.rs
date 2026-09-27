@@ -64,44 +64,44 @@ pub struct clock_topology {
 }
 
 extern "C" {
-    pub fn zynqmp_clk_map_common_ccf_flags( zynqmp_flag: u32) -> ::core::ffi::c_ulong;
+    pub fn zynqmp_clk_map_common_ccf_flags( zynqmp_flag: u32) -> ::kernel::ffi::c_ulong;
 
     pub fn zynqmp_clk_register_pll(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         clk_id: u32,
-        parents: *const *const ::core::ffi::c_char,
+        parents: *const *const ::kernel::ffi::c_char,
         num_parents: u8,
         nodes: *const clock_topology,
     ) -> *mut clk_hw;
 
     pub fn zynqmp_clk_register_gate(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         clk_id: u32,
-        parents: *const *const ::core::ffi::c_char,
+        parents: *const *const ::kernel::ffi::c_char,
         num_parents: u8,
         nodes: *const clock_topology,
     ) -> *mut clk_hw;
 
     pub fn zynqmp_clk_register_divider(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         clk_id: u32,
-        parents: *const *const ::core::ffi::c_char,
+        parents: *const *const ::kernel::ffi::c_char,
         num_parents: u8,
         nodes: *const clock_topology,
     ) -> *mut clk_hw;
 
     pub fn zynqmp_clk_register_mux(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         clk_id: u32,
-        parents: *const *const ::core::ffi::c_char,
+        parents: *const *const ::kernel::ffi::c_char,
         num_parents: u8,
         nodes: *const clock_topology,
     ) -> *mut clk_hw;
 
     pub fn zynqmp_clk_register_fixed_factor(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         clk_id: u32,
-        parents: *const *const ::core::ffi::c_char,
+        parents: *const *const ::kernel::ffi::c_char,
         num_parents: u8,
         nodes: *const clock_topology,
     ) -> *mut clk_hw;

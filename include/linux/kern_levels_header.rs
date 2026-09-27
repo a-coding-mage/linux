@@ -21,6 +21,77 @@ pub const KERN_DEFAULT: &str = ""; /* the default kernel loglevel */
  */
 pub const KERN_CONT: &str = concat!("\u{1}", "c");
 
+/*
+ * C builds messages by string-literal concatenation (KERN_ERR "text");
+ * these literal forms let Rust do the same with concat!().
+ */
+#[macro_export]
+macro_rules! KERN_SOH {
+    () => {
+        "\x01"
+    };
+}
+#[macro_export]
+macro_rules! KERN_EMERG {
+    () => {
+        "\x010"
+    };
+}
+#[macro_export]
+macro_rules! KERN_ALERT {
+    () => {
+        "\x011"
+    };
+}
+#[macro_export]
+macro_rules! KERN_CRIT {
+    () => {
+        "\x012"
+    };
+}
+#[macro_export]
+macro_rules! KERN_ERR {
+    () => {
+        "\x013"
+    };
+}
+#[macro_export]
+macro_rules! KERN_WARNING {
+    () => {
+        "\x014"
+    };
+}
+#[macro_export]
+macro_rules! KERN_NOTICE {
+    () => {
+        "\x015"
+    };
+}
+#[macro_export]
+macro_rules! KERN_INFO {
+    () => {
+        "\x016"
+    };
+}
+#[macro_export]
+macro_rules! KERN_DEBUG {
+    () => {
+        "\x017"
+    };
+}
+#[macro_export]
+macro_rules! KERN_DEFAULT {
+    () => {
+        ""
+    };
+}
+#[macro_export]
+macro_rules! KERN_CONT {
+    () => {
+        "\x01c"
+    };
+}
+
 /* integer equivalents of KERN_<LEVEL> */
 pub const LOGLEVEL_SCHED: i32 = -2; /* Deferred messages from sched code
                                       * are set to this special level */

@@ -28,7 +28,7 @@ pub struct clk_omap_reg {
 #[allow(non_camel_case_types)]
 #[repr(C)]
 pub struct clk_hw {
-    pub clk: *mut core::ffi::c_void,
+    pub clk: *mut kernel::ffi::c_void,
 }
 
 #[allow(non_camel_case_types)]
@@ -45,8 +45,8 @@ pub struct clk_hw_omap {
     pub enable_reg: clk_omap_reg,
     pub enable_bit: u8,
     pub flags: u32,
-    pub clkdm: *mut core::ffi::c_void,
-    pub clkdm_name: *const core::ffi::c_char,
+    pub clkdm: *mut kernel::ffi::c_void,
+    pub clkdm_name: *const kernel::ffi::c_char,
     pub ops: *const clk_hw_omap_ops,
 }
 
@@ -57,16 +57,16 @@ pub struct ti_clk_ll_ops_type {
     pub clk_writel: unsafe extern "C" fn(u32, *const clk_omap_reg),
     pub cm_split_idlest_reg: unsafe extern "C" fn(*const clk_omap_reg, *mut i16, *mut u8) -> i32,
     pub cm_wait_module_ready: unsafe extern "C" fn(u8, i16, u8, u8),
-    pub clkdm_clk_enable: unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
-    pub clkdm_clk_disable: unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void),
+    pub clkdm_clk_enable: unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut kernel::ffi::c_void) -> i32,
+    pub clkdm_clk_disable: unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut kernel::ffi::c_void),
 }
 
 extern "C" {
     static ti_clk_ll_ops: *const ti_clk_ll_ops_type;
     fn udelay(usecs: u32);
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn clk_hw_get_name(hw: *const clk_hw) -> *const core::ffi::c_char;
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn clk_hw_get_name(hw: *const clk_hw) -> *const kernel::ffi::c_char;
     fn ti_clk_get_features() -> *const ti_clk_features;
 }
 
@@ -88,7 +88,7 @@ unsafe fn _wait_idlest_generic(
     reg: *mut clk_omap_reg,
     mask: u32,
     idlest: u8,
-    _name: *const core::ffi::c_char,
+    _name: *const kernel::ffi::c_char,
 ) -> i32 {
     let mut i: i32 = 0;
     let ena: u32 = if idlest != 0 { 0 } else { mask };

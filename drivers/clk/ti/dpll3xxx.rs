@@ -15,10 +15,10 @@ const OMAP3XXX_EN_DPLL_LOCKED: u32 = 0x7;
 extern "C" {
     static mut ti_clk_ll_ops: *mut TiClkLlOps;
     fn udelay(usecs: u32);
-    fn clk_hw_get_name(hw: *mut clk_hw) -> *const core::ffi::c_char;
+    fn clk_hw_get_name(hw: *mut clk_hw) -> *const kernel::ffi::c_char;
     fn clk_hw_get_rate(hw: *mut clk_hw) -> u64;
     fn clk_hw_get_parent(hw: *mut clk_hw) -> *mut clk_hw;
-    fn __clk_get_name(clk: *mut clk) -> *const core::ffi::c_char;
+    fn __clk_get_name(clk: *mut clk) -> *const kernel::ffi::c_char;
     fn to_clk_hw_omap(hw: *mut clk_hw) -> *mut clk_hw_omap;
     fn omap2_get_dpll_rate(clk: *mut clk_hw_omap) -> u64;
     fn omap2_dpll_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request) -> i32;
@@ -31,11 +31,11 @@ extern "C" {
 // left as dependencies of the surrounding translation.
 extern "C" {
     fn __ffs(v: u32) -> u32;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
     fn WARN_ON(cond: bool) -> bool;
-    fn WARN(cond: bool, fmt: *const core::ffi::c_char, ...);
+    fn WARN(cond: bool, fmt: *const kernel::ffi::c_char, ...);
 }
 
 const DPLL_LOCKED: u32 = 1;

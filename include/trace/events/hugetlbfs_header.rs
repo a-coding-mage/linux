@@ -3,7 +3,7 @@
 
 #![allow(non_camel_case_types, non_snake_case, dead_code)]
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* Supplied by the kernel tracepoint and filesystem definitions. */
 pub enum inode {}

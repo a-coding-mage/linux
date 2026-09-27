@@ -12,15 +12,15 @@
 
 /* 8-way parallel cipher functions */
 extern "C" {
-    pub fn serpent_ecb_enc_8way_avx(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn serpent_ecb_dec_8way_avx(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn serpent_cbc_dec_8way_avx(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn serpent_ecb_enc_8way_avx(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn serpent_ecb_dec_8way_avx(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn serpent_cbc_dec_8way_avx(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
 }
 
 extern "C" {
-    fn __serpent_setkey(ctx: *mut core::ffi::c_void, key: *const u8, keylen: u32) -> i32;
-    fn __serpent_encrypt(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    fn __serpent_decrypt(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
+    fn __serpent_setkey(ctx: *mut kernel::ffi::c_void, key: *const u8, keylen: u32) -> i32;
+    fn __serpent_encrypt(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    fn __serpent_decrypt(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
 }
 
 // The following walk operations are provided by the kernel crypto helpers.
@@ -94,7 +94,7 @@ static mut serpent_algs: [skcipher_alg; 2] = [
 ];
 
 unsafe fn serpent_init() -> i32 {
-    let mut feature_name: *const core::ffi::c_char = core::ptr::null();
+    let mut feature_name: *const kernel::ffi::c_char = core::ptr::null();
 
     if !cpu_has_xfeatures(XFEATURE_MASK_SSE | XFEATURE_MASK_YMM, &mut feature_name) {
         pr_info!("CPU feature '%s' is not supported.\n", feature_name);

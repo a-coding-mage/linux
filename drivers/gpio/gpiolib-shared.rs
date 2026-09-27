@@ -11,7 +11,7 @@ struct gpio_shared_ref {
     list: list_head,
     fwnode: *mut fwnode_handle,
     flags: gpiod_flags,
-    con_id: *mut core::ffi::c_char,
+    con_id: *mut kernel::ffi::c_char,
     dev_id: i32,
     lock: mutex,
     lock_key: lock_class_key,
@@ -45,7 +45,7 @@ unsafe fn gpio_shared_find_entry(controller_node: *mut fwnode_handle, offset: u3
 }
 
 #[cfg(CONFIG_OF)]
-unsafe fn gpio_shared_make_ref(fwnode: *mut fwnode_handle, con_id: *const core::ffi::c_char, flags: gpiod_flags) -> *mut gpio_shared_ref {
+unsafe fn gpio_shared_make_ref(fwnode: *mut fwnode_handle, con_id: *const kernel::ffi::c_char, flags: gpiod_flags) -> *mut gpio_shared_ref {
     let ref_: *mut gpio_shared_ref = kzalloc_obj();
     if ref_.is_null() { return core::ptr::null_mut(); }
     let con_id_cpy = if !con_id.is_null() { kstrdup(con_id, GFP_KERNEL) } else { core::ptr::null_mut() };
@@ -151,7 +151,7 @@ unsafe fn gpio_shared_make_adev(gdev: *mut gpio_device, entry: *mut gpio_shared_
 // Remaining exported lifecycle and lookup operations retain their C control flow;
 // declarations are kept as external dependencies for the translated subsystem.
 unsafe extern "C" {
-    fn gpio_shared_add_proxy_lookup(consumer: *mut device, fwnode: *mut fwnode_handle, con_id: *const core::ffi::c_char, lflags: core::ffi::c_ulong) -> i32;
+    fn gpio_shared_add_proxy_lookup(consumer: *mut device, fwnode: *mut fwnode_handle, con_id: *const kernel::ffi::c_char, lflags: kernel::ffi::c_ulong) -> i32;
     fn gpiochip_setup_shared(gc: *mut gpio_chip) -> i32;
     fn gpio_device_teardown_shared(gdev: *mut gpio_device);
     fn devm_gpiod_shared_get(dev: *mut device) -> *mut gpio_shared_desc;

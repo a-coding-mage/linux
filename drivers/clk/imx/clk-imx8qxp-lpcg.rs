@@ -6,7 +6,7 @@ pub struct Imx8qxpLpcgData {
     pub id: i32,
     pub name: *mut i8,
     pub parent: *mut i8,
-    pub flags: libc::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub offset: u32,
     pub bit_idx: u8,
     pub hw_gate: bool,
@@ -22,9 +22,9 @@ pub struct Imx8qxpSsLpcg {
 // The following constants and symbols are provided by the kernel clock bindings.
 extern "C" {
     fn imx_clk_lpcg_scu_dev(dev: *mut Device, name: *const i8, parent: *const i8,
-        flags: libc::c_ulong, base: *mut libc::c_void, bit_offset: u32, hw_gate: bool) -> *mut ClkHw;
-    fn imx_clk_lpcg_scu(name: *mut i8, parent: *mut i8, flags: libc::c_ulong,
-        base: *mut libc::c_void, bit_idx: u8, hw_gate: bool) -> *mut ClkHw;
+        flags: kernel::ffi::c_ulong, base: *mut kernel::ffi::c_void, bit_offset: u32, hw_gate: bool) -> *mut ClkHw;
+    fn imx_clk_lpcg_scu(name: *mut i8, parent: *mut i8, flags: kernel::ffi::c_ulong,
+        base: *mut kernel::ffi::c_void, bit_idx: u8, hw_gate: bool) -> *mut ClkHw;
     fn imx_clk_lpcg_scu_unregister(hw: *mut ClkHw);
 }
 
@@ -66,7 +66,7 @@ extern "C" {
 
 #[repr(C)] pub struct ClkHwOnecellData { pub num: u32, pub hws: *mut *mut ClkHw }
 
-unsafe fn imx_lpcg_of_clk_src_get(clkspec: *mut OfPhandleArgs, data: *mut libc::c_void) -> *mut ClkHw {
+unsafe fn imx_lpcg_of_clk_src_get(clkspec: *mut OfPhandleArgs, data: *mut kernel::ffi::c_void) -> *mut ClkHw {
     let hw_data = data as *mut ClkHwOnecellData;
     let idx = ((*clkspec).args[0] / 4) as u32;
     if idx >= (*hw_data).num { return core::ptr::null_mut(); }

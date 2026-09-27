@@ -25,24 +25,24 @@ pub struct drm_scanout_buffer {
     pub pages: *mut *mut page,
 
     /// Width of the scanout buffer, in pixels.
-    pub width: core::ffi::c_uint,
+    pub width: kernel::ffi::c_uint,
 
     /// Height of the scanout buffer, in pixels.
-    pub height: core::ffi::c_uint,
+    pub height: kernel::ffi::c_uint,
 
     /// Length in bytes between the start of two consecutive lines.
-    pub pitch: [core::ffi::c_uint; DRM_FORMAT_MAX_PLANES],
+    pub pitch: [kernel::ffi::c_uint; DRM_FORMAT_MAX_PLANES],
 
     /// Optional callback to set a pixel color on the framebuffer.
     pub set_pixel: Option<unsafe extern "C" fn(
         sb: *mut drm_scanout_buffer,
-        x: core::ffi::c_uint,
-        y: core::ffi::c_uint,
+        x: kernel::ffi::c_uint,
+        y: kernel::ffi::c_uint,
         color: u32,
     )>,
 
     /// Private pointer available to callbacks.
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
 }
 
 // Under CONFIG_DRM_PANIC these operations access
@@ -73,24 +73,24 @@ macro_rules! drm_panic_unlock {
 
 #[cfg(not(CONFIG_DRM_PANIC))]
 #[inline]
-pub unsafe fn drm_panic_trylock(_dev: *mut drm_device, _flags: core::ffi::c_ulong) -> bool {
+pub unsafe fn drm_panic_trylock(_dev: *mut drm_device, _flags: kernel::ffi::c_ulong) -> bool {
     true
 }
 
 #[cfg(not(CONFIG_DRM_PANIC))]
 #[inline]
-pub unsafe fn drm_panic_lock(_dev: *mut drm_device, _flags: core::ffi::c_ulong) {}
+pub unsafe fn drm_panic_lock(_dev: *mut drm_device, _flags: kernel::ffi::c_ulong) {}
 
 #[cfg(not(CONFIG_DRM_PANIC))]
 #[inline]
-pub unsafe fn drm_panic_unlock(_dev: *mut drm_device, _flags: core::ffi::c_ulong) {}
+pub unsafe fn drm_panic_unlock(_dev: *mut drm_device, _flags: kernel::ffi::c_ulong) {}
 
 #[cfg(CONFIG_DRM_PANIC_SCREEN_QR_CODE)]
 extern "C" {
     pub fn drm_panic_qr_max_data_size(version: u8, url_len: usize) -> usize;
 
     pub fn drm_panic_qr_generate(
-        url: *const core::ffi::c_char,
+        url: *const kernel::ffi::c_char,
         data: *mut u8,
         data_len: usize,
         data_size: usize,

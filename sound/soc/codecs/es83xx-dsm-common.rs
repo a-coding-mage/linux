@@ -17,7 +17,7 @@ pub struct device {
     _private: [u8; 0],
 }
 
-pub type acpi_handle = *mut core::ffi::c_void;
+pub type acpi_handle = *mut kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct acpi_object_integer {
@@ -55,11 +55,11 @@ extern "C" {
         guid: *const guid_t,
         rev: u64,
         func: u64,
-        argv4: *mut core::ffi::c_void,
+        argv4: *mut kernel::ffi::c_void,
     ) -> *mut acpi_object;
     fn ACPI_FREE(obj: *mut acpi_object);
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 extern "C" {
@@ -74,12 +74,12 @@ extern "C" {
 #[no_mangle]
 pub unsafe extern "C" fn es83xx_dsm(
     dev: *mut device,
-    arg: core::ffi::c_int,
-    value: *mut core::ffi::c_int,
-) -> core::ffi::c_int {
+    arg: kernel::ffi::c_int,
+    value: *mut kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let dhandle: acpi_handle;
     let obj: *mut acpi_object;
-    let mut ret: core::ffi::c_int = 0;
+    let mut ret: kernel::ffi::c_int = 0;
 
     dhandle = ACPI_HANDLE(dev);
     if dhandle.is_null() {
@@ -96,8 +96,8 @@ pub unsafe extern "C" fn es83xx_dsm(
     if obj.is_null() {
         dev_err(
             dev,
-            b"%s: acpi_evaluate_dsm() failed\n\0".as_ptr() as *const core::ffi::c_char,
-            b"es83xx_dsm\0".as_ptr() as *const core::ffi::c_char,
+            b"%s: acpi_evaluate_dsm() failed\n\0".as_ptr() as *const kernel::ffi::c_char,
+            b"es83xx_dsm\0".as_ptr() as *const kernel::ffi::c_char,
         );
         ret = -EINVAL;
         return ret;
@@ -106,15 +106,15 @@ pub unsafe extern "C" fn es83xx_dsm(
     if (*obj).type_ != ACPI_TYPE_INTEGER {
         dev_err(
             dev,
-            b"%s: object is not ACPI_TYPE_INTEGER\n\0".as_ptr() as *const core::ffi::c_char,
-            b"es83xx_dsm\0".as_ptr() as *const core::ffi::c_char,
+            b"%s: object is not ACPI_TYPE_INTEGER\n\0".as_ptr() as *const kernel::ffi::c_char,
+            b"es83xx_dsm\0".as_ptr() as *const kernel::ffi::c_char,
         );
         ret = -EINVAL;
         ACPI_FREE(obj);
         return ret;
     }
 
-    *value = (*obj).data.integer.value as core::ffi::c_int;
+    *value = (*obj).data.integer.value as kernel::ffi::c_int;
     ACPI_FREE(obj);
     ret
 }
@@ -122,9 +122,9 @@ pub unsafe extern "C" fn es83xx_dsm(
 // EXPORT_SYMBOL_GPL(es83xx_dsm);
 
 #[no_mangle]
-pub unsafe extern "C" fn es83xx_dsm_dump(dev: *mut device) -> core::ffi::c_int {
-    let mut value: core::ffi::c_int = 0;
-    let mut ret: core::ffi::c_int;
+pub unsafe extern "C" fn es83xx_dsm_dump(dev: *mut device) -> kernel::ffi::c_int {
+    let mut value: kernel::ffi::c_int = 0;
+    let mut ret: kernel::ffi::c_int;
 
     ret = es83xx_dsm(dev, PLATFORM_MAINMIC_TYPE_ARG, &mut value);
     if ret < 0 {
@@ -132,7 +132,7 @@ pub unsafe extern "C" fn es83xx_dsm_dump(dev: *mut device) -> core::ffi::c_int {
     }
     dev_info(
         dev,
-        b"PLATFORM_MAINMIC_TYPE %#x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"PLATFORM_MAINMIC_TYPE %#x\n\0".as_ptr() as *const kernel::ffi::c_char,
         value,
     );
 
@@ -142,7 +142,7 @@ pub unsafe extern "C" fn es83xx_dsm_dump(dev: *mut device) -> core::ffi::c_int {
     }
     dev_info(
         dev,
-        b"PLATFORM_HPMIC_TYPE %#x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"PLATFORM_HPMIC_TYPE %#x\n\0".as_ptr() as *const kernel::ffi::c_char,
         value,
     );
 
@@ -152,7 +152,7 @@ pub unsafe extern "C" fn es83xx_dsm_dump(dev: *mut device) -> core::ffi::c_int {
     }
     dev_info(
         dev,
-        b"PLATFORM_SPK_TYPE %#x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"PLATFORM_SPK_TYPE %#x\n\0".as_ptr() as *const kernel::ffi::c_char,
         value,
     );
 
@@ -162,7 +162,7 @@ pub unsafe extern "C" fn es83xx_dsm_dump(dev: *mut device) -> core::ffi::c_int {
     }
     dev_info(
         dev,
-        b"PLATFORM_HPDET_INV %#x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"PLATFORM_HPDET_INV %#x\n\0".as_ptr() as *const kernel::ffi::c_char,
         value,
     );
 
@@ -172,7 +172,7 @@ pub unsafe extern "C" fn es83xx_dsm_dump(dev: *mut device) -> core::ffi::c_int {
     }
     dev_info(
         dev,
-        b"PLATFORM_PCM_TYPE %#x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"PLATFORM_PCM_TYPE %#x\n\0".as_ptr() as *const kernel::ffi::c_char,
         value,
     );
 
@@ -182,7 +182,7 @@ pub unsafe extern "C" fn es83xx_dsm_dump(dev: *mut device) -> core::ffi::c_int {
     }
     dev_info(
         dev,
-        b"PLATFORM_MIC_DE_POP %#x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"PLATFORM_MIC_DE_POP %#x\n\0".as_ptr() as *const kernel::ffi::c_char,
         value,
     );
 

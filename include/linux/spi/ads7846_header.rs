@@ -44,7 +44,7 @@ pub struct ads7846_platform_data {
     pub get_pendown_state: Option<unsafe extern "C" fn() -> i32>,
     pub wait_for_sync: Option<unsafe extern "C" fn()>,
     pub wakeup: bool,
-    pub irq_flags: ::core::ffi::c_ulong,
+    pub irq_flags: ::kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

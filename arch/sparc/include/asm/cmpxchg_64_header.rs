@@ -7,7 +7,7 @@
 // Original header guard: __ARCH_SPARC64_CMPXCHG__
 
 #[inline]
-pub unsafe fn __cmpxchg_u32(m: *mut core::ffi::c_int, old: core::ffi::c_int, mut new: core::ffi::c_int) -> u64 {
+pub unsafe fn __cmpxchg_u32(m: *mut kernel::ffi::c_int, old: kernel::ffi::c_int, mut new: kernel::ffi::c_int) -> u64 {
     core::arch::asm!("cas [{m}], {old}, {new}", m = in(reg) m, old = in(reg) old, new = inout(reg) new, options(nostack, preserves_flags));
     new as u64
 }
@@ -67,12 +67,12 @@ pub unsafe fn xchg16(m: *mut u16, val: u16) -> u64 {
 extern "C" { pub fn __xchg_called_with_bad_pointer(); }
 
 #[inline(always)]
-pub unsafe fn __arch_xchg(x: u64, ptr: *mut core::ffi::c_void, size: i32) -> u64 {
+pub unsafe fn __arch_xchg(x: u64, ptr: *mut kernel::ffi::c_void, size: i32) -> u64 {
     match size { 2 => xchg16(ptr.cast(), x as u16), 4 => xchg32(ptr.cast(), x as u32), 8 => xchg64(ptr.cast(), x), _ => { __xchg_called_with_bad_pointer(); x } }
 }
 
 #[inline]
-pub unsafe fn __cmpxchg_u64(m: *mut core::ffi::c_long, old: u64, mut new: u64) -> u64 {
+pub unsafe fn __cmpxchg_u64(m: *mut kernel::ffi::c_long, old: u64, mut new: u64) -> u64 {
     core::arch::asm!("casx [{m}], {old}, {new}", m = in(reg) m, old = in(reg) old, new = inout(reg) new, options(nostack, preserves_flags));
     new
 }
@@ -97,30 +97,30 @@ pub unsafe fn __cmpxchg_u8(m: *mut u8, old: u8, new: u8) -> u64 {
 extern "C" { pub fn __cmpxchg_called_with_bad_pointer(); }
 
 #[inline]
-pub unsafe fn __cmpxchg(ptr: *mut core::ffi::c_void, old: u64, new: u64, size: i32) -> u64 {
+pub unsafe fn __cmpxchg(ptr: *mut kernel::ffi::c_void, old: u64, new: u64, size: i32) -> u64 {
     match size { 1 => __cmpxchg_u8(ptr.cast(), old as u8, new as u8), 4 => __cmpxchg_u32(ptr.cast(), old as i32, new as i32), 8 => __cmpxchg_u64(ptr.cast(), old, new), _ => { __cmpxchg_called_with_bad_pointer(); old } }
 }
 
-extern "C" { pub fn __generic_cmpxchg_local(ptr: *mut core::ffi::c_void, old: u64, new: u64, size: i32) -> u64; }
+extern "C" { pub fn __generic_cmpxchg_local(ptr: *mut kernel::ffi::c_void, old: u64, new: u64, size: i32) -> u64; }
 
 #[inline]
-pub unsafe fn __cmpxchg_local(ptr: *mut core::ffi::c_void, old: u64, new: u64, size: i32) -> u64 {
+pub unsafe fn __cmpxchg_local(ptr: *mut kernel::ffi::c_void, old: u64, new: u64, size: i32) -> u64 {
     match size { 4 | 8 => __cmpxchg(ptr, old, new, size), _ => __generic_cmpxchg_local(ptr, old, new, size) }
 }
 
 #[macro_export]
 macro_rules! arch_xchg { ($ptr:expr, $x:expr) => {{
-    unsafe { $crate::__arch_xchg($x as u64, ($ptr) as *mut core::ffi::c_void, core::mem::size_of_val(&*$ptr) as i32) }
+    unsafe { $crate::__arch_xchg($x as u64, ($ptr) as *mut kernel::ffi::c_void, core::mem::size_of_val(&*$ptr) as i32) }
 }}; }
 
 #[macro_export]
 macro_rules! arch_cmpxchg { ($ptr:expr, $o:expr, $n:expr) => {{
-    unsafe { $crate::__cmpxchg(($ptr) as *mut core::ffi::c_void, $o as u64, $n as u64, core::mem::size_of_val(&*$ptr) as i32) as _ }
+    unsafe { $crate::__cmpxchg(($ptr) as *mut kernel::ffi::c_void, $o as u64, $n as u64, core::mem::size_of_val(&*$ptr) as i32) as _ }
 }}; }
 
 #[macro_export]
 macro_rules! arch_cmpxchg_local { ($ptr:expr, $o:expr, $n:expr) => {{
-    unsafe { $crate::__cmpxchg_local(($ptr) as *mut core::ffi::c_void, $o as u64, $n as u64, core::mem::size_of_val(&*$ptr) as i32) as _ }
+    unsafe { $crate::__cmpxchg_local(($ptr) as *mut kernel::ffi::c_void, $o as u64, $n as u64, core::mem::size_of_val(&*$ptr) as i32) as _ }
 }}; }
 
 #[macro_export]

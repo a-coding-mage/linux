@@ -16,11 +16,11 @@ pub enum proto_type {
 #[repr(C)]
 pub struct st_proto_s {
     pub type_: proto_type,
-    pub recv: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut sk_buff) -> core::ffi::c_long>,
+    pub recv: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut sk_buff) -> kernel::ffi::c_long>,
     pub match_packet: Option<unsafe extern "C" fn(*const u8) -> u8>,
-    pub reg_complete_cb: Option<unsafe extern "C" fn(*mut core::ffi::c_void, core::ffi::c_int)>,
-    pub write: Option<unsafe extern "C" fn(*mut sk_buff) -> core::ffi::c_long>,
-    pub priv_data: *mut core::ffi::c_void,
+    pub reg_complete_cb: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, kernel::ffi::c_int)>,
+    pub write: Option<unsafe extern "C" fn(*mut sk_buff) -> kernel::ffi::c_long>,
+    pub priv_data: *mut kernel::ffi::c_void,
     pub chnl_id: u8,
     pub max_frame_size: u16,
     pub hdr_len: u8,
@@ -30,8 +30,8 @@ pub struct st_proto_s {
 }
 
 extern "C" {
-    pub fn st_register(proto: *mut st_proto_s) -> core::ffi::c_long;
-    pub fn st_unregister(proto: *mut st_proto_s) -> core::ffi::c_long;
+    pub fn st_register(proto: *mut st_proto_s) -> kernel::ffi::c_long;
+    pub fn st_unregister(proto: *mut st_proto_s) -> kernel::ffi::c_long;
 }
 
 pub const ST_NOTEMPTY: u32 = 1;
@@ -46,35 +46,35 @@ pub const ST_TX_WAKEUP: u32 = 2;
 
 #[repr(C)]
 pub struct st_data_s {
-    pub st_state: libc::c_ulong,
+    pub st_state: kernel::ffi::c_ulong,
     pub tx_skb: *mut sk_buff,
-    pub tx_state: libc::c_ulong,
+    pub tx_state: kernel::ffi::c_ulong,
     pub list: [*mut st_proto_s; 16],
     pub is_registered: [bool; 16],
-    pub rx_state: libc::c_ulong,
-    pub rx_count: libc::c_ulong,
+    pub rx_state: kernel::ffi::c_ulong,
+    pub rx_count: kernel::ffi::c_ulong,
     pub rx_skb: *mut sk_buff,
     pub rx_chnl: u8,
     pub txq: sk_buff_head,
     pub tx_waitq: sk_buff_head,
     pub lock: spinlock_t,
     pub protos_registered: u8,
-    pub ll_state: libc::c_ulong,
-    pub kim_data: *mut core::ffi::c_void,
+    pub ll_state: kernel::ffi::c_ulong,
+    pub kim_data: *mut kernel::ffi::c_void,
     pub tty: *mut tty_struct,
     pub work_write_wakeup: work_struct,
 }
 
 extern "C" {
-    pub fn st_get_uart_wr_room(st_gdata: *mut st_data_s) -> core::ffi::c_int;
-    pub fn st_int_write(st_gdata: *mut st_data_s, data: *const u8, count: core::ffi::c_int) -> core::ffi::c_int;
-    pub fn st_write(skb: *mut sk_buff) -> core::ffi::c_long;
+    pub fn st_get_uart_wr_room(st_gdata: *mut st_data_s) -> kernel::ffi::c_int;
+    pub fn st_int_write(st_gdata: *mut st_data_s, data: *const u8, count: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub fn st_write(skb: *mut sk_buff) -> kernel::ffi::c_long;
     pub fn st_ll_send_frame(proto: proto_type, skb: *mut sk_buff);
     pub fn st_tx_wakeup(st_data: *mut st_data_s);
-    pub fn st_core_init(st_data: *mut *mut st_data_s) -> core::ffi::c_int;
+    pub fn st_core_init(st_data: *mut *mut st_data_s) -> kernel::ffi::c_int;
     pub fn st_core_exit(st_data: *mut st_data_s);
-    pub fn st_kim_ref(st_data: *mut *mut st_data_s, data: core::ffi::c_int);
-    pub fn gps_chrdrv_stub_write(data: *const u8, count: core::ffi::c_int) -> core::ffi::c_int;
+    pub fn st_kim_ref(st_data: *mut *mut st_data_s, data: kernel::ffi::c_int);
+    pub fn gps_chrdrv_stub_write(data: *const u8, count: kernel::ffi::c_int) -> kernel::ffi::c_int;
     pub fn gps_chrdrv_stub_init();
 }
 
@@ -95,30 +95,30 @@ pub struct chip_version { pub full: u16, pub chip: u16, pub min_ver: u16, pub ma
 
 #[repr(C)]
 pub struct kim_data_s {
-    pub uim_pid: libc::c_long,
+    pub uim_pid: kernel::ffi::c_long,
     pub kim_pdev: *mut platform_device,
     pub kim_rcvd: completion,
     pub ldisc_installed: completion,
     pub resp_buffer: [u8; 30],
     pub fw_entry: *const firmware,
-    pub nshutdown: libc::c_uint,
-    pub rx_state: libc::c_ulong,
-    pub rx_count: libc::c_ulong,
+    pub nshutdown: kernel::ffi::c_uint,
+    pub rx_state: kernel::ffi::c_ulong,
+    pub rx_count: kernel::ffi::c_ulong,
     pub rx_skb: *mut sk_buff,
     pub core_data: *mut st_data_s,
     pub version: chip_version,
     pub ldisc_install: u8,
     pub dev_name: [u8; UART_DEV_NAME_LEN + 1],
-    pub flow_cntrl: libc::c_uint,
-    pub baud_rate: libc::c_uint,
+    pub flow_cntrl: kernel::ffi::c_uint,
+    pub baud_rate: kernel::ffi::c_uint,
 }
 
 extern "C" {
-    pub fn st_kim_start(data: *mut core::ffi::c_void) -> core::ffi::c_long;
-    pub fn st_kim_stop(data: *mut core::ffi::c_void) -> core::ffi::c_long;
-    pub fn st_kim_complete(data: *mut core::ffi::c_void);
-    pub fn kim_st_list_protocols(st_data: *mut st_data_s, data: *mut core::ffi::c_void);
-    pub fn st_kim_recv(disc_data: *mut core::ffi::c_void, data: *const u8, count: usize);
+    pub fn st_kim_start(data: *mut kernel::ffi::c_void) -> kernel::ffi::c_long;
+    pub fn st_kim_stop(data: *mut kernel::ffi::c_void) -> kernel::ffi::c_long;
+    pub fn st_kim_complete(data: *mut kernel::ffi::c_void);
+    pub fn kim_st_list_protocols(st_data: *mut st_data_s, data: *mut kernel::ffi::c_void);
+    pub fn st_kim_recv(disc_data: *mut kernel::ffi::c_void, data: *const u8, count: usize);
 }
 
 pub const ACTION_SEND_COMMAND: u16 = 1;
@@ -157,12 +157,12 @@ pub const LL_WAKE_UP_IND: u32 = 0x32;
 pub const LL_WAKE_UP_ACK: u32 = 0x33;
 
 extern "C" {
-    pub fn st_ll_init(data: *mut st_data_s) -> core::ffi::c_long;
-    pub fn st_ll_deinit(data: *mut st_data_s) -> core::ffi::c_long;
+    pub fn st_ll_init(data: *mut st_data_s) -> kernel::ffi::c_long;
+    pub fn st_ll_deinit(data: *mut st_data_s) -> kernel::ffi::c_long;
     pub fn st_ll_enable(data: *mut st_data_s);
     pub fn st_ll_disable(data: *mut st_data_s);
-    pub fn st_ll_getstate(data: *mut st_data_s) -> libc::c_ulong;
-    pub fn st_ll_sleep_state(data: *mut st_data_s, state: u8) -> libc::c_ulong;
+    pub fn st_ll_getstate(data: *mut st_data_s) -> kernel::ffi::c_ulong;
+    pub fn st_ll_sleep_state(data: *mut st_data_s, state: u8) -> kernel::ffi::c_ulong;
     pub fn st_ll_wakeup(data: *mut st_data_s);
 }
 
@@ -180,12 +180,12 @@ pub struct ti_st_plat_data {
     pub dev_name: [u8; UART_DEV_NAME_LEN],
     pub flow_cntrl: u32,
     pub baud_rate: u32,
-    pub suspend: Option<unsafe extern "C" fn(*mut platform_device, pm_message_t) -> core::ffi::c_int>,
-    pub resume: Option<unsafe extern "C" fn(*mut platform_device) -> core::ffi::c_int>,
-    pub chip_enable: Option<unsafe extern "C" fn(*mut kim_data_s) -> core::ffi::c_int>,
-    pub chip_disable: Option<unsafe extern "C" fn(*mut kim_data_s) -> core::ffi::c_int>,
-    pub chip_asleep: Option<unsafe extern "C" fn(*mut kim_data_s) -> core::ffi::c_int>,
-    pub chip_awake: Option<unsafe extern "C" fn(*mut kim_data_s) -> core::ffi::c_int>,
+    pub suspend: Option<unsafe extern "C" fn(*mut platform_device, pm_message_t) -> kernel::ffi::c_int>,
+    pub resume: Option<unsafe extern "C" fn(*mut platform_device) -> kernel::ffi::c_int>,
+    pub chip_enable: Option<unsafe extern "C" fn(*mut kim_data_s) -> kernel::ffi::c_int>,
+    pub chip_disable: Option<unsafe extern "C" fn(*mut kim_data_s) -> kernel::ffi::c_int>,
+    pub chip_asleep: Option<unsafe extern "C" fn(*mut kim_data_s) -> kernel::ffi::c_int>,
+    pub chip_awake: Option<unsafe extern "C" fn(*mut kim_data_s) -> kernel::ffi::c_int>,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

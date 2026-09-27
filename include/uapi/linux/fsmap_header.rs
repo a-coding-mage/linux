@@ -87,6 +87,6 @@ pub const FMR_OWN_UNKNOWN: __u64 = FMR_OWNER(0, 2); /* unknown owner */
 pub const FMR_OWN_METADATA: __u64 = FMR_OWNER(0, 3); /* metadata */
 
 /* Dependency: _IOWR is supplied by the ioctl definitions. */
-pub const FS_IOC_GETFSMAP: _ = _IOWR(b'X' as _, 59, fsmap_head);
+pub const FS_IOC_GETFSMAP: u32 = _IOWR(b'X' as _, 59, fsmap_head);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

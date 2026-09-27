@@ -97,24 +97,24 @@ static mut imx_scu_irq_notifier_chain: () = ();
 extern "C" {
     fn blocking_notifier_chain_register(chain: *mut (), nb: *mut notifier_block) -> i32;
     fn blocking_notifier_chain_unregister(chain: *mut (), nb: *mut notifier_block) -> i32;
-    fn blocking_notifier_call_chain(chain: *mut (), status: usize, data: *mut core::ffi::c_void) -> i32;
+    fn blocking_notifier_call_chain(chain: *mut (), status: usize, data: *mut kernel::ffi::c_void) -> i32;
     fn imx_scu_irq_get_status(group: U8, irq_status: *mut U32) -> i32;
-    fn imx_scu_call_rpc(handle: *mut imx_sc_ipc, msg: *mut core::ffi::c_void, wait: bool) -> i32;
+    fn imx_scu_call_rpc(handle: *mut imx_sc_ipc, msg: *mut kernel::ffi::c_void, wait: bool) -> i32;
     fn schedule_work(work: *mut work_struct);
     fn pm_system_wakeup();
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn sprintf(buf: *mut core::ffi::c_char, fmt: *const core::ffi::c_char, ... ) -> i32;
-    fn strlen(buf: *const core::ffi::c_char) -> usize;
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn sprintf(buf: *mut kernel::ffi::c_char, fmt: *const kernel::ffi::c_char, ... ) -> i32;
+    fn strlen(buf: *const kernel::ffi::c_char) -> usize;
     fn imx_scu_get_handle(handle: *mut *mut imx_sc_ipc) -> i32;
-    fn of_parse_phandle_with_args(node: *mut core::ffi::c_void, name: *const core::ffi::c_char, cells: *const core::ffi::c_char, index: i32, spec: *mut of_phandle_args) -> i32;
-    fn of_alias_get_id(node: *mut core::ffi::c_void, stem: *const core::ffi::c_char) -> i32;
-    fn of_node_put(node: *mut core::ffi::c_void);
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn devm_kfree(dev: *mut device, ptr: *mut core::ffi::c_void);
-    fn mbox_request_channel_byname(cl: *mut mbox_client, name: *const core::ffi::c_char) -> *mut mbox_chan;
+    fn of_parse_phandle_with_args(node: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, cells: *const kernel::ffi::c_char, index: i32, spec: *mut of_phandle_args) -> i32;
+    fn of_alias_get_id(node: *mut kernel::ffi::c_void, stem: *const kernel::ffi::c_char) -> i32;
+    fn of_node_put(node: *mut kernel::ffi::c_void);
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn devm_kfree(dev: *mut device, ptr: *mut kernel::ffi::c_void);
+    fn mbox_request_channel_byname(cl: *mut mbox_client, name: *const kernel::ffi::c_char) -> *mut mbox_chan;
     fn mbox_free_channel(ch: *mut mbox_chan);
-    fn kobject_create_and_add(name: *const core::ffi::c_char, parent: *mut kobject) -> *mut kobject;
-    fn sysfs_create_file(kobj: *mut kobject, attr: *mut core::ffi::c_void) -> i32;
+    fn kobject_create_and_add(name: *const kernel::ffi::c_char, parent: *mut kobject) -> *mut kobject;
+    fn sysfs_create_file(kobj: *mut kobject, attr: *mut kernel::ffi::c_void) -> i32;
     fn kobject_put(kobj: *mut kobject);
 }
 
@@ -182,11 +182,11 @@ pub unsafe fn imx_scu_irq_group_enable(group: U8, mask: U32, enable: U8) -> i32 
     ret
 }
 
-unsafe fn imx_scu_irq_callback(_c: *mut mbox_client, _msg: *mut core::ffi::c_void) {
+unsafe fn imx_scu_irq_callback(_c: *mut mbox_client, _msg: *mut kernel::ffi::c_void) {
     schedule_work(&mut imx_sc_irq_work);
 }
 
-unsafe fn wakeup_source_show(_kobj: *mut kobject, _attr: *mut kobj_attribute, buf: *mut core::ffi::c_char) -> isize {
+unsafe fn wakeup_source_show(_kobj: *mut kobject, _attr: *mut kobj_attribute, buf: *mut kernel::ffi::c_char) -> isize {
     for i in 0..IMX_SC_IRQ_NUM_GROUP {
         if scu_irq_wakeup[i].wakeup_src == 0 { continue; }
         if scu_irq_wakeup[i].valid {

@@ -120,7 +120,7 @@ pub const fn gi_src(val: i32, subsel: i32) -> i32 {
  */
 #[repr(C)]
 pub struct family_route_values {
-    pub family: *const core::ffi::c_char,
+    pub family: *const kernel::ffi::c_char,
     pub register_values: [[register_type; NI_NUM_NAMES]; NI_NUM_NAMES],
 }
 

@@ -14,7 +14,7 @@ pub const PARMAREA: usize = 0x10400;
 pub const COMMAND_LINE_SIZE: usize = CONFIG_COMMAND_LINE_SIZE;
 
 pub const LPP_MAGIC: u32 = 1u32 << 31;
-pub const LPP_PID_MASK: libc::c_ulong = 0xffff_ffff;
+pub const LPP_PID_MASK: kernel::ffi::c_ulong = 0xffff_ffff;
 
 /* Offsets to entry points in kernel/head.S */
 pub const STARTUP_NORMAL_OFFSET: usize = 0x10000;
@@ -24,42 +24,42 @@ pub const LEGACY_COMMAND_LINE_SIZE: usize = 896;
 
 #[repr(C)]
 pub struct parmarea {
-    pub ipl_device: libc::c_ulong,       /* 0x10400 */
-    pub initrd_start: libc::c_ulong,     /* 0x10408 */
-    pub initrd_size: libc::c_ulong,      /* 0x10410 */
-    pub oldmem_base: libc::c_ulong,      /* 0x10418 */
-    pub oldmem_size: libc::c_ulong,      /* 0x10420 */
-    pub kernel_version: libc::c_ulong,   /* 0x10428 */
-    pub max_command_line_size: libc::c_ulong, /* 0x10430 */
-    pub pad1: [libc::c_char; 0x10480 - 0x10438], /* 0x10438 - 0x10480 */
-    pub command_line: [libc::c_char; COMMAND_LINE_SIZE], /* 0x10480 */
+    pub ipl_device: kernel::ffi::c_ulong,       /* 0x10400 */
+    pub initrd_start: kernel::ffi::c_ulong,     /* 0x10408 */
+    pub initrd_size: kernel::ffi::c_ulong,      /* 0x10410 */
+    pub oldmem_base: kernel::ffi::c_ulong,      /* 0x10418 */
+    pub oldmem_size: kernel::ffi::c_ulong,      /* 0x10420 */
+    pub kernel_version: kernel::ffi::c_ulong,   /* 0x10428 */
+    pub max_command_line_size: kernel::ffi::c_ulong, /* 0x10430 */
+    pub pad1: [kernel::ffi::c_char; 0x10480 - 0x10438], /* 0x10438 - 0x10480 */
+    pub command_line: [kernel::ffi::c_char; COMMAND_LINE_SIZE], /* 0x10480 */
 }
 
 extern "C" {
-    pub static mut arch_hw_string: [libc::c_char; 128];
+    pub static mut arch_hw_string: [kernel::ffi::c_char; 128];
     pub static mut parmarea: parmarea;
 
-    pub static mut zlib_dfltcc_support: libc::c_uint;
-    pub static mut max_mappable: libc::c_ulong;
+    pub static mut zlib_dfltcc_support: kernel::ffi::c_uint;
+    pub static mut max_mappable: kernel::ffi::c_ulong;
 
     /* The Write Back bit position in the physaddr is given by the SLPC PCI */
-    pub static mut mio_wb_bit_mask: libc::c_ulong;
+    pub static mut mio_wb_bit_mask: kernel::ffi::c_ulong;
 
     /*
      * Console mode. Override with conmode=
      */
-    pub static mut console_mode: libc::c_uint;
-    pub static mut console_devno: libc::c_uint;
-    pub static mut console_irq: libc::c_uint;
+    pub static mut console_mode: kernel::ffi::c_uint;
+    pub static mut console_devno: kernel::ffi::c_uint;
+    pub static mut console_irq: kernel::ffi::c_uint;
 
     pub fn register_early_console();
 
     #[cfg(CONFIG_VMCP)]
     pub fn vmcp_cma_reserve();
 
-    pub fn report_user_fault(regs: *mut pt_regs, signr: libc::c_long, is_mm_fault: libc::c_int);
+    pub fn report_user_fault(regs: *mut pt_regs, signr: kernel::ffi::c_long, is_mm_fault: kernel::ffi::c_int);
 
-    pub static mut _machine_restart: Option<unsafe extern "C" fn(command: *mut libc::c_char)>;
+    pub static mut _machine_restart: Option<unsafe extern "C" fn(command: *mut kernel::ffi::c_char)>;
     pub static mut _machine_halt: Option<unsafe extern "C" fn()>;
     pub static mut _machine_power_off: Option<unsafe extern "C" fn()>;
 
@@ -70,23 +70,23 @@ extern "C" {
 #[inline]
 pub unsafe fn vmcp_cma_reserve() {}
 
-pub const ZLIB_DFLTCC_DISABLED: libc::c_uint = 0;
-pub const ZLIB_DFLTCC_FULL: libc::c_uint = 1;
-pub const ZLIB_DFLTCC_DEFLATE_ONLY: libc::c_uint = 2;
-pub const ZLIB_DFLTCC_INFLATE_ONLY: libc::c_uint = 3;
-pub const ZLIB_DFLTCC_FULL_DEBUG: libc::c_uint = 4;
+pub const ZLIB_DFLTCC_DISABLED: kernel::ffi::c_uint = 0;
+pub const ZLIB_DFLTCC_FULL: kernel::ffi::c_uint = 1;
+pub const ZLIB_DFLTCC_DEFLATE_ONLY: kernel::ffi::c_uint = 2;
+pub const ZLIB_DFLTCC_INFLATE_ONLY: kernel::ffi::c_uint = 3;
+pub const ZLIB_DFLTCC_FULL_DEBUG: kernel::ffi::c_uint = 4;
 
 pub const CONSOLE_IS_UNDEFINED: bool = false; // console_mode == 0
-pub const CONSOLE_IS_SCLP: libc::c_uint = 1;
-pub const CONSOLE_IS_3215: libc::c_uint = 2;
-pub const CONSOLE_IS_3270: libc::c_uint = 3;
-pub const CONSOLE_IS_VT220: libc::c_uint = 4;
-pub const CONSOLE_IS_HVC: libc::c_uint = 5;
+pub const CONSOLE_IS_SCLP: kernel::ffi::c_uint = 1;
+pub const CONSOLE_IS_3215: kernel::ffi::c_uint = 2;
+pub const CONSOLE_IS_3270: kernel::ffi::c_uint = 3;
+pub const CONSOLE_IS_VT220: kernel::ffi::c_uint = 4;
+pub const CONSOLE_IS_HVC: kernel::ffi::c_uint = 5;
 
 #[repr(C)]
 pub struct oldmem_data {
-    pub start: libc::c_ulong,
-    pub size: libc::c_ulong,
+    pub start: kernel::ffi::c_ulong,
+    pub size: kernel::ffi::c_ulong,
 }
 
 // C macros CONSOLE_IS_* compare console_mode to the corresponding value.
@@ -115,7 +115,7 @@ pub unsafe fn set_console_vt220() { console_mode = 4; }
 pub unsafe fn set_console_hvc() { console_mode = 5; }
 
 #[inline(always)]
-pub unsafe fn gen_lpswe(addr: libc::c_ulong) -> u32 {
+pub unsafe fn gen_lpswe(addr: kernel::ffi::c_ulong) -> u32 {
     // Equivalent of BUILD_BUG_ON(addr > 0xfff); retained as a runtime check
     // because Rust function parameters cannot be used directly in a const assertion.
     assert!(addr <= 0xfff);

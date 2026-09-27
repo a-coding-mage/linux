@@ -64,11 +64,11 @@ pub struct snd_ps3_card_info {
 
     /* registers */
     /* C type: void __iomem * */
-    pub mapped_mmio_vaddr: *mut core::ffi::c_void,
+    pub mapped_mmio_vaddr: *mut kernel::ffi::c_void,
 
     /* irq */
     pub audio_irq_outlet: u64,
-    pub irq_no: core::ffi::c_uint,
+    pub irq_no: kernel::ffi::c_uint,
 
     /* remember avsetting */
     pub avs: snd_ps3_avsetting_info,
@@ -76,22 +76,22 @@ pub struct snd_ps3_card_info {
     /* dma buffer management */
     pub dma_lock: spinlock_t,
     /* dma_lock start */
-    pub dma_start_vaddr: [*mut core::ffi::c_void; 2], /* 0 for L, 1 for R */
+    pub dma_start_vaddr: [*mut kernel::ffi::c_void; 2], /* 0 for L, 1 for R */
     pub dma_start_bus_addr: [dma_addr_t; 2],
     pub dma_buffer_size: usize,
-    pub dma_last_transfer_vaddr: [*mut core::ffi::c_void; 2],
-    pub dma_next_transfer_vaddr: [*mut core::ffi::c_void; 2],
-    pub silent: core::ffi::c_int,
+    pub dma_last_transfer_vaddr: [*mut kernel::ffi::c_void; 2],
+    pub dma_next_transfer_vaddr: [*mut kernel::ffi::c_void; 2],
+    pub silent: kernel::ffi::c_int,
     /* dma_lock end */
 
-    pub running: core::ffi::c_int,
+    pub running: kernel::ffi::c_int,
 
     /* null buffer */
-    pub null_buffer_start_vaddr: *mut core::ffi::c_void,
+    pub null_buffer_start_vaddr: *mut kernel::ffi::c_void,
     pub null_buffer_start_dma_addr: dma_addr_t,
 
     /* start delay */
-    pub start_delay: core::ffi::c_uint,
+    pub start_delay: kernel::ffi::c_uint,
 }
 
 /* PS3 audio DMAC block size in bytes */
@@ -124,6 +124,6 @@ pub const SND_PS3_PCM_PREALLOC_SIZE: usize =
 pub const SND_PS3_DMA_REGION_SIZE: usize =
     SND_PS3_PCM_PREALLOC_SIZE + PAGE_SIZE;
 
-pub const PS3_AUDIO_IOID: core::ffi::c_ulong = 1;
+pub const PS3_AUDIO_IOID: kernel::ffi::c_ulong = 1;
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

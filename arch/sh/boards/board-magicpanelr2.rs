@@ -16,8 +16,8 @@ extern "C" {
     fn __raw_writeb(value: u8, addr: usize);
     fn mdelay(ms: u32);
     fn udelay(us: u32);
-    fn gpio_request(gpio: u32, label: *const core::ffi::c_char) -> i32;
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn gpio_request(gpio: u32, label: *const kernel::ffi::c_char) -> i32;
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
     fn evt2irq(event: u32) -> u32;
     fn regulator_register_fixed(id: i32, supplies: *mut RegulatorConsumerSupply, count: usize) -> i32;
     fn platform_add_devices(devices: *mut *mut PlatformDevice, count: usize) -> i32;
@@ -27,23 +27,23 @@ extern "C" {
 }
 
 #[repr(C)]
-struct RegulatorConsumerSupply { supply: *const core::ffi::c_char, dev_name: *const core::ffi::c_char }
+struct RegulatorConsumerSupply { supply: *const kernel::ffi::c_char, dev_name: *const kernel::ffi::c_char }
 #[repr(C)]
 struct Resource { start: usize, end: usize, flags: u32 }
 #[repr(C)]
-struct Device { platform_data: *mut core::ffi::c_void }
+struct Device { platform_data: *mut kernel::ffi::c_void }
 #[repr(C)]
-struct PlatformDevice { name: *const core::ffi::c_char, id: i32, num_resources: usize, resource: *mut Resource, dev: Device }
+struct PlatformDevice { name: *const kernel::ffi::c_char, id: i32, num_resources: usize, resource: *mut Resource, dev: Device }
 #[repr(C)]
 struct Smsc911xPlatformConfig { phy_interface: u32, irq_polarity: u32, irq_type: u32, flags: u32 }
 #[repr(C)]
 struct HeartbeatData { flags: u32 }
 #[repr(C)]
-struct MtdPartition { name: *const core::ffi::c_char, offset: usize, size: usize, mask_flags: u32 }
+struct MtdPartition { name: *const kernel::ffi::c_char, offset: usize, size: usize, mask_flags: u32 }
 #[repr(C)]
 struct PhysmapFlashData { parts: *mut MtdPartition, nr_parts: usize, width: u32 }
 #[repr(C)]
-struct ShMachineVector { mv_name: *const core::ffi::c_char, mv_setup: Option<unsafe extern "C" fn(*mut *mut core::ffi::c_char),> , mv_init_irq: Option<unsafe extern "C" fn()> }
+struct ShMachineVector { mv_name: *const kernel::ffi::c_char, mv_setup: Option<unsafe extern "C" fn(*mut *mut kernel::ffi::c_char),> , mv_init_irq: Option<unsafe extern "C" fn()> }
 
 const IORESOURCE_MEM: u32 = 0x0000_0200;
 const IORESOURCE_IRQ: u32 = 0x0000_0400;
@@ -115,7 +115,7 @@ unsafe fn setup_port_multiplexing() {
     __raw_writew(0x0140, PORT_PSCR); __raw_writew(0x0001, PORT_PTCR); __raw_writew(0x0240, PORT_PUCR); __raw_writew(0x0142, PORT_PVCR);
 }
 
-unsafe extern "C" fn mpr2_setup(_cmdline_p: *mut *mut core::ffi::c_char) {
+unsafe extern "C" fn mpr2_setup(_cmdline_p: *mut *mut kernel::ffi::c_char) {
     __raw_writew(0xAABC, PORT_PSELA); __raw_writew(0x3C00, PORT_PSELB); __raw_writew(0, PORT_PSELC); __raw_writew(0, PORT_PSELD);
     __raw_writew(0x0101, PORT_UTRCTL); __raw_writew(0xA5C0, PORT_UCLKCR_W); setup_chip_select(); setup_port_multiplexing(); reset_ethernet();
     if ethernet_reset_finished() == 0 { printk(b"Ethernet not ready\n\0".as_ptr() as _); }

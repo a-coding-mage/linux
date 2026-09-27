@@ -64,7 +64,7 @@ pub struct ResetDomInfo {
     pub async_reset: bool,
     pub reset_notify: bool,
     pub latency_us: u32,
-    pub name: [core::ffi::c_char; SCMI_MAX_STR_SIZE],
+    pub name: [kernel::ffi::c_char; SCMI_MAX_STR_SIZE],
 }
 
 #[repr(C)]
@@ -130,7 +130,7 @@ unsafe fn scmi_reset_domain_attributes_get(ph: *const ScmiProtocolHandle, pinfo:
 
 unsafe fn scmi_reset_num_domains_get(ph: *const ScmiProtocolHandle) -> i32 { (*((*ph).get_priv(ph) as *mut ScmiResetInfo)).num_domains }
 
-unsafe fn scmi_reset_name_get(ph: *const ScmiProtocolHandle, domain: u32) -> *const core::ffi::c_char {
+unsafe fn scmi_reset_name_get(ph: *const ScmiProtocolHandle, domain: u32) -> *const kernel::ffi::c_char {
     let d = scmi_reset_domain_lookup(ph, domain);
     if IS_ERR(d) { return c"unknown".as_ptr(); }
     (*d).name.as_ptr()
@@ -206,7 +206,7 @@ unsafe fn scmi_reset_protocol_init(ph: *const ScmiProtocolHandle) -> i32 {
     (*pinfo).dom_info = devm_kcalloc((*ph).dev, (*pinfo).num_domains as usize, core::mem::size_of::<ResetDomInfo>(), GFP_KERNEL) as *mut ResetDomInfo;
     if (*pinfo).dom_info.is_null() { return -ENOMEM; }
     for domain in 0..(*pinfo).num_domains { scmi_reset_domain_attributes_get(ph, pinfo, domain as u32); }
-    (*ph).set_priv(ph, pinfo as *mut core::ffi::c_void)
+    (*ph).set_priv(ph, pinfo as *mut kernel::ffi::c_void)
 }
 
 #[no_mangle]

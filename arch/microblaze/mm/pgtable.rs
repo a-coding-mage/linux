@@ -25,13 +25,13 @@
  *  archive for more details.
  */
 
-pub static mut ioremap_base: ::core::ffi::c_ulong = 0;
+pub static mut ioremap_base: ::kernel::ffi::c_ulong = 0;
 #[no_mangle]
-pub static mut ioremap_bot: ::core::ffi::c_ulong = 0;
+pub static mut ioremap_bot: ::kernel::ffi::c_ulong = 0;
 
-unsafe fn __ioremap(addr: phys_addr_t, mut size: ::core::ffi::c_ulong,
-                    mut flags: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void {
-    let (mut v, mut i): (::core::ffi::c_ulong, ::core::ffi::c_ulong);
+unsafe fn __ioremap(addr: phys_addr_t, mut size: ::kernel::ffi::c_ulong,
+                    mut flags: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void {
+    let (mut v, mut i): (::kernel::ffi::c_ulong, ::kernel::ffi::c_ulong);
     let mut p: phys_addr_t;
     let mut err: i32;
 
@@ -51,7 +51,7 @@ unsafe fn __ioremap(addr: phys_addr_t, mut size: ::core::ffi::c_ulong,
     if mem_init_done != 0 {
         let area = get_vm_area(size, VM_IOREMAP);
         if area.is_null() { return ::core::ptr::null_mut(); }
-        v = (*area).addr as ::core::ffi::c_ulong;
+        v = (*area).addr as ::kernel::ffi::c_ulong;
     } else {
         ioremap_bot -= size;
         v = ioremap_bot;
@@ -67,24 +67,24 @@ unsafe fn __ioremap(addr: phys_addr_t, mut size: ::core::ffi::c_ulong,
         i += PAGE_SIZE;
     }
     if err != 0 {
-        if mem_init_done != 0 { vfree(v as *mut ::core::ffi::c_void); }
+        if mem_init_done != 0 { vfree(v as *mut ::kernel::ffi::c_void); }
         return ::core::ptr::null_mut();
     }
-    (v + ((addr as ::core::ffi::c_ulong) & !PAGE_MASK)) as *mut ::core::ffi::c_void
+    (v + ((addr as ::kernel::ffi::c_ulong) & !PAGE_MASK)) as *mut ::kernel::ffi::c_void
 }
 
-pub unsafe fn ioremap(addr: phys_addr_t, size: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void {
+pub unsafe fn ioremap(addr: phys_addr_t, size: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void {
     __ioremap(addr, size, _PAGE_NO_CACHE)
 }
 
-pub unsafe fn iounmap(addr: *mut ::core::ffi::c_void) {
-    if (addr as ::core::ffi::c_ulong) > (high_memory as ::core::ffi::c_ulong)
-        && (addr as ::core::ffi::c_ulong) < ioremap_bot {
-        vfree((PAGE_MASK & addr as ::core::ffi::c_ulong) as *mut ::core::ffi::c_void);
+pub unsafe fn iounmap(addr: *mut ::kernel::ffi::c_void) {
+    if (addr as ::kernel::ffi::c_ulong) > (high_memory as ::kernel::ffi::c_ulong)
+        && (addr as ::kernel::ffi::c_ulong) < ioremap_bot {
+        vfree((PAGE_MASK & addr as ::kernel::ffi::c_ulong) as *mut ::kernel::ffi::c_void);
     }
 }
 
-pub unsafe fn map_page(va: ::core::ffi::c_ulong, pa: phys_addr_t, flags: i32) -> i32 {
+pub unsafe fn map_page(va: ::kernel::ffi::c_ulong, pa: phys_addr_t, flags: i32) -> i32 {
     let p4d = p4d_offset(pgd_offset_k(va), va);
     let pud = pud_offset(p4d, va);
     let pd = pmd_offset(pud, va);
@@ -112,9 +112,9 @@ pub unsafe fn mapin_ram() {
 }
 
 #[inline]
-fn is_power_of_2(x: ::core::ffi::c_ulong) -> bool { x != 0 && (x & (x - 1)) == 0 }
+fn is_power_of_2(x: ::kernel::ffi::c_ulong) -> bool { x != 0 && (x & (x - 1)) == 0 }
 
-unsafe fn get_pteptr(mm: *mut mm_struct, addr: ::core::ffi::c_ulong,
+unsafe fn get_pteptr(mm: *mut mm_struct, addr: ::kernel::ffi::c_ulong,
                      ptep: *mut *mut pte_t) -> i32 {
     let pgd = pgd_offset(mm, addr & PAGE_MASK);
     let mut retval = 0;
@@ -130,7 +130,7 @@ unsafe fn get_pteptr(mm: *mut mm_struct, addr: ::core::ffi::c_ulong,
     retval
 }
 
-pub unsafe fn iopa(addr: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub unsafe fn iopa(addr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     let mm = if addr < TASK_SIZE { (*current).mm } else { &mut init_mm };
     let mut pte: *mut pte_t = ::core::ptr::null_mut();
     let mut pa = 0;

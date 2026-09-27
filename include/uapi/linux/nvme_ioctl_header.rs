@@ -100,21 +100,21 @@ pub struct nvme_uring_cmd {
 
 pub type nvme_admin_cmd = nvme_passthru_cmd;
 
-pub const NVME_IOCTL_ID: _ = _IO(b'N' as _, 0x40);
-pub const NVME_IOCTL_ADMIN_CMD: _ = _IOWR(b'N' as _, 0x41, nvme_admin_cmd);
-pub const NVME_IOCTL_SUBMIT_IO: _ = _IOW(b'N' as _, 0x42, nvme_user_io);
-pub const NVME_IOCTL_IO_CMD: _ = _IOWR(b'N' as _, 0x43, nvme_passthru_cmd);
-pub const NVME_IOCTL_RESET: _ = _IO(b'N' as _, 0x44);
-pub const NVME_IOCTL_SUBSYS_RESET: _ = _IO(b'N' as _, 0x45);
-pub const NVME_IOCTL_RESCAN: _ = _IO(b'N' as _, 0x46);
-pub const NVME_IOCTL_ADMIN64_CMD: _ = _IOWR(b'N' as _, 0x47, nvme_passthru_cmd64);
-pub const NVME_IOCTL_IO64_CMD: _ = _IOWR(b'N' as _, 0x48, nvme_passthru_cmd64);
-pub const NVME_IOCTL_IO64_CMD_VEC: _ = _IOWR(b'N' as _, 0x49, nvme_passthru_cmd64);
+pub const NVME_IOCTL_ID: u32 = _IO(b'N' as _, 0x40);
+pub const NVME_IOCTL_ADMIN_CMD: u32 = _IOWR(b'N' as _, 0x41, nvme_admin_cmd);
+pub const NVME_IOCTL_SUBMIT_IO: u32 = _IOW(b'N' as _, 0x42, nvme_user_io);
+pub const NVME_IOCTL_IO_CMD: u32 = _IOWR(b'N' as _, 0x43, nvme_passthru_cmd);
+pub const NVME_IOCTL_RESET: u32 = _IO(b'N' as _, 0x44);
+pub const NVME_IOCTL_SUBSYS_RESET: u32 = _IO(b'N' as _, 0x45);
+pub const NVME_IOCTL_RESCAN: u32 = _IO(b'N' as _, 0x46);
+pub const NVME_IOCTL_ADMIN64_CMD: u32 = _IOWR(b'N' as _, 0x47, nvme_passthru_cmd64);
+pub const NVME_IOCTL_IO64_CMD: u32 = _IOWR(b'N' as _, 0x48, nvme_passthru_cmd64);
+pub const NVME_IOCTL_IO64_CMD_VEC: u32 = _IOWR(b'N' as _, 0x49, nvme_passthru_cmd64);
 
 /* io_uring async commands: */
-pub const NVME_URING_CMD_IO: _ = _IOWR(b'N' as _, 0x80, nvme_uring_cmd);
-pub const NVME_URING_CMD_IO_VEC: _ = _IOWR(b'N' as _, 0x81, nvme_uring_cmd);
-pub const NVME_URING_CMD_ADMIN: _ = _IOWR(b'N' as _, 0x82, nvme_uring_cmd);
-pub const NVME_URING_CMD_ADMIN_VEC: _ = _IOWR(b'N' as _, 0x83, nvme_uring_cmd);
+pub const NVME_URING_CMD_IO: u32 = _IOWR(b'N' as _, 0x80, nvme_uring_cmd);
+pub const NVME_URING_CMD_IO_VEC: u32 = _IOWR(b'N' as _, 0x81, nvme_uring_cmd);
+pub const NVME_URING_CMD_ADMIN: u32 = _IOWR(b'N' as _, 0x82, nvme_uring_cmd);
+pub const NVME_URING_CMD_ADMIN_VEC: u32 = _IOWR(b'N' as _, 0x83, nvme_uring_cmd);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -5,7 +5,7 @@
 
 #[cfg(CONFIG_X86_VMX_FEATURE_NAMES)]
 extern "C" {
-    static x86_vmx_flags: *const *const core::ffi::c_char;
+    static x86_vmx_flags: *const *const kernel::ffi::c_char;
 }
 
 /*
@@ -51,7 +51,7 @@ unsafe fn show_cpuinfo_misc(m: *mut seq_file, c: *mut cpuinfo_x86) {
         (*c).cpuid_level);
 }
 
-unsafe fn show_cpuinfo(m: *mut seq_file, v: *mut core::ffi::c_void) -> c_int {
+unsafe fn show_cpuinfo(m: *mut seq_file, v: *mut kernel::ffi::c_void) -> c_int {
     let c = v as *mut cpuinfo_x86;
     let cpu = (*c).cpu_index;
     let mut i: c_int;
@@ -130,12 +130,12 @@ unsafe fn show_cpuinfo(m: *mut seq_file, v: *mut core::ffi::c_void) -> c_int {
     0
 }
 
-unsafe fn c_start(_m: *mut seq_file, pos: *mut loff_t) -> *mut core::ffi::c_void {
+unsafe fn c_start(_m: *mut seq_file, pos: *mut loff_t) -> *mut kernel::ffi::c_void {
     *pos = cpumask_next(*pos - 1, cpu_online_mask);
-    if *pos < nr_cpu_ids { &mut cpu_data(*pos) as *mut _ as *mut core::ffi::c_void } else { core::ptr::null_mut() }
+    if *pos < nr_cpu_ids { &mut cpu_data(*pos) as *mut _ as *mut kernel::ffi::c_void } else { core::ptr::null_mut() }
 }
-unsafe fn c_next(m: *mut seq_file, _v: *mut core::ffi::c_void, pos: *mut loff_t) -> *mut core::ffi::c_void { *pos += 1; c_start(m, pos) }
-unsafe fn c_stop(_m: *mut seq_file, _v: *mut core::ffi::c_void) {}
+unsafe fn c_next(m: *mut seq_file, _v: *mut kernel::ffi::c_void, pos: *mut loff_t) -> *mut kernel::ffi::c_void { *pos += 1; c_start(m, pos) }
+unsafe fn c_stop(_m: *mut seq_file, _v: *mut kernel::ffi::c_void) {}
 
 #[no_mangle]
 pub static cpuinfo_op: seq_operations = seq_operations { start: Some(c_start), next: Some(c_next), stop: Some(c_stop), show: Some(show_cpuinfo) };

@@ -33,10 +33,10 @@ macro_rules! __bootdata_preserved {
 }
 
 extern "C" {
-    pub static mut __samode31: *mut core::ffi::c_char;
-    pub static mut __eamode31: *mut core::ffi::c_char;
-    pub static mut __stext_amode31: *mut core::ffi::c_char;
-    pub static mut __etext_amode31: *mut core::ffi::c_char;
+    pub static mut __samode31: *mut kernel::ffi::c_char;
+    pub static mut __eamode31: *mut kernel::ffi::c_char;
+    pub static mut __stext_amode31: *mut kernel::ffi::c_char;
+    pub static mut __etext_amode31: *mut kernel::ffi::c_char;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

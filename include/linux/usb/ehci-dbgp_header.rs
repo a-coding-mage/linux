@@ -48,7 +48,7 @@ pub const fn DBGP_EPADDR(dev: u32, ep: u32) -> u32 { (dev << 8) | ep }
 /* CONFIG_EARLY_PRINTK_DBGP declarations. */
 #[cfg(CONFIG_EARLY_PRINTK_DBGP)]
 extern "C" {
-    pub fn early_dbgp_init(s: *mut core::ffi::c_char) -> i32;
+    pub fn early_dbgp_init(s: *mut kernel::ffi::c_char) -> i32;
     pub static mut early_dbgp_console: console;
 }
 

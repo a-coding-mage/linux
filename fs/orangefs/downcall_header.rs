@@ -7,7 +7,7 @@
 
 /* Definitions of downcalls used in Linux kernel module. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 use core::mem::ManuallyDrop;
 
 /* Sanitized the device-client core interaction for clean 32-64 bit usage. */

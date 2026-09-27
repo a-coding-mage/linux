@@ -10,7 +10,7 @@
 //! The Linux tracepoint declaration machinery represented by the C macros is
 //! supplied by the surrounding tracepoint implementation.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]

@@ -6,7 +6,7 @@
  * version 2.1, as published by the Free Software Foundation.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C, packed)]
 pub struct nd_cmd_dimm_flags { pub status: u32, pub flags: u32 }

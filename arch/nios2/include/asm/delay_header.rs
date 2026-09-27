@@ -14,7 +14,7 @@ unsafe extern "C" {
     pub fn __bad_udelay();
     pub fn __bad_ndelay();
 
-    pub static mut loops_per_jiffy: core::ffi::c_ulong;
+    pub static mut loops_per_jiffy: kernel::ffi::c_ulong;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

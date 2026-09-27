@@ -14,12 +14,12 @@
 /// A valid pointer is always returned. Unknown codes produce the literal
 /// `UNKNOWN_STATUS_CODE` string.
 #[no_mangle]
-pub unsafe extern "C" fn acpi_format_exception(status: acpi_status) -> *const core::ffi::c_char {
+pub unsafe extern "C" fn acpi_format_exception(status: acpi_status) -> *const kernel::ffi::c_char {
     let exception = acpi_ut_validate_exception(status);
     if exception.is_null() {
         // Exception code was not recognized.
         // ACPI_ERROR((AE_INFO, "Unknown exception code: 0x%8.8X", status));
-        return b"UNKNOWN_STATUS_CODE\0".as_ptr() as *const core::ffi::c_char;
+        return b"UNKNOWN_STATUS_CODE\0".as_ptr() as *const kernel::ffi::c_char;
     }
 
     (*exception).name

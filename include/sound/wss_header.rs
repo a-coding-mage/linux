@@ -46,13 +46,13 @@ pub const AD1848_THINKPAD_CS4248_ENABLE_BIT: u8 = 0x02;
 
 #[repr(C)]
 pub struct snd_wss {
-    pub port: ::core::ffi::c_ulong,
+    pub port: ::kernel::ffi::c_ulong,
     pub res_port: *mut resource,
-    pub cport: ::core::ffi::c_ulong,
+    pub cport: ::kernel::ffi::c_ulong,
     pub res_cport: *mut resource,
-    pub irq: ::core::ffi::c_int,
-    pub dma1: ::core::ffi::c_int,
-    pub dma2: ::core::ffi::c_int,
+    pub irq: ::kernel::ffi::c_int,
+    pub dma1: ::kernel::ffi::c_int,
+    pub dma2: ::kernel::ffi::c_int,
     pub version: u16,
     pub mode: u16,
     pub hardware: u16,
@@ -68,25 +68,25 @@ pub struct snd_wss {
     pub image: [u8; 32],
     pub eimage: [u8; 32],
     pub cimage: [u8; 16],
-    pub mce_bit: ::core::ffi::c_int,
-    pub calibrate_mute: ::core::ffi::c_int,
-    pub sw_3d_bit: ::core::ffi::c_int,
-    pub p_dma_size: ::core::ffi::c_uint,
-    pub c_dma_size: ::core::ffi::c_uint,
+    pub mce_bit: ::kernel::ffi::c_int,
+    pub calibrate_mute: ::kernel::ffi::c_int,
+    pub sw_3d_bit: ::kernel::ffi::c_int,
+    pub p_dma_size: ::kernel::ffi::c_uint,
+    pub c_dma_size: ::kernel::ffi::c_uint,
     pub reg_lock: spinlock_t,
     pub mce_mutex: mutex,
     pub open_mutex: mutex,
-    pub rate_constraint: Option<unsafe extern "C" fn(*mut snd_pcm_runtime) -> ::core::ffi::c_int>,
+    pub rate_constraint: Option<unsafe extern "C" fn(*mut snd_pcm_runtime) -> ::kernel::ffi::c_int>,
     pub set_playback_format: Option<unsafe extern "C" fn(*mut snd_wss, *mut snd_pcm_hw_params, u8)>,
     pub set_capture_format: Option<unsafe extern "C" fn(*mut snd_wss, *mut snd_pcm_hw_params, u8)>,
-    pub trigger: Option<unsafe extern "C" fn(*mut snd_wss, ::core::ffi::c_uint, ::core::ffi::c_int)>,
+    pub trigger: Option<unsafe extern "C" fn(*mut snd_wss, ::kernel::ffi::c_uint, ::kernel::ffi::c_int)>,
     #[cfg(CONFIG_PM)]
     pub suspend: Option<unsafe extern "C" fn(*mut snd_wss)>,
     #[cfg(CONFIG_PM)]
     pub resume: Option<unsafe extern "C" fn(*mut snd_wss)>,
-    pub dma_private_data: *mut ::core::ffi::c_void,
-    pub claim_dma: Option<unsafe extern "C" fn(*mut snd_wss, *mut ::core::ffi::c_void, ::core::ffi::c_int) -> ::core::ffi::c_int>,
-    pub release_dma: Option<unsafe extern "C" fn(*mut snd_wss, *mut ::core::ffi::c_void, ::core::ffi::c_int) -> ::core::ffi::c_int>,
+    pub dma_private_data: *mut ::kernel::ffi::c_void,
+    pub claim_dma: Option<unsafe extern "C" fn(*mut snd_wss, *mut ::kernel::ffi::c_void, ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
+    pub release_dma: Option<unsafe extern "C" fn(*mut snd_wss, *mut ::kernel::ffi::c_void, ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
 }
 
 unsafe extern "C" {
@@ -97,22 +97,22 @@ unsafe extern "C" {
     pub fn snd_wss_mce_up(chip: *mut snd_wss);
     pub fn snd_wss_mce_down(chip: *mut snd_wss);
     pub fn snd_wss_overrange(chip: *mut snd_wss);
-    pub fn snd_wss_interrupt(irq: ::core::ffi::c_int, dev_id: *mut ::core::ffi::c_void) -> irqreturn_t;
-    pub fn snd_wss_chip_id(chip: *mut snd_wss) -> *const ::core::ffi::c_char;
-    pub fn snd_wss_create(card: *mut snd_card, port: ::core::ffi::c_ulong, cport: ::core::ffi::c_ulong, irq: ::core::ffi::c_int, dma1: ::core::ffi::c_int, dma2: ::core::ffi::c_int, hardware: u16, hwshare: u16, rchip: *mut *mut snd_wss) -> ::core::ffi::c_int;
-    pub fn snd_wss_pcm(chip: *mut snd_wss, device: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn snd_wss_timer(chip: *mut snd_wss, device: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn snd_wss_mixer(chip: *mut snd_wss) -> ::core::ffi::c_int;
-    pub fn snd_wss_get_pcm_ops(direction: ::core::ffi::c_int) -> *const snd_pcm_ops;
-    pub fn snd_cs4236_create(card: *mut snd_card, port: ::core::ffi::c_ulong, cport: ::core::ffi::c_ulong, irq: ::core::ffi::c_int, dma1: ::core::ffi::c_int, dma2: ::core::ffi::c_int, hardware: u16, hwshare: u16, rchip: *mut *mut snd_wss) -> ::core::ffi::c_int;
-    pub fn snd_cs4236_pcm(chip: *mut snd_wss, device: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn snd_cs4236_mixer(chip: *mut snd_wss) -> ::core::ffi::c_int;
-    pub fn snd_wss_info_single(kcontrol: *mut snd_kcontrol, uinfo: *mut snd_ctl_elem_info) -> ::core::ffi::c_int;
-    pub fn snd_wss_get_single(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> ::core::ffi::c_int;
-    pub fn snd_wss_put_single(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> ::core::ffi::c_int;
-    pub fn snd_wss_info_double(kcontrol: *mut snd_kcontrol, uinfo: *mut snd_ctl_elem_info) -> ::core::ffi::c_int;
-    pub fn snd_wss_get_double(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> ::core::ffi::c_int;
-    pub fn snd_wss_put_double(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> ::core::ffi::c_int;
+    pub fn snd_wss_interrupt(irq: ::kernel::ffi::c_int, dev_id: *mut ::kernel::ffi::c_void) -> irqreturn_t;
+    pub fn snd_wss_chip_id(chip: *mut snd_wss) -> *const ::kernel::ffi::c_char;
+    pub fn snd_wss_create(card: *mut snd_card, port: ::kernel::ffi::c_ulong, cport: ::kernel::ffi::c_ulong, irq: ::kernel::ffi::c_int, dma1: ::kernel::ffi::c_int, dma2: ::kernel::ffi::c_int, hardware: u16, hwshare: u16, rchip: *mut *mut snd_wss) -> ::kernel::ffi::c_int;
+    pub fn snd_wss_pcm(chip: *mut snd_wss, device: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn snd_wss_timer(chip: *mut snd_wss, device: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn snd_wss_mixer(chip: *mut snd_wss) -> ::kernel::ffi::c_int;
+    pub fn snd_wss_get_pcm_ops(direction: ::kernel::ffi::c_int) -> *const snd_pcm_ops;
+    pub fn snd_cs4236_create(card: *mut snd_card, port: ::kernel::ffi::c_ulong, cport: ::kernel::ffi::c_ulong, irq: ::kernel::ffi::c_int, dma1: ::kernel::ffi::c_int, dma2: ::kernel::ffi::c_int, hardware: u16, hwshare: u16, rchip: *mut *mut snd_wss) -> ::kernel::ffi::c_int;
+    pub fn snd_cs4236_pcm(chip: *mut snd_wss, device: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn snd_cs4236_mixer(chip: *mut snd_wss) -> ::kernel::ffi::c_int;
+    pub fn snd_wss_info_single(kcontrol: *mut snd_kcontrol, uinfo: *mut snd_ctl_elem_info) -> ::kernel::ffi::c_int;
+    pub fn snd_wss_get_single(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> ::kernel::ffi::c_int;
+    pub fn snd_wss_put_single(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> ::kernel::ffi::c_int;
+    pub fn snd_wss_info_double(kcontrol: *mut snd_kcontrol, uinfo: *mut snd_ctl_elem_info) -> ::kernel::ffi::c_int;
+    pub fn snd_wss_get_double(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> ::kernel::ffi::c_int;
+    pub fn snd_wss_put_double(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> ::kernel::ffi::c_int;
 }
 
 // C bit-fields are represented as individual one-bit values in the source;

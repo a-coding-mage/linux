@@ -66,10 +66,10 @@ pub struct ib_user_mad {
 // The C declaration uses unsigned long with an explicit 4-byte alignment.
 // The alias preserves the unsigned-long integer intent; ABI alignment is a
 // property of the containing C-compatible layout.
-pub type packed_ulong = core::ffi::c_ulong;
+pub type packed_ulong = kernel::ffi::c_ulong;
 
 pub const IB_USER_MAD_LONGS_PER_METHOD_MASK: usize =
-    128 / (8 * core::mem::size_of::<core::ffi::c_ulong>());
+    128 / (8 * core::mem::size_of::<kernel::ffi::c_ulong>());
 
 /// MAD registration request.
 #[repr(C)]

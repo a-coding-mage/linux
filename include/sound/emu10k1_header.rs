@@ -1493,11 +1493,11 @@ pub const EMU_SRC_MDOCK_ADAT: u64 = 0x0118;
 
 /* ------------------- CONSTANTS -------------------- */
 
-extern "C" { pub static mut snd_emu10k1_fxbus: [*const core::ffi::c_char; 32]; }
-extern "C" { pub static mut snd_emu10k1_sblive_ins: [*const core::ffi::c_char; 16]; }
-extern "C" { pub static mut snd_emu10k1_audigy_ins: [*const core::ffi::c_char; 16]; }
-extern "C" { pub static mut snd_emu10k1_sblive_outs: [*const core::ffi::c_char; 32]; }
-extern "C" { pub static mut snd_emu10k1_audigy_outs: [*const core::ffi::c_char; 32]; }
+extern "C" { pub static mut snd_emu10k1_fxbus: [*const kernel::ffi::c_char; 32]; }
+extern "C" { pub static mut snd_emu10k1_sblive_ins: [*const kernel::ffi::c_char; 16]; }
+extern "C" { pub static mut snd_emu10k1_audigy_ins: [*const kernel::ffi::c_char; 16]; }
+extern "C" { pub static mut snd_emu10k1_sblive_outs: [*const kernel::ffi::c_char; 32]; }
+extern "C" { pub static mut snd_emu10k1_audigy_outs: [*const kernel::ffi::c_char; 32]; }
 // C declaration: extern const s8 snd_emu10k1_sblive51_fxbus2_map[16];
 
 /* ------------------- STRUCTURES -------------------- */

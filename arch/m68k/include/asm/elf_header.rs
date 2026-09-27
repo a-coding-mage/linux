@@ -32,7 +32,7 @@ pub const R_68K_GLOB_DAT: i32 = 20;
 pub const R_68K_JMP_SLOT: i32 = 21;
 pub const R_68K_RELATIVE: i32 = 22;
 
-pub type elf_greg_t = ::core::ffi::c_ulong;
+pub type elf_greg_t = ::kernel::ffi::c_ulong;
 pub const ELF_NGREG: usize = ::core::mem::size_of::<user_regs_struct>() / ::core::mem::size_of::<elf_greg_t>();
 pub type elf_gregset_t = [elf_greg_t; ELF_NGREG];
 pub type elf_fpregset_t = user_m68kfp_struct;
@@ -46,7 +46,7 @@ macro_rules! elf_check_arch {
 /* Parameters used in core dumps. */
 pub const ELF_CLASS: _ = ELFCLASS32;
 pub const ELF_DATA: _ = ELFDATA2MSB;
-pub const ELF_ARCH: _ = EM_68K;
+pub const ELF_ARCH: u16 = EM_68K;
 
 /* The function pointer registered with atexit is passed in %a1. */
 #[macro_export]
@@ -75,9 +75,9 @@ pub const ELF_EXEC_PAGESIZE: usize = 4096;
 
 /* CONFIG_SUN3 selects the alternate ET_DYN load base. */
 #[cfg(not(CONFIG_SUN3))]
-pub const ELF_ET_DYN_BASE: ::core::ffi::c_ulong = 0xD0000000;
+pub const ELF_ET_DYN_BASE: ::kernel::ffi::c_ulong = 0xD0000000;
 #[cfg(CONFIG_SUN3)]
-pub const ELF_ET_DYN_BASE: ::core::ffi::c_ulong = 0x0D800000;
+pub const ELF_ET_DYN_BASE: ::kernel::ffi::c_ulong = 0x0D800000;
 
 #[macro_export]
 macro_rules! ELF_CORE_COPY_REGS {
@@ -109,7 +109,7 @@ macro_rules! ELF_CORE_COPY_REGS {
 }
 
 pub const ELF_HWCAP: i32 = 0;
-pub const ELF_PLATFORM: *const core::ffi::c_void = core::ptr::null();
+pub const ELF_PLATFORM: *const kernel::ffi::c_void = core::ptr::null();
 pub const ELF_FDPIC_CORE_EFLAGS: i32 = 0;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -33,7 +33,7 @@ enum Apci1516Boardid {
 
 #[repr(C)]
 struct Apci1516Boardinfo {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     di_nchan: i32,
     do_nchan: i32,
     has_wdog: i32,
@@ -41,19 +41,19 @@ struct Apci1516Boardinfo {
 
 static APCI1516_BOARDTYPES: [Apci1516Boardinfo; 3] = [
     Apci1516Boardinfo {
-        name: b"apci1016\0".as_ptr() as *const core::ffi::c_char,
+        name: b"apci1016\0".as_ptr() as *const kernel::ffi::c_char,
         di_nchan: 16,
         do_nchan: 0,
         has_wdog: 0,
     },
     Apci1516Boardinfo {
-        name: b"apci1516\0".as_ptr() as *const core::ffi::c_char,
+        name: b"apci1516\0".as_ptr() as *const kernel::ffi::c_char,
         di_nchan: 8,
         do_nchan: 8,
         has_wdog: 1,
     },
     Apci1516Boardinfo {
-        name: b"apci2016\0".as_ptr() as *const core::ffi::c_char,
+        name: b"apci2016\0".as_ptr() as *const kernel::ffi::c_char,
         di_nchan: 0,
         do_nchan: 16,
         has_wdog: 1,
@@ -168,7 +168,7 @@ unsafe fn apci1516_detach(dev: *mut ComediDevice) {
 // The following driver objects and PCI table correspond directly to the C
 // registration declarations; their concrete surrounding types are external.
 static mut APCI1516_DRIVER: ComediDriver = ComediDriver {
-    driver_name: b"addi_apci_1516\0".as_ptr() as *const core::ffi::c_char,
+    driver_name: b"addi_apci_1516\0".as_ptr() as *const kernel::ffi::c_char,
     module_: THIS_MODULE,
     auto_attach: Some(apci1516_auto_attach),
     detach: Some(apci1516_detach),
@@ -186,7 +186,7 @@ static APCI1516_PCI_TABLE: [PciDeviceId; 4] = [
 ];
 
 static mut APCI1516_PCI_DRIVER: PciDriver = PciDriver {
-    name: b"addi_apci_1516\0".as_ptr() as *const core::ffi::c_char,
+    name: b"addi_apci_1516\0".as_ptr() as *const kernel::ffi::c_char,
     id_table: APCI1516_PCI_TABLE.as_ptr(),
     probe: Some(apci1516_pci_probe),
     remove: Some(comedi_pci_auto_unconfig),

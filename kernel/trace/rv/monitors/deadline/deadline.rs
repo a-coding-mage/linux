@@ -6,8 +6,8 @@ const MODULE_NAME: &str = "deadline";
 
 #[repr(C)]
 pub struct rv_monitor {
-    pub name: *const core::ffi::c_char,
-    pub description: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub description: *const kernel::ffi::c_char,
     pub enable: Option<unsafe extern "C" fn()>,
     pub disable: Option<unsafe extern "C" fn()>,
     pub reset: Option<unsafe extern "C" fn()>,
@@ -20,16 +20,16 @@ pub struct sched_class {
 }
 
 unsafe extern "C" {
-    fn rv_register_monitor(monitor: *mut rv_monitor, arg: *mut core::ffi::c_void) -> i32;
+    fn rv_register_monitor(monitor: *mut rv_monitor, arg: *mut kernel::ffi::c_void) -> i32;
     fn rv_unregister_monitor(monitor: *mut rv_monitor);
-    fn kallsyms_lookup_name(name: *const core::ffi::c_char) -> usize;
+    fn kallsyms_lookup_name(name: *const kernel::ffi::c_char) -> usize;
 }
 
 #[unsafe(no_mangle)]
 pub static mut rv_deadline: rv_monitor = rv_monitor {
-    name: b"deadline\0".as_ptr() as *const core::ffi::c_char,
+    name: b"deadline\0".as_ptr() as *const kernel::ffi::c_char,
     description: b"container for several deadline scheduler specifications.\0".as_ptr()
-        as *const core::ffi::c_char,
+        as *const kernel::ffi::c_char,
     enable: None,
     disable: None,
     reset: None,
@@ -45,7 +45,7 @@ unsafe extern "C" fn register_deadline() -> i32 {
     // configuration is supplied by the surrounding kernel build.
     if cfg!(CONFIG_SCHED_CLASS_EXT) {
         rv_ext_sched_class = kallsyms_lookup_name(
-            b"ext_sched_class\0".as_ptr() as *const core::ffi::c_char,
+            b"ext_sched_class\0".as_ptr() as *const kernel::ffi::c_char,
         ) as *mut sched_class;
         if rv_ext_sched_class.is_null() {
             // Equivalent to: pr_warn("rv: Missing ext_sched_class, monitors may not work.\n");

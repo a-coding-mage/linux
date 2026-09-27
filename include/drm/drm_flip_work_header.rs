@@ -41,7 +41,7 @@
  * Callback function to be called for each of the  queue'd work items after
  * drm_flip_work_commit() is called.
  */
-pub type drm_flip_func_t = unsafe extern "C" fn(work: *mut drm_flip_work, val: *mut core::ffi::c_void);
+pub type drm_flip_func_t = unsafe extern "C" fn(work: *mut drm_flip_work, val: *mut kernel::ffi::c_void);
 
 /**
  * struct drm_flip_work - flip work queue
@@ -54,7 +54,7 @@ pub type drm_flip_func_t = unsafe extern "C" fn(work: *mut drm_flip_work, val: *
  */
 #[repr(C)]
 pub struct drm_flip_work {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub func: drm_flip_func_t,
     pub worker: work_struct,
     pub queued: list_head,
@@ -63,11 +63,11 @@ pub struct drm_flip_work {
 }
 
 unsafe extern "C" {
-    pub fn drm_flip_work_queue(work: *mut drm_flip_work, val: *mut core::ffi::c_void);
+    pub fn drm_flip_work_queue(work: *mut drm_flip_work, val: *mut kernel::ffi::c_void);
     pub fn drm_flip_work_commit(work: *mut drm_flip_work, wq: *mut workqueue_struct);
     pub fn drm_flip_work_init(
         work: *mut drm_flip_work,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         func: drm_flip_func_t,
     );
     pub fn drm_flip_work_cleanup(work: *mut drm_flip_work);

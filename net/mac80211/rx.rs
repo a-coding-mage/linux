@@ -43,12 +43,12 @@
  * only useful for monitoring.
  */
 static struct sk_buff *ieee80211_clean_skb(sk_buff *skb,
-					   present_fcs_len: core::ffi::c_uint,
-					   rtap_space: core::ffi::c_uint)
+					   present_fcs_len: kernel::ffi::c_uint,
+					   rtap_space: kernel::ffi::c_uint)
 {
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
 	struct ieee80211_hdr *hdr;
-	core::ffi::c_uint hdrlen;
+	kernel::ffi::c_uint hdrlen;
 	__le16 fc;
 
 	if (present_fcs_len)
@@ -93,7 +93,7 @@ static struct sk_buff *ieee80211_clean_skb(sk_buff *skb,
 }
 
 bool should_drop_frame(sk_buff *skb, int present_fcs_len,
-				     rtap_space: core::ffi::c_uint)
+				     rtap_space: kernel::ffi::c_uint)
 {
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
 	struct ieee80211_hdr *hdr;
@@ -319,14 +319,14 @@ ieee80211_add_rx_radiotap_header(ieee80211_local *local,
 {
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
 	struct ieee80211_radiotap_header *rthdr;
-	core::ffi::c_uchar *pos;
+	kernel::ffi::c_uchar *pos;
 	__le32 *it_present;
 	u32 it_present_val;
 	u16 rx_flags = 0;
 	u16 channel_flags = 0;
 	u32 tlvs_len = 0;
 	int mpdulen, chain;
-	core::ffi::c_ulong chains = (*status).chains;
+	kernel::ffi::c_ulong chains = (*status).chains;
 	struct ieee80211_radiotap_vht vht = {};
 	struct ieee80211_radiotap_he he = {};
 	struct ieee80211_radiotap_he_mu he_mu = {};
@@ -494,7 +494,7 @@ ieee80211_add_rx_radiotap_header(ieee80211_local *local,
 	pos += 2;
 
 	if ((*status).encoding == RX_ENC_HT) {
-		core::ffi::c_uint stbc;
+		kernel::ffi::c_uint stbc;
 
 		(*rthdr).it_present |= cpu_to_le32(BIT(IEEE80211_RADIOTAP_MCS));
 		*pos = (*local).hw.radiotap_mcs_details;
@@ -852,11 +852,11 @@ ieee80211_rx_monitor(ieee80211_local *local, sk_buff *origskb,
 	struct ieee80211_sub_if_data *sdata, *prev_sdata = NULL;
 	struct sk_buff *skb, *monskb = NULL;
 	int present_fcs_len = 0;
-	core::ffi::c_uint rtap_space = 0;
+	kernel::ffi::c_uint rtap_space = 0;
 	struct ieee80211_sub_if_data *monitor_sdata =
 		rcu_dereference((*local).monitor_sdata);
 	bool only_monitor = false;
-	core::ffi::c_uint min_head_len;
+	kernel::ffi::c_uint min_head_len;
 
 	if (WARN_ON_ONCE((*status).flag & RX_FLAG_RADIOTAP_TLV_AT_END &&
 			 !skb_mac_header_was_set(origskb))) {
@@ -1053,7 +1053,7 @@ static void ieee80211_parse_qos(ieee80211_rx_data *rx)
 static void ieee80211_verify_alignment(ieee80211_rx_data *rx)
 {
 #ifdef CONFIG_MAC80211_VERBOSE_DEBUG
-	WARN_ON_ONCE((core::ffi::c_ulong)rx->skb->data & 1);
+	WARN_ON_ONCE((kernel::ffi::c_ulong)rx->skb->data & 1);
 #endif
 }
 
@@ -1629,7 +1629,7 @@ ieee80211_rx_h_check(ieee80211_rx_data *rx)
 		 */
 		if (rx->sta && rx->sdata->vif.r#type == NL80211_IFTYPE_STATION &&
 		    ieee80211_is_data_present(hdr->frame_control)) {
-			core::ffi::c_uint hdrlen;
+			kernel::ffi::c_uint hdrlen;
 			__be16 ethertype;
 
 			hdrlen = ieee80211_hdrlen(hdr->frame_control);
@@ -2297,7 +2297,7 @@ void ieee80211_destroy_frag_cache(ieee80211_fragment_cache *cache)
 
 struct ieee80211_fragment_entry *
 ieee80211_reassemble_add(ieee80211_fragment_cache *cache,
-			 frag: core::ffi::c_uint, seq: core::ffi::c_uint, int rx_queue,
+			 frag: kernel::ffi::c_uint, seq: kernel::ffi::c_uint, int rx_queue,
 			 sk_buff **skb)
 {
 	struct ieee80211_fragment_entry *entry;
@@ -2322,7 +2322,7 @@ ieee80211_reassemble_add(ieee80211_fragment_cache *cache,
 
 struct ieee80211_fragment_entry *
 ieee80211_reassemble_find(ieee80211_fragment_cache *cache,
-			  frag: core::ffi::c_uint, seq: core::ffi::c_uint,
+			  frag: kernel::ffi::c_uint, seq: kernel::ffi::c_uint,
 			  int rx_queue, ieee80211_hdr *hdr)
 {
 	struct ieee80211_fragment_entry *entry;
@@ -2383,7 +2383,7 @@ ieee80211_rx_h_defragment(ieee80211_rx_data *rx)
 	struct ieee80211_hdr *hdr;
 	u16 sc;
 	__le16 fc;
-	frag: core::ffi::c_uint, seq;
+	frag: kernel::ffi::c_uint, seq;
 	struct ieee80211_fragment_entry *entry;
 	struct sk_buff *skb;
 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(rx->skb);
@@ -2696,7 +2696,7 @@ __ieee80211_data_to_8023(ieee80211_rx_data *rx, bool *port_control)
 bool ieee80211_is_our_addr(ieee80211_sub_if_data *sdata,
 			   const u8 *addr, int *out_link_id)
 {
-	core::ffi::c_uint link_id;
+	kernel::ffi::c_uint link_id;
 
 	/* non-MLO, or MLD address replaced by hardware */
 	if (ether_addr_equal(sdata->vif.addr, addr))
@@ -2863,7 +2863,7 @@ ieee80211_deliver_skb(ieee80211_rx_data *rx)
 		 */
 		int align;
 
-		align = (core::ffi::c_ulong)(skb->data + sizeof(ethhdr)) & 3;
+		align = (kernel::ffi::c_ulong)(skb->data + sizeof(ethhdr)) & 3;
 		if (align) {
 			if (WARN_ON(skb_headroom(skb) < 3)) {
 				dev_kfree_skb(skb);

@@ -21,13 +21,13 @@ pub struct device {
 }
 
 extern "C" {
-    pub fn mpc5xxx_fwnode_get_bus_frequency(fwnode: *mut fwnode_handle) -> ::core::ffi::c_ulong;
+    pub fn mpc5xxx_fwnode_get_bus_frequency(fwnode: *mut fwnode_handle) -> ::kernel::ffi::c_ulong;
 
     // Supplied by the device interface included by the original header.
     pub fn dev_fwnode(dev: *const device) -> *mut fwnode_handle;
 }
 
-pub unsafe fn mpc5xxx_get_bus_frequency(dev: *const device) -> ::core::ffi::c_ulong {
+pub unsafe fn mpc5xxx_get_bus_frequency(dev: *const device) -> ::kernel::ffi::c_ulong {
     mpc5xxx_fwnode_get_bus_frequency(dev_fwnode(dev))
 }
 

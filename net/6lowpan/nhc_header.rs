@@ -2,10 +2,10 @@
 
 /* Dependencies supplied by the surrounding kernel translation unit. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[allow(non_camel_case_types)]
-pub type u8 = core::ffi::c_uchar;
+pub type u8 = kernel::ffi::c_uchar;
 
 #[allow(non_camel_case_types)]
 pub type size_t = usize;

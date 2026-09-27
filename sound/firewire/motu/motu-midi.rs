@@ -5,7 +5,7 @@
  * Copyright (c) 2015-2017 Takashi Sakamoto <o-takashi@sakamocchi.jp>
  */
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 use core::mem::{offset_of, size_of};
 use core::ptr;
 
@@ -120,7 +120,7 @@ unsafe extern "C" {
     fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: c_ulong);
 }
 
-pub type c_ulong = core::ffi::c_ulong;
+pub type c_ulong = kernel::ffi::c_ulong;
 
 const MIDI_NAME_FMT: &[u8] = b"%s MIDI\0";
 const MIDI_SUBSTREAM_NAME_FMT: &[u8] = b"%s MIDI %d\0";

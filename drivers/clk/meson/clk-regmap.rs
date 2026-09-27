@@ -9,7 +9,7 @@
 extern "C" {
     fn to_clk_regmap(hw: *mut clk_hw) -> *mut clk_regmap;
     fn clk_hw_get_dev(hw: *mut clk_hw) -> *mut device;
-    fn dev_get_regmap(dev: *mut device, name: *const core::ffi::c_char) -> *mut regmap;
+    fn dev_get_regmap(dev: *mut device, name: *const kernel::ffi::c_char) -> *mut regmap;
     fn clk_hw_get_of_node(hw: *mut clk_hw) -> *mut device_node;
     fn of_get_parent(np: *mut device_node) -> *mut device_node;
     fn syscon_node_to_regmap(np: *mut device_node) -> *mut regmap;
@@ -20,10 +20,10 @@ extern "C" {
     fn clk_get_regmap_div_data(clk: *mut clk_regmap) -> *mut clk_regmap_div_data;
     fn clk_get_regmap_mux_data(clk: *mut clk_regmap) -> *mut clk_regmap_mux_data;
     fn clk_div_mask(width: u8) -> u32;
-    fn divider_recalc_rate(hw: *mut clk_hw, prate: usize, val: u32, table: *const core::ffi::c_void, flags: u8, width: u8) -> usize;
-    fn divider_ro_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request, table: *const core::ffi::c_void, width: u8, flags: u8, val: u32) -> i32;
-    fn divider_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request, table: *const core::ffi::c_void, width: u8, flags: u8) -> i32;
-    fn divider_get_val(rate: usize, parent_rate: usize, table: *const core::ffi::c_void, width: u8, flags: u8) -> i32;
+    fn divider_recalc_rate(hw: *mut clk_hw, prate: usize, val: u32, table: *const kernel::ffi::c_void, flags: u8, width: u8) -> usize;
+    fn divider_ro_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request, table: *const kernel::ffi::c_void, width: u8, flags: u8, val: u32) -> i32;
+    fn divider_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request, table: *const kernel::ffi::c_void, width: u8, flags: u8) -> i32;
+    fn divider_get_val(rate: usize, parent_rate: usize, table: *const kernel::ffi::c_void, width: u8, flags: u8) -> i32;
     fn clk_mux_val_to_index(hw: *mut clk_hw, table: *const u32, flags: u32, val: u32) -> u8;
     fn clk_mux_index_to_val(table: *const u32, flags: u32, index: u8) -> u32;
     fn clk_mux_determine_rate_flags(hw: *mut clk_hw, req: *mut clk_rate_request, flags: u32) -> i32;
@@ -36,7 +36,7 @@ extern "C" {
 #[repr(C)] pub struct clk_rate_request { _private: [u8; 0] }
 #[repr(C)] pub struct clk_regmap { pub map: *mut regmap }
 #[repr(C)] pub struct clk_regmap_gate_data { pub flags: u32, pub offset: u32, pub bit_idx: u8 }
-#[repr(C)] pub struct clk_regmap_div_data { pub flags: u8, pub offset: u32, pub shift: u8, pub width: u8, pub table: *const core::ffi::c_void }
+#[repr(C)] pub struct clk_regmap_div_data { pub flags: u8, pub offset: u32, pub shift: u8, pub width: u8, pub table: *const kernel::ffi::c_void }
 #[repr(C)] pub struct clk_regmap_mux_data { pub flags: u32, pub offset: u32, pub shift: u8, pub mask: u32, pub table: *const u32 }
 #[repr(C)] pub struct clk_ops {
     pub init: Option<unsafe extern "C" fn(*mut clk_hw) -> i32>,

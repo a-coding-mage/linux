@@ -103,7 +103,7 @@ pub struct ipack_driver {
 
 #[repr(C)]
 pub struct ipack_bus_ops {
-    pub request_irq: Option<unsafe extern "C" fn(*mut ipack_device, Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> irqreturn_t>, *mut core::ffi::c_void) -> i32>,
+    pub request_irq: Option<unsafe extern "C" fn(*mut ipack_device, Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> irqreturn_t>, *mut kernel::ffi::c_void) -> i32>,
     pub free_irq: Option<unsafe extern "C" fn(*mut ipack_device) -> i32>,
     pub get_clockrate: Option<unsafe extern "C" fn(*mut ipack_device) -> i32>,
     pub set_clockrate: Option<unsafe extern "C" fn(*mut ipack_device, i32) -> i32>,
@@ -124,7 +124,7 @@ pub struct ipack_bus_device {
 extern "C" {
     pub fn ipack_bus_register(parent: *mut device, slots: i32, ops: *const ipack_bus_ops, owner: *mut module) -> *mut ipack_bus_device;
     pub fn ipack_bus_unregister(bus: *mut ipack_bus_device) -> i32;
-    pub fn ipack_driver_register(edrv: *mut ipack_driver, owner: *mut module, name: *const core::ffi::c_char) -> i32;
+    pub fn ipack_driver_register(edrv: *mut ipack_driver, owner: *mut module, name: *const kernel::ffi::c_char) -> i32;
     pub fn ipack_driver_unregister(edrv: *mut ipack_driver);
     pub fn ipack_device_init(dev: *mut ipack_device) -> i32;
     pub fn ipack_device_add(dev: *mut ipack_device) -> i32;

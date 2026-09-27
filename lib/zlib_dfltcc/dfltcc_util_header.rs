@@ -22,8 +22,8 @@ pub const HB_SIZE: usize = 1usize << HB_BITS;
 
 // External declarations supplied by the translated dependency headers.
 extern "C" {
-    fn kmsan_unpoison_memory(address: *mut core::ffi::c_void, size: usize);
-    fn oesc_msg(buf: *mut core::ffi::c_char, oesc: i32) -> *mut core::ffi::c_char;
+    fn kmsan_unpoison_memory(address: *mut kernel::ffi::c_void, size: usize);
+    fn oesc_msg(buf: *mut kernel::ffi::c_char, oesc: i32) -> *mut kernel::ffi::c_char;
 }
 
 // The following parameter layouts and Byte/uInt/uLong types are supplied by dfltcc.h/zutil.h.
@@ -36,12 +36,12 @@ extern "C" {
 #[inline]
 pub unsafe fn dfltcc(
     fn_: i32,
-    param: *mut core::ffi::c_void,
+    param: *mut kernel::ffi::c_void,
     op1: *mut *mut u8,
     len1: *mut usize,
     op2: *mut *const u8,
     len2: *mut usize,
-    hist: *mut core::ffi::c_void,
+    hist: *mut kernel::ffi::c_void,
 ) -> dfltcc_cc {
     let mut t2 = if !op1.is_null() { *op1 } else { core::ptr::null_mut() };
     let orig_t2 = t2;

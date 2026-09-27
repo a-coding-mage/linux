@@ -20,7 +20,7 @@ pub struct siox_device {
     pub smaster: *mut siox_master,
     pub dev: device,
 
-    pub type_: *const core::ffi::c_char,
+    pub type_: *const kernel::ffi::c_char,
     pub inbytes: usize,
     pub outbytes: usize,
     pub statustype: u8,
@@ -31,8 +31,8 @@ pub struct siox_device {
     pub connected: bool,
 
     /* statistics */
-    pub watchdog_errors: core::ffi::c_uint,
-    pub status_errors: core::ffi::c_uint,
+    pub watchdog_errors: kernel::ffi::c_uint,
+    pub status_errors: kernel::ffi::c_uint,
 
     pub status_errors_kn: *mut kernfs_node,
     pub watchdog_kn: *mut kernfs_node,
@@ -47,7 +47,7 @@ extern "C" {
 
 #[repr(C)]
 pub struct siox_driver {
-    pub probe: Option<unsafe extern "C" fn(sdevice: *mut siox_device) -> core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(sdevice: *mut siox_device) -> kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(sdevice: *mut siox_device)>,
     pub shutdown: Option<unsafe extern "C" fn(sdevice: *mut siox_device)>,
 
@@ -59,7 +59,7 @@ pub struct siox_driver {
         sdevice: *mut siox_device,
         status: u8,
         buf: *mut u8,
-    ) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
     /*
      * buf is big enough to hold sdev->outbytes - 1 bytes, the status byte
      * is in the scope of the framework
@@ -67,7 +67,7 @@ pub struct siox_driver {
     pub get_data: Option<unsafe extern "C" fn(
         sdevice: *mut siox_device,
         buf: *const u8,
-    ) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
 
     pub driver: device_driver,
 }
@@ -85,11 +85,11 @@ extern "C" {
     pub fn __siox_driver_register(
         sdriver: *mut siox_driver,
         owner: *mut module,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 #[inline]
-pub unsafe fn siox_driver_register(sdriver: *mut siox_driver) -> core::ffi::c_int {
+pub unsafe fn siox_driver_register(sdriver: *mut siox_driver) -> kernel::ffi::c_int {
     __siox_driver_register(sdriver, THIS_MODULE)
 }
 

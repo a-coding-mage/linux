@@ -40,17 +40,17 @@ pub unsafe fn acpi_ps_get_opcode_info(opcode: u16) -> *const acpi_opcode_info {
 
     #[cfg(all(ACPI_ASL_COMPILER, ACPI_DEBUG_OUTPUT))]
     {
-        let opcode_name: *const core::ffi::c_char = match opcode {
-            AML_RAW_DATA_BYTE => b"-Raw Data Byte-\0".as_ptr() as *const core::ffi::c_char,
-            AML_RAW_DATA_WORD => b"-Raw Data Word-\0".as_ptr() as *const core::ffi::c_char,
-            AML_RAW_DATA_DWORD => b"-Raw Data Dword-\0".as_ptr() as *const core::ffi::c_char,
-            AML_RAW_DATA_QWORD => b"-Raw Data Qword-\0".as_ptr() as *const core::ffi::c_char,
-            AML_RAW_DATA_BUFFER => b"-Raw Data Buffer-\0".as_ptr() as *const core::ffi::c_char,
-            AML_RAW_DATA_CHAIN => b"-Raw Data Buffer Chain-\0".as_ptr() as *const core::ffi::c_char,
-            AML_PACKAGE_LENGTH => b"-Package Length-\0".as_ptr() as *const core::ffi::c_char,
-            AML_UNASSIGNED_OPCODE => b"-Unassigned Opcode-\0".as_ptr() as *const core::ffi::c_char,
-            AML_DEFAULT_ARG_OP => b"-Default Arg-\0".as_ptr() as *const core::ffi::c_char,
-            _ => b"Unknown AML opcode\0".as_ptr() as *const core::ffi::c_char,
+        let opcode_name: *const kernel::ffi::c_char = match opcode {
+            AML_RAW_DATA_BYTE => b"-Raw Data Byte-\0".as_ptr() as *const kernel::ffi::c_char,
+            AML_RAW_DATA_WORD => b"-Raw Data Word-\0".as_ptr() as *const kernel::ffi::c_char,
+            AML_RAW_DATA_DWORD => b"-Raw Data Dword-\0".as_ptr() as *const kernel::ffi::c_char,
+            AML_RAW_DATA_QWORD => b"-Raw Data Qword-\0".as_ptr() as *const kernel::ffi::c_char,
+            AML_RAW_DATA_BUFFER => b"-Raw Data Buffer-\0".as_ptr() as *const kernel::ffi::c_char,
+            AML_RAW_DATA_CHAIN => b"-Raw Data Buffer Chain-\0".as_ptr() as *const kernel::ffi::c_char,
+            AML_PACKAGE_LENGTH => b"-Package Length-\0".as_ptr() as *const kernel::ffi::c_char,
+            AML_UNASSIGNED_OPCODE => b"-Unassigned Opcode-\0".as_ptr() as *const kernel::ffi::c_char,
+            AML_DEFAULT_ARG_OP => b"-Default Arg-\0".as_ptr() as *const kernel::ffi::c_char,
+            _ => b"Unknown AML opcode\0".as_ptr() as *const kernel::ffi::c_char,
         };
         // ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "%s [%4.4X]\n", opcode_name, opcode));
         let _ = opcode_name;
@@ -72,7 +72,7 @@ pub unsafe fn acpi_ps_get_opcode_info(opcode: u16) -> *const acpi_opcode_info {
  *
  ******************************************************************************/
 
-pub unsafe fn acpi_ps_get_opcode_name(opcode: u16) -> *const core::ffi::c_char {
+pub unsafe fn acpi_ps_get_opcode_name(opcode: u16) -> *const kernel::ffi::c_char {
     #[cfg(any(ACPI_DISASSEMBLER, ACPI_DEBUG_OUTPUT))]
     {
         let op = acpi_ps_get_opcode_info(opcode);
@@ -80,7 +80,7 @@ pub unsafe fn acpi_ps_get_opcode_name(opcode: u16) -> *const core::ffi::c_char {
     }
     #[cfg(not(any(ACPI_DISASSEMBLER, ACPI_DEBUG_OUTPUT)))]
     {
-        b"OpcodeName unavailable\0".as_ptr() as *const core::ffi::c_char
+        b"OpcodeName unavailable\0".as_ptr() as *const kernel::ffi::c_char
     }
 }
 

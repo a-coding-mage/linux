@@ -29,16 +29,16 @@ pub struct sysconfig_priv {
     pub dev: *mut device,
     pub command_transfer: Option<unsafe extern "C" fn(
         priv_: *mut sysconfig_priv,
-        tx_buf: *const core::ffi::c_void,
+        tx_buf: *const kernel::ffi::c_void,
         tx_len: usize,
-        rx_buf: *mut core::ffi::c_void,
+        rx_buf: *mut kernel::ffi::c_void,
         rx_len: usize,
     ) -> i32>,
     pub bitstream_burst_write_init:
         Option<unsafe extern "C" fn(priv_: *mut sysconfig_priv) -> i32>,
     pub bitstream_burst_write: Option<unsafe extern "C" fn(
         priv_: *mut sysconfig_priv,
-        tx_buf: *const core::ffi::c_char,
+        tx_buf: *const kernel::ffi::c_char,
         tx_len: usize,
     ) -> i32>,
     pub bitstream_burst_write_complete:

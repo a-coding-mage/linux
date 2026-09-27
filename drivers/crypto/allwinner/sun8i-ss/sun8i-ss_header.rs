@@ -66,15 +66,15 @@ pub const MAX_PAD_SIZE: usize = 4096;
 
 #[repr(C)]
 pub struct ss_clock {
-    pub name: *const core::ffi::c_char,
-    pub freq: core::ffi::c_ulong,
-    pub max_freq: core::ffi::c_ulong,
+    pub name: *const kernel::ffi::c_char,
+    pub freq: kernel::ffi::c_ulong,
+    pub max_freq: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct ss_variant {
-    pub alg_cipher: [core::ffi::c_char; SS_ID_CIPHER_MAX],
-    pub alg_hash: [core::ffi::c_char; SS_ID_HASH_MAX],
+    pub alg_cipher: [kernel::ffi::c_char; SS_ID_CIPHER_MAX],
+    pub alg_hash: [kernel::ffi::c_char; SS_ID_HASH_MAX],
     pub op_mode: [u32; SS_ID_OP_MAX],
     pub ss_clks: [ss_clock; SS_MAX_CLOCKS],
 }
@@ -89,18 +89,18 @@ pub struct sginfo {
 pub struct sun8i_ss_flow {
     pub engine: *mut crypto_engine,
     pub complete: completion,
-    pub status: core::ffi::c_int,
+    pub status: kernel::ffi::c_int,
     pub iv: [*mut u8; MAX_SG],
     pub biv: *mut u8,
-    pub pad: *mut core::ffi::c_void,
-    pub result: *mut core::ffi::c_void,
+    pub pad: *mut kernel::ffi::c_void,
+    pub result: *mut kernel::ffi::c_void,
     #[cfg(CONFIG_CRYPTO_DEV_SUN8I_SS_DEBUG)]
-    pub stat_req: libc::c_ulong,
+    pub stat_req: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct sun8i_ss_dev {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub ssclks: [*mut clk; SS_MAX_CLOCKS],
     pub reset: *mut reset_control,
     pub dev: *mut device,
@@ -119,13 +119,13 @@ pub struct sun8i_cipher_req_ctx {
     pub t_dst: [sginfo; MAX_SG],
     pub p_key: u32,
     pub p_iv: [u32; MAX_SG],
-    pub niv: core::ffi::c_int,
+    pub niv: kernel::ffi::c_int,
     pub method: u32,
     pub op_mode: u32,
     pub op_dir: u32,
-    pub flow: core::ffi::c_int,
-    pub ivlen: core::ffi::c_uint,
-    pub keylen: core::ffi::c_uint,
+    pub flow: kernel::ffi::c_int,
+    pub ivlen: kernel::ffi::c_uint,
+    pub keylen: kernel::ffi::c_uint,
     pub fallback_req: skcipher_request, // keep at the end
 }
 
@@ -144,7 +144,7 @@ pub struct sun8i_ss_hash_tfm_ctx {
     pub ipad: *mut u8,
     pub opad: *mut u8,
     pub key: [u8; SHA256_BLOCK_SIZE],
-    pub keylen: core::ffi::c_int,
+    pub keylen: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -152,7 +152,7 @@ pub struct sun8i_ss_hash_reqctx {
     pub t_src: [sginfo; MAX_SG],
     pub t_dst: [sginfo; MAX_SG],
     pub method: u32,
-    pub flow: core::ffi::c_int,
+    pub flow: kernel::ffi::c_int,
     // Must be last as it ends in a flexible-array member.
     pub fallback_req: ahash_request,
 }

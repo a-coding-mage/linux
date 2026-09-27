@@ -4327,8 +4327,8 @@ MODULE_AUTHOR("Bard Liao <bardliao@realtek.com>");
 MODULE_LICENSE("GPL v2");
 
 }
-pub const rt5659_suspend: _ = NULL;
-pub const rt5659_resume: _ = NULL;
+pub const rt5659_suspend: *const core::ffi::c_void = NULL;
+pub const rt5659_resume: *const core::ffi::c_void = NULL;
 pub const RT5659_STEREO_RATES: _ = SNDRV_PCM_RATE_8000_192000;
 pub const RT5659_FORMATS: _ = (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE | \;
 

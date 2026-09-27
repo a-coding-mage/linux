@@ -9,11 +9,11 @@
 
 unsafe fn ccu_reset_assert(
     rcdev: *mut reset_controller_dev,
-    id: libc::c_ulong,
-) -> libc::c_int {
+    id: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let ccu = rcdev_to_ccu_reset(rcdev);
     let map = &(*ccu).reset_map[id as usize];
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let mut reg: u32;
 
     spin_lock_irqsave((*ccu).lock, &mut flags);
@@ -28,11 +28,11 @@ unsafe fn ccu_reset_assert(
 
 unsafe fn ccu_reset_deassert(
     rcdev: *mut reset_controller_dev,
-    id: libc::c_ulong,
-) -> libc::c_int {
+    id: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let ccu = rcdev_to_ccu_reset(rcdev);
     let map = &(*ccu).reset_map[id as usize];
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let mut reg: u32;
 
     spin_lock_irqsave((*ccu).lock, &mut flags);
@@ -47,8 +47,8 @@ unsafe fn ccu_reset_deassert(
 
 unsafe fn ccu_reset_reset(
     rcdev: *mut reset_controller_dev,
-    id: libc::c_ulong,
-) -> libc::c_int {
+    id: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     ccu_reset_assert(rcdev, id);
     udelay(10);
     ccu_reset_deassert(rcdev, id);
@@ -58,8 +58,8 @@ unsafe fn ccu_reset_reset(
 
 unsafe fn ccu_reset_status(
     rcdev: *mut reset_controller_dev,
-    id: libc::c_ulong,
-) -> libc::c_int {
+    id: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let ccu = rcdev_to_ccu_reset(rcdev);
     let map = &(*ccu).reset_map[id as usize];
 
@@ -67,7 +67,7 @@ unsafe fn ccu_reset_status(
      * The reset control API expects 0 if reset is not asserted,
      * which is the opposite of what our hardware uses.
      */
-    (!(map.bit & readl((*ccu).base.add(map.reg as usize)) != 0)) as libc::c_int
+    (!(map.bit & readl((*ccu).base.add(map.reg as usize)) != 0)) as kernel::ffi::c_int
 }
 
 pub static ccu_reset_ops: reset_control_ops = reset_control_ops {

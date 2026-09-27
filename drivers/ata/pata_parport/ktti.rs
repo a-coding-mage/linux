@@ -38,17 +38,17 @@ unsafe fn ktti_read_regr(_pi: *mut crate::pi_adapter, cont: i32, regr: i32) -> i
     j44(a, b)
 }
 
-unsafe fn ktti_read_block(_pi: *mut crate::pi_adapter, buf: *mut core::ffi::c_char, count: i32) {
+unsafe fn ktti_read_block(_pi: *mut crate::pi_adapter, buf: *mut kernel::ffi::c_char, count: i32) {
     for k in 0..(count / 2) {
         w0(0x10); w2(0xb); w2(0xa); w2(9); w2(0xc); w2(9);
         let mut a = r1(); w2(0xc); let mut b = r1(); w2(9);
-        *buf.add((2 * k) as usize) = j44(a, b) as core::ffi::c_char;
+        *buf.add((2 * k) as usize) = j44(a, b) as kernel::ffi::c_char;
         a = r1(); w2(0xc); b = r1(); w2(9);
-        *buf.add((2 * k + 1) as usize) = j44(a, b) as core::ffi::c_char;
+        *buf.add((2 * k + 1) as usize) = j44(a, b) as kernel::ffi::c_char;
     }
 }
 
-unsafe fn ktti_write_block(_pi: *mut crate::pi_adapter, buf: *mut core::ffi::c_char, count: i32) {
+unsafe fn ktti_write_block(_pi: *mut crate::pi_adapter, buf: *mut kernel::ffi::c_char, count: i32) {
     for k in 0..(count / 2) {
         w0(0x10); w2(0xb); w2(0xa); w2(3); w2(6);
         w0(*buf.add((2 * k) as usize) as i32); w2(3);

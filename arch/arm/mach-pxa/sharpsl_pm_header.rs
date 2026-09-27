@@ -21,7 +21,7 @@ pub struct sharpsl_charger_machinfo {
     pub presuspend: Option<unsafe extern "C" fn()>,
     pub postsuspend: Option<unsafe extern "C" fn()>,
     pub earlyresume: Option<unsafe extern "C" fn()>,
-    pub read_devdata: Option<unsafe extern "C" fn(i32) -> ::core::ffi::c_ulong>,
+    pub read_devdata: Option<unsafe extern "C" fn(i32) -> ::kernel::ffi::c_ulong>,
     pub charger_wakeup: Option<unsafe extern "C" fn() -> bool>,
     pub should_wakeup: Option<unsafe extern "C" fn(u32) -> i32>,
     pub backlight_limit: Option<unsafe extern "C" fn(i32)>,
@@ -65,7 +65,7 @@ pub struct sharpsl_pm_status {
     pub charge_mode: i32,
     pub flags: u32,
     pub full_count: i32,
-    pub charge_start_time: ::core::ffi::c_ulong,
+    pub charge_start_time: ::kernel::ffi::c_ulong,
     pub machinfo: *mut sharpsl_charger_machinfo,
     pub battstat: battery_stat,
 }

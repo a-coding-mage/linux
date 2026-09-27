@@ -159,7 +159,7 @@ struct walk_control {
 };
 
 static void do_abort_log_replay(walk_control *wc, const char *function,
-				line: core::ffi::c_uint, int error, const char *fmt, ...)
+				line: kernel::ffi::c_uint, int error, const char *fmt, ...)
 {
 	struct btrfs_fs_info *fs_info = (*(*wc).trans).fs_info;
 	struct va_format vaf;
@@ -248,7 +248,7 @@ static bool wait_log_commit(btrfs_root *root, int transid);
 
 static struct btrfs_inode *btrfs_iget_logging(objectid: u64, btrfs_root *root)
 {
-	core::ffi::c_uint nofs_flag;
+	kernel::ffi::c_uint nofs_flag;
 	struct btrfs_inode *inode;
 
 	/* Only meant to be called for subvolume roots and not for log roots. */
@@ -468,8 +468,8 @@ static int overwrite_item(walk_control *wc)
 	u32 item_size;
 	u64 saved_i_size = 0;
 	int save_old_i_size = 0;
-	core::ffi::c_ulong src_ptr;
-	core::ffi::c_ulong dst_ptr;
+	kernel::ffi::c_ulong src_ptr;
+	kernel::ffi::c_ulong dst_ptr;
 	struct extent_buffer *dst_eb;
 	int dst_slot;
 	const bool is_inode_item = ((*wc).log_key.r#type == BTRFS_INODE_ITEM_KEY);
@@ -677,7 +677,7 @@ static int read_alloc_one_name(extent_buffer *eb, void *start, int len,
 	if (!buf)
 		return -ENOMEM;
 
-	read_extent_buffer(eb, buf, (core::ffi::c_ulong)start, len);
+	read_extent_buffer(eb, buf, (kernel::ffi::c_ulong)start, len);
 	(*name).name = buf;
 	(*name).len = len;
 	return 0;
@@ -711,7 +711,7 @@ static noinline int replay_one_extent(walk_control *wc)
 	u64 csum_end;
 	LIST_HEAD(ordered_sums);
 	u64 offset;
-	core::ffi::c_ulong dest_offset;
+	kernel::ffi::c_ulong dest_offset;
 	struct btrfs_key ins;
 	struct btrfs_file_extent_item *item;
 	struct btrfs_inode *inode = NULL;
@@ -759,7 +759,7 @@ static noinline int replay_one_extent(walk_control *wc)
 	     found_type == BTRFS_FILE_EXTENT_PREALLOC)) {
 		struct extent_buffer *leaf = (*(*wc).subvol_path).nodes[0];
 		struct btrfs_file_extent_item existing;
-		core::ffi::c_ulong ptr;
+		kernel::ffi::c_ulong ptr;
 
 		ptr = btrfs_item_ptr_offset(leaf, (*(*wc).subvol_path).slots[0]);
 		read_extent_buffer(leaf, &existing, ptr, sizeof(existing));
@@ -768,7 +768,7 @@ static noinline int replay_one_extent(walk_control *wc)
 		 * we already have a pointer to this exact extent,
 		 * we don't have to do anything
 		 */
-		if (memcmp_extent_buffer((*wc).log_leaf, &existing, (core::ffi::c_ulong)item,
+		if (memcmp_extent_buffer((*wc).log_leaf, &existing, (kernel::ffi::c_ulong)item,
 					 sizeof(existing)) == 0) {
 			btrfs_release_path((*wc).subvol_path);
 			break 'out;
@@ -820,7 +820,7 @@ static noinline int replay_one_extent(walk_control *wc)
 	dest_offset = btrfs_item_ptr_offset((*(*wc).subvol_path).nodes[0],
 					    (*(*wc).subvol_path).slots[0]);
 	copy_extent_buffer((*(*wc).subvol_path).nodes[0], (*wc).log_leaf, dest_offset,
-			   (core::ffi::c_ulong)item, sizeof(*item));
+			   (kernel::ffi::c_ulong)item, sizeof(*item));
 
 	/*
 	 * We have an explicit hole and NO_HOLES is not enabled. We have added
@@ -1199,8 +1199,8 @@ static int unlink_refs_not_in_log(walk_control *wc,
 				  btrfs_inode *inode)
 {
 	struct extent_buffer *leaf = (*(*wc).subvol_path).nodes[0];
-	core::ffi::c_ulong ptr;
-	core::ffi::c_ulong ptr_end;
+	kernel::ffi::c_ulong ptr;
+	kernel::ffi::c_ulong ptr_end;
 
 	/*
 	 * Check all the names in this back reference to see if they are in the
@@ -1238,7 +1238,7 @@ static int unlink_refs_not_in_log(walk_control *wc,
 				return ret;
 			}
 			kfree(victim_name.name);
-			ptr = (core::ffi::c_ulong)(victim_ref + 1) + victim_name.len;
+			ptr = (kernel::ffi::c_ulong)(victim_ref + 1) + victim_name.len;
 			continue;
 		}
 
@@ -1261,7 +1261,7 @@ static int unlink_extrefs_not_in_log(walk_control *wc,
 				     btrfs_inode *inode)
 {
 	struct extent_buffer *leaf = wc->subvol_path->nodes[0];
-	const core::ffi::c_ulong base = btrfs_item_ptr_offset(leaf, wc->subvol_path->slots[0]);
+	const kernel::ffi::c_ulong base = btrfs_item_ptr_offset(leaf, wc->subvol_path->slots[0]);
 	const u32 item_size = btrfs_item_size(leaf, wc->subvol_path->slots[0]);
 	u32 cur_offset = 0;
 
@@ -1416,7 +1416,7 @@ int __add_inode_ref(walk_control *wc,
     }
 }
 
-static int extref_get_fields(extent_buffer *eb, ref_ptr: core::ffi::c_ulong,
+static int extref_get_fields(extent_buffer *eb, ref_ptr: kernel::ffi::c_ulong,
 			     fscrypt_str *name, u64 *index,
 			     u64 *parent_objectid)
 {
@@ -1438,7 +1438,7 @@ static int extref_get_fields(extent_buffer *eb, ref_ptr: core::ffi::c_ulong,
 	return 0;
 }
 
-static int ref_get_fields(extent_buffer *eb, ref_ptr: core::ffi::c_ulong,
+static int ref_get_fields(extent_buffer *eb, ref_ptr: kernel::ffi::c_ulong,
 			  fscrypt_str *name, u64 *index)
 {
 	struct btrfs_inode_ref *ref;
@@ -1469,8 +1469,8 @@ static int unlink_old_inode_refs(walk_control *wc, btrfs_inode *inode)
 	'out: {
 	struct btrfs_root *root = wc->root;
 	int ret;
-	core::ffi::c_ulong ref_ptr;
-	core::ffi::c_ulong ref_end;
+	kernel::ffi::c_ulong ref_ptr;
+	kernel::ffi::c_ulong ref_end;
 	struct extent_buffer *eb;
 
     'again: loop {
@@ -1572,8 +1572,8 @@ static noinline int add_inode_ref(walk_control *wc)
 	struct btrfs_root *root = wc->root;
 	struct btrfs_inode *dir = NULL;
 	struct btrfs_inode *inode = NULL;
-	core::ffi::c_ulong ref_ptr;
-	core::ffi::c_ulong ref_end;
+	kernel::ffi::c_ulong ref_ptr;
+	kernel::ffi::c_ulong ref_end;
 	struct fscrypt_str name = { 0 };
 	int ret;
 	const bool is_extref_item = (wc->log_key.r#type == BTRFS_INODE_EXTREF_KEY);
@@ -1731,7 +1731,7 @@ static noinline int add_inode_ref(walk_control *wc)
 		/* Else, ret == 1, we already have a perfect match, we're done. */
 		}
 		
-		ref_ptr = (core::ffi::c_ulong)(ref_ptr + ref_struct_size) + name.len;
+		ref_ptr = (kernel::ffi::c_ulong)(ref_ptr + ref_struct_size) + name.len;
 		kfree(name.name);
 		name.name = NULL;
 		if (is_extref_item && dir) {
@@ -1769,12 +1769,12 @@ static int count_inode_extrefs(btrfs_inode *inode, btrfs_path *path)
 {
 	int ret = 0;
 	int name_len;
-	core::ffi::c_uint nlink = 0;
+	kernel::ffi::c_uint nlink = 0;
 	u32 item_size;
 	u32 cur_offset = 0;
 	u64 inode_objectid = btrfs_ino(inode);
 	u64 offset = 0;
-	core::ffi::c_ulong ptr;
+	kernel::ffi::c_ulong ptr;
 	struct btrfs_inode_extref *extref;
 	struct extent_buffer *leaf;
 
@@ -1812,9 +1812,9 @@ static int count_inode_refs(btrfs_inode *inode, btrfs_path *path)
 {
 	int ret;
 	struct btrfs_key key;
-	core::ffi::c_uint nlink = 0;
-	core::ffi::c_ulong ptr;
-	core::ffi::c_ulong ptr_end;
+	kernel::ffi::c_uint nlink = 0;
+	kernel::ffi::c_ulong ptr;
+	kernel::ffi::c_ulong ptr_end;
 	int name_len;
 	u64 ino = btrfs_ino(inode);
 
@@ -1846,7 +1846,7 @@ process_slot:
 			ref = (btrfs_inode_ref *)ptr;
 			name_len = btrfs_inode_ref_name_len(path->nodes[0],
 							    ref);
-			ptr = (core::ffi::c_ulong)(ref + 1) + name_len;
+			ptr = (kernel::ffi::c_ulong)(ref + 1) + name_len;
 			nlink++;
 		}
 
@@ -2578,7 +2578,7 @@ again:
 				break 'out;
 			}
 			read_extent_buffer(wc->subvol_path->nodes[0], name,
-					   (core::ffi::c_ulong)(di + 1), name_len);
+					   (kernel::ffi::c_ulong)(di + 1), name_len);
 
 			log_di = btrfs_lookup_xattr(NULL, log, log_path, ino,
 						    name, name_len, 0);
@@ -4043,8 +4043,8 @@ static int flush_dir_items_batch(btrfs_trans_handle *trans,
 	char AUTO_KFREE(ins_data);
 	struct btrfs_item_batch batch;
 	struct extent_buffer *dst;
-	core::ffi::c_ulong src_offset;
-	core::ffi::c_ulong dst_offset;
+	kernel::ffi::c_ulong src_offset;
+	kernel::ffi::c_ulong dst_offset;
 	u64 last_index;
 	struct btrfs_key key;
 	u32 item_size;
@@ -4974,8 +4974,8 @@ static noinline int copy_items(btrfs_trans_handle *trans,
 		const int src_slot = start_slot + i;
 		const int dst_slot = dst_path->slots[0] + dst_index;
 		struct btrfs_key key;
-		core::ffi::c_ulong src_offset;
-		core::ffi::c_ulong dst_offset;
+		kernel::ffi::c_ulong src_offset;
+		kernel::ffi::c_ulong dst_offset;
 
 		/*
 		 * We're done, all the remaining items in the source leaf
@@ -5783,7 +5783,7 @@ static int btrfs_check_ref_name_override(extent_buffer *eb,
 	u32 name_len = 0;
 	u32 item_size = btrfs_item_size(eb, slot);
 	u32 cur_offset = 0;
-	core::ffi::c_ulong ptr = btrfs_item_ptr_offset(eb, slot);
+	kernel::ffi::c_ulong ptr = btrfs_item_ptr_offset(eb, slot);
 
 	search_path = btrfs_alloc_path();
 	if (!search_path)
@@ -5795,7 +5795,7 @@ static int btrfs_check_ref_name_override(extent_buffer *eb,
 		u64 parent;
 		u32 this_name_len;
 		u32 this_len;
-		core::ffi::c_ulong name_ptr;
+		kernel::ffi::c_ulong name_ptr;
 		struct btrfs_dir_item *di;
 		struct fscrypt_str name_str;
 
@@ -5805,7 +5805,7 @@ static int btrfs_check_ref_name_override(extent_buffer *eb,
 			iref = (btrfs_inode_ref *)(ptr + cur_offset);
 			parent = key->offset;
 			this_name_len = btrfs_inode_ref_name_len(eb, iref);
-			name_ptr = (core::ffi::c_ulong)(iref + 1);
+			name_ptr = (kernel::ffi::c_ulong)(iref + 1);
 			this_len = sizeof(*iref) + this_name_len;
 		} else {
 			struct btrfs_inode_extref *extref;
@@ -5814,7 +5814,7 @@ static int btrfs_check_ref_name_override(extent_buffer *eb,
 							       cur_offset);
 			parent = btrfs_inode_extref_parent(eb, extref);
 			this_name_len = btrfs_inode_extref_name_len(eb, extref);
-			name_ptr = (core::ffi::c_ulong)&extref->name;
+			name_ptr = (kernel::ffi::c_ulong)&extref->name;
 			this_len = sizeof(*extref) + this_name_len;
 		}
 
@@ -6598,7 +6598,7 @@ static int insert_delayed_items_batch(btrfs_trans_handle *trans,
 
 		data_ptr = btrfs_item_ptr(path->nodes[0], path->slots[0], char);
 		write_extent_buffer(path->nodes[0], &curr->data,
-				    (core::ffi::c_ulong)data_ptr, curr->data_len);
+				    (kernel::ffi::c_ulong)data_ptr, curr->data_len);
 		curr = list_next_entry(curr, log_list);
 		path->slots[0]++;
 	}
@@ -7364,7 +7364,7 @@ static int btrfs_log_all_parents(btrfs_trans_handle *trans,
 		int slot = path->slots[0];
 		u32 cur_offset = 0;
 		u32 item_size;
-		core::ffi::c_ulong ptr;
+		kernel::ffi::c_ulong ptr;
 
 		if (slot >= btrfs_header_nritems(leaf)) {
 			ret = btrfs_next_leaf(root, path);

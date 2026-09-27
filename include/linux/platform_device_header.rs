@@ -16,7 +16,7 @@ pub enum fwnode_handle {}
 
 #[repr(C)]
 pub struct platform_device {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub id: i32,
     pub id_auto: bool,
     pub dev: device,
@@ -57,11 +57,11 @@ unsafe extern "C" {
     /* CONFIG_HAS_IOMEM controls whether these are external functions or error stubs. */
     pub fn devm_platform_get_and_ioremap_resource(
         pdev: *mut platform_device, index: u32, res: *mut *mut resource,
-    ) -> *mut ::core::ffi::c_void;
-    pub fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32) -> *mut ::core::ffi::c_void;
+    ) -> *mut ::kernel::ffi::c_void;
+    pub fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32) -> *mut ::kernel::ffi::c_void;
     pub fn devm_platform_ioremap_resource_byname(
-        pdev: *mut platform_device, name: *const ::core::ffi::c_char,
-    ) -> *mut ::core::ffi::c_void;
+        pdev: *mut platform_device, name: *const ::kernel::ffi::c_char,
+    ) -> *mut ::kernel::ffi::c_void;
 
     pub fn platform_get_irq(pdev: *mut platform_device, num: u32) -> i32;
     pub fn platform_get_irq_optional(pdev: *mut platform_device, num: u32) -> i32;
@@ -74,10 +74,10 @@ unsafe extern "C" {
         maxvec: u32, irqs: *mut *mut i32,
     ) -> i32;
     pub fn platform_get_resource_byname(
-        pdev: *mut platform_device, typ: u32, name: *const ::core::ffi::c_char,
+        pdev: *mut platform_device, typ: u32, name: *const ::kernel::ffi::c_char,
     ) -> *mut resource;
-    pub fn platform_get_irq_byname(pdev: *mut platform_device, name: *const ::core::ffi::c_char) -> i32;
-    pub fn platform_get_irq_byname_optional(pdev: *mut platform_device, name: *const ::core::ffi::c_char) -> i32;
+    pub fn platform_get_irq_byname(pdev: *mut platform_device, name: *const ::kernel::ffi::c_char) -> i32;
+    pub fn platform_get_irq_byname_optional(pdev: *mut platform_device, name: *const ::kernel::ffi::c_char) -> i32;
     pub fn platform_add_devices(pdevs: *mut *mut platform_device, num: i32) -> i32;
 }
 
@@ -86,11 +86,11 @@ pub struct platform_device_info {
     pub parent: *mut device,
     pub fwnode: *mut fwnode_handle,
     pub of_node_reused: bool,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub id: i32,
     pub res: *const resource,
     pub num_res: u32,
-    pub data: *const ::core::ffi::c_void,
+    pub data: *const ::kernel::ffi::c_void,
     pub size_data: usize,
     pub dma_mask: u64,
     pub swnode: *const software_node,
@@ -103,8 +103,8 @@ unsafe extern "C" {
 
 #[inline]
 pub unsafe fn platform_device_register_resndata(
-    parent: *mut device, name: *const ::core::ffi::c_char, id: i32,
-    res: *const resource, num: u32, data: *const ::core::ffi::c_void, size: usize,
+    parent: *mut device, name: *const ::kernel::ffi::c_char, id: i32,
+    res: *const resource, num: u32, data: *const ::kernel::ffi::c_void, size: usize,
 ) -> *mut platform_device {
     let info = platform_device_info { parent, fwnode: core::ptr::null_mut(), of_node_reused: false,
         name, id, res, num_res: num, data, size_data: size, dma_mask: 0,
@@ -114,23 +114,23 @@ pub unsafe fn platform_device_register_resndata(
 
 #[inline]
 pub unsafe fn platform_device_register_simple(
-    name: *const ::core::ffi::c_char, id: i32, res: *const resource, num: u32,
+    name: *const ::kernel::ffi::c_char, id: i32, res: *const resource, num: u32,
 ) -> *mut platform_device {
     platform_device_register_resndata(core::ptr::null_mut(), name, id, res, num, core::ptr::null(), 0)
 }
 
 #[inline]
 pub unsafe fn platform_device_register_data(
-    parent: *mut device, name: *const ::core::ffi::c_char, id: i32,
-    data: *const ::core::ffi::c_void, size: usize,
+    parent: *mut device, name: *const ::kernel::ffi::c_char, id: i32,
+    data: *const ::kernel::ffi::c_void, size: usize,
 ) -> *mut platform_device {
     platform_device_register_resndata(parent, name, id, core::ptr::null(), 0, data, size)
 }
 
 unsafe extern "C" {
-    pub fn platform_device_alloc(name: *const ::core::ffi::c_char, id: i32) -> *mut platform_device;
+    pub fn platform_device_alloc(name: *const ::kernel::ffi::c_char, id: i32) -> *mut platform_device;
     pub fn platform_device_add_resources(pdev: *mut platform_device, res: *const resource, num: u32) -> i32;
-    pub fn platform_device_add_data(pdev: *mut platform_device, data: *const ::core::ffi::c_void, size: usize) -> i32;
+    pub fn platform_device_add_data(pdev: *mut platform_device, data: *const ::kernel::ffi::c_void, size: usize) -> i32;
     pub fn platform_device_set_of_node(pdev: *mut platform_device, np: *mut device_node);
     pub fn platform_device_set_fwnode(pdev: *mut platform_device, fwnode: *mut fwnode_handle);
     pub fn platform_device_set_of_node_from_dev(pdev: *mut platform_device, dev2: *const device);
@@ -158,24 +158,24 @@ pub unsafe fn to_platform_driver(drv: *mut device_driver) -> *mut platform_drive
 }
 
 unsafe extern "C" {
-    pub fn __platform_driver_register(drv: *mut platform_driver, module: *mut module, mod_name: *const ::core::ffi::c_char) -> i32;
+    pub fn __platform_driver_register(drv: *mut platform_driver, module: *mut module, mod_name: *const ::kernel::ffi::c_char) -> i32;
     pub fn __platform_driver_unregister(drv: *mut platform_driver);
     pub fn __platform_driver_probe(
         driver: *mut platform_driver,
         probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32>,
-        module: *mut module, mod_name: *const ::core::ffi::c_char,
+        module: *mut module, mod_name: *const ::kernel::ffi::c_char,
     ) -> i32;
-    pub fn dev_get_drvdata(dev: *const device) -> *mut ::core::ffi::c_void;
-    pub fn dev_set_drvdata(dev: *mut device, data: *mut ::core::ffi::c_void);
+    pub fn dev_get_drvdata(dev: *const device) -> *mut ::kernel::ffi::c_void;
+    pub fn dev_set_drvdata(dev: *mut device, data: *mut ::kernel::ffi::c_void);
 }
 
 #[inline]
-pub unsafe fn platform_get_drvdata(pdev: *const platform_device) -> *mut ::core::ffi::c_void {
+pub unsafe fn platform_get_drvdata(pdev: *const platform_device) -> *mut ::kernel::ffi::c_void {
     dev_get_drvdata(&(*pdev).dev)
 }
 
 #[inline]
-pub unsafe fn platform_set_drvdata(pdev: *mut platform_device, data: *mut ::core::ffi::c_void) {
+pub unsafe fn platform_set_drvdata(pdev: *mut platform_device, data: *mut ::kernel::ffi::c_void) {
     dev_set_drvdata(&mut (*pdev).dev, data)
 }
 
@@ -186,12 +186,12 @@ unsafe extern "C" {
     pub fn __platform_create_bundle(
         driver: *mut platform_driver,
         probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32>,
-        res: *mut resource, n_res: u32, data: *const ::core::ffi::c_void, size: usize,
-        module: *mut module, mod_name: *const ::core::ffi::c_char,
+        res: *mut resource, n_res: u32, data: *const ::kernel::ffi::c_void, size: usize,
+        module: *mut module, mod_name: *const ::kernel::ffi::c_char,
     ) -> *mut platform_device;
     pub fn __platform_register_drivers(
         drivers: *const *mut platform_driver, count: u32, owner: *mut module,
-        mod_name: *const ::core::ffi::c_char,
+        mod_name: *const ::kernel::ffi::c_char,
     ) -> i32;
     pub fn platform_unregister_drivers(drivers: *const *mut platform_driver, count: u32);
     pub fn early_platform_cleanup();

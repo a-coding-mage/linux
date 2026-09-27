@@ -11,7 +11,7 @@
 #[repr(C)]
 pub struct fsl_mc_device_id {
     pub vendor: __u16,
-    pub obj_type: [::core::ffi::c_char; 16],
+    pub obj_type: [::kernel::ffi::c_char; 16],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -23,7 +23,7 @@ extern "C" {
     pub fn cpumf_events_sysfs_show(
         dev: *mut device,
         attr: *mut device_attribute,
-        page: *mut core::ffi::c_char,
+        page: *mut kernel::ffi::c_char,
     ) -> isize;
 }
 
@@ -68,6 +68,6 @@ pub struct perf_sf_sde_regs {
  *       offsetof(struct stack_frame, back_chain);
  */
 
-pub type c_ulong = core::ffi::c_ulong;
+pub type c_ulong = kernel::ffi::c_ulong;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

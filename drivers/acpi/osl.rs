@@ -19,7 +19,7 @@ ACPI_MODULE_NAME!("osl");
 #[repr(C)]
 pub struct acpi_os_dpc {
     pub function: acpi_osd_exec_callback,
-    pub context: *mut core::ffi::c_void,
+    pub context: *mut kernel::ffi::c_void,
     pub work: work_struct,
 }
 
@@ -29,7 +29,7 @@ pub static mut acpi_in_debugger: i32 = 0;
 static mut __acpi_os_prepare_sleep: Option<unsafe extern "C" fn(u8, u32, u32) -> i32> = None;
 static mut __acpi_os_prepare_extended_sleep: Option<unsafe extern "C" fn(u8, u32, u32) -> i32> = None;
 static mut acpi_irq_handler: Option<acpi_osd_handler> = None;
-static mut acpi_irq_context: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut acpi_irq_context: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut kacpid_wq: *mut workqueue_struct = core::ptr::null_mut();
 static mut kacpi_notify_wq: *mut workqueue_struct = core::ptr::null_mut();
 static mut kacpi_hotplug_wq: *mut workqueue_struct = core::ptr::null_mut();
@@ -42,7 +42,7 @@ static mut poweroff_on_fatal: bool = true;
 #[repr(C)]
 pub struct acpi_ioremap {
     pub list: list_head,
-    pub virt: *mut core::ffi::c_void,
+    pub virt: *mut kernel::ffi::c_void,
     pub phys: acpi_physical_address,
     pub size: acpi_size,
     pub track: acpi_ioremap_track,
@@ -50,7 +50,7 @@ pub struct acpi_ioremap {
 
 #[repr(C)]
 pub union acpi_ioremap_track {
-    pub refcount: core::ffi::c_ulong,
+    pub refcount: kernel::ffi::c_ulong,
     pub rwork: rcu_work,
 }
 
@@ -145,12 +145,12 @@ unsafe fn acpi_map_lookup(phys: acpi_physical_address, size: acpi_size) -> *mut 
     if !map.is_null() && (*map).phys <= phys && phys.wrapping_add(size) <= (*map).phys.wrapping_add((*map).size) { map } else { core::ptr::null_mut() }
 }
 
-unsafe fn acpi_map_vaddr_lookup(phys: acpi_physical_address, size: u32) -> *mut core::ffi::c_void {
+unsafe fn acpi_map_vaddr_lookup(phys: acpi_physical_address, size: u32) -> *mut kernel::ffi::c_void {
     let map = acpi_map_lookup(phys, size as acpi_size);
     if map.is_null() { core::ptr::null_mut() } else { ((*map).virt as usize).wrapping_add((phys - (*map).phys) as usize) as *mut _ }
 }
 
-pub unsafe extern "C" fn acpi_os_get_iomem(phys: acpi_physical_address, size: u32) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn acpi_os_get_iomem(phys: acpi_physical_address, size: u32) -> *mut kernel::ffi::c_void {
     mutex_lock!(&mut acpi_ioremap_lock);
     let map = acpi_map_lookup(phys, size as acpi_size);
     let virt = if map.is_null() { core::ptr::null_mut() } else { (*map).track.refcount = (*map).track.refcount.wrapping_add(1); ((*map).virt as usize).wrapping_add((phys - (*map).phys) as usize) as *mut _ };
@@ -170,7 +170,7 @@ unsafe extern "C" fn acpi_os_map_remove(work: *mut work_struct) {
     acpi_unmap((*map).phys, (*map).virt); kfree!(map);
 }
 
-pub unsafe extern "C" fn acpi_os_map_iomem(phys: acpi_physical_address, size: acpi_size) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn acpi_os_map_iomem(phys: acpi_physical_address, size: acpi_size) -> *mut kernel::ffi::c_void {
     if phys > ULONG_MAX as u64 { pr_err!("Cannot map memory that high: 0x{:x}\n", phys); return core::ptr::null_mut(); }
     if !acpi_permanent_mmap { return __acpi_map_table(phys as usize, size); }
     mutex_lock!(&mut acpi_ioremap_lock);
@@ -185,14 +185,14 @@ pub unsafe extern "C" fn acpi_os_map_iomem(phys: acpi_physical_address, size: ac
     ((*map).virt as usize + (phys - (*map).phys) as usize) as *mut _
 }
 
-pub unsafe extern "C" fn acpi_os_map_memory(phys: acpi_physical_address, size: acpi_size) -> *mut core::ffi::c_void { acpi_os_map_iomem(phys, size) }
-pub unsafe extern "C" fn acpi_os_unmap_iomem(virt: *mut core::ffi::c_void, size: acpi_size) {
+pub unsafe extern "C" fn acpi_os_map_memory(phys: acpi_physical_address, size: acpi_size) -> *mut kernel::ffi::c_void { acpi_os_map_iomem(phys, size) }
+pub unsafe extern "C" fn acpi_os_unmap_iomem(virt: *mut kernel::ffi::c_void, size: acpi_size) {
     if !acpi_permanent_mmap { __acpi_unmap_table(virt, size); return; }
     mutex_lock!(&mut acpi_ioremap_lock); let map = acpi_map_lookup_virt(virt, size); if map.is_null() { mutex_unlock!(&mut acpi_ioremap_lock); WARN!(true, "ACPI: bad address {:p}\n", virt); return; } acpi_os_drop_map_ref(map); mutex_unlock!(&mut acpi_ioremap_lock);
 }
-pub unsafe extern "C" fn acpi_os_unmap_memory(virt: *mut core::ffi::c_void, size: acpi_size) { acpi_os_unmap_iomem(virt, size); }
+pub unsafe extern "C" fn acpi_os_unmap_memory(virt: *mut kernel::ffi::c_void, size: acpi_size) { acpi_os_unmap_iomem(virt, size); }
 
-unsafe fn acpi_map_lookup_virt(virt: *mut core::ffi::c_void, size: acpi_size) -> *mut acpi_ioremap {
+unsafe fn acpi_map_lookup_virt(virt: *mut kernel::ffi::c_void, size: acpi_size) -> *mut acpi_ioremap {
     let mut map: *mut acpi_ioremap = core::ptr::null_mut(); list_for_each_entry_rcu!(map, &acpi_ioremaps, list, acpi_ioremap_lock_held!()); if !map.is_null() && (*map).virt as usize <= virt as usize && virt as usize + size as usize <= (*map).virt as usize + (*map).size as usize { map } else { core::ptr::null_mut() }
 }
 

@@ -17,7 +17,7 @@ pub const IDE_HOB_STD_IN_FLAGS: u32 = 0x3c;
 pub const IDE_TASKFILE_STD_OUT_FLAGS: u32 = 0xfe;
 pub const IDE_HOB_STD_OUT_FLAGS: u32 = 0x3c;
 pub type task_ioreg_t = u8;
-pub type sata_ioreg_t = ::core::ffi::c_ulong;
+pub type sata_ioreg_t = ::kernel::ffi::c_ulong;
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -34,10 +34,10 @@ pub struct ide_task_request_s {
     pub hob_ports: [__u8; 8],
     pub out_flags: ide_reg_valid_t,
     pub in_flags: ide_reg_valid_t,
-    pub data_phase: ::core::ffi::c_int,
-    pub req_cmd: ::core::ffi::c_int,
-    pub out_size: ::core::ffi::c_ulong,
-    pub in_size: ::core::ffi::c_ulong,
+    pub data_phase: ::kernel::ffi::c_int,
+    pub req_cmd: ::kernel::ffi::c_int,
+    pub out_size: ::kernel::ffi::c_ulong,
+    pub in_size: ::kernel::ffi::c_ulong,
 }
 pub type ide_task_request_t = ide_task_request_s;
 
@@ -102,7 +102,7 @@ pub const SMART_LCYL_PASS: u8 = 0x4f; pub const SMART_HCYL_PASS: u8 = 0xc2;
 pub const SECURITY_SET_PASSWORD: u8 = 0xba; pub const SECURITY_UNLOCK: u8 = 0xbb; pub const SECURITY_ERASE_PREPARE: u8 = 0xbc; pub const SECURITY_ERASE_UNIT: u8 = 0xbd; pub const SECURITY_FREEZE_LOCK: u8 = 0xbe; pub const SECURITY_DISABLE_PASSWORD: u8 = 0xbf;
 pub const SETFEATURES_EN_8BIT: u8 = 0x01; pub const SETFEATURES_EN_WCACHE: u8 = 0x02; pub const SETFEATURES_DIS_DEFECT: u8 = 0x04; pub const SETFEATURES_EN_APM: u8 = 0x05; pub const SETFEATURES_EN_SAME_R: u8 = 0x22; pub const SETFEATURES_DIS_MSN: u8 = 0x31; pub const SETFEATURES_DIS_RETRY: u8 = 0x33; pub const SETFEATURES_EN_AAM: u8 = 0x42; pub const SETFEATURES_RW_LONG: u8 = 0x44; pub const SETFEATURES_SET_CACHE: u8 = 0x54; pub const SETFEATURES_DIS_RLA: u8 = 0x55; pub const SETFEATURES_EN_RI: u8 = 0x5d; pub const SETFEATURES_EN_SI: u8 = 0x5e; pub const SETFEATURES_DIS_RPOD: u8 = 0x66; pub const SETFEATURES_DIS_ECC: u8 = 0x77; pub const SETFEATURES_DIS_8BIT: u8 = 0x81; pub const SETFEATURES_DIS_WCACHE: u8 = 0x82; pub const SETFEATURES_EN_DEFECT: u8 = 0x84; pub const SETFEATURES_DIS_APM: u8 = 0x85; pub const SETFEATURES_EN_ECC: u8 = 0x88; pub const SETFEATURES_EN_MSN: u8 = 0x95; pub const SETFEATURES_EN_RETRY: u8 = 0x99; pub const SETFEATURES_EN_RLA: u8 = 0xaa; pub const SETFEATURES_PREFETCH: u8 = 0xab; pub const SETFEATURES_EN_REST: u8 = 0xac; pub const SETFEATURES_4B_RW_LONG: u8 = 0xbb; pub const SETFEATURES_DIS_AAM: u8 = 0xc2; pub const SETFEATURES_EN_RPOD: u8 = 0xcc; pub const SETFEATURES_DIS_RI: u8 = 0xdd; pub const SETFEATURES_EN_SAME_M: u8 = 0xdd; pub const SETFEATURES_DIS_SI: u8 = 0xde;
 
-#[repr(C)] pub struct hd_geometry { pub heads: u8, pub sectors: u8, pub cylinders: u16, pub start: ::core::ffi::c_ulong }
+#[repr(C)] pub struct hd_geometry { pub heads: u8, pub sectors: u8, pub cylinders: u16, pub start: ::kernel::ffi::c_ulong }
 pub const HDIO_GETGEO: u32 = 0x0301; pub const HDIO_GET_UNMASKINTR: u32 = 0x0302; pub const HDIO_GET_MULTCOUNT: u32 = 0x0304; pub const HDIO_GET_QDMA: u32 = 0x0305; pub const HDIO_SET_XFER: u32 = 0x0306; pub const HDIO_OBSOLETE_IDENTITY: u32 = 0x0307; pub const HDIO_GET_KEEPSETTINGS: u32 = 0x0308; pub const HDIO_GET_32BIT: u32 = 0x0309; pub const HDIO_GET_NOWERR: u32 = 0x030a; pub const HDIO_GET_DMA: u32 = 0x030b; pub const HDIO_GET_NICE: u32 = 0x030c; pub const HDIO_GET_IDENTITY: u32 = 0x030d; pub const HDIO_GET_WCACHE: u32 = 0x030e; pub const HDIO_GET_ACOUSTIC: u32 = 0x030f; pub const HDIO_GET_ADDRESS: u32 = 0x0310;
 pub const HDIO_GET_BUSSTATE: u32 = 0x031a; pub const HDIO_TRISTATE_HWIF: u32 = 0x031b; pub const HDIO_DRIVE_RESET: u32 = 0x031c; pub const HDIO_DRIVE_TASKFILE: u32 = 0x031d; pub const HDIO_DRIVE_TASK: u32 = 0x031e; pub const HDIO_DRIVE_CMD: u32 = 0x031f; pub const HDIO_DRIVE_CMD_AEB: u32 = HDIO_DRIVE_TASK;
 pub const HDIO_SET_MULTCOUNT: u32 = 0x0321; pub const HDIO_SET_UNMASKINTR: u32 = 0x0322; pub const HDIO_SET_KEEPSETTINGS: u32 = 0x0323; pub const HDIO_SET_32BIT: u32 = 0x0324; pub const HDIO_SET_NOWERR: u32 = 0x0325; pub const HDIO_SET_DMA: u32 = 0x0326; pub const HDIO_SET_PIO_MODE: u32 = 0x0327; pub const HDIO_SCAN_HWIF: u32 = 0x0328; pub const HDIO_UNREGISTER_HWIF: u32 = 0x032a; pub const HDIO_SET_NICE: u32 = 0x0329; pub const HDIO_SET_WCACHE: u32 = 0x032b; pub const HDIO_SET_ACOUSTIC: u32 = 0x032c; pub const HDIO_SET_BUSSTATE: u32 = 0x032d; pub const HDIO_SET_QDMA: u32 = 0x032e; pub const HDIO_SET_ADDRESS: u32 = 0x032f;

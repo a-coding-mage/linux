@@ -18,25 +18,25 @@ pub struct AllocTag {
 #[repr(C)]
 pub struct AllocTagKernelSection {
     pub first_tag: *mut AllocTag,
-    pub count: core::ffi::c_ulong,
+    pub count: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub union AllocTagModuleSectionStart {
-    pub start_addr: core::ffi::c_ulong,
+    pub start_addr: kernel::ffi::c_ulong,
     pub first_tag: *mut AllocTag,
 }
 
 #[repr(C)]
 pub struct AllocTagModuleSection {
     pub start: AllocTagModuleSectionStart,
-    pub end_addr: core::ffi::c_ulong,
+    pub end_addr: kernel::ffi::c_ulong,
     /* used size */
-    pub size: core::ffi::c_ulong,
+    pub size: kernel::ffi::c_ulong,
 }
 
 #[cfg(CONFIG_MEM_ALLOC_PROFILING_DEBUG)]
-pub const CODETAG_EMPTY: *mut core::ffi::c_void = 1usize as *mut core::ffi::c_void;
+pub const CODETAG_EMPTY: *mut kernel::ffi::c_void = 1usize as *mut kernel::ffi::c_void;
 
 #[cfg(CONFIG_MEM_ALLOC_PROFILING_DEBUG)]
 #[inline]

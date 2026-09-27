@@ -26,9 +26,9 @@ pub struct x86_init_mpparse {
 pub struct x86_init_resources {
     pub probe_roms: Option<unsafe extern "C" fn()>,
     pub reserve_resources: Option<unsafe extern "C" fn()>,
-    pub memory_setup: Option<unsafe extern "C" fn() -> *mut ::core::ffi::c_char>,
+    pub memory_setup: Option<unsafe extern "C" fn() -> *mut ::kernel::ffi::c_char>,
     pub dmi_setup: Option<unsafe extern "C" fn()>,
-    pub realmode_limit: ::core::ffi::c_ulong,
+    pub realmode_limit: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -60,13 +60,13 @@ pub struct x86_init_timers {
 
 #[repr(C)]
 pub struct x86_init_iommu {
-    pub iommu_init: Option<unsafe extern "C" fn() -> ::core::ffi::c_int>,
+    pub iommu_init: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct x86_init_pci {
-    pub arch_init: Option<unsafe extern "C" fn() -> ::core::ffi::c_int>,
-    pub init: Option<unsafe extern "C" fn() -> ::core::ffi::c_int>,
+    pub arch_init: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_int>,
+    pub init: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_int>,
     pub init_irq: Option<unsafe extern "C" fn()>,
     pub fixup_irqs: Option<unsafe extern "C" fn()>,
 }
@@ -90,8 +90,8 @@ pub struct x86_init_acpi {
 
 #[repr(C)]
 pub struct x86_guest {
-    pub enc_status_change_prepare: Option<unsafe extern "C" fn(vaddr: ::core::ffi::c_ulong, npages: ::core::ffi::c_int, enc: bool) -> ::core::ffi::c_int>,
-    pub enc_status_change_finish: Option<unsafe extern "C" fn(vaddr: ::core::ffi::c_ulong, npages: ::core::ffi::c_int, enc: bool) -> ::core::ffi::c_int>,
+    pub enc_status_change_prepare: Option<unsafe extern "C" fn(vaddr: ::kernel::ffi::c_ulong, npages: ::kernel::ffi::c_int, enc: bool) -> ::kernel::ffi::c_int>,
+    pub enc_status_change_finish: Option<unsafe extern "C" fn(vaddr: ::kernel::ffi::c_ulong, npages: ::kernel::ffi::c_int, enc: bool) -> ::kernel::ffi::c_int>,
     pub enc_tlb_flush_required: Option<unsafe extern "C" fn(enc: bool) -> bool>,
     pub enc_cache_flush_required: Option<unsafe extern "C" fn() -> bool>,
     pub enc_kexec_begin: Option<unsafe extern "C" fn()>,
@@ -116,13 +116,13 @@ pub struct x86_init_ops {
 pub struct x86_cpuinit_ops {
     pub setup_percpu_clockev: Option<unsafe extern "C" fn()>,
     pub early_percpu_clock_init: Option<unsafe extern "C" fn()>,
-    pub fixup_cpu_id: Option<unsafe extern "C" fn(c: *mut cpuinfo_x86, node: ::core::ffi::c_int)>,
+    pub fixup_cpu_id: Option<unsafe extern "C" fn(c: *mut cpuinfo_x86, node: ::kernel::ffi::c_int)>,
     pub parallel_bringup: bool,
 }
 
 #[repr(C)]
 pub struct x86_legacy_devices {
-    pub pnpbios: ::core::ffi::c_int,
+    pub pnpbios: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -136,16 +136,16 @@ pub enum x86_legacy_i8042_state {
 #[repr(C)]
 pub struct x86_legacy_features {
     pub i8042: x86_legacy_i8042_state,
-    pub rtc: ::core::ffi::c_int,
-    pub warm_reset: ::core::ffi::c_int,
-    pub no_vga: ::core::ffi::c_int,
-    pub reserve_bios_regions: ::core::ffi::c_int,
+    pub rtc: ::kernel::ffi::c_int,
+    pub warm_reset: ::kernel::ffi::c_int,
+    pub no_vga: ::kernel::ffi::c_int,
+    pub reserve_bios_regions: ::kernel::ffi::c_int,
     pub devices: x86_legacy_devices,
 }
 
 #[repr(C)]
 pub struct x86_hyper_runtime {
-    pub pin_vcpu: Option<unsafe extern "C" fn(cpu: ::core::ffi::c_int)>,
+    pub pin_vcpu: Option<unsafe extern "C" fn(cpu: ::kernel::ffi::c_int)>,
     pub sev_es_hcall_prepare: Option<unsafe extern "C" fn(ghcb: *mut ghcb, regs: *mut pt_regs)>,
     pub sev_es_hcall_finish: Option<unsafe extern "C" fn(ghcb: *mut ghcb, regs: *mut pt_regs) -> bool>,
     pub is_private_mmio: Option<unsafe extern "C" fn(addr: u64) -> bool>,
@@ -153,10 +153,10 @@ pub struct x86_hyper_runtime {
 
 #[repr(C)]
 pub struct x86_platform_ops {
-    pub calibrate_cpu: Option<unsafe extern "C" fn() -> ::core::ffi::c_ulong>,
-    pub calibrate_tsc: Option<unsafe extern "C" fn() -> ::core::ffi::c_ulong>,
+    pub calibrate_cpu: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_ulong>,
+    pub calibrate_tsc: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_ulong>,
     pub get_wallclock: Option<unsafe extern "C" fn(ts: *mut timespec64)>,
-    pub set_wallclock: Option<unsafe extern "C" fn(ts: *const timespec64) -> ::core::ffi::c_int>,
+    pub set_wallclock: Option<unsafe extern "C" fn(ts: *const timespec64) -> ::kernel::ffi::c_int>,
     pub iommu_shutdown: Option<unsafe extern "C" fn()>,
     pub is_untracked_pat_range: Option<unsafe extern "C" fn(start: u64, end: u64) -> bool>,
     pub nmi_init: Option<unsafe extern "C" fn()>,
@@ -189,9 +189,9 @@ extern "C" {
     pub fn x86_init_noop();
     pub fn x86_init_uint_noop(unused: u32);
     pub fn bool_x86_init_noop() -> bool;
-    pub fn x86_op_int_noop(cpu: ::core::ffi::c_int);
+    pub fn x86_op_int_noop(cpu: ::kernel::ffi::c_int);
     pub fn x86_pnpbios_disabled() -> bool;
-    pub fn set_rtc_noop(now: *const timespec64) -> ::core::ffi::c_int;
+    pub fn set_rtc_noop(now: *const timespec64) -> ::kernel::ffi::c_int;
     pub fn get_rtc_noop(now: *mut timespec64);
 }
 

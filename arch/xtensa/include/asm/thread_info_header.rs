@@ -28,15 +28,15 @@ pub struct xtregs_coprocessor_t {
 #[repr(C)]
 pub struct thread_info {
     pub task: *mut task_struct,
-    pub flags: ::core::ffi::c_ulong,
-    pub status: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
+    pub status: ::kernel::ffi::c_ulong,
     pub cpu: u32,
     pub preempt_count: i32,
     #[cfg(feature = "xchal_have_exclusive")]
-    pub atomctl8: ::core::ffi::c_ulong,
+    pub atomctl8: ::kernel::ffi::c_ulong,
     #[cfg(feature = "config_user_abi_call0_probe")]
-    pub ps_woe_fix_addr: ::core::ffi::c_ulong,
-    pub cpenable: ::core::ffi::c_ulong,
+    pub ps_woe_fix_addr: ::kernel::ffi::c_ulong,
+    pub cpenable: ::kernel::ffi::c_ulong,
     pub cp_owner_cpu: u32,
     #[cfg(feature = "xtensa_have_coprocessors")]
     pub xtregs_cp: xtregs_coprocessor_t,
@@ -86,17 +86,17 @@ pub const TIF_SYSCALL_AUDIT: usize = 9;
 pub const TIF_SECCOMP: usize = 10;
 pub const TIF_MEMDIE: usize = 11;
 
-pub const _TIF_SYSCALL_TRACE: ::core::ffi::c_ulong = 1 << TIF_SYSCALL_TRACE;
-pub const _TIF_SIGPENDING: ::core::ffi::c_ulong = 1 << TIF_SIGPENDING;
-pub const _TIF_NEED_RESCHED: ::core::ffi::c_ulong = 1 << TIF_NEED_RESCHED;
-pub const _TIF_SINGLESTEP: ::core::ffi::c_ulong = 1 << TIF_SINGLESTEP;
-pub const _TIF_SYSCALL_TRACEPOINT: ::core::ffi::c_ulong = 1 << TIF_SYSCALL_TRACEPOINT;
-pub const _TIF_NOTIFY_SIGNAL: ::core::ffi::c_ulong = 1 << TIF_NOTIFY_SIGNAL;
-pub const _TIF_NOTIFY_RESUME: ::core::ffi::c_ulong = 1 << TIF_NOTIFY_RESUME;
-pub const _TIF_SYSCALL_AUDIT: ::core::ffi::c_ulong = 1 << TIF_SYSCALL_AUDIT;
-pub const _TIF_SECCOMP: ::core::ffi::c_ulong = 1 << TIF_SECCOMP;
+pub const _TIF_SYSCALL_TRACE: ::kernel::ffi::c_ulong = 1 << TIF_SYSCALL_TRACE;
+pub const _TIF_SIGPENDING: ::kernel::ffi::c_ulong = 1 << TIF_SIGPENDING;
+pub const _TIF_NEED_RESCHED: ::kernel::ffi::c_ulong = 1 << TIF_NEED_RESCHED;
+pub const _TIF_SINGLESTEP: ::kernel::ffi::c_ulong = 1 << TIF_SINGLESTEP;
+pub const _TIF_SYSCALL_TRACEPOINT: ::kernel::ffi::c_ulong = 1 << TIF_SYSCALL_TRACEPOINT;
+pub const _TIF_NOTIFY_SIGNAL: ::kernel::ffi::c_ulong = 1 << TIF_NOTIFY_SIGNAL;
+pub const _TIF_NOTIFY_RESUME: ::kernel::ffi::c_ulong = 1 << TIF_NOTIFY_RESUME;
+pub const _TIF_SYSCALL_AUDIT: ::kernel::ffi::c_ulong = 1 << TIF_SYSCALL_AUDIT;
+pub const _TIF_SECCOMP: ::kernel::ffi::c_ulong = 1 << TIF_SECCOMP;
 
-pub const _TIF_WORK_MASK: ::core::ffi::c_ulong =
+pub const _TIF_WORK_MASK: ::kernel::ffi::c_ulong =
     _TIF_SYSCALL_TRACE | _TIF_SINGLESTEP | _TIF_SYSCALL_TRACEPOINT |
     _TIF_SYSCALL_AUDIT | _TIF_SECCOMP;
 

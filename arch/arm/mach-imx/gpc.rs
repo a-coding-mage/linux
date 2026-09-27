@@ -30,7 +30,7 @@ pub struct irq_chip {
     pub irq_retrigger: Option<unsafe extern "C" fn(*mut irq_data) -> i32>,
     pub irq_set_wake: Option<unsafe extern "C" fn(*mut irq_data, u32) -> i32>,
     pub irq_set_type: Option<unsafe extern "C" fn(*mut irq_data, u32) -> i32>,
-    #[cfg(feature = "SMP")]
+    #[cfg(CONFIG_SMP)]
     pub irq_set_affinity: Option<unsafe extern "C" fn(*mut irq_data, *const u8, bool) -> i32>,
 }
 #[repr(C)] pub struct device_node;
@@ -94,7 +94,7 @@ unsafe extern "C" fn imx_gpc_irq_set_wake(d: *mut irq_data, on: u32) -> i32 {
 
 unsafe extern "C" fn imx_gpc_irq_unmask(d: *mut irq_data) { imx_gpc_hwirq_unmask((*d).hwirq); irq_chip_unmask_parent(d); }
 unsafe extern "C" fn imx_gpc_irq_mask(d: *mut irq_data) { imx_gpc_hwirq_mask((*d).hwirq); irq_chip_mask_parent(d); }
-static mut IMX_GPC_CHIP: irq_chip = irq_chip { name: b"GPC\0".as_ptr(), irq_eoi: Some(irq_chip_eoi_parent), irq_mask: Some(imx_gpc_irq_mask), irq_unmask: Some(imx_gpc_irq_unmask), irq_retrigger: Some(irq_chip_retrigger_hierarchy), irq_set_wake: Some(imx_gpc_irq_set_wake), irq_set_type: Some(irq_chip_set_type_parent), #[cfg(feature="SMP")] irq_set_affinity: None };
+static mut IMX_GPC_CHIP: irq_chip = irq_chip { name: b"GPC\0".as_ptr(), irq_eoi: Some(irq_chip_eoi_parent), irq_mask: Some(imx_gpc_irq_mask), irq_unmask: Some(imx_gpc_irq_unmask), irq_retrigger: Some(irq_chip_retrigger_hierarchy), irq_set_wake: Some(imx_gpc_irq_set_wake), irq_set_type: Some(irq_chip_set_type_parent), #[cfg(CONFIG_SMP)] irq_set_affinity: None };
 
 unsafe fn imx_gpc_domain_translate(_d: *mut irq_domain, f: *mut irq_fwspec, h: *mut usize, ty: *mut u32) -> i32 { if (*f).param_count != 3 || (*f).param[0] != 0 { return -22; } *h=(*f).param[1] as usize; *ty=(*f).param[2]; 0 }
 unsafe fn imx_gpc_domain_alloc(d: *mut irq_domain, irq: u32, nr: u32, f: *mut irq_fwspec) -> i32 { if (*f).param_count != 3 || (*f).param[0] != 0 || (*f).param[1] as usize >= GPC_MAX_IRQS { return -22; } for i in 0..nr { irq_domain_set_hwirq_and_chip(d,irq+i,(*f).param[1]+i,&mut IMX_GPC_CHIP,core::ptr::null_mut()); } irq_domain_alloc_irqs_parent(d,irq,nr,f) }

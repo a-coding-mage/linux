@@ -11,19 +11,19 @@
 
 #[repr(C)]
 struct afe_gate {
-    id: ::core::ffi::c_int,
-    name: *const ::core::ffi::c_char,
-    parent_name: *const ::core::ffi::c_char,
-    reg: ::core::ffi::c_int,
+    id: ::kernel::ffi::c_int,
+    name: *const ::kernel::ffi::c_char,
+    parent_name: *const ::kernel::ffi::c_char,
+    reg: ::kernel::ffi::c_int,
     bit: u8,
     ops: *const clk_ops,
-    flags: ::core::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
     cg_flags: u8,
 }
 
 macro_rules! c_str {
     ($s:literal) => {
-        concat!($s, "\0").as_ptr() as *const ::core::ffi::c_char
+        concat!($s, "\0").as_ptr() as *const ::kernel::ffi::c_char
     };
 }
 
@@ -111,12 +111,12 @@ static aud_clks: [afe_gate; CLK_AUD_NR_CLK as usize] = [
     GATE_AUD2!(CLK_AUD_ETDM_OUT1_BCLK, "aud_etdm_out1_bclk", "top_audio", 24),
 ];
 
-unsafe extern "C" fn mt8186_audsys_clk_unregister(data: *mut ::core::ffi::c_void) {
+unsafe extern "C" fn mt8186_audsys_clk_unregister(data: *mut ::kernel::ffi::c_void) {
     let afe: *mut mtk_base_afe = data as *mut mtk_base_afe;
     let afe_priv: *mut mt8186_afe_private = (*afe).platform_priv as *mut mt8186_afe_private;
     let mut clk: *mut clk;
     let mut cl: *mut clk_lookup;
-    let mut i: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
 
     if afe_priv.is_null() {
         return;
@@ -139,11 +139,11 @@ unsafe extern "C" fn mt8186_audsys_clk_unregister(data: *mut ::core::ffi::c_void
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn mt8186_audsys_clk_register(afe: *mut mtk_base_afe) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn mt8186_audsys_clk_register(afe: *mut mtk_base_afe) -> ::kernel::ffi::c_int {
     let afe_priv: *mut mt8186_afe_private = (*afe).platform_priv as *mut mt8186_afe_private;
     let mut clk: *mut clk;
     let mut cl: *mut clk_lookup;
-    let mut i: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
 
     (*afe_priv).lookup = devm_kcalloc(
         (*afe).dev,
@@ -171,12 +171,12 @@ pub unsafe extern "C" fn mt8186_audsys_clk_register(afe: *mut mtk_base_afe) -> :
             ::core::ptr::null_mut(),
         );
 
-        if IS_ERR(clk as *const ::core::ffi::c_void) {
+        if IS_ERR(clk as *const ::kernel::ffi::c_void) {
             dev_err(
                 (*afe).dev,
                 c_str!("Failed to register clk %s: %ld\n"),
                 (*gate).name,
-                PTR_ERR(clk as *const ::core::ffi::c_void),
+                PTR_ERR(clk as *const ::kernel::ffi::c_void),
             );
             i += 1;
             continue;
@@ -200,7 +200,7 @@ pub unsafe extern "C" fn mt8186_audsys_clk_register(afe: *mut mtk_base_afe) -> :
     devm_add_action_or_reset(
         (*afe).dev,
         Some(mt8186_audsys_clk_unregister),
-        afe as *mut ::core::ffi::c_void,
+        afe as *mut ::kernel::ffi::c_void,
     )
 }
 

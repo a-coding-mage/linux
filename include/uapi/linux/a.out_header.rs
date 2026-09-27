@@ -89,18 +89,18 @@ macro_rules! N_BSSADDR { ($x:expr) => { $crate::N_DATADDR!($x) + ($x).a_data }; 
 
 #[repr(C)]
 pub union nlist_n_un {
-    pub n_name: *mut core::ffi::c_char,
+    pub n_name: *mut kernel::ffi::c_char,
     pub n_next: *mut nlist,
-    pub n_strx: libc::c_long,
+    pub n_strx: kernel::ffi::c_long,
 }
 
 #[repr(C)]
 pub struct nlist {
     pub n_un: nlist_n_un,
     pub n_type: u8,
-    pub n_other: core::ffi::c_char,
+    pub n_other: kernel::ffi::c_char,
     pub n_desc: i16,
-    pub n_value: libc::c_ulong,
+    pub n_value: kernel::ffi::c_ulong,
 }
 
 pub const N_UNDF: u32 = 0;

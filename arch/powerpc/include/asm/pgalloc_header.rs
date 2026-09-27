@@ -3,7 +3,7 @@
 // Translated from the PowerPC page-table allocation header.
 // The original MODULE conditional is preserved through Rust cfg attributes.
 
-#[cfg(not(feature = "MODULE"))]
+#[cfg(not(MODULE))]
 #[inline]
 pub unsafe fn pgtable_gfp_flags(mm: *mut mm_struct, gfp: gfp_t) -> gfp_t {
     if mm == (&init_mm as *const mm_struct as *mut mm_struct) {
@@ -13,7 +13,7 @@ pub unsafe fn pgtable_gfp_flags(mm: *mut mm_struct, gfp: gfp_t) -> gfp_t {
     }
 }
 
-#[cfg(feature = "MODULE")]
+#[cfg(MODULE)]
 #[inline]
 pub unsafe fn pgtable_gfp_flags(_mm: *mut mm_struct, gfp: gfp_t) -> gfp_t {
     gfp | __GFP_ACCOUNT
@@ -22,10 +22,10 @@ pub unsafe fn pgtable_gfp_flags(_mm: *mut mm_struct, gfp: gfp_t) -> gfp_t {
 pub const PGALLOC_GFP: gfp_t = GFP_KERNEL | __GFP_ZERO;
 
 extern "C" {
-    pub fn pte_fragment_alloc(mm: *mut mm_struct, kernel: ::core::ffi::c_int) -> *mut pte_t;
+    pub fn pte_fragment_alloc(mm: *mut mm_struct, kernel: ::kernel::ffi::c_int) -> *mut pte_t;
 
-    pub fn pte_frag_destroy(pte_frag: *mut ::core::ffi::c_void);
-    pub fn pte_fragment_free(table: *mut ::core::ffi::c_ulong, kernel: ::core::ffi::c_int);
+    pub fn pte_frag_destroy(pte_frag: *mut ::kernel::ffi::c_void);
+    pub fn pte_fragment_free(table: *mut ::kernel::ffi::c_ulong, kernel: ::kernel::ffi::c_int);
 
     // arch use pte_free_defer() implementation in arch/powerpc/mm/pgtable-frag.c
     pub fn pte_free_defer(mm: *mut mm_struct, pgtable: pgtable_t);
@@ -45,12 +45,12 @@ pub unsafe fn pte_alloc_one(mm: *mut mm_struct) -> pgtable_t {
 
 #[inline]
 pub unsafe fn pte_free_kernel(_mm: *mut mm_struct, pte: *mut pte_t) {
-    pte_fragment_free(pte as *mut ::core::ffi::c_ulong, 1);
+    pte_fragment_free(pte as *mut ::kernel::ffi::c_ulong, 1);
 }
 
 #[inline]
 pub unsafe fn pte_free(_mm: *mut mm_struct, ptepage: pgtable_t) {
-    pte_fragment_free(ptepage as *mut ::core::ffi::c_ulong, 0);
+    pte_fragment_free(ptepage as *mut ::kernel::ffi::c_ulong, 0);
 }
 
 pub const MAX_PGTABLE_INDEX_SIZE: u32 = 0xf;

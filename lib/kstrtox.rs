@@ -3,14 +3,14 @@
 
 // External kernel definitions and helpers are supplied by other translation units.
 extern "C" {
-    fn _parse_integer(s: *const core::ffi::c_char, base: u32, p: *mut u64) -> u32;
+    fn _parse_integer(s: *const kernel::ffi::c_char, base: u32, p: *mut u64) -> u32;
     fn _tolower(c: u32) -> u32;
     fn isxdigit(c: u32) -> bool;
     fn isdigit(c: u32) -> bool;
     fn check_mul_overflow_u64(a: u64, b: u64, out: *mut u64) -> bool;
     fn check_add_overflow_u64(a: u64, b: u64, out: *mut u64) -> bool;
     fn int_pow(base: u32, exp: u32) -> u64;
-    fn copy_from_user(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, n: usize) -> usize;
+    fn copy_from_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, n: usize) -> usize;
 }
 
 pub const KSTRTOX_OVERFLOW: u32 = 1 << 31;
@@ -19,7 +19,7 @@ pub const EINVAL: i32 = 22;
 pub const EFAULT: i32 = 14;
 
 #[no_mangle]
-pub unsafe extern "C" fn _parse_integer_fixup_radix(mut s: *const core::ffi::c_char, base: *mut u32) -> *const core::ffi::c_char {
+pub unsafe extern "C" fn _parse_integer_fixup_radix(mut s: *const kernel::ffi::c_char, base: *mut u32) -> *const kernel::ffi::c_char {
     if *base == 0 {
         if *s as u8 == b'0' {
             if _tolower(*s.add(1) as u32) == b'x' as u32 && isxdigit(*s.add(2) as u32) { *base = 16; } else { *base = 8; }
@@ -30,7 +30,7 @@ pub unsafe extern "C" fn _parse_integer_fixup_radix(mut s: *const core::ffi::c_c
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn _parse_integer_limit(s: *const core::ffi::c_char, base: u32, p: *mut u64, max_chars: usize, init: u64) -> u32 {
+pub unsafe extern "C" fn _parse_integer_limit(s: *const kernel::ffi::c_char, base: u32, p: *mut u64, max_chars: usize, init: u64) -> u32 {
     let mut rv = 0u32; let mut overflow = 0u32; let mut res = init;
     while (rv as usize) < max_chars {
         let c = *s.add(rv as usize) as u32; let lc = _tolower(c);
@@ -44,7 +44,7 @@ pub unsafe extern "C" fn _parse_integer_limit(s: *const core::ffi::c_char, base:
     *p = res; rv | overflow
 }
 
-unsafe fn _kstrtoull(mut s: *const core::ffi::c_char, mut base: u32, res: *mut u64) -> i32 {
+unsafe fn _kstrtoull(mut s: *const kernel::ffi::c_char, mut base: u32, res: *mut u64) -> i32 {
     s = _parse_integer_fixup_radix(s, &mut base); let mut tmp = 0u64; let rv = _parse_integer(s, base, &mut tmp);
     if rv & KSTRTOX_OVERFLOW != 0 { return -ERANGE; } if rv == 0 { return -EINVAL; }
     s = s.add(rv as usize); if *s as u8 == b'\n' { s = s.add(1); } if *s != 0 { return -EINVAL; } *res = tmp; 0
@@ -65,9 +65,9 @@ unsafe fn _kstrtoudec64(mut s:*const i8,scale:u32,res:*mut u64)->i32 {let mut ou
 #[no_mangle] pub unsafe extern "C" fn kstrtoudec64(s:*const i8,scale:u32,r:*mut u64)->i32{_kstrtoudec64(if *s as u8==b'+'{s.add(1)}else{s},scale,r)}
 #[no_mangle] pub unsafe extern "C" fn kstrtodec64(s:*const i8,scale:u32,r:*mut i64)->i32{let mut t=0;let v=if *s as u8==b'-'{_kstrtoudec64(s.add(1),scale,&mut t)}else{kstrtoudec64(s,scale,&mut t)};if v<0{return v}if *s as u8==b'-'{if -(t as i64)>0{return -ERANGE}*r=-(t as i64)}else{if (t as i64)<0{return -ERANGE}*r=t as i64}0}
 
-#[no_mangle] pub unsafe extern "C" fn kstrtobool_from_user(s:*const core::ffi::c_void,count:usize,r:*mut bool)->i32{let mut b=[0i8;4];let n=core::cmp::min(count,3);if copy_from_user(b.as_mut_ptr() as *mut _,s,n)!=0{return -EFAULT}b[n]=0;kstrtobool(b.as_ptr(),r)}
+#[no_mangle] pub unsafe extern "C" fn kstrtobool_from_user(s:*const kernel::ffi::c_void,count:usize,r:*mut bool)->i32{let mut b=[0i8;4];let n=core::cmp::min(count,3);if copy_from_user(b.as_mut_ptr() as *mut _,s,n)!=0{return -EFAULT}b[n]=0;kstrtobool(b.as_ptr(),r)}
 
-macro_rules! from_user {($n:ident,$f:ident,$t:ty,$size:expr) => {#[no_mangle] pub unsafe extern "C" fn $n(s:*const core::ffi::c_void,count:usize,base:u32,r:*mut $t)->i32{let mut b=[0i8;$size];let $n=core::cmp::min(count,$size-1);if copy_from_user(b.as_mut_ptr() as *mut _,s,$n)!=0{return -EFAULT}b[$n]=0;$f(b.as_ptr(),base,r)}}}
+macro_rules! from_user {($n:ident,$f:ident,$t:ty,$size:expr) => {#[no_mangle] pub unsafe extern "C" fn $n(s:*const kernel::ffi::c_void,count:usize,base:u32,r:*mut $t)->i32{let mut b=[0i8;$size];let $n=core::cmp::min(count,$size-1);if copy_from_user(b.as_mut_ptr() as *mut _,s,$n)!=0{return -EFAULT}b[$n]=0;$f(b.as_ptr(),base,r)}}}
 from_user!(kstrtoull_from_user,kstrtoull,u64,18);
 from_user!(kstrtoll_from_user,kstrtoll,i64,18);
 from_user!(kstrtoul_from_user,_kstrtoul,usize,10);

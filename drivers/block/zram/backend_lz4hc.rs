@@ -5,7 +5,7 @@
 
 #[repr(C)]
 struct lz4hc_ctx {
-    mem: *mut core::ffi::c_void,
+    mem: *mut kernel::ffi::c_void,
     dstrm: *mut LZ4_streamDecode_t,
     cstrm: *mut LZ4_streamHC_t,
 }
@@ -37,10 +37,10 @@ unsafe fn lz4hc_destroy(ctx: *mut zcomp_ctx) {
         return;
     }
 
-    kfree((*zctx).dstrm as *mut core::ffi::c_void);
-    kfree((*zctx).cstrm as *mut core::ffi::c_void);
+    kfree((*zctx).dstrm as *mut kernel::ffi::c_void);
+    kfree((*zctx).cstrm as *mut kernel::ffi::c_void);
     vfree((*zctx).mem);
-    kfree(zctx as *mut core::ffi::c_void);
+    kfree(zctx as *mut kernel::ffi::c_void);
 }
 
 unsafe fn lz4hc_create(params: *mut zcomp_params, ctx: *mut zcomp_ctx) -> i32 {
@@ -50,7 +50,7 @@ unsafe fn lz4hc_create(params: *mut zcomp_params, ctx: *mut zcomp_ctx) -> i32 {
         return -ENOMEM;
     }
 
-    (*ctx).context = zctx as *mut core::ffi::c_void;
+    (*ctx).context = zctx as *mut kernel::ffi::c_void;
     if (*params).dict_sz == 0 {
         (*zctx).mem = vmalloc(LZ4HC_MEM_COMPRESS);
         if (*zctx).mem.is_null() {
@@ -155,7 +155,7 @@ pub static backend_lz4hc: zcomp_ops = zcomp_ops {
     destroy_ctx: Some(lz4hc_destroy),
     setup_params: Some(lz4hc_setup_params),
     release_params: Some(lz4hc_release_params),
-    name: b"lz4hc\0".as_ptr() as *const core::ffi::c_char,
+    name: b"lz4hc\0".as_ptr() as *const kernel::ffi::c_char,
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

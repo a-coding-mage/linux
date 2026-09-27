@@ -17,7 +17,7 @@ pub struct Regmap {
 
 #[repr(C)]
 pub struct DeviceNode {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub parent: *mut DeviceNode,
 }
 
@@ -34,9 +34,9 @@ pub struct ClkOps {
 
 #[repr(C)]
 pub struct ClkInitData {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const ClkOps,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: u32,
 }
 
@@ -44,17 +44,17 @@ unsafe extern "C" {
     fn regmap_write(map: *mut Regmap, reg: u32, val: u32) -> i32;
     fn regmap_read(map: *mut Regmap, reg: u32, val: *mut u32) -> i32;
     fn cpu_relax();
-    fn of_clk_get_parent_name(np: *mut DeviceNode, index: u32) -> *const core::ffi::c_char;
+    fn of_clk_get_parent_name(np: *mut DeviceNode, index: u32) -> *const kernel::ffi::c_char;
     fn syscon_node_to_regmap(np: *mut DeviceNode) -> *mut Regmap;
-    fn clk_hw_register(dev: *mut core::ffi::c_void, hw: *mut ClkHw) -> i32;
+    fn clk_hw_register(dev: *mut kernel::ffi::c_void, hw: *mut ClkHw) -> i32;
     fn of_clk_add_hw_provider(
         np: *mut DeviceNode,
-        get: unsafe extern "C" fn(*mut DeviceNode, *const core::ffi::c_void) -> *mut ClkHw,
+        get: unsafe extern "C" fn(*mut DeviceNode, *const kernel::ffi::c_void) -> *mut ClkHw,
         data: *mut ClkHw,
     ) -> i32;
     fn clk_hw_unregister(hw: *mut ClkHw);
     fn kfree(ptr: *mut bcm53573_ilp);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
 }
 
 const PMU_XTAL_FREQ_RATIO: u32 = 0x66c;
@@ -161,7 +161,7 @@ unsafe extern "C" fn bcm53573_ilp_init(np: *mut DeviceNode) {
         ptr
     };
     let mut init: ClkInitData = core::mem::zeroed();
-    let parent_name: *const core::ffi::c_char;
+    let parent_name: *const kernel::ffi::c_char;
     let err: i32;
 
     parent_name = of_clk_get_parent_name(np, 0);
@@ -200,7 +200,7 @@ unsafe extern "C" fn goto_err_free_ilp(ilp: *mut bcm53573_ilp, err: i32) {
 
 unsafe extern "C" fn of_clk_hw_simple_get(
     _np: *mut DeviceNode,
-    data: *const core::ffi::c_void,
+    data: *const kernel::ffi::c_void,
 ) -> *mut ClkHw {
     data as *mut ClkHw
 }

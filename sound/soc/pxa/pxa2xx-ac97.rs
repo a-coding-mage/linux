@@ -28,57 +28,57 @@ extern "C" {
     fn pxa2xx_ac97_try_warm_reset();
     fn pxa2xx_ac97_finish_reset();
     fn pxa2xx_ac97_try_cold_reset();
-    fn pxa2xx_ac97_read(slot: core::ffi::c_int, reg: core::ffi::c_ushort) -> core::ffi::c_int;
+    fn pxa2xx_ac97_read(slot: kernel::ffi::c_int, reg: kernel::ffi::c_ushort) -> kernel::ffi::c_int;
     fn pxa2xx_ac97_write(
-        slot: core::ffi::c_int,
-        reg: core::ffi::c_ushort,
-        val: core::ffi::c_ushort,
-    ) -> core::ffi::c_int;
+        slot: kernel::ffi::c_int,
+        reg: kernel::ffi::c_ushort,
+        val: kernel::ffi::c_ushort,
+    ) -> kernel::ffi::c_int;
     fn snd_soc_dai_set_dma_data(
         cpu_dai: *mut snd_soc_dai,
         substream: *mut snd_pcm_substream,
         data: *mut snd_dmaengine_dai_dma_data,
     );
     fn pxa2xx_soc_pcm_new(component: *mut snd_soc_component, rtd: *mut snd_soc_pcm_runtime)
-        -> core::ffi::c_int;
-    fn pxa2xx_soc_pcm_open(substream: *mut snd_pcm_substream) -> core::ffi::c_int;
-    fn pxa2xx_soc_pcm_close(substream: *mut snd_pcm_substream) -> core::ffi::c_int;
+        -> kernel::ffi::c_int;
+    fn pxa2xx_soc_pcm_open(substream: *mut snd_pcm_substream) -> kernel::ffi::c_int;
+    fn pxa2xx_soc_pcm_close(substream: *mut snd_pcm_substream) -> kernel::ffi::c_int;
     fn pxa2xx_soc_pcm_hw_params(
         substream: *mut snd_pcm_substream,
         params: *mut snd_pcm_hw_params,
-    ) -> core::ffi::c_int;
-    fn pxa2xx_soc_pcm_prepare(substream: *mut snd_pcm_substream) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
+    fn pxa2xx_soc_pcm_prepare(substream: *mut snd_pcm_substream) -> kernel::ffi::c_int;
     fn pxa2xx_soc_pcm_trigger(
         substream: *mut snd_pcm_substream,
-        cmd: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        cmd: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
     fn pxa2xx_soc_pcm_pointer(substream: *mut snd_pcm_substream) -> snd_pcm_uframes_t;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     fn platform_get_resource(
         pdev: *mut platform_device,
-        ty: core::ffi::c_uint,
-        num: core::ffi::c_uint,
+        ty: kernel::ffi::c_uint,
+        num: kernel::ffi::c_uint,
     ) -> *mut resource;
-    fn pxa2xx_ac97_hw_probe(pdev: *mut platform_device) -> core::ffi::c_int;
+    fn pxa2xx_ac97_hw_probe(pdev: *mut platform_device) -> kernel::ffi::c_int;
     fn snd_ac97_controller_register(
         ops: *mut ac97_controller_ops,
         dev: *mut device,
-        slots_available: core::ffi::c_ulong,
+        slots_available: kernel::ffi::c_ulong,
     ) -> *mut ac97_controller;
-    fn IS_ERR(ptr: *const core::ffi::c_void) -> bool;
-    fn PTR_ERR(ptr: *const core::ffi::c_void) -> core::ffi::c_int;
-    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut core::ffi::c_void);
+    fn IS_ERR(ptr: *const kernel::ffi::c_void) -> bool;
+    fn PTR_ERR(ptr: *const kernel::ffi::c_void) -> kernel::ffi::c_int;
+    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut kernel::ffi::c_void);
     fn devm_snd_soc_register_component(
         dev: *mut device,
         cmpnt_drv: *const snd_soc_component_driver,
         dai_drv: *mut snd_soc_dai_driver,
-        num_dai: core::ffi::c_int,
-    ) -> core::ffi::c_int;
-    fn platform_get_drvdata(pdev: *mut platform_device) -> *mut core::ffi::c_void;
+        num_dai: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
+    fn platform_get_drvdata(pdev: *mut platform_device) -> *mut kernel::ffi::c_void;
     fn snd_ac97_controller_unregister(ctrl: *mut ac97_controller);
     fn pxa2xx_ac97_hw_remove(pdev: *mut platform_device);
-    fn pxa2xx_ac97_hw_suspend() -> core::ffi::c_int;
-    fn pxa2xx_ac97_hw_resume() -> core::ffi::c_int;
+    fn pxa2xx_ac97_hw_suspend() -> kernel::ffi::c_int;
+    fn pxa2xx_ac97_hw_resume() -> kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -116,17 +116,17 @@ pub struct ac97_controller_ops {
     pub read: Option<
         unsafe extern "C" fn(
             adrv: *mut ac97_controller,
-            slot: core::ffi::c_int,
-            reg: core::ffi::c_ushort,
-        ) -> core::ffi::c_int,
+            slot: kernel::ffi::c_int,
+            reg: kernel::ffi::c_ushort,
+        ) -> kernel::ffi::c_int,
     >,
     pub write: Option<
         unsafe extern "C" fn(
             adrv: *mut ac97_controller,
-            slot: core::ffi::c_int,
-            reg: core::ffi::c_ushort,
-            val: core::ffi::c_ushort,
-        ) -> core::ffi::c_int,
+            slot: kernel::ffi::c_int,
+            reg: kernel::ffi::c_ushort,
+            val: kernel::ffi::c_ushort,
+        ) -> kernel::ffi::c_int,
     >,
     pub warm_reset: Option<unsafe extern "C" fn(adrv: *mut ac97_controller)>,
     pub reset: Option<unsafe extern "C" fn(adrv: *mut ac97_controller)>,
@@ -135,14 +135,14 @@ pub struct ac97_controller_ops {
 #[repr(C)]
 pub struct snd_dmaengine_dai_dma_data {
     pub addr: u64,
-    pub addr_width: core::ffi::c_uint,
-    pub chan_name: *const core::ffi::c_char,
-    pub maxburst: core::ffi::c_uint,
+    pub addr_width: kernel::ffi::c_uint,
+    pub chan_name: *const kernel::ffi::c_char,
+    pub maxburst: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct snd_pcm_substream {
-    pub stream: core::ffi::c_int,
+    pub stream: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -151,22 +151,22 @@ pub struct snd_soc_dai_ops {
         unsafe extern "C" fn(
             substream: *mut snd_pcm_substream,
             cpu_dai: *mut snd_soc_dai,
-        ) -> core::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
 }
 
 #[repr(C)]
 pub struct snd_soc_pcm_stream {
-    pub stream_name: *const core::ffi::c_char,
-    pub channels_min: core::ffi::c_uint,
-    pub channels_max: core::ffi::c_uint,
+    pub stream_name: *const kernel::ffi::c_char,
+    pub channels_min: kernel::ffi::c_uint,
+    pub channels_max: kernel::ffi::c_uint,
     pub rates: u32,
     pub formats: u64,
 }
 
 #[repr(C)]
 pub struct snd_soc_dai_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub playback: snd_soc_pcm_stream,
     pub capture: snd_soc_pcm_stream,
     pub ops: *const snd_soc_dai_ops,
@@ -174,40 +174,40 @@ pub struct snd_soc_dai_driver {
 
 #[repr(C)]
 pub struct snd_soc_component_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub pcm_new: Option<
         unsafe extern "C" fn(
             component: *mut snd_soc_component,
             rtd: *mut snd_soc_pcm_runtime,
-        ) -> core::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
-    pub open: Option<unsafe extern "C" fn(substream: *mut snd_pcm_substream) -> core::ffi::c_int>,
-    pub close: Option<unsafe extern "C" fn(substream: *mut snd_pcm_substream) -> core::ffi::c_int>,
+    pub open: Option<unsafe extern "C" fn(substream: *mut snd_pcm_substream) -> kernel::ffi::c_int>,
+    pub close: Option<unsafe extern "C" fn(substream: *mut snd_pcm_substream) -> kernel::ffi::c_int>,
     pub hw_params: Option<
         unsafe extern "C" fn(
             substream: *mut snd_pcm_substream,
             params: *mut snd_pcm_hw_params,
-        ) -> core::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
-    pub prepare: Option<unsafe extern "C" fn(substream: *mut snd_pcm_substream) -> core::ffi::c_int>,
+    pub prepare: Option<unsafe extern "C" fn(substream: *mut snd_pcm_substream) -> kernel::ffi::c_int>,
     pub trigger: Option<
         unsafe extern "C" fn(
             substream: *mut snd_pcm_substream,
-            cmd: core::ffi::c_int,
-        ) -> core::ffi::c_int,
+            cmd: kernel::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
     pub pointer: Option<unsafe extern "C" fn(substream: *mut snd_pcm_substream) -> snd_pcm_uframes_t>,
 }
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct platform_device {
     pub dev: device,
-    pub id: core::ffi::c_int,
+    pub id: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -217,30 +217,30 @@ pub struct resource {
 
 #[repr(C)]
 pub struct dev_pm_ops {
-    pub suspend: Option<unsafe extern "C" fn(dev: *mut device) -> core::ffi::c_int>,
-    pub resume: Option<unsafe extern "C" fn(dev: *mut device) -> core::ffi::c_int>,
+    pub suspend: Option<unsafe extern "C" fn(dev: *mut device) -> kernel::ffi::c_int>,
+    pub resume: Option<unsafe extern "C" fn(dev: *mut device) -> kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub pm: *const dev_pm_ops,
     pub of_match_table: *const of_device_id,
 }
 
 #[repr(C)]
 pub struct platform_driver {
-    pub probe: Option<unsafe extern "C" fn(pdev: *mut platform_device) -> core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(pdev: *mut platform_device) -> kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(pdev: *mut platform_device)>,
     pub driver: device_driver,
 }
 
-pub type snd_pcm_uframes_t = core::ffi::c_ulong;
+pub type snd_pcm_uframes_t = kernel::ffi::c_ulong;
 
 unsafe extern "C" {
-    static DMA_SLAVE_BUSWIDTH_4_BYTES: core::ffi::c_uint;
-    static DMA_SLAVE_BUSWIDTH_2_BYTES: core::ffi::c_uint;
-    static SNDRV_PCM_STREAM_PLAYBACK: core::ffi::c_int;
+    static DMA_SLAVE_BUSWIDTH_4_BYTES: kernel::ffi::c_uint;
+    static DMA_SLAVE_BUSWIDTH_2_BYTES: kernel::ffi::c_uint;
+    static SNDRV_PCM_STREAM_PLAYBACK: kernel::ffi::c_int;
     static SNDRV_PCM_RATE_8000: u32;
     static SNDRV_PCM_RATE_11025: u32;
     static SNDRV_PCM_RATE_16000: u32;
@@ -248,10 +248,10 @@ unsafe extern "C" {
     static SNDRV_PCM_RATE_44100: u32;
     static SNDRV_PCM_RATE_48000: u32;
     static SNDRV_PCM_FMTBIT_S16_LE: u64;
-    static ENODEV: core::ffi::c_int;
-    static ENXIO: core::ffi::c_int;
-    static IORESOURCE_MEM: core::ffi::c_uint;
-    static AC97_SLOTS_AVAILABLE_ALL: core::ffi::c_ulong;
+    static ENODEV: kernel::ffi::c_int;
+    static ENXIO: kernel::ffi::c_int;
+    static IORESOURCE_MEM: kernel::ffi::c_uint;
+    static AC97_SLOTS_AVAILABLE_ALL: kernel::ffi::c_ulong;
 }
 
 unsafe extern "C" fn pxa2xx_ac97_warm_reset(_adrv: *mut ac97_controller) {
@@ -270,18 +270,18 @@ unsafe extern "C" fn pxa2xx_ac97_cold_reset(_adrv: *mut ac97_controller) {
 
 unsafe extern "C" fn pxa2xx_ac97_read_actrl(
     _adrv: *mut ac97_controller,
-    slot: core::ffi::c_int,
-    reg: core::ffi::c_ushort,
-) -> core::ffi::c_int {
+    slot: kernel::ffi::c_int,
+    reg: kernel::ffi::c_ushort,
+) -> kernel::ffi::c_int {
     unsafe { pxa2xx_ac97_read(slot, reg) }
 }
 
 unsafe extern "C" fn pxa2xx_ac97_write_actrl(
     _adrv: *mut ac97_controller,
-    slot: core::ffi::c_int,
-    reg: core::ffi::c_ushort,
-    val: core::ffi::c_ushort,
-) -> core::ffi::c_int {
+    slot: kernel::ffi::c_int,
+    reg: kernel::ffi::c_ushort,
+    val: kernel::ffi::c_ushort,
+) -> kernel::ffi::c_int {
     unsafe { pxa2xx_ac97_write(slot, reg, val) }
 }
 
@@ -331,7 +331,7 @@ static mut pxa2xx_ac97_pcm_mic_mono_in: snd_dmaengine_dai_dma_data = snd_dmaengi
 unsafe extern "C" fn pxa2xx_ac97_hifi_startup(
     substream: *mut snd_pcm_substream,
     cpu_dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let dma_data: *mut snd_dmaengine_dai_dma_data;
 
     unsafe {
@@ -350,7 +350,7 @@ unsafe extern "C" fn pxa2xx_ac97_hifi_startup(
 unsafe extern "C" fn pxa2xx_ac97_aux_startup(
     substream: *mut snd_pcm_substream,
     cpu_dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let dma_data: *mut snd_dmaengine_dai_dma_data;
 
     unsafe {
@@ -369,7 +369,7 @@ unsafe extern "C" fn pxa2xx_ac97_aux_startup(
 unsafe extern "C" fn pxa2xx_ac97_mic_startup(
     substream: *mut snd_pcm_substream,
     cpu_dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     unsafe {
         if (*substream).stream == SNDRV_PCM_STREAM_PLAYBACK {
             return -ENODEV;
@@ -485,8 +485,8 @@ static pxa2xx_ac97_dt_ids: [of_device_id; 4] = [
 ];
 // MODULE_DEVICE_TABLE(of, pxa2xx_ac97_dt_ids);
 
-unsafe extern "C" fn pxa2xx_ac97_dev_probe(pdev: *mut platform_device) -> core::ffi::c_int {
-    let ret: core::ffi::c_int;
+unsafe extern "C" fn pxa2xx_ac97_dev_probe(pdev: *mut platform_device) -> kernel::ffi::c_int {
+    let ret: kernel::ffi::c_int;
     let ctrl: *mut ac97_controller;
     let regs: *mut resource;
 
@@ -525,11 +525,11 @@ unsafe extern "C" fn pxa2xx_ac97_dev_probe(pdev: *mut platform_device) -> core::
             &mut (*pdev).dev,
             AC97_SLOTS_AVAILABLE_ALL,
         );
-        if IS_ERR(ctrl as *const core::ffi::c_void) {
-            return PTR_ERR(ctrl as *const core::ffi::c_void);
+        if IS_ERR(ctrl as *const kernel::ffi::c_void) {
+            return PTR_ERR(ctrl as *const kernel::ffi::c_void);
         }
 
-        platform_set_drvdata(pdev, ctrl as *mut core::ffi::c_void);
+        platform_set_drvdata(pdev, ctrl as *mut kernel::ffi::c_void);
         /* Punt most of the init to the SoC probe; we may need the machine
          * driver to do interesting things with the clocking to get us up
          * and running.
@@ -538,7 +538,7 @@ unsafe extern "C" fn pxa2xx_ac97_dev_probe(pdev: *mut platform_device) -> core::
             &mut (*pdev).dev,
             &pxa_ac97_component,
             pxa_ac97_dai_driver.as_mut_ptr(),
-            pxa_ac97_dai_driver.len() as core::ffi::c_int,
+            pxa_ac97_dai_driver.len() as kernel::ffi::c_int,
         )
     }
 }
@@ -553,11 +553,11 @@ unsafe extern "C" fn pxa2xx_ac97_dev_remove(pdev: *mut platform_device) {
     }
 }
 
-unsafe extern "C" fn pxa2xx_ac97_dev_suspend(_dev: *mut device) -> core::ffi::c_int {
+unsafe extern "C" fn pxa2xx_ac97_dev_suspend(_dev: *mut device) -> kernel::ffi::c_int {
     unsafe { pxa2xx_ac97_hw_suspend() }
 }
 
-unsafe extern "C" fn pxa2xx_ac97_dev_resume(_dev: *mut device) -> core::ffi::c_int {
+unsafe extern "C" fn pxa2xx_ac97_dev_resume(_dev: *mut device) -> kernel::ffi::c_int {
     unsafe { pxa2xx_ac97_hw_resume() }
 }
 

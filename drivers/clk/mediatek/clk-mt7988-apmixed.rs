@@ -15,7 +15,7 @@ const MT7988_PCW_CHG_BIT: u32 = 2;
 #[repr(C)]
 struct mtk_pll_data {
     id: u32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     reg: u32,
     pwr_reg: u32,
     en_mask: u32,
@@ -32,7 +32,7 @@ struct mtk_pll_data {
     pcw_shift: u32,
     pcw_chg_reg: u32,
     pcw_chg_bit: u32,
-    parent_name: *const core::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
 }
 
 macro_rules! pll {
@@ -41,7 +41,7 @@ macro_rules! pll {
      $pd_shift:expr, $tuner_reg:expr, $tuner_en_reg:expr, $tuner_en_bit:expr,
      $pcw_reg:expr, $pcw_shift:expr, $pcw_chg_reg:expr) => {
         mtk_pll_data {
-            id: $id, name: concat!($name, "\0").as_ptr() as *const core::ffi::c_char,
+            id: $id, name: concat!($name, "\0").as_ptr() as *const kernel::ffi::c_char,
             reg: $reg, pwr_reg: $pwr_reg, en_mask: $en_mask, flags: $flags,
             rst_bar_mask: 1u32 << $rst_bar_mask, fmax: MT7988_PLL_FMAX,
             pcwbits: $pcwbits, pd_reg: $pd_reg, pd_shift: $pd_shift,
@@ -49,7 +49,7 @@ macro_rules! pll {
             tuner_en_bit: $tuner_en_bit, pcw_reg: $pcw_reg,
             pcw_shift: $pcw_shift, pcw_chg_reg: $pcw_chg_reg,
             pcw_chg_bit: MT7988_PCW_CHG_BIT,
-            parent_name: b"clkxtal\0".as_ptr() as *const core::ffi::c_char,
+            parent_name: b"clkxtal\0".as_ptr() as *const kernel::ffi::c_char,
         }
     };
 }
@@ -70,7 +70,7 @@ static plls: [mtk_pll_data; 12] = [
 ];
 
 #[repr(C)]
-struct of_device_id { compatible: *const core::ffi::c_char }
+struct of_device_id { compatible: *const kernel::ffi::c_char }
 static of_match_clk_mt7988_apmixed: [of_device_id; 2] = [
     of_device_id { compatible: b"mediatek,mt7988-apmixedsys\0".as_ptr() as *const _ },
     of_device_id { compatible: core::ptr::null() },
@@ -100,13 +100,13 @@ struct platform_driver {
 }
 #[repr(C)]
 struct driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     of_match_table: *const of_device_id,
 }
 static mut clk_mt7988_apmixed_drv: platform_driver = platform_driver {
     probe: Some(clk_mt7988_apmixed_probe),
     driver: driver {
-        name: b"clk-mt7988-apmixed\0".as_ptr() as *const core::ffi::c_char,
+        name: b"clk-mt7988-apmixed\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: of_match_clk_mt7988_apmixed.as_ptr(),
     },
 };

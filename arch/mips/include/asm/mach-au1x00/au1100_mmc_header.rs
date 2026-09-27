@@ -25,12 +25,12 @@ pub struct led_classdev;
 
 #[repr(C)]
 pub struct au1xmmc_platform_data {
-    pub cd_setup: Option<unsafe extern "C" fn(mmc_host: *mut core::ffi::c_void, on: i32) -> i32>,
-    pub card_inserted: Option<unsafe extern "C" fn(mmc_host: *mut core::ffi::c_void) -> i32>,
-    pub card_readonly: Option<unsafe extern "C" fn(mmc_host: *mut core::ffi::c_void) -> i32>,
-    pub set_power: Option<unsafe extern "C" fn(mmc_host: *mut core::ffi::c_void, state: i32)>,
+    pub cd_setup: Option<unsafe extern "C" fn(mmc_host: *mut kernel::ffi::c_void, on: i32) -> i32>,
+    pub card_inserted: Option<unsafe extern "C" fn(mmc_host: *mut kernel::ffi::c_void) -> i32>,
+    pub card_readonly: Option<unsafe extern "C" fn(mmc_host: *mut kernel::ffi::c_void) -> i32>,
+    pub set_power: Option<unsafe extern "C" fn(mmc_host: *mut kernel::ffi::c_void, state: i32)>,
     pub led: *mut led_classdev,
-    pub mask_host_caps: core::ffi::c_ulong,
+    pub mask_host_caps: kernel::ffi::c_ulong,
 }
 
 pub const SD0_BASE: u32 = 0xB0600000;

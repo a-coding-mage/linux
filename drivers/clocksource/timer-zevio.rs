@@ -44,8 +44,8 @@ pub struct zevio_timer {
     interrupt_regs: *mut u8,
     clk: *mut clk,
     clkevt: clock_event_device,
-    clocksource_name: [core::ffi::c_char; 64],
-    clockevent_name: [core::ffi::c_char; 64],
+    clocksource_name: [kernel::ffi::c_char; 64],
+    clockevent_name: [kernel::ffi::c_char; 64],
 }
 
 #[inline]
@@ -74,7 +74,7 @@ unsafe fn zevio_timer_set_oneshot(dev: *mut clock_event_device) -> i32 {
     0
 }
 
-unsafe fn zevio_timer_interrupt(_irq: i32, dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe fn zevio_timer_interrupt(_irq: i32, dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     let timer = dev_id as *mut zevio_timer;
     let intr = readl(reg((*timer).interrupt_regs, IO_INTR_ACK));
     if intr & TIMER_INTR_MSK == 0 { return IRQ_NONE; }

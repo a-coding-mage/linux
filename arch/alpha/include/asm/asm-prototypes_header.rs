@@ -19,11 +19,11 @@ unsafe extern "C" {
     pub fn __divqu();
     pub fn __remqu();
     pub fn __udiv_qrnnd(
-        __p: *mut ::core::ffi::c_ulong,
-        __n1: ::core::ffi::c_ulong,
-        __n0: ::core::ffi::c_ulong,
-        __d: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_ulong;
+        __p: *mut ::kernel::ffi::c_ulong,
+        __n1: ::kernel::ffi::c_ulong,
+        __n0: ::kernel::ffi::c_ulong,
+        __d: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_ulong;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

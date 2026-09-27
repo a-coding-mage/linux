@@ -4,7 +4,7 @@
 // Translated from C implementation source. Kernel, ASoC, regmap, platform,
 // PM, IRQ, and local fsl_aud2htx/imx-pcm definitions are external dependencies.
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 use core::mem::size_of;
 use core::ptr;
 
@@ -70,7 +70,7 @@ extern "C" {
     fn pm_runtime_force_resume(dev: *mut device) -> c_int;
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct snd_pcm_substream {

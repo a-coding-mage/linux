@@ -37,9 +37,9 @@ pub enum amdgpu_ras_block {
 #[repr(C)] pub enum amdgpu_ras_error_query_mode { AMDGPU_RAS_INVALID_ERROR_QUERY=0, AMDGPU_RAS_DIRECT_ERROR_QUERY, AMDGPU_RAS_FIRMWARE_ERROR_QUERY, AMDGPU_RAS_VIRT_ERROR_COUNT_QUERY }
 #[repr(C)] pub enum ras_event_type { RAS_EVENT_TYPE_INVALID=0, RAS_EVENT_TYPE_FATAL, RAS_EVENT_TYPE_POISON_CREATION, RAS_EVENT_TYPE_POISON_CONSUMPTION, RAS_EVENT_TYPE_COUNT }
 
-#[repr(C)] pub struct amdgpu_ras_err_status_reg_entry { pub hwip:u32,pub ip_inst:u32,pub seg_lo:u32,pub reg_lo:u32,pub seg_hi:u32,pub reg_hi:u32,pub reg_inst:u32,pub flags:u32,pub block_name:*const core::ffi::c_char }
-#[repr(C)] pub struct amdgpu_ras_memory_id_entry { pub memory_id:u32,pub name:*const core::ffi::c_char }
-#[repr(C)] pub struct ras_common_if { pub block:amdgpu_ras_block,pub type_:amdgpu_ras_error_type,pub sub_block_index:u32,pub name:[core::ffi::c_char;32] }
+#[repr(C)] pub struct amdgpu_ras_err_status_reg_entry { pub hwip:u32,pub ip_inst:u32,pub seg_lo:u32,pub reg_lo:u32,pub seg_hi:u32,pub reg_hi:u32,pub reg_inst:u32,pub flags:u32,pub block_name:*const kernel::ffi::c_char }
+#[repr(C)] pub struct amdgpu_ras_memory_id_entry { pub memory_id:u32,pub name:*const kernel::ffi::c_char }
+#[repr(C)] pub struct ras_common_if { pub block:amdgpu_ras_block,pub type_:amdgpu_ras_error_type,pub sub_block_index:u32,pub name:[kernel::ffi::c_char;32] }
 #[repr(C)] pub struct ecc_info_per_ch { pub ce_count_lo_chip:u16,pub ce_count_hi_chip:u16,pub mca_umc_status:u64,pub mca_umc_addr:u64,pub mca_ceumc_addr:u64 }
 #[repr(C)] pub struct umc_ecc_info { pub ecc:[ecc_info_per_ch;MAX_UMC_CHANNEL_NUM],pub record_ce_addr_supported:i32 }
 #[repr(C)] pub struct ras_event_state { pub last_seqno:u64,pub count:atomic64_t }
@@ -52,7 +52,7 @@ pub enum amdgpu_ras_block {
 #[repr(C)] pub struct ras_inject_if { pub head:ras_common_if,pub address:u64,pub value:u64,pub instance_mask:u32 }
 #[repr(C)] pub struct ras_cure_if { pub head:ras_common_if,pub address:u64 }
 
-#[allow(non_camel_case_types)] pub type atomic64_t = core::ffi::c_long;
+#[allow(non_camel_case_types)] pub type atomic64_t = kernel::ffi::c_long;
 extern "C" {
     pub fn amdgpu_ras_init_badpage_info(adev:*mut amdgpu_device)->i32;
     pub fn amdgpu_ras_init(adev:*mut amdgpu_device)->i32;

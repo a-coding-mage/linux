@@ -16,11 +16,11 @@
 
 // External Linux kernel declarations and TPS68470 constants are supplied by dependencies.
 
-const TPS68470_CLK_NAME: *const core::ffi::c_char = c"tps68470-clk".as_ptr();
+const TPS68470_CLK_NAME: *const kernel::ffi::c_char = c"tps68470-clk".as_ptr();
 
 #[repr(C)]
 struct Tps68470ClkoutFreqs {
-    freq: ::core::ffi::c_ulong,
+    freq: ::kernel::ffi::c_ulong,
     xtaldiv: u32,
     plldiv: u32,
     postdiv: u32,
@@ -38,7 +38,7 @@ static mut CLK_FREQS: [Tps68470ClkoutFreqs; 3] = [
 struct Tps68470Clkdata {
     clkout_hw: ClkHw,
     regmap: *mut Regmap,
-    rate: ::core::ffi::c_ulong,
+    rate: ::kernel::ffi::c_ulong,
 }
 
 unsafe fn to_tps68470_clkdata(clkd: *mut ClkHw) -> *mut Tps68470Clkdata {
@@ -70,11 +70,11 @@ unsafe extern "C" fn tps68470_clk_unprepare(hw: *mut ClkHw) {
     regmap_write(clkdata.regmap, TPS68470_REG_CLKCFG1, 0);
 }
 
-unsafe extern "C" fn tps68470_clk_recalc_rate(hw: *mut ClkHw, _parent_rate: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+unsafe extern "C" fn tps68470_clk_recalc_rate(hw: *mut ClkHw, _parent_rate: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     (*to_tps68470_clkdata(hw)).rate
 }
 
-unsafe fn tps68470_clk_cfg_lookup(rate: ::core::ffi::c_ulong) -> u32 {
+unsafe fn tps68470_clk_cfg_lookup(rate: ::kernel::ffi::c_ulong) -> u32 {
     let mut best_diff: i64 = i64::MAX;
     let mut best_idx: u32 = 0;
     let mut i = 0;
@@ -94,7 +94,7 @@ unsafe extern "C" fn tps68470_clk_determine_rate(_hw: *mut ClkHw, req: *mut ClkR
     0
 }
 
-unsafe extern "C" fn tps68470_clk_set_rate(hw: *mut ClkHw, rate: ::core::ffi::c_ulong, _parent_rate: ::core::ffi::c_ulong) -> i32 {
+unsafe extern "C" fn tps68470_clk_set_rate(hw: *mut ClkHw, rate: ::kernel::ffi::c_ulong, _parent_rate: ::kernel::ffi::c_ulong) -> i32 {
     let clkdata = &mut *to_tps68470_clkdata(hw);
     let idx = tps68470_clk_cfg_lookup(rate) as usize;
     if rate != CLK_FREQS[idx].freq { return -EINVAL; }
@@ -118,9 +118,9 @@ struct ClkOps {
     is_prepared: Option<unsafe extern "C" fn(*mut ClkHw) -> i32>,
     prepare: Option<unsafe extern "C" fn(*mut ClkHw) -> i32>,
     unprepare: Option<unsafe extern "C" fn(*mut ClkHw)>,
-    recalc_rate: Option<unsafe extern "C" fn(*mut ClkHw, ::core::ffi::c_ulong) -> ::core::ffi::c_ulong>,
+    recalc_rate: Option<unsafe extern "C" fn(*mut ClkHw, ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong>,
     determine_rate: Option<unsafe extern "C" fn(*mut ClkHw, *mut ClkRateRequest) -> i32>,
-    set_rate: Option<unsafe extern "C" fn(*mut ClkHw, ::core::ffi::c_ulong, ::core::ffi::c_ulong) -> i32>,
+    set_rate: Option<unsafe extern "C" fn(*mut ClkHw, ::kernel::ffi::c_ulong, ::kernel::ffi::c_ulong) -> i32>,
 }
 
 static TPS68470_CLK_OPS: ClkOps = ClkOps {

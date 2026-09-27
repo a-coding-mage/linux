@@ -36,7 +36,7 @@ pub struct v4l2_flash_ops {
 /** V4L2 Flash sub-device initialization data. */
 #[repr(C)]
 pub struct v4l2_flash_config {
-    pub dev_name: [core::ffi::c_char; 32],
+    pub dev_name: [kernel::ffi::c_char; 32],
     pub intensity: led_flash_setting,
     pub flash_faults: u32,
     pub has_external_strobe: u32,

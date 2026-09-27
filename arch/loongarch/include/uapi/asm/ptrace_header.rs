@@ -25,15 +25,15 @@ pub const NUM_FPU_REGS: usize = 32;
 #[repr(C, align(8))]
 pub struct user_pt_regs {
     /* Main processor registers. */
-    pub regs: [core::ffi::c_ulong; 32],
+    pub regs: [kernel::ffi::c_ulong; 32],
 
     /* Original syscall arg0. */
-    pub orig_a0: core::ffi::c_ulong,
+    pub orig_a0: kernel::ffi::c_ulong,
 
     /* Special CSR registers. */
-    pub csr_era: core::ffi::c_ulong,
-    pub csr_badv: core::ffi::c_ulong,
-    pub reserved: [core::ffi::c_ulong; 10],
+    pub csr_era: kernel::ffi::c_ulong,
+    pub csr_badv: kernel::ffi::c_ulong,
+    pub reserved: [kernel::ffi::c_ulong; 10],
 }
 
 #[repr(C)]

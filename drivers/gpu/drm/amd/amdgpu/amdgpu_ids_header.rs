@@ -71,8 +71,8 @@ pub struct amdgpu_vmid_mgr {
 
 extern "C" {
     pub fn amdgpu_pasid_alloc(bits: u32, fpriv: *mut amdgpu_fpriv) -> i32;
-    pub fn amdgpu_pasid_lock(flags: *mut ::core::ffi::c_ulong);
-    pub fn amdgpu_pasid_unlock(flags: ::core::ffi::c_ulong);
+    pub fn amdgpu_pasid_lock(flags: *mut ::kernel::ffi::c_ulong);
+    pub fn amdgpu_pasid_unlock(flags: ::kernel::ffi::c_ulong);
     pub fn amdgpu_pasid_get_fpriv_locked(pasid: u32) -> *mut amdgpu_fpriv;
     pub fn amdgpu_pasid_free(pasid: u32);
     pub fn amdgpu_pasid_free_delayed(resv: *mut dma_resv, pasid: u32);

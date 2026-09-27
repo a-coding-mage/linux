@@ -8,7 +8,7 @@
 #[repr(C)]
 struct BcmaDeviceIdName {
     id: u16,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 static BCMA_ARM_DEVICE_NAMES: &[BcmaDeviceIdName] = &[
@@ -101,7 +101,7 @@ static BCMA_MIPS_DEVICE_NAMES: &[BcmaDeviceIdName] = &[
     BcmaDeviceIdName { id: BCMA_CORE_MIPS_74K, name: c"MIPS 74K".as_ptr() },
 ];
 
-unsafe fn bcma_device_name(id: *const bcma_device_id) -> *const core::ffi::c_char {
+unsafe fn bcma_device_name(id: *const bcma_device_id) -> *const kernel::ffi::c_char {
     let names: &[BcmaDeviceIdName] = match (*id).manuf {
         BCMA_MANUF_ARM => BCMA_ARM_DEVICE_NAMES,
         BCMA_MANUF_BCM => BCMA_BCM_DEVICE_NAMES,

@@ -14,7 +14,7 @@ pub struct PendingExtent {
 
 #[repr(C)]
 pub struct PendingExtentTestCase {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub hole_start: u64,
     pub hole_len: u64,
     pub min_hole_size: u64,
@@ -48,7 +48,7 @@ static FIND_HOLE_TESTS: &[PendingExtentTestCase] = &[
 
 #[repr(C)]
 pub struct FirstPendingTestCase {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub hole_start: u64,
     pub hole_len: u64,
     pub pending_extent: PendingExtent,
@@ -69,16 +69,16 @@ static FIRST_PENDING_TESTS: &[FirstPendingTestCase] = &[
 #[repr(C)] pub struct BtrfsFsInfo { _private: [u8; 0] }
 #[repr(C)] pub struct BtrfsDevice { pub fs_info: *mut BtrfsFsInfo, pub alloc_state: [u8; 0] }
 extern "C" {
-    fn test_msg(message: *const core::ffi::c_char);
+    fn test_msg(message: *const kernel::ffi::c_char);
     fn test_std_err(error: i32);
-    fn test_err(message: *const core::ffi::c_char);
+    fn test_err(message: *const kernel::ffi::c_char);
     fn btrfs_alloc_dummy_fs_info(nodesize: u32, sectorsize: u32) -> *mut BtrfsFsInfo;
     fn btrfs_alloc_dummy_device(fs_info: *mut BtrfsFsInfo) -> *mut BtrfsDevice;
     fn btrfs_free_dummy_fs_info(fs_info: *mut BtrfsFsInfo);
-    fn btrfs_set_extent_bit(state: *mut core::ffi::c_void, start: u64, end: u64, bit: u32, cached_state: *mut core::ffi::c_void);
-    fn btrfs_clear_extent_bit(state: *mut core::ffi::c_void, start: u64, end: u64, bit: u32, cached_state: *mut core::ffi::c_void);
-    fn mutex_lock(mutex: *mut core::ffi::c_void);
-    fn mutex_unlock(mutex: *mut core::ffi::c_void);
+    fn btrfs_set_extent_bit(state: *mut kernel::ffi::c_void, start: u64, end: u64, bit: u32, cached_state: *mut kernel::ffi::c_void);
+    fn btrfs_clear_extent_bit(state: *mut kernel::ffi::c_void, start: u64, end: u64, bit: u32, cached_state: *mut kernel::ffi::c_void);
+    fn mutex_lock(mutex: *mut kernel::ffi::c_void);
+    fn mutex_unlock(mutex: *mut kernel::ffi::c_void);
     fn btrfs_find_hole_in_pending_extents(device: *mut BtrfsDevice, start: *mut u64, len: *mut u64, min_hole_size: u64) -> bool;
     fn btrfs_first_pending_extent(device: *mut BtrfsDevice, start: u64, len: u64, pending_start: *mut u64, pending_end: *mut u64) -> bool;
 }

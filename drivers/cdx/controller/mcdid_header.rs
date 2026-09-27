@@ -40,17 +40,17 @@ pub unsafe fn cdx_mcdi_if(cdx: *mut cdx_mcdi) -> *mut cdx_mcdi_iface {
 extern "C" {
     pub fn cdx_mcdi_rpc_async(
         cdx: *mut cdx_mcdi,
-        cmd: core::ffi::c_uint,
+        cmd: kernel::ffi::c_uint,
         inbuf: *const cdx_dword,
         inlen: usize,
         complete: cdx_mcdi_async_completer,
-        cookie: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        cookie: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
 
     pub fn cdx_mcdi_wait_for_quiescence(
         cdx: *mut cdx_mcdi,
-        timeout_jiffies: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        timeout_jiffies: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
 }
 
 /*

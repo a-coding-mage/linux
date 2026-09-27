@@ -2,7 +2,7 @@
 
 /* Declarations from acpi/apei.h and acpi/hed.h are supplied externally. */
 
-pub const GHES_EXITING: ::core::ffi::c_uint = 0x0002;
+pub const GHES_EXITING: ::kernel::ffi::c_uint = 0x0002;
 
 #[repr(C)]
 pub union ghes__bindgen_ty_1 {
@@ -14,19 +14,19 @@ pub union ghes__bindgen_ty_1 {
 pub union ghes__bindgen_ty_2 {
     pub list: ::core::mem::ManuallyDrop<list_head>,
     pub timer: ::core::mem::ManuallyDrop<timer_list>,
-    pub irq: ::core::ffi::c_uint,
+    pub irq: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct ghes {
     pub generic: ghes__bindgen_ty_1,
     pub estatus: *mut acpi_hest_generic_status,
-    pub estatus_length: ::core::ffi::c_uint,
-    pub flags: ::core::ffi::c_ulong,
+    pub estatus_length: ::kernel::ffi::c_uint,
+    pub flags: ::kernel::ffi::c_ulong,
     pub list_or_timer_or_irq: ghes__bindgen_ty_2,
     pub dev: *mut device,
     pub elist: list_head,
-    pub error_status_vaddr: *mut ::core::ffi::c_void,
+    pub error_status_vaddr: *mut ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -45,21 +45,21 @@ pub struct ghes_estatus_cache {
     pub rcu: rcu_head,
 }
 
-pub const GHES_SEV_NO: ::core::ffi::c_uint = 0x0;
-pub const GHES_SEV_CORRECTED: ::core::ffi::c_uint = 0x1;
-pub const GHES_SEV_RECOVERABLE: ::core::ffi::c_uint = 0x2;
-pub const GHES_SEV_PANIC: ::core::ffi::c_uint = 0x3;
+pub const GHES_SEV_NO: ::kernel::ffi::c_uint = 0x0;
+pub const GHES_SEV_CORRECTED: ::kernel::ffi::c_uint = 0x1;
+pub const GHES_SEV_RECOVERABLE: ::kernel::ffi::c_uint = 0x2;
+pub const GHES_SEV_PANIC: ::kernel::ffi::c_uint = 0x3;
 
 #[cfg(CONFIG_ACPI_APEI_GHES)]
 extern "C" {
-    pub fn ghes_register_vendor_record_notifier(nb: *mut notifier_block) -> ::core::ffi::c_int;
+    pub fn ghes_register_vendor_record_notifier(nb: *mut notifier_block) -> ::kernel::ffi::c_int;
     pub fn ghes_unregister_vendor_record_notifier(nb: *mut notifier_block);
     pub fn devm_ghes_register_vendor_record_notifier(
         dev: *mut device,
         nb: *mut notifier_block,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn ghes_get_devices() -> *mut list_head;
-    pub fn ghes_estatus_pool_region_free(addr: ::core::ffi::c_ulong, size: u32);
+    pub fn ghes_estatus_pool_region_free(addr: ::kernel::ffi::c_ulong, size: u32);
 }
 
 #[cfg(not(CONFIG_ACPI_APEI_GHES))]
@@ -70,29 +70,29 @@ pub unsafe fn ghes_get_devices() -> *mut list_head {
 
 #[cfg(not(CONFIG_ACPI_APEI_GHES))]
 #[inline]
-pub unsafe fn ghes_estatus_pool_region_free(_addr: ::core::ffi::c_ulong, _size: u32) {}
+pub unsafe fn ghes_estatus_pool_region_free(_addr: ::kernel::ffi::c_ulong, _size: u32) {}
 
 extern "C" {
-    pub fn ghes_estatus_pool_init(num_ghes: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    pub fn ghes_estatus_pool_init(num_ghes: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
 }
 
 #[inline]
-pub unsafe fn acpi_hest_get_version(gdata: *mut acpi_hest_generic_data) -> ::core::ffi::c_int {
-    ((*gdata).revision >> 8) as ::core::ffi::c_int
+pub unsafe fn acpi_hest_get_version(gdata: *mut acpi_hest_generic_data) -> ::kernel::ffi::c_int {
+    ((*gdata).revision >> 8) as ::kernel::ffi::c_int
 }
 
 #[inline]
-pub unsafe fn acpi_hest_get_payload(gdata: *mut acpi_hest_generic_data) -> *mut ::core::ffi::c_void {
+pub unsafe fn acpi_hest_get_payload(gdata: *mut acpi_hest_generic_data) -> *mut ::kernel::ffi::c_void {
     if acpi_hest_get_version(gdata) >= 3 {
-        (gdata as *mut acpi_hest_generic_data_v300).add(1) as *mut ::core::ffi::c_void
+        (gdata as *mut acpi_hest_generic_data_v300).add(1) as *mut ::kernel::ffi::c_void
     } else {
-        gdata.add(1) as *mut ::core::ffi::c_void
+        gdata.add(1) as *mut ::kernel::ffi::c_void
     }
 }
 
 #[inline]
-pub unsafe fn acpi_hest_get_error_length(gdata: *mut acpi_hest_generic_data) -> ::core::ffi::c_int {
-    (*gdata).error_data_length as ::core::ffi::c_int
+pub unsafe fn acpi_hest_get_error_length(gdata: *mut acpi_hest_generic_data) -> ::kernel::ffi::c_int {
+    (*gdata).error_data_length as ::kernel::ffi::c_int
 }
 
 #[inline]
@@ -110,18 +110,18 @@ pub unsafe fn acpi_hest_get_record_size(gdata: *mut acpi_hest_generic_data) -> u
 }
 
 #[inline]
-pub unsafe fn acpi_hest_get_next(gdata: *mut acpi_hest_generic_data) -> *mut ::core::ffi::c_void {
-    (gdata as *mut u8).add(acpi_hest_get_record_size(gdata)) as *mut ::core::ffi::c_void
+pub unsafe fn acpi_hest_get_next(gdata: *mut acpi_hest_generic_data) -> *mut ::kernel::ffi::c_void {
+    (gdata as *mut u8).add(acpi_hest_get_record_size(gdata)) as *mut ::kernel::ffi::c_void
 }
 
 #[cfg(CONFIG_ACPI_APEI_SEA)]
 extern "C" {
-    pub fn ghes_notify_sea() -> ::core::ffi::c_int;
+    pub fn ghes_notify_sea() -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_ACPI_APEI_SEA))]
 #[inline]
-pub unsafe fn ghes_notify_sea() -> ::core::ffi::c_int {
+pub unsafe fn ghes_notify_sea() -> ::kernel::ffi::c_int {
     -2 /* -ENOENT */
 }
 

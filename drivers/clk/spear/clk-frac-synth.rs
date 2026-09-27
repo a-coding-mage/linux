@@ -38,10 +38,10 @@ pub struct ClkHw {
 
 #[repr(C)]
 pub struct ClkInitData {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub ops: *const ClkOps,
-    pub flags: ::core::ffi::c_ulong,
-    pub parent_names: *const *const ::core::ffi::c_char,
+    pub flags: ::kernel::ffi::c_ulong,
+    pub parent_names: *const *const ::kernel::ffi::c_char,
     pub num_parents: u8,
 }
 
@@ -64,52 +64,52 @@ pub struct ClkFrac {
 
 #[repr(C)]
 pub struct ClkRateRequest {
-    pub rate: ::core::ffi::c_ulong,
-    pub best_parent_rate: ::core::ffi::c_ulong,
+    pub rate: ::kernel::ffi::c_ulong,
+    pub best_parent_rate: ::kernel::ffi::c_ulong,
 }
 
 pub type ClkRoundRateFn = unsafe extern "C" fn(
     hw: *mut ClkHw,
-    prate: ::core::ffi::c_ulong,
-    index: ::core::ffi::c_int,
-) -> ::core::ffi::c_ulong;
+    prate: ::kernel::ffi::c_ulong,
+    index: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct ClkOps {
-    pub recalc_rate: Option<unsafe extern "C" fn(*mut ClkHw, ::core::ffi::c_ulong) -> ::core::ffi::c_ulong>,
-    pub determine_rate: Option<unsafe extern "C" fn(*mut ClkHw, *mut ClkRateRequest) -> ::core::ffi::c_int>,
-    pub set_rate: Option<unsafe extern "C" fn(*mut ClkHw, ::core::ffi::c_ulong, ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
+    pub recalc_rate: Option<unsafe extern "C" fn(*mut ClkHw, ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong>,
+    pub determine_rate: Option<unsafe extern "C" fn(*mut ClkHw, *mut ClkRateRequest) -> ::kernel::ffi::c_int>,
+    pub set_rate: Option<unsafe extern "C" fn(*mut ClkHw, ::kernel::ffi::c_ulong, ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct Clk;
 
 unsafe extern "C" {
-    fn clk_round_rate_index(hw: *mut ClkHw, rate: ::core::ffi::c_ulong,
-        best_parent_rate: ::core::ffi::c_ulong, calc_rate: ClkRoundRateFn,
-        count: u8, index: *mut ::core::ffi::c_int) -> ::core::ffi::c_ulong;
+    fn clk_round_rate_index(hw: *mut ClkHw, rate: ::kernel::ffi::c_ulong,
+        best_parent_rate: ::kernel::ffi::c_ulong, calc_rate: ClkRoundRateFn,
+        count: u8, index: *mut ::kernel::ffi::c_int) -> ::kernel::ffi::c_ulong;
     fn readl_relaxed(addr: *mut u8) -> u32;
-    fn writel_relaxed(value: ::core::ffi::c_ulong, addr: *mut u8);
-    fn spin_lock_irqsave(lock: *mut Spinlock, flags: *mut ::core::ffi::c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut Spinlock, flags: ::core::ffi::c_ulong);
+    fn writel_relaxed(value: ::kernel::ffi::c_ulong, addr: *mut u8);
+    fn spin_lock_irqsave(lock: *mut Spinlock, flags: *mut ::kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut Spinlock, flags: ::kernel::ffi::c_ulong);
     fn clk_register(parent: *mut Clk, hw: *mut ClkHw) -> *mut Clk;
     fn kzalloc_obj<T>() -> *mut T;
     fn kfree(ptr: *mut ClkFrac);
 }
 
-unsafe extern "C" fn frac_calc_rate(hw: *mut ClkHw, mut prate: ::core::ffi::c_ulong,
-    index: ::core::ffi::c_int) -> ::core::ffi::c_ulong {
+unsafe extern "C" fn frac_calc_rate(hw: *mut ClkHw, mut prate: ::kernel::ffi::c_ulong,
+    index: ::kernel::ffi::c_int) -> ::kernel::ffi::c_ulong {
     let frac = &*(hw as *mut ClkFrac);
     let rtbl = frac.rtbl;
     prate /= 10000;
     prate <<= 14;
-    prate /= 2 * (*rtbl.add(index as usize)).div as ::core::ffi::c_ulong;
+    prate /= 2 * (*rtbl.add(index as usize)).div as ::kernel::ffi::c_ulong;
     prate *= 10000;
     prate
 }
 
 unsafe extern "C" fn clk_frac_determine_rate(hw: *mut ClkHw,
-    req: *mut ClkRateRequest) -> ::core::ffi::c_int {
+    req: *mut ClkRateRequest) -> ::kernel::ffi::c_int {
     let frac = &*(hw as *mut ClkFrac);
     let mut unused = 0;
     (*req).rate = clk_round_rate_index(hw, (*req).rate, (*req).best_parent_rate,
@@ -118,7 +118,7 @@ unsafe extern "C" fn clk_frac_determine_rate(hw: *mut ClkHw,
 }
 
 unsafe extern "C" fn clk_frac_recalc_rate(hw: *mut ClkHw,
-    mut parent_rate: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+    mut parent_rate: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     let frac = &*(hw as *mut ClkFrac);
     let mut flags = 0;
     let val;
@@ -128,20 +128,20 @@ unsafe extern "C" fn clk_frac_recalc_rate(hw: *mut ClkHw,
     let div = val & DIV_FACTOR_MASK;
     if div == 0 { return 0; }
     parent_rate /= 10000;
-    parent_rate = (parent_rate << 14) / (2 * div as ::core::ffi::c_ulong);
+    parent_rate = (parent_rate << 14) / (2 * div as ::kernel::ffi::c_ulong);
     parent_rate * 10000
 }
 
 /* Configures new clock rate of frac */
 unsafe extern "C" fn clk_frac_set_rate(hw: *mut ClkHw,
-    drate: ::core::ffi::c_ulong, prate: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+    drate: ::kernel::ffi::c_ulong, prate: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     let frac = &*(hw as *mut ClkFrac);
     let mut flags = 0;
     let mut i = 0;
     clk_round_rate_index(hw, drate, prate, frac_calc_rate, frac.rtbl_cnt, &mut i);
     if !frac.lock.is_null() { spin_lock_irqsave(frac.lock, &mut flags); }
-    let mut val = (readl_relaxed(frac.reg) as ::core::ffi::c_ulong) & !(DIV_FACTOR_MASK as ::core::ffi::c_ulong);
-    val |= ((*frac.rtbl.add(i as usize)).div & DIV_FACTOR_MASK) as ::core::ffi::c_ulong;
+    let mut val = (readl_relaxed(frac.reg) as ::kernel::ffi::c_ulong) & !(DIV_FACTOR_MASK as ::kernel::ffi::c_ulong);
+    val |= ((*frac.rtbl.add(i as usize)).div & DIV_FACTOR_MASK) as ::kernel::ffi::c_ulong;
     writel_relaxed(val, frac.reg);
     if !frac.lock.is_null() { spin_unlock_irqrestore(frac.lock, flags); }
     0
@@ -153,8 +153,8 @@ static CLK_FRAC_OPS: ClkOps = ClkOps {
     set_rate: Some(clk_frac_set_rate),
 };
 
-pub unsafe extern "C" fn clk_register_frac(name: *const ::core::ffi::c_char,
-    parent_name: *const ::core::ffi::c_char, flags: ::core::ffi::c_ulong,
+pub unsafe extern "C" fn clk_register_frac(name: *const ::kernel::ffi::c_char,
+    parent_name: *const ::kernel::ffi::c_char, flags: ::kernel::ffi::c_ulong,
     reg: *mut u8, rtbl: *mut FracRateTbl, rtbl_cnt: u8,
     lock: *mut Spinlock) -> *mut Clk {
     if name.is_null() || parent_name.is_null() || reg.is_null() || rtbl.is_null() || rtbl_cnt == 0 {

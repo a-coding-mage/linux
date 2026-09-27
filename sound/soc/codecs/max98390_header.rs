@@ -656,14 +656,14 @@ pub const MAX98390_DSM_PARAM_MIN_SIZE: u32 = 670;
 #[repr(C)]
 pub struct max98390_priv {
     pub regmap: *mut regmap,
-    pub sysclk: ::core::ffi::c_uint,
-    pub provider: ::core::ffi::c_uint,
-    pub tdm_mode: ::core::ffi::c_uint,
-    pub v_l_slot: ::core::ffi::c_uint,
-    pub i_l_slot: ::core::ffi::c_uint,
-    pub ref_rdc_value: ::core::ffi::c_uint,
-    pub ambient_temp_value: ::core::ffi::c_uint,
-    pub dsm_param_name: *const ::core::ffi::c_char,
+    pub sysclk: ::kernel::ffi::c_uint,
+    pub provider: ::kernel::ffi::c_uint,
+    pub tdm_mode: ::kernel::ffi::c_uint,
+    pub v_l_slot: ::kernel::ffi::c_uint,
+    pub i_l_slot: ::kernel::ffi::c_uint,
+    pub ref_rdc_value: ::kernel::ffi::c_uint,
+    pub ambient_temp_value: ::kernel::ffi::c_uint,
+    pub dsm_param_name: *const ::kernel::ffi::c_char,
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

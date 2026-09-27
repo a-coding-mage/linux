@@ -27,8 +27,8 @@ const CP0_CERRD_COHERENCY: u32 = 1 << 22;
 const CP0_CERRD_DUPTAG: u32 = 1 << 21;
 
 extern "C" {
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn panic(fmt: *const core::ffi::c_char) -> !;
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn panic(fmt: *const kernel::ffi::c_char) -> !;
     fn read_c0_prid() -> u32;
     fn check_bus_watcher();
 }
@@ -96,7 +96,7 @@ fn inst_parity(mut word: u32) -> u8 {
 fn dc_ecc(dword: u64) -> u8 { let mut p=0; for i in (0..8).rev() { let t=dword&MASK_72_64[i]; let a=(t>>32) as u32; let b=t as u32; p=(p<<1)^PARITY[(a>>24) as usize]^PARITY[((a>>16)&255) as usize]^PARITY[((a>>8)&255) as usize]^PARITY[(a&255) as usize]^PARITY[(b>>24) as usize]^PARITY[((b>>16)&255) as usize]^PARITY[((b>>8)&255) as usize]^PARITY[(b&255) as usize]; } p }
 
 #[repr(C)]
-struct DcState { val: u8, name: *const core::ffi::c_char }
+struct DcState { val: u8, name: *const kernel::ffi::c_char }
 static DC_STATES: [DcState; 7] = [
     DcState { val: 0x00, name: c"INVALID".as_ptr() },
     DcState { val: 0x0f, name: c"COH-SHD".as_ptr() },
@@ -107,7 +107,7 @@ static DC_STATES: [DcState; 7] = [
     DcState { val: 0xff, name: c"*ERROR*".as_ptr() },
 ];
 fn dc_tag_valid(s: u8) -> bool { matches!(s, 0 | 0xf | 0x13 | 0x19 | 0x16 | 0x1c) }
-unsafe fn dc_state_str(state: u8) -> *const core::ffi::c_char {
+unsafe fn dc_state_str(state: u8) -> *const kernel::ffi::c_char {
     for d in &DC_STATES { if d.val == 0xff || d.val == state { return d.name; } } DC_STATES[6].name
 }
 

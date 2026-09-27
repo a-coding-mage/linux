@@ -7,7 +7,7 @@
  * The Unicode to charset table has only exact mappings.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 const ENAMETOOLONG: i32 = 36;
 const EINVAL: i32 = 22;

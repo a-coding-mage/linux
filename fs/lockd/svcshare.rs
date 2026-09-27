@@ -14,9 +14,9 @@
 #[inline]
 unsafe fn nlm_cmp_owner(share: *mut lockd_share, oh: *mut xdr_netobj) -> bool {
     (*share).s_owner.len == (*oh).len
-        && libc::memcmp(
-            (*share).s_owner.data as *const libc::c_void,
-            (*oh).data as *const libc::c_void,
+        && memcmp(
+            (*share).s_owner.data as *const core::ffi::c_void,
+            (*oh).data as *const core::ffi::c_void,
             (*oh).len as usize,
         ) == 0
 }
@@ -28,7 +28,7 @@ unsafe fn nlm_cmp_owner(share: *mut lockd_share, oh: *mut xdr_netobj) -> bool {
 unsafe fn nlm_recompute_share(share: *mut lockd_share) {
     let mut new_access: u32 = 0;
     let mut new_mode: u32 = 0;
-    let mut i: libc::c_uint = 0;
+    let mut i: core::ffi::c_uint = 0;
 
     while i < 16 {
         if (*share).s_access_deny_bmap & (1u32 << i) != 0 {
@@ -87,9 +87,9 @@ pub unsafe fn nlmsvc_share_file(
 
         /* Copy owner handle */
         ohdata = (share.add(1)) as *mut u8;
-        libc::memcpy(
-            ohdata as *mut libc::c_void,
-            (*oh).data as *const libc::c_void,
+        memcpy(
+            ohdata as *mut core::ffi::c_void,
+            (*oh).data as *const core::ffi::c_void,
             (*oh).len as usize,
         );
 
@@ -141,7 +141,7 @@ pub unsafe fn nlmsvc_unshare_file(
             nlm_recompute_share(share);
             if (*share).s_access_deny_bmap == 0 {
                 *shpp = (*share).s_next;
-                kfree(share as *mut libc::c_void);
+                kfree(share as *mut core::ffi::c_void);
             }
             return nlm_granted;
         }
@@ -172,7 +172,7 @@ pub unsafe fn nlmsvc_traverse_shares(
     } {
         if match_fn((*share).s_host, host) {
             *shpp = (*share).s_next;
-            kfree(share as *mut libc::c_void);
+            kfree(share as *mut core::ffi::c_void);
             continue;
         }
         shpp = &mut (*share).s_next;

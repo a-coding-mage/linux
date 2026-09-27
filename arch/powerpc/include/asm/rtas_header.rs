@@ -113,11 +113,11 @@ extern "C" {
     pub fn rtas_get_sensor(sensor:i32,index:i32,state:*mut i32)->i32; pub fn rtas_get_sensor_fast(sensor:i32,index:i32,state:*mut i32)->i32;
     pub fn rtas_get_power_level(domain:i32,level:*mut i32)->i32; pub fn rtas_set_power_level(domain:i32,level:i32,setlevel:*mut i32)->i32;
     pub fn rtas_indicator_present(token:i32,maxindex:*mut i32)->bool; pub fn rtas_set_indicator(indicator:i32,index:i32,new_value:i32)->i32; pub fn rtas_set_indicator_fast(indicator:i32,index:i32,new_value:i32)->i32;
-    pub fn rtas_progress(s:*mut core::ffi::c_char, hex:u16); pub fn rtas_ibm_suspend_me(status:*mut i32)->i32; pub fn rtas_error_rc(rc:i32)->i32;
+    pub fn rtas_progress(s:*mut kernel::ffi::c_char, hex:u16); pub fn rtas_ibm_suspend_me(status:*mut i32)->i32; pub fn rtas_error_rc(rc:i32)->i32;
     pub fn rtas_busy_delay_time(status:i32)->u32; pub fn rtas_busy_delay(status:i32)->bool;
-    pub fn early_init_dt_scan_rtas(node:usize,uname:*const core::ffi::c_char,depth:i32,data:*mut core::ffi::c_void)->i32;
-    pub fn pSeries_log_error(buf:*mut core::ffi::c_char,err_type:u32,fatal:i32);
-    pub static mut rtas_data_buf_lock: spinlock_t; pub static mut rtas_data_buf:[core::ffi::c_char;RTAS_DATA_BUF_SIZE]; pub static mut rtas_rmo_buf:usize;
+    pub fn early_init_dt_scan_rtas(node:usize,uname:*const kernel::ffi::c_char,depth:i32,data:*mut kernel::ffi::c_void)->i32;
+    pub fn pSeries_log_error(buf:*mut kernel::ffi::c_char,err_type:u32,fatal:i32);
+    pub static mut rtas_data_buf_lock: spinlock_t; pub static mut rtas_data_buf:[kernel::ffi::c_char;RTAS_DATA_BUF_SIZE]; pub static mut rtas_rmo_buf:usize;
     pub fn rtas_cancel_event_scan(); pub fn pSeries_coalesce_init(); pub fn rtas_initialize(); pub fn read_24x7_sys_info();
 }
 /* Kernel-provided declarations retained as opaque external types. */
@@ -128,10 +128,10 @@ extern "C" {
 
 extern "C" {
     pub fn rtas_function_token(handle: rtas_fn_handle_t) -> i32;
-    pub fn rtas_token(service: *const core::ffi::c_char) -> i32;
+    pub fn rtas_token(service: *const kernel::ffi::c_char) -> i32;
     pub fn rtas_call(token:i32, nargs:i32, nret:i32, outputs:*mut i32, ...) -> i32;
-    pub fn rtas_power_off(); pub fn rtas_halt() -> !; pub fn rtas_restart(cmd:*mut core::ffi::c_char) -> !;
-    pub fn rtas_os_term(s:*mut core::ffi::c_char); pub fn rtas_activate_firmware();
+    pub fn rtas_power_off(); pub fn rtas_halt() -> !; pub fn rtas_restart(cmd:*mut kernel::ffi::c_char) -> !;
+    pub fn rtas_os_term(s:*mut kernel::ffi::c_char); pub fn rtas_activate_firmware();
     pub fn rtas_get_error_log_max() -> i32; pub fn rtas_give_timebase(); pub fn rtas_take_timebase();
 }
 #[inline] pub unsafe fn rtas_function_implemented(h:rtas_fn_handle_t)->bool { rtas_function_token(h)!=RTAS_UNKNOWN_SERVICE }

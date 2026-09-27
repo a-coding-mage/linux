@@ -5,16 +5,16 @@
 
 #[repr(C)]
 pub struct stack_frame_user {
-    pub back_chain: ::core::ffi::c_ulong,
-    pub empty1: [::core::ffi::c_ulong; 5],
-    pub gprs: [::core::ffi::c_ulong; 10],
-    pub empty2: [::core::ffi::c_ulong; 4],
+    pub back_chain: ::kernel::ffi::c_ulong,
+    pub empty1: [::kernel::ffi::c_ulong; 5],
+    pub gprs: [::kernel::ffi::c_ulong; 10],
+    pub empty2: [::kernel::ffi::c_ulong; 4],
 }
 
 #[repr(C)]
 pub struct stack_frame_vdso_wrapper {
     pub sf: stack_frame_user,
-    pub return_address: ::core::ffi::c_ulong,
+    pub return_address: ::kernel::ffi::c_ulong,
 }
 
 pub struct perf_callchain_entry_ctx;
@@ -22,7 +22,7 @@ pub struct perf_callchain_entry_ctx;
 extern "C" {
     pub fn arch_stack_walk_user_common(
         consume_entry: stack_trace_consume_fn,
-        cookie: *mut ::core::ffi::c_void,
+        cookie: *mut ::kernel::ffi::c_void,
         entry: *mut perf_callchain_entry_ctx,
         regs: *const pt_regs,
         perf: bool,
@@ -43,18 +43,18 @@ pub enum stack_type {
 #[repr(C)]
 pub struct stack_info {
     pub type_: stack_type,
-    pub begin: ::core::ffi::c_ulong,
-    pub end: ::core::ffi::c_ulong,
+    pub begin: ::kernel::ffi::c_ulong,
+    pub end: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
-    pub fn stack_type_name(type_: stack_type) -> *const ::core::ffi::c_char;
+    pub fn stack_type_name(type_: stack_type) -> *const ::kernel::ffi::c_char;
     pub fn get_stack_info(
-        sp: ::core::ffi::c_ulong,
+        sp: ::kernel::ffi::c_ulong,
         task: *mut task_struct,
         info: *mut stack_info,
-        visit_mask: *mut ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        visit_mask: *mut ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[inline]
@@ -72,39 +72,39 @@ pub unsafe fn on_stack(info: *mut stack_info, addr: usize, len: usize) -> bool {
 /* Stack layout of a C stack frame. Kernel uses the packed stack layout. */
 #[repr(C)]
 pub union stack_frame__bindgen_ty_1 {
-    pub empty: [::core::ffi::c_ulong; 9],
+    pub empty: [::kernel::ffi::c_ulong; 9],
     pub __bindgen_anon_1: stack_frame__bindgen_ty_1__bindgen_ty_1,
 }
 
 #[repr(C)]
 pub struct stack_frame__bindgen_ty_1__bindgen_ty_1 {
-    pub sie_control_block: ::core::ffi::c_ulong,
-    pub sie_savearea: ::core::ffi::c_ulong,
-    pub sie_return: ::core::ffi::c_ulong,
-    pub sie_flags: ::core::ffi::c_ulong,
-    pub sie_control_block_phys: ::core::ffi::c_ulong,
-    pub sie_guest_asce: ::core::ffi::c_ulong,
-    pub sie_irq: ::core::ffi::c_ulong,
+    pub sie_control_block: ::kernel::ffi::c_ulong,
+    pub sie_savearea: ::kernel::ffi::c_ulong,
+    pub sie_return: ::kernel::ffi::c_ulong,
+    pub sie_flags: ::kernel::ffi::c_ulong,
+    pub sie_control_block_phys: ::kernel::ffi::c_ulong,
+    pub sie_guest_asce: ::kernel::ffi::c_ulong,
+    pub sie_irq: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct stack_frame {
     pub __bindgen_anon_1: stack_frame__bindgen_ty_1,
-    pub gprs: [::core::ffi::c_ulong; 10],
-    pub back_chain: ::core::ffi::c_ulong,
+    pub gprs: [::kernel::ffi::c_ulong; 10],
+    pub back_chain: ::kernel::ffi::c_ulong,
 }
 
 // current_frame_address() returns the function stack-frame address.
 #[inline]
-pub unsafe fn current_frame_address() -> ::core::ffi::c_ulong {
-    (core::arch::frame_pointer() as ::core::ffi::c_ulong)
-        .wrapping_sub(core::mem::offset_of!(stack_frame, back_chain) as ::core::ffi::c_ulong)
+pub unsafe fn current_frame_address() -> ::kernel::ffi::c_ulong {
+    (core::arch::frame_pointer() as ::kernel::ffi::c_ulong)
+        .wrapping_sub(core::mem::offset_of!(stack_frame, back_chain) as ::kernel::ffi::c_ulong)
 }
 
 #[inline(always)]
-pub unsafe fn get_stack_pointer(task: *mut task_struct, regs: *mut pt_regs) -> ::core::ffi::c_ulong {
+pub unsafe fn get_stack_pointer(task: *mut task_struct, regs: *mut pt_regs) -> ::kernel::ffi::c_ulong {
     if !regs.is_null() {
-        return kernel_stack_pointer(regs) as ::core::ffi::c_ulong;
+        return kernel_stack_pointer(regs) as ::kernel::ffi::c_ulong;
     }
     if task == current {
         return current_frame_address();

@@ -3,7 +3,7 @@
 
 // Dependency supplied by asm/kvm_emulate.h.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct kvm_vcpu {

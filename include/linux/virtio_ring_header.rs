@@ -5,7 +5,7 @@
  * intentionally left external here.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct virtio_device {
@@ -29,7 +29,7 @@ pub union virtio_map {
 }
 
 pub type irqreturn_t = i32;
-pub type u32 = core::ffi::c_uint;
+pub type u32 = kernel::ffi::c_uint;
 
 extern "C" {
     fn virt_mb();
@@ -42,9 +42,9 @@ extern "C" {
     fn WRITE_ONCE<T>(p: *mut T, v: T);
 
     pub fn vring_create_virtqueue(
-        index: core::ffi::c_uint,
-        num: core::ffi::c_uint,
-        vring_align: core::ffi::c_uint,
+        index: kernel::ffi::c_uint,
+        num: kernel::ffi::c_uint,
+        vring_align: kernel::ffi::c_uint,
         vdev: *mut virtio_device,
         weak_barriers: bool,
         may_reduce_num: bool,
@@ -55,9 +55,9 @@ extern "C" {
     ) -> *mut virtqueue;
 
     pub fn vring_create_virtqueue_map(
-        index: core::ffi::c_uint,
-        num: core::ffi::c_uint,
-        vring_align: core::ffi::c_uint,
+        index: kernel::ffi::c_uint,
+        num: kernel::ffi::c_uint,
+        vring_align: kernel::ffi::c_uint,
         vdev: *mut virtio_device,
         weak_barriers: bool,
         may_reduce_num: bool,
@@ -69,13 +69,13 @@ extern "C" {
     ) -> *mut virtqueue;
 
     pub fn vring_new_virtqueue(
-        index: core::ffi::c_uint,
-        num: core::ffi::c_uint,
-        vring_align: core::ffi::c_uint,
+        index: kernel::ffi::c_uint,
+        num: kernel::ffi::c_uint,
+        vring_align: kernel::ffi::c_uint,
         vdev: *mut virtio_device,
         weak_barriers: bool,
         ctx: bool,
-        pages: *mut core::ffi::c_void,
+        pages: *mut kernel::ffi::c_void,
         notify: Option<unsafe extern "C" fn(*mut virtqueue) -> bool>,
         callback: Option<unsafe extern "C" fn(*mut virtqueue)>,
         name: *const c_char,
@@ -83,7 +83,7 @@ extern "C" {
 
     pub fn vring_del_virtqueue(vq: *mut virtqueue);
     pub fn vring_transport_features(vdev: *mut virtio_device);
-    pub fn vring_interrupt(irq: i32, _vq: *mut core::ffi::c_void) -> irqreturn_t;
+    pub fn vring_interrupt(irq: i32, _vq: *mut kernel::ffi::c_void) -> irqreturn_t;
     pub fn vring_notification_data(_vq: *mut virtqueue) -> u32;
 }
 

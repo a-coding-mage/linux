@@ -16,11 +16,11 @@ macro_rules! A64_CBZ { ($sf:expr, $rt:expr, $imm:expr) => { A64_COMP_BRANCH!($sf
 macro_rules! A64_CBNZ { ($sf:expr, $rt:expr, $imm:expr) => { A64_COMP_BRANCH!($sf, $rt, ($imm) << 2, NONZERO) }; }
 
 macro_rules! A64_COND_BRANCH { ($cond:expr, $offset:expr) => { aarch64_insn_gen_cond_branch_imm(0, $offset, $cond) }; }
-pub const A64_COND_EQ: _ = AARCH64_INSN_COND_EQ; pub const A64_COND_NE: _ = AARCH64_INSN_COND_NE;
-pub const A64_COND_CS: _ = AARCH64_INSN_COND_CS; pub const A64_COND_HI: _ = AARCH64_INSN_COND_HI;
-pub const A64_COND_LS: _ = AARCH64_INSN_COND_LS; pub const A64_COND_CC: _ = AARCH64_INSN_COND_CC;
-pub const A64_COND_GE: _ = AARCH64_INSN_COND_GE; pub const A64_COND_GT: _ = AARCH64_INSN_COND_GT;
-pub const A64_COND_LE: _ = AARCH64_INSN_COND_LE; pub const A64_COND_LT: _ = AARCH64_INSN_COND_LT;
+pub const A64_COND_EQ: () = AARCH64_INSN_COND_EQ; pub const A64_COND_NE: _ = AARCH64_INSN_COND_NE;
+pub const A64_COND_CS: () = AARCH64_INSN_COND_CS; pub const A64_COND_HI: _ = AARCH64_INSN_COND_HI;
+pub const A64_COND_LS: () = AARCH64_INSN_COND_LS; pub const A64_COND_CC: _ = AARCH64_INSN_COND_CC;
+pub const A64_COND_GE: () = AARCH64_INSN_COND_GE; pub const A64_COND_GT: _ = AARCH64_INSN_COND_GT;
+pub const A64_COND_LE: () = AARCH64_INSN_COND_LE; pub const A64_COND_LT: _ = AARCH64_INSN_COND_LT;
 macro_rules! A64_B_ { ($c:expr, $i:expr) => { A64_COND_BRANCH!($c, ($i) << 2) }; }
 
 macro_rules! A64_BRANCH { ($o:expr, $ty:ident) => { aarch64_insn_gen_branch_imm(0, $o, AARCH64_INSN_BRANCH_$ty) }; }
@@ -107,8 +107,8 @@ macro_rules! A64_LOGIC_IMM { ($s:expr,$d:expr,$n:expr,$i:expr,$ty:ident) => {{ l
 macro_rules! A64_AND_I { ($s:expr,$d:expr,$n:expr,$i:expr) => { A64_LOGIC_IMM!($s,$d,$n,$i,AND) }; } macro_rules! A64_ORR_I { ($s:expr,$d:expr,$n:expr,$i:expr) => { A64_LOGIC_IMM!($s,$d,$n,$i,ORR) }; } macro_rules! A64_EOR_I { ($s:expr,$d:expr,$n:expr,$i:expr) => { A64_LOGIC_IMM!($s,$d,$n,$i,EOR) }; } macro_rules! A64_ANDS_I { ($s:expr,$d:expr,$n:expr,$i:expr) => { A64_LOGIC_IMM!($s,$d,$n,$i,AND_SETFLAGS) }; } macro_rules! A64_TST_I { ($s:expr,$n:expr,$i:expr) => { A64_ANDS_I!($s,A64_ZR,$n,$i) }; }
 
 macro_rules! A64_HINT { ($x:expr) => { aarch64_insn_gen_hint($x) }; }
-pub const A64_PACIASP: _ = A64_HINT!(AARCH64_INSN_HINT_PACIASP); pub const A64_AUTIASP: _ = A64_HINT!(AARCH64_INSN_HINT_AUTIASP);
-pub const A64_BTI_C: _ = A64_HINT!(AARCH64_INSN_HINT_BTIC); pub const A64_BTI_J: _ = A64_HINT!(AARCH64_INSN_HINT_BTIJ); pub const A64_BTI_JC: _ = A64_HINT!(AARCH64_INSN_HINT_BTIJC); pub const A64_NOP: _ = A64_HINT!(AARCH64_INSN_HINT_NOP);
+pub const A64_PACIASP: () = A64_HINT!(AARCH64_INSN_HINT_PACIASP); pub const A64_AUTIASP: _ = A64_HINT!(AARCH64_INSN_HINT_AUTIASP);
+pub const A64_BTI_C: () = A64_HINT!(AARCH64_INSN_HINT_BTIC); pub const A64_BTI_J: _ = A64_HINT!(AARCH64_INSN_HINT_BTIJ); pub const A64_BTI_JC: _ = A64_HINT!(AARCH64_INSN_HINT_BTIJC); pub const A64_NOP: _ = A64_HINT!(AARCH64_INSN_HINT_NOP);
 pub const A64_DMB_ISH: _ = aarch64_insn_gen_dmb(AARCH64_INSN_MB_ISH);
 macro_rules! A64_ADR { ($d:expr,$o:expr) => { aarch64_insn_gen_adr(0,$o,$d,AARCH64_INSN_ADR_TYPE_ADR) }; }
 macro_rules! A64_MRS_TPIDR_EL1 { ($t:expr) => { aarch64_insn_gen_mrs($t,AARCH64_INSN_SYSREG_TPIDR_EL1) }; } macro_rules! A64_MRS_TPIDR_EL2 { ($t:expr) => { aarch64_insn_gen_mrs($t,AARCH64_INSN_SYSREG_TPIDR_EL2) }; } macro_rules! A64_MRS_SP_EL0 { ($t:expr) => { aarch64_insn_gen_mrs($t,AARCH64_INSN_SYSREG_SP_EL0) }; }

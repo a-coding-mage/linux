@@ -16,8 +16,8 @@ pub const fn MMAP_OFFSET(o: usize) -> usize {
 }
 
 #[inline(always)]
-pub unsafe fn stub_syscall0(syscall: libc::c_long) -> libc::c_long {
-    let ret: libc::c_long;
+pub unsafe fn stub_syscall0(syscall: kernel::ffi::c_long) -> kernel::ffi::c_long {
+    let ret: kernel::ffi::c_long;
     core::arch::asm!(
         "syscall",
         inlateout("rax") syscall => ret,
@@ -29,8 +29,8 @@ pub unsafe fn stub_syscall0(syscall: libc::c_long) -> libc::c_long {
 }
 
 #[inline(always)]
-pub unsafe fn stub_syscall1(syscall: libc::c_long, arg1: libc::c_long) -> libc::c_long {
-    let ret: libc::c_long;
+pub unsafe fn stub_syscall1(syscall: kernel::ffi::c_long, arg1: kernel::ffi::c_long) -> kernel::ffi::c_long {
+    let ret: kernel::ffi::c_long;
     core::arch::asm!(
         "syscall",
         inlateout("rax") syscall => ret,
@@ -43,8 +43,8 @@ pub unsafe fn stub_syscall1(syscall: libc::c_long, arg1: libc::c_long) -> libc::
 }
 
 #[inline(always)]
-pub unsafe fn stub_syscall2(syscall: libc::c_long, arg1: libc::c_long, arg2: libc::c_long) -> libc::c_long {
-    let ret: libc::c_long;
+pub unsafe fn stub_syscall2(syscall: kernel::ffi::c_long, arg1: kernel::ffi::c_long, arg2: kernel::ffi::c_long) -> kernel::ffi::c_long {
+    let ret: kernel::ffi::c_long;
     core::arch::asm!(
         "syscall",
         inlateout("rax") syscall => ret,
@@ -58,8 +58,8 @@ pub unsafe fn stub_syscall2(syscall: libc::c_long, arg1: libc::c_long, arg2: lib
 }
 
 #[inline(always)]
-pub unsafe fn stub_syscall3(syscall: libc::c_long, arg1: libc::c_long, arg2: libc::c_long, arg3: libc::c_long) -> libc::c_long {
-    let ret: libc::c_long;
+pub unsafe fn stub_syscall3(syscall: kernel::ffi::c_long, arg1: kernel::ffi::c_long, arg2: kernel::ffi::c_long, arg3: kernel::ffi::c_long) -> kernel::ffi::c_long {
+    let ret: kernel::ffi::c_long;
     core::arch::asm!(
         "syscall",
         inlateout("rax") syscall => ret,
@@ -74,8 +74,8 @@ pub unsafe fn stub_syscall3(syscall: libc::c_long, arg1: libc::c_long, arg2: lib
 }
 
 #[inline(always)]
-pub unsafe fn stub_syscall4(syscall: libc::c_long, arg1: libc::c_long, arg2: libc::c_long, arg3: libc::c_long, arg4: libc::c_long) -> libc::c_long {
-    let ret: libc::c_long;
+pub unsafe fn stub_syscall4(syscall: kernel::ffi::c_long, arg1: kernel::ffi::c_long, arg2: kernel::ffi::c_long, arg3: kernel::ffi::c_long, arg4: kernel::ffi::c_long) -> kernel::ffi::c_long {
+    let ret: kernel::ffi::c_long;
     core::arch::asm!(
         "mov r10, {arg4}",
         "syscall",
@@ -93,8 +93,8 @@ pub unsafe fn stub_syscall4(syscall: libc::c_long, arg1: libc::c_long, arg2: lib
 }
 
 #[inline(always)]
-pub unsafe fn stub_syscall5(syscall: libc::c_long, arg1: libc::c_long, arg2: libc::c_long, arg3: libc::c_long, arg4: libc::c_long, arg5: libc::c_long) -> libc::c_long {
-    let ret: libc::c_long;
+pub unsafe fn stub_syscall5(syscall: kernel::ffi::c_long, arg1: kernel::ffi::c_long, arg2: kernel::ffi::c_long, arg3: kernel::ffi::c_long, arg4: kernel::ffi::c_long, arg5: kernel::ffi::c_long) -> kernel::ffi::c_long {
+    let ret: kernel::ffi::c_long;
     core::arch::asm!(
         "mov r10, {arg4}", "mov r8, {arg5}", "syscall",
         arg4 = in(reg) arg4, arg5 = in(reg) arg5,
@@ -104,8 +104,8 @@ pub unsafe fn stub_syscall5(syscall: libc::c_long, arg1: libc::c_long, arg2: lib
 }
 
 #[inline(always)]
-pub unsafe fn stub_syscall6(syscall: libc::c_long, arg1: libc::c_long, arg2: libc::c_long, arg3: libc::c_long, arg4: libc::c_long, arg5: libc::c_long, arg6: libc::c_long) -> libc::c_long {
-    let ret: libc::c_long;
+pub unsafe fn stub_syscall6(syscall: kernel::ffi::c_long, arg1: kernel::ffi::c_long, arg2: kernel::ffi::c_long, arg3: kernel::ffi::c_long, arg4: kernel::ffi::c_long, arg5: kernel::ffi::c_long, arg6: kernel::ffi::c_long) -> kernel::ffi::c_long {
+    let ret: kernel::ffi::c_long;
     core::arch::asm!(
         "mov r10, {arg4}", "mov r8, {arg5}", "mov r9, {arg6}", "syscall",
         arg4 = in(reg) arg4, arg5 = in(reg) arg5, arg6 = in(reg) arg6,
@@ -118,7 +118,7 @@ pub unsafe fn stub_syscall6(syscall: libc::c_long, arg1: libc::c_long, arg2: lib
 pub unsafe fn trap_myself() { core::arch::asm!("int3"); }
 
 #[inline(always)]
-pub unsafe fn get_stub_data() -> *mut core::ffi::c_void {
+pub unsafe fn get_stub_data() -> *mut kernel::ffi::c_void {
     let ret: usize;
     core::arch::asm!(
         "lea 0[rip], {ret}",
@@ -129,7 +129,7 @@ pub unsafe fn get_stub_data() -> *mut core::ffi::c_void {
         page = in(reg) UM_KERN_PAGE_SIZE,
         options(nostack)
     );
-    ret as *mut core::ffi::c_void
+    ret as *mut kernel::ffi::c_void
 }
 
 #[macro_export]

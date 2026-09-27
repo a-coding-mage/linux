@@ -32,22 +32,22 @@ pub struct i2c_client {
 
 #[repr(C)]
 pub struct i2c_device_id {
-    pub name: [::core::ffi::c_char; 20],
-    pub driver_data: ::core::ffi::c_ulong,
+    pub name: [::kernel::ffi::c_char; 20],
+    pub driver_data: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct of_device_id {
-    pub name: [::core::ffi::c_char; 32],
-    pub type_: [::core::ffi::c_char; 32],
-    pub compatible: [::core::ffi::c_char; 128],
-    pub data: *const ::core::ffi::c_void,
+    pub name: [::kernel::ffi::c_char; 32],
+    pub type_: [::kernel::ffi::c_char; 32],
+    pub compatible: [::kernel::ffi::c_char; 128],
+    pub data: *const ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct acpi_device_id {
-    pub id: [::core::ffi::c_char; 16],
-    pub driver_data: ::core::ffi::c_ulong,
+    pub id: [::kernel::ffi::c_char; 16],
+    pub driver_data: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -57,7 +57,7 @@ pub struct dev_pm_ops {
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub pm: *const dev_pm_ops,
     pub of_match_table: *const of_device_id,
     pub acpi_match_table: *const acpi_device_id,
@@ -66,7 +66,7 @@ pub struct device_driver {
 #[repr(C)]
 pub struct i2c_driver {
     pub driver: device_driver,
-    pub probe: Option<unsafe extern "C" fn(*mut i2c_client) -> ::core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(*mut i2c_client) -> ::kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(*mut i2c_client)>,
     pub id_table: *const i2c_device_id,
 }
@@ -79,54 +79,54 @@ unsafe extern "C" {
         i2c: *mut i2c_client,
         config: *const regmap_config,
     ) -> *mut regmap;
-    fn IS_ERR(ptr: *const ::core::ffi::c_void) -> bool;
-    fn PTR_ERR(ptr: *const ::core::ffi::c_void) -> ::core::ffi::c_long;
-    fn wm8804_probe(dev: *mut device, regmap: *mut regmap) -> ::core::ffi::c_int;
+    fn IS_ERR(ptr: *const ::kernel::ffi::c_void) -> bool;
+    fn PTR_ERR(ptr: *const ::kernel::ffi::c_void) -> ::kernel::ffi::c_long;
+    fn wm8804_probe(dev: *mut device, regmap: *mut regmap) -> ::kernel::ffi::c_int;
     fn wm8804_remove(dev: *mut device);
 }
 
-const fn c_char_array_20(s: &[u8]) -> [::core::ffi::c_char; 20] {
-    let mut out = [0 as ::core::ffi::c_char; 20];
+const fn c_char_array_20(s: &[u8]) -> [::kernel::ffi::c_char; 20] {
+    let mut out = [0 as ::kernel::ffi::c_char; 20];
     let mut i = 0;
 
     while i < s.len() && i < 20 {
-        out[i] = s[i] as ::core::ffi::c_char;
+        out[i] = s[i] as ::kernel::ffi::c_char;
         i += 1;
     }
 
     out
 }
 
-const fn c_char_array_16(s: &[u8]) -> [::core::ffi::c_char; 16] {
-    let mut out = [0 as ::core::ffi::c_char; 16];
+const fn c_char_array_16(s: &[u8]) -> [::kernel::ffi::c_char; 16] {
+    let mut out = [0 as ::kernel::ffi::c_char; 16];
     let mut i = 0;
 
     while i < s.len() && i < 16 {
-        out[i] = s[i] as ::core::ffi::c_char;
+        out[i] = s[i] as ::kernel::ffi::c_char;
         i += 1;
     }
 
     out
 }
 
-const fn c_char_array_128(s: &[u8]) -> [::core::ffi::c_char; 128] {
-    let mut out = [0 as ::core::ffi::c_char; 128];
+const fn c_char_array_128(s: &[u8]) -> [::kernel::ffi::c_char; 128] {
+    let mut out = [0 as ::kernel::ffi::c_char; 128];
     let mut i = 0;
 
     while i < s.len() && i < 128 {
-        out[i] = s[i] as ::core::ffi::c_char;
+        out[i] = s[i] as ::kernel::ffi::c_char;
         i += 1;
     }
 
     out
 }
 
-unsafe extern "C" fn wm8804_i2c_probe(i2c: *mut i2c_client) -> ::core::ffi::c_int {
+unsafe extern "C" fn wm8804_i2c_probe(i2c: *mut i2c_client) -> ::kernel::ffi::c_int {
     let regmap: *mut regmap;
 
     regmap = devm_regmap_init_i2c(i2c, &wm8804_regmap_config);
-    if IS_ERR(regmap as *const ::core::ffi::c_void) {
-        return PTR_ERR(regmap as *const ::core::ffi::c_void) as ::core::ffi::c_int;
+    if IS_ERR(regmap as *const ::kernel::ffi::c_void) {
+        return PTR_ERR(regmap as *const ::kernel::ffi::c_void) as ::kernel::ffi::c_int;
     }
 
     wm8804_probe(&mut (*i2c).dev, regmap)
@@ -198,7 +198,7 @@ unsafe fn ACPI_PTR(ptr: *const acpi_device_id) -> *const acpi_device_id {
 
 static mut wm8804_i2c_driver: i2c_driver = i2c_driver {
     driver: device_driver {
-        name: b"wm8804\0".as_ptr() as *const ::core::ffi::c_char,
+        name: b"wm8804\0".as_ptr() as *const ::kernel::ffi::c_char,
         pm: unsafe { pm_ptr(&wm8804_pm) },
         of_match_table: unsafe { of_match_ptr(wm8804_of_match.as_ptr()) },
         acpi_match_table: unsafe { ACPI_PTR(wm8804_acpi_match.as_ptr()) },

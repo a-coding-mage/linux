@@ -9,13 +9,13 @@
 
 #[repr(C)]
 pub struct nfc_phy_ops {
-    pub write: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut sk_buff) -> i32>,
-    pub enable: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
-    pub disable: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
+    pub write: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut sk_buff) -> i32>,
+    pub enable: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
+    pub disable: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
 }
 
-pub type data_exchange_cb_t = Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut sk_buff, i32)>;
-pub type se_io_cb_t = Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut u8, usize, i32)>;
+pub type data_exchange_cb_t = Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut sk_buff, i32)>;
+pub type se_io_cb_t = Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut u8, usize, i32)>;
 
 #[repr(C)]
 pub struct nfc_ops {
@@ -27,14 +27,14 @@ pub struct nfc_ops {
     pub dep_link_down: Option<unsafe extern "C" fn(*mut nfc_dev) -> i32>,
     pub activate_target: Option<unsafe extern "C" fn(*mut nfc_dev, *mut nfc_target, u32) -> i32>,
     pub deactivate_target: Option<unsafe extern "C" fn(*mut nfc_dev, *mut nfc_target, u8)>,
-    pub im_transceive: Option<unsafe extern "C" fn(*mut nfc_dev, *mut nfc_target, *mut sk_buff, data_exchange_cb_t, *mut core::ffi::c_void) -> i32>,
+    pub im_transceive: Option<unsafe extern "C" fn(*mut nfc_dev, *mut nfc_target, *mut sk_buff, data_exchange_cb_t, *mut kernel::ffi::c_void) -> i32>,
     pub tm_send: Option<unsafe extern "C" fn(*mut nfc_dev, *mut sk_buff) -> i32>,
     pub check_presence: Option<unsafe extern "C" fn(*mut nfc_dev, *mut nfc_target) -> i32>,
-    pub fw_download: Option<unsafe extern "C" fn(*mut nfc_dev, *const core::ffi::c_char) -> i32>,
+    pub fw_download: Option<unsafe extern "C" fn(*mut nfc_dev, *const kernel::ffi::c_char) -> i32>,
     pub discover_se: Option<unsafe extern "C" fn(*mut nfc_dev) -> i32>,
     pub enable_se: Option<unsafe extern "C" fn(*mut nfc_dev, u32) -> i32>,
     pub disable_se: Option<unsafe extern "C" fn(*mut nfc_dev, u32) -> i32>,
-    pub se_io: Option<unsafe extern "C" fn(*mut nfc_dev, u32, *mut u8, usize, se_io_cb_t, *mut core::ffi::c_void) -> i32>,
+    pub se_io: Option<unsafe extern "C" fn(*mut nfc_dev, u32, *mut u8, usize, se_io_cb_t, *mut kernel::ffi::c_void) -> i32>,
 }
 
 pub const NFC_TARGET_IDX_ANY: i32 = -1;
@@ -97,7 +97,7 @@ pub struct nfc_genl_data {
 pub struct nfc_vendor_cmd {
     pub vendor_id: __u32,
     pub subcmd: __u32,
-    pub doit: Option<unsafe extern "C" fn(*mut nfc_dev, *mut core::ffi::c_void, usize) -> i32>,
+    pub doit: Option<unsafe extern "C" fn(*mut nfc_dev, *mut kernel::ffi::c_void, usize) -> i32>,
 }
 
 #[repr(C)]
@@ -137,15 +137,15 @@ pub unsafe extern "C" fn nfc_set_parent_dev(nfc_dev: *mut nfc_dev, dev: *mut dev
     (*nfc_dev).dev.parent = dev;
 }
 
-pub unsafe extern "C" fn nfc_set_drvdata(dev: *mut nfc_dev, data: *mut core::ffi::c_void) {
+pub unsafe extern "C" fn nfc_set_drvdata(dev: *mut nfc_dev, data: *mut kernel::ffi::c_void) {
     dev_set_drvdata(&mut (*dev).dev, data);
 }
 
-pub unsafe extern "C" fn nfc_get_drvdata(dev: *const nfc_dev) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn nfc_get_drvdata(dev: *const nfc_dev) -> *mut kernel::ffi::c_void {
     dev_get_drvdata(&(*dev).dev)
 }
 
-pub unsafe extern "C" fn nfc_device_name(dev: *const nfc_dev) -> *const core::ffi::c_char {
+pub unsafe extern "C" fn nfc_device_name(dev: *const nfc_dev) -> *const kernel::ffi::c_char {
     dev_name(&(*dev).dev)
 }
 
@@ -160,7 +160,7 @@ extern "C" {
     pub fn nfc_alloc_recv_skb(_: u32, _: gfp_t) -> *mut sk_buff;
     pub fn nfc_set_remote_general_bytes(_: *mut nfc_dev, _: *const u8, _: u8) -> i32;
     pub fn nfc_get_local_general_bytes(_: *mut nfc_dev, _: *mut usize) -> *mut u8;
-    pub fn nfc_fw_download_done(_: *mut nfc_dev, _: *const core::ffi::c_char, _: u32) -> i32;
+    pub fn nfc_fw_download_done(_: *mut nfc_dev, _: *const kernel::ffi::c_char, _: u32) -> i32;
     pub fn nfc_targets_found(_: *mut nfc_dev, _: *mut nfc_target, _: i32) -> i32;
     pub fn nfc_target_lost(_: *mut nfc_dev, _: u32) -> i32;
     pub fn nfc_dep_link_is_up(_: *mut nfc_dev, _: u32, _: u8, _: u8) -> i32;

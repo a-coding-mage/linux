@@ -9,7 +9,7 @@
 // linux/delay.h, sound/pcm.h, sound/pcm_params.h, sound/soc.h,
 // sound/soc-dapm.h, sound/tlv.h, and "tas2562.h".
 
-use core::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
 
 const TAS2562_FORMATS: c_uint =
     SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FORMAT_S32_LE;
@@ -879,7 +879,7 @@ pub struct snd_soc_dai_driver {
     _private: [u8; 0],
 }
 
-type c_long = core::ffi::c_long;
+type c_long = kernel::ffi::c_long;
 
 extern "C" {
     fn dev_info(dev: *mut device, fmt: *const c_char, ...) -> c_int;

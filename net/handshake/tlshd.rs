@@ -12,12 +12,12 @@
 
 #[repr(C)]
 struct TlsHandshakeReq {
-    th_consumer_done: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32, key_serial_t)>,
-    th_consumer_data: *mut core::ffi::c_void,
+    th_consumer_done: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, i32, key_serial_t)>,
+    th_consumer_data: *mut kernel::ffi::c_void,
     th_type: i32,
     th_timeout_ms: u32,
     th_auth_mode: i32,
-    th_peername: *const core::ffi::c_char,
+    th_peername: *const kernel::ffi::c_char,
     th_keyring: key_serial_t,
     th_certificate: key_serial_t,
     th_privkey: key_serial_t,

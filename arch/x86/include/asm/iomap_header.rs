@@ -12,17 +12,17 @@
 
 unsafe extern "C" {
     pub fn __iomap_local_pfn_prot(
-        pfn: core::ffi::c_ulong,
+        pfn: kernel::ffi::c_ulong,
         prot: pgprot_t,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 
     pub fn iomap_create_wc(
         base: resource_size_t,
-        size: core::ffi::c_ulong,
+        size: kernel::ffi::c_ulong,
         prot: *mut pgprot_t,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
-    pub fn iomap_free(base: resource_size_t, size: core::ffi::c_ulong);
+    pub fn iomap_free(base: resource_size_t, size: kernel::ffi::c_ulong);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

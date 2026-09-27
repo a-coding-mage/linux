@@ -18,16 +18,16 @@ pub struct pwrseq_desc {
 // The enabled branch contains the external API declarations below.
 #[cfg(CONFIG_POWER_SEQUENCING)]
 extern "C" {
-    pub fn pwrseq_get(dev: *mut device, target: *const core::ffi::c_char) -> *mut pwrseq_desc;
+    pub fn pwrseq_get(dev: *mut device, target: *const kernel::ffi::c_char) -> *mut pwrseq_desc;
     pub fn pwrseq_put(desc: *mut pwrseq_desc);
 
     pub fn devm_pwrseq_get(
         dev: *mut device,
-        target: *const core::ffi::c_char,
+        target: *const kernel::ffi::c_char,
     ) -> *mut pwrseq_desc;
 
-    pub fn pwrseq_enable(desc: *mut pwrseq_desc) -> core::ffi::c_int;
-    pub fn pwrseq_disable(desc: *mut pwrseq_desc) -> core::ffi::c_int;
+    pub fn pwrseq_enable(desc: *mut pwrseq_desc) -> kernel::ffi::c_int;
+    pub fn pwrseq_disable(desc: *mut pwrseq_desc) -> kernel::ffi::c_int;
 
     pub fn pwrseq_to_device(desc: *mut pwrseq_desc) -> *mut device;
 }
@@ -36,7 +36,7 @@ extern "C" {
 // by the translated linux/err.h dependency.
 #[cfg(not(CONFIG_POWER_SEQUENCING))]
 unsafe extern "C" {
-    fn ERR_PTR(error: isize) -> *mut core::ffi::c_void;
+    fn ERR_PTR(error: isize) -> *mut kernel::ffi::c_void;
 }
 
 #[cfg(not(CONFIG_POWER_SEQUENCING))]
@@ -46,7 +46,7 @@ const ENOSYS: isize = 38;
 #[inline]
 pub unsafe fn pwrseq_get(
     _dev: *mut device,
-    _target: *const core::ffi::c_char,
+    _target: *const kernel::ffi::c_char,
 ) -> *mut pwrseq_desc {
     ERR_PTR(-ENOSYS) as *mut pwrseq_desc
 }
@@ -59,21 +59,21 @@ pub unsafe fn pwrseq_put(_desc: *mut pwrseq_desc) {}
 #[inline]
 pub unsafe fn devm_pwrseq_get(
     _dev: *mut device,
-    _target: *const core::ffi::c_char,
+    _target: *const kernel::ffi::c_char,
 ) -> *mut pwrseq_desc {
     ERR_PTR(-ENOSYS) as *mut pwrseq_desc
 }
 
 #[cfg(not(CONFIG_POWER_SEQUENCING))]
 #[inline]
-pub unsafe fn pwrseq_enable(_desc: *mut pwrseq_desc) -> core::ffi::c_int {
-    -ENOSYS as core::ffi::c_int
+pub unsafe fn pwrseq_enable(_desc: *mut pwrseq_desc) -> kernel::ffi::c_int {
+    -ENOSYS as kernel::ffi::c_int
 }
 
 #[cfg(not(CONFIG_POWER_SEQUENCING))]
 #[inline]
-pub unsafe fn pwrseq_disable(_desc: *mut pwrseq_desc) -> core::ffi::c_int {
-    -ENOSYS as core::ffi::c_int
+pub unsafe fn pwrseq_disable(_desc: *mut pwrseq_desc) -> kernel::ffi::c_int {
+    -ENOSYS as kernel::ffi::c_int
 }
 
 #[cfg(not(CONFIG_POWER_SEQUENCING))]

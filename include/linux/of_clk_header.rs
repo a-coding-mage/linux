@@ -19,8 +19,8 @@ extern "C" {
     pub fn of_clk_get_parent_count(np: *const device_node) -> u32;
     pub fn of_clk_get_parent_name(
         np: *const device_node,
-        index: core::ffi::c_int,
-    ) -> *const core::ffi::c_char;
+        index: kernel::ffi::c_int,
+    ) -> *const kernel::ffi::c_char;
     pub fn of_clk_init(matches: *const of_device_id);
 }
 
@@ -35,8 +35,8 @@ pub unsafe fn of_clk_get_parent_count(np: *const device_node) -> u32 {
 #[inline]
 pub unsafe fn of_clk_get_parent_name(
     np: *const device_node,
-    index: core::ffi::c_int,
-) -> *const core::ffi::c_char {
+    index: kernel::ffi::c_int,
+) -> *const kernel::ffi::c_char {
     core::ptr::null()
 }
 

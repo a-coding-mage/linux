@@ -13,9 +13,9 @@ extern "C" {
      *              TP_ARGS(state, event, next_state, final_state));
      */
     pub fn event_sts(
-        state: *mut core::ffi::c_char,
-        event: *mut core::ffi::c_char,
-        next_state: *mut core::ffi::c_char,
+        state: *mut kernel::ffi::c_char,
+        event: *mut kernel::ffi::c_char,
+        next_state: *mut kernel::ffi::c_char,
         final_state: bool,
     );
 
@@ -24,7 +24,7 @@ extern "C" {
      *              TP_PROTO(char *state, char *event),
      *              TP_ARGS(state, event));
      */
-    pub fn error_sts(state: *mut core::ffi::c_char, event: *mut core::ffi::c_char);
+    pub fn error_sts(state: *mut kernel::ffi::c_char, event: *mut kernel::ffi::c_char);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

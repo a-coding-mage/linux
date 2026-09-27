@@ -2,8 +2,8 @@
 
 /* The CONFIG_NUMA conditional is preserved as a Rust feature conditional. */
 #[cfg(CONFIG_NUMA)]
-pub unsafe fn pfn_to_nid(pfn: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
-    let mut nid: ::core::ffi::c_int = 0;
+pub unsafe fn pfn_to_nid(pfn: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
+    let mut nid: ::kernel::ffi::c_int = 0;
 
     while nid < MAX_NUMNODES {
         if pfn >= node_start_pfn(nid) && pfn <= node_end_pfn(nid) {
@@ -17,7 +17,7 @@ pub unsafe fn pfn_to_nid(pfn: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
 
 #[cfg(CONFIG_NUMA)]
 pub unsafe fn pfn_to_pgdat(
-    pfn: ::core::ffi::c_ulong,
+    pfn: ::kernel::ffi::c_ulong,
 ) -> *mut pglist_data {
     NODE_DATA(pfn_to_nid(pfn))
 }
@@ -25,16 +25,16 @@ pub unsafe fn pfn_to_pgdat(
 /* arch/sh/mm/numa.c */
 #[cfg(CONFIG_NUMA)]
 pub unsafe extern "C" fn setup_bootmem_node(
-    nid: ::core::ffi::c_int,
-    start: ::core::ffi::c_ulong,
-    end: ::core::ffi::c_ulong,
+    nid: ::kernel::ffi::c_int,
+    start: ::kernel::ffi::c_ulong,
+    end: ::kernel::ffi::c_ulong,
 );
 
 #[cfg(not(CONFIG_NUMA))]
 pub unsafe fn setup_bootmem_node(
-    _nid: ::core::ffi::c_int,
-    _start: ::core::ffi::c_ulong,
-    _end: ::core::ffi::c_ulong,
+    _nid: ::kernel::ffi::c_int,
+    _start: ::kernel::ffi::c_ulong,
+    _end: ::kernel::ffi::c_ulong,
 ) {
 }
 
@@ -43,13 +43,13 @@ pub unsafe extern "C" fn plat_mem_setup();
 
 /* arch/sh/kernel/setup.c */
 pub unsafe extern "C" fn __add_active_range(
-    nid: ::core::ffi::c_uint,
-    start_pfn: ::core::ffi::c_ulong,
-    end_pfn: ::core::ffi::c_ulong,
+    nid: ::kernel::ffi::c_uint,
+    start_pfn: ::kernel::ffi::c_ulong,
+    end_pfn: ::kernel::ffi::c_ulong,
 );
 
 /* arch/sh/mm/init.c */
-pub unsafe extern "C" fn allocate_pgdat(nid: ::core::ffi::c_uint);
+pub unsafe extern "C" fn allocate_pgdat(nid: ::kernel::ffi::c_uint);
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

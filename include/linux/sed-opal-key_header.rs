@@ -15,11 +15,11 @@
 // original header and is represented here with a Rust cfg feature.
 #[cfg(CONFIG_PSERIES_PLPKS_SED)]
 unsafe extern "C" {
-    pub fn sed_read_key(keyname: *mut core::ffi::c_char,
-                        key: *mut core::ffi::c_char,
+    pub fn sed_read_key(keyname: *mut kernel::ffi::c_char,
+                        key: *mut kernel::ffi::c_char,
                         keylen: *mut u_int) -> i32;
-    pub fn sed_write_key(keyname: *mut core::ffi::c_char,
-                         key: *mut core::ffi::c_char,
+    pub fn sed_write_key(keyname: *mut kernel::ffi::c_char,
+                         key: *mut kernel::ffi::c_char,
                          keylen: u_int) -> i32;
 }
 
@@ -33,8 +33,8 @@ pub type u_int = u32;
 
 #[cfg(not(CONFIG_PSERIES_PLPKS_SED))]
 pub unsafe fn sed_read_key(
-    _keyname: *mut core::ffi::c_char,
-    _key: *mut core::ffi::c_char,
+    _keyname: *mut kernel::ffi::c_char,
+    _key: *mut kernel::ffi::c_char,
     _keylen: *mut u_int,
 ) -> i32 {
     -(EOPNOTSUPP as i32)
@@ -42,8 +42,8 @@ pub unsafe fn sed_read_key(
 
 #[cfg(not(CONFIG_PSERIES_PLPKS_SED))]
 pub unsafe fn sed_write_key(
-    _keyname: *mut core::ffi::c_char,
-    _key: *mut core::ffi::c_char,
+    _keyname: *mut kernel::ffi::c_char,
+    _key: *mut kernel::ffi::c_char,
     _keylen: u_int,
 ) -> i32 {
     -(EOPNOTSUPP as i32)

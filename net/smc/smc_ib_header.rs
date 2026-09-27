@@ -42,7 +42,7 @@ pub struct smc_ib_device {
     pub initialized: u8,
     pub port_event_work: work_struct,
     pub port_event_mask: usize,
-    pub ports_going_away: [core::ffi::c_ulong; 1],
+    pub ports_going_away: [kernel::ffi::c_ulong; 1],
     pub lnk_cnt: atomic_t,
     pub lnks_deleted: wait_queue_head_t,
     pub mutex: mutex,

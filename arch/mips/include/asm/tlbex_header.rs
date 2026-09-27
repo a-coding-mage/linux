@@ -15,7 +15,7 @@ pub enum tlb_write_entry {
 }
 
 unsafe extern "C" {
-    pub static mut pgd_reg: core::ffi::c_int;
+    pub static mut pgd_reg: kernel::ffi::c_int;
 
     pub fn build_get_pmde64(
         p: *mut *mut u32,
@@ -36,13 +36,13 @@ unsafe extern "C" {
     pub fn build_tlb_refill_handler();
 
     pub fn handle_tlbl();
-    pub static handle_tlbl_end: [core::ffi::c_char; 0];
+    pub static handle_tlbl_end: [kernel::ffi::c_char; 0];
 
     pub fn handle_tlbs();
-    pub static handle_tlbs_end: [core::ffi::c_char; 0];
+    pub static handle_tlbs_end: [kernel::ffi::c_char; 0];
 
     pub fn handle_tlbm();
-    pub static handle_tlbm_end: [core::ffi::c_char; 0];
+    pub static handle_tlbm_end: [kernel::ffi::c_char; 0];
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

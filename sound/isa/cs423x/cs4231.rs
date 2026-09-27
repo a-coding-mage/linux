@@ -19,70 +19,70 @@ const DEV_NAME: &[u8] = b"cs4231\0";
 
 extern "C" {
     static SNDRV_CARDS: usize;
-    static SNDRV_DEFAULT_IDX: [::core::ffi::c_int; 0];
-    static SNDRV_DEFAULT_STR: [*mut ::core::ffi::c_char; 0];
+    static SNDRV_DEFAULT_IDX: [::kernel::ffi::c_int; 0];
+    static SNDRV_DEFAULT_STR: [*mut ::kernel::ffi::c_char; 0];
     static SNDRV_DEFAULT_ENABLE: [bool; 0];
-    static SNDRV_DEFAULT_PORT: [::core::ffi::c_long; 0];
-    static SNDRV_DEFAULT_IRQ: [::core::ffi::c_int; 0];
-    static SNDRV_DEFAULT_DMA: [::core::ffi::c_int; 0];
+    static SNDRV_DEFAULT_PORT: [::kernel::ffi::c_long; 0];
+    static SNDRV_DEFAULT_IRQ: [::kernel::ffi::c_int; 0];
+    static SNDRV_DEFAULT_DMA: [::kernel::ffi::c_int; 0];
 
-    static SNDRV_AUTO_PORT: ::core::ffi::c_long;
-    static SNDRV_AUTO_IRQ: ::core::ffi::c_int;
-    static SNDRV_AUTO_DMA: ::core::ffi::c_int;
-    static WSS_HW_DETECT: ::core::ffi::c_int;
-    static MPU401_HW_CS4232: ::core::ffi::c_int;
-    static SNDRV_CTL_POWER_D3hot: ::core::ffi::c_int;
-    static SNDRV_CTL_POWER_D0: ::core::ffi::c_int;
+    static SNDRV_AUTO_PORT: ::kernel::ffi::c_long;
+    static SNDRV_AUTO_IRQ: ::kernel::ffi::c_int;
+    static SNDRV_AUTO_DMA: ::kernel::ffi::c_int;
+    static WSS_HW_DETECT: ::kernel::ffi::c_int;
+    static MPU401_HW_CS4232: ::kernel::ffi::c_int;
+    static SNDRV_CTL_POWER_D3hot: ::kernel::ffi::c_int;
+    static SNDRV_CTL_POWER_D0: ::kernel::ffi::c_int;
     static THIS_MODULE: *mut module;
 
-    fn dev_err(dev: *mut device, fmt: *const ::core::ffi::c_char, ...);
-    fn dev_warn(dev: *mut device, fmt: *const ::core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const ::kernel::ffi::c_char, ...);
+    fn dev_warn(dev: *mut device, fmt: *const ::kernel::ffi::c_char, ...);
     fn snd_devm_card_new(
         dev: *mut device,
-        idx: ::core::ffi::c_int,
-        xid: *mut ::core::ffi::c_char,
+        idx: ::kernel::ffi::c_int,
+        xid: *mut ::kernel::ffi::c_char,
         module: *mut module,
-        extra_size: ::core::ffi::c_int,
+        extra_size: ::kernel::ffi::c_int,
         card_ret: *mut *mut snd_card,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     fn snd_wss_create(
         card: *mut snd_card,
-        port: ::core::ffi::c_long,
-        cport: ::core::ffi::c_int,
-        irq: ::core::ffi::c_int,
-        dma1: ::core::ffi::c_int,
-        dma2: ::core::ffi::c_int,
-        hardware: ::core::ffi::c_int,
-        hwshare: ::core::ffi::c_int,
+        port: ::kernel::ffi::c_long,
+        cport: ::kernel::ffi::c_int,
+        irq: ::kernel::ffi::c_int,
+        dma1: ::kernel::ffi::c_int,
+        dma2: ::kernel::ffi::c_int,
+        hardware: ::kernel::ffi::c_int,
+        hwshare: ::kernel::ffi::c_int,
         chip_ret: *mut *mut snd_wss,
-    ) -> ::core::ffi::c_int;
-    fn snd_wss_pcm(chip: *mut snd_wss, device: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    fn snd_wss_pcm(chip: *mut snd_wss, device: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
     fn strscpy(
-        dest: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
+        dest: *mut ::kernel::ffi::c_char,
+        src: *const ::kernel::ffi::c_char,
         count: usize,
     ) -> isize;
     fn scnprintf(
-        buf: *mut ::core::ffi::c_char,
+        buf: *mut ::kernel::ffi::c_char,
         size: usize,
-        fmt: *const ::core::ffi::c_char,
+        fmt: *const ::kernel::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
-    fn snd_wss_mixer(chip: *mut snd_wss) -> ::core::ffi::c_int;
-    fn snd_wss_timer(chip: *mut snd_wss, device: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    fn snd_wss_mixer(chip: *mut snd_wss) -> ::kernel::ffi::c_int;
+    fn snd_wss_timer(chip: *mut snd_wss, device: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
     fn snd_mpu401_uart_new(
         card: *mut snd_card,
-        device: ::core::ffi::c_int,
-        hardware: ::core::ffi::c_int,
-        port: ::core::ffi::c_long,
-        integrated: ::core::ffi::c_int,
-        irq: ::core::ffi::c_int,
-        private_data: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
-    fn snd_card_register(card: *mut snd_card) -> ::core::ffi::c_int;
-    fn dev_set_drvdata(dev: *mut device, data: *mut ::core::ffi::c_void);
-    fn dev_get_drvdata(dev: *mut device) -> *mut ::core::ffi::c_void;
-    fn snd_power_change_state(card: *mut snd_card, state: ::core::ffi::c_int);
+        device: ::kernel::ffi::c_int,
+        hardware: ::kernel::ffi::c_int,
+        port: ::kernel::ffi::c_long,
+        integrated: ::kernel::ffi::c_int,
+        irq: ::kernel::ffi::c_int,
+        private_data: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
+    fn snd_card_register(card: *mut snd_card) -> ::kernel::ffi::c_int;
+    fn dev_set_drvdata(dev: *mut device, data: *mut ::kernel::ffi::c_void);
+    fn dev_get_drvdata(dev: *mut device) -> *mut ::kernel::ffi::c_void;
+    fn snd_power_change_state(card: *mut snd_card, state: ::kernel::ffi::c_int);
 }
 
 #[repr(C)]
@@ -97,21 +97,21 @@ pub struct module {
 
 #[repr(C)]
 pub struct snd_pcm {
-    pub name: [::core::ffi::c_char; 0],
+    pub name: [::kernel::ffi::c_char; 0],
 }
 
 #[repr(C)]
 pub struct snd_card {
-    pub private_data: *mut ::core::ffi::c_void,
-    pub driver: [::core::ffi::c_char; 0],
-    pub shortname: [::core::ffi::c_char; 0],
-    pub longname: [::core::ffi::c_char; 0],
+    pub private_data: *mut ::kernel::ffi::c_void,
+    pub driver: [::kernel::ffi::c_char; 0],
+    pub shortname: [::kernel::ffi::c_char; 0],
+    pub longname: [::kernel::ffi::c_char; 0],
 }
 
 #[repr(C)]
 pub struct snd_wss {
     pub pcm: *mut snd_pcm,
-    pub port: ::core::ffi::c_ulong,
+    pub port: ::kernel::ffi::c_ulong,
     pub suspend: unsafe extern "C" fn(chip: *mut snd_wss),
     pub resume: unsafe extern "C" fn(chip: *mut snd_wss),
 }
@@ -123,36 +123,36 @@ pub struct pm_message_t {
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct isa_driver {
-    pub match_: Option<unsafe extern "C" fn(dev: *mut device, n: ::core::ffi::c_uint) -> ::core::ffi::c_int>,
-    pub probe: Option<unsafe extern "C" fn(dev: *mut device, n: ::core::ffi::c_uint) -> ::core::ffi::c_int>,
+    pub match_: Option<unsafe extern "C" fn(dev: *mut device, n: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(dev: *mut device, n: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>,
     // Present when CONFIG_PM is enabled in the original C source.
     #[cfg(CONFIG_PM)]
     pub suspend: Option<
         unsafe extern "C" fn(
             dev: *mut device,
-            n: ::core::ffi::c_uint,
+            n: ::kernel::ffi::c_uint,
             state: pm_message_t,
-        ) -> ::core::ffi::c_int,
+        ) -> ::kernel::ffi::c_int,
     >,
     #[cfg(CONFIG_PM)]
-    pub resume: Option<unsafe extern "C" fn(dev: *mut device, n: ::core::ffi::c_uint) -> ::core::ffi::c_int>,
+    pub resume: Option<unsafe extern "C" fn(dev: *mut device, n: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>,
     pub driver: device_driver,
 }
 
-static mut index: [::core::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_IDX; /* Index 0-MAX */
-static mut id: [*mut ::core::ffi::c_char; SNDRV_CARDS] = SNDRV_DEFAULT_STR; /* ID for this card */
+static mut index: [::kernel::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_IDX; /* Index 0-MAX */
+static mut id: [*mut ::kernel::ffi::c_char; SNDRV_CARDS] = SNDRV_DEFAULT_STR; /* ID for this card */
 static mut enable: [bool; SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE; /* Enable this card */
-static mut port: [::core::ffi::c_long; SNDRV_CARDS] = SNDRV_DEFAULT_PORT; /* PnP setup */
-static mut mpu_port: [::core::ffi::c_long; SNDRV_CARDS] = SNDRV_DEFAULT_PORT; /* PnP setup */
-static mut irq: [::core::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_IRQ; /* 5,7,9,11,12,15 */
-static mut mpu_irq: [::core::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_IRQ; /* 9,11,12,15 */
-static mut dma1: [::core::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_DMA; /* 0,1,3,5,6,7 */
-static mut dma2: [::core::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_DMA; /* 0,1,3,5,6,7 */
+static mut port: [::kernel::ffi::c_long; SNDRV_CARDS] = SNDRV_DEFAULT_PORT; /* PnP setup */
+static mut mpu_port: [::kernel::ffi::c_long; SNDRV_CARDS] = SNDRV_DEFAULT_PORT; /* PnP setup */
+static mut irq: [::kernel::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_IRQ; /* 5,7,9,11,12,15 */
+static mut mpu_irq: [::kernel::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_IRQ; /* 9,11,12,15 */
+static mut dma1: [::kernel::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_DMA; /* 0,1,3,5,6,7 */
+static mut dma2: [::kernel::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_DMA; /* 0,1,3,5,6,7 */
 
 // module_param_array(index, int, NULL, 0444);
 // MODULE_PARM_DESC(index, "Index value for " CRD_NAME " soundcard.");
@@ -173,7 +173,7 @@ static mut dma2: [::core::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_DMA; /* 0,1,3
 // module_param_hw_array(dma2, int, dma, NULL, 0444);
 // MODULE_PARM_DESC(dma2, "DMA2 # for " CRD_NAME " driver.");
 
-unsafe extern "C" fn snd_cs4231_match(dev: *mut device, n: ::core::ffi::c_uint) -> ::core::ffi::c_int {
+unsafe extern "C" fn snd_cs4231_match(dev: *mut device, n: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int {
     let n = n as usize;
 
     if !enable[n] {
@@ -181,25 +181,25 @@ unsafe extern "C" fn snd_cs4231_match(dev: *mut device, n: ::core::ffi::c_uint) 
     }
 
     if port[n] == SNDRV_AUTO_PORT {
-        dev_err(dev, b"please specify port\n\0".as_ptr() as *const ::core::ffi::c_char);
+        dev_err(dev, b"please specify port\n\0".as_ptr() as *const ::kernel::ffi::c_char);
         return 0;
     }
     if irq[n] == SNDRV_AUTO_IRQ {
-        dev_err(dev, b"please specify irq\n\0".as_ptr() as *const ::core::ffi::c_char);
+        dev_err(dev, b"please specify irq\n\0".as_ptr() as *const ::kernel::ffi::c_char);
         return 0;
     }
     if dma1[n] == SNDRV_AUTO_DMA {
-        dev_err(dev, b"please specify dma1\n\0".as_ptr() as *const ::core::ffi::c_char);
+        dev_err(dev, b"please specify dma1\n\0".as_ptr() as *const ::kernel::ffi::c_char);
         return 0;
     }
     1
 }
 
-unsafe extern "C" fn snd_cs4231_probe(dev: *mut device, n: ::core::ffi::c_uint) -> ::core::ffi::c_int {
+unsafe extern "C" fn snd_cs4231_probe(dev: *mut device, n: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int {
     let n = n as usize;
     let mut card: *mut snd_card = ::core::ptr::null_mut();
     let mut chip: *mut snd_wss = ::core::ptr::null_mut();
-    let mut error: ::core::ffi::c_int;
+    let mut error: ::kernel::ffi::c_int;
 
     error = snd_devm_card_new(dev, index[n], id[n], THIS_MODULE, 0, &mut card);
     if error < 0 {
@@ -221,7 +221,7 @@ unsafe extern "C" fn snd_cs4231_probe(dev: *mut device, n: ::core::ffi::c_uint) 
         return error;
     }
 
-    (*card).private_data = chip as *mut ::core::ffi::c_void;
+    (*card).private_data = chip as *mut ::kernel::ffi::c_void;
 
     error = snd_wss_pcm(chip, 0);
     if error < 0 {
@@ -230,7 +230,7 @@ unsafe extern "C" fn snd_cs4231_probe(dev: *mut device, n: ::core::ffi::c_uint) 
 
     strscpy(
         (*card).driver.as_mut_ptr(),
-        b"CS4231\0".as_ptr() as *const ::core::ffi::c_char,
+        b"CS4231\0".as_ptr() as *const ::kernel::ffi::c_char,
         ::core::mem::size_of_val(&(*card).driver),
     );
     strscpy(
@@ -243,7 +243,7 @@ unsafe extern "C" fn snd_cs4231_probe(dev: *mut device, n: ::core::ffi::c_uint) 
         scnprintf(
             (*card).longname.as_mut_ptr(),
             ::core::mem::size_of_val(&(*card).longname),
-            b"%s at 0x%lx, irq %d, dma %d\0".as_ptr() as *const ::core::ffi::c_char,
+            b"%s at 0x%lx, irq %d, dma %d\0".as_ptr() as *const ::kernel::ffi::c_char,
             (*(*chip).pcm).name.as_ptr(),
             (*chip).port,
             irq[n],
@@ -253,7 +253,7 @@ unsafe extern "C" fn snd_cs4231_probe(dev: *mut device, n: ::core::ffi::c_uint) 
         scnprintf(
             (*card).longname.as_mut_ptr(),
             ::core::mem::size_of_val(&(*card).longname),
-            b"%s at 0x%lx, irq %d, dma %d&%d\0".as_ptr() as *const ::core::ffi::c_char,
+            b"%s at 0x%lx, irq %d, dma %d&%d\0".as_ptr() as *const ::kernel::ffi::c_char,
             (*(*chip).pcm).name.as_ptr(),
             (*chip).port,
             irq[n],
@@ -286,7 +286,7 @@ unsafe extern "C" fn snd_cs4231_probe(dev: *mut device, n: ::core::ffi::c_uint) 
             ::core::ptr::null_mut(),
         ) < 0
         {
-            dev_warn(dev, b"MPU401 not detected\n\0".as_ptr() as *const ::core::ffi::c_char);
+            dev_warn(dev, b"MPU401 not detected\n\0".as_ptr() as *const ::kernel::ffi::c_char);
         }
     }
 
@@ -295,16 +295,16 @@ unsafe extern "C" fn snd_cs4231_probe(dev: *mut device, n: ::core::ffi::c_uint) 
         return error;
     }
 
-    dev_set_drvdata(dev, card as *mut ::core::ffi::c_void);
+    dev_set_drvdata(dev, card as *mut ::kernel::ffi::c_void);
     0
 }
 
 #[cfg(CONFIG_PM)]
 unsafe extern "C" fn snd_cs4231_suspend(
     dev: *mut device,
-    _n: ::core::ffi::c_uint,
+    _n: ::kernel::ffi::c_uint,
     _state: pm_message_t,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let card: *mut snd_card = dev_get_drvdata(dev) as *mut snd_card;
     let chip: *mut snd_wss = (*card).private_data as *mut snd_wss;
 
@@ -314,7 +314,7 @@ unsafe extern "C" fn snd_cs4231_suspend(
 }
 
 #[cfg(CONFIG_PM)]
-unsafe extern "C" fn snd_cs4231_resume(dev: *mut device, _n: ::core::ffi::c_uint) -> ::core::ffi::c_int {
+unsafe extern "C" fn snd_cs4231_resume(dev: *mut device, _n: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int {
     let card: *mut snd_card = dev_get_drvdata(dev) as *mut snd_card;
     let chip: *mut snd_wss = (*card).private_data as *mut snd_wss;
 
@@ -331,7 +331,7 @@ static mut snd_cs4231_driver: isa_driver = isa_driver {
     #[cfg(CONFIG_PM)]
     resume: Some(snd_cs4231_resume),
     driver: device_driver {
-        name: DEV_NAME.as_ptr() as *const ::core::ffi::c_char,
+        name: DEV_NAME.as_ptr() as *const ::kernel::ffi::c_char,
     },
 };
 

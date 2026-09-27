@@ -12,7 +12,7 @@ const QAIC_DBC_DIR_NAME: usize = 9;
 #[repr(C)]
 struct BootlogMsg {
     /* Buffer for bootlog messages */
-    str_: [core::ffi::c_char; BOOTLOG_MSG_SIZE],
+    str_: [kernel::ffi::c_char; BOOTLOG_MSG_SIZE],
     /* Length of bootlog message */
     len: usize,
     /* Root struct of device, used to access device resources */
@@ -31,14 +31,14 @@ struct BootlogPage {
     offset: u32,
 }
 
-unsafe fn bootlog_show(s: *mut seq_file, _unused: *mut core::ffi::c_void) -> i32 {
+unsafe fn bootlog_show(s: *mut seq_file, _unused: *mut kernel::ffi::c_void) -> i32 {
     let qdev = (*s).private as *mut qaic_device;
     mutex_lock(&mut (*qdev).bootlog_mutex);
     let mut page: *mut BootlogPage = core::ptr::null_mut();
     let mut pos = (*qdev).bootlog.next;
     while pos != &mut (*qdev).bootlog as *mut list_head {
         page = container_of!(pos, BootlogPage, node);
-        let log = page.add(1) as *mut core::ffi::c_void;
+        let log = page.add(1) as *mut kernel::ffi::c_void;
         let len = ((*page).offset as usize).wrapping_sub(core::mem::size_of::<BootlogPage>());
         seq_write(s, log, len);
         pos = (*pos).next;
@@ -47,13 +47,13 @@ unsafe fn bootlog_show(s: *mut seq_file, _unused: *mut core::ffi::c_void) -> i32
     0
 }
 
-unsafe fn fifo_size_show(s: *mut seq_file, _unused: *mut core::ffi::c_void) -> i32 {
+unsafe fn fifo_size_show(s: *mut seq_file, _unused: *mut kernel::ffi::c_void) -> i32 {
     let dbc = (*s).private as *mut dma_bridge_chan;
     seq_printf(s, "%u\n", (*dbc).nelem);
     0
 }
 
-unsafe fn queued_show(s: *mut seq_file, _unused: *mut core::ffi::c_void) -> i32 {
+unsafe fn queued_show(s: *mut seq_file, _unused: *mut kernel::ffi::c_void) -> i32 {
     let dbc = (*s).private as *mut dma_bridge_chan;
     let mut tail: u32 = 0;
     let mut head: u32 = 0;
@@ -81,7 +81,7 @@ pub unsafe fn qaic_debugfs_init(qddev: *mut qaic_drm_device) {
     debugfs_create_file(c"bootlog".as_ptr(), 0o400, debugfs_root, qdev as *mut _, &bootlog_fops);
     let mut i: u32 = 0;
     while i < (*qdev).num_dbc && i < 256 {
-        let mut name = [0 as core::ffi::c_char; QAIC_DBC_DIR_NAME];
+        let mut name = [0 as kernel::ffi::c_char; QAIC_DBC_DIR_NAME];
         snprintf(name.as_mut_ptr(), QAIC_DBC_DIR_NAME, c"dbc%03u".as_ptr(), i);
         let debugfs_dir = debugfs_create_dir(name.as_ptr(), debugfs_root);
         debugfs_create_file(c"fifo_size".as_ptr(), 0o400, debugfs_dir, &mut (*qdev).dbc[i as usize] as *mut _, &fifo_size_fops);
@@ -113,14 +113,14 @@ unsafe fn reset_bootlog(qdev: *mut qaic_device) -> i32 {
     0
 }
 
-unsafe fn bootlog_get_space(qdev: *mut qaic_device, size: u32) -> *mut core::ffi::c_void {
+unsafe fn bootlog_get_space(qdev: *mut qaic_device, size: u32) -> *mut kernel::ffi::c_void {
     let mut page = list_last_entry!(&mut (*qdev).bootlog, BootlogPage, node);
     if size.checked_add(core::mem::size_of::<BootlogPage>() as u32).unwrap_or(u32::MAX) > (*page).size { return core::ptr::null_mut(); }
     if (*page).offset.wrapping_add(size) > (*page).size {
         page = alloc_bootlog_page(qdev);
         if page.is_null() { return core::ptr::null_mut(); }
     }
-    (page as *mut u8).add((*page).offset as usize) as *mut core::ffi::c_void
+    (page as *mut u8).add((*page).offset as usize) as *mut kernel::ffi::c_void
 }
 
 unsafe fn bootlog_commit(qdev: *mut qaic_device, size: u32) {
@@ -187,7 +187,7 @@ unsafe extern "C" fn qaic_bootlog_mhi_dl_xfer_cb(mhi_dev: *mut mhi_device, mhi_r
 // MHI match table and driver registration object.
 #[repr(C)]
 struct QaicBootlogMhiMatchTableEntry {
-    chan: *const core::ffi::c_char,
+    chan: *const kernel::ffi::c_char,
 }
 
 static mut qaic_bootlog_mhi_match_table: [QaicBootlogMhiMatchTableEntry; 2] = [

@@ -7,12 +7,12 @@
 #[repr(C)]
 struct buffer {
     size: usize,
-    data: [core::ffi::c_char; 0],
+    data: [kernel::ffi::c_char; 0],
 }
 
 unsafe fn atags_read(
     file: *mut file,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     count: usize,
     ppos: *mut loff_t,
 ) -> ssize_t {
@@ -34,14 +34,14 @@ static atags_proc_ops: proc_ops = proc_ops {
 };
 
 const BOOT_PARAMS_SIZE: usize = 1536;
-static mut atags_copy: [core::ffi::c_char; BOOT_PARAMS_SIZE] = [0; BOOT_PARAMS_SIZE];
+static mut atags_copy: [kernel::ffi::c_char; BOOT_PARAMS_SIZE] = [0; BOOT_PARAMS_SIZE];
 
 unsafe fn save_atags(tags: *const tag) {
     unsafe {
         memcpy(
             atags_copy.as_mut_ptr(),
-            tags as *const core::ffi::c_void,
-            core::mem::size_of::<[core::ffi::c_char; BOOT_PARAMS_SIZE]>(),
+            tags as *const kernel::ffi::c_void,
+            core::mem::size_of::<[kernel::ffi::c_char; BOOT_PARAMS_SIZE]>(),
         );
     }
 }
@@ -66,7 +66,7 @@ unsafe fn init_atags_procfs() -> c_int {
     }
 
     /* include the terminating ATAG_NONE */
-    size = (tag as *mut core::ffi::c_char as usize)
+    size = (tag as *mut kernel::ffi::c_char as usize)
         - (unsafe { atags_copy.as_mut_ptr() as usize })
         + core::mem::size_of::<tag_header>();
 
@@ -74,7 +74,7 @@ unsafe fn init_atags_procfs() -> c_int {
 
     b = unsafe { kmalloc_flex(size) };
     if b.is_null() {
-        unsafe { kfree(b as *mut core::ffi::c_void); }
+        unsafe { kfree(b as *mut kernel::ffi::c_void); }
         unsafe { pr_err(c"Exporting ATAGs: not enough memory\n".as_ptr()); }
         return -ENOMEM;
     }
@@ -83,7 +83,7 @@ unsafe fn init_atags_procfs() -> c_int {
         (*b).size = size;
         memcpy(
             (*b).data.as_mut_ptr(),
-            atags_copy.as_ptr() as *const core::ffi::c_void,
+            atags_copy.as_ptr() as *const kernel::ffi::c_void,
             size,
         );
     }
@@ -94,11 +94,11 @@ unsafe fn init_atags_procfs() -> c_int {
             0o400,
             core::ptr::null_mut(),
             &atags_proc_ops,
-            b as *mut core::ffi::c_void,
+            b as *mut kernel::ffi::c_void,
         )
     };
     if tags_entry.is_null() {
-        unsafe { kfree(b as *mut core::ffi::c_void); }
+        unsafe { kfree(b as *mut kernel::ffi::c_void); }
         unsafe { pr_err(c"Exporting ATAGs: not enough memory\n".as_ptr()); }
         return -ENOMEM;
     }

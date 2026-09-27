@@ -14,7 +14,7 @@
 /* This flag indicates that the page pointed to by a pte is dirty and requires
  * cleaning before returning it to the user.
  */
-pub const PG_dcache_dirty: _ = PG_arch_1;
+pub const PG_dcache_dirty: c_ulong = PG_arch_1;
 
 #[inline]
 pub unsafe fn folio_test_dcache_dirty(folio: *const folio) -> bool {
@@ -36,26 +36,26 @@ extern "C" {
     pub static mut __flush_cache_all: Option<unsafe extern "C" fn()>;
     pub static mut flush_cache_mm: Option<unsafe extern "C" fn(mm: *mut mm_struct)>;
     pub static mut flush_cache_range:
-        Option<unsafe extern "C" fn(vma: *mut vm_area_struct, start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong)>;
+        Option<unsafe extern "C" fn(vma: *mut vm_area_struct, start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong)>;
     pub static mut flush_cache_page:
-        Option<unsafe extern "C" fn(vma: *mut vm_area_struct, page: ::core::ffi::c_ulong, pfn: ::core::ffi::c_ulong)>;
-    pub fn __flush_dcache_folio_pages(folio: *mut folio, page: *mut page, nr: ::core::ffi::c_uint);
-    pub static mut flush_icache_range: Option<unsafe extern "C" fn(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong)>;
-    pub static mut local_flush_icache_range: Option<unsafe extern "C" fn(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong)>;
-    pub static mut __flush_icache_user_range: Option<unsafe extern "C" fn(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong)>;
-    pub static mut __local_flush_icache_user_range: Option<unsafe extern "C" fn(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong)>;
+        Option<unsafe extern "C" fn(vma: *mut vm_area_struct, page: ::kernel::ffi::c_ulong, pfn: ::kernel::ffi::c_ulong)>;
+    pub fn __flush_dcache_folio_pages(folio: *mut folio, page: *mut page, nr: ::kernel::ffi::c_uint);
+    pub static mut flush_icache_range: Option<unsafe extern "C" fn(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong)>;
+    pub static mut local_flush_icache_range: Option<unsafe extern "C" fn(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong)>;
+    pub static mut __flush_icache_user_range: Option<unsafe extern "C" fn(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong)>;
+    pub static mut __local_flush_icache_user_range: Option<unsafe extern "C" fn(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong)>;
     pub static mut __flush_cache_vmap: Option<unsafe extern "C" fn()>;
     pub static mut __flush_cache_vunmap: Option<unsafe extern "C" fn()>;
-    pub fn copy_to_user_page(vma: *mut vm_area_struct, page: *mut page, vaddr: ::core::ffi::c_ulong, dst: *mut ::core::ffi::c_void, src: *const ::core::ffi::c_void, len: ::core::ffi::c_ulong);
-    pub fn copy_from_user_page(vma: *mut vm_area_struct, page: *mut page, vaddr: ::core::ffi::c_ulong, dst: *mut ::core::ffi::c_void, src: *const ::core::ffi::c_void, len: ::core::ffi::c_ulong);
+    pub fn copy_to_user_page(vma: *mut vm_area_struct, page: *mut page, vaddr: ::kernel::ffi::c_ulong, dst: *mut ::kernel::ffi::c_void, src: *const ::kernel::ffi::c_void, len: ::kernel::ffi::c_ulong);
+    pub fn copy_from_user_page(vma: *mut vm_area_struct, page: *mut page, vaddr: ::kernel::ffi::c_ulong, dst: *mut ::kernel::ffi::c_void, src: *const ::kernel::ffi::c_void, len: ::kernel::ffi::c_ulong);
     pub static mut flush_icache_all: Option<unsafe extern "C" fn()>;
-    pub static mut flush_data_cache_page: Option<unsafe extern "C" fn(addr: ::core::ffi::c_ulong)>;
-    pub fn run_uncached(func: *mut ::core::ffi::c_void) -> ::core::ffi::c_ulong;
-    pub fn kmap_coherent(page: *mut page, addr: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void;
+    pub static mut flush_data_cache_page: Option<unsafe extern "C" fn(addr: ::kernel::ffi::c_ulong)>;
+    pub fn run_uncached(func: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_ulong;
+    pub fn kmap_coherent(page: *mut page, addr: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void;
     pub fn kunmap_coherent();
-    pub fn kmap_noncoherent(page: *mut page, addr: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void;
-    pub static mut __flush_kernel_vmap_range: Option<unsafe extern "C" fn(vaddr: ::core::ffi::c_ulong, size: ::core::ffi::c_int)>;
-    pub fn __flush_anon_page(page: *mut page, vmaddr: ::core::ffi::c_ulong);
+    pub fn kmap_noncoherent(page: *mut page, addr: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void;
+    pub static mut __flush_kernel_vmap_range: Option<unsafe extern "C" fn(vaddr: ::kernel::ffi::c_ulong, size: ::kernel::ffi::c_int)>;
+    pub fn __flush_anon_page(page: *mut page, vmaddr: ::kernel::ffi::c_ulong);
 }
 
 pub const ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE: i32 = 1;
@@ -82,21 +82,21 @@ pub unsafe fn flush_dcache_page(page: *mut page) {
 pub const ARCH_HAS_FLUSH_ANON_PAGE: bool = true;
 
 #[inline]
-pub unsafe fn flush_anon_page(_vma: *mut vm_area_struct, page: *mut page, vmaddr: ::core::ffi::c_ulong) {
+pub unsafe fn flush_anon_page(_vma: *mut vm_area_struct, page: *mut page, vmaddr: ::kernel::ffi::c_ulong) {
     if cpu_has_dc_aliases && PageAnon(page) {
         __flush_anon_page(page, vmaddr);
     }
 }
 
 #[inline]
-pub unsafe fn flush_cache_vmap(_start: ::core::ffi::c_ulong, _end: ::core::ffi::c_ulong) {
+pub unsafe fn flush_cache_vmap(_start: ::kernel::ffi::c_ulong, _end: ::kernel::ffi::c_ulong) {
     if cpu_has_dc_aliases {
         if let Some(f) = __flush_cache_vmap { f(); }
     }
 }
 
 #[inline]
-pub unsafe fn flush_cache_vunmap(_start: ::core::ffi::c_ulong, _end: ::core::ffi::c_ulong) {
+pub unsafe fn flush_cache_vunmap(_start: ::kernel::ffi::c_ulong, _end: ::kernel::ffi::c_ulong) {
     if cpu_has_dc_aliases {
         if let Some(f) = __flush_cache_vunmap { f(); }
     }
@@ -118,16 +118,16 @@ pub const ARCH_IMPLEMENTS_FLUSH_KERNEL_VMAP_RANGE: i32 = 1;
 
 /* For now both operations write back and invalidate the cache. */
 #[inline]
-pub unsafe fn flush_kernel_vmap_range(vaddr: *mut ::core::ffi::c_void, size: ::core::ffi::c_int) {
+pub unsafe fn flush_kernel_vmap_range(vaddr: *mut ::kernel::ffi::c_void, size: ::kernel::ffi::c_int) {
     if cpu_has_dc_aliases {
-        if let Some(f) = __flush_kernel_vmap_range { f(vaddr as ::core::ffi::c_ulong, size); }
+        if let Some(f) = __flush_kernel_vmap_range { f(vaddr as ::kernel::ffi::c_ulong, size); }
     }
 }
 
 #[inline]
-pub unsafe fn invalidate_kernel_vmap_range(vaddr: *mut ::core::ffi::c_void, size: ::core::ffi::c_int) {
+pub unsafe fn invalidate_kernel_vmap_range(vaddr: *mut ::kernel::ffi::c_void, size: ::kernel::ffi::c_int) {
     if cpu_has_dc_aliases {
-        if let Some(f) = __flush_kernel_vmap_range { f(vaddr as ::core::ffi::c_ulong, size); }
+        if let Some(f) = __flush_kernel_vmap_range { f(vaddr as ::kernel::ffi::c_ulong, size); }
     }
 }
 

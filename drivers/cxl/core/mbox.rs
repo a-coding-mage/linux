@@ -75,7 +75,7 @@ unsafe fn cxl_mem_find_command(opcode: u16) -> *mut cxl_mem_command {
     for c in CXL_MEM_COMMANDS.iter_mut() { if c.opcode == opcode { return c; } }
     core::ptr::null_mut()
 }
-unsafe fn cxl_mem_opcode_to_name(opcode: u16) -> *const core::ffi::c_char {
+unsafe fn cxl_mem_opcode_to_name(opcode: u16) -> *const kernel::ffi::c_char {
     let c = cxl_mem_find_command(opcode); if c.is_null() { return core::ptr::null(); }
     cxl_command_names[(*c).info.id as usize].name
 }
@@ -102,7 +102,7 @@ unsafe fn cxl_mem_raw_command_allowed(opcode: u16) -> bool {
     !CXL_DISABLED_RAW_COMMANDS.iter().any(|&x| x == opcode)
 }
 
-unsafe fn cxl_payload_from_user_allowed(opcode: u16, p: *mut core::ffi::c_void, n: usize) -> bool {
+unsafe fn cxl_payload_from_user_allowed(opcode: u16, p: *mut kernel::ffi::c_void, n: usize) -> bool {
     match opcode {
         CXL_MBOX_OP_SET_PARTITION_INFO => { if n < core::mem::size_of::<cxl_mbox_set_partition_info>() { return false; } (*(p as *const cxl_mbox_set_partition_info)).flags & CXL_SET_PARTITION_IMMEDIATE_FLAG == 0 },
         CXL_MBOX_OP_CLEAR_LOG => { if n < core::mem::size_of::<uuid_t>() { return false; } uuid_equal(p as *const uuid_t, &DEFINE_CXL_VENDOR_DEBUG_UUID) },

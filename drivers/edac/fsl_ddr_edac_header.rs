@@ -78,19 +78,19 @@ pub const TYPE_IMX9: u32 = 0x1; // MC used by iMX9 having registers changed
 
 #[repr(C)]
 pub struct fsl_mc_pdata {
-    pub name: *mut core::ffi::c_char,
-    pub edac_idx: core::ffi::c_int,
-    pub mc_vbase: *mut core::ffi::c_void,
-    pub inject_vbase: *mut core::ffi::c_void,
-    pub irq: core::ffi::c_int,
+    pub name: *mut kernel::ffi::c_char,
+    pub edac_idx: kernel::ffi::c_int,
+    pub mc_vbase: *mut kernel::ffi::c_void,
+    pub inject_vbase: *mut kernel::ffi::c_void,
+    pub irq: kernel::ffi::c_int,
     pub orig_ddr_err_disable: u32,
     pub orig_ddr_err_sbe: u32,
     pub little_endian: bool,
-    pub flag: core::ffi::c_ulong,
+    pub flag: kernel::ffi::c_ulong,
 }
 
 extern "C" {
-    pub fn fsl_mc_err_probe(op: *mut platform_device) -> core::ffi::c_int;
+    pub fn fsl_mc_err_probe(op: *mut platform_device) -> kernel::ffi::c_int;
     pub fn fsl_mc_err_remove(op: *mut platform_device);
 }
 

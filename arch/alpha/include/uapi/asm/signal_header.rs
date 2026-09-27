@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* Avoid too many header ordering problems. */
 #[repr(C)]
@@ -13,7 +13,7 @@ pub struct siginfo {
 pub const NSIG: usize = 32;
 
 #[cfg(not(__KERNEL__))]
-pub type sigset_t = ::core::ffi::c_ulong;
+pub type sigset_t = ::kernel::ffi::c_ulong;
 
 /*
  * Linux/AXP has different signal numbers that Linux/i386: I'm trying

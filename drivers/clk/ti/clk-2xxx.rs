@@ -10,9 +10,9 @@
 
 #[repr(C)]
 pub struct TiDtClk {
-    pub node_name: *const core::ffi::c_char,
-    pub con_id: *const core::ffi::c_char,
-    pub clk_name: *const core::ffi::c_char,
+    pub node_name: *const kernel::ffi::c_char,
+    pub con_id: *const kernel::ffi::c_char,
+    pub clk_name: *const kernel::ffi::c_char,
 }
 
 macro_rules! dt_clk {
@@ -26,7 +26,7 @@ macro_rules! dt_clk {
 }
 
 macro_rules! cstr {
-    ($s:literal) => { concat!($s, "\0").as_ptr() as *const core::ffi::c_char };
+    ($s:literal) => { concat!($s, "\0").as_ptr() as *const kernel::ffi::c_char };
 }
 
 static mut OMAP2XXX_CLKS: &[TiDtClk] = &[
@@ -224,10 +224,10 @@ extern "C" {
     fn ti_dt_clocks_register(clks: *const TiDtClk);
     fn omap2xxx_clkt_vps_init();
     fn omap2_clk_disable_autoidle_all();
-    fn omap2_clk_enable_init_clocks(clks: *const *const core::ffi::c_char, count: usize);
-    fn clk_get_sys(dev_id: *const core::ffi::c_char, con_id: *const core::ffi::c_char) -> *mut core::ffi::c_void;
-    fn clk_get_rate(clk: *mut core::ffi::c_void) -> libc::c_ulong;
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn omap2_clk_enable_init_clocks(clks: *const *const kernel::ffi::c_char, count: usize);
+    fn clk_get_sys(dev_id: *const kernel::ffi::c_char, con_id: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
+    fn clk_get_rate(clk: *mut kernel::ffi::c_void) -> kernel::ffi::c_ulong;
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[no_mangle]
@@ -240,7 +240,7 @@ pub unsafe extern "C" fn omap2xxx_dt_clk_init(soc_type: i32) -> i32 {
     }
     omap2xxx_clkt_vps_init();
     omap2_clk_disable_autoidle_all();
-    omap2_clk_enable_init_clocks(ENABLE_INIT_CLKS.as_ptr() as *const *const core::ffi::c_char, ENABLE_INIT_CLKS.len());
+    omap2_clk_enable_init_clocks(ENABLE_INIT_CLKS.as_ptr() as *const *const kernel::ffi::c_char, ENABLE_INIT_CLKS.len());
     pr_info(c"Clocking rate (Crystal/DPLL/MPU): %ld.%01ld/%ld/%ld MHz\n".as_ptr(),
         clk_get_rate(clk_get_sys(core::ptr::null(), c"sys_ck".as_ptr())) / 1_000_000,
         (clk_get_rate(clk_get_sys(core::ptr::null(), c"sys_ck".as_ptr())) / 100_000) % 10,

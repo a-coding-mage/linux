@@ -10,11 +10,11 @@ mod standard_bios {
      */
 
     unsafe extern "C" {
-        pub fn sh_bios_console_write(buf: *const core::ffi::c_char, len: core::ffi::c_uint);
+        pub fn sh_bios_console_write(buf: *const kernel::ffi::c_char, len: kernel::ffi::c_uint);
         pub fn sh_bios_gdb_detach();
 
-        pub fn sh_bios_get_node_addr(node_addr: *mut core::ffi::c_uchar);
-        pub fn sh_bios_shutdown(how: core::ffi::c_uint);
+        pub fn sh_bios_get_node_addr(node_addr: *mut kernel::ffi::c_uchar);
+        pub fn sh_bios_shutdown(how: kernel::ffi::c_uint);
 
         pub fn sh_bios_vbr_init();
         pub fn sh_bios_vbr_reload();

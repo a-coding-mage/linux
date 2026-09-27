@@ -129,7 +129,7 @@ pub unsafe fn netlbl_af6list_remove(addr: *const in6_addr, mask: *const in6_addr
 }
 
 #[cfg(CONFIG_AUDIT)]
-pub unsafe fn netlbl_af4list_audit_addr(audit_buf: *mut audit_buffer, src: i32, dev: *const core::ffi::c_char, addr: __be32, mask: __be32) {
+pub unsafe fn netlbl_af4list_audit_addr(audit_buf: *mut audit_buffer, src: i32, dev: *const kernel::ffi::c_char, addr: __be32, mask: __be32) {
     let mut mask_val = ntohl(mask);
     let dir = if src != 0 { "src" } else { "dst" };
     if !dev.is_null() { audit_log_format!(audit_buf, " netif=%s", dev); }
@@ -142,7 +142,7 @@ pub unsafe fn netlbl_af4list_audit_addr(audit_buf: *mut audit_buffer, src: i32, 
 }
 
 #[cfg(all(CONFIG_AUDIT, CONFIG_IPV6))]
-pub unsafe fn netlbl_af6list_audit_addr(audit_buf: *mut audit_buffer, src: i32, dev: *const core::ffi::c_char, addr: *const in6_addr, mask: *const in6_addr) {
+pub unsafe fn netlbl_af6list_audit_addr(audit_buf: *mut audit_buffer, src: i32, dev: *const kernel::ffi::c_char, addr: *const in6_addr, mask: *const in6_addr) {
     let dir = if src != 0 { "src" } else { "dst" };
     if !dev.is_null() { audit_log_format!(audit_buf, " netif=%s", dev); }
     audit_log_format!(audit_buf, " %s=%pI6", dir, addr);

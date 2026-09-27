@@ -30,8 +30,8 @@ macro_rules! flush_tlb_page {
  * This is a kludge, until I know better. --zaitcev XXX
  */
 #[inline]
-unsafe fn flush_tlb_kernel_range(start: ::core::ffi::c_ulong,
-                                 end: ::core::ffi::c_ulong)
+unsafe fn flush_tlb_kernel_range(start: ::kernel::ffi::c_ulong,
+                                 end: ::kernel::ffi::c_ulong)
 {
     let _ = (start, end);
     flush_tlb_all!();

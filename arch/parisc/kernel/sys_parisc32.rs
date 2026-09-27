@@ -12,7 +12,7 @@
  */
 
 // Dependencies supplied by the surrounding kernel translation unit.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct task_struct {

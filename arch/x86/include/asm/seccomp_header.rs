@@ -16,16 +16,16 @@ pub const __NR_seccomp_exit_32: _ = __NR_ia32_exit;
 pub const __NR_seccomp_sigreturn_32: _ = __NR_ia32_sigreturn;
 
 #[cfg(CONFIG_X86_64)]
-pub const SECCOMP_ARCH_NATIVE: _ = AUDIT_ARCH_X86_64;
+pub const SECCOMP_ARCH_NATIVE: u32 = AUDIT_ARCH_X86_64;
 #[cfg(CONFIG_X86_64)]
-pub const SECCOMP_ARCH_NATIVE_NR: _ = NR_syscalls;
+pub const SECCOMP_ARCH_NATIVE_NR: usize = NR_syscalls;
 #[cfg(CONFIG_X86_64)]
 pub const SECCOMP_ARCH_NATIVE_NAME: &str = "x86_64";
 
 #[cfg(all(CONFIG_X86_64, CONFIG_COMPAT))]
-pub const SECCOMP_ARCH_COMPAT: _ = AUDIT_ARCH_I386;
+pub const SECCOMP_ARCH_COMPAT: u32 = AUDIT_ARCH_I386;
 #[cfg(all(CONFIG_X86_64, CONFIG_COMPAT))]
-pub const SECCOMP_ARCH_COMPAT_NR: _ = IA32_NR_syscalls;
+pub const SECCOMP_ARCH_COMPAT_NR: usize = IA32_NR_syscalls;
 #[cfg(all(CONFIG_X86_64, CONFIG_COMPAT))]
 pub const SECCOMP_ARCH_COMPAT_NAME: &str = "ia32";
 
@@ -37,9 +37,9 @@ pub const SECCOMP_ARCH_COMPAT_NAME: &str = "ia32";
 
 // !CONFIG_X86_64
 #[cfg(not(CONFIG_X86_64))]
-pub const SECCOMP_ARCH_NATIVE: _ = AUDIT_ARCH_I386;
+pub const SECCOMP_ARCH_NATIVE: u32 = AUDIT_ARCH_I386;
 #[cfg(not(CONFIG_X86_64))]
-pub const SECCOMP_ARCH_NATIVE_NR: _ = NR_syscalls;
+pub const SECCOMP_ARCH_NATIVE_NR: usize = NR_syscalls;
 #[cfg(not(CONFIG_X86_64))]
 pub const SECCOMP_ARCH_NATIVE_NAME: &str = "ia32";
 

@@ -52,12 +52,12 @@ pub const LM3630A_MAX_BRIGHTNESS: i32 = 255;
 #[repr(C)]
 pub struct lm3630a_platform_data {
     /* led a config. */
-    pub leda_label: *const core::ffi::c_char,
+    pub leda_label: *const kernel::ffi::c_char,
     pub leda_init_brt: i32,
     pub leda_max_brt: i32,
     pub leda_ctrl: lm3630a_leda_ctrl,
     /* led b config. */
-    pub ledb_label: *const core::ffi::c_char,
+    pub ledb_label: *const kernel::ffi::c_char,
     pub ledb_init_brt: i32,
     pub ledb_max_brt: i32,
     pub ledb_ctrl: lm3630a_ledb_ctrl,

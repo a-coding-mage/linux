@@ -167,10 +167,10 @@ struct qfq_aggregate {
 
 struct qfq_group {
 	u64 S, F;			/* group timestamps (approx). */
-	core::ffi::c_uint slot_shift;	/* Slot shift. */
-	core::ffi::c_uint index;		/* Group index. */
-	core::ffi::c_uint front;		/* Index of the front slot. */
-	core::ffi::c_ulong full_slots;	/* non-empty slots */
+	kernel::ffi::c_uint slot_shift;	/* Slot shift. */
+	kernel::ffi::c_uint index;		/* Group index. */
+	kernel::ffi::c_uint front;		/* Index of the front slot. */
+	kernel::ffi::c_ulong full_slots;	/* non-empty slots */
 
 	/* Array of RR lists of active aggregates. */
 	struct hlist_head slots[QFQ_MAX_SLOTS];
@@ -186,7 +186,7 @@ struct qfq_sched {
 	u32			wsum;		/* weight sum */
 	u32			iwsum;		/* inverse weight sum */
 
-	core::ffi::c_ulong bitmaps[QFQ_MAX_STATE];	    /* Group bitmaps. */
+	kernel::ffi::c_ulong bitmaps[QFQ_MAX_STATE];	    /* Group bitmaps. */
 	struct qfq_group groups[QFQ_MAX_INDEX + 1]; /* The groups. */
 	u32 min_slot_shift;	/* Index of the group-0 bit in the bitmaps. */
 
@@ -234,11 +234,11 @@ static const struct nla_policy qfq_policy[TCA_QFQ_MAX + 1] = {
  * index = log_2(maxlen/weight) but we need to apply the scaling.
  * This is used only once at flow creation.
  */
-static int qfq_calc_index(inv_w: u32, maxlen: core::ffi::c_uint, min_slot_shift: u32)
+static int qfq_calc_index(inv_w: u32, maxlen: kernel::ffi::c_uint, min_slot_shift: u32)
 {
 	'out: {
 	u64 slot_size = (u64)maxlen * inv_w;
-	core::ffi::c_ulong size_map;
+	kernel::ffi::c_ulong size_map;
 	int index = 0;
 
 	size_map = slot_size >> min_slot_shift;
@@ -253,7 +253,7 @@ static int qfq_calc_index(inv_w: u32, maxlen: core::ffi::c_uint, min_slot_shift:
 	}
 	
 	pr_debug("qfq calc_index: W = %lu, L = %u, I = %d\n",
-		 (core::ffi::c_ulong) ONE_FP/inv_w, maxlen, index);
+		 (kernel::ffi::c_ulong) ONE_FP/inv_w, maxlen, index);
 
 	return index;
 }
@@ -407,7 +407,7 @@ static int qfq_change_agg(Qdisc *sch, qfq_class *cl, weight: u32,
 }
 
 static int qfq_change_class(Qdisc *sch, classid: u32, parentid: u32,
-			    nlattr **tca, core::ffi::c_ulong *arg,
+			    nlattr **tca, kernel::ffi::c_ulong *arg,
 			    netlink_ext_ack *extack)
 {
 	'destroy_class: {
@@ -530,7 +530,7 @@ static int qfq_change_class(Qdisc *sch, classid: u32, parentid: u32,
 	sch_tree_unlock(sch);
 	qdisc_class_hash_grow(sch, (*&q).clhash);
 
-	*arg = (core::ffi::c_ulong)cl;
+	*arg = (kernel::ffi::c_ulong)cl;
 	return 0;
 	}
 	
@@ -548,7 +548,7 @@ static void qfq_destroy_class(Qdisc *sch, qfq_class *cl)
 	kfree(cl);
 }
 
-static int qfq_delete_class(Qdisc *sch, arg: core::ffi::c_ulong,
+static int qfq_delete_class(Qdisc *sch, arg: kernel::ffi::c_ulong,
 			    netlink_ext_ack *extack)
 {
 	struct qfq_sched *q = qdisc_priv(sch);
@@ -571,12 +571,12 @@ static int qfq_delete_class(Qdisc *sch, arg: core::ffi::c_ulong,
 	return 0;
 }
 
-static core::ffi::c_ulong qfq_search_class(Qdisc *sch, classid: u32)
+static kernel::ffi::c_ulong qfq_search_class(Qdisc *sch, classid: u32)
 {
-	return (core::ffi::c_ulong)qfq_find_class(sch, classid);
+	return (kernel::ffi::c_ulong)qfq_find_class(sch, classid);
 }
 
-static struct tcf_block *qfq_tcf_block(Qdisc *sch, cl: core::ffi::c_ulong,
+static struct tcf_block *qfq_tcf_block(Qdisc *sch, cl: kernel::ffi::c_ulong,
 				       netlink_ext_ack *extack)
 {
 	struct qfq_sched *q = qdisc_priv(sch);
@@ -587,7 +587,7 @@ static struct tcf_block *qfq_tcf_block(Qdisc *sch, cl: core::ffi::c_ulong,
 	return (*q).block;
 }
 
-static core::ffi::c_ulong qfq_bind_tcf(Qdisc *sch, parent: core::ffi::c_ulong,
+static kernel::ffi::c_ulong qfq_bind_tcf(Qdisc *sch, parent: kernel::ffi::c_ulong,
 				  classid: u32)
 {
 	struct qfq_class *cl = qfq_find_class(sch, classid);
@@ -595,17 +595,17 @@ static core::ffi::c_ulong qfq_bind_tcf(Qdisc *sch, parent: core::ffi::c_ulong,
 	if (cl)
 		qdisc_class_get((*&cl).common);
 
-	return (core::ffi::c_ulong)cl;
+	return (kernel::ffi::c_ulong)cl;
 }
 
-static void qfq_unbind_tcf(Qdisc *sch, arg: core::ffi::c_ulong)
+static void qfq_unbind_tcf(Qdisc *sch, arg: kernel::ffi::c_ulong)
 {
 	struct qfq_class *cl = (qfq_class *)arg;
 
 	qdisc_class_put((*&cl).common);
 }
 
-static int qfq_graft_class(Qdisc *sch, arg: core::ffi::c_ulong,
+static int qfq_graft_class(Qdisc *sch, arg: kernel::ffi::c_ulong,
 			   Qdisc *new, Qdisc **old,
 			   netlink_ext_ack *extack)
 {
@@ -622,14 +622,14 @@ static int qfq_graft_class(Qdisc *sch, arg: core::ffi::c_ulong,
 	return 0;
 }
 
-static struct Qdisc *qfq_class_leaf(Qdisc *sch, arg: core::ffi::c_ulong)
+static struct Qdisc *qfq_class_leaf(Qdisc *sch, arg: kernel::ffi::c_ulong)
 {
 	struct qfq_class *cl = (qfq_class *)arg;
 
 	return (*cl).qdisc;
 }
 
-static int qfq_dump_class(Qdisc *sch, arg: core::ffi::c_ulong,
+static int qfq_dump_class(Qdisc *sch, arg: kernel::ffi::c_ulong,
 			  sk_buff *skb, tcmsg *tcm)
 {
 	'nla_put_failure: {
@@ -659,7 +659,7 @@ static int qfq_dump_class(Qdisc *sch, arg: core::ffi::c_ulong,
 	return -EMSGSIZE;
 }
 
-static int qfq_dump_class_stats(Qdisc *sch, arg: core::ffi::c_ulong,
+static int qfq_dump_class_stats(Qdisc *sch, arg: kernel::ffi::c_ulong,
 				gnet_dump *d)
 {
 	struct qfq_class *cl = (qfq_class *)arg;
@@ -683,14 +683,14 @@ static int qfq_dump_class_stats(Qdisc *sch, arg: core::ffi::c_ulong,
 static void qfq_walk!(Qdisc *sch, qdisc_walker *arg, {
 	struct qfq_sched *q = qdisc_priv(sch);
 	struct qfq_class *cl;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	if ((*arg).stop)
 		return;
 
 	for (i = 0; i < (*q).clhash.hashsize; i++) {
 		hlist_for_each_entry!(cl, (*&q).clhash.hash[i], common.hnode, {
-			if (!tc_qdisc_stats_dump(sch, (core::ffi::c_ulong)cl, arg))
+			if (!tc_qdisc_stats_dump(sch, (kernel::ffi::c_ulong)cl, arg))
 				return;
 		});
 	}
@@ -743,20 +743,20 @@ int qfq_gt(a: u64, b: u64)
 }
 
 /* Round a precise timestamp to its slotted value. */
-u64 qfq_round_down(ts: u64, shift: core::ffi::c_uint)
+u64 qfq_round_down(ts: u64, shift: kernel::ffi::c_uint)
 {
 	return ts & ~((1ULL << shift) - 1);
 }
 
 /* return the pointer to the group with lowest index in the bitmap */
 struct qfq_group *qfq_ffs(qfq_sched *q,
-					bitmap: core::ffi::c_ulong)
+					bitmap: kernel::ffi::c_ulong)
 {
 	int index = __ffs(bitmap);
 	return (*&q).groups[index];
 }
 /* Calculate a mask to mimic what would be ffs_from(). */
-core::ffi::c_ulong mask_from(bitmap: core::ffi::c_ulong, int from)
+kernel::ffi::c_ulong mask_from(bitmap: kernel::ffi::c_ulong, int from)
 {
 	return bitmap & ~((1UL << from) - 1);
 }
@@ -769,8 +769,8 @@ core::ffi::c_ulong mask_from(bitmap: core::ffi::c_ulong, int from)
 static int qfq_calc_state(qfq_sched *q, const struct qfq_group *grp)
 {
 	/* if S > V we are not eligible */
-	core::ffi::c_uint state = qfq_gt((*grp).S, (*q).V);
-	core::ffi::c_ulong mask = mask_from((*q).bitmaps[ER], (*grp).index);
+	kernel::ffi::c_uint state = qfq_gt((*grp).S, (*q).V);
+	kernel::ffi::c_ulong mask = mask_from((*q).bitmaps[ER], (*grp).index);
 	struct qfq_group *next;
 
 	if (mask) {
@@ -789,7 +789,7 @@ static int qfq_calc_state(qfq_sched *q, const struct qfq_group *grp)
  *	q->bitmaps[src] &= ~mask;
  * but we should make sure that src != dst
  */
-void qfq_move_groups(qfq_sched *q, mask: core::ffi::c_ulong,
+void qfq_move_groups(qfq_sched *q, mask: kernel::ffi::c_ulong,
 				   int src, int dst)
 {
 	(*q).bitmaps[dst] |= (*q).bitmaps[src] & mask;
@@ -798,7 +798,7 @@ void qfq_move_groups(qfq_sched *q, mask: core::ffi::c_ulong,
 
 static void qfq_unblock_groups(qfq_sched *q, int index, old_F: u64)
 {
-	core::ffi::c_ulong mask = mask_from((*q).bitmaps[ER], index + 1);
+	kernel::ffi::c_ulong mask = mask_from((*q).bitmaps[ER], index + 1);
 	struct qfq_group *next;
 
 	if (mask) {
@@ -824,11 +824,11 @@ static void qfq_unblock_groups(qfq_sched *q, int index, old_F: u64)
  */
 static void qfq_make_eligible(qfq_sched *q)
 {
-	core::ffi::c_ulong vslot = (*q).V >> (*q).min_slot_shift;
-	core::ffi::c_ulong old_vslot = (*q).oldV >> (*q).min_slot_shift;
+	kernel::ffi::c_ulong vslot = (*q).V >> (*q).min_slot_shift;
+	kernel::ffi::c_ulong old_vslot = (*q).oldV >> (*q).min_slot_shift;
 
 	if (vslot != old_vslot) {
-		core::ffi::c_ulong mask;
+		kernel::ffi::c_ulong mask;
 		int last_flip_pos = fls(vslot ^ old_vslot);
 
 		if (last_flip_pos > 31) /* higher than the number of groups */
@@ -900,7 +900,7 @@ static void qfq_slot_insert(qfq_group *grp, qfq_aggregate *agg,
 			    roundedS: u64)
 {
 	u64 slot = (roundedS - (*grp).S) >> (*grp).slot_shift;
-	core::ffi::c_uint i; /* slot index in the bucket list */
+	kernel::ffi::c_uint i; /* slot index in the bucket list */
 
 	if (unlikely(slot > QFQ_MAX_SLOTS - 2)) {
 		u64 deltaS = roundedS - (*grp).S -
@@ -943,7 +943,7 @@ static void qfq_front_slot_remove(qfq_group *grp)
  */
 static struct qfq_aggregate *qfq_slot_scan(qfq_group *grp)
 {
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	pr_debug("qfq slot_scan: grp %u full %#lx\n",
 		 (*grp).index, (*grp).full_slots);
@@ -971,7 +971,7 @@ static struct qfq_aggregate *qfq_slot_scan(qfq_group *grp)
  */
 static void qfq_slot_rotate(qfq_group *grp, roundedS: u64)
 {
-	core::ffi::c_uint i = ((*grp).S - roundedS) >> (*grp).slot_shift;
+	kernel::ffi::c_uint i = ((*grp).S - roundedS) >> (*grp).slot_shift;
 
 	(*grp).full_slots <<= i;
 	(*grp).front = ((*grp).front - i) % QFQ_MAX_SLOTS;
@@ -980,7 +980,7 @@ static void qfq_slot_rotate(qfq_group *grp, roundedS: u64)
 static void qfq_update_eligible(qfq_sched *q)
 {
 	struct qfq_group *grp;
-	core::ffi::c_ulong ineligible;
+	kernel::ffi::c_ulong ineligible;
 
 	ineligible = (*q).bitmaps[IR] | (*q).bitmaps[IB];
 	if (ineligible) {
@@ -995,7 +995,7 @@ static void qfq_update_eligible(qfq_sched *q)
 
 /* Dequeue head packet of the head class in the DRR queue of the aggregate. */
 static struct sk_buff *agg_dequeue(qfq_aggregate *agg,
-				   qfq_class *cl, len: core::ffi::c_uint)
+				   qfq_class *cl, len: kernel::ffi::c_uint)
 {
 	struct sk_buff *skb = qdisc_dequeue_peeked((*cl).qdisc);
 
@@ -1016,7 +1016,7 @@ static struct sk_buff *agg_dequeue(qfq_aggregate *agg,
 
 struct sk_buff *qfq_peek_skb(qfq_aggregate *agg,
 					   qfq_class **cl,
-					   core::ffi::c_uint *len)
+					   kernel::ffi::c_uint *len)
 {
 	struct sk_buff *skb;
 
@@ -1058,7 +1058,7 @@ void charge_actual_service(qfq_aggregate *agg)
  */
 static void qfq_update_start(qfq_sched *q, qfq_aggregate *agg)
 {
-	core::ffi::c_ulong mask;
+	kernel::ffi::c_ulong mask;
 	limit: u64, roundedF;
 	int slot_shift = (*(*agg).grp).slot_shift;
 
@@ -1109,7 +1109,7 @@ static struct sk_buff *qfq_dequeue(Qdisc *sch)
 	struct qfq_class *cl;
 	struct sk_buff *skb = NULL;
 	/* next-packet len, 0 means no more active classes in in-service agg */
-	core::ffi::c_uint len = 0;
+	kernel::ffi::c_uint len = 0;
 
 	if (in_serv_agg == NULL)
 		return NULL;
@@ -1180,8 +1180,8 @@ static struct sk_buff *qfq_dequeue(Qdisc *sch)
 
 	q->V += (u64)len * q->iwsum;
 	pr_debug("qfq dequeue: len %u F %lld now %lld\n",
-		 len, (core::ffi::c_ulonglong) in_serv_agg->F,
-		 (core::ffi::c_ulonglong) q->V);
+		 len, (kernel::ffi::c_ulonglong) in_serv_agg->F,
+		 (kernel::ffi::c_ulonglong) q->V);
 
 	return skb;
 }
@@ -1213,7 +1213,7 @@ static struct qfq_aggregate *qfq_choose_next_agg(qfq_sched *q)
 	else {
 		u64 roundedS = qfq_round_down(new_front_agg->S,
 					      grp->slot_shift);
-		core::ffi::c_uint s;
+		kernel::ffi::c_uint s;
 
 		if (grp->S == roundedS)
 			return agg;
@@ -1232,7 +1232,7 @@ static struct qfq_aggregate *qfq_choose_next_agg(qfq_sched *q)
 static int qfq_enqueue(sk_buff *skb, Qdisc *sch,
 		       sk_buff **to_free)
 {
-	core::ffi::c_uint len = qdisc_pkt_len(skb), gso_segs;
+	kernel::ffi::c_uint len = qdisc_pkt_len(skb), gso_segs;
 	struct qfq_sched *q = qdisc_priv(sch);
 	struct qfq_class *cl;
 	struct qfq_aggregate *agg;
@@ -1337,9 +1337,9 @@ static void qfq_schedule_agg(qfq_sched *q, qfq_aggregate *agg)
 
 	pr_debug("qfq enqueue: new state %d %#lx S %lld F %lld V %lld\n",
 		 s, q->bitmaps[s],
-		 (core::ffi::c_ulonglong) agg->S,
-		 (core::ffi::c_ulonglong) agg->F,
-		 (core::ffi::c_ulonglong) q->V);
+		 (kernel::ffi::c_ulonglong) agg->S,
+		 (kernel::ffi::c_ulonglong) agg->F,
+		 (kernel::ffi::c_ulonglong) q->V);
 	}
 	
 	qfq_slot_insert(grp, agg, roundedS);
@@ -1364,7 +1364,7 @@ static void qfq_activate_agg(qfq_sched *q, qfq_aggregate *agg,
 static void qfq_slot_remove(qfq_sched *q, qfq_group *grp,
 			    qfq_aggregate *agg)
 {
-	i: core::ffi::c_uint, offset;
+	i: kernel::ffi::c_uint, offset;
 	u64 roundedS;
 
 	roundedS = qfq_round_down(agg->S, grp->slot_shift);
@@ -1387,7 +1387,7 @@ static void qfq_slot_remove(qfq_sched *q, qfq_group *grp,
 static void qfq_deactivate_agg(qfq_sched *q, qfq_aggregate *agg)
 {
 	struct qfq_group *grp = agg->grp;
-	core::ffi::c_ulong mask;
+	kernel::ffi::c_ulong mask;
 	u64 roundedS;
 	int s;
 
@@ -1432,7 +1432,7 @@ static void qfq_deactivate_agg(qfq_sched *q, qfq_aggregate *agg)
 	}
 }
 
-static void qfq_qlen_notify(Qdisc *sch, arg: core::ffi::c_ulong)
+static void qfq_qlen_notify(Qdisc *sch, arg: kernel::ffi::c_ulong)
 {
 	struct qfq_sched *q = qdisc_priv(sch);
 	struct qfq_class *cl = (qfq_class *)arg;
@@ -1485,7 +1485,7 @@ static void qfq_reset_qdisc(Qdisc *sch)
 {
 	struct qfq_sched *q = qdisc_priv(sch);
 	struct qfq_class *cl;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	for (i = 0; i < q->clhash.hashsize; i++) {
 		hlist_for_each_entry!(cl, &q->clhash.hash[i], common.hnode, {
@@ -1502,7 +1502,7 @@ static void qfq_destroy_qdisc(Qdisc *sch)
 	struct qfq_sched *q = qdisc_priv(sch);
 	struct qfq_class *cl;
 	struct hlist_node *next;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	tcf_block_put(q->block);
 

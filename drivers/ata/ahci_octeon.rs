@@ -25,17 +25,17 @@ const SATA_UCTL_CSR_ENDIAN_MODE_SHIFT: u32 = 0;
 const SATA_UCTL_DMA_READ_CMD_SHIFT: u32 = 12;
 
 unsafe extern "C" {
-    fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32) -> *mut core::ffi::c_void;
-    fn cvmx_readq_csr(addr: *mut core::ffi::c_void) -> u64;
-    fn cvmx_writeq_csr(addr: *mut core::ffi::c_void, value: u64);
+    fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32) -> *mut kernel::ffi::c_void;
+    fn cvmx_readq_csr(addr: *mut kernel::ffi::c_void) -> u64;
+    fn cvmx_writeq_csr(addr: *mut kernel::ffi::c_void, value: u64);
     fn of_platform_populate(
         node: *mut device_node,
-        matches: *const core::ffi::c_void,
-        lookup: *const core::ffi::c_void,
+        matches: *const kernel::ffi::c_void,
+        lookup: *const kernel::ffi::c_void,
         parent: *mut device,
     ) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn PTR_ERR(ptr: *mut core::ffi::c_void) -> i32;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn PTR_ERR(ptr: *mut kernel::ffi::c_void) -> i32;
 }
 
 #[repr(C)]
@@ -53,12 +53,12 @@ pub struct platform_device {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 

@@ -14,14 +14,14 @@ pub const BOND_ABI_VERSION: i32 = 2;
  * We can remove these ioctl definitions in 2.5. People should use the
  * SIOC*** versions of them instead
  */
-pub const BOND_ENSLAVE_OLD: _ = SIOCDEVPRIVATE;
-pub const BOND_RELEASE_OLD: _ = SIOCDEVPRIVATE + 1;
-pub const BOND_SETHWADDR_OLD: _ = SIOCDEVPRIVATE + 2;
-pub const BOND_SLAVE_INFO_QUERY_OLD: _ = SIOCDEVPRIVATE + 11;
-pub const BOND_INFO_QUERY_OLD: _ = SIOCDEVPRIVATE + 12;
-pub const BOND_CHANGE_ACTIVE_OLD: _ = SIOCDEVPRIVATE + 13;
+pub const BOND_ENSLAVE_OLD: u32 = SIOCDEVPRIVATE;
+pub const BOND_RELEASE_OLD: u32 = SIOCDEVPRIVATE + 1;
+pub const BOND_SETHWADDR_OLD: u32 = SIOCDEVPRIVATE + 2;
+pub const BOND_SLAVE_INFO_QUERY_OLD: u32 = SIOCDEVPRIVATE + 11;
+pub const BOND_INFO_QUERY_OLD: u32 = SIOCDEVPRIVATE + 12;
+pub const BOND_CHANGE_ACTIVE_OLD: u32 = SIOCDEVPRIVATE + 13;
 
-pub const BOND_CHECK_MII_STATUS: _ = SIOCGMIIPHY;
+pub const BOND_CHECK_MII_STATUS: u32 = SIOCGMIIPHY;
 
 pub const BOND_MODE_ROUNDROBIN: i32 = 0;
 pub const BOND_MODE_ACTIVEBACKUP: i32 = 1;
@@ -73,7 +73,7 @@ pub struct ifbond {
 #[repr(C)]
 pub struct ifslave {
     pub slave_id: i32, /* Used as an IN param to the BOND_SLAVE_INFO_QUERY ioctl */
-    pub slave_name: [::core::ffi::c_char; IFNAMSIZ],
+    pub slave_name: [::kernel::ffi::c_char; IFNAMSIZ],
     pub link: i8,
     pub state: i8,
     pub link_failure_count: u32,

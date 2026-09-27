@@ -29,7 +29,7 @@ unsafe fn cabriolet_disable_irq(d: *mut irq_data) {
 }
 
 static mut cabriolet_irq_type: irq_chip = irq_chip {
-    name: b"CABRIOLET\0".as_ptr() as *const ::core::ffi::c_char,
+    name: b"CABRIOLET\0".as_ptr() as *const ::kernel::ffi::c_char,
     irq_unmask: Some(cabriolet_enable_irq),
     irq_mask: Some(cabriolet_disable_irq),
     irq_mask_ack: Some(cabriolet_disable_irq),

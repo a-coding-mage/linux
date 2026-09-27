@@ -23,7 +23,7 @@ static mut acpi_ec_debugfs_dir: *mut dentry = core::ptr::null_mut();
 
 unsafe fn acpi_ec_read_io(
     _f: *mut file,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     mut count: usize,
     off: *mut loff_t,
 ) -> ssize_t {
@@ -64,7 +64,7 @@ unsafe fn acpi_ec_read_io(
 
 unsafe fn acpi_ec_write_io(
     _f: *mut file,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     mut count: usize,
     off: *mut loff_t,
 ) -> ssize_t {
@@ -117,7 +117,7 @@ static acpi_ec_io_ops: file_operations = file_operations {
 
 unsafe fn acpi_ec_add_debugfs(ec: *mut acpi_ec, ec_device_count: c_uint) {
     let mut dev_dir: *mut dentry;
-    let mut name = [0 as core::ffi::c_char; 64];
+    let mut name = [0 as kernel::ffi::c_char; 64];
     let mut mode: umode_t = 0o400;
 
     if ec_device_count == 0 {

@@ -26,17 +26,17 @@ pub struct S390HmacCtx { pub key: [u8; MAX_BLOCK_SIZE] }
 
 #[repr(C)]
 pub union S390KmacGr0 {
-    pub reg: libc::c_ulong,
+    pub reg: kernel::ffi::c_ulong,
     pub bits: S390KmacGr0Bits,
 }
 #[repr(C)]
 pub struct S390KmacGr0Bits {
-    pub _reserved0: libc::c_ulong,
-    pub ikp: libc::c_ulong,
-    pub iimp: libc::c_ulong,
-    pub ccup: libc::c_ulong,
-    pub _reserved1: libc::c_ulong,
-    pub fc: libc::c_ulong,
+    pub _reserved0: kernel::ffi::c_ulong,
+    pub ikp: kernel::ffi::c_ulong,
+    pub iimp: kernel::ffi::c_ulong,
+    pub ccup: kernel::ffi::c_ulong,
+    pub _reserved1: kernel::ffi::c_ulong,
+    pub fc: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -94,10 +94,10 @@ unsafe fn s390_hmac_sha2_init(desc: *mut shash_desc) -> i32 {
     (*ctx).buflen = [0, 0];
     (*ctx).gr0.reg = 0;
     (*ctx).gr0.bits.fc = match crypto_shash_digestsize(tfm) as usize {
-        SHA224_DIGEST_SIZE => CPACF_KMAC_HMAC_SHA_224 as libc::c_ulong,
-        SHA256_DIGEST_SIZE => CPACF_KMAC_HMAC_SHA_256 as libc::c_ulong,
-        SHA384_DIGEST_SIZE => CPACF_KMAC_HMAC_SHA_384 as libc::c_ulong,
-        SHA512_DIGEST_SIZE => CPACF_KMAC_HMAC_SHA_512 as libc::c_ulong,
+        SHA224_DIGEST_SIZE => CPACF_KMAC_HMAC_SHA_224 as kernel::ffi::c_ulong,
+        SHA256_DIGEST_SIZE => CPACF_KMAC_HMAC_SHA_256 as kernel::ffi::c_ulong,
+        SHA384_DIGEST_SIZE => CPACF_KMAC_HMAC_SHA_384 as kernel::ffi::c_ulong,
+        SHA512_DIGEST_SIZE => CPACF_KMAC_HMAC_SHA_512 as kernel::ffi::c_ulong,
         _ => return -EINVAL,
     };
     0
@@ -181,11 +181,11 @@ unsafe fn s390_hmac_import(desc: *mut shash_desc, input: *const u8) -> i32 {
 
 extern "C" {
     fn cpacf_klmd(func: u32, param: *mut u8, input: *const u8, len: u32);
-    fn _cpacf_kmac(gr0: *mut libc::c_ulong, param: *mut u8, input: *const u8, len: u32);
-    fn crypto_shash_ctx(tfm: *mut crypto_shash) -> *mut core::ffi::c_void;
+    fn _cpacf_kmac(gr0: *mut kernel::ffi::c_ulong, param: *mut u8, input: *const u8, len: u32);
+    fn crypto_shash_ctx(tfm: *mut crypto_shash) -> *mut kernel::ffi::c_void;
     fn crypto_shash_digestsize(tfm: *mut crypto_shash) -> u32;
     fn crypto_shash_blocksize(tfm: *mut crypto_shash) -> u32;
-    fn shash_desc_ctx(desc: *mut shash_desc) -> *mut core::ffi::c_void;
+    fn shash_desc_ctx(desc: *mut shash_desc) -> *mut kernel::ffi::c_void;
     fn memzero_explicit(ptr: *mut u8, len: usize);
 }
 

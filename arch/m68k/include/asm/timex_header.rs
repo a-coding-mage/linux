@@ -13,12 +13,12 @@ pub fn get_cycles() -> cycles_t {
 }
 
 extern "C" {
-    pub static mut mach_random_get_entropy: Option<unsafe extern "C" fn() -> libc::c_ulong>;
-    pub fn random_get_entropy_fallback() -> libc::c_ulong;
+    pub static mut mach_random_get_entropy: Option<unsafe extern "C" fn() -> kernel::ffi::c_ulong>;
+    pub fn random_get_entropy_fallback() -> kernel::ffi::c_ulong;
 }
 
 #[inline]
-pub unsafe fn random_get_entropy() -> libc::c_ulong {
+pub unsafe fn random_get_entropy() -> kernel::ffi::c_ulong {
     if let Some(get_entropy) = mach_random_get_entropy {
         return get_entropy();
     }

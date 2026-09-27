@@ -7,7 +7,7 @@
 
 // Linux and SGI platform headers supplying the declarations below.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct PtRegs {

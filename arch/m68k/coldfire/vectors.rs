@@ -14,7 +14,7 @@
 #[cfg(TRAP_DBG_INTERRUPT)]
 unsafe extern "C" {
     fn dump(fp: *mut pt_regs);
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[cfg(TRAP_DBG_INTERRUPT)]
@@ -43,7 +43,7 @@ unsafe extern "C" {
 pub unsafe extern "C" fn dbginterrupt_c(fp: *mut frame) {
     static FILE: &[u8] = b"vectors.c\0";
     static MESSAGE: &[u8] = b"%s(%d): BUS ERROR TRAP\n\0";
-    printk(MESSAGE.as_ptr() as *const core::ffi::c_char, FILE.as_ptr(), 39);
+    printk(MESSAGE.as_ptr() as *const kernel::ffi::c_char, FILE.as_ptr(), 39);
     dump(fp as *mut pt_regs);
     core::arch::asm!("halt");
 }

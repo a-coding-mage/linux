@@ -11,12 +11,12 @@
 
 // C dependencies: linux/ptrace.h, linux/kgdb.h, linux/kdebug.h, linux/io.h
 
-static mut wait_for_remote_debugger: ::core::ffi::c_int = 0;
+static mut wait_for_remote_debugger: ::kernel::ffi::c_int = 0;
 
 #[repr(C)]
 pub struct dbg_reg_def_t {
-    pub name: *const ::core::ffi::c_char,
-    pub size: ::core::ffi::c_int,
+    pub name: *const ::kernel::ffi::c_char,
+    pub size: ::kernel::ffi::c_int,
     pub offset: isize,
 }
 
@@ -57,19 +57,19 @@ pub struct thread_struct {
 }
 
 pub const DBG_MAX_REG_NUM: usize = 53;
-pub const GDB_SIZEOF_REG: ::core::ffi::c_int = 4;
+pub const GDB_SIZEOF_REG: ::kernel::ffi::c_int = 4;
 pub const NUMREGBYTES: usize = 4 * GDB_SIZEOF_REG as usize;
 pub const GDB_SP: usize = 27;
 pub const GDB_PC: usize = 32;
-pub const EINVAL: ::core::ffi::c_int = 22;
-pub const SIGTRAP: ::core::ffi::c_int = 5;
+pub const EINVAL: ::kernel::ffi::c_int = 22;
+pub const SIGTRAP: ::kernel::ffi::c_int = 5;
 
 extern "C" {
-    pub fn kgdb_hex2long(ptr: *mut *mut ::core::ffi::c_char, addr: *mut usize) -> bool;
+    pub fn kgdb_hex2long(ptr: *mut *mut ::kernel::ffi::c_char, addr: *mut usize) -> bool;
     pub fn kgdb_handle_exception(
-        vector: ::core::ffi::c_int,
-        signo: ::core::ffi::c_int,
-        err_code: ::core::ffi::c_int,
+        vector: ::kernel::ffi::c_int,
+        signo: ::kernel::ffi::c_int,
+        err_code: ::kernel::ffi::c_int,
         regs: *mut pt_regs,
     );
 }
@@ -126,7 +126,7 @@ pub static mut dbg_reg_def: [dbg_reg_def_t; DBG_MAX_REG_NUM] = [
     dbg_reg_def_t { name: b"mpuacc\0".as_ptr() as *const _, size: GDB_SIZEOF_REG, offset: -1 },
 ];
 
-pub unsafe fn dbg_get_reg(regno: ::core::ffi::c_int, mem: *mut u8, regs: *mut pt_regs) -> *const ::core::ffi::c_char {
+pub unsafe fn dbg_get_reg(regno: ::kernel::ffi::c_int, mem: *mut u8, regs: *mut pt_regs) -> *const ::kernel::ffi::c_char {
     if regno >= DBG_MAX_REG_NUM as i32 || regno < 0 { return core::ptr::null(); }
     let d = &dbg_reg_def[regno as usize];
     if d.offset != -1 { core::ptr::copy_nonoverlapping((regs as *mut u8).offset(d.offset), mem, d.size as usize); }
@@ -134,7 +134,7 @@ pub unsafe fn dbg_get_reg(regno: ::core::ffi::c_int, mem: *mut u8, regs: *mut pt
     d.name
 }
 
-pub unsafe fn dbg_set_reg(regno: ::core::ffi::c_int, mem: *const u8, regs: *mut pt_regs) -> ::core::ffi::c_int {
+pub unsafe fn dbg_set_reg(regno: ::kernel::ffi::c_int, mem: *const u8, regs: *mut pt_regs) -> ::kernel::ffi::c_int {
     if regno >= DBG_MAX_REG_NUM as i32 || regno < 0 { return -EINVAL; }
     let d = &dbg_reg_def[regno as usize];
     if d.offset != -1 { core::ptr::copy_nonoverlapping(mem, (regs as *mut u8).offset(d.offset), d.size as usize); }

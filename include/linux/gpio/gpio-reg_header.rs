@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-use core::ffi::c_char;
-use core::ffi::c_void;
+use kernel::ffi::c_char;
+use kernel::ffi::c_void;
 
 // Forward declarations corresponding to the C header's opaque structures.
 #[repr(C)]

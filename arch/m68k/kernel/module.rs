@@ -10,7 +10,7 @@
 #[cfg(CONFIG_MODULES)]
 pub unsafe fn apply_relocate(
     sechdrs: *mut Elf32_Shdr,
-    _strtab: *const ::core::ffi::c_char,
+    _strtab: *const ::kernel::ffi::c_char,
     symindex: u32,
     relsec: u32,
     me: *mut module,
@@ -52,7 +52,7 @@ pub unsafe fn apply_relocate(
 #[cfg(CONFIG_MODULES)]
 pub unsafe fn apply_relocate_add(
     sechdrs: *mut Elf32_Shdr,
-    _strtab: *const ::core::ffi::c_char,
+    _strtab: *const ::kernel::ffi::c_char,
     symindex: u32,
     relsec: u32,
     me: *mut module,

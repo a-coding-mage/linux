@@ -15,12 +15,12 @@
  * Returns: the microvolts DC that the CPCAP PMIC should generate when
  * programmed with @vsel.
  */
-unsafe fn omap_cpcap_vsel_to_uv(mut vsel: u8) -> libc::c_ulong {
+unsafe fn omap_cpcap_vsel_to_uv(mut vsel: u8) -> kernel::ffi::c_ulong {
     if vsel > 0x44 { vsel = 0x44; }
-    (((vsel as libc::c_ulong * 125) + 6000) * 100)
+    (((vsel as kernel::ffi::c_ulong * 125) + 6000) * 100)
 }
 
-unsafe fn omap_cpcap_uv_to_vsel(mut uv: libc::c_ulong) -> u8 {
+unsafe fn omap_cpcap_uv_to_vsel(mut uv: kernel::ffi::c_ulong) -> u8 {
     if uv < 600000 { uv = 600000; }
     else if uv > 1450000 { uv = 1450000; }
     ((uv - 600000 + 12500 - 1) / 12500) as u8
@@ -50,12 +50,12 @@ static mut omap_cpcap_iva: omap_voltdm_pmic = omap_voltdm_pmic {
     uv_to_vsel: Some(omap_cpcap_uv_to_vsel),
 };
 
-unsafe fn omap_max8952_vsel_to_uv(mut vsel: u8) -> libc::c_ulong {
+unsafe fn omap_max8952_vsel_to_uv(mut vsel: u8) -> kernel::ffi::c_ulong {
     if vsel > 0x3F { vsel = 0x3F; }
-    (((vsel as libc::c_ulong * 100) + 7700) * 100)
+    (((vsel as kernel::ffi::c_ulong * 100) + 7700) * 100)
 }
 
-unsafe fn omap_max8952_uv_to_vsel(mut uv: libc::c_ulong) -> u8 {
+unsafe fn omap_max8952_uv_to_vsel(mut uv: kernel::ffi::c_ulong) -> u8 {
     if uv < 770000 { uv = 770000; }
     else if uv > 1400000 { uv = 1400000; }
     ((uv - 770000 + 10000 - 1) / 10000) as u8
@@ -73,26 +73,26 @@ static mut omap443x_max8952_mpu: omap_voltdm_pmic = omap_voltdm_pmic {
     uv_to_vsel: Some(omap_max8952_uv_to_vsel),
 };
 
-unsafe fn omap_fan535503_vsel_to_uv(mut vsel: u8) -> libc::c_ulong {
+unsafe fn omap_fan535503_vsel_to_uv(mut vsel: u8) -> kernel::ffi::c_ulong {
     /* Extract bits[5:0] */
     vsel &= 0x3F;
-    (((vsel as libc::c_ulong * 125) + 7500) * 100)
+    (((vsel as kernel::ffi::c_ulong * 125) + 7500) * 100)
 }
 
-unsafe fn omap_fan535508_vsel_to_uv(mut vsel: u8) -> libc::c_ulong {
+unsafe fn omap_fan535508_vsel_to_uv(mut vsel: u8) -> kernel::ffi::c_ulong {
     /* Extract bits[5:0] */
     vsel &= 0x3F;
     if vsel > 0x37 { vsel = 0x37; }
-    (((vsel as libc::c_ulong * 125) + 7500) * 100)
+    (((vsel as kernel::ffi::c_ulong * 125) + 7500) * 100)
 }
 
-unsafe fn omap_fan535503_uv_to_vsel(mut uv: libc::c_ulong) -> u8 {
+unsafe fn omap_fan535503_uv_to_vsel(mut uv: kernel::ffi::c_ulong) -> u8 {
     if uv < 750000 { uv = 750000; }
     else if uv > 1537500 { uv = 1537500; }
     (((uv - 750000 + 12500 - 1) / 12500) as u8) | 0xC0
 }
 
-unsafe fn omap_fan535508_uv_to_vsel(mut uv: libc::c_ulong) -> u8 {
+unsafe fn omap_fan535508_uv_to_vsel(mut uv: kernel::ffi::c_ulong) -> u8 {
     if uv < 750000 { uv = 750000; }
     else if uv > 1437500 { uv = 1437500; }
     (((uv - 750000 + 12500 - 1) / 12500) as u8) | 0xC0

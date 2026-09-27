@@ -57,16 +57,16 @@ unsafe extern "C" {
     pub fn sysv_encode_dev(dev: u32) -> u32;
     pub fn MKDEV(major: u32, minor: u32) -> u32;
     pub fn schedule_timeout_uninterruptible(ticks: i64);
-    pub fn sort(a: *mut core::ffi::c_void, n: usize, size: usize, cmp: *mut core::ffi::c_void, swap: *mut core::ffi::c_void);
+    pub fn sort(a: *mut kernel::ffi::c_void, n: usize, size: usize, cmp: *mut kernel::ffi::c_void, swap: *mut kernel::ffi::c_void);
     pub fn dump_stack();
     pub fn is_power_of_2(value: u64) -> bool;
     pub fn ilog2(value: u64) -> u32;
-    pub fn is_vmalloc_addr(addr: *const core::ffi::c_void) -> bool;
-    pub fn vmalloc_to_page(addr: *const core::ffi::c_void) -> *mut page;
-    pub fn virt_to_page(addr: *const core::ffi::c_void) -> *mut page;
-    pub fn xfs_corruption_error(expr: *const core::ffi::c_char, level: i32, mp: *mut core::ffi::c_void, info: *mut core::ffi::c_void, flags: i32, file: *const core::ffi::c_char, line: i32, address: *const core::ffi::c_void);
-    pub fn assfail(expr: *const core::ffi::c_char, file: *const core::ffi::c_char, line: i32) -> !;
-    pub fn asswarn(expr: *const core::ffi::c_char, file: *const core::ffi::c_char, line: i32) -> !;
+    pub fn is_vmalloc_addr(addr: *const kernel::ffi::c_void) -> bool;
+    pub fn vmalloc_to_page(addr: *const kernel::ffi::c_void) -> *mut page;
+    pub fn virt_to_page(addr: *const kernel::ffi::c_void) -> *mut page;
+    pub fn xfs_corruption_error(expr: *const kernel::ffi::c_char, level: i32, mp: *mut kernel::ffi::c_void, info: *mut kernel::ffi::c_void, flags: i32, file: *const kernel::ffi::c_char, line: i32, address: *const kernel::ffi::c_void);
+    pub fn assfail(expr: *const kernel::ffi::c_char, file: *const kernel::ffi::c_char, line: i32) -> !;
+    pub fn asswarn(expr: *const kernel::ffi::c_char, file: *const kernel::ffi::c_char, line: i32) -> !;
 }
 
 pub const NBBY: u32 = 8;
@@ -135,7 +135,7 @@ pub unsafe fn mask64_if_power2(b: u64) -> u64 {
     if is_power_of_2(b) { b - 1 } else { 0 }
 }
 
-pub unsafe fn kmem_to_page(addr: *mut core::ffi::c_void) -> *mut page {
+pub unsafe fn kmem_to_page(addr: *mut kernel::ffi::c_void) -> *mut page {
     if is_vmalloc_addr(addr) { vmalloc_to_page(addr) } else { virt_to_page(addr) }
 }
 

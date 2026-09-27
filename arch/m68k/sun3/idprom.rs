@@ -11,10 +11,10 @@
 
 extern "C" {
     static mut idprom: *mut crate::idprom;
-    fn prom_get_idprom(buf: *mut core::ffi::c_char, len: usize);
-    fn prom_printf(fmt: *const core::ffi::c_char, ...);
+    fn prom_get_idprom(buf: *mut kernel::ffi::c_char, len: usize);
+    fn prom_printf(fmt: *const kernel::ffi::c_char, ...);
     fn prom_halt() -> !;
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 static mut idprom_buffer: crate::idprom = unsafe { core::mem::zeroed() };
@@ -46,11 +46,11 @@ unsafe fn display_system_type(machtype: u8) {
         i += 1;
     }
 
-    prom_printf(b"IDPROM: Bogus id_machtype value, 0x%x\n\0".as_ptr() as *const _, machtype as core::ffi::c_uint);
+    prom_printf(b"IDPROM: Bogus id_machtype value, 0x%x\n\0".as_ptr() as *const _, machtype as kernel::ffi::c_uint);
     prom_halt();
 }
 
-pub unsafe fn sun3_get_model(model: *mut core::ffi::c_char) {
+pub unsafe fn sun3_get_model(model: *mut kernel::ffi::c_char) {
     let mut i: usize = 0;
     while i < crate::NUM_SUN_MACHINES {
         if Sun_Machines[i].id_machtype == (*idprom).id_machtype {
@@ -76,7 +76,7 @@ unsafe fn calc_idprom_cksum(idprom: *mut crate::idprom) -> u8 {
 /* Create a local IDPROM copy, verify integrity, and display information. */
 pub unsafe fn idprom_init() {
     prom_get_idprom(
-        &mut idprom_buffer as *mut crate::idprom as *mut core::ffi::c_char,
+        &mut idprom_buffer as *mut crate::idprom as *mut kernel::ffi::c_char,
         core::mem::size_of::<crate::idprom>(),
     );
 

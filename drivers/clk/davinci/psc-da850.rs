@@ -7,7 +7,7 @@
 
 // The following types, constants, macros, and functions are supplied by the
 // surrounding PSC implementation and kernel bindings.
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct device {
@@ -16,7 +16,7 @@ pub struct device {
 
 #[repr(C)]
 pub struct clk_bulk_data {
-    pub id: *const core::ffi::c_char,
+    pub id: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]

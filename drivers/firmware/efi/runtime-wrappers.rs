@@ -24,14 +24,14 @@ pub union EfiRtsArgs {
 #[repr(C)] pub struct SetTime { pub time: *mut efi_time_t }
 #[repr(C)] pub struct GetWakeupTime { pub enabled: *mut efi_bool_t, pub pending: *mut efi_bool_t, pub time: *mut efi_time_t }
 #[repr(C)] pub struct SetWakeupTime { pub enable: efi_bool_t, pub time: *mut efi_time_t }
-#[repr(C)] pub struct GetVariable { pub name: *mut efi_char16_t, pub vendor: *mut efi_guid_t, pub attr: *mut u32, pub data_size: *mut libc::c_ulong, pub data: *mut libc::c_void }
-#[repr(C)] pub struct GetNextVariable { pub name_size: *mut libc::c_ulong, pub name: *mut efi_char16_t, pub vendor: *mut efi_guid_t }
-#[repr(C)] pub struct SetVariable { pub name: *mut efi_char16_t, pub vendor: *mut efi_guid_t, pub attr: u32, pub data_size: libc::c_ulong, pub data: *mut libc::c_void }
+#[repr(C)] pub struct GetVariable { pub name: *mut efi_char16_t, pub vendor: *mut efi_guid_t, pub attr: *mut u32, pub data_size: *mut kernel::ffi::c_ulong, pub data: *mut kernel::ffi::c_void }
+#[repr(C)] pub struct GetNextVariable { pub name_size: *mut kernel::ffi::c_ulong, pub name: *mut efi_char16_t, pub vendor: *mut efi_guid_t }
+#[repr(C)] pub struct SetVariable { pub name: *mut efi_char16_t, pub vendor: *mut efi_guid_t, pub attr: u32, pub data_size: kernel::ffi::c_ulong, pub data: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct QueryVariableInfo { pub attr: u32, pub storage_space: *mut u64, pub remaining_space: *mut u64, pub max_variable_size: *mut u64 }
 #[repr(C)] pub struct GetNextHighMonoCount { pub high_count: *mut u32 }
-#[repr(C)] pub struct UpdateCapsule { pub capsules: *mut *mut efi_capsule_header_t, pub count: libc::c_ulong, pub sg_list: libc::c_ulong }
-#[repr(C)] pub struct QueryCapsuleCaps { pub capsules: *mut *mut efi_capsule_header_t, pub count: libc::c_ulong, pub max_size: *mut u64, pub reset_type: *mut libc::c_int }
-#[repr(C)] pub struct AcpiPrmHandler { pub acpi_prm_handler: Option<unsafe extern "efiapi" fn(u64, *mut libc::c_void) -> efi_status_t>, pub param_buffer_addr: u64, pub context: *mut libc::c_void }
+#[repr(C)] pub struct UpdateCapsule { pub capsules: *mut *mut efi_capsule_header_t, pub count: kernel::ffi::c_ulong, pub sg_list: kernel::ffi::c_ulong }
+#[repr(C)] pub struct QueryCapsuleCaps { pub capsules: *mut *mut efi_capsule_header_t, pub count: kernel::ffi::c_ulong, pub max_size: *mut u64, pub reset_type: *mut kernel::ffi::c_int }
+#[repr(C)] pub struct AcpiPrmHandler { pub acpi_prm_handler: Option<unsafe extern "efiapi" fn(u64, *mut kernel::ffi::c_void) -> efi_status_t>, pub param_buffer_addr: u64, pub context: *mut kernel::ffi::c_void }
 
 extern "C" {
     static mut efi_rts_work: efi_runtime_work;
@@ -39,15 +39,15 @@ extern "C" {
     static mut efi_runtime_lock_owner: *mut task_struct;
 }
 
-const EFI_RTS_TIMEOUT: libc::c_ulong = 120 * HZ;
+const EFI_RTS_TIMEOUT: kernel::ffi::c_ulong = 120 * HZ;
 
-pub unsafe extern "C" fn efi_call_virt_save_flags() -> libc::c_ulong {
+pub unsafe extern "C" fn efi_call_virt_save_flags() -> kernel::ffi::c_ulong {
     let mut flags = 0;
     arch_efi_save_flags(&mut flags);
     flags
 }
 
-pub unsafe extern "C" fn efi_call_virt_check_flags(flags: libc::c_ulong, caller: *const libc::c_void) {
+pub unsafe extern "C" fn efi_call_virt_check_flags(flags: kernel::ffi::c_ulong, caller: *const kernel::ffi::c_void) {
     let cur_flags = efi_call_virt_save_flags();
     let mismatch = flags ^ cur_flags;
     if !(WARN_ON_ONCE(mismatch & ARCH_EFI_IRQ_FLAGS_MASK) != 0) { return; }
@@ -114,16 +114,16 @@ queued_wrapper!(virt_efi_get_time, GET_TIME, (tm: *mut efi_time_t, tc: *mut efi_
 queued_wrapper!(virt_efi_set_time, SET_TIME, (tm: *mut efi_time_t), (tm));
 queued_wrapper!(virt_efi_get_wakeup_time, GET_WAKEUP_TIME, (enabled: *mut efi_bool_t, pending: *mut efi_bool_t, tm: *mut efi_time_t), (enabled, pending, tm));
 queued_wrapper!(virt_efi_set_wakeup_time, SET_WAKEUP_TIME, (enabled: efi_bool_t, tm: *mut efi_time_t), (enabled, tm));
-queued_wrapper!(virt_efi_get_variable, GET_VARIABLE, (name: *mut efi_char16_t, vendor: *mut efi_guid_t, attr: *mut u32, data_size: *mut libc::c_ulong, data: *mut libc::c_void), (name, vendor, attr, data_size, data));
-queued_wrapper!(virt_efi_get_next_variable, GET_NEXT_VARIABLE, (name_size: *mut libc::c_ulong, name: *mut efi_char16_t, vendor: *mut efi_guid_t), (name_size, name, vendor));
-queued_wrapper!(virt_efi_set_variable, SET_VARIABLE, (name: *mut efi_char16_t, vendor: *mut efi_guid_t, attr: u32, data_size: libc::c_ulong, data: *mut libc::c_void), (name, vendor, attr, data_size, data));
+queued_wrapper!(virt_efi_get_variable, GET_VARIABLE, (name: *mut efi_char16_t, vendor: *mut efi_guid_t, attr: *mut u32, data_size: *mut kernel::ffi::c_ulong, data: *mut kernel::ffi::c_void), (name, vendor, attr, data_size, data));
+queued_wrapper!(virt_efi_get_next_variable, GET_NEXT_VARIABLE, (name_size: *mut kernel::ffi::c_ulong, name: *mut efi_char16_t, vendor: *mut efi_guid_t), (name_size, name, vendor));
+queued_wrapper!(virt_efi_set_variable, SET_VARIABLE, (name: *mut efi_char16_t, vendor: *mut efi_guid_t, attr: u32, data_size: kernel::ffi::c_ulong, data: *mut kernel::ffi::c_void), (name, vendor, attr, data_size, data));
 queued_wrapper!(virt_efi_get_next_high_mono_count, GET_NEXT_HIGH_MONO_COUNT, (count: *mut u32), (count));
 
 queued_wrapper!(virt_efi_query_variable_info, QUERY_VARIABLE_INFO, (attr: u32, storage_space: *mut u64, remaining_space: *mut u64, max_variable_size: *mut u64), (attr, storage_space, remaining_space, max_variable_size));
-queued_wrapper!(virt_efi_update_capsule, UPDATE_CAPSULE, (capsules: *mut *mut efi_capsule_header_t, count: libc::c_ulong, sg_list: libc::c_ulong), (capsules, count, sg_list));
-queued_wrapper!(virt_efi_query_capsule_caps, QUERY_CAPSULE_CAPS, (capsules: *mut *mut efi_capsule_header_t, count: libc::c_ulong, max_size: *mut u64, reset_type: *mut libc::c_int), (capsules, count, max_size, reset_type));
+queued_wrapper!(virt_efi_update_capsule, UPDATE_CAPSULE, (capsules: *mut *mut efi_capsule_header_t, count: kernel::ffi::c_ulong, sg_list: kernel::ffi::c_ulong), (capsules, count, sg_list));
+queued_wrapper!(virt_efi_query_capsule_caps, QUERY_CAPSULE_CAPS, (capsules: *mut *mut efi_capsule_header_t, count: kernel::ffi::c_ulong, max_size: *mut u64, reset_type: *mut kernel::ffi::c_int), (capsules, count, max_size, reset_type));
 
-unsafe extern "C" fn virt_efi_set_variable_nb(name: *mut efi_char16_t, vendor: *mut efi_guid_t, attr: u32, data_size: libc::c_ulong, data: *mut libc::c_void) -> efi_status_t {
+unsafe extern "C" fn virt_efi_set_variable_nb(name: *mut efi_char16_t, vendor: *mut efi_guid_t, attr: u32, data_size: kernel::ffi::c_ulong, data: *mut kernel::ffi::c_void) -> efi_status_t {
     if down_trylock(&mut efi_runtime_lock) != 0 { return EFI_NOT_READY; }
     if !efi_enabled(EFI_RUNTIME_SERVICES) { up(&mut efi_runtime_lock); return EFI_DEVICE_ERROR; }
     efi_runtime_lock_owner = current;
@@ -140,7 +140,7 @@ unsafe extern "C" fn virt_efi_query_variable_info_nb(attr: u32, storage_space: *
     efi_runtime_lock_owner = core::ptr::null_mut(); up(&mut efi_runtime_lock); status
 }
 
-unsafe extern "C" fn virt_efi_reset_system(reset_type: libc::c_int, status: efi_status_t, data_size: libc::c_ulong, data: *mut efi_char16_t) {
+unsafe extern "C" fn virt_efi_reset_system(reset_type: kernel::ffi::c_int, status: efi_status_t, data_size: kernel::ffi::c_ulong, data: *mut efi_char16_t) {
     if down_trylock(&mut efi_runtime_lock) != 0 { pr_warn!("failed to invoke the reset_system() runtime service:\ncould not get exclusive access to the firmware\n"); return; }
     if !efi_enabled(EFI_RUNTIME_SERVICES) { pr_warn!("EFI Runtime Services are disabled, not invoking reset_system()\n"); up(&mut efi_runtime_lock); return; }
     efi_runtime_lock_owner = current; arch_efi_call_virt_setup(); efi_rts_work.efi_rts_id = EFI_RESET_SYSTEM;
@@ -149,7 +149,7 @@ unsafe extern "C" fn virt_efi_reset_system(reset_type: libc::c_int, status: efi_
 }
 
 #[cfg(CONFIG_ACPI_PRMT)]
-pub unsafe extern "C" fn efi_call_acpi_prm_handler(handler_addr: Option<unsafe extern "efiapi" fn(u64, *mut libc::c_void) -> efi_status_t>, param_buffer_addr: u64, context: *mut libc::c_void) -> efi_status_t {
+pub unsafe extern "C" fn efi_call_acpi_prm_handler(handler_addr: Option<unsafe extern "efiapi" fn(u64, *mut kernel::ffi::c_void) -> efi_status_t>, param_buffer_addr: u64, context: *mut kernel::ffi::c_void) -> efi_status_t {
     if down_interruptible(&mut efi_runtime_lock) != 0 { return EFI_ABORTED; }
     let status = efi_queue_work!(ACPI_PRM_HANDLER, handler_addr, param_buffer_addr, context);
     up(&mut efi_runtime_lock); status

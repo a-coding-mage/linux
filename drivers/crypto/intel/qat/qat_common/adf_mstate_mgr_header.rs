@@ -45,7 +45,7 @@ pub struct adf_mstate_preh {
 
 #[repr(C)]
 pub struct adf_mstate_vreginfo {
-    pub addr: *mut core::ffi::c_void,
+    pub addr: *mut kernel::ffi::c_void,
     pub size: u32,
 }
 
@@ -54,19 +54,19 @@ pub struct adf_mstate_sect_h;
 
 pub type adf_mstate_preamble_checker = unsafe extern "C" fn(
     preamble: *mut adf_mstate_preh,
-    opa: *mut core::ffi::c_void,
+    opa: *mut kernel::ffi::c_void,
 ) -> i32;
 pub type adf_mstate_populate = unsafe extern "C" fn(
     sub_mgr: *mut adf_mstate_mgr,
     buf: *mut u8,
     size: u32,
-    opa: *mut core::ffi::c_void,
+    opa: *mut kernel::ffi::c_void,
 ) -> i32;
 pub type adf_mstate_action = unsafe extern "C" fn(
     sub_mgr: *mut adf_mstate_mgr,
     buf: *mut u8,
     size: u32,
-    opa: *mut core::ffi::c_void,
+    opa: *mut kernel::ffi::c_void,
 ) -> i32;
 
 unsafe extern "C" {
@@ -86,7 +86,7 @@ unsafe extern "C" {
         buf: *mut u8,
         size: u32,
         checker: adf_mstate_preamble_checker,
-        opaque: *mut core::ffi::c_void,
+        opaque: *mut kernel::ffi::c_void,
     ) -> i32;
     pub fn adf_mstate_preamble_add(mgr: *mut adf_mstate_mgr) -> *mut adf_mstate_preh;
     pub fn adf_mstate_preamble_update(mgr: *mut adf_mstate_mgr) -> i32;
@@ -99,20 +99,20 @@ unsafe extern "C" {
     );
     pub fn adf_mstate_sect_add_vreg(
         mgr: *mut adf_mstate_mgr,
-        id: *const core::ffi::c_char,
+        id: *const kernel::ffi::c_char,
         info: *mut adf_mstate_vreginfo,
     ) -> *mut adf_mstate_sect_h;
     pub fn adf_mstate_sect_add(
         mgr: *mut adf_mstate_mgr,
-        id: *const core::ffi::c_char,
+        id: *const kernel::ffi::c_char,
         populate: adf_mstate_populate,
-        opaque: *mut core::ffi::c_void,
+        opaque: *mut kernel::ffi::c_void,
     ) -> *mut adf_mstate_sect_h;
     pub fn adf_mstate_sect_lookup(
         mgr: *mut adf_mstate_mgr,
-        id: *const core::ffi::c_char,
+        id: *const kernel::ffi::c_char,
         action: adf_mstate_action,
-        opaque: *mut core::ffi::c_void,
+        opaque: *mut kernel::ffi::c_void,
     ) -> *mut adf_mstate_sect_h;
 }
 

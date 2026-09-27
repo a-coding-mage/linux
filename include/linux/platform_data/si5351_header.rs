@@ -104,7 +104,7 @@ pub struct si5351_clkout_config {
     pub disable_state: si5351_disable_state,
     pub pll_master: bool,
     pub pll_reset: bool,
-    pub rate: core::ffi::c_ulong,
+    pub rate: kernel::ffi::c_ulong,
 }
 
 /**

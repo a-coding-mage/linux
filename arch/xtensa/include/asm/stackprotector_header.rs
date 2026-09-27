@@ -13,7 +13,7 @@
 
 // Header guard: _ASM_STACKPROTECTOR_H
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 extern "C" {
     pub static mut __stack_chk_guard: c_ulong;

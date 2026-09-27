@@ -12,8 +12,8 @@
 static mut acpi_chain_head: BlockingNotifierHead = BLOCKING_NOTIFIER_HEAD!();
 
 pub unsafe fn acpi_notifier_call_chain(
-    device_class: *const core::ffi::c_char,
-    bus_id: *const core::ffi::c_char,
+    device_class: *const kernel::ffi::c_char,
+    bus_id: *const kernel::ffi::c_char,
     r#type: u32,
     data: u32,
 ) -> i32 {
@@ -26,7 +26,7 @@ pub unsafe fn acpi_notifier_call_chain(
     (blocking_notifier_call_chain(
         &raw mut acpi_chain_head,
         0,
-        &mut event as *mut _ as *mut core::ffi::c_void,
+        &mut event as *mut _ as *mut kernel::ffi::c_void,
     ) == NOTIFY_BAD) as i32 * -EINVAL
 }
 
@@ -45,7 +45,7 @@ static mut acpi_event_seqnum: u32 = 0;
 #[repr(C)]
 struct acpi_genl_event {
     device_class: acpi_device_class,
-    bus_id: [core::ffi::c_char; 15],
+    bus_id: [kernel::ffi::c_char; 15],
     r#type: u32,
     data: u32,
 }
@@ -75,13 +75,13 @@ const ACPI_GENL_MCAST_GROUP_NAME: &[u8] = b"acpi_mc_group\0";
 
 #[cfg(CONFIG_NET)]
 static mut acpi_event_mcgrps: [genl_multicast_group; 1] = [genl_multicast_group {
-    name: ACPI_GENL_MCAST_GROUP_NAME.as_ptr() as *const core::ffi::c_char,
+    name: ACPI_GENL_MCAST_GROUP_NAME.as_ptr() as *const kernel::ffi::c_char,
 }];
 
 #[cfg(CONFIG_NET)]
 static mut acpi_event_genl_family: genl_family = genl_family {
     module: THIS_MODULE,
-    name: ACPI_GENL_FAMILY_NAME.as_ptr() as *const core::ffi::c_char,
+    name: ACPI_GENL_FAMILY_NAME.as_ptr() as *const kernel::ffi::c_char,
     version: ACPI_GENL_VERSION,
     maxattr: ACPI_GENL_ATTR_MAX,
     mcgrps: unsafe { acpi_event_mcgrps.as_ptr() },
@@ -90,8 +90,8 @@ static mut acpi_event_genl_family: genl_family = genl_family {
 
 #[cfg(CONFIG_NET)]
 pub unsafe fn acpi_bus_generate_netlink_event(
-    device_class: *const core::ffi::c_char,
-    bus_id: *const core::ffi::c_char,
+    device_class: *const kernel::ffi::c_char,
+    bus_id: *const kernel::ffi::c_char,
     r#type: u8,
     data: i32,
 ) -> i32 {
@@ -128,8 +128,8 @@ unsafe fn acpi_event_genetlink_init() -> i32 {
 
 #[cfg(not(CONFIG_NET))]
 pub unsafe fn acpi_bus_generate_netlink_event(
-    _device_class: *const core::ffi::c_char,
-    _bus_id: *const core::ffi::c_char,
+    _device_class: *const kernel::ffi::c_char,
+    _bus_id: *const kernel::ffi::c_char,
     _type: u8,
     _data: i32,
 ) -> i32 { 0 }

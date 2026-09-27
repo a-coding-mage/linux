@@ -124,7 +124,7 @@ pub enum msg_index_t {
 
 #[repr(C)]
 pub struct msg_group_t {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub start: msg_index_t,
     pub end: msg_index_t,
 }

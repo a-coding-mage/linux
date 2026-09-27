@@ -28,7 +28,7 @@ pub struct sigframe_ia32 {
      */
     pub fpstate_unused: _fpstate_32,
     pub extramask: [u32; 1],
-    pub retcode: [core::ffi::c_char; 8],
+    pub retcode: [kernel::ffi::c_char; 8],
     /* fp state follows here */
 }
 
@@ -44,14 +44,14 @@ pub struct rt_sigframe_ia32 {
     #[cfg(not(CONFIG_IA32_EMULATION))]
     pub info: siginfo,
     pub uc: ucontext_ia32,
-    pub retcode: [core::ffi::c_char; 8],
+    pub retcode: [kernel::ffi::c_char; 8],
     /* fp state follows here */
 }
 
 #[cfg(CONFIG_X86_64)]
 #[repr(C)]
 pub struct rt_sigframe {
-    pub pretcode: *mut core::ffi::c_char,
+    pub pretcode: *mut kernel::ffi::c_char,
     pub uc: ucontext,
     pub info: siginfo,
     /* fp state follows here */

@@ -398,7 +398,7 @@ fn void emit_call_libgcc_ll(void *func, arg0: *const i8,
 fn void emit_jump(paoff: i32, force_far: bool,
 			       *mut hppa_jit_contextctx)
 {
-	pc: core::ffi::c_ulong, addr;
+	pc: kernel::ffi::c_ulong, addr;
 
 	/* Note: allocate 2 instructions for jumps if force_far is set. */
 	if (relative_bits_ok(paoff - HPPA_BRANCH_DISPLACEMENT, 17)) {
@@ -1467,7 +1467,7 @@ void bpf_jit_build_prologue(*mut hppa_jit_contextctx)
 	*const i8dst, *reg;
 	int stack_adjust = 0;
 	int i;
-	core::ffi::c_ulong addr;
+	kernel::ffi::c_ulong addr;
 	int bpf_stack_adjust;
 
 	/*

@@ -6,9 +6,9 @@ const IO_FUTEX_ALLOC_CACHE_MAX: usize = 32;
 #[repr(C)]
 pub struct io_futex {
     pub file: *mut file,
-    pub uaddr: *mut core::ffi::c_void,
-    pub futex_val: libc::c_ulong,
-    pub futex_mask: libc::c_ulong,
+    pub uaddr: *mut kernel::ffi::c_void,
+    pub futex_val: kernel::ffi::c_ulong,
+    pub futex_mask: kernel::ffi::c_ulong,
     pub futex_flags: u32,
     pub futex_nr: u32,
     pub futexv_unqueued: bool,
@@ -22,7 +22,7 @@ pub struct io_futex_data {
 
 #[repr(C)]
 pub struct io_futexv_data {
-    pub owned: libc::c_ulong,
+    pub owned: kernel::ffi::c_ulong,
     pub futexv: [futex_vector; 0],
 }
 
@@ -168,11 +168,11 @@ pub unsafe fn io_futexv_prep(req: *mut io_kiocb, sqe: *const io_uring_sqe) -> i3
     let ifd = kzalloc(size, GFP_KERNEL_ACCOUNT) as *mut io_futexv_data;
     if ifd.is_null() { return -ENOMEM; }
     let ret = futex_parse_waitv((*ifd).futexv.as_mut_ptr(), (*iof).uaddr, (*iof).futex_nr, io_futex_wakev_fn, req);
-    if ret != 0 { kfree(ifd as *mut core::ffi::c_void); return ret; }
+    if ret != 0 { kfree(ifd as *mut kernel::ffi::c_void); return ret; }
     for i in 0..(*iof).futex_nr as usize { if (*(*ifd).futexv.as_ptr().add(i)).w.flags & FLAGS_SHARED == 0 { io_req_track_inflight(req); break; } }
     (*iof).futexv_unqueued = false;
     (*req).flags |= REQ_F_ASYNC_DATA;
-    (*req).async_data = ifd as *mut core::ffi::c_void;
+    (*req).async_data = ifd as *mut kernel::ffi::c_void;
     0
 }
 
@@ -222,7 +222,7 @@ pub unsafe fn io_futex_wait(req: *mut io_kiocb, issue_flags: u32) -> i32 {
         ifd = io_cache_alloc(&mut (*ctx).futex_cache, GFP_NOWAIT) as *mut io_futex_data;
         if ifd.is_null() { ret = -ENOMEM; } else {
             (*req).flags |= REQ_F_ASYNC_DATA;
-            (*req).async_data = ifd as *mut core::ffi::c_void;
+            (*req).async_data = ifd as *mut kernel::ffi::c_void;
             (*ifd).q = futex_q_init;
             (*ifd).q.bitset = (*iof).futex_mask;
             (*ifd).q.wake = Some(io_futex_wake_fn);

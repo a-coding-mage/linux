@@ -5,7 +5,7 @@
 // The following declarations are enabled when ACPI_DEBUG_OUTPUT,
 // ACPI_DISASSEMBLER, or ACPI_DEBUGGER is enabled in the C build.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub static mut acpi_gbl_bm_decode: [*const c_char; 2] = [
     b"NotBusMaster\0".as_ptr() as *const c_char,

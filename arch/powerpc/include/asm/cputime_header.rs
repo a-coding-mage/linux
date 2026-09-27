@@ -13,7 +13,7 @@
 
 #[cfg(CONFIG_VIRT_CPU_ACCOUNTING_NATIVE)]
 #[cfg(feature = "__KERNEL__")]
-pub fn cputime_to_nsecs(cputime: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub fn cputime_to_nsecs(cputime: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     tb_to_ns(cputime)
 }
 
@@ -58,7 +58,7 @@ macro_rules! raw_get_accounting {
 #[cfg(all(CONFIG_VIRT_CPU_ACCOUNTING_NATIVE, feature = "__KERNEL__"))]
 #[inline]
 pub unsafe fn account_cpu_user_entry() {
-    let tb: ::core::ffi::c_ulong = mftb();
+    let tb: ::kernel::ffi::c_ulong = mftb();
     let acct = raw_get_accounting!(current);
 
     (*acct).utime = (*acct).utime.wrapping_add(tb.wrapping_sub((*acct).starttime_user));
@@ -68,7 +68,7 @@ pub unsafe fn account_cpu_user_entry() {
 #[cfg(all(CONFIG_VIRT_CPU_ACCOUNTING_NATIVE, feature = "__KERNEL__"))]
 #[inline]
 pub unsafe fn account_cpu_user_exit() {
-    let tb: ::core::ffi::c_ulong = mftb();
+    let tb: ::kernel::ffi::c_ulong = mftb();
     let acct = raw_get_accounting!(current);
 
     (*acct).stime = (*acct).stime.wrapping_add(tb.wrapping_sub((*acct).starttime));

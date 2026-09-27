@@ -38,7 +38,7 @@ pub enum lp3944_type {
 
 #[repr(C)]
 pub struct lp3944_led {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub r#type: lp3944_type,
     pub status: lp3944_status,
 }

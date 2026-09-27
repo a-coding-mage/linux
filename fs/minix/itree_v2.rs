@@ -12,7 +12,7 @@ pub struct super_block {
     pub s_blocksize_bits: u32,
     pub s_blocksize: u64,
     pub s_maxbytes: u64,
-    pub s_bdev: *mut core::ffi::c_void,
+    pub s_bdev: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -31,13 +31,13 @@ const DIRCOUNT: usize = 7;
 // Supplied by minix.h in the original source.
 extern "C" {
     fn minix_i(inode: *mut inode) -> *mut minix_inode_info;
-    fn printk(fmt: *const core::ffi::c_char, ...) -> core::ffi::c_int;
+    fn printk(fmt: *const kernel::ffi::c_char, ...) -> kernel::ffi::c_int;
     fn get_block(
         inode: *mut inode,
         block: i64,
         bh_result: *mut buffer_head,
-        create: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        create: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
     fn truncate(inode: *mut inode);
     fn nblocks(size: loff_t, sb: *mut super_block) -> u32;
 }
@@ -79,7 +79,7 @@ unsafe fn block_to_path(inode: *mut inode, mut block: i64, offsets: *mut i32) ->
     if block < 0 {
         // Original printk format: MINIX-fs: block %ld < 0 on dev %pg
         printk(
-            b"MINIX-fs: block %ld < 0 on dev %pg\0".as_ptr() as *const core::ffi::c_char,
+            b"MINIX-fs: block %ld < 0 on dev %pg\0".as_ptr() as *const kernel::ffi::c_char,
             block,
             (*sb).s_bdev,
         );

@@ -18,7 +18,7 @@ pub unsafe fn pppoe_hdr(skb: *const sk_buff) -> *mut pppoe_hdr {
 #[repr(C)]
 pub struct pppoe_opt {
     pub dev: *mut net_device,       // device associated with socket
-    pub ifindex: ::core::ffi::c_int, // ifindex of device associated with socket
+    pub ifindex: ::kernel::ffi::c_int, // ifindex of device associated with socket
     pub pa: pppoe_addr,             // what this socket is bound to
     pub padt_work: work_struct,     // Work item for handling PADT
 }
@@ -31,7 +31,7 @@ pub struct pptp_opt {
     pub ack_recv: u32,
     pub seq_sent: u32,
     pub seq_recv: u32,
-    pub ppp_flags: ::core::ffi::c_int,
+    pub ppp_flags: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -57,7 +57,7 @@ impl pppox_sock {
     }
 
     #[inline]
-    pub unsafe fn pppoe_ifindex(&mut self) -> ::core::ffi::c_int {
+    pub unsafe fn pppoe_ifindex(&mut self) -> ::kernel::ffi::c_int {
         self.proto.pppoe.ifindex
     }
 
@@ -76,17 +76,17 @@ pub struct module;
 
 #[repr(C)]
 pub struct pppox_proto {
-    pub create: Option<unsafe extern "C" fn(net: *mut net, sock: *mut socket, kern: ::core::ffi::c_int) -> ::core::ffi::c_int>,
-    pub ioctl: Option<unsafe extern "C" fn(sock: *mut socket, cmd: u32, arg: ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
+    pub create: Option<unsafe extern "C" fn(net: *mut net, sock: *mut socket, kern: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
+    pub ioctl: Option<unsafe extern "C" fn(sock: *mut socket, cmd: u32, arg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
     pub owner: *mut module,
 }
 
 unsafe extern "C" {
-    pub fn register_pppox_proto(proto_num: ::core::ffi::c_int, pp: *const pppox_proto) -> ::core::ffi::c_int;
-    pub fn unregister_pppox_proto(proto_num: ::core::ffi::c_int);
+    pub fn register_pppox_proto(proto_num: ::kernel::ffi::c_int, pp: *const pppox_proto) -> ::kernel::ffi::c_int;
+    pub fn unregister_pppox_proto(proto_num: ::kernel::ffi::c_int);
     pub fn pppox_unbind_sock(sk: *mut sock); // delete ppp-channel binding
-    pub fn pppox_ioctl(sock: *mut socket, cmd: u32, arg: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn pppox_compat_ioctl(sock: *mut socket, cmd: u32, arg: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn pppox_ioctl(sock: *mut socket, cmd: u32, arg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn pppox_compat_ioctl(sock: *mut socket, cmd: u32, arg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
 }
 
 /* PPPoX socket states */

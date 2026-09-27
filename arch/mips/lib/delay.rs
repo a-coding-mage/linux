@@ -13,18 +13,18 @@
 
 #[repr(C)]
 pub struct RawCurrentCpuData {
-    pub udelay_val: ::core::ffi::c_uint,
+    pub udelay_val: ::kernel::ffi::c_uint,
 }
 
 extern "C" {
     pub static raw_current_cpu_data: RawCurrentCpuData;
     // HZ is supplied by the platform/kernel configuration (a C preprocessor constant).
-    pub static HZ: ::core::ffi::c_ulong;
+    pub static HZ: ::kernel::ffi::c_ulong;
 }
 
 #[cfg(not(CONFIG_HAVE_PLAT_DELAY))]
 #[no_mangle]
-pub unsafe extern "C" fn __delay(mut loops: ::core::ffi::c_ulong) {
+pub unsafe extern "C" fn __delay(mut loops: ::kernel::ffi::c_ulong) {
     while loops != 0 {
         loops = loops.wrapping_sub(1);
     }
@@ -32,29 +32,29 @@ pub unsafe extern "C" fn __delay(mut loops: ::core::ffi::c_ulong) {
 
 #[cfg(not(CONFIG_HAVE_PLAT_DELAY))]
 #[no_mangle]
-pub unsafe extern "C" fn __udelay(us: ::core::ffi::c_ulong) {
-    let lpj: ::core::ffi::c_uint = raw_current_cpu_data.udelay_val;
+pub unsafe extern "C" fn __udelay(us: ::kernel::ffi::c_ulong) {
+    let lpj: ::kernel::ffi::c_uint = raw_current_cpu_data.udelay_val;
 
     __delay(
         ((us as u64)
             .wrapping_mul(0x0000_10c7u64)
             .wrapping_mul(HZ as u64)
             .wrapping_mul(lpj as u64)
-            >> 32) as ::core::ffi::c_ulong,
+            >> 32) as ::kernel::ffi::c_ulong,
     );
 }
 
 #[cfg(not(CONFIG_HAVE_PLAT_DELAY))]
 #[no_mangle]
-pub unsafe extern "C" fn __ndelay(ns: ::core::ffi::c_ulong) {
-    let lpj: ::core::ffi::c_uint = raw_current_cpu_data.udelay_val;
+pub unsafe extern "C" fn __ndelay(ns: ::kernel::ffi::c_ulong) {
+    let lpj: ::kernel::ffi::c_uint = raw_current_cpu_data.udelay_val;
 
     __delay(
         ((ns as u64)
             .wrapping_mul(0x0000_0005u64)
             .wrapping_mul(HZ as u64)
             .wrapping_mul(lpj as u64)
-            >> 32) as ::core::ffi::c_ulong,
+            >> 32) as ::kernel::ffi::c_ulong,
     );
 }
 

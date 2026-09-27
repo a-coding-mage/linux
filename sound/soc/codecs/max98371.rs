@@ -8,13 +8,13 @@
 // Translated from Linux kernel C. External types, constants, macros, and
 // functions are expected to be supplied by the surrounding driver bindings.
 
-static monomix_text: [*const core::ffi::c_char; 3] = [
+static monomix_text: [*const kernel::ffi::c_char; 3] = [
     c"Left".as_ptr(),
     c"Right".as_ptr(),
     c"LeftRightDiv2".as_ptr(),
 ];
 
-static hpf_cutoff_txt: [*const core::ffi::c_char; 7] = [
+static hpf_cutoff_txt: [*const kernel::ffi::c_char; 7] = [
     c"Disable".as_ptr(),
     c"DC Block".as_ptr(),
     c"50Hz".as_ptr(),
@@ -126,7 +126,7 @@ static max98371_reg: [reg_default; 67] = [
 
 unsafe extern "C" fn max98371_volatile_register(
     dev: *mut device,
-    reg: core::ffi::c_uint,
+    reg: kernel::ffi::c_uint,
 ) -> bool {
     match reg {
         MAX98371_IRQ_CLEAR1 | MAX98371_IRQ_CLEAR2 | MAX98371_IRQ_CLEAR3 | MAX98371_VERSION => true,
@@ -136,7 +136,7 @@ unsafe extern "C" fn max98371_volatile_register(
 
 unsafe extern "C" fn max98371_readable_register(
     dev: *mut device,
-    reg: core::ffi::c_uint,
+    reg: kernel::ffi::c_uint,
 ) -> bool {
     match reg {
         MAX98371_SOFT_RESET => false,
@@ -200,11 +200,11 @@ static max98371_snd_controls: [snd_kcontrol_new; 9] = [
 
 unsafe extern "C" fn max98371_dai_set_fmt(
     codec_dai: *mut snd_soc_dai,
-    fmt: core::ffi::c_uint,
-) -> core::ffi::c_int {
+    fmt: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*codec_dai).component;
     let max98371: *mut max98371_priv = snd_soc_component_get_drvdata(component) as *mut max98371_priv;
-    let mut val: core::ffi::c_uint = 0;
+    let mut val: kernel::ffi::c_uint = 0;
 
     match fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK {
         SND_SOC_DAIFMT_CBC_CFC => {}
@@ -242,12 +242,12 @@ unsafe extern "C" fn max98371_dai_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
     let max98371: *mut max98371_priv = snd_soc_component_get_drvdata(component) as *mut max98371_priv;
-    let mut ch_size: core::ffi::c_int;
-    let channels: core::ffi::c_int = params_channels(params);
-    let rate: core::ffi::c_int = params_rate(params);
+    let mut ch_size: kernel::ffi::c_int;
+    let channels: kernel::ffi::c_int = params_channels(params);
+    let rate: kernel::ffi::c_int = params_rate(params);
 
     match params_format(params) {
         SNDRV_PCM_FORMAT_S8 => {
@@ -290,7 +290,7 @@ unsafe extern "C" fn max98371_dai_hw_params(
     }
 
     /* BCLK/LRCLK ratio calculation */
-    let blr_clk_ratio: core::ffi::c_int = channels * ch_size;
+    let blr_clk_ratio: kernel::ffi::c_int = channels * ch_size;
     match blr_clk_ratio {
         32 => {
             regmap_update_bits(
@@ -410,8 +410,8 @@ static max98371_audio_map: [snd_soc_dapm_route; 3] = [
     },
 ];
 
-const MAX98371_RATES: core::ffi::c_uint = SNDRV_PCM_RATE_8000_48000;
-const MAX98371_FORMATS: core::ffi::c_uint =
+const MAX98371_RATES: kernel::ffi::c_uint = SNDRV_PCM_RATE_8000_48000;
+const MAX98371_FORMATS: kernel::ffi::c_uint =
     SNDRV_PCM_FMTBIT_S8 | SNDRV_PCM_FMTBIT_S16_BE | SNDRV_PCM_FMTBIT_S24_BE | SNDRV_PCM_FMTBIT_S32_BE;
 
 static max98371_dai_ops: snd_soc_dai_ops = snd_soc_dai_ops {
@@ -458,9 +458,9 @@ static max98371_regmap: regmap_config = regmap_config {
     ..unsafe { core::mem::zeroed() }
 };
 
-unsafe extern "C" fn max98371_i2c_probe(i2c: *mut i2c_client) -> core::ffi::c_int {
-    let mut ret: core::ffi::c_int;
-    let mut reg: core::ffi::c_int = 0;
+unsafe extern "C" fn max98371_i2c_probe(i2c: *mut i2c_client) -> kernel::ffi::c_int {
+    let mut ret: kernel::ffi::c_int;
+    let mut reg: kernel::ffi::c_int = 0;
 
     let max98371: *mut max98371_priv = devm_kzalloc(
         &mut (*i2c).dev,
@@ -471,10 +471,10 @@ unsafe extern "C" fn max98371_i2c_probe(i2c: *mut i2c_client) -> core::ffi::c_in
         return -ENOMEM;
     }
 
-    i2c_set_clientdata(i2c, max98371 as *mut core::ffi::c_void);
+    i2c_set_clientdata(i2c, max98371 as *mut kernel::ffi::c_void);
     (*max98371).regmap = devm_regmap_init_i2c(i2c, &max98371_regmap);
     if IS_ERR((*max98371).regmap) {
-        ret = PTR_ERR((*max98371).regmap) as core::ffi::c_int;
+        ret = PTR_ERR((*max98371).regmap) as kernel::ffi::c_int;
         dev_err(
             &mut (*i2c).dev,
             c"Failed to allocate regmap: %d\n".as_ptr(),

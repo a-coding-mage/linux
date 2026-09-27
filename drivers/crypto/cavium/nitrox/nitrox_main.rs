@@ -21,7 +21,7 @@ static mut NUM_DEVICES: u32 = 0;
 #[repr(C)]
 struct ucode {
     id: u8,
-    version: [core::ffi::c_char; VERSION_LEN - 1],
+    version: [kernel::ffi::c_char; VERSION_LEN - 1],
     code_size: __be32,
     raz: [u8; 12],
     code: [u64; 0],
@@ -57,7 +57,7 @@ unsafe fn write_to_ucd_unit(
 
 unsafe fn nitrox_load_fw(ndev: *mut nitrox_device) -> i32 {
     let mut fw: *const firmware;
-    let mut fw_name: *const core::ffi::c_char;
+    let mut fw_name: *const kernel::ffi::c_char;
     let mut ucode: *mut ucode;
     let mut ucode_data: *mut u64;
     let mut offset: u64;
@@ -68,7 +68,7 @@ unsafe fn nitrox_load_fw(ndev: *mut nitrox_device) -> i32 {
     let mut ret: i32;
     let mut i: i32 = 0;
 
-    fw_name = SE_FW.as_ptr() as *const core::ffi::c_char;
+    fw_name = SE_FW.as_ptr() as *const kernel::ffi::c_char;
     dev_info(DEV(ndev), c_str!("Loading firmware \"%s\"\n"), fw_name);
     ret = request_firmware(&mut fw, fw_name, DEV(ndev));
     if ret < 0 {
@@ -83,8 +83,8 @@ unsafe fn nitrox_load_fw(ndev: *mut nitrox_device) -> i32 {
         return -EINVAL;
     }
     ucode_data = (*ucode).code.as_mut_ptr();
-    memcpy((*ndev).hw.fw_name[0].as_mut_ptr() as *mut core::ffi::c_void,
-           (*ucode).version.as_ptr() as *const core::ffi::c_void, VERSION_LEN - 2);
+    memcpy((*ndev).hw.fw_name[0].as_mut_ptr() as *mut kernel::ffi::c_void,
+           (*ucode).version.as_ptr() as *const kernel::ffi::c_void, VERSION_LEN - 2);
     (*ndev).hw.fw_name[0][VERSION_LEN - 1] = 0;
     write_to_ucd_unit(ndev, ucode_size, ucode_data, 0);
     release_firmware(fw);
@@ -100,7 +100,7 @@ unsafe fn nitrox_load_fw(ndev: *mut nitrox_device) -> i32 {
         i += 1;
     }
 
-    fw_name = AE_FW.as_ptr() as *const core::ffi::c_char;
+    fw_name = AE_FW.as_ptr() as *const kernel::ffi::c_char;
     dev_info(DEV(ndev), c_str!("Loading firmware \"%s\"\n"), fw_name);
     ret = request_firmware(&mut fw, fw_name, DEV(ndev));
     if ret < 0 {
@@ -115,8 +115,8 @@ unsafe fn nitrox_load_fw(ndev: *mut nitrox_device) -> i32 {
         return -EINVAL;
     }
     ucode_data = (*ucode).code.as_mut_ptr();
-    memcpy((*ndev).hw.fw_name[1].as_mut_ptr() as *mut core::ffi::c_void,
-           (*ucode).version.as_ptr() as *const core::ffi::c_void, VERSION_LEN - 2);
+    memcpy((*ndev).hw.fw_name[1].as_mut_ptr() as *mut kernel::ffi::c_void,
+           (*ucode).version.as_ptr() as *const kernel::ffi::c_void, VERSION_LEN - 2);
     (*ndev).hw.fw_name[1][VERSION_LEN - 1] = 0;
     write_to_ucd_unit(ndev, ucode_size, ucode_data, 2);
     release_firmware(fw);

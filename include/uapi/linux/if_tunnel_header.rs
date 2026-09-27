@@ -40,8 +40,8 @@ pub const GRE_PPTP_KEY_MASK: u32 = 0xffffu32.to_be();
 
 #[repr(C)]
 pub struct ip_tunnel_parm {
-    pub name: [::core::ffi::c_char; IFNAMSIZ],
-    pub link: ::core::ffi::c_int,
+    pub name: [::kernel::ffi::c_char; IFNAMSIZ],
+    pub link: ::kernel::ffi::c_int,
     pub i_flags: __be16,
     pub o_flags: __be16,
     pub i_key: __be32,

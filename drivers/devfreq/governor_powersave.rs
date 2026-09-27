@@ -8,7 +8,7 @@
 
 // Dependencies supplied by the Linux devfreq, module, and governor headers.
 
-use core::ffi::{c_int, c_uint, c_ulong, c_void};
+use kernel::ffi::{c_int, c_uint, c_ulong, c_void};
 
 #[repr(C)]
 pub struct mutex {
@@ -23,7 +23,7 @@ pub struct devfreq {
 
 #[repr(C)]
 pub struct devfreq_governor {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub get_target_freq:
         Option<unsafe extern "C" fn(df: *mut devfreq, freq: *mut c_ulong) -> c_int>,
     pub event_handler:
@@ -33,14 +33,14 @@ pub struct devfreq_governor {
 extern "C" {
     static DEVFREQ_MIN_FREQ: c_ulong;
     static DEVFREQ_GOV_START: c_uint;
-    static DEVFREQ_GOV_POWERSAVE: *const core::ffi::c_char;
+    static DEVFREQ_GOV_POWERSAVE: *const kernel::ffi::c_char;
 
     fn mutex_lock(lock: *mut mutex);
     fn mutex_unlock(lock: *mut mutex);
     fn update_devfreq(devfreq: *mut devfreq) -> c_int;
     fn devfreq_add_governor(governor: *mut devfreq_governor) -> c_int;
     fn devfreq_remove_governor(governor: *mut devfreq_governor) -> c_int;
-    fn pr_err(format: *const core::ffi::c_char, ...);
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
 }
 
 unsafe extern "C" fn devfreq_powersave_func(

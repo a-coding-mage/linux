@@ -22,7 +22,7 @@ struct creg_layout {
 #[repr(C)]
 struct creg_gpio {
     gc: gpio_chip,
-    regs: *mut core::ffi::c_void,
+    regs: *mut kernel::ffi::c_void,
     lock: spinlock_t,
     layout: *const creg_layout,
 }
@@ -30,7 +30,7 @@ struct creg_gpio {
 #[repr(C)]
 struct gpio_chip {
     parent: *mut device,
-    label: *const core::ffi::c_char,
+    label: *const kernel::ffi::c_char,
     base: i32,
     ngpio: u32,
     set: Option<unsafe fn(*mut gpio_chip, u32, i32) -> i32>,
@@ -55,8 +55,8 @@ struct platform_device {
 
 #[repr(C)]
 struct of_device_id {
-    compatible: *const core::ffi::c_char,
-    data: *const core::ffi::c_void,
+    compatible: *const kernel::ffi::c_char,
+    data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -65,31 +65,31 @@ struct platform_driver {
 }
 
 extern "C" {
-    fn gpiochip_get_data(gc: *mut gpio_chip) -> *mut core::ffi::c_void;
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
+    fn gpiochip_get_data(gc: *mut gpio_chip) -> *mut kernel::ffi::c_void;
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
     fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut usize);
     fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: usize);
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_platform_ioremap_resource(
         pdev: *mut platform_device,
         index: u32,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     fn device_get_match_data(dev: *mut device) -> *const creg_layout;
     fn of_property_read_u32(
-        node: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
+        node: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
         value: *mut u32,
     ) -> i32;
     fn spin_lock_init(lock: *mut spinlock_t);
     fn devm_gpiochip_add_data(
         dev: *mut device,
         gc: *mut gpio_chip,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
-    fn dev_name(dev: *mut device) -> *const core::ffi::c_char;
-    fn dev_err(dev: *mut device, format: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut device, format: *const core::ffi::c_char, ...);
+    fn dev_name(dev: *mut device) -> *const kernel::ffi::c_char;
+    fn dev_err(dev: *mut device, format: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, format: *const kernel::ffi::c_char, ...);
 }
 
 const EINVAL: i32 = 22;

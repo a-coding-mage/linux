@@ -15,7 +15,7 @@
 #[repr(C)]
 pub struct s3c24xx_uart_resources {
     pub resources: *mut resource,
-    pub nr_resources: libc::c_ulong,
+    pub nr_resources: kernel::ffi::c_ulong,
 }
 
 // Opaque declarations corresponding to the C types supplied by dependencies.
@@ -56,10 +56,10 @@ extern "C" {
      * platform data of the device.
      */
     pub fn s3c_set_platdata(
-        pd: *mut libc::c_void,
-        pdsize: libc::size_t,
+        pd: *mut kernel::ffi::c_void,
+        pdsize: usize,
         pdev: *mut platform_device,
-    ) -> *mut libc::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

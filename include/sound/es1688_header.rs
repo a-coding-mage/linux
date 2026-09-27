@@ -16,17 +16,17 @@ pub const ES1688_HW_UNDEF: u16 = 0x0003;
 #[repr(C)]
 pub struct snd_es1688 {
     pub card: *mut snd_card,
-    pub port: ::core::ffi::c_ulong, /* port of ESS chip */
+    pub port: ::kernel::ffi::c_ulong, /* port of ESS chip */
     pub res_port: *mut resource,
-    pub mpu_port: ::core::ffi::c_ulong, /* MPU-401 port of ESS chip */
-    pub irq: ::core::ffi::c_int, /* IRQ number of ESS chip */
-    pub mpu_irq: ::core::ffi::c_int, /* MPU IRQ */
-    pub dma8: ::core::ffi::c_int, /* 8-bit DMA */
+    pub mpu_port: ::kernel::ffi::c_ulong, /* MPU-401 port of ESS chip */
+    pub irq: ::kernel::ffi::c_int, /* IRQ number of ESS chip */
+    pub mpu_irq: ::kernel::ffi::c_int, /* MPU IRQ */
+    pub dma8: ::kernel::ffi::c_int, /* 8-bit DMA */
     pub version: u16, /* version of ESS chip */
     pub hardware: u16, /* see to ES1688_HW_XXXX */
     pub trigger_value: u16,
     pub pad: u8,
-    pub dma_size: ::core::ffi::c_uint,
+    pub dma_size: ::kernel::ffi::c_uint,
     pub pcm: *mut snd_pcm,
     pub playback_substream: *mut snd_pcm_substream,
     pub capture_substream: *mut snd_pcm_substream,
@@ -91,20 +91,20 @@ unsafe extern "C" {
     pub fn snd_es1688_create(
         card: *mut snd_card,
         chip: *mut snd_es1688,
-        port: ::core::ffi::c_ulong,
-        mpu_port: ::core::ffi::c_ulong,
-        irq: ::core::ffi::c_int,
-        mpu_irq: ::core::ffi::c_int,
-        dma8: ::core::ffi::c_int,
+        port: ::kernel::ffi::c_ulong,
+        mpu_port: ::kernel::ffi::c_ulong,
+        irq: ::kernel::ffi::c_int,
+        mpu_irq: ::kernel::ffi::c_int,
+        dma8: ::kernel::ffi::c_int,
         hardware: u16,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_es1688_pcm(
         card: *mut snd_card,
         chip: *mut snd_es1688,
-        device: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    pub fn snd_es1688_mixer(card: *mut snd_card, chip: *mut snd_es1688) -> ::core::ffi::c_int;
-    pub fn snd_es1688_reset(chip: *mut snd_es1688) -> ::core::ffi::c_int;
+        device: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
+    pub fn snd_es1688_mixer(card: *mut snd_card, chip: *mut snd_es1688) -> ::kernel::ffi::c_int;
+    pub fn snd_es1688_reset(chip: *mut snd_es1688) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

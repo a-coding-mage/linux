@@ -20,8 +20,8 @@
 
 /* declarations for highmem.c */
 extern "C" {
-    pub static mut highstart_pfn: ::core::ffi::c_ulong;
-    pub static mut highend_pfn: ::core::ffi::c_ulong;
+    pub static mut highstart_pfn: ::kernel::ffi::c_ulong;
+    pub static mut highend_pfn: ::kernel::ffi::c_ulong;
 }
 
 /*
@@ -47,15 +47,15 @@ extern "C" {
  * it is unused when the ioremap() is functional. vmalloc/pkmap area become
  * available after early boot so the temp fixed area is available for re-use.
  */
-pub const LAST_PKMAP_MASK: ::core::ffi::c_ulong = LAST_PKMAP - 1;
+pub const LAST_PKMAP_MASK: ::kernel::ffi::c_ulong = LAST_PKMAP - 1;
 
 #[inline]
-pub const fn PKMAP_NR(virt: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub const fn PKMAP_NR(virt: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     (virt - PKMAP_BASE) >> PAGE_SHIFT
 }
 
 #[inline]
-pub const fn PKMAP_ADDR(nr: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub const fn PKMAP_ADDR(nr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     PKMAP_BASE + (nr << PAGE_SHIFT)
 }
 
@@ -64,21 +64,21 @@ pub fn flush_cache_kmaps() {}
 
 #[inline]
 pub unsafe fn arch_kmap_local_post_map(
-    _vaddr: ::core::ffi::c_ulong,
-    _pteval: ::core::ffi::c_ulong,
+    _vaddr: ::kernel::ffi::c_ulong,
+    _pteval: ::kernel::ffi::c_ulong,
 ) {
     arch_flush_lazy_mmu_mode();
 }
 
 #[inline]
-pub unsafe fn arch_kmap_local_post_unmap(vaddr: ::core::ffi::c_ulong) {
+pub unsafe fn arch_kmap_local_post_unmap(vaddr: ::kernel::ffi::c_ulong) {
     flush_tlb_one_kernel(vaddr);
     arch_flush_lazy_mmu_mode();
 }
 
 extern "C" {
     fn arch_flush_lazy_mmu_mode();
-    fn flush_tlb_one_kernel(vaddr: ::core::ffi::c_ulong);
+    fn flush_tlb_one_kernel(vaddr: ::kernel::ffi::c_ulong);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

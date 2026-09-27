@@ -21,13 +21,13 @@ pub struct nfs_netns_client {
     pub nfs_net_kobj: kobject,
     pub net: *mut net,
     // const char __rcu *identifier;
-    pub identifier: *const core::ffi::c_char,
+    pub identifier: *const kernel::ffi::c_char,
 }
 
 extern "C" {
     pub static mut nfs_net_kobj: *mut kobject;
 
-    pub fn nfs_sysfs_init() -> core::ffi::c_int;
+    pub fn nfs_sysfs_init() -> kernel::ffi::c_int;
     pub fn nfs_sysfs_exit();
 
     pub fn nfs_netns_sysfs_setup(netns: *mut nfs_net, net: *mut net);
@@ -36,7 +36,7 @@ extern "C" {
     pub fn nfs_sysfs_link_rpc_client(
         server: *mut nfs_server,
         clnt: *mut rpc_clnt,
-        sysfs_prefix: *const core::ffi::c_char,
+        sysfs_prefix: *const kernel::ffi::c_char,
     );
     pub fn nfs_sysfs_add_server(s: *mut nfs_server);
     pub fn nfs_sysfs_move_server_to_sb(s: *mut super_block);

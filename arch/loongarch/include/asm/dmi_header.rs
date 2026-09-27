@@ -25,12 +25,12 @@ macro_rules! dmi_alloc {
 }
 
 #[inline]
-pub unsafe fn dmi_remap(phys_addr: phys_addr_t, _size: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void {
-    (TO_CACHE!(phys_addr)) as *mut ::core::ffi::c_void
+pub unsafe fn dmi_remap(phys_addr: phys_addr_t, _size: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void {
+    (TO_CACHE!(phys_addr)) as *mut ::kernel::ffi::c_void
 }
 
 #[inline]
-pub unsafe fn dmi_unmap(_addr: *mut ::core::ffi::c_void) {
+pub unsafe fn dmi_unmap(_addr: *mut ::kernel::ffi::c_void) {
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

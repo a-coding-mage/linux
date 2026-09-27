@@ -3,14 +3,14 @@
 
 #[repr(C)]
 struct clk_bcm63xx_table_entry {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     bit: u8,
     flags: c_ulong,
 }
 
 #[repr(C)]
 struct clk_bcm63xx_hw {
-    regs: *mut core::ffi::c_void,
+    regs: *mut kernel::ffi::c_void,
     lock: spinlock_t,
     data: clk_hw_onecell_data,
 }
@@ -143,7 +143,7 @@ unsafe fn clk_bcm63xx_remove(pdev: *mut platform_device) {
 }
 
 #[repr(C)]
-struct of_device_id { compatible: *const core::ffi::c_char, data: *const core::ffi::c_void }
+struct of_device_id { compatible: *const kernel::ffi::c_char, data: *const kernel::ffi::c_void }
 
 static clk_bcm63xx_dt_ids: [of_device_id; 9] = [
     of_device_id { compatible: b"brcm,bcm3368-clocks\0".as_ptr() as _, data: &bcm3368_clocks as *const _ as _ },
@@ -161,7 +161,7 @@ static clk_bcm63xx_dt_ids: [of_device_id; 9] = [
 struct platform_driver {
     probe: unsafe fn(*mut platform_device) -> c_int,
     remove: unsafe fn(*mut platform_device),
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     of_match_table: *const of_device_id,
 }
 

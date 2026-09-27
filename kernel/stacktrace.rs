@@ -17,28 +17,28 @@ pub struct pt_regs {
     _private: [u8; 0],
 }
 
-type StackTraceConsumeFn = unsafe extern "C" fn(*mut core::ffi::c_void, usize) -> bool;
+type StackTraceConsumeFn = unsafe extern "C" fn(*mut kernel::ffi::c_void, usize) -> bool;
 
 extern "C" {
     fn warn_on(condition: bool) -> bool;
-    fn printk(format: *const core::ffi::c_char, ...);
-    fn snprintf(buf: *mut core::ffi::c_char, size: usize, format: *const core::ffi::c_char, ...)
+    fn printk(format: *const kernel::ffi::c_char, ...);
+    fn snprintf(buf: *mut kernel::ffi::c_char, size: usize, format: *const kernel::ffi::c_char, ...)
         -> usize;
     fn in_sched_functions(addr: usize) -> bool;
     fn arch_stack_walk(
         consume: StackTraceConsumeFn,
-        cookie: *mut core::ffi::c_void,
+        cookie: *mut kernel::ffi::c_void,
         task: *mut task_struct,
         regs: *mut pt_regs,
     );
     fn arch_stack_walk_reliable(
         consume: StackTraceConsumeFn,
-        cookie: *mut core::ffi::c_void,
+        cookie: *mut kernel::ffi::c_void,
         task: *mut task_struct,
     ) -> i32;
     fn arch_stack_walk_user(
         consume: StackTraceConsumeFn,
-        cookie: *mut core::ffi::c_void,
+        cookie: *mut kernel::ffi::c_void,
         regs: *mut pt_regs,
     );
     fn try_get_task_stack(task: *mut task_struct) -> bool;
@@ -61,13 +61,13 @@ pub unsafe extern "C" fn stack_trace_print(entries: *const usize, nr_entries: u3
     }
     for i in 0..nr_entries {
         printk(b"%*c%pS\n\0".as_ptr() as *const _, 1 + spaces, b' ' as i32,
-            entries.add(i as usize) as *const core::ffi::c_void);
+            entries.add(i as usize) as *const kernel::ffi::c_void);
     }
 }
 
 /// stack_trace_snprint - Print the entries in the stack trace into a buffer
 pub unsafe extern "C" fn stack_trace_snprint(
-    mut buf: *mut core::ffi::c_char,
+    mut buf: *mut kernel::ffi::c_char,
     mut size: usize,
     entries: *const usize,
     nr_entries: u32,
@@ -80,7 +80,7 @@ pub unsafe extern "C" fn stack_trace_snprint(
     for i in 0..nr_entries {
         if size == 0 { break; }
         let generated = snprintf(buf, size, b"%*c%pS\n\0".as_ptr() as *const _,
-            1 + spaces, b' ' as i32, *entries.add(i as usize) as *const core::ffi::c_void);
+            1 + spaces, b' ' as i32, *entries.add(i as usize) as *const kernel::ffi::c_void);
         total = total.wrapping_add(generated);
         if generated >= size {
             buf = buf.add(size);
@@ -94,7 +94,7 @@ pub unsafe extern "C" fn stack_trace_snprint(
 }
 
 #[cfg(CONFIG_ARCH_STACKWALK)]
-unsafe extern "C" fn stack_trace_consume_entry(cookie: *mut core::ffi::c_void, addr: usize) -> bool {
+unsafe extern "C" fn stack_trace_consume_entry(cookie: *mut kernel::ffi::c_void, addr: usize) -> bool {
     let c = &mut *(cookie as *mut StacktraceCookie);
     if c.len >= c.size { return false; }
     if c.skip > 0 { c.skip -= 1; return true; }
@@ -104,7 +104,7 @@ unsafe extern "C" fn stack_trace_consume_entry(cookie: *mut core::ffi::c_void, a
 }
 
 #[cfg(CONFIG_ARCH_STACKWALK)]
-unsafe extern "C" fn stack_trace_consume_entry_nosched(cookie: *mut core::ffi::c_void, addr: usize) -> bool {
+unsafe extern "C" fn stack_trace_consume_entry_nosched(cookie: *mut kernel::ffi::c_void, addr: usize) -> bool {
     if in_sched_functions(addr) { return true; }
     stack_trace_consume_entry(cookie, addr)
 }

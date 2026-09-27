@@ -93,7 +93,7 @@ pub const ZONEFS_SUPER_SIZE: usize = 4096;
 pub struct zonefs_super {
     pub s_magic: __le32,
     pub s_crc: __le32,
-    pub s_label: [::core::ffi::c_char; ZONEFS_LABEL_LEN],
+    pub s_label: [::kernel::ffi::c_char; ZONEFS_LABEL_LEN],
     pub s_uuid: [__u8; ZONEFS_UUID_SIZE],
     pub s_features: __le64,
     pub s_uid: __le32,
@@ -124,9 +124,9 @@ pub const ZONEFS_MNTOPT_EXPLICIT_OPEN: i32 = 1 << 4;
 
 #[repr(C)]
 pub struct zonefs_sb_info {
-    pub s_mount_opts: ::core::ffi::c_ulong,
+    pub s_mount_opts: ::kernel::ffi::c_ulong,
     pub s_lock: spinlock_t,
-    pub s_features: ::core::ffi::c_ulonglong,
+    pub s_features: ::kernel::ffi::c_ulonglong,
     pub s_uid: kuid_t,
     pub s_gid: kgid_t,
     pub s_perm: umode_t,

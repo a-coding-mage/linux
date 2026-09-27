@@ -185,18 +185,18 @@ unsafe fn hisi_dma_enable_hw_channels(d: *mut HisiDmaDev) -> i32 {
     let ret = hisi_dma_request_qps_irq(d); if ret != 0 { return ret; }
     hisi_dma_enable_qps(d); 0
 }
-unsafe fn hisi_dma_disable_hw_channels(data: *mut core::ffi::c_void) { hisi_dma_disable_qps(data as *mut HisiDmaDev); }
+unsafe fn hisi_dma_disable_hw_channels(data: *mut kernel::ffi::c_void) { hisi_dma_disable_qps(data as *mut HisiDmaDev); }
 
 #[repr(C)] struct HisiDmaPciId { vendor: u16, device: u16 }
 static HISI_DMA_PCI_TBL: [HisiDmaPciId; 2] = [
     HisiDmaPciId { vendor: 0x19e5, device: 0xa122 }, HisiDmaPciId { vendor: 0, device: 0 },
 ];
 #[repr(C)] struct HisiDmaPciDriver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     id_table: *const HisiDmaPciId,
-    probe: unsafe fn(*mut PciDev, *const core::ffi::c_void) -> i32,
+    probe: unsafe fn(*mut PciDev, *const kernel::ffi::c_void) -> i32,
 }
-unsafe fn hisi_dma_probe(_pdev: *mut PciDev, _id: *const core::ffi::c_void) -> i32 {
+unsafe fn hisi_dma_probe(_pdev: *mut PciDev, _id: *const kernel::ffi::c_void) -> i32 {
     // The remaining PCI resource-management calls are Linux kernel externals.
     -22
 }

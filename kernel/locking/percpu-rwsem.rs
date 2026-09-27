@@ -3,7 +3,7 @@
 
 pub unsafe fn __percpu_init_rwsem(
     sem: *mut percpu_rw_semaphore,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     key: *mut lock_class_key,
 ) -> i32 {
     unsafe {
@@ -19,7 +19,7 @@ pub unsafe fn __percpu_init_rwsem(
         // CONFIG_DEBUG_LOCK_ALLOC conditionally includes the following checks.
         #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
         {
-            debug_check_no_locks_freed(sem as *mut core::ffi::c_void, core::mem::size_of::<percpu_rw_semaphore>());
+            debug_check_no_locks_freed(sem as *mut kernel::ffi::c_void, core::mem::size_of::<percpu_rw_semaphore>());
             lockdep_init_map(&mut (*sem).dep_map, name, key, 0);
         }
         0
@@ -111,7 +111,7 @@ unsafe fn percpu_rwsem_wake_function(
     wq_entry: *mut wait_queue_entry,
     _mode: u32,
     _wake_flags: i32,
-    key: *mut core::ffi::c_void,
+    key: *mut kernel::ffi::c_void,
 ) -> i32 {
     unsafe {
         let reader = ((*wq_entry).flags & WQ_FLAG_CUSTOM) != 0;
@@ -218,7 +218,7 @@ pub unsafe fn percpu_up_write(sem: *mut percpu_rw_semaphore) {
             trace_call__contended_release(sem);
         }
         atomic_set_release(&mut (*sem).block, 0);
-        __wake_up(&mut (*sem).waiters, TASK_NORMAL, 1, sem as *mut core::ffi::c_void);
+        __wake_up(&mut (*sem).waiters, TASK_NORMAL, 1, sem as *mut kernel::ffi::c_void);
         rcu_sync_exit(&mut (*sem).rss);
     }
 }

@@ -11,7 +11,7 @@
 // sound/initval.h, sound/pcm.h, sound/pcm_params.h, sound/soc.h, sound/tlv.h,
 // and "cs530x.h".
 
-static cs530x_supply_names: [*const core::ffi::c_char; CS530X_NUM_SUPPLIES] = [
+static cs530x_supply_names: [*const kernel::ffi::c_char; CS530X_NUM_SUPPLIES] = [
     c"vdd-a".as_ptr(),
     c"vdd-io".as_ptr(),
 ];
@@ -51,7 +51,7 @@ static cs530x_reg_defaults: [reg_default; 32] = [
     reg_default { reg: CS530X_PAD_LVL, def: 0 },
 ];
 
-fn cs530x_read_and_write_regs(reg: core::ffi::c_uint) -> bool {
+fn cs530x_read_and_write_regs(reg: kernel::ffi::c_uint) -> bool {
     match reg {
         CS530X_CLK_CFG_0 | CS530X_CLK_CFG_1 | CS530X_CHIP_ENABLE | CS530X_ASP_CFG
         | CS530X_SIGNAL_PATH_CFG | CS530X_IN_ENABLES | CS530X_IN_RAMP_SUM
@@ -68,14 +68,14 @@ fn cs530x_read_and_write_regs(reg: core::ffi::c_uint) -> bool {
     }
 }
 
-unsafe fn cs530x_readable_register(_dev: *mut device, reg: core::ffi::c_uint) -> bool {
+unsafe fn cs530x_readable_register(_dev: *mut device, reg: kernel::ffi::c_uint) -> bool {
     match reg {
         CS530X_DEVID | CS530X_REVID => true,
         _ => cs530x_read_and_write_regs(reg),
     }
 }
 
-unsafe fn cs530x_writeable_register(_dev: *mut device, reg: core::ffi::c_uint) -> bool {
+unsafe fn cs530x_writeable_register(_dev: *mut device, reg: kernel::ffi::c_uint) -> bool {
     match reg {
         CS530X_SW_RESET | CS530X_IN_VOL_CTRL5 | CS530X_OUT_VOL_CTRL5 => true,
         _ => cs530x_read_and_write_regs(reg),
@@ -85,12 +85,12 @@ unsafe fn cs530x_writeable_register(_dev: *mut device, reg: core::ffi::c_uint) -
 unsafe fn cs530x_put_volsw_vu(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let component = snd_kcontrol_chip(kcontrol) as *mut snd_soc_component;
     let dapm = snd_soc_component_to_dapm(component);
     let cs530x = snd_soc_component_get_drvdata(component) as *mut cs530x_priv;
     let regmap = (*cs530x).regmap;
-    let ret: core::ffi::c_int;
+    let ret: kernel::ffi::c_int;
 
     snd_soc_dapm_mutex_lock(dapm);
 
@@ -110,7 +110,7 @@ unsafe fn cs530x_put_volsw_vu(
 
 static in_vol_tlv: [_; 1] = [DECLARE_TLV_DB_SCALE!(-1270, 50, 0)];
 
-static cs530x_inout_filter_text: [*const core::ffi::c_char; 4] = [
+static cs530x_inout_filter_text: [*const kernel::ffi::c_char; 4] = [
     c"Min Phase Slow Roll-off".as_ptr(),
     c"Min Phase Fast Roll-off".as_ptr(),
     c"Linear Phase Slow Roll-off".as_ptr(),
@@ -122,7 +122,7 @@ static cs530x_in_filter_enum: soc_enum =
 static cs530x_out_filter_enum: soc_enum =
     SOC_ENUM_SINGLE_DECL!(CS530X_OUT_FILTER, CS530X_INOUT_FILTER_SHIFT, cs530x_inout_filter_text);
 
-static cs530x_4ch_sum_text: [*const core::ffi::c_char; 3] = [
+static cs530x_4ch_sum_text: [*const kernel::ffi::c_char; 3] = [
     c"None".as_ptr(),
     c"Groups of 2".as_ptr(),
     c"Groups of 4".as_ptr(),
@@ -138,7 +138,7 @@ static cs530x_out_sum_ch4_enum: soc_enum =
 static cs530x_out_sum_4ch_controls: [snd_kcontrol_new; 1] =
     [SOC_ENUM!(c"OUT Sum Select".as_ptr(), cs530x_out_sum_ch4_enum)];
 
-static cs530x_8ch_sum_text: [*const core::ffi::c_char; 4] = [
+static cs530x_8ch_sum_text: [*const kernel::ffi::c_char; 4] = [
     c"None".as_ptr(),
     c"Groups of 2".as_ptr(),
     c"Groups of 4".as_ptr(),
@@ -155,7 +155,7 @@ static cs530x_out_sum_ch8_enum: soc_enum =
 static cs530x_out_sum_8ch_controls: [snd_kcontrol_new; 1] =
     [SOC_ENUM!(c"OUT Sum Select".as_ptr(), cs530x_out_sum_ch8_enum)];
 
-static cs530x_vol_ramp_text: [*const core::ffi::c_char; 8] = [
+static cs530x_vol_ramp_text: [*const kernel::ffi::c_char; 8] = [
     c"0ms/6dB".as_ptr(),
     c"0.5ms/6dB".as_ptr(),
     c"1ms/6dB".as_ptr(),
@@ -202,8 +202,8 @@ static cs530x_in_5_to_8_controls: [snd_kcontrol_new; 8] = [
 unsafe fn cs530x_adc_event(
     w: *mut snd_soc_dapm_widget,
     _kcontrol: *mut snd_kcontrol,
-    event: core::ffi::c_int,
-) -> core::ffi::c_int {
+    event: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component = snd_soc_dapm_to_component((*w).dapm);
     let cs530x = snd_soc_component_get_drvdata(component) as *mut cs530x_priv;
     let regmap = (*cs530x).regmap;
@@ -213,8 +213,8 @@ unsafe fn cs530x_adc_event(
             (*cs530x).adc_pairs_count += 1;
         }
         SND_SOC_DAPM_POST_PMU => {
-            regmap_clear_bits(regmap, CS530X_IN_VOL_CTRL1_0 + ((*w).shift * 2) as core::ffi::c_uint, CS530X_INOUT_MUTE);
-            regmap_clear_bits(regmap, CS530X_IN_VOL_CTRL1_0 + (((*w).shift + 1) * 2) as core::ffi::c_uint, CS530X_INOUT_MUTE);
+            regmap_clear_bits(regmap, CS530X_IN_VOL_CTRL1_0 + ((*w).shift * 2) as kernel::ffi::c_uint, CS530X_INOUT_MUTE);
+            regmap_clear_bits(regmap, CS530X_IN_VOL_CTRL1_0 + (((*w).shift + 1) * 2) as kernel::ffi::c_uint, CS530X_INOUT_MUTE);
             (*cs530x).adc_pairs_count -= 1;
             if (*cs530x).adc_pairs_count == 0 {
                 usleep_range(1000, 1100);
@@ -222,8 +222,8 @@ unsafe fn cs530x_adc_event(
             }
         }
         SND_SOC_DAPM_PRE_PMD => {
-            regmap_set_bits(regmap, CS530X_IN_VOL_CTRL1_0 + ((*w).shift * 2) as core::ffi::c_uint, CS530X_INOUT_MUTE);
-            regmap_set_bits(regmap, CS530X_IN_VOL_CTRL1_0 + (((*w).shift + 1) * 2) as core::ffi::c_uint, CS530X_INOUT_MUTE);
+            regmap_set_bits(regmap, CS530X_IN_VOL_CTRL1_0 + ((*w).shift * 2) as kernel::ffi::c_uint, CS530X_INOUT_MUTE);
+            regmap_set_bits(regmap, CS530X_IN_VOL_CTRL1_0 + (((*w).shift + 1) * 2) as kernel::ffi::c_uint, CS530X_INOUT_MUTE);
             return regmap_write(regmap, CS530X_IN_VOL_CTRL5, CS530X_INOUT_VU);
         }
         _ => return -EINVAL,
@@ -268,8 +268,8 @@ static cs530x_out_5_to_8_controls: [snd_kcontrol_new; 8] = [
 unsafe fn cs530x_dac_event(
     w: *mut snd_soc_dapm_widget,
     _kcontrol: *mut snd_kcontrol,
-    event: core::ffi::c_int,
-) -> core::ffi::c_int {
+    event: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component = snd_soc_dapm_to_component((*w).dapm);
     let cs530x = snd_soc_component_get_drvdata(component) as *mut cs530x_priv;
     let regmap = (*cs530x).regmap;
@@ -279,8 +279,8 @@ unsafe fn cs530x_dac_event(
             (*cs530x).dac_pairs_count += 1;
         }
         SND_SOC_DAPM_POST_PMU => {
-            regmap_clear_bits(regmap, CS530X_OUT_VOL_CTRL1_0 + ((*w).shift * 2) as core::ffi::c_uint, CS530X_INOUT_MUTE);
-            regmap_clear_bits(regmap, CS530X_OUT_VOL_CTRL1_0 + (((*w).shift + 1) * 2) as core::ffi::c_uint, CS530X_INOUT_MUTE);
+            regmap_clear_bits(regmap, CS530X_OUT_VOL_CTRL1_0 + ((*w).shift * 2) as kernel::ffi::c_uint, CS530X_INOUT_MUTE);
+            regmap_clear_bits(regmap, CS530X_OUT_VOL_CTRL1_0 + (((*w).shift + 1) * 2) as kernel::ffi::c_uint, CS530X_INOUT_MUTE);
             (*cs530x).dac_pairs_count -= 1;
             if (*cs530x).dac_pairs_count == 0 {
                 usleep_range(1000, 1100);
@@ -288,8 +288,8 @@ unsafe fn cs530x_dac_event(
             }
         }
         SND_SOC_DAPM_PRE_PMD => {
-            regmap_set_bits(regmap, CS530X_OUT_VOL_CTRL1_0 + ((*w).shift * 2) as core::ffi::c_uint, CS530X_INOUT_MUTE);
-            regmap_set_bits(regmap, CS530X_OUT_VOL_CTRL1_0 + (((*w).shift + 1) * 2) as core::ffi::c_uint, CS530X_INOUT_MUTE);
+            regmap_set_bits(regmap, CS530X_OUT_VOL_CTRL1_0 + ((*w).shift * 2) as kernel::ffi::c_uint, CS530X_INOUT_MUTE);
+            regmap_set_bits(regmap, CS530X_OUT_VOL_CTRL1_0 + (((*w).shift + 1) * 2) as kernel::ffi::c_uint, CS530X_INOUT_MUTE);
             return regmap_write(regmap, CS530X_OUT_VOL_CTRL5, CS530X_INOUT_VU);
         }
         _ => return -EINVAL,
@@ -399,16 +399,16 @@ static adc_ch5_8_routes: [snd_soc_dapm_route; 20] = [
 
 unsafe fn cs530x_add_12_adc_widgets(component: *mut snd_soc_component) {
     let dapm = snd_soc_component_to_dapm(component);
-    snd_soc_add_component_controls(component, cs530x_in_1_to_2_controls.as_ptr(), cs530x_in_1_to_2_controls.len() as core::ffi::c_uint);
-    snd_soc_dapm_new_controls(dapm, cs530x_adc_ch12_dapm_widgets.as_ptr(), cs530x_adc_ch12_dapm_widgets.len() as core::ffi::c_int);
-    snd_soc_dapm_add_routes(dapm, adc_ch1_2_routes.as_ptr(), adc_ch1_2_routes.len() as core::ffi::c_int);
+    snd_soc_add_component_controls(component, cs530x_in_1_to_2_controls.as_ptr(), cs530x_in_1_to_2_controls.len() as kernel::ffi::c_uint);
+    snd_soc_dapm_new_controls(dapm, cs530x_adc_ch12_dapm_widgets.as_ptr(), cs530x_adc_ch12_dapm_widgets.len() as kernel::ffi::c_int);
+    snd_soc_dapm_add_routes(dapm, adc_ch1_2_routes.as_ptr(), adc_ch1_2_routes.len() as kernel::ffi::c_int);
 }
 
 unsafe fn cs530x_add_34_adc_widgets(component: *mut snd_soc_component) {
     let dapm = snd_soc_component_to_dapm(component);
-    snd_soc_add_component_controls(component, cs530x_in_3_to_4_controls.as_ptr(), cs530x_in_3_to_4_controls.len() as core::ffi::c_uint);
-    snd_soc_dapm_new_controls(dapm, cs530x_adc_ch34_dapm_widgets.as_ptr(), cs530x_adc_ch34_dapm_widgets.len() as core::ffi::c_int);
-    snd_soc_dapm_add_routes(dapm, adc_ch3_4_routes.as_ptr(), adc_ch3_4_routes.len() as core::ffi::c_int);
+    snd_soc_add_component_controls(component, cs530x_in_3_to_4_controls.as_ptr(), cs530x_in_3_to_4_controls.len() as kernel::ffi::c_uint);
+    snd_soc_dapm_new_controls(dapm, cs530x_adc_ch34_dapm_widgets.as_ptr(), cs530x_adc_ch34_dapm_widgets.len() as kernel::ffi::c_int);
+    snd_soc_dapm_add_routes(dapm, adc_ch3_4_routes.as_ptr(), adc_ch3_4_routes.len() as kernel::ffi::c_int);
 }
 
 /* DAC's Channels 1 and 2 plus generic DAC DAPM events */
@@ -504,22 +504,22 @@ static dac_ch5_8_routes: [snd_soc_dapm_route; 24] = [
 
 unsafe fn cs530x_add_12_dac_widgets(component: *mut snd_soc_component) {
     let dapm = snd_soc_component_to_dapm(component);
-    snd_soc_add_component_controls(component, cs530x_out_1_to_2_controls.as_ptr(), cs530x_out_1_to_2_controls.len() as core::ffi::c_uint);
-    snd_soc_dapm_new_controls(dapm, cs530x_dac_ch12_dapm_widgets.as_ptr(), cs530x_dac_ch12_dapm_widgets.len() as core::ffi::c_int);
-    snd_soc_dapm_add_routes(dapm, dac_ch1_2_routes.as_ptr(), dac_ch1_2_routes.len() as core::ffi::c_int);
+    snd_soc_add_component_controls(component, cs530x_out_1_to_2_controls.as_ptr(), cs530x_out_1_to_2_controls.len() as kernel::ffi::c_uint);
+    snd_soc_dapm_new_controls(dapm, cs530x_dac_ch12_dapm_widgets.as_ptr(), cs530x_dac_ch12_dapm_widgets.len() as kernel::ffi::c_int);
+    snd_soc_dapm_add_routes(dapm, dac_ch1_2_routes.as_ptr(), dac_ch1_2_routes.len() as kernel::ffi::c_int);
 }
 
 unsafe fn cs530x_add_34_dac_widgets(component: *mut snd_soc_component) {
     let dapm = snd_soc_component_to_dapm(component);
-    snd_soc_add_component_controls(component, cs530x_out_3_to_4_controls.as_ptr(), cs530x_out_3_to_4_controls.len() as core::ffi::c_uint);
-    snd_soc_dapm_new_controls(dapm, cs530x_dac_ch34_dapm_widgets.as_ptr(), cs530x_dac_ch34_dapm_widgets.len() as core::ffi::c_int);
-    snd_soc_dapm_add_routes(dapm, dac_ch3_4_routes.as_ptr(), dac_ch3_4_routes.len() as core::ffi::c_int);
+    snd_soc_add_component_controls(component, cs530x_out_3_to_4_controls.as_ptr(), cs530x_out_3_to_4_controls.len() as kernel::ffi::c_uint);
+    snd_soc_dapm_new_controls(dapm, cs530x_dac_ch34_dapm_widgets.as_ptr(), cs530x_dac_ch34_dapm_widgets.len() as kernel::ffi::c_int);
+    snd_soc_dapm_add_routes(dapm, dac_ch3_4_routes.as_ptr(), dac_ch3_4_routes.len() as kernel::ffi::c_int);
 }
 
-unsafe fn cs530x_set_bclk(component: *mut snd_soc_component, freq: core::ffi::c_int) -> core::ffi::c_int {
+unsafe fn cs530x_set_bclk(component: *mut snd_soc_component, freq: kernel::ffi::c_int) -> kernel::ffi::c_int {
     let cs530x = snd_soc_component_get_drvdata(component) as *mut cs530x_priv;
     let regmap = (*cs530x).regmap;
-    let bclk_val: core::ffi::c_uint;
+    let bclk_val: kernel::ffi::c_uint;
 
     match freq {
         2822400 | 3072000 => bclk_val = CS530X_BCLK_2P822_3P072,
@@ -536,10 +536,10 @@ unsafe fn cs530x_set_bclk(component: *mut snd_soc_component, freq: core::ffi::c_
     regmap_update_bits(regmap, CS530X_ASP_CFG, CS530X_ASP_BCLK_FREQ_MASK, bclk_val)
 }
 
-unsafe fn cs530x_set_pll_refclk(component: *mut snd_soc_component, freq: core::ffi::c_uint) -> core::ffi::c_int {
+unsafe fn cs530x_set_pll_refclk(component: *mut snd_soc_component, freq: kernel::ffi::c_uint) -> kernel::ffi::c_int {
     let priv_ = snd_soc_component_get_drvdata(component) as *mut cs530x_priv;
     let regmap = (*priv_).regmap;
-    let refclk: core::ffi::c_uint;
+    let refclk: kernel::ffi::c_uint;
 
     match freq {
         2822400 | 3072000 => refclk = CS530X_REFCLK_2P822_3P072,
@@ -559,14 +559,14 @@ unsafe fn cs530x_hw_params(
     _substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let component = (*dai).component;
     let cs530x = snd_soc_component_get_drvdata(component) as *mut cs530x_priv;
     let regmap = (*cs530x).regmap;
-    let mut ret: core::ffi::c_int = 0;
-    let fs: core::ffi::c_int = params_rate(params);
-    let bclk: core::ffi::c_int;
-    let fs_val: core::ffi::c_uint;
+    let mut ret: kernel::ffi::c_int = 0;
+    let fs: kernel::ffi::c_int = params_rate(params);
+    let bclk: kernel::ffi::c_int;
+    let fs_val: kernel::ffi::c_uint;
 
     match fs {
         32000 => fs_val = CS530X_FS_32K,
@@ -591,7 +591,7 @@ unsafe fn cs530x_hw_params(
     }
 
     if !regmap_test_bits(regmap, CS530X_CLK_CFG_0, CS530X_PLL_REFCLK_SRC_MASK) {
-        ret = cs530x_set_pll_refclk(component, bclk as core::ffi::c_uint);
+        ret = cs530x_set_pll_refclk(component, bclk as kernel::ffi::c_uint);
         if ret != 0 {
             return ret;
         }
@@ -600,12 +600,12 @@ unsafe fn cs530x_hw_params(
     cs530x_set_bclk(component, bclk)
 }
 
-unsafe fn cs530x_set_fmt(dai: *mut snd_soc_dai, fmt: core::ffi::c_uint) -> core::ffi::c_int {
+unsafe fn cs530x_set_fmt(dai: *mut snd_soc_dai, fmt: kernel::ffi::c_uint) -> kernel::ffi::c_int {
     let component = (*dai).component;
     let priv_ = snd_soc_component_get_drvdata(component) as *mut cs530x_priv;
     let regmap = (*priv_).regmap;
-    let asp_fmt: core::ffi::c_uint;
-    let mut asp_cfg: core::ffi::c_uint = 0;
+    let asp_fmt: kernel::ffi::c_uint;
+    let mut asp_cfg: kernel::ffi::c_uint = 0;
 
     match fmt & SND_SOC_DAIFMT_MASTER_MASK {
         SND_SOC_DAIFMT_CBC_CFC => {}
@@ -630,7 +630,7 @@ unsafe fn cs530x_set_fmt(dai: *mut snd_soc_dai, fmt: core::ffi::c_uint) -> core:
     regmap_update_bits(regmap, CS530X_SIGNAL_PATH_CFG, CS530X_ASP_FMT_MASK, asp_fmt)
 }
 
-unsafe fn cs530x_check_mclk_freq(component: *mut snd_soc_component, freq: core::ffi::c_uint) -> bool {
+unsafe fn cs530x_check_mclk_freq(component: *mut snd_soc_component, freq: kernel::ffi::c_uint) -> bool {
     match freq {
         24576000 | 22579200 | 12288000 | 11289600 => true,
         _ => {
@@ -642,15 +642,15 @@ unsafe fn cs530x_check_mclk_freq(component: *mut snd_soc_component, freq: core::
 
 unsafe fn cs530x_set_tdm_slot(
     dai: *mut snd_soc_dai,
-    tx_mask: core::ffi::c_uint,
-    _rx_mask: core::ffi::c_uint,
-    slots: core::ffi::c_int,
-    slot_width: core::ffi::c_int,
-) -> core::ffi::c_int {
+    tx_mask: kernel::ffi::c_uint,
+    _rx_mask: kernel::ffi::c_uint,
+    slots: kernel::ffi::c_int,
+    slot_width: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component = (*dai).component;
     let cs530x = snd_soc_component_get_drvdata(component) as *mut cs530x_priv;
     let regmap = (*cs530x).regmap;
-    let val: core::ffi::c_uint;
+    let val: kernel::ffi::c_uint;
 
     match tx_mask {
         CS530X_0_1_TDM_SLOT_MASK | CS530X_0_3_TDM_SLOT_MASK | CS530X_0_7_TDM_SLOT_MASK => val = CS530X_0_7_TDM_SLOT_VAL,
@@ -701,15 +701,15 @@ static cs530x_dai: snd_soc_dai_driver = snd_soc_dai_driver {
 
 unsafe fn cs530x_set_pll(
     component: *mut snd_soc_component,
-    _pll_id: core::ffi::c_int,
-    source: core::ffi::c_int,
-    freq_in: core::ffi::c_uint,
-    _freq_out: core::ffi::c_uint,
-) -> core::ffi::c_int {
+    _pll_id: kernel::ffi::c_int,
+    source: kernel::ffi::c_int,
+    freq_in: kernel::ffi::c_uint,
+    _freq_out: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let cs530x = snd_soc_component_get_drvdata(component) as *mut cs530x_priv;
     let regmap = (*cs530x).regmap;
-    let mut sysclk_src: core::ffi::c_uint = 0;
-    let ret: core::ffi::c_int;
+    let mut sysclk_src: kernel::ffi::c_uint = 0;
+    let ret: kernel::ffi::c_int;
 
     regmap_read(regmap, CS530X_CLK_CFG_0, &mut sysclk_src);
 
@@ -735,15 +735,15 @@ unsafe fn cs530x_set_pll(
         }
     }
 
-    regmap_update_bits(regmap, CS530X_CLK_CFG_0, CS530X_PLL_REFCLK_SRC_MASK, source as core::ffi::c_uint)
+    regmap_update_bits(regmap, CS530X_CLK_CFG_0, CS530X_PLL_REFCLK_SRC_MASK, source as kernel::ffi::c_uint)
 }
 
-unsafe fn cs530x_component_probe(component: *mut snd_soc_component) -> core::ffi::c_int {
+unsafe fn cs530x_component_probe(component: *mut snd_soc_component) -> kernel::ffi::c_int {
     let cs530x = snd_soc_component_get_drvdata(component) as *mut cs530x_priv;
     let dapm = snd_soc_component_to_dapm(component);
-    let mut num_widgets: core::ffi::c_int;
+    let mut num_widgets: kernel::ffi::c_int;
 
-    snd_soc_dapm_new_controls(dapm, cs530x_gen_dapm_widgets.as_ptr(), cs530x_gen_dapm_widgets.len() as core::ffi::c_int);
+    snd_soc_dapm_new_controls(dapm, cs530x_gen_dapm_widgets.as_ptr(), cs530x_gen_dapm_widgets.len() as kernel::ffi::c_int);
 
     match (*cs530x).devtype {
         CS4282 => {
@@ -756,19 +756,19 @@ unsafe fn cs530x_component_probe(component: *mut snd_soc_component) -> core::ffi
         CS4304 => {
             cs530x_add_12_dac_widgets(component);
             cs530x_add_34_dac_widgets(component);
-            num_widgets = cs530x_out_sum_4ch_controls.len() as core::ffi::c_int;
-            snd_soc_add_component_controls(component, cs530x_out_sum_4ch_controls.as_ptr(), num_widgets as core::ffi::c_uint);
+            num_widgets = cs530x_out_sum_4ch_controls.len() as kernel::ffi::c_int;
+            snd_soc_add_component_controls(component, cs530x_out_sum_4ch_controls.as_ptr(), num_widgets as kernel::ffi::c_uint);
         }
         CS4308 => {
             cs530x_add_12_dac_widgets(component);
             cs530x_add_34_dac_widgets(component);
-            num_widgets = cs530x_out_5_to_8_controls.len() as core::ffi::c_int;
-            snd_soc_add_component_controls(component, cs530x_out_5_to_8_controls.as_ptr(), num_widgets as core::ffi::c_uint);
-            num_widgets = cs530x_out_sum_8ch_controls.len() as core::ffi::c_int;
-            snd_soc_add_component_controls(component, cs530x_out_sum_8ch_controls.as_ptr(), num_widgets as core::ffi::c_uint);
-            num_widgets = cs530x_dac_ch58_dapm_widgets.len() as core::ffi::c_int;
+            num_widgets = cs530x_out_5_to_8_controls.len() as kernel::ffi::c_int;
+            snd_soc_add_component_controls(component, cs530x_out_5_to_8_controls.as_ptr(), num_widgets as kernel::ffi::c_uint);
+            num_widgets = cs530x_out_sum_8ch_controls.len() as kernel::ffi::c_int;
+            snd_soc_add_component_controls(component, cs530x_out_sum_8ch_controls.as_ptr(), num_widgets as kernel::ffi::c_uint);
+            num_widgets = cs530x_dac_ch58_dapm_widgets.len() as kernel::ffi::c_int;
             snd_soc_dapm_new_controls(dapm, cs530x_dac_ch58_dapm_widgets.as_ptr(), num_widgets);
-            snd_soc_dapm_add_routes(dapm, dac_ch5_8_routes.as_ptr(), dac_ch5_8_routes.len() as core::ffi::c_int);
+            snd_soc_dapm_add_routes(dapm, dac_ch5_8_routes.as_ptr(), dac_ch5_8_routes.len() as kernel::ffi::c_int);
         }
         CS5302 => {
             cs530x_add_12_adc_widgets(component);
@@ -776,19 +776,19 @@ unsafe fn cs530x_component_probe(component: *mut snd_soc_component) -> core::ffi
         CS5304 => {
             cs530x_add_12_adc_widgets(component);
             cs530x_add_34_adc_widgets(component);
-            num_widgets = cs530x_in_sum_4ch_controls.len() as core::ffi::c_int;
-            snd_soc_add_component_controls(component, cs530x_in_sum_4ch_controls.as_ptr(), num_widgets as core::ffi::c_uint);
+            num_widgets = cs530x_in_sum_4ch_controls.len() as kernel::ffi::c_int;
+            snd_soc_add_component_controls(component, cs530x_in_sum_4ch_controls.as_ptr(), num_widgets as kernel::ffi::c_uint);
         }
         CS5308 => {
             cs530x_add_12_adc_widgets(component);
             cs530x_add_34_adc_widgets(component);
-            num_widgets = cs530x_in_5_to_8_controls.len() as core::ffi::c_int;
-            snd_soc_add_component_controls(component, cs530x_in_5_to_8_controls.as_ptr(), num_widgets as core::ffi::c_uint);
-            num_widgets = cs530x_in_sum_8ch_controls.len() as core::ffi::c_int;
-            snd_soc_add_component_controls(component, cs530x_in_sum_8ch_controls.as_ptr(), num_widgets as core::ffi::c_uint);
-            num_widgets = cs530x_adc_ch58_dapm_widgets.len() as core::ffi::c_int;
+            num_widgets = cs530x_in_5_to_8_controls.len() as kernel::ffi::c_int;
+            snd_soc_add_component_controls(component, cs530x_in_5_to_8_controls.as_ptr(), num_widgets as kernel::ffi::c_uint);
+            num_widgets = cs530x_in_sum_8ch_controls.len() as kernel::ffi::c_int;
+            snd_soc_add_component_controls(component, cs530x_in_sum_8ch_controls.as_ptr(), num_widgets as kernel::ffi::c_uint);
+            num_widgets = cs530x_adc_ch58_dapm_widgets.len() as kernel::ffi::c_int;
             snd_soc_dapm_new_controls(dapm, cs530x_adc_ch58_dapm_widgets.as_ptr(), num_widgets);
-            snd_soc_dapm_add_routes(dapm, adc_ch5_8_routes.as_ptr(), adc_ch5_8_routes.len() as core::ffi::c_int);
+            snd_soc_dapm_add_routes(dapm, adc_ch5_8_routes.as_ptr(), adc_ch5_8_routes.len() as kernel::ffi::c_int);
         }
         _ => {
             dev_err((*component).dev, c"Invalid device type %d\n".as_ptr(), (*cs530x).devtype);
@@ -799,7 +799,7 @@ unsafe fn cs530x_component_probe(component: *mut snd_soc_component) -> core::ffi
     0
 }
 
-unsafe fn cs530x_mclk_freq_is_valid(cs530x: *mut cs530x_priv, freq: core::ffi::c_uint) -> bool {
+unsafe fn cs530x_mclk_freq_is_valid(cs530x: *mut cs530x_priv, freq: kernel::ffi::c_uint) -> bool {
     /*
      * All these chips support 48 kHz- and 44.1 kHz-related sample rates,
      * but they differ in what MCLK frequency is required for achieving
@@ -814,11 +814,11 @@ unsafe fn cs530x_mclk_freq_is_valid(cs530x: *mut cs530x_priv, freq: core::ffi::c
 
 unsafe fn cs530x_set_sysclk(
     component: *mut snd_soc_component,
-    _clk_id: core::ffi::c_int,
-    source: core::ffi::c_int,
-    freq: core::ffi::c_uint,
-    _dir: core::ffi::c_int,
-) -> core::ffi::c_int {
+    _clk_id: kernel::ffi::c_int,
+    source: kernel::ffi::c_int,
+    freq: kernel::ffi::c_uint,
+    _dir: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let cs530x = snd_soc_component_get_drvdata(component) as *mut cs530x_priv;
     let regmap = (*cs530x).regmap;
 
@@ -836,7 +836,7 @@ unsafe fn cs530x_set_sysclk(
         }
     }
 
-    regmap_update_bits(regmap, CS530X_CLK_CFG_0, CS530X_SYSCLK_SRC_MASK, (source as core::ffi::c_uint) << CS530X_SYSCLK_SRC_SHIFT)
+    regmap_update_bits(regmap, CS530X_CLK_CFG_0, CS530X_SYSCLK_SRC_MASK, (source as kernel::ffi::c_uint) << CS530X_SYSCLK_SRC_SHIFT)
 }
 
 static soc_component_dev_cs530x: snd_soc_component_driver = snd_soc_component_driver {
@@ -855,7 +855,7 @@ pub static cs530x_regmap_i2c: regmap_config = regmap_config {
     writeable_reg: Some(cs530x_writeable_register),
     cache_type: REGCACHE_MAPLE,
     reg_defaults: cs530x_reg_defaults.as_ptr(),
-    num_reg_defaults: cs530x_reg_defaults.len() as core::ffi::c_uint,
+    num_reg_defaults: cs530x_reg_defaults.len() as kernel::ffi::c_uint,
     ..unsafe { core::mem::zeroed() }
 };
 EXPORT_SYMBOL_NS_GPL!(cs530x_regmap_i2c, c"SND_SOC_CS530X".as_ptr());
@@ -872,16 +872,16 @@ pub static cs530x_regmap_spi: regmap_config = regmap_config {
     readable_reg: Some(cs530x_readable_register),
     cache_type: REGCACHE_MAPLE,
     reg_defaults: cs530x_reg_defaults.as_ptr(),
-    num_reg_defaults: cs530x_reg_defaults.len() as core::ffi::c_uint,
+    num_reg_defaults: cs530x_reg_defaults.len() as kernel::ffi::c_uint,
     ..unsafe { core::mem::zeroed() }
 };
 EXPORT_SYMBOL_NS_GPL!(cs530x_regmap_spi, c"SND_SOC_CS530X".as_ptr());
 
-unsafe fn cs530x_check_device_id(cs530x: *mut cs530x_priv) -> core::ffi::c_int {
+unsafe fn cs530x_check_device_id(cs530x: *mut cs530x_priv) -> kernel::ffi::c_int {
     let dev = (*cs530x).dev;
-    let mut dev_id: core::ffi::c_uint = 0;
-    let mut rev: core::ffi::c_uint = 0;
-    let mut ret: core::ffi::c_int;
+    let mut dev_id: kernel::ffi::c_uint = 0;
+    let mut rev: kernel::ffi::c_uint = 0;
+    let mut ret: kernel::ffi::c_int;
 
     ret = regmap_read((*cs530x).regmap, CS530X_DEVID, &mut dev_id);
     if ret != 0 {
@@ -917,10 +917,10 @@ unsafe fn cs530x_check_device_id(cs530x: *mut cs530x_priv) -> core::ffi::c_int {
     0
 }
 
-unsafe fn cs530x_parse_device_properties(cs530x: *mut cs530x_priv) -> core::ffi::c_int {
+unsafe fn cs530x_parse_device_properties(cs530x: *mut cs530x_priv) -> kernel::ffi::c_int {
     let regmap = (*cs530x).regmap;
     let dev = (*cs530x).dev;
-    let mut val: core::ffi::c_uint = 0;
+    let mut val: kernel::ffi::c_uint = 0;
 
     match (*cs530x).num_adcs {
         8 => {
@@ -961,12 +961,12 @@ unsafe fn cs530x_parse_device_properties(cs530x: *mut cs530x_priv) -> core::ffi:
     }
 }
 
-pub unsafe fn cs530x_probe(cs530x: *mut cs530x_priv) -> core::ffi::c_int {
+pub unsafe fn cs530x_probe(cs530x: *mut cs530x_priv) -> kernel::ffi::c_int {
     let dev = (*cs530x).dev;
-    let mut ret: core::ffi::c_int;
-    let mut i: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
+    let mut i: kernel::ffi::c_int;
 
-    (*cs530x).dev_dai = devm_kmemdup(dev, &cs530x_dai as *const _ as *const core::ffi::c_void, core::mem::size_of::<snd_soc_dai_driver>(), GFP_KERNEL) as *mut snd_soc_dai_driver;
+    (*cs530x).dev_dai = devm_kmemdup(dev, &cs530x_dai as *const _ as *const kernel::ffi::c_void, core::mem::size_of::<snd_soc_dai_driver>(), GFP_KERNEL) as *mut snd_soc_dai_driver;
     if (*cs530x).dev_dai.is_null() {
         return -ENOMEM;
     }
@@ -977,19 +977,19 @@ pub unsafe fn cs530x_probe(cs530x: *mut cs530x_priv) -> core::ffi::c_int {
         i += 1;
     }
 
-    ret = devm_regulator_bulk_get(dev, (*cs530x).supplies.len() as core::ffi::c_int, (*cs530x).supplies.as_mut_ptr());
+    ret = devm_regulator_bulk_get(dev, (*cs530x).supplies.len() as kernel::ffi::c_int, (*cs530x).supplies.as_mut_ptr());
     if ret != 0 {
         return dev_err_probe(dev, ret, c"Failed to request supplies".as_ptr());
     }
 
-    ret = regulator_bulk_enable((*cs530x).supplies.len() as core::ffi::c_int, (*cs530x).supplies.as_mut_ptr());
+    ret = regulator_bulk_enable((*cs530x).supplies.len() as kernel::ffi::c_int, (*cs530x).supplies.as_mut_ptr());
     if ret != 0 {
         return dev_err_probe(dev, ret, c"Failed to enable supplies".as_ptr());
     }
 
     (*cs530x).reset_gpio = devm_gpiod_get_optional(dev, c"reset".as_ptr(), GPIOD_OUT_HIGH);
     if IS_ERR((*cs530x).reset_gpio) {
-        ret = dev_err_probe(dev, PTR_ERR((*cs530x).reset_gpio) as core::ffi::c_int, c"Reset gpio not available\n".as_ptr());
+        ret = dev_err_probe(dev, PTR_ERR((*cs530x).reset_gpio) as kernel::ffi::c_int, c"Reset gpio not available\n".as_ptr());
         goto_err_regulator(cs530x, ret)
     } else {
         if !(*cs530x).reset_gpio.is_null() {
@@ -1036,13 +1036,13 @@ pub unsafe fn cs530x_probe(cs530x: *mut cs530x_priv) -> core::ffi::c_int {
     }
 }
 
-unsafe fn goto_err_reset(cs530x: *mut cs530x_priv, ret: core::ffi::c_int) -> core::ffi::c_int {
+unsafe fn goto_err_reset(cs530x: *mut cs530x_priv, ret: kernel::ffi::c_int) -> kernel::ffi::c_int {
     gpiod_set_value_cansleep((*cs530x).reset_gpio, 1);
     goto_err_regulator(cs530x, ret)
 }
 
-unsafe fn goto_err_regulator(cs530x: *mut cs530x_priv, ret: core::ffi::c_int) -> core::ffi::c_int {
-    regulator_bulk_disable((*cs530x).supplies.len() as core::ffi::c_int, (*cs530x).supplies.as_mut_ptr());
+unsafe fn goto_err_regulator(cs530x: *mut cs530x_priv, ret: kernel::ffi::c_int) -> kernel::ffi::c_int {
+    regulator_bulk_disable((*cs530x).supplies.len() as kernel::ffi::c_int, (*cs530x).supplies.as_mut_ptr());
     ret
 }
 

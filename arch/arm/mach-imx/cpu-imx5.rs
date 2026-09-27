@@ -7,7 +7,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct DeviceNode {
@@ -20,12 +20,12 @@ extern "C" {
         type_: *const c_char,
         compatible: *const c_char,
     ) -> *mut DeviceNode;
-    fn of_iomap(np: *mut DeviceNode, index: i32) -> *mut core::ffi::c_void;
+    fn of_iomap(np: *mut DeviceNode, index: i32) -> *mut kernel::ffi::c_void;
     fn of_node_put(np: *mut DeviceNode);
-    fn iounmap(addr: *mut core::ffi::c_void);
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn readl_relaxed(addr: *mut core::ffi::c_void) -> u32;
-    fn writel_relaxed(value: u32, addr: *mut core::ffi::c_void);
+    fn iounmap(addr: *mut kernel::ffi::c_void);
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn readl_relaxed(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel_relaxed(value: u32, addr: *mut kernel::ffi::c_void);
     fn of_property_read_bool(np: *mut DeviceNode, propname: *const c_char) -> bool;
     fn pr_info(fmt: *const c_char, ...);
     fn warn_on(condition: bool) -> bool;
@@ -49,7 +49,7 @@ const IIM_SREV: usize = 0x24;
 
 unsafe fn imx5_read_srev_reg(compat: *const c_char) -> u32 {
     let np: *mut DeviceNode;
-    let iim_base: *mut core::ffi::c_void;
+    let iim_base: *mut kernel::ffi::c_void;
     let srev: u32;
 
     np = of_find_compatible_node(core::ptr::null_mut(), core::ptr::null(), compat);
@@ -139,7 +139,7 @@ const DBGEN: u32 = 1 << 16;
  */
 #[no_mangle]
 pub unsafe extern "C" fn imx5_pmu_init() {
-    let tigerp_base: *mut core::ffi::c_void;
+    let tigerp_base: *mut kernel::ffi::c_void;
     let mut np: *mut DeviceNode;
     let mut gpc: u32;
 

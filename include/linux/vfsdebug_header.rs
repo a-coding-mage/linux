@@ -10,7 +10,7 @@ pub struct inode {
 
 #[cfg(CONFIG_DEBUG_VFS)]
 extern "C" {
-    pub fn dump_inode(inode: *mut inode, reason: *const ::core::ffi::c_char);
+    pub fn dump_inode(inode: *mut inode, reason: *const ::kernel::ffi::c_char);
 }
 
 #[cfg(CONFIG_DEBUG_VFS)]
@@ -44,7 +44,7 @@ macro_rules! VFS_BUG_ON_INODE {
         if ($cond) {
             let __reason = concat!("VFS_BUG_ON_INODE!(", stringify!($cond), ")");
             unsafe {
-                dump_inode($inode, concat!(__reason, "\0").as_ptr() as *const ::core::ffi::c_char);
+                dump_inode($inode, concat!(__reason, "\0").as_ptr() as *const ::kernel::ffi::c_char);
             }
             BUG_ON!(true);
         }
@@ -58,7 +58,7 @@ macro_rules! VFS_WARN_ON_INODE {
         if __ret_warn != 0 {
             let __reason = concat!("VFS_WARN_ON_INODE!(", stringify!($cond), ")");
             unsafe {
-                dump_inode($inode, concat!(__reason, "\0").as_ptr() as *const ::core::ffi::c_char);
+                dump_inode($inode, concat!(__reason, "\0").as_ptr() as *const ::kernel::ffi::c_char);
             }
             WARN_ON!(true);
         }

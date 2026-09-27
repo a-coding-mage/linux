@@ -8,7 +8,7 @@
 #[macro_export]
 macro_rules! __get_dynamic_array {
     ($entry:expr, $field:ident) => {
-        (($entry as *mut u8).wrapping_add(((*$entry).__data_loc_$field & 0xffff) as usize)) as *mut core::ffi::c_void
+        (($entry as *mut u8).wrapping_add(((*$entry).__data_loc_$field & 0xffff) as usize)) as *mut kernel::ffi::c_void
     };
 }
 
@@ -22,7 +22,7 @@ macro_rules! __get_dynamic_array_len {
 #[macro_export]
 macro_rules! __get_str {
     ($entry:expr, $field:ident) => {
-        $crate::__get_dynamic_array!($entry, $field) as *mut core::ffi::c_char
+        $crate::__get_dynamic_array!($entry, $field) as *mut kernel::ffi::c_char
     };
 }
 
@@ -32,7 +32,7 @@ macro_rules! __get_rel_dynamic_array {
         (($entry as *mut u8)
             .wrapping_add(core::mem::offset_of!($entry_type, __rel_loc_$field))
             .wrapping_add(core::mem::size_of_val(&(*$entry).__rel_loc_$field))
-            .wrapping_add(((*$entry).__rel_loc_$field & 0xffff) as usize)) as *mut core::ffi::c_void
+            .wrapping_add(((*$entry).__rel_loc_$field & 0xffff) as usize)) as *mut kernel::ffi::c_void
     };
 }
 
@@ -46,7 +46,7 @@ macro_rules! __get_rel_dynamic_array_len {
 #[macro_export]
 macro_rules! __get_rel_str {
     ($entry:expr, $field:ident, $entry_type:ty) => {
-        $crate::__get_rel_dynamic_array!($entry, $field, $entry_type) as *mut core::ffi::c_char
+        $crate::__get_rel_dynamic_array!($entry, $field, $entry_type) as *mut kernel::ffi::c_char
     };
 }
 

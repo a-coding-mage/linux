@@ -2508,11 +2508,11 @@ unsafe fn dcn5_ms_populate_mode_support_result(
 	result.global.active.average_bw_sdp_kbps = 0;
 	result.global.active.urgent_bw_dram_kbps = 0;
 
-	result.global.active.average_bw_sdp_kbps = (core::ffi::c_ulong)math_ceil2((mode_support_ex_params.out_evaluation_info.avg_bandwidth_required[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000), 1.0);
-	result.global.active.urgent_bw_sdp_kbps = (core::ffi::c_ulong)math_ceil2((mode_support_ex_params.out_evaluation_info.urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000), 1.0);
+	result.global.active.average_bw_sdp_kbps = (kernel::ffi::c_ulong)math_ceil2((mode_support_ex_params.out_evaluation_info.avg_bandwidth_required[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000), 1.0);
+	result.global.active.urgent_bw_sdp_kbps = (kernel::ffi::c_ulong)math_ceil2((mode_support_ex_params.out_evaluation_info.urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000), 1.0);
 
-	result.global.active.average_bw_dram_kbps = (core::ffi::c_ulong)math_ceil2((mode_support_ex_params.out_evaluation_info.avg_bandwidth_required[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_dram] * 1000), 1.0);
-	result.global.active.urgent_bw_dram_kbps = (core::ffi::c_ulong)math_ceil2((mode_support_ex_params.out_evaluation_info.urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_dram] * 1000), 1.0);
+	result.global.active.average_bw_dram_kbps = (kernel::ffi::c_ulong)math_ceil2((mode_support_ex_params.out_evaluation_info.avg_bandwidth_required[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_dram] * 1000), 1.0);
+	result.global.active.urgent_bw_dram_kbps = (kernel::ffi::c_ulong)math_ceil2((mode_support_ex_params.out_evaluation_info.urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_dram] * 1000), 1.0);
 	DML_LOG_VERBOSE("DML::%s: result.global.active.urgent_bw_sdp_kbps = %ld\n", __func__, result.global.active.urgent_bw_sdp_kbps);
 	DML_LOG_VERBOSE("DML::%s: result.global.active.urgent_bw_dram_kbps = %ld\n", __func__, result.global.active.urgent_bw_dram_kbps);
 
@@ -2576,8 +2576,8 @@ unsafe fn dcn5_ms_populate_mode_support_result(
 			stream_bitmask |= 0x1 << stream_index;
 		}
 	}
-	result.bandwidth_upper_bound.dcn5.urgent_bandwidth_kbps = (core::ffi::c_ulong)(mode_support_ex_params.mode_lib.ms.support.urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000);
-	result.bandwidth_upper_bound.dcn5.non_urgent_bandwidth_kbps = (core::ffi::c_ulong)(mode_support_ex_params.mode_lib.ms.support.non_urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000);
+	result.bandwidth_upper_bound.dcn5.urgent_bandwidth_kbps = (kernel::ffi::c_ulong)(mode_support_ex_params.mode_lib.ms.support.urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000);
+	result.bandwidth_upper_bound.dcn5.non_urgent_bandwidth_kbps = (kernel::ffi::c_ulong)(mode_support_ex_params.mode_lib.ms.support.non_urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000);
 }
 
 unsafe fn dcn5_ms_calculate_watermarks(*const dml2_display_cfgdisplay_cfg,

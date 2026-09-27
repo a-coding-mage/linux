@@ -12,31 +12,31 @@
 // Dependency supplied by soc/at91/sama7-ddr.h.
 // Dependency supplied by soc/at91/sama7-sfrbu.h.
 
-pub const AT91_MEMCTRL_MC: core::ffi::c_uint = 0;
-pub const AT91_MEMCTRL_SDRAMC: core::ffi::c_uint = 1;
-pub const AT91_MEMCTRL_DDRSDR: core::ffi::c_uint = 2;
+pub const AT91_MEMCTRL_MC: kernel::ffi::c_uint = 0;
+pub const AT91_MEMCTRL_SDRAMC: kernel::ffi::c_uint = 1;
+pub const AT91_MEMCTRL_DDRSDR: kernel::ffi::c_uint = 2;
 
-pub const AT91_PM_STANDBY: core::ffi::c_uint = 0x00;
-pub const AT91_PM_ULP0: core::ffi::c_uint = 0x01;
-pub const AT91_PM_ULP0_FAST: core::ffi::c_uint = 0x02;
-pub const AT91_PM_ULP1: core::ffi::c_uint = 0x03;
-pub const AT91_PM_BACKUP: core::ffi::c_uint = 0x04;
+pub const AT91_PM_STANDBY: kernel::ffi::c_uint = 0x00;
+pub const AT91_PM_ULP0: kernel::ffi::c_uint = 0x01;
+pub const AT91_PM_ULP0_FAST: kernel::ffi::c_uint = 0x02;
+pub const AT91_PM_ULP1: kernel::ffi::c_uint = 0x03;
+pub const AT91_PM_BACKUP: kernel::ffi::c_uint = 0x04;
 
 #[repr(C)]
 pub struct at91_pm_data {
-    pub pmc: *mut core::ffi::c_void,
-    pub ramc: [*mut core::ffi::c_void; 2],
-    pub ramc_phy: *mut core::ffi::c_void,
-    pub uhp_udp_mask: core::ffi::c_ulong,
-    pub memctrl: core::ffi::c_uint,
-    pub mode: core::ffi::c_uint,
-    pub shdwc: *mut core::ffi::c_void,
-    pub sfrbu: *mut core::ffi::c_void,
-    pub standby_mode: core::ffi::c_uint,
-    pub suspend_mode: core::ffi::c_uint,
-    pub pmc_mckr_offset: core::ffi::c_uint,
-    pub pmc_version: core::ffi::c_uint,
-    pub pmc_mcks: core::ffi::c_uint,
+    pub pmc: *mut kernel::ffi::c_void,
+    pub ramc: [*mut kernel::ffi::c_void; 2],
+    pub ramc_phy: *mut kernel::ffi::c_void,
+    pub uhp_udp_mask: kernel::ffi::c_ulong,
+    pub memctrl: kernel::ffi::c_uint,
+    pub mode: kernel::ffi::c_uint,
+    pub shdwc: *mut kernel::ffi::c_void,
+    pub sfrbu: *mut kernel::ffi::c_void,
+    pub standby_mode: kernel::ffi::c_uint,
+    pub suspend_mode: kernel::ffi::c_uint,
+    pub pmc_mckr_offset: kernel::ffi::c_uint,
+    pub pmc_version: kernel::ffi::c_uint,
+    pub pmc_mcks: kernel::ffi::c_uint,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

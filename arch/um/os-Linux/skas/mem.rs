@@ -7,7 +7,7 @@
 use core::mem::{offset_of, size_of};
 
 extern "C" {
-    static mut __syscall_stub_start: core::ffi::c_char;
+    static mut __syscall_stub_start: kernel::ffi::c_char;
 }
 
 pub unsafe fn syscall_stub_dump_error(mm_idp: *mut mm_id) {

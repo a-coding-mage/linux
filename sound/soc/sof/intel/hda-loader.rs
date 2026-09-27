@@ -59,11 +59,11 @@ unsafe fn hda_ssp_set_cbp_cfp(sdev: *mut snd_sof_dev) {
 #[no_mangle]
 pub unsafe extern "C" fn hda_cl_prepare(
     dev: *mut device,
-    format: ::core::ffi::c_uint,
-    size: ::core::ffi::c_uint,
+    format: ::kernel::ffi::c_uint,
+    size: ::kernel::ffi::c_uint,
     dmab: *mut snd_dma_buffer,
     persistent_buffer: bool,
-    direction: ::core::ffi::c_int,
+    direction: ::kernel::ffi::c_int,
     is_iccmax: bool,
 ) -> *mut hdac_ext_stream {
     hda_data_stream_prepare(
@@ -87,19 +87,19 @@ pub unsafe extern "C" fn hda_cl_prepare(
 #[no_mangle]
 pub unsafe extern "C" fn cl_dsp_init(
     sdev: *mut snd_sof_dev,
-    stream_tag: ::core::ffi::c_int,
+    stream_tag: ::kernel::ffi::c_int,
     imr_boot: bool,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let hda = (*(*sdev).pdata).hw_pdata as *mut sof_intel_hda_dev;
     let chip = (*hda).desc;
-    let mut status: ::core::ffi::c_uint = 0;
-    let target_status: ::core::ffi::c_uint;
+    let mut status: ::kernel::ffi::c_uint = 0;
+    let target_status: ::kernel::ffi::c_uint;
     let mut flags: u32;
     let mut ipc_hdr: u32;
     let mut j: u32;
-    let mut mask: ::core::ffi::c_ulong;
-    let dump_msg: *mut ::core::ffi::c_char;
-    let mut ret: ::core::ffi::c_int;
+    let mut mask: ::kernel::ffi::c_ulong;
+    let dump_msg: *mut ::kernel::ffi::c_char;
+    let mut ret: ::kernel::ffi::c_int;
     let mut goto_err: bool;
 
     /* step 1: power up corex */
@@ -205,10 +205,10 @@ pub unsafe extern "C" fn cl_dsp_init(
         if ret == 0 {
             /* set enabled cores mask and increment ref count for cores in init_core_mask */
             (*sdev).enabled_cores_mask |= (*chip).init_core_mask;
-            mask = (*sdev).enabled_cores_mask as ::core::ffi::c_ulong;
+            mask = (*sdev).enabled_cores_mask as ::kernel::ffi::c_ulong;
             j = 0;
             while j < SOF_MAX_DSP_NUM_CORES {
-                if (mask & (1 as ::core::ffi::c_ulong).wrapping_shl(j)) != 0 {
+                if (mask & (1 as ::kernel::ffi::c_ulong).wrapping_shl(j)) != 0 {
                     (*sdev).dsp_core_ref_count[j as usize] += 1;
                 }
                 j += 1;
@@ -242,7 +242,7 @@ pub unsafe extern "C" fn cl_dsp_init(
     snd_sof_dsp_dbg_dump(sdev, dump_msg, flags);
     hda_dsp_core_reset_power_down(sdev, (*chip).host_managed_cores_mask);
 
-    kfree(dump_msg as *mut ::core::ffi::c_void);
+    kfree(dump_msg as *mut ::kernel::ffi::c_void);
     ret
 }
 /* EXPORT_SYMBOL_NS(cl_dsp_init, "SND_SOC_SOF_INTEL_HDA_COMMON"); */
@@ -251,8 +251,8 @@ pub unsafe extern "C" fn cl_dsp_init(
 pub unsafe extern "C" fn hda_cl_trigger(
     dev: *mut device,
     hext_stream: *mut hdac_ext_stream,
-    cmd: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    cmd: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let sdev = dev_get_drvdata(dev) as *mut snd_sof_dev;
     let hstream = &mut (*hext_stream).hstream as *mut hdac_stream;
     let sd_offset = SOF_STREAM_SD_OFFSET(hstream);
@@ -295,23 +295,23 @@ pub unsafe extern "C" fn hda_cl_cleanup(
     persistent_buffer: bool,
     hext_stream: *mut hdac_ext_stream,
     is_iccmax: bool,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     hda_data_stream_cleanup(dev, dmab, persistent_buffer, hext_stream, is_iccmax, false)
 }
 /* EXPORT_SYMBOL_NS(hda_cl_cleanup, "SND_SOC_SOF_INTEL_HDA_COMMON"); */
 
-const HDA_CL_DMA_IOC_TIMEOUT_MS: ::core::ffi::c_int = 500;
+const HDA_CL_DMA_IOC_TIMEOUT_MS: ::kernel::ffi::c_int = 500;
 
 #[no_mangle]
 pub unsafe extern "C" fn hda_cl_copy_fw(
     sdev: *mut snd_sof_dev,
     hext_stream: *mut hdac_ext_stream,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let hda = (*(*sdev).pdata).hw_pdata as *mut sof_intel_hda_dev;
     let chip = (*hda).desc;
-    let mut reg: ::core::ffi::c_uint = 0;
-    let mut ret: ::core::ffi::c_int;
-    let mut status: ::core::ffi::c_int;
+    let mut reg: ::kernel::ffi::c_uint = 0;
+    let mut ret: ::kernel::ffi::c_int;
+    let mut status: ::kernel::ffi::c_int;
 
     dev_dbg((*sdev).dev, c_str!("Code loader DMA starting\n"));
 
@@ -365,11 +365,11 @@ pub unsafe extern "C" fn hda_cl_copy_fw(
 #[no_mangle]
 pub unsafe extern "C" fn hda_dsp_cl_boot_firmware_iccmax(
     sdev: *mut snd_sof_dev,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let hda = (*(*sdev).pdata).hw_pdata as *mut sof_intel_hda_dev;
     let iccmax_stream: *mut hdac_ext_stream;
-    let mut ret: ::core::ffi::c_int;
-    let ret1: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
+    let ret1: ::kernel::ffi::c_int;
     let original_gb: u8;
 
     /* save the original LTRP guardband value */
@@ -429,9 +429,9 @@ pub unsafe extern "C" fn hda_dsp_cl_boot_firmware_iccmax(
 }
 /* EXPORT_SYMBOL_NS(hda_dsp_cl_boot_firmware_iccmax, "SND_SOC_SOF_INTEL_CNL"); */
 
-unsafe fn hda_dsp_boot_imr(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int {
+unsafe fn hda_dsp_boot_imr(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int {
     let chip_info: *const sof_intel_dsp_desc;
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     chip_info = get_chip_info((*sdev).pdata);
     if (*chip_info).cl_init.is_some() {
@@ -448,16 +448,16 @@ unsafe fn hda_dsp_boot_imr(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn hda_dsp_cl_boot_firmware(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn hda_dsp_cl_boot_firmware(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int {
     let hda = (*(*sdev).pdata).hw_pdata as *mut sof_intel_hda_dev;
     let plat_data = (*sdev).pdata;
     let desc = (*plat_data).desc;
     let chip_info: *const sof_intel_dsp_desc;
     let hext_stream: *mut hdac_ext_stream;
     let mut stripped_firmware: firmware = ::core::mem::zeroed();
-    let mut ret: ::core::ffi::c_int = 0;
-    let ret1: ::core::ffi::c_int;
-    let mut i: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int = 0;
+    let ret1: ::kernel::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
     let mut goto_cleanup: bool;
 
     if (*hda).imrboot_supported && !(*sdev).first_boot && !(*hda).skip_imr_boot {
@@ -489,7 +489,7 @@ pub unsafe extern "C" fn hda_dsp_cl_boot_firmware(sdev: *mut snd_sof_dev) -> ::c
     hext_stream = hda_cl_prepare(
         (*sdev).dev,
         HDA_CL_STREAM_FORMAT,
-        stripped_firmware.size as ::core::ffi::c_uint,
+        stripped_firmware.size as ::kernel::ffi::c_uint,
         &mut (*hda).cl_dmab,
         persistent_cl_buffer,
         SNDRV_PCM_STREAM_PLAYBACK,
@@ -510,7 +510,7 @@ pub unsafe extern "C" fn hda_dsp_cl_boot_firmware(sdev: *mut snd_sof_dev) -> ::c
         stripped_firmware.data = (*(*sdev).basefw.fw).data.add((*sdev).basefw.payload_offset);
         memcpy(
             (*hda).cl_dmab.area,
-            stripped_firmware.data as *const ::core::ffi::c_void,
+            stripped_firmware.data as *const ::kernel::ffi::c_void,
             stripped_firmware.size,
         );
         (*hda).cl_dmab_contains_basefw = true;
@@ -619,7 +619,7 @@ pub unsafe extern "C" fn hda_dsp_cl_boot_firmware(sdev: *mut snd_sof_dev) -> ::c
      * and stream clean up are successful
      */
     if ret == 0 {
-        return (*chip_info).init_core_mask as ::core::ffi::c_int;
+        return (*chip_info).init_core_mask as ::kernel::ffi::c_int;
     }
 
     /* disable DSP */
@@ -634,14 +634,14 @@ pub unsafe extern "C" fn hda_dsp_ipc4_load_library(
     sdev: *mut snd_sof_dev,
     fw_lib: *mut sof_ipc4_fw_library,
     reload: bool,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let hda = (*(*sdev).pdata).hw_pdata as *mut sof_intel_hda_dev;
     let ipc4_data = (*sdev).private as *mut sof_ipc4_fw_data;
     let hext_stream: *mut hdac_ext_stream;
     let mut stripped_firmware: firmware = ::core::mem::zeroed();
     let mut msg: sof_ipc4_msg = ::core::mem::zeroed();
-    let mut ret: ::core::ffi::c_int;
-    let mut ret1: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
+    let mut ret1: ::kernel::ffi::c_int;
     let mut goto_cleanup: bool;
 
     /*
@@ -671,7 +671,7 @@ pub unsafe extern "C" fn hda_dsp_ipc4_load_library(
     hext_stream = hda_cl_prepare(
         (*sdev).dev,
         HDA_CL_STREAM_FORMAT,
-        stripped_firmware.size as ::core::ffi::c_uint,
+        stripped_firmware.size as ::kernel::ffi::c_uint,
         &mut (*hda).cl_dmab,
         persistent_cl_buffer,
         SNDRV_PCM_STREAM_PLAYBACK,
@@ -684,7 +684,7 @@ pub unsafe extern "C" fn hda_dsp_ipc4_load_library(
 
     memcpy(
         (*hda).cl_dmab.area,
-        stripped_firmware.data as *const ::core::ffi::c_void,
+        stripped_firmware.data as *const ::kernel::ffi::c_void,
         stripped_firmware.size,
     );
     (*hda).cl_dmab_contains_basefw = false;
@@ -703,7 +703,7 @@ pub unsafe extern "C" fn hda_dsp_ipc4_load_library(
     ret = sof_ipc_tx_message_no_reply((*sdev).ipc, &mut msg, 0);
     if ret == 0 {
         let sd_offset = SOF_STREAM_SD_OFFSET(&mut (*hext_stream).hstream);
-        let mut status: ::core::ffi::c_uint = 0;
+        let mut status: ::kernel::ffi::c_uint = 0;
 
         /*
          * Make sure that the FIFOS value is not 0 in SDxFIFOS register
@@ -799,16 +799,16 @@ pub unsafe extern "C" fn hda_dsp_ipc4_load_library(
 pub unsafe extern "C" fn hda_dsp_ext_man_get_cavs_config_data(
     sdev: *mut snd_sof_dev,
     hdr: *const sof_ext_man_elem_header,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let config_data =
         container_of!(hdr, sof_ext_man_cavs_config_data, hdr) as *const sof_ext_man_cavs_config_data;
     let hda = (*(*sdev).pdata).hw_pdata as *mut sof_intel_hda_dev;
-    let mut i: ::core::ffi::c_int;
-    let elem_num: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
+    let elem_num: ::kernel::ffi::c_int;
 
     /* calculate total number of config data elements */
     elem_num = (((*hdr).size as usize - ::core::mem::size_of::<sof_ext_man_elem_header>())
-        / ::core::mem::size_of::<sof_config_elem>()) as ::core::ffi::c_int;
+        / ::core::mem::size_of::<sof_config_elem>()) as ::kernel::ffi::c_int;
     if elem_num <= 0 {
         dev_err(
             (*sdev).dev,

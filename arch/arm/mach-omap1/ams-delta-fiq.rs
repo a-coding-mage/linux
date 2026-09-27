@@ -15,7 +15,7 @@
 
 #[repr(C)]
 pub struct FiqHandler {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 extern "C" {
@@ -23,16 +23,16 @@ extern "C" {
     static mut qwerty_fiqin_end: u8;
     fn claim_fiq(fh: *mut FiqHandler) -> i32;
     fn release_fiq(fh: *mut FiqHandler);
-    fn set_fiq_handler(start: *mut core::ffi::c_void, length: u32);
+    fn set_fiq_handler(start: *mut kernel::ffi::c_void, length: u32);
     fn set_fiq_regs(regs: *mut PtRegs);
-    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> i32,
-                   flags: u32, name: *const core::ffi::c_char,
-                   dev_id: *mut core::ffi::c_void) -> i32;
+    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> i32,
+                   flags: u32, name: *const kernel::ffi::c_char,
+                   dev_id: *mut kernel::ffi::c_void) -> i32;
     fn generic_handle_irq(irq: u32);
     fn irq_get_irq_data(irq: u32) -> *mut IrqData;
     fn gpiod_to_irq(desc: *mut GpioDesc) -> u32;
     fn gpiochip_request_own_desc(chip: *mut GpioChip, hwnum: u32,
-                                 label: *const core::ffi::c_char,
+                                 label: *const kernel::ffi::c_char,
                                  flags: u32, dflags: u32) -> *mut GpioDesc;
     fn gpiochip_free_own_desc(desc: *mut GpioDesc);
     fn gpiod_direction_input(desc: *mut GpioDesc) -> i32;
@@ -41,18 +41,18 @@ extern "C" {
 }
 
 #[repr(C)] pub struct GpioDesc;
-#[repr(C)] pub struct GpioChip { pub irq: GpioChipIrq, pub label: *const core::ffi::c_char }
+#[repr(C)] pub struct GpioChip { pub irq: GpioChipIrq, pub label: *const kernel::ffi::c_char }
 #[repr(C)] pub struct GpioChipIrq { pub chip: *mut IrqChip }
 #[repr(C)] pub struct IrqChip { pub irq_unmask: Option<unsafe extern "C" fn(*mut IrqData)> }
 #[repr(C)] pub struct IrqData { pub irq: u32 }
 #[repr(C)] pub struct PlatformDevice { pub resource: *mut Resource, pub dev: Device }
 #[repr(C)] pub struct Resource { pub start: u32, pub end: u32 }
-#[repr(C)] pub struct Device { pub platform_data: *mut core::ffi::c_void }
+#[repr(C)] pub struct Device { pub platform_data: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct PtRegs { pub ARM_r9: u32 }
 
 extern "C" {
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
     fn warn_on_once(condition: bool) -> bool;
 }
 
@@ -64,14 +64,14 @@ static mut fiq_buffer: [u32; 1024] = [0; 1024];
 static mut irq_chip: *mut IrqChip = core::ptr::null_mut();
 static mut irq_data: [*mut IrqData; 16] = [core::ptr::null_mut(); 16];
 static mut irq_counter: [u32; 16] = [0; 16];
-static pin_name: [*const core::ffi::c_char; 16] = {
+static pin_name: [*const kernel::ffi::c_char; 16] = {
     let mut names = [core::ptr::null(); 16];
     names[AMS_DELTA_GPIO_PIN_KEYBRD_DATA as usize] = c"keybrd_data".as_ptr();
     names[AMS_DELTA_GPIO_PIN_KEYBRD_CLK as usize] = c"keybrd_clk".as_ptr();
     names
 };
 
-unsafe extern "C" fn deferred_fiq(_irq: i32, _dev_id: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn deferred_fiq(_irq: i32, _dev_id: *mut kernel::ffi::c_void) -> i32 {
     for gpio in AMS_DELTA_GPIO_PIN_KEYBRD_CLK..=AMS_DELTA_GPIO_PIN_HOOK_SWITCH {
         let d = irq_data[gpio as usize];
         let irq_num = (*d).irq;
@@ -105,7 +105,7 @@ pub unsafe extern "C" fn ams_delta_init_fiq(chip: *mut GpioChip, serio: *mut Pla
         }
     }
     if data.is_null() || clk.is_null() { if !data.is_null() { gpiochip_free_own_desc(data); } if !clk.is_null() { gpiochip_free_own_desc(clk); } return; }
-    let start = &mut qwerty_fiqin_start as *mut u8 as *mut core::ffi::c_void;
+    let start = &mut qwerty_fiqin_start as *mut u8 as *mut kernel::ffi::c_void;
     let length = (&qwerty_fiqin_end as *const u8 as usize).wrapping_sub(&qwerty_fiqin_start as *const u8 as usize) as u32;
     if claim_fiq(&mut fh) != 0 { goto_out(data, clk); return; }
     if request_irq(INT_DEFERRED_FIQ, deferred_fiq, IRQ_TYPE_EDGE_RISING, b"deferred_fiq\0".as_ptr() as *const _, core::ptr::null_mut()) < 0 { release_fiq(&mut fh); goto_out(data, clk); return; }

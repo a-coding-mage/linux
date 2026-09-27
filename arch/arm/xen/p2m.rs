@@ -3,9 +3,9 @@
 
 #[repr(C)]
 pub struct xen_p2m_entry {
-    pub pfn: ::core::ffi::c_ulong,
-    pub mfn: ::core::ffi::c_ulong,
-    pub nr_pages: ::core::ffi::c_ulong,
+    pub pfn: ::kernel::ffi::c_ulong,
+    pub mfn: ::kernel::ffi::c_ulong,
+    pub nr_pages: ::kernel::ffi::c_ulong,
     pub rbnode_phys: rb_node,
 }
 
@@ -13,11 +13,11 @@ static mut p2m_lock: rwlock_t = rwlock_t { _private: [] };
 #[no_mangle]
 pub static mut phys_to_mach: rb_root = RB_ROOT;
 
-unsafe fn xen_add_phys_to_mach_entry(new: *mut xen_p2m_entry) -> ::core::ffi::c_int {
+unsafe fn xen_add_phys_to_mach_entry(new: *mut xen_p2m_entry) -> ::kernel::ffi::c_int {
     let mut link: *mut *mut rb_node = &mut (*phys_to_mach.rb_node);
     let mut parent: *mut rb_node = core::ptr::null_mut();
     let mut entry: *mut xen_p2m_entry;
-    let mut rc: ::core::ffi::c_int = 0;
+    let mut rc: ::kernel::ffi::c_int = 0;
 
     while !(*link).is_null() {
         parent = *link;
@@ -42,10 +42,10 @@ unsafe fn xen_add_phys_to_mach_entry(new: *mut xen_p2m_entry) -> ::core::ffi::c_
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn __pfn_to_mfn(pfn: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub unsafe extern "C" fn __pfn_to_mfn(pfn: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     let mut n: *mut rb_node;
     let mut entry: *mut xen_p2m_entry;
-    let mut irqflags: ::core::ffi::c_ulong = 0;
+    let mut irqflags: ::kernel::ffi::c_ulong = 0;
 
     read_lock_irqsave(&mut p2m_lock, &mut irqflags);
     n = phys_to_mach.rb_node;
@@ -65,12 +65,12 @@ pub unsafe extern "C" fn __pfn_to_mfn(pfn: ::core::ffi::c_ulong) -> ::core::ffi:
 #[no_mangle]
 pub unsafe extern "C" fn set_foreign_p2m_mapping(
     map_ops: *mut gnttab_map_grant_ref, _kmap_ops: *mut gnttab_map_grant_ref,
-    _pages: *mut *mut page, count: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    _pages: *mut *mut page, count: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     for i in 0..count {
         let op = &mut *map_ops.add(i as usize);
         let mut unmap: gnttab_unmap_grant_ref;
-        let mut rc: ::core::ffi::c_int;
+        let mut rc: ::kernel::ffi::c_int;
         if op.status != 0 { continue; }
         if likely(set_phys_to_machine(op.host_addr >> XEN_PAGE_SHIFT, op.dev_bus_addr >> XEN_PAGE_SHIFT)) { continue; }
         op.status = GNTST_general_error;
@@ -88,17 +88,17 @@ pub unsafe extern "C" fn set_foreign_p2m_mapping(
 #[no_mangle]
 pub unsafe extern "C" fn clear_foreign_p2m_mapping(
     unmap_ops: *mut gnttab_unmap_grant_ref, _kunmap_ops: *mut gnttab_unmap_grant_ref,
-    _pages: *mut *mut page, count: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    _pages: *mut *mut page, count: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     for i in 0..count { set_phys_to_machine((*unmap_ops.add(i as usize)).host_addr >> XEN_PAGE_SHIFT, INVALID_P2M_ENTRY); }
     0
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn __set_phys_to_machine_multi(
-    pfn: ::core::ffi::c_ulong, mfn: ::core::ffi::c_ulong, nr_pages: ::core::ffi::c_ulong,
+    pfn: ::kernel::ffi::c_ulong, mfn: ::kernel::ffi::c_ulong, nr_pages: ::kernel::ffi::c_ulong,
 ) -> bool {
-    let mut irqflags: ::core::ffi::c_ulong = 0;
+    let mut irqflags: ::kernel::ffi::c_ulong = 0;
     if mfn == INVALID_P2M_ENTRY {
         write_lock_irqsave(&mut p2m_lock, &mut irqflags);
         let mut n = phys_to_mach.rb_node;
@@ -107,7 +107,7 @@ pub unsafe extern "C" fn __set_phys_to_machine_multi(
             if (*entry).pfn <= pfn && (*entry).pfn.wrapping_add((*entry).nr_pages) > pfn {
                 rb_erase(&mut (*entry).rbnode_phys, &mut phys_to_mach);
                 write_unlock_irqrestore(&mut p2m_lock, irqflags);
-                kfree(entry as *mut core::ffi::c_void);
+                kfree(entry as *mut kernel::ffi::c_void);
                 return true;
             }
             if pfn < (*entry).pfn { n = (*n).rb_left; } else { n = (*n).rb_right; }
@@ -120,17 +120,17 @@ pub unsafe extern "C" fn __set_phys_to_machine_multi(
     (*p2m_entry).pfn = pfn; (*p2m_entry).nr_pages = nr_pages; (*p2m_entry).mfn = mfn;
     write_lock_irqsave(&mut p2m_lock, &mut irqflags);
     let rc = xen_add_phys_to_mach_entry(p2m_entry);
-    if rc < 0 { write_unlock_irqrestore(&mut p2m_lock, irqflags); kfree(p2m_entry as *mut core::ffi::c_void); return false; }
+    if rc < 0 { write_unlock_irqrestore(&mut p2m_lock, irqflags); kfree(p2m_entry as *mut kernel::ffi::c_void); return false; }
     write_unlock_irqrestore(&mut p2m_lock, irqflags);
     true
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn __set_phys_to_machine(pfn: ::core::ffi::c_ulong, mfn: ::core::ffi::c_ulong) -> bool {
+pub unsafe extern "C" fn __set_phys_to_machine(pfn: ::kernel::ffi::c_ulong, mfn: ::kernel::ffi::c_ulong) -> bool {
     __set_phys_to_machine_multi(pfn, mfn, 1)
 }
 
-unsafe fn p2m_init() -> ::core::ffi::c_int { rwlock_init(&mut p2m_lock); 0 }
+unsafe fn p2m_init() -> ::kernel::ffi::c_int { rwlock_init(&mut p2m_lock); 0 }
 // arch_initcall(p2m_init);
 
 

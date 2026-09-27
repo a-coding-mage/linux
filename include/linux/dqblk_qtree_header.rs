@@ -3,7 +3,7 @@
  *	Definitions of structures and functions for quota formats using trie
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* Numbers of blocks needed for updates - we count with the smallest
  * possible block size (1024) */
@@ -68,7 +68,7 @@ extern "C" {
     pub fn qtree_read_dquot(info: *mut qtree_mem_dqinfo, dquot: *mut dquot) -> i32;
     pub fn qtree_delete_dquot(info: *mut qtree_mem_dqinfo, dquot: *mut dquot) -> i32;
     pub fn qtree_release_dquot(info: *mut qtree_mem_dqinfo, dquot: *mut dquot) -> i32;
-    pub fn qtree_entry_unused(info: *mut qtree_mem_dqinfo, disk: *mut core::ffi::c_char) -> i32;
+    pub fn qtree_entry_unused(info: *mut qtree_mem_dqinfo, disk: *mut kernel::ffi::c_char) -> i32;
 }
 
 pub unsafe fn qtree_depth(info: *mut qtree_mem_dqinfo) -> i32 {

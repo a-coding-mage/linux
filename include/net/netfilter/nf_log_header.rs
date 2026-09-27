@@ -51,17 +51,17 @@ pub struct nf_loginfo {
 pub type nf_logfn = unsafe extern "C" fn(
     net: *mut net,
     pf: u8,
-    hooknum: core::ffi::c_uint,
+    hooknum: kernel::ffi::c_uint,
     skb: *const sk_buff,
     in_: *const net_device,
     out: *const net_device,
     li: *const nf_loginfo,
-    prefix: *const core::ffi::c_char,
+    prefix: *const kernel::ffi::c_char,
 );
 
 #[repr(C)]
 pub struct nf_logger {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub type_: nf_log_type,
     pub logfn: Option<nf_logfn>,
     pub me: *mut module,
@@ -69,10 +69,10 @@ pub struct nf_logger {
 
 /* sysctl_nf_log_all_netns - allow LOG target in all network namespaces */
 extern "C" {
-    pub static mut sysctl_nf_log_all_netns: core::ffi::c_int;
+    pub static mut sysctl_nf_log_all_netns: kernel::ffi::c_int;
 
     /* Function to register/unregister log function. */
-    pub fn nf_log_register(pf: u8, logger: *mut nf_logger) -> core::ffi::c_int;
+    pub fn nf_log_register(pf: u8, logger: *mut nf_logger) -> kernel::ffi::c_int;
     pub fn nf_log_unregister(logger: *mut nf_logger);
 
     /* Check if any logger is registered for a given protocol family. */
@@ -82,50 +82,50 @@ extern "C" {
         net: *mut net,
         pf: u8,
         logger: *const nf_logger,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn nf_log_unset(net: *mut net, logger: *const nf_logger);
 
     pub fn nf_log_bind_pf(
         net: *mut net,
         pf: u8,
         logger: *const nf_logger,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn nf_log_unbind_pf(net: *mut net, pf: u8);
 
-    pub fn nf_logger_find_get(pf: core::ffi::c_int, type_: nf_log_type) -> core::ffi::c_int;
-    pub fn nf_logger_put(pf: core::ffi::c_int, type_: nf_log_type);
+    pub fn nf_logger_find_get(pf: kernel::ffi::c_int, type_: nf_log_type) -> kernel::ffi::c_int;
+    pub fn nf_logger_put(pf: kernel::ffi::c_int, type_: nf_log_type);
 
     /* Calls the registered backend logging function */
     pub fn nf_log_packet(
         net: *mut net,
         pf: u8,
-        hooknum: core::ffi::c_uint,
+        hooknum: kernel::ffi::c_uint,
         skb: *const sk_buff,
         in_: *const net_device,
         out: *const net_device,
         li: *const nf_loginfo,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
         ...,
     );
 
     pub fn nf_log_trace(
         net: *mut net,
         pf: u8,
-        hooknum: core::ffi::c_uint,
+        hooknum: kernel::ffi::c_uint,
         skb: *const sk_buff,
         in_: *const net_device,
         out: *const net_device,
         li: *const nf_loginfo,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
         ...,
     );
 
     pub fn nf_log_buf_open() -> *mut nf_log_buf;
     pub fn nf_log_buf_add(
         m: *mut nf_log_buf,
-        f: *const core::ffi::c_char,
+        f: *const kernel::ffi::c_char,
         ...,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn nf_log_buf_close(m: *mut nf_log_buf);
 }
 

@@ -19,14 +19,14 @@ pub struct test_stat {
     pub real_cnt: i32,
     pub perf: i32,
     pub sum: u64,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub addr: usize,
     pub addrs: [usize; MAX_NUM_OF_RECORDS],
 }
 
 #[repr(C)]
 pub struct test_item {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub addr: usize,
 }
 
@@ -34,35 +34,35 @@ extern "C" {
     static mut kallsyms_test_var_bss: i32;
     static mut kallsyms_test_var_data: i32;
     fn vmalloc_noprof();
-    fn vfree(ptr: *mut core::ffi::c_void);
+    fn vfree(ptr: *mut kernel::ffi::c_void);
     fn kmalloc_objs<T>(n: usize) -> *mut T;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn kallsyms_lookup_name(name: *const core::ffi::c_char) -> usize;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn kallsyms_lookup_name(name: *const kernel::ffi::c_char) -> usize;
     fn kallsyms_on_each_symbol(
-        callback: unsafe extern "C" fn(*mut core::ffi::c_void, *const core::ffi::c_char, usize) -> i32,
-        data: *mut core::ffi::c_void,
+        callback: unsafe extern "C" fn(*mut kernel::ffi::c_void, *const kernel::ffi::c_char, usize) -> i32,
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
     fn kallsyms_on_each_match_symbol(
-        callback: unsafe extern "C" fn(*mut core::ffi::c_void, usize) -> i32,
-        name: *const core::ffi::c_char,
-        data: *mut core::ffi::c_void,
+        callback: unsafe extern "C" fn(*mut kernel::ffi::c_void, usize) -> i32,
+        name: *const kernel::ffi::c_char,
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
     fn ktime_get_ns() -> u64;
-    fn lookup_symbol_name(addr: usize, name: *mut core::ffi::c_char) -> i32;
+    fn lookup_symbol_name(addr: usize, name: *mut kernel::ffi::c_char) -> i32;
     fn kallsyms_sym_address(index: u32) -> usize;
     fn is_ksym_addr(addr: usize) -> bool;
-    fn get_random_bytes(buf: *mut core::ffi::c_void, len: usize);
+    fn get_random_bytes(buf: *mut kernel::ffi::c_void, len: usize);
     fn schedule_timeout(timeout: i64) -> i64;
     fn kthread_run_on_cpu(
-        threadfn: unsafe extern "C" fn(*mut core::ffi::c_void) -> i32,
-        data: *mut core::ffi::c_void,
+        threadfn: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32,
+        data: *mut kernel::ffi::c_void,
         cpu: i32,
-        name: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_void;
+        name: *const kernel::ffi::c_char,
+    ) -> *mut kernel::ffi::c_void;
     static mut kallsyms_num_syms: u32;
     static mut kallsyms_names: *const u8;
     static mut kallsyms_token_index: *const u16;
-    static mut kallsyms_token_table: *const core::ffi::c_char;
+    static mut kallsyms_token_table: *const kernel::ffi::c_char;
     static mut system_state: i32;
 }
 
@@ -94,14 +94,14 @@ static mut test_items: [test_item; 5] = [
     test_item { name: b"vfree\0" as *const _ as *mut _, addr: vfree as usize },
 ];
 
-static mut stub_name: [core::ffi::c_char; 256] = [0; 256];
+static mut stub_name: [kernel::ffi::c_char; 256] = [0; 256];
 
-unsafe extern "C" fn stat_symbol_len(data: *mut core::ffi::c_void, name: *const core::ffi::c_char, _addr: usize) -> i32 {
-    *(data as *mut u32) += libc::strlen(name) as u32;
+unsafe extern "C" fn stat_symbol_len(data: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, _addr: usize) -> i32 {
+    *(data as *mut u32) += strlen(name) as u32;
     0
 }
 
-unsafe extern "C" fn lookup_name(data: *mut core::ffi::c_void, name: *const core::ffi::c_char, _addr: usize) -> i32 {
+unsafe extern "C" fn lookup_name(data: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, _addr: usize) -> i32 {
     let stat = &mut *(data as *mut test_stat);
     let t0 = ktime_get_ns(); let _ = kallsyms_lookup_name(name); let t = ktime_get_ns() - t0;
     if t < stat.min as u64 { stat.min = t as i32; }
@@ -109,16 +109,16 @@ unsafe extern "C" fn lookup_name(data: *mut core::ffi::c_void, name: *const core
     stat.real_cnt += 1; stat.sum += t; 0
 }
 
-unsafe extern "C" fn find_symbol(data: *mut core::ffi::c_void, name: *const core::ffi::c_char, addr: usize) -> i32 {
+unsafe extern "C" fn find_symbol(data: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, addr: usize) -> i32 {
     let stat = &mut *(data as *mut test_stat);
-    if libc::strcmp(name, stat.name) == 0 {
+    if strcmp(name, stat.name) == 0 {
         stat.real_cnt += 1; stat.addr = addr;
         if stat.save_cnt < MAX_NUM_OF_RECORDS as i32 { stat.addrs[stat.save_cnt as usize] = addr; stat.save_cnt += 1; }
         if stat.real_cnt == stat.max { return 1; }
     } 0
 }
 
-unsafe extern "C" fn match_symbol(data: *mut core::ffi::c_void, addr: usize) -> i32 {
+unsafe extern "C" fn match_symbol(data: *mut kernel::ffi::c_void, addr: usize) -> i32 {
     let stat = &mut *(data as *mut test_stat);
     stat.real_cnt += 1; stat.addr = addr;
     if stat.save_cnt < MAX_NUM_OF_RECORDS as i32 { stat.addrs[stat.save_cnt as usize] = addr; stat.save_cnt += 1; }
@@ -127,11 +127,11 @@ unsafe extern "C" fn match_symbol(data: *mut core::ffi::c_void, addr: usize) -> 
 
 unsafe fn test_kallsyms_compression_ratio() {
     let mut total_len = 0u32; kallsyms_on_each_symbol(stat_symbol_len, &mut total_len as *mut _ as *mut _);
-    libc::memset(stub_name.as_mut_ptr() as *mut _, b'4' as i32, stub_name.len());
+    memset(stub_name.as_mut_ptr() as *mut _, b'4' as i32, stub_name.len());
     let pos = total_len / kallsyms_num_syms; stub_name[pos as usize] = 0;
     let (mut pos, mut num, mut off) = (0u32, 0u32, 0u32);
     while pos < kallsyms_num_syms { let mut len = *kallsyms_names.add(off as usize) as u32; num += 1; off += 1; pos += 1; if len & 0x80 != 0 { len = (len & 0x7f) | ((*kallsyms_names.add(off as usize) as u32) << 7); num += 1; off += 1; } off += len; }
-    let mut total_size = off - num; let p = *kallsyms_token_index.add(0xff) as u32; total_size += p + libc::strlen(kallsyms_token_table.add(p as usize)) as u32 + 1 + 0x100 * 2;
+    let mut total_size = off - num; let p = *kallsyms_token_index.add(0xff) as u32; total_size += p + strlen(kallsyms_token_table.add(p as usize)) as u32 + 1 + 0x100 * 2;
     let _ = total_size; // pr_info output and kernel integer helpers remain external.
 }
 
@@ -176,7 +176,7 @@ pub unsafe extern "C" fn kallsyms_test_init() -> i32 {
     if t.is_null() { return -1; } 0
 }
 
-unsafe extern "C" fn test_entry(_p: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn test_entry(_p: *mut kernel::ffi::c_void) -> i32 {
     if test_kallsyms_basic_function() != 0 { return 0; }
     test_kallsyms_compression_ratio(); test_perf_kallsyms_lookup_name(); test_perf_kallsyms_on_each_symbol(); test_perf_kallsyms_on_each_match_symbol(); 0
 }

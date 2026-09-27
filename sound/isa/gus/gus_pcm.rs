@@ -42,7 +42,7 @@ pub struct gus_pcm_private {
 
 unsafe extern "C" fn snd_gf1_pcm_block_change_ack(
     _gus: *mut snd_gus_card,
-    private_data: *mut core::ffi::c_void,
+    private_data: *mut kernel::ffi::c_void,
 ) {
     let pcmp = private_data as *mut gus_pcm_private;
 
@@ -75,7 +75,7 @@ unsafe extern "C" fn snd_gf1_pcm_block_change(
     block.buffer = (*runtime).dma_area.add(offset as usize);
     block.buf_addr = (*runtime).dma_addr + offset as dma_addr_t;
     block.count = count;
-    block.private_data = pcmp as *mut core::ffi::c_void;
+    block.private_data = pcmp as *mut kernel::ffi::c_void;
     block.ack = Some(snd_gf1_pcm_block_change_ack);
     if snd_gf1_dma_transfer_block((*pcmp).gus, core::ptr::addr_of_mut!(block), 0, 0) == 0 {
         atomic_inc(core::ptr::addr_of_mut!((*pcmp).dma_count));
@@ -304,9 +304,9 @@ unsafe extern "C" fn snd_gf1_pcm_poke_block(
             snd_gf1_dram_addr(gus, pos);
             if w16 != 0 {
                 outb(SNDRV_GF1_GW_DRAM_IO16, GUSP(gus, GF1REGSEL));
-                outsw(GUSP(gus, GF1DATALOW), buf as *const core::ffi::c_void, len >> 1);
+                outsw(GUSP(gus, GF1DATALOW), buf as *const kernel::ffi::c_void, len >> 1);
             } else {
-                outsb(GUSP(gus, DRAM), buf as *const core::ffi::c_void, len);
+                outsb(GUSP(gus, DRAM), buf as *const kernel::ffi::c_void, len);
             }
             spin_unlock_irqrestore(core::ptr::addr_of_mut!((*gus).reg_lock), _flags);
             buf = buf.add(512);
@@ -373,9 +373,9 @@ unsafe extern "C" fn playback_copy_ack(substream: *mut snd_pcm_substream, bpos: 
 unsafe extern "C" fn snd_gf1_pcm_playback_copy(
     substream: *mut snd_pcm_substream,
     voice: i32,
-    pos: core::ffi::c_ulong,
+    pos: kernel::ffi::c_ulong,
     src: *mut iov_iter,
-    count: core::ffi::c_ulong,
+    count: kernel::ffi::c_ulong,
 ) -> i32 {
     let runtime = (*substream).runtime;
     let pcmp = (*runtime).private_data as *mut gus_pcm_private;
@@ -395,8 +395,8 @@ unsafe extern "C" fn snd_gf1_pcm_playback_copy(
 unsafe extern "C" fn snd_gf1_pcm_playback_silence(
     substream: *mut snd_pcm_substream,
     voice: i32,
-    pos: core::ffi::c_ulong,
-    count: core::ffi::c_ulong,
+    pos: kernel::ffi::c_ulong,
+    count: kernel::ffi::c_ulong,
 ) -> i32 {
     let runtime = (*substream).runtime;
     let pcmp = (*runtime).private_data as *mut gus_pcm_private;
@@ -448,7 +448,7 @@ unsafe extern "C" fn snd_gf1_pcm_playback_hw_params(
         (*(*pcmp).pvoices[0]).handler_wave = Some(snd_gf1_pcm_interrupt_wave);
         (*(*pcmp).pvoices[0]).handler_volume = Some(snd_gf1_pcm_interrupt_volume);
         (*(*pcmp).pvoices[0]).volume_change = Some(snd_gf1_pcm_volume_change);
-        (*(*pcmp).pvoices[0]).private_data = pcmp as *mut core::ffi::c_void;
+        (*(*pcmp).pvoices[0]).private_data = pcmp as *mut kernel::ffi::c_void;
     }
     if (*pcmp).voices > 1 && (*pcmp).pvoices[1].is_null() {
         (*pcmp).pvoices[1] = snd_gf1_alloc_voice((*pcmp).gus, SNDRV_GF1_VOICE_TYPE_PCM, 0, 0);
@@ -458,7 +458,7 @@ unsafe extern "C" fn snd_gf1_pcm_playback_hw_params(
         (*(*pcmp).pvoices[1]).handler_wave = Some(snd_gf1_pcm_interrupt_wave);
         (*(*pcmp).pvoices[1]).handler_volume = Some(snd_gf1_pcm_interrupt_volume);
         (*(*pcmp).pvoices[1]).volume_change = Some(snd_gf1_pcm_volume_change);
-        (*(*pcmp).pvoices[1]).private_data = pcmp as *mut core::ffi::c_void;
+        (*(*pcmp).pvoices[1]).private_data = pcmp as *mut kernel::ffi::c_void;
     } else if (*pcmp).voices == 1 {
         if !(*pcmp).pvoices[1].is_null() {
             snd_gf1_free_voice((*pcmp).gus, (*pcmp).pvoices[1]);
@@ -676,7 +676,7 @@ unsafe extern "C" fn snd_gf1_pcm_playback_open(substream: *mut snd_pcm_substream
     init_waitqueue_head(core::ptr::addr_of_mut!((*pcmp).sleep));
     atomic_set(core::ptr::addr_of_mut!((*pcmp).dma_count), 0);
 
-    (*runtime).private_data = pcmp as *mut core::ffi::c_void;
+    (*runtime).private_data = pcmp as *mut kernel::ffi::c_void;
     (*runtime).private_free = Some(snd_gf1_pcm_playback_free);
 
     /*
@@ -878,7 +878,7 @@ pub unsafe extern "C" fn snd_gf1_pcm_new(
     if err < 0 {
         return err;
     }
-    (*pcm).private_data = gus as *mut core::ffi::c_void;
+    (*pcm).private_data = gus as *mut kernel::ffi::c_void;
     /* playback setup */
     snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, core::ptr::addr_of!(snd_gf1_pcm_playback_ops));
 
@@ -921,9 +921,9 @@ pub unsafe extern "C" fn snd_gf1_pcm_new(
     (*gus).pcm = pcm;
 
     if (*gus).codec_flag != 0 {
-        kctl = snd_ctl_new1(core::ptr::addr_of!(snd_gf1_pcm_volume_control1), gus as *mut core::ffi::c_void);
+        kctl = snd_ctl_new1(core::ptr::addr_of!(snd_gf1_pcm_volume_control1), gus as *mut kernel::ffi::c_void);
     } else {
-        kctl = snd_ctl_new1(core::ptr::addr_of!(snd_gf1_pcm_volume_control), gus as *mut core::ffi::c_void);
+        kctl = snd_ctl_new1(core::ptr::addr_of!(snd_gf1_pcm_volume_control), gus as *mut kernel::ffi::c_void);
     }
     if kctl.is_null() {
         return -ENOMEM;

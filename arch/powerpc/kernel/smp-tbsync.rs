@@ -40,10 +40,10 @@ extern "C" {
     fn rmb();
     fn mb();
     fn wmb();
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
     fn abs(value: i32) -> i32;
     fn kzalloc_obj<T>() -> *mut T;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
 }
 
 unsafe fn enter_contest(mark: u64, add: i64) {
@@ -142,7 +142,7 @@ pub unsafe extern "C" fn smp_generic_give_timebase() {
     let mut max: i32 = 5000;
     let mut offset: i32 = 1000;
 
-    pr_debug(b"Software timebase sync\0".as_ptr() as *const core::ffi::c_char);
+    pr_debug(b"Software timebase sync\0".as_ptr() as *const kernel::ffi::c_char);
 
     // If this fails then this kernel won't work anyway...
     TBSYNC = kzalloc_obj::<TbSync>();
@@ -153,7 +153,7 @@ pub unsafe extern "C" fn smp_generic_give_timebase() {
         barrier();
     }
 
-    pr_debug(b"Got ack\0".as_ptr() as *const core::ffi::c_char);
+    pr_debug(b"Got ack\0".as_ptr() as *const kernel::ffi::c_char);
 
     // Binary search.
     old = -1;
@@ -198,7 +198,7 @@ pub unsafe extern "C" fn smp_generic_give_timebase() {
         barrier();
     }
     (*TBSYNC).handshake = 0;
-    kfree(TBSYNC as *mut core::ffi::c_void);
+    kfree(TBSYNC as *mut kernel::ffi::c_void);
     TBSYNC = core::ptr::null_mut();
     RUNNING = 0;
 }

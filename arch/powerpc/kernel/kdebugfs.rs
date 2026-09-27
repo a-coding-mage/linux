@@ -5,7 +5,7 @@
 // - linux/export.h
 // - linux/init.h
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct dentry {

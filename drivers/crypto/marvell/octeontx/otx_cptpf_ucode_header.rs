@@ -19,7 +19,7 @@ pub const OTX_CPT_UCODE_SIGN_LEN: usize = 256;
 pub const OTX_CPT_UCODE_VER_STR_SZ: usize = 44;
 pub const OTX_CPT_MAX_ENGINES: usize = 64;
 pub const OTX_CPT_ENGS_BITMASK_LEN: usize =
-    OTX_CPT_MAX_ENGINES / (8 * core::mem::size_of::<core::ffi::c_ulong>());
+    OTX_CPT_MAX_ENGINES / (8 * core::mem::size_of::<kernel::ffi::c_ulong>());
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -32,14 +32,14 @@ pub enum otx_cpt_ucode_type {
 
 #[repr(C)]
 pub struct otx_cpt_bitmap {
-    pub bits: [core::ffi::c_ulong; OTX_CPT_ENGS_BITMASK_LEN],
-    pub size: core::ffi::c_int,
+    pub bits: [kernel::ffi::c_ulong; OTX_CPT_ENGS_BITMASK_LEN],
+    pub size: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct otx_cpt_engines {
-    pub r#type: core::ffi::c_int,
-    pub count: core::ffi::c_int,
+    pub r#type: kernel::ffi::c_int,
+    pub count: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -63,13 +63,13 @@ pub struct otx_cpt_ucode_hdr {
 pub struct otx_cpt_ucode {
     pub ver_str: [u8; OTX_CPT_UCODE_VER_STR_SZ],
     pub ver_num: otx_cpt_ucode_ver_num,
-    pub filename: [core::ffi::c_char; OTX_CPT_UCODE_NAME_LENGTH],
+    pub filename: [kernel::ffi::c_char; OTX_CPT_UCODE_NAME_LENGTH],
     pub dma: dma_addr_t,
     pub align_dma: dma_addr_t,
-    pub va: *mut core::ffi::c_void,
-    pub align_va: *mut core::ffi::c_void,
+    pub va: *mut kernel::ffi::c_void,
+    pub align_va: *mut kernel::ffi::c_void,
     pub size: u32,
-    pub r#type: core::ffi::c_int,
+    pub r#type: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -81,26 +81,26 @@ pub struct tar_ucode_info_t {
 
 #[repr(C)]
 pub struct otx_cpt_engs_available {
-    pub max_se_cnt: core::ffi::c_int,
-    pub max_ae_cnt: core::ffi::c_int,
-    pub se_cnt: core::ffi::c_int,
-    pub ae_cnt: core::ffi::c_int,
+    pub max_se_cnt: kernel::ffi::c_int,
+    pub max_ae_cnt: kernel::ffi::c_int,
+    pub se_cnt: kernel::ffi::c_int,
+    pub ae_cnt: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct otx_cpt_engs_rsvd {
-    pub r#type: core::ffi::c_int,
-    pub count: core::ffi::c_int,
-    pub offset: core::ffi::c_int,
-    pub bmap: *mut core::ffi::c_ulong,
+    pub r#type: kernel::ffi::c_int,
+    pub count: kernel::ffi::c_int,
+    pub offset: kernel::ffi::c_int,
+    pub bmap: *mut kernel::ffi::c_ulong,
     pub ucode: *mut otx_cpt_ucode,
 }
 
 #[repr(C)]
 pub struct otx_cpt_mirror_info {
-    pub is_ena: core::ffi::c_int,
-    pub idx: core::ffi::c_int,
-    pub ref_count: core::ffi::c_int,
+    pub is_ena: kernel::ffi::c_int,
+    pub idx: kernel::ffi::c_int,
+    pub ref_count: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -109,9 +109,9 @@ pub struct otx_cpt_eng_grp_info {
     pub info_attr: device_attribute,
     pub engs: [otx_cpt_engs_rsvd; OTX_CPT_MAX_ETYPES_PER_GRP],
     pub ucode: [otx_cpt_ucode; OTX_CPT_MAX_ETYPES_PER_GRP],
-    pub sysfs_info_name: [core::ffi::c_char; OTX_CPT_UCODE_NAME_LENGTH],
+    pub sysfs_info_name: [kernel::ffi::c_char; OTX_CPT_UCODE_NAME_LENGTH],
     pub mirror: otx_cpt_mirror_info,
-    pub idx: core::ffi::c_int,
+    pub idx: kernel::ffi::c_int,
     pub is_enabled: bool,
 }
 
@@ -121,9 +121,9 @@ pub struct otx_cpt_eng_grps {
     pub ucode_load_attr: device_attribute,
     pub avail: otx_cpt_engs_available,
     pub lock: mutex,
-    pub obj: *mut core::ffi::c_void,
-    pub engs_num: core::ffi::c_int,
-    pub eng_types_supported: core::ffi::c_int,
+    pub obj: *mut kernel::ffi::c_void,
+    pub engs_num: kernel::ffi::c_int,
+    pub eng_types_supported: kernel::ffi::c_int,
     pub eng_ref_cnt: [u8; OTX_CPT_MAX_ENGINES],
     pub is_ucode_load_created: bool,
     pub is_first_try: bool,
@@ -134,8 +134,8 @@ extern "C" {
     pub fn otx_cpt_init_eng_grps(
         pdev: *mut pci_dev,
         eng_grps: *mut otx_cpt_eng_grps,
-        pf_type: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        pf_type: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
     pub fn otx_cpt_cleanup_eng_grps(
         pdev: *mut pci_dev,
         eng_grps: *mut otx_cpt_eng_grps,
@@ -143,16 +143,16 @@ extern "C" {
     pub fn otx_cpt_try_create_default_eng_grps(
         pdev: *mut pci_dev,
         eng_grps: *mut otx_cpt_eng_grps,
-        pf_type: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        pf_type: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
     pub fn otx_cpt_set_eng_grps_is_rdonly(
         eng_grps: *mut otx_cpt_eng_grps,
         is_rdonly: bool,
     );
     pub fn otx_cpt_uc_supports_eng_type(
         ucode: *mut otx_cpt_ucode,
-        eng_type: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        eng_type: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

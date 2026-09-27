@@ -7,18 +7,18 @@
 unsafe extern "C" {
     fn preempt_disable();
     fn preempt_enable();
-    fn current() -> *mut core::ffi::c_void;
-    fn task_pt_regs(task: *mut core::ffi::c_void) -> *mut core::ffi::c_void;
-    fn fstate_save(task: *mut core::ffi::c_void, regs: *mut core::ffi::c_void);
-    fn fstate_restore(task: *mut core::ffi::c_void, regs: *mut core::ffi::c_void);
-    fn csr_set(csr: core::ffi::c_ulong, value: core::ffi::c_ulong);
-    fn csr_clear(csr: core::ffi::c_ulong, value: core::ffi::c_ulong);
+    fn current() -> *mut kernel::ffi::c_void;
+    fn task_pt_regs(task: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+    fn fstate_save(task: *mut kernel::ffi::c_void, regs: *mut kernel::ffi::c_void);
+    fn fstate_restore(task: *mut kernel::ffi::c_void, regs: *mut kernel::ffi::c_void);
+    fn csr_set(csr: kernel::ffi::c_ulong, value: kernel::ffi::c_ulong);
+    fn csr_clear(csr: kernel::ffi::c_ulong, value: kernel::ffi::c_ulong);
 }
 
 // Constants supplied by <asm/csr.h>.
 unsafe extern "C" {
-    static CSR_SSTATUS: core::ffi::c_ulong;
-    static SR_FS: core::ffi::c_ulong;
+    static CSR_SSTATUS: kernel::ffi::c_ulong;
+    static SR_FS: kernel::ffi::c_ulong;
 }
 
 pub unsafe fn kernel_fpu_begin() {

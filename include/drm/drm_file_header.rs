@@ -80,7 +80,7 @@ pub struct drm_file {
     pub table_lock: spinlock_t,
     pub syncobj_xa: xarray,
     pub filp: *mut file,
-    pub driver_priv: *mut core::ffi::c_void,
+    pub driver_priv: *mut kernel::ffi::c_void,
     pub fbs: list_head,
     pub fbs_lock: mutex,
     pub blobs: list_head,
@@ -90,7 +90,7 @@ pub struct drm_file {
     pub event_space: i32,
     pub event_read_lock: mutex,
     pub prime: drm_prime_file_private,
-    pub client_name: *const core::ffi::c_char,
+    pub client_name: *const kernel::ffi::c_char,
     pub client_name_lock: mutex,
     pub debugfs_client: *mut dentry,
 }
@@ -123,13 +123,13 @@ pub enum drm_gem_object_status {}
 
 extern "C" {
     pub static mut drm_minors_xa: xarray;
-    pub fn drm_file_err(file_priv: *mut drm_file, fmt: *const core::ffi::c_char, ...);
+    pub fn drm_file_err(file_priv: *mut drm_file, fmt: *const kernel::ffi::c_char, ...);
     pub fn drm_file_update_pid(file_priv: *mut drm_file);
     pub fn drm_minor_acquire(minors_xa: *mut xarray, minor_id: u32) -> *mut drm_minor;
     pub fn drm_minor_release(minor: *mut drm_minor);
     pub fn drm_open(inode: *mut inode, filp: *mut file) -> i32;
     pub fn drm_open_helper(filp: *mut file, minor: *mut drm_minor) -> i32;
-    pub fn drm_read(filp: *mut file, buffer: *mut core::ffi::c_char, count: usize, offset: *mut loff_t) -> isize;
+    pub fn drm_read(filp: *mut file, buffer: *mut kernel::ffi::c_char, count: usize, offset: *mut loff_t) -> isize;
     pub fn drm_release(inode: *mut inode, filp: *mut file) -> i32;
     pub fn drm_release_noglobal(inode: *mut inode, filp: *mut file) -> i32;
     pub fn drm_poll(filp: *mut file, wait: *mut poll_table_struct) -> __poll_t;
@@ -140,8 +140,8 @@ extern "C" {
     pub fn drm_send_event(dev: *mut drm_device, e: *mut drm_pending_event);
     pub fn drm_send_event_timestamp_locked(dev: *mut drm_device, e: *mut drm_pending_event, timestamp: ktime_t);
     pub fn drm_memory_stats_is_zero(stats: *const drm_memory_stats) -> i32;
-    pub fn drm_fdinfo_print_size(p: *mut drm_printer, prefix: *const core::ffi::c_char, stat: *const core::ffi::c_char, region: *const core::ffi::c_char, sz: u64);
-    pub fn drm_print_memory_stats(p: *mut drm_printer, stats: *const drm_memory_stats, supported_status: drm_gem_object_status, region: *const core::ffi::c_char);
+    pub fn drm_fdinfo_print_size(p: *mut drm_printer, prefix: *const kernel::ffi::c_char, stat: *const kernel::ffi::c_char, region: *const kernel::ffi::c_char, sz: u64);
+    pub fn drm_print_memory_stats(p: *mut drm_printer, stats: *const drm_memory_stats, supported_status: drm_gem_object_status, region: *const kernel::ffi::c_char);
     pub fn drm_show_memory_stats(p: *mut drm_printer, file: *mut drm_file);
     pub fn drm_show_fdinfo(m: *mut seq_file, f: *mut file);
     pub fn mock_drm_getfile(minor: *mut drm_minor, flags: u32) -> *mut file;

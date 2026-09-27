@@ -73,7 +73,7 @@ struct PlatformDevice {
 }
 #[repr(C)]
 struct PlatformDeviceId {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -92,13 +92,13 @@ extern "C" {
     fn gpiochip_get_data(chip: *mut GpioChip) -> *mut Bd72720Gpio;
     fn pinconf_to_config_param(config: u64) -> u32;
     fn fwnode_property_read_string(
-        fwnode: *const core::ffi::c_void,
-        property: *const core::ffi::c_char,
-        value: *mut *const core::ffi::c_char,
+        fwnode: *const kernel::ffi::c_void,
+        property: *const kernel::ffi::c_char,
+        value: *mut *const kernel::ffi::c_char,
     ) -> i32;
-    fn dev_fwnode(dev: *mut Device) -> *const core::ffi::c_void;
-    fn dev_get_regmap(dev: *mut Device, name: *const core::ffi::c_char) -> *mut Regmap;
-    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn dev_fwnode(dev: *mut Device) -> *const kernel::ffi::c_void;
+    fn dev_get_regmap(dev: *mut Device, name: *const kernel::ffi::c_char) -> *mut Regmap;
+    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_gpiochip_add_data(dev: *mut Device, chip: *mut GpioChip, data: *mut Bd72720Gpio) -> i32;
 }
 
@@ -182,8 +182,8 @@ unsafe extern "C" fn bd72720_valid_mask(gc: *mut GpioChip, valid_mask: *mut u64,
 
 #[repr(C)]
 struct Bd72720GpoChip {
-    label: *const core::ffi::c_char,
-    owner: *const core::ffi::c_void,
+    label: *const kernel::ffi::c_char,
+    owner: *const kernel::ffi::c_void,
     get: unsafe extern "C" fn(*mut GpioChip, u32) -> i32,
     get_direction: unsafe extern "C" fn(*mut GpioChip, u32) -> i32,
     set: unsafe extern "C" fn(*mut GpioChip, u32, i32) -> i32,
@@ -195,7 +195,7 @@ struct Bd72720GpoChip {
 }
 
 static BD72720GPO_CHIP: Bd72720GpoChip = Bd72720GpoChip {
-    label: b"bd72720\0".as_ptr() as *const core::ffi::c_char,
+    label: b"bd72720\0".as_ptr() as *const kernel::ffi::c_char,
     owner: core::ptr::null(),
     get: bd72720gpio_get,
     get_direction: bd72720gpo_direction_get,
@@ -219,7 +219,7 @@ unsafe extern "C" fn gpo_bd72720_probe(pdev: *mut PlatformDevice) -> i32 {
 }
 
 static BD72720_GPIO_ID: [PlatformDeviceId; 2] = [
-    PlatformDeviceId { name: b"bd72720-gpio\0".as_ptr() as *const core::ffi::c_char },
+    PlatformDeviceId { name: b"bd72720-gpio\0".as_ptr() as *const kernel::ffi::c_char },
     PlatformDeviceId { name: core::ptr::null() },
 ];
 

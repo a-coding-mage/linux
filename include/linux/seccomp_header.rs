@@ -20,9 +20,9 @@ extern "C" {
     #[cfg(not(CONFIG_HAVE_ARCH_SECCOMP_FILTER))]
     pub fn secure_computing_strict(this_syscall: i32);
 
-    pub fn prctl_get_seccomp() -> ::core::ffi::c_long;
-    pub fn prctl_set_seccomp(arg2: ::core::ffi::c_ulong, arg3: *mut ::core::ffi::c_void)
-        -> ::core::ffi::c_long;
+    pub fn prctl_get_seccomp() -> ::kernel::ffi::c_long;
+    pub fn prctl_set_seccomp(arg2: ::kernel::ffi::c_ulong, arg3: *mut ::kernel::ffi::c_void)
+        -> ::kernel::ffi::c_long;
 }
 
 #[cfg(all(CONFIG_SECCOMP, CONFIG_HAVE_ARCH_SECCOMP_FILTER))]
@@ -61,14 +61,14 @@ pub fn __seccomp_permit_syscall() -> bool { true }
 
 #[cfg(not(CONFIG_SECCOMP))]
 #[inline]
-pub fn prctl_get_seccomp() -> ::core::ffi::c_long { -EINVAL as ::core::ffi::c_long }
+pub fn prctl_get_seccomp() -> ::kernel::ffi::c_long { -EINVAL as ::kernel::ffi::c_long }
 
 #[cfg(not(CONFIG_SECCOMP))]
 #[inline]
 pub unsafe fn prctl_set_seccomp(
-    _arg2: ::core::ffi::c_ulong,
-    _arg3: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_long { -EINVAL as ::core::ffi::c_long }
+    _arg2: ::kernel::ffi::c_ulong,
+    _arg3: *mut ::kernel::ffi::c_char,
+) -> ::kernel::ffi::c_long { -EINVAL as ::kernel::ffi::c_long }
 
 #[cfg(not(CONFIG_SECCOMP))]
 #[inline]
@@ -92,31 +92,31 @@ pub fn get_seccomp_filter(_tsk: *mut task_struct) {}
 extern "C" {
     pub fn seccomp_get_filter(
         task: *mut task_struct,
-        filter_off: ::core::ffi::c_ulong,
-        data: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_long;
+        filter_off: ::kernel::ffi::c_ulong,
+        data: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_long;
     pub fn seccomp_get_metadata(
         task: *mut task_struct,
-        filter_off: ::core::ffi::c_ulong,
-        data: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_long;
+        filter_off: ::kernel::ffi::c_ulong,
+        data: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_long;
 }
 
 #[cfg(not(all(CONFIG_SECCOMP_FILTER, CONFIG_CHECKPOINT_RESTORE)))]
 #[inline]
 pub fn seccomp_get_filter(
     _task: *mut task_struct,
-    _n: ::core::ffi::c_ulong,
-    _data: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_long { -EINVAL as ::core::ffi::c_long }
+    _n: ::kernel::ffi::c_ulong,
+    _data: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_long { -EINVAL as ::kernel::ffi::c_long }
 
 #[cfg(not(all(CONFIG_SECCOMP_FILTER, CONFIG_CHECKPOINT_RESTORE)))]
 #[inline]
 pub fn seccomp_get_metadata(
     _task: *mut task_struct,
-    _filter_off: ::core::ffi::c_ulong,
-    _data: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_long { -EINVAL as ::core::ffi::c_long }
+    _filter_off: ::kernel::ffi::c_ulong,
+    _data: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_long { -EINVAL as ::kernel::ffi::c_long }
 
 #[cfg(all(CONFIG_SECCOMP_CACHE_DEBUG))]
 extern "C" {

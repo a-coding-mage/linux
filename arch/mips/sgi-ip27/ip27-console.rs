@@ -26,7 +26,7 @@ unsafe fn console_uart() -> *mut ioc3_uartregs {
     &mut (*ioc3).sregs.uarta
 }
 
-pub unsafe fn prom_putchar(c: core::ffi::c_char) {
+pub unsafe fn prom_putchar(c: kernel::ffi::c_char) {
     let uart: *mut ioc3_uartregs = console_uart();
 
     while (readb(&(*uart).iu_lsr as *const _) & 0x20) == 0 {}

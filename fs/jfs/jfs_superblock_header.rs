@@ -22,7 +22,7 @@ pub const LV_NAME_SIZE: usize = 11; /* MUST BE 11 for OS/2 boot sector */
  */
 #[repr(C)]
 pub struct jfs_superblock {
-	pub s_magic: [core::ffi::c_char; 4], /* 4: magic number */
+	pub s_magic: [kernel::ffi::c_char; 4], /* 4: magic number */
 	pub s_version: __le32, /* 4: version number */
 
 	pub s_size: __le64, /* 8: aggregate size in hardware/LVM blocks;
@@ -75,7 +75,7 @@ pub struct jfs_superblock {
 					 *    1 => the first one
 					 *    2 => the 2nd one
 					 */
-	pub s_fpack: [core::ffi::c_char; 11], /* 11: file system volume name
+	pub s_fpack: [kernel::ffi::c_char; 11], /* 11: file system volume name
 					 *     N.B. This must be 11 bytes to
 					 *          conform with the OS/2 BootSector
 					 *          requirements
@@ -87,14 +87,14 @@ pub struct jfs_superblock {
 	pub s_xfsckpxd: pxd_t, /* 8: extendfs fsckpxd */
 	pub s_xlogpxd: pxd_t, /* 8: extendfs logpxd */
 	pub s_uuid: uuid_t, /* 16: 128-bit uuid for volume */
-	pub s_label: [core::ffi::c_char; 16], /* 16: volume label */
+	pub s_label: [kernel::ffi::c_char; 16], /* 16: volume label */
 	pub s_loguuid: uuid_t, /* 16: 128-bit uuid for log device */
 }
 
 unsafe extern "C" {
 	pub fn readSuper(sb: *mut super_block, bpp: *mut *mut buffer_head) -> i32;
 	pub fn updateSuper(sb: *mut super_block, flag: uint) -> i32;
-	pub fn jfs_error(sb: *mut super_block, fmt: *const core::ffi::c_char, ...);
+	pub fn jfs_error(sb: *mut super_block, fmt: *const kernel::ffi::c_char, ...);
 	pub fn jfs_mount(sb: *mut super_block) -> i32;
 	pub fn jfs_mount_rw(sb: *mut super_block, rw: i32) -> i32;
 	pub fn jfs_umount(sb: *mut super_block) -> i32;

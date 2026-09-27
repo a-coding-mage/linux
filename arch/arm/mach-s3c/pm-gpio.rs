@@ -52,13 +52,13 @@ unsafe fn samsung_gpio_pm_2bit_save(chip: *mut samsung_gpio_chip) {
 }
 
 #[inline]
-fn is_sfn(con: ::core::ffi::c_ulong) -> bool { con >= 2 }
+fn is_sfn(con: ::kernel::ffi::c_ulong) -> bool { con >= 2 }
 
 #[inline]
-fn is_in(con: ::core::ffi::c_ulong) -> bool { con == 0 }
+fn is_in(con: ::kernel::ffi::c_ulong) -> bool { con == 0 }
 
 #[inline]
-fn is_out(con: ::core::ffi::c_ulong) -> bool { con == 1 }
+fn is_out(con: ::kernel::ffi::c_ulong) -> bool { con == 1 }
 
 unsafe fn samsung_gpio_pm_2bit_resume(chip: *mut samsung_gpio_chip) {
     let base = (*chip).base;

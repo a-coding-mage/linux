@@ -16,12 +16,12 @@ pub unsafe fn rcuwait_init(w: *mut rcuwait) {
  * requires care to estimate as to whether or not the wait is active.
  */
 #[inline]
-pub unsafe fn rcuwait_active(w: *mut rcuwait) -> core::ffi::c_int {
+pub unsafe fn rcuwait_active(w: *mut rcuwait) -> kernel::ffi::c_int {
     if rcu_access_pointer((*w).task).is_null() { 0 } else { 1 }
 }
 
 extern "C" {
-    pub fn rcuwait_wake_up(w: *mut rcuwait) -> core::ffi::c_int;
+    pub fn rcuwait_wake_up(w: *mut rcuwait) -> kernel::ffi::c_int;
 }
 
 /*
@@ -43,7 +43,7 @@ extern "C" {
 #[macro_export]
 macro_rules! ___rcuwait_wait_event {
     ($w:expr, $condition:expr, $state:expr, $ret:expr, $cmd:expr) => {{
-        let mut __ret: core::ffi::c_long = $ret;
+        let mut __ret: kernel::ffi::c_long = $ret;
         unsafe { $crate::prepare_to_rcuwait($w); }
         loop {
             /*
@@ -56,7 +56,7 @@ macro_rules! ___rcuwait_wait_event {
             }
 
             if unsafe { signal_pending_state($state, current) } {
-                __ret = -(EINTR as core::ffi::c_long);
+                __ret = -(EINTR as kernel::ffi::c_long);
                 break;
             }
 
@@ -90,7 +90,7 @@ macro_rules! __rcuwait_wait_event_timeout {
 #[macro_export]
 macro_rules! rcuwait_wait_event_timeout {
     ($w:expr, $condition:expr, $state:expr, $timeout:expr) => {{
-        let mut __ret: core::ffi::c_long = $timeout;
+        let mut __ret: kernel::ffi::c_long = $timeout;
         if !___wait_cond_timeout!($condition) {
             __ret = $crate::__rcuwait_wait_event_timeout!($w, $condition, $state, $timeout);
         }

@@ -7,7 +7,7 @@
  */
 
 /* Translated from C header: include guard and C includes omitted. */
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct snd_soc_component {

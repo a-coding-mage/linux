@@ -12,7 +12,7 @@
 
 #[repr(C)]
 pub struct SeqFile {
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -44,12 +44,12 @@ extern "C" {
     fn jump_to_uncached();
     fn back_to_cached();
     fn __raw_readl(address: u64) -> u32;
-    fn seq_printf(file: *mut SeqFile, format: *const core::ffi::c_char, ...);
+    fn seq_printf(file: *mut SeqFile, format: *const kernel::ffi::c_char, ...);
     fn debugfs_create_file(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         mode: u16,
         parent: *mut Dentry,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         fops: *const FileOperations,
     ) -> *mut Dentry;
 }
@@ -70,7 +70,7 @@ pub enum CacheType {
     CACHE_TYPE_UNIFIED,
 }
 
-unsafe fn cache_debugfs_show(file: *mut SeqFile, _iter: *mut core::ffi::c_void) -> i32 {
+unsafe fn cache_debugfs_show(file: *mut SeqFile, _iter: *mut kernel::ffi::c_void) -> i32 {
     let cache_type = (*file).private as usize as u32;
     let cache: *mut CacheInfo;
     let mut waysize: u32;
@@ -157,14 +157,14 @@ unsafe fn cache_debugfs_init() -> i32 {
         b"dcache\0".as_ptr() as *const i8,
         0o400,
         arch_debugfs_dir,
-        CacheType::CACHE_TYPE_DCACHE as usize as *mut core::ffi::c_void,
+        CacheType::CACHE_TYPE_DCACHE as usize as *mut kernel::ffi::c_void,
         &cache_debugfs_fops,
     );
     debugfs_create_file(
         b"icache\0".as_ptr() as *const i8,
         0o400,
         arch_debugfs_dir,
-        CacheType::CACHE_TYPE_ICACHE as usize as *mut core::ffi::c_void,
+        CacheType::CACHE_TYPE_ICACHE as usize as *mut kernel::ffi::c_void,
         &cache_debugfs_fops,
     );
     0

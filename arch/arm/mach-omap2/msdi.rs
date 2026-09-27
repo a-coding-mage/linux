@@ -31,15 +31,15 @@ pub struct OmapHwmodClass {
 #[repr(C)]
 pub struct OmapHwmod {
     pub class: *mut OmapHwmodClass,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 unsafe extern "C" {
     fn omap_hwmod_softreset(oh: *mut OmapHwmod);
     fn omap_hwmod_write(v: u16, oh: *mut OmapHwmod, reg: u32);
     fn omap_hwmod_read(oh: *mut OmapHwmod, reg: u32) -> u16;
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
 }
 
 // Supplied by the OMAP hwmod dependencies.

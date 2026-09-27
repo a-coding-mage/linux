@@ -8,11 +8,11 @@
 /* Represents a crypto mode supported by blk-crypto  */
 #[repr(C)]
 pub struct blk_crypto_mode {
-    pub name: *const core::ffi::c_char, /* name of this mode, shown in sysfs */
-    pub cipher_str: *const core::ffi::c_char, /* crypto API name (for fallback case) */
-    pub keysize: core::ffi::c_uint, /* key size in bytes */
-    pub security_strength: core::ffi::c_uint, /* security strength in bytes */
-    pub ivsize: core::ffi::c_uint, /* iv size in bytes */
+    pub name: *const kernel::ffi::c_char, /* name of this mode, shown in sysfs */
+    pub cipher_str: *const kernel::ffi::c_char, /* crypto API name (for fallback case) */
+    pub keysize: kernel::ffi::c_uint, /* key size in bytes */
+    pub security_strength: kernel::ffi::c_uint, /* security strength in bytes */
+    pub ivsize: kernel::ffi::c_uint, /* iv size in bytes */
 }
 
 extern "C" {
@@ -21,12 +21,12 @@ extern "C" {
 
 // CONFIG_BLK_INLINE_ENCRYPTION
 extern "C" {
-    pub fn blk_crypto_sysfs_register(disk: *mut gendisk) -> core::ffi::c_int;
+    pub fn blk_crypto_sysfs_register(disk: *mut gendisk) -> kernel::ffi::c_int;
     pub fn blk_crypto_sysfs_unregister(disk: *mut gendisk);
-    pub fn bio_crypt_dun_increment(dun: *mut u64, inc: core::ffi::c_uint);
+    pub fn bio_crypt_dun_increment(dun: *mut u64, inc: kernel::ffi::c_uint);
     pub fn bio_crypt_rq_ctx_compatible(rq: *mut request, bio: *mut bio) -> bool;
     pub fn bio_crypt_ctx_mergeable(
-        bc1: *mut bio_crypt_ctx, bc1_bytes: core::ffi::c_uint,
+        bc1: *mut bio_crypt_ctx, bc1_bytes: kernel::ffi::c_uint,
         bc2: *mut bio_crypt_ctx,
     ) -> bool;
     pub fn blk_crypto_get_keyslot(
@@ -34,8 +34,8 @@ extern "C" {
         slot_ptr: *mut *mut blk_crypto_keyslot,
     ) -> blk_status_t;
     pub fn blk_crypto_put_keyslot(slot: *mut blk_crypto_keyslot);
-    pub fn __blk_crypto_evict_key(profile: *mut blk_crypto_profile, key: *const blk_crypto_key) -> core::ffi::c_int;
-    pub fn blk_crypto_ioctl(bdev: *mut block_device, cmd: core::ffi::c_uint, argp: *mut core::ffi::c_void) -> core::ffi::c_int;
+    pub fn __blk_crypto_evict_key(profile: *mut blk_crypto_profile, key: *const blk_crypto_key) -> kernel::ffi::c_int;
+    pub fn blk_crypto_ioctl(bdev: *mut block_device, cmd: kernel::ffi::c_uint, argp: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
 }
 
 // The following helpers are enabled when CONFIG_BLK_INLINE_ENCRYPTION is set.
@@ -79,17 +79,17 @@ pub unsafe fn blk_crypto_supported(bio_ptr: *mut bio) -> bool {
 
 extern "C" {
     pub fn blk_crypto_config_supported_natively(bdev: *mut block_device, cfg: *mut crypto_cfg) -> bool;
-    pub fn __bio_crypt_advance(bio: *mut bio, bytes: core::ffi::c_uint);
+    pub fn __bio_crypt_advance(bio: *mut bio, bytes: kernel::ffi::c_uint);
     pub fn __bio_crypt_free_ctx(bio: *mut bio);
     pub fn __blk_crypto_rq_get_keyslot(rq: *mut request) -> blk_status_t;
     pub fn __blk_crypto_rq_put_keyslot(rq: *mut request);
     pub fn __blk_crypto_free_request(rq: *mut request);
-    pub fn __blk_crypto_rq_bio_prep(rq: *mut request, bio: *mut bio, gfp_mask: gfp_t) -> core::ffi::c_int;
+    pub fn __blk_crypto_rq_bio_prep(rq: *mut request, bio: *mut bio, gfp_mask: gfp_t) -> kernel::ffi::c_int;
     pub fn blk_crypto_fallback_bio_prep(bio: *mut bio) -> bool;
 }
 
 #[inline]
-pub unsafe fn bio_crypt_advance(bio_ptr: *mut bio, bytes: core::ffi::c_uint) {
+pub unsafe fn bio_crypt_advance(bio_ptr: *mut bio, bytes: kernel::ffi::c_uint) {
     if bio_has_crypt_ctx(bio_ptr) { __bio_crypt_advance(bio_ptr, bytes); }
 }
 
@@ -134,7 +134,7 @@ pub unsafe fn blk_crypto_free_request(rq: *mut request) {
  *         @gfp_mask doesn't include %__GFP_DIRECT_RECLAIM.
  */
 #[inline]
-pub unsafe fn blk_crypto_rq_bio_prep(rq: *mut request, bio_ptr: *mut bio, gfp_mask: gfp_t) -> core::ffi::c_int {
+pub unsafe fn blk_crypto_rq_bio_prep(rq: *mut request, bio_ptr: *mut bio, gfp_mask: gfp_t) -> kernel::ffi::c_int {
     if bio_has_crypt_ctx(bio_ptr) { __blk_crypto_rq_bio_prep(rq, bio_ptr, gfp_mask) } else { 0 }
 }
 
@@ -143,8 +143,8 @@ pub unsafe fn blk_crypto_supported_without_inline_encryption(_bio: *mut bio) -> 
 
 // CONFIG_BLK_INLINE_ENCRYPTION_FALLBACK
 extern "C" {
-    pub fn blk_crypto_fallback_start_using_mode(mode_num: blk_crypto_mode_num) -> core::ffi::c_int;
-    pub fn blk_crypto_fallback_evict_key(key: *const blk_crypto_key) -> core::ffi::c_int;
+    pub fn blk_crypto_fallback_start_using_mode(mode_num: blk_crypto_mode_num) -> kernel::ffi::c_int;
+    pub fn blk_crypto_fallback_evict_key(key: *const blk_crypto_key) -> kernel::ffi::c_int;
 }
 // When CONFIG_BLK_INLINE_ENCRYPTION_FALLBACK is unset, start_using_mode warns
 // once and returns -ENOPKG, while fallback_evict_key returns 0.

@@ -13,17 +13,17 @@
 
 unsafe fn loongson_cu2_call(
     _nfb: *mut notifier_block,
-    action: ::core::ffi::c_ulong,
-    data: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int {
+    action: ::kernel::ffi::c_ulong,
+    data: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int {
     let mut res: u32;
     let mut fpu_owned: u32;
-    let mut value: ::core::ffi::c_ulong;
-    let mut value_next: ::core::ffi::c_ulong;
+    let mut value: ::kernel::ffi::c_ulong;
+    let mut value_next: ::kernel::ffi::c_ulong;
     let mut insn: mips_instruction;
     let fr = !test_thread_flag(TIF_32BIT_FPREGS);
     let regs = data as *mut pt_regs;
-    let addr = (*regs).cp0_badvaddr as *mut ::core::ffi::c_void;
+    let addr = (*regs).cp0_badvaddr as *mut ::kernel::ffi::c_void;
     let pc = exception_epc(regs) as *mut u32;
 
     let ra = (*regs).regs[31];
@@ -135,7 +135,7 @@ unsafe fn loongson_cu2_call(
     }
     
     (*regs).regs[31] = ra;
-    (*regs).cp0_epc = pc as ::core::ffi::c_ulong;
+    (*regs).cp0_epc = pc as ::kernel::ffi::c_ulong;
     if fixup_exception(regs) { return NOTIFY_STOP; }
     die_if_kernel("Unhandled kernel unaligned access", regs);
     force_sig(SIGSEGV);
@@ -147,7 +147,7 @@ unsafe fn loongson_cu2_call(
     return NOTIFY_STOP;
 }
 
-unsafe fn loongson_cu2_setup() -> ::core::ffi::c_int {
+unsafe fn loongson_cu2_setup() -> ::kernel::ffi::c_int {
     cu2_notifier(loongson_cu2_call, 0)
 }
 

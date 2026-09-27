@@ -56,17 +56,17 @@ pub struct pt_regs {
 
 unsafe extern "C" {
     pub fn arch_kgdb_breakpoint();
-    pub static mut saved_vectors: [*mut core::ffi::c_void; 32];
+    pub static mut saved_vectors: [*mut kernel::ffi::c_void; 32];
     pub fn handle_exception(regs: *mut pt_regs);
     pub fn breakinst();
     pub fn kgdb_ll_trap(
-        cmd: core::ffi::c_int,
-        str_: *const core::ffi::c_char,
+        cmd: kernel::ffi::c_int,
+        str_: *const kernel::ffi::c_char,
         regs: *mut pt_regs,
-        err: core::ffi::c_long,
-        trap: core::ffi::c_int,
-        sig: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        err: kernel::ffi::c_long,
+        trap: kernel::ffi::c_int,
+        sig: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -5,7 +5,7 @@
 #[repr(C)]
 pub struct percpu_rw_semaphore {
     pub rss: rcu_sync,
-    pub read_count: *mut core::ffi::c_uint,
+    pub read_count: *mut kernel::ffi::c_uint,
     pub writer: rcuwait,
     pub waiters: wait_queue_head_t,
     pub block: atomic_t,
@@ -27,7 +27,7 @@ macro_rules! __PERCPU_RWSEM_DEP_MAP_INIT {
 // other translated kernel headers.
 macro_rules! __DEFINE_PERCPU_RWSEM {
     ($name:ident, $is_static:tt) => {
-        static mut __percpu_rwsem_rc_$name: core::ffi::c_uint = 0;
+        static mut __percpu_rwsem_rc_$name: kernel::ffi::c_uint = 0;
         $is_static mut $name: percpu_rw_semaphore = percpu_rw_semaphore {
             rss: __RCU_SYNC_INITIALIZER!($name.rss),
             read_count: &raw mut __percpu_rwsem_rc_$name,
@@ -120,14 +120,14 @@ pub unsafe fn percpu_is_write_locked(sem: *mut percpu_rw_semaphore) -> bool {
 }
 
 extern "C" {
-    pub fn __percpu_init_rwsem(sem: *mut percpu_rw_semaphore, name: *const core::ffi::c_char, key: *mut lock_class_key) -> core::ffi::c_int;
+    pub fn __percpu_init_rwsem(sem: *mut percpu_rw_semaphore, name: *const kernel::ffi::c_char, key: *mut lock_class_key) -> kernel::ffi::c_int;
     pub fn percpu_free_rwsem(sem: *mut percpu_rw_semaphore);
 }
 
 macro_rules! percpu_init_rwsem {
     ($sem:expr) => {{
         static mut rwsem_key: lock_class_key = lock_class_key {};
-        __percpu_init_rwsem($sem, stringify!($sem).as_ptr() as *const core::ffi::c_char, &raw mut rwsem_key)
+        __percpu_init_rwsem($sem, concat!(stringify!($sem), "\0").as_ptr() as *const kernel::ffi::c_char, &raw mut rwsem_key)
     }};
 }
 macro_rules! percpu_rwsem_is_write_held { ($sem:expr) => { lockdep_is_held_type!($sem, 0) }; }

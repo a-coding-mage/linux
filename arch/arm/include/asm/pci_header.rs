@@ -3,24 +3,24 @@
 /* The following declarations are available only when building the kernel. */
 #[cfg(__KERNEL__)]
 extern "C" {
-    pub static mut pcibios_min_io: ::core::ffi::c_ulong;
-    pub static mut pcibios_min_mem: ::core::ffi::c_ulong;
+    pub static mut pcibios_min_io: ::kernel::ffi::c_ulong;
+    pub static mut pcibios_min_mem: ::kernel::ffi::c_ulong;
 
     pub fn pcibios_report_status(
-        status_mask: ::core::ffi::c_uint,
-        warn: ::core::ffi::c_int,
+        status_mask: ::kernel::ffi::c_uint,
+        warn: ::kernel::ffi::c_int,
     );
 }
 
 #[cfg(__KERNEL__)]
 #[inline(always)]
-pub unsafe fn PCIBIOS_MIN_IO() -> ::core::ffi::c_ulong {
+pub unsafe fn PCIBIOS_MIN_IO() -> ::kernel::ffi::c_ulong {
     pcibios_min_io
 }
 
 #[cfg(__KERNEL__)]
 #[inline(always)]
-pub unsafe fn PCIBIOS_MIN_MEM() -> ::core::ffi::c_ulong {
+pub unsafe fn PCIBIOS_MIN_MEM() -> ::kernel::ffi::c_ulong {
     pcibios_min_mem
 }
 
@@ -35,7 +35,7 @@ macro_rules! pcibios_assign_all_busses {
 /* CONFIG_PCI_DOMAINS controls whether this declaration is available. */
 #[cfg(all(__KERNEL__, CONFIG_PCI_DOMAINS))]
 #[inline(always)]
-pub unsafe fn pci_proc_domain(bus: *mut pci_bus) -> ::core::ffi::c_int {
+pub unsafe fn pci_proc_domain(bus: *mut pci_bus) -> ::kernel::ffi::c_int {
     pci_domain_nr(bus)
 }
 

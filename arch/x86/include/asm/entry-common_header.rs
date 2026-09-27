@@ -13,8 +13,8 @@ pub unsafe fn arch_enter_from_user_mode(regs: *mut pt_regs) {
          * register.  Native because we want to check the actual CPU
          * state, not the interrupt state as imagined by Xen.
          */
-        let flags: ::core::ffi::c_ulong = native_save_fl();
-        let mut mask: ::core::ffi::c_ulong = X86_EFLAGS_DF | X86_EFLAGS_NT;
+        let flags: ::kernel::ffi::c_ulong = native_save_fl();
+        let mut mask: ::kernel::ffi::c_ulong = X86_EFLAGS_DF | X86_EFLAGS_NT;
 
         /*
          * For !SMAP hardware we patch out CLAC on entry.
@@ -41,7 +41,7 @@ pub unsafe fn arch_enter_from_user_mode(regs: *mut pt_regs) {
 }
 
 #[inline]
-pub unsafe fn arch_exit_work(ti_work: ::core::ffi::c_ulong) {
+pub unsafe fn arch_exit_work(ti_work: ::kernel::ffi::c_ulong) {
     if ti_work & _TIF_USER_RETURN_NOTIFY != 0 {
         fire_user_return_notifiers();
     }
@@ -58,7 +58,7 @@ pub unsafe fn arch_exit_work(ti_work: ::core::ffi::c_ulong) {
 #[inline]
 pub unsafe fn arch_exit_to_user_mode_prepare(
     regs: *mut pt_regs,
-    ti_work: ::core::ffi::c_ulong,
+    ti_work: ::kernel::ffi::c_ulong,
 ) {
     let _ = regs;
     fpregs_assert_state_consistent();
@@ -101,7 +101,7 @@ pub unsafe fn arch_exit_to_user_mode() {
 }
 
 extern "C" {
-    fn x86_entry_from_kvm(entry_type: ::core::ffi::c_uint, vector: ::core::ffi::c_uint);
+    fn x86_entry_from_kvm(entry_type: ::kernel::ffi::c_uint, vector: ::kernel::ffi::c_uint);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

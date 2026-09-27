@@ -63,7 +63,7 @@ pub mod scsi_trace {
     pub const SCSI_RTN_NAMES: &[&str] = &["SCSI_MLQUEUE_HOST_BUSY", "SCSI_MLQUEUE_DEVICE_BUSY", "SCSI_MLQUEUE_EH_RETRY", "SCSI_MLQUEUE_TARGET_BUSY"];
 
     extern "C" {
-        pub fn scsi_trace_parse_cdb(p: *mut trace_seq, cdb: *mut u8, len: i32) -> *const ::core::ffi::c_char;
+        pub fn scsi_trace_parse_cdb(p: *mut trace_seq, cdb: *mut u8, len: i32) -> *const ::kernel::ffi::c_char;
     }
 
     #[repr(C)] pub struct trace_seq { _private: [u8; 0] }

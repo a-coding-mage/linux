@@ -5,7 +5,7 @@
  */
 
 // External kernel and Atari hardware symbols supplied by other translation units.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct Console {

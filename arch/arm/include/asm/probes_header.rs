@@ -20,7 +20,7 @@ pub type probes_insn_handler_t = unsafe extern "C" fn(
     *mut arch_probes_insn,
     *mut pt_regs,
 );
-pub type probes_check_cc = unsafe extern "C" fn(::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
+pub type probes_check_cc = unsafe extern "C" fn(::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
 pub type probes_insn_singlestep_t = unsafe extern "C" fn(
     probes_opcode_t,
     *mut arch_probes_insn,
@@ -36,8 +36,8 @@ pub struct arch_probes_insn {
     pub insn_check_cc: Option<probes_check_cc>,
     pub insn_singlestep: Option<probes_insn_singlestep_t>,
     pub insn_fn: Option<probes_insn_fn_t>,
-    pub stack_space: ::core::ffi::c_int,
-    pub register_usage_flags: ::core::ffi::c_ulong,
+    pub stack_space: ::kernel::ffi::c_int,
+    pub register_usage_flags: ::kernel::ffi::c_ulong,
     pub kprobe_direct_exec: bool,
 }
 
@@ -46,6 +46,6 @@ pub struct arch_probes_insn {
  * 'push {r0-r15}'. Instructions consume more or unknown stack space like
  * 'str r0, [sp, #-80]' and 'str r0, [sp, r1]' should be prohibit to probe.
  */
-pub const MAX_STACK_SIZE: ::core::ffi::c_int = 64;
+pub const MAX_STACK_SIZE: ::kernel::ffi::c_int = 64;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

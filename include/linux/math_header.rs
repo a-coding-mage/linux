@@ -8,8 +8,11 @@
  * as wide as the result!), and we want to evaluate the macro
  * arguments just once each.
  */
+#[macro_export]
 macro_rules! __round_mask {
-    ($x:expr, $y:expr) => { (($y) - 1) as _ };
+    ($x:expr, $y:expr) => {
+        if false { $x } else { (($y) - 1) as _ }
+    };
 }
 
 /**
@@ -17,8 +20,12 @@ macro_rules! __round_mask {
  * @x: the value to round
  * @y: multiple to round up to (must be a power of 2)
  */
+#[macro_export]
 macro_rules! round_up {
-    ($x:expr, $y:expr) => { ((($x) - 1) | __round_mask!($x, $y)) + 1 };
+    ($x:expr, $y:expr) => {{
+        let __x = $x;
+        ((__x - 1) | __round_mask!(__x, $y)) + 1
+    }};
 }
 
 /**
@@ -26,18 +33,25 @@ macro_rules! round_up {
  * @x: the value to round
  * @y: multiple to round down to (must be a power of 2)
  */
+#[macro_export]
 macro_rules! round_down {
-    ($x:expr, $y:expr) => { ($x) & !__round_mask!($x, $y) };
+    ($x:expr, $y:expr) => {{
+        let __x = $x;
+        __x & !__round_mask!(__x, $y)
+    }};
 }
 
+#[macro_export]
 macro_rules! DIV_ROUND_UP_POW2 {
     ($n:expr, $d:expr) => { ($n) / ($d) + if (($n) & (($d) - 1)) != 0 { 1 } else { 0 } };
 }
 
+#[macro_export]
 macro_rules! DIV_ROUND_UP {
     ($n:expr, $d:expr) => { (($n) + ($d) - 1) / ($d) };
 }
 
+#[macro_export]
 macro_rules! DIV_ROUND_DOWN_ULL {
     ($ll:expr, $d:expr) => {{
         let mut _tmp = $ll as u64;
@@ -46,6 +60,7 @@ macro_rules! DIV_ROUND_DOWN_ULL {
     }};
 }
 
+#[macro_export]
 macro_rules! DIV_ROUND_UP_ULL {
     ($ll:expr, $d:expr) => {
         DIV_ROUND_DOWN_ULL!(($ll as u64) + ($d as u64) - 1, $d)
@@ -53,10 +68,12 @@ macro_rules! DIV_ROUND_UP_ULL {
 }
 
 /* The C header selects this according to BITS_PER_LONG. */
+#[macro_export]
 macro_rules! DIV_ROUND_UP_SECTOR_T {
     ($ll:expr, $d:expr) => { DIV_ROUND_UP!($ll, $d) };
 }
 
+#[macro_export]
 macro_rules! roundup {
     ($x:expr, $y:expr) => {{
         let __y = $y;
@@ -64,6 +81,7 @@ macro_rules! roundup {
     }};
 }
 
+#[macro_export]
 macro_rules! rounddown {
     ($x:expr, $y:expr) => {{
         let __x = $x;
@@ -71,11 +89,13 @@ macro_rules! rounddown {
     }};
 }
 
+#[macro_export]
 macro_rules! DIV_ROUND_CLOSEST {
     ($x:expr, $d:expr) => { (($x) + ($d) / 2) / ($d) };
 }
 
 /* Same as above but for u64 dividends. divisor must be a 32-bit number. */
+#[macro_export]
 macro_rules! DIV_ROUND_CLOSEST_ULL {
     ($x:expr, $divisor:expr) => {{
         let __d = $divisor;
@@ -99,6 +119,7 @@ pub struct s32_fract { pub numerator: i32, pub denominator: i32 }
 pub struct u32_fract { pub numerator: u32, pub denominator: u32 }
 
 /* Calculate "x * n / d" without unnecessary overflow or loss of precision. */
+#[macro_export]
 macro_rules! mult_frac {
     ($x:expr, $n:expr, $d:expr) => {{
         let x_ = $x;
@@ -110,6 +131,7 @@ macro_rules! mult_frac {
     }};
 }
 
+#[macro_export]
 macro_rules! sector_div {
     ($a:expr, $b:expr) => {{
         $a /= $b;
@@ -118,6 +140,7 @@ macro_rules! sector_div {
 }
 
 /** abs - return absolute value of an argument */
+#[macro_export]
 macro_rules! abs {
     ($x:expr) => {{
         let __x = $x;
@@ -126,6 +149,7 @@ macro_rules! abs {
 }
 
 /** abs_diff - return absolute value of the difference between the arguments */
+#[macro_export]
 macro_rules! abs_diff {
     ($a:expr, $b:expr) => {{
         let __a = $a;

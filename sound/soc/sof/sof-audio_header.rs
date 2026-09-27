@@ -66,8 +66,8 @@ pub const VOLUME_FWL: u32 = 16;
 
 pub const SOF_TLV_ITEMS: usize = 3;
 
-pub unsafe fn mixer_to_ipc(value: ::core::ffi::c_uint, volume_map: *mut u32, size: i32) -> u32 {
-    if value >= size as ::core::ffi::c_uint {
+pub unsafe fn mixer_to_ipc(value: ::kernel::ffi::c_uint, volume_map: *mut u32, size: i32) -> u32 {
+    if value >= size as ::kernel::ffi::c_uint {
         return *volume_map.offset((size - 1) as isize);
     }
 
@@ -167,11 +167,11 @@ pub struct sof_ipc_tplg_control_ops {
     pub enum_get: Option<unsafe extern "C" fn(*mut snd_sof_control, *mut snd_ctl_elem_value) -> i32>,
     pub bytes_put: Option<unsafe extern "C" fn(*mut snd_sof_control, *mut snd_ctl_elem_value) -> i32>,
     pub bytes_get: Option<unsafe extern "C" fn(*mut snd_sof_control, *mut snd_ctl_elem_value) -> i32>,
-    pub bytes_ext_get: Option<unsafe extern "C" fn(*mut snd_sof_control, *const ::core::ffi::c_uint, ::core::ffi::c_uint) -> i32>,
-    pub bytes_ext_volatile_get: Option<unsafe extern "C" fn(*mut snd_sof_control, *const ::core::ffi::c_uint, ::core::ffi::c_uint) -> i32>,
-    pub bytes_ext_put: Option<unsafe extern "C" fn(*mut snd_sof_control, *const ::core::ffi::c_uint, ::core::ffi::c_uint) -> i32>,
+    pub bytes_ext_get: Option<unsafe extern "C" fn(*mut snd_sof_control, *const ::kernel::ffi::c_uint, ::kernel::ffi::c_uint) -> i32>,
+    pub bytes_ext_volatile_get: Option<unsafe extern "C" fn(*mut snd_sof_control, *const ::kernel::ffi::c_uint, ::kernel::ffi::c_uint) -> i32>,
+    pub bytes_ext_put: Option<unsafe extern "C" fn(*mut snd_sof_control, *const ::kernel::ffi::c_uint, ::kernel::ffi::c_uint) -> i32>,
     /* update control data based on notification from the DSP */
-    pub update: Option<unsafe extern "C" fn(*mut snd_sof_dev, *mut ::core::ffi::c_void)>,
+    pub update: Option<unsafe extern "C" fn(*mut snd_sof_dev, *mut ::kernel::ffi::c_void)>,
     /* Optional callback to setup kcontrols associated with an swidget */
     pub widget_kcontrol_setup: Option<unsafe extern "C" fn(*mut snd_sof_dev, *mut snd_sof_widget) -> i32>,
     /* mandatory callback to set up volume table for volume kcontrols */
@@ -201,7 +201,7 @@ pub struct sof_ipc_tplg_ops {
     pub pipeline_complete: Option<unsafe extern "C" fn(*mut snd_sof_dev, *mut snd_sof_widget) -> i32>,
     pub widget_setup: Option<unsafe extern "C" fn(*mut snd_sof_dev, *mut snd_sof_widget) -> i32>,
     pub widget_free: Option<unsafe extern "C" fn(*mut snd_sof_dev, *mut snd_sof_widget) -> i32>,
-    pub dai_config: Option<unsafe extern "C" fn(*mut snd_sof_dev, *mut snd_sof_widget, ::core::ffi::c_uint, *mut snd_sof_dai_config_data) -> i32>,
+    pub dai_config: Option<unsafe extern "C" fn(*mut snd_sof_dev, *mut snd_sof_widget, ::kernel::ffi::c_uint, *mut snd_sof_dai_config_data) -> i32>,
     pub host_config: Option<unsafe extern "C" fn(*mut snd_sof_dev, *mut snd_sof_widget, *mut snd_sof_platform_stream_params)>,
     pub dai_get_param: Option<unsafe extern "C" fn(*mut snd_sof_dev, *mut snd_sof_dai, i32) -> i32>,
     pub set_up_all_pipelines: Option<unsafe extern "C" fn(*mut snd_sof_dev, bool) -> i32>,
@@ -214,7 +214,7 @@ pub struct sof_ipc_tplg_ops {
 #[repr(C)]
 pub union snd_sof_tuple_value {
     pub v: u32,
-    pub s: *const ::core::ffi::c_char,
+    pub s: *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -271,13 +271,13 @@ pub enum sof_tokens {
 pub struct sof_topology_token {
     pub token: u32,
     pub type_: u32,
-    pub get_token: Option<unsafe extern "C" fn(*mut ::core::ffi::c_void, *mut ::core::ffi::c_void, u32) -> i32>,
+    pub get_token: Option<unsafe extern "C" fn(*mut ::kernel::ffi::c_void, *mut ::kernel::ffi::c_void, u32) -> i32>,
     pub offset: u32,
 }
 
 #[repr(C)]
 pub struct sof_token_info {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub tokens: *const sof_topology_token,
     pub count: i32,
 }
@@ -300,7 +300,7 @@ pub struct snd_sof_pcm_stream {
     pub list: *mut snd_soc_dapm_widget_list, /* list of connected DAPM widgets */
     pub d0i3_compatible: bool, /* DSP can be in D0I3 when this pcm is opened */
     pub pause_supported: bool, /* PCM device supports PAUSE operation */
-    pub dsp_max_burst_size_in_ms: ::core::ffi::c_uint, /* The maximum size of the host DMA burst in ms */
+    pub dsp_max_burst_size_in_ms: ::kernel::ffi::c_uint, /* The maximum size of the host DMA burst in ms */
     /*
      * flag to indicate that the DSP pipelines should be kept
      * active or not while suspending the stream
@@ -309,7 +309,7 @@ pub struct snd_sof_pcm_stream {
     pub pipeline_list: snd_sof_pcm_stream_pipeline_list,
 
     /* used by IPC implementation and core does not touch it */
-    pub private: *mut ::core::ffi::c_void,
+    pub private: *mut ::kernel::ffi::c_void,
 }
 
 /* ALSA SOF PCM device */
@@ -330,8 +330,8 @@ pub struct snd_sof_pcm {
 
 #[repr(C)]
 pub struct snd_sof_led_control {
-    pub use_led: ::core::ffi::c_uint,
-    pub direction: ::core::ffi::c_uint,
+    pub use_led: ::kernel::ffi::c_uint,
+    pub direction: ::kernel::ffi::c_uint,
     pub led_value: i32,
 }
 
@@ -339,19 +339,19 @@ pub struct snd_sof_led_control {
 #[repr(C)]
 pub struct snd_sof_control {
     pub scomp: *mut snd_soc_component,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub comp_id: i32,
     pub min_volume_step: i32, /* min volume step for volume_table */
     pub max_volume_step: i32, /* max volume step for volume_table */
     pub num_channels: i32,
-    pub access: ::core::ffi::c_uint,
+    pub access: ::kernel::ffi::c_uint,
     pub info_type: i32,
     pub index: i32, /* pipeline ID */
-    pub priv_: *mut ::core::ffi::c_void, /* private data copied from topology */
+    pub priv_: *mut ::kernel::ffi::c_void, /* private data copied from topology */
     pub priv_size: size_t, /* size of private data */
     pub max_size: size_t,
-    pub ipc_control_data: *mut ::core::ffi::c_void,
-    pub old_ipc_control_data: *mut ::core::ffi::c_void,
+    pub ipc_control_data: *mut ::kernel::ffi::c_void,
+    pub old_ipc_control_data: *mut ::kernel::ffi::c_void,
     pub max: i32, /* applicable to volume controls */
     pub size: u32, /* cdata size */
     pub volume_table: *mut u32, /* volume table computed from tlv data*/
@@ -427,7 +427,7 @@ pub struct snd_sof_widget {
     pub widget: *mut snd_soc_dapm_widget,
     pub list: list_head, /* list in sdev widget list */
     pub spipe: *mut snd_sof_pipeline,
-    pub module_info: *mut ::core::ffi::c_void,
+    pub module_info: *mut ::kernel::ffi::c_void,
 
     pub uuid: guid_t,
 
@@ -455,13 +455,13 @@ pub struct snd_sof_widget {
      * If pin binding is not defined in topology, nothing to parse in the kernel,
      * input_pin_binding and output_pin_binding shall be NULL.
      */
-    pub input_pin_binding: *mut *mut ::core::ffi::c_char,
-    pub output_pin_binding: *mut *mut ::core::ffi::c_char,
+    pub input_pin_binding: *mut *mut ::kernel::ffi::c_char,
+    pub output_pin_binding: *mut *mut ::kernel::ffi::c_char,
 
     pub output_queue_ida: ida,
     pub input_queue_ida: ida,
 
-    pub private: *mut ::core::ffi::c_void, /* core does not touch this */
+    pub private: *mut ::kernel::ffi::c_void, /* core does not touch this */
 }
 
 #[repr(C)]
@@ -470,7 +470,7 @@ pub struct snd_sof_pipeline {
     pub started_count: i32,
     pub paused_count: i32,
     pub complete: i32,
-    pub core_mask: ::core::ffi::c_ulong,
+    pub core_mask: ::kernel::ffi::c_ulong,
     pub list: list_head,
     pub direction_valid: bool,
     pub direction: u32,
@@ -490,22 +490,22 @@ pub struct snd_sof_route {
     pub src_queue_id: i32,
     pub dst_queue_id: i32,
 
-    pub private: *mut ::core::ffi::c_void,
+    pub private: *mut ::kernel::ffi::c_void,
 }
 
 /* ASoC DAI device */
 #[repr(C)]
 pub struct snd_sof_dai {
     pub scomp: *mut snd_soc_component,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub type_: u32,
 
     pub number_configs: i32,
     pub current_config: i32,
     pub list: list_head, /* list in sdev dai list */
     /* core should not touch this */
-    pub platform_private: *const ::core::ffi::c_void,
-    pub private: *mut ::core::ffi::c_void,
+    pub platform_private: *const ::kernel::ffi::c_void,
+    pub private: *mut ::kernel::ffi::c_void,
 }
 
 unsafe extern "C" {
@@ -521,9 +521,9 @@ unsafe extern "C" {
     pub fn snd_sof_enum_put(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> i32;
     pub fn snd_sof_bytes_get(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> i32;
     pub fn snd_sof_bytes_put(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> i32;
-    pub fn snd_sof_bytes_ext_put(kcontrol: *mut snd_kcontrol, binary_data: *const ::core::ffi::c_uint, size: ::core::ffi::c_uint) -> i32;
-    pub fn snd_sof_bytes_ext_get(kcontrol: *mut snd_kcontrol, binary_data: *mut ::core::ffi::c_uint, size: ::core::ffi::c_uint) -> i32;
-    pub fn snd_sof_bytes_ext_volatile_get(kcontrol: *mut snd_kcontrol, binary_data: *mut ::core::ffi::c_uint, size: ::core::ffi::c_uint) -> i32;
+    pub fn snd_sof_bytes_ext_put(kcontrol: *mut snd_kcontrol, binary_data: *const ::kernel::ffi::c_uint, size: ::kernel::ffi::c_uint) -> i32;
+    pub fn snd_sof_bytes_ext_get(kcontrol: *mut snd_kcontrol, binary_data: *mut ::kernel::ffi::c_uint, size: ::kernel::ffi::c_uint) -> i32;
+    pub fn snd_sof_bytes_ext_volatile_get(kcontrol: *mut snd_kcontrol, binary_data: *mut ::kernel::ffi::c_uint, size: ::kernel::ffi::c_uint) -> i32;
     pub fn snd_sof_control_notify(sdev: *mut snd_sof_dev, cdata: *mut sof_ipc_ctrl_data);
 
     /*
@@ -531,16 +531,16 @@ unsafe extern "C" {
      * There is no snd_sof_free_topology since topology components will
      * be freed by snd_soc_unregister_component,
      */
-    pub fn snd_sof_load_topology(scomp: *mut snd_soc_component, file: *const ::core::ffi::c_char) -> i32;
+    pub fn snd_sof_load_topology(scomp: *mut snd_soc_component, file: *const ::kernel::ffi::c_char) -> i32;
 
     /*
      * Stream IPC
      */
     pub fn snd_sof_ipc_stream_posn(scomp: *mut snd_soc_component, spcm: *mut snd_sof_pcm, direction: i32, posn: *mut sof_ipc_stream_posn) -> i32;
 
-    pub fn snd_sof_find_swidget(scomp: *mut snd_soc_component, name: *const ::core::ffi::c_char) -> *mut snd_sof_widget;
-    pub fn snd_sof_find_swidget_sname(scomp: *mut snd_soc_component, pcm_name: *const ::core::ffi::c_char, dir: i32) -> *mut snd_sof_widget;
-    pub fn snd_sof_find_dai(scomp: *mut snd_soc_component, name: *const ::core::ffi::c_char) -> *mut snd_sof_dai;
+    pub fn snd_sof_find_swidget(scomp: *mut snd_soc_component, name: *const ::kernel::ffi::c_char) -> *mut snd_sof_widget;
+    pub fn snd_sof_find_swidget_sname(scomp: *mut snd_soc_component, pcm_name: *const ::kernel::ffi::c_char, dir: i32) -> *mut snd_sof_widget;
+    pub fn snd_sof_find_dai(scomp: *mut snd_soc_component, name: *const ::kernel::ffi::c_char) -> *mut snd_sof_dai;
 }
 
 /*
@@ -557,8 +557,8 @@ pub unsafe fn snd_sof_find_spcm_dai(
 }
 
 unsafe extern "C" {
-    pub fn snd_sof_find_spcm_name(scomp: *mut snd_soc_component, name: *const ::core::ffi::c_char) -> *mut snd_sof_pcm;
-    pub fn snd_sof_find_spcm_comp(scomp: *mut snd_soc_component, comp_id: ::core::ffi::c_uint, direction: *mut i32) -> *mut snd_sof_pcm;
+    pub fn snd_sof_find_spcm_name(scomp: *mut snd_soc_component, name: *const ::kernel::ffi::c_char) -> *mut snd_sof_pcm;
+    pub fn snd_sof_find_spcm_comp(scomp: *mut snd_soc_component, comp_id: ::kernel::ffi::c_uint, direction: *mut i32) -> *mut snd_sof_pcm;
     pub fn snd_sof_pcm_period_elapsed(substream: *mut snd_pcm_substream);
     pub fn snd_sof_pcm_init_elapsed_work(work: *mut work_struct);
 }
@@ -588,8 +588,8 @@ unsafe extern "C" {
     pub fn snd_sof_dsp_only_d0i3_compatible_stream_active(sdev: *mut snd_sof_dev) -> bool;
 
     /* Machine driver enumeration */
-    pub fn sof_machine_register(sdev: *mut snd_sof_dev, pdata: *mut ::core::ffi::c_void) -> i32;
-    pub fn sof_machine_unregister(sdev: *mut snd_sof_dev, pdata: *mut ::core::ffi::c_void);
+    pub fn sof_machine_register(sdev: *mut snd_sof_dev, pdata: *mut ::kernel::ffi::c_void) -> i32;
+    pub fn sof_machine_unregister(sdev: *mut snd_sof_dev, pdata: *mut ::kernel::ffi::c_void);
 
     pub fn sof_widget_setup(sdev: *mut snd_sof_dev, swidget: *mut snd_sof_widget) -> i32;
     pub fn sof_widget_free(sdev: *mut snd_sof_dev, swidget: *mut snd_sof_widget) -> i32;
@@ -602,13 +602,13 @@ unsafe extern "C" {
     pub fn sof_widget_list_free(sdev: *mut snd_sof_dev, spcm: *mut snd_sof_pcm, dir: i32) -> i32;
     pub fn sof_pcm_dsp_pcm_free(substream: *mut snd_pcm_substream, sdev: *mut snd_sof_dev, spcm: *mut snd_sof_pcm) -> i32;
     pub fn sof_pcm_free_all_streams(sdev: *mut snd_sof_dev) -> i32;
-    pub fn get_token_u32(elem: *mut ::core::ffi::c_void, object: *mut ::core::ffi::c_void, offset: u32) -> i32;
-    pub fn get_token_u16(elem: *mut ::core::ffi::c_void, object: *mut ::core::ffi::c_void, offset: u32) -> i32;
-    pub fn get_token_comp_format(elem: *mut ::core::ffi::c_void, object: *mut ::core::ffi::c_void, offset: u32) -> i32;
-    pub fn get_token_dai_type(elem: *mut ::core::ffi::c_void, object: *mut ::core::ffi::c_void, offset: u32) -> i32;
-    pub fn get_token_uuid(elem: *mut ::core::ffi::c_void, object: *mut ::core::ffi::c_void, offset: u32) -> i32;
-    pub fn get_token_string(elem: *mut ::core::ffi::c_void, object: *mut ::core::ffi::c_void, offset: u32) -> i32;
-    pub fn sof_update_ipc_object(scomp: *mut snd_soc_component, object: *mut ::core::ffi::c_void, token_id: sof_tokens, tuples: *mut snd_sof_tuple, num_tuples: i32, object_size: size_t, token_instance_num: i32) -> i32;
+    pub fn get_token_u32(elem: *mut ::kernel::ffi::c_void, object: *mut ::kernel::ffi::c_void, offset: u32) -> i32;
+    pub fn get_token_u16(elem: *mut ::kernel::ffi::c_void, object: *mut ::kernel::ffi::c_void, offset: u32) -> i32;
+    pub fn get_token_comp_format(elem: *mut ::kernel::ffi::c_void, object: *mut ::kernel::ffi::c_void, offset: u32) -> i32;
+    pub fn get_token_dai_type(elem: *mut ::kernel::ffi::c_void, object: *mut ::kernel::ffi::c_void, offset: u32) -> i32;
+    pub fn get_token_uuid(elem: *mut ::kernel::ffi::c_void, object: *mut ::kernel::ffi::c_void, offset: u32) -> i32;
+    pub fn get_token_string(elem: *mut ::kernel::ffi::c_void, object: *mut ::kernel::ffi::c_void, offset: u32) -> i32;
+    pub fn sof_update_ipc_object(scomp: *mut snd_soc_component, object: *mut ::kernel::ffi::c_void, token_id: sof_tokens, tuples: *mut snd_sof_tuple, num_tuples: i32, object_size: size_t, token_instance_num: i32) -> i32;
     pub fn vol_compute_gain(value: u32, tlv: *mut i32) -> u32;
 }
 

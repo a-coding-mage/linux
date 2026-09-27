@@ -13,7 +13,7 @@
 
 #[repr(C)]
 pub struct lsm_network_audit {
-    pub netif: ::core::ffi::c_int,
+    pub netif: ::kernel::ffi::c_int,
     pub sk: *const sock,
     pub family: u16,
     pub dport: __be16,
@@ -53,37 +53,37 @@ pub struct lsm_ibpkey_audit {
 
 #[repr(C)]
 pub struct lsm_ibendport_audit {
-    pub dev_name: *const ::core::ffi::c_char,
+    pub dev_name: *const ::kernel::ffi::c_char,
     pub port: u8,
 }
 
 /* Auxiliary data to use in generating the audit record. */
 #[repr(C)]
 pub struct common_audit_data {
-    pub type_: ::core::ffi::c_char,
+    pub type_: ::kernel::ffi::c_char,
     pub u: common_audit_data_u,
     /* this union contains LSM specific data */
     pub lsm_data: common_audit_data_lsm_data,
 }
 
-pub const LSM_AUDIT_DATA_PATH: ::core::ffi::c_int = 1;
-pub const LSM_AUDIT_DATA_NET: ::core::ffi::c_int = 2;
-pub const LSM_AUDIT_DATA_CAP: ::core::ffi::c_int = 3;
-pub const LSM_AUDIT_DATA_IPC: ::core::ffi::c_int = 4;
-pub const LSM_AUDIT_DATA_TASK: ::core::ffi::c_int = 5;
-pub const LSM_AUDIT_DATA_KEY: ::core::ffi::c_int = 6;
-pub const LSM_AUDIT_DATA_NONE: ::core::ffi::c_int = 7;
-pub const LSM_AUDIT_DATA_KMOD: ::core::ffi::c_int = 8;
-pub const LSM_AUDIT_DATA_INODE: ::core::ffi::c_int = 9;
-pub const LSM_AUDIT_DATA_DENTRY: ::core::ffi::c_int = 10;
-pub const LSM_AUDIT_DATA_IOCTL_OP: ::core::ffi::c_int = 11;
-pub const LSM_AUDIT_DATA_FILE: ::core::ffi::c_int = 12;
-pub const LSM_AUDIT_DATA_IBPKEY: ::core::ffi::c_int = 13;
-pub const LSM_AUDIT_DATA_IBENDPORT: ::core::ffi::c_int = 14;
-pub const LSM_AUDIT_DATA_LOCKDOWN: ::core::ffi::c_int = 15;
-pub const LSM_AUDIT_DATA_NOTIFICATION: ::core::ffi::c_int = 16;
-pub const LSM_AUDIT_DATA_ANONINODE: ::core::ffi::c_int = 17;
-pub const LSM_AUDIT_DATA_NLMSGTYPE: ::core::ffi::c_int = 18;
+pub const LSM_AUDIT_DATA_PATH: ::kernel::ffi::c_int = 1;
+pub const LSM_AUDIT_DATA_NET: ::kernel::ffi::c_int = 2;
+pub const LSM_AUDIT_DATA_CAP: ::kernel::ffi::c_int = 3;
+pub const LSM_AUDIT_DATA_IPC: ::kernel::ffi::c_int = 4;
+pub const LSM_AUDIT_DATA_TASK: ::kernel::ffi::c_int = 5;
+pub const LSM_AUDIT_DATA_KEY: ::kernel::ffi::c_int = 6;
+pub const LSM_AUDIT_DATA_NONE: ::kernel::ffi::c_int = 7;
+pub const LSM_AUDIT_DATA_KMOD: ::kernel::ffi::c_int = 8;
+pub const LSM_AUDIT_DATA_INODE: ::kernel::ffi::c_int = 9;
+pub const LSM_AUDIT_DATA_DENTRY: ::kernel::ffi::c_int = 10;
+pub const LSM_AUDIT_DATA_IOCTL_OP: ::kernel::ffi::c_int = 11;
+pub const LSM_AUDIT_DATA_FILE: ::kernel::ffi::c_int = 12;
+pub const LSM_AUDIT_DATA_IBPKEY: ::kernel::ffi::c_int = 13;
+pub const LSM_AUDIT_DATA_IBENDPORT: ::kernel::ffi::c_int = 14;
+pub const LSM_AUDIT_DATA_LOCKDOWN: ::kernel::ffi::c_int = 15;
+pub const LSM_AUDIT_DATA_NOTIFICATION: ::kernel::ffi::c_int = 16;
+pub const LSM_AUDIT_DATA_ANONINODE: ::kernel::ffi::c_int = 17;
+pub const LSM_AUDIT_DATA_NLMSGTYPE: ::kernel::ffi::c_int = 18;
 
 #[repr(C)]
 pub union common_audit_data_u {
@@ -91,25 +91,25 @@ pub union common_audit_data_u {
     pub dentry: *mut dentry,
     pub inode: *mut inode,
     pub net: *mut lsm_network_audit,
-    pub cap: ::core::ffi::c_int,
-    pub ipc_id: ::core::ffi::c_int,
+    pub cap: ::kernel::ffi::c_int,
+    pub ipc_id: ::kernel::ffi::c_int,
     pub tsk: *mut task_struct,
     /* CONFIG_KEYS conditional member */
     pub key_struct: common_audit_data_key_struct,
-    pub kmod_name: *mut ::core::ffi::c_char,
+    pub kmod_name: *mut ::kernel::ffi::c_char,
     pub op: *mut lsm_ioctlop_audit,
     pub file: *const file,
     pub ibpkey: *mut lsm_ibpkey_audit,
     pub ibendport: *mut lsm_ibendport_audit,
-    pub reason: ::core::ffi::c_int,
-    pub anonclass: *const ::core::ffi::c_char,
+    pub reason: ::kernel::ffi::c_int,
+    pub anonclass: *const ::kernel::ffi::c_char,
     pub nlmsg_type: u16,
 }
 
 #[repr(C)]
 pub struct common_audit_data_key_struct {
     pub key: key_serial_t,
-    pub key_desc: *mut ::core::ffi::c_char,
+    pub key_desc: *mut ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -124,13 +124,13 @@ pub union common_audit_data_lsm_data {
 
 #[cfg(CONFIG_AUDIT)]
 extern "C" {
-    pub fn ipv4_skb_to_auditdata(skb: *mut sk_buff, ad: *mut common_audit_data, proto: *mut u8) -> ::core::ffi::c_int;
+    pub fn ipv4_skb_to_auditdata(skb: *mut sk_buff, ad: *mut common_audit_data, proto: *mut u8) -> ::kernel::ffi::c_int;
     /* IS_ENABLED(CONFIG_IPV6) conditional declaration. */
-    pub fn ipv6_skb_to_auditdata(skb: *mut sk_buff, ad: *mut common_audit_data, proto: *mut u8) -> ::core::ffi::c_int;
+    pub fn ipv6_skb_to_auditdata(skb: *mut sk_buff, ad: *mut common_audit_data, proto: *mut u8) -> ::kernel::ffi::c_int;
     pub fn common_lsm_audit(
         a: *mut common_audit_data,
-        pre_audit: Option<unsafe extern "C" fn(*mut audit_buffer, *mut ::core::ffi::c_void)>,
-        post_audit: Option<unsafe extern "C" fn(*mut audit_buffer, *mut ::core::ffi::c_void)>,
+        pre_audit: Option<unsafe extern "C" fn(*mut audit_buffer, *mut ::kernel::ffi::c_void)>,
+        post_audit: Option<unsafe extern "C" fn(*mut audit_buffer, *mut ::kernel::ffi::c_void)>,
     );
     pub fn audit_log_lsm_data(ab: *mut audit_buffer, a: *const common_audit_data);
 }
@@ -138,8 +138,8 @@ extern "C" {
 #[cfg(not(CONFIG_AUDIT))]
 pub unsafe fn common_lsm_audit(
     _a: *mut common_audit_data,
-    _pre_audit: Option<unsafe extern "C" fn(*mut audit_buffer, *mut ::core::ffi::c_void)>,
-    _post_audit: Option<unsafe extern "C" fn(*mut audit_buffer, *mut ::core::ffi::c_void)>,
+    _pre_audit: Option<unsafe extern "C" fn(*mut audit_buffer, *mut ::kernel::ffi::c_void)>,
+    _post_audit: Option<unsafe extern "C" fn(*mut audit_buffer, *mut ::kernel::ffi::c_void)>,
 ) {
 }
 

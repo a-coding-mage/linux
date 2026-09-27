@@ -27,24 +27,24 @@ const fn colour_align(addr: usize, pgoff: usize) -> usize {
 }
 
 pub unsafe fn xtensa_shmat(
-    shmid: ::core::ffi::c_int,
-    shmaddr: *mut ::core::ffi::c_char,
-    shmflg: ::core::ffi::c_int,
-) -> ::core::ffi::c_long {
-    let mut ret: ::core::ffi::c_ulong = 0;
-    let err: ::core::ffi::c_long = do_shmat(shmid, shmaddr, shmflg, &mut ret, SHMLBA);
+    shmid: ::kernel::ffi::c_int,
+    shmaddr: *mut ::kernel::ffi::c_char,
+    shmflg: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_long {
+    let mut ret: ::kernel::ffi::c_ulong = 0;
+    let err: ::kernel::ffi::c_long = do_shmat(shmid, shmaddr, shmflg, &mut ret, SHMLBA);
     if err != 0 {
         return err;
     }
-    ret as ::core::ffi::c_long
+    ret as ::kernel::ffi::c_long
 }
 
 pub unsafe fn xtensa_fadvise64_64(
-    fd: ::core::ffi::c_int,
-    advice: ::core::ffi::c_int,
+    fd: ::kernel::ffi::c_int,
+    advice: ::kernel::ffi::c_int,
     offset: u64,
     len: u64,
-) -> ::core::ffi::c_long {
+) -> ::kernel::ffi::c_long {
     ksys_fadvise64_64(fd, offset, len, advice)
 }
 

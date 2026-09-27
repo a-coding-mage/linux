@@ -12,8 +12,8 @@
 
 #[repr(C)]
 pub struct powerdomain {
-    pub name: *const core::ffi::c_char,
-    pub pwrsts: *mut core::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
+    pub pwrsts: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -42,8 +42,8 @@ pub struct power_state {
 
 #[repr(C)]
 pub struct static_dep_map {
-    pub from: *const core::ffi::c_char,
-    pub to: *const core::ffi::c_char,
+    pub from: *const kernel::ffi::c_char,
+    pub to: *const kernel::ffi::c_char,
 }
 
 pub static mut pm44xx_errata: u16 = 0;
@@ -63,20 +63,20 @@ extern "C" {
     fn pwrdm_set_logic_retst(pwrdm: *mut powerdomain, state: u32);
     fn omap4_enter_lowpower(cpu_id: u32, state: u32, save_state: bool);
     fn pwrdm_read_prev_pwrst(pwrdm: *mut powerdomain) -> i32;
-    fn kmalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn kmalloc(size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn pwrdm_get_valid_lp_state(pwrdm: *mut powerdomain, logic: bool, state: u32) -> u32;
     fn omap_do_wfi();
-    fn clkdm_lookup(name: *const core::ffi::c_char) -> *mut clockdomain;
+    fn clkdm_lookup(name: *const kernel::ffi::c_char) -> *mut clockdomain;
     fn clkdm_add_wkdep(from: *mut clockdomain, to: *mut clockdomain) -> i32;
     fn cpu_is_omap446x() -> bool;
     fn soc_is_omap54xx() -> bool;
     fn soc_is_dra7xx() -> bool;
     fn cpu_is_omap44xx() -> bool;
     fn omap_rev() -> u32;
-    fn pwrdm_for_each(callback: unsafe extern "C" fn(*mut powerdomain, *mut core::ffi::c_void) -> i32, data: *mut core::ffi::c_void) -> i32;
+    fn pwrdm_for_each(callback: unsafe extern "C" fn(*mut powerdomain, *mut kernel::ffi::c_void) -> i32, data: *mut kernel::ffi::c_void) -> i32;
     fn omap4_mpuss_init() -> i32;
-    fn clkdm_for_each(callback: unsafe extern "C" fn(*mut clockdomain, *mut core::ffi::c_void) -> i32, data: *mut core::ffi::c_void) -> i32;
-    fn omap_pm_clkdms_setup(clkdm: *mut clockdomain, unused: *mut core::ffi::c_void) -> i32;
+    fn clkdm_for_each(callback: unsafe extern "C" fn(*mut clockdomain, *mut kernel::ffi::c_void) -> i32, data: *mut kernel::ffi::c_void) -> i32;
+    fn omap_pm_clkdms_setup(clkdm: *mut clockdomain, unused: *mut kernel::ffi::c_void) -> i32;
     fn omap_common_suspend_init(suspend: Option<unsafe extern "C" fn() -> i32>);
     fn omap4_idle_init();
 }
@@ -128,7 +128,7 @@ unsafe extern "C" fn omap4_pm_suspend() -> i32 {
 #[cfg(not(CONFIG_SUSPEND))]
 static omap4_pm_suspend: Option<unsafe extern "C" fn() -> i32> = None;
 
-unsafe extern "C" fn pwrdms_setup(pwrdm: *mut powerdomain, _unused: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn pwrdms_setup(pwrdm: *mut powerdomain, _unused: *mut kernel::ffi::c_void) -> i32 {
     if (*pwrdm).pwrsts.is_null() {
         return 0;
     }

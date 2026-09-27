@@ -14,7 +14,7 @@ static mut COUNTER_IDA: Ida = Ida::new();
 struct CounterDeviceAllocHelper {
     counter: CounterDevice,
     // Flexible array member, aligned to ARCH_DMA_MINALIGN in the C source.
-    privdata: [core::ffi::c_ulong; 0],
+    privdata: [kernel::ffi::c_ulong; 0],
 }
 
 unsafe fn counter_device_release(dev: *mut Device) {
@@ -43,9 +43,9 @@ static mut COUNTER_DEVT: DevT = DevT(0);
  *
  * Get the counter device private data
  */
-pub unsafe fn counter_priv(counter: *const CounterDevice) -> *mut core::ffi::c_void {
+pub unsafe fn counter_priv(counter: *const CounterDevice) -> *mut kernel::ffi::c_void {
     let ch = container_of_counter_const(counter);
-    (*ch).privdata.as_ptr() as *mut core::ffi::c_void
+    (*ch).privdata.as_ptr() as *mut kernel::ffi::c_void
 }
 
 /**
@@ -116,11 +116,11 @@ pub unsafe fn counter_unregister(counter: *mut CounterDevice) {
     mutex_unlock(&mut (*counter).ops_exist_lock);
 }
 
-unsafe fn devm_counter_release(counter: *mut core::ffi::c_void) {
+unsafe fn devm_counter_release(counter: *mut kernel::ffi::c_void) {
     counter_unregister(counter as *mut CounterDevice);
 }
 
-unsafe fn devm_counter_put(counter: *mut core::ffi::c_void) {
+unsafe fn devm_counter_put(counter: *mut kernel::ffi::c_void) {
     counter_put(counter as *mut CounterDevice);
 }
 

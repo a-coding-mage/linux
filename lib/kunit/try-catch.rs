@@ -9,11 +9,11 @@
 
 // Dependencies are supplied by the surrounding kernel/KUnit translation unit.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct kunit_last_seen {
-    pub file: *const core::ffi::c_char,
+    pub file: *const kernel::ffi::c_char,
     pub line: i32,
 }
 
@@ -49,14 +49,14 @@ extern "C" {
     fn kthread_create(
         threadfn: unsafe extern "C" fn(*mut c_void) -> i32,
         data: *mut c_void,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> *mut task_struct;
     fn get_task_struct(task: *mut task_struct);
     fn wake_up_process(task: *mut task_struct);
     fn wait_for_completion_timeout(done: *mut completion, timeout: i32) -> i32;
     fn kthread_stop(task: *mut task_struct);
     fn put_task_struct(task: *mut task_struct);
-    fn kunit_err(test: *mut kunit, fmt: *const core::ffi::c_char, ...);
+    fn kunit_err(test: *mut kunit, fmt: *const kernel::ffi::c_char, ...);
 }
 
 const EFAULT: i32 = 14;
@@ -95,7 +95,7 @@ pub unsafe extern "C" fn kunit_try_catch_run(
     task_struct = kthread_create(
         kunit_generic_run_threadfn_adapter,
         try_catch as *mut c_void,
-        b"kunit_try_catch_thread\0".as_ptr() as *const core::ffi::c_char,
+        b"kunit_try_catch_thread\0".as_ptr() as *const kernel::ffi::c_char,
     );
     // IS_ERR(task_struct)
     if (task_struct as isize) < 0 {
@@ -132,19 +132,19 @@ pub unsafe extern "C" fn kunit_try_catch_run(
         if !(*test).last_seen.file.is_null() {
             kunit_err(
                 test,
-                b"try faulted: last line seen %s:%d\n\0".as_ptr() as *const core::ffi::c_char,
+                b"try faulted: last line seen %s:%d\n\0".as_ptr() as *const kernel::ffi::c_char,
                 (*test).last_seen.file,
                 (*test).last_seen.line,
             );
         } else {
-            kunit_err(test, b"try faulted\n\0".as_ptr() as *const core::ffi::c_char);
+            kunit_err(test, b"try faulted\n\0".as_ptr() as *const kernel::ffi::c_char);
         }
     } else if exit_code == -ETIMEDOUT {
-        kunit_err(test, b"try timed out\n\0".as_ptr() as *const core::ffi::c_char);
+        kunit_err(test, b"try timed out\n\0".as_ptr() as *const kernel::ffi::c_char);
     } else if exit_code != 0 {
         kunit_err(
             test,
-            b"Unknown error: %d\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Unknown error: %d\n\0".as_ptr() as *const kernel::ffi::c_char,
             exit_code,
         );
     }

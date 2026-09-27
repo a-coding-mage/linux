@@ -17,11 +17,11 @@ pub struct mtk_gate_regs {
 #[repr(C)]
 pub struct mtk_gate {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char,
     pub regs: *const mtk_gate_regs,
     pub shift: u8,
-    pub ops: *const core::ffi::c_void,
+    pub ops: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -32,27 +32,27 @@ pub struct mtk_clk_desc {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct platform_driver {
-    pub probe: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
-    pub remove: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
+    pub probe: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
+    pub remove: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
     pub driver: driver,
 }
 
 #[repr(C)]
 pub struct driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
 extern "C" {
-    pub static mtk_clk_gate_ops_setclr: core::ffi::c_void;
-    pub fn mtk_clk_simple_probe(dev: *mut core::ffi::c_void) -> i32;
-    pub fn mtk_clk_simple_remove(dev: *mut core::ffi::c_void) -> i32;
+    pub static mtk_clk_gate_ops_setclr: kernel::ffi::c_void;
+    pub fn mtk_clk_simple_probe(dev: *mut kernel::ffi::c_void) -> i32;
+    pub fn mtk_clk_simple_remove(dev: *mut kernel::ffi::c_void) -> i32;
 }
 
 const fn gate_mtk(
@@ -61,12 +61,12 @@ const fn gate_mtk(
     parent: &'static [u8],
     regs: &'static mtk_gate_regs,
     shift: u8,
-    ops: *const core::ffi::c_void,
+    ops: *const kernel::ffi::c_void,
 ) -> mtk_gate {
     mtk_gate {
         id,
-        name: name.as_ptr() as *const core::ffi::c_char,
-        parent_name: parent.as_ptr() as *const core::ffi::c_char,
+        name: name.as_ptr() as *const kernel::ffi::c_char,
+        parent_name: parent.as_ptr() as *const kernel::ffi::c_char,
         regs: regs as *const mtk_gate_regs,
         shift,
         ops,

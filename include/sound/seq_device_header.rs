@@ -12,12 +12,12 @@
 pub struct snd_seq_device {
     /* device info */
     pub card: *mut snd_card, /* sound card */
-    pub device: ::core::ffi::c_int, /* device number */
-    pub id: *const ::core::ffi::c_char, /* driver id */
-    pub name: [::core::ffi::c_char; 80], /* device name */
-    pub argsize: ::core::ffi::c_int, /* size of the argument */
-    pub driver_data: *mut ::core::ffi::c_void, /* private data for driver */
-    pub private_data: *mut ::core::ffi::c_void, /* private data for the caller */
+    pub device: ::kernel::ffi::c_int, /* device number */
+    pub id: *const ::kernel::ffi::c_char, /* driver id */
+    pub name: [::kernel::ffi::c_char; 80], /* device name */
+    pub argsize: ::kernel::ffi::c_int, /* size of the argument */
+    pub driver_data: *mut ::kernel::ffi::c_void, /* private data for driver */
+    pub private_data: *mut ::kernel::ffi::c_void, /* private data for the caller */
     pub private_free: Option<unsafe extern "C" fn(device: *mut snd_seq_device)>,
     pub dev: device,
     pub args: [u8; 0], /* driver-specific argument */
@@ -48,11 +48,11 @@ macro_rules! to_seq_dev {
  */
 #[repr(C)]
 pub struct snd_seq_driver {
-    pub probe: Option<unsafe extern "C" fn(dev: *mut snd_seq_device) -> ::core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(dev: *mut snd_seq_device) -> ::kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(dev: *mut snd_seq_device)>,
     pub driver: device_driver,
-    pub id: *mut ::core::ffi::c_char,
-    pub argsize: ::core::ffi::c_int,
+    pub id: *mut ::kernel::ffi::c_char,
+    pub argsize: ::kernel::ffi::c_int,
 }
 
 /* Equivalent to container_of(_drv, struct snd_seq_driver, driver). */
@@ -78,16 +78,16 @@ macro_rules! snd_seq_device_load_drivers {
 unsafe extern "C" {
     pub fn snd_seq_device_new(
         card: *mut snd_card,
-        device: ::core::ffi::c_int,
-        id: *const ::core::ffi::c_char,
-        argsize: ::core::ffi::c_int,
+        device: ::kernel::ffi::c_int,
+        id: *const ::kernel::ffi::c_char,
+        argsize: ::kernel::ffi::c_int,
         result: *mut *mut snd_seq_device,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn __snd_seq_driver_register(
         drv: *mut snd_seq_driver,
         module: *mut module,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn snd_seq_driver_unregister(drv: *mut snd_seq_driver);
 }
@@ -95,7 +95,7 @@ unsafe extern "C" {
 #[macro_export]
 macro_rules! SNDRV_SEQ_DEVICE_ARGPTR {
     ($dev:expr) => {
-        unsafe { (*$dev).args.as_mut_ptr() as *mut ::core::ffi::c_void }
+        unsafe { (*$dev).args.as_mut_ptr() as *mut ::kernel::ffi::c_void }
     };
 }
 

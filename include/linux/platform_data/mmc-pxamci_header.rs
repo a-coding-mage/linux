@@ -9,12 +9,12 @@ pub enum property_entry {}
 
 #[repr(C)]
 pub struct pxamci_platform_data {
-    pub ocr_mask: ::core::ffi::c_uint, // available voltages
-    pub detect_delay_ms: ::core::ffi::c_ulong, // delay in millisecond before detecting cards after interrupt
-    pub init: Option<unsafe extern "C" fn(*mut device, irq_handler_t, *mut ::core::ffi::c_void) -> ::core::ffi::c_int>,
-    pub get_ro: Option<unsafe extern "C" fn(*mut device) -> ::core::ffi::c_int>,
-    pub setpower: Option<unsafe extern "C" fn(*mut device, ::core::ffi::c_uint) -> ::core::ffi::c_int>,
-    pub exit: Option<unsafe extern "C" fn(*mut device, *mut ::core::ffi::c_void)>,
+    pub ocr_mask: ::kernel::ffi::c_uint, // available voltages
+    pub detect_delay_ms: ::kernel::ffi::c_ulong, // delay in millisecond before detecting cards after interrupt
+    pub init: Option<unsafe extern "C" fn(*mut device, irq_handler_t, *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int>,
+    pub get_ro: Option<unsafe extern "C" fn(*mut device) -> ::kernel::ffi::c_int>,
+    pub setpower: Option<unsafe extern "C" fn(*mut device, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>,
+    pub exit: Option<unsafe extern "C" fn(*mut device, *mut ::kernel::ffi::c_void)>,
     pub gpio_card_ro_invert: bool, // gpio ro is inverted
 }
 

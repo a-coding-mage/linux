@@ -100,9 +100,9 @@ pub const CACHE_FLUSH_IS_SAFE: i32 = 1;
 extern "C" {
     pub fn kgdb_ll_trap(
         cmd: i32,
-        str_: *const core::ffi::c_char,
+        str_: *const kernel::ffi::c_char,
         regs: *mut pt_regs,
-        err: core::ffi::c_long,
+        err: kernel::ffi::c_long,
         trap: i32,
         sig: i32,
     ) -> i32;

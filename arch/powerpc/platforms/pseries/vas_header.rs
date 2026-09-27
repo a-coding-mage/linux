@@ -113,7 +113,7 @@ pub struct pseries_vas_window {
     pub pid: u32,
     pub win_list: list_head,
     pub flags: u64,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub fault_virq: i32,
     pub pending_faults: atomic_t,
 }

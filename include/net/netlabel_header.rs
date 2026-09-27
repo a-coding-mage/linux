@@ -39,8 +39,8 @@ pub struct netlbl_audit { pub prop: lsm_prop, pub loginuid: kuid_t, pub sessioni
 #[repr(C)]
 pub struct netlbl_lsm_cache {
     pub refcount: refcount_t,
-    pub free: Option<unsafe extern "C" fn(*const core::ffi::c_void)>,
-    pub data: *mut core::ffi::c_void,
+    pub free: Option<unsafe extern "C" fn(*const kernel::ffi::c_void)>,
+    pub data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -54,7 +54,7 @@ pub struct netlbl_lsm_catmap {
 pub struct netlbl_lsm_secattr {
     pub flags: u32,
     pub type_: u32,
-    pub domain: *mut core::ffi::c_char,
+    pub domain: *mut kernel::ffi::c_char,
     pub cache: *mut netlbl_lsm_cache,
     pub attr: netlbl_lsm_secattr_attr,
 }
@@ -70,7 +70,7 @@ pub struct netlbl_calipso_ops {
     pub doi_remove: Option<unsafe extern "C" fn(u32, *mut netlbl_audit) -> i32>,
     pub doi_getdef: Option<unsafe extern "C" fn(u32) -> *mut calipso_doi>,
     pub doi_putdef: Option<unsafe extern "C" fn(*mut calipso_doi)>,
-    pub doi_walk: Option<unsafe extern "C" fn(*mut u32, Option<unsafe extern "C" fn(*mut calipso_doi, *mut core::ffi::c_void) -> i32>, *mut core::ffi::c_void) -> i32>,
+    pub doi_walk: Option<unsafe extern "C" fn(*mut u32, Option<unsafe extern "C" fn(*mut calipso_doi, *mut kernel::ffi::c_void) -> i32>, *mut kernel::ffi::c_void) -> i32>,
     pub sock_getattr: Option<unsafe extern "C" fn(*mut sock, *mut netlbl_lsm_secattr) -> i32>,
     pub sock_setattr: Option<unsafe extern "C" fn(*mut sock, *const calipso_doi, *const netlbl_lsm_secattr) -> i32>,
     pub sock_delattr: Option<unsafe extern "C" fn(*mut sock)>,
@@ -89,10 +89,10 @@ extern "C" {
 }
 
 extern "C" {
-    pub fn netlbl_cfg_map_del(domain: *const i8, family: u16, addr: *const core::ffi::c_void, mask: *const core::ffi::c_void, audit: *mut netlbl_audit) -> i32;
-    pub fn netlbl_cfg_unlbl_map_add(domain: *const i8, family: u16, addr: *const core::ffi::c_void, mask: *const core::ffi::c_void, audit: *mut netlbl_audit) -> i32;
-    pub fn netlbl_cfg_unlbl_static_add(net: *mut net, dev_name: *const i8, addr: *const core::ffi::c_void, mask: *const core::ffi::c_void, family: u16, secid: u32, audit: *mut netlbl_audit) -> i32;
-    pub fn netlbl_cfg_unlbl_static_del(net: *mut net, dev_name: *const i8, addr: *const core::ffi::c_void, mask: *const core::ffi::c_void, family: u16, audit: *mut netlbl_audit) -> i32;
+    pub fn netlbl_cfg_map_del(domain: *const i8, family: u16, addr: *const kernel::ffi::c_void, mask: *const kernel::ffi::c_void, audit: *mut netlbl_audit) -> i32;
+    pub fn netlbl_cfg_unlbl_map_add(domain: *const i8, family: u16, addr: *const kernel::ffi::c_void, mask: *const kernel::ffi::c_void, audit: *mut netlbl_audit) -> i32;
+    pub fn netlbl_cfg_unlbl_static_add(net: *mut net, dev_name: *const i8, addr: *const kernel::ffi::c_void, mask: *const kernel::ffi::c_void, family: u16, secid: u32, audit: *mut netlbl_audit) -> i32;
+    pub fn netlbl_cfg_unlbl_static_del(net: *mut net, dev_name: *const i8, addr: *const kernel::ffi::c_void, mask: *const kernel::ffi::c_void, family: u16, audit: *mut netlbl_audit) -> i32;
     pub fn netlbl_cfg_cipsov4_add(doi: *mut cipso_v4_doi, audit: *mut netlbl_audit) -> i32;
     pub fn netlbl_cfg_cipsov4_del(doi: u32, audit: *mut netlbl_audit);
     pub fn netlbl_cfg_calipso_add(doi: *mut calipso_doi, audit: *mut netlbl_audit) -> i32;

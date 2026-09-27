@@ -17,7 +17,7 @@ pub struct xt_nflog_info {
     pub threshold: u16,
     pub flags: u16,
     pub pad: u16,
-    pub prefix: [::core::ffi::c_char; 64],
+    pub prefix: [::kernel::ffi::c_char; 64],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

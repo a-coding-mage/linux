@@ -20,7 +20,7 @@ pub struct device {
 // IS_ENABLED(CONFIG_QCOM_AOSS_QMP)
 #[cfg(CONFIG_QCOM_AOSS_QMP)]
 unsafe extern "C" {
-    pub fn qmp_send(qmp: *mut qmp, fmt: *const core::ffi::c_char, ...) -> i32;
+    pub fn qmp_send(qmp: *mut qmp, fmt: *const kernel::ffi::c_char, ...) -> i32;
     pub fn qmp_get(dev: *mut device) -> *mut qmp;
     pub fn qmp_put(qmp: *mut qmp);
 }
@@ -30,7 +30,7 @@ unsafe extern "C" {
 #[inline]
 pub unsafe fn qmp_send(
     _qmp: *mut qmp,
-    _fmt: *const core::ffi::c_char,
+    _fmt: *const kernel::ffi::c_char,
     ...
 ) -> i32 {
     -19 // -ENODEV

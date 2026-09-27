@@ -3,10 +3,10 @@
 // Dependency intent from the original header: linux/types.h, linux/fcntl.h,
 // and linux/ioctl.h provide __u32, __u64, O_EXCL, and _IO.
 
-pub const O_NOTIFICATION_PIPE: _ = O_EXCL; /* Parameter to pipe2() selecting notification pipe */
+pub const O_NOTIFICATION_PIPE: u32 = O_EXCL; /* Parameter to pipe2() selecting notification pipe */
 
-pub const IOC_WATCH_QUEUE_SET_SIZE: _ = _IO('W' as _, 0x60); /* Set the size in pages */
-pub const IOC_WATCH_QUEUE_SET_FILTER: _ = _IO('W' as _, 0x61); /* Set the filter */
+pub const IOC_WATCH_QUEUE_SET_SIZE: u32 = _IO('W' as _, 0x60); /* Set the size in pages */
+pub const IOC_WATCH_QUEUE_SET_FILTER: u32 = _IO('W' as _, 0x61); /* Set the filter */
 
 #[repr(u32)]
 pub enum watch_notification_type {

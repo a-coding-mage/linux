@@ -18,7 +18,7 @@ pub struct xt_template {
     pub list: list_head,
     pub table_init: Option<unsafe extern "C" fn(*mut net) -> i32>,
     pub me: *mut module,
-    pub name: [core::ffi::c_char; XT_TABLE_MAXNAMELEN],
+    pub name: [kernel::ffi::c_char; XT_TABLE_MAXNAMELEN],
 }
 #[repr(C)] pub struct xt_pernet { pub tables: [list_head; NFPROTO_NUMPROTO], pub dead_tables: [list_head; NFPROTO_NUMPROTO] }
 #[repr(C)] pub struct compat_delta { pub offset: u32, pub delta: i32 }
@@ -63,10 +63,10 @@ pub unsafe extern "C" fn xt_register_target(target: *mut xt_target) -> i32 {
 // declared here; their concrete kernel structures and helpers are supplied by
 // the dependent netfilter translation units.
 extern "C" {
-    fn xt_data_to_user(dst:*mut core::ffi::c_void,src:*const core::ffi::c_void,usersize:i32,size:i32,aligned_size:i32)->i32;
+    fn xt_data_to_user(dst:*mut kernel::ffi::c_void,src:*const kernel::ffi::c_void,usersize:i32,size:i32,aligned_size:i32)->i32;
     fn xt_match_to_user(m:*const xt_entry_match,u:*mut xt_entry_match)->i32;
     fn xt_target_to_user(t:*const xt_entry_target,u:*mut xt_entry_target)->i32;
-    fn xt_check_entry_offsets(base:*const core::ffi::c_void,elems:*const i8,target_offset:u32,next_offset:u32)->i32;
+    fn xt_check_entry_offsets(base:*const kernel::ffi::c_void,elems:*const i8,target_offset:u32,next_offset:u32)->i32;
     fn xt_alloc_entry_offsets(size:u32)->*mut u32;
     fn xt_check_table_hooks(info:*const xt_table_info,valid_hooks:u32)->i32;
     fn xt_check_match(par:*mut xt_mtchk_param,size:u32,proto:u16,inv_proto:bool)->i32;

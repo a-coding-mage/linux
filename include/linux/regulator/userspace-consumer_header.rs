@@ -12,8 +12,8 @@ pub enum regulator_consumer_supply {}
 //           initialisation
 #[repr(C)]
 pub struct regulator_userspace_consumer_data {
-    pub name: *const ::core::ffi::c_char,
-    pub num_supplies: ::core::ffi::c_int,
+    pub name: *const ::kernel::ffi::c_char,
+    pub num_supplies: ::kernel::ffi::c_int,
     pub supplies: *mut regulator_bulk_data,
     pub init_on: bool,
     pub no_autoswitch: bool,

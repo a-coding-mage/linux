@@ -8,7 +8,7 @@
 /* Dependencies supplied by the corresponding kernel headers are intentionally
  * referenced here rather than reimplemented. */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* Global defines */
 
@@ -18,8 +18,8 @@ pub struct pps_device;
 /* The specific PPS source info */
 #[repr(C)]
 pub struct pps_source_info {
-    pub name: [core::ffi::c_char; PPS_MAX_NAME_LEN], /* symbolic name */
-    pub path: [core::ffi::c_char; PPS_MAX_NAME_LEN], /* path of connected device */
+    pub name: [kernel::ffi::c_char; PPS_MAX_NAME_LEN], /* symbolic name */
+    pub path: [kernel::ffi::c_char; PPS_MAX_NAME_LEN], /* path of connected device */
     pub mode: i32, /* PPS allowed mode */
 
     pub echo: Option<unsafe extern "C" fn(pps: *mut pps_device, event: i32, data: *mut c_void)>, /* PPS echo function */

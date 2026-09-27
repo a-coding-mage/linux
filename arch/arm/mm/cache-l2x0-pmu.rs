@@ -9,10 +9,10 @@
 
 const PMU_NR_COUNTERS: usize = 2;
 
-static mut l2x0_base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut l2x0_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut l2x0_pmu: *mut pmu = core::ptr::null_mut();
 static mut pmu_cpu: cpumask_t = unsafe { core::mem::zeroed() };
-static mut l2x0_name: *const core::ffi::c_char = core::ptr::null();
+static mut l2x0_name: *const kernel::ffi::c_char = core::ptr::null();
 static mut l2x0_pmu_poll_period: ktime_t = 0;
 static mut l2x0_pmu_hrtimer: hrtimer = unsafe { core::mem::zeroed() };
 
@@ -199,7 +199,7 @@ pub unsafe fn l2x0_pmu_resume() {
     l2x0_pmu_enable(l2x0_pmu);
 }
 
-pub unsafe fn l2x0_pmu_register(base: *mut core::ffi::c_void, part: u32) {
+pub unsafe fn l2x0_pmu_register(base: *mut kernel::ffi::c_void, part: u32) {
     match part & L2X0_CACHE_ID_PART_MASK {
         L2X0_CACHE_ID_PART_L220 => l2x0_name = c"l2c_220".as_ptr(),
         L2X0_CACHE_ID_PART_L310 => l2x0_name = c"l2c_310".as_ptr(),

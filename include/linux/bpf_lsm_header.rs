@@ -25,7 +25,7 @@ extern "C" {
     pub fn bpf_lsm_verify_prog(
         vlog: *mut bpf_verifier_log,
         prog: *const bpf_prog,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn bpf_lsm_is_sleepable_hook(btf_id: u32) -> bool;
     pub fn bpf_lsm_is_trusted(prog: *const bpf_prog) -> bool;
@@ -39,17 +39,17 @@ extern "C" {
     pub fn bpf_lsm_get_retval_range(
         prog: *const bpf_prog,
         range: *mut bpf_retval_range,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn bpf_set_dentry_xattr_locked(
         dentry: *mut dentry,
-        name__str: *const ::core::ffi::c_char,
+        name__str: *const ::kernel::ffi::c_char,
         value_p: *const bpf_dynptr,
-        flags: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        flags: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn bpf_remove_dentry_xattr_locked(
         dentry: *mut dentry,
-        name__str: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        name__str: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
     pub fn bpf_lsm_has_d_inode_locked(prog: *const bpf_prog) -> bool;
     pub fn bpf_lsm_hook_returns_errno(btf_id: u32) -> bool;
 }
@@ -81,7 +81,7 @@ pub unsafe fn bpf_lsm_is_trusted(_prog: *const bpf_prog) -> bool { false }
 pub unsafe fn bpf_lsm_verify_prog(
     _vlog: *mut bpf_verifier_log,
     _prog: *const bpf_prog,
-) -> ::core::ffi::c_int { -EOPNOTSUPP }
+) -> ::kernel::ffi::c_int { -EOPNOTSUPP }
 
 #[cfg(not(CONFIG_BPF_LSM))]
 #[inline]
@@ -102,23 +102,23 @@ pub unsafe fn bpf_lsm_find_cgroup_shim(_prog: *const bpf_prog, _bpf_func: *mut b
 pub unsafe fn bpf_lsm_get_retval_range(
     _prog: *const bpf_prog,
     _range: *mut bpf_retval_range,
-) -> ::core::ffi::c_int { -EOPNOTSUPP }
+) -> ::kernel::ffi::c_int { -EOPNOTSUPP }
 
 #[cfg(not(CONFIG_BPF_LSM))]
 #[inline]
 pub unsafe fn bpf_set_dentry_xattr_locked(
     _dentry: *mut dentry,
-    _name__str: *const ::core::ffi::c_char,
+    _name__str: *const ::kernel::ffi::c_char,
     _value_p: *const bpf_dynptr,
-    _flags: ::core::ffi::c_int,
-) -> ::core::ffi::c_int { -EOPNOTSUPP }
+    _flags: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int { -EOPNOTSUPP }
 
 #[cfg(not(CONFIG_BPF_LSM))]
 #[inline]
 pub unsafe fn bpf_remove_dentry_xattr_locked(
     _dentry: *mut dentry,
-    _name__str: *const ::core::ffi::c_char,
-) -> ::core::ffi::c_int { -EOPNOTSUPP }
+    _name__str: *const ::kernel::ffi::c_char,
+) -> ::kernel::ffi::c_int { -EOPNOTSUPP }
 
 #[cfg(not(CONFIG_BPF_LSM))]
 #[inline]

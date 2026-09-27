@@ -59,8 +59,8 @@ pub struct EccStatus {
 
 #[repr(C)]
 pub struct EdacPriv {
-    pub baseaddr: *mut core::ffi::c_void,
-    pub message: [core::ffi::c_char; ZYNQMP_OCM_EDAC_MSG_SIZE],
+    pub baseaddr: *mut kernel::ffi::c_void,
+    pub message: [kernel::ffi::c_char; ZYNQMP_OCM_EDAC_MSG_SIZE],
     pub stat: EccStatus,
     pub ce_cnt: u32,
     pub ue_cnt: u32,
@@ -79,35 +79,35 @@ pub struct EdacPriv {
 pub struct EdacDeviceCtlInfo {
     pub pvt_info: *mut EdacPriv,
     pub dev: *mut Device,
-    pub mod_name: *const core::ffi::c_char,
-    pub ctl_name: *const core::ffi::c_char,
-    pub dev_name: *const core::ffi::c_char,
+    pub mod_name: *const kernel::ffi::c_char,
+    pub ctl_name: *const kernel::ffi::c_char,
+    pub dev_name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)] pub struct PlatformDevice { pub dev: Device }
 #[repr(C)] pub struct Device { pub driver: *mut DeviceDriver }
-#[repr(C)] pub struct DeviceDriver { pub name: *const core::ffi::c_char }
+#[repr(C)] pub struct DeviceDriver { pub name: *const kernel::ffi::c_char }
 #[repr(C)] pub struct Resource;
 #[repr(C)] pub struct Dentry;
-#[repr(C)] pub struct File { pub private_data: *mut core::ffi::c_void }
+#[repr(C)] pub struct File { pub private_data: *mut kernel::ffi::c_void }
 
 extern "C" {
     fn readl(addr: *mut u8) -> u32;
     fn writel(value: u32, addr: *mut u8);
-    fn memset(s: *mut core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void;
-    fn snprintf(s: *mut core::ffi::c_char, n: usize, fmt: *const core::ffi::c_char, ...) -> i32;
-    fn edac_device_handle_ce(dci: *mut EdacDeviceCtlInfo, instance: u32, block: u32, msg: *const core::ffi::c_char);
-    fn edac_device_handle_ue(dci: *mut EdacDeviceCtlInfo, instance: u32, block: u32, msg: *const core::ffi::c_char);
+    fn memset(s: *mut kernel::ffi::c_void, c: i32, n: usize) -> *mut kernel::ffi::c_void;
+    fn snprintf(s: *mut kernel::ffi::c_char, n: usize, fmt: *const kernel::ffi::c_char, ...) -> i32;
+    fn edac_device_handle_ce(dci: *mut EdacDeviceCtlInfo, instance: u32, block: u32, msg: *const kernel::ffi::c_char);
+    fn edac_device_handle_ue(dci: *mut EdacDeviceCtlInfo, instance: u32, block: u32, msg: *const kernel::ffi::c_char);
     fn edac_device_alloc_ctl_info(size: usize, name: *const u8, n: u32, ctl: *const u8, layers: u32, nr: u32, idx: i32) -> *mut EdacDeviceCtlInfo;
     fn edac_device_free_ctl_info(dci: *mut EdacDeviceCtlInfo);
     fn edac_device_add_device(dci: *mut EdacDeviceCtlInfo) -> i32;
     fn edac_device_del_device(dev: *mut Device);
     fn devm_platform_get_and_ioremap_resource(pdev: *mut PlatformDevice, index: u32, res: *mut *mut Resource) -> *mut u8;
     fn platform_get_irq(pdev: *mut PlatformDevice, index: u32) -> i32;
-    fn devm_request_irq(dev: *mut Device, irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> i32, flags: u32, name: *const core::ffi::c_char, data: *mut EdacDeviceCtlInfo) -> i32;
+    fn devm_request_irq(dev: *mut Device, irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> i32, flags: u32, name: *const kernel::ffi::c_char, data: *mut EdacDeviceCtlInfo) -> i32;
     fn platform_set_drvdata(pdev: *mut PlatformDevice, data: *mut EdacDeviceCtlInfo);
     fn platform_get_drvdata(pdev: *mut PlatformDevice) -> *mut EdacDeviceCtlInfo;
-    fn dev_name(dev: *mut Device) -> *const core::ffi::c_char;
+    fn dev_name(dev: *mut Device) -> *const kernel::ffi::c_char;
     fn edac_device_alloc_index() -> i32;
     fn ptr_err(ptr: *mut u8) -> i32;
     fn is_err(ptr: *mut u8) -> bool;
@@ -147,7 +147,7 @@ unsafe fn handle_error(dci: *mut EdacDeviceCtlInfo, p: *mut EccStatus) {
     memset(p as *mut _, 0, core::mem::size_of::<EccStatus>());
 }
 
-pub unsafe extern "C" fn intr_handler(irq: i32, dev_id: *mut core::ffi::c_void) -> i32 {
+pub unsafe extern "C" fn intr_handler(irq: i32, dev_id: *mut kernel::ffi::c_void) -> i32 {
     let dci = dev_id as *mut EdacDeviceCtlInfo;
     let priv_ = (*dci).pvt_info;
     let regval = readl((*priv_).baseaddr.add(OCM_ISR_OFST));
@@ -182,7 +182,7 @@ unsafe fn edac_probe(pdev: *mut PlatformDevice) -> i32 {
     let priv_ = (*dci).pvt_info;
     platform_set_drvdata(pdev, dci);
     (*dci).dev = &mut (*pdev).dev;
-    (*priv_).baseaddr = baseaddr as *mut core::ffi::c_void;
+    (*priv_).baseaddr = baseaddr as *mut kernel::ffi::c_void;
     (*dci).mod_name = (*(*pdev).dev.driver).name;
     (*dci).ctl_name = ZYNQMP_OCM_EDAC_STRING.as_ptr();
     (*dci).dev_name = dev_name(&mut (*pdev).dev);

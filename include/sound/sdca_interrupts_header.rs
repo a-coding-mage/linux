@@ -35,7 +35,7 @@ pub const SDCA_MAX_INTERRUPTS: usize = 31; // the last bit is reserved for futur
  */
 #[repr(C)]
 pub struct sdca_interrupt {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 
     pub dev: *mut device,
     pub device_regmap: *mut regmap,
@@ -46,10 +46,10 @@ pub struct sdca_interrupt {
     pub control: *mut sdca_control,
     pub handler: irq_handler_t,
 
-    pub priv_: *mut ::core::ffi::c_void,
+    pub priv_: *mut ::kernel::ffi::c_void,
     pub free_priv: Option<unsafe extern "C" fn(interrupt: *mut sdca_interrupt)>,
 
-    pub irq: ::core::ffi::c_int,
+    pub irq: ::kernel::ffi::c_int,
     pub early_request: bool,
 }
 
@@ -72,30 +72,30 @@ pub struct sdca_interrupt_info {
 
 extern "C" {
     pub fn sdca_irq_request(dev: *mut device, interrupt_info: *mut sdca_interrupt_info,
-                            sdca_irq: ::core::ffi::c_int, name: *const ::core::ffi::c_char,
-                            handler: irq_handler_t, data: *mut ::core::ffi::c_void)
-        -> ::core::ffi::c_int;
+                            sdca_irq: ::kernel::ffi::c_int, name: *const ::kernel::ffi::c_char,
+                            handler: irq_handler_t, data: *mut ::kernel::ffi::c_void)
+        -> ::kernel::ffi::c_int;
     pub fn sdca_irq_free(dev: *mut device, interrupt_info: *mut sdca_interrupt_info,
-                         sdca_irq: ::core::ffi::c_int, name: *const ::core::ffi::c_char,
-                         data: *mut ::core::ffi::c_void);
+                         sdca_irq: ::kernel::ffi::c_int, name: *const ::kernel::ffi::c_char,
+                         data: *mut ::kernel::ffi::c_void);
     pub fn sdca_irq_data_populate(dev: *mut device, function_regmap: *mut regmap,
                                   component: *mut snd_soc_component,
                                   function: *mut sdca_function_data,
                                   entity: *mut sdca_entity, control: *mut sdca_control,
-                                  interrupt: *mut sdca_interrupt) -> ::core::ffi::c_int;
+                                  interrupt: *mut sdca_interrupt) -> ::kernel::ffi::c_int;
     pub fn sdca_irq_populate_early(dev: *mut device, function_regmap: *mut regmap,
                                    function: *mut sdca_function_data,
-                                   info: *mut sdca_interrupt_info) -> ::core::ffi::c_int;
+                                   info: *mut sdca_interrupt_info) -> ::kernel::ffi::c_int;
     pub fn sdca_irq_populate(function: *mut sdca_function_data,
                              component: *mut snd_soc_component,
-                             info: *mut sdca_interrupt_info) -> ::core::ffi::c_int;
+                             info: *mut sdca_interrupt_info) -> ::kernel::ffi::c_int;
     pub fn sdca_irq_cleanup(dev: *mut device, function: *mut sdca_function_data,
                             info: *mut sdca_interrupt_info);
     pub fn sdca_irq_cleanup_late(dev: *mut device, function: *mut sdca_function_data,
                                  info: *mut sdca_interrupt_info);
 
     pub fn devm_sdca_irq_allocate(dev: *mut device, regmap: *mut regmap,
-                                  irq: ::core::ffi::c_int) -> *mut sdca_interrupt_info;
+                                  irq: ::kernel::ffi::c_int) -> *mut sdca_interrupt_info;
 
     pub fn sdca_irq_enable_early(function: *mut sdca_function_data,
                                  info: *mut sdca_interrupt_info);

@@ -224,7 +224,7 @@ static i32 soc21_query_video_codecs(amdgpu_device *adev, encode: bool,
 
 static u32 soc21_didt_rreg(amdgpu_device *adev, reg: u32)
 {
-	flags: core::ffi::c_ulong, address, data;
+	flags: kernel::ffi::c_ulong, address, data;
 	u32 r;
 
 	address = SOC15_REG_OFFSET(GC, 0, regDIDT_IND_INDEX);
@@ -239,7 +239,7 @@ static u32 soc21_didt_rreg(amdgpu_device *adev, reg: u32)
 
 static c_void soc21_didt_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	flags: core::ffi::c_ulong, address, data;
+	flags: kernel::ffi::c_ulong, address, data;
 
 	address = SOC15_REG_OFFSET(GC, 0, regDIDT_IND_INDEX);
 	data = SOC15_REG_OFFSET(GC, 0, regDIDT_IND_DATA);

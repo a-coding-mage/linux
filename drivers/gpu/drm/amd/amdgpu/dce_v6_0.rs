@@ -138,7 +138,7 @@ static const struct {
 static u32 dce_v6_0_audio_endpt_rreg(amdgpu_device *adev,
 				     block_offset: u32, reg: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u32 r;
 
 	spin_lock_irqsave((*&adev).reg.audio_endpt.lock, flags);
@@ -152,7 +152,7 @@ static u32 dce_v6_0_audio_endpt_rreg(amdgpu_device *adev,
 static void dce_v6_0_audio_endpt_wreg(amdgpu_device *adev,
 				      block_offset: u32, reg: u32, v: u32)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave((*&adev).reg.audio_endpt.lock, flags);
 	WREG32(mmAZALIA_F0_CODEC_ENDPOINT_INDEX + block_offset,
@@ -3018,7 +3018,7 @@ static int dce_v6_0_crtc_irq(amdgpu_device *adev,
 {
 	unsigned crtc = entry->src_id - 1;
 	uint32_t disp_int = RREG32(interrupt_status_offsets[crtc].reg);
-	core::ffi::c_uint irq_type = amdgpu_display_crtc_idx_to_irq_type(adev,
+	kernel::ffi::c_uint irq_type = amdgpu_display_crtc_idx_to_irq_type(adev,
 								    crtc);
 
 	switch (entry->src_data[0]) {
@@ -3076,7 +3076,7 @@ static int dce_v6_0_pageflip_irq(amdgpu_device *adev,
 				 amdgpu_irq_src *source,
 				 amdgpu_iv_entry *entry)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	unsigned crtc_id;
 	struct amdgpu_crtc *amdgpu_crtc;
 	struct amdgpu_flip_work *works;

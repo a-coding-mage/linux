@@ -18,11 +18,11 @@ pub struct MtkGateRegs {
 #[repr(C)]
 pub struct MtkGate {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char,
     pub regs: *const MtkGateRegs,
     pub shift: u8,
-    pub ops: *const core::ffi::c_void,
+    pub ops: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -33,29 +33,29 @@ pub struct MtkClkDesc {
 
 #[repr(C)]
 pub struct OfDeviceId {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct PlatformDriver {
-    pub probe: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
-    pub remove: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
+    pub probe: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
+    pub remove: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
     pub driver: Driver,
 }
 
 #[repr(C)]
 pub struct Driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const OfDeviceId,
 }
 
 // The following clock identifiers and gate-operation symbols are supplied by
 // the corresponding kernel headers and other translation units.
 extern "C" {
-    pub static mtk_clk_gate_ops_setclr: core::ffi::c_void;
-    pub fn mtk_clk_simple_probe(device: *mut core::ffi::c_void) -> i32;
-    pub fn mtk_clk_simple_remove(device: *mut core::ffi::c_void) -> i32;
+    pub static mtk_clk_gate_ops_setclr: kernel::ffi::c_void;
+    pub fn mtk_clk_simple_probe(device: *mut kernel::ffi::c_void) -> i32;
+    pub fn mtk_clk_simple_remove(device: *mut kernel::ffi::c_void) -> i32;
 }
 
 static IMG_CG_REGS: MtkGateRegs = MtkGateRegs {
@@ -71,12 +71,12 @@ const fn gate_mtk(
     parent: &'static [u8],
     regs: &'static MtkGateRegs,
     shift: u8,
-    ops: *const core::ffi::c_void,
+    ops: *const kernel::ffi::c_void,
 ) -> MtkGate {
     MtkGate {
         id,
-        name: name.as_ptr() as *const core::ffi::c_char,
-        parent_name: parent.as_ptr() as *const core::ffi::c_char,
+        name: name.as_ptr() as *const kernel::ffi::c_char,
+        parent_name: parent.as_ptr() as *const kernel::ffi::c_char,
         regs,
         shift,
         ops,
@@ -86,7 +86,7 @@ const fn gate_mtk(
 const fn gate_dummy(id: u32, name: &'static [u8]) -> MtkGate {
     MtkGate {
         id,
-        name: name.as_ptr() as *const core::ffi::c_char,
+        name: name.as_ptr() as *const kernel::ffi::c_char,
         parent_name: core::ptr::null(),
         regs: core::ptr::null(),
         shift: 0,
@@ -122,8 +122,8 @@ static IMG_DESC: MtkClkDesc = MtkClkDesc {
 
 static OF_MATCH_CLK_MT2701_IMG: [OfDeviceId; 2] = [
     OfDeviceId {
-        compatible: b"mediatek,mt2701-imgsys\0".as_ptr() as *const core::ffi::c_char,
-        data: core::ptr::addr_of!(IMG_DESC) as *const core::ffi::c_void,
+        compatible: b"mediatek,mt2701-imgsys\0".as_ptr() as *const kernel::ffi::c_char,
+        data: core::ptr::addr_of!(IMG_DESC) as *const kernel::ffi::c_void,
     },
     OfDeviceId {
         // sentinel
@@ -136,7 +136,7 @@ static mut CLK_MT2701_IMG_DRV: PlatformDriver = PlatformDriver {
     probe: Some(mtk_clk_simple_probe),
     remove: Some(mtk_clk_simple_remove),
     driver: Driver {
-        name: b"clk-mt2701-img\0".as_ptr() as *const core::ffi::c_char,
+        name: b"clk-mt2701-img\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: OF_MATCH_CLK_MT2701_IMG.as_ptr(),
     },
 };

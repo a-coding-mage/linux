@@ -20,7 +20,7 @@
 struct clk_div {
     divider: clk_divider,
     ops: *const clk_ops,
-    reg: *mut core::ffi::c_void,
+    reg: *mut kernel::ffi::c_void,
     busy: u8,
 }
 
@@ -33,8 +33,8 @@ unsafe fn to_clk_div(hw: *mut clk_hw) -> *mut clk_div {
 
 unsafe extern "C" fn clk_div_recalc_rate(
     hw: *mut clk_hw,
-    parent_rate: core::ffi::c_ulong,
-) -> core::ffi::c_ulong {
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     let div = to_clk_div(hw);
 
     ((*(*div).ops).recalc_rate)(
@@ -46,7 +46,7 @@ unsafe extern "C" fn clk_div_recalc_rate(
 unsafe extern "C" fn clk_div_determine_rate(
     hw: *mut clk_hw,
     req: *mut clk_rate_request,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let div = to_clk_div(hw);
 
     ((*(*div).ops).determine_rate)(&mut (*div).divider.hw, req)
@@ -54,11 +54,11 @@ unsafe extern "C" fn clk_div_determine_rate(
 
 unsafe extern "C" fn clk_div_set_rate(
     hw: *mut clk_hw,
-    rate: core::ffi::c_ulong,
-    parent_rate: core::ffi::c_ulong,
-) -> core::ffi::c_int {
+    rate: kernel::ffi::c_ulong,
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let div = to_clk_div(hw);
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     ret = ((*(*div).ops).set_rate)(&mut (*div).divider.hw, rate, parent_rate);
     if ret == 0 {
@@ -75,9 +75,9 @@ static clk_div_ops: clk_ops = clk_ops {
 };
 
 unsafe fn mxs_clk_div(
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
-    reg: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
+    reg: *mut kernel::ffi::c_void,
     shift: u8,
     width: u8,
     busy: u8,
@@ -114,7 +114,7 @@ unsafe fn mxs_clk_div(
 
     clk = clk_register(core::ptr::null_mut(), &mut (*div).divider.hw);
     if IS_ERR(clk) {
-        kfree(div as *mut core::ffi::c_void);
+        kfree(div as *mut kernel::ffi::c_void);
     }
 
     clk

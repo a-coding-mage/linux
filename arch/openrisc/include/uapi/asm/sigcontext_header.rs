@@ -26,8 +26,8 @@
 
 #[repr(C)]
 pub union sigcontext__fpcsr_or_oldmask {
-    pub fpcsr: ::core::ffi::c_ulong,
-    pub oldmask: ::core::ffi::c_ulong, /* unused */
+    pub fpcsr: ::kernel::ffi::c_ulong,
+    pub oldmask: ::kernel::ffi::c_ulong, /* unused */
 }
 
 #[repr(C)]

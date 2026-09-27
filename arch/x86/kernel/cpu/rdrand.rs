@@ -23,8 +23,8 @@
 pub unsafe fn x86_init_rdrand(c: *mut cpuinfo_x86) {
     const SAMPLES: usize = 8;
     const MIN_CHANGE: usize = 5;
-    let mut sample: core::ffi::c_ulong = 0;
-    let mut prev: core::ffi::c_ulong = 0;
+    let mut sample: kernel::ffi::c_ulong = 0;
+    let mut prev: kernel::ffi::c_ulong = 0;
     let mut failure = false;
     let mut i: usize;
     let mut changed: usize;

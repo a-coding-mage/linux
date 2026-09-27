@@ -8,8 +8,8 @@ pub const MEMFD_ANON_NAME: &str = "[memfd]";
 extern "C" {
     pub fn memfd_fcntl(
         file: *mut file,
-        cmd: ::core::ffi::c_uint,
-        arg: ::core::ffi::c_uint) -> ::core::ffi::c_long;
+        cmd: ::kernel::ffi::c_uint,
+        arg: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_long;
     pub fn memfd_alloc_folio(
         memfd: *mut file,
         idx: pgoff_t) -> *mut folio;
@@ -23,24 +23,24 @@ extern "C" {
      */
     pub fn memfd_check_seals_mmap(
         file: *mut file,
-        vma_flags_ptr: *mut vma_flags_t) -> ::core::ffi::c_int;
+        vma_flags_ptr: *mut vma_flags_t) -> ::kernel::ffi::c_int;
     pub fn memfd_alloc_file(
-        name: *const ::core::ffi::c_char,
-        flags: ::core::ffi::c_uint) -> *mut file;
-    pub fn memfd_get_seals(file: *mut file) -> ::core::ffi::c_int;
+        name: *const ::kernel::ffi::c_char,
+        flags: ::kernel::ffi::c_uint) -> *mut file;
+    pub fn memfd_get_seals(file: *mut file) -> ::kernel::ffi::c_int;
     pub fn memfd_add_seals(
         file: *mut file,
-        seals: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+        seals: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_MEMFD_CREATE))]
 #[inline]
 pub unsafe fn memfd_fcntl(
     _f: *mut file,
-    _c: ::core::ffi::c_uint,
-    _a: ::core::ffi::c_uint,
-) -> ::core::ffi::c_long {
-    -EINVAL as ::core::ffi::c_long
+    _c: ::kernel::ffi::c_uint,
+    _a: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_long {
+    -EINVAL as ::kernel::ffi::c_long
 }
 
 #[cfg(not(CONFIG_MEMFD_CREATE))]
@@ -57,32 +57,32 @@ pub unsafe fn memfd_alloc_folio(
 pub unsafe fn memfd_check_seals_mmap(
     _file: *mut file,
     _vma_flags_ptr: *mut vma_flags_t,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     0
 }
 
 #[cfg(not(CONFIG_MEMFD_CREATE))]
 #[inline]
 pub unsafe fn memfd_alloc_file(
-    _name: *const ::core::ffi::c_char,
-    _flags: ::core::ffi::c_uint,
+    _name: *const ::kernel::ffi::c_char,
+    _flags: ::kernel::ffi::c_uint,
 ) -> *mut file {
     ERR_PTR(-EINVAL)
 }
 
 #[cfg(not(CONFIG_MEMFD_CREATE))]
 #[inline]
-pub unsafe fn memfd_get_seals(_file: *mut file) -> ::core::ffi::c_int {
-    -EINVAL as ::core::ffi::c_int
+pub unsafe fn memfd_get_seals(_file: *mut file) -> ::kernel::ffi::c_int {
+    -EINVAL as ::kernel::ffi::c_int
 }
 
 #[cfg(not(CONFIG_MEMFD_CREATE))]
 #[inline]
 pub unsafe fn memfd_add_seals(
     _file: *mut file,
-    _seals: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
-    -EINVAL as ::core::ffi::c_int
+    _seals: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
+    -EINVAL as ::kernel::ffi::c_int
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

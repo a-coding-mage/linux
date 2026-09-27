@@ -3,7 +3,7 @@
 // Declaration of the system call table. The C declaration is an incomplete
 // array whose complete definition is supplied elsewhere.
 unsafe extern "C" {
-    pub static sys_call_table: [core::ffi::c_ulong; 0];
+    pub static sys_call_table: [kernel::ffi::c_ulong; 0];
 }
 
 // Dependency preserved from the original header: <asm/syscall_32.h>.

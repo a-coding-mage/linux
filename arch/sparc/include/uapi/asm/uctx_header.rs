@@ -26,34 +26,34 @@ pub const MC_O6: usize = 17;
 pub const MC_O7: usize = 18;
 pub const MC_NGREG: usize = 19;
 
-pub type mc_greg_t = ::core::ffi::c_ulong;
+pub type mc_greg_t = ::kernel::ffi::c_ulong;
 pub type mc_gregset_t = [mc_greg_t; MC_NGREG];
 
 pub const MC_MAXFPQ: usize = 16;
 
 #[repr(C)]
 pub struct mc_fq {
-    pub mcfq_addr: *mut ::core::ffi::c_ulong,
-    pub mcfq_insn: ::core::ffi::c_uint,
+    pub mcfq_addr: *mut ::kernel::ffi::c_ulong,
+    pub mcfq_insn: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub union mc_fpu_fregs {
-    pub sregs: [::core::ffi::c_uint; 32],
-    pub dregs: [::core::ffi::c_ulong; 32],
+    pub sregs: [::kernel::ffi::c_uint; 32],
+    pub dregs: [::kernel::ffi::c_ulong; 32],
     pub qregs: [f64; 16],
 }
 
 #[repr(C)]
 pub struct mc_fpu {
     pub mcfpu_fregs: mc_fpu_fregs,
-    pub mcfpu_fsr: ::core::ffi::c_ulong,
-    pub mcfpu_fprs: ::core::ffi::c_ulong,
-    pub mcfpu_gsr: ::core::ffi::c_ulong,
+    pub mcfpu_fsr: ::kernel::ffi::c_ulong,
+    pub mcfpu_fprs: ::kernel::ffi::c_ulong,
+    pub mcfpu_gsr: ::kernel::ffi::c_ulong,
     pub mcfpu_fq: *mut mc_fq,
-    pub mcfpu_qcnt: ::core::ffi::c_uchar,
-    pub mcfpu_qentsz: ::core::ffi::c_uchar,
-    pub mcfpu_enab: ::core::ffi::c_uchar,
+    pub mcfpu_qcnt: ::kernel::ffi::c_uchar,
+    pub mcfpu_qentsz: ::kernel::ffi::c_uchar,
+    pub mcfpu_enab: ::kernel::ffi::c_uchar,
 }
 
 pub type mc_fpu_t = mc_fpu;
@@ -69,7 +69,7 @@ pub struct mcontext_t {
 #[repr(C)]
 pub struct ucontext {
     pub uc_link: *mut ucontext,
-    pub uc_flags: ::core::ffi::c_ulong,
+    pub uc_flags: ::kernel::ffi::c_ulong,
     pub uc_sigmask: sigset_t,
     pub uc_mcontext: mcontext_t,
 }

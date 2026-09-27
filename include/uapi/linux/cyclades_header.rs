@@ -5,10 +5,10 @@
 
 #[repr(C)]
 pub struct cyclades_monitor {
-    pub int_count: ::core::ffi::c_ulong,
-    pub char_count: ::core::ffi::c_ulong,
-    pub char_max: ::core::ffi::c_ulong,
-    pub char_last: ::core::ffi::c_ulong,
+    pub int_count: ::kernel::ffi::c_ulong,
+    pub char_count: ::kernel::ffi::c_ulong,
+    pub char_max: ::kernel::ffi::c_ulong,
+    pub char_last: ::kernel::ffi::c_ulong,
 }
 
 pub const CYGETMON: u32 = 0x435901;

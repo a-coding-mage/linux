@@ -21,7 +21,7 @@ pub const MAC_FILLED: u8 = 1;
 
 #[repr(C)]
 pub struct bitmap_ipmac {
-    pub members: *mut core::ffi::c_ulong,
+    pub members: *mut kernel::ffi::c_ulong,
     pub first_ip: u32,
     pub last_ip: u32,
     pub elements: u32,
@@ -85,7 +85,7 @@ unsafe fn bitmap_ipmac_is_filled(elem: *const bitmap_ipmac_elem) -> i32 {
 }
 
 unsafe fn bitmap_ipmac_add_timeout(
-    timeout: *mut core::ffi::c_ulong,
+    timeout: *mut kernel::ffi::c_ulong,
     e: *const bitmap_ipmac_adt_elem,
     ext: *const ip_set_ext,
     set: *mut ip_set,
@@ -217,7 +217,7 @@ unsafe extern "C" fn bitmap_ipmac_create(net: *mut net, set: *mut ip_set, tb: *m
     (*set).dsize = ip_set_elem_len(set, tb, core::mem::size_of::<bitmap_ipmac_elem>(), core::mem::align_of::<bitmap_ipmac_elem>());
     map = ip_set_alloc(core::mem::size_of::<bitmap_ipmac>().wrapping_add(elements as usize * (*set).dsize)) as *mut bitmap_ipmac;
     if map.is_null() { return -ENOMEM; }
-    (*map).memsize = bits_to_longs(elements as usize) * core::mem::size_of::<core::ffi::c_ulong>();
+    (*map).memsize = bits_to_longs(elements as usize) * core::mem::size_of::<kernel::ffi::c_ulong>();
     (*set).variant = &mut bitmap_ipmac;
     if !init_map_ipmac(set, map, first_ip, last_ip, elements as u32) { ip_set_free(map as *mut _); return -ENOMEM; }
     if !(*tb.add(IPSET_ATTR_TIMEOUT as usize)).is_null() { (*set).timeout = ip_set_timeout_uget(*tb.add(IPSET_ATTR_TIMEOUT as usize)); bitmap_ipmac_gc_init(set, bitmap_ipmac_gc); }

@@ -36,7 +36,7 @@ pub struct papr_sysparm_io_block {
  * -EPERM: The calling partition is not allowed to access this parameter. (-9002)
  * -EOPNOTSUPP: Parameter not supported on this platform (-3)
  */
-pub const PAPR_SYSPARM_IOC_GET: _ = _IOWR!(
+pub const PAPR_SYSPARM_IOC_GET: u32 = _IOWR!(
     PAPR_MISCDEV_IOC_ID,
     1,
     papr_sysparm_io_block,
@@ -54,7 +54,7 @@ pub const PAPR_SYSPARM_IOC_GET: _ = _IOWR!(
  * -EPERM: The calling partition is not allowed to access this parameter. (-9002)
  * -EOPNOTSUPP: Parameter not supported on this platform (-3)
  */
-pub const PAPR_SYSPARM_IOC_SET: _ = _IOW!(
+pub const PAPR_SYSPARM_IOC_SET: u32 = _IOW!(
     PAPR_MISCDEV_IOC_ID,
     2,
     papr_sysparm_io_block,

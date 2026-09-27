@@ -20,7 +20,7 @@
 // Linux kernel dependencies supplied by the surrounding translation.
 
 #[repr(C)]
-struct OfDeviceId { compatible: *const core::ffi::c_char }
+struct OfDeviceId { compatible: *const kernel::ffi::c_char }
 
 static PPC47X_OF_BUS: [OfDeviceId; 5] = [
     OfDeviceId { compatible: c"ibm,plb4".as_ptr() },
@@ -53,7 +53,7 @@ unsafe fn avr_halt_system(pwrctl_flags: i32) -> ! {
 
 unsafe fn avr_power_off_system() { avr_halt_system(AVR_PWRCTL_PWROFF); }
 
-unsafe fn avr_reset_system(_cmd: *mut core::ffi::c_char) -> ! {
+unsafe fn avr_reset_system(_cmd: *mut kernel::ffi::c_char) -> ! {
     avr_halt_system(AVR_PWRCTL_RESET);
 }
 

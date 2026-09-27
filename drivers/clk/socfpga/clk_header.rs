@@ -20,7 +20,7 @@ pub const SOCFPGA_MAX_PARENTS: usize = 5;
 #[macro_export]
 macro_rules! streq {
     ($a:expr, $b:expr) => {
-        unsafe { libc::strcmp($a, $b) == 0 }
+        unsafe { strcmp($a, $b) == 0 }
     };
 }
 

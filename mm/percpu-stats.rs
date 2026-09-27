@@ -23,40 +23,40 @@ pub struct pcpu_alloc_info;
 extern "C" {
     static mut pcpu_stats: percpu_stats;
     static mut pcpu_stats_ai: pcpu_alloc_info;
-    static mut pcpu_nr_slots: ::core::ffi::c_int;
-    static mut pcpu_chunk_lists: *mut ::core::ffi::c_void;
-    static mut pcpu_lock: ::core::ffi::c_void;
+    static mut pcpu_nr_slots: ::kernel::ffi::c_int;
+    static mut pcpu_chunk_lists: *mut ::kernel::ffi::c_void;
+    static mut pcpu_lock: ::kernel::ffi::c_void;
     static mut pcpu_reserved_chunk: *mut pcpu_chunk;
     static mut pcpu_first_chunk: *mut pcpu_chunk;
-    static mut pcpu_to_depopulate_slot: ::core::ffi::c_int;
-    static mut pcpu_sidelined_slot: ::core::ffi::c_int;
+    static mut pcpu_to_depopulate_slot: ::kernel::ffi::c_int;
+    static mut pcpu_sidelined_slot: ::kernel::ffi::c_int;
     static mut pcpu_nr_empty_pop_pages: u64;
 
-    fn find_last_bit(addr: *const ::core::ffi::c_ulong, size: usize) -> usize;
-    fn find_next_bit(addr: *const ::core::ffi::c_ulong, size: usize, offset: usize) -> usize;
-    fn test_bit(nr: usize, addr: *const ::core::ffi::c_ulong) -> bool;
-    fn vmalloc_array(n: usize, size: usize) -> *mut ::core::ffi::c_void;
-    fn vfree(addr: *mut ::core::ffi::c_void);
-    fn seq_printf(m: *mut seq_file, fmt: *const ::core::ffi::c_char, ...);
-    fn seq_putc(m: *mut seq_file, c: ::core::ffi::c_int);
-    fn seq_puts(m: *mut seq_file, s: *const ::core::ffi::c_char);
-    fn spin_lock_irq(lock: *mut ::core::ffi::c_void);
-    fn spin_unlock_irq(lock: *mut ::core::ffi::c_void);
-    fn sort(base: *mut ::core::ffi::c_void, n: usize, size: usize,
-            cmp: unsafe extern "C" fn(*const ::core::ffi::c_void, *const ::core::ffi::c_void) -> ::core::ffi::c_int,
-            swap: *mut ::core::ffi::c_void);
-    fn debugfs_create_file(name: *const ::core::ffi::c_char, mode: u32,
-                           parent: *mut ::core::ffi::c_void, data: *mut ::core::ffi::c_void,
-                           fops: *const ::core::ffi::c_void) -> *mut ::core::ffi::c_void;
+    fn find_last_bit(addr: *const ::kernel::ffi::c_ulong, size: usize) -> usize;
+    fn find_next_bit(addr: *const ::kernel::ffi::c_ulong, size: usize, offset: usize) -> usize;
+    fn test_bit(nr: usize, addr: *const ::kernel::ffi::c_ulong) -> bool;
+    fn vmalloc_array(n: usize, size: usize) -> *mut ::kernel::ffi::c_void;
+    fn vfree(addr: *mut ::kernel::ffi::c_void);
+    fn seq_printf(m: *mut seq_file, fmt: *const ::kernel::ffi::c_char, ...);
+    fn seq_putc(m: *mut seq_file, c: ::kernel::ffi::c_int);
+    fn seq_puts(m: *mut seq_file, s: *const ::kernel::ffi::c_char);
+    fn spin_lock_irq(lock: *mut ::kernel::ffi::c_void);
+    fn spin_unlock_irq(lock: *mut ::kernel::ffi::c_void);
+    fn sort(base: *mut ::kernel::ffi::c_void, n: usize, size: usize,
+            cmp: unsafe extern "C" fn(*const ::kernel::ffi::c_void, *const ::kernel::ffi::c_void) -> ::kernel::ffi::c_int,
+            swap: *mut ::kernel::ffi::c_void);
+    fn debugfs_create_file(name: *const ::kernel::ffi::c_char, mode: u32,
+                           parent: *mut ::kernel::ffi::c_void, data: *mut ::kernel::ffi::c_void,
+                           fops: *const ::kernel::ffi::c_void) -> *mut ::kernel::ffi::c_void;
 }
 
-const PCPU_MIN_ALLOC_SIZE: ::core::ffi::c_int = 1; // supplied by percpu-internal.h
+const PCPU_MIN_ALLOC_SIZE: ::kernel::ffi::c_int = 1; // supplied by percpu-internal.h
 
-unsafe extern "C" fn cmpint(a: *const ::core::ffi::c_void, b: *const ::core::ffi::c_void) -> ::core::ffi::c_int {
-    *(a as *const ::core::ffi::c_int) - *(b as *const ::core::ffi::c_int)
+unsafe extern "C" fn cmpint(a: *const ::kernel::ffi::c_void, b: *const ::kernel::ffi::c_void) -> ::kernel::ffi::c_int {
+    *(a as *const ::kernel::ffi::c_int) - *(b as *const ::kernel::ffi::c_int)
 }
 
-unsafe fn find_max_nr_alloc() -> ::core::ffi::c_int {
+unsafe fn find_max_nr_alloc() -> ::kernel::ffi::c_int {
     let mut max_nr_alloc = 0;
     for slot in 0..pcpu_nr_slots {
         // list_for_each_entry(chunk, &pcpu_chunk_lists[slot], list)
@@ -66,7 +66,7 @@ unsafe fn find_max_nr_alloc() -> ::core::ffi::c_int {
     max_nr_alloc
 }
 
-unsafe fn chunk_map_stats(m: *mut seq_file, chunk: *mut pcpu_chunk, buffer: *mut ::core::ffi::c_int) {
+unsafe fn chunk_map_stats(m: *mut seq_file, chunk: *mut pcpu_chunk, buffer: *mut ::kernel::ffi::c_int) {
     let mut sum_frag = 0;
     let mut max_frag = 0;
     let mut cur_min_alloc = 0;
@@ -93,7 +93,7 @@ unsafe fn chunk_map_stats(m: *mut seq_file, chunk: *mut pcpu_chunk, buffer: *mut
     }
 
     if as_len > 0 {
-        sort(buffer as *mut _, as_len as usize, core::mem::size_of::<::core::ffi::c_int>(), cmpint, core::ptr::null_mut());
+        sort(buffer as *mut _, as_len as usize, core::mem::size_of::<::kernel::ffi::c_int>(), cmpint, core::ptr::null_mut());
         let mut i = 0;
         while i < as_len && *buffer.add(i as usize) < 0 {
             sum_frag -= *buffer.add(i as usize);
@@ -110,7 +110,7 @@ unsafe fn chunk_map_stats(m: *mut seq_file, chunk: *mut pcpu_chunk, buffer: *mut
     seq_putc(m, '\n' as i32);
 }
 
-unsafe fn percpu_stats_show(m: *mut seq_file, _v: *mut ::core::ffi::c_void) -> ::core::ffi::c_int {
+unsafe fn percpu_stats_show(m: *mut seq_file, _v: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int {
     let mut max_nr_alloc;
     let mut buffer;
     'alloc_buffer: loop {
@@ -137,7 +137,7 @@ unsafe fn percpu_stats_show(m: *mut seq_file, _v: *mut ::core::ffi::c_void) -> :
 
 // DEFINE_SHOW_ATTRIBUTE(percpu_stats);
 
-unsafe extern "C" fn init_percpu_stats_debugfs() -> ::core::ffi::c_int {
+unsafe extern "C" fn init_percpu_stats_debugfs() -> ::kernel::ffi::c_int {
     // debugfs_create_file("percpu_stats", 0444, NULL, NULL, &percpu_stats_fops);
     0
 }

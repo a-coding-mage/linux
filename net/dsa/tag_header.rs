@@ -12,25 +12,25 @@ pub struct dsa_tag_driver {
 extern "C" {
     pub static mut dsa_pack_type: packet_type;
 
-    pub fn dsa_tag_driver_get_by_id(tag_protocol: ::core::ffi::c_int)
+    pub fn dsa_tag_driver_get_by_id(tag_protocol: ::kernel::ffi::c_int)
         -> *const dsa_device_ops;
-    pub fn dsa_tag_driver_get_by_name(name: *const ::core::ffi::c_char)
+    pub fn dsa_tag_driver_get_by_name(name: *const ::kernel::ffi::c_char)
         -> *const dsa_device_ops;
     pub fn dsa_tag_driver_put(ops: *const dsa_device_ops);
     pub fn dsa_tag_protocol_to_str(ops: *const dsa_device_ops)
-        -> *const ::core::ffi::c_char;
+        -> *const ::kernel::ffi::c_char;
 }
 
 #[inline]
-pub unsafe fn dsa_tag_protocol_overhead(ops: *const dsa_device_ops) -> ::core::ffi::c_int {
+pub unsafe fn dsa_tag_protocol_overhead(ops: *const dsa_device_ops) -> ::kernel::ffi::c_int {
     (*ops).needed_headroom + (*ops).needed_tailroom
 }
 
 #[inline]
 pub unsafe fn dsa_conduit_find_user(
     dev: *mut net_device,
-    device: ::core::ffi::c_int,
-    port: ::core::ffi::c_int,
+    device: ::kernel::ffi::c_int,
+    port: ::kernel::ffi::c_int,
 ) -> *mut net_device {
     let cpu_dp = (*dev).dsa_ptr;
     let dst = (*cpu_dp).dst;
@@ -54,7 +54,7 @@ pub unsafe fn dsa_software_untag_vlan_aware_bridge(
 ) {
     let mut pvid: u16 = 0;
     let mut proto: u16 = 0;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     err = br_vlan_get_proto(br, &mut proto);
     if err != 0 { return; }
@@ -76,7 +76,7 @@ pub unsafe fn dsa_software_untag_vlan_unaware_bridge(
     let mut upper_dev: *mut net_device;
     let mut pvid: u16 = 0;
     let mut proto: u16 = 0;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     err = br_vlan_get_proto(br, &mut proto);
     if err != 0 { return; }
@@ -100,7 +100,7 @@ pub unsafe fn dsa_software_vlan_untag(mut skb: *mut sk_buff) -> *mut sk_buff {
     let br = dsa_port_bridge_dev_get(dp);
     let mut vid: u16 = 0;
     let mut proto: u16 = 0;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     if br.is_null() { return skb; }
 
@@ -136,7 +136,7 @@ pub unsafe fn dsa_find_designated_bridge_port_by_vid(
     let mut vinfo: bridge_vlan_info;
     let mut user: *mut net_device;
     let mut dp: *mut dsa_port;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     list_for_each_entry!(dp, &mut (*dst).ports, list);
     if (*dp).type_ != DSA_PORT_TYPE_USER || (*dp).bridge.is_null() { continue; }
@@ -158,29 +158,29 @@ pub unsafe fn dsa_default_offload_fwd_mark(skb: *mut sk_buff) {
 }
 
 #[inline]
-pub unsafe fn dsa_strip_etype_header(skb: *mut sk_buff, len: ::core::ffi::c_int) {
+pub unsafe fn dsa_strip_etype_header(skb: *mut sk_buff, len: ::kernel::ffi::c_int) {
     memmove((*skb).data.offset(-(ETH_HLEN as isize)),
             (*skb).data.offset(-(ETH_HLEN as isize) - len as isize),
             (2 * ETH_ALEN) as usize);
 }
 
 #[inline]
-pub unsafe fn dsa_alloc_etype_header(skb: *mut sk_buff, len: ::core::ffi::c_int) {
+pub unsafe fn dsa_alloc_etype_header(skb: *mut sk_buff, len: ::kernel::ffi::c_int) {
     memmove((*skb).data, (*skb).data.offset(len as isize), (2 * ETH_ALEN) as usize);
 }
 
 #[inline]
-pub unsafe fn dsa_etype_header_pos_rx(skb: *mut sk_buff) -> *mut ::core::ffi::c_void {
+pub unsafe fn dsa_etype_header_pos_rx(skb: *mut sk_buff) -> *mut ::kernel::ffi::c_void {
     (*skb).data.offset(-2) as *mut _
 }
 
 #[inline]
-pub unsafe fn dsa_etype_header_pos_tx(skb: *mut sk_buff) -> *mut ::core::ffi::c_void {
+pub unsafe fn dsa_etype_header_pos_tx(skb: *mut sk_buff) -> *mut ::kernel::ffi::c_void {
     (*skb).data.add(2 * ETH_ALEN) as *mut _
 }
 
 #[inline]
-pub unsafe fn dsa_xmit_port_mask(skb: *const sk_buff, dev: *const net_device) -> ::core::ffi::c_ulong {
+pub unsafe fn dsa_xmit_port_mask(skb: *const sk_buff, dev: *const net_device) -> ::kernel::ffi::c_ulong {
     let dp = dsa_user_to_port(dev as *mut _);
     let mut mask = BIT((*dp).index);
     if IS_ENABLED!(CONFIG_HSR) && unlikely!((*dev).features & NETIF_F_HW_HSR_DUP != 0) {
@@ -205,12 +205,12 @@ macro_rules! MODULE_ALIAS_DSA_TAG_DRIVER {
 extern "C" {
     pub fn dsa_tag_drivers_register(
         dsa_tag_driver_array: *mut *mut dsa_tag_driver,
-        count: ::core::ffi::c_uint,
+        count: ::kernel::ffi::c_uint,
         owner: *mut module,
     );
     pub fn dsa_tag_drivers_unregister(
         dsa_tag_driver_array: *mut *mut dsa_tag_driver,
-        count: ::core::ffi::c_uint,
+        count: ::kernel::ffi::c_uint,
     );
 }
 

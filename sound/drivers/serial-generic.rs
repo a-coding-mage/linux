@@ -20,12 +20,12 @@
 // MODULE_LICENSE("GPL");
 
 type size_t = usize;
-type u8 = ::core::ffi::c_uchar;
-type c_char = ::core::ffi::c_char;
-type c_int = ::core::ffi::c_int;
-type c_uint = ::core::ffi::c_uint;
-type c_ulong = ::core::ffi::c_ulong;
-type c_void = ::core::ffi::c_void;
+type u8 = ::kernel::ffi::c_uchar;
+type c_char = ::kernel::ffi::c_char;
+type c_int = ::kernel::ffi::c_int;
+type c_uint = ::kernel::ffi::c_uint;
+type c_ulong = ::kernel::ffi::c_ulong;
+type c_void = ::kernel::ffi::c_void;
 
 const SERIAL_MODE_INPUT_OPEN: c_ulong = 1;
 const SERIAL_MODE_OUTPUT_OPEN: c_ulong = 2;

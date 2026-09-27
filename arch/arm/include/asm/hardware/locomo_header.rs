@@ -133,8 +133,8 @@ pub struct locomo_dev {
     pub dev: crate::device,
     pub devid: u32,
     pub irq: [u32; 1],
-    pub mapbase: *mut core::ffi::c_void,
-    pub length: core::ffi::c_ulong,
+    pub mapbase: *mut kernel::ffi::c_void,
+    pub length: kernel::ffi::c_ulong,
     pub dma_mask: u64,
 }
 

@@ -11,7 +11,7 @@
 #[repr(C)]
 pub struct rate_control_ref {
     pub ops: *const rate_control_ops,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
 }
 
 extern "C" {
@@ -42,8 +42,8 @@ extern "C" {
     /* If `name' is NULL, get the first available algorithm. */
     pub fn ieee80211_init_rate_ctrl_alg(
         local: *mut ieee80211_local,
-        name: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        name: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
     pub fn rate_control_deinitialize(local: *mut ieee80211_local);
 }
 
@@ -51,7 +51,7 @@ pub unsafe fn rate_control_alloc_sta(
     ref_: *mut rate_control_ref,
     sta: *mut sta_info,
     gfp: gfp_t,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     spin_lock_init(&mut (*sta).rate_ctrl_lock);
     ((*(*ref_).ops).alloc_sta)(
         (*ref_).priv_,
@@ -63,7 +63,7 @@ pub unsafe fn rate_control_alloc_sta(
 pub unsafe fn rate_control_free_sta(sta: *mut sta_info) {
     let ref_: *mut rate_control_ref = (*sta).rate_ctrl;
     let ista: *mut ieee80211_sta = &mut (*sta).sta;
-    let priv_sta: *mut core::ffi::c_void = (*sta).rate_ctrl_priv;
+    let priv_sta: *mut kernel::ffi::c_void = (*sta).rate_ctrl_priv;
 
     ((*(*ref_).ops).free_sta)((*ref_).priv_, ista, priv_sta);
 }
@@ -98,15 +98,15 @@ pub unsafe fn rate_control_add_debugfs(local: *mut ieee80211_local) {
     }
 
     debugfsdir = debugfs_create_dir(
-        b"rc\0".as_ptr() as *const core::ffi::c_char,
+        b"rc\0".as_ptr() as *const kernel::ffi::c_char,
         (*(*local).hw.wiphy).debugfsdir,
     );
     (*local).debugfs.rcdir = debugfsdir;
     debugfs_create_file(
-        b"name\0".as_ptr() as *const core::ffi::c_char,
+        b"name\0".as_ptr() as *const kernel::ffi::c_char,
         0o400,
         debugfsdir,
-        (*local).rate_ctrl as *mut core::ffi::c_void,
+        (*local).rate_ctrl as *mut kernel::ffi::c_void,
         &rcname_ops,
     );
 
@@ -122,12 +122,12 @@ pub unsafe fn rate_control_add_debugfs(_local: *mut ieee80211_local) {}
 
 #[cfg(CONFIG_MAC80211_RC_MINSTREL)]
 extern "C" {
-    pub fn rc80211_minstrel_init() -> core::ffi::c_int;
+    pub fn rc80211_minstrel_init() -> kernel::ffi::c_int;
     pub fn rc80211_minstrel_exit();
 }
 
 #[cfg(not(CONFIG_MAC80211_RC_MINSTREL))]
-pub unsafe fn rc80211_minstrel_init() -> core::ffi::c_int {
+pub unsafe fn rc80211_minstrel_init() -> kernel::ffi::c_int {
     0
 }
 

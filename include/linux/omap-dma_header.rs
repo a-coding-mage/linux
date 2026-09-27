@@ -135,9 +135,9 @@ pub struct omap_dma_channel_params {
 
 #[repr(C)] pub struct omap_dma_lch {
     pub next_lch: i32, pub dev_id: i32, pub saved_csr: u16, pub enabled_irqs: u16,
-    pub dev_name: *const core::ffi::c_char,
-    pub callback: Option<unsafe extern "C" fn(i32, u16, *mut core::ffi::c_void)>,
-    pub data: *mut core::ffi::c_void, pub flags: isize, pub state: i32, pub chain_id: i32, pub status: i32,
+    pub dev_name: *const kernel::ffi::c_char,
+    pub callback: Option<unsafe extern "C" fn(i32, u16, *mut kernel::ffi::c_void)>,
+    pub data: *mut kernel::ffi::c_void, pub flags: isize, pub state: i32, pub chain_id: i32, pub status: i32,
 }
 #[repr(C)] pub struct omap_dma_dev_attr { pub dev_caps: u32, pub lch_count: u16, pub chan_count: u16 }
 pub const OMAP_DMA_REG_NONE: u32 = 0; pub const OMAP_DMA_REG_16BIT: u32 = 1; pub const OMAP_DMA_REG_2X16BIT: u32 = 2; pub const OMAP_DMA_REG_32BIT: u32 = 3;
@@ -153,7 +153,7 @@ pub struct dma_slave_map;
 
 extern "C" {
     pub fn omap_get_plat_info() -> *mut omap_system_dma_plat_info;
-    pub fn omap_request_dma(dev_id: i32, dev_name: *const core::ffi::c_char, callback: Option<unsafe extern "C" fn(i32, u16, *mut core::ffi::c_void)>, data: *mut core::ffi::c_void, dma_ch: *mut i32) -> i32;
+    pub fn omap_request_dma(dev_id: i32, dev_name: *const kernel::ffi::c_char, callback: Option<unsafe extern "C" fn(i32, u16, *mut kernel::ffi::c_void)>, data: *mut kernel::ffi::c_void, dma_ch: *mut i32) -> i32;
     pub fn omap_free_dma(ch: i32);
     pub fn omap_disable_dma_irq(ch: i32, irq_bits: u16);
     pub fn omap_start_dma(lch: i32);

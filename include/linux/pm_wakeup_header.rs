@@ -3,7 +3,7 @@
 
 /* C dependencies: linux/types.h and the device/power-management declarations. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct wake_irq { _private: [u8; 0] }
@@ -23,7 +23,7 @@ pub struct device { _private: [u8; 0] }
 #[repr(C)]
 pub struct wakeup_source {
     pub name: *const c_char,
-    pub id: core::ffi::c_int,
+    pub id: kernel::ffi::c_int,
     pub entry: list_head,
     pub lock: spinlock_t,
     pub wakeirq: *mut wake_irq,
@@ -47,14 +47,14 @@ pub struct wakeup_source {
 extern "C" {
     pub fn wakeup_source_register(dev: *mut device, name: *const c_char) -> *mut wakeup_source;
     pub fn wakeup_source_unregister(ws: *mut wakeup_source);
-    pub fn wakeup_sources_read_lock() -> core::ffi::c_int;
-    pub fn wakeup_sources_read_unlock(idx: core::ffi::c_int);
+    pub fn wakeup_sources_read_lock() -> kernel::ffi::c_int;
+    pub fn wakeup_sources_read_unlock(idx: kernel::ffi::c_int);
     pub fn wakeup_sources_walk_start() -> *mut wakeup_source;
     pub fn wakeup_sources_walk_next(ws: *mut wakeup_source) -> *mut wakeup_source;
-    pub fn device_wakeup_enable(dev: *mut device) -> core::ffi::c_int;
+    pub fn device_wakeup_enable(dev: *mut device) -> kernel::ffi::c_int;
     pub fn device_wakeup_disable(dev: *mut device);
     pub fn device_set_wakeup_capable(dev: *mut device, capable: bool);
-    pub fn device_set_wakeup_enable(dev: *mut device, enable: bool) -> core::ffi::c_int;
+    pub fn device_set_wakeup_enable(dev: *mut device, enable: bool) -> kernel::ffi::c_int;
     pub fn __pm_stay_awake(ws: *mut wakeup_source);
     pub fn pm_stay_awake(dev: *mut device);
     pub fn __pm_relax(ws: *mut wakeup_source);
@@ -89,7 +89,7 @@ extern "C" {
 }
 
 #[inline]
-pub unsafe fn device_init_wakeup(dev: *mut device, enable: bool) -> core::ffi::c_int {
+pub unsafe fn device_init_wakeup(dev: *mut device, enable: bool) -> kernel::ffi::c_int {
     if enable {
         device_set_wakeup_capable(dev, true);
         device_wakeup_enable(dev)
@@ -100,7 +100,7 @@ pub unsafe fn device_init_wakeup(dev: *mut device, enable: bool) -> core::ffi::c
     }
 }
 
-unsafe extern "C" fn device_disable_wakeup(dev: *mut core::ffi::c_void) {
+unsafe extern "C" fn device_disable_wakeup(dev: *mut kernel::ffi::c_void) {
     device_init_wakeup(dev as *mut device, false);
 }
 
@@ -108,15 +108,15 @@ unsafe extern "C" fn device_disable_wakeup(dev: *mut core::ffi::c_void) {
 extern "C" {
     fn devm_add_action_or_reset(
         dev: *mut device,
-        action: unsafe extern "C" fn(*mut core::ffi::c_void),
-        data: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        action: unsafe extern "C" fn(*mut kernel::ffi::c_void),
+        data: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
 }
 
 #[inline]
-pub unsafe fn devm_device_init_wakeup(dev: *mut device) -> core::ffi::c_int {
+pub unsafe fn devm_device_init_wakeup(dev: *mut device) -> kernel::ffi::c_int {
     device_init_wakeup(dev, true);
-    devm_add_action_or_reset(dev, device_disable_wakeup, dev as *mut core::ffi::c_void)
+    devm_add_action_or_reset(dev, device_disable_wakeup, dev as *mut kernel::ffi::c_void)
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

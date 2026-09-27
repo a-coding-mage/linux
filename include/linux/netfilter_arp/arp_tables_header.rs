@@ -62,16 +62,16 @@ pub const fn ARPT_ERROR_INIT() -> arpt_error {
 }
 
 unsafe extern "C" {
-    pub fn arpt_alloc_initial_table(table: *const xt_table) -> *mut core::ffi::c_void;
+    pub fn arpt_alloc_initial_table(table: *const xt_table) -> *mut kernel::ffi::c_void;
     pub fn arpt_register_table(
         net: *mut net,
         table: *const xt_table,
         repl: *const arpt_replace,
         ops: *const nf_hook_ops,
     ) -> i32;
-    pub fn arpt_unregister_table(net: *mut net, name: *const core::ffi::c_char);
+    pub fn arpt_unregister_table(net: *mut net, name: *const kernel::ffi::c_char);
     pub fn arpt_do_table(
-        priv_: *mut core::ffi::c_void,
+        priv_: *mut kernel::ffi::c_void,
         skb: *mut sk_buff,
         state: *const nf_hook_state,
     ) -> u32;

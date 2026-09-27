@@ -9,7 +9,7 @@
  * @app_id_len: size of application identifier
  */
 pub unsafe fn blkcg_set_fc_appid(
-    app_id: *mut core::ffi::c_char,
+    app_id: *mut kernel::ffi::c_char,
     cgrp_id: u64,
     app_id_len: usize,
 ) -> i32 {
@@ -58,7 +58,7 @@ unsafe fn goto_out_cgrp_put(cgrp: *mut cgroup, ret: i32) -> i32 {
  *
  * On success return the fc_app_id, on failure return NULL
  */
-pub unsafe fn blkcg_get_fc_appid(bio: *mut bio) -> *mut core::ffi::c_char {
+pub unsafe fn blkcg_get_fc_appid(bio: *mut bio) -> *mut kernel::ffi::c_char {
     if (*bio).bi_blkg.is_null()
         || (*(*bio).bi_blkg).blkcg.is_null()
         || (*(*(*bio).bi_blkg).blkcg).fc_app_id[0] == 0

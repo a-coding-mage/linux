@@ -34,7 +34,7 @@ enum amd76x_chips {
 
 #[repr(C)]
 struct amd76x_dev_info {
-    ctl_name: *const core::ffi::c_char,
+    ctl_name: *const kernel::ffi::c_char,
 }
 
 static amd76x_devs: [amd76x_dev_info; 2] = [

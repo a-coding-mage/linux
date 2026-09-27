@@ -105,13 +105,13 @@ pub struct iqs62x_event_desc {
 
 #[repr(C)]
 pub struct iqs62x_dev_desc {
-    pub dev_name: *const core::ffi::c_char,
+    pub dev_name: *const kernel::ffi::c_char,
     pub sub_devs: *const mfd_cell,
-    pub num_sub_devs: core::ffi::c_int,
+    pub num_sub_devs: kernel::ffi::c_int,
     pub prod_num: u8,
     pub sw_num: u8,
     pub cal_regs: *const u8,
-    pub num_cal_regs: core::ffi::c_int,
+    pub num_cal_regs: kernel::ffi::c_int,
     pub prox_mask: u8,
     pub sar_mask: u8,
     pub hall_mask: u8,
@@ -125,7 +125,7 @@ pub struct iqs62x_dev_desc {
     pub hyst_shift: u8,
     pub interval: u8,
     pub interval_div: u8,
-    pub fw_name: *const core::ffi::c_char,
+    pub fw_name: *const kernel::ffi::c_char,
     pub event_regs: *const [iqs62x_event_reg; IQS62X_EVENT_SIZE],
 }
 
@@ -139,7 +139,7 @@ pub struct iqs62x_core {
     pub ati_done: completion,
     pub fw_done: completion,
     pub ui_sel: iqs62x_ui_sel,
-    pub event_cache: core::ffi::c_ulong,
+    pub event_cache: kernel::ffi::c_ulong,
     pub sw_num: u8,
     pub hw_num: u8,
 }

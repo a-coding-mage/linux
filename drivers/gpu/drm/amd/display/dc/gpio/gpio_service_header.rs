@@ -43,7 +43,7 @@ pub struct gpio_service {
      * Business storage.
      * one byte For each member of 'enum gpio_id'
      */
-    pub busyness: [*mut core::ffi::c_char; GPIO_ID_COUNT],
+    pub busyness: [*mut kernel::ffi::c_char; GPIO_ID_COUNT],
 }
 
 extern "C" {

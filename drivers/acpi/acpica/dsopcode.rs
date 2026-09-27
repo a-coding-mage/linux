@@ -6,14 +6,14 @@
 unsafe extern "C" {
     fn acpi_ns_get_attached_object(handle: acpi_handle) -> *mut acpi_operand_object;
     fn acpi_ev_initialize_region(obj_desc: *mut acpi_operand_object) -> acpi_status;
-    fn acpi_ut_get_object_type_name(obj_desc: *mut acpi_operand_object) -> *const core::ffi::c_char;
-    fn acpi_ps_get_opcode_name(opcode: u16) -> *const core::ffi::c_char;
-    fn acpi_ut_get_descriptor_name(desc: *mut acpi_operand_object) -> *const core::ffi::c_char;
+    fn acpi_ut_get_object_type_name(obj_desc: *mut acpi_operand_object) -> *const kernel::ffi::c_char;
+    fn acpi_ps_get_opcode_name(opcode: u16) -> *const kernel::ffi::c_char;
+    fn acpi_ut_get_descriptor_name(desc: *mut acpi_operand_object) -> *const kernel::ffi::c_char;
     fn acpi_ex_prep_common_field_object(obj: *mut acpi_operand_object, flags: u8, lock_rule: u8, bit_offset: u32, bit_count: u32) -> acpi_status;
     fn acpi_ut_remove_reference(obj: *mut acpi_operand_object);
     fn acpi_ds_create_operands(walk_state: *mut acpi_walk_state, op: *mut acpi_parse_object) -> acpi_status;
     fn acpi_ex_resolve_operands(opcode: u16, operand_flags: u32, walk_state: *mut acpi_walk_state) -> acpi_status;
-    fn acpi_ut_get_node_name(node: *mut acpi_namespace_node) -> *const core::ffi::c_char;
+    fn acpi_ut_get_node_name(node: *mut acpi_namespace_node) -> *const kernel::ffi::c_char;
     fn acpi_ut_add_address_range(space_id: acpi_adr_space_type, address: acpi_physical_address, length: u32, node: *mut acpi_namespace_node) -> acpi_status;
     fn acpi_tb_find_table(sig: *const u8, oem_id: *const u8, oem_table_id: *const u8, index: *mut u32) -> acpi_status;
     fn acpi_get_table_by_index(index: u32, table: *mut *mut acpi_table_header) -> acpi_status;

@@ -32,7 +32,7 @@
  */
 #[repr(C)]
 pub struct cec_pin_ops {
-    pub read: Option<unsafe extern "C" fn(adap: *mut cec_adapter) -> ::core::ffi::c_int>,
+    pub read: Option<unsafe extern "C" fn(adap: *mut cec_adapter) -> ::kernel::ffi::c_int>,
     pub low: Option<unsafe extern "C" fn(adap: *mut cec_adapter)>,
     pub high: Option<unsafe extern "C" fn(adap: *mut cec_adapter)>,
     pub enable_irq: Option<unsafe extern "C" fn(adap: *mut cec_adapter) -> bool>,
@@ -42,14 +42,14 @@ pub struct cec_pin_ops {
         adap: *mut cec_adapter,
         file: *mut seq_file,
     )>,
-    pub read_hpd: Option<unsafe extern "C" fn(adap: *mut cec_adapter) -> ::core::ffi::c_int>,
-    pub read_5v: Option<unsafe extern "C" fn(adap: *mut cec_adapter) -> ::core::ffi::c_int>,
+    pub read_hpd: Option<unsafe extern "C" fn(adap: *mut cec_adapter) -> ::kernel::ffi::c_int>,
+    pub read_5v: Option<unsafe extern "C" fn(adap: *mut cec_adapter) -> ::kernel::ffi::c_int>,
 
     /* High-level CEC message callback */
     pub received: Option<unsafe extern "C" fn(
         adap: *mut cec_adapter,
         msg: *mut cec_msg,
-    ) -> ::core::ffi::c_int>,
+    ) -> ::kernel::ffi::c_int>,
 }
 
 /**
@@ -82,8 +82,8 @@ extern "C" {
 extern "C" {
     pub fn cec_pin_allocate_adapter(
         pin_ops: *const cec_pin_ops,
-        priv_: *mut ::core::ffi::c_void,
-        name: *const ::core::ffi::c_char,
+        priv_: *mut ::kernel::ffi::c_void,
+        name: *const ::kernel::ffi::c_char,
         caps: u32,
     ) -> *mut cec_adapter;
 }

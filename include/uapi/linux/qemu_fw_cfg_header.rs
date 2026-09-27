@@ -60,7 +60,7 @@ pub struct fw_cfg_file {
     pub size: __be32,
     pub select: __be16,
     pub reserved: __u16,
-    pub name: [::core::ffi::c_char; FW_CFG_MAX_FILE_PATH],
+    pub name: [::kernel::ffi::c_char; FW_CFG_MAX_FILE_PATH],
 }
 
 /* FW_CFG_DMA_CONTROL bits */

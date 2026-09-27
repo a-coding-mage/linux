@@ -126,7 +126,7 @@ pub const APM_CAP_RESUME_SUSPEND_PCMCIA: u32 = 0x0080; /* Resume on PCMCIA Ring 
  * ioctl operations
  */
 // Dependency: linux/ioctl.h
-pub const APM_IOC_STANDBY: _ = _IO('A', 1);
-pub const APM_IOC_SUSPEND: _ = _IO('A', 2);
+pub const APM_IOC_STANDBY: u32 = _IO('A', 1);
+pub const APM_IOC_SUSPEND: u32 = _IO('A', 2);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

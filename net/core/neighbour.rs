@@ -133,7 +133,7 @@ static void neigh_cleanup_and_release(neighbour *neigh)
  * because it is really reasonable choice.
  */
 
-core::ffi::c_ulong neigh_rand_reach_time(base: core::ffi::c_ulong)
+kernel::ffi::c_ulong neigh_rand_reach_time(base: kernel::ffi::c_ulong)
 {
 	return base ? get_random_u32_below(base) + (base >> 1) : 0;
 }
@@ -266,7 +266,7 @@ static int neigh_forced_gc(neigh_table *tbl)
 	int max_clean = atomic_read((*&tbl).gc_entries) -
 			READ_ONCE((*tbl).gc_thresh2);
 	u64 tmax = ktime_get_ns() + NSEC_PER_MSEC;
-	core::ffi::c_ulong tref = jiffies - 5 * HZ;
+	kernel::ffi::c_ulong tref = jiffies - 5 * HZ;
 	struct neighbour *n, *tmp;
 	int shrunk = 0;
 	int loop = 0;
@@ -308,13 +308,13 @@ static int neigh_forced_gc(neigh_table *tbl)
 	return shrunk;
 }
 
-static void neigh_add_timer(neighbour *n, when: core::ffi::c_ulong)
+static void neigh_add_timer(neighbour *n, when: kernel::ffi::c_ulong)
 {
 	/* Use safe distance from the jiffies - LONG_MAX point while timer
 	 * is running in DELAY/PROBE state but still show to user space
 	 * large times in the past.
 	 */
-	core::ffi::c_ulong mint = jiffies - (LONG_MAX - 86400 * HZ);
+	kernel::ffi::c_ulong mint = jiffies - (LONG_MAX - 86400 * HZ);
 
 	neigh_hold(n);
 	if (!time_in_range((*n).confirmed, mint, jiffies))
@@ -365,7 +365,7 @@ static void pneigh_queue_purge(sk_buff_head *list, net *net,
 			       int family)
 {
 	struct sk_buff_head tmp;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	struct sk_buff *skb;
 
 	skb_queue_head_init(&tmp);
@@ -509,7 +509,7 @@ static struct neighbour *neigh_alloc(neigh_table *tbl,
 	'out_entries: {
 	'do_alloc: {
 	struct neighbour *n = NULL;
-	core::ffi::c_ulong now = jiffies;
+	kernel::ffi::c_ulong now = jiffies;
 	int entries, gc_thresh3;
 
 	if (exempt_from_gc)
@@ -568,7 +568,7 @@ static void neigh_get_hash_rnd(u32 *x)
 	*x = get_random_u32() | 1;
 }
 
-static struct neigh_hash_table *neigh_hash_alloc(shift: core::ffi::c_uint)
+static struct neigh_hash_table *neigh_hash_alloc(shift: kernel::ffi::c_uint)
 {
 	size_t size = (1 << shift) * sizeof(hlist_head);
 	struct hlist_head *hash_heads;
@@ -602,9 +602,9 @@ static void neigh_hash_free_rcu(rcu_head *head)
 }
 
 static struct neigh_hash_table *neigh_hash_grow(neigh_table *tbl,
-						new_shift: core::ffi::c_ulong)
+						new_shift: kernel::ffi::c_ulong)
 {
-	i: core::ffi::c_uint, hash;
+	i: kernel::ffi::c_uint, hash;
 	struct neigh_hash_table *new_nht, *old_nht;
 
 	NEIGH_CACHE_STAT_INC(tbl, hash_grows);
@@ -763,7 +763,7 @@ struct neighbour *__neigh_create(neigh_table *tbl, const void *pkey,
 }
 EXPORT_SYMBOL(__neigh_create);
 
-static u32 pneigh_hash(const void *pkey, key_len: core::ffi::c_uint)
+static u32 pneigh_hash(const void *pkey, key_len: kernel::ffi::c_uint)
 {
 	u32 hash_val = *(u32 *)(pkey + key_len - 4);
 	hash_val ^= (hash_val >> 16);
@@ -778,7 +778,7 @@ struct pneigh_entry *pneigh_lookup(neigh_table *tbl,
 				   net_device *dev)
 {
 	struct pneigh_entry *n;
-	core::ffi::c_uint key_len;
+	kernel::ffi::c_uint key_len;
 	u32 hash_val;
 
 	key_len = tbl->key_len;
@@ -805,7 +805,7 @@ int pneigh_create(neigh_table *tbl, net *net,
 	'out: {
 	'update: {
 	struct pneigh_entry *n;
-	core::ffi::c_uint key_len;
+	kernel::ffi::c_uint key_len;
 	u32 hash_val;
 	int err = 0;
 
@@ -861,7 +861,7 @@ int pneigh_delete(neigh_table *tbl, net *net, const void *pkey,
 		  net_device *dev)
 {
 	struct pneigh_entry *n, __rcu **np;
-	core::ffi::c_uint key_len;
+	kernel::ffi::c_uint key_len;
 	u32 hash_val;
 
 	key_len = tbl->key_len;
@@ -1003,7 +1003,7 @@ static void neigh_periodic_work(work_struct *work)
 	struct neigh_hash_table *nht;
 	struct hlist_node *tmp;
 	struct neighbour *n;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	NEIGH_CACHE_STAT_INC(tbl, periodic_gc_runs);
 
@@ -1028,7 +1028,7 @@ static void neigh_periodic_work(work_struct *work)
 
 	for (i = 0 ; i < (1 << nht->hash_shift); i++) {
 		neigh_for_each_in_bucket_safe!(n, tmp, &nht->hash_heads[i], {
-			core::ffi::c_uint state;
+			kernel::ffi::c_uint state;
 
 			write_lock(&n->lock);
 
@@ -1129,10 +1129,10 @@ static void neigh_probe(neighbour *neigh)
 
 static void neigh_timer_handler(timer_list *t)
 {
-	now: core::ffi::c_ulong, next;
+	now: kernel::ffi::c_ulong, next;
 	struct neighbour *neigh = timer_container_of(neigh, t, timer);
 	bool skip_probe = false;
-	core::ffi::c_uint state;
+	kernel::ffi::c_uint state;
 	int notify = 0;
 
 	write_lock(&neigh->lock);
@@ -1252,7 +1252,7 @@ int __neigh_event_send(neighbour *neigh, sk_buff *skb,
 		    NEIGH_VAR(neigh->parms, APP_PROBES)) {
 			'next: {
 			}
-			core::ffi::c_ulong, now = jiffies;
+			kernel::ffi::c_ulong, now = jiffies;
 
 			atomic_set(&neigh->probes,
 				   NEIGH_VAR(neigh->parms, UCAST_PROBES));
@@ -1327,7 +1327,7 @@ EXPORT_SYMBOL(__neigh_event_send);
 static void neigh_update_hhs(neighbour *neigh)
 {
 	struct hh_cache *hh;
-	void (*update)(hh_cache*, const struct net_device*, const core::ffi::c_uchar *)
+	void (*update)(hh_cache*, const struct net_device*, const kernel::ffi::c_uchar *)
 		= NULL;
 
 	if (neigh->dev->header_ops)
@@ -1639,7 +1639,7 @@ int neigh_resolve_output(neighbour *neigh, sk_buff *skb)
 	if (!neigh_event_send(neigh, skb)) {
 		int err;
 		struct net_device *dev = neigh->dev;
-		core::ffi::c_uint seq;
+		kernel::ffi::c_uint seq;
 
 		if (dev->header_ops->cache && !READ_ONCE(neigh->hh.hh_len))
 			neigh_hh_init(neigh);
@@ -1673,7 +1673,7 @@ EXPORT_SYMBOL(neigh_resolve_output);
 int neigh_connected_output(neighbour *neigh, sk_buff *skb)
 {
 	struct net_device *dev = neigh->dev;
-	core::ffi::c_uint seq;
+	kernel::ffi::c_uint seq;
 	int err;
 
 	do {
@@ -1715,7 +1715,7 @@ static void neigh_proxy_process(timer_list *t)
 {
 	struct neigh_table *tbl = timer_container_of(tbl, t, proxy_timer);
 	long sched_next = 0;
-	core::ffi::c_ulong now = jiffies;
+	kernel::ffi::c_ulong now = jiffies;
 	struct sk_buff *skb, *n;
 
 	spin_lock(&tbl->proxy_queue.lock);
@@ -1747,12 +1747,12 @@ static void neigh_proxy_process(timer_list *t)
 	spin_unlock(&tbl->proxy_queue.lock);
 }
 
-static core::ffi::c_ulong neigh_proxy_delay(neigh_parms *p)
+static kernel::ffi::c_ulong neigh_proxy_delay(neigh_parms *p)
 {
 	/* If proxy_delay is zero, do not call get_random_u32_below()
 	 * as it is undefined behavior.
 	 */
-	core::ffi::c_ulong proxy_delay = NEIGH_VAR(p, PROXY_DELAY);
+	kernel::ffi::c_ulong proxy_delay = NEIGH_VAR(p, PROXY_DELAY);
 
 	return proxy_delay ?
 	       jiffies + get_random_u32_below(proxy_delay) : jiffies;
@@ -1761,7 +1761,7 @@ static core::ffi::c_ulong neigh_proxy_delay(neigh_parms *p)
 void pneigh_enqueue(neigh_table *tbl, neigh_parms *p,
 		    sk_buff *skb)
 {
-	core::ffi::c_ulong sched_next = neigh_proxy_delay(p);
+	kernel::ffi::c_ulong sched_next = neigh_proxy_delay(p);
 
 	if (p->qlen > NEIGH_VAR(p, PROXY_QLEN)) {
 		kfree_skb(skb);
@@ -1862,8 +1862,8 @@ static struct neigh_table __rcu *neigh_tables[NEIGH_NR_TABLES] __read_mostly;
 
 void neigh_table_init(int index, neigh_table *tbl)
 {
-	core::ffi::c_ulong now = jiffies;
-	core::ffi::c_ulong phsize;
+	kernel::ffi::c_ulong now = jiffies;
+	kernel::ffi::c_ulong phsize;
 
 	INIT_LIST_HEAD(&tbl->parms_list);
 	INIT_LIST_HEAD(&tbl->gc_list);
@@ -2307,7 +2307,7 @@ static int neightbl_fill_info(sk_buff *skb, neigh_table *tbl,
 	    nla_put_u32(skb, NDTA_THRESH3, READ_ONCE(tbl->gc_thresh3)))
 		break 'nla_put_failure;
 	{
-		core::ffi::c_ulong now = jiffies;
+		kernel::ffi::c_ulong now = jiffies;
 		long flush_delta = now - READ_ONCE(tbl->last_flush);
 		long rand_delta = now - READ_ONCE(tbl->last_rand);
 		struct neigh_hash_table *nht;
@@ -2372,7 +2372,7 @@ static int neightbl_fill_param_info(sk_buff *skb,
 				    neigh_table *tbl,
 				    neigh_parms *parms,
 				    pid: u32, seq: u32, int type,
-				    flags: core::ffi::c_uint)
+				    flags: kernel::ffi::c_uint)
 {
 	'errout: {
 	struct ndtmsg *ndtmsg;
@@ -2697,11 +2697,11 @@ static int neightbl_dump_info(sk_buff *skb, netlink_callback *cb)
 }
 
 static int __neigh_fill_info(sk_buff *skb, neighbour *neigh,
-			     pid: u32, seq: u32, int type, flags: core::ffi::c_uint)
+			     pid: u32, seq: u32, int type, flags: kernel::ffi::c_uint)
 {
 	'nla_put_failure: {
 	neigh_flags: u32, neigh_flags_ext;
-	core::ffi::c_ulong now = jiffies;
+	kernel::ffi::c_ulong now = jiffies;
 	struct nda_cacheinfo ci;
 	struct nlmsghdr *nlh;
 	struct ndmsg *ndm;
@@ -2756,7 +2756,7 @@ static int __neigh_fill_info(sk_buff *skb, neighbour *neigh,
 }
 
 static int neigh_fill_info(sk_buff *skb, neighbour *neigh,
-			   pid: u32, seq: u32, int type, flags: core::ffi::c_uint)
+			   pid: u32, seq: u32, int type, flags: kernel::ffi::c_uint)
 	__releases(neigh->lock)
 	__acquires(neigh->lock)
 {
@@ -2770,7 +2770,7 @@ static int neigh_fill_info(sk_buff *skb, neighbour *neigh,
 }
 
 static int pneigh_fill_info(sk_buff *skb, pneigh_entry *pn,
-			    pid: u32, seq: u32, int type, flags: core::ffi::c_uint,
+			    pid: u32, seq: u32, int type, flags: kernel::ffi::c_uint,
 			    neigh_table *tbl)
 {
 	'nla_put_failure: {
@@ -2857,7 +2857,7 @@ static int neigh_dump_table(neigh_table *tbl, sk_buff *skb,
 	int err = 0, h, s_h = cb->args[1];
 	int idx, s_idx = idx = cb->args[2];
 	struct neigh_hash_table *nht;
-	core::ffi::c_uint flags = NLM_F_MULTI;
+	kernel::ffi::c_uint flags = NLM_F_MULTI;
 
 	if (filter->dev_idx || filter->master_idx)
 		flags |= NLM_F_DUMP_FILTERED;
@@ -2901,7 +2901,7 @@ static int pneigh_dump_table(neigh_table *tbl, sk_buff *skb,
 	struct net *net = sock_net(skb->sk);
 	int err = 0, h, s_h = cb->args[3];
 	int idx, s_idx = idx = cb->args[4];
-	core::ffi::c_uint flags = NLM_F_MULTI;
+	kernel::ffi::c_uint flags = NLM_F_MULTI;
 
 	if (filter->dev_idx || filter->master_idx)
 		flags |= NLM_F_DUMP_FILTERED;
@@ -3483,7 +3483,7 @@ static void *neigh_get_idx_any(seq_file *seq, loff_t *pos)
 	return rc;
 }
 
-void *neigh_seq_start(seq_file *seq, loff_t *pos, neigh_table *tbl, neigh_seq_flags: core::ffi::c_uint)
+void *neigh_seq_start(seq_file *seq, loff_t *pos, neigh_table *tbl, neigh_seq_flags: kernel::ffi::c_uint)
 	__acquires(tbl->lock)
 	__acquires(rcu)
 {
@@ -4043,16 +4043,16 @@ subsys_initcall(neigh_init);
 // The implementation is provided against the kernel's C-compatible ABI.
 extern "C" {
     pub fn neigh_rand_reach_time(base: usize) -> usize;
-    pub fn neigh_lookup(tbl: *mut core::ffi::c_void, pkey: *const core::ffi::c_void,
-                        dev: *mut core::ffi::c_void) -> *mut core::ffi::c_void;
-    pub fn neigh_changeaddr(tbl: *mut core::ffi::c_void, dev: *mut core::ffi::c_void);
-    pub fn neigh_carrier_down(tbl: *mut core::ffi::c_void, dev: *mut core::ffi::c_void) -> i32;
-    pub fn neigh_ifdown(tbl: *mut core::ffi::c_void, dev: *mut core::ffi::c_void) -> i32;
-    pub fn neigh_update(neigh: *mut core::ffi::c_void, lladdr: *const u8, new_state: u8,
+    pub fn neigh_lookup(tbl: *mut kernel::ffi::c_void, pkey: *const kernel::ffi::c_void,
+                        dev: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+    pub fn neigh_changeaddr(tbl: *mut kernel::ffi::c_void, dev: *mut kernel::ffi::c_void);
+    pub fn neigh_carrier_down(tbl: *mut kernel::ffi::c_void, dev: *mut kernel::ffi::c_void) -> i32;
+    pub fn neigh_ifdown(tbl: *mut kernel::ffi::c_void, dev: *mut kernel::ffi::c_void) -> i32;
+    pub fn neigh_update(neigh: *mut kernel::ffi::c_void, lladdr: *const u8, new_state: u8,
                         flags: u32, nlmsg_pid: u32) -> i32;
-    pub fn neigh_resolve_output(neigh: *mut core::ffi::c_void, skb: *mut core::ffi::c_void) -> i32;
-    pub fn neigh_connected_output(neigh: *mut core::ffi::c_void, skb: *mut core::ffi::c_void) -> i32;
-    pub fn neigh_direct_output(neigh: *mut core::ffi::c_void, skb: *mut core::ffi::c_void) -> i32;
+    pub fn neigh_resolve_output(neigh: *mut kernel::ffi::c_void, skb: *mut kernel::ffi::c_void) -> i32;
+    pub fn neigh_connected_output(neigh: *mut kernel::ffi::c_void, skb: *mut kernel::ffi::c_void) -> i32;
+    pub fn neigh_direct_output(neigh: *mut kernel::ffi::c_void, skb: *mut kernel::ffi::c_void) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -22,11 +22,11 @@
 
 // Kernel and amd-pstate dependencies are supplied externally.
 
-static mut test_list: *mut core::ffi::c_char = core::ptr::null_mut();
+static mut test_list: *mut kernel::ffi::c_char = core::ptr::null_mut();
 
 #[repr(C)]
 struct amd_pstate_ut_struct {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     func: unsafe extern "C" fn(u32) -> i32,
 }
 
@@ -42,12 +42,12 @@ static mut amd_pstate_ut_cases: [amd_pstate_ut_struct; 8] = [
 ];
 
 unsafe fn test_in_list(list: *const u8, name: *const u8) -> bool {
-    let name_len = libc::strlen(name as _);
+    let name_len = strlen(name as _);
     let mut p = list;
     while *p != 0 {
-        let sep = libc::strchr(p as _, b',' as i32) as *const u8;
-        let token_len = if !sep.is_null() { sep.offset_from(p) as usize } else { libc::strlen(p as _) };
-        if token_len == name_len && libc::strncmp(p as _, name as _, token_len) == 0 { return true; }
+        let sep = strchr(p as _, b',' as i32) as *const u8;
+        let token_len = if !sep.is_null() { sep.offset_from(p) as usize } else { strlen(p as _) };
+        if token_len == name_len && strncmp(p as _, name as _, token_len) == 0 { return true; }
         if sep.is_null() { break; }
         p = sep.add(1);
     }
@@ -86,7 +86,7 @@ unsafe fn amd_pstate_ut_check_freq(_index: u32) -> i32 { 0 }
 unsafe fn amd_pstate_set_mode(mode: amd_pstate_mode) -> i32 {
     let mode_str = amd_pstate_get_mode_string(mode);
     pr_debug!("->setting mode to %s\n", mode_str);
-    amd_pstate_update_status(mode_str, libc::strlen(mode_str))
+    amd_pstate_update_status(mode_str, strlen(mode_str))
 }
 
 unsafe fn amd_pstate_ut_epp(_index: u32) -> i32 { 0 }

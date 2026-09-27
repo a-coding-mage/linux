@@ -24,12 +24,12 @@ pub const LINEBITS: usize = 5;
 
 /* Flush Dcache range through current map. */
 extern "C" {
-    pub fn flush_dcache_range(start: libc::c_ulong, end: libc::c_ulong);
+    pub fn flush_dcache_range(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong);
 }
 
 /* Flush Icache range through current map. */
 extern "C" {
-    pub fn flush_icache_range(start: libc::c_ulong, end: libc::c_ulong);
+    pub fn flush_icache_range(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong);
 }
 
 /*
@@ -65,9 +65,9 @@ pub enum pte_t {}
 pub unsafe fn update_mmu_cache_range(
     _vmf: *mut vm_fault,
     _vma: *mut vm_area_struct,
-    _address: libc::c_ulong,
+    _address: kernel::ffi::c_ulong,
     _ptep: *mut pte_t,
-    _nr: libc::c_uint,
+    _nr: kernel::ffi::c_uint,
 ) {
     /* generic_ptrace_pokedata doesn't wind up here, does it? */
 }
@@ -75,7 +75,7 @@ pub unsafe fn update_mmu_cache_range(
 #[inline]
 pub unsafe fn update_mmu_cache(
     vma: *mut vm_area_struct,
-    addr: libc::c_ulong,
+    addr: kernel::ffi::c_ulong,
     ptep: *mut pte_t,
 ) {
     update_mmu_cache_range(core::ptr::null_mut(), vma, addr, ptep, 1);
@@ -85,10 +85,10 @@ extern "C" {
     pub fn copy_to_user_page(
         vma: *mut vm_area_struct,
         page: *mut page,
-        vaddr: libc::c_ulong,
-        dst: *mut libc::c_void,
-        src: *mut libc::c_void,
-        len: libc::c_int,
+        vaddr: kernel::ffi::c_ulong,
+        dst: *mut kernel::ffi::c_void,
+        src: *mut kernel::ffi::c_void,
+        len: kernel::ffi::c_int,
     );
 }
 
@@ -96,17 +96,17 @@ extern "C" {
 pub unsafe fn copy_from_user_page(
     _vma: *mut vm_area_struct,
     _page: *mut page,
-    _vaddr: libc::c_ulong,
-    dst: *mut libc::c_void,
-    src: *const libc::c_void,
+    _vaddr: kernel::ffi::c_ulong,
+    dst: *mut kernel::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     len: usize,
 ) {
     core::ptr::copy_nonoverlapping(src as *const u8, dst as *mut u8, len);
 }
 
 extern "C" {
-    pub fn hexagon_inv_dcache_range(start: libc::c_ulong, end: libc::c_ulong);
-    pub fn hexagon_clean_dcache_range(start: libc::c_ulong, end: libc::c_ulong);
+    pub fn hexagon_inv_dcache_range(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong);
+    pub fn hexagon_clean_dcache_range(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong);
 }
 
 /* Dependency: asm-generic/cacheflush.h */

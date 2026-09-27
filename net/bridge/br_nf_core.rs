@@ -24,19 +24,19 @@ unsafe fn fake_update_pmtu(
 unsafe fn fake_redirect(_dst: *mut dst_entry, _sk: *mut sock, _skb: *mut sk_buff) {
 }
 
-unsafe fn fake_cow_metrics(_dst: *mut dst_entry, _old: libc::c_ulong) -> *mut u32 {
+unsafe fn fake_cow_metrics(_dst: *mut dst_entry, _old: kernel::ffi::c_ulong) -> *mut u32 {
     core::ptr::null_mut()
 }
 
 unsafe fn fake_neigh_lookup(
     _dst: *const dst_entry,
     _skb: *mut sk_buff,
-    _daddr: *const core::ffi::c_void,
+    _daddr: *const kernel::ffi::c_void,
 ) -> *mut neighbour {
     core::ptr::null_mut()
 }
 
-unsafe fn fake_mtu(dst: *const dst_entry) -> libc::c_uint {
+unsafe fn fake_mtu(dst: *const dst_entry) -> kernel::ffi::c_uint {
     (*dst).dev.mtu
 }
 
@@ -67,7 +67,7 @@ unsafe fn br_netfilter_rtable_init(br: *mut net_bridge) {
     (*rt).dst.ops = &raw mut fake_dst_ops;
 }
 
-unsafe fn br_nf_core_init() -> libc::c_int {
+unsafe fn br_nf_core_init() -> kernel::ffi::c_int {
     dst_entries_init(&raw mut fake_dst_ops)
 }
 

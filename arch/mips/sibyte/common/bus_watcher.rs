@@ -18,13 +18,13 @@ pub struct BwStatsStruct {
     pub l2_err: u32,
     pub memio_err: u32,
     pub status_printed: i32,
-    pub l2_cor_d: libc::c_ulong,
-    pub l2_bad_d: libc::c_ulong,
-    pub l2_cor_t: libc::c_ulong,
-    pub l2_bad_t: libc::c_ulong,
-    pub mem_cor_d: libc::c_ulong,
-    pub mem_bad_d: libc::c_ulong,
-    pub bus_error: libc::c_ulong,
+    pub l2_cor_d: kernel::ffi::c_ulong,
+    pub l2_bad_d: kernel::ffi::c_ulong,
+    pub l2_cor_t: kernel::ffi::c_ulong,
+    pub l2_bad_t: kernel::ffi::c_ulong,
+    pub mem_cor_d: kernel::ffi::c_ulong,
+    pub mem_bad_d: kernel::ffi::c_ulong,
+    pub bus_error: kernel::ffi::c_ulong,
 }
 
 pub static mut bw_stats: BwStatsStruct = BwStatsStruct {
@@ -76,7 +76,7 @@ pub unsafe fn check_bus_watcher() {
 }
 
 #[cfg(CONFIG_PROC_FS)]
-unsafe fn bw_proc_show(m: *mut seq_file, _v: *mut libc::c_void) -> i32 {
+unsafe fn bw_proc_show(m: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
     let stats = (*m).private as *mut BwStatsStruct;
     seq_puts!(m, "SiByte Bus Watcher statistics\n");
     seq_puts!(m, "-----------------------------\n");
@@ -102,9 +102,9 @@ unsafe fn create_proc_decoder(stats: *mut BwStatsStruct) {
     if ent.is_null() { printk!(KERN_INFO "Unable to initialize bus_watcher /proc entry\n"); }
 }
 
-unsafe fn sibyte_bw_int(_irq: i32, data: *mut libc::c_void) -> irqreturn_t {
+unsafe fn sibyte_bw_int(_irq: i32, data: *mut kernel::ffi::c_void) -> irqreturn_t {
     let stats = data as *mut BwStatsStruct;
-    let cntr: libc::c_ulong;
+    let cntr: kernel::ffi::c_ulong;
     #[cfg(CONFIG_SIBYTE_BW_TRACE)]
     {
         csr_out32(M_SCD_TRACE_CFG_FREEZE, IOADDR(A_SCD_TRACE_CFG));
@@ -116,14 +116,14 @@ unsafe fn sibyte_bw_int(_irq: i32, data: *mut libc::c_void) -> irqreturn_t {
     (*stats).status = csr_in32(IOADDR(A_SCD_BUS_ERR_STATUS)) as u64;
     (*stats).status_printed = 0;
     (*stats).l2_err = csr_in32(IOADDR(A_BUS_L2_ERRORS));
-    cntr = (*stats).l2_err as libc::c_ulong;
+    cntr = (*stats).l2_err as kernel::ffi::c_ulong;
     (*stats).l2_cor_d += G_SCD_L2ECC_CORR_D(cntr);
     (*stats).l2_bad_d += G_SCD_L2ECC_BAD_D(cntr);
     (*stats).l2_cor_t += G_SCD_L2ECC_CORR_T(cntr);
     (*stats).l2_bad_t += G_SCD_L2ECC_BAD_T(cntr);
     csr_out32(0, IOADDR(A_BUS_L2_ERRORS));
     (*stats).memio_err = csr_in32(IOADDR(A_BUS_MEM_IO_ERRORS));
-    cntr = (*stats).memio_err as libc::c_ulong;
+    cntr = (*stats).memio_err as kernel::ffi::c_ulong;
     (*stats).mem_cor_d += G_SCD_MEM_ECC_CORR(cntr);
     (*stats).mem_bad_d += G_SCD_MEM_ECC_BAD(cntr);
     (*stats).bus_error += G_SCD_MEM_BUSERR(cntr);

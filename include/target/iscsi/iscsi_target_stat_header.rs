@@ -35,7 +35,7 @@ pub struct iscsi_sess_err_stats {
     pub cxn_timeout_errors: u32,
     pub pdu_format_errors: u32,
     pub last_sess_failure_type: u32,
-    pub last_sess_fail_rem_name: [core::ffi::c_char; ISCSI_IQN_LEN],
+    pub last_sess_fail_rem_name: [kernel::ffi::c_char; ISCSI_IQN_LEN],
 }
 // C attribute: ____cacheline_aligned.
 
@@ -60,7 +60,7 @@ pub struct iscsi_login_stats {
     pub last_fail_type: u32,
     pub last_intr_fail_ip_family: i32,
     pub last_intr_fail_sockaddr: sockaddr_storage,
-    pub last_intr_fail_name: [core::ffi::c_char; ISCSI_IQN_LEN],
+    pub last_intr_fail_name: [kernel::ffi::c_char; ISCSI_IQN_LEN],
 }
 // C attribute: ____cacheline_aligned.
 

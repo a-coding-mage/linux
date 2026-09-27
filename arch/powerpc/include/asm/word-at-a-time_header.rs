@@ -8,8 +8,8 @@
 #[cfg(target_endian = "big")]
 #[repr(C)]
 pub struct word_at_a_time {
-    pub high_bits: ::core::ffi::c_ulong,
-    pub low_bits: ::core::ffi::c_ulong,
+    pub high_bits: ::kernel::ffi::c_ulong,
+    pub low_bits: ::kernel::ffi::c_ulong,
 }
 
 #[cfg(target_endian = "big")]
@@ -21,8 +21,8 @@ pub const WORD_AT_A_TIME_CONSTANTS: (u64, u64) = (
 #[cfg(target_endian = "big")]
 #[inline]
 pub unsafe fn prep_zero_mask(
-    val: ::core::ffi::c_ulong,
-    rhs: ::core::ffi::c_ulong,
+    val: ::kernel::ffi::c_ulong,
+    rhs: ::kernel::ffi::c_ulong,
     c: *const word_at_a_time,
 ) -> isize {
     let mask = (val & (*c).low_bits).wrapping_add((*c).low_bits);
@@ -31,21 +31,21 @@ pub unsafe fn prep_zero_mask(
 
 #[cfg(target_endian = "big")]
 #[inline]
-pub const fn create_zero_mask(mask: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong { mask }
+pub const fn create_zero_mask(mask: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong { mask }
 
 #[cfg(target_endian = "big")]
 #[inline]
-pub fn find_zero(mask: ::core::ffi::c_ulong) -> isize {
+pub fn find_zero(mask: ::kernel::ffi::c_ulong) -> isize {
     mask.leading_zeros() as isize >> 3
 }
 
 #[cfg(target_endian = "big")]
 #[inline]
 pub unsafe fn has_zero(
-    val: ::core::ffi::c_ulong,
-    data: *mut ::core::ffi::c_ulong,
+    val: ::kernel::ffi::c_ulong,
+    data: *mut ::kernel::ffi::c_ulong,
     c: *const word_at_a_time,
-) -> ::core::ffi::c_ulong {
+) -> ::kernel::ffi::c_ulong {
     let rhs = val | (*c).low_bits;
     *data = rhs;
     (val.wrapping_add((*c).high_bits)) & !rhs
@@ -53,8 +53,8 @@ pub unsafe fn has_zero(
 
 #[cfg(target_endian = "big")]
 #[inline]
-pub fn zero_bytemask(mask: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
-    !1usize.wrapping_shl(mask.trailing_zeros()) as ::core::ffi::c_ulong
+pub fn zero_bytemask(mask: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
+    !1usize.wrapping_shl(mask.trailing_zeros()) as ::kernel::ffi::c_ulong
 }
 
 /* The following little-endian definitions correspond to the C build-time branches. */
@@ -148,7 +148,7 @@ pub const fn zero_bytemask(mask: u32) -> u32 { mask }
 
 /* load_unaligned_zeropad uses PowerPC exception-table fixup assembly in C. */
 #[inline]
-pub unsafe fn load_unaligned_zeropad(addr: *const ::core::ffi::c_void) -> usize {
+pub unsafe fn load_unaligned_zeropad(addr: *const ::kernel::ffi::c_void) -> usize {
     let mut ret: usize;
     ::core::ptr::copy_nonoverlapping(addr as *const u8, &mut ret as *mut usize as *mut u8, core::mem::size_of::<usize>());
     ret

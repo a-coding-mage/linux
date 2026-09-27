@@ -13,11 +13,11 @@
  * linux/types.h, sound/pcm.h, sof-priv.h.
  */
 
-use core::ffi::{c_char, c_int, c_ulong, c_void};
+use kernel::ffi::{c_char, c_int, c_ulong, c_void};
 
-pub type u8 = core::ffi::c_uchar;
-pub type u32 = core::ffi::c_uint;
-pub type u64 = core::ffi::c_ulonglong;
+pub type u8 = kernel::ffi::c_uchar;
+pub type u32 = kernel::ffi::c_uint;
+pub type u64 = kernel::ffi::c_ulonglong;
 pub type size_t = usize;
 pub type snd_pcm_uframes_t = c_ulong;
 
@@ -820,7 +820,7 @@ pub unsafe fn snd_sof_is_chain_dma_supported(sdev: *mut snd_sof_dev, dai_type: u
 macro_rules! snd_sof_dsp_read_poll_timeout {
     ($sdev:expr, $bar:expr, $offset:expr, $val:expr, $cond:expr, $sleep_us:expr, $timeout_us:expr) => {{
         let __timeout_us: $crate::u64 = $timeout_us;
-        let __sleep_us: core::ffi::c_ulong = $sleep_us;
+        let __sleep_us: kernel::ffi::c_ulong = $sleep_us;
         let __timeout = unsafe { $crate::ktime_add_us($crate::ktime_get(), __timeout_us) };
         unsafe { $crate::might_sleep_if(__sleep_us != 0) };
         loop {

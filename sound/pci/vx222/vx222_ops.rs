@@ -66,10 +66,10 @@ static VX2_REG_INDEX: [i32; VX_REG_MAX as usize] = {
 };
 
 #[inline]
-unsafe fn vx2_reg_addr(_chip: *mut vx_core, reg: i32) -> libc::c_ulong {
+unsafe fn vx2_reg_addr(_chip: *mut vx_core, reg: i32) -> kernel::ffi::c_ulong {
     let chip = to_vx222(_chip);
     (*chip).port[VX2_REG_INDEX[reg as usize] as usize]
-        + VX2_REG_OFFSET[reg as usize] as libc::c_ulong
+        + VX2_REG_OFFSET[reg as usize] as kernel::ffi::c_ulong
 }
 
 /**
@@ -77,7 +77,7 @@ unsafe fn vx2_reg_addr(_chip: *mut vx_core, reg: i32) -> libc::c_ulong {
  * @chip: VX core instance
  * @offset: register enum
  */
-unsafe extern "C" fn vx2_inb(chip: *mut vx_core, offset: i32) -> libc::c_uchar {
+unsafe extern "C" fn vx2_inb(chip: *mut vx_core, offset: i32) -> kernel::ffi::c_uchar {
     inb(vx2_reg_addr(chip, offset))
 }
 
@@ -87,7 +87,7 @@ unsafe extern "C" fn vx2_inb(chip: *mut vx_core, offset: i32) -> libc::c_uchar {
  * @offset: the register offset
  * @val: the value to write
  */
-unsafe extern "C" fn vx2_outb(chip: *mut vx_core, offset: i32, val: libc::c_uchar) {
+unsafe extern "C" fn vx2_outb(chip: *mut vx_core, offset: i32, val: kernel::ffi::c_uchar) {
     outb(val, vx2_reg_addr(chip, offset));
     /*
     dev_dbg(chip->card->dev, "outb: %x -> %x\n", val, vx2_reg_addr(chip, offset));
@@ -99,7 +99,7 @@ unsafe extern "C" fn vx2_outb(chip: *mut vx_core, offset: i32, val: libc::c_ucha
  * @chip: VX core instance
  * @offset: register enum
  */
-unsafe extern "C" fn vx2_inl(chip: *mut vx_core, offset: i32) -> libc::c_uint {
+unsafe extern "C" fn vx2_inl(chip: *mut vx_core, offset: i32) -> kernel::ffi::c_uint {
     inl(vx2_reg_addr(chip, offset))
 }
 
@@ -109,7 +109,7 @@ unsafe extern "C" fn vx2_inl(chip: *mut vx_core, offset: i32) -> libc::c_uint {
  * @offset: the register enum
  * @val: the value to write
  */
-unsafe extern "C" fn vx2_outl(chip: *mut vx_core, offset: i32, val: libc::c_uint) {
+unsafe extern "C" fn vx2_outl(chip: *mut vx_core, offset: i32, val: kernel::ffi::c_uint) {
     /*
     dev_dbg(chip->card->dev, "outl: %x -> %x\n", val, vx2_reg_addr(chip, offset));
     */
@@ -119,19 +119,19 @@ unsafe extern "C" fn vx2_outl(chip: *mut vx_core, offset: i32, val: libc::c_uint
 /*
  * redefine macros to call directly
  */
-unsafe fn vx_inb(chip: *mut vx_core, reg: i32) -> libc::c_uchar {
+unsafe fn vx_inb(chip: *mut vx_core, reg: i32) -> kernel::ffi::c_uchar {
     vx2_inb(chip, reg)
 }
 
-unsafe fn vx_outb(chip: *mut vx_core, reg: i32, val: libc::c_uchar) {
+unsafe fn vx_outb(chip: *mut vx_core, reg: i32, val: kernel::ffi::c_uchar) {
     vx2_outb(chip, reg, val);
 }
 
-unsafe fn vx_inl(chip: *mut vx_core, reg: i32) -> libc::c_uint {
+unsafe fn vx_inl(chip: *mut vx_core, reg: i32) -> kernel::ffi::c_uint {
     vx2_inl(chip, reg)
 }
 
-unsafe fn vx_outl(chip: *mut vx_core, reg: i32, val: libc::c_uint) {
+unsafe fn vx_outl(chip: *mut vx_core, reg: i32, val: kernel::ffi::c_uint) {
     vx2_outl(chip, reg, val);
 }
 
@@ -139,7 +139,7 @@ unsafe fn vx_outl(chip: *mut vx_core, reg: i32, val: libc::c_uint) {
  * vx_reset_dsp - reset the DSP
  */
 
-const XX_DSP_RESET_WAIT_TIME: libc::c_uint = 2; /* ms */
+const XX_DSP_RESET_WAIT_TIME: kernel::ffi::c_uint = 2; /* ms */
 
 unsafe extern "C" fn vx2_reset_dsp(_chip: *mut vx_core) {
     let chip = to_vx222(_chip);
@@ -156,7 +156,7 @@ unsafe extern "C" fn vx2_reset_dsp(_chip: *mut vx_core) {
 
 unsafe fn vx2_test_xilinx(_chip: *mut vx_core) -> i32 {
     let chip = to_vx222(_chip);
-    let mut data: libc::c_uint;
+    let mut data: kernel::ffi::c_uint;
 
     dev_dbg((*(*_chip).card).dev, c"testing xilinx...\n".as_ptr());
     /* This test uses several write/read sequences on TEST0 and TEST1 bits
@@ -318,24 +318,24 @@ unsafe extern "C" fn vx2_dma_read(
     vx2_release_pseudo_dma(chip);
 }
 
-const VX_XILINX_RESET_MASK: libc::c_uint = 0x40000000;
-const VX_USERBIT0_MASK: libc::c_uint = 0x00000004;
-const VX_USERBIT1_MASK: libc::c_uint = 0x00000020;
-const VX_CNTRL_REGISTER_VALUE: libc::c_uint = 0x00172012;
+const VX_XILINX_RESET_MASK: kernel::ffi::c_uint = 0x40000000;
+const VX_USERBIT0_MASK: kernel::ffi::c_uint = 0x00000004;
+const VX_USERBIT1_MASK: kernel::ffi::c_uint = 0x00000020;
+const VX_CNTRL_REGISTER_VALUE: kernel::ffi::c_uint = 0x00172012;
 
 /*
  * transfer counts bits to PLX
  */
 unsafe fn put_xilinx_data(
     chip: *mut vx_core,
-    port: libc::c_uint,
-    counts: libc::c_uint,
-    data: libc::c_uchar,
+    port: kernel::ffi::c_uint,
+    counts: kernel::ffi::c_uint,
+    data: kernel::ffi::c_uchar,
 ) -> i32 {
-    let mut i: libc::c_uint = 0;
+    let mut i: kernel::ffi::c_uint = 0;
 
     while i < counts {
-        let mut val: libc::c_uint;
+        let mut val: kernel::ffi::c_uint;
 
         /* set the clock bit to 0. */
         val = VX_CNTRL_REGISTER_VALUE & !VX_USERBIT0_MASK;
@@ -343,7 +343,7 @@ unsafe fn put_xilinx_data(
         vx2_inl(chip, port as i32);
         udelay(1);
 
-        if (data as libc::c_uint & (1 << i)) != 0 {
+        if (data as kernel::ffi::c_uint & (1 << i)) != 0 {
             val |= VX_USERBIT1_MASK;
         } else {
             val &= !VX_USERBIT1_MASK;
@@ -365,9 +365,9 @@ unsafe fn put_xilinx_data(
  * load the xilinx image
  */
 unsafe fn vx2_load_xilinx_binary(chip: *mut vx_core, xilinx: *const firmware) -> i32 {
-    let mut i: libc::c_uint;
-    let port: libc::c_uint;
-    let mut image: *const libc::c_uchar;
+    let mut i: kernel::ffi::c_uint;
+    let port: kernel::ffi::c_uint;
+    let mut image: *const kernel::ffi::c_uchar;
 
     /* XILINX reset (wait at least 1 millisecond between reset on and off). */
     vx_outl(chip, VX_CNTRL, VX_CNTRL_REGISTER_VALUE | VX_XILINX_RESET_MASK);
@@ -378,9 +378,9 @@ unsafe fn vx2_load_xilinx_binary(chip: *mut vx_core, xilinx: *const firmware) ->
     msleep(10);
 
     if (*chip).type_ == VX_TYPE_BOARD {
-        port = VX_CNTRL as libc::c_uint;
+        port = VX_CNTRL as kernel::ffi::c_uint;
     } else {
-        port = VX_GPIOC as libc::c_uint; /* VX222 V2 and VX222_MIC_BOARD with new PLX9030 use this register */
+        port = VX_GPIOC as kernel::ffi::c_uint; /* VX222 V2 and VX222_MIC_BOARD with new PLX9030 use this register */
     }
 
     image = (*xilinx).data;
@@ -507,8 +507,8 @@ unsafe extern "C" fn vx2_validate_irq(_chip: *mut vx_core, enable: i32) {
 /*
  * write an AKM codec data (24bit)
  */
-unsafe fn vx2_write_codec_reg(chip: *mut vx_core, mut data: libc::c_uint) {
-    let mut i: libc::c_uint;
+unsafe fn vx2_write_codec_reg(chip: *mut vx_core, mut data: kernel::ffi::c_uint) {
+    let mut i: kernel::ffi::c_uint;
 
     vx_inl(chip, VX_HIFREQ);
 
@@ -523,14 +523,14 @@ unsafe fn vx2_write_codec_reg(chip: *mut vx_core, mut data: libc::c_uint) {
     vx_inl(chip, VX_RUER);
 }
 
-const AKM_CODEC_POWER_CONTROL_CMD: libc::c_uint = 0xA007;
-const AKM_CODEC_RESET_ON_CMD: libc::c_uint = 0xA100;
-const AKM_CODEC_RESET_OFF_CMD: libc::c_uint = 0xA103;
-const AKM_CODEC_CLOCK_FORMAT_CMD: libc::c_uint = 0xA240;
-const AKM_CODEC_MUTE_CMD: libc::c_uint = 0xA38D;
-const AKM_CODEC_UNMUTE_CMD: libc::c_uint = 0xA30D;
-const AKM_CODEC_LEFT_LEVEL_CMD: libc::c_uint = 0xA400;
-const AKM_CODEC_RIGHT_LEVEL_CMD: libc::c_uint = 0xA500;
+const AKM_CODEC_POWER_CONTROL_CMD: kernel::ffi::c_uint = 0xA007;
+const AKM_CODEC_RESET_ON_CMD: kernel::ffi::c_uint = 0xA100;
+const AKM_CODEC_RESET_OFF_CMD: kernel::ffi::c_uint = 0xA103;
+const AKM_CODEC_CLOCK_FORMAT_CMD: kernel::ffi::c_uint = 0xA240;
+const AKM_CODEC_MUTE_CMD: kernel::ffi::c_uint = 0xA38D;
+const AKM_CODEC_UNMUTE_CMD: kernel::ffi::c_uint = 0xA30D;
+const AKM_CODEC_LEFT_LEVEL_CMD: kernel::ffi::c_uint = 0xA400;
+const AKM_CODEC_RIGHT_LEVEL_CMD: kernel::ffi::c_uint = 0xA500;
 
 static VX2_AKM_GAINS_LUT: [u8; VX2_AKM_LEVEL_MAX as usize + 1] = [
     0x7f, 0x7d, 0x7c, 0x7a, 0x79, 0x77, 0x76, 0x75, 0x73, 0x72, 0x71, 0x70, 0x6f, 0x6d, 0x6c,
@@ -548,8 +548,8 @@ static VX2_AKM_GAINS_LUT: [u8; VX2_AKM_LEVEL_MAX as usize + 1] = [
 /*
  * pseudo-codec write entry
  */
-unsafe extern "C" fn vx2_write_akm(chip: *mut vx_core, reg: i32, data: libc::c_uint) {
-    let mut val: libc::c_uint;
+unsafe extern "C" fn vx2_write_akm(chip: *mut vx_core, reg: i32, data: kernel::ffi::c_uint) {
+    let mut val: kernel::ffi::c_uint;
 
     if reg == XX_CODEC_DAC_CONTROL_REGISTER {
         vx2_write_codec_reg(chip, if data != 0 { AKM_CODEC_MUTE_CMD } else { AKM_CODEC_UNMUTE_CMD });
@@ -576,7 +576,7 @@ unsafe extern "C" fn vx2_write_akm(chip: *mut vx_core, reg: i32, data: libc::c_u
             return;
         }
     }
-    val |= VX2_AKM_GAINS_LUT[data as usize] as libc::c_uint;
+    val |= VX2_AKM_GAINS_LUT[data as usize] as kernel::ffi::c_uint;
 
     vx2_write_codec_reg(chip, val);
 }
@@ -587,7 +587,7 @@ unsafe extern "C" fn vx2_write_akm(chip: *mut vx_core, reg: i32, data: libc::c_u
 unsafe extern "C" fn vx2_old_write_codec_bit(
     chip: *mut vx_core,
     _codec: i32,
-    mut data: libc::c_uint,
+    mut data: kernel::ffi::c_uint,
 ) {
     let mut i: i32;
 
@@ -701,7 +701,7 @@ unsafe fn vx2_set_input_level(chip: *mut snd_vx222) {
     let mut i: i32;
     let mut miclevel: i32;
     let mut preamp: i32;
-    let mut data: libc::c_uint;
+    let mut data: kernel::ffi::c_uint;
 
     miclevel = (*chip).mic_level;
     miclevel += V2_MICRO_LEVEL_RANGE; /* add 318 - 0xff */
@@ -717,13 +717,13 @@ unsafe fn vx2_set_input_level(chip: *mut snd_vx222) {
 
     /* set pre-amp level */
     (*chip).regSELMIC &= !MICRO_SELECT_PREAMPLI_MASK;
-    (*chip).regSELMIC |= ((preamp as libc::c_uint) << MICRO_SELECT_PREAMPLI_OFFSET)
+    (*chip).regSELMIC |= ((preamp as kernel::ffi::c_uint) << MICRO_SELECT_PREAMPLI_OFFSET)
         & MICRO_SELECT_PREAMPLI_MASK;
     vx_outl(chip as *mut vx_core, VX_SELMIC, (*chip).regSELMIC);
 
-    data = ((miclevel as libc::c_uint) << 16)
-        | (((*chip).input_level[1] as libc::c_uint) << 8)
-        | ((*chip).input_level[0] as libc::c_uint);
+    data = ((miclevel as kernel::ffi::c_uint) << 16)
+        | (((*chip).input_level[1] as kernel::ffi::c_uint) << 8)
+        | ((*chip).input_level[0] as kernel::ffi::c_uint);
     vx_inl(chip as *mut vx_core, VX_DATA); /* Activate input level programming */
 
     /* We have to send 32 bits (4 x 8 bits) */
@@ -743,7 +743,7 @@ unsafe fn vx2_set_input_level(chip: *mut snd_vx222) {
 
 const MIC_LEVEL_MAX: i32 = 0xff;
 
-static DB_SCALE_MIC: [libc::c_uint; 4] = TLV_DB_SCALE_ITEM(-6450, 50, 0);
+static DB_SCALE_MIC: [kernel::ffi::c_uint; 4] = TLV_DB_SCALE_ITEM(-6450, 50, 0);
 
 /*
  * controls API for input levels
@@ -757,7 +757,7 @@ unsafe extern "C" fn vx_input_level_info(
     (*uinfo).type_ = SNDRV_CTL_ELEM_TYPE_INTEGER;
     (*uinfo).count = 2;
     (*uinfo).value.integer.min = 0;
-    (*uinfo).value.integer.max = MIC_LEVEL_MAX as libc::c_long;
+    (*uinfo).value.integer.max = MIC_LEVEL_MAX as kernel::ffi::c_long;
     0
 }
 
@@ -769,8 +769,8 @@ unsafe extern "C" fn vx_input_level_get(
     let chip = to_vx222(_chip);
 
     let _guard = mutex_guard(&mut (*_chip).mixer_mutex);
-    (*ucontrol).value.integer.value[0] = (*chip).input_level[0] as libc::c_long;
-    (*ucontrol).value.integer.value[1] = (*chip).input_level[1] as libc::c_long;
+    (*ucontrol).value.integer.value[0] = (*chip).input_level[0] as kernel::ffi::c_long;
+    (*ucontrol).value.integer.value[1] = (*chip).input_level[1] as kernel::ffi::c_long;
     0
 }
 
@@ -781,12 +781,12 @@ unsafe extern "C" fn vx_input_level_put(
     let _chip: *mut vx_core = snd_kcontrol_chip(kcontrol);
     let chip = to_vx222(_chip);
     if (*ucontrol).value.integer.value[0] < 0
-        || (*ucontrol).value.integer.value[0] > MIC_LEVEL_MAX as libc::c_long
+        || (*ucontrol).value.integer.value[0] > MIC_LEVEL_MAX as kernel::ffi::c_long
     {
         return -EINVAL;
     }
     if (*ucontrol).value.integer.value[1] < 0
-        || (*ucontrol).value.integer.value[1] > MIC_LEVEL_MAX as libc::c_long
+        || (*ucontrol).value.integer.value[1] > MIC_LEVEL_MAX as kernel::ffi::c_long
     {
         return -EINVAL;
     }
@@ -810,7 +810,7 @@ unsafe extern "C" fn vx_mic_level_info(
     (*uinfo).type_ = SNDRV_CTL_ELEM_TYPE_INTEGER;
     (*uinfo).count = 1;
     (*uinfo).value.integer.min = 0;
-    (*uinfo).value.integer.max = MIC_LEVEL_MAX as libc::c_long;
+    (*uinfo).value.integer.max = MIC_LEVEL_MAX as kernel::ffi::c_long;
     0
 }
 
@@ -820,7 +820,7 @@ unsafe extern "C" fn vx_mic_level_get(
 ) -> i32 {
     let _chip: *mut vx_core = snd_kcontrol_chip(kcontrol);
     let chip = to_vx222(_chip);
-    (*ucontrol).value.integer.value[0] = (*chip).mic_level as libc::c_long;
+    (*ucontrol).value.integer.value[0] = (*chip).mic_level as kernel::ffi::c_long;
     0
 }
 
@@ -831,7 +831,7 @@ unsafe extern "C" fn vx_mic_level_put(
     let _chip: *mut vx_core = snd_kcontrol_chip(kcontrol);
     let chip = to_vx222(_chip);
     if (*ucontrol).value.integer.value[0] < 0
-        || (*ucontrol).value.integer.value[0] > MIC_LEVEL_MAX as libc::c_long
+        || (*ucontrol).value.integer.value[0] > MIC_LEVEL_MAX as kernel::ffi::c_long
     {
         return -EINVAL;
     }
@@ -889,11 +889,11 @@ unsafe extern "C" fn vx2_add_mic_controls(_chip: *mut vx_core) -> i32 {
     vx2_set_input_level(chip);
 
     /* controls */
-    err = snd_ctl_add((*_chip).card, snd_ctl_new1(&VX_CONTROL_INPUT_LEVEL, chip as *mut libc::c_void));
+    err = snd_ctl_add((*_chip).card, snd_ctl_new1(&VX_CONTROL_INPUT_LEVEL, chip as *mut kernel::ffi::c_void));
     if err < 0 {
         return err;
     }
-    err = snd_ctl_add((*_chip).card, snd_ctl_new1(&VX_CONTROL_MIC_LEVEL, chip as *mut libc::c_void));
+    err = snd_ctl_add((*_chip).card, snd_ctl_new1(&VX_CONTROL_MIC_LEVEL, chip as *mut kernel::ffi::c_void));
     if err < 0 {
         return err;
     }

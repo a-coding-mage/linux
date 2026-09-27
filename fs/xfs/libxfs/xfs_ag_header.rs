@@ -6,7 +6,7 @@
 
 // Dependency: xfs_group.h
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub struct xfs_mount;
 pub struct xfs_trans;
@@ -21,7 +21,7 @@ pub struct xfs_ag_resv {
 #[repr(C)]
 pub struct xfs_perag {
     pub pag_group: xfs_group,
-    pub pag_opstate: libc::c_ulong,
+    pub pag_opstate: kernel::ffi::c_ulong,
     pub pagf_bno_level: u8,
     pub pagf_cnt_level: u8,
     pub pagf_rmap_level: u8,
@@ -69,10 +69,10 @@ __XFS_AG_OPSTATE!(xfs_perag_allows_inodes, ALLOWS_INODES);
 __XFS_AG_OPSTATE!(xfs_perag_agfl_needs_reset, AGFL_NEEDS_RESET);
 
 extern "C" {
-    pub fn xfs_initialize_perag(mp: *mut xfs_mount, orig_agcount: xfs_agnumber_t, new_agcount: xfs_agnumber_t, dcount: xfs_rfsblock_t, maxagi: *mut xfs_agnumber_t) -> libc::c_int;
+    pub fn xfs_initialize_perag(mp: *mut xfs_mount, orig_agcount: xfs_agnumber_t, new_agcount: xfs_agnumber_t, dcount: xfs_rfsblock_t, maxagi: *mut xfs_agnumber_t) -> kernel::ffi::c_int;
     pub fn xfs_free_perag_range(mp: *mut xfs_mount, first_agno: xfs_agnumber_t, end_agno: xfs_agnumber_t);
-    pub fn xfs_initialize_perag_data(mp: *mut xfs_mount, agno: xfs_agnumber_t) -> libc::c_int;
-    pub fn xfs_update_last_ag_size(mp: *mut xfs_mount, prev_agcount: xfs_agnumber_t) -> libc::c_int;
+    pub fn xfs_initialize_perag_data(mp: *mut xfs_mount, agno: xfs_agnumber_t) -> kernel::ffi::c_int;
+    pub fn xfs_update_last_ag_size(mp: *mut xfs_mount, prev_agcount: xfs_agnumber_t) -> kernel::ffi::c_int;
 }
 
 pub unsafe fn xfs_perag_get(mp: *mut xfs_mount, agno: xfs_agnumber_t) -> *mut xfs_perag { to_perag(xfs_group_get(mp, agno, XG_TYPE_AG)) }
@@ -122,10 +122,10 @@ macro_rules! for_each_perag_wrap { ($($t:tt)*) => { for_each_perag_wrap_at!($($t
 extern "C" {
     pub fn xfs_ag_block_count(mp: *mut xfs_mount, agno: xfs_agnumber_t) -> xfs_agblock_t;
     pub fn xfs_agino_range(mp: *mut xfs_mount, agno: xfs_agnumber_t, first: *mut xfs_agino_t, last: *mut xfs_agino_t);
-    pub fn xfs_ag_init_headers(mp: *mut xfs_mount, id: *mut aghdr_init_data) -> libc::c_int;
-    pub fn xfs_ag_shrink_space(pag: *mut xfs_perag, tpp: *mut *mut xfs_trans, delta: xfs_extlen_t) -> libc::c_int;
-    pub fn xfs_ag_extend_space(pag: *mut xfs_perag, tp: *mut xfs_trans, len: xfs_extlen_t) -> libc::c_int;
-    pub fn xfs_ag_get_geometry(pag: *mut xfs_perag, ageo: *mut xfs_ag_geometry) -> libc::c_int;
+    pub fn xfs_ag_init_headers(mp: *mut xfs_mount, id: *mut aghdr_init_data) -> kernel::ffi::c_int;
+    pub fn xfs_ag_shrink_space(pag: *mut xfs_perag, tpp: *mut *mut xfs_trans, delta: xfs_extlen_t) -> kernel::ffi::c_int;
+    pub fn xfs_ag_extend_space(pag: *mut xfs_perag, tp: *mut xfs_trans, len: xfs_extlen_t) -> kernel::ffi::c_int;
+    pub fn xfs_ag_get_geometry(pag: *mut xfs_perag, ageo: *mut xfs_ag_geometry) -> kernel::ffi::c_int;
     pub fn xfs_growfs_compute_agcount(mp: *mut xfs_mount, nb: *mut xfs_rfsblock_t) -> xfs_agnumber_t;
 }
 

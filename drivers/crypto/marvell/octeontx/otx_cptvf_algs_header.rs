@@ -59,7 +59,7 @@ pub enum otx_cpt_aes_key_len { OTX_CPT_AES_128_BIT = 0x1, OTX_CPT_AES_192_BIT = 
 pub union otx_cpt_encr_ctrl { pub flags: u64, pub cflags: u64, pub e: u64 }
 
 #[repr(C)]
-pub struct otx_cpt_cipher { pub name: *const core::ffi::c_char, pub value: u8 }
+pub struct otx_cpt_cipher { pub name: *const kernel::ffi::c_char, pub value: u8 }
 
 #[repr(C)]
 pub struct otx_cpt_enc_context { pub enc_ctrl: otx_cpt_encr_ctrl, pub encr_key: [u8; 32], pub encr_iv: [u8; 16] }

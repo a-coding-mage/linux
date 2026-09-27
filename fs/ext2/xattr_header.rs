@@ -40,7 +40,7 @@ pub struct ext2_xattr_entry {
     pub e_value_block: u32, /* disk block attribute is stored on (n/i) */
     pub e_value_size: u32,  /* size of attribute value */
     pub e_hash: u32,        /* hash value of name and value */
-    pub e_name: [core::ffi::c_char; 0], /* attribute name */
+    pub e_name: [kernel::ffi::c_char; 0], /* attribute name */
 }
 
 pub const EXT2_XATTR_PAD_BITS: usize = 2;
@@ -73,9 +73,9 @@ extern "C" {
     pub static ext2_xattr_user_handler: xattr_handler;
     pub static ext2_xattr_trusted_handler: xattr_handler;
     pub static ext2_xattr_security_handler: xattr_handler;
-    pub fn ext2_listxattr(dentry: *mut dentry, buffer: *mut core::ffi::c_char, size: usize) -> isize;
-    pub fn ext2_xattr_get(inode: *mut inode, name_index: i32, name: *const core::ffi::c_char, buffer: *mut core::ffi::c_void, size: usize) -> i32;
-    pub fn ext2_xattr_set(inode: *mut inode, name_index: i32, name: *const core::ffi::c_char, value: *const core::ffi::c_void, size: usize, flags: i32) -> i32;
+    pub fn ext2_listxattr(dentry: *mut dentry, buffer: *mut kernel::ffi::c_char, size: usize) -> isize;
+    pub fn ext2_xattr_get(inode: *mut inode, name_index: i32, name: *const kernel::ffi::c_char, buffer: *mut kernel::ffi::c_void, size: usize) -> i32;
+    pub fn ext2_xattr_set(inode: *mut inode, name_index: i32, name: *const kernel::ffi::c_char, value: *const kernel::ffi::c_void, size: usize, flags: i32) -> i32;
     pub fn ext2_xattr_delete_inode(inode: *mut inode);
     pub fn ext2_xattr_create_cache() -> *mut mb_cache;
     pub fn ext2_xattr_destroy_cache(cache: *mut mb_cache);
@@ -83,10 +83,10 @@ extern "C" {
 }
 
 #[cfg(not(CONFIG_EXT2_FS_XATTR))]
-pub unsafe fn ext2_xattr_get(_inode: *mut inode, _name_index: i32, _name: *const core::ffi::c_char, _buffer: *mut core::ffi::c_void, _size: usize) -> i32 { -libc::EOPNOTSUPP }
+pub unsafe fn ext2_xattr_get(_inode: *mut inode, _name_index: i32, _name: *const kernel::ffi::c_char, _buffer: *mut kernel::ffi::c_void, _size: usize) -> i32 { -EOPNOTSUPP }
 
 #[cfg(not(CONFIG_EXT2_FS_XATTR))]
-pub unsafe fn ext2_xattr_set(_inode: *mut inode, _name_index: i32, _name: *const core::ffi::c_char, _value: *const core::ffi::c_void, _size: usize, _flags: i32) -> i32 { -libc::EOPNOTSUPP }
+pub unsafe fn ext2_xattr_set(_inode: *mut inode, _name_index: i32, _name: *const kernel::ffi::c_char, _value: *const kernel::ffi::c_void, _size: usize, _flags: i32) -> i32 { -EOPNOTSUPP }
 
 #[cfg(not(CONFIG_EXT2_FS_XATTR))]
 pub unsafe fn ext2_xattr_delete_inode(_inode: *mut inode) {}

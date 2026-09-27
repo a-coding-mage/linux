@@ -3,11 +3,11 @@
 // Dependencies supplied by the corresponding asm/uapi and Linux headers are
 // intentionally referenced here rather than redefined.
 
-pub const S_IRWXUGO: _ = S_IRWXU | S_IRWXG | S_IRWXO;
-pub const S_IALLUGO: _ = S_ISUID | S_ISGID | S_ISVTX | S_IRWXUGO;
-pub const S_IRUGO: _ = S_IRUSR | S_IRGRP | S_IROTH;
-pub const S_IWUGO: _ = S_IWUSR | S_IWGRP | S_IWOTH;
-pub const S_IXUGO: _ = S_IXUSR | S_IXGRP | S_IXOTH;
+pub const S_IRWXUGO: u32 = S_IRWXU | S_IRWXG | S_IRWXO;
+pub const S_IALLUGO: u32 = S_ISUID | S_ISGID | S_ISVTX | S_IRWXUGO;
+pub const S_IRUGO: u32 = S_IRUSR | S_IRGRP | S_IROTH;
+pub const S_IWUGO: u32 = S_IWUSR | S_IWGRP | S_IWOTH;
+pub const S_IXUGO: u32 = S_IXUSR | S_IXGRP | S_IXOTH;
 
 pub const UTIME_NOW: i64 = (1i64 << 30) - 1i64;
 pub const UTIME_OMIT: i64 = (1i64 << 30) - 2i64;
@@ -51,14 +51,14 @@ pub const STATX_CHANGE_COOKIE: u32 = 0x40000000u32; // Want/got stx_change_attr
 // file attribute values
 pub const STATX_ATTR_CHANGE_MONOTONIC: u64 = 0x8000000000000000u64; // version monotonically increases
 
-pub const KSTAT_ATTR_FS_IOC_FLAGS: _ = STATX_ATTR_COMPRESSED
+pub const KSTAT_ATTR_FS_IOC_FLAGS: __u64 = STATX_ATTR_COMPRESSED
     | STATX_ATTR_IMMUTABLE
     | STATX_ATTR_APPEND
     | STATX_ATTR_NODUMP
     | STATX_ATTR_ENCRYPTED
     | STATX_ATTR_VERITY; // Attrs corresponding to FS_*_FL flags
 
-pub const KSTAT_ATTR_VFS_FLAGS: _ = STATX_ATTR_IMMUTABLE | STATX_ATTR_APPEND;
+pub const KSTAT_ATTR_VFS_FLAGS: __u64 = STATX_ATTR_IMMUTABLE | STATX_ATTR_APPEND;
 // Attrs corresponding to S_* flags that are enforced by the VFS
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

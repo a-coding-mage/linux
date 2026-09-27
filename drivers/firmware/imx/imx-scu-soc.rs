@@ -43,19 +43,19 @@ extern "C" {
     fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut soc_device_attribute;
     fn of_property_read_string(
         root: *mut device_node,
-        name: *const core::ffi::c_char,
-        value: *mut *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
+        value: *mut *const kernel::ffi::c_char,
     ) -> i32;
     fn devm_kasprintf(
         dev: *mut device,
         flags: u32,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
         ...,
-    ) -> *mut core::ffi::c_char;
+    ) -> *mut kernel::ffi::c_char;
     fn soc_device_register(attr: *mut soc_device_attribute) -> *mut soc_device;
     fn ptr_err(ptr: *mut soc_device) -> i32;
     fn is_err(ptr: *mut soc_device) -> bool;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
 }
 
 unsafe fn imx_scu_soc_uid(soc_uid: *mut u64) -> i32 {
@@ -97,7 +97,7 @@ unsafe fn imx_scu_soc_id() -> i32 {
     msg.data.resp.id as i32
 }
 
-unsafe fn imx_scu_soc_name(id: u32) -> *const core::ffi::c_char {
+unsafe fn imx_scu_soc_name(id: u32) -> *const kernel::ffi::c_char {
     match id {
         0x1 => c"i.MX8QM".as_ptr(),
         0x2 => c"i.MX8QXP".as_ptr(),

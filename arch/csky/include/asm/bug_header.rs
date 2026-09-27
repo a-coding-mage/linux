@@ -25,12 +25,12 @@ pub struct pt_regs {
 }
 
 extern "C" {
-    pub fn die(regs: *mut pt_regs, str_: *const core::ffi::c_char);
+    pub fn die(regs: *mut pt_regs, str_: *const kernel::ffi::c_char);
     pub fn do_trap(
         regs: *mut pt_regs,
-        signo: core::ffi::c_int,
-        code: core::ffi::c_int,
-        addr: core::ffi::c_ulong,
+        signo: kernel::ffi::c_int,
+        code: kernel::ffi::c_int,
+        addr: kernel::ffi::c_ulong,
     );
 
     pub fn show_regs(regs: *mut pt_regs);

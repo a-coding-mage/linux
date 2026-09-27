@@ -18,7 +18,7 @@ struct Resource {
 
 #[repr(C)]
 struct PlatformDevice {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     id: i32,
     num_resources: usize,
     resource: *mut Resource,
@@ -79,7 +79,7 @@ pub unsafe extern "C" fn bcm63xx_spi_register() -> i32 {
     SPI_RESOURCES[1].start = bcm63xx_get_irq_number(IRQ_SPI);
 
     if BCMCPU_IS_6338() || BCMCPU_IS_6348() {
-        BCM63XX_SPI_DEVICE.name = b"bcm6348-spi\0".as_ptr() as *const core::ffi::c_char;
+        BCM63XX_SPI_DEVICE.name = b"bcm6348-spi\0".as_ptr() as *const kernel::ffi::c_char;
         SPI_RESOURCES[0].end = SPI_RESOURCES[0]
             .end
             .wrapping_add(BCM_6348_RSET_SPI_SIZE)
@@ -87,7 +87,7 @@ pub unsafe extern "C" fn bcm63xx_spi_register() -> i32 {
     }
 
     if BCMCPU_IS_3368() || BCMCPU_IS_6358() || BCMCPU_IS_6362() || BCMCPU_IS_6368() {
-        BCM63XX_SPI_DEVICE.name = b"bcm6358-spi\0".as_ptr() as *const core::ffi::c_char;
+        BCM63XX_SPI_DEVICE.name = b"bcm6358-spi\0".as_ptr() as *const kernel::ffi::c_char;
         SPI_RESOURCES[0].end = SPI_RESOURCES[0]
             .end
             .wrapping_add(BCM_6358_RSET_SPI_SIZE)

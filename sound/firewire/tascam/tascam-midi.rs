@@ -9,7 +9,7 @@
 // "tascam.h"; the referenced kernel/ALSA types, constants, and helpers are
 // treated as external dependencies here.
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 
 #[repr(C)]
 pub struct snd_tscm {
@@ -109,7 +109,7 @@ unsafe extern "C" {
     fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: c_ulong);
 }
 
-pub type c_ulong = core::ffi::c_ulong;
+pub type c_ulong = kernel::ffi::c_ulong;
 
 unsafe extern "C" fn midi_capture_open(_substream: *mut snd_rawmidi_substream) -> c_int {
     /* Do nothing. */

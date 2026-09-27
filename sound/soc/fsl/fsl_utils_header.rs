@@ -48,11 +48,11 @@ pub struct snd_ctl_elem_value {
 unsafe extern "C" {
     pub fn fsl_asoc_get_dma_channel(
         ssi_np: *mut device_node,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         dai: *mut snd_soc_dai_link,
-        dma_channel_id: *mut ::core::ffi::c_uint,
-        dma_id: *mut ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        dma_channel_id: *mut ::kernel::ffi::c_uint,
+        dma_id: *mut ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn fsl_asoc_get_pll_clocks(
         dev: *mut device,
@@ -74,38 +74,38 @@ unsafe extern "C" {
         pll8k_clk: *mut clk,
         pll11k_clk: *mut clk,
         ext_clk: *mut clk,
-        target_rates: *mut ::core::ffi::c_int,
+        target_rates: *mut ::kernel::ffi::c_int,
     );
 
     pub fn fsl_asoc_get_xr_sx(
         kcontrol: *mut snd_kcontrol,
         ucontrol: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn fsl_asoc_put_xr_sx(
         kcontrol: *mut snd_kcontrol,
         ucontrol: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn fsl_asoc_get_enum_double(
         kcontrol: *mut snd_kcontrol,
         ucontrol: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn fsl_asoc_put_enum_double(
         kcontrol: *mut snd_kcontrol,
         ucontrol: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn fsl_asoc_get_volsw(
         kcontrol: *mut snd_kcontrol,
         ucontrol: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn fsl_asoc_put_volsw(
         kcontrol: *mut snd_kcontrol,
         ucontrol: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 /* Similar to SOC_SINGLE_XR_SX, but it is for read only registers. */
@@ -126,7 +126,7 @@ macro_rules! FSL_ASOC_SINGLE_XR_SX_EXT_RO {
                 invert: $xinvert,
                 min: $xmin,
                 max: $xmax,
-            } as *const soc_mreg_control as ::core::ffi::c_ulong,
+            } as *const soc_mreg_control as ::kernel::ffi::c_ulong,
         }
     };
 }
@@ -158,7 +158,7 @@ macro_rules! FSL_ASOC_ENUM_EXT {
             info: snd_soc_info_enum_double,
             get: $xhandler_get,
             put: $xhandler_put,
-            private_value: &$xenum as *const _ as ::core::ffi::c_ulong,
+            private_value: &$xenum as *const _ as ::kernel::ffi::c_ulong,
         }
     };
 }

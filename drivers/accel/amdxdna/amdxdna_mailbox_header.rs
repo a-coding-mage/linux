@@ -5,7 +5,7 @@
 
 // C header guard: _AIE_MAILBOX_H_
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub enum mailbox {}
 pub enum mailbox_channel {}
@@ -48,7 +48,7 @@ pub struct xdna_mailbox_res {
     pub ringbuf_size: usize,
     pub mbox_base: *mut c_void,
     pub mbox_size: usize,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 /*

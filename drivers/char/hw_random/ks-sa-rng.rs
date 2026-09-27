@@ -145,17 +145,17 @@ pub unsafe extern "C" fn ks_sa_rng_probe(pdev: *mut platform_device) -> i32 {
     );
 
     (*ks_sa_rng).reg_rng = devm_platform_ioremap_resource(pdev, 0);
-    if is_err((*ks_sa_rng).reg_rng as *mut core::ffi::c_void) {
-        return ptr_err((*ks_sa_rng).reg_rng as *mut core::ffi::c_void);
+    if is_err((*ks_sa_rng).reg_rng as *mut kernel::ffi::c_void) {
+        return ptr_err((*ks_sa_rng).reg_rng as *mut kernel::ffi::c_void);
     }
     (*ks_sa_rng).regmap_cfg = syscon_regmap_lookup_by_phandle(
         &mut (*dev).of_node, b"ti,syscon-sa-cfg\0".as_ptr());
-    if is_err((*ks_sa_rng).regmap_cfg as *mut core::ffi::c_void) {
+    if is_err((*ks_sa_rng).regmap_cfg as *mut kernel::ffi::c_void) {
         return dev_err_probe(dev, -22, b"syscon_node_to_regmap failed\n\0".as_ptr());
     }
     (*ks_sa_rng).clk = devm_clk_get_enabled(dev, core::ptr::null());
-    if is_err((*ks_sa_rng).clk as *mut core::ffi::c_void) {
-        return dev_err_probe(dev, ptr_err((*ks_sa_rng).clk as *mut core::ffi::c_void),
+    if is_err((*ks_sa_rng).clk as *mut kernel::ffi::c_void) {
+        return dev_err_probe(dev, ptr_err((*ks_sa_rng).clk as *mut kernel::ffi::c_void),
                              b"Failed to get clock\n\0".as_ptr());
     }
     pm_runtime_enable(dev);
@@ -218,9 +218,9 @@ extern "C" {
                   data_present: unsafe extern "C" fn(*mut hwrng, i32) -> i32,
                   cleanup: unsafe extern "C" fn(*mut hwrng));
     fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32) -> *mut trng_regs;
-    fn is_err(ptr: *mut core::ffi::c_void) -> bool;
-    fn ptr_err(ptr: *mut core::ffi::c_void) -> i32;
-    fn syscon_regmap_lookup_by_phandle(node: *mut *mut core::ffi::c_void, name: *const u8) -> *mut regmap;
+    fn is_err(ptr: *mut kernel::ffi::c_void) -> bool;
+    fn ptr_err(ptr: *mut kernel::ffi::c_void) -> i32;
+    fn syscon_regmap_lookup_by_phandle(node: *mut *mut kernel::ffi::c_void, name: *const u8) -> *mut regmap;
     fn dev_err_probe(dev: *mut device, err: i32, msg: *const u8) -> i32;
     fn devm_clk_get_enabled(dev: *mut device, id: *const u8) -> *mut clk;
     fn pm_runtime_enable(dev: *mut device);
@@ -228,11 +228,11 @@ extern "C" {
     fn devm_hwrng_register(dev: *mut device, rng: *mut hwrng) -> i32;
 }
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 #[allow(non_camel_case_types)] pub enum hwrng {}
 #[allow(non_camel_case_types)] pub enum clk {}
 #[allow(non_camel_case_types)] pub enum regmap {}
-#[allow(non_camel_case_types)] pub struct device { pub of_node: *mut core::ffi::c_void, _private: [u8; 0] }
+#[allow(non_camel_case_types)] pub struct device { pub of_node: *mut kernel::ffi::c_void, _private: [u8; 0] }
 #[allow(non_camel_case_types)] pub struct platform_device { pub dev: device }
 const GFP_KERNEL: u32 = 0x08;
 

@@ -11,8 +11,8 @@
  * Access to the ThumbEE Handler Base register
  */
 #[inline]
-unsafe fn teehbr_read() -> ::core::ffi::c_ulong {
-    let v: ::core::ffi::c_ulong;
+unsafe fn teehbr_read() -> ::kernel::ffi::c_ulong {
+    let v: ::kernel::ffi::c_ulong;
     ::core::arch::asm!(
         "mrc p14, 6, {0}, c1, c0, 0",
         out(reg) v,
@@ -21,7 +21,7 @@ unsafe fn teehbr_read() -> ::core::ffi::c_ulong {
 }
 
 #[inline]
-unsafe fn teehbr_write(v: ::core::ffi::c_ulong) {
+unsafe fn teehbr_write(v: ::kernel::ffi::c_ulong) {
     ::core::arch::asm!(
         "mcr p14, 6, {0}, c1, c0, 0",
         in(reg) v,
@@ -30,9 +30,9 @@ unsafe fn teehbr_write(v: ::core::ffi::c_ulong) {
 
 unsafe fn thumbee_notifier(
     self_: *mut notifier_block,
-    cmd: ::core::ffi::c_ulong,
-    t: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int {
+    cmd: ::kernel::ffi::c_ulong,
+    t: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int {
     let _ = self_;
     let thread = t as *mut thread_info;
 
@@ -54,9 +54,9 @@ static mut thumbee_notifier_block: notifier_block = notifier_block {
     notifier_call: Some(thumbee_notifier),
 };
 
-unsafe fn thumbee_init() -> ::core::ffi::c_int {
-    let mut pfr0: ::core::ffi::c_ulong;
-    let cpu_arch: ::core::ffi::c_uint = cpu_architecture();
+unsafe fn thumbee_init() -> ::kernel::ffi::c_int {
+    let mut pfr0: ::kernel::ffi::c_ulong;
+    let cpu_arch: ::kernel::ffi::c_uint = cpu_architecture();
 
     if cpu_arch < CPU_ARCH_ARMv7 {
         return 0;

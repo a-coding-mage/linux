@@ -5,7 +5,7 @@
 unsafe fn common_tracking_show_fdinfo(
     ctx: *mut io_ring_ctx,
     m: *mut seq_file,
-    tracking_strategy: *const core::ffi::c_char,
+    tracking_strategy: *const kernel::ffi::c_char,
 ) {
     seq_puts(m, "NAPI:\tenabled\n");
     seq_printf(m, "napi tracking:\t%s\n", tracking_strategy);

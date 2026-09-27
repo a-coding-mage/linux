@@ -20,7 +20,7 @@ pub struct inotify_event {
     pub mask: u32,     /* watch mask */
     pub cookie: u32,   /* cookie to synchronize two events */
     pub len: u32,      /* length (including nulls) of name */
-    pub name: [core::ffi::c_char; 0], /* stub for possible name */
+    pub name: [kernel::ffi::c_char; 0], /* stub for possible name */
 }
 
 /* the following are legal, implemented events that user-space can watch for */

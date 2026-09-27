@@ -23,21 +23,21 @@ pub struct tegra_clk {
 extern "C" {
     static mut osc_ctrl_ctx: u32;
 
-    fn readl_relaxed(addr: *const core::ffi::c_void) -> u32;
-    fn writel_relaxed(value: u32, addr: *mut core::ffi::c_void);
-    fn fence_udelay(usecs: u32, clk_base: *mut core::ffi::c_void);
+    fn readl_relaxed(addr: *const kernel::ffi::c_void) -> u32;
+    fn writel_relaxed(value: u32, addr: *mut kernel::ffi::c_void);
+    fn fence_udelay(usecs: u32, clk_base: *mut kernel::ffi::c_void);
     fn tegra_lookup_dt_id(id: u32, clks: *mut tegra_clk) -> *mut *mut clk;
     fn clk_register_fixed_rate(
-        dev: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
-        parent_name: *const core::ffi::c_char,
+        dev: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        parent_name: *const kernel::ffi::c_char,
         flags: u32,
-        rate: core::ffi::c_ulong,
+        rate: kernel::ffi::c_ulong,
     ) -> *mut clk;
     fn clk_register_fixed_factor(
-        dev: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
-        parent_name: *const core::ffi::c_char,
+        dev: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        parent_name: *const kernel::ffi::c_char,
         flags: u32,
         mult: u32,
         div: u32,
@@ -54,13 +54,13 @@ extern "C" {
 
 #[no_mangle]
 pub unsafe extern "C" fn tegra_osc_clk_init(
-    clk_base: *mut core::ffi::c_void,
+    clk_base: *mut kernel::ffi::c_void,
     clks: *mut tegra_clk,
-    input_freqs: *mut core::ffi::c_ulong,
+    input_freqs: *mut kernel::ffi::c_ulong,
     num: u32,
     clk_m_div: u32,
-    osc_freq: *mut core::ffi::c_ulong,
-    pll_ref_freq: *mut core::ffi::c_ulong,
+    osc_freq: *mut kernel::ffi::c_ulong,
+    pll_ref_freq: *mut kernel::ffi::c_ulong,
 ) -> i32 {
     let mut clk: *mut clk;
     let mut osc: *mut clk;
@@ -126,7 +126,7 @@ pub unsafe extern "C" fn tegra_osc_clk_init(
     *dt_clk = clk;
 
     if !pll_ref_freq.is_null() {
-        *pll_ref_freq = *osc_freq / pll_ref_div as core::ffi::c_ulong;
+        *pll_ref_freq = *osc_freq / pll_ref_div as kernel::ffi::c_ulong;
     }
 
     0
@@ -146,7 +146,7 @@ pub unsafe extern "C" fn tegra_fixed_clk_init(tegra_clks: *mut tegra_clk) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn tegra_clk_osc_resume(clk_base: *mut core::ffi::c_void) {
+pub unsafe extern "C" fn tegra_clk_osc_resume(clk_base: *mut kernel::ffi::c_void) {
     let mut val: u32;
 
     val = readl_relaxed(clk_base.add(OSC_CTRL)) & !OSC_CTRL_MASK;

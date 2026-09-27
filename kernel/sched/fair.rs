@@ -15,7 +15,7 @@ static mut normalized_sysctl_sched_base_slice: u32 = 700000;
 pub static mut sysctl_sched_migration_cost: u32 = 500000;
 
 extern "C" {
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
     fn num_online_cpus() -> u32;
     fn ilog2(x: u32) -> u32;
 }
@@ -27,7 +27,7 @@ pub fn fits_capacity(cap: u64, max: u64) -> bool { cap.wrapping_mul(1280) < max.
 pub fn capacity_greater(cap1: u64, cap2: u64) -> bool { cap1.wrapping_mul(1024) > cap2.wrapping_mul(1078) }
 
 #[no_mangle]
-pub unsafe extern "C" fn setup_sched_thermal_decay_shift(_str: *mut core::ffi::c_char) -> i32 {
+pub unsafe extern "C" fn setup_sched_thermal_decay_shift(_str: *mut kernel::ffi::c_char) -> i32 {
     // __setup("sched_thermal_decay_shift=", setup_sched_thermal_decay_shift)
     pr_warn(b"Ignoring the deprecated sched_thermal_decay_shift= option\n\0".as_ptr() as _);
     1
@@ -76,12 +76,12 @@ pub unsafe extern "C" fn sched_init_granularity() { update_sysctl(); }
 // until the corresponding kernel Rust bindings are supplied.
 
 extern "C" {
-    pub static fair_sched_class: core::ffi::c_void;
-    pub fn update_curr_common(rq: *mut core::ffi::c_void) -> i64;
-    pub fn entity_eligible(cfs_rq: *mut core::ffi::c_void, se: *mut core::ffi::c_void) -> i32;
-    pub fn avg_vruntime(cfs_rq: *mut core::ffi::c_void) -> u64;
-    pub fn init_sched_mm(p: *mut core::ffi::c_void);
-    pub fn task_numa_group_id(p: *mut core::ffi::c_void) -> i32;
+    pub static fair_sched_class: kernel::ffi::c_void;
+    pub fn update_curr_common(rq: *mut kernel::ffi::c_void) -> i64;
+    pub fn entity_eligible(cfs_rq: *mut kernel::ffi::c_void, se: *mut kernel::ffi::c_void) -> i32;
+    pub fn avg_vruntime(cfs_rq: *mut kernel::ffi::c_void) -> u64;
+    pub fn init_sched_mm(p: *mut kernel::ffi::c_void);
+    pub fn task_numa_group_id(p: *mut kernel::ffi::c_void) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

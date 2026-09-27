@@ -7,12 +7,12 @@
 
 #[repr(C)]
 pub struct cpulaunch {
-    pub pc: core::ffi::c_ulong,
-    pub gp: core::ffi::c_ulong,
-    pub sp: core::ffi::c_ulong,
-    pub a0: core::ffi::c_ulong,
-    pub _pad: [core::ffi::c_ulong; 3], /* pad to cache line size to avoid thrashing */
-    pub flags: core::ffi::c_ulong,
+    pub pc: kernel::ffi::c_ulong,
+    pub gp: kernel::ffi::c_ulong,
+    pub sp: kernel::ffi::c_ulong,
+    pub a0: kernel::ffi::c_ulong,
+    pub _pad: [kernel::ffi::c_ulong; 3], /* pad to cache line size to avoid thrashing */
+    pub flags: kernel::ffi::c_ulong,
 }
 
 /* When assembled, these are byte/word offsets used by assembly code. */

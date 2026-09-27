@@ -12,17 +12,17 @@
 // Dependencies supplied by the Linux and SGI/IP27 environments are external.
 
 extern "C" {
-    pub fn machine_restart(command: *mut core::ffi::c_char) -> !;
+    pub fn machine_restart(command: *mut kernel::ffi::c_char) -> !;
     pub fn machine_halt() -> !;
     pub fn machine_power_off() -> !;
 
-    static mut _machine_restart: Option<unsafe extern "C" fn(*mut core::ffi::c_char)>;
+    static mut _machine_restart: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char)>;
     static mut _machine_halt: Option<unsafe extern "C" fn()>;
     static mut pm_power_off: Option<unsafe extern "C" fn()>;
 }
 
 #[inline(never)]
-unsafe fn ip27_machine_restart(command: *mut core::ffi::c_char) -> ! {
+unsafe fn ip27_machine_restart(command: *mut kernel::ffi::c_char) -> ! {
     let _ = command;
 
     // XXX How to pass the reboot command to the firmware???

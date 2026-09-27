@@ -89,7 +89,7 @@ pub struct fw_rsc_vdev {
 pub enum device {}
 
 extern "C" {
-    pub fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    pub fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 pub const EINVAL: i32 = 22;
@@ -98,8 +98,8 @@ pub unsafe fn rsc_table_for_each_entry(
     table: *mut resource_table,
     table_sz: usize,
     dev: *mut device,
-    cb: Option<unsafe extern "C" fn(u32, *mut core::ffi::c_void, i32, i32, *mut core::ffi::c_void) -> i32>,
-    data: *mut core::ffi::c_void,
+    cb: Option<unsafe extern "C" fn(u32, *mut kernel::ffi::c_void, i32, i32, *mut kernel::ffi::c_void) -> i32>,
+    data: *mut kernel::ffi::c_void,
 ) -> i32 {
     let mut i: u32 = 0;
     let mut ret: i32;
@@ -109,20 +109,20 @@ pub unsafe fn rsc_table_for_each_entry(
         let hdr: *mut fw_rsc_hdr;
         let avail: i32;
         let rsc_offset: i32;
-        let rsc: *mut core::ffi::c_void;
+        let rsc: *mut kernel::ffi::c_void;
 
         if (offset as usize) < core::mem::size_of::<resource_table>()
             || (offset as usize) >= table_sz
             || table_sz - (offset as usize) < core::mem::size_of::<fw_rsc_hdr>()
         {
-            dev_err(dev, b"rsc table is truncated\0".as_ptr() as *const core::ffi::c_char);
+            dev_err(dev, b"rsc table is truncated\0".as_ptr() as *const kernel::ffi::c_char);
             return -EINVAL;
         }
 
         hdr = (table as *mut u8).add(offset as usize) as *mut fw_rsc_hdr;
         avail = (table_sz - offset as usize - core::mem::size_of::<fw_rsc_hdr>()) as i32;
         rsc_offset = (offset as usize + core::mem::size_of::<fw_rsc_hdr>()) as i32;
-        rsc = (hdr as *mut u8).add(core::mem::size_of::<fw_rsc_hdr>()) as *mut core::ffi::c_void;
+        rsc = (hdr as *mut u8).add(core::mem::size_of::<fw_rsc_hdr>()) as *mut kernel::ffi::c_void;
 
         ret = cb.unwrap()((*hdr).type_, rsc, rsc_offset, avail, data);
         if ret != 0 {

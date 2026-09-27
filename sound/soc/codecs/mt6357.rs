@@ -372,38 +372,38 @@ static mic_type_mux_map: &[*const c_char] = &[
     c"Sine Generator".as_ptr(),
 ];
 
-static mic_type_mux_map_enum: _ = SOC_ENUM_SINGLE_DECL!(SND_SOC_NOPM, 0, mic_type_mux_map);
+static mic_type_mux_map_enum: &[*const c_char] = SOC_ENUM_SINGLE_DECL!(SND_SOC_NOPM, 0, mic_type_mux_map);
 static mic_type_mux_control: snd_kcontrol_new = SOC_DAPM_ENUM!("Mic Type Select", mic_type_mux_map_enum);
 
 static pga_mux_map: &[*const c_char] = &[c"None".as_ptr(), c"AIN0".as_ptr(), c"AIN1".as_ptr(), c"AIN2".as_ptr()];
-static pga_left_mux_map_enum: _ =
+static pga_left_mux_map_enum: u32 =
     SOC_ENUM_SINGLE_DECL!(MT6357_AUDENC_ANA_CON0, MT6357_AUDPREAMPLINPUTSEL_SFT, pga_mux_map);
 static pga_left_mux_control: snd_kcontrol_new = SOC_DAPM_ENUM!("PGA L Select", pga_left_mux_map_enum);
-static pga_right_mux_map_enum: _ =
+static pga_right_mux_map_enum: u32 =
     SOC_ENUM_SINGLE_DECL!(MT6357_AUDENC_ANA_CON1, MT6357_AUDPREAMPRINPUTSEL_SFT, pga_mux_map);
 static pga_right_mux_control: snd_kcontrol_new = SOC_DAPM_ENUM!("PGA R Select", pga_right_mux_map_enum);
 
 /* Downlink controls */
 static hslo_mux_map: &[*const c_char] =
     &[c"Open".as_ptr(), c"DACR".as_ptr(), c"Playback".as_ptr(), c"Test mode".as_ptr()];
-static lo_mux_map_enum: _ =
+static lo_mux_map_enum: u32 =
     SOC_ENUM_SINGLE_DECL!(MT6357_AUDDEC_ANA_CON4, MT6357_AUD_LOL_MUX_INPUT_VAUDP15_SFT, hslo_mux_map);
 static lo_mux_control: snd_kcontrol_new = SOC_DAPM_ENUM!("Line out source", lo_mux_map_enum);
-static hs_mux_map_enum: _ =
+static hs_mux_map_enum: u32 =
     SOC_ENUM_SINGLE_DECL!(MT6357_AUDDEC_ANA_CON3, MT6357_AUD_HS_MUX_INPUT_VAUDP15_SFT, hslo_mux_map);
 static hs_mux_control: snd_kcontrol_new = SOC_DAPM_ENUM!("Handset source", hs_mux_map_enum);
 
 static hplr_mux_map: &[*const c_char] =
     &[c"Open".as_ptr(), c"Line Out".as_ptr(), c"DAC".as_ptr(), c"Handset".as_ptr()];
-static hpr_mux_map_enum: _ =
+static hpr_mux_map_enum: u32 =
     SOC_ENUM_SINGLE_DECL!(MT6357_AUDDEC_ANA_CON0, MT6357_AUD_HPR_MUX_INPUT_VAUDP15_SFT, hplr_mux_map);
 static hpr_mux_control: snd_kcontrol_new = SOC_DAPM_ENUM!("Headphone Right source", hpr_mux_map_enum);
-static hpl_mux_map_enum: _ =
+static hpl_mux_map_enum: u32 =
     SOC_ENUM_SINGLE_DECL!(MT6357_AUDDEC_ANA_CON0, MT6357_AUD_HPL_MUX_INPUT_VAUDP15_SFT, hplr_mux_map);
 static hpl_mux_control: snd_kcontrol_new = SOC_DAPM_ENUM!("Headphone Left source", hpl_mux_map_enum);
 
 static dac_mux_map: &[*const c_char] = &[c"Normal Path".as_ptr(), c"Sine Generator".as_ptr()];
-static dac_mux_map_enum: _ =
+static dac_mux_map_enum: u32 =
     SOC_ENUM_SINGLE_DECL!(MT6357_AFE_TOP_CON0, MT6357_DL_SINE_ON_SFT, dac_mux_map);
 static dac_mux_control: snd_kcontrol_new = SOC_DAPM_ENUM!("DAC Select", dac_mux_map_enum);
 

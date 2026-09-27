@@ -12,8 +12,8 @@ pub struct autogroup {
     pub kref: kref,
     pub tg: *mut task_group,
     pub lock: rw_semaphore,
-    pub id: ::core::ffi::c_ulong,
-    pub nice: ::core::ffi::c_int,
+    pub id: ::kernel::ffi::c_ulong,
+    pub nice: ::kernel::ffi::c_int,
 }
 
 #[cfg(CONFIG_SCHED_AUTOGROUP)]
@@ -25,11 +25,11 @@ unsafe extern "C" {
 
     pub fn autogroup_path(
         tg: *mut task_group,
-        buf: *mut ::core::ffi::c_char,
-        buflen: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        buf: *mut ::kernel::ffi::c_char,
+        buflen: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 
-    pub static mut sysctl_sched_autogroup_enabled: ::core::ffi::c_uint;
+    pub static mut sysctl_sched_autogroup_enabled: ::kernel::ffi::c_uint;
 }
 
 #[cfg(CONFIG_SCHED_AUTOGROUP)]
@@ -44,9 +44,9 @@ pub unsafe fn autogroup_task_group(
     p: *mut task_struct,
     tg: *mut task_group,
 ) -> *mut task_group {
-    let enabled: ::core::ffi::c_int = unsafe {
+    let enabled: ::kernel::ffi::c_int = unsafe {
         ::core::ptr::read_volatile(&raw const sysctl_sched_autogroup_enabled)
-    } as ::core::ffi::c_int;
+    } as ::kernel::ffi::c_int;
 
     if enabled != 0 && unsafe { task_wants_autogroup(p, tg) } {
         unsafe { (*(*p).signal).autogroup.as_ref().unwrap().tg }
@@ -83,9 +83,9 @@ pub unsafe fn autogroup_task_group(
 #[inline]
 pub unsafe fn autogroup_path(
     _tg: *mut task_group,
-    _buf: *mut ::core::ffi::c_char,
-    _buflen: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    _buf: *mut ::kernel::ffi::c_char,
+    _buflen: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     0
 }
 

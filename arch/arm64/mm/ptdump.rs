@@ -17,13 +17,13 @@
 pub struct ptdump_prot_bits {
     pub mask: ptval_t,
     pub val: ptval_t,
-    pub set: *const core::ffi::c_char,
-    pub clear: *const core::ffi::c_char,
+    pub set: *const kernel::ffi::c_char,
+    pub clear: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct ptdump_pg_level {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub bits: *const ptdump_prot_bits,
     pub num: usize,
     pub mask: ptval_t,
@@ -57,7 +57,7 @@ pub enum seq_file {}
 pub enum mm_struct {}
 
 #[repr(C)]
-pub struct addr_marker { pub start_address: usize, pub name: *const core::ffi::c_char }
+pub struct addr_marker { pub start_address: usize, pub name: *const kernel::ffi::c_char }
 #[repr(C)]
 pub struct ptdump_range { pub start: usize, pub end: usize }
 #[repr(C)]
@@ -75,16 +75,16 @@ pub struct ptdump_info { pub mm: *mut mm_struct, pub markers: *mut addr_marker, 
 
 extern "C" {
     static mut init_mm: mm_struct;
-    fn seq_printf(m: *mut seq_file, fmt: *const core::ffi::c_char, ...);
-    fn ptdump_walk_pgd(st: *mut ptdump_state, mm: *mut mm_struct, vma: *mut core::ffi::c_void);
-    fn ptdump_debugfs_register(info: *mut ptdump_info, name: *const core::ffi::c_char) -> i32;
-    fn virt_to_page(addr: *const core::ffi::c_void) -> *mut core::ffi::c_void;
-    fn memcpy(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void;
+    fn seq_printf(m: *mut seq_file, fmt: *const kernel::ffi::c_char, ...);
+    fn ptdump_walk_pgd(st: *mut ptdump_state, mm: *mut mm_struct, vma: *mut kernel::ffi::c_void);
+    fn ptdump_debugfs_register(info: *mut ptdump_info, name: *const kernel::ffi::c_char) -> i32;
+    fn virt_to_page(addr: *const kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+    fn memcpy(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize) -> *mut kernel::ffi::c_void;
     fn mm_p4d_folded(mm: *mut mm_struct) -> bool;
     fn mm_pud_folded(mm: *mut mm_struct) -> bool;
-    fn warn_once(cond: bool, fmt: *const core::ffi::c_char, ...);
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn warn_once(cond: bool, fmt: *const kernel::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 extern "C" {
@@ -133,8 +133,8 @@ static mut kernel_pg_levels: [ptdump_pg_level; 5] = [
     ptdump_pg_level { name: b"PTE\0".as_ptr() as _, bits: core::ptr::null(), num: 16, mask: 0 },
 ];
 
-unsafe fn pt_dump_seq_printf(m: *mut seq_file, fmt: *const core::ffi::c_char, args: ...) { if !m.is_null() { seq_printf(m, fmt, args); } }
-unsafe fn pt_dump_seq_puts(m: *mut seq_file, fmt: *const core::ffi::c_char) { if !m.is_null() { seq_printf(m, fmt); } }
+unsafe fn pt_dump_seq_printf(m: *mut seq_file, fmt: *const kernel::ffi::c_char, args: ...) { if !m.is_null() { seq_printf(m, fmt, args); } }
+unsafe fn pt_dump_seq_puts(m: *mut seq_file, fmt: *const kernel::ffi::c_char) { if !m.is_null() { seq_printf(m, fmt); } }
 
 unsafe fn dump_prot(st: *mut ptdump_pg_state, mut bits: *const ptdump_prot_bits, num: usize) {
     for _ in 0..num { let b = &*bits; let s = if ((*st).current_prot & b.mask) == b.val { b.set } else { b.clear }; if !s.is_null() { pt_dump_seq_printf((*st).seq, b" %s\0".as_ptr() as _, s); } bits = bits.add(1); }

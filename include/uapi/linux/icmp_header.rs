@@ -153,7 +153,7 @@ pub union icmp_ext_echo_iio_ip_addr {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union icmp_ext_echo_iio_ident {
-    pub name: [core::ffi::c_char; IFNAMSIZ],
+    pub name: [kernel::ffi::c_char; IFNAMSIZ],
     pub ifindex: __be32,
     pub addr: icmp_ext_echo_iio_addr,
 }

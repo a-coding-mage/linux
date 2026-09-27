@@ -9,7 +9,7 @@
 
 #[repr(C)]
 struct MfpTestCase {
-    desc: *const core::ffi::c_char,
+    desc: *const kernel::ffi::c_char,
     sta: bool,
     mfp: bool,
     decrypted: bool,
@@ -23,7 +23,7 @@ struct MfpTestCase {
 
 // The following constants, types, and functions are provided externally.
 extern "C" {
-    static accept_mfp_gen_params: core::ffi::c_void;
+    static accept_mfp_gen_params: kernel::ffi::c_void;
 }
 
 static ACCEPT_MFP_CASES: &[MfpTestCase] = &[

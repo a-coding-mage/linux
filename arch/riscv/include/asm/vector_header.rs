@@ -6,8 +6,8 @@
 
 #[cfg(CONFIG_RISCV_ISA_V)]
 extern "C" {
-    pub static mut riscv_v_vsize: ::core::ffi::c_ulong;
-    pub fn riscv_v_setup_vsize() -> ::core::ffi::c_int;
+    pub static mut riscv_v_vsize: ::kernel::ffi::c_ulong;
+    pub fn riscv_v_setup_vsize() -> ::kernel::ffi::c_int;
     pub fn insn_is_vector(insn_buf: u32) -> bool;
     pub fn riscv_v_first_use_handler(regs: *mut pt_regs) -> bool;
     pub fn kernel_vector_begin();
@@ -17,7 +17,7 @@ extern "C" {
     pub fn riscv_v_thread_free(tsk: *mut task_struct);
     pub fn riscv_v_setup_ctx_cache();
     pub fn riscv_v_thread_alloc(tsk: *mut task_struct);
-    pub fn update_regset_vector_info(size: ::core::ffi::c_ulong);
+    pub fn update_regset_vector_info(size: ::kernel::ffi::c_ulong);
     pub fn riscv_v_vstate_ctrl_init(tsk: *mut task_struct);
     pub fn riscv_v_vstate_ctrl_user_allowed() -> bool;
 }
@@ -99,7 +99,7 @@ pub unsafe fn __vstate_csr_restore(src: *const __riscv_v_ext_state) {
 
 #[cfg(CONFIG_RISCV_ISA_V)]
 #[inline]
-pub unsafe fn __riscv_v_vstate_save(save_to: *mut __riscv_v_ext_state, datap: *mut ::core::ffi::c_void) {
+pub unsafe fn __riscv_v_vstate_save(save_to: *mut __riscv_v_ext_state, datap: *mut ::kernel::ffi::c_void) {
     riscv_v_enable(); __vstate_csr_save(save_to);
     // Original T-Head and standard vector store sequences are retained here.
     core::arch::asm!("mv t0, {0}\n\nadd t0, t0, t4\nadd t0, t0, t4\nadd t0, t0, t4", in(reg) datap, options(nostack));
@@ -108,7 +108,7 @@ pub unsafe fn __riscv_v_vstate_save(save_to: *mut __riscv_v_ext_state, datap: *m
 
 #[cfg(CONFIG_RISCV_ISA_V)]
 #[inline]
-pub unsafe fn __riscv_v_vstate_restore(restore_from: *const __riscv_v_ext_state, datap: *mut ::core::ffi::c_void) {
+pub unsafe fn __riscv_v_vstate_restore(restore_from: *const __riscv_v_ext_state, datap: *mut ::kernel::ffi::c_void) {
     riscv_v_enable();
     core::arch::asm!("mv t0, {0}\nadd t0, t0, t4\nadd t0, t0, t4\nadd t0, t0, t4", in(reg) datap, options(nostack));
     __vstate_csr_restore(restore_from); riscv_v_disable();
@@ -180,7 +180,7 @@ pub unsafe fn __switch_to_vector(prev: *mut task_struct, next: *mut task_struct)
 pub unsafe fn __switch_to_vector(_: *mut task_struct, _: *mut task_struct) {}
 
 #[cfg(not(CONFIG_RISCV_ISA_V))]
-pub unsafe fn riscv_v_setup_vsize() -> ::core::ffi::c_int { -EOPNOTSUPP }
+pub unsafe fn riscv_v_setup_vsize() -> ::kernel::ffi::c_int { -EOPNOTSUPP }
 #[cfg(not(CONFIG_RISCV_ISA_V))] pub unsafe fn has_vector() -> bool { false }
 #[cfg(not(CONFIG_RISCV_ISA_V))] pub unsafe fn insn_is_vector(_: u32) -> bool { false }
 #[cfg(not(CONFIG_RISCV_ISA_V))] pub unsafe fn has_xtheadvector_no_alternatives() -> bool { false }
@@ -190,6 +190,6 @@ pub unsafe fn riscv_v_setup_vsize() -> ::core::ffi::c_int { -EOPNOTSUPP }
 #[cfg(not(CONFIG_RISCV_ISA_V))] pub unsafe fn riscv_v_vstate_ctrl_user_allowed() -> bool { false }
 
 #[inline]
-pub unsafe fn riscv_vector_vlen() -> ::core::ffi::c_int { (riscv_v_vsize / 32 * 8) as _ }
+pub unsafe fn riscv_vector_vlen() -> ::kernel::ffi::c_int { (riscv_v_vsize / 32 * 8) as _ }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

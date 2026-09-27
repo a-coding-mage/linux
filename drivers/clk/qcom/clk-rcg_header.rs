@@ -12,7 +12,7 @@ macro_rules! F {
 
 #[repr(C)]
 pub struct freq_tbl {
-    pub freq: ::core::ffi::c_ulong,
+    pub freq: ::kernel::ffi::c_ulong,
     pub src: u8,
     pub pre_div: u8,
     pub m: u16,
@@ -50,7 +50,7 @@ pub struct freq_conf {
 
 #[repr(C)]
 pub struct freq_multi_tbl {
-    pub freq: ::core::ffi::c_ulong,
+    pub freq: ::kernel::ffi::c_ulong,
     pub num_confs: usize,
     pub confs: *const freq_conf,
 }
@@ -201,7 +201,7 @@ extern "C" {
     pub fn qcom_cc_register_rcg_dfs(
         regmap: *mut regmap,
         rcgs: *const clk_rcg_dfs_data,
-        len: usize) -> ::core::ffi::c_int;
+        len: usize) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

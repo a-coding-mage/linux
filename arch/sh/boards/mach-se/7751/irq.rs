@@ -40,7 +40,7 @@ static mut IPR_IRQ_DESC: ipr_desc = ipr_desc {
     nr_irqs: IPR_IRQ_TABLE.len(),
 
     chip: irq_chip {
-        name: b"IPR-se7751\0".as_ptr() as *const core::ffi::c_char,
+        name: b"IPR-se7751\0".as_ptr() as *const kernel::ffi::c_char,
     },
 };
 

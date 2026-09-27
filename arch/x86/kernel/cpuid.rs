@@ -30,7 +30,7 @@ struct cpuid_regs_done {
     done: completion,
 }
 
-unsafe fn cpuid_smp_cpuid(cmd_block: *mut core::ffi::c_void) {
+unsafe fn cpuid_smp_cpuid(cmd_block: *mut kernel::ffi::c_void) {
     let cmd = cmd_block as *mut cpuid_regs_done;
 
     cpuid_count(
@@ -47,7 +47,7 @@ unsafe fn cpuid_smp_cpuid(cmd_block: *mut core::ffi::c_void) {
 
 unsafe fn cpuid_read_f(
     file: *mut file,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     mut count: usize,
     ppos: *mut loff_t,
 ) -> ssize_t {
@@ -76,7 +76,7 @@ unsafe fn cpuid_read_f(
             break;
         }
         wait_for_completion(&mut cmd.done);
-        if copy_to_user(tmp, &cmd.regs as *const _ as *const core::ffi::c_void, 16) != 0 {
+        if copy_to_user(tmp, &cmd.regs as *const _ as *const kernel::ffi::c_void, 16) != 0 {
             err = -EFAULT;
             break;
         }
@@ -115,12 +115,12 @@ static cpuid_fops: file_operations = file_operations {
     open: cpuid_open,
 };
 
-unsafe fn cpuid_devnode(dev: *const device, mode: *mut umode_t) -> *mut core::ffi::c_char {
-    kasprintf(GFP_KERNEL, b"cpu/%u/cpuid\0".as_ptr() as *const core::ffi::c_char, MINOR((*dev).devt))
+unsafe fn cpuid_devnode(dev: *const device, mode: *mut umode_t) -> *mut kernel::ffi::c_char {
+    kasprintf(GFP_KERNEL, b"cpu/%u/cpuid\0".as_ptr() as *const kernel::ffi::c_char, MINOR((*dev).devt))
 }
 
 static cpuid_class: class = class {
-    name: b"cpuid\0".as_ptr() as *const core::ffi::c_char,
+    name: b"cpuid\0".as_ptr() as *const kernel::ffi::c_char,
     devnode: cpuid_devnode,
 };
 
@@ -130,7 +130,7 @@ unsafe fn cpuid_device_create(cpu: u32) -> i32 {
         core::ptr::null_mut(),
         MKDEV(CPUID_MAJOR, cpu),
         core::ptr::null_mut(),
-        b"cpu%d\0".as_ptr() as *const core::ffi::c_char,
+        b"cpu%d\0".as_ptr() as *const kernel::ffi::c_char,
         cpu,
     );
     PTR_ERR_OR_ZERO(dev)
@@ -144,8 +144,8 @@ unsafe fn cpuid_device_destroy(cpu: u32) -> i32 {
 unsafe fn cpuid_init() -> i32 {
     let mut err: i32;
 
-    if __register_chrdev(CPUID_MAJOR, 0, NR_CPUS, b"cpu/cpuid\0".as_ptr() as *const core::ffi::c_char, &cpuid_fops) != 0 {
-        printk(KERN_ERR, b"cpuid: unable to get major %d for cpuid\n\0".as_ptr() as *const core::ffi::c_char, CPUID_MAJOR);
+    if __register_chrdev(CPUID_MAJOR, 0, NR_CPUS, b"cpu/cpuid\0".as_ptr() as *const kernel::ffi::c_char, &cpuid_fops) != 0 {
+        printk(KERN_ERR, b"cpuid: unable to get major %d for cpuid\n\0".as_ptr() as *const kernel::ffi::c_char, CPUID_MAJOR);
         return -EBUSY;
     }
     err = class_register(&cpuid_class);
@@ -153,10 +153,10 @@ unsafe fn cpuid_init() -> i32 {
         goto_out_chrdev(err);
     }
 
-    err = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, b"x86/cpuid:online\0".as_ptr() as *const core::ffi::c_char, cpuid_device_create, cpuid_device_destroy);
+    err = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, b"x86/cpuid:online\0".as_ptr() as *const kernel::ffi::c_char, cpuid_device_create, cpuid_device_destroy);
     if err < 0 {
         class_unregister(&cpuid_class);
-        __unregister_chrdev(CPUID_MAJOR, 0, NR_CPUS, b"cpu/cpuid\0".as_ptr() as *const core::ffi::c_char);
+        __unregister_chrdev(CPUID_MAJOR, 0, NR_CPUS, b"cpu/cpuid\0".as_ptr() as *const kernel::ffi::c_char);
         return err;
     }
 
@@ -165,14 +165,14 @@ unsafe fn cpuid_init() -> i32 {
 }
 
 unsafe fn goto_out_chrdev(err: i32) -> i32 {
-    __unregister_chrdev(CPUID_MAJOR, 0, NR_CPUS, b"cpu/cpuid\0".as_ptr() as *const core::ffi::c_char);
+    __unregister_chrdev(CPUID_MAJOR, 0, NR_CPUS, b"cpu/cpuid\0".as_ptr() as *const kernel::ffi::c_char);
     err
 }
 
 unsafe fn cpuid_exit() {
     cpuhp_remove_state(cpuhp_cpuid_state);
     class_unregister(&cpuid_class);
-    __unregister_chrdev(CPUID_MAJOR, 0, NR_CPUS, b"cpu/cpuid\0".as_ptr() as *const core::ffi::c_char);
+    __unregister_chrdev(CPUID_MAJOR, 0, NR_CPUS, b"cpu/cpuid\0".as_ptr() as *const kernel::ffi::c_char);
 }
 
 module_init!(cpuid_init);

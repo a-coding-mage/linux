@@ -8,8 +8,8 @@ pub struct io_bitmap {
     pub sequence: u64,
     pub refcnt: refcount_t,
     /* The maximum number of bytes to copy so all zero bits are covered */
-    pub max: ::core::ffi::c_uint,
-    pub bitmap: [::core::ffi::c_ulong; IO_BITMAP_LONGS],
+    pub max: ::kernel::ffi::c_uint,
+    pub bitmap: [::kernel::ffi::c_ulong; IO_BITMAP_LONGS],
 }
 
 pub struct task_struct;

@@ -61,7 +61,7 @@ unsafe extern "C" {
     pub fn amdgpu_dm_plane_init(
         dm: *mut amdgpu_display_manager,
         plane: *mut drm_plane,
-        possible_crtcs: ::core::ffi::c_ulong,
+        possible_crtcs: ::kernel::ffi::c_ulong,
         plane_cap: *const dc_plane_cap,
     ) -> i32;
 

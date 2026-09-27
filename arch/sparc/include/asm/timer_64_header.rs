@@ -11,38 +11,38 @@
  */
 #[repr(C)]
 pub struct sparc64_tick_ops {
-    pub ticks_per_nsec_quotient: libc::c_ulong,
-    pub offset: libc::c_ulong,
-    pub get_tick: Option<unsafe extern "C" fn() -> libc::c_ulonglong>,
-    pub add_compare: Option<unsafe extern "C" fn(libc::c_ulong) -> libc::c_int>,
-    pub softint_mask: libc::c_ulong,
+    pub ticks_per_nsec_quotient: kernel::ffi::c_ulong,
+    pub offset: kernel::ffi::c_ulong,
+    pub get_tick: Option<unsafe extern "C" fn() -> kernel::ffi::c_ulonglong>,
+    pub add_compare: Option<unsafe extern "C" fn(kernel::ffi::c_ulong) -> kernel::ffi::c_int>,
+    pub softint_mask: kernel::ffi::c_ulong,
     pub disable_irq: Option<unsafe extern "C" fn()>,
     pub init_tick: Option<unsafe extern "C" fn()>,
-    pub add_tick: Option<unsafe extern "C" fn(libc::c_ulong) -> libc::c_ulong>,
-    pub get_frequency: Option<unsafe extern "C" fn() -> libc::c_ulong>,
-    pub frequency: libc::c_ulong,
-    pub name: *mut libc::c_char,
+    pub add_tick: Option<unsafe extern "C" fn(kernel::ffi::c_ulong) -> kernel::ffi::c_ulong>,
+    pub get_frequency: Option<unsafe extern "C" fn() -> kernel::ffi::c_ulong>,
+    pub frequency: kernel::ffi::c_ulong,
+    pub name: *mut kernel::ffi::c_char,
 }
 
 extern "C" {
     pub static mut tick_ops: *mut sparc64_tick_ops;
-    pub fn sparc64_get_clock_tick(cpu: libc::c_uint) -> libc::c_ulong;
+    pub fn sparc64_get_clock_tick(cpu: kernel::ffi::c_uint) -> kernel::ffi::c_ulong;
     pub fn setup_sparc64_timer();
 }
 
-pub const TICK_PRIV_BIT: libc::c_ulong = 1u64 << 63;
-pub const TICKCMP_IRQ_BIT: libc::c_ulong = 1u64 << 63;
+pub const TICK_PRIV_BIT: kernel::ffi::c_ulong = 1u64 << 63;
+pub const TICKCMP_IRQ_BIT: kernel::ffi::c_ulong = 1u64 << 63;
 
-pub const HBIRD_STICKCMP_ADDR: libc::c_ulong = 0x1fe0000f060;
-pub const HBIRD_STICK_ADDR: libc::c_ulong = 0x1fe0000f070;
+pub const HBIRD_STICKCMP_ADDR: kernel::ffi::c_ulong = 0x1fe0000f060;
+pub const HBIRD_STICK_ADDR: kernel::ffi::c_ulong = 0x1fe0000f070;
 
 pub const GET_TICK_NINSTR: usize = 13;
 
 #[repr(C)]
 pub struct get_tick_patch {
-    pub addr: libc::c_uint,
-    pub tick: [libc::c_uint; GET_TICK_NINSTR],
-    pub stick: [libc::c_uint; GET_TICK_NINSTR],
+    pub addr: kernel::ffi::c_uint,
+    pub tick: [kernel::ffi::c_uint; GET_TICK_NINSTR],
+    pub stick: [kernel::ffi::c_uint; GET_TICK_NINSTR],
 }
 
 extern "C" {
@@ -51,10 +51,10 @@ extern "C" {
 }
 
 #[inline]
-pub unsafe fn get_tick() -> libc::c_ulong {
-    let mut tick: libc::c_ulong;
-    let mut tmp1: libc::c_ulong;
-    let mut tmp2: libc::c_ulong;
+pub unsafe fn get_tick() -> kernel::ffi::c_ulong {
+    let mut tick: kernel::ffi::c_ulong;
+    let mut tmp1: kernel::ffi::c_ulong;
+    let mut tmp2: kernel::ffi::c_ulong;
 
     // The original SPARC inline assembly is preserved verbatim as the
     // required target-specific implementation.  The patch section selects

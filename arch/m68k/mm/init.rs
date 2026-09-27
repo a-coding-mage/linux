@@ -10,16 +10,16 @@
 
 // C headers and architecture dependencies are supplied by other translated units.
 
-pub unsafe fn arch_zone_limits_init(max_zone_pfns: *mut core::ffi::c_ulong) {
+pub unsafe fn arch_zone_limits_init(max_zone_pfns: *mut kernel::ffi::c_ulong) {
     *max_zone_pfns.add(ZONE_DMA as usize) =
         PFN_DOWN(memblock_end_of_DRAM());
 }
 
 #[cfg(CONFIG_MMU)]
-pub static mut m68k_virt_to_node_shift: core::ffi::c_int = 0;
+pub static mut m68k_virt_to_node_shift: kernel::ffi::c_int = 0;
 
 #[cfg(CONFIG_MMU)]
-pub unsafe fn m68k_setup_node(node: core::ffi::c_int) {
+pub unsafe fn m68k_setup_node(node: kernel::ffi::c_int) {
     node_set_online(node);
 }
 
@@ -35,9 +35,9 @@ pub unsafe fn paging_init() {
      * Make sure start_mem is page aligned, otherwise bootmem and
      * page_alloc get different views of the world.
      */
-    let end_mem: core::ffi::c_ulong = memory_end & PAGE_MASK;
+    let end_mem: kernel::ffi::c_ulong = memory_end & PAGE_MASK;
 
-    high_memory = end_mem as *mut core::ffi::c_void;
+    high_memory = end_mem as *mut kernel::ffi::c_void;
 }
 
 pub unsafe fn free_initmem() {
@@ -46,16 +46,16 @@ pub unsafe fn free_initmem() {
 }
 
 #[cfg(all(CONFIG_MMU, not(CONFIG_COLDFIRE)))]
-const VECTORS: *mut core::ffi::c_void = unsafe { &mut vectors[0] as *mut _ as *mut core::ffi::c_void };
+const VECTORS: *mut kernel::ffi::c_void = unsafe { &mut vectors[0] as *mut _ as *mut kernel::ffi::c_void };
 
 #[cfg(any(not(CONFIG_MMU), CONFIG_COLDFIRE))]
-const VECTORS: *mut core::ffi::c_void = unsafe { _ramvec as *mut core::ffi::c_void };
+const VECTORS: *mut kernel::ffi::c_void = unsafe { _ramvec as *mut kernel::ffi::c_void };
 
 unsafe fn init_pointer_tables() {
     #[cfg(all(CONFIG_MMU, not(CONFIG_SUN3), not(CONFIG_COLDFIRE)))]
     {
-        let mut i: core::ffi::c_int;
-        let mut j: core::ffi::c_int;
+        let mut i: kernel::ffi::c_int;
+        let mut j: kernel::ffi::c_int;
 
         /* insert pointer tables allocated so far into the tablelist */
         init_pointer_table(kernel_pg_dir, TABLE_PGD);

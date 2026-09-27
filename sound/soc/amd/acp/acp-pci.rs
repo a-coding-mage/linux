@@ -21,16 +21,16 @@
 // "amd.h"
 // "../mach-config.h"
 
-const DRV_NAME: *const core::ffi::c_char = b"acp_pci\0".as_ptr() as *const core::ffi::c_char;
+const DRV_NAME: *const kernel::ffi::c_char = b"acp_pci\0".as_ptr() as *const kernel::ffi::c_char;
 
 const ACP3x_REG_START: u32 = 0x1240000;
 const ACP3x_REG_END: u32 = 0x125C000;
 
-type c_int = core::ffi::c_int;
-type c_uint = core::ffi::c_uint;
-type c_void = core::ffi::c_void;
+type c_int = kernel::ffi::c_int;
+type c_uint = kernel::ffi::c_uint;
+type c_void = kernel::ffi::c_void;
 type size_t = usize;
-type u32 = core::ffi::c_uint;
+type u32 = kernel::ffi::c_uint;
 type irqreturn_t = c_uint;
 
 const IRQ_NONE: irqreturn_t = 0;
@@ -89,7 +89,7 @@ pub struct platform_device {
 pub struct platform_device_info {
     pub parent: *mut device,
     pub fwnode: *mut fwnode_handle,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub id: c_uint,
     pub res: *const resource,
     pub num_res: c_uint,
@@ -109,7 +109,7 @@ pub struct device_driver {
 
 #[repr(C)]
 pub struct pci_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id_table: *const pci_device_id,
     pub probe: Option<unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> c_int>,
     pub remove: Option<unsafe extern "C" fn(*mut pci_dev)>,
@@ -128,7 +128,7 @@ pub struct acp_chip_info {
     pub is_pdm_dev: bool,
     pub is_pdm_config: bool,
     pub res: *mut resource,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub acp_plat_dev: *mut platform_device,
     pub dmic_codec_dev: *mut platform_device,
     pub mach_dev: *mut platform_device,
@@ -155,7 +155,7 @@ unsafe extern "C" {
     static snd_soc_acpi_amd_acp63_acp_machines: c_void;
     static snd_soc_acpi_amd_acp70_acp_machines: c_void;
     static ACP_PCI_DEV_ID: c_uint;
-    static KBUILD_MODNAME: core::ffi::c_char;
+    static KBUILD_MODNAME: kernel::ffi::c_char;
 
     fn devm_kzalloc(dev: *mut device, size: size_t, flags: c_uint) -> *mut c_void;
     fn memset(s: *mut c_void, c: c_int, n: size_t) -> *mut c_void;
@@ -164,7 +164,7 @@ unsafe extern "C" {
     ) -> *mut platform_device;
     fn platform_device_register_data(
         parent: *mut device,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         id: c_int,
         data: *const c_void,
         size: size_t,
@@ -172,11 +172,11 @@ unsafe extern "C" {
     fn platform_device_unregister(pdev: *mut platform_device);
     fn IS_ERR(ptr: *const c_void) -> bool;
     fn PTR_ERR(ptr: *const c_void) -> c_int;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...) -> c_int;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...) -> c_int;
     fn dev_err_probe(
         dev: *mut device,
         err: c_int,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
         ...
     ) -> c_int;
     fn snd_amd_acp_find_config(pci: *mut pci_dev) -> c_uint;
@@ -186,7 +186,7 @@ unsafe extern "C" {
     fn pcim_iomap_region(
         pci: *mut pci_dev,
         bar: c_int,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> *mut c_void;
     fn acp31_hw_ops_init(chip: *mut acp_chip_info);
     fn acp6x_hw_ops_init(chip: *mut acp_chip_info);
@@ -200,7 +200,7 @@ unsafe extern "C" {
         irq: c_uint,
         handler: unsafe extern "C" fn(c_int, *mut c_void) -> irqreturn_t,
         flags: c_uint,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         data: *mut c_void,
     ) -> c_int;
     fn check_acp_config(pci: *mut pci_dev, chip: *mut acp_chip_info);
@@ -236,7 +236,7 @@ unsafe extern "C" fn acp_fill_platform_dev_info(
     pdevinfo: *mut platform_device_info,
     parent: *mut device,
     fw_node: *mut fwnode_handle,
-    name: *mut core::ffi::c_char,
+    name: *mut kernel::ffi::c_char,
     id: c_uint,
     res: *const resource,
     num_res: c_uint,
@@ -305,7 +305,7 @@ unsafe extern "C" fn create_acp_platform_devs(
     if IS_ERR((*chip).acp_plat_dev as *const c_void) {
         dev_err(
             &mut (*pci).dev,
-            b"cannot register %s device\n\0".as_ptr() as *const core::ffi::c_char,
+            b"cannot register %s device\n\0".as_ptr() as *const kernel::ffi::c_char,
             pdevinfo.name,
         );
         ret = PTR_ERR((*chip).acp_plat_dev as *const c_void);
@@ -314,7 +314,7 @@ unsafe extern "C" fn create_acp_platform_devs(
     if (*chip).is_pdm_dev && (*chip).is_pdm_config {
         (*chip).dmic_codec_dev = platform_device_register_data(
             &mut (*pci).dev,
-            b"dmic-codec\0".as_ptr() as *const core::ffi::c_char,
+            b"dmic-codec\0".as_ptr() as *const kernel::ffi::c_char,
             PLATFORM_DEVID_NONE,
             core::ptr::null(),
             0,
@@ -322,7 +322,7 @@ unsafe extern "C" fn create_acp_platform_devs(
         if IS_ERR((*chip).dmic_codec_dev as *const c_void) {
             dev_err(
                 &mut (*pci).dev,
-                b"failed to create DMIC device\n\0".as_ptr() as *const core::ffi::c_char,
+                b"failed to create DMIC device\n\0".as_ptr() as *const kernel::ffi::c_char,
             );
             ret = PTR_ERR((*chip).dmic_codec_dev as *const c_void);
             platform_device_unregister((*chip).acp_plat_dev);
@@ -362,7 +362,7 @@ unsafe extern "C" fn acp_pci_probe(
         return dev_err_probe(
             &mut (*pci).dev,
             -ENODEV,
-            b"pci_enable_device failed\n\0".as_ptr() as *const core::ffi::c_char,
+            b"pci_enable_device failed\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
@@ -371,25 +371,25 @@ unsafe extern "C" fn acp_pci_probe(
     (*chip).acp_rev = (*pci).revision;
     match (*pci).revision {
         0x01 => {
-            (*chip).name = b"acp_asoc_renoir\0".as_ptr() as *mut core::ffi::c_char;
+            (*chip).name = b"acp_asoc_renoir\0".as_ptr() as *mut kernel::ffi::c_char;
             (*chip).rsrc = &rn_rsrc as *const c_void;
             (*chip).acp_hw_ops_init = Some(acp31_hw_ops_init);
             (*chip).machines = &snd_soc_acpi_amd_acp_machines as *const c_void;
         }
         0x6f => {
-            (*chip).name = b"acp_asoc_rembrandt\0".as_ptr() as *mut core::ffi::c_char;
+            (*chip).name = b"acp_asoc_rembrandt\0".as_ptr() as *mut kernel::ffi::c_char;
             (*chip).rsrc = &rmb_rsrc as *const c_void;
             (*chip).acp_hw_ops_init = Some(acp6x_hw_ops_init);
             (*chip).machines = &snd_soc_acpi_amd_rmb_acp_machines as *const c_void;
         }
         0x63 => {
-            (*chip).name = b"acp_asoc_acp63\0".as_ptr() as *mut core::ffi::c_char;
+            (*chip).name = b"acp_asoc_acp63\0".as_ptr() as *mut kernel::ffi::c_char;
             (*chip).rsrc = &acp63_rsrc as *const c_void;
             (*chip).acp_hw_ops_init = Some(acp63_hw_ops_init);
             (*chip).machines = &snd_soc_acpi_amd_acp63_acp_machines as *const c_void;
         }
         0x70 | 0x71 | 0x72 => {
-            (*chip).name = b"acp_asoc_acp70\0".as_ptr() as *mut core::ffi::c_char;
+            (*chip).name = b"acp_asoc_acp70\0".as_ptr() as *mut kernel::ffi::c_char;
             (*chip).rsrc = &acp70_rsrc as *const c_void;
             (*chip).acp_hw_ops_init = Some(acp70_hw_ops_init);
             (*chip).machines = &snd_soc_acpi_amd_acp70_acp_machines as *const c_void;
@@ -397,7 +397,7 @@ unsafe extern "C" fn acp_pci_probe(
         _ => {
             dev_err(
                 dev,
-                b"Unsupported device revision:0x%x\n\0".as_ptr() as *const core::ffi::c_char,
+                b"Unsupported device revision:0x%x\n\0".as_ptr() as *const kernel::ffi::c_char,
                 (*pci).revision,
             );
             return -EINVAL;
@@ -409,7 +409,7 @@ unsafe extern "C" fn acp_pci_probe(
     (*chip).base = pcim_iomap_region(
         pci,
         0,
-        b"AMD ACP3x audio\0".as_ptr() as *const core::ffi::c_char,
+        b"AMD ACP3x audio\0".as_ptr() as *const kernel::ffi::c_char,
     );
     if IS_ERR((*chip).base as *const c_void) {
         return PTR_ERR((*chip).base as *const c_void);
@@ -429,13 +429,13 @@ unsafe extern "C" fn acp_pci_probe(
         (*pci).irq,
         irq_handler,
         IRQF_SHARED,
-        b"ACP_I2S_IRQ\0".as_ptr() as *const core::ffi::c_char,
+        b"ACP_I2S_IRQ\0".as_ptr() as *const kernel::ffi::c_char,
         chip as *mut c_void,
     );
     if ret != 0 {
         dev_err(
             &mut (*pci).dev,
-            b"ACP I2S IRQ request failed %d\n\0".as_ptr() as *const core::ffi::c_char,
+            b"ACP I2S IRQ request failed %d\n\0".as_ptr() as *const kernel::ffi::c_char,
             ret,
         );
         acp_hw_deinit(chip);
@@ -456,7 +456,7 @@ unsafe extern "C" fn acp_pci_probe(
     if ret < 0 {
         dev_err(
             &mut (*pci).dev,
-            b"ACP platform devices creation failed\n\0".as_ptr() as *const core::ffi::c_char,
+            b"ACP platform devices creation failed\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
         acp_hw_deinit(chip);
         return ret;
@@ -487,7 +487,7 @@ unsafe extern "C" fn snd_acp_suspend(dev: *mut device) -> c_int {
     if ret != 0 {
         dev_err(
             dev,
-            b"ACP de-init failed\n\0".as_ptr() as *const core::ffi::c_char,
+            b"ACP de-init failed\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
     ret
@@ -502,7 +502,7 @@ unsafe extern "C" fn snd_acp_resume(dev: *mut device) -> c_int {
     if ret != 0 {
         dev_err(
             dev,
-            b"ACP init failed\n\0".as_ptr() as *const core::ffi::c_char,
+            b"ACP init failed\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
@@ -510,7 +510,7 @@ unsafe extern "C" fn snd_acp_resume(dev: *mut device) -> c_int {
     if ret != 0 {
         dev_err(
             dev,
-            b"ACP en-interrupts failed\n\0".as_ptr() as *const core::ffi::c_char,
+            b"ACP en-interrupts failed\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
@@ -545,7 +545,7 @@ unsafe extern "C" fn acp_pci_remove(pci: *mut pci_dev) {
     if ret != 0 {
         dev_err(
             &mut (*pci).dev,
-            b"ACP de-init failed\n\0".as_ptr() as *const core::ffi::c_char,
+            b"ACP de-init failed\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 }
@@ -579,7 +579,7 @@ static acp_pci_ids: [pci_device_id; 2] = [
 
 /* pci_driver definition */
 static mut snd_amd_acp_pci_driver: pci_driver = pci_driver {
-    name: unsafe { &KBUILD_MODNAME as *const core::ffi::c_char },
+    name: unsafe { &KBUILD_MODNAME as *const kernel::ffi::c_char },
     id_table: acp_pci_ids.as_ptr(),
     probe: Some(acp_pci_probe),
     remove: Some(acp_pci_remove),

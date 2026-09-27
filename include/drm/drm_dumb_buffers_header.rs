@@ -13,8 +13,8 @@ pub struct drm_mode_create_dumb {
 pub unsafe extern "C" fn drm_mode_size_dumb(
     dev: *mut drm_device,
     args: *mut drm_mode_create_dumb,
-    hw_pitch_align: core::ffi::c_ulong,
-    hw_size_align: core::ffi::c_ulong,
-) -> core::ffi::c_int;
+    hw_pitch_align: kernel::ffi::c_ulong,
+    hw_size_align: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

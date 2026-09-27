@@ -40,8 +40,8 @@ macro_rules! i8255_volatile_regmap_range {
 pub struct i8255_regmap_config {
     pub parent: *mut device,
     pub map: *mut regmap,
-    pub num_ppi: core::ffi::c_int,
-    pub names: *const *const core::ffi::c_char,
+    pub num_ppi: kernel::ffi::c_int,
+    pub names: *const *const kernel::ffi::c_char,
     pub domain: *mut irq_domain,
 }
 
@@ -49,7 +49,7 @@ unsafe extern "C" {
     pub fn devm_i8255_regmap_register(
         dev: *mut device,
         config: *const i8255_regmap_config,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

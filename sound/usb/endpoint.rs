@@ -54,13 +54,13 @@ unsafe fn release_urb_ctx(u: *mut SndUrbCtx) {
 
 fn usb_error_string(err: i32) -> &'static str {
     match err {
-        case if case == -libc::ENODEV => "no device",
-        case if case == -libc::ENOENT => "endpoint not enabled",
-        case if case == -libc::EPIPE => "endpoint stalled",
-        case if case == -libc::ENOSPC => "not enough bandwidth",
-        case if case == -libc::ESHUTDOWN => "device disabled",
-        case if case == -libc::EHOSTUNREACH => "device suspended",
-        case if case == -libc::EINVAL || case == -libc::EAGAIN || case == -libc::EFBIG || case == -libc::EMSGSIZE => "internal error",
+        case if case == -ENODEV => "no device",
+        case if case == -ENOENT => "endpoint not enabled",
+        case if case == -EPIPE => "endpoint stalled",
+        case if case == -ENOSPC => "not enough bandwidth",
+        case if case == -ESHUTDOWN => "device disabled",
+        case if case == -EHOSTUNREACH => "device suspended",
+        case if case == -EINVAL || case == -EAGAIN || case == -EFBIG || case == -EMSGSIZE => "internal error",
         _ => "unknown error",
     }
 }
@@ -101,7 +101,7 @@ fn synced_next_packet_size(ep: *mut SndUsbEndpoint, avail: u32) -> i32 {
             ret = (*ep).maxframesize as i32;
         }
         if avail != 0 && ret as u32 >= avail {
-            ret = -libc::EAGAIN as i32;
+            ret = -EAGAIN as i32;
         } else {
             (*ep).phase = phase;
         }
@@ -128,7 +128,7 @@ fn next_packet_size(ep: *mut SndUsbEndpoint, avail: u32) -> i32 {
             ret = (*ep).packsize[0] as i32;
         }
         if avail != 0 && ret as u32 >= avail {
-            ret = -libc::EAGAIN as i32;
+            ret = -EAGAIN as i32;
         } else {
             (*ep).sample_accum = sample_accum;
         }
@@ -150,7 +150,7 @@ pub extern "C" fn snd_usb_endpoint_next_packet_size(
                 packet = (*ep).maxframesize as u32;
             }
             if avail != 0 && packet >= avail {
-                return -libc::EAGAIN as i32;
+                return -EAGAIN as i32;
             }
             return packet as i32;
         }
@@ -246,7 +246,7 @@ unsafe fn prepare_silent_urb(ep: *mut SndUsbEndpoint, ctx: *mut SndUrbCtx) -> i3
     }
 
     if offs == 0 {
-        return -libc::EPIPE as i32;
+        return -EPIPE as i32;
     }
 
     (*urb).number_of_packets = i as u32;
@@ -407,7 +407,7 @@ pub extern "C" fn snd_usb_queue_pending_output_urbs(
                 break;
             }
             if err < 0 {
-                if err == -libc::EAGAIN as i32 {
+                if err == -EAGAIN as i32 {
                     push_back_to_ready_list(ep, ctx);
                     break;
                 }
@@ -415,13 +415,13 @@ pub extern "C" fn snd_usb_queue_pending_output_urbs(
                 if !in_stream_lock {
                     notify_xrun(ep);
                 }
-                return -libc::EPIPE as i32;
+                return -EPIPE as i32;
             }
 
             if atomic_read(&(*(*ep).chip).shutdown) == 0 {
                 err = usb_submit_urb((*ctx).urb, GFP_ATOMIC);
             } else {
-                err = -libc::ENODEV as i32;
+                err = -ENODEV as i32;
             }
             if err < 0 {
                 if atomic_read(&(*(*ep).chip).shutdown) == 0 {
@@ -436,7 +436,7 @@ pub extern "C" fn snd_usb_queue_pending_output_urbs(
                         notify_xrun(ep);
                     }
                 }
-                return -libc::EPIPE as i32;
+                return -EPIPE as i32;
             }
 
             set_bit((*ctx).index, &mut (*ep).active_mask);
@@ -453,10 +453,10 @@ extern "C" fn snd_complete_urb(urb: *mut Urb) {
         let ep = (*ctx).ep;
         let mut err: i32;
 
-        if ((*urb).status == -libc::ENOENT as i32)
-            || ((*urb).status == -libc::ENODEV as i32)
-            || ((*urb).status == -libc::ECONNRESET as i32)
-            || ((*urb).status == -libc::ESHUTDOWN as i32)
+        if ((*urb).status == -ENOENT as i32)
+            || ((*urb).status == -ENODEV as i32)
+            || ((*urb).status == -ECONNRESET as i32)
+            || ((*urb).status == -ESHUTDOWN as i32)
         {
             goto_exit_clear(ep, ctx);
             return;
@@ -509,7 +509,7 @@ extern "C" fn snd_complete_urb(urb: *mut Urb) {
         if atomic_read(&(*(*ep).chip).shutdown) == 0 {
             err = usb_submit_urb(urb, GFP_ATOMIC);
         } else {
-            err = -libc::ENODEV as i32;
+            err = -ENODEV as i32;
         }
         if err == 0 {
             return;
@@ -629,7 +629,7 @@ pub extern "C" fn snd_usb_add_endpoint(chip: *mut SndUsbAudio, ep_num: i32, ep_t
         );
         let ep = kzalloc(core::mem::size_of::<SndUsbEndpoint>()) as *mut SndUsbEndpoint;
         if ep.is_null() {
-            return -libc::ENOMEM as i32;
+            return -ENOMEM as i32;
         }
 
         (*ep).chip = chip;
@@ -878,7 +878,7 @@ unsafe fn endpoint_set_interface(chip: *mut SndUsbAudio, ep: *mut SndUsbEndpoint
         return 0;
     }
     if atomic_read(&(*chip).shutdown) != 0 {
-        return -libc::ENODEV as i32;
+        return -ENODEV as i32;
     }
 
     usb_audio_dbg(
@@ -891,7 +891,7 @@ unsafe fn endpoint_set_interface(chip: *mut SndUsbAudio, ep: *mut SndUsbEndpoint
     loop {
         err = usb_set_interface((*chip).dev, (*ep).iface, altset);
         if err < 0 {
-            if err == -libc::EPROTO as i32 && retries < MAX_RETRIES {
+            if err == -EPROTO as i32 && retries < MAX_RETRIES {
                 retries += 1;
                 msleep(5 * (1 << (retries - 1)));
                 continue;
@@ -1015,7 +1015,7 @@ pub extern "C" fn snd_usb_endpoint_sync_pending_stop(ep: *mut SndUsbEndpoint) {
 
 unsafe fn stop_urbs(ep: *mut SndUsbEndpoint, force: bool, keep_pending: bool) -> i32 {
     if !force && atomic_read(&(*ep).running) != 0 {
-        return -libc::EBUSY as i32;
+        return -EBUSY as i32;
     }
 
     if !ep_state_update(ep, EP_STATE_RUNNING as i32, EP_STATE_STOPPING as i32) {
@@ -1198,7 +1198,7 @@ unsafe fn data_ep_set_params(ep: *mut SndUsbEndpoint) -> i32 {
         u.urb = usb_alloc_urb(u.packets as u32, GFP_KERNEL);
         if u.urb.is_null() {
             release_urbs(ep, false);
-            return -libc::ENOMEM as i32;
+            return -ENOMEM as i32;
         }
 
         (*u.urb).transfer_buffer = usb_alloc_coherent(
@@ -1209,7 +1209,7 @@ unsafe fn data_ep_set_params(ep: *mut SndUsbEndpoint) -> i32 {
         );
         if (*u.urb).transfer_buffer.is_null() {
             release_urbs(ep, false);
-            return -libc::ENOMEM as i32;
+            return -ENOMEM as i32;
         }
         (*u.urb).pipe = (*ep).pipe;
         (*u.urb).transfer_flags = URB_NO_TRANSFER_DMA_MAP;
@@ -1242,7 +1242,7 @@ unsafe fn sync_ep_set_params(ep: *mut SndUsbEndpoint) -> i32 {
         &mut (*ep).sync_dma,
     );
     if (*ep).syncbuf.is_null() {
-        return -libc::ENOMEM as i32;
+        return -ENOMEM as i32;
     }
 
     (*ep).nurbs = SYNC_URBS as i32;
@@ -1254,7 +1254,7 @@ unsafe fn sync_ep_set_params(ep: *mut SndUsbEndpoint) -> i32 {
         u.urb = usb_alloc_urb(1, GFP_KERNEL);
         if u.urb.is_null() {
             release_urbs(ep, false);
-            return -libc::ENOMEM as i32;
+            return -ENOMEM as i32;
         }
         (*u.urb).transfer_buffer = ((*ep).syncbuf as *mut u8).add(i * 4) as *mut _;
         (*u.urb).transfer_dma = (*ep).sync_dma + (i * 4) as u64;
@@ -1341,7 +1341,7 @@ pub extern "C" fn snd_usb_endpoint_set_params(
                 (*ep).pps,
             );
             mutex_unlock(&mut (*chip).mutex);
-            return -libc::EINVAL as i32;
+            return -EINVAL as i32;
         }
 
         (*ep).freqm = (*ep).freqn;
@@ -1357,7 +1357,7 @@ pub extern "C" fn snd_usb_endpoint_set_params(
                 err = sync_ep_set_params(ep);
             }
             _ => {
-                err = -libc::EINVAL as i32;
+                err = -EINVAL as i32;
             }
         }
 
@@ -1538,7 +1538,7 @@ pub extern "C" fn snd_usb_endpoint_start(ep: *mut SndUsbEndpoint) -> i32 {
         let mut err: i32;
 
         if atomic_read(&(*(*ep).chip).shutdown) != 0 {
-            return -libc::EBADFD as i32;
+            return -EBADFD as i32;
         }
 
         if !(*ep).sync_source.is_null() {
@@ -1573,7 +1573,7 @@ pub extern "C" fn snd_usb_endpoint_start(ep: *mut SndUsbEndpoint) -> i32 {
 
         if !ep_state_update(ep, EP_STATE_STOPPED as i32, EP_STATE_RUNNING as i32) {
             snd_usb_endpoint_stop(ep, false);
-            return -libc::EPIPE as i32;
+            return -EPIPE as i32;
         }
 
         if snd_usb_endpoint_implicit_feedback_sink(ep) != 0
@@ -1594,7 +1594,7 @@ pub extern "C" fn snd_usb_endpoint_start(ep: *mut SndUsbEndpoint) -> i32 {
 
             if urb.is_null() {
                 snd_usb_endpoint_stop(ep, false);
-                return -libc::EPIPE as i32;
+                return -EPIPE as i32;
             }
 
             if is_playback {
@@ -1603,7 +1603,7 @@ pub extern "C" fn snd_usb_endpoint_start(ep: *mut SndUsbEndpoint) -> i32 {
                 err = prepare_inbound_urb(ep, (*urb).context as *mut _);
             }
             if err < 0 {
-                if err == -libc::EAGAIN as i32 {
+                if err == -EAGAIN as i32 {
                     break;
                 }
                 usb_audio_dbg(
@@ -1613,13 +1613,13 @@ pub extern "C" fn snd_usb_endpoint_start(ep: *mut SndUsbEndpoint) -> i32 {
                     err,
                 );
                 snd_usb_endpoint_stop(ep, false);
-                return -libc::EPIPE as i32;
+                return -EPIPE as i32;
             }
 
             if atomic_read(&(*(*ep).chip).shutdown) == 0 {
                 err = usb_submit_urb(urb, GFP_ATOMIC);
             } else {
-                err = -libc::ENODEV as i32;
+                err = -ENODEV as i32;
             }
             if err < 0 {
                 if atomic_read(&(*(*ep).chip).shutdown) == 0 {
@@ -1632,7 +1632,7 @@ pub extern "C" fn snd_usb_endpoint_start(ep: *mut SndUsbEndpoint) -> i32 {
                     );
                 }
                 snd_usb_endpoint_stop(ep, false);
-                return -libc::EPIPE as i32;
+                return -EPIPE as i32;
             }
             set_bit(i, &mut (*ep).active_mask);
             atomic_inc(&mut (*ep).submitted_urbs);
@@ -1646,7 +1646,7 @@ pub extern "C" fn snd_usb_endpoint_start(ep: *mut SndUsbEndpoint) -> i32 {
                 (*ep).ep_num,
             );
             snd_usb_endpoint_stop(ep, false);
-            return -libc::EPIPE as i32;
+            return -EPIPE as i32;
         }
 
         usb_audio_dbg(

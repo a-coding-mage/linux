@@ -9,25 +9,25 @@
 #[repr(C)]
 pub struct ppc_plt_entry {
     /* 16 byte jump instruction sequence (4 instructions) */
-    pub jump: [core::ffi::c_uint; 4],
+    pub jump: [kernel::ffi::c_uint; 4],
 }
 
 #[repr(C)]
 pub struct mod_arch_specific {
     #[cfg(target_arch = "powerpc64")]
-    pub stubs_section: core::ffi::c_uint, /* Index of stubs section in module */
+    pub stubs_section: kernel::ffi::c_uint, /* Index of stubs section in module */
     #[cfg(target_arch = "powerpc64")]
-    pub stub_count: core::ffi::c_uint, /* Number of stubs used */
+    pub stub_count: kernel::ffi::c_uint, /* Number of stubs used */
 
     #[cfg(all(target_arch = "powerpc64", CONFIG_PPC_KERNEL_PCREL))]
-    pub got_section: core::ffi::c_uint, /* What section is the GOT? */
+    pub got_section: kernel::ffi::c_uint, /* What section is the GOT? */
     #[cfg(all(target_arch = "powerpc64", CONFIG_PPC_KERNEL_PCREL))]
-    pub pcpu_section: core::ffi::c_uint, /* .data..percpu section */
+    pub pcpu_section: kernel::ffi::c_uint, /* .data..percpu section */
     #[cfg(all(
         target_arch = "powerpc64",
         not(CONFIG_PPC_KERNEL_PCREL)
     ))]
-    pub toc_section: core::ffi::c_uint, /* What section is the TOC? */
+    pub toc_section: kernel::ffi::c_uint, /* What section is the TOC? */
     #[cfg(all(
         target_arch = "powerpc64",
         not(CONFIG_PPC_KERNEL_PCREL)
@@ -36,20 +36,20 @@ pub struct mod_arch_specific {
 
     #[cfg(all(target_arch = "powerpc64", CONFIG_PPC64_ELF_ABI_V1))]
     /* For module function descriptor dereference */
-    pub start_opd: core::ffi::c_ulong,
+    pub start_opd: kernel::ffi::c_ulong,
     #[cfg(all(target_arch = "powerpc64", CONFIG_PPC64_ELF_ABI_V1))]
-    pub end_opd: core::ffi::c_ulong,
+    pub end_opd: kernel::ffi::c_ulong,
 
     #[cfg(not(target_arch = "powerpc64"))]
     /* Indices of PLT sections within module. */
-    pub core_plt_section: core::ffi::c_uint,
+    pub core_plt_section: kernel::ffi::c_uint,
     #[cfg(not(target_arch = "powerpc64"))]
-    pub init_plt_section: core::ffi::c_uint,
+    pub init_plt_section: kernel::ffi::c_uint,
 
     #[cfg(CONFIG_DYNAMIC_FTRACE)]
-    pub tramp: core::ffi::c_ulong,
+    pub tramp: kernel::ffi::c_ulong,
     #[cfg(CONFIG_DYNAMIC_FTRACE)]
-    pub tramp_regs: core::ffi::c_ulong,
+    pub tramp_regs: kernel::ffi::c_ulong,
     #[cfg(all(
         CONFIG_DYNAMIC_FTRACE,
         CONFIG_PPC_FTRACE_OUT_OF_LINE
@@ -59,12 +59,12 @@ pub struct mod_arch_specific {
         CONFIG_DYNAMIC_FTRACE,
         CONFIG_PPC_FTRACE_OUT_OF_LINE
     ))]
-    pub ool_stub_count: core::ffi::c_uint,
+    pub ool_stub_count: kernel::ffi::c_uint,
     #[cfg(all(
         CONFIG_DYNAMIC_FTRACE,
         CONFIG_PPC_FTRACE_OUT_OF_LINE
     ))]
-    pub ool_stub_index: core::ffi::c_uint,
+    pub ool_stub_index: kernel::ffi::c_uint,
 }
 
 // The C asm directives create empty ELF sections for module_frob_arch_sections
@@ -74,13 +74,13 @@ pub struct mod_arch_specific {
 unsafe extern "C" {
     pub fn module_trampoline_target(
         modu: *mut module,
-        trampoline: core::ffi::c_ulong,
-        target: *mut core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        trampoline: kernel::ffi::c_ulong,
+        target: *mut kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
     pub fn module_finalize_ftrace(
         modu: *mut module,
         sechdrs: *const Elf_Shdr,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_DYNAMIC_FTRACE))]
@@ -88,7 +88,7 @@ unsafe extern "C" {
 pub unsafe fn module_finalize_ftrace(
     _modu: *mut module,
     _sechdrs: *const Elf_Shdr,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     0
 }
 

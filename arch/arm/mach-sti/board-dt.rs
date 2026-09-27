@@ -9,7 +9,7 @@
 // #include <asm/mach/arch.h>
 // #include "smp.h"
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Constants and symbols supplied by the architecture and SMP dependencies.
 extern "C" {

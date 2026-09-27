@@ -53,7 +53,7 @@ const MAX_DPLL_WAIT_TRIES: i32 = 1000;
 #[repr(C)]
 pub struct clk_pllv2 {
     pub hw: clk_hw,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
 }
 
 unsafe fn __clk_pllv2_recalc_rate(parent_rate: usize, dp_ctl: u32, dp_op: u32,
@@ -155,9 +155,9 @@ static clk_pllv2_ops: clk_ops = clk_ops {
     set_rate: Some(clk_pllv2_set_rate),
 };
 
-pub unsafe fn imx_clk_hw_pllv2(name: *const core::ffi::c_char,
-                               parent: *const core::ffi::c_char,
-                               base: *mut core::ffi::c_void) -> *mut clk_hw {
+pub unsafe fn imx_clk_hw_pllv2(name: *const kernel::ffi::c_char,
+                               parent: *const kernel::ffi::c_char,
+                               base: *mut kernel::ffi::c_void) -> *mut clk_hw {
     let pll = kzalloc_obj::<clk_pllv2>();
     if pll.is_null() { return ERR_PTR(-12); }
     (*pll).base = base;

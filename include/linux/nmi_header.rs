@@ -9,17 +9,17 @@ extern "C" {
     pub fn lockup_detector_retry_init();
     pub fn lockup_detector_soft_poweroff();
 
-    pub static mut watchdog_user_enabled: ::core::ffi::c_int;
-    pub static mut watchdog_thresh: ::core::ffi::c_int;
-    pub static mut watchdog_enabled: ::core::ffi::c_ulong;
-    pub static mut watchdog_hardlockup_miss_thresh: ::core::ffi::c_int;
+    pub static mut watchdog_user_enabled: ::kernel::ffi::c_int;
+    pub static mut watchdog_thresh: ::kernel::ffi::c_int;
+    pub static mut watchdog_enabled: ::kernel::ffi::c_ulong;
+    pub static mut watchdog_hardlockup_miss_thresh: ::kernel::ffi::c_int;
     pub static mut watchdog_cpumask: cpumask;
-    pub static mut watchdog_cpumask_bits: *mut ::core::ffi::c_ulong;
+    pub static mut watchdog_cpumask_bits: *mut ::kernel::ffi::c_ulong;
 
     #[cfg(CONFIG_SMP)]
-    pub static mut sysctl_softlockup_all_cpu_backtrace: ::core::ffi::c_int;
+    pub static mut sysctl_softlockup_all_cpu_backtrace: ::kernel::ffi::c_int;
     #[cfg(CONFIG_SMP)]
-    pub static mut sysctl_hardlockup_all_cpu_backtrace: ::core::ffi::c_int;
+    pub static mut sysctl_hardlockup_all_cpu_backtrace: ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_LOCKUP_DETECTOR))]
@@ -33,9 +33,9 @@ pub unsafe fn lockup_detector_retry_init() {}
 pub unsafe fn lockup_detector_soft_poweroff() {}
 
 #[cfg(not(CONFIG_SMP))]
-pub const sysctl_softlockup_all_cpu_backtrace: ::core::ffi::c_int = 0;
+pub const sysctl_softlockup_all_cpu_backtrace: ::kernel::ffi::c_int = 0;
 #[cfg(not(CONFIG_SMP))]
-pub const sysctl_hardlockup_all_cpu_backtrace: ::core::ffi::c_int = 0;
+pub const sysctl_hardlockup_all_cpu_backtrace: ::kernel::ffi::c_int = 0;
 
 #[cfg(CONFIG_SOFTLOCKUP_DETECTOR)]
 extern "C" {
@@ -43,9 +43,9 @@ extern "C" {
     pub fn touch_softlockup_watchdog();
     pub fn touch_softlockup_watchdog_sync();
     pub fn touch_all_softlockup_watchdogs();
-    pub static mut softlockup_panic: ::core::ffi::c_uint;
-    pub fn lockup_detector_online_cpu(cpu: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn lockup_detector_offline_cpu(cpu: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    pub static mut softlockup_panic: ::kernel::ffi::c_uint;
+    pub fn lockup_detector_online_cpu(cpu: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn lockup_detector_offline_cpu(cpu: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_SOFTLOCKUP_DETECTOR))]
@@ -75,8 +75,8 @@ pub const WATCHDOG_SOFTLOCKUP_ENABLED: i32 = 1 << WATCHDOG_SOFTLOCKUP_ENABLED_BI
 #[cfg(CONFIG_HARDLOCKUP_DETECTOR)]
 extern "C" {
     pub fn hardlockup_detector_disable();
-    pub static mut hardlockup_panic: ::core::ffi::c_uint;
-    pub static mut hardlockup_si_mask: ::core::ffi::c_ulong;
+    pub static mut hardlockup_panic: ::kernel::ffi::c_uint;
+    pub static mut hardlockup_si_mask: ::kernel::ffi::c_ulong;
 }
 #[cfg(not(CONFIG_HARDLOCKUP_DETECTOR))]
 #[inline]
@@ -90,15 +90,15 @@ pub unsafe fn arch_touch_nmi_watchdog() {}
 
 #[cfg(CONFIG_HARDLOCKUP_DETECTOR_COUNTS_HRTIMER)]
 extern "C" {
-    pub fn watchdog_hardlockup_touch_cpu(cpu: ::core::ffi::c_uint);
-    pub fn watchdog_hardlockup_check(cpu: ::core::ffi::c_uint, regs: *mut pt_regs);
+    pub fn watchdog_hardlockup_touch_cpu(cpu: ::kernel::ffi::c_uint);
+    pub fn watchdog_hardlockup_check(cpu: ::kernel::ffi::c_uint, regs: *mut pt_regs);
 }
 
 #[cfg(CONFIG_HARDLOCKUP_DETECTOR_PERF)]
 extern "C" {
     pub fn hardlockup_detector_perf_stop();
     pub fn hardlockup_detector_perf_restart();
-    pub fn hardlockup_config_perf_event(string: *const ::core::ffi::c_char);
+    pub fn hardlockup_config_perf_event(string: *const ::kernel::ffi::c_char);
     pub fn hardlockup_detector_perf_adjust_period(period: u64);
 }
 #[cfg(not(CONFIG_HARDLOCKUP_DETECTOR_PERF))]
@@ -106,24 +106,24 @@ extern "C" {
 #[cfg(not(CONFIG_HARDLOCKUP_DETECTOR_PERF))]
 #[inline] pub unsafe fn hardlockup_detector_perf_restart() {}
 #[cfg(not(CONFIG_HARDLOCKUP_DETECTOR_PERF))]
-#[inline] pub unsafe fn hardlockup_config_perf_event(_: *const ::core::ffi::c_char) {}
+#[inline] pub unsafe fn hardlockup_config_perf_event(_: *const ::kernel::ffi::c_char) {}
 #[cfg(not(CONFIG_HARDLOCKUP_DETECTOR_PERF))]
 #[inline] pub unsafe fn hardlockup_detector_perf_adjust_period(_: u64) {}
 
 extern "C" {
     pub fn watchdog_hardlockup_stop();
     pub fn watchdog_hardlockup_start();
-    pub fn watchdog_hardlockup_probe() -> ::core::ffi::c_int;
-    pub fn watchdog_hardlockup_enable(cpu: ::core::ffi::c_uint);
-    pub fn watchdog_hardlockup_disable(cpu: ::core::ffi::c_uint);
+    pub fn watchdog_hardlockup_probe() -> ::kernel::ffi::c_int;
+    pub fn watchdog_hardlockup_enable(cpu: ::kernel::ffi::c_uint);
+    pub fn watchdog_hardlockup_disable(cpu: ::kernel::ffi::c_uint);
     pub fn lockup_detector_reconfigure();
 }
 
 #[cfg(CONFIG_HARDLOCKUP_DETECTOR_BUDDY)]
-extern "C" { pub fn watchdog_buddy_check_hardlockup(hrtimer_interrupts: ::core::ffi::c_int); }
+extern "C" { pub fn watchdog_buddy_check_hardlockup(hrtimer_interrupts: ::kernel::ffi::c_int); }
 #[cfg(not(CONFIG_HARDLOCKUP_DETECTOR_BUDDY))]
 #[inline]
-pub unsafe fn watchdog_buddy_check_hardlockup(_: ::core::ffi::c_int) {}
+pub unsafe fn watchdog_buddy_check_hardlockup(_: ::kernel::ffi::c_int) {}
 
 #[inline]
 pub unsafe fn touch_nmi_watchdog() {
@@ -133,8 +133,8 @@ pub unsafe fn touch_nmi_watchdog() {
 
 #[cfg(feature = "arch_trigger_cpumask_backtrace")]
 extern "C" {
-    pub fn cpumask_backtrace(mask: *const cpumask_t, exclude_cpu: ::core::ffi::c_int);
-    pub fn nmi_trigger_cpumask_backtrace(mask: *const cpumask_t, exclude_cpu: ::core::ffi::c_int, raise: unsafe extern "C" fn(*mut cpumask_t));
+    pub fn cpumask_backtrace(mask: *const cpumask_t, exclude_cpu: ::kernel::ffi::c_int);
+    pub fn nmi_trigger_cpumask_backtrace(mask: *const cpumask_t, exclude_cpu: ::kernel::ffi::c_int, raise: unsafe extern "C" fn(*mut cpumask_t));
     pub fn nmi_cpu_backtrace(regs: *mut pt_regs) -> bool;
 }
 
@@ -145,7 +145,7 @@ pub unsafe fn trigger_all_cpu_backtrace() -> bool {
 }
 #[cfg(feature = "arch_trigger_cpumask_backtrace")]
 #[inline]
-pub unsafe fn trigger_allbutcpu_cpu_backtrace(exclude_cpu: ::core::ffi::c_int) -> bool {
+pub unsafe fn trigger_allbutcpu_cpu_backtrace(exclude_cpu: ::kernel::ffi::c_int) -> bool {
     cpumask_backtrace(cpu_online_mask, exclude_cpu); true
 }
 #[cfg(feature = "arch_trigger_cpumask_backtrace")]
@@ -155,22 +155,22 @@ pub unsafe fn trigger_cpumask_backtrace(mask: *mut cpumask) -> bool {
 }
 #[cfg(feature = "arch_trigger_cpumask_backtrace")]
 #[inline]
-pub unsafe fn trigger_single_cpu_backtrace(cpu: ::core::ffi::c_int) -> bool {
+pub unsafe fn trigger_single_cpu_backtrace(cpu: ::kernel::ffi::c_int) -> bool {
     cpumask_backtrace(cpumask_of(cpu), -1); true
 }
 
 #[cfg(not(feature = "arch_trigger_cpumask_backtrace"))]
 #[inline] pub unsafe fn trigger_all_cpu_backtrace() -> bool { false }
 #[cfg(not(feature = "arch_trigger_cpumask_backtrace"))]
-#[inline] pub unsafe fn trigger_allbutcpu_cpu_backtrace(_: ::core::ffi::c_int) -> bool { false }
+#[inline] pub unsafe fn trigger_allbutcpu_cpu_backtrace(_: ::kernel::ffi::c_int) -> bool { false }
 #[cfg(not(feature = "arch_trigger_cpumask_backtrace"))]
 #[inline] pub unsafe fn trigger_cpumask_backtrace(_: *mut cpumask) -> bool { false }
 #[cfg(not(feature = "arch_trigger_cpumask_backtrace"))]
-#[inline] pub unsafe fn trigger_single_cpu_backtrace(_: ::core::ffi::c_int) -> bool { false }
+#[inline] pub unsafe fn trigger_single_cpu_backtrace(_: ::kernel::ffi::c_int) -> bool { false }
 
 #[cfg(CONFIG_HARDLOCKUP_DETECTOR_PERF)]
 extern "C" {
-    pub fn hw_nmi_get_sample_period(watchdog_thresh: ::core::ffi::c_int) -> u64;
+    pub fn hw_nmi_get_sample_period(watchdog_thresh: ::kernel::ffi::c_int) -> u64;
     pub fn arch_perf_nmi_is_available() -> bool;
 }
 

@@ -11,19 +11,19 @@
 // linux/compiler.h, linux/types.h, asm/barrier.h, asm/cmpxchg.h, asm/lse.h
 
 extern "C" {
-    fn __lse_ll_sc_body_atomic_andnot(i: core::ffi::c_int, v: *mut atomic_t);
-    fn __lse_ll_sc_body_atomic_or(i: core::ffi::c_int, v: *mut atomic_t);
-    fn __lse_ll_sc_body_atomic_xor(i: core::ffi::c_int, v: *mut atomic_t);
-    fn __lse_ll_sc_body_atomic_add(i: core::ffi::c_int, v: *mut atomic_t);
-    fn __lse_ll_sc_body_atomic_and(i: core::ffi::c_int, v: *mut atomic_t);
-    fn __lse_ll_sc_body_atomic_sub(i: core::ffi::c_int, v: *mut atomic_t);
+    fn __lse_ll_sc_body_atomic_andnot(i: kernel::ffi::c_int, v: *mut atomic_t);
+    fn __lse_ll_sc_body_atomic_or(i: kernel::ffi::c_int, v: *mut atomic_t);
+    fn __lse_ll_sc_body_atomic_xor(i: kernel::ffi::c_int, v: *mut atomic_t);
+    fn __lse_ll_sc_body_atomic_add(i: kernel::ffi::c_int, v: *mut atomic_t);
+    fn __lse_ll_sc_body_atomic_and(i: kernel::ffi::c_int, v: *mut atomic_t);
+    fn __lse_ll_sc_body_atomic_sub(i: kernel::ffi::c_int, v: *mut atomic_t);
 
-    fn __lse_ll_sc_body_atomic64_andnot(i: core::ffi::c_long, v: *mut atomic64_t);
-    fn __lse_ll_sc_body_atomic64_or(i: core::ffi::c_long, v: *mut atomic64_t);
-    fn __lse_ll_sc_body_atomic64_xor(i: core::ffi::c_long, v: *mut atomic64_t);
-    fn __lse_ll_sc_body_atomic64_add(i: core::ffi::c_long, v: *mut atomic64_t);
-    fn __lse_ll_sc_body_atomic64_and(i: core::ffi::c_long, v: *mut atomic64_t);
-    fn __lse_ll_sc_body_atomic64_sub(i: core::ffi::c_long, v: *mut atomic64_t);
+    fn __lse_ll_sc_body_atomic64_andnot(i: kernel::ffi::c_long, v: *mut atomic64_t);
+    fn __lse_ll_sc_body_atomic64_or(i: kernel::ffi::c_long, v: *mut atomic64_t);
+    fn __lse_ll_sc_body_atomic64_xor(i: kernel::ffi::c_long, v: *mut atomic64_t);
+    fn __lse_ll_sc_body_atomic64_add(i: kernel::ffi::c_long, v: *mut atomic64_t);
+    fn __lse_ll_sc_body_atomic64_and(i: kernel::ffi::c_long, v: *mut atomic64_t);
+    fn __lse_ll_sc_body_atomic64_sub(i: kernel::ffi::c_long, v: *mut atomic64_t);
 }
 
 // The C ATOMIC_OP macro generates these architecture operations.

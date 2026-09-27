@@ -3,11 +3,11 @@
 // The C tracepoint machinery and its build-time multi-read condition are
 // supplied by the surrounding kernel translation.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
-pub type u8 = core::ffi::c_uchar;
-pub type u32 = core::ffi::c_uint;
-pub type c_ulong = core::ffi::c_ulong;
+pub type u8 = kernel::ffi::c_uchar;
+pub type u32 = kernel::ffi::c_uint;
+pub type c_ulong = kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct device {
@@ -32,15 +32,15 @@ pub struct geni_spi_clk_cfg_entry {
     pub name: *const c_char,
     pub req_hz: c_ulong,
     pub sclk_hz: c_ulong,
-    pub clk_idx: core::ffi::c_uint,
-    pub clk_div: core::ffi::c_uint,
-    pub bpw: core::ffi::c_uint,
+    pub clk_idx: kernel::ffi::c_uint,
+    pub clk_div: kernel::ffi::c_uint,
+    pub bpw: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct geni_spi_transfer_entry {
     pub name: *const c_char,
-    pub len: core::ffi::c_uint,
+    pub len: kernel::ffi::c_uint,
     pub m_cmd: u32,
 }
 
@@ -74,9 +74,9 @@ pub unsafe fn geni_spi_clk_cfg_assign(
     dev: *mut device,
     req_hz: c_ulong,
     sclk_hz: c_ulong,
-    clk_idx: core::ffi::c_uint,
-    clk_div: core::ffi::c_uint,
-    bpw: core::ffi::c_uint,
+    clk_idx: kernel::ffi::c_uint,
+    clk_div: kernel::ffi::c_uint,
+    bpw: kernel::ffi::c_uint,
 ) {
     (*entry).name = dev_name(dev);
     (*entry).req_hz = req_hz;
@@ -90,7 +90,7 @@ pub unsafe fn geni_spi_clk_cfg_assign(
 pub unsafe fn geni_spi_transfer_assign(
     entry: *mut geni_spi_transfer_entry,
     dev: *mut device,
-    len: core::ffi::c_uint,
+    len: kernel::ffi::c_uint,
     m_cmd: u32,
 ) {
     (*entry).name = dev_name(dev);

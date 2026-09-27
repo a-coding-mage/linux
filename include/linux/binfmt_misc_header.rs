@@ -30,13 +30,13 @@ pub struct binfmt_misc_interp {
     pub list: list_head,
     pub file: *mut file,
     pub ucounts: *mut ucounts,
-    pub path: *const core::ffi::c_char,
-    pub name: [core::ffi::c_char; 0],
+    pub path: *const kernel::ffi::c_char,
+    pub name: [kernel::ffi::c_char; 0],
 }
 
 pub unsafe extern "C" fn binfmt_misc_find_interp(
     interps: *const list_head,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> *const binfmt_misc_interp;
 
 /**
@@ -82,8 +82,8 @@ pub enum bpf_binprm_flags {
 #[repr(C)]
 pub struct binfmt_misc_ops {
     pub r#match: Option<unsafe extern "C" fn(*mut linux_binprm) -> bool>,
-    pub load: Option<unsafe extern "C" fn(*mut linux_binprm) -> core::ffi::c_int>,
-    pub name: [core::ffi::c_char; BINFMT_MISC_OPS_NAME_MAX],
+    pub load: Option<unsafe extern "C" fn(*mut linux_binprm) -> kernel::ffi::c_int>,
+    pub name: [kernel::ffi::c_char; BINFMT_MISC_OPS_NAME_MAX],
 }
 
 // Under CONFIG_BINFMT_MISC_BPF these are external declarations.
@@ -91,7 +91,7 @@ pub struct binfmt_misc_ops {
 extern "C" {
     pub fn binfmt_misc_get_ops(
         user_ns: *mut user_namespace,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> *const binfmt_misc_ops;
     pub fn binfmt_misc_put_ops(ops: *const binfmt_misc_ops);
     pub fn bpf_prog_is_binfmt_misc_ops(prog: *const bpf_prog) -> bool;
@@ -101,7 +101,7 @@ extern "C" {
 #[cfg(not(CONFIG_BINFMT_MISC_BPF))]
 pub unsafe fn binfmt_misc_get_ops(
     _user_ns: *mut user_namespace,
-    _name: *const core::ffi::c_char,
+    _name: *const kernel::ffi::c_char,
 ) -> *const binfmt_misc_ops {
     core::ptr::null()
 }

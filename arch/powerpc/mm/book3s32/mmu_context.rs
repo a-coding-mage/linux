@@ -20,7 +20,7 @@
 /* Dependencies supplied by the surrounding kernel translation. */
 
 #[no_mangle]
-pub static mut abatron_pteptrs: [*mut core::ffi::c_void; 2] = [core::ptr::null_mut(); 2];
+pub static mut abatron_pteptrs: [*mut kernel::ffi::c_void; 2] = [core::ptr::null_mut(); 2];
 
 /*
  * On 32-bit PowerPC 6xx/7xx/7xxx CPUs, we use a set of 16 VSIDs
@@ -34,15 +34,15 @@ pub static mut abatron_pteptrs: [*mut core::ffi::c_void; 2] = [core::ptr::null_m
  * particularly on SMP systems.
  *  -- paulus.
  */
-pub const NO_CONTEXT: ::core::ffi::c_ulong = !0;
+pub const NO_CONTEXT: ::kernel::ffi::c_ulong = !0;
 pub const LAST_CONTEXT: usize = 32767;
 pub const FIRST_CONTEXT: usize = 1;
 
-static mut next_mmu_context: ::core::ffi::c_ulong = 0;
-static mut context_map: [::core::ffi::c_ulong; LAST_CONTEXT / (8 * core::mem::size_of::<::core::ffi::c_ulong>()) + 1] =
-    [0; LAST_CONTEXT / (8 * core::mem::size_of::<::core::ffi::c_ulong>()) + 1];
+static mut next_mmu_context: ::kernel::ffi::c_ulong = 0;
+static mut context_map: [::kernel::ffi::c_ulong; LAST_CONTEXT / (8 * core::mem::size_of::<::kernel::ffi::c_ulong>()) + 1] =
+    [0; LAST_CONTEXT / (8 * core::mem::size_of::<::kernel::ffi::c_ulong>()) + 1];
 
-pub unsafe fn __init_new_context() -> ::core::ffi::c_ulong {
+pub unsafe fn __init_new_context() -> ::kernel::ffi::c_ulong {
     let mut ctx = next_mmu_context;
 
     while test_and_set_bit(ctx, context_map.as_mut_ptr()) != 0 {
@@ -72,7 +72,7 @@ pub unsafe fn init_new_context(t: *mut task_struct, mm: *mut mm_struct) -> i32 {
 }
 
 /* Free a context ID. Make sure to call this with preempt disabled! */
-pub unsafe fn __destroy_context(ctx: ::core::ffi::c_ulong) {
+pub unsafe fn __destroy_context(ctx: ::kernel::ffi::c_ulong) {
     clear_bit(ctx, context_map.as_mut_ptr());
 }
 
@@ -109,7 +109,7 @@ pub unsafe fn switch_mmu_context(
     update_user_segments((*next).context.sr0);
 
     if IS_ENABLED(CONFIG_BDI_SWITCH) {
-        abatron_pteptrs[1] = (*next).pgd as *mut core::ffi::c_void;
+        abatron_pteptrs[1] = (*next).pgd as *mut kernel::ffi::c_void;
     }
 
     if !mmu_has_feature(MMU_FTR_HPTE_TABLE) {

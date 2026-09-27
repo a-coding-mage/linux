@@ -140,7 +140,7 @@ static bool tdx_unsupported_cpuid(const struct kvm_cpuid_entry2 *entry)
 
 #define KVM_TDX_CPUID_NO_SUBLEAF	((__u32)-1)
 
-static void td_init_cpuid_entry2(kvm_cpuid_entry2 *entry, idx: core::ffi::c_uchar)
+static void td_init_cpuid_entry2(kvm_cpuid_entry2 *entry, idx: kernel::ffi::c_uchar)
 {
 	const struct tdx_sys_info_td_conf *td_conf = (*&tdx_sysinfo).td_conf;
 
@@ -218,12 +218,12 @@ static bool tdx_operand_busy(err: u64)
  */
 static DEFINE_PER_CPU(list_head, associated_tdvcpus);
 
-static __always_inline core::ffi::c_ulong tdvmcall_exit_type(kvm_vcpu *vcpu)
+static __always_inline kernel::ffi::c_ulong tdvmcall_exit_type(kvm_vcpu *vcpu)
 {
 	return (*to_tdx(vcpu)).vp_enter_args.r10;
 }
 
-static __always_inline core::ffi::c_ulong tdvmcall_leaf(kvm_vcpu *vcpu)
+static __always_inline kernel::ffi::c_ulong tdvmcall_leaf(kvm_vcpu *vcpu)
 {
 	return (*to_tdx(vcpu)).vp_enter_args.r11;
 }
@@ -235,7 +235,7 @@ static __always_inline void tdvmcall_set_return_code(kvm_vcpu *vcpu,
 }
 
 static __always_inline void tdvmcall_set_return_val(kvm_vcpu *vcpu,
-						    val: core::ffi::c_ulong)
+						    val: kernel::ffi::c_ulong)
 {
 	(*to_tdx(vcpu)).vp_enter_args.r11 = val;
 }
@@ -411,7 +411,7 @@ void tdx_disable_virtualization_cpu(void)
 	struct list_head *tdvcpus = &per_cpu(associated_tdvcpus, cpu);
 	struct tdx_flush_vp_arg arg;
 	struct vcpu_tdx *tdx, *tmp;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	local_irq_save(flags);
 	/* Safe variant needed as tdx_disassociate_vp() deletes the entry. */
@@ -462,7 +462,7 @@ void tdx_mmu_release_hkid(kvm *kvm)
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 	cpumask_var_t packages, targets;
 	struct kvm_vcpu *vcpu;
-	core::ffi::c_ulong j;
+	kernel::ffi::c_ulong j;
 	int i;
 	u64 err;
 
@@ -753,7 +753,7 @@ static bool tdx_protected_apic_has_interrupt(kvm_vcpu *vcpu)
 
 struct tdx_uret_msr {
 	u32 msr;
-	core::ffi::c_uint slot;
+	kernel::ffi::c_uint slot;
 	u64 defval;
 };
 
@@ -1326,7 +1326,7 @@ static int tdx_complete_pio_out(kvm_vcpu *vcpu)
 static int tdx_complete_pio_in(kvm_vcpu *vcpu)
 {
 	struct x86_emulate_ctxt *ctxt = vcpu->arch.emulate_ctxt;
-	core::ffi::c_ulong val = 0;
+	kernel::ffi::c_ulong val = 0;
 	int ret;
 
 	ret = ctxt->ops->pio_in_emulated(ctxt, vcpu->arch.pio.size,
@@ -1343,8 +1343,8 @@ static int tdx_emulate_io(kvm_vcpu *vcpu)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	struct x86_emulate_ctxt *ctxt = vcpu->arch.emulate_ctxt;
-	core::ffi::c_ulong val = 0;
-	core::ffi::c_uint port;
+	kernel::ffi::c_ulong val = 0;
+	kernel::ffi::c_uint port;
 	size: u64, write;
 	int ret;
 
@@ -1377,7 +1377,7 @@ static int tdx_emulate_io(kvm_vcpu *vcpu)
 
 static int tdx_complete_mmio_read(kvm_vcpu *vcpu)
 {
-	core::ffi::c_ulong val = 0;
+	kernel::ffi::c_ulong val = 0;
 	gpa_t gpa;
 	int size;
 
@@ -1391,7 +1391,7 @@ static int tdx_complete_mmio_read(kvm_vcpu *vcpu)
 }
 
 int tdx_mmio_write(kvm_vcpu *vcpu, gpa_t gpa, int size,
-				 val: core::ffi::c_ulong)
+				 val: kernel::ffi::c_ulong)
 {
 	if (!kvm_io_bus_write(vcpu, KVM_FAST_MMIO_BUS, gpa, 0, NULL)) {
 		trace_kvm_fast_mmio(gpa);
@@ -1407,7 +1407,7 @@ int tdx_mmio_write(kvm_vcpu *vcpu, gpa_t gpa, int size,
 
 int tdx_mmio_read(kvm_vcpu *vcpu, gpa_t gpa, int size)
 {
-	core::ffi::c_ulong val;
+	kernel::ffi::c_ulong val;
 
 	if (kvm_io_bus_read(vcpu, KVM_MMIO_BUS, gpa, size, &val))
 		return -EOPNOTSUPP;
@@ -1422,7 +1422,7 @@ static int tdx_emulate_mmio(kvm_vcpu *vcpu)
 	'error: {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	int size, write, r;
-	core::ffi::c_ulong val;
+	kernel::ffi::c_ulong val;
 	gpa_t gpa;
 
 	size = tdx->vp_enter_args.r12;
@@ -1869,7 +1869,7 @@ static void tdx_sept_free_private_spt(kvm *kvm, kvm_mmu_page *sp)
 	 * after TDH.PHYMEM.PAGE.RECLAIM ensures there are no outstanding
 	 * readers.
 	 */
-	free_page((core::ffi::c_ulong)sp->external_spt);
+	free_page((kernel::ffi::c_ulong)sp->external_spt);
 	}
 	
 	sp->external_spt = NULL;
@@ -1900,7 +1900,7 @@ bool tdx_is_sept_violation_unexpected_pending(kvm_vcpu *vcpu)
 
 static int tdx_handle_ept_violation(kvm_vcpu *vcpu)
 {
-	core::ffi::c_ulong exit_qual;
+	kernel::ffi::c_ulong exit_qual;
 	gpa_t gpa = to_tdx(vcpu)->exit_gpa;
 	bool local_retry = false;
 	int ret;
@@ -2698,7 +2698,7 @@ static int tdx_read_cpuid(kvm_vcpu *vcpu, leaf: u32, sub_leaf: u32,
 	 */
 	if (leaf == 0x80000008) {
 		gpa_t gpa_bits = gfn_to_gpa(kvm_gfn_direct_bits(vcpu->kvm));
-		core::ffi::c_uint g_maxpa = __ffs(gpa_bits) + 1;
+		kernel::ffi::c_uint g_maxpa = __ffs(gpa_bits) + 1;
 
 		out->eax = tdx_set_guest_phys_addr_bits(out->eax, g_maxpa);
 	}
@@ -3486,7 +3486,7 @@ int __init tdx_hardware_setup(void)
 
 	KVM_SANITY_CHECK_VM_STRUCT_SIZE(kvm_tdx);
 
-	vt_x86_ops.vm_size = max_t(core::ffi::c_uint, vt_x86_ops.vm_size, sizeof(kvm_tdx));
+	vt_x86_ops.vm_size = max_t(kernel::ffi::c_uint, vt_x86_ops.vm_size, sizeof(kvm_tdx));
 
 	vt_x86_ops.set_external_spte = tdx_sept_set_private_spte;
 	vt_x86_ops.free_external_spt = tdx_sept_free_private_spt;

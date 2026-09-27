@@ -10,29 +10,29 @@
 #[repr(C)]
 pub struct z_erofs_gbuf {
     pub lock: spinlock_t,
-    pub ptr: *mut core::ffi::c_void,
+    pub ptr: *mut kernel::ffi::c_void,
     pub pages: *mut *mut page,
-    pub nrpages: core::ffi::c_uint,
+    pub nrpages: kernel::ffi::c_uint,
 }
 
 static mut z_erofs_gbufpool: *mut z_erofs_gbuf = core::ptr::null_mut();
 static mut z_erofs_rsvbuf: *mut z_erofs_gbuf = core::ptr::null_mut();
-static mut z_erofs_gbuf_count: core::ffi::c_uint = 0;
-static mut z_erofs_gbuf_nrpages: core::ffi::c_uint = 0;
-static mut z_erofs_rsv_nrpages: core::ffi::c_uint = 0;
+static mut z_erofs_gbuf_count: kernel::ffi::c_uint = 0;
+static mut z_erofs_gbuf_nrpages: kernel::ffi::c_uint = 0;
+static mut z_erofs_rsv_nrpages: kernel::ffi::c_uint = 0;
 
 pub static mut erofs_global_shrink_cnt: atomic_long_t = atomic_long_t { counter: 0 };
 
 static mut erofs_sb_list_lock: spinlock_t = spinlock_t { raw_lock: 0 };
 static mut erofs_sb_list: list_head = list_head { next: core::ptr::null_mut(), prev: core::ptr::null_mut() };
-static mut shrinker_run_no: core::ffi::c_uint = 0;
+static mut shrinker_run_no: kernel::ffi::c_uint = 0;
 static mut erofs_shrinker_info: *mut shrinker = core::ptr::null_mut();
 
-unsafe fn z_erofs_gbuf_id() -> core::ffi::c_uint {
+unsafe fn z_erofs_gbuf_id() -> kernel::ffi::c_uint {
     raw_smp_processor_id() % z_erofs_gbuf_count
 }
 
-pub unsafe fn z_erofs_get_gbuf(requiredpages: core::ffi::c_uint) -> *mut core::ffi::c_void {
+pub unsafe fn z_erofs_get_gbuf(requiredpages: kernel::ffi::c_uint) -> *mut kernel::ffi::c_void {
     migrate_disable();
     let gbuf = &mut *z_erofs_gbufpool.add(z_erofs_gbuf_id() as usize);
     spin_lock(&mut gbuf.lock);
@@ -46,22 +46,22 @@ pub unsafe fn z_erofs_get_gbuf(requiredpages: core::ffi::c_uint) -> *mut core::f
     gbuf.ptr
 }
 
-pub unsafe fn z_erofs_put_gbuf(ptr: *mut core::ffi::c_void) {
+pub unsafe fn z_erofs_put_gbuf(ptr: *mut kernel::ffi::c_void) {
     let gbuf = &mut *z_erofs_gbufpool.add(z_erofs_gbuf_id() as usize);
     DBG_BUGON(gbuf.ptr != ptr);
     spin_unlock(&mut gbuf.lock);
     migrate_enable();
 }
 
-pub unsafe fn z_erofs_gbuf_growsize(nrpages: core::ffi::c_uint) -> core::ffi::c_int {
+pub unsafe fn z_erofs_gbuf_growsize(nrpages: kernel::ffi::c_uint) -> kernel::ffi::c_int {
     static mut gbuf_resize_mutex: mutex = mutex { count: 0 };
     let mut tmp_pages: *mut *mut page = core::ptr::null_mut();
     let mut gbuf: *mut z_erofs_gbuf = core::ptr::null_mut();
-    let mut ptr: *mut core::ffi::c_void;
-    let mut old_ptr: *mut core::ffi::c_void;
-    let mut last: core::ffi::c_int;
-    let mut i: core::ffi::c_int = 0;
-    let mut j: core::ffi::c_int;
+    let mut ptr: *mut kernel::ffi::c_void;
+    let mut old_ptr: *mut kernel::ffi::c_void;
+    let mut last: kernel::ffi::c_int;
+    let mut i: kernel::ffi::c_int = 0;
+    let mut j: kernel::ffi::c_int;
 
     mutex_lock(&mut gbuf_resize_mutex);
     // avoid shrinking gbufs, since no idea how many fses rely on
@@ -70,7 +70,7 @@ pub unsafe fn z_erofs_gbuf_growsize(nrpages: core::ffi::c_uint) -> core::ffi::c_
         return 0;
     }
 
-    while i < z_erofs_gbuf_count as core::ffi::c_int {
+    while i < z_erofs_gbuf_count as kernel::ffi::c_int {
         gbuf = z_erofs_gbufpool.add(i as usize);
         if (*gbuf).nrpages >= nrpages {
             i += 1;
@@ -80,7 +80,7 @@ pub unsafe fn z_erofs_gbuf_growsize(nrpages: core::ffi::c_uint) -> core::ffi::c_
         if tmp_pages.is_null() { break; }
 
         j = 0;
-        while j < (*gbuf).nrpages as core::ffi::c_int {
+        while j < (*gbuf).nrpages as kernel::ffi::c_int {
             *tmp_pages.add(j as usize) = *(*gbuf).pages.add(j as usize);
             j += 1;
         }
@@ -88,15 +88,15 @@ pub unsafe fn z_erofs_gbuf_growsize(nrpages: core::ffi::c_uint) -> core::ffi::c_
             last = j;
             j = alloc_pages_bulk(GFP_KERNEL, nrpages, tmp_pages);
             if last == j { break; }
-            if j == nrpages as core::ffi::c_int { break; }
+            if j == nrpages as kernel::ffi::c_int { break; }
         }
-        if j != nrpages as core::ffi::c_int { break; }
+        if j != nrpages as kernel::ffi::c_int { break; }
 
         ptr = vmap(tmp_pages, nrpages, VM_MAP, PAGE_KERNEL);
         if ptr.is_null() { break; }
 
         spin_lock(&mut (*gbuf).lock);
-        kfree((*gbuf).pages as *mut core::ffi::c_void);
+        kfree((*gbuf).pages as *mut kernel::ffi::c_void);
         old_ptr = (*gbuf).ptr;
         (*gbuf).pages = tmp_pages;
         (*gbuf).ptr = ptr;
@@ -109,25 +109,25 @@ pub unsafe fn z_erofs_gbuf_growsize(nrpages: core::ffi::c_uint) -> core::ffi::c_
     z_erofs_gbuf_nrpages = nrpages;
     if !tmp_pages.is_null() {
         j = 0;
-        while j < nrpages as core::ffi::c_int {
+        while j < nrpages as kernel::ffi::c_int {
             let p = *tmp_pages.add(j as usize);
-            if !p.is_null() && (j >= (*gbuf).nrpages as core::ffi::c_int || p != *(*gbuf).pages.add(j as usize)) {
+            if !p.is_null() && (j >= (*gbuf).nrpages as kernel::ffi::c_int || p != *(*gbuf).pages.add(j as usize)) {
                 __free_page(p);
             }
             j += 1;
         }
-        kfree(tmp_pages as *mut core::ffi::c_void);
+        kfree(tmp_pages as *mut kernel::ffi::c_void);
     }
     mutex_unlock(&mut gbuf_resize_mutex);
-    if i < z_erofs_gbuf_count as core::ffi::c_int { -ENOMEM } else { 0 }
+    if i < z_erofs_gbuf_count as kernel::ffi::c_int { -ENOMEM } else { 0 }
 }
 
-pub unsafe fn z_erofs_gbuf_init() -> core::ffi::c_int {
+pub unsafe fn z_erofs_gbuf_init() -> kernel::ffi::c_int {
     let mut total = num_possible_cpus();
     if z_erofs_gbuf_count != 0 { total = core::cmp::min(z_erofs_gbuf_count, total); }
     z_erofs_gbuf_count = total;
     // The last (special) global buffer is the reserved buffer
-    total += (z_erofs_rsv_nrpages != 0) as core::ffi::c_uint;
+    total += (z_erofs_rsv_nrpages != 0) as kernel::ffi::c_uint;
     z_erofs_gbufpool = kzalloc_objs(total);
     if z_erofs_gbufpool.is_null() { return -ENOMEM; }
     if z_erofs_rsv_nrpages != 0 {
@@ -141,16 +141,16 @@ pub unsafe fn z_erofs_gbuf_init() -> core::ffi::c_int {
 
 pub unsafe fn z_erofs_gbuf_exit() {
     let mut i = 0;
-    while i < z_erofs_gbuf_count + (!z_erofs_rsvbuf.is_null() as core::ffi::c_uint) {
+    while i < z_erofs_gbuf_count + (!z_erofs_rsvbuf.is_null() as kernel::ffi::c_uint) {
         let gbuf = &mut *z_erofs_gbufpool.add(i as usize);
         if !gbuf.ptr.is_null() { vunmap(gbuf.ptr); gbuf.ptr = core::ptr::null_mut(); }
         if !gbuf.pages.is_null() {
             for j in 0..gbuf.nrpages { if !(*gbuf.pages.add(j as usize)).is_null() { put_page(*gbuf.pages.add(j as usize)); } }
-            kfree(gbuf.pages as *mut core::ffi::c_void); gbuf.pages = core::ptr::null_mut();
+            kfree(gbuf.pages as *mut kernel::ffi::c_void); gbuf.pages = core::ptr::null_mut();
         }
         i += 1;
     }
-    kfree(z_erofs_gbufpool as *mut core::ffi::c_void);
+    kfree(z_erofs_gbufpool as *mut kernel::ffi::c_void);
 }
 
 pub unsafe fn __erofs_allocpage(pagepool: *mut *mut page, gfp: gfp_t, tryrsv: bool) -> *mut page {
@@ -204,8 +204,8 @@ unsafe fn erofs_shrink_scan(_shrink: *mut shrinker, sc: *mut shrink_control) -> 
     spin_unlock(&mut erofs_sb_list_lock); freed
 }
 
-pub unsafe fn erofs_init_shrinker() -> core::ffi::c_int {
-    erofs_shrinker_info = shrinker_alloc(0, b"erofs-shrinker\0".as_ptr() as *const core::ffi::c_char); if erofs_shrinker_info.is_null() { return -ENOMEM; }
+pub unsafe fn erofs_init_shrinker() -> kernel::ffi::c_int {
+    erofs_shrinker_info = shrinker_alloc(0, b"erofs-shrinker\0".as_ptr() as *const kernel::ffi::c_char); if erofs_shrinker_info.is_null() { return -ENOMEM; }
     (*erofs_shrinker_info).count_objects = Some(erofs_shrink_count); (*erofs_shrinker_info).scan_objects = Some(erofs_shrink_scan); shrinker_register(erofs_shrinker_info); 0
 }
 

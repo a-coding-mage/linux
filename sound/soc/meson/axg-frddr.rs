@@ -29,7 +29,7 @@ const CTRL2_SEL3_EN_SHIFT: u32 = 20;
 unsafe fn g12a_frddr_dai_prepare(
     substream: *mut snd_pcm_substream,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let fifo: *mut axg_fifo = snd_soc_dai_get_drvdata(dai) as *mut axg_fifo;
 
     /* Reset the read pointer to the FIFO_INIT_ADDR */
@@ -59,7 +59,7 @@ unsafe fn axg_frddr_dai_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let fifo: *mut axg_fifo = snd_soc_dai_get_drvdata(dai) as *mut axg_fifo;
     let period: u32;
     let depth: u32;
@@ -83,9 +83,9 @@ unsafe fn axg_frddr_dai_hw_params(
 unsafe fn axg_frddr_dai_startup(
     substream: *mut snd_pcm_substream,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let fifo: *mut axg_fifo = snd_soc_dai_get_drvdata(dai) as *mut axg_fifo;
-    let ret: core::ffi::c_int;
+    let ret: kernel::ffi::c_int;
 
     /* Enable pclk to access registers and clock the fifo ip */
     ret = clk_prepare_enable((*fifo).pclk);
@@ -111,7 +111,7 @@ unsafe fn axg_frddr_dai_shutdown(
 unsafe fn axg_frddr_pcm_new(
     rtd: *mut snd_soc_pcm_runtime,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     axg_fifo_pcm_new(rtd, SNDRV_PCM_STREAM_PLAYBACK)
 }
 
@@ -139,7 +139,7 @@ static mut axg_frddr_dai_drv: snd_soc_dai_driver = snd_soc_dai_driver {
     ..unsafe { core::mem::zeroed() }
 };
 
-static axg_frddr_sel_texts: [*const core::ffi::c_char; 8] = [
+static axg_frddr_sel_texts: [*const kernel::ffi::c_char; 8] = [
     c_str!("OUT 0"),
     c_str!("OUT 1"),
     c_str!("OUT 2"),
@@ -390,17 +390,17 @@ static sm1_frddr_match_data: axg_fifo_match_data = axg_fifo_match_data {
 static axg_frddr_of_match: [of_device_id; 4] = [
     of_device_id {
         compatible: c_str!("amlogic,axg-frddr"),
-        data: &axg_frddr_match_data as *const _ as *const core::ffi::c_void,
+        data: &axg_frddr_match_data as *const _ as *const kernel::ffi::c_void,
         ..unsafe { core::mem::zeroed() }
     },
     of_device_id {
         compatible: c_str!("amlogic,g12a-frddr"),
-        data: &g12a_frddr_match_data as *const _ as *const core::ffi::c_void,
+        data: &g12a_frddr_match_data as *const _ as *const kernel::ffi::c_void,
         ..unsafe { core::mem::zeroed() }
     },
     of_device_id {
         compatible: c_str!("amlogic,sm1-frddr"),
-        data: &sm1_frddr_match_data as *const _ as *const core::ffi::c_void,
+        data: &sm1_frddr_match_data as *const _ as *const kernel::ffi::c_void,
         ..unsafe { core::mem::zeroed() }
     },
     unsafe { core::mem::zeroed() },

@@ -60,14 +60,14 @@ pub struct int3472_cldb {
 #[repr(C)]
 pub struct int3472_discrete_quirks {
     /* For models where AVDD GPIO is shared between sensors */
-    pub avdd_second_sensor: *const core::ffi::c_char,
+    pub avdd_second_sensor: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct int3472_gpio_regulator {
     pub supply_map: [regulator_consumer_supply; GPIO_REGULATOR_SUPPLY_MAP_COUNT * 2],
-    pub supply_name_upper: [core::ffi::c_char; GPIO_SUPPLY_NAME_LENGTH],
-    pub regulator_name: [core::ffi::c_char; GPIO_REGULATOR_NAME_LENGTH],
+    pub supply_name_upper: [kernel::ffi::c_char; GPIO_SUPPLY_NAME_LENGTH],
+    pub regulator_name: [kernel::ffi::c_char; GPIO_REGULATOR_NAME_LENGTH],
     pub rdev: *mut regulator_dev,
     pub rdesc: regulator_desc,
 }
@@ -86,7 +86,7 @@ pub struct int3472_clock {
 pub struct int3472_led {
     pub classdev: led_classdev,
     pub lookup: led_lookup_data,
-    pub name: [core::ffi::c_char; INT3472_LED_MAX_NAME_LEN],
+    pub name: [kernel::ffi::c_char; INT3472_LED_MAX_NAME_LEN],
     pub gpio: *mut gpio_desc,
 }
 
@@ -95,31 +95,31 @@ pub struct int3472_discrete_device {
     pub adev: *mut acpi_device,
     pub dev: *mut device,
     pub sensor: *mut acpi_device,
-    pub sensor_name: *const core::ffi::c_char,
+    pub sensor_name: *const kernel::ffi::c_char,
     pub regulators: [int3472_gpio_regulator; INT3472_MAX_REGULATORS],
     pub clock: int3472_clock,
     pub leds: [int3472_led; INT3472_MAX_LEDS],
     pub quirks: int3472_discrete_quirks,
-    pub ngpios: core::ffi::c_uint,
-    pub n_leds: core::ffi::c_uint,
-    pub n_sensor_gpios: core::ffi::c_uint,
-    pub n_regulator_gpios: core::ffi::c_uint,
+    pub ngpios: kernel::ffi::c_uint,
+    pub n_leds: kernel::ffi::c_uint,
+    pub n_sensor_gpios: kernel::ffi::c_uint,
+    pub n_regulator_gpios: kernel::ffi::c_uint,
     pub gpios: gpiod_lookup_table,
 }
 
 extern "C" {
     pub static skl_int3472_discrete_quirks: [dmi_system_id; 0];
-    pub fn skl_int3472_get_acpi_buffer(adev: *mut acpi_device, id: *mut core::ffi::c_char) -> *mut acpi_object;
-    pub fn skl_int3472_fill_cldb(adev: *mut acpi_device, cldb: *mut int3472_cldb) -> core::ffi::c_int;
-    pub fn skl_int3472_get_sensor_adev_and_name(dev: *mut device, sensor_adev_ret: *mut *mut acpi_device, name_ret: *mut *const core::ffi::c_char) -> core::ffi::c_int;
-    pub fn int3472_discrete_parse_crs(int3472: *mut int3472_discrete_device) -> core::ffi::c_int;
+    pub fn skl_int3472_get_acpi_buffer(adev: *mut acpi_device, id: *mut kernel::ffi::c_char) -> *mut acpi_object;
+    pub fn skl_int3472_fill_cldb(adev: *mut acpi_device, cldb: *mut int3472_cldb) -> kernel::ffi::c_int;
+    pub fn skl_int3472_get_sensor_adev_and_name(dev: *mut device, sensor_adev_ret: *mut *mut acpi_device, name_ret: *mut *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    pub fn int3472_discrete_parse_crs(int3472: *mut int3472_discrete_device) -> kernel::ffi::c_int;
     pub fn int3472_discrete_cleanup(int3472: *mut int3472_discrete_device);
-    pub fn skl_int3472_register_gpio_clock(int3472: *mut int3472_discrete_device, gpio: *mut gpio_desc) -> core::ffi::c_int;
-    pub fn skl_int3472_register_dsm_clock(int3472: *mut int3472_discrete_device) -> core::ffi::c_int;
+    pub fn skl_int3472_register_gpio_clock(int3472: *mut int3472_discrete_device, gpio: *mut gpio_desc) -> kernel::ffi::c_int;
+    pub fn skl_int3472_register_dsm_clock(int3472: *mut int3472_discrete_device) -> kernel::ffi::c_int;
     pub fn skl_int3472_unregister_clock(int3472: *mut int3472_discrete_device);
-    pub fn skl_int3472_register_regulator(int3472: *mut int3472_discrete_device, gpio: *mut gpio_desc, enable_time: core::ffi::c_uint, supply_name: *const core::ffi::c_char, second_sensor: *const core::ffi::c_char) -> core::ffi::c_int;
+    pub fn skl_int3472_register_regulator(int3472: *mut int3472_discrete_device, gpio: *mut gpio_desc, enable_time: kernel::ffi::c_uint, supply_name: *const kernel::ffi::c_char, second_sensor: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
     pub fn skl_int3472_unregister_regulator(int3472: *mut int3472_discrete_device);
-    pub fn skl_int3472_register_led(int3472: *mut int3472_discrete_device, gpio: *mut gpio_desc, con_id: *const core::ffi::c_char) -> core::ffi::c_int;
+    pub fn skl_int3472_register_led(int3472: *mut int3472_discrete_device, gpio: *mut gpio_desc, con_id: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
     pub fn skl_int3472_unregister_leds(int3472: *mut int3472_discrete_device);
 }
 

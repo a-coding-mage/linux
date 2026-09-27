@@ -32,14 +32,14 @@ pub const EISA_DEVICE_INFO_NAME_SIZE: usize = 74;
 #[repr(C)]
 pub struct eisa_device {
     pub id: eisa_device_id,
-    pub slot: ::core::ffi::c_int,
-    pub state: ::core::ffi::c_int,
-    pub base_addr: ::core::ffi::c_ulong,
+    pub slot: ::kernel::ffi::c_int,
+    pub state: ::kernel::ffi::c_int,
+    pub base_addr: ::kernel::ffi::c_ulong,
     pub res: [resource; EISA_MAX_RESOURCES],
     pub dma_mask: u64,
     pub dev: device, /* generic device */
     #[cfg(CONFIG_EISA_NAMES)]
-    pub pretty_name: [::core::ffi::c_char; EISA_DEVICE_INFO_NAME_SIZE],
+    pub pretty_name: [::kernel::ffi::c_char; EISA_DEVICE_INFO_NAME_SIZE],
 }
 
 /* Corresponds to container_of(n, struct eisa_device, dev). */
@@ -50,10 +50,10 @@ macro_rules! to_eisa_device {
     };
 }
 
-pub unsafe fn eisa_get_region_index(addr: *mut ::core::ffi::c_void) -> ::core::ffi::c_int {
-    let mut x = addr as ::core::ffi::c_ulong;
+pub unsafe fn eisa_get_region_index(addr: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int {
+    let mut x = addr as ::kernel::ffi::c_ulong;
     x &= 0xc00;
-    (x >> 12) as ::core::ffi::c_int
+    (x >> 12) as ::kernel::ffi::c_int
 }
 
 #[repr(C)]
@@ -74,12 +74,12 @@ macro_rules! to_eisa_driver {
 #[cfg(CONFIG_EISA)]
 extern "C" {
     pub static eisa_bus_type: bus_type;
-    pub fn eisa_driver_register(edrv: *mut eisa_driver) -> ::core::ffi::c_int;
+    pub fn eisa_driver_register(edrv: *mut eisa_driver) -> ::kernel::ffi::c_int;
     pub fn eisa_driver_unregister(edrv: *mut eisa_driver);
 }
 
 #[cfg(not(CONFIG_EISA))]
-pub unsafe fn eisa_driver_register(_edrv: *mut eisa_driver) -> ::core::ffi::c_int {
+pub unsafe fn eisa_driver_register(_edrv: *mut eisa_driver) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -87,11 +87,11 @@ pub unsafe fn eisa_driver_register(_edrv: *mut eisa_driver) -> ::core::ffi::c_in
 pub unsafe fn eisa_driver_unregister(_edrv: *mut eisa_driver) {}
 
 /* Mimics pci.h... */
-pub unsafe fn eisa_get_drvdata(edev: *mut eisa_device) -> *mut ::core::ffi::c_void {
+pub unsafe fn eisa_get_drvdata(edev: *mut eisa_device) -> *mut ::kernel::ffi::c_void {
     dev_get_drvdata(&mut (*edev).dev)
 }
 
-pub unsafe fn eisa_set_drvdata(edev: *mut eisa_device, data: *mut ::core::ffi::c_void) {
+pub unsafe fn eisa_set_drvdata(edev: *mut eisa_device, data: *mut ::kernel::ffi::c_void) {
     dev_set_drvdata(&mut (*edev).dev, data);
 }
 
@@ -101,24 +101,24 @@ pub unsafe fn eisa_set_drvdata(edev: *mut eisa_device, data: *mut ::core::ffi::c
 pub struct eisa_root_device {
     pub dev: *mut device, /* Pointer to bridge device */
     pub res: *mut resource,
-    pub bus_base_addr: ::core::ffi::c_ulong,
-    pub slots: ::core::ffi::c_int, /* Max slot number */
-    pub force_probe: ::core::ffi::c_int, /* Probe even when no slot 0 */
+    pub bus_base_addr: ::kernel::ffi::c_ulong,
+    pub slots: ::kernel::ffi::c_int, /* Max slot number */
+    pub force_probe: ::kernel::ffi::c_int, /* Probe even when no slot 0 */
     pub dma_mask: u64, /* from bridge device */
-    pub bus_nr: ::core::ffi::c_int, /* Set by eisa_root_register */
+    pub bus_nr: ::kernel::ffi::c_int, /* Set by eisa_root_register */
     pub eisa_root_res: resource, /* ditto */
 }
 
 extern "C" {
-    pub fn eisa_root_register(root: *mut eisa_root_device) -> ::core::ffi::c_int;
+    pub fn eisa_root_register(root: *mut eisa_root_device) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_EISA)]
 extern "C" {
-    pub static mut EISA_bus: ::core::ffi::c_int;
+    pub static mut EISA_bus: ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_EISA))]
-pub const EISA_bus: ::core::ffi::c_int = 0;
+pub const EISA_bus: ::kernel::ffi::c_int = 0;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

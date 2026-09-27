@@ -4,10 +4,10 @@
 extern "C" {
     pub static mut current_set: *mut thread_info;
     pub fn fpsave(
-        fpregs: *mut ::core::ffi::c_ulong,
-        fsr: *mut ::core::ffi::c_ulong,
-        fpqueue: *mut ::core::ffi::c_void,
-        fpqdepth: *mut ::core::ffi::c_ulong,
+        fpregs: *mut ::kernel::ffi::c_ulong,
+        fsr: *mut ::kernel::ffi::c_ulong,
+        fpqueue: *mut ::kernel::ffi::c_void,
+        fpqdepth: *mut ::kernel::ffi::c_ulong,
     );
     pub fn synchronize_user_stack();
 }
@@ -20,16 +20,16 @@ pub struct thread_info {
 
 #[repr(C)]
 pub struct thread_struct {
-    pub float_regs: [::core::ffi::c_ulong; 0],
-    pub fsr: ::core::ffi::c_ulong,
-    pub fpqueue: [::core::ffi::c_ulong; 0],
-    pub fpqdepth: ::core::ffi::c_ulong,
+    pub float_regs: [::kernel::ffi::c_ulong; 0],
+    pub fsr: ::kernel::ffi::c_ulong,
+    pub fpqueue: [::kernel::ffi::c_ulong; 0],
+    pub fpqdepth: ::kernel::ffi::c_ulong,
     pub kregs: *mut pt_regs,
 }
 
 #[repr(C)]
 pub struct pt_regs {
-    pub psr: ::core::ffi::c_ulong,
+    pub psr: ::kernel::ffi::c_ulong,
 }
 
 #[cfg(not(CONFIG_SMP))]
@@ -97,12 +97,12 @@ macro_rules! switch_to {
 extern "C" {
     fn flush_patch_switch();
     fn sparc_switch_to(prev: *mut task_struct, next: *mut task_struct) -> *mut task_struct;
-    fn test_tsk_thread_flag(task: *mut task_struct, flag: ::core::ffi::c_int) -> bool;
-    fn clear_tsk_thread_flag(task: *mut task_struct, flag: ::core::ffi::c_int);
-    fn put_psr(value: ::core::ffi::c_ulong);
-    fn get_psr() -> ::core::ffi::c_ulong;
-    fn cpumask_set_cpu(cpu: ::core::ffi::c_uint, mask: *mut cpumask);
-    fn smp_processor_id() -> ::core::ffi::c_uint;
+    fn test_tsk_thread_flag(task: *mut task_struct, flag: ::kernel::ffi::c_int) -> bool;
+    fn clear_tsk_thread_flag(task: *mut task_struct, flag: ::kernel::ffi::c_int);
+    fn put_psr(value: ::kernel::ffi::c_ulong);
+    fn get_psr() -> ::kernel::ffi::c_ulong;
+    fn cpumask_set_cpu(cpu: ::kernel::ffi::c_uint, mask: *mut cpumask);
+    fn smp_processor_id() -> ::kernel::ffi::c_uint;
     fn mm_cpumask(mm: *mut mm_struct) -> *mut cpumask;
 }
 
@@ -110,8 +110,8 @@ extern "C" {
 #[repr(C)] pub struct mm_struct;
 #[repr(C)] pub struct cpumask;
 
-const TIF_USEDFPU: ::core::ffi::c_int = 0;
-const PSR_EF: ::core::ffi::c_ulong = 0;
+const TIF_USEDFPU: ::kernel::ffi::c_int = 0;
+const PSR_EF: ::kernel::ffi::c_ulong = 0;
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

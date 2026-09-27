@@ -3,16 +3,16 @@
 
 #![allow(non_camel_case_types, non_snake_case, dead_code)]
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub const DEVICE_NAME: &[u8] = b"ipmi-ipmb\0";
 pub const IPMB_MAX_MSG_LEN: usize = IPMI_MAX_MSG_LENGTH + 5;
 
-pub type u8 = core::ffi::c_uchar;
-pub type u32 = core::ffi::c_uint;
-pub type c_int = core::ffi::c_int;
-pub type c_long = core::ffi::c_long;
-pub type ulong = core::ffi::c_ulong;
+pub type u8 = kernel::ffi::c_uchar;
+pub type u32 = kernel::ffi::c_uint;
+pub type c_int = kernel::ffi::c_int;
+pub type c_long = kernel::ffi::c_long;
+pub type ulong = kernel::ffi::c_ulong;
 
 pub const IPMI_MAX_MSG_LENGTH: usize = 256;
 pub const IPMI_SMI_MSG_TYPE_IPMB_DIRECT: u8 = 1;

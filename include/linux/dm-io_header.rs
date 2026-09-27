@@ -24,9 +24,9 @@ pub struct page_list {
 }
 
 pub type io_notify_fn = Option<unsafe extern "C" fn(
-    error: ::core::ffi::c_ulong,
-    unsup: ::core::ffi::c_ulong,
-    context: *mut ::core::ffi::c_void,
+    error: ::kernel::ffi::c_ulong,
+    unsup: ::kernel::ffi::c_ulong,
+    context: *mut ::kernel::ffi::c_void,
 )>;
 
 #[repr(C)]
@@ -42,21 +42,21 @@ pub enum dm_io_mem_type {
 pub union dm_io_memory_ptr {
     pub pl: *mut page_list,
     pub bio: *mut bio,
-    pub vma: *mut ::core::ffi::c_void,
-    pub addr: *mut ::core::ffi::c_void,
+    pub vma: *mut ::kernel::ffi::c_void,
+    pub addr: *mut ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct dm_io_memory {
     pub type_: dm_io_mem_type,
-    pub offset: ::core::ffi::c_uint,
+    pub offset: ::kernel::ffi::c_uint,
     pub ptr: dm_io_memory_ptr,
 }
 
 #[repr(C)]
 pub struct dm_io_notify {
     pub r#fn: io_notify_fn, // Callback for asynchronous requests
-    pub context: *mut ::core::ffi::c_void, // Passed to callback
+    pub context: *mut ::kernel::ffi::c_void, // Passed to callback
 }
 
 /*
@@ -91,12 +91,12 @@ extern "C" {
 extern "C" {
     pub fn dm_io(
         io_req: *mut dm_io_request,
-        num_regions: ::core::ffi::c_uint,
+        num_regions: ::kernel::ffi::c_uint,
         region: *mut dm_io_region,
-        sync_error_bits: *mut ::core::ffi::c_ulong,
-        sync_unsup_bits: *mut ::core::ffi::c_ulong,
-        ioprio: ::core::ffi::c_ushort,
-    ) -> ::core::ffi::c_int;
+        sync_error_bits: *mut ::kernel::ffi::c_ulong,
+        sync_unsup_bits: *mut ::kernel::ffi::c_ulong,
+        ioprio: ::kernel::ffi::c_ushort,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

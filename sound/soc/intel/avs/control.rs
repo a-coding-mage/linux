@@ -81,12 +81,12 @@ pub unsafe extern "C" fn avs_control_volume_get(
             (*ctl_data).values[i as usize] = (*dspvols.add(i as usize)).target_volume;
             i += 1;
         }
-        kfree(dspvols as *mut core::ffi::c_void);
+        kfree(dspvols as *mut kernel::ffi::c_void);
     }
 
     memcpy(
-        (*uctl).value.integer.value.as_mut_ptr() as *mut core::ffi::c_void,
-        (*ctl_data).values.as_ptr() as *const core::ffi::c_void,
+        (*uctl).value.integer.value.as_mut_ptr() as *mut kernel::ffi::c_void,
+        (*ctl_data).values.as_ptr() as *const kernel::ffi::c_void,
         core::mem::size_of_val(&(*ctl_data).values),
     );
     0
@@ -101,7 +101,7 @@ pub unsafe extern "C" fn avs_control_volume_put(
     let ctl_data: *mut avs_control_data;
     let mc: *mut soc_mixer_control;
     let adev: *mut avs_dev;
-    let input: *mut core::ffi::c_long;
+    let input: *mut kernel::ffi::c_long;
     let mut ret: i32;
     let mut i: i32;
 
@@ -123,8 +123,8 @@ pub unsafe extern "C" fn avs_control_volume_put(
     }
 
     if memcmp(
-        (*ctl_data).values.as_ptr() as *const core::ffi::c_void,
-        input as *const core::ffi::c_void,
+        (*ctl_data).values.as_ptr() as *const kernel::ffi::c_void,
+        input as *const kernel::ffi::c_void,
         core::mem::size_of_val(&(*ctl_data).values),
     ) == 0
     {
@@ -143,8 +143,8 @@ pub unsafe extern "C" fn avs_control_volume_put(
     }
 
     memcpy(
-        (*ctl_data).values.as_mut_ptr() as *mut core::ffi::c_void,
-        input as *const core::ffi::c_void,
+        (*ctl_data).values.as_mut_ptr() as *mut kernel::ffi::c_void,
+        input as *const kernel::ffi::c_void,
         core::mem::size_of_val(&(*ctl_data).values),
     );
     1
@@ -207,12 +207,12 @@ pub unsafe extern "C" fn avs_control_mute_get(
             };
             i += 1;
         }
-        kfree(dspmutes as *mut core::ffi::c_void);
+        kfree(dspmutes as *mut kernel::ffi::c_void);
     }
 
     memcpy(
-        (*uctl).value.integer.value.as_mut_ptr() as *mut core::ffi::c_void,
-        (*ctl_data).values.as_ptr() as *const core::ffi::c_void,
+        (*uctl).value.integer.value.as_mut_ptr() as *mut kernel::ffi::c_void,
+        (*ctl_data).values.as_ptr() as *const kernel::ffi::c_void,
         core::mem::size_of_val(&(*ctl_data).values),
     );
     0
@@ -227,7 +227,7 @@ pub unsafe extern "C" fn avs_control_mute_put(
     let ctl_data: *mut avs_control_data;
     let mc: *mut soc_mixer_control;
     let adev: *mut avs_dev;
-    let input: *mut core::ffi::c_long;
+    let input: *mut kernel::ffi::c_long;
     let mut ret: i32;
     let mut i: i32;
 
@@ -249,8 +249,8 @@ pub unsafe extern "C" fn avs_control_mute_put(
     }
 
     if memcmp(
-        (*ctl_data).values.as_ptr() as *const core::ffi::c_void,
-        input as *const core::ffi::c_void,
+        (*ctl_data).values.as_ptr() as *const kernel::ffi::c_void,
+        input as *const kernel::ffi::c_void,
         core::mem::size_of_val(&(*ctl_data).values),
     ) == 0
     {
@@ -269,8 +269,8 @@ pub unsafe extern "C" fn avs_control_mute_put(
     }
 
     memcpy(
-        (*ctl_data).values.as_mut_ptr() as *mut core::ffi::c_void,
-        input as *const core::ffi::c_void,
+        (*ctl_data).values.as_mut_ptr() as *mut kernel::ffi::c_void,
+        input as *const kernel::ffi::c_void,
         core::mem::size_of_val(&(*ctl_data).values),
     );
     1

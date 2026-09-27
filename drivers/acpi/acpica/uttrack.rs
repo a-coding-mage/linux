@@ -46,7 +46,7 @@ mod acpi_dbg_track_allocations {
         size: acpi_size,
         alloc_type: u8,
         component: u32,
-        module: *const core::ffi::c_char,
+        module: *const kernel::ffi::c_char,
         line: u32,
     ) -> acpi_status {
         if acpi_gbl_disable_mem_tracking { return AE_OK; }
@@ -66,7 +66,7 @@ mod acpi_dbg_track_allocations {
         (*allocation).alloc_type = alloc_type;
         (*allocation).component = component;
         (*allocation).line = line;
-        acpi_ut_safe_strncpy((*allocation).module.as_mut_ptr(), module as *mut core::ffi::c_char, ACPI_MAX_MODULE_NAME);
+        acpi_ut_safe_strncpy((*allocation).module.as_mut_ptr(), module as *mut kernel::ffi::c_char, ACPI_MAX_MODULE_NAME);
 
         if element.is_null() {
             if !(*mem_list).list_head.is_null() { (*(*mem_list).list_head).previous = allocation; }
@@ -87,7 +87,7 @@ mod acpi_dbg_track_allocations {
     unsafe fn acpi_ut_remove_allocation(
         allocation: *mut acpi_debug_mem_block,
         component: u32,
-        module: *const core::ffi::c_char,
+        module: *const kernel::ffi::c_char,
         line: u32,
     ) -> acpi_status {
         if acpi_gbl_disable_mem_tracking { return AE_OK; }
@@ -107,7 +107,7 @@ mod acpi_dbg_track_allocations {
         acpi_ut_release_mutex(ACPI_MTX_MEMORY)
     }
 
-    pub unsafe fn acpi_ut_create_list(list_name: *const core::ffi::c_char, object_size: u16, return_cache: *mut *mut acpi_memory_list) -> acpi_status {
+    pub unsafe fn acpi_ut_create_list(list_name: *const kernel::ffi::c_char, object_size: u16, return_cache: *mut *mut acpi_memory_list) -> acpi_status {
         let cache = acpi_os_allocate_zeroed(core::mem::size_of::<acpi_memory_list>()) as *mut acpi_memory_list;
         if cache.is_null() { return AE_NO_MEMORY; }
         (*cache).list_name = list_name;
@@ -116,45 +116,45 @@ mod acpi_dbg_track_allocations {
         AE_OK
     }
 
-    pub unsafe fn acpi_ut_allocate_and_track(size: acpi_size, component: u32, module: *const core::ffi::c_char, line: u32) -> *mut core::ffi::c_void {
+    pub unsafe fn acpi_ut_allocate_and_track(size: acpi_size, component: u32, module: *const kernel::ffi::c_char, line: u32) -> *mut kernel::ffi::c_void {
         let mut size = size;
         if size == 0 { ACPI_WARNING!((module, line, "Attempt to allocate zero bytes, allocating 1 byte")); size = 1; }
         let allocation = acpi_os_allocate(size + core::mem::size_of::<acpi_debug_mem_header>()) as *mut acpi_debug_mem_block;
         if allocation.is_null() { ACPI_WARNING!((module, line, "Could not allocate size %u", size as u32)); return core::ptr::null_mut(); }
-        if ACPI_FAILURE(acpi_ut_track_allocation(allocation, size, ACPI_MEM_MALLOC, component, module, line)) { acpi_os_free(allocation as *mut core::ffi::c_void); return core::ptr::null_mut(); }
+        if ACPI_FAILURE(acpi_ut_track_allocation(allocation, size, ACPI_MEM_MALLOC, component, module, line)) { acpi_os_free(allocation as *mut kernel::ffi::c_void); return core::ptr::null_mut(); }
         (*acpi_gbl_global_list).total_allocated += 1;
         (*acpi_gbl_global_list).total_size += size as u32;
         (*acpi_gbl_global_list).current_total_size += size as u32;
         if (*acpi_gbl_global_list).current_total_size > (*acpi_gbl_global_list).max_occupied { (*acpi_gbl_global_list).max_occupied = (*acpi_gbl_global_list).current_total_size; }
-        (*allocation).user_space.as_mut_ptr() as *mut core::ffi::c_void
+        (*allocation).user_space.as_mut_ptr() as *mut kernel::ffi::c_void
     }
 
-    pub unsafe fn acpi_ut_allocate_zeroed_and_track(size: acpi_size, component: u32, module: *const core::ffi::c_char, line: u32) -> *mut core::ffi::c_void {
+    pub unsafe fn acpi_ut_allocate_zeroed_and_track(size: acpi_size, component: u32, module: *const kernel::ffi::c_char, line: u32) -> *mut kernel::ffi::c_void {
         let mut size = size;
         if size == 0 { ACPI_WARNING!((module, line, "Attempt to allocate zero bytes, allocating 1 byte")); size = 1; }
         let allocation = acpi_os_allocate_zeroed(size + core::mem::size_of::<acpi_debug_mem_header>()) as *mut acpi_debug_mem_block;
         if allocation.is_null() { ACPI_ERROR!((module, line, "Could not allocate size %u", size as u32)); return core::ptr::null_mut(); }
-        if ACPI_FAILURE(acpi_ut_track_allocation(allocation, size, ACPI_MEM_CALLOC, component, module, line)) { acpi_os_free(allocation as *mut core::ffi::c_void); return core::ptr::null_mut(); }
+        if ACPI_FAILURE(acpi_ut_track_allocation(allocation, size, ACPI_MEM_CALLOC, component, module, line)) { acpi_os_free(allocation as *mut kernel::ffi::c_void); return core::ptr::null_mut(); }
         (*acpi_gbl_global_list).total_allocated += 1;
         (*acpi_gbl_global_list).total_size += size as u32;
         (*acpi_gbl_global_list).current_total_size += size as u32;
         if (*acpi_gbl_global_list).current_total_size > (*acpi_gbl_global_list).max_occupied { (*acpi_gbl_global_list).max_occupied = (*acpi_gbl_global_list).current_total_size; }
-        (*allocation).user_space.as_mut_ptr() as *mut core::ffi::c_void
+        (*allocation).user_space.as_mut_ptr() as *mut kernel::ffi::c_void
     }
 
-    pub unsafe fn acpi_ut_free_and_track(allocation: *mut core::ffi::c_void, component: u32, module: *const core::ffi::c_char, line: u32) {
+    pub unsafe fn acpi_ut_free_and_track(allocation: *mut kernel::ffi::c_void, component: u32, module: *const kernel::ffi::c_char, line: u32) {
         if allocation.is_null() { ACPI_ERROR!((module, line, "Attempt to delete a NULL address")); return; }
         let debug_block = (allocation as *mut u8).sub(core::mem::size_of::<acpi_debug_mem_header>()) as *mut acpi_debug_mem_block;
         (*acpi_gbl_global_list).total_freed += 1;
         (*acpi_gbl_global_list).current_total_size -= (*debug_block).size;
         let status = acpi_ut_remove_allocation(debug_block, component, module, line);
         if ACPI_FAILURE(status) { ACPI_EXCEPTION!((AE_INFO, status, "Could not free memory")); }
-        acpi_os_free(debug_block as *mut core::ffi::c_void);
+        acpi_os_free(debug_block as *mut kernel::ffi::c_void);
     }
 
     pub unsafe fn acpi_ut_dump_allocation_info() { /* Diagnostic body is intentionally empty in the source. */ }
 
-    pub unsafe fn acpi_ut_dump_allocations(component: u32, module: *const core::ffi::c_char) {
+    pub unsafe fn acpi_ut_dump_allocations(component: u32, module: *const kernel::ffi::c_char) {
         if acpi_gbl_disable_mem_tracking { return; }
         if ACPI_FAILURE(acpi_ut_acquire_mutex(ACPI_MTX_MEMORY)) { return; }
         let mut element = if acpi_gbl_global_list.is_null() { core::ptr::null_mut() } else { (*acpi_gbl_global_list).list_head };

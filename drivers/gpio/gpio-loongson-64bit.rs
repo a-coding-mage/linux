@@ -9,7 +9,7 @@ enum loongson_gpio_mode { BIT_CTRL_MODE, BYTE_CTRL_MODE }
 
 #[repr(C)]
 struct loongson_gpio_chip_data {
-    label: *const core::ffi::c_char,
+    label: *const kernel::ffi::c_char,
     mode: loongson_gpio_mode,
     conf_offset: u32, out_offset: u32, in_offset: u32, inten_offset: u32,
     intpol_offset: u32, intedge_offset: u32, intclr_offset: u32,
@@ -52,7 +52,7 @@ unsafe extern "C" fn loongson_gpio_irq_ack(data:*mut irq_data){let c=irq_data_ge
 unsafe extern "C" fn loongson_gpio_irq_mask(data:*mut irq_data){let c=irq_data_get_irq_chip_data(data);let l=to_loongson_gpio_chip(c);writeb(0,(*l).reg_base.add((*(*l).chip_data).inten_offset as usize+irqd_to_hwirq(data) as usize));}
 unsafe extern "C" fn loongson_gpio_irq_unmask(data:*mut irq_data){let c=irq_data_get_irq_chip_data(data);let l=to_loongson_gpio_chip(c);writeb(1,(*l).reg_base.add((*(*l).chip_data).inten_offset as usize+irqd_to_hwirq(data) as usize));}
 
-const fn cstr(s: &[u8]) -> *const core::ffi::c_char { s.as_ptr() as *const _ }
+const fn cstr(s: &[u8]) -> *const kernel::ffi::c_char { s.as_ptr() as *const _ }
 static L2K:&[u8]=b"ls2k_gpio\0"; static L0300:&[u8]=b"ls2k0300_gpio\0";
 static L0500:&[u8]=b"ls2k0500_gpio\0"; static L2000:&[u8]=b"ls2k2000_gpio\0";
 static L3A5:&[u8]=b"ls3a5000_gpio\0"; static L7A:&[u8]=b"ls7a_gpio\0";

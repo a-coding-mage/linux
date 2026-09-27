@@ -26,7 +26,7 @@ macro_rules! perf_arch_fetch_caller_regs {
                 options(nomem, nostack, preserves_flags)
             );
         }
-        frame_pointer(($regs)) = __frame_address as ::core::ffi::c_ulong;
+        frame_pointer(($regs)) = __frame_address as ::kernel::ffi::c_ulong;
 
         ($regs).ARM_sp = current_stack_pointer;
         ($regs).ARM_cpsr = SVC_MODE;

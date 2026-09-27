@@ -41,7 +41,7 @@ unsafe fn ocfs2_fast_symlink_read_folio(
     let mut bh: *mut buffer_head = core::ptr::null_mut();
     let status: i32 = unsafe { ocfs2_read_inode_block(inode, &mut bh) };
     let fe: *mut ocfs2_dinode;
-    let link: *const core::ffi::c_char;
+    let link: *const kernel::ffi::c_char;
     let len: usize;
 
     if status < 0 {
@@ -52,10 +52,10 @@ unsafe fn ocfs2_fast_symlink_read_folio(
     }
 
     fe = unsafe { (*bh).b_data as *mut ocfs2_dinode };
-    link = unsafe { (*fe).id2.i_symlink.as_ptr() as *const core::ffi::c_char };
+    link = unsafe { (*fe).id2.i_symlink.as_ptr() as *const kernel::ffi::c_char };
     // will be less than a page size
     len = unsafe { strnlen(link, ocfs2_fast_symlink_chars((*inode).i_sb)) };
-    unsafe { memcpy_to_folio(folio, 0, link as *const core::ffi::c_void, len + 1); }
+    unsafe { memcpy_to_folio(folio, 0, link as *const kernel::ffi::c_void, len + 1); }
 
     unsafe { folio_end_read(folio, status == 0); }
     unsafe { brelse(bh); }

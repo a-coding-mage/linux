@@ -18,24 +18,24 @@ const KSI8560_CPLD_PVR: usize = 0x08; // PLD Version Register
 const KSI8560_CPLD_RCR1: usize = 0x30; // Reset Command Register 1
 const KSI8560_CPLD_RCR1_CPUHR: u8 = 0x80; // CPU Hard Reset
 
-static mut cpld_base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut cpld_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 unsafe extern "C" {
     fn out_8(addr: *mut u8, value: u8);
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn mpic_alloc(a: *mut core::ffi::c_void, b: i32, c: i32, d: i32, e: i32, f: *const core::ffi::c_char) -> *mut core::ffi::c_void;
-    fn mpic_init(mpic: *mut core::ffi::c_void);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn mpic_alloc(a: *mut kernel::ffi::c_void, b: i32, c: i32, d: i32, e: i32, f: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
+    fn mpic_init(mpic: *mut kernel::ffi::c_void);
     fn mpc85xx_cpm2_pic_init();
-    fn of_find_compatible_node(a: *mut core::ffi::c_void, b: *mut core::ffi::c_void, c: *const core::ffi::c_char) -> *mut core::ffi::c_void;
-    fn of_iomap(node: *mut core::ffi::c_void, index: i32) -> *mut core::ffi::c_void;
-    fn of_node_put(node: *mut core::ffi::c_void);
+    fn of_find_compatible_node(a: *mut kernel::ffi::c_void, b: *mut kernel::ffi::c_void, c: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
+    fn of_iomap(node: *mut kernel::ffi::c_void, index: i32) -> *mut kernel::ffi::c_void;
+    fn of_node_put(node: *mut kernel::ffi::c_void);
     fn cpm2_reset();
     fn cpm2_set_pin(port: i32, pin: i32, flags: i32);
     fn cpm2_clk_setup(clock: i32, brg: i32, mode: i32);
     fn mfspr(spr: i32) -> u32;
     fn in_8(addr: *mut u8) -> u8;
-    fn seq_printf(m: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
-    fn mpic_get_irq(x: *mut core::ffi::c_void) -> i32;
+    fn seq_printf(m: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
+    fn mpic_get_irq(x: *mut kernel::ffi::c_void) -> i32;
 }
 
 #[repr(C)]
@@ -67,7 +67,7 @@ static mut ksi8560_pins: [cpm_pin; 18] = [
     cpm_pin { port: 0, pin: 29, flags: CPM_PIN_OUTPUT | CPM_PIN_SECONDARY },
 ];
 
-unsafe fn machine_restart(_cmd: *mut core::ffi::c_char) -> ! {
+unsafe fn machine_restart(_cmd: *mut kernel::ffi::c_char) -> ! {
     if !cpld_base.is_null() {
         out_8(cpld_base.add(KSI8560_CPLD_RCR1) as *mut u8, KSI8560_CPLD_RCR1_CPUHR);
     } else {
@@ -112,7 +112,7 @@ unsafe fn ksi8560_setup_arch() {
     { cpm2_reset(); init_ioports(); }
 }
 
-unsafe fn ksi8560_show_cpuinfo(m: *mut core::ffi::c_void) {
+unsafe fn ksi8560_show_cpuinfo(m: *mut kernel::ffi::c_void) {
     let pvid = mfspr(SPRN_PVR);
     let svid = mfspr(SPRN_SVR);
     seq_printf(m, b"Vendor\t\t: Emerson Network Power\n\0".as_ptr() as *const _);

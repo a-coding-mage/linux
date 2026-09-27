@@ -4,7 +4,7 @@
  * Copyright (C) 2018 Intel Corporation
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 unsafe extern "C" {
     pub fn adxl_get_component_names() -> *const *const c_char;

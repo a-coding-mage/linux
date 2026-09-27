@@ -25,7 +25,7 @@ pub struct spinlock_t {
 
 #[repr(C)]
 pub struct device_node {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -37,7 +37,7 @@ pub struct resource {
 #[repr(C)]
 pub struct clk_divider {
     pub hw: clk_hw,
-    pub reg: *mut ::core::ffi::c_void,
+    pub reg: *mut ::kernel::ffi::c_void,
     pub shift: u8,
     pub width: u8,
     pub lock: *mut spinlock_t,
@@ -46,7 +46,7 @@ pub struct clk_divider {
 #[repr(C)]
 pub struct clk_gate {
     pub hw: clk_hw,
-    pub reg: *mut ::core::ffi::c_void,
+    pub reg: *mut ::kernel::ffi::c_void,
     pub bit_idx: u8,
     pub lock: *mut spinlock_t,
 }
@@ -54,7 +54,7 @@ pub struct clk_gate {
 #[repr(C)]
 pub struct clk_mux {
     pub hw: clk_hw,
-    pub reg: *mut ::core::ffi::c_void,
+    pub reg: *mut ::kernel::ffi::c_void,
     pub shift: u8,
     pub mask: u32,
     pub lock: *mut spinlock_t,
@@ -72,52 +72,52 @@ pub struct clk {
 
 extern "C" {
     fn of_clk_get_parent_count(node: *mut device_node) -> i32;
-    fn kcalloc(n: usize, size: usize, flags: u32) -> *mut *const ::core::ffi::c_char;
+    fn kcalloc(n: usize, size: usize, flags: u32) -> *mut *const ::kernel::ffi::c_char;
     fn of_io_request_and_map(
         node: *mut device_node,
         index: i32,
-        name: *const ::core::ffi::c_char,
-    ) -> *mut ::core::ffi::c_void;
-    fn of_node_full_name(node: *mut device_node) -> *const ::core::ffi::c_char;
-    fn kzalloc(size: usize, flags: u32) -> *mut ::core::ffi::c_void;
+        name: *const ::kernel::ffi::c_char,
+    ) -> *mut ::kernel::ffi::c_void;
+    fn of_node_full_name(node: *mut device_node) -> *const ::kernel::ffi::c_char;
+    fn kzalloc(size: usize, flags: u32) -> *mut ::kernel::ffi::c_void;
     fn of_property_read_string(
         node: *mut device_node,
-        propname: *const ::core::ffi::c_char,
-        out: *mut *const ::core::ffi::c_char,
+        propname: *const ::kernel::ffi::c_char,
+        out: *mut *const ::kernel::ffi::c_char,
     ) -> i32;
     fn of_clk_parent_fill(
         node: *mut device_node,
-        parents: *mut *const ::core::ffi::c_char,
+        parents: *mut *const ::kernel::ffi::c_char,
         num_parents: i32,
     ) -> i32;
     fn clk_register_composite(
-        dev: *mut ::core::ffi::c_void,
-        name: *const ::core::ffi::c_char,
-        parents: *mut *const ::core::ffi::c_char,
+        dev: *mut ::kernel::ffi::c_void,
+        name: *const ::kernel::ffi::c_char,
+        parents: *mut *const ::kernel::ffi::c_char,
         num_parents: i32,
         mux_hw: *mut clk_hw,
-        mux_ops: *const ::core::ffi::c_void,
+        mux_ops: *const ::kernel::ffi::c_void,
         div_hw: *mut clk_hw,
-        div_ops: *const ::core::ffi::c_void,
+        div_ops: *const ::kernel::ffi::c_void,
         gate_hw: *mut clk_hw,
-        gate_ops: *const ::core::ffi::c_void,
+        gate_ops: *const ::kernel::ffi::c_void,
         flags: u32,
     ) -> *mut clk;
-    fn of_clk_add_provider(node: *mut device_node, get: *const ::core::ffi::c_void, clk: *mut clk) -> i32;
+    fn of_clk_add_provider(node: *mut device_node, get: *const ::kernel::ffi::c_void, clk: *mut clk) -> i32;
     fn clk_unregister(clk: *mut clk);
-    fn iounmap(addr: *mut ::core::ffi::c_void);
+    fn iounmap(addr: *mut ::kernel::ffi::c_void);
     fn of_address_to_resource(node: *mut device_node, index: i32, res: *mut resource) -> i32;
     fn resource_size(res: *const resource) -> u64;
     fn release_mem_region(start: u64, size: u64);
-    fn kfree(ptr: *mut ::core::ffi::c_void);
-    fn pr_err(fmt: *const ::core::ffi::c_char, ...);
+    fn kfree(ptr: *mut ::kernel::ffi::c_void);
+    fn pr_err(fmt: *const ::kernel::ffi::c_char, ...);
 }
 
 extern "C" {
-    static clk_mux_ops: ::core::ffi::c_void;
-    static clk_divider_ops: ::core::ffi::c_void;
-    static clk_gate_ops: ::core::ffi::c_void;
-    static of_clk_src_simple_get: ::core::ffi::c_void;
+    static clk_mux_ops: ::kernel::ffi::c_void;
+    static clk_divider_ops: ::kernel::ffi::c_void;
+    static clk_gate_ops: ::kernel::ffi::c_void;
+    static of_clk_src_simple_get: ::kernel::ffi::c_void;
 }
 
 const GFP_KERNEL: u32 = 0;
@@ -126,9 +126,9 @@ const CLK_IS_CRITICAL: u32 = 1 << 11;
 #[inline(never)]
 pub unsafe extern "C" fn sun8i_a23_mbus_setup(node: *mut device_node) {
     let num_parents = of_clk_get_parent_count(node);
-    let mut parents: *mut *const ::core::ffi::c_char = kcalloc(
+    let mut parents: *mut *const ::kernel::ffi::c_char = kcalloc(
         num_parents as usize,
-        core::mem::size_of::<*const ::core::ffi::c_char>(),
+        core::mem::size_of::<*const ::kernel::ffi::c_char>(),
         GFP_KERNEL,
     );
     let mut clk_name = (*node).name;
@@ -137,7 +137,7 @@ pub unsafe extern "C" fn sun8i_a23_mbus_setup(node: *mut device_node) {
     let mut gate: *mut clk_gate;
     let mut mux: *mut clk_mux;
     let clk: *mut clk;
-    let reg: *mut ::core::ffi::c_void;
+    let reg: *mut ::kernel::ffi::c_void;
     let err: i32;
 
     if parents.is_null() { return; }
@@ -170,8 +170,8 @@ pub unsafe extern "C" fn sun8i_a23_mbus_setup(node: *mut device_node) {
     kfree(parents as _);
 }
 
-unsafe fn goto_err_free_parents(parents: *mut *const ::core::ffi::c_char) { kfree(parents as _); }
-unsafe fn goto_err_unmap(reg: *mut ::core::ffi::c_void, node: *mut device_node, res: *mut resource, parents: *mut *const ::core::ffi::c_char) {
+unsafe fn goto_err_free_parents(parents: *mut *const ::kernel::ffi::c_char) { kfree(parents as _); }
+unsafe fn goto_err_unmap(reg: *mut ::kernel::ffi::c_void, node: *mut device_node, res: *mut resource, parents: *mut *const ::kernel::ffi::c_char) {
     iounmap(reg); of_address_to_resource(node, 0, res); release_mem_region((*res).start, resource_size(res)); kfree(parents as _);
 }
 

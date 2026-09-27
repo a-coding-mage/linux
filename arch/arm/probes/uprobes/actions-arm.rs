@@ -5,7 +5,7 @@
 
 // Kernel and local header dependencies are supplied by the surrounding build.
 
-unsafe fn uprobes_substitute_pc(pinsn: *mut ::core::ffi::c_ulong, oregs: u32) -> i32 {
+unsafe fn uprobes_substitute_pc(pinsn: *mut ::kernel::ffi::c_ulong, oregs: u32) -> i32 {
     let mut insn: probes_opcode_t = __mem_to_opcode_arm(*pinsn);
     let mut temp: probes_opcode_t;
     let mut mask: probes_opcode_t;

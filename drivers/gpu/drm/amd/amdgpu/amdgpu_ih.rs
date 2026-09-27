@@ -25,9 +25,9 @@
 pub unsafe fn amdgpu_ih_ring_init(
     adev: *mut amdgpu_device,
     ih: *mut amdgpu_ih_ring,
-    mut ring_size: libc::c_uint,
+    mut ring_size: kernel::ffi::c_uint,
     use_bus_addr: bool,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let rb_bufsz = order_base_2(ring_size / 4);
     ring_size = (1u32 << rb_bufsz) * 4;
     (*ih).ring_size = ring_size;
@@ -42,7 +42,7 @@ pub unsafe fn amdgpu_ih_ring_init(
         }
         (*ih).ring = dma_alloc_coherent((*adev).dev, (*ih).ring_size + 8, &mut dma_addr, GFP_KERNEL);
         if (*ih).ring.is_null() {
-            return -libc::ENOMEM;
+            return -ENOMEM;
         }
         (*ih).gpu_addr = dma_addr;
         (*ih).wptr_addr = dma_addr + (*ih).ring_size as u64;
@@ -50,7 +50,7 @@ pub unsafe fn amdgpu_ih_ring_init(
         (*ih).rptr_addr = dma_addr + (*ih).ring_size as u64 + 4;
         (*ih).rptr_cpu = (*ih).ring.add((*ih).ring_size as usize / 4 + 1);
     } else {
-        let (mut wptr_offs, mut rptr_offs): (libc::c_uint, libc::c_uint) = (0, 0);
+        let (mut wptr_offs, mut rptr_offs): (kernel::ffi::c_uint, kernel::ffi::c_uint) = (0, 0);
         let mut r = amdgpu_wb_get(adev, &mut wptr_offs);
         if r != 0 { return r; }
         r = amdgpu_wb_get(adev, &mut rptr_offs);
@@ -78,7 +78,7 @@ pub unsafe fn amdgpu_ih_ring_init(
 pub unsafe fn amdgpu_ih_ring_fini(adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring) {
     if (*ih).ring.is_null() { return; }
     if (*ih).use_bus_addr {
-        dma_free_coherent((*adev).dev, (*ih).ring_size + 8, (*ih).ring as *mut libc::c_void, (*ih).gpu_addr);
+        dma_free_coherent((*adev).dev, (*ih).ring_size + 8, (*ih).ring as *mut kernel::ffi::c_void, (*ih).gpu_addr);
         (*ih).ring = core::ptr::null_mut();
     } else {
         amdgpu_bo_free_kernel(&mut (*ih).ring_obj, &mut (*ih).gpu_addr,
@@ -89,7 +89,7 @@ pub unsafe fn amdgpu_ih_ring_fini(adev: *mut amdgpu_device, ih: *mut amdgpu_ih_r
 }
 
 pub unsafe fn amdgpu_ih_ring_write(
-    adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring, iv: *const u32, num_dw: libc::c_uint,
+    adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring, iv: *const u32, num_dw: kernel::ffi::c_uint,
 ) {
     let mut wptr = le32_to_cpu(*(*ih).wptr_cpu) >> 2;
     for i in 0..num_dw {
@@ -108,9 +108,9 @@ pub unsafe fn amdgpu_ih_ring_write(
 
 pub unsafe fn amdgpu_ih_wait_on_checkpoint_process_ts(
     adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring,
-) -> libc::c_int {
-    let timeout: libc::c_long = HZ;
-    if !(*ih).enabled || (*adev).shutdown { return -libc::ENODEV; }
+) -> kernel::ffi::c_int {
+    let timeout: kernel::ffi::c_long = HZ;
+    if !(*ih).enabled || (*adev).shutdown { return -ENODEV; }
     let checkpoint_wptr = amdgpu_ih_get_wptr(adev, ih);
     rmb();
     let checkpoint_ts = amdgpu_ih_decode_iv_ts(adev, ih, checkpoint_wptr, -1);
@@ -119,7 +119,7 @@ pub unsafe fn amdgpu_ih_wait_on_checkpoint_process_ts(
             || (*ih).rptr == amdgpu_ih_get_wptr(adev, ih), timeout)
 }
 
-pub unsafe fn amdgpu_ih_process(adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring) -> libc::c_int {
+pub unsafe fn amdgpu_ih_process(adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring) -> kernel::ffi::c_int {
     if !(*ih).enabled || (*adev).shutdown { return IRQ_NONE; }
     let mut wptr = amdgpu_ih_get_wptr(adev, ih);
     'restart_ih: loop {
@@ -171,7 +171,7 @@ pub unsafe fn amdgpu_ih_decode_iv_ts_helper(ih: *mut amdgpu_ih_ring, mut rptr: u
     dw1 as u64 | (((dw2 & 0xffff) as u64) << 32)
 }
 
-pub unsafe fn amdgpu_ih_ring_name(adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring) -> *const libc::c_char {
+pub unsafe fn amdgpu_ih_ring_name(adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring) -> *const kernel::ffi::c_char {
     if ih == &mut (*adev).irq.ih { b"ih\0".as_ptr() as *const _ }
     else if ih == &mut (*adev).irq.ih_soft { b"sw ih\0".as_ptr() as *const _ }
     else if ih == &mut (*adev).irq.ih1 { b"ih1\0".as_ptr() as *const _ }

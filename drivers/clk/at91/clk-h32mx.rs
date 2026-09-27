@@ -9,7 +9,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-pub const H32MX_MAX_FREQ: ::core::ffi::c_ulong = 90_000_000;
+pub const H32MX_MAX_FREQ: ::kernel::ffi::c_ulong = 90_000_000;
 
 #[repr(C)]
 pub struct clk_sama5d4_h32mx {
@@ -25,8 +25,8 @@ unsafe fn to_clk_sama5d4_h32mx(hw: *mut clk_hw) -> *mut clk_sama5d4_h32mx {
 
 unsafe extern "C" fn clk_sama5d4_h32mx_recalc_rate(
     hw: *mut clk_hw,
-    parent_rate: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_ulong {
+    parent_rate: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_ulong {
     let h32mxclk = &mut *to_clk_sama5d4_h32mx(hw);
     let mut mckr: u32 = 0;
 
@@ -46,7 +46,7 @@ unsafe extern "C" fn clk_sama5d4_h32mx_determine_rate(
     req: *mut clk_rate_request,
 ) -> i32 {
     let req = &mut *req;
-    let div: ::core::ffi::c_ulong;
+    let div: ::kernel::ffi::c_ulong;
 
     if req.rate > req.best_parent_rate {
         req.rate = req.best_parent_rate;
@@ -67,8 +67,8 @@ unsafe extern "C" fn clk_sama5d4_h32mx_determine_rate(
 
 unsafe extern "C" fn clk_sama5d4_h32mx_set_rate(
     hw: *mut clk_hw,
-    rate: ::core::ffi::c_ulong,
-    parent_rate: ::core::ffi::c_ulong,
+    rate: ::kernel::ffi::c_ulong,
+    parent_rate: ::kernel::ffi::c_ulong,
 ) -> i32 {
     let h32mxclk = &mut *to_clk_sama5d4_h32mx(hw);
     let mut mckr: u32 = 0;
@@ -92,8 +92,8 @@ pub static h32mx_ops: clk_ops = clk_ops {
 
 pub unsafe extern "C" fn at91_clk_register_h32mx(
     regmap: *mut regmap,
-    name: *const ::core::ffi::c_char,
-    parent_name: *const ::core::ffi::c_char,
+    name: *const ::kernel::ffi::c_char,
+    parent_name: *const ::kernel::ffi::c_char,
 ) -> *mut clk_hw {
     let h32mxclk = kzalloc_obj::<clk_sama5d4_h32mx>();
     if h32mxclk.is_null() {

@@ -46,7 +46,7 @@ pub struct amba_cs_uci_id {
     pub devarch: u32,
     pub devarch_mask: u32,
     pub devtype: u32,
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
 }
 
 /* define offsets for registers used by UCI */
@@ -105,12 +105,12 @@ extern "C" {
     pub fn __amba_driver_register(drv: *mut amba_driver, owner: *mut module) -> i32;
     pub fn amba_driver_unregister(drv: *mut amba_driver);
     pub fn dev_is_amba(dev: *const device) -> bool;
-    pub fn amba_device_alloc(name: *const core::ffi::c_char, size: resource_size_t, sz: usize) -> *mut amba_device;
+    pub fn amba_device_alloc(name: *const kernel::ffi::c_char, size: resource_size_t, sz: usize) -> *mut amba_device;
     pub fn amba_device_put(dev: *mut amba_device);
     pub fn amba_device_add(dev: *mut amba_device, res: *mut resource) -> i32;
     pub fn amba_device_register(dev: *mut amba_device, res: *mut resource) -> i32;
     pub fn amba_device_unregister(dev: *mut amba_device);
-    pub fn amba_request_regions(dev: *mut amba_device, name: *const core::ffi::c_char) -> i32;
+    pub fn amba_request_regions(dev: *mut amba_device, name: *const kernel::ffi::c_char) -> i32;
     pub fn amba_release_regions(dev: *mut amba_device);
 }
 

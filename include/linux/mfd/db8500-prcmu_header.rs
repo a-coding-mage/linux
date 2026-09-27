@@ -2,12 +2,12 @@
 /* Rust translation of db8500-prcmu.h. */
 
 // External kernel types and symbols are supplied by the surrounding translation.
-pub type bool = core::ffi::c_bool;
+pub type bool = kernel::ffi::c_bool;
 pub type s32 = i32;
-pub type u8 = core::ffi::c_uchar;
-pub type u16 = core::ffi::c_ushort;
-pub type u32 = core::ffi::c_uint;
-pub type unsigned_long = core::ffi::c_ulong;
+pub type u8 = kernel::ffi::c_uchar;
+pub type u16 = kernel::ffi::c_ushort;
+pub type u32 = kernel::ffi::c_uint;
+pub type unsigned_long = kernel::ffi::c_ulong;
 
 pub const DB8500_PRCM_LINE_VALUE: u32 = 0x170;
 pub const DB8500_PRCM_LINE_VALUE_HSI_CAWAKE0: u32 = 1 << 3;
@@ -67,7 +67,7 @@ pub const PRCMU_FW_PROJECT_U8500: u32 = 2; pub const PRCMU_FW_PROJECT_U8400: u32
 pub const PRCMU_QOS_APE_OPP: i32 = 1; pub const PRCMU_QOS_DDR_OPP: i32 = 2; pub const PRCMU_QOS_ARM_OPP: i32 = 3; pub const PRCMU_QOS_DEFAULT_VALUE: i32 = -1; pub const PRCMU_AUTO_PM_OFF: u8 = 0; pub const PRCMU_AUTO_PM_ON: u8 = 1; pub const PRCMU_AUTO_PM_POWER_ON_HSEM: u8 = 1; pub const PRCMU_AUTO_PM_POWER_ON_ABB_FIFO_IT: u8 = 2;
 pub type prcmu_auto_pm_policy = u32; pub const PRCMU_AUTO_PM_POLICY_NO_CHANGE: prcmu_auto_pm_policy = 0; pub const PRCMU_AUTO_PM_POLICY_DSP_OFF_HWP_OFF: prcmu_auto_pm_policy = 1; pub const PRCMU_AUTO_PM_POLICY_DSP_OFF_RAMRET_HWP_OFF: prcmu_auto_pm_policy = 2; pub const PRCMU_AUTO_PM_POLICY_DSP_CLK_OFF_HWP_OFF: prcmu_auto_pm_policy = 3; pub const PRCMU_AUTO_PM_POLICY_DSP_CLK_OFF_HWP_CLK_OFF: prcmu_auto_pm_policy = 4;
 
-#[repr(C)] pub struct prcmu_fw_version { pub project: u32, pub api_version: u8, pub func_version: u8, pub errata: u8, pub project_name: [core::ffi::c_char; PRCMU_FW_PROJECT_NAME_LEN] }
+#[repr(C)] pub struct prcmu_fw_version { pub project: u32, pub api_version: u8, pub func_version: u8, pub errata: u8, pub project_name: [kernel::ffi::c_char; PRCMU_FW_PROJECT_NAME_LEN] }
 #[repr(C)] pub struct prcmu_auto_pm_config { pub sia_auto_pm_enable: u8, pub sia_power_on: u8, pub sia_policy: u8, pub sva_auto_pm_enable: u8, pub sva_power_on: u8, pub sva_policy: u8 }
 
 // CONFIG_MFD_DB8500_PRCMU controls whether these are external kernel functions or inline no-op stubs.
@@ -95,12 +95,12 @@ extern "C" {
     pub fn prcmu_abb_write_masked(slave: u8, reg: u8, value: *mut u8, mask: *mut u8, size: u8) -> i32;
     pub fn prcmu_ac_wake_req() -> i32; pub fn prcmu_ac_sleep_req(); pub fn db8500_prcmu_modem_reset();
     pub fn db8500_prcmu_config_a9wdog(num: u8, sleep_auto_off: bool) -> i32; pub fn db8500_prcmu_enable_a9wdog(id: u8) -> i32; pub fn db8500_prcmu_disable_a9wdog(id: u8) -> i32; pub fn db8500_prcmu_kick_a9wdog(id: u8) -> i32; pub fn db8500_prcmu_load_a9wdog(id: u8, val: u32) -> i32;
-    pub fn db8500_prcmu_system_reset(reset_code: u16); pub fn db8500_prcmu_set_power_state(state: u8, keep_ulp_clk: bool, keep_ap_pll: bool) -> i32; pub fn db8500_prcmu_get_power_state_result() -> u8; pub fn db8500_prcmu_enable_wakeups(wakeups: u32); pub fn db8500_prcmu_set_epod(epod_id: u16, epod_state: u8) -> i32; pub fn db8500_prcmu_request_clock(clock: u8, enable: bool) -> i32; pub fn db8500_prcmu_config_abb_event_readout(abb_events: u32); pub fn db8500_prcmu_get_abb_event_buffer(buf: *mut *mut core::ffi::c_void); pub fn db8500_prcmu_config_esram0_deep_sleep(state: u8) -> i32; pub fn db8500_prcmu_get_reset_code() -> u16; pub fn db8500_prcmu_is_ac_wake_requested() -> bool; pub fn db8500_prcmu_set_arm_opp(opp: u8) -> i32; pub fn db8500_prcmu_get_arm_opp() -> i32; pub fn db8500_prcmu_set_ape_opp(opp: u8) -> i32; pub fn db8500_prcmu_get_ape_opp() -> i32; pub fn db8500_prcmu_request_ape_opp_100_voltage(enable: bool) -> i32; pub fn db8500_prcmu_get_ddr_opp() -> i32;
+    pub fn db8500_prcmu_system_reset(reset_code: u16); pub fn db8500_prcmu_set_power_state(state: u8, keep_ulp_clk: bool, keep_ap_pll: bool) -> i32; pub fn db8500_prcmu_get_power_state_result() -> u8; pub fn db8500_prcmu_enable_wakeups(wakeups: u32); pub fn db8500_prcmu_set_epod(epod_id: u16, epod_state: u8) -> i32; pub fn db8500_prcmu_request_clock(clock: u8, enable: bool) -> i32; pub fn db8500_prcmu_config_abb_event_readout(abb_events: u32); pub fn db8500_prcmu_get_abb_event_buffer(buf: *mut *mut kernel::ffi::c_void); pub fn db8500_prcmu_config_esram0_deep_sleep(state: u8) -> i32; pub fn db8500_prcmu_get_reset_code() -> u16; pub fn db8500_prcmu_is_ac_wake_requested() -> bool; pub fn db8500_prcmu_set_arm_opp(opp: u8) -> i32; pub fn db8500_prcmu_get_arm_opp() -> i32; pub fn db8500_prcmu_set_ape_opp(opp: u8) -> i32; pub fn db8500_prcmu_get_ape_opp() -> i32; pub fn db8500_prcmu_request_ape_opp_100_voltage(enable: bool) -> i32; pub fn db8500_prcmu_get_ddr_opp() -> i32;
     pub fn db8500_prcmu_read(reg: u32) -> u32; pub fn db8500_prcmu_write(reg: u32, value: u32); pub fn db8500_prcmu_write_masked(reg: u32, mask: u32, value: u32);
 }
 
-#[inline] pub fn prcmu_qos_add_requirement(_: i32, _: *mut core::ffi::c_char, _: i32) -> i32 { 0 }
-#[inline] pub fn prcmu_qos_update_requirement(_: i32, _: *mut core::ffi::c_char, _: i32) -> i32 { 0 }
-#[inline] pub fn prcmu_qos_remove_requirement(_: i32, _: *mut core::ffi::c_char) {}
+#[inline] pub fn prcmu_qos_add_requirement(_: i32, _: *mut kernel::ffi::c_char, _: i32) -> i32 { 0 }
+#[inline] pub fn prcmu_qos_update_requirement(_: i32, _: *mut kernel::ffi::c_char, _: i32) -> i32 { 0 }
+#[inline] pub fn prcmu_qos_remove_requirement(_: i32, _: *mut kernel::ffi::c_char) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

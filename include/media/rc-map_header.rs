@@ -81,11 +81,11 @@ pub struct rc_map_table { pub scancode: u64, pub keycode: u32 }
 #[repr(C)]
 pub struct rc_map {
     pub scan: *mut rc_map_table,
-    pub size: core::ffi::c_uint,
-    pub len: core::ffi::c_uint,
-    pub alloc: core::ffi::c_uint,
+    pub size: kernel::ffi::c_uint,
+    pub len: kernel::ffi::c_uint,
+    pub alloc: kernel::ffi::c_uint,
     pub rc_proto: rc_proto,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub lock: spinlock_t,
 }
 
@@ -96,9 +96,9 @@ pub struct rc_map_list { pub list: list_head, pub map: rc_map }
 extern "C" { pub static mut cec_map: rc_map_list; }
 
 extern "C" {
-    pub fn rc_map_register(map: *mut rc_map_list) -> core::ffi::c_int;
+    pub fn rc_map_register(map: *mut rc_map_list) -> kernel::ffi::c_int;
     pub fn rc_map_unregister(map: *mut rc_map_list);
-    pub fn rc_map_get(name: *const core::ffi::c_char) -> *mut rc_map;
+    pub fn rc_map_get(name: *const kernel::ffi::c_char) -> *mut rc_map;
 }
 
 // Names of the several keytables defined in-kernel

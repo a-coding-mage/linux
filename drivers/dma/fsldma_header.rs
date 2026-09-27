@@ -77,7 +77,7 @@ pub struct fsldma_chan_regs { pub mr: u32, pub sr: u32, pub cdar: u64, pub sar: 
 pub struct fsldma_chan;
 pub const FSL_DMA_MAX_CHANS_PER_DEVICE: usize = 8;
 #[repr(C)]
-pub struct fsldma_device { pub regs: *mut core::ffi::c_void, pub dev: *mut device, pub common: dma_device, pub chan: [*mut fsldma_chan; FSL_DMA_MAX_CHANS_PER_DEVICE], pub feature: u32, pub irq: i32, pub addr_bits: i32 }
+pub struct fsldma_device { pub regs: *mut kernel::ffi::c_void, pub dev: *mut device, pub common: dma_device, pub chan: [*mut fsldma_chan; FSL_DMA_MAX_CHANS_PER_DEVICE], pub feature: u32, pub irq: i32, pub addr_bits: i32 }
 
 pub const FSL_DMA_LITTLE_ENDIAN: u32 = 0;
 pub const FSL_DMA_BIG_ENDIAN: u32 = 1;
@@ -94,7 +94,7 @@ pub const FSL_DMA_CHAN_START_EXT: u32 = 0x2000;
 
 #[repr(C)]
 pub struct fsldma_chan {
-    pub name: [core::ffi::c_char; 8], pub regs: *mut fsldma_chan_regs, pub desc_lock: spinlock_t,
+    pub name: [kernel::ffi::c_char; 8], pub regs: *mut fsldma_chan_regs, pub desc_lock: spinlock_t,
     pub ld_pending: list_head, pub ld_running: list_head, pub ld_completed: list_head,
     pub common: dma_chan, pub desc_pool: *mut dma_pool, pub dev: *mut device,
     pub irq: i32, pub id: i32, pub tasklet: tasklet_struct, pub feature: u32, pub idle: bool,

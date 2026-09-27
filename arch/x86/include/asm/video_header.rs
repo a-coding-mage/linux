@@ -8,9 +8,9 @@ pub struct device;
 unsafe extern "C" {
     pub fn pgprot_framebuffer(
         prot: pgprot_t,
-        vm_start: ::core::ffi::c_ulong,
-        vm_end: ::core::ffi::c_ulong,
-        offset: ::core::ffi::c_ulong,
+        vm_start: ::kernel::ffi::c_ulong,
+        vm_end: ::kernel::ffi::c_ulong,
+        offset: ::kernel::ffi::c_ulong,
     ) -> pgprot_t;
 }
 

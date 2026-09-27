@@ -99,7 +99,7 @@ pub struct IopMsg {
     pub next: *mut IopMsg,
     pub iop_num: u32,
     pub channel: u32,
-    pub caller_priv: *mut core::ffi::c_void,
+    pub caller_priv: *mut kernel::ffi::c_void,
     pub status: i32,
     pub message: [u8; IOP_MSG_LEN],
     pub reply: [u8; IOP_MSG_LEN],
@@ -109,8 +109,8 @@ pub struct IopMsg {
 extern "C" {
     pub static mut iop_scc_present: i32;
     pub static mut iop_ism_present: i32;
-    pub fn iop_listen(iop_num: u32, channel: u32, handler: Option<unsafe extern "C" fn(*mut IopMsg)>, name: *const core::ffi::c_char) -> i32;
-    pub fn iop_send_message(iop_num: u32, channel: u32, priv_data: *mut core::ffi::c_void, length: u32, message: *mut u8, handler: Option<unsafe extern "C" fn(*mut IopMsg)>) -> i32;
+    pub fn iop_listen(iop_num: u32, channel: u32, handler: Option<unsafe extern "C" fn(*mut IopMsg)>, name: *const kernel::ffi::c_char) -> i32;
+    pub fn iop_send_message(iop_num: u32, channel: u32, priv_data: *mut kernel::ffi::c_void, length: u32, message: *mut u8, handler: Option<unsafe extern "C" fn(*mut IopMsg)>) -> i32;
     pub fn iop_complete_message(message: *mut IopMsg);
     pub fn iop_upload_code(iop_num: u32, code: *mut u8, length: u32, offset: u16);
     pub fn iop_download_code(iop_num: u32, code: *mut u8, length: u32, offset: u16);

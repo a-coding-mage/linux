@@ -9,15 +9,15 @@
 
 pub unsafe fn v9fs_cache_session_get_cookie(
     v9ses: *mut v9fs_session_info,
-    dev_name: *const ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
+    dev_name: *const ::kernel::ffi::c_char,
+) -> ::kernel::ffi::c_int {
     let mut vcookie: *mut fscache_volume;
-    let name: *mut ::core::ffi::c_char;
-    let mut p: *mut ::core::ffi::c_char;
+    let name: *mut ::kernel::ffi::c_char;
+    let mut p: *mut ::kernel::ffi::c_char;
 
     name = kasprintf(
         GFP_KERNEL,
-        b"9p,%s,%s\0".as_ptr() as *const ::core::ffi::c_char,
+        b"9p,%s,%s\0".as_ptr() as *const ::kernel::ffi::c_char,
         dev_name,
         if (*v9ses).cachetag.is_null() {
             (*v9ses).aname
@@ -31,8 +31,8 @@ pub unsafe fn v9fs_cache_session_get_cookie(
 
     p = name;
     while *p != 0 {
-        if *p == b'/' as ::core::ffi::c_char {
-            *p = b';' as ::core::ffi::c_char;
+        if *p == b'/' as ::kernel::ffi::c_char {
+            *p = b';' as ::kernel::ffi::c_char;
         }
         p = p.add(1);
     }
@@ -40,25 +40,25 @@ pub unsafe fn v9fs_cache_session_get_cookie(
     vcookie = fscache_acquire_volume(name, core::ptr::null_mut(), core::ptr::null_mut(), 0);
     p9_debug(
         P9_DEBUG_FSC,
-        b"session %p get volume %p (%s)\n\0".as_ptr() as *const ::core::ffi::c_char,
+        b"session %p get volume %p (%s)\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         v9ses,
         vcookie,
         name,
     );
     if IS_ERR(vcookie) {
         if vcookie != ERR_PTR(-EBUSY) {
-            kfree(name as *mut ::core::ffi::c_void);
+            kfree(name as *mut ::kernel::ffi::c_void);
             return PTR_ERR(vcookie);
         }
         pr_err(
             b"Cache volume key already in use (%s)\n\0".as_ptr()
-                as *const ::core::ffi::c_char,
+                as *const ::kernel::ffi::c_char,
             name,
         );
         vcookie = core::ptr::null_mut();
     }
     (*v9ses).fscache = vcookie;
-    kfree(name as *mut ::core::ffi::c_void);
+    kfree(name as *mut ::kernel::ffi::c_void);
     0
 }
 
@@ -81,9 +81,9 @@ pub unsafe fn v9fs_cache_inode_get_cookie(inode: *mut inode) {
     (*v9inode).netfs.cache = fscache_acquire_cookie(
         v9fs_session_cache(v9ses),
         0,
-        &path as *const __le64 as *const ::core::ffi::c_void,
+        &path as *const __le64 as *const ::kernel::ffi::c_void,
         core::mem::size_of::<__le64>(),
-        &version as *const __le32 as *const ::core::ffi::c_void,
+        &version as *const __le32 as *const ::kernel::ffi::c_void,
         core::mem::size_of::<__le32>(),
         i_size_read(&mut (*v9inode).netfs.inode),
     );
@@ -93,7 +93,7 @@ pub unsafe fn v9fs_cache_inode_get_cookie(inode: *mut inode) {
 
     p9_debug(
         P9_DEBUG_FSC,
-        b"inode %p get cookie %p\n\0".as_ptr() as *const ::core::ffi::c_char,
+        b"inode %p get cookie %p\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         inode,
         v9fs_inode_cookie(v9inode),
     );

@@ -5,7 +5,7 @@
 
 // Dependencies supplied by the corresponding kernel/Rust bindings.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 const PLL_LOCK_TIMEOUT_US: u32 = 200 * 1000;
 
@@ -19,8 +19,8 @@ extern "C" {
         timeout_us: u32,
     ) -> i32;
     fn writel(value: u32, addr: *mut u8);
-    fn spin_lock_irqsave(lock: *mut core::ffi::c_void, flags: *mut c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut core::ffi::c_void, flags: c_ulong);
+    fn spin_lock_irqsave(lock: *mut kernel::ffi::c_void, flags: *mut c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut kernel::ffi::c_void, flags: c_ulong);
     fn warn_on(condition: bool) -> bool;
 }
 
@@ -33,7 +33,7 @@ pub struct cv1800_clk_regbit {
 #[repr(C)]
 pub struct cv1800_clk_common {
     pub base: *mut u8,
-    pub lock: *mut core::ffi::c_void,
+    pub lock: *mut kernel::ffi::c_void,
 }
 
 pub unsafe fn cv1800_clk_setbit(

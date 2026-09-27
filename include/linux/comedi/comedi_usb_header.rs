@@ -26,14 +26,14 @@ extern "C" {
     pub fn comedi_usb_auto_config(
         intf: *mut usb_interface,
         driver: *mut comedi_driver,
-        context: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        context: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
     pub fn comedi_usb_auto_unconfig(intf: *mut usb_interface);
 
     pub fn comedi_usb_driver_register(
         comedi_driver: *mut comedi_driver,
         usb_driver: *mut usb_driver,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn comedi_usb_driver_unregister(
         comedi_driver: *mut comedi_driver,
         usb_driver: *mut usb_driver,

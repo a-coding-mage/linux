@@ -20,15 +20,15 @@ pub const IMX_CHIP_REVISION_3_3: u32 = 0x33;
 pub const IMX_CHIP_REVISION_UNKNOWN: u32 = 0xff;
 
 unsafe extern "C" {
-    pub fn mx25_revision() -> ::core::ffi::c_int;
-    pub fn mx27_revision() -> ::core::ffi::c_int;
-    pub fn mx31_revision() -> ::core::ffi::c_int;
-    pub fn mx35_revision() -> ::core::ffi::c_int;
-    pub fn mx51_revision() -> ::core::ffi::c_int;
-    pub fn mx53_revision() -> ::core::ffi::c_int;
+    pub fn mx25_revision() -> ::kernel::ffi::c_int;
+    pub fn mx27_revision() -> ::kernel::ffi::c_int;
+    pub fn mx31_revision() -> ::kernel::ffi::c_int;
+    pub fn mx35_revision() -> ::kernel::ffi::c_int;
+    pub fn mx51_revision() -> ::kernel::ffi::c_int;
+    pub fn mx53_revision() -> ::kernel::ffi::c_int;
 
-    pub fn imx_get_soc_revision() -> ::core::ffi::c_uint;
-    pub fn imx_print_silicon_rev(cpu: *const ::core::ffi::c_char, srev: ::core::ffi::c_int);
+    pub fn imx_get_soc_revision() -> ::kernel::ffi::c_uint;
+    pub fn imx_print_silicon_rev(cpu: *const ::kernel::ffi::c_char, srev: ::kernel::ffi::c_int);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -22,7 +22,7 @@
  */
 
 unsafe extern "C" {
-    pub static soc_v1_0_ih_clientid_name: [*const core::ffi::c_char; 0];
+    pub static soc_v1_0_ih_clientid_name: [*const kernel::ffi::c_char; 0];
 }
 
 #[repr(i32)]

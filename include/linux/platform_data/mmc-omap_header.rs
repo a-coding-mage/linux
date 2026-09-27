@@ -81,7 +81,7 @@ pub struct omap_mmc_slot_data {
      */
     pub get_cover_state: Option<unsafe extern "C" fn(*mut device, i32) -> i32>,
 
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ocr_mask: u32,
 
     /* Card detection */

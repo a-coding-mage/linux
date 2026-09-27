@@ -22,12 +22,12 @@ extern "C" {
     fn spin_lock(lock: *mut spinlock_t);
     fn atomic_dec_and_test(atomic: *mut atomic_t) -> i32;
     fn spin_unlock(lock: *mut spinlock_t);
-    fn spin_lock_irqsave(lock: *mut spinlock_t, flags: ::core::ffi::c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: ::core::ffi::c_ulong);
+    fn spin_lock_irqsave(lock: *mut spinlock_t, flags: ::kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: ::kernel::ffi::c_ulong);
     fn raw_spin_lock(lock: *mut raw_spinlock_t);
     fn raw_spin_unlock(lock: *mut raw_spinlock_t);
-    fn raw_spin_lock_irqsave(lock: *mut raw_spinlock_t, flags: ::core::ffi::c_ulong);
-    fn raw_spin_unlock_irqrestore(lock: *mut raw_spinlock_t, flags: ::core::ffi::c_ulong);
+    fn raw_spin_lock_irqsave(lock: *mut raw_spinlock_t, flags: ::kernel::ffi::c_ulong);
+    fn raw_spin_unlock_irqrestore(lock: *mut raw_spinlock_t, flags: ::kernel::ffi::c_ulong);
 }
 
 // This is an implementation of the notion of "decrement a
@@ -68,7 +68,7 @@ pub unsafe extern "C" fn atomic_dec_and_lock(
 pub unsafe extern "C" fn _atomic_dec_and_lock_irqsave(
     atomic: *mut atomic_t,
     lock: *mut spinlock_t,
-    flags: *mut ::core::ffi::c_ulong,
+    flags: *mut ::kernel::ffi::c_ulong,
 ) -> i32 {
     // Subtract 1 from counter unless that drops it to 0 (ie. it was 1)
     if atomic_add_unless(atomic, -1, 1) != 0 {
@@ -111,7 +111,7 @@ pub unsafe extern "C" fn atomic_dec_and_raw_lock(
 pub unsafe extern "C" fn _atomic_dec_and_raw_lock_irqsave(
     atomic: *mut atomic_t,
     lock: *mut raw_spinlock_t,
-    flags: *mut ::core::ffi::c_ulong,
+    flags: *mut ::kernel::ffi::c_ulong,
 ) -> i32 {
     // Subtract 1 from counter unless that drops it to 0 (ie. it was 1)
     if atomic_add_unless(atomic, -1, 1) != 0 {

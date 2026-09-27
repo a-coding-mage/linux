@@ -13,7 +13,7 @@
 /*
  * Allocates a new page and creates a new grant reference.
  */
-pub const IOCTL_GNTALLOC_ALLOC_GREF: _ = _IOC(_IOC_NONE, 'G', 5, core::mem::size_of::<ioctl_gntalloc_alloc_gref>());
+pub const IOCTL_GNTALLOC_ALLOC_GREF: u32 = _IOC(_IOC_NONE, 'G', 5, core::mem::size_of::<ioctl_gntalloc_alloc_gref>());
 
 #[repr(C)]
 pub struct ioctl_gntalloc_alloc_gref {
@@ -44,7 +44,7 @@ pub const GNTALLOC_FLAG_WRITABLE: u32 = 1;
  * Deallocates the grant reference, allowing the associated page to be freed if
  * no other domains are using it.
  */
-pub const IOCTL_GNTALLOC_DEALLOC_GREF: _ = _IOC(_IOC_NONE, 'G', 6, core::mem::size_of::<ioctl_gntalloc_dealloc_gref>());
+pub const IOCTL_GNTALLOC_DEALLOC_GREF: u32 = _IOC(_IOC_NONE, 'G', 6, core::mem::size_of::<ioctl_gntalloc_dealloc_gref>());
 
 #[repr(C)]
 pub struct ioctl_gntalloc_dealloc_gref {
@@ -65,7 +65,7 @@ pub struct ioctl_gntalloc_dealloc_gref {
  * notification prior to the IOCTL_GNTALLOC_DEALLOC_GREF if you do not want it
  * to occur.
  */
-pub const IOCTL_GNTALLOC_SET_UNMAP_NOTIFY: _ = _IOC(_IOC_NONE, 'G', 7, core::mem::size_of::<ioctl_gntalloc_unmap_notify>());
+pub const IOCTL_GNTALLOC_SET_UNMAP_NOTIFY: u32 = _IOC(_IOC_NONE, 'G', 7, core::mem::size_of::<ioctl_gntalloc_unmap_notify>());
 
 #[repr(C)]
 pub struct ioctl_gntalloc_unmap_notify {

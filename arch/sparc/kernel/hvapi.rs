@@ -8,14 +8,14 @@
 
 #[repr(C)]
 struct ApiInfo {
-    group: libc::c_ulong,
-    major: libc::c_ulong,
-    minor: libc::c_ulong,
-    refcnt: libc::c_uint,
-    flags: libc::c_uint,
+    group: kernel::ffi::c_ulong,
+    major: kernel::ffi::c_ulong,
+    minor: kernel::ffi::c_ulong,
+    refcnt: kernel::ffi::c_uint,
+    flags: kernel::ffi::c_uint,
 }
 
-const FLAG_PRE_API: libc::c_uint = 0x00000001;
+const FLAG_PRE_API: kernel::ffi::c_uint = 0x00000001;
 
 static mut API_TABLE: [ApiInfo; 26] = [
     ApiInfo { group: HV_GRP_SUN4V, flags: FLAG_PRE_API, major: 0, minor: 0, refcnt: 0 },
@@ -49,7 +49,7 @@ static mut API_TABLE: [ApiInfo; 26] = [
 
 static mut HVAPI_LOCK: Spinlock = DEFINE_SPINLOCK!();
 
-unsafe fn __get_info(group: libc::c_ulong) -> *mut ApiInfo {
+unsafe fn __get_info(group: kernel::ffi::c_ulong) -> *mut ApiInfo {
     let mut i = 0;
     while i < API_TABLE.len() {
         if API_TABLE[i].group == group { return &mut API_TABLE[i]; }
@@ -70,7 +70,7 @@ unsafe fn __put_ref(p: *mut ApiInfo) {
     }
 }
 
-pub unsafe fn sun4v_hvapi_register(group: libc::c_ulong, major: libc::c_ulong, minor: *mut libc::c_ulong) -> libc::c_int {
+pub unsafe fn sun4v_hvapi_register(group: kernel::ffi::c_ulong, major: kernel::ffi::c_ulong, minor: *mut kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     let mut flags = 0;
     spin_lock_irqsave(&mut HVAPI_LOCK, &mut flags);
     let p = __get_info(group);
@@ -92,7 +92,7 @@ pub unsafe fn sun4v_hvapi_register(group: libc::c_ulong, major: libc::c_ulong, m
     ret
 }
 
-pub unsafe fn sun4v_hvapi_unregister(group: libc::c_ulong) {
+pub unsafe fn sun4v_hvapi_unregister(group: kernel::ffi::c_ulong) {
     let mut flags = 0;
     spin_lock_irqsave(&mut HVAPI_LOCK, &mut flags);
     let p = __get_info(group);
@@ -100,7 +100,7 @@ pub unsafe fn sun4v_hvapi_unregister(group: libc::c_ulong) {
     spin_unlock_irqrestore(&mut HVAPI_LOCK, flags);
 }
 
-pub unsafe fn sun4v_hvapi_get(group: libc::c_ulong, major: *mut libc::c_ulong, minor: *mut libc::c_ulong) -> libc::c_int {
+pub unsafe fn sun4v_hvapi_get(group: kernel::ffi::c_ulong, major: *mut kernel::ffi::c_ulong, minor: *mut kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     let mut flags = 0;
     spin_lock_irqsave(&mut HVAPI_LOCK, &mut flags);
     let p = __get_info(group);
@@ -119,7 +119,7 @@ pub unsafe fn sun4v_hvapi_init() {
     if sun4v_hvapi_register(group, major, &mut minor) != 0 { goto_bad(group, major, minor); }
 }
 
-unsafe fn goto_bad(group: libc::c_ulong, major: libc::c_ulong, minor: libc::c_ulong) -> ! {
+unsafe fn goto_bad(group: kernel::ffi::c_ulong, major: kernel::ffi::c_ulong, minor: kernel::ffi::c_ulong) -> ! {
     prom_printf(b"HVAPI: Cannot register API group %lx with major(%lu) minor(%lu)\n\0".as_ptr(), group, major, minor);
     prom_halt();
     core::hint::unreachable_unchecked()

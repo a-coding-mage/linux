@@ -4,14 +4,14 @@
 
 static mut FORCE_GPT: i32 = 0;
 
-unsafe extern "C" fn force_gpt_fn(_str: *mut core::ffi::c_char) -> i32 {
+unsafe extern "C" fn force_gpt_fn(_str: *mut kernel::ffi::c_char) -> i32 {
     FORCE_GPT = 1;
     1
 }
 
 #[inline]
-unsafe fn efi_crc32(buf: *const core::ffi::c_void, len: libc::c_ulong) -> u32 {
-    crc32(!0u64 as libc::c_ulong, buf, len) ^ !0u64 as libc::c_ulong
+unsafe fn efi_crc32(buf: *const kernel::ffi::c_void, len: kernel::ffi::c_ulong) -> u32 {
+    crc32(!0u64 as kernel::ffi::c_ulong, buf, len) ^ !0u64 as kernel::ffi::c_ulong
 }
 
 unsafe fn last_lba(disk: *mut gendisk) -> u64 {
@@ -95,7 +95,7 @@ unsafe fn alloc_read_gpt_entries(state: *mut parsed_partitions, gpt: *mut gpt_he
     let pte = kmalloc(count, GFP_KERNEL) as *mut gpt_entry;
     if pte.is_null() { return core::ptr::null_mut(); }
     if read_lba(state, le64_to_cpu((*gpt).partition_entry_lba), pte as *mut u8, count) < count {
-        kfree(pte as *mut core::ffi::c_void);
+        kfree(pte as *mut kernel::ffi::c_void);
         return core::ptr::null_mut();
     }
     pte
@@ -106,7 +106,7 @@ unsafe fn alloc_read_gpt_header(state: *mut parsed_partitions, lba: u64) -> *mut
     let gpt = kmalloc(ssz, GFP_KERNEL) as *mut gpt_header;
     if gpt.is_null() { return core::ptr::null_mut(); }
     if read_lba(state, lba, gpt as *mut u8, ssz) < ssz {
-        kfree(gpt as *mut core::ffi::c_void);
+        kfree(gpt as *mut kernel::ffi::c_void);
         return core::ptr::null_mut();
     }
     gpt
@@ -123,7 +123,7 @@ unsafe fn is_gpt_valid(state: *mut parsed_partitions, lba: u64, gpt: *mut *mut g
     { goto_fail(gpt, ptes); return 0; }
     let origcrc = le32_to_cpu((*h).header_crc32);
     (*h).header_crc32 = 0;
-    let crc = efi_crc32(h as *const core::ffi::c_void, le32_to_cpu((*h).header_size) as libc::c_ulong) as u32;
+    let crc = efi_crc32(h as *const kernel::ffi::c_void, le32_to_cpu((*h).header_size) as kernel::ffi::c_ulong) as u32;
     (*h).header_crc32 = cpu_to_le32(origcrc);
     if crc != origcrc || le64_to_cpu((*h).my_lba) != lba { goto_fail(gpt, ptes); return 0; }
     let lastlba = last_lba((*state).disk);
@@ -135,17 +135,17 @@ unsafe fn is_gpt_valid(state: *mut parsed_partitions, lba: u64, gpt: *mut *mut g
     let pt_size = le32_to_cpu((*h).num_partition_entries) as u64 * le32_to_cpu((*h).sizeof_partition_entry) as u64;
     if pt_size > KMALLOC_MAX_SIZE as u64 { goto_fail(gpt, ptes); return 0; }
     *ptes = alloc_read_gpt_entries(state, h);
-    if (*ptes).is_null() || efi_crc32(*ptes as *const core::ffi::c_void, pt_size as libc::c_ulong) as u32 != le32_to_cpu((*h).partition_entry_array_crc32) {
-        if !(*ptes).is_null() { kfree(*ptes as *mut core::ffi::c_void); *ptes = core::ptr::null_mut(); }
-        kfree(*gpt as *mut core::ffi::c_void); *gpt = core::ptr::null_mut();
+    if (*ptes).is_null() || efi_crc32(*ptes as *const kernel::ffi::c_void, pt_size as kernel::ffi::c_ulong) as u32 != le32_to_cpu((*h).partition_entry_array_crc32) {
+        if !(*ptes).is_null() { kfree(*ptes as *mut kernel::ffi::c_void); *ptes = core::ptr::null_mut(); }
+        kfree(*gpt as *mut kernel::ffi::c_void); *gpt = core::ptr::null_mut();
         return 0;
     }
     1
 }
 
 unsafe fn goto_fail(gpt: *mut *mut gpt_header, ptes: *mut *mut gpt_entry) {
-    if !(*ptes).is_null() { kfree(*ptes as *mut core::ffi::c_void); *ptes = core::ptr::null_mut(); }
-    if !(*gpt).is_null() { kfree(*gpt as *mut core::ffi::c_void); *gpt = core::ptr::null_mut(); }
+    if !(*ptes).is_null() { kfree(*ptes as *mut kernel::ffi::c_void); *ptes = core::ptr::null_mut(); }
+    if !(*gpt).is_null() { kfree(*gpt as *mut kernel::ffi::c_void); *gpt = core::ptr::null_mut(); }
 }
 
 #[inline]
@@ -177,7 +177,7 @@ unsafe fn find_valid_gpt(state: *mut parsed_partitions, gpt: *mut *mut gpt_heade
         let legacymbr = kzalloc(core::mem::size_of::<legacy_mbr>(), GFP_KERNEL) as *mut legacy_mbr;
         if legacymbr.is_null() { return 0; }
         read_lba(state, 0, legacymbr as *mut u8, core::mem::size_of::<legacy_mbr>());
-        let good = is_pmbr_valid(legacymbr, get_capacity(disk)); kfree(legacymbr as *mut core::ffi::c_void);
+        let good = is_pmbr_valid(legacymbr, get_capacity(disk)); kfree(legacymbr as *mut kernel::ffi::c_void);
         if good == 0 { return 0; }
     }
     let good_pgpt = is_gpt_valid(state, GPT_PRIMARY_PARTITION_TABLE_LBA, &mut pgpt, &mut pptes);
@@ -186,8 +186,8 @@ unsafe fn find_valid_gpt(state: *mut parsed_partitions, gpt: *mut *mut gpt_heade
     if good_agpt == 0 && FORCE_GPT != 0 { good_agpt = is_gpt_valid(state, lastlba, &mut agpt, &mut aptes); }
     if good_pgpt == 0 && good_agpt == 0 { goto_fail(&mut pgpt, &mut pptes); goto_fail(&mut agpt, &mut aptes); *gpt = core::ptr::null_mut(); *ptes = core::ptr::null_mut(); return 0; }
     compare_gpts(pgpt, agpt, lastlba);
-    if good_pgpt != 0 { *gpt = pgpt; *ptes = pptes; kfree(agpt as *mut core::ffi::c_void); kfree(aptes as *mut core::ffi::c_void); }
-    else { *gpt = agpt; *ptes = aptes; kfree(pgpt as *mut core::ffi::c_void); kfree(pptes as *mut core::ffi::c_void); }
+    if good_pgpt != 0 { *gpt = pgpt; *ptes = pptes; kfree(agpt as *mut kernel::ffi::c_void); kfree(aptes as *mut kernel::ffi::c_void); }
+    else { *gpt = agpt; *ptes = aptes; kfree(pgpt as *mut kernel::ffi::c_void); kfree(pptes as *mut kernel::ffi::c_void); }
     1
 }
 
@@ -203,7 +203,7 @@ unsafe fn utf16_le_to_7bit(input: *const __le16, size: u32, out: *mut u8) {
 pub unsafe fn efi_partition(state: *mut parsed_partitions) -> i32 {
     let mut gpt = core::ptr::null_mut(); let mut ptes = core::ptr::null_mut();
     let ssz = queue_logical_block_size((*state).disk.queue) / 512;
-    if find_valid_gpt(state, &mut gpt, &mut ptes) == 0 || gpt.is_null() || ptes.is_null() { kfree(gpt as *mut core::ffi::c_void); kfree(ptes as *mut core::ffi::c_void); return 0; }
+    if find_valid_gpt(state, &mut gpt, &mut ptes) == 0 || gpt.is_null() || ptes.is_null() { kfree(gpt as *mut kernel::ffi::c_void); kfree(ptes as *mut kernel::ffi::c_void); return 0; }
     for i in 0..le32_to_cpu((*gpt).num_partition_entries).min((*state).limit - 1) {
         let pte = ptes.add(i as usize);
         if is_pte_valid(pte, last_lba((*state).disk)) == 0 { continue; }
@@ -216,7 +216,7 @@ pub unsafe fn efi_partition(state: *mut parsed_partitions) -> i32 {
         utf16_le_to_7bit((*pte).partition_name.as_ptr(), label_max as u32, info.volname.as_mut_ptr());
         (*state).parts.add((i + 1) as usize).as_mut().unwrap().has_info = true;
     }
-    kfree(ptes as *mut core::ffi::c_void); kfree(gpt as *mut core::ffi::c_void);
+    kfree(ptes as *mut kernel::ffi::c_void); kfree(gpt as *mut kernel::ffi::c_void);
     seq_buf_puts(&mut (*state).pp_buf, "\n");
     1
 }

@@ -9,7 +9,7 @@ extern "C" {
 
 #[cfg(CONFIG_HRTIMER_REARM_DEFERRED)]
 #[inline(always)]
-pub unsafe fn hrtimer_test_and_clear_rearm_deferred_tif(tif_work: libc::c_ulong) -> bool {
+pub unsafe fn hrtimer_test_and_clear_rearm_deferred_tif(tif_work: kernel::ffi::c_ulong) -> bool {
     // lockdep_assert_irqs_disabled();
 
     if (tif_work & _TIF_HRTIMER_REARM) != 0 {
@@ -20,14 +20,14 @@ pub unsafe fn hrtimer_test_and_clear_rearm_deferred_tif(tif_work: libc::c_ulong)
 }
 
 #[cfg(CONFIG_HRTIMER_REARM_DEFERRED)]
-pub const TIF_REARM_MASK: libc::c_ulong =
+pub const TIF_REARM_MASK: kernel::ffi::c_ulong =
     _TIF_NEED_RESCHED | _TIF_NEED_RESCHED_LAZY | _TIF_HRTIMER_REARM;
 
 #[cfg(CONFIG_HRTIMER_REARM_DEFERRED)]
 #[inline(always)]
 pub unsafe fn hrtimer_rearm_deferred_user_irq(
-    tif_work: *mut libc::c_ulong,
-    tif_mask: libc::c_ulong,
+    tif_work: *mut kernel::ffi::c_ulong,
+    tif_mask: kernel::ffi::c_ulong,
 ) -> bool {
     if (tif_mask & _TIF_HRTIMER_REARM) == 0 {
         return false;
@@ -43,7 +43,7 @@ pub unsafe fn hrtimer_rearm_deferred_user_irq(
 
 #[cfg(CONFIG_HRTIMER_REARM_DEFERRED)]
 #[inline(always)]
-pub unsafe fn hrtimer_rearm_deferred_tif(tif_work: libc::c_ulong) {
+pub unsafe fn hrtimer_rearm_deferred_tif(tif_work: kernel::ffi::c_ulong) {
     if hrtimer_test_and_clear_rearm_deferred_tif(tif_work) {
         __hrtimer_rearm_deferred();
     }
@@ -71,13 +71,13 @@ pub unsafe fn hrtimer_rearm_deferred() {}
 
 #[cfg(not(CONFIG_HRTIMER_REARM_DEFERRED))]
 #[inline(always)]
-pub unsafe fn hrtimer_rearm_deferred_tif(_tif_work: libc::c_ulong) {}
+pub unsafe fn hrtimer_rearm_deferred_tif(_tif_work: kernel::ffi::c_ulong) {}
 
 #[cfg(not(CONFIG_HRTIMER_REARM_DEFERRED))]
 #[inline(always)]
 pub unsafe fn hrtimer_rearm_deferred_user_irq(
-    _tif_work: *mut libc::c_ulong,
-    _tif_mask: libc::c_ulong,
+    _tif_work: *mut kernel::ffi::c_ulong,
+    _tif_mask: kernel::ffi::c_ulong,
 ) -> bool {
     false
 }

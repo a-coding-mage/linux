@@ -15,7 +15,7 @@ pub const RPMSG_ADDR_ANY: u32 = 0xFFFF_FFFF;
  */
 #[repr(C)]
 pub struct rpmsg_endpoint_info {
-    pub name: [core::ffi::c_char; 32],
+    pub name: [kernel::ffi::c_char; 32],
     pub src: u32,
     pub dst: u32,
 }

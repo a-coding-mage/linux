@@ -6,7 +6,7 @@
 // C dependencies are supplied by the surrounding kernel translation unit.
 
 #[cfg(CONFIG_SMP)]
-unsafe fn ipi_remote_fence_i(_info: *mut core::ffi::c_void) {
+unsafe fn ipi_remote_fence_i(_info: *mut kernel::ffi::c_void) {
     local_flush_icache_all();
 }
 
@@ -30,7 +30,7 @@ pub unsafe fn flush_icache_all() {
 
 #[cfg(CONFIG_SMP)]
 pub unsafe fn flush_icache_mm(mm: *mut mm_struct, mut local: bool) {
-    let cpu: core::ffi::c_uint;
+    let cpu: kernel::ffi::c_uint;
     let mut others = core::mem::MaybeUninit::<cpumask_t>::uninit();
     let mask: *mut cpumask_t;
 
@@ -68,13 +68,13 @@ pub unsafe fn flush_icache_pte(mm: *mut mm_struct, pte: pte_t) {
     }
 }
 
-pub static mut riscv_cbom_block_size: core::ffi::c_uint = 0;
-pub static mut riscv_cboz_block_size: core::ffi::c_uint = 0;
-pub static mut riscv_cbop_block_size: core::ffi::c_uint = 0;
+pub static mut riscv_cbom_block_size: kernel::ffi::c_uint = 0;
+pub static mut riscv_cboz_block_size: kernel::ffi::c_uint = 0;
+pub static mut riscv_cbop_block_size: kernel::ffi::c_uint = 0;
 
 unsafe fn cbo_get_block_size(
     node: *mut device_node,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     block_size: *mut u32,
     first_hartid: *mut c_ulong,
 ) {

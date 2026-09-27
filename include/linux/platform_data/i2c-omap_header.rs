@@ -34,7 +34,7 @@ pub struct omap_i2c_bus_platform_data {
     pub rev: u32,
     pub flags: u32,
     pub set_mpu_wkup_lat:
-        Option<unsafe extern "C" fn(dev: *mut device, set: core::ffi::c_long)>,
+        Option<unsafe extern "C" fn(dev: *mut device, set: kernel::ffi::c_long)>,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

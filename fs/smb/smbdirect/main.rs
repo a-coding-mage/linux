@@ -38,14 +38,14 @@ extern "C" {
 
     fn mutex_lock(lock: *mut mutex);
     fn mutex_unlock(lock: *mut mutex);
-    fn alloc_workqueue(name: *const core::ffi::c_char, flags: u32, max_active: u32)
+    fn alloc_workqueue(name: *const kernel::ffi::c_char, flags: u32, max_active: u32)
         -> *mut workqueue_struct;
     fn destroy_workqueue(wq: *mut workqueue_struct);
     fn smbdirect_devices_init() -> i32;
     fn smbdirect_devices_exit();
-    fn pr_notice(format: *const core::ffi::c_char, ...);
-    fn pr_crit(format: *const core::ffi::c_char, ...);
-    fn smbdirect_debug_err_ptr(error: i32) -> *const core::ffi::c_void;
+    fn pr_notice(format: *const kernel::ffi::c_char, ...);
+    fn pr_crit(format: *const kernel::ffi::c_char, ...);
+    fn smbdirect_debug_err_ptr(error: i32) -> *const kernel::ffi::c_void;
 }
 
 const ENOMEM: i32 = 12;
@@ -59,11 +59,11 @@ const WQ_MEM_RECLAIM: u32 = 1 << 4;
 pub unsafe extern "C" fn smbdirect_module_init() -> i32 {
     let mut ret: i32 = -ENOMEM;
 
-    pr_notice(b"subsystem loading...\n\0".as_ptr() as *const core::ffi::c_char);
+    pr_notice(b"subsystem loading...\n\0".as_ptr() as *const kernel::ffi::c_char);
     mutex_lock(&mut smbdirect_globals.mutex);
 
     smbdirect_globals.workqueues.accept = alloc_workqueue(
-        b"smbdirect-accept\0".as_ptr() as *const core::ffi::c_char,
+        b"smbdirect-accept\0".as_ptr() as *const kernel::ffi::c_char,
         WQ_SYSFS | WQ_PERCPU | WQ_POWER_EFFICIENT,
         0,
     );
@@ -71,7 +71,7 @@ pub unsafe extern "C" fn smbdirect_module_init() -> i32 {
         goto_alloc_accept_wq_failed(&mut ret);
     } else {
         smbdirect_globals.workqueues.connect = alloc_workqueue(
-            b"smbdirect-connect\0".as_ptr() as *const core::ffi::c_char,
+            b"smbdirect-connect\0".as_ptr() as *const kernel::ffi::c_char,
             WQ_SYSFS | WQ_PERCPU | WQ_POWER_EFFICIENT,
             0,
         );
@@ -79,7 +79,7 @@ pub unsafe extern "C" fn smbdirect_module_init() -> i32 {
             goto_alloc_connect_wq_failed(&mut ret);
         } else {
             smbdirect_globals.workqueues.idle = alloc_workqueue(
-                b"smbdirect-idle\0".as_ptr() as *const core::ffi::c_char,
+                b"smbdirect-idle\0".as_ptr() as *const kernel::ffi::c_char,
                 WQ_SYSFS | WQ_PERCPU | WQ_POWER_EFFICIENT,
                 0,
             );
@@ -87,7 +87,7 @@ pub unsafe extern "C" fn smbdirect_module_init() -> i32 {
                 goto_alloc_idle_wq_failed(&mut ret);
             } else {
                 smbdirect_globals.workqueues.refill = alloc_workqueue(
-                    b"smbdirect-refill\0".as_ptr() as *const core::ffi::c_char,
+                    b"smbdirect-refill\0".as_ptr() as *const kernel::ffi::c_char,
                     WQ_HIGHPRI | WQ_SYSFS | WQ_PERCPU | WQ_POWER_EFFICIENT,
                     0,
                 );
@@ -95,7 +95,7 @@ pub unsafe extern "C" fn smbdirect_module_init() -> i32 {
                     goto_alloc_refill_wq_failed(&mut ret);
                 } else {
                     smbdirect_globals.workqueues.immediate = alloc_workqueue(
-                        b"smbdirect-immediate\0".as_ptr() as *const core::ffi::c_char,
+                        b"smbdirect-immediate\0".as_ptr() as *const kernel::ffi::c_char,
                         WQ_HIGHPRI | WQ_SYSFS | WQ_PERCPU | WQ_POWER_EFFICIENT,
                         0,
                     );
@@ -103,7 +103,7 @@ pub unsafe extern "C" fn smbdirect_module_init() -> i32 {
                         goto_alloc_immediate_wq_failed(&mut ret);
                     } else {
                         smbdirect_globals.workqueues.cleanup = alloc_workqueue(
-                            b"smbdirect-cleanup\0".as_ptr() as *const core::ffi::c_char,
+                            b"smbdirect-cleanup\0".as_ptr() as *const kernel::ffi::c_char,
                             WQ_MEM_RECLAIM | WQ_HIGHPRI | WQ_SYSFS | WQ_PERCPU | WQ_POWER_EFFICIENT,
                             0,
                         );
@@ -115,7 +115,7 @@ pub unsafe extern "C" fn smbdirect_module_init() -> i32 {
                                 destroy_workqueue(smbdirect_globals.workqueues.cleanup);
                             } else {
                                 mutex_unlock(&mut smbdirect_globals.mutex);
-                                pr_notice(b"subsystem loaded\n\0".as_ptr() as *const core::ffi::c_char);
+                                pr_notice(b"subsystem loaded\n\0".as_ptr() as *const kernel::ffi::c_char);
                                 return 0;
                             }
                         }
@@ -131,7 +131,7 @@ pub unsafe extern "C" fn smbdirect_module_init() -> i32 {
     destroy_workqueue(smbdirect_globals.workqueues.connect);
     destroy_workqueue(smbdirect_globals.workqueues.accept);
     mutex_unlock(&mut smbdirect_globals.mutex);
-    pr_crit(b"failed to loaded: %d (%1pe)\n\0".as_ptr() as *const core::ffi::c_char, ret, smbdirect_debug_err_ptr(ret));
+    pr_crit(b"failed to loaded: %d (%1pe)\n\0".as_ptr() as *const kernel::ffi::c_char, ret, smbdirect_debug_err_ptr(ret));
     ret
 }
 
@@ -145,7 +145,7 @@ unsafe fn goto_alloc_cleanup_wq_failed(_: &mut i32) {}
 
 #[no_mangle]
 pub unsafe extern "C" fn smbdirect_module_exit() {
-    pr_notice(b"subsystem unloading...\n\0".as_ptr() as *const core::ffi::c_char);
+    pr_notice(b"subsystem unloading...\n\0".as_ptr() as *const kernel::ffi::c_char);
     mutex_lock(&mut smbdirect_globals.mutex);
     smbdirect_devices_exit();
     destroy_workqueue(smbdirect_globals.workqueues.accept);
@@ -155,7 +155,7 @@ pub unsafe extern "C" fn smbdirect_module_exit() {
     destroy_workqueue(smbdirect_globals.workqueues.immediate);
     destroy_workqueue(smbdirect_globals.workqueues.cleanup);
     mutex_unlock(&mut smbdirect_globals.mutex);
-    pr_notice(b"subsystem unloaded\n\0".as_ptr() as *const core::ffi::c_char);
+    pr_notice(b"subsystem unloaded\n\0".as_ptr() as *const kernel::ffi::c_char);
 }
 
 // module_init(smbdirect_module_init);

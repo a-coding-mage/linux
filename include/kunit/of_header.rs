@@ -2,7 +2,7 @@
 
 // C dependency: <kunit/test.h>
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct device_node {
@@ -111,7 +111,7 @@ pub struct kunit {
 }
 
 unsafe extern "C" {
-    fn kunit_skip(test: *mut kunit, reason: *const core::ffi::c_char);
+    fn kunit_skip(test: *mut kunit, reason: *const kernel::ffi::c_char);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

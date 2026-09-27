@@ -13,13 +13,13 @@
 // MPC8xx symbols referenced below.
 
 /* A place holder for time base interrupts, if they are ever enabled. */
-unsafe fn timebase_interrupt(_irq: i32, _dev: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe fn timebase_interrupt(_irq: i32, _dev: *mut kernel::ffi::c_void) -> irqreturn_t {
     printk!("timebase_interrupt()\n");
 
     IRQ_HANDLED
 }
 
-unsafe fn get_freq(name: *mut i8, val: *mut libc::c_ulong) -> i32 {
+unsafe fn get_freq(name: *mut i8, val: *mut kernel::ffi::c_ulong) -> i32 {
     let mut cpu: *mut device_node;
     let fp: *const u32;
     let mut found: i32 = 0;
@@ -31,7 +31,7 @@ unsafe fn get_freq(name: *mut i8, val: *mut libc::c_ulong) -> i32 {
         fp = of_get_property(cpu, name, core::ptr::null_mut());
         if !fp.is_null() {
             found = 1;
-            *val = *fp as libc::c_ulong;
+            *val = *fp as kernel::ffi::c_ulong;
         }
 
         of_node_put(cpu);
@@ -132,10 +132,10 @@ pub unsafe fn mpc8xx_set_rtc_time(tm: *mut rtc_time) -> i32 {
 }
 
 pub unsafe fn mpc8xx_get_rtc_time(tm: *mut rtc_time) {
-    let data: libc::c_ulong;
+    let data: kernel::ffi::c_ulong;
 
     /* Get time from the RTC. */
-    data = in_be32(&(*mpc8xx_immr).im_sit.sit_rtc) as libc::c_ulong;
+    data = in_be32(&(*mpc8xx_immr).im_sit.sit_rtc) as kernel::ffi::c_ulong;
     rtc_time64_to_tm(data as time64_t, tm);
     return;
 }

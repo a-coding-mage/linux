@@ -7,22 +7,22 @@
 
 #[repr(C)]
 pub struct StackTrace {
-    pub skip: ::core::ffi::c_int,
-    pub nr_entries: ::core::ffi::c_uint,
-    pub max_entries: ::core::ffi::c_uint,
-    pub entries: *mut ::core::ffi::c_ulong,
+    pub skip: ::kernel::ffi::c_int,
+    pub nr_entries: ::kernel::ffi::c_uint,
+    pub max_entries: ::kernel::ffi::c_uint,
+    pub entries: *mut ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct PtRegs {
-    pub regs: [::core::ffi::c_ulong; 32],
-    pub cp0_epc: ::core::ffi::c_ulong,
+    pub regs: [::kernel::ffi::c_ulong; 32],
+    pub cp0_epc: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct ThreadStruct {
-    pub reg29: ::core::ffi::c_ulong,
-    pub reg31: ::core::ffi::c_ulong,
+    pub reg29: ::kernel::ffi::c_ulong,
+    pub reg31: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -33,18 +33,18 @@ pub struct TaskStruct {
 extern "C" {
     static mut current: *mut TaskStruct;
     static mut raw_show_trace: bool;
-    static THREAD_SIZE: ::core::ffi::c_ulong;
+    static THREAD_SIZE: ::kernel::ffi::c_ulong;
 
-    fn kstack_end(sp: *mut ::core::ffi::c_ulong) -> bool;
-    fn __kernel_text_address(addr: ::core::ffi::c_ulong) -> bool;
-    fn in_sched_functions(addr: ::core::ffi::c_ulong) -> bool;
-    fn task_stack_page(tsk: *mut TaskStruct) -> *mut ::core::ffi::c_void;
+    fn kstack_end(sp: *mut ::kernel::ffi::c_ulong) -> bool;
+    fn __kernel_text_address(addr: ::kernel::ffi::c_ulong) -> bool;
+    fn in_sched_functions(addr: ::kernel::ffi::c_ulong) -> bool;
+    fn task_stack_page(tsk: *mut TaskStruct) -> *mut ::kernel::ffi::c_void;
     fn unwind_stack(
         tsk: *mut TaskStruct,
-        sp: *mut ::core::ffi::c_ulong,
-        pc: ::core::ffi::c_ulong,
-        ra: *mut ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_ulong;
+        sp: *mut ::kernel::ffi::c_ulong,
+        pc: ::kernel::ffi::c_ulong,
+        ra: *mut ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_ulong;
     fn prepare_frametrace(regs: *mut PtRegs);
     fn WARN_ON(condition: bool) -> bool;
 }
@@ -54,11 +54,11 @@ extern "C" {
  */
 unsafe fn save_raw_context_stack(
     trace: *mut StackTrace,
-    reg29: ::core::ffi::c_ulong,
-    savesched: ::core::ffi::c_int,
+    reg29: ::kernel::ffi::c_ulong,
+    savesched: ::kernel::ffi::c_int,
 ) {
-    let mut sp = reg29 as *mut ::core::ffi::c_ulong;
-    let mut addr: ::core::ffi::c_ulong;
+    let mut sp = reg29 as *mut ::kernel::ffi::c_ulong;
+    let mut addr: ::kernel::ffi::c_ulong;
 
     while !kstack_end(sp) {
         addr = *sp;
@@ -83,7 +83,7 @@ unsafe fn save_context_stack(
     trace: *mut StackTrace,
     tsk: *mut TaskStruct,
     regs: *mut PtRegs,
-    savesched: ::core::ffi::c_int,
+    savesched: ::kernel::ffi::c_int,
 ) {
     let mut sp = (*regs).regs[29];
 
@@ -93,7 +93,7 @@ unsafe fn save_context_stack(
         let mut pc = (*regs).cp0_epc;
 
         if raw_show_trace || !__kernel_text_address(pc) {
-            let stack_page = task_stack_page(tsk) as ::core::ffi::c_ulong;
+            let stack_page = task_stack_page(tsk) as ::kernel::ffi::c_ulong;
             if stack_page != 0
                 && sp >= stack_page
                 && sp <= stack_page + THREAD_SIZE - 32
@@ -152,7 +152,7 @@ pub unsafe extern "C" fn save_stack_trace_tsk(
     } else {
         prepare_frametrace(regs);
     }
-    save_context_stack(trace, tsk, regs, (tsk == current) as ::core::ffi::c_int);
+    save_context_stack(trace, tsk, regs, (tsk == current) as ::kernel::ffi::c_int);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

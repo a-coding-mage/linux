@@ -7,7 +7,7 @@
  * Copyright (C) 2012 Texas Instruments, Inc.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* Types and functions supplied by the Linux PM and platform-device code. */
 #[repr(C)]

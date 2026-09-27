@@ -30,14 +30,14 @@ pub struct icc_node_data {
 
 #[repr(C)]
 pub struct icc_onecell_data {
-    pub num_nodes: ::core::ffi::c_uint,
+    pub num_nodes: ::kernel::ffi::c_uint,
     pub nodes: [*mut icc_node; 0],
 }
 
 unsafe extern "C" {
     pub fn of_icc_xlate_onecell(
         spec: *const of_phandle_args,
-        data: *mut ::core::ffi::c_void,
+        data: *mut ::kernel::ffi::c_void,
     ) -> *mut icc_node;
 }
 
@@ -56,18 +56,18 @@ pub struct icc_provider {
     ) -> i32>,
     pub pre_aggregate: Option<unsafe extern "C" fn(node: *mut icc_node)>,
     pub get_bw: Option<unsafe extern "C" fn(node: *mut icc_node, avg: *mut u32, peak: *mut u32) -> i32>,
-    pub xlate: Option<unsafe extern "C" fn(spec: *const of_phandle_args, data: *mut ::core::ffi::c_void) -> *mut icc_node>,
-    pub xlate_extended: Option<unsafe extern "C" fn(spec: *const of_phandle_args, data: *mut ::core::ffi::c_void) -> *mut icc_node_data>,
+    pub xlate: Option<unsafe extern "C" fn(spec: *const of_phandle_args, data: *mut ::kernel::ffi::c_void) -> *mut icc_node>,
+    pub xlate_extended: Option<unsafe extern "C" fn(spec: *const of_phandle_args, data: *mut ::kernel::ffi::c_void) -> *mut icc_node_data>,
     pub dev: *mut device,
     pub users: i32,
     pub inter_set: bool,
-    pub data: *mut ::core::ffi::c_void,
+    pub data: *mut ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct icc_node {
     pub id: i32,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub links: *mut *mut icc_node,
     pub num_links: usize,
     pub provider: *mut icc_provider,
@@ -80,7 +80,7 @@ pub struct icc_node {
     pub peak_bw: u32,
     pub init_avg: u32,
     pub init_peak: u32,
-    pub data: *mut ::core::ffi::c_void,
+    pub data: *mut ::kernel::ffi::c_void,
 }
 
 // The following declarations are enabled when CONFIG_INTERCONNECT is enabled.
@@ -90,7 +90,7 @@ unsafe extern "C" {
     pub fn icc_node_create_dyn() -> *mut icc_node;
     pub fn icc_node_create(id: i32) -> *mut icc_node;
     pub fn icc_node_destroy(id: i32);
-    pub fn icc_node_set_name(node: *mut icc_node, provider: *const icc_provider, name: *const ::core::ffi::c_char) -> i32;
+    pub fn icc_node_set_name(node: *mut icc_node, provider: *const icc_provider, name: *const ::kernel::ffi::c_char) -> i32;
     pub fn icc_link_nodes(src_node: *mut icc_node, dst_node: *mut *mut icc_node) -> i32;
     pub fn icc_link_create(node: *mut icc_node, dst_id: i32) -> i32;
     pub fn icc_node_add(node: *mut icc_node, provider: *mut icc_provider);
@@ -118,7 +118,7 @@ pub unsafe fn icc_node_create(_id: i32) -> *mut icc_node { ERR_PTR(-EOPNOTSUPP) 
 pub unsafe fn icc_node_destroy(_id: i32) {}
 #[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
-pub unsafe fn icc_node_set_name(_node: *mut icc_node, _provider: *const icc_provider, _name: *const ::core::ffi::c_char) -> i32 { -EOPNOTSUPP }
+pub unsafe fn icc_node_set_name(_node: *mut icc_node, _provider: *const icc_provider, _name: *const ::kernel::ffi::c_char) -> i32 { -EOPNOTSUPP }
 #[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_link_nodes(_src_node: *mut icc_node, _dst_node: *mut *mut icc_node) -> i32 { -EOPNOTSUPP }

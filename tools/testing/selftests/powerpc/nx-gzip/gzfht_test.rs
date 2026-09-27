@@ -84,31 +84,31 @@ macro_rules! NXPRT {
 
 macro_rules! put32 {
     ($obj:expr, $field:ident, $val:expr) => {{
-        put32_field((&mut $obj) as *mut _ as *mut c_void, stringify!($field).as_ptr() as *const c_char, $val as u32)
+        put32_field((&mut $obj) as *mut _ as *mut c_void, concat!(stringify!($field), "\0").as_ptr() as *const c_char, $val as u32)
     }};
 }
 
 macro_rules! put64 {
     ($obj:expr, $field:ident, $val:expr) => {{
-        put64_field((&mut $obj) as *mut _ as *mut c_void, stringify!($field).as_ptr() as *const c_char, $val as u64)
+        put64_field((&mut $obj) as *mut _ as *mut c_void, concat!(stringify!($field), "\0").as_ptr() as *const c_char, $val as u64)
     }};
 }
 
 macro_rules! putnn {
     ($obj:expr, $field:ident, $val:expr) => {{
-        putnn_field((&mut $obj) as *mut _ as *mut c_void, stringify!($field).as_ptr() as *const c_char, $val as u64)
+        putnn_field((&mut $obj) as *mut _ as *mut c_void, concat!(stringify!($field), "\0").as_ptr() as *const c_char, $val as u64)
     }};
 }
 
 macro_rules! get32 {
     ($obj:expr, $field:ident) => {{
-        get32_field((&$obj) as *const _ as *const c_void, stringify!($field).as_ptr() as *const c_char)
+        get32_field((&$obj) as *const _ as *const c_void, concat!(stringify!($field), "\0").as_ptr() as *const c_char)
     }};
 }
 
 macro_rules! getnn {
     ($obj:expr, $field:ident) => {{
-        getnn_field((&$obj) as *const _ as *const c_void, stringify!($field).as_ptr() as *const c_char)
+        getnn_field((&$obj) as *const _ as *const c_void, concat!(stringify!($field), "\0").as_ptr() as *const c_char)
     }};
 }
 

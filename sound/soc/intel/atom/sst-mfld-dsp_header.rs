@@ -11,11 +11,11 @@
 
 /* Rust translation of declarations from sst-mfld-dsp.h. */
 
-pub type u8 = ::core::ffi::c_uchar;
-pub type u16 = ::core::ffi::c_ushort;
-pub type u32 = ::core::ffi::c_uint;
-pub type u64 = ::core::ffi::c_ulonglong;
-pub type s32 = ::core::ffi::c_int;
+pub type u8 = ::kernel::ffi::c_uchar;
+pub type u16 = ::kernel::ffi::c_ushort;
+pub type u32 = ::kernel::ffi::c_uint;
+pub type u64 = ::kernel::ffi::c_ulonglong;
+pub type s32 = ::kernel::ffi::c_int;
 pub type __u16 = u16;
 pub type __u32 = u32;
 
@@ -356,8 +356,8 @@ impl ipc_header_part {
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct sst_fw_build_info {
-    pub date: [::core::ffi::c_uchar; 16], /* Firmware build date */
-    pub time: [::core::ffi::c_uchar; 16], /* Firmware build time */
+    pub date: [::kernel::ffi::c_uchar; 16], /* Firmware build date */
+    pub time: [::kernel::ffi::c_uchar; 16], /* Firmware build time */
 }
 
 /* Firmware Version info */
@@ -414,8 +414,8 @@ pub struct module_info {
     pub media_type: u32,
     pub lib_name: [u8; 12],
     pub lib_caps: u32,
-    pub b_date: [::core::ffi::c_uchar; 16], /* Lib build date */
-    pub b_time: [::core::ffi::c_uchar; 16], /* Lib build time */
+    pub b_date: [::kernel::ffi::c_uchar; 16], /* Lib build date */
+    pub b_time: [::kernel::ffi::c_uchar; 16], /* Lib build time */
 }
 
 /* Library slot info */
@@ -651,7 +651,7 @@ pub struct snd_sst_runtime_params {
     pub str_id: u8,
     pub size: u8,
     pub rsvd: u8,
-    pub addr: *mut ::core::ffi::c_void,
+    pub addr: *mut ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -678,7 +678,7 @@ pub struct ipc_post {
     pub is_large: bool,
     pub is_process_reply: bool,
     pub mrfld_header: ipc_header_mrfld,
-    pub mailbox_data: *mut ::core::ffi::c_char,
+    pub mailbox_data: *mut ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -713,7 +713,7 @@ pub struct snd_sst_bytes_v2 {
     pub pipe_id: u8,
     pub rsvd: u8,
     pub len: u16,
-    pub bytes: [::core::ffi::c_char; 0],
+    pub bytes: [::kernel::ffi::c_char; 0],
 }
 
 pub const MAX_VTSV_FILES: usize = 2;

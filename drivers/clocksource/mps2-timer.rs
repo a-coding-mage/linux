@@ -16,33 +16,33 @@ const TIMER_INT: usize = 0xc;
 
 #[repr(C)]
 struct clockevent_mps2 {
-    reg: *mut core::ffi::c_void,
+    reg: *mut kernel::ffi::c_void,
     clock_count_per_tick: u32,
     clkevt: clock_event_device,
 }
 
-static mut sched_clock_base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut sched_clock_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 extern "C" {
-    fn readl_relaxed(addr: *const core::ffi::c_void) -> u32;
-    fn writel_relaxed(value: u32, addr: *mut core::ffi::c_void);
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn of_property_read_u32(np: *mut device_node, name: *const core::ffi::c_char, value: *mut u32) -> i32;
+    fn readl_relaxed(addr: *const kernel::ffi::c_void) -> u32;
+    fn writel_relaxed(value: u32, addr: *mut kernel::ffi::c_void);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn of_property_read_u32(np: *mut device_node, name: *const kernel::ffi::c_char, value: *mut u32) -> i32;
     fn of_clk_get(np: *mut device_node, index: i32) -> *mut clk;
     fn clk_prepare_enable(clk: *mut clk) -> i32;
     fn clk_get_rate(clk: *mut clk) -> u32;
-    fn of_iomap(np: *mut device_node, index: i32) -> *mut core::ffi::c_void;
+    fn of_iomap(np: *mut device_node, index: i32) -> *mut kernel::ffi::c_void;
     fn irq_of_parse_and_map(np: *mut device_node, index: i32) -> i32;
-    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t, flags: u32, name: *const core::ffi::c_char, dev: *mut core::ffi::c_void) -> i32;
+    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t, flags: u32, name: *const kernel::ffi::c_char, dev: *mut kernel::ffi::c_void) -> i32;
     fn clockevents_config_and_register(dev: *mut clock_event_device, rate: u32, min: u32, max: u32);
-    fn clocksource_mmio_init(addr: *mut core::ffi::c_void, name: *const core::ffi::c_char, rate: u32, rating: u32, bits: u32, read: unsafe extern "C" fn(*mut core::ffi::c_void) -> u64) -> i32;
-    fn clocksource_mmio_readl_down(addr: *mut core::ffi::c_void) -> u64;
+    fn clocksource_mmio_init(addr: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, rate: u32, rating: u32, bits: u32, read: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> u64) -> i32;
+    fn clocksource_mmio_readl_down(addr: *mut kernel::ffi::c_void) -> u64;
     fn sched_clock_register(read: unsafe extern "C" fn() -> u64, bits: u32, rate: u32);
-    fn iounmap(addr: *mut core::ffi::c_void);
+    fn iounmap(addr: *mut kernel::ffi::c_void);
     fn clk_disable_unprepare(clk: *mut clk);
     fn clk_put(clk: *mut clk);
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
 }
 
 #[repr(C)] struct device_node;
@@ -59,7 +59,7 @@ const CLOCK_EVT_FEAT_ONESHOT: u32 = 1 << 1;
 #[repr(C)]
 struct clock_event_device {
     irq: i32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     rating: u32,
     features: u32,
     cpumask: *const cpumask,
@@ -103,7 +103,7 @@ unsafe extern "C" fn mps2_timer_set_periodic(ce: *mut clock_event_device) -> i32
     0
 }
 
-unsafe extern "C" fn mps2_timer_interrupt(_irq: i32, dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn mps2_timer_interrupt(_irq: i32, dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     let ce = dev_id as *mut clockevent_mps2;
     let status = readl_relaxed((*ce).reg.add(TIMER_INT));
     if status == 0 {

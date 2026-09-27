@@ -296,7 +296,7 @@ pub const MFP_PIN_TWSI4_SDA: i32 = 350;
 pub const MFP_PIN_CLK_REQ: i32 = 351;
 pub const MFP_PIN_MAX: i32 = 352;
 
-pub type mfp_cfg_t = libc::c_ulong;
+pub type mfp_cfg_t = kernel::ffi::c_ulong;
 
 #[inline] pub const fn MFP_PIN(x: u32) -> u32 { x & 0x3ff }
 
@@ -354,17 +354,17 @@ pub const MFP_CFG_DEFAULT: u32 = MFP_AF0 | MFP_DS03X | MFP_LPM_DEFAULT | MFP_LPM
 #[macro_export] macro_rules! MFP_CFG_X { ($pin:expr, $af:expr, $drv:expr, $lpm:expr) => { (MFP_CFG_DEFAULT & !(MFP_AF_MASK | MFP_DS_MASK | MFP_LPM_STATE_MASK)) | (MFP_PIN($pin) | $af | $drv | $lpm) }; }
 
 /* CONFIG_PXA3xx || CONFIG_ARCH_MMP declarations. */
-#[repr(C)] pub struct mfp_addr_map { pub start: u32, pub end: u32, pub offset: libc::c_ulong }
+#[repr(C)] pub struct mfp_addr_map { pub start: u32, pub end: u32, pub offset: kernel::ffi::c_ulong }
 #[macro_export] macro_rules! MFP_ADDR_X { ($start:expr, $end:expr, $offset:expr) => { mfp_addr_map { start: $start, end: $end, offset: $offset } }; }
 #[macro_export] macro_rules! MFP_ADDR { ($pin:expr, $offset:expr) => { mfp_addr_map { start: $pin, end: u32::MAX, offset: $offset } }; }
 #[macro_export] macro_rules! MFP_ADDR_END { () => { mfp_addr_map { start: MFP_PIN_INVALID as u32, end: 0, offset: 0 } }; }
 
 extern "C" {
-    pub fn mfp_init_base(mfpr_base: *mut core::ffi::c_void);
+    pub fn mfp_init_base(mfpr_base: *mut kernel::ffi::c_void);
     pub fn mfp_init_addr(map: *mut mfp_addr_map);
-    pub fn mfp_read(mfp: i32) -> libc::c_ulong;
-    pub fn mfp_write(mfp: i32, mfpr_val: libc::c_ulong);
-    pub fn mfp_config(mfp_cfgs: *mut libc::c_ulong, num: i32);
+    pub fn mfp_read(mfp: i32) -> kernel::ffi::c_ulong;
+    pub fn mfp_write(mfp: i32, mfpr_val: kernel::ffi::c_ulong);
+    pub fn mfp_config(mfp_cfgs: *mut kernel::ffi::c_ulong, num: i32);
     pub fn mfp_config_run();
     pub fn mfp_config_lpm();
 }

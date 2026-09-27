@@ -2,37 +2,37 @@
 
 // <asm/types.h> equivalents used by this header:
 // __u32 -> u32, __u64 -> u64, int -> i32,
-// unsigned long -> core::ffi::c_ulong, unsigned long long -> u64.
+// unsigned long -> kernel::ffi::c_ulong, unsigned long long -> u64.
 
 unsafe extern "C" {
     pub fn init_cow_file(
         fd: i32,
-        cow_file: *mut core::ffi::c_char,
-        backing_file: *mut core::ffi::c_char,
+        cow_file: *mut kernel::ffi::c_char,
+        backing_file: *mut kernel::ffi::c_char,
         sectorsize: i32,
         alignment: i32,
         bitmap_offset_out: *mut i32,
-        bitmap_len_out: *mut core::ffi::c_ulong,
+        bitmap_len_out: *mut kernel::ffi::c_ulong,
         data_offset_out: *mut i32,
     ) -> i32;
 
     pub fn file_reader(
         offset: u64,
-        buf: *mut core::ffi::c_char,
+        buf: *mut kernel::ffi::c_char,
         len: i32,
-        arg: *mut core::ffi::c_void,
+        arg: *mut kernel::ffi::c_void,
     ) -> i32;
 
     pub fn read_cow_header(
         reader: unsafe extern "C" fn(
             u64,
-            *mut core::ffi::c_char,
+            *mut kernel::ffi::c_char,
             i32,
-            *mut core::ffi::c_void,
+            *mut kernel::ffi::c_void,
         ) -> i32,
-        arg: *mut core::ffi::c_void,
+        arg: *mut kernel::ffi::c_void,
         version_out: *mut u32,
-        backing_file_out: *mut *mut core::ffi::c_char,
+        backing_file_out: *mut *mut kernel::ffi::c_char,
         mtime_out: *mut i64,
         size_out: *mut u64,
         sectorsize_out: *mut i32,
@@ -41,9 +41,9 @@ unsafe extern "C" {
     ) -> i32;
 
     pub fn write_cow_header(
-        cow_file: *mut core::ffi::c_char,
+        cow_file: *mut kernel::ffi::c_char,
         fd: i32,
-        backing_file: *mut core::ffi::c_char,
+        backing_file: *mut kernel::ffi::c_char,
         sectorsize: i32,
         alignment: i32,
         size: *mut u64,
@@ -55,7 +55,7 @@ unsafe extern "C" {
         sectorsize: i32,
         align: i32,
         bitmap_offset: i32,
-        bitmap_len_out: *mut core::ffi::c_ulong,
+        bitmap_len_out: *mut kernel::ffi::c_ulong,
         data_offset_out: *mut i32,
     );
 }

@@ -27,7 +27,7 @@ pub struct mtpos32 {
 // _IOR('m', 3, struct mtpos32)
 pub const MTIOCPOS32: usize = 0x80046d03;
 
-pub unsafe fn put_user_mtget(u: *mut core::ffi::c_void, k: *mut mtget) -> i32 {
+pub unsafe fn put_user_mtget(u: *mut kernel::ffi::c_void, k: *mut mtget) -> i32 {
     let k32 = mtget32 {
         mt_type: (*k).mt_type,
         mt_resid: (*k).mt_resid,
@@ -42,13 +42,13 @@ pub unsafe fn put_user_mtget(u: *mut core::ffi::c_void, k: *mut mtget) -> i32 {
     if in_compat_syscall() {
         ret = copy_to_user(
             u,
-            &k32 as *const mtget32 as *const core::ffi::c_void,
+            &k32 as *const mtget32 as *const kernel::ffi::c_void,
             core::mem::size_of::<mtget32>(),
         );
     } else {
         ret = copy_to_user(
             u,
-            k as *const mtget as *const core::ffi::c_void,
+            k as *const mtget as *const kernel::ffi::c_void,
             core::mem::size_of::<mtget>(),
         );
     }
@@ -56,11 +56,11 @@ pub unsafe fn put_user_mtget(u: *mut core::ffi::c_void, k: *mut mtget) -> i32 {
     if ret != 0 { -EFAULT } else { 0 }
 }
 
-pub unsafe fn put_user_mtpos(u: *mut core::ffi::c_void, k: *mut mtpos) -> i32 {
+pub unsafe fn put_user_mtpos(u: *mut kernel::ffi::c_void, k: *mut mtpos) -> i32 {
     if in_compat_syscall() {
         put_user((*k).mt_blkno, u as *mut u32)
     } else {
-        put_user((*k).mt_blkno, u as *mut libc::c_long)
+        put_user((*k).mt_blkno, u as *mut kernel::ffi::c_long)
     }
 }
 

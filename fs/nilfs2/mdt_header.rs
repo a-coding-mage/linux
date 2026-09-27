@@ -38,13 +38,13 @@ pub struct nilfs_shadow_map {
 pub struct nilfs_mdt_info {
     pub mi_sem: rw_semaphore,
     pub mi_bgl: *mut blockgroup_lock,
-    pub mi_entry_size: ::core::ffi::c_uint,
-    pub mi_first_entry_offset: ::core::ffi::c_uint,
-    pub mi_entries_per_block: ::core::ffi::c_ulong,
+    pub mi_entry_size: ::kernel::ffi::c_uint,
+    pub mi_first_entry_offset: ::kernel::ffi::c_uint,
+    pub mi_entries_per_block: ::kernel::ffi::c_ulong,
     pub mi_palloc_cache: *mut nilfs_palloc_cache,
     pub mi_shadow: *mut nilfs_shadow_map,
-    pub mi_blocks_per_group: ::core::ffi::c_ulong,
-    pub mi_blocks_per_desc_block: ::core::ffi::c_ulong,
+    pub mi_blocks_per_group: ::kernel::ffi::c_ulong,
+    pub mi_blocks_per_desc_block: ::kernel::ffi::c_ulong,
 }
 
 #[inline]
@@ -53,39 +53,39 @@ pub unsafe fn NILFS_MDT(inode: *const inode) -> *mut nilfs_mdt_info {
 }
 
 #[inline]
-pub unsafe fn nilfs_is_metadata_file_inode(inode: *const inode) -> ::core::ffi::c_int {
+pub unsafe fn nilfs_is_metadata_file_inode(inode: *const inode) -> ::kernel::ffi::c_int {
     if !(*inode).i_private.is_null() { 1 } else { 0 }
 }
 
 /* Default GFP flags using highmem */
-pub const NILFS_MDT_GFP: ::core::ffi::c_uint = __GFP_RECLAIM | __GFP_IO | __GFP_HIGHMEM;
+pub const NILFS_MDT_GFP: ::kernel::ffi::c_uint = __GFP_RECLAIM | __GFP_IO | __GFP_HIGHMEM;
 
 pub unsafe extern "C" fn nilfs_mdt_get_block(
     _: *mut inode,
-    _: ::core::ffi::c_ulong,
-    _: ::core::ffi::c_int,
-    _: Option<unsafe extern "C" fn(*mut inode, *mut buffer_head, *mut ::core::ffi::c_void)>,
+    _: ::kernel::ffi::c_ulong,
+    _: ::kernel::ffi::c_int,
+    _: Option<unsafe extern "C" fn(*mut inode, *mut buffer_head, *mut ::kernel::ffi::c_void)>,
     _: *mut *mut buffer_head,
-) -> ::core::ffi::c_int;
+) -> ::kernel::ffi::c_int;
 pub unsafe extern "C" fn nilfs_mdt_find_block(
     inode: *mut inode,
-    start: ::core::ffi::c_ulong,
-    end: ::core::ffi::c_ulong,
-    blkoff: *mut ::core::ffi::c_ulong,
+    start: ::kernel::ffi::c_ulong,
+    end: ::kernel::ffi::c_ulong,
+    blkoff: *mut ::kernel::ffi::c_ulong,
     out_bh: *mut *mut buffer_head,
-) -> ::core::ffi::c_int;
-pub unsafe extern "C" fn nilfs_mdt_delete_block(_: *mut inode, _: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-pub unsafe extern "C" fn nilfs_mdt_forget_block(_: *mut inode, _: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-pub unsafe extern "C" fn nilfs_mdt_fetch_dirty(_: *mut inode) -> ::core::ffi::c_int;
-pub unsafe extern "C" fn nilfs_mdt_init(_: *mut inode, _: gfp_t, _: usize) -> ::core::ffi::c_int;
+) -> ::kernel::ffi::c_int;
+pub unsafe extern "C" fn nilfs_mdt_delete_block(_: *mut inode, _: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+pub unsafe extern "C" fn nilfs_mdt_forget_block(_: *mut inode, _: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+pub unsafe extern "C" fn nilfs_mdt_fetch_dirty(_: *mut inode) -> ::kernel::ffi::c_int;
+pub unsafe extern "C" fn nilfs_mdt_init(_: *mut inode, _: gfp_t, _: usize) -> ::kernel::ffi::c_int;
 pub unsafe extern "C" fn nilfs_mdt_clear(_: *mut inode);
 pub unsafe extern "C" fn nilfs_mdt_destroy(_: *mut inode);
-pub unsafe extern "C" fn nilfs_mdt_set_entry_size(_: *mut inode, _: ::core::ffi::c_uint, _: ::core::ffi::c_uint);
-pub unsafe extern "C" fn nilfs_mdt_setup_shadow_map(_: *mut inode, _: *mut nilfs_shadow_map) -> ::core::ffi::c_int;
-pub unsafe extern "C" fn nilfs_mdt_save_to_shadow_map(_: *mut inode) -> ::core::ffi::c_int;
+pub unsafe extern "C" fn nilfs_mdt_set_entry_size(_: *mut inode, _: ::kernel::ffi::c_uint, _: ::kernel::ffi::c_uint);
+pub unsafe extern "C" fn nilfs_mdt_setup_shadow_map(_: *mut inode, _: *mut nilfs_shadow_map) -> ::kernel::ffi::c_int;
+pub unsafe extern "C" fn nilfs_mdt_save_to_shadow_map(_: *mut inode) -> ::kernel::ffi::c_int;
 pub unsafe extern "C" fn nilfs_mdt_restore_from_shadow_map(_: *mut inode);
 pub unsafe extern "C" fn nilfs_mdt_clear_shadow_map(_: *mut inode);
-pub unsafe extern "C" fn nilfs_mdt_freeze_buffer(_: *mut inode, _: *mut buffer_head) -> ::core::ffi::c_int;
+pub unsafe extern "C" fn nilfs_mdt_freeze_buffer(_: *mut inode, _: *mut buffer_head) -> ::kernel::ffi::c_int;
 pub unsafe extern "C" fn nilfs_mdt_get_frozen_buffer(_: *mut inode, _: *mut buffer_head) -> *mut buffer_head;
 
 #[inline]
@@ -106,7 +106,7 @@ pub unsafe fn nilfs_mdt_cno(inode: *mut inode) -> __u64 {
 }
 
 #[inline]
-pub unsafe fn nilfs_mdt_bgl_lock(inode: *mut inode, block_group: ::core::ffi::c_uint) -> *mut spinlock_t {
+pub unsafe fn nilfs_mdt_bgl_lock(inode: *mut inode, block_group: ::kernel::ffi::c_uint) -> *mut spinlock_t {
     bgl_lock_ptr(NILFS_MDT(inode).as_ref().unwrap().mi_bgl, block_group)
 }
 

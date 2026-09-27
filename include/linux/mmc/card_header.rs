@@ -9,10 +9,10 @@
 
 #[repr(C)]
 pub struct mmc_cid {
-    pub manfid: ::core::ffi::c_uint,
-    pub prod_name: [::core::ffi::c_char; 8],
+    pub manfid: ::kernel::ffi::c_uint,
+    pub prod_name: [::kernel::ffi::c_char; 8],
     pub prv: u8,
-    pub serial: ::core::ffi::c_uint,
+    pub serial: ::kernel::ffi::c_uint,
     pub oemid: u16,
     pub year: u16,
     pub hwrev: u8,
@@ -26,17 +26,17 @@ pub struct mmc_csd {
     pub mmca_vsn: u8,
     pub cmdclass: u16,
     pub taac_clks: u16,
-    pub taac_ns: ::core::ffi::c_uint,
-    pub c_size: ::core::ffi::c_uint,
-    pub r2w_factor: ::core::ffi::c_uint,
-    pub max_dtr: ::core::ffi::c_uint,
-    pub erase_size: ::core::ffi::c_uint,
-    pub wp_grp_size: ::core::ffi::c_uint,
-    pub read_blkbits: ::core::ffi::c_uint,
-    pub write_blkbits: ::core::ffi::c_uint,
+    pub taac_ns: ::kernel::ffi::c_uint,
+    pub c_size: ::kernel::ffi::c_uint,
+    pub r2w_factor: ::kernel::ffi::c_uint,
+    pub max_dtr: ::kernel::ffi::c_uint,
+    pub erase_size: ::kernel::ffi::c_uint,
+    pub wp_grp_size: ::kernel::ffi::c_uint,
+    pub read_blkbits: ::kernel::ffi::c_uint,
+    pub write_blkbits: ::kernel::ffi::c_uint,
     pub capacity: sector_t,
     // C bitfields: read_partial, read_misalign, write_partial, write_misalign, dsr_imp.
-    pub bitfields: ::core::ffi::c_uint,
+    pub bitfields: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -50,37 +50,37 @@ pub struct mmc_ext_csd {
     pub part_config: u8,
     pub cache_ctrl: u8,
     pub rst_n_function: u8,
-    pub part_time: ::core::ffi::c_uint,
-    pub sa_timeout: ::core::ffi::c_uint,
-    pub generic_cmd6_time: ::core::ffi::c_uint,
-    pub power_off_longtime: ::core::ffi::c_uint,
+    pub part_time: ::kernel::ffi::c_uint,
+    pub sa_timeout: ::kernel::ffi::c_uint,
+    pub generic_cmd6_time: ::kernel::ffi::c_uint,
+    pub power_off_longtime: ::kernel::ffi::c_uint,
     pub power_off_notification: u8,
-    pub hs_max_dtr: ::core::ffi::c_uint,
-    pub hs200_max_dtr: ::core::ffi::c_uint,
-    pub sectors: ::core::ffi::c_uint,
-    pub hc_erase_size: ::core::ffi::c_uint,
-    pub hc_erase_timeout: ::core::ffi::c_uint,
-    pub sec_trim_mult: ::core::ffi::c_uint,
-    pub sec_erase_mult: ::core::ffi::c_uint,
-    pub trim_timeout: ::core::ffi::c_uint,
+    pub hs_max_dtr: ::kernel::ffi::c_uint,
+    pub hs200_max_dtr: ::kernel::ffi::c_uint,
+    pub sectors: ::kernel::ffi::c_uint,
+    pub hc_erase_size: ::kernel::ffi::c_uint,
+    pub hc_erase_timeout: ::kernel::ffi::c_uint,
+    pub sec_trim_mult: ::kernel::ffi::c_uint,
+    pub sec_erase_mult: ::kernel::ffi::c_uint,
+    pub trim_timeout: ::kernel::ffi::c_uint,
     pub partition_setting_completed: bool,
     pub enhanced_area_offset: u64,
-    pub enhanced_area_size: ::core::ffi::c_uint,
-    pub cache_size: ::core::ffi::c_uint,
+    pub enhanced_area_size: ::kernel::ffi::c_uint,
+    pub cache_size: ::kernel::ffi::c_uint,
     pub hpi_en: bool,
     pub hpi: bool,
-    pub hpi_cmd: ::core::ffi::c_uint,
+    pub hpi_cmd: ::kernel::ffi::c_uint,
     pub bkops: bool,
     pub man_bkops_en: bool,
     pub auto_bkops_en: bool,
-    pub data_sector_size: ::core::ffi::c_uint,
-    pub data_tag_unit_size: ::core::ffi::c_uint,
-    pub boot_ro_lock: ::core::ffi::c_uint,
+    pub data_sector_size: ::kernel::ffi::c_uint,
+    pub data_tag_unit_size: ::kernel::ffi::c_uint,
+    pub boot_ro_lock: ::kernel::ffi::c_uint,
     pub boot_ro_lockable: bool,
     pub ffu_capable: bool,
     pub cmdq_en: bool,
     pub cmdq_support: bool,
-    pub cmdq_depth: ::core::ffi::c_uint,
+    pub cmdq_depth: ::kernel::ffi::c_uint,
     pub fwrev: [u8; MMC_FIRMWARE_LEN],
     pub raw_exception_status: u8,
     pub raw_partition_support: u8,
@@ -114,27 +114,27 @@ pub struct mmc_ext_csd {
     pub pre_eol_info: u8,
     pub device_life_time_est_typ_a: u8,
     pub device_life_time_est_typ_b: u8,
-    pub feature_support: ::core::ffi::c_uint,
+    pub feature_support: ::kernel::ffi::c_uint,
 }
 
-pub const MMC_HIGH_26_MAX_DTR: ::core::ffi::c_uint = 26000000;
-pub const MMC_HIGH_52_MAX_DTR: ::core::ffi::c_uint = 52000000;
-pub const MMC_HIGH_DDR_MAX_DTR: ::core::ffi::c_uint = 52000000;
-pub const MMC_HS200_MAX_DTR: ::core::ffi::c_uint = 200000000;
+pub const MMC_HIGH_26_MAX_DTR: ::kernel::ffi::c_uint = 26000000;
+pub const MMC_HIGH_52_MAX_DTR: ::kernel::ffi::c_uint = 52000000;
+pub const MMC_HIGH_DDR_MAX_DTR: ::kernel::ffi::c_uint = 52000000;
+pub const MMC_HS200_MAX_DTR: ::kernel::ffi::c_uint = 200000000;
 pub const MMC_FIRMWARE_LEN: usize = 8;
-pub const MMC_DISCARD_FEATURE: ::core::ffi::c_uint = 1 << 0;
+pub const MMC_DISCARD_FEATURE: ::kernel::ffi::c_uint = 1 << 0;
 
 #[repr(C)]
 pub struct sd_scr {
     pub sda_vsn: u8, pub sda_spec3: u8, pub sda_spec4: u8, pub sda_specx: u8,
     pub bus_widths: u8, pub cmds: u8,
 }
-pub const SD_SCR_BUS_WIDTH_1: ::core::ffi::c_uint = 1 << 0;
-pub const SD_SCR_BUS_WIDTH_4: ::core::ffi::c_uint = 1 << 2;
-pub const SD_SCR_CMD20_SUPPORT: ::core::ffi::c_uint = 1 << 0;
-pub const SD_SCR_CMD23_SUPPORT: ::core::ffi::c_uint = 1 << 1;
-pub const SD_SCR_CMD48_SUPPORT: ::core::ffi::c_uint = 1 << 2;
-pub const SD_SCR_CMD58_SUPPORT: ::core::ffi::c_uint = 1 << 3;
+pub const SD_SCR_BUS_WIDTH_1: ::kernel::ffi::c_uint = 1 << 0;
+pub const SD_SCR_BUS_WIDTH_4: ::kernel::ffi::c_uint = 1 << 2;
+pub const SD_SCR_CMD20_SUPPORT: ::kernel::ffi::c_uint = 1 << 0;
+pub const SD_SCR_CMD23_SUPPORT: ::kernel::ffi::c_uint = 1 << 1;
+pub const SD_SCR_CMD48_SUPPORT: ::kernel::ffi::c_uint = 1 << 2;
+pub const SD_SCR_CMD58_SUPPORT: ::kernel::ffi::c_uint = 1 << 3;
 
 #[repr(C)] pub struct sd_ssr { pub au: u32, pub erase_timeout: u32, pub erase_offset: u32 }
 #[repr(C)] pub struct sd_switch_caps { pub hs_max_dtr: u32, pub uhs_max_dtr: u32, pub sd3_bus_mode: u32, pub sd3_drv_type: u32, pub sd3_curr_limit: u32 }
@@ -155,7 +155,7 @@ pub const MMC_NUM_PHY_PARTITION: usize = 7;
 pub const MAX_MMC_PART_NAME_LEN: usize = 20;
 
 #[repr(C)]
-pub struct mmc_part { pub size: u64, pub part_cfg: u32, pub name: [::core::ffi::c_char; MAX_MMC_PART_NAME_LEN], pub force_ro: bool, pub area_type: u32 }
+pub struct mmc_part { pub size: u64, pub part_cfg: u32, pub name: [::kernel::ffi::c_char; MAX_MMC_PART_NAME_LEN], pub force_ro: bool, pub area_type: u32 }
 pub const MMC_BLK_DATA_AREA_MAIN: u32 = 1 << 0;
 pub const MMC_BLK_DATA_AREA_BOOT: u32 = 1 << 1;
 pub const MMC_BLK_DATA_AREA_GP: u32 = 1 << 2;
@@ -169,7 +169,7 @@ pub struct mmc_card {
     pub raw_cid: [u32; 4], pub raw_csd: [u32; 4], pub raw_scr: [u32; 2], pub raw_ssr: [u32; 16],
     pub cid: mmc_cid, pub csd: mmc_csd, pub ext_csd: mmc_ext_csd, pub scr: sd_scr, pub ssr: sd_ssr, pub sw_caps: sd_switch_caps, pub ext_power: sd_ext_reg, pub ext_perf: sd_ext_reg,
     pub uhs2_config: sd_uhs2_config, pub sdio_funcs: u32, pub sdio_funcs_probed: atomic_t, pub cccr: sdio_cccr, pub cis: sdio_cis,
-    pub sdio_func: [*mut sdio_func; SDIO_MAX_FUNCS], pub sdio_single_irq: *mut sdio_func, pub major_rev: u8, pub minor_rev: u8, pub num_info: u32, pub info: *const *const ::core::ffi::c_char, pub tuples: *mut sdio_func_tuple,
+    pub sdio_func: [*mut sdio_func; SDIO_MAX_FUNCS], pub sdio_single_irq: *mut sdio_func, pub major_rev: u8, pub minor_rev: u8, pub num_info: u32, pub info: *const *const ::kernel::ffi::c_char, pub tuples: *mut sdio_func_tuple,
     pub sd_bus_speed: u32, pub mmc_avail_type: u32, pub drive_strength: u32, pub debugfs_root: *mut dentry, pub part: [mmc_part; MMC_NUM_PHY_PARTITION], pub nr_parts: u32, pub complete_wq: *mut workqueue_struct,
 }
 

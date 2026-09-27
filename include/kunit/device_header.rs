@@ -12,7 +12,7 @@
 // All declarations below are conditional on CONFIG_KUNIT being enabled.
 #[cfg(CONFIG_KUNIT)]
 mod kunit_config {
-    use core::ffi::c_char;
+    use kernel::ffi::c_char;
 
     // Supplied by the corresponding kernel headers.
     #[repr(C)]

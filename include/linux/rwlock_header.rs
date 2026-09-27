@@ -6,7 +6,7 @@
 extern "C" {
     pub fn __rwlock_init(
         lock: *mut rwlock_t,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         key: *mut lock_class_key,
     );
 }
@@ -19,7 +19,7 @@ macro_rules! rwlock_init {
         unsafe {
             $crate::__rwlock_init(
                 ($lock),
-                concat!(stringify!($lock), "\0").as_ptr() as *const ::core::ffi::c_char,
+                concat!(stringify!($lock), "\0").as_ptr() as *const ::kernel::ffi::c_char,
                 &mut __KEY,
             );
         }
@@ -37,10 +37,10 @@ macro_rules! rwlock_init {
 #[cfg(CONFIG_DEBUG_SPINLOCK)]
 extern "C" {
     pub fn do_raw_read_lock(lock: *mut rwlock_t);
-    pub fn do_raw_read_trylock(lock: *mut rwlock_t) -> ::core::ffi::c_int;
+    pub fn do_raw_read_trylock(lock: *mut rwlock_t) -> ::kernel::ffi::c_int;
     pub fn do_raw_read_unlock(lock: *mut rwlock_t);
     pub fn do_raw_write_lock(lock: *mut rwlock_t);
-    pub fn do_raw_write_trylock(lock: *mut rwlock_t) -> ::core::ffi::c_int;
+    pub fn do_raw_write_trylock(lock: *mut rwlock_t) -> ::kernel::ffi::c_int;
     pub fn do_raw_write_unlock(lock: *mut rwlock_t);
 }
 
@@ -54,7 +54,7 @@ macro_rules! do_raw_read_lock {
 
 #[cfg(not(CONFIG_DEBUG_SPINLOCK))]
 #[inline]
-pub unsafe fn do_raw_read_trylock(rwlock: *mut rwlock_t) -> ::core::ffi::c_int {
+pub unsafe fn do_raw_read_trylock(rwlock: *mut rwlock_t) -> ::kernel::ffi::c_int {
     arch_read_trylock(&mut (*rwlock).raw_lock)
 }
 
@@ -76,7 +76,7 @@ macro_rules! do_raw_write_lock {
 
 #[cfg(not(CONFIG_DEBUG_SPINLOCK))]
 #[inline]
-pub unsafe fn do_raw_write_trylock(rwlock: *mut rwlock_t) -> ::core::ffi::c_int {
+pub unsafe fn do_raw_write_trylock(rwlock: *mut rwlock_t) -> ::kernel::ffi::c_int {
     arch_write_trylock(&mut (*rwlock).raw_lock)
 }
 

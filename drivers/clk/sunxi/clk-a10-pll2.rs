@@ -23,32 +23,32 @@ const SUN4I_PLL2_POST_DIV_VALUE: u32 = 4;
 const SUN4I_PLL2_OUTPUTS: usize = 4;
 
 extern "C" {
-    static mut sun4i_a10_pll2_lock: core::ffi::c_void;
+    static mut sun4i_a10_pll2_lock: kernel::ffi::c_void;
 }
 
 #[repr(C)] pub struct device_node { _private: [u8; 0] }
 #[repr(C)] pub struct clk { _private: [u8; 0] }
 #[repr(C)] pub struct clk_onecell_data { pub clks: *mut *mut clk, pub clk_num: u32 }
-#[repr(C)] pub struct clk_multiplier { pub hw: core::ffi::c_void, pub reg: *mut core::ffi::c_void, pub shift: u32, pub width: u32, pub flags: u32, pub lock: *mut core::ffi::c_void }
-#[repr(C)] pub struct clk_gate { pub hw: core::ffi::c_void, pub reg: *mut core::ffi::c_void, pub bit_idx: u32, pub lock: *mut core::ffi::c_void }
+#[repr(C)] pub struct clk_multiplier { pub hw: kernel::ffi::c_void, pub reg: *mut kernel::ffi::c_void, pub shift: u32, pub width: u32, pub flags: u32, pub lock: *mut kernel::ffi::c_void }
+#[repr(C)] pub struct clk_gate { pub hw: kernel::ffi::c_void, pub reg: *mut kernel::ffi::c_void, pub bit_idx: u32, pub lock: *mut kernel::ffi::c_void }
 extern "C" {
-    fn of_io_request_and_map(n: *mut device_node, index: i32, name: *const core::ffi::c_char) -> *mut core::ffi::c_void;
-    fn of_node_full_name(n: *mut device_node) -> *const core::ffi::c_char;
-    fn kzalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn kfree(p: *mut core::ffi::c_void);
-    fn iounmap(p: *mut core::ffi::c_void);
-    fn of_clk_get_parent_name(n: *mut device_node, index: i32) -> *const core::ffi::c_char;
-    fn clk_register_divider(a: *mut core::ffi::c_void, name: *const core::ffi::c_char, parent: *const core::ffi::c_char, flags: u32, reg: *mut core::ffi::c_void, shift: u32, width: u32, div_flags: u32, lock: *mut core::ffi::c_void) -> *mut clk;
-    fn clk_register_composite(a: *mut core::ffi::c_void, name: *const core::ffi::c_char, parent: *const *const core::ffi::c_char, parents: usize, mux: *mut core::ffi::c_void, mux_ops: *mut core::ffi::c_void, mult: *mut core::ffi::c_void, mult_ops: *mut core::ffi::c_void, gate: *mut core::ffi::c_void, gate_ops: *mut core::ffi::c_void, flags: u32) -> *mut clk;
-    fn clk_register_fixed_factor(a: *mut core::ffi::c_void, name: *const core::ffi::c_char, parent: *const core::ffi::c_char, flags: u32, mult: u32, div: u32) -> *mut clk;
+    fn of_io_request_and_map(n: *mut device_node, index: i32, name: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
+    fn of_node_full_name(n: *mut device_node) -> *const kernel::ffi::c_char;
+    fn kzalloc(size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn kfree(p: *mut kernel::ffi::c_void);
+    fn iounmap(p: *mut kernel::ffi::c_void);
+    fn of_clk_get_parent_name(n: *mut device_node, index: i32) -> *const kernel::ffi::c_char;
+    fn clk_register_divider(a: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, parent: *const kernel::ffi::c_char, flags: u32, reg: *mut kernel::ffi::c_void, shift: u32, width: u32, div_flags: u32, lock: *mut kernel::ffi::c_void) -> *mut clk;
+    fn clk_register_composite(a: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, parent: *const *const kernel::ffi::c_char, parents: usize, mux: *mut kernel::ffi::c_void, mux_ops: *mut kernel::ffi::c_void, mult: *mut kernel::ffi::c_void, mult_ops: *mut kernel::ffi::c_void, gate: *mut kernel::ffi::c_void, gate_ops: *mut kernel::ffi::c_void, flags: u32) -> *mut clk;
+    fn clk_register_fixed_factor(a: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, parent: *const kernel::ffi::c_char, flags: u32, mult: u32, div: u32) -> *mut clk;
     fn clk_unregister_divider(c: *mut clk);
-    fn __clk_get_name(c: *mut clk) -> *const core::ffi::c_char;
-    fn readl(reg: *mut core::ffi::c_void) -> u32;
-    fn writel(val: u32, reg: *mut core::ffi::c_void);
-    fn of_property_read_string_index(n: *mut device_node, name: *const core::ffi::c_char, index: u32, out: *mut *const core::ffi::c_char) -> i32;
-    fn of_clk_add_provider(n: *mut device_node, get: *mut core::ffi::c_void, data: *mut core::ffi::c_void) -> i32;
-    fn IS_ERR(p: *mut core::ffi::c_void) -> bool;
-    fn pr_err(s: *const core::ffi::c_char);
+    fn __clk_get_name(c: *mut clk) -> *const kernel::ffi::c_char;
+    fn readl(reg: *mut kernel::ffi::c_void) -> u32;
+    fn writel(val: u32, reg: *mut kernel::ffi::c_void);
+    fn of_property_read_string_index(n: *mut device_node, name: *const kernel::ffi::c_char, index: u32, out: *mut *const kernel::ffi::c_char) -> i32;
+    fn of_clk_add_provider(n: *mut device_node, get: *mut kernel::ffi::c_void, data: *mut kernel::ffi::c_void) -> i32;
+    fn IS_ERR(p: *mut kernel::ffi::c_void) -> bool;
+    fn pr_err(s: *const kernel::ffi::c_char);
     fn WARN_ON(v: bool) -> bool;
 }
 
@@ -63,8 +63,8 @@ const SUN4I_A10_PLL2_4X: u32 = 2;
 const SUN4I_A10_PLL2_8X: u32 = 3;
 
 unsafe fn sun4i_pll2_setup(node: *mut device_node, post_div_offset: u32) {
-    let mut clk_name = *(node as *mut *const core::ffi::c_char);
-    let mut parent: *const core::ffi::c_char;
+    let mut clk_name = *(node as *mut *const kernel::ffi::c_char);
+    let mut parent: *const kernel::ffi::c_char;
     let reg = of_io_request_and_map(node, 0, of_node_full_name(node));
     if IS_ERR(reg) { return; }
     let clk_data = kzalloc(core::mem::size_of::<clk_onecell_data>(), 0) as *mut clk_onecell_data;

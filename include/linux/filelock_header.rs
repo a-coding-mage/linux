@@ -45,10 +45,10 @@ pub enum list_head {}
 pub enum hlist_node {}
 pub enum wait_queue_head_t {}
 pub enum spinlock_t {}
-pub type fl_owner_t = *mut core::ffi::c_void;
+pub type fl_owner_t = *mut kernel::ffi::c_void;
 pub type loff_t = i64;
 pub type pid_t = i32;
-pub type u32 = core::ffi::c_uint;
+pub type u32 = kernel::ffi::c_uint;
 
 #[repr(C)]
 pub struct file_lock_operations {
@@ -58,7 +58,7 @@ pub struct file_lock_operations {
 
 #[repr(C)]
 pub struct lock_manager_operations {
-    pub lm_mod_owner: *mut core::ffi::c_void,
+    pub lm_mod_owner: *mut kernel::ffi::c_void,
     pub lm_get_owner: Option<unsafe extern "C" fn(fl_owner_t) -> fl_owner_t>,
     pub lm_put_owner: Option<unsafe extern "C" fn(fl_owner_t)>,
     pub lm_notify: Option<unsafe extern "C" fn(*mut file_lock)>,
@@ -71,7 +71,7 @@ pub struct lock_manager_operations {
 pub struct lease_manager_operations {
     pub lm_break: Option<unsafe extern "C" fn(*mut file_lease) -> bool>,
     pub lm_change: Option<unsafe extern "C" fn(*mut file_lease, i32, *mut list_head) -> i32>,
-    pub lm_setup: Option<unsafe extern "C" fn(*mut file_lease, *mut *mut core::ffi::c_void)>,
+    pub lm_setup: Option<unsafe extern "C" fn(*mut file_lease, *mut *mut kernel::ffi::c_void)>,
     pub lm_breaker_owns_lease: Option<unsafe extern "C" fn(*mut file_lease) -> bool>,
     pub lm_open_conflict: Option<unsafe extern "C" fn(*mut file, i32) -> i32>,
     pub lm_breaker_timedout: Option<unsafe extern "C" fn(*mut file_lease) -> bool>,
@@ -98,7 +98,7 @@ pub struct file_lock_core {
     pub flc_blocked_requests: list_head,
     pub flc_blocked_member: list_head,
     pub flc_owner: fl_owner_t,
-    pub flc_flags: core::ffi::c_uint,
+    pub flc_flags: kernel::ffi::c_uint,
     pub flc_type: u8,
     pub flc_pid: pid_t,
     pub flc_link_cpu: i32,
@@ -114,7 +114,7 @@ pub union file_lock_union {
     pub ceph: file_lock_ceph,
 }
 #[repr(C)]
-pub struct file_lock_afs { pub link: list_head, pub state: i32, pub debug_id: core::ffi::c_uint }
+pub struct file_lock_afs { pub link: list_head, pub state: i32, pub debug_id: kernel::ffi::c_uint }
 #[repr(C)]
 pub struct file_lock_ceph { pub inode: *mut inode }
 pub enum nfs_lock_info {}
@@ -134,8 +134,8 @@ pub struct file_lock {
 pub struct file_lease {
     pub c: file_lock_core,
     pub fl_fasync: *mut fasync_struct,
-    pub fl_break_time: core::ffi::c_ulong,
-    pub fl_downgrade_time: core::ffi::c_ulong,
+    pub fl_break_time: kernel::ffi::c_ulong,
+    pub fl_downgrade_time: kernel::ffi::c_ulong,
     pub fl_lmops: *const lease_manager_operations,
 }
 
@@ -149,11 +149,11 @@ pub struct file_lock_context {
 
 #[cfg(CONFIG_FILE_LOCKING)]
 extern "C" {
-    pub fn fcntl_getlk(file: *mut file, cmd: core::ffi::c_uint, user: *mut flock) -> i32;
-    pub fn fcntl_setlk(fd: core::ffi::c_uint, file: *mut file, cmd: core::ffi::c_uint, user: *mut flock) -> i32;
-    pub fn fcntl_setlease(fd: core::ffi::c_uint, filp: *mut file, arg: i32) -> i32;
+    pub fn fcntl_getlk(file: *mut file, cmd: kernel::ffi::c_uint, user: *mut flock) -> i32;
+    pub fn fcntl_setlk(fd: kernel::ffi::c_uint, file: *mut file, cmd: kernel::ffi::c_uint, user: *mut flock) -> i32;
+    pub fn fcntl_setlease(fd: kernel::ffi::c_uint, filp: *mut file, arg: i32) -> i32;
     pub fn fcntl_getlease(filp: *mut file) -> i32;
-    pub fn fcntl_setdeleg(fd: core::ffi::c_uint, filp: *mut file, deleg: *mut delegation) -> i32;
+    pub fn fcntl_setdeleg(fd: kernel::ffi::c_uint, filp: *mut file, deleg: *mut delegation) -> i32;
     pub fn fcntl_getdeleg(filp: *mut file, deleg: *mut delegation) -> i32;
     pub fn locks_free_lock_context(inode: *mut inode);
     pub fn locks_free_lock(fl: *mut file_lock);
@@ -168,18 +168,18 @@ extern "C" {
     pub fn posix_lock_file(file: *mut file, fl: *mut file_lock, conflock: *mut file_lock) -> i32;
     pub fn locks_delete_block(waiter: *mut file_lock) -> i32;
     pub fn vfs_test_lock(file: *mut file, fl: *mut file_lock) -> i32;
-    pub fn vfs_lock_file(file: *mut file, cmd: core::ffi::c_uint, fl: *mut file_lock, conf: *mut file_lock) -> i32;
+    pub fn vfs_lock_file(file: *mut file, cmd: kernel::ffi::c_uint, fl: *mut file_lock, conf: *mut file_lock) -> i32;
     pub fn vfs_cancel_lock(filp: *mut file, fl: *mut file_lock) -> i32;
     pub fn vfs_inode_has_locks(inode: *mut inode) -> bool;
     pub fn locks_lock_inode_wait(inode: *mut inode, fl: *mut file_lock) -> i32;
     pub fn locks_init_lease(fl: *mut file_lease);
     pub fn locks_free_lease(fl: *mut file_lease);
     pub fn locks_alloc_lease() -> *mut file_lease;
-    pub fn __break_lease(inode: *mut inode, flags: core::ffi::c_uint) -> i32;
+    pub fn __break_lease(inode: *mut inode, flags: kernel::ffi::c_uint) -> i32;
     pub fn lease_get_mtime(inode: *mut inode, time: *mut timespec64);
-    pub fn generic_setlease(file: *mut file, arg: i32, flp: *mut *mut file_lease, priv_: *mut *mut core::ffi::c_void) -> i32;
-    pub fn kernel_setlease(file: *mut file, arg: i32, lease: *mut *mut file_lease, priv_: *mut *mut core::ffi::c_void) -> i32;
-    pub fn vfs_setlease(file: *mut file, arg: i32, lease: *mut *mut file_lease, priv_: *mut *mut core::ffi::c_void) -> i32;
+    pub fn generic_setlease(file: *mut file, arg: i32, flp: *mut *mut file_lease, priv_: *mut *mut kernel::ffi::c_void) -> i32;
+    pub fn kernel_setlease(file: *mut file, arg: i32, lease: *mut *mut file_lease, priv_: *mut *mut kernel::ffi::c_void) -> i32;
+    pub fn vfs_setlease(file: *mut file, arg: i32, lease: *mut *mut file_lease, priv_: *mut *mut kernel::ffi::c_void) -> i32;
     pub fn lease_modify(fl: *mut file_lease, arg: i32, dispose: *mut list_head) -> i32;
     pub fn inode_lease_ignore_mask(inode: *mut inode) -> u32;
     pub fn lease_register_notifier(nb: *mut notifier_block) -> i32;
@@ -189,9 +189,9 @@ extern "C" {
 }
 
 #[cfg(not(CONFIG_FILE_LOCKING))]
-pub unsafe fn fcntl_getlk(_: *mut file, _: core::ffi::c_uint, _: *mut flock) -> i32 { -22 }
+pub unsafe fn fcntl_getlk(_: *mut file, _: kernel::ffi::c_uint, _: *mut flock) -> i32 { -22 }
 #[cfg(not(CONFIG_FILE_LOCKING))]
-pub unsafe fn fcntl_setlk(_: core::ffi::c_uint, _: *mut file, _: core::ffi::c_uint, _: *mut flock) -> i32 { -13 }
+pub unsafe fn fcntl_setlk(_: kernel::ffi::c_uint, _: *mut file, _: kernel::ffi::c_uint, _: *mut flock) -> i32 { -13 }
 
 pub const F_UNLCK: u8 = 2;
 pub const F_RDLCK: u8 = 0;

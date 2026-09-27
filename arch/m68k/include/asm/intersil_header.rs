@@ -45,7 +45,7 @@ pub struct intersil_7170 {
 }
 
 extern "C" {
-    pub static mut clock_va: *mut core::ffi::c_char;
+    pub static mut clock_va: *mut kernel::ffi::c_char;
 }
 
 #[macro_export]

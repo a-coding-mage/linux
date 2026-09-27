@@ -33,7 +33,7 @@ unsafe extern "C" {
     fn sm4_expandkey(ctx: *mut sm4_ctx, key: *const u8, keylen: usize) -> i32;
     fn sm4_crypt_block(rkey: *const u32, dst: *mut u8, src: *const u8);
     fn crypto_tfm_ctx(tfm: *mut crypto_tfm) -> *mut sm4_ctx;
-    fn riscv_isa_extension_available(cpu: *const core::ffi::c_void, extension: u32) -> bool;
+    fn riscv_isa_extension_available(cpu: *const kernel::ffi::c_void, extension: u32) -> bool;
     fn riscv_vector_vlen() -> u32;
     fn crypto_register_alg(alg: *mut crypto_alg) -> i32;
     fn crypto_unregister_alg(alg: *mut crypto_alg);
@@ -56,10 +56,10 @@ pub struct crypto_alg {
     pub cra_blocksize: usize,
     pub cra_ctxsize: usize,
     pub cra_priority: u32,
-    pub cra_name: *const core::ffi::c_char,
-    pub cra_driver_name: *const core::ffi::c_char,
+    pub cra_name: *const kernel::ffi::c_char,
+    pub cra_driver_name: *const kernel::ffi::c_char,
     pub cra_cipher: crypto_cipher,
-    pub cra_module: *mut core::ffi::c_void,
+    pub cra_module: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -140,8 +140,8 @@ static mut RISCV64_SM4_ALG: crypto_alg = crypto_alg {
     cra_blocksize: SM4_BLOCK_SIZE,
     cra_ctxsize: core::mem::size_of::<sm4_ctx>(),
     cra_priority: 300,
-    cra_name: b"sm4\0".as_ptr() as *const core::ffi::c_char,
-    cra_driver_name: b"sm4-riscv64-zvksed-zvkb\0".as_ptr() as *const core::ffi::c_char,
+    cra_name: b"sm4\0".as_ptr() as *const kernel::ffi::c_char,
+    cra_driver_name: b"sm4-riscv64-zvksed-zvkb\0".as_ptr() as *const kernel::ffi::c_char,
     cra_cipher: crypto_cipher {
         cia_min_keysize: SM4_KEY_SIZE,
         cia_max_keysize: SM4_KEY_SIZE,

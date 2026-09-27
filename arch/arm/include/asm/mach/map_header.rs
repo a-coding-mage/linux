@@ -11,54 +11,54 @@
 
 #[repr(C)]
 pub struct map_desc {
-    pub virtual_: ::core::ffi::c_ulong,
-    pub pfn: ::core::ffi::c_ulong,
-    pub length: ::core::ffi::c_ulong,
-    pub type_: ::core::ffi::c_uint,
+    pub virtual_: ::kernel::ffi::c_ulong,
+    pub pfn: ::kernel::ffi::c_ulong,
+    pub length: ::kernel::ffi::c_ulong,
+    pub type_: ::kernel::ffi::c_uint,
 }
 
 /* types 0-3 are defined in asm/io.h */
-pub const MT_UNCACHED: ::core::ffi::c_uint = 4;
-pub const MT_CACHECLEAN: ::core::ffi::c_uint = 5;
-pub const MT_MINICLEAN: ::core::ffi::c_uint = 6;
-pub const MT_LOW_VECTORS: ::core::ffi::c_uint = 7;
-pub const MT_HIGH_VECTORS: ::core::ffi::c_uint = 8;
-pub const MT_MEMORY_RWX: ::core::ffi::c_uint = 9;
-pub const MT_MEMORY_RW: ::core::ffi::c_uint = 10;
-pub const MT_MEMORY_RO: ::core::ffi::c_uint = 11;
-pub const MT_ROM: ::core::ffi::c_uint = 12;
-pub const MT_MEMORY_RWX_NONCACHED: ::core::ffi::c_uint = 13;
-pub const MT_MEMORY_RW_DTCM: ::core::ffi::c_uint = 14;
-pub const MT_MEMORY_RWX_ITCM: ::core::ffi::c_uint = 15;
-pub const MT_MEMORY_RW_SO: ::core::ffi::c_uint = 16;
-pub const MT_MEMORY_DMA_READY: ::core::ffi::c_uint = 17;
+pub const MT_UNCACHED: ::kernel::ffi::c_uint = 4;
+pub const MT_CACHECLEAN: ::kernel::ffi::c_uint = 5;
+pub const MT_MINICLEAN: ::kernel::ffi::c_uint = 6;
+pub const MT_LOW_VECTORS: ::kernel::ffi::c_uint = 7;
+pub const MT_HIGH_VECTORS: ::kernel::ffi::c_uint = 8;
+pub const MT_MEMORY_RWX: ::kernel::ffi::c_uint = 9;
+pub const MT_MEMORY_RW: ::kernel::ffi::c_uint = 10;
+pub const MT_MEMORY_RO: ::kernel::ffi::c_uint = 11;
+pub const MT_ROM: ::kernel::ffi::c_uint = 12;
+pub const MT_MEMORY_RWX_NONCACHED: ::kernel::ffi::c_uint = 13;
+pub const MT_MEMORY_RW_DTCM: ::kernel::ffi::c_uint = 14;
+pub const MT_MEMORY_RWX_ITCM: ::kernel::ffi::c_uint = 15;
+pub const MT_MEMORY_RW_SO: ::kernel::ffi::c_uint = 16;
+pub const MT_MEMORY_DMA_READY: ::kernel::ffi::c_uint = 17;
 
 /* CONFIG_MMU declarations from the original conditional section. */
 #[cfg(CONFIG_MMU)]
 unsafe extern "C" {
-    pub fn iotable_init(map: *mut map_desc, num: ::core::ffi::c_int);
+    pub fn iotable_init(map: *mut map_desc, num: ::kernel::ffi::c_int);
     pub fn vm_reserve_area_early(
-        addr: ::core::ffi::c_ulong,
-        size: ::core::ffi::c_ulong,
-        caller: *mut ::core::ffi::c_void,
+        addr: ::kernel::ffi::c_ulong,
+        size: ::kernel::ffi::c_ulong,
+        caller: *mut ::kernel::ffi::c_void,
     );
     pub fn create_mapping_late(mm: *mut mm_struct, md: *mut map_desc, ng: bool);
 
     #[cfg(CONFIG_DEBUG_LL)]
     pub fn debug_ll_addr(
-        paddr: *mut ::core::ffi::c_ulong,
-        vaddr: *mut ::core::ffi::c_ulong,
+        paddr: *mut ::kernel::ffi::c_ulong,
+        vaddr: *mut ::kernel::ffi::c_ulong,
     );
     #[cfg(CONFIG_DEBUG_LL)]
     pub fn debug_ll_io_init();
 
-    pub fn get_mem_type(type_: ::core::ffi::c_uint) -> *const mem_type;
+    pub fn get_mem_type(type_: ::kernel::ffi::c_uint) -> *const mem_type;
     /* external interface to remap single page with appropriate type */
     pub fn ioremap_page(
-        virt: ::core::ffi::c_ulong,
-        phys: ::core::ffi::c_ulong,
+        virt: ::kernel::ffi::c_ulong,
+        phys: ::kernel::ffi::c_ulong,
         mtype: *const mem_type,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(all(CONFIG_MMU, not(CONFIG_DEBUG_LL)))]
@@ -74,14 +74,14 @@ pub enum mem_type {}
 /* CONFIG_MMU-disabled macros are intentionally no-ops. */
 #[cfg(not(CONFIG_MMU))]
 #[inline]
-pub unsafe fn iotable_init(_map: *mut map_desc, _num: ::core::ffi::c_int) {}
+pub unsafe fn iotable_init(_map: *mut map_desc, _num: ::kernel::ffi::c_int) {}
 
 #[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn vm_reserve_area_early(
-    _addr: ::core::ffi::c_ulong,
-    _size: ::core::ffi::c_ulong,
-    _caller: *mut ::core::ffi::c_void,
+    _addr: ::kernel::ffi::c_ulong,
+    _size: ::kernel::ffi::c_ulong,
+    _caller: *mut ::kernel::ffi::c_void,
 ) {
 }
 

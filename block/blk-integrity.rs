@@ -89,7 +89,7 @@ pub unsafe fn blk_get_meta_cap(
     copy_struct_to_user(argp, usize_, &meta_cap, core::mem::size_of::<logical_block_metadata_cap>(), core::ptr::null_mut())
 }
 
-pub unsafe fn blk_rq_integrity_map_user(rq: *mut request, ubuf: *mut core::ffi::c_void, bytes: isize) -> i32 {
+pub unsafe fn blk_rq_integrity_map_user(rq: *mut request, ubuf: *mut kernel::ffi::c_void, bytes: isize) -> i32 {
     let mut iter: iov_iter = core::mem::zeroed();
     iov_iter_ubuf(&mut iter, rq_data_dir(rq), ubuf, bytes as usize);
     let ret = bio_integrity_map_user((*rq).bio, &mut iter);
@@ -125,7 +125,7 @@ pub unsafe fn blk_integrity_merge_bio(q: *mut request_queue, req: *mut request, 
 
 unsafe fn dev_to_bi(dev: *mut device) -> *mut blk_integrity { &mut (*(*dev_to_disk(dev)).queue).limits.integrity }
 
-pub unsafe fn blk_integrity_profile_name(bi: *mut blk_integrity) -> *const core::ffi::c_char {
+pub unsafe fn blk_integrity_profile_name(bi: *mut blk_integrity) -> *const kernel::ffi::c_char {
     match (*bi).csum_type {
         BLK_INTEGRITY_CSUM_IP => if (*bi).flags & BLK_INTEGRITY_REF_TAG != 0 { b"T10-DIF-TYPE1-IP\0".as_ptr() as _ } else { b"T10-DIF-TYPE3-IP\0".as_ptr() as _ },
         BLK_INTEGRITY_CSUM_CRC => if (*bi).flags & BLK_INTEGRITY_REF_TAG != 0 { b"T10-DIF-TYPE1-CRC\0".as_ptr() as _ } else { b"T10-DIF-TYPE3-CRC\0".as_ptr() as _ },
@@ -137,7 +137,7 @@ pub unsafe fn blk_integrity_profile_name(bi: *mut blk_integrity) -> *const core:
 // The remaining sysfs show/store helpers and DEVICE_ATTR/attribute_group declarations
 // are preserved below using their kernel-provided Rust equivalents.
 
-unsafe fn flag_store(dev: *mut device, page: *const core::ffi::c_char, count: usize, flag: u8) -> isize {
+unsafe fn flag_store(dev: *mut device, page: *const kernel::ffi::c_char, count: usize, flag: u8) -> isize {
     let q = (*dev_to_disk(dev)).queue;
     let mut lim = queue_limits_start_update(q);
     let mut val: u64 = 0;
@@ -149,19 +149,19 @@ unsafe fn flag_store(dev: *mut device, page: *const core::ffi::c_char, count: us
     count as isize
 }
 
-unsafe fn flag_show(dev: *mut device, page: *mut core::ffi::c_char, flag: u8) -> isize {
+unsafe fn flag_show(dev: *mut device, page: *mut kernel::ffi::c_char, flag: u8) -> isize {
     let bi = dev_to_bi(dev);
     sysfs_emit(page, b"%d\n\0".as_ptr() as _, ((*bi).flags & flag == 0) as i32) as isize
 }
 
-unsafe fn format_show(dev: *mut device, _attr: *mut device_attribute, page: *mut core::ffi::c_char) -> isize { let bi = dev_to_bi(dev); if (*bi).metadata_size == 0 { sysfs_emit(page, b"none\n\0".as_ptr() as _) as isize } else { sysfs_emit(page, b"%s\n\0".as_ptr() as _, blk_integrity_profile_name(bi)) as isize } }
-unsafe fn tag_size_show(dev: *mut device, _attr: *mut device_attribute, page: *mut core::ffi::c_char) -> isize { sysfs_emit(page, b"%u\n\0".as_ptr() as _, (*dev_to_bi(dev)).tag_size) as isize }
-unsafe fn protection_interval_bytes_show(dev: *mut device, _attr: *mut device_attribute, page: *mut core::ffi::c_char) -> isize { let v = (*dev_to_bi(dev)).interval_exp; sysfs_emit(page, b"%u\n\0".as_ptr() as _, if v != 0 { 1u32 << v } else { 0 }) as isize }
-unsafe fn read_verify_store(dev: *mut device, _attr: *mut device_attribute, page: *const core::ffi::c_char, count: usize) -> isize { flag_store(dev, page, count, BLK_INTEGRITY_NOVERIFY) }
-unsafe fn read_verify_show(dev: *mut device, _attr: *mut device_attribute, page: *mut core::ffi::c_char) -> isize { flag_show(dev, page, BLK_INTEGRITY_NOVERIFY) }
-unsafe fn write_generate_store(dev: *mut device, _attr: *mut device_attribute, page: *const core::ffi::c_char, count: usize) -> isize { flag_store(dev, page, count, BLK_INTEGRITY_NOGENERATE) }
-unsafe fn write_generate_show(dev: *mut device, _attr: *mut device_attribute, page: *mut core::ffi::c_char) -> isize { flag_show(dev, page, BLK_INTEGRITY_NOGENERATE) }
-unsafe fn device_is_integrity_capable_show(dev: *mut device, _attr: *mut device_attribute, page: *mut core::ffi::c_char) -> isize { sysfs_emit(page, b"%u\n\0".as_ptr() as _, ((*dev_to_bi(dev)).flags & BLK_INTEGRITY_DEVICE_CAPABLE != 0) as u32) as isize }
+unsafe fn format_show(dev: *mut device, _attr: *mut device_attribute, page: *mut kernel::ffi::c_char) -> isize { let bi = dev_to_bi(dev); if (*bi).metadata_size == 0 { sysfs_emit(page, b"none\n\0".as_ptr() as _) as isize } else { sysfs_emit(page, b"%s\n\0".as_ptr() as _, blk_integrity_profile_name(bi)) as isize } }
+unsafe fn tag_size_show(dev: *mut device, _attr: *mut device_attribute, page: *mut kernel::ffi::c_char) -> isize { sysfs_emit(page, b"%u\n\0".as_ptr() as _, (*dev_to_bi(dev)).tag_size) as isize }
+unsafe fn protection_interval_bytes_show(dev: *mut device, _attr: *mut device_attribute, page: *mut kernel::ffi::c_char) -> isize { let v = (*dev_to_bi(dev)).interval_exp; sysfs_emit(page, b"%u\n\0".as_ptr() as _, if v != 0 { 1u32 << v } else { 0 }) as isize }
+unsafe fn read_verify_store(dev: *mut device, _attr: *mut device_attribute, page: *const kernel::ffi::c_char, count: usize) -> isize { flag_store(dev, page, count, BLK_INTEGRITY_NOVERIFY) }
+unsafe fn read_verify_show(dev: *mut device, _attr: *mut device_attribute, page: *mut kernel::ffi::c_char) -> isize { flag_show(dev, page, BLK_INTEGRITY_NOVERIFY) }
+unsafe fn write_generate_store(dev: *mut device, _attr: *mut device_attribute, page: *const kernel::ffi::c_char, count: usize) -> isize { flag_store(dev, page, count, BLK_INTEGRITY_NOGENERATE) }
+unsafe fn write_generate_show(dev: *mut device, _attr: *mut device_attribute, page: *mut kernel::ffi::c_char) -> isize { flag_show(dev, page, BLK_INTEGRITY_NOGENERATE) }
+unsafe fn device_is_integrity_capable_show(dev: *mut device, _attr: *mut device_attribute, page: *mut kernel::ffi::c_char) -> isize { sysfs_emit(page, b"%u\n\0".as_ptr() as _, ((*dev_to_bi(dev)).flags & BLK_INTEGRITY_DEVICE_CAPABLE != 0) as u32) as isize }
 
 // DEVICE_ATTR_RO(format), DEVICE_ATTR_RO(tag_size), DEVICE_ATTR_RO(protection_interval_bytes),
 // DEVICE_ATTR_RW(read_verify), DEVICE_ATTR_RW(write_generate),

@@ -8,14 +8,14 @@
 pub const ARCH_SUPPORTS_FTRACE_OPS: i32 = 1;
 
 extern "C" {
-    pub fn return_address(level: u32) -> *mut core::ffi::c_void;
+    pub fn return_address(level: u32) -> *mut kernel::ffi::c_void;
     pub fn _mcount();
     pub fn ftrace_call_adjust(addr: usize) -> usize;
     pub fn arch_ftrace_get_symaddr(fentry_ip: usize) -> usize;
 }
 
 #[inline]
-pub unsafe fn ftrace_return_address(n: u32) -> *mut core::ffi::c_void {
+pub unsafe fn ftrace_return_address(n: u32) -> *mut kernel::ffi::c_void {
     return_address(n)
 }
 
@@ -33,8 +33,8 @@ pub unsafe fn arch_trace_is_compat_syscall(_regs: *mut pt_regs) -> bool {
 
 // ARCH_HAS_SYSCALL_MATCH_SYM_NAME
 #[inline]
-pub unsafe fn arch_syscall_match_sym_name(sym: *const core::ffi::c_char,
-                                          name: *const core::ffi::c_char) -> bool {
+pub unsafe fn arch_syscall_match_sym_name(sym: *const kernel::ffi::c_char,
+                                          name: *const kernel::ffi::c_char) -> bool {
     // Since all syscall functions have __riscv_ prefix, we must skip it.
     // Compat syscalls are ignored, so __riscv_compat_ is not relevant here.
     strcmp(sym.add(8), name) == 0
@@ -98,7 +98,7 @@ pub const MCOUNT_NOP4_SIZE: usize = 4;
 #[cfg(CONFIG_DYNAMIC_FTRACE)]
 extern "C" {
     pub fn ftrace_init_nop(mod_: *mut module, rec: *mut dyn_ftrace) -> i32;
-    pub fn ftrace_regs_query_register_offset(name: *const core::ffi::c_char) -> i32;
+    pub fn ftrace_regs_query_register_offset(name: *const kernel::ffi::c_char) -> i32;
     pub fn ftrace_graph_func(ip: usize, parent_ip: usize, op: *mut ftrace_ops,
                              fregs: *mut ftrace_regs);
 }

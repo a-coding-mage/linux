@@ -16,35 +16,35 @@ pub struct rv_sts_ops {
     pub mon: rv_kunit_mon,
     /* Preserved from: #ifdef CONFIG_X86_LOCAL_APIC */
     #[cfg(CONFIG_X86_LOCAL_APIC)]
-    pub handle_vector_irq_entry: Option<unsafe extern "C" fn(data: *mut core::ffi::c_void, vector: core::ffi::c_int)>,
+    pub handle_vector_irq_entry: Option<unsafe extern "C" fn(data: *mut kernel::ffi::c_void, vector: kernel::ffi::c_int)>,
     pub handle_irq_disable: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
-        ip: core::ffi::c_ulong,
-        parent_ip: core::ffi::c_ulong,
+        data: *mut kernel::ffi::c_void,
+        ip: kernel::ffi::c_ulong,
+        parent_ip: kernel::ffi::c_ulong,
     )>,
     pub handle_irq_enable: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
-        ip: core::ffi::c_ulong,
-        parent_ip: core::ffi::c_ulong,
+        data: *mut kernel::ffi::c_void,
+        ip: kernel::ffi::c_ulong,
+        parent_ip: kernel::ffi::c_ulong,
     )>,
     pub handle_irq_entry: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
-        irq: core::ffi::c_int,
+        data: *mut kernel::ffi::c_void,
+        irq: kernel::ffi::c_int,
         action: *mut irqaction,
     )>,
     pub handle_sched_switch: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         preempt: bool,
         prev: *mut task_struct,
         next: *mut task_struct,
-        prev_state: core::ffi::c_uint,
+        prev_state: kernel::ffi::c_uint,
     )>,
     pub handle_schedule_entry: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         preempt: bool,
     )>,
     pub handle_schedule_exit: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         is_switch: bool,
     )>,
 }

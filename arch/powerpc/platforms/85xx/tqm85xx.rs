@@ -46,30 +46,30 @@ pub struct device {
 extern "C" {
     static mut ppc_md: ppc_machine_desc;
     fn mpic_alloc(
-        node: *mut core::ffi::c_void,
+        node: *mut kernel::ffi::c_void,
         flags: u32,
         senses: u32,
         isu_size: u32,
         irq_count: u32,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> *mut mpic;
     fn mpic_init(mpic: *mut mpic);
     fn mpc85xx_cpm2_pic_init();
     fn cpm2_reset();
     fn fsl_pci_assign_primary();
     fn mfspr(spr: u32) -> u32;
-    fn seq_printf(m: *mut seq_file, format: *const core::ffi::c_char, ...);
-    fn machine_is(machine: *const core::ffi::c_char) -> bool;
-    fn dev_info(dev: *mut device, format: *const core::ffi::c_char, ...);
+    fn seq_printf(m: *mut seq_file, format: *const kernel::ffi::c_char, ...);
+    fn machine_is(machine: *const kernel::ffi::c_char) -> bool;
+    fn dev_info(dev: *mut device, format: *const kernel::ffi::c_char, ...);
     fn pci_read_config_dword(dev: *mut pci_dev, where_: u32, val: *mut u32);
     fn pci_write_config_dword(dev: *mut pci_dev, where_: u32, val: u32);
     fn mpic_get_irq() -> u32;
-    fn udbg_progress(message: *const core::ffi::c_char, hex: u32);
+    fn udbg_progress(message: *const kernel::ffi::c_char, hex: u32);
 }
 
 #[repr(C)]
 pub struct ppc_machine_desc {
-    pub progress: Option<unsafe extern "C" fn(*const core::ffi::c_char, u32)>,
+    pub progress: Option<unsafe extern "C" fn(*const kernel::ffi::c_char, u32)>,
 }
 
 const MPIC_BIG_ENDIAN: u32 = 1;
@@ -79,12 +79,12 @@ const SPRN_HID1: u32 = 1009;
 const PCI_VENDOR_ID_TI: u32 = 0x104c;
 const PCI_DEVICE_ID_TI_1520: u32 = 0xac50;
 
-static BOARD: [*const core::ffi::c_char; 6] = [
-    b"tqc,tqm8540\0".as_ptr() as *const core::ffi::c_char,
-    b"tqc,tqm8541\0".as_ptr() as *const core::ffi::c_char,
-    b"tqc,tqm8548\0".as_ptr() as *const core::ffi::c_char,
-    b"tqc,tqm8555\0".as_ptr() as *const core::ffi::c_char,
-    b"tqc,tqm8560\0".as_ptr() as *const core::ffi::c_char,
+static BOARD: [*const kernel::ffi::c_char; 6] = [
+    b"tqc,tqm8540\0".as_ptr() as *const kernel::ffi::c_char,
+    b"tqc,tqm8541\0".as_ptr() as *const kernel::ffi::c_char,
+    b"tqc,tqm8548\0".as_ptr() as *const kernel::ffi::c_char,
+    b"tqc,tqm8555\0".as_ptr() as *const kernel::ffi::c_char,
+    b"tqc,tqm8560\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -95,7 +95,7 @@ unsafe fn tqm85xx_pic_init() {
         MPIC_BIG_ENDIAN,
         0,
         256,
-        b" OpenPIC  \0".as_ptr() as *const core::ffi::c_char,
+        b" OpenPIC  \0".as_ptr() as *const kernel::ffi::c_char,
     );
     assert!(!mpic.is_null());
     mpic_init(mpic);
@@ -109,7 +109,7 @@ unsafe fn tqm85xx_pic_init() {
 unsafe fn tqm85xx_setup_arch() {
     if let Some(progress) = ppc_md.progress {
         progress(
-            b"tqm85xx_setup_arch()\0".as_ptr() as *const core::ffi::c_char,
+            b"tqm85xx_setup_arch()\0".as_ptr() as *const kernel::ffi::c_char,
             0,
         );
     }

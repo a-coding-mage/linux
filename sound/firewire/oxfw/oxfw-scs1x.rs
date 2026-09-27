@@ -8,12 +8,12 @@
 
 // Rust translation of implementation depending on declarations from "oxfw.h".
 
-use core::ffi::{c_int, c_uint, c_ulonglong, c_void};
+use kernel::ffi::{c_int, c_uint, c_ulonglong, c_void};
 use core::mem::size_of;
 use core::ptr;
 
-type u8 = core::ffi::c_uchar;
-type u64 = core::ffi::c_ulonglong;
+type u8 = kernel::ffi::c_uchar;
+type u64 = kernel::ffi::c_ulonglong;
 type size_t = usize;
 type bool_t = bool;
 type __be64 = u64;
@@ -108,7 +108,7 @@ pub struct device {
 #[repr(C)]
 pub struct snd_card {
     pub card_dev: device,
-    pub shortname: [core::ffi::c_char; 32],
+    pub shortname: [kernel::ffi::c_char; 32],
 }
 
 #[repr(C)]
@@ -122,7 +122,7 @@ pub struct snd_oxfw {
 pub struct snd_rawmidi {
     pub private_data: *mut c_void,
     pub private_free: Option<unsafe extern "C" fn(*mut snd_rawmidi)>,
-    pub name: [core::ffi::c_char; 80],
+    pub name: [kernel::ffi::c_char; 80],
     pub info_flags: c_uint,
 }
 
@@ -201,16 +201,16 @@ unsafe extern "C" {
     fn fw_parent_device(unit: *mut fw_unit) -> *mut fw_device;
     fn snd_rawmidi_new(
         card: *mut snd_card,
-        id: *const core::ffi::c_char,
+        id: *const kernel::ffi::c_char,
         device: c_int,
         output_count: c_int,
         input_count: c_int,
         rmidi: *mut *mut snd_rawmidi,
     ) -> c_int;
     fn snprintf(
-        s: *mut core::ffi::c_char,
+        s: *mut kernel::ffi::c_char,
         maxlen: size_t,
-        format: *const core::ffi::c_char,
+        format: *const kernel::ffi::c_char,
         ...
     ) -> c_int;
     fn snd_rawmidi_set_ops(rmidi: *mut snd_rawmidi, stream: c_int, ops: *const snd_rawmidi_ops);

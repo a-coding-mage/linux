@@ -24,7 +24,7 @@ macro_rules! __tagtable {
 
 extern "C" {
     pub fn arm_add_memory(start: u64, size: u64) -> i32;
-    pub fn early_print(str_: *const core::ffi::c_char, ...);
+    pub fn early_print(str_: *const kernel::ffi::c_char, ...);
     pub fn dump_machine_table();
 }
 
@@ -72,6 +72,6 @@ pub struct ScreenInfo {
     _private: [u8; 0],
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

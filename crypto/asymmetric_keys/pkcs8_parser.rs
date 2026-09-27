@@ -10,11 +10,11 @@
 #[repr(C)]
 pub struct Pkcs8ParseContext {
     pub pub_: *mut public_key,
-    pub data: libc::c_ulong, // Start of data
+    pub data: kernel::ffi::c_ulong, // Start of data
     pub last_oid: OID,       // Last OID encountered
     pub algo_oid: OID,       // Algorithm OID
     pub key_size: u32,
-    pub key: *const libc::c_void,
+    pub key: *const kernel::ffi::c_void,
 }
 
 /*
@@ -22,12 +22,12 @@ pub struct Pkcs8ParseContext {
  * interpret it.
  */
 pub unsafe extern "C" fn pkcs8_note_OID(
-    context: *mut libc::c_void,
+    context: *mut kernel::ffi::c_void,
     _hdrlen: usize,
-    _tag: libc::c_uchar,
-    value: *const libc::c_void,
+    _tag: kernel::ffi::c_uchar,
+    value: *const kernel::ffi::c_void,
     vlen: usize,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let ctx = &mut *(context as *mut Pkcs8ParseContext);
 
     ctx.last_oid = look_up_OID(value, vlen);
@@ -36,7 +36,7 @@ pub unsafe extern "C" fn pkcs8_note_OID(
         sprint_oid(value, vlen, buffer.as_mut_ptr(), buffer.len());
         pr_info!(
             "Unknown OID: [{}] {}\n",
-            (value as libc::c_ulong).wrapping_sub(ctx.data),
+            (value as kernel::ffi::c_ulong).wrapping_sub(ctx.data),
             buffer.as_ptr()
         );
     }
@@ -47,12 +47,12 @@ pub unsafe extern "C" fn pkcs8_note_OID(
  * Note the version number of the ASN.1 blob.
  */
 pub unsafe extern "C" fn pkcs8_note_version(
-    _context: *mut libc::c_void,
+    _context: *mut kernel::ffi::c_void,
     _hdrlen: usize,
-    _tag: libc::c_uchar,
-    value: *const libc::c_void,
+    _tag: kernel::ffi::c_uchar,
+    value: *const kernel::ffi::c_void,
     vlen: usize,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     if vlen != 1 || *(value as *const u8) != 0 {
         pr_warn!("Unsupported PKCS#8 version\n");
         return -EBADMSG;
@@ -64,19 +64,19 @@ pub unsafe extern "C" fn pkcs8_note_version(
  * Note the public algorithm.
  */
 pub unsafe extern "C" fn pkcs8_note_algo(
-    context: *mut libc::c_void,
+    context: *mut kernel::ffi::c_void,
     _hdrlen: usize,
-    _tag: libc::c_uchar,
-    _value: *const libc::c_void,
+    _tag: kernel::ffi::c_uchar,
+    _value: *const kernel::ffi::c_void,
     _vlen: usize,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let ctx = &mut *(context as *mut Pkcs8ParseContext);
 
     if ctx.last_oid != OID_rsaEncryption {
         return -ENOPKG;
     }
 
-    (*ctx.pub_).pkey_algo = b"rsa\0".as_ptr() as *const libc::c_char;
+    (*ctx.pub_).pkey_algo = b"rsa\0".as_ptr() as *const kernel::ffi::c_char;
     0
 }
 
@@ -84,12 +84,12 @@ pub unsafe extern "C" fn pkcs8_note_algo(
  * Note the key data of the ASN.1 blob.
  */
 pub unsafe extern "C" fn pkcs8_note_key(
-    context: *mut libc::c_void,
+    context: *mut kernel::ffi::c_void,
     _hdrlen: usize,
-    _tag: libc::c_uchar,
-    value: *const libc::c_void,
+    _tag: kernel::ffi::c_uchar,
+    value: *const kernel::ffi::c_void,
     vlen: usize,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let ctx = &mut *(context as *mut Pkcs8ParseContext);
 
     ctx.key = value;
@@ -100,18 +100,18 @@ pub unsafe extern "C" fn pkcs8_note_key(
 /*
  * Parse a PKCS#8 private key blob.
  */
-unsafe fn pkcs8_parse(data: *const libc::c_void, datalen: usize) -> *mut public_key {
+unsafe fn pkcs8_parse(data: *const kernel::ffi::c_void, datalen: usize) -> *mut public_key {
     let mut ctx: Pkcs8ParseContext = core::mem::zeroed();
-    let mut ret: libc::c_long;
+    let mut ret: kernel::ffi::c_long;
     let pub_: *mut public_key;
 
-    ret = -ENOMEM as libc::c_long;
+    ret = -ENOMEM as kernel::ffi::c_long;
     ctx.pub_ = kzalloc_obj::<public_key>();
     if ctx.pub_.is_null() {
         return ERR_PTR(ret);
     }
 
-    ctx.data = data as libc::c_ulong;
+    ctx.data = data as kernel::ffi::c_ulong;
 
     /* Attempt to decode the private key */
     ret = asn1_ber_decoder(&pkcs8_decoder, &mut ctx, data, datalen);
@@ -120,7 +120,7 @@ unsafe fn pkcs8_parse(data: *const libc::c_void, datalen: usize) -> *mut public_
         return ERR_PTR(ret);
     }
 
-    ret = -ENOMEM as libc::c_long;
+    ret = -ENOMEM as kernel::ffi::c_long;
     pub_ = ctx.pub_;
     (*pub_).key = kmemdup(ctx.key, ctx.key_size as usize, GFP_KERNEL);
     if (*pub_).key.is_null() {
@@ -136,14 +136,14 @@ unsafe fn pkcs8_parse(data: *const libc::c_void, datalen: usize) -> *mut public_
 /*
  * Attempt to parse a data blob for a key as a PKCS#8 private key.
  */
-unsafe fn pkcs8_key_preparse(prep: *mut key_preparsed_payload) -> libc::c_int {
+unsafe fn pkcs8_key_preparse(prep: *mut key_preparsed_payload) -> kernel::ffi::c_int {
     let pub_ = pkcs8_parse((*prep).data, (*prep).datalen);
     if IS_ERR(pub_) {
         return PTR_ERR(pub_);
     }
 
     pr_devel!("Cert Key Algo: %s\n", (*pub_).pkey_algo);
-    (*pub_).id_type = b"PKCS8\0".as_ptr() as *const libc::c_char;
+    (*pub_).id_type = b"PKCS8\0".as_ptr() as *const kernel::ffi::c_char;
 
     /* We're pinning the module by being linked against it */
     __module_get(public_key_subtype.owner);
@@ -157,12 +157,12 @@ unsafe fn pkcs8_key_preparse(prep: *mut key_preparsed_payload) -> libc::c_int {
 
 static mut pkcs8_key_parser: asymmetric_key_parser = asymmetric_key_parser {
     owner: THIS_MODULE,
-    name: b"pkcs8\0".as_ptr() as *const libc::c_char,
+    name: b"pkcs8\0".as_ptr() as *const kernel::ffi::c_char,
     parse: Some(pkcs8_key_preparse),
 };
 
 /* Module stuff */
-unsafe extern "C" fn pkcs8_key_init() -> libc::c_int {
+unsafe extern "C" fn pkcs8_key_init() -> kernel::ffi::c_int {
     register_asymmetric_key_parser(&mut pkcs8_key_parser)
 }
 

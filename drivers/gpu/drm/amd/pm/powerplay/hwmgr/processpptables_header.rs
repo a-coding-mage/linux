@@ -35,28 +35,28 @@ extern "C" {
 pub type pp_tables_hw_clock_info_callback = unsafe extern "C" fn(
     hwmgr: *mut pp_hwmgr,
     hw_ps: *mut pp_hw_power_state,
-    index: ::core::ffi::c_uint,
-    clock_info: *const ::core::ffi::c_void,
-) -> ::core::ffi::c_int;
+    index: ::kernel::ffi::c_uint,
+    clock_info: *const ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int;
 
 extern "C" {
     pub fn pp_tables_get_num_of_entries(
         hwmgr: *mut pp_hwmgr,
-        num_of_entries: *mut ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        num_of_entries: *mut ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn pp_tables_get_entry(
         hwmgr: *mut pp_hwmgr,
-        entry_index: ::core::ffi::c_ulong,
+        entry_index: ::kernel::ffi::c_ulong,
         ps: *mut pp_power_state,
         func: pp_tables_hw_clock_info_callback,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn pp_tables_get_response_times(
         hwmgr: *mut pp_hwmgr,
         vol_rep_time: *mut u32,
         bb_rep_time: *mut u32,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

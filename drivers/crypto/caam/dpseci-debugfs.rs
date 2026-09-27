@@ -19,7 +19,7 @@ struct device;
 struct dentry;
 #[allow(non_camel_case_types)]
 struct seq_file {
-    private: *mut core::ffi::c_void,
+    private: *mut kernel::ffi::c_void,
 }
 #[allow(non_camel_case_types)]
 struct dpaa2_queue_attr {
@@ -29,23 +29,23 @@ struct dpaa2_queue_attr {
 struct file_operations;
 
 extern "C" {
-    fn dev_name(dev: *const device) -> *const core::ffi::c_char;
-    fn seq_printf(file: *mut seq_file, format: *const core::ffi::c_char, ...);
+    fn dev_name(dev: *const device) -> *const kernel::ffi::c_char;
+    fn seq_printf(file: *mut seq_file, format: *const kernel::ffi::c_char, ...);
     fn dpaa2_io_query_fq_count(
-        portal: *mut core::ffi::c_void,
+        portal: *mut kernel::ffi::c_void,
         fqid: u32,
         fcnt: *mut u32,
         bcnt: *mut u32,
     ) -> i32;
     fn debugfs_create_dir(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         parent: *mut dentry,
     ) -> *mut dentry;
     fn debugfs_create_file(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         mode: u32,
         parent: *mut dentry,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         fops: *const file_operations,
     ) -> *mut dentry;
     fn debugfs_remove_recursive(dentry: *mut dentry);
@@ -58,7 +58,7 @@ extern "C" {
 
 unsafe extern "C" fn dpseci_dbg_fqs_show(
     file: *mut seq_file,
-    _offset: *mut core::ffi::c_void,
+    _offset: *mut kernel::ffi::c_void,
 ) -> i32 {
     let priv_ = (*file).private as *mut dpaa2_caam_priv;
     let mut fqid: u32;
@@ -121,7 +121,7 @@ pub unsafe extern "C" fn dpaa2_dpseci_debugfs_init(priv_: *mut dpaa2_caam_priv) 
         c"fq_stats".as_ptr(),
         0o444,
         (*priv_).dfs_root,
-        priv_ as *mut core::ffi::c_void,
+        priv_ as *mut kernel::ffi::c_void,
         &dpseci_dbg_fqs_fops,
     );
 }

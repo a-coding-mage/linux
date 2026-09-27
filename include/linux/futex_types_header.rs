@@ -19,7 +19,7 @@ pub struct futex_sched_data {
     pub pi_state_list: list_head,
     pub pi_state_cache: *mut futex_pi_state,
     pub exit_mutex: mutex,
-    pub state: ::core::ffi::c_uint,
+    pub state: ::kernel::ffi::c_uint,
 }
 
 #[cfg(all(CONFIG_FUTEX, CONFIG_FUTEX_PRIVATE_HASH))]
@@ -27,10 +27,10 @@ pub struct futex_mm_phash {
     pub lock: mutex,
     pub hash: *mut futex_private_hash,
     pub hash_new: *mut futex_private_hash,
-    pub batches: ::core::ffi::c_ulong,
+    pub batches: ::kernel::ffi::c_ulong,
     pub rcu: rcu_head,
     pub atomic: atomic_long_t,
-    pub r#ref: *mut ::core::ffi::c_uint,
+    pub r#ref: *mut ::kernel::ffi::c_uint,
 }
 
 #[cfg(all(CONFIG_FUTEX, not(CONFIG_FUTEX_PRIVATE_HASH)))]
@@ -38,9 +38,9 @@ pub struct futex_mm_phash;
 
 #[cfg(all(CONFIG_FUTEX, CONFIG_FUTEX_ROBUST_UNLOCK))]
 pub struct futex_unlock_cs_range {
-    pub start_ip: ::core::ffi::c_ulong,
-    pub len: ::core::ffi::c_uint,
-    pub pop_size32: ::core::ffi::c_uint,
+    pub start_ip: ::kernel::ffi::c_ulong,
+    pub len: ::kernel::ffi::c_uint,
+    pub pop_size32: ::kernel::ffi::c_uint,
 }
 
 #[cfg(all(CONFIG_FUTEX, CONFIG_FUTEX_ROBUST_UNLOCK))]

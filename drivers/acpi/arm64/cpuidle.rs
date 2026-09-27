@@ -46,7 +46,7 @@ extern "C" {
 
     fn psci_power_state_is_valid(state: u32) -> bool;
     fn psci_cpu_suspend_enter(index: u32, state: u32) -> i32;
-    fn pr_warn(format: *const core::ffi::c_char, ...);
+    fn pr_warn(format: *const kernel::ffi::c_char, ...);
 }
 
 #[inline]
@@ -78,7 +78,7 @@ unsafe fn psci_acpi_cpu_init_idle(cpu: u32) -> i32 {
          */
         let state = (*lpi).address as u32;
         if !psci_power_state_is_valid(state) {
-            pr_warn(b"Invalid PSCI power state %#x\n\0".as_ptr() as *const core::ffi::c_char, state);
+            pr_warn(b"Invalid PSCI power state %#x\n\0".as_ptr() as *const kernel::ffi::c_char, state);
             return -EINVAL;
         }
         i += 1;

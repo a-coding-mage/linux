@@ -31,13 +31,13 @@ pub struct clk_rate_request;
 #[repr(C)]
 pub struct mtk_pll_div_table {
     pub div: u32,
-    pub freq: ::core::ffi::c_ulong,
+    pub freq: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct mtk_pll_data {
     pub id: i32,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub reg: u32,
     pub pwr_reg: u32,
     pub en_mask: u32,
@@ -50,15 +50,15 @@ pub struct mtk_pll_data {
     pub flags: u32,
     pub ops: *const clk_ops,
     pub rst_bar_mask: u32,
-    pub fmin: ::core::ffi::c_ulong,
-    pub fmax: ::core::ffi::c_ulong,
+    pub fmin: ::kernel::ffi::c_ulong,
+    pub fmax: ::kernel::ffi::c_ulong,
     pub pcwbits: i32,
     pub pcwibits: i32,
     pub pcw_reg: u32,
     pub pcw_shift: i32,
     pub pcw_chg_reg: u32,
     pub div_table: *const mtk_pll_div_table,
-    pub parent_name: *const ::core::ffi::c_char,
+    pub parent_name: *const ::kernel::ffi::c_char,
     pub en_reg: u32,
     pub en_set_reg: u32,
     pub en_clr_reg: u32,
@@ -77,17 +77,17 @@ pub struct mtk_pll_data {
 pub struct mtk_clk_pll {
     pub dev: *mut device,
     pub hw: clk_hw,
-    pub base_addr: *mut ::core::ffi::c_void,
-    pub pd_addr: *mut ::core::ffi::c_void,
-    pub pwr_addr: *mut ::core::ffi::c_void,
-    pub tuner_addr: *mut ::core::ffi::c_void,
-    pub tuner_en_addr: *mut ::core::ffi::c_void,
-    pub pcw_addr: *mut ::core::ffi::c_void,
-    pub pcw_chg_addr: *mut ::core::ffi::c_void,
-    pub en_addr: *mut ::core::ffi::c_void,
-    pub en_set_addr: *mut ::core::ffi::c_void,
-    pub en_clr_addr: *mut ::core::ffi::c_void,
-    pub fenc_addr: *mut ::core::ffi::c_void,
+    pub base_addr: *mut ::kernel::ffi::c_void,
+    pub pd_addr: *mut ::kernel::ffi::c_void,
+    pub pwr_addr: *mut ::kernel::ffi::c_void,
+    pub tuner_addr: *mut ::kernel::ffi::c_void,
+    pub tuner_en_addr: *mut ::kernel::ffi::c_void,
+    pub pcw_addr: *mut ::kernel::ffi::c_void,
+    pub pcw_chg_addr: *mut ::kernel::ffi::c_void,
+    pub en_addr: *mut ::kernel::ffi::c_void,
+    pub en_set_addr: *mut ::kernel::ffi::c_void,
+    pub en_clr_addr: *mut ::kernel::ffi::c_void,
+    pub fenc_addr: *mut ::kernel::ffi::c_void,
     pub data: *const mtk_pll_data,
 }
 
@@ -101,18 +101,18 @@ extern "C" {
     pub fn mtk_pll_is_prepared(hw: *mut clk_hw) -> i32;
     pub fn mtk_pll_prepare(hw: *mut clk_hw) -> i32;
     pub fn mtk_pll_unprepare(hw: *mut clk_hw);
-    pub fn mtk_pll_recalc_rate(hw: *mut clk_hw, parent_rate: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
+    pub fn mtk_pll_recalc_rate(hw: *mut clk_hw, parent_rate: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
     pub fn mtk_pll_calc_values(pll: *mut mtk_clk_pll, pcw: *mut u32, postdiv: *mut u32,
                                freq: u32, fin: u32);
-    pub fn mtk_pll_set_rate(hw: *mut clk_hw, rate: ::core::ffi::c_ulong,
-                            parent_rate: ::core::ffi::c_ulong) -> i32;
+    pub fn mtk_pll_set_rate(hw: *mut clk_hw, rate: ::kernel::ffi::c_ulong,
+                            parent_rate: ::kernel::ffi::c_ulong) -> i32;
     pub fn mtk_pll_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request) -> i32;
     pub fn mtk_clk_register_pll_ops(pll: *mut mtk_clk_pll, data: *const mtk_pll_data,
-                                    base: *mut ::core::ffi::c_void, pll_ops: *const clk_ops) -> *mut clk_hw;
+                                    base: *mut ::kernel::ffi::c_void, pll_ops: *const clk_ops) -> *mut clk_hw;
     pub fn mtk_clk_register_pll(dev: *mut device, data: *const mtk_pll_data,
-                                base: *mut ::core::ffi::c_void) -> *mut clk_hw;
+                                base: *mut ::kernel::ffi::c_void) -> *mut clk_hw;
     pub fn mtk_clk_unregister_pll(hw: *mut clk_hw);
-    pub fn mtk_clk_pll_get_base(hw: *mut clk_hw, data: *const mtk_pll_data) -> *mut ::core::ffi::c_void;
+    pub fn mtk_clk_pll_get_base(hw: *mut clk_hw, data: *const mtk_pll_data) -> *mut ::kernel::ffi::c_void;
 }
 
 #[inline]

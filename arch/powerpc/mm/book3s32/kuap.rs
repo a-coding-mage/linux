@@ -8,7 +8,7 @@ extern "C" {
     fn mfsr(segment: u32) -> u32;
     fn isync();
     fn smp_processor_id() -> u32;
-    fn pr_info(message: *const core::ffi::c_char);
+    fn pr_info(message: *const kernel::ffi::c_char);
 
     static mut init_mm: MmStruct;
     static mut current: *mut TaskStruct;
@@ -62,7 +62,7 @@ pub unsafe fn setup_kuap(disabled: bool) {
         (*cur_cpu_spec).mmu_features &= !MMU_FTR_KUAP;
     } else {
         pr_info(b"Activating Kernel Userspace Access Protection\n\0".as_ptr()
-            as *const core::ffi::c_char);
+            as *const kernel::ffi::c_char);
     }
 }
 

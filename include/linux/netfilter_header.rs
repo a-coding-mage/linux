@@ -42,7 +42,7 @@ pub struct nf_hook_state {
     pub okfn: Option<unsafe extern "C" fn(*mut net, *mut sock, *mut sk_buff) -> i32>,
 }
 
-pub type nf_hookfn = unsafe extern "C" fn(*mut core::ffi::c_void, *mut sk_buff, *const nf_hook_state) -> u32;
+pub type nf_hookfn = unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut sk_buff, *const nf_hook_state) -> u32;
 
 #[repr(C)]
 pub enum nf_hook_ops_type { NF_HOOK_OP_UNDEFINED, NF_HOOK_OP_NF_TABLES, NF_HOOK_OP_BPF, NF_HOOK_OP_NFT_FT, NF_HOOK_OP_NAT }
@@ -53,15 +53,15 @@ pub struct nf_hook_ops {
     pub rcu: rcu_head,
     pub hook: Option<nf_hookfn>,
     pub dev: *mut net_device,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
     pub pf: u8,
     pub hook_ops_type: u8,
     pub hooknum: u32,
     pub priority: i32,
 }
 
-#[repr(C)] pub struct nf_hook_entry { pub hook: Option<nf_hookfn>, pub priv_: *mut core::ffi::c_void }
-#[repr(C)] pub struct nf_hook_entries_rcu_head { pub head: rcu_head, pub allocation: *mut core::ffi::c_void }
+#[repr(C)] pub struct nf_hook_entry { pub hook: Option<nf_hookfn>, pub priv_: *mut kernel::ffi::c_void }
+#[repr(C)] pub struct nf_hook_entries_rcu_head { pub head: rcu_head, pub allocation: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct nf_hook_entries { pub num_hook_entries: u16, pub hooks: [nf_hook_entry; 0] }
 #[repr(C)] pub struct nf_nat_lookup_hook_priv { pub entries: *mut nf_hook_entries, pub rcu_head: rcu_head }
 
@@ -91,7 +91,7 @@ pub struct nf_sockopt_ops {
     pub list: list_head, pub pf: u8, pub set_optmin: i32, pub set_optmax: i32,
     pub set: Option<unsafe extern "C" fn(*mut sock, i32, sockptr_t, u32) -> i32>,
     pub get_optmin: i32, pub get_optmax: i32,
-    pub get: Option<unsafe extern "C" fn(*mut sock, i32, *mut core::ffi::c_void, *mut i32) -> i32>,
+    pub get: Option<unsafe extern "C" fn(*mut sock, i32, *mut kernel::ffi::c_void, *mut i32) -> i32>,
     pub owner: *mut module,
 }
 
@@ -105,7 +105,7 @@ extern "C" {
     pub fn nf_hook_slow(skb: *mut sk_buff, state: *mut nf_hook_state, e: *const nf_hook_entries, i: u32) -> i32;
     pub fn nf_hook_slow_list(head: *mut list_head, state: *mut nf_hook_state, e: *const nf_hook_entries);
     pub fn nf_setsockopt(sk: *mut sock, pf: u8, optval: i32, opt: sockptr_t, len: u32) -> i32;
-    pub fn nf_getsockopt(sk: *mut sock, pf: u8, optval: i32, opt: *mut core::ffi::c_char, len: *mut i32) -> i32;
+    pub fn nf_getsockopt(sk: *mut sock, pf: u8, optval: i32, opt: *mut kernel::ffi::c_char, len: *mut i32) -> i32;
 }
 
 #[cfg(not(CONFIG_NETFILTER))]

@@ -22,7 +22,7 @@ unsafe extern "C" fn da850_init_machine() {
 }
 
 #[cfg(CONFIG_ARCH_DAVINCI_DA850)]
-static DA850_BOARDS_COMPAT: [*const core::ffi::c_char; 5] = [
+static DA850_BOARDS_COMPAT: [*const kernel::ffi::c_char; 5] = [
     c"enbw,cmc".as_ptr(),
     c"ti,da850-lcdk".as_ptr(),
     c"ti,da850-evm".as_ptr(),

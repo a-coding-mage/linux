@@ -6,30 +6,30 @@
  */
 
 extern "C" {
-    pub fn debug_user_asce(exit: ::core::ffi::c_int);
-    pub fn _copy_from_user_key(to: *mut ::core::ffi::c_void, from: *const ::core::ffi::c_void,
+    pub fn debug_user_asce(exit: ::kernel::ffi::c_int);
+    pub fn _copy_from_user_key(to: *mut ::kernel::ffi::c_void, from: *const ::kernel::ffi::c_void,
                                n: usize, key: usize) -> usize;
-    pub fn _copy_to_user_key(to: *mut ::core::ffi::c_void, from: *const ::core::ffi::c_void,
+    pub fn _copy_to_user_key(to: *mut ::kernel::ffi::c_void, from: *const ::kernel::ffi::c_void,
                              n: usize, key: usize) -> usize;
     pub fn __put_user_bad() -> !;
     pub fn __get_user_bad() -> !;
-    pub fn strncpy_from_user(dst: *mut ::core::ffi::c_char,
-                             src: *const ::core::ffi::c_char, count: isize) -> isize;
-    pub fn strnlen_user(src: *const ::core::ffi::c_char, count: isize) -> isize;
-    pub fn __s390_kernel_write(dst: *mut ::core::ffi::c_void,
-                               src: *const ::core::ffi::c_void, size: usize)
-                               -> *mut ::core::ffi::c_void;
+    pub fn strncpy_from_user(dst: *mut ::kernel::ffi::c_char,
+                             src: *const ::kernel::ffi::c_char, count: isize) -> isize;
+    pub fn strnlen_user(src: *const ::kernel::ffi::c_char, count: isize) -> isize;
+    pub fn __s390_kernel_write(dst: *mut ::kernel::ffi::c_void,
+                               src: *const ::kernel::ffi::c_void, size: usize)
+                               -> *mut ::kernel::ffi::c_void;
     pub fn __mvc_kernel_nofault_bad() -> !;
-    pub fn __cmpxchg_key1(address: *mut ::core::ffi::c_void, uval: *mut u8,
-                           old: u8, new: u8, key: usize) -> ::core::ffi::c_int;
-    pub fn __cmpxchg_key2(address: *mut ::core::ffi::c_void, uval: *mut u16,
-                           old: u16, new: u16, key: usize) -> ::core::ffi::c_int;
-    pub fn __cmpxchg_key4(address: *mut ::core::ffi::c_void, uval: *mut u32,
-                           old: u32, new: u32, key: usize) -> ::core::ffi::c_int;
-    pub fn __cmpxchg_key8(address: *mut ::core::ffi::c_void, uval: *mut usize,
-                           old: usize, new: usize, key: usize) -> ::core::ffi::c_int;
-    pub fn __cmpxchg_key16(address: *mut ::core::ffi::c_void, uval: *mut u128,
-                            old: u128, new: u128, key: usize) -> ::core::ffi::c_int;
+    pub fn __cmpxchg_key1(address: *mut ::kernel::ffi::c_void, uval: *mut u8,
+                           old: u8, new: u8, key: usize) -> ::kernel::ffi::c_int;
+    pub fn __cmpxchg_key2(address: *mut ::kernel::ffi::c_void, uval: *mut u16,
+                           old: u16, new: u16, key: usize) -> ::kernel::ffi::c_int;
+    pub fn __cmpxchg_key4(address: *mut ::kernel::ffi::c_void, uval: *mut u32,
+                           old: u32, new: u32, key: usize) -> ::kernel::ffi::c_int;
+    pub fn __cmpxchg_key8(address: *mut ::kernel::ffi::c_void, uval: *mut usize,
+                           old: usize, new: usize, key: usize) -> ::kernel::ffi::c_int;
+    pub fn __cmpxchg_key16(address: *mut ::kernel::ffi::c_void, uval: *mut u128,
+                            old: u128, new: u128, key: usize) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(feature = "kmsan"))]
@@ -68,21 +68,21 @@ pub unsafe fn raw_copy_to_user(mut to: *mut u8, mut from: *const u8, mut size: u
 }
 
 #[inline(always)]
-pub unsafe fn copy_from_user_key(to: *mut ::core::ffi::c_void, from: *const ::core::ffi::c_void,
+pub unsafe fn copy_from_user_key(to: *mut ::kernel::ffi::c_void, from: *const ::kernel::ffi::c_void,
                                 mut n: usize, key: usize) -> usize {
     if check_copy_size(to, n, false) { n = _copy_from_user_key(to, from, n, key); }
     n
 }
 
 #[inline(always)]
-pub unsafe fn copy_to_user_key(to: *mut ::core::ffi::c_void, from: *const ::core::ffi::c_void,
+pub unsafe fn copy_to_user_key(to: *mut ::kernel::ffi::c_void, from: *const ::kernel::ffi::c_void,
                               mut n: usize, key: usize) -> usize {
     if check_copy_size(from, n, true) { n = _copy_to_user_key(to, from, n, key); }
     n
 }
 
 extern "Rust" {
-    fn check_copy_size(ptr: *const ::core::ffi::c_void, n: usize, is_source: bool) -> bool;
+    fn check_copy_size(ptr: *const ::kernel::ffi::c_void, n: usize, is_source: bool) -> bool;
     fn might_fault();
     fn instrument_put_user<T>(value: T, to: *mut T, size: usize);
     fn instrument_get_user<T>(value: T);
@@ -116,14 +116,14 @@ pub unsafe fn clear_user(to: *mut u8, n: usize) -> usize {
 }
 
 #[inline]
-pub unsafe fn s390_kernel_write(dst: *mut ::core::ffi::c_void,
-                                src: *const ::core::ffi::c_void, size: usize)
-                                -> *mut ::core::ffi::c_void {
+pub unsafe fn s390_kernel_write(dst: *mut ::kernel::ffi::c_void,
+                                src: *const ::kernel::ffi::c_void, size: usize)
+                                -> *mut ::kernel::ffi::c_void {
     if cfg!(feature = "decompressor") {
         // Equivalent to memcpy(dst, src, size), supplied by the platform.
-        extern "C" { fn memcpy(dst: *mut ::core::ffi::c_void,
-                                 src: *const ::core::ffi::c_void, n: usize)
-                                 -> *mut ::core::ffi::c_void; }
+        extern "C" { fn memcpy(dst: *mut ::kernel::ffi::c_void,
+                                 src: *const ::kernel::ffi::c_void, n: usize)
+                                 -> *mut ::kernel::ffi::c_void; }
         memcpy(dst, src, size)
     } else { __s390_kernel_write(dst, src, size) }
 }

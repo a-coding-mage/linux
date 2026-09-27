@@ -51,8 +51,8 @@ pub struct IpaqMicroRxdev {
     pub state: RxState,
     pub chksum: u8,
     pub id: u8,
-    pub len: core::ffi::c_uint,
-    pub index: core::ffi::c_uint,
+    pub len: kernel::ffi::c_uint,
+    pub index: kernel::ffi::c_uint,
     pub buf: [u8; RX_BUF_SIZE],
 }
 
@@ -72,29 +72,29 @@ pub struct IpaqMicroMsg {
 #[repr(C)]
 pub struct IpaqMicro {
     pub dev: *mut Device,
-    pub base: *mut core::ffi::c_void,
-    pub sdlc: *mut core::ffi::c_void,
-    pub version: [core::ffi::c_char; 5],
+    pub base: *mut kernel::ffi::c_void,
+    pub sdlc: *mut kernel::ffi::c_void,
+    pub version: [kernel::ffi::c_char; 5],
     pub tx: IpaqMicroTxdev, /* transmit ISR state */
     pub rx: IpaqMicroRxdev, /* receive ISR state */
     pub lock: Spinlock,
     pub msg: *mut IpaqMicroMsg,
     pub queue: ListHead,
-    pub key: Option<unsafe extern "C" fn(*mut core::ffi::c_void, core::ffi::c_int, *mut u8)>,
-    pub key_data: *mut core::ffi::c_void,
-    pub ts: Option<unsafe extern "C" fn(*mut core::ffi::c_void, core::ffi::c_int, *mut u8)>,
-    pub ts_data: *mut core::ffi::c_void,
+    pub key: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, kernel::ffi::c_int, *mut u8)>,
+    pub key_data: *mut kernel::ffi::c_void,
+    pub ts: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, kernel::ffi::c_int, *mut u8)>,
+    pub ts_data: *mut kernel::ffi::c_void,
 }
 
 extern "C" {
-    pub fn ipaq_micro_tx_msg(micro: *mut IpaqMicro, msg: *mut IpaqMicroMsg) -> core::ffi::c_int;
+    pub fn ipaq_micro_tx_msg(micro: *mut IpaqMicro, msg: *mut IpaqMicroMsg) -> kernel::ffi::c_int;
 }
 
 #[inline]
 pub unsafe fn ipaq_micro_tx_msg_sync(
     micro: *mut IpaqMicro,
     msg: *mut IpaqMicroMsg,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     init_completion(core::ptr::addr_of_mut!((*msg).ack));
     let ret = ipaq_micro_tx_msg(micro, msg);
     wait_for_completion(core::ptr::addr_of_mut!((*msg).ack));
@@ -105,7 +105,7 @@ pub unsafe fn ipaq_micro_tx_msg_sync(
 pub unsafe fn ipaq_micro_tx_msg_async(
     micro: *mut IpaqMicro,
     msg: *mut IpaqMicroMsg,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     init_completion(core::ptr::addr_of_mut!((*msg).ack));
     ipaq_micro_tx_msg(micro, msg)
 }

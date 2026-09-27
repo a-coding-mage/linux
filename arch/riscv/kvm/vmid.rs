@@ -8,39 +8,39 @@
 
 // Dependencies supplied by the surrounding kernel/RISC-V translation.
 
-static mut vmid_version: ::core::ffi::c_ulong = 1;
-static mut vmid_next: ::core::ffi::c_ulong = 0;
-static mut vmid_bits: ::core::ffi::c_ulong = 0;
+static mut vmid_version: ::kernel::ffi::c_ulong = 1;
+static mut vmid_next: ::kernel::ffi::c_ulong = 0;
+static mut vmid_bits: ::kernel::ffi::c_ulong = 0;
 static mut vmid_lock: SpinLock = SpinLock::new();
 
 extern "C" {
-    fn csr_write(csr: ::core::ffi::c_ulong, value: ::core::ffi::c_ulong);
-    fn csr_read(csr: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    fn kvm_riscv_gstage_mode(levels: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
+    fn csr_write(csr: ::kernel::ffi::c_ulong, value: ::kernel::ffi::c_ulong);
+    fn csr_read(csr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    fn kvm_riscv_gstage_mode(levels: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
     fn kvm_riscv_local_hfence_gvma_all();
-    fn fls_long(value: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    fn num_possible_cpus() -> ::core::ffi::c_ulong;
-    fn on_each_cpu_mask(mask: *mut CpuMask, func: unsafe extern "C" fn(*mut ::core::ffi::c_void),
-                        info: *mut ::core::ffi::c_void, wait: ::core::ffi::c_int);
-    fn kvm_make_request(request: ::core::ffi::c_ulong, vcpu: *mut KvmVcpu);
+    fn fls_long(value: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    fn num_possible_cpus() -> ::kernel::ffi::c_ulong;
+    fn on_each_cpu_mask(mask: *mut CpuMask, func: unsafe extern "C" fn(*mut ::kernel::ffi::c_void),
+                        info: *mut ::kernel::ffi::c_void, wait: ::kernel::ffi::c_int);
+    fn kvm_make_request(request: ::kernel::ffi::c_ulong, vcpu: *mut KvmVcpu);
     fn kvm_for_each_vcpu(kvm: *mut Kvm,
-                         func: unsafe extern "C" fn(*mut KvmVcpu, *mut ::core::ffi::c_void),
-                         data: *mut ::core::ffi::c_void);
+                         func: unsafe extern "C" fn(*mut KvmVcpu, *mut ::kernel::ffi::c_void),
+                         data: *mut ::kernel::ffi::c_void);
 }
 
 // Values and types below are provided by the corresponding kernel headers.
-const CSR_HGATP: ::core::ffi::c_ulong = 0;
-const HGATP_MODE_SHIFT: ::core::ffi::c_ulong = 0;
-const HGATP_VMID: ::core::ffi::c_ulong = 0;
-const HGATP_VMID_SHIFT: ::core::ffi::c_ulong = 0;
-const KVM_REQ_UPDATE_HGATP: ::core::ffi::c_ulong = 0;
-static mut kvm_riscv_gstage_max_pgd_levels: ::core::ffi::c_ulong = 0;
+const CSR_HGATP: ::kernel::ffi::c_ulong = 0;
+const HGATP_MODE_SHIFT: ::kernel::ffi::c_ulong = 0;
+const HGATP_VMID: ::kernel::ffi::c_ulong = 0;
+const HGATP_VMID_SHIFT: ::kernel::ffi::c_ulong = 0;
+const KVM_REQ_UPDATE_HGATP: ::kernel::ffi::c_ulong = 0;
+static mut kvm_riscv_gstage_max_pgd_levels: ::kernel::ffi::c_ulong = 0;
 static mut cpu_online_mask: CpuMask = CpuMask;
 
 #[repr(C)]
 pub struct KvmVmid {
-    pub vmid_version: ::core::ffi::c_ulong,
-    pub vmid: ::core::ffi::c_ulong,
+    pub vmid_version: ::kernel::ffi::c_ulong,
+    pub vmid: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -66,7 +66,7 @@ impl SpinLock {
     unsafe fn unlock(&mut self) {}
 }
 
-unsafe extern "C" fn __local_hfence_gvma_all(_info: *mut ::core::ffi::c_void) {
+unsafe extern "C" fn __local_hfence_gvma_all(_info: *mut ::kernel::ffi::c_void) {
     kvm_riscv_local_hfence_gvma_all();
 }
 
@@ -77,23 +77,23 @@ pub unsafe extern "C" fn kvm_riscv_gstage_vmid_detect() {
                   | HGATP_VMID);
     vmid_bits = csr_read(CSR_HGATP);
     vmid_bits = (vmid_bits & HGATP_VMID) >> HGATP_VMID_SHIFT;
-    vmid_bits = fls_long(vmid_bits) as ::core::ffi::c_ulong;
+    vmid_bits = fls_long(vmid_bits) as ::kernel::ffi::c_ulong;
     csr_write(CSR_HGATP, 0);
 
     /* We polluted local TLB so flush all guest TLB */
     kvm_riscv_local_hfence_gvma_all();
 
     /* We don't use VMID bits if they are not sufficient */
-    if (1 as ::core::ffi::c_ulong).wrapping_shl(vmid_bits as u32) < num_possible_cpus() {
+    if (1 as ::kernel::ffi::c_ulong).wrapping_shl(vmid_bits as u32) < num_possible_cpus() {
         vmid_bits = 0;
     }
 }
 
-pub unsafe extern "C" fn kvm_riscv_gstage_vmid_bits() -> ::core::ffi::c_ulong {
+pub unsafe extern "C" fn kvm_riscv_gstage_vmid_bits() -> ::kernel::ffi::c_ulong {
     vmid_bits
 }
 
-pub unsafe extern "C" fn kvm_riscv_gstage_vmid_init(kvm: *mut Kvm) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn kvm_riscv_gstage_vmid_init(kvm: *mut Kvm) -> ::kernel::ffi::c_int {
     (*kvm).arch.vmid.vmid_version = 0;
     (*kvm).arch.vmid.vmid = 0;
     0
@@ -139,7 +139,7 @@ pub unsafe extern "C" fn kvm_riscv_gstage_vmid_update(vcpu: *mut KvmVcpu) {
     ::core::ptr::write_volatile(&mut (*vmid).vmid_version, vmid_version);
     vmid_lock.unlock();
 
-    unsafe extern "C" fn update_vcpu(v: *mut KvmVcpu, _data: *mut ::core::ffi::c_void) {
+    unsafe extern "C" fn update_vcpu(v: *mut KvmVcpu, _data: *mut ::kernel::ffi::c_void) {
         kvm_make_request(KVM_REQ_UPDATE_HGATP, v);
     }
     kvm_for_each_vcpu((*vcpu).kvm, update_vcpu, ::core::ptr::null_mut());

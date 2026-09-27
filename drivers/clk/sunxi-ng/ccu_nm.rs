@@ -9,31 +9,31 @@
 
 #[repr(C)]
 struct _ccu_nm {
-    n: ::core::ffi::c_ulong,
-    min_n: ::core::ffi::c_ulong,
-    max_n: ::core::ffi::c_ulong,
-    m: ::core::ffi::c_ulong,
-    min_m: ::core::ffi::c_ulong,
-    max_m: ::core::ffi::c_ulong,
+    n: ::kernel::ffi::c_ulong,
+    min_n: ::kernel::ffi::c_ulong,
+    max_n: ::kernel::ffi::c_ulong,
+    m: ::kernel::ffi::c_ulong,
+    min_m: ::kernel::ffi::c_ulong,
+    max_m: ::kernel::ffi::c_ulong,
 }
 
 unsafe fn ccu_nm_calc_rate(
-    parent: ::core::ffi::c_ulong,
-    n: ::core::ffi::c_ulong,
-    m: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_ulong {
+    parent: ::kernel::ffi::c_ulong,
+    n: ::kernel::ffi::c_ulong,
+    m: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_ulong {
     let mut rate = parent as u64;
     rate = rate.wrapping_mul(n as u64);
     rate /= m as u64;
-    rate as ::core::ffi::c_ulong
+    rate as ::kernel::ffi::c_ulong
 }
 
 unsafe fn ccu_nm_find_best(
     common: *mut ccu_common,
-    parent: ::core::ffi::c_ulong,
-    rate: ::core::ffi::c_ulong,
+    parent: ::kernel::ffi::c_ulong,
+    rate: ::kernel::ffi::c_ulong,
     nm: *mut _ccu_nm,
-) -> ::core::ffi::c_ulong {
+) -> ::kernel::ffi::c_ulong {
     let mut best_rate = 0;
     let mut best_n = 0;
     let mut best_m = 0;
@@ -71,7 +71,7 @@ unsafe fn ccu_nm_is_enabled(hw: *mut clk_hw) -> i32 {
     ccu_gate_helper_is_enabled(&mut (*nm).common, (*nm).enable)
 }
 
-unsafe fn ccu_nm_recalc_rate(hw: *mut clk_hw, parent_rate: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+unsafe fn ccu_nm_recalc_rate(hw: *mut clk_hw, parent_rate: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     let nm = hw_to_ccu_nm(hw);
     let rate;
     if ccu_frac_helper_is_enabled(&mut (*nm).common, &mut (*nm).frac) {
@@ -115,10 +115,10 @@ unsafe fn ccu_nm_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request) -> 
 // The rate-setting implementation follows the same low-level register and helper
 // operations as the C source; external helper and clock types are supplied by the
 // surrounding translation unit.
-unsafe fn ccu_nm_set_rate(hw: *mut clk_hw, mut rate: ::core::ffi::c_ulong, parent_rate: ::core::ffi::c_ulong) -> i32 {
+unsafe fn ccu_nm_set_rate(hw: *mut clk_hw, mut rate: ::kernel::ffi::c_ulong, parent_rate: ::kernel::ffi::c_ulong) -> i32 {
     let nm = hw_to_ccu_nm(hw);
     let mut _nm = _ccu_nm { n: 0, min_n: 0, max_n: 0, m: 0, min_m: 0, max_m: 0 };
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
     if (*nm).common.features & CCU_FEATURE_FIXED_POSTDIV != 0 { rate *= (*nm).fixed_post_div; }
     if ccu_frac_helper_has_rate(&mut (*nm).common, &mut (*nm).frac, rate) {
         spin_lock_irqsave((*nm).common.lock, &mut flags);

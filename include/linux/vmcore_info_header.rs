@@ -30,10 +30,10 @@ pub type NoteBufT = [u32; CRASH_CORE_NOTE_BYTES / 4];
 extern "C" {
     pub static mut crash_notes: *mut NoteBufT;
 
-    pub fn crash_update_vmcoreinfo_safecopy(ptr: *mut core::ffi::c_void);
+    pub fn crash_update_vmcoreinfo_safecopy(ptr: *mut kernel::ffi::c_void);
     pub fn crash_save_vmcoreinfo();
     pub fn arch_crash_save_vmcoreinfo();
-    pub fn vmcoreinfo_append_str(fmt: *const core::ffi::c_char, ...);
+    pub fn vmcoreinfo_append_str(fmt: *const kernel::ffi::c_char, ...);
     pub fn paddr_vmcoreinfo_note() -> phys_addr_t;
 
     pub static mut vmcoreinfo_data: *mut u8;
@@ -42,9 +42,9 @@ extern "C" {
 
     pub fn append_elf_note(
         buf: *mut Elf_Word,
-        name: *mut core::ffi::c_char,
-        type_: core::ffi::c_uint,
-        data: *mut core::ffi::c_void,
+        name: *mut kernel::ffi::c_char,
+        type_: kernel::ffi::c_uint,
+        data: *mut kernel::ffi::c_void,
         data_len: usize,
     ) -> *mut Elf_Word;
     pub fn final_note(buf: *mut Elf_Word);

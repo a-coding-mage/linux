@@ -23,7 +23,7 @@ macro_rules! LOAD_SYM_ARMV6 {
 }
 
 #[inline]
-pub fn arm_gen_nop() -> libc::c_ulong {
+pub fn arm_gen_nop() -> kernel::ffi::c_ulong {
     #[cfg(CONFIG_THUMB2_KERNEL)]
     {
         return 0xf3af8000; /* nop.w */
@@ -36,24 +36,24 @@ pub fn arm_gen_nop() -> libc::c_ulong {
 
 unsafe extern "C" {
     pub fn __arm_gen_branch(
-        pc: libc::c_ulong,
-        addr: libc::c_ulong,
+        pc: kernel::ffi::c_ulong,
+        addr: kernel::ffi::c_ulong,
         link: bool,
         warn: bool,
-    ) -> libc::c_ulong;
+    ) -> kernel::ffi::c_ulong;
 }
 
 #[inline]
-pub unsafe fn arm_gen_branch(pc: libc::c_ulong, addr: libc::c_ulong) -> libc::c_ulong {
+pub unsafe fn arm_gen_branch(pc: kernel::ffi::c_ulong, addr: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     unsafe { __arm_gen_branch(pc, addr, false, true) }
 }
 
 #[inline]
 pub unsafe fn arm_gen_branch_link(
-    pc: libc::c_ulong,
-    addr: libc::c_ulong,
+    pc: kernel::ffi::c_ulong,
+    addr: kernel::ffi::c_ulong,
     warn: bool,
-) -> libc::c_ulong {
+) -> kernel::ffi::c_ulong {
     unsafe { __arm_gen_branch(pc, addr, true, warn) }
 }
 

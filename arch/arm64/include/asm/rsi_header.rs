@@ -21,15 +21,15 @@ extern "C" {
         start: phys_addr_t,
         end: phys_addr_t,
         state: ripas,
-        flags: core::ffi::c_ulong,
+        flags: kernel::ffi::c_ulong,
         top: *mut phys_addr_t,
-    ) -> core::ffi::c_ulong;
+    ) -> kernel::ffi::c_ulong;
 }
 
 pub const RSI_RIPAS_RAM: ripas = RSI_RIPAS_RAM_VALUE;
 pub const RSI_RIPAS_EMPTY: ripas = RSI_RIPAS_EMPTY_VALUE;
-pub const RSI_CHANGE_DESTROYED: core::ffi::c_ulong = RSI_CHANGE_DESTROYED_VALUE;
-pub const RSI_NO_CHANGE_DESTROYED: core::ffi::c_ulong = RSI_NO_CHANGE_DESTROYED_VALUE;
+pub const RSI_CHANGE_DESTROYED: kernel::ffi::c_ulong = RSI_CHANGE_DESTROYED_VALUE;
+pub const RSI_NO_CHANGE_DESTROYED: kernel::ffi::c_ulong = RSI_NO_CHANGE_DESTROYED_VALUE;
 
 #[inline]
 pub unsafe fn is_realm_world() -> bool {
@@ -41,9 +41,9 @@ pub unsafe fn rsi_set_memory_range(
     mut start: phys_addr_t,
     end: phys_addr_t,
     state: ripas,
-    flags: core::ffi::c_ulong,
-) -> core::ffi::c_int {
-    let mut ret: core::ffi::c_ulong;
+    flags: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
+    let mut ret: kernel::ffi::c_ulong;
     let mut top: phys_addr_t;
 
     while start != end {
@@ -65,7 +65,7 @@ pub unsafe fn rsi_set_memory_range(
 pub unsafe fn rsi_set_memory_range_protected(
     start: phys_addr_t,
     end: phys_addr_t,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     rsi_set_memory_range(start, end, RSI_RIPAS_RAM, RSI_CHANGE_DESTROYED)
 }
 
@@ -77,7 +77,7 @@ pub unsafe fn rsi_set_memory_range_protected(
 pub unsafe fn rsi_set_memory_range_protected_safe(
     start: phys_addr_t,
     end: phys_addr_t,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     rsi_set_memory_range(start, end, RSI_RIPAS_RAM, RSI_NO_CHANGE_DESTROYED)
 }
 
@@ -85,7 +85,7 @@ pub unsafe fn rsi_set_memory_range_protected_safe(
 pub unsafe fn rsi_set_memory_range_shared(
     start: phys_addr_t,
     end: phys_addr_t,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     rsi_set_memory_range(start, end, RSI_RIPAS_EMPTY, RSI_CHANGE_DESTROYED)
 }
 

@@ -6,7 +6,7 @@
 
 // C dependencies: <linux/efi.h> and <linux/types.h>.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct cs_dsp;
@@ -95,14 +95,14 @@ pub struct cs_amp_test_hooks {
         guid: *mut efi_guid_t,
         returned_attr: *mut u32,
         size: *mut usize,
-        buf: *mut core::ffi::c_void,
+        buf: *mut kernel::ffi::c_void,
     ) -> efi_status_t>,
     pub set_efi_variable: Option<unsafe extern "C" fn(
         name: *mut efi_char16_t,
         guid: *mut efi_guid_t,
         attr: u32,
         size: usize,
-        buf: *mut core::ffi::c_void,
+        buf: *mut kernel::ffi::c_void,
     ) -> efi_status_t>,
     pub write_cal_coeff: Option<unsafe extern "C" fn(
         dsp: *mut cs_dsp,

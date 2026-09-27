@@ -25,17 +25,17 @@
 const VORTEX_GAME_DWAIT: u32 = 20; /* 20 ms */
 
 unsafe extern "C" {
-    fn gameport_get_port_data(gameport: *mut gameport) -> *mut core::ffi::c_void;
-    fn hwread(mmio: *mut core::ffi::c_void, offset: u32) -> u32;
-    fn hwwrite(mmio: *mut core::ffi::c_void, offset: u32, data: u32);
+    fn gameport_get_port_data(gameport: *mut gameport) -> *mut kernel::ffi::c_void;
+    fn hwread(mmio: *mut kernel::ffi::c_void, offset: u32) -> u32;
+    fn hwwrite(mmio: *mut kernel::ffi::c_void, offset: u32, data: u32);
     fn msleep(msecs: u32);
     fn gameport_allocate_port() -> *mut gameport;
-    fn dev_err(dev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
-    fn gameport_set_name(gameport: *mut gameport, name: *const core::ffi::c_char);
-    fn gameport_set_phys(gameport: *mut gameport, fmt: *const core::ffi::c_char, ...);
-    fn pci_name(pci_dev: *mut pci_dev) -> *const core::ffi::c_char;
-    fn gameport_set_dev_parent(gameport: *mut gameport, dev: *mut core::ffi::c_void);
-    fn gameport_set_port_data(gameport: *mut gameport, data: *mut core::ffi::c_void);
+    fn dev_err(dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
+    fn gameport_set_name(gameport: *mut gameport, name: *const kernel::ffi::c_char);
+    fn gameport_set_phys(gameport: *mut gameport, fmt: *const kernel::ffi::c_char, ...);
+    fn pci_name(pci_dev: *mut pci_dev) -> *const kernel::ffi::c_char;
+    fn gameport_set_dev_parent(gameport: *mut gameport, dev: *mut kernel::ffi::c_void);
+    fn gameport_set_port_data(gameport: *mut gameport, data: *mut kernel::ffi::c_void);
     fn gameport_register_port(gameport: *mut gameport);
     fn gameport_unregister_port(gameport: *mut gameport);
 }
@@ -55,7 +55,7 @@ unsafe extern "C" {
 
 #[repr(C)]
 pub struct pci_dev {
-    pub dev: core::ffi::c_void,
+    pub dev: kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -69,12 +69,12 @@ pub struct gameport {
 
 #[repr(C)]
 pub struct snd_card {
-    pub dev: *mut core::ffi::c_void,
+    pub dev: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct vortex_t {
-    pub mmio: *mut core::ffi::c_void,
+    pub mmio: *mut kernel::ffi::c_void,
     pub gameport: *mut gameport,
     pub card: *mut snd_card,
     pub pci_dev: *mut pci_dev,
@@ -162,14 +162,14 @@ unsafe extern "C" fn vortex_gameport_register(vortex: *mut vortex_t) -> i32 {
 
         gameport_set_name(gp, c"AU88x0 Gameport".as_ptr());
         gameport_set_phys(gp, c"pci%s/gameport0".as_ptr(), pci_name((*vortex).pci_dev));
-        gameport_set_dev_parent(gp, &mut (*(*vortex).pci_dev).dev as *mut core::ffi::c_void);
+        gameport_set_dev_parent(gp, &mut (*(*vortex).pci_dev).dev as *mut kernel::ffi::c_void);
 
         (*gp).read = Some(vortex_game_read);
         (*gp).trigger = Some(vortex_game_trigger);
         (*gp).cooked_read = Some(vortex_game_cooked_read);
         (*gp).open = Some(vortex_game_open);
 
-        gameport_set_port_data(gp, vortex as *mut core::ffi::c_void);
+        gameport_set_port_data(gp, vortex as *mut kernel::ffi::c_void);
         (*gp).fuzz = 64;
 
         gameport_register_port(gp);

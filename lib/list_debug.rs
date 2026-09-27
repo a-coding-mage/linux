@@ -6,7 +6,7 @@
  * LIST_HARDENED and DEBUG_LIST.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Supplied by the surrounding kernel translation/dependencies.
 #[repr(C)]

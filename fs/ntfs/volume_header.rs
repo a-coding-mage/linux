@@ -6,14 +6,14 @@
  * the surrounding translation unit.
  */
 
-pub const NTFS_VOL_UID: ::core::ffi::c_ulong = 1 << 1;
-pub const NTFS_VOL_GID: ::core::ffi::c_ulong = 1 << 2;
+pub const NTFS_VOL_UID: ::kernel::ffi::c_ulong = 1 << 1;
+pub const NTFS_VOL_GID: ::kernel::ffi::c_ulong = 1 << 2;
 
 #[repr(C)]
 pub struct ntfs_volume {
     pub sb: *mut super_block,
     pub nr_blocks: i64,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub uid: kuid_t,
     pub gid: kgid_t,
     pub fmask: umode_t,
@@ -50,7 +50,7 @@ pub struct ntfs_volume {
     pub mftbmp_ino: *mut inode,
     pub mftbmp_lock: rw_semaphore,
     pub mftmirr_ino: *mut inode,
-    pub mftmirr_size: ::core::ffi::c_int,
+    pub mftmirr_size: ::kernel::ffi::c_int,
     pub logfile_ino: *mut inode,
     pub lcnbmp_ino: *mut inode,
     pub lcnbmp_lock: rw_semaphore,
@@ -70,7 +70,7 @@ pub struct ntfs_volume {
     pub free_mft_records: atomic64_t,
     pub dirty_clusters: atomic64_t,
     pub sparse_compression_unit: u8,
-    pub lcn_empty_bits_per_page: *mut ::core::ffi::c_uint,
+    pub lcn_empty_bits_per_page: *mut ::kernel::ffi::c_uint,
     pub precalc_work: work_struct,
     pub preallocated_size: loff_t,
 }
@@ -98,39 +98,39 @@ pub enum ntfs_volume_flag {
 
 /* The C DEFINE_NVOL_BIT_OPS macro expands to these declarations. */
 extern "C" {
-    pub fn NVolErrors(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolErrors(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetErrors(vol: *mut ntfs_volume); pub fn NVolClearErrors(vol: *mut ntfs_volume);
-    pub fn NVolShowSystemFiles(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolShowSystemFiles(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetShowSystemFiles(vol: *mut ntfs_volume); pub fn NVolClearShowSystemFiles(vol: *mut ntfs_volume);
-    pub fn NVolCaseSensitive(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolCaseSensitive(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetCaseSensitive(vol: *mut ntfs_volume); pub fn NVolClearCaseSensitive(vol: *mut ntfs_volume);
-    pub fn NVolLogFileEmpty(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolLogFileEmpty(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetLogFileEmpty(vol: *mut ntfs_volume); pub fn NVolClearLogFileEmpty(vol: *mut ntfs_volume);
-    pub fn NVolUsnJrnlStamped(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolUsnJrnlStamped(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetUsnJrnlStamped(vol: *mut ntfs_volume); pub fn NVolClearUsnJrnlStamped(vol: *mut ntfs_volume);
-    pub fn NVolReadOnly(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolReadOnly(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetReadOnly(vol: *mut ntfs_volume); pub fn NVolClearReadOnly(vol: *mut ntfs_volume);
-    pub fn NVolCompression(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolCompression(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetCompression(vol: *mut ntfs_volume); pub fn NVolClearCompression(vol: *mut ntfs_volume);
-    pub fn NVolFreeClusterKnown(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolFreeClusterKnown(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetFreeClusterKnown(vol: *mut ntfs_volume); pub fn NVolClearFreeClusterKnown(vol: *mut ntfs_volume);
-    pub fn NVolShutdown(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolShutdown(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetShutdown(vol: *mut ntfs_volume); pub fn NVolClearShutdown(vol: *mut ntfs_volume);
-    pub fn NVolSysImmutable(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolSysImmutable(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetSysImmutable(vol: *mut ntfs_volume); pub fn NVolClearSysImmutable(vol: *mut ntfs_volume);
-    pub fn NVolShowHiddenFiles(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolShowHiddenFiles(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetShowHiddenFiles(vol: *mut ntfs_volume); pub fn NVolClearShowHiddenFiles(vol: *mut ntfs_volume);
-    pub fn NVolHideDotFiles(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolHideDotFiles(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetHideDotFiles(vol: *mut ntfs_volume); pub fn NVolClearHideDotFiles(vol: *mut ntfs_volume);
-    pub fn NVolCheckWindowsNames(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolCheckWindowsNames(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetCheckWindowsNames(vol: *mut ntfs_volume); pub fn NVolClearCheckWindowsNames(vol: *mut ntfs_volume);
-    pub fn NVolDiscard(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolDiscard(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetDiscard(vol: *mut ntfs_volume); pub fn NVolClearDiscard(vol: *mut ntfs_volume);
-    pub fn NVolDisableSparse(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolDisableSparse(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetDisableSparse(vol: *mut ntfs_volume); pub fn NVolClearDisableSparse(vol: *mut ntfs_volume);
-    pub fn NVolNativeSymlinkRel(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolNativeSymlinkRel(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetNativeSymlinkRel(vol: *mut ntfs_volume); pub fn NVolClearNativeSymlinkRel(vol: *mut ntfs_volume);
-    pub fn NVolSymlinkNative(vol: *mut ntfs_volume) -> ::core::ffi::c_int;
+    pub fn NVolSymlinkNative(vol: *mut ntfs_volume) -> ::kernel::ffi::c_int;
     pub fn NVolSetSymlinkNative(vol: *mut ntfs_volume); pub fn NVolClearSymlinkNative(vol: *mut ntfs_volume);
     pub fn ntfs_available_clusters_count(vol: *mut ntfs_volume, nr_clusters: i64) -> i64;
     pub fn get_nr_free_clusters(vol: *mut ntfs_volume) -> i64;
@@ -162,7 +162,7 @@ pub unsafe fn ntfs_dec_free_mft_records(vol: *mut ntfs_volume, nr: i64) {
 
 #[inline]
 pub unsafe fn ntfs_set_lcn_empty_bits(
-    vol: *mut ntfs_volume, index: usize, val: u8, count: ::core::ffi::c_uint,
+    vol: *mut ntfs_volume, index: usize, val: u8, count: ::kernel::ffi::c_uint,
 ) {
     if NVolFreeClusterKnown(vol) == 0 { return; } // wait_event() is supplied by the kernel layer.
     if val != 0 {

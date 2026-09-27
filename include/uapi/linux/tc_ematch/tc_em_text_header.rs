@@ -6,7 +6,7 @@ pub const TC_EM_TEXT_ALGOSIZ: usize = 16;
 
 #[repr(C)]
 pub struct tcf_em_text {
-    pub algo: [::core::ffi::c_char; TC_EM_TEXT_ALGOSIZ],
+    pub algo: [::kernel::ffi::c_char; TC_EM_TEXT_ALGOSIZ],
     pub from_offset: u16,
     pub to_offset: u16,
     pub pattern_len: u16,

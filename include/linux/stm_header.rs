@@ -4,7 +4,7 @@
  * Copyright (C) 2014 Intel Corporation.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Dependency supplied by the surrounding kernel translation.
 #[repr(C)]

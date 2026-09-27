@@ -17,10 +17,10 @@ unsafe fn test_btrfs_split_item(sectorsize: u32, nodesize: u32) -> i32 {
     let split4 = b" had a little\0";
     let mut buf = [0i8; 32];
     let mut key: btrfs_key;
-    let value_len = libc::strlen(value.as_ptr() as *const libc::c_char) as u32;
+    let value_len = strlen(value.as_ptr() as *const kernel::ffi::c_char) as u32;
     let mut ret: i32 = 0;
 
-    test_msg(b"running btrfs_split_item tests\0".as_ptr() as *const libc::c_char);
+    test_msg(b"running btrfs_split_item tests\0".as_ptr() as *const kernel::ffi::c_char);
 
     fs_info = btrfs_alloc_dummy_fs_info(nodesize, sectorsize);
     if fs_info.is_null() {
@@ -60,7 +60,7 @@ unsafe fn test_btrfs_split_item(sectorsize: u32, nodesize: u32) -> i32 {
      * and the tree is a single node (level 0).
      */
     btrfs_setup_item_for_insert(core::ptr::null_mut(), root, path, &mut key, value_len);
-    write_extent_buffer(eb, value.as_ptr() as *const libc::c_void,
+    write_extent_buffer(eb, value.as_ptr() as *const kernel::ffi::c_void,
                         btrfs_item_ptr_offset(eb, 0), value_len);
 
     key.offset = 3;
@@ -72,7 +72,7 @@ unsafe fn test_btrfs_split_item(sectorsize: u32, nodesize: u32) -> i32 {
      */
     ret = btrfs_split_item(core::ptr::null_mut(), root, path, &key, 17);
     if ret != 0 {
-        test_err(b"split item failed %d\0".as_ptr() as *const libc::c_char, ret);
+        test_err(b"split item failed %d\0".as_ptr() as *const kernel::ffi::c_char, ret);
         return goto_out(path, root, fs_info, ret);
     }
 
@@ -80,40 +80,40 @@ unsafe fn test_btrfs_split_item(sectorsize: u32, nodesize: u32) -> i32 {
      * 'mary had a little' */
     btrfs_item_key_to_cpu(eb, &mut key, 0);
     if key.objectid != 0 || key.type_ != BTRFS_EXTENT_CSUM_KEY || key.offset != 0 {
-        test_err(b"invalid key at slot 0\0".as_ptr() as *const libc::c_char);
+        test_err(b"invalid key at slot 0\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
-    if btrfs_item_size(eb, 0) != libc::strlen(split1.as_ptr() as *const libc::c_char) as u32 {
-        test_err(b"invalid len in the first split\0".as_ptr() as *const libc::c_char);
+    if btrfs_item_size(eb, 0) != strlen(split1.as_ptr() as *const kernel::ffi::c_char) as u32 {
+        test_err(b"invalid len in the first split\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         goto_out(path, root, fs_info, ret);
     }
-    read_extent_buffer(eb, buf.as_mut_ptr() as *mut libc::c_void, btrfs_item_ptr_offset(eb, 0),
-                       libc::strlen(split1.as_ptr() as *const libc::c_char) as u32);
-    if libc::memcmp(buf.as_ptr() as *const libc::c_void, split1.as_ptr() as *const libc::c_void,
-                    libc::strlen(split1.as_ptr() as *const libc::c_char)) != 0 {
-        test_err(b"data in the buffer doesn't match what it should in the first split\0".as_ptr() as *const libc::c_char);
+    read_extent_buffer(eb, buf.as_mut_ptr() as *mut kernel::ffi::c_void, btrfs_item_ptr_offset(eb, 0),
+                       strlen(split1.as_ptr() as *const kernel::ffi::c_char) as u32);
+    if memcmp(buf.as_ptr() as *const kernel::ffi::c_void, split1.as_ptr() as *const kernel::ffi::c_void,
+                    strlen(split1.as_ptr() as *const kernel::ffi::c_char)) != 0 {
+        test_err(b"data in the buffer doesn't match what it should in the first split\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         goto_out(path, root, fs_info, ret);
     }
 
     btrfs_item_key_to_cpu(eb, &mut key, 1);
     if key.objectid != 0 || key.type_ != BTRFS_EXTENT_CSUM_KEY || key.offset != 3 {
-        test_err(b"invalid key at slot 1\0".as_ptr() as *const libc::c_char);
+        test_err(b"invalid key at slot 1\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
-    if btrfs_item_size(eb, 1) != libc::strlen(split2.as_ptr() as *const libc::c_char) as u32 {
-        test_err(b"invalid len in the second split\0".as_ptr() as *const libc::c_char);
+    if btrfs_item_size(eb, 1) != strlen(split2.as_ptr() as *const kernel::ffi::c_char) as u32 {
+        test_err(b"invalid len in the second split\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
-    read_extent_buffer(eb, buf.as_mut_ptr() as *mut libc::c_void, btrfs_item_ptr_offset(eb, 1),
-                       libc::strlen(split2.as_ptr() as *const libc::c_char) as u32);
-    if libc::memcmp(buf.as_ptr() as *const libc::c_void, split2.as_ptr() as *const libc::c_void,
-                    libc::strlen(split2.as_ptr() as *const libc::c_char)) != 0 {
-        test_err(b"data in the buffer doesn't match what it should in the second split\0".as_ptr() as *const libc::c_char);
+    read_extent_buffer(eb, buf.as_mut_ptr() as *mut kernel::ffi::c_void, btrfs_item_ptr_offset(eb, 1),
+                       strlen(split2.as_ptr() as *const kernel::ffi::c_char) as u32);
+    if memcmp(buf.as_ptr() as *const kernel::ffi::c_void, split2.as_ptr() as *const kernel::ffi::c_void,
+                    strlen(split2.as_ptr() as *const kernel::ffi::c_char)) != 0 {
+        test_err(b"data in the buffer doesn't match what it should in the second split\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
@@ -121,65 +121,65 @@ unsafe fn test_btrfs_split_item(sectorsize: u32, nodesize: u32) -> i32 {
     key.offset = 1;
     ret = btrfs_split_item(core::ptr::null_mut(), root, path, &key, 4);
     if ret != 0 {
-        test_err(b"second split item failed %d\0".as_ptr() as *const libc::c_char, ret);
+        test_err(b"second split item failed %d\0".as_ptr() as *const kernel::ffi::c_char, ret);
         return goto_out(path, root, fs_info, ret);
     }
 
     btrfs_item_key_to_cpu(eb, &mut key, 0);
     if key.objectid != 0 || key.type_ != BTRFS_EXTENT_CSUM_KEY || key.offset != 0 {
-        test_err(b"invalid key at slot 0\0".as_ptr() as *const libc::c_char);
+        test_err(b"invalid key at slot 0\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
 
-    if btrfs_item_size(eb, 0) != libc::strlen(split3.as_ptr() as *const libc::c_char) as u32 {
-        test_err(b"invalid len in the first split\0".as_ptr() as *const libc::c_char);
+    if btrfs_item_size(eb, 0) != strlen(split3.as_ptr() as *const kernel::ffi::c_char) as u32 {
+        test_err(b"invalid len in the first split\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
-    read_extent_buffer(eb, buf.as_mut_ptr() as *mut libc::c_void, btrfs_item_ptr_offset(eb, 0),
-                       libc::strlen(split3.as_ptr() as *const libc::c_char) as u32);
-    if libc::memcmp(buf.as_ptr() as *const libc::c_void, split3.as_ptr() as *const libc::c_void,
-                    libc::strlen(split3.as_ptr() as *const libc::c_char)) != 0 {
-        test_err(b"data in the buffer doesn't match what it should in the third split\0".as_ptr() as *const libc::c_char);
+    read_extent_buffer(eb, buf.as_mut_ptr() as *mut kernel::ffi::c_void, btrfs_item_ptr_offset(eb, 0),
+                       strlen(split3.as_ptr() as *const kernel::ffi::c_char) as u32);
+    if memcmp(buf.as_ptr() as *const kernel::ffi::c_void, split3.as_ptr() as *const kernel::ffi::c_void,
+                    strlen(split3.as_ptr() as *const kernel::ffi::c_char)) != 0 {
+        test_err(b"data in the buffer doesn't match what it should in the third split\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
     btrfs_item_key_to_cpu(eb, &mut key, 1);
     if key.objectid != 0 || key.type_ != BTRFS_EXTENT_CSUM_KEY || key.offset != 1 {
-        test_err(b"invalid key at slot 1\0".as_ptr() as *const libc::c_char);
+        test_err(b"invalid key at slot 1\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
-    if btrfs_item_size(eb, 1) != libc::strlen(split4.as_ptr() as *const libc::c_char) as u32 {
-        test_err(b"invalid len in the second split\0".as_ptr() as *const libc::c_char);
+    if btrfs_item_size(eb, 1) != strlen(split4.as_ptr() as *const kernel::ffi::c_char) as u32 {
+        test_err(b"invalid len in the second split\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
-    read_extent_buffer(eb, buf.as_mut_ptr() as *mut libc::c_void, btrfs_item_ptr_offset(eb, 1),
-                       libc::strlen(split4.as_ptr() as *const libc::c_char) as u32);
-    if libc::memcmp(buf.as_ptr() as *const libc::c_void, split4.as_ptr() as *const libc::c_void,
-                    libc::strlen(split4.as_ptr() as *const libc::c_char)) != 0 {
-        test_err(b"data in the buffer doesn't match what it should in the fourth split\0".as_ptr() as *const libc::c_char);
+    read_extent_buffer(eb, buf.as_mut_ptr() as *mut kernel::ffi::c_void, btrfs_item_ptr_offset(eb, 1),
+                       strlen(split4.as_ptr() as *const kernel::ffi::c_char) as u32);
+    if memcmp(buf.as_ptr() as *const kernel::ffi::c_void, split4.as_ptr() as *const kernel::ffi::c_void,
+                    strlen(split4.as_ptr() as *const kernel::ffi::c_char)) != 0 {
+        test_err(b"data in the buffer doesn't match what it should in the fourth split\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
     btrfs_item_key_to_cpu(eb, &mut key, 2);
     if key.objectid != 0 || key.type_ != BTRFS_EXTENT_CSUM_KEY || key.offset != 3 {
-        test_err(b"invalid key at slot 2\0".as_ptr() as *const libc::c_char);
+        test_err(b"invalid key at slot 2\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
-    if btrfs_item_size(eb, 2) != libc::strlen(split2.as_ptr() as *const libc::c_char) as u32 {
-        test_err(b"invalid len in the second split\0".as_ptr() as *const libc::c_char);
+    if btrfs_item_size(eb, 2) != strlen(split2.as_ptr() as *const kernel::ffi::c_char) as u32 {
+        test_err(b"invalid len in the second split\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
-    read_extent_buffer(eb, buf.as_mut_ptr() as *mut libc::c_void, btrfs_item_ptr_offset(eb, 2),
-                       libc::strlen(split2.as_ptr() as *const libc::c_char) as u32);
-    if libc::memcmp(buf.as_ptr() as *const libc::c_void, split2.as_ptr() as *const libc::c_void,
-                    libc::strlen(split2.as_ptr() as *const libc::c_char)) != 0 {
-        test_err(b"data in the buffer doesn't match what it should in the last chunk\0".as_ptr() as *const libc::c_char);
+    read_extent_buffer(eb, buf.as_mut_ptr() as *mut kernel::ffi::c_void, btrfs_item_ptr_offset(eb, 2),
+                       strlen(split2.as_ptr() as *const kernel::ffi::c_char) as u32);
+    if memcmp(buf.as_ptr() as *const kernel::ffi::c_void, split2.as_ptr() as *const kernel::ffi::c_void,
+                    strlen(split2.as_ptr() as *const kernel::ffi::c_char)) != 0 {
+        test_err(b"data in the buffer doesn't match what it should in the last chunk\0".as_ptr() as *const kernel::ffi::c_char);
         ret = -EINVAL;
         return goto_out(path, root, fs_info, ret);
     }
@@ -188,7 +188,7 @@ unsafe fn test_btrfs_split_item(sectorsize: u32, nodesize: u32) -> i32 {
 }
 
 pub unsafe fn btrfs_test_extent_buffer_operations(sectorsize: u32, nodesize: u32) -> i32 {
-    test_msg(b"running extent buffer operation tests\0".as_ptr() as *const libc::c_char);
+    test_msg(b"running extent buffer operation tests\0".as_ptr() as *const kernel::ffi::c_char);
     test_btrfs_split_item(sectorsize, nodesize)
 }
 

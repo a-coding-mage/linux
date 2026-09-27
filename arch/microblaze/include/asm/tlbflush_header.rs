@@ -9,7 +9,7 @@
 // linux/sched.h, linux/threads.h, asm/processor.h, asm/mmu.h, and asm/page.h.
 
 extern "C" {
-    pub fn _tlbie(address: ::core::ffi::c_ulong);
+    pub fn _tlbie(address: ::kernel::ffi::c_ulong);
     pub fn _tlbia();
     pub fn preempt_disable();
     pub fn preempt_enable();
@@ -23,7 +23,7 @@ pub unsafe fn __tlbia() {
 }
 
 #[inline(always)]
-pub unsafe fn __tlbie(x: ::core::ffi::c_ulong) {
+pub unsafe fn __tlbie(x: ::kernel::ffi::c_ulong) {
     _tlbie(x);
 }
 
@@ -40,7 +40,7 @@ pub unsafe fn local_flush_tlb_mm(_mm: *mut mm_struct) {
 #[inline]
 pub unsafe fn local_flush_tlb_page(
     _vma: *mut vm_area_struct,
-    vmaddr: ::core::ffi::c_ulong,
+    vmaddr: ::kernel::ffi::c_ulong,
 ) {
     __tlbie(vmaddr);
 }
@@ -48,8 +48,8 @@ pub unsafe fn local_flush_tlb_page(
 #[inline]
 pub unsafe fn local_flush_tlb_range(
     _vma: *mut vm_area_struct,
-    _start: ::core::ffi::c_ulong,
-    _end: ::core::ffi::c_ulong,
+    _start: ::kernel::ffi::c_ulong,
+    _end: ::kernel::ffi::c_ulong,
 ) {
     __tlbia();
 }
@@ -57,8 +57,8 @@ pub unsafe fn local_flush_tlb_range(
 // #define flush_tlb_kernel_range(start, end) do { } while (0)
 #[inline]
 pub fn flush_tlb_kernel_range(
-    _start: ::core::ffi::c_ulong,
-    _end: ::core::ffi::c_ulong,
+    _start: ::kernel::ffi::c_ulong,
+    _end: ::kernel::ffi::c_ulong,
 ) {
 }
 
@@ -67,9 +67,9 @@ pub fn flush_tlb_kernel_range(
 pub fn update_mmu_cache_range(
     _vmf: *mut vm_fault,
     _vma: *mut vm_area_struct,
-    _addr: ::core::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
     _ptep: *mut pte_t,
-    _nr: ::core::ffi::c_ulong,
+    _nr: ::kernel::ffi::c_ulong,
 ) {
 }
 
@@ -104,8 +104,8 @@ pub use local_flush_tlb_range as flush_tlb_range;
 #[inline]
 pub fn flush_tlb_pgtables(
     _mm: *mut mm_struct,
-    _start: ::core::ffi::c_ulong,
-    _end: ::core::ffi::c_ulong,
+    _start: ::kernel::ffi::c_ulong,
+    _end: ::kernel::ffi::c_ulong,
 ) {
 }
 

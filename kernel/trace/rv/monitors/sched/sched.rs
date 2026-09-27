@@ -7,7 +7,7 @@
 // #include <linux/rv.h>
 // #include "sched.h"
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 const MODULE_NAME: &str = "sched";
 
@@ -22,7 +22,7 @@ pub struct rv_monitor {
 }
 
 unsafe extern "C" {
-    fn rv_register_monitor(monitor: *mut rv_monitor, data: *mut core::ffi::c_void) -> i32;
+    fn rv_register_monitor(monitor: *mut rv_monitor, data: *mut kernel::ffi::c_void) -> i32;
     fn rv_unregister_monitor(monitor: *mut rv_monitor);
 }
 

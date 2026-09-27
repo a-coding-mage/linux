@@ -80,38 +80,38 @@ pub struct ZSTD_DCtx_s {
     pub LLTptr: *const ZSTD_seqSymbol, pub MLTptr: *const ZSTD_seqSymbol, pub OFTptr: *const ZSTD_seqSymbol,
     pub HUFptr: *const HUF_DTable, pub entropy: ZSTD_entropyDTables_t,
     pub workspace: [U32; HUF_DECOMPRESS_WORKSPACE_SIZE_U32],
-    pub previousDstEnd: *const core::ffi::c_void, pub prefixStart: *const core::ffi::c_void,
-    pub virtualStart: *const core::ffi::c_void, pub dictEnd: *const core::ffi::c_void,
+    pub previousDstEnd: *const kernel::ffi::c_void, pub prefixStart: *const kernel::ffi::c_void,
+    pub virtualStart: *const kernel::ffi::c_void, pub dictEnd: *const kernel::ffi::c_void,
     pub expected: size_t, pub fParams: ZSTD_FrameHeader, pub processedCSize: U64, pub decodedSize: U64,
     pub bType: blockType_e, pub stage: ZSTD_dStage, pub litEntropy: U32, pub fseEntropy: U32,
     pub xxhState: xxh64_state, pub headerSize: size_t, pub format: ZSTD_format_e,
     pub forceIgnoreChecksum: ZSTD_forceIgnoreChecksum_e, pub validateChecksum: U32,
     pub litPtr: *const BYTE, pub customMem: ZSTD_customMem, pub litSize: size_t, pub rleSize: size_t,
-    pub staticSize: size_t, pub isFrameDecompression: core::ffi::c_int,
-    #[cfg(DYNAMIC_BMI2)] pub bmi2: core::ffi::c_int,
+    pub staticSize: size_t, pub isFrameDecompression: kernel::ffi::c_int,
+    #[cfg(DYNAMIC_BMI2)] pub bmi2: kernel::ffi::c_int,
     pub ddictLocal: *mut ZSTD_DDict, pub ddict: *const ZSTD_DDict, pub dictID: U32,
-    pub ddictIsCold: core::ffi::c_int, pub dictUses: ZSTD_dictUses_e, pub ddictSet: *mut ZSTD_DDictHashSet,
-    pub refMultipleDDicts: ZSTD_refMultipleDDicts_e, pub disableHufAsm: core::ffi::c_int,
-    pub maxBlockSizeParam: core::ffi::c_int, pub streamStage: ZSTD_dStreamStage,
-    pub inBuff: *mut core::ffi::c_char, pub inBuffSize: size_t, pub inPos: size_t, pub maxWindowSize: size_t,
-    pub outBuff: *mut core::ffi::c_char, pub outBuffSize: size_t, pub outStart: size_t, pub outEnd: size_t,
-    pub lhSize: size_t, pub hostageByte: U32, pub noForwardProgress: core::ffi::c_int,
+    pub ddictIsCold: kernel::ffi::c_int, pub dictUses: ZSTD_dictUses_e, pub ddictSet: *mut ZSTD_DDictHashSet,
+    pub refMultipleDDicts: ZSTD_refMultipleDDicts_e, pub disableHufAsm: kernel::ffi::c_int,
+    pub maxBlockSizeParam: kernel::ffi::c_int, pub streamStage: ZSTD_dStreamStage,
+    pub inBuff: *mut kernel::ffi::c_char, pub inBuffSize: size_t, pub inPos: size_t, pub maxWindowSize: size_t,
+    pub outBuff: *mut kernel::ffi::c_char, pub outBuffSize: size_t, pub outStart: size_t, pub outEnd: size_t,
+    pub lhSize: size_t, pub hostageByte: U32, pub noForwardProgress: kernel::ffi::c_int,
     pub outBufferMode: ZSTD_bufferMode_e, pub expectedOutBuffer: ZSTD_outBuffer,
     pub litBuffer: *mut BYTE, pub litBufferEnd: *const BYTE, pub litBufferLocation: ZSTD_litLocation_e,
     pub litExtraBuffer: [BYTE; ZSTD_LITBUFFEREXTRASIZE + WILDCOPY_OVERLENGTH],
     pub headerBuffer: [BYTE; ZSTD_FRAMEHEADERSIZE_MAX], pub oversizedDuration: size_t,
-    #[cfg(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)] pub dictContentBeginForFuzzing: *const core::ffi::c_void,
-    #[cfg(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)] pub dictContentEndForFuzzing: *const core::ffi::c_void,
+    #[cfg(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)] pub dictContentBeginForFuzzing: *const kernel::ffi::c_void,
+    #[cfg(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)] pub dictContentEndForFuzzing: *const kernel::ffi::c_void,
 }
 
-pub unsafe fn ZSTD_DCtx_get_bmi2(dctx: *const ZSTD_DCtx_s) -> core::ffi::c_int {
+pub unsafe fn ZSTD_DCtx_get_bmi2(dctx: *const ZSTD_DCtx_s) -> kernel::ffi::c_int {
     #[cfg(DYNAMIC_BMI2)] { (*dctx).bmi2 }
     #[cfg(not(DYNAMIC_BMI2))] { let _ = dctx; 0 }
 }
 
 extern "C" {
-    pub fn ZSTD_loadDEntropy(entropy: *mut ZSTD_entropyDTables_t, dict: *const core::ffi::c_void, dictSize: size_t) -> size_t;
-    pub fn ZSTD_checkContinuity(dctx: *mut ZSTD_DCtx_s, dst: *const core::ffi::c_void, dstSize: size_t);
+    pub fn ZSTD_loadDEntropy(entropy: *mut ZSTD_entropyDTables_t, dict: *const kernel::ffi::c_void, dictSize: size_t) -> size_t;
+    pub fn ZSTD_checkContinuity(dctx: *mut ZSTD_DCtx_s, dst: *const kernel::ffi::c_void, dstSize: size_t);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

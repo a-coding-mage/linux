@@ -23,8 +23,8 @@
 unsafe extern "C" fn arm_enter_idle_state(
     _dev: *mut cpuidle_device,
     _drv: *mut cpuidle_driver,
-    idx: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    idx: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     /*
      * Pass idle state index to arm_cpuidle_suspend which in turn
      * will call the CPU ops suspend protocol with idle index as a
@@ -34,7 +34,7 @@ unsafe extern "C" fn arm_enter_idle_state(
 }
 
 static mut arm_idle_driver: cpuidle_driver = cpuidle_driver {
-    name: "arm_idle\0".as_ptr() as *const ::core::ffi::c_char,
+    name: "arm_idle\0".as_ptr() as *const ::kernel::ffi::c_char,
     owner: THIS_MODULE,
     states: {
         let mut states = [cpuidle_state::ZERO; CPUIDLE_STATE_MAX];
@@ -43,8 +43,8 @@ static mut arm_idle_driver: cpuidle_driver = cpuidle_driver {
             exit_latency: 1,
             target_residency: 1,
             power_usage: UINT_MAX,
-            name: "WFI\0".as_ptr() as *const ::core::ffi::c_char,
-            desc: "ARM WFI\0".as_ptr() as *const ::core::ffi::c_char,
+            name: "WFI\0".as_ptr() as *const ::kernel::ffi::c_char,
+            desc: "ARM WFI\0".as_ptr() as *const ::kernel::ffi::c_char,
             ..cpuidle_state::ZERO
         };
         states
@@ -54,7 +54,7 @@ static mut arm_idle_driver: cpuidle_driver = cpuidle_driver {
 
 static arm_idle_state_match: [of_device_id; 2] = [
     of_device_id {
-        compatible: "arm,idle-state\0".as_ptr() as *const ::core::ffi::c_char,
+        compatible: "arm,idle-state\0".as_ptr() as *const ::kernel::ffi::c_char,
         data: arm_enter_idle_state as *const (),
         ..of_device_id::ZERO
     },
@@ -68,9 +68,9 @@ static arm_idle_state_match: [of_device_id; 2] = [
  * framework. It relies on core code to parse the idle states
  * and initialize them using driver data structures accordingly.
  */
-unsafe extern "C" fn arm_idle_init_cpu(cpu: ::core::ffi::c_int) -> ::core::ffi::c_int {
+unsafe extern "C" fn arm_idle_init_cpu(cpu: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     let mut drv: *mut cpuidle_driver;
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     drv = kmemdup(
         &arm_idle_driver as *const cpuidle_driver as *const (),
@@ -119,9 +119,9 @@ unsafe extern "C" fn arm_idle_init_cpu(cpu: ::core::ffi::c_int) -> ::core::ffi::
  * CPU fails to register cpuidle driver then rollback to cancel
  * all CPUs registration.
  */
-unsafe extern "C" fn arm_idle_init() -> ::core::ffi::c_int {
-    let mut cpu: ::core::ffi::c_int = 0;
-    let mut ret: ::core::ffi::c_int;
+unsafe extern "C" fn arm_idle_init() -> ::kernel::ffi::c_int {
+    let mut cpu: ::kernel::ffi::c_int = 0;
+    let mut ret: ::kernel::ffi::c_int;
     let mut drv: *mut cpuidle_driver;
     let mut dev: *mut cpuidle_device;
 

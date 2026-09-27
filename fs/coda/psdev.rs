@@ -11,8 +11,8 @@
 // surrounding translation unit.
 
 /* statistics */
-pub static mut coda_hard: ::core::ffi::c_int = 0;
-pub static mut coda_timeout: ::core::ffi::c_ulong = 30;
+pub static mut coda_hard: ::kernel::ffi::c_int = 0;
+pub static mut coda_timeout: ::kernel::ffi::c_ulong = 30;
 
 pub static mut coda_comms: [venus_comm; MAX_CODADEVS] = [venus_comm::ZERO; MAX_CODADEVS];
 static mut coda_psdev_class: *mut class = core::ptr::null_mut();
@@ -30,25 +30,25 @@ unsafe fn coda_psdev_poll(file: *mut file, wait: *mut poll_table) -> __poll_t {
     mask
 }
 
-unsafe fn coda_psdev_ioctl(_filp: *mut file, cmd: ::core::ffi::c_uint, arg: ::core::ffi::c_ulong) -> ::core::ffi::c_long {
-    let mut data: ::core::ffi::c_uint;
+unsafe fn coda_psdev_ioctl(_filp: *mut file, cmd: ::kernel::ffi::c_uint, arg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_long {
+    let mut data: ::kernel::ffi::c_uint;
     match cmd {
         CIOC_KERNEL_VERSION => {
             data = CODA_KERNEL_VERSION;
-            put_user(data, arg as *mut ::core::ffi::c_int)
+            put_user(data, arg as *mut ::kernel::ffi::c_int)
         }
         _ => -ENOTTY,
     }
 }
 
 /* Receive a message written by Venus to the psdev. */
-unsafe fn coda_psdev_write(file: *mut file, buf: *const ::core::ffi::c_char, mut nbytes: usize, _off: *mut loff_t) -> isize {
+unsafe fn coda_psdev_write(file: *mut file, buf: *const ::kernel::ffi::c_char, mut nbytes: usize, _off: *mut loff_t) -> isize {
     let vcp = (*file).private_data as *mut venus_comm;
     let mut req: *mut upc_req = core::ptr::null_mut();
     let mut hdr: coda_in_hdr = core::mem::zeroed();
     let mut retval: isize = 0;
     let mut count: isize = 0;
-    let mut error: ::core::ffi::c_int;
+    let mut error: ::kernel::ffi::c_int;
 
     if nbytes < 2 * core::mem::size_of::<u_int32_t>() { return -EINVAL; }
     if copy_from_user(&mut hdr as *mut _ as *mut _, buf, 2 * core::mem::size_of::<u_int32_t>()) != 0 { return -EFAULT; }
@@ -87,7 +87,7 @@ unsafe fn coda_psdev_write(file: *mut file, buf: *const ::core::ffi::c_char, mut
 }
 
 /* Read a message from the kernel to Venus. */
-unsafe fn coda_psdev_read(file: *mut file, buf: *mut ::core::ffi::c_char, nbytes: usize, _off: *mut loff_t) -> isize {
+unsafe fn coda_psdev_read(file: *mut file, buf: *mut ::kernel::ffi::c_char, nbytes: usize, _off: *mut loff_t) -> isize {
     let vcp = (*file).private_data as *mut venus_comm;
     if nbytes == 0 { return 0; }
     mutex_lock(&mut (*vcp).vc_mutex);
@@ -107,7 +107,7 @@ unsafe fn coda_psdev_read(file: *mut file, buf: *mut ::core::ffi::c_char, nbytes
     retval
 }
 
-unsafe fn coda_psdev_open(inode: *mut inode, file: *mut file) -> ::core::ffi::c_int {
+unsafe fn coda_psdev_open(inode: *mut inode, file: *mut file) -> ::kernel::ffi::c_int {
     if task_active_pid_ns(current) != &init_pid_ns || current_user_ns() != &init_user_ns { return -EINVAL; }
     let idx = iminor(inode); if idx < 0 || idx >= MAX_CODADEVS { return -ENODEV; }
     let vcp = &mut coda_comms[idx as usize]; mutex_lock(&mut vcp.vc_mutex);
@@ -116,7 +116,7 @@ unsafe fn coda_psdev_open(inode: *mut inode, file: *mut file) -> ::core::ffi::c_
     mutex_unlock(&mut vcp.vc_mutex); 0
 }
 
-unsafe fn coda_psdev_release(_inode: *mut inode, file: *mut file) -> ::core::ffi::c_int {
+unsafe fn coda_psdev_release(_inode: *mut inode, file: *mut file) -> ::kernel::ffi::c_int {
     let vcp = (*file).private_data as *mut venus_comm; if vcp.is_null() || (*vcp).vc_inuse == 0 { pr_warn!("Not open.\n"); return -1; }
     mutex_lock(&mut (*vcp).vc_mutex);
     let mut req = (*vcp).vc_pending.next; while req != &mut (*vcp).vc_pending as *mut _ { let next = (*req).next; let r = list_entry(req, upc_req, uc_chain); list_del(req); if (*r).uc_flags & CODA_REQ_ASYNC != 0 { kvfree((*r).uc_data); kfree(r); } else { (*r).uc_flags |= CODA_REQ_ABORT; wake_up(&mut (*r).uc_sleep); } req = next; }
@@ -128,9 +128,9 @@ unsafe fn coda_psdev_release(_inode: *mut inode, file: *mut file) -> ::core::ffi
 // below retain the corresponding Linux kernel registrations.
 static coda_psdev_fops: file_operations = file_operations { owner: THIS_MODULE, read: Some(coda_psdev_read), write: Some(coda_psdev_write), poll: Some(coda_psdev_poll), unlocked_ioctl: Some(coda_psdev_ioctl), open: Some(coda_psdev_open), release: Some(coda_psdev_release), llseek: Some(noop_llseek) };
 
-unsafe fn init_coda_psdev() -> ::core::ffi::c_int { if register_chrdev(CODA_PSDEV_MAJOR, "coda", &coda_psdev_fops) != 0 { pr_err!("unable to get major %d\n", CODA_PSDEV_MAJOR); return -EIO; } coda_psdev_class = class_create("coda"); if IS_ERR(coda_psdev_class) { let e = PTR_ERR(coda_psdev_class); unregister_chrdev(CODA_PSDEV_MAJOR, "coda"); return e; } for i in 0..MAX_CODADEVS { mutex_init(&mut coda_comms[i].vc_mutex); device_create(coda_psdev_class, core::ptr::null_mut(), MKDEV(CODA_PSDEV_MAJOR, i), core::ptr::null_mut(), "cfs%d", i); } coda_sysctl_init(); 0 }
+unsafe fn init_coda_psdev() -> ::kernel::ffi::c_int { if register_chrdev(CODA_PSDEV_MAJOR, "coda", &coda_psdev_fops) != 0 { pr_err!("unable to get major %d\n", CODA_PSDEV_MAJOR); return -EIO; } coda_psdev_class = class_create("coda"); if IS_ERR(coda_psdev_class) { let e = PTR_ERR(coda_psdev_class); unregister_chrdev(CODA_PSDEV_MAJOR, "coda"); return e; } for i in 0..MAX_CODADEVS { mutex_init(&mut coda_comms[i].vc_mutex); device_create(coda_psdev_class, core::ptr::null_mut(), MKDEV(CODA_PSDEV_MAJOR, i), core::ptr::null_mut(), "cfs%d", i); } coda_sysctl_init(); 0 }
 
-unsafe fn init_coda() -> ::core::ffi::c_int { let mut status = coda_init_inodecache(); if status != 0 { return status; } status = init_coda_psdev(); if status != 0 { coda_destroy_inodecache(); return status; } status = register_filesystem(&coda_fs_type); if status != 0 { for i in 0..MAX_CODADEVS { device_destroy(coda_psdev_class, MKDEV(CODA_PSDEV_MAJOR, i)); } class_destroy(coda_psdev_class); unregister_chrdev(CODA_PSDEV_MAJOR, "coda"); coda_sysctl_clean(); coda_destroy_inodecache(); } status }
+unsafe fn init_coda() -> ::kernel::ffi::c_int { let mut status = coda_init_inodecache(); if status != 0 { return status; } status = init_coda_psdev(); if status != 0 { coda_destroy_inodecache(); return status; } status = register_filesystem(&coda_fs_type); if status != 0 { for i in 0..MAX_CODADEVS { device_destroy(coda_psdev_class, MKDEV(CODA_PSDEV_MAJOR, i)); } class_destroy(coda_psdev_class); unregister_chrdev(CODA_PSDEV_MAJOR, "coda"); coda_sysctl_clean(); coda_destroy_inodecache(); } status }
 
 unsafe fn exit_coda() { unregister_filesystem(&coda_fs_type); for i in 0..MAX_CODADEVS { device_destroy(coda_psdev_class, MKDEV(CODA_PSDEV_MAJOR, i)); } class_destroy(coda_psdev_class); unregister_chrdev(CODA_PSDEV_MAJOR, "coda"); coda_sysctl_clean(); coda_destroy_inodecache(); }
 

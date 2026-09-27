@@ -54,21 +54,21 @@ pub const KEMPLD_VERSION_LEN: usize = 10;
 
 #[repr(C)]
 pub struct kempld_info {
-    pub major: ::core::ffi::c_uint,
-    pub minor: ::core::ffi::c_uint,
-    pub buildnr: ::core::ffi::c_uint,
-    pub number: ::core::ffi::c_uint,
-    pub type_: ::core::ffi::c_uint,
-    pub spec_major: ::core::ffi::c_uint,
-    pub spec_minor: ::core::ffi::c_uint,
-    pub version: [::core::ffi::c_char; KEMPLD_VERSION_LEN],
+    pub major: ::kernel::ffi::c_uint,
+    pub minor: ::kernel::ffi::c_uint,
+    pub buildnr: ::kernel::ffi::c_uint,
+    pub number: ::kernel::ffi::c_uint,
+    pub type_: ::kernel::ffi::c_uint,
+    pub spec_major: ::kernel::ffi::c_uint,
+    pub spec_minor: ::kernel::ffi::c_uint,
+    pub version: [::kernel::ffi::c_char; KEMPLD_VERSION_LEN],
 }
 
 #[repr(C)]
 pub struct kempld_device_data {
-    pub io_base: *mut ::core::ffi::c_void,
-    pub io_index: *mut ::core::ffi::c_void,
-    pub io_data: *mut ::core::ffi::c_void,
+    pub io_base: *mut ::kernel::ffi::c_void,
+    pub io_index: *mut ::kernel::ffi::c_void,
+    pub io_data: *mut ::kernel::ffi::c_void,
     pub pld_clock: u32,
     pub feature_mask: u32,
     pub dev: *mut device,
@@ -79,12 +79,12 @@ pub struct kempld_device_data {
 #[repr(C)]
 pub struct kempld_platform_data {
     pub pld_clock: u32,
-    pub gpio_base: ::core::ffi::c_int,
+    pub gpio_base: ::kernel::ffi::c_int,
     pub ioresource: *mut resource,
     pub get_hardware_mutex: Option<unsafe extern "C" fn(*mut kempld_device_data)>,
     pub release_hardware_mutex: Option<unsafe extern "C" fn(*mut kempld_device_data)>,
-    pub get_info: Option<unsafe extern "C" fn(*mut kempld_device_data) -> ::core::ffi::c_int>,
-    pub register_cells: Option<unsafe extern "C" fn(*mut kempld_device_data) -> ::core::ffi::c_int>,
+    pub get_info: Option<unsafe extern "C" fn(*mut kempld_device_data) -> ::kernel::ffi::c_int>,
+    pub register_cells: Option<unsafe extern "C" fn(*mut kempld_device_data) -> ::kernel::ffi::c_int>,
 }
 
 pub enum device {}

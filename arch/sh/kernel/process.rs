@@ -14,7 +14,7 @@ pub struct task_struct {
 
 #[repr(C)]
 pub struct thread_struct {
-    pub xstate: *mut core::ffi::c_void,
+    pub xstate: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -27,16 +27,16 @@ extern "C" {
 
     fn unlazy_fpu(src: *mut task_struct, regs: *mut pt_regs);
     fn task_pt_regs(task: *mut task_struct) -> *mut pt_regs;
-    fn kmem_cache_alloc(cachep: *mut kmem_cache, flags: u32) -> *mut core::ffi::c_void;
-    fn kmem_cache_free(cachep: *mut kmem_cache, objp: *mut core::ffi::c_void);
-    fn memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize)
-        -> *mut core::ffi::c_void;
+    fn kmem_cache_alloc(cachep: *mut kmem_cache, flags: u32) -> *mut kernel::ffi::c_void;
+    fn kmem_cache_free(cachep: *mut kmem_cache, objp: *mut kernel::ffi::c_void);
+    fn memcpy(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize)
+        -> *mut kernel::ffi::c_void;
     fn kmem_cache_create(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         size: usize,
         align: usize,
         flags: u32,
-        ctor: *mut core::ffi::c_void,
+        ctor: *mut kernel::ffi::c_void,
     ) -> *mut kmem_cache;
 }
 
@@ -111,7 +111,7 @@ pub unsafe extern "C" fn arch_task_cache_init() {
     }
 
     task_xstate_cachep = kmem_cache_create(
-        b"task_xstate\0".as_ptr() as *const core::ffi::c_char,
+        b"task_xstate\0".as_ptr() as *const kernel::ffi::c_char,
         xstate_size as usize,
         core::mem::align_of::<thread_xstate>(),
         SLAB_PANIC,

@@ -72,46 +72,46 @@ pub enum ib_cm_rej_reason { IB_CM_REJ_NO_QP = 1, IB_CM_REJ_NO_EEC, IB_CM_REJ_NO_
     IB_CM_REJ_INVALID_CLASS_VERSION, IB_CM_REJ_INVALID_FLOW_LABEL,
     IB_CM_REJ_INVALID_ALT_FLOW_LABEL, IB_CM_REJ_VENDOR_OPTION_NOT_SUPPORTED = 35 }
 
-#[repr(C)] pub struct ib_cm_rej_event_param { pub reason: ib_cm_rej_reason, pub ari: *mut core::ffi::c_void, pub ari_length: u8 }
+#[repr(C)] pub struct ib_cm_rej_event_param { pub reason: ib_cm_rej_reason, pub ari: *mut kernel::ffi::c_void, pub ari_length: u8 }
 #[repr(C)] pub struct ib_cm_mra_event_param { pub service_timeout: u8 }
 #[repr(C)] pub struct ib_cm_lap_event_param { pub alternate_path: *mut sa_path_rec }
 #[repr(C)] pub enum ib_cm_apr_status { IB_CM_APR_SUCCESS, IB_CM_APR_INVALID_COMM_ID, IB_CM_APR_UNSUPPORTED, IB_CM_APR_REJECT, IB_CM_APR_REDIRECT, IB_CM_APR_IS_CURRENT, IB_CM_APR_INVALID_QPN_EECN, IB_CM_APR_INVALID_LID, IB_CM_APR_INVALID_GID, IB_CM_APR_INVALID_FLOW_LABEL, IB_CM_APR_INVALID_TCLASS, IB_CM_APR_INVALID_HOP_LIMIT, IB_CM_APR_INVALID_PACKET_RATE, IB_CM_APR_INVALID_SL }
-#[repr(C)] pub struct ib_cm_apr_event_param { pub ap_status: ib_cm_apr_status, pub apr_info: *mut core::ffi::c_void, pub info_len: u8 }
+#[repr(C)] pub struct ib_cm_apr_event_param { pub ap_status: ib_cm_apr_status, pub apr_info: *mut kernel::ffi::c_void, pub info_len: u8 }
 #[repr(C)] pub struct ib_cm_sidr_req_event_param { pub listen_id: *mut ib_cm_id, pub service_id: __be64, pub sgid_attr: *const ib_gid_attr, pub bth_pkey: u16, pub port: u8, pub pkey: u16 }
 #[repr(C)] pub enum ib_cm_sidr_status { IB_SIDR_SUCCESS, IB_SIDR_UNSUPPORTED, IB_SIDR_REJECT, IB_SIDR_NO_QP, IB_SIDR_REDIRECT, IB_SIDR_UNSUPPORTED_VERSION }
-#[repr(C)] pub struct ib_cm_sidr_rep_event_param { pub status: ib_cm_sidr_status, pub qkey: u32, pub qpn: u32, pub info: *mut core::ffi::c_void, pub sgid_attr: *const ib_gid_attr, pub info_len: u8 }
+#[repr(C)] pub struct ib_cm_sidr_rep_event_param { pub status: ib_cm_sidr_status, pub qkey: u32, pub qpn: u32, pub info: *mut kernel::ffi::c_void, pub sgid_attr: *const ib_gid_attr, pub info_len: u8 }
 
 #[repr(C)] pub union ib_cm_event_param { pub req_rcvd: ib_cm_req_event_param, pub rep_rcvd: ib_cm_rep_event_param, pub rej_rcvd: ib_cm_rej_event_param, pub mra_rcvd: ib_cm_mra_event_param, pub lap_rcvd: ib_cm_lap_event_param, pub apr_rcvd: ib_cm_apr_event_param, pub sidr_req_rcvd: ib_cm_sidr_req_event_param, pub sidr_rep_rcvd: ib_cm_sidr_rep_event_param, pub send_status: ib_wc_status }
-#[repr(C)] pub struct ib_cm_event { pub event: ib_cm_event_type, pub param: ib_cm_event_param, pub private_data: *mut core::ffi::c_void }
+#[repr(C)] pub struct ib_cm_event { pub event: ib_cm_event_type, pub param: ib_cm_event_param, pub private_data: *mut kernel::ffi::c_void }
 
 pub const CM_REQ_ATTR_ID: u16 = 0x0010u16.to_be(); pub const CM_MRA_ATTR_ID: u16 = 0x0011u16.to_be(); pub const CM_REJ_ATTR_ID: u16 = 0x0012u16.to_be(); pub const CM_REP_ATTR_ID: u16 = 0x0013u16.to_be(); pub const CM_RTU_ATTR_ID: u16 = 0x0014u16.to_be(); pub const CM_DREQ_ATTR_ID: u16 = 0x0015u16.to_be(); pub const CM_DREP_ATTR_ID: u16 = 0x0016u16.to_be(); pub const CM_SIDR_REQ_ATTR_ID: u16 = 0x0017u16.to_be(); pub const CM_SIDR_REP_ATTR_ID: u16 = 0x0018u16.to_be(); pub const CM_LAP_ATTR_ID: u16 = 0x0019u16.to_be(); pub const CM_APR_ATTR_ID: u16 = 0x001Au16.to_be();
 
 pub type ib_cm_handler = unsafe extern "C" fn(*mut ib_cm_id, *const ib_cm_event) -> i32;
-#[repr(C)] pub struct ib_cm_id { pub cm_handler: ib_cm_handler, pub context: *mut core::ffi::c_void, pub device: *mut ib_device, pub service_id: __be64, pub state: ib_cm_state, pub lap_state: ib_cm_lap_state, pub local_id: __be32, pub remote_id: __be32, pub remote_cm_qpn: u32 }
+#[repr(C)] pub struct ib_cm_id { pub cm_handler: ib_cm_handler, pub context: *mut kernel::ffi::c_void, pub device: *mut ib_device, pub service_id: __be64, pub state: ib_cm_state, pub lap_state: ib_cm_lap_state, pub local_id: __be32, pub remote_id: __be32, pub remote_cm_qpn: u32 }
 
-extern "C" { pub fn ib_create_cm_id(device: *mut ib_device, cm_handler: ib_cm_handler, context: *mut core::ffi::c_void) -> *mut ib_cm_id; pub fn ib_destroy_cm_id(cm_id: *mut ib_cm_id); }
+extern "C" { pub fn ib_create_cm_id(device: *mut ib_device, cm_handler: ib_cm_handler, context: *mut kernel::ffi::c_void) -> *mut ib_cm_id; pub fn ib_destroy_cm_id(cm_id: *mut ib_cm_id); }
 pub const IB_SERVICE_ID_AGN_MASK: u64 = 0xFF00000000000000u64.to_be(); pub const IB_CM_ASSIGN_SERVICE_ID: u64 = 0x0200000000000000u64.to_be(); pub const IB_CMA_SERVICE_ID: u64 = 0x0000000001000000u64.to_be(); pub const IB_CMA_SERVICE_ID_MASK: u64 = 0xFFFFFFFFFF000000u64.to_be(); pub const IB_SDP_SERVICE_ID: u64 = 0x0000000000010000u64.to_be(); pub const IB_SDP_SERVICE_ID_MASK: u64 = 0xFFFFFFFFFFFF0000u64.to_be();
 
-#[repr(C)] pub struct ib_cm_req_param { pub primary_path:*mut sa_path_rec, pub primary_path_inbound:*mut sa_path_rec, pub primary_path_outbound:*mut sa_path_rec, pub alternate_path:*mut sa_path_rec, pub ppath_sgid_attr:*const ib_gid_attr, pub service_id:__be64, pub qp_num:u32, pub qp_type:ib_qp_type, pub starting_psn:u32, pub private_data:*const core::ffi::c_void, pub private_data_len:u8, pub responder_resources:u8, pub initiator_depth:u8, pub remote_cm_response_timeout:u8, pub flow_control:u8, pub local_cm_response_timeout:u8, pub retry_count:u8, pub rnr_retry_count:u8, pub max_cm_retries:u8, pub srq:u8, pub ece:rdma_ucm_ece }
-#[repr(C)] pub struct ib_cm_rep_param { pub qp_num:u32, pub starting_psn:u32, pub private_data:*const core::ffi::c_void, pub private_data_len:u8, pub responder_resources:u8, pub initiator_depth:u8, pub failover_accepted:u8, pub flow_control:u8, pub rnr_retry_count:u8, pub srq:u8, pub ece:rdma_ucm_ece }
-#[repr(C)] pub struct ib_cm_sidr_req_param { pub path:*mut sa_path_rec, pub sgid_attr:*const ib_gid_attr, pub service_id:__be64, pub timeout_ms:usize, pub private_data:*const core::ffi::c_void, pub private_data_len:u8, pub max_cm_retries:u8 }
-#[repr(C)] pub struct ib_cm_sidr_rep_param { pub qp_num:u32, pub qkey:u32, pub status:ib_cm_sidr_status, pub info:*const core::ffi::c_void, pub info_length:u8, pub private_data:*const core::ffi::c_void, pub private_data_len:u8, pub ece:rdma_ucm_ece }
+#[repr(C)] pub struct ib_cm_req_param { pub primary_path:*mut sa_path_rec, pub primary_path_inbound:*mut sa_path_rec, pub primary_path_outbound:*mut sa_path_rec, pub alternate_path:*mut sa_path_rec, pub ppath_sgid_attr:*const ib_gid_attr, pub service_id:__be64, pub qp_num:u32, pub qp_type:ib_qp_type, pub starting_psn:u32, pub private_data:*const kernel::ffi::c_void, pub private_data_len:u8, pub responder_resources:u8, pub initiator_depth:u8, pub remote_cm_response_timeout:u8, pub flow_control:u8, pub local_cm_response_timeout:u8, pub retry_count:u8, pub rnr_retry_count:u8, pub max_cm_retries:u8, pub srq:u8, pub ece:rdma_ucm_ece }
+#[repr(C)] pub struct ib_cm_rep_param { pub qp_num:u32, pub starting_psn:u32, pub private_data:*const kernel::ffi::c_void, pub private_data_len:u8, pub responder_resources:u8, pub initiator_depth:u8, pub failover_accepted:u8, pub flow_control:u8, pub rnr_retry_count:u8, pub srq:u8, pub ece:rdma_ucm_ece }
+#[repr(C)] pub struct ib_cm_sidr_req_param { pub path:*mut sa_path_rec, pub sgid_attr:*const ib_gid_attr, pub service_id:__be64, pub timeout_ms:usize, pub private_data:*const kernel::ffi::c_void, pub private_data_len:u8, pub max_cm_retries:u8 }
+#[repr(C)] pub struct ib_cm_sidr_rep_param { pub qp_num:u32, pub qkey:u32, pub status:ib_cm_sidr_status, pub info:*const kernel::ffi::c_void, pub info_length:u8, pub private_data:*const kernel::ffi::c_void, pub private_data_len:u8, pub ece:rdma_ucm_ece }
 
 extern "C" {
     pub fn ib_cm_listen(_: *mut ib_cm_id, _: __be64) -> i32;
     pub fn ib_cm_insert_listen(_: *mut ib_device, _: ib_cm_handler, _: __be64) -> *mut ib_cm_id;
     pub fn ib_send_cm_req(_: *mut ib_cm_id, _: *mut ib_cm_req_param) -> i32;
     pub fn ib_send_cm_rep(_: *mut ib_cm_id, _: *mut ib_cm_rep_param) -> i32;
-    pub fn ib_send_cm_rtu(_: *mut ib_cm_id, _: *const core::ffi::c_void, _: u8) -> i32;
-    pub fn ib_send_cm_dreq(_: *mut ib_cm_id, _: *const core::ffi::c_void, _: u8) -> i32;
-    pub fn ib_send_cm_drep(_: *mut ib_cm_id, _: *const core::ffi::c_void, _: u8) -> i32;
+    pub fn ib_send_cm_rtu(_: *mut ib_cm_id, _: *const kernel::ffi::c_void, _: u8) -> i32;
+    pub fn ib_send_cm_dreq(_: *mut ib_cm_id, _: *const kernel::ffi::c_void, _: u8) -> i32;
+    pub fn ib_send_cm_drep(_: *mut ib_cm_id, _: *const kernel::ffi::c_void, _: u8) -> i32;
     pub fn ib_cm_notify(_: *mut ib_cm_id, _: ib_event_type) -> i32;
-    pub fn ib_send_cm_rej(_: *mut ib_cm_id, _: ib_cm_rej_reason, _: *mut core::ffi::c_void, _: u8, _: *const core::ffi::c_void, _: u8) -> i32;
+    pub fn ib_send_cm_rej(_: *mut ib_cm_id, _: ib_cm_rej_reason, _: *mut kernel::ffi::c_void, _: u8, _: *const kernel::ffi::c_void, _: u8) -> i32;
     pub fn ib_prepare_cm_mra(_: *mut ib_cm_id) -> i32;
     pub fn ib_cm_init_qp_attr(_: *mut ib_cm_id, _: *mut ib_qp_attr, _: *mut i32) -> i32;
     pub fn ib_send_cm_sidr_req(_: *mut ib_cm_id, _: *mut ib_cm_sidr_req_param) -> i32;
     pub fn ib_send_cm_sidr_rep(_: *mut ib_cm_id, _: *mut ib_cm_sidr_rep_param) -> i32;
-    pub fn ibcm_reject_msg(reason: i32) -> *const core::ffi::c_char;
+    pub fn ibcm_reject_msg(reason: i32) -> *const kernel::ffi::c_char;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

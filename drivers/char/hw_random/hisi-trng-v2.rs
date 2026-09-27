@@ -12,16 +12,16 @@ const TIMEOUT_US: u32 = 10000;
 
 #[repr(C)]
 pub struct HisiTrng {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub rng: Hwrng,
 }
 
 #[repr(C)]
 pub struct Hwrng {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub read: Option<unsafe extern "C" fn(
         rng: *mut Hwrng,
-        buf: *mut core::ffi::c_void,
+        buf: *mut kernel::ffi::c_void,
         max: usize,
         wait: bool,
     ) -> i32>,
@@ -31,7 +31,7 @@ pub struct Hwrng {
 #[repr(C)]
 pub struct PlatformDevice {
     pub dev: Device,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -39,7 +39,7 @@ pub struct Device;
 
 #[repr(C)]
 pub struct AcpiDeviceId {
-    pub id: *const core::ffi::c_char,
+    pub id: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -50,13 +50,13 @@ pub struct PlatformDriver {
 
 #[repr(C)]
 pub struct Driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub acpi_match_table: *const AcpiDeviceId,
 }
 
 extern "C" {
     fn readl_poll_timeout(
-        addr: *mut core::ffi::c_void,
+        addr: *mut kernel::ffi::c_void,
         val: *mut u32,
         condition: u32,
         delay_us: u32,
@@ -66,14 +66,14 @@ extern "C" {
         dev: *mut Device,
         size: usize,
         flags: u32,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     fn devm_platform_ioremap_resource(
         pdev: *mut PlatformDevice,
         index: u32,
-    ) -> *mut core::ffi::c_void;
-    fn ptr_err(ptr: *mut core::ffi::c_void) -> i32;
+    ) -> *mut kernel::ffi::c_void;
+    fn ptr_err(ptr: *mut kernel::ffi::c_void) -> i32;
     fn devm_hwrng_register(dev: *mut Device, rng: *mut Hwrng) -> i32;
-    fn dev_err(dev: *mut Device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut Device, fmt: *const kernel::ffi::c_char, ...);
     fn platform_driver_register(driver: *mut PlatformDriver) -> i32;
     fn platform_driver_unregister(driver: *mut PlatformDriver);
 }
@@ -82,7 +82,7 @@ const GFP_KERNEL: u32 = 0;
 
 unsafe extern "C" fn hisi_trng_read(
     rng: *mut Hwrng,
-    buf: *mut core::ffi::c_void,
+    buf: *mut kernel::ffi::c_void,
     max: usize,
     _wait: bool,
 ) -> i32 {
@@ -93,7 +93,7 @@ unsafe extern "C" fn hisi_trng_read(
 
     loop {
         ret = readl_poll_timeout(
-            ((*trng).base as *mut u8).add(HISI_TRNG_REG) as *mut core::ffi::c_void,
+            ((*trng).base as *mut u8).add(HISI_TRNG_REG) as *mut kernel::ffi::c_void,
             &mut val,
             val,
             SLEEP_US,
@@ -149,7 +149,7 @@ unsafe extern "C" fn hisi_trng_probe(pdev: *mut PlatformDevice) -> i32 {
     if ret != 0 {
         dev_err(
             &mut (*pdev).dev,
-            b"failed to register hwrng: %d!\n\0".as_ptr() as *const core::ffi::c_char,
+            b"failed to register hwrng: %d!\n\0".as_ptr() as *const kernel::ffi::c_char,
             ret,
         );
     }
@@ -157,14 +157,14 @@ unsafe extern "C" fn hisi_trng_probe(pdev: *mut PlatformDevice) -> i32 {
 }
 
 static HISI_TRNG_ACPI_MATCH: [AcpiDeviceId; 2] = [
-    AcpiDeviceId { id: b"HISI02B3\0".as_ptr() as *const core::ffi::c_char },
+    AcpiDeviceId { id: b"HISI02B3\0".as_ptr() as *const kernel::ffi::c_char },
     AcpiDeviceId { id: core::ptr::null() },
 ];
 
 static mut HISI_TRNG_DRIVER: PlatformDriver = PlatformDriver {
     probe: Some(hisi_trng_probe),
     driver: Driver {
-        name: b"hisi-trng-v2\0".as_ptr() as *const core::ffi::c_char,
+        name: b"hisi-trng-v2\0".as_ptr() as *const kernel::ffi::c_char,
         acpi_match_table: HISI_TRNG_ACPI_MATCH.as_ptr(),
     },
 };

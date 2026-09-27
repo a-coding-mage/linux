@@ -10,7 +10,7 @@
 
 #[repr(C)]
 pub struct clk_hw {
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub init: *mut clk_init_data,
 }
 
@@ -30,11 +30,11 @@ pub struct clk_hw_wrapper {
 
 #[repr(C)]
 pub struct clk_init_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const clk_ops,
     pub flags: u32,
     pub num_parents: u8,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -45,28 +45,28 @@ pub struct clk_ops {
 
 extern "C" {
     static mut clk_mgr_base_addr: *mut u8;
-    fn readl(addr: *const core::ffi::c_void) -> u32;
+    fn readl(addr: *const kernel::ffi::c_void) -> u32;
     fn kzalloc_obj<T>() -> *mut T;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn clk_hw_register(dev: *mut core::ffi::c_void, hw: *mut clk_hw) -> i32;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn clk_hw_register(dev: *mut kernel::ffi::c_void, hw: *mut clk_hw) -> i32;
     fn clk_hw_unregister(hw: *mut clk_hw);
-    fn of_clk_add_hw_provider(node: *mut device_node, get: *const core::ffi::c_void,
+    fn of_clk_add_hw_provider(node: *mut device_node, get: *const kernel::ffi::c_void,
                               hw: *mut clk_hw) -> i32;
     fn of_clk_hw_simple_get() -> !;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn of_property_read_u32(node: *mut device_node, name: *const core::ffi::c_char,
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn of_property_read_u32(node: *mut device_node, name: *const kernel::ffi::c_char,
                             value: *mut u32) -> i32;
-    fn of_property_read_u32_array(node: *mut device_node, name: *const core::ffi::c_char,
+    fn of_property_read_u32_array(node: *mut device_node, name: *const kernel::ffi::c_char,
                                   value: *mut u32, count: usize) -> i32;
-    fn of_property_read_string(node: *mut device_node, name: *const core::ffi::c_char,
-                               value: *mut *const core::ffi::c_char) -> i32;
-    fn of_clk_parent_fill(node: *mut device_node, parents: *mut *const core::ffi::c_char,
+    fn of_property_read_string(node: *mut device_node, name: *const kernel::ffi::c_char,
+                               value: *mut *const kernel::ffi::c_char) -> i32;
+    fn of_clk_parent_fill(node: *mut device_node, parents: *mut *const kernel::ffi::c_char,
                           count: usize) -> u8;
 }
 
 #[repr(C)]
 pub struct device_node {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 const SOCFPGA_MAX_PARENTS: usize = 2;
@@ -81,19 +81,19 @@ unsafe fn clk_periclk_recalc_rate(hwclk: *mut clk_hw, mut parent_rate: usize) ->
         div = (*socfpgaclk).fixed_div;
     } else {
         if !(*socfpgaclk).div_reg.is_null() {
-            let mut val = readl((*socfpgaclk).div_reg as *const core::ffi::c_void)
+            let mut val = readl((*socfpgaclk).div_reg as *const kernel::ffi::c_void)
                 >> (*socfpgaclk).shift;
             val &= (1u32 << ((*socfpgaclk).width - 1)) * 2 - 1;
             parent_rate /= (val + 1) as usize;
         }
-        div = (readl((*socfpgaclk).hw.hw.reg as *const core::ffi::c_void) & 0x1ff) + 1;
+        div = (readl((*socfpgaclk).hw.hw.reg as *const kernel::ffi::c_void) & 0x1ff) + 1;
     }
 
     parent_rate / div as usize
 }
 
 unsafe fn clk_periclk_get_parent(_hwclk: *mut clk_hw) -> u8 {
-    let clk_src = readl(clk_mgr_base_addr.add(CLKMGR_DBCTRL) as *const core::ffi::c_void);
+    let clk_src = readl(clk_mgr_base_addr.add(CLKMGR_DBCTRL) as *const kernel::ffi::c_void);
     (clk_src & 0x1) as u8
 }
 

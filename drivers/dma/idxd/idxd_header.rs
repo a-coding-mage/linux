@@ -6,7 +6,7 @@ pub const IDXD_DRIVER_VERSION: &str = "1.00";
 
 extern "C" {
     pub fn perfmon_pmu_init(_: *mut idxd_device) -> i32; pub fn perfmon_pmu_remove(_: *mut idxd_device); pub fn perfmon_counter_overflow(_: *mut idxd_device);
-    pub fn idxd_misc_thread(_: i32, _: *mut core::ffi::c_void) -> i32; pub fn idxd_wq_thread(_: i32, _: *mut core::ffi::c_void) -> i32;
+    pub fn idxd_misc_thread(_: i32, _: *mut kernel::ffi::c_void) -> i32; pub fn idxd_wq_thread(_: i32, _: *mut kernel::ffi::c_void) -> i32;
     pub static mut tc_override: bool;
 }
 
@@ -38,11 +38,11 @@ pub enum idxd_desc {}
 
 #[repr(C)]
 pub struct idxd_device_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub type_: *mut idxd_dev_type,
     pub probe: Option<unsafe extern "C" fn(*mut idxd_dev) -> i32>,
     pub remove: Option<unsafe extern "C" fn(*mut idxd_dev)>,
-    pub desc_complete: Option<unsafe extern "C" fn(*mut idxd_desc, idxd_complete_type, bool, *mut core::ffi::c_void, *mut u32)>,
+    pub desc_complete: Option<unsafe extern "C" fn(*mut idxd_desc, idxd_complete_type, bool, *mut kernel::ffi::c_void, *mut u32)>,
     pub drv: device_driver,
 }
 extern "C" { pub static mut dsa_drv: idxd_device_driver; pub static mut idxd_drv: idxd_device_driver; pub static mut idxd_dmaengine_drv: idxd_device_driver; pub static mut idxd_user_drv: idxd_device_driver; }
@@ -50,7 +50,7 @@ extern "C" { pub static mut dsa_drv: idxd_device_driver; pub static mut idxd_drv
 pub const INVALID_INT_HANDLE: i32 = -1;
 #[repr(C)] pub struct idxd_irq_entry { pub id: i32, pub vector: i32, pub pending_llist: llist_head, pub work_list: list_head, pub list_lock: spinlock_t, pub int_handle: i32, pub pasid: ioasid_t }
 #[repr(C)] pub struct idxd_group { pub idxd_dev: idxd_dev, pub idxd: *mut idxd_device, pub grpcfg: grpcfg, pub id: i32, pub num_engines: i32, pub num_wqs: i32, pub use_rdbuf_limit: bool, pub rdbufs_allowed: u8, pub rdbufs_reserved: u8, pub tc_a: i32, pub tc_b: i32, pub desc_progress_limit: i32, pub batch_progress_limit: i32 }
-#[repr(C)] pub struct idxd_pmu { pub idxd: *mut idxd_device, pub event_list: [*mut perf_event; IDXD_PMU_EVENT_MAX], pub n_events: i32, pub used_mask: [usize; 1], pub pmu: pmu, pub name: [core::ffi::c_char; IDXD_NAME_SIZE], pub n_counters: i32, pub counter_width: i32, pub n_event_categories: i32, pub per_counter_caps_supported: bool, pub supported_event_categories: usize, pub supported_filters: usize, pub n_filters: i32 }
+#[repr(C)] pub struct idxd_pmu { pub idxd: *mut idxd_device, pub event_list: [*mut perf_event; IDXD_PMU_EVENT_MAX], pub n_events: i32, pub used_mask: [usize; 1], pub pmu: pmu, pub name: [kernel::ffi::c_char; IDXD_NAME_SIZE], pub n_counters: i32, pub counter_width: i32, pub n_event_categories: i32, pub per_counter_caps_supported: bool, pub supported_event_categories: usize, pub supported_filters: usize, pub n_filters: i32 }
 pub const IDXD_MAX_PRIORITY: u32 = 0xf;
 pub const COUNTER_FAULTS: u32 = 0; pub const COUNTER_FAULT_FAILS: u32 = 1; pub const COUNTER_MAX: u32 = 2;
 #[repr(C)] pub enum idxd_wq_state { IDXD_WQ_DISABLED = 0, IDXD_WQ_ENABLED }
@@ -62,7 +62,7 @@ pub const DRIVER_NAME_SIZE: usize = 128; pub const WQ_NAME_SIZE: usize = 1024; p
 #[repr(C)] pub struct idxd_dma_chan { pub chan: dma_chan, pub wq: *mut idxd_wq }
 
 #[repr(C)] pub struct idxd_wq {
-    pub portal: *mut core::ffi::c_void, pub portal_offset: u32, pub enqcmds_retries: u32, pub wq_active: percpu_ref, pub wq_dead: completion, pub wq_resurrect: completion, pub idxd_dev: idxd_dev, pub idxd_cdev: *mut idxd_cdev, pub err_queue: wait_queue_head_t, pub wq: *mut workqueue_struct, pub idxd: *mut idxd_device, pub id: i32, pub ie: idxd_irq_entry, pub type_: idxd_wq_type, pub group: *mut idxd_group, pub client_count: i32, pub wq_lock: mutex, pub size: u32, pub threshold: u32, pub priority: u32, pub state: idxd_wq_state, pub flags: usize, pub wqcfg: *mut wqcfg, pub opcap_bmap: *mut usize, pub hw_descs: *mut *mut dsa_hw_desc, pub num_descs: i32, pub completion: wq_completions, pub compls_addr: dma_addr_t, pub compls_size: i32, pub descs: *mut *mut idxd_desc, pub sbq: sbitmap_queue, pub idxd_chan: *mut idxd_dma_chan, pub name: [core::ffi::c_char; WQ_NAME_SIZE + 1], pub max_xfer_bytes: u64, pub max_batch_size: u32, pub max_sgl_size: u32, pub uc_lock: mutex, pub upasid_xa: xarray, pub driver_name: [core::ffi::c_char; DRIVER_NAME_SIZE + 1]
+    pub portal: *mut kernel::ffi::c_void, pub portal_offset: u32, pub enqcmds_retries: u32, pub wq_active: percpu_ref, pub wq_dead: completion, pub wq_resurrect: completion, pub idxd_dev: idxd_dev, pub idxd_cdev: *mut idxd_cdev, pub err_queue: wait_queue_head_t, pub wq: *mut workqueue_struct, pub idxd: *mut idxd_device, pub id: i32, pub ie: idxd_irq_entry, pub type_: idxd_wq_type, pub group: *mut idxd_group, pub client_count: i32, pub wq_lock: mutex, pub size: u32, pub threshold: u32, pub priority: u32, pub state: idxd_wq_state, pub flags: usize, pub wqcfg: *mut wqcfg, pub opcap_bmap: *mut usize, pub hw_descs: *mut *mut dsa_hw_desc, pub num_descs: i32, pub completion: wq_completions, pub compls_addr: dma_addr_t, pub compls_size: i32, pub descs: *mut *mut idxd_desc, pub sbq: sbitmap_queue, pub idxd_chan: *mut idxd_dma_chan, pub name: [kernel::ffi::c_char; WQ_NAME_SIZE + 1], pub max_xfer_bytes: u64, pub max_batch_size: u32, pub max_sgl_size: u32, pub uc_lock: mutex, pub upasid_xa: xarray, pub driver_name: [kernel::ffi::c_char; DRIVER_NAME_SIZE + 1]
 }
 #[repr(C)] pub union wq_completions { pub compls: *mut dsa_completion_record, pub iax_compls: *mut iax_completion_record }
 #[repr(C)] pub struct idxd_engine { pub idxd_dev: idxd_dev, pub id: i32, pub group: *mut idxd_group, pub idxd: *mut idxd_device }
@@ -71,11 +71,11 @@ pub const DRIVER_NAME_SIZE: usize = 128; pub const WQ_NAME_SIZE: usize = 1024; p
 #[repr(C)] pub enum idxd_device_flag { IDXD_FLAG_CONFIGURABLE = 0, IDXD_FLAG_CMD_RUNNING, IDXD_FLAG_PASID_ENABLED, IDXD_FLAG_USER_PASID_ENABLED }
 #[repr(C)] pub struct idxd_dma_dev { pub idxd: *mut idxd_device, pub dma: dma_device }
 pub type load_device_defaults_fn_t = unsafe extern "C" fn(*mut idxd_device) -> i32;
-#[repr(C)] pub struct idxd_driver_data { pub name_prefix: *const core::ffi::c_char, pub type_: idxd_type, pub dev_type: *const device_type, pub compl_size: i32, pub align: i32, pub evl_cr_off: i32, pub cr_status_off: i32, pub cr_result_off: i32, pub user_submission_safe: bool, pub load_device_defaults: Option<load_device_defaults_fn_t> }
-#[repr(C)] pub struct idxd_evl { pub lock: mutex, pub log: *mut core::ffi::c_void, pub dma: dma_addr_t, pub log_size: u32, pub size: u16, pub bmap: *mut usize, pub batch_fail: [bool; IDXD_MAX_BATCH_IDENT] }
+#[repr(C)] pub struct idxd_driver_data { pub name_prefix: *const kernel::ffi::c_char, pub type_: idxd_type, pub dev_type: *const device_type, pub compl_size: i32, pub align: i32, pub evl_cr_off: i32, pub cr_status_off: i32, pub cr_result_off: i32, pub user_submission_safe: bool, pub load_device_defaults: Option<load_device_defaults_fn_t> }
+#[repr(C)] pub struct idxd_evl { pub lock: mutex, pub log: *mut kernel::ffi::c_void, pub dma: dma_addr_t, pub log_size: u32, pub size: u16, pub bmap: *mut usize, pub batch_fail: [bool; IDXD_MAX_BATCH_IDENT] }
 #[repr(C)] pub struct idxd_evl_fault { pub work: work_struct, pub wq: *mut idxd_wq, pub status: u8, pub entry: [__evl_entry; 0] }
 
-#[repr(C)] pub struct idxd_device { pub idxd_dev: idxd_dev, pub data: *mut idxd_driver_data, pub list: list_head, pub hw: idxd_hw, pub state: idxd_device_state, pub flags: usize, pub id: i32, pub major: i32, pub cmd_status: u32, pub ie: idxd_irq_entry, pub pdev: *mut pci_dev, pub reg_base: *mut core::ffi::c_void, pub dev_lock: spinlock_t, pub cmd_lock: spinlock_t, pub cmd_done: *mut completion, pub groups: *mut *mut idxd_group, pub wqs: *mut *mut idxd_wq, pub engines: *mut *mut idxd_engine, pub sva: *mut iommu_sva, pub pasid: u32, pub num_groups: i32, pub irq_cnt: i32, pub request_int_handles: bool, pub msix_perm_offset: u32, pub wqcfg_offset: u32, pub grpcfg_offset: u32, pub perfmon_offset: u32, pub max_xfer_bytes: u64, pub max_batch_size: u32, pub max_sgl_size: u32, pub max_groups: i32, pub max_engines: i32, pub max_rdbufs: i32, pub max_wqs: i32, pub max_wq_size: i32, pub rdbuf_limit: i32, pub nr_rdbufs: i32, pub wqcfg_size: u32, pub wq_enable_map: *mut usize, pub sw_err: sw_err_reg, pub cmd_waitq: wait_queue_head_t, pub idxd_dma: *mut idxd_dma_dev, pub wq: *mut workqueue_struct, pub work: work_struct, pub idxd_pmu: *mut idxd_pmu, pub opcap_bmap: *mut usize, pub evl: *mut idxd_evl, pub evl_cache: *mut kmem_cache, pub dbgfs_dir: *mut dentry, pub dbgfs_evl_file: *mut dentry, pub user_submission_safe: bool, pub idxd_saved: *mut idxd_saved_states }
+#[repr(C)] pub struct idxd_device { pub idxd_dev: idxd_dev, pub data: *mut idxd_driver_data, pub list: list_head, pub hw: idxd_hw, pub state: idxd_device_state, pub flags: usize, pub id: i32, pub major: i32, pub cmd_status: u32, pub ie: idxd_irq_entry, pub pdev: *mut pci_dev, pub reg_base: *mut kernel::ffi::c_void, pub dev_lock: spinlock_t, pub cmd_lock: spinlock_t, pub cmd_done: *mut completion, pub groups: *mut *mut idxd_group, pub wqs: *mut *mut idxd_wq, pub engines: *mut *mut idxd_engine, pub sva: *mut iommu_sva, pub pasid: u32, pub num_groups: i32, pub irq_cnt: i32, pub request_int_handles: bool, pub msix_perm_offset: u32, pub wqcfg_offset: u32, pub grpcfg_offset: u32, pub perfmon_offset: u32, pub max_xfer_bytes: u64, pub max_batch_size: u32, pub max_sgl_size: u32, pub max_groups: i32, pub max_engines: i32, pub max_rdbufs: i32, pub max_wqs: i32, pub max_wq_size: i32, pub rdbuf_limit: i32, pub nr_rdbufs: i32, pub wqcfg_size: u32, pub wq_enable_map: *mut usize, pub sw_err: sw_err_reg, pub cmd_waitq: wait_queue_head_t, pub idxd_dma: *mut idxd_dma_dev, pub wq: *mut workqueue_struct, pub work: work_struct, pub idxd_pmu: *mut idxd_pmu, pub opcap_bmap: *mut usize, pub evl: *mut idxd_evl, pub evl_cache: *mut kmem_cache, pub dbgfs_dir: *mut dentry, pub dbgfs_evl_file: *mut dentry, pub user_submission_safe: bool, pub idxd_saved: *mut idxd_saved_states }
 #[repr(C)] pub struct idxd_saved_states { pub saved_idxd: idxd_device, pub saved_evl: idxd_evl, pub saved_engines: *mut *mut idxd_engine, pub saved_wqs: *mut *mut idxd_wq, pub saved_groups: *mut *mut idxd_group, pub saved_wq_enable_map: *mut usize }
 
 pub unsafe fn evl_ent_size(idxd: *mut idxd_device) -> u32 { if (*idxd).hw.gen_cap.evl_support != 0 { 32 * (1u32 << (*idxd).hw.gen_cap.evl_support) } else { 0 } }
@@ -115,11 +115,11 @@ pub unsafe fn wq_shared_supported(w: *mut idxd_wq) -> bool { support_enqcmd && w
 // External declarations from the Linux kernel and other repository headers.
 extern "C" {
     pub fn idxd_free_desc(_: *mut idxd_wq, _: *mut idxd_desc);
-    pub fn idxd_dma_complete_txd(_: *mut idxd_desc, _: idxd_complete_type, _: bool, _: *mut core::ffi::c_void, _: *mut u32);
+    pub fn idxd_dma_complete_txd(_: *mut idxd_desc, _: idxd_complete_type, _: bool, _: *mut kernel::ffi::c_void, _: *mut u32);
     pub fn idxd_register_devices(_: *mut idxd_device) -> i32; pub fn idxd_unregister_devices(_: *mut idxd_device);
     pub fn idxd_wqs_quiesce(_: *mut idxd_device); pub fn idxd_queue_int_handle_resubmit(_: *mut idxd_desc) -> bool;
     pub fn idxd_submit_desc(_: *mut idxd_wq, _: *mut idxd_desc) -> i32; pub fn idxd_alloc_desc(_: *mut idxd_wq, _: idxd_op_type) -> *mut idxd_desc;
-    pub fn idxd_enqcmds(_: *mut idxd_wq, _: *mut core::ffi::c_void, _: *const core::ffi::c_void) -> i32;
+    pub fn idxd_enqcmds(_: *mut idxd_wq, _: *mut kernel::ffi::c_void, _: *const kernel::ffi::c_void) -> i32;
     pub fn idxd_register_dma_device(_: *mut idxd_device) -> i32; pub fn idxd_unregister_dma_device(_: *mut idxd_device);
     pub fn idxd_cdev_register() -> i32; pub fn idxd_cdev_remove(); pub fn idxd_cdev_get_major(_: *mut idxd_device) -> i32;
     pub fn idxd_device_drv_probe(_: *mut idxd_dev) -> i32; pub fn idxd_device_drv_remove(_: *mut idxd_dev);
@@ -140,8 +140,8 @@ extern "C" {
     pub fn idxd_wq_disable_pasid(_: *mut idxd_wq) -> i32; pub fn __idxd_wq_quiesce(_: *mut idxd_wq);
     pub fn idxd_wq_quiesce(_: *mut idxd_wq); pub fn idxd_wq_init_percpu_ref(_: *mut idxd_wq) -> i32;
     pub fn idxd_wq_free_irq(_: *mut idxd_wq); pub fn idxd_wq_request_irq(_: *mut idxd_wq) -> i32;
-    pub fn idxd_wq_flush_descs(_: *mut idxd_wq); pub fn idxd_dma_complete_txd(_: *mut idxd_desc, _: idxd_complete_type, _: bool, _: *mut core::ffi::c_void, _: *mut u32);
-    pub fn idxd_copy_cr(_: *mut idxd_wq, _: ioasid_t, _: usize, _: *mut core::ffi::c_void, _: i32) -> i32;
+    pub fn idxd_wq_flush_descs(_: *mut idxd_wq); pub fn idxd_dma_complete_txd(_: *mut idxd_desc, _: idxd_complete_type, _: bool, _: *mut kernel::ffi::c_void, _: *mut u32);
+    pub fn idxd_copy_cr(_: *mut idxd_wq, _: ioasid_t, _: usize, _: *mut kernel::ffi::c_void, _: i32) -> i32;
     pub fn idxd_user_counter_increment(_: *mut idxd_wq, _: u32, _: i32);
     pub fn idxd_device_init_debugfs(_: *mut idxd_device) -> i32; pub fn idxd_device_remove_debugfs(_: *mut idxd_device);
     pub fn idxd_init_debugfs() -> i32; pub fn idxd_remove_debugfs();

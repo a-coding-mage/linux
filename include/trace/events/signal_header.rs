@@ -30,13 +30,13 @@ pub enum TraceSignal {
 /// mean SI_USER and SI_KERNEL respectively.
 #[repr(C)]
 pub struct SignalGenerateEntry {
-    pub sig: core::ffi::c_int,
-    pub errno: core::ffi::c_int,
-    pub code: core::ffi::c_int,
-    pub comm: [core::ffi::c_char; TASK_COMM_LEN],
+    pub sig: kernel::ffi::c_int,
+    pub errno: kernel::ffi::c_int,
+    pub code: kernel::ffi::c_int,
+    pub comm: [kernel::ffi::c_char; TASK_COMM_LEN],
     pub pid: pid_t,
-    pub group: core::ffi::c_int,
-    pub result: core::ffi::c_int,
+    pub group: kernel::ffi::c_int,
+    pub result: kernel::ffi::c_int,
 }
 
 /// signal_deliver - called when a signal is delivered
@@ -46,11 +46,11 @@ pub struct SignalGenerateEntry {
 /// before reaching this tracepoint.
 #[repr(C)]
 pub struct SignalDeliverEntry {
-    pub sig: core::ffi::c_int,
-    pub errno: core::ffi::c_int,
-    pub code: core::ffi::c_int,
-    pub sa_handler: core::ffi::c_ulong,
-    pub sa_flags: core::ffi::c_ulong,
+    pub sig: kernel::ffi::c_int,
+    pub errno: kernel::ffi::c_int,
+    pub code: kernel::ffi::c_int,
+    pub sa_handler: kernel::ffi::c_ulong,
+    pub sa_flags: kernel::ffi::c_ulong,
 }
 
 // The following declarations are the direct Rust representation of the two
@@ -71,7 +71,7 @@ extern "C" {
     static TASK_COMM_LEN: usize;
 }
 
-type pid_t = core::ffi::c_int;
+type pid_t = kernel::ffi::c_int;
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

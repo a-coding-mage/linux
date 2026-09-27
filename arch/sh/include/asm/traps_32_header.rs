@@ -8,8 +8,8 @@
 // original header.
 #[cfg(CONFIG_CPU_HAS_SR_RB)]
 #[inline]
-pub unsafe fn lookup_exception_vector() -> ::core::ffi::c_ulong {
-    let mut vec: ::core::ffi::c_ulong;
+pub unsafe fn lookup_exception_vector() -> ::kernel::ffi::c_ulong {
+    let mut vec: ::kernel::ffi::c_ulong;
     ::core::arch::asm!(
         "stc r2_bank, {0}",
         out(reg) vec,
@@ -20,8 +20,8 @@ pub unsafe fn lookup_exception_vector() -> ::core::ffi::c_ulong {
 
 #[cfg(not(CONFIG_CPU_HAS_SR_RB))]
 #[inline]
-pub unsafe fn lookup_exception_vector() -> ::core::ffi::c_ulong {
-    let mut vec: ::core::ffi::c_ulong;
+pub unsafe fn lookup_exception_vector() -> ::kernel::ffi::c_ulong {
+    let mut vec: ::kernel::ffi::c_ulong;
     ::core::arch::asm!(
         "mov r4, {0}",
         out(reg) vec,
@@ -47,15 +47,15 @@ pub unsafe fn trigger_address_error() {
 extern "C" {
     pub fn do_address_error(
         regs: *mut pt_regs,
-        writeaccess: ::core::ffi::c_ulong,
-        address: ::core::ffi::c_ulong,
+        writeaccess: ::kernel::ffi::c_ulong,
+        address: ::kernel::ffi::c_ulong,
     );
     pub fn do_page_fault(
         regs: *mut pt_regs,
-        error_code: ::core::ffi::c_ulong,
-        address: ::core::ffi::c_ulong,
+        error_code: ::kernel::ffi::c_ulong,
+        address: ::kernel::ffi::c_ulong,
     );
-    pub fn do_divide_error(r4: ::core::ffi::c_ulong);
+    pub fn do_divide_error(r4: ::kernel::ffi::c_ulong);
     pub fn do_reserved_inst();
     pub fn do_illegal_slot_inst();
     pub fn do_exception_error();
@@ -70,10 +70,10 @@ macro_rules! BUILD_TRAP_HANDLER {
     ($handler:ident) => {
         extern "C" {
             pub fn $handler(
-                r4: ::core::ffi::c_ulong,
-                r5: ::core::ffi::c_ulong,
-                r6: ::core::ffi::c_ulong,
-                r7: ::core::ffi::c_ulong,
+                r4: ::kernel::ffi::c_ulong,
+                r5: ::kernel::ffi::c_ulong,
+                r6: ::kernel::ffi::c_ulong,
+                r7: ::kernel::ffi::c_ulong,
                 __regs: $crate::pt_regs,
             );
         }

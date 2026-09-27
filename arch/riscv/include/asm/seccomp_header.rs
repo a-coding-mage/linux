@@ -7,16 +7,16 @@
 pub const SECCOMP_ARCH_NATIVE: _ = AUDIT_ARCH_RISCV64;
 
 #[cfg(CONFIG_64BIT)]
-pub const SECCOMP_ARCH_NATIVE_NR: _ = NR_syscalls;
+pub const SECCOMP_ARCH_NATIVE_NR: usize = NR_syscalls;
 
 #[cfg(CONFIG_64BIT)]
 pub const SECCOMP_ARCH_NATIVE_NAME: &str = "riscv64";
 
 #[cfg(not(CONFIG_64BIT))]
-pub const SECCOMP_ARCH_NATIVE: _ = AUDIT_ARCH_RISCV32;
+pub const SECCOMP_ARCH_NATIVE: u32 = AUDIT_ARCH_RISCV32;
 
 #[cfg(not(CONFIG_64BIT))]
-pub const SECCOMP_ARCH_NATIVE_NR: _ = NR_syscalls;
+pub const SECCOMP_ARCH_NATIVE_NR: usize = NR_syscalls;
 
 #[cfg(not(CONFIG_64BIT))]
 pub const SECCOMP_ARCH_NATIVE_NAME: &str = "riscv32";

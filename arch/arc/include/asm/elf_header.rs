@@ -74,6 +74,6 @@ pub const ELF_HWCAP: u32 = 0;
  * specific libraries for optimization.  This is more specific in
  * intent than poking at uname or /proc/cpuinfo.
  */
-pub const ELF_PLATFORM: *const core::ffi::c_char = core::ptr::null();
+pub const ELF_PLATFORM: *const kernel::ffi::c_char = core::ptr::null();
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

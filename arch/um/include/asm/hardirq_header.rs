@@ -3,18 +3,18 @@
 // Dependencies supplied by the surrounding kernel translation:
 // linux/cache.h, linux/threads.h, and linux/irq.h.
 
-pub const __ARCH_IRQ_EXIT_IRQS_DISABLED: ::core::ffi::c_int = 1;
+pub const __ARCH_IRQ_EXIT_IRQS_DISABLED: ::kernel::ffi::c_int = 1;
 
 #[repr(C)]
 #[cfg_attr(target_pointer_width = "64", repr(align(64)))]
 #[cfg_attr(target_pointer_width = "32", repr(align(32)))]
 pub struct irq_cpustat_t {
-    pub __softirq_pending: ::core::ffi::c_uint,
+    pub __softirq_pending: ::kernel::ffi::c_uint,
     // Corresponds to IS_ENABLED(CONFIG_SMP).
     #[cfg(CONFIG_SMP)]
-    pub irq_resched_count: ::core::ffi::c_uint,
+    pub irq_resched_count: ::kernel::ffi::c_uint,
     #[cfg(CONFIG_SMP)]
-    pub irq_call_count: ::core::ffi::c_uint,
+    pub irq_call_count: ::kernel::ffi::c_uint,
 }
 
 // Corresponds to DECLARE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat).
@@ -36,14 +36,14 @@ macro_rules! inc_irq_stat {
 pub const __ARCH_IRQ_STAT: () = ();
 
 unsafe extern "C" {
-    fn pr_crit(fmt: *const ::core::ffi::c_char, ...);
+    fn pr_crit(fmt: *const ::kernel::ffi::c_char, ...);
 }
 
 #[inline]
-pub unsafe fn ack_bad_irq(irq: ::core::ffi::c_uint) {
+pub unsafe fn ack_bad_irq(irq: ::kernel::ffi::c_uint) {
     static FORMAT: &[u8] = b"unexpected IRQ trap at vector %02x\n\0";
     unsafe {
-        pr_crit(FORMAT.as_ptr() as *const ::core::ffi::c_char, irq);
+        pr_crit(FORMAT.as_ptr() as *const ::kernel::ffi::c_char, irq);
     }
 }
 

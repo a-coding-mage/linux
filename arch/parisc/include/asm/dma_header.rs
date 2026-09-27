@@ -10,9 +10,9 @@
 // supplied by the surrounding kernel translation.
 
 unsafe extern "C" {
-    pub static mut pcxl_dma_start: ::core::ffi::c_ulong;
-    pub fn outb(value: ::core::ffi::c_uchar, port: ::core::ffi::c_ushort);
-    pub fn inb(port: ::core::ffi::c_ushort) -> ::core::ffi::c_uchar;
+    pub static mut pcxl_dma_start: ::kernel::ffi::c_ulong;
+    pub fn outb(value: ::kernel::ffi::c_uchar, port: ::kernel::ffi::c_ushort);
+    pub fn inb(port: ::kernel::ffi::c_ushort) -> ::kernel::ffi::c_uchar;
 }
 
 pub const DMA_CHUNK_SIZE: usize = BITS_PER_LONG * PAGE_SIZE;
@@ -49,10 +49,10 @@ pub const DMA2_MASK_ALL_REG: u32 = 0xDE;
 pub const DMA2_EXT_MODE_REG: u32 = 0x400 | DMA2_MODE_REG;
 
 #[inline]
-pub unsafe fn claim_dma_lock() -> ::core::ffi::c_ulong { 0 }
+pub unsafe fn claim_dma_lock() -> ::kernel::ffi::c_ulong { 0 }
 
 #[inline]
-pub unsafe fn release_dma_lock(_flags: ::core::ffi::c_ulong) {}
+pub unsafe fn release_dma_lock(_flags: ::kernel::ffi::c_ulong) {}
 
 #[inline]
 pub unsafe fn get_dma_residue(dmanr: u32) -> i32 {

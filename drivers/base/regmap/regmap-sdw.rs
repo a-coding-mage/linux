@@ -3,8 +3,8 @@
 
 // Dependencies supplied by the surrounding kernel/regmap/SoundWire code.
 
-unsafe fn regmap_sdw_write(context: *mut core::ffi::c_void,
-                           val_buf: *const core::ffi::c_void,
+unsafe fn regmap_sdw_write(context: *mut kernel::ffi::c_void,
+                           val_buf: *const kernel::ffi::c_void,
                            val_size: usize) -> i32 {
     let dev = context as *mut device;
     let slave = unsafe { dev_to_sdw_dev(dev) };
@@ -18,10 +18,10 @@ unsafe fn regmap_sdw_write(context: *mut core::ffi::c_void,
     }
 }
 
-unsafe fn regmap_sdw_gather_write(context: *mut core::ffi::c_void,
-                                   reg_buf: *const core::ffi::c_void,
+unsafe fn regmap_sdw_gather_write(context: *mut kernel::ffi::c_void,
+                                   reg_buf: *const kernel::ffi::c_void,
                                    _reg_size: usize,
-                                   val_buf: *const core::ffi::c_void,
+                                   val_buf: *const kernel::ffi::c_void,
                                    val_size: usize) -> i32 {
     let dev = context as *mut device;
     let slave = unsafe { dev_to_sdw_dev(dev) };
@@ -30,10 +30,10 @@ unsafe fn regmap_sdw_gather_write(context: *mut core::ffi::c_void,
     unsafe { sdw_nwrite_no_pm(slave, addr, val_size, val_buf as *const u8) }
 }
 
-unsafe fn regmap_sdw_read(context: *mut core::ffi::c_void,
-                           reg_buf: *const core::ffi::c_void,
+unsafe fn regmap_sdw_read(context: *mut kernel::ffi::c_void,
+                           reg_buf: *const kernel::ffi::c_void,
                            _reg_size: usize,
-                           val_buf: *mut core::ffi::c_void,
+                           val_buf: *mut kernel::ffi::c_void,
                            val_size: usize) -> i32 {
     let dev = context as *mut device;
     let slave = unsafe { dev_to_sdw_dev(dev) };
@@ -71,7 +71,7 @@ unsafe fn regmap_sdw_config_check(config: *const regmap_config) -> i32 {
 unsafe fn __regmap_init_sdw(sdw: *mut sdw_slave,
                             config: *const regmap_config,
                             lock_key: *mut lock_class_key,
-                            lock_name: *const core::ffi::c_char) -> *mut regmap {
+                            lock_name: *const kernel::ffi::c_char) -> *mut regmap {
     let ret = unsafe { regmap_sdw_config_check(config) };
     if ret != 0 {
         return unsafe { ERR_PTR(ret) };
@@ -86,7 +86,7 @@ unsafe fn __regmap_init_sdw(sdw: *mut sdw_slave,
 unsafe fn __devm_regmap_init_sdw(sdw: *mut sdw_slave,
                                  config: *const regmap_config,
                                  lock_key: *mut lock_class_key,
-                                 lock_name: *const core::ffi::c_char) -> *mut regmap {
+                                 lock_name: *const kernel::ffi::c_char) -> *mut regmap {
     let ret = unsafe { regmap_sdw_config_check(config) };
     if ret != 0 {
         return unsafe { ERR_PTR(ret) };

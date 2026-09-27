@@ -112,13 +112,13 @@ pub unsafe fn _raw_spin_trylock_irq(lock: *mut raw_spinlock_t) -> i32 { __LOCK_I
 #[inline(always)]
 pub unsafe fn _raw_spin_trylock_irq_disable(lock: *mut raw_spinlock_t) -> i32 { __LOCK_IRQ_DISABLE!(lock); 1 }
 #[inline(always)]
-pub unsafe fn _raw_spin_trylock_irqsave(lock: *mut raw_spinlock_t, flags: *mut ::core::ffi::c_ulong) -> i32 { __LOCK_IRQSAVE!(lock, *flags); 1 }
+pub unsafe fn _raw_spin_trylock_irqsave(lock: *mut raw_spinlock_t, flags: *mut ::kernel::ffi::c_ulong) -> i32 { __LOCK_IRQSAVE!(lock, *flags); 1 }
 #[inline(always)]
 pub unsafe fn _raw_read_trylock(lock: *mut rwlock_t) -> i32 { __LOCK!(lock, shared); 1 }
 #[inline(always)]
 pub unsafe fn _raw_write_trylock(lock: *mut rwlock_t) -> i32 { __LOCK!(lock); 1 }
 #[inline(always)]
-pub unsafe fn _raw_write_trylock_irqsave(lock: *mut rwlock_t, flags: *mut ::core::ffi::c_ulong) -> i32 { __LOCK_IRQSAVE!(lock, *flags); 1 }
+pub unsafe fn _raw_write_trylock_irqsave(lock: *mut rwlock_t, flags: *mut ::kernel::ffi::c_ulong) -> i32 { __LOCK_IRQSAVE!(lock, *flags); 1 }
 
 macro_rules! _raw_spin_unlock { ($lock:expr) => { __UNLOCK!($lock) }; }
 macro_rules! _raw_read_unlock { ($lock:expr) => { __UNLOCK!($lock, shared) }; }

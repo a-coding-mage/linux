@@ -20,8 +20,8 @@
 
 /* declarations for highmem.c */
 extern "C" {
-    static mut highstart_pfn: ::core::ffi::c_ulong;
-    static mut highend_pfn: ::core::ffi::c_ulong;
+    static mut highstart_pfn: ::kernel::ffi::c_ulong;
+    static mut highend_pfn: ::kernel::ffi::c_ulong;
 
     static mut pkmap_page_table: *mut pte_t;
 }
@@ -52,7 +52,7 @@ pub const unsafe fn PKMAP_ADDR(nr: usize) -> usize {
 
 /* ARCH_HAS_KMAP_FLUSH_TLB */
 extern "C" {
-    pub fn kmap_flush_tlb(addr: ::core::ffi::c_ulong);
+    pub fn kmap_flush_tlb(addr: ::kernel::ffi::c_ulong);
 }
 
 #[inline(always)]
@@ -62,7 +62,7 @@ pub unsafe fn flush_cache_kmaps() {
 
 #[inline(always)]
 pub unsafe fn arch_kmap_local_set_pte(
-    _mm: *mut ::core::ffi::c_void,
+    _mm: *mut ::kernel::ffi::c_void,
     _vaddr: usize,
     ptep: *mut pte_t,
     ptev: pte_t,

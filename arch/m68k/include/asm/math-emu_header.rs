@@ -94,9 +94,9 @@ extern "C" {
 
 /* Kernel logging symbols supplied by the surrounding environment. */
 extern "C" {
-    pub fn pr_info(fmt: *const core::ffi::c_char, ...);
-    pub fn pr_err(fmt: *const core::ffi::c_char, ...);
-    pub fn no_printk(fmt: *const core::ffi::c_char, ...);
+    pub fn pr_info(fmt: *const kernel::ffi::c_char, ...);
+    pub fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    pub fn no_printk(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[cfg(feature = "FPU_EMU_DEBUG")]

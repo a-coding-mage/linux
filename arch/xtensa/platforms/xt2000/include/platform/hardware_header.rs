@@ -19,7 +19,7 @@
  * On-board components.
  */
 
-pub const SONIC83934_INTNUM: _ = XCHAL_EXTINT3_NUM;
+pub const SONIC83934_INTNUM: u32 = XCHAL_EXTINT3_NUM;
 pub const SONIC83934_ADDR: _ = IOADDR!(0x0d030000);
 
 /*

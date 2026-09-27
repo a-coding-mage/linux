@@ -31,7 +31,7 @@ unsafe fn sccb_is_available(adap: *mut i2c_adapter) -> bool {
  * 2-phase read transmission cycle, returning negative errno else zero on
  * success.
  */
-unsafe fn regmap_sccb_read(context: *mut core::ffi::c_void, reg: u32, val: *mut u32) -> i32 {
+unsafe fn regmap_sccb_read(context: *mut kernel::ffi::c_void, reg: u32, val: *mut u32) -> i32 {
     let dev = context as *mut device;
     let i2c = to_i2c_client(dev);
     let mut ret: i32;
@@ -81,7 +81,7 @@ unsafe fn regmap_sccb_read(context: *mut core::ffi::c_void, reg: u32, val: *mut 
  * This executes the SCCB 3-phase write transmission cycle, returning negative
  * errno else zero on success.
  */
-unsafe fn regmap_sccb_write(context: *mut core::ffi::c_void, reg: u32, val: u32) -> i32 {
+unsafe fn regmap_sccb_write(context: *mut kernel::ffi::c_void, reg: u32, val: u32) -> i32 {
     let dev = context as *mut device;
     let i2c = to_i2c_client(dev);
     i2c_smbus_write_byte_data(i2c, reg, val)
@@ -110,7 +110,7 @@ pub unsafe fn __regmap_init_sccb(
     i2c: *mut i2c_client,
     config: *const regmap_config,
     lock_key: *mut lock_class_key,
-    lock_name: *const core::ffi::c_char,
+    lock_name: *const kernel::ffi::c_char,
 ) -> *mut regmap {
     let bus = regmap_get_sccb_bus(i2c, config);
 
@@ -125,7 +125,7 @@ pub unsafe fn __devm_regmap_init_sccb(
     i2c: *mut i2c_client,
     config: *const regmap_config,
     lock_key: *mut lock_class_key,
-    lock_name: *const core::ffi::c_char,
+    lock_name: *const kernel::ffi::c_char,
 ) -> *mut regmap {
     let bus = regmap_get_sccb_bus(i2c, config);
 

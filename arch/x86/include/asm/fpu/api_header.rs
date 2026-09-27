@@ -66,7 +66,7 @@ pub fn fpregs_assert_state_consistent() {}
 
 extern "C" {
     pub fn switch_fpu_return();
-    pub fn cpu_has_xfeatures(xfeatures_mask: u64, feature_name: *mut *const core::ffi::c_char) -> i32;
+    pub fn cpu_has_xfeatures(xfeatures_mask: u64, feature_name: *mut *const kernel::ffi::c_char) -> i32;
     pub fn fpu__exception_code(fpu: *mut fpu, trap_nr: i32) -> i32;
     pub fn fpu_sync_fpstate(fpu: *mut fpu);
     pub fn fpu_reset_from_exception_fixup();
@@ -76,13 +76,13 @@ extern "C" {
     pub fn fpu__resume_cpu();
     pub fn fpstate_clear_xstate_component(fpstate: *mut fpstate, xfeature: u32);
     pub fn xstate_get_guest_group_perm() -> u64;
-    pub fn get_xsave_addr(xsave: *mut xregs_state, xfeature_nr: i32) -> *mut core::ffi::c_void;
+    pub fn get_xsave_addr(xsave: *mut xregs_state, xfeature_nr: i32) -> *mut kernel::ffi::c_void;
     pub fn fpu_alloc_guest_fpstate(gfpu: *mut fpu_guest) -> bool;
     pub fn fpu_free_guest_fpstate(gfpu: *mut fpu_guest);
     pub fn fpu_swap_kvm_fpstate(gfpu: *mut fpu_guest, enter_guest: bool) -> i32;
     pub fn fpu_enable_guest_xfd_features(guest_fpu: *mut fpu_guest, xfeatures: u64) -> i32;
-    pub fn fpu_copy_guest_fpstate_to_uabi(gfpu: *mut fpu_guest, buf: *mut core::ffi::c_void, size: u32, xfeatures: u64, pkru: u32);
-    pub fn fpu_copy_uabi_to_guest_fpstate(gfpu: *mut fpu_guest, buf: *const core::ffi::c_void, xcr0: u64, vpkru: *mut u32) -> i32;
+    pub fn fpu_copy_guest_fpstate_to_uabi(gfpu: *mut fpu_guest, buf: *mut kernel::ffi::c_void, size: u32, xfeatures: u64, pkru: u32);
+    pub fn fpu_copy_uabi_to_guest_fpstate(gfpu: *mut fpu_guest, buf: *const kernel::ffi::c_void, xcr0: u64, vpkru: *mut u32) -> i32;
     pub fn fpu_xstate_prctl(option: i32, arg2: usize) -> isize;
     pub fn fpu_idle_fpregs();
 }

@@ -12,7 +12,7 @@ static mut param_acpi_on: bool = false;
 static mut param_acpi_force: bool = false;
 static mut param_acpi_nospcr: bool = false;
 
-unsafe fn parse_acpi(arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn parse_acpi(arg: *mut kernel::ffi::c_char) -> i32 {
     if arg.is_null() { return -22; }
     if c_str_eq(arg, b"off\0") { param_acpi_off = true; }
     else if c_str_eq(arg, b"on\0") { param_acpi_on = true; }
@@ -22,7 +22,7 @@ unsafe fn parse_acpi(arg: *mut core::ffi::c_char) -> i32 {
     0
 }
 
-unsafe fn c_str_eq(_a: *const core::ffi::c_char, _b: &[u8]) -> bool { todo!("external kernel string comparison") }
+unsafe fn c_str_eq(_a: *const kernel::ffi::c_char, _b: &[u8]) -> bool { todo!("external kernel string comparison") }
 
 unsafe fn dt_is_stub() -> bool {
     let mut node: i32 = 0;
@@ -36,12 +36,12 @@ unsafe fn dt_is_stub() -> bool {
     true
 }
 
-pub unsafe fn __acpi_map_table(phys: u64, size: u64) -> *mut core::ffi::c_void {
+pub unsafe fn __acpi_map_table(phys: u64, size: u64) -> *mut kernel::ffi::c_void {
     if size == 0 { return core::ptr::null_mut(); }
     early_memremap(phys, size)
 }
 
-pub unsafe fn __acpi_unmap_table(map: *mut core::ffi::c_void, size: u64) {
+pub unsafe fn __acpi_unmap_table(map: *mut kernel::ffi::c_void, size: u64) {
     if map.is_null() || size == 0 { return; }
     early_memunmap(map, size);
 }
@@ -88,7 +88,7 @@ pub unsafe fn __acpi_get_mem_attribute(addr: phys_addr_t) -> pgprot_t {
     __pgprot(PROT_DEVICE_nGnRnE)
 }
 
-pub unsafe fn acpi_os_ioremap(phys: acpi_physical_address, size: acpi_size) -> *mut core::ffi::c_void {
+pub unsafe fn acpi_os_ioremap(phys: acpi_physical_address, size: acpi_size) -> *mut kernel::ffi::c_void {
     let mut region: *mut efi_memory_desc_t = core::ptr::null_mut();
     let mut prot = __pgprot(PROT_DEVICE_nGnRnE);
     if !efi_enabled(EFI_MEMMAP) { return core::ptr::null_mut(); }

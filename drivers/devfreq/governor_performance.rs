@@ -13,7 +13,7 @@ use crate::{
     DEVFREQ_GOV_START, DEVFREQ_MAX_FREQ,
 };
 
-unsafe fn devfreq_performance_func(df: *mut devfreq, freq: *mut ::core::ffi::c_ulong) -> i32 {
+unsafe fn devfreq_performance_func(df: *mut devfreq, freq: *mut ::kernel::ffi::c_ulong) -> i32 {
     /*
      * target callback should be able to get floor value as
      * said in devfreq.h
@@ -27,8 +27,8 @@ unsafe fn devfreq_performance_func(df: *mut devfreq, freq: *mut ::core::ffi::c_u
 
 unsafe fn devfreq_performance_handler(
     devfreq: *mut devfreq,
-    event: ::core::ffi::c_uint,
-    data: *mut ::core::ffi::c_void,
+    event: ::kernel::ffi::c_uint,
+    data: *mut ::kernel::ffi::c_void,
 ) -> i32 {
     let mut ret: i32 = 0;
     let _ = data;

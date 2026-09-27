@@ -22,7 +22,7 @@ unsafe fn mux_div_set_src_div(md: *mut clk_regmap_mux_div, src: u32, div: u32) -
     let mut count: i32;
     let mut val: u32;
     let mask: u32;
-    let name: *const core::ffi::c_char = clk_hw_get_name(&(*(*md).clkr).hw);
+    let name: *const kernel::ffi::c_char = clk_hw_get_name(&(*(*md).clkr).hw);
 
     val = (div << (*md).hid_shift) | (src << (*md).src_shift);
     mask = (((1u32 << (*md).hid_width) - 1) << (*md).hid_shift)
@@ -74,7 +74,7 @@ unsafe fn mux_div_get_src_div(md: *mut clk_regmap_mux_div, src: *mut u32, div: *
     let mut val: u32 = 0;
     let mut d: u32;
     let mut s: u32;
-    let name: *const core::ffi::c_char = clk_hw_get_name(&(*(*md).clkr).hw);
+    let name: *const kernel::ffi::c_char = clk_hw_get_name(&(*(*md).clkr).hw);
 
     regmap_read((*(*md).clkr).regmap, CMD_RCGR + (*md).reg_offset, &mut val);
 

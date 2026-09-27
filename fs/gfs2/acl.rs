@@ -6,7 +6,7 @@
 
 // Linux and GFS2 dependencies supplied by the surrounding translation unit.
 
-unsafe fn gfs2_acl_name(type_: core::ffi::c_int) -> *const core::ffi::c_char {
+unsafe fn gfs2_acl_name(type_: kernel::ffi::c_int) -> *const kernel::ffi::c_char {
     match type_ {
         ACL_TYPE_ACCESS => XATTR_POSIX_ACL_ACCESS,
         ACL_TYPE_DEFAULT => XATTR_POSIX_ACL_DEFAULT,
@@ -16,13 +16,13 @@ unsafe fn gfs2_acl_name(type_: core::ffi::c_int) -> *const core::ffi::c_char {
 
 unsafe fn __gfs2_get_acl(
     inode: *mut inode,
-    type_: core::ffi::c_int,
+    type_: kernel::ffi::c_int,
 ) -> *mut posix_acl {
     let ip = GFS2_I(inode);
     let mut acl: *mut posix_acl;
-    let name: *const core::ffi::c_char;
-    let mut data: *mut core::ffi::c_char = core::ptr::null_mut();
-    let len: core::ffi::c_int;
+    let name: *const kernel::ffi::c_char;
+    let mut data: *mut kernel::ffi::c_char = core::ptr::null_mut();
+    let len: kernel::ffi::c_int;
 
     if !(*ip).i_eattr {
         return core::ptr::null_mut();
@@ -34,13 +34,13 @@ unsafe fn __gfs2_get_acl(
         return ERR_PTR(len as isize);
     }
     acl = posix_acl_from_xattr(&init_user_ns, data, len as usize);
-    kfree(data as *mut core::ffi::c_void);
+    kfree(data as *mut kernel::ffi::c_void);
     acl
 }
 
 pub unsafe fn gfs2_get_acl(
     inode: *mut inode,
-    type_: core::ffi::c_int,
+    type_: kernel::ffi::c_int,
     rcu: bool,
 ) -> *mut posix_acl {
     let ip = GFS2_I(inode);
@@ -74,11 +74,11 @@ pub unsafe fn gfs2_get_acl(
 pub unsafe fn __gfs2_set_acl(
     inode: *mut inode,
     acl: *mut posix_acl,
-    type_: core::ffi::c_int,
-) -> core::ffi::c_int {
-    let mut error: core::ffi::c_int;
+    type_: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
+    let mut error: kernel::ffi::c_int;
     let mut len: usize = 0;
-    let mut data: *mut core::ffi::c_char = core::ptr::null_mut();
+    let mut data: *mut kernel::ffi::c_char = core::ptr::null_mut();
     let name = gfs2_acl_name(type_);
 
     if !acl.is_null() {
@@ -90,11 +90,11 @@ pub unsafe fn __gfs2_set_acl(
 
     error = __gfs2_xattr_set(inode, name, data, len, 0, GFS2_EATYPE_SYS);
     if error != 0 {
-        kfree(data as *mut core::ffi::c_void);
+        kfree(data as *mut kernel::ffi::c_void);
         return error;
     }
     set_cached_acl(inode, type_, acl);
-    kfree(data as *mut core::ffi::c_void);
+    kfree(data as *mut kernel::ffi::c_void);
     error
 }
 
@@ -102,13 +102,13 @@ pub unsafe fn gfs2_set_acl(
     idmap: *mut mnt_idmap,
     dentry: *mut dentry,
     acl: *mut posix_acl,
-    type_: core::ffi::c_int,
-) -> core::ffi::c_int {
+    type_: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let inode = d_inode(dentry);
     let ip = GFS2_I(inode);
     let mut gh: gfs2_holder;
     let mut need_unlock = false;
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
     let mut mode: umode_t;
 
     if !acl.is_null() && (*acl).a_count > GFS2_ACL_MAX_ENTRIES(GFS2_SB(inode)) {

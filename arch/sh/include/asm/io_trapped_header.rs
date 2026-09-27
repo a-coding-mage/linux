@@ -2,17 +2,17 @@
 
 /* C dependencies: linux::list, linux::ioport, asm::page, and pt_regs. */
 
-pub const IO_TRAPPED_MAGIC: ::core::ffi::c_uint = 0xfeedbeef;
+pub const IO_TRAPPED_MAGIC: ::kernel::ffi::c_uint = 0xfeedbeef;
 
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct trapped_io {
-    pub magic: ::core::ffi::c_uint,
+    pub magic: ::kernel::ffi::c_uint,
     pub resource: *mut resource,
-    pub num_resources: ::core::ffi::c_uint,
-    pub minimum_bus_width: ::core::ffi::c_uint,
+    pub num_resources: ::kernel::ffi::c_uint,
+    pub minimum_bus_width: ::kernel::ffi::c_uint,
     pub list: list_head,
-    pub virt_base: *mut ::core::ffi::c_void,
+    pub virt_base: *mut ::kernel::ffi::c_void,
 }
 
 /* C declaration: __aligned(PAGE_SIZE). The required PAGE_SIZE-dependent
@@ -20,17 +20,17 @@ pub struct trapped_io {
 
 #[cfg(CONFIG_IO_TRAPPED)]
 extern "C" {
-    pub fn register_trapped_io(tiop: *mut trapped_io) -> ::core::ffi::c_int;
+    pub fn register_trapped_io(tiop: *mut trapped_io) -> ::kernel::ffi::c_int;
     pub fn handle_trapped_io(
         regs: *mut pt_regs,
-        address: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        address: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn match_trapped_io_handler(
         list: *mut list_head,
-        offset: ::core::ffi::c_ulong,
-        size: ::core::ffi::c_ulong,
-    ) -> *mut ::core::ffi::c_void;
+        offset: ::kernel::ffi::c_ulong,
+        size: ::kernel::ffi::c_ulong,
+    ) -> *mut ::kernel::ffi::c_void;
 }
 
 #[cfg(all(CONFIG_IO_TRAPPED, CONFIG_HAS_IOMEM))]
@@ -41,18 +41,18 @@ extern "C" {
 #[cfg(all(CONFIG_IO_TRAPPED, CONFIG_HAS_IOMEM))]
 #[inline]
 pub unsafe fn __ioremap_trapped(
-    offset: ::core::ffi::c_ulong,
-    size: ::core::ffi::c_ulong,
-) -> *mut ::core::ffi::c_void {
+    offset: ::kernel::ffi::c_ulong,
+    size: ::kernel::ffi::c_ulong,
+) -> *mut ::kernel::ffi::c_void {
     match_trapped_io_handler(&raw mut trapped_mem, offset, size)
 }
 
 #[cfg(any(not(CONFIG_IO_TRAPPED), all(CONFIG_IO_TRAPPED, not(CONFIG_HAS_IOMEM))))]
 #[inline]
 pub const fn __ioremap_trapped(
-    _offset: ::core::ffi::c_ulong,
-    _size: ::core::ffi::c_ulong,
-) -> *mut ::core::ffi::c_void {
+    _offset: ::kernel::ffi::c_ulong,
+    _size: ::kernel::ffi::c_ulong,
+) -> *mut ::kernel::ffi::c_void {
     ::core::ptr::null_mut()
 }
 
@@ -64,24 +64,24 @@ extern "C" {
 #[cfg(all(CONFIG_IO_TRAPPED, CONFIG_HAS_IOPORT_MAP))]
 #[inline]
 pub unsafe fn __ioport_map_trapped(
-    offset: ::core::ffi::c_ulong,
-    size: ::core::ffi::c_ulong,
-) -> *mut ::core::ffi::c_void {
+    offset: ::kernel::ffi::c_ulong,
+    size: ::kernel::ffi::c_ulong,
+) -> *mut ::kernel::ffi::c_void {
     match_trapped_io_handler(&raw mut trapped_io, offset, size)
 }
 
 #[cfg(any(not(CONFIG_IO_TRAPPED), all(CONFIG_IO_TRAPPED, not(CONFIG_HAS_IOPORT_MAP))))]
 #[inline]
 pub const fn __ioport_map_trapped(
-    _offset: ::core::ffi::c_ulong,
-    _size: ::core::ffi::c_ulong,
-) -> *mut ::core::ffi::c_void {
+    _offset: ::kernel::ffi::c_ulong,
+    _size: ::kernel::ffi::c_ulong,
+) -> *mut ::kernel::ffi::c_void {
     ::core::ptr::null_mut()
 }
 
 #[cfg(not(CONFIG_IO_TRAPPED))]
 #[inline]
-pub const fn register_trapped_io(_tiop: *mut trapped_io) -> ::core::ffi::c_int {
+pub const fn register_trapped_io(_tiop: *mut trapped_io) -> ::kernel::ffi::c_int {
     -1
 }
 
@@ -89,8 +89,8 @@ pub const fn register_trapped_io(_tiop: *mut trapped_io) -> ::core::ffi::c_int {
 #[inline]
 pub const fn handle_trapped_io(
     _tiop: *mut pt_regs,
-    _address: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    _address: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     0
 }
 

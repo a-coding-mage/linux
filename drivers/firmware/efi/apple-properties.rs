@@ -12,7 +12,7 @@
 
 static mut dump_properties: bool = false;
 
-unsafe extern "C" fn dump_properties_enable(_arg: *mut core::ffi::c_char) -> i32 {
+unsafe extern "C" fn dump_properties_enable(_arg: *mut kernel::ffi::c_char) -> i32 {
     dump_properties = true;
     1
 }
@@ -37,7 +37,7 @@ struct properties_header {
 unsafe fn unmarshal_key_value_pairs(
     dev_header: *mut dev_header,
     dev: *mut device,
-    mut ptr: *const core::ffi::c_void,
+    mut ptr: *const kernel::ffi::c_void,
     entry: *mut property_entry,
 ) {
     let mut i: i32 = 0;
@@ -48,7 +48,7 @@ unsafe fn unmarshal_key_value_pairs(
         let val_len: u32;
         let entry_len: u32;
         let entry_data: *const u8;
-        let key: *mut core::ffi::c_char;
+        let key: *mut kernel::ffi::c_char;
 
         if core::mem::size_of::<u32>() > remaining { break; }
         key_len = *(ptr as *const u32);
@@ -81,7 +81,7 @@ unsafe fn unmarshal_key_value_pairs(
             dev_info(dev, "property: %s\n", key);
             print_hex_dump(KERN_INFO, pr_fmt!(), DUMP_PREFIX_OFFSET, 16, 1, entry_data, entry_len, true);
         }
-        ptr = (ptr as *const u8).add(key_len as usize + val_len as usize) as *const core::ffi::c_void;
+        ptr = (ptr as *const u8).add(key_len as usize + val_len as usize) as *const kernel::ffi::c_void;
         i += 1;
     }
     if i != (*dev_header).prop_count as i32 {

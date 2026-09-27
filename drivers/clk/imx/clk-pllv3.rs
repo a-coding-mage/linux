@@ -21,7 +21,7 @@ const PLL_LOCK_TIMEOUT: u32 = 10000;
 #[repr(C)]
 pub struct clk_pllv3 {
     pub hw: clk_hw,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub power_bit: u32,
     pub powerup_set: bool,
     pub div_mask: u32,
@@ -32,7 +32,7 @@ pub struct clk_pllv3 {
 }
 
 #[repr(C)] pub struct clk_hw { pub init: *const clk_init_data }
-#[repr(C)] pub struct clk_init_data { pub name: *const core::ffi::c_char, pub ops: *const clk_ops, pub flags: u32, pub parent_names: *const *const core::ffi::c_char, pub num_parents: u8 }
+#[repr(C)] pub struct clk_init_data { pub name: *const kernel::ffi::c_char, pub ops: *const clk_ops, pub flags: u32, pub parent_names: *const *const kernel::ffi::c_char, pub num_parents: u8 }
 #[repr(C)] pub struct clk_rate_request { pub rate: usize, pub best_parent_rate: usize }
 #[repr(C)] pub struct clk_ops {
     pub prepare: Option<unsafe extern "C" fn(*mut clk_hw) -> i32>,
@@ -46,12 +46,12 @@ pub struct clk_pllv3 {
 #[repr(C)] #[derive(Copy, Clone)] pub struct clk_pllv3_vf610_mf { pub mfi: u32, pub mfn: u32, pub mfd: u32 }
 
 extern "C" {
-    fn readl_relaxed(addr: *mut core::ffi::c_void) -> u32;
-    fn writel_relaxed(val: u32, addr: *mut core::ffi::c_void);
-    fn readl_relaxed_poll_timeout(addr: *mut core::ffi::c_void, val: *mut u32, cond: u32, delay: u32, timeout: u32) -> i32;
-    fn clk_hw_register(dev: *mut core::ffi::c_void, hw: *mut clk_hw) -> i32;
-    fn kzalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn readl_relaxed(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel_relaxed(val: u32, addr: *mut kernel::ffi::c_void);
+    fn readl_relaxed_poll_timeout(addr: *mut kernel::ffi::c_void, val: *mut u32, cond: u32, delay: u32, timeout: u32) -> i32;
+    fn clk_hw_register(dev: *mut kernel::ffi::c_void, hw: *mut clk_hw) -> i32;
+    fn kzalloc(size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
 }
 
 unsafe fn pll(hw: *mut clk_hw) -> *mut clk_pllv3 { (hw as *mut u8).sub(core::mem::offset_of!(clk_pllv3, hw)) as *mut clk_pllv3 }
@@ -82,6 +82,6 @@ static SYS_OPS: clk_ops=clk_ops{prepare:Some(prepare),unprepare:Some(unprepare),
 static AV_OPS: clk_ops=clk_ops{prepare:Some(prepare),unprepare:Some(unprepare),is_prepared:Some(is_prepared),recalc_rate:Some(av_rate),determine_rate:Some(av_determine),set_rate:Some(av_set)};
 static VF_OPS: clk_ops=clk_ops{prepare:Some(prepare),unprepare:Some(unprepare),is_prepared:Some(is_prepared),recalc_rate:Some(vf_recalc),determine_rate:Some(vf_determine),set_rate:Some(vf_set)};
 static ENET_OPS: clk_ops=clk_ops{prepare:Some(prepare),unprepare:Some(unprepare),is_prepared:Some(is_prepared),recalc_rate:Some(enet_recalc),determine_rate:None,set_rate:None};
-pub unsafe fn imx_clk_hw_pllv3(t:imx_pllv3_type,name:*const core::ffi::c_char,parent_name:*const core::ffi::c_char,base:*mut core::ffi::c_void,mask:u32)->*mut clk_hw { let p=Box::into_raw(Box::new(clk_pllv3{hw:clk_hw{init:core::ptr::null()},base,power_bit:BM_PLL_POWER,powerup_set:false,div_mask:mask,div_shift:0,ref_clock:0,num_offset:PLL_NUM_OFFSET,denom_offset:PLL_DENOM_OFFSET})); let ops=match t{imx_pllv3_type::IMX_PLLV3_SYS=>&SYS_OPS,imx_pllv3_type::IMX_PLLV3_SYS_VF610=>{(*p).num_offset=PLL_VF610_NUM_OFFSET;(*p).denom_offset=PLL_VF610_DENOM_OFFSET;&VF_OPS},imx_pllv3_type::IMX_PLLV3_AV|imx_pllv3_type::IMX_PLLV3_AV_IMX7=>&AV_OPS,imx_pllv3_type::IMX_PLLV3_ENET|imx_pllv3_type::IMX_PLLV3_ENET_IMX7=>{(*p).ref_clock=if matches!(t,imx_pllv3_type::IMX_PLLV3_ENET_IMX7){1000000000}else{500000000};&ENET_OPS},_=>{(*p).powerup_set=true;&OPS}}; let init=Box::new(clk_init_data{name,ops,flags:0,parent_names:&parent_name,num_parents:1}); (*p).hw.init=Box::into_raw(init); if clk_hw_register(core::ptr::null_mut(),&mut (*p).hw)!=0{return core::ptr::null_mut()}; &mut (*p).hw }
+pub unsafe fn imx_clk_hw_pllv3(t:imx_pllv3_type,name:*const kernel::ffi::c_char,parent_name:*const kernel::ffi::c_char,base:*mut kernel::ffi::c_void,mask:u32)->*mut clk_hw { let p=Box::into_raw(Box::new(clk_pllv3{hw:clk_hw{init:core::ptr::null()},base,power_bit:BM_PLL_POWER,powerup_set:false,div_mask:mask,div_shift:0,ref_clock:0,num_offset:PLL_NUM_OFFSET,denom_offset:PLL_DENOM_OFFSET})); let ops=match t{imx_pllv3_type::IMX_PLLV3_SYS=>&SYS_OPS,imx_pllv3_type::IMX_PLLV3_SYS_VF610=>{(*p).num_offset=PLL_VF610_NUM_OFFSET;(*p).denom_offset=PLL_VF610_DENOM_OFFSET;&VF_OPS},imx_pllv3_type::IMX_PLLV3_AV|imx_pllv3_type::IMX_PLLV3_AV_IMX7=>&AV_OPS,imx_pllv3_type::IMX_PLLV3_ENET|imx_pllv3_type::IMX_PLLV3_ENET_IMX7=>{(*p).ref_clock=if matches!(t,imx_pllv3_type::IMX_PLLV3_ENET_IMX7){1000000000}else{500000000};&ENET_OPS},_=>{(*p).powerup_set=true;&OPS}}; let init=Box::new(clk_init_data{name,ops,flags:0,parent_names:&parent_name,num_parents:1}); (*p).hw.init=Box::into_raw(init); if clk_hw_register(core::ptr::null_mut(),&mut (*p).hw)!=0{return core::ptr::null_mut()}; &mut (*p).hw }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -16,7 +16,7 @@ pub struct snd_ump_group {
     pub active: bool,
     pub valid: bool,
     pub is_midi1: bool,
-    pub name: [core::ffi::c_char; 64],
+    pub name: [kernel::ffi::c_char; 64],
 }
 
 #[repr(C)]
@@ -25,7 +25,7 @@ pub struct snd_ump_endpoint {
     pub info: snd_ump_endpoint_info,
     pub ops: *const snd_ump_ops,
     pub substreams: [*mut snd_rawmidi_substream; 2],
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
     pub private_free: Option<unsafe extern "C" fn(*mut snd_ump_endpoint)>,
     pub stream_wait_for: u32,
     pub stream_finished: bool,
@@ -46,7 +46,7 @@ pub struct snd_ump_endpoint {
     #[cfg(CONFIG_SND_UMP_LEGACY_RAWMIDI)]
     pub legacy_substreams: [[*mut snd_rawmidi_substream; SNDRV_UMP_MAX_GROUPS]; 2],
     #[cfg(CONFIG_SND_UMP_LEGACY_RAWMIDI)]
-    pub legacy_mapping: [core::ffi::c_uchar; SNDRV_UMP_MAX_GROUPS],
+    pub legacy_mapping: [kernel::ffi::c_uchar; SNDRV_UMP_MAX_GROUPS],
     #[cfg(CONFIG_SND_UMP_LEGACY_RAWMIDI)]
     pub legacy_out_opens: i32,
     #[cfg(CONFIG_SND_UMP_LEGACY_RAWMIDI)]
@@ -58,7 +58,7 @@ pub struct snd_ump_endpoint {
     #[cfg(CONFIG_SND_SEQUENCER)]
     pub seq_ops: *const snd_seq_ump_ops,
     #[cfg(CONFIG_SND_SEQUENCER)]
-    pub seq_client: *mut core::ffi::c_void,
+    pub seq_client: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -81,7 +81,7 @@ pub struct snd_seq_ump_ops {
 pub struct snd_ump_block {
     pub info: snd_ump_block_info,
     pub ump: *mut snd_ump_endpoint,
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
     pub private_free: Option<unsafe extern "C" fn(*mut snd_ump_block)>,
     pub list: list_head,
 }
@@ -92,7 +92,7 @@ pub unsafe fn rawmidi_to_ump(rmidi: *mut snd_rawmidi) -> *mut snd_ump_endpoint {
 }
 
 unsafe extern "C" {
-    pub fn snd_ump_endpoint_new(card: *mut snd_card, id: *mut core::ffi::c_char, device: i32,
+    pub fn snd_ump_endpoint_new(card: *mut snd_card, id: *mut kernel::ffi::c_char, device: i32,
         output: i32, input: i32, ump_ret: *mut *mut snd_ump_endpoint) -> i32;
     pub fn snd_ump_parse_endpoint(ump: *mut snd_ump_endpoint) -> i32;
     pub fn snd_ump_block_new(ump: *mut snd_ump_endpoint, blk: u32, direction: u32,
@@ -100,7 +100,7 @@ unsafe extern "C" {
     pub fn snd_ump_receive(ump: *mut snd_ump_endpoint, buffer: *const u32, count: i32) -> i32;
     pub fn snd_ump_transmit(ump: *mut snd_ump_endpoint, buffer: *mut u32, count: i32) -> i32;
     pub fn snd_ump_attach_legacy_rawmidi(ump: *mut snd_ump_endpoint,
-        id: *mut core::ffi::c_char, device: i32) -> i32;
+        id: *mut kernel::ffi::c_char, device: i32) -> i32;
     pub fn snd_ump_receive_ump_val(ump: *mut snd_ump_endpoint, val: u32) -> i32;
     pub fn snd_ump_switch_protocol(ump: *mut snd_ump_endpoint, protocol: u32) -> i32;
     pub fn snd_ump_update_group_attrs(ump: *mut snd_ump_endpoint);

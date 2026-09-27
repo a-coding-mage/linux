@@ -2,7 +2,7 @@
 // Translated from printk.h. Configuration-dependent declarations retain their
 // original intent; symbols from included kernel headers are external deps.
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 
 #[repr(C)] pub struct console { _private: [u8; 0] }
 #[repr(C)] pub struct dev_printk_info { _private: [u8; 0] }
@@ -120,20 +120,144 @@ extern "C" {
 }
 
 // C preprocessor interfaces are represented as Rust macros, preserving call shape.
-#[macro_export] macro_rules! no_printk { ($fmt:expr $(, $arg:expr)*) => {{ let _ = ($fmt $(, $arg)*); 0 }}; }
-#[macro_export] macro_rules! pr_fmt { ($fmt:expr) => { $fmt }; }
-#[macro_export] macro_rules! printk { ($fmt:expr $(, $arg:expr)*) => { $crate::_printk($fmt $(, $arg)*) }; }
-#[macro_export] macro_rules! printk_deferred { ($fmt:expr $(, $arg:expr)*) => { $crate::_printk_deferred($fmt $(, $arg)*) }; }
-#[macro_export] macro_rules! pr_emerg { ($fmt:expr $(, $arg:expr)*) => { printk!(concat!(KERN_EMERG, $fmt) $(, $arg)*) }; }
-#[macro_export] macro_rules! pr_alert { ($fmt:expr $(, $arg:expr)*) => { printk!(concat!(KERN_ALERT, $fmt) $(, $arg)*) }; }
-#[macro_export] macro_rules! pr_crit { ($fmt:expr $(, $arg:expr)*) => { printk!(concat!(KERN_CRIT, $fmt) $(, $arg)*) }; }
-#[macro_export] macro_rules! pr_err { ($fmt:expr $(, $arg:expr)*) => { printk!(concat!(KERN_ERR, $fmt) $(, $arg)*) }; }
-#[macro_export] macro_rules! pr_warn { ($fmt:expr $(, $arg:expr)*) => { printk!(concat!(KERN_WARNING, $fmt) $(, $arg)*) }; }
-#[macro_export] macro_rules! pr_notice { ($fmt:expr $(, $arg:expr)*) => { printk!(concat!(KERN_NOTICE, $fmt) $(, $arg)*) }; }
-#[macro_export] macro_rules! pr_info { ($fmt:expr $(, $arg:expr)*) => { printk!(concat!(KERN_INFO, $fmt) $(, $arg)*) }; }
-#[macro_export] macro_rules! pr_cont { ($fmt:expr $(, $arg:expr)*) => { printk!(concat!(KERN_CONT, $fmt) $(, $arg)*) }; }
-#[macro_export] macro_rules! pr_devel { ($fmt:expr $(, $arg:expr)*) => { no_printk!(concat!(KERN_DEBUG, $fmt) $(, $arg)*) }; }
-#[macro_export] macro_rules! pr_debug { ($fmt:expr $(, $arg:expr)*) => { no_printk!(concat!(KERN_DEBUG, $fmt) $(, $arg)*) }; }
+/*
+ * Dummy printk for disabled debugging statements to use whilst maintaining
+ * gcc's format checking.
+ */
+#[macro_export]
+macro_rules! no_printk {
+    ($fmt:expr $(, $arg:expr)* $(,)?) => {{
+        if false {
+            printk!($fmt $(, $arg)*);
+        }
+        0
+    }};
+}
+
+#[macro_export]
+macro_rules! pr_fmt {
+    ($fmt:literal) => {
+        $fmt
+    };
+}
+
+/*
+ * printk(fmt, ...) with C format semantics.  A literal format is passed as a
+ * NUL-terminated C string; the level may be written as C's concatenated
+ * prefix (`KERN_ERR "..."`, spelled `KERN_ERR, "..."`).
+ */
+#[macro_export]
+macro_rules! printk {
+    (KERN_EMERG, $fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_EMERG!(), $fmt, "\0").as_ptr().cast() $(, $arg)*)
+    };
+    (KERN_ALERT, $fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_ALERT!(), $fmt, "\0").as_ptr().cast() $(, $arg)*)
+    };
+    (KERN_CRIT, $fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_CRIT!(), $fmt, "\0").as_ptr().cast() $(, $arg)*)
+    };
+    (KERN_ERR, $fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_ERR!(), $fmt, "\0").as_ptr().cast() $(, $arg)*)
+    };
+    (KERN_WARNING, $fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_WARNING!(), $fmt, "\0").as_ptr().cast() $(, $arg)*)
+    };
+    (KERN_NOTICE, $fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_NOTICE!(), $fmt, "\0").as_ptr().cast() $(, $arg)*)
+    };
+    (KERN_INFO, $fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_INFO!(), $fmt, "\0").as_ptr().cast() $(, $arg)*)
+    };
+    (KERN_DEBUG, $fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_DEBUG!(), $fmt, "\0").as_ptr().cast() $(, $arg)*)
+    };
+    (KERN_DEFAULT, $fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_DEFAULT!(), $fmt, "\0").as_ptr().cast() $(, $arg)*)
+    };
+    (KERN_CONT, $fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_CONT!(), $fmt, "\0").as_ptr().cast() $(, $arg)*)
+    };
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!($fmt, "\0").as_ptr().cast() $(, $arg)*)
+    };
+    ($fmt:expr $(, $arg:expr)* $(,)?) => {
+        _printk($fmt $(, $arg)*)
+    };
+}
+
+#[macro_export]
+macro_rules! printk_deferred {
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk_deferred(concat!($fmt, "\0").as_ptr().cast() $(, $arg)*)
+    };
+    ($fmt:expr $(, $arg:expr)* $(,)?) => {
+        _printk_deferred($fmt $(, $arg)*)
+    };
+}
+
+#[macro_export]
+macro_rules! pr_emerg {
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_EMERG!(), pr_fmt!($fmt), "\0").as_ptr().cast() $(, $arg)*)
+    };
+}
+#[macro_export]
+macro_rules! pr_alert {
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_ALERT!(), pr_fmt!($fmt), "\0").as_ptr().cast() $(, $arg)*)
+    };
+}
+#[macro_export]
+macro_rules! pr_crit {
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_CRIT!(), pr_fmt!($fmt), "\0").as_ptr().cast() $(, $arg)*)
+    };
+}
+#[macro_export]
+macro_rules! pr_err {
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_ERR!(), pr_fmt!($fmt), "\0").as_ptr().cast() $(, $arg)*)
+    };
+}
+#[macro_export]
+macro_rules! pr_warn {
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_WARNING!(), pr_fmt!($fmt), "\0").as_ptr().cast() $(, $arg)*)
+    };
+}
+#[macro_export]
+macro_rules! pr_notice {
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_NOTICE!(), pr_fmt!($fmt), "\0").as_ptr().cast() $(, $arg)*)
+    };
+}
+#[macro_export]
+macro_rules! pr_info {
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_INFO!(), pr_fmt!($fmt), "\0").as_ptr().cast() $(, $arg)*)
+    };
+}
+#[macro_export]
+macro_rules! pr_cont {
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        _printk(concat!(KERN_CONT!(), pr_fmt!($fmt), "\0").as_ptr().cast() $(, $arg)*)
+    };
+}
+/* pr_devel() should produce zero code unless DEBUG is defined */
+#[macro_export]
+macro_rules! pr_devel {
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        no_printk!(concat!(KERN_DEBUG!(), pr_fmt!($fmt), "\0").as_ptr().cast::<kernel::ffi::c_char>() $(, $arg)*)
+    };
+}
+/* Without DEBUG or CONFIG_DYNAMIC_DEBUG, pr_debug() compiles to no_printk(). */
+#[macro_export]
+macro_rules! pr_debug {
+    ($fmt:literal $(, $arg:expr)* $(,)?) => {
+        no_printk!(concat!(KERN_DEBUG!(), pr_fmt!($fmt), "\0").as_ptr().cast::<kernel::ffi::c_char>() $(, $arg)*)
+    };
+}
 #[macro_export] macro_rules! print_hex_dump_bytes { ($prefix:expr, $ptype:expr, $buf:expr, $len:expr) => { print_hex_dump_debug!($prefix, $ptype, 16, 1, $buf, $len, true) }; }
 #[macro_export] macro_rules! print_hex_dump_debug { ($prefix:expr, $ptype:expr, $rows:expr, $groups:expr, $buf:expr, $len:expr, $ascii:expr) => { () }; }
 #[macro_export] macro_rules! print_hex_dump_devel { ($prefix:expr, $ptype:expr, $rows:expr, $groups:expr, $buf:expr, $len:expr, $ascii:expr) => { () }; }

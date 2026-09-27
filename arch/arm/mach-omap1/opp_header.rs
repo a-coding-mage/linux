@@ -11,9 +11,9 @@
 
 #[repr(C)]
 pub struct mpu_rate {
-    pub rate: core::ffi::c_ulong,
-    pub xtal: core::ffi::c_ulong,
-    pub pll_rate: core::ffi::c_ulong,
+    pub rate: kernel::ffi::c_ulong,
+    pub xtal: kernel::ffi::c_ulong,
+    pub pll_rate: kernel::ffi::c_ulong,
     pub ckctl_val: u16,
     pub dpllctl_val: u16,
     pub flags: u32,

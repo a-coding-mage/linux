@@ -5,7 +5,7 @@
  * This file must not contain any executable code.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub static x86_power_flags: [*const c_char; 32] = [
     c"ts".as_ptr(),             /* temperature sensor */

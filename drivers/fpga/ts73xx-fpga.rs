@@ -23,14 +23,14 @@ const TS73XX_FPGA_CONFIG_LOAD: u8 = 0x8;
 
 #[repr(C)]
 struct ts73xx_fpga_priv {
-    io_base: *mut core::ffi::c_void,
+    io_base: *mut kernel::ffi::c_void,
     dev: *mut device,
 }
 
 unsafe fn ts73xx_fpga_write_init(
     mgr: *mut fpga_manager,
     _info: *mut fpga_image_info,
-    _buf: *const core::ffi::c_char,
+    _buf: *const kernel::ffi::c_char,
     _count: usize,
 ) -> i32 {
     let priv_ = (*mgr).priv_ as *mut ts73xx_fpga_priv;
@@ -46,7 +46,7 @@ unsafe fn ts73xx_fpga_write_init(
 
 unsafe fn ts73xx_fpga_write(
     mgr: *mut fpga_manager,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     mut count: usize,
 ) -> i32 {
     let priv_ = (*mgr).priv_ as *mut ts73xx_fpga_priv;
@@ -100,8 +100,8 @@ unsafe fn ts73xx_fpga_write_complete(
 
 #[repr(C)]
 struct fpga_manager_ops {
-    write_init: Option<unsafe fn(*mut fpga_manager, *mut fpga_image_info, *const core::ffi::c_char, usize) -> i32>,
-    write: Option<unsafe fn(*mut fpga_manager, *const core::ffi::c_char, usize) -> i32>,
+    write_init: Option<unsafe fn(*mut fpga_manager, *mut fpga_image_info, *const kernel::ffi::c_char, usize) -> i32>,
+    write: Option<unsafe fn(*mut fpga_manager, *const kernel::ffi::c_char, usize) -> i32>,
     write_complete: Option<unsafe fn(*mut fpga_manager, *mut fpga_image_info) -> i32>,
 }
 
@@ -131,7 +131,7 @@ unsafe fn ts73xx_fpga_probe(pdev: *mut platform_device) -> i32 {
 
 #[repr(C)]
 struct of_device_id {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 static ts73xx_fpga_of_match: [of_device_id; 2] = [

@@ -10,13 +10,13 @@
 // Linux and platform headers are supplied by the surrounding translation unit.
 
 extern "C" {
-    fn alchemy_uart_putchar(addr: usize, c: core::ffi::c_char);
+    fn alchemy_uart_putchar(addr: usize, c: kernel::ffi::c_char);
     fn alchemy_gpio1_input_enable();
     fn alchemy_gpio2_enable();
     fn alchemy_rdsys(reg: u32) -> u32;
     fn alchemy_wrsys(value: u32, reg: u32);
     fn alchemy_uart_enable(addr: usize);
-    fn __raw_writel(value: u32, addr: *mut core::ffi::c_void);
+    fn __raw_writel(value: u32, addr: *mut kernel::ffi::c_void);
     fn wmb();
     fn irq_set_irq_type(irq: u32, irq_type: u32) -> i32;
     fn platform_add_devices(devs: *mut *mut platform_device, count: usize) -> i32;
@@ -24,7 +24,7 @@ extern "C" {
 
 #[repr(C)]
 pub struct resource {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub flags: u64,
     pub start: usize,
     pub end: usize,
@@ -32,7 +32,7 @@ pub struct resource {
 
 #[repr(C)]
 pub struct platform_device {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: i32,
     pub num_resources: usize,
     pub resource: *mut resource,
@@ -41,18 +41,18 @@ pub struct platform_device {
 extern "C" {
     static mut pm_power_off: Option<unsafe extern "C" fn()>;
     static mut _machine_halt: Option<unsafe extern "C" fn()>;
-    static mut _machine_restart: Option<unsafe extern "C" fn(*mut core::ffi::c_char)>;
+    static mut _machine_restart: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char)>;
 }
 
-pub unsafe extern "C" fn get_system_type() -> *const core::ffi::c_char {
-    b"XXS1500\0".as_ptr() as *const core::ffi::c_char
+pub unsafe extern "C" fn get_system_type() -> *const kernel::ffi::c_char {
+    b"XXS1500\0".as_ptr() as *const kernel::ffi::c_char
 }
 
-pub unsafe extern "C" fn prom_putchar(c: core::ffi::c_char) {
+pub unsafe extern "C" fn prom_putchar(c: kernel::ffi::c_char) {
     alchemy_uart_putchar(AU1000_UART0_PHYS_ADDR, c);
 }
 
-unsafe extern "C" fn xxs1500_reset(_c: *mut core::ffi::c_char) {
+unsafe extern "C" fn xxs1500_reset(_c: *mut kernel::ffi::c_char) {
     core::arch::asm!("jr {0}", in(reg) 0xbfc00000usize);
 }
 
@@ -80,25 +80,25 @@ pub unsafe extern "C" fn board_setup() {
     /* Enable UART */
     alchemy_uart_enable(AU1000_UART3_PHYS_ADDR);
     /* Enable DTR (MCR bit 0) = USB power up */
-    __raw_writel(1, KSEG1ADDR(AU1000_UART3_PHYS_ADDR + 0x18) as *mut core::ffi::c_void);
+    __raw_writel(1, KSEG1ADDR(AU1000_UART3_PHYS_ADDR + 0x18) as *mut kernel::ffi::c_void);
     wmb();
 }
 
 static mut xxs1500_pcmcia_res: [resource; 3] = [
     resource {
-        name: b"pcmcia-io\0".as_ptr() as *const core::ffi::c_char,
+        name: b"pcmcia-io\0".as_ptr() as *const kernel::ffi::c_char,
         flags: IORESOURCE_MEM,
         start: AU1000_PCMCIA_IO_PHYS_ADDR,
         end: AU1000_PCMCIA_IO_PHYS_ADDR + 0x000400000 - 1,
     },
     resource {
-        name: b"pcmcia-attr\0".as_ptr() as *const core::ffi::c_char,
+        name: b"pcmcia-attr\0".as_ptr() as *const kernel::ffi::c_char,
         flags: IORESOURCE_MEM,
         start: AU1000_PCMCIA_ATTR_PHYS_ADDR,
         end: AU1000_PCMCIA_ATTR_PHYS_ADDR + 0x000400000 - 1,
     },
     resource {
-        name: b"pcmcia-mem\0".as_ptr() as *const core::ffi::c_char,
+        name: b"pcmcia-mem\0".as_ptr() as *const kernel::ffi::c_char,
         flags: IORESOURCE_MEM,
         start: AU1000_PCMCIA_MEM_PHYS_ADDR,
         end: AU1000_PCMCIA_MEM_PHYS_ADDR + 0x000400000 - 1,
@@ -106,7 +106,7 @@ static mut xxs1500_pcmcia_res: [resource; 3] = [
 ];
 
 static mut xxs1500_pcmcia_dev: platform_device = platform_device {
-    name: b"xxs1500_pcmcia\0".as_ptr() as *const core::ffi::c_char,
+    name: b"xxs1500_pcmcia\0".as_ptr() as *const kernel::ffi::c_char,
     id: -1,
     num_resources: 3,
     resource: core::ptr::addr_of_mut!(xxs1500_pcmcia_res) as *mut resource,

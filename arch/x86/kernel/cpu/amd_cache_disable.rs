@@ -44,7 +44,7 @@ unsafe fn amd_get_l3_disable_slot(nb: *mut amd_northbridge, slot: u32) -> i32 {
     -1
 }
 
-unsafe fn show_cache_disable(ci: *mut cacheinfo, buf: *mut core::ffi::c_char, slot: u32) -> isize {
+unsafe fn show_cache_disable(ci: *mut cacheinfo, buf: *mut kernel::ffi::c_char, slot: u32) -> isize {
     let index = amd_get_l3_disable_slot((*ci).priv_, slot);
     if index >= 0 {
         return sysfs_emit(buf, b"%d\0".as_ptr() as *const _, index);
@@ -52,12 +52,12 @@ unsafe fn show_cache_disable(ci: *mut cacheinfo, buf: *mut core::ffi::c_char, sl
     sysfs_emit(buf, b"FREE\n\0".as_ptr() as *const _)
 }
 
-unsafe extern "C" fn cache_disable_0_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> isize {
+unsafe extern "C" fn cache_disable_0_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut kernel::ffi::c_char) -> isize {
     let ci = dev_get_drvdata(dev) as *mut cacheinfo;
     show_cache_disable(ci, buf, 0)
 }
 
-unsafe extern "C" fn cache_disable_1_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> isize {
+unsafe extern "C" fn cache_disable_1_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut kernel::ffi::c_char) -> isize {
     let ci = dev_get_drvdata(dev) as *mut cacheinfo;
     show_cache_disable(ci, buf, 1)
 }
@@ -85,7 +85,7 @@ unsafe fn amd_set_l3_disable_slot(nb: *mut amd_northbridge, cpu: i32, slot: u32,
     0
 }
 
-unsafe fn store_cache_disable(ci: *mut cacheinfo, buf: *const core::ffi::c_char, count: usize, slot: u32) -> isize {
+unsafe fn store_cache_disable(ci: *mut cacheinfo, buf: *const kernel::ffi::c_char, count: usize, slot: u32) -> isize {
     let nb = (*ci).priv_;
     let mut val: usize = 0;
     if !capable(CAP_SYS_ADMIN) { return -EPERM as isize; }
@@ -99,20 +99,20 @@ unsafe fn store_cache_disable(ci: *mut cacheinfo, buf: *const core::ffi::c_char,
     count as isize
 }
 
-unsafe extern "C" fn cache_disable_0_store(dev: *mut device, _attr: *mut device_attribute, buf: *const core::ffi::c_char, count: usize) -> isize {
+unsafe extern "C" fn cache_disable_0_store(dev: *mut device, _attr: *mut device_attribute, buf: *const kernel::ffi::c_char, count: usize) -> isize {
     store_cache_disable(dev_get_drvdata(dev) as *mut cacheinfo, buf, count, 0)
 }
-unsafe extern "C" fn cache_disable_1_store(dev: *mut device, _attr: *mut device_attribute, buf: *const core::ffi::c_char, count: usize) -> isize {
+unsafe extern "C" fn cache_disable_1_store(dev: *mut device, _attr: *mut device_attribute, buf: *const kernel::ffi::c_char, count: usize) -> isize {
     store_cache_disable(dev_get_drvdata(dev) as *mut cacheinfo, buf, count, 1)
 }
 
-unsafe extern "C" fn subcaches_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> isize {
+unsafe extern "C" fn subcaches_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut kernel::ffi::c_char) -> isize {
     let ci = dev_get_drvdata(dev) as *mut cacheinfo;
     let cpu = cpumask_first(&(*ci).shared_cpu_map);
     sysfs_emit(buf, b"%x\n\0".as_ptr() as *const _, amd_get_subcaches(cpu))
 }
 
-unsafe extern "C" fn subcaches_store(dev: *mut device, _attr: *mut device_attribute, buf: *const core::ffi::c_char, count: usize) -> isize {
+unsafe extern "C" fn subcaches_store(dev: *mut device, _attr: *mut device_attribute, buf: *const kernel::ffi::c_char, count: usize) -> isize {
     let ci = dev_get_drvdata(dev) as *mut cacheinfo;
     let cpu = cpumask_first(&(*ci).shared_cpu_map);
     let mut val = 0usize;

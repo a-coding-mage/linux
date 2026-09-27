@@ -78,9 +78,9 @@ pub const DSR_ERR: u32 = 0x133A;
 
 pub unsafe fn send_pfow_command(
     map: *mut map_info,
-    cmd_code: ::core::ffi::c_ulong,
-    adr: ::core::ffi::c_ulong,
-    len: ::core::ffi::c_ulong,
+    cmd_code: ::kernel::ffi::c_ulong,
+    adr: ::kernel::ffi::c_ulong,
+    len: ::kernel::ffi::c_ulong,
     datum: *mut map_word,
 ) {
     let bits_per_chip = map_bankwidth(map) * 8;
@@ -115,7 +115,7 @@ pub unsafe fn send_pfow_command(
     /* Command execution start */
     map_write(
         map,
-        CMD(LPDDR_START_EXECUTION as ::core::ffi::c_ulong),
+        CMD(LPDDR_START_EXECUTION as ::kernel::ffi::c_ulong),
         (*map).pfow_base + PFOW_COMMAND_EXECUTE,
     );
 }

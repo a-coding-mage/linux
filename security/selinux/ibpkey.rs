@@ -71,8 +71,8 @@ pub struct sel_ib_pkey {
 unsafe extern "C" {
     static mut selinux_enabled_boot: bool;
 
-    fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut core::ffi::c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: core::ffi::c_ulong);
+    fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: kernel::ffi::c_ulong);
 
     fn rcu_read_lock();
     fn rcu_read_unlock();
@@ -197,7 +197,7 @@ unsafe fn sel_ib_pkey_sid_slow(subnet_prefix: u64, pkey_num: u16, sid: *mut u32)
     let mut ret: i32;
     let mut pkey: *mut sel_ib_pkey;
     let new: *mut sel_ib_pkey;
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     spin_lock_irqsave(&raw mut sel_ib_pkey_lock, &mut flags);
     pkey = sel_ib_pkey_find(subnet_prefix, pkey_num);
@@ -272,7 +272,7 @@ pub unsafe extern "C" fn sel_ib_pkey_flush() {
     let mut idx: u32;
     let mut pkey: *mut sel_ib_pkey;
     let mut pkey_tmp: *mut sel_ib_pkey;
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     spin_lock_irqsave(&raw mut sel_ib_pkey_lock, &mut flags);
     idx = 0;

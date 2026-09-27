@@ -14,9 +14,9 @@
 // linux/initrd.h, linux/bug.h, asm/cpuinfo.h, linux/delay.h, linux/io.h,
 // asm/page.h, linux/param.h, asm/pvr.h, asm/sections.h, asm/setup.h
 
-unsafe fn show_cpuinfo(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
-    let mut fpga_family: *const core::ffi::c_char = b"Unknown\0".as_ptr() as *const _;
-    let mut cpu_ver: *const core::ffi::c_char = b"Unknown\0".as_ptr() as *const _;
+unsafe fn show_cpuinfo(m: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
+    let mut fpga_family: *const kernel::ffi::c_char = b"Unknown\0".as_ptr() as *const _;
+    let mut cpu_ver: *const kernel::ffi::c_char = b"Unknown\0".as_ptr() as *const _;
     let mut i: i32;
 
     /* Denormalised to get the fpga family string */
@@ -79,24 +79,24 @@ unsafe fn show_cpuinfo(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
     0
 }
 
-unsafe fn c_start(_m: *mut seq_file, pos: *mut loff_t) -> *mut core::ffi::c_void {
+unsafe fn c_start(_m: *mut seq_file, pos: *mut loff_t) -> *mut kernel::ffi::c_void {
     let i = *pos;
-    if i < NR_CPUS { (i + 1) as usize as *mut core::ffi::c_void } else { core::ptr::null_mut() }
+    if i < NR_CPUS { (i + 1) as usize as *mut kernel::ffi::c_void } else { core::ptr::null_mut() }
 }
 
-unsafe fn c_next(m: *mut seq_file, _v: *mut core::ffi::c_void, pos: *mut loff_t) -> *mut core::ffi::c_void {
+unsafe fn c_next(m: *mut seq_file, _v: *mut kernel::ffi::c_void, pos: *mut loff_t) -> *mut kernel::ffi::c_void {
     *pos += 1;
     c_start(m, pos)
 }
 
-unsafe fn c_stop(_m: *mut seq_file, _v: *mut core::ffi::c_void) {}
+unsafe fn c_stop(_m: *mut seq_file, _v: *mut kernel::ffi::c_void) {}
 
 #[repr(C)]
 pub struct seq_operations {
-    pub start: Option<unsafe fn(*mut seq_file, *mut loff_t) -> *mut core::ffi::c_void>,
-    pub next: Option<unsafe fn(*mut seq_file, *mut core::ffi::c_void, *mut loff_t) -> *mut core::ffi::c_void>,
-    pub stop: Option<unsafe fn(*mut seq_file, *mut core::ffi::c_void)>,
-    pub show: Option<unsafe fn(*mut seq_file, *mut core::ffi::c_void) -> i32>,
+    pub start: Option<unsafe fn(*mut seq_file, *mut loff_t) -> *mut kernel::ffi::c_void>,
+    pub next: Option<unsafe fn(*mut seq_file, *mut kernel::ffi::c_void, *mut loff_t) -> *mut kernel::ffi::c_void>,
+    pub stop: Option<unsafe fn(*mut seq_file, *mut kernel::ffi::c_void)>,
+    pub show: Option<unsafe fn(*mut seq_file, *mut kernel::ffi::c_void) -> i32>,
 }
 
 pub static cpuinfo_op: seq_operations = seq_operations {

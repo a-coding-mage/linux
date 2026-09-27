@@ -26,9 +26,9 @@
 
 #[repr(C)]
 pub struct btree_head {
-    pub node: *mut ::core::ffi::c_ulong,
+    pub node: *mut ::kernel::ffi::c_ulong,
     pub mempool: *mut mempool_t,
-    pub height: ::core::ffi::c_int,
+    pub height: ::kernel::ffi::c_int,
 }
 
 /* btree geometry */
@@ -38,48 +38,48 @@ pub struct btree_geo {
 }
 
 extern "C" {
-    pub fn btree_alloc(gfp_mask: gfp_t, pool_data: *mut ::core::ffi::c_void)
-        -> *mut ::core::ffi::c_void;
-    pub fn btree_free(element: *mut ::core::ffi::c_void,
-                      pool_data: *mut ::core::ffi::c_void);
+    pub fn btree_alloc(gfp_mask: gfp_t, pool_data: *mut ::kernel::ffi::c_void)
+        -> *mut ::kernel::ffi::c_void;
+    pub fn btree_free(element: *mut ::kernel::ffi::c_void,
+                      pool_data: *mut ::kernel::ffi::c_void);
     pub fn btree_init_mempool(head: *mut btree_head, mempool: *mut mempool_t);
-    pub fn btree_init(head: *mut btree_head) -> ::core::ffi::c_int;
+    pub fn btree_init(head: *mut btree_head) -> ::kernel::ffi::c_int;
     pub fn btree_destroy(head: *mut btree_head);
     pub fn btree_lookup(head: *mut btree_head, geo: *mut btree_geo,
-                        key: *mut ::core::ffi::c_ulong)
-        -> *mut ::core::ffi::c_void;
+                        key: *mut ::kernel::ffi::c_ulong)
+        -> *mut ::kernel::ffi::c_void;
     pub fn btree_insert(head: *mut btree_head, geo: *mut btree_geo,
-                        key: *mut ::core::ffi::c_ulong,
-                        val: *mut ::core::ffi::c_void, gfp: gfp_t)
-        -> ::core::ffi::c_int;
+                        key: *mut ::kernel::ffi::c_ulong,
+                        val: *mut ::kernel::ffi::c_void, gfp: gfp_t)
+        -> ::kernel::ffi::c_int;
     pub fn btree_update(head: *mut btree_head, geo: *mut btree_geo,
-                        key: *mut ::core::ffi::c_ulong,
-                        val: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
+                        key: *mut ::kernel::ffi::c_ulong,
+                        val: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
     pub fn btree_remove(head: *mut btree_head, geo: *mut btree_geo,
-                        key: *mut ::core::ffi::c_ulong)
-        -> *mut ::core::ffi::c_void;
+                        key: *mut ::kernel::ffi::c_ulong)
+        -> *mut ::kernel::ffi::c_void;
     pub fn btree_merge(target: *mut btree_head, victim: *mut btree_head,
-                       geo: *mut btree_geo, gfp: gfp_t) -> ::core::ffi::c_int;
+                       geo: *mut btree_geo, gfp: gfp_t) -> ::kernel::ffi::c_int;
     pub fn btree_last(head: *mut btree_head, geo: *mut btree_geo,
-                      key: *mut ::core::ffi::c_ulong)
-        -> *mut ::core::ffi::c_void;
+                      key: *mut ::kernel::ffi::c_ulong)
+        -> *mut ::kernel::ffi::c_void;
     pub fn btree_get_prev(head: *mut btree_head, geo: *mut btree_geo,
-                          key: *mut ::core::ffi::c_ulong)
-        -> *mut ::core::ffi::c_void;
+                          key: *mut ::kernel::ffi::c_ulong)
+        -> *mut ::kernel::ffi::c_void;
     pub fn btree_visitor(
-        head: *mut btree_head, geo: *mut btree_geo, opaque: ::core::ffi::c_ulong,
-        func: Option<unsafe extern "C" fn(*mut ::core::ffi::c_void,
-                                           ::core::ffi::c_ulong,
-                                           *mut ::core::ffi::c_ulong,
-                                           usize, *mut ::core::ffi::c_void)>,
-        func2: *mut ::core::ffi::c_void) -> usize;
+        head: *mut btree_head, geo: *mut btree_geo, opaque: ::kernel::ffi::c_ulong,
+        func: Option<unsafe extern "C" fn(*mut ::kernel::ffi::c_void,
+                                           ::kernel::ffi::c_ulong,
+                                           *mut ::kernel::ffi::c_ulong,
+                                           usize, *mut ::kernel::ffi::c_void)>,
+        func2: *mut ::kernel::ffi::c_void) -> usize;
     pub fn btree_grim_visitor(
-        head: *mut btree_head, geo: *mut btree_geo, opaque: ::core::ffi::c_ulong,
-        func: Option<unsafe extern "C" fn(*mut ::core::ffi::c_void,
-                                           ::core::ffi::c_ulong,
-                                           *mut ::core::ffi::c_ulong,
-                                           usize, *mut ::core::ffi::c_void)>,
-        func2: *mut ::core::ffi::c_void) -> usize;
+        head: *mut btree_head, geo: *mut btree_geo, opaque: ::kernel::ffi::c_ulong,
+        func: Option<unsafe extern "C" fn(*mut ::kernel::ffi::c_void,
+                                           ::kernel::ffi::c_ulong,
+                                           *mut ::kernel::ffi::c_ulong,
+                                           usize, *mut ::kernel::ffi::c_void)>,
+        func2: *mut ::kernel::ffi::c_void) -> usize;
 
     pub static mut btree_geo32: btree_geo;
     pub static mut btree_geo64: btree_geo;

@@ -23,8 +23,8 @@ pub const IP6_TNL_F_ALLOW_LOCAL_REMOTE: u32 = 0x40;
 
 #[repr(C)]
 pub struct ip6_tnl_parm {
-    pub name: [::core::ffi::c_char; IFNAMSIZ], /* name of tunnel device */
-    pub link: ::core::ffi::c_int, /* ifindex of underlying L2 interface */
+    pub name: [::kernel::ffi::c_char; IFNAMSIZ], /* name of tunnel device */
+    pub link: ::kernel::ffi::c_int, /* ifindex of underlying L2 interface */
     pub proto: __u8, /* tunnel protocol */
     pub encap_limit: __u8, /* encapsulation limit for tunnel */
     pub hop_limit: __u8, /* hop limit for tunnel */
@@ -36,8 +36,8 @@ pub struct ip6_tnl_parm {
 
 #[repr(C)]
 pub struct ip6_tnl_parm2 {
-    pub name: [::core::ffi::c_char; IFNAMSIZ], /* name of tunnel device */
-    pub link: ::core::ffi::c_int, /* ifindex of underlying L2 interface */
+    pub name: [::kernel::ffi::c_char; IFNAMSIZ], /* name of tunnel device */
+    pub link: ::kernel::ffi::c_int, /* ifindex of underlying L2 interface */
     pub proto: __u8, /* tunnel protocol */
     pub encap_limit: __u8, /* encapsulation limit for tunnel */
     pub hop_limit: __u8, /* hop limit for tunnel */

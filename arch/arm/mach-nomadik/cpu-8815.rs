@@ -70,8 +70,8 @@ static mut CPU8815_IO_DESC: [MapDesc; 1] = [MapDesc {
 
 extern "C" {
     fn iotable_init(desc: *mut MapDesc, size: usize);
-    fn ioremap(addr: usize, size: usize) -> *mut core::ffi::c_void;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
+    fn ioremap(addr: usize, size: usize) -> *mut kernel::ffi::c_void;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
 }
 
 unsafe fn cpu8815_map_io() {
@@ -83,7 +83,7 @@ pub enum RebootMode {
     Unknown,
 }
 
-unsafe fn cpu8815_restart(_mode: RebootMode, _cmd: *const core::ffi::c_char) {
+unsafe fn cpu8815_restart(_mode: RebootMode, _cmd: *const kernel::ffi::c_char) {
     let srcbase = ioremap(NOMADIK_SRC_BASE, 0x1000);
 
     /* FIXME: use egpio when implemented */

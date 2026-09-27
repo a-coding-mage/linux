@@ -9,47 +9,47 @@
 
 /* Linux kernel dependencies are supplied by the surrounding translation. */
 
-unsafe fn rts_threshold_read(file: *mut file, userbuf: *mut core::ffi::c_char,
+unsafe fn rts_threshold_read(file: *mut file, userbuf: *mut kernel::ffi::c_char,
                              count: usize, ppos: *mut loff_t) -> isize {
     let wiphy = (*file).private_data as *mut wiphy;
-    let mut buf = [0 as core::ffi::c_char; 20];
+    let mut buf = [0 as kernel::ffi::c_char; 20];
     let res = scnprintf(buf.as_mut_ptr(), 20, b"%d\0".as_ptr() as *const _, (*wiphy).rts_threshold);
     simple_read_from_buffer(userbuf, count, ppos, buf.as_ptr(), res)
 }
 
-unsafe fn fragmentation_threshold_read(file: *mut file, userbuf: *mut core::ffi::c_char,
+unsafe fn fragmentation_threshold_read(file: *mut file, userbuf: *mut kernel::ffi::c_char,
                                        count: usize, ppos: *mut loff_t) -> isize {
     let wiphy = (*file).private_data as *mut wiphy;
-    let mut buf = [0 as core::ffi::c_char; 20];
+    let mut buf = [0 as kernel::ffi::c_char; 20];
     let res = scnprintf(buf.as_mut_ptr(), 20, b"%d\0".as_ptr() as *const _, (*wiphy).frag_threshold);
     simple_read_from_buffer(userbuf, count, ppos, buf.as_ptr(), res)
 }
 
-unsafe fn short_retry_limit_read(file: *mut file, userbuf: *mut core::ffi::c_char,
+unsafe fn short_retry_limit_read(file: *mut file, userbuf: *mut kernel::ffi::c_char,
                                  count: usize, ppos: *mut loff_t) -> isize {
     let wiphy = (*file).private_data as *mut wiphy;
-    let mut buf = [0 as core::ffi::c_char; 20];
+    let mut buf = [0 as kernel::ffi::c_char; 20];
     let res = scnprintf(buf.as_mut_ptr(), 20, b"%d\0".as_ptr() as *const _, (*wiphy).retry_short);
     simple_read_from_buffer(userbuf, count, ppos, buf.as_ptr(), res)
 }
 
-unsafe fn long_retry_limit_read(file: *mut file, userbuf: *mut core::ffi::c_char,
+unsafe fn long_retry_limit_read(file: *mut file, userbuf: *mut kernel::ffi::c_char,
                                 count: usize, ppos: *mut loff_t) -> isize {
     let wiphy = (*file).private_data as *mut wiphy;
-    let mut buf = [0 as core::ffi::c_char; 20];
+    let mut buf = [0 as kernel::ffi::c_char; 20];
     let res = scnprintf(buf.as_mut_ptr(), 20, b"%d\0".as_ptr() as *const _, (*wiphy).retry_long);
     simple_read_from_buffer(userbuf, count, ppos, buf.as_ptr(), res)
 }
 
-unsafe fn radio_rts_threshold_read(file: *mut file, userbuf: *mut core::ffi::c_char,
+unsafe fn radio_rts_threshold_read(file: *mut file, userbuf: *mut kernel::ffi::c_char,
                                    count: usize, ppos: *mut loff_t) -> isize {
     let radio_cfg = (*file).private_data as *mut wiphy_radio_cfg;
-    let mut buf = [0 as core::ffi::c_char; 20];
+    let mut buf = [0 as kernel::ffi::c_char; 20];
     let res = scnprintf(buf.as_mut_ptr(), 20, b"%d\0".as_ptr() as *const _, (*radio_cfg).rts_threshold);
     simple_read_from_buffer(userbuf, count, ppos, buf.as_ptr(), res)
 }
 
-unsafe fn ht_print_chan(chan: *mut ieee80211_channel, buf: *mut core::ffi::c_char,
+unsafe fn ht_print_chan(chan: *mut ieee80211_channel, buf: *mut kernel::ffi::c_char,
                         buf_size: i32, offset: i32) -> i32 {
     if WARN_ON(offset > buf_size) { return 0; }
     if (*chan).flags & IEEE80211_CHAN_DISABLED != 0 {
@@ -62,7 +62,7 @@ unsafe fn ht_print_chan(chan: *mut ieee80211_channel, buf: *mut core::ffi::c_cha
               if (*chan).flags & IEEE80211_CHAN_NO_HT40PLUS != 0 { ' ' as i32 } else { '+' as i32 })
 }
 
-unsafe fn ht40allow_map_read(file: *mut file, user_buf: *mut core::ffi::c_char,
+unsafe fn ht40allow_map_read(file: *mut file, user_buf: *mut kernel::ffi::c_char,
                              count: usize, ppos: *mut loff_t) -> isize {
     let wiphy = (*file).private_data as *mut wiphy;
     let buf_size = PAGE_SIZE;
@@ -117,9 +117,9 @@ static ht40allow_map_ops: file_operations = file_operations { read: Some(ht40all
 #[repr(C)]
 struct debugfs_read_work {
     work: wiphy_work,
-    handler: Option<unsafe extern "C" fn(*mut wiphy, *mut file, *mut core::ffi::c_char, usize, *mut core::ffi::c_void) -> isize>,
-    wiphy: *mut wiphy, file: *mut file, buf: *mut core::ffi::c_char, bufsize: usize,
-    data: *mut core::ffi::c_void, ret: isize, completion: completion,
+    handler: Option<unsafe extern "C" fn(*mut wiphy, *mut file, *mut kernel::ffi::c_char, usize, *mut kernel::ffi::c_void) -> isize>,
+    wiphy: *mut wiphy, file: *mut file, buf: *mut kernel::ffi::c_char, bufsize: usize,
+    data: *mut kernel::ffi::c_void, ret: isize, completion: completion,
 }
 
 unsafe fn wiphy_locked_debugfs_read_work(wiphy: *mut wiphy, work: *mut wiphy_work) {
@@ -128,17 +128,17 @@ unsafe fn wiphy_locked_debugfs_read_work(wiphy: *mut wiphy, work: *mut wiphy_wor
     complete(&mut (*w).completion);
 }
 
-unsafe fn wiphy_locked_debugfs_read_cancel(_dentry: *mut dentry, data: *mut core::ffi::c_void) {
+unsafe fn wiphy_locked_debugfs_read_cancel(_dentry: *mut dentry, data: *mut kernel::ffi::c_void) {
     let w = data as *mut debugfs_read_work;
     wiphy_work_cancel((*w).wiphy, &mut (*w).work);
     complete(&mut (*w).completion);
 }
 
-unsafe fn wiphy_locked_debugfs_read(wiphy: *mut wiphy, file: *mut file, buf: *mut core::ffi::c_char,
-                                    bufsize: usize, userbuf: *mut core::ffi::c_char, count: usize,
+unsafe fn wiphy_locked_debugfs_read(wiphy: *mut wiphy, file: *mut file, buf: *mut kernel::ffi::c_char,
+                                    bufsize: usize, userbuf: *mut kernel::ffi::c_char, count: usize,
                                     ppos: *mut loff_t,
-                                    handler: Option<unsafe extern "C" fn(*mut wiphy, *mut file, *mut core::ffi::c_char, usize, *mut core::ffi::c_void) -> isize>,
-                                    data: *mut core::ffi::c_void) -> isize {
+                                    handler: Option<unsafe extern "C" fn(*mut wiphy, *mut file, *mut kernel::ffi::c_char, usize, *mut kernel::ffi::c_void) -> isize>,
+                                    data: *mut kernel::ffi::c_void) -> isize {
     let mut work = debugfs_read_work { work: core::mem::zeroed(), handler, wiphy, file, buf, bufsize, data, ret: -ENODEV, completion: core::mem::zeroed() };
     let cancellation = debugfs_cancellation { cancel: Some(wiphy_locked_debugfs_read_cancel), cancel_data: &mut work as *mut _ as *mut _ };
     memset(buf, 0, bufsize);
@@ -155,9 +155,9 @@ unsafe fn wiphy_locked_debugfs_read(wiphy: *mut wiphy, file: *mut file, buf: *mu
 #[repr(C)]
 struct debugfs_write_work {
     work: wiphy_work,
-    handler: Option<unsafe extern "C" fn(*mut wiphy, *mut file, *mut core::ffi::c_char, usize, *mut core::ffi::c_void) -> isize>,
-    wiphy: *mut wiphy, file: *mut file, buf: *mut core::ffi::c_char, count: usize,
-    data: *mut core::ffi::c_void, ret: isize, completion: completion,
+    handler: Option<unsafe extern "C" fn(*mut wiphy, *mut file, *mut kernel::ffi::c_char, usize, *mut kernel::ffi::c_void) -> isize>,
+    wiphy: *mut wiphy, file: *mut file, buf: *mut kernel::ffi::c_char, count: usize,
+    data: *mut kernel::ffi::c_void, ret: isize, completion: completion,
 }
 
 unsafe fn wiphy_locked_debugfs_write_work(_wiphy: *mut wiphy, work: *mut wiphy_work) {
@@ -166,16 +166,16 @@ unsafe fn wiphy_locked_debugfs_write_work(_wiphy: *mut wiphy, work: *mut wiphy_w
     complete(&mut (*w).completion);
 }
 
-unsafe fn wiphy_locked_debugfs_write_cancel(_dentry: *mut dentry, data: *mut core::ffi::c_void) {
+unsafe fn wiphy_locked_debugfs_write_cancel(_dentry: *mut dentry, data: *mut kernel::ffi::c_void) {
     let w = data as *mut debugfs_write_work;
     wiphy_work_cancel((*w).wiphy, &mut (*w).work);
     complete(&mut (*w).completion);
 }
 
-unsafe fn wiphy_locked_debugfs_write(wiphy: *mut wiphy, file: *mut file, buf: *mut core::ffi::c_char,
-                                     bufsize: usize, userbuf: *const core::ffi::c_char, count: usize,
-                                     handler: Option<unsafe extern "C" fn(*mut wiphy, *mut file, *mut core::ffi::c_char, usize, *mut core::ffi::c_void) -> isize>,
-                                     data: *mut core::ffi::c_void) -> isize {
+unsafe fn wiphy_locked_debugfs_write(wiphy: *mut wiphy, file: *mut file, buf: *mut kernel::ffi::c_char,
+                                     bufsize: usize, userbuf: *const kernel::ffi::c_char, count: usize,
+                                     handler: Option<unsafe extern "C" fn(*mut wiphy, *mut file, *mut kernel::ffi::c_char, usize, *mut kernel::ffi::c_void) -> isize>,
+                                     data: *mut kernel::ffi::c_void) -> isize {
     let mut work = debugfs_write_work { work: core::mem::zeroed(), handler, wiphy, file, buf, count, data, ret: -ENODEV, completion: core::mem::zeroed() };
     let cancellation = debugfs_cancellation { cancel: Some(wiphy_locked_debugfs_write_cancel), cancel_data: &mut work as *mut _ as *mut _ };
     if count >= bufsize { return -EINVAL; }

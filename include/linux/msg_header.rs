@@ -7,10 +7,10 @@
 #[repr(C)]
 pub struct msg_msg {
     pub m_list: list_head,
-    pub m_type: core::ffi::c_long,
+    pub m_type: kernel::ffi::c_long,
     pub m_ts: usize, /* message text size */
     pub next: *mut msg_msgseg,
-    pub security: *mut core::ffi::c_void,
+    pub security: *mut kernel::ffi::c_void,
     /* the actual message follows immediately */
 }
 

@@ -33,7 +33,7 @@ pub const ENGINE_NAME_LEN: usize = 30;
  */
 #[repr(C)]
 pub struct crypto_engine {
-    pub name: [core::ffi::c_char; ENGINE_NAME_LEN],
+    pub name: [kernel::ffi::c_char; ENGINE_NAME_LEN],
     pub busy: bool,
     pub running: bool,
 
@@ -48,7 +48,7 @@ pub struct crypto_engine {
     pub kworker: *mut kthread_worker,
     pub pump_requests: kthread_work,
 
-    pub priv_data: *mut core::ffi::c_void,
+    pub priv_data: *mut kernel::ffi::c_void,
     pub cur_req: *mut crypto_async_request,
 }
 

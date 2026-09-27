@@ -10,9 +10,9 @@
 #[cfg(CONFIG_BPF_SYSCALL)]
 extern "C" {
     pub fn bpf_arena_handle_page_fault(
-        addr: libc::c_ulong,
+        addr: kernel::ffi::c_ulong,
         is_write: bool,
-        fault_ip: libc::c_ulong,
+        fault_ip: kernel::ffi::c_ulong,
     ) -> bool;
 }
 
@@ -21,9 +21,9 @@ extern "C" {
 #[cfg(not(CONFIG_BPF_SYSCALL))]
 #[inline]
 pub fn bpf_arena_handle_page_fault(
-    _addr: libc::c_ulong,
+    _addr: kernel::ffi::c_ulong,
     _is_write: bool,
-    _fault_ip: libc::c_ulong,
+    _fault_ip: kernel::ffi::c_ulong,
 ) -> bool {
     false
 }

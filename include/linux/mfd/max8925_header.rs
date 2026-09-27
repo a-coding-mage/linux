@@ -7,7 +7,7 @@
  */
 
 // Dependencies supplied by the surrounding kernel translation.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub enum device {}
 pub enum i2c_client {}

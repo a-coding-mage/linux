@@ -16,8 +16,8 @@ static mut ath79_sys_type: [u8; ATH79_SYS_TYPE_LEN] = [0; ATH79_SYS_TYPE_LEN];
 extern "C" {
     static mut ath79_soc: u32;
     static mut ath79_soc_rev: u32;
-    static mut ath79_reset_base: *mut core::ffi::c_void;
-    static mut ath79_pll_base: *mut core::ffi::c_void;
+    static mut ath79_reset_base: *mut kernel::ffi::c_void;
+    static mut ath79_pll_base: *mut kernel::ffi::c_void;
     static mut mips_hpt_frequency: u32;
     static mut _machine_halt: Option<unsafe extern "C" fn()>;
     static mut pm_power_off: Option<unsafe extern "C" fn()>;
@@ -28,23 +28,23 @@ extern "C" {
     fn soc_is_qca955x() -> bool;
     fn soc_is_qca956x() -> bool;
     fn soc_is_tp9343() -> bool;
-    fn panic(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn panic(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
     fn set_io_port_base(base: usize);
-    fn fw_getenvl(name: *const core::ffi::c_char) -> usize;
-    fn get_fdt() -> *mut core::ffi::c_void;
-    fn __dt_setup_arch(dtb: *mut core::ffi::c_void);
-    fn ioremap(base: usize, size: usize) -> *mut core::ffi::c_void;
+    fn fw_getenvl(name: *const kernel::ffi::c_char) -> usize;
+    fn get_fdt() -> *mut kernel::ffi::c_void;
+    fn __dt_setup_arch(dtb: *mut kernel::ffi::c_void);
+    fn ioremap(base: usize, size: usize) -> *mut kernel::ffi::c_void;
     fn ath79_ddr_ctrl_init();
     fn detect_memory_region(start: usize, min: usize, max: usize);
-    fn of_clk_init(matches: *const core::ffi::c_void);
-    fn of_get_cpu_node(cpu: u32, thread: *const core::ffi::c_void) -> *mut core::ffi::c_void;
-    fn of_clk_get(np: *mut core::ffi::c_void, index: u32) -> *mut core::ffi::c_void;
-    fn is_err(ptr: *mut core::ffi::c_void) -> bool;
-    fn ptr_err(ptr: *mut core::ffi::c_void) -> isize;
-    fn clk_get_rate(clk: *mut core::ffi::c_void) -> usize;
-    fn clk_put(clk: *mut core::ffi::c_void);
+    fn of_clk_init(matches: *const kernel::ffi::c_void);
+    fn of_get_cpu_node(cpu: u32, thread: *const kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+    fn of_clk_get(np: *mut kernel::ffi::c_void, index: u32) -> *mut kernel::ffi::c_void;
+    fn is_err(ptr: *mut kernel::ffi::c_void) -> bool;
+    fn ptr_err(ptr: *mut kernel::ffi::c_void) -> isize;
+    fn clk_get_rate(clk: *mut kernel::ffi::c_void) -> usize;
+    fn clk_put(clk: *mut kernel::ffi::c_void);
     fn irqchip_init();
 }
 

@@ -8,7 +8,7 @@
 
 pub unsafe fn regmap_ac97_default_volatile(
     _dev: *mut device,
-    reg: libc::c_uint,
+    reg: kernel::ffi::c_uint,
 ) -> bool {
     match reg {
         AC97_RESET
@@ -33,10 +33,10 @@ pub unsafe fn regmap_ac97_default_volatile(
 }
 
 unsafe fn regmap_ac97_reg_read(
-    context: *mut libc::c_void,
-    reg: libc::c_uint,
-    val: *mut libc::c_uint,
-) -> libc::c_int {
+    context: *mut kernel::ffi::c_void,
+    reg: kernel::ffi::c_uint,
+    val: *mut kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let ac97 = context as *mut snd_ac97;
 
     *val = ((*(*(*ac97).bus).ops).read)(ac97, reg);
@@ -45,10 +45,10 @@ unsafe fn regmap_ac97_reg_read(
 }
 
 unsafe fn regmap_ac97_reg_write(
-    context: *mut libc::c_void,
-    reg: libc::c_uint,
-    val: libc::c_uint,
-) -> libc::c_int {
+    context: *mut kernel::ffi::c_void,
+    reg: kernel::ffi::c_uint,
+    val: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let ac97 = context as *mut snd_ac97;
 
     ((*(*(*ac97).bus).ops).write)(ac97, reg, val);
@@ -65,12 +65,12 @@ pub unsafe fn __regmap_init_ac97(
     ac97: *mut snd_ac97,
     config: *const regmap_config,
     lock_key: *mut lock_class_key,
-    lock_name: *const libc::c_char,
+    lock_name: *const kernel::ffi::c_char,
 ) -> *mut regmap {
     __regmap_init(
         &mut (*ac97).dev,
         &ac97_regmap_bus,
-        ac97 as *mut libc::c_void,
+        ac97 as *mut kernel::ffi::c_void,
         config,
         lock_key,
         lock_name,
@@ -81,12 +81,12 @@ pub unsafe fn __devm_regmap_init_ac97(
     ac97: *mut snd_ac97,
     config: *const regmap_config,
     lock_key: *mut lock_class_key,
-    lock_name: *const libc::c_char,
+    lock_name: *const kernel::ffi::c_char,
 ) -> *mut regmap {
     __devm_regmap_init(
         &mut (*ac97).dev,
         &ac97_regmap_bus,
-        ac97 as *mut libc::c_void,
+        ac97 as *mut kernel::ffi::c_void,
         config,
         lock_key,
         lock_name,

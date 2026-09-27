@@ -3,23 +3,23 @@
 // Dependencies supplied by the surrounding kernel translation.
 
 #[inline]
-pub const unsafe fn make_process_cpuclock(pid: core::ffi::c_uint, clock: clockid_t) -> clockid_t {
+pub const unsafe fn make_process_cpuclock(pid: kernel::ffi::c_uint, clock: clockid_t) -> clockid_t {
     ((!pid) << 3) | clock
 }
 
 #[inline]
-pub const unsafe fn make_thread_cpuclock(tid: core::ffi::c_uint, clock: clockid_t) -> clockid_t {
+pub const unsafe fn make_thread_cpuclock(tid: kernel::ffi::c_uint, clock: clockid_t) -> clockid_t {
     make_process_cpuclock(tid, clock | CPUCLOCK_PERTHREAD_MASK)
 }
 
 #[inline]
-pub const unsafe fn fd_to_clockid(fd: core::ffi::c_int) -> clockid_t {
-    make_process_cpuclock(fd as core::ffi::c_uint, CLOCKFD)
+pub const unsafe fn fd_to_clockid(fd: kernel::ffi::c_int) -> clockid_t {
+    make_process_cpuclock(fd as kernel::ffi::c_uint, CLOCKFD)
 }
 
 #[inline]
-pub const unsafe fn clockid_to_fd(clk: clockid_t) -> core::ffi::c_int {
-    (!(clk >> 3)) as core::ffi::c_int
+pub const unsafe fn clockid_to_fd(clk: clockid_t) -> kernel::ffi::c_int {
+    (!(clk >> 3)) as kernel::ffi::c_int
 }
 
 #[inline]
@@ -98,7 +98,7 @@ extern "C" {
     pub fn posixtimer_send_sigqueue(tmr: *mut k_itimer);
     pub fn posixtimer_deliver_signal(info: *mut kernel_siginfo, timer_sigq: *mut sigqueue) -> bool;
     pub fn posixtimer_free_timer(timer: *mut k_itimer);
-    pub fn posixtimer_create_prctl(ctrl: core::ffi::c_ulong) -> core::ffi::c_long;
+    pub fn posixtimer_create_prctl(ctrl: kernel::ffi::c_ulong) -> kernel::ffi::c_long;
 }
 
 // INIT_CPU_TIMERBASE, INIT_CPU_TIMERBASES, and INIT_CPU_TIMERS are C static
@@ -137,7 +137,7 @@ pub unsafe fn posixtimer_free_timer(_timer: *mut k_itimer) {}
 
 #[cfg(not(CONFIG_POSIX_TIMERS))]
 #[inline]
-pub unsafe fn posixtimer_create_prctl(_ctrl: core::ffi::c_ulong) -> core::ffi::c_long { -EINVAL }
+pub unsafe fn posixtimer_create_prctl(_ctrl: kernel::ffi::c_ulong) -> kernel::ffi::c_long { -EINVAL }
 
 #[cfg(not(CONFIG_POSIX_CPU_TIMERS_TASK_WORK))]
 #[inline]
@@ -153,17 +153,17 @@ pub struct k_itimer {
     pub list: hlist_node,
     pub it_id: timer_t,
     pub it_clock: clockid_t,
-    pub it_sigev_notify: core::ffi::c_int,
+    pub it_sigev_notify: kernel::ffi::c_int,
     pub it_pid_type: pid_type,
     pub it_signal: *mut signal_struct,
     pub kclock: *const k_clock,
     pub it_lock: spinlock_t,
-    pub it_status: core::ffi::c_int,
+    pub it_status: kernel::ffi::c_int,
     pub it_sig_periodic: bool,
     pub it_overrun: i64,
     pub it_overrun_last: i64,
-    pub it_signal_seq: core::ffi::c_uint,
-    pub it_sigqueue_seq: core::ffi::c_uint,
+    pub it_signal_seq: kernel::ffi::c_uint,
+    pub it_sigqueue_seq: kernel::ffi::c_uint,
     pub it_interval: ktime_t,
     pub ignored_list: hlist_node,
     pub it_pid: *mut pid,
@@ -187,8 +187,8 @@ extern "C" {
     pub fn run_posix_cpu_timers();
     pub fn posix_cpu_timers_exit(task: *mut task_struct);
     pub fn posix_cpu_timers_exit_group(task: *mut task_struct);
-    pub fn set_process_cpu_timer(task: *mut task_struct, clock_idx: core::ffi::c_uint, newval: *mut u64, oldval: *mut u64);
-    pub fn update_rlimit_cpu(task: *mut task_struct, rlim_new: core::ffi::c_ulong) -> core::ffi::c_int;
+    pub fn set_process_cpu_timer(task: *mut task_struct, clock_idx: kernel::ffi::c_uint, newval: *mut u64, oldval: *mut u64);
+    pub fn update_rlimit_cpu(task: *mut task_struct, rlim_new: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_POSIX_TIMERS)]

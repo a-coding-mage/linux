@@ -148,7 +148,7 @@ extern "C" { pub fn read_lock_is_recursive() -> bool; }
 #[macro_export] macro_rules! lockdep_is_held { ($l:expr) => { lockdep_is_held_type!($l,-1) }; }
 #[macro_export] macro_rules! lockdep_assert_held { ($l:expr) => { lockdep_assert!(lockdep_is_held!($l) != LOCK_STATE_NOT_HELD) }; }
 #[macro_export] macro_rules! lockdep_assert_not_held { ($l:expr) => { lockdep_assert!(lockdep_is_held!($l) != LOCK_STATE_HELD) }; }
-#[macro_export] macro_rules! lockdep_set_class { ($l:expr,$k:expr) => { unsafe { lockdep_init_map_type(&mut (*$l).dep_map,stringify!($k).as_ptr() as *const i8,$k,0,(*$l).dep_map.wait_type_inner,(*$l).dep_map.wait_type_outer,(*$l).dep_map.lock_type) } }; }
+#[macro_export] macro_rules! lockdep_set_class { ($l:expr,$k:expr) => { unsafe { lockdep_init_map_type(&mut (*$l).dep_map,concat!(stringify!($k), "\0").as_ptr() as *const i8,$k,0,(*$l).dep_map.wait_type_inner,(*$l).dep_map.wait_type_outer,(*$l).dep_map.lock_type) } }; }
 #[macro_export] macro_rules! lockdep_set_subclass { ($l:expr,$s:expr) => { unsafe { lock_set_class(&mut (*$l).dep_map,(*$l).dep_map.name,(*$l).dep_map.key,$s,0) } }; }
 #[macro_export] macro_rules! lockdep_pin_lock { ($l:expr) => { unsafe { lock_pin_lock(&mut (*$l).dep_map) } }; }
 #[macro_export] macro_rules! lockdep_repin_lock { ($l:expr,$c:expr) => { unsafe { lock_repin_lock(&mut (*$l).dep_map,$c) } }; }

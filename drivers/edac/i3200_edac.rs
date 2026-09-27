@@ -43,7 +43,7 @@ const I3200_CAPID0: usize = 0xe0;
 
 #[repr(C)]
 pub struct i3200_priv {
-    pub window: *mut core::ffi::c_void,
+    pub window: *mut kernel::ffi::c_void,
 }
 
 static mut nr_channels: i32 = 0;
@@ -77,7 +77,7 @@ unsafe fn eccerrlog_row(channel: i32, log: u64) -> u64 {
 }
 
 #[repr(C)]
-pub struct i3200_dev_info { pub ctl_name: *const core::ffi::c_char }
+pub struct i3200_dev_info { pub ctl_name: *const kernel::ffi::c_char }
 
 #[repr(C)]
 pub struct i3200_error_info {
@@ -135,7 +135,7 @@ unsafe fn i3200_check(mci: *mut mem_ctl_info) {
 
 // The remaining kernel-facing routines retain the C implementation's interfaces and are
 // expressed with external types/functions supplied by the surrounding kernel bindings.
-unsafe fn i3200_map_mchbar(pdev: *mut pci_dev) -> *mut core::ffi::c_void {
+unsafe fn i3200_map_mchbar(pdev: *mut pci_dev) -> *mut kernel::ffi::c_void {
     let mut low = 0u32;
     let mut high = 0u32;
     pci_read_config_dword(pdev, I3200_MCHBAR_LOW as u32, &mut low);
@@ -147,7 +147,7 @@ unsafe fn i3200_map_mchbar(pdev: *mut pci_dev) -> *mut core::ffi::c_void {
     window
 }
 
-unsafe fn i3200_get_drbs(window: *mut core::ffi::c_void, drbs: &mut [[u16; I3200_RANKS_PER_CHANNEL]; I3200_CHANNELS]) {
+unsafe fn i3200_get_drbs(window: *mut kernel::ffi::c_void, drbs: &mut [[u16; I3200_RANKS_PER_CHANNEL]; I3200_CHANNELS]) {
     for i in 0..I3200_RANKS_PER_CHANNEL {
         drbs[0][i] = readw(window.add(I3200_C0DRB + 2 * i)) & I3200_DRB_MASK;
         drbs[1][i] = readw(window.add(I3200_C1DRB + 2 * i)) & I3200_DRB_MASK;

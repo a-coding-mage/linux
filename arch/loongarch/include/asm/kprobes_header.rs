@@ -4,7 +4,7 @@
 // The original header is active only when CONFIG_KPROBES is enabled.
 
 #[cfg(CONFIG_KPROBES)]
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[cfg(CONFIG_KPROBES)]
 pub const MAX_INSN_SIZE: usize = 2;

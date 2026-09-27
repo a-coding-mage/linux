@@ -7,7 +7,7 @@
 #[cfg(CONFIG_EFI)]
 extern "C" {
     pub fn efi_init();
-    pub fn efi_runtime_fixup_exception(regs: *mut pt_regs, msg: *const ::core::ffi::c_char) -> bool;
+    pub fn efi_runtime_fixup_exception(regs: *mut pt_regs, msg: *const ::kernel::ffi::c_char) -> bool;
 }
 
 #[cfg(not(CONFIG_EFI))]
@@ -18,23 +18,23 @@ pub fn efi_init() {}
 #[inline]
 pub unsafe fn efi_runtime_fixup_exception(
     _regs: *mut pt_regs,
-    _msg: *const ::core::ffi::c_char,
+    _msg: *const ::kernel::ffi::c_char,
 ) -> bool {
     false
 }
 
 extern "C" {
-    pub fn efi_create_mapping(mm: *mut mm_struct, md: *mut efi_memory_desc_t) -> ::core::ffi::c_int;
+    pub fn efi_create_mapping(mm: *mut mm_struct, md: *mut efi_memory_desc_t) -> ::kernel::ffi::c_int;
     pub fn efi_set_mapping_permissions(
         mm: *mut mm_struct,
         md: *mut efi_memory_desc_t,
         has_bti: bool,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub static mut efi_rt_stack_top: *mut u64;
     pub fn __efi_rt_asm_wrapper(
-        f: *mut ::core::ffi::c_void,
-        name: *const ::core::ffi::c_char,
+        f: *mut ::kernel::ffi::c_void,
+        name: *const ::kernel::ffi::c_char,
         ...,
     ) -> efi_status_t;
 
@@ -46,7 +46,7 @@ extern "C" {
     pub fn efi_virtmap_unload();
     pub fn efi_handle_corrupted_x18(
         s: efi_status_t,
-        f: *const ::core::ffi::c_char,
+        f: *const ::kernel::ffi::c_char,
     ) -> efi_status_t;
     pub fn efi_icache_sync(start: ::core::primitive::usize, end: ::core::primitive::usize);
 }
@@ -116,7 +116,7 @@ pub unsafe fn efi_set_pgd(mm: *mut mm_struct) {
 }
 
 #[inline]
-pub unsafe fn efi_capsule_flush_cache_range(addr: *mut ::core::ffi::c_void, size: ::core::ffi::c_int) {
+pub unsafe fn efi_capsule_flush_cache_range(addr: *mut ::kernel::ffi::c_void, size: ::kernel::ffi::c_int) {
     dcache_clean_inval_poc(addr as usize, addr as usize + size as usize);
 }
 

@@ -33,9 +33,9 @@ pub unsafe fn ceph_fscache_register_inode_cookie(inode: *mut inode) {
     (*ci).netfs.cache = fscache_acquire_cookie(
         (*fsc).fscache,
         0,
-        &(*ci).i_vino as *const _ as *const core::ffi::c_void,
+        &(*ci).i_vino as *const _ as *const kernel::ffi::c_void,
         core::mem::size_of_val(&(*ci).i_vino),
-        &(*ci).i_version as *const _ as *const core::ffi::c_void,
+        &(*ci).i_version as *const _ as *const kernel::ffi::c_void,
         core::mem::size_of_val(&(*ci).i_version),
         i_size_read(inode),
     );
@@ -93,13 +93,13 @@ pub unsafe fn ceph_fscache_register_fs(
     fc: *mut fs_context,
 ) -> i32 {
     let fsid: *const ceph_fsid = &(*(*fsc).client).fsid;
-    let fscache_uniq: *const core::ffi::c_char = (*(*fsc).mount_options).fscache_uniq;
+    let fscache_uniq: *const kernel::ffi::c_char = (*(*fsc).mount_options).fscache_uniq;
     let uniq_len: usize = if !fscache_uniq.is_null() {
         strlen(fscache_uniq)
     } else {
         0
     };
-    let mut name: *mut core::ffi::c_char;
+    let mut name: *mut kernel::ffi::c_char;
     let mut err: i32 = 0;
 
     name = kasprintf(
@@ -123,7 +123,7 @@ pub unsafe fn ceph_fscache_register_fs(
         };
         (*fsc).fscache = core::ptr::null_mut();
     }
-    kfree(name as *mut core::ffi::c_void);
+    kfree(name as *mut kernel::ffi::c_void);
     err
 }
 

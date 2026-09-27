@@ -52,8 +52,8 @@ pub enum aiu_clk_ids {
 #[repr(C)]
 pub struct aiu_interface {
     pub clks: *mut clk_bulk_data,
-    pub clk_num: ::core::ffi::c_uint,
-    pub irq: ::core::ffi::c_int,
+    pub clk_num: ::kernel::ffi::c_uint,
+    pub irq: ::kernel::ffi::c_int,
     pub iface: gx_iface,
 }
 
@@ -78,15 +78,15 @@ unsafe extern "C" {
     pub fn aiu_of_xlate_dai_name(
         component: *mut snd_soc_component,
         args: *const of_phandle_args,
-        dai_name: *mut *const ::core::ffi::c_char,
-        component_id: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        dai_name: *mut *const ::kernel::ffi::c_char,
+        component_id: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 
-    pub fn aiu_hdmi_ctrl_register_component(dev: *mut device) -> ::core::ffi::c_int;
-    pub fn aiu_acodec_ctrl_register_component(dev: *mut device) -> ::core::ffi::c_int;
+    pub fn aiu_hdmi_ctrl_register_component(dev: *mut device) -> ::kernel::ffi::c_int;
+    pub fn aiu_acodec_ctrl_register_component(dev: *mut device) -> ::kernel::ffi::c_int;
 
-    pub fn aiu_fifo_i2s_dai_probe(dai: *mut snd_soc_dai) -> ::core::ffi::c_int;
-    pub fn aiu_fifo_spdif_dai_probe(dai: *mut snd_soc_dai) -> ::core::ffi::c_int;
+    pub fn aiu_fifo_i2s_dai_probe(dai: *mut snd_soc_dai) -> ::kernel::ffi::c_int;
+    pub fn aiu_fifo_spdif_dai_probe(dai: *mut snd_soc_dai) -> ::kernel::ffi::c_int;
 
     pub static aiu_fifo_i2s_dai_ops: snd_soc_dai_ops;
     pub static aiu_fifo_spdif_dai_ops: snd_soc_dai_ops;

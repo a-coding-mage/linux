@@ -5,17 +5,17 @@
 extern "C" {
     pub fn __find_linux_pte(
         pgdir: *mut pgd_t,
-        ea: ::core::ffi::c_ulong,
+        ea: ::kernel::ffi::c_ulong,
         is_thp: *mut bool,
-        hshift: *mut ::core::ffi::c_uint,
+        hshift: *mut ::kernel::ffi::c_uint,
     ) -> *mut pte_t;
 }
 
 pub unsafe fn find_linux_pte(
     pgdir: *mut pgd_t,
-    ea: ::core::ffi::c_ulong,
+    ea: ::kernel::ffi::c_ulong,
     is_thp: *mut bool,
-    hshift: *mut ::core::ffi::c_uint,
+    hshift: *mut ::kernel::ffi::c_uint,
 ) -> *mut pte_t {
     let pte: *mut pte_t;
 
@@ -32,8 +32,8 @@ pub unsafe fn find_linux_pte(
 }
 
 pub unsafe fn find_init_mm_pte(
-    ea: ::core::ffi::c_ulong,
-    hshift: *mut ::core::ffi::c_uint,
+    ea: ::kernel::ffi::c_ulong,
+    hshift: *mut ::kernel::ffi::c_uint,
 ) -> *mut pte_t {
     let pgdir: *mut pgd_t = init_mm.pgd;
     __find_linux_pte(pgdir, ea, ::core::ptr::null_mut(), hshift)
@@ -43,16 +43,16 @@ pub unsafe fn find_init_mm_pte(
  * Convert a kernel vmap virtual address (vmalloc or ioremap space) to a
  * physical address, without taking locks. This can be used in real-mode.
  */
-pub unsafe fn ppc_find_vmap_phys(addr: ::core::ffi::c_ulong) -> phys_addr_t {
+pub unsafe fn ppc_find_vmap_phys(addr: ::kernel::ffi::c_ulong) -> phys_addr_t {
     let ptep: *mut pte_t;
     let mut pa: phys_addr_t;
-    let mut hugepage_shift: ::core::ffi::c_int;
+    let mut hugepage_shift: ::kernel::ffi::c_int;
 
     /*
      * init_mm does not free page tables, and does not do THP. It may
      * have huge pages from huge vmalloc / ioremap etc.
      */
-    ptep = find_init_mm_pte(addr, &mut hugepage_shift as *mut _ as *mut ::core::ffi::c_uint);
+    ptep = find_init_mm_pte(addr, &mut hugepage_shift as *mut _ as *mut ::kernel::ffi::c_uint);
     if WARN_ON!(ptep.is_null()) {
         return 0;
     }

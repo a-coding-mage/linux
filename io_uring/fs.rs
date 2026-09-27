@@ -39,8 +39,8 @@ pub struct io_link {
 
 pub unsafe fn io_renameat_prep(req: *mut io_kiocb, sqe: *const io_uring_sqe) -> i32 {
     let ren: *mut io_rename = io_kiocb_to_cmd(req);
-    let oldf: *const core::ffi::c_char;
-    let newf: *const core::ffi::c_char;
+    let oldf: *const kernel::ffi::c_char;
+    let newf: *const kernel::ffi::c_char;
     let mut err: i32;
 
     if (*sqe).buf_index != 0 || (*sqe).splice_fd_in != 0 { return -EINVAL; }
@@ -84,7 +84,7 @@ pub unsafe fn io_renameat_cleanup(req: *mut io_kiocb) {
 
 pub unsafe fn io_unlinkat_prep(req: *mut io_kiocb, sqe: *const io_uring_sqe) -> i32 {
     let un: *mut io_unlink = io_kiocb_to_cmd(req);
-    let fname: *const core::ffi::c_char;
+    let fname: *const kernel::ffi::c_char;
     let err: i32;
     if (*sqe).off != 0 || (*sqe).len != 0 || (*sqe).buf_index != 0 || (*sqe).splice_fd_in != 0 || (*sqe).addr3 != 0 || (*sqe).__pad2[0] != 0 { return -EINVAL; }
     if ((*req).flags & REQ_F_FIXED_FILE) != 0 { return -EBADF; }
@@ -116,7 +116,7 @@ pub unsafe fn io_unlinkat_cleanup(req: *mut io_kiocb) {
 
 pub unsafe fn io_mkdirat_prep(req: *mut io_kiocb, sqe: *const io_uring_sqe) -> i32 {
     let mkd: *mut io_mkdir = io_kiocb_to_cmd(req);
-    let fname: *const core::ffi::c_char;
+    let fname: *const kernel::ffi::c_char;
     let err: i32;
     if (*sqe).off != 0 || (*sqe).rw_flags != 0 || (*sqe).buf_index != 0 || (*sqe).splice_fd_in != 0 { return -EINVAL; }
     if ((*req).flags & REQ_F_FIXED_FILE) != 0 { return -EBADF; }
@@ -146,8 +146,8 @@ pub unsafe fn io_mkdirat_cleanup(req: *mut io_kiocb) {
 
 pub unsafe fn io_symlinkat_prep(req: *mut io_kiocb, sqe: *const io_uring_sqe) -> i32 {
     let sl: *mut io_link = io_kiocb_to_cmd(req);
-    let oldpath: *const core::ffi::c_char;
-    let newpath: *const core::ffi::c_char;
+    let oldpath: *const kernel::ffi::c_char;
+    let newpath: *const kernel::ffi::c_char;
     let mut err: i32;
     if (*sqe).len != 0 || (*sqe).rw_flags != 0 || (*sqe).buf_index != 0 || (*sqe).splice_fd_in != 0 { return -EINVAL; }
     if ((*req).flags & REQ_F_FIXED_FILE) != 0 { return -EBADF; }
@@ -175,8 +175,8 @@ pub unsafe fn io_symlinkat(req: *mut io_kiocb, issue_flags: u32) -> i32 {
 
 pub unsafe fn io_linkat_prep(req: *mut io_kiocb, sqe: *const io_uring_sqe) -> i32 {
     let lnk: *mut io_link = io_kiocb_to_cmd(req);
-    let oldf: *const core::ffi::c_char;
-    let newf: *const core::ffi::c_char;
+    let oldf: *const kernel::ffi::c_char;
+    let newf: *const kernel::ffi::c_char;
     let mut err: i32;
     if (*sqe).buf_index != 0 || (*sqe).splice_fd_in != 0 { return -EINVAL; }
     if ((*req).flags & REQ_F_FIXED_FILE) != 0 { return -EBADF; }

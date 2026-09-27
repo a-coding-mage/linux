@@ -29,7 +29,7 @@ pub struct cpu_hw_events {
     /* currently enabled firmware counters */
     pub used_fw_ctrs: [c_ulong; RISCV_MAX_COUNTERS],
     /* The virtual address of the shared memory where counter snapshot will be taken */
-    pub snapshot_addr: *mut core::ffi::c_void,
+    pub snapshot_addr: *mut kernel::ffi::c_void,
     /* The physical address of the shared memory where counter snapshot will be taken */
     pub snapshot_addr_phys: phys_addr_t,
     /* Boolean flag to indicate setup is already done */
@@ -41,9 +41,9 @@ pub struct cpu_hw_events {
 #[repr(C)]
 pub struct riscv_pmu {
     pub pmu: pmu,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
 
-    pub handle_irq: Option<unsafe extern "C" fn(irq_num: i32, dev: *mut core::ffi::c_void) -> irqreturn_t>,
+    pub handle_irq: Option<unsafe extern "C" fn(irq_num: i32, dev: *mut kernel::ffi::c_void) -> irqreturn_t>,
 
     pub cmask: c_ulong,
     pub ctr_read: Option<unsafe extern "C" fn(event: *mut perf_event) -> u64>,

@@ -6,9 +6,9 @@
 #[cfg(CONFIG_SYSCALL_USER_DISPATCH)]
 #[repr(C)]
 pub struct syscall_user_dispatch {
-    pub selector: *mut core::ffi::c_char,
-    pub offset: core::ffi::c_ulong,
-    pub len: core::ffi::c_ulong,
+    pub selector: *mut kernel::ffi::c_char,
+    pub offset: kernel::ffi::c_ulong,
+    pub len: kernel::ffi::c_ulong,
     pub on_dispatch: bool,
 }
 

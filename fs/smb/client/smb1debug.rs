@@ -20,7 +20,7 @@ pub struct TCP_Server_Info {
 #[repr(C)]
 pub struct TCP_Server_Operations {
     pub check_message:
-        unsafe extern "C" fn(*mut core::ffi::c_void, usize, usize, *mut TCP_Server_Info) -> bool,
+        unsafe extern "C" fn(*mut kernel::ffi::c_void, usize, usize, *mut TCP_Server_Info) -> bool,
     pub calc_smb_size: unsafe extern "C" fn(*mut smb_hdr) -> usize,
 }
 
@@ -44,14 +44,14 @@ pub struct smb_hdr {
 
 #[cfg(CONFIG_CIFS_DEBUG2)]
 unsafe extern "C" {
-    fn cifs_dbg(level: i32, format: *const core::ffi::c_char, ...);
+    fn cifs_dbg(level: i32, format: *const kernel::ffi::c_char, ...);
 }
 
 #[cfg(CONFIG_CIFS_DEBUG2)]
 pub const VFS: i32 = 0;
 
 pub unsafe fn cifs_dump_detail(
-    buf: *mut core::ffi::c_void,
+    buf: *mut kernel::ffi::c_void,
     buf_len: usize,
     server: *mut TCP_Server_Info,
 ) {

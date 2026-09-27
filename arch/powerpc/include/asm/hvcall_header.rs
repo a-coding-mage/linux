@@ -79,20 +79,20 @@ pub const H_HTM_FLAGS_HARDWARE_TARGET:u64=1u64<<63; pub const H_HTM_FLAGS_LOGICA
 pub const H_HTM_OP_CAPABILITIES:u32=1; pub const H_HTM_OP_STATUS:u32=2; pub const H_HTM_OP_SETUP:u32=3; pub const H_HTM_OP_CONFIGURE:u32=4; pub const H_HTM_OP_START:u32=5; pub const H_HTM_OP_STOP:u32=6; pub const H_HTM_OP_DECONFIGURE:u32=7; pub const H_HTM_OP_DUMP_DETAILS:u32=8; pub const H_HTM_OP_DUMP_DATA:u32=9; pub const H_HTM_OP_DUMP_SYSMEM_CONF:u32=0xa; pub const H_HTM_OP_DUMP_SYSPROC_CONF:u32=0xb; pub const H_HTM_TYPE_NEST:u32=1; pub const H_HTM_TYPE_CORE:u32=2; pub const H_HTM_TYPE_LLAT:u32=3; pub const H_HTM_TYPE_GLOBAL:u32=0xff;
 
 extern "C" {
-    pub fn plpar_hcall_norets(opcode: libc::c_ulong, ...) -> libc::c_long;
-    pub fn plpar_hcall_norets_notrace(opcode: libc::c_ulong, ...) -> libc::c_long;
-    pub fn plpar_hcall(opcode: libc::c_ulong, retbuf: *mut libc::c_ulong, ...) -> libc::c_long;
-    pub fn plpar_hcall_raw(opcode: libc::c_ulong, retbuf: *mut libc::c_ulong, ...) -> libc::c_long;
-    pub fn plpar_hcall9(opcode: libc::c_ulong, retbuf: *mut libc::c_ulong, ...) -> libc::c_long;
-    pub fn plpar_hcall9_raw(opcode: libc::c_ulong, retbuf: *mut libc::c_ulong, ...) -> libc::c_long;
-    pub fn __trace_hcall_entry(opcode: libc::c_ulong, args: *mut libc::c_ulong);
-    pub fn __trace_hcall_exit(opcode: libc::c_long, retval: libc::c_long, retbuf: *mut libc::c_ulong);
-    pub fn h_get_mpp(data: *mut HvcallMppData) -> libc::c_long;
-    pub fn h_get_mpp_x(data: *mut HvcallMppXData) -> libc::c_int;
+    pub fn plpar_hcall_norets(opcode: kernel::ffi::c_ulong, ...) -> kernel::ffi::c_long;
+    pub fn plpar_hcall_norets_notrace(opcode: kernel::ffi::c_ulong, ...) -> kernel::ffi::c_long;
+    pub fn plpar_hcall(opcode: kernel::ffi::c_ulong, retbuf: *mut kernel::ffi::c_ulong, ...) -> kernel::ffi::c_long;
+    pub fn plpar_hcall_raw(opcode: kernel::ffi::c_ulong, retbuf: *mut kernel::ffi::c_ulong, ...) -> kernel::ffi::c_long;
+    pub fn plpar_hcall9(opcode: kernel::ffi::c_ulong, retbuf: *mut kernel::ffi::c_ulong, ...) -> kernel::ffi::c_long;
+    pub fn plpar_hcall9_raw(opcode: kernel::ffi::c_ulong, retbuf: *mut kernel::ffi::c_ulong, ...) -> kernel::ffi::c_long;
+    pub fn __trace_hcall_entry(opcode: kernel::ffi::c_ulong, args: *mut kernel::ffi::c_ulong);
+    pub fn __trace_hcall_exit(opcode: kernel::ffi::c_long, retval: kernel::ffi::c_long, retbuf: *mut kernel::ffi::c_ulong);
+    pub fn h_get_mpp(data: *mut HvcallMppData) -> kernel::ffi::c_long;
+    pub fn h_get_mpp_x(data: *mut HvcallMppXData) -> kernel::ffi::c_int;
 }
 pub const PLPAR_HCALL_BUFSIZE: usize=4; pub const PLPAR_HCALL9_BUFSIZE: usize=9;
-#[repr(C)] pub struct HvcallMppData { pub entitled_mem: libc::c_ulong, pub mapped_mem: libc::c_ulong, pub group_num:u16, pub pool_num:u16, pub mem_weight:u8, pub unallocated_mem_weight:u8, pub unallocated_entitlement:libc::c_ulong, pub pool_size:libc::c_ulong, pub loan_request:libc::c_long, pub backing_mem:libc::c_ulong }
-#[repr(C)] pub struct HvcallMppXData { pub coalesced_bytes:libc::c_ulong, pub pool_coalesced_bytes:libc::c_ulong, pub pool_purr_cycles:libc::c_ulong, pub pool_spurr_cycles:libc::c_ulong, pub reserved:[libc::c_ulong;3] }
+#[repr(C)] pub struct HvcallMppData { pub entitled_mem: kernel::ffi::c_ulong, pub mapped_mem: kernel::ffi::c_ulong, pub group_num:u16, pub pool_num:u16, pub mem_weight:u8, pub unallocated_mem_weight:u8, pub unallocated_entitlement:kernel::ffi::c_ulong, pub pool_size:kernel::ffi::c_ulong, pub loan_request:kernel::ffi::c_long, pub backing_mem:kernel::ffi::c_ulong }
+#[repr(C)] pub struct HvcallMppXData { pub coalesced_bytes:kernel::ffi::c_ulong, pub pool_coalesced_bytes:kernel::ffi::c_ulong, pub pool_purr_cycles:kernel::ffi::c_ulong, pub pool_spurr_cycles:kernel::ffi::c_ulong, pub reserved:[kernel::ffi::c_ulong;3] }
 pub fn get_longbusy_msecs(rc:i32)->u32 { match rc { 9900=>1,9901=>10,9902=>100,9903=>1000,9904=>10000,9905=>100000,_=>1 } }
 #[repr(C)] pub struct HCpuCharResult { pub character:u64, pub behaviour:u64 }
 #[repr(C)] pub struct HvGuestState { pub version:u64, pub lpid:u32, pub vcpu_token:u32, pub lpcr:u64, pub pcr:u64, pub amor:u64, pub dpdes:u64, pub hfscr:u64, pub tb_offset:i64, pub dawr0:u64, pub dawrx0:u64, pub ciabr:u64, pub hdec_expiry:u64, pub purr:u64, pub spurr:u64, pub ic:u64, pub vtb:u64, pub hdar:u64, pub hdsisr:u64, pub heir:u64, pub asdr:u64, pub srr0:u64, pub srr1:u64, pub sprg:[u64;4], pub pidr:u64, pub cfar:u64, pub ppr:u64, pub dawr1:u64, pub dawrx1:u64 }

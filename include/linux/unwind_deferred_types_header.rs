@@ -4,9 +4,9 @@
 
 #[repr(C)]
 pub struct unwind_cache {
-    pub unwind_completed: ::core::ffi::c_ulong,
-    pub nr_entries: ::core::ffi::c_uint,
-    pub entries: [::core::ffi::c_ulong; 0],
+    pub unwind_completed: ::kernel::ffi::c_ulong,
+    pub nr_entries: ::kernel::ffi::c_uint,
+    pub entries: [::kernel::ffi::c_ulong; 0],
 }
 
 /*
@@ -57,7 +57,7 @@ pub type unwind_callback_t = Option<
 pub struct unwind_work {
     pub list: list_head,
     pub func: unwind_callback_t,
-    pub bit: ::core::ffi::c_int,
+    pub bit: ::kernel::ffi::c_int,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

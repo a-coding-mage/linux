@@ -78,7 +78,7 @@ static AT91SAM9N12_PERIPHCK: [Pck; 25] = [
 
 unsafe fn at91sam9n12_pmc_setup(np: *mut DeviceNode) {
     let mut range = clk_range!(0, 0);
-    let mut parent_names: [*const core::ffi::c_char; 6] = [core::ptr::null(); 6];
+    let mut parent_names: [*const kernel::ffi::c_char; 6] = [core::ptr::null(); 6];
     let mut i: i32;
     let mut bypass: bool;
     let mut at91sam9n12_pmc: *mut PmcData;

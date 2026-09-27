@@ -13,7 +13,7 @@
 
 #[repr(C)]
 struct coreboot_table_header {
-    signature: [core::ffi::c_char; 4],
+    signature: [kernel::ffi::c_char; 4],
     header_bytes: u32,
     header_checksum: u32,
     table_bytes: u32,
@@ -187,7 +187,7 @@ unsafe extern "C" fn coreboot_table_probe(pdev: *mut platform_device) -> i32 {
     ret
 }
 
-unsafe extern "C" fn __cb_dev_unregister(dev: *mut device, _dummy: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn __cb_dev_unregister(dev: *mut device, _dummy: *mut kernel::ffi::c_void) -> i32 {
     device_unregister(dev);
     0
 }

@@ -9,7 +9,7 @@
 
 #[repr(C)]
 struct pdata_init {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
     fn_: Option<unsafe extern "C" fn()>,
 }
 
@@ -34,7 +34,7 @@ static mut da850_ch0_inputs: [vpif_input; 1] = [vpif_input {
     },
     input_route: INPUT_CVBS_VI2B,
     output_route: OUTPUT_10BIT_422_EMBEDDED_SYNC,
-    subdev_name: TVP5147_CH0.as_ptr() as *const core::ffi::c_char,
+    subdev_name: TVP5147_CH0.as_ptr() as *const kernel::ffi::c_char,
 }];
 
 static mut da850_ch1_inputs: [vpif_input; 1] = [vpif_input {
@@ -47,12 +47,12 @@ static mut da850_ch1_inputs: [vpif_input; 1] = [vpif_input {
     },
     input_route: INPUT_SVIDEO_VI2C_VI1C,
     output_route: OUTPUT_10BIT_422_EMBEDDED_SYNC,
-    subdev_name: TVP5147_CH1.as_ptr() as *const core::ffi::c_char,
+    subdev_name: TVP5147_CH1.as_ptr() as *const kernel::ffi::c_char,
 }];
 
 static mut da850_vpif_capture_sdev_info: [vpif_subdev_info; 2] = [
     vpif_subdev_info {
-        name: TVP5147_CH0.as_ptr() as *const core::ffi::c_char,
+        name: TVP5147_CH0.as_ptr() as *const kernel::ffi::c_char,
         board_info: i2c_board_info {
             type_: *b"tvp5146\0",
             addr: 0x5d,
@@ -60,7 +60,7 @@ static mut da850_vpif_capture_sdev_info: [vpif_subdev_info; 2] = [
         },
     },
     vpif_subdev_info {
-        name: TVP5147_CH1.as_ptr() as *const core::ffi::c_char,
+        name: TVP5147_CH1.as_ptr() as *const kernel::ffi::c_char,
         board_info: i2c_board_info {
             type_: *b"tvp5146\0",
             addr: 0x5c,

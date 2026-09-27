@@ -29,7 +29,7 @@ static LAN969X_CLK_NAMES: [&[u8]; 12] = [
 #[repr(C)]
 struct Lan966xGck {
     hw: ClkHw,
-    reg: *mut core::ffi::c_void,
+    reg: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -39,7 +39,7 @@ struct ClkHw {
 
 #[repr(C)]
 struct ClkParentData {
-    fw_name: *const core::ffi::c_char,
+    fw_name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -70,13 +70,13 @@ struct ClkRateRequest {
 
 #[repr(C)]
 struct ClkGateSocDesc {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     bit_idx: i32,
 }
 
 #[repr(C)]
 struct Lan966xMatchData {
-    name: *mut core::ffi::c_char,
+    name: *mut kernel::ffi::c_char,
     clk_name: *const *const u8,
     clk_gate_desc: *const ClkGateSocDesc,
     num_generic_clks: u8,
@@ -107,8 +107,8 @@ static LAN969X_CLK_GATE_DESC: [ClkGateSocDesc; 3] = [
 ];
 
 extern "C" {
-    fn readl(reg: *mut core::ffi::c_void) -> u32;
-    fn writel(val: u32, reg: *mut core::ffi::c_void);
+    fn readl(reg: *mut kernel::ffi::c_void) -> u32;
+    fn writel(val: u32, reg: *mut kernel::ffi::c_void);
     fn clk_hw_get_num_parents(hw: *mut ClkHw) -> i32;
     fn clk_hw_get_parent_by_index(hw: *mut ClkHw, index: i32) -> *mut ClkHw;
     fn clk_hw_get_rate(hw: *mut ClkHw) -> usize;
@@ -191,13 +191,13 @@ static mut LAN969X_DESC: Lan966xMatchData = Lan966xMatchData {
 // The following driver-registration and platform interfaces are supplied by the kernel.
 extern "C" {
     fn lan966x_gck_clk_register(dev: *mut Device, i: i32) -> *mut ClkHw;
-    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn devm_clk_hw_register_gate(dev: *mut Device, name: *const core::ffi::c_char,
-        parent: *mut core::ffi::c_char, flags: u32, reg: *mut core::ffi::c_void,
-        bit_idx: i32, flags2: u32, lock: *mut core::ffi::c_void) -> *mut ClkHw;
-    fn dev_err_probe(dev: *mut Device, err: i32, fmt: *const core::ffi::c_char, ...) -> i32;
-    fn dev_err(dev: *mut Device, fmt: *const core::ffi::c_char, ...);
-    fn devm_of_clk_add_hw_provider(dev: *mut Device, get: *const core::ffi::c_void,
+    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn devm_clk_hw_register_gate(dev: *mut Device, name: *const kernel::ffi::c_char,
+        parent: *mut kernel::ffi::c_char, flags: u32, reg: *mut kernel::ffi::c_void,
+        bit_idx: i32, flags2: u32, lock: *mut kernel::ffi::c_void) -> *mut ClkHw;
+    fn dev_err_probe(dev: *mut Device, err: i32, fmt: *const kernel::ffi::c_char, ...) -> i32;
+    fn dev_err(dev: *mut Device, fmt: *const kernel::ffi::c_char, ...);
+    fn devm_of_clk_add_hw_provider(dev: *mut Device, get: *const kernel::ffi::c_void,
         data: *mut ClkHwOnecellData) -> i32;
     fn device_get_match_data(dev: *mut Device) -> *const Lan966xMatchData;
 }
@@ -207,7 +207,7 @@ extern "C" {
 #[repr(C)] struct ClkHwOnecellData { num: usize, hws: *mut *mut ClkHw }
 
 unsafe fn lan966x_gate_clk_register(dev: *mut Device, data: *const Lan966xMatchData,
-    hw_data: *mut ClkHwOnecellData, gate_base: *mut core::ffi::c_void) -> i32 {
+    hw_data: *mut ClkHwOnecellData, gate_base: *mut kernel::ffi::c_void) -> i32 {
     for i in ((*data).num_generic_clks as usize)..((*data).num_total_clks as usize) {
         let idx = i - (*data).num_generic_clks as usize;
         let desc = &*(*data).clk_gate_desc.add(idx);

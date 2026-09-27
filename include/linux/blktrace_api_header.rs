@@ -7,10 +7,10 @@
 #[cfg(CONFIG_BLK_DEV_IO_TRACE)]
 #[repr(C)]
 pub struct blk_trace {
-    pub version: ::core::ffi::c_int,
-    pub trace_state: ::core::ffi::c_int,
+    pub version: ::kernel::ffi::c_int,
+    pub trace_state: ::kernel::ffi::c_int,
     pub rchan: *mut rchan,
-    pub sequence: *mut ::core::ffi::c_ulong,
+    pub sequence: *mut ::kernel::ffi::c_ulong,
     pub msg_data: *mut u8,
     pub act_mask: u64,
     pub start_lba: u64,
@@ -26,27 +26,27 @@ pub struct blk_trace {
 extern "C" {
     pub fn blk_trace_ioctl(
         bdev: *mut block_device,
-        cmd: ::core::ffi::c_uint,
-        arg: *mut ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        cmd: ::kernel::ffi::c_uint,
+        arg: *mut ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
     pub fn blk_trace_shutdown(q: *mut request_queue);
     pub fn __blk_trace_note_message(
         bt: *mut blk_trace,
         css: *mut cgroup_subsys_state,
-        fmt: *const ::core::ffi::c_char,
+        fmt: *const ::kernel::ffi::c_char,
         ...
     );
-    pub fn blk_add_driver_data(rq: *mut request, data: *mut ::core::ffi::c_void, len: usize);
+    pub fn blk_add_driver_data(rq: *mut request, data: *mut ::kernel::ffi::c_void, len: usize);
     pub fn blk_trace_setup(
         q: *mut request_queue,
-        name: *mut ::core::ffi::c_char,
+        name: *mut ::kernel::ffi::c_char,
         dev: dev_t,
         bdev: *mut block_device,
-        arg: *mut ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
-    pub fn blk_trace_startstop(q: *mut request_queue, start: ::core::ffi::c_int)
-        -> ::core::ffi::c_int;
-    pub fn blk_trace_remove(q: *mut request_queue) -> ::core::ffi::c_int;
+        arg: *mut ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
+    pub fn blk_trace_startstop(q: *mut request_queue, start: ::kernel::ffi::c_int)
+        -> ::kernel::ffi::c_int;
+    pub fn blk_trace_remove(q: *mut request_queue) -> ::kernel::ffi::c_int;
 }
 
 // The C variadic macros use RCU locking and are retained as source-level
@@ -93,9 +93,9 @@ pub unsafe fn blk_trace_note_message_enabled(q: *mut request_queue) -> bool {
 #[inline]
 pub unsafe fn blk_trace_ioctl(
     _bdev: *mut block_device,
-    _cmd: ::core::ffi::c_uint,
-    _arg: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int { -ENOTTY }
+    _cmd: ::kernel::ffi::c_uint,
+    _arg: *mut ::kernel::ffi::c_char,
+) -> ::kernel::ffi::c_int { -ENOTTY }
 
 #[cfg(not(CONFIG_BLK_DEV_IO_TRACE))]
 #[inline]
@@ -104,24 +104,24 @@ pub unsafe fn blk_trace_shutdown(_q: *mut request_queue) {}
 #[cfg(not(CONFIG_BLK_DEV_IO_TRACE))]
 #[inline]
 pub unsafe fn blk_add_driver_data(
-    _rq: *mut request, _data: *mut ::core::ffi::c_void, _len: usize,
+    _rq: *mut request, _data: *mut ::kernel::ffi::c_void, _len: usize,
 ) {}
 
 #[cfg(not(CONFIG_BLK_DEV_IO_TRACE))]
 #[inline]
 pub unsafe fn blk_trace_setup(
-    _q: *mut request_queue, _name: *mut ::core::ffi::c_char, _dev: dev_t,
-    _bdev: *mut block_device, _arg: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int { -ENOTTY }
+    _q: *mut request_queue, _name: *mut ::kernel::ffi::c_char, _dev: dev_t,
+    _bdev: *mut block_device, _arg: *mut ::kernel::ffi::c_char,
+) -> ::kernel::ffi::c_int { -ENOTTY }
 
 #[cfg(not(CONFIG_BLK_DEV_IO_TRACE))]
 #[inline]
-pub unsafe fn blk_trace_startstop(_q: *mut request_queue, _start: ::core::ffi::c_int)
-    -> ::core::ffi::c_int { -ENOTTY }
+pub unsafe fn blk_trace_startstop(_q: *mut request_queue, _start: ::kernel::ffi::c_int)
+    -> ::kernel::ffi::c_int { -ENOTTY }
 
 #[cfg(not(CONFIG_BLK_DEV_IO_TRACE))]
 #[inline]
-pub unsafe fn blk_trace_remove(_q: *mut request_queue) -> ::core::ffi::c_int { -ENOTTY }
+pub unsafe fn blk_trace_remove(_q: *mut request_queue) -> ::kernel::ffi::c_int { -ENOTTY }
 
 #[cfg(not(CONFIG_BLK_DEV_IO_TRACE))]
 #[inline]
@@ -130,7 +130,7 @@ pub unsafe fn blk_trace_note_message_enabled(_q: *mut request_queue) -> bool { f
 #[cfg(CONFIG_COMPAT)]
 #[repr(C)]
 pub struct compat_blk_user_trace_setup {
-    pub name: [::core::ffi::c_char; BLKTRACE_BDEV_SIZE],
+    pub name: [::kernel::ffi::c_char; BLKTRACE_BDEV_SIZE],
     pub act_mask: u16,
     pub buf_size: u32,
     pub buf_nr: u32,
@@ -142,7 +142,7 @@ pub struct compat_blk_user_trace_setup {
 // #define BLKTRACESETUP32 _IOWR(0x12, 115, struct compat_blk_user_trace_setup)
 
 extern "C" {
-    pub fn blk_fill_rwbs(rwbs: *mut ::core::ffi::c_char, opf: blk_opf_t);
+    pub fn blk_fill_rwbs(rwbs: *mut ::kernel::ffi::c_char, opf: blk_opf_t);
 }
 
 #[inline]
@@ -157,7 +157,7 @@ pub unsafe fn blk_rq_trace_sector(rq: *mut request) -> sector_t {
 }
 
 #[inline]
-pub unsafe fn blk_rq_trace_nr_sectors(rq: *mut request) -> ::core::ffi::c_uint {
+pub unsafe fn blk_rq_trace_nr_sectors(rq: *mut request) -> ::kernel::ffi::c_uint {
     if blk_rq_is_passthrough(rq) { 0 } else { blk_rq_sectors(rq) }
 }
 

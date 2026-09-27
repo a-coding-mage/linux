@@ -56,7 +56,7 @@ unsafe extern "C" fn afs_fs_init() -> c_int {
         core::mem::size_of::<afs_vnode>(), 0, SLAB_HWCACHE_ALIGN | SLAB_ACCOUNT,
         Some(afs_i_init_once));
     if AFS_INODE_CACHEP.is_null() {
-        printk(KERN_NOTICE, b"kAFS: Failed to allocate inode cache\n\0".as_ptr());
+        printk(c"\x015kAFS: Failed to allocate inode cache\n".as_ptr());
         return ret;
     }
     ret = register_filesystem(&raw mut AFS_FS_TYPE);
@@ -68,7 +68,7 @@ unsafe extern "C" fn afs_fs_exit() {
     _enter!("");
     afs_mntpt_kill_timer();
     unregister_filesystem(&raw mut AFS_FS_TYPE);
-    if atomic_read(&raw mut AFS_COUNT_ACTIVE_INODES) != 0 { printk(KERN_ERR, b"kAFS: active inode objects still present\n\0".as_ptr()); BUG!(); }
+    if atomic_read(&raw mut AFS_COUNT_ACTIVE_INODES) != 0 { printk(c"\x013kAFS: active inode objects still present\n".as_ptr()); BUG!(); }
     rcu_barrier();
     kmem_cache_destroy(AFS_INODE_CACHEP);
     _leave!("");
@@ -114,7 +114,7 @@ unsafe extern "C" fn afs_parse_source(fc: *mut fs_context, param: *mut fs_parame
     let ctx = (*fc).fs_private as *mut afs_fs_context; let name = (*param).string;
     _enter!(',%s', name);
     if !(*fc).source.is_null() { return invalf(fc, b"kAFS: Multiple sources not supported\0".as_ptr()); }
-    if name.is_null() { printk(KERN_ERR, b"kAFS: no volume name specified\n\0".as_ptr()); return -EINVAL; }
+    if name.is_null() { printk(c"\x013kAFS: no volume name specified\n".as_ptr()); return -EINVAL; }
     if ((*name != b'%' && *name != b'#') || *name.add(1) == 0) {
         if strcmp(name, b"none\0".as_ptr()) == 0 { (*ctx).no_cell = true; return 0; }
         return -EINVAL;

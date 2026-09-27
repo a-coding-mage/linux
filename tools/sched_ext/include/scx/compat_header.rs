@@ -211,7 +211,7 @@ unsafe extern "C" {
 
 macro_rules! SCX_OPS_FLAG {
     ($name:ident) => {
-        __COMPAT_ENUM_OR_ZERO!(c"scx_ops_flags".as_ptr(), c stringify!($name).as_ptr())
+        __COMPAT_ENUM_OR_ZERO!(c"scx_ops_flags".as_ptr(), concat!(stringify!($name), "\0").as_ptr())
     };
 }
 
@@ -258,7 +258,7 @@ macro_rules! SCX_OPS_ALWAYS_ENQ_IMMED {
 
 macro_rules! SCX_PICK_IDLE_FLAG {
     ($name:ident) => {
-        __COMPAT_ENUM_OR_ZERO!(c"scx_pick_idle_cpu_flags".as_ptr(), c stringify!($name).as_ptr())
+        __COMPAT_ENUM_OR_ZERO!(c"scx_pick_idle_cpu_flags".as_ptr(), concat!(stringify!($name), "\0").as_ptr())
     };
 }
 

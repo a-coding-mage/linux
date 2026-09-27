@@ -29,8 +29,11 @@ extern "C" {
     static mut swiotlb_force_disable: bool;
 }
 
-inline fn io_tlb_offset(val: c_ulong) -> c_ulong { val & (IO_TLB_SEGSIZE - 1) }
-inline fn nr_slots(val: u64) -> c_ulong { DIV_ROUND_UP(val, IO_TLB_SIZE) }
+#[inline]
+
+fn io_tlb_offset(val: c_ulong) -> c_ulong { val & (IO_TLB_SEGSIZE - 1) }
+#[inline]
+fn nr_slots(val: u64) -> c_ulong { DIV_ROUND_UP(val, IO_TLB_SIZE) }
 
 unsafe fn round_up_default_nslabs() -> bool {
     if default_nareas == 0 { return false; }

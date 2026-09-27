@@ -7,7 +7,7 @@
 
 // External kernel and DEC I/O ASIC dependencies are supplied by the surrounding build.
 
-static mut ioasic_irq_base: ::core::ffi::c_int = 0;
+static mut ioasic_irq_base: ::kernel::ffi::c_int = 0;
 
 unsafe fn unmask_ioasic_irq(d: *mut irq_data) {
     let mut simr: u32;
@@ -31,7 +31,7 @@ unsafe fn ack_ioasic_irq(d: *mut irq_data) {
 }
 
 static mut ioasic_irq_type: irq_chip = irq_chip {
-    name: "IO-ASIC\0".as_ptr() as *const ::core::ffi::c_char,
+    name: "IO-ASIC\0".as_ptr() as *const ::kernel::ffi::c_char,
     irq_ack: Some(ack_ioasic_irq),
     irq_mask: Some(mask_ioasic_irq),
     irq_mask_ack: Some(ack_ioasic_irq),
@@ -47,7 +47,7 @@ unsafe fn clear_ioasic_dma_irq(d: *mut irq_data) {
 }
 
 static mut ioasic_dma_irq_type: irq_chip = irq_chip {
-    name: "IO-ASIC-DMA\0".as_ptr() as *const ::core::ffi::c_char,
+    name: "IO-ASIC-DMA\0".as_ptr() as *const ::kernel::ffi::c_char,
     irq_ack: Some(clear_ioasic_dma_irq),
     irq_mask: Some(mask_ioasic_irq),
     irq_unmask: Some(unmask_ioasic_irq),
@@ -79,8 +79,8 @@ const IO_IRQ_DMA_INFO: u32 =
         | IO_IRQ_MASK(IO_INR_ISDN_RXDMA)
         | IO_IRQ_MASK(IO_INR_ASC_DMA);
 
-unsafe fn init_ioasic_irqs(base: ::core::ffi::c_int) {
-    let mut i: ::core::ffi::c_int;
+unsafe fn init_ioasic_irqs(base: ::kernel::ffi::c_int) {
+    let mut i: ::kernel::ffi::c_int;
 
     /* Mask interrupts. */
     ioasic_write(IO_REG_SIMR, 0);

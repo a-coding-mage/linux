@@ -11,7 +11,7 @@ pub const QCE_MAX_KEY_SIZE: usize = 64;
 #[repr(C)]
 pub struct qce_cipher_ctx {
     pub enc_key: [u8; QCE_MAX_KEY_SIZE],
-    pub enc_keylen: ::core::ffi::c_uint,
+    pub enc_keylen: ::kernel::ffi::c_uint,
     pub fallback: *mut crypto_skcipher,
 }
 
@@ -31,16 +31,16 @@ pub struct qce_cipher_ctx {
  */
 #[repr(C)]
 pub struct qce_cipher_reqctx {
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub iv: *mut u8,
-    pub ivsize: ::core::ffi::c_uint,
-    pub src_nents: ::core::ffi::c_int,
-    pub dst_nents: ::core::ffi::c_int,
+    pub ivsize: ::kernel::ffi::c_uint,
+    pub src_nents: ::kernel::ffi::c_int,
+    pub dst_nents: ::kernel::ffi::c_int,
     pub result_sg: scatterlist,
     pub dst_tbl: sg_table,
     pub dst_sg: *mut scatterlist,
     pub src_sg: *mut scatterlist,
-    pub cryptlen: ::core::ffi::c_uint,
+    pub cryptlen: ::kernel::ffi::c_uint,
     // keep at the end
     pub fallback_req: skcipher_request,
 }

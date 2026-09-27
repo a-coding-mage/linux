@@ -20,30 +20,30 @@ pub union msi_msg {
     pub arch_data: arch_msi_msg_data_t,
 }
 
-#[repr(C)] pub struct msi_desc { pub irq: core::ffi::c_uint, pub nvec_used: core::ffi::c_uint, pub dev: *mut device, pub msg: msi_msg, pub affinity: *mut irq_affinity_desc, pub write_msi_msg: Option<unsafe extern "C" fn(*mut msi_desc, *mut core::ffi::c_void)>, pub write_msi_msg_data: *mut core::ffi::c_void, pub msi_index: u16, pub data: msi_desc_data }
+#[repr(C)] pub struct msi_desc { pub irq: kernel::ffi::c_uint, pub nvec_used: kernel::ffi::c_uint, pub dev: *mut device, pub msg: msi_msg, pub affinity: *mut irq_affinity_desc, pub write_msi_msg: Option<unsafe extern "C" fn(*mut msi_desc, *mut kernel::ffi::c_void)>, pub write_msi_msg_data: *mut kernel::ffi::c_void, pub msi_index: u16, pub data: msi_desc_data }
 #[repr(C)] pub struct pci_msi_desc { pub msi_mask: u32, pub msi_attrib: msi_attrib, pub mask: pci_msi_mask }
-#[repr(C)] pub struct msi_attrib { pub is_msix: u8, pub multiple: u8, pub multi_cap: u8, pub can_mask: u8, pub is_64: u8, pub is_virtual: u8, pub default_irq: core::ffi::c_uint }
-#[repr(C)] pub union pci_msi_mask { pub mask_pos: u8, pub mask_base: *mut core::ffi::c_void }
-#[repr(C)] pub union msi_domain_cookie { pub value: u64, pub ptr: *mut core::ffi::c_void, pub iobase: *mut core::ffi::c_void }
+#[repr(C)] pub struct msi_attrib { pub is_msix: u8, pub multiple: u8, pub multi_cap: u8, pub can_mask: u8, pub is_64: u8, pub is_virtual: u8, pub default_irq: kernel::ffi::c_uint }
+#[repr(C)] pub union pci_msi_mask { pub mask_pos: u8, pub mask_base: *mut kernel::ffi::c_void }
+#[repr(C)] pub union msi_domain_cookie { pub value: u64, pub ptr: *mut kernel::ffi::c_void, pub iobase: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct msi_desc_data { pub dcookie: msi_domain_cookie, pub icookie: msi_instance_cookie }
 
 #[repr(C)] pub struct msi_dev_domain { pub store: xarray, pub domain: *mut irq_domain }
 
 #[repr(C)] pub struct msi_domain_ops {
     pub get_hwirq: Option<unsafe extern "C" fn(*mut msi_domain_info, *mut msi_alloc_info_t) -> irq_hw_number_t>,
-    pub msi_init: Option<unsafe extern "C" fn(*mut irq_domain, *mut msi_domain_info, core::ffi::c_uint, irq_hw_number_t, *mut msi_alloc_info_t) -> i32>,
-    pub msi_free: Option<unsafe extern "C" fn(*mut irq_domain, *mut msi_domain_info, core::ffi::c_uint)>,
+    pub msi_init: Option<unsafe extern "C" fn(*mut irq_domain, *mut msi_domain_info, kernel::ffi::c_uint, irq_hw_number_t, *mut msi_alloc_info_t) -> i32>,
+    pub msi_free: Option<unsafe extern "C" fn(*mut irq_domain, *mut msi_domain_info, kernel::ffi::c_uint)>,
     pub msi_prepare: Option<unsafe extern "C" fn(*mut irq_domain, *mut device, i32, *mut msi_alloc_info_t) -> i32>,
     pub msi_teardown: Option<unsafe extern "C" fn(*mut irq_domain, *mut msi_alloc_info_t)>,
     pub prepare_desc: Option<unsafe extern "C" fn(*mut irq_domain, *mut msi_alloc_info_t, *mut msi_desc)>,
     pub set_desc: Option<unsafe extern "C" fn(*mut msi_alloc_info_t, *mut msi_desc)>,
     pub domain_alloc_irqs: Option<unsafe extern "C" fn(*mut irq_domain, *mut device, i32) -> i32>,
     pub domain_free_irqs: Option<unsafe extern "C" fn(*mut irq_domain, *mut device)>,
-    pub msi_translate: Option<unsafe extern "C" fn(*mut irq_domain, *mut irq_fwspec, *mut irq_hw_number_t, *mut core::ffi::c_uint) -> i32>,
+    pub msi_translate: Option<unsafe extern "C" fn(*mut irq_domain, *mut irq_fwspec, *mut irq_hw_number_t, *mut kernel::ffi::c_uint) -> i32>,
 }
-#[repr(C)] pub struct msi_domain_info { pub flags: u32, pub bus_token: irq_domain_bus_token, pub hwsize: core::ffi::c_uint, pub ops: *mut msi_domain_ops, pub dev: *mut device, pub chip: *mut irq_chip, pub chip_data: *mut core::ffi::c_void, pub handler: irq_flow_handler_t, pub handler_data: *mut core::ffi::c_void, pub handler_name: *const core::ffi::c_char, pub alloc_data: *mut msi_alloc_info_t, pub data: *mut core::ffi::c_void }
-#[repr(C)] pub struct msi_domain_template { pub name: [core::ffi::c_char; 48], pub chip: irq_chip, pub ops: msi_domain_ops, pub info: msi_domain_info, pub alloc_info: msi_alloc_info_t }
-#[repr(C)] pub struct msi_parent_ops { pub supported_flags: u32, pub required_flags: u32, pub chip_flags: u32, pub bus_select_token: u32, pub bus_select_mask: u32, pub prefix: *const core::ffi::c_char, pub init_dev_msi_info: Option<unsafe extern "C" fn(*mut device, *mut irq_domain, *mut irq_domain, *mut msi_domain_info) -> bool> }
+#[repr(C)] pub struct msi_domain_info { pub flags: u32, pub bus_token: irq_domain_bus_token, pub hwsize: kernel::ffi::c_uint, pub ops: *mut msi_domain_ops, pub dev: *mut device, pub chip: *mut irq_chip, pub chip_data: *mut kernel::ffi::c_void, pub handler: irq_flow_handler_t, pub handler_data: *mut kernel::ffi::c_void, pub handler_name: *const kernel::ffi::c_char, pub alloc_data: *mut msi_alloc_info_t, pub data: *mut kernel::ffi::c_void }
+#[repr(C)] pub struct msi_domain_template { pub name: [kernel::ffi::c_char; 48], pub chip: irq_chip, pub ops: msi_domain_ops, pub info: msi_domain_info, pub alloc_info: msi_alloc_info_t }
+#[repr(C)] pub struct msi_parent_ops { pub supported_flags: u32, pub required_flags: u32, pub chip_flags: u32, pub bus_select_token: u32, pub bus_select_mask: u32, pub prefix: *const kernel::ffi::c_char, pub init_dev_msi_info: Option<unsafe extern "C" fn(*mut device, *mut irq_domain, *mut irq_domain, *mut msi_domain_info) -> bool> }
 
 #[repr(C)] pub enum msi_desc_filter { MSI_DESC_ALL, MSI_DESC_NOTASSOCIATED, MSI_DESC_ASSOCIATED }
 
@@ -73,41 +73,41 @@ pub const MSI_CHIP_FLAG_SET_ACK: u32 = 1 << 1;
 
 extern "C" {
     pub fn __get_cached_msi_msg(entry: *mut msi_desc, msg: *mut msi_msg);
-    pub fn get_cached_msi_msg(irq: core::ffi::c_uint, msg: *mut msi_msg);
+    pub fn get_cached_msi_msg(irq: kernel::ffi::c_uint, msg: *mut msi_msg);
     pub fn msi_setup_device_data(dev: *mut device) -> i32;
     pub fn __msi_lock_descs(dev: *mut device);
     pub fn __msi_unlock_descs(dev: *mut device);
-    pub fn msi_domain_first_desc(dev: *mut device, domid: core::ffi::c_uint, filter: msi_desc_filter) -> *mut msi_desc;
-    pub fn msi_next_desc(dev: *mut device, domid: core::ffi::c_uint, filter: msi_desc_filter) -> *mut msi_desc;
-    pub fn msi_domain_insert_msi_desc(dev: *mut device, domid: core::ffi::c_uint, init_desc: *mut msi_desc) -> i32;
-    pub fn msi_domain_free_msi_descs_range(dev: *mut device, domid: core::ffi::c_uint, first: core::ffi::c_uint, last: core::ffi::c_uint);
+    pub fn msi_domain_first_desc(dev: *mut device, domid: kernel::ffi::c_uint, filter: msi_desc_filter) -> *mut msi_desc;
+    pub fn msi_next_desc(dev: *mut device, domid: kernel::ffi::c_uint, filter: msi_desc_filter) -> *mut msi_desc;
+    pub fn msi_domain_insert_msi_desc(dev: *mut device, domid: kernel::ffi::c_uint, init_desc: *mut msi_desc) -> i32;
+    pub fn msi_domain_free_msi_descs_range(dev: *mut device, domid: kernel::ffi::c_uint, first: kernel::ffi::c_uint, last: kernel::ffi::c_uint);
     pub fn msi_parent_init_dev_msi_info(dev: *mut device, domain: *mut irq_domain, parent: *mut irq_domain, info: *mut msi_domain_info) -> bool;
     pub fn msi_domain_set_affinity(data: *mut irq_data, mask: *const cpumask, force: bool) -> i32;
     pub fn msi_create_irq_domain(fwnode: *mut fwnode_handle, info: *mut msi_domain_info, parent: *mut irq_domain) -> *mut irq_domain;
     pub fn msi_create_parent_irq_domain(info: *mut irq_domain_info, ops: *const msi_parent_ops) -> *mut irq_domain;
-    pub fn msi_create_device_irq_domain(dev: *mut device, domid: core::ffi::c_uint, template: *const msi_domain_template, hwsize: core::ffi::c_uint, domain_data: *mut core::ffi::c_void, chip_data: *mut core::ffi::c_void) -> bool;
-    pub fn msi_remove_device_irq_domain(dev: *mut device, domid: core::ffi::c_uint);
-    pub fn msi_match_device_irq_domain(dev: *mut device, domid: core::ffi::c_uint, token: irq_domain_bus_token) -> bool;
-    pub fn msi_domain_alloc_irqs_range_locked(dev: *mut device, domid: core::ffi::c_uint, first: core::ffi::c_uint, last: core::ffi::c_uint) -> i32;
-    pub fn msi_domain_alloc_irqs_range(dev: *mut device, domid: core::ffi::c_uint, first: core::ffi::c_uint, last: core::ffi::c_uint) -> i32;
-    pub fn msi_domain_alloc_irqs_all_locked(dev: *mut device, domid: core::ffi::c_uint, nirqs: i32) -> i32;
-    pub fn msi_domain_free_irqs_range_locked(dev: *mut device, domid: core::ffi::c_uint, first: core::ffi::c_uint, last: core::ffi::c_uint);
-    pub fn msi_domain_free_irqs_range(dev: *mut device, domid: core::ffi::c_uint, first: core::ffi::c_uint, last: core::ffi::c_uint);
-    pub fn msi_domain_free_irqs_all_locked(dev: *mut device, domid: core::ffi::c_uint);
-    pub fn msi_domain_free_irqs_all(dev: *mut device, domid: core::ffi::c_uint);
+    pub fn msi_create_device_irq_domain(dev: *mut device, domid: kernel::ffi::c_uint, template: *const msi_domain_template, hwsize: kernel::ffi::c_uint, domain_data: *mut kernel::ffi::c_void, chip_data: *mut kernel::ffi::c_void) -> bool;
+    pub fn msi_remove_device_irq_domain(dev: *mut device, domid: kernel::ffi::c_uint);
+    pub fn msi_match_device_irq_domain(dev: *mut device, domid: kernel::ffi::c_uint, token: irq_domain_bus_token) -> bool;
+    pub fn msi_domain_alloc_irqs_range_locked(dev: *mut device, domid: kernel::ffi::c_uint, first: kernel::ffi::c_uint, last: kernel::ffi::c_uint) -> i32;
+    pub fn msi_domain_alloc_irqs_range(dev: *mut device, domid: kernel::ffi::c_uint, first: kernel::ffi::c_uint, last: kernel::ffi::c_uint) -> i32;
+    pub fn msi_domain_alloc_irqs_all_locked(dev: *mut device, domid: kernel::ffi::c_uint, nirqs: i32) -> i32;
+    pub fn msi_domain_free_irqs_range_locked(dev: *mut device, domid: kernel::ffi::c_uint, first: kernel::ffi::c_uint, last: kernel::ffi::c_uint);
+    pub fn msi_domain_free_irqs_range(dev: *mut device, domid: kernel::ffi::c_uint, first: kernel::ffi::c_uint, last: kernel::ffi::c_uint);
+    pub fn msi_domain_free_irqs_all_locked(dev: *mut device, domid: kernel::ffi::c_uint);
+    pub fn msi_domain_free_irqs_all(dev: *mut device, domid: kernel::ffi::c_uint);
     pub fn msi_get_domain_info(domain: *mut irq_domain) -> *mut msi_domain_info;
-    pub fn platform_device_msi_init_and_alloc_irqs(dev: *mut device, nvec: core::ffi::c_uint, write: irq_write_msi_msg_t) -> i32;
+    pub fn platform_device_msi_init_and_alloc_irqs(dev: *mut device, nvec: kernel::ffi::c_uint, write: irq_write_msi_msg_t) -> i32;
     pub fn platform_device_msi_free_irqs_all(dev: *mut device);
     pub fn msi_device_has_isolated_msi(dev: *mut device) -> bool;
     pub fn arch_restore_msi_irqs(dev: *mut pci_dev) -> bool;
     pub fn arch_setup_msi_irq(dev: *mut pci_dev, desc: *mut msi_desc) -> i32;
-    pub fn arch_teardown_msi_irq(irq: core::ffi::c_uint);
+    pub fn arch_teardown_msi_irq(irq: kernel::ffi::c_uint);
     pub fn arch_setup_msi_irqs(dev: *mut pci_dev, nvec: i32, kind: i32) -> i32;
     pub fn arch_teardown_msi_irqs(dev: *mut pci_dev);
     pub fn msi_device_populate_sysfs(dev: *mut device) -> i32;
     pub fn msi_device_destroy_sysfs(dev: *mut device);
     pub fn msi_desc_to_pci_dev(desc: *mut msi_desc) -> *mut pci_dev;
-    pub fn pci_write_msi_msg(irq: core::ffi::c_uint, msg: *mut msi_msg);
+    pub fn pci_write_msi_msg(irq: kernel::ffi::c_uint, msg: *mut msi_msg);
     pub fn __pci_read_msi_msg(entry: *mut msi_desc, msg: *mut msi_msg);
     pub fn __pci_write_msi_msg(entry: *mut msi_desc, msg: *mut msi_msg);
     pub fn pci_msi_mask_irq(data: *mut irq_data);
@@ -119,7 +119,7 @@ extern "C" {
 }
 
 pub type irq_write_msi_msg_t = Option<unsafe extern "C" fn(*mut msi_desc, *mut msi_msg)>;
-pub type msi_alloc_info_t = core::ffi::c_void;
+pub type msi_alloc_info_t = kernel::ffi::c_void;
 pub type irq_hw_number_t = u64;
 pub type irq_flow_handler_t = Option<unsafe extern "C" fn(*mut irq_desc)>;
 pub type irq_domain_bus_token = u32;
@@ -136,7 +136,7 @@ pub type irq_domain_bus_token = u32;
 #[repr(C)] pub struct irq_affinity_desc { _private: [u8; 0] }
 #[repr(C)] pub struct cpumask { _private: [u8; 0] }
 #[repr(C)] pub struct xarray { _private: [u8; 0] }
-#[repr(C)] pub union msi_instance_cookie { pub value: u64, pub ptr: *mut core::ffi::c_void }
+#[repr(C)] pub union msi_instance_cookie { pub value: u64, pub ptr: *mut kernel::ffi::c_void }
 
 pub const MSI_DEFAULT_DOMAIN: u32 = 0;
 pub const fn msi_desc_to_dev(desc: *mut msi_desc) -> *mut device { unsafe { (*desc).dev } }

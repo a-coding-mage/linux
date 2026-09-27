@@ -29,8 +29,8 @@ pub struct FsverityEnableEntry {
     pub ino: u64,
     pub data_size: u64,
     pub tree_size: u64,
-    pub merkle_block: ::core::ffi::c_uint,
-    pub num_levels: ::core::ffi::c_uint,
+    pub merkle_block: ::kernel::ffi::c_uint,
+    pub num_levels: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -38,8 +38,8 @@ pub struct FsverityTreeDoneEntry {
     pub ino: u64,
     pub data_size: u64,
     pub tree_size: u64,
-    pub merkle_block: ::core::ffi::c_uint,
-    pub levels: ::core::ffi::c_uint,
+    pub merkle_block: ::kernel::ffi::c_uint,
+    pub levels: ::kernel::ffi::c_uint,
     pub root_hash: *mut u8,
     pub root_hash_len: usize,
     pub file_digest: *mut u8,
@@ -50,24 +50,24 @@ pub struct FsverityTreeDoneEntry {
 pub struct FsverityVerifyDataBlockEntry {
     pub ino: u64,
     pub data_pos: u64,
-    pub merkle_block: ::core::ffi::c_uint,
+    pub merkle_block: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct FsverityMerkleHitEntry {
     pub ino: u64,
     pub data_pos: u64,
-    pub hblock_idx: ::core::ffi::c_ulong,
-    pub level: ::core::ffi::c_uint,
-    pub hidx: ::core::ffi::c_uint,
+    pub hblock_idx: ::kernel::ffi::c_ulong,
+    pub level: ::kernel::ffi::c_uint,
+    pub hidx: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct FsverityVerifyMerkleBlockEntry {
     pub ino: u64,
-    pub hblock_idx: ::core::ffi::c_ulong,
-    pub level: ::core::ffi::c_uint,
-    pub hidx: ::core::ffi::c_uint,
+    pub hblock_idx: ::kernel::ffi::c_ulong,
+    pub level: ::kernel::ffi::c_uint,
+    pub hidx: ::kernel::ffi::c_uint,
 }
 
 // TRACE_EVENT(fsverity_enable,

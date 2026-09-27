@@ -7,15 +7,15 @@
 
 #[repr(C)]
 pub struct adf_cfg_key_val {
-    pub key: [::core::ffi::c_char; ADF_CFG_MAX_KEY_LEN_IN_BYTES],
-    pub val: [::core::ffi::c_char; ADF_CFG_MAX_VAL_LEN_IN_BYTES],
+    pub key: [::kernel::ffi::c_char; ADF_CFG_MAX_KEY_LEN_IN_BYTES],
+    pub val: [::kernel::ffi::c_char; ADF_CFG_MAX_VAL_LEN_IN_BYTES],
     pub type_: adf_cfg_val_type,
     pub list: list_head,
 }
 
 #[repr(C)]
 pub struct adf_cfg_section {
-    pub name: [::core::ffi::c_char; ADF_CFG_MAX_SECTION_LEN_IN_BYTES],
+    pub name: [::kernel::ffi::c_char; ADF_CFG_MAX_SECTION_LEN_IN_BYTES],
     pub list: list_head,
     pub param_head: list_head,
 }
@@ -28,31 +28,31 @@ pub struct adf_cfg_device_data {
 }
 
 extern "C" {
-    pub fn adf_cfg_dev_add(accel_dev: *mut adf_accel_dev) -> ::core::ffi::c_int;
+    pub fn adf_cfg_dev_add(accel_dev: *mut adf_accel_dev) -> ::kernel::ffi::c_int;
     pub fn adf_cfg_dev_remove(accel_dev: *mut adf_accel_dev);
     pub fn adf_cfg_dev_dbgfs_add(accel_dev: *mut adf_accel_dev);
     pub fn adf_cfg_dev_dbgfs_rm(accel_dev: *mut adf_accel_dev);
     pub fn adf_cfg_section_add(
         accel_dev: *mut adf_accel_dev,
-        name: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        name: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
     pub fn adf_cfg_del_all_except(
         accel_dev: *mut adf_accel_dev,
-        section_name: *const ::core::ffi::c_char,
+        section_name: *const ::kernel::ffi::c_char,
     );
     pub fn adf_cfg_add_key_value_param(
         accel_dev: *mut adf_accel_dev,
-        section_name: *const ::core::ffi::c_char,
-        key: *const ::core::ffi::c_char,
-        val: *const ::core::ffi::c_void,
+        section_name: *const ::kernel::ffi::c_char,
+        key: *const ::kernel::ffi::c_char,
+        val: *const ::kernel::ffi::c_void,
         type_: adf_cfg_val_type,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn adf_cfg_get_param_value(
         accel_dev: *mut adf_accel_dev,
-        section: *const ::core::ffi::c_char,
-        name: *const ::core::ffi::c_char,
-        value: *mut ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        section: *const ::kernel::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
+        value: *mut ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

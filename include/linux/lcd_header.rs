@@ -62,7 +62,7 @@ pub struct lcd_platform_data {
     pub power_on_delay: u32,
     pub power_off_delay: u32,
     /* it could be used for any purpose. */
-    pub pdata: *mut core::ffi::c_void,
+    pub pdata: *mut kernel::ffi::c_void,
 }
 
 pub unsafe fn lcd_set_power(ld: *mut lcd_device, power: i32) {
@@ -78,16 +78,16 @@ pub unsafe fn lcd_set_power(ld: *mut lcd_device, power: i32) {
 
 unsafe extern "C" {
     pub fn lcd_device_register(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         parent: *mut device,
-        devdata: *mut core::ffi::c_void,
+        devdata: *mut kernel::ffi::c_void,
         ops: *const lcd_ops,
     ) -> *mut lcd_device;
     pub fn devm_lcd_device_register(
         dev: *mut device,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         parent: *mut device,
-        devdata: *mut core::ffi::c_void,
+        devdata: *mut kernel::ffi::c_void,
         ops: *const lcd_ops,
     ) -> *mut lcd_device;
     pub fn lcd_device_unregister(ld: *mut lcd_device);
@@ -99,7 +99,7 @@ unsafe extern "C" {
 // In the C header these notifications are empty when
 // IS_REACHABLE(CONFIG_LCD_CLASS_DEVICE) is false.
 
-pub unsafe fn lcd_get_data(ld_dev: *mut lcd_device) -> *mut core::ffi::c_void {
+pub unsafe fn lcd_get_data(ld_dev: *mut lcd_device) -> *mut kernel::ffi::c_void {
     dev_get_drvdata(&mut (*ld_dev).dev)
 }
 

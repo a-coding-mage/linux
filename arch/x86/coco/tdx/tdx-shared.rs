@@ -4,10 +4,10 @@
 
 unsafe fn try_accept_one(
     start: phys_addr_t,
-    len: ::core::ffi::c_ulong,
+    len: ::kernel::ffi::c_ulong,
     pg_level: pg_level,
-) -> ::core::ffi::c_ulong {
-    let accept_size: ::core::ffi::c_ulong = page_level_size(pg_level);
+) -> ::kernel::ffi::c_ulong {
+    let accept_size: ::kernel::ffi::c_ulong = page_level_size(pg_level);
     let mut args: tdx_module_args = unsafe { ::core::mem::zeroed() };
     let page_size: u8;
 
@@ -46,8 +46,8 @@ pub unsafe fn tdx_accept_memory(mut start: phys_addr_t, end: phys_addr_t) -> boo
      * TDG_MEM_PAGE_ACCEPT TDX module call.
      */
     while start < end {
-        let len: ::core::ffi::c_ulong = end - start;
-        let mut accept_size: ::core::ffi::c_ulong;
+        let len: ::kernel::ffi::c_ulong = end - start;
+        let mut accept_size: ::kernel::ffi::c_ulong;
 
         /*
          * Try larger accepts first. It gives chance to VMM to keep

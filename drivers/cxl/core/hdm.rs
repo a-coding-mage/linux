@@ -6,7 +6,7 @@
 pub const COMMIT_TIMEOUT_MS: i32 = 20;
 
 #[repr(C)]
-pub struct CxlRwsem { pub region: core::ffi::c_ulong, pub dpa: core::ffi::c_ulong }
+pub struct CxlRwsem { pub region: kernel::ffi::c_ulong, pub dpa: kernel::ffi::c_ulong }
 pub static mut CXL_RWSEM: CxlRwsem = CxlRwsem { region: 0, dpa: 0 };
 
 unsafe fn add_hdm_decoder(port: *mut CxlPort, cxld: *mut CxlDecoder) -> i32 {
@@ -92,7 +92,7 @@ unsafe fn __cxl_dpa_release(cxled: *mut CxlEndpointDecoder) {
     release_region(&mut (*cxlds).dpa_res, (*res).start, resource_size(res)); if (*cxled).skip != 0 { release_skip(cxlds, skip_start, (*cxled).skip); } (*cxled).skip = 0; (*cxled).dpa_res = core::ptr::null_mut(); put_device((*cxled).cxld.dev); (*port).hdm_end -= 1;
 }
 
-unsafe fn cxl_dpa_release(data: *mut core::ffi::c_void) { rwsem_write_lock(&mut CXL_RWSEM.dpa); __cxl_dpa_release(data as *mut CxlEndpointDecoder); rwsem_write_unlock(&mut CXL_RWSEM.dpa); }
+unsafe fn cxl_dpa_release(data: *mut kernel::ffi::c_void) { rwsem_write_lock(&mut CXL_RWSEM.dpa); __cxl_dpa_release(data as *mut CxlEndpointDecoder); rwsem_write_unlock(&mut CXL_RWSEM.dpa); }
 
 unsafe fn devm_cxl_dpa_release(cxled: *mut CxlEndpointDecoder) { let port = cxled_to_port(cxled); devm_remove_action((*port).dev, cxl_dpa_release, cxled as *mut _); __cxl_dpa_release(cxled); }
 

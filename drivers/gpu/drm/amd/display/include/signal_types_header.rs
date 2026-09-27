@@ -46,20 +46,20 @@ pub enum signal_type {
 }
 
 #[inline]
-pub fn signal_type_to_string(type_: i32) -> *const core::ffi::c_char {
+pub fn signal_type_to_string(type_: i32) -> *const kernel::ffi::c_char {
     match type_ {
-        x if x == signal_type::SIGNAL_TYPE_NONE as i32 => b"No signal\0".as_ptr() as *const core::ffi::c_char,
-        x if x == signal_type::SIGNAL_TYPE_DVI_SINGLE_LINK as i32 => b"DVI: Single Link\0".as_ptr() as *const core::ffi::c_char,
-        x if x == signal_type::SIGNAL_TYPE_DVI_DUAL_LINK as i32 => b"DVI: Dual Link\0".as_ptr() as *const core::ffi::c_char,
-        x if x == signal_type::SIGNAL_TYPE_HDMI_TYPE_A as i32 => b"HDMI: TYPE A\0".as_ptr() as *const core::ffi::c_char,
-        x if x == signal_type::SIGNAL_TYPE_LVDS as i32 => b"LVDS\0".as_ptr() as *const core::ffi::c_char,
-        x if x == signal_type::SIGNAL_TYPE_RGB as i32 => b"RGB\0".as_ptr() as *const core::ffi::c_char,
-        x if x == signal_type::SIGNAL_TYPE_DISPLAY_PORT as i32 => b"Display Port\0".as_ptr() as *const core::ffi::c_char,
-        x if x == signal_type::SIGNAL_TYPE_DISPLAY_PORT_MST as i32 => b"Display Port: MST\0".as_ptr() as *const core::ffi::c_char,
-        x if x == signal_type::SIGNAL_TYPE_EDP as i32 => b"Embedded Display Port\0".as_ptr() as *const core::ffi::c_char,
-        x if x == signal_type::SIGNAL_TYPE_HDMI_FRL as i32 => b"HDMI: FRL\0".as_ptr() as *const core::ffi::c_char,
-        x if x == signal_type::SIGNAL_TYPE_VIRTUAL as i32 => b"Virtual\0".as_ptr() as *const core::ffi::c_char,
-        _ => b"Unknown\0".as_ptr() as *const core::ffi::c_char,
+        x if x == signal_type::SIGNAL_TYPE_NONE as i32 => b"No signal\0".as_ptr() as *const kernel::ffi::c_char,
+        x if x == signal_type::SIGNAL_TYPE_DVI_SINGLE_LINK as i32 => b"DVI: Single Link\0".as_ptr() as *const kernel::ffi::c_char,
+        x if x == signal_type::SIGNAL_TYPE_DVI_DUAL_LINK as i32 => b"DVI: Dual Link\0".as_ptr() as *const kernel::ffi::c_char,
+        x if x == signal_type::SIGNAL_TYPE_HDMI_TYPE_A as i32 => b"HDMI: TYPE A\0".as_ptr() as *const kernel::ffi::c_char,
+        x if x == signal_type::SIGNAL_TYPE_LVDS as i32 => b"LVDS\0".as_ptr() as *const kernel::ffi::c_char,
+        x if x == signal_type::SIGNAL_TYPE_RGB as i32 => b"RGB\0".as_ptr() as *const kernel::ffi::c_char,
+        x if x == signal_type::SIGNAL_TYPE_DISPLAY_PORT as i32 => b"Display Port\0".as_ptr() as *const kernel::ffi::c_char,
+        x if x == signal_type::SIGNAL_TYPE_DISPLAY_PORT_MST as i32 => b"Display Port: MST\0".as_ptr() as *const kernel::ffi::c_char,
+        x if x == signal_type::SIGNAL_TYPE_EDP as i32 => b"Embedded Display Port\0".as_ptr() as *const kernel::ffi::c_char,
+        x if x == signal_type::SIGNAL_TYPE_HDMI_FRL as i32 => b"HDMI: FRL\0".as_ptr() as *const kernel::ffi::c_char,
+        x if x == signal_type::SIGNAL_TYPE_VIRTUAL as i32 => b"Virtual\0".as_ptr() as *const kernel::ffi::c_char,
+        _ => b"Unknown\0".as_ptr() as *const kernel::ffi::c_char,
     }
 }
 

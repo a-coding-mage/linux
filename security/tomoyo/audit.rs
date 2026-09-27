@@ -10,11 +10,11 @@
 unsafe fn tomoyo_print_bprm(
     bprm: *mut linux_binprm,
     dump: *mut tomoyo_page_dump,
-) -> *mut core::ffi::c_char {
+) -> *mut kernel::ffi::c_char {
     const TOMOYO_BUFFER_LEN: usize = 4096 * 2;
     let buffer = kzalloc(TOMOYO_BUFFER_LEN, GFP_NOFS);
-    let mut cp: *mut core::ffi::c_char;
-    let mut last_start: *mut core::ffi::c_char;
+    let mut cp: *mut kernel::ffi::c_char;
+    let mut last_start: *mut kernel::ffi::c_char;
     let mut len: i32;
     let mut pos = (*bprm).p;
     let mut offset = pos % PAGE_SIZE;
@@ -72,7 +72,7 @@ unsafe fn tomoyo_print_bprm(
 }
 
 #[inline]
-unsafe fn tomoyo_filetype(mode: umode_t) -> *const core::ffi::c_char {
+unsafe fn tomoyo_filetype(mode: umode_t) -> *const kernel::ffi::c_char {
     match mode & S_IFMT {
         S_IFREG | 0 => tomoyo_condition_keyword[TOMOYO_TYPE_IS_FILE as usize],
         S_IFDIR => tomoyo_condition_keyword[TOMOYO_TYPE_IS_DIRECTORY as usize],
@@ -85,7 +85,7 @@ unsafe fn tomoyo_filetype(mode: umode_t) -> *const core::ffi::c_char {
     }
 }
 
-unsafe fn tomoyo_print_header(r: *mut tomoyo_request_info) -> *mut core::ffi::c_char {
+unsafe fn tomoyo_print_header(r: *mut tomoyo_request_info) -> *mut kernel::ffi::c_char {
     let mut stamp: tomoyo_time = core::mem::zeroed();
     let gpid = task_pid_nr(current);
     let obj = (*r).obj;
@@ -109,8 +109,8 @@ unsafe fn tomoyo_print_header(r: *mut tomoyo_request_info) -> *mut core::ffi::c_
     if pos < TOMOYO_BUFFER_LEN as i32 - 1 { buffer } else { kfree(buffer.cast()); core::ptr::null_mut() }
 }
 
-pub unsafe fn tomoyo_init_log(r: *mut tomoyo_request_info, mut len: i32, fmt: *const core::ffi::c_char, args: va_list) -> *mut core::ffi::c_char {
-    let mut buf = core::ptr::null_mut(); let mut bprm_info = core::ptr::null_mut(); let mut header = tomoyo_print_header(r); let mut realpath = core::ptr::null_mut(); let mut symlink: *const core::ffi::c_char = core::ptr::null();
+pub unsafe fn tomoyo_init_log(r: *mut tomoyo_request_info, mut len: i32, fmt: *const kernel::ffi::c_char, args: va_list) -> *mut kernel::ffi::c_char {
+    let mut buf = core::ptr::null_mut(); let mut bprm_info = core::ptr::null_mut(); let mut header = tomoyo_print_header(r); let mut realpath = core::ptr::null_mut(); let mut symlink: *const kernel::ffi::c_char = core::ptr::null();
     if header.is_null() { return core::ptr::null_mut(); }
     let domainname = (*(*r).domain).domainname.name;
     len += strlen(domainname) as i32 + strlen(header) as i32 + 10;
@@ -124,7 +124,7 @@ pub unsafe fn tomoyo_init_log(r: *mut tomoyo_request_info, mut len: i32, fmt: *c
 
 /* Wait queue, log structure, list, lock, and counters are supplied by the kernel support layer. */
 static mut tomoyo_log_wait: wait_queue_head_t = DECLARE_WAIT_QUEUE_HEAD!();
-#[repr(C)] struct tomoyo_log { list: list_head, log: *mut core::ffi::c_char, size: i32 }
+#[repr(C)] struct tomoyo_log { list: list_head, log: *mut kernel::ffi::c_char, size: i32 }
 static mut tomoyo_log: list_head = LIST_HEAD_INIT!();
 static mut tomoyo_log_lock: spinlock_t = DEFINE_SPINLOCK!();
 static mut tomoyo_log_count: u32 = 0;
@@ -138,9 +138,9 @@ unsafe fn tomoyo_get_audit(ns: *const tomoyo_policy_namespace, profile: u8, inde
     if is_granted { mode & TOMOYO_CONFIG_WANT_GRANT_LOG != 0 } else { mode & TOMOYO_CONFIG_WANT_REJECT_LOG != 0 }
 }
 
-pub unsafe fn tomoyo_write_log2(r: *mut tomoyo_request_info, len: i32, fmt: *const core::ffi::c_char, args: va_list) { if !tomoyo_get_audit((*(*r).domain).ns, (*r).profile, (*r).type_, (*r).matched_acl, (*r).granted) { return; } let buf = tomoyo_init_log(r, len, fmt, args); if buf.is_null() { return; } let entry = kzalloc_obj::<tomoyo_log>(GFP_NOFS); if entry.is_null() { kfree(buf); return; } (*entry).log = buf; let size = kmalloc_size_roundup(strlen(buf) as i32 + 1); (*entry).size = size + kmalloc_size_roundup(core::mem::size_of::<tomoyo_log>() as i32); let mut quota_exceeded = false; spin_lock(&mut tomoyo_log_lock); if tomoyo_memory_quota[TOMOYO_MEMORY_AUDIT as usize] != 0 && tomoyo_memory_used[TOMOYO_MEMORY_AUDIT as usize] + (*entry).size as u32 >= tomoyo_memory_quota[TOMOYO_MEMORY_AUDIT as usize] { quota_exceeded = true; } else { tomoyo_memory_used[TOMOYO_MEMORY_AUDIT as usize] += (*entry).size as u32; list_add_tail(&mut (*entry).list, &mut tomoyo_log); tomoyo_log_count += 1; } spin_unlock(&mut tomoyo_log_lock); if quota_exceeded { kfree(buf); kfree(entry); return; } wake_up(&mut tomoyo_log_wait); }
+pub unsafe fn tomoyo_write_log2(r: *mut tomoyo_request_info, len: i32, fmt: *const kernel::ffi::c_char, args: va_list) { if !tomoyo_get_audit((*(*r).domain).ns, (*r).profile, (*r).type_, (*r).matched_acl, (*r).granted) { return; } let buf = tomoyo_init_log(r, len, fmt, args); if buf.is_null() { return; } let entry = kzalloc_obj::<tomoyo_log>(GFP_NOFS); if entry.is_null() { kfree(buf); return; } (*entry).log = buf; let size = kmalloc_size_roundup(strlen(buf) as i32 + 1); (*entry).size = size + kmalloc_size_roundup(core::mem::size_of::<tomoyo_log>() as i32); let mut quota_exceeded = false; spin_lock(&mut tomoyo_log_lock); if tomoyo_memory_quota[TOMOYO_MEMORY_AUDIT as usize] != 0 && tomoyo_memory_used[TOMOYO_MEMORY_AUDIT as usize] + (*entry).size as u32 >= tomoyo_memory_quota[TOMOYO_MEMORY_AUDIT as usize] { quota_exceeded = true; } else { tomoyo_memory_used[TOMOYO_MEMORY_AUDIT as usize] += (*entry).size as u32; list_add_tail(&mut (*entry).list, &mut tomoyo_log); tomoyo_log_count += 1; } spin_unlock(&mut tomoyo_log_lock); if quota_exceeded { kfree(buf); kfree(entry); return; } wake_up(&mut tomoyo_log_wait); }
 
-pub unsafe fn tomoyo_write_log(r: *mut tomoyo_request_info, fmt: *const core::ffi::c_char, mut args: ...) { let len = vsnprintf(core::ptr::null_mut(), 0, fmt, args) + 1; tomoyo_write_log2(r, len, fmt, args); }
+pub unsafe fn tomoyo_write_log(r: *mut tomoyo_request_info, fmt: *const kernel::ffi::c_char, mut args: ...) { let len = vsnprintf(core::ptr::null_mut(), 0, fmt, args) + 1; tomoyo_write_log2(r, len, fmt, args); }
 
 pub unsafe fn tomoyo_read_log(head: *mut tomoyo_io_buffer) { if (*head).r.w_pos != 0 { return; } kfree((*head).read_buf); (*head).read_buf = core::ptr::null_mut(); spin_lock(&mut tomoyo_log_lock); let ptr = if !list_empty(&tomoyo_log) { let p = list_entry(tomoyo_log.next, tomoyo_log, list); list_del(&mut (*p).list); tomoyo_log_count -= 1; tomoyo_memory_used[TOMOYO_MEMORY_AUDIT as usize] -= (*p).size as u32; p } else { core::ptr::null_mut() }; spin_unlock(&mut tomoyo_log_lock); if !ptr.is_null() { (*head).read_buf = (*ptr).log; (*head).r.w[(*head).r.w_pos as usize] = (*head).read_buf; (*head).r.w_pos += 1; kfree(ptr); } }
 

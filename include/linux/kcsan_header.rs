@@ -23,7 +23,7 @@ pub struct kcsan_ctx {
     pub in_flat_atomic: bool,
 
     /* Access mask for all accesses if non-zero. */
-    pub access_mask: core::ffi::c_ulong,
+    pub access_mask: kernel::ffi::c_ulong,
 
     /* List of scoped accesses; likely to be empty. */
     pub scoped_accesses: list_head,

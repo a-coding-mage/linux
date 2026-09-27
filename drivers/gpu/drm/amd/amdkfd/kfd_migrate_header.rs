@@ -35,25 +35,25 @@ extern "C" {
     pub fn svm_migrate_to_vram(
         prange: *mut svm_range,
         best_loc: u32,
-        start: ::core::ffi::c_ulong,
-        last: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        last: ::kernel::ffi::c_ulong,
         mm: *mut mm_struct,
         trigger: u32,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn svm_migrate_vram_to_ram(
         prange: *mut svm_range,
         mm: *mut mm_struct,
-        start: ::core::ffi::c_ulong,
-        last: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        last: ::kernel::ffi::c_ulong,
         trigger: u32,
         fault_page: *mut page,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn svm_migrate_addr_to_pfn(
         adev: *mut amdgpu_device,
-        addr: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_ulong;
+        addr: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_ulong;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

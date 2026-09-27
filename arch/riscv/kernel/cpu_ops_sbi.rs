@@ -8,7 +8,7 @@
 // Dependencies supplied by the kernel headers are intentionally left external.
 
 extern "C" {
-    static mut secondary_start_sbi: ::core::ffi::c_char;
+    static mut secondary_start_sbi: ::kernel::ffi::c_char;
 }
 
 /*
@@ -21,8 +21,8 @@ static mut boot_data: [sbi_hart_boot_data; NR_CPUS] = [sbi_hart_boot_data {
     stack_ptr: ::core::ptr::null_mut(),
 }; NR_CPUS];
 
-unsafe fn sbi_hsm_hart_start(hartid: ::core::ffi::c_ulong, saddr: ::core::ffi::c_ulong,
-                             priv_: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+unsafe fn sbi_hsm_hart_start(hartid: ::kernel::ffi::c_ulong, saddr: ::kernel::ffi::c_ulong,
+                             priv_: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     let ret: sbiret = sbi_ecall(
         SBI_EXT_HSM,
         SBI_EXT_HSM_HART_START,
@@ -39,7 +39,7 @@ unsafe fn sbi_hsm_hart_start(hartid: ::core::ffi::c_ulong, saddr: ::core::ffi::c
 
 // CONFIG_HOTPLUG_CPU condition from the C source.
 #[cfg(CONFIG_HOTPLUG_CPU)]
-unsafe fn sbi_hsm_hart_stop() -> ::core::ffi::c_int {
+unsafe fn sbi_hsm_hart_stop() -> ::kernel::ffi::c_int {
     let ret: sbiret = sbi_ecall(
         SBI_EXT_HSM,
         SBI_EXT_HSM_HART_STOP,
@@ -55,7 +55,7 @@ unsafe fn sbi_hsm_hart_stop() -> ::core::ffi::c_int {
 }
 
 #[cfg(CONFIG_HOTPLUG_CPU)]
-unsafe fn sbi_hsm_hart_get_status(hartid: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+unsafe fn sbi_hsm_hart_get_status(hartid: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     let ret: sbiret = sbi_ecall(
         SBI_EXT_HSM,
         SBI_EXT_HSM_HART_STATUS,
@@ -73,10 +73,10 @@ unsafe fn sbi_hsm_hart_get_status(hartid: ::core::ffi::c_ulong) -> ::core::ffi::
     }
 }
 
-unsafe fn sbi_cpu_start(cpuid: ::core::ffi::c_uint, tidle: *mut task_struct) -> ::core::ffi::c_int {
-    let boot_addr: ::core::ffi::c_ulong = __pa_symbol(&secondary_start_sbi as *const _);
-    let hartid: ::core::ffi::c_ulong = cpuid_to_hartid_map(cpuid);
-    let hsm_data: ::core::ffi::c_ulong;
+unsafe fn sbi_cpu_start(cpuid: ::kernel::ffi::c_uint, tidle: *mut task_struct) -> ::kernel::ffi::c_int {
+    let boot_addr: ::kernel::ffi::c_ulong = __pa_symbol(&secondary_start_sbi as *const _);
+    let hartid: ::kernel::ffi::c_ulong = cpuid_to_hartid_map(cpuid);
+    let hsm_data: ::kernel::ffi::c_ulong;
     let bdata: *mut sbi_hart_boot_data = &mut boot_data[cpuid as usize];
 
     /* Make sure tidle is updated */
@@ -91,16 +91,16 @@ unsafe fn sbi_cpu_start(cpuid: ::core::ffi::c_uint, tidle: *mut task_struct) -> 
 
 #[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn sbi_cpu_stop() {
-    let ret: ::core::ffi::c_int;
+    let ret: ::kernel::ffi::c_int;
 
     ret = sbi_hsm_hart_stop();
     pr_crit!("Unable to stop the cpu %d (%d)\n", smp_processor_id(), ret);
 }
 
 #[cfg(CONFIG_HOTPLUG_CPU)]
-unsafe fn sbi_cpu_is_stopped(cpuid: ::core::ffi::c_uint) -> bool {
-    let rc: ::core::ffi::c_int;
-    let hartid: ::core::ffi::c_ulong = cpuid_to_hartid_map(cpuid);
+unsafe fn sbi_cpu_is_stopped(cpuid: ::kernel::ffi::c_uint) -> bool {
+    let rc: ::kernel::ffi::c_int;
+    let hartid: ::kernel::ffi::c_ulong = cpuid_to_hartid_map(cpuid);
 
     rc = sbi_hsm_hart_get_status(hartid);
 

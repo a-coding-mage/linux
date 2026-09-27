@@ -16,8 +16,8 @@ pub struct kern_ipc_perm {
     pub cuid: kuid_t,
     pub cgid: kgid_t,
     pub mode: umode_t,
-    pub seq: core::ffi::c_ulong,
-    pub security: *mut core::ffi::c_void,
+    pub seq: kernel::ffi::c_ulong,
+    pub security: *mut kernel::ffi::c_void,
 
     pub khtnode: rhash_head,
 

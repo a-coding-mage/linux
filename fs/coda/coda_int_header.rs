@@ -20,19 +20,19 @@ pub type loff_t = i64;
 
 unsafe extern "C" {
     pub static mut coda_fs_type: file_system_type;
-    pub static mut coda_timeout: ::core::ffi::c_ulong;
-    pub static mut coda_hard: ::core::ffi::c_int;
-    pub static mut coda_fake_statfs: ::core::ffi::c_int;
+    pub static mut coda_timeout: ::kernel::ffi::c_ulong;
+    pub static mut coda_hard: ::kernel::ffi::c_int;
+    pub static mut coda_fake_statfs: ::kernel::ffi::c_int;
 
     pub fn coda_destroy_inodecache();
     // The C declaration carries the kernel's __init attribute.
-    pub fn coda_init_inodecache() -> ::core::ffi::c_int;
+    pub fn coda_init_inodecache() -> ::kernel::ffi::c_int;
     pub fn coda_fsync(
         coda_file: *mut file,
         start: loff_t,
         end: loff_t,
-        datasync: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        datasync: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // When CONFIG_SYSCTL is enabled, these are supplied externally by the C

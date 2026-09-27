@@ -29,34 +29,34 @@ pub const HSI_EVENT_STOP_RX: u32 = 1;
 
 #[repr(C)]
 pub struct hsi_channel {
-    pub id: ::core::ffi::c_uint,
-    pub name: *const ::core::ffi::c_char,
+    pub id: ::kernel::ffi::c_uint,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub union hsi_config__bindgen_ty_1 {
-    pub flow: ::core::ffi::c_uint,
-    pub arb_mode: ::core::ffi::c_uint,
+    pub flow: ::kernel::ffi::c_uint,
+    pub arb_mode: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct hsi_config {
-    pub mode: ::core::ffi::c_uint,
+    pub mode: ::kernel::ffi::c_uint,
     pub channels: *mut hsi_channel,
-    pub num_channels: ::core::ffi::c_uint,
-    pub num_hw_channels: ::core::ffi::c_uint,
-    pub speed: ::core::ffi::c_uint,
+    pub num_channels: ::kernel::ffi::c_uint,
+    pub num_hw_channels: ::kernel::ffi::c_uint,
+    pub speed: ::kernel::ffi::c_uint,
     pub __bindgen_anon_1: hsi_config__bindgen_ty_1,
 }
 
 #[repr(C)]
 pub struct hsi_board_info {
-    pub name: *const ::core::ffi::c_char,
-    pub hsi_id: ::core::ffi::c_uint,
-    pub port: ::core::ffi::c_uint,
+    pub name: *const ::kernel::ffi::c_char,
+    pub hsi_id: ::kernel::ffi::c_uint,
+    pub port: ::kernel::ffi::c_uint,
     pub tx_cfg: hsi_config,
     pub rx_cfg: hsi_config,
-    pub platform_data: *mut ::core::ffi::c_void,
+    pub platform_data: *mut ::kernel::ffi::c_void,
     pub archdata: *mut dev_archdata,
 }
 
@@ -64,16 +64,16 @@ pub struct hsi_board_info {
 unsafe extern "C" {
     pub fn hsi_register_board_info(
         info: *const hsi_board_info,
-        len: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        len: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_HSI_BOARDINFO))]
 #[inline]
 pub unsafe fn hsi_register_board_info(
     _info: *const hsi_board_info,
-    _len: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    _len: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -82,8 +82,8 @@ pub struct hsi_client {
     pub device: device,
     pub tx_cfg: hsi_config,
     pub rx_cfg: hsi_config,
-    pub ehandler: Option<unsafe extern "C" fn(*mut hsi_client, ::core::ffi::c_ulong)>,
-    pub pclaimed: ::core::ffi::c_uint,
+    pub ehandler: Option<unsafe extern "C" fn(*mut hsi_client, ::kernel::ffi::c_ulong)>,
+    pub pclaimed: ::kernel::ffi::c_uint,
     pub nb: notifier_block,
 }
 
@@ -93,21 +93,21 @@ macro_rules! to_hsi_client {
 }
 
 #[inline]
-pub unsafe fn hsi_client_set_drvdata(cl: *mut hsi_client, data: *mut ::core::ffi::c_void) {
+pub unsafe fn hsi_client_set_drvdata(cl: *mut hsi_client, data: *mut ::kernel::ffi::c_void) {
     dev_set_drvdata(&mut (*cl).device, data);
 }
 
 #[inline]
-pub unsafe fn hsi_client_drvdata(cl: *mut hsi_client) -> *mut ::core::ffi::c_void {
+pub unsafe fn hsi_client_drvdata(cl: *mut hsi_client) -> *mut ::kernel::ffi::c_void {
     dev_get_drvdata(&mut (*cl).device)
 }
 
 unsafe extern "C" {
     pub fn hsi_register_port_event(
         cl: *mut hsi_client,
-        handler: Option<unsafe extern "C" fn(*mut hsi_client, ::core::ffi::c_ulong)>,
-    ) -> ::core::ffi::c_int;
-    pub fn hsi_unregister_port_event(cl: *mut hsi_client) -> ::core::ffi::c_int;
+        handler: Option<unsafe extern "C" fn(*mut hsi_client, ::kernel::ffi::c_ulong)>,
+    ) -> ::kernel::ffi::c_int;
+    pub fn hsi_unregister_port_event(cl: *mut hsi_client) -> ::kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -121,7 +121,7 @@ macro_rules! to_hsi_client_driver {
 }
 
 unsafe extern "C" {
-    pub fn hsi_register_client_driver(drv: *mut hsi_client_driver) -> ::core::ffi::c_int;
+    pub fn hsi_register_client_driver(drv: *mut hsi_client_driver) -> ::kernel::ffi::c_int;
 }
 
 #[inline]
@@ -134,18 +134,18 @@ pub struct hsi_msg {
     pub link: list_head,
     pub cl: *mut hsi_client,
     pub sgt: sg_table,
-    pub context: *mut ::core::ffi::c_void,
+    pub context: *mut ::kernel::ffi::c_void,
     pub complete: Option<unsafe extern "C" fn(*mut hsi_msg)>,
     pub destructor: Option<unsafe extern "C" fn(*mut hsi_msg)>,
-    pub status: ::core::ffi::c_int,
-    pub actual_len: ::core::ffi::c_uint,
-    pub channel: ::core::ffi::c_uint,
-    pub ttype: ::core::ffi::c_uint,
-    pub break_frame: ::core::ffi::c_uint,
+    pub status: ::kernel::ffi::c_int,
+    pub actual_len: ::kernel::ffi::c_uint,
+    pub channel: ::kernel::ffi::c_uint,
+    pub ttype: ::kernel::ffi::c_uint,
+    pub break_frame: ::kernel::ffi::c_uint,
 }
 
 unsafe extern "C" {
-    pub fn hsi_alloc_msg(n_frag: ::core::ffi::c_uint, flags: gfp_t) -> *mut hsi_msg;
+    pub fn hsi_alloc_msg(n_frag: ::kernel::ffi::c_uint, flags: gfp_t) -> *mut hsi_msg;
     pub fn hsi_free_msg(msg: *mut hsi_msg);
 }
 
@@ -154,16 +154,16 @@ pub struct hsi_port {
     pub device: device,
     pub tx_cfg: hsi_config,
     pub rx_cfg: hsi_config,
-    pub num: ::core::ffi::c_uint,
-    pub shared: ::core::ffi::c_uint,
-    pub claimed: ::core::ffi::c_int,
+    pub num: ::kernel::ffi::c_uint,
+    pub shared: ::kernel::ffi::c_uint,
+    pub claimed: ::kernel::ffi::c_int,
     pub lock: mutex,
-    pub async_: Option<unsafe extern "C" fn(*mut hsi_msg) -> ::core::ffi::c_int>,
-    pub setup: Option<unsafe extern "C" fn(*mut hsi_client) -> ::core::ffi::c_int>,
-    pub flush: Option<unsafe extern "C" fn(*mut hsi_client) -> ::core::ffi::c_int>,
-    pub start_tx: Option<unsafe extern "C" fn(*mut hsi_client) -> ::core::ffi::c_int>,
-    pub stop_tx: Option<unsafe extern "C" fn(*mut hsi_client) -> ::core::ffi::c_int>,
-    pub release: Option<unsafe extern "C" fn(*mut hsi_client) -> ::core::ffi::c_int>,
+    pub async_: Option<unsafe extern "C" fn(*mut hsi_msg) -> ::kernel::ffi::c_int>,
+    pub setup: Option<unsafe extern "C" fn(*mut hsi_client) -> ::kernel::ffi::c_int>,
+    pub flush: Option<unsafe extern "C" fn(*mut hsi_client) -> ::kernel::ffi::c_int>,
+    pub start_tx: Option<unsafe extern "C" fn(*mut hsi_client) -> ::kernel::ffi::c_int>,
+    pub stop_tx: Option<unsafe extern "C" fn(*mut hsi_client) -> ::kernel::ffi::c_int>,
+    pub release: Option<unsafe extern "C" fn(*mut hsi_client) -> ::kernel::ffi::c_int>,
     pub n_head: blocking_notifier_head,
 }
 

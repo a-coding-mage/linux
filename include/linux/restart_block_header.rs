@@ -42,8 +42,8 @@ pub enum timespec_type {
  */
 #[repr(C)]
 pub struct restart_block {
-    pub arch_data: ::core::ffi::c_ulong,
-    pub fn_: Option<unsafe extern "C" fn(*mut restart_block) -> ::core::ffi::c_long>,
+    pub arch_data: ::kernel::ffi::c_ulong,
+    pub fn_: Option<unsafe extern "C" fn(*mut restart_block) -> ::kernel::ffi::c_long>,
     pub data: restart_block_data,
 }
 
@@ -84,13 +84,13 @@ pub struct restart_block_nanosleep {
 #[repr(C)]
 pub struct restart_block_poll {
     pub ufds: *mut pollfd,
-    pub nfds: ::core::ffi::c_int,
-    pub has_timeout: ::core::ffi::c_int,
+    pub nfds: ::kernel::ffi::c_int,
+    pub has_timeout: ::kernel::ffi::c_int,
     pub end_time: timespec64,
 }
 
 extern "C" {
-    pub fn do_no_restart_syscall(parm: *mut restart_block) -> ::core::ffi::c_long;
+    pub fn do_no_restart_syscall(parm: *mut restart_block) -> ::kernel::ffi::c_long;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

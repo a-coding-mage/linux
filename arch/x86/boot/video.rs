@@ -87,9 +87,9 @@ unsafe fn get_entry() -> u32 {
     loop {
         key = getchar();
 
-        if key == b'\b' as i32 {
+        if key == b'\x08' as i32 {
             if len > 0 {
-                puts("\b \b");
+                puts("\x08 \x08");
                 len -= 1;
             }
         } else if (key >= b'0' as i32 && key <= b'9' as i32) ||
@@ -165,7 +165,7 @@ unsafe fn mode_menu() -> u32 {
         key = getchar_timeout();
         if key == b' ' as i32 || key == 0 { return VIDEO_CURRENT_MODE; }
         if key == b'\r' as i32 { break; }
-        putchar(b'\a' as i32);
+        putchar(b'\x07' as i32);
     }
     loop {
         display_menu();

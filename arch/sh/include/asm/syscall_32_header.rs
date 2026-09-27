@@ -8,9 +8,9 @@
 pub unsafe fn syscall_get_nr(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-) -> libc::c_long {
+) -> kernel::ffi::c_long {
     if (*regs).tra >= 0 {
-        (*regs).regs[3] as libc::c_long
+        (*regs).regs[3] as kernel::ffi::c_long
     } else {
         -1
     }
@@ -20,7 +20,7 @@ pub unsafe fn syscall_get_nr(
 pub unsafe fn syscall_set_nr(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    nr: libc::c_int,
+    nr: kernel::ffi::c_int,
 ) {
     /*
      * Unlike syscall_get_nr(), syscall_set_nr() can be called only when
@@ -42,9 +42,9 @@ pub unsafe fn syscall_rollback(_task: *mut task_struct, _regs: *mut pt_regs) {
 pub unsafe fn syscall_get_error(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-) -> libc::c_long {
+) -> kernel::ffi::c_long {
     if IS_ERR_VALUE((*regs).regs[0]) {
-        (*regs).regs[0] as libc::c_long
+        (*regs).regs[0] as kernel::ffi::c_long
     } else {
         0
     }
@@ -54,25 +54,25 @@ pub unsafe fn syscall_get_error(
 pub unsafe fn syscall_get_return_value(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-) -> libc::c_long {
-    (*regs).regs[0] as libc::c_long
+) -> kernel::ffi::c_long {
+    (*regs).regs[0] as kernel::ffi::c_long
 }
 
 #[inline]
 pub unsafe fn syscall_set_return_value(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    error: libc::c_int,
-    val: libc::c_long,
+    error: kernel::ffi::c_int,
+    val: kernel::ffi::c_long,
 ) {
-    (*regs).regs[0] = if error != 0 { error as libc::c_long } else { val } as _;
+    (*regs).regs[0] = if error != 0 { error as kernel::ffi::c_long } else { val } as _;
 }
 
 #[inline]
 pub unsafe fn syscall_get_arguments(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    args: *mut libc::c_ulong,
+    args: *mut kernel::ffi::c_ulong,
 ) {
     /* Argument pattern is: R4, R5, R6, R7, R0, R1 */
     *args.add(5) = (*regs).regs[1] as _;
@@ -87,7 +87,7 @@ pub unsafe fn syscall_get_arguments(
 pub unsafe fn syscall_set_arguments(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    args: *const libc::c_ulong,
+    args: *const kernel::ffi::c_ulong,
 ) {
     (*regs).regs[1] = *args.add(5) as _;
     (*regs).regs[0] = *args.add(4) as _;
@@ -98,7 +98,7 @@ pub unsafe fn syscall_set_arguments(
 }
 
 #[inline]
-pub unsafe fn syscall_get_arch(_task: *mut task_struct) -> libc::c_int {
+pub unsafe fn syscall_get_arch(_task: *mut task_struct) -> kernel::ffi::c_int {
     let mut arch = AUDIT_ARCH_SH;
 
     // CONFIG_CPU_LITTLE_ENDIAN conditionally adds __AUDIT_ARCH_LE.

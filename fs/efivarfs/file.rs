@@ -9,12 +9,12 @@
 
 unsafe fn efivarfs_file_write(
     file: *mut file,
-    userbuf: *const core::ffi::c_char,
+    userbuf: *const kernel::ffi::c_char,
     count: usize,
     ppos: *mut loff_t,
 ) -> ssize_t {
     let var = (*file).private_data as *mut efivar_entry;
-    let mut data: *mut core::ffi::c_void;
+    let mut data: *mut kernel::ffi::c_void;
     let mut attributes: u32 = 0;
     let inode = (*(*file).f_mapping).host;
     let mut datasize = count.wrapping_sub(core::mem::size_of::<u32>());
@@ -26,8 +26,8 @@ unsafe fn efivarfs_file_write(
     }
 
     if copy_from_user(
-        &mut attributes as *mut u32 as *mut core::ffi::c_void,
-        userbuf as *const core::ffi::c_void,
+        &mut attributes as *mut u32 as *mut kernel::ffi::c_void,
+        userbuf as *const kernel::ffi::c_void,
         core::mem::size_of::<u32>(),
     ) != 0 {
         return -EFAULT;
@@ -38,7 +38,7 @@ unsafe fn efivarfs_file_write(
     }
 
     data = memdup_user(
-        userbuf.add(core::mem::size_of::<u32>()) as *const core::ffi::c_void,
+        userbuf.add(core::mem::size_of::<u32>()) as *const kernel::ffi::c_void,
         datasize,
     );
     if IS_ERR(data) {
@@ -73,7 +73,7 @@ unsafe fn efivarfs_file_write(
     bytes
 }
 
-unsafe fn goto_out(inode: *mut inode, data: *mut core::ffi::c_void, bytes: ssize_t) -> ssize_t {
+unsafe fn goto_out(inode: *mut inode, data: *mut kernel::ffi::c_void, bytes: ssize_t) -> ssize_t {
     inode_unlock(inode);
     kfree(data);
     bytes
@@ -81,14 +81,14 @@ unsafe fn goto_out(inode: *mut inode, data: *mut core::ffi::c_void, bytes: ssize
 
 unsafe fn efivarfs_file_read(
     file: *mut file,
-    userbuf: *mut core::ffi::c_char,
+    userbuf: *mut kernel::ffi::c_char,
     count: usize,
     ppos: *mut loff_t,
 ) -> ssize_t {
     let var = (*file).private_data as *mut efivar_entry;
     let mut datasize: usize = 0;
     let mut attributes: u32 = 0;
-    let data: *mut core::ffi::c_void;
+    let data: *mut kernel::ffi::c_void;
     let mut size: ssize_t = 0;
     let mut err: int;
 
@@ -114,7 +114,7 @@ unsafe fn efivarfs_file_read(
         return size;
     }
 
-    memcpy(data, &attributes as *const u32 as *const core::ffi::c_void, core::mem::size_of::<u32>());
+    memcpy(data, &attributes as *const u32 as *const kernel::ffi::c_void, core::mem::size_of::<u32>());
     size = simple_read_from_buffer(userbuf, count, ppos, data, datasize + core::mem::size_of::<u32>());
     kfree(data);
     size
@@ -134,7 +134,7 @@ unsafe fn efivarfs_file_release(inode: *mut inode, file: *mut file) -> int {
 
 unsafe fn efivarfs_file_open(inode: *mut inode, file: *mut file) -> int {
     let entry = (*inode).i_private as *mut efivar_entry;
-    (*file).private_data = entry as *mut core::ffi::c_void;
+    (*file).private_data = entry as *mut kernel::ffi::c_void;
     inode_lock(inode);
     (*entry).open_count += 1;
     inode_unlock(inode);

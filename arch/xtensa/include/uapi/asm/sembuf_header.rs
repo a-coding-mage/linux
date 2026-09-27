@@ -11,7 +11,7 @@
  * - 2 miscellaneous 32-bit values
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct semid64_ds {

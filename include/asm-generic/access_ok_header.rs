@@ -26,9 +26,9 @@
  * for constant `size` and `limit` values.
  */
 #[inline]
-pub unsafe fn __access_ok(ptr: *const core::ffi::c_void, size: libc::c_ulong) -> bool {
-    let limit: libc::c_ulong = TASK_SIZE_MAX;
-    let addr: libc::c_ulong = ptr as libc::c_ulong;
+pub unsafe fn __access_ok(ptr: *const kernel::ffi::c_void, size: kernel::ffi::c_ulong) -> bool {
+    let limit: kernel::ffi::c_ulong = TASK_SIZE_MAX;
+    let addr: kernel::ffi::c_ulong = ptr as kernel::ffi::c_ulong;
 
     // Build-time conditions corresponding to IS_ENABLED(CONFIG_ALTERNATE_USER_ADDRESS_SPACE)
     // and IS_ENABLED(CONFIG_MMU) are supplied by the target configuration.

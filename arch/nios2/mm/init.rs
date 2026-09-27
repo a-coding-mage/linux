@@ -17,27 +17,27 @@
 
 extern "C" {
     static mut pgd_current: *mut pgd_t;
-    static mut max_low_pfn: ::core::ffi::c_ulong;
-    static mut empty_zero_page: ::core::ffi::c_uchar;
+    static mut max_low_pfn: ::kernel::ffi::c_ulong;
+    static mut empty_zero_page: ::kernel::ffi::c_uchar;
 
     fn pagetable_init();
-    fn flush_dcache_range(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
+    fn flush_dcache_range(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
     fn flush_tlb_all();
-    fn get_zeroed_page(gfp: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    fn memcpy(dst: *mut ::core::ffi::c_void, src: *const ::core::ffi::c_void, n: usize) -> *mut ::core::ffi::c_void;
-    fn flush_icache_range(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    fn virt_to_page(addr: ::core::ffi::c_ulong) -> *mut page;
+    fn get_zeroed_page(gfp: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    fn memcpy(dst: *mut ::kernel::ffi::c_void, src: *const ::kernel::ffi::c_void, n: usize) -> *mut ::kernel::ffi::c_void;
+    fn flush_icache_range(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    fn virt_to_page(addr: ::kernel::ffi::c_ulong) -> *mut page;
     fn mmap_write_lock(mm: *mut mm_struct);
     fn mmap_write_unlock(mm: *mut mm_struct);
     fn _install_special_mapping(
         mm: *mut mm_struct,
-        addr: ::core::ffi::c_ulong,
-        len: ::core::ffi::c_ulong,
-        vm_flags: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
+        len: ::kernel::ffi::c_ulong,
+        vm_flags: ::kernel::ffi::c_ulong,
         spec: *mut vm_special_mapping,
     ) -> *mut vm_area_struct;
     fn is_err(ptr: *mut vm_area_struct) -> bool;
-    fn ptr_err(ptr: *mut vm_area_struct) -> ::core::ffi::c_long;
+    fn ptr_err(ptr: *mut vm_area_struct) -> ::kernel::ffi::c_long;
 }
 
 #[repr(C)]
@@ -50,22 +50,22 @@ pub struct page;
 pub struct mm_struct;
 #[repr(C)]
 pub struct vm_area_struct {
-    pub vm_start: ::core::ffi::c_ulong,
+    pub vm_start: ::kernel::ffi::c_ulong,
 }
 #[repr(C)]
 pub struct linux_binprm;
 #[repr(C)]
-pub struct pgprot_t(::core::ffi::c_ulong);
+pub struct pgprot_t(::kernel::ffi::c_ulong);
 #[repr(C)]
 pub struct vm_special_mapping {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub pages: *mut *mut page,
 }
 
 const PTRS_PER_PGD: usize = 1;
 const PTRS_PER_PTE: usize = 1;
 
-pub unsafe fn arch_zone_limits_init(max_zone_pfns: *mut ::core::ffi::c_ulong) {
+pub unsafe fn arch_zone_limits_init(max_zone_pfns: *mut ::kernel::ffi::c_ulong) {
     *max_zone_pfns.add(ZONE_NORMAL) = max_low_pfn;
 }
 
@@ -80,8 +80,8 @@ pub unsafe fn paging_init() {
     pgd_current = swapper_pg_dir.as_mut_ptr();
 
     flush_dcache_range(
-        (&raw mut empty_zero_page) as *mut _ as ::core::ffi::c_ulong,
-        (&raw mut empty_zero_page) as *mut _ as ::core::ffi::c_ulong + PAGE_SIZE,
+        (&raw mut empty_zero_page) as *mut _ as ::kernel::ffi::c_ulong,
+        (&raw mut empty_zero_page) as *mut _ as ::kernel::ffi::c_ulong + PAGE_SIZE,
     );
 }
 
@@ -93,14 +93,14 @@ pub static mut swapper_pg_dir: [pgd_t; PTRS_PER_PGD] = [pgd_t; PTRS_PER_PGD];
 pub static mut invalid_pte_table: [pte_t; PTRS_PER_PTE] = [pte_t; PTRS_PER_PTE];
 static mut kuser_page: [*mut page; 1] = [::core::ptr::null_mut(); 1];
 static mut vdso_mapping: vm_special_mapping = vm_special_mapping {
-    name: b"[vdso]\0".as_ptr() as *const ::core::ffi::c_char,
+    name: b"[vdso]\0".as_ptr() as *const ::kernel::ffi::c_char,
     pages: &raw mut kuser_page,
 };
 
-unsafe fn alloc_kuser_page() -> ::core::ffi::c_int {
+unsafe fn alloc_kuser_page() -> ::kernel::ffi::c_int {
     unsafe extern "C" {
-        static __kuser_helper_start: ::core::ffi::c_char;
-        static __kuser_helper_end: ::core::ffi::c_char;
+        static __kuser_helper_start: ::kernel::ffi::c_char;
+        static __kuser_helper_end: ::kernel::ffi::c_char;
     }
     let kuser_sz = (&raw const __kuser_helper_end as usize)
         .wrapping_sub(&raw const __kuser_helper_start as usize);
@@ -111,8 +111,8 @@ unsafe fn alloc_kuser_page() -> ::core::ffi::c_int {
 
     /* Copy kuser helpers */
     memcpy(
-        vpage as *mut ::core::ffi::c_void,
-        &raw const __kuser_helper_start as *const ::core::ffi::c_void,
+        vpage as *mut ::kernel::ffi::c_void,
+        &raw const __kuser_helper_start as *const ::kernel::ffi::c_void,
         kuser_sz,
     );
 
@@ -124,8 +124,8 @@ unsafe fn alloc_kuser_page() -> ::core::ffi::c_int {
 
 pub unsafe fn arch_setup_additional_pages(
     bprm: *mut linux_binprm,
-    uses_interp: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    uses_interp: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let mm = current_mm();
     mmap_write_lock(mm);
 
@@ -140,12 +140,12 @@ pub unsafe fn arch_setup_additional_pages(
 
     mmap_write_unlock(mm);
 
-    if is_err(vma) { ptr_err(vma) as ::core::ffi::c_int } else { 0 }
+    if is_err(vma) { ptr_err(vma) as ::kernel::ffi::c_int } else { 0 }
 }
 
-pub unsafe fn arch_vma_name(vma: *mut vm_area_struct) -> *const ::core::ffi::c_char {
+pub unsafe fn arch_vma_name(vma: *mut vm_area_struct) -> *const ::kernel::ffi::c_char {
     if (*vma).vm_start == KUSER_BASE {
-        b"[kuser]\0".as_ptr() as *const ::core::ffi::c_char
+        b"[kuser]\0".as_ptr() as *const ::kernel::ffi::c_char
     } else {
         ::core::ptr::null()
     }

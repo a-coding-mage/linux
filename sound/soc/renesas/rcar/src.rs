@@ -24,7 +24,7 @@
 
 // C dependencies: <linux/of_irq.h>, "rsnd.h"
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 use core::mem::size_of;
 use core::ptr;
 
@@ -139,7 +139,7 @@ const RSND_MOD_SRC: c_int = 0;
 const EINVAL: c_int = 22;
 const ENOMEM: c_int = 12;
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 unsafe extern "C" {
     fn rsnd_mod_write(mod_: *mut rsnd_mod, reg: c_int, data: u32);
@@ -217,7 +217,7 @@ unsafe extern "C" {
     fn clk_prepare_enable(clk: *mut clk) -> c_int;
 }
 
-type c_long = core::ffi::c_long;
+type c_long = kernel::ffi::c_long;
 
 unsafe fn rsnd_src_get(priv_: *mut rsnd_priv, id: c_int) -> *mut rsnd_src {
     ((*priv_).src as *mut rsnd_src).add(id as usize)

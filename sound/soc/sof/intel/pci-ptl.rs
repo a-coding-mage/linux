@@ -19,20 +19,20 @@
 // #include "ptl.h"
 
 extern "C" {
-    static snd_soc_acpi_intel_ptl_machines: *const core::ffi::c_void;
-    static snd_soc_acpi_intel_ptl_sdw_machines: *const core::ffi::c_void;
-    static ptl_chip_info: core::ffi::c_void;
-    static wcl_chip_info: core::ffi::c_void;
-    static sof_pci_pm: core::ffi::c_void;
+    static snd_soc_acpi_intel_ptl_machines: *const kernel::ffi::c_void;
+    static snd_soc_acpi_intel_ptl_sdw_machines: *const kernel::ffi::c_void;
+    static ptl_chip_info: kernel::ffi::c_void;
+    static wcl_chip_info: kernel::ffi::c_void;
+    static sof_pci_pm: kernel::ffi::c_void;
 
     fn sof_ptl_set_ops(
         sdev: *mut snd_sof_dev,
         ops: *mut snd_sof_dsp_ops,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     fn hda_pci_intel_probe(
         pci: *mut pci_dev,
         id: *const pci_device_id,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     fn sof_pci_remove(pci: *mut pci_dev);
     fn sof_pci_shutdown(pci: *mut pci_dev);
 }
@@ -55,48 +55,48 @@ pub struct pci_dev {
 #[repr(C)]
 pub struct sof_dev_desc {
     pub use_acpi_target_states: bool,
-    pub machines: *const core::ffi::c_void,
-    pub alt_machines: *const core::ffi::c_void,
-    pub resindex_lpe_base: core::ffi::c_int,
-    pub resindex_pcicfg_base: core::ffi::c_int,
-    pub resindex_imr_base: core::ffi::c_int,
-    pub irqindex_host_ipc: core::ffi::c_int,
-    pub chip_info: *const core::ffi::c_void,
-    pub ipc_supported_mask: core::ffi::c_uint,
-    pub ipc_default: core::ffi::c_uint,
+    pub machines: *const kernel::ffi::c_void,
+    pub alt_machines: *const kernel::ffi::c_void,
+    pub resindex_lpe_base: kernel::ffi::c_int,
+    pub resindex_pcicfg_base: kernel::ffi::c_int,
+    pub resindex_imr_base: kernel::ffi::c_int,
+    pub irqindex_host_ipc: kernel::ffi::c_int,
+    pub chip_info: *const kernel::ffi::c_void,
+    pub ipc_supported_mask: kernel::ffi::c_uint,
+    pub ipc_default: kernel::ffi::c_uint,
     pub dspless_mode_supported: bool,
     pub on_demand_dsp_boot: bool,
-    pub default_fw_path: [*const core::ffi::c_char; SOF_IPC_TYPE_COUNT],
-    pub default_lib_path: [*const core::ffi::c_char; SOF_IPC_TYPE_COUNT],
-    pub default_tplg_path: [*const core::ffi::c_char; SOF_IPC_TYPE_COUNT],
-    pub default_fw_filename: [*const core::ffi::c_char; SOF_IPC_TYPE_COUNT],
-    pub nocodec_tplg_filename: *const core::ffi::c_char,
+    pub default_fw_path: [*const kernel::ffi::c_char; SOF_IPC_TYPE_COUNT],
+    pub default_lib_path: [*const kernel::ffi::c_char; SOF_IPC_TYPE_COUNT],
+    pub default_tplg_path: [*const kernel::ffi::c_char; SOF_IPC_TYPE_COUNT],
+    pub default_fw_filename: [*const kernel::ffi::c_char; SOF_IPC_TYPE_COUNT],
+    pub nocodec_tplg_filename: *const kernel::ffi::c_char,
     pub ops: *mut snd_sof_dsp_ops,
-    pub ops_init: Option<unsafe extern "C" fn(*mut snd_sof_dev) -> core::ffi::c_int>,
+    pub ops_init: Option<unsafe extern "C" fn(*mut snd_sof_dev) -> kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct pci_device_id {
-    pub vendor: core::ffi::c_uint,
-    pub device: core::ffi::c_uint,
-    pub subvendor: core::ffi::c_uint,
-    pub subdevice: core::ffi::c_uint,
-    pub class: core::ffi::c_uint,
-    pub class_mask: core::ffi::c_uint,
+    pub vendor: kernel::ffi::c_uint,
+    pub device: kernel::ffi::c_uint,
+    pub subvendor: kernel::ffi::c_uint,
+    pub subdevice: kernel::ffi::c_uint,
+    pub class: kernel::ffi::c_uint,
+    pub class_mask: kernel::ffi::c_uint,
     pub driver_data: usize,
 }
 
 #[repr(C)]
 pub struct device_driver {
-    pub pm: *const core::ffi::c_void,
+    pub pm: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct pci_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id_table: *const pci_device_id,
     pub probe: Option<
-        unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> core::ffi::c_int,
+        unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> kernel::ffi::c_int,
     >,
     pub remove: Option<unsafe extern "C" fn(*mut pci_dev)>,
     pub shutdown: Option<unsafe extern "C" fn(*mut pci_dev)>,
@@ -106,32 +106,32 @@ pub struct pci_driver {
 const SOF_IPC_TYPE_4: usize = 4;
 const SOF_IPC_TYPE_COUNT: usize = SOF_IPC_TYPE_4 + 1;
 
-const PCI_VENDOR_ID_INTEL: core::ffi::c_uint = 0x8086;
+const PCI_VENDOR_ID_INTEL: kernel::ffi::c_uint = 0x8086;
 
 extern "C" {
-    static HDA_PTL: core::ffi::c_uint;
-    static HDA_PTL_H: core::ffi::c_uint;
-    static HDA_WCL: core::ffi::c_uint;
+    static HDA_PTL: kernel::ffi::c_uint;
+    static HDA_PTL_H: kernel::ffi::c_uint;
+    static HDA_WCL: kernel::ffi::c_uint;
 }
 
-const fn bit(nr: usize) -> core::ffi::c_uint {
+const fn bit(nr: usize) -> kernel::ffi::c_uint {
     1u32 << nr
 }
 
-const fn null_path_array() -> [*const core::ffi::c_char; SOF_IPC_TYPE_COUNT] {
+const fn null_path_array() -> [*const kernel::ffi::c_char; SOF_IPC_TYPE_COUNT] {
     [core::ptr::null(); SOF_IPC_TYPE_COUNT]
 }
 
 macro_rules! cstr {
     ($s:literal) => {
-        concat!($s, "\0").as_ptr() as *const core::ffi::c_char
+        concat!($s, "\0").as_ptr() as *const kernel::ffi::c_char
     };
 }
 
 // PantherLake ops
 static mut sof_ptl_ops: snd_sof_dsp_ops = snd_sof_dsp_ops { _private: [] };
 
-unsafe extern "C" fn sof_ptl_ops_init(sdev: *mut snd_sof_dev) -> core::ffi::c_int {
+unsafe extern "C" fn sof_ptl_ops_init(sdev: *mut snd_sof_dev) -> kernel::ffi::c_int {
     unsafe { sof_ptl_set_ops(sdev, core::ptr::addr_of_mut!(sof_ptl_ops)) }
 }
 
@@ -156,7 +156,7 @@ static ptl_desc: sof_dev_desc = {
         irqindex_host_ipc: -1,
         chip_info: unsafe { core::ptr::addr_of!(ptl_chip_info) },
         ipc_supported_mask: bit(SOF_IPC_TYPE_4),
-        ipc_default: SOF_IPC_TYPE_4 as core::ffi::c_uint,
+        ipc_default: SOF_IPC_TYPE_4 as kernel::ffi::c_uint,
         dspless_mode_supported: true,
         on_demand_dsp_boot: true,
         default_fw_path,
@@ -190,7 +190,7 @@ static wcl_desc: sof_dev_desc = {
         irqindex_host_ipc: -1,
         chip_info: unsafe { core::ptr::addr_of!(wcl_chip_info) },
         ipc_supported_mask: bit(SOF_IPC_TYPE_4),
-        ipc_default: SOF_IPC_TYPE_4 as core::ffi::c_uint,
+        ipc_default: SOF_IPC_TYPE_4 as kernel::ffi::c_uint,
         dspless_mode_supported: true,
         on_demand_dsp_boot: true,
         default_fw_path,
@@ -204,8 +204,8 @@ static wcl_desc: sof_dev_desc = {
 };
 
 const fn pci_device_data(
-    vendor: core::ffi::c_uint,
-    device: core::ffi::c_uint,
+    vendor: kernel::ffi::c_uint,
+    device: kernel::ffi::c_uint,
     data: *const sof_dev_desc,
 ) -> pci_device_id {
     pci_device_id {

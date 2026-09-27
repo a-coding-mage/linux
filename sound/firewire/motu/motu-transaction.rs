@@ -7,7 +7,7 @@
 
 // C dependency intent: translated from `#include "motu.h"`.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 type u32 = u32;
 type __be32 = u32;
@@ -115,8 +115,8 @@ extern "C" {
     fn fw_core_remove_address_handler(handler: *mut fw_address_handler);
     fn wake_up(wait: *mut wait_queue_head_t);
 
-    fn spin_lock_irqsave(lock: *mut spinlock_t) -> ::core::ffi::c_ulong;
-    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: ::core::ffi::c_ulong);
+    fn spin_lock_irqsave(lock: *mut spinlock_t) -> ::kernel::ffi::c_ulong;
+    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: ::kernel::ffi::c_ulong);
 }
 
 #[inline]

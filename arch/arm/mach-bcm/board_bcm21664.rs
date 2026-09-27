@@ -12,8 +12,8 @@ unsafe fn bcm21664_init() {
 
 static BCM21664_DT_COMPAT_BCM21664: &[u8] = b"brcm,bcm21664\0";
 
-static BCM21664_DT_COMPAT: [*const core::ffi::c_char; 2] = [
-    BCM21664_DT_COMPAT_BCM21664.as_ptr() as *const core::ffi::c_char,
+static BCM21664_DT_COMPAT: [*const kernel::ffi::c_char; 2] = [
+    BCM21664_DT_COMPAT_BCM21664.as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 

@@ -15,7 +15,7 @@ pub const HOST_MASK: u8 = 32;
 
 #[repr(C)]
 pub struct bitmap_ip {
-    pub members: *mut core::ffi::c_ulong,
+    pub members: *mut kernel::ffi::c_ulong,
     pub first_ip: u32,
     pub last_ip: u32,
     pub elements: u32,
@@ -130,7 +130,7 @@ unsafe fn bitmap_ip_create(net: *mut net, set: *mut ip_set, tb: *mut *mut nlattr
     else { let mut mask_bits = 0u8; let mask = range_to_mask(first_ip, last_ip, &mut mask_bits); if (mask == 0 && (first_ip != 0 || last_ip != 0xFFFF_FFFF)) || netmask <= mask_bits { return -IPSET_ERR_BITMAP_RANGE; } hosts = 2u32 << (32 - netmask - 1); elements = 2u64 << (netmask - mask_bits - 1); }
     if elements > IPSET_BITMAP_MAX_RANGE as u64 + 1 { return -IPSET_ERR_BITMAP_RANGE_SIZE; }
     (*set).dsize = ip_set_elem_len(set, tb, 0, 0); let map = ip_set_alloc(core::mem::size_of::<bitmap_ip>() + elements as usize * (*set).dsize) as *mut bitmap_ip; if map.is_null() { return -ENOMEM; }
-    (*map).memsize = BITS_TO_LONGS(elements as usize) * core::mem::size_of::<core::ffi::c_ulong>();
+    (*map).memsize = BITS_TO_LONGS(elements as usize) * core::mem::size_of::<kernel::ffi::c_ulong>();
     (*set).variant = &bitmap_ip as *const _ as *mut _;
     if !init_map_ip(set, map, first_ip, last_ip, elements as u32, hosts, netmask) { ip_set_free(map as *mut _); return -ENOMEM; }
     if !(*tb.add(IPSET_ATTR_TIMEOUT as usize)).is_null() { (*set).timeout = ip_set_timeout_uget(*tb.add(IPSET_ATTR_TIMEOUT as usize)); bitmap_ip_gc_init(set, bitmap_ip_gc); }

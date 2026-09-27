@@ -11,8 +11,8 @@
 
 #[repr(C)]
 pub struct OfDeviceId {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 extern "C" {
@@ -23,19 +23,19 @@ extern "C" {
     ) -> *mut DeviceNode;
     fn of_property_match_string(
         node: *mut DeviceNode,
-        property: *const core::ffi::c_char,
-        string: *const core::ffi::c_void,
+        property: *const kernel::ffi::c_char,
+        string: *const kernel::ffi::c_void,
     ) -> i32;
-    fn of_parse_phandle(node: *mut DeviceNode, property: *const core::ffi::c_char, index: i32) -> *mut DeviceNode;
+    fn of_parse_phandle(node: *mut DeviceNode, property: *const kernel::ffi::c_char, index: i32) -> *mut DeviceNode;
     fn of_node_put(node: *mut DeviceNode);
-    fn of_property_read_u32(node: *mut DeviceNode, property: *const core::ffi::c_char, value: *mut u32) -> i32;
-    fn of_machine_compatible_match(matches: *const *const core::ffi::c_char) -> bool;
+    fn of_property_read_u32(node: *mut DeviceNode, property: *const kernel::ffi::c_char, value: *mut u32) -> i32;
+    fn of_machine_compatible_match(matches: *const *const kernel::ffi::c_char) -> bool;
     fn secure_cntvoff_init();
     fn ioremap(addr: usize, size: usize) -> *mut u8;
     fn ioread32(addr: *const u8) -> u32;
     fn iowrite32(value: u32, addr: *mut u8);
     fn iounmap(addr: *mut u8);
-    fn of_clk_init(data: *const core::ffi::c_void);
+    fn of_clk_init(data: *const kernel::ffi::c_void);
     fn timer_probe();
     fn shmobile_init_late();
 }
@@ -75,7 +75,7 @@ const CNTCR: usize = 0;
 const CNTFID0: usize = 0x20;
 
 pub unsafe fn rcar_gen2_timer_init() {
-    let fixed_freq_socs: [*const core::ffi::c_char; 5] = [
+    let fixed_freq_socs: [*const kernel::ffi::c_char; 5] = [
         b"renesas,r8a7745\0".as_ptr() as *const _, b"renesas,r8a77470\0".as_ptr() as *const _,
         b"renesas,r8a7792\0".as_ptr() as *const _, b"renesas,r8a7794\0".as_ptr() as *const _, core::ptr::null(),
     ];
@@ -96,13 +96,13 @@ pub unsafe fn rcar_gen2_timer_init() {
     timer_probe();
 }
 
-pub static RCAR_GEN2_BOARDS_COMPAT_DT: [*const core::ffi::c_char; 6] = [
+pub static RCAR_GEN2_BOARDS_COMPAT_DT: [*const kernel::ffi::c_char; 6] = [
     b"renesas,r8a7790\0".as_ptr() as *const _, b"renesas,r8a7791\0".as_ptr() as *const _,
     b"renesas,r8a7792\0".as_ptr() as *const _, b"renesas,r8a7793\0".as_ptr() as *const _,
     b"renesas,r8a7794\0".as_ptr() as *const _, core::ptr::null(),
 ];
 
-pub static RZ_G1_BOARDS_COMPAT_DT: [*const core::ffi::c_char; 6] = [
+pub static RZ_G1_BOARDS_COMPAT_DT: [*const kernel::ffi::c_char; 6] = [
     b"renesas,r8a7742\0".as_ptr() as *const _, b"renesas,r8a7743\0".as_ptr() as *const _,
     b"renesas,r8a7744\0".as_ptr() as *const _, b"renesas,r8a7745\0".as_ptr() as *const _,
     b"renesas,r8a77470\0".as_ptr() as *const _, core::ptr::null(),

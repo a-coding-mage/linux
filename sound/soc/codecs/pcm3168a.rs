@@ -42,9 +42,9 @@ const PCM3168A_DAI_ADC: usize = 1;
 struct pcm3168a_io_params {
     provider_mode: bool,
     format: u32,
-    tdm_slots: core::ffi::c_int,
+    tdm_slots: kernel::ffi::c_int,
     tdm_mask: u32,
-    slot_width: core::ffi::c_int,
+    slot_width: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -53,7 +53,7 @@ struct pcm3168a_priv {
     regmap: *mut regmap,
     scki: *mut clk,
     gpio_rst: *mut gpio_desc,
-    sysclk: core::ffi::c_ulong,
+    sysclk: kernel::ffi::c_ulong,
 
     io_params: [pcm3168a_io_params; 2],
     dai_drv: [snd_soc_dai_driver; 2],
@@ -214,8 +214,8 @@ const PCM3168A_NUM_SCKI_RATIOS_ADC: usize = 4;
 
 const PCM3168A_MAX_SYSCLK: u32 = 36864000;
 
-unsafe fn pcm3168a_reset(pcm3168a: *mut pcm3168a_priv) -> core::ffi::c_int {
-    let mut ret: core::ffi::c_int;
+unsafe fn pcm3168a_reset(pcm3168a: *mut pcm3168a_priv) -> kernel::ffi::c_int {
+    let mut ret: kernel::ffi::c_int;
 
     ret = regmap_write((*pcm3168a).regmap, PCM3168A_RST_SMODE, 0);
     if ret != 0 {
@@ -231,9 +231,9 @@ unsafe fn pcm3168a_reset(pcm3168a: *mut pcm3168a_priv) -> core::ffi::c_int {
 
 unsafe fn pcm3168a_mute(
     dai: *mut snd_soc_dai,
-    mute: core::ffi::c_int,
-    direction: core::ffi::c_int,
-) -> core::ffi::c_int {
+    mute: kernel::ffi::c_int,
+    direction: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
     let pcm3168a: *mut pcm3168a_priv = snd_soc_component_get_drvdata(component);
 
@@ -244,12 +244,12 @@ unsafe fn pcm3168a_mute(
 
 unsafe fn pcm3168a_set_dai_sysclk(
     dai: *mut snd_soc_dai,
-    clk_id: core::ffi::c_int,
+    clk_id: kernel::ffi::c_int,
     freq: u32,
-    dir: core::ffi::c_int,
-) -> core::ffi::c_int {
+    dir: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let pcm3168a: *mut pcm3168a_priv = snd_soc_component_get_drvdata((*dai).component);
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     /*
      * Some sound card sets 0 Hz as reset,
@@ -268,7 +268,7 @@ unsafe fn pcm3168a_set_dai_sysclk(
         return ret;
     }
 
-    (*pcm3168a).sysclk = freq as core::ffi::c_ulong;
+    (*pcm3168a).sysclk = freq as kernel::ffi::c_ulong;
 
     return 0;
 }
@@ -302,7 +302,7 @@ unsafe fn pcm3168a_update_fixup_pcm_stream(dai: *mut snd_soc_dai) {
     }
 }
 
-unsafe fn pcm3168a_set_dai_fmt(dai: *mut snd_soc_dai, format: u32) -> core::ffi::c_int {
+unsafe fn pcm3168a_set_dai_fmt(dai: *mut snd_soc_dai, format: u32) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
     let pcm3168a: *mut pcm3168a_priv = snd_soc_component_get_drvdata(component);
     let io_params: *mut pcm3168a_io_params = &mut (*pcm3168a).io_params[(*dai).id as usize];
@@ -349,9 +349,9 @@ unsafe fn pcm3168a_set_tdm_slot(
     dai: *mut snd_soc_dai,
     tx_mask: u32,
     rx_mask: u32,
-    slots: core::ffi::c_int,
-    slot_width: core::ffi::c_int,
-) -> core::ffi::c_int {
+    slots: kernel::ffi::c_int,
+    slot_width: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
     let pcm3168a: *mut pcm3168a_priv = snd_soc_component_get_drvdata(component);
     let io_params: *mut pcm3168a_io_params = &mut (*pcm3168a).io_params[(*dai).id as usize];
@@ -386,7 +386,7 @@ unsafe fn pcm3168a_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
     let pcm3168a: *mut pcm3168a_priv = snd_soc_component_get_drvdata(component);
     let io_params: *mut pcm3168a_io_params = &mut (*pcm3168a).io_params[(*dai).id as usize];
@@ -401,18 +401,18 @@ unsafe fn pcm3168a_hw_params(
     let mut fmt_shift: u32;
     let mut ratio: u32;
     let mut tdm_slots: u32;
-    let mut i: core::ffi::c_int;
-    let mut num_scki_ratios: core::ffi::c_int;
-    let mut slot_width: core::ffi::c_int;
+    let mut i: kernel::ffi::c_int;
+    let mut num_scki_ratios: kernel::ffi::c_int;
+    let mut slot_width: kernel::ffi::c_int;
 
     if (*dai).id as usize == PCM3168A_DAI_DAC {
-        num_scki_ratios = PCM3168A_NUM_SCKI_RATIOS_DAC as core::ffi::c_int;
+        num_scki_ratios = PCM3168A_NUM_SCKI_RATIOS_DAC as kernel::ffi::c_int;
         reg = PCM3168A_DAC_PWR_MST_FMT;
         mask = PCM3168A_DAC_MSDA_MASK | PCM3168A_DAC_FMT_MASK;
         ms_shift = PCM3168A_DAC_MSDA_SHIFT;
         fmt_shift = PCM3168A_DAC_FMT_SHIFT;
     } else {
-        num_scki_ratios = PCM3168A_NUM_SCKI_RATIOS_ADC as core::ffi::c_int;
+        num_scki_ratios = PCM3168A_NUM_SCKI_RATIOS_ADC as kernel::ffi::c_int;
         reg = PCM3168A_ADC_MST_FMT;
         mask = PCM3168A_ADC_MSAD_MASK | PCM3168A_ADC_FMTAD_MASK;
         ms_shift = PCM3168A_ADC_MSAD_SHIFT;
@@ -422,7 +422,7 @@ unsafe fn pcm3168a_hw_params(
     provider_mode = (*io_params).provider_mode;
 
     if provider_mode {
-        ratio = ((*pcm3168a).sysclk / params_rate(params) as core::ffi::c_ulong) as u32;
+        ratio = ((*pcm3168a).sysclk / params_rate(params) as kernel::ffi::c_ulong) as u32;
 
         i = 0;
         while i < num_scki_ratios {
@@ -558,7 +558,7 @@ static pcm3168a_dai_ops: snd_soc_dai_ops = snd_soc_dai_ops {
 static mut pcm3168a_dais: [snd_soc_dai_driver; 2] = [
     snd_soc_dai_driver {
         name: "pcm3168a-dac",
-        id: PCM3168A_DAI_DAC as core::ffi::c_int,
+        id: PCM3168A_DAI_DAC as kernel::ffi::c_int,
         playback: snd_soc_pcm_stream {
             stream_name: "Playback",
             channels_min: 1,
@@ -570,7 +570,7 @@ static mut pcm3168a_dais: [snd_soc_dai_driver; 2] = [
     },
     snd_soc_dai_driver {
         name: "pcm3168a-adc",
-        id: PCM3168A_DAI_ADC as core::ffi::c_int,
+        id: PCM3168A_DAI_ADC as kernel::ffi::c_int,
         capture: snd_soc_pcm_stream {
             stream_name: "Capture",
             channels_min: 1,
@@ -675,10 +675,10 @@ static pcm3168a_driver: snd_soc_component_driver = snd_soc_component_driver {
     endianness: 1,
 };
 
-pub unsafe fn pcm3168a_probe(dev: *mut device, regmap: *mut regmap) -> core::ffi::c_int {
+pub unsafe fn pcm3168a_probe(dev: *mut device, regmap: *mut regmap) -> kernel::ffi::c_int {
     let mut pcm3168a: *mut pcm3168a_priv;
-    let mut ret: core::ffi::c_int;
-    let mut i: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
+    let mut i: kernel::ffi::c_int;
 
     pcm3168a = devm_kzalloc(dev, core::mem::size_of::<pcm3168a_priv>(), GFP_KERNEL);
     if pcm3168a == core::ptr::null_mut() {
@@ -721,7 +721,7 @@ pub unsafe fn pcm3168a_probe(dev: *mut device, regmap: *mut regmap) -> core::ffi
     }
 
     i = 0;
-    while i < (*pcm3168a).supplies.len() as core::ffi::c_int {
+    while i < (*pcm3168a).supplies.len() as kernel::ffi::c_int {
         (*pcm3168a).supplies[i as usize].supply = pcm3168a_supply_names[i as usize];
         i += 1;
     }
@@ -801,9 +801,9 @@ pub unsafe fn pcm3168a_remove(dev: *mut device) {
 }
 EXPORT_SYMBOL_GPL!(pcm3168a_remove);
 
-unsafe fn pcm3168a_rt_resume(dev: *mut device) -> core::ffi::c_int {
+unsafe fn pcm3168a_rt_resume(dev: *mut device) -> kernel::ffi::c_int {
     let pcm3168a: *mut pcm3168a_priv = dev_get_drvdata(dev);
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     ret = clk_prepare_enable((*pcm3168a).scki);
     if ret != 0 {
@@ -841,7 +841,7 @@ unsafe fn pcm3168a_rt_resume(dev: *mut device) -> core::ffi::c_int {
     return 0;
 }
 
-unsafe fn pcm3168a_rt_suspend(dev: *mut device) -> core::ffi::c_int {
+unsafe fn pcm3168a_rt_suspend(dev: *mut device) -> kernel::ffi::c_int {
     let pcm3168a: *mut pcm3168a_priv = dev_get_drvdata(dev);
 
     regcache_cache_only((*pcm3168a).regmap, true);

@@ -5,7 +5,7 @@
 
 #[repr(C)]
 pub struct hyp_trace_desc {
-    pub bpages_backing_start: ::core::ffi::c_ulong,
+    pub bpages_backing_start: ::kernel::ffi::c_ulong,
     pub bpages_backing_size: usize,
     pub trace_buffer_desc: trace_buffer_desc,
 }

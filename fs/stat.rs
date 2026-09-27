@@ -126,12 +126,12 @@ unsafe fn vfs_statx(dfd: i32, filename: *mut filename, flags: i32, stat: *mut ks
     }
 }
 
-pub unsafe fn vfs_fstatat(dfd: i32, filename: *const core::ffi::c_char, stat: *mut kstat, flags: i32) -> i32 {
+pub unsafe fn vfs_fstatat(dfd: i32, filename: *const kernel::ffi::c_char, stat: *mut kstat, flags: i32) -> i32 {
     if filename.is_null() && dfd >= 0 { return vfs_fstat(dfd, stat); }
     vfs_statx(dfd, filename_maybe_null(filename, flags), flags | AT_NO_AUTOMOUNT, stat, STATX_BASIC_STATS)
 }
 
-unsafe fn do_readlinkat(dfd: i32, pathname: *const core::ffi::c_char, buf: *mut core::ffi::c_char, bufsiz: i32) -> i32 {
+unsafe fn do_readlinkat(dfd: i32, pathname: *const kernel::ffi::c_char, buf: *mut kernel::ffi::c_char, bufsiz: i32) -> i32 {
     if bufsiz <= 0 { return -EINVAL; }
     let name = filename_flags(pathname, LOOKUP_EMPTY);
     let mut lookup_flags = 0;
@@ -150,8 +150,8 @@ unsafe fn do_readlinkat(dfd: i32, pathname: *const core::ffi::c_char, buf: *mut 
     }
 }
 
-pub unsafe fn readlinkat(dfd: i32, pathname: *const core::ffi::c_char, buf: *mut core::ffi::c_char, bufsiz: i32) -> i32 { do_readlinkat(dfd, pathname, buf, bufsiz) }
-pub unsafe fn readlink(pathname: *const core::ffi::c_char, buf: *mut core::ffi::c_char, bufsiz: i32) -> i32 { do_readlinkat(AT_FDCWD, pathname, buf, bufsiz) }
+pub unsafe fn readlinkat(dfd: i32, pathname: *const kernel::ffi::c_char, buf: *mut kernel::ffi::c_char, bufsiz: i32) -> i32 { do_readlinkat(dfd, pathname, buf, bufsiz) }
+pub unsafe fn readlink(pathname: *const kernel::ffi::c_char, buf: *mut kernel::ffi::c_char, bufsiz: i32) -> i32 { do_readlinkat(AT_FDCWD, pathname, buf, bufsiz) }
 
 unsafe fn cp_statx(stat: *const kstat, buffer: *mut statx) -> i32 {
     let mut tmp: statx = core::mem::zeroed();
@@ -186,7 +186,7 @@ pub unsafe fn do_statx_fd(fd: i32, flags: u32, mut mask: u32, buffer: *mut statx
     cp_statx(stat.as_ptr(), buffer)
 }
 
-pub unsafe fn statx(dfd: i32, filename: *const core::ffi::c_char, flags: u32, mask: u32, buffer: *mut statx) -> i32 {
+pub unsafe fn statx(dfd: i32, filename: *const kernel::ffi::c_char, flags: u32, mask: u32, buffer: *mut statx) -> i32 {
     if filename.is_null() && dfd >= 0 { return do_statx_fd(dfd, flags & !AT_NO_AUTOMOUNT, mask, buffer); }
     do_statx(dfd, filename_maybe_null(filename, flags as i32), flags, mask, buffer)
 }

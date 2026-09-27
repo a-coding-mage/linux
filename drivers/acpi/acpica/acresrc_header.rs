@@ -6,7 +6,7 @@
  * surrounding translation unit.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* The C header conditionally packs these structures to byte alignment. */
 #[repr(C, packed)]
@@ -135,7 +135,7 @@ extern "C" {
     pub fn acpi_rs_get_list_length(aml_buffer: *mut u8, aml_buffer_length: u32, size_needed: *mut acpi_size) -> acpi_status;
     pub fn acpi_rs_get_aml_length(resource_list: *mut acpi_resource, resource_list_size: acpi_size, size_needed: *mut acpi_size) -> acpi_status;
     pub fn acpi_rs_get_pci_routing_table_length(package_object: *mut acpi_operand_object, buffer_size_needed: *mut acpi_size) -> acpi_status;
-    pub fn acpi_rs_convert_aml_to_resources(aml: *mut u8, length: u32, offset: u32, resource_index: u8, context: *mut *mut core::ffi::c_void) -> acpi_status;
+    pub fn acpi_rs_convert_aml_to_resources(aml: *mut u8, length: u32, offset: u32, resource_index: u8, context: *mut *mut kernel::ffi::c_void) -> acpi_status;
     pub fn acpi_rs_convert_resources_to_aml(resource: *mut acpi_resource, aml_size_needed: acpi_size, output_buffer: *mut u8) -> acpi_status;
 
     pub fn acpi_rs_set_address_common(aml: *mut aml_resource, resource: *mut acpi_resource);

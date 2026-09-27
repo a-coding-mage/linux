@@ -23,65 +23,65 @@ pub unsafe fn arch_clear_hugetlb_flags(folio: *mut folio) {
 }
 
 extern "C" {
-    pub fn arch_make_huge_pte(entry: pte_t, shift: ::core::ffi::c_uint, flags: vm_flags_t) -> pte_t;
+    pub fn arch_make_huge_pte(entry: pte_t, shift: ::kernel::ffi::c_uint, flags: vm_flags_t) -> pte_t;
 
     pub fn set_huge_pte_at(
         mm: *mut mm_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
         pte: pte_t,
-        sz: ::core::ffi::c_ulong,
+        sz: ::kernel::ffi::c_ulong,
     );
 
     pub fn huge_ptep_set_access_flags(
         vma: *mut vm_area_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
         pte: pte_t,
-        dirty: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        dirty: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn huge_ptep_get_and_clear(
         mm: *mut mm_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
-        sz: ::core::ffi::c_ulong,
+        sz: ::kernel::ffi::c_ulong,
     ) -> pte_t;
 
     pub fn huge_ptep_set_wrprotect(
         mm: *mut mm_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
     );
 
     pub fn huge_ptep_clear_flush(
         vma: *mut vm_area_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
     ) -> pte_t;
 
     pub fn huge_pte_clear(
         mm: *mut mm_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
-        sz: ::core::ffi::c_ulong,
+        sz: ::kernel::ffi::c_ulong,
     );
 
     pub fn huge_ptep_get(
         mm: *mut mm_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
     ) -> pte_t;
 
     pub fn huge_ptep_modify_prot_start(
         vma: *mut vm_area_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
     ) -> pte_t;
 
     pub fn huge_ptep_modify_prot_commit(
         vma: *mut vm_area_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         ptep: *mut pte_t,
         old_pte: pte_t,
         new_pte: pte_t,
@@ -93,9 +93,9 @@ extern "C" {
 #[inline]
 pub unsafe fn __flush_hugetlb_tlb_range(
     vma: *mut vm_area_struct,
-    start: ::core::ffi::c_ulong,
-    end: ::core::ffi::c_ulong,
-    stride: ::core::ffi::c_ulong,
+    start: ::kernel::ffi::c_ulong,
+    end: ::kernel::ffi::c_ulong,
+    stride: ::kernel::ffi::c_ulong,
     flags: tlbf_t,
 ) {
     match stride {
@@ -111,8 +111,8 @@ pub unsafe fn __flush_hugetlb_tlb_range(
 #[inline]
 pub unsafe fn flush_hugetlb_tlb_range(
     vma: *mut vm_area_struct,
-    start: ::core::ffi::c_ulong,
-    end: ::core::ffi::c_ulong,
+    start: ::kernel::ffi::c_ulong,
+    end: ::kernel::ffi::c_ulong,
 ) {
     let stride = huge_page_size(hstate_vma(vma));
     __flush_hugetlb_tlb_range(vma, start, end, stride, TLBF_NONE);

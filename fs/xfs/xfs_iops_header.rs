@@ -40,7 +40,7 @@ pub struct qstr {
 extern "C" {
     pub fn xfs_vn_listxattr(
         dentry: *mut dentry,
-        data: *mut ::core::ffi::c_char,
+        data: *mut ::kernel::ffi::c_char,
         size: usize,
     ) -> isize;
 
@@ -48,13 +48,13 @@ extern "C" {
         idmap: *mut mnt_idmap,
         dentry: *mut dentry,
         vap: *mut iattr,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn xfs_inode_init_security(
         inode: *mut inode,
         dir: *mut inode,
         qstr: *const qstr,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn xfs_setup_inode(ip: *mut xfs_inode);
     pub fn xfs_setup_iops(ip: *mut xfs_inode);

@@ -23,7 +23,7 @@ pub unsafe fn bug() -> ! {
 
 #[cfg(CONFIG_GENERIC_BUG)]
 #[inline(always)]
-pub unsafe fn __warn_flags(_cond_str: *const core::ffi::c_char, _flags: i32) {
+pub unsafe fn __warn_flags(_cond_str: *const kernel::ffi::c_char, _flags: i32) {
     /* The original emits the trap and __bug_table entry; see bug(). */
 }
 
@@ -66,19 +66,19 @@ pub struct pt_regs {
 
 extern "C" {
     pub fn die(
-        str_: *const core::ffi::c_char,
+        str_: *const kernel::ffi::c_char,
         regs: *mut pt_regs,
-        err: core::ffi::c_long,
+        err: kernel::ffi::c_long,
     ) -> !;
     pub fn die_if_kernel(
-        str_: *const core::ffi::c_char,
+        str_: *const kernel::ffi::c_char,
         regs: *mut pt_regs,
-        err: core::ffi::c_long,
+        err: kernel::ffi::c_long,
     );
     pub fn die_if_no_fixup(
-        str_: *const core::ffi::c_char,
+        str_: *const kernel::ffi::c_char,
         regs: *mut pt_regs,
-        err: core::ffi::c_long,
+        err: kernel::ffi::c_long,
     );
 }
 

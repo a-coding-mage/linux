@@ -13,12 +13,12 @@
 #![allow(non_upper_case_globals)]
 #![allow(dead_code)]
 
-type u16 = ::core::ffi::c_ushort;
-type u32 = ::core::ffi::c_uint;
-type c_int = ::core::ffi::c_int;
-type c_uint = ::core::ffi::c_uint;
-type c_char = ::core::ffi::c_char;
-type c_void = ::core::ffi::c_void;
+type u16 = ::kernel::ffi::c_ushort;
+type u32 = ::kernel::ffi::c_uint;
+type c_int = ::kernel::ffi::c_int;
+type c_uint = ::kernel::ffi::c_uint;
+type c_char = ::kernel::ffi::c_char;
+type c_void = ::kernel::ffi::c_void;
 type bool_ = bool;
 
 #[repr(C)]

@@ -4,7 +4,7 @@
 // The Linux tracepoint include and header guard are C preprocessor constructs;
 // their dependency/conditional intent is retained here as comments.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct device {
@@ -33,7 +33,7 @@ pub struct GeniI2cIrqEntry {
 #[repr(C)]
 pub struct GeniI2cErrEntry {
     pub name: *const c_char,
-    pub err: core::ffi::c_int,
+    pub err: kernel::ffi::c_int,
     pub msg: *const c_char,
 }
 
@@ -63,7 +63,7 @@ extern "C" {
     // TP_printk: "%s: err=%d msg=%s"
     pub fn geni_i2c_err(
         dev: *mut device,
-        err: core::ffi::c_int,
+        err: kernel::ffi::c_int,
         msg: *const c_char,
     );
 }

@@ -194,7 +194,7 @@ pub const AMD_MAX_VCE_LEVELS: u64 = 6;
 	PP_SMC_POWER_PROFILE_COUNT,
 };
 
-extern "C" { pub static amdgpu_pp_profile_name: [*const core::ffi::c_char; PP_SMC_POWER_PROFILE_COUNT]; }
+extern "C" { pub static amdgpu_pp_profile_name: [*const kernel::ffi::c_char; PP_SMC_POWER_PROFILE_COUNT]; }
 
 
 
@@ -408,122 +408,122 @@ dpm_clocks: pub;
 
 #[repr(C)]\npub amd_pm_funcs {
 /* export for dpm on ci and si */
-	int (*pre_set_power_state)(handle: *mut core::ffi::c_void);
-	int (*set_power_state)(handle: *mut core::ffi::c_void);
-	void (*post_set_power_state)(handle: *mut core::ffi::c_void);
-	void (*display_configuration_changed)(handle: *mut core::ffi::c_void);
-	void (*print_power_state)(handle: *mut core::ffi::c_void, ps: *mut core::ffi::c_void);
-	bool (*vblank_too_short)(handle: *mut core::ffi::c_void);
-	void (*notify_ac_dc)(handle: *mut core::ffi::c_void);
-	int (*check_state_equal)(handle: *mut core::ffi::c_void,
-				cps: *mut core::ffi::c_void,
-				rps: *mut core::ffi::c_void,
+	int (*pre_set_power_state)(handle: *mut kernel::ffi::c_void);
+	int (*set_power_state)(handle: *mut kernel::ffi::c_void);
+	void (*post_set_power_state)(handle: *mut kernel::ffi::c_void);
+	void (*display_configuration_changed)(handle: *mut kernel::ffi::c_void);
+	void (*print_power_state)(handle: *mut kernel::ffi::c_void, ps: *mut kernel::ffi::c_void);
+	bool (*vblank_too_short)(handle: *mut kernel::ffi::c_void);
+	void (*notify_ac_dc)(handle: *mut kernel::ffi::c_void);
+	int (*check_state_equal)(handle: *mut kernel::ffi::c_void,
+				cps: *mut kernel::ffi::c_void,
+				rps: *mut kernel::ffi::c_void,
 				bool  *equal);
 /* export for sysfs */
-	int (*set_fan_control_mode)(handle: *mut core::ffi::c_void, mode: u32);
-	int (*get_fan_control_mode)(handle: *mut core::ffi::c_void, u32 *fan_mode);
-	int (*set_fan_speed_pwm)(handle: *mut core::ffi::c_void, speed: u32);
-	int (*get_fan_speed_pwm)(handle: *mut core::ffi::c_void, u32 *speed);
-	int (*force_clock_level)(handle: *mut core::ffi::c_void, pp_clock_type type, mask: u32);
-	int (*print_clock_levels)(handle: *mut core::ffi::c_void, pp_clock_type type, buf: *mut core::ffi::c_char);
-	int (*emit_clock_levels)(handle: *mut core::ffi::c_void, pp_clock_type type, buf: *mut core::ffi::c_char, int *offset);
-	int (*force_performance_level)(handle: *mut core::ffi::c_void, amd_dpm_forced_level level);
-	int (*get_sclk_od)(handle: *mut core::ffi::c_void);
-	int (*set_sclk_od)(handle: *mut core::ffi::c_void, value: u32);
-	int (*get_mclk_od)(handle: *mut core::ffi::c_void);
-	int (*set_mclk_od)(handle: *mut core::ffi::c_void, value: u32);
-	int (*read_sensor)(handle: *mut core::ffi::c_void, int idx, value: *mut core::ffi::c_void, int *size);
-	int (*get_apu_thermal_limit)(handle: *mut core::ffi::c_void, u32 *limit);
-	int (*set_apu_thermal_limit)(handle: *mut core::ffi::c_void, limit: u32);
-	amd_dpm_forced_level (*get_performance_level)(handle: *mut core::ffi::c_void);
-	amd_pm_state_type (*get_current_power_state)(handle: *mut core::ffi::c_void);
-	int (*get_fan_speed_rpm)(handle: *mut core::ffi::c_void, u32 *rpm);
-	int (*set_fan_speed_rpm)(handle: *mut core::ffi::c_void, rpm: u32);
-	int (*get_pp_num_states)(handle: *mut core::ffi::c_void, pp_states_info *data);
-	int (*get_pp_table)(handle: *mut core::ffi::c_void, *mut core::ffi::c_char*table);
-	int (*set_pp_table)(handle: *mut core::ffi::c_void, buf: *const core::ffi::c_char, size: usize);
-	void (*debugfs_print_current_performance_level)(handle: *mut core::ffi::c_void, seq_file *m);
-	int (*switch_power_profile)(handle: *mut core::ffi::c_void, PP_SMC_POWER_PROFILE type, en: bool);
-	int (*pause_power_profile)(handle: *mut core::ffi::c_void, pause: bool);
+	int (*set_fan_control_mode)(handle: *mut kernel::ffi::c_void, mode: u32);
+	int (*get_fan_control_mode)(handle: *mut kernel::ffi::c_void, u32 *fan_mode);
+	int (*set_fan_speed_pwm)(handle: *mut kernel::ffi::c_void, speed: u32);
+	int (*get_fan_speed_pwm)(handle: *mut kernel::ffi::c_void, u32 *speed);
+	int (*force_clock_level)(handle: *mut kernel::ffi::c_void, pp_clock_type type, mask: u32);
+	int (*print_clock_levels)(handle: *mut kernel::ffi::c_void, pp_clock_type type, buf: *mut kernel::ffi::c_char);
+	int (*emit_clock_levels)(handle: *mut kernel::ffi::c_void, pp_clock_type type, buf: *mut kernel::ffi::c_char, int *offset);
+	int (*force_performance_level)(handle: *mut kernel::ffi::c_void, amd_dpm_forced_level level);
+	int (*get_sclk_od)(handle: *mut kernel::ffi::c_void);
+	int (*set_sclk_od)(handle: *mut kernel::ffi::c_void, value: u32);
+	int (*get_mclk_od)(handle: *mut kernel::ffi::c_void);
+	int (*set_mclk_od)(handle: *mut kernel::ffi::c_void, value: u32);
+	int (*read_sensor)(handle: *mut kernel::ffi::c_void, int idx, value: *mut kernel::ffi::c_void, int *size);
+	int (*get_apu_thermal_limit)(handle: *mut kernel::ffi::c_void, u32 *limit);
+	int (*set_apu_thermal_limit)(handle: *mut kernel::ffi::c_void, limit: u32);
+	amd_dpm_forced_level (*get_performance_level)(handle: *mut kernel::ffi::c_void);
+	amd_pm_state_type (*get_current_power_state)(handle: *mut kernel::ffi::c_void);
+	int (*get_fan_speed_rpm)(handle: *mut kernel::ffi::c_void, u32 *rpm);
+	int (*set_fan_speed_rpm)(handle: *mut kernel::ffi::c_void, rpm: u32);
+	int (*get_pp_num_states)(handle: *mut kernel::ffi::c_void, pp_states_info *data);
+	int (*get_pp_table)(handle: *mut kernel::ffi::c_void, *mut kernel::ffi::c_char*table);
+	int (*set_pp_table)(handle: *mut kernel::ffi::c_void, buf: *const kernel::ffi::c_char, size: usize);
+	void (*debugfs_print_current_performance_level)(handle: *mut kernel::ffi::c_void, seq_file *m);
+	int (*switch_power_profile)(handle: *mut kernel::ffi::c_void, PP_SMC_POWER_PROFILE type, en: bool);
+	int (*pause_power_profile)(handle: *mut kernel::ffi::c_void, pause: bool);
 /* export to amdgpu */
-	amd_vce_state *(*get_vce_clock_state)(handle: *mut core::ffi::c_void, idx: u32);
-	int (*dispatch_tasks)(handle: *mut core::ffi::c_void, amd_pp_task task_id,
+	amd_vce_state *(*get_vce_clock_state)(handle: *mut kernel::ffi::c_void, idx: u32);
+	int (*dispatch_tasks)(handle: *mut kernel::ffi::c_void, amd_pp_task task_id,
 			amd_pm_state_type *user_state);
-	int (*load_firmware)(handle: *mut core::ffi::c_void);
-	int (*wait_for_fw_loading_complete)(handle: *mut core::ffi::c_void);
-	int (*set_powergating_by_smu)(handle: *mut core::ffi::c_void,
+	int (*load_firmware)(handle: *mut kernel::ffi::c_void);
+	int (*wait_for_fw_loading_complete)(handle: *mut kernel::ffi::c_void);
+	int (*set_powergating_by_smu)(handle: *mut kernel::ffi::c_void,
 				block_type: u32,
 				gate: bool,
 				int inst);
-	int (*set_clockgating_by_smu)(handle: *mut core::ffi::c_void, msg_id: u32);
-	int (*set_power_limit)(handle: *mut core::ffi::c_void, limit_type: u32, n: u32);
-	int (*get_power_limit)(handle: *mut core::ffi::c_void, u32 *limit,
+	int (*set_clockgating_by_smu)(handle: *mut kernel::ffi::c_void, msg_id: u32);
+	int (*set_power_limit)(handle: *mut kernel::ffi::c_void, limit_type: u32, n: u32);
+	int (*get_power_limit)(handle: *mut kernel::ffi::c_void, u32 *limit,
 			pp_power_limit_level pp_limit_level,
 			pp_power_type power_type);
-	int (*get_power_profile_mode)(handle: *mut core::ffi::c_void, buf: *mut core::ffi::c_char);
-	int (*set_power_profile_mode)(handle: *mut core::ffi::c_void, long *input, size: u32);
-	int (*set_fine_grain_clk_vol)(handle: *mut core::ffi::c_void, r#type: u32, long *input, size: u32);
-	int (*odn_edit_dpm_table)(handle: *mut core::ffi::c_void, PP_OD_DPM_TABLE_COMMAND type,
+	int (*get_power_profile_mode)(handle: *mut kernel::ffi::c_void, buf: *mut kernel::ffi::c_char);
+	int (*set_power_profile_mode)(handle: *mut kernel::ffi::c_void, long *input, size: u32);
+	int (*set_fine_grain_clk_vol)(handle: *mut kernel::ffi::c_void, r#type: u32, long *input, size: u32);
+	int (*odn_edit_dpm_table)(handle: *mut kernel::ffi::c_void, PP_OD_DPM_TABLE_COMMAND type,
 				  long *input, size: u32);
-	int (*set_mp1_state)(handle: *mut core::ffi::c_void, pp_mp1_state mp1_state);
-	int (*smu_i2c_bus_access)(handle: *mut core::ffi::c_void, acquire: bool);
-	int (*gfx_state_change_set)(handle: *mut core::ffi::c_void, state: u32);
+	int (*set_mp1_state)(handle: *mut kernel::ffi::c_void, pp_mp1_state mp1_state);
+	int (*smu_i2c_bus_access)(handle: *mut kernel::ffi::c_void, acquire: bool);
+	int (*gfx_state_change_set)(handle: *mut kernel::ffi::c_void, state: u32);
 /* export to DC */
-	u32 (*get_sclk)(handle: *mut core::ffi::c_void, low: bool);
-	u32 (*get_mclk)(handle: *mut core::ffi::c_void, low: bool);
-	int (*display_configuration_change)(handle: *mut core::ffi::c_void,
+	u32 (*get_sclk)(handle: *mut kernel::ffi::c_void, low: bool);
+	u32 (*get_mclk)(handle: *mut kernel::ffi::c_void, low: bool);
+	int (*display_configuration_change)(handle: *mut kernel::ffi::c_void,
 		const amd_pp_display_configuration *input);
-	int (*get_current_clocks)(handle: *mut core::ffi::c_void,
+	int (*get_current_clocks)(handle: *mut kernel::ffi::c_void,
 		amd_pp_clock_info *clocks);
-	int (*get_clock_by_type)(handle: *mut core::ffi::c_void,
+	int (*get_clock_by_type)(handle: *mut kernel::ffi::c_void,
 		amd_pp_clock_type type,
 		amd_pp_clocks *clocks);
-	int (*get_clock_by_type_with_latency)(handle: *mut core::ffi::c_void,
+	int (*get_clock_by_type_with_latency)(handle: *mut kernel::ffi::c_void,
 		amd_pp_clock_type type,
 		pp_clock_levels_with_latency *clocks);
-	int (*get_clock_by_type_with_voltage)(handle: *mut core::ffi::c_void,
+	int (*get_clock_by_type_with_voltage)(handle: *mut kernel::ffi::c_void,
 		amd_pp_clock_type type,
 		pp_clock_levels_with_voltage *clocks);
-	int (*set_watermarks_for_clocks_ranges)(handle: *mut core::ffi::c_void,
-						clock_ranges: *mut core::ffi::c_void);
-	int (*display_clock_voltage_request)(handle: *mut core::ffi::c_void,
+	int (*set_watermarks_for_clocks_ranges)(handle: *mut kernel::ffi::c_void,
+						clock_ranges: *mut kernel::ffi::c_void);
+	int (*display_clock_voltage_request)(handle: *mut kernel::ffi::c_void,
 				pp_display_clock_request *clock);
-	int (*get_display_mode_validation_clocks)(handle: *mut core::ffi::c_void,
+	int (*get_display_mode_validation_clocks)(handle: *mut kernel::ffi::c_void,
 		amd_pp_simple_clock_info *clocks);
-	int (*notify_smu_enable_pwe)(handle: *mut core::ffi::c_void);
-	int (*enable_mgpu_fan_boost)(handle: *mut core::ffi::c_void);
-	int (*set_active_display_count)(handle: *mut core::ffi::c_void, count: u32);
-	int (*set_hard_min_dcefclk_by_freq)(handle: *mut core::ffi::c_void, clock: u32);
-	int (*set_hard_min_fclk_by_freq)(handle: *mut core::ffi::c_void, clock: u32);
-	int (*set_min_deep_sleep_dcefclk)(handle: *mut core::ffi::c_void, clock: u32);
-	int (*get_asic_baco_capability)(handle: *mut core::ffi::c_void);
-	int (*get_asic_baco_state)(handle: *mut core::ffi::c_void, int *state);
-	int (*set_asic_baco_state)(handle: *mut core::ffi::c_void, int state);
-	int (*get_ppfeature_status)(handle: *mut core::ffi::c_void, buf: *mut core::ffi::c_char);
-	int (*set_ppfeature_status)(handle: *mut core::ffi::c_void, ppfeature_masks: u64);
-	int (*asic_reset_mode_2)(handle: *mut core::ffi::c_void);
-	int (*asic_reset_enable_gfx_features)(handle: *mut core::ffi::c_void);
-	int (*set_df_cstate)(handle: *mut core::ffi::c_void, pp_df_cstate state);
-	int (*set_xgmi_pstate)(handle: *mut core::ffi::c_void, pstate: u32);
-	isize (*get_gpu_metrics)(handle: *mut core::ffi::c_void, *mut core::ffi::c_void*table);
-	isize (*get_temp_metrics)(handle: *mut core::ffi::c_void, smu_temp_metric_type type, table: *mut core::ffi::c_void);
-	bool (*temp_metrics_is_supported)(handle: *mut core::ffi::c_void, smu_temp_metric_type type);
-	isize (*get_xcp_metrics)(handle: *mut core::ffi::c_void, int xcp_id, table: *mut core::ffi::c_void);
-	isize (*get_pm_metrics)(handle: *mut core::ffi::c_void, pmmetrics: *mut core::ffi::c_void, size: usize);
-	int (*set_watermarks_for_clock_ranges)(handle: *mut core::ffi::c_void,
+	int (*notify_smu_enable_pwe)(handle: *mut kernel::ffi::c_void);
+	int (*enable_mgpu_fan_boost)(handle: *mut kernel::ffi::c_void);
+	int (*set_active_display_count)(handle: *mut kernel::ffi::c_void, count: u32);
+	int (*set_hard_min_dcefclk_by_freq)(handle: *mut kernel::ffi::c_void, clock: u32);
+	int (*set_hard_min_fclk_by_freq)(handle: *mut kernel::ffi::c_void, clock: u32);
+	int (*set_min_deep_sleep_dcefclk)(handle: *mut kernel::ffi::c_void, clock: u32);
+	int (*get_asic_baco_capability)(handle: *mut kernel::ffi::c_void);
+	int (*get_asic_baco_state)(handle: *mut kernel::ffi::c_void, int *state);
+	int (*set_asic_baco_state)(handle: *mut kernel::ffi::c_void, int state);
+	int (*get_ppfeature_status)(handle: *mut kernel::ffi::c_void, buf: *mut kernel::ffi::c_char);
+	int (*set_ppfeature_status)(handle: *mut kernel::ffi::c_void, ppfeature_masks: u64);
+	int (*asic_reset_mode_2)(handle: *mut kernel::ffi::c_void);
+	int (*asic_reset_enable_gfx_features)(handle: *mut kernel::ffi::c_void);
+	int (*set_df_cstate)(handle: *mut kernel::ffi::c_void, pp_df_cstate state);
+	int (*set_xgmi_pstate)(handle: *mut kernel::ffi::c_void, pstate: u32);
+	isize (*get_gpu_metrics)(handle: *mut kernel::ffi::c_void, *mut kernel::ffi::c_void*table);
+	isize (*get_temp_metrics)(handle: *mut kernel::ffi::c_void, smu_temp_metric_type type, table: *mut kernel::ffi::c_void);
+	bool (*temp_metrics_is_supported)(handle: *mut kernel::ffi::c_void, smu_temp_metric_type type);
+	isize (*get_xcp_metrics)(handle: *mut kernel::ffi::c_void, int xcp_id, table: *mut kernel::ffi::c_void);
+	isize (*get_pm_metrics)(handle: *mut kernel::ffi::c_void, pmmetrics: *mut kernel::ffi::c_void, size: usize);
+	int (*set_watermarks_for_clock_ranges)(handle: *mut kernel::ffi::c_void,
 					       pp_smu_wm_range_sets *ranges);
-	int (*display_disable_memory_clock_switch)(handle: *mut core::ffi::c_void,
+	int (*display_disable_memory_clock_switch)(handle: *mut kernel::ffi::c_void,
 						   disable_memory_clock_switch: bool);
-	int (*get_max_sustainable_clocks_by_dc)(handle: *mut core::ffi::c_void,
+	int (*get_max_sustainable_clocks_by_dc)(handle: *mut kernel::ffi::c_void,
 						pp_smu_nv_clock_table *max_clocks);
-	int (*get_uclk_dpm_states)(handle: *mut core::ffi::c_void,
-				   core::ffi::c_uint *clock_values_in_khz,
-				   core::ffi::c_uint *num_states);
-	int (*get_dpm_clock_table)(handle: *mut core::ffi::c_void,
+	int (*get_uclk_dpm_states)(handle: *mut kernel::ffi::c_void,
+				   kernel::ffi::c_uint *clock_values_in_khz,
+				   kernel::ffi::c_uint *num_states);
+	int (*get_dpm_clock_table)(handle: *mut kernel::ffi::c_void,
 				   dpm_clocks *clock_table);
-	int (*get_smu_prv_buf_details)(handle: *mut core::ffi::c_void, *mut core::ffi::c_void*addr, usize *size);
-	void (*pm_compute_clocks)(handle: *mut core::ffi::c_void);
-	int (*notify_rlc_state)(handle: *mut core::ffi::c_void, en: bool);
+	int (*get_smu_prv_buf_details)(handle: *mut kernel::ffi::c_void, *mut kernel::ffi::c_void*addr, usize *size);
+	void (*pm_compute_clocks)(handle: *mut kernel::ffi::c_void);
+	int (*notify_rlc_state)(handle: *mut kernel::ffi::c_void, en: bool);
 };
 
 #[repr(C)]\npub metrics_table_header {

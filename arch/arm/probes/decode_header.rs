@@ -19,12 +19,12 @@ pub const ALU_WRITE_PC_INTERWORKS: bool = true;
 
 #[repr(C)]
 pub struct PtRegs {
-    pub ARM_cpsr: libc::c_long,
-    pub ARM_pc: libc::c_long,
+    pub ARM_cpsr: kernel::ffi::c_long,
+    pub ARM_pc: kernel::ffi::c_long,
 }
 
 #[inline]
-pub unsafe fn bx_write_pc(mut pcv: libc::c_long, regs: *mut PtRegs) {
+pub unsafe fn bx_write_pc(mut pcv: kernel::ffi::c_long, regs: *mut PtRegs) {
     let mut cpsr = (*regs).ARM_cpsr;
     if (pcv & 0x1) != 0 {
         cpsr |= 0x20;
@@ -38,7 +38,7 @@ pub unsafe fn bx_write_pc(mut pcv: libc::c_long, regs: *mut PtRegs) {
 }
 
 #[inline]
-pub unsafe fn load_write_pc(pcv: libc::c_long, regs: *mut PtRegs) {
+pub unsafe fn load_write_pc(pcv: kernel::ffi::c_long, regs: *mut PtRegs) {
     if LOAD_WRITE_PC_INTERWORKS {
         bx_write_pc(pcv, regs);
     } else {
@@ -47,7 +47,7 @@ pub unsafe fn load_write_pc(pcv: libc::c_long, regs: *mut PtRegs) {
 }
 
 #[inline]
-pub unsafe fn alu_write_pc(pcv: libc::c_long, regs: *mut PtRegs) {
+pub unsafe fn alu_write_pc(pcv: kernel::ffi::c_long, regs: *mut PtRegs) {
     if ALU_WRITE_PC_INTERWORKS {
         bx_write_pc(pcv, regs);
     } else {

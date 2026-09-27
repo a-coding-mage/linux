@@ -22,7 +22,7 @@ pub struct Efi {
         reset_type: i32,
         status: usize,
         data_size: usize,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     ),
 }
 
@@ -31,12 +31,12 @@ extern "C" {
 
     fn efi_rt_services_supported(feature: i32) -> bool;
     fn efi_capsule_pending(reset_mode: *mut i32) -> bool;
-    fn printk(format: *const core::ffi::c_char, ...) -> i32;
+    fn printk(format: *const kernel::ffi::c_char, ...) -> i32;
     fn register_sys_off_handler(
         mode: i32,
         priority: i32,
         callback: unsafe extern "C" fn(*mut SysOffData) -> i32,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     ) -> *mut SysOffHandler;
     fn ptr_err(ptr: *mut SysOffHandler) -> i32;
 }
@@ -45,12 +45,12 @@ static mut efi_sys_off_handler: *mut SysOffHandler = core::ptr::null_mut();
 
 pub static mut efi_reboot_quirk_mode: i32 = -1;
 
-pub unsafe extern "C" fn efi_reboot(reboot_mode: i32, _unused: *const core::ffi::c_char) {
-    let str_: [*const core::ffi::c_char; 4] = [
-        b"cold\0".as_ptr() as *const core::ffi::c_char,
-        b"warm\0".as_ptr() as *const core::ffi::c_char,
-        b"shutdown\0".as_ptr() as *const core::ffi::c_char,
-        b"platform\0".as_ptr() as *const core::ffi::c_char,
+pub unsafe extern "C" fn efi_reboot(reboot_mode: i32, _unused: *const kernel::ffi::c_char) {
+    let str_: [*const kernel::ffi::c_char; 4] = [
+        b"cold\0".as_ptr() as *const kernel::ffi::c_char,
+        b"warm\0".as_ptr() as *const kernel::ffi::c_char,
+        b"shutdown\0".as_ptr() as *const kernel::ffi::c_char,
+        b"platform\0".as_ptr() as *const kernel::ffi::c_char,
     ];
     let mut efi_mode: i32;
     let mut cap_reset_mode: i32 = 0;
@@ -75,7 +75,7 @@ pub unsafe extern "C" fn efi_reboot(reboot_mode: i32, _unused: *const core::ffi:
         if efi_mode != cap_reset_mode {
             printk(
                 b"efi: %s reset requested but pending capsule update requires %s reset... Performing %s reset.\n\0"
-                    .as_ptr() as *const core::ffi::c_char,
+                    .as_ptr() as *const kernel::ffi::c_char,
                 str_[efi_mode as usize],
                 str_[cap_reset_mode as usize],
                 str_[cap_reset_mode as usize],

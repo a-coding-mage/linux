@@ -61,9 +61,9 @@ pub const GIODRV_IOCSGIODATA1: u32 = iow::<*mut u8>(GIODRV_IOC_MAGIC, 1);
 pub const GIODRV_IOCGGIODATA1: u32 = ior::<*mut u8>(GIODRV_IOC_MAGIC, 2);
 pub const GIODRV_IOCSGIODATA2: u32 = iow::<*mut u16>(GIODRV_IOC_MAGIC, 3);
 pub const GIODRV_IOCGGIODATA2: u32 = ior::<*mut u16>(GIODRV_IOC_MAGIC, 4);
-pub const GIODRV_IOCSGIODATA4: u32 = iow::<*mut core::ffi::c_ulong>(GIODRV_IOC_MAGIC, 5);
-pub const GIODRV_IOCGGIODATA4: u32 = ior::<*mut core::ffi::c_ulong>(GIODRV_IOC_MAGIC, 6);
-pub const GIODRV_IOCSGIOSETADDR: u32 = iow::<*mut core::ffi::c_ulong>(GIODRV_IOC_MAGIC, 7);
+pub const GIODRV_IOCSGIODATA4: u32 = iow::<*mut kernel::ffi::c_ulong>(GIODRV_IOC_MAGIC, 5);
+pub const GIODRV_IOCGGIODATA4: u32 = ior::<*mut kernel::ffi::c_ulong>(GIODRV_IOC_MAGIC, 6);
+pub const GIODRV_IOCSGIOSETADDR: u32 = iow::<*mut kernel::ffi::c_ulong>(GIODRV_IOC_MAGIC, 7);
 pub const GIODRV_IOCHARDRESET: u32 = io(GIODRV_IOC_MAGIC, 8); /* debugging tool */
 pub const GIODRV_IOC_MAXNR: u32 = 8;
 

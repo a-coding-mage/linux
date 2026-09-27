@@ -84,7 +84,7 @@ pub struct vio_pfo_op {
     pub out: i64,
     pub outlen: i64,
     pub csbcpb: u64,
-    pub done: *mut ::core::ffi::c_void,
+    pub done: *mut ::kernel::ffi::c_void,
     pub handle: ::core::primitive::c_ulong,
     pub timeout: ::core::primitive::c_uint,
     pub hcall_err: ::core::primitive::c_long,
@@ -108,8 +108,8 @@ pub enum vio_dev_family {
  */
 #[repr(C)]
 pub struct vio_dev {
-    pub name: *const ::core::ffi::c_char,
-    pub r#type: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
+    pub r#type: *const ::kernel::ffi::c_char,
     pub unit_address: u32,
     pub resource_id: u32,
     pub irq: ::core::primitive::c_uint,
@@ -128,7 +128,7 @@ pub struct vio_dev_cmo {
 
 #[repr(C)]
 pub struct vio_driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub id_table: *const vio_device_id,
     pub probe: Option<unsafe extern "C" fn(*mut vio_dev, *const vio_device_id) -> ::core::primitive::c_int>,
     pub remove: Option<unsafe extern "C" fn(*mut vio_dev)>,
@@ -145,7 +145,7 @@ extern "C" {
     pub fn __vio_register_driver(
         drv: *mut vio_driver,
         owner: *mut module,
-        mod_name: *const ::core::ffi::c_char,
+        mod_name: *const ::kernel::ffi::c_char,
     ) -> ::core::primitive::c_int;
     pub fn vio_unregister_driver(drv: *mut vio_driver);
     pub fn vio_cmo_entitlement_update(size: usize) -> ::core::primitive::c_int;
@@ -160,9 +160,9 @@ extern "C" {
     pub fn vio_register_device_node(node_vdev: *mut device_node) -> *mut vio_dev;
     pub fn vio_get_attribute(
         vdev: *mut vio_dev,
-        which: *mut ::core::ffi::c_char,
+        which: *mut ::kernel::ffi::c_char,
         length: *mut ::core::primitive::c_int,
-    ) -> *const ::core::ffi::c_void;
+    ) -> *const ::kernel::ffi::c_void;
 }
 
 /* CONFIG_PPC_PSERIES selects the external interrupt implementations. */

@@ -3,7 +3,7 @@
  * code tagging framework
  */
 
-use core::ffi::{c_char, c_void};
+use kernel::ffi::{c_char, c_void};
 
 /* Dependency supplied by the surrounding kernel translation. */
 
@@ -80,8 +80,8 @@ macro_rules! CODE_TAG_INIT {
     () => {
         $crate::codetag {
             modname: core::ptr::null(),
-            function: concat!(module_path!(), "\0").as_ptr() as *const core::ffi::c_char,
-            filename: concat!(file!(), "\0").as_ptr() as *const core::ffi::c_char,
+            function: concat!(module_path!(), "\0").as_ptr() as *const kernel::ffi::c_char,
+            filename: concat!(file!(), "\0").as_ptr() as *const kernel::ffi::c_char,
             lineno: line!(),
             flags: 0,
         }

@@ -13,8 +13,8 @@ unsafe fn __fuse_get_acl(
     rcu: bool,
 ) -> *mut posix_acl {
     let mut size: i32;
-    let name: *const core::ffi::c_char;
-    let mut value: *mut core::ffi::c_void = core::ptr::null_mut();
+    let name: *const kernel::ffi::c_char;
+    let mut value: *mut kernel::ffi::c_void = core::ptr::null_mut();
     let acl: *mut posix_acl;
 
     if rcu {
@@ -110,7 +110,7 @@ pub unsafe fn fuse_set_acl(
 ) -> i32 {
     let inode = d_inode(dentry);
     let fc = get_fuse_conn(inode);
-    let name: *const core::ffi::c_char;
+    let name: *const kernel::ffi::c_char;
     let ret: i32;
 
     if fuse_is_bad(inode) {
@@ -139,7 +139,7 @@ pub unsafe fn fuse_set_acl(
          * and it also updates i_ctime.
          */
         let mut size: usize = 0;
-        let value: *mut core::ffi::c_void;
+        let value: *mut kernel::ffi::c_void;
 
         value = posix_acl_to_xattr((*fc).user_ns, acl, &mut size, GFP_KERNEL);
         if value.is_null() {

@@ -3,7 +3,7 @@
 // Dependency supplied by <asm/page.h>.
 // `pgprot_t`, `PHYS_PFN`, and `__phys_mem_access_prot` are intentionally
 // referenced here rather than redefined.
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[inline]
 pub unsafe fn pgprot_framebuffer(

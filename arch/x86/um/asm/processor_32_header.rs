@@ -7,21 +7,21 @@
 // linux/string.h, asm/segment.h, and asm/ldt.h
 
 extern "C" {
-    pub static mut host_has_cmov: ::core::ffi::c_int;
+    pub static mut host_has_cmov: ::kernel::ffi::c_int;
 }
 
 #[repr(C)]
 pub struct uml_tls_struct {
     pub tls: user_desc,
-    pub flushed: ::core::ffi::c_uint,
-    pub present: ::core::ffi::c_uint,
+    pub flushed: ::kernel::ffi::c_uint,
+    pub present: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct arch_thread {
     pub tls_array: [uml_tls_struct; GDT_ENTRY_TLS_ENTRIES as usize],
-    pub debugregs: [::core::ffi::c_ulong; 8],
-    pub debugregs_seq: ::core::ffi::c_int,
+    pub debugregs: [::kernel::ffi::c_ulong; 8],
+    pub debugregs_seq: ::kernel::ffi::c_int,
     pub faultinfo: faultinfo,
 }
 
@@ -63,14 +63,14 @@ pub unsafe fn arch_copy_thread(from: *const arch_thread, to: *mut arch_thread) {
     );
 }
 
-pub unsafe fn current_sp() -> *mut ::core::ffi::c_void {
-    let mut sp: *mut ::core::ffi::c_void;
+pub unsafe fn current_sp() -> *mut ::kernel::ffi::c_void {
+    let mut sp: *mut ::kernel::ffi::c_void;
     ::core::arch::asm!("movl %esp, {0}", out(reg) sp);
     sp
 }
 
-pub unsafe fn current_bp() -> ::core::ffi::c_ulong {
-    let mut bp: ::core::ffi::c_ulong;
+pub unsafe fn current_bp() -> ::kernel::ffi::c_ulong {
+    let mut bp: ::kernel::ffi::c_ulong;
     ::core::arch::asm!("movl %ebp, {0}", out(reg) bp);
     bp
 }

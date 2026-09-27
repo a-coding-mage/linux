@@ -21,7 +21,7 @@ pub struct cw1200_platform_data_spi {
         enable: bool,
     ) -> i32>, // Control CLK32K
     pub macaddr: *const u8, // if NULL, use cw1200_mac_template module parameter
-    pub sdd_file: *const core::ffi::c_char, // if NULL, will use default for detected hw type
+    pub sdd_file: *const kernel::ffi::c_char, // if NULL, will use default for detected hw type
 }
 
 #[repr(C)]
@@ -41,7 +41,7 @@ pub struct cw1200_platform_data_sdio {
         enable: bool,
     ) -> i32>, // Control CLK32K
     pub macaddr: *const u8, // if NULL, use cw1200_mac_template module parameter
-    pub sdd_file: *const core::ffi::c_char, // if NULL, will use default for detected hw type
+    pub sdd_file: *const kernel::ffi::c_char, // if NULL, will use default for detected hw type
 }
 
 /* An example of SPI support in your board setup file:

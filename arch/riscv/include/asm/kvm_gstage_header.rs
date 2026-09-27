@@ -9,13 +9,13 @@
 #[repr(C)]
 pub struct kvm_gstage {
     pub kvm: *mut kvm,
-    pub flags: ::core::ffi::c_ulong,
-    pub vmid: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
+    pub vmid: ::kernel::ffi::c_ulong,
     pub pgd: *mut pgd_t,
-    pub pgd_levels: ::core::ffi::c_ulong,
+    pub pgd_levels: ::kernel::ffi::c_ulong,
 }
 
-pub const KVM_GSTAGE_FLAGS_LOCAL: ::core::ffi::c_ulong = 1 << 0;
+pub const KVM_GSTAGE_FLAGS_LOCAL: ::kernel::ffi::c_ulong = 1 << 0;
 
 #[repr(C)]
 pub struct kvm_gstage_mapping {
@@ -25,25 +25,25 @@ pub struct kvm_gstage_mapping {
 }
 
 #[cfg(target_pointer_width = "64")]
-pub const kvm_riscv_gstage_index_bits: ::core::ffi::c_ulong = 9;
+pub const kvm_riscv_gstage_index_bits: ::kernel::ffi::c_ulong = 9;
 #[cfg(not(target_pointer_width = "64"))]
-pub const kvm_riscv_gstage_index_bits: ::core::ffi::c_ulong = 10;
+pub const kvm_riscv_gstage_index_bits: ::kernel::ffi::c_ulong = 10;
 
 extern "C" {
-    pub static mut kvm_riscv_gstage_max_pgd_levels: ::core::ffi::c_ulong;
+    pub static mut kvm_riscv_gstage_max_pgd_levels: ::kernel::ffi::c_ulong;
 }
 
-pub const kvm_riscv_gstage_pgd_xbits: ::core::ffi::c_ulong = 2;
-pub const kvm_riscv_gstage_pgd_size: ::core::ffi::c_ulong =
+pub const kvm_riscv_gstage_pgd_xbits: ::kernel::ffi::c_ulong = 2;
+pub const kvm_riscv_gstage_pgd_size: ::kernel::ffi::c_ulong =
     1 << (HGATP_PAGE_SHIFT + kvm_riscv_gstage_pgd_xbits);
 
 #[inline]
-pub const unsafe fn kvm_riscv_gstage_gpa_bits(pgd_levels: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub const unsafe fn kvm_riscv_gstage_gpa_bits(pgd_levels: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     HGATP_PAGE_SHIFT + pgd_levels * kvm_riscv_gstage_index_bits + kvm_riscv_gstage_pgd_xbits
 }
 
 #[inline]
-pub const unsafe fn kvm_riscv_gstage_gpa_size(pgd_levels: ::core::ffi::c_ulong) -> u64 {
+pub const unsafe fn kvm_riscv_gstage_gpa_size(pgd_levels: ::kernel::ffi::c_ulong) -> u64 {
     1u64 << kvm_riscv_gstage_gpa_bits(pgd_levels)
 }
 
@@ -62,7 +62,7 @@ extern "C" {
     ) -> bool;
     pub fn kvm_riscv_gstage_map_page(
         gstage: *mut kvm_gstage, pcache: *mut kvm_mmu_memory_cache, gpa: gpa_t,
-        hpa: phys_addr_t, page_size: ::core::ffi::c_ulong, page_rdonly: bool,
+        hpa: phys_addr_t, page_size: ::kernel::ffi::c_ulong, page_rdonly: bool,
         page_exec: bool, out_map: *mut kvm_gstage_mapping,
     ) -> i32;
     pub fn kvm_riscv_gstage_split_huge(
@@ -89,13 +89,13 @@ extern "C" {
     ) -> bool;
     pub fn kvm_riscv_gstage_wp_range(gstage: *mut kvm_gstage, start: gpa_t, end: gpa_t) -> bool;
     pub fn kvm_riscv_gstage_wp_pt_masked(
-        gstage: *mut kvm_gstage, base_gfn: gfn_t, mask: ::core::ffi::c_ulong,
+        gstage: *mut kvm_gstage, base_gfn: gfn_t, mask: ::kernel::ffi::c_ulong,
     ) -> bool;
     pub fn kvm_riscv_gstage_mode_detect();
 }
 
 #[inline]
-pub unsafe fn kvm_riscv_gstage_mode(pgd_levels: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub unsafe fn kvm_riscv_gstage_mode(pgd_levels: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     match pgd_levels {
         2 => HGATP_MODE_SV32X4,
         3 => HGATP_MODE_SV39X4,

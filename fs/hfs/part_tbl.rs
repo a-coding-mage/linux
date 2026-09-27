@@ -100,7 +100,7 @@ pub unsafe fn hfs_part_find(
             size = be32_to_cpu((*pm).pmMapBlkCnt) as i32;
             i = 0;
             while i < size {
-                if libc::memcmp((*pm).pmPartType.as_ptr() as *const _, b"Apple_HFS\0".as_ptr() as *const _, 9) == 0
+                if memcmp((*pm).pmPartType.as_ptr() as *const _, b"Apple_HFS\0".as_ptr() as *const _, 9) == 0
                     && (HFS_SB(sb).part < 0 || HFS_SB(sb).part == i)
                 {
                     *part_start += be32_to_cpu((*pm).pmPyPartStart) as sector_t;

@@ -31,11 +31,11 @@ pub struct voltagedomain {
 }
 
 extern "C" {
-    pub fn voltdm_lookup(name: *const core::ffi::c_char) -> *mut voltagedomain;
-    pub fn voltdm_get_voltage(voltdm: *mut voltagedomain) -> core::ffi::c_ulong;
+    pub fn voltdm_lookup(name: *const kernel::ffi::c_char) -> *mut voltagedomain;
+    pub fn voltdm_get_voltage(voltdm: *mut voltagedomain) -> kernel::ffi::c_ulong;
     pub fn omap_voltage_get_voltdata(
         voltdm: *mut voltagedomain,
-        volt: core::ffi::c_ulong,
+        volt: kernel::ffi::c_ulong,
     ) -> *mut omap_volt_data;
 }
 

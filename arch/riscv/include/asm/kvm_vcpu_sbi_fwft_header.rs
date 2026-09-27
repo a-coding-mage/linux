@@ -9,7 +9,7 @@
 // Translated from kvm_vcpu_sbi_fwft.h. The asm/sbi.h dependency is supplied
 // externally by the surrounding translation unit.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 pub struct KvmSbiFwftFeature;
 

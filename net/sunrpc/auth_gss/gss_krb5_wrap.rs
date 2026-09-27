@@ -116,7 +116,7 @@ pub unsafe fn gss_krb5_unwrap_v2(
     err = gss_krb5_aead_decrypt(kctx, offset, len, buf, &mut (headskip as u32), &mut (tailskip as u32));
     if err != 0 { return err as u32; }
     if read_bytes_from_xdr_buf(buf, len - GSS_KRB5_TOK_HDR_LEN - tailskip, decrypted_hdr.as_mut_ptr(), GSS_KRB5_TOK_HDR_LEN) != 0 { return GSS_S_FAILURE; }
-    if libc::memcmp(ptr.cast(), decrypted_hdr.as_ptr().cast(), 6) != 0 || libc::memcmp(ptr.add(8).cast(), decrypted_hdr.as_ptr().add(8).cast(), 8) != 0 { return GSS_S_FAILURE; }
+    if memcmp(ptr.cast(), decrypted_hdr.as_ptr().cast(), 6) != 0 || memcmp(ptr.add(8).cast(), decrypted_hdr.as_ptr().add(8).cast(), 8) != 0 { return GSS_S_FAILURE; }
     now = ktime_get_real_seconds(); if now > (*kctx).endtime { return GSS_S_CONTEXT_EXPIRED; }
     movelen = core::cmp::min((*buf).head[0].iov_len, len); if movelen < offset as u32 + GSS_KRB5_TOK_HDR_LEN + headskip { return GSS_S_DEFECTIVE_TOKEN; }
     let movelen = movelen - offset as u32 - GSS_KRB5_TOK_HDR_LEN - headskip;

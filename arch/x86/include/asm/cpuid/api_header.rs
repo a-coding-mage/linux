@@ -90,7 +90,7 @@ pub fn cpuid_function_is_indexed(function: u32) -> bool {
 }
 
 #[inline]
-pub unsafe fn cpuid_base_hypervisor(sig: *const core::ffi::c_char, leaves: u32) -> u32 {
+pub unsafe fn cpuid_base_hypervisor(sig: *const kernel::ffi::c_char, leaves: u32) -> u32 {
     let mut base = 0x40000000u32;
     while base < 0x40010000 {
         let (mut eax, mut s0, mut s1, mut s2) = (0, 0, 0, 0);
@@ -102,7 +102,7 @@ pub unsafe fn cpuid_base_hypervisor(sig: *const core::ffi::c_char, leaves: u32) 
     0
 }
 
-extern "C" { fn libc_memcmp(a: *const core::ffi::c_void, b: *const core::ffi::c_void, n: usize) -> i32; }
+extern "C" { fn libc_memcmp(a: *const kernel::ffi::c_void, b: *const kernel::ffi::c_void, n: usize) -> i32; }
 
 // The remaining C macros are retained as Rust macro interfaces; their
 // token-pasted leaf types and parser structures come from the included headers.

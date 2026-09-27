@@ -37,8 +37,8 @@ unsafe fn per_hub_init(nasid: nasid_t) {
     if nasid != 0 {
         /* copy exception handlers from first node to current node */
         memcpy(
-            NODE_OFFSET_TO_K0(nasid, 0) as *mut core::ffi::c_void,
-            CKSEG0 as *const core::ffi::c_void,
+            NODE_OFFSET_TO_K0(nasid, 0) as *mut kernel::ffi::c_void,
+            CKSEG0 as *const kernel::ffi::c_void,
             0x200,
         );
         __flush_cache_all();
@@ -121,8 +121,8 @@ pub unsafe fn plat_mem_setup() {
     set_io_port_base(IO_BASE);
 }
 
-pub unsafe fn get_system_type() -> *const core::ffi::c_char {
-    b"SGI Origin\0".as_ptr() as *const core::ffi::c_char
+pub unsafe fn get_system_type() -> *const kernel::ffi::c_char {
+    b"SGI Origin\0".as_ptr() as *const kernel::ffi::c_char
 }
 
 pub unsafe fn prom_init() {

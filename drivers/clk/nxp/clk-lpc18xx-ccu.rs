@@ -19,13 +19,13 @@ const CCU_BRANCH_HAVE_DIV2: u16 = 1 << 1;
 #[repr(C)]
 struct lpc18xx_branch_clk_data {
     num: i32,
-    name: [*const core::ffi::c_char; 0],
+    name: [*const kernel::ffi::c_char; 0],
 }
 
 #[repr(C)]
 struct lpc18xx_clk_branch {
-    base_name: *const core::ffi::c_char,
-    name: *const core::ffi::c_char,
+    base_name: *const kernel::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     offset: u16,
     flags: u16,
     clk: *mut clk,
@@ -88,7 +88,7 @@ static mut clk_branches: [lpc18xx_clk_branch; 53] = [
     lpc18xx_clk_branch { base_name: core::ptr::null(), name: core::ptr::null(), offset: 0, flags: 0, clk: core::ptr::null_mut(), gate: clk_gate::ZERO },
 ];
 
-unsafe fn lpc18xx_ccu_branch_clk_get(clkspec: *mut of_phandle_args, data: *mut core::ffi::c_void) -> *mut clk {
+unsafe fn lpc18xx_ccu_branch_clk_get(clkspec: *mut of_phandle_args, data: *mut kernel::ffi::c_void) -> *mut clk {
     let clk_data = data as *mut lpc18xx_branch_clk_data;
     let offset = (*clkspec).args[0];
     for i in 0..clk_branches.len() {
@@ -127,7 +127,7 @@ unsafe fn lpc18xx_ccu_gate_is_enabled(hw: *mut clk_hw) -> i32 {
     ((*clk_gate_ops).is_enabled.unwrap())(hw)
 }
 
-unsafe fn lpc18xx_ccu_register_branch_gate_div(branch: *mut lpc18xx_clk_branch, reg_base: *mut core::ffi::c_void, parent: *const core::ffi::c_char) {
+unsafe fn lpc18xx_ccu_register_branch_gate_div(branch: *mut lpc18xx_clk_branch, reg_base: *mut kernel::ffi::c_void, parent: *const kernel::ffi::c_char) {
     let mut div_ops: *const clk_ops = core::ptr::null();
     let mut div: *mut clk_divider = core::ptr::null_mut();
     let mut div_hw: *mut clk_hw = core::ptr::null_mut();
@@ -142,10 +142,10 @@ unsafe fn lpc18xx_ccu_register_branch_gate_div(branch: *mut lpc18xx_clk_branch, 
     (*branch).gate.reg = (*branch).offset as usize + reg_base as usize as *mut u32;
     (*branch).gate.bit_idx = 0;
     (*branch).clk = clk_register_composite(core::ptr::null_mut(), (*branch).name, &parent, 1, core::ptr::null_mut(), core::ptr::null(), div_hw, div_ops, &mut (*branch).gate.hw, &lpc18xx_ccu_gate_ops, 0);
-    if IS_ERR((*branch).clk) { kfree(div as *mut core::ffi::c_void); pr_warn!("failed to register clock"); }
+    if IS_ERR((*branch).clk) { kfree(div as *mut kernel::ffi::c_void); pr_warn!("failed to register clock"); }
 }
 
-unsafe fn lpc18xx_ccu_register_branch_clks(reg_base: *mut core::ffi::c_void, base_name: *const core::ffi::c_char) {
+unsafe fn lpc18xx_ccu_register_branch_clks(reg_base: *mut kernel::ffi::c_void, base_name: *const kernel::ffi::c_char) {
     let mut parent = base_name;
     for i in 0..clk_branches.len() {
         if strcmp(clk_branches[i].base_name, base_name) != 0 { continue; }
@@ -166,7 +166,7 @@ unsafe fn lpc18xx_ccu_init(np: *mut device_node) {
         if ret != 0 { pr_warn!("failed to get clock name at idx %d\n", i); continue; }
         lpc18xx_ccu_register_branch_clks(reg_base, *(*clk_data).name.as_ptr().add(i as usize));
     }
-    of_clk_add_provider(np, Some(lpc18xx_ccu_branch_clk_get), clk_data as *mut core::ffi::c_void);
+    of_clk_add_provider(np, Some(lpc18xx_ccu_branch_clk_get), clk_data as *mut kernel::ffi::c_void);
 }
 
 // CLK_OF_DECLARE(lpc18xx_ccu, "nxp,lpc1850-ccu", lpc18xx_ccu_init);

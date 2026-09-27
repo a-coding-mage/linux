@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Nikolay Aleksandrov <nikolay@redhat.com>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 use core::mem::size_of;
 use core::ptr;
 
@@ -124,7 +124,7 @@ pub unsafe fn __bond_opt_init(
     optval: *mut bond_opt_value,
     string: *mut c_char,
     value: u64,
-    extra: *const core::ffi::c_void,
+    extra: *const kernel::ffi::c_void,
     extra_len: usize,
 ) {
     ptr::write_bytes(optval.cast::<u8>(), 0, size_of::<bond_opt_value>());
@@ -152,7 +152,7 @@ pub unsafe fn bond_opt_initstr(optval: *mut bond_opt_value, str_: *mut c_char) {
     __bond_opt_init(optval, str_, u64::MAX, ptr::null(), 0)
 }
 #[inline]
-pub unsafe fn bond_opt_initextra(optval: *mut bond_opt_value, extra: *const core::ffi::c_void, extra_len: usize) {
+pub unsafe fn bond_opt_initextra(optval: *mut bond_opt_value, extra: *const kernel::ffi::c_void, extra_len: usize) {
     __bond_opt_init(optval, ptr::null_mut(), u64::MAX, extra, extra_len)
 }
 #[inline]

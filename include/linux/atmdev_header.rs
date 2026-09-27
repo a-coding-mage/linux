@@ -11,7 +11,7 @@ extern "C" {
 #[cfg(CONFIG_COMPAT)]
 #[repr(C)]
 pub struct compat_atm_iobuf {
-    pub length: ::core::ffi::c_int,
+    pub length: ::kernel::ffi::c_int,
     pub buffer: compat_uptr_t,
 }
 
@@ -45,22 +45,22 @@ pub const ATM_ATMOPT_CLP: i32 = 1;
 #[repr(C)]
 pub struct atm_vcc {
     pub sk: sock,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub vpi: i16,
-    pub vci: ::core::ffi::c_int,
-    pub aal_options: ::core::ffi::c_ulong,
-    pub atm_options: ::core::ffi::c_ulong,
+    pub vci: ::kernel::ffi::c_int,
+    pub aal_options: ::kernel::ffi::c_ulong,
+    pub atm_options: ::kernel::ffi::c_ulong,
     pub dev: *mut atm_dev,
     pub qos: atm_qos,
     pub release_cb: Option<unsafe extern "C" fn(*mut atm_vcc)>,
     pub push: Option<unsafe extern "C" fn(*mut atm_vcc, *mut sk_buff)>,
     pub pop: Option<unsafe extern "C" fn(*mut atm_vcc, *mut sk_buff)>,
-    pub send: Option<unsafe extern "C" fn(*mut atm_vcc, *mut sk_buff) -> ::core::ffi::c_int>,
-    pub dev_data: *mut ::core::ffi::c_void,
-    pub proto_data: *mut ::core::ffi::c_void,
+    pub send: Option<unsafe extern "C" fn(*mut atm_vcc, *mut sk_buff) -> ::kernel::ffi::c_int>,
+    pub dev_data: *mut ::kernel::ffi::c_void,
+    pub proto_data: *mut ::kernel::ffi::c_void,
     pub stats: *mut k_atm_aal_stats,
     pub owner: *mut module,
-    pub user_back: *mut ::core::ffi::c_void,
+    pub user_back: *mut ::kernel::ffi::c_void,
 }
 
 #[inline]
@@ -75,21 +75,21 @@ pub unsafe fn sk_atm(vcc: *mut atm_vcc) -> *mut sock { vcc as *mut sock }
 #[repr(C)]
 pub struct atm_dev {
     pub ops: *const atmdev_ops,
-    pub type_: *const ::core::ffi::c_char,
-    pub number: ::core::ffi::c_int,
-    pub dev_data: *mut ::core::ffi::c_void,
-    pub phy_data: *mut ::core::ffi::c_void,
-    pub flags: ::core::ffi::c_ulong,
+    pub type_: *const ::kernel::ffi::c_char,
+    pub number: ::kernel::ffi::c_int,
+    pub dev_data: *mut ::kernel::ffi::c_void,
+    pub phy_data: *mut ::kernel::ffi::c_void,
+    pub flags: ::kernel::ffi::c_ulong,
     pub esi: [u8; ESI_LEN],
     pub ci_range: atm_cirange,
     pub stats: k_atm_dev_stats,
-    pub signal: ::core::ffi::c_char,
-    pub link_rate: ::core::ffi::c_int,
+    pub signal: ::kernel::ffi::c_char,
+    pub link_rate: ::kernel::ffi::c_int,
     pub refcnt: refcount_t,
     #[cfg(CONFIG_PROC_FS)]
     pub proc_entry: *mut proc_dir_entry,
     #[cfg(CONFIG_PROC_FS)]
-    pub proc_name: *mut ::core::ffi::c_char,
+    pub proc_name: *mut ::kernel::ffi::c_char,
     pub class_dev: device,
     pub dev_list: list_head,
 }
@@ -97,20 +97,20 @@ pub struct atm_dev {
 #[repr(C)]
 pub struct atmdev_ops {
     pub dev_close: Option<unsafe extern "C" fn(*mut atm_dev)>,
-    pub open: Option<unsafe extern "C" fn(*mut atm_vcc) -> ::core::ffi::c_int>,
+    pub open: Option<unsafe extern "C" fn(*mut atm_vcc) -> ::kernel::ffi::c_int>,
     pub close: Option<unsafe extern "C" fn(*mut atm_vcc)>,
-    pub ioctl: Option<unsafe extern "C" fn(*mut atm_dev, u32, *mut ::core::ffi::c_void) -> ::core::ffi::c_int>,
+    pub ioctl: Option<unsafe extern "C" fn(*mut atm_dev, u32, *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int>,
     #[cfg(CONFIG_COMPAT)]
-    pub compat_ioctl: Option<unsafe extern "C" fn(*mut atm_dev, u32, *mut ::core::ffi::c_void) -> ::core::ffi::c_int>,
-    pub send: Option<unsafe extern "C" fn(*mut atm_vcc, *mut sk_buff) -> ::core::ffi::c_int>,
-    pub proc_read: Option<unsafe extern "C" fn(*mut atm_dev, *mut loff_t, *mut ::core::ffi::c_char) -> ::core::ffi::c_int>,
+    pub compat_ioctl: Option<unsafe extern "C" fn(*mut atm_dev, u32, *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int>,
+    pub send: Option<unsafe extern "C" fn(*mut atm_vcc, *mut sk_buff) -> ::kernel::ffi::c_int>,
+    pub proc_read: Option<unsafe extern "C" fn(*mut atm_dev, *mut loff_t, *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int>,
     pub owner: *mut module,
 }
 
 #[repr(C, packed)]
 pub struct atm_skb_data {
     pub vcc: *mut atm_vcc,
-    pub atm_options: ::core::ffi::c_ulong,
+    pub atm_options: ::kernel::ffi::c_ulong,
     pub acct_truesize: u32,
 }
 
@@ -119,14 +119,14 @@ pub const VCC_HTABLE_SIZE: usize = 32;
 extern "C" {
     pub static mut vcc_hash: [hlist_head; VCC_HTABLE_SIZE];
     pub static mut vcc_sklist_lock: rwlock_t;
-    pub fn atm_dev_register(type_: *const ::core::ffi::c_char, parent: *mut device, ops: *const atmdev_ops, number: ::core::ffi::c_int, flags: *mut ::core::ffi::c_ulong) -> *mut atm_dev;
-    pub fn atm_dev_lookup(number: ::core::ffi::c_int) -> *mut atm_dev;
+    pub fn atm_dev_register(type_: *const ::kernel::ffi::c_char, parent: *mut device, ops: *const atmdev_ops, number: ::kernel::ffi::c_int, flags: *mut ::kernel::ffi::c_ulong) -> *mut atm_dev;
+    pub fn atm_dev_lookup(number: ::kernel::ffi::c_int) -> *mut atm_dev;
     pub fn atm_dev_deregister(dev: *mut atm_dev);
-    pub fn atm_dev_signal_change(dev: *mut atm_dev, signal: ::core::ffi::c_char);
+    pub fn atm_dev_signal_change(dev: *mut atm_dev, signal: ::kernel::ffi::c_char);
     pub fn vcc_insert_socket(sk: *mut sock);
     pub fn atm_dev_release_vccs(dev: *mut atm_dev);
-    pub fn atm_charge(vcc: *mut atm_vcc, truesize: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn vcc_release_async(vcc: *mut atm_vcc, reply: ::core::ffi::c_int);
+    pub fn atm_charge(vcc: *mut atm_vcc, truesize: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn vcc_release_async(vcc: *mut atm_vcc, reply: ::kernel::ffi::c_int);
 }
 
 #[inline]
@@ -142,11 +142,11 @@ pub unsafe fn atm_return_tx(vcc: *mut atm_vcc, skb: *mut sk_buff) {
 }
 
 #[inline]
-pub unsafe fn atm_force_charge(vcc: *mut atm_vcc, truesize: ::core::ffi::c_int) { atomic_add(truesize, &mut (*sk_atm(vcc)).sk_rmem_alloc); }
+pub unsafe fn atm_force_charge(vcc: *mut atm_vcc, truesize: ::kernel::ffi::c_int) { atomic_add(truesize, &mut (*sk_atm(vcc)).sk_rmem_alloc); }
 #[inline]
-pub unsafe fn atm_return(vcc: *mut atm_vcc, truesize: ::core::ffi::c_int) { atomic_sub(truesize, &mut (*sk_atm(vcc)).sk_rmem_alloc); }
+pub unsafe fn atm_return(vcc: *mut atm_vcc, truesize: ::kernel::ffi::c_int) { atomic_sub(truesize, &mut (*sk_atm(vcc)).sk_rmem_alloc); }
 #[inline]
-pub unsafe fn atm_may_send(vcc: *mut atm_vcc, size: u32) -> ::core::ffi::c_int { ((size as usize + refcount_read(&(*sk_atm(vcc)).sk_wmem_alloc)) < (*sk_atm(vcc)).sk_sndbuf as usize) as ::core::ffi::c_int }
+pub unsafe fn atm_may_send(vcc: *mut atm_vcc, size: u32) -> ::kernel::ffi::c_int { ((size as usize + refcount_read(&(*sk_atm(vcc)).sk_wmem_alloc)) < (*sk_atm(vcc)).sk_sndbuf as usize) as ::kernel::ffi::c_int }
 #[inline]
 pub unsafe fn atm_dev_hold(dev: *mut atm_dev) { refcount_inc(&mut (*dev).refcnt); }
 #[inline]
@@ -161,14 +161,14 @@ pub unsafe fn atm_dev_put(dev: *mut atm_dev) {
 #[repr(C)]
 pub struct atm_ioctl {
     pub owner: *mut module,
-    pub ioctl: Option<unsafe extern "C" fn(*mut socket, u32, ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
+    pub ioctl: Option<unsafe extern "C" fn(*mut socket, u32, ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
     pub list: list_head,
 }
 
 extern "C" {
     pub fn register_atm_ioctl(ioctl: *mut atm_ioctl);
     pub fn deregister_atm_ioctl(ioctl: *mut atm_ioctl);
-    pub fn register_atmdevice_notifier(nb: *mut notifier_block) -> ::core::ffi::c_int;
+    pub fn register_atmdevice_notifier(nb: *mut notifier_block) -> ::kernel::ffi::c_int;
     pub fn unregister_atmdevice_notifier(nb: *mut notifier_block);
 }
 

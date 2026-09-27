@@ -33,7 +33,7 @@ pub struct acpi_srat_rintc_affinity {
 
 extern "C" {
     static mut nr_cpu_ids: i32;
-    static mut numa_nodes_parsed: core::ffi::c_ulong;
+    static mut numa_nodes_parsed: kernel::ffi::c_ulong;
 
     fn srat_disabled() -> bool;
     fn acpi_get_cpu_uid(cpu: i32, uid: *mut u32) -> i32;
@@ -41,10 +41,10 @@ extern "C" {
     fn acpi_map_pxm_to_node(pxm: i32) -> i32;
     fn cpuid_to_hartid_map(cpu: i32) -> u64;
     fn early_map_cpu_to_node(cpu: i32, node: i32);
-    fn node_set(node: i32, map: *mut core::ffi::c_ulong);
+    fn node_set(node: i32, map: *mut kernel::ffi::c_ulong);
     fn bad_srat();
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
     fn acpi_table_parse_entries(
         sig: u32,
         table_size: usize,

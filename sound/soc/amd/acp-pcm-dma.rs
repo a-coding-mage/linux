@@ -14,18 +14,18 @@
 #![allow(dead_code)]
 #![allow(improper_ctypes)]
 
-use core::ffi::{c_char, c_int, c_void};
+use kernel::ffi::{c_char, c_int, c_void};
 use core::mem::size_of;
 use core::ptr;
 
-type u8 = core::ffi::c_uchar;
-type u16 = core::ffi::c_ushort;
-type u32 = core::ffi::c_uint;
-type u64 = core::ffi::c_ulonglong;
+type u8 = kernel::ffi::c_uchar;
+type u16 = kernel::ffi::c_ushort;
+type u32 = kernel::ffi::c_uint;
+type u64 = kernel::ffi::c_ulonglong;
 type uint64_t = u64;
 type dma_addr_t = u64;
-type snd_pcm_uframes_t = core::ffi::c_ulong;
-type snd_pcm_sframes_t = core::ffi::c_long;
+type snd_pcm_uframes_t = kernel::ffi::c_ulong;
+type snd_pcm_sframes_t = kernel::ffi::c_long;
 type irqreturn_t = c_int;
 
 const DRV_NAME: &[u8] = b"acp_audio_dma\0";

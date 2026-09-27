@@ -86,20 +86,20 @@ pub const PTE_FRAG_SIZE: usize = 1usize << 12;
 pub const mmu_linear_psize: u32 = MMU_PAGE_8M;
 
 unsafe extern "C" {
-    pub fn mmu_pin_tlb(top: libc::c_ulong, readonly: bool);
+    pub fn mmu_pin_tlb(top: kernel::ffi::c_ulong, readonly: bool);
 }
 
 #[repr(C)]
 pub struct mm_context_t {
-    pub id: libc::c_uint,
-    pub active: libc::c_uint,
-    pub vdso: *mut libc::c_void,
-    pub pte_frag: *mut libc::c_void,
+    pub id: kernel::ffi::c_uint,
+    pub active: kernel::ffi::c_uint,
+    pub vdso: *mut kernel::ffi::c_void,
+    pub pte_frag: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct mmu_psize_def {
-    pub shift: libc::c_uint,
+    pub shift: kernel::ffi::c_uint,
 }
 
 unsafe extern "C" {
@@ -110,7 +110,7 @@ unsafe extern "C" {
     pub static mut patch__dtlbmiss_perf: i32;
 }
 
-pub unsafe fn shift_to_mmu_psize(shift: libc::c_uint) -> i32 {
+pub unsafe fn shift_to_mmu_psize(shift: kernel::ffi::c_uint) -> i32 {
     let mut psize: i32 = 0;
     while psize < MMU_PAGE_COUNT as i32 {
         if mmu_psize_defs[psize as usize].shift == shift {
@@ -121,7 +121,7 @@ pub unsafe fn shift_to_mmu_psize(shift: libc::c_uint) -> i32 {
     -1
 }
 
-pub unsafe fn mmu_psize_to_shift(mmu_psize: libc::c_uint) -> libc::c_uint {
+pub unsafe fn mmu_psize_to_shift(mmu_psize: kernel::ffi::c_uint) -> kernel::ffi::c_uint {
     if mmu_psize_defs[mmu_psize as usize].shift != 0 {
         return mmu_psize_defs[mmu_psize as usize].shift;
     }
@@ -129,27 +129,27 @@ pub unsafe fn mmu_psize_to_shift(mmu_psize: libc::c_uint) -> libc::c_uint {
 }
 
 pub unsafe fn arch_vmap_try_size(
-    addr: libc::c_ulong, end: libc::c_ulong, pfn: u64,
-    max_page_shift: libc::c_uint, size: libc::c_ulong,
+    addr: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong, pfn: u64,
+    max_page_shift: kernel::ffi::c_uint, size: kernel::ffi::c_ulong,
 ) -> bool {
     if end.wrapping_sub(addr) < size { return false; }
-    if (1 as libc::c_ulong).wrapping_shl(max_page_shift) < size { return false; }
+    if (1 as kernel::ffi::c_ulong).wrapping_shl(max_page_shift) < size { return false; }
     if !IS_ALIGNED(addr, size) { return false; }
     if !IS_ALIGNED(PFN_PHYS(pfn), size) { return false; }
     true
 }
 
 pub unsafe fn arch_vmap_pte_range_map_size(
-    addr: libc::c_ulong, end: libc::c_ulong, pfn: u64,
-    max_page_shift: libc::c_uint,
-) -> libc::c_ulong {
+    addr: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong, pfn: u64,
+    max_page_shift: kernel::ffi::c_uint,
+) -> kernel::ffi::c_ulong {
     if arch_vmap_try_size(addr, end, pfn, max_page_shift, SZ_512K) { return SZ_512K; }
     if PAGE_SIZE == SZ_16K { return SZ_16K; }
     if arch_vmap_try_size(addr, end, pfn, max_page_shift, SZ_16K) { return SZ_16K; }
     PAGE_SIZE
 }
 
-pub unsafe fn arch_vmap_pte_supported_shift(size: libc::c_ulong) -> libc::c_uint {
+pub unsafe fn arch_vmap_pte_supported_shift(size: kernel::ffi::c_ulong) -> kernel::ffi::c_uint {
     if size >= SZ_512K { 19 } else if size >= SZ_16K { 14 } else { PAGE_SHIFT }
 }
 

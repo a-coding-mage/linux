@@ -10,8 +10,8 @@
 
 // Dependencies: include/apparmor.h, include/cred.h, include/policy.h, include/policy_ns.h, include/domain.h, include/procattr.h
 
-use core::ffi::c_char;
-use core::ffi::c_int;
+use kernel::ffi::c_char;
+use kernel::ffi::c_int;
 use core::ptr;
 
 // External type declarations

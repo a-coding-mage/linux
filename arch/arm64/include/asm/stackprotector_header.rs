@@ -10,7 +10,7 @@
  * we cannot have a different canary value per task.
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 // Dependency supplied by asm/pointer_auth.h and the surrounding kernel.
 extern "C" {

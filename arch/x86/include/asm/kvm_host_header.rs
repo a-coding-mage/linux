@@ -26,7 +26,7 @@ pub const fn kvm_hpage_shift(x: u64, page_shift: u64) -> u64 { page_shift + kvm_
 pub const fn kvm_max<const A: usize, const B: usize>() -> usize { if A >= B { A } else { B } }
 
 pub type hpa_t = u64; pub type gpa_t = u64; pub type gfn_t = u64; pub type gva_t = u64;
-pub type kvm_pfn_t = u64; pub type cpumask_var_t = *mut core::ffi::c_void;
+pub type kvm_pfn_t = u64; pub type cpumask_var_t = *mut kernel::ffi::c_void;
 pub type atomic_t = i32; pub type atomic64_t = i64; pub type atomic_long_t = isize;
 
 #[repr(C)] pub struct kvm_vcpu;
@@ -85,7 +85,7 @@ pub const KVM_MAX_NR_GP_COUNTERS:usize=8; pub const KVM_MAX_NR_FIXED_COUNTERS:us
 #[repr(C)] pub struct kvm_queued_exception { pub pending:bool, pub injected:bool, pub has_error_code:bool, pub vector:u8, pub error_code:u32, pub payload:usize, pub has_payload:bool }
 #[repr(C)] pub struct kvm_msr_data { pub host_initiated:bool, pub index:u32, pub data:u64 }
 #[repr(C)] pub struct kvm_lapic_irq { pub vector:u32, pub delivery_mode:u16, pub dest_mode:u16, pub level:bool, pub trig_mode:u16, pub shorthand:u32, pub dest_id:u32, pub msi_redir_hint:bool }
-#[repr(C)] pub struct kvm_arch_memory_slot { pub rmap:[*mut kvm_rmap_head;4], pub lpage_info:[*mut core::ffi::c_void;3], pub gfn_write_track:*mut u16 }
+#[repr(C)] pub struct kvm_arch_memory_slot { pub rmap:[*mut kvm_rmap_head;4], pub lpage_info:[*mut kernel::ffi::c_void;3], pub gfn_write_track:*mut u16 }
 #[repr(C)] pub struct kvm_arch { pub n_requested_mmu_pages:usize, pub n_max_mmu_pages:usize, pub indirect_shadow_pages:u32, pub mmu_valid_gen:u8, pub vm_type:u8, pub has_private_mem:bool, pub has_protected_state:bool, pub has_protected_eoi:bool, pub has_protected_pmu:bool, pub pre_fault_allowed:bool, pub shadow_mmio_value:u64, pub wall_clock:gpa_t, pub kvmclock_offset:i64, pub default_tsc_khz:u32, pub user_set_tsc:bool, pub backwards_tsc_observed:bool, pub bsp_vcpu_id:u32, pub irqchip_mode:u32, pub max_vcpu_ids:u32, pub disable_nx_huge_pages:bool, pub gfn_direct_bits:gfn_t, pub cpu_dirty_log_size:i32 }
 #[repr(C)] pub struct kvm_arch_async_pf { pub token:u32, pub gfn:gfn_t, pub cr3:usize, pub direct_map:bool, pub error_code:u64 }
 
@@ -94,7 +94,7 @@ extern "C" {
     pub static mut kvm_x86_ops:kvm_x86_ops; pub static mut kvm_nested_ops:kvm_x86_nested_ops;
     pub fn kvm_arch_free_vm(kvm:*mut kvm); pub fn kvm_arch_async_page_not_present(vcpu:*mut kvm_vcpu, work:*mut kvm_async_pf)->bool; pub fn kvm_arch_async_page_present(vcpu:*mut kvm_vcpu, work:*mut kvm_async_pf); pub fn kvm_arch_async_page_ready(vcpu:*mut kvm_vcpu, work:*mut kvm_async_pf); pub fn kvm_arch_async_page_present_queued(vcpu:*mut kvm_vcpu); pub fn kvm_arch_can_dequeue_async_page_present(vcpu:*mut kvm_vcpu)->bool;
 }
-#[repr(C)] pub struct kvm_x86_ops { pub name:*const core::ffi::c_char, pub check_processor_compatibility:Option<unsafe extern "C" fn()->i32>, pub enable_virtualization_cpu:Option<unsafe extern "C" fn()->i32>, pub disable_virtualization_cpu:Option<unsafe extern "C" fn()>, pub vm_size:usize, pub vm_init:Option<unsafe extern "C" fn(*mut kvm)->i32>, pub vm_destroy:Option<unsafe extern "C" fn(*mut kvm)>, pub vcpu_create:Option<unsafe extern "C" fn(*mut kvm_vcpu)->i32>, pub vcpu_free:Option<unsafe extern "C" fn(*mut kvm_vcpu)>, pub vcpu_reset:Option<unsafe extern "C" fn(*mut kvm_vcpu,bool)>, pub vcpu_run:Option<unsafe extern "C" fn(*mut kvm_vcpu,u64)->i32>, pub handle_exit:Option<unsafe extern "C" fn(*mut kvm_vcpu,i32)->i32> }
+#[repr(C)] pub struct kvm_x86_ops { pub name:*const kernel::ffi::c_char, pub check_processor_compatibility:Option<unsafe extern "C" fn()->i32>, pub enable_virtualization_cpu:Option<unsafe extern "C" fn()->i32>, pub disable_virtualization_cpu:Option<unsafe extern "C" fn()>, pub vm_size:usize, pub vm_init:Option<unsafe extern "C" fn(*mut kvm)->i32>, pub vm_destroy:Option<unsafe extern "C" fn(*mut kvm)>, pub vcpu_create:Option<unsafe extern "C" fn(*mut kvm_vcpu)->i32>, pub vcpu_free:Option<unsafe extern "C" fn(*mut kvm_vcpu)>, pub vcpu_reset:Option<unsafe extern "C" fn(*mut kvm_vcpu,bool)>, pub vcpu_run:Option<unsafe extern "C" fn(*mut kvm_vcpu,u64)->i32>, pub handle_exit:Option<unsafe extern "C" fn(*mut kvm_vcpu,i32)->i32> }
 #[repr(C)] pub struct kvm_x86_nested_ops { pub enabled:bool, pub leave_nested:Option<unsafe extern "C" fn(*mut kvm_vcpu)>, pub check_events:Option<unsafe extern "C" fn(*mut kvm_vcpu)->i32>, pub has_events:Option<unsafe extern "C" fn(*mut kvm_vcpu,bool)->bool>, pub triple_fault:Option<unsafe extern "C" fn(*mut kvm_vcpu)> }
 #[repr(C)] pub struct kvm_x86_init_ops { pub hardware_setup:Option<unsafe extern "C" fn()->i32>, pub handle_intel_pt_intr:Option<unsafe extern "C" fn()->u32>, pub runtime_ops:*mut kvm_x86_ops, pub nested_ops:*mut kvm_x86_nested_ops }
 

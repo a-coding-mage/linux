@@ -12,7 +12,7 @@ unsafe extern "C" {
 
 unsafe extern "C" fn unbind_store(
     drv: *mut device_driver,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     count: usize,
 ) -> isize {
     let bus: *const bus_type = unsafe { (*drv).bus };
@@ -40,7 +40,7 @@ extern "C" {
 
 unsafe extern "C" fn bind_store(
     drv: *mut device_driver,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     count: usize,
 ) -> isize {
     let bus: *const bus_type = unsafe { (*drv).bus };

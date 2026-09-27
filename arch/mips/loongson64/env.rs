@@ -14,7 +14,7 @@
  * Author: Wu Zhangjin, wuzhangjin@gmail.com
  */
 
-const HOST_BRIDGE_CONFIG_ADDR: *mut core::ffi::c_void = 0x1a000000usize as *mut core::ffi::c_void;
+const HOST_BRIDGE_CONFIG_ADDR: *mut kernel::ffi::c_void = 0x1a000000usize as *mut kernel::ffi::c_void;
 
 pub static mut cpu_clock_freq: u32 = 0;
 pub static mut loongson_memmap: *mut efi_memory_map_loongson = core::ptr::null_mut();
@@ -29,19 +29,19 @@ pub static mut loongson_chiptemp: [u64; MAX_PACKAGES] = [0; MAX_PACKAGES];
 pub static mut loongson_freqctrl: [u64; MAX_PACKAGES] = [0; MAX_PACKAGES];
 pub static mut smp_group: [u64; 4] = [0; 4];
 
-pub unsafe fn get_system_type() -> *const core::ffi::c_char {
-    b"Generic Loongson64 System\0".as_ptr() as *const core::ffi::c_char
+pub unsafe fn get_system_type() -> *const kernel::ffi::c_char {
+    b"Generic Loongson64 System\0".as_ptr() as *const kernel::ffi::c_char
 }
 
 pub unsafe fn prom_dtb_init_env() {
     if (fw_arg2 < CKSEG0 || fw_arg2 > CKSEG1) && (fw_arg2 < XKPHYS || fw_arg2 > XKSEG) {
         loongson_fdt_blob = __dtb_loongson64_2core_2k1000_begin;
     } else {
-        loongson_fdt_blob = fw_arg2 as *mut core::ffi::c_void;
+        loongson_fdt_blob = fw_arg2 as *mut kernel::ffi::c_void;
     }
 }
 
-unsafe fn lefi_fixup_fdt_serial(fdt: *mut core::ffi::c_void, uart_addr: u64, uart_clk: u32) -> i32 {
+unsafe fn lefi_fixup_fdt_serial(fdt: *mut kernel::ffi::c_void, uart_addr: u64, uart_clk: u32) -> i32 {
     let mut node: i32;
     let mut len: i32 = 0;
     let mut depth: i32 = -1;

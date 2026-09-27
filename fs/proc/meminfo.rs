@@ -4,12 +4,12 @@
 #[allow(dead_code)]
 pub unsafe extern "C" fn arch_report_meminfo(m: *mut seq_file) {}
 
-unsafe fn show_val_kb(m: *mut seq_file, s: *const core::ffi::c_char, num: c_ulong) {
+unsafe fn show_val_kb(m: *mut seq_file, s: *const kernel::ffi::c_char, num: c_ulong) {
     seq_put_decimal_ull_width(m, s, num << (PAGE_SHIFT - 10), 8);
-    seq_write(m, b" kB\n".as_ptr() as *const core::ffi::c_char, 4);
+    seq_write(m, b" kB\n".as_ptr() as *const kernel::ffi::c_char, 4);
 }
 
-unsafe fn meminfo_proc_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> c_int {
+unsafe fn meminfo_proc_show(m: *mut seq_file, _v: *mut kernel::ffi::c_void) -> c_int {
     let mut i: sysinfo = core::mem::zeroed();
     let mut committed: c_ulong;
     let mut cached: c_long;

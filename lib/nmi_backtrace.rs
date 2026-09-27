@@ -22,7 +22,7 @@ static mut backtrace_mask: [usize; (NR_CPUS + usize::BITS as usize - 1) / usize:
     [0; (NR_CPUS + usize::BITS as usize - 1) / usize::BITS as usize];
 
 /* "in progress" flag of arch_trigger_cpumask_backtrace */
-static mut backtrace_flag: core::ffi::c_ulong = 0;
+static mut backtrace_flag: kernel::ffi::c_ulong = 0;
 
 const NMI_BT_TIMEOUT_SEC: i32 = 10;
 
@@ -106,7 +106,7 @@ static mut backtrace_idle: bool = false;
 
 pub unsafe extern "C" fn nmi_cpu_backtrace(regs: *mut pt_regs) -> bool {
     let cpu = smp_processor_id();
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     if cpumask_test_cpu(cpu, to_cpumask(&raw mut backtrace_mask)) {
         /*

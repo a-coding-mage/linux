@@ -299,8 +299,8 @@ struct tegra210_domain_mbist_war {
 	void (*handle_lvl2_ovr)(tegra210_domain_mbist_war *mbist);
 	const u32 lvl2_offset;
 	const u32 lvl2_mask;
-	const core::ffi::c_uint num_clks;
-	const core::ffi::c_uint *clk_init_data;
+	const kernel::ffi::c_uint num_clks;
+	const kernel::ffi::c_uint *clk_init_data;
 	struct clk_bulk_data *clks;
 };
 
@@ -312,8 +312,8 @@ static void __iomem *ahub_base;
 static void __iomem *dispa_base;
 static void __iomem *vic_base;
 
-static core::ffi::c_ulong osc_freq;
-static core::ffi::c_ulong pll_ref_freq;
+static kernel::ffi::c_ulong osc_freq;
+static kernel::ffi::c_ulong pll_ref_freq;
 
 static DEFINE_SPINLOCK(pll_d_lock);
 static DEFINE_SPINLOCK(pll_e_lock);
@@ -325,7 +325,7 @@ static DEFINE_SPINLOCK(emc_lock);
 static DEFINE_MUTEX(lvl2_ovr_lock);
 
 /* possible OSC frequencies in Hz */
-static core::ffi::c_ulong tegra210_input_freq[] = {
+static kernel::ffi::c_ulong tegra210_input_freq[] = {
 	[5] = 38400000,
 	[8] = 12000000,
 };
@@ -651,7 +651,7 @@ static void tegra210_generic_mbist_war(tegra210_domain_mbist_war *mbist)
 static void tegra210_venc_mbist_war(tegra210_domain_mbist_war *mbist)
 {
 	csi_src: u32, ovra, ovre;
-	core::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong flags = 0;
 
 	spin_lock_irqsave(&pll_d_lock, flags);
 
@@ -714,7 +714,7 @@ static void tegra210_vic_mbist_war(tegra210_domain_mbist_war *mbist)
 static void tegra210_ape_mbist_war(tegra210_domain_mbist_war *mbist)
 {
 	void __iomem *i2s_base;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 	ovrc: u32, ovre;
 
 	ovrc = readl_relaxed(clk_base + LVL2_CLK_GATE_OVRC);
@@ -1119,7 +1119,7 @@ static void tegra210_pllre_set_defaults(tegra_clk_pll *pllre)
 
 static void pllx_get_dyn_steps(clk_hw *hw, u32 *step_a, u32 *step_b)
 {
-	core::ffi::c_ulong input_rate;
+	kernel::ffi::c_ulong input_rate;
 
 	/* cf rate */
 	if (!IS_ERR_OR_NULL((*hw).clk))
@@ -1487,12 +1487,12 @@ static int tegra210_pllx_dyn_ramp(tegra_clk_pll *pllx,
  */
 static int tegra210_pll_fixed_mdiv_cfg(clk_hw *hw,
 			       tegra_clk_pll_freq_table *cfg,
-			       rate: core::ffi::c_ulong, input_rate: core::ffi::c_ulong)
+			       rate: kernel::ffi::c_ulong, input_rate: kernel::ffi::c_ulong)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
 	struct tegra_clk_pll_params *params = pll->params;
 	int p;
-	cf: core::ffi::c_ulong, p_rate;
+	cf: kernel::ffi::c_ulong, p_rate;
 	u32 pdiv;
 
 	if (!rate)
@@ -1523,7 +1523,7 @@ static int tegra210_pll_fixed_mdiv_cfg(clk_hw *hw,
 	cfg->sdm_data = 0;
 	cfg->output_rate = input_rate;
 	if (params->sdm_ctrl_reg) {
-		core::ffi::c_ulong rem = p_rate - cf * cfg->n;
+		kernel::ffi::c_ulong rem = p_rate - cf * cfg->n;
 		/* If ssc is enabled SDM enabled as well, even for integer n */
 		if (rem || params->ssc_ctrl_reg) {
 			u64 s = rem * PLL_SDM_COEFF;
@@ -1561,11 +1561,11 @@ static void tegra210_clk_pll_set_gain(tegra_clk_pll_freq_table *cfg)
 	cfg->m *= PLL_SDM_COEFF;
 }
 
-static core::ffi::c_ulong
+static kernel::ffi::c_ulong
 tegra210_clk_adjust_vco_min(tegra_clk_pll_params *params,
-			    parent_rate: core::ffi::c_ulong)
+			    parent_rate: kernel::ffi::c_ulong)
 {
-	core::ffi::c_ulong vco_min = params->vco_min;
+	kernel::ffi::c_ulong vco_min = params->vco_min;
 
 	params->vco_min += DIV_ROUND_UP(parent_rate, PLL_SDM_COEFF);
 	vco_min = min(vco_min, params->vco_min);
@@ -2643,25 +2643,25 @@ static const char * const aclk_parents[] = {
 	"clk_m"
 };
 
-static core::ffi::c_uint nvjpg_slcg_clkids[] = { TEGRA210_CLK_NVDEC };
-static core::ffi::c_uint nvdec_slcg_clkids[] = { TEGRA210_CLK_NVJPG };
-static core::ffi::c_uint sor_slcg_clkids[] = { TEGRA210_CLK_HDA2CODEC_2X,
+static kernel::ffi::c_uint nvjpg_slcg_clkids[] = { TEGRA210_CLK_NVDEC };
+static kernel::ffi::c_uint nvdec_slcg_clkids[] = { TEGRA210_CLK_NVJPG };
+static kernel::ffi::c_uint sor_slcg_clkids[] = { TEGRA210_CLK_HDA2CODEC_2X,
 	TEGRA210_CLK_HDA2HDMI, TEGRA210_CLK_DISP1, TEGRA210_CLK_DISP2 };
-static core::ffi::c_uint disp_slcg_clkids[] = { TEGRA210_CLK_LA,
+static kernel::ffi::c_uint disp_slcg_clkids[] = { TEGRA210_CLK_LA,
 	TEGRA210_CLK_HOST1X};
-static core::ffi::c_uint xusba_slcg_clkids[] = { TEGRA210_CLK_XUSB_HOST,
+static kernel::ffi::c_uint xusba_slcg_clkids[] = { TEGRA210_CLK_XUSB_HOST,
 	TEGRA210_CLK_XUSB_DEV };
-static core::ffi::c_uint xusbb_slcg_clkids[] = { TEGRA210_CLK_XUSB_HOST,
+static kernel::ffi::c_uint xusbb_slcg_clkids[] = { TEGRA210_CLK_XUSB_HOST,
 	TEGRA210_CLK_XUSB_SS };
-static core::ffi::c_uint xusbc_slcg_clkids[] = { TEGRA210_CLK_XUSB_DEV,
+static kernel::ffi::c_uint xusbc_slcg_clkids[] = { TEGRA210_CLK_XUSB_DEV,
 	TEGRA210_CLK_XUSB_SS };
-static core::ffi::c_uint venc_slcg_clkids[] = { TEGRA210_CLK_HOST1X,
+static kernel::ffi::c_uint venc_slcg_clkids[] = { TEGRA210_CLK_HOST1X,
 	TEGRA210_CLK_PLL_D };
-static core::ffi::c_uint ape_slcg_clkids[] = { TEGRA210_CLK_ACLK,
+static kernel::ffi::c_uint ape_slcg_clkids[] = { TEGRA210_CLK_ACLK,
 	TEGRA210_CLK_I2S0, TEGRA210_CLK_I2S1, TEGRA210_CLK_I2S2,
 	TEGRA210_CLK_I2S3, TEGRA210_CLK_I2S4, TEGRA210_CLK_SPDIF_OUT,
 	TEGRA210_CLK_D_AUDIO };
-static core::ffi::c_uint vic_slcg_clkids[] = { TEGRA210_CLK_HOST1X };
+static kernel::ffi::c_uint vic_slcg_clkids[] = { TEGRA210_CLK_HOST1X };
 
 static struct tegra210_domain_mbist_war tegra210_pg_mbist_war[] = {
 	[TEGRA_POWERGATE_VENC] = {
@@ -2750,7 +2750,7 @@ static struct tegra210_domain_mbist_war tegra210_pg_mbist_war[] = {
 	},
 };
 
-int tegra210_clk_handle_mbist_war(id: core::ffi::c_uint)
+int tegra210_clk_handle_mbist_war(id: kernel::ffi::c_uint)
 {
 	int err;
 	struct tegra210_domain_mbist_war *mbist_war;
@@ -3101,7 +3101,7 @@ static __init void tegra210_periph_clk_init(device_node *np,
 					    void __iomem *pmc_base)
 {
 	struct clk *clk;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	/* xusb_ss_div2 */
 	clk = clk_register_fixed_factor(NULL, "xusb_ss_div2", "xusb_ss_src", 0,
@@ -3433,7 +3433,7 @@ static void __init tegra210_pll_init(void __iomem *clk_base,
 /* Tegra210 CPU clock and reset control functions */
 static void tegra210_wait_cpu_in_reset(cpu: u32)
 {
-	core::ffi::c_uint reg;
+	kernel::ffi::c_uint reg;
 
 	do {
 		reg = readl(clk_base + CLK_RST_CONTROLLER_CPU_CMPLX_STATUS);
@@ -3456,7 +3456,7 @@ static u32 cpu_softrst_ctx[3];
 
 static int tegra210_clk_suspend(void *data)
 {
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	clk_save_context();
 
@@ -3477,7 +3477,7 @@ static int tegra210_clk_suspend(void *data)
 
 static void tegra210_clk_resume(void *data)
 {
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	tegra_clk_osc_resume(clk_base);
 
@@ -3671,7 +3671,7 @@ static void tegra210_clock_deassert_dfll_dvco_reset(void)
 	tegra210_car_barrier();
 }
 
-static int tegra210_reset_assert(id: core::ffi::c_ulong)
+static int tegra210_reset_assert(id: kernel::ffi::c_ulong)
 {
 	if (id == TEGRA210_RST_DFLL_DVCO)
 		tegra210_clock_assert_dfll_dvco_reset();
@@ -3684,7 +3684,7 @@ static int tegra210_reset_assert(id: core::ffi::c_ulong)
 	return 0;
 }
 
-static int tegra210_reset_deassert(id: core::ffi::c_ulong)
+static int tegra210_reset_deassert(id: kernel::ffi::c_ulong)
 {
 	if (id == TEGRA210_RST_DFLL_DVCO)
 		tegra210_clock_deassert_dfll_dvco_reset();
@@ -3706,10 +3706,10 @@ static int tegra210_reset_deassert(id: core::ffi::c_ulong)
 
 static void tegra210_mbist_clk_init(void)
 {
-	i: core::ffi::c_uint, j;
+	i: kernel::ffi::c_uint, j;
 
 	for (i = 0; i < ARRAY_SIZE(tegra210_pg_mbist_war); i++) {
-		core::ffi::c_uint num_clks = tegra210_pg_mbist_war[i].num_clks;
+		kernel::ffi::c_uint num_clks = tegra210_pg_mbist_war[i].num_clks;
 		struct clk_bulk_data *clk_data;
 
 		if (!num_clks)

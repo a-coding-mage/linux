@@ -4,7 +4,7 @@
 // External kernel declarations and architecture constants are supplied by the surrounding tree.
 
 #[repr(C)]
-pub struct AddrMarker { pub start_address: usize, pub name: *const core::ffi::c_char }
+pub struct AddrMarker { pub start_address: usize, pub name: *const kernel::ffi::c_char }
 #[repr(C)]
 pub struct SeqFile { _private: [u8; 0] }
 #[repr(C)]

@@ -113,7 +113,7 @@ unsafe fn __gup_test_ioctl(cmd: c_uint, gup: *mut gup_test) -> c_int {
     if check_add_overflow((*gup).addr as c_ulong, (*gup).size as c_ulong, &mut end) { return -EINVAL; }
 
     nr_pages = (*gup).size / PAGE_SIZE;
-    pages = kvcalloc(nr_pages, core::mem::size_of::<*mut core::ffi::c_void>(), GFP_KERNEL);
+    pages = kvcalloc(nr_pages, core::mem::size_of::<*mut kernel::ffi::c_void>(), GFP_KERNEL);
     if pages.is_null() { return -ENOMEM; }
 
     if needs_mmap_lock && mmap_read_lock_killable((*current).mm) != 0 {
@@ -168,7 +168,7 @@ extern "C" {
     fn page_folio(page: *mut page) -> *mut folio;
     fn folio_maybe_dma_pinned(folio: *mut folio) -> bool;
     fn folio_is_longterm_pinnable(folio: *mut folio) -> bool;
-    fn dump_page(page: *mut page, reason: *const core::ffi::c_char);
+    fn dump_page(page: *mut page, reason: *const kernel::ffi::c_char);
     fn kvcalloc(n: c_ulong, size: usize, flags: c_uint) -> *mut *mut page;
     fn kvfree(ptr: *mut *mut page);
     fn ktime_get() -> ktime_t;
@@ -202,13 +202,13 @@ unsafe fn pin_longterm_test_start(data: *mut gup_test_data, arg: c_ulong) -> c_i
     let fast: bool;
 
     if !(*data).longterm_pages.is_null() { return -EINVAL; }
-    if copy_from_user(&mut args as *mut _ as *mut core::ffi::c_void,
-                      arg as *const core::ffi::c_void, core::mem::size_of::<pin_longterm_test>()) != 0 { return -EFAULT; }
+    if copy_from_user(&mut args as *mut _ as *mut kernel::ffi::c_void,
+                      arg as *const kernel::ffi::c_void, core::mem::size_of::<pin_longterm_test>()) != 0 { return -EFAULT; }
     if args.flags & !(PIN_LONGTERM_TEST_FLAG_USE_WRITE | PIN_LONGTERM_TEST_FLAG_USE_FAST) != 0 { return -EINVAL; }
     if !IS_ALIGNED(args.addr | args.size, PAGE_SIZE) || args.size > LONG_MAX as u64 { return -EINVAL; }
     nr_pages = (args.size / PAGE_SIZE) as c_long;
     if nr_pages == 0 { return -EINVAL; }
-    pages = kvcalloc(nr_pages as c_ulong, core::mem::size_of::<*mut core::ffi::c_void>(), GFP_KERNEL);
+    pages = kvcalloc(nr_pages as c_ulong, core::mem::size_of::<*mut kernel::ffi::c_void>(), GFP_KERNEL);
     if pages.is_null() { return -ENOMEM; }
     if args.flags & PIN_LONGTERM_TEST_FLAG_USE_WRITE != 0 { gup_flags |= FOLL_WRITE as c_int; }
     fast = args.flags & PIN_LONGTERM_TEST_FLAG_USE_FAST != 0;
@@ -231,12 +231,12 @@ unsafe fn pin_longterm_test_start(data: *mut gup_test_data, arg: c_ulong) -> c_i
 unsafe fn pin_longterm_test_read(data: *mut gup_test_data, arg: c_ulong) -> c_int {
     let mut user_addr: u64 = 0;
     if (*data).longterm_pages.is_null() { return -EINVAL; }
-    if copy_from_user(&mut user_addr as *mut _ as *mut core::ffi::c_void,
-                      arg as *const core::ffi::c_void, core::mem::size_of::<u64>()) != 0 { return -EFAULT; }
+    if copy_from_user(&mut user_addr as *mut _ as *mut kernel::ffi::c_void,
+                      arg as *const kernel::ffi::c_void, core::mem::size_of::<u64>()) != 0 { return -EFAULT; }
     let mut i = 0;
     while i < (*data).longterm_nr_pages {
         let addr = kmap_local_page(*(*data).longterm_pages.add(i as usize));
-        let ret = copy_to_user(user_addr as *mut core::ffi::c_void, addr, PAGE_SIZE as usize);
+        let ret = copy_to_user(user_addr as *mut kernel::ffi::c_void, addr, PAGE_SIZE as usize);
         kunmap_local(addr);
         if ret != 0 { return -EFAULT; }
         user_addr += PAGE_SIZE as u64;
@@ -269,11 +269,11 @@ unsafe fn gup_test_ioctl(filep: *mut file, cmd: c_uint, arg: c_ulong) -> c_long 
         _ => return -EINVAL as c_long,
     }
     let mut gup: gup_test = core::mem::zeroed();
-    if copy_from_user(&mut gup as *mut _ as *mut core::ffi::c_void,
-                      arg as *const core::ffi::c_void, core::mem::size_of::<gup_test>()) != 0 { return -EFAULT as c_long; }
+    if copy_from_user(&mut gup as *mut _ as *mut kernel::ffi::c_void,
+                      arg as *const kernel::ffi::c_void, core::mem::size_of::<gup_test>()) != 0 { return -EFAULT as c_long; }
     let ret = __gup_test_ioctl(cmd, &mut gup);
     if ret != 0 { return ret as c_long; }
-    if copy_to_user(arg as *mut core::ffi::c_void, &gup as *const _ as *const core::ffi::c_void,
+    if copy_to_user(arg as *mut kernel::ffi::c_void, &gup as *const _ as *const kernel::ffi::c_void,
                     core::mem::size_of::<gup_test>()) != 0 { return -EFAULT as c_long; }
     0
 }
@@ -284,7 +284,7 @@ unsafe fn gup_test_open(inode: *mut inode, file: *mut file) -> c_int {
     let ret = nonseekable_open(inode, file);
     if ret != 0 { kfree(data); return ret; }
     mutex_init(&mut (*data).longterm_mutex);
-    (*file).private_data = data as *mut core::ffi::c_void;
+    (*file).private_data = data as *mut kernel::ffi::c_void;
     0
 }
 

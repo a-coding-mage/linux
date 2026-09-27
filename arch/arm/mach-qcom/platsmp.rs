@@ -36,24 +36,24 @@ pub struct TaskStruct { _private: [u8; 0] }
 
 extern "C" {
     fn secondary_startup_arm();
-    fn of_find_compatible_node(from: *mut DeviceNode, ty: *mut core::ffi::c_char, compatible: *const core::ffi::c_char) -> *mut DeviceNode;
+    fn of_find_compatible_node(from: *mut DeviceNode, ty: *mut kernel::ffi::c_char, compatible: *const kernel::ffi::c_char) -> *mut DeviceNode;
     fn of_iomap(node: *mut DeviceNode, index: i32) -> *mut u8;
     fn of_node_put(node: *mut DeviceNode);
     fn of_get_cpu_node(cpu: u32, thread: *mut u32) -> *mut DeviceNode;
-    fn of_parse_phandle(node: *mut DeviceNode, name: *const core::ffi::c_char, index: i32) -> *mut DeviceNode;
+    fn of_parse_phandle(node: *mut DeviceNode, name: *const kernel::ffi::c_char, index: i32) -> *mut DeviceNode;
     fn iounmap(addr: *mut u8);
     fn writel(value: u32, addr: *mut u8);
     fn writel_relaxed(value: u32, addr: *mut u8);
     fn mb();
     fn udelay(usecs: u32);
     fn ndelay(nsecs: u32);
-    fn arch_send_wakeup_ipi_mask(mask: *const core::ffi::c_void);
-    fn cpumask_of(cpu: u32) -> *const core::ffi::c_void;
+    fn arch_send_wakeup_ipi_mask(mask: *const kernel::ffi::c_void);
+    fn cpumask_of(cpu: u32) -> *const kernel::ffi::c_void;
     fn smp_processor_id() -> u32;
     fn set_cpu_present(cpu: u32, present: bool);
     fn qcom_scm_set_cold_boot_addr(addr: unsafe extern "C" fn()) -> i32;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
     fn wfi();
 }
 

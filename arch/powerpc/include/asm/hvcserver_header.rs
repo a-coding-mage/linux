@@ -36,18 +36,18 @@ pub struct hvcs_partner_info {
 }
 
 unsafe extern "C" {
-    pub fn hvcs_free_partner_info(head: *mut crate::list_head) -> ::core::ffi::c_int;
+    pub fn hvcs_free_partner_info(head: *mut crate::list_head) -> ::kernel::ffi::c_int;
     pub fn hvcs_get_partner_info(
         unit_address: u32,
         head: *mut crate::list_head,
-        pi_buff: *mut ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        pi_buff: *mut ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
     pub fn hvcs_register_connection(
         unit_address: u32,
         p_partition_ID: u32,
         p_unit_address: u32,
-    ) -> ::core::ffi::c_int;
-    pub fn hvcs_free_connection(unit_address: u32) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn hvcs_free_connection(unit_address: u32) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

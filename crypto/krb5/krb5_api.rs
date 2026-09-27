@@ -22,8 +22,8 @@ pub struct krb5_enctype {
     pub etype: u32,
     pub cksum_len: usize,
     pub conf_len: usize,
-    pub encrypt_name: *const core::ffi::c_char,
-    pub cksum_name: *const core::ffi::c_char,
+    pub encrypt_name: *const kernel::ffi::c_char,
+    pub cksum_name: *const kernel::ffi::c_char,
     pub profile: *const krb5_profile,
 }
 
@@ -103,11 +103,11 @@ pub unsafe fn crypto_krb5_check_data_len(krb5: *const krb5_enctype, mode: krb5_c
 }
 
 extern "C" {
-    fn crypto_alloc_aead(name: *const core::ffi::c_char, type_: u32, mask: u32) -> *mut crypto_aead;
+    fn crypto_alloc_aead(name: *const kernel::ffi::c_char, type_: u32, mask: u32) -> *mut crypto_aead;
     fn crypto_aead_setkey(ci: *mut crypto_aead, data: *mut u8, len: usize) -> i32;
     fn crypto_aead_setauthsize(ci: *mut crypto_aead, len: usize) -> i32;
     fn crypto_free_aead(ci: *mut crypto_aead);
-    fn crypto_alloc_shash(name: *const core::ffi::c_char, type_: u32, mask: u32) -> *mut crypto_shash;
+    fn crypto_alloc_shash(name: *const kernel::ffi::c_char, type_: u32, mask: u32) -> *mut crypto_shash;
     fn crypto_shash_setkey(ci: *mut crypto_shash, data: *mut u8, len: usize) -> i32;
     fn crypto_free_shash(ci: *mut crypto_shash);
     fn kfree_sensitive(data: *mut u8);

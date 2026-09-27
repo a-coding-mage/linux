@@ -2,7 +2,7 @@
 //
 // C dependencies supplied by the surrounding kernel translation are omitted.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* address of OFW callback interface; will be NULL if OFW isn't found */
 static mut olpc_ofw_cif: Option<unsafe extern "C" fn(*mut i32) -> i32> = None;
@@ -59,7 +59,7 @@ pub unsafe fn setup_olpc_ofw_pgd() {
 }
 
 pub unsafe fn __olpc_ofw(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     nr_args: i32,
     args: *const *const c_void,
     nr_res: i32,

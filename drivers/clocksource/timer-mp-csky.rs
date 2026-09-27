@@ -12,7 +12,7 @@ const PTIM_TSR: &str = "cr<1, 14>";
 static mut CSKY_MPTIMER_IRQ: i32 = 0;
 
 unsafe fn csky_mptimer_set_next_event(
-    delta: libc::c_ulong,
+    delta: kernel::ffi::c_ulong,
     _ce: *mut clock_event_device,
 ) -> i32 {
     mtcr(PTIM_LVR, delta);
@@ -49,7 +49,7 @@ static mut CSKY_TO: timer_of = timer_of {
     ..timer_of::zeroed()
 };
 
-unsafe fn csky_timer_interrupt(_irq: i32, _dev: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe fn csky_timer_interrupt(_irq: i32, _dev: *mut kernel::ffi::c_void) -> irqreturn_t {
     let to: *mut timer_of = this_cpu_ptr(&raw mut CSKY_TO);
 
     mtcr(PTIM_TSR, 0);
@@ -68,7 +68,7 @@ unsafe fn csky_mptimer_starting_cpu(cpu: u32) -> i32 {
         &mut (*to).clkevt,
         timer_of_rate(to),
         2,
-        libc::ULONG_MAX,
+        kernel::ffi::c_ulong::MAX,
     );
     0
 }

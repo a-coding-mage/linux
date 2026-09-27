@@ -85,7 +85,7 @@ pub struct snd_sb_csp_info {
 /* HWDEP controls */
 /* get CSP information */
 /* `_IOR`, `_IOC`, `_IO`, and `_IOW` are supplied by the surrounding ABI. */
-pub const SNDRV_SB_CSP_IOCTL_INFO: _ = _IOR('H', 0x10, snd_sb_csp_info);
+pub const SNDRV_SB_CSP_IOCTL_INFO: u32 = _IOR('H', 0x10, snd_sb_csp_info);
 /* load microcode to CSP */
 /* NOTE: struct snd_sb_csp_microcode overflows the max size (13 bits)
  * defined for some architectures like MIPS, and it leads to build errors.
@@ -93,17 +93,17 @@ pub const SNDRV_SB_CSP_IOCTL_INFO: _ = _IOR('H', 0x10, snd_sb_csp_info);
  * As a workaround for skipping the size-limit check, here we don't use the
  * normal _IOW() macro but _IOC() with the manual argument.
  */
-pub const SNDRV_SB_CSP_IOCTL_LOAD_CODE: _ =
+pub const SNDRV_SB_CSP_IOCTL_LOAD_CODE: u32 =
     _IOC(_IOC_WRITE, 'H', 0x11, core::mem::size_of::<snd_sb_csp_microcode>());
 /* unload microcode from CSP */
-pub const SNDRV_SB_CSP_IOCTL_UNLOAD_CODE: _ = _IO('H', 0x12);
+pub const SNDRV_SB_CSP_IOCTL_UNLOAD_CODE: u32 = _IO('H', 0x12);
 /* start CSP */
-pub const SNDRV_SB_CSP_IOCTL_START: _ = _IOW('H', 0x13, snd_sb_csp_start);
+pub const SNDRV_SB_CSP_IOCTL_START: u32 = _IOW('H', 0x13, snd_sb_csp_start);
 /* stop CSP */
-pub const SNDRV_SB_CSP_IOCTL_STOP: _ = _IO('H', 0x14);
+pub const SNDRV_SB_CSP_IOCTL_STOP: u32 = _IO('H', 0x14);
 /* pause CSP and DMA transfer */
-pub const SNDRV_SB_CSP_IOCTL_PAUSE: _ = _IO('H', 0x15);
+pub const SNDRV_SB_CSP_IOCTL_PAUSE: u32 = _IO('H', 0x15);
 /* restart CSP and DMA transfer */
-pub const SNDRV_SB_CSP_IOCTL_RESTART: _ = _IO('H', 0x16);
+pub const SNDRV_SB_CSP_IOCTL_RESTART: u32 = _IO('H', 0x16);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

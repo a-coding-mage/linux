@@ -34,16 +34,16 @@ static mut kmem_cache *discard_cmd_slab;
 static mut kmem_cache *sit_entry_set_slab;
 static mut kmem_cache *revoke_entry_slab;
 
-unsafe fn __reverse_ulong(core::ffi::c_uchar *str)
+unsafe fn __reverse_ulong(kernel::ffi::c_uchar *str)
 {
-	core::ffi::c_ulong tmp = 0;
+	kernel::ffi::c_ulong tmp = 0;
 	int shift = 24, idx = 0;
 
 // cfg condition: BITS_PER_LONG == 64
 	shift = 56;
 // cfg end
 	while (shift >= 0) {
-		tmp |= (core::ffi::c_ulong)str[idx++] << shift;
+		tmp |= (kernel::ffi::c_ulong)str[idx++] << shift;
 		shift -= BITS_PER_BYTE;
 	}
 	return tmp;
@@ -54,7 +54,7 @@ unsafe fn __reverse_ulong(core::ffi::c_uchar *str)
  * MSB and LSB are reversed in a byte by f2fs_set_bit.
  */
 #[inline]
-unsafe fn __reverse_ffs(word: core::ffi::c_ulong)
+unsafe fn __reverse_ffs(word: kernel::ffi::c_ulong)
 {
 	int num = 0;
 
@@ -98,13 +98,13 @@ unsafe fn __reverse_ffs(word: core::ffi::c_ulong)
  *   f2fs_set_bit(0, bitmap) => 1000 0000
  *   f2fs_set_bit(7, bitmap) => 0000 0001
  */
-unsafe fn __find_rev_next_bit(const core::ffi::c_ulong *addr,
-			size: core::ffi::c_ulong, offset: core::ffi::c_ulong)
+unsafe fn __find_rev_next_bit(const kernel::ffi::c_ulong *addr,
+			size: kernel::ffi::c_ulong, offset: kernel::ffi::c_ulong)
 {
 	'found: {
-	const core::ffi::c_ulong *p = addr + BIT_WORD(offset);
-	core::ffi::c_ulong result = size;
-	core::ffi::c_ulong tmp;
+	const kernel::ffi::c_ulong *p = addr + BIT_WORD(offset);
+	kernel::ffi::c_ulong result = size;
+	kernel::ffi::c_ulong tmp;
 
 	if (offset >= size)
 		return size;
@@ -117,7 +117,7 @@ unsafe fn __find_rev_next_bit(const core::ffi::c_ulong *addr,
 		if (*p == 0)
 			break 'pass;
 
-		tmp = __reverse_ulong((core::ffi::c_uchar *)p);
+		tmp = __reverse_ulong((kernel::ffi::c_uchar *)p);
 
 		tmp &= ~0UL >> offset;
 		if (size < BITS_PER_LONG)
@@ -138,13 +138,13 @@ unsafe fn __find_rev_next_bit(const core::ffi::c_ulong *addr,
 	return result - size + __reverse_ffs(tmp);
 }
 
-unsafe fn __find_rev_next_zero_bit(const core::ffi::c_ulong *addr,
-			size: core::ffi::c_ulong, offset: core::ffi::c_ulong)
+unsafe fn __find_rev_next_zero_bit(const kernel::ffi::c_ulong *addr,
+			size: kernel::ffi::c_ulong, offset: kernel::ffi::c_ulong)
 {
 	'found: {
-	const core::ffi::c_ulong *p = addr + BIT_WORD(offset);
-	core::ffi::c_ulong result = size;
-	core::ffi::c_ulong tmp;
+	const kernel::ffi::c_ulong *p = addr + BIT_WORD(offset);
+	kernel::ffi::c_ulong result = size;
+	kernel::ffi::c_ulong tmp;
 
 	if (offset >= size)
 		return size;
@@ -157,7 +157,7 @@ unsafe fn __find_rev_next_zero_bit(const core::ffi::c_ulong *addr,
 		if (*p == ~0UL)
 			break 'pass;
 
-		tmp = __reverse_ulong((core::ffi::c_uchar *)p);
+		tmp = __reverse_ulong((kernel::ffi::c_uchar *)p);
 
 		if (offset)
 			tmp |= ~0UL << (BITS_PER_LONG - offset);
@@ -495,14 +495,14 @@ void f2fs_balance_fs(f2fs_sb_info *sbi, need: bool)
 unsafe fn bool excess_dirty_threshold(f2fs_sb_info *sbi)
 {
 	int factor = f2fs_rwsem_is_locked((*&sbi).cp_rwsem) ? 3 : 2;
-	core::ffi::c_uint dents = get_pages(sbi, F2FS_DIRTY_DENTS);
-	core::ffi::c_uint qdata = get_pages(sbi, F2FS_DIRTY_QDATA);
-	core::ffi::c_uint nodes = get_pages(sbi, F2FS_DIRTY_NODES);
-	core::ffi::c_uint meta = get_pages(sbi, F2FS_DIRTY_META);
-	core::ffi::c_uint imeta = get_pages(sbi, F2FS_DIRTY_IMETA);
-	core::ffi::c_uint threshold =
+	kernel::ffi::c_uint dents = get_pages(sbi, F2FS_DIRTY_DENTS);
+	kernel::ffi::c_uint qdata = get_pages(sbi, F2FS_DIRTY_QDATA);
+	kernel::ffi::c_uint nodes = get_pages(sbi, F2FS_DIRTY_NODES);
+	kernel::ffi::c_uint meta = get_pages(sbi, F2FS_DIRTY_META);
+	kernel::ffi::c_uint imeta = get_pages(sbi, F2FS_DIRTY_IMETA);
+	kernel::ffi::c_uint threshold =
 		SEGS_TO_BLKS(sbi, (factor * DEFAULT_DIRTY_THRESHOLD));
-	core::ffi::c_uint global_threshold = threshold * 3 / 2;
+	kernel::ffi::c_uint global_threshold = threshold * 3 / 2;
 
 	if (dents >= threshold || qdata >= threshold ||
 		nodes >= threshold || meta >= threshold ||
@@ -595,7 +595,7 @@ struct f2fs_flush_bio {
 unsafe fn submit_flush_wait(f2fs_sb_info *sbi, nid_t ino)
 {
 	struct f2fs_flush_bio *flush_bio;
-	core::ffi::c_ulong devices = 0;
+	kernel::ffi::c_ulong devices = 0;
 	int ret = 0;
 	int i;
 
@@ -834,7 +834,7 @@ int f2fs_flush_device_cache(f2fs_sb_info *sbi)
 	return ret;
 }
 
-unsafe fn __locate_dirty_segment(f2fs_sb_info *sbi, segno: core::ffi::c_uint,
+unsafe fn __locate_dirty_segment(f2fs_sb_info *sbi, segno: kernel::ffi::c_uint,
 		dirty_type dirty_type)
 {
 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
@@ -858,7 +858,7 @@ unsafe fn __locate_dirty_segment(f2fs_sb_info *sbi, segno: core::ffi::c_uint,
 			(*dirty_i).nr_dirty[t]++;
 
 		if (__is_large_section(sbi)) {
-			core::ffi::c_uint secno = GET_SEC_FROM_SEG(sbi, segno);
+			kernel::ffi::c_uint secno = GET_SEC_FROM_SEG(sbi, segno);
 			block_t valid_blocks =
 				get_valid_blocks(sbi, segno, true);
 
@@ -873,7 +873,7 @@ unsafe fn __locate_dirty_segment(f2fs_sb_info *sbi, segno: core::ffi::c_uint,
 	}
 }
 
-unsafe fn __remove_dirty_segment(f2fs_sb_info *sbi, segno: core::ffi::c_uint,
+unsafe fn __remove_dirty_segment(f2fs_sb_info *sbi, segno: kernel::ffi::c_uint,
 		dirty_type dirty_type)
 {
 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
@@ -898,7 +898,7 @@ unsafe fn __remove_dirty_segment(f2fs_sb_info *sbi, segno: core::ffi::c_uint,
 // cfg end
 		}
 		if (__is_large_section(sbi)) {
-			core::ffi::c_uint secno = GET_SEC_FROM_SEG(sbi, segno);
+			kernel::ffi::c_uint secno = GET_SEC_FROM_SEG(sbi, segno);
 
 			if (!valid_blocks ||
 					valid_blocks == CAP_BLKS_PER_SEC(sbi)) {
@@ -917,11 +917,11 @@ unsafe fn __remove_dirty_segment(f2fs_sb_info *sbi, segno: core::ffi::c_uint,
  * Adding dirty entry into seglist is not critical operation.
  * If a given segment is one of current working segments, it won't be added.
  */
-unsafe fn locate_dirty_segment(f2fs_sb_info *sbi, segno: core::ffi::c_uint)
+unsafe fn locate_dirty_segment(f2fs_sb_info *sbi, segno: kernel::ffi::c_uint)
 {
 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
-	valid_blocks: core::ffi::c_ushort, ckpt_valid_blocks;
-	core::ffi::c_uint usable_blocks;
+	valid_blocks: kernel::ffi::c_ushort, ckpt_valid_blocks;
+	kernel::ffi::c_uint usable_blocks;
 
 	if (segno == NULL_SEGNO || is_curseg(sbi, segno))
 		return;
@@ -950,7 +950,7 @@ unsafe fn locate_dirty_segment(f2fs_sb_info *sbi, segno: core::ffi::c_uint)
 void f2fs_dirty_to_prefree(f2fs_sb_info *sbi)
 {
 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
-	core::ffi::c_uint segno;
+	kernel::ffi::c_uint segno;
 
 	mutex_lock((*&dirty_i).seglist_lock);
 	for_each_set_bit!(segno, (*dirty_i).dirty_segmap[DIRTY], MAIN_SEGS(sbi), {
@@ -973,7 +973,7 @@ block_t f2fs_get_unusable_blocks(f2fs_sb_info *sbi)
 	block_t holes[2] = {0, 0};	/* DATA and NODE */
 	block_t unusable;
 	struct seg_entry *se;
-	core::ffi::c_uint segno;
+	kernel::ffi::c_uint segno;
 
 	mutex_lock((*&dirty_i).seglist_lock);
 	for_each_set_bit!(segno, (*dirty_i).dirty_segmap[DIRTY], MAIN_SEGS(sbi), {
@@ -1011,10 +1011,10 @@ int f2fs_disable_cp_again(f2fs_sb_info *sbi, block_t unusable)
 }
 
 /* This is only used by SBI_CP_DISABLED */
-static core::ffi::c_uint get_free_segment(f2fs_sb_info *sbi)
+static kernel::ffi::c_uint get_free_segment(f2fs_sb_info *sbi)
 {
 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
-	core::ffi::c_uint segno = 0;
+	kernel::ffi::c_uint segno = 0;
 
 	mutex_lock((*&dirty_i).seglist_lock);
 	for_each_set_bit!(segno, (*dirty_i).dirty_segmap[DIRTY], MAIN_SEGS(sbi), {
@@ -1186,7 +1186,7 @@ unsafe fn __remove_discard_cmd(f2fs_sb_info *sbi,
 							discard_cmd *dc)
 {
 	struct discard_cmd_control *dcc = (*SM_I(sbi)).dcc_info;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	trace_f2fs_remove_discard((*dc).bdev, (*dc).di.start, (*dc).di.len);
 
@@ -1212,7 +1212,7 @@ unsafe fn __remove_discard_cmd(f2fs_sb_info *sbi,
 unsafe fn f2fs_submit_discard_endio(bio *bio)
 {
 	struct discard_cmd *dc = (*(discard_cmd *)bio).bi_private;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave((*&dc).lock, flags);
 	if ((*!dc).error)
@@ -1231,9 +1231,9 @@ unsafe fn __check_sit_bitmap(f2fs_sb_info *sbi,
 {
 #ifdef CONFIG_F2FS_CHECK_FS
 	struct seg_entry *sentry;
-	core::ffi::c_uint segno;
+	kernel::ffi::c_uint segno;
 	block_t blk = start;
-	offset: core::ffi::c_ulong, size, *map;
+	offset: kernel::ffi::c_ulong, size, *map;
 
 	while (blk < end) {
 		segno = GET_SEGNO(sbi, blk);
@@ -1244,7 +1244,7 @@ unsafe fn __check_sit_bitmap(f2fs_sb_info *sbi,
 			size = GET_BLKOFF_FROM_SEG0(sbi, end);
 		else
 			size = BLKS_PER_SEG(sbi);
-		map = (core::ffi::c_ulong *)(sentry->cur_valid_map);
+		map = (kernel::ffi::c_ulong *)(sentry->cur_valid_map);
 		offset = __find_rev_next_bit(map, size, offset);
 		f2fs_bug_on(sbi, offset != size);
 		blk = START_BLOCK(sbi, segno + 1);
@@ -1254,7 +1254,7 @@ unsafe fn __check_sit_bitmap(f2fs_sb_info *sbi,
 
 unsafe fn __init_discard_policy(f2fs_sb_info *sbi,
 				discard_policy *dpolicy,
-				int discard_type, granularity: core::ffi::c_uint)
+				int discard_type, granularity: kernel::ffi::c_uint)
 {
 	struct discard_cmd_control *dcc = SM_I(sbi)->dcc_info;
 
@@ -1307,12 +1307,12 @@ unsafe fn __update_discard_tree_range(f2fs_sb_info *sbi,
 unsafe fn __submit_zone_reset_cmd(f2fs_sb_info *sbi,
 				   discard_cmd *dc, blk_opf_t flag,
 				   list_head *wait_list,
-				   core::ffi::c_uint *issued)
+				   kernel::ffi::c_uint *issued)
 {
 	struct discard_cmd_control *dcc = SM_I(sbi)->dcc_info;
 	struct block_device *bdev = dc->bdev;
 	struct bio *bio = bio_alloc(bdev, 0, REQ_OP_ZONE_RESET | flag, GFP_NOFS);
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	trace_f2fs_issue_reset_zone(bdev, dc->di.start);
 
@@ -1347,7 +1347,7 @@ unsafe fn __submit_discard_cmd(f2fs_sb_info *sbi,
 				discard_cmd *dc, int *issued)
 {
 	struct block_device *bdev = dc->bdev;
-	core::ffi::c_uint max_discard_blocks =
+	kernel::ffi::c_uint max_discard_blocks =
 			SECTOR_TO_BLOCK(bdev_max_discard_sectors(bdev));
 	struct discard_cmd_control *dcc = SM_I(sbi)->dcc_info;
 	struct list_head *wait_list = (dpolicy->type == DPOLICY_FSTRIM) ?
@@ -1396,7 +1396,7 @@ unsafe fn __submit_discard_cmd(f2fs_sb_info *sbi,
 
 	while (total_len && *issued < dpolicy->max_requests) {
 		struct bio *bio = NULL;
-		core::ffi::c_ulong flags;
+		kernel::ffi::c_ulong flags;
 		bool last = true;
 
 		if (len > max_discard_blocks) {
@@ -1538,7 +1538,7 @@ unsafe fn __update_discard_tree_range(f2fs_sb_info *sbi,
 	struct discard_cmd *dc;
 	struct discard_info di = {0};
 	struct rb_node **insert_p = NULL, *insert_parent = NULL;
-	core::ffi::c_uint max_discard_blocks =
+	kernel::ffi::c_uint max_discard_blocks =
 			SECTOR_TO_BLOCK(bdev_max_discard_sectors(bdev));
 	block_t end = lstart + len;
 
@@ -1707,7 +1707,7 @@ unsafe fn __issue_discard_cmd_orderly(f2fs_sb_info *sbi,
 	if (!(*issued) && io_interrupted)
 		*issued = -1;
 }
-static core::ffi::c_uint __wait_all_discard_cmd(f2fs_sb_info *sbi,
+static kernel::ffi::c_uint __wait_all_discard_cmd(f2fs_sb_info *sbi,
 					discard_policy *dpolicy);
 
 unsafe fn __issue_discard_cmd(f2fs_sb_info *sbi,
@@ -1819,11 +1819,11 @@ void f2fs_drop_discard_cmd(f2fs_sb_info *sbi)
 	__drop_discard_cmd(sbi);
 }
 
-static core::ffi::c_uint __wait_one_discard_bio(f2fs_sb_info *sbi,
+static kernel::ffi::c_uint __wait_one_discard_bio(f2fs_sb_info *sbi,
 							discard_cmd *dc)
 {
 	struct discard_cmd_control *dcc = SM_I(sbi)->dcc_info;
-	core::ffi::c_uint len = 0;
+	kernel::ffi::c_uint len = 0;
 
 	wait_for_completion_io(&dc->wait);
 	mutex_lock(&dcc->cmd_lock);
@@ -1839,7 +1839,7 @@ static core::ffi::c_uint __wait_one_discard_bio(f2fs_sb_info *sbi,
 	return len;
 }
 
-static core::ffi::c_uint __wait_discard_cmd_range(f2fs_sb_info *sbi,
+static kernel::ffi::c_uint __wait_discard_cmd_range(f2fs_sb_info *sbi,
 						discard_policy *dpolicy,
 						block_t start, block_t end)
 {
@@ -1847,7 +1847,7 @@ static core::ffi::c_uint __wait_discard_cmd_range(f2fs_sb_info *sbi,
 	struct list_head *wait_list = (dpolicy->type == DPOLICY_FSTRIM) ?
 					&(dcc->fstrim_list) : &(dcc->wait_list);
 	struct discard_cmd *dc = NULL, *iter, *tmp;
-	core::ffi::c_uint trimmed = 0;
+	kernel::ffi::c_uint trimmed = 0;
 
 next:
 	dc = NULL;
@@ -1880,11 +1880,11 @@ next:
 	return trimmed;
 }
 
-static core::ffi::c_uint __wait_all_discard_cmd(f2fs_sb_info *sbi,
+static kernel::ffi::c_uint __wait_all_discard_cmd(f2fs_sb_info *sbi,
 						discard_policy *dpolicy)
 {
 	struct discard_policy dp;
-	core::ffi::c_uint discard_blks;
+	kernel::ffi::c_uint discard_blks;
 
 	if (dpolicy)
 		return __wait_discard_cmd_range(sbi, dpolicy, 0, UINT_MAX);
@@ -1990,7 +1990,7 @@ unsafe fn issue_discard_thread(void *data)
 	struct discard_cmd_control *dcc = SM_I(sbi)->dcc_info;
 	wait_queue_head_t *q = &dcc->discard_wait_queue;
 	struct discard_policy dpolicy;
-	core::ffi::c_uint wait_ms = dcc->min_discard_issue_time;
+	kernel::ffi::c_uint wait_ms = dcc->min_discard_issue_time;
 	int issued;
 
 	set_freezable();
@@ -2080,7 +2080,7 @@ unsafe fn __f2fs_issue_discard_zone(f2fs_sb_info *sbi,
 		}
 
 		if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING))) {
-			core::ffi::c_uint nofs_flags;
+			kernel::ffi::c_uint nofs_flags;
 			int ret;
 
 			trace_f2fs_issue_reset_zone(bdev, blkstart);
@@ -2118,7 +2118,7 @@ unsafe fn f2fs_issue_discard(f2fs_sb_info *sbi,
 	sector_t start = blkstart, len = 0;
 	struct block_device *bdev;
 	struct seg_entry *se;
-	core::ffi::c_uint offset;
+	kernel::ffi::c_uint offset;
 	block_t i;
 	int err = 0;
 
@@ -2156,13 +2156,13 @@ unsafe fn f2fs_issue_discard(f2fs_sb_info *sbi,
 unsafe fn add_discard_addrs(f2fs_sb_info *sbi, cp_control *cpc,
 							check_only: bool)
 {
-	int entries = SIT_VBLOCK_MAP_SIZE / sizeof(core::ffi::c_ulong);
+	int entries = SIT_VBLOCK_MAP_SIZE / sizeof(kernel::ffi::c_ulong);
 	struct seg_entry *se = get_seg_entry(sbi, cpc->trim_start);
-	core::ffi::c_ulong *cur_map = (core::ffi::c_ulong *)se->cur_valid_map;
-	core::ffi::c_ulong *ckpt_map = (core::ffi::c_ulong *)se->ckpt_valid_map;
-	core::ffi::c_ulong *discard_map = (core::ffi::c_ulong *)se->discard_map;
-	core::ffi::c_ulong *dmap = SIT_I(sbi)->tmp_map;
-	core::ffi::c_uint start = 0, end = -1;
+	kernel::ffi::c_ulong *cur_map = (kernel::ffi::c_ulong *)se->cur_valid_map;
+	kernel::ffi::c_ulong *ckpt_map = (kernel::ffi::c_ulong *)se->ckpt_valid_map;
+	kernel::ffi::c_ulong *discard_map = (kernel::ffi::c_ulong *)se->discard_map;
+	kernel::ffi::c_ulong *dmap = SIT_I(sbi)->tmp_map;
+	kernel::ffi::c_uint start = 0, end = -1;
 	bool force = (cpc->reason & CP_DISCARD);
 	struct discard_entry *de = NULL;
 	struct list_head *head = &SM_I(sbi)->dcc_info->entry_list;
@@ -2182,7 +2182,7 @@ unsafe fn add_discard_addrs(f2fs_sb_info *sbi, cp_control *cpc,
 			return false;
 	}
 
-	/* SIT_VBLOCK_MAP_SIZE should be multiple of sizeof(core::ffi::c_ulong) */
+	/* SIT_VBLOCK_MAP_SIZE should be multiple of sizeof(kernel::ffi::c_ulong) */
 	for (i = 0; i < entries; i++)
 		dmap[i] = force ? ~ckpt_map[i] & ~discard_map[i] :
 				(cur_map[i] ^ ckpt_map[i]) & ckpt_map[i];
@@ -2239,7 +2239,7 @@ void f2fs_release_discard_addrs(f2fs_sb_info *sbi)
 unsafe fn set_prefree_as_free_segments(f2fs_sb_info *sbi)
 {
 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
-	core::ffi::c_uint segno;
+	kernel::ffi::c_uint segno;
 
 	mutex_lock(&dirty_i->seglist_lock);
 	for_each_set_bit(segno, dirty_i->dirty_segmap[PRE], MAIN_SEGS(sbi))
@@ -2255,9 +2255,9 @@ void f2fs_clear_prefree_segments(f2fs_sb_info *sbi,
 	struct list_head *head = &dcc->entry_list;
 	struct discard_entry *entry, *this;
 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
-	core::ffi::c_ulong *prefree_map = dirty_i->dirty_segmap[PRE];
-	core::ffi::c_uint start = 0, end = -1;
-	secno: core::ffi::c_uint, start_segno;
+	kernel::ffi::c_ulong *prefree_map = dirty_i->dirty_segmap[PRE];
+	kernel::ffi::c_uint start = 0, end = -1;
+	secno: kernel::ffi::c_uint, start_segno;
 	bool force = (cpc->reason & CP_DISCARD);
 	bool section_alignment = F2FS_OPTION(sbi).discard_unit ==
 						DISCARD_UNIT_SECTION;
@@ -2326,7 +2326,7 @@ void f2fs_clear_prefree_segments(f2fs_sb_info *sbi,
 	/* send small discards */
 	list_for_each_entry_safe!(entry, this, head, list, {
 		'skip: {
-		core::ffi::c_uint cur_pos = 0, next_pos, len, total_len = 0;
+		kernel::ffi::c_uint cur_pos = 0, next_pos, len, total_len = 0;
 		bool is_valid = test_bit_le(0, entry->discard_map);
 
     'find_next: loop {
@@ -2465,7 +2465,7 @@ unsafe fn destroy_discard_cmd_control(f2fs_sb_info *sbi)
 	SM_I(sbi)->dcc_info = NULL;
 }
 
-unsafe fn __mark_sit_entry_dirty(f2fs_sb_info *sbi, segno: core::ffi::c_uint)
+unsafe fn __mark_sit_entry_dirty(f2fs_sb_info *sbi, segno: kernel::ffi::c_uint)
 {
 	struct sit_info *sit_i = SIT_I(sbi);
 
@@ -2478,7 +2478,7 @@ unsafe fn __mark_sit_entry_dirty(f2fs_sb_info *sbi, segno: core::ffi::c_uint)
 }
 
 unsafe fn __set_sit_entry_type(f2fs_sb_info *sbi, int type,
-					segno: core::ffi::c_uint, int modified)
+					segno: kernel::ffi::c_uint, int modified)
 {
 	struct seg_entry *se = get_seg_entry(sbi, segno);
 
@@ -2488,10 +2488,10 @@ unsafe fn __set_sit_entry_type(f2fs_sb_info *sbi, int type,
 }
 
 #[inline]
-unsafe fn core::ffi::c_ulonglong get_segment_mtime(f2fs_sb_info *sbi,
+unsafe fn kernel::ffi::c_ulonglong get_segment_mtime(f2fs_sb_info *sbi,
 								block_t blkaddr)
 {
-	core::ffi::c_uint segno = GET_SEGNO(sbi, blkaddr);
+	kernel::ffi::c_uint segno = GET_SEGNO(sbi, blkaddr);
 
 	if (segno == NULL_SEGNO)
 		return 0;
@@ -2499,12 +2499,12 @@ unsafe fn core::ffi::c_ulonglong get_segment_mtime(f2fs_sb_info *sbi,
 }
 
 unsafe fn update_segment_mtime(f2fs_sb_info *sbi, block_t blkaddr,
-						old_mtime: core::ffi::c_ulonglong)
+						old_mtime: kernel::ffi::c_ulonglong)
 {
 	struct seg_entry *se;
-	core::ffi::c_uint segno = GET_SEGNO(sbi, blkaddr);
-	core::ffi::c_ulonglong ctime = get_mtime(sbi, false);
-	core::ffi::c_ulonglong mtime = old_mtime ? old_mtime : ctime;
+	kernel::ffi::c_uint segno = GET_SEGNO(sbi, blkaddr);
+	kernel::ffi::c_ulonglong ctime = get_mtime(sbi, false);
+	kernel::ffi::c_ulonglong mtime = old_mtime ? old_mtime : ctime;
 
 	if (segno == NULL_SEGNO)
 		return;
@@ -2526,7 +2526,7 @@ unsafe fn update_segment_mtime(f2fs_sb_info *sbi, block_t blkaddr,
  * that the consecutive input blocks belong to the same segment.
  */
 unsafe fn update_sit_entry_for_release(f2fs_sb_info *sbi, seg_entry *se,
-				segno: core::ffi::c_uint, block_t blkaddr, offset: core::ffi::c_uint, int del) {
+				segno: kernel::ffi::c_uint, block_t blkaddr, offset: kernel::ffi::c_uint, int del) {
 	bool exist;
 	int i;
 	int del_count = -del;
@@ -2572,7 +2572,7 @@ unsafe fn update_sit_entry_for_release(f2fs_sb_info *sbi, seg_entry *se,
 }
 
 unsafe fn update_sit_entry_for_alloc(f2fs_sb_info *sbi, seg_entry *se,
-				segno: core::ffi::c_uint, block_t blkaddr, offset: core::ffi::c_uint, int del) {
+				segno: kernel::ffi::c_uint, block_t blkaddr, offset: kernel::ffi::c_uint, int del) {
 	bool exist;
 	int del_count = del;
 	int i;
@@ -2626,7 +2626,7 @@ unsafe fn update_sit_entry_for_alloc(f2fs_sb_info *sbi, seg_entry *se,
 unsafe fn update_sit_entry(f2fs_sb_info *sbi, block_t blkaddr, int del)
 {
 	struct seg_entry *se;
-	segno: core::ffi::c_uint, offset;
+	segno: kernel::ffi::c_uint, offset;
 	long int new_vblocks;
 
 	segno = GET_SEGNO(sbi, blkaddr);
@@ -2659,13 +2659,13 @@ unsafe fn update_sit_entry(f2fs_sb_info *sbi, block_t blkaddr, int del)
 }
 
 void f2fs_invalidate_blocks(f2fs_sb_info *sbi, block_t addr,
-				len: core::ffi::c_uint)
+				len: kernel::ffi::c_uint)
 {
-	core::ffi::c_uint segno = GET_SEGNO(sbi, addr);
+	kernel::ffi::c_uint segno = GET_SEGNO(sbi, addr);
 	struct sit_info *sit_i = SIT_I(sbi);
 	block_t addr_start = addr, addr_end = addr + len - 1;
-	core::ffi::c_uint seg_num;
-	core::ffi::c_uint i = 1, max_blocks = sbi->blocks_per_seg, cnt;
+	kernel::ffi::c_uint seg_num;
+	kernel::ffi::c_uint i = 1, max_blocks = sbi->blocks_per_seg, cnt;
 
 	if (len == 0)
 		return;
@@ -2705,13 +2705,13 @@ void f2fs_invalidate_blocks(f2fs_sb_info *sbi, block_t addr,
 }
 
 void f2fs_reserve_device_alias(f2fs_sb_info *sbi, block_t addr,
-				len: core::ffi::c_uint)
+				len: kernel::ffi::c_uint)
 {
-	core::ffi::c_uint segno = GET_SEGNO(sbi, addr);
+	kernel::ffi::c_uint segno = GET_SEGNO(sbi, addr);
 	struct sit_info *sit_i = SIT_I(sbi);
 	block_t addr_start = addr, addr_end = addr + len - 1;
-	core::ffi::c_uint seg_num;
-	core::ffi::c_uint i = 1, max_blocks = sbi->blocks_per_seg, cnt;
+	kernel::ffi::c_uint seg_num;
+	kernel::ffi::c_uint i = 1, max_blocks = sbi->blocks_per_seg, cnt;
 
 	if (len == 0)
 		return;
@@ -2753,7 +2753,7 @@ void f2fs_reserve_device_alias(f2fs_sb_info *sbi, block_t addr,
 bool f2fs_is_checkpointed_data(f2fs_sb_info *sbi, block_t blkaddr)
 {
 	struct sit_info *sit_i = SIT_I(sbi);
-	segno: core::ffi::c_uint, offset;
+	segno: kernel::ffi::c_uint, offset;
 	struct seg_entry *se;
 	bool is_cp = false;
 
@@ -2774,7 +2774,7 @@ bool f2fs_is_checkpointed_data(f2fs_sb_info *sbi, block_t blkaddr)
 	return is_cp;
 }
 
-static core::ffi::c_ushort f2fs_curseg_valid_blocks(f2fs_sb_info *sbi, int type)
+static kernel::ffi::c_ushort f2fs_curseg_valid_blocks(f2fs_sb_info *sbi, int type)
 {
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
 
@@ -2811,7 +2811,7 @@ int f2fs_npages_for_summary_flush!(f2fs_sb_info *sbi, for_ra: bool, {
 /*
  * Caller should put this summary folio
  */
-struct folio *f2fs_get_sum_folio(f2fs_sb_info *sbi, segno: core::ffi::c_uint)
+struct folio *f2fs_get_sum_folio(f2fs_sb_info *sbi, segno: kernel::ffi::c_uint)
 {
 	if (unlikely(f2fs_cp_error(sbi)))
 		return ERR_PTR(-EIO);
@@ -2837,7 +2837,7 @@ void f2fs_update_meta_page(f2fs_sb_info *sbi,
 }
 
 unsafe fn write_sum_page(f2fs_sb_info *sbi,
-		f2fs_summary_block *sum_blk, segno: core::ffi::c_uint)
+		f2fs_summary_block *sum_blk, segno: kernel::ffi::c_uint)
 {
 	struct folio *folio;
 
@@ -2884,7 +2884,7 @@ unsafe fn write_current_sum_page(f2fs_sb_info *sbi,
 unsafe fn is_next_segment_free(f2fs_sb_info *sbi,
 				curseg_info *curseg)
 {
-	core::ffi::c_uint segno = curseg->segno + 1;
+	kernel::ffi::c_uint segno = curseg->segno + 1;
 	struct free_segmap_info *free_i = FREE_I(sbi);
 
 	if (segno < MAIN_SEGS(sbi) && segno % SEGS_PER_SEC(sbi)) {
@@ -2902,18 +2902,18 @@ unsafe fn is_next_segment_free(f2fs_sb_info *sbi,
  * This function should be returned with success, otherwise BUG
  */
 unsafe fn get_new_segment(f2fs_sb_info *sbi,
-			core::ffi::c_uint *newseg, new_sec: bool, pinning: bool)
+			kernel::ffi::c_uint *newseg, new_sec: bool, pinning: bool)
 {
 	'out_unlock: {
 	'got_it: {
 	struct free_segmap_info *free_i = FREE_I(sbi);
-	segno: core::ffi::c_uint, secno, zoneno;
-	core::ffi::c_uint total_zones = MAIN_SECS(sbi) / sbi->secs_per_zone;
-	core::ffi::c_uint hint = GET_SEC_FROM_SEG(sbi, *newseg);
-	core::ffi::c_uint old_zoneno = GET_ZONE_FROM_SEG(sbi, *newseg);
-	core::ffi::c_uint alloc_policy = sbi->allocate_section_policy;
-	core::ffi::c_uint alloc_hint = sbi->allocate_section_hint;
-	core::ffi::c_uint max_secno = MAIN_SECS(sbi);
+	segno: kernel::ffi::c_uint, secno, zoneno;
+	kernel::ffi::c_uint total_zones = MAIN_SECS(sbi) / sbi->secs_per_zone;
+	kernel::ffi::c_uint hint = GET_SEC_FROM_SEG(sbi, *newseg);
+	kernel::ffi::c_uint old_zoneno = GET_ZONE_FROM_SEG(sbi, *newseg);
+	kernel::ffi::c_uint alloc_policy = sbi->allocate_section_policy;
+	kernel::ffi::c_uint alloc_hint = sbi->allocate_section_hint;
+	kernel::ffi::c_uint max_secno = MAIN_SECS(sbi);
 	bool init = true;
 	bool looped = false;
 	int i, devi;
@@ -3000,7 +3000,7 @@ find_other_zone:
 	if (f2fs_dev_is_alloc_blocked(sbi, devi, pinning)) {
 		while (devi < sbi->s_ndevs &&
 			f2fs_dev_is_alloc_blocked(sbi, devi, pinning)) {
-			core::ffi::c_uint end_segno = GET_SEGNO(sbi, FDEV(devi).end_blk);
+			kernel::ffi::c_uint end_segno = GET_SEGNO(sbi, FDEV(devi).end_blk);
 
 			hint = GET_SEC_FROM_SEG(sbi, end_segno) + 1;
 			devi++;
@@ -3059,7 +3059,7 @@ unsafe fn reset_curseg(f2fs_sb_info *sbi, int type, int modified)
 {
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
 	struct summary_footer *sum_footer;
-	core::ffi::c_ushort seg_type = curseg->seg_type;
+	kernel::ffi::c_ushort seg_type = curseg->seg_type;
 
 	/* only happen when get_new_segment() fails */
 	if (curseg->next_segno == NULL_SEGNO)
@@ -3083,15 +3083,15 @@ unsafe fn reset_curseg(f2fs_sb_info *sbi, int type, int modified)
 	__set_sit_entry_type(sbi, seg_type, curseg->segno, modified);
 }
 
-static core::ffi::c_uint __get_next_segno(f2fs_sb_info *sbi, int type)
+static kernel::ffi::c_uint __get_next_segno(f2fs_sb_info *sbi, int type)
 {
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
-	core::ffi::c_ushort seg_type = curseg->seg_type;
+	kernel::ffi::c_ushort seg_type = curseg->seg_type;
 
 	sanity_check_seg_type(sbi, seg_type);
 	if (__is_large_section(sbi)) {
 		if (f2fs_need_rand_seg_blk(sbi, type)) {
-			core::ffi::c_uint hint = GET_SEC_FROM_SEG(sbi, curseg->segno);
+			kernel::ffi::c_uint hint = GET_SEC_FROM_SEG(sbi, curseg->segno);
 
 			if (GET_SEC_FROM_SEG(sbi, curseg->segno + 1) != hint)
 				return curseg->segno;
@@ -3137,7 +3137,7 @@ unsafe fn reset_curseg_fields(curseg_info *curseg)
 unsafe fn new_curseg(f2fs_sb_info *sbi, int type, new_sec: bool)
 {
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
-	core::ffi::c_uint segno = curseg->segno;
+	kernel::ffi::c_uint segno = curseg->segno;
 	bool pinning = type == CURSEG_COLD_DATA_PINNED;
 	int ret;
 
@@ -3165,10 +3165,10 @@ unsafe fn __next_free_blkoff(f2fs_sb_info *sbi,
 					int segno, block_t start)
 {
 	struct seg_entry *se = get_seg_entry(sbi, segno);
-	int entries = SIT_VBLOCK_MAP_SIZE / sizeof(core::ffi::c_ulong);
-	core::ffi::c_ulong *target_map = SIT_I(sbi)->tmp_map;
-	core::ffi::c_ulong *ckpt_map = (core::ffi::c_ulong *)se->ckpt_valid_map;
-	core::ffi::c_ulong *cur_map = (core::ffi::c_ulong *)se->cur_valid_map;
+	int entries = SIT_VBLOCK_MAP_SIZE / sizeof(kernel::ffi::c_ulong);
+	kernel::ffi::c_ulong *target_map = SIT_I(sbi)->tmp_map;
+	kernel::ffi::c_ulong *ckpt_map = (kernel::ffi::c_ulong *)se->ckpt_valid_map;
+	kernel::ffi::c_ulong *cur_map = (kernel::ffi::c_ulong *)se->cur_valid_map;
 	int i;
 
 	for (i = 0; i < entries; i++)
@@ -3196,7 +3196,7 @@ unsafe fn change_curseg(f2fs_sb_info *sbi, int type)
 {
 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
-	core::ffi::c_uint new_segno = curseg->next_segno;
+	kernel::ffi::c_uint new_segno = curseg->next_segno;
 	struct f2fs_summary_block *sum_node;
 	struct folio *sum_folio;
 
@@ -3227,11 +3227,11 @@ unsafe fn change_curseg(f2fs_sb_info *sbi, int type)
 }
 
 unsafe fn get_ssr_segment(f2fs_sb_info *sbi, int type,
-				int alloc_mode, age: core::ffi::c_ulonglong);
+				int alloc_mode, age: kernel::ffi::c_ulonglong);
 
 unsafe fn get_atssr_segment(f2fs_sb_info *sbi, int type,
 					int target_type, int alloc_mode,
-					age: core::ffi::c_ulonglong)
+					age: kernel::ffi::c_ulonglong)
 {
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
 	int ret = 0;
@@ -3357,11 +3357,11 @@ void f2fs_restore_inmem_curseg(f2fs_sb_info *sbi)
 }
 
 unsafe fn get_ssr_segment(f2fs_sb_info *sbi, int type,
-				int alloc_mode, age: core::ffi::c_ulonglong)
+				int alloc_mode, age: kernel::ffi::c_ulonglong)
 {
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
 	unsigned segno = NULL_SEGNO;
-	core::ffi::c_ushort seg_type = curseg->seg_type;
+	kernel::ffi::c_ushort seg_type = curseg->seg_type;
 	int i, cnt;
 	bool reversed = false;
 
@@ -3430,10 +3430,10 @@ unsafe fn need_new_seg(f2fs_sb_info *sbi, int type)
 }
 
 int f2fs_allocate_segment_for_resize!(f2fs_sb_info *sbi, int type,
-					start: core::ffi::c_uint, end: core::ffi::c_uint, {
+					start: kernel::ffi::c_uint, end: kernel::ffi::c_uint, {
 	'unlock: {
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
-	core::ffi::c_uint segno;
+	kernel::ffi::c_uint segno;
 	int ret = 0;
 
 	f2fs_down_read(&SM_I(sbi)->curseg_lock);
@@ -3470,7 +3470,7 @@ unsafe fn __allocate_new_segment(f2fs_sb_info *sbi, int type,
 {
 	'allocate: {
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
-	core::ffi::c_uint old_segno;
+	kernel::ffi::c_uint old_segno;
 	int err = 0;
 
 	if (type == CURSEG_COLD_DATA_PINNED && !curseg->inited)
@@ -3568,9 +3568,9 @@ bool f2fs_exist_trim_candidates(f2fs_sb_info *sbi,
 	return has_candidate;
 }
 
-static core::ffi::c_uint __issue_discard_cmd_range(f2fs_sb_info *sbi,
+static kernel::ffi::c_uint __issue_discard_cmd_range(f2fs_sb_info *sbi,
 					discard_policy *dpolicy,
-					start: core::ffi::c_uint, end: core::ffi::c_uint)
+					start: kernel::ffi::c_uint, end: kernel::ffi::c_uint)
 {
 	struct discard_cmd_control *dcc = SM_I(sbi)->dcc_info;
 	struct discard_cmd *prev_dc = NULL, *next_dc = NULL;
@@ -3578,7 +3578,7 @@ static core::ffi::c_uint __issue_discard_cmd_range(f2fs_sb_info *sbi,
 	struct discard_cmd *dc;
 	struct blk_plug plug;
 	int issued;
-	core::ffi::c_uint trimmed = 0;
+	kernel::ffi::c_uint trimmed = 0;
 
 next:
 	issued = 0;
@@ -3643,12 +3643,12 @@ int f2fs_trim_fs(f2fs_sb_info *sbi, fstrim_range *range)
 	'out: {
 	__u64 start = F2FS_BYTES_TO_BLK(range->start);
 	__u64 end = start + F2FS_BYTES_TO_BLK(range->len) - 1;
-	start_segno: core::ffi::c_uint, end_segno;
+	start_segno: kernel::ffi::c_uint, end_segno;
 	block_t start_block, end_block;
 	struct cp_control cpc;
 	struct discard_policy dpolicy;
 	struct f2fs_lock_context lc;
-	core::ffi::c_ulonglong trimmed = 0;
+	kernel::ffi::c_ulonglong trimmed = 0;
 	int err = 0;
 	bool need_align = f2fs_lfs_mode(sbi) && __is_large_section(sbi);
 
@@ -3792,7 +3792,7 @@ enum rw_hint f2fs_io_type_to_rw_hint(f2fs_sb_info *sbi,
 u8 f2fs_io_type_to_write_stream(block_device *bdev,
 				page_type type, temp_type temp)
 {
-	core::ffi::c_ushort nr = bdev_max_write_streams(bdev);
+	kernel::ffi::c_ushort nr = bdev_max_write_streams(bdev);
 
 	if (type != DATA || !nr)
 		return 0;
@@ -3956,7 +3956,7 @@ int f2fs_allocate_data_block(f2fs_sb_info *sbi, folio *folio,
 	'skip_new_segment: {
 	struct sit_info *sit_i = SIT_I(sbi);
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
-	core::ffi::c_ulonglong old_mtime;
+	kernel::ffi::c_ulonglong old_mtime;
 	bool from_gc = (type == CURSEG_ALL_DATA_ATGC);
 	struct seg_entry *se = NULL;
 	bool segment_full = false;
@@ -4048,7 +4048,7 @@ int f2fs_allocate_data_block(f2fs_sb_info *sbi, folio *folio,
 	locate_dirty_segment(sbi, GET_SEGNO(sbi, *new_blkaddr));
 
 	if (IS_DATASEG(curseg->seg_type)) {
-		core::ffi::c_ulonglong new_val;
+		kernel::ffi::c_ulonglong new_val;
 
 		new_val = atomic64_inc_return(&sbi->allocated_data_blocks);
 		if (unlikely(new_val == ULLONG_MAX))
@@ -4087,14 +4087,14 @@ int f2fs_allocate_data_block(f2fs_sb_info *sbi, folio *folio,
 }
 
 void f2fs_update_device_state(f2fs_sb_info *sbi, nid_t ino,
-					block_t blkaddr, blkcnt: core::ffi::c_uint)
+					block_t blkaddr, blkcnt: kernel::ffi::c_uint)
 {
 	if (!f2fs_is_multi_device(sbi))
 		return;
 
 	while (1) {
-		core::ffi::c_uint devidx = f2fs_target_device_index(sbi, blkaddr);
-		core::ffi::c_uint blks = FDEV(devidx).end_blk - blkaddr + 1;
+		kernel::ffi::c_uint devidx = f2fs_target_device_index(sbi, blkaddr);
+		kernel::ffi::c_uint blks = FDEV(devidx).end_blk - blkaddr + 1;
 
 		/* update device state for fsync */
 		f2fs_set_dirty_device(sbi, ino, devidx, FLUSH_INO);
@@ -4206,7 +4206,7 @@ void f2fs_do_write_meta_page(f2fs_sb_info *sbi, folio *folio,
 	f2fs_update_iostat(sbi, NULL, io_type, F2FS_BLKSIZE);
 }
 
-void f2fs_do_write_node_page(nid: core::ffi::c_uint, f2fs_io_info *fio)
+void f2fs_do_write_node_page(nid: kernel::ffi::c_uint, f2fs_io_info *fio)
 {
 	struct f2fs_summary sum;
 
@@ -4237,7 +4237,7 @@ int f2fs_inplace_write_data(f2fs_io_info *fio)
 	'drop_bio: {
 	int err;
 	struct f2fs_sb_info *sbi = fio->sbi;
-	core::ffi::c_uint segno;
+	kernel::ffi::c_uint segno;
 
 	fio->new_blkaddr = fio->old_blkaddr;
 	/* i/o temperature is needed for passing down write hints */
@@ -4290,7 +4290,7 @@ int f2fs_inplace_write_data(f2fs_io_info *fio)
 
 #[inline]
 unsafe fn int __f2fs_get_curseg(f2fs_sb_info *sbi,
-						segno: core::ffi::c_uint)
+						segno: kernel::ffi::c_uint)
 {
 	int i;
 
@@ -4309,11 +4309,11 @@ void f2fs_do_replace_block(f2fs_sb_info *sbi, f2fs_summary *sum,
 	'out_unlock: {
 	struct sit_info *sit_i = SIT_I(sbi);
 	struct curseg_info *curseg;
-	segno: core::ffi::c_uint, old_cursegno;
+	segno: kernel::ffi::c_uint, old_cursegno;
 	struct seg_entry *se;
 	int type;
-	core::ffi::c_ushort old_blkoff;
-	core::ffi::c_uchar old_alloc_type;
+	kernel::ffi::c_ushort old_blkoff;
+	kernel::ffi::c_uchar old_alloc_type;
 
 	segno = GET_SEGNO(sbi, new_blkaddr);
 	se = get_seg_entry(sbi, segno);
@@ -4394,7 +4394,7 @@ void f2fs_do_replace_block(f2fs_sb_info *sbi, f2fs_summary *sum,
 
 void f2fs_replace_block(f2fs_sb_info *sbi, dnode_of_data *dn,
 				block_t old_addr, block_t new_addr,
-				version: core::ffi::c_uchar, recover_curseg: bool,
+				version: kernel::ffi::c_uchar, recover_curseg: bool,
 				recover_newaddr: bool)
 {
 	struct f2fs_summary sum;
@@ -4463,7 +4463,7 @@ unsafe fn read_compacted_summaries(f2fs_sb_info *sbi)
 {
 	struct f2fs_checkpoint *ckpt = F2FS_CKPT(sbi);
 	struct curseg_info *seg_i;
-	core::ffi::c_uchar *kaddr;
+	kernel::ffi::c_uchar *kaddr;
 	struct folio *folio;
 	block_t start;
 	int i, j, offset;
@@ -4486,8 +4486,8 @@ unsafe fn read_compacted_summaries(f2fs_sb_info *sbi)
 
 	/* Step 3: restore summary entries */
 	for (i = CURSEG_HOT_DATA; i <= CURSEG_COLD_DATA; i++) {
-		core::ffi::c_ushort blk_off;
-		core::ffi::c_uint segno;
+		kernel::ffi::c_ushort blk_off;
+		kernel::ffi::c_uint segno;
 
 		seg_i = CURSEG_I(sbi, i);
 		segno = le32_to_cpu(ckpt->cur_data_segno[i]);
@@ -4530,8 +4530,8 @@ unsafe fn read_normal_summaries(f2fs_sb_info *sbi, int type)
 	struct f2fs_summary_block *sum;
 	struct curseg_info *curseg;
 	struct folio *new;
-	core::ffi::c_ushort blk_off;
-	core::ffi::c_uint segno = 0;
+	kernel::ffi::c_ushort blk_off;
+	kernel::ffi::c_uint segno = 0;
 	block_t blk_addr = 0;
 	int err = 0;
 
@@ -4647,7 +4647,7 @@ unsafe fn restore_curseg_summaries(f2fs_sb_info *sbi)
 unsafe fn write_compacted_summaries(f2fs_sb_info *sbi, block_t blkaddr)
 {
 	struct folio *folio;
-	core::ffi::c_uchar *kaddr;
+	kernel::ffi::c_uchar *kaddr;
 	struct f2fs_summary *summary;
 	struct curseg_info *seg_i;
 	int written_size = 0;
@@ -4725,7 +4725,7 @@ void f2fs_write_node_summaries(f2fs_sb_info *sbi, block_t start_blk)
 
 int f2fs_lookup_journal_in_cursum(f2fs_sb_info *sbi,
 			f2fs_journal *journal, int type,
-			val: core::ffi::c_uint, int alloc)
+			val: kernel::ffi::c_uint, int alloc)
 {
 	int i;
 
@@ -4747,13 +4747,13 @@ int f2fs_lookup_journal_in_cursum(f2fs_sb_info *sbi,
 }
 
 static mut folio *get_current_sit_folio(f2fs_sb_info *sbi,
-					segno: core::ffi::c_uint)
+					segno: kernel::ffi::c_uint)
 {
 	return f2fs_get_meta_folio(sbi, current_sit_addr(sbi, segno));
 }
 
 static mut folio *get_next_sit_folio(f2fs_sb_info *sbi,
-					start: core::ffi::c_uint)
+					start: kernel::ffi::c_uint)
 {
 	struct sit_info *sit_i = SIT_I(sbi);
 	struct folio *folio;
@@ -4805,10 +4805,10 @@ unsafe fn adjust_sit_entry_set(sit_entry_set *ses,
 	list_move_tail(&ses->set_list, head);
 }
 
-unsafe fn add_sit_entry(segno: core::ffi::c_uint, list_head *head)
+unsafe fn add_sit_entry(segno: kernel::ffi::c_uint, list_head *head)
 {
 	struct sit_entry_set *ses;
-	core::ffi::c_uint start_segno = START_SEGNO(segno);
+	kernel::ffi::c_uint start_segno = START_SEGNO(segno);
 
 	list_for_each_entry!(ses, head, set_list, {
 		if (ses->start_segno == start_segno) {
@@ -4829,8 +4829,8 @@ unsafe fn add_sits_in_set(f2fs_sb_info *sbi)
 {
 	struct f2fs_sm_info *sm_info = SM_I(sbi);
 	struct list_head *set_list = &sm_info->sit_entry_set;
-	core::ffi::c_ulong *bitmap = SIT_I(sbi)->dirty_sentries_bitmap;
-	core::ffi::c_uint segno;
+	kernel::ffi::c_ulong *bitmap = SIT_I(sbi)->dirty_sentries_bitmap;
+	kernel::ffi::c_uint segno;
 
 	for_each_set_bit(segno, bitmap, MAIN_SEGS(sbi))
 		add_sit_entry(segno, set_list);
@@ -4844,7 +4844,7 @@ unsafe fn remove_sits_in_journal(f2fs_sb_info *sbi)
 
 	down_write(&curseg->journal_rwsem);
 	for (i = 0; i < sits_in_cursum(journal); i++) {
-		core::ffi::c_uint segno;
+		kernel::ffi::c_uint segno;
 		bool dirtied;
 
 		segno = le32_to_cpu(segno_in_journal(journal, i));
@@ -4865,7 +4865,7 @@ void f2fs_flush_sit_entries(f2fs_sb_info *sbi, cp_control *cpc)
 {
 	'out: {
 	struct sit_info *sit_i = SIT_I(sbi);
-	core::ffi::c_ulong *bitmap = sit_i->dirty_sentries_bitmap;
+	kernel::ffi::c_ulong *bitmap = sit_i->dirty_sentries_bitmap;
 	struct curseg_info *curseg = CURSEG_I(sbi, CURSEG_COLD_DATA);
 	struct f2fs_journal *journal = curseg->journal;
 	struct sit_entry_set *ses, *tmp;
@@ -4901,10 +4901,10 @@ void f2fs_flush_sit_entries(f2fs_sb_info *sbi, cp_control *cpc)
 	list_for_each_entry_safe!(ses, tmp, head, set_list, {
 		struct folio *folio = NULL;
 		struct f2fs_sit_block *raw_sit = NULL;
-		core::ffi::c_uint start_segno = ses->start_segno;
-		core::ffi::c_uint end = min(start_segno + SIT_ENTRY_PER_BLOCK,
-						(core::ffi::c_ulong)MAIN_SEGS(sbi));
-		core::ffi::c_uint segno = start_segno;
+		kernel::ffi::c_uint start_segno = ses->start_segno;
+		kernel::ffi::c_uint end = min(start_segno + SIT_ENTRY_PER_BLOCK,
+						(kernel::ffi::c_ulong)MAIN_SEGS(sbi));
+		kernel::ffi::c_uint segno = start_segno;
 
 		if (to_journal &&
 			!__has_cursum_space(sbi, journal, ses->entry_cnt,
@@ -4987,10 +4987,10 @@ unsafe fn build_sit_info(f2fs_sb_info *sbi)
 {
 	struct f2fs_super_block *raw_super = F2FS_RAW_SUPER(sbi);
 	struct sit_info *sit_i;
-	sit_segs: core::ffi::c_uint, start;
+	sit_segs: kernel::ffi::c_uint, start;
 	char *src_bitmap, *bitmap;
-	bitmap_size: core::ffi::c_uint, main_bitmap_size, sit_bitmap_size;
-	core::ffi::c_uint discard_map = f2fs_block_unit_discard(sbi) ? 1 : 0;
+	bitmap_size: kernel::ffi::c_uint, main_bitmap_size, sit_bitmap_size;
+	kernel::ffi::c_uint discard_map = f2fs_block_unit_discard(sbi) ? 1 : 0;
 
 	/* allocate memory for SIT information */
 	sit_i = f2fs_kzalloc(sbi, sizeof(sit_info), GFP_KERNEL);
@@ -5078,7 +5078,7 @@ unsafe fn build_sit_info(f2fs_sb_info *sbi)
 unsafe fn build_free_segmap(f2fs_sb_info *sbi)
 {
 	struct free_segmap_info *free_i;
-	bitmap_size: core::ffi::c_uint, sec_bitmap_size;
+	bitmap_size: kernel::ffi::c_uint, sec_bitmap_size;
 
 	/* allocate memory for free segmap information */
 	free_i = f2fs_kzalloc(sbi, sizeof(free_segmap_info), GFP_KERNEL);
@@ -5146,8 +5146,8 @@ unsafe fn build_sit_entries(f2fs_sb_info *sbi)
 	struct seg_entry *se;
 	struct f2fs_sit_entry sit;
 	int sit_blk_cnt = SIT_BLK_CNT(sbi);
-	i: core::ffi::c_uint, start, end;
-	readed: core::ffi::c_uint, start_blk = 0;
+	i: kernel::ffi::c_uint, start, end;
+	readed: kernel::ffi::c_uint, start_blk = 0;
 	int err = 0;
 	block_t sit_valid_blocks[2] = {0, 0};
 
@@ -5210,7 +5210,7 @@ unsafe fn build_sit_entries(f2fs_sb_info *sbi)
 
 	down_read(&curseg->journal_rwsem);
 	for (i = 0; i < sits_in_cursum(journal); i++) {
-		core::ffi::c_uint old_valid_blocks;
+		kernel::ffi::c_uint old_valid_blocks;
 
 		start = le32_to_cpu(segno_in_journal(journal, i));
 		if (start >= MAIN_SEGS(sbi)) {
@@ -5265,7 +5265,7 @@ unsafe fn build_sit_entries(f2fs_sb_info *sbi)
 
 	/* update ckpt_valid_block */
 	if (__is_large_section(sbi)) {
-		core::ffi::c_uint segno;
+		kernel::ffi::c_uint segno;
 
 		for (segno = 0; segno < MAIN_SEGS(sbi); segno += SEGS_PER_SEC(sbi))
 			set_ckpt_valid_blocks(sbi, segno);
@@ -5295,7 +5295,7 @@ unsafe fn build_sit_entries(f2fs_sb_info *sbi)
 
 unsafe fn init_free_segmap(f2fs_sb_info *sbi)
 {
-	core::ffi::c_uint start;
+	kernel::ffi::c_uint start;
 	int type;
 	struct seg_entry *sentry;
 
@@ -5322,7 +5322,7 @@ unsafe fn init_dirty_segmap(f2fs_sb_info *sbi)
 {
 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
 	struct free_segmap_info *free_i = FREE_I(sbi);
-	core::ffi::c_uint segno = 0, offset = 0, secno;
+	kernel::ffi::c_uint segno = 0, offset = 0, secno;
 	block_t valid_blocks, usable_blks_in_seg;
 
 	while (1) {
@@ -5364,7 +5364,7 @@ unsafe fn init_dirty_segmap(f2fs_sb_info *sbi)
 unsafe fn init_victim_secmap(f2fs_sb_info *sbi)
 {
 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
-	core::ffi::c_uint bitmap_size = f2fs_bitmap_size(MAIN_SECS(sbi));
+	kernel::ffi::c_uint bitmap_size = f2fs_bitmap_size(MAIN_SECS(sbi));
 
 	dirty_i->victim_secmap = f2fs_kvzalloc(sbi, bitmap_size, GFP_KERNEL);
 	if (!dirty_i->victim_secmap)
@@ -5382,7 +5382,7 @@ unsafe fn init_victim_secmap(f2fs_sb_info *sbi)
 unsafe fn build_dirty_segmap(f2fs_sb_info *sbi)
 {
 	struct dirty_seglist_info *dirty_i;
-	bitmap_size: core::ffi::c_uint, i;
+	bitmap_size: kernel::ffi::c_uint, i;
 
 	/* allocate memory for dirty segments list information */
 	dirty_i = f2fs_kzalloc(sbi, sizeof(dirty_seglist_info),
@@ -5425,7 +5425,7 @@ unsafe fn sanity_check_curseg(f2fs_sb_info *sbi)
 	for (i = 0; i < NR_PERSISTENT_LOG; i++) {
 		struct curseg_info *curseg = CURSEG_I(sbi, i);
 		struct seg_entry *se = get_seg_entry(sbi, curseg->segno);
-		core::ffi::c_uint blkofs = curseg->next_blkoff;
+		kernel::ffi::c_uint blkofs = curseg->next_blkoff;
 
 		if (f2fs_sb_has_readonly(sbi) &&
 			i != CURSEG_HOT_DATA && i != CURSEG_HOT_NODE)
@@ -5467,11 +5467,11 @@ unsafe fn check_zone_write_pointer(f2fs_sb_info *sbi,
 				    f2fs_dev_info *fdev,
 				    blk_zone *zone)
 {
-	core::ffi::c_uint zone_segno;
+	kernel::ffi::c_uint zone_segno;
 	block_t zone_block, valid_block_cnt;
-	core::ffi::c_uint log_sectors_per_block = sbi->log_blocksize - SECTOR_SHIFT;
+	kernel::ffi::c_uint log_sectors_per_block = sbi->log_blocksize - SECTOR_SHIFT;
 	int ret;
-	core::ffi::c_uint nofs_flags;
+	kernel::ffi::c_uint nofs_flags;
 
 	if (zone->type != BLK_ZONE_TYPE_SEQWRITE_REQ)
 		return 0;
@@ -5559,7 +5559,7 @@ static mut f2fs_dev_info *get_target_zoned_dev(f2fs_sb_info *sbi,
 	return NULL;
 }
 
-unsafe fn report_one_zone_cb(blk_zone *zone, idx: core::ffi::c_uint,
+unsafe fn report_one_zone_cb(blk_zone *zone, idx: kernel::ffi::c_uint,
 			      void *data)
 {
 	memcpy(data, zone, sizeof(blk_zone));
@@ -5571,9 +5571,9 @@ unsafe fn do_fix_curseg_write_pointer(f2fs_sb_info *sbi, int type)
 	struct curseg_info *cs = CURSEG_I(sbi, type);
 	struct f2fs_dev_info *zbd;
 	struct blk_zone zone;
-	cs_section: core::ffi::c_uint, wp_segno, wp_blkoff, wp_sector_off;
+	cs_section: kernel::ffi::c_uint, wp_segno, wp_blkoff, wp_sector_off;
 	block_t cs_zone_block, wp_block;
-	core::ffi::c_uint log_sectors_per_block = sbi->log_blocksize - SECTOR_SHIFT;
+	kernel::ffi::c_uint log_sectors_per_block = sbi->log_blocksize - SECTOR_SHIFT;
 	sector_t zone_sector;
 	int err;
 
@@ -5620,7 +5620,7 @@ unsafe fn do_fix_curseg_write_pointer(f2fs_sb_info *sbi, int type)
 	/* Allocate a new section if it's not new. */
 	if (cs->next_blkoff ||
 	    cs->segno != GET_SEG_FROM_SEC(sbi, GET_ZONE_FROM_SEC(sbi, cs_section))) {
-		core::ffi::c_uint old_segno = cs->segno, old_blkoff = cs->next_blkoff;
+		kernel::ffi::c_uint old_segno = cs->segno, old_blkoff = cs->next_blkoff;
 
 		f2fs_allocate_new_section(sbi, type, true);
 		f2fs_notice(sbi, "Assign new section to curseg[%d]: "
@@ -5689,7 +5689,7 @@ struct check_zone_write_pointer_args {
 	struct f2fs_dev_info *fdev;
 };
 
-unsafe fn check_zone_write_pointer_cb(blk_zone *zone, idx: core::ffi::c_uint,
+unsafe fn check_zone_write_pointer_cb(blk_zone *zone, idx: kernel::ffi::c_uint,
 				      void *data)
 {
 	struct check_zone_write_pointer_args *args;
@@ -5743,11 +5743,11 @@ int f2fs_check_and_fix_write_pointer(f2fs_sb_info *sbi)
  * is returned. 0 is returned in all other cases.
  */
 #[inline]
-unsafe fn core::ffi::c_uint f2fs_usable_zone_blks_in_seg(
-			f2fs_sb_info *sbi, segno: core::ffi::c_uint)
+unsafe fn kernel::ffi::c_uint f2fs_usable_zone_blks_in_seg(
+			f2fs_sb_info *sbi, segno: kernel::ffi::c_uint)
 {
 	block_t seg_start, sec_start_blkaddr, sec_cap_blkaddr;
-	core::ffi::c_uint secno;
+	kernel::ffi::c_uint secno;
 
 	if (!sbi->unusable_blocks_per_sec)
 		return BLKS_PER_SEG(sbi);
@@ -5777,15 +5777,15 @@ int f2fs_check_and_fix_write_pointer(f2fs_sb_info *sbi)
 }
 
 #[inline]
-unsafe fn core::ffi::c_uint f2fs_usable_zone_blks_in_seg(f2fs_sb_info *sbi,
-							segno: core::ffi::c_uint)
+unsafe fn kernel::ffi::c_uint f2fs_usable_zone_blks_in_seg(f2fs_sb_info *sbi,
+							segno: kernel::ffi::c_uint)
 {
 	return 0;
 }
 
 // cfg end
-core::ffi::c_uint f2fs_usable_blks_in_seg(f2fs_sb_info *sbi,
-					segno: core::ffi::c_uint)
+kernel::ffi::c_uint f2fs_usable_blks_in_seg(f2fs_sb_info *sbi,
+					segno: kernel::ffi::c_uint)
 {
 	if (f2fs_sb_has_blkzoned(sbi))
 		return f2fs_usable_zone_blks_in_seg(sbi, segno);
@@ -5793,7 +5793,7 @@ core::ffi::c_uint f2fs_usable_blks_in_seg(f2fs_sb_info *sbi,
 	return BLKS_PER_SEG(sbi);
 }
 
-core::ffi::c_uint f2fs_usable_segs_in_sec(f2fs_sb_info *sbi)
+kernel::ffi::c_uint f2fs_usable_segs_in_sec(f2fs_sb_info *sbi)
 {
 	if (f2fs_sb_has_blkzoned(sbi))
 		return CAP_SEGS_PER_SEC(sbi);
@@ -5801,15 +5801,15 @@ core::ffi::c_uint f2fs_usable_segs_in_sec(f2fs_sb_info *sbi)
 	return SEGS_PER_SEC(sbi);
 }
 
-core::ffi::c_ulonglong f2fs_get_section_mtime(f2fs_sb_info *sbi,
-	segno: core::ffi::c_uint)
+kernel::ffi::c_ulonglong f2fs_get_section_mtime(f2fs_sb_info *sbi,
+	segno: kernel::ffi::c_uint)
 {
 	'out: {
-	core::ffi::c_uint usable_segs_per_sec = f2fs_usable_segs_in_sec(sbi);
-	core::ffi::c_uint secno = 0, start = 0;
-	core::ffi::c_uint total_valid_blocks = 0;
-	core::ffi::c_ulonglong mtime = 0;
-	core::ffi::c_uint i = 0;
+	kernel::ffi::c_uint usable_segs_per_sec = f2fs_usable_segs_in_sec(sbi);
+	kernel::ffi::c_uint secno = 0, start = 0;
+	kernel::ffi::c_uint total_valid_blocks = 0;
+	kernel::ffi::c_ulonglong mtime = 0;
+	kernel::ffi::c_uint i = 0;
 
 	secno = GET_SEC_FROM_SEG(sbi, segno);
 	start = GET_SEG_FROM_SEC(sbi, secno);
@@ -5844,14 +5844,14 @@ core::ffi::c_ulonglong f2fs_get_section_mtime(f2fs_sb_info *sbi,
 unsafe fn init_min_max_mtime(f2fs_sb_info *sbi)
 {
 	struct sit_info *sit_i = SIT_I(sbi);
-	core::ffi::c_uint segno;
+	kernel::ffi::c_uint segno;
 
 	down_write(&sit_i->sentry_lock);
 
 	sit_i->min_mtime = ULLONG_MAX;
 
 	for (segno = 0; segno < MAIN_SEGS(sbi); segno += SEGS_PER_SEC(sbi)) {
-		core::ffi::c_ulonglong mtime = 0;
+		kernel::ffi::c_ulonglong mtime = 0;
 
 		mtime = f2fs_get_section_mtime(sbi, segno);
 

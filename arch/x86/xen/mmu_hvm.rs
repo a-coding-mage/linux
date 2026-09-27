@@ -10,7 +10,7 @@
  * Returns "false" if the pfn is not backed by a RAM page, the caller may
  * handle the pfn special in this case.
  */
-unsafe fn xen_vmcore_pfn_is_ram(cb: *mut vmcore_cb, pfn: ::core::ffi::c_ulong) -> bool {
+unsafe fn xen_vmcore_pfn_is_ram(cb: *mut vmcore_cb, pfn: ::kernel::ffi::c_ulong) -> bool {
     let mut a = xen_hvm_get_mem_type {
         domid: DOMID_SELF,
         pfn,
@@ -32,7 +32,7 @@ static mut xen_vmcore_cb: vmcore_cb = vmcore_cb {
 
 unsafe fn xen_hvm_exit_mmap(mm: *mut mm_struct) {
     let mut a: xen_hvm_pagetable_dying = ::core::mem::zeroed();
-    let rc: ::core::ffi::c_int;
+    let rc: ::kernel::ffi::c_int;
 
     a.domid = DOMID_SELF;
     a.gpa = __pa((*mm).pgd);
@@ -40,9 +40,9 @@ unsafe fn xen_hvm_exit_mmap(mm: *mut mm_struct) {
     WARN_ON_ONCE!(rc < 0);
 }
 
-unsafe fn is_pagetable_dying_supported() -> ::core::ffi::c_int {
+unsafe fn is_pagetable_dying_supported() -> ::kernel::ffi::c_int {
     let mut a: xen_hvm_pagetable_dying = ::core::mem::zeroed();
-    let mut rc: ::core::ffi::c_int = 0;
+    let mut rc: ::kernel::ffi::c_int = 0;
 
     a.domid = DOMID_SELF;
     a.gpa = 0x00;

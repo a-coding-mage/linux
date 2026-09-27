@@ -8,14 +8,14 @@
 
 unsafe extern "C" {
     pub fn topology_normalize_cpu_scale();
-    pub fn topology_update_cpu_topology() -> core::ffi::c_int;
+    pub fn topology_update_cpu_topology() -> kernel::ffi::c_int;
 
-    pub fn topology_parse_cpu_capacity(cpu_node: *mut device_node, cpu: core::ffi::c_int) -> bool;
+    pub fn topology_parse_cpu_capacity(cpu_node: *mut device_node, cpu: kernel::ffi::c_int) -> bool;
 
     pub fn topology_set_freq_scale(
         cpus: *const cpumask,
-        cur_freq: libc::c_ulong,
-        max_freq: libc::c_ulong,
+        cur_freq: kernel::ffi::c_ulong,
+        max_freq: kernel::ffi::c_ulong,
     );
     pub fn topology_scale_freq_invariant() -> bool;
 
@@ -29,7 +29,7 @@ unsafe extern "C" {
         cpus: *const cpumask,
     );
 
-    pub fn topology_update_hw_pressure(cpus: *const cpumask, capped_freq: libc::c_ulong);
+    pub fn topology_update_hw_pressure(cpus: *const cpumask, capped_freq: kernel::ffi::c_ulong);
 }
 
 #[repr(C)]
@@ -38,17 +38,17 @@ pub struct device_node {
 }
 
 // DECLARE_PER_CPU(unsigned long, capacity_freq_ref);
-pub unsafe fn topology_get_freq_ref(cpu: core::ffi::c_int) -> libc::c_ulong {
+pub unsafe fn topology_get_freq_ref(cpu: kernel::ffi::c_int) -> kernel::ffi::c_ulong {
     per_cpu_capacity_freq_ref(cpu)
 }
 
 extern "C" {
-    fn per_cpu_capacity_freq_ref(cpu: core::ffi::c_int) -> libc::c_ulong;
-    fn per_cpu_arch_freq_scale(cpu: core::ffi::c_int) -> libc::c_ulong;
-    fn per_cpu_hw_pressure(cpu: core::ffi::c_int) -> libc::c_ulong;
+    fn per_cpu_capacity_freq_ref(cpu: kernel::ffi::c_int) -> kernel::ffi::c_ulong;
+    fn per_cpu_arch_freq_scale(cpu: kernel::ffi::c_int) -> kernel::ffi::c_ulong;
+    fn per_cpu_hw_pressure(cpu: kernel::ffi::c_int) -> kernel::ffi::c_ulong;
 }
 
-pub unsafe fn topology_get_freq_scale(cpu: core::ffi::c_int) -> libc::c_ulong {
+pub unsafe fn topology_get_freq_scale(cpu: kernel::ffi::c_int) -> kernel::ffi::c_ulong {
     per_cpu_arch_freq_scale(cpu)
 }
 
@@ -68,16 +68,16 @@ pub struct scale_freq_data {
 }
 
 // DECLARE_PER_CPU(unsigned long, hw_pressure);
-pub unsafe fn topology_get_hw_pressure(cpu: core::ffi::c_int) -> libc::c_ulong {
+pub unsafe fn topology_get_hw_pressure(cpu: kernel::ffi::c_int) -> kernel::ffi::c_ulong {
     per_cpu_hw_pressure(cpu)
 }
 
 #[repr(C)]
 pub struct cpu_topology {
-    pub thread_id: core::ffi::c_int,
-    pub core_id: core::ffi::c_int,
-    pub cluster_id: core::ffi::c_int,
-    pub package_id: core::ffi::c_int,
+    pub thread_id: kernel::ffi::c_int,
+    pub core_id: kernel::ffi::c_int,
+    pub cluster_id: kernel::ffi::c_int,
+    pub package_id: kernel::ffi::c_int,
     pub thread_sibling: cpumask_t,
     pub core_sibling: cpumask_t,
     pub cluster_sibling: cpumask_t,
@@ -90,23 +90,23 @@ unsafe extern "C" {
     pub static mut cpu_topology: [cpu_topology; NR_CPUS];
 
     pub fn init_cpu_topology();
-    pub fn store_cpu_topology(cpuid: core::ffi::c_uint);
-    pub fn cpu_coregroup_mask(cpu: core::ffi::c_int) -> *const cpumask;
-    pub fn cpu_clustergroup_mask(cpu: core::ffi::c_int) -> *const cpumask;
-    pub fn update_siblings_masks(cpu: core::ffi::c_uint);
-    pub fn remove_cpu_topology(cpuid: core::ffi::c_uint);
+    pub fn store_cpu_topology(cpuid: kernel::ffi::c_uint);
+    pub fn cpu_coregroup_mask(cpu: kernel::ffi::c_int) -> *const cpumask;
+    pub fn cpu_clustergroup_mask(cpu: kernel::ffi::c_int) -> *const cpumask;
+    pub fn update_siblings_masks(cpu: kernel::ffi::c_uint);
+    pub fn remove_cpu_topology(cpuid: kernel::ffi::c_uint);
     pub fn reset_cpu_topology();
-    pub fn parse_acpi_topology() -> core::ffi::c_int;
-    pub fn freq_inv_set_max_ratio(cpu: core::ffi::c_int, max_rate: u64);
+    pub fn parse_acpi_topology() -> kernel::ffi::c_int;
+    pub fn freq_inv_set_max_ratio(cpu: kernel::ffi::c_int, max_rate: u64);
 }
 
-pub unsafe fn topology_physical_package_id(cpu: usize) -> core::ffi::c_int {
+pub unsafe fn topology_physical_package_id(cpu: usize) -> kernel::ffi::c_int {
     cpu_topology[cpu].package_id
 }
-pub unsafe fn topology_cluster_id(cpu: usize) -> core::ffi::c_int {
+pub unsafe fn topology_cluster_id(cpu: usize) -> kernel::ffi::c_int {
     cpu_topology[cpu].cluster_id
 }
-pub unsafe fn topology_core_id(cpu: usize) -> core::ffi::c_int {
+pub unsafe fn topology_core_id(cpu: usize) -> kernel::ffi::c_int {
     cpu_topology[cpu].core_id
 }
 pub unsafe fn topology_core_cpumask(cpu: usize) -> *mut cpumask_t {
@@ -124,7 +124,7 @@ pub unsafe fn topology_llc_cpumask(cpu: usize) -> *mut cpumask_t {
 
 // If arch_cpu_is_threaded is not provided by the architecture, its C default
 // is equivalent to this function returning zero.
-pub const fn arch_cpu_is_threaded() -> core::ffi::c_int { 0 }
+pub const fn arch_cpu_is_threaded() -> kernel::ffi::c_int { 0 }
 
 /*
  * Architectures like ARM64 don't have reliable architectural way to get SMT

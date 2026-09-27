@@ -16,19 +16,19 @@ pub unsafe fn csum_ipv6_magic(
     proto: u8,
     csum: __wsum,
 ) -> __sum16 {
-    let mut sum = csum as libc::c_ulong;
+    let mut sum = csum as kernel::ffi::c_ulong;
 
-    sum = sum.wrapping_add((*saddr).s6_addr32[0] as libc::c_ulong);
-    sum = sum.wrapping_add((*saddr).s6_addr32[1] as libc::c_ulong);
-    sum = sum.wrapping_add((*saddr).s6_addr32[2] as libc::c_ulong);
-    sum = sum.wrapping_add((*saddr).s6_addr32[3] as libc::c_ulong);
-    sum = sum.wrapping_add((*daddr).s6_addr32[0] as libc::c_ulong);
-    sum = sum.wrapping_add((*daddr).s6_addr32[1] as libc::c_ulong);
-    sum = sum.wrapping_add((*daddr).s6_addr32[2] as libc::c_ulong);
-    sum = sum.wrapping_add((*daddr).s6_addr32[3] as libc::c_ulong);
+    sum = sum.wrapping_add((*saddr).s6_addr32[0] as kernel::ffi::c_ulong);
+    sum = sum.wrapping_add((*saddr).s6_addr32[1] as kernel::ffi::c_ulong);
+    sum = sum.wrapping_add((*saddr).s6_addr32[2] as kernel::ffi::c_ulong);
+    sum = sum.wrapping_add((*saddr).s6_addr32[3] as kernel::ffi::c_ulong);
+    sum = sum.wrapping_add((*daddr).s6_addr32[0] as kernel::ffi::c_ulong);
+    sum = sum.wrapping_add((*daddr).s6_addr32[1] as kernel::ffi::c_ulong);
+    sum = sum.wrapping_add((*daddr).s6_addr32[2] as kernel::ffi::c_ulong);
+    sum = sum.wrapping_add((*daddr).s6_addr32[3] as kernel::ffi::c_ulong);
 
-    sum = sum.wrapping_add(u32::from_be(len) as libc::c_ulong);
-    sum = sum.wrapping_add(u32::from_be(proto as u32) as libc::c_ulong);
+    sum = sum.wrapping_add(u32::from_be(len) as kernel::ffi::c_ulong);
+    sum = sum.wrapping_add(u32::from_be(proto as u32) as kernel::ffi::c_ulong);
 
     // The ZBB inline-assembly fast path is architecture/build dependent;
     // preserve its operation with the equivalent scalar folding below.
@@ -43,12 +43,12 @@ const OFFSET_MASK: usize = 3;
 const OFFSET_MASK: usize = 7;
 
 #[inline]
-unsafe fn do_csum_common(mut ptr: *const libc::c_ulong, end: *const libc::c_ulong, mut data: libc::c_ulong) -> libc::c_ulong {
-    let mut csum: libc::c_ulong = 0;
-    let mut carry: libc::c_ulong = 0;
+unsafe fn do_csum_common(mut ptr: *const kernel::ffi::c_ulong, end: *const kernel::ffi::c_ulong, mut data: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
+    let mut csum: kernel::ffi::c_ulong = 0;
+    let mut carry: kernel::ffi::c_ulong = 0;
     while ptr < end {
         csum = csum.wrapping_add(data);
-        carry = carry.wrapping_add((csum < data) as libc::c_ulong);
+        carry = carry.wrapping_add((csum < data) as kernel::ffi::c_ulong);
         data = *ptr;
         ptr = ptr.add(1);
     }
@@ -58,16 +58,16 @@ unsafe fn do_csum_common(mut ptr: *const libc::c_ulong, end: *const libc::c_ulon
     #[cfg(target_endian = "big")]
     { data = (data >> shift) << shift; }
     csum = csum.wrapping_add(data);
-    carry = carry.wrapping_add((csum < data) as libc::c_ulong);
+    carry = carry.wrapping_add((csum < data) as kernel::ffi::c_ulong);
     csum = csum.wrapping_add(carry);
-    csum.wrapping_add((csum < carry) as libc::c_ulong)
+    csum.wrapping_add((csum < carry) as kernel::ffi::c_ulong)
 }
 
 #[inline]
 unsafe fn do_csum_with_alignment(buff: *const u8, len: i32) -> u32 {
     let offset = (buff as usize) & OFFSET_MASK;
     kasan_check_read(buff, len);
-    let mut ptr = (buff.sub(offset)) as *const libc::c_ulong;
+    let mut ptr = (buff.sub(offset)) as *const kernel::ffi::c_ulong;
     let shift = (offset * 8) as u32;
     let mut data = *ptr;
     ptr = ptr.add(1);
@@ -75,7 +75,7 @@ unsafe fn do_csum_with_alignment(buff: *const u8, len: i32) -> u32 {
     { data = (data >> shift) << shift; }
     #[cfg(target_endian = "big")]
     { data = (data << shift) >> shift; }
-    let end = buff.add(len as usize) as *const libc::c_ulong;
+    let end = buff.add(len as usize) as *const kernel::ffi::c_ulong;
     let mut csum = do_csum_common(ptr, end, data);
     #[cfg(not(CONFIG_32BIT))]
     { csum = csum.wrapping_add(csum.rotate_right(32)); csum >>= 32; }
@@ -85,11 +85,11 @@ unsafe fn do_csum_with_alignment(buff: *const u8, len: i32) -> u32 {
 
 #[inline]
 unsafe fn do_csum_no_alignment(buff: *const u8, len: i32) -> u32 {
-    let mut ptr = buff as *const libc::c_ulong;
+    let mut ptr = buff as *const kernel::ffi::c_ulong;
     let data = *ptr;
     ptr = ptr.add(1);
     kasan_check_read(buff, len);
-    let end = buff.add(len as usize) as *const libc::c_ulong;
+    let end = buff.add(len as usize) as *const kernel::ffi::c_ulong;
     let mut csum = do_csum_common(ptr, end, data);
     #[cfg(not(CONFIG_32BIT))]
     { csum = csum.wrapping_add(csum.rotate_right(32)); csum >>= 32; }

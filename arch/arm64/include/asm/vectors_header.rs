@@ -5,7 +5,7 @@
 
 // C dependencies: <linux/bug.h>, <linux/percpu.h>, and <asm/fixmap.h>.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     pub static mut vectors: [c_char; 0];

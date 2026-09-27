@@ -125,34 +125,34 @@ pub struct lp8788_chg_param { pub addr: u8, pub val: u8 }
 
 #[repr(C)]
 pub struct lp8788_charger_platform_data {
-    pub adc_vbatt: *const core::ffi::c_char,
-    pub adc_batt_temp: *const core::ffi::c_char,
-    pub max_vbatt_mv: core::ffi::c_uint,
+    pub adc_vbatt: *const kernel::ffi::c_char,
+    pub adc_batt_temp: *const kernel::ffi::c_char,
+    pub max_vbatt_mv: kernel::ffi::c_uint,
     pub chg_params: *mut lp8788_chg_param,
-    pub num_chg_params: core::ffi::c_int,
+    pub num_chg_params: kernel::ffi::c_int,
     pub charger_event: Option<unsafe extern "C" fn(*mut lp8788, lp8788_charger_event)>,
 }
 
 #[repr(C)]
 pub struct lp8788_led_platform_data {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub scale: lp8788_isink_scale,
     pub num: lp8788_isink_number,
-    pub iout_code: core::ffi::c_int,
+    pub iout_code: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct lp8788_vib_platform_data {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub scale: lp8788_isink_scale,
     pub num: lp8788_isink_number,
-    pub iout_code: core::ffi::c_int,
-    pub pwm_code: core::ffi::c_int,
+    pub iout_code: kernel::ffi::c_int,
+    pub pwm_code: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct lp8788_platform_data {
-    pub init_func: Option<unsafe extern "C" fn(*mut lp8788) -> core::ffi::c_int>,
+    pub init_func: Option<unsafe extern "C" fn(*mut lp8788) -> kernel::ffi::c_int>,
     pub buck_data: [*mut regulator_init_data; LP8788_NUM_BUCKS],
     pub dldo_data: [*mut regulator_init_data; LP8788_NUM_DLDOS],
     pub aldo_data: [*mut regulator_init_data; LP8788_NUM_ALDOS],
@@ -170,17 +170,17 @@ pub struct lp8788 {
     pub dev: *mut device,
     pub regmap: *mut regmap,
     pub irqdm: *mut irq_domain,
-    pub irq: core::ffi::c_int,
+    pub irq: kernel::ffi::c_int,
     pub pdata: *mut lp8788_platform_data,
 }
 
 extern "C" {
-    pub fn lp8788_irq_init(lp: *mut lp8788, chip_irq: core::ffi::c_int) -> core::ffi::c_int;
+    pub fn lp8788_irq_init(lp: *mut lp8788, chip_irq: kernel::ffi::c_int) -> kernel::ffi::c_int;
     pub fn lp8788_irq_exit(lp: *mut lp8788);
-    pub fn lp8788_read_byte(lp: *mut lp8788, reg: u8, data: *mut u8) -> core::ffi::c_int;
-    pub fn lp8788_read_multi_bytes(lp: *mut lp8788, reg: u8, data: *mut u8, count: usize) -> core::ffi::c_int;
-    pub fn lp8788_write_byte(lp: *mut lp8788, reg: u8, data: u8) -> core::ffi::c_int;
-    pub fn lp8788_update_bits(lp: *mut lp8788, reg: u8, mask: u8, data: u8) -> core::ffi::c_int;
+    pub fn lp8788_read_byte(lp: *mut lp8788, reg: u8, data: *mut u8) -> kernel::ffi::c_int;
+    pub fn lp8788_read_multi_bytes(lp: *mut lp8788, reg: u8, data: *mut u8, count: usize) -> kernel::ffi::c_int;
+    pub fn lp8788_write_byte(lp: *mut lp8788, reg: u8, data: u8) -> kernel::ffi::c_int;
+    pub fn lp8788_update_bits(lp: *mut lp8788, reg: u8, mask: u8, data: u8) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -23,11 +23,11 @@ pub const FAULT_CODE_USER: u32 = 1 << 4; /* user-mode access */
 #[repr(C)]
 pub struct thread_info {
     pub task: *mut task_struct, /* main task structure */
-    pub flags: libc::c_ulong, /* low level flags */
+    pub flags: kernel::ffi::c_ulong, /* low level flags */
     pub status: u32, /* thread synchronous flags */
     pub cpu: u32,
-    pub preempt_count: libc::c_int, /* 0 => preemptable, <0 => BUG */
-    pub previous_sp: libc::c_ulong, /* sp of previous stack in case of nested IRQ stacks */
+    pub preempt_count: kernel::ffi::c_int, /* 0 => preemptable, <0 => BUG */
+    pub previous_sp: kernel::ffi::c_ulong, /* sp of previous stack in case of nested IRQ stacks */
     pub supervisor_stack: [u8; 0],
 }
 
@@ -58,7 +58,7 @@ pub const fn init_thread_info(tsk: *mut task_struct) -> thread_info {
 
 /* Dependency supplied by the surrounding translation unit. */
 extern "C" {
-    pub static mut current_stack_pointer: libc::c_ulong;
+    pub static mut current_stack_pointer: kernel::ffi::c_ulong;
     pub fn init_thread_xstate();
 }
 
@@ -120,7 +120,7 @@ pub const TI_FLAG_FAULT_CODE_SHIFT: u32 = 24;
 pub unsafe fn set_thread_fault_code(val: u32) {
     let ti = current_thread_info();
     (*ti).flags = ((*ti).flags & (!0usize >> (32 - TI_FLAG_FAULT_CODE_SHIFT)))
-        | ((val as libc::c_ulong) << TI_FLAG_FAULT_CODE_SHIFT);
+        | ((val as kernel::ffi::c_ulong) << TI_FLAG_FAULT_CODE_SHIFT);
 }
 
 #[inline]

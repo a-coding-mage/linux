@@ -21,7 +21,7 @@
 //     TP_printk("level=%s", __get_str(level))
 // );
 trace_event!(initcall_level {
-    proto: unsafe extern "C" fn(level: *const core::ffi::c_char),
+    proto: unsafe extern "C" fn(level: *const kernel::ffi::c_char),
     args: (level),
     entry: {
         string level;
@@ -85,11 +85,11 @@ trace_event!(initcall_start {
 //     TP_printk("func=%pS ret=%d", __entry->func, __entry->ret)
 // );
 trace_event!(initcall_finish {
-    proto: unsafe extern "C" fn(func: initcall_t, ret: core::ffi::c_int),
+    proto: unsafe extern "C" fn(func: initcall_t, ret: kernel::ffi::c_int),
     args: (func, ret),
     entry: {
         field_struct initcall_t func;
-        field core::ffi::c_int ret;
+        field kernel::ffi::c_int ret;
     },
     assign: {
         entry.func = func;

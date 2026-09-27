@@ -7,25 +7,25 @@
 #![allow(dead_code)]
 #![allow(improper_ctypes)]
 
-use core::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
 use core::mem::size_of;
 use core::ptr;
 
-type u8 = core::ffi::c_uchar;
+type u8 = kernel::ffi::c_uchar;
 type u32 = c_uint;
-type u64 = core::ffi::c_ulonglong;
-type s64 = core::ffi::c_longlong;
+type u64 = kernel::ffi::c_ulonglong;
+type s64 = kernel::ffi::c_longlong;
 type bool_ = bool;
 type snd_pcm_format_t = c_int;
 type irqreturn_t = c_int;
-type dma_addr_t = core::ffi::c_ulonglong;
+type dma_addr_t = kernel::ffi::c_ulonglong;
 
 // Includes translated as external dependencies from Linux, ALSA SoC, fsl_easrc.h and imx-pcm.h.
 
 #[repr(C)] pub struct snd_kcontrol { pub private_value: c_ulong }
 #[repr(C)] pub struct snd_ctl_elem_value { pub value: snd_ctl_elem_value_union }
 #[repr(C)] pub union snd_ctl_elem_value_union { pub integer: snd_ctl_elem_value_integer, pub iec958: snd_ctl_elem_value_iec958 }
-#[repr(C)] #[derive(Copy, Clone)] pub struct snd_ctl_elem_value_integer { pub value: [core::ffi::c_long; 128] }
+#[repr(C)] #[derive(Copy, Clone)] pub struct snd_ctl_elem_value_integer { pub value: [kernel::ffi::c_long; 128] }
 #[repr(C)] #[derive(Copy, Clone)] pub struct snd_ctl_elem_value_iec958 { pub status: [u8; 24] }
 #[repr(C)] pub struct snd_ctl_elem_info { pub type_: c_uint, pub count: c_uint }
 #[repr(C)] pub struct snd_soc_component { pub dev: *mut device }
@@ -210,7 +210,7 @@ unsafe extern "C" fn fsl_easrc_iec958_get_bits(kcontrol: *mut snd_kcontrol, ucon
     let easrc = snd_soc_component_get_drvdata(comp);
     let easrc_priv = (*easrc).private as *mut fsl_easrc_priv;
     let mc = (*kcontrol).private_value as *mut soc_mreg_control;
-    (*ucontrol).value.integer.value[0] = (*easrc_priv).bps_iec958[(*mc).regbase as usize] as core::ffi::c_long;
+    (*ucontrol).value.integer.value[0] = (*easrc_priv).bps_iec958[(*mc).regbase as usize] as kernel::ffi::c_long;
     0
 }
 

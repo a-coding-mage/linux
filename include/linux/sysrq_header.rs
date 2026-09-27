@@ -28,8 +28,8 @@ pub const SYSRQ_ENABLE_RTNICE: i32 = 0x0100;
 #[repr(C)]
 pub struct sysrq_key_op {
     pub handler: Option<unsafe extern "C" fn(u8)>,
-    pub help_msg: *const core::ffi::c_char,
-    pub action_msg: *const core::ffi::c_char,
+    pub help_msg: *const kernel::ffi::c_char,
+    pub action_msg: *const kernel::ffi::c_char,
     pub enable_mask: i32,
 }
 

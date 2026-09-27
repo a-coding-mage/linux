@@ -24,7 +24,7 @@ pub struct seg6_hmac_info {
 
     pub hmackeyid: u32,
     /* The raw key, kept only so it can be returned back to userspace */
-    pub secret: [core::ffi::c_char; SEG6_HMAC_SECRET_LEN],
+    pub secret: [kernel::ffi::c_char; SEG6_HMAC_SECRET_LEN],
     pub slen: u8,
     pub alg_id: u8,
     /* The prepared key, which the calculations actually use */

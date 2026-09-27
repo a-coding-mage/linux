@@ -22,12 +22,12 @@ pub struct soc_device {
 
 #[repr(C)]
 pub struct soc_device_attribute {
-    pub machine: *const core::ffi::c_char,
-    pub family: *const core::ffi::c_char,
-    pub revision: *const core::ffi::c_char,
-    pub serial_number: *const core::ffi::c_char,
-    pub soc_id: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub machine: *const kernel::ffi::c_char,
+    pub family: *const kernel::ffi::c_char,
+    pub revision: *const kernel::ffi::c_char,
+    pub serial_number: *const kernel::ffi::c_char,
+    pub soc_id: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
     pub custom_attr_group: *const attribute_group,
 }
 
@@ -59,7 +59,7 @@ extern "C" {
     ///
     /// Returns:
     /// 0 on success, negative error number on failure.
-    pub fn soc_attr_read_machine(soc_dev_attr: *mut soc_device_attribute) -> core::ffi::c_int;
+    pub fn soc_attr_read_machine(soc_dev_attr: *mut soc_device_attribute) -> kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_SOC_BUS)]

@@ -12,7 +12,7 @@
  * the cpu specific initialisation code.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* External device objects supplied by the platform support code. */
 extern "C" {

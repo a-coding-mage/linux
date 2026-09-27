@@ -46,7 +46,7 @@ const _COMPLETE_SOURCE_LEVEL_TRANSLATION: &str = r###"
 #include <asm/traps.h>
 #include <asm/vdso.h>
 
-#define GCS_SIGNAL_CAP(addr) (((core::ffi::c_ulong)addr) & GCS_CAP_ADDR_MASK)
+#define GCS_SIGNAL_CAP(addr) (((kernel::ffi::c_ulong)addr) & GCS_CAP_ADDR_MASK)
 
 /*
  * Do a signal return; undo the signal stack. These are aligned to 128-bit.
@@ -60,20 +60,20 @@ struct rt_sigframe_user_layout {
 	struct rt_sigframe __user *sigframe;
 	struct frame_record __user *next_frame;
 
-	core::ffi::c_ulong size;	/* size of allocated sigframe data */
-	core::ffi::c_ulong limit;	/* largest allowed size */
+	kernel::ffi::c_ulong size;	/* size of allocated sigframe data */
+	kernel::ffi::c_ulong limit;	/* largest allowed size */
 
-	core::ffi::c_ulong fpsimd_offset;
-	core::ffi::c_ulong esr_offset;
-	core::ffi::c_ulong gcs_offset;
-	core::ffi::c_ulong sve_offset;
-	core::ffi::c_ulong tpidr2_offset;
-	core::ffi::c_ulong za_offset;
-	core::ffi::c_ulong zt_offset;
-	core::ffi::c_ulong fpmr_offset;
-	core::ffi::c_ulong poe_offset;
-	core::ffi::c_ulong extra_offset;
-	core::ffi::c_ulong end_offset;
+	kernel::ffi::c_ulong fpsimd_offset;
+	kernel::ffi::c_ulong esr_offset;
+	kernel::ffi::c_ulong gcs_offset;
+	kernel::ffi::c_ulong sve_offset;
+	kernel::ffi::c_ulong tpidr2_offset;
+	kernel::ffi::c_ulong za_offset;
+	kernel::ffi::c_ulong zt_offset;
+	kernel::ffi::c_ulong fpmr_offset;
+	kernel::ffi::c_ulong poe_offset;
+	kernel::ffi::c_ulong extra_offset;
+	kernel::ffi::c_ulong end_offset;
 };
 
 #define TERMINATOR_SIZE round_up(sizeof(_aarch64_ctx), 16)
@@ -92,7 +92,7 @@ struct rt_sigframe_user_layout {
  * (have been set to some value).
  */
 struct user_access_state {
-	core::ffi::c_uint __valid_fields;
+	kernel::ffi::c_uint __valid_fields;
 	u64 __por_el0;
 };
 
@@ -191,7 +191,7 @@ static size_t sigframe_size(rt_sigframe_user_layout const *user)
 #define SIGFRAME_MAXSZ SZ_256K
 
 static int __sigframe_alloc(rt_sigframe_user_layout *user,
-			    core::ffi::c_ulong *offset, size_t size, extend: bool)
+			    kernel::ffi::c_ulong *offset, size_t size, extend: bool)
 {
 	size_t padded_size = round_up(size, 16);
 
@@ -234,7 +234,7 @@ static int __sigframe_alloc(rt_sigframe_user_layout *user,
  * allocated block is assigned to *offset.
  */
 static int sigframe_alloc(rt_sigframe_user_layout *user,
-			  core::ffi::c_ulong *offset, size_t size)
+			  kernel::ffi::c_ulong *offset, size_t size)
 {
 	return __sigframe_alloc(user, offset, size, true);
 }
@@ -258,7 +258,7 @@ static int sigframe_alloc_end(rt_sigframe_user_layout *user)
 }
 
 static void __user *apply_user_offset(
-	rt_sigframe_user_layout const *user, offset: core::ffi::c_ulong)
+	rt_sigframe_user_layout const *user, offset: kernel::ffi::c_ulong)
 {
 	char __user *base = (char __user *)user->sigframe;
 
@@ -406,8 +406,8 @@ static int preserve_sve_context(sve_context __user *ctx)
 	int err = 0;
 	u16 reserved[ARRAY_SIZE(ctx->__reserved)];
 	u16 flags = 0;
-	core::ffi::c_uint vl = task_get_sve_vl(current);
-	core::ffi::c_uint vq = 0;
+	kernel::ffi::c_uint vl = task_get_sve_vl(current);
+	kernel::ffi::c_uint vq = 0;
 
 	if (thread_sm_enabled(&current->thread)) {
 		vl = task_get_sme_vl(current);
@@ -439,7 +439,7 @@ static int preserve_sve_context(sve_context __user *ctx)
 static int restore_sve_fpsimd_context(user_ctxs *user)
 {
 	int err = 0;
-	vl: core::ffi::c_uint, vq;
+	vl: kernel::ffi::c_uint, vq;
 	struct user_fpsimd_state fpsimd;
 	user_vl: u16, flags;
 	bool sm;
@@ -575,8 +575,8 @@ static int preserve_za_context(za_context __user *ctx)
 {
 	int err = 0;
 	u16 reserved[ARRAY_SIZE(ctx->__reserved)];
-	core::ffi::c_uint vl = task_get_sme_vl(current);
-	core::ffi::c_uint vq;
+	kernel::ffi::c_uint vl = task_get_sme_vl(current);
+	kernel::ffi::c_uint vq;
 
 	if (thread_za_enabled(&current->thread))
 		vq = sve_vq_from_vl(vl);
@@ -604,7 +604,7 @@ static int preserve_za_context(za_context __user *ctx)
 static int restore_za_context(user_ctxs *user)
 {
 	int err = 0;
-	core::ffi::c_uint vq;
+	kernel::ffi::c_uint vq;
 	u16 user_vl;
 
 	if (user->za_size < sizeof(*user->za))
@@ -811,7 +811,7 @@ static int parse_user_sigframe(user_ctxs *user,
 	user->poe = NULL;
 	user->gcs = NULL;
 
-	if (!IS_ALIGNED((core::ffi::c_ulong)base, 16))
+	if (!IS_ALIGNED((kernel::ffi::c_ulong)base, 16))
 		goto invalid;
 
 	while (1) {
@@ -974,7 +974,7 @@ static int parse_user_sigframe(user_ctxs *user,
 			have_extra_context = true;
 
 			base = (__force void __user *)extra_datap;
-			if (!IS_ALIGNED((core::ffi::c_ulong)base, 16))
+			if (!IS_ALIGNED((kernel::ffi::c_ulong)base, 16))
 				goto invalid;
 
 			if (!IS_ALIGNED(extra_size, 16))
@@ -1107,7 +1107,7 @@ static int gcs_restore_signal(void)
 	 * then faults will be generated on GCS operations - the main
 	 * concern is to protect GCS pages.
 	 */
-	ret = copy_from_user(&cap, (core::ffi::c_ulong __user *)gcspr_el0,
+	ret = copy_from_user(&cap, (kernel::ffi::c_ulong __user *)gcspr_el0,
 			     sizeof(cap));
 	if (ret)
 		return -EFAULT;
@@ -1119,7 +1119,7 @@ static int gcs_restore_signal(void)
 		return -EINVAL;
 
 	/* Invalidate the token to prevent reuse */
-	put_user_gcs(0, (core::ffi::c_ulong __user *)gcspr_el0, &ret);
+	put_user_gcs(0, (kernel::ffi::c_ulong __user *)gcspr_el0, &ret);
 	if (ret != 0)
 		return -EFAULT;
 
@@ -1208,7 +1208,7 @@ static int setup_sigframe_layout(rt_sigframe_user_layout *user,
 #endif
 
 	if (system_supports_sve() || system_supports_sme()) {
-		core::ffi::c_uint vq = 0;
+		kernel::ffi::c_uint vq = 0;
 
 		if (add_all || current->thread.fp_type == FP_STATE_SVE ||
 		    thread_sm_enabled(&current->thread)) {
@@ -1234,8 +1234,8 @@ static int setup_sigframe_layout(rt_sigframe_user_layout *user,
 	}
 
 	if (system_supports_sme()) {
-		core::ffi::c_uint vl;
-		core::ffi::c_uint vq = 0;
+		kernel::ffi::c_uint vl;
+		kernel::ffi::c_uint vq = 0;
 
 		if (add_all)
 			vl = sme_max_vl();
@@ -1413,7 +1413,7 @@ static int setup_sigframe(rt_sigframe_user_layout *user,
 static int get_sigframe(rt_sigframe_user_layout *user,
 			 ksignal *ksig, pt_regs *regs)
 {
-	sp: core::ffi::c_ulong, sp_top;
+	sp: kernel::ffi::c_ulong, sp_top;
 	int err;
 
 	init_user_layout(user);
@@ -1460,10 +1460,10 @@ static int gcs_signal_entry(__sigrestore_t sigtramp, ksignal *ksig)
 	/*
 	 * Push a cap and the GCS entry for the trampoline onto the GCS.
 	 */
-	put_user_gcs((core::ffi::c_ulong)sigtramp,
-		     (core::ffi::c_ulong __user *)(gcspr_el0 - 16), &ret);
+	put_user_gcs((kernel::ffi::c_ulong)sigtramp,
+		     (kernel::ffi::c_ulong __user *)(gcspr_el0 - 16), &ret);
 	put_user_gcs(GCS_SIGNAL_CAP(gcspr_el0 - 8),
-		     (core::ffi::c_ulong __user *)(gcspr_el0 - 8), &ret);
+		     (kernel::ffi::c_ulong __user *)(gcspr_el0 - 8), &ret);
 	if (ret != 0)
 		return ret;
 
@@ -1506,13 +1506,13 @@ static int setup_return(pt_regs *regs, ksignal *ksig,
 
 	regs->regs[0] = usig;
 	if (ksig->ka.sa.sa_flags & SA_SIGINFO) {
-		regs->regs[1] = (core::ffi::c_ulong)&user->sigframe->info;
-		regs->regs[2] = (core::ffi::c_ulong)&user->sigframe->uc;
+		regs->regs[1] = (kernel::ffi::c_ulong)&user->sigframe->info;
+		regs->regs[2] = (kernel::ffi::c_ulong)&user->sigframe->uc;
 	}
-	regs->sp = (core::ffi::c_ulong)user->sigframe;
-	regs->regs[29] = (core::ffi::c_ulong)&user->next_frame->fp;
-	regs->regs[30] = (core::ffi::c_ulong)sigtramp;
-	regs->pc = (core::ffi::c_ulong)ksig->ka.sa.sa_handler;
+	regs->sp = (kernel::ffi::c_ulong)user->sigframe;
+	regs->regs[29] = (kernel::ffi::c_ulong)&user->next_frame->fp;
+	regs->regs[30] = (kernel::ffi::c_ulong)sigtramp;
+	regs->pc = (kernel::ffi::c_ulong)ksig->ka.sa.sa_handler;
 
 	/*
 	 * Signal delivery is a (wacky) indirect function call in
@@ -1634,7 +1634,7 @@ static void handle_signal(ksignal *ksig, pt_regs *regs)
  */
 void arch_do_signal_or_restart(pt_regs *regs)
 {
-	core::ffi::c_ulong continue_addr = 0, restart_addr = 0;
+	kernel::ffi::c_ulong continue_addr = 0, restart_addr = 0;
 	int retval = 0;
 	struct ksignal ksig;
 	bool syscall = in_syscall(regs);
@@ -1703,7 +1703,7 @@ void arch_do_signal_or_restart(pt_regs *regs)
 	restore_saved_sigmask();
 }
 
-core::ffi::c_ulong __ro_after_init signal_minsigstksz;
+kernel::ffi::c_ulong __ro_after_init signal_minsigstksz;
 
 /*
  * Determine the stack space required for guaranteed signal devliery.
@@ -1771,7 +1771,7 @@ static_assert(offsetof(siginfo_t, si_arch)	== 0x1c);
 "###;
 #![allow(non_camel_case_types, non_snake_case, dead_code, unused_variables)]
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub const GCS_SIGNAL_CAP_MASK: usize = 0xffff_ffff_ffff_ffff;
 #[inline]

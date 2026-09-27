@@ -50,7 +50,7 @@ static uuid_t *
 xfs_uuid_search(
 	uuid_t		*new_uuid)
 {
-	core::ffi::c_ulong	index = 0;
+	kernel::ffi::c_ulong	index = 0;
 	uuid_t		*uuid;
 
 	xa_for_each!(&xfs_uuid_table, index, uuid, {
@@ -63,7 +63,7 @@ xfs_uuid_search(
 static void
 xfs_uuid_delete(
 	uuid_t		*uuid,
-	index: core::ffi::c_uint)
+	index: kernel::ffi::c_uint)
 {
 	ASSERT(uuid_equal(xa_load(&xfs_uuid_table, index), uuid));
 	xa_erase(&xfs_uuid_table, index);
@@ -159,7 +159,7 @@ xfs_readsb(
 	int		flags)
 {
 	'release_buf: {
-	core::ffi::c_uint	sector_size;
+	kernel::ffi::c_uint	sector_size;
 	struct xfs_buf	*bp;
 	struct xfs_sb	*sbp = (*&mp).m_sb;
 	int		error;
@@ -665,7 +665,7 @@ fn void
 xfs_agbtree_compute_maxlevels(
 	xfs_mount	*mp)
 {
-	core::ffi::c_uint		levels;
+	kernel::ffi::c_uint		levels;
 
 	levels = max((*mp).m_alloc_maxlevels, (*M_IGEO(mp)).inobt_maxlevels);
 	levels = max(levels, (*mp).m_rmap_maxlevels);
@@ -730,7 +730,7 @@ xfs_calc_atomic_write_unit_max(
 int
 xfs_set_max_atomic_write_opt(
 	xfs_mount	*mp,
-	new_max_bytes: core::ffi::c_ulonglong)
+	new_max_bytes: kernel::ffi::c_ulonglong)
 {
 	'set_limit: {
 	const xfs_filblks_t	new_max_fsbs = XFS_B_TO_FSBT(mp, new_max_bytes);
@@ -1103,7 +1103,7 @@ xfs_mountfs(
 
 	if (XFS_IS_CORRUPT(mp, !S_ISDIR((*VFS_I(rip)).i_mode))) {
 		xfs_warn(mp, "corrupted root inode %llu: not a directory",
-			(core::ffi::c_ulonglong)I_INO(rip));
+			(kernel::ffi::c_ulonglong)I_INO(rip));
 		xfs_iunlock(rip, XFS_ILOCK_EXCL);
 		error = -EFSCORRUPTED;
 		break 'out_rele_rip;

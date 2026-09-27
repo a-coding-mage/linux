@@ -17,7 +17,7 @@ const fn div_mask(width: u32) -> u32 {
 #[repr(C)]
 pub struct hi6220_clk_divider {
     pub hw: clk_hw,
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub shift: u8,
     pub width: u8,
     pub mask: u32,
@@ -33,8 +33,8 @@ unsafe fn to_hi6220_clk_divider(hw: *mut clk_hw) -> *mut hi6220_clk_divider {
 
 unsafe fn hi6220_clkdiv_recalc_rate(
     hw: *mut clk_hw,
-    parent_rate: libc::c_ulong,
-) -> libc::c_ulong {
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     let dclk = &*to_hi6220_clk_divider(hw);
     let mut val: u32 = readl_relaxed(dclk.reg) >> dclk.shift;
     val &= div_mask(dclk.width as u32);
@@ -52,7 +52,7 @@ unsafe fn hi6220_clkdiv_recalc_rate(
 unsafe fn hi6220_clkdiv_determine_rate(
     hw: *mut clk_hw,
     req: *mut clk_rate_request,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let dclk = &*to_hi6220_clk_divider(hw);
 
     divider_determine_rate(
@@ -66,9 +66,9 @@ unsafe fn hi6220_clkdiv_determine_rate(
 
 unsafe fn hi6220_clkdiv_set_rate(
     hw: *mut clk_hw,
-    rate: libc::c_ulong,
-    parent_rate: libc::c_ulong,
-) -> libc::c_int {
+    rate: kernel::ffi::c_ulong,
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let dclk = &*to_hi6220_clk_divider(hw);
     let value = divider_get_val(
         rate,
@@ -77,7 +77,7 @@ unsafe fn hi6220_clkdiv_set_rate(
         dclk.width,
         CLK_DIVIDER_ROUND_CLOSEST,
     );
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     if !dclk.lock.is_null() {
         spin_lock_irqsave(dclk.lock, &mut flags);
@@ -99,9 +99,9 @@ unsafe fn hi6220_clkdiv_set_rate(
 
 #[repr(C)]
 pub struct clk_ops {
-    pub recalc_rate: Option<unsafe fn(*mut clk_hw, libc::c_ulong) -> libc::c_ulong>,
-    pub determine_rate: Option<unsafe fn(*mut clk_hw, *mut clk_rate_request) -> libc::c_int>,
-    pub set_rate: Option<unsafe fn(*mut clk_hw, libc::c_ulong, libc::c_ulong) -> libc::c_int>,
+    pub recalc_rate: Option<unsafe fn(*mut clk_hw, kernel::ffi::c_ulong) -> kernel::ffi::c_ulong>,
+    pub determine_rate: Option<unsafe fn(*mut clk_hw, *mut clk_rate_request) -> kernel::ffi::c_int>,
+    pub set_rate: Option<unsafe fn(*mut clk_hw, kernel::ffi::c_ulong, kernel::ffi::c_ulong) -> kernel::ffi::c_int>,
 }
 
 static HI6220_CLKDIV_OPS: clk_ops = clk_ops {
@@ -112,10 +112,10 @@ static HI6220_CLKDIV_OPS: clk_ops = clk_ops {
 
 pub unsafe fn hi6220_register_clkdiv(
     dev: *mut device,
-    name: *const libc::c_char,
-    parent_name: *const libc::c_char,
-    flags: libc::c_ulong,
-    reg: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
+    flags: kernel::ffi::c_ulong,
+    reg: *mut kernel::ffi::c_void,
     shift: u8,
     width: u8,
     mask_bit: u32,
@@ -152,7 +152,7 @@ pub unsafe fn hi6220_register_clkdiv(
 
     let clk = clk_register(dev, &mut (*div).hw);
     if IS_ERR(clk) {
-        kfree(div as *mut core::ffi::c_void);
+        kfree(div as *mut kernel::ffi::c_void);
     }
 
     clk

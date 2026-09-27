@@ -37,23 +37,23 @@ extern "C" {
         mem: *mut cper_sec_mem_err,
         err_seq: u32,
         fru_id: *const guid_t,
-        fru_text: *const core::ffi::c_char,
+        fru_text: *const kernel::ffi::c_char,
         sev: u8,
     );
 
     pub fn mc_event(
-        err_type: core::ffi::c_uint,
-        error_msg: *const core::ffi::c_char,
-        label: *const core::ffi::c_char,
-        error_count: core::ffi::c_int,
+        err_type: kernel::ffi::c_uint,
+        error_msg: *const kernel::ffi::c_char,
+        label: *const kernel::ffi::c_char,
+        error_count: kernel::ffi::c_int,
         mc_index: u8,
         top_layer: i8,
         mid_layer: i8,
         low_layer: i8,
-        address: core::ffi::c_ulong,
+        address: kernel::ffi::c_ulong,
         grain_bits: u8,
-        syndrome: core::ffi::c_ulong,
-        driver_detail: *const core::ffi::c_char,
+        syndrome: kernel::ffi::c_ulong,
+        driver_detail: *const kernel::ffi::c_char,
     );
 
     pub fn arm_event(
@@ -65,13 +65,13 @@ extern "C" {
         oem: *const u8,
         oem_len: u32,
         sev: u8,
-        cpu: core::ffi::c_int,
+        cpu: kernel::ffi::c_int,
     );
 
     pub fn non_standard_event(
         sec_type: *const guid_t,
         fru_id: *const guid_t,
-        fru_text: *const core::ffi::c_char,
+        fru_text: *const kernel::ffi::c_char,
         sev: u8,
         err: *const u8,
         len: u32,
@@ -79,12 +79,12 @@ extern "C" {
 
     #[cfg(CONFIG_PCIEAER)]
     pub fn aer_event(
-        dev_name: *const core::ffi::c_char,
+        dev_name: *const kernel::ffi::c_char,
         status: u32,
         severity: u8,
         tlp_header_valid: u8,
         tlp: *mut pcie_tlp_log,
-        bus_type: *const core::ffi::c_char,
+        bus_type: *const kernel::ffi::c_char,
     );
 }
 

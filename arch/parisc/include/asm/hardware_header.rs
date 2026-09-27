@@ -2,10 +2,10 @@
 
 // Dependency supplied by <linux/device-id/parisc.h>.
 
-pub const HWTYPE_ANY_ID: _ = PA_HWTYPE_ANY_ID;
-pub const HVERSION_ANY_ID: _ = PA_HVERSION_ANY_ID;
-pub const HVERSION_REV_ANY_ID: _ = PA_HVERSION_REV_ANY_ID;
-pub const SVERSION_ANY_ID: _ = PA_SVERSION_ANY_ID;
+pub const HWTYPE_ANY_ID: u8 = PA_HWTYPE_ANY_ID;
+pub const HVERSION_ANY_ID: u16 = PA_HVERSION_ANY_ID;
+pub const HVERSION_REV_ANY_ID: u8 = PA_HVERSION_REV_ANY_ID;
+pub const SVERSION_ANY_ID: u32 = PA_SVERSION_ANY_ID;
 
 #[repr(C, packed)]
 pub struct hp_hardware {
@@ -35,7 +35,7 @@ pub enum cpu_type {
 }
 
 unsafe extern "C" {
-    pub static cpu_name_version: [[*const core::ffi::c_char; 2]; 13]; /* mapping from enum cpu_type to strings */
+    pub static cpu_name_version: [[*const kernel::ffi::c_char; 2]; 13]; /* mapping from enum cpu_type to strings */
 }
 
 pub struct parisc_driver;
@@ -104,23 +104,23 @@ pub struct hardware_path;
 pub struct device;
 
 unsafe extern "C" {
-    pub fn parisc_hardware_description(id: *mut parisc_device_id) -> *const core::ffi::c_char;
-    pub fn parisc_get_cpu_type(hversion: core::ffi::c_ulong) -> cpu_type;
-    pub fn alloc_pa_dev(hpa: core::ffi::c_ulong, path: *mut hardware_path) -> *mut parisc_device;
-    pub fn register_parisc_device(dev: *mut parisc_device) -> core::ffi::c_int;
-    pub fn register_parisc_driver(driver: *mut parisc_driver) -> core::ffi::c_int;
-    pub fn count_parisc_driver(driver: *mut parisc_driver) -> core::ffi::c_int;
-    pub fn unregister_parisc_driver(driver: *mut parisc_driver) -> core::ffi::c_int;
+    pub fn parisc_hardware_description(id: *mut parisc_device_id) -> *const kernel::ffi::c_char;
+    pub fn parisc_get_cpu_type(hversion: kernel::ffi::c_ulong) -> cpu_type;
+    pub fn alloc_pa_dev(hpa: kernel::ffi::c_ulong, path: *mut hardware_path) -> *mut parisc_device;
+    pub fn register_parisc_device(dev: *mut parisc_device) -> kernel::ffi::c_int;
+    pub fn register_parisc_driver(driver: *mut parisc_driver) -> kernel::ffi::c_int;
+    pub fn count_parisc_driver(driver: *mut parisc_driver) -> kernel::ffi::c_int;
+    pub fn unregister_parisc_driver(driver: *mut parisc_driver) -> kernel::ffi::c_int;
     pub fn walk_central_bus();
-    pub fn find_pa_parent_type(dev: *const parisc_device, ty: core::ffi::c_int) -> *const parisc_device;
+    pub fn find_pa_parent_type(dev: *const parisc_device, ty: kernel::ffi::c_int) -> *const parisc_device;
     pub fn print_parisc_devices();
-    pub fn print_pa_hwpath(dev: *mut parisc_device, path: *mut core::ffi::c_char) -> *mut core::ffi::c_char;
-    pub fn print_pci_hwpath(dev: *mut pci_dev, path: *mut core::ffi::c_char) -> *mut core::ffi::c_char;
+    pub fn print_pa_hwpath(dev: *mut parisc_device, path: *mut kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    pub fn print_pci_hwpath(dev: *mut pci_dev, path: *mut kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
     pub fn get_pci_node_path(dev: *mut pci_dev, path: *mut hardware_path);
     pub fn init_parisc_bus();
     pub fn hwpath_to_device(modpath: *mut hardware_path) -> *mut device;
     pub fn device_to_hwpath(dev: *mut device, path: *mut hardware_path);
-    pub fn machine_has_merced_bus() -> core::ffi::c_int;
+    pub fn machine_has_merced_bus() -> kernel::ffi::c_int;
     pub fn do_memory_inventory();
     pub fn do_device_inventory();
 }

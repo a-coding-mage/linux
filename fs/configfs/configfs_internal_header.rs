@@ -26,48 +26,48 @@ extern "C" {
 #[repr(C)]
 pub struct configfs_dirent {
     pub s_count: atomic_t,
-    pub s_dependent_count: core::ffi::c_int,
+    pub s_dependent_count: kernel::ffi::c_int,
     pub s_sibling: list_head,
     pub s_children: list_head,
-    pub s_links: core::ffi::c_int,
-    pub s_element: *mut core::ffi::c_void,
-    pub s_type: core::ffi::c_int,
+    pub s_links: kernel::ffi::c_int,
+    pub s_element: *mut kernel::ffi::c_void,
+    pub s_type: kernel::ffi::c_int,
     pub s_mode: umode_t,
     pub s_dentry: *mut dentry,
     pub s_iattr: *mut iattr,
     // Present when CONFIG_LOCKDEP is enabled.
     #[cfg(CONFIG_LOCKDEP)]
-    pub s_depth: core::ffi::c_int,
+    pub s_depth: kernel::ffi::c_int,
     pub s_frag: *mut configfs_fragment,
 }
 
-pub const CONFIGFS_ROOT: core::ffi::c_int = 0x0001;
-pub const CONFIGFS_DIR: core::ffi::c_int = 0x0002;
-pub const CONFIGFS_ITEM_ATTR: core::ffi::c_int = 0x0004;
-pub const CONFIGFS_ITEM_BIN_ATTR: core::ffi::c_int = 0x0008;
-pub const CONFIGFS_ITEM_LINK: core::ffi::c_int = 0x0020;
-pub const CONFIGFS_USET_DIR: core::ffi::c_int = 0x0040;
-pub const CONFIGFS_USET_DEFAULT: core::ffi::c_int = 0x0080;
-pub const CONFIGFS_USET_DROPPING: core::ffi::c_int = 0x0100;
-pub const CONFIGFS_USET_IN_MKDIR: core::ffi::c_int = 0x0200;
-pub const CONFIGFS_USET_CREATING: core::ffi::c_int = 0x0400;
-pub const CONFIGFS_NOT_PINNED: core::ffi::c_int = CONFIGFS_ITEM_ATTR | CONFIGFS_ITEM_BIN_ATTR;
-pub const CONFIGFS_PINNED: core::ffi::c_int = CONFIGFS_ROOT | CONFIGFS_DIR | CONFIGFS_ITEM_LINK;
+pub const CONFIGFS_ROOT: kernel::ffi::c_int = 0x0001;
+pub const CONFIGFS_DIR: kernel::ffi::c_int = 0x0002;
+pub const CONFIGFS_ITEM_ATTR: kernel::ffi::c_int = 0x0004;
+pub const CONFIGFS_ITEM_BIN_ATTR: kernel::ffi::c_int = 0x0008;
+pub const CONFIGFS_ITEM_LINK: kernel::ffi::c_int = 0x0020;
+pub const CONFIGFS_USET_DIR: kernel::ffi::c_int = 0x0040;
+pub const CONFIGFS_USET_DEFAULT: kernel::ffi::c_int = 0x0080;
+pub const CONFIGFS_USET_DROPPING: kernel::ffi::c_int = 0x0100;
+pub const CONFIGFS_USET_IN_MKDIR: kernel::ffi::c_int = 0x0200;
+pub const CONFIGFS_USET_CREATING: kernel::ffi::c_int = 0x0400;
+pub const CONFIGFS_NOT_PINNED: kernel::ffi::c_int = CONFIGFS_ITEM_ATTR | CONFIGFS_ITEM_BIN_ATTR;
+pub const CONFIGFS_PINNED: kernel::ffi::c_int = CONFIGFS_ROOT | CONFIGFS_DIR | CONFIGFS_ITEM_LINK;
 
 extern "C" {
     pub static mut configfs_symlink_mutex: mutex;
     pub static mut configfs_dirent_lock: spinlock_t;
     pub static mut configfs_dir_cachep: *mut kmem_cache;
 
-    pub fn configfs_is_root(item: *mut config_item) -> core::ffi::c_int;
+    pub fn configfs_is_root(item: *mut config_item) -> kernel::ffi::c_int;
     pub fn configfs_new_inode(mode: umode_t, dirent: *mut configfs_dirent, sb: *mut super_block) -> *mut inode;
     pub fn configfs_create(dentry: *mut dentry, mode: umode_t) -> *mut inode;
-    pub fn configfs_create_file(item: *mut config_item, attr: *const configfs_attribute) -> core::ffi::c_int;
-    pub fn configfs_create_bin_file(item: *mut config_item, attr: *const configfs_bin_attribute) -> core::ffi::c_int;
-    pub fn configfs_make_dirent(dirent: *mut configfs_dirent, dentry: *mut dentry, element: *mut core::ffi::c_void, mode: umode_t, ty: core::ffi::c_int, frag: *mut configfs_fragment) -> core::ffi::c_int;
-    pub fn configfs_dirent_is_ready(dirent: *mut configfs_dirent) -> core::ffi::c_int;
+    pub fn configfs_create_file(item: *mut config_item, attr: *const configfs_attribute) -> kernel::ffi::c_int;
+    pub fn configfs_create_bin_file(item: *mut config_item, attr: *const configfs_bin_attribute) -> kernel::ffi::c_int;
+    pub fn configfs_make_dirent(dirent: *mut configfs_dirent, dentry: *mut dentry, element: *mut kernel::ffi::c_void, mode: umode_t, ty: kernel::ffi::c_int, frag: *mut configfs_fragment) -> kernel::ffi::c_int;
+    pub fn configfs_dirent_is_ready(dirent: *mut configfs_dirent) -> kernel::ffi::c_int;
     pub fn configfs_get_name(sd: *mut configfs_dirent) -> *const u8;
-    pub fn configfs_setattr(idmap: *mut mnt_idmap, dentry: *mut dentry, iattr: *mut iattr) -> core::ffi::c_int;
+    pub fn configfs_setattr(idmap: *mut mnt_idmap, dentry: *mut dentry, iattr: *mut iattr) -> kernel::ffi::c_int;
     pub fn configfs_pin_fs() -> *mut dentry;
     pub fn configfs_release_fs();
     pub static configfs_dir_operations: file_operations;
@@ -77,9 +77,9 @@ extern "C" {
     pub static configfs_root_inode_operations: inode_operations;
     pub static configfs_symlink_inode_operations: inode_operations;
     pub static configfs_dentry_ops: dentry_operations;
-    pub fn configfs_symlink(idmap: *mut mnt_idmap, dir: *mut inode, dentry: *mut dentry, symname: *const core::ffi::c_char) -> core::ffi::c_int;
-    pub fn configfs_unlink(dir: *mut inode, dentry: *mut dentry) -> core::ffi::c_int;
-    pub fn configfs_create_link(target: *mut configfs_dirent, parent: *mut dentry, dentry: *mut dentry, body: *mut core::ffi::c_char) -> core::ffi::c_int;
+    pub fn configfs_symlink(idmap: *mut mnt_idmap, dir: *mut inode, dentry: *mut dentry, symname: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    pub fn configfs_unlink(dir: *mut inode, dentry: *mut dentry) -> kernel::ffi::c_int;
+    pub fn configfs_create_link(target: *mut configfs_dirent, parent: *mut dentry, dentry: *mut dentry, body: *mut kernel::ffi::c_char) -> kernel::ffi::c_int;
 }
 
 #[inline]
@@ -113,9 +113,9 @@ pub unsafe fn configfs_get_config_item(dentry: *mut dentry) -> *mut config_item 
 #[inline]
 pub unsafe fn release_configfs_dirent(sd: *mut configfs_dirent) {
     if (*sd).s_type & CONFIGFS_ROOT == 0 {
-        kfree((*sd).s_iattr as *mut core::ffi::c_void);
+        kfree((*sd).s_iattr as *mut kernel::ffi::c_void);
         put_fragment((*sd).s_frag);
-        kmem_cache_free(configfs_dir_cachep, sd as *mut core::ffi::c_void);
+        kmem_cache_free(configfs_dir_cachep, sd as *mut kernel::ffi::c_void);
     }
 }
 

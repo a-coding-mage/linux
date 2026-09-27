@@ -27,8 +27,8 @@ struct mtk_gate_regs {
 #[repr(C)]
 struct mtk_gate {
     id: u32,
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
     regs: *const mtk_gate_regs,
     shift: u8,
     ops: *const mtk_clk_gate_ops,
@@ -45,13 +45,13 @@ struct mtk_clk_desc {
 
 #[repr(C)]
 struct of_device_id {
-    compatible: *const core::ffi::c_char,
-    data: *const core::ffi::c_void,
+    compatible: *const kernel::ffi::c_char,
+    data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 struct platform_driver_driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     of_match_table: *const of_device_id,
 }
 
@@ -72,8 +72,8 @@ macro_rules! gate_venc {
     ($id:expr, $name:expr, $parent:expr, $shift:expr) => {
         mtk_gate {
             id: $id,
-            name: concat!($name, "\0").as_ptr() as *const core::ffi::c_char,
-            parent_name: concat!($parent, "\0").as_ptr() as *const core::ffi::c_char,
+            name: concat!($name, "\0").as_ptr() as *const kernel::ffi::c_char,
+            parent_name: concat!($parent, "\0").as_ptr() as *const kernel::ffi::c_char,
             regs: &venc_cg_regs,
             shift: $shift,
             ops: unsafe { &mtk_clk_gate_ops_setclr_inv },
@@ -95,8 +95,8 @@ static venc_desc: mtk_clk_desc = mtk_clk_desc {
 
 static of_match_clk_mt6795_vencsys: [of_device_id; 2] = [
     of_device_id {
-        compatible: b"mediatek,mt6795-vencsys\0".as_ptr() as *const core::ffi::c_char,
-        data: &venc_desc as *const _ as *const core::ffi::c_void,
+        compatible: b"mediatek,mt6795-vencsys\0".as_ptr() as *const kernel::ffi::c_char,
+        data: &venc_desc as *const _ as *const kernel::ffi::c_void,
     },
     of_device_id {
         compatible: core::ptr::null(),
@@ -106,7 +106,7 @@ static of_match_clk_mt6795_vencsys: [of_device_id; 2] = [
 
 static mut clk_mt6795_vencsys_drv: platform_driver = platform_driver {
     driver: platform_driver_driver {
-        name: b"clk-mt6795-vencsys\0".as_ptr() as *const core::ffi::c_char,
+        name: b"clk-mt6795-vencsys\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: of_match_clk_mt6795_vencsys.as_ptr(),
     },
     probe: Some(mtk_clk_simple_probe),

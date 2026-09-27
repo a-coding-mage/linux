@@ -7,7 +7,7 @@
 // Author: Bruce zhao <zhaolei@awinic.com>
 //
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const PROJECT_NAME_MAX: usize = 24;
 pub const CUSTOMER_NAME_MAX: usize = 16;

@@ -2,14 +2,14 @@
 // Dependencies are supplied by the kernel or compatibility headers in the C
 // implementation.
 
-pub unsafe fn crush_bucket_alg_name(alg: i32) -> *const core::ffi::c_char {
+pub unsafe fn crush_bucket_alg_name(alg: i32) -> *const kernel::ffi::c_char {
     match alg {
-        CRUSH_BUCKET_UNIFORM => b"uniform\0".as_ptr() as *const core::ffi::c_char,
-        CRUSH_BUCKET_LIST => b"list\0".as_ptr() as *const core::ffi::c_char,
-        CRUSH_BUCKET_TREE => b"tree\0".as_ptr() as *const core::ffi::c_char,
-        CRUSH_BUCKET_STRAW => b"straw\0".as_ptr() as *const core::ffi::c_char,
-        CRUSH_BUCKET_STRAW2 => b"straw2\0".as_ptr() as *const core::ffi::c_char,
-        _ => b"unknown\0".as_ptr() as *const core::ffi::c_char,
+        CRUSH_BUCKET_UNIFORM => b"uniform\0".as_ptr() as *const kernel::ffi::c_char,
+        CRUSH_BUCKET_LIST => b"list\0".as_ptr() as *const kernel::ffi::c_char,
+        CRUSH_BUCKET_TREE => b"tree\0".as_ptr() as *const kernel::ffi::c_char,
+        CRUSH_BUCKET_STRAW => b"straw\0".as_ptr() as *const kernel::ffi::c_char,
+        CRUSH_BUCKET_STRAW2 => b"straw2\0".as_ptr() as *const kernel::ffi::c_char,
+        _ => b"unknown\0".as_ptr() as *const kernel::ffi::c_char,
     }
 }
 

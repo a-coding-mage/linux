@@ -11,22 +11,22 @@
 
 // External declarations supplied by the kernel and clk support code.
 extern "C" {
-    fn readl_relaxed(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn fence_udelay(usecs: u32, addr: *mut core::ffi::c_void);
+    fn readl_relaxed(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn fence_udelay(usecs: u32, addr: *mut kernel::ffi::c_void);
     fn clk_hw_get_num_parents(hw: *mut clk_hw) -> i32;
     fn clk_hw_get_parent(hw: *mut clk_hw) -> *mut clk_hw;
     fn clk_hw_get_rate(hw: *mut clk_hw) -> usize;
     fn clk_hw_get_parent_index(hw: *mut clk_hw) -> i32;
-    fn clk_register(parent: *mut core::ffi::c_void, hw: *mut clk_hw) -> *mut clk;
+    fn clk_register(parent: *mut kernel::ffi::c_void, hw: *mut clk_hw) -> *mut clk;
     fn get_reg_bank(clk_num: u32) -> *const tegra_clk_periph_regs;
     fn div_frac_get(rate: usize, parent_rate: usize, width: u32, shift: u32,
                     flags: u8) -> i32;
     fn kzalloc_obj<T>() -> *mut T;
     fn kfree<T>(ptr: *mut T);
     fn __clk_hw_set_clk(gate_hw: *mut clk_hw, hw: *mut clk_hw);
-    fn spin_lock_irqsave(lock: *mut core::ffi::c_void, flags: *mut usize);
-    fn spin_unlock_irqrestore(lock: *mut core::ffi::c_void, flags: usize);
+    fn spin_lock_irqsave(lock: *mut kernel::ffi::c_void, flags: *mut usize);
+    fn spin_unlock_irqrestore(lock: *mut kernel::ffi::c_void, flags: usize);
 }
 
 const DIV_MASK: u32 = 0xff;
@@ -51,8 +51,8 @@ fn get_mux_field(val: u32) -> u32 { (val & MUX_MASK) >> MUX_SHIFT }
 pub struct clk_hw { pub init: *const clk_init_data, pub clk: *mut clk }
 #[repr(C)] pub struct clk;
 #[repr(C)] pub struct clk_init_data {
-    pub ops: *const clk_ops, pub name: *const core::ffi::c_char,
-    pub flags: usize, pub parent_names: *const *const core::ffi::c_char,
+    pub ops: *const clk_ops, pub name: *const kernel::ffi::c_char,
+    pub flags: usize, pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: usize,
 }
 #[repr(C)] pub struct clk_rate_request { pub rate: usize, pub min_rate: usize, pub max_rate: usize, pub best_parent_rate: usize }
@@ -70,16 +70,16 @@ pub struct clk_hw { pub init: *const clk_init_data, pub clk: *mut clk }
 }
 #[repr(C)] pub struct tegra_clk_periph_regs;
 #[repr(C)] pub struct tegra_periph_clk {
-    pub hw: clk_hw, pub clk_base: *mut core::ffi::c_void,
+    pub hw: clk_hw, pub clk_base: *mut kernel::ffi::c_void,
     pub regs: *const tegra_clk_periph_regs, pub enable_refcnt: *mut u32,
     pub clk_num: u32, pub flags: u32,
 }
 #[repr(C)] pub struct tegra_sdmmc_mux {
-    pub hw: clk_hw, pub reg: *mut core::ffi::c_void, pub lock: *mut core::ffi::c_void,
+    pub hw: clk_hw, pub reg: *mut kernel::ffi::c_void, pub lock: *mut kernel::ffi::c_void,
     pub gate: tegra_periph_clk, pub div_flags: u8, pub gate_ops: *const clk_ops,
 }
 
-static MUX_SDMMC_PARENTS: [*const core::ffi::c_char; 5] = [
+static MUX_SDMMC_PARENTS: [*const kernel::ffi::c_char; 5] = [
     b"pll_p\0".as_ptr() as _, b"pll_c4_out2\0".as_ptr() as _,
     b"pll_c4_out0\0".as_ptr() as _, b"pll_c4_out1\0".as_ptr() as _,
     b"clk_m\0".as_ptr() as _,
@@ -133,7 +133,7 @@ unsafe extern "C" fn clk_sdmmc_mux_restore_context(hw: *mut clk_hw) { let p=clk_
 
 static TEGRA_CLK_SDMMC_MUX_OPS: clk_ops = clk_ops { get_parent:Some(clk_sdmmc_mux_get_parent), set_parent:Some(clk_sdmmc_mux_set_parent), determine_rate:Some(clk_sdmmc_mux_determine_rate), recalc_rate:Some(clk_sdmmc_mux_recalc_rate), set_rate:Some(clk_sdmmc_mux_set_rate), is_enabled:Some(clk_sdmmc_mux_is_enabled), enable:Some(clk_sdmmc_mux_enable), disable:Some(clk_sdmmc_mux_disable), disable_unused:Some(clk_sdmmc_mux_disable_unused), restore_context:Some(clk_sdmmc_mux_restore_context) };
 
-pub unsafe fn tegra_clk_register_sdmmc_mux_div(name: *const core::ffi::c_char, clk_base: *mut core::ffi::c_void, offset: u32, clk_num: u32, div_flags: u8, flags: usize, lock: *mut core::ffi::c_void) -> *mut clk {
+pub unsafe fn tegra_clk_register_sdmmc_mux_div(name: *const kernel::ffi::c_char, clk_base: *mut kernel::ffi::c_void, offset: u32, clk_num: u32, div_flags: u8, flags: usize, lock: *mut kernel::ffi::c_void) -> *mut clk {
     let bank = get_reg_bank(clk_num); if bank.is_null() { return (-EINVAL as isize) as *mut clk; }
     let mux = kzalloc_obj::<tegra_sdmmc_mux>(); if mux.is_null() { return (-ENOMEM as isize) as *mut clk; }
     let init = clk_init_data { ops:&TEGRA_CLK_SDMMC_MUX_OPS, name, flags, parent_names:MUX_SDMMC_PARENTS.as_ptr(), num_parents:5 };

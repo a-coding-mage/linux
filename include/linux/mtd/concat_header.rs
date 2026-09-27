@@ -17,15 +17,15 @@ pub struct mtd_info;
 #[repr(C)]
 pub struct mtd_concat {
     pub mtd: mtd_info,
-    pub num_subdev: ::core::ffi::c_int,
+    pub num_subdev: ::kernel::ffi::c_int,
     pub subdev: [*mut mtd_info; 0],
 }
 
 unsafe extern "C" {
     pub fn mtd_concat_create(
         subdev: *mut *mut mtd_info, /* subdevices to concatenate */
-        num_devs: ::core::ffi::c_int, /* number of subdevices */
-        name: *const ::core::ffi::c_char, /* name for the new device */
+        num_devs: ::kernel::ffi::c_int, /* number of subdevices */
+        name: *const ::kernel::ffi::c_char, /* name for the new device */
     ) -> *mut mtd_info;
 
     pub fn mtd_concat_destroy(mtd: *mut mtd_info);
@@ -39,7 +39,7 @@ unsafe extern "C" {
      * List all the devices for concatenations found in DT and create a
      * component for concatenation.
      */
-    pub fn mtd_virt_concat_node_create() -> ::core::ffi::c_int;
+    pub fn mtd_virt_concat_node_create() -> ::kernel::ffi::c_int;
 
     /**
      * mtd_virt_concat_add - add mtd_info object to the list of subdevices for concatenation
@@ -61,7 +61,7 @@ unsafe extern "C" {
      *
      * Creates and registers the concatenated MTD device
      */
-    pub fn mtd_virt_concat_create_join() -> ::core::ffi::c_int;
+    pub fn mtd_virt_concat_create_join() -> ::kernel::ffi::c_int;
 
     /**
      * mtd_virt_concat_destroy - Remove the concat that includes a specific mtd device
@@ -74,7 +74,7 @@ unsafe extern "C" {
      * within that concat are registered individually. The concatenated device is then
      * removed, along with its concatenation component.
      */
-    pub fn mtd_virt_concat_destroy(mtd: *mut mtd_info) -> ::core::ffi::c_int;
+    pub fn mtd_virt_concat_destroy(mtd: *mut mtd_info) -> ::kernel::ffi::c_int;
 
     pub fn mtd_virt_concat_destroy_joins();
     pub fn mtd_virt_concat_destroy_items();

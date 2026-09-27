@@ -7,16 +7,16 @@
  * is a signed type and the tests do cover negative year values. So this
  * can't use the is_leap_year() helper from rtc.h.
  */
-fn is_leap(year: libc::c_long) -> bool {
+fn is_leap(year: kernel::ffi::c_long) -> bool {
     year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
 }
 
 /*
  * Gets the last day of a month.
  */
-fn last_day_of_month(year: libc::c_long, month: libc::c_int) -> libc::c_int {
+fn last_day_of_month(year: kernel::ffi::c_long, month: kernel::ffi::c_int) -> kernel::ffi::c_int {
     if month == 2 {
-        return 28 + is_leap(year) as libc::c_int;
+        return 28 + is_leap(year) as kernel::ffi::c_int;
     }
     if month == 4 || month == 6 || month == 9 || month == 11 {
         return 30;
@@ -28,10 +28,10 @@ fn last_day_of_month(year: libc::c_long, month: libc::c_int) -> libc::c_int {
  * Advances a date by one day.
  */
 unsafe fn advance_date(
-    year: *mut libc::c_long,
-    month: *mut libc::c_int,
-    mday: *mut libc::c_int,
-    yday: *mut libc::c_int,
+    year: *mut kernel::ffi::c_long,
+    month: *mut kernel::ffi::c_int,
+    mday: *mut kernel::ffi::c_int,
+    yday: *mut kernel::ffi::c_int,
 ) {
     if *mday != last_day_of_month(*year, *month) {
         *mday += 1;
@@ -62,10 +62,10 @@ unsafe fn time64_to_tm_test_date_range(test: *mut kunit) {
      *              = (80000 / 400) * 146097 * 86400 seconds
      */
     let total_secs: time64_t = (80000 as time64_t) / 400 * 146097 * 86400;
-    let mut year: libc::c_long = 1970 - 80000;
-    let mut month: libc::c_int = 1;
-    let mut mdday: libc::c_int = 1;
-    let mut yday: libc::c_int = 0;
+    let mut year: kernel::ffi::c_long = 1970 - 80000;
+    let mut month: kernel::ffi::c_int = 1;
+    let mut mdday: kernel::ffi::c_int = 1;
+    let mut yday: kernel::ffi::c_int = 0;
 
     let mut result: tm = core::mem::zeroed();
     let mut secs: time64_t;
@@ -111,10 +111,10 @@ type s64 = i64;
 
 #[repr(C)]
 struct tm {
-    tm_year: libc::c_int,
-    tm_mon: libc::c_int,
-    tm_mday: libc::c_int,
-    tm_yday: libc::c_int,
+    tm_year: kernel::ffi::c_int,
+    tm_mon: kernel::ffi::c_int,
+    tm_mday: kernel::ffi::c_int,
+    tm_yday: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -128,7 +128,7 @@ struct kunit_suite {
 }
 
 extern "C" {
-    fn time64_to_tm(secs: time64_t, offset: libc::c_int, result: *mut tm);
+    fn time64_to_tm(secs: time64_t, offset: kernel::ffi::c_int, result: *mut tm);
     fn div_s64(dividend: s64, divisor: s64) -> s64;
 }
 

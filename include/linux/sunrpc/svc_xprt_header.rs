@@ -7,7 +7,7 @@
 
 // C dependency: <linux/sunrpc/svc.h>
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct module;
@@ -20,7 +20,7 @@ pub struct svc_xprt_ops {
     pub xpo_recvfrom: Option<unsafe extern "C" fn(*mut svc_rqst) -> i32>,
     pub xpo_sendto: Option<unsafe extern "C" fn(*mut svc_rqst) -> i32>,
     pub xpo_result_payload: Option<unsafe extern "C" fn(*mut svc_rqst, u32, u32) -> i32>,
-    pub xpo_release_ctxt: Option<unsafe extern "C" fn(*mut svc_xprt, *mut core::ffi::c_void)>,
+    pub xpo_release_ctxt: Option<unsafe extern "C" fn(*mut svc_xprt, *mut kernel::ffi::c_void)>,
     pub xpo_detach: Option<unsafe extern "C" fn(*mut svc_xprt)>,
     pub xpo_free: Option<unsafe extern "C" fn(*mut svc_xprt)>,
     pub xpo_kill_temp_xprt: Option<unsafe extern "C" fn(*mut svc_xprt)>,
@@ -57,7 +57,7 @@ pub struct svc_xprt {
     pub xpt_nr_rqsts: atomic_t,
     pub xpt_mutex: mutex,
     pub xpt_lock: spinlock_t,
-    pub xpt_auth_cache: *mut core::ffi::c_void,
+    pub xpt_auth_cache: *mut kernel::ffi::c_void,
     pub xpt_deferred: list_head,
     pub xpt_local: sockaddr_storage,
     pub xpt_locallen: usize,

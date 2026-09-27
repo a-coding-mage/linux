@@ -11,8 +11,8 @@ pub enum writeback_sync_modes { WB_SYNC_NONE, WB_SYNC_ALL }
 
 #[repr(C)]
 pub struct writeback_control {
-    pub nr_to_write: ::core::ffi::c_long,
-    pub pages_skipped: ::core::ffi::c_long,
+    pub nr_to_write: ::kernel::ffi::c_long,
+    pub pages_skipped: ::kernel::ffi::c_long,
     pub range_start: i64,
     pub range_end: i64,
     pub sync_mode: writeback_sync_modes,

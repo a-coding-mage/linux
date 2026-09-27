@@ -19,7 +19,7 @@ pub struct bin_attribute {
 }
 #[repr(C)]
 pub struct attribute_group {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub bin_attrs: *const *const bin_attribute,
 }
 #[repr(C)]
@@ -41,10 +41,10 @@ extern "C" {
     pub fn cpacf_query(instruction: u32, mask: *mut cpacf_mask_t) -> bool;
     pub fn cpacf_qai(instruction: u32, qai: *mut cpacf_qai_t) -> bool;
     pub fn memory_read_from_buffer(
-        to: *mut core::ffi::c_char,
+        to: *mut kernel::ffi::c_char,
         count: usize,
         ppos: *mut loff_t,
-        from: *const core::ffi::c_void,
+        from: *const kernel::ffi::c_void,
         available: usize,
     ) -> ssize_t;
     pub fn bus_get_dev_root(bus: *const bus_type) -> *mut device;
@@ -77,7 +77,7 @@ macro_rules! cpacf_query {
             _fp: *mut file,
             _kobj: *mut kobject,
             _attr: *const bin_attribute,
-            buf: *mut core::ffi::c_char,
+            buf: *mut kernel::ffi::c_char,
             mut offs: loff_t,
             count: usize,
         ) -> ssize_t {
@@ -96,7 +96,7 @@ macro_rules! cpacf_qai {
             _fp: *mut file,
             _kobj: *mut kobject,
             _attr: *const bin_attribute,
-            buf: *mut core::ffi::c_char,
+            buf: *mut kernel::ffi::c_char,
             mut offs: loff_t,
             count: usize,
         ) -> ssize_t {
@@ -141,7 +141,7 @@ cpacf_qai!(kdsa_query_auth_info_raw_read, KDSA);
 pub static cpacf_attrs: [*const bin_attribute; 27] = [core::ptr::null(); 27];
 
 pub static cpacf_attr_grp: attribute_group = attribute_group {
-    name: b"cpacf\0".as_ptr() as *const core::ffi::c_char,
+    name: b"cpacf\0".as_ptr() as *const kernel::ffi::c_char,
     bin_attrs: cpacf_attrs.as_ptr(),
 };
 

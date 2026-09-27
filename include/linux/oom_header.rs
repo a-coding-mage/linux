@@ -2,7 +2,7 @@
 
 /* Dependencies supplied by the surrounding kernel translation. */
 
-use core::ffi::c_long;
+use kernel::ffi::c_long;
 
 #[repr(C)]
 pub struct zonelist;
@@ -19,8 +19,8 @@ pub struct mm_struct;
 #[repr(C)]
 pub struct nodemask_t;
 
-pub type gfp_t = ::core::ffi::c_uint;
-pub type vm_fault_t = ::core::ffi::c_uint;
+pub type gfp_t = ::kernel::ffi::c_uint;
+pub type vm_fault_t = ::kernel::ffi::c_uint;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -37,8 +37,8 @@ pub struct oom_control {
     pub nodemask: *const nodemask_t,
     pub memcg: *mut mem_cgroup,
     pub gfp_mask: gfp_t,
-    pub order: ::core::ffi::c_int,
-    pub totalpages: ::core::ffi::c_ulong,
+    pub order: ::kernel::ffi::c_int,
+    pub totalpages: ::kernel::ffi::c_ulong,
     pub chosen: *mut task_struct,
     pub chosen_points: c_long,
     pub constraint: oom_constraint,
@@ -50,17 +50,17 @@ extern "C" {
 
     pub static mut current: *mut task_struct;
 
-    pub fn mm_flags_test(flag: ::core::ffi::c_uint, mm: *mut mm_struct) -> bool;
+    pub fn mm_flags_test(flag: ::kernel::ffi::c_uint, mm: *mut mm_struct) -> bool;
 
     pub fn oom_badness(
         p: *mut task_struct,
-        totalpages: ::core::ffi::c_ulong,
+        totalpages: ::kernel::ffi::c_ulong,
     ) -> c_long;
     pub fn out_of_memory(oc: *mut oom_control) -> bool;
     pub fn exit_oom_victim();
-    pub fn register_oom_notifier(nb: *mut notifier_block) -> ::core::ffi::c_int;
-    pub fn unregister_oom_notifier(nb: *mut notifier_block) -> ::core::ffi::c_int;
-    pub fn oom_killer_disable(timeout: ::core::ffi::c_long) -> bool;
+    pub fn register_oom_notifier(nb: *mut notifier_block) -> ::kernel::ffi::c_int;
+    pub fn unregister_oom_notifier(nb: *mut notifier_block) -> ::kernel::ffi::c_int;
+    pub fn oom_killer_disable(timeout: ::kernel::ffi::c_long) -> bool;
     pub fn oom_killer_enable();
     pub fn find_lock_task_mm(p: *mut task_struct) -> *mut task_struct;
 }

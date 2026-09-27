@@ -14,31 +14,31 @@ pub enum stack_type {
 #[repr(C)]
 pub struct stack_info {
     pub type_: stack_type,
-    pub begin: ::core::ffi::c_ulong,
-    pub end: ::core::ffi::c_ulong,
-    pub next_sp: ::core::ffi::c_ulong,
+    pub begin: ::kernel::ffi::c_ulong,
+    pub end: ::kernel::ffi::c_ulong,
+    pub next_sp: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct stack_frame {
-    pub fp: ::core::ffi::c_ulong,
-    pub ra: ::core::ffi::c_ulong,
+    pub fp: ::kernel::ffi::c_ulong,
+    pub ra: ::kernel::ffi::c_ulong,
 }
 
 pub enum task_struct {}
 
 extern "C" {
-    pub fn in_irq_stack(stack: ::core::ffi::c_ulong, info: *mut stack_info) -> bool;
+    pub fn in_irq_stack(stack: ::kernel::ffi::c_ulong, info: *mut stack_info) -> bool;
     pub fn in_task_stack(
-        stack: ::core::ffi::c_ulong,
+        stack: ::kernel::ffi::c_ulong,
         task: *mut task_struct,
         info: *mut stack_info,
     ) -> bool;
     pub fn get_stack_info(
-        stack: ::core::ffi::c_ulong,
+        stack: ::kernel::ffi::c_ulong,
         task: *mut task_struct,
         info: *mut stack_info,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 // The C header's build-time architecture constants and stringify macros are
@@ -49,27 +49,27 @@ pub const STR_LONGSIZE: &str = stringify!(LONGSIZE);
 
 #[inline(always)]
 pub unsafe fn on_thread_stack() -> bool {
-    !((((*current).stack as ::core::ffi::c_ulong) ^ current_stack_pointer)
+    !((((*current).stack as ::kernel::ffi::c_ulong) ^ current_stack_pointer)
         & !(THREAD_SIZE - 1))
         != 0
 }
 
 #[repr(C)]
 pub struct pt_regs {
-    pub regs: *mut ::core::ffi::c_ulong,
-    pub csr_era: ::core::ffi::c_ulong,
-    pub csr_badvaddr: ::core::ffi::c_ulong,
-    pub csr_crmd: ::core::ffi::c_ulong,
-    pub csr_prmd: ::core::ffi::c_ulong,
-    pub csr_euen: ::core::ffi::c_ulong,
-    pub csr_ecfg: ::core::ffi::c_ulong,
-    pub csr_estat: ::core::ffi::c_ulong,
+    pub regs: *mut ::kernel::ffi::c_ulong,
+    pub csr_era: ::kernel::ffi::c_ulong,
+    pub csr_badvaddr: ::kernel::ffi::c_ulong,
+    pub csr_crmd: ::kernel::ffi::c_ulong,
+    pub csr_prmd: ::kernel::ffi::c_ulong,
+    pub csr_euen: ::kernel::ffi::c_ulong,
+    pub csr_ecfg: ::kernel::ffi::c_ulong,
+    pub csr_estat: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
     static mut current: *mut task_struct;
-    static mut current_stack_pointer: ::core::ffi::c_ulong;
-    static THREAD_SIZE: ::core::ffi::c_ulong;
+    static mut current_stack_pointer: ::kernel::ffi::c_ulong;
+    static THREAD_SIZE: ::kernel::ffi::c_ulong;
 }
 
 #[inline(always)]

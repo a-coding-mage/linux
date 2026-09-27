@@ -35,7 +35,7 @@ pub const KHO_KEXEC_METADATA_VERSION: u32 = 1;
 #[repr(C, packed)]
 pub struct kho_kexec_metadata {
     pub version: u32,
-    pub previous_release: [core::ffi::c_char; __NEW_UTS_LEN + 1],
+    pub previous_release: [kernel::ffi::c_char; __NEW_UTS_LEN + 1],
     pub kexec_count: u32,
 }
 

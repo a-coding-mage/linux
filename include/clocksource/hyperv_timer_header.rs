@@ -20,7 +20,7 @@ extern "C" {
     pub fn hv_init_clocksource();
     pub fn hv_remap_tsc_clocksource();
 
-    pub fn hv_get_tsc_pfn() -> libc::c_ulong;
+    pub fn hv_get_tsc_pfn() -> kernel::ffi::c_ulong;
     pub fn hv_get_tsc_page() -> *mut crate::ms_hyperv_tsc_page;
 
     pub fn hv_adj_sched_clock_offset(offset: u64);
@@ -65,7 +65,7 @@ pub unsafe fn hv_read_tsc_page_tsc(
 
 #[cfg(not(CONFIG_HYPERV_TIMER))]
 #[inline]
-pub fn hv_get_tsc_pfn() -> libc::c_ulong {
+pub fn hv_get_tsc_pfn() -> kernel::ffi::c_ulong {
     0
 }
 

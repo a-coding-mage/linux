@@ -19,8 +19,8 @@ MODULE_AUTHOR!("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION!("Cirrus Logic Sound Fusion CS46XX");
 MODULE_LICENSE!("GPL");
 
-static mut index: [::core::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_IDX; /* Index 0-MAX */
-static mut id: [*mut ::core::ffi::c_char; SNDRV_CARDS] = SNDRV_DEFAULT_STR; /* ID for this card */
+static mut index: [::kernel::ffi::c_int; SNDRV_CARDS] = SNDRV_DEFAULT_IDX; /* Index 0-MAX */
+static mut id: [*mut ::kernel::ffi::c_char; SNDRV_CARDS] = SNDRV_DEFAULT_STR; /* ID for this card */
 static mut enable: [bool; SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP; /* Enable this card */
 static mut external_amp: [bool; SNDRV_CARDS] = [false; SNDRV_CARDS];
 static mut thinkpad: [bool; SNDRV_CARDS] = [false; SNDRV_CARDS];
@@ -51,15 +51,15 @@ MODULE_DEVICE_TABLE!(pci, snd_cs46xx_ids);
 unsafe extern "C" fn snd_card_cs46xx_probe(
     pci: *mut pci_dev,
     pci_id: *const pci_device_id,
-) -> ::core::ffi::c_int {
-    static mut dev: ::core::ffi::c_int = 0;
+) -> ::kernel::ffi::c_int {
+    static mut dev: ::kernel::ffi::c_int = 0;
     let mut card: *mut snd_card = ::core::ptr::null_mut();
     let mut chip: *mut snd_cs46xx;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     let _ = pci_id;
 
-    if dev >= SNDRV_CARDS as ::core::ffi::c_int {
+    if dev >= SNDRV_CARDS as ::kernel::ffi::c_int {
         return -ENODEV;
     }
     if !enable[dev as usize] {
@@ -89,7 +89,7 @@ unsafe extern "C" fn snd_card_cs46xx_probe(
         goto_error(card, err);
         return err;
     }
-    (*card).private_data = chip as *mut ::core::ffi::c_void;
+    (*card).private_data = chip as *mut ::kernel::ffi::c_void;
     (*chip).accept_valid = mmap_valid[dev as usize];
     err = snd_cs46xx_pcm(chip, 0);
     if err < 0 {
@@ -165,12 +165,12 @@ unsafe extern "C" fn snd_card_cs46xx_probe(
         return err;
     }
 
-    pci_set_drvdata(pci, card as *mut ::core::ffi::c_void);
+    pci_set_drvdata(pci, card as *mut ::kernel::ffi::c_void);
     dev += 1;
     0
 }
 
-unsafe fn goto_error(card: *mut snd_card, err: ::core::ffi::c_int) {
+unsafe fn goto_error(card: *mut snd_card, err: ::kernel::ffi::c_int) {
     let _ = err;
     snd_card_free(card);
 }

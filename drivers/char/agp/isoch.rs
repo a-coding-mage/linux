@@ -28,11 +28,11 @@ extern "C" {
     fn pci_write_config_dword(dev: *mut pci_dev, where_: u8, val: u32);
     fn pci_write_config_word(dev: *mut pci_dev, where_: u8, val: u16);
     fn pci_find_capability(dev: *mut pci_dev, cap: u8) -> u8;
-    fn pci_name(dev: *mut pci_dev) -> *const core::ffi::c_char;
-    fn dev_err(dev: *mut pci_dev, fmt: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut pci_dev, fmt: *const core::ffi::c_char, ...);
-    fn kmalloc(size: usize) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn pci_name(dev: *mut pci_dev) -> *const kernel::ffi::c_char;
+    fn dev_err(dev: *mut pci_dev, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut pci_dev, fmt: *const kernel::ffi::c_char, ...);
+    fn kmalloc(size: usize) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
 }
 
 const AGPNISTAT: u8 = 0x0c;

@@ -17,34 +17,34 @@ pub struct posix_clock_operations {
     pub clock_adjtime: Option<unsafe extern "C" fn(
         pc: *mut posix_clock,
         tx: *mut __kernel_timex,
-    ) -> ::core::ffi::c_int>,
+    ) -> ::kernel::ffi::c_int>,
 
     pub clock_gettime: Option<unsafe extern "C" fn(
         pc: *mut posix_clock,
         ts: *mut timespec64,
-    ) -> ::core::ffi::c_int>,
+    ) -> ::kernel::ffi::c_int>,
 
     pub clock_getres: Option<unsafe extern "C" fn(
         pc: *mut posix_clock,
         ts: *mut timespec64,
-    ) -> ::core::ffi::c_int>,
+    ) -> ::kernel::ffi::c_int>,
 
     pub clock_settime: Option<unsafe extern "C" fn(
         pc: *mut posix_clock,
         ts: *const timespec64,
-    ) -> ::core::ffi::c_int>,
+    ) -> ::kernel::ffi::c_int>,
 
     /* Optional character device methods. */
     pub ioctl: Option<unsafe extern "C" fn(
         pccontext: *mut posix_clock_context,
         cmd: u32,
-        arg: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_long>,
+        arg: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_long>,
 
     pub open: Option<unsafe extern "C" fn(
         pccontext: *mut posix_clock_context,
         f_mode: fmode_t,
-    ) -> ::core::ffi::c_int>,
+    ) -> ::kernel::ffi::c_int>,
 
     pub poll: Option<unsafe extern "C" fn(
         pccontext: *mut posix_clock_context,
@@ -54,12 +54,12 @@ pub struct posix_clock_operations {
 
     pub release: Option<unsafe extern "C" fn(
         pccontext: *mut posix_clock_context,
-    ) -> ::core::ffi::c_int>,
+    ) -> ::kernel::ffi::c_int>,
 
     pub read: Option<unsafe extern "C" fn(
         pccontext: *mut posix_clock_context,
         flags: u32,
-        buf: *mut ::core::ffi::c_char,
+        buf: *mut ::kernel::ffi::c_char,
         cnt: usize,
     ) -> ssize_t>,
 }
@@ -77,11 +77,11 @@ pub struct posix_clock {
 pub struct posix_clock_context {
     pub clk: *mut posix_clock,
     pub fp: *mut file,
-    pub private_clkdata: *mut ::core::ffi::c_void,
+    pub private_clkdata: *mut ::kernel::ffi::c_void,
 }
 
 extern "C" {
-    pub fn posix_clock_register(clk: *mut posix_clock, dev: *mut device) -> ::core::ffi::c_int;
+    pub fn posix_clock_register(clk: *mut posix_clock, dev: *mut device) -> ::kernel::ffi::c_int;
     pub fn posix_clock_unregister(clk: *mut posix_clock);
 }
 

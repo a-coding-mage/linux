@@ -1986,7 +1986,7 @@ pub const RT5670_DOWN_RATE_FILTER: u32 = 0x1  <<  7;
 
 
 unsafe extern "C" {
-    pub fn rt5670_sel_asrc_clk_src(component: *mut snd_soc_component, filter_mask: ::core::ffi::c_uint, clk_src: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    pub fn rt5670_sel_asrc_clk_src(component: *mut snd_soc_component, filter_mask: ::kernel::ffi::c_uint, clk_src: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
 
 }
 
@@ -1997,33 +1997,33 @@ pub struct rt5670_priv {
     pub jack: *mut snd_soc_jack,
     pub hp_gpio: snd_soc_jack_gpio,
 
-    pub jd_mode: ::core::ffi::c_int,
+    pub jd_mode: ::kernel::ffi::c_int,
     pub in2_diff: bool,
     pub gpio1_is_irq: bool,
     pub gpio1_is_ext_spk_en: bool,
 
     pub dmic_en: bool,
-    pub dmic1_data_pin: ::core::ffi::c_uint,
+    pub dmic1_data_pin: ::kernel::ffi::c_uint,
     /* 0 = GPIO6; 1 = IN2P; 3 = GPIO7*/
-    pub dmic2_data_pin: ::core::ffi::c_uint,
+    pub dmic2_data_pin: ::kernel::ffi::c_uint,
     /* 0 = GPIO8; 1 = IN3N; */
-    pub dmic3_data_pin: ::core::ffi::c_uint,
+    pub dmic3_data_pin: ::kernel::ffi::c_uint,
     /* 0 = GPIO9; 1 = GPIO10; 2 = GPIO5*/
 
-    pub sysclk: ::core::ffi::c_int,
-    pub sysclk_src: ::core::ffi::c_int,
-    pub lrck: [::core::ffi::c_int; RT5670_AIFS as usize],
-    pub bclk: [::core::ffi::c_int; RT5670_AIFS as usize],
-    pub master: [::core::ffi::c_int; RT5670_AIFS as usize],
+    pub sysclk: ::kernel::ffi::c_int,
+    pub sysclk_src: ::kernel::ffi::c_int,
+    pub lrck: [::kernel::ffi::c_int; RT5670_AIFS as usize],
+    pub bclk: [::kernel::ffi::c_int; RT5670_AIFS as usize],
+    pub master: [::kernel::ffi::c_int; RT5670_AIFS as usize],
 
-    pub pll_src: ::core::ffi::c_int,
-    pub pll_in: ::core::ffi::c_int,
-    pub pll_out: ::core::ffi::c_int,
+    pub pll_src: ::kernel::ffi::c_int,
+    pub pll_in: ::kernel::ffi::c_int,
+    pub pll_out: ::kernel::ffi::c_int,
 
-    pub dsp_sw: ::core::ffi::c_int, /* expected parameter setting */
-    pub dsp_rate: ::core::ffi::c_int,
-    pub jack_type: ::core::ffi::c_int,
-    pub jack_type_saved: ::core::ffi::c_int,
+    pub dsp_sw: ::kernel::ffi::c_int, /* expected parameter setting */
+    pub dsp_rate: ::kernel::ffi::c_int,
+    pub jack_type: ::kernel::ffi::c_int,
+    pub jack_type_saved: ::kernel::ffi::c_int,
 
     pub dac1_mixl_dac1_switch: bool,
     pub dac1_mixr_dac1_switch: bool,
@@ -2041,8 +2041,8 @@ pub struct rt5670_priv {
 unsafe extern "C" {
     pub fn rt5670_jack_suspend(component: *mut snd_soc_component);
     pub fn rt5670_jack_resume(component: *mut snd_soc_component);
-    pub fn rt5670_set_jack_detect(component: *mut snd_soc_component, jack: *mut snd_soc_jack) -> ::core::ffi::c_int;
-    pub fn rt5670_components() -> *const ::core::ffi::c_char;
+    pub fn rt5670_set_jack_detect(component: *mut snd_soc_component, jack: *mut snd_soc_jack) -> ::kernel::ffi::c_int;
+    pub fn rt5670_components() -> *const ::kernel::ffi::c_char;
 }
 
 

@@ -19,7 +19,7 @@ static mut STANDARD_IO_RESOURCES: [Resource; 5] = [
 ];
 
 #[no_mangle]
-pub unsafe extern "C" fn get_system_type() -> *const core::ffi::c_char {
+pub unsafe extern "C" fn get_system_type() -> *const kernel::ffi::c_char {
     c"MIPS Malta".as_ptr()
 }
 
@@ -125,8 +125,8 @@ unsafe fn bonito_quirks_setup() {
     }
 }
 
-pub unsafe extern "C" fn plat_get_fdt() -> *mut core::ffi::c_void {
-    __dtb_start as *mut core::ffi::c_void
+pub unsafe extern "C" fn plat_get_fdt() -> *mut kernel::ffi::c_void {
+    __dtb_start as *mut kernel::ffi::c_void
 }
 
 pub unsafe extern "C" fn plat_mem_setup() {

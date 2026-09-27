@@ -20,8 +20,8 @@ pub enum list_head {}
 pub enum rv_monitor {}
 
 /* These constants are supplied by the corresponding trace headers. */
-pub const RV_MODE_WRITE: _ = TRACE_MODE_WRITE;
-pub const RV_MODE_READ: _ = TRACE_MODE_READ;
+pub const RV_MODE_WRITE: u32 = TRACE_MODE_WRITE;
+pub const RV_MODE_READ: u32 = TRACE_MODE_READ;
 
 macro_rules! rv_create_dir {
     ($($arg:tt)*) => { tracefs_create_dir!($($arg)*) };

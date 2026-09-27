@@ -10,7 +10,7 @@
 
 // Dependency: XT_DSCP_MASK is supplied by linux/netfilter/xt_dscp.h.
 
-pub const XT_ECN_IP_MASK: _ = !XT_DSCP_MASK;
+pub const XT_ECN_IP_MASK: u8 = !XT_DSCP_MASK;
 
 pub const XT_ECN_OP_MATCH_IP: u8 = 0x01;
 pub const XT_ECN_OP_MATCH_ECE: u8 = 0x10;

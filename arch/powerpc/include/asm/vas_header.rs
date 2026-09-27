@@ -59,7 +59,7 @@ pub struct vas_window {
     pub status: u32,
     pub cop: vas_cop_type,
     pub task_ref: vas_user_win_ref,
-    pub dbgname: *mut core::ffi::c_char,
+    pub dbgname: *mut kernel::ffi::c_char,
     pub dbgdir: *mut dentry,
 }
 
@@ -136,9 +136,9 @@ extern "C" {
     pub fn vas_init_tx_win_attr(txattr: *mut vas_tx_win_attr, cop: vas_cop_type);
     pub fn vas_tx_win_open(vasid: i32, cop: vas_cop_type, attr: *mut vas_tx_win_attr) -> *mut vas_window;
     pub fn vas_win_close(win: *mut vas_window) -> i32;
-    pub fn vas_copy_crb(crb: *mut core::ffi::c_void, offset: i32) -> i32;
+    pub fn vas_copy_crb(crb: *mut kernel::ffi::c_void, offset: i32) -> i32;
     pub fn vas_paste_crb(win: *mut vas_window, offset: i32, re: bool) -> i32;
-    pub fn vas_register_api_powernv(mod_: *mut module, cop_type: vas_cop_type, name: *const core::ffi::c_char) -> i32;
+    pub fn vas_register_api_powernv(mod_: *mut module, cop_type: vas_cop_type, name: *const kernel::ffi::c_char) -> i32;
     pub fn vas_unregister_api_powernv();
 }
 
@@ -157,9 +157,9 @@ pub struct vas_all_caps { pub descriptor: u64, pub feat_type: u64 }
 
 extern "C" {
     pub fn h_query_vas_capabilities(hcall: u64, query_type: u8, result: u64) -> i32;
-    pub fn vas_register_api_pseries(mod_: *mut module, cop_type: vas_cop_type, name: *const core::ffi::c_char) -> i32;
+    pub fn vas_register_api_pseries(mod_: *mut module, cop_type: vas_cop_type, name: *const kernel::ffi::c_char) -> i32;
     pub fn vas_unregister_api_pseries();
-    pub fn vas_register_coproc_api(mod_: *mut module, cop_type: vas_cop_type, name: *const core::ffi::c_char, vops: *const vas_user_win_ops) -> i32;
+    pub fn vas_register_coproc_api(mod_: *mut module, cop_type: vas_cop_type, name: *const kernel::ffi::c_char, vops: *const vas_user_win_ops) -> i32;
     pub fn vas_unregister_coproc_api();
     pub fn get_vas_user_win_ref(task_ref: *mut vas_user_win_ref) -> i32;
     pub fn vas_update_csb(crb: *mut coprocessor_request_block, task_ref: *mut vas_user_win_ref);

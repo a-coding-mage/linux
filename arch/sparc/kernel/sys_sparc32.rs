@@ -10,7 +10,7 @@
 
 // Linux kernel and architecture dependencies are supplied by the surrounding translation unit.
 
-pub unsafe fn truncate64(path: *const core::ffi::c_char, high: u32, low: u32) -> i32 {
+pub unsafe fn truncate64(path: *const kernel::ffi::c_char, high: u32, low: u32) -> i32 {
     ksys_truncate(path, ((high as u64) << 32) | low as u64)
 }
 
@@ -44,14 +44,14 @@ unsafe fn cp_compat_stat64(stat: *mut kstat, statbuf: *mut compat_stat64) -> i32
     err
 }
 
-pub unsafe fn stat64(filename: *const core::ffi::c_char, statbuf: *mut compat_stat64) -> i32 {
+pub unsafe fn stat64(filename: *const kernel::ffi::c_char, statbuf: *mut compat_stat64) -> i32 {
     let mut stat: kstat = core::mem::zeroed();
     let mut error = vfs_stat(filename, &mut stat);
     if error == 0 { error = cp_compat_stat64(&mut stat, statbuf); }
     error
 }
 
-pub unsafe fn lstat64(filename: *const core::ffi::c_char, statbuf: *mut compat_stat64) -> i32 {
+pub unsafe fn lstat64(filename: *const kernel::ffi::c_char, statbuf: *mut compat_stat64) -> i32 {
     let mut stat: kstat = core::mem::zeroed();
     let mut error = vfs_lstat(filename, &mut stat);
     if error == 0 { error = cp_compat_stat64(&mut stat, statbuf); }
@@ -65,7 +65,7 @@ pub unsafe fn fstat64(fd: u32, statbuf: *mut compat_stat64) -> i32 {
     error
 }
 
-pub unsafe fn fstatat64(dfd: u32, filename: *const core::ffi::c_char,
+pub unsafe fn fstatat64(dfd: u32, filename: *const kernel::ffi::c_char,
                         statbuf: *mut compat_stat64, flag: i32) -> i32 {
     let mut stat: kstat = core::mem::zeroed();
     let error = vfs_fstatat(dfd, filename, &mut stat, flag);
@@ -80,7 +80,7 @@ pub unsafe fn sparc_sigaction(sig: i32, act: *mut compat_old_sigaction,
 }
 
 pub unsafe fn rt_sigaction(sig: i32, act: *mut compat_sigaction,
-                           oact: *mut compat_sigaction, restorer: *mut core::ffi::c_void,
+                           oact: *mut compat_sigaction, restorer: *mut kernel::ffi::c_void,
                            sigsetsize: usize) -> i32 {
     let mut new_ka: k_sigaction = core::mem::zeroed();
     let mut old_ka: k_sigaction = core::mem::zeroed();
@@ -109,8 +109,8 @@ pub unsafe fn rt_sigaction(sig: i32, act: *mut compat_sigaction,
     ret
 }
 
-pub unsafe fn pread64(fd: u32, ubuf: *mut core::ffi::c_char, count: usize, poshi: u32, poslo: u32) -> i64 { ksys_pread64(fd, ubuf, count, ((poshi as u64) << 32) | poslo as u64) }
-pub unsafe fn pwrite64(fd: u32, ubuf: *const core::ffi::c_char, count: usize, poshi: u32, poslo: u32) -> i64 { ksys_pwrite64(fd, ubuf, count, ((poshi as u64) << 32) | poslo as u64) }
+pub unsafe fn pread64(fd: u32, ubuf: *mut kernel::ffi::c_char, count: usize, poshi: u32, poslo: u32) -> i64 { ksys_pread64(fd, ubuf, count, ((poshi as u64) << 32) | poslo as u64) }
+pub unsafe fn pwrite64(fd: u32, ubuf: *const kernel::ffi::c_char, count: usize, poshi: u32, poslo: u32) -> i64 { ksys_pwrite64(fd, ubuf, count, ((poshi as u64) << 32) | poslo as u64) }
 pub unsafe fn readahead(fd: i32, offhi: u32, offlo: u32, count: usize) -> i64 { ksys_readahead(fd, ((offhi as u64) << 32) | offlo as u64, count) }
 pub unsafe fn fadvise64(fd: i32, offhi: u32, offlo: u32, len: usize, advice: i32) -> i64 { ksys_fadvise64_64(fd, ((offhi as u64) << 32) | offlo as u64, len, advice) }
 pub unsafe fn fadvise64_64(fd: i32, offhi: u32, offlo: u32, lenhi: u32, lenlo: u32, advice: i32) -> i64 { ksys_fadvise64_64(fd, ((offhi as u64) << 32) | offlo as u64, ((lenhi as u64) << 32) | lenlo as u64, advice) }

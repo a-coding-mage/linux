@@ -16,7 +16,7 @@ pub const OWL_PLL_DEF_DELAY: u8 = 50;
 #[repr(C)]
 pub struct clk_pll_table {
     pub val: u32,
-    pub rate: ::core::ffi::c_ulong,
+    pub rate: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]

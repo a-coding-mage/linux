@@ -4,7 +4,7 @@
  */
 
 /* Dependencies supplied by the surrounding translation unit. */
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct icc_path {
@@ -46,25 +46,25 @@ pub struct gdsc {
     pub pd: generic_pm_domain,
     pub parent: *mut generic_pm_domain,
     pub regmap: *mut regmap,
-    pub gdscr: core::ffi::c_uint,
-    pub collapse_ctrl: core::ffi::c_uint,
-    pub collapse_mask: core::ffi::c_uint,
-    pub gds_hw_ctrl: core::ffi::c_uint,
-    pub clamp_io_ctrl: core::ffi::c_uint,
-    pub cxcs: *mut core::ffi::c_uint,
-    pub cxc_count: core::ffi::c_uint,
-    pub en_rest_wait_val: core::ffi::c_uint,
-    pub en_few_wait_val: core::ffi::c_uint,
-    pub clk_dis_wait_val: core::ffi::c_uint,
+    pub gdscr: kernel::ffi::c_uint,
+    pub collapse_ctrl: kernel::ffi::c_uint,
+    pub collapse_mask: kernel::ffi::c_uint,
+    pub gds_hw_ctrl: kernel::ffi::c_uint,
+    pub clamp_io_ctrl: kernel::ffi::c_uint,
+    pub cxcs: *mut kernel::ffi::c_uint,
+    pub cxc_count: kernel::ffi::c_uint,
+    pub en_rest_wait_val: kernel::ffi::c_uint,
+    pub en_few_wait_val: kernel::ffi::c_uint,
+    pub clk_dis_wait_val: kernel::ffi::c_uint,
     pub pwrsts: u8,
     pub flags: u16,
     pub rcdev: *mut reset_controller_dev,
-    pub resets: *mut core::ffi::c_uint,
-    pub reset_count: core::ffi::c_uint,
+    pub resets: *mut kernel::ffi::c_uint,
+    pub reset_count: kernel::ffi::c_uint,
     pub supply: *const c_char,
     pub rsupply: *mut regulator,
     pub needs_icc: bool,
-    pub icc_path_index: core::ffi::c_uint,
+    pub icc_path_index: kernel::ffi::c_uint,
     pub icc_path: *mut icc_path,
 }
 
@@ -100,10 +100,10 @@ extern "C" {
         desc: *mut gdsc_desc,
         rcdev: *mut reset_controller_dev,
         r: *mut regmap,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn gdsc_unregister(desc: *mut gdsc_desc);
-    pub fn gdsc_gx_do_nothing_enable(domain: *mut generic_pm_domain) -> core::ffi::c_int;
-    pub fn gdsc_gx_disable(domain: *mut generic_pm_domain) -> core::ffi::c_int;
+    pub fn gdsc_gx_do_nothing_enable(domain: *mut generic_pm_domain) -> kernel::ffi::c_int;
+    pub fn gdsc_gx_disable(domain: *mut generic_pm_domain) -> kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_QCOM_GDSC))]
@@ -111,7 +111,7 @@ pub unsafe fn gdsc_register(
     _desc: *mut gdsc_desc,
     _rcdev: *mut reset_controller_dev,
     _r: *mut regmap,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     -38
 }
 

@@ -12,7 +12,7 @@ pub const PIO_FONTX: u32 = 0x4B6C; /* set font using struct consolefontdesc */
 pub struct consolefontdesc {
     pub charcount: u16, /* characters in font (256 or 512) */
     pub charheight: u16, /* scan lines per character (1-32) */
-    pub chardata: *mut core::ffi::c_char, /* font data in expanded form */
+    pub chardata: *mut kernel::ffi::c_char, /* font data in expanded form */
 }
 
 pub const PIO_FONTRESET: u32 = 0x4B6D; /* reset to default font */
@@ -42,7 +42,7 @@ pub const KDGETMODE: u32 = 0x4B3B; /* get current mode */
 pub const KDMAPDISP: u32 = 0x4B3C; /* map display into address space */
 pub const KDUNMAPDISP: u32 = 0x4B3D; /* unmap display from address space */
 
-pub type scrnmap_t = core::ffi::c_char;
+pub type scrnmap_t = kernel::ffi::c_char;
 pub const E_TABSZ: usize = 256;
 pub const GIO_SCRNMAP: u32 = 0x4B40; /* get screen mapping from kernel */
 pub const PIO_SCRNMAP: u32 = 0x4B41; /* put screen mapping table in kernel */

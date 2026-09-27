@@ -50,12 +50,12 @@ unsafe fn rxrpc_peer_cmp_key(peer: *const rxrpc_peer, local: *mut rxrpc_local,
     match (*srx).transport.family {
         AF_INET => {
             let d = (*peer).srx.transport.sin.sin_port as c_long - (*srx).transport.sin.sin_port as c_long;
-            if d != 0 { d } else { libc::memcmp(&(*peer).srx.transport.sin.sin_addr as *const _ as *const _, &(*srx).transport.sin.sin_addr as *const _ as *const _, core::mem::size_of::<in_addr>()) as c_long }
+            if d != 0 { d } else { memcmp(&(*peer).srx.transport.sin.sin_addr as *const _ as *const _, &(*srx).transport.sin.sin_addr as *const _ as *const _, core::mem::size_of::<in_addr>()) as c_long }
         }
         #[cfg(CONFIG_AF_RXRPC_IPV6)]
         AF_INET6 => {
             let d = (*peer).srx.transport.sin6.sin6_port as c_long - (*srx).transport.sin6.sin6_port as c_long;
-            if d != 0 { d } else { libc::memcmp(&(*peer).srx.transport.sin6.sin6_addr as *const _ as *const _, &(*srx).transport.sin6.sin6_addr as *const _ as *const _, core::mem::size_of::<in6_addr>()) as c_long }
+            if d != 0 { d } else { memcmp(&(*peer).srx.transport.sin6.sin6_addr as *const _ as *const _, &(*srx).transport.sin6.sin6_addr as *const _ as *const _, core::mem::size_of::<in6_addr>()) as c_long }
         }
         _ => { BUG!(); 0 }
     }

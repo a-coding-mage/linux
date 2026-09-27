@@ -10,7 +10,7 @@
 
 #[repr(C)]
 pub struct sync_merge_data {
-    pub name: [::core::ffi::c_char; 32],
+    pub name: [::kernel::ffi::c_char; 32],
     pub fd2: i32,
     pub fence: i32,
     pub flags: u32,
@@ -19,8 +19,8 @@ pub struct sync_merge_data {
 
 #[repr(C)]
 pub struct sync_fence_info {
-    pub obj_name: [::core::ffi::c_char; 32],
-    pub driver_name: [::core::ffi::c_char; 32],
+    pub obj_name: [::kernel::ffi::c_char; 32],
+    pub driver_name: [::kernel::ffi::c_char; 32],
     pub status: i32,
     pub flags: u32,
     pub timestamp_ns: u64,
@@ -28,7 +28,7 @@ pub struct sync_fence_info {
 
 #[repr(C)]
 pub struct sync_file_info {
-    pub name: [::core::ffi::c_char; 32],
+    pub name: [::kernel::ffi::c_char; 32],
     pub status: i32,
     pub flags: u32,
     pub num_fences: u32,
@@ -55,8 +55,8 @@ pub const SYNC_IOC_MAGIC: u8 = b'>';
  *
  * _IOWR and _IOW are supplied by the translated linux ioctl dependency.
  */
-pub const SYNC_IOC_MERGE: _ = _IOWR!(SYNC_IOC_MAGIC, 3, sync_merge_data);
-pub const SYNC_IOC_FILE_INFO: _ = _IOWR!(SYNC_IOC_MAGIC, 4, sync_file_info);
-pub const SYNC_IOC_SET_DEADLINE: _ = _IOW!(SYNC_IOC_MAGIC, 5, sync_set_deadline);
+pub const SYNC_IOC_MERGE: u32 = _IOWR!(SYNC_IOC_MAGIC, 3, sync_merge_data);
+pub const SYNC_IOC_FILE_INFO: u32 = _IOWR!(SYNC_IOC_MAGIC, 4, sync_file_info);
+pub const SYNC_IOC_SET_DEADLINE: u32 = _IOW!(SYNC_IOC_MAGIC, 5, sync_set_deadline);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

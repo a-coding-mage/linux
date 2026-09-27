@@ -3,7 +3,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-pub const BTRFS_TRANS_DIO_WRITE_STUB: *mut core::ffi::c_void = 1 as *mut core::ffi::c_void;
+pub const BTRFS_TRANS_DIO_WRITE_STUB: *mut kernel::ffi::c_void = 1 as *mut kernel::ffi::c_void;
 pub const BTRFS_ROOT_TRANS_TAG: u32 = 0;
 
 #[repr(C)]
@@ -29,9 +29,9 @@ pub struct btrfs_transaction {
     pub num_extwriters: atomic_t,
     pub num_writers: atomic_t,
     pub use_count: refcount_t,
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub state: btrfs_trans_state,
-    pub aborted: core::ffi::c_int,
+    pub aborted: kernel::ffi::c_int,
     pub list: list_head,
     pub dirty_pages: extent_io_tree,
     pub start_time: time64_t,
@@ -76,14 +76,14 @@ pub struct btrfs_trans_handle {
     pub bytes_reserved: u64,
     pub delayed_refs_bytes_reserved: u64,
     pub chunk_bytes_reserved: u64,
-    pub delayed_ref_updates: core::ffi::c_ulong,
-    pub delayed_ref_csum_deletions: core::ffi::c_ulong,
+    pub delayed_ref_updates: kernel::ffi::c_ulong,
+    pub delayed_ref_csum_deletions: kernel::ffi::c_ulong,
     pub transaction: *mut btrfs_transaction,
     pub block_rsv: *mut btrfs_block_rsv,
     pub orig_rsv: *mut btrfs_block_rsv,
     pub pending_snapshot: *mut btrfs_pending_snapshot,
     pub use_count: refcount_t,
-    pub type_: core::ffi::c_uint,
+    pub type_: kernel::ffi::c_uint,
     pub aborted: i16,
     pub adding_csums: bool,
     pub allocating_chunk: bool,
@@ -109,7 +109,7 @@ pub struct btrfs_pending_snapshot {
     pub inherit: *mut btrfs_qgroup_inherit,
     pub path: *mut btrfs_path,
     pub block_rsv: btrfs_block_rsv,
-    pub error: core::ffi::c_int,
+    pub error: kernel::ffi::c_int,
     pub anon_dev: dev_t,
     pub readonly: bool,
     pub list: list_head,
@@ -165,7 +165,7 @@ extern "C" {
     pub fn btrfs_put_transaction(transaction: *mut btrfs_transaction);
     pub fn btrfs_add_dropped_root(trans: *mut btrfs_trans_handle, root: *mut btrfs_root);
     pub fn btrfs_trans_release_chunk_metadata(trans: *mut btrfs_trans_handle);
-    pub fn __btrfs_abort_transaction(trans: *mut btrfs_trans_handle, function: *const core::ffi::c_char, line: u32, error: i32);
+    pub fn __btrfs_abort_transaction(trans: *mut btrfs_trans_handle, function: *const kernel::ffi::c_char, line: u32, error: i32);
     pub fn btrfs_transaction_init() -> i32;
     pub fn btrfs_transaction_exit();
 }

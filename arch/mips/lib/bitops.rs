@@ -7,7 +7,7 @@
  * Copyright (c) 1999, 2000  Silicon Graphics, Inc.
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 // Supplied by the architecture's IRQ flags implementation.
 unsafe extern "C" {

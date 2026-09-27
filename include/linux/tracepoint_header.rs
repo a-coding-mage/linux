@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* Rust translation of linux/tracepoint.h. Included dependencies are supplied elsewhere. */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct trace_eval_map {
-    pub system: *const core::ffi::c_char,
-    pub eval_string: *const core::ffi::c_char,
+    pub system: *const kernel::ffi::c_char,
+    pub eval_string: *const kernel::ffi::c_char,
     pub eval_value: c_ulong,
 }
 

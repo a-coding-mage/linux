@@ -11,12 +11,12 @@ extern "C" {
 
     // run an OFW command by calling into the firmware
     pub fn __olpc_ofw(
-        name: *const core::ffi::c_char,
-        nr_args: core::ffi::c_int,
-        args: *mut *const core::ffi::c_void,
-        nr_res: core::ffi::c_int,
-        res: *mut *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        name: *const kernel::ffi::c_char,
+        nr_args: kernel::ffi::c_int,
+        args: *mut *const kernel::ffi::c_void,
+        nr_res: kernel::ffi::c_int,
+        res: *mut *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
 
     // determine whether OFW is available and lives in the proper memory
     pub fn olpc_ofw_detect();
@@ -39,9 +39,9 @@ macro_rules! olpc_ofw {
         unsafe {
             $crate::__olpc_ofw(
                 $name,
-                $args.len() as core::ffi::c_int,
+                $args.len() as kernel::ffi::c_int,
                 $args.as_mut_ptr(),
-                $res.len() as core::ffi::c_int,
+                $res.len() as kernel::ffi::c_int,
                 $res.as_mut_ptr(),
             )
         }

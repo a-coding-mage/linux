@@ -13,7 +13,7 @@ pub struct dentry {
 }
 
 unsafe extern "C" {
-    fn debugfs_create_dir(name: *const core::ffi::c_char, parent: *mut dentry) -> *mut dentry;
+    fn debugfs_create_dir(name: *const kernel::ffi::c_char, parent: *mut dentry) -> *mut dentry;
 }
 
 // EXPORT_SYMBOL_GPL(acpi_debugfs_dir);

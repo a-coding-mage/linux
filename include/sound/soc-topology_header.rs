@@ -9,7 +9,7 @@
  * algorithms, equalisers, DAIs, widgets, FE caps, BE caps, codec link caps etc.
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* External types supplied by the surrounding ALSA headers. */
 #[repr(C)]
@@ -76,7 +76,7 @@ pub enum snd_soc_dobj_type {
 pub struct snd_soc_dobj_control {
     pub kcontrol: *mut snd_kcontrol,
     pub dtexts: *mut *mut i8,
-    pub dvalues: *mut libc::c_ulong,
+    pub dvalues: *mut kernel::ffi::c_ulong,
 }
 
 #[repr(C)]

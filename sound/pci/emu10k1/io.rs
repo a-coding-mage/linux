@@ -12,10 +12,10 @@
 // Dependencies from Linux, ALSA, emu10k1 headers, and p17v.h are expected
 // to be supplied by the surrounding translation unit.
 
-type u8 = core::ffi::c_uchar;
-type u16 = core::ffi::c_ushort;
-type u32 = core::ffi::c_uint;
-type u64 = core::ffi::c_ulonglong;
+type u8 = kernel::ffi::c_uchar;
+type u16 = kernel::ffi::c_ushort;
+type u32 = kernel::ffi::c_uint;
+type u64 = kernel::ffi::c_ulonglong;
 
 #[repr(C)]
 pub struct snd_emu10k1 {
@@ -112,11 +112,11 @@ unsafe extern "C" {
     fn udelay(usecs: u32);
     fn mdelay(msecs: u32);
     fn snd_BUG_ON(cond: bool) -> bool;
-    fn mutex_is_locked(lock: *mut core::ffi::c_void) -> bool;
-    fn dev_err(dev: *mut core::ffi::c_void, fmt: *const u8, ...);
-    fn dev_warn(dev: *mut core::ffi::c_void, fmt: *const u8, ...);
-    fn spin_lock_irqsave(lock: *mut core::ffi::c_void, flags: core::ffi::c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut core::ffi::c_void, flags: core::ffi::c_ulong);
+    fn mutex_is_locked(lock: *mut kernel::ffi::c_void) -> bool;
+    fn dev_err(dev: *mut kernel::ffi::c_void, fmt: *const u8, ...);
+    fn dev_warn(dev: *mut kernel::ffi::c_void, fmt: *const u8, ...);
+    fn spin_lock_irqsave(lock: *mut kernel::ffi::c_void, flags: kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut kernel::ffi::c_void, flags: kernel::ffi::c_ulong);
     fn REG_SIZE(reg: u32) -> u32;
     fn REG_VAL_GET(reg: u32, value: u32) -> u32;
     fn REG_MASK0(reg: u32) -> u32;
@@ -128,22 +128,22 @@ unsafe fn emu_audigy(_emu: *mut snd_emu10k1) -> bool {
 unsafe fn emu_port(_emu: *mut snd_emu10k1) -> u32 {
     todo!("external field access: emu->port")
 }
-unsafe fn emu_emu_lock(_emu: *mut snd_emu10k1) -> *mut core::ffi::c_void {
+unsafe fn emu_emu_lock(_emu: *mut snd_emu10k1) -> *mut kernel::ffi::c_void {
     todo!("external field access: &emu->emu_lock")
 }
-unsafe fn emu_spi_lock(_emu: *mut snd_emu10k1) -> *mut core::ffi::c_void {
+unsafe fn emu_spi_lock(_emu: *mut snd_emu10k1) -> *mut kernel::ffi::c_void {
     todo!("external field access: &emu->spi_lock")
 }
-unsafe fn emu_i2c_lock(_emu: *mut snd_emu10k1) -> *mut core::ffi::c_void {
+unsafe fn emu_i2c_lock(_emu: *mut snd_emu10k1) -> *mut kernel::ffi::c_void {
     todo!("external field access: &emu->i2c_lock")
 }
-unsafe fn emu_card_dev(_emu: *mut snd_emu10k1) -> *mut core::ffi::c_void {
+unsafe fn emu_card_dev(_emu: *mut snd_emu10k1) -> *mut kernel::ffi::c_void {
     todo!("external field access: emu->card->dev")
 }
 unsafe fn emu_ca0108_chip(_emu: *mut snd_emu10k1) -> bool {
     todo!("external field access: emu->card_capabilities->ca0108_chip")
 }
-unsafe fn emu1010_lock(_emu: *mut snd_emu10k1) -> *mut core::ffi::c_void {
+unsafe fn emu1010_lock(_emu: *mut snd_emu10k1) -> *mut kernel::ffi::c_void {
     todo!("external field access: &emu->emu1010.lock")
 }
 unsafe fn emu1010_wclock(_emu: *mut snd_emu10k1) -> u32 {
@@ -153,10 +153,10 @@ unsafe fn emu1010_set_word_clock(_emu: *mut snd_emu10k1, _clock: i32) {
     todo!("external field access: emu->emu1010.word_clock")
 }
 
-unsafe fn guard_spinlock_irqsave(_lock: *mut core::ffi::c_void) {
+unsafe fn guard_spinlock_irqsave(_lock: *mut kernel::ffi::c_void) {
     todo!("external scoped guard: spinlock_irqsave")
 }
-unsafe fn guard_spinlock(_lock: *mut core::ffi::c_void) {
+unsafe fn guard_spinlock(_lock: *mut kernel::ffi::c_void) {
     todo!("external scoped guard: spinlock")
 }
 unsafe fn guard_snd_emu1010_fpga_lock(_emu: *mut snd_emu10k1) {
@@ -845,7 +845,7 @@ pub unsafe extern "C" fn snd_emu10k1_voice_clear_loop_stop_multiple_atomic(
     emu: *mut snd_emu10k1,
     voices: u64,
 ) -> i32 {
-    let flags: core::ffi::c_ulong = 0;
+    let flags: kernel::ffi::c_ulong = 0;
     let mut soll: u32;
     let mut solh: u32;
     let mut ret: i32 = -EIO;

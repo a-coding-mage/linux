@@ -9,7 +9,7 @@
  */
 
 // C dependencies supplied by the surrounding kernel translation.
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /*
  * The registers we're interested in are at the end of the variable
@@ -22,21 +22,21 @@ use core::ffi::c_void;
 #[repr(C, packed)]
 struct frame_tail {
     fp: *mut frame_tail,
-    sp: ::core::ffi::c_ulong,
-    lr: ::core::ffi::c_ulong,
+    sp: ::kernel::ffi::c_ulong,
+    lr: ::kernel::ffi::c_ulong,
 }
 
 // External kernel types and functions referenced by this implementation.
 #[repr(C)]
 pub struct perf_callchain_entry_ctx {
-    pub nr: ::core::ffi::c_ulong,
-    pub max_stack: ::core::ffi::c_ulong,
+    pub nr: ::kernel::ffi::c_ulong,
+    pub max_stack: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct pt_regs {
-    pub ARM_pc: ::core::ffi::c_ulong,
-    pub ARM_fp: ::core::ffi::c_ulong,
+    pub ARM_pc: ::kernel::ffi::c_ulong,
+    pub ARM_fp: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -48,13 +48,13 @@ extern "C" {
     static mut current: *mut task_struct;
     fn access_ok(addr: *const c_void, size: usize) -> bool;
     fn pagefault_disable();
-    fn __copy_from_user_inatomic(to: *mut c_void, from: *const c_void, n: usize) -> ::core::ffi::c_ulong;
+    fn __copy_from_user_inatomic(to: *mut c_void, from: *const c_void, n: usize) -> ::kernel::ffi::c_ulong;
     fn pagefault_enable();
-    fn perf_callchain_store(entry: *mut perf_callchain_entry_ctx, ip: ::core::ffi::c_ulong) -> i32;
+    fn perf_callchain_store(entry: *mut perf_callchain_entry_ctx, ip: ::kernel::ffi::c_ulong) -> i32;
     fn arm_get_current_stackframe(regs: *mut pt_regs, frame: *mut stackframe);
     fn walk_stackframe(
         frame: *mut stackframe,
-        fn_: unsafe extern "C" fn(*mut c_void, ::core::ffi::c_ulong) -> bool,
+        fn_: unsafe extern "C" fn(*mut c_void, ::kernel::ffi::c_ulong) -> bool,
         data: *mut c_void,
     );
 }
@@ -78,7 +78,7 @@ unsafe fn user_backtrace(
     entry: *mut perf_callchain_entry_ctx,
 ) -> *mut frame_tail {
     let mut buftail = core::mem::MaybeUninit::<frame_tail>::uninit();
-    let err: ::core::ffi::c_ulong;
+    let err: ::kernel::ffi::c_ulong;
 
     if !access_ok(tail as *const c_void, core::mem::size_of::<frame_tail>()) {
         return core::ptr::null_mut();
@@ -137,7 +137,7 @@ pub unsafe extern "C" fn perf_callchain_user(
  * whist unwinding the stackframe and is like a subroutine return so we use
  * the PC.
  */
-unsafe extern "C" fn callchain_trace(data: *mut c_void, pc: ::core::ffi::c_ulong) -> bool {
+unsafe extern "C" fn callchain_trace(data: *mut c_void, pc: ::kernel::ffi::c_ulong) -> bool {
     let entry = data as *mut perf_callchain_entry_ctx;
     perf_callchain_store(entry, pc) == 0
 }

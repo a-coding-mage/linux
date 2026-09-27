@@ -187,20 +187,20 @@ pub const GPIOEVENT_EVENT_FALLING_EDGE: __u32 = 0x02;
 pub struct gpioevent_data { pub timestamp: __u64, pub id: __u32 }
 
 /* ioctl constants depend on the external _IOR/_IOWR definitions. */
-pub const GPIO_GET_CHIPINFO_IOCTL: _ = _IOR(0xB4, 0x01, gpiochip_info);
-pub const GPIO_GET_LINEINFO_UNWATCH_IOCTL: _ = _IOWR(0xB4, 0x0C, __u32);
-pub const GPIO_V2_GET_LINEINFO_IOCTL: _ = _IOWR(0xB4, 0x05, gpio_v2_line_info);
-pub const GPIO_V2_GET_LINEINFO_WATCH_IOCTL: _ = _IOWR(0xB4, 0x06, gpio_v2_line_info);
-pub const GPIO_V2_GET_LINE_IOCTL: _ = _IOWR(0xB4, 0x07, gpio_v2_line_request);
-pub const GPIO_V2_LINE_SET_CONFIG_IOCTL: _ = _IOWR(0xB4, 0x0D, gpio_v2_line_config);
-pub const GPIO_V2_LINE_GET_VALUES_IOCTL: _ = _IOWR(0xB4, 0x0E, gpio_v2_line_values);
-pub const GPIO_V2_LINE_SET_VALUES_IOCTL: _ = _IOWR(0xB4, 0x0F, gpio_v2_line_values);
-pub const GPIO_GET_LINEINFO_IOCTL: _ = _IOWR(0xB4, 0x02, gpioline_info);
-pub const GPIO_GET_LINEHANDLE_IOCTL: _ = _IOWR(0xB4, 0x03, gpiohandle_request);
-pub const GPIO_GET_LINEEVENT_IOCTL: _ = _IOWR(0xB4, 0x04, gpioevent_request);
-pub const GPIOHANDLE_GET_LINE_VALUES_IOCTL: _ = _IOWR(0xB4, 0x08, gpiohandle_data);
-pub const GPIOHANDLE_SET_LINE_VALUES_IOCTL: _ = _IOWR(0xB4, 0x09, gpiohandle_data);
-pub const GPIOHANDLE_SET_CONFIG_IOCTL: _ = _IOWR(0xB4, 0x0A, gpiohandle_config);
-pub const GPIO_GET_LINEINFO_WATCH_IOCTL: _ = _IOWR(0xB4, 0x0B, gpioline_info);
+pub const GPIO_GET_CHIPINFO_IOCTL: u32 = _IOR(0xB4, 0x01, gpiochip_info);
+pub const GPIO_GET_LINEINFO_UNWATCH_IOCTL: u32 = _IOWR(0xB4, 0x0C, __u32);
+pub const GPIO_V2_GET_LINEINFO_IOCTL: u32 = _IOWR(0xB4, 0x05, gpio_v2_line_info);
+pub const GPIO_V2_GET_LINEINFO_WATCH_IOCTL: u32 = _IOWR(0xB4, 0x06, gpio_v2_line_info);
+pub const GPIO_V2_GET_LINE_IOCTL: u32 = _IOWR(0xB4, 0x07, gpio_v2_line_request);
+pub const GPIO_V2_LINE_SET_CONFIG_IOCTL: u32 = _IOWR(0xB4, 0x0D, gpio_v2_line_config);
+pub const GPIO_V2_LINE_GET_VALUES_IOCTL: u32 = _IOWR(0xB4, 0x0E, gpio_v2_line_values);
+pub const GPIO_V2_LINE_SET_VALUES_IOCTL: u32 = _IOWR(0xB4, 0x0F, gpio_v2_line_values);
+pub const GPIO_GET_LINEINFO_IOCTL: u32 = _IOWR(0xB4, 0x02, gpioline_info);
+pub const GPIO_GET_LINEHANDLE_IOCTL: u32 = _IOWR(0xB4, 0x03, gpiohandle_request);
+pub const GPIO_GET_LINEEVENT_IOCTL: u32 = _IOWR(0xB4, 0x04, gpioevent_request);
+pub const GPIOHANDLE_GET_LINE_VALUES_IOCTL: u32 = _IOWR(0xB4, 0x08, gpiohandle_data);
+pub const GPIOHANDLE_SET_LINE_VALUES_IOCTL: u32 = _IOWR(0xB4, 0x09, gpiohandle_data);
+pub const GPIOHANDLE_SET_CONFIG_IOCTL: u32 = _IOWR(0xB4, 0x0A, gpiohandle_config);
+pub const GPIO_GET_LINEINFO_WATCH_IOCTL: u32 = _IOWR(0xB4, 0x0B, gpioline_info);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

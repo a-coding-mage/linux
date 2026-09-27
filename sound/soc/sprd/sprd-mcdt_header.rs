@@ -22,8 +22,8 @@ pub enum sprd_mcdt_dma_chan {
 
 #[repr(C)]
 pub struct sprd_mcdt_chan_callback {
-    pub notify: Option<unsafe extern "C" fn(data: *mut core::ffi::c_void)>,
-    pub data: *mut core::ffi::c_void,
+    pub notify: Option<unsafe extern "C" fn(data: *mut kernel::ffi::c_void)>,
+    pub data: *mut kernel::ffi::c_void,
 }
 
 /**
@@ -44,7 +44,7 @@ pub struct sprd_mcdt_chan_callback {
 pub struct sprd_mcdt_chan {
     pub mcdt: *mut sprd_mcdt_dev,
     pub id: u8,
-    pub fifo_phys: core::ffi::c_ulong,
+    pub fifo_phys: kernel::ffi::c_ulong,
     pub type_: sprd_mcdt_channel_type,
     pub dma_chan: sprd_mcdt_dma_chan,
     pub cb: *mut sprd_mcdt_chan_callback,
@@ -65,26 +65,26 @@ unsafe extern "C" {
 
     pub fn sprd_mcdt_chan_write(
         chan: *mut sprd_mcdt_chan,
-        tx_buf: *mut core::ffi::c_char,
+        tx_buf: *mut kernel::ffi::c_char,
         size: u32,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn sprd_mcdt_chan_read(
         chan: *mut sprd_mcdt_chan,
-        rx_buf: *mut core::ffi::c_char,
+        rx_buf: *mut kernel::ffi::c_char,
         size: u32,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn sprd_mcdt_chan_int_enable(
         chan: *mut sprd_mcdt_chan,
         water_mark: u32,
         cb: *mut sprd_mcdt_chan_callback,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn sprd_mcdt_chan_int_disable(chan: *mut sprd_mcdt_chan);
 
     pub fn sprd_mcdt_chan_dma_enable(
         chan: *mut sprd_mcdt_chan,
         dma_chan: sprd_mcdt_dma_chan,
         water_mark: u32,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn sprd_mcdt_chan_dma_disable(chan: *mut sprd_mcdt_chan);
 }
 
@@ -107,9 +107,9 @@ pub unsafe extern "C" fn sprd_mcdt_free_chan(_chan: *mut sprd_mcdt_chan) {}
 #[no_mangle]
 pub unsafe extern "C" fn sprd_mcdt_chan_write(
     _chan: *mut sprd_mcdt_chan,
-    _tx_buf: *mut core::ffi::c_char,
+    _tx_buf: *mut kernel::ffi::c_char,
     _size: u32,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     -EINVAL
 }
 
@@ -117,9 +117,9 @@ pub unsafe extern "C" fn sprd_mcdt_chan_write(
 #[no_mangle]
 pub unsafe extern "C" fn sprd_mcdt_chan_read(
     _chan: *mut sprd_mcdt_chan,
-    _rx_buf: *mut core::ffi::c_char,
+    _rx_buf: *mut kernel::ffi::c_char,
     _size: u32,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     0
 }
 
@@ -129,7 +129,7 @@ pub unsafe extern "C" fn sprd_mcdt_chan_int_enable(
     _chan: *mut sprd_mcdt_chan,
     _water_mark: u32,
     _cb: *mut sprd_mcdt_chan_callback,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     -EINVAL
 }
 
@@ -143,7 +143,7 @@ pub unsafe extern "C" fn sprd_mcdt_chan_dma_enable(
     _chan: *mut sprd_mcdt_chan,
     _dma_chan: sprd_mcdt_dma_chan,
     _water_mark: u32,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     -EINVAL
 }
 

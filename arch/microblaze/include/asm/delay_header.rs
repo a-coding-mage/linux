@@ -9,7 +9,7 @@
 
 /// Delay for the specified number of processor loops.
 #[inline]
-pub unsafe fn __delay(mut loops: libc::c_ulong) {
+pub unsafe fn __delay(mut loops: kernel::ffi::c_ulong) {
     // The original implementation uses MicroBlaze inline assembly.  This
     // preserves its decrement-and-test loop semantics.
     while {
@@ -31,19 +31,19 @@ pub unsafe fn __delay(mut loops: libc::c_ulong) {
  * (which corresponds to ~3800 bogomips at HZ = 100).
  * -- paulus
  */
-pub const __MAX_UDELAY: libc::c_ulong = 226050910u64 as libc::c_ulong / HZ;
-pub const __MAX_NDELAY: libc::c_ulong = 4294967295u64 as libc::c_ulong / HZ;
+pub const __MAX_UDELAY: kernel::ffi::c_ulong = 226050910u64 as kernel::ffi::c_ulong / HZ;
+pub const __MAX_NDELAY: kernel::ffi::c_ulong = 4294967295u64 as kernel::ffi::c_ulong / HZ;
 
 extern "C" {
-    pub static mut loops_per_jiffy: libc::c_ulong;
+    pub static mut loops_per_jiffy: kernel::ffi::c_ulong;
 }
 
 #[inline]
-pub unsafe fn __udelay(x: libc::c_uint) {
+pub unsafe fn __udelay(x: kernel::ffi::c_uint) {
     let tmp = (x as u64)
         .wrapping_mul(loops_per_jiffy as u64)
         .wrapping_mul(226u64);
-    let loops = (tmp >> 32) as libc::c_ulong;
+    let loops = (tmp >> 32) as kernel::ffi::c_ulong;
     __delay(loops);
 }
 

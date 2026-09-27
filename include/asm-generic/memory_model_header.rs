@@ -9,40 +9,40 @@
 /* supports 3 memory models. */
 
 #[cfg(CONFIG_FLATMEM)]
-pub const ARCH_PFN_OFFSET: ::core::ffi::c_ulong = 0;
+pub const ARCH_PFN_OFFSET: ::kernel::ffi::c_ulong = 0;
 
 #[cfg(CONFIG_FLATMEM)]
 extern "C" {
-    pub static mut max_mapnr: ::core::ffi::c_ulong;
+    pub static mut max_mapnr: ::kernel::ffi::c_ulong;
     pub static mut mem_map: *mut page;
 }
 
 #[cfg(CONFIG_FLATMEM)]
 #[inline]
-pub unsafe fn __pfn_to_page(pfn: ::core::ffi::c_ulong) -> *mut page {
+pub unsafe fn __pfn_to_page(pfn: ::kernel::ffi::c_ulong) -> *mut page {
     mem_map.add(pfn.wrapping_sub(ARCH_PFN_OFFSET) as usize)
 }
 
 #[cfg(CONFIG_FLATMEM)]
 #[inline]
-pub unsafe fn __page_to_pfn(page: *const page) -> ::core::ffi::c_ulong {
-    (page.offset_from(mem_map as *const page) as ::core::ffi::c_ulong)
+pub unsafe fn __page_to_pfn(page: *const page) -> ::kernel::ffi::c_ulong {
+    (page.offset_from(mem_map as *const page) as ::kernel::ffi::c_ulong)
         .wrapping_add(ARCH_PFN_OFFSET)
 }
 
 #[cfg(CONFIG_FLATMEM)]
 #[inline]
-pub unsafe fn pfn_valid(pfn: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+pub unsafe fn pfn_valid(pfn: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     let pfn_offset = ARCH_PFN_OFFSET;
-    (pfn >= pfn_offset && pfn.wrapping_sub(pfn_offset) < max_mapnr) as ::core::ffi::c_int
+    (pfn >= pfn_offset && pfn.wrapping_sub(pfn_offset) < max_mapnr) as ::kernel::ffi::c_int
 }
 
 #[cfg(CONFIG_FLATMEM)]
 #[inline]
-pub unsafe fn for_each_valid_pfn<F: FnMut(::core::ffi::c_ulong)>(
+pub unsafe fn for_each_valid_pfn<F: FnMut(::kernel::ffi::c_ulong)>(
     mut body: F,
-    start_pfn: ::core::ffi::c_ulong,
-    end_pfn: ::core::ffi::c_ulong,
+    start_pfn: ::kernel::ffi::c_ulong,
+    end_pfn: ::kernel::ffi::c_ulong,
 ) {
     let mut pfn = core::cmp::max(start_pfn, ARCH_PFN_OFFSET);
     let end = core::cmp::min(end_pfn, ARCH_PFN_OFFSET.wrapping_add(max_mapnr));
@@ -59,27 +59,27 @@ extern "C" {
 
 #[cfg(CONFIG_SPARSEMEM_VMEMMAP)]
 #[inline]
-pub unsafe fn __pfn_to_page(pfn: ::core::ffi::c_ulong) -> *mut page {
+pub unsafe fn __pfn_to_page(pfn: ::kernel::ffi::c_ulong) -> *mut page {
     vmemmap.add(pfn as usize)
 }
 
 #[cfg(CONFIG_SPARSEMEM_VMEMMAP)]
 #[inline]
-pub unsafe fn __page_to_pfn(page: *const page) -> ::core::ffi::c_ulong {
-    page.offset_from(vmemmap as *const page) as ::core::ffi::c_ulong
+pub unsafe fn __page_to_pfn(page: *const page) -> ::kernel::ffi::c_ulong {
+    page.offset_from(vmemmap as *const page) as ::kernel::ffi::c_ulong
 }
 
 #[cfg(CONFIG_SPARSEMEM)]
 #[inline]
-pub unsafe fn __page_to_pfn(pg: *const page) -> ::core::ffi::c_ulong {
+pub unsafe fn __page_to_pfn(pg: *const page) -> ::kernel::ffi::c_ulong {
     let sec = memdesc_section(&(*pg).flags);
     pg.offset_from(__section_mem_map_addr(__nr_to_section(sec)) as *const page)
-        as ::core::ffi::c_ulong
+        as ::kernel::ffi::c_ulong
 }
 
 #[cfg(CONFIG_SPARSEMEM)]
 #[inline]
-pub unsafe fn __pfn_to_page(pfn: ::core::ffi::c_ulong) -> *mut page {
+pub unsafe fn __pfn_to_page(pfn: ::kernel::ffi::c_ulong) -> *mut page {
     let sec = __pfn_to_section(pfn);
     (__section_mem_map_addr(sec) as *mut page).add(pfn as usize)
 }
@@ -96,12 +96,12 @@ pub fn __pfn_to_phys(pfn: usize) -> usize {
 }
 
 #[inline]
-pub unsafe fn page_to_pfn(page: *const page) -> ::core::ffi::c_ulong {
+pub unsafe fn page_to_pfn(page: *const page) -> ::kernel::ffi::c_ulong {
     __page_to_pfn(page)
 }
 
 #[inline]
-pub unsafe fn pfn_to_page(pfn: ::core::ffi::c_ulong) -> *mut page {
+pub unsafe fn pfn_to_page(pfn: ::kernel::ffi::c_ulong) -> *mut page {
     __pfn_to_page(pfn)
 }
 

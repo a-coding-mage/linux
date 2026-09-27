@@ -18,7 +18,7 @@ macro_rules! DBG { ($($arg:tt)*) => { unsafe { pr_debug($($arg)*) } } }
 pub static mut ps3_gpu_mutex: mutex = unsafe { core::mem::zeroed() };
 
 static mut ps3_firmware_version: ps3_firmware_version_union = unsafe { core::mem::zeroed() };
-static mut ps3_firmware_version_str: [core::ffi::c_char; 16] = [0; 16];
+static mut ps3_firmware_version_str: [kernel::ffi::c_char; 16] = [0; 16];
 
 #[no_mangle]
 pub unsafe extern "C" fn ps3_get_firmware_version(v: *mut ps3_firmware_version_union) {
@@ -46,7 +46,7 @@ unsafe fn ps3_power_save() {
     lv1_pause(0);
 }
 
-unsafe extern "C" fn ps3_restart(cmd: *mut core::ffi::c_char) -> ! {
+unsafe extern "C" fn ps3_restart(cmd: *mut kernel::ffi::c_char) -> ! {
     DBG!("%s:%d cmd '%s'\n", "ps3_restart", line!(), cmd);
     smp_send_stop();
     ps3_sys_manager_restart();
@@ -67,7 +67,7 @@ unsafe extern "C" fn ps3_halt() -> ! {
     core::hint::unreachable_unchecked()
 }
 
-unsafe extern "C" fn ps3_panic(str_: *mut core::ffi::c_char) {
+unsafe extern "C" fn ps3_panic(str_: *mut kernel::ffi::c_char) {
     DBG!("%s:%d %s\n", "ps3_panic", line!(), str_);
     smp_send_stop();
     printk("\n");
@@ -88,7 +88,7 @@ unsafe fn prealloc(p: *mut ps3_prealloc) {
 #[cfg(any(CONFIG_FB_PS3, CONFIG_FB_PS3_MODULE))]
 #[no_mangle]
 pub static mut ps3fb_videomemory: ps3_prealloc = ps3_prealloc {
-    name: "ps3fb videomemory\0".as_ptr() as *const core::ffi::c_char,
+    name: "ps3fb videomemory\0".as_ptr() as *const kernel::ffi::c_char,
     size: CONFIG_FB_PS3_DEFAULT_SIZE_M * 1024 * 1024,
     align: 1024 * 1024,
     address: core::ptr::null_mut(),
@@ -102,7 +102,7 @@ unsafe fn prealloc_ps3fb_videomemory() {}
 #[cfg(any(CONFIG_PS3_FLASH, CONFIG_PS3_FLASH_MODULE))]
 #[no_mangle]
 pub static mut ps3flash_bounce_buffer: ps3_prealloc = ps3_prealloc {
-    name: "ps3flash bounce buffer\0".as_ptr() as *const core::ffi::c_char,
+    name: "ps3flash bounce buffer\0".as_ptr() as *const kernel::ffi::c_char,
     size: 256 * 1024,
     align: 256 * 1024,
     address: core::ptr::null_mut(),

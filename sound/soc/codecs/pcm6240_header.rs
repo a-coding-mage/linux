@@ -180,36 +180,36 @@ pub enum pcmdevice_fw_state {
 
 #[repr(C)]
 pub struct pcmdevice_regbin_hdr {
-    pub img_sz: ::core::ffi::c_uint,
-    pub checksum: ::core::ffi::c_uint,
-    pub binary_version_num: ::core::ffi::c_uint,
-    pub drv_fw_version: ::core::ffi::c_uint,
-    pub timestamp: ::core::ffi::c_uint,
-    pub plat_type: ::core::ffi::c_uchar,
-    pub dev_family: ::core::ffi::c_uchar,
-    pub reserve: ::core::ffi::c_uchar,
-    pub ndev: ::core::ffi::c_uchar,
-    pub devs: [::core::ffi::c_uchar; PCMDEVICE_MAX_REGBIN_DEVICES],
-    pub nconfig: ::core::ffi::c_uint,
-    pub config_size: [::core::ffi::c_uint; PCMDEVICE_CONFIG_SUM],
+    pub img_sz: ::kernel::ffi::c_uint,
+    pub checksum: ::kernel::ffi::c_uint,
+    pub binary_version_num: ::kernel::ffi::c_uint,
+    pub drv_fw_version: ::kernel::ffi::c_uint,
+    pub timestamp: ::kernel::ffi::c_uint,
+    pub plat_type: ::kernel::ffi::c_uchar,
+    pub dev_family: ::kernel::ffi::c_uchar,
+    pub reserve: ::kernel::ffi::c_uchar,
+    pub ndev: ::kernel::ffi::c_uchar,
+    pub devs: [::kernel::ffi::c_uchar; PCMDEVICE_MAX_REGBIN_DEVICES],
+    pub nconfig: ::kernel::ffi::c_uint,
+    pub config_size: [::kernel::ffi::c_uint; PCMDEVICE_CONFIG_SUM],
 }
 
 #[repr(C)]
 pub struct pcmdevice_block_data {
-    pub dev_idx: ::core::ffi::c_uchar,
-    pub block_type: ::core::ffi::c_uchar,
-    pub yram_checksum: ::core::ffi::c_ushort,
-    pub block_size: ::core::ffi::c_uint,
-    pub n_subblks: ::core::ffi::c_uint,
-    pub regdata: *mut ::core::ffi::c_uchar,
+    pub dev_idx: ::kernel::ffi::c_uchar,
+    pub block_type: ::kernel::ffi::c_uchar,
+    pub yram_checksum: ::kernel::ffi::c_ushort,
+    pub block_size: ::kernel::ffi::c_uint,
+    pub n_subblks: ::kernel::ffi::c_uint,
+    pub regdata: *mut ::kernel::ffi::c_uchar,
 }
 
 #[repr(C)]
 pub struct pcmdevice_config_info {
-    pub cfg_name: [::core::ffi::c_char; 64],
-    pub nblocks: ::core::ffi::c_uint,
-    pub real_nblocks: ::core::ffi::c_uint,
-    pub active_dev: ::core::ffi::c_uchar,
+    pub cfg_name: [::kernel::ffi::c_char; 64],
+    pub nblocks: ::kernel::ffi::c_uint,
+    pub real_nblocks: ::kernel::ffi::c_uint,
+    pub active_dev: ::kernel::ffi::c_uchar,
     /* Flexible array member: struct pcmdevice_block_data *blk_data[] __counted_by(nblocks); */
     pub blk_data: [*mut pcmdevice_block_data; 0],
 }
@@ -217,7 +217,7 @@ pub struct pcmdevice_config_info {
 #[repr(C)]
 pub struct pcmdevice_regbin {
     pub fw_hdr: pcmdevice_regbin_hdr,
-    pub ncfgs: ::core::ffi::c_int,
+    pub ncfgs: ::kernel::ffi::c_int,
     pub cfg_info: *mut *mut pcmdevice_config_info,
 }
 
@@ -230,36 +230,36 @@ pub struct pcmdevice_priv {
     pub hw_rst: *mut gpio_desc,
     pub regmap: *mut regmap,
     pub regbin: pcmdevice_regbin,
-    pub irq: ::core::ffi::c_int,
-    pub addr: [::core::ffi::c_uint; PCMDEVICE_MAX_I2C_DEVICES],
-    pub chip_id: ::core::ffi::c_uint,
-    pub cur_conf: ::core::ffi::c_int,
-    pub fw_state: ::core::ffi::c_int,
-    pub ndev: ::core::ffi::c_int,
-    pub bin_name: [::core::ffi::c_uchar; PCMDEVICE_BIN_FILENAME_LEN],
+    pub irq: ::kernel::ffi::c_int,
+    pub addr: [::kernel::ffi::c_uint; PCMDEVICE_MAX_I2C_DEVICES],
+    pub chip_id: ::kernel::ffi::c_uint,
+    pub cur_conf: ::kernel::ffi::c_int,
+    pub fw_state: ::kernel::ffi::c_int,
+    pub ndev: ::kernel::ffi::c_int,
+    pub bin_name: [::kernel::ffi::c_uchar; PCMDEVICE_BIN_FILENAME_LEN],
     /* used for kcontrol name */
-    pub upper_dev_name: [::core::ffi::c_uchar; I2C_NAME_SIZE],
-    pub dev_name: [::core::ffi::c_uchar; I2C_NAME_SIZE],
+    pub upper_dev_name: [::kernel::ffi::c_uchar; I2C_NAME_SIZE],
+    pub dev_name: [::kernel::ffi::c_uchar; I2C_NAME_SIZE],
 }
 
 /* mixer control */
 #[repr(C)]
 pub struct pcmdevice_mixer_control {
-    pub max: ::core::ffi::c_int,
-    pub reg: ::core::ffi::c_int,
-    pub dev_no: ::core::ffi::c_uint,
-    pub shift: ::core::ffi::c_uint,
-    pub invert: ::core::ffi::c_uint,
+    pub max: ::kernel::ffi::c_int,
+    pub reg: ::kernel::ffi::c_int,
+    pub dev_no: ::kernel::ffi::c_uint,
+    pub shift: ::kernel::ffi::c_uint,
+    pub invert: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct pcmdev_ctrl_info {
-    pub gain: *const ::core::ffi::c_uint,
+    pub gain: *const ::kernel::ffi::c_uint,
     pub pcmdev_ctrl: *const pcmdevice_mixer_control,
-    pub ctrl_array_size: ::core::ffi::c_uint,
+    pub ctrl_array_size: ::kernel::ffi::c_uint,
     pub get: *mut snd_kcontrol_get_t,
     pub put: *mut snd_kcontrol_put_t,
-    pub pcmdev_ctrl_name_id: ::core::ffi::c_int,
+    pub pcmdev_ctrl_name_id: ::kernel::ffi::c_int,
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -8,11 +8,11 @@
 // Requires: linux/slab.h, sound/core.h, sound/pcm.h, sound/pcm_params.h
 // Requires: capture.h, driver.h, pcm.h
 
-use core::ffi::c_char;
-use core::ffi::c_int;
-use core::ffi::c_uint;
-use core::ffi::c_ulong;
-use core::ffi::c_void;
+use kernel::ffi::c_char;
+use kernel::ffi::c_int;
+use kernel::ffi::c_uint;
+use kernel::ffi::c_ulong;
+use kernel::ffi::c_void;
 use core::ptr;
 
 // Type declarations from other files

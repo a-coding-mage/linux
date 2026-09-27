@@ -35,7 +35,7 @@ pub struct IsapnpCardIdDev {
 
 #[repr(C)]
 pub struct IsapnpCardId {
-    pub driver_data: ::core::ffi::c_ulong,
+    pub driver_data: ::kernel::ffi::c_ulong,
     pub card_vendor: u16,
     pub card_device: u16,
     pub devs: [IsapnpCardIdDev; ISAPNP_CARD_DEVS],
@@ -53,25 +53,25 @@ pub struct IsapnpCardId {
 // is enabled; otherwise the inline fallbacks below apply.
 #[cfg(any(CONFIG_ISAPNP, CONFIG_ISAPNP_MODULE))]
 extern "C" {
-    pub fn isapnp_present() -> ::core::ffi::c_int;
-    pub fn isapnp_cfg_begin(csn: ::core::ffi::c_int, device: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn isapnp_cfg_end() -> ::core::ffi::c_int;
+    pub fn isapnp_present() -> ::kernel::ffi::c_int;
+    pub fn isapnp_cfg_begin(csn: ::kernel::ffi::c_int, device: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn isapnp_cfg_end() -> ::kernel::ffi::c_int;
     pub fn isapnp_read_byte(idx: u8) -> u8;
     pub fn isapnp_write_byte(idx: u8, val: u8);
 }
 
 #[cfg(not(CONFIG_PROC_FS))]
 #[inline]
-pub const fn isapnp_proc_init() -> ::core::ffi::c_int { 0 }
+pub const fn isapnp_proc_init() -> ::kernel::ffi::c_int { 0 }
 
 #[cfg(not(CONFIG_PROC_FS))]
 #[inline]
-pub const fn isapnp_proc_done() -> ::core::ffi::c_int { 0 }
+pub const fn isapnp_proc_done() -> ::kernel::ffi::c_int { 0 }
 
 #[cfg(CONFIG_PROC_FS)]
 extern "C" {
-    pub fn isapnp_proc_init() -> ::core::ffi::c_int;
-    pub fn isapnp_proc_done() -> ::core::ffi::c_int;
+    pub fn isapnp_proc_init() -> ::kernel::ffi::c_int;
+    pub fn isapnp_proc_done() -> ::kernel::ffi::c_int;
 }
 
 // compat: pnp_find_dev is supplied by linux/pnp.h.
@@ -88,15 +88,15 @@ extern "C" {
 // fallbacks.  ENODEV is supplied by linux/errno.h.
 #[cfg(not(any(CONFIG_ISAPNP, CONFIG_ISAPNP_MODULE)))]
 #[inline]
-pub const fn isapnp_present() -> ::core::ffi::c_int { 0 }
+pub const fn isapnp_present() -> ::kernel::ffi::c_int { 0 }
 
 #[cfg(not(any(CONFIG_ISAPNP, CONFIG_ISAPNP_MODULE)))]
 #[inline]
-pub const fn isapnp_cfg_begin(_csn: ::core::ffi::c_int, _device: ::core::ffi::c_int) -> ::core::ffi::c_int { -crate::ENODEV }
+pub const fn isapnp_cfg_begin(_csn: ::kernel::ffi::c_int, _device: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int { -crate::ENODEV }
 
 #[cfg(not(any(CONFIG_ISAPNP, CONFIG_ISAPNP_MODULE)))]
 #[inline]
-pub const fn isapnp_cfg_end() -> ::core::ffi::c_int { -crate::ENODEV }
+pub const fn isapnp_cfg_end() -> ::kernel::ffi::c_int { -crate::ENODEV }
 
 #[cfg(not(any(CONFIG_ISAPNP, CONFIG_ISAPNP_MODULE)))]
 #[inline]

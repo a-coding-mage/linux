@@ -8,19 +8,19 @@
  * Rust representation; the pointer remains a raw pointer here.
  */
 extern "C" {
-    pub fn early_ioremap(phys_addr: resource_size_t, size: ::core::ffi::c_ulong)
-        -> *mut ::core::ffi::c_void;
-    pub fn early_memremap(phys_addr: resource_size_t, size: ::core::ffi::c_ulong)
-        -> *mut ::core::ffi::c_void;
-    pub fn early_memremap_ro(phys_addr: resource_size_t, size: ::core::ffi::c_ulong)
-        -> *mut ::core::ffi::c_void;
+    pub fn early_ioremap(phys_addr: resource_size_t, size: ::kernel::ffi::c_ulong)
+        -> *mut ::kernel::ffi::c_void;
+    pub fn early_memremap(phys_addr: resource_size_t, size: ::kernel::ffi::c_ulong)
+        -> *mut ::kernel::ffi::c_void;
+    pub fn early_memremap_ro(phys_addr: resource_size_t, size: ::kernel::ffi::c_ulong)
+        -> *mut ::kernel::ffi::c_void;
     pub fn early_memremap_prot(
         phys_addr: resource_size_t,
-        size: ::core::ffi::c_ulong,
-        prot_val: ::core::ffi::c_ulong,
-    ) -> *mut ::core::ffi::c_void;
-    pub fn early_iounmap(addr: *mut ::core::ffi::c_void, size: ::core::ffi::c_ulong);
-    pub fn early_memunmap(addr: *mut ::core::ffi::c_void, size: ::core::ffi::c_ulong);
+        size: ::kernel::ffi::c_ulong,
+        prot_val: ::kernel::ffi::c_ulong,
+    ) -> *mut ::kernel::ffi::c_void;
+    pub fn early_iounmap(addr: *mut ::kernel::ffi::c_void, size: ::kernel::ffi::c_ulong);
+    pub fn early_memunmap(addr: *mut ::kernel::ffi::c_void, size: ::kernel::ffi::c_ulong);
 }
 
 /* CONFIG_GENERIC_EARLY_IOREMAP && CONFIG_MMU */
@@ -43,10 +43,10 @@ extern "C" {
 
     /* Early copy from unmapped memory to kernel mapped memory. */
     pub fn copy_from_early_mem(
-        dest: *mut ::core::ffi::c_void,
+        dest: *mut ::kernel::ffi::c_void,
         src: phys_addr_t,
-        size: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        size: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(all(

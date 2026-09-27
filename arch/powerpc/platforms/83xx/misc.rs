@@ -16,13 +16,13 @@ unsafe extern "C" {
     fn in_be32(addr: *mut u32) -> u32;
     fn out_be32(addr: *mut u32, value: u32);
     fn local_irq_disable();
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn of_find_compatible_node(from: *mut device_node, typ: *const core::ffi::c_char, compatible: *const core::ffi::c_char) -> *mut device_node;
-    fn of_find_node_by_type(from: *mut device_node, typ: *const core::ffi::c_char) -> *mut device_node;
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn of_find_compatible_node(from: *mut device_node, typ: *const kernel::ffi::c_char, compatible: *const kernel::ffi::c_char) -> *mut device_node;
+    fn of_find_node_by_type(from: *mut device_node, typ: *const kernel::ffi::c_char) -> *mut device_node;
     fn of_node_put(node: *mut device_node);
     fn ipic_init(node: *mut device_node, flags: i32);
     fn ipic_set_default_priority();
-    fn of_platform_bus_probe(node: *mut device_node, ids: *const of_device_id, parent: *mut core::ffi::c_void) -> i32;
+    fn of_platform_bus_probe(node: *mut device_node, ids: *const of_device_id, parent: *mut kernel::ffi::c_void) -> i32;
     fn fix_to_virt(index: i32) -> usize;
     fn setbat(index: i32, virt: usize, phys: usize, size: usize, flags: usize);
     fn update_bats();
@@ -30,7 +30,7 @@ unsafe extern "C" {
     fn ipic_get_mcp_status() -> u32;
     fn ipic_clear_mcp_status(mask: u32);
     fn debugger_fault_handler(regs: *mut pt_regs) -> i32;
-    fn die(msg: *const core::ffi::c_char, regs: *mut pt_regs, err: i32);
+    fn die(msg: *const kernel::ffi::c_char, regs: *mut pt_regs, err: i32);
     fn mpc83xx_add_bridge(node: *mut device_node);
 }
 
@@ -47,14 +47,14 @@ pub struct pt_regs {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub name: *const core::ffi::c_char,
-    pub type_: *const core::ffi::c_char,
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
+    pub type_: *const kernel::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 extern "C" {
-    static mut ppc_md_progress: Option<unsafe extern "C" fn(*const core::ffi::c_char, u32)>;
+    static mut ppc_md_progress: Option<unsafe extern "C" fn(*const kernel::ffi::c_char, u32)>;
 }
 
 unsafe fn mpc83xx_restart_init() -> i32 {
@@ -65,7 +65,7 @@ unsafe fn mpc83xx_restart_init() -> i32 {
 
 // Equivalent of arch_initcall(mpc83xx_restart_init).
 
-pub unsafe extern "C" fn mpc83xx_restart(_cmd: *mut core::ffi::c_char) -> ! {
+pub unsafe extern "C" fn mpc83xx_restart(_cmd: *mut kernel::ffi::c_char) -> ! {
     const RST_PROT_REG: usize = 0x00000018;
     const RST_CTRL_REG: usize = 0x0000001c;
 

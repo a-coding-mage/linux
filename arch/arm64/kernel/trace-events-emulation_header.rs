@@ -4,7 +4,7 @@
 // The C header guard and TRACE_HEADER_MULTI_READ conditional are preserved here
 // as source-level intent; their expansion is provided by the tracepoint system.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /// Entry data emitted by the `instruction_emulation` trace event.
 #[repr(C)]

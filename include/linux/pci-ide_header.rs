@@ -97,7 +97,7 @@ pub struct pci_ide {
     pub partner: [pci_ide_partner; PCI_IDE_PARTNER_MAX as usize],
     pub host_bridge_stream: u8,
     pub stream_id: i32,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 /*

@@ -9,7 +9,7 @@
  *  Fabian Frederick : August 2003 - All file operations assigned to EIO
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 unsafe fn bad_file_open(_inode: *mut inode, _filp: *mut file) -> c_int {
     -EIO

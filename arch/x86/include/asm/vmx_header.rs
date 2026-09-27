@@ -51,7 +51,7 @@ extern "C" { pub static mut l1tf_vmx_mitigation: vmx_l1d_flush_state; }
 pub struct vmcs {
     pub hdr: vmcs_hdr,
     pub abort: u32,
-    pub data: [core::ffi::c_char; 0],
+    pub data: [kernel::ffi::c_char; 0],
 }
 
 /* Supplied by the corresponding VMX feature definitions. */

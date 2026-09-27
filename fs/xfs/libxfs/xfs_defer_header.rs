@@ -55,7 +55,7 @@ extern "C" {
 #[repr(C)]
 #[allow(non_camel_case_types)]
 pub struct xfs_defer_op_type {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub max_items: u32,
     pub create_intent: Option<unsafe extern "C" fn(*mut xfs_trans, *mut list_head, u32, bool) -> *mut xfs_log_item>,
     pub abort_intent: Option<unsafe extern "C" fn(*mut xfs_log_item)>,

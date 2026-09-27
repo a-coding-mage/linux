@@ -75,23 +75,23 @@ macro_rules! SPI_IOC_MESSAGE {
 }
 
 /* Read / Write of SPI mode (SPI_MODE_0..SPI_MODE_3) (limited to 8 bits) */
-pub const SPI_IOC_RD_MODE: _ = _IOR!(SPI_IOC_MAGIC, 1, u8);
-pub const SPI_IOC_WR_MODE: _ = _IOW!(SPI_IOC_MAGIC, 1, u8);
+pub const SPI_IOC_RD_MODE: u32 = _IOR!(SPI_IOC_MAGIC, 1, u8);
+pub const SPI_IOC_WR_MODE: u32 = _IOW!(SPI_IOC_MAGIC, 1, u8);
 
 /* Read / Write SPI bit justification */
-pub const SPI_IOC_RD_LSB_FIRST: _ = _IOR!(SPI_IOC_MAGIC, 2, u8);
-pub const SPI_IOC_WR_LSB_FIRST: _ = _IOW!(SPI_IOC_MAGIC, 2, u8);
+pub const SPI_IOC_RD_LSB_FIRST: u32 = _IOR!(SPI_IOC_MAGIC, 2, u8);
+pub const SPI_IOC_WR_LSB_FIRST: u32 = _IOW!(SPI_IOC_MAGIC, 2, u8);
 
 /* Read / Write SPI device word length (1..N) */
-pub const SPI_IOC_RD_BITS_PER_WORD: _ = _IOR!(SPI_IOC_MAGIC, 3, u8);
-pub const SPI_IOC_WR_BITS_PER_WORD: _ = _IOW!(SPI_IOC_MAGIC, 3, u8);
+pub const SPI_IOC_RD_BITS_PER_WORD: u32 = _IOR!(SPI_IOC_MAGIC, 3, u8);
+pub const SPI_IOC_WR_BITS_PER_WORD: u32 = _IOW!(SPI_IOC_MAGIC, 3, u8);
 
 /* Read / Write SPI device default max speed hz */
-pub const SPI_IOC_RD_MAX_SPEED_HZ: _ = _IOR!(SPI_IOC_MAGIC, 4, u32);
-pub const SPI_IOC_WR_MAX_SPEED_HZ: _ = _IOW!(SPI_IOC_MAGIC, 4, u32);
+pub const SPI_IOC_RD_MAX_SPEED_HZ: u32 = _IOR!(SPI_IOC_MAGIC, 4, u32);
+pub const SPI_IOC_WR_MAX_SPEED_HZ: u32 = _IOW!(SPI_IOC_MAGIC, 4, u32);
 
 /* Read / Write of the SPI mode field */
-pub const SPI_IOC_RD_MODE32: _ = _IOR!(SPI_IOC_MAGIC, 5, u32);
-pub const SPI_IOC_WR_MODE32: _ = _IOW!(SPI_IOC_MAGIC, 5, u32);
+pub const SPI_IOC_RD_MODE32: u32 = _IOR!(SPI_IOC_MAGIC, 5, u32);
+pub const SPI_IOC_WR_MODE32: u32 = _IOW!(SPI_IOC_MAGIC, 5, u32);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

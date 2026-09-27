@@ -3,7 +3,7 @@
 
 // Linux kernel dependencies and local headers are supplied by the surrounding translation unit.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // #define dev_fmt(fmt) "RateLimiting: " fmt
 // #define GET_RL_STRUCT(accel_dev) ((accel_dev)->rate_limiting->user_input)

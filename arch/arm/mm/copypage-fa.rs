@@ -28,18 +28,18 @@ pub struct vm_area_struct {
 
 #[repr(C)]
 pub struct cpu_user_fns {
-    pub cpu_clear_user_highpage: Option<unsafe extern "C" fn(*mut page, libc::c_ulong)>,
+    pub cpu_clear_user_highpage: Option<unsafe extern "C" fn(*mut page, kernel::ffi::c_ulong)>,
     pub cpu_copy_user_highpage:
-        Option<unsafe extern "C" fn(*mut page, *mut page, libc::c_ulong, *mut vm_area_struct)>,
+        Option<unsafe extern "C" fn(*mut page, *mut page, kernel::ffi::c_ulong, *mut vm_area_struct)>,
 }
 
 extern "C" {
-    fn kmap_atomic(page: *mut page) -> *mut core::ffi::c_void;
-    fn kunmap_atomic(addr: *const core::ffi::c_void);
+    fn kmap_atomic(page: *mut page) -> *mut kernel::ffi::c_void;
+    fn kunmap_atomic(addr: *const kernel::ffi::c_void);
 }
 
 /* Faraday optimised copy_user_page */
-unsafe fn fa_copy_user_page(mut kto: *mut core::ffi::c_void, mut kfrom: *const core::ffi::c_void) {
+unsafe fn fa_copy_user_page(mut kto: *mut kernel::ffi::c_void, mut kfrom: *const kernel::ffi::c_void) {
     let mut tmp: i32;
 
     asm!(
@@ -66,7 +66,7 @@ unsafe fn fa_copy_user_page(mut kto: *mut core::ffi::c_void, mut kfrom: *const c
 pub unsafe extern "C" fn fa_copy_user_highpage(
     to: *mut page,
     from: *mut page,
-    _vaddr: libc::c_ulong,
+    _vaddr: kernel::ffi::c_ulong,
     _vma: *mut vm_area_struct,
 ) {
     let kto = kmap_atomic(to);
@@ -81,7 +81,7 @@ pub unsafe extern "C" fn fa_copy_user_highpage(
  *
  * Same story as above.
  */
-pub unsafe extern "C" fn fa_clear_user_highpage(page: *mut page, _vaddr: libc::c_ulong) {
+pub unsafe extern "C" fn fa_clear_user_highpage(page: *mut page, _vaddr: kernel::ffi::c_ulong) {
     let kaddr = kmap_atomic(page);
     let mut ptr = kaddr;
 

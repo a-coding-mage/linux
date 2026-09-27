@@ -21,12 +21,12 @@ const GPT_NSCALE_MASK: u32 = 0xF;
  * Fout= Fin/((2 ^ (N+1)) * (M+1))
  */
 
-unsafe fn gpt_calc_rate(hw: *mut clk_hw, mut prate: libc::c_ulong, index: libc::c_int) -> libc::c_ulong {
+unsafe fn gpt_calc_rate(hw: *mut clk_hw, mut prate: kernel::ffi::c_ulong, index: kernel::ffi::c_int) -> kernel::ffi::c_ulong {
     let gpt = container_of_clk_gpt(hw);
     let rtbl = (*gpt).rtbl;
 
     prate /= ((1i32 << ((*rtbl.add(index as usize)).nscale + 1))
-        * ((*rtbl.add(index as usize)).mscale + 1)) as libc::c_ulong;
+        * ((*rtbl.add(index as usize)).mscale + 1)) as kernel::ffi::c_ulong;
 
     prate
 }
@@ -34,9 +34,9 @@ unsafe fn gpt_calc_rate(hw: *mut clk_hw, mut prate: libc::c_ulong, index: libc::
 unsafe fn clk_gpt_determine_rate(
     hw: *mut clk_hw,
     req: *mut clk_rate_request,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let gpt = container_of_clk_gpt(hw);
-    let mut unused: libc::c_int = 0;
+    let mut unused: kernel::ffi::c_int = 0;
 
     (*req).rate = clk_round_rate_index(
         hw,
@@ -52,12 +52,12 @@ unsafe fn clk_gpt_determine_rate(
 
 unsafe fn clk_gpt_recalc_rate(
     hw: *mut clk_hw,
-    parent_rate: libc::c_ulong,
-) -> libc::c_ulong {
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     let gpt = container_of_clk_gpt(hw);
-    let mut flags: libc::c_ulong = 0;
-    let mut div: libc::c_uint = 1;
-    let val: libc::c_uint;
+    let mut flags: kernel::ffi::c_ulong = 0;
+    let mut div: kernel::ffi::c_uint = 1;
+    let val: kernel::ffi::c_uint;
 
     if !(*gpt).lock.is_null() {
         spin_lock_irqsave((*gpt).lock, &mut flags);
@@ -76,20 +76,20 @@ unsafe fn clk_gpt_recalc_rate(
         return 0;
     }
 
-    parent_rate / div as libc::c_ulong
+    parent_rate / div as kernel::ffi::c_ulong
 }
 
 /* Configures new clock rate of gpt */
 unsafe fn clk_gpt_set_rate(
     hw: *mut clk_hw,
-    drate: libc::c_ulong,
-    prate: libc::c_ulong,
-) -> libc::c_int {
+    drate: kernel::ffi::c_ulong,
+    prate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let gpt = container_of_clk_gpt(hw);
     let rtbl = (*gpt).rtbl;
-    let mut flags: libc::c_ulong = 0;
-    let mut val: libc::c_uint;
-    let mut i: libc::c_int = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
+    let mut val: kernel::ffi::c_uint;
+    let mut i: kernel::ffi::c_int = 0;
 
     clk_round_rate_index(
         hw,
@@ -126,10 +126,10 @@ static clk_gpt_ops: clk_ops = clk_ops {
 };
 
 pub unsafe fn clk_register_gpt(
-    name: *const libc::c_char,
-    parent_name: *const libc::c_char,
-    flags: libc::c_ulong,
-    reg: *mut libc::c_void,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
+    flags: kernel::ffi::c_ulong,
+    reg: *mut kernel::ffi::c_void,
     rtbl: *mut gpt_rate_tbl,
     rtbl_cnt: u8,
     lock: *mut spinlock_t,
@@ -140,12 +140,12 @@ pub unsafe fn clk_register_gpt(
 
     if name.is_null() || parent_name.is_null() || reg.is_null() || rtbl.is_null() || rtbl_cnt == 0 {
         pr_err(c"Invalid arguments passed\n");
-        return err_ptr(-libc::EINVAL);
+        return err_ptr(-EINVAL);
     }
 
     gpt = kzalloc_clk_gpt();
     if gpt.is_null() {
-        return err_ptr(-libc::ENOMEM);
+        return err_ptr(-ENOMEM);
     }
 
     /* struct clk_gpt assignments */

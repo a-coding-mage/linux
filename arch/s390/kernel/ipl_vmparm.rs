@@ -4,13 +4,13 @@
 
 /* VM IPL PARM routines */
 pub unsafe fn ipl_block_get_ascii_vmparm(
-    dest: *mut core::ffi::c_char,
+    dest: *mut kernel::ffi::c_char,
     size: usize,
     ipb: *const ipl_parameter_block,
 ) -> usize {
     let mut i: i32;
     let mut len: usize;
-    let mut has_lowercase: core::ffi::c_char = 0;
+    let mut has_lowercase: kernel::ffi::c_char = 0;
 
     len = 0;
     if ((*ipb).ccw.vm_flags & IPL_PB0_CCW_VM_FLAG_VP) != 0
@@ -47,8 +47,8 @@ pub unsafe fn ipl_block_get_ascii_vmparm(
 
 // External equivalents of the EBC_TOLOWER and EBCASC macros.
 extern "C" {
-    fn ebcdic_tolower(dest: *mut core::ffi::c_char, len: usize);
-    fn ebcdic_to_ascii(dest: *mut core::ffi::c_char, len: usize);
+    fn ebcdic_tolower(dest: *mut kernel::ffi::c_char, len: usize);
+    fn ebcdic_to_ascii(dest: *mut kernel::ffi::c_char, len: usize);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

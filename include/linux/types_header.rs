@@ -5,7 +5,7 @@
 #[macro_export]
 macro_rules! DECLARE_BITMAP {
     ($name:ident, $bits:expr) => {
-        pub static mut $name: [::core::ffi::c_ulong; BITS_TO_LONGS!($bits)] =
+        pub static mut $name: [::kernel::ffi::c_ulong; BITS_TO_LONGS!($bits)] =
             [0; BITS_TO_LONGS!($bits)];
     };
 }
@@ -30,14 +30,14 @@ pub type suseconds_t = __kernel_suseconds_t;
 pub type timer_t = __kernel_timer_t;
 pub type clockid_t = __kernel_clockid_t;
 pub type mqd_t = __kernel_mqd_t;
-pub type bool = core::ffi::c_int;
+pub type bool = kernel::ffi::c_int;
 
 pub type uid_t = __kernel_uid32_t;
 pub type gid_t = __kernel_gid32_t;
 pub type uid16_t = __kernel_uid16_t;
 pub type gid16_t = __kernel_gid16_t;
-pub type uintptr_t = ::core::ffi::c_ulong;
-pub type intptr_t = ::core::ffi::c_long;
+pub type uintptr_t = ::kernel::ffi::c_ulong;
+pub type intptr_t = ::kernel::ffi::c_long;
 
 #[cfg(CONFIG_HAVE_UID16)]
 pub type old_uid_t = __kernel_old_uid_t;
@@ -58,15 +58,15 @@ pub type caddr_t = __kernel_caddr_t;
 /* bsd */
 pub type u_char = u8;
 pub type u_short = u16;
-pub type u_int = ::core::ffi::c_uint;
-pub type u_long = ::core::ffi::c_ulong;
+pub type u_int = ::kernel::ffi::c_uint;
+pub type u_long = ::kernel::ffi::c_ulong;
 
 /* sysv */
 pub type unchar = u8;
 pub type ushort = u16;
-pub type uint = ::core::ffi::c_uint;
-pub type ulong = ::core::ffi::c_ulong;
-pub type ullong = ::core::ffi::c_ulonglong;
+pub type uint = ::kernel::ffi::c_uint;
+pub type ulong = ::kernel::ffi::c_ulong;
+pub type ullong = ::kernel::ffi::c_ulonglong;
 
 pub type u_int8_t = u8;
 pub type int8_t = i8;
@@ -96,18 +96,18 @@ pub type blkcnt_t = u64;
 pub const READ: i32 = 0;
 pub const WRITE: i32 = 1;
 
-pub type pgoff_t = ::core::ffi::c_ulong;
+pub type pgoff_t = ::kernel::ffi::c_ulong;
 
 #[cfg(CONFIG_ARCH_DMA_ADDR_T_64BIT)]
 pub type dma_addr_t = u64;
 #[cfg(not(CONFIG_ARCH_DMA_ADDR_T_64BIT))]
 pub type dma_addr_t = u32;
 
-pub type gfp_t = ::core::ffi::c_uint;
-pub type slab_flags_t = ::core::ffi::c_uint;
-pub type fmode_t = ::core::ffi::c_uint;
-pub type blk_mode_t = ::core::ffi::c_uint;
-pub type fop_flags_t = ::core::ffi::c_uint;
+pub type gfp_t = ::kernel::ffi::c_uint;
+pub type slab_flags_t = ::kernel::ffi::c_uint;
+pub type fmode_t = ::kernel::ffi::c_uint;
+pub type blk_mode_t = ::kernel::ffi::c_uint;
+pub type fop_flags_t = ::kernel::ffi::c_uint;
 
 #[cfg(CONFIG_PHYS_ADDR_T_64BIT)]
 pub type phys_addr_t = u64;
@@ -121,12 +121,12 @@ pub struct phys_vec {
 }
 
 pub type resource_size_t = phys_addr_t;
-pub type irq_hw_number_t = ::core::ffi::c_ulong;
+pub type irq_hw_number_t = ::kernel::ffi::c_ulong;
 
 #[repr(C)]
 #[derive(Clone, Copy)]
 pub struct atomic_t {
-    pub counter: ::core::ffi::c_int,
+    pub counter: ::kernel::ffi::c_int,
 }
 
 #[macro_export]
@@ -165,11 +165,11 @@ pub struct hlist_node {
 pub struct ustat {
     pub f_tfree: __kernel_daddr_t,
     #[cfg(CONFIG_ARCH_32BIT_USTAT_F_TINODE)]
-    pub f_tinode: ::core::ffi::c_uint,
+    pub f_tinode: ::kernel::ffi::c_uint,
     #[cfg(not(CONFIG_ARCH_32BIT_USTAT_F_TINODE))]
-    pub f_tinode: ::core::ffi::c_ulong,
-    pub f_fname: [::core::ffi::c_char; 6],
-    pub f_fpack: [::core::ffi::c_char; 6],
+    pub f_tinode: ::kernel::ffi::c_ulong,
+    pub f_fname: [::kernel::ffi::c_char; 6],
+    pub f_fpack: [::kernel::ffi::c_char; 6],
 }
 
 #[repr(C)]
@@ -194,10 +194,10 @@ pub struct kvfree_rcu_head { pub head: rcu_head }
 
 pub type rcu_callback_t = Option<unsafe extern "C" fn(head: *mut rcu_head)>;
 pub type call_rcu_func_t = Option<unsafe extern "C" fn(head: *mut rcu_head, func: rcu_callback_t)>;
-pub type swap_r_func_t = Option<unsafe extern "C" fn(a: *mut core::ffi::c_void, b: *mut core::ffi::c_void, size: i32, priv_: *const core::ffi::c_void)>;
-pub type swap_func_t = Option<unsafe extern "C" fn(a: *mut core::ffi::c_void, b: *mut core::ffi::c_void, size: i32)>;
-pub type cmp_r_func_t = Option<unsafe extern "C" fn(a: *const core::ffi::c_void, b: *const core::ffi::c_void, priv_: *const core::ffi::c_void) -> i32>;
-pub type cmp_func_t = Option<unsafe extern "C" fn(a: *const core::ffi::c_void, b: *const core::ffi::c_void) -> i32>;
+pub type swap_r_func_t = Option<unsafe extern "C" fn(a: *mut kernel::ffi::c_void, b: *mut kernel::ffi::c_void, size: i32, priv_: *const kernel::ffi::c_void)>;
+pub type swap_func_t = Option<unsafe extern "C" fn(a: *mut kernel::ffi::c_void, b: *mut kernel::ffi::c_void, size: i32)>;
+pub type cmp_r_func_t = Option<unsafe extern "C" fn(a: *const kernel::ffi::c_void, b: *const kernel::ffi::c_void, priv_: *const kernel::ffi::c_void) -> i32>;
+pub type cmp_func_t = Option<unsafe extern "C" fn(a: *const kernel::ffi::c_void, b: *const kernel::ffi::c_void) -> i32>;
 
 #[repr(C)]
 pub struct rcuwait {

@@ -39,8 +39,8 @@ pub enum irq_alloc_type {
 #[cfg(feature = "irq_domain_hierarchy")]
 #[repr(C)]
 pub struct ioapic_alloc_info {
-    pub pin: ::core::ffi::c_int,
-    pub node: ::core::ffi::c_int,
+    pub pin: ::kernel::ffi::c_int,
+    pub node: ::kernel::ffi::c_int,
     /* C bit-fields are represented by their underlying u32 storage. */
     pub is_level: u32,
     pub active_low: u32,
@@ -50,10 +50,10 @@ pub struct ioapic_alloc_info {
 #[cfg(feature = "irq_domain_hierarchy")]
 #[repr(C)]
 pub struct uv_alloc_info {
-    pub limit: ::core::ffi::c_int,
-    pub blade: ::core::ffi::c_int,
-    pub offset: ::core::ffi::c_ulong,
-    pub name: *mut ::core::ffi::c_char,
+    pub limit: ::kernel::ffi::c_int,
+    pub blade: ::kernel::ffi::c_int,
+    pub offset: ::kernel::ffi::c_ulong,
+    pub name: *mut ::kernel::ffi::c_char,
 }
 
 #[cfg(feature = "irq_domain_hierarchy")]
@@ -72,20 +72,20 @@ pub struct irq_alloc_info {
     pub hwirq: irq_hw_number_t,
     pub mask: *const cpumask,
     pub desc: *mut msi_desc,
-    pub data: *mut ::core::ffi::c_void,
+    pub data: *mut ::kernel::ffi::c_void,
     pub data_union: irq_alloc_info_data,
 }
 
 #[cfg(feature = "irq_domain_hierarchy")]
 #[repr(C)]
 pub struct irq_cfg {
-    pub dest_apicid: ::core::ffi::c_uint,
-    pub vector: ::core::ffi::c_uint,
+    pub dest_apicid: ::kernel::ffi::c_uint,
+    pub vector: ::kernel::ffi::c_uint,
 }
 
 #[cfg(feature = "irq_domain_hierarchy")]
 extern "C" {
-    pub fn irq_cfg(irq: ::core::ffi::c_uint) -> *mut irq_cfg;
+    pub fn irq_cfg(irq: ::kernel::ffi::c_uint) -> *mut irq_cfg;
     pub fn irqd_cfg(irq_data: *mut irq_data) -> *mut irq_cfg;
     #[cfg(feature = "smp")]
     pub fn vector_schedule_cleanup(cfg: *mut irq_cfg);
@@ -117,9 +117,9 @@ pub unsafe fn lock_vector_lock() {}
 pub unsafe fn unlock_vector_lock() {}
 
 extern "C" {
-    pub fn elcr_set_level_irq(irq: ::core::ffi::c_uint);
-    pub static mut irq_entries_start: ::core::ffi::c_char;
-    pub static mut spurious_entries_start: ::core::ffi::c_char;
+    pub fn elcr_set_level_irq(irq: ::kernel::ffi::c_uint);
+    pub static mut irq_entries_start: ::kernel::ffi::c_char;
+    pub static mut spurious_entries_start: ::kernel::ffi::c_char;
 }
 
 #[cfg(feature = "tracing")]
@@ -127,9 +127,9 @@ pub use irq_entries_start as trace_irq_entries_start;
 
 /* VECTOR_UNUSED = NULL; VECTOR_SHUTDOWN = (void *)-1L;
  * VECTOR_RETRIGGERED = (void *)-2L. */
-pub const VECTOR_UNUSED: *mut ::core::ffi::c_void = ::core::ptr::null_mut();
-pub const VECTOR_SHUTDOWN: *mut ::core::ffi::c_void = (-1isize) as *mut ::core::ffi::c_void;
-pub const VECTOR_RETRIGGERED: *mut ::core::ffi::c_void = (-2isize) as *mut ::core::ffi::c_void;
+pub const VECTOR_UNUSED: *mut ::kernel::ffi::c_void = ::core::ptr::null_mut();
+pub const VECTOR_SHUTDOWN: *mut ::kernel::ffi::c_void = (-1isize) as *mut ::kernel::ffi::c_void;
+pub const VECTOR_RETRIGGERED: *mut ::kernel::ffi::c_void = (-2isize) as *mut ::kernel::ffi::c_void;
 
 /* NR_VECTORS, irq_hw_number_t, and cpumask are supplied by included headers. */
 pub type vector_irq_t = [*mut irq_desc; NR_VECTORS];

@@ -31,7 +31,7 @@ extern "C" {
     pub fn amdgpu_i2c_create(
         dev: *mut drm_device,
         rec: *const amdgpu_i2c_bus_rec,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> *mut amdgpu_i2c_chan;
 
     pub fn amdgpu_i2c_destroy(i2c: *mut amdgpu_i2c_chan);

@@ -39,7 +39,7 @@ struct altera_ps_conf {
     spi: *mut spi_device,
     data: *const altera_ps_data,
     info_flags: u32,
-    mgr_name: [core::ffi::c_char; 64],
+    mgr_name: [kernel::ffi::c_char; 64],
 }
 
 //          |   Arria 10  |   Cyclone5  |   Stratix5  |
@@ -89,7 +89,7 @@ unsafe fn altera_ps_delay(delay_us: i32) {
 unsafe fn altera_ps_write_init(
     mgr: *mut fpga_manager,
     info: *mut fpga_image_info,
-    _buf: *const core::ffi::c_char,
+    _buf: *const kernel::ffi::c_char,
     _count: usize,
 ) -> i32 {
     let conf = (*mgr).priv_data as *mut altera_ps_conf;
@@ -124,7 +124,7 @@ unsafe fn altera_ps_write_init(
     -EIO
 }
 
-unsafe fn rev_buf(mut buf: *mut core::ffi::c_char, len: usize) {
+unsafe fn rev_buf(mut buf: *mut kernel::ffi::c_char, len: usize) {
     let mut fw32 = buf as *mut u32;
     let extra_bytes = len & 0x03;
     let fw_end = (buf.add(len - extra_bytes)) as *const u32;
@@ -133,24 +133,24 @@ unsafe fn rev_buf(mut buf: *mut core::ffi::c_char, len: usize) {
         fw32 = fw32.add(1);
     }
     if extra_bytes != 0 {
-        buf = fw_end as *mut core::ffi::c_char;
+        buf = fw_end as *mut kernel::ffi::c_char;
         let mut remaining = extra_bytes;
         while remaining != 0 {
-            *buf = bitrev8(*buf as u8) as core::ffi::c_char;
+            *buf = bitrev8(*buf as u8) as kernel::ffi::c_char;
             buf = buf.add(1);
             remaining -= 1;
         }
     }
 }
 
-unsafe fn altera_ps_write(mgr: *mut fpga_manager, buf: *const core::ffi::c_char, count: usize) -> i32 {
+unsafe fn altera_ps_write(mgr: *mut fpga_manager, buf: *const kernel::ffi::c_char, count: usize) -> i32 {
     let conf = (*mgr).priv_data as *mut altera_ps_conf;
     let mut fw_data = buf;
     let fw_data_end = buf.add(count);
     while fw_data < fw_data_end {
         let stride = core::cmp::min(fw_data_end.offset_from(fw_data) as usize, 4096);
         if (*conf).info_flags & FPGA_MGR_BITSTREAM_LSB_FIRST == 0 {
-            rev_buf(fw_data as *mut core::ffi::c_char, stride);
+            rev_buf(fw_data as *mut kernel::ffi::c_char, stride);
         }
         let ret = spi_write((*conf).spi, fw_data, stride);
         if ret != 0 {
@@ -164,7 +164,7 @@ unsafe fn altera_ps_write(mgr: *mut fpga_manager, buf: *const core::ffi::c_char,
 
 unsafe fn altera_ps_write_complete(mgr: *mut fpga_manager, _info: *mut fpga_image_info) -> i32 {
     let conf = (*mgr).priv_data as *mut altera_ps_conf;
-    static DUMMY: [core::ffi::c_char; 1] = [0];
+    static DUMMY: [kernel::ffi::c_char; 1] = [0];
     if gpiod_get_value_cansleep((*conf).status) != 0 {
         dev_err(&mut (*mgr).dev, "Error during configuration.\n");
         return -EIO;
@@ -184,11 +184,11 @@ unsafe fn altera_ps_write_complete(mgr: *mut fpga_manager, _info: *mut fpga_imag
 }
 
 // External kernel types, constants, and functions are supplied by dependencies.
-#[allow(non_camel_case_types)] type gpio_desc = core::ffi::c_void;
-#[allow(non_camel_case_types)] type spi_device = core::ffi::c_void;
+#[allow(non_camel_case_types)] type gpio_desc = kernel::ffi::c_void;
+#[allow(non_camel_case_types)] type spi_device = kernel::ffi::c_void;
 #[allow(non_camel_case_types)] type fpga_mgr_states = i32;
 #[repr(C)] struct device { _private: [u8; 0] }
-#[repr(C)] struct fpga_manager { dev: device, priv_data: *mut core::ffi::c_void }
+#[repr(C)] struct fpga_manager { dev: device, priv_data: *mut kernel::ffi::c_void }
 #[repr(C)] struct fpga_image_info { flags: u32 }
 extern "C" {
     fn gpiod_get_value_cansleep(gpio: *mut gpio_desc) -> i32;
@@ -198,7 +198,7 @@ extern "C" {
     fn udelay(usecs: i32);
     fn bitrev8x4(value: u32) -> u32;
     fn bitrev8(value: u8) -> u8;
-    fn spi_write(spi: *mut spi_device, buf: *const core::ffi::c_char, len: usize) -> i32;
+    fn spi_write(spi: *mut spi_device, buf: *const kernel::ffi::c_char, len: usize) -> i32;
 }
 const FPGA_MGR_STATE_RESET: fpga_mgr_states = 0;
 const FPGA_MGR_STATE_UNKNOWN: fpga_mgr_states = 1;

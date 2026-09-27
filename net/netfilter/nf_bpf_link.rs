@@ -2,7 +2,7 @@
 // C dependencies are supplied by the surrounding kernel translation unit.
 
 unsafe fn nf_hook_run_bpf(
-    bpf_prog: *mut core::ffi::c_void,
+    bpf_prog: *mut kernel::ffi::c_void,
     skb: *mut sk_buff,
     s: *const nf_hook_state,
 ) -> u32 {
@@ -26,7 +26,7 @@ struct bpf_nf_link {
 unsafe fn get_proto_defrag_hook(
     link: *mut bpf_nf_link,
     ptr_global_hook: *const *const nf_defrag_hook,
-    mod_name: *const core::ffi::c_char,
+    mod_name: *const kernel::ffi::c_char,
 ) -> *const nf_defrag_hook {
     let mut hook: *const nf_defrag_hook;
     let err: i32;
@@ -195,7 +195,7 @@ pub unsafe extern "C" fn bpf_nf_link_attach(attr: *const bpf_attr, prog: *mut bp
 
 pub static NETFILTER_PROG_OPS: bpf_prog_ops = bpf_prog_ops { test_run: Some(bpf_prog_test_run_nf) };
 
-unsafe fn nf_ptr_to_btf_id(info: *mut bpf_insn_access_aux, name: *const core::ffi::c_char) -> bool {
+unsafe fn nf_ptr_to_btf_id(info: *mut bpf_insn_access_aux, name: *const kernel::ffi::c_char) -> bool {
     let btf = bpf_get_btf_vmlinux();
     if btf.is_null() || is_err(btf) { return false; }
     let type_id = btf_find_by_name_kind(btf, name, BTF_KIND_STRUCT);

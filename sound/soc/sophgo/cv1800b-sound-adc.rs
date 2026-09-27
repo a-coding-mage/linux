@@ -9,13 +9,13 @@
 #![allow(non_upper_case_globals)]
 #![allow(dead_code)]
 
-type u32 = core::ffi::c_uint;
-type u64 = core::ffi::c_ulonglong;
-type c_int = core::ffi::c_int;
-type c_uint = core::ffi::c_uint;
-type c_ulong = core::ffi::c_ulong;
-type c_char = core::ffi::c_char;
-type c_void = core::ffi::c_void;
+type u32 = kernel::ffi::c_uint;
+type u64 = kernel::ffi::c_ulonglong;
+type c_int = kernel::ffi::c_int;
+type c_uint = kernel::ffi::c_uint;
+type c_ulong = kernel::ffi::c_ulong;
+type c_char = kernel::ffi::c_char;
+type c_void = kernel::ffi::c_void;
 
 const EINVAL: c_int = 22;
 const ENOMEM: c_int = 12;
@@ -71,7 +71,7 @@ fn clamp_u32(val: c_long, min: u32, max: u32) -> u32 {
     v
 }
 
-type c_long = core::ffi::c_long;
+type c_long = kernel::ffi::c_long;
 
 const CV1800B_RXADC_WORD_LEN: u32 = 16;
 const CV1800B_RXADC_CHANNELS: u32 = 2;

@@ -44,17 +44,17 @@ pub struct ArchSpecificInsn {
 #[repr(C)]
 pub struct PrevKprobe {
     pub kp: *mut Kprobe,
-    pub status: libc::c_ulong,
-    pub orig_tnpc: libc::c_ulong,
-    pub orig_tstate_pil: libc::c_ulong,
+    pub status: kernel::ffi::c_ulong,
+    pub orig_tnpc: kernel::ffi::c_ulong,
+    pub orig_tstate_pil: kernel::ffi::c_ulong,
 }
 
 /* per-cpu kprobe control block */
 #[repr(C)]
 pub struct KprobeCtlblk {
-    pub kprobe_status: libc::c_ulong,
-    pub kprobe_orig_tnpc: libc::c_ulong,
-    pub kprobe_orig_tstate_pil: libc::c_ulong,
+    pub kprobe_status: kernel::ffi::c_ulong,
+    pub kprobe_orig_tnpc: kernel::ffi::c_ulong,
+    pub kprobe_orig_tstate_pil: kernel::ffi::c_ulong,
     pub prev_kprobe: PrevKprobe,
 }
 
@@ -63,9 +63,9 @@ pub enum Kprobe {}
 pub enum PtRegs {}
 
 extern "C" {
-    pub fn kprobe_fault_handler(regs: *mut PtRegs, trapnr: libc::c_int) -> libc::c_int;
+    pub fn kprobe_fault_handler(regs: *mut PtRegs, trapnr: kernel::ffi::c_int) -> kernel::ffi::c_int;
     /* asmlinkage and __kprobes are kernel declaration attributes. */
-    pub fn kprobe_trap(trap_level: libc::c_ulong, regs: *mut PtRegs);
+    pub fn kprobe_trap(trap_level: kernel::ffi::c_ulong, regs: *mut PtRegs);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

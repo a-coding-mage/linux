@@ -33,12 +33,12 @@ unsafe fn rt3883_soc_valid() -> bool
     }
 }
 
-unsafe fn rt3883_get_soc_name() -> *const core::ffi::c_char
+unsafe fn rt3883_get_soc_name() -> *const kernel::ffi::c_char
 {
     if rt3883_soc_valid() {
-        b"RT3883\0".as_ptr() as *const core::ffi::c_char
+        b"RT3883\0".as_ptr() as *const kernel::ffi::c_char
     } else {
-        b"invalid\0".as_ptr() as *const core::ffi::c_char
+        b"invalid\0".as_ptr() as *const kernel::ffi::c_char
     }
 }
 
@@ -67,14 +67,14 @@ unsafe fn rt3883_soc_dev_init() -> i32
         return -ENOMEM;
     }
 
-    (*soc_dev_attr).family = b"Ralink\0".as_ptr() as *const core::ffi::c_char;
+    (*soc_dev_attr).family = b"Ralink\0".as_ptr() as *const kernel::ffi::c_char;
     (*soc_dev_attr).soc_id = rt3883_get_soc_name();
 
-    (*soc_dev_attr).data = soc_info_ptr as *const core::ffi::c_void;
+    (*soc_dev_attr).data = soc_info_ptr as *const kernel::ffi::c_void;
 
     soc_dev = soc_device_register(soc_dev_attr);
     if IS_ERR(soc_dev) {
-        kfree(soc_dev_attr as *mut core::ffi::c_void);
+        kfree(soc_dev_attr as *mut kernel::ffi::c_void);
         return PTR_ERR(soc_dev);
     }
 
@@ -86,7 +86,7 @@ device_initcall!(rt3883_soc_dev_init);
 unsafe fn prom_soc_init(soc_info: *mut ralink_soc_info)
 {
     if rt3883_soc_valid() {
-        (*soc_info).compatible = b"ralink,rt3883-soc\0".as_ptr() as *const core::ffi::c_char;
+        (*soc_info).compatible = b"ralink,rt3883-soc\0".as_ptr() as *const kernel::ffi::c_char;
     } else {
         panic!(
             "rt3883: unknown SoC, n0:{:08x} n1:{:08x}",
@@ -98,7 +98,7 @@ unsafe fn prom_soc_init(soc_info: *mut ralink_soc_info)
     snprintf(
         (*soc_info).sys_type.as_mut_ptr(),
         RAMIPS_SYS_TYPE_LEN,
-        b"Ralink %s ver:%u eco:%u\0".as_ptr() as *const core::ffi::c_char,
+        b"Ralink %s ver:%u eco:%u\0".as_ptr() as *const kernel::ffi::c_char,
         rt3883_get_soc_name(),
         rt3883_get_soc_ver(),
         rt3883_get_soc_rev(),

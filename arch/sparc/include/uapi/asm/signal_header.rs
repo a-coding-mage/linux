@@ -91,19 +91,19 @@ pub const _NSIG: usize = __OLD_NSIG;
 #[cfg(not(any(feature = "kernel", feature = "want_posix1b_signals")))]
 pub const NSIG: usize = _NSIG;
 
-pub type __old_sigset_t = libc::c_ulong;
+pub type __old_sigset_t = kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct __new_sigset_t {
-    pub sig: [libc::c_ulong; _NSIG_WORDS],
+    pub sig: [kernel::ffi::c_ulong; _NSIG_WORDS],
 }
 
 /* A SunOS sigstack */
 #[repr(C)]
 pub struct sigstack {
     /* XXX 32-bit pointers pinhead XXX */
-    pub the_stack: *mut libc::c_char,
-    pub cur_status: libc::c_int,
+    pub the_stack: *mut kernel::ffi::c_char,
+    pub cur_status: kernel::ffi::c_int,
 }
 
 /* Sigvec flags */
@@ -139,7 +139,7 @@ pub const SIGSTKSZ: usize = 16384;
 #[repr(C)]
 pub struct __new_sigaction {
     pub sa_handler: __sighandler_t,
-    pub sa_flags: libc::c_ulong,
+    pub sa_flags: kernel::ffi::c_ulong,
     pub sa_restorer: __sigrestore_t,
     pub sa_mask: __new_sigset_t,
 }
@@ -149,14 +149,14 @@ pub struct __new_sigaction {
 pub struct __old_sigaction {
     pub sa_handler: __sighandler_t,
     pub sa_mask: __old_sigset_t,
-    pub sa_flags: libc::c_ulong,
+    pub sa_flags: kernel::ffi::c_ulong,
     pub sa_restorer: Option<unsafe extern "C" fn()>,
 }
 
 #[repr(C)]
 pub struct sigaltstack {
-    pub ss_sp: *mut core::ffi::c_void,
-    pub ss_flags: libc::c_int,
+    pub ss_sp: *mut kernel::ffi::c_void,
+    pub ss_flags: kernel::ffi::c_int,
     pub ss_size: __kernel_size_t,
 }
 

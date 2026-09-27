@@ -4,17 +4,17 @@
 // linux/pfn.h, asm/xen/page.h, asm/xen/hypercall.h, xen/interface/memory.h,
 // and xen-ops.h.
 
-pub unsafe fn arbitrary_virt_to_mfn(vaddr: *mut core::ffi::c_void) -> libc::c_ulong {
+pub unsafe fn arbitrary_virt_to_mfn(vaddr: *mut kernel::ffi::c_void) -> kernel::ffi::c_ulong {
     let maddr: xmaddr_t = arbitrary_virt_to_machine(vaddr);
 
     pfn_down(maddr.maddr)
 }
 
-pub unsafe fn arbitrary_virt_to_machine(vaddr: *mut core::ffi::c_void) -> xmaddr_t {
-    let address: libc::c_ulong = vaddr as libc::c_ulong;
-    let mut level: libc::c_uint;
+pub unsafe fn arbitrary_virt_to_machine(vaddr: *mut kernel::ffi::c_void) -> xmaddr_t {
+    let address: kernel::ffi::c_ulong = vaddr as kernel::ffi::c_ulong;
+    let mut level: kernel::ffi::c_uint;
     let pte: *mut pte_t;
-    let offset: libc::c_uint;
+    let offset: kernel::ffi::c_uint;
 
     /*
      * if the PFN is in the linear mapped vaddr range, we can just use
@@ -37,9 +37,9 @@ pub unsafe fn arbitrary_virt_to_machine(vaddr: *mut core::ffi::c_void) -> xmaddr
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn xen_unmap_domain_gfn_range(
     vma: *mut vm_area_struct,
-    nr: libc::c_int,
+    nr: kernel::ffi::c_int,
     pages: *mut *mut page,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     if !xen_pv_domain() {
         return xen_xlate_unmap_gfn_range(vma, nr, pages);
     }

@@ -19,7 +19,7 @@ pub struct mutex_waiter {
     pub task: *mut task_struct,
     pub ww_ctx: *mut ww_acquire_ctx,
     #[cfg(CONFIG_DEBUG_MUTEXES)]
-    pub magic: *mut core::ffi::c_void,
+    pub magic: *mut kernel::ffi::c_void,
 }
 
 /*
@@ -31,11 +31,11 @@ pub struct mutex_waiter {
  * Bit1 indicates unlock needs to hand the lock to the top-waiter
  * Bit2 indicates handoff has been done and we're waiting for pickup.
  */
-pub const MUTEX_FLAG_WAITERS: libc::c_ulong = 0x01;
-pub const MUTEX_FLAG_HANDOFF: libc::c_ulong = 0x02;
-pub const MUTEX_FLAG_PICKUP: libc::c_ulong = 0x04;
+pub const MUTEX_FLAG_WAITERS: kernel::ffi::c_ulong = 0x01;
+pub const MUTEX_FLAG_HANDOFF: kernel::ffi::c_ulong = 0x02;
+pub const MUTEX_FLAG_PICKUP: kernel::ffi::c_ulong = 0x04;
 
-pub const MUTEX_FLAGS: libc::c_ulong = 0x07;
+pub const MUTEX_FLAGS: kernel::ffi::c_ulong = 0x07;
 
 /*
  * Internal helper function; C doesn't allow us to hide it :/
@@ -47,7 +47,7 @@ pub unsafe fn __mutex_owner(lock: *mut mutex) -> *mut task_struct {
     if lock.is_null() {
         return core::ptr::null_mut();
     }
-    (atomic_long_read(&(*lock).owner) & !(MUTEX_FLAGS as libc::c_long)) as *mut task_struct
+    (atomic_long_read(&(*lock).owner) & !(MUTEX_FLAGS as kernel::ffi::c_long)) as *mut task_struct
 }
 
 #[inline]

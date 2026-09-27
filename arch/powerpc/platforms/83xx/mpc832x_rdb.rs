@@ -14,8 +14,8 @@
 
 #[cfg(CONFIG_QUICC_ENGINE)]
 unsafe fn of_fsl_spi_probe(
-    type_: *mut core::ffi::c_char,
-    compatible: *mut core::ffi::c_char,
+    type_: *mut kernel::ffi::c_char,
+    compatible: *mut kernel::ffi::c_char,
     sysclk: u32,
     board_infos: *mut spi_board_info,
     num_board_infos: u32,
@@ -28,7 +28,7 @@ unsafe fn of_fsl_spi_probe(
     for_each_compatible_node!(np, type_, compatible, {
         let mut ret: i32;
         let mut j: u32;
-        let mut prop: *const core::ffi::c_void;
+        let mut prop: *const kernel::ffi::c_void;
         let mut res: [resource; 2] = [core::mem::zeroed(), core::mem::zeroed()];
         let mut pdev: *mut platform_device;
         let mut pdata = fsl_spi_platform_data { cs_control, ..core::mem::zeroed() };
@@ -63,7 +63,7 @@ unsafe fn of_fsl_spi_probe(
 
         pdev = platform_device_alloc(c"mpc83xx_spi".as_ptr(), i);
         if pdev.is_null() { goto_err!(err); }
-        ret = platform_device_add_data(pdev, &pdata as *const _ as *const core::ffi::c_void,
+        ret = platform_device_add_data(pdev, &pdata as *const _ as *const kernel::ffi::c_void,
                                        core::mem::size_of_val(&pdata));
         if ret != 0 { platform_device_put(pdev); goto_err!(err); }
         ret = platform_device_add_resources(pdev, res.as_ptr(), 2);

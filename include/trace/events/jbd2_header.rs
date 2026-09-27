@@ -5,7 +5,7 @@
 // tracepoint machinery supplied by the kernel integration.
 
 // Dependencies supplied by the surrounding kernel translation.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub type DevT = usize;
 pub type TidT = u32;

@@ -115,7 +115,7 @@ pub const FCP_IOCTL_SET_METER_MAP: u32 = 0x4004_5366;
 #[repr(C, packed)]
 pub struct fcp_meter_labels {
     pub labels_size: u16,
-    pub labels: [core::ffi::c_char; 0],
+    pub labels: [kernel::ffi::c_char; 0],
 }
 
 pub const FCP_IOCTL_SET_METER_LABELS: u32 = 0x4002_5367;

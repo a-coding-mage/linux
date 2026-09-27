@@ -31,26 +31,26 @@ macro_rules! smp_init_ops {
 
 #[repr(C)]
 pub struct machine_desc {
-    pub nr: core::ffi::c_uint,
-    pub name: *const core::ffi::c_char,
-    pub atag_offset: core::ffi::c_ulong,
-    pub dt_compat: *const *const core::ffi::c_char,
-    pub nr_irqs: core::ffi::c_uint,
+    pub nr: kernel::ffi::c_uint,
+    pub name: *const kernel::ffi::c_char,
+    pub atag_offset: kernel::ffi::c_ulong,
+    pub dt_compat: *const *const kernel::ffi::c_char,
+    pub nr_irqs: kernel::ffi::c_uint,
     #[cfg(CONFIG_ZONE_DMA)]
     pub dma_zone_size: phys_addr_t,
-    pub video_start: core::ffi::c_uint,
-    pub video_end: core::ffi::c_uint,
+    pub video_start: kernel::ffi::c_uint,
+    pub video_end: kernel::ffi::c_uint,
     // C unsigned-char bit-fields, each one bit wide.
     pub reserve_lp0: u8,
     pub reserve_lp1: u8,
     pub reserve_lp2: u8,
     pub reboot_mode: reboot_mode,
-    pub l2c_aux_val: core::ffi::c_uint,
-    pub l2c_aux_mask: core::ffi::c_uint,
-    pub l2c_write_sec: Option<unsafe extern "C" fn(core::ffi::c_ulong, core::ffi::c_uint)>,
+    pub l2c_aux_val: kernel::ffi::c_uint,
+    pub l2c_aux_mask: kernel::ffi::c_uint,
+    pub l2c_write_sec: Option<unsafe extern "C" fn(kernel::ffi::c_ulong, kernel::ffi::c_uint)>,
     pub smp: *const smp_operations,
     pub smp_init: Option<unsafe extern "C" fn() -> bool>,
-    pub fixup: Option<unsafe extern "C" fn(*mut tag, *mut *mut core::ffi::c_char)>,
+    pub fixup: Option<unsafe extern "C" fn(*mut tag, *mut *mut kernel::ffi::c_char)>,
     pub dt_fixup: Option<unsafe extern "C" fn()>,
     pub pv_fixup: Option<unsafe extern "C" fn() -> i64>,
     pub reserve: Option<unsafe extern "C" fn()>,
@@ -60,7 +60,7 @@ pub struct machine_desc {
     pub init_time: Option<unsafe extern "C" fn()>,
     pub init_machine: Option<unsafe extern "C" fn()>,
     pub init_late: Option<unsafe extern "C" fn()>,
-    pub restart: Option<unsafe extern "C" fn(reboot_mode, *const core::ffi::c_char)>,
+    pub restart: Option<unsafe extern "C" fn(reboot_mode, *const kernel::ffi::c_char)>,
 }
 
 /* Current machine - only accessible during boot. */

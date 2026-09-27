@@ -72,7 +72,7 @@ static DEFINE_MUTEX(kprobe_mutex);
 static DEFINE_PER_CPU(kprobe *, kprobe_instance);
 
 kprobe_opcode_t * __weak kprobe_lookup_name(const char *name,
-					__unused: core::ffi::c_uint)
+					__unused: kernel::ffi::c_uint)
 {
 	return ((kprobe_opcode_t *)(kallsyms_lookup_name(name)));
 }
@@ -191,7 +191,7 @@ kprobe_opcode_t *__get_insn_slot(kprobe_insn_cache *c)
 	list_add_rcu((*&kip).list, (*&c).pages);
 
 	/* Record the perf ksymbol register event after adding the page */
-	perf_event_ksymbol(PERF_RECORD_KSYMBOL_TYPE_OOL, (*(core::ffi::c_ulong)kip).insns,
+	perf_event_ksymbol(PERF_RECORD_KSYMBOL_TYPE_OOL, (*(kernel::ffi::c_ulong)kip).insns,
 			   PAGE_SIZE, false, (*c).sym);
 
 	return (*kip).insns;
@@ -217,7 +217,7 @@ static bool collect_one_slot(kprobe_insn_page *kip, int idx)
 		 * the page.
 		 */
 		perf_event_ksymbol(PERF_RECORD_KSYMBOL_TYPE_OOL,
-				   (*(core::ffi::c_ulong)kip).insns, PAGE_SIZE, true,
+				   (*(kernel::ffi::c_ulong)kip).insns, PAGE_SIZE, true,
 				   (*(*kip).cache).sym);
 		list_del_rcu((*&kip).list);
 		synchronize_rcu();
@@ -298,15 +298,15 @@ void __free_insn_slot(kprobe_insn_cache *c,
  * This will be used for checking whether the address on a stack
  * is on a text area or not.
  */
-bool __is_insn_slot_addr(kprobe_insn_cache *c, addr: core::ffi::c_ulong)
+bool __is_insn_slot_addr(kprobe_insn_cache *c, addr: kernel::ffi::c_ulong)
 {
 	kprobe_insn_page *kip;
 	bool ret = false;
 
 	rcu_read_lock();
 	list_for_each_entry_rcu!(kip, (*&c).pages, list, {
-		if (addr >= (*(core::ffi::c_ulong)kip).insns &&
-		    addr < (*(core::ffi::c_ulong)kip).insns + PAGE_SIZE) {
+		if (addr >= (*(kernel::ffi::c_ulong)kip).insns &&
+		    addr < (*(kernel::ffi::c_ulong)kip).insns + PAGE_SIZE) {
 			ret = true;
 			break;
 		}
@@ -316,8 +316,8 @@ bool __is_insn_slot_addr(kprobe_insn_cache *c, addr: core::ffi::c_ulong)
 	return ret;
 }
 
-int kprobe_cache_get_kallsym(kprobe_insn_cache *c, core::ffi::c_uint *symnum,
-			     core::ffi::c_ulong *value, char *type, char *sym)
+int kprobe_cache_get_kallsym(kprobe_insn_cache *c, kernel::ffi::c_uint *symnum,
+			     kernel::ffi::c_ulong *value, char *type, char *sym)
 {
 	kprobe_insn_page *kip;
 	int ret = -ERANGE;
@@ -328,7 +328,7 @@ int kprobe_cache_get_kallsym(kprobe_insn_cache *c, core::ffi::c_uint *symnum,
 			continue;
 		strscpy(sym, (*c).sym, KSYM_NAME_LEN);
 		*type = 't';
-		*value = (*(core::ffi::c_ulong)kip).insns;
+		*value = (*(kernel::ffi::c_ulong)kip).insns;
 		ret = 0;
 		break;
 	});
@@ -955,7 +955,7 @@ static void optimize_all_kprobes(void)
 {
 	hlist_head *head;
 	kprobe *p;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	guard(mutex)(&kprobe_mutex);
 	/* If optimization is already allowed, just return. */
@@ -979,7 +979,7 @@ static void unoptimize_all_kprobes(void)
 {
 	hlist_head *head;
 	kprobe *p;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	guard(mutex)(&kprobe_mutex);
 	/* If optimization is already prohibited, just return. */
@@ -1147,7 +1147,7 @@ static int __arm_kprobe_ftrace(kprobe *p, ftrace_ops *ops,
 
 	lockdep_assert_held(&kprobe_mutex);
 
-	ret = ftrace_set_filter_ip(ops, (*(core::ffi::c_ulong)p).addr, 0, 0);
+	ret = ftrace_set_filter_ip(ops, (*(kernel::ffi::c_ulong)p).addr, 0, 0);
 	if (ret < 0)
 		return ret;
 
@@ -1158,7 +1158,7 @@ static int __arm_kprobe_ftrace(kprobe *p, ftrace_ops *ops,
 			 * At this point, sinec ops is not registered, we should be sefe from
 			 * registering empty filter.
 			 */
-			ftrace_set_filter_ip(ops, (*(core::ffi::c_ulong)p).addr, 1, 0);
+			ftrace_set_filter_ip(ops, (*(kernel::ffi::c_ulong)p).addr, 1, 0);
 			return ret;
 		}
 	}
@@ -1195,7 +1195,7 @@ static int __disarm_kprobe_ftrace(kprobe *p, ftrace_ops *ops,
 
 	(*cnt)--;
 
-	ret = ftrace_set_filter_ip(ops, (*(core::ffi::c_ulong)p).addr, 1, 0);
+	ret = ftrace_set_filter_ip(ops, (*(kernel::ffi::c_ulong)p).addr, 1, 0);
 	WARN_ONCE(ret < 0, "Failed to disarm kprobe-ftrace at %pS (error %d)\n",
 		  (*p).addr, ret);
 	return ret;
@@ -1280,7 +1280,7 @@ static int aggr_pre_handler(kprobe *p, pt_regs *regs)
 NOKPROBE_SYMBOL(aggr_pre_handler);
 
 static void aggr_post_handler(kprobe *p, pt_regs *regs,
-			      flags: core::ffi::c_ulong)
+			      flags: kernel::ffi::c_ulong)
 {
 	kprobe *kp;
 
@@ -1437,14 +1437,14 @@ static int register_aggr_kprobe(kprobe *orig_p, kprobe *p)
 	return ret;
 }
 
-bool __weak arch_within_kprobe_blacklist(addr: core::ffi::c_ulong)
+bool __weak arch_within_kprobe_blacklist(addr: kernel::ffi::c_ulong)
 {
 	/* The '__kprobes' functions and entry code must not be probed. */
-	return addr >= (core::ffi::c_ulong)__kprobes_text_start &&
-	       addr < (core::ffi::c_ulong)__kprobes_text_end;
+	return addr >= (kernel::ffi::c_ulong)__kprobes_text_start &&
+	       addr < (kernel::ffi::c_ulong)__kprobes_text_end;
 }
 
-static bool __within_kprobe_blacklist(addr: core::ffi::c_ulong)
+static bool __within_kprobe_blacklist(addr: kernel::ffi::c_ulong)
 {
 	kprobe_blacklist_entry *ent;
 
@@ -1461,7 +1461,7 @@ static bool __within_kprobe_blacklist(addr: core::ffi::c_ulong)
 	return false;
 }
 
-bool within_kprobe_blacklist(addr: core::ffi::c_ulong)
+bool within_kprobe_blacklist(addr: kernel::ffi::c_ulong)
 {
 	char symname[KSYM_NAME_LEN], *p;
 
@@ -1474,7 +1474,7 @@ bool within_kprobe_blacklist(addr: core::ffi::c_ulong)
 		if (!p)
 			return false;
 		*p = '\0';
-		addr = (core::ffi::c_ulong)kprobe_lookup_name(symname, 0);
+		addr = (kernel::ffi::c_ulong)kprobe_lookup_name(symname, 0);
 		if (addr)
 			return __within_kprobe_blacklist(addr);
 	}
@@ -1495,8 +1495,8 @@ bool within_kprobe_blacklist(addr: core::ffi::c_ulong)
  * Specifically, for things like IBT/BTI, skip the resp. ENDBR/BTI.C
  * instruction at +0.
  */
-kprobe_opcode_t *__weak arch_adjust_kprobe_addr(addr: core::ffi::c_ulong,
-						offset: core::ffi::c_ulong,
+kprobe_opcode_t *__weak arch_adjust_kprobe_addr(addr: kernel::ffi::c_ulong,
+						offset: kernel::ffi::c_ulong,
 						bool *on_func_entry)
 {
 	*on_func_entry = !offset;
@@ -1511,7 +1511,7 @@ kprobe_opcode_t *__weak arch_adjust_kprobe_addr(addr: core::ffi::c_ulong,
  */
 static kprobe_opcode_t *
 _kprobe_addr(kprobe_opcode_t *addr, const char *symbol_name,
-	     offset: core::ffi::c_ulong, bool *on_func_entry)
+	     offset: kernel::ffi::c_ulong, bool *on_func_entry)
 {
 	if ((symbol_name && addr) || (!symbol_name && !addr))
 		return ERR_PTR(-EINVAL);
@@ -1534,7 +1534,7 @@ _kprobe_addr(kprobe_opcode_t *addr, const char *symbol_name,
 	 * @addr' + @offset' where @addr' is the symbol start address.
 	 */
 	addr = (void *)addr + offset;
-	if (!kallsyms_lookup_size_offset((core::ffi::c_ulong)addr, core::ptr::null_mut(), &offset))
+	if (!kallsyms_lookup_size_offset((kernel::ffi::c_ulong)addr, core::ptr::null_mut(), &offset))
 		return ERR_PTR(-ENOENT);
 	addr = (void *)addr - offset;
 
@@ -1543,7 +1543,7 @@ _kprobe_addr(kprobe_opcode_t *addr, const char *symbol_name,
 	 * magical function entry details while telling us if this was indeed
 	 * at the start of the function.
 	 */
-	addr = arch_adjust_kprobe_addr((core::ffi::c_ulong)addr, offset, on_func_entry);
+	addr = arch_adjust_kprobe_addr((kernel::ffi::c_ulong)addr, offset, on_func_entry);
 	if (!addr)
 		return ERR_PTR(-EINVAL);
 
@@ -1599,7 +1599,7 @@ static int warn_kprobe_rereg(kprobe *p)
 
 static int check_ftrace_location(kprobe *p)
 {
-	core::ffi::c_ulong addr = (*(core::ffi::c_ulong)p).addr;
+	kernel::ffi::c_ulong addr = (*(kernel::ffi::c_ulong)p).addr;
 
 	if (ftrace_location(addr) == addr) {
 // #ifdef CONFIG_KPROBES_ON_FTRACE
@@ -1611,7 +1611,7 @@ static int check_ftrace_location(kprobe *p)
 	return 0;
 }
 
-static bool is_cfi_preamble_symbol(addr: core::ffi::c_ulong)
+static bool is_cfi_preamble_symbol(addr: kernel::ffi::c_ulong)
 {
 	char symbuf[KSYM_NAME_LEN];
 
@@ -1635,9 +1635,9 @@ static int check_kprobe_address_safe(kprobe *p,
 
 	/* Ensure the address is in a text area, and find a module if exists. */
 	*probed_mod = core::ptr::null_mut();
-	if (!core_kernel_text((core::ffi::c_ulong) (*p).addr)) {
+	if (!core_kernel_text((kernel::ffi::c_ulong) (*p).addr)) {
 		guard(rcu)();
-		*probed_mod = __module_text_address((core::ffi::c_ulong) (*p).addr);
+		*probed_mod = __module_text_address((kernel::ffi::c_ulong) (*p).addr);
 		if (!(*probed_mod))
 			return -EINVAL;
 
@@ -1649,12 +1649,12 @@ static int check_kprobe_address_safe(kprobe *p,
 			return -ENOENT;
 	}
 	/* Ensure it is not in reserved area. */
-	if (in_gate_area_no_mm((core::ffi::c_ulong) (*p).addr) ||
-	    within_kprobe_blacklist((core::ffi::c_ulong) (*p).addr) ||
+	if (in_gate_area_no_mm((kernel::ffi::c_ulong) (*p).addr) ||
+	    within_kprobe_blacklist((kernel::ffi::c_ulong) (*p).addr) ||
 	    jump_label_text_reserved((*p).addr, (*p).addr) ||
 	    static_call_text_reserved((*p).addr, (*p).addr) ||
-	    find_bug((*(core::ffi::c_ulong)p).addr) ||
-	    is_cfi_preamble_symbol((*(core::ffi::c_ulong)p).addr)) {
+	    find_bug((*(kernel::ffi::c_ulong)p).addr) ||
+	    is_cfi_preamble_symbol((*(kernel::ffi::c_ulong)p).addr)) {
 		module_put(*probed_mod);
 		return -EINVAL;
 	}
@@ -1665,7 +1665,7 @@ static int check_kprobe_address_safe(kprobe *p,
 		 * If the module freed '.init.text', we couldn't insert
 		 * kprobes in there.
 		 */
-		if (within_module_init((*(core::ffi::c_ulong)p).addr, *probed_mod) &&
+		if (within_module_init((*(kernel::ffi::c_ulong)p).addr, *probed_mod) &&
 		    !module_is_coming(*probed_mod)) {
 			module_put(*probed_mod);
 			return -ENOENT;
@@ -1928,7 +1928,7 @@ void unregister_kprobes(kprobe **kps, int num)
 EXPORT_SYMBOL_GPL(unregister_kprobes);
 
 int __weak kprobe_exceptions_notify(notifier_block *self,
-					val: core::ffi::c_ulong, void *data)
+					val: kernel::ffi::c_ulong, void *data)
 {
 	return NOTIFY_DONE;
 }
@@ -2056,7 +2056,7 @@ NOKPROBE_SYMBOL(__kretprobe_find_ret_addr);
  * kretprobe return addresses on the @tsk. The '*@cur' should be core::ptr::null_mut() at the
  * first call, but '@cur' itself must NOT core::ptr::null_mut().
  */
-core::ffi::c_ulong kretprobe_find_ret_addr(task_struct *tsk, void *fp,
+kernel::ffi::c_ulong kretprobe_find_ret_addr(task_struct *tsk, void *fp,
 				      llist_node **cur)
 {
 	kretprobe_instance *ri;
@@ -2072,7 +2072,7 @@ core::ffi::c_ulong kretprobe_find_ret_addr(task_struct *tsk, void *fp,
 		ri = container_of(*cur, kretprobe_instance, llist);
 	} while (ri->fp != fp);
 
-	return (core::ffi::c_ulong)ret;
+	return (kernel::ffi::c_ulong)ret;
 }
 NOKPROBE_SYMBOL(kretprobe_find_ret_addr);
 
@@ -2085,7 +2085,7 @@ void __weak arch_kretprobe_fixup_return(pt_regs *regs,
 	 */
 }
 
-core::ffi::c_ulong __kretprobe_trampoline_handler(pt_regs *regs,
+kernel::ffi::c_ulong __kretprobe_trampoline_handler(pt_regs *regs,
 					     void *frame_pointer)
 {
 	kretprobe_instance *ri = core::ptr::null_mut();
@@ -2105,7 +2105,7 @@ core::ffi::c_ulong __kretprobe_trampoline_handler(pt_regs *regs,
 	 * user handler calls stack_trace_save_regs() with this 'regs',
 	 * the stack trace will start from the instruction pointer.
 	 */
-	instruction_pointer_set(regs, (core::ffi::c_ulong)correct_ret_addr);
+	instruction_pointer_set(regs, (kernel::ffi::c_ulong)correct_ret_addr);
 
 	/* Run the user handler of the nodes. */
 	first = current->kretprobe_instances.first;
@@ -2145,7 +2145,7 @@ core::ffi::c_ulong __kretprobe_trampoline_handler(pt_regs *regs,
 		recycle_rp_inst(ri);
 	}
 
-	return (core::ffi::c_ulong)correct_ret_addr;
+	return (kernel::ffi::c_ulong)correct_ret_addr;
 }
 NOKPROBE_SYMBOL(__kretprobe_trampoline_handler)
 
@@ -2206,7 +2206,7 @@ static int pre_handler_kretprobe(kprobe *p, pt_regs *regs)
 NOKPROBE_SYMBOL(pre_handler_kretprobe);
 
 static void kretprobe_rethook_handler(rethook_node *rh, void *data,
-				      ret_addr: core::ffi::c_ulong,
+				      ret_addr: kernel::ffi::c_ulong,
 				      pt_regs *regs)
 {
 	kretprobe *rp = (kretprobe *)data;
@@ -2243,7 +2243,7 @@ NOKPROBE_SYMBOL(kretprobe_rethook_handler);
  * Caller must pass @addr or @sym (either one must be core::ptr::null_mut()), or this
  * returns -EINVAL.
  */
-int kprobe_on_func_entry(kprobe_opcode_t *addr, const char *sym, offset: core::ffi::c_ulong)
+int kprobe_on_func_entry(kprobe_opcode_t *addr, const char *sym, offset: kernel::ffi::c_ulong)
 {
 	bool on_func_entry;
 	kprobe_opcode_t *kp_addr = _kprobe_addr(addr, sym, offset, &on_func_entry);
@@ -2290,7 +2290,7 @@ int register_kretprobe(kretprobe *rp)
 
 	/* Pre-allocate memory for max kretprobe instances */
 	if (rp->maxactive <= 0)
-		rp->maxactive = max_t(core::ffi::c_uint, 10, 2*num_possible_cpus());
+		rp->maxactive = max_t(kernel::ffi::c_uint, 10, 2*num_possible_cpus());
 
 // #ifdef CONFIG_KRETPROBE_ON_RETHOOK
 	rp->rh = rethook_alloc((void *)rp, kretprobe_rethook_handler,
@@ -2502,10 +2502,10 @@ void dump_kprobe(kprobe *kp)
 }
 NOKPROBE_SYMBOL(dump_kprobe);
 
-int kprobe_add_ksym_blacklist(entry: core::ffi::c_ulong)
+int kprobe_add_ksym_blacklist(entry: kernel::ffi::c_ulong)
 {
 	kprobe_blacklist_entry *ent;
-	core::ffi::c_ulong offset = 0, size = 0;
+	kernel::ffi::c_ulong offset = 0, size = 0;
 
 	if (!kernel_text_address(entry) ||
 	    !kallsyms_lookup_size_offset(entry, &size, &offset))
@@ -2523,9 +2523,9 @@ int kprobe_add_ksym_blacklist(entry: core::ffi::c_ulong)
 }
 
 /* Add all symbols in given area into kprobe blacklist */
-int kprobe_add_area_blacklist(start: core::ffi::c_ulong, end: core::ffi::c_ulong)
+int kprobe_add_area_blacklist(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong)
 {
-	core::ffi::c_ulong entry;
+	kernel::ffi::c_ulong entry;
 	int ret = 0;
 
 	for (entry = start; entry < end; entry += ret) {
@@ -2538,13 +2538,13 @@ int kprobe_add_area_blacklist(start: core::ffi::c_ulong, end: core::ffi::c_ulong
 	return 0;
 }
 
-int __weak arch_kprobe_get_kallsym(core::ffi::c_uint *symnum, core::ffi::c_ulong *value,
+int __weak arch_kprobe_get_kallsym(kernel::ffi::c_uint *symnum, kernel::ffi::c_ulong *value,
 				   char *type, char *sym)
 {
 	return -ERANGE;
 }
 
-int kprobe_get_kallsym(symnum: core::ffi::c_uint, core::ffi::c_ulong *value, char *type,
+int kprobe_get_kallsym(symnum: kernel::ffi::c_uint, kernel::ffi::c_ulong *value, char *type,
 		       char *sym)
 {
 // #ifdef __ARCH_WANT_KPROBES_INSN_SLOT
@@ -2573,15 +2573,15 @@ int __init __weak arch_populate_kprobe_blacklist(void)
  * since a kprobe need not necessarily be at the beginning
  * of a function.
  */
-static int __init populate_kprobe_blacklist(core::ffi::c_ulong *start,
-					     core::ffi::c_ulong *end)
+static int __init populate_kprobe_blacklist(kernel::ffi::c_ulong *start,
+					     kernel::ffi::c_ulong *end)
 {
-	core::ffi::c_ulong entry;
-	core::ffi::c_ulong *iter;
+	kernel::ffi::c_ulong entry;
+	kernel::ffi::c_ulong *iter;
 	int ret;
 
 	for (iter = start; iter < end; iter++) {
-		entry = (core::ffi::c_ulong)dereference_symbol_descriptor((void *)*iter);
+		entry = (kernel::ffi::c_ulong)dereference_symbol_descriptor((void *)*iter);
 		ret = kprobe_add_ksym_blacklist(entry);
 		if (ret == -EINVAL)
 			continue;
@@ -2590,21 +2590,21 @@ static int __init populate_kprobe_blacklist(core::ffi::c_ulong *start,
 	}
 
 	/* Symbols in '__kprobes_text' are blacklisted */
-	ret = kprobe_add_area_blacklist((core::ffi::c_ulong)__kprobes_text_start,
-					(core::ffi::c_ulong)__kprobes_text_end);
+	ret = kprobe_add_area_blacklist((kernel::ffi::c_ulong)__kprobes_text_start,
+					(kernel::ffi::c_ulong)__kprobes_text_end);
 	if (ret)
 		return ret;
 
 	/* Symbols in 'noinstr' section are blacklisted */
-	ret = kprobe_add_area_blacklist((core::ffi::c_ulong)__noinstr_text_start,
-					(core::ffi::c_ulong)__noinstr_text_end);
+	ret = kprobe_add_area_blacklist((kernel::ffi::c_ulong)__noinstr_text_start,
+					(kernel::ffi::c_ulong)__noinstr_text_end);
 
 	return ret ? : arch_populate_kprobe_blacklist();
 }
 
 // #ifdef CONFIG_MODULES
 /* Remove all symbols in given area from kprobe blacklist */
-static void kprobe_remove_area_blacklist(start: core::ffi::c_ulong, end: core::ffi::c_ulong)
+static void kprobe_remove_area_blacklist(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong)
 {
 	kprobe_blacklist_entry *ent, *n;
 
@@ -2616,14 +2616,14 @@ static void kprobe_remove_area_blacklist(start: core::ffi::c_ulong, end: core::f
 	});
 }
 
-static void kprobe_remove_ksym_blacklist(entry: core::ffi::c_ulong)
+static void kprobe_remove_ksym_blacklist(entry: kernel::ffi::c_ulong)
 {
 	kprobe_remove_area_blacklist(entry, entry + 1);
 }
 
 static void add_module_kprobe_blacklist(module *mod)
 {
-	start: core::ffi::c_ulong, end;
+	start: kernel::ffi::c_ulong, end;
 	int i;
 
 	if (mod->kprobe_blacklist) {
@@ -2631,13 +2631,13 @@ static void add_module_kprobe_blacklist(module *mod)
 			kprobe_add_ksym_blacklist(mod->kprobe_blacklist[i]);
 	}
 
-	start = (core::ffi::c_ulong)mod->kprobes_text_start;
+	start = (kernel::ffi::c_ulong)mod->kprobes_text_start;
 	if (start) {
 		end = start + mod->kprobes_text_size;
 		kprobe_add_area_blacklist(start, end);
 	}
 
-	start = (core::ffi::c_ulong)mod->noinstr_text_start;
+	start = (kernel::ffi::c_ulong)mod->noinstr_text_start;
 	if (start) {
 		end = start + mod->noinstr_text_size;
 		kprobe_add_area_blacklist(start, end);
@@ -2646,7 +2646,7 @@ static void add_module_kprobe_blacklist(module *mod)
 
 static void remove_module_kprobe_blacklist(module *mod)
 {
-	start: core::ffi::c_ulong, end;
+	start: kernel::ffi::c_ulong, end;
 	int i;
 
 	if (mod->kprobe_blacklist) {
@@ -2654,13 +2654,13 @@ static void remove_module_kprobe_blacklist(module *mod)
 			kprobe_remove_ksym_blacklist(mod->kprobe_blacklist[i]);
 	}
 
-	start = (core::ffi::c_ulong)mod->kprobes_text_start;
+	start = (kernel::ffi::c_ulong)mod->kprobes_text_start;
 	if (start) {
 		end = start + mod->kprobes_text_size;
 		kprobe_remove_area_blacklist(start, end);
 	}
 
-	start = (core::ffi::c_ulong)mod->noinstr_text_start;
+	start = (kernel::ffi::c_ulong)mod->noinstr_text_start;
 	if (start) {
 		end = start + mod->noinstr_text_size;
 		kprobe_remove_area_blacklist(start, end);
@@ -2669,12 +2669,12 @@ static void remove_module_kprobe_blacklist(module *mod)
 
 /* Module notifier call back, checking kprobes on the module */
 static int kprobes_module_callback(notifier_block *nb,
-				   val: core::ffi::c_ulong, void *data)
+				   val: kernel::ffi::c_ulong, void *data)
 {
 	module *mod = data;
 	hlist_head *head;
 	kprobe *p;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 	int checkcore = (val == MODULE_STATE_GOING);
 
 	guard(mutex)(&kprobe_mutex);
@@ -2694,9 +2694,9 @@ static int kprobes_module_callback(notifier_block *nb,
 	for (i = 0; i < KPROBE_TABLE_SIZE; i++) {
 		head = &kprobe_table[i];
 		hlist_for_each_entry(p, head, hlist)
-			if (within_module_init((core::ffi::c_ulong)p->addr, mod) ||
+			if (within_module_init((kernel::ffi::c_ulong)p->addr, mod) ||
 			    (checkcore &&
-			     within_module_core((core::ffi::c_ulong)p->addr, mod))) {
+			     within_module_core((kernel::ffi::c_ulong)p->addr, mod))) {
 				/*
 				 * The vaddr this probe is installed will soon
 				 * be vfreed buy not synced to disk. Hence,
@@ -2865,14 +2865,14 @@ static int show_kprobe_addr(seq_file *pi, void *v)
 	hlist_head *head;
 	kprobe *p, *kp;
 	const char *sym;
-	core::ffi::c_uint i = *(loff_t *) v;
-	core::ffi::c_ulong offset = 0;
+	kernel::ffi::c_uint i = *(loff_t *) v;
+	kernel::ffi::c_ulong offset = 0;
 	char *modname, namebuf[KSYM_NAME_LEN];
 
 	head = &kprobe_table[i];
 	preempt_disable();
 	hlist_for_each_entry_rcu!(p, head, hlist, {
-		sym = kallsyms_lookup((core::ffi::c_ulong)p->addr, core::ptr::null_mut(),
+		sym = kallsyms_lookup((kernel::ffi::c_ulong)p->addr, core::ptr::null_mut(),
 					&offset, &modname, namebuf);
 		if (kprobe_aggrprobe(p)) {
 			list_for_each_entry_rcu(kp, &p->list, list)
@@ -2940,7 +2940,7 @@ static int arm_all_kprobes(void)
 {
 	hlist_head *head;
 	kprobe *p;
-	i: core::ffi::c_uint, total = 0, errors = 0;
+	i: kernel::ffi::c_uint, total = 0, errors = 0;
 	int err, ret = 0;
 
 	guard(mutex)(&kprobe_mutex);
@@ -2984,7 +2984,7 @@ static int disarm_all_kprobes(void)
 {
 	hlist_head *head;
 	kprobe *p;
-	i: core::ffi::c_uint, total = 0, errors = 0;
+	i: kernel::ffi::c_uint, total = 0, errors = 0;
 	int err, ret = 0;
 
 	guard(mutex)(&kprobe_mutex);

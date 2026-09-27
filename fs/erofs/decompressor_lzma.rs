@@ -79,7 +79,7 @@ unsafe fn z_erofs_lzma_init() -> i32 {
 unsafe fn z_erofs_load_lzma_config(
     sb: *mut super_block,
     _dsb: *mut erofs_super_block,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
     size: i32,
 ) -> i32 {
     static mut LZMA_RESIZE_MUTEX: DEFINE_MUTEX_TYPE = DEFINE_MUTEX_INIT;
@@ -169,13 +169,13 @@ unsafe fn z_erofs_load_lzma_config(
 unsafe fn z_erofs_lzma_decompress(
     rq: *mut z_erofs_decompress_req,
     pgpl: *mut *mut page,
-) -> *const core::ffi::c_char {
+) -> *const kernel::ffi::c_char {
     let sb = (*rq).sb;
     let mut dctx = z_erofs_stream_dctx { rq, no: -1, ni: 0, ..core::mem::zeroed() };
     let mut buf: xz_buf = core::mem::zeroed();
     let mut strm: *mut z_erofs_lzma;
     let mut xz_err: xz_ret;
-    let mut reason: *const core::ffi::c_char;
+    let mut reason: *const kernel::ffi::c_char;
 
     /* 1. get the exact LZMA compressed size */
     dctx.kin = kmap_local_page(*(*rq).in_);

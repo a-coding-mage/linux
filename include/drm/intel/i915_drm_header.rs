@@ -25,7 +25,7 @@
 
 // Dependency supplied by the surrounding kernel translation.
 extern "C" {
-    pub fn i915_read_mch_val() -> core::ffi::c_ulong;
+    pub fn i915_read_mch_val() -> kernel::ffi::c_ulong;
     pub fn i915_gpu_raise() -> bool;
     pub fn i915_gpu_lower() -> bool;
     pub fn i915_gpu_busy() -> bool;

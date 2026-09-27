@@ -57,11 +57,11 @@ macro_rules! MINSTREL_SAMPLE_INTERVAL { () => { HZ / 50 }; }
 #[repr(C)]
 pub struct minstrel_priv {
     pub hw: *mut ieee80211_hw,
-    pub cw_min: ::core::ffi::c_uint,
-    pub cw_max: ::core::ffi::c_uint,
-    pub max_retry: ::core::ffi::c_uint,
-    pub segment_size: ::core::ffi::c_uint,
-    pub update_interval: ::core::ffi::c_uint,
+    pub cw_min: ::kernel::ffi::c_uint,
+    pub cw_max: ::kernel::ffi::c_uint,
+    pub max_retry: ::kernel::ffi::c_uint,
+    pub segment_size: ::kernel::ffi::c_uint,
+    pub update_interval: ::kernel::ffi::c_uint,
     pub cck_rates: [u8; 4],
     pub ofdm_rates: [[u8; 8]; NUM_NL80211_BANDS],
     /* CONFIG_MAC80211_DEBUGFS: fixed-rate debugfs processing */
@@ -99,17 +99,17 @@ pub struct minstrel_sample_category { pub sample_group: u8, pub sample_rates: [u
 #[repr(C)]
 pub struct minstrel_ht_sta {
     pub sta: *mut ieee80211_sta,
-    pub ampdu_len: ::core::ffi::c_uint, pub ampdu_packets: ::core::ffi::c_uint, pub avg_ampdu_len: ::core::ffi::c_uint,
-    pub max_tp_rate: [u16; MAX_THR_RATES], pub max_prob_rate: u16, pub last_stats_update: ::core::ffi::c_ulong,
-    pub overhead: ::core::ffi::c_uint, pub overhead_rtscts: ::core::ffi::c_uint, pub overhead_legacy: ::core::ffi::c_uint, pub overhead_legacy_rtscts: ::core::ffi::c_uint,
-    pub total_packets: ::core::ffi::c_uint, pub sample_packets: ::core::ffi::c_uint, pub tx_flags: u32, pub use_short_preamble: bool, pub band: u8,
-    pub sample_seq: u8, pub sample_rate: u16, pub sample_time: ::core::ffi::c_ulong, pub sample: [minstrel_sample_category; __MINSTREL_SAMPLE_TYPE_MAX as usize],
+    pub ampdu_len: ::kernel::ffi::c_uint, pub ampdu_packets: ::kernel::ffi::c_uint, pub avg_ampdu_len: ::kernel::ffi::c_uint,
+    pub max_tp_rate: [u16; MAX_THR_RATES], pub max_prob_rate: u16, pub last_stats_update: ::kernel::ffi::c_ulong,
+    pub overhead: ::kernel::ffi::c_uint, pub overhead_rtscts: ::kernel::ffi::c_uint, pub overhead_legacy: ::kernel::ffi::c_uint, pub overhead_legacy_rtscts: ::kernel::ffi::c_uint,
+    pub total_packets: ::kernel::ffi::c_uint, pub sample_packets: ::kernel::ffi::c_uint, pub tx_flags: u32, pub use_short_preamble: bool, pub band: u8,
+    pub sample_seq: u8, pub sample_rate: u16, pub sample_time: ::kernel::ffi::c_ulong, pub sample: [minstrel_sample_category; __MINSTREL_SAMPLE_TYPE_MAX as usize],
     pub supported: [u16; MINSTREL_GROUPS_NB], pub groups: [minstrel_mcs_group_data; MINSTREL_GROUPS_NB],
 }
 
 extern "C" {
-    pub fn minstrel_ht_add_sta_debugfs(priv_: *mut ::core::ffi::c_void, priv_sta: *mut ::core::ffi::c_void, dir: *mut dentry);
-    pub fn minstrel_ht_get_tp_avg(mi: *mut minstrel_ht_sta, group: ::core::ffi::c_int, rate: ::core::ffi::c_int, prob_avg: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn minstrel_ht_add_sta_debugfs(priv_: *mut ::kernel::ffi::c_void, priv_sta: *mut ::kernel::ffi::c_void, dir: *mut dentry);
+    pub fn minstrel_ht_get_tp_avg(mi: *mut minstrel_ht_sta, group: ::kernel::ffi::c_int, rate: ::kernel::ffi::c_int, prob_avg: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -16,17 +16,17 @@
 
 // C header dependencies are supplied by other translated units.
 
-pub const TF_PM_MODE_LP0: ::core::ffi::c_int = 0;
-pub const TF_PM_MODE_LP1: ::core::ffi::c_int = 1;
-pub const TF_PM_MODE_LP1_NO_MC_CLK: ::core::ffi::c_int = 2;
-pub const TF_PM_MODE_LP2: ::core::ffi::c_int = 3;
-pub const TF_PM_MODE_LP2_NOFLUSH_L2: ::core::ffi::c_int = 4;
-pub const TF_PM_MODE_NONE: ::core::ffi::c_int = 5;
+pub const TF_PM_MODE_LP0: ::kernel::ffi::c_int = 0;
+pub const TF_PM_MODE_LP1: ::kernel::ffi::c_int = 1;
+pub const TF_PM_MODE_LP1_NO_MC_CLK: ::kernel::ffi::c_int = 2;
+pub const TF_PM_MODE_LP2: ::kernel::ffi::c_int = 3;
+pub const TF_PM_MODE_LP2_NOFLUSH_L2: ::kernel::ffi::c_int = 4;
+pub const TF_PM_MODE_NONE: ::kernel::ffi::c_int = 5;
 
 #[repr(C)]
 pub struct trusted_foundations_platform_data {
-    pub version_major: ::core::ffi::c_uint,
-    pub version_minor: ::core::ffi::c_uint,
+    pub version_major: ::kernel::ffi::c_uint,
+    pub version_minor: ::kernel::ffi::c_uint,
 }
 
 // CONFIG_TRUSTED_FOUNDATIONS is a build-time condition from the original
@@ -43,8 +43,8 @@ unsafe extern "C" {
 
 #[cfg(not(CONFIG_TRUSTED_FOUNDATIONS))]
 pub unsafe fn tf_dummy_write_sec(
-    _val: ::core::ffi::c_ulong,
-    _reg: ::core::ffi::c_uint,
+    _val: ::kernel::ffi::c_ulong,
+    _reg: ::kernel::ffi::c_uint,
 ) {
 }
 

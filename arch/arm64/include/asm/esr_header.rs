@@ -279,6 +279,6 @@ pub const ESR_ELx_IT_GCSPOPX: u64 = 7;
 #[inline] pub fn esr_fsc_is_secc_ttw(esr: u64) -> bool { let e=esr&ESR_ELx_FSC; e==ESR_ELx_FSC_SECC_TTW!(3)||e==ESR_ELx_FSC_SECC_TTW!(2)||e==ESR_ELx_FSC_SECC_TTW!(1)||e==ESR_ELx_FSC_SECC_TTW!(0)||e==ESR_ELx_FSC_SECC_TTW!(-1i64) }
 #[inline] pub fn esr_iss_is_eretax(esr: u64) -> bool { (esr & ESR_ELx_ERET_ISS_ERET) != 0 }
 #[inline] pub fn esr_iss_is_eretab(esr: u64) -> bool { (esr & ESR_ELx_ERET_ISS_ERETA) != 0 }
-extern "C" { pub fn esr_get_class_string(esr: u64) -> *const core::ffi::c_char; }
+extern "C" { pub fn esr_get_class_string(esr: u64) -> *const kernel::ffi::c_char; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

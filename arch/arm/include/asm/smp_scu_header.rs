@@ -18,8 +18,8 @@ pub fn scu_a9_has_base() -> bool {
 }
 
 #[inline]
-pub unsafe fn scu_a9_get_base() -> libc::c_ulong {
-    let mut pa: libc::c_ulong;
+pub unsafe fn scu_a9_get_base() -> kernel::ffi::c_ulong {
+    let mut pa: kernel::ffi::c_ulong;
 
     core::arch::asm!(
         "mrc p15, 4, {0}, c15, c0, 0",
@@ -30,7 +30,7 @@ pub unsafe fn scu_a9_get_base() -> libc::c_ulong {
 }
 
 /* __iomem is a kernel address-space annotation; represented here as a raw pointer. */
-pub type Iomem = *mut core::ffi::c_void;
+pub type Iomem = *mut kernel::ffi::c_void;
 
 /* CONFIG_HAVE_ARM_SCU selects these external declarations in the C header. */
 #[cfg(CONFIG_HAVE_ARM_SCU)]
@@ -51,19 +51,19 @@ pub fn scu_get_core_count(_scu_base: Iomem) -> u32 {
 #[cfg(not(CONFIG_HAVE_ARM_SCU))]
 #[inline]
 pub fn scu_power_mode(_scu_base: Iomem, _mode: u32) -> i32 {
-    -(libc::EINVAL as i32)
+    -(EINVAL as i32)
 }
 
 #[cfg(not(CONFIG_HAVE_ARM_SCU))]
 #[inline]
 pub fn scu_cpu_power_enable(_scu_base: Iomem, _mode: u32) -> i32 {
-    -(libc::EINVAL as i32)
+    -(EINVAL as i32)
 }
 
 #[cfg(not(CONFIG_HAVE_ARM_SCU))]
 #[inline]
 pub fn scu_get_cpu_power_mode(_scu_base: Iomem, _logical_cpu: u32) -> i32 {
-    -(libc::EINVAL as i32)
+    -(EINVAL as i32)
 }
 
 /* CONFIG_SMP && CONFIG_HAVE_ARM_SCU selects the external declaration in C. */

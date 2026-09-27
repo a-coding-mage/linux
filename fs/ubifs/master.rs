@@ -20,7 +20,7 @@ pub unsafe fn ubifs_compare_master_node(
     let hmac_offs = core::mem::offset_of!(ubifs_mst_node, hmac);
 
     // Do not compare the common node header since the sequence number and CRC differ.
-    let ret = libc::memcmp(
+    let ret = memcmp(
         (m1 as *mut u8).add(UBIFS_CH_SZ as usize) as *const core::ffi::c_void,
         (m2 as *mut u8).add(UBIFS_CH_SZ as usize) as *const core::ffi::c_void,
         hmac_offs - UBIFS_CH_SZ as usize,
@@ -32,7 +32,7 @@ pub unsafe fn ubifs_compare_master_node(
     // Do not compare the embedded HMAC, which also differs due to the header.
     let behind = hmac_offs + UBIFS_MAX_HMAC_LEN as usize;
     if UBIFS_MST_NODE_SZ as usize > behind {
-        return libc::memcmp(
+        return memcmp(
             (m1 as *mut u8).add(behind) as *const core::ffi::c_void,
             (m2 as *mut u8).add(behind) as *const core::ffi::c_void,
             UBIFS_MST_NODE_SZ as usize - behind,
@@ -76,7 +76,7 @@ unsafe fn scan_for_master(c: *mut ubifs_info) -> i32 {
         if (*snod).type_ != UBIFS_MST_NODE {
             goto_out_dump(c, sleb, snod, lnum)
         }
-        libc::memcpy((*c).mst_node as *mut _, (*snod).node as *const _, (*snod).len);
+        memcpy((*c).mst_node as *mut _, (*snod).node as *const _, (*snod).len);
         offs = (*snod).offs;
     }
     ubifs_scan_destroy(sleb);

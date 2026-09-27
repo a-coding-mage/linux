@@ -10,10 +10,10 @@ pub struct mtd_info {
 extern "C" {
     pub fn mtdram_init_device(
         mtd: *mut mtd_info,
-        mapped_address: *mut core::ffi::c_void,
-        size: core::ffi::c_ulong,
-        name: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        mapped_address: *mut kernel::ffi::c_void,
+        size: kernel::ffi::c_ulong,
+        name: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

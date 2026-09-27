@@ -4,7 +4,7 @@
  */
 // External kernel and DSA declarations are supplied by the surrounding build.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 const LAN9303_NAME: *const c_char = b"lan9303\0".as_ptr() as *const c_char;
 const LAN9303_TAG_LEN: usize = 4;

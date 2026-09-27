@@ -66,7 +66,7 @@ pub struct acpi_walk_state {
     pub method_call_op: *mut acpi_parse_object,
     pub method_desc: *mut acpi_operand_object,
     pub method_node: *mut acpi_namespace_node,
-    pub method_pathname: *mut core::ffi::c_char,
+    pub method_pathname: *mut kernel::ffi::c_char,
     pub op: *mut acpi_parse_object,
     pub op_info: *const acpi_opcode_info,
     pub origin: *mut acpi_parse_object,
@@ -95,8 +95,8 @@ pub struct acpi_init_walk_info {
 #[repr(C)]
 pub struct acpi_get_devices_info {
     pub user_function: acpi_walk_callback,
-    pub context: *mut core::ffi::c_void,
-    pub hid: *const core::ffi::c_char,
+    pub context: *mut kernel::ffi::c_void,
+    pub hid: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -128,11 +128,11 @@ pub union acpi_aml_operands {
 #[repr(C)]
 pub struct acpi_evaluate_info {
     pub prefix_node: *mut acpi_namespace_node,
-    pub relative_pathname: *const core::ffi::c_char,
+    pub relative_pathname: *const kernel::ffi::c_char,
     pub parameters: *mut *mut acpi_operand_object,
     pub node: *mut acpi_namespace_node,
     pub obj_desc: *mut acpi_operand_object,
-    pub full_pathname: *mut core::ffi::c_char,
+    pub full_pathname: *mut kernel::ffi::c_char,
     pub predefined: *const acpi_predefined_info,
     pub return_object: *mut acpi_operand_object,
     pub parent_package: *mut acpi_operand_object,

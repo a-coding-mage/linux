@@ -362,8 +362,8 @@ unsafe fn imx8mp_clocks_probe(platform_device *pdev) -> i32
 {
 	*mut device dev = (*&pdev).dev;
 	*mut device_node np;
-	*mut core::ffi::c_void anatop_base, *mut core::ffi::c_void ccm_base;
-	*const core::ffi::c_char opmode;
+	*mut kernel::ffi::c_void anatop_base, *mut kernel::ffi::c_void ccm_base;
+	*const kernel::ffi::c_char opmode;
 	i32 err;
 
 	np = of_find_compatible_node(NULL, NULL, "fsl,imx8mp-anatop");

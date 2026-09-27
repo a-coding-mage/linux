@@ -15,7 +15,7 @@ extern "C" {
 }
 
 // OP-TEE configures the L2 cache and does not allow modifying it yet.
-unsafe fn sama5_l2c310_write_sec(_val: libc::c_ulong, _reg: libc::c_uint) {
+unsafe fn sama5_l2c310_write_sec(_val: kernel::ffi::c_ulong, _reg: kernel::ffi::c_uint) {
 }
 
 unsafe fn sama5_secure_cache_init() {
@@ -27,8 +27,8 @@ unsafe fn sama5_secure_cache_init() {
     }
 }
 
-static SAMA5_DT_BOARD_COMPAT: [*const libc::c_char; 2] = [
-    b"atmel,sama5\0".as_ptr() as *const libc::c_char,
+static SAMA5_DT_BOARD_COMPAT: [*const kernel::ffi::c_char; 2] = [
+    b"atmel,sama5\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -38,8 +38,8 @@ static SAMA5_DT_BOARD_COMPAT: [*const libc::c_char; 2] = [
 // .dt_compat = sama5_dt_board_compat
 // MACHINE_END
 
-static SAMA5_ALT_DT_BOARD_COMPAT: [*const libc::c_char; 2] = [
-    b"atmel,sama5d4\0".as_ptr() as *const libc::c_char,
+static SAMA5_ALT_DT_BOARD_COMPAT: [*const kernel::ffi::c_char; 2] = [
+    b"atmel,sama5d4\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -50,8 +50,8 @@ static SAMA5_ALT_DT_BOARD_COMPAT: [*const libc::c_char; 2] = [
 // .l2c_aux_mask = ~0UL
 // MACHINE_END
 
-static SAMA5D2_COMPAT: [*const libc::c_char; 2] = [
-    b"atmel,sama5d2\0".as_ptr() as *const libc::c_char,
+static SAMA5D2_COMPAT: [*const kernel::ffi::c_char; 2] = [
+    b"atmel,sama5d2\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 

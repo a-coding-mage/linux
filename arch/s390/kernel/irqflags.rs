@@ -2,15 +2,15 @@
 
 // Dependencies supplied by <asm/irqflags.h>.
 unsafe extern "C" {
-    fn __arch_local_save_flags() -> ::core::ffi::c_ulong;
-    fn __arch_local_irq_save() -> ::core::ffi::c_ulong;
+    fn __arch_local_save_flags() -> ::kernel::ffi::c_ulong;
+    fn __arch_local_irq_save() -> ::kernel::ffi::c_ulong;
     fn __arch_local_irq_enable_external();
     fn __arch_local_irq_enable();
 }
 
 // noinstr unsigned long arch_local_save_flags(void)
 #[no_mangle]
-pub unsafe extern "C" fn arch_local_save_flags() -> ::core::ffi::c_ulong {
+pub unsafe extern "C" fn arch_local_save_flags() -> ::kernel::ffi::c_ulong {
     unsafe { __arch_local_save_flags() }
 }
 
@@ -18,7 +18,7 @@ pub unsafe extern "C" fn arch_local_save_flags() -> ::core::ffi::c_ulong {
 
 // noinstr unsigned long arch_local_irq_save(void)
 #[no_mangle]
-pub unsafe extern "C" fn arch_local_irq_save() -> ::core::ffi::c_ulong {
+pub unsafe extern "C" fn arch_local_irq_save() -> ::kernel::ffi::c_ulong {
     unsafe { __arch_local_irq_save() }
 }
 

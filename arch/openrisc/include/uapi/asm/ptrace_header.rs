@@ -28,14 +28,14 @@
 #[repr(C)]
 pub struct user_regs_struct {
     /* GPR R0-R31... */
-    pub gpr: [core::ffi::c_ulong; 32],
-    pub pc: core::ffi::c_ulong,
-    pub sr: core::ffi::c_ulong,
+    pub gpr: [kernel::ffi::c_ulong; 32],
+    pub pc: kernel::ffi::c_ulong,
+    pub sr: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct __or1k_fpu_state {
-    pub fpcsr: core::ffi::c_ulong,
+    pub fpcsr: kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

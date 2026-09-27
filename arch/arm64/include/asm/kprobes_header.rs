@@ -29,35 +29,35 @@ pub const kretprobe_blacklist_size: usize = 0;
 #[repr(C)]
 pub struct prev_kprobe {
     pub kp: *mut kprobe,
-    pub status: core::ffi::c_uint,
+    pub status: kernel::ffi::c_uint,
     /*
      * The original DAIF state of the outer kprobe, saved here before
      * a nested kprobe overwrites kcb->saved_irqflag during reentry.
      */
-    pub saved_irqflag: core::ffi::c_ulong,
+    pub saved_irqflag: kernel::ffi::c_ulong,
 }
 
 // per-cpu kprobe control block
 #[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct kprobe_ctlblk {
-    pub kprobe_status: core::ffi::c_uint,
-    pub saved_irqflag: core::ffi::c_ulong,
+    pub kprobe_status: kernel::ffi::c_uint,
+    pub saved_irqflag: kernel::ffi::c_ulong,
     pub prev_kprobe: prev_kprobe,
 }
 
 #[cfg(CONFIG_KPROBES)]
 unsafe extern "C" {
     pub fn arch_remove_kprobe(kp: *mut kprobe);
-    pub fn kprobe_fault_handler(regs: *mut pt_regs, fsr: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn kprobe_fault_handler(regs: *mut pt_regs, fsr: kernel::ffi::c_uint) -> kernel::ffi::c_int;
     pub fn __kretprobe_trampoline();
-    pub fn trampoline_probe_handler(regs: *mut pt_regs) -> *mut core::ffi::c_void;
+    pub fn trampoline_probe_handler(regs: *mut pt_regs) -> *mut kernel::ffi::c_void;
 }
 
 unsafe extern "C" {
-    pub fn kprobe_brk_handler(regs: *mut pt_regs, esr: core::ffi::c_ulong) -> core::ffi::c_int;
-    pub fn kprobe_ss_brk_handler(regs: *mut pt_regs, esr: core::ffi::c_ulong) -> core::ffi::c_int;
-    pub fn kretprobe_brk_handler(regs: *mut pt_regs, esr: core::ffi::c_ulong) -> core::ffi::c_int;
+    pub fn kprobe_brk_handler(regs: *mut pt_regs, esr: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+    pub fn kprobe_ss_brk_handler(regs: *mut pt_regs, esr: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+    pub fn kretprobe_brk_handler(regs: *mut pt_regs, esr: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
 }
 
 // External types supplied by the translated dependency headers:

@@ -42,9 +42,9 @@ extern "C" {
     pub type nfs_fattr;
     pub type nfs4_string;
 
-    pub fn nfs_idmap_init() -> ::core::ffi::c_int;
+    pub fn nfs_idmap_init() -> ::kernel::ffi::c_int;
     pub fn nfs_idmap_quit();
-    pub fn nfs_idmap_new(client: *mut nfs_client) -> ::core::ffi::c_int;
+    pub fn nfs_idmap_new(client: *mut nfs_client) -> ::kernel::ffi::c_int;
     pub fn nfs_idmap_delete(client: *mut nfs_client);
 
     pub fn nfs_fattr_init_names(
@@ -57,36 +57,36 @@ extern "C" {
 
     pub fn nfs_map_name_to_uid(
         server: *const nfs_server,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         namelen: usize,
         uid: *mut kuid_t,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn nfs_map_group_to_gid(
         server: *const nfs_server,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         namelen: usize,
         gid: *mut kgid_t,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn nfs_map_uid_to_name(
         server: *const nfs_server,
         uid: kuid_t,
-        name: *mut ::core::ffi::c_char,
+        name: *mut ::kernel::ffi::c_char,
         namelen: usize,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn nfs_map_gid_to_group(
         server: *const nfs_server,
         gid: kgid_t,
-        name: *mut ::core::ffi::c_char,
+        name: *mut ::kernel::ffi::c_char,
         namelen: usize,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn nfs_map_string_to_numeric(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         namelen: usize,
         res: *mut u32,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
-    pub static mut nfs_idmap_cache_timeout: ::core::ffi::c_uint;
+    pub static mut nfs_idmap_cache_timeout: ::kernel::ffi::c_uint;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

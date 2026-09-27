@@ -64,28 +64,28 @@ pub enum ptp_pin_function { PTP_PF_NONE, PTP_PF_EXTTS, PTP_PF_PEROUT, PTP_PF_PHY
 pub struct ptp_pin_desc { pub name: [i8; 64], pub index: u32, pub func: u32, pub chan: u32, pub rsv: [u32; 5] }
 
 pub const PTP_CLK_MAGIC: u8 = b'=';
-pub const PTP_CLOCK_GETCAPS: _ = _IOR(PTP_CLK_MAGIC, 1, ptp_clock_caps);
-pub const PTP_EXTTS_REQUEST: _ = _IOW(PTP_CLK_MAGIC, 2, ptp_extts_request);
-pub const PTP_PEROUT_REQUEST: _ = _IOW(PTP_CLK_MAGIC, 3, ptp_perout_request);
-pub const PTP_ENABLE_PPS: _ = _IOW(PTP_CLK_MAGIC, 4, i32);
-pub const PTP_SYS_OFFSET: _ = _IOW(PTP_CLK_MAGIC, 5, ptp_sys_offset);
-pub const PTP_PIN_GETFUNC: _ = _IOWR(PTP_CLK_MAGIC, 6, ptp_pin_desc);
-pub const PTP_PIN_SETFUNC: _ = _IOW(PTP_CLK_MAGIC, 7, ptp_pin_desc);
-pub const PTP_SYS_OFFSET_PRECISE: _ = _IOWR(PTP_CLK_MAGIC, 8, ptp_sys_offset_precise);
-pub const PTP_SYS_OFFSET_EXTENDED: _ = _IOWR(PTP_CLK_MAGIC, 9, ptp_sys_offset_extended);
-pub const PTP_CLOCK_GETCAPS2: _ = _IOR(PTP_CLK_MAGIC, 10, ptp_clock_caps);
-pub const PTP_EXTTS_REQUEST2: _ = _IOW(PTP_CLK_MAGIC, 11, ptp_extts_request);
-pub const PTP_PEROUT_REQUEST2: _ = _IOW(PTP_CLK_MAGIC, 12, ptp_perout_request);
-pub const PTP_ENABLE_PPS2: _ = _IOW(PTP_CLK_MAGIC, 13, i32);
-pub const PTP_SYS_OFFSET2: _ = _IOW(PTP_CLK_MAGIC, 14, ptp_sys_offset);
-pub const PTP_PIN_GETFUNC2: _ = _IOWR(PTP_CLK_MAGIC, 15, ptp_pin_desc);
-pub const PTP_PIN_SETFUNC2: _ = _IOW(PTP_CLK_MAGIC, 16, ptp_pin_desc);
-pub const PTP_SYS_OFFSET_PRECISE2: _ = _IOWR(PTP_CLK_MAGIC, 17, ptp_sys_offset_precise);
-pub const PTP_SYS_OFFSET_EXTENDED2: _ = _IOWR(PTP_CLK_MAGIC, 18, ptp_sys_offset_extended);
-pub const PTP_MASK_CLEAR_ALL: _ = _IO(PTP_CLK_MAGIC, 19);
-pub const PTP_MASK_EN_SINGLE: _ = _IOW(PTP_CLK_MAGIC, 20, u32);
-pub const PTP_SYS_OFFSET_PRECISE_CYCLES: _ = _IOWR(PTP_CLK_MAGIC, 21, ptp_sys_offset_precise);
-pub const PTP_SYS_OFFSET_EXTENDED_CYCLES: _ = _IOWR(PTP_CLK_MAGIC, 22, ptp_sys_offset_extended);
+pub const PTP_CLOCK_GETCAPS: u32 = _IOR(PTP_CLK_MAGIC, 1, ptp_clock_caps);
+pub const PTP_EXTTS_REQUEST: u32 = _IOW(PTP_CLK_MAGIC, 2, ptp_extts_request);
+pub const PTP_PEROUT_REQUEST: u32 = _IOW(PTP_CLK_MAGIC, 3, ptp_perout_request);
+pub const PTP_ENABLE_PPS: u32 = _IOW(PTP_CLK_MAGIC, 4, i32);
+pub const PTP_SYS_OFFSET: u32 = _IOW(PTP_CLK_MAGIC, 5, ptp_sys_offset);
+pub const PTP_PIN_GETFUNC: u32 = _IOWR(PTP_CLK_MAGIC, 6, ptp_pin_desc);
+pub const PTP_PIN_SETFUNC: u32 = _IOW(PTP_CLK_MAGIC, 7, ptp_pin_desc);
+pub const PTP_SYS_OFFSET_PRECISE: u32 = _IOWR(PTP_CLK_MAGIC, 8, ptp_sys_offset_precise);
+pub const PTP_SYS_OFFSET_EXTENDED: u32 = _IOWR(PTP_CLK_MAGIC, 9, ptp_sys_offset_extended);
+pub const PTP_CLOCK_GETCAPS2: u32 = _IOR(PTP_CLK_MAGIC, 10, ptp_clock_caps);
+pub const PTP_EXTTS_REQUEST2: u32 = _IOW(PTP_CLK_MAGIC, 11, ptp_extts_request);
+pub const PTP_PEROUT_REQUEST2: u32 = _IOW(PTP_CLK_MAGIC, 12, ptp_perout_request);
+pub const PTP_ENABLE_PPS2: u32 = _IOW(PTP_CLK_MAGIC, 13, i32);
+pub const PTP_SYS_OFFSET2: u32 = _IOW(PTP_CLK_MAGIC, 14, ptp_sys_offset);
+pub const PTP_PIN_GETFUNC2: u32 = _IOWR(PTP_CLK_MAGIC, 15, ptp_pin_desc);
+pub const PTP_PIN_SETFUNC2: u32 = _IOW(PTP_CLK_MAGIC, 16, ptp_pin_desc);
+pub const PTP_SYS_OFFSET_PRECISE2: u32 = _IOWR(PTP_CLK_MAGIC, 17, ptp_sys_offset_precise);
+pub const PTP_SYS_OFFSET_EXTENDED2: u32 = _IOWR(PTP_CLK_MAGIC, 18, ptp_sys_offset_extended);
+pub const PTP_MASK_CLEAR_ALL: u32 = _IO(PTP_CLK_MAGIC, 19);
+pub const PTP_MASK_EN_SINGLE: u32 = _IOW(PTP_CLK_MAGIC, 20, u32);
+pub const PTP_SYS_OFFSET_PRECISE_CYCLES: u32 = _IOWR(PTP_CLK_MAGIC, 21, ptp_sys_offset_precise);
+pub const PTP_SYS_OFFSET_EXTENDED_CYCLES: u32 = _IOWR(PTP_CLK_MAGIC, 22, ptp_sys_offset_extended);
 
 #[repr(C)]
 pub struct ptp_extts_event { pub t: ptp_clock_time, pub index: u32, pub flags: u32, pub rsv: [u32; 2] }

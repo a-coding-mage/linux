@@ -75,7 +75,7 @@ pub struct apr_pkt {
 #[repr(C)]
 pub struct apr_resp_pkt {
     pub hdr: apr_hdr,
-    pub payload: *mut core::ffi::c_void,
+    pub payload: *mut kernel::ffi::c_void,
     pub payload_size: i32,
 }
 
@@ -100,7 +100,7 @@ pub struct gpr_pkt {
 #[repr(C)]
 pub struct gpr_resp_pkt {
     pub hdr: gpr_hdr,
-    pub payload: *mut core::ffi::c_void,
+    pub payload: *mut kernel::ffi::c_void,
     pub payload_size: i32,
 }
 
@@ -127,7 +127,7 @@ pub struct gpr_ibasic_rsp_accepted_t {
 pub const fn APR_SVC_MAJOR_VERSION(v: u32) -> u32 { (v >> 16) & 0xFF }
 pub const fn APR_SVC_MINOR_VERSION(v: u32) -> u32 { v & 0xFF }
 
-pub type gpr_port_cb = unsafe extern "C" fn(*const gpr_resp_pkt, *mut core::ffi::c_void, i32) -> i32;
+pub type gpr_port_cb = unsafe extern "C" fn(*const gpr_resp_pkt, *mut kernel::ffi::c_void, i32) -> i32;
 
 pub enum packet_router {}
 
@@ -138,7 +138,7 @@ pub struct pkt_router_svc {
     pub pr: *mut packet_router,
     pub lock: spinlock_t,
     pub id: i32,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
 }
 
 pub type gpr_port_t = pkt_router_svc;
@@ -149,8 +149,8 @@ pub struct apr_device {
     pub svc_id: u16,
     pub domain_id: u16,
     pub version: u32,
-    pub name: [core::ffi::c_char; APR_NAME_SIZE],
-    pub service_path: *const core::ffi::c_char,
+    pub name: [kernel::ffi::c_char; APR_NAME_SIZE],
+    pub service_path: *const kernel::ffi::c_char,
     pub svc: pkt_router_svc,
     pub node: list_head,
 }
@@ -177,7 +177,7 @@ extern "C" {
     pub fn __apr_driver_register(drv: *mut apr_driver, owner: *mut module) -> i32;
     pub fn apr_driver_unregister(drv: *mut apr_driver);
     pub fn apr_send_pkt(adev: *mut apr_device, pkt: *mut apr_pkt) -> i32;
-    pub fn gpr_alloc_port(gdev: *mut gpr_device_t, dev: *mut device, cb: Option<gpr_port_cb>, priv_: *mut core::ffi::c_void) -> *mut gpr_port_t;
+    pub fn gpr_alloc_port(gdev: *mut gpr_device_t, dev: *mut device, cb: Option<gpr_port_cb>, priv_: *mut kernel::ffi::c_void) -> *mut gpr_port_t;
     pub fn gpr_free_port(port: *mut gpr_port_t);
     pub fn gpr_send_port_pkt(port: *mut gpr_port_t, pkt: *const gpr_pkt) -> i32;
     pub fn gpr_send_pkt(gdev: *mut gpr_device_t, pkt: *const gpr_pkt) -> i32;

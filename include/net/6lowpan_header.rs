@@ -51,7 +51,7 @@ pub struct lowpan_iphc_ctx {
     pub id: u8,
     pub pfx: in6_addr,
     pub plen: u8,
-    pub flags: libc::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -86,7 +86,7 @@ pub struct lowpan_802154_neigh {
 }
 
 #[inline]
-pub unsafe fn lowpan_802154_neigh(neigh_priv: *mut core::ffi::c_void) -> *mut lowpan_802154_neigh {
+pub unsafe fn lowpan_802154_neigh(neigh_priv: *mut kernel::ffi::c_void) -> *mut lowpan_802154_neigh {
     neigh_priv as *mut lowpan_802154_neigh
 }
 
@@ -109,7 +109,7 @@ pub unsafe fn lowpan_802154_dev(dev: *const net_device) -> *mut lowpan_802154_de
 #[repr(C)]
 pub struct lowpan_802154_cb {
     pub d_tag: u16,
-    pub d_size: libc::c_uint,
+    pub d_size: kernel::ffi::c_uint,
     pub d_offset: u8,
 }
 
@@ -120,7 +120,7 @@ pub unsafe fn lowpan_802154_cb(skb: *const sk_buff) -> *mut lowpan_802154_cb {
 }
 
 #[inline]
-pub unsafe fn lowpan_iphc_uncompress_eui64_lladdr(ipaddr: *mut in6_addr, lladdr: *const core::ffi::c_void) {
+pub unsafe fn lowpan_iphc_uncompress_eui64_lladdr(ipaddr: *mut in6_addr, lladdr: *const kernel::ffi::c_void) {
     (*ipaddr).s6_addr[0] = 0xFE;
     (*ipaddr).s6_addr[1] = 0x80;
     core::ptr::copy_nonoverlapping(lladdr as *const u8, (*ipaddr).s6_addr.as_mut_ptr().add(8), EUI64_ADDR_LEN);
@@ -128,7 +128,7 @@ pub unsafe fn lowpan_iphc_uncompress_eui64_lladdr(ipaddr: *mut in6_addr, lladdr:
 }
 
 #[inline]
-pub unsafe fn lowpan_iphc_uncompress_eui48_lladdr(ipaddr: *mut in6_addr, lladdr: *const core::ffi::c_void) {
+pub unsafe fn lowpan_iphc_uncompress_eui48_lladdr(ipaddr: *mut in6_addr, lladdr: *const kernel::ffi::c_void) {
     (*ipaddr).s6_addr[0] = 0xFE;
     (*ipaddr).s6_addr[1] = 0x80;
     core::ptr::copy_nonoverlapping(lladdr as *const u8, (*ipaddr).s6_addr.as_mut_ptr().add(8), 3);
@@ -139,16 +139,16 @@ pub unsafe fn lowpan_iphc_uncompress_eui48_lladdr(ipaddr: *mut in6_addr, lladdr:
 
 /* DEBUG-only dump helpers retain the C conditional intent. */
 #[cfg(debug_assertions)]
-pub unsafe fn raw_dump_inline(_caller: *const libc::c_char, _msg: *mut libc::c_char, _buf: *const u8, _len: libc::c_int) { }
+pub unsafe fn raw_dump_inline(_caller: *const kernel::ffi::c_char, _msg: *mut kernel::ffi::c_char, _buf: *const u8, _len: kernel::ffi::c_int) { }
 #[cfg(debug_assertions)]
-pub unsafe fn raw_dump_table(_caller: *const libc::c_char, _msg: *mut libc::c_char, _buf: *const u8, _len: libc::c_int) { }
+pub unsafe fn raw_dump_table(_caller: *const kernel::ffi::c_char, _msg: *mut kernel::ffi::c_char, _buf: *const u8, _len: kernel::ffi::c_int) { }
 #[cfg(not(debug_assertions))]
-pub unsafe fn raw_dump_inline(_caller: *const libc::c_char, _msg: *mut libc::c_char, _buf: *const u8, _len: libc::c_int) { }
+pub unsafe fn raw_dump_inline(_caller: *const kernel::ffi::c_char, _msg: *mut kernel::ffi::c_char, _buf: *const u8, _len: kernel::ffi::c_int) { }
 #[cfg(not(debug_assertions))]
-pub unsafe fn raw_dump_table(_caller: *const libc::c_char, _msg: *mut libc::c_char, _buf: *const u8, _len: libc::c_int) { }
+pub unsafe fn raw_dump_table(_caller: *const kernel::ffi::c_char, _msg: *mut kernel::ffi::c_char, _buf: *const u8, _len: kernel::ffi::c_int) { }
 
 #[inline]
-pub unsafe fn lowpan_fetch_skb(skb: *mut sk_buff, data: *mut core::ffi::c_void, len: libc::c_uint) -> bool {
+pub unsafe fn lowpan_fetch_skb(skb: *mut sk_buff, data: *mut kernel::ffi::c_void, len: kernel::ffi::c_uint) -> bool {
     if !pskb_may_pull(skb, len) { return true; }
     skb_copy_from_linear_data(skb, data, len);
     skb_pull(skb, len);
@@ -161,18 +161,18 @@ pub fn lowpan_802154_is_valid_src_short_addr(addr: __le16) -> bool {
 }
 
 #[inline]
-pub unsafe fn lowpan_push_hc_data(hc_ptr: *mut *mut u8, data: *const core::ffi::c_void, len: usize) {
+pub unsafe fn lowpan_push_hc_data(hc_ptr: *mut *mut u8, data: *const kernel::ffi::c_void, len: usize) {
     core::ptr::copy_nonoverlapping(data as *const u8, *hc_ptr, len);
     *hc_ptr = (*hc_ptr).add(len);
 }
 
 extern "C" {
-    pub fn lowpan_register_netdevice(dev: *mut net_device, lltype: lowpan_lltypes) -> libc::c_int;
-    pub fn lowpan_register_netdev(dev: *mut net_device, lltype: lowpan_lltypes) -> libc::c_int;
+    pub fn lowpan_register_netdevice(dev: *mut net_device, lltype: lowpan_lltypes) -> kernel::ffi::c_int;
+    pub fn lowpan_register_netdev(dev: *mut net_device, lltype: lowpan_lltypes) -> kernel::ffi::c_int;
     pub fn lowpan_unregister_netdevice(dev: *mut net_device);
     pub fn lowpan_unregister_netdev(dev: *mut net_device);
-    pub fn lowpan_header_decompress(skb: *mut sk_buff, dev: *const net_device, daddr: *const core::ffi::c_void, saddr: *const core::ffi::c_void) -> libc::c_int;
-    pub fn lowpan_header_compress(skb: *mut sk_buff, dev: *const net_device, daddr: *const core::ffi::c_void, saddr: *const core::ffi::c_void) -> libc::c_int;
+    pub fn lowpan_header_decompress(skb: *mut sk_buff, dev: *const net_device, daddr: *const kernel::ffi::c_void, saddr: *const kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn lowpan_header_compress(skb: *mut sk_buff, dev: *const net_device, daddr: *const kernel::ffi::c_void, saddr: *const kernel::ffi::c_void) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

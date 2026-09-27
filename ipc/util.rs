@@ -4,20 +4,20 @@
 
 #[repr(C)]
 pub struct ipc_proc_iface {
-    pub path: *const core::ffi::c_char,
-    pub header: *const core::ffi::c_char,
+    pub path: *const kernel::ffi::c_char,
+    pub header: *const kernel::ffi::c_char,
     pub ids: i32,
-    pub show: Option<unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void) -> i32>,
+    pub show: Option<unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void) -> i32>,
 }
 
 extern "C" {
-    fn proc_mkdir(name: *const core::ffi::c_char, parent: *mut core::ffi::c_void) -> *mut core::ffi::c_void;
+    fn proc_mkdir(name: *const kernel::ffi::c_char, parent: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
     fn sem_init(); fn msg_init(); fn shm_init();
     fn init_rwsem(x: *mut rw_semaphore); fn rhashtable_init(x: *mut rhashtable, p: *const rhashtable_params) -> i32;
     fn idr_init(x: *mut idr);
     fn rhashtable_lookup_fast(ht: *mut rhashtable, key: *const key_t, p: rhashtable_params) -> *mut kern_ipc_perm;
     fn rcu_read_lock(); fn rcu_read_unlock(); fn ipc_lock_object(x: *mut kern_ipc_perm); fn ipc_unlock(x: *mut kern_ipc_perm);
-    fn idr_alloc_cyclic(x: *mut idr, ptr: *mut core::ffi::c_void, s: i32, e: i32, g: u32) -> i32;
+    fn idr_alloc_cyclic(x: *mut idr, ptr: *mut kernel::ffi::c_void, s: i32, e: i32, g: u32) -> i32;
     fn idr_alloc(x: *mut idr, ptr: *mut kern_ipc_perm, s: i32, e: i32, g: u32) -> i32;
     fn idr_replace(x: *mut idr, ptr: *mut kern_ipc_perm, id: i32); fn idr_remove(x: *mut idr, id: i32) -> *mut kern_ipc_perm;
     fn ipcid_seq_max() -> i32; fn ipcid_to_seqx(id: i32) -> i32; fn ipcid_to_idx(id: i32) -> i32; fn ipcmni_seq_shift() -> i32;
@@ -45,9 +45,9 @@ pub static mut ipc_kht_params: rhashtable_params = rhashtable_params {
 pub unsafe fn ipc_init() -> i32 { proc_mkdir(b"sysvipc\0".as_ptr() as _, core::ptr::null_mut()); sem_init(); msg_init(); shm_init(); 0 }
 
 #[cfg(CONFIG_PROC_FS)]
-pub unsafe fn ipc_init_proc_interface(path:*const core::ffi::c_char,header:*const core::ffi::c_char,ids:i32,show:Option<unsafe extern "C" fn(*mut seq_file,*mut core::ffi::c_void)->i32>){
+pub unsafe fn ipc_init_proc_interface(path:*const kernel::ffi::c_char,header:*const kernel::ffi::c_char,ids:i32,show:Option<unsafe extern "C" fn(*mut seq_file,*mut kernel::ffi::c_void)->i32>){
     let iface=kmalloc_obj::<ipc_proc_iface>(); if iface.is_null(){return;} (*iface).path=path;(*iface).header=header;(*iface).ids=ids;(*iface).show=show;
-    let pde=proc_create_data(path,S_IRUGO,core::ptr::null_mut(),core::ptr::null(),iface as *mut _);if pde.is_null(){kfree(iface as *mut core::ffi::c_void);}
+    let pde=proc_create_data(path,S_IRUGO,core::ptr::null_mut(),core::ptr::null(),iface as *mut _);if pde.is_null(){kfree(iface as *mut kernel::ffi::c_void);}
 }
 
 pub unsafe fn ipc_init_ids(ids: *mut ipc_ids) {
@@ -93,10 +93,10 @@ pub unsafe fn ipc_parse_version(cmd:*mut i32)->i32{if *cmd&IPC_64!=0{*cmd^=IPC_6
 #[repr(C)] pub struct ipc_proc_iter{pub ns:*mut ipc_namespace,pub pid_ns:*mut pid_namespace,pub iface:*mut ipc_proc_iface}
 #[cfg(CONFIG_PROC_FS)] pub unsafe fn ipc_seq_pid_ns(s:*mut seq_file)->*mut pid_namespace{(*( (*s).private as *mut ipc_proc_iter)).pid_ns}
 #[cfg(CONFIG_PROC_FS)] unsafe fn sysvipc_find_ipc(ids:*mut ipc_ids,pos:*mut i64)->*mut kern_ipc_perm{let mut i=(*pos-1) as i32;let p=idr_find(&mut (*ids).ipcs_idr,i);if !p.is_null(){rcu_read_lock();ipc_lock_object(p);*pos=(i+1) as i64;}p}
-#[cfg(CONFIG_PROC_FS)] unsafe fn sysvipc_proc_next(s:*mut seq_file,it:*mut core::ffi::c_void,pos:*mut i64)->*mut core::ffi::c_void{let iter=(*s).private as *mut ipc_proc_iter;if !it.is_null(){ipc_unlock(it as *mut kern_ipc_perm);}*pos+=1;sysvipc_find_ipc(&mut (*(*iter).ns).ids[(*(*iter).iface).ids as usize],pos) as *mut _}
-#[cfg(CONFIG_PROC_FS)] unsafe fn sysvipc_proc_start(s:*mut seq_file,pos:*mut i64)->*mut core::ffi::c_void{let iter=(*s).private as *mut ipc_proc_iter;let ids=&mut (*(*iter).ns).ids[(*(*iter).iface).ids as usize];down_read(&mut ids.rwsem);if *pos<0{core::ptr::null_mut()}else if *pos==0{SEQ_START_TOKEN}else{sysvipc_find_ipc(ids,pos) as *mut _}}
-#[cfg(CONFIG_PROC_FS)] unsafe fn sysvipc_proc_stop(s:*mut seq_file,it:*mut core::ffi::c_void){let iter=(*s).private as *mut ipc_proc_iter;if !it.is_null(){ipc_unlock(it as *mut kern_ipc_perm);}let ids=&mut (*(*iter).ns).ids[(*(*iter).iface).ids as usize];up_read(&mut ids.rwsem);}
-#[cfg(CONFIG_PROC_FS)] unsafe fn sysvipc_proc_show(s:*mut seq_file,it:*mut core::ffi::c_void)->i32{let iter=(*s).private as *mut ipc_proc_iter;if it==SEQ_START_TOKEN{seq_puts(s,(*(*iter).iface).header);0}else{((*(*iter).iface).show.unwrap())(s,it)}}
+#[cfg(CONFIG_PROC_FS)] unsafe fn sysvipc_proc_next(s:*mut seq_file,it:*mut kernel::ffi::c_void,pos:*mut i64)->*mut kernel::ffi::c_void{let iter=(*s).private as *mut ipc_proc_iter;if !it.is_null(){ipc_unlock(it as *mut kern_ipc_perm);}*pos+=1;sysvipc_find_ipc(&mut (*(*iter).ns).ids[(*(*iter).iface).ids as usize],pos) as *mut _}
+#[cfg(CONFIG_PROC_FS)] unsafe fn sysvipc_proc_start(s:*mut seq_file,pos:*mut i64)->*mut kernel::ffi::c_void{let iter=(*s).private as *mut ipc_proc_iter;let ids=&mut (*(*iter).ns).ids[(*(*iter).iface).ids as usize];down_read(&mut ids.rwsem);if *pos<0{core::ptr::null_mut()}else if *pos==0{SEQ_START_TOKEN}else{sysvipc_find_ipc(ids,pos) as *mut _}}
+#[cfg(CONFIG_PROC_FS)] unsafe fn sysvipc_proc_stop(s:*mut seq_file,it:*mut kernel::ffi::c_void){let iter=(*s).private as *mut ipc_proc_iter;if !it.is_null(){ipc_unlock(it as *mut kern_ipc_perm);}let ids=&mut (*(*iter).ns).ids[(*(*iter).iface).ids as usize];up_read(&mut ids.rwsem);}
+#[cfg(CONFIG_PROC_FS)] unsafe fn sysvipc_proc_show(s:*mut seq_file,it:*mut kernel::ffi::c_void)->i32{let iter=(*s).private as *mut ipc_proc_iter;if it==SEQ_START_TOKEN{seq_puts(s,(*(*iter).iface).header);0}else{((*(*iter).iface).show.unwrap())(s,it)}}
 
 pub unsafe fn ipc_obtain_object_idr(ids:*mut ipc_ids,id:i32)->*mut kern_ipc_perm{let p=idr_find(&mut (*ids).ipcs_idr,ipcid_to_idx(id));if p.is_null(){ERR_PTR(-EINVAL)}else{p}}
 pub unsafe fn ipc_obtain_object_check(ids:*mut ipc_ids,id:i32)->*mut kern_ipc_perm{let p=ipc_obtain_object_idr(ids,id);if IS_ERR(p){p}else if ipc_checkid(p,id){ERR_PTR(-EINVAL)}else{p}}

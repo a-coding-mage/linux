@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
 /* AML Parser subcomponent prototypes and defines. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const OP_HAS_RETURN_VALUE: u32 = 1;
 

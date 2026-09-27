@@ -8,12 +8,12 @@
 
 #[repr(C)]
 pub struct spu_context {
-    pub tid: ::core::ffi::c_int,
+    pub tid: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct spu {
-    pub number: ::core::ffi::c_int,
+    pub number: ::kernel::ffi::c_int,
 }
 
 /// External tracepoint emitted by TRACE_EVENT(spufs_context).
@@ -25,7 +25,7 @@ unsafe extern "C" {
     pub fn trace_spufs_context(
         ctx: *mut spu_context,
         spu: *mut spu,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
     );
 }
 
@@ -58,7 +58,7 @@ macro_rules! __stringify {
 #[macro_export]
 macro_rules! spu_context_trace {
     ($name:ident, $ctx:expr, $spu:expr) => {{
-        let __name = __stringify!($name).as_ptr() as *const ::core::ffi::c_char;
+        let __name = concat!(stringify!($name), "\0").as_ptr() as *const ::kernel::ffi::c_char;
         unsafe {
             trace_spufs_context($ctx, $spu, __name);
         }
@@ -69,7 +69,7 @@ macro_rules! spu_context_trace {
 #[macro_export]
 macro_rules! spu_context_nospu_trace {
     ($name:ident, $ctx:expr) => {{
-        let __name = __stringify!($name).as_ptr() as *const ::core::ffi::c_char;
+        let __name = concat!(stringify!($name), "\0").as_ptr() as *const ::kernel::ffi::c_char;
         unsafe {
             trace_spufs_context($ctx, ::core::ptr::null_mut(), __name);
         }

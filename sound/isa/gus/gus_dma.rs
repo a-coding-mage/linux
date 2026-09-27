@@ -14,14 +14,14 @@ unsafe fn snd_gf1_dma_ack(gus: *mut snd_gus_card) {
 
 unsafe fn snd_gf1_dma_program(
     gus: *mut snd_gus_card,
-    addr: ::core::ffi::c_uint,
-    buf_addr: ::core::ffi::c_ulong,
-    mut count: ::core::ffi::c_uint,
-    cmd: ::core::ffi::c_uint,
+    addr: ::kernel::ffi::c_uint,
+    buf_addr: ::kernel::ffi::c_ulong,
+    mut count: ::kernel::ffi::c_uint,
+    cmd: ::kernel::ffi::c_uint,
 ) {
-    let address: ::core::ffi::c_uint;
-    let mut dma_cmd: ::core::ffi::c_uchar;
-    let address_high: ::core::ffi::c_uint;
+    let address: ::kernel::ffi::c_uint;
+    let mut dma_cmd: ::kernel::ffi::c_uchar;
+    let address_high: ::kernel::ffi::c_uint;
 
     dev_dbg(
         (*(*gus).card).dev,
@@ -50,18 +50,18 @@ unsafe fn snd_gf1_dma_program(
         address = addr;
     }
 
-    dma_cmd = (SNDRV_GF1_DMA_ENABLE | (cmd as ::core::ffi::c_ushort as ::core::ffi::c_uint))
-        as ::core::ffi::c_uchar;
+    dma_cmd = (SNDRV_GF1_DMA_ENABLE | (cmd as ::kernel::ffi::c_ushort as ::kernel::ffi::c_uint))
+        as ::kernel::ffi::c_uchar;
     /*
      * Disabled in the original C source:
      * dma_cmd |= 0x08;
      */
-    if (dma_cmd as ::core::ffi::c_uint & SNDRV_GF1_DMA_16BIT) != 0 {
+    if (dma_cmd as ::kernel::ffi::c_uint & SNDRV_GF1_DMA_16BIT) != 0 {
         count = count.wrapping_add(1);
         count &= !1; /* align */
     }
     if (*gus).gf1.dma1 > 3 {
-        dma_cmd = (dma_cmd as ::core::ffi::c_uint | SNDRV_GF1_DMA_WIDTH16) as ::core::ffi::c_uchar;
+        dma_cmd = (dma_cmd as ::kernel::ffi::c_uint | SNDRV_GF1_DMA_WIDTH16) as ::kernel::ffi::c_uchar;
         count = count.wrapping_add(1);
         count &= !1; /* align */
     }
@@ -70,7 +70,7 @@ unsafe fn snd_gf1_dma_program(
         (*gus).gf1.dma1,
         buf_addr,
         count,
-        if (dma_cmd as ::core::ffi::c_uint & SNDRV_GF1_DMA_READ) != 0 {
+        if (dma_cmd as ::kernel::ffi::c_uint & SNDRV_GF1_DMA_READ) != 0 {
             DMA_MODE_READ
         } else {
             DMA_MODE_WRITE
@@ -88,18 +88,18 @@ unsafe fn snd_gf1_dma_program(
         snd_gf1_write16(
             gus,
             SNDRV_GF1_GW_DRAM_DMA_LOW,
-            (address >> 4) as ::core::ffi::c_ushort,
+            (address >> 4) as ::kernel::ffi::c_ushort,
         );
         snd_gf1_write8(
             gus,
             SNDRV_GF1_GB_DRAM_DMA_HIGH,
-            address_high as ::core::ffi::c_uchar,
+            address_high as ::kernel::ffi::c_uchar,
         );
     } else {
         snd_gf1_write16(
             gus,
             SNDRV_GF1_GW_DRAM_DMA_LOW,
-            (address >> 4) as ::core::ffi::c_ushort,
+            (address >> 4) as ::kernel::ffi::c_ushort,
         );
     }
     snd_gf1_write8(gus, SNDRV_GF1_GB_DRAM_DMA_CONTROL, dma_cmd);
@@ -159,9 +159,9 @@ unsafe fn snd_gf1_dma_interrupt(gus: *mut snd_gus_card) {
         (*block).addr,
         (*block).buf_addr,
         (*block).count,
-        (*block).cmd as ::core::ffi::c_ushort as ::core::ffi::c_uint,
+        (*block).cmd as ::kernel::ffi::c_ushort as ::kernel::ffi::c_uint,
     );
-    kfree(block as *const ::core::ffi::c_void);
+    kfree(block as *const ::kernel::ffi::c_void);
     /*
      * Disabled in the original C source:
      * dev_dbg(gus->card->dev,
@@ -170,7 +170,7 @@ unsafe fn snd_gf1_dma_interrupt(gus: *mut snd_gus_card) {
      */
 }
 
-pub unsafe extern "C" fn snd_gf1_dma_init(gus: *mut snd_gus_card) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn snd_gf1_dma_init(gus: *mut snd_gus_card) -> ::kernel::ffi::c_int {
     let _guard = mutex_guard(&mut (*gus).dma_mutex);
     (*gus).gf1.dma_shared += 1;
     if (*gus).gf1.dma_shared > 1 {
@@ -184,7 +184,7 @@ pub unsafe extern "C" fn snd_gf1_dma_init(gus: *mut snd_gus_card) -> ::core::ffi
     0
 }
 
-pub unsafe extern "C" fn snd_gf1_dma_done(gus: *mut snd_gus_card) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn snd_gf1_dma_done(gus: *mut snd_gus_card) -> ::kernel::ffi::c_int {
     let mut block: *mut snd_gf1_dma_block;
 
     let _guard = mutex_guard(&mut (*gus).dma_mutex);
@@ -196,13 +196,13 @@ pub unsafe extern "C" fn snd_gf1_dma_done(gus: *mut snd_gus_card) -> ::core::ffi
         block = (*gus).gf1.dma_data_pcm;
         while !block.is_null() {
             (*gus).gf1.dma_data_pcm = (*block).next;
-            kfree(block as *const ::core::ffi::c_void);
+            kfree(block as *const ::kernel::ffi::c_void);
             block = (*gus).gf1.dma_data_pcm;
         }
         block = (*gus).gf1.dma_data_synth;
         while !block.is_null() {
             (*gus).gf1.dma_data_synth = (*block).next;
-            kfree(block as *const ::core::ffi::c_void);
+            kfree(block as *const ::kernel::ffi::c_void);
             block = (*gus).gf1.dma_data_synth;
         }
         (*gus).gf1.dma_data_pcm_last = ::core::ptr::null_mut();
@@ -233,7 +233,7 @@ pub unsafe extern "C" fn snd_gf1_dma_suspend(gus: *mut snd_gus_card) {
         if let Some(ack) = (*block).ack {
             ack(gus, (*block).private_data);
         }
-        kfree(block as *const ::core::ffi::c_void);
+        kfree(block as *const ::kernel::ffi::c_void);
         block = (*gus).gf1.dma_data_pcm;
     }
     block = (*gus).gf1.dma_data_synth;
@@ -242,7 +242,7 @@ pub unsafe extern "C" fn snd_gf1_dma_suspend(gus: *mut snd_gus_card) {
         if let Some(ack) = (*block).ack {
             ack(gus, (*block).private_data);
         }
-        kfree(block as *const ::core::ffi::c_void);
+        kfree(block as *const ::kernel::ffi::c_void);
         block = (*gus).gf1.dma_data_synth;
     }
 
@@ -254,9 +254,9 @@ pub unsafe extern "C" fn snd_gf1_dma_suspend(gus: *mut snd_gus_card) {
 pub unsafe extern "C" fn snd_gf1_dma_transfer_block(
     gus: *mut snd_gus_card,
     __block: *mut snd_gf1_dma_block,
-    atomic: ::core::ffi::c_int,
-    synth: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    atomic: ::kernel::ffi::c_int,
+    synth: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let block: *mut snd_gf1_dma_block;
     let mut free_block: *mut snd_gf1_dma_block = ::core::ptr::null_mut();
 
@@ -275,7 +275,7 @@ pub unsafe extern "C" fn snd_gf1_dma_transfer_block(
         (*(*gus).card).dev,
         c"addr = 0x%x, buffer = 0x%lx, count = 0x%x, cmd = 0x%x\n".as_ptr(),
         (*block).addr,
-        (*block).buffer as ::core::ffi::c_long,
+        (*block).buffer as ::kernel::ffi::c_long,
         (*block).count,
         (*block).cmd,
     );
@@ -283,12 +283,12 @@ pub unsafe extern "C" fn snd_gf1_dma_transfer_block(
     dev_dbg(
         (*(*gus).card).dev,
         c"gus->gf1.dma_data_pcm_last = 0x%lx\n".as_ptr(),
-        (*gus).gf1.dma_data_pcm_last as ::core::ffi::c_long,
+        (*gus).gf1.dma_data_pcm_last as ::kernel::ffi::c_long,
     );
     dev_dbg(
         (*(*gus).card).dev,
         c"gus->gf1.dma_data_pcm = 0x%lx\n".as_ptr(),
-        (*gus).gf1.dma_data_pcm as ::core::ffi::c_long,
+        (*gus).gf1.dma_data_pcm as ::kernel::ffi::c_long,
     );
 
     {
@@ -320,9 +320,9 @@ pub unsafe extern "C" fn snd_gf1_dma_transfer_block(
             (*free_block).addr,
             (*free_block).buf_addr,
             (*free_block).count,
-            (*free_block).cmd as ::core::ffi::c_ushort as ::core::ffi::c_uint,
+            (*free_block).cmd as ::kernel::ffi::c_ushort as ::kernel::ffi::c_uint,
         );
-        kfree(free_block as *const ::core::ffi::c_void);
+        kfree(free_block as *const ::kernel::ffi::c_void);
     }
 
     0

@@ -1028,7 +1028,7 @@ static void tegra124_periph_clk_init(void __iomem *clk_base,
 					    void __iomem *pmc_base)
 {
 	struct clk *clk;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	/* xusb_ss_div2 */
 	clk = clk_register_fixed_factor(NULL, "xusb_ss_div2", "xusb_ss_src", 0,
@@ -1237,7 +1237,7 @@ unsafe fn tegra124_pll_init(void __iomem *clk_base,
 /* Tegra124 CPU clock and reset control functions */
 unsafe fn tegra124_wait_cpu_in_reset(cpu: u32)
 {
-	core::ffi::c_uint reg;
+	kernel::ffi::c_uint reg;
 
 	do {
 		reg = readl(clk_base + CLK_RST_CONTROLLER_CPU_CMPLX_STATUS);
@@ -1414,7 +1414,7 @@ unsafe fn tegra124_clock_deassert_dfll_dvco_reset(void)
 	tegra124_car_barrier();
 }
 
-unsafe fn tegra124_reset_assert(id: core::ffi::c_ulong)
+unsafe fn tegra124_reset_assert(id: kernel::ffi::c_ulong)
 {
 	if (id == TEGRA124_RST_DFLL_DVCO)
 		tegra124_clock_assert_dfll_dvco_reset();
@@ -1424,7 +1424,7 @@ unsafe fn tegra124_reset_assert(id: core::ffi::c_ulong)
 	return 0;
 }
 
-unsafe fn tegra124_reset_deassert(id: core::ffi::c_ulong)
+unsafe fn tegra124_reset_deassert(id: kernel::ffi::c_ulong)
 {
 	if (id == TEGRA124_RST_DFLL_DVCO)
 		tegra124_clock_deassert_dfll_dvco_reset();

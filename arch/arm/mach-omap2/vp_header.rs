@@ -124,12 +124,12 @@ extern "C" {
     pub fn omap_vp_disable(voltdm: *mut voltagedomain);
     pub fn omap_vp_forceupdate_scale(
         voltdm: *mut voltagedomain,
-        target_volt: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        target_volt: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
     pub fn omap_vp_update_errorgain(
         voltdm: *mut voltagedomain,
-        target_volt: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        target_volt: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

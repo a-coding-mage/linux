@@ -12,7 +12,7 @@ pub struct Device {
 
 #[repr(C)]
 pub struct DeviceType {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub release: Option<unsafe extern "C" fn(*mut Device)>,
 }
 
@@ -22,8 +22,8 @@ pub struct BusType;
 #[repr(C)]
 pub struct CxlPmu {
     pub dev: Device,
-    pub assoc_id: core::ffi::c_int,
-    pub index: core::ffi::c_int,
+    pub assoc_id: kernel::ffi::c_int,
+    pub index: kernel::ffi::c_int,
     pub type_: CxlPmuType,
     pub base: u64,
 }
@@ -40,17 +40,17 @@ pub enum CxlPmuType {
 }
 
 unsafe extern "C" {
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn device_unregister(dev: *mut Device);
     fn device_initialize(dev: *mut Device);
     fn device_set_pm_not_required(dev: *mut Device);
-    fn dev_set_name(dev: *mut Device, fmt: *const core::ffi::c_char, ... ) -> core::ffi::c_int;
-    fn device_add(dev: *mut Device) -> core::ffi::c_int;
+    fn dev_set_name(dev: *mut Device, fmt: *const kernel::ffi::c_char, ... ) -> kernel::ffi::c_int;
+    fn device_add(dev: *mut Device) -> kernel::ffi::c_int;
     fn devm_add_action_or_reset(
         parent: *mut Device,
-        action: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
-        data: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        action: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
+        data: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
     fn put_device(dev: *mut Device);
     fn kzalloc_obj<T>() -> *mut T;
     fn to_cxl_pmu(dev: *mut Device) -> *mut CxlPmu;
@@ -72,7 +72,7 @@ pub static cxl_pmu_type: DeviceType = DeviceType {
     release: Some(cxl_pmu_release),
 };
 
-unsafe extern "C" fn remove_dev(dev: *mut core::ffi::c_void) {
+unsafe extern "C" fn remove_dev(dev: *mut kernel::ffi::c_void) {
     device_unregister(dev.cast());
 }
 
@@ -80,13 +80,13 @@ unsafe extern "C" fn remove_dev(dev: *mut core::ffi::c_void) {
 pub unsafe extern "C" fn devm_cxl_pmu_add(
     parent: *mut Device,
     regs: *mut CxlPmuRegs,
-    assoc_id: core::ffi::c_int,
-    index: core::ffi::c_int,
+    assoc_id: kernel::ffi::c_int,
+    index: kernel::ffi::c_int,
     type_: CxlPmuType,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let pmu: *mut CxlPmu;
     let dev: *mut Device;
-    let rc: core::ffi::c_int;
+    let rc: kernel::ffi::c_int;
 
     pmu = kzalloc_obj::<CxlPmu>();
     if pmu.is_null() {

@@ -113,7 +113,7 @@ pub unsafe extern "C" fn virtual_stream_encoder_create(ctx: *mut dc_context, bp:
     if enc.is_null() { return core::ptr::null_mut(); }
     if virtual_stream_encoder_construct(enc, ctx, bp) { return enc; }
     BREAK_TO_DEBUGGER!();
-    libc::free(enc as *mut libc::c_void);
+    libc::free(enc as *mut core::ffi::c_void);
     core::ptr::null_mut()
 }
 

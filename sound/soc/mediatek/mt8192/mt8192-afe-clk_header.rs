@@ -218,35 +218,35 @@ pub struct mtk_base_afe {
 }
 
 unsafe extern "C" {
-    pub fn mt8192_init_clock(afe: *mut mtk_base_afe) -> core::ffi::c_int;
-    pub fn mt8192_afe_enable_clock(afe: *mut mtk_base_afe) -> core::ffi::c_int;
+    pub fn mt8192_init_clock(afe: *mut mtk_base_afe) -> kernel::ffi::c_int;
+    pub fn mt8192_afe_enable_clock(afe: *mut mtk_base_afe) -> kernel::ffi::c_int;
     pub fn mt8192_afe_disable_clock(afe: *mut mtk_base_afe);
 
-    pub fn mt8192_apll1_enable(afe: *mut mtk_base_afe) -> core::ffi::c_int;
+    pub fn mt8192_apll1_enable(afe: *mut mtk_base_afe) -> kernel::ffi::c_int;
     pub fn mt8192_apll1_disable(afe: *mut mtk_base_afe);
 
-    pub fn mt8192_apll2_enable(afe: *mut mtk_base_afe) -> core::ffi::c_int;
+    pub fn mt8192_apll2_enable(afe: *mut mtk_base_afe) -> kernel::ffi::c_int;
     pub fn mt8192_apll2_disable(afe: *mut mtk_base_afe);
 
-    pub fn mt8192_get_apll_rate(afe: *mut mtk_base_afe, apll: core::ffi::c_int) -> core::ffi::c_int;
-    pub fn mt8192_get_apll_by_rate(afe: *mut mtk_base_afe, rate: core::ffi::c_int) -> core::ffi::c_int;
+    pub fn mt8192_get_apll_rate(afe: *mut mtk_base_afe, apll: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub fn mt8192_get_apll_by_rate(afe: *mut mtk_base_afe, rate: kernel::ffi::c_int) -> kernel::ffi::c_int;
     pub fn mt8192_get_apll_by_name(
         afe: *mut mtk_base_afe,
-        name: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        name: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 
     /* these will be replaced by using CCF */
     pub fn mt8192_mck_enable(
         afe: *mut mtk_base_afe,
-        mck_id: core::ffi::c_int,
-        rate: core::ffi::c_int,
-    ) -> core::ffi::c_int;
-    pub fn mt8192_mck_disable(afe: *mut mtk_base_afe, mck_id: core::ffi::c_int);
+        mck_id: kernel::ffi::c_int,
+        rate: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
+    pub fn mt8192_mck_disable(afe: *mut mtk_base_afe, mck_id: kernel::ffi::c_int);
 
     pub fn mt8192_set_audio_int_bus_parent(
         afe: *mut mtk_base_afe,
-        clk_id: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        clk_id: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

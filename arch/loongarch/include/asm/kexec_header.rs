@@ -21,7 +21,7 @@ pub const KEXEC_CONTROL_MEMORY_LIMIT: c_ulong = !0 as c_ulong;
 pub const KEXEC_CONTROL_PAGE_SIZE: usize = PAGE_SIZE;
 
 /* The native architecture */
-pub const KEXEC_ARCH: _ = KEXEC_ARCH_LOONGARCH;
+pub const KEXEC_ARCH: u32 = KEXEC_ARCH_LOONGARCH;
 
 pub unsafe fn crash_setup_regs(newregs: *mut pt_regs, oldregs: *mut pt_regs) {
     if !oldregs.is_null() {

@@ -2,14 +2,14 @@
 //
 // Dependencies supplied by the surrounding kernel translation unit.
 
-const UPROBE_TRAP_NR: ::core::ffi::c_ulong = u32::MAX as ::core::ffi::c_ulong;
+const UPROBE_TRAP_NR: ::kernel::ffi::c_ulong = u32::MAX as ::kernel::ffi::c_ulong;
 
 pub unsafe fn arch_uprobe_analyze_insn(
     auprobe: *mut arch_uprobe,
     _mm: *mut mm_struct,
-    addr: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
-    let mut idx: ::core::ffi::c_int;
+    addr: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
+    let mut idx: ::kernel::ffi::c_int;
     let mut insn: loongarch_instruction;
 
     if addr & 0x3 != 0 {
@@ -17,7 +17,7 @@ pub unsafe fn arch_uprobe_analyze_insn(
     }
 
     idx = (::core::mem::size_of_val(&(*auprobe).insn) /
-        ::core::mem::size_of_val(&(*auprobe).insn[0])) as ::core::ffi::c_int - 1;
+        ::core::mem::size_of_val(&(*auprobe).insn[0])) as ::kernel::ffi::c_int - 1;
     while idx >= 0 {
         insn.word = (*auprobe).insn[idx as usize];
         if insns_not_supported(insn) {
@@ -42,7 +42,7 @@ pub unsafe fn arch_uprobe_analyze_insn(
 pub unsafe fn arch_uprobe_pre_xol(
     _auprobe: *mut arch_uprobe,
     regs: *mut pt_regs,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let utask: *mut uprobe_task = (*current).utask;
 
     (*utask).autask.saved_trap_nr = (*current).thread.trap_nr;
@@ -55,7 +55,7 @@ pub unsafe fn arch_uprobe_pre_xol(
 pub unsafe fn arch_uprobe_post_xol(
     _auprobe: *mut arch_uprobe,
     regs: *mut pt_regs,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let utask: *mut uprobe_task = (*current).utask;
 
     WARN_ON_ONCE((*current).thread.trap_nr != UPROBE_TRAP_NR);
@@ -97,9 +97,9 @@ pub unsafe fn arch_uprobe_skip_sstep(
 }
 
 pub unsafe fn arch_uretprobe_hijack_return_addr(
-    trampoline_vaddr: ::core::ffi::c_ulong,
+    trampoline_vaddr: ::kernel::ffi::c_ulong,
     regs: *mut pt_regs,
-) -> ::core::ffi::c_ulong {
+) -> ::kernel::ffi::c_ulong {
     let ra = (*regs).regs[1];
 
     (*regs).regs[1] = trampoline_vaddr;
@@ -121,9 +121,9 @@ pub unsafe fn arch_uretprobe_is_alive(
 
 pub unsafe fn arch_uprobe_exception_notify(
     _self: *mut notifier_block,
-    _val: ::core::ffi::c_ulong,
-    _data: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int {
+    _val: ::kernel::ffi::c_ulong,
+    _data: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int {
     NOTIFY_DONE
 }
 
@@ -143,21 +143,21 @@ pub unsafe fn uprobe_singlestep_handler(regs: *mut pt_regs) -> bool {
     false
 }
 
-pub unsafe fn uprobe_get_swbp_addr(regs: *mut pt_regs) -> ::core::ffi::c_ulong {
+pub unsafe fn uprobe_get_swbp_addr(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong {
     instruction_pointer(regs)
 }
 
 pub unsafe fn arch_uprobe_copy_ixol(
     page: *mut page,
-    vaddr: ::core::ffi::c_ulong,
-    src: *mut ::core::ffi::c_void,
-    len: ::core::ffi::c_ulong,
+    vaddr: ::kernel::ffi::c_ulong,
+    src: *mut ::kernel::ffi::c_void,
+    len: ::kernel::ffi::c_ulong,
 ) {
-    let kaddr: *mut ::core::ffi::c_void = kmap_local_page(page);
-    let dst = (kaddr as *mut u8).add((vaddr & !PAGE_MASK) as usize) as *mut ::core::ffi::c_void;
+    let kaddr: *mut ::kernel::ffi::c_void = kmap_local_page(page);
+    let dst = (kaddr as *mut u8).add((vaddr & !PAGE_MASK) as usize) as *mut ::kernel::ffi::c_void;
 
     memcpy(dst, src, len);
-    flush_icache_range(dst as ::core::ffi::c_ulong, dst as ::core::ffi::c_ulong + len);
+    flush_icache_range(dst as ::kernel::ffi::c_ulong, dst as ::kernel::ffi::c_ulong + len);
     kunmap_local(kaddr);
 }
 

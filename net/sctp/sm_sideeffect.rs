@@ -640,7 +640,7 @@ unsafe fn sctp_do_8_2_transport_strike(*mut commands,
 /* Worker routine to handle INIT command failure.  */
 unsafe fn sctp_cmd_init_failed(*mut commands,
 				 *mut asoc,
-				 error: core::ffi::c_uint)
+				 error: kernel::ffi::c_uint)
 {
 	*mut event;
 
@@ -666,7 +666,7 @@ unsafe fn sctp_cmd_assoc_failed(*mut commands,
 				  sctp_event_type event_type,
 				  sctp_subtype subtype,
 				  *mut chunk,
-				  error: core::ffi::c_uint)
+				  error: kernel::ffi::c_uint)
 {
 	*mut event;
 	*mut abort;
@@ -1299,7 +1299,7 @@ unsafe fn sctp_cmd_interpreter(sctp_event_type event_type,
 	struct sctp_sackhdr sackh;
 	*mut timer;
 	*mut t;
-	core::ffi::c_ulong timeout;
+	kernel::ffi::c_ulong timeout;
 	*mut cmd;
 	int local_cork = 0;
 	int error = 0;

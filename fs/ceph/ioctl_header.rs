@@ -51,16 +51,16 @@ const IOC_DIRSHIFT: u32 = IOC_SIZESHIFT + IOC_SIZEBITS;
 const IOC_WRITE: u32 = 1;
 const IOC_READ: u32 = 2;
 
-const fn ioc(dir: u32, ty: u32, nr: u32, size: u32) -> libc::c_ulong {
+const fn ioc(dir: u32, ty: u32, nr: u32, size: u32) -> kernel::ffi::c_ulong {
     ((dir << IOC_DIRSHIFT) | (ty << IOC_TYPESHIFT) | (nr << IOC_NRSHIFT)
-        | (size << IOC_SIZESHIFT)) as libc::c_ulong
+        | (size << IOC_SIZESHIFT)) as kernel::ffi::c_ulong
 }
 
-pub const CEPH_IOC_GET_LAYOUT: libc::c_ulong =
+pub const CEPH_IOC_GET_LAYOUT: kernel::ffi::c_ulong =
     ioc(IOC_READ, CEPH_IOCTL_MAGIC, 1, core::mem::size_of::<ceph_ioctl_layout>() as u32);
-pub const CEPH_IOC_SET_LAYOUT: libc::c_ulong =
+pub const CEPH_IOC_SET_LAYOUT: kernel::ffi::c_ulong =
     ioc(IOC_WRITE, CEPH_IOCTL_MAGIC, 2, core::mem::size_of::<ceph_ioctl_layout>() as u32);
-pub const CEPH_IOC_SET_LAYOUT_POLICY: libc::c_ulong =
+pub const CEPH_IOC_SET_LAYOUT_POLICY: kernel::ffi::c_ulong =
     ioc(IOC_WRITE, CEPH_IOCTL_MAGIC, 5, core::mem::size_of::<ceph_ioctl_layout>() as u32);
 
 /*
@@ -75,14 +75,14 @@ pub struct ceph_ioctl_dataloc {
     pub object_offset: u64,     /* out: offset in object */
     pub object_no: u64,         /* out: object # */
     pub object_size: u64,       /* out: object size */
-    pub object_name: [libc::c_char; 64], /* out: object name */
+    pub object_name: [kernel::ffi::c_char; 64], /* out: object name */
     pub block_offset: u64,      /* out: offset in block */
     pub block_size: u64,        /* out: block length */
     pub osd: i64,               /* out: osd # */
     pub osd_addr: libc::sockaddr_storage, /* out: osd address */
 }
 
-pub const CEPH_IOC_GET_DATALOC: libc::c_ulong =
+pub const CEPH_IOC_GET_DATALOC: kernel::ffi::c_ulong =
     ioc(IOC_READ | IOC_WRITE, CEPH_IOCTL_MAGIC, 3, core::mem::size_of::<ceph_ioctl_dataloc>() as u32);
 
 /*
@@ -95,7 +95,7 @@ pub const CEPH_IOC_GET_DATALOC: libc::c_ulong =
  * application knows it won't interfere with other nodes (or doesn't
  * care).
  */
-pub const CEPH_IOC_LAZYIO: libc::c_ulong = ioc(0, CEPH_IOCTL_MAGIC, 4, 0);
+pub const CEPH_IOC_LAZYIO: kernel::ffi::c_ulong = ioc(0, CEPH_IOCTL_MAGIC, 4, 0);
 
 /*
  * CEPH_IOC_SYNCIO - force synchronous IO
@@ -113,6 +113,6 @@ pub const CEPH_IOC_LAZYIO: libc::c_ulong = ioc(0, CEPH_IOCTL_MAGIC, 4, 0);
  * are not copied (user page must remain stable) and O_DIRECT writes
  * have alignment restrictions (on the buffer and file offset).
  */
-pub const CEPH_IOC_SYNCIO: libc::c_ulong = ioc(0, CEPH_IOCTL_MAGIC, 5, 0);
+pub const CEPH_IOC_SYNCIO: kernel::ffi::c_ulong = ioc(0, CEPH_IOCTL_MAGIC, 5, 0);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

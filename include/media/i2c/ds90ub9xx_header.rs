@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 // C dependency: <linux/types.h>
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 /// Opaque declaration corresponding to `struct i2c_atr`.
 pub struct i2c_atr;

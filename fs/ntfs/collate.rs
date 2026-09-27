@@ -21,7 +21,7 @@ unsafe fn ntfs_collate_binary(
 	data2_len: u32,
 ) -> i32 {
 	let mut rc = unsafe {
-		libc::memcmp(
+		memcmp(
 			data1,
 			data2,
 			core::cmp::min(data1_len, data2_len) as usize,

@@ -6,26 +6,26 @@
 pub static mut virt_bi_data: virt_booter_data = unsafe { core::mem::zeroed() };
 
 unsafe extern "C" {
-    fn sprintf(str_: *mut core::ffi::c_char, format: *const core::ffi::c_char, ...);
-    fn do_kernel_restart(cmd: *const core::ffi::c_char);
+    fn sprintf(str_: *mut kernel::ffi::c_char, format: *const kernel::ffi::c_char, ...);
+    fn do_kernel_restart(cmd: *const kernel::ffi::c_char);
     fn be16_to_cpu(value: u16) -> u16;
-    fn be32_to_cpup(value: *const core::ffi::c_void) -> u32;
-    fn goldfish_timer_init(irq: u32, base: *mut core::ffi::c_void);
+    fn be32_to_cpup(value: *const kernel::ffi::c_void) -> u32;
+    fn goldfish_timer_init(irq: u32, base: *mut kernel::ffi::c_void);
     fn snprintf(
-        str_: *mut core::ffi::c_char,
+        str_: *mut kernel::ffi::c_char,
         size: usize,
-        format: *const core::ffi::c_char,
+        format: *const kernel::ffi::c_char,
         ...,
     ) -> i32;
-    fn setup_earlycon(name: *const core::ffi::c_char);
+    fn setup_earlycon(name: *const kernel::ffi::c_char);
     static mut mach_init_IRQ: Option<unsafe extern "C" fn()>;
     static mut mach_sched_init: Option<unsafe extern "C" fn()>;
-    static mut mach_get_model: Option<unsafe extern "C" fn(*mut core::ffi::c_char)>;
+    static mut mach_get_model: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char)>;
     static mut mach_reset: Option<unsafe extern "C" fn()>;
     fn virt_init_IRQ();
 }
 
-unsafe fn virt_get_model(str_: *mut core::ffi::c_char) {
+unsafe fn virt_get_model(str_: *mut kernel::ffi::c_char) {
     /* str is 80 characters long */
     sprintf(
         str_,
@@ -49,32 +49,32 @@ pub unsafe extern "C" fn virt_parse_bootinfo(record: *const bi_record) -> i32 {
 
     match be16_to_cpu((*record).tag) {
         BI_VIRT_QEMU_VERSION => {
-            virt_bi_data.qemu_version = be32_to_cpup(data as *const core::ffi::c_void);
+            virt_bi_data.qemu_version = be32_to_cpup(data as *const kernel::ffi::c_void);
         }
         BI_VIRT_GF_PIC_BASE => {
-            virt_bi_data.pic.mmio = be32_to_cpup(data as *const core::ffi::c_void);
+            virt_bi_data.pic.mmio = be32_to_cpup(data as *const kernel::ffi::c_void);
             data = data.add(4);
-            virt_bi_data.pic.irq = be32_to_cpup(data as *const core::ffi::c_void);
+            virt_bi_data.pic.irq = be32_to_cpup(data as *const kernel::ffi::c_void);
         }
         BI_VIRT_GF_RTC_BASE => {
-            virt_bi_data.rtc.mmio = be32_to_cpup(data as *const core::ffi::c_void);
+            virt_bi_data.rtc.mmio = be32_to_cpup(data as *const kernel::ffi::c_void);
             data = data.add(4);
-            virt_bi_data.rtc.irq = be32_to_cpup(data as *const core::ffi::c_void);
+            virt_bi_data.rtc.irq = be32_to_cpup(data as *const kernel::ffi::c_void);
         }
         BI_VIRT_GF_TTY_BASE => {
-            virt_bi_data.tty.mmio = be32_to_cpup(data as *const core::ffi::c_void);
+            virt_bi_data.tty.mmio = be32_to_cpup(data as *const kernel::ffi::c_void);
             data = data.add(4);
-            virt_bi_data.tty.irq = be32_to_cpup(data as *const core::ffi::c_void);
+            virt_bi_data.tty.irq = be32_to_cpup(data as *const kernel::ffi::c_void);
         }
         BI_VIRT_CTRL_BASE => {
-            virt_bi_data.ctrl.mmio = be32_to_cpup(data as *const core::ffi::c_void);
+            virt_bi_data.ctrl.mmio = be32_to_cpup(data as *const kernel::ffi::c_void);
             data = data.add(4);
-            virt_bi_data.ctrl.irq = be32_to_cpup(data as *const core::ffi::c_void);
+            virt_bi_data.ctrl.irq = be32_to_cpup(data as *const kernel::ffi::c_void);
         }
         BI_VIRT_VIRTIO_BASE => {
-            virt_bi_data.virtio.mmio = be32_to_cpup(data as *const core::ffi::c_void);
+            virt_bi_data.virtio.mmio = be32_to_cpup(data as *const kernel::ffi::c_void);
             data = data.add(4);
-            virt_bi_data.virtio.irq = be32_to_cpup(data as *const core::ffi::c_void);
+            virt_bi_data.virtio.irq = be32_to_cpup(data as *const kernel::ffi::c_void);
         }
         _ => {
             unknown = 1;
@@ -86,12 +86,12 @@ pub unsafe extern "C" fn virt_parse_bootinfo(record: *const bi_record) -> i32 {
 unsafe fn virt_sched_init() {
     goldfish_timer_init(
         virt_bi_data.rtc.irq,
-        virt_bi_data.rtc.mmio as *mut core::ffi::c_void,
+        virt_bi_data.rtc.mmio as *mut kernel::ffi::c_void,
     );
 }
 
 pub unsafe extern "C" fn config_virt() {
-    let mut earlycon = [0 as core::ffi::c_char; 24];
+    let mut earlycon = [0 as kernel::ffi::c_char; 24];
 
     snprintf(
         earlycon.as_mut_ptr(),

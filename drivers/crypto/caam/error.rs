@@ -9,7 +9,7 @@
 
 #[cfg(debug_assertions)]
 pub unsafe fn caam_dump_sg(
-    _prefix_str: *const core::ffi::c_char,
+    _prefix_str: *const kernel::ffi::c_char,
     _prefix_type: i32,
     _rowsize: i32,
     _groupsize: i32,
@@ -24,7 +24,7 @@ pub unsafe fn caam_dump_sg(
 
 #[cfg(not(debug_assertions))]
 pub unsafe fn caam_dump_sg(
-    _prefix_str: *const core::ffi::c_char,
+    _prefix_str: *const kernel::ffi::c_char,
     _prefix_type: i32,
     _rowsize: i32,
     _groupsize: i32,
@@ -82,12 +82,12 @@ static CHA_ID_LIST: &[&str] = &["", "AES", "DES", "ARC4", "MDHA", "RNG", "SNOW f
 static ERR_ID_LIST: &[&str] = &["No error.", "Mode error.", "Data size error.", "Key size error.", "PKHA A memory size error.", "PKHA B memory size error.", "Data arrived out of sequence error.", "PKHA divide-by-zero error.", "PKHA modulus even error.", "DES key parity error.", "ICV check failed.", "Hardware error.", "Unsupported CCM AAD size.", "Class 1 CHA is not reset", "Invalid CHA combination was selected", "Invalid CHA selected."];
 static RNG_ERR_ID_LIST: &[&str] = &["", "", "", "Instantiate", "Not instantiated", "Test instantiate", "Prediction resistance", "Prediction resistance and test request", "Uninstantiate", "Secure key generation", "", "Hardware error", "Continuous check"];
 
-unsafe fn report_ccb_status(_jrdev: *mut device, _status: u32, _error: *const core::ffi::c_char) -> i32 { -74 }
-unsafe fn report_jump_status(_jrdev: *mut device, _status: u32, _error: *const core::ffi::c_char) -> i32 { -22 }
-unsafe fn report_deco_status(_jrdev: *mut device, _status: u32, _error: *const core::ffi::c_char) -> i32 { -22 }
-unsafe fn report_qi_status(_qidev: *mut device, _status: u32, _error: *const core::ffi::c_char) -> i32 { -22 }
-unsafe fn report_jr_status(_jrdev: *mut device, _status: u32, _error: *const core::ffi::c_char) -> i32 { -22 }
-unsafe fn report_cond_code_status(_jrdev: *mut device, _status: u32, _error: *const core::ffi::c_char) -> i32 { -22 }
+unsafe fn report_ccb_status(_jrdev: *mut device, _status: u32, _error: *const kernel::ffi::c_char) -> i32 { -74 }
+unsafe fn report_jump_status(_jrdev: *mut device, _status: u32, _error: *const kernel::ffi::c_char) -> i32 { -22 }
+unsafe fn report_deco_status(_jrdev: *mut device, _status: u32, _error: *const kernel::ffi::c_char) -> i32 { -22 }
+unsafe fn report_qi_status(_qidev: *mut device, _status: u32, _error: *const kernel::ffi::c_char) -> i32 { -22 }
+unsafe fn report_jr_status(_jrdev: *mut device, _status: u32, _error: *const kernel::ffi::c_char) -> i32 { -22 }
+unsafe fn report_cond_code_status(_jrdev: *mut device, _status: u32, _error: *const kernel::ffi::c_char) -> i32 { -22 }
 
 pub unsafe fn caam_strstatus(_jrdev: *mut device, status: u32, _qi_v2: bool) -> i32 {
     let ssrc = status >> 28;

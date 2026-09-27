@@ -6,7 +6,7 @@
  *
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Supplied by the platform power-management implementation.
 unsafe extern "C" {

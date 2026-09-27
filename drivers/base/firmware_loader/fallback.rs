@@ -22,7 +22,7 @@ pub unsafe fn fw_fallback_set_default_timeout() {
     __fw_fallback_set_timeout(fw_fallback_config.old_timeout);
 }
 
-unsafe fn firmware_loading_timeout() -> libc::c_long {
+unsafe fn firmware_loading_timeout() -> kernel::ffi::c_long {
     if __firmware_loading_timeout() > 0 {
         __firmware_loading_timeout() * HZ
     } else {
@@ -31,7 +31,7 @@ unsafe fn firmware_loading_timeout() -> libc::c_long {
 }
 
 #[inline]
-unsafe fn fw_sysfs_wait_timeout(fw_priv: *mut fw_priv, timeout: libc::c_long) -> libc::c_int {
+unsafe fn fw_sysfs_wait_timeout(fw_priv: *mut fw_priv, timeout: kernel::ffi::c_long) -> kernel::ffi::c_int {
     __fw_state_wait_common(fw_priv, timeout)
 }
 
@@ -62,8 +62,8 @@ pub unsafe fn kill_pending_fw_fallback_reqs(kill_all: bool) {
  *
  * In charge of constructing a sysfs fallback interface for firmware loading.
  **/
-unsafe fn fw_load_sysfs_fallback(fw_sysfs: *mut fw_sysfs, mut timeout: libc::c_long) -> libc::c_int {
-    let mut retval: libc::c_int = 0;
+unsafe fn fw_load_sysfs_fallback(fw_sysfs: *mut fw_sysfs, mut timeout: kernel::ffi::c_long) -> kernel::ffi::c_int {
+    let mut retval: kernel::ffi::c_int = 0;
     let f_dev: *mut device = &mut (*fw_sysfs).dev;
     let fw_priv: *mut fw_priv = (*fw_sysfs).fw_priv;
     'err_put_dev: {
@@ -135,13 +135,13 @@ unsafe fn fw_load_sysfs_fallback(fw_sysfs: *mut fw_sysfs, mut timeout: libc::c_l
 
 unsafe fn fw_load_from_user_helper(
     firmware: *mut firmware,
-    name: *const libc::c_char,
+    name: *const kernel::ffi::c_char,
     device: *mut device,
     opt_flags: u32,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let fw_sysfs: *mut fw_sysfs;
-    let mut timeout: libc::c_long;
-    let mut ret: libc::c_int;
+    let mut timeout: kernel::ffi::c_long;
+    let mut ret: kernel::ffi::c_int;
     'out_unlock: {
 
     timeout = firmware_loading_timeout();
@@ -188,7 +188,7 @@ unsafe fn fw_force_sysfs_fallback(opt_flags: u32) -> bool {
 }
 
 unsafe fn fw_run_sysfs_fallback(opt_flags: u32) -> bool {
-    let ret: libc::c_int;
+    let ret: kernel::ffi::c_int;
 
     if fw_fallback_config.ignore_sysfs_fallback {
         pr_info_once!("Ignoring firmware sysfs fallback due to sysctl knob");
@@ -232,11 +232,11 @@ unsafe fn fw_run_sysfs_fallback(opt_flags: u32) -> bool {
  **/
 pub unsafe fn firmware_fallback_sysfs(
     fw: *mut firmware,
-    name: *const libc::c_char,
+    name: *const kernel::ffi::c_char,
     device: *mut device,
     opt_flags: u32,
-    ret: libc::c_int,
-) -> libc::c_int {
+    ret: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     if !fw_run_sysfs_fallback(opt_flags) {
         return ret;
     }

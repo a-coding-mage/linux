@@ -3,7 +3,7 @@
 /* Copyright 2011-2013 Texas Instruments Inc. */
 /* Authors: Graeme Gregory <gg@slimlogic.co.uk>, Ian Lartey <ian@slimlogic.co.uk> */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Dependencies supplied by the surrounding kernel translation.
 #[repr(C)] pub struct device { _private: [u8; 0] }

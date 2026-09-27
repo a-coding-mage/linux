@@ -2,7 +2,7 @@
 
 pub const ENCRYPTED_DEBUG: i32 = 0;
 
-pub type u8 = core::ffi::c_uchar;
+pub type u8 = kernel::ffi::c_uchar;
 pub type size_t = usize;
 
 #[repr(C)]
@@ -25,7 +25,7 @@ pub struct encrypted_key_payload {
  */
 unsafe extern "C" {
     pub fn request_trusted_key(
-        trusted_desc: *const core::ffi::c_char,
+        trusted_desc: *const kernel::ffi::c_char,
         master_key: *mut *const u8,
         master_keylen: *mut size_t,
     ) -> *mut key;
@@ -57,15 +57,15 @@ pub unsafe fn dump_decrypted_data(_epayload: *mut encrypted_key_payload) {}
 #[inline]
 pub unsafe fn dump_encrypted_data(
     _epayload: *mut encrypted_key_payload,
-    _encrypted_datalen: core::ffi::c_uint,
+    _encrypted_datalen: kernel::ffi::c_uint,
 ) {
 }
 
 #[inline]
 pub unsafe fn dump_hmac(
-    _str: *const core::ffi::c_char,
+    _str: *const kernel::ffi::c_char,
     _digest: *const u8,
-    _hmac_size: core::ffi::c_uint,
+    _hmac_size: kernel::ffi::c_uint,
 ) {
 }
 

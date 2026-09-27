@@ -14,64 +14,64 @@
 
 pub unsafe fn isofs_name_translate(
     de: *mut iso_directory_record,
-    new: *mut libc::c_char,
+    new: *mut kernel::ffi::c_char,
     _inode: *mut inode,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let old = (*de).name.as_mut_ptr();
-    let len = (*de).name_len[0] as libc::c_int;
+    let len = (*de).name_len[0] as kernel::ffi::c_int;
     let mut i = 0;
 
     while i < len {
-        let mut c = *old.add(i as usize) as libc::c_uchar;
+        let mut c = *old.add(i as usize) as kernel::ffi::c_uchar;
         if c == 0 { break; }
         if c >= b'A' && c <= b'Z' { c |= 0x20; }
         /* Drop trailing '.;1' (ISO 9660:1988 7.5.1 requires period) */
-        if c == b'.' && i == len - 3 && *old.add((i + 1) as usize) == b';' as libc::c_char && *old.add((i + 2) as usize) == b'1' as libc::c_char { break; }
+        if c == b'.' && i == len - 3 && *old.add((i + 1) as usize) == b';' as kernel::ffi::c_char && *old.add((i + 2) as usize) == b'1' as kernel::ffi::c_char { break; }
         /* Drop trailing ';1' */
-        if c == b';' && i == len - 2 && *old.add((i + 1) as usize) == b'1' as libc::c_char { break; }
+        if c == b';' && i == len - 2 && *old.add((i + 1) as usize) == b'1' as kernel::ffi::c_char { break; }
         /* Convert remaining ';' to '.' */
         /* Also '/' to '.' (broken Acorn-generated ISO9660 images) */
         if c == b';' || c == b'/' { c = b'.'; }
-        *new.add(i as usize) = c as libc::c_char;
+        *new.add(i as usize) = c as kernel::ffi::c_char;
         i += 1;
     }
     i
 }
 
 /* Acorn extensions written by Matthew Wilcox <willy@infradead.org> 1998 */
-pub unsafe fn get_acorn_filename(de: *mut iso_directory_record, retname: *mut libc::c_char, inode: *mut inode) -> libc::c_int {
+pub unsafe fn get_acorn_filename(de: *mut iso_directory_record, retname: *mut kernel::ffi::c_char, inode: *mut inode) -> kernel::ffi::c_int {
     let retnamlen = isofs_name_translate(de, retname, inode);
     if retnamlen == 0 { return 0; }
-    let mut std = core::mem::size_of::<iso_directory_record>() as libc::c_int + (*de).name_len[0] as libc::c_int;
+    let mut std = core::mem::size_of::<iso_directory_record>() as kernel::ffi::c_int + (*de).name_len[0] as kernel::ffi::c_int;
     if std & 1 != 0 { std += 1; }
-    if (*de).length[0] as libc::c_int - std != 32 { return retnamlen; }
-    let chr = (de as *mut libc::c_uchar).add(std as usize);
-    if libc::strncmp(chr as *const libc::c_char, b"ARCHIMEDES\0".as_ptr() as *const libc::c_char, 10) != 0 { return retnamlen; }
-    if *retname == b'_' as libc::c_char && (*chr.add(19) & 1) == 1 { *retname = b'!' as libc::c_char; }
+    if (*de).length[0] as kernel::ffi::c_int - std != 32 { return retnamlen; }
+    let chr = (de as *mut kernel::ffi::c_uchar).add(std as usize);
+    if strncmp(chr as *const kernel::ffi::c_char, b"ARCHIMEDES\0".as_ptr() as *const kernel::ffi::c_char, 10) != 0 { return retnamlen; }
+    if *retname == b'_' as kernel::ffi::c_char && (*chr.add(19) & 1) == 1 { *retname = b'!' as kernel::ffi::c_char; }
     if ((*de).flags[0] & 2) == 0 && *chr.add(13) == 0xff && (*chr.add(12) & 0xf0) == 0xf0 {
-        *retname.add(retnamlen as usize) = b',' as libc::c_char;
-        libc::sprintf(retname.add((retnamlen + 1) as usize), b"%3.3x\0".as_ptr() as *const libc::c_char, (((*chr.add(12) & 0xf) as libc::c_int) << 8) | *chr.add(11) as libc::c_int);
+        *retname.add(retnamlen as usize) = b',' as kernel::ffi::c_char;
+        sprintf(retname.add((retnamlen + 1) as usize), b"%3.3x\0".as_ptr() as *const kernel::ffi::c_char, (((*chr.add(12) & 0xf) as kernel::ffi::c_int) << 8) | *chr.add(11) as kernel::ffi::c_int);
         return retnamlen + 4;
     }
     retnamlen
 }
 
 /* This should _really_ be cleaned up some day.. */
-unsafe fn do_isofs_readdir(inode: *mut inode, file: *mut file, ctx: *mut dir_context, tmpname: *mut libc::c_char) -> libc::c_int {
+unsafe fn do_isofs_readdir(inode: *mut inode, file: *mut file, ctx: *mut dir_context, tmpname: *mut kernel::ffi::c_char) -> kernel::ffi::c_int {
     let bufsize = ISOFS_BUFFER_SIZE(inode);
     let bufbits = ISOFS_BUFFER_BITS(inode);
     let mut block = (*ctx).pos >> bufbits;
     let mut offset = (*ctx).pos & (bufsize - 1);
-    let mut inode_number: libc::c_ulong = 0;
+    let mut inode_number: kernel::ffi::c_ulong = 0;
     let mut bh: *mut buffer_head = core::ptr::null_mut();
     let mut first_de = 1;
-    let mut p: *mut libc::c_char = core::ptr::null_mut();
+    let mut p: *mut kernel::ffi::c_char = core::ptr::null_mut();
     let sbi = ISOFS_SB((*inode).i_sb);
 
     while (*ctx).pos < (*inode).i_size {
         if bh.is_null() { bh = isofs_bread(inode, block); if bh.is_null() { return 0; } }
         let de = ((*bh).b_data.add(offset as usize)) as *mut iso_directory_record;
-        let de_len = *(de as *mut libc::c_uchar) as libc::c_ulong;
+        let de_len = *(de as *mut kernel::ffi::c_uchar) as kernel::ffi::c_ulong;
         if de_len == 0 {
             brelse(bh); bh = core::ptr::null_mut();
             (*ctx).pos = ((*ctx).pos + ISOFS_BLOCK_SIZE) & !(ISOFS_BLOCK_SIZE - 1);
@@ -95,13 +95,13 @@ unsafe fn do_isofs_readdir(inode: *mut inode, file: *mut file, ctx: *mut dir_con
     if !bh.is_null() { brelse(bh); } 0
 }
 
-unsafe fn isofs_readdir(file: *mut file, ctx: *mut dir_context) -> libc::c_int {
-    let inode = file_inode(file); let tmpname = kmalloc(1024, GFP_KERNEL) as *mut libc::c_char;
+unsafe fn isofs_readdir(file: *mut file, ctx: *mut dir_context) -> kernel::ffi::c_int {
+    let inode = file_inode(file); let tmpname = kmalloc(1024, GFP_KERNEL) as *mut kernel::ffi::c_char;
     if tmpname.is_null() { return -ENOMEM; }
-    let result = do_isofs_readdir(inode, file, ctx, tmpname); kfree(tmpname as *mut libc::c_void); result
+    let result = do_isofs_readdir(inode, file, ctx, tmpname); kfree(tmpname as *mut kernel::ffi::c_void); result
 }
 
-pub unsafe fn isofs_fileattr_get(dentry: *mut dentry, fa: *mut file_kattr) -> libc::c_int {
+pub unsafe fn isofs_fileattr_get(dentry: *mut dentry, fa: *mut file_kattr) -> kernel::ffi::c_int {
     let sbi = ISOFS_SB((*dentry).d_sb);
     if (*sbi).s_check == b'r' as _ { (*fa).fsx_xflags |= FS_XFLAG_CASEFOLD; (*fa).flags |= FS_CASEFOLD_FL; }
     if !(*sbi).s_joliet_level && !(*sbi).s_rock && ((*sbi).s_mapping == b'n' as _ || (*sbi).s_mapping == b'a' as _) { (*fa).fsx_xflags |= FS_XFLAG_CASENONPRESERVING; } 0

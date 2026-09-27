@@ -95,7 +95,7 @@ unsafe extern "C" {
 
     pub fn mt8186_get_apll_rate(afe: *mut mtk_base_afe, apll: i32) -> i32;
     pub fn mt8186_get_apll_by_rate(afe: *mut mtk_base_afe, rate: i32) -> i32;
-    pub fn mt8186_get_apll_by_name(afe: *mut mtk_base_afe, name: *const ::core::ffi::c_char) -> i32;
+    pub fn mt8186_get_apll_by_name(afe: *mut mtk_base_afe, name: *const ::kernel::ffi::c_char) -> i32;
 
     /* these will be replaced by using CCF */
     pub fn mt8186_mck_enable(afe: *mut mtk_base_afe, mck_id: i32, rate: i32) -> i32;

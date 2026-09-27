@@ -11,11 +11,11 @@
 // linux/log2.h, linux/spinlock_types.h
 
 unsafe extern "C" {
-    fn DEFINE(name: *const core::ffi::c_char, value: usize);
+    fn DEFINE(name: *const kernel::ffi::c_char, value: usize);
     fn order_base_2(value: usize) -> usize;
 }
 
-pub unsafe fn main() -> core::ffi::c_int {
+pub unsafe fn main() -> kernel::ffi::c_int {
     /* The enum constants to put into include/generated/bounds.h */
     DEFINE(b"NR_PAGEFLAGS\0".as_ptr().cast(), __NR_PAGEFLAGS as usize);
     DEFINE(b"MAX_NR_ZONES\0".as_ptr().cast(), __MAX_NR_ZONES as usize);

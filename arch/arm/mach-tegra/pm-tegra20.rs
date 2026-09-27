@@ -8,7 +8,7 @@
 
 // CONFIG_PM_SLEEP
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct TegraLp1Iram {

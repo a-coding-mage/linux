@@ -4,12 +4,12 @@
 // Dependencies supplied by the surrounding kernel translation unit:
 // linux/debugfs.h, compat.h, debugfs.h, regs.h, and intern.h.
 
-unsafe fn caam_debugfs_u64_get(data: *mut core::ffi::c_void, val: *mut u64) -> i32 {
+unsafe fn caam_debugfs_u64_get(data: *mut kernel::ffi::c_void, val: *mut u64) -> i32 {
     *val = caam64_to_cpu(*(data as *const u64));
     0
 }
 
-unsafe fn caam_debugfs_u32_get(data: *mut core::ffi::c_void, val: *mut u64) -> i32 {
+unsafe fn caam_debugfs_u32_get(data: *mut kernel::ffi::c_void, val: *mut u64) -> i32 {
     *val = caam32_to_cpu(*(data as *const u32)) as u64;
     0
 }
@@ -33,10 +33,10 @@ pub unsafe fn caam_debugfs_qi_congested() {
 #[cfg(CONFIG_CRYPTO_DEV_FSL_CAAM_CRYPTO_API_QI)]
 pub unsafe fn caam_debugfs_qi_init(ctrlpriv: *mut caam_drv_private) {
     debugfs_create_file(
-        b"qi_congested\\0".as_ptr() as *const core::ffi::c_char,
+        b"qi_congested\\0".as_ptr() as *const kernel::ffi::c_char,
         0o444,
         (*ctrlpriv).ctl,
-        &raw mut times_congested as *mut core::ffi::c_void,
+        &raw mut times_congested as *mut kernel::ffi::c_void,
         &caam_fops_u64_ro,
     );
 }
@@ -52,37 +52,37 @@ pub unsafe fn caam_debugfs_init(
      * but does separate instances
      */
 
-    (*ctrlpriv).ctl = debugfs_create_dir(b"ctl\\0".as_ptr() as *const core::ffi::c_char, root);
+    (*ctrlpriv).ctl = debugfs_create_dir(b"ctl\\0".as_ptr() as *const kernel::ffi::c_char, root);
 
-    debugfs_create_file(b"rq_dequeued\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).req_dequeued as *mut _ as *mut core::ffi::c_void, &caam_fops_u64_ro);
-    debugfs_create_file(b"ob_rq_encrypted\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).ob_enc_req as *mut _ as *mut core::ffi::c_void, &caam_fops_u64_ro);
-    debugfs_create_file(b"ib_rq_decrypted\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).ib_dec_req as *mut _ as *mut core::ffi::c_void, &caam_fops_u64_ro);
-    debugfs_create_file(b"ob_bytes_encrypted\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).ob_enc_bytes as *mut _ as *mut core::ffi::c_void, &caam_fops_u64_ro);
-    debugfs_create_file(b"ob_bytes_protected\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).ob_prot_bytes as *mut _ as *mut core::ffi::c_void, &caam_fops_u64_ro);
-    debugfs_create_file(b"ib_bytes_decrypted\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).ib_dec_bytes as *mut _ as *mut core::ffi::c_void, &caam_fops_u64_ro);
-    debugfs_create_file(b"ib_bytes_validated\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).ib_valid_bytes as *mut _ as *mut core::ffi::c_void, &caam_fops_u64_ro);
+    debugfs_create_file(b"rq_dequeued\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).req_dequeued as *mut _ as *mut kernel::ffi::c_void, &caam_fops_u64_ro);
+    debugfs_create_file(b"ob_rq_encrypted\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).ob_enc_req as *mut _ as *mut kernel::ffi::c_void, &caam_fops_u64_ro);
+    debugfs_create_file(b"ib_rq_decrypted\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).ib_dec_req as *mut _ as *mut kernel::ffi::c_void, &caam_fops_u64_ro);
+    debugfs_create_file(b"ob_bytes_encrypted\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).ob_enc_bytes as *mut _ as *mut kernel::ffi::c_void, &caam_fops_u64_ro);
+    debugfs_create_file(b"ob_bytes_protected\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).ob_prot_bytes as *mut _ as *mut kernel::ffi::c_void, &caam_fops_u64_ro);
+    debugfs_create_file(b"ib_bytes_decrypted\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).ib_dec_bytes as *mut _ as *mut kernel::ffi::c_void, &caam_fops_u64_ro);
+    debugfs_create_file(b"ib_bytes_validated\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).ib_valid_bytes as *mut _ as *mut kernel::ffi::c_void, &caam_fops_u64_ro);
 
     /* Controller level - global status values */
-    debugfs_create_file(b"fault_addr\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).faultaddr as *mut _ as *mut core::ffi::c_void, &caam_fops_u32_ro);
-    debugfs_create_file(b"fault_detail\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).faultdetail as *mut _ as *mut core::ffi::c_void, &caam_fops_u32_ro);
-    debugfs_create_file(b"fault_status\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).status as *mut _ as *mut core::ffi::c_void, &caam_fops_u32_ro);
+    debugfs_create_file(b"fault_addr\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).faultaddr as *mut _ as *mut kernel::ffi::c_void, &caam_fops_u32_ro);
+    debugfs_create_file(b"fault_detail\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).faultdetail as *mut _ as *mut kernel::ffi::c_void, &caam_fops_u32_ro);
+    debugfs_create_file(b"fault_status\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*perfmon).status as *mut _ as *mut kernel::ffi::c_void, &caam_fops_u32_ro);
 
     if (*ctrlpriv).optee_en {
         return;
     }
 
     /* Internal covering keys (useful in non-secure mode only) */
-    (*ctrlpriv).ctl_kek_wrap.data = (*ctrlpriv).ctrl.kek.as_mut_ptr() as *mut core::ffi::c_void;
+    (*ctrlpriv).ctl_kek_wrap.data = (*ctrlpriv).ctrl.kek.as_mut_ptr() as *mut kernel::ffi::c_void;
     (*ctrlpriv).ctl_kek_wrap.size = KEK_KEY_SIZE * core::mem::size_of::<u32>();
-    debugfs_create_blob(b"kek\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*ctrlpriv).ctl_kek_wrap);
+    debugfs_create_blob(b"kek\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*ctrlpriv).ctl_kek_wrap);
 
-    (*ctrlpriv).ctl_tkek_wrap.data = (*ctrlpriv).ctrl.tkek.as_mut_ptr() as *mut core::ffi::c_void;
+    (*ctrlpriv).ctl_tkek_wrap.data = (*ctrlpriv).ctrl.tkek.as_mut_ptr() as *mut kernel::ffi::c_void;
     (*ctrlpriv).ctl_tkek_wrap.size = KEK_KEY_SIZE * core::mem::size_of::<u32>();
-    debugfs_create_blob(b"tkek\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*ctrlpriv).ctl_tkek_wrap);
+    debugfs_create_blob(b"tkek\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*ctrlpriv).ctl_tkek_wrap);
 
-    (*ctrlpriv).ctl_tdsk_wrap.data = (*ctrlpriv).ctrl.tdsk.as_mut_ptr() as *mut core::ffi::c_void;
+    (*ctrlpriv).ctl_tdsk_wrap.data = (*ctrlpriv).ctrl.tdsk.as_mut_ptr() as *mut kernel::ffi::c_void;
     (*ctrlpriv).ctl_tdsk_wrap.size = KEK_KEY_SIZE * core::mem::size_of::<u32>();
-    debugfs_create_blob(b"tdsk\\0".as_ptr() as *const core::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*ctrlpriv).ctl_tdsk_wrap);
+    debugfs_create_blob(b"tdsk\\0".as_ptr() as *const kernel::ffi::c_char, 0o444, (*ctrlpriv).ctl, &mut (*ctrlpriv).ctl_tdsk_wrap);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

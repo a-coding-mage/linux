@@ -20,37 +20,37 @@ pub struct device {
 
 #[cfg(CONFIG_SAMSUNG_PM)]
 extern "C" {
-    pub fn s3c_pm_init() -> ::core::ffi::c_int;
-    pub fn s3c64xx_pm_init() -> ::core::ffi::c_int;
+    pub fn s3c_pm_init() -> ::kernel::ffi::c_int;
+    pub fn s3c64xx_pm_init() -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_SAMSUNG_PM))]
 #[inline]
-pub fn s3c_pm_init() -> ::core::ffi::c_int {
+pub fn s3c_pm_init() -> ::kernel::ffi::c_int {
     0
 }
 
 #[cfg(not(CONFIG_SAMSUNG_PM))]
 #[inline]
-pub fn s3c64xx_pm_init() -> ::core::ffi::c_int {
+pub fn s3c64xx_pm_init() -> ::kernel::ffi::c_int {
     0
 }
 
 /* configuration for the IRQ mask over sleep */
 extern "C" {
-    pub static mut s3c_irqwake_intmask: ::core::ffi::c_ulong;
-    pub static mut s3c_irqwake_eintmask: ::core::ffi::c_ulong;
+    pub static mut s3c_irqwake_intmask: ::kernel::ffi::c_ulong;
+    pub static mut s3c_irqwake_eintmask: ::kernel::ffi::c_ulong;
 }
 
 /* per-cpu sleep functions */
 extern "C" {
     pub static mut pm_cpu_prep: Option<unsafe extern "C" fn()>;
-    pub static mut pm_cpu_sleep: Option<unsafe extern "C" fn(::core::ffi::c_ulong) -> ::core::ffi::c_int>;
+    pub static mut pm_cpu_sleep: Option<unsafe extern "C" fn(::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>;
 }
 
 /* Flags for PM Control */
 extern "C" {
-    pub static mut s3c_pm_flags: ::core::ffi::c_ulong;
+    pub static mut s3c_pm_flags: ::kernel::ffi::c_ulong;
 }
 
 /* from sleep.S */
@@ -61,23 +61,23 @@ pub struct irq_data {
 
 #[cfg(CONFIG_PM_SLEEP)]
 extern "C" {
-    pub fn s3c_irq_wake(data: *mut irq_data, state: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    pub fn s3c_irq_wake(data: *mut irq_data, state: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
     pub fn s3c_cpu_resume();
 }
 
 #[cfg(not(CONFIG_PM_SLEEP))]
-pub const s3c_irq_wake: Option<unsafe extern "C" fn(*mut irq_data, ::core::ffi::c_uint) -> ::core::ffi::c_int> = None;
+pub const s3c_irq_wake: Option<unsafe extern "C" fn(*mut irq_data, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int> = None;
 
 #[cfg(not(CONFIG_PM_SLEEP))]
 pub const s3c_cpu_resume: Option<unsafe extern "C" fn()> = None;
 
 #[cfg(CONFIG_SAMSUNG_PM)]
 extern "C" {
-    pub fn s3c_irqext_wake(data: *mut irq_data, state: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    pub fn s3c_irqext_wake(data: *mut irq_data, state: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_SAMSUNG_PM))]
-pub const s3c_irqext_wake: Option<unsafe extern "C" fn(*mut irq_data, ::core::ffi::c_uint) -> ::core::ffi::c_int> = None;
+pub const s3c_irqext_wake: Option<unsafe extern "C" fn(*mut irq_data, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int> = None;
 
 /**
  * s3c_pm_configure_extint() - ensure pins are correctly set for IRQ

@@ -48,7 +48,7 @@ pub const CPUIDLE_GICD_CTXT: u32 = 1u32 << 3; /* GICD */
 #[cfg(CONFIG_ACPI)]
 extern "C" {
     pub fn __acpi_get_mem_attribute(addr: phys_addr_t) -> pgprot_t;
-    pub fn acpi_os_ioremap(phys: acpi_physical_address, size: acpi_size) -> *mut core::ffi::c_void;
+    pub fn acpi_os_ioremap(phys: acpi_physical_address, size: acpi_size) -> *mut kernel::ffi::c_void;
     pub static mut acpi_disabled: i32;
     pub static mut acpi_noirq: i32;
     pub static mut acpi_pci_disabled: i32;
@@ -107,7 +107,7 @@ pub fn acpi_parking_protocol_valid(_cpu: i32) -> bool { false }
 pub fn acpi_set_mailbox_entry(_cpu: i32, _processor: *mut acpi_madt_generic_interrupt) {}
 
 #[inline(always)]
-pub fn acpi_get_enable_method(cpu: i32) -> *const core::ffi::c_char {
+pub fn acpi_get_enable_method(cpu: i32) -> *const kernel::ffi::c_char {
     if acpi_psci_present() { return b"psci\0".as_ptr() as *const _; }
     if acpi_parking_protocol_valid(cpu) { return b"parking-protocol\0".as_ptr() as *const _; }
     core::ptr::null()

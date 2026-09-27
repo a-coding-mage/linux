@@ -11,7 +11,7 @@
 // The architecture syscall table is consumed below with the corresponding
 // __SYSCALL expansion to generate the declarations and table entries.
 
-use core::ffi::c_long;
+use kernel::ffi::c_long;
 
 #[repr(C)]
 pub struct pt_regs {

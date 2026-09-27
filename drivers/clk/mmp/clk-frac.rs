@@ -53,7 +53,7 @@ unsafe fn clk_factor_determine_rate(
     0
 }
 
-unsafe fn clk_factor_recalc_rate(hw: *mut clk_hw, parent_rate: libc::c_ulong) -> libc::c_ulong {
+unsafe fn clk_factor_recalc_rate(hw: *mut clk_hw, parent_rate: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     let factor = &mut *to_clk_factor(hw);
     let masks = &*factor.masks;
     let mut d = u32_fract { numerator: 0, denominator: 0 };
@@ -76,13 +76,13 @@ unsafe fn clk_factor_recalc_rate(hw: *mut clk_hw, parent_rate: libc::c_ulong) ->
 // Configures new clock rate
 unsafe fn clk_factor_set_rate(
     hw: *mut clk_hw,
-    drate: libc::c_ulong,
-    prate: libc::c_ulong,
+    drate: kernel::ffi::c_ulong,
+    prate: kernel::ffi::c_ulong,
 ) -> i32 {
     let factor = &mut *to_clk_factor(hw);
     let masks = &*factor.masks;
     let mut i: i32 = 0;
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let mut rate: u64 = 0;
 
     while i < factor.ftbl_cnt as i32 {
@@ -117,7 +117,7 @@ unsafe fn clk_factor_init(hw: *mut clk_hw) -> i32 {
     let factor = &mut *to_clk_factor(hw);
     let masks = &*factor.masks;
     let mut d = u32_fract { numerator: 0, denominator: 0 };
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     if !factor.lock.is_null() {
         spin_lock_irqsave(factor.lock, &mut flags);
@@ -165,13 +165,13 @@ static clk_factor_ops: clk_ops = clk_ops {
 };
 
 unsafe fn mmp_clk_register_factor(
-    name: *const libc::c_char,
-    parent_name: *const libc::c_char,
-    flags: libc::c_ulong,
-    base: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
+    flags: kernel::ffi::c_ulong,
+    base: *mut kernel::ffi::c_void,
     masks: *mut mmp_clk_factor_masks,
     ftbl: *mut u32_fract,
-    ftbl_cnt: libc::c_uint,
+    ftbl_cnt: kernel::ffi::c_uint,
     lock: *mut spinlock_t,
 ) -> *mut clk {
     if masks.is_null() {

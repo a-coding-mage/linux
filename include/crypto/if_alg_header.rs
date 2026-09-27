@@ -17,29 +17,29 @@ pub struct alg_sock {
     pub refcnt: atomic_t,
     pub nokey_refcnt: atomic_t,
     pub type_: *const af_alg_type,
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct af_alg_control {
     pub iv: *mut af_alg_iv,
-    pub op: core::ffi::c_int,
-    pub aead_assoclen: core::ffi::c_uint,
+    pub op: kernel::ffi::c_int,
+    pub aead_assoclen: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct af_alg_type {
-    pub bind: Option<unsafe extern "C" fn(*const core::ffi::c_char) -> *mut core::ffi::c_void>,
-    pub release: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
-    pub setkey: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *const u8, core::ffi::c_uint) -> core::ffi::c_int>,
-    pub setentropy: Option<unsafe extern "C" fn(*mut core::ffi::c_void, sockptr_t, core::ffi::c_uint) -> core::ffi::c_int>,
-    pub accept: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut sock) -> core::ffi::c_int>,
-    pub accept_nokey: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut sock) -> core::ffi::c_int>,
-    pub setauthsize: Option<unsafe extern "C" fn(*mut core::ffi::c_void, core::ffi::c_uint) -> core::ffi::c_int>,
+    pub bind: Option<unsafe extern "C" fn(*const kernel::ffi::c_char) -> *mut kernel::ffi::c_void>,
+    pub release: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
+    pub setkey: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *const u8, kernel::ffi::c_uint) -> kernel::ffi::c_int>,
+    pub setentropy: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, sockptr_t, kernel::ffi::c_uint) -> kernel::ffi::c_int>,
+    pub accept: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut sock) -> kernel::ffi::c_int>,
+    pub accept_nokey: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut sock) -> kernel::ffi::c_int>,
+    pub setauthsize: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, kernel::ffi::c_uint) -> kernel::ffi::c_int>,
     pub ops: *mut proto_ops,
     pub ops_nokey: *mut proto_ops,
     pub owner: *mut module,
-    pub name: [core::ffi::c_char; 14],
+    pub name: [kernel::ffi::c_char; 14],
 }
 
 #[repr(C)]
@@ -53,7 +53,7 @@ pub struct af_alg_sgl {
 #[repr(C)]
 pub struct af_alg_tsgl {
     pub list: list_head,
-    pub cur: core::ffi::c_uint, /* Last processed SG entry */
+    pub cur: kernel::ffi::c_uint, /* Last processed SG entry */
     pub sg: [scatterlist; 0], /* Array of SGs forming the SGL */
 }
 
@@ -87,9 +87,9 @@ pub struct af_alg_async_req {
     pub last_rsgl: *mut af_alg_rsgl,
     pub rsgl_list: list_head,
     pub tsgl: *mut scatterlist,
-    pub tsgl_entries: core::ffi::c_uint,
-    pub outlen: core::ffi::c_uint,
-    pub areqlen: core::ffi::c_uint,
+    pub tsgl_entries: kernel::ffi::c_uint,
+    pub outlen: kernel::ffi::c_uint,
+    pub areqlen: kernel::ffi::c_uint,
     pub cra_u: af_alg_async_req_cra_u,
     /* req ctx trails this struct */
 }
@@ -104,8 +104,8 @@ pub union af_alg_async_req_cra_u {
 #[repr(C)]
 pub struct af_alg_ctx {
     pub tsgl_list: list_head,
-    pub iv: *mut core::ffi::c_void,
-    pub state: *mut core::ffi::c_void,
+    pub iv: *mut kernel::ffi::c_void,
+    pub state: *mut kernel::ffi::c_void,
     pub aead_assoclen: usize,
     pub wait: crypto_wait,
     pub used: usize,
@@ -115,8 +115,8 @@ pub struct af_alg_ctx {
     pub enc: bool,
     pub write: bool,
     pub init: bool,
-    pub len: core::ffi::c_uint,
-    pub inflight: core::ffi::c_uint,
+    pub len: kernel::ffi::c_uint,
+    pub inflight: kernel::ffi::c_uint,
 }
 
 /* Flags for af_alg_allowlist_entry::flags: */
@@ -124,34 +124,34 @@ pub const AF_ALG_UNPRIVILEGED: u32 = 1u32 << 0; /* Unprivileged use is allowed *
 
 #[repr(C)]
 pub struct af_alg_allowlist_entry {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub flags: u32,
 }
 
 extern "C" {
-    pub fn af_alg_register_type(type_: *const af_alg_type) -> core::ffi::c_int;
-    pub fn af_alg_unregister_type(type_: *const af_alg_type) -> core::ffi::c_int;
-    pub fn af_alg_check_restriction(name: *const core::ffi::c_char, allowlist: *const af_alg_allowlist_entry) -> core::ffi::c_int;
-    pub fn af_alg_release(sock: *mut socket) -> core::ffi::c_int;
+    pub fn af_alg_register_type(type_: *const af_alg_type) -> kernel::ffi::c_int;
+    pub fn af_alg_unregister_type(type_: *const af_alg_type) -> kernel::ffi::c_int;
+    pub fn af_alg_check_restriction(name: *const kernel::ffi::c_char, allowlist: *const af_alg_allowlist_entry) -> kernel::ffi::c_int;
+    pub fn af_alg_release(sock: *mut socket) -> kernel::ffi::c_int;
     pub fn af_alg_release_parent(sk: *mut sock);
-    pub fn af_alg_accept(sk: *mut sock, newsock: *mut socket, arg: *mut proto_accept_arg) -> core::ffi::c_int;
+    pub fn af_alg_accept(sk: *mut sock, newsock: *mut socket, arg: *mut proto_accept_arg) -> kernel::ffi::c_int;
     pub fn af_alg_free_sg(sgl: *mut af_alg_sgl);
-    pub fn af_alg_count_tsgl(sk: *mut sock, bytes: usize) -> core::ffi::c_uint;
+    pub fn af_alg_count_tsgl(sk: *mut sock, bytes: usize) -> kernel::ffi::c_uint;
     pub fn af_alg_pull_tsgl(sk: *mut sock, used: usize, dst: *mut scatterlist);
     pub fn af_alg_wmem_wakeup(sk: *mut sock);
-    pub fn af_alg_wait_for_data(sk: *mut sock, flags: core::ffi::c_uint, min: core::ffi::c_uint) -> core::ffi::c_int;
-    pub fn af_alg_sendmsg(sock: *mut socket, msg: *mut msghdr, size: usize, ivsize: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn af_alg_wait_for_data(sk: *mut sock, flags: kernel::ffi::c_uint, min: kernel::ffi::c_uint) -> kernel::ffi::c_int;
+    pub fn af_alg_sendmsg(sock: *mut socket, msg: *mut msghdr, size: usize, ivsize: kernel::ffi::c_uint) -> kernel::ffi::c_int;
     pub fn af_alg_free_resources(areq: *mut af_alg_async_req);
     pub fn af_alg_poll(file: *mut file, sock: *mut socket, wait: *mut poll_table) -> __poll_t;
-    pub fn af_alg_alloc_areq(sk: *mut sock, areqlen: core::ffi::c_uint) -> *mut af_alg_async_req;
-    pub fn af_alg_get_rsgl(sk: *mut sock, msg: *mut msghdr, flags: core::ffi::c_int, areq: *mut af_alg_async_req, maxsize: usize, outlen: *mut usize) -> core::ffi::c_int;
+    pub fn af_alg_alloc_areq(sk: *mut sock, areqlen: kernel::ffi::c_uint) -> *mut af_alg_async_req;
+    pub fn af_alg_get_rsgl(sk: *mut sock, msg: *mut msghdr, flags: kernel::ffi::c_int, areq: *mut af_alg_async_req, maxsize: usize, outlen: *mut usize) -> kernel::ffi::c_int;
 }
 
 #[inline]
 pub unsafe fn alg_sk(sk: *mut sock) -> *mut alg_sock { sk as *mut alg_sock }
 
 #[inline]
-pub unsafe fn af_alg_sndbuf(sk: *mut sock) -> core::ffi::c_int {
+pub unsafe fn af_alg_sndbuf(sk: *mut sock) -> kernel::ffi::c_int {
     let ask = &*alg_sk(sk);
     let ctx = ask.private as *mut af_alg_ctx;
     core::cmp::max(core::cmp::max((*sk).sk_sndbuf & PAGE_MASK, PAGE_SIZE) - (*ctx).used as _, 0)
@@ -161,7 +161,7 @@ pub unsafe fn af_alg_sndbuf(sk: *mut sock) -> core::ffi::c_int {
 pub unsafe fn af_alg_writable(sk: *mut sock) -> bool { PAGE_SIZE <= af_alg_sndbuf(sk) }
 
 #[inline]
-pub unsafe fn af_alg_rcvbuf(sk: *mut sock) -> core::ffi::c_int {
+pub unsafe fn af_alg_rcvbuf(sk: *mut sock) -> kernel::ffi::c_int {
     let ask = &*alg_sk(sk);
     let ctx = ask.private as *mut af_alg_ctx;
     core::cmp::max(core::cmp::max((*sk).sk_rcvbuf & PAGE_MASK, PAGE_SIZE) - atomic_read(&(*ctx).rcvused), 0)

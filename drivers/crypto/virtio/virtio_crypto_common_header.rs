@@ -13,7 +13,7 @@ pub struct data_queue {
     // To protect the vq operations for the dataq
     pub lock: spinlock_t,
     // Name of the tx queue: dataq.$index
-    pub name: [core::ffi::c_char; 32],
+    pub name: [kernel::ffi::c_char; 32],
     pub engine: *mut crypto_engine,
     pub done_work: work_struct,
 }
@@ -50,7 +50,7 @@ pub struct virtio_crypto {
     pub max_auth_key_len: u32,
     // Maximum size of per request
     pub max_size: u64,
-    pub status: core::ffi::c_ulong,
+    pub status: kernel::ffi::c_ulong,
     pub ref_count: atomic_t,
     pub list: list_head,
     pub owner: *mut module,
@@ -82,7 +82,7 @@ pub struct virtio_crypto_request;
 
 pub type virtio_crypto_data_callback = unsafe extern "C" fn(
     vc_req: *mut virtio_crypto_request,
-    len: core::ffi::c_int,
+    len: kernel::ffi::c_int,
 );
 
 #[repr(C)]
@@ -95,43 +95,43 @@ pub struct virtio_crypto_request {
 }
 
 extern "C" {
-    pub fn virtcrypto_devmgr_add_dev(vcrypto_dev: *mut virtio_crypto) -> core::ffi::c_int;
+    pub fn virtcrypto_devmgr_add_dev(vcrypto_dev: *mut virtio_crypto) -> kernel::ffi::c_int;
     pub fn virtcrypto_devmgr_get_head() -> *mut list_head;
     pub fn virtcrypto_devmgr_rm_dev(vcrypto_dev: *mut virtio_crypto);
-    pub fn virtcrypto_dev_get(vcrypto_dev: *mut virtio_crypto) -> core::ffi::c_int;
+    pub fn virtcrypto_dev_get(vcrypto_dev: *mut virtio_crypto) -> kernel::ffi::c_int;
     pub fn virtcrypto_dev_put(vcrypto_dev: *mut virtio_crypto);
-    pub fn virtcrypto_dev_started(vcrypto_dev: *mut virtio_crypto) -> core::ffi::c_int;
+    pub fn virtcrypto_dev_started(vcrypto_dev: *mut virtio_crypto) -> kernel::ffi::c_int;
     pub fn virtcrypto_algo_is_supported(
         vcrypto_dev: *mut virtio_crypto,
         service: u32,
         algo: u32,
     ) -> bool;
-    pub fn virtcrypto_get_dev_node(node: core::ffi::c_int, service: u32, algo: u32)
+    pub fn virtcrypto_get_dev_node(node: kernel::ffi::c_int, service: u32, algo: u32)
         -> *mut virtio_crypto;
-    pub fn virtcrypto_dev_start(vcrypto: *mut virtio_crypto) -> core::ffi::c_int;
+    pub fn virtcrypto_dev_start(vcrypto: *mut virtio_crypto) -> kernel::ffi::c_int;
     pub fn virtcrypto_dev_stop(vcrypto: *mut virtio_crypto);
     pub fn virtio_crypto_skcipher_crypt_req(
         engine: *mut crypto_engine,
-        vreq: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        vreq: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
     pub fn virtcrypto_clear_request(vc_req: *mut virtio_crypto_request);
-    pub fn virtio_crypto_skcipher_algs_register(vcrypto: *mut virtio_crypto) -> core::ffi::c_int;
+    pub fn virtio_crypto_skcipher_algs_register(vcrypto: *mut virtio_crypto) -> kernel::ffi::c_int;
     pub fn virtio_crypto_skcipher_algs_unregister(vcrypto: *mut virtio_crypto);
-    pub fn virtio_crypto_akcipher_algs_register(vcrypto: *mut virtio_crypto) -> core::ffi::c_int;
+    pub fn virtio_crypto_akcipher_algs_register(vcrypto: *mut virtio_crypto) -> kernel::ffi::c_int;
     pub fn virtio_crypto_akcipher_algs_unregister(vcrypto: *mut virtio_crypto);
     pub fn virtio_crypto_ctrl_vq_request(
         vcrypto: *mut virtio_crypto,
         sgs: *mut *mut scatterlist,
-        out_sgs: core::ffi::c_uint,
-        in_sgs: core::ffi::c_uint,
+        out_sgs: kernel::ffi::c_uint,
+        in_sgs: kernel::ffi::c_uint,
         vc_ctrl_req: *mut virtio_crypto_ctrl_request,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 #[inline]
-pub unsafe fn virtio_crypto_get_current_node() -> core::ffi::c_int {
-    let cpu: core::ffi::c_int = get_cpu();
-    let node: core::ffi::c_int = cpu_to_node(cpu);
+pub unsafe fn virtio_crypto_get_current_node() -> kernel::ffi::c_int {
+    let cpu: kernel::ffi::c_int = get_cpu();
+    let node: kernel::ffi::c_int = cpu_to_node(cpu);
     put_cpu();
     node
 }

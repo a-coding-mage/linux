@@ -37,13 +37,13 @@ pub unsafe fn ORANGEFS_khandle_cmp(kh1: *const orangefs_khandle, kh2: *const ora
 }
 
 #[inline]
-pub unsafe fn ORANGEFS_khandle_to(kh: *const orangefs_khandle, p: *mut core::ffi::c_void, size: i32) {
+pub unsafe fn ORANGEFS_khandle_to(kh: *const orangefs_khandle, p: *mut kernel::ffi::c_void, size: i32) {
     core::ptr::copy_nonoverlapping((*kh).u.as_ptr(), p as *mut u8, 16);
     core::ptr::write_bytes((p as *mut u8).add(16), 0, (size - 16) as usize);
 }
 
 #[inline]
-pub unsafe fn ORANGEFS_khandle_from(kh: *mut orangefs_khandle, p: *mut core::ffi::c_void, _size: i32) {
+pub unsafe fn ORANGEFS_khandle_from(kh: *mut orangefs_khandle, p: *mut kernel::ffi::c_void, _size: i32) {
     core::ptr::write_bytes(kh, 0, 1);
     core::ptr::copy_nonoverlapping(p as *const u8, (*kh).u.as_mut_ptr(), 16);
 }
@@ -93,13 +93,13 @@ pub enum ORANGEFS_io_type { ORANGEFS_IO_READ = 1, ORANGEFS_IO_WRITE = 2 }
 pub enum orangefs_ds_type { ORANGEFS_TYPE_NONE = 0, ORANGEFS_TYPE_METAFILE = 1 << 0, ORANGEFS_TYPE_DATAFILE = 1 << 1, ORANGEFS_TYPE_DIRECTORY = 1 << 2, ORANGEFS_TYPE_SYMLINK = 1 << 3, ORANGEFS_TYPE_DIRDATA = 1 << 4, ORANGEFS_TYPE_INTERNAL = 1 << 5 }
 
 #[repr(C)]
-pub struct ORANGEFS_keyval_pair { pub key: [core::ffi::c_char; ORANGEFS_MAX_XATTR_NAMELEN], pub key_sz: i32, pub val_sz: i32, pub val: [core::ffi::c_char; ORANGEFS_MAX_XATTR_VALUELEN] }
+pub struct ORANGEFS_keyval_pair { pub key: [kernel::ffi::c_char; ORANGEFS_MAX_XATTR_NAMELEN], pub key_sz: i32, pub val_sz: i32, pub val: [kernel::ffi::c_char; ORANGEFS_MAX_XATTR_VALUELEN] }
 
 #[repr(C)]
 pub struct ORANGEFS_sys_attr_s {
     pub owner: u32, pub group: u32, pub perms: u32, pub atime: u64, pub mtime: u64, pub ctime: u64, pub size: i64,
-    pub link_target: *mut core::ffi::c_char, pub dfile_count: i32, pub distr_dir_servers_initial: i32, pub distr_dir_servers_max: i32,
-    pub distr_dir_split_size: i32, pub mirror_copies_count: u32, pub dist_name: *mut core::ffi::c_char, pub dist_params: *mut core::ffi::c_char,
+    pub link_target: *mut kernel::ffi::c_char, pub dfile_count: i32, pub distr_dir_servers_initial: i32, pub distr_dir_servers_max: i32,
+    pub distr_dir_split_size: i32, pub mirror_copies_count: u32, pub dist_name: *mut kernel::ffi::c_char, pub dist_params: *mut kernel::ffi::c_char,
     pub dirent_count: i64, pub objtype: orangefs_ds_type, pub flags: u64, pub mask: u32, pub blksize: i64,
 }
 
@@ -130,12 +130,12 @@ pub const ORANGEFS_DEV_REMOUNT_ALL: u32 = _IO(ORANGEFS_DEV_MAGIC, DEV_REMOUNT_AL
 pub const ORANGEFS_DEV_DEBUG: u32 = _IOR(ORANGEFS_DEV_MAGIC, DEV_DEBUG, i32);
 pub const ORANGEFS_DEV_UPSTREAM: u32 = _IOW(ORANGEFS_DEV_MAGIC, DEV_UPSTREAM, i32);
 pub const ORANGEFS_DEV_CLIENT_MASK: u32 = _IOW(ORANGEFS_DEV_MAGIC, DEV_CLIENT_MASK, dev_mask2_info_s);
-pub const ORANGEFS_DEV_CLIENT_STRING: u32 = _IOW(ORANGEFS_DEV_MAGIC, DEV_CLIENT_STRING, *mut core::ffi::c_char);
+pub const ORANGEFS_DEV_CLIENT_STRING: u32 = _IOW(ORANGEFS_DEV_MAGIC, DEV_CLIENT_STRING, *mut kernel::ffi::c_char);
 pub const ORANGEFS_DEV_MAXNR: u32 = DEV_MAX_NR;
 pub const ORANGEFS_KERNEL_PROTO_VERSION: i32 = 0; pub const ORANGEFS_MINIMUM_USERSPACE_VERSION: i32 = 20903;
 
 #[repr(C)]
-pub struct ORANGEFS_dev_map_desc { pub ptr: *mut core::ffi::c_void, pub total_size: i32, pub size: i32, pub count: i32 }
+pub struct ORANGEFS_dev_map_desc { pub ptr: *mut kernel::ffi::c_void, pub total_size: i32, pub size: i32, pub count: i32 }
 pub static mut orangefs_gossip_debug_mask: u64 = 0;
 // gossip_debug and gossip_err depend on kernel printk/pr_err and variadic macro syntax.
 

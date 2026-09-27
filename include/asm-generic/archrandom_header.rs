@@ -8,7 +8,7 @@
 /// Corresponds to the C `__must_check` attribute and `static inline`
 /// declaration.  This generic implementation provides no random values.
 pub unsafe fn arch_get_random_longs(
-    _v: *mut ::core::ffi::c_ulong,
+    _v: *mut ::kernel::ffi::c_ulong,
     _max_longs: usize,
 ) -> usize {
     0
@@ -19,7 +19,7 @@ pub unsafe fn arch_get_random_longs(
 /// Corresponds to the C `__must_check` attribute and `static inline`
 /// declaration.  This generic implementation provides no random values.
 pub unsafe fn arch_get_random_seed_longs(
-    _v: *mut ::core::ffi::c_ulong,
+    _v: *mut ::kernel::ffi::c_ulong,
     _max_longs: usize,
 ) -> usize {
     0

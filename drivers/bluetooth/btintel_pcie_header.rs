@@ -117,20 +117,20 @@ pub const BTINTEL_PCIE_RBD_SIZE_4K: u32 = 0x04;
 #[repr(C, packed)] pub struct rfh_hdr { pub packet_control:u64 }
 #[repr(C)] pub struct data_buf { pub data:*mut u8, pub data_p_addr:dma_addr_t }
 #[repr(C)] pub struct ia { pub tr_hia_p_addr:dma_addr_t, pub tr_hia:*mut u16, pub tr_tia_p_addr:dma_addr_t, pub tr_tia:*mut u16, pub cr_hia_p_addr:dma_addr_t, pub cr_hia:*mut u16, pub cr_tia_p_addr:dma_addr_t, pub cr_tia:*mut u16 }
-#[repr(C)] pub struct txq { pub count:u16, pub tfds_p_addr:dma_addr_t, pub tfds:*mut tfd, pub urbd0s_p_addr:dma_addr_t, pub urbd0s:*mut urbd0, pub buf_p_addr:dma_addr_t, pub buf_v_addr:*mut core::ffi::c_void, pub bufs:*mut data_buf }
-#[repr(C)] pub struct rxq { pub count:u16, pub frbds_p_addr:dma_addr_t, pub frbds:*mut frbd, pub urbd1s_p_addr:dma_addr_t, pub urbd1s:*mut urbd1, pub buf_p_addr:dma_addr_t, pub buf_v_addr:*mut core::ffi::c_void, pub bufs:*mut data_buf }
-#[repr(C)] pub struct btintel_pcie_dbgc { pub count:u16, pub frag_v_addr:*mut core::ffi::c_void, pub frag_p_addr:dma_addr_t, pub frag_size:u16, pub buf_p_addr:dma_addr_t, pub buf_v_addr:*mut core::ffi::c_void, pub bufs:*mut data_buf }
-#[repr(C)] pub struct btintel_pcie_dump_header { pub driver_name:*const core::ffi::c_char, pub cnvi_top:u32, pub cnvr_top:u32, pub fw_timestamp:u16, pub fw_build_type:u8, pub fw_build_num:u32, pub fw_git_sha1:u32, pub cnvi_bt:u32, pub write_ptr:u32, pub wrap_ctr:u32, pub trigger_reason:u16, pub state:i32, pub event_type:u8, pub event_id:u16 }
+#[repr(C)] pub struct txq { pub count:u16, pub tfds_p_addr:dma_addr_t, pub tfds:*mut tfd, pub urbd0s_p_addr:dma_addr_t, pub urbd0s:*mut urbd0, pub buf_p_addr:dma_addr_t, pub buf_v_addr:*mut kernel::ffi::c_void, pub bufs:*mut data_buf }
+#[repr(C)] pub struct rxq { pub count:u16, pub frbds_p_addr:dma_addr_t, pub frbds:*mut frbd, pub urbd1s_p_addr:dma_addr_t, pub urbd1s:*mut urbd1, pub buf_p_addr:dma_addr_t, pub buf_v_addr:*mut kernel::ffi::c_void, pub bufs:*mut data_buf }
+#[repr(C)] pub struct btintel_pcie_dbgc { pub count:u16, pub frag_v_addr:*mut kernel::ffi::c_void, pub frag_p_addr:dma_addr_t, pub frag_size:u16, pub buf_p_addr:dma_addr_t, pub buf_v_addr:*mut kernel::ffi::c_void, pub bufs:*mut data_buf }
+#[repr(C)] pub struct btintel_pcie_dump_header { pub driver_name:*const kernel::ffi::c_char, pub cnvi_top:u32, pub cnvr_top:u32, pub fw_timestamp:u16, pub fw_build_type:u8, pub fw_build_num:u32, pub fw_git_sha1:u32, pub cnvi_bt:u32, pub write_ptr:u32, pub wrap_ctr:u32, pub trigger_reason:u16, pub state:i32, pub event_type:u8, pub event_id:u16 }
 
 #[repr(C)] pub struct btintel_pcie_data {
-    pub pdev:*mut pci_dev, pub hdev:*mut hci_dev, pub flags: c_ulong, pub irq_lock: spinlock_t, pub hci_rx_lock: spinlock_t, pub base_addr:*mut core::ffi::c_void,
+    pub pdev:*mut pci_dev, pub hdev:*mut hci_dev, pub flags: c_ulong, pub irq_lock: spinlock_t, pub hci_rx_lock: spinlock_t, pub base_addr:*mut kernel::ffi::c_void,
     pub msix_entries:[msix_entry; BTINTEL_PCIE_MSIX_VEC_MAX], pub msix_enabled:bool, pub alloc_vecs:u32, pub def_irq:u32, pub fh_init_mask:u32, pub hw_init_mask:u32,
     pub boot_stage_cache:u32, pub img_resp_cache:u32, pub cnvi:u32, pub cnvr:u32, pub gp0_received:bool, pub gp0_wait_q:wait_queue_head_t, pub tx_wait_done:bool, pub tx_wait_q:wait_queue_head_t,
     pub workqueue:*mut workqueue_struct, pub rx_skb_q:sk_buff_head, pub rx_work:work_struct, pub reset_work:work_struct, pub dump_workqueue:*mut workqueue_struct, pub coredump_work:work_struct, pub hwexp_work:work_struct, pub fwtrigger_work:work_struct,
-    pub dma_pool:*mut dma_pool, pub dma_p_addr:dma_addr_t, pub dma_v_addr:*mut core::ffi::c_void, pub ci_p_addr:dma_addr_t, pub ci:*mut ctx_info, pub ia:ia, pub txq:txq, pub rxq:rxq, pub alive_intr_ctxt:u32, pub reset_type:btintel_pcie_reset_type, pub dbgc:btintel_pcie_dbgc, pub dmp_hdr:btintel_pcie_dump_header, pub pm_sx_event:u8, pub debug_evt_addr:u32, pub debug_evt_size:u32
+    pub dma_pool:*mut dma_pool, pub dma_p_addr:dma_addr_t, pub dma_v_addr:*mut kernel::ffi::c_void, pub ci_p_addr:dma_addr_t, pub ci:*mut ctx_info, pub ia:ia, pub txq:txq, pub rxq:rxq, pub alive_intr_ctxt:u32, pub reset_type:btintel_pcie_reset_type, pub dbgc:btintel_pcie_dbgc, pub dmp_hdr:btintel_pcie_dump_header, pub pm_sx_event:u8, pub debug_evt_addr:u32, pub debug_evt_size:u32
 }
 
-extern "C" { fn ioread32(addr:*mut core::ffi::c_void)->u32; fn iowrite8(val:u8, addr:*mut core::ffi::c_void); fn iowrite32(val:u32, addr:*mut core::ffi::c_void); }
+extern "C" { fn ioread32(addr:*mut kernel::ffi::c_void)->u32; fn iowrite8(val:u8, addr:*mut kernel::ffi::c_void); fn iowrite32(val:u32, addr:*mut kernel::ffi::c_void); }
 #[inline] pub unsafe fn btintel_pcie_rd_reg32(data:*mut btintel_pcie_data, offset:u32)->u32 { ioread32((*data).base_addr.add(offset as usize)) }
 #[inline] pub unsafe fn btintel_pcie_wr_reg8(data:*mut btintel_pcie_data, offset:u32, val:u8) { iowrite8(val, (*data).base_addr.add(offset as usize)); }
 #[inline] pub unsafe fn btintel_pcie_wr_reg32(data:*mut btintel_pcie_data, offset:u32, val:u32) { iowrite32(val, (*data).base_addr.add(offset as usize)); }

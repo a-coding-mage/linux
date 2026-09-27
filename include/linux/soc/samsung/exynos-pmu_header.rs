@@ -37,7 +37,7 @@ extern "C" {
     pub fn exynos_get_pmu_regmap() -> *mut regmap;
     pub fn exynos_get_pmu_regmap_by_phandle(
         np: *mut device_node,
-        propname: *const core::ffi::c_char,
+        propname: *const kernel::ffi::c_char,
     ) -> *mut regmap;
 }
 
@@ -49,7 +49,7 @@ pub unsafe fn exynos_get_pmu_regmap() -> *mut regmap {
 #[cfg(not(CONFIG_EXYNOS_PMU))]
 pub unsafe fn exynos_get_pmu_regmap_by_phandle(
     _np: *mut device_node,
-    _propname: *const core::ffi::c_char,
+    _propname: *const kernel::ffi::c_char,
 ) -> *mut regmap {
     ERR_PTR(-ENODEV)
 }

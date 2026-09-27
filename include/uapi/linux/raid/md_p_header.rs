@@ -96,7 +96,7 @@ pub union mdp_superblock_1_recovery { pub recovery_offset: u64, pub journal_tail
 #[repr(C)]
 pub struct mdp_superblock_1 {
     pub magic: u32, pub major_version: u32, pub feature_map: u32, pub pad0: u32,
-    pub set_uuid: [u8; 16], pub set_name: [core::ffi::c_char; 32], pub ctime: u64,
+    pub set_uuid: [u8; 16], pub set_name: [kernel::ffi::c_char; 32], pub ctime: u64,
     pub level: u32, pub layout: u32, pub size: u64, pub chunksize: u32, pub raid_disks: u32,
     pub bitmap: mdp_superblock_1_bitmap, pub new_level: u32, pub reshape_position: u64,
     pub delta_disks: u32, pub new_layout: u32, pub new_chunk: u32, pub new_offset: u32,

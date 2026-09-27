@@ -27,8 +27,8 @@ macro_rules! SOC_EARLY_INIT_DECLARE {
 extern "C" {
     pub fn soc_early_init();
 
-    pub static mut __soc_early_init_table_start: ::core::ffi::c_ulong;
-    pub static mut __soc_early_init_table_end: ::core::ffi::c_ulong;
+    pub static mut __soc_early_init_table_start: ::kernel::ffi::c_ulong;
+    pub static mut __soc_early_init_table_end: ::kernel::ffi::c_ulong;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -3,7 +3,7 @@
 
 // C dependencies supplied by the surrounding kernel translation.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub struct pci_epf;
 pub struct pci_epc_features;
@@ -115,7 +115,7 @@ pub struct pci_epf_doorbell_msg {
 #[repr(C)]
 pub struct pci_epf {
     pub dev: device,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub header: *mut pci_epf_header,
     pub bar: [pci_epf_bar; PCI_STD_NUM_BARS],
     pub msi_interrupts: u8,
@@ -160,7 +160,7 @@ pub unsafe fn pci_epf_register_driver(driver: *mut pci_epf_driver, this_module: 
 extern "C" {
     pub fn dev_set_drvdata(dev: *mut device, data: *mut c_void);
     pub fn dev_get_drvdata(dev: *mut device) -> *mut c_void;
-    pub fn pci_epf_create(name: *const core::ffi::c_char) -> *mut pci_epf;
+    pub fn pci_epf_create(name: *const kernel::ffi::c_char) -> *mut pci_epf;
     pub fn pci_epf_destroy(epf: *mut pci_epf);
     pub fn __pci_epf_register_driver(driver: *mut pci_epf_driver, owner: *mut module) -> i32;
     pub fn pci_epf_unregister_driver(driver: *mut pci_epf_driver);

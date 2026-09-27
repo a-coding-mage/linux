@@ -31,7 +31,7 @@ pub const MAX_FILTER_PROG: i32 = 2 << 16;
 #[repr(C)]
 pub struct vector_queue {
     pub mmsg_vector: *mut mmsghdr,
-    pub skbuff_vector: *mut *mut core::ffi::c_void,
+    pub skbuff_vector: *mut *mut kernel::ffi::c_void,
     /* backlink to device which owns us */
     pub dev: *mut net_device,
     pub head_lock: spinlock_t,
@@ -89,7 +89,7 @@ pub struct vector_private {
 
     pub parsed: *mut arglist,
 
-    pub transport_data: *mut core::ffi::c_void, /* transport specific params if needed */
+    pub transport_data: *mut kernel::ffi::c_void, /* transport specific params if needed */
 
     pub max_packet: i32,
     pub req_size: i32, /* different from max packet - used for TSO */
@@ -103,8 +103,8 @@ pub struct vector_private {
     pub rx_header_size: i32,
     pub coalesce: i32,
 
-    pub header_rxbuffer: *mut core::ffi::c_void,
-    pub header_txbuffer: *mut core::ffi::c_void,
+    pub header_rxbuffer: *mut kernel::ffi::c_void,
+    pub header_txbuffer: *mut kernel::ffi::c_void,
 
     pub form_header: Option<unsafe extern "C" fn(
         header: *mut u8,
@@ -132,7 +132,7 @@ pub struct vector_private {
     pub estats: vector_estats,
     pub bpf: *mut sock_fprog,
 
-    pub user: [core::ffi::c_char; 0],
+    pub user: [kernel::ffi::c_char; 0],
 }
 
 unsafe extern "C" {

@@ -4,12 +4,12 @@
 
 #[cfg(any(CONFIG_PREEMPT_RT, CONFIG_TRACE_IRQFLAGS))]
 extern "C" {
-    pub fn __local_bh_disable_ip(ip: ::core::ffi::c_ulong, cnt: u32);
+    pub fn __local_bh_disable_ip(ip: ::kernel::ffi::c_ulong, cnt: u32);
 }
 
 #[cfg(not(any(CONFIG_PREEMPT_RT, CONFIG_TRACE_IRQFLAGS)))]
 #[inline(always)]
-unsafe fn __local_bh_disable_ip(ip: ::core::ffi::c_ulong, cnt: u32) {
+unsafe fn __local_bh_disable_ip(ip: ::kernel::ffi::c_ulong, cnt: u32) {
     let _ = ip;
     preempt_count_add(cnt);
     core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::SeqCst);
@@ -17,7 +17,7 @@ unsafe fn __local_bh_disable_ip(ip: ::core::ffi::c_ulong, cnt: u32) {
 
 extern "C" {
     pub fn _local_bh_enable();
-    pub fn __local_bh_enable_ip(ip: ::core::ffi::c_ulong, cnt: u32);
+    pub fn __local_bh_enable_ip(ip: ::kernel::ffi::c_ulong, cnt: u32);
 }
 
 extern "C" {
@@ -34,7 +34,7 @@ pub unsafe fn local_bh_disable() {
 }
 
 #[inline]
-pub unsafe fn local_bh_enable_ip(ip: ::core::ffi::c_ulong) {
+pub unsafe fn local_bh_enable_ip(ip: ::kernel::ffi::c_ulong) {
     __local_bh_enable_ip(ip, SOFTIRQ_DISABLE_OFFSET);
 }
 

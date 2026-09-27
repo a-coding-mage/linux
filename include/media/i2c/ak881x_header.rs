@@ -14,7 +14,7 @@ pub const AK881X_COMPONENT: u32 = 1 << 3;
 
 #[repr(C)]
 pub struct ak881x_pdata {
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

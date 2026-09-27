@@ -19,18 +19,18 @@ pub const VFIO_UPDATE_VADDR: u32 = 10;
 #[repr(C)]
 pub struct vfio_info_cap_header { pub id: __u16, pub version: __u16, pub next: __u32 }
 
-pub const VFIO_GET_API_VERSION: _ = _IO(VFIO_TYPE, VFIO_BASE + 0);
-pub const VFIO_CHECK_EXTENSION: _ = _IO(VFIO_TYPE, VFIO_BASE + 1);
-pub const VFIO_SET_IOMMU: _ = _IO(VFIO_TYPE, VFIO_BASE + 2);
+pub const VFIO_GET_API_VERSION: u32 = _IO(VFIO_TYPE, VFIO_BASE + 0);
+pub const VFIO_CHECK_EXTENSION: u32 = _IO(VFIO_TYPE, VFIO_BASE + 1);
+pub const VFIO_SET_IOMMU: u32 = _IO(VFIO_TYPE, VFIO_BASE + 2);
 
 #[repr(C)]
 pub struct vfio_group_status { pub argsz: __u32, pub flags: __u32 }
 pub const VFIO_GROUP_FLAGS_VIABLE: __u32 = 1 << 0;
 pub const VFIO_GROUP_FLAGS_CONTAINER_SET: __u32 = 1 << 1;
-pub const VFIO_GROUP_GET_STATUS: _ = _IO(VFIO_TYPE, VFIO_BASE + 3);
-pub const VFIO_GROUP_SET_CONTAINER: _ = _IO(VFIO_TYPE, VFIO_BASE + 4);
-pub const VFIO_GROUP_UNSET_CONTAINER: _ = _IO(VFIO_TYPE, VFIO_BASE + 5);
-pub const VFIO_GROUP_GET_DEVICE_FD: _ = _IO(VFIO_TYPE, VFIO_BASE + 6);
+pub const VFIO_GROUP_GET_STATUS: u32 = _IO(VFIO_TYPE, VFIO_BASE + 3);
+pub const VFIO_GROUP_SET_CONTAINER: u32 = _IO(VFIO_TYPE, VFIO_BASE + 4);
+pub const VFIO_GROUP_UNSET_CONTAINER: u32 = _IO(VFIO_TYPE, VFIO_BASE + 5);
+pub const VFIO_GROUP_GET_DEVICE_FD: u32 = _IO(VFIO_TYPE, VFIO_BASE + 6);
 
 #[repr(C)]
 pub struct vfio_device_info { pub argsz: __u32, pub flags: __u32, pub num_regions: __u32, pub num_irqs: __u32, pub cap_offset: __u32, pub pad: __u32 }
@@ -39,7 +39,7 @@ pub const VFIO_DEVICE_FLAGS_PLATFORM: __u32 = 1<<2; pub const VFIO_DEVICE_FLAGS_
 pub const VFIO_DEVICE_FLAGS_CCW: __u32 = 1<<4; pub const VFIO_DEVICE_FLAGS_AP: __u32 = 1<<5;
 pub const VFIO_DEVICE_FLAGS_FSL_MC: __u32 = 1<<6; pub const VFIO_DEVICE_FLAGS_CAPS: __u32 = 1<<7;
 pub const VFIO_DEVICE_FLAGS_CDX: __u32 = 1<<8;
-pub const VFIO_DEVICE_GET_INFO: _ = _IO(VFIO_TYPE, VFIO_BASE + 7);
+pub const VFIO_DEVICE_GET_INFO: u32 = _IO(VFIO_TYPE, VFIO_BASE + 7);
 pub const VFIO_DEVICE_API_PCI_STRING: &str = "vfio-pci";
 pub const VFIO_DEVICE_API_PLATFORM_STRING: &str = "vfio-platform";
 pub const VFIO_DEVICE_API_AMBA_STRING: &str = "vfio-amba";
@@ -53,7 +53,7 @@ pub const VFIO_PCI_ATOMIC_COMP32: __u32=1<<0; pub const VFIO_PCI_ATOMIC_COMP64: 
 
 #[repr(C)] pub struct vfio_region_info { pub argsz: __u32, pub flags: __u32, pub index: __u32, pub cap_offset: __u32, pub size: __aligned_u64, pub offset: __aligned_u64 }
 pub const VFIO_REGION_INFO_FLAG_READ: __u32=1<<0; pub const VFIO_REGION_INFO_FLAG_WRITE: __u32=1<<1; pub const VFIO_REGION_INFO_FLAG_MMAP: __u32=1<<2; pub const VFIO_REGION_INFO_FLAG_CAPS: __u32=1<<3;
-pub const VFIO_DEVICE_GET_REGION_INFO: _ = _IO(VFIO_TYPE, VFIO_BASE + 8);
+pub const VFIO_DEVICE_GET_REGION_INFO: u32 = _IO(VFIO_TYPE, VFIO_BASE + 8);
 pub const VFIO_REGION_INFO_CAP_SPARSE_MMAP: u32=1;
 #[repr(C)] pub struct vfio_region_sparse_mmap_area { pub offset: __aligned_u64, pub size: __aligned_u64 }
 #[repr(C)] pub struct vfio_region_info_cap_sparse_mmap { pub header: vfio_info_cap_header, pub nr_areas: __u32, pub reserved: __u32, pub areas: [vfio_region_sparse_mmap_area; 0] }
@@ -105,7 +105,7 @@ pub const VFIO_DEVICE_FEATURE_PCI_VF_TOKEN:u32=0;
 #[repr(C)] pub struct vfio_device_feature_migration { pub flags:__aligned_u64 } pub const VFIO_MIGRATION_STOP_COPY:__u64=1;pub const VFIO_MIGRATION_P2P:__u64=2;pub const VFIO_MIGRATION_PRE_COPY:__u64=4;pub const VFIO_DEVICE_FEATURE_MIGRATION:u32=1;
 #[repr(C)] pub struct vfio_device_feature_mig_state { pub device_state:__u32,pub data_fd:__s32 } pub const VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE:u32=2;
 #[repr(C)] pub struct vfio_precopy_info { pub argsz:__u32,pub flags:__u32,pub initial_bytes:__aligned_u64,pub dirty_bytes:__aligned_u64 } pub const VFIO_PRECOPY_INFO_REINIT:__u32=1;
-pub const VFIO_MIG_GET_PRECOPY_INFO:_=_IO(VFIO_TYPE,VFIO_BASE+21);
+pub const VFIO_MIG_GET_PRECOPY_INFO:u32=_IO(VFIO_TYPE,VFIO_BASE+21);
 #[repr(C)] pub struct vfio_device_low_power_entry_with_wakeup { pub wakeup_eventfd:__s32,pub reserved:__u32 }
 pub const VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY:u32=3;pub const VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP:u32=4;pub const VFIO_DEVICE_FEATURE_LOW_POWER_EXIT:u32=5;
 #[repr(C)] pub struct vfio_device_feature_dma_logging_control { pub page_size:__aligned_u64,pub num_ranges:__u32,pub __reserved:__u32,pub ranges:__aligned_u64 }
@@ -122,7 +122,7 @@ pub const VFIO_DEVICE_FEATURE_MIG_PRECOPY_INFOv2:u32=12; #[repr(C)] pub struct v
 #[repr(C)] pub struct vfio_iova_range { pub start:__u64,pub end:__u64 } #[repr(C)] pub struct vfio_iommu_type1_info_cap_iova_range { pub header:vfio_info_cap_header,pub nr_iovas:__u32,pub reserved:__u32,pub iova_ranges:[vfio_iova_range;0] }
 pub const VFIO_IOMMU_TYPE1_INFO_CAP_MIGRATION:u32=2;#[repr(C)] pub struct vfio_iommu_type1_info_cap_migration { pub header:vfio_info_cap_header,pub flags:__u32,pub pgsize_bitmap:__u64,pub max_dirty_bitmap_size:__u64 }
 pub const VFIO_IOMMU_TYPE1_INFO_DMA_AVAIL:u32=3;#[repr(C)] pub struct vfio_iommu_type1_info_dma_avail { pub header:vfio_info_cap_header,pub avail:__u32 }
-pub const VFIO_IOMMU_GET_INFO:_=_IO(VFIO_TYPE,VFIO_BASE+12);
+pub const VFIO_IOMMU_GET_INFO:u32=_IO(VFIO_TYPE,VFIO_BASE+12);
 #[repr(C)] pub struct vfio_iommu_type1_dma_map { pub argsz:__u32,pub flags:__u32,pub vaddr:__u64,pub iova:__u64,pub size:__u64 } pub const VFIO_DMA_MAP_FLAG_READ:__u32=1;pub const VFIO_DMA_MAP_FLAG_WRITE:__u32=2;pub const VFIO_DMA_MAP_FLAG_VADDR:__u32=4;pub const VFIO_IOMMU_MAP_DMA:_=_IO(VFIO_TYPE,VFIO_BASE+13);
 #[repr(C)] pub struct vfio_bitmap { pub pgsize:__u64,pub size:__u64,pub data:*mut __u64 }
 #[repr(C)] pub struct vfio_iommu_type1_dma_unmap { pub argsz:__u32,pub flags:__u32,pub iova:__u64,pub size:__u64,pub data:[__u8;0] } pub const VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP:__u32=1;pub const VFIO_DMA_UNMAP_FLAG_ALL:__u32=2;pub const VFIO_DMA_UNMAP_FLAG_VADDR:__u32=4;pub const VFIO_IOMMU_UNMAP_DMA:_=_IO(VFIO_TYPE,VFIO_BASE+14);pub const VFIO_IOMMU_ENABLE:_=_IO(VFIO_TYPE,VFIO_BASE+15);pub const VFIO_IOMMU_DISABLE:_=_IO(VFIO_TYPE,VFIO_BASE+16);

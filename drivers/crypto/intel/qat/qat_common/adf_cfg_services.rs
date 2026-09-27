@@ -4,7 +4,7 @@
 // Dependencies supplied by the surrounding kernel translation are intentionally
 // referenced here without reimplementing them.
 
-static ADF_CFG_SERVICES: [*const core::ffi::c_char; SVC_COUNT] = [
+static ADF_CFG_SERVICES: [*const kernel::ffi::c_char; SVC_COUNT] = [
     [SVC_ASYM] = ADF_CFG_ASYM,
     [SVC_SYM] = ADF_CFG_SYM,
     [SVC_DC] = ADF_CFG_DC,
@@ -43,14 +43,14 @@ const _: () = assert!(
 
 unsafe fn adf_service_string_to_mask(
     accel_dev: *mut adf_accel_dev,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     out_mask: *mut usize,
 ) -> i32 {
     let hw_data = GET_HW_DATA(accel_dev);
     let mut services = [0i8; ADF_CFG_MAX_VAL_LEN_IN_BYTES];
     let mut mask: usize = 0;
-    let mut substr: *mut core::ffi::c_char;
-    let mut token: *mut core::ffi::c_char;
+    let mut substr: *mut kernel::ffi::c_char;
+    let mut token: *mut kernel::ffi::c_char;
     let mut id: i32;
     let mut num_svc: i32 = 0;
 
@@ -89,7 +89,7 @@ unsafe fn adf_service_string_to_mask(
     0
 }
 
-unsafe fn adf_service_mask_to_string(mask: usize, buf: *mut core::ffi::c_char, len: usize) -> i32 {
+unsafe fn adf_service_mask_to_string(mask: usize, buf: *mut kernel::ffi::c_char, len: usize) -> i32 {
     let mut offset: i32 = 0;
     let mut bit: i32;
 
@@ -120,8 +120,8 @@ unsafe fn adf_service_mask_to_string(mask: usize, buf: *mut core::ffi::c_char, l
 
 pub unsafe fn adf_parse_service_string(
     accel_dev: *mut adf_accel_dev,
-    input: *const core::ffi::c_char,
-    out: *mut core::ffi::c_char,
+    input: *const kernel::ffi::c_char,
+    out: *mut kernel::ffi::c_char,
     out_len: usize,
 ) -> i32 {
     let mut mask: usize = 0;

@@ -35,8 +35,8 @@ pub const __BCM963XX_NVRAM_NAND_NR_PARTS: usize = 5;
 #[repr(C)]
 pub struct bcm963xx_nvram {
     pub version: u32,
-    pub bootline: [core::ffi::c_char; 256],
-    pub name: [core::ffi::c_char; 16],
+    pub bootline: [kernel::ffi::c_char; 256],
+    pub name: [kernel::ffi::c_char; 16],
     pub main_tp_number: u32,
     pub psi_size: u32,
     pub mac_addr_count: u32,
@@ -96,7 +96,7 @@ macro_rules! BCM963XX_NVRAM_NAND_PART_SIZE {
  * Return: 0 if the checksum is valid, otherwise -EINVAL
  */
 extern "C" {
-    pub fn crc32_le(crc: u32, p: *const core::ffi::c_void, len: usize) -> u32;
+    pub fn crc32_le(crc: u32, p: *const kernel::ffi::c_void, len: usize) -> u32;
 }
 
 pub const EINVAL: i32 = 22;

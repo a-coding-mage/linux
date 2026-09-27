@@ -91,33 +91,33 @@ pub struct tlb_info {
     pub last: u64,
     pub entries: u32,
     pub step: u32,
-    pub flags: libc::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct sh_cpuinfo {
     pub type_: u32,
     pub family: u32,
-    pub cut_major: libc::c_int,
-    pub cut_minor: libc::c_int,
-    pub loops_per_jiffy: libc::c_ulong,
-    pub asid_cache: libc::c_ulong,
+    pub cut_major: kernel::ffi::c_int,
+    pub cut_minor: kernel::ffi::c_int,
+    pub loops_per_jiffy: kernel::ffi::c_ulong,
+    pub asid_cache: kernel::ffi::c_ulong,
     pub icache: cache_info,
     pub dcache: cache_info,
     pub scache: cache_info,
     pub itlb: tlb_info,
     pub dtlb: tlb_info,
     pub phys_bits: u32,
-    pub flags: libc::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
 }
 
 extern "C" {
     pub static mut cpu_data: [sh_cpuinfo; 0];
-    pub fn smp_processor_id() -> libc::c_int;
-    pub fn raw_smp_processor_id() -> libc::c_int;
+    pub fn smp_processor_id() -> kernel::ffi::c_int;
+    pub fn raw_smp_processor_id() -> kernel::ffi::c_int;
 
     pub fn default_idle();
-    pub fn stop_this_cpu(arg: *mut libc::c_void);
+    pub fn stop_this_cpu(arg: *mut kernel::ffi::c_void);
 
     pub static mut fake_swapper_regs: pt_regs;
     pub fn cpu_init();
@@ -127,18 +127,18 @@ extern "C" {
     pub fn free_thread_xstate(tsk: *mut task_struct);
     pub static mut task_xstate_cachep: *mut kmem_cache;
 
-    pub fn get_unalign_ctl(tsk: *mut task_struct, addr: libc::c_ulong) -> libc::c_int;
-    pub fn set_unalign_ctl(tsk: *mut task_struct, val: u32) -> libc::c_int;
+    pub fn get_unalign_ctl(tsk: *mut task_struct, addr: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+    pub fn set_unalign_ctl(tsk: *mut task_struct, val: u32) -> kernel::ffi::c_int;
 
     pub static mut mem_init_done: u32;
-    pub fn get_cpu_subtype(c: *mut sh_cpuinfo) -> *const libc::c_char;
+    pub fn get_cpu_subtype(c: *mut sh_cpuinfo) -> *const kernel::ffi::c_char;
     pub static cpuinfo_op: seq_operations;
 
-    pub fn generic_mode_pins() -> libc::c_int;
-    pub fn test_mode_pin(pin: libc::c_int) -> libc::c_int;
+    pub fn generic_mode_pins() -> kernel::ffi::c_int;
+    pub fn test_mode_pin(pin: kernel::ffi::c_int) -> kernel::ffi::c_int;
 
     #[cfg(CONFIG_VSYSCALL)]
-    pub fn vsyscall_init() -> libc::c_int;
+    pub fn vsyscall_init() -> kernel::ffi::c_int;
 
     #[cfg(CONFIG_CPU_SH2A)]
     pub fn instruction_size(insn: u32) -> u32;
@@ -149,26 +149,26 @@ extern "C" {
 // Forward declarations and types supplied by other translated headers:
 // seq_operations, task_struct, pt_regs, kmem_cache, cache_info.
 
-pub const SH_THREAD_UAC_NOPRINT: libc::c_uint = 1 << 0;
-pub const SH_THREAD_UAC_SIGBUS: libc::c_uint = 1 << 1;
-pub const SH_THREAD_UAC_MASK: libc::c_uint = SH_THREAD_UAC_NOPRINT | SH_THREAD_UAC_SIGBUS;
+pub const SH_THREAD_UAC_NOPRINT: kernel::ffi::c_uint = 1 << 0;
+pub const SH_THREAD_UAC_SIGBUS: kernel::ffi::c_uint = 1 << 1;
+pub const SH_THREAD_UAC_MASK: kernel::ffi::c_uint = SH_THREAD_UAC_NOPRINT | SH_THREAD_UAC_SIGBUS;
 
-pub const MODE_PIN0: libc::c_uint = 1 << 0;
-pub const MODE_PIN1: libc::c_uint = 1 << 1;
-pub const MODE_PIN2: libc::c_uint = 1 << 2;
-pub const MODE_PIN3: libc::c_uint = 1 << 3;
-pub const MODE_PIN4: libc::c_uint = 1 << 4;
-pub const MODE_PIN5: libc::c_uint = 1 << 5;
-pub const MODE_PIN6: libc::c_uint = 1 << 6;
-pub const MODE_PIN7: libc::c_uint = 1 << 7;
-pub const MODE_PIN8: libc::c_uint = 1 << 8;
-pub const MODE_PIN9: libc::c_uint = 1 << 9;
-pub const MODE_PIN10: libc::c_uint = 1 << 10;
-pub const MODE_PIN11: libc::c_uint = 1 << 11;
-pub const MODE_PIN12: libc::c_uint = 1 << 12;
-pub const MODE_PIN13: libc::c_uint = 1 << 13;
-pub const MODE_PIN14: libc::c_uint = 1 << 14;
-pub const MODE_PIN15: libc::c_uint = 1 << 15;
+pub const MODE_PIN0: kernel::ffi::c_uint = 1 << 0;
+pub const MODE_PIN1: kernel::ffi::c_uint = 1 << 1;
+pub const MODE_PIN2: kernel::ffi::c_uint = 1 << 2;
+pub const MODE_PIN3: kernel::ffi::c_uint = 1 << 3;
+pub const MODE_PIN4: kernel::ffi::c_uint = 1 << 4;
+pub const MODE_PIN5: kernel::ffi::c_uint = 1 << 5;
+pub const MODE_PIN6: kernel::ffi::c_uint = 1 << 6;
+pub const MODE_PIN7: kernel::ffi::c_uint = 1 << 7;
+pub const MODE_PIN8: kernel::ffi::c_uint = 1 << 8;
+pub const MODE_PIN9: kernel::ffi::c_uint = 1 << 9;
+pub const MODE_PIN10: kernel::ffi::c_uint = 1 << 10;
+pub const MODE_PIN11: kernel::ffi::c_uint = 1 << 11;
+pub const MODE_PIN12: kernel::ffi::c_uint = 1 << 12;
+pub const MODE_PIN13: kernel::ffi::c_uint = 1 << 13;
+pub const MODE_PIN14: kernel::ffi::c_uint = 1 << 14;
+pub const MODE_PIN15: kernel::ffi::c_uint = 1 << 15;
 
 // C macros preserved as Rust macros where their external dependencies are defined elsewhere.
 #[macro_export]

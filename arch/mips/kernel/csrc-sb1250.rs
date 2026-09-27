@@ -14,11 +14,11 @@ extern "C" {
     static M_SCD_TIMER_CNT: u64;
     static V_SCD_TIMER_FREQ: u64;
 
-    fn IOADDR(address: usize) -> *mut core::ffi::c_void;
+    fn IOADDR(address: usize) -> *mut kernel::ffi::c_void;
     fn A_SCD_TIMER_REGISTER(timer: u32, register: u32) -> usize;
     fn G_SCD_TIMER_CNT(value: u64) -> u32;
-    fn __raw_readq(address: *mut core::ffi::c_void) -> u64;
-    fn __raw_writeq(value: u64, address: *mut core::ffi::c_void);
+    fn __raw_readq(address: *mut kernel::ffi::c_void) -> u64;
+    fn __raw_writeq(value: u64, address: *mut kernel::ffi::c_void);
     fn clocksource_register_hz(cs: *mut clocksource, hz: u64);
     fn sched_clock_register(read: unsafe extern "C" fn() -> u64, bits: u32, hz: u64);
 
@@ -28,7 +28,7 @@ extern "C" {
 // Opaque dependency type corresponding to struct clocksource.
 #[repr(C)]
 pub struct clocksource {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub rating: i32,
     pub read: unsafe extern "C" fn(*mut clocksource) -> u64,
     pub mask: u64,
@@ -53,7 +53,7 @@ unsafe extern "C" fn sb1250_hpt_read(_cs: *mut clocksource) -> u64 {
 
 #[no_mangle]
 pub static mut bcm1250_clocksource: clocksource = clocksource {
-    name: b"bcm1250-counter-3\0".as_ptr() as *const core::ffi::c_char,
+    name: b"bcm1250-counter-3\0".as_ptr() as *const kernel::ffi::c_char,
     rating: 200,
     read: sb1250_hpt_read,
     mask: (1u64 << 23) - 1,

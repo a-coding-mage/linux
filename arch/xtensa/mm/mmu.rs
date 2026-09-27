@@ -10,13 +10,13 @@
 
 // DEFINE_PER_CPU(unsigned long, asid_cache) = ASID_USER_FIRST;
 #[no_mangle]
-pub static mut asid_cache: ::core::ffi::c_ulong = ASID_USER_FIRST;
+pub static mut asid_cache: ::kernel::ffi::c_ulong = ASID_USER_FIRST;
 
 #[cfg(CONFIG_HIGHMEM)]
-unsafe fn init_pmd(vaddr: ::core::ffi::c_ulong, mut n_pages: ::core::ffi::c_ulong) -> *mut pte_t {
+unsafe fn init_pmd(vaddr: ::kernel::ffi::c_ulong, mut n_pages: ::kernel::ffi::c_ulong) -> *mut pte_t {
     let mut pmd: *mut pmd_t = pmd_off_k(vaddr);
     let pte: *mut pte_t;
-    let mut i: ::core::ffi::c_ulong;
+    let mut i: ::kernel::ffi::c_ulong;
 
     n_pages = ALIGN(n_pages, PTRS_PER_PTE);
 
@@ -46,7 +46,7 @@ unsafe fn init_pmd(vaddr: ::core::ffi::c_ulong, mut n_pages: ::core::ffi::c_ulon
         let cur_pte: *mut pte_t = pte.add(i as usize);
 
         BUG_ON(pmd_none(*pmd));
-        set_pmd(pmd, __pmd((cur_pte as ::core::ffi::c_ulong) & PAGE_MASK));
+        set_pmd(pmd, __pmd((cur_pte as ::kernel::ffi::c_ulong) & PAGE_MASK));
         BUG_ON(cur_pte != pte_offset_kernel(pmd, 0));
         pr_debug!("%s: pmd: 0x%p, pte: 0x%p\n", __func__, pmd, cur_pte);
 

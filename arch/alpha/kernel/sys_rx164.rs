@@ -12,26 +12,26 @@
 // Dependencies are supplied by the surrounding kernel translation unit.
 
 /* Note mask bit is true for ENABLED irqs. */
-static mut CACHED_IRQ_MASK: ::core::ffi::c_ulong = 0;
+static mut CACHED_IRQ_MASK: ::kernel::ffi::c_ulong = 0;
 
 #[inline]
-unsafe fn rx164_update_irq_hw(mask: ::core::ffi::c_ulong) {
-    let irq_mask = (POLARIS_DENSE_CONFIG_BASE + 0x74) as *mut ::core::ffi::c_uint;
-    core::ptr::write_volatile(irq_mask, mask as ::core::ffi::c_uint);
+unsafe fn rx164_update_irq_hw(mask: ::kernel::ffi::c_ulong) {
+    let irq_mask = (POLARIS_DENSE_CONFIG_BASE + 0x74) as *mut ::kernel::ffi::c_uint;
+    core::ptr::write_volatile(irq_mask, mask as ::kernel::ffi::c_uint);
     mb();
     let _ = core::ptr::read_volatile(irq_mask);
 }
 
 #[inline]
 unsafe fn rx164_enable_irq(d: *mut irq_data) {
-    CACHED_IRQ_MASK |= (1 as ::core::ffi::c_ulong)
-        << ((*d).irq.wrapping_sub(16) as ::core::ffi::c_ulong);
+    CACHED_IRQ_MASK |= (1 as ::kernel::ffi::c_ulong)
+        << ((*d).irq.wrapping_sub(16) as ::kernel::ffi::c_ulong);
     rx164_update_irq_hw(CACHED_IRQ_MASK);
 }
 
 unsafe fn rx164_disable_irq(d: *mut irq_data) {
-    CACHED_IRQ_MASK &= !((1 as ::core::ffi::c_ulong)
-        << ((*d).irq.wrapping_sub(16) as ::core::ffi::c_ulong));
+    CACHED_IRQ_MASK &= !((1 as ::kernel::ffi::c_ulong)
+        << ((*d).irq.wrapping_sub(16) as ::kernel::ffi::c_ulong));
     rx164_update_irq_hw(CACHED_IRQ_MASK);
 }
 
@@ -43,9 +43,9 @@ static mut rx164_irq_type: irq_chip = irq_chip {
     ..unsafe { core::mem::zeroed() }
 };
 
-unsafe fn rx164_device_interrupt(vector: ::core::ffi::c_ulong) {
-    let dirr = (POLARIS_DENSE_CONFIG_BASE + 0x84) as *const ::core::ffi::c_uint;
-    let mut pld = core::ptr::read_volatile(dirr) as ::core::ffi::c_ulong;
+unsafe fn rx164_device_interrupt(vector: ::kernel::ffi::c_ulong) {
+    let dirr = (POLARIS_DENSE_CONFIG_BASE + 0x84) as *const ::kernel::ffi::c_uint;
+    let mut pld = core::ptr::read_volatile(dirr) as ::kernel::ffi::c_ulong;
 
     /*
      * Now for every possible bit set, work through them and call
@@ -79,7 +79,7 @@ unsafe fn rx164_init_irq() {
     }
 }
 
-unsafe fn rx164_map_irq(dev: *const pci_dev, slot: u8, pin: u8) -> ::core::ffi::c_int {
+unsafe fn rx164_map_irq(dev: *const pci_dev, slot: u8, pin: u8) -> ::kernel::ffi::c_int {
     let _ = dev;
     /*
      * JRP - Need to figure out how to distinguish pass1 from pass2,

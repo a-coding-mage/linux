@@ -5,7 +5,7 @@
  * Copyright 2017-2018 Jacopo Mondi <jacopo+renesas@jmondi.org>
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 pub const CEU_MAX_SUBDEVS: usize = 2;
 

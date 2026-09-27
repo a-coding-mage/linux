@@ -6,7 +6,7 @@
 // Dependency intent: declarations supplied by autofs_i.h and other repository
 // sources are referenced here; C preprocessor inclusion is omitted.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 unsafe fn autofs_get_link(
     dentry: *mut dentry,

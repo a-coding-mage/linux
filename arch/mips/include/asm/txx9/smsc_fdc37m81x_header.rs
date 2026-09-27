@@ -54,7 +54,7 @@ pub const SMSC_FDC37M81X_CONFIG_EXIT: u8 = 0xaa;
 pub const SMSC_FDC37M81X_CHIP_ID: u8 = 0x4d;
 
 unsafe extern "C" {
-    pub fn smsc_fdc37m81x_init(port: core::ffi::c_ulong) -> core::ffi::c_ulong;
+    pub fn smsc_fdc37m81x_init(port: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
 
     pub fn smsc_fdc37m81x_config_beg();
 

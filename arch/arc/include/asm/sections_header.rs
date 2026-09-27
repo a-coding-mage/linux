@@ -6,7 +6,7 @@
 // Dependency: <asm-generic/sections.h>
 
 extern "C" {
-    pub static mut __arc_dccm_base: [core::ffi::c_char; 0];
+    pub static mut __arc_dccm_base: [kernel::ffi::c_char; 0];
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

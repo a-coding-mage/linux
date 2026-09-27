@@ -8,7 +8,7 @@
  */
 
 // C dependencies supplied by the corresponding Linux MTD headers.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct map_info {
@@ -28,13 +28,13 @@ pub struct mtd_partition {
 
 #[repr(C)]
 pub struct physmap_flash_data {
-    pub width: core::ffi::c_uint,
-    pub init: Option<unsafe extern "C" fn(*mut platform_device) -> core::ffi::c_int>,
+    pub width: kernel::ffi::c_uint,
+    pub init: Option<unsafe extern "C" fn(*mut platform_device) -> kernel::ffi::c_int>,
     pub exit: Option<unsafe extern "C" fn(*mut platform_device)>,
     pub set_vpp:
-        Option<unsafe extern "C" fn(*mut platform_device, core::ffi::c_int)>,
-    pub nr_parts: core::ffi::c_uint,
-    pub pfow_base: core::ffi::c_uint,
+        Option<unsafe extern "C" fn(*mut platform_device, kernel::ffi::c_int)>,
+    pub nr_parts: kernel::ffi::c_uint,
+    pub pfow_base: kernel::ffi::c_uint,
     pub probe_type: *mut c_char,
     pub parts: *mut mtd_partition,
     pub part_probe_types: *const *const c_char,

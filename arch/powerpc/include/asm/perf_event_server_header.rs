@@ -8,19 +8,19 @@
 // C dependencies supplied by the surrounding kernel translation.
 
 /* Update perf_event_print_debug() if this changes */
-pub const MAX_HWEVENTS: ::core::ffi::c_int = 8;
-pub const MAX_EVENT_ALTERNATIVES: ::core::ffi::c_int = 8;
-pub const MAX_LIMITED_HWCOUNTERS: ::core::ffi::c_int = 2;
+pub const MAX_HWEVENTS: ::kernel::ffi::c_int = 8;
+pub const MAX_EVENT_ALTERNATIVES: ::kernel::ffi::c_int = 8;
+pub const MAX_LIMITED_HWCOUNTERS: ::kernel::ffi::c_int = 2;
 
 pub struct perf_event;
 
 #[repr(C)]
 pub struct mmcr_regs {
-    pub mmcr0: ::core::ffi::c_ulong,
-    pub mmcr1: ::core::ffi::c_ulong,
-    pub mmcr2: ::core::ffi::c_ulong,
-    pub mmcra: ::core::ffi::c_ulong,
-    pub mmcr3: ::core::ffi::c_ulong,
+    pub mmcr0: ::kernel::ffi::c_ulong,
+    pub mmcr1: ::kernel::ffi::c_ulong,
+    pub mmcr2: ::kernel::ffi::c_ulong,
+    pub mmcra: ::kernel::ffi::c_ulong,
+    pub mmcr3: ::kernel::ffi::c_ulong,
 }
 
 /*
@@ -29,46 +29,46 @@ pub struct mmcr_regs {
  */
 #[repr(C)]
 pub struct power_pmu {
-    pub name: *const ::core::ffi::c_char,
-    pub n_counter: ::core::ffi::c_int,
-    pub max_alternatives: ::core::ffi::c_int,
-    pub add_fields: ::core::ffi::c_ulong,
-    pub test_adder: ::core::ffi::c_ulong,
+    pub name: *const ::kernel::ffi::c_char,
+    pub n_counter: ::kernel::ffi::c_int,
+    pub max_alternatives: ::kernel::ffi::c_int,
+    pub add_fields: ::kernel::ffi::c_ulong,
+    pub test_adder: ::kernel::ffi::c_ulong,
     pub compute_mmcr: Option<unsafe extern "C" fn(
-        events: *mut u64, n_ev: ::core::ffi::c_int,
+        events: *mut u64, n_ev: ::kernel::ffi::c_int,
         hwc: *mut u32, mmcr: *mut mmcr_regs,
         pevents: *mut *mut perf_event, flags: u32,
-    ) -> ::core::ffi::c_int>,
+    ) -> ::kernel::ffi::c_int>,
     pub get_constraint: Option<unsafe extern "C" fn(
-        event_id: u64, mskp: *mut ::core::ffi::c_ulong,
-        valp: *mut ::core::ffi::c_ulong, event_config1: u64,
-    ) -> ::core::ffi::c_int>,
+        event_id: u64, mskp: *mut ::kernel::ffi::c_ulong,
+        valp: *mut ::kernel::ffi::c_ulong, event_config1: u64,
+    ) -> ::kernel::ffi::c_int>,
     pub get_alternatives: Option<unsafe extern "C" fn(
         event_id: u64, flags: u32, alt: *mut u64,
-    ) -> ::core::ffi::c_int>,
+    ) -> ::kernel::ffi::c_int>,
     pub get_mem_data_src: Option<unsafe extern "C" fn(
         dsrc: *mut union_perf_mem_data_src, flags: u32, regs: *mut pt_regs,
     )>,
     pub get_mem_weight: Option<unsafe extern "C" fn(weight: *mut u64, ty: u64)>,
-    pub group_constraint_mask: ::core::ffi::c_ulong,
-    pub group_constraint_val: ::core::ffi::c_ulong,
+    pub group_constraint_mask: ::kernel::ffi::c_ulong,
+    pub group_constraint_val: ::kernel::ffi::c_ulong,
     pub bhrb_filter_map: Option<unsafe extern "C" fn(branch_sample_type: u64) -> u64>,
     pub config_bhrb: Option<unsafe extern "C" fn(pmu_bhrb_filter: u64)>,
     pub disable_pmc: Option<unsafe extern "C" fn(pmc: u32, mmcr: *mut mmcr_regs)>,
-    pub limited_pmc_event: Option<unsafe extern "C" fn(event_id: u64) -> ::core::ffi::c_int>,
+    pub limited_pmc_event: Option<unsafe extern "C" fn(event_id: u64) -> ::kernel::ffi::c_int>,
     pub flags: u32,
     pub attr_groups: *const *const attribute_group,
-    pub n_generic: ::core::ffi::c_int,
-    pub generic_events: *mut ::core::ffi::c_int,
+    pub n_generic: ::kernel::ffi::c_int,
+    pub generic_events: *mut ::kernel::ffi::c_int,
     pub cache_events: *mut [[[u64; PERF_COUNT_HW_CACHE_RESULT_MAX as usize]; PERF_COUNT_HW_CACHE_OP_MAX as usize]; PERF_COUNT_HW_CACHE_MAX as usize],
-    pub n_blacklist_ev: ::core::ffi::c_int,
-    pub blacklist_ev: *mut ::core::ffi::c_int,
+    pub n_blacklist_ev: ::kernel::ffi::c_int,
+    pub blacklist_ev: *mut ::kernel::ffi::c_int,
     /* BHRB entries in the PMU */
-    pub bhrb_nr: ::core::ffi::c_int,
+    pub bhrb_nr: ::kernel::ffi::c_int,
     /* set this flag with `PERF_PMU_CAP_EXTENDED_REGS` if the pmu supports extended perf regs capability */
-    pub capabilities: ::core::ffi::c_int,
+    pub capabilities: ::kernel::ffi::c_int,
     /* Function to check event code for values which are reserved. */
-    pub check_attr_config: Option<unsafe extern "C" fn(ev: *mut perf_event) -> ::core::ffi::c_int>,
+    pub check_attr_config: Option<unsafe extern "C" fn(ev: *mut perf_event) -> ::kernel::ffi::c_int>,
 }
 
 pub const PPMU_LIMITED_PMC5_6: u32 = 0x00000001;
@@ -90,11 +90,11 @@ pub const PPMU_LIMITED_PMC_REQD: u32 = 2;
 pub const PPMU_ONLY_COUNT_RUN: u32 = 4;
 
 unsafe extern "C" {
-    pub fn register_power_pmu(pmu: *mut power_pmu) -> ::core::ffi::c_int;
-    pub fn perf_arch_misc_flags(regs: *mut pt_regs) -> ::core::ffi::c_ulong;
-    pub fn perf_arch_instruction_pointer(regs: *mut pt_regs) -> ::core::ffi::c_ulong;
-    pub fn read_bhrb(n: ::core::ffi::c_int) -> ::core::ffi::c_ulong;
-    pub fn power_events_sysfs_show(dev: *mut device, attr: *mut device_attribute, page: *mut ::core::ffi::c_char) -> isize;
+    pub fn register_power_pmu(pmu: *mut power_pmu) -> ::kernel::ffi::c_int;
+    pub fn perf_arch_misc_flags(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong;
+    pub fn perf_arch_instruction_pointer(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong;
+    pub fn read_bhrb(n: ::kernel::ffi::c_int) -> ::kernel::ffi::c_ulong;
+    pub fn power_events_sysfs_show(dev: *mut device, attr: *mut device_attribute, page: *mut ::kernel::ffi::c_char) -> isize;
 }
 
 pub struct pt_regs;

@@ -56,40 +56,40 @@ pub enum enclosure_component_setting {
 #[repr(C)]
 pub struct enclosure_component_callbacks {
     pub get_status: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component)>,
-    pub set_status: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component, enclosure_status) -> ::core::ffi::c_int>,
+    pub set_status: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component, enclosure_status) -> ::kernel::ffi::c_int>,
     pub get_fault: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component)>,
-    pub set_fault: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component, enclosure_component_setting) -> ::core::ffi::c_int>,
+    pub set_fault: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component, enclosure_component_setting) -> ::kernel::ffi::c_int>,
     pub get_active: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component)>,
-    pub set_active: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component, enclosure_component_setting) -> ::core::ffi::c_int>,
+    pub set_active: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component, enclosure_component_setting) -> ::kernel::ffi::c_int>,
     pub get_locate: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component)>,
-    pub set_locate: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component, enclosure_component_setting) -> ::core::ffi::c_int>,
+    pub set_locate: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component, enclosure_component_setting) -> ::kernel::ffi::c_int>,
     pub get_power_status: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component)>,
-    pub set_power_status: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component, ::core::ffi::c_int) -> ::core::ffi::c_int>,
-    pub show_id: Option<unsafe extern "C" fn(*mut enclosure_device, *mut ::core::ffi::c_char) -> ::core::ffi::c_int>,
+    pub set_power_status: Option<unsafe extern "C" fn(*mut enclosure_device, *mut enclosure_component, ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
+    pub show_id: Option<unsafe extern "C" fn(*mut enclosure_device, *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct enclosure_component {
-    pub scratch: *mut ::core::ffi::c_void,
+    pub scratch: *mut ::kernel::ffi::c_void,
     pub cdev: device,
     pub dev: *mut device,
     pub type_: enclosure_component_type,
-    pub number: ::core::ffi::c_int,
-    pub fault: ::core::ffi::c_int,
-    pub active: ::core::ffi::c_int,
-    pub locate: ::core::ffi::c_int,
-    pub slot: ::core::ffi::c_int,
+    pub number: ::kernel::ffi::c_int,
+    pub fault: ::kernel::ffi::c_int,
+    pub active: ::kernel::ffi::c_int,
+    pub locate: ::kernel::ffi::c_int,
+    pub slot: ::kernel::ffi::c_int,
     pub status: enclosure_status,
-    pub power_status: ::core::ffi::c_int,
+    pub power_status: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct enclosure_device {
-    pub scratch: *mut ::core::ffi::c_void,
+    pub scratch: *mut ::kernel::ffi::c_void,
     pub node: list_head,
     pub edev: device,
     pub cb: *mut enclosure_component_callbacks,
-    pub components: ::core::ffi::c_int,
+    pub components: ::kernel::ffi::c_int,
     pub component: [enclosure_component; 0],
 }
 
@@ -104,22 +104,22 @@ pub unsafe fn to_enclosure_component(dev: *mut device) -> *mut enclosure_compone
 extern "C" {
     pub fn enclosure_register(
         dev: *mut device,
-        name: *const ::core::ffi::c_char,
-        components: ::core::ffi::c_int,
+        name: *const ::kernel::ffi::c_char,
+        components: ::kernel::ffi::c_int,
         cb: *mut enclosure_component_callbacks,
     ) -> *mut enclosure_device;
     pub fn enclosure_unregister(ed: *mut enclosure_device);
     pub fn enclosure_component_alloc(
         ed: *mut enclosure_device,
-        number: ::core::ffi::c_uint,
+        number: ::kernel::ffi::c_uint,
         type_: enclosure_component_type,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
     ) -> *mut enclosure_component;
-    pub fn enclosure_component_register(component: *mut enclosure_component) -> ::core::ffi::c_int;
-    pub fn enclosure_add_device(ed: *mut enclosure_device, component: ::core::ffi::c_int, dev: *mut device) -> ::core::ffi::c_int;
-    pub fn enclosure_remove_device(ed: *mut enclosure_device, dev: *mut device) -> ::core::ffi::c_int;
+    pub fn enclosure_component_register(component: *mut enclosure_component) -> ::kernel::ffi::c_int;
+    pub fn enclosure_add_device(ed: *mut enclosure_device, component: ::kernel::ffi::c_int, dev: *mut device) -> ::kernel::ffi::c_int;
+    pub fn enclosure_remove_device(ed: *mut enclosure_device, dev: *mut device) -> ::kernel::ffi::c_int;
     pub fn enclosure_find(dev: *mut device, start: *mut enclosure_device) -> *mut enclosure_device;
-    pub fn enclosure_for_each_device(fn_: Option<unsafe extern "C" fn(*mut enclosure_device, *mut ::core::ffi::c_void) -> ::core::ffi::c_int>, data: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
+    pub fn enclosure_for_each_device(fn_: Option<unsafe extern "C" fn(*mut enclosure_device, *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int>, data: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

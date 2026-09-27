@@ -13,7 +13,7 @@
 // "mt8189-afe-common.h"
 // "mt8189-interconnection.h"
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 
 const DPTX_CH_EN_MASK_2CH: c_uint = 0x3;
 const DPTX_CH_EN_MASK_4CH: c_uint = 0xf;
@@ -175,7 +175,7 @@ struct snd_soc_pcm_stream {
     formats: c_ulong,
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 #[repr(C)]
 struct snd_soc_dai_driver {

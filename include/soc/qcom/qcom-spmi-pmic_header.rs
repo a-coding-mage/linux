@@ -72,13 +72,13 @@ pub const PM660_FAB_ID_MX: u32 = 0x3;
 
 #[repr(C)]
 pub struct qcom_spmi_pmic {
-    pub type_: core::ffi::c_uint,
-    pub subtype: core::ffi::c_uint,
-    pub major: core::ffi::c_uint,
-    pub minor: core::ffi::c_uint,
-    pub rev2: core::ffi::c_uint,
-    pub fab_id: core::ffi::c_uint,
-    pub name: *const core::ffi::c_char,
+    pub type_: kernel::ffi::c_uint,
+    pub subtype: kernel::ffi::c_uint,
+    pub major: kernel::ffi::c_uint,
+    pub minor: kernel::ffi::c_uint,
+    pub rev2: kernel::ffi::c_uint,
+    pub fab_id: kernel::ffi::c_uint,
+    pub name: *const kernel::ffi::c_char,
 }
 
 // External dependency declaration corresponding to struct device.

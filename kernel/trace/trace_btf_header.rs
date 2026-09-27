@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 // Dependency corresponding to <linux/btf.h>.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Opaque C types supplied by the Linux BTF definitions.
 #[repr(C)]

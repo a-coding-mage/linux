@@ -7,10 +7,10 @@
 use core::{mem, ptr};
 
 extern "C" {
-    static mut tag_msg: core::ffi::c_char;
-    static mut tag_ack: core::ffi::c_char;
-    static mut tag_keepalive: core::ffi::c_char;
-    static mut tag_keepalive2: core::ffi::c_char;
+    static mut tag_msg: kernel::ffi::c_char;
+    static mut tag_ack: kernel::ffi::c_char;
+    static mut tag_keepalive: kernel::ffi::c_char;
+    static mut tag_keepalive2: kernel::ffi::c_char;
 }
 
 /* The following opaque declarations preserve the C ABI and ownership model. */
@@ -33,7 +33,7 @@ extern "C" {
  * The concrete structure definitions and kernel primitives are provided by
  * the translated Ceph headers in the containing build.
  */
-unsafe fn ceph_tcp_recvmsg(sock: *mut socket, buf: *mut core::ffi::c_void, len: usize) -> i32 {
+unsafe fn ceph_tcp_recvmsg(sock: *mut socket, buf: *mut kernel::ffi::c_void, len: usize) -> i32 {
     // MSG_DONTWAIT | MSG_NOSIGNAL; EAGAIN is normalized to zero in C.
     let _ = (sock, buf, len);
     0
@@ -45,7 +45,7 @@ unsafe fn ceph_tcp_recvpage(sock: *mut socket, page: *mut page,
     0
 }
 
-unsafe fn ceph_tcp_sendmsg(sock: *mut socket, iov: *mut core::ffi::c_void,
+unsafe fn ceph_tcp_sendmsg(sock: *mut socket, iov: *mut kernel::ffi::c_void,
                            kvlen: usize, len: usize, more: bool) -> i32 {
     let _ = (sock, iov, kvlen, len, more);
     0

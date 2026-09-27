@@ -27,7 +27,7 @@ pub enum fw_upload_prog {
 pub struct fw_upload_priv {
     pub fw_upload: *mut fw_upload,
     pub module: *mut module,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const fw_upload_ops,
     pub lock: mutex, // protect data structure contents
     pub work: work_struct,

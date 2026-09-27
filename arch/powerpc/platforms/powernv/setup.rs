@@ -8,8 +8,8 @@
 // C includes and build-time configuration supplied by the surrounding kernel
 // are intentionally represented by external symbols below.
 
-unsafe fn fw_feature_is(state: *const core::ffi::c_char,
-                        name: *const core::ffi::c_char,
+unsafe fn fw_feature_is(state: *const kernel::ffi::c_char,
+                        name: *const kernel::ffi::c_char,
                         fw_features: *mut device_node) -> bool {
     let np = of_get_child_by_name(fw_features, name);
     if !np.is_null() {
@@ -96,7 +96,7 @@ unsafe fn pnv_setup_arch() {
 unsafe fn pnv_add_hw_description() {
     let dn = of_find_node_by_path(c"/ibm,opal/firmware".as_ptr());
     if dn.is_null() { return; }
-    let mut s: *const core::ffi::c_char = core::ptr::null();
+    let mut s: *const kernel::ffi::c_char = core::ptr::null();
     if of_property_read_string(dn, c"version".as_ptr(), &mut s) == 0 || of_property_read_string(dn, c"git-id".as_ptr(), &mut s) == 0 { seq_buf_printf(&mut ppc_hw_desc, c"opal:%s ".as_ptr(), s); }
     if of_property_read_string(dn, c"mi-version".as_ptr(), &mut s) == 0 { seq_buf_printf(&mut ppc_hw_desc, c"mi:%s ".as_ptr(), s); }
     of_node_put(dn);
@@ -126,7 +126,7 @@ unsafe fn pnv_show_cpuinfo(m: *mut seq_file) {
 
 unsafe fn pnv_prepare_going_down() { opal_event_shutdown(); opal_flash_update_print_message(); smp_send_stop(); hard_irq_disable(); }
 
-unsafe fn pnv_restart(mut cmd: *mut core::ffi::c_char) -> ! {
+unsafe fn pnv_restart(mut cmd: *mut kernel::ffi::c_char) -> ! {
     pnv_prepare_going_down();
     loop {
         let mut rc = if cmd.is_null() || *cmd == 0 { opal_cec_reboot() } else if strcmp(cmd, c"full".as_ptr()) == 0 { opal_cec_reboot2(OPAL_REBOOT_FULL_IPL, core::ptr::null_mut()) } else if strcmp(cmd, c"mpipl".as_ptr()) == 0 { opal_cec_reboot2(OPAL_REBOOT_MPIPL, core::ptr::null_mut()) } else if strcmp(cmd, c"error".as_ptr()) == 0 { opal_cec_reboot2(OPAL_REBOOT_PLATFORM_ERROR, core::ptr::null_mut()) } else if strcmp(cmd, c"fast".as_ptr()) == 0 { opal_cec_reboot2(OPAL_REBOOT_FAST, core::ptr::null_mut()) } else { OPAL_UNSUPPORTED };
@@ -140,7 +140,7 @@ unsafe fn pnv_restart(mut cmd: *mut core::ffi::c_char) -> ! {
 
 unsafe fn pnv_power_off() -> ! { pnv_prepare_going_down(); let mut rc = OPAL_BUSY; while rc == OPAL_BUSY || rc == OPAL_BUSY_EVENT { rc = opal_cec_power_down(0); if rc == OPAL_BUSY_EVENT { opal_poll_events(core::ptr::null_mut()); } else { mdelay(10); } } loop { opal_poll_events(core::ptr::null_mut()); } }
 unsafe fn pnv_halt() -> ! { pnv_power_off(); }
-unsafe fn pnv_progress(_s: *mut core::ffi::c_char, _hex: u16) {}
+unsafe fn pnv_progress(_s: *mut kernel::ffi::c_char, _hex: u16) {}
 unsafe fn pnv_shutdown() { pnv_pci_shutdown(); opal_shutdown(); }
 
 // CONFIG_KEXEC_CORE: the following hooks return CPUs to OPAL before kexec.

@@ -8,9 +8,9 @@
 // Kernel headers and symbols are supplied by the surrounding kernel translation.
 
 #[inline]
-unsafe fn fetch_message_locked(log: *mut fs_log, len: usize, need_free: *mut bool) -> *const core::ffi::c_char {
+unsafe fn fetch_message_locked(log: *mut fs_log, len: usize, need_free: *mut bool) -> *const kernel::ffi::c_char {
     let mut index: usize;
-    let p: *const core::ffi::c_char;
+    let p: *const kernel::ffi::c_char;
 
     if unlikely((*log).head == (*log).tail) {
         return ERR_PTR(-ENODATA);
@@ -34,12 +34,12 @@ unsafe fn fetch_message_locked(log: *mut fs_log, len: usize, need_free: *mut boo
  * Allow the user to read back any error, warning or informational messages.
  * Only one message is returned for each read(2) call.
  */
-unsafe fn fscontext_read(file: *mut file, buf: *mut core::ffi::c_void, len: usize, _pos: *mut loff_t) -> isize {
+unsafe fn fscontext_read(file: *mut file, buf: *mut kernel::ffi::c_void, len: usize, _pos: *mut loff_t) -> isize {
     let fc = (*file).private_data as *mut fs_context;
     let err: isize;
-    let message: *const core::ffi::c_char;
+    let message: *const kernel::ffi::c_char;
     let mut need_free = false;
-    let mut p: *const core::ffi::c_char = core::ptr::null();
+    let mut p: *const kernel::ffi::c_char = core::ptr::null();
     let n: usize;
 
     err = mutex_lock_interruptible(&mut (*fc).uapi_mutex);
@@ -57,7 +57,7 @@ unsafe fn fscontext_read(file: *mut file, buf: *mut core::ffi::c_void, len: usiz
     }
 
     n = strlen(message);
-    if copy_to_user(buf, message as *const core::ffi::c_void, n) != 0 {
+    if copy_to_user(buf, message as *const kernel::ffi::c_void, n) != 0 {
         return -EFAULT;
     }
     n as isize
@@ -108,10 +108,10 @@ unsafe fn fscontext_alloc_log(fc: *mut fs_context) -> i32 {
  * network namespace will be used for network filesystems).
  */
 #[no_mangle]
-pub unsafe extern "C" fn fsopen(_fs_name: *const core::ffi::c_char, flags: u32) -> i32 {
+pub unsafe extern "C" fn fsopen(_fs_name: *const kernel::ffi::c_char, flags: u32) -> i32 {
     let fs_type: *mut file_system_type;
     let fc: *mut fs_context;
-    let fs_name: *mut core::ffi::c_char;
+    let fs_name: *mut kernel::ffi::c_char;
     let ret: i32;
 
     if !may_mount() { return -EPERM; }
@@ -120,7 +120,7 @@ pub unsafe extern "C" fn fsopen(_fs_name: *const core::ffi::c_char, flags: u32) 
     fs_name = strndup_user(_fs_name, PAGE_SIZE);
     if IS_ERR(fs_name) { return PTR_ERR(fs_name); }
     fs_type = get_fs_type(fs_name);
-    kfree(fs_name as *mut core::ffi::c_void);
+    kfree(fs_name as *mut kernel::ffi::c_void);
     if fs_type.is_null() { return -ENODEV; }
 
     fc = fs_context_for_mount(fs_type, 0);
@@ -137,7 +137,7 @@ pub unsafe extern "C" fn fsopen(_fs_name: *const core::ffi::c_char, flags: u32) 
  * Pick a superblock into a context for reconfiguration.
  */
 #[no_mangle]
-pub unsafe extern "C" fn fspick(dfd: i32, path: *const core::ffi::c_char, flags: u32) -> i32 {
+pub unsafe extern "C" fn fspick(dfd: i32, path: *const kernel::ffi::c_char, flags: u32) -> i32 {
     let mut fc: *mut fs_context;
     let mut target = core::mem::MaybeUninit::<path>::uninit();
     let mut lookup_flags: u32;
@@ -210,7 +210,7 @@ unsafe fn vfs_fsconfig_locked(fc: *mut fs_context, cmd: i32, param: *mut fs_para
 
 // sys_fsconfig - Set parameters and trigger actions on a context.
 #[no_mangle]
-pub unsafe extern "C" fn fsconfig(fd: i32, cmd: u32, key: *const core::ffi::c_char, value: *const core::ffi::c_void, aux: i32) -> i32 {
+pub unsafe extern "C" fn fsconfig(fd: i32, cmd: u32, key: *const kernel::ffi::c_char, value: *const kernel::ffi::c_void, aux: i32) -> i32 {
     // The full syscall parameter validation and cleanup follows the C implementation.
     if fd < 0 { return -EINVAL; }
     match cmd {

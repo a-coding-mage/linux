@@ -24,7 +24,7 @@
 pub struct drm_property_enum {
     pub value: u64,
     pub head: list_head,
-    pub name: [core::ffi::c_char; DRM_PROP_NAME_LEN],
+    pub name: [kernel::ffi::c_char; DRM_PROP_NAME_LEN],
 }
 
 #[repr(C)]
@@ -32,7 +32,7 @@ pub struct drm_property {
     pub head: list_head,
     pub base: drm_mode_object,
     pub flags: u32,
-    pub name: [core::ffi::c_char; DRM_PROP_NAME_LEN],
+    pub name: [kernel::ffi::c_char; DRM_PROP_NAME_LEN],
     pub num_values: u32,
     pub values: *mut u64,
     pub dev: *mut drm_device,
@@ -46,13 +46,13 @@ pub struct drm_property_blob {
     pub head_global: list_head,
     pub head_file: list_head,
     pub length: usize,
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct drm_prop_enum_list {
-    pub type_: core::ffi::c_int,
-    pub name: *const core::ffi::c_char,
+    pub type_: kernel::ffi::c_int,
+    pub name: *const kernel::ffi::c_char,
 }
 
 /* These macros depend on the shared container_of implementation. */
@@ -74,51 +74,51 @@ pub unsafe fn drm_property_type_is(property: *mut drm_property, type_: u32) -> b
 
 unsafe extern "C" {
     pub fn drm_property_create(
-        dev: *mut drm_device, flags: u32, name: *const core::ffi::c_char,
-        num_values: core::ffi::c_int,
+        dev: *mut drm_device, flags: u32, name: *const kernel::ffi::c_char,
+        num_values: kernel::ffi::c_int,
     ) -> *mut drm_property;
     pub fn drm_property_create_enum(
-        dev: *mut drm_device, flags: u32, name: *const core::ffi::c_char,
-        props: *const drm_prop_enum_list, num_values: core::ffi::c_int,
+        dev: *mut drm_device, flags: u32, name: *const kernel::ffi::c_char,
+        props: *const drm_prop_enum_list, num_values: kernel::ffi::c_int,
     ) -> *mut drm_property;
     pub fn drm_property_create_bitmask(
-        dev: *mut drm_device, flags: u32, name: *const core::ffi::c_char,
-        props: *const drm_prop_enum_list, num_props: core::ffi::c_int,
+        dev: *mut drm_device, flags: u32, name: *const kernel::ffi::c_char,
+        props: *const drm_prop_enum_list, num_props: kernel::ffi::c_int,
         supported_bits: u64,
     ) -> *mut drm_property;
     pub fn drm_property_create_range(
-        dev: *mut drm_device, flags: u32, name: *const core::ffi::c_char,
+        dev: *mut drm_device, flags: u32, name: *const kernel::ffi::c_char,
         min: u64, max: u64,
     ) -> *mut drm_property;
     pub fn drm_property_create_signed_range(
-        dev: *mut drm_device, flags: u32, name: *const core::ffi::c_char,
+        dev: *mut drm_device, flags: u32, name: *const kernel::ffi::c_char,
         min: i64, max: i64,
     ) -> *mut drm_property;
     pub fn drm_property_create_object(
-        dev: *mut drm_device, flags: u32, name: *const core::ffi::c_char,
+        dev: *mut drm_device, flags: u32, name: *const kernel::ffi::c_char,
         type_: u32,
     ) -> *mut drm_property;
     pub fn drm_property_create_bool(
-        dev: *mut drm_device, flags: u32, name: *const core::ffi::c_char,
+        dev: *mut drm_device, flags: u32, name: *const kernel::ffi::c_char,
     ) -> *mut drm_property;
     pub fn drm_property_add_enum(
-        property: *mut drm_property, value: u64, name: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        property: *mut drm_property, value: u64, name: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
     pub fn drm_property_destroy(dev: *mut drm_device, property: *mut drm_property);
     pub fn drm_property_create_blob(
-        dev: *mut drm_device, length: usize, data: *const core::ffi::c_void,
+        dev: *mut drm_device, length: usize, data: *const kernel::ffi::c_void,
     ) -> *mut drm_property_blob;
     pub fn drm_property_lookup_blob(dev: *mut drm_device, id: u32) -> *mut drm_property_blob;
     pub fn drm_property_replace_blob_from_id(
         dev: *mut drm_device, blob: *mut *mut drm_property_blob, blob_id: u64,
         expected_size: isize, expected_elem_size: isize, max_size: isize,
         replaced: *mut bool,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn drm_property_replace_global_blob(
         dev: *mut drm_device, replace: *mut *mut drm_property_blob, length: usize,
-        data: *const core::ffi::c_void, obj_holds_id: *mut drm_mode_object,
+        data: *const kernel::ffi::c_void, obj_holds_id: *mut drm_mode_object,
         prop_holds_id: *mut drm_property,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn drm_property_replace_blob(
         blob: *mut *mut drm_property_blob, new_blob: *mut drm_property_blob,
     ) -> bool;

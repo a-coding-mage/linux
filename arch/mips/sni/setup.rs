@@ -11,26 +11,26 @@
 
 // C headers and configuration-dependent declarations are supplied by other files.
 
-pub static mut sni_brd_type: core::ffi::c_uint = 0;
+pub static mut sni_brd_type: kernel::ffi::c_uint = 0;
 
 extern "C" {
-    fn sni_machine_restart(command: *mut core::ffi::c_char);
+    fn sni_machine_restart(command: *mut kernel::ffi::c_char);
     fn sni_machine_power_off();
     fn set_io_port_base(base: usize);
-    fn read_c0_prid() -> core::ffi::c_uint;
+    fn read_c0_prid() -> kernel::ffi::c_uint;
     fn sni_a20r_init();
     fn sni_pcit_init();
     fn sni_rm200_init();
     fn sni_pcimt_init();
     fn vgacon_register_screen(si: *mut screen_info);
-    fn prom_getenv(name: *const core::ffi::c_char) -> *mut core::ffi::c_char;
-    fn strncmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char, n: usize) -> i32;
-    fn strscpy(dst: *mut core::ffi::c_char, src: *const core::ffi::c_char);
-    fn add_preferred_console(name: *const core::ffi::c_char, index: i32, options: *const core::ffi::c_char);
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn prom_getenv(name: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    fn strncmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char, n: usize) -> i32;
+    fn strscpy(dst: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char);
+    fn add_preferred_console(name: *const kernel::ffi::c_char, index: i32, options: *const kernel::ffi::c_char);
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
     fn pci_read_config_word(dev: *mut pci_dev, where_: u32, val: *mut u16);
-    fn vga_wseq(chip: *mut core::ffi::c_void, index: u8, data: u8);
+    fn vga_wseq(chip: *mut kernel::ffi::c_void, index: u8, data: u8);
 }
 
 #[repr(C)]
@@ -63,7 +63,7 @@ unsafe fn sni_console_setup() {
     // Compiled only when CONFIG_FW_ARC is not enabled.
     #[cfg(not(CONFIG_FW_ARC))]
     {
-        static mut OPTIONS: [core::ffi::c_char; 8] = [0; 8];
+        static mut OPTIONS: [kernel::ffi::c_char; 8] = [0; 8];
         let cdev = prom_getenv(b"console_dev\0".as_ptr() as *const _);
         if strncmp(cdev, b"tty\0".as_ptr() as *const _, 3) == 0 {
             let ctype = prom_getenv(b"console\0".as_ptr() as *const _);
@@ -96,7 +96,7 @@ pub unsafe fn plat_mem_setup() {
     #[cfg(CONFIG_EISA)]
     { EISA_bus = 1; }
 
-    sni_brd_type = *(SNI_IDPROM_BRDTYPE as *const u8) as core::ffi::c_uint;
+    sni_brd_type = *(SNI_IDPROM_BRDTYPE as *const u8) as kernel::ffi::c_uint;
     let cputype = *(SNI_IDPROM_CPUTYPE as *const u8) as i32;
     system_type = match sni_brd_type {
         SNI_BRD_TOWER_OASIC => match cputype { SNI_CPU_M8030 => b"RM400-330\0", SNI_CPU_M8031 => b"RM400-430\0", SNI_CPU_M8037 => b"RM400-530\0", SNI_CPU_M8034 => b"RM400-730\0", _ => b"RM400-xxx\0" },

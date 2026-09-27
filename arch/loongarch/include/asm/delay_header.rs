@@ -3,7 +3,7 @@
  * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 extern "C" {
     pub fn __delay(cycles: c_ulong);

@@ -263,7 +263,7 @@ static void put_quota_format(quota_format_type *fmt)
 static LIST_HEAD(inuse_list);
 static LIST_HEAD(free_dquots);
 static LIST_HEAD(releasing_dquots);
-static core::ffi::c_uint dq_hash_bits, dq_hash_mask;
+static kernel::ffi::c_uint dq_hash_bits, dq_hash_mask;
 static struct hlist_head *dquot_hash;
 
 struct dqstats dqstats;
@@ -276,14 +276,14 @@ static int __dquot_initialize(inode *inode, int type);
 static void quota_release_workfn(work_struct *work);
 static DECLARE_DELAYED_WORK(quota_release_work, quota_release_workfn);
 
-core::ffi::c_uint
+kernel::ffi::c_uint
 hashfn(const struct super_block *sb, kqid qid)
 {
-	core::ffi::c_uint id = from_kqid(&init_user_ns, qid);
+	kernel::ffi::c_uint id = from_kqid(&init_user_ns, qid);
 	int type = qid.r#type;
-	core::ffi::c_ulong tmp;
+	kernel::ffi::c_ulong tmp;
 
-	tmp = (((core::ffi::c_ulong)sb>>L1_CACHE_SHIFT) ^ id) * (MAXQUOTAS - type);
+	tmp = (((kernel::ffi::c_ulong)sb>>L1_CACHE_SHIFT) ^ id) * (MAXQUOTAS - type);
 	return (tmp + (tmp >> dq_hash_bits)) & dq_hash_mask;
 }
 
@@ -302,7 +302,7 @@ void remove_dquot_hash(dquot *dquot)
 	hlist_del_init(&dquot->dq_hash);
 }
 
-static struct dquot *find_dquot(hashent: core::ffi::c_uint, super_block *sb,
+static struct dquot *find_dquot(hashent: kernel::ffi::c_uint, super_block *sb,
 				kqid qid)
 {
 	struct dquot *dquot;
@@ -447,7 +447,7 @@ int mark_all_dquot_dirty(dquot __rcu * const *dquots)
 
 void dqput_all(dquot **dquot)
 {
-	core::ffi::c_uint cnt;
+	kernel::ffi::c_uint cnt;
 
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++)
 		dqput(dquot[cnt]);
@@ -483,7 +483,7 @@ EXPORT_SYMBOL(mark_info_dirty);
 int dquot_acquire(dquot *dquot)
 {
 	int ret = 0, ret2 = 0;
-	core::ffi::c_uint memalloc;
+	kernel::ffi::c_uint memalloc;
 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
 
 	mutex_lock(&dquot->dq_lock);
@@ -530,7 +530,7 @@ EXPORT_SYMBOL(dquot_acquire);
 int dquot_commit(dquot *dquot)
 {
 	int ret = 0;
-	core::ffi::c_uint memalloc;
+	kernel::ffi::c_uint memalloc;
 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
 
 	mutex_lock(&dquot->dq_lock);
@@ -556,7 +556,7 @@ EXPORT_SYMBOL(dquot_commit);
 int dquot_release(dquot *dquot)
 {
 	int ret = 0, ret2 = 0;
-	core::ffi::c_uint memalloc;
+	kernel::ffi::c_uint memalloc;
 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
 
 	mutex_lock(&dquot->dq_lock);
@@ -655,8 +655,8 @@ restart:
 
 /* Call callback for every active dquot on given filesystem */
 int dquot_scan_active(super_block *sb,
-		      int (*fn)(dquot *dquot, r#priv: core::ffi::c_ulong),
-		      r#priv: core::ffi::c_ulong)
+		      int (*fn)(dquot *dquot, r#priv: kernel::ffi::c_ulong),
+		      r#priv: kernel::ffi::c_ulong)
 {
 	struct dquot *dquot, *old_dquot = NULL;
 	int ret = 0;
@@ -808,11 +808,11 @@ int dquot_quota_sync(super_block *sb, int type)
 }
 EXPORT_SYMBOL(dquot_quota_sync);
 
-static core::ffi::c_ulong
+static kernel::ffi::c_ulong
 dqcache_shrink_scan(shrinker *shrink, shrink_control *sc)
 {
 	struct dquot *dquot;
-	core::ffi::c_ulong freed = 0;
+	kernel::ffi::c_ulong freed = 0;
 
 	spin_lock(&dq_list_lock);
 	while (!list_empty(&free_dquots) && sc->nr_to_scan) {
@@ -828,7 +828,7 @@ dqcache_shrink_scan(shrinker *shrink, shrink_control *sc)
 	return freed;
 }
 
-static core::ffi::c_ulong
+static kernel::ffi::c_ulong
 dqcache_shrink_count(shrinker *shrink, shrink_control *sc)
 {
 	return vfs_pressure_ratio(
@@ -952,7 +952,7 @@ static struct dquot *get_empty_dquot(super_block *sb, int type)
  */
 struct dquot *dqget(super_block *sb, kqid qid)
 {
-	core::ffi::c_uint hashent = hashfn(sb, qid);
+	kernel::ffi::c_uint hashent = hashfn(sb, qid);
 	struct dquot *dquot, *empty = NULL;
 
 	if (!qid_has_mapping(sb->s_user_ns, qid))
@@ -1293,7 +1293,7 @@ out:
 }
 
 static int dquot_add_space(dquot *dquot, qsize_t space,
-			   qsize_t rsv_space, flags: core::ffi::c_uint,
+			   qsize_t rsv_space, flags: kernel::ffi::c_uint,
 			   dquot_warn *warn)
 {
 	qsize_t tspace;
@@ -1839,7 +1839,7 @@ EXPORT_SYMBOL(dquot_reclaim_space_nodirty);
  */
 void __dquot_free_space(inode *inode, qsize_t number, int flags)
 {
-	core::ffi::c_uint cnt;
+	kernel::ffi::c_uint cnt;
 	struct dquot_warn warn[MAXQUOTAS];
 	struct dquot __rcu **dquots;
 	struct dquot *dquot;
@@ -1896,7 +1896,7 @@ EXPORT_SYMBOL(__dquot_free_space);
  */
 void dquot_free_inode(inode *inode)
 {
-	core::ffi::c_uint cnt;
+	kernel::ffi::c_uint cnt;
 	struct dquot_warn warn[MAXQUOTAS];
 	struct dquot __rcu * const *dquots;
 	struct dquot *dquot;
@@ -2198,7 +2198,7 @@ static void vfs_cleanup_quota_inode(super_block *sb, int type)
 /*
  * Turn quota off on a device. type == -1 ==> quotaoff for all types (umount)
  */
-int dquot_disable(super_block *sb, int type, flags: core::ffi::c_uint)
+int dquot_disable(super_block *sb, int type, flags: kernel::ffi::c_uint)
 {
 	int cnt;
 	struct quota_info *dqopt = sb_dqopt(sb);
@@ -2361,7 +2361,7 @@ static int vfs_setup_quota_inode(inode *inode, int type)
 }
 
 int dquot_load_quota_sb(super_block *sb, int type, int format_id,
-	flags: core::ffi::c_uint)
+	flags: kernel::ffi::c_uint)
 {
 	struct quota_format_type *fmt;
 	struct quota_info *dqopt = sb_dqopt(sb);
@@ -2445,7 +2445,7 @@ EXPORT_SYMBOL(dquot_load_quota_sb);
  * setting of individual quota flags
  */
 int dquot_load_quota_inode(inode *inode, int type, int format_id,
-	flags: core::ffi::c_uint)
+	flags: kernel::ffi::c_uint)
 {
 	int err;
 
@@ -2464,7 +2464,7 @@ int dquot_resume(super_block *sb, int type)
 {
 	struct quota_info *dqopt = sb_dqopt(sb);
 	int ret = 0, cnt;
-	core::ffi::c_uint flags;
+	kernel::ffi::c_uint flags;
 
 	rwsem_assert_held_write(&sb->s_umount);
 
@@ -2533,7 +2533,7 @@ int dquot_quota_on_mount(super_block *sb, char *qf_name,
 }
 EXPORT_SYMBOL(dquot_quota_on_mount);
 
-static int dquot_quota_enable(super_block *sb, flags: core::ffi::c_uint)
+static int dquot_quota_enable(super_block *sb, flags: kernel::ffi::c_uint)
 {
 	int ret;
 	int type;
@@ -2572,7 +2572,7 @@ out_err:
 	return ret;
 }
 
-static int dquot_quota_disable(super_block *sb, flags: core::ffi::c_uint)
+static int dquot_quota_disable(super_block *sb, flags: kernel::ffi::c_uint)
 {
 	int ret;
 	int type;
@@ -2872,7 +2872,7 @@ EXPORT_SYMBOL(dquot_quotactl_sysfile_ops);
 static int do_proc_dqstats(const struct ctl_table *table, int write,
 		     void *buffer, size_t *lenp, loff_t *ppos)
 {
-	core::ffi::c_uint type = (core::ffi::c_ulong *)table->data - dqstats.stat;
+	kernel::ffi::c_uint type = (kernel::ffi::c_ulong *)table->data - dqstats.stat;
 	s64 value = percpu_counter_sum(&dqstats.counter[type]);
 
 	/* Filter negative values for non-monotonic counters */
@@ -2889,56 +2889,56 @@ static const struct ctl_table fs_dqstats_table[] = {
 	{
 		procname: \"lookups\",
 		data: &dqstats.stat[DQST_LOOKUPS],
-		maxlen: sizeof(core::ffi::c_ulong),
+		maxlen: sizeof(kernel::ffi::c_ulong),
 		mode: 0444,
 		proc_handler: do_proc_dqstats,
 	},
 	{
 		procname: \"drops\",
 		data: &dqstats.stat[DQST_DROPS],
-		maxlen: sizeof(core::ffi::c_ulong),
+		maxlen: sizeof(kernel::ffi::c_ulong),
 		mode: 0444,
 		proc_handler: do_proc_dqstats,
 	},
 	{
 		procname: \"reads\",
 		data: &dqstats.stat[DQST_READS],
-		maxlen: sizeof(core::ffi::c_ulong),
+		maxlen: sizeof(kernel::ffi::c_ulong),
 		mode: 0444,
 		proc_handler: do_proc_dqstats,
 	},
 	{
 		procname: \"writes\",
 		data: &dqstats.stat[DQST_WRITES],
-		maxlen: sizeof(core::ffi::c_ulong),
+		maxlen: sizeof(kernel::ffi::c_ulong),
 		mode: 0444,
 		proc_handler: do_proc_dqstats,
 	},
 	{
 		procname: \"cache_hits\",
 		data: &dqstats.stat[DQST_CACHE_HITS],
-		maxlen: sizeof(core::ffi::c_ulong),
+		maxlen: sizeof(kernel::ffi::c_ulong),
 		mode: 0444,
 		proc_handler: do_proc_dqstats,
 	},
 	{
 		procname: \"allocated_dquots\",
 		data: &dqstats.stat[DQST_ALLOC_DQUOTS],
-		maxlen: sizeof(core::ffi::c_ulong),
+		maxlen: sizeof(kernel::ffi::c_ulong),
 		mode: 0444,
 		proc_handler: do_proc_dqstats,
 	},
 	{
 		procname: \"free_dquots\",
 		data: &dqstats.stat[DQST_FREE_DQUOTS],
-		maxlen: sizeof(core::ffi::c_ulong),
+		maxlen: sizeof(kernel::ffi::c_ulong),
 		mode: 0444,
 		proc_handler: do_proc_dqstats,
 	},
 	{
 		procname: \"syncs\",
 		data: &dqstats.stat[DQST_SYNCS],
-		maxlen: sizeof(core::ffi::c_ulong),
+		maxlen: sizeof(kernel::ffi::c_ulong),
 		mode: 0444,
 		proc_handler: do_proc_dqstats,
 	},
@@ -2947,7 +2947,7 @@ static const struct ctl_table fs_dqstats_table[] = {
 static int __init dquot_init(void)
 {
 	int i, ret;
-	core::ffi::c_ulong nr_hash;
+	kernel::ffi::c_ulong nr_hash;
 	struct shrinker *dqcache_shrinker;
 
 	printk(KERN_NOTICE \"VFS: Disk quotas %s\n\", __DQUOT_VERSION__);
@@ -2955,7 +2955,7 @@ static int __init dquot_init(void)
 	register_sysctl_init(\"fs/quota\", fs_dqstats_table);
 
 	dquot_cachep = kmem_cache_create(\"dquot\",
-			sizeof(dquot), sizeof(core::ffi::c_ulong) * 4,
+			sizeof(dquot), sizeof(kernel::ffi::c_ulong) * 4,
 			(SLAB_HWCACHE_ALIGN|SLAB_RECLAIM_ACCOUNT|
 				SLAB_PANIC),
 			NULL);

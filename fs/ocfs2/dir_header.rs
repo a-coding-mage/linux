@@ -42,26 +42,26 @@ extern "C" {
     pub fn ocfs2_free_dir_lookup_result(res: *mut ocfs2_dir_lookup_result);
 
     pub fn ocfs2_find_entry(
-        name: *const ::core::ffi::c_char,
-        namelen: ::core::ffi::c_int,
+        name: *const ::kernel::ffi::c_char,
+        namelen: ::kernel::ffi::c_int,
         dir: *mut inode,
         lookup: *mut ocfs2_dir_lookup_result,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn ocfs2_delete_entry(
         handle: *mut handle_t,
         dir: *mut inode,
         res: *mut ocfs2_dir_lookup_result,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn __ocfs2_add_entry(
         handle: *mut handle_t,
         dir: *mut inode,
-        name: *const ::core::ffi::c_char,
-        namelen: ::core::ffi::c_int,
+        name: *const ::kernel::ffi::c_char,
+        namelen: ::kernel::ffi::c_int,
         inode: *mut inode,
         blkno: u64,
         parent_fe_bh: *mut buffer_head,
         lookup: *mut ocfs2_dir_lookup_result,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     /* The C inline wrapper depends on the external dentry layout and helpers. */
     pub fn ocfs2_add_entry(
@@ -71,43 +71,43 @@ extern "C" {
         blkno: u64,
         parent_fe_bh: *mut buffer_head,
         lookup: *mut ocfs2_dir_lookup_result,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn ocfs2_update_entry(
         dir: *mut inode,
         handle: *mut handle_t,
         res: *mut ocfs2_dir_lookup_result,
         new_entry_inode: *mut inode,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn ocfs2_check_dir_for_entry(
         dir: *mut inode,
-        name: *const ::core::ffi::c_char,
-        namelen: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    pub fn ocfs2_empty_dir(inode: *mut inode) -> ::core::ffi::c_int;
+        name: *const ::kernel::ffi::c_char,
+        namelen: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
+    pub fn ocfs2_empty_dir(inode: *mut inode) -> ::kernel::ffi::c_int;
     pub fn ocfs2_find_files_on_disk(
-        name: *const ::core::ffi::c_char,
-        namelen: ::core::ffi::c_int,
+        name: *const ::kernel::ffi::c_char,
+        namelen: ::kernel::ffi::c_int,
         blkno: *mut u64,
         inode: *mut inode,
         res: *mut ocfs2_dir_lookup_result,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn ocfs2_lookup_ino_from_name(
         dir: *mut inode,
-        name: *const ::core::ffi::c_char,
-        namelen: ::core::ffi::c_int,
+        name: *const ::kernel::ffi::c_char,
+        namelen: ::kernel::ffi::c_int,
         blkno: *mut u64,
-    ) -> ::core::ffi::c_int;
-    pub fn ocfs2_readdir(file: *mut file, ctx: *mut dir_context) -> ::core::ffi::c_int;
-    pub fn ocfs2_dir_foreach(inode: *mut inode, ctx: *mut dir_context) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn ocfs2_readdir(file: *mut file, ctx: *mut dir_context) -> ::kernel::ffi::c_int;
+    pub fn ocfs2_dir_foreach(inode: *mut inode, ctx: *mut dir_context) -> ::kernel::ffi::c_int;
     pub fn ocfs2_prepare_dir_for_insert(
         osb: *mut ocfs2_super,
         dir: *mut inode,
         parent_fe_bh: *mut buffer_head,
-        name: *const ::core::ffi::c_char,
-        namelen: ::core::ffi::c_int,
+        name: *const ::kernel::ffi::c_char,
+        namelen: ::kernel::ffi::c_int,
         lookup: *mut ocfs2_dir_lookup_result,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn ocfs2_fill_new_dir(
         osb: *mut ocfs2_super,
         handle: *mut handle_t,
@@ -116,11 +116,11 @@ extern "C" {
         fe_bh: *mut buffer_head,
         data_ac: *mut ocfs2_alloc_context,
         meta_ac: *mut ocfs2_alloc_context,
-    ) -> ::core::ffi::c_int;
-    pub fn ocfs2_dx_dir_truncate(dir: *mut inode, di_bh: *mut buffer_head) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn ocfs2_dx_dir_truncate(dir: *mut inode, di_bh: *mut buffer_head) -> ::kernel::ffi::c_int;
     pub fn ocfs2_dir_trailer_from_size(
-        blocksize: ::core::ffi::c_int,
-        data: *mut ::core::ffi::c_void,
+        blocksize: ::kernel::ffi::c_int,
+        data: *mut ::kernel::ffi::c_void,
     ) -> *mut ocfs2_dir_block_trailer;
 }
 

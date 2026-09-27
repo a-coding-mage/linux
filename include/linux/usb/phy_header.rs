@@ -65,27 +65,27 @@ pub struct usb_phy_io_ops {
 
 #[repr(C)]
 pub struct usb_charger_current {
-    pub sdp_min: core::ffi::c_uint,
-    pub sdp_max: core::ffi::c_uint,
-    pub dcp_min: core::ffi::c_uint,
-    pub dcp_max: core::ffi::c_uint,
-    pub cdp_min: core::ffi::c_uint,
-    pub cdp_max: core::ffi::c_uint,
-    pub aca_min: core::ffi::c_uint,
-    pub aca_max: core::ffi::c_uint,
+    pub sdp_min: kernel::ffi::c_uint,
+    pub sdp_max: kernel::ffi::c_uint,
+    pub dcp_min: kernel::ffi::c_uint,
+    pub dcp_max: kernel::ffi::c_uint,
+    pub cdp_min: kernel::ffi::c_uint,
+    pub cdp_max: kernel::ffi::c_uint,
+    pub aca_min: kernel::ffi::c_uint,
+    pub aca_max: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct usb_phy {
     pub dev: *mut device,
-    pub label: *const core::ffi::c_char,
-    pub flags: core::ffi::c_uint,
+    pub label: *const kernel::ffi::c_char,
+    pub flags: kernel::ffi::c_uint,
     pub type_: usb_phy_type,
     pub last_event: usb_phy_events,
     pub otg: *mut usb_otg,
     pub io_dev: *mut device,
     pub io_ops: *mut usb_phy_io_ops,
-    pub io_priv: *mut core::ffi::c_void,
+    pub io_priv: *mut kernel::ffi::c_void,
     pub edev: *mut extcon_dev,
     pub id_edev: *mut extcon_dev,
     pub vbus_nb: notifier_block,
@@ -102,7 +102,7 @@ pub struct usb_phy {
     pub init: Option<unsafe extern "C" fn(x: *mut usb_phy) -> i32>,
     pub shutdown: Option<unsafe extern "C" fn(x: *mut usb_phy)>,
     pub set_vbus: Option<unsafe extern "C" fn(x: *mut usb_phy, on: i32) -> i32>,
-    pub set_power: Option<unsafe extern "C" fn(x: *mut usb_phy, ma: core::ffi::c_uint) -> i32>,
+    pub set_power: Option<unsafe extern "C" fn(x: *mut usb_phy, ma: kernel::ffi::c_uint) -> i32>,
     pub set_suspend: Option<unsafe extern "C" fn(x: *mut usb_phy, suspend: i32) -> i32>,
     pub set_wakeup: Option<unsafe extern "C" fn(x: *mut usb_phy, enabled: bool) -> i32>,
     pub notify_connect: Option<unsafe extern "C" fn(x: *mut usb_phy, speed: usb_device_speed) -> i32>,
@@ -167,16 +167,16 @@ pub unsafe fn usb_phy_vbus_off(x: *mut usb_phy) -> i32 {
 extern "C" {
     pub fn usb_get_phy(type_: usb_phy_type) -> *mut usb_phy;
     pub fn devm_usb_get_phy(dev: *mut device, type_: usb_phy_type) -> *mut usb_phy;
-    pub fn devm_usb_get_phy_by_phandle(dev: *mut device, phandle: *const core::ffi::c_char, index: u8) -> *mut usb_phy;
+    pub fn devm_usb_get_phy_by_phandle(dev: *mut device, phandle: *const kernel::ffi::c_char, index: u8) -> *mut usb_phy;
     pub fn devm_usb_get_phy_by_node(dev: *mut device, node: *mut device_node, nb: *mut notifier_block) -> *mut usb_phy;
     pub fn usb_put_phy(x: *mut usb_phy);
-    pub fn usb_phy_set_event(x: *mut usb_phy, event: core::ffi::c_ulong);
-    pub fn usb_phy_set_charger_current(x: *mut usb_phy, ma: core::ffi::c_uint);
-    pub fn usb_phy_get_charger_current(x: *mut usb_phy, min: *mut core::ffi::c_uint, max: *mut core::ffi::c_uint);
+    pub fn usb_phy_set_event(x: *mut usb_phy, event: kernel::ffi::c_ulong);
+    pub fn usb_phy_set_charger_current(x: *mut usb_phy, ma: kernel::ffi::c_uint);
+    pub fn usb_phy_get_charger_current(x: *mut usb_phy, min: *mut kernel::ffi::c_uint, max: *mut kernel::ffi::c_uint);
     pub fn usb_phy_set_charger_state(x: *mut usb_phy, state: usb_charger_state);
 }
 
-pub unsafe fn usb_phy_set_power(x: *mut usb_phy, ma: core::ffi::c_uint) -> i32 {
+pub unsafe fn usb_phy_set_power(x: *mut usb_phy, ma: kernel::ffi::c_uint) -> i32 {
     if x.is_null() { return 0; }
     usb_phy_set_charger_current(x, ma);
     if let Some(set_power) = (*x).set_power { return set_power(x, ma); }

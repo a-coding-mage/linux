@@ -40,7 +40,7 @@ pub struct hdac_codec {
 
 #[repr(C)]
 pub struct hdac_stream {
-    pub stream_tag: ::core::ffi::c_uchar,
+    pub stream_tag: ::kernel::ffi::c_uchar,
 }
 
 #[repr(C)]
@@ -49,7 +49,7 @@ pub struct device {
 }
 
 unsafe extern "C" {
-    pub fn dev_name(dev: *const device) -> *const ::core::ffi::c_char;
+    pub fn dev_name(dev: *const device) -> *const ::kernel::ffi::c_char;
 }
 
 /*
@@ -69,11 +69,11 @@ unsafe extern "C" {
  */
 #[repr(C)]
 pub struct hda_send_cmd_entry {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub cmd: u32,
 }
 
-pub unsafe fn hda_send_cmd_assign(bus: *mut hdac_bus, cmd: ::core::ffi::c_uint) -> hda_send_cmd_entry {
+pub unsafe fn hda_send_cmd_assign(bus: *mut hdac_bus, cmd: ::kernel::ffi::c_uint) -> hda_send_cmd_entry {
     hda_send_cmd_entry {
         name: unsafe { dev_name((*bus).dev) },
         cmd: cmd as u32,
@@ -105,15 +105,15 @@ pub unsafe fn hda_send_cmd_printk_node(entry: *const hda_send_cmd_entry) -> u32 
  */
 #[repr(C)]
 pub struct hda_get_response_entry {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub addr: u32,
     pub res: u32,
 }
 
 pub unsafe fn hda_get_response_assign(
     bus: *mut hdac_bus,
-    addr: ::core::ffi::c_uint,
-    res: ::core::ffi::c_uint,
+    addr: ::kernel::ffi::c_uint,
+    res: ::kernel::ffi::c_uint,
 ) -> hda_get_response_entry {
     hda_get_response_entry {
         name: unsafe { dev_name((*bus).dev) },
@@ -144,7 +144,7 @@ pub const HDA_GET_RESPONSE_PRINTK_FORMAT: &str = "[%s:%d] val=0x%08x";
  */
 #[repr(C)]
 pub struct hda_unsol_event_entry {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub res: u32,
     pub res_ex: u32,
 }
@@ -178,7 +178,7 @@ pub unsafe fn hda_unsol_event_printk_addr(entry: *const hda_unsol_event_entry) -
  */
 #[repr(C)]
 pub struct hdac_stream_entry {
-    pub stream_tag: ::core::ffi::c_uchar,
+    pub stream_tag: ::kernel::ffi::c_uchar,
 }
 
 pub unsafe fn hdac_stream_assign(

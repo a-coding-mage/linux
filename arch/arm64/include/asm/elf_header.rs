@@ -49,7 +49,7 @@ pub const R_AARCH64_RELATIVE: i32 = 1027;
 pub const ELF_CLASS: _ = ELFCLASS64;
 // __AARCH64EB__ selects ELFDATA2MSB; otherwise ELFDATA2LSB.
 pub const ELF_DATA: _ = ELFDATA2LSB;
-pub const ELF_ARCH: _ = EM_AARCH64;
+pub const ELF_ARCH: u16 = EM_AARCH64;
 pub const ELF_PLATFORM_SIZE: usize = 16;
 // __AARCH64EB__: "aarch64_be", otherwise "aarch64".
 pub const ELF_PLATFORM: &str = "aarch64";
@@ -58,17 +58,17 @@ pub unsafe fn elf_check_arch(x: *const elf64_hdr) -> bool {
     (*x).e_machine == EM_AARCH64
 }
 
-pub unsafe fn compat_elf_read_implies_exec(_ex: *mut core::ffi::c_void, stk: i32) -> bool {
+pub unsafe fn compat_elf_read_implies_exec(_ex: *mut kernel::ffi::c_void, stk: i32) -> bool {
     stk == EXSTACK_DEFAULT
 }
 
 pub const CORE_DUMP_USE_REGSET: bool = true;
-pub const ELF_EXEC_PAGESIZE: _ = PAGE_SIZE;
+pub const ELF_EXEC_PAGESIZE: usize = PAGE_SIZE;
 // CONFIG_ARM64_FORCE_52BIT selects 2 * TASK_SIZE_64 / 3; otherwise
 // 2 * DEFAULT_MAP_WINDOW_64 / 3.
-pub const ELF_ET_DYN_BASE: _ = 2 * DEFAULT_MAP_WINDOW_64 / 3;
+pub const ELF_ET_DYN_BASE: usize = 2 * DEFAULT_MAP_WINDOW_64 / 3;
 
-pub type elf_greg_t = core::ffi::c_ulong;
+pub type elf_greg_t = kernel::ffi::c_ulong;
 pub const ELF_NGREG: usize = core::mem::size_of::<user_pt_regs>() / core::mem::size_of::<elf_greg_t>();
 pub type elf_gregset_t = [elf_greg_t; ELF_NGREG];
 pub type elf_fpregset_t = user_fpsimd_state;
@@ -87,11 +87,11 @@ unsafe extern "C" {
 }
 
 // CONFIG_COMPAT selects test_thread_flag(TIF_32BIT) ? 0x7ff : 0x3ffff;
-pub const STACK_RND_MASK: _ = 0x3ffff >> (PAGE_SHIFT - 12);
+pub const STACK_RND_MASK: usize = 0x3ffff >> (PAGE_SHIFT - 12);
 // __AARCH64EB__: "v8b", otherwise "v8l".
 pub const COMPAT_ELF_PLATFORM: &str = "v8l";
 pub const COMPAT_ELF_NGREG: usize = 18;
-pub type compat_elf_greg_t = core::ffi::c_uint;
+pub type compat_elf_greg_t = kernel::ffi::c_uint;
 pub type compat_elf_gregset_t = [compat_elf_greg_t; COMPAT_ELF_NGREG];
 
 // CONFIG_COMPAT
@@ -114,7 +114,7 @@ pub const INIT_ARCH_ELF_STATE: arch_elf_state = arch_elf_state { flags: 0 };
 
 pub unsafe fn arch_parse_elf_property(
     type_: u32,
-    data: *const core::ffi::c_void,
+    data: *const kernel::ffi::c_void,
     datasz: usize,
     compat: bool,
     arch: *mut arch_elf_state,
@@ -132,13 +132,13 @@ pub unsafe fn arch_parse_elf_property(
 }
 
 pub unsafe fn arch_elf_pt_proc(
-    _ehdr: *mut core::ffi::c_void, _phdr: *mut core::ffi::c_void,
+    _ehdr: *mut kernel::ffi::c_void, _phdr: *mut kernel::ffi::c_void,
     _f: *mut file, _is_interp: bool, _state: *mut arch_elf_state,
 ) -> i32 { 0 }
 
 pub unsafe fn arch_check_elf(
-    _ehdr: *mut core::ffi::c_void, _has_interp: bool,
-    _interp_ehdr: *mut core::ffi::c_void, _state: *mut arch_elf_state,
+    _ehdr: *mut kernel::ffi::c_void, _has_interp: bool,
+    _interp_ehdr: *mut kernel::ffi::c_void, _state: *mut arch_elf_state,
 ) -> i32 { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

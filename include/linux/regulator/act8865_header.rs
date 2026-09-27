@@ -56,7 +56,7 @@ pub const ACT8846: i32 = 2;
 #[repr(C)]
 pub struct act8865_regulator_data {
     pub id: i32,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub init_data: *mut regulator_init_data,
     pub of_node: *mut device_node,
 }

@@ -53,7 +53,7 @@ pub unsafe extern "C" fn vfs_statfs(path: *const path, buf: *mut kstatfs) -> i32
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn user_statfs(pathname: *const core::ffi::c_char, st: *mut kstatfs) -> i32 {
+pub unsafe extern "C" fn user_statfs(pathname: *const kernel::ffi::c_char, st: *mut kstatfs) -> i32 {
     let mut path = core::mem::MaybeUninit::<path>::uninit();
     let mut lookup_flags = LOOKUP_FOLLOW | LOOKUP_AUTOMOUNT;
     let name = filename_class(pathname);
@@ -113,13 +113,13 @@ unsafe fn do_statfs64(st: *mut kstatfs, p: *mut statfs64) -> i32 {
 }
 
 // The syscall macro expansions retain their C ABI and are provided by the kernel integration.
-pub unsafe fn sys_statfs(pathname: *const core::ffi::c_char, buf: *mut statfs) -> i32 {
+pub unsafe fn sys_statfs(pathname: *const kernel::ffi::c_char, buf: *mut statfs) -> i32 {
     let mut st = core::mem::MaybeUninit::<kstatfs>::uninit();
     let error = user_statfs(pathname, st.as_mut_ptr());
     if error == 0 { do_statfs_native(st.as_mut_ptr(), buf) } else { error }
 }
 
-pub unsafe fn sys_statfs64(pathname: *const core::ffi::c_char, sz: usize, buf: *mut statfs64) -> i32 {
+pub unsafe fn sys_statfs64(pathname: *const kernel::ffi::c_char, sz: usize, buf: *mut statfs64) -> i32 {
     if sz != core::mem::size_of::<statfs64>() { return -EINVAL; }
     let mut st = core::mem::MaybeUninit::<kstatfs>::uninit();
     let error = user_statfs(pathname, st.as_mut_ptr());
@@ -175,7 +175,7 @@ unsafe fn put_compat_statfs(ubuf: *mut compat_statfs, kbuf: *mut kstatfs) -> i32
 }
 
 #[cfg(CONFIG_COMPAT)]
-pub unsafe fn compat_sys_statfs(pathname: *const core::ffi::c_char, buf: *mut compat_statfs) -> i32 {
+pub unsafe fn compat_sys_statfs(pathname: *const kernel::ffi::c_char, buf: *mut compat_statfs) -> i32 {
     let mut tmp = core::mem::MaybeUninit::<kstatfs>::uninit();
     let error = user_statfs(pathname, tmp.as_mut_ptr());
     if error == 0 { put_compat_statfs(buf, tmp.as_mut_ptr()) } else { error }
@@ -201,7 +201,7 @@ unsafe fn put_compat_statfs64(ubuf: *mut compat_statfs64, kbuf: *mut kstatfs) ->
 }
 
 #[cfg(CONFIG_COMPAT)]
-pub unsafe fn kcompat_sys_statfs64(pathname: *const core::ffi::c_char, sz: compat_size_t, buf: *mut compat_statfs64) -> i32 {
+pub unsafe fn kcompat_sys_statfs64(pathname: *const kernel::ffi::c_char, sz: compat_size_t, buf: *mut compat_statfs64) -> i32 {
     if sz as usize != core::mem::size_of::<compat_statfs64>() { return -EINVAL; }
     let mut tmp = core::mem::MaybeUninit::<kstatfs>::uninit();
     let error = user_statfs(pathname, tmp.as_mut_ptr());
@@ -209,7 +209,7 @@ pub unsafe fn kcompat_sys_statfs64(pathname: *const core::ffi::c_char, sz: compa
 }
 
 #[cfg(CONFIG_COMPAT)]
-pub unsafe fn compat_sys_statfs64(pathname: *const core::ffi::c_char, sz: compat_size_t, buf: *mut compat_statfs64) -> i32 {
+pub unsafe fn compat_sys_statfs64(pathname: *const kernel::ffi::c_char, sz: compat_size_t, buf: *mut compat_statfs64) -> i32 {
     kcompat_sys_statfs64(pathname, sz, buf)
 }
 

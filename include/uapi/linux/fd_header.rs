@@ -82,14 +82,14 @@ pub const FD_RAW_FAILURE: u32 = 0x10000; pub const FD_RAW_HARDFAILURE: u32 = 0x2
 pub const FD_FILL_BYTE: u8 = 0xf6;
 /* The following ioctl values retain their source macro expressions; _IO/_IOR/_IOW
  * are supplied by the Linux ioctl dependency. */
-pub const FDCLRPRM: _ = _IO(2, 0x41); pub const FDSETPRM: _ = _IOW(2, 0x42, floppy_struct);
-pub const FDSETMEDIAPRM: _ = FDSETPRM; pub const FDDEFPRM: _ = _IOW(2, 0x43, floppy_struct); pub const FDGETPRM: _ = _IOR(2, 0x04, floppy_struct);
-pub const FDDEFMEDIAPRM: _ = FDDEFPRM; pub const FDGETMEDIAPRM: _ = FDGETPRM; pub const FDMSGON: _ = _IO(2, 0x45); pub const FDMSGOFF: _ = _IO(2, 0x46);
-pub const FDFMTBEG: _ = _IO(2, 0x47); pub const FDFMTTRK: _ = _IOW(2, 0x48, format_descr); pub const FDFMTEND: _ = _IO(2, 0x49);
-pub const FDSETEMSGTRESH: _ = _IO(2, 0x4a); pub const FDFLUSH: _ = _IO(2, 0x4b); pub const FDSETMAXERRS: _ = _IOW(2, 0x4c, floppy_max_errors); pub const FDGETMAXERRS: _ = _IOR(2, 0x0e, floppy_max_errors);
-pub const FDGETDRVTYP: _ = _IOR(2, 0x0f, floppy_drive_name); pub const FDSETDRVPRM: _ = _IOW(2, 0x90, floppy_drive_params); pub const FDGETDRVPRM: _ = _IOR(2, 0x11, floppy_drive_params);
-pub const FDGETDRVSTAT: _ = _IOR(2, 0x12, floppy_drive_struct); pub const FDPOLLDRVSTAT: _ = _IOR(2, 0x13, floppy_drive_struct); pub const FDRESET: _ = _IO(2, 0x54);
-pub const FDGETFDCSTAT: _ = _IOR(2, 0x15, floppy_fdc_state); pub const FDWERRORCLR: _ = _IO(2, 0x56); pub const FDWERRORGET: _ = _IOR(2, 0x17, floppy_write_errors);
-pub const FDRAWCMD: _ = _IO(2, 0x58); pub const FDTWADDLE: _ = _IO(2, 0x59); pub const FDEJECT: _ = _IO(2, 0x5a);
+pub const FDCLRPRM: u32 = _IO(2, 0x41); pub const FDSETPRM: _ = _IOW(2, 0x42, floppy_struct);
+pub const FDSETMEDIAPRM: () = FDSETPRM; pub const FDDEFPRM: _ = _IOW(2, 0x43, floppy_struct); pub const FDGETPRM: _ = _IOR(2, 0x04, floppy_struct);
+pub const FDDEFMEDIAPRM: () = FDDEFPRM; pub const FDGETMEDIAPRM: _ = FDGETPRM; pub const FDMSGON: _ = _IO(2, 0x45); pub const FDMSGOFF: _ = _IO(2, 0x46);
+pub const FDFMTBEG: u32 = _IO(2, 0x47); pub const FDFMTTRK: _ = _IOW(2, 0x48, format_descr); pub const FDFMTEND: _ = _IO(2, 0x49);
+pub const FDSETEMSGTRESH: u32 = _IO(2, 0x4a); pub const FDFLUSH: _ = _IO(2, 0x4b); pub const FDSETMAXERRS: _ = _IOW(2, 0x4c, floppy_max_errors); pub const FDGETMAXERRS: _ = _IOR(2, 0x0e, floppy_max_errors);
+pub const FDGETDRVTYP: u32 = _IOR(2, 0x0f, floppy_drive_name); pub const FDSETDRVPRM: _ = _IOW(2, 0x90, floppy_drive_params); pub const FDGETDRVPRM: _ = _IOR(2, 0x11, floppy_drive_params);
+pub const FDGETDRVSTAT: u32 = _IOR(2, 0x12, floppy_drive_struct); pub const FDPOLLDRVSTAT: _ = _IOR(2, 0x13, floppy_drive_struct); pub const FDRESET: _ = _IO(2, 0x54);
+pub const FDGETFDCSTAT: u32 = _IOR(2, 0x15, floppy_fdc_state); pub const FDWERRORCLR: _ = _IO(2, 0x56); pub const FDWERRORGET: _ = _IOR(2, 0x17, floppy_write_errors);
+pub const FDRAWCMD: u32 = _IO(2, 0x58); pub const FDTWADDLE: _ = _IO(2, 0x59); pub const FDEJECT: _ = _IO(2, 0x5a);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -6,7 +6,7 @@
 // is preserved here; those names are supplied by the surrounding translation.
 
 #[cfg(all(CONFIG_PPC64, not(feature = "BUILD_VDSO")))]
-pub unsafe fn arch_calc_vm_prot_bits(prot: ::core::ffi::c_ulong, pkey: ::core::ffi::c_ulong) -> vm_flags_t {
+pub unsafe fn arch_calc_vm_prot_bits(prot: ::kernel::ffi::c_ulong, pkey: ::kernel::ffi::c_ulong) -> vm_flags_t {
     #[cfg(CONFIG_PPC_MEM_KEYS)]
     {
         return (((if prot & PROT_SAO != 0 { VM_SAO } else { 0 })
@@ -23,8 +23,8 @@ pub unsafe fn arch_calc_vm_prot_bits(prot: ::core::ffi::c_ulong, pkey: ::core::f
 
 #[cfg(all(CONFIG_PPC64, not(feature = "BUILD_VDSO")))]
 pub unsafe fn arch_validate_prot(
-    prot: ::core::ffi::c_ulong,
-    _addr: ::core::ffi::c_ulong,
+    prot: ::kernel::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
 ) -> bool {
     if prot & !(PROT_READ | PROT_WRITE | PROT_EXEC | PROT_SEM | PROT_SAO) != 0 {
         return false;

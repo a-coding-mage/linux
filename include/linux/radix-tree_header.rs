@@ -15,7 +15,7 @@ pub type radix_tree_node = xa_node;
 #[repr(C)]
 pub struct radix_tree_preload {
     pub lock: local_lock_t,
-    pub nr: ::core::ffi::c_uint,
+    pub nr: ::kernel::ffi::c_uint,
     /* nodes->parent points to next preallocated node */
     pub nodes: *mut radix_tree_node,
 }
@@ -39,23 +39,23 @@ extern "C" {
  * This means that storing a NULL entry in the tree is the same as deleting
  * the entry from the tree.
  */
-pub const RADIX_TREE_ENTRY_MASK: ::core::ffi::c_ulong = 3;
-pub const RADIX_TREE_INTERNAL_NODE: ::core::ffi::c_ulong = 2;
+pub const RADIX_TREE_ENTRY_MASK: ::kernel::ffi::c_ulong = 3;
+pub const RADIX_TREE_INTERNAL_NODE: ::kernel::ffi::c_ulong = 2;
 
 #[inline]
-pub unsafe fn radix_tree_is_internal_node(ptr: *mut ::core::ffi::c_void) -> bool {
-    (ptr as ::core::ffi::c_ulong & RADIX_TREE_ENTRY_MASK) == RADIX_TREE_INTERNAL_NODE
+pub unsafe fn radix_tree_is_internal_node(ptr: *mut ::kernel::ffi::c_void) -> bool {
+    (ptr as ::kernel::ffi::c_ulong & RADIX_TREE_ENTRY_MASK) == RADIX_TREE_INTERNAL_NODE
 }
 
-pub const RADIX_TREE_MAP_SHIFT: ::core::ffi::c_uint = XA_CHUNK_SHIFT;
-pub const RADIX_TREE_MAP_SIZE: ::core::ffi::c_ulong = 1u64 << RADIX_TREE_MAP_SHIFT;
-pub const RADIX_TREE_MAP_MASK: ::core::ffi::c_ulong = RADIX_TREE_MAP_SIZE - 1;
-pub const RADIX_TREE_MAX_TAGS: ::core::ffi::c_uint = XA_MAX_MARKS;
-pub const RADIX_TREE_TAG_LONGS: ::core::ffi::c_uint = XA_MARK_LONGS;
-pub const RADIX_TREE_INDEX_BITS: ::core::ffi::c_uint = 8 * (core::mem::size_of::<::core::ffi::c_ulong>() as ::core::ffi::c_uint);
-pub const RADIX_TREE_MAX_PATH: ::core::ffi::c_uint = (RADIX_TREE_INDEX_BITS + RADIX_TREE_MAP_SHIFT - 1) / RADIX_TREE_MAP_SHIFT;
+pub const RADIX_TREE_MAP_SHIFT: ::kernel::ffi::c_uint = XA_CHUNK_SHIFT;
+pub const RADIX_TREE_MAP_SIZE: ::kernel::ffi::c_ulong = 1u64 << RADIX_TREE_MAP_SHIFT;
+pub const RADIX_TREE_MAP_MASK: ::kernel::ffi::c_ulong = RADIX_TREE_MAP_SIZE - 1;
+pub const RADIX_TREE_MAX_TAGS: ::kernel::ffi::c_uint = XA_MAX_MARKS;
+pub const RADIX_TREE_TAG_LONGS: ::kernel::ffi::c_uint = XA_MARK_LONGS;
+pub const RADIX_TREE_INDEX_BITS: ::kernel::ffi::c_uint = 8 * (core::mem::size_of::<::kernel::ffi::c_ulong>() as ::kernel::ffi::c_uint);
+pub const RADIX_TREE_MAX_PATH: ::kernel::ffi::c_uint = (RADIX_TREE_INDEX_BITS + RADIX_TREE_MAP_SHIFT - 1) / RADIX_TREE_MAP_SHIFT;
 pub const ROOT_IS_IDR: gfp_t = 4 as gfp_t;
-pub const ROOT_TAG_SHIFT: ::core::ffi::c_uint = __GFP_BITS_SHIFT;
+pub const ROOT_TAG_SHIFT: ::kernel::ffi::c_uint = __GFP_BITS_SHIFT;
 
 #[macro_export]
 macro_rules! RADIX_TREE_INIT { ($name:expr, $mask:expr) => { XARRAY_INIT!($name, $mask) }; }
@@ -70,88 +70,88 @@ pub unsafe fn radix_tree_empty(root: *const radix_tree_root) -> bool { (*root).x
 
 #[repr(C)]
 pub struct radix_tree_iter {
-    pub index: ::core::ffi::c_ulong,
-    pub next_index: ::core::ffi::c_ulong,
-    pub tags: ::core::ffi::c_ulong,
+    pub index: ::kernel::ffi::c_ulong,
+    pub next_index: ::kernel::ffi::c_ulong,
+    pub tags: ::kernel::ffi::c_ulong,
     pub node: *mut radix_tree_node,
 }
 
 #[inline]
-pub unsafe fn radix_tree_deref_slot(slot: *mut *mut ::core::ffi::c_void) -> *mut ::core::ffi::c_void { rcu_dereference(*slot) }
+pub unsafe fn radix_tree_deref_slot(slot: *mut *mut ::kernel::ffi::c_void) -> *mut ::kernel::ffi::c_void { rcu_dereference(*slot) }
 
 #[inline]
-pub unsafe fn radix_tree_deref_slot_protected(slot: *mut *mut ::core::ffi::c_void, treelock: *mut spinlock_t) -> *mut ::core::ffi::c_void {
+pub unsafe fn radix_tree_deref_slot_protected(slot: *mut *mut ::kernel::ffi::c_void, treelock: *mut spinlock_t) -> *mut ::kernel::ffi::c_void {
     rcu_dereference_protected(*slot, lockdep_is_held(treelock))
 }
 
 #[inline]
-pub unsafe fn radix_tree_deref_retry(arg: *mut ::core::ffi::c_void) -> ::core::ffi::c_int { unlikely(radix_tree_is_internal_node(arg)) as ::core::ffi::c_int }
+pub unsafe fn radix_tree_deref_retry(arg: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int { unlikely(radix_tree_is_internal_node(arg)) as ::kernel::ffi::c_int }
 
 #[inline]
-pub unsafe fn radix_tree_exception(arg: *mut ::core::ffi::c_void) -> ::core::ffi::c_int { unlikely((arg as ::core::ffi::c_ulong & RADIX_TREE_ENTRY_MASK) != 0) as ::core::ffi::c_int }
+pub unsafe fn radix_tree_exception(arg: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int { unlikely((arg as ::kernel::ffi::c_ulong & RADIX_TREE_ENTRY_MASK) != 0) as ::kernel::ffi::c_int }
 
 extern "C" {
-    pub fn radix_tree_insert(root: *mut radix_tree_root, index: ::core::ffi::c_ulong, item: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-    pub fn __radix_tree_lookup(root: *const radix_tree_root, index: ::core::ffi::c_ulong, nodep: *mut *mut radix_tree_node, slotp: *mut *mut *mut ::core::ffi::c_void) -> *mut ::core::ffi::c_void;
-    pub fn radix_tree_lookup(root: *const radix_tree_root, index: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void;
-    pub fn radix_tree_lookup_slot(root: *const radix_tree_root, index: ::core::ffi::c_ulong) -> *mut *mut ::core::ffi::c_void;
-    pub fn __radix_tree_replace(root: *mut radix_tree_root, node: *mut radix_tree_node, slot: *mut *mut ::core::ffi::c_void, entry: *mut ::core::ffi::c_void);
-    pub fn radix_tree_iter_replace(root: *mut radix_tree_root, iter: *const radix_tree_iter, slot: *mut *mut ::core::ffi::c_void, entry: *mut ::core::ffi::c_void);
-    pub fn radix_tree_replace_slot(root: *mut radix_tree_root, slot: *mut *mut ::core::ffi::c_void, entry: *mut ::core::ffi::c_void);
-    pub fn radix_tree_iter_delete(root: *mut radix_tree_root, iter: *mut radix_tree_iter, slot: *mut *mut ::core::ffi::c_void);
-    pub fn radix_tree_delete_item(root: *mut radix_tree_root, index: ::core::ffi::c_ulong, item: *mut ::core::ffi::c_void) -> *mut ::core::ffi::c_void;
-    pub fn radix_tree_delete(root: *mut radix_tree_root, index: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void;
-    pub fn radix_tree_gang_lookup(root: *const radix_tree_root, results: *mut *mut ::core::ffi::c_void, first_index: ::core::ffi::c_ulong, max_items: ::core::ffi::c_uint) -> ::core::ffi::c_uint;
-    pub fn radix_tree_preload(gfp_mask: gfp_t) -> ::core::ffi::c_int;
-    pub fn radix_tree_maybe_preload(gfp_mask: gfp_t) -> ::core::ffi::c_int;
+    pub fn radix_tree_insert(root: *mut radix_tree_root, index: ::kernel::ffi::c_ulong, item: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
+    pub fn __radix_tree_lookup(root: *const radix_tree_root, index: ::kernel::ffi::c_ulong, nodep: *mut *mut radix_tree_node, slotp: *mut *mut *mut ::kernel::ffi::c_void) -> *mut ::kernel::ffi::c_void;
+    pub fn radix_tree_lookup(root: *const radix_tree_root, index: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void;
+    pub fn radix_tree_lookup_slot(root: *const radix_tree_root, index: ::kernel::ffi::c_ulong) -> *mut *mut ::kernel::ffi::c_void;
+    pub fn __radix_tree_replace(root: *mut radix_tree_root, node: *mut radix_tree_node, slot: *mut *mut ::kernel::ffi::c_void, entry: *mut ::kernel::ffi::c_void);
+    pub fn radix_tree_iter_replace(root: *mut radix_tree_root, iter: *const radix_tree_iter, slot: *mut *mut ::kernel::ffi::c_void, entry: *mut ::kernel::ffi::c_void);
+    pub fn radix_tree_replace_slot(root: *mut radix_tree_root, slot: *mut *mut ::kernel::ffi::c_void, entry: *mut ::kernel::ffi::c_void);
+    pub fn radix_tree_iter_delete(root: *mut radix_tree_root, iter: *mut radix_tree_iter, slot: *mut *mut ::kernel::ffi::c_void);
+    pub fn radix_tree_delete_item(root: *mut radix_tree_root, index: ::kernel::ffi::c_ulong, item: *mut ::kernel::ffi::c_void) -> *mut ::kernel::ffi::c_void;
+    pub fn radix_tree_delete(root: *mut radix_tree_root, index: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void;
+    pub fn radix_tree_gang_lookup(root: *const radix_tree_root, results: *mut *mut ::kernel::ffi::c_void, first_index: ::kernel::ffi::c_ulong, max_items: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint;
+    pub fn radix_tree_preload(gfp_mask: gfp_t) -> ::kernel::ffi::c_int;
+    pub fn radix_tree_maybe_preload(gfp_mask: gfp_t) -> ::kernel::ffi::c_int;
     pub fn radix_tree_init();
-    pub fn radix_tree_tag_set(root: *mut radix_tree_root, index: ::core::ffi::c_ulong, tag: ::core::ffi::c_uint) -> *mut ::core::ffi::c_void;
-    pub fn radix_tree_tag_clear(root: *mut radix_tree_root, index: ::core::ffi::c_ulong, tag: ::core::ffi::c_uint) -> *mut ::core::ffi::c_void;
-    pub fn radix_tree_tag_get(root: *const radix_tree_root, index: ::core::ffi::c_ulong, tag: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn radix_tree_iter_tag_clear(root: *mut radix_tree_root, iter: *const radix_tree_iter, tag: ::core::ffi::c_uint);
-    pub fn radix_tree_gang_lookup_tag(root: *const radix_tree_root, results: *mut *mut ::core::ffi::c_void, first_index: ::core::ffi::c_ulong, max_items: ::core::ffi::c_uint, tag: ::core::ffi::c_uint) -> ::core::ffi::c_uint;
-    pub fn radix_tree_gang_lookup_tag_slot(root: *const radix_tree_root, results: *mut *mut *mut ::core::ffi::c_void, first_index: ::core::ffi::c_ulong, max_items: ::core::ffi::c_uint, tag: ::core::ffi::c_uint) -> ::core::ffi::c_uint;
-    pub fn radix_tree_tagged(root: *const radix_tree_root, tag: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn idr_get_free(root: *mut radix_tree_root, iter: *mut radix_tree_iter, gfp: gfp_t, max: ::core::ffi::c_ulong) -> *mut *mut ::core::ffi::c_void;
-    pub fn radix_tree_next_chunk(root: *const radix_tree_root, iter: *mut radix_tree_iter, flags: ::core::ffi::c_uint) -> *mut *mut ::core::ffi::c_void;
-    pub fn radix_tree_iter_resume(slot: *mut *mut ::core::ffi::c_void, iter: *mut radix_tree_iter) -> *mut *mut ::core::ffi::c_void;
+    pub fn radix_tree_tag_set(root: *mut radix_tree_root, index: ::kernel::ffi::c_ulong, tag: ::kernel::ffi::c_uint) -> *mut ::kernel::ffi::c_void;
+    pub fn radix_tree_tag_clear(root: *mut radix_tree_root, index: ::kernel::ffi::c_ulong, tag: ::kernel::ffi::c_uint) -> *mut ::kernel::ffi::c_void;
+    pub fn radix_tree_tag_get(root: *const radix_tree_root, index: ::kernel::ffi::c_ulong, tag: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn radix_tree_iter_tag_clear(root: *mut radix_tree_root, iter: *const radix_tree_iter, tag: ::kernel::ffi::c_uint);
+    pub fn radix_tree_gang_lookup_tag(root: *const radix_tree_root, results: *mut *mut ::kernel::ffi::c_void, first_index: ::kernel::ffi::c_ulong, max_items: ::kernel::ffi::c_uint, tag: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint;
+    pub fn radix_tree_gang_lookup_tag_slot(root: *const radix_tree_root, results: *mut *mut *mut ::kernel::ffi::c_void, first_index: ::kernel::ffi::c_ulong, max_items: ::kernel::ffi::c_uint, tag: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint;
+    pub fn radix_tree_tagged(root: *const radix_tree_root, tag: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn idr_get_free(root: *mut radix_tree_root, iter: *mut radix_tree_iter, gfp: gfp_t, max: ::kernel::ffi::c_ulong) -> *mut *mut ::kernel::ffi::c_void;
+    pub fn radix_tree_next_chunk(root: *const radix_tree_root, iter: *mut radix_tree_iter, flags: ::kernel::ffi::c_uint) -> *mut *mut ::kernel::ffi::c_void;
+    pub fn radix_tree_iter_resume(slot: *mut *mut ::kernel::ffi::c_void, iter: *mut radix_tree_iter) -> *mut *mut ::kernel::ffi::c_void;
 }
 
 #[inline]
 pub unsafe fn radix_tree_preload_end() { local_unlock(&mut radix_tree_preloads.lock); }
 
-pub const RADIX_TREE_ITER_TAG_MASK: ::core::ffi::c_uint = 0x0f;
-pub const RADIX_TREE_ITER_TAGGED: ::core::ffi::c_uint = 0x10;
-pub const RADIX_TREE_ITER_CONTIG: ::core::ffi::c_uint = 0x20;
+pub const RADIX_TREE_ITER_TAG_MASK: ::kernel::ffi::c_uint = 0x0f;
+pub const RADIX_TREE_ITER_TAGGED: ::kernel::ffi::c_uint = 0x10;
+pub const RADIX_TREE_ITER_CONTIG: ::kernel::ffi::c_uint = 0x20;
 
 #[inline]
-pub unsafe fn radix_tree_iter_init(iter: *mut radix_tree_iter, start: ::core::ffi::c_ulong) -> *mut *mut ::core::ffi::c_void {
+pub unsafe fn radix_tree_iter_init(iter: *mut radix_tree_iter, start: ::kernel::ffi::c_ulong) -> *mut *mut ::kernel::ffi::c_void {
     (*iter).index = 0;
     (*iter).next_index = start;
     core::ptr::null_mut()
 }
 
 #[inline]
-pub unsafe fn radix_tree_iter_lookup(root: *const radix_tree_root, iter: *mut radix_tree_iter, index: ::core::ffi::c_ulong) -> *mut *mut ::core::ffi::c_void {
+pub unsafe fn radix_tree_iter_lookup(root: *const radix_tree_root, iter: *mut radix_tree_iter, index: ::kernel::ffi::c_ulong) -> *mut *mut ::kernel::ffi::c_void {
     radix_tree_iter_init(iter, index);
     radix_tree_next_chunk(root, iter, RADIX_TREE_ITER_CONTIG)
 }
 
 #[inline]
-pub unsafe fn radix_tree_iter_retry(iter: *mut radix_tree_iter) -> *mut *mut ::core::ffi::c_void {
+pub unsafe fn radix_tree_iter_retry(iter: *mut radix_tree_iter) -> *mut *mut ::kernel::ffi::c_void {
     (*iter).next_index = (*iter).index;
     (*iter).tags = 0;
     core::ptr::null_mut()
 }
 
 #[inline]
-pub unsafe fn __radix_tree_iter_add(iter: *mut radix_tree_iter, slots: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong { (*iter).index.wrapping_add(slots) }
+pub unsafe fn __radix_tree_iter_add(iter: *mut radix_tree_iter, slots: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong { (*iter).index.wrapping_add(slots) }
 
 #[inline]
-pub unsafe fn radix_tree_chunk_size(iter: *mut radix_tree_iter) -> ::core::ffi::c_long { (*iter).next_index.wrapping_sub((*iter).index) as ::core::ffi::c_long }
+pub unsafe fn radix_tree_chunk_size(iter: *mut radix_tree_iter) -> ::kernel::ffi::c_long { (*iter).next_index.wrapping_sub((*iter).index) as ::kernel::ffi::c_long }
 
 #[inline]
-pub unsafe fn radix_tree_next_slot(mut slot: *mut *mut ::core::ffi::c_void, iter: *mut radix_tree_iter, flags: ::core::ffi::c_uint) -> *mut *mut ::core::ffi::c_void {
+pub unsafe fn radix_tree_next_slot(mut slot: *mut *mut ::kernel::ffi::c_void, iter: *mut radix_tree_iter, flags: ::kernel::ffi::c_uint) -> *mut *mut ::kernel::ffi::c_void {
     if flags & RADIX_TREE_ITER_TAGGED != 0 {
         (*iter).tags >>= 1;
         if (*iter).tags == 0 { return core::ptr::null_mut(); }

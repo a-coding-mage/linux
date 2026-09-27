@@ -4,10 +4,10 @@
  * linux/sched/sysctl.h, linux/timekeeping.h, xen/xen.h,
  * and blk-crypto-internal.h. */
 
-pub const BLK_DEF_MAX_SECTORS_CAP: _ = SZ_4M >> SECTOR_SHIFT;
-pub const BLK_DEV_MAX_SECTORS: _ = LLONG_MAX >> 9;
+pub const BLK_DEF_MAX_SECTORS_CAP: u64 = SZ_4M >> SECTOR_SHIFT;
+pub const BLK_DEV_MAX_SECTORS: loff_t = LLONG_MAX >> 9;
 pub const BLK_MIN_SEGMENT_SIZE: usize = 4096;
-pub const BLK_MAX_TIMEOUT: _ = 5 * HZ;
+pub const BLK_MAX_TIMEOUT: i32 = 5 * HZ;
 
 pub struct elv_change_ctx;
 
@@ -17,9 +17,9 @@ pub struct blk_flush_queue {
     pub flush_pending_idx: u32,
     pub flush_running_idx: u32,
     pub rq_status: blk_status_t,
-    pub flush_pending_since: ::core::ffi::c_ulong,
+    pub flush_pending_since: ::kernel::ffi::c_ulong,
     pub flush_queue: [list_head; 2],
-    pub flush_data_in_flight: ::core::ffi::c_ulong,
+    pub flush_data_in_flight: ::kernel::ffi::c_ulong,
     pub flush_rq: *mut request,
     pub rcu_head: rcu_head,
 }
@@ -31,22 +31,22 @@ extern "C" {
     pub fn is_flush_rq(req: *mut request) -> bool;
     pub fn blk_alloc_flush_queue(node: i32, cmd_size: i32, flags: gfp_t) -> *mut blk_flush_queue;
     pub fn blk_free_flush_queue(q: *mut blk_flush_queue);
-    pub fn blk_status_to_str(status: blk_status_t) -> *const ::core::ffi::c_char;
-    pub fn blk_status_to_tag(status: blk_status_t) -> *const ::core::ffi::c_char;
-    pub fn tag_to_blk_status(tag: *const ::core::ffi::c_char) -> blk_status_t;
-    pub fn str_to_blk_op(op: *const ::core::ffi::c_char) -> req_op;
+    pub fn blk_status_to_str(status: blk_status_t) -> *const ::kernel::ffi::c_char;
+    pub fn blk_status_to_tag(status: blk_status_t) -> *const ::kernel::ffi::c_char;
+    pub fn tag_to_blk_status(tag: *const ::kernel::ffi::c_char) -> blk_status_t;
+    pub fn str_to_blk_op(op: *const ::kernel::ffi::c_char) -> req_op;
     pub fn __blk_mq_unfreeze_queue(q: *mut request_queue, force_atomic: bool) -> bool;
     pub fn blk_queue_start_drain(q: *mut request_queue) -> bool;
     pub fn __blk_freeze_queue_start(q: *mut request_queue, owner: *mut task_struct) -> bool;
     pub fn __bio_queue_enter(q: *mut request_queue, bio: *mut bio) -> i32;
     pub fn submit_bio_noacct_nocheck(bio: *mut bio, split: bool);
-    pub fn bio_submit_or_kill(bio: *mut bio, flags: ::core::ffi::c_uint) -> i32;
+    pub fn bio_submit_or_kill(bio: *mut bio, flags: ::kernel::ffi::c_uint) -> i32;
 
     pub fn blkdev_get_no_open(dev: dev_t, autoload: bool) -> *mut block_device;
     pub fn blkdev_put_no_open(bdev: *mut block_device);
     pub fn bvec_try_merge_hw_page(q: *mut request_queue, bv: *mut bio_vec, page: *mut page,
-                                   len: ::core::ffi::c_uint, offset: ::core::ffi::c_uint) -> bool;
-    pub fn blk_rq_timeout(timeout: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
+                                   len: ::kernel::ffi::c_uint, offset: ::kernel::ffi::c_uint) -> bool;
+    pub fn blk_rq_timeout(timeout: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
     pub fn blk_add_timer(req: *mut request);
 }
 
@@ -90,10 +90,10 @@ pub unsafe fn zone_device_pages_compatible(a: *const page, b: *const page) -> bo
     if is_pci_p2pdma_page(a) || is_pci_p2pdma_page(b) { zone_device_pages_have_same_pgmap(a, b) } else { true }
 }
 
-pub unsafe fn __bvec_gap_to_prev(lim: *const queue_limits, bprv: *const bio_vec, offset: ::core::ffi::c_uint) -> bool {
+pub unsafe fn __bvec_gap_to_prev(lim: *const queue_limits, bprv: *const bio_vec, offset: ::kernel::ffi::c_uint) -> bool {
     (offset & (*lim).virt_boundary_mask) != 0 || (((*bprv).bv_offset + (*bprv).bv_len) & (*lim).virt_boundary_mask) != 0
 }
-pub unsafe fn bvec_gap_to_prev(lim: *const queue_limits, bprv: *const bio_vec, offset: ::core::ffi::c_uint) -> bool {
+pub unsafe fn bvec_gap_to_prev(lim: *const queue_limits, bprv: *const bio_vec, offset: ::kernel::ffi::c_uint) -> bool {
     if (*lim).virt_boundary_mask == 0 { false } else { __bvec_gap_to_prev(lim, bprv, offset) }
 }
 
@@ -103,8 +103,8 @@ pub unsafe fn rq_mergeable(rq: *mut request) -> bool {
     true
 }
 pub unsafe fn blk_discard_mergable(req: *mut request) -> bool { req_op(req) == REQ_OP_DISCARD && queue_max_discard_segments((*req).q) > 1 }
-pub unsafe fn blk_rq_get_max_segments(rq: *mut request) -> ::core::ffi::c_uint { if req_op(rq) == REQ_OP_DISCARD { queue_max_discard_segments((*rq).q) } else { queue_max_segments((*rq).q) } }
-pub unsafe fn blk_queue_get_max_sectors(rq: *mut request) -> ::core::ffi::c_uint {
+pub unsafe fn blk_rq_get_max_segments(rq: *mut request) -> ::kernel::ffi::c_uint { if req_op(rq) == REQ_OP_DISCARD { queue_max_discard_segments((*rq).q) } else { queue_max_segments((*rq).q) } }
+pub unsafe fn blk_queue_get_max_sectors(rq: *mut request) -> ::kernel::ffi::c_uint {
     let q = (*rq).q; let op = req_op(rq);
     if unlikely(op == REQ_OP_DISCARD) { return min((*q).limits.max_discard_sectors, UINT_MAX >> SECTOR_SHIFT); }
     if unlikely(op == REQ_OP_SECURE_ERASE) { return min((*q).limits.max_secure_erase_sectors, UINT_MAX >> SECTOR_SHIFT); }
@@ -147,7 +147,7 @@ pub unsafe fn bio_may_need_split(bio: *mut bio, lim: *const queue_limits) -> boo
     (*bv).bv_len + (*bv).bv_offset > (*lim).max_fast_segment_size
 }
 
-pub unsafe fn __bio_split_to_limits(bio: *mut bio, lim: *const queue_limits, nr_segs: *mut ::core::ffi::c_uint) -> *mut bio {
+pub unsafe fn __bio_split_to_limits(bio: *mut bio, lim: *const queue_limits, nr_segs: *mut ::kernel::ffi::c_uint) -> *mut bio {
     match bio_op(bio) {
         REQ_OP_READ | REQ_OP_WRITE => { if bio_may_need_split(bio, lim) { bio_split_rw(bio, lim, nr_segs) } else { *nr_segs = 1; bio } }
         REQ_OP_ZONE_APPEND => bio_split_zone_append(bio, lim, nr_segs),
@@ -156,34 +156,34 @@ pub unsafe fn __bio_split_to_limits(bio: *mut bio, lim: *const queue_limits, nr_
         _ => { *nr_segs = 0; bio }
     }
 }
-pub unsafe fn get_max_segment_size(lim: *const queue_limits, paddr: phys_addr_t, len: ::core::ffi::c_uint) -> ::core::ffi::c_uint {
-    min_t::<::core::ffi::c_ulong>(len as _, min((*lim).seg_boundary_mask - ((*lim).seg_boundary_mask & paddr), (*lim).max_segment_size as _ - 1) + 1) as _
+pub unsafe fn get_max_segment_size(lim: *const queue_limits, paddr: phys_addr_t, len: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint {
+    min_t::<::kernel::ffi::c_ulong>(len as _, min((*lim).seg_boundary_mask - ((*lim).seg_boundary_mask & paddr), (*lim).max_segment_size as _ - 1) + 1) as _
 }
 
 pub enum bio_merge_status { BIO_MERGE_OK, BIO_MERGE_NONE, BIO_MERGE_FAILED }
 
 extern "C" {
-    pub fn part_size_show(dev: *mut device, attr: *mut device_attribute, buf: *mut ::core::ffi::c_char) -> ssize_t;
-    pub fn part_stat_show(dev: *mut device, attr: *mut device_attribute, buf: *mut ::core::ffi::c_char) -> ssize_t;
-    pub fn part_inflight_show(dev: *mut device, attr: *mut device_attribute, buf: *mut ::core::ffi::c_char) -> ssize_t;
-    pub fn part_fail_show(dev: *mut device, attr: *mut device_attribute, buf: *mut ::core::ffi::c_char) -> ssize_t;
-    pub fn part_fail_store(dev: *mut device, attr: *mut device_attribute, buf: *const ::core::ffi::c_char, count: usize) -> ssize_t;
-    pub fn part_timeout_show(dev: *mut device, attr: *mut device_attribute, buf: *mut ::core::ffi::c_char) -> ssize_t;
-    pub fn part_timeout_store(dev: *mut device, attr: *mut device_attribute, buf: *const ::core::ffi::c_char, count: usize) -> ssize_t;
+    pub fn part_size_show(dev: *mut device, attr: *mut device_attribute, buf: *mut ::kernel::ffi::c_char) -> ssize_t;
+    pub fn part_stat_show(dev: *mut device, attr: *mut device_attribute, buf: *mut ::kernel::ffi::c_char) -> ssize_t;
+    pub fn part_inflight_show(dev: *mut device, attr: *mut device_attribute, buf: *mut ::kernel::ffi::c_char) -> ssize_t;
+    pub fn part_fail_show(dev: *mut device, attr: *mut device_attribute, buf: *mut ::kernel::ffi::c_char) -> ssize_t;
+    pub fn part_fail_store(dev: *mut device, attr: *mut device_attribute, buf: *const ::kernel::ffi::c_char, count: usize) -> ssize_t;
+    pub fn part_timeout_show(dev: *mut device, attr: *mut device_attribute, buf: *mut ::kernel::ffi::c_char) -> ssize_t;
+    pub fn part_timeout_store(dev: *mut device, attr: *mut device_attribute, buf: *const ::kernel::ffi::c_char, count: usize) -> ssize_t;
     pub fn blk_insert_flush(rq: *mut request) -> bool;
     pub fn elv_update_nr_hw_queues(q: *mut request_queue, ctx: *mut elv_change_ctx);
     pub fn elevator_set_default(q: *mut request_queue);
     pub fn elevator_set_none(q: *mut request_queue);
-    pub fn bio_split_discard(bio: *mut bio, lim: *const queue_limits, nsegs: *mut ::core::ffi::c_uint) -> *mut bio;
-    pub fn bio_split_write_zeroes(bio: *mut bio, lim: *const queue_limits, nsegs: *mut ::core::ffi::c_uint) -> *mut bio;
-    pub fn bio_split_rw(bio: *mut bio, lim: *const queue_limits, nr_segs: *mut ::core::ffi::c_uint) -> *mut bio;
-    pub fn bio_split_zone_append(bio: *mut bio, lim: *const queue_limits, nr_segs: *mut ::core::ffi::c_uint) -> *mut bio;
-    pub fn bio_attempt_back_merge(req: *mut request, bio: *mut bio, nr_segs: ::core::ffi::c_uint) -> bio_merge_status;
-    pub fn blk_attempt_plug_merge(q: *mut request_queue, bio: *mut bio, nr_segs: ::core::ffi::c_uint) -> bool;
-    pub fn blk_bio_list_merge(q: *mut request_queue, list: *mut list_head, bio: *mut bio, nr_segs: ::core::ffi::c_uint) -> bool;
-    pub fn ll_back_merge_fn(req: *mut request, bio: *mut bio, nr_segs: ::core::ffi::c_uint) -> i32;
+    pub fn bio_split_discard(bio: *mut bio, lim: *const queue_limits, nsegs: *mut ::kernel::ffi::c_uint) -> *mut bio;
+    pub fn bio_split_write_zeroes(bio: *mut bio, lim: *const queue_limits, nsegs: *mut ::kernel::ffi::c_uint) -> *mut bio;
+    pub fn bio_split_rw(bio: *mut bio, lim: *const queue_limits, nr_segs: *mut ::kernel::ffi::c_uint) -> *mut bio;
+    pub fn bio_split_zone_append(bio: *mut bio, lim: *const queue_limits, nr_segs: *mut ::kernel::ffi::c_uint) -> *mut bio;
+    pub fn bio_attempt_back_merge(req: *mut request, bio: *mut bio, nr_segs: ::kernel::ffi::c_uint) -> bio_merge_status;
+    pub fn blk_attempt_plug_merge(q: *mut request_queue, bio: *mut bio, nr_segs: ::kernel::ffi::c_uint) -> bool;
+    pub fn blk_bio_list_merge(q: *mut request_queue, list: *mut list_head, bio: *mut bio, nr_segs: ::kernel::ffi::c_uint) -> bool;
+    pub fn ll_back_merge_fn(req: *mut request, bio: *mut bio, nr_segs: ::kernel::ffi::c_uint) -> i32;
     pub fn blk_attempt_req_merge(q: *mut request_queue, rq: *mut request, next: *mut request) -> bool;
-    pub fn blk_recalc_rq_segments(rq: *mut request) -> ::core::ffi::c_uint;
+    pub fn blk_recalc_rq_segments(rq: *mut request) -> ::kernel::ffi::c_uint;
     pub fn blk_rq_merge_ok(rq: *mut request, bio: *mut bio) -> bool;
     pub fn blk_try_merge(rq: *mut request, bio: *mut bio) -> elv_merge;
 }

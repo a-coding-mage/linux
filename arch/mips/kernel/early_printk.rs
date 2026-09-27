@@ -14,14 +14,14 @@ use crate::linux::init::__init;
 use crate::linux::printk::{early_console, register_console};
 use crate::asm::setup::prom_putchar;
 
-unsafe fn early_console_write(con: *mut console, s: *const core::ffi::c_char, mut n: u32) {
+unsafe fn early_console_write(con: *mut console, s: *const kernel::ffi::c_char, mut n: u32) {
     while n != 0 {
         n = n.wrapping_sub(1);
         if *s == 0 {
             break;
         }
-        if *s == b'\n' as core::ffi::c_char {
-            prom_putchar(b'\r' as core::ffi::c_char);
+        if *s == b'\n' as kernel::ffi::c_char {
+            prom_putchar(b'\r' as kernel::ffi::c_char);
         }
         prom_putchar(*s);
         s = s.add(1);
@@ -29,7 +29,7 @@ unsafe fn early_console_write(con: *mut console, s: *const core::ffi::c_char, mu
 }
 
 static mut early_console_prom: console = console {
-    name: b"early\0".as_ptr() as *const core::ffi::c_char,
+    name: b"early\0".as_ptr() as *const kernel::ffi::c_char,
     write: Some(early_console_write),
     flags: CON_PRINTBUFFER | CON_BOOT,
     index: -1,

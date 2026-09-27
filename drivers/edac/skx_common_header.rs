@@ -51,7 +51,7 @@ pub struct SkxDimm { pub close_pg: u8, pub bank_xor_enable: u8, pub fine_grain_b
 #[repr(C)]
 pub struct SkxChannel { pub cdev: *mut pci_dev, pub edev: *mut pci_dev, pub rrl_ctl: [[u32; NUM_RRL_SET]; 2], pub dimms: [SkxDimm; NUM_DIMMS] }
 #[repr(C)]
-pub struct SkxImc { pub mdev: *mut pci_dev, pub dev: *mut device, pub mci: *mut mem_ctl_info, pub mbase: *mut core::ffi::c_void, pub chan_mmio_sz: i32, pub num_channels: i32, pub num_dimms: i32, pub hbm_mc: bool, pub mc: u8, pub lmc: u8, pub src_id: u8, pub mc_mapping: u8, pub chan: [SkxChannel; NUM_CHANNELS] }
+pub struct SkxImc { pub mdev: *mut pci_dev, pub dev: *mut device, pub mci: *mut mem_ctl_info, pub mbase: *mut kernel::ffi::c_void, pub chan_mmio_sz: i32, pub num_channels: i32, pub num_dimms: i32, pub hbm_mc: bool, pub mc: u8, pub lmc: u8, pub src_id: u8, pub mc_mapping: u8, pub chan: [SkxChannel; NUM_CHANNELS] }
 #[repr(C)]
 pub struct SkxDev { pub bus: [u8; 4], pub seg: i32, pub sad_all: *mut pci_dev, pub util_all: *mut pci_dev, pub uracu: *mut pci_dev, pub pcu_cr3: *mut pci_dev, pub mcroute: u32, pub mmio_base_h_north: u64, pub mmio_base_h_south: u64, pub pkg: i32, pub num_imc: i32, pub list: list_head, pub imc: [SkxImc; 0] }
 #[repr(C)] pub struct SkxPvt { pub imc: *mut SkxImc }
@@ -71,24 +71,24 @@ pub const BIT_SUBCH: u64 = 1u64 << INDEX_SUBCH; pub const BIT_NM_MEMCTRL: u64 = 
 
 pub type GetDimmConfigF = unsafe extern "C" fn(*mut mem_ctl_info, *mut ResConfig) -> i32;
 pub type SkxDecodeF = unsafe extern "C" fn(*mut DecodedAddr) -> bool;
-pub type SkxShowRrlF = unsafe extern "C" fn(*mut DecodedAddr, *mut core::ffi::c_char, i32, bool);
+pub type SkxShowRrlF = unsafe extern "C" fn(*mut DecodedAddr, *mut kernel::ffi::c_char, i32, bool);
 
 extern "C" {
-    pub fn skx_readx(addr: *mut core::ffi::c_void, width: u8) -> u64;
+    pub fn skx_readx(addr: *mut kernel::ffi::c_void, width: u8) -> u64;
     pub fn skx_read_imc_reg(imc: *mut SkxImc, chan: i32, offset: u32, width: u8) -> u64;
     pub fn skx_write_imc_reg(imc: *mut SkxImc, chan: i32, offset: u32, width: u8, val: u64);
-    pub fn skx_adxl_get() -> i32; pub fn skx_adxl_put(); pub fn skx_set_decode(decode: SkxDecodeF); pub fn skx_set_show_rrl(rrl: SkxShowRrlF); pub fn skx_show_rrl(res: *mut DecodedAddr, msg: *mut core::ffi::c_char, len: i32, scrub_err: bool); pub fn skx_enable_rrl(enable: bool); pub fn skx_set_mem_cfg(mem_cfg_2lm: bool); pub fn skx_set_res_cfg(cfg: *mut ResConfig); pub fn skx_init_mc_mapping(d: *mut SkxDev); pub fn skx_set_mc_mapping(d: *mut SkxDev, pmc: u8, lmc: u8);
+    pub fn skx_adxl_get() -> i32; pub fn skx_adxl_put(); pub fn skx_set_decode(decode: SkxDecodeF); pub fn skx_set_show_rrl(rrl: SkxShowRrlF); pub fn skx_show_rrl(res: *mut DecodedAddr, msg: *mut kernel::ffi::c_char, len: i32, scrub_err: bool); pub fn skx_enable_rrl(enable: bool); pub fn skx_set_mem_cfg(mem_cfg_2lm: bool); pub fn skx_set_res_cfg(cfg: *mut ResConfig); pub fn skx_init_mc_mapping(d: *mut SkxDev); pub fn skx_set_mc_mapping(d: *mut SkxDev, pmc: u8, lmc: u8);
     pub fn skx_get_src_id(d: *mut SkxDev, off: i32, id: *mut u8) -> i32; pub fn skx_get_all_bus_mappings(cfg: *mut ResConfig, list: *mut *mut list_head) -> i32; pub fn skx_get_edac_list() -> *mut list_head; pub fn skx_get_hi_lo(did: u32, off: *mut i32, tolm: *mut u64, tohm: *mut u64) -> i32; pub fn skx_set_hi_lo(tolm: u64, tohm: u64); pub fn skx_remove();
     pub fn skx_get_dimm_info(mtr: u32, mcmtr: u32, amap: u32, dimm: *mut dimm_info, imc: *mut SkxImc, chan: i32, dimmno: i32, cfg: *mut ResConfig) -> i32;
-    pub fn skx_get_nvdimm_info(dimm: *mut dimm_info, imc: *mut SkxImc, chan: i32, dimmno: i32, mod_str: *const core::ffi::c_char) -> i32;
-    pub fn skx_register_mci(imc: *mut SkxImc, dev: *mut device, dev_name: *const core::ffi::c_char, ctl_name: *const core::ffi::c_char, mod_str: *const core::ffi::c_char, get_dimm_config: GetDimmConfigF, cfg: *mut ResConfig) -> i32;
-    pub fn skx_mce_check_error(nb: *mut notifier_block, val: usize, data: *mut core::ffi::c_void) -> i32;
+    pub fn skx_get_nvdimm_info(dimm: *mut dimm_info, imc: *mut SkxImc, chan: i32, dimmno: i32, mod_str: *const kernel::ffi::c_char) -> i32;
+    pub fn skx_register_mci(imc: *mut SkxImc, dev: *mut device, dev_name: *const kernel::ffi::c_char, ctl_name: *const kernel::ffi::c_char, mod_str: *const kernel::ffi::c_char, get_dimm_config: GetDimmConfigF, cfg: *mut ResConfig) -> i32;
+    pub fn skx_mce_check_error(nb: *mut notifier_block, val: usize, data: *mut kernel::ffi::c_void) -> i32;
 }
 
 #[cfg(CONFIG_EDAC_DEBUG)]
-extern "C" { pub fn skx_setup_debug(name: *const core::ffi::c_char); pub fn skx_teardown_debug(); }
+extern "C" { pub fn skx_setup_debug(name: *const kernel::ffi::c_char); pub fn skx_teardown_debug(); }
 #[cfg(not(CONFIG_EDAC_DEBUG))]
-#[inline] pub unsafe fn skx_setup_debug(_name: *const core::ffi::c_char) {}
+#[inline] pub unsafe fn skx_setup_debug(_name: *const kernel::ffi::c_char) {}
 #[cfg(not(CONFIG_EDAC_DEBUG))]
 #[inline] pub unsafe fn skx_teardown_debug() {}
 

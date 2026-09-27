@@ -51,16 +51,16 @@ pub unsafe fn kvm_psci_narrow_to_32bit(vcpu: &mut kvm_vcpu) {
 
 pub unsafe fn kvm_psci_valid_affinity(
     vcpu: &mut kvm_vcpu,
-    affinity: libc::c_ulong,
+    affinity: kernel::ffi::c_ulong,
 ) -> bool {
     let _ = vcpu;
     (affinity & !MPIDR_HWID_BITMASK) == 0
 }
 
-pub unsafe fn kvm_psci_affinity_mask(affinity_level: libc::c_ulong) -> libc::c_ulong {
+pub unsafe fn kvm_psci_affinity_mask(affinity_level: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     if affinity_level <= 3 {
         return MPIDR_HWID_BITMASK
-            & !((0x1 as libc::c_ulong)
+            & !((0x1 as kernel::ffi::c_ulong)
                 .wrapping_shl((affinity_level * MPIDR_LEVEL_BITS) as u32)
                 .wrapping_sub(1));
     }

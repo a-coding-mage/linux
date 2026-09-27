@@ -20,8 +20,8 @@ const MTK_SIP_KERNEL_GET_RND: usize = mtk_sip_smc_cmd(0x550);
 
 #[repr(C)]
 struct MtkRng {
-    base: *mut core::ffi::c_void,
-    clk: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
+    clk: *mut kernel::ffi::c_void,
     rng: Hwrng,
     dev: *mut Device,
     flags: usize,
@@ -29,11 +29,11 @@ struct MtkRng {
 
 #[repr(C)]
 struct Hwrng {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     quality: u32,
     init: Option<unsafe extern "C" fn(*mut Hwrng) -> i32>,
     cleanup: Option<unsafe extern "C" fn(*mut Hwrng)>,
-    read: Option<unsafe extern "C" fn(*mut Hwrng, *mut core::ffi::c_void, usize, bool) -> i32>,
+    read: Option<unsafe extern "C" fn(*mut Hwrng, *mut kernel::ffi::c_void, usize, bool) -> i32>,
 }
 
 #[repr(C)]
@@ -41,7 +41,7 @@ struct Device;
 #[repr(C)]
 struct PlatformDevice {
     dev: Device,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 #[repr(C)]
 struct ArmSmcccRes {
@@ -56,8 +56,8 @@ struct ArmSmcccRes {
 }
 
 extern "C" {
-    fn clk_prepare_enable(clk: *mut core::ffi::c_void) -> i32;
-    fn clk_disable_unprepare(clk: *mut core::ffi::c_void);
+    fn clk_prepare_enable(clk: *mut kernel::ffi::c_void) -> i32;
+    fn clk_disable_unprepare(clk: *mut kernel::ffi::c_void);
     fn readl(addr: *mut u8) -> u32;
     fn writel(value: u32, addr: *mut u8);
     fn readl_poll_timeout_atomic(addr: *mut u8, value: *mut i32, condition: i32, delay: u32, timeout: u32) -> i32;
@@ -65,7 +65,7 @@ extern "C" {
     fn pm_runtime_put_sync_autosuspend(dev: *mut Device) -> i32;
     fn arm_smccc_smc(a0: usize, a1: usize, a2: usize, a3: usize, a4: usize, a5: usize, a6: usize, a7: usize, res: *mut ArmSmcccRes);
     fn mtk_sip_smc_cmd(cmd: usize) -> usize;
-    fn dev_get_drvdata(dev: *mut Device) -> *mut core::ffi::c_void;
+    fn dev_get_drvdata(dev: *mut Device) -> *mut kernel::ffi::c_void;
 }
 
 unsafe fn mtk_rng_init(rng: *mut Hwrng) -> i32 {
@@ -95,7 +95,7 @@ unsafe fn mtk_rng_wait_ready(rng: *mut Hwrng, wait: bool) -> bool {
     (ready & RNG_READY as i32) != 0
 }
 
-unsafe fn mtk_rng_read(rng: *mut Hwrng, mut buf: *mut core::ffi::c_void, mut max: usize, wait: bool) -> i32 {
+unsafe fn mtk_rng_read(rng: *mut Hwrng, mut buf: *mut kernel::ffi::c_void, mut max: usize, wait: bool) -> i32 {
     let priv_: *mut MtkRng = (rng as *mut u8).sub(core::mem::offset_of!(MtkRng, rng)) as *mut MtkRng;
     let mut retval: i32 = 0;
     pm_runtime_get_sync((*priv_).dev);
@@ -103,14 +103,14 @@ unsafe fn mtk_rng_read(rng: *mut Hwrng, mut buf: *mut core::ffi::c_void, mut max
         if !mtk_rng_wait_ready(rng, wait) { break; }
         *(buf as *mut u32) = readl((*priv_).base.add(RNG_DATA));
         retval += core::mem::size_of::<u32>() as i32;
-        buf = (buf as *mut u8).add(core::mem::size_of::<u32>()) as *mut core::ffi::c_void;
+        buf = (buf as *mut u8).add(core::mem::size_of::<u32>()) as *mut kernel::ffi::c_void;
         max -= core::mem::size_of::<u32>();
     }
     pm_runtime_put_sync_autosuspend((*priv_).dev);
     if retval != 0 || !wait { retval } else { -5 }
 }
 
-unsafe fn mtk_rng_read_smc(_rng: *mut Hwrng, mut buf: *mut core::ffi::c_void, mut max: usize, wait: bool) -> i32 {
+unsafe fn mtk_rng_read_smc(_rng: *mut Hwrng, mut buf: *mut kernel::ffi::c_void, mut max: usize, wait: bool) -> i32 {
     let mut res = ArmSmcccRes { a0: 0, a1: 0, a2: 0, a3: 0, a4: 0, a5: 0, a6: 0, a7: 0 };
     let mut retval: i32 = 0;
     while max >= core::mem::size_of::<u32>() {
@@ -118,7 +118,7 @@ unsafe fn mtk_rng_read_smc(_rng: *mut Hwrng, mut buf: *mut core::ffi::c_void, mu
         if res.a0 != 0 { break; }
         *(buf as *mut u32) = res.a1 as u32;
         retval += core::mem::size_of::<u32>() as i32;
-        buf = (buf as *mut u8).add(core::mem::size_of::<u32>()) as *mut core::ffi::c_void;
+        buf = (buf as *mut u8).add(core::mem::size_of::<u32>()) as *mut kernel::ffi::c_void;
         max -= core::mem::size_of::<u32>();
     }
     if retval != 0 || !wait { retval } else { -5 }
@@ -149,8 +149,8 @@ extern "C" {
 
 #[repr(C)]
 struct OfDeviceId {
-    compatible: *const core::ffi::c_char,
-    data: *const core::ffi::c_void,
+    compatible: *const kernel::ffi::c_char,
+    data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -162,7 +162,7 @@ struct DevPmOps {
 #[repr(C)]
 struct PlatformDriver {
     probe: Option<unsafe extern "C" fn(*mut PlatformDevice) -> i32>,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     pm: *const DevPmOps,
     of_match_table: *const OfDeviceId,
 }
@@ -181,10 +181,10 @@ static MTK_RNG_PM_OPS: *const DevPmOps = core::ptr::null();
 // has null fields, as in the original C initializer.
 static MTK_RNG_MATCH: [OfDeviceId; 6] = [
     OfDeviceId { compatible: b"mediatek,mt7623-rng\0".as_ptr() as *const _, data: core::ptr::null() },
-    OfDeviceId { compatible: b"mediatek,mt7981-rng\0".as_ptr() as *const _, data: MTK_RNG_SMC as *const core::ffi::c_void },
+    OfDeviceId { compatible: b"mediatek,mt7981-rng\0".as_ptr() as *const _, data: MTK_RNG_SMC as *const kernel::ffi::c_void },
     OfDeviceId { compatible: b"mediatek,mt7986-rng\0".as_ptr() as *const _, data: core::ptr::null() },
-    OfDeviceId { compatible: b"mediatek,mt7987-rng\0".as_ptr() as *const _, data: MTK_RNG_SMC as *const core::ffi::c_void },
-    OfDeviceId { compatible: b"mediatek,mt7988-rng\0".as_ptr() as *const _, data: MTK_RNG_SMC as *const core::ffi::c_void },
+    OfDeviceId { compatible: b"mediatek,mt7987-rng\0".as_ptr() as *const _, data: MTK_RNG_SMC as *const kernel::ffi::c_void },
+    OfDeviceId { compatible: b"mediatek,mt7988-rng\0".as_ptr() as *const _, data: MTK_RNG_SMC as *const kernel::ffi::c_void },
     OfDeviceId { compatible: core::ptr::null(), data: core::ptr::null() },
 ];
 

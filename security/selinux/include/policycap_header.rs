@@ -21,7 +21,7 @@ pub const __POLICYDB_CAP_MAX: u32 = 15;
 pub const POLICYDB_CAP_MAX: u32 = __POLICYDB_CAP_MAX - 1;
 
 unsafe extern "C" {
-    pub static selinux_policycap_names: [*const core::ffi::c_char; __POLICYDB_CAP_MAX as usize];
+    pub static selinux_policycap_names: [*const kernel::ffi::c_char; __POLICYDB_CAP_MAX as usize];
 }
 
 

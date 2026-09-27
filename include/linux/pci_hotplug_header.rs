@@ -37,26 +37,26 @@ pub struct hotplug_slot {
     /* Variables below this are for use only by the hotplug PCI core. */
     pub pci_slot: *mut pci_slot,
     pub owner: *mut module,
-    pub mod_name: *const core::ffi::c_char,
+    pub mod_name: *const kernel::ffi::c_char,
 }
 
 extern "C" {
-    pub fn pci_slot_name(slot: *mut pci_slot) -> *const core::ffi::c_char;
+    pub fn pci_slot_name(slot: *mut pci_slot) -> *const kernel::ffi::c_char;
     pub fn __pci_hp_register(
         slot: *mut hotplug_slot,
         pbus: *mut pci_bus,
         nr: i32,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         owner: *mut module,
-        mod_name: *const core::ffi::c_char,
+        mod_name: *const kernel::ffi::c_char,
     ) -> i32;
     pub fn __pci_hp_initialize(
         slot: *mut hotplug_slot,
         bus: *mut pci_bus,
         nr: i32,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         owner: *mut module,
-        mod_name: *const core::ffi::c_char,
+        mod_name: *const kernel::ffi::c_char,
     ) -> i32;
     pub fn pci_hp_add(slot: *mut hotplug_slot) -> i32;
     pub fn pci_hp_del(slot: *mut hotplug_slot);
@@ -65,7 +65,7 @@ extern "C" {
 }
 
 #[inline]
-pub unsafe fn hotplug_slot_name(slot: *const hotplug_slot) -> *const core::ffi::c_char {
+pub unsafe fn hotplug_slot_name(slot: *const hotplug_slot) -> *const kernel::ffi::c_char {
     unsafe { pci_slot_name((*slot).pci_slot) }
 }
 

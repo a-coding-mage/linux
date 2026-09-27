@@ -25,23 +25,23 @@ pub const ARCH_DMA_MINALIGN: usize = 32;
 pub const ARCH_KMALLOC_MINALIGN: usize = 16; /* ldcw requires 16-byte alignment */
 
 extern "C" {
-    pub static mut dcache_stride: ::core::ffi::c_int;
-    pub static mut icache_stride: ::core::ffi::c_int;
-    pub static mut split_tlb: ::core::ffi::c_int;
+    pub static mut dcache_stride: ::kernel::ffi::c_int;
+    pub static mut icache_stride: ::kernel::ffi::c_int;
+    pub static mut split_tlb: ::kernel::ffi::c_int;
 }
 
 #[inline]
-pub unsafe fn arch_slab_minalign() -> ::core::ffi::c_uint {
-    dcache_stride as ::core::ffi::c_uint
+pub unsafe fn arch_slab_minalign() -> ::kernel::ffi::c_uint {
+    dcache_stride as ::kernel::ffi::c_uint
 }
 
 #[inline]
-pub unsafe fn cache_line_size() -> ::core::ffi::c_int {
+pub unsafe fn cache_line_size() -> ::kernel::ffi::c_int {
     dcache_stride
 }
 
 #[inline]
-pub unsafe fn dma_get_cache_alignment() -> ::core::ffi::c_int {
+pub unsafe fn dma_get_cache_alignment() -> ::kernel::ffi::c_int {
     cache_line_size()
 }
 
@@ -49,10 +49,10 @@ pub unsafe fn dma_get_cache_alignment() -> ::core::ffi::c_int {
 
 extern "C" {
     pub fn parisc_cache_init(); /* initializes cache-flushing */
-    pub fn disable_sr_hashing_asm(arg: ::core::ffi::c_int); /* low level support for above */
+    pub fn disable_sr_hashing_asm(arg: ::kernel::ffi::c_int); /* low level support for above */
     pub fn disable_sr_hashing(); /* turns off space register hashing */
-    pub fn free_sid(arg: ::core::ffi::c_ulong);
-    pub fn alloc_sid() -> ::core::ffi::c_ulong;
+    pub fn free_sid(arg: ::kernel::ffi::c_ulong);
+    pub fn alloc_sid() -> ::kernel::ffi::c_ulong;
 }
 
 #[repr(C)]

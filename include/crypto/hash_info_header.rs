@@ -9,7 +9,7 @@
 // crypto/sha1.h, crypto/sha2.h, crypto/sha3.h, crypto/md5.h,
 // crypto/streebog.h, and uapi/linux/hash_info.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* not defined in include/crypto/ */
 pub const RMD128_DIGEST_SIZE: usize = 16;
@@ -32,7 +32,7 @@ pub const SM3256_DIGEST_SIZE: usize = 32;
 
 extern "C" {
     pub static hash_algo_name: [*const c_char; HASH_ALGO__LAST];
-    pub static hash_digest_size: [core::ffi::c_int; HASH_ALGO__LAST];
+    pub static hash_digest_size: [kernel::ffi::c_int; HASH_ALGO__LAST];
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

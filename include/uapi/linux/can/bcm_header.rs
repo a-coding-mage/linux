@@ -14,8 +14,8 @@
 
 #[repr(C)]
 pub struct bcm_timeval {
-    pub tv_sec: core::ffi::c_long,
-    pub tv_usec: core::ffi::c_long,
+    pub tv_sec: kernel::ffi::c_long,
+    pub tv_usec: kernel::ffi::c_long,
 }
 
 /**

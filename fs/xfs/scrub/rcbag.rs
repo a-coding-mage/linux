@@ -16,7 +16,7 @@ pub struct rcbag {
 
 extern "C" {
     pub fn kzalloc_obj<T>(flags: i32) -> *mut T;
-    pub fn kfree(ptr: *mut core::ffi::c_void);
+    pub fn kfree(ptr: *mut kernel::ffi::c_void);
     pub fn rcbagbt_mem_init(mp: *mut xfs_mount, tree: *mut xfbtree, btp: *mut xfs_buftarg) -> i32;
     pub fn xfbtree_destroy(tree: *mut xfbtree);
     pub fn rcbagbt_mem_cursor(mp: *mut xfs_mount, tp: *mut xfs_trans, tree: *mut xfbtree) -> *mut xfs_btree_cur;
@@ -32,7 +32,7 @@ extern "C" {
     pub fn xfs_btree_decrement(cur: *mut xfs_btree_cur, level: i32, has: *mut i32) -> i32;
     pub fn xfs_btree_lookup(cur: *mut xfs_btree_cur, op: i32, has: *mut i32) -> i32;
     pub fn xfs_btree_delete(cur: *mut xfs_btree_cur, has: *mut i32) -> i32;
-    pub fn xfs_err(mp: *mut xfs_mount, fmt: *const core::ffi::c_char, ...);
+    pub fn xfs_err(mp: *mut xfs_mount, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)] pub struct xfs_mount;

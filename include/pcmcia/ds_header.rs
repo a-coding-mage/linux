@@ -25,7 +25,7 @@ pub struct pcmcia_dynids {
 
 #[repr(C)]
 pub struct pcmcia_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub probe: Option<unsafe extern "C" fn(*mut pcmcia_device) -> i32>,
     pub remove: Option<unsafe extern "C" fn(*mut pcmcia_device)>,
     pub suspend: Option<unsafe extern "C" fn(*mut pcmcia_device) -> i32>,
@@ -54,7 +54,7 @@ pub const PCMCIA_NUM_RESOURCES: usize = 6;
 #[repr(C)]
 pub struct pcmcia_device {
     pub socket: *mut pcmcia_socket,
-    pub devname: *mut core::ffi::c_char,
+    pub devname: *mut kernel::ffi::c_char,
     pub device_no: u8,
     pub func: u8,
     pub function_config: *mut config_t,
@@ -82,10 +82,10 @@ pub struct pcmcia_device {
     pub func_id: u8,
     pub manf_id: u16,
     pub card_id: u16,
-    pub prod_id: [*mut core::ffi::c_char; 4],
+    pub prod_id: [*mut kernel::ffi::c_char; 4],
     pub dma_mask: u64,
     pub dev: device,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
     pub open: u32,
 }
 
@@ -94,13 +94,13 @@ pub struct pcmcia_device {
 extern "C" {
     pub fn pcmcia_get_tuple(p_dev: *mut pcmcia_device, code: cisdata_t, buf: *mut *mut u8) -> usize;
     pub fn pcmcia_loop_tuple(p_dev: *mut pcmcia_device, code: cisdata_t,
-        loop_tuple: Option<unsafe extern "C" fn(*mut pcmcia_device, *mut tuple_t, *mut core::ffi::c_void) -> i32>,
-        priv_data: *mut core::ffi::c_void) -> i32;
+        loop_tuple: Option<unsafe extern "C" fn(*mut pcmcia_device, *mut tuple_t, *mut kernel::ffi::c_void) -> i32>,
+        priv_data: *mut kernel::ffi::c_void) -> i32;
     pub fn pcmcia_get_mac_from_cis(p_dev: *mut pcmcia_device, dev: *mut net_device) -> i32;
     pub fn pcmcia_parse_tuple(tuple: *mut tuple_t, parse: *mut cisparse_t) -> i32;
     pub fn pcmcia_loop_config(p_dev: *mut pcmcia_device,
-        conf_check: Option<unsafe extern "C" fn(*mut pcmcia_device, *mut core::ffi::c_void) -> i32>,
-        priv_data: *mut core::ffi::c_void) -> i32;
+        conf_check: Option<unsafe extern "C" fn(*mut pcmcia_device, *mut kernel::ffi::c_void) -> i32>,
+        priv_data: *mut kernel::ffi::c_void) -> i32;
     pub fn pcmcia_dev_present(p_dev: *mut pcmcia_device) -> *mut pcmcia_device;
     pub fn pcmcia_reset_card(skt: *mut pcmcia_socket) -> i32;
     pub fn pcmcia_read_config_byte(p_dev: *mut pcmcia_device, where_: off_t, val: *mut u8) -> i32;

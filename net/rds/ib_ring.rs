@@ -34,12 +34,12 @@
 
 extern "C" {
     static mut rds_ib_ring_empty_wait: rds_wait_queue_head;
-    fn memset(s: *mut core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void;
+    fn memset(s: *mut kernel::ffi::c_void, c: i32, n: usize) -> *mut kernel::ffi::c_void;
     fn atomic_read(v: *const rds_atomic_t) -> i32;
     fn atomic_add(i: u32, v: *mut rds_atomic_t);
     fn waitqueue_active(wq: *mut rds_wait_queue_head) -> bool;
     fn wake_up(wq: *mut rds_wait_queue_head);
-    fn rdsdebug(fmt: *const core::ffi::c_char, ...);
+    fn rdsdebug(fmt: *const kernel::ffi::c_char, ...);
     fn rds_bug_on(condition: bool);
 }
 

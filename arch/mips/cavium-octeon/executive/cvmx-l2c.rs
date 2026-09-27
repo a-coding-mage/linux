@@ -1,6 +1,6 @@
 /* Implementation of Level 2 Cache control, measurement, and debugging. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     static mut cvmx_l2c_spinlock: cvmx_spinlock_t;

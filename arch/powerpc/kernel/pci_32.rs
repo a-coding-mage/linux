@@ -5,11 +5,11 @@
 
 // Kernel and architecture dependencies are supplied by the surrounding tree.
 
-pub static mut isa_io_base: ::core::ffi::c_ulong = 0;
-pub static mut pci_dram_offset: ::core::ffi::c_ulong = 0;
-pub static mut pcibios_assign_bus_offset: ::core::ffi::c_int = 1;
+pub static mut isa_io_base: ::kernel::ffi::c_ulong = 0;
+pub static mut pci_dram_offset: ::kernel::ffi::c_ulong = 0;
+pub static mut pcibios_assign_bus_offset: ::kernel::ffi::c_int = 1;
 
-static mut pci_assign_all_buses: ::core::ffi::c_int = 0;
+static mut pci_assign_all_buses: ::kernel::ffi::c_int = 0;
 pub static mut isa_bridge_pcidev: *mut pci_dev = core::ptr::null_mut();
 
 #[allow(non_camel_case_types)]
@@ -20,7 +20,7 @@ pub struct pci_dev {
     pub devfn: u8,
 }
 #[allow(non_camel_case_types)]
-pub struct resource { pub start: ::core::ffi::c_ulong, pub end: ::core::ffi::c_ulong, pub flags: ::core::ffi::c_ulong }
+pub struct resource { pub start: ::kernel::ffi::c_ulong, pub end: ::kernel::ffi::c_ulong, pub flags: ::kernel::ffi::c_ulong }
 #[allow(non_camel_case_types)]
 pub struct pci_bus { pub number: u8 }
 #[allow(non_camel_case_types)]
@@ -32,24 +32,24 @@ pub struct pci_controller {
     pub first_busno: u8,
     pub last_busno: u8,
     pub bus: *mut pci_bus,
-    pub mem_offset: [::core::ffi::c_ulong; 3],
-    pub io_base_phys: ::core::ffi::c_ulong,
+    pub mem_offset: [::kernel::ffi::c_ulong; 3],
+    pub io_base_phys: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
     static mut hose_list: list_head;
-    static mut isa_mem_base: ::core::ffi::c_ulong;
+    static mut isa_mem_base: ::kernel::ffi::c_ulong;
     static mut ppc_md: ppc_md_struct;
     fn pci_find_hose_for_OF_device(node: *mut device_node) -> *mut pci_controller;
-    fn of_get_property(node: *mut device_node, name: *const u8, len: *mut ::core::ffi::c_int) -> *const u8;
+    fn of_get_property(node: *mut device_node, name: *const u8, len: *mut ::kernel::ffi::c_int) -> *const u8;
     fn pci_get_domain_bus_and_slot(domain: u32, bus: u8, devfn: u8) -> *mut pci_dev;
     fn pci_dev_put(dev: *mut pci_dev);
-    fn pcibios_io_space_offset(hose: *mut pci_controller) -> ::core::ffi::c_ulong;
+    fn pcibios_io_space_offset(hose: *mut pci_controller) -> ::kernel::ffi::c_ulong;
     fn pcibios_scan_phb(hose: *mut pci_controller);
     fn pci_bus_add_devices(bus: *mut pci_bus);
     fn pcibios_resource_survey();
-    fn pci_has_flag(flag: ::core::ffi::c_int) -> bool;
-    fn pci_add_flags(flags: ::core::ffi::c_int);
+    fn pci_has_flag(flag: ::kernel::ffi::c_int) -> bool;
+    fn pci_add_flags(flags: ::kernel::ffi::c_int);
 }
 
 #[repr(C)] pub struct list_head { pub next: *mut list_head, pub prev: *mut list_head }
@@ -63,7 +63,7 @@ unsafe fn fixup_cpc710_pci64(dev: *mut pci_dev) {
 #[cfg(CONFIG_PPC_PCI_OF_BUS_MAP)]
 static mut pci_to_OF_bus_map: *mut u8 = core::ptr::null_mut();
 #[cfg(CONFIG_PPC_PCI_OF_BUS_MAP)]
-static mut pci_bus_count: ::core::ffi::c_int = 0;
+static mut pci_bus_count: ::kernel::ffi::c_int = 0;
 
 #[cfg(CONFIG_PPC_PCI_OF_BUS_MAP)]
 unsafe fn make_one_node_map(node: *mut device_node, pci_bus: u8) {
@@ -120,7 +120,7 @@ unsafe fn pci_bus_to_hose(bus: i32) -> *mut pci_controller {
     core::ptr::null_mut()
 }
 
-pub unsafe extern "C" fn pciconfig_iobase(which: i64, bus: ::core::ffi::c_ulong, _devfn: ::core::ffi::c_ulong) -> i64 {
+pub unsafe extern "C" fn pciconfig_iobase(which: i64, bus: ::kernel::ffi::c_ulong, _devfn: ::kernel::ffi::c_ulong) -> i64 {
     let hose = pci_bus_to_hose(bus as i32);
     if hose.is_null() { return -19; }
     match which as i32 {

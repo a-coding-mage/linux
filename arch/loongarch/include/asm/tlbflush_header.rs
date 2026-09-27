@@ -5,7 +5,7 @@
 
 // Dependency supplied by the surrounding kernel translation:
 // #include <linux/mm.h>
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 /*
  * TLB flushing:

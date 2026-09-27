@@ -10,26 +10,26 @@
 
 #[repr(C)]
 pub struct RwmmioRwTemplateEntry {
-    pub caller: ::core::ffi::c_ulong,
-    pub caller0: ::core::ffi::c_ulong,
-    pub addr: ::core::ffi::c_ulong,
+    pub caller: ::kernel::ffi::c_ulong,
+    pub caller0: ::kernel::ffi::c_ulong,
+    pub addr: ::kernel::ffi::c_ulong,
     pub val: u64,
     pub width: u8,
 }
 
 #[repr(C)]
 pub struct RwmmioReadEntry {
-    pub caller: ::core::ffi::c_ulong,
-    pub caller0: ::core::ffi::c_ulong,
-    pub addr: ::core::ffi::c_ulong,
+    pub caller: ::kernel::ffi::c_ulong,
+    pub caller0: ::kernel::ffi::c_ulong,
+    pub addr: ::kernel::ffi::c_ulong,
     pub width: u8,
 }
 
 #[repr(C)]
 pub struct RwmmioPostReadEntry {
-    pub caller: ::core::ffi::c_ulong,
-    pub caller0: ::core::ffi::c_ulong,
-    pub addr: ::core::ffi::c_ulong,
+    pub caller: ::kernel::ffi::c_ulong,
+    pub caller0: ::kernel::ffi::c_ulong,
+    pub addr: ::kernel::ffi::c_ulong,
     pub val: u64,
     pub width: u8,
 }
@@ -41,71 +41,71 @@ pub const RWMMIO_POST_READ_PRINTK: &str =
     "%pS -> %pS width=%d val=%#llx addr=%#lx";
 
 pub type RwmmioRwTemplateProto = unsafe extern "C" fn(
-    caller: ::core::ffi::c_ulong,
-    caller0: ::core::ffi::c_ulong,
+    caller: ::kernel::ffi::c_ulong,
+    caller0: ::kernel::ffi::c_ulong,
     val: u64,
     width: u8,
-    addr: *mut ::core::ffi::c_void,
+    addr: *mut ::kernel::ffi::c_void,
 );
 
 pub type RwmmioReadProto = unsafe extern "C" fn(
-    caller: ::core::ffi::c_ulong,
-    caller0: ::core::ffi::c_ulong,
+    caller: ::kernel::ffi::c_ulong,
+    caller0: ::kernel::ffi::c_ulong,
     width: u8,
-    addr: *const ::core::ffi::c_void,
+    addr: *const ::kernel::ffi::c_void,
 );
 
 pub type RwmmioPostReadProto = unsafe extern "C" fn(
-    caller: ::core::ffi::c_ulong,
-    caller0: ::core::ffi::c_ulong,
+    caller: ::kernel::ffi::c_ulong,
+    caller0: ::kernel::ffi::c_ulong,
     val: u64,
     width: u8,
-    addr: *const ::core::ffi::c_void,
+    addr: *const ::kernel::ffi::c_void,
 );
 
 #[inline]
 pub unsafe fn rwmmio_rw_template_fast_assign(
     entry: *mut RwmmioRwTemplateEntry,
-    caller: ::core::ffi::c_ulong,
-    caller0: ::core::ffi::c_ulong,
+    caller: ::kernel::ffi::c_ulong,
+    caller0: ::kernel::ffi::c_ulong,
     val: u64,
     width: u8,
-    addr: *mut ::core::ffi::c_void,
+    addr: *mut ::kernel::ffi::c_void,
 ) {
     (*entry).caller = caller;
     (*entry).caller0 = caller0;
     (*entry).val = val;
-    (*entry).addr = addr as ::core::ffi::c_ulong;
+    (*entry).addr = addr as ::kernel::ffi::c_ulong;
     (*entry).width = width;
 }
 
 #[inline]
 pub unsafe fn rwmmio_read_fast_assign(
     entry: *mut RwmmioReadEntry,
-    caller: ::core::ffi::c_ulong,
-    caller0: ::core::ffi::c_ulong,
+    caller: ::kernel::ffi::c_ulong,
+    caller0: ::kernel::ffi::c_ulong,
     width: u8,
-    addr: *const ::core::ffi::c_void,
+    addr: *const ::kernel::ffi::c_void,
 ) {
     (*entry).caller = caller;
     (*entry).caller0 = caller0;
-    (*entry).addr = addr as ::core::ffi::c_ulong;
+    (*entry).addr = addr as ::kernel::ffi::c_ulong;
     (*entry).width = width;
 }
 
 #[inline]
 pub unsafe fn rwmmio_post_read_fast_assign(
     entry: *mut RwmmioPostReadEntry,
-    caller: ::core::ffi::c_ulong,
-    caller0: ::core::ffi::c_ulong,
+    caller: ::kernel::ffi::c_ulong,
+    caller0: ::kernel::ffi::c_ulong,
     val: u64,
     width: u8,
-    addr: *const ::core::ffi::c_void,
+    addr: *const ::kernel::ffi::c_void,
 ) {
     (*entry).caller = caller;
     (*entry).caller0 = caller0;
     (*entry).val = val;
-    (*entry).addr = addr as ::core::ffi::c_ulong;
+    (*entry).addr = addr as ::kernel::ffi::c_ulong;
     (*entry).width = width;
 }
 

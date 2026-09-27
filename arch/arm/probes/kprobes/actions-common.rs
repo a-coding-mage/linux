@@ -20,7 +20,7 @@ unsafe fn simulate_ldm1stm1(
     let wbit = insn & (1 << 21);
     let ubit = insn & (1 << 23);
     let pbit = insn & (1 << 24);
-    let mut addr = (*regs).uregs[rn] as *mut libc::c_long;
+    let mut addr = (*regs).uregs[rn] as *mut kernel::ffi::c_long;
     let mut reg_bit_vector: u32;
     let mut reg_count: isize;
 

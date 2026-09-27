@@ -7,56 +7,56 @@
 
 #[repr(C)]
 pub struct gpib_board_config {
-    pub init_data: *mut core::ffi::c_void,
-    pub init_data_length: core::ffi::c_int,
+    pub init_data: *mut kernel::ffi::c_void,
+    pub init_data_length: kernel::ffi::c_int,
     pub ibbase: u32,
-    pub mmibbase: *mut core::ffi::c_void,
-    pub ibirq: core::ffi::c_uint,
-    pub ibdma: core::ffi::c_uint,
-    pub pci_bus: core::ffi::c_int,
-    pub pci_slot: core::ffi::c_int,
-    pub device_path: *mut core::ffi::c_char,
-    pub serial_number: *mut core::ffi::c_char,
+    pub mmibbase: *mut kernel::ffi::c_void,
+    pub ibirq: kernel::ffi::c_uint,
+    pub ibdma: kernel::ffi::c_uint,
+    pub pci_bus: kernel::ffi::c_int,
+    pub pci_slot: kernel::ffi::c_int,
+    pub device_path: *mut kernel::ffi::c_char,
+    pub serial_number: *mut kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct gpib_interface {
-    pub name: *mut core::ffi::c_char,
-    pub attach: Option<unsafe extern "C" fn(*mut gpib_board, *const gpib_board_config) -> core::ffi::c_int>,
+    pub name: *mut kernel::ffi::c_char,
+    pub attach: Option<unsafe extern "C" fn(*mut gpib_board, *const gpib_board_config) -> kernel::ffi::c_int>,
     pub detach: Option<unsafe extern "C" fn(*mut gpib_board)>,
-    pub read: Option<unsafe extern "C" fn(*mut gpib_board, *mut u8, usize, *mut core::ffi::c_int, *mut usize) -> core::ffi::c_int>,
-    pub write: Option<unsafe extern "C" fn(*mut gpib_board, *mut u8, usize, core::ffi::c_int, *mut usize) -> core::ffi::c_int>,
-    pub command: Option<unsafe extern "C" fn(*mut gpib_board, *mut u8, usize, *mut usize) -> core::ffi::c_int>,
-    pub take_control: Option<unsafe extern "C" fn(*mut gpib_board, core::ffi::c_int) -> core::ffi::c_int>,
-    pub go_to_standby: Option<unsafe extern "C" fn(*mut gpib_board) -> core::ffi::c_int>,
-    pub request_system_control: Option<unsafe extern "C" fn(*mut gpib_board, core::ffi::c_int) -> core::ffi::c_int>,
-    pub interface_clear: Option<unsafe extern "C" fn(*mut gpib_board, core::ffi::c_int)>,
-    pub remote_enable: Option<unsafe extern "C" fn(*mut gpib_board, core::ffi::c_int)>,
-    pub enable_eos: Option<unsafe extern "C" fn(*mut gpib_board, u8, core::ffi::c_int) -> core::ffi::c_int>,
+    pub read: Option<unsafe extern "C" fn(*mut gpib_board, *mut u8, usize, *mut kernel::ffi::c_int, *mut usize) -> kernel::ffi::c_int>,
+    pub write: Option<unsafe extern "C" fn(*mut gpib_board, *mut u8, usize, kernel::ffi::c_int, *mut usize) -> kernel::ffi::c_int>,
+    pub command: Option<unsafe extern "C" fn(*mut gpib_board, *mut u8, usize, *mut usize) -> kernel::ffi::c_int>,
+    pub take_control: Option<unsafe extern "C" fn(*mut gpib_board, kernel::ffi::c_int) -> kernel::ffi::c_int>,
+    pub go_to_standby: Option<unsafe extern "C" fn(*mut gpib_board) -> kernel::ffi::c_int>,
+    pub request_system_control: Option<unsafe extern "C" fn(*mut gpib_board, kernel::ffi::c_int) -> kernel::ffi::c_int>,
+    pub interface_clear: Option<unsafe extern "C" fn(*mut gpib_board, kernel::ffi::c_int)>,
+    pub remote_enable: Option<unsafe extern "C" fn(*mut gpib_board, kernel::ffi::c_int)>,
+    pub enable_eos: Option<unsafe extern "C" fn(*mut gpib_board, u8, kernel::ffi::c_int) -> kernel::ffi::c_int>,
     pub disable_eos: Option<unsafe extern "C" fn(*mut gpib_board)>,
     pub parallel_poll_configure: Option<unsafe extern "C" fn(*mut gpib_board, u8)>,
-    pub parallel_poll: Option<unsafe extern "C" fn(*mut gpib_board, *mut u8) -> core::ffi::c_int>,
-    pub parallel_poll_response: Option<unsafe extern "C" fn(*mut gpib_board, core::ffi::c_int)>,
-    pub local_parallel_poll_mode: Option<unsafe extern "C" fn(*mut gpib_board, core::ffi::c_int)>,
-    pub line_status: Option<unsafe extern "C" fn(*const gpib_board) -> core::ffi::c_int>,
-    pub update_status: Option<unsafe extern "C" fn(*mut gpib_board, core::ffi::c_uint) -> core::ffi::c_uint>,
-    pub primary_address: Option<unsafe extern "C" fn(*mut gpib_board, core::ffi::c_uint) -> core::ffi::c_int>,
-    pub secondary_address: Option<unsafe extern "C" fn(*mut gpib_board, core::ffi::c_uint, core::ffi::c_int) -> core::ffi::c_int>,
+    pub parallel_poll: Option<unsafe extern "C" fn(*mut gpib_board, *mut u8) -> kernel::ffi::c_int>,
+    pub parallel_poll_response: Option<unsafe extern "C" fn(*mut gpib_board, kernel::ffi::c_int)>,
+    pub local_parallel_poll_mode: Option<unsafe extern "C" fn(*mut gpib_board, kernel::ffi::c_int)>,
+    pub line_status: Option<unsafe extern "C" fn(*const gpib_board) -> kernel::ffi::c_int>,
+    pub update_status: Option<unsafe extern "C" fn(*mut gpib_board, kernel::ffi::c_uint) -> kernel::ffi::c_uint>,
+    pub primary_address: Option<unsafe extern "C" fn(*mut gpib_board, kernel::ffi::c_uint) -> kernel::ffi::c_int>,
+    pub secondary_address: Option<unsafe extern "C" fn(*mut gpib_board, kernel::ffi::c_uint, kernel::ffi::c_int) -> kernel::ffi::c_int>,
     pub serial_poll_response: Option<unsafe extern "C" fn(*mut gpib_board, u8)>,
-    pub serial_poll_response2: Option<unsafe extern "C" fn(*mut gpib_board, u8, core::ffi::c_int)>,
+    pub serial_poll_response2: Option<unsafe extern "C" fn(*mut gpib_board, u8, kernel::ffi::c_int)>,
     pub serial_poll_status: Option<unsafe extern "C" fn(*mut gpib_board) -> u8>,
-    pub t1_delay: Option<unsafe extern "C" fn(*mut gpib_board, core::ffi::c_uint) -> core::ffi::c_int>,
+    pub t1_delay: Option<unsafe extern "C" fn(*mut gpib_board, kernel::ffi::c_uint) -> kernel::ffi::c_int>,
     pub return_to_local: Option<unsafe extern "C" fn(*mut gpib_board)>,
-    pub no_7_bit_eos: core::ffi::c_uint,
-    pub skip_check_for_command_acceptors: core::ffi::c_uint,
+    pub no_7_bit_eos: kernel::ffi::c_uint,
+    pub skip_check_for_command_acceptors: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct gpib_event_queue {
     pub event_head: list_head,
     pub lock: spinlock_t,
-    pub num_events: core::ffi::c_uint,
-    pub dropped_event: core::ffi::c_uint,
+    pub num_events: kernel::ffi::c_uint,
+    pub dropped_event: kernel::ffi::c_uint,
 }
 
 #[inline]
@@ -70,7 +70,7 @@ pub unsafe fn init_event_queue(queue: *mut gpib_event_queue) {
 #[repr(C)]
 pub struct gpib_pseudo_irq {
     pub timer: timer_list,
-    pub handler: Option<unsafe extern "C" fn(core::ffi::c_int, *mut core::ffi::c_void) -> irqreturn_t>,
+    pub handler: Option<unsafe extern "C" fn(kernel::ffi::c_int, *mut kernel::ffi::c_void) -> irqreturn_t>,
     pub board: *mut gpib_board,
     pub active: atomic_t,
 }
@@ -94,8 +94,8 @@ pub struct gpib_board {
     pub interface: *mut gpib_interface,
     pub provider_module: *mut module,
     pub buffer: *mut u8,
-    pub buffer_length: core::ffi::c_uint,
-    pub status: core::ffi::c_ulong,
+    pub buffer_length: kernel::ffi::c_uint,
+    pub status: kernel::ffi::c_ulong,
     pub wait: wait_queue_head_t,
     pub user_mutex: mutex,
     pub big_gpib_mutex: mutex,
@@ -105,25 +105,25 @@ pub struct gpib_board {
     pub timer: timer_list,
     pub dev: *mut device,
     pub gpib_dev: *mut device,
-    pub private_data: *mut core::ffi::c_void,
-    pub use_count: core::ffi::c_uint,
+    pub private_data: *mut kernel::ffi::c_void,
+    pub use_count: kernel::ffi::c_uint,
     pub device_list: list_head,
-    pub pad: core::ffi::c_uint,
-    pub sad: core::ffi::c_int,
-    pub usec_timeout: core::ffi::c_uint,
+    pub pad: kernel::ffi::c_uint,
+    pub sad: kernel::ffi::c_int,
+    pub usec_timeout: kernel::ffi::c_uint,
     pub parallel_poll_configuration: u8,
-    pub t1_nano_sec: core::ffi::c_uint,
-    pub online: core::ffi::c_uint,
-    pub autospollers: core::ffi::c_int,
+    pub t1_nano_sec: kernel::ffi::c_uint,
+    pub online: kernel::ffi::c_uint,
+    pub autospollers: kernel::ffi::c_int,
     pub autospoll_task: *mut task_struct,
     pub event_queue: gpib_event_queue,
-    pub minor: core::ffi::c_int,
+    pub minor: kernel::ffi::c_int,
     pub pseudo_irq: gpib_pseudo_irq,
     pub stuck_srq: atomic_t,
     pub config: gpib_board_config,
-    pub master: core::ffi::c_uint,
-    pub ist: core::ffi::c_uint,
-    pub local_ppoll_mode: core::ffi::c_uint,
+    pub master: kernel::ffi::c_uint,
+    pub ist: kernel::ffi::c_uint,
+    pub local_ppoll_mode: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -132,12 +132,12 @@ pub struct gpib_event { pub list: list_head, pub event_type: i16 }
 #[repr(C)]
 pub struct gpib_status_queue {
     pub list: list_head,
-    pub pad: core::ffi::c_uint,
-    pub sad: core::ffi::c_int,
+    pub pad: kernel::ffi::c_uint,
+    pub sad: kernel::ffi::c_int,
     pub status_bytes: list_head,
-    pub num_status_bytes: core::ffi::c_uint,
-    pub reference_count: core::ffi::c_uint,
-    pub dropped_byte: core::ffi::c_uint,
+    pub num_status_bytes: kernel::ffi::c_uint,
+    pub reference_count: kernel::ffi::c_uint,
+    pub dropped_byte: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -147,12 +147,12 @@ unsafe extern "C" { pub fn init_gpib_status_queue(device: *mut gpib_status_queue
 
 #[repr(C)]
 pub struct gpib_descriptor {
-    pub pad: core::ffi::c_uint,
-    pub sad: core::ffi::c_int,
+    pub pad: kernel::ffi::c_uint,
+    pub sad: kernel::ffi::c_int,
     pub io_in_progress: atomic_t,
     pub descriptor_busy: atomic_t,
-    pub is_board: core::ffi::c_uint,
-    pub autopoll_enabled: core::ffi::c_uint,
+    pub is_board: kernel::ffi::c_uint,
+    pub autopoll_enabled: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -160,7 +160,7 @@ pub struct gpib_file_private {
     pub holding_mutex: atomic_t,
     pub descriptors: [*mut gpib_descriptor; GPIB_MAX_NUM_DESCRIPTORS],
     pub descriptors_mutex: mutex,
-    pub got_module: core::ffi::c_uint,
+    pub got_module: kernel::ffi::c_uint,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

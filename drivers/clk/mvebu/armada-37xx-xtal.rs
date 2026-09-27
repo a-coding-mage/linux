@@ -42,7 +42,7 @@ pub struct clk_hw {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -54,25 +54,25 @@ pub struct platform_driver {
 
 #[repr(C)]
 pub struct driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
 extern "C" {
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut core::ffi::c_void);
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut kernel::ffi::c_void);
     fn syscon_node_to_regmap(node: *mut device_node) -> *mut regmap;
     fn regmap_read(map: *mut regmap, reg: u32, val: *mut u32) -> i32;
     fn of_property_read_string_index(
         np: *mut device_node,
-        propname: *const core::ffi::c_char,
+        propname: *const kernel::ffi::c_char,
         index: usize,
-        output: *mut *const core::ffi::c_char,
+        output: *mut *const kernel::ffi::c_char,
     ) -> i32;
     fn clk_hw_register_fixed_rate(
         dev: *mut device,
-        name: *const core::ffi::c_char,
-        parent_name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
+        parent_name: *const kernel::ffi::c_char,
         flags: u32,
         rate: u32,
     ) -> *mut clk_hw;
@@ -83,8 +83,8 @@ extern "C" {
     ) -> i32;
     fn of_clk_hw_simple_get(np: *mut device_node, args: *const u32) -> *mut clk_hw;
     fn of_clk_del_provider(np: *mut device_node);
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn ptr_err(ptr: *mut core::ffi::c_void) -> i32;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn ptr_err(ptr: *mut kernel::ffi::c_void) -> i32;
     fn is_err<T>(ptr: *mut T) -> bool;
 }
 
@@ -93,7 +93,7 @@ const GFP_KERNEL: u32 = 0;
 #[allow(non_snake_case)]
 unsafe extern "C" fn armada_3700_xtal_clock_probe(pdev: *mut platform_device) -> i32 {
     let np = (*pdev).dev.of_node;
-    let mut xtal_name = b"xtal\0".as_ptr() as *const core::ffi::c_char;
+    let mut xtal_name = b"xtal\0".as_ptr() as *const kernel::ffi::c_char;
     let parent: *mut device_node;
     let regmap: *mut regmap;
     let mut xtal_hw: *mut clk_hw;
@@ -110,7 +110,7 @@ unsafe extern "C" fn armada_3700_xtal_clock_probe(pdev: *mut platform_device) ->
         return -12;
     }
 
-    platform_set_drvdata(pdev, xtal_hw as *mut core::ffi::c_void);
+    platform_set_drvdata(pdev, xtal_hw as *mut kernel::ffi::c_void);
 
     parent = (*np).parent;
     if parent.is_null() {
@@ -121,7 +121,7 @@ unsafe extern "C" fn armada_3700_xtal_clock_probe(pdev: *mut platform_device) ->
     regmap = syscon_node_to_regmap(parent);
     if is_err(regmap) {
         dev_err(&mut (*pdev).dev, b"cannot get regmap\n\0".as_ptr() as *const _);
-        return ptr_err(regmap as *mut core::ffi::c_void);
+        return ptr_err(regmap as *mut kernel::ffi::c_void);
     }
 
     ret = regmap_read(regmap, NB_GPIO1_LATCH, &mut reg);
@@ -144,7 +144,7 @@ unsafe extern "C" fn armada_3700_xtal_clock_probe(pdev: *mut platform_device) ->
     );
     xtal_hw = clk_hw_register_fixed_rate(core::ptr::null_mut(), xtal_name, core::ptr::null(), 0, rate);
     if is_err(xtal_hw) {
-        return ptr_err(xtal_hw as *mut core::ffi::c_void);
+        return ptr_err(xtal_hw as *mut kernel::ffi::c_void);
     }
     ret = of_clk_add_hw_provider(Some(np), Some(of_clk_hw_simple_get), xtal_hw);
 

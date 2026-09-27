@@ -73,8 +73,8 @@ unsafe extern "C" fn tee_tg6(
 
 unsafe extern "C" fn tee_netdev_event(
     this: *mut notifier_block,
-    event: libc::c_ulong,
-    ptr: *mut libc::c_void,
+    event: kernel::ffi::c_ulong,
+    ptr: *mut kernel::ffi::c_void,
 ) -> i32 {
     let dev = netdev_notifier_info_to_dev(ptr);
     let net = dev_net(dev);
@@ -117,8 +117,8 @@ unsafe extern "C" fn tee_tg_check(par: *const xt_tgchk_param) -> i32 {
 
     // 0.0.0.0 and :: not allowed
     if memcmp(
-        &(*info).gw as *const _ as *const libc::c_void,
-        &tee_zero_address as *const _ as *const libc::c_void,
+        &(*info).gw as *const _ as *const kernel::ffi::c_void,
+        &tee_zero_address as *const _ as *const kernel::ffi::c_void,
         core::mem::size_of::<nf_inet_addr>(),
     ) == 0 {
         return -EINVAL;

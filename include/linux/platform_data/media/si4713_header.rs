@@ -42,6 +42,6 @@ pub struct si4713_rnl {
  * Driver must return measured value in the same structure, filling 'rnl' field.
  */
 /* Build-time ioctl encoding supplied by the surrounding kernel bindings. */
-pub const SI4713_IOC_MEASURE_RNL: _ = _IOWR!('V', BASE_VIDIOC_PRIVATE + 0, si4713_rnl);
+pub const SI4713_IOC_MEASURE_RNL: u32 = _IOWR!('V', BASE_VIDIOC_PRIVATE + 0, si4713_rnl);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

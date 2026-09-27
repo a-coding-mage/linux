@@ -33,7 +33,7 @@ macro_rules! RESET_DATA {
  * IO_ADDRESS, and the related platform types. */
 
 extern "C" {
-    pub static mut __tegra_cpu_reset_handler_data: [core::ffi::c_ulong; TEGRA_RESET_DATA_SIZE];
+    pub static mut __tegra_cpu_reset_handler_data: [kernel::ffi::c_ulong; TEGRA_RESET_DATA_SIZE];
 
     pub fn __tegra_cpu_reset_handler_start();
     pub fn __tegra_cpu_reset_handler();

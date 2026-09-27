@@ -47,7 +47,7 @@ pub struct io_issue_def {
 
 #[repr(C)]
 pub struct io_cold_def {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 
     pub sqe_copy: Option<unsafe extern "C" fn(*mut io_kiocb)>,
     pub cleanup: Option<unsafe extern "C" fn(*mut io_kiocb)>,

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Supplied by the corresponding kernel headers/dependencies.
 #[repr(C)]

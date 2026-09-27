@@ -32,8 +32,8 @@ pub struct syscon_gpio_priv {
 #[repr(C)]
 pub struct gpio_chip {
     pub parent: *mut device,
-    pub owner: *mut core::ffi::c_void,
-    pub label: *const core::ffi::c_char,
+    pub owner: *mut kernel::ffi::c_void,
+    pub label: *const kernel::ffi::c_char,
     pub base: i32,
     pub ngpio: u32,
     pub get: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>,
@@ -52,14 +52,14 @@ unsafe extern "C" {
     fn regmap_read(map: *mut regmap, reg: u32, val: *mut u32) -> i32;
     fn regmap_update_bits(map: *mut regmap, reg: u32, mask: u32, val: u32) -> i32;
     fn regmap_write(map: *mut regmap, reg: u32, val: u32) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_dbg(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_dbg(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn of_device_get_match_data(dev: *mut device) -> *const syscon_gpio_data;
-    fn syscon_regmap_lookup_by_phandle(np: *mut device_node, name: *const core::ffi::c_char) -> *mut regmap;
+    fn syscon_regmap_lookup_by_phandle(np: *mut device_node, name: *const kernel::ffi::c_char) -> *mut regmap;
     fn syscon_node_to_regmap(np: *mut device_node) -> *mut regmap;
-    fn of_property_read_u32_index(np: *mut device_node, name: *const core::ffi::c_char, index: u32, out: *mut u32) -> i32;
-    fn dev_name(dev: *mut device) -> *const core::ffi::c_char;
+    fn of_property_read_u32_index(np: *mut device_node, name: *const kernel::ffi::c_char, index: u32, out: *mut u32) -> i32;
+    fn dev_name(dev: *mut device) -> *const kernel::ffi::c_char;
     fn devm_gpiochip_add_data(dev: *mut device, chip: *mut gpio_chip, data: *mut syscon_gpio_priv) -> i32;
 }
 
@@ -127,7 +127,7 @@ unsafe extern "C" fn keystone_gpio_set(chip: *mut gpio_chip, offset: u32, val: i
 static keystone_dsp_gpio: syscon_gpio_data = syscon_gpio_data { flags: GPIO_SYSCON_FEAT_OUT, bit_count: 28, dat_bit_offset: 4, dir_bit_offset: 0, set: Some(keystone_gpio_set) };
 
 #[repr(C)]
-struct of_device_id { compatible: *const core::ffi::c_char, data: *const syscon_gpio_data }
+struct of_device_id { compatible: *const kernel::ffi::c_char, data: *const syscon_gpio_data }
 
 static syscon_gpio_ids: [of_device_id; 4] = [
     of_device_id { compatible: c"cirrus,ep7209-mctrl-gpio".as_ptr(), data: &clps711x_mctrl_gpio },

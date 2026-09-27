@@ -25,7 +25,7 @@ unsafe extern "C" {
     pub fn folio_test_swapbacked(folio: *const folio) -> bool;
     pub fn folio_test_mappedtodisk(folio: *const folio) -> bool;
     pub fn folio_test_private(folio: *const folio) -> bool;
-    pub fn folio_pfn(folio: *const folio) -> ::core::ffi::c_ulong;
+    pub fn folio_pfn(folio: *const folio) -> ::kernel::ffi::c_ulong;
     pub fn folio_lru_list(folio: *const folio) -> lru_list;
 }
 
@@ -61,9 +61,9 @@ pub unsafe fn trace_pagemap_flags(folio: *const folio) -> u32 {
 #[repr(C)]
 pub struct MmLruInsertionEntry {
     pub folio: *mut folio,
-    pub pfn: ::core::ffi::c_ulong,
+    pub pfn: ::kernel::ffi::c_ulong,
     pub lru: lru_list,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
 }
 
 #[inline]
@@ -72,14 +72,14 @@ pub unsafe fn mm_lru_insertion_entry(folio: *mut folio) -> MmLruInsertionEntry {
         folio,
         pfn: folio_pfn(folio),
         lru: folio_lru_list(folio),
-        flags: trace_pagemap_flags(folio) as ::core::ffi::c_ulong,
+        flags: trace_pagemap_flags(folio) as ::kernel::ffi::c_ulong,
     }
 }
 
 #[repr(C)]
 pub struct MmLruActivateEntry {
     pub folio: *mut folio,
-    pub pfn: ::core::ffi::c_ulong,
+    pub pfn: ::kernel::ffi::c_ulong,
 }
 
 #[inline]

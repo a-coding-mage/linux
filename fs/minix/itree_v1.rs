@@ -7,12 +7,12 @@ pub const DIRECT: usize = 7; // Only double indirect
 pub type BlockT = u16; // 16 bit, host order
 
 #[inline]
-fn block_to_cpu(n: BlockT) -> libc::c_ulong {
-    n as libc::c_ulong
+fn block_to_cpu(n: BlockT) -> kernel::ffi::c_ulong {
+    n as kernel::ffi::c_ulong
 }
 
 #[inline]
-fn cpu_to_block(n: libc::c_ulong) -> BlockT {
+fn cpu_to_block(n: kernel::ffi::c_ulong) -> BlockT {
     n as BlockT
 }
 
@@ -28,7 +28,7 @@ pub struct inode {
 
 #[repr(C)]
 pub struct super_block {
-    pub s_bdev: *mut core::ffi::c_void,
+    pub s_bdev: *mut kernel::ffi::c_void,
     pub s_maxbytes: u64,
 }
 
@@ -52,9 +52,9 @@ unsafe fn i_data(inode: *mut inode) -> *mut BlockT {
     (*minix_i(inode)).u.i1_data.as_mut_ptr()
 }
 
-unsafe fn block_to_path(inode: *mut inode, mut block: libc::c_long,
-                        offsets: *mut libc::c_int) -> libc::c_int {
-    let mut n: libc::c_int = 0;
+unsafe fn block_to_path(inode: *mut inode, mut block: kernel::ffi::c_long,
+                        offsets: *mut kernel::ffi::c_int) -> kernel::ffi::c_int {
+    let mut n: kernel::ffi::c_int = 0;
 
     if block < 0 {
         // printk("MINIX-fs: block_to_path: block %ld < 0 on dev %pg\n", ...)
@@ -65,7 +65,7 @@ unsafe fn block_to_path(inode: *mut inode, mut block: libc::c_long,
     }
 
     if block < 7 {
-        *offsets.add(n as usize) = block as libc::c_int;
+        *offsets.add(n as usize) = block as kernel::ffi::c_int;
         n += 1;
     } else if {
         block -= 7;
@@ -73,15 +73,15 @@ unsafe fn block_to_path(inode: *mut inode, mut block: libc::c_long,
     } {
         *offsets.add(n as usize) = 7;
         n += 1;
-        *offsets.add(n as usize) = block as libc::c_int;
+        *offsets.add(n as usize) = block as kernel::ffi::c_int;
         n += 1;
     } else {
         block -= 512;
         *offsets.add(n as usize) = 8;
         n += 1;
-        *offsets.add(n as usize) = (block >> 9) as libc::c_int;
+        *offsets.add(n as usize) = (block >> 9) as kernel::ffi::c_int;
         n += 1;
-        *offsets.add(n as usize) = (block & 511) as libc::c_int;
+        *offsets.add(n as usize) = (block & 511) as kernel::ffi::c_int;
         n += 1;
     }
     n
@@ -89,18 +89,18 @@ unsafe fn block_to_path(inode: *mut inode, mut block: libc::c_long,
 
 // "itree_common.c" is translated/provided by the surrounding source set.
 extern "C" {
-    fn get_block(inode: *mut inode, block: libc::c_long,
-                 bh_result: *mut buffer_head, create: libc::c_int) -> libc::c_int;
+    fn get_block(inode: *mut inode, block: kernel::ffi::c_long,
+                 bh_result: *mut buffer_head, create: kernel::ffi::c_int) -> kernel::ffi::c_int;
     fn truncate(inode: *mut inode);
-    fn nblocks(size: libc::c_longlong, sb: *mut super_block) -> libc::c_uint;
+    fn nblocks(size: kernel::ffi::c_longlong, sb: *mut super_block) -> kernel::ffi::c_uint;
 }
 
 pub const BLOCK_SIZE: usize = 1024;
 
 #[no_mangle]
-pub unsafe extern "C" fn V1_minix_get_block(inode: *mut inode, block: libc::c_long,
+pub unsafe extern "C" fn V1_minix_get_block(inode: *mut inode, block: kernel::ffi::c_long,
                                              bh_result: *mut buffer_head,
-                                             create: libc::c_int) -> libc::c_int {
+                                             create: kernel::ffi::c_int) -> kernel::ffi::c_int {
     get_block(inode, block, bh_result, create)
 }
 
@@ -110,8 +110,8 @@ pub unsafe extern "C" fn V1_minix_truncate(inode: *mut inode) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn V1_minix_blocks(size: libc::c_longlong,
-                                          sb: *mut super_block) -> libc::c_uint {
+pub unsafe extern "C" fn V1_minix_blocks(size: kernel::ffi::c_longlong,
+                                          sb: *mut super_block) -> kernel::ffi::c_uint {
     nblocks(size, sb)
 }
 

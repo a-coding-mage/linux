@@ -17,7 +17,7 @@ pub const PALMAS_CLOCK_DT_EXT_CONTROL_NSLEEP: u32 = 3;
 
 #[repr(C)]
 pub struct palmas_clk32k_desc {
-    pub clk_name: *const core::ffi::c_char,
+    pub clk_name: *const kernel::ffi::c_char,
     pub control_reg: u32,
     pub enable_mask: u32,
     pub sleep_mask: u32,
@@ -43,19 +43,19 @@ unsafe extern "C" {
     fn palmas_update_bits(palmas: *mut palmas, base: u32, reg: u32, mask: u32, val: u32) -> i32;
     fn palmas_read(palmas: *mut palmas, base: u32, reg: u32, val: *mut u32) -> i32;
     fn udelay(usecs: u32);
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_warn(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_warn(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     fn clk_unprepare(clk: *mut clk);
     fn clk_prepare(clk: *mut clk) -> i32;
     fn palmas_ext_control_req_config(palmas: *mut palmas, id: u32, pin: i32, enable: bool) -> i32;
-    fn of_property_read_u32(node: *mut device_node, name: *const core::ffi::c_char, prop: *mut u32) -> i32;
-    fn devm_add_action_or_reset(dev: *mut device, action: unsafe extern "C" fn(*mut core::ffi::c_void), data: *mut core::ffi::c_void) -> i32;
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
-    fn of_device_get_match_data(dev: *mut device) -> *const core::ffi::c_void;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut core::ffi::c_void);
+    fn of_property_read_u32(node: *mut device_node, name: *const kernel::ffi::c_char, prop: *mut u32) -> i32;
+    fn devm_add_action_or_reset(dev: *mut device, action: unsafe extern "C" fn(*mut kernel::ffi::c_void), data: *mut kernel::ffi::c_void) -> i32;
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
+    fn of_device_get_match_data(dev: *mut device) -> *const kernel::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut kernel::ffi::c_void);
     fn devm_clk_hw_register(dev: *mut device, hw: *mut clk_hw) -> i32;
-    fn devm_of_clk_add_hw_provider(dev: *mut device, get: *const core::ffi::c_void, data: *mut core::ffi::c_void) -> i32;
+    fn devm_of_clk_add_hw_provider(dev: *mut device, get: *const kernel::ffi::c_void, data: *mut kernel::ffi::c_void) -> i32;
 }
 
 unsafe fn palmas_clks_recalc_rate(_hw: *mut clk_hw, _parent_rate: usize) -> usize { 32768 }
@@ -98,7 +98,7 @@ unsafe fn palmas_clks_get_clk_data(pdev: *mut platform_device, cinfo: *mut palma
     (*cinfo).ext_control_pin = prop as i32;
 }
 
-unsafe extern "C" fn palmas_clks_unprepare_ext_control(data: *mut core::ffi::c_void) { let cinfo = data as *mut palmas_clock_info; clk_unprepare((*cinfo).hw.clk); }
+unsafe extern "C" fn palmas_clks_unprepare_ext_control(data: *mut kernel::ffi::c_void) { let cinfo = data as *mut palmas_clock_info; clk_unprepare((*cinfo).hw.clk); }
 
 unsafe fn palmas_clks_init_configure(cinfo: *mut palmas_clock_info) -> i32 {
     let d = &*(*cinfo).clk_desc;
@@ -106,7 +106,7 @@ unsafe fn palmas_clks_init_configure(cinfo: *mut palmas_clock_info) -> i32 {
     if ret < 0 { dev_err((*cinfo).dev, c"Reg 0x%02x update failed, %d\n".as_ptr(), d.control_reg, ret); return ret; }
     if (*cinfo).ext_control_pin != 0 {
         ret = clk_prepare((*cinfo).hw.clk); if ret < 0 { dev_err((*cinfo).dev, c"Clock prep failed, %d\n".as_ptr(), ret); return ret; }
-        ret = devm_add_action_or_reset((*cinfo).dev, palmas_clks_unprepare_ext_control, cinfo as *mut core::ffi::c_void); if ret != 0 { return ret; }
+        ret = devm_add_action_or_reset((*cinfo).dev, palmas_clks_unprepare_ext_control, cinfo as *mut kernel::ffi::c_void); if ret != 0 { return ret; }
         ret = palmas_ext_control_req_config((*cinfo).palmas, d.sleep_reqstr_id, (*cinfo).ext_control_pin, true);
         if ret < 0 { dev_err((*cinfo).dev, c"Ext config for %s failed, %d\n".as_ptr(), d.clk_name, ret); return ret; }
     }
@@ -120,7 +120,7 @@ pub unsafe fn palmas_clks_probe(pdev: *mut platform_device) -> i32 {
     let cinfo = devm_kzalloc(&mut (*pdev).dev, core::mem::size_of::<palmas_clock_info>(), GFP_KERNEL) as *mut palmas_clock_info;
     if cinfo.is_null() { return -12; }
     palmas_clks_get_clk_data(pdev, cinfo);
-    platform_set_drvdata(pdev, cinfo as *mut core::ffi::c_void);
+    platform_set_drvdata(pdev, cinfo as *mut kernel::ffi::c_void);
     (*cinfo).dev = &mut (*pdev).dev;
     (*cinfo).palmas = palmas;
     (*cinfo).clk_desc = &(*match_data).desc;
@@ -129,7 +129,7 @@ pub unsafe fn palmas_clks_probe(pdev: *mut platform_device) -> i32 {
     if ret != 0 { dev_err(&mut (*pdev).dev, c"Fail to register clock %s, %d\n".as_ptr(), (*match_data).desc.clk_name, ret); return ret; }
     ret = palmas_clks_init_configure(cinfo);
     if ret < 0 { dev_err(&mut (*pdev).dev, c"Clock config failed, %d\n".as_ptr(), ret); return ret; }
-    ret = devm_of_clk_add_hw_provider(&mut (*pdev).dev, of_clk_hw_simple_get, &mut (*cinfo).hw as *mut clk_hw as *mut core::ffi::c_void);
+    ret = devm_of_clk_add_hw_provider(&mut (*pdev).dev, of_clk_hw_simple_get, &mut (*cinfo).hw as *mut clk_hw as *mut kernel::ffi::c_void);
     if ret < 0 { dev_err(&mut (*pdev).dev, c"Fail to add clock driver, %d\n".as_ptr(), ret); }
     ret
 }

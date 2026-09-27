@@ -2,7 +2,7 @@
 
 // C dependencies supplied by the surrounding kernel translation unit.
 
-pub unsafe fn unwind_get_return_address(state: *mut unwind_state) -> ::core::ffi::c_ulong {
+pub unsafe fn unwind_get_return_address(state: *mut unwind_state) -> ::kernel::ffi::c_ulong {
 	if unwind_done(state) {
 		return 0;
 	}
@@ -13,14 +13,14 @@ pub unsafe fn unwind_get_return_address(state: *mut unwind_state) -> ::core::ffi
 	}
 }
 
-unsafe fn outside_of_stack(state: *mut unwind_state, sp: ::core::ffi::c_ulong) -> bool {
+unsafe fn outside_of_stack(state: *mut unwind_state, sp: ::kernel::ffi::c_ulong) -> bool {
 	(sp <= (*state).sp)
 		|| (sp > (*state).stack_info.end - ::core::mem::size_of::<stack_frame>())
 }
 
-unsafe fn update_stack_info(state: *mut unwind_state, sp: ::core::ffi::c_ulong) -> bool {
+unsafe fn update_stack_info(state: *mut unwind_state, sp: ::kernel::ffi::c_ulong) -> bool {
 	let info: *mut stack_info = &mut (*state).stack_info;
-	let mask: *mut ::core::ffi::c_ulong = &mut (*state).stack_mask;
+	let mask: *mut ::kernel::ffi::c_ulong = &mut (*state).stack_mask;
 
 	/* New stack pointer leaves the current stack */
 	if get_stack_info(sp, (*state).task, info, mask) != 0
@@ -48,7 +48,7 @@ unsafe fn is_final_pt_regs(
 	/* user mode pt_regs at the bottom of irq stack */
 	(*state).stack_info.type_ == STACK_TYPE_IRQ
 		&& (*state).stack_info.end - ::core::mem::size_of::<pt_regs>()
-			== regs as ::core::ffi::c_ulong
+			== regs as ::kernel::ffi::c_ulong
 		&& (READ_ONCE_NOCHECK((*regs).psw.mask) & PSW_MASK_PSTATE) != 0
 }
 
@@ -57,8 +57,8 @@ pub unsafe fn unwind_next_frame(state: *mut unwind_state) -> bool {
 	let info: *mut stack_info = &mut (*state).stack_info;
 	let mut sf: *mut stack_frame;
 	let mut regs: *mut pt_regs;
-	let mut sp: ::core::ffi::c_ulong;
-	let mut ip: ::core::ffi::c_ulong;
+	let mut sp: ::kernel::ffi::c_ulong;
+	let mut ip: ::kernel::ffi::c_ulong;
 	let reliable: bool;
 	'out_stop: {
 	'out_err: {
@@ -136,12 +136,12 @@ pub unsafe fn __unwind_start(
 	state: *mut unwind_state,
 	task: *mut task_struct,
 	regs: *mut pt_regs,
-	first_frame: ::core::ffi::c_ulong,
+	first_frame: ::kernel::ffi::c_ulong,
 ) {
 	let info: *mut stack_info = &mut (*state).stack_info;
 	let mut sf: *mut stack_frame;
-	let mut ip: ::core::ffi::c_ulong;
-	let mut sp: ::core::ffi::c_ulong;
+	let mut ip: ::kernel::ffi::c_ulong;
+	let mut sp: ::kernel::ffi::c_ulong;
 
 	::core::ptr::write_bytes(state as *mut u8, 0, ::core::mem::size_of::<unwind_state>());
 	(*state).task = task;

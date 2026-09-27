@@ -200,25 +200,25 @@ pub const SOF_INTEL_PROCEN_FMT_QUIRK: u32 = BIT(0);
 /* DSP hardware descriptor */
 #[repr(C)]
 pub struct sof_intel_dsp_desc {
-    pub cores_num: ::core::ffi::c_int,
-    pub host_managed_cores_mask: ::core::ffi::c_int,
-    pub init_core_mask: ::core::ffi::c_int, /* cores available after fw boot */
-    pub ipc_req: ::core::ffi::c_int,
-    pub ipc_req_mask: ::core::ffi::c_int,
-    pub ipc_ack: ::core::ffi::c_int,
-    pub ipc_ack_mask: ::core::ffi::c_int,
-    pub ipc_ctl: ::core::ffi::c_int,
-    pub rom_status_reg: ::core::ffi::c_int,
-    pub rom_init_timeout: ::core::ffi::c_int,
-    pub ssp_count: ::core::ffi::c_int,       /* ssp count of the platform */
-    pub ssp_base_offset: ::core::ffi::c_int, /* base address of the SSPs */
+    pub cores_num: ::kernel::ffi::c_int,
+    pub host_managed_cores_mask: ::kernel::ffi::c_int,
+    pub init_core_mask: ::kernel::ffi::c_int, /* cores available after fw boot */
+    pub ipc_req: ::kernel::ffi::c_int,
+    pub ipc_req_mask: ::kernel::ffi::c_int,
+    pub ipc_ack: ::kernel::ffi::c_int,
+    pub ipc_ack_mask: ::kernel::ffi::c_int,
+    pub ipc_ctl: ::kernel::ffi::c_int,
+    pub rom_status_reg: ::kernel::ffi::c_int,
+    pub rom_init_timeout: ::kernel::ffi::c_int,
+    pub ssp_count: ::kernel::ffi::c_int,       /* ssp count of the platform */
+    pub ssp_base_offset: ::kernel::ffi::c_int, /* base address of the SSPs */
     pub sdw_shim_base: u32,
     pub sdw_alh_base: u32,
     pub d0i3_offset: u32,
     pub quirks: u32,
-    pub platform: *const ::core::ffi::c_char,
+    pub platform: *const ::kernel::ffi::c_char,
     pub hw_ip_version: sof_intel_hw_ip_version,
-    pub read_sdw_lcount: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int>,
+    pub read_sdw_lcount: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int>,
     pub enable_sdw_irq: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev, enable: bool)>,
     pub check_sdw_irq: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> bool>,
     pub check_sdw_wakeen_irq: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> bool>,
@@ -228,21 +228,21 @@ pub struct sof_intel_dsp_desc {
         unsafe extern "C" fn(
             sdev: *mut snd_sof_dev,
             alt: bool,
-            elid: ::core::ffi::c_int,
+            elid: ::kernel::ffi::c_int,
         ) -> bool,
     >,
     pub process_mic_privacy: Option<
-        unsafe extern "C" fn(sdev: *mut snd_sof_dev, alt: bool, elid: ::core::ffi::c_int),
+        unsafe extern "C" fn(sdev: *mut snd_sof_dev, alt: bool, elid: ::kernel::ffi::c_int),
     >,
-    pub power_down_dsp: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int>,
+    pub power_down_dsp: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int>,
     pub disable_interrupts:
-        Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int>,
+        Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int>,
     pub cl_init: Option<
         unsafe extern "C" fn(
             sdev: *mut snd_sof_dev,
-            stream_tag: ::core::ffi::c_int,
+            stream_tag: ::kernel::ffi::c_int,
             imr_boot: bool,
-        ) -> ::core::ffi::c_int,
+        ) -> ::kernel::ffi::c_int,
     >,
 }
 

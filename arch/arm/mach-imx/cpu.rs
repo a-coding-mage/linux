@@ -2,7 +2,7 @@
 //
 // C dependencies are supplied by the surrounding kernel translation.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Equivalent of IMX_CHIP_REVISION_UNKNOWN from the included headers.
 // The value is supplied by the translated hardware/common dependencies.

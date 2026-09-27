@@ -14,7 +14,7 @@
 const PENDING_ERROR: i32 = 1;
 
 unsafe extern "C" {
-    fn dma_fence_get_driver_name(fence: *mut dma_fence) -> *const core::ffi::c_char;
+    fn dma_fence_get_driver_name(fence: *mut dma_fence) -> *const kernel::ffi::c_char;
     fn dma_fence_array_clear_pending_error(array: *mut dma_fence_array);
 }
 
@@ -49,8 +49,8 @@ pub struct dma_fence_array {
 
 #[repr(C)]
 pub struct dma_fence_ops {
-    pub get_driver_name: Option<unsafe extern "C" fn(*mut dma_fence) -> *const core::ffi::c_char>,
-    pub get_timeline_name: Option<unsafe extern "C" fn(*mut dma_fence) -> *const core::ffi::c_char>,
+    pub get_driver_name: Option<unsafe extern "C" fn(*mut dma_fence) -> *const kernel::ffi::c_char>,
+    pub get_timeline_name: Option<unsafe extern "C" fn(*mut dma_fence) -> *const kernel::ffi::c_char>,
     pub enable_signaling: Option<unsafe extern "C" fn(*mut dma_fence) -> bool>,
     pub signaled: Option<unsafe extern "C" fn(*mut dma_fence) -> bool>,
     pub release: Option<unsafe extern "C" fn(*mut dma_fence)>,
@@ -77,15 +77,15 @@ unsafe extern "C" {
     fn dma_fence_is_signaled(fence: *mut dma_fence) -> bool;
     fn dma_fence_is_container(fence: *mut dma_fence) -> bool;
     fn dma_fence_set_deadline(fence: *mut dma_fence, deadline: ktime_t);
-    fn dma_fence_init(fence: *mut dma_fence, ops: *const dma_fence_ops, lock: *mut core::ffi::c_void, context: u64, seqno: u32);
+    fn dma_fence_init(fence: *mut dma_fence, ops: *const dma_fence_ops, lock: *mut kernel::ffi::c_void, context: u64, seqno: u32);
     fn dma_fence_free(fence: *mut dma_fence);
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn lockdep_set_class(lock: *mut lock, key: *mut lock_class_key);
     fn warn_on(condition: bool) -> bool;
 }
 
-unsafe fn dma_fence_array_get_driver_name(_: *mut dma_fence) -> *const core::ffi::c_char { b"dma_fence_array\0".as_ptr() as _ }
-unsafe fn dma_fence_array_get_timeline_name(_: *mut dma_fence) -> *const core::ffi::c_char { b"unbound\0".as_ptr() as _ }
+unsafe fn dma_fence_array_get_driver_name(_: *mut dma_fence) -> *const kernel::ffi::c_char { b"dma_fence_array\0".as_ptr() as _ }
+unsafe fn dma_fence_array_get_timeline_name(_: *mut dma_fence) -> *const kernel::ffi::c_char { b"unbound\0".as_ptr() as _ }
 
 unsafe fn dma_fence_array_set_pending_error(array: *mut dma_fence_array, error: i32) {
     if error != 0 { cmpxchg(&mut (*array).base.error, PENDING_ERROR, error); }

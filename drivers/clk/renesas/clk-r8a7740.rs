@@ -22,7 +22,7 @@ const CPG_FRQCRC: u32 = 0xe0;
 
 #[repr(C)]
 struct Div4Clk {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     reg: u32,
     shift: u32,
 }
@@ -60,11 +60,11 @@ static mut CPG_MODE: u32 = 0;
 unsafe fn r8a7740_cpg_register_clock(
     np: *mut DeviceNode,
     cpg: *mut R8a7740Cpg,
-    base: *mut core::ffi::c_void,
-    name: *const core::ffi::c_char,
+    base: *mut kernel::ffi::c_void,
+    name: *const kernel::ffi::c_char,
 ) -> *mut Clk {
     let mut table: *const ClkDivTable = core::ptr::null();
-    let mut parent_name: *const core::ffi::c_char;
+    let mut parent_name: *const kernel::ffi::c_char;
     let mut shift: u32 = 0;
     let mut reg: u32 = 0;
     let mut mult: u32 = 1;
@@ -107,14 +107,14 @@ unsafe fn r8a7740_cpg_register_clock(
         clk_register_fixed_factor(core::ptr::null_mut(), name, parent_name, 0, mult, div)
     } else {
         clk_register_divider_table(core::ptr::null_mut(), name, parent_name, 0,
-            (base as *mut u8).add(reg as usize) as *mut core::ffi::c_void,
+            (base as *mut u8).add(reg as usize) as *mut kernel::ffi::c_void,
             shift, 4, 0, table, &mut (*cpg).lock)
     }
 }
 
 unsafe fn r8a7740_cpg_clocks_init(np: *mut DeviceNode) {
     let mut cpg: *mut R8a7740Cpg;
-    let mut base: *mut core::ffi::c_void;
+    let mut base: *mut kernel::ffi::c_void;
     let clks: *mut *mut Clk;
     let mut i: u32;
     let num_clks: i32;
@@ -131,7 +131,7 @@ unsafe fn r8a7740_cpg_clocks_init(np: *mut DeviceNode) {
     if WARN_ON(base.is_null()) { return; }
     i = 0;
     while i < num_clks as u32 {
-        let mut name: *const core::ffi::c_char = core::ptr::null();
+        let mut name: *const kernel::ffi::c_char = core::ptr::null();
         of_property_read_string_index(np, c"clock-output-names".as_ptr(), i, &mut name);
         let clk = r8a7740_cpg_register_clock(np, cpg, base, name);
         if IS_ERR(clk) { pr_err(c"%s: failed to register %pOFn %s clock (%ld)\n".as_ptr(), c"r8a7740_cpg_clocks_init".as_ptr(), np, name, PTR_ERR(clk)); }

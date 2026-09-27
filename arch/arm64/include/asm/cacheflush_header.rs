@@ -10,31 +10,31 @@
 // left external to this translation.
 
 /* This flag indicates that the page pointed to by a pte is clean. */
-pub const PG_dcache_clean: _ = PG_arch_1;
+pub const PG_dcache_clean: c_ulong = PG_arch_1;
 
 extern "C" {
-    pub fn caches_clean_inval_pou(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn icache_inval_pou(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn dcache_clean_inval_poc(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn dcache_inval_poc(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn dcache_clean_poc(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn dcache_inval_poc_nosync(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn dcache_clean_poc_nosync(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn dcache_clean_pop(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn dcache_clean_pou(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
+    pub fn caches_clean_inval_pou(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn icache_inval_pou(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn dcache_clean_inval_poc(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn dcache_inval_poc(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn dcache_clean_poc(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn dcache_inval_poc_nosync(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn dcache_clean_poc_nosync(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn dcache_clean_pop(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn dcache_clean_pou(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
     pub fn caches_clean_inval_user_pou(
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_long;
-    pub fn sync_icache_aliases(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_long;
+    pub fn sync_icache_aliases(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
 
     pub fn copy_to_user_page(
         vma: *mut vm_area_struct,
         page: *mut page,
-        vaddr: ::core::ffi::c_ulong,
-        dst: *mut ::core::ffi::c_void,
-        src: *const ::core::ffi::c_void,
-        len: ::core::ffi::c_ulong,
+        vaddr: ::kernel::ffi::c_ulong,
+        dst: *mut ::kernel::ffi::c_void,
+        src: *const ::kernel::ffi::c_void,
+        len: ::kernel::ffi::c_ulong,
     );
     pub fn flush_dcache_page(page: *mut page);
     pub fn flush_dcache_folio(folio: *mut folio);
@@ -44,8 +44,8 @@ pub const ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE: i32 = 1;
 
 #[inline(always)]
 pub unsafe fn flush_icache_range(
-    start: ::core::ffi::c_ulong,
-    end: ::core::ffi::c_ulong,
+    start: ::kernel::ffi::c_ulong,
+    end: ::kernel::ffi::c_ulong,
 ) {
     caches_clean_inval_pou(start, end);
 

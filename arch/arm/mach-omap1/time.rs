@@ -37,7 +37,7 @@ unsafe fn omap_mpu_timer_base(n: i32) -> *mut omap_mpu_timer_regs_t {
 
 #[cfg(CONFIG_OMAP_MPU_TIMER)]
 #[inline]
-unsafe fn omap_mpu_timer_read(nr: i32) -> ::core::ffi::c_ulong {
+unsafe fn omap_mpu_timer_read(nr: i32) -> ::kernel::ffi::c_ulong {
     let timer = omap_mpu_timer_base(nr);
     readl(&(*timer).read_tim)
 }
@@ -58,7 +58,7 @@ unsafe fn omap_mpu_remove_autoreset(nr: i32) {
 
 #[cfg(CONFIG_OMAP_MPU_TIMER)]
 #[inline]
-unsafe fn omap_mpu_timer_start(nr: i32, load_val: ::core::ffi::c_ulong, autoreset: i32) {
+unsafe fn omap_mpu_timer_start(nr: i32, load_val: ::kernel::ffi::c_ulong, autoreset: i32) {
     let timer = omap_mpu_timer_base(nr);
     let mut timerflags: u32 = MPU_TIMER_CLOCK_ENABLE | MPU_TIMER_ST;
 
@@ -81,7 +81,7 @@ unsafe fn omap_mpu_timer_stop(nr: i32) {
 }
 
 #[cfg(CONFIG_OMAP_MPU_TIMER)]
-unsafe fn omap_mpu_set_next_event(cycles: ::core::ffi::c_ulong, _evt: *mut clock_event_device) -> i32 {
+unsafe fn omap_mpu_set_next_event(cycles: ::kernel::ffi::c_ulong, _evt: *mut clock_event_device) -> i32 {
     omap_mpu_timer_start(0, cycles, 0);
     0
 }
@@ -109,14 +109,14 @@ static mut clockevent_mpu_timer1: clock_event_device = clock_event_device {
 };
 
 #[cfg(CONFIG_OMAP_MPU_TIMER)]
-unsafe fn omap_mpu_timer1_interrupt(_irq: i32, _dev_id: *mut ::core::ffi::c_void) -> irqreturn_t {
+unsafe fn omap_mpu_timer1_interrupt(_irq: i32, _dev_id: *mut ::kernel::ffi::c_void) -> irqreturn_t {
     let evt = &mut clockevent_mpu_timer1;
     ((*evt).event_handler)(evt);
     IRQ_HANDLED
 }
 
 #[cfg(CONFIG_OMAP_MPU_TIMER)]
-unsafe fn omap_init_mpu_timer(rate: ::core::ffi::c_ulong) {
+unsafe fn omap_init_mpu_timer(rate: ::kernel::ffi::c_ulong) {
     if request_irq(INT_TIMER1, Some(omap_mpu_timer1_interrupt), IRQF_TIMER | IRQF_IRQPOLL,
                    "mpu_timer1", core::ptr::null_mut()) != 0 {
         pr_err!("Failed to request irq {} (mpu_timer1)\n", INT_TIMER1);
@@ -132,7 +132,7 @@ unsafe fn omap_mpu_read_sched_clock() -> u64 {
 }
 
 #[cfg(CONFIG_OMAP_MPU_TIMER)]
-unsafe fn omap_init_clocksource(rate: ::core::ffi::c_ulong) {
+unsafe fn omap_init_clocksource(rate: ::kernel::ffi::c_ulong) {
     let timer = omap_mpu_timer_base(1);
     omap_mpu_timer_start(1, !0, 1);
     sched_clock_register(Some(omap_mpu_read_sched_clock), 32, rate);

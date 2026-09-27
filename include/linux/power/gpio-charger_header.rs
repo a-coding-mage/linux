@@ -15,9 +15,9 @@
  */
 #[repr(C)]
 pub struct gpio_charger_platform_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub r#type: power_supply_type,
-    pub supplied_to: *mut *mut core::ffi::c_char,
+    pub supplied_to: *mut *mut kernel::ffi::c_char,
     pub num_supplicants: usize,
 }
 

@@ -49,25 +49,25 @@ pub struct pinconf_ops {
     pub pin_config_get: Option<unsafe extern "C" fn(
         pctldev: *mut pinctrl_dev,
         pin: u32,
-        config: *mut libc::c_ulong,
-    ) -> libc::c_int>,
+        config: *mut kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int>,
     pub pin_config_set: Option<unsafe extern "C" fn(
         pctldev: *mut pinctrl_dev,
         pin: u32,
-        configs: *mut libc::c_ulong,
+        configs: *mut kernel::ffi::c_ulong,
         num_configs: u32,
-    ) -> libc::c_int>,
+    ) -> kernel::ffi::c_int>,
     pub pin_config_group_get: Option<unsafe extern "C" fn(
         pctldev: *mut pinctrl_dev,
         selector: u32,
-        config: *mut libc::c_ulong,
-    ) -> libc::c_int>,
+        config: *mut kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int>,
     pub pin_config_group_set: Option<unsafe extern "C" fn(
         pctldev: *mut pinctrl_dev,
         selector: u32,
-        configs: *mut libc::c_ulong,
+        configs: *mut kernel::ffi::c_ulong,
         num_configs: u32,
-    ) -> libc::c_int>,
+    ) -> kernel::ffi::c_int>,
     pub pin_config_dbg_show: Option<unsafe extern "C" fn(
         pctldev: *mut pinctrl_dev,
         s: *mut seq_file,
@@ -81,7 +81,7 @@ pub struct pinconf_ops {
     pub pin_config_config_dbg_show: Option<unsafe extern "C" fn(
         pctldev: *mut pinctrl_dev,
         s: *mut seq_file,
-        config: libc::c_ulong,
+        config: kernel::ffi::c_ulong,
     )>,
 }
 

@@ -10,7 +10,7 @@
 #[no_mangle]
 pub unsafe extern "C" fn arch_rethook_trampoline_callback(
     regs: *mut pt_regs,
-) -> ::core::ffi::c_ulong {
+) -> ::kernel::ffi::c_ulong {
     rethook_trampoline_handler(regs, (*regs).s0)
 }
 
@@ -26,7 +26,7 @@ pub unsafe extern "C" fn arch_rethook_prepare(
     (*rhn).frame = (*regs).s0;
 
     /* replace return addr with trampoline */
-    (*regs).ra = arch_rethook_trampoline as usize as ::core::ffi::c_ulong;
+    (*regs).ra = arch_rethook_trampoline as usize as ::kernel::ffi::c_ulong;
 }
 
 // NOKPROBE_SYMBOL(arch_rethook_prepare)

@@ -5,32 +5,32 @@
 
 #[cfg(CONFIG_KALLSYMS)]
 extern "C" {
-    pub static mut raw_show_trace: ::core::ffi::c_int;
+    pub static mut raw_show_trace: ::kernel::ffi::c_int;
     pub fn unwind_stack(
         task: *mut task_struct,
-        sp: *mut ::core::ffi::c_ulong,
-        pc: ::core::ffi::c_ulong,
-        ra: *mut ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_ulong;
+        sp: *mut ::kernel::ffi::c_ulong,
+        pc: ::kernel::ffi::c_ulong,
+        ra: *mut ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_ulong;
     pub fn unwind_stack_by_address(
-        stack_page: ::core::ffi::c_ulong,
-        sp: *mut ::core::ffi::c_ulong,
-        pc: ::core::ffi::c_ulong,
-        ra: *mut ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_ulong;
+        stack_page: ::kernel::ffi::c_ulong,
+        sp: *mut ::kernel::ffi::c_ulong,
+        pc: ::kernel::ffi::c_ulong,
+        ra: *mut ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_ulong;
 }
 
 #[cfg(not(CONFIG_KALLSYMS))]
-pub const raw_show_trace: ::core::ffi::c_int = 1;
+pub const raw_show_trace: ::kernel::ffi::c_int = 1;
 
 #[cfg(not(CONFIG_KALLSYMS))]
 #[inline(always)]
 pub unsafe fn unwind_stack(
     _task: *mut task_struct,
-    _sp: *mut ::core::ffi::c_ulong,
-    _pc: ::core::ffi::c_ulong,
-    _ra: *mut ::core::ffi::c_ulong,
-) -> ::core::ffi::c_ulong {
+    _sp: *mut ::kernel::ffi::c_ulong,
+    _pc: ::kernel::ffi::c_ulong,
+    _ra: *mut ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_ulong {
     0
 }
 

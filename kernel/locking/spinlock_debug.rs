@@ -10,7 +10,7 @@
 
 pub unsafe fn __raw_spin_lock_init(
     lock: *mut raw_spinlock_t,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     key: *mut lock_class_key,
     inner: i16,
 ) {
@@ -25,7 +25,7 @@ pub unsafe fn __raw_spin_lock_init(
 
 pub unsafe fn __rwlock_init(
     lock: *mut rwlock_t,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     key: *mut lock_class_key,
 ) {
     // !CONFIG_PREEMPT_RT; CONFIG_DEBUG_LOCK_ALLOC preserves the lockdep path.
@@ -37,7 +37,7 @@ pub unsafe fn __rwlock_init(
     (*lock).owner_cpu = -1;
 }
 
-unsafe fn spin_dump(lock: *mut raw_spinlock_t, msg: *const core::ffi::c_char) {
+unsafe fn spin_dump(lock: *mut raw_spinlock_t, msg: *const kernel::ffi::c_char) {
     let mut owner: *mut task_struct = core::ptr::read_volatile(&(*lock).owner);
     if owner == SPINLOCK_OWNER_INIT { owner = core::ptr::null_mut(); }
     printk(KERN_EMERG, c"BUG: spinlock %s on CPU#%d, %s/%d\n", msg,
@@ -50,7 +50,7 @@ unsafe fn spin_dump(lock: *mut raw_spinlock_t, msg: *const core::ffi::c_char) {
     dump_stack();
 }
 
-unsafe fn spin_bug(lock: *mut raw_spinlock_t, msg: *const core::ffi::c_char) {
+unsafe fn spin_bug(lock: *mut raw_spinlock_t, msg: *const kernel::ffi::c_char) {
     if !debug_locks_off() { return; }
     spin_dump(lock, msg);
 }
@@ -98,7 +98,7 @@ pub unsafe fn do_raw_spin_unlock(lock: *mut raw_spinlock_t) {
     arch_spin_unlock(&mut (*lock).raw_lock);
 }
 
-unsafe fn rwlock_bug(lock: *mut rwlock_t, msg: *const core::ffi::c_char) {
+unsafe fn rwlock_bug(lock: *mut rwlock_t, msg: *const kernel::ffi::c_char) {
     if !debug_locks_off() { return; }
     printk(KERN_EMERG, c"BUG: rwlock %s on CPU#%d, %s/%d, %p\n", msg,
         raw_smp_processor_id(), (*current).comm.as_ptr(), task_pid_nr(current), lock);

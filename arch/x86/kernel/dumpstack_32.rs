@@ -12,7 +12,7 @@ extern "C" {
     fn raw_smp_processor_id() -> i32;
     fn get_cpu_entry_area(cpu: i32) -> *mut cpu_entry_area;
     static mut current: *mut task_struct;
-    fn printk_deferred_once(format: *const core::ffi::c_char, ...);
+    fn printk_deferred_once(format: *const kernel::ffi::c_char, ...);
     fn this_cpu_read_cpu_tss_rw_sp() -> *mut usize;
 }
 
@@ -56,21 +56,21 @@ extern "C" {
 
 const THREAD_SIZE: usize = 0; // Supplied by the kernel build configuration.
 
-pub unsafe extern "C" fn stack_type_name(type_: stack_type) -> *const core::ffi::c_char {
+pub unsafe extern "C" fn stack_type_name(type_: stack_type) -> *const kernel::ffi::c_char {
     if matches!(type_, stack_type::STACK_TYPE_IRQ) {
-        return b"IRQ\0".as_ptr() as *const core::ffi::c_char;
+        return b"IRQ\0".as_ptr() as *const kernel::ffi::c_char;
     }
 
     if matches!(type_, stack_type::STACK_TYPE_SOFTIRQ) {
-        return b"SOFTIRQ\0".as_ptr() as *const core::ffi::c_char;
+        return b"SOFTIRQ\0".as_ptr() as *const kernel::ffi::c_char;
     }
 
     if matches!(type_, stack_type::STACK_TYPE_ENTRY) {
-        return b"ENTRY_TRAMPOLINE\0".as_ptr() as *const core::ffi::c_char;
+        return b"ENTRY_TRAMPOLINE\0".as_ptr() as *const kernel::ffi::c_char;
     }
 
     if matches!(type_, stack_type::STACK_TYPE_EXCEPTION) {
-        return b"#DF\0".as_ptr() as *const core::ffi::c_char;
+        return b"#DF\0".as_ptr() as *const kernel::ffi::c_char;
     }
 
     core::ptr::null()
@@ -199,7 +199,7 @@ unsafe fn recursion_check(info: *mut stack_info, visit_mask: *mut usize) -> i32 
         let bit = 1usize.wrapping_shl((*info).type_ as u32);
         if (*visit_mask & bit) != 0 {
             static WARNING: &[u8] = b"WARNING: stack recursion on stack type %d\n\0";
-            printk_deferred_once(WARNING.as_ptr() as *const core::ffi::c_char, (*info).type_ as i32);
+            printk_deferred_once(WARNING.as_ptr() as *const kernel::ffi::c_char, (*info).type_ as i32);
             (*info).type_ = stack_type::STACK_TYPE_UNKNOWN;
             return -EINVAL;
         }

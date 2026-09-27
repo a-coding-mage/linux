@@ -4,7 +4,7 @@
 
 pub const MAX_REG_OFFSET: usize = core::mem::offset_of!(pt_regs, tra);
 
-pub unsafe fn regs_return_value(regs: *mut pt_regs) -> libc::c_long {
+pub unsafe fn regs_return_value(regs: *mut pt_regs) -> kernel::ffi::c_long {
     (*regs).regs[0]
 }
 

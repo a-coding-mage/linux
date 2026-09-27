@@ -10,7 +10,7 @@
 
 #[repr(C)]
 struct DetermineChanModeCase {
-    desc: *const core::ffi::c_char,
+    desc: *const kernel::ffi::c_char,
     extra_supp_rate: u8,
     conn_mode: ieee80211_conn_mode,
     expected_mode: ieee80211_conn_mode,
@@ -60,7 +60,7 @@ unsafe fn test_determine_chan_mode(test: *mut kunit) {
     let params = (*(test)).param_value as *const DetermineChanModeCase;
     let t_sdata = T_SDATA(test);
     let mut conn = ieee80211_conn_settings { mode: (*params).conn_mode, bw_limit: (*params).conn_bw_limit };
-    let mut userspace_selectors: [core::ffi::c_ulong; BITS_TO_LONGS(128)] = [0; BITS_TO_LONGS(128)];
+    let mut userspace_selectors: [kernel::ffi::c_ulong; BITS_TO_LONGS(128)] = [0; BITS_TO_LONGS(128)];
     let bss_ies: [u8; 0] = [];
 
     set_bit(IEEE80211_HW_DISALLOW_PUNCTURING, (*t_sdata).local.hw.flags);

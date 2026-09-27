@@ -21,7 +21,7 @@
  *
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const AMDGPU_PRODUCT_NAME_LEN: usize = 64;
 

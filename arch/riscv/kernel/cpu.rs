@@ -15,12 +15,12 @@ pub unsafe fn arch_match_cpu_phys_id(cpu: i32, phys_id: u64) -> bool {
  */
 pub unsafe fn riscv_of_processor_hartid(
     node: *mut device_node,
-    hart: *mut libc::c_ulong,
+    hart: *mut kernel::ffi::c_ulong,
 ) -> i32 {
     let cpu: i32;
 
-    *hart = of_get_cpu_hwid(node, 0) as libc::c_ulong;
-    if *hart == !0 as libc::c_ulong {
+    *hart = of_get_cpu_hwid(node, 0) as kernel::ffi::c_ulong;
+    if *hart == !0 as kernel::ffi::c_ulong {
         pr_warn!("Found CPU without hart ID\n");
         return -ENODEV;
     }
@@ -39,17 +39,17 @@ pub unsafe fn riscv_of_processor_hartid(
 
 pub unsafe fn riscv_early_of_processor_hartid(
     node: *mut device_node,
-    hart: *mut libc::c_ulong,
+    hart: *mut kernel::ffi::c_ulong,
 ) -> i32 {
-    let isa: *const libc::c_char;
+    let isa: *const kernel::ffi::c_char;
 
     if !of_device_is_compatible(node, c"riscv".as_ptr()) {
         pr_warn!("Found incompatible CPU\n");
         return -ENODEV;
     }
 
-    *hart = of_get_cpu_hwid(node, 0) as libc::c_ulong;
-    if *hart == !0 as libc::c_ulong {
+    *hart = of_get_cpu_hwid(node, 0) as kernel::ffi::c_ulong;
+    if *hart == !0 as kernel::ffi::c_ulong {
         pr_warn!("Found CPU without hart ID\n");
         return -ENODEV;
     }
@@ -85,9 +85,9 @@ pub unsafe fn riscv_early_of_processor_hartid(
 
 unsafe fn riscv_early_of_processor_hartid_old_interface(
     node: *mut device_node,
-    hart: *mut libc::c_ulong,
+    hart: *mut kernel::ffi::c_ulong,
 ) -> i32 {
-    let isa: *const libc::c_char;
+    let isa: *const kernel::ffi::c_char;
     if !riscv_isa_fallback {
         pr_warn!("CPU with hartid=%lu is invalid: this kernel does not parse \"riscv,isa\"", *hart);
         return -ENODEV;
@@ -109,12 +109,12 @@ unsafe fn riscv_early_of_processor_hartid_old_interface(
 
 pub unsafe fn riscv_of_parent_hartid(
     mut node: *mut device_node,
-    hartid: *mut libc::c_ulong,
+    hartid: *mut kernel::ffi::c_ulong,
 ) -> i32 {
     while !node.is_null() {
         if of_device_is_compatible(node, c"riscv".as_ptr()) {
-            *hartid = of_get_cpu_hwid(node, 0) as libc::c_ulong;
-            if *hartid == !0 as libc::c_ulong {
+            *hartid = of_get_cpu_hwid(node, 0) as kernel::ffi::c_ulong;
+            if *hartid == !0 as kernel::ffi::c_ulong {
                 pr_warn!("Found CPU without hart ID\n");
                 return -ENODEV;
             }
@@ -125,7 +125,7 @@ pub unsafe fn riscv_of_parent_hartid(
     -1
 }
 
-pub unsafe fn riscv_get_marchid() -> libc::c_ulong {
+pub unsafe fn riscv_get_marchid() -> kernel::ffi::c_ulong {
     let ci = this_cpu_ptr(&mut riscv_cpuinfo);
     #[cfg(CONFIG_RISCV_SBI)]
     { (*ci).marchid = if sbi_spec_is_0_1() { 0 } else { sbi_get_marchid() }; }
@@ -136,7 +136,7 @@ pub unsafe fn riscv_get_marchid() -> libc::c_ulong {
     (*ci).marchid
 }
 
-pub unsafe fn riscv_get_mvendorid() -> libc::c_ulong {
+pub unsafe fn riscv_get_mvendorid() -> kernel::ffi::c_ulong {
     let ci = this_cpu_ptr(&mut riscv_cpuinfo);
     #[cfg(CONFIG_RISCV_SBI)]
     { (*ci).mvendorid = if sbi_spec_is_0_1() { 0 } else { sbi_get_mvendorid() }; }
@@ -149,15 +149,15 @@ pub unsafe fn riscv_get_mvendorid() -> libc::c_ulong {
 
 pub static mut riscv_cpuinfo: riscv_cpuinfo = riscv_cpuinfo::default();
 
-pub unsafe fn riscv_cached_mvendorid(cpu_id: u32) -> libc::c_ulong {
+pub unsafe fn riscv_cached_mvendorid(cpu_id: u32) -> kernel::ffi::c_ulong {
     (*per_cpu_ptr(&mut riscv_cpuinfo, cpu_id)).mvendorid
 }
 
-pub unsafe fn riscv_cached_marchid(cpu_id: u32) -> libc::c_ulong {
+pub unsafe fn riscv_cached_marchid(cpu_id: u32) -> kernel::ffi::c_ulong {
     (*per_cpu_ptr(&mut riscv_cpuinfo, cpu_id)).marchid
 }
 
-pub unsafe fn riscv_cached_mimpid(cpu_id: u32) -> libc::c_ulong {
+pub unsafe fn riscv_cached_mimpid(cpu_id: u32) -> kernel::ffi::c_ulong {
     (*per_cpu_ptr(&mut riscv_cpuinfo, cpu_id)).mimpid
 }
 
@@ -208,7 +208,7 @@ mod proc_fs {
         }
     }
 
-    unsafe fn print_isa(f: *mut seq_file, isa_bitmap: *const libc::c_ulong, cpu: i32) {
+    unsafe fn print_isa(f: *mut seq_file, isa_bitmap: *const kernel::ffi::c_ulong, cpu: i32) {
         if cfg!(CONFIG_32BIT) { seq_write(f, c"rv32".as_ptr(), 4); } else { seq_write(f, c"rv64".as_ptr(), 4); }
         for i in 0..riscv_isa_ext_count {
             if !__riscv_isa_extension_available(isa_bitmap, riscv_isa_ext[i].id) { continue; }
@@ -224,15 +224,15 @@ mod proc_fs {
         seq_printf(f, c"mmu\t\t: %s\n".as_ptr(), sv_type);
     }
 
-    unsafe fn c_start(_m: *mut seq_file, pos: *mut loff_t) -> *mut libc::c_void {
+    unsafe fn c_start(_m: *mut seq_file, pos: *mut loff_t) -> *mut kernel::ffi::c_void {
         if *pos == nr_cpu_ids { return core::ptr::null_mut(); }
         *pos = cpumask_next(*pos - 1, cpu_online_mask);
-        if *pos < nr_cpu_ids { (1 + *pos as usize) as *mut libc::c_void } else { core::ptr::null_mut() }
+        if *pos < nr_cpu_ids { (1 + *pos as usize) as *mut kernel::ffi::c_void } else { core::ptr::null_mut() }
     }
-    unsafe fn c_next(m: *mut seq_file, _v: *mut libc::c_void, pos: *mut loff_t) -> *mut libc::c_void { *pos += 1; c_start(m, pos) }
-    unsafe fn c_stop(_m: *mut seq_file, _v: *mut libc::c_void) {}
+    unsafe fn c_next(m: *mut seq_file, _v: *mut kernel::ffi::c_void, pos: *mut loff_t) -> *mut kernel::ffi::c_void { *pos += 1; c_start(m, pos) }
+    unsafe fn c_stop(_m: *mut seq_file, _v: *mut kernel::ffi::c_void) {}
 
-    unsafe fn c_show(m: *mut seq_file, v: *mut libc::c_void) -> i32 {
+    unsafe fn c_show(m: *mut seq_file, v: *mut kernel::ffi::c_void) -> i32 {
         let cpu_id = v as usize - 1;
         let ci = per_cpu_ptr(&mut riscv_cpuinfo, cpu_id as u32);
         seq_printf(m, c"processor\t: %lu\n".as_ptr(), cpu_id);

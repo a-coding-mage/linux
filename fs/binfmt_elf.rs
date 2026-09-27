@@ -102,7 +102,7 @@ static struct linux_binfmt elf_format = {
 #endif
 };
 
-#define BAD_ADDR(x) (unlikely((core::ffi::c_ulong)(x) >= TASK_SIZE))
+#define BAD_ADDR(x) (unlikely((kernel::ffi::c_ulong)(x) >= TASK_SIZE))
 
 void elf_coredump_set_mm_eflags(mm_struct *mm, flags: u32)
 {
@@ -124,9 +124,9 @@ u32 elf_coredump_get_mm_eflags(mm_struct *mm, flags: u32)
  * p_filesz when it ends before the page ends (e.g. bss), otherwise this
  * memory will contain the junk from the file that should not be present.
  */
-static int padzero(address: core::ffi::c_ulong)
+static int padzero(address: kernel::ffi::c_ulong)
 {
-	core::ffi::c_ulong nbyte;
+	kernel::ffi::c_ulong nbyte;
 
 	nbyte = ELF_PAGEOFFSET(address);
 	if (nbyte) {
@@ -141,14 +141,14 @@ static int padzero(address: core::ffi::c_ulong)
 #ifdef CONFIG_STACK_GROWSUP
 #define STACK_ADD(sp, items) ((elf_addr_t __user *)(sp) + (items))
 #define STACK_ROUND(sp, items) \
-	((15 + (core::ffi::c_ulong) ((sp) + (items))) &~ 15UL)
+	((15 + (kernel::ffi::c_ulong) ((sp) + (items))) &~ 15UL)
 #define STACK_ALLOC(sp, len) ({ \
 	elf_addr_t __user *old_sp = (elf_addr_t __user *)sp; sp += len; \
 	old_sp; })
 #else
 #define STACK_ADD(sp, items) ((elf_addr_t __user *)(sp) - (items))
 #define STACK_ROUND(sp, items) \
-	(((core::ffi::c_ulong) (sp - items)) &~ 15UL)
+	(((kernel::ffi::c_ulong) (sp - items)) &~ 15UL)
 #define STACK_ALLOC(sp, len) (sp -= len)
 #endif
 
@@ -163,11 +163,11 @@ static int padzero(address: core::ffi::c_ulong)
 
 static int
 create_elf_tables(linux_binprm *bprm, const struct elfhdr *exec,
-		interp_load_addr: core::ffi::c_ulong,
-		e_entry: core::ffi::c_ulong, phdr_addr: core::ffi::c_ulong)
+		interp_load_addr: kernel::ffi::c_ulong,
+		e_entry: kernel::ffi::c_ulong, phdr_addr: kernel::ffi::c_ulong)
 {
 	struct mm_struct *mm = (*current).mm;
-	core::ffi::c_ulong p = (*bprm).p;
+	kernel::ffi::c_ulong p = (*bprm).p;
 	int argc = (*bprm).argc;
 	int envc = (*bprm).envc;
 	elf_addr_t __user *sp;
@@ -176,7 +176,7 @@ create_elf_tables(linux_binprm *bprm, const struct elfhdr *exec,
 	elf_addr_t __user *u_rand_bytes;
 	const char *k_platform = ELF_PLATFORM;
 	const char *k_base_platform = ELF_BASE_PLATFORM;
-	core::ffi::c_uchar k_rand_bytes[16];
+	kernel::ffi::c_uchar k_rand_bytes[16];
 	int items;
 	elf_addr_t *elf_info;
 	int ei_index;
@@ -260,7 +260,7 @@ create_elf_tables(linux_binprm *bprm, const struct elfhdr *exec,
 	NEW_AUX_ENT(AT_GID, from_kgid_munged((*cred).user_ns, (*cred).gid));
 	NEW_AUX_ENT(AT_EGID, from_kgid_munged((*cred).user_ns, (*cred).egid));
 	NEW_AUX_ENT(AT_SECURE, (*bprm).secureexec);
-	NEW_AUX_ENT(AT_RANDOM, (elf_addr_t)(core::ffi::c_ulong)u_rand_bytes);
+	NEW_AUX_ENT(AT_RANDOM, (elf_addr_t)(kernel::ffi::c_ulong)u_rand_bytes);
 #ifdef ELF_HWCAP2
 	NEW_AUX_ENT(AT_HWCAP2, ELF_HWCAP2);
 #endif
@@ -273,11 +273,11 @@ create_elf_tables(linux_binprm *bprm, const struct elfhdr *exec,
 	NEW_AUX_ENT(AT_EXECFN, (*bprm).exec);
 	if (k_platform) {
 		NEW_AUX_ENT(AT_PLATFORM,
-			    (elf_addr_t)(core::ffi::c_ulong)u_platform);
+			    (elf_addr_t)(kernel::ffi::c_ulong)u_platform);
 	}
 	if (k_base_platform) {
 		NEW_AUX_ENT(AT_BASE_PLATFORM,
-			    (elf_addr_t)(core::ffi::c_ulong)u_base_platform);
+			    (elf_addr_t)(kernel::ffi::c_ulong)u_base_platform);
 	}
 	if ((*bprm).have_execfd) {
 		NEW_AUX_ENT(AT_EXECFD, (*bprm).execfd);
@@ -303,7 +303,7 @@ create_elf_tables(linux_binprm *bprm, const struct elfhdr *exec,
 	/* Point sp at the lowest address on the stack */
 #ifdef CONFIG_STACK_GROWSUP
 	sp = (*(elf_addr_t __user *)bprm).p - items - ei_index;
-	(*bprm).exec = (core::ffi::c_ulong)sp; /* XXX: PARISC HACK */
+	(*bprm).exec = (kernel::ffi::c_ulong)sp; /* XXX: PARISC HACK */
 #else
 	sp = (*(elf_addr_t __user *)bprm).p;
 #endif
@@ -365,13 +365,13 @@ create_elf_tables(linux_binprm *bprm, const struct elfhdr *exec,
  * into memory at "addr". (Note that p_filesz is rounded up to the
  * next page, so any extra bytes from the file must be wiped.)
  */
-static core::ffi::c_ulong elf_map(file *filep, addr: core::ffi::c_ulong,
+static kernel::ffi::c_ulong elf_map(file *filep, addr: kernel::ffi::c_ulong,
 		const struct elf_phdr *eppnt, int prot, int type,
-		total_size: core::ffi::c_ulong)
+		total_size: kernel::ffi::c_ulong)
 {
-	core::ffi::c_ulong map_addr;
-	core::ffi::c_ulong size = (*eppnt).p_filesz + ELF_PAGEOFFSET((*eppnt).p_vaddr);
-	core::ffi::c_ulong off = (*eppnt).p_offset - ELF_PAGEOFFSET((*eppnt).p_vaddr);
+	kernel::ffi::c_ulong map_addr;
+	kernel::ffi::c_ulong size = (*eppnt).p_filesz + ELF_PAGEOFFSET((*eppnt).p_vaddr);
+	kernel::ffi::c_ulong off = (*eppnt).p_offset - ELF_PAGEOFFSET((*eppnt).p_vaddr);
 	addr = ELF_PAGESTART(addr);
 	size = ELF_PAGEALIGN(size);
 
@@ -409,12 +409,12 @@ static core::ffi::c_ulong elf_map(file *filep, addr: core::ffi::c_ulong,
  * into memory at "addr". Memory from "p_filesz" through "p_memsz"
  * rounded up to the next page is zeroed.
  */
-static core::ffi::c_ulong elf_load(file *filep, addr: core::ffi::c_ulong,
+static kernel::ffi::c_ulong elf_load(file *filep, addr: kernel::ffi::c_ulong,
 		const struct elf_phdr *eppnt, int prot, int type,
-		total_size: core::ffi::c_ulong)
+		total_size: kernel::ffi::c_ulong)
 {
-	zero_start: core::ffi::c_ulong, zero_end;
-	core::ffi::c_ulong map_addr;
+	zero_start: kernel::ffi::c_ulong, zero_end;
+	kernel::ffi::c_ulong map_addr;
 
 	if ((*eppnt).p_filesz) {
 		map_addr = elf_map(filep, addr, eppnt, prot, type, total_size);
@@ -457,7 +457,7 @@ static core::ffi::c_ulong elf_load(file *filep, addr: core::ffi::c_ulong,
 	return map_addr;
 }
 
-static core::ffi::c_ulong total_mapping_size(const struct elf_phdr *phdr, int nr)
+static kernel::ffi::c_ulong total_mapping_size(const struct elf_phdr *phdr, int nr)
 {
 	elf_addr_t min_addr = -1;
 	elf_addr_t max_addr = 0;
@@ -485,14 +485,14 @@ static int elf_read(file *file, void *buf, size_t len, loff_t pos)
 	return 0;
 }
 
-static core::ffi::c_ulong maximum_alignment(elf_phdr *cmds, int nr)
+static kernel::ffi::c_ulong maximum_alignment(elf_phdr *cmds, int nr)
 {
-	core::ffi::c_ulong alignment = 0;
+	kernel::ffi::c_ulong alignment = 0;
 	int i;
 
 	for (i = 0; i < nr; i++) {
 		if (cmds[i].p_type == PT_LOAD) {
-			core::ffi::c_ulong p_align = cmds[i].p_align;
+			kernel::ffi::c_ulong p_align = cmds[i].p_align;
 
 			/* skip non-power of two alignments as invalid */
 			if (!is_power_of_2(p_align))
@@ -520,7 +520,7 @@ static struct elf_phdr *load_elf_phdrs(const struct elfhdr *elf_ex,
 	'out: {
 	struct elf_phdr *elf_phdata = NULL;
 	int retval = -1;
-	core::ffi::c_uint size;
+	kernel::ffi::c_uint size;
 
 	/*
 	 * If the size of this structure has changed, then punt, since
@@ -640,17 +640,17 @@ int make_prot(p_flags: u32, arch_elf_state *arch_state,
    is only provided so that we can read a.out libraries that have
    an ELF header */
 
-static core::ffi::c_ulong load_elf_interp(elfhdr *interp_elf_ex,
+static kernel::ffi::c_ulong load_elf_interp(elfhdr *interp_elf_ex,
 		file *interpreter,
-		no_base: core::ffi::c_ulong, elf_phdr *interp_elf_phdata,
+		no_base: kernel::ffi::c_ulong, elf_phdr *interp_elf_phdata,
 		arch_elf_state *arch_state)
 {
 	'out: {
 	struct elf_phdr *eppnt;
-	core::ffi::c_ulong load_addr = 0;
+	kernel::ffi::c_ulong load_addr = 0;
 	int load_addr_set = 0;
-	core::ffi::c_ulong error = ~0UL;
-	core::ffi::c_ulong total_size;
+	kernel::ffi::c_ulong error = ~0UL;
+	kernel::ffi::c_ulong total_size;
 	int i;
 
 	/* First of all, some simple consistency checks */
@@ -676,8 +676,8 @@ static core::ffi::c_ulong load_elf_interp(elfhdr *interp_elf_ex,
 			int elf_type = MAP_PRIVATE;
 			int elf_prot = make_prot((*eppnt).p_flags, arch_state,
 						 true, true);
-			core::ffi::c_ulong vaddr = 0;
-			k: core::ffi::c_ulong, map_addr;
+			kernel::ffi::c_ulong vaddr = 0;
+			k: kernel::ffi::c_ulong, map_addr;
 
 			vaddr = (*eppnt).p_vaddr;
 			if ((*interp_elf_ex).e_type == ET_EXEC || load_addr_set)
@@ -836,19 +836,19 @@ static int load_elf_binary(linux_binprm *bprm)
 	'out_free_dentry: {
 	'out: {
 	struct file *interpreter = NULL; /* to shut gcc up */
-	core::ffi::c_ulong load_bias = 0, phdr_addr = 0;
+	kernel::ffi::c_ulong load_bias = 0, phdr_addr = 0;
 	int first_pt_load = 1;
-	core::ffi::c_ulong error;
+	kernel::ffi::c_ulong error;
 	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
 	struct elf_phdr *elf_property_phdata = NULL;
-	core::ffi::c_ulong elf_brk;
+	kernel::ffi::c_ulong elf_brk;
 	bool brk_moved = false;
 	int retval, i;
-	core::ffi::c_ulong elf_entry;
-	core::ffi::c_ulong e_entry;
-	core::ffi::c_ulong interp_load_addr = 0;
-	start_code: core::ffi::c_ulong, end_code, start_data, end_data;
-	core::ffi::c_ulong reloc_func_desc __maybe_unused = 0;
+	kernel::ffi::c_ulong elf_entry;
+	kernel::ffi::c_ulong e_entry;
+	kernel::ffi::c_ulong interp_load_addr = 0;
+	start_code: kernel::ffi::c_ulong, end_code, start_data, end_data;
+	kernel::ffi::c_ulong reloc_func_desc __maybe_unused = 0;
 	int executable_stack = EXSTACK_DEFAULT;
 	struct elfhdr *elf_ex = (*(elfhdr *)bprm).buf;
 	struct elfhdr *interp_elf_ex = NULL;
@@ -1050,9 +1050,9 @@ static int load_elf_binary(linux_binprm *bprm)
 	for(i = 0, elf_ppnt = elf_phdata;
 	    i < (*elf_ex).e_phnum; i++, elf_ppnt++) {
 		int elf_prot, elf_flags;
-		k: core::ffi::c_ulong, vaddr;
-		core::ffi::c_ulong total_size = 0;
-		core::ffi::c_ulong alignment;
+		k: kernel::ffi::c_ulong, vaddr;
+		kernel::ffi::c_ulong total_size = 0;
+		kernel::ffi::c_ulong alignment;
 
 		if ((*elf_ppnt).p_type != PT_LOAD)
 			continue;
@@ -1416,7 +1416,7 @@ struct memelfnote
 {
 	const char *name;
 	int type;
-	core::ffi::c_uint datasz;
+	kernel::ffi::c_uint datasz;
 	void *data;
 };
 
@@ -1477,7 +1477,7 @@ static void fill_elf_note_phdr(elf_phdr *phdr, int sz, loff_t offset)
 }
 
 static void __fill_note(memelfnote *note, const char *name, int type,
-			sz: core::ffi::c_uint, void *data)
+			sz: kernel::ffi::c_uint, void *data)
 {
 	(*note).name = name;
 	(*note).type = type;
@@ -1530,8 +1530,8 @@ static int fill_psinfo(elf_prpsinfo *psinfo, task_struct *p,
 		       mm_struct *mm)
 {
 	const struct cred *cred;
-	i: core::ffi::c_uint, len;
-	core::ffi::c_uint state;
+	i: kernel::ffi::c_uint, len;
+	kernel::ffi::c_uint state;
 
 	/* first copy the parameters from user space */
 	memset(psinfo, 0, sizeof(elf_prpsinfo));
@@ -1730,7 +1730,7 @@ static int fill_thread_core_info(elf_thread_core_info *t,
 				 const struct user_regset_view *view,
 				 long signr, elf_note_info *info)
 {
-	note_iter: core::ffi::c_uint, view_iter;
+	note_iter: kernel::ffi::c_uint, view_iter;
 
 	/*
 	 * NT_PRSTATUS is the one special case, because the regset data
@@ -1964,7 +1964,7 @@ static void free_note_info(elf_note_info *info)
 {
 	struct elf_thread_core_info *threads = info->thread;
 	while (threads) {
-		core::ffi::c_uint i;
+		kernel::ffi::c_uint i;
 		struct elf_thread_core_info *t = threads;
 		threads = t->next;
 		WARN_ON(t->notes[0].data && t->notes[0].data != &t->prstatus);

@@ -25,15 +25,15 @@ pub struct mnt_idmap {
 
 #[repr(C)]
 pub struct xattr_handler {
-    pub prefix: *const core::ffi::c_char,
+    pub prefix: *const kernel::ffi::c_char,
     pub list: Option<unsafe extern "C" fn(*mut dentry) -> bool>,
     pub get: Option<
         unsafe extern "C" fn(
             *const xattr_handler,
             *mut dentry,
             *mut inode,
-            *const core::ffi::c_char,
-            *mut core::ffi::c_void,
+            *const kernel::ffi::c_char,
+            *mut kernel::ffi::c_void,
             usize,
         ) -> i32,
     >,
@@ -43,8 +43,8 @@ pub struct xattr_handler {
             *mut mnt_idmap,
             *mut dentry,
             *mut inode,
-            *const core::ffi::c_char,
-            *const core::ffi::c_void,
+            *const kernel::ffi::c_char,
+            *const kernel::ffi::c_void,
             usize,
             i32,
         ) -> i32,
@@ -56,15 +56,15 @@ extern "C" {
     fn ext2_xattr_get(
         inode: *mut inode,
         index: i32,
-        name: *const core::ffi::c_char,
-        buffer: *mut core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        buffer: *mut kernel::ffi::c_void,
         size: usize,
     ) -> i32;
     fn ext2_xattr_set(
         inode: *mut inode,
         index: i32,
-        name: *const core::ffi::c_char,
-        value: *const core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        value: *const kernel::ffi::c_void,
         size: usize,
         flags: i32,
     ) -> i32;
@@ -74,7 +74,7 @@ extern "C" {
 const CAP_SYS_ADMIN: i32 = 21;
 const EXT2_XATTR_INDEX_TRUSTED: i32 = 4;
 extern "C" {
-    static XATTR_TRUSTED_PREFIX: *const core::ffi::c_char;
+    static XATTR_TRUSTED_PREFIX: *const kernel::ffi::c_char;
 }
 
 unsafe extern "C" fn ext2_xattr_trusted_list(_dentry: *mut dentry) -> bool {
@@ -85,8 +85,8 @@ unsafe extern "C" fn ext2_xattr_trusted_get(
     _handler: *const xattr_handler,
     _unused: *mut dentry,
     inode: *mut inode,
-    name: *const core::ffi::c_char,
-    buffer: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    buffer: *mut kernel::ffi::c_void,
     size: usize,
 ) -> i32 {
     ext2_xattr_get(inode, EXT2_XATTR_INDEX_TRUSTED, name, buffer, size)
@@ -97,8 +97,8 @@ unsafe extern "C" fn ext2_xattr_trusted_set(
     _idmap: *mut mnt_idmap,
     _unused: *mut dentry,
     inode: *mut inode,
-    name: *const core::ffi::c_char,
-    value: *const core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    value: *const kernel::ffi::c_void,
     size: usize,
     flags: i32,
 ) -> i32 {

@@ -3,7 +3,7 @@
 
 #[repr(C)]
 struct SpkLdiscData {
-    buf: ::core::ffi::c_char,
+    buf: ::kernel::ffi::c_char,
     completion: Completion,
     buf_free: bool,
     synth: *mut SpkSynth,
@@ -86,7 +86,7 @@ unsafe extern "C" fn spk_ttyio_receive_buf2(
     // buf_free == true and overwrite buf
     mb!();
 
-    (*ldisc_data).buf = *cp as ::core::ffi::c_char;
+    (*ldisc_data).buf = *cp as ::kernel::ffi::c_char;
     (*ldisc_data).buf_free = false;
     complete(&mut (*ldisc_data).completion);
     1
@@ -101,9 +101,9 @@ static mut SPK_TTYIO_LDISC_OPS: TtyLdiscOps = TtyLdiscOps {
     receive_buf2: Some(spk_ttyio_receive_buf2),
 };
 
-unsafe extern "C" fn spk_ttyio_out(in_synth: *mut SpkSynth, ch: ::core::ffi::c_char) -> i32;
+unsafe extern "C" fn spk_ttyio_out(in_synth: *mut SpkSynth, ch: ::kernel::ffi::c_char) -> i32;
 unsafe extern "C" fn spk_ttyio_out_unicode(in_synth: *mut SpkSynth, ch: u16) -> i32;
-unsafe extern "C" fn spk_ttyio_send_xchar(in_synth: *mut SpkSynth, ch: ::core::ffi::c_char);
+unsafe extern "C" fn spk_ttyio_send_xchar(in_synth: *mut SpkSynth, ch: ::kernel::ffi::c_char);
 unsafe extern "C" fn spk_ttyio_tiocmset(in_synth: *mut SpkSynth, set: u32, clear: u32);
 unsafe extern "C" fn spk_ttyio_in(in_synth: *mut SpkSynth) -> u8;
 unsafe extern "C" fn spk_ttyio_in_nowait(in_synth: *mut SpkSynth) -> u8;
@@ -182,7 +182,7 @@ pub unsafe extern "C" fn spk_ttyio_register_ldisc() {
 #[no_mangle]
 pub unsafe extern "C" fn spk_ttyio_unregister_ldisc() { tty_unregister_ldisc(&mut SPK_TTYIO_LDISC_OPS); }
 
-unsafe extern "C" fn spk_ttyio_out(in_synth: *mut SpkSynth, ch: ::core::ffi::c_char) -> i32 {
+unsafe extern "C" fn spk_ttyio_out(in_synth: *mut SpkSynth, ch: ::kernel::ffi::c_char) -> i32 {
     let tty = (*in_synth).dev;
     if !(*in_synth).alive || (*(*tty).ops).write.is_none() { return 0; }
     let ret = (*(*tty).ops).write.unwrap()(tty, &ch, 1);
@@ -203,7 +203,7 @@ unsafe extern "C" fn spk_ttyio_out_unicode(in_synth: *mut SpkSynth, ch: u16) -> 
     ret
 }
 
-unsafe extern "C" fn spk_ttyio_send_xchar(s: *mut SpkSynth, ch: ::core::ffi::c_char) { let tty = (*s).dev; if let Some(f) = (*(*tty).ops).send_xchar { f(tty, ch); } }
+unsafe extern "C" fn spk_ttyio_send_xchar(s: *mut SpkSynth, ch: ::kernel::ffi::c_char) { let tty = (*s).dev; if let Some(f) = (*(*tty).ops).send_xchar { f(tty, ch); } }
 unsafe extern "C" fn spk_ttyio_tiocmset(s: *mut SpkSynth, set: u32, clear: u32) { let tty = (*s).dev; if let Some(f) = (*(*tty).ops).tiocmset { f(tty, set, clear); } }
 unsafe extern "C" fn spk_ttyio_wait_for_xmitr(_s: *mut SpkSynth) -> i32 { 1 }
 
@@ -239,7 +239,7 @@ pub unsafe extern "C" fn spk_ttyio_release(s: *mut SpkSynth) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn spk_ttyio_synth_immediate(s: *mut SpkSynth, mut buff: *const ::core::ffi::c_char) -> *const ::core::ffi::c_char {
+pub unsafe extern "C" fn spk_ttyio_synth_immediate(s: *mut SpkSynth, mut buff: *const ::kernel::ffi::c_char) -> *const ::kernel::ffi::c_char {
     let tty = (*s).dev;
     loop {
         let mut ch = *buff as u8;

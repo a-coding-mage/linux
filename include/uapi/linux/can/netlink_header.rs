@@ -32,7 +32,7 @@ pub struct can_bittiming {
 /* CAN hardware-dependent bit-timing constant. */
 #[repr(C)]
 pub struct can_bittiming_const {
-    pub name: [core::ffi::c_char; 16],
+    pub name: [kernel::ffi::c_char; 16],
     pub tseg1_min: u32,
     pub tseg1_max: u32,
     pub tseg2_min: u32,

@@ -51,7 +51,7 @@ pub struct scoop_pcmcia_dev {
     pub dev: *mut device, /* Pointer to this socket's scoop device */
     pub irq: i32,         /* irq for socket */
     pub cd_irq: i32,
-    pub cd_irq_str: *const core::ffi::c_char,
+    pub cd_irq_str: *const kernel::ffi::c_char,
     pub keep_vs: u8,
     pub keep_rd: u8,
 }

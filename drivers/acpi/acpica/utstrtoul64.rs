@@ -6,7 +6,7 @@
  *
  ******************************************************************************/
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // The declarations below are supplied by the surrounding ACPICA translation.
 extern "C" {

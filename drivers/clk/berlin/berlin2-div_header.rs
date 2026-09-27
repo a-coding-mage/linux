@@ -86,10 +86,10 @@ pub struct berlin2_div_map {
 
 #[repr(C)]
 pub struct berlin2_div_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub parent_ids: *const u8,
-    pub num_parents: core::ffi::c_int,
-    pub flags: core::ffi::c_ulong,
+    pub num_parents: kernel::ffi::c_int,
+    pub flags: kernel::ffi::c_ulong,
     pub map: berlin2_div_map,
     pub div_flags: u8,
 }
@@ -97,17 +97,17 @@ pub struct berlin2_div_data {
 extern "C" {
     pub fn berlin2_div_register(
         map: *const berlin2_div_map,
-        base: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
+        base: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
         div_flags: u8,
-        parent_names: *const *const core::ffi::c_char,
-        num_parents: core::ffi::c_int,
-        flags: core::ffi::c_ulong,
+        parent_names: *const *const kernel::ffi::c_char,
+        num_parents: kernel::ffi::c_int,
+        flags: kernel::ffi::c_ulong,
         lock: *mut spinlock_t,
     ) -> *mut clk_hw;
 }
 
 // Supplied by the kernel synchronization primitives.
-pub type spinlock_t = core::ffi::c_void;
+pub type spinlock_t = kernel::ffi::c_void;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

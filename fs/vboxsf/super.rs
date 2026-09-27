@@ -16,7 +16,7 @@ pub const VBOXSF_SUPER_MAGIC: u32 = 0x786f4256; // 'VBox' little endian
 
 static VBSF_MOUNT_SIGNATURE: [u8; 4] = [0, 0xff, 0xfe, 0xfd];
 
-static mut follow_symlinks: ::core::ffi::c_int = 0;
+static mut follow_symlinks: ::kernel::ffi::c_int = 0;
 
 static mut vboxsf_bdi_ida: ida = DEFINE_IDA!();
 static mut vboxsf_setup_mutex: mutex = DEFINE_MUTEX!();
@@ -24,7 +24,7 @@ static mut vboxsf_setup_done: bool = false;
 static mut vboxsf_super_ops: super_operations = unsafe { core::mem::zeroed() };
 static mut vboxsf_inode_cachep: *mut kmem_cache = core::ptr::null_mut();
 
-static mut vboxsf_default_nls: *mut ::core::ffi::c_char = CONFIG_NLS_DEFAULT;
+static mut vboxsf_default_nls: *mut ::kernel::ffi::c_char = CONFIG_NLS_DEFAULT;
 
 #[repr(i32)]
 enum VboxsfOption {
@@ -98,7 +98,7 @@ unsafe fn vboxsf_fill_super(sb: *mut super_block, fc: *mut fs_context) -> i32 {
     let mut sbi: *mut vboxsf_sbi;
     let mut droot: *mut dentry;
     let mut iroot: *mut inode;
-    let mut nls_name: *mut ::core::ffi::c_char;
+    let mut nls_name: *mut ::kernel::ffi::c_char;
     let mut size: usize;
     let mut err: i32;
     'fail_destroy_idr: {
@@ -137,7 +137,7 @@ unsafe fn vboxsf_fill_super(sb: *mut super_block, fc: *mut fs_context) -> i32 {
     (*folder_name).length = size - 1;
     strscpy((*folder_name).string.utf8.as_mut_ptr(), (*fc).source, size);
     err = vboxsf_map_folder(folder_name, &mut (*sbi).root);
-    kfree(folder_name as *mut core::ffi::c_void);
+    kfree(folder_name as *mut kernel::ffi::c_void);
     if err != 0 { vbg_err!("vboxsf: Host rejected mount of '%s' with error %d\n", (*fc).source, err); break 'fail_free; }
 
     root_path.length = 1;
@@ -160,7 +160,7 @@ unsafe fn vboxsf_fill_super(sb: *mut super_block, fc: *mut fs_context) -> i32 {
     droot = d_make_root(iroot);
     if droot.is_null() { err = -ENOMEM; break 'fail_unmap; }
     (*sb).s_root = droot;
-    (*sb).s_fs_info = sbi as *mut core::ffi::c_void;
+    (*sb).s_fs_info = sbi as *mut kernel::ffi::c_void;
     return 0;
     }
     
@@ -172,11 +172,11 @@ unsafe fn vboxsf_fill_super(sb: *mut super_block, fc: *mut fs_context) -> i32 {
     }
     
     idr_destroy(&mut (*sbi).ino_idr);
-    kfree(sbi as *mut core::ffi::c_void);
+    kfree(sbi as *mut kernel::ffi::c_void);
     err
 }
 
-unsafe fn vboxsf_inode_init_once(data: *mut core::ffi::c_void) {
+unsafe fn vboxsf_inode_init_once(data: *mut kernel::ffi::c_void) {
     let sf_i = data as *mut vboxsf_inode;
     mutex_init(&mut (*sf_i).handle_list_mutex);
     inode_init_once(&mut (*sf_i).vfs_inode);
@@ -206,7 +206,7 @@ unsafe fn vboxsf_put_super(sb: *mut super_block) {
     if !(*sbi).nls.is_null() { unload_nls((*sbi).nls); }
     rcu_barrier();
     idr_destroy(&mut (*sbi).ino_idr);
-    kfree(sbi as *mut core::ffi::c_void);
+    kfree(sbi as *mut kernel::ffi::c_void);
 }
 
 unsafe fn vboxsf_statfs(dentry: *mut dentry, stat: *mut kstatfs) -> i32 {
@@ -267,7 +267,7 @@ success:
     mutex_unlock(&mut vboxsf_setup_mutex); return err;
 }
 
-unsafe fn vboxsf_parse_monolithic(fc: *mut fs_context, data: *mut core::ffi::c_void) -> i32 {
+unsafe fn vboxsf_parse_monolithic(fc: *mut fs_context, data: *mut kernel::ffi::c_void) -> i32 {
     if !data.is_null() && memcmp(data, VBSF_MOUNT_SIGNATURE.as_ptr() as *const _, 4) == 0 { vbg_err!("vboxsf: Old binary mount data not supported, remove obsolete mount.vboxsf and/or update your VBoxService.\n"); return -EINVAL; }
     generic_parse_monolithic(fc, data)
 }

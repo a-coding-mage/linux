@@ -86,7 +86,7 @@ pub enum cb_pcidas_boardid { BOARD_PCIDAS1602_16, BOARD_PCIDAS1200, BOARD_PCIDAS
 
 #[repr(C)]
 pub struct cb_pcidas_board {
-    pub name: *const core::ffi::c_char, pub ai_speed: i32, pub ao_scan_speed: i32,
+    pub name: *const kernel::ffi::c_char, pub ai_speed: i32, pub ao_scan_speed: i32,
     pub fifo_size: i32, pub is_16bit: u32, pub use_alt_range: u32, pub has_ao: u32,
     pub has_ao_fifo: u32, pub has_ad8402: u32, pub has_dac08: u32, pub is_1602: u32,
 }

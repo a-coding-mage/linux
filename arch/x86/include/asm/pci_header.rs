@@ -4,22 +4,22 @@
 
 #[repr(C)]
 pub struct pci_sysdata {
-    pub domain: ::core::ffi::c_int, /* PCI domain */
-    pub node: ::core::ffi::c_int,   /* NUMA node */
+    pub domain: ::kernel::ffi::c_int, /* PCI domain */
+    pub node: ::kernel::ffi::c_int,   /* NUMA node */
     #[cfg(CONFIG_ACPI)]
     pub companion: *mut acpi_device, /* ACPI companion device */
     #[cfg(CONFIG_X86_64)]
-    pub iommu: *mut ::core::ffi::c_void, /* IOMMU private data */
+    pub iommu: *mut ::kernel::ffi::c_void, /* IOMMU private data */
     #[cfg(CONFIG_PCI_MSI)]
-    pub fwnode: *mut ::core::ffi::c_void, /* IRQ domain for MSI assignment */
+    pub fwnode: *mut ::kernel::ffi::c_void, /* IRQ domain for MSI assignment */
     #[cfg(CONFIG_VMD)]
     pub vmd_dev: *mut pci_dev, /* VMD Device if in Intel VMD domain */
 }
 
 extern "C" {
-    pub static mut pci_routeirq: ::core::ffi::c_int;
-    pub static mut noioapicquirk: ::core::ffi::c_int;
-    pub static mut noioapicreroute: ::core::ffi::c_int;
+    pub static mut pci_routeirq: ::kernel::ffi::c_int;
+    pub static mut noioapicquirk: ::kernel::ffi::c_int;
+    pub static mut noioapicreroute: ::kernel::ffi::c_int;
 }
 
 #[inline]
@@ -30,21 +30,21 @@ pub unsafe fn to_pci_sysdata(bus: *const pci_bus) -> *mut pci_sysdata {
 #[cfg(CONFIG_PCI)]
 #[cfg(CONFIG_PCI_DOMAINS)]
 #[inline]
-pub unsafe fn pci_domain_nr(bus: *mut pci_bus) -> ::core::ffi::c_int {
+pub unsafe fn pci_domain_nr(bus: *mut pci_bus) -> ::kernel::ffi::c_int {
     (*to_pci_sysdata(bus)).domain
 }
 
 #[cfg(CONFIG_PCI)]
 #[cfg(CONFIG_PCI_DOMAINS)]
 #[inline]
-pub unsafe fn pci_proc_domain(bus: *mut pci_bus) -> ::core::ffi::c_int {
+pub unsafe fn pci_proc_domain(bus: *mut pci_bus) -> ::kernel::ffi::c_int {
     pci_domain_nr(bus)
 }
 
 #[cfg(CONFIG_PCI)]
 #[cfg(CONFIG_PCI_MSI)]
 #[inline]
-pub unsafe fn _pci_root_bus_fwnode(bus: *mut pci_bus) -> *mut ::core::ffi::c_void {
+pub unsafe fn _pci_root_bus_fwnode(bus: *mut pci_bus) -> *mut ::kernel::ffi::c_void {
     (*to_pci_sysdata(bus)).fwnode
 }
 
@@ -64,31 +64,31 @@ pub fn is_vmd(_bus: *mut pci_bus) -> bool {
 
 #[cfg(CONFIG_PCI)]
 extern "C" {
-    pub fn pcibios_assign_all_busses() -> ::core::ffi::c_uint;
-    pub fn pci_legacy_init() -> ::core::ffi::c_int;
+    pub fn pcibios_assign_all_busses() -> ::kernel::ffi::c_uint;
+    pub fn pci_legacy_init() -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_PCI))]
 #[inline]
-pub fn pcibios_assign_all_busses() -> ::core::ffi::c_uint { 0 }
+pub fn pcibios_assign_all_busses() -> ::kernel::ffi::c_uint { 0 }
 
 extern "C" {
-    pub static mut pci_mem_start: ::core::ffi::c_ulong;
+    pub static mut pci_mem_start: ::kernel::ffi::c_ulong;
 }
 
-pub const PCIBIOS_MIN_IO: ::core::ffi::c_ulong = 0x1000;
+pub const PCIBIOS_MIN_IO: ::kernel::ffi::c_ulong = 0x1000;
 /* C macro: (pci_mem_start). Read the external object at the point of use. */
 #[inline]
-pub unsafe fn PCIBIOS_MIN_MEM() -> ::core::ffi::c_ulong { pci_mem_start }
+pub unsafe fn PCIBIOS_MIN_MEM() -> ::kernel::ffi::c_ulong { pci_mem_start }
 
-pub const PCIBIOS_MIN_CARDBUS_IO: ::core::ffi::c_ulong = 0x4000;
+pub const PCIBIOS_MIN_CARDBUS_IO: ::kernel::ffi::c_ulong = 0x4000;
 
 extern "C" {
-    pub static mut pcibios_enabled: ::core::ffi::c_int;
-    pub fn pcibios_scan_root(bus: ::core::ffi::c_int);
+    pub static mut pcibios_enabled: ::kernel::ffi::c_int;
+    pub fn pcibios_scan_root(bus: ::kernel::ffi::c_int);
     pub fn pcibios_get_irq_routing_table() -> *mut irq_routing_table;
-    pub fn pcibios_set_irq_routing(dev: *mut pci_dev, pin: ::core::ffi::c_int,
-                                   irq: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn pcibios_set_irq_routing(dev: *mut pci_dev, pin: ::kernel::ffi::c_int,
+                                   irq: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
     pub fn pci_dev_has_default_msi_parent_domain(dev: *mut pci_dev) -> bool;
     pub fn pat_enabled() -> bool;
     pub fn pci_iommu_alloc();
@@ -108,7 +108,7 @@ pub fn early_quirks() {}
 
 #[cfg(CONFIG_NUMA)]
 #[inline]
-pub unsafe fn __pcibus_to_node(bus: *const pci_bus) -> ::core::ffi::c_int {
+pub unsafe fn __pcibus_to_node(bus: *const pci_bus) -> ::kernel::ffi::c_int {
     (*to_pci_sysdata(bus)).node
 }
 

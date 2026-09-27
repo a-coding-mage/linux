@@ -30,14 +30,14 @@ pub struct srp_rport {
     pub roles: u8,
 
     /* for initiator drivers */
-    pub lld_data: *mut core::ffi::c_void,
+    pub lld_data: *mut kernel::ffi::c_void,
     pub mutex: mutex,
     pub state: srp_rport_state,
-    pub reconnect_delay: core::ffi::c_int,
-    pub failed_reconnects: core::ffi::c_int,
+    pub reconnect_delay: kernel::ffi::c_int,
+    pub failed_reconnects: kernel::ffi::c_int,
     pub reconnect_work: delayed_work,
-    pub fast_io_fail_tmo: core::ffi::c_int,
-    pub dev_loss_tmo: core::ffi::c_int,
+    pub fast_io_fail_tmo: kernel::ffi::c_int,
+    pub dev_loss_tmo: kernel::ffi::c_int,
     pub fast_io_fail_work: delayed_work,
     pub dev_loss_work: delayed_work,
 }
@@ -47,10 +47,10 @@ pub struct srp_function_template {
     /* for initiator drivers */
     pub has_rport_state: bool,
     pub reset_timer_if_blocked: bool,
-    pub reconnect_delay: *mut core::ffi::c_int,
-    pub fast_io_fail_tmo: *mut core::ffi::c_int,
-    pub dev_loss_tmo: *mut core::ffi::c_int,
-    pub reconnect: Option<unsafe extern "C" fn(*mut srp_rport) -> core::ffi::c_int>,
+    pub reconnect_delay: *mut kernel::ffi::c_int,
+    pub fast_io_fail_tmo: *mut kernel::ffi::c_int,
+    pub dev_loss_tmo: *mut kernel::ffi::c_int,
+    pub reconnect: Option<unsafe extern "C" fn(*mut srp_rport) -> kernel::ffi::c_int>,
     pub terminate_rport_io: Option<unsafe extern "C" fn(*mut srp_rport)>,
     pub rport_delete: Option<unsafe extern "C" fn(*mut srp_rport)>,
 }
@@ -68,13 +68,13 @@ extern "C" {
     ) -> *mut srp_rport;
     pub fn srp_rport_del(rport: *mut srp_rport);
     pub fn srp_tmo_valid(
-        reconnect_delay: core::ffi::c_int,
-        fast_io_fail_tmo: core::ffi::c_int,
-        dev_loss_tmo: core::ffi::c_long,
-    ) -> core::ffi::c_int;
-    pub fn srp_parse_tmo(tmo: *mut core::ffi::c_int, buf: *const core::ffi::c_char)
-        -> core::ffi::c_int;
-    pub fn srp_reconnect_rport(rport: *mut srp_rport) -> core::ffi::c_int;
+        reconnect_delay: kernel::ffi::c_int,
+        fast_io_fail_tmo: kernel::ffi::c_int,
+        dev_loss_tmo: kernel::ffi::c_long,
+    ) -> kernel::ffi::c_int;
+    pub fn srp_parse_tmo(tmo: *mut kernel::ffi::c_int, buf: *const kernel::ffi::c_char)
+        -> kernel::ffi::c_int;
+    pub fn srp_reconnect_rport(rport: *mut srp_rport) -> kernel::ffi::c_int;
     pub fn srp_start_tl_fail_timers(rport: *mut srp_rport);
     pub fn srp_remove_host(host: *mut Scsi_Host);
     pub fn srp_stop_rport_timers(rport: *mut srp_rport);
@@ -90,7 +90,7 @@ extern "C" {
  * fc_remote_port_chkready().
  */
 #[inline]
-pub unsafe fn srp_chkready(rport: *mut srp_rport) -> core::ffi::c_int {
+pub unsafe fn srp_chkready(rport: *mut srp_rport) -> kernel::ffi::c_int {
     match (*rport).state {
         srp_rport_state::SRP_RPORT_RUNNING | srp_rport_state::SRP_RPORT_BLOCKED => 0,
         srp_rport_state::SRP_RPORT_FAIL_FAST => DID_TRANSPORT_FAILFAST << 16,

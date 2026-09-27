@@ -4,19 +4,19 @@
 // Dependency declarations and build-time constants are supplied by the
 // corresponding Linux kernel headers and architecture code.
 
-pub static mut highstart_pfn: ::core::ffi::c_ulong = 0;
-pub static mut highend_pfn: ::core::ffi::c_ulong = 0;
+pub static mut highstart_pfn: ::kernel::ffi::c_ulong = 0;
+pub static mut highend_pfn: ::kernel::ffi::c_ulong = 0;
 
 extern "C" {
-    fn flush_tlb_one(addr: ::core::ffi::c_ulong);
+    fn flush_tlb_one(addr: ::kernel::ffi::c_ulong);
     fn fixrange_init(
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
         pgd: *mut pgd_t,
     );
-    fn pgd_index(addr: ::core::ffi::c_ulong) -> usize;
-    fn pmd_offset(pud: *mut pud_t, addr: ::core::ffi::c_ulong) -> *mut pmd_t;
-    fn pte_offset_kernel(pmd: *mut pmd_t, addr: ::core::ffi::c_ulong) -> *mut pte_t;
+    fn pgd_index(addr: ::kernel::ffi::c_ulong) -> usize;
+    fn pmd_offset(pud: *mut pud_t, addr: ::kernel::ffi::c_ulong) -> *mut pmd_t;
+    fn pte_offset_kernel(pmd: *mut pmd_t, addr: ::kernel::ffi::c_ulong) -> *mut pte_t;
 
     static mut swapper_pg_dir: *mut pgd_t;
     static mut pkmap_page_table: *mut pte_t;
@@ -29,12 +29,12 @@ extern "C" {
     type pte_t;
 }
 
-pub unsafe fn kmap_flush_tlb(addr: ::core::ffi::c_ulong) {
+pub unsafe fn kmap_flush_tlb(addr: ::kernel::ffi::c_ulong) {
     flush_tlb_one(addr);
 }
 
 pub unsafe fn kmap_init() {
-    let mut vaddr: ::core::ffi::c_ulong;
+    let mut vaddr: ::kernel::ffi::c_ulong;
     let mut pgd: *mut pgd_t;
     let mut pmd: *mut pmd_t;
     let mut pud: *mut pud_t;

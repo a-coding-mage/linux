@@ -4,7 +4,7 @@
 // The C header includes linux/types.h and refers to declarations supplied by
 // other translation units.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub struct adf_accel_dev;
 

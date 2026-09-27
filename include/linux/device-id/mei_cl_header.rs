@@ -22,7 +22,7 @@ pub const MEI_CL_VERSION_ANY: u8 = 0xff;
  */
 #[repr(C)]
 pub struct mei_cl_device_id {
-    pub name: [core::ffi::c_char; MEI_CL_NAME_SIZE],
+    pub name: [kernel::ffi::c_char; MEI_CL_NAME_SIZE],
     pub uuid: uuid_le,
     pub version: u8,
     pub driver_info: kernel_ulong_t,

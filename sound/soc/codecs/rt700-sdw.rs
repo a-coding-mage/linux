@@ -13,7 +13,7 @@
 // The referenced kernel, SoundWire, regmap, and RT700 symbols are expected
 // to be supplied by surrounding bindings.
 
-unsafe fn rt700_readable_register(dev: *mut device, reg: ::core::ffi::c_uint) -> bool {
+unsafe fn rt700_readable_register(dev: *mut device, reg: ::kernel::ffi::c_uint) -> bool {
     match reg {
         0x00e0
         | 0x00f0
@@ -43,7 +43,7 @@ unsafe fn rt700_readable_register(dev: *mut device, reg: ::core::ffi::c_uint) ->
     }
 }
 
-unsafe fn rt700_volatile_register(dev: *mut device, reg: ::core::ffi::c_uint) -> bool {
+unsafe fn rt700_volatile_register(dev: *mut device, reg: ::kernel::ffi::c_uint) -> bool {
     match reg {
         0x2009
         | 0x2016
@@ -71,25 +71,25 @@ unsafe fn rt700_volatile_register(dev: *mut device, reg: ::core::ffi::c_uint) ->
 }
 
 unsafe fn rt700_sdw_read(
-    context: *mut ::core::ffi::c_void,
-    mut reg: ::core::ffi::c_uint,
-    val: *mut ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    context: *mut ::kernel::ffi::c_void,
+    mut reg: ::kernel::ffi::c_uint,
+    val: *mut ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let dev: *mut device = context as *mut device;
     let rt700: *mut rt700_priv = dev_get_drvdata(dev) as *mut rt700_priv;
-    let mut sdw_data_3: ::core::ffi::c_uint;
-    let mut sdw_data_2: ::core::ffi::c_uint;
-    let mut sdw_data_1: ::core::ffi::c_uint;
-    let mut sdw_data_0: ::core::ffi::c_uint;
-    let mut reg2: ::core::ffi::c_uint = 0;
-    let mut reg3: ::core::ffi::c_uint = 0;
-    let mut reg4: ::core::ffi::c_uint = 0;
-    let mask: ::core::ffi::c_uint;
-    let nid: ::core::ffi::c_uint;
-    let val2: ::core::ffi::c_uint;
-    let mut is_hda_reg: ::core::ffi::c_uint = 1;
-    let mut is_index_reg: ::core::ffi::c_uint = 0;
-    let mut ret: ::core::ffi::c_int;
+    let mut sdw_data_3: ::kernel::ffi::c_uint;
+    let mut sdw_data_2: ::kernel::ffi::c_uint;
+    let mut sdw_data_1: ::kernel::ffi::c_uint;
+    let mut sdw_data_0: ::kernel::ffi::c_uint;
+    let mut reg2: ::kernel::ffi::c_uint = 0;
+    let mut reg3: ::kernel::ffi::c_uint = 0;
+    let mut reg4: ::kernel::ffi::c_uint = 0;
+    let mask: ::kernel::ffi::c_uint;
+    let nid: ::kernel::ffi::c_uint;
+    let val2: ::kernel::ffi::c_uint;
+    let mut is_hda_reg: ::kernel::ffi::c_uint = 1;
+    let mut is_index_reg: ::kernel::ffi::c_uint = 0;
+    let mut ret: ::kernel::ffi::c_int;
 
     if reg > 0xffff {
         is_index_reg = 1;
@@ -234,20 +234,20 @@ unsafe fn rt700_sdw_read(
 }
 
 unsafe fn rt700_sdw_write(
-    context: *mut ::core::ffi::c_void,
-    mut reg: ::core::ffi::c_uint,
-    val: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    context: *mut ::kernel::ffi::c_void,
+    mut reg: ::kernel::ffi::c_uint,
+    val: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let dev: *mut device = context as *mut device;
     let rt700: *mut rt700_priv = dev_get_drvdata(dev) as *mut rt700_priv;
-    let mut reg2: ::core::ffi::c_uint = 0;
-    let reg3: ::core::ffi::c_uint;
-    let reg4: ::core::ffi::c_uint;
-    let nid: ::core::ffi::c_uint;
-    let mask: ::core::ffi::c_uint;
-    let val2: ::core::ffi::c_uint;
-    let mut is_index_reg: ::core::ffi::c_uint = 0;
-    let mut ret: ::core::ffi::c_int;
+    let mut reg2: ::kernel::ffi::c_uint = 0;
+    let reg3: ::kernel::ffi::c_uint;
+    let reg4: ::kernel::ffi::c_uint;
+    let nid: ::kernel::ffi::c_uint;
+    let mask: ::kernel::ffi::c_uint;
+    let val2: ::kernel::ffi::c_uint;
+    let mut is_index_reg: ::kernel::ffi::c_uint = 0;
+    let mut ret: ::kernel::ffi::c_int;
 
     if reg > 0xffff {
         is_index_reg = 1;
@@ -375,7 +375,7 @@ static rt700_sdw_regmap: regmap_config = regmap_config {
 unsafe fn rt700_update_status(
     slave: *mut sdw_slave,
     status: sdw_slave_status,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let rt700: *mut rt700_priv = dev_get_drvdata(&mut (*slave).dev) as *mut rt700_priv;
 
     if status == SDW_SLAVE_UNATTACHED {
@@ -394,12 +394,12 @@ unsafe fn rt700_update_status(
     rt700_io_init(&mut (*slave).dev, slave)
 }
 
-unsafe fn rt700_read_prop(slave: *mut sdw_slave) -> ::core::ffi::c_int {
+unsafe fn rt700_read_prop(slave: *mut sdw_slave) -> ::kernel::ffi::c_int {
     let prop: *mut sdw_slave_prop = &mut (*slave).prop;
-    let mut nval: ::core::ffi::c_int;
-    let mut i: ::core::ffi::c_int;
+    let mut nval: ::kernel::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
     let mut bit: u32;
-    let mut addr: ::core::ffi::c_ulong;
+    let mut addr: ::kernel::ffi::c_ulong;
     let mut dpn: *mut sdw_dpn_prop;
 
     (*prop).scp_int1_mask = SDW_SCP_INT1_IMPL_DEF | SDW_SCP_INT1_BUS_CLASH | SDW_SCP_INT1_PARITY;
@@ -424,10 +424,10 @@ unsafe fn rt700_read_prop(slave: *mut sdw_slave) -> ::core::ffi::c_int {
 
     i = 0;
     dpn = (*prop).src_dpn_prop;
-    addr = (*prop).source_ports as ::core::ffi::c_ulong;
+    addr = (*prop).source_ports as ::kernel::ffi::c_ulong;
     bit = 0;
     while bit < 32 {
-        if (addr & (1 as ::core::ffi::c_ulong).wrapping_shl(bit)) != 0 {
+        if (addr & (1 as ::kernel::ffi::c_ulong).wrapping_shl(bit)) != 0 {
             (*dpn.offset(i as isize)).num = bit;
             (*dpn.offset(i as isize)).type_ = SDW_DPN_FULL;
             (*dpn.offset(i as isize)).simple_ch_prep_sm = true;
@@ -451,10 +451,10 @@ unsafe fn rt700_read_prop(slave: *mut sdw_slave) -> ::core::ffi::c_int {
 
     i = 0;
     dpn = (*prop).sink_dpn_prop;
-    addr = (*prop).sink_ports as ::core::ffi::c_ulong;
+    addr = (*prop).sink_ports as ::kernel::ffi::c_ulong;
     bit = 0;
     while bit < 32 {
-        if (addr & (1 as ::core::ffi::c_ulong).wrapping_shl(bit)) != 0 {
+        if (addr & (1 as ::kernel::ffi::c_ulong).wrapping_shl(bit)) != 0 {
             (*dpn.offset(i as isize)).num = bit;
             (*dpn.offset(i as isize)).type_ = SDW_DPN_FULL;
             (*dpn.offset(i as isize)).simple_ch_prep_sm = true;
@@ -476,13 +476,13 @@ unsafe fn rt700_read_prop(slave: *mut sdw_slave) -> ::core::ffi::c_int {
 unsafe fn rt700_bus_config(
     slave: *mut sdw_slave,
     params: *mut sdw_bus_params,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let rt700: *mut rt700_priv = dev_get_drvdata(&mut (*slave).dev) as *mut rt700_priv;
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     memcpy(
-        &mut (*rt700).params as *mut _ as *mut ::core::ffi::c_void,
-        params as *const ::core::ffi::c_void,
+        &mut (*rt700).params as *mut _ as *mut ::kernel::ffi::c_void,
+        params as *const ::kernel::ffi::c_void,
         ::core::mem::size_of_val(&*params),
     );
 
@@ -497,7 +497,7 @@ unsafe fn rt700_bus_config(
 unsafe fn rt700_interrupt_callback(
     slave: *mut sdw_slave,
     status: *mut sdw_slave_intr_status,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let rt700: *mut rt700_priv = dev_get_drvdata(&mut (*slave).dev) as *mut rt700_priv;
 
     dev_dbg(
@@ -534,7 +534,7 @@ static rt700_slave_ops: sdw_slave_ops = sdw_slave_ops {
 unsafe fn rt700_sdw_probe(
     slave: *mut sdw_slave,
     id: *const sdw_device_id,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let sdw_regmap: *mut regmap;
     let regmap: *mut regmap;
 
@@ -547,7 +547,7 @@ unsafe fn rt700_sdw_probe(
     regmap = devm_regmap_init(
         &mut (*slave).dev,
         ::core::ptr::null_mut(),
-        &mut (*slave).dev as *mut _ as *mut ::core::ffi::c_void,
+        &mut (*slave).dev as *mut _ as *mut ::kernel::ffi::c_void,
         &rt700_regmap,
     );
     if IS_ERR(regmap) {
@@ -572,7 +572,7 @@ static rt700_id: [sdw_device_id; 2] = [
 ];
 // MODULE_DEVICE_TABLE(sdw, rt700_id);
 
-unsafe fn rt700_dev_suspend(dev: *mut device) -> ::core::ffi::c_int {
+unsafe fn rt700_dev_suspend(dev: *mut device) -> ::kernel::ffi::c_int {
     let rt700: *mut rt700_priv = dev_get_drvdata(dev) as *mut rt700_priv;
 
     if !(*rt700).hw_init {
@@ -587,10 +587,10 @@ unsafe fn rt700_dev_suspend(dev: *mut device) -> ::core::ffi::c_int {
     0
 }
 
-unsafe fn rt700_dev_system_suspend(dev: *mut device) -> ::core::ffi::c_int {
+unsafe fn rt700_dev_system_suspend(dev: *mut device) -> ::kernel::ffi::c_int {
     let slave: *mut sdw_slave = dev_to_sdw_dev(dev);
     let rt700: *mut rt700_priv = dev_get_drvdata(dev) as *mut rt700_priv;
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     if !(*rt700).hw_init {
         return 0;
@@ -620,12 +620,12 @@ unsafe fn rt700_dev_system_suspend(dev: *mut device) -> ::core::ffi::c_int {
     rt700_dev_suspend(dev)
 }
 
-const RT700_PROBE_TIMEOUT: ::core::ffi::c_int = 5000;
+const RT700_PROBE_TIMEOUT: ::kernel::ffi::c_int = 5000;
 
-unsafe fn rt700_dev_resume(dev: *mut device) -> ::core::ffi::c_int {
+unsafe fn rt700_dev_resume(dev: *mut device) -> ::kernel::ffi::c_int {
     let slave: *mut sdw_slave = dev_to_sdw_dev(dev);
     let rt700: *mut rt700_priv = dev_get_drvdata(dev) as *mut rt700_priv;
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     if !(*rt700).first_hw_init {
         return 0;

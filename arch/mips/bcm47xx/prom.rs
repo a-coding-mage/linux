@@ -11,9 +11,9 @@
 
 // Linux and architecture-specific dependencies are supplied by the surrounding kernel translation.
 
-static mut BCM47XX_SYSTEM_TYPE: [core::ffi::c_char; 20] = *b"Broadcom BCM47XX\0\0\0\0\0";
+static mut BCM47XX_SYSTEM_TYPE: [kernel::ffi::c_char; 20] = *b"Broadcom BCM47XX\0\0\0\0\0";
 
-pub unsafe fn get_system_type() -> *const core::ffi::c_char {
+pub unsafe fn get_system_type() -> *const kernel::ffi::c_char {
     BCM47XX_SYSTEM_TYPE.as_ptr()
 }
 

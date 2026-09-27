@@ -11,7 +11,7 @@
 
 #[repr(C)]
 struct CbmemEntry {
-    mem_file_buf: *mut core::ffi::c_char,
+    mem_file_buf: *mut kernel::ffi::c_char,
     size: u32,
 }
 
@@ -23,7 +23,7 @@ unsafe fn mem_read(
     _filp: *mut File,
     kobj: *mut Kobject,
     _bin_attr: *const BinAttribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     pos: *mut LoffT,
     count: usize,
 ) -> Isize {
@@ -42,7 +42,7 @@ unsafe fn mem_write(
     _filp: *mut File,
     kobj: *mut Kobject,
     _bin_attr: *const BinAttribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     pos: LoFFT,
     mut count: usize,
 ) -> Isize {
@@ -75,7 +75,7 @@ static mut BIN_ATTR_MEM: BinAttribute = BinAttribute {
 unsafe fn address_show(
     dev: *mut Device,
     _attr: *mut DeviceAttribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> Isize {
     let cbdev = dev_to_coreboot_device(dev);
 
@@ -88,7 +88,7 @@ static mut DEV_ATTR_ADDRESS: DeviceAttribute = DeviceAttribute { };
 unsafe fn size_show(
     dev: *mut Device,
     _attr: *mut DeviceAttribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> Isize {
     let cbdev = dev_to_coreboot_device(dev);
 
@@ -131,15 +131,15 @@ unsafe fn cbmem_entry_probe(dev: *mut CorebootDevice) -> i32 {
         return -ENOMEM;
     }
 
-    dev_set_drvdata(&mut (*dev).dev, entry as *mut core::ffi::c_void);
+    dev_set_drvdata(&mut (*dev).dev, entry as *mut kernel::ffi::c_void);
     (*entry).mem_file_buf = devm_memremap(
         &mut (*dev).dev,
         (*dev).cbmem_entry.address,
         (*dev).cbmem_entry.entry_size,
         MEMREMAP_WB,
     );
-    if is_err((*entry).mem_file_buf as *const core::ffi::c_void) {
-        return ptr_err((*entry).mem_file_buf as *const core::ffi::c_void) as i32;
+    if is_err((*entry).mem_file_buf as *const kernel::ffi::c_void) {
+        return ptr_err((*entry).mem_file_buf as *const kernel::ffi::c_void) as i32;
     }
 
     (*entry).size = (*dev).cbmem_entry.entry_size;
@@ -157,7 +157,7 @@ static mut CBMEM_IDS: [CorebootDeviceId; 2] = [
 static mut CBMEM_ENTRY_DRIVER: CorebootDriver = CorebootDriver {
     probe: Some(cbmem_entry_probe),
     drv: Driver {
-        name: "cbmem\0".as_ptr() as *const core::ffi::c_char,
+        name: "cbmem\0".as_ptr() as *const kernel::ffi::c_char,
         dev_groups: unsafe { &DEV_GROUPS as *const _ },
     },
     id_table: unsafe { &CBMEM_IDS as *const _ },

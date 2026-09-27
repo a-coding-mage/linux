@@ -17,7 +17,7 @@ extern "C" {
  */
 
 /* Dependencies from <linux/dmi.h>, <asm/iosf_mbi.h>, and platform headers. */
-pub type u32 = core::ffi::c_uint;
+pub type u32 = kernel::ffi::c_uint;
 
 #[repr(C)]
 pub struct device {
@@ -45,32 +45,32 @@ pub struct dmi_system_id {
 }
 
 extern "C" {
-    pub static DMI_SYS_VENDOR: core::ffi::c_int;
-    pub static DMI_PRODUCT_FAMILY: core::ffi::c_int;
-    pub static BT_MBI_UNIT_PMC: core::ffi::c_int;
-    pub static MBI_REG_READ: core::ffi::c_int;
-    pub static IORESOURCE_IRQ: core::ffi::c_uint;
+    pub static DMI_SYS_VENDOR: kernel::ffi::c_int;
+    pub static DMI_PRODUCT_FAMILY: kernel::ffi::c_int;
+    pub static BT_MBI_UNIT_PMC: kernel::ffi::c_int;
+    pub static MBI_REG_READ: kernel::ffi::c_int;
+    pub static IORESOURCE_IRQ: kernel::ffi::c_uint;
 
     pub fn DMI_MATCH(
-        slot: core::ffi::c_int,
-        substr: *const core::ffi::c_char,
+        slot: kernel::ffi::c_int,
+        substr: *const kernel::ffi::c_char,
     ) -> dmi_strmatch;
     pub fn dmi_check_system(list: *const dmi_system_id) -> bool;
     pub fn iosf_mbi_available() -> bool;
     pub fn iosf_mbi_read(
-        port: core::ffi::c_int,
-        opcode: core::ffi::c_int,
-        offset: core::ffi::c_uint,
+        port: kernel::ffi::c_int,
+        opcode: kernel::ffi::c_int,
+        offset: kernel::ffi::c_uint,
         mdr: *mut u32,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn platform_get_resource(
         dev: *mut platform_device,
-        type_: core::ffi::c_uint,
-        num: core::ffi::c_uint,
+        type_: kernel::ffi::c_uint,
+        num: kernel::ffi::c_uint,
     ) -> *mut resource;
 
-    pub fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    pub fn dev_info(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    pub fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    pub fn dev_info(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 pub unsafe fn soc_intel_is_byt_cr(pdev: *mut platform_device) -> bool {
@@ -90,10 +90,10 @@ pub unsafe fn soc_intel_is_byt_cr(pdev: *mut platform_device) -> bool {
         dmi_system_id {
             /* Lenovo Yoga Tablet 2 series */
             matches: [
-                DMI_MATCH(DMI_SYS_VENDOR, b"LENOVO\0".as_ptr() as *const core::ffi::c_char),
+                DMI_MATCH(DMI_SYS_VENDOR, b"LENOVO\0".as_ptr() as *const kernel::ffi::c_char),
                 DMI_MATCH(
                     DMI_PRODUCT_FAMILY,
-                    b"YOGATablet2\0".as_ptr() as *const core::ffi::c_char,
+                    b"YOGATablet2\0".as_ptr() as *const kernel::ffi::c_char,
                 ),
                 core::mem::zeroed(),
                 core::mem::zeroed(),
@@ -102,7 +102,7 @@ pub unsafe fn soc_intel_is_byt_cr(pdev: *mut platform_device) -> bool {
         core::mem::zeroed(),
     ];
     let dev: *mut device = &mut (*pdev).dev;
-    let mut status: core::ffi::c_int = 0;
+    let mut status: kernel::ffi::c_int = 0;
 
     if !soc_intel_is_byt() {
         return false;
@@ -123,22 +123,22 @@ pub unsafe fn soc_intel_is_byt_cr(pdev: *mut platform_device) -> bool {
         );
 
         if status != 0 {
-            dev_err(dev, b"could not read PUNIT BIOS_CONFIG\n\0".as_ptr() as *const core::ffi::c_char);
+            dev_err(dev, b"could not read PUNIT BIOS_CONFIG\n\0".as_ptr() as *const kernel::ffi::c_char);
         } else {
             /* bits 26:27 mirror PMIC options */
             bios_status = (bios_status >> 26) & 3;
 
             if bios_status == 1 || bios_status == 3 {
-                dev_info(dev, b"Detected Baytrail-CR platform\n\0".as_ptr() as *const core::ffi::c_char);
+                dev_info(dev, b"Detected Baytrail-CR platform\n\0".as_ptr() as *const kernel::ffi::c_char);
                 return true;
             }
 
-            dev_info(dev, b"BYT-CR not detected\n\0".as_ptr() as *const core::ffi::c_char);
+            dev_info(dev, b"BYT-CR not detected\n\0".as_ptr() as *const kernel::ffi::c_char);
         }
     } else {
         dev_info(
             dev,
-            b"IOSF_MBI not available, no BYT-CR detection\n\0".as_ptr() as *const core::ffi::c_char,
+            b"IOSF_MBI not available, no BYT-CR detection\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
@@ -148,7 +148,7 @@ pub unsafe fn soc_intel_is_byt_cr(pdev: *mut platform_device) -> bool {
          * causing platform_get_irq with index 5 to return -ENXIO.
          * The correct IRQ in this case is at index 0, as on BYT-CR.
          */
-        dev_info(dev, b"Falling back to Baytrail-CR platform\n\0".as_ptr() as *const core::ffi::c_char);
+        dev_info(dev, b"Falling back to Baytrail-CR platform\n\0".as_ptr() as *const kernel::ffi::c_char);
         return true;
     }
 

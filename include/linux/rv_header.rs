@@ -19,7 +19,7 @@ pub const RV_MON_PER_OBJ: i32 = 3;
 #[repr(C)]
 pub struct da_monitor {
     pub monitoring: bool,
-    pub curr_state: ::core::ffi::c_uint,
+    pub curr_state: ::kernel::ffi::c_uint,
 }
 
 /* CONFIG_RV_LTL_MONITOR declarations. */
@@ -93,22 +93,22 @@ pub const RV_PER_TASK_MONITOR_INIT: usize = CONFIG_RV_PER_TASK_MONITORS;
 
 #[repr(C)]
 pub struct rv_reactor {
-    pub name: *const ::core::ffi::c_char,
-    pub description: *const ::core::ffi::c_char,
-    pub react: Option<unsafe extern "C" fn(*const ::core::ffi::c_char, ...)>,
+    pub name: *const ::kernel::ffi::c_char,
+    pub description: *const ::kernel::ffi::c_char,
+    pub react: Option<unsafe extern "C" fn(*const ::kernel::ffi::c_char, ...)>,
     pub list: list_head,
 }
 
 #[repr(C)]
 pub struct rv_monitor {
-    pub name: *const ::core::ffi::c_char,
-    pub description: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
+    pub description: *const ::kernel::ffi::c_char,
     pub enabled: bool,
-    pub enable: Option<unsafe extern "C" fn() -> ::core::ffi::c_int>,
+    pub enable: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_int>,
     pub disable: Option<unsafe extern "C" fn()>,
     pub reset: Option<unsafe extern "C" fn()>,
     pub reactor: *mut rv_reactor,
-    pub react: Option<unsafe extern "C" fn(*const ::core::ffi::c_char, ...)>,
+    pub react: Option<unsafe extern "C" fn(*const ::kernel::ffi::c_char, ...)>,
     pub list: list_head,
     pub parent: *mut rv_monitor,
     pub root_d: *mut dentry,
@@ -116,13 +116,13 @@ pub struct rv_monitor {
 
 extern "C" {
     pub fn rv_monitoring_on() -> bool;
-    pub fn rv_unregister_monitor(monitor: *mut rv_monitor) -> ::core::ffi::c_int;
-    pub fn rv_register_monitor(monitor: *mut rv_monitor, parent: *mut rv_monitor) -> ::core::ffi::c_int;
-    pub fn rv_get_task_monitor_slot() -> ::core::ffi::c_int;
-    pub fn rv_put_task_monitor_slot(slot: ::core::ffi::c_int);
-    pub fn rv_unregister_reactor(reactor: *mut rv_reactor) -> ::core::ffi::c_int;
-    pub fn rv_register_reactor(reactor: *mut rv_reactor) -> ::core::ffi::c_int;
-    pub fn rv_react(monitor: *mut rv_monitor, msg: *const ::core::ffi::c_char, ...);
+    pub fn rv_unregister_monitor(monitor: *mut rv_monitor) -> ::kernel::ffi::c_int;
+    pub fn rv_register_monitor(monitor: *mut rv_monitor, parent: *mut rv_monitor) -> ::kernel::ffi::c_int;
+    pub fn rv_get_task_monitor_slot() -> ::kernel::ffi::c_int;
+    pub fn rv_put_task_monitor_slot(slot: ::kernel::ffi::c_int);
+    pub fn rv_unregister_reactor(reactor: *mut rv_reactor) -> ::kernel::ffi::c_int;
+    pub fn rv_register_reactor(reactor: *mut rv_reactor) -> ::kernel::ffi::c_int;
+    pub fn rv_react(monitor: *mut rv_monitor, msg: *const ::kernel::ffi::c_char, ...);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

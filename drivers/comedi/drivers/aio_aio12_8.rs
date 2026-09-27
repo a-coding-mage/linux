@@ -67,7 +67,7 @@ static AIO_AIO12_8_RANGE: comedi_lrange = comedi_lrange {
 
 #[repr(C)]
 struct aio12_8_boardtype {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     has_ai: u32,
     has_ao: u32,
 }

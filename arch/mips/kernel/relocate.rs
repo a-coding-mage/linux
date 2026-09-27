@@ -11,8 +11,8 @@
 
 // C headers and configuration-provided symbols are supplied by other files.
 
-type u32 = core::ffi::c_uint;
-type u64 = core::ffi::c_ulonglong;
+type u32 = kernel::ffi::c_uint;
+type u64 = kernel::ffi::c_ulonglong;
 type ulong = usize;
 
 extern "C" {
@@ -31,11 +31,11 @@ extern "C" {
     static mut arcs_cmdline: u8;
     static mut boot_command_line: u8;
     static mut linux_banner: u8;
-    static mut initial_boot_params: *mut core::ffi::c_void;
-    static mut panic_notifier_list: core::ffi::c_void;
+    static mut initial_boot_params: *mut kernel::ffi::c_void;
+    static mut panic_notifier_list: kernel::ffi::c_void;
 }
 
-unsafe extern "C" fn plat_fdt_relocated(_new_location: *mut core::ffi::c_void) {}
+unsafe extern "C" fn plat_fdt_relocated(_new_location: *mut kernel::ffi::c_void) {}
 
 #[inline]
 unsafe fn relocated<T>(x: *mut T, offset: isize) -> *mut T {
@@ -134,9 +134,9 @@ unsafe fn determine_relocation_address() -> *mut u8 {
     0xffffffff81000000usize as *mut u8
 }
 
-unsafe extern "C" fn relocate_kernel() -> *mut core::ffi::c_void {
+unsafe extern "C" fn relocate_kernel() -> *mut kernel::ffi::c_void {
     let mut offset: isize = 0;
-    let mut kernel_entry = start_kernel as *mut core::ffi::c_void;
+    let mut kernel_entry = start_kernel as *mut kernel::ffi::c_void;
     let kernel_length = (&_relocation_start as *const u32 as usize) - (&_text as *const u8 as usize);
     let bss_length = (&__bss_stop as *const u8 as usize) - (&__bss_start as *const u8 as usize);
     let loc_new = determine_relocation_address();
@@ -148,13 +148,13 @@ unsafe extern "C" fn relocate_kernel() -> *mut core::ffi::c_void {
         if relocate_exception_table(offset) < 0 { return kernel_entry; }
         core::ptr::copy_nonoverlapping(&__bss_start as *const u8, relocated(&mut __bss_start, offset), bss_length);
         if plat_post_relocation(offset) != 0 { return kernel_entry; }
-        kernel_entry = relocated(start_kernel as *mut core::ffi::c_void, offset);
+        kernel_entry = relocated(start_kernel as *mut kernel::ffi::c_void, offset);
         update_kaslr_offset(&mut __kaslr_offset, offset);
     }
     kernel_entry
 }
 
-unsafe fn show_kernel_relocation(_level: *const core::ffi::c_char) {
+unsafe fn show_kernel_relocation(_level: *const kernel::ffi::c_char) {
     if __kaslr_offset > 0 {
         // printk(level); pr_cont("Kernel relocated by 0x%p\n", ...);
         // The remaining address reporting preserves the C function's purpose.
@@ -163,13 +163,13 @@ unsafe fn show_kernel_relocation(_level: *const core::ffi::c_char) {
 
 #[repr(C)]
 pub struct notifier_block {
-    pub notifier_call: Option<unsafe extern "C" fn(*mut notifier_block, ulong, *mut core::ffi::c_void) -> i32>,
+    pub notifier_call: Option<unsafe extern "C" fn(*mut notifier_block, ulong, *mut kernel::ffi::c_void) -> i32>,
 }
 
 unsafe extern "C" fn kernel_location_notifier_fn(
     _self: *mut notifier_block,
     _v: ulong,
-    _p: *mut core::ffi::c_void,
+    _p: *mut kernel::ffi::c_void,
 ) -> i32 {
     show_kernel_relocation(core::ptr::null());
     0

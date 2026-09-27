@@ -57,13 +57,13 @@ static rk3308_codec_hpf_cutoff_text: [*const c_char; 3] = [
     c_str!("612 Hz"),
 ];
 
-static rk3308_codec_hpf_cutoff_enum12: _ =
+static rk3308_codec_hpf_cutoff_enum12: u32 =
     SOC_ENUM_SINGLE_DECL!(RK3308_ADC_DIG_CON04(0), 0, rk3308_codec_hpf_cutoff_text);
-static rk3308_codec_hpf_cutoff_enum34: _ =
+static rk3308_codec_hpf_cutoff_enum34: u32 =
     SOC_ENUM_SINGLE_DECL!(RK3308_ADC_DIG_CON04(1), 0, rk3308_codec_hpf_cutoff_text);
-static rk3308_codec_hpf_cutoff_enum56: _ =
+static rk3308_codec_hpf_cutoff_enum56: u32 =
     SOC_ENUM_SINGLE_DECL!(RK3308_ADC_DIG_CON04(2), 0, rk3308_codec_hpf_cutoff_text);
-static rk3308_codec_hpf_cutoff_enum78: _ =
+static rk3308_codec_hpf_cutoff_enum78: u32 =
     SOC_ENUM_SINGLE_DECL!(RK3308_ADC_DIG_CON04(3), 0, rk3308_codec_hpf_cutoff_text);
 
 static rk3308_codec_controls: &[snd_kcontrol_new] = &[

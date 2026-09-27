@@ -7,7 +7,7 @@
 // Linux headers: reboot_mode, dsb, __raw_writel, V7M_SCB_AIRCR_VECTKEY,
 // V7M_SCB_AIRCR_SYSRESETREQ, BASEADDR_V7M_SCB, and V7M_SCB_AIRCR.
 
-pub unsafe fn armv7m_restart(mode: reboot_mode, cmd: *const core::ffi::c_char) {
+pub unsafe fn armv7m_restart(mode: reboot_mode, cmd: *const kernel::ffi::c_char) {
     let _ = mode;
     let _ = cmd;
 

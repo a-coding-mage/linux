@@ -21,8 +21,8 @@ extern "C" {
     fn setup_force_cpu_bug(bug: u32);
     fn cpu_smt_disable(force: bool);
     fn cpu_attack_vector_mitigated(vector: u32) -> bool;
-    fn static_branch_enable(key: *const core::ffi::c_void);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn static_branch_enable(key: *const kernel::ffi::c_void);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]

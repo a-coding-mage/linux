@@ -11,7 +11,7 @@ const ACT_BPF_NAME_LEN: usize = 256;
 struct tcf_bpf_cfg {
     filter: *mut bpf_prog,
     bpf_ops: *mut sock_filter,
-    bpf_name: *const core::ffi::c_char,
+    bpf_name: *const kernel::ffi::c_char,
     bpf_num_ops: u16,
     is_ebpf: bool,
 }

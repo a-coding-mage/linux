@@ -12,7 +12,7 @@
 
 static mut reset_module_base: *mut mpc512x_reset_module = core::ptr::null_mut();
 
-pub unsafe extern "C" fn mpc512x_restart(_cmd: *mut core::ffi::c_char) -> ! {
+pub unsafe extern "C" fn mpc512x_restart(_cmd: *mut kernel::ffi::c_char) -> ! {
     if !reset_module_base.is_null() {
         out_be32(&mut (*reset_module_base).rpr, 0x52535445);
         out_be32(&mut (*reset_module_base).rcr, 0x2);
@@ -153,19 +153,19 @@ pub unsafe extern "C" fn mpc512x_init_IRQ() {
 
 const DEFAULT_FIFO_SIZE: u32 = 16;
 
-pub unsafe extern "C" fn mpc512x_select_psc_compat() -> *const core::ffi::c_char {
+pub unsafe extern "C" fn mpc512x_select_psc_compat() -> *const kernel::ffi::c_char {
     if of_machine_is_compatible(c"fsl,mpc5121".as_ptr()) { return c"fsl,mpc5121-psc".as_ptr(); }
     if of_machine_is_compatible(c"fsl,mpc5125".as_ptr()) { return c"fsl,mpc5125-psc".as_ptr(); }
     core::ptr::null()
 }
 
-unsafe fn mpc512x_select_reset_compat() -> *const core::ffi::c_char {
+unsafe fn mpc512x_select_reset_compat() -> *const kernel::ffi::c_char {
     if of_machine_is_compatible(c"fsl,mpc5121".as_ptr()) { return c"fsl,mpc5121-reset".as_ptr(); }
     if of_machine_is_compatible(c"fsl,mpc5125".as_ptr()) { return c"fsl,mpc5125-reset".as_ptr(); }
     core::ptr::null()
 }
 
-unsafe fn get_fifo_size(np: *mut device_node, prop_name: *const core::ffi::c_char) -> u32 {
+unsafe fn get_fifo_size(np: *mut device_node, prop_name: *const kernel::ffi::c_char) -> u32 {
     let fp = of_get_property(np, prop_name, core::ptr::null_mut());
     if !fp.is_null() { return *fp; }
     pr_warn(c"no fifo property in node, defaulting to %d\n", DEFAULT_FIFO_SIZE);

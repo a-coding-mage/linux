@@ -60,7 +60,7 @@ pub struct ScmiMsgDumpEntry {
     pub channel_id: u8,
     pub protocol_id: u8,
     pub msg_id: u8,
-    pub tag: [core::ffi::c_char; TRACE_SCMI_MAX_TAG_LEN],
+    pub tag: [kernel::ffi::c_char; TRACE_SCMI_MAX_TAG_LEN],
     pub seq: u16,
     pub status: i32,
     pub len: usize,

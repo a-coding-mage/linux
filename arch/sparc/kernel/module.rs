@@ -12,7 +12,7 @@
 pub unsafe fn module_frob_arch_sections(
     hdr: *mut Elf_Ehdr,
     sechdrs: *mut Elf_Shdr,
-    _secstrings: *mut core::ffi::c_char,
+    _secstrings: *mut kernel::ffi::c_char,
     mod_: *mut module,
 ) -> i32 {
     let mut symidx: u32 = 0;
@@ -45,7 +45,7 @@ pub unsafe fn module_frob_arch_sections(
 
 pub unsafe fn apply_relocate_add(
     sechdrs: *mut Elf_Shdr,
-    _strtab: *const core::ffi::c_char,
+    _strtab: *const kernel::ffi::c_char,
     symindex: u32,
     relsec: u32,
     me: *mut module,
@@ -132,12 +132,12 @@ unsafe fn do_patch_sections(hdr: *const Elf_Ehdr, sechdrs: *const Elf_Shdr) {
         if strcmp(b".sun4v_2insn_patch\0".as_ptr() as *const i8, name) == 0 { sun4v_2insn = s; }
     }
     if !sun4v_1insn.is_null() && tlb_type == hypervisor {
-        let p = (*sun4v_1insn).sh_addr as *mut core::ffi::c_void;
-        sun4v_patch_1insn_range(p, (p as *mut u8).add((*sun4v_1insn).sh_size as usize) as *mut core::ffi::c_void);
+        let p = (*sun4v_1insn).sh_addr as *mut kernel::ffi::c_void;
+        sun4v_patch_1insn_range(p, (p as *mut u8).add((*sun4v_1insn).sh_size as usize) as *mut kernel::ffi::c_void);
     }
     if !sun4v_2insn.is_null() && tlb_type == hypervisor {
-        let p = (*sun4v_2insn).sh_addr as *mut core::ffi::c_void;
-        sun4v_patch_2insn_range(p, (p as *mut u8).add((*sun4v_2insn).sh_size as usize) as *mut core::ffi::c_void);
+        let p = (*sun4v_2insn).sh_addr as *mut kernel::ffi::c_void;
+        sun4v_patch_2insn_range(p, (p as *mut u8).add((*sun4v_2insn).sh_size as usize) as *mut kernel::ffi::c_void);
     }
 }
 

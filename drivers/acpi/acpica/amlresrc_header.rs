@@ -69,7 +69,7 @@ pub const ASL_RDESC_FIXED_DMA_SIZE: u32 = 0x05;
 pub const ASL_RDESC_END_TAG_SIZE: u32 = 0x01;
 
 #[repr(C)]
-pub struct asl_resource_node { pub buffer_length: u32, pub buffer: *mut core::ffi::c_void, pub next: *mut asl_resource_node }
+pub struct asl_resource_node { pub buffer_length: u32, pub buffer: *mut kernel::ffi::c_void, pub next: *mut asl_resource_node }
 #[repr(C)]
 pub struct asl_resource_info { pub descriptor_type_op: *mut acpi_parse_object, pub mapping_op: *mut acpi_parse_object, pub current_byte_offset: u32 }
 
@@ -141,14 +141,14 @@ pub const AML_RESOURCE_PIN_FUNCTION_REVISION:u8=1; pub const AML_RESOURCE_PIN_CO
 #[repr(C)] pub union aml_resource { pub descriptor_type:u8, pub small_header: core::mem::ManuallyDrop<aml_resource_small_header>, pub large_header: core::mem::ManuallyDrop<aml_resource_large_header>, pub irq:core::mem::ManuallyDrop<aml_resource_irq>, pub dma:core::mem::ManuallyDrop<aml_resource_dma>, pub start_dpf:core::mem::ManuallyDrop<aml_resource_start_dependent>, pub end_dpf:core::mem::ManuallyDrop<aml_resource_end_dependent>, pub io:core::mem::ManuallyDrop<aml_resource_io>, pub fixed_io:core::mem::ManuallyDrop<aml_resource_fixed_io>, pub fixed_dma:core::mem::ManuallyDrop<aml_resource_fixed_dma>, pub vendor_small:core::mem::ManuallyDrop<aml_resource_vendor_small>, pub end_tag:core::mem::ManuallyDrop<aml_resource_end_tag>, pub memory24:core::mem::ManuallyDrop<aml_resource_memory24>, pub generic_reg:core::mem::ManuallyDrop<aml_resource_generic_register>, pub vendor_large:core::mem::ManuallyDrop<aml_resource_vendor_large>, pub memory32:core::mem::ManuallyDrop<aml_resource_memory32>, pub fixed_memory32:core::mem::ManuallyDrop<aml_resource_fixed_memory32>, pub address16:core::mem::ManuallyDrop<aml_resource_address16>, pub address32:core::mem::ManuallyDrop<aml_resource_address32>, pub address64:core::mem::ManuallyDrop<aml_resource_address64>, pub ext_address64:core::mem::ManuallyDrop<aml_resource_extended_address64>, pub extended_irq:core::mem::ManuallyDrop<aml_resource_extended_irq>, pub gpio:core::mem::ManuallyDrop<aml_resource_gpio>, pub i2c_serial_bus:core::mem::ManuallyDrop<aml_resource_i2c_serialbus>, pub spi_serial_bus:core::mem::ManuallyDrop<aml_resource_spi_serialbus>, pub uart_serial_bus:core::mem::ManuallyDrop<aml_resource_uart_serialbus>, pub csi2_serial_bus:core::mem::ManuallyDrop<aml_resource_csi2_serialbus>, pub common_serial_bus:core::mem::ManuallyDrop<aml_resource_common_serialbus>, pub pin_function:core::mem::ManuallyDrop<aml_resource_pin_function>, pub pin_config:core::mem::ManuallyDrop<aml_resource_pin_config>, pub pin_group:core::mem::ManuallyDrop<aml_resource_pin_group>, pub pin_group_function:core::mem::ManuallyDrop<aml_resource_pin_group_function>, pub pin_group_config:core::mem::ManuallyDrop<aml_resource_pin_group_config>, pub clock_input:core::mem::ManuallyDrop<aml_resource_clock_input>, pub address:core::mem::ManuallyDrop<aml_resource_address>, pub dword_item:u32, pub word_item:u16, pub byte_item:u8 }
 
 extern "C" {
-    pub fn mp_save_gpio_info(op:*mut acpi_parse_object, resource:*mut aml_resource, pin_count:u32, pin_list:*mut u16, device_name:*mut core::ffi::c_char);
-    pub fn mp_save_serial_info(op:*mut acpi_parse_object, resource:*mut aml_resource, device_name:*mut core::ffi::c_char);
-    pub fn mp_get_hid_from_parse_tree(hid_node:*mut acpi_namespace_node) -> *mut core::ffi::c_char;
-    pub fn mp_get_hid_via_namestring(device_name:*mut core::ffi::c_char) -> *mut core::ffi::c_char;
-    pub fn mp_get_connection_info(op:*mut acpi_parse_object, pin_index:u32, target_node:*mut *mut acpi_namespace_node, target_name:*mut *mut core::ffi::c_char) -> *mut core::ffi::c_char;
-    pub fn mp_get_parent_device_hid(op:*mut acpi_parse_object, target_node:*mut *mut acpi_namespace_node, parent_device_name:*mut *mut core::ffi::c_char) -> *mut core::ffi::c_char;
-    pub fn mp_get_ddn_value(device_name:*mut core::ffi::c_char) -> *mut core::ffi::c_char;
-    pub fn mp_get_hid_value(device_node:*mut acpi_namespace_node) -> *mut core::ffi::c_char;
+    pub fn mp_save_gpio_info(op:*mut acpi_parse_object, resource:*mut aml_resource, pin_count:u32, pin_list:*mut u16, device_name:*mut kernel::ffi::c_char);
+    pub fn mp_save_serial_info(op:*mut acpi_parse_object, resource:*mut aml_resource, device_name:*mut kernel::ffi::c_char);
+    pub fn mp_get_hid_from_parse_tree(hid_node:*mut acpi_namespace_node) -> *mut kernel::ffi::c_char;
+    pub fn mp_get_hid_via_namestring(device_name:*mut kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    pub fn mp_get_connection_info(op:*mut acpi_parse_object, pin_index:u32, target_node:*mut *mut acpi_namespace_node, target_name:*mut *mut kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    pub fn mp_get_parent_device_hid(op:*mut acpi_parse_object, target_node:*mut *mut acpi_namespace_node, parent_device_name:*mut *mut kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    pub fn mp_get_ddn_value(device_name:*mut kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    pub fn mp_get_hid_value(device_node:*mut acpi_namespace_node) -> *mut kernel::ffi::c_char;
 }
 
 /* External project types supplied by the surrounding ACPICA translation. */

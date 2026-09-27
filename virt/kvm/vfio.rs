@@ -6,12 +6,12 @@
  *     Author: Alex Williamson <alex.williamson@redhat.com>
  */
 
-use core::ffi::{c_char, c_int, c_long, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_long, c_uint, c_void};
 
 type bool_t = bool;
-type u32 = core::ffi::c_uint;
-type u64 = core::ffi::c_ulonglong;
-type int32_t = core::ffi::c_int;
+type u32 = kernel::ffi::c_uint;
+type u64 = kernel::ffi::c_ulonglong;
+type int32_t = kernel::ffi::c_int;
 
 #[repr(C)]
 pub struct list_head {
@@ -154,7 +154,7 @@ unsafe extern "C" {
     ) -> c_int;
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 unsafe fn container_of_kvm_vfio_file(ptr: *mut list_head) -> *mut kvm_vfio_file {
     (ptr as *mut u8).sub(core::mem::offset_of!(kvm_vfio_file, node)) as *mut kvm_vfio_file

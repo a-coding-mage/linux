@@ -42,7 +42,7 @@ pub struct hhf_sched_data {
     pub hh_flows_current_cnt: u32,
     pub hhf_arrays: [*mut u32; HHF_ARRAYS_CNT],
     pub hhf_arrays_reset_timestamp: u32,
-    pub hhf_valid_bits: [*mut libc::c_ulong; HHF_ARRAYS_CNT],
+    pub hhf_valid_bits: [*mut kernel::ffi::c_ulong; HHF_ARRAYS_CNT],
     pub new_buckets: list_head,
     pub old_buckets: list_head,
     pub hhf_reset_timeout: u32,

@@ -38,19 +38,19 @@ pub struct thread_struct {
 }
 
 extern "C" {
-    fn show_kernel_fault_diag(str_: *const core::ffi::c_char, regs: *mut pt_regs, address: usize);
+    fn show_kernel_fault_diag(str_: *const kernel::ffi::c_char, regs: *mut pt_regs, address: usize);
     fn user_mode(regs: *mut pt_regs) -> bool;
     static mut current: *mut task_struct;
-    fn force_sig_fault(signo: i32, si_code: i32, addr: *mut core::ffi::c_void);
+    fn force_sig_fault(signo: i32, si_code: i32, addr: *mut kernel::ffi::c_void);
     fn fixup_exception(regs: *mut pt_regs) -> i32;
     fn misaligned_fixup(address: usize, regs: *mut pt_regs, cregs: *mut callee_regs) -> i32;
     fn trap_is_kprobe(address: usize, regs: *mut pt_regs) -> i32;
     fn kgdb_trap(regs: *mut pt_regs);
-    fn notify_die(name: i32, str_: *const core::ffi::c_char, regs: *mut pt_regs,
+    fn notify_die(name: i32, str_: *const kernel::ffi::c_char, regs: *mut pt_regs,
                   address: usize, trapno: i32, signo: i32) -> i32;
 }
 
-pub unsafe fn die(str_: *const core::ffi::c_char, regs: *mut pt_regs, address: usize) {
+pub unsafe fn die(str_: *const kernel::ffi::c_char, regs: *mut pt_regs, address: usize) {
     show_kernel_fault_diag(str_, regs, address);
 
     /* DEAD END */
@@ -64,11 +64,11 @@ pub unsafe fn die(str_: *const core::ffi::c_char, regs: *mut pt_regs, address: u
  */
 #[inline(never)]
 unsafe fn unhandled_exception(
-    str_: *const core::ffi::c_char,
+    str_: *const kernel::ffi::c_char,
     regs: *mut pt_regs,
     signo: i32,
     si_code: i32,
-    addr: *mut core::ffi::c_void,
+    addr: *mut kernel::ffi::c_void,
 ) -> i32 {
     if user_mode(regs) {
         let tsk = current;

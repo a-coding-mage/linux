@@ -15,7 +15,7 @@ pub const SGX_ENCL_PAGE_BEING_RECLAIMED: u64 = 1u64 << 3;
 
 #[repr(C)]
 pub struct sgx_encl_page {
-    pub desc: ::core::ffi::c_ulong,
+    pub desc: ::kernel::ffi::c_ulong,
     pub vm_max_prot_bits: u8,
     pub type_: sgx_page_type,
     pub epc_page: *mut sgx_epc_page,
@@ -41,21 +41,21 @@ pub struct sgx_encl_mm {
 
 #[repr(C)]
 pub struct sgx_encl {
-    pub base: ::core::ffi::c_ulong,
-    pub size: ::core::ffi::c_ulong,
-    pub flags: ::core::ffi::c_ulong,
+    pub base: ::kernel::ffi::c_ulong,
+    pub size: ::kernel::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub page_cnt: u32,
     pub secs_child_cnt: u32,
     pub lock: mutex,
     pub page_array: xarray,
     pub secs: sgx_encl_page,
-    pub attributes: ::core::ffi::c_ulong,
-    pub attributes_mask: ::core::ffi::c_ulong,
+    pub attributes: ::kernel::ffi::c_ulong,
+    pub attributes_mask: ::kernel::ffi::c_ulong,
     pub cpumask: cpumask_t,
     pub backing: *mut file,
     pub refcount: kref,
     pub va_pages: list_head,
-    pub mm_list_version: ::core::ffi::c_ulong,
+    pub mm_list_version: ::kernel::ffi::c_ulong,
     pub mm_list: list_head,
     pub mm_lock: spinlock_t,
     pub srcu: srcu_struct,
@@ -74,19 +74,19 @@ pub struct sgx_va_page {
 pub struct sgx_backing {
     pub contents: *mut page,
     pub pcmd: *mut page,
-    pub pcmd_offset: ::core::ffi::c_ulong,
+    pub pcmd_offset: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
     pub static sgx_vm_ops: vm_operations_struct;
 
-    pub fn vma_lookup(mm: *mut mm_struct, addr: ::core::ffi::c_ulong)
+    pub fn vma_lookup(mm: *mut mm_struct, addr: ::kernel::ffi::c_ulong)
         -> *mut vm_area_struct;
 
     pub fn sgx_encl_may_map(
         encl: *mut sgx_encl,
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
         vm_flags: vm_flags_t,
     ) -> i32;
     pub fn current_is_ksgxd() -> bool;
@@ -95,23 +95,23 @@ extern "C" {
     pub fn sgx_encl_cpumask(encl: *mut sgx_encl) -> *const cpumask_t;
     pub fn sgx_encl_alloc_backing(
         encl: *mut sgx_encl,
-        page_index: ::core::ffi::c_ulong,
+        page_index: ::kernel::ffi::c_ulong,
         backing: *mut sgx_backing,
     ) -> i32;
     pub fn sgx_encl_put_backing(backing: *mut sgx_backing);
     pub fn sgx_encl_test_and_clear_young(mm: *mut mm_struct, page: *mut sgx_encl_page) -> i32;
     pub fn sgx_encl_page_alloc(
         encl: *mut sgx_encl,
-        offset: ::core::ffi::c_ulong,
+        offset: ::kernel::ffi::c_ulong,
         secinfo_flags: u64,
     ) -> *mut sgx_encl_page;
-    pub fn sgx_zap_enclave_ptes(encl: *mut sgx_encl, addr: ::core::ffi::c_ulong);
+    pub fn sgx_zap_enclave_ptes(encl: *mut sgx_encl, addr: ::kernel::ffi::c_ulong);
     pub fn sgx_alloc_va_page(reclaim: bool) -> *mut sgx_epc_page;
     pub fn sgx_alloc_va_slot(va_page: *mut sgx_va_page) -> u32;
     pub fn sgx_free_va_slot(va_page: *mut sgx_va_page, offset: u32);
     pub fn sgx_va_page_full(va_page: *mut sgx_va_page) -> bool;
     pub fn sgx_encl_free_epc_page(page: *mut sgx_epc_page);
-    pub fn sgx_encl_load_page(encl: *mut sgx_encl, addr: ::core::ffi::c_ulong)
+    pub fn sgx_encl_load_page(encl: *mut sgx_encl, addr: ::kernel::ffi::c_ulong)
         -> *mut sgx_encl_page;
     pub fn sgx_encl_grow(encl: *mut sgx_encl, reclaim: bool) -> *mut sgx_va_page;
     pub fn sgx_encl_shrink(encl: *mut sgx_encl, va_page: *mut sgx_va_page);
@@ -120,7 +120,7 @@ extern "C" {
 #[inline]
 pub unsafe fn sgx_encl_find(
     mm: *mut mm_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     vma: *mut *mut vm_area_struct,
 ) -> i32 {
     let result = vma_lookup(mm, addr);

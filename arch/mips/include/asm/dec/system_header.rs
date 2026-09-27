@@ -8,9 +8,9 @@
  */
 
 extern "C" {
-    pub static mut dec_kn_slot_base: ::core::ffi::c_ulong;
-    pub static mut dec_kn_slot_size: ::core::ffi::c_ulong;
-    pub static mut dec_tc_bus: ::core::ffi::c_int;
+    pub static mut dec_kn_slot_base: ::kernel::ffi::c_ulong;
+    pub static mut dec_kn_slot_size: ::kernel::ffi::c_ulong;
+    pub static mut dec_tc_bus: ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

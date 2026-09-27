@@ -45,7 +45,7 @@ unsafe fn zcomp_strm_init(comp: *mut zcomp, zstrm: *mut zcomp_strm) -> i32 {
     0
 }
 
-unsafe fn lookup_backend_ops(comp: *const core::ffi::c_char) -> *const zcomp_ops {
+unsafe fn lookup_backend_ops(comp: *const kernel::ffi::c_char) -> *const zcomp_ops {
     let mut i = 0usize;
     while !BACKENDS[i].is_null() {
         if sysfs_streq(comp, (*BACKENDS[i]).name) {
@@ -56,7 +56,7 @@ unsafe fn lookup_backend_ops(comp: *const core::ffi::c_char) -> *const zcomp_ops
     BACKENDS[i]
 }
 
-pub unsafe fn zcomp_lookup_backend_name(comp: *const core::ffi::c_char) -> *const core::ffi::c_char {
+pub unsafe fn zcomp_lookup_backend_name(comp: *const kernel::ffi::c_char) -> *const kernel::ffi::c_char {
     let backend = lookup_backend_ops(comp);
     if !backend.is_null() {
         return (*backend).name;
@@ -66,8 +66,8 @@ pub unsafe fn zcomp_lookup_backend_name(comp: *const core::ffi::c_char) -> *cons
 
 /* show available compressors */
 pub unsafe fn zcomp_available_show(
-    comp: *const core::ffi::c_char,
-    buf: *mut core::ffi::c_char,
+    comp: *const kernel::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     mut at: isize,
 ) -> isize {
     for i in 0..BACKENDS.len() - 1 {
@@ -109,7 +109,7 @@ pub unsafe fn zcomp_stream_put(zstrm: *mut zcomp_strm) {
 pub unsafe fn zcomp_compress(
     comp: *mut zcomp,
     zstrm: *mut zcomp_strm,
-    src: *const core::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     dst_len: *mut u32,
 ) -> i32 {
     let mut req = zcomp_req {
@@ -129,9 +129,9 @@ pub unsafe fn zcomp_compress(
 pub unsafe fn zcomp_decompress(
     comp: *mut zcomp,
     zstrm: *mut zcomp_strm,
-    src: *const core::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     src_len: u32,
-    dst: *mut core::ffi::c_void,
+    dst: *mut kernel::ffi::c_void,
 ) -> i32 {
     let mut req = zcomp_req { src, dst, src_len, dst_len: PAGE_SIZE };
     might_sleep();
@@ -192,7 +192,7 @@ pub unsafe fn zcomp_destroy(comp: *mut zcomp) {
 }
 
 pub unsafe fn zcomp_create(
-    alg: *const core::ffi::c_char,
+    alg: *const kernel::ffi::c_char,
     params: *mut zcomp_params,
 ) -> *mut zcomp {
     // The backends array has a sentinel NULL value and at least one backend.

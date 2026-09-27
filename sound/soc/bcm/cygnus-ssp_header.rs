@@ -22,13 +22,13 @@ pub const PROP_LEN_MAX: u32 = 40;
 
 #[repr(C)]
 pub struct ringbuf_regs {
-    pub rdaddr: ::core::ffi::c_uint,
-    pub wraddr: ::core::ffi::c_uint,
-    pub baseaddr: ::core::ffi::c_uint,
-    pub endaddr: ::core::ffi::c_uint,
-    pub fmark: ::core::ffi::c_uint, /* freemark for play, fullmark for caputure */
-    pub period_bytes: ::core::ffi::c_uint,
-    pub buf_size: ::core::ffi::c_uint,
+    pub rdaddr: ::kernel::ffi::c_uint,
+    pub wraddr: ::kernel::ffi::c_uint,
+    pub baseaddr: ::kernel::ffi::c_uint,
+    pub endaddr: ::kernel::ffi::c_uint,
+    pub fmark: ::kernel::ffi::c_uint, /* freemark for play, fullmark for caputure */
+    pub period_bytes: ::kernel::ffi::c_uint,
+    pub buf_size: ::kernel::ffi::c_uint,
 }
 
 /*
@@ -94,12 +94,12 @@ pub struct cygnus_track_clk {
 
 #[repr(C)]
 pub struct cygnus_aio_port {
-    pub portnum: ::core::ffi::c_int,
-    pub mode: ::core::ffi::c_int,
+    pub portnum: ::kernel::ffi::c_int,
+    pub mode: ::kernel::ffi::c_int,
     pub is_slave: bool,
-    pub streams_on: ::core::ffi::c_int, /* will be 0 if both capture and play are off */
-    pub fsync_width: ::core::ffi::c_int,
-    pub port_type: ::core::ffi::c_int,
+    pub streams_on: ::kernel::ffi::c_int, /* will be 0 if both capture and play are off */
+    pub fsync_width: ::kernel::ffi::c_int,
+    pub port_type: ::kernel::ffi::c_int,
 
     pub mclk: u32,
     pub lrclk: u32,
@@ -122,14 +122,14 @@ pub struct cygnus_aio_port {
 pub struct cygnus_audio {
     pub portinfo: [cygnus_aio_port; CYGNUS_MAX_PORTS],
 
-    pub irq_num: ::core::ffi::c_int,
-    pub audio: *mut ::core::ffi::c_void,
+    pub irq_num: ::kernel::ffi::c_int,
+    pub audio: *mut ::kernel::ffi::c_void,
     pub dev: *mut device,
-    pub i2s_in: *mut ::core::ffi::c_void,
+    pub i2s_in: *mut ::kernel::ffi::c_void,
 
     pub audio_clk: [*mut clk; CYGNUS_AUIDO_MAX_NUM_CLKS],
-    pub active_ports: ::core::ffi::c_int,
-    pub vco_rate: ::core::ffi::c_ulong,
+    pub active_ports: ::kernel::ffi::c_int,
+    pub vco_rate: ::kernel::ffi::c_ulong,
 }
 
 unsafe extern "C" {
@@ -140,13 +140,13 @@ unsafe extern "C" {
 
     pub fn cygnus_ssp_set_custom_fsync_width(
         cpu_dai: *mut snd_soc_dai,
-        len: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        len: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn cygnus_soc_platform_register(
         dev: *mut device,
         cygaud: *mut cygnus_audio,
-    ) -> ::core::ffi::c_int;
-    pub fn cygnus_soc_platform_unregister(dev: *mut device) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn cygnus_soc_platform_unregister(dev: *mut device) -> ::kernel::ffi::c_int;
 }
 
 /*

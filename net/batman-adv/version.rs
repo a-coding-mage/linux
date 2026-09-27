@@ -2,7 +2,7 @@
 
 // Dependency supplied by <generated/utsrelease.h>.
 unsafe extern "C" {
-    pub static UTS_RELEASE: *const core::ffi::c_char;
+    pub static UTS_RELEASE: *const kernel::ffi::c_char;
 }
 
 // WARNING userspace tools like batctl were relying on
@@ -13,7 +13,7 @@ unsafe extern "C" {
 //
 // Equivalent of MODULE_VERSION(UTS_RELEASE): expose the kernel module version
 // metadata using the release string supplied by the build environment.
-pub unsafe fn module_version() -> *const core::ffi::c_char {
+pub unsafe fn module_version() -> *const kernel::ffi::c_char {
     UTS_RELEASE
 }
 

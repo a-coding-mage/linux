@@ -8,7 +8,7 @@
 /* Equalizer filter response configuration */
 #[repr(C)]
 pub struct max98095_eq_cfg {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub rate: u32,
     pub band1: [u16; 5],
     pub band2: [u16; 5],
@@ -20,7 +20,7 @@ pub struct max98095_eq_cfg {
 /* Biquad filter response configuration */
 #[repr(C)]
 pub struct max98095_biquad_cfg {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub rate: u32,
     pub band1: [u16; 5],
     pub band2: [u16; 5],

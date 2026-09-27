@@ -13,8 +13,8 @@ extern "C" {
     fn sam9x60_pm_init();
 }
 
-static SAM9X60_DT_BOARD_COMPAT: [*const core::ffi::c_char; 2] = [
-    b"microchip,sam9x60\0".as_ptr() as *const core::ffi::c_char,
+static SAM9X60_DT_BOARD_COMPAT: [*const kernel::ffi::c_char; 2] = [
+    b"microchip,sam9x60\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -27,7 +27,7 @@ static SAM9X60_DT_BOARD_COMPAT: [*const core::ffi::c_char; 2] = [
 #[repr(C)]
 pub struct sam9x60_dt_machine {
     pub init_late: Option<unsafe extern "C" fn()>,
-    pub dt_compat: *const *const core::ffi::c_char,
+    pub dt_compat: *const *const kernel::ffi::c_char,
 }
 
 #[no_mangle]

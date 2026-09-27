@@ -82,8 +82,8 @@ pub struct tdmr_info {
 #[repr(C)]
 pub struct tdx_memblock {
     pub list: list_head,
-    pub start_pfn: ::core::ffi::c_ulong,
-    pub end_pfn: ::core::ffi::c_ulong,
+    pub start_pfn: ::kernel::ffi::c_ulong,
+    pub end_pfn: ::kernel::ffi::c_ulong,
     pub nid: i32,
 }
 
@@ -92,7 +92,7 @@ pub const TDMR_NR_WARN: i32 = 4;
 
 #[repr(C)]
 pub struct tdmr_info_list {
-    pub tdmrs: *mut ::core::ffi::c_void, // Flexible array to hold 'tdmr_info's
+    pub tdmrs: *mut ::kernel::ffi::c_void, // Flexible array to hold 'tdmr_info's
     pub nr_consumed_tdmrs: i32, // How many 'tdmr_info's are in use
 
     // Metadata for finding target 'tdmr_info' and freeing @tdmrs

@@ -72,11 +72,11 @@ pub enum qmc_mode {
 #[derive(Copy, Clone)]
 pub struct qmc_chan_info {
     pub mode: qmc_mode,
-    pub rx_fs_rate: ::core::ffi::c_ulong,
-    pub rx_bit_rate: ::core::ffi::c_ulong,
+    pub rx_fs_rate: ::kernel::ffi::c_ulong,
+    pub rx_bit_rate: ::kernel::ffi::c_ulong,
     pub nb_rx_ts: u8,
-    pub tx_fs_rate: ::core::ffi::c_ulong,
-    pub tx_bit_rate: ::core::ffi::c_ulong,
+    pub tx_fs_rate: ::kernel::ffi::c_ulong,
+    pub tx_bit_rate: ::kernel::ffi::c_ulong,
     pub nb_tx_ts: u8,
 }
 
@@ -131,8 +131,8 @@ extern "C" {
         chan: *mut qmc_chan,
         addr: dma_addr_t,
         length: size_t,
-        complete: Option<unsafe extern "C" fn(context: *mut ::core::ffi::c_void)>,
-        context: *mut ::core::ffi::c_void,
+        complete: Option<unsafe extern "C" fn(context: *mut ::kernel::ffi::c_void)>,
+        context: *mut ::kernel::ffi::c_void,
     ) -> i32;
 
     /* Flags available (ORed) for read complete() flags parameter in HDLC mode.
@@ -144,11 +144,11 @@ extern "C" {
         addr: dma_addr_t,
         length: size_t,
         complete: Option<unsafe extern "C" fn(
-            context: *mut ::core::ffi::c_void,
+            context: *mut ::kernel::ffi::c_void,
             length: size_t,
-            flags: ::core::ffi::c_uint,
+            flags: ::kernel::ffi::c_uint,
         )>,
-        context: *mut ::core::ffi::c_void,
+        context: *mut ::kernel::ffi::c_void,
     ) -> i32;
 
     pub fn qmc_chan_start(chan: *mut qmc_chan, direction: i32) -> i32;

@@ -40,8 +40,8 @@
  */
 #[repr(C)]
 pub struct mtd_partition {
-    pub name: *const core::ffi::c_char,
-    pub types: *const *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub types: *const *const kernel::ffi::c_char,
     pub size: u64,
     pub offset: u64,
     pub mask_flags: u32,
@@ -66,7 +66,7 @@ pub struct of_device_id;
  */
 #[repr(C)]
 pub struct mtd_part_parser_data {
-    pub origin: core::ffi::c_ulong,
+    pub origin: kernel::ffi::c_ulong,
 }
 
 /* Functions dealing with the various ways of partitioning the space */
@@ -74,7 +74,7 @@ pub struct mtd_part_parser_data {
 pub struct mtd_part_parser {
     pub list: list_head,
     pub owner: *mut module,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
     pub parse_fn: Option<unsafe extern "C" fn(
         *mut mtd_info,
@@ -97,7 +97,7 @@ unsafe extern "C" {
     pub fn deregister_mtd_parser(parser: *mut mtd_part_parser);
     pub fn mtd_add_partition(
         master: *mut mtd_info,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         offset: i64,
         length: i64,
     ) -> i32;

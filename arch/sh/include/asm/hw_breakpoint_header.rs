@@ -20,7 +20,7 @@ pub const SH_BREAKPOINT_LEN_8: u32 = 1 << 14;
 
 #[repr(C)]
 pub struct ShUbc {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub num_events: u32,
     pub trap_nr: u32,
     pub enable: Option<unsafe extern "C" fn(*mut ArchHwBreakpoint, i32)>,
@@ -83,7 +83,7 @@ unsafe extern "C" {
     pub fn hw_breakpoint_exceptions_notify(
         unused: *mut NotifierBlock,
         val: usize,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
 
     pub fn arch_install_hw_breakpoint(bp: *mut PerfEvent) -> i32;

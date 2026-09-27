@@ -26,13 +26,13 @@ pub const RAMOOPS_FLAG_FTRACE_PER_CPU: u32 = 1u32 << 0;
 
 #[repr(C)]
 pub struct ramoops_platform_data {
-    pub mem_size: core::ffi::c_ulong,
+    pub mem_size: kernel::ffi::c_ulong,
     pub mem_address: phys_addr_t,
     pub mem_type: u32,
-    pub record_size: core::ffi::c_ulong,
-    pub console_size: core::ffi::c_ulong,
-    pub ftrace_size: core::ffi::c_ulong,
-    pub pmsg_size: core::ffi::c_ulong,
+    pub record_size: kernel::ffi::c_ulong,
+    pub console_size: kernel::ffi::c_ulong,
+    pub ftrace_size: kernel::ffi::c_ulong,
+    pub pmsg_size: kernel::ffi::c_ulong,
     pub max_reason: i32,
     pub flags: u32,
     pub ecc_info: persistent_ram_ecc_info,

@@ -128,9 +128,9 @@ pub struct s3c2410_uartcfg {
     pub uart_flags: upf_t,
     pub clk_sel: u32,
     pub has_fracval: u32,
-    pub ucon: libc::c_ulong,
-    pub ulcon: libc::c_ulong,
-    pub ufcon: libc::c_ulong,
+    pub ucon: kernel::ffi::c_ulong,
+    pub ulcon: kernel::ffi::c_ulong,
+    pub ufcon: kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

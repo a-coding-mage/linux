@@ -18,29 +18,29 @@ pub const RTC_ALWAYS_BCD: i32 = 1; // RTC operates in binary mode
 // CONFIG_X86_32 in the original header.
 #[cfg(CONFIG_X86_32)]
 extern "C" {
-    pub static mut cmos_lock: core::ffi::c_ulong;
-    fn smp_processor_id() -> core::ffi::c_ulong;
+    pub static mut cmos_lock: kernel::ffi::c_ulong;
+    fn smp_processor_id() -> kernel::ffi::c_ulong;
     fn cpu_relax();
     fn __cmpxchg(
-        ptr: *mut core::ffi::c_ulong,
-        old: core::ffi::c_ulong,
-        new: core::ffi::c_ulong,
+        ptr: *mut kernel::ffi::c_ulong,
+        old: kernel::ffi::c_ulong,
+        new: kernel::ffi::c_ulong,
         size: usize,
-    ) -> core::ffi::c_ulong;
-    fn local_irq_save(flags: *mut core::ffi::c_ulong);
-    fn local_irq_restore(flags: core::ffi::c_ulong);
+    ) -> kernel::ffi::c_ulong;
+    fn local_irq_save(flags: *mut kernel::ffi::c_ulong);
+    fn local_irq_restore(flags: kernel::ffi::c_ulong);
 }
 
 #[cfg(CONFIG_X86_32)]
 #[inline]
 pub unsafe fn lock_cmos(reg: u8) {
-    let new: core::ffi::c_ulong = ((smp_processor_id().wrapping_add(1)) << 8) | reg as core::ffi::c_ulong;
+    let new: kernel::ffi::c_ulong = ((smp_processor_id().wrapping_add(1)) << 8) | reg as kernel::ffi::c_ulong;
     loop {
         if core::ptr::read_volatile(&raw const cmos_lock) != 0 {
             cpu_relax();
             continue;
         }
-        if __cmpxchg(&raw mut cmos_lock, 0, new, core::mem::size_of::<core::ffi::c_ulong>()) == 0 {
+        if __cmpxchg(&raw mut cmos_lock, 0, new, core::mem::size_of::<kernel::ffi::c_ulong>()) == 0 {
             return;
         }
     }
@@ -70,7 +70,7 @@ pub unsafe fn current_lock_cmos_reg() -> u8 {
 #[macro_export]
 macro_rules! lock_cmos_prefix {
     ($reg:expr) => {{
-        let mut cmos_flags: core::ffi::c_ulong = 0;
+        let mut cmos_flags: kernel::ffi::c_ulong = 0;
         unsafe { local_irq_save(&mut cmos_flags); lock_cmos($reg); }
         cmos_flags
     }};

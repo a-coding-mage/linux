@@ -57,7 +57,7 @@ pub unsafe fn jfs_extendfs(sb: *mut super_block, new_lv_size: s64, mut new_log_s
         old_lv_size = addressPXD(&(*sbi).fsckpxd) + lengthPXD(&(*sbi).fsckpxd);
     }
     if old_lv_size >= new_lv_size {
-        printk(KERN_WARNING, b"jfs_extendfs: volume hasn't grown, returning\n\0".as_ptr());
+        printk(c"\x014jfs_extendfs: volume hasn't grown, returning\n".as_ptr());
         return rc;
     }
     volume_size = sb_bdev_nr_blocks(sb);

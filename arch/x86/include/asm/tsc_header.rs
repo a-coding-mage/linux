@@ -3,7 +3,7 @@
  * x86 TSC related functions
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /**
  * rdtsc() - returns the current TSC without ordering constraints
@@ -89,7 +89,7 @@ unsafe extern "C" {
     pub fn cpu_khz_from_msr() -> c_ulong;
 }
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[inline]
 pub unsafe fn get_cycles() -> cycles_t {

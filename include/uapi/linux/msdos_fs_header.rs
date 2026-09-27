@@ -78,10 +78,10 @@ pub unsafe fn is_free(n: *const u8) -> bool { *n == 0 || *n == DELETED_FLAG }
 
 #[repr(C)]
 pub struct __fat_dirent {
-    pub d_ino: core::ffi::c_long,
+    pub d_ino: kernel::ffi::c_long,
     pub d_off: __kernel_off_t,
     pub d_reclen: u16,
-    pub d_name: [core::ffi::c_char; 256],
+    pub d_name: [kernel::ffi::c_char; 256],
 }
 
 #[repr(C)]

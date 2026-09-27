@@ -9,7 +9,7 @@
 
 // C header dependency: <linux/extcon.h>
 
-use core::ffi::c_int;
+use kernel::ffi::c_int;
 
 #[repr(C)]
 pub struct extcon_dev {
@@ -25,7 +25,7 @@ pub struct device {
 pub union extcon_property_value {
     pub intval: c_int,
     pub intval64: i64,
-    pub strval: *const core::ffi::c_char,
+    pub strval: *const kernel::ffi::c_char,
 }
 
 // When CONFIG_EXTCON is enabled, these are externally defined C functions.

@@ -37,7 +37,7 @@ pub unsafe fn kvm_s390_faultin_gfn(
     let mut local_mc: *mut kvm_s390_mmu_cache = core::ptr::null_mut();
     let mut mc: *mut kvm_s390_mmu_cache = core::ptr::null_mut();
     let mut slot: *mut kvm_memory_slot;
-    let mut inv_seq: ::core::ffi::c_ulong;
+    let mut inv_seq: ::kernel::ffi::c_ulong;
     let mut rc: i32 = -EAGAIN;
     let mut foll: i32;
 

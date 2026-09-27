@@ -4,7 +4,7 @@
 
 #[cfg(not(feature = "assembler"))]
 extern "C" {
-    pub fn ppc_printk_progress(s: *mut core::ffi::c_char, hex: u16);
+    pub fn ppc_printk_progress(s: *mut kernel::ffi::c_char, hex: u16);
 
     pub static mut memory_limit: u64;
 
@@ -97,14 +97,14 @@ pub enum l1d_flush_type {
 #[cfg(feature = "ppc_barrier_nospec")]
 extern "C" {
     pub fn setup_barrier_nospec();
-    pub fn do_barrier_nospec_fixups_range(enable: bool, start: *mut core::ffi::c_void, end: *mut core::ffi::c_void);
+    pub fn do_barrier_nospec_fixups_range(enable: bool, start: *mut kernel::ffi::c_void, end: *mut kernel::ffi::c_void);
 }
 #[cfg(not(feature = "ppc_barrier_nospec"))]
 #[inline]
 pub fn setup_barrier_nospec() {}
 #[cfg(not(feature = "ppc_barrier_nospec"))]
 #[inline]
-pub fn do_barrier_nospec_fixups_range(_enable: bool, _start: *mut core::ffi::c_void, _end: *mut core::ffi::c_void) {}
+pub fn do_barrier_nospec_fixups_range(_enable: bool, _start: *mut kernel::ffi::c_void, _end: *mut kernel::ffi::c_void) {}
 
 #[cfg(feature = "ppc_e500")]
 extern "C" {

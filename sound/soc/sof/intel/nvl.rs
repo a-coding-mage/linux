@@ -24,7 +24,7 @@ extern "C" {
     fn sof_ptl_set_ops(
         sdev: *mut snd_sof_dev,
         dsp_ops: *mut snd_sof_dsp_ops,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     fn hda_sdw_check_lcount_ext();
     fn lnl_dsp_check_sdw_irq();
@@ -48,18 +48,18 @@ pub struct snd_sof_dsp_ops {
 
 #[repr(C)]
 pub struct sof_intel_dsp_desc {
-    pub cores_num: ::core::ffi::c_int,
-    pub init_core_mask: ::core::ffi::c_uint,
-    pub host_managed_cores_mask: ::core::ffi::c_uint,
-    pub ipc_req: ::core::ffi::c_uint,
-    pub ipc_req_mask: ::core::ffi::c_uint,
-    pub ipc_ack: ::core::ffi::c_uint,
-    pub ipc_ack_mask: ::core::ffi::c_uint,
-    pub ipc_ctl: ::core::ffi::c_uint,
-    pub rom_status_reg: ::core::ffi::c_uint,
-    pub rom_init_timeout: ::core::ffi::c_int,
-    pub ssp_count: ::core::ffi::c_int,
-    pub d0i3_offset: ::core::ffi::c_uint,
+    pub cores_num: ::kernel::ffi::c_int,
+    pub init_core_mask: ::kernel::ffi::c_uint,
+    pub host_managed_cores_mask: ::kernel::ffi::c_uint,
+    pub ipc_req: ::kernel::ffi::c_uint,
+    pub ipc_req_mask: ::kernel::ffi::c_uint,
+    pub ipc_ack: ::kernel::ffi::c_uint,
+    pub ipc_ack_mask: ::kernel::ffi::c_uint,
+    pub ipc_ctl: ::kernel::ffi::c_uint,
+    pub rom_status_reg: ::kernel::ffi::c_uint,
+    pub rom_init_timeout: ::kernel::ffi::c_int,
+    pub ssp_count: ::kernel::ffi::c_int,
+    pub d0i3_offset: ::kernel::ffi::c_uint,
     pub read_sdw_lcount: unsafe extern "C" fn(),
     pub check_sdw_irq: unsafe extern "C" fn(),
     pub check_sdw_wakeen_irq: unsafe extern "C" fn(),
@@ -68,13 +68,13 @@ pub struct sof_intel_dsp_desc {
     pub cl_init: unsafe extern "C" fn(),
     pub power_down_dsp: unsafe extern "C" fn(),
     pub disable_interrupts: unsafe extern "C" fn(),
-    pub hw_ip_version: ::core::ffi::c_int,
-    pub platform: *const ::core::ffi::c_char,
+    pub hw_ip_version: ::kernel::ffi::c_int,
+    pub platform: *const ::kernel::ffi::c_char,
 }
 
 unsafe impl Sync for sof_intel_dsp_desc {}
 
-const fn BIT(nr: ::core::ffi::c_uint) -> ::core::ffi::c_uint {
+const fn BIT(nr: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint {
     1u32 << nr
 }
 
@@ -82,7 +82,7 @@ const fn BIT(nr: ::core::ffi::c_uint) -> ::core::ffi::c_uint {
 pub unsafe extern "C" fn sof_nvl_set_ops(
     sdev: *mut snd_sof_dev,
     dsp_ops: *mut snd_sof_dsp_ops,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     /* Use PTL ops for NVL */
     unsafe { sof_ptl_set_ops(sdev, dsp_ops) }
 }
@@ -112,7 +112,7 @@ pub static nvl_chip_info: sof_intel_dsp_desc = sof_intel_dsp_desc {
     power_down_dsp: mtl_power_down_dsp,
     disable_interrupts: lnl_dsp_disable_interrupts,
     hw_ip_version: SOF_INTEL_ACE_4_0,
-    platform: b"nvl\0".as_ptr() as *const ::core::ffi::c_char,
+    platform: b"nvl\0".as_ptr() as *const ::kernel::ffi::c_char,
 };
 
 #[no_mangle]
@@ -138,7 +138,7 @@ pub static nvl_s_chip_info: sof_intel_dsp_desc = sof_intel_dsp_desc {
     power_down_dsp: mtl_power_down_dsp,
     disable_interrupts: lnl_dsp_disable_interrupts,
     hw_ip_version: SOF_INTEL_ACE_4_0,
-    platform: b"nvl\0".as_ptr() as *const ::core::ffi::c_char,
+    platform: b"nvl\0".as_ptr() as *const ::kernel::ffi::c_char,
 };
 
 // MODULE_IMPORT_NS("SND_SOC_SOF_INTEL_MTL");

@@ -4,7 +4,7 @@
 /* Includes and build-time __KERNEL__ conditionals are intentionally omitted;
  * their dependent symbols are expected to be supplied by the surrounding ABI. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const IP6T_FUNCTION_MAXNAMELEN: usize = XT_FUNCTION_MAXNAMELEN;
 pub const IP6T_TABLE_MAXNAMELEN: usize = XT_TABLE_MAXNAMELEN;

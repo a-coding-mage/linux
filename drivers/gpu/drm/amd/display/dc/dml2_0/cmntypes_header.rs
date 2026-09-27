@@ -49,10 +49,10 @@ pub type puint64 = *mut uint64;
 pub type ulong = u64;
 pub type uchar = u8;
 
-pub type pvoid = *mut core::ffi::c_void;
-pub type pchar = *mut core::ffi::c_char;
-pub type const_pvoid = *const core::ffi::c_void;
-pub type const_pchar = *const core::ffi::c_char;
+pub type pvoid = *mut kernel::ffi::c_void;
+pub type pchar = *mut kernel::ffi::c_char;
+pub type const_pvoid = *const kernel::ffi::c_void;
+pub type const_pchar = *const kernel::ffi::c_char;
 
 #[repr(C)]
 #[derive(Copy, Clone)]

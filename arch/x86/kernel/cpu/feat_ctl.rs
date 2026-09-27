@@ -107,7 +107,7 @@ unsafe fn init_vmx_capabilities(c: *mut cpuinfo_x86) {
 }
 // #endif
 
-unsafe extern "C" fn nosgx(_str: *mut core::ffi::c_char) -> i32 {
+unsafe extern "C" fn nosgx(_str: *mut kernel::ffi::c_char) -> i32 {
     setup_clear_cpu_cap(X86_FEATURE_SGX);
     0
 }

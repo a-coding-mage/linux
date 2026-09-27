@@ -4,14 +4,14 @@
 // linux/netdevice.h, linux/types.h, and net/rtnetlink.h.
 
 unsafe extern "C" {
-    fn strcmp(s1: *const core::ffi::c_char, s2: *const core::ffi::c_char) -> core::ffi::c_int;
+    fn strcmp(s1: *const kernel::ffi::c_char, s2: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
 }
 
 pub unsafe fn netif_is_bareudp(dev: *const net_device) -> bool {
     !(*dev).rtnl_link_ops.is_null()
         && strcmp(
             (*(*dev).rtnl_link_ops).kind,
-            b"bareudp\0".as_ptr() as *const core::ffi::c_char,
+            b"bareudp\0".as_ptr() as *const kernel::ffi::c_char,
         ) == 0
 }
 

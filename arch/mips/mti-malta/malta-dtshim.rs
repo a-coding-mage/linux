@@ -16,35 +16,35 @@ const ROCIT_CONFIG_GEN1_MEMMAP_MASK: u32 = 0xf << 8;
 static mut FDT_BUF: [u8; 16 << 10] = [0; 16 << 10];
 
 extern "C" {
-    static mut physical_memsize: libc::c_ulong;
-    static mut arcs_cmdline: *mut libc::c_char;
+    static mut physical_memsize: kernel::ffi::c_ulong;
+    static mut arcs_cmdline: *mut kernel::ffi::c_char;
 
-    fn fw_getenv(name: *const libc::c_char) -> *mut libc::c_char;
-    fn mips_cm_probe() -> libc::c_int;
+    fn fw_getenv(name: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    fn mips_cm_probe() -> kernel::ffi::c_int;
     fn read_gcr_gic_status() -> u32;
-    fn readl(addr: *const libc::c_void) -> u32;
-    fn ioremap(addr: usize, size: usize) -> *mut libc::c_void;
-    fn __raw_readl(addr: *const libc::c_void) -> u32;
-    fn __raw_writel(value: u32, addr: *mut libc::c_void);
-    fn fdt_check_header(fdt: *const libc::c_void) -> libc::c_int;
-    fn fdt_open_into(fdt: *const libc::c_void, buf: *mut libc::c_void, size: libc::c_int) -> libc::c_int;
-    fn fdt_path_offset(fdt: *const libc::c_void, path: *const libc::c_char) -> libc::c_int;
-    fn fdt_getprop(fdt: *const libc::c_void, node: libc::c_int, name: *const libc::c_char, len: *mut libc::c_int) -> *const libc::c_char;
-    fn fdt_add_subnode(fdt: *mut libc::c_void, parent: libc::c_int, name: *const libc::c_char) -> libc::c_int;
-    fn fdt_setprop_string(fdt: *mut libc::c_void, node: libc::c_int, name: *const libc::c_char, value: *const libc::c_char) -> libc::c_int;
-    fn fdt_setprop(fdt: *mut libc::c_void, node: libc::c_int, name: *const libc::c_char, value: *const libc::c_void, len: libc::c_int) -> libc::c_int;
-    fn fdt_node_offset_by_compatible(fdt: *const libc::c_void, start: libc::c_int, compatible: *const libc::c_char) -> libc::c_int;
-    fn fdt_nop_node(fdt: *mut libc::c_void, node: libc::c_int) -> libc::c_int;
-    fn fdt_get_phandle(fdt: *const libc::c_void, node: libc::c_int) -> u32;
-    fn fdt_setprop_u32(fdt: *mut libc::c_void, node: libc::c_int, name: *const libc::c_char, value: u32) -> libc::c_int;
-    fn fdt_pack(fdt: *mut libc::c_void) -> libc::c_int;
-    fn kstrtoul(s: *const libc::c_char, base: u32, result: *mut libc::c_ulong) -> libc::c_int;
-    fn memparse(s: *const libc::c_char, retptr: *mut *mut libc::c_char) -> libc::c_ulong;
-    fn snprintf(s: *mut libc::c_char, n: usize, format: *const libc::c_char, ...) -> libc::c_int;
-    fn strlen(s: *const libc::c_char) -> usize;
-    fn strstr(haystack: *const libc::c_char, needle: *const libc::c_char) -> *mut libc::c_char;
-    fn strncmp(a: *const libc::c_char, b: *const libc::c_char, n: usize) -> libc::c_int;
-    fn panic(message: *const libc::c_char, ... ) -> !;
+    fn readl(addr: *const kernel::ffi::c_void) -> u32;
+    fn ioremap(addr: usize, size: usize) -> *mut kernel::ffi::c_void;
+    fn __raw_readl(addr: *const kernel::ffi::c_void) -> u32;
+    fn __raw_writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn fdt_check_header(fdt: *const kernel::ffi::c_void) -> kernel::ffi::c_int;
+    fn fdt_open_into(fdt: *const kernel::ffi::c_void, buf: *mut kernel::ffi::c_void, size: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    fn fdt_path_offset(fdt: *const kernel::ffi::c_void, path: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    fn fdt_getprop(fdt: *const kernel::ffi::c_void, node: kernel::ffi::c_int, name: *const kernel::ffi::c_char, len: *mut kernel::ffi::c_int) -> *const kernel::ffi::c_char;
+    fn fdt_add_subnode(fdt: *mut kernel::ffi::c_void, parent: kernel::ffi::c_int, name: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    fn fdt_setprop_string(fdt: *mut kernel::ffi::c_void, node: kernel::ffi::c_int, name: *const kernel::ffi::c_char, value: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    fn fdt_setprop(fdt: *mut kernel::ffi::c_void, node: kernel::ffi::c_int, name: *const kernel::ffi::c_char, value: *const kernel::ffi::c_void, len: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    fn fdt_node_offset_by_compatible(fdt: *const kernel::ffi::c_void, start: kernel::ffi::c_int, compatible: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    fn fdt_nop_node(fdt: *mut kernel::ffi::c_void, node: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    fn fdt_get_phandle(fdt: *const kernel::ffi::c_void, node: kernel::ffi::c_int) -> u32;
+    fn fdt_setprop_u32(fdt: *mut kernel::ffi::c_void, node: kernel::ffi::c_int, name: *const kernel::ffi::c_char, value: u32) -> kernel::ffi::c_int;
+    fn fdt_pack(fdt: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    fn kstrtoul(s: *const kernel::ffi::c_char, base: u32, result: *mut kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+    fn memparse(s: *const kernel::ffi::c_char, retptr: *mut *mut kernel::ffi::c_char) -> kernel::ffi::c_ulong;
+    fn snprintf(s: *mut kernel::ffi::c_char, n: usize, format: *const kernel::ffi::c_char, ...) -> kernel::ffi::c_int;
+    fn strlen(s: *const kernel::ffi::c_char) -> usize;
+    fn strstr(haystack: *const kernel::ffi::c_char, needle: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    fn strncmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char, n: usize) -> kernel::ffi::c_int;
+    fn panic(message: *const kernel::ffi::c_char, ... ) -> !;
 }
 
 #[repr(u32)]
@@ -52,7 +52,7 @@ enum MemMap { V1 = 0, V2 }
 
 const MAX_MEM_ARRAY_ENTRIES: usize = 2;
 
-unsafe fn malta_scon() -> libc::c_int {
+unsafe fn malta_scon() -> kernel::ffi::c_int {
     let scon = MIPS_REVISION_SCONID;
     if scon != MIPS_REVISION_SCON_OTHER { return scon; }
     match MIPS_REVISION_CORID {
@@ -66,20 +66,20 @@ unsafe fn malta_scon() -> libc::c_int {
     }
 }
 
-unsafe fn gen_fdt_mem_array(mem_array: *mut u32, mut size: libc::c_ulong, map: MemMap) -> u32 {
+unsafe fn gen_fdt_mem_array(mem_array: *mut u32, mut size: kernel::ffi::c_ulong, map: MemMap) -> u32 {
     let mut entries = 1u32;
     *mem_array = cpu_to_be32(PHYS_OFFSET);
     if IS_ENABLED_CONFIG_EVA {
         *mem_array.add(1) = cpu_to_be32(size as u32);
         return entries;
     }
-    let size_preio = core::cmp::min(size, SZ_256M as libc::c_ulong);
+    let size_preio = core::cmp::min(size, SZ_256M as kernel::ffi::c_ulong);
     *mem_array.add(1) = cpu_to_be32(size_preio as u32);
     size -= size_preio;
     if size == 0 { return entries; }
     if map as u32 == MemMap::V2 as u32 {
-        if size <= SZ_256M as libc::c_ulong { return entries; }
-        size -= SZ_256M as libc::c_ulong;
+        if size <= SZ_256M as kernel::ffi::c_ulong { return entries; }
+        size -= SZ_256M as kernel::ffi::c_ulong;
         entries += 1;
         *mem_array.add(2) = cpu_to_be32((PHYS_OFFSET + SZ_512M) as u32);
         *mem_array.add(3) = cpu_to_be32(size as u32);
@@ -92,9 +92,9 @@ unsafe fn gen_fdt_mem_array(mem_array: *mut u32, mut size: libc::c_ulong, map: M
     entries
 }
 
-unsafe fn append_memory(fdt: *mut libc::c_void, root_off: libc::c_int) {
+unsafe fn append_memory(fdt: *mut kernel::ffi::c_void, root_off: kernel::ffi::c_int) {
     let mut mem_array = [0u32; 2 * MAX_MEM_ARRAY_ENTRIES];
-    let mut memsize: libc::c_ulong;
+    let mut memsize: kernel::ffi::c_ulong;
     let mut mem_entries: u32;
     let mut mem_off = fdt_path_offset(fdt, b"/memory\0".as_ptr() as _);
     if mem_off >= 0 { return; }
@@ -130,7 +130,7 @@ unsafe fn append_memory(fdt: *mut libc::c_void, root_off: libc::c_int) {
     if err != 0 { panic(b"Unable to set linux,usable-memory property: %d\0".as_ptr() as _, err); }
 }
 
-unsafe fn remove_gic(fdt: *mut libc::c_void) {
+unsafe fn remove_gic(fdt: *mut kernel::ffi::c_void) {
     let err = mips_cm_probe();
     if err == 0 && (read_gcr_gic_status() & CM_GCR_GIC_STATUS_EX) != 0 { return; }
     if malta_scon() == MIPS_REVISION_SCON_ROCIT {
@@ -155,7 +155,7 @@ unsafe fn remove_gic(fdt: *mut libc::c_void) {
     fdt_setprop_u32(fdt, i8259_off, b"interrupts\0".as_ptr() as _, 2);
 }
 
-unsafe fn malta_dt_shim(fdt: *mut libc::c_void) -> *mut libc::c_void {
+unsafe fn malta_dt_shim(fdt: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void {
     if fdt_check_header(fdt) != 0 { panic(b"Corrupt DT\0".as_ptr() as _); }
     if fdt_open_into(fdt, FDT_BUF.as_mut_ptr() as _, FDT_BUF.len() as _) != 0 { panic(b"Unable to open FDT\0".as_ptr() as _); }
     let root_off = fdt_path_offset(FDT_BUF.as_ptr() as _, b"/\0".as_ptr() as _);

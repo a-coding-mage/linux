@@ -8,7 +8,7 @@
 // Dependencies supplied by the surrounding translation unit:
 // linux/fs.h, linux/filelock.h, linux/nfs.h, and linux/sunrpc/xdr.h
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const SM_MAXSTRLEN: usize = 1024;
 pub const SM_PRIV_SIZE: usize = 16;

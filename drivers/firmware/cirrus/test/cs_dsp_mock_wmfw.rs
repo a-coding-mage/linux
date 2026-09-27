@@ -13,11 +13,11 @@ const CS_DSP_MOCK_WMFW_BUF_SIZE: usize = 131072;
 pub struct cs_dsp_mock_wmfw_builder {
     pub test_priv: *mut cs_dsp_test,
     pub format_version: i32,
-    pub buf: *mut core::ffi::c_void,
+    pub buf: *mut kernel::ffi::c_void,
     pub buf_size_bytes: usize,
-    pub write_p: *mut core::ffi::c_void,
+    pub write_p: *mut kernel::ffi::c_void,
     pub bytes_used: usize,
-    pub alg_data_header: *mut core::ffi::c_void,
+    pub alg_data_header: *mut kernel::ffi::c_void,
     pub num_coeffs: u32,
 }
 
@@ -45,7 +45,7 @@ extern "C" {
 }
 
 unsafe fn round_up_4(v: usize) -> usize { (v + 3) & !3 }
-unsafe fn c_strlen(p: *const core::ffi::c_char) -> usize {
+unsafe fn c_strlen(p: *const kernel::ffi::c_char) -> usize {
     let mut n = 0;
     while *p.add(n) != 0 { n += 1; }
     n
@@ -70,7 +70,7 @@ pub unsafe extern "C" fn cs_dsp_mock_wmfw_get_firmware(
 
 pub unsafe extern "C" fn cs_dsp_mock_wmfw_add_raw_block(
     builder: *mut cs_dsp_mock_wmfw_builder, block_type: i32, offset: u32,
-    payload_data: *const core::ffi::c_void, payload_len_bytes: usize,
+    payload_data: *const kernel::ffi::c_void, payload_len_bytes: usize,
 ) {
     let header = (*builder).write_p as *mut wmfw_region;
     let bytes_needed = 8 + payload_len_bytes;
@@ -83,11 +83,11 @@ pub unsafe extern "C" fn cs_dsp_mock_wmfw_add_raw_block(
     (*builder).bytes_used += bytes_needed;
 }
 
-pub unsafe extern "C" fn cs_dsp_mock_wmfw_add_info(builder: *mut cs_dsp_mock_wmfw_builder, info: *const core::ffi::c_char) {
+pub unsafe extern "C" fn cs_dsp_mock_wmfw_add_info(builder: *mut cs_dsp_mock_wmfw_builder, info: *const kernel::ffi::c_char) {
     let mut len = c_strlen(info); let mut tmp = core::ptr::null_mut();
     if len % 4 != 0 {
         let copy_len = len; len = round_up_4(len);
-        tmp = kunit_kzalloc((*(*builder).test_priv).test, len, GFP_KERNEL) as *mut core::ffi::c_char;
+        tmp = kunit_kzalloc((*(*builder).test_priv).test, len, GFP_KERNEL) as *mut kernel::ffi::c_char;
         kunit_assert_not_err_or_null((*(*builder).test_priv).test, tmp);
         core::ptr::copy_nonoverlapping(info as *const u8, tmp as *mut u8, copy_len); info = tmp;
     }
@@ -95,12 +95,12 @@ pub unsafe extern "C" fn cs_dsp_mock_wmfw_add_info(builder: *mut cs_dsp_mock_wmf
     kunit_kfree((*(*builder).test_priv).test, tmp as *mut _);
 }
 
-pub unsafe extern "C" fn cs_dsp_mock_wmfw_add_data_block(builder: *mut cs_dsp_mock_wmfw_builder, mem_region: i32, mem_offset_dsp_words: u32, payload_data: *const core::ffi::c_void, payload_len_bytes: usize) {
+pub unsafe extern "C" fn cs_dsp_mock_wmfw_add_data_block(builder: *mut cs_dsp_mock_wmfw_builder, mem_region: i32, mem_offset_dsp_words: u32, payload_data: *const kernel::ffi::c_void, payload_len_bytes: usize) {
     kunit_assert_eq((*(*builder).test_priv).test, payload_len_bytes % 4, 0);
     cs_dsp_mock_wmfw_add_raw_block(builder, mem_region, mem_offset_dsp_words, payload_data, payload_len_bytes);
 }
 
-pub unsafe extern "C" fn cs_dsp_mock_wmfw_start_alg_info_block(builder: *mut cs_dsp_mock_wmfw_builder, alg_id: u32, name: *const core::ffi::c_char, description: *const core::ffi::c_char) {
+pub unsafe extern "C" fn cs_dsp_mock_wmfw_start_alg_info_block(builder: *mut cs_dsp_mock_wmfw_builder, alg_id: u32, name: *const kernel::ffi::c_char, description: *const kernel::ffi::c_char) {
     let rgn = (*builder).write_p as *mut wmfw_region;
     let mut bytes_needed = 8usize;
     (*builder).alg_data_header = (*builder).write_p; (*builder).num_coeffs = 0;

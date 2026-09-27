@@ -8,50 +8,50 @@
 pub struct trap_per_cpu {
     /* D-cache line 1: Basic thread information, cpu and device mondo queues */
     pub thread: *mut thread_info,
-    pub pgd_paddr: ::core::ffi::c_ulong,
-    pub cpu_mondo_pa: ::core::ffi::c_ulong,
-    pub dev_mondo_pa: ::core::ffi::c_ulong,
+    pub pgd_paddr: ::kernel::ffi::c_ulong,
+    pub cpu_mondo_pa: ::kernel::ffi::c_ulong,
+    pub dev_mondo_pa: ::kernel::ffi::c_ulong,
 
     /* D-cache line 2: Error Mondo Queue and kernel buffer pointers */
-    pub resum_mondo_pa: ::core::ffi::c_ulong,
-    pub resum_kernel_buf_pa: ::core::ffi::c_ulong,
-    pub nonresum_mondo_pa: ::core::ffi::c_ulong,
-    pub nonresum_kernel_buf_pa: ::core::ffi::c_ulong,
+    pub resum_mondo_pa: ::kernel::ffi::c_ulong,
+    pub resum_kernel_buf_pa: ::kernel::ffi::c_ulong,
+    pub nonresum_mondo_pa: ::kernel::ffi::c_ulong,
+    pub nonresum_kernel_buf_pa: ::kernel::ffi::c_ulong,
 
     /* Dcache lines 3, 4, 5, and 6: Hypervisor Fault Status */
     pub fault_info: hv_fault_status,
 
     /* Dcache line 7: Physical addresses of CPU send mondo block and CPU list. */
-    pub cpu_mondo_block_pa: ::core::ffi::c_ulong,
-    pub cpu_list_pa: ::core::ffi::c_ulong,
-    pub tsb_huge: ::core::ffi::c_ulong,
-    pub tsb_huge_temp: ::core::ffi::c_ulong,
+    pub cpu_mondo_block_pa: ::kernel::ffi::c_ulong,
+    pub cpu_list_pa: ::kernel::ffi::c_ulong,
+    pub tsb_huge: ::kernel::ffi::c_ulong,
+    pub tsb_huge_temp: ::kernel::ffi::c_ulong,
 
     /* Dcache line 8: IRQ work list, and keep trap_block a power-of-2 in size. */
-    pub irq_worklist_pa: ::core::ffi::c_ulong,
-    pub cpu_mondo_qmask: ::core::ffi::c_uint,
-    pub dev_mondo_qmask: ::core::ffi::c_uint,
-    pub resum_qmask: ::core::ffi::c_uint,
-    pub nonresum_qmask: ::core::ffi::c_uint,
-    pub __per_cpu_base: ::core::ffi::c_ulong,
+    pub irq_worklist_pa: ::kernel::ffi::c_ulong,
+    pub cpu_mondo_qmask: ::kernel::ffi::c_uint,
+    pub dev_mondo_qmask: ::kernel::ffi::c_uint,
+    pub resum_qmask: ::kernel::ffi::c_uint,
+    pub nonresum_qmask: ::kernel::ffi::c_uint,
+    pub __per_cpu_base: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
     pub static mut trap_block: [trap_per_cpu; NR_CPUS];
     pub fn init_cur_cpu_trap(thread: *mut thread_info);
     pub fn setup_tba();
-    pub static mut ncpus_probed: ::core::ffi::c_int;
+    pub static mut ncpus_probed: ::kernel::ffi::c_int;
     pub static mut cpu_mondo_counter: [u64; NR_CPUS];
-    pub fn real_hard_smp_processor_id() -> ::core::ffi::c_ulong;
+    pub fn real_hard_smp_processor_id() -> ::kernel::ffi::c_ulong;
 }
 
 #[repr(C)]
 pub struct cpuid_patch_entry {
-    pub addr: ::core::ffi::c_uint,
-    pub cheetah_safari: [::core::ffi::c_uint; 4],
-    pub cheetah_jbus: [::core::ffi::c_uint; 4],
-    pub starfire: [::core::ffi::c_uint; 4],
-    pub sun4v: [::core::ffi::c_uint; 4],
+    pub addr: ::kernel::ffi::c_uint,
+    pub cheetah_safari: [::kernel::ffi::c_uint; 4],
+    pub cheetah_jbus: [::kernel::ffi::c_uint; 4],
+    pub starfire: [::kernel::ffi::c_uint; 4],
+    pub sun4v: [::kernel::ffi::c_uint; 4],
 }
 
 extern "C" {
@@ -61,8 +61,8 @@ extern "C" {
 
 #[repr(C)]
 pub struct sun4v_1insn_patch_entry {
-    pub addr: ::core::ffi::c_uint,
-    pub insn: ::core::ffi::c_uint,
+    pub addr: ::kernel::ffi::c_uint,
+    pub insn: ::kernel::ffi::c_uint,
 }
 
 extern "C" {
@@ -76,8 +76,8 @@ extern "C" {
 
 #[repr(C)]
 pub struct sun4v_2insn_patch_entry {
-    pub addr: ::core::ffi::c_uint,
-    pub insns: [::core::ffi::c_uint; 2],
+    pub addr: ::kernel::ffi::c_uint,
+    pub insns: [::kernel::ffi::c_uint; 2],
 }
 
 extern "C" {

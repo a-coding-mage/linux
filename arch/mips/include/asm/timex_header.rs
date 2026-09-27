@@ -11,7 +11,7 @@
 // dependencies and configuration-provided symbols are supplied externally.
 
 /// Standard cycle-counter type.
-pub type cycles_t = core::ffi::c_uint;
+pub type cycles_t = kernel::ffi::c_uint;
 
 /*
  * On R4000/R4400 an erratum exists such that if the cycle counter is read in
@@ -19,7 +19,7 @@ pub type cycles_t = core::ffi::c_uint;
  * will be generated.
  */
 #[inline]
-pub unsafe fn can_use_mips_counter(prid: core::ffi::c_uint) -> core::ffi::c_int {
+pub unsafe fn can_use_mips_counter(prid: kernel::ffi::c_uint) -> kernel::ffi::c_int {
     let comp = (prid & PRID_COMP_MASK) != PRID_COMP_LEGACY;
 
     // __builtin_constant_p is a compiler/build-time property.  Preserve the
@@ -62,11 +62,11 @@ pub unsafe fn get_cycles() -> cycles_t {
  * c0_random in an attempt to get at least a little bit of entropy.
  */
 #[inline]
-pub unsafe fn random_get_entropy() -> core::ffi::c_ulong {
-    let c0_random: core::ffi::c_uint;
+pub unsafe fn random_get_entropy() -> kernel::ffi::c_ulong {
+    let c0_random: kernel::ffi::c_uint;
 
     if can_use_mips_counter(read_c0_prid()) != 0 {
-        return read_c0_count() as core::ffi::c_ulong;
+        return read_c0_count() as kernel::ffi::c_ulong;
     }
 
     if cpu_has_3kex {
@@ -74,7 +74,7 @@ pub unsafe fn random_get_entropy() -> core::ffi::c_ulong {
     } else {
         c0_random = read_c0_random() & 0x3f;
     }
-    (random_get_entropy_fallback() << 6) | (0x3f - c0_random as core::ffi::c_ulong)
+    (random_get_entropy_fallback() << 6) | (0x3f - c0_random as kernel::ffi::c_ulong)
 }
 
 // #define random_get_entropy random_get_entropy

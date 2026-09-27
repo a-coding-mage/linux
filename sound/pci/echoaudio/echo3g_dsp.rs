@@ -101,7 +101,7 @@ unsafe fn set_mixer_defaults(chip: *mut echoaudio) -> i32 {
     init_line_levels(chip)
 }
 
-unsafe fn set_phantom_power(chip: *mut echoaudio, on: core::ffi::c_char) -> i32 {
+unsafe fn set_phantom_power(chip: *mut echoaudio, on: kernel::ffi::c_char) -> i32 {
     let mut control_reg: u32 = le32_to_cpu((*(*chip).comm_page).control_register);
 
     if on != 0 {

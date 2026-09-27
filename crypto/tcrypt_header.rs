@@ -10,7 +10,7 @@
  * Copyright (c) 2007 Nokia Siemens Networks
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 struct cipher_speed_template {

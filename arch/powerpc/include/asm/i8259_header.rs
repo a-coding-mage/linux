@@ -8,8 +8,8 @@
 // struct irq_domain;
 
 unsafe extern "C" {
-    pub fn i8259_init(node: *mut device_node, intack_addr: ::core::ffi::c_ulong);
-    pub fn i8259_irq() -> ::core::ffi::c_uint;
+    pub fn i8259_init(node: *mut device_node, intack_addr: ::kernel::ffi::c_ulong);
+    pub fn i8259_irq() -> ::kernel::ffi::c_uint;
     // Original declaration carried the kernel __init attribute.
     pub fn i8259_get_host() -> *mut irq_domain;
 }

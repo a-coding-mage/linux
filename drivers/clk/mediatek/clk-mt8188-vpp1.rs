@@ -21,11 +21,11 @@ struct MtkGateRegs {
 #[repr(C)]
 struct MtkGate {
     id: u32,
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
     regs: *const MtkGateRegs,
     shift: u32,
-    ops: *const core::ffi::c_void,
+    ops: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -36,27 +36,27 @@ struct MtkClkDesc {
 
 #[repr(C)]
 struct PlatformDeviceId {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     driver_data: usize,
 }
 
 #[repr(C)]
 struct PlatformDriver {
-    probe: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
-    remove: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
+    probe: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
+    remove: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
     driver: Driver,
     id_table: *const PlatformDeviceId,
 }
 
 #[repr(C)]
 struct Driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 extern "C" {
-    static mtk_clk_gate_ops_setclr: core::ffi::c_void;
-    static mtk_clk_pdev_probe: unsafe extern "C" fn(*mut core::ffi::c_void) -> i32;
-    static mtk_clk_pdev_remove: unsafe extern "C" fn(*mut core::ffi::c_void) -> i32;
+    static mtk_clk_gate_ops_setclr: kernel::ffi::c_void;
+    static mtk_clk_pdev_probe: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32;
+    static mtk_clk_pdev_remove: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32;
 }
 
 static VPP1_0_CG_REGS: MtkGateRegs = MtkGateRegs {
@@ -75,11 +75,11 @@ macro_rules! gate_mtk {
     ($id:expr, $name:literal, $parent:literal, $regs:expr, $shift:expr) => {
         MtkGate {
             id: $id,
-            name: concat!($name, "\0").as_ptr() as *const core::ffi::c_char,
-            parent_name: concat!($parent, "\0").as_ptr() as *const core::ffi::c_char,
+            name: concat!($name, "\0").as_ptr() as *const kernel::ffi::c_char,
+            parent_name: concat!($parent, "\0").as_ptr() as *const kernel::ffi::c_char,
             regs: $regs,
             shift: $shift,
-            ops: unsafe { &mtk_clk_gate_ops_setclr as *const _ as *const core::ffi::c_void },
+            ops: unsafe { &mtk_clk_gate_ops_setclr as *const _ as *const kernel::ffi::c_void },
         }
     };
 }
@@ -160,7 +160,7 @@ static VPP1_DESC: MtkClkDesc = MtkClkDesc {
 
 static CLK_MT8188_VPP1_ID_TABLE: &[PlatformDeviceId] = &[
     PlatformDeviceId {
-        name: b"clk-mt8188-vpp1\0".as_ptr() as *const core::ffi::c_char,
+        name: b"clk-mt8188-vpp1\0".as_ptr() as *const kernel::ffi::c_char,
         driver_data: &VPP1_DESC as *const _ as usize,
     },
     PlatformDeviceId { name: core::ptr::null(), driver_data: 0 },
@@ -171,7 +171,7 @@ static CLK_MT8188_VPP1_ID_TABLE: &[PlatformDeviceId] = &[
 static mut CLK_MT8188_VPP1_DRV: PlatformDriver = PlatformDriver {
     probe: Some(mtk_clk_pdev_probe),
     remove: Some(mtk_clk_pdev_remove),
-    driver: Driver { name: b"clk-mt8188-vpp1\0".as_ptr() as *const core::ffi::c_char },
+    driver: Driver { name: b"clk-mt8188-vpp1\0".as_ptr() as *const kernel::ffi::c_char },
     id_table: CLK_MT8188_VPP1_ID_TABLE.as_ptr(),
 };
 

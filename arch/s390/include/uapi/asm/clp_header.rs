@@ -51,6 +51,6 @@ impl clp_req {
 pub const CLP_IOCTL_MAGIC: u8 = b'c';
 
 // `_IOWR` is provided by the ioctl interface dependency.
-pub const CLP_SYNC: _ = _IOWR(CLP_IOCTL_MAGIC, 0xC1, clp_req);
+pub const CLP_SYNC: u32 = _IOWR(CLP_IOCTL_MAGIC, 0xC1, clp_req);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

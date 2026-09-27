@@ -8,17 +8,17 @@
 
 #[repr(C)]
 pub struct geni_se {
-    pub base: *mut core::ffi::c_void,
-    pub dev: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
+    pub dev: *mut kernel::ffi::c_void,
 }
 
 unsafe extern "C" {
-    pub fn readl(addr: *const core::ffi::c_void) -> u32;
+    pub fn readl(addr: *const kernel::ffi::c_void) -> u32;
 }
 
 #[repr(C)]
 pub struct GeniSeRegs {
-    pub geni_se_name: *const core::ffi::c_char,
+    pub geni_se_name: *const kernel::ffi::c_char,
     pub geni_se_m_cmd0: u32,
     pub geni_se_m_irq_status: u32,
     pub geni_se_s_cmd0: u32,
@@ -83,7 +83,7 @@ macro_rules! geni_se_read_regs {
 
 // TRACE_EVENT(geni_se_regs, ...): the event's field layout and fast assignment
 // are represented by GeniSeRegs and this declaration-only hook.
-pub unsafe fn geni_se_regs(se: *mut geni_se, name: *const core::ffi::c_char) -> GeniSeRegs {
+pub unsafe fn geni_se_regs(se: *mut geni_se, name: *const kernel::ffi::c_char) -> GeniSeRegs {
     GeniSeRegs {
         geni_se_name: name,
         geni_se_m_cmd0: readl((*se).base.add(SE_GENI_M_CMD0 as usize)),

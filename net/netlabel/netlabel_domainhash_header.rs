@@ -74,7 +74,7 @@ macro_rules! netlbl_domhsh_addr6_entry {
 
 #[repr(C)]
 pub struct netlbl_dom_map {
-    pub domain: *mut core::ffi::c_char,
+    pub domain: *mut kernel::ffi::c_char,
     pub def: netlbl_dommap_def,
     pub family: u16,
     pub valid: u32,
@@ -84,62 +84,62 @@ pub struct netlbl_dom_map {
 
 /* init function */
 extern "C" {
-    pub fn netlbl_domhsh_init(size: u32) -> core::ffi::c_int;
+    pub fn netlbl_domhsh_init(size: u32) -> kernel::ffi::c_int;
 
     /* Manipulate the domain hash table */
     pub fn netlbl_domhsh_add(
         entry: *mut netlbl_dom_map,
         audit_info: *mut netlbl_audit,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn netlbl_domhsh_add_default(
         entry: *mut netlbl_dom_map,
         audit_info: *mut netlbl_audit,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn netlbl_domhsh_remove_entry(
         entry: *mut netlbl_dom_map,
         audit_info: *mut netlbl_audit,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn netlbl_domhsh_remove_af4(
-        domain: *const core::ffi::c_char,
+        domain: *const kernel::ffi::c_char,
         addr: *const in_addr,
         mask: *const in_addr,
         audit_info: *mut netlbl_audit,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn netlbl_domhsh_remove_af6(
-        domain: *const core::ffi::c_char,
+        domain: *const kernel::ffi::c_char,
         addr: *const in6_addr,
         mask: *const in6_addr,
         audit_info: *mut netlbl_audit,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn netlbl_domhsh_remove(
-        domain: *const core::ffi::c_char,
+        domain: *const kernel::ffi::c_char,
         family: u16,
         audit_info: *mut netlbl_audit,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn netlbl_domhsh_remove_default(
         family: u16,
         audit_info: *mut netlbl_audit,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn netlbl_domhsh_getentry(
-        domain: *const core::ffi::c_char,
+        domain: *const kernel::ffi::c_char,
         family: u16,
     ) -> *mut netlbl_dom_map;
     pub fn netlbl_domhsh_getentry_af4(
-        domain: *const core::ffi::c_char,
+        domain: *const kernel::ffi::c_char,
         addr: __be32,
     ) -> *mut netlbl_dommap_def;
 
     /* IPv6 declarations are conditional on CONFIG_IPV6 (IS_ENABLED). */
     pub fn netlbl_domhsh_getentry_af6(
-        domain: *const core::ffi::c_char,
+        domain: *const kernel::ffi::c_char,
         addr: *const in6_addr,
     ) -> *mut netlbl_dommap_def;
     pub fn netlbl_domhsh_walk(
         skip_bkt: *mut u32,
         skip_chain: *mut u32,
-        callback: Option<unsafe extern "C" fn(*mut netlbl_dom_map, *mut core::ffi::c_void) -> core::ffi::c_int>,
-        cb_arg: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        callback: Option<unsafe extern "C" fn(*mut netlbl_dom_map, *mut kernel::ffi::c_void) -> kernel::ffi::c_int>,
+        cb_arg: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

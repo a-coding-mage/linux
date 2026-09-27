@@ -110,17 +110,17 @@ pub struct smb3_notify_info {
 }
 
 pub const CIFS_IOCTL_MAGIC: u32 = 0xCF;
-pub const CIFS_IOC_COPYCHUNK_FILE: _ = _IOW!(CIFS_IOCTL_MAGIC, 3, i32);
-pub const CIFS_IOC_SET_INTEGRITY: _ = _IO!(CIFS_IOCTL_MAGIC, 4);
-pub const CIFS_IOC_GET_MNT_INFO: _ = _IOR!(CIFS_IOCTL_MAGIC, 5, smb_mnt_fs_info);
-pub const CIFS_ENUMERATE_SNAPSHOTS: _ = _IOR!(CIFS_IOCTL_MAGIC, 6, smb_snapshot_array);
-pub const CIFS_QUERY_INFO: _ = _IOWR!(CIFS_IOCTL_MAGIC, 7, smb_query_info);
-pub const CIFS_DUMP_KEY: _ = _IOWR!(CIFS_IOCTL_MAGIC, 8, smb3_key_debug_info);
-pub const CIFS_IOC_NOTIFY: _ = _IOW!(CIFS_IOCTL_MAGIC, 9, smb3_notify);
-pub const CIFS_DUMP_FULL_KEY: _ = _IOWR!(CIFS_IOCTL_MAGIC, 10, smb3_full_key_debug_info);
-pub const CIFS_IOC_NOTIFY_INFO: _ = _IOWR!(CIFS_IOCTL_MAGIC, 11, smb3_notify_info);
-pub const CIFS_IOC_GET_TCON_INFO: _ = _IOR!(CIFS_IOCTL_MAGIC, 12, smb_mnt_tcon_info);
-pub const CIFS_IOC_SHUTDOWN: _ = _IOR!('X', 125, __u32);
+pub const CIFS_IOC_COPYCHUNK_FILE: u32 = _IOW!(CIFS_IOCTL_MAGIC, 3, i32);
+pub const CIFS_IOC_SET_INTEGRITY: u32 = _IO!(CIFS_IOCTL_MAGIC, 4);
+pub const CIFS_IOC_GET_MNT_INFO: u32 = _IOR!(CIFS_IOCTL_MAGIC, 5, smb_mnt_fs_info);
+pub const CIFS_ENUMERATE_SNAPSHOTS: u32 = _IOR!(CIFS_IOCTL_MAGIC, 6, smb_snapshot_array);
+pub const CIFS_QUERY_INFO: u32 = _IOWR!(CIFS_IOCTL_MAGIC, 7, smb_query_info);
+pub const CIFS_DUMP_KEY: u32 = _IOWR!(CIFS_IOCTL_MAGIC, 8, smb3_key_debug_info);
+pub const CIFS_IOC_NOTIFY: u32 = _IOW!(CIFS_IOCTL_MAGIC, 9, smb3_notify);
+pub const CIFS_DUMP_FULL_KEY: u32 = _IOWR!(CIFS_IOCTL_MAGIC, 10, smb3_full_key_debug_info);
+pub const CIFS_IOC_NOTIFY_INFO: u32 = _IOWR!(CIFS_IOCTL_MAGIC, 11, smb3_notify_info);
+pub const CIFS_IOC_GET_TCON_INFO: u32 = _IOR!(CIFS_IOCTL_MAGIC, 12, smb_mnt_tcon_info);
+pub const CIFS_IOC_SHUTDOWN: u32 = _IOR!('X', 125, __u32);
 
 /*
  * Flags for going down operation

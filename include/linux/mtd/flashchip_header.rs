@@ -47,8 +47,8 @@ pub enum flstate_t {
    the same physical chip when present. */
 #[repr(C)]
 pub struct flchip {
-    pub start: ::core::ffi::c_ulong, /* Offset within the map */
-    // pub len: ::core::ffi::c_ulong;
+    pub start: ::kernel::ffi::c_ulong, /* Offset within the map */
+    // pub len: ::kernel::ffi::c_ulong;
     /* We omit len for now, because when we group them together
        we insist that they're all of the same size, and the chip size
        is held in the next level up. If we get more versatile later,
@@ -56,28 +56,28 @@ pub struct flchip {
        a given offset, and we'll want to add the per-chip length field
        back in.
     */
-    pub ref_point_counter: ::core::ffi::c_int,
+    pub ref_point_counter: ::kernel::ffi::c_int,
     pub state: flstate_t,
     pub oldstate: flstate_t,
 
     /* C bit-fields; each flag occupies one bit in the original object. */
-    pub write_suspended: ::core::ffi::c_uint,
-    pub erase_suspended: ::core::ffi::c_uint,
-    pub in_progress_block_addr: ::core::ffi::c_ulong,
-    pub in_progress_block_mask: ::core::ffi::c_ulong,
+    pub write_suspended: ::kernel::ffi::c_uint,
+    pub erase_suspended: ::kernel::ffi::c_uint,
+    pub in_progress_block_addr: ::kernel::ffi::c_ulong,
+    pub in_progress_block_mask: ::kernel::ffi::c_ulong,
 
     pub mutex: mutex,
     pub wq: wait_queue_head_t, /* Wait on here when we're waiting for the chip
                                   to be ready */
-    pub word_write_time: ::core::ffi::c_int,
-    pub buffer_write_time: ::core::ffi::c_int,
-    pub erase_time: ::core::ffi::c_int,
+    pub word_write_time: ::kernel::ffi::c_int,
+    pub buffer_write_time: ::kernel::ffi::c_int,
+    pub erase_time: ::kernel::ffi::c_int,
 
-    pub word_write_time_max: ::core::ffi::c_int,
-    pub buffer_write_time_max: ::core::ffi::c_int,
-    pub erase_time_max: ::core::ffi::c_int,
+    pub word_write_time_max: ::kernel::ffi::c_int,
+    pub buffer_write_time_max: ::kernel::ffi::c_int,
+    pub erase_time_max: ::kernel::ffi::c_int,
 
-    pub priv_: *mut ::core::ffi::c_void,
+    pub priv_: *mut ::kernel::ffi::c_void,
 }
 
 /* This is used to handle contention on write/erase operations

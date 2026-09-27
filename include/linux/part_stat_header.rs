@@ -9,16 +9,16 @@
 #[repr(C)]
 pub struct disk_stats {
     pub nsecs: [u64; NR_STAT_GROUPS],
-    pub sectors: [::core::ffi::c_ulong; NR_STAT_GROUPS],
-    pub ios: [::core::ffi::c_ulong; NR_STAT_GROUPS],
-    pub merges: [::core::ffi::c_ulong; NR_STAT_GROUPS],
-    pub io_ticks: ::core::ffi::c_ulong,
+    pub sectors: [::kernel::ffi::c_ulong; NR_STAT_GROUPS],
+    pub ios: [::kernel::ffi::c_ulong; NR_STAT_GROUPS],
+    pub merges: [::kernel::ffi::c_ulong; NR_STAT_GROUPS],
+    pub io_ticks: ::kernel::ffi::c_ulong,
     pub in_flight: [local_t; 2],
 }
 
 #[inline(always)]
-pub unsafe fn part_stat_set_all(part: *mut block_device, value: ::core::ffi::c_int) {
-    let mut i: ::core::ffi::c_int;
+pub unsafe fn part_stat_set_all(part: *mut block_device, value: ::kernel::ffi::c_int) {
+    let mut i: ::kernel::ffi::c_int;
     // for_each_possible_cpu(i)
     for_each_possible_cpu!(i, {
         memset(
@@ -57,7 +57,7 @@ macro_rules! part_stat_get {
 macro_rules! part_stat_read {
     ($part:expr, $field:ident) => {{
         let mut res = 0;
-        let mut _cpu: ::core::ffi::c_uint;
+        let mut _cpu: ::kernel::ffi::c_uint;
         // for_each_possible_cpu(_cpu)
         for_each_possible_cpu!(_cpu, {
             res += (*per_cpu_ptr(($part)->bd_stats, _cpu)).$field;
@@ -109,7 +109,7 @@ macro_rules! part_stat_local_read { ($part:expr, $field:ident) => { local_read!(
 macro_rules! part_stat_local_read_cpu { ($part:expr, $field:ident, $cpu:expr) => { local_read!(&part_stat_get_cpu!($part, $field, $cpu)) }; }
 
 extern "C" {
-    pub fn bdev_count_inflight(part: *mut block_device) -> ::core::ffi::c_uint;
+    pub fn bdev_count_inflight(part: *mut block_device) -> ::kernel::ffi::c_uint;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

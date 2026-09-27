@@ -8,12 +8,12 @@ pub struct task_struct {
 }
 
 extern "C" {
-    pub static mut debug_locks: ::core::ffi::c_int;
-    pub static mut debug_locks_silent: ::core::ffi::c_int;
+    pub static mut debug_locks: ::kernel::ffi::c_int;
+    pub static mut debug_locks_silent: ::kernel::ffi::c_int;
 
-    pub fn xchg(ptr: *mut ::core::ffi::c_int, value: ::core::ffi::c_int)
-        -> ::core::ffi::c_int;
-    pub fn debug_locks_off() -> ::core::ffi::c_int;
+    pub fn xchg(ptr: *mut ::kernel::ffi::c_int, value: ::kernel::ffi::c_int)
+        -> ::kernel::ffi::c_int;
+    pub fn debug_locks_off() -> ::kernel::ffi::c_int;
 
     #[cfg(CONFIG_DEBUG_LOCKING_API_SELFTESTS)]
     pub fn locking_selftest();
@@ -24,8 +24,8 @@ extern "C" {
     pub fn debug_show_held_locks(task: *mut task_struct);
     #[cfg(CONFIG_LOCKDEP)]
     pub fn debug_check_no_locks_freed(
-        from: *const ::core::ffi::c_void,
-        len: ::core::ffi::c_ulong,
+        from: *const ::kernel::ffi::c_void,
+        len: ::kernel::ffi::c_ulong,
     );
     #[cfg(CONFIG_LOCKDEP)]
     pub fn debug_check_no_locks_held();
@@ -36,18 +36,18 @@ extern "C" {
     pub static mut oops_in_progress: bool;
     pub fn instrumentation_begin();
     pub fn instrumentation_end();
-    pub fn WARN(condition: ::core::ffi::c_int, format: *const ::core::ffi::c_char, ...);
+    pub fn WARN(condition: ::kernel::ffi::c_int, format: *const ::kernel::ffi::c_char, ...);
 }
 
 #[inline(always)]
-pub unsafe fn __debug_locks_off() -> ::core::ffi::c_int {
+pub unsafe fn __debug_locks_off() -> ::kernel::ffi::c_int {
     xchg(&mut debug_locks, 0)
 }
 
 #[macro_export]
 macro_rules! DEBUG_LOCKS_WARN_ON {
     ($c:expr) => {{
-        let mut __ret: ::core::ffi::c_int = 0;
+        let mut __ret: ::kernel::ffi::c_int = 0;
         if unsafe { !oops_in_progress } && ($c) {
             unsafe {
                 instrumentation_begin();
@@ -55,7 +55,7 @@ macro_rules! DEBUG_LOCKS_WARN_ON {
                     WARN(
                         1,
                         concat!("DEBUG_LOCKS_WARN_ON!(", stringify!($c), ")\0")
-                            .as_ptr() as *const ::core::ffi::c_char,
+                            .as_ptr() as *const ::kernel::ffi::c_char,
                     );
                 }
                 instrumentation_end();
@@ -103,8 +103,8 @@ pub unsafe fn debug_show_held_locks(_task: *mut task_struct) {}
 #[cfg(not(CONFIG_LOCKDEP))]
 #[inline(always)]
 pub unsafe fn debug_check_no_locks_freed(
-    _from: *const ::core::ffi::c_void,
-    _len: ::core::ffi::c_ulong,
+    _from: *const ::kernel::ffi::c_void,
+    _len: ::kernel::ffi::c_ulong,
 ) {
 }
 

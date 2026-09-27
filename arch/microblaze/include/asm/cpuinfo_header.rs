@@ -11,8 +11,8 @@
 
 #[repr(C)]
 pub struct cpu_ver_key {
-    pub s: *const ::core::ffi::c_char,
-    pub k: ::core::ffi::c_uint,
+    pub s: *const ::kernel::ffi::c_char,
+    pub k: ::kernel::ffi::c_uint,
 }
 
 extern "C" {
@@ -21,8 +21,8 @@ extern "C" {
 
 #[repr(C)]
 pub struct family_string_key {
-    pub s: *const ::core::ffi::c_char,
-    pub k: ::core::ffi::c_uint,
+    pub s: *const ::kernel::ffi::c_char,
+    pub k: ::kernel::ffi::c_uint,
 }
 
 extern "C" {
@@ -47,8 +47,8 @@ pub struct cpuinfo {
     pub icache_write: u32,
     pub icache_line_length: u32,
     pub icache_size: u32,
-    pub icache_base: ::core::ffi::c_ulong,
-    pub icache_high: ::core::ffi::c_ulong,
+    pub icache_base: ::kernel::ffi::c_ulong,
+    pub icache_high: ::kernel::ffi::c_ulong,
 
     pub use_dcache: u32,
     pub dcache_tagbits: u32,
@@ -56,8 +56,8 @@ pub struct cpuinfo {
     pub dcache_line_length: u32,
     pub dcache_size: u32,
     pub dcache_wb: u32,
-    pub dcache_base: ::core::ffi::c_ulong,
-    pub dcache_high: ::core::ffi::c_ulong,
+    pub dcache_base: ::kernel::ffi::c_ulong,
+    pub dcache_high: ::kernel::ffi::c_ulong,
 
     /* Bus connections */
     pub use_dopb: u32,
@@ -99,9 +99,9 @@ extern "C" {
 
     pub fn of_property_read_u32(
         np: *mut device_node,
-        propname: *const ::core::ffi::c_char,
+        propname: *const ::kernel::ffi::c_char,
         out_value: *mut u32,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 /* External Linux device-tree type supplied by another translation unit. */
@@ -110,10 +110,10 @@ pub struct device_node {
     _private: [u8; 0],
 }
 
-pub unsafe fn fcpu(cpu: *mut device_node, n: *mut ::core::ffi::c_char) -> ::core::ffi::c_uint {
+pub unsafe fn fcpu(cpu: *mut device_node, n: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_uint {
     let mut val: u32 = 0;
 
-    of_property_read_u32(cpu, n as *const ::core::ffi::c_char, &mut val);
+    of_property_read_u32(cpu, n as *const ::kernel::ffi::c_char, &mut val);
 
     val
 }

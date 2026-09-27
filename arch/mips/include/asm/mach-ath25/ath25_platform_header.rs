@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /*
  * This is board-specific data that is stored in a "fixed" location in flash.

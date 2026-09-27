@@ -24,15 +24,15 @@ static mut CAKEY: CaKey = CaKey {
 };
 
 #[cfg(not(feature = "module"))]
-unsafe fn ca_keys_setup(str_: *mut core::ffi::c_char) -> i32 {
+unsafe fn ca_keys_setup(str_: *mut kernel::ffi::c_char) -> i32 {
     if str_.is_null() {
         // default system keyring
         return 1;
     }
 
-    if libc::strncmp(str_, b"id:\0".as_ptr() as *const _, 3) == 0 {
+    if strncmp(str_, b"id:\0".as_ptr() as *const _, 3) == 0 {
         let p: *mut asymmetric_key_id = &raw mut CAKEY.id;
-        let hexlen = (libc::strlen(str_) - 3) / 2;
+        let hexlen = (strlen(str_) - 3) / 2;
         let ret: i32;
 
         if hexlen == 0 || hexlen > core::mem::size_of_val(&CAKEY.data) {
@@ -46,7 +46,7 @@ unsafe fn ca_keys_setup(str_: *mut core::ffi::c_char) -> i32 {
         } else {
             CA_KEYID = p; // owner key 'id:xxxxxx'
         }
-    } else if libc::strcmp(str_, b"builtin\0".as_ptr() as *const _) == 0 {
+    } else if strcmp(str_, b"builtin\0".as_ptr() as *const _) == 0 {
         USE_BUILTIN_KEYS = true;
     }
 
@@ -87,7 +87,7 @@ pub unsafe fn restrict_link_by_signature(
     if USE_BUILTIN_KEYS && !test_bit(KEY_FLAG_BUILTIN, &(*key).flags) {
         ret = -ENOKEY;
     } else if is_builtin(CONFIG_SECONDARY_TRUSTED_KEYRING_SIGNED_BY_BUILTIN) &&
-              libc::strcmp((*dest_keyring).description, b".secondary_trusted_keys\0".as_ptr() as *const _) == 0 &&
+              strcmp((*dest_keyring).description, b".secondary_trusted_keys\0".as_ptr() as *const _) == 0 &&
               !test_bit(KEY_FLAG_BUILTIN, &(*key).flags) {
         ret = -ENOKEY;
     } else {

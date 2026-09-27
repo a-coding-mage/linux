@@ -7,16 +7,16 @@
 // #endif
 
 extern "C" {
-    pub static mut restore_jump_address: core::ffi::c_ulong;
-    pub static mut jump_address_phys: core::ffi::c_ulong;
-    pub static mut restore_cr3: core::ffi::c_ulong;
-    pub static mut temp_pgt: core::ffi::c_ulong;
-    pub static mut relocated_restore_code: core::ffi::c_ulong;
+    pub static mut restore_jump_address: kernel::ffi::c_ulong;
+    pub static mut jump_address_phys: kernel::ffi::c_ulong;
+    pub static mut restore_cr3: kernel::ffi::c_ulong;
+    pub static mut temp_pgt: kernel::ffi::c_ulong;
+    pub static mut relocated_restore_code: kernel::ffi::c_ulong;
 
-    pub fn relocate_restore_code() -> core::ffi::c_int;
+    pub fn relocate_restore_code() -> kernel::ffi::c_int;
 
     // Defined in hibernate_asm_32/64.S
-    pub fn restore_image() -> core::ffi::c_int;
+    pub fn restore_image() -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

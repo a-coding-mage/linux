@@ -33,25 +33,25 @@ snd_soc_dailink_def!(
 );
 
 static mut acp63_dai_pdm: [snd_soc_dai_link; 1] = [snd_soc_dai_link {
-    name: b"acp63-dmic-capture\0".as_ptr() as *const core::ffi::c_char,
-    stream_name: b"DMIC capture\0".as_ptr() as *const core::ffi::c_char,
+    name: b"acp63-dmic-capture\0".as_ptr() as *const kernel::ffi::c_char,
+    stream_name: b"DMIC capture\0".as_ptr() as *const kernel::ffi::c_char,
     capture_only: 1,
     snd_soc_dailink_reg!(acp63_pdm, dmic_codec, pdm_platform)
 }];
 
 static mut acp63_card: snd_soc_card = snd_soc_card {
-    name: b"acp63\0".as_ptr() as *const core::ffi::c_char,
+    name: b"acp63\0".as_ptr() as *const kernel::ffi::c_char,
     owner: THIS_MODULE,
     dai_link: unsafe { acp63_dai_pdm.as_mut_ptr() },
     num_links: 1,
     ..unsafe { core::mem::zeroed() }
 };
 
-unsafe extern "C" fn acp63_probe(pdev: *mut platform_device) -> core::ffi::c_int {
+unsafe extern "C" fn acp63_probe(pdev: *mut platform_device) -> kernel::ffi::c_int {
     let mut card: *mut snd_soc_card;
-    let ret: core::ffi::c_int;
+    let ret: kernel::ffi::c_int;
 
-    platform_set_drvdata(pdev, core::ptr::addr_of_mut!(acp63_card) as *mut core::ffi::c_void);
+    platform_set_drvdata(pdev, core::ptr::addr_of_mut!(acp63_card) as *mut kernel::ffi::c_void);
     card = platform_get_drvdata(pdev) as *mut snd_soc_card;
     acp63_card.dev = core::ptr::addr_of_mut!((*pdev).dev);
 
@@ -60,7 +60,7 @@ unsafe extern "C" fn acp63_probe(pdev: *mut platform_device) -> core::ffi::c_int
         return dev_err_probe(
             core::ptr::addr_of_mut!((*pdev).dev),
             ret,
-            b"snd_soc_register_card(%s) failed\n\0".as_ptr() as *const core::ffi::c_char,
+            b"snd_soc_register_card(%s) failed\n\0".as_ptr() as *const kernel::ffi::c_char,
             (*card).name,
         );
     }
@@ -70,7 +70,7 @@ unsafe extern "C" fn acp63_probe(pdev: *mut platform_device) -> core::ffi::c_int
 
 static mut acp63_mach_driver: platform_driver = platform_driver {
     driver: device_driver {
-        name: b"acp_ps_mach\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp_ps_mach\0".as_ptr() as *const kernel::ffi::c_char,
         pm: unsafe { core::ptr::addr_of!(snd_soc_pm_ops) },
         ..unsafe { core::mem::zeroed() }
     },

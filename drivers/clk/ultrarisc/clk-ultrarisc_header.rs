@@ -16,13 +16,13 @@ pub struct ultrarisc_pll_layout {
 #[repr(C)]
 pub struct ultrarisc_pll_desc {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct ultrarisc_fixed_factor_desc {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub parent_id: u32,
     pub mult: u32,
     pub div: u32,
@@ -31,7 +31,7 @@ pub struct ultrarisc_fixed_factor_desc {
 #[repr(C)]
 pub struct ultrarisc_divider_desc {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub offset: u32,
     pub parent_id: u32,
     pub max_rate: usize,
@@ -46,7 +46,7 @@ pub struct ultrarisc_divider_desc {
 #[repr(C)]
 pub struct ultrarisc_gate_desc {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub offset: u32,
     pub parent_id: u32,
     pub gate_bit: u8,

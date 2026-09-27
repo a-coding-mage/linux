@@ -44,8 +44,8 @@ fn xor4(a: &mut [Unative; 4], b: &[Unative; 4]) {
 
 unsafe fn __xor_altivec_2(
     bytes: usize,
-    v1_in: *mut core::ffi::c_ulong,
-    v2_in: *const core::ffi::c_ulong,
+    v1_in: *mut kernel::ffi::c_ulong,
+    v2_in: *const kernel::ffi::c_ulong,
 ) {
     let mut v1 = v1_in as *mut Unative;
     let mut v2 = v2_in as *const Unative;
@@ -66,9 +66,9 @@ unsafe fn __xor_altivec_2(
 
 unsafe fn __xor_altivec_3(
     bytes: usize,
-    v1_in: *mut core::ffi::c_ulong,
-    v2_in: *const core::ffi::c_ulong,
-    v3_in: *const core::ffi::c_ulong,
+    v1_in: *mut kernel::ffi::c_ulong,
+    v2_in: *const kernel::ffi::c_ulong,
+    v3_in: *const kernel::ffi::c_ulong,
 ) {
     let mut v1 = v1_in as *mut Unative;
     let mut v2 = v2_in as *const Unative;
@@ -89,9 +89,9 @@ unsafe fn __xor_altivec_3(
 }
 
 unsafe fn __xor_altivec_4(
-    bytes: usize, v1_in: *mut core::ffi::c_ulong,
-    v2_in: *const core::ffi::c_ulong, v3_in: *const core::ffi::c_ulong,
-    v4_in: *const core::ffi::c_ulong,
+    bytes: usize, v1_in: *mut kernel::ffi::c_ulong,
+    v2_in: *const kernel::ffi::c_ulong, v3_in: *const kernel::ffi::c_ulong,
+    v4_in: *const kernel::ffi::c_ulong,
 ) {
     let (mut v1, mut v2, mut v3, mut v4) = (v1_in as *mut Unative, v2_in as *const Unative, v3_in as *const Unative, v4_in as *const Unative);
     let mut lines = bytes / core::mem::size_of::<Unative>() / 4;
@@ -104,9 +104,9 @@ unsafe fn __xor_altivec_4(
 }
 
 unsafe fn __xor_altivec_5(
-    bytes: usize, v1_in: *mut core::ffi::c_ulong,
-    v2_in: *const core::ffi::c_ulong, v3_in: *const core::ffi::c_ulong,
-    v4_in: *const core::ffi::c_ulong, v5_in: *const core::ffi::c_ulong,
+    bytes: usize, v1_in: *mut kernel::ffi::c_ulong,
+    v2_in: *const kernel::ffi::c_ulong, v3_in: *const kernel::ffi::c_ulong,
+    v4_in: *const kernel::ffi::c_ulong, v5_in: *const kernel::ffi::c_ulong,
 ) {
     let (mut v1, mut v2, mut v3, mut v4, mut v5) = (v1_in as *mut Unative, v2_in as *const Unative, v3_in as *const Unative, v4_in as *const Unative, v5_in as *const Unative);
     let mut lines = bytes / core::mem::size_of::<Unative>() / 4;

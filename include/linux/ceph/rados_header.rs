@@ -8,7 +8,7 @@ pub struct ceph_fsid { pub fsid: [u8; 16] }
 
 #[inline]
 pub unsafe fn ceph_fsid_compare(a: *const ceph_fsid, b: *const ceph_fsid) -> i32 {
-    libc::memcmp(a as *const libc::c_void, b as *const libc::c_void, core::mem::size_of::<ceph_fsid>()) as i32
+    memcmp(a as *const kernel::ffi::c_void, b as *const kernel::ffi::c_void, core::mem::size_of::<ceph_fsid>()) as i32
 }
 
 pub type ceph_snapid_t = __le64;
@@ -50,7 +50,7 @@ pub const CEPH_OSD_EXISTS: i32 = 1 << 0;
 pub const CEPH_OSD_UP: i32 = 1 << 1;
 pub const CEPH_OSD_AUTOOUT: i32 = 1 << 2;
 pub const CEPH_OSD_NEW: i32 = 1 << 3;
-extern "C" { pub fn ceph_osd_state_name(s: i32) -> *const core::ffi::c_char; }
+extern "C" { pub fn ceph_osd_state_name(s: i32) -> *const kernel::ffi::c_char; }
 pub const CEPH_OSD_IN: i32 = 0x10000;
 pub const CEPH_OSD_OUT: i32 = 0;
 pub const CEPH_OSD_MAX_PRIMARY_AFFINITY: i32 = 0x10000;
@@ -186,7 +186,7 @@ pub const CEPH_OSD_TMAP_SET: u8 = b's';
 pub const CEPH_OSD_TMAP_CREATE: u8 = b'c';
 pub const CEPH_OSD_TMAP_RM: u8 = b'r';
 pub const CEPH_OSD_TMAP_RMSLOPPY: u8 = b'R';
-extern "C" { pub fn ceph_osd_op_name(op: i32) -> *const core::ffi::c_char; }
+extern "C" { pub fn ceph_osd_op_name(op: i32) -> *const kernel::ffi::c_char; }
 
 pub const CEPH_OSD_FLAG_ACK: i32=0x0001; pub const CEPH_OSD_FLAG_ONNVRAM: i32=0x0002; pub const CEPH_OSD_FLAG_ONDISK: i32=0x0004; pub const CEPH_OSD_FLAG_RETRY: i32=0x0008;
 pub const CEPH_OSD_FLAG_READ: i32=0x0010; pub const CEPH_OSD_FLAG_WRITE: i32=0x0020; pub const CEPH_OSD_FLAG_ORDERSNAP: i32=0x0040; pub const CEPH_OSD_FLAG_PEERSTAT_OLD: i32=0x0080;
@@ -201,7 +201,7 @@ pub const CEPH_OSD_CMPXATTR_OP_NOP:i32=0; pub const CEPH_OSD_CMPXATTR_OP_EQ:i32=
 pub const CEPH_OSD_CMPXATTR_MODE_STRING:i32=1; pub const CEPH_OSD_CMPXATTR_MODE_U64:i32=2;
 pub const CEPH_OSD_COPY_FROM_FLAG_FLUSH:i32=1; pub const CEPH_OSD_COPY_FROM_FLAG_IGNORE_OVERLAY:i32=2; pub const CEPH_OSD_COPY_FROM_FLAG_IGNORE_CACHE:i32=4; pub const CEPH_OSD_COPY_FROM_FLAG_MAP_SNAP_CLONE:i32=8; pub const CEPH_OSD_COPY_FROM_FLAG_RWORDERED:i32=16; pub const CEPH_OSD_COPY_FROM_FLAG_TRUNCATE_SEQ:i32=32;
 pub const CEPH_OSD_WATCH_OP_UNWATCH:i32=0; pub const CEPH_OSD_WATCH_OP_LEGACY_WATCH:i32=1; pub const CEPH_OSD_WATCH_OP_WATCH:i32=3; pub const CEPH_OSD_WATCH_OP_RECONNECT:i32=5; pub const CEPH_OSD_WATCH_OP_PING:i32=7;
-extern "C" { pub fn ceph_osd_watch_op_name(o: i32) -> *const core::ffi::c_char; }
+extern "C" { pub fn ceph_osd_watch_op_name(o: i32) -> *const kernel::ffi::c_char; }
 pub const CEPH_OSD_ALLOC_HINT_FLAG_SEQUENTIAL_WRITE:i32=1; pub const CEPH_OSD_ALLOC_HINT_FLAG_RANDOM_WRITE:i32=2; pub const CEPH_OSD_ALLOC_HINT_FLAG_SEQUENTIAL_READ:i32=4; pub const CEPH_OSD_ALLOC_HINT_FLAG_RANDOM_READ:i32=8; pub const CEPH_OSD_ALLOC_HINT_FLAG_APPEND_ONLY:i32=16; pub const CEPH_OSD_ALLOC_HINT_FLAG_IMMUTABLE:i32=32; pub const CEPH_OSD_ALLOC_HINT_FLAG_SHORTLIVED:i32=64; pub const CEPH_OSD_ALLOC_HINT_FLAG_LONGLIVED:i32=128; pub const CEPH_OSD_ALLOC_HINT_FLAG_COMPRESSIBLE:i32=256; pub const CEPH_OSD_ALLOC_HINT_FLAG_INCOMPRESSIBLE:i32=512;
 pub const CEPH_OSD_BACKOFF_OP_BLOCK:i32=1; pub const CEPH_OSD_BACKOFF_OP_ACK_BLOCK:i32=2; pub const CEPH_OSD_BACKOFF_OP_UNBLOCK:i32=3;
 

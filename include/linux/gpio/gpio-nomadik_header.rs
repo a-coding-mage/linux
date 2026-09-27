@@ -50,9 +50,9 @@ pub enum nmk_gpio_slpm {
 #[repr(C)]
 pub struct nmk_gpio_chip {
     pub chip: gpio_chip,
-    pub addr: *mut core::ffi::c_void,
+    pub addr: *mut kernel::ffi::c_void,
     pub clk: *mut clk,
-    pub bank: core::ffi::c_uint,
+    pub bank: kernel::ffi::c_uint,
     pub set_ioforce: Option<unsafe extern "C" fn(enable: bool)>,
     pub lock: spinlock_t,
     pub sleepmode: bool,
@@ -112,19 +112,19 @@ pub struct nmk_prcm_gpiocr_pin_desc { pub pin: u16, pub altcx: [prcm_gpiocr_altc
 pub type prcm_gpiocr_altcx_pin_desc = nmk_prcm_gpiocr_pin_desc;
 
 #[repr(C)]
-pub struct nmk_function { pub name: *const core::ffi::c_char, pub groups: *const *const core::ffi::c_char, pub ngroups: core::ffi::c_uint }
+pub struct nmk_function { pub name: *const kernel::ffi::c_char, pub groups: *const *const kernel::ffi::c_char, pub ngroups: kernel::ffi::c_uint }
 #[repr(C)]
-pub struct nmk_pingroup { pub grp: pingroup, pub altsetting: core::ffi::c_int }
+pub struct nmk_pingroup { pub grp: pingroup, pub altsetting: kernel::ffi::c_int }
 
 #[macro_export]
 macro_rules! NMK_PIN_GROUP { ($a:tt, $b:expr) => { nmk_pingroup { grp: PINCTRL_PINGROUP!(stringify!($a), ::kernel::macros::paste!([<$a _pins>]), ::kernel::macros::paste!([<$a _pins>]).len()), altsetting: $b } }; }
 
 #[repr(C)]
 pub struct nmk_pinctrl_soc_data {
-    pub pins: *const pinctrl_pin_desc, pub npins: core::ffi::c_uint,
-    pub functions: *const nmk_function, pub nfunctions: core::ffi::c_uint,
-    pub groups: *const nmk_pingroup, pub ngroups: core::ffi::c_uint,
-    pub altcx_pins: *const prcm_gpiocr_altcx_pin_desc, pub npins_altcx: core::ffi::c_uint,
+    pub pins: *const pinctrl_pin_desc, pub npins: kernel::ffi::c_uint,
+    pub functions: *const nmk_function, pub nfunctions: kernel::ffi::c_uint,
+    pub groups: *const nmk_pingroup, pub ngroups: kernel::ffi::c_uint,
+    pub altcx_pins: *const prcm_gpiocr_altcx_pin_desc, pub npins_altcx: kernel::ffi::c_uint,
     pub prcm_gpiocr_registers: *const u16,
 }
 
@@ -144,13 +144,13 @@ pub struct platform_device;
 
 // CONFIG_DEBUG_FS selects the external debug implementation; otherwise this is a no-op.
 #[cfg(CONFIG_DEBUG_FS)]
-unsafe extern "C" { pub fn nmk_gpio_dbg_show_one(s: *mut seq_file, pctldev: *mut pinctrl_dev, chip: *mut gpio_chip, offset: core::ffi::c_uint); }
+unsafe extern "C" { pub fn nmk_gpio_dbg_show_one(s: *mut seq_file, pctldev: *mut pinctrl_dev, chip: *mut gpio_chip, offset: kernel::ffi::c_uint); }
 #[cfg(not(CONFIG_DEBUG_FS))]
-pub unsafe fn nmk_gpio_dbg_show_one(_s: *mut seq_file, _pctldev: *mut pinctrl_dev, _chip: *mut gpio_chip, _offset: core::ffi::c_uint) {}
+pub unsafe fn nmk_gpio_dbg_show_one(_s: *mut seq_file, _pctldev: *mut pinctrl_dev, _chip: *mut gpio_chip, _offset: kernel::ffi::c_uint) {}
 
 unsafe extern "C" {
-    pub fn __nmk_gpio_make_output(nmk_chip: *mut nmk_gpio_chip, offset: core::ffi::c_uint, val: core::ffi::c_int);
-    pub fn __nmk_gpio_set_slpm(nmk_chip: *mut nmk_gpio_chip, offset: core::ffi::c_uint, mode: nmk_gpio_slpm);
+    pub fn __nmk_gpio_make_output(nmk_chip: *mut nmk_gpio_chip, offset: kernel::ffi::c_uint, val: kernel::ffi::c_int);
+    pub fn __nmk_gpio_set_slpm(nmk_chip: *mut nmk_gpio_chip, offset: kernel::ffi::c_uint, mode: nmk_gpio_slpm);
     pub fn nmk_gpio_populate_chip(fwnode: *mut fwnode_handle, pdev: *mut platform_device) -> *mut nmk_gpio_chip;
 }
 
@@ -159,7 +159,7 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub static mut nmk_gpio_chips: [*mut nmk_gpio_chip; NMK_MAX_BANKS as usize];
     pub static mut nmk_gpio_slpm_lock: spinlock_t;
-    pub fn nmk_prcm_gpiocr_get_mode(pctldev: *mut pinctrl_dev, gpio: core::ffi::c_int) -> core::ffi::c_int;
+    pub fn nmk_prcm_gpiocr_get_mode(pctldev: *mut pinctrl_dev, gpio: kernel::ffi::c_int) -> kernel::ffi::c_int;
 }
 
 

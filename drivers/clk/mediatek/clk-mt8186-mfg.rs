@@ -16,11 +16,11 @@ pub struct MtkGateRegs {
 #[repr(C)]
 pub struct MtkGate {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char,
     pub regs: *const MtkGateRegs,
     pub shift: u8,
-    pub ops: *const core::ffi::c_void,
+    pub ops: *const kernel::ffi::c_void,
     pub flags: u32,
 }
 
@@ -32,32 +32,32 @@ pub struct MtkClkDesc {
 
 #[repr(C)]
 pub struct OfDeviceId {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct DeviceDriver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const OfDeviceId,
 }
 
 #[repr(C)]
 pub struct PlatformDriver {
-    pub probe: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
-    pub remove: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
+    pub probe: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
+    pub remove: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
     pub driver: DeviceDriver,
 }
 
 extern "C" {
-    static mtk_clk_gate_ops_setclr: core::ffi::c_void;
+    static mtk_clk_gate_ops_setclr: kernel::ffi::c_void;
     static CLK_MFG_BG3D: u32;
     static CLK_SET_RATE_PARENT: u32;
-    unsafe fn mtk_clk_simple_probe(dev: *mut core::ffi::c_void) -> i32;
-    unsafe fn mtk_clk_simple_remove(dev: *mut core::ffi::c_void) -> i32;
+    unsafe fn mtk_clk_simple_probe(dev: *mut kernel::ffi::c_void) -> i32;
+    unsafe fn mtk_clk_simple_remove(dev: *mut kernel::ffi::c_void) -> i32;
     unsafe fn __platform_driver_register(
         driver: *mut PlatformDriver,
-        owner: *mut core::ffi::c_void,
+        owner: *mut kernel::ffi::c_void,
     ) -> i32;
 }
 
@@ -69,8 +69,8 @@ static MFG_CG_REGS: MtkGateRegs = MtkGateRegs {
 
 static MFG_CLKS: [MtkGate; 1] = [MtkGate {
     id: unsafe { CLK_MFG_BG3D },
-    name: b"mfg_bg3d\0".as_ptr() as *const core::ffi::c_char,
-    parent_name: b"top_mfg\0".as_ptr() as *const core::ffi::c_char,
+    name: b"mfg_bg3d\0".as_ptr() as *const kernel::ffi::c_char,
+    parent_name: b"top_mfg\0".as_ptr() as *const kernel::ffi::c_char,
     regs: &MFG_CG_REGS,
     shift: 0,
     ops: unsafe { &mtk_clk_gate_ops_setclr },
@@ -84,8 +84,8 @@ static MFG_DESC: MtkClkDesc = MtkClkDesc {
 
 static OF_MATCH_CLK_MT8186_MFG: [OfDeviceId; 2] = [
     OfDeviceId {
-        compatible: b"mediatek,mt8186-mfgsys\0".as_ptr() as *const core::ffi::c_char,
-        data: &MFG_DESC as *const MtkClkDesc as *const core::ffi::c_void,
+        compatible: b"mediatek,mt8186-mfgsys\0".as_ptr() as *const kernel::ffi::c_char,
+        data: &MFG_DESC as *const MtkClkDesc as *const kernel::ffi::c_void,
     },
     OfDeviceId {
         compatible: core::ptr::null(),
@@ -97,7 +97,7 @@ static mut CLK_MT8186_MFG_DRV: PlatformDriver = PlatformDriver {
     probe: Some(mtk_clk_simple_probe),
     remove: Some(mtk_clk_simple_remove),
     driver: DeviceDriver {
-        name: b"clk-mt8186-mfg\0".as_ptr() as *const core::ffi::c_char,
+        name: b"clk-mt8186-mfg\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: OF_MATCH_CLK_MT8186_MFG.as_ptr(),
     },
 };

@@ -26,28 +26,28 @@ pub const TI_FLAG_WSAVED_SHIFT: usize = 16;
 pub struct thread_info {
     /* D$ line 1 */
     pub task: *mut task_struct,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub fpsaved: [u8; 7],
     pub status: u8,
-    pub ksp: ::core::ffi::c_ulong,
+    pub ksp: ::kernel::ffi::c_ulong,
 
     /* D$ line 2 */
-    pub fault_address: ::core::ffi::c_ulong,
+    pub fault_address: ::kernel::ffi::c_ulong,
     pub kregs: *mut pt_regs,
-    pub preempt_count: ::core::ffi::c_int,
+    pub preempt_count: ::kernel::ffi::c_int,
     pub new_child: u8,
     pub __pad: u8,
     pub cpu: u16,
 
-    pub utraps: *mut ::core::ffi::c_ulong,
+    pub utraps: *mut ::kernel::ffi::c_ulong,
     pub reg_window: [reg_window; NSWINS],
-    pub rwbuf_stkptrs: [::core::ffi::c_ulong; NSWINS],
-    pub gsr: [::core::ffi::c_ulong; 7],
-    pub xfsr: [::core::ffi::c_ulong; 7],
+    pub rwbuf_stkptrs: [::kernel::ffi::c_ulong; NSWINS],
+    pub gsr: [::kernel::ffi::c_ulong; 7],
+    pub xfsr: [::kernel::ffi::c_ulong; 7],
     pub kern_una_regs: *mut pt_regs,
-    pub kern_una_insn: ::core::ffi::c_uint,
+    pub kern_una_insn: ::kernel::ffi::c_uint,
     #[repr(align(64))]
-    pub fpregs: [::core::ffi::c_ulong; (7 * 256) / ::core::mem::size_of::<::core::ffi::c_ulong>()],
+    pub fpregs: [::kernel::ffi::c_ulong; (7 * 256) / ::core::mem::size_of::<::kernel::ffi::c_ulong>()],
 }
 
 pub const TI_TASK: usize = 0x00000000;
@@ -129,10 +129,10 @@ unsafe extern "C" {
 pub unsafe fn is_32bit_task() -> bool { test_thread_flag(TIF_32BIT) }
 
 #[inline]
-pub const fn thread32_stack_is_64bit(sp: ::core::ffi::c_ulong) -> bool { (sp & 0x1) != 0 }
+pub const fn thread32_stack_is_64bit(sp: ::kernel::ffi::c_ulong) -> bool { (sp & 0x1) != 0 }
 
 #[inline]
-pub unsafe fn test_thread_64bit_stack(sp: ::core::ffi::c_ulong) -> bool {
+pub unsafe fn test_thread_64bit_stack(sp: ::kernel::ffi::c_ulong) -> bool {
     if test_thread_flag(TIF_32BIT) && !thread32_stack_is_64bit(sp) { false } else { true }
 }
 

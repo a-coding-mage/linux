@@ -11,7 +11,7 @@
 
 #![allow(non_camel_case_types, non_snake_case, dead_code)]
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 // TRACE_SYSTEM amdgpu; TRACE_INCLUDE_FILE amdgpu_trace
 // AMDGPU_JOB_GET_TIMELINE_NAME(job) expands to
@@ -41,14 +41,14 @@ pub struct amdgpu_cs {
 
 #[repr(C)]
 pub struct amdgpu_cs_ioctl {
-    pub timeline: *const core::ffi::c_char, pub context: u64, pub seqno: u64,
-    pub fence: *mut c_void, pub ring: *const core::ffi::c_char, pub num_ibs: u32,
+    pub timeline: *const kernel::ffi::c_char, pub context: u64, pub seqno: u64,
+    pub fence: *mut c_void, pub ring: *const kernel::ffi::c_char, pub num_ibs: u32,
 }
 pub type amdgpu_sched_run_job = amdgpu_cs_ioctl;
 
 #[repr(C)]
 pub struct amdgpu_vm_grab_id {
-    pub pasid: u32, pub ring: *const core::ffi::c_char, pub ring_id: u32,
+    pub pasid: u32, pub ring: *const kernel::ffi::c_char, pub ring_id: u32,
     pub vmid: u32, pub vm_hub: u32, pub pd_addr: u64, pub needs_flush: u32,
 }
 
@@ -86,7 +86,7 @@ pub struct amdgpu_vm_copy_ptes {
 
 #[repr(C)]
 pub struct amdgpu_vm_flush {
-    pub ring: *const core::ffi::c_char, pub vmid: u32, pub vm_hub: u32,
+    pub ring: *const kernel::ffi::c_char, pub vmid: u32, pub vm_hub: u32,
     pub pd_addr: u64,
 }
 
@@ -100,7 +100,7 @@ pub struct amdgpu_isolation { pub prev: *mut c_void, pub next: *mut c_void }
 
 #[repr(C)]
 pub struct amdgpu_cleaner_shader {
-    pub ring: *const core::ffi::c_char, pub seqno: u64,
+    pub ring: *const kernel::ffi::c_char, pub seqno: u64,
 }
 
 #[repr(C)]
@@ -119,7 +119,7 @@ pub struct amdgpu_bo_move {
 
 #[repr(C)]
 pub struct amdgpu_ib_pipe_sync {
-    pub ring: *const core::ffi::c_char, pub fence: *mut c_void,
+    pub ring: *const kernel::ffi::c_char, pub fence: *mut c_void,
     pub ctx: u64, pub seqno: u64,
 }
 
@@ -144,14 +144,14 @@ pub type amdgpu_userq_destroy_end = amdgpu_userq_queue_result;
 
 #[repr(C)]
 pub struct amdgpu_userq_emit_fence {
-    pub fence_context: u64, pub fence_seqno: u64, pub dev: *const core::ffi::c_char,
+    pub fence_context: u64, pub fence_seqno: u64, pub dev: *const kernel::ffi::c_char,
     pub doorbell_index: u64, pub client_id: u64, pub queue_type: u32,
 }
 
 #[repr(C)]
 pub struct amdgpu_userq_wait_deps {
     pub context: u64, pub dep_context: u64, pub dep_seqno: u64,
-    pub dev: *const core::ffi::c_char, pub doorbell_index: u64,
+    pub dev: *const kernel::ffi::c_char, pub doorbell_index: u64,
     pub client_id: u64, pub queue_type: u32,
 }
 

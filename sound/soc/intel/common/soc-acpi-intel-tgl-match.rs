@@ -12,7 +12,7 @@
 // #include <sound/soc-acpi-intel-ssp-common.h>
 // #include "soc-acpi-intel-sdw-mockup-match.h"
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 use crate::{
     snd_soc_acpi_adr_device, snd_soc_acpi_codecs, snd_soc_acpi_endpoint,

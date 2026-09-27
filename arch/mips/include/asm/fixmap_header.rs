@@ -72,8 +72,8 @@ pub const FIXADDR_START: usize = FIXADDR_TOP - FIXADDR_SIZE;
  * Called from pagetable_init()
  */
 extern "C" {
-    pub fn fixrange_init(start: core::ffi::c_ulong,
-                         end: core::ffi::c_ulong,
+    pub fn fixrange_init(start: kernel::ffi::c_ulong,
+                         end: kernel::ffi::c_ulong,
                          pgd_base: *mut pgd_t);
 }
 

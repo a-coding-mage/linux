@@ -11,7 +11,7 @@ pub const PD_FLAG_DETACH_POWER_OFF: u32 = 1 << 4;
 
 #[repr(C)]
 pub struct dev_pm_domain_attach_data {
-    pub pd_names: *const *const core::ffi::c_char,
+    pub pd_names: *const *const kernel::ffi::c_char,
     pub num_pd_names: u32,
     pub pd_flags: u32,
 }
@@ -65,10 +65,10 @@ pub struct genpd_governor_data {
 }
 #[repr(C)]
 pub struct genpd_power_state {
-    pub name: *const core::ffi::c_char, pub power_off_latency_ns: i64,
+    pub name: *const kernel::ffi::c_char, pub power_off_latency_ns: i64,
     pub power_on_latency_ns: i64, pub residency_ns: i64, pub usage: u64,
     pub rejected: u64, pub above: u64, pub below: u64, pub usage_s2idle: u64,
-    pub fwnode: *mut fwnode_handle, pub idle_time: u64, pub data: *mut core::ffi::c_void,
+    pub fwnode: *mut fwnode_handle, pub idle_time: u64, pub data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -77,7 +77,7 @@ pub struct generic_pm_domain {
     pub parent_links: list_head, pub child_links: list_head, pub dev_list: list_head,
     pub gov: *mut dev_power_governor, pub gd: *mut genpd_governor_data,
     pub power_off_work: work_struct, pub provider: *mut fwnode_handle, pub has_provider: bool,
-    pub name: *const core::ffi::c_char, pub sd_count: atomic_t, pub status: gpd_status,
+    pub name: *const kernel::ffi::c_char, pub sd_count: atomic_t, pub status: gpd_status,
     pub device_count: u32, pub device_id: u32, pub suspended_count: u32, pub prepared_count: u32,
     pub performance_state: u32, pub cpus: cpumask_var_t, pub synced_poweroff: bool,
     pub stay_on: bool, pub sync_state: genpd_sync_state,
@@ -114,7 +114,7 @@ pub union generic_pm_domain_lock {
 #[repr(C)] pub struct gpd_link { pub parent: *mut generic_pm_domain, pub parent_node: list_head, pub child: *mut generic_pm_domain, pub child_node: list_head, pub performance_state: u32, pub prev_performance_state: u32 }
 #[repr(C)] pub struct gpd_timing_data { pub suspend_latency_ns: i64, pub resume_latency_ns: i64, pub effective_constraint_ns: i64, pub next_wakeup: ktime_t, pub constraint_changed: bool, pub cached_suspend_ok: bool }
 #[repr(C)] pub struct pm_domain_data { pub list_node: list_head, pub dev: *mut device }
-#[repr(C)] pub struct generic_pm_domain_data { pub base: pm_domain_data, pub td: *mut gpd_timing_data, pub nb: notifier_block, pub power_nb: *mut notifier_block, pub cpu: i32, pub performance_state: u32, pub default_pstate: u32, pub rpm_pstate: u32, pub opp_token: u32, pub hw_mode: bool, pub rpm_always_on: bool, pub data: *mut core::ffi::c_void }
+#[repr(C)] pub struct generic_pm_domain_data { pub base: pm_domain_data, pub td: *mut gpd_timing_data, pub nb: notifier_block, pub power_nb: *mut notifier_block, pub cpu: i32, pub performance_state: u32, pub default_pstate: u32, pub rpm_pstate: u32, pub opp_token: u32, pub hw_mode: bool, pub rpm_always_on: bool, pub data: *mut kernel::ffi::c_void }
 
 extern "C" {
     pub fn pm_genpd_add_device(genpd: *mut generic_pm_domain, dev: *mut device) -> i32;
@@ -137,7 +137,7 @@ extern "C" {
     pub fn dev_pm_genpd_is_on(dev: *mut device) -> bool;
     pub fn dev_pm_domain_attach(dev: *mut device, flags: u32) -> i32;
     pub fn dev_pm_domain_attach_by_id(dev: *mut device, index: u32) -> *mut device;
-    pub fn dev_pm_domain_attach_by_name(dev: *mut device, name: *const core::ffi::c_char) -> *mut device;
+    pub fn dev_pm_domain_attach_by_name(dev: *mut device, name: *const kernel::ffi::c_char) -> *mut device;
     pub fn dev_pm_domain_attach_list(dev: *mut device, data: *const dev_pm_domain_attach_data, list: *mut *mut dev_pm_domain_list) -> i32;
     pub fn devm_pm_domain_attach_list(dev: *mut device, data: *const dev_pm_domain_attach_data, list: *mut *mut dev_pm_domain_list) -> i32;
     pub fn dev_pm_domain_detach(dev: *mut device, power_off: bool);
@@ -148,7 +148,7 @@ extern "C" {
 }
 
 // The following declarations retain the OF-provider interfaces and their configuration intent.
-pub type genpd_xlate_t = unsafe extern "C" fn(*const of_phandle_args, *mut core::ffi::c_void) -> *mut generic_pm_domain;
+pub type genpd_xlate_t = unsafe extern "C" fn(*const of_phandle_args, *mut kernel::ffi::c_void) -> *mut generic_pm_domain;
 #[repr(C)] pub struct genpd_onecell_data { pub domains: *mut *mut generic_pm_domain, pub num_domains: u32, pub xlate: Option<genpd_xlate_t> }
 
 extern "C" {
@@ -165,7 +165,7 @@ extern "C" {
     pub fn of_genpd_remove_child_ids(np: *mut device_node, data: *mut genpd_onecell_data) -> i32;
     pub fn genpd_dev_pm_attach(dev: *mut device) -> i32;
     pub fn genpd_dev_pm_attach_by_id(dev: *mut device, index: u32) -> *mut device;
-    pub fn genpd_dev_pm_attach_by_name(dev: *mut device, name: *const core::ffi::c_char) -> *mut device;
+    pub fn genpd_dev_pm_attach_by_name(dev: *mut device, name: *const kernel::ffi::c_char) -> *mut device;
     pub fn dev_pm_genpd_suspend(dev: *mut device);
     pub fn dev_pm_genpd_resume(dev: *mut device);
 }

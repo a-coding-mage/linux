@@ -15,13 +15,13 @@
 pub struct lc_element {
     pub collision: hlist_node,
     pub list: list_head,
-    pub refcnt: ::core::ffi::c_uint,
-    pub lc_index: ::core::ffi::c_uint,
-    pub lc_number: ::core::ffi::c_uint,
-    pub lc_new_number: ::core::ffi::c_uint,
+    pub refcnt: ::kernel::ffi::c_uint,
+    pub lc_index: ::kernel::ffi::c_uint,
+    pub lc_number: ::kernel::ffi::c_uint,
+    pub lc_new_number: ::kernel::ffi::c_uint,
 }
 
-pub const LC_FREE: ::core::ffi::c_uint = !0u32;
+pub const LC_FREE: ::kernel::ffi::c_uint = !0u32;
 
 #[repr(C)]
 pub struct lru_cache {
@@ -32,68 +32,68 @@ pub struct lru_cache {
     pub lc_cache: *mut kmem_cache,
     pub element_size: usize,
     pub element_off: usize,
-    pub nr_elements: ::core::ffi::c_uint,
-    pub max_pending_changes: ::core::ffi::c_uint,
-    pub pending_changes: ::core::ffi::c_uint,
-    pub used: ::core::ffi::c_uint,
-    pub hits: ::core::ffi::c_ulong,
-    pub misses: ::core::ffi::c_ulong,
-    pub starving: ::core::ffi::c_ulong,
-    pub locked: ::core::ffi::c_ulong,
-    pub changed: ::core::ffi::c_ulong,
-    pub flags: ::core::ffi::c_ulong,
-    pub name: *const ::core::ffi::c_char,
+    pub nr_elements: ::kernel::ffi::c_uint,
+    pub max_pending_changes: ::kernel::ffi::c_uint,
+    pub pending_changes: ::kernel::ffi::c_uint,
+    pub used: ::kernel::ffi::c_uint,
+    pub hits: ::kernel::ffi::c_ulong,
+    pub misses: ::kernel::ffi::c_ulong,
+    pub starving: ::kernel::ffi::c_ulong,
+    pub locked: ::kernel::ffi::c_ulong,
+    pub changed: ::kernel::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
+    pub name: *const ::kernel::ffi::c_char,
     pub lc_slot: *mut hlist_head,
     pub lc_element: *mut *mut lc_element,
 }
 
-pub const LC_MAX_ACTIVE: ::core::ffi::c_uint = 1 << 24;
+pub const LC_MAX_ACTIVE: ::kernel::ffi::c_uint = 1 << 24;
 
 pub const __LC_PARANOIA: u32 = 0;
 pub const __LC_DIRTY: u32 = 1;
 pub const __LC_LOCKED: u32 = 2;
 pub const __LC_STARVING: u32 = 3;
 
-pub const LC_PARANOIA: ::core::ffi::c_ulong = 1 << __LC_PARANOIA;
-pub const LC_DIRTY: ::core::ffi::c_ulong = 1 << __LC_DIRTY;
-pub const LC_LOCKED: ::core::ffi::c_ulong = 1 << __LC_LOCKED;
-pub const LC_STARVING: ::core::ffi::c_ulong = 1 << __LC_STARVING;
+pub const LC_PARANOIA: ::kernel::ffi::c_ulong = 1 << __LC_PARANOIA;
+pub const LC_DIRTY: ::kernel::ffi::c_ulong = 1 << __LC_DIRTY;
+pub const LC_LOCKED: ::kernel::ffi::c_ulong = 1 << __LC_LOCKED;
+pub const LC_STARVING: ::kernel::ffi::c_ulong = 1 << __LC_STARVING;
 
 extern "C" {
     pub fn lc_create(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         cache: *mut kmem_cache,
-        max_pending_changes: ::core::ffi::c_uint,
-        e_count: ::core::ffi::c_uint,
+        max_pending_changes: ::kernel::ffi::c_uint,
+        e_count: ::kernel::ffi::c_uint,
         e_size: usize,
         e_off: usize,
     ) -> *mut lru_cache;
     pub fn lc_reset(lc: *mut lru_cache);
     pub fn lc_destroy(lc: *mut lru_cache);
     pub fn lc_del(lc: *mut lru_cache, element: *mut lc_element);
-    pub fn lc_get_cumulative(lc: *mut lru_cache, enr: ::core::ffi::c_uint) -> *mut lc_element;
-    pub fn lc_try_get(lc: *mut lru_cache, enr: ::core::ffi::c_uint) -> *mut lc_element;
-    pub fn lc_find(lc: *mut lru_cache, enr: ::core::ffi::c_uint) -> *mut lc_element;
-    pub fn lc_get(lc: *mut lru_cache, enr: ::core::ffi::c_uint) -> *mut lc_element;
-    pub fn lc_put(lc: *mut lru_cache, e: *mut lc_element) -> ::core::ffi::c_uint;
+    pub fn lc_get_cumulative(lc: *mut lru_cache, enr: ::kernel::ffi::c_uint) -> *mut lc_element;
+    pub fn lc_try_get(lc: *mut lru_cache, enr: ::kernel::ffi::c_uint) -> *mut lc_element;
+    pub fn lc_find(lc: *mut lru_cache, enr: ::kernel::ffi::c_uint) -> *mut lc_element;
+    pub fn lc_get(lc: *mut lru_cache, enr: ::kernel::ffi::c_uint) -> *mut lc_element;
+    pub fn lc_put(lc: *mut lru_cache, e: *mut lc_element) -> ::kernel::ffi::c_uint;
     pub fn lc_committed(lc: *mut lru_cache);
     pub fn lc_seq_printf_stats(seq: *mut seq_file, lc: *mut lru_cache);
     pub fn lc_seq_dump_details(
         seq: *mut seq_file,
         lc: *mut lru_cache,
-        utext: *mut ::core::ffi::c_char,
+        utext: *mut ::kernel::ffi::c_char,
         detail: Option<unsafe extern "C" fn(*mut seq_file, *mut lc_element)>,
     );
-    pub fn lc_try_lock(lc: *mut lru_cache) -> ::core::ffi::c_int;
-    pub fn lc_element_by_index(lc: *mut lru_cache, i: ::core::ffi::c_uint) -> *mut lc_element;
-    pub fn test_and_set_bit(nr: u32, addr: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn clear_bit(nr: u32, addr: *mut ::core::ffi::c_ulong);
-    pub fn clear_bit_unlock(nr: u32, addr: *mut ::core::ffi::c_ulong);
+    pub fn lc_try_lock(lc: *mut lru_cache) -> ::kernel::ffi::c_int;
+    pub fn lc_element_by_index(lc: *mut lru_cache, i: ::kernel::ffi::c_uint) -> *mut lc_element;
+    pub fn test_and_set_bit(nr: u32, addr: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn clear_bit(nr: u32, addr: *mut ::kernel::ffi::c_ulong);
+    pub fn clear_bit_unlock(nr: u32, addr: *mut ::kernel::ffi::c_ulong);
 }
 
 #[inline]
-pub unsafe fn lc_try_lock_for_transaction(lc: *mut lru_cache) -> ::core::ffi::c_int {
-    (!test_and_set_bit(__LC_LOCKED, &mut (*lc).flags) != 0) as ::core::ffi::c_int
+pub unsafe fn lc_try_lock_for_transaction(lc: *mut lru_cache) -> ::kernel::ffi::c_int {
+    (!test_and_set_bit(__LC_LOCKED, &mut (*lc).flags) != 0) as ::kernel::ffi::c_int
 }
 
 #[inline]

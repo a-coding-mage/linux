@@ -15,7 +15,7 @@
  */
 #[repr(C)]
 pub struct pll_freq_tbl {
-    pub freq: ::core::ffi::c_ulong,
+    pub freq: ::kernel::ffi::c_ulong,
     pub l: u16,
     pub m: u16,
     pub n: u16,

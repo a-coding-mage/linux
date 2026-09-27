@@ -15,9 +15,9 @@ pub struct zpci_dev {
 unsafe extern "C" {
     pub fn zpci_report_status(
         zdev: *mut zpci_dev,
-        operation: *const core::ffi::c_char,
-        status: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        operation: *const kernel::ffi::c_char,
+        status: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

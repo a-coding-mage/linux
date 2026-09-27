@@ -6,7 +6,7 @@
  * Authors: Tadeusz Struk <tadeusz.struk@intel.com>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct akcipher_instance {
@@ -32,11 +32,11 @@ pub struct crypto_akcipher_spawn {
     pub base: crypto_spawn,
 }
 
-pub unsafe fn akcipher_request_ctx(req: *mut akcipher_request) -> *mut core::ffi::c_void {
+pub unsafe fn akcipher_request_ctx(req: *mut akcipher_request) -> *mut kernel::ffi::c_void {
     (*req).__ctx
 }
 
-pub unsafe fn akcipher_request_ctx_dma(req: *mut akcipher_request) -> *mut core::ffi::c_void {
+pub unsafe fn akcipher_request_ctx_dma(req: *mut akcipher_request) -> *mut kernel::ffi::c_void {
     let mut align = crypto_dma_align();
     if align <= crypto_tfm_ctx_alignment() {
         align = 1;
@@ -53,11 +53,11 @@ pub unsafe fn akcipher_set_reqsize_dma(akcipher: *mut crypto_akcipher, mut reqsi
     (*akcipher).reqsize = reqsize;
 }
 
-pub unsafe fn akcipher_tfm_ctx(tfm: *mut crypto_akcipher) -> *mut core::ffi::c_void {
+pub unsafe fn akcipher_tfm_ctx(tfm: *mut crypto_akcipher) -> *mut kernel::ffi::c_void {
     crypto_tfm_ctx(&mut (*tfm).base)
 }
 
-pub unsafe fn akcipher_tfm_ctx_dma(tfm: *mut crypto_akcipher) -> *mut core::ffi::c_void {
+pub unsafe fn akcipher_tfm_ctx_dma(tfm: *mut crypto_akcipher) -> *mut kernel::ffi::c_void {
     crypto_tfm_ctx_dma(&mut (*tfm).base)
 }
 
@@ -81,7 +81,7 @@ pub unsafe fn akcipher_alg_instance(akcipher: *mut crypto_akcipher) -> *mut akci
     akcipher_instance(crypto_tfm_alg_instance(&mut (*akcipher).base))
 }
 
-pub unsafe fn akcipher_instance_ctx(inst: *mut akcipher_instance) -> *mut core::ffi::c_void {
+pub unsafe fn akcipher_instance_ctx(inst: *mut akcipher_instance) -> *mut kernel::ffi::c_void {
     crypto_instance_ctx(akcipher_crypto_instance(inst))
 }
 

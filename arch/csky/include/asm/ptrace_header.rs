@@ -94,7 +94,7 @@ pub unsafe fn frame_pointer_set(regs: *mut pt_regs, val: _) {
 }
 
 extern "C" {
-    pub fn regs_query_register_offset(name: *const core::ffi::c_char) -> i32;
+    pub fn regs_query_register_offset(name: *const kernel::ffi::c_char) -> i32;
     pub fn regs_get_kernel_stack_nth(regs: *mut pt_regs, n: u32) -> usize;
 }
 

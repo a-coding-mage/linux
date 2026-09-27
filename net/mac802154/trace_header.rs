@@ -2,7 +2,7 @@
 /* Rust translation of mac802154/trace.h. Linux tracepoint registration is
  * supplied by the surrounding trace infrastructure. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* External C types and helpers supplied by the kernel headers. */
 #[repr(C)]

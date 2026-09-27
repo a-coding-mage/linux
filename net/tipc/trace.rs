@@ -35,7 +35,7 @@
 
 // CREATE_TRACE_POINTS; dependency declarations from trace.h are supplied externally.
 
-pub static mut SYSCTL_TIPC_SK_FILTER: [core::ffi::c_ulong; 5] = [0; 5];
+pub static mut SYSCTL_TIPC_SK_FILTER: [kernel::ffi::c_ulong; 5] = [0; 5];
 
 /// tipc_skb_dump - dump TIPC skb data
 /// @skb: skb to be dumped
@@ -43,8 +43,8 @@ pub static mut SYSCTL_TIPC_SK_FILTER: [core::ffi::c_ulong; 5] = [0; 5];
 ///        - false: dump only tipc msg data
 ///        - true: dump kernel-related skb data and tipc cb[] array as well
 /// @buf: returned buffer of dump data in format
-pub unsafe fn tipc_skb_dump(skb: *mut sk_buff, more: bool, buf: *mut core::ffi::c_char) -> core::ffi::c_int {
-    let mut i: core::ffi::c_int = 0;
+pub unsafe fn tipc_skb_dump(skb: *mut sk_buff, more: bool, buf: *mut kernel::ffi::c_char) -> kernel::ffi::c_int {
+    let mut i: kernel::ffi::c_int = 0;
     let sz: usize = if more { SKB_LMAX } else { SKB_LMIN };
     let hdr: *mut tipc_msg;
     let skbcb: *mut tipc_skb_cb;
@@ -124,8 +124,8 @@ pub unsafe fn tipc_skb_dump(skb: *mut sk_buff, more: bool, buf: *mut core::ffi::
 }
 
 /// tipc_list_dump - dump TIPC skb list/queue
-pub unsafe fn tipc_list_dump(list: *mut sk_buff_head, more: bool, buf: *mut core::ffi::c_char) -> core::ffi::c_int {
-    let mut i: core::ffi::c_int = 0;
+pub unsafe fn tipc_list_dump(list: *mut sk_buff_head, more: bool, buf: *mut kernel::ffi::c_char) -> kernel::ffi::c_int {
+    let mut i: kernel::ffi::c_int = 0;
     let sz = if more { LIST_LMAX } else { LIST_LMIN };
     if list.is_null() { i += scnprintf(buf, sz, c"(null)\n".as_ptr()); return i; }
     let len = skb_queue_len(list);

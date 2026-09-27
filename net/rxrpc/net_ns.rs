@@ -8,7 +8,7 @@
 // Dependency declarations and kernel-provided symbols are supplied by other
 // translation units.
 
-pub static mut rxrpc_net_id: libc::c_uint = 0;
+pub static mut rxrpc_net_id: core::ffi::c_uint = 0;
 
 unsafe fn rxrpc_service_conn_reap_timeout(timer: *mut timer_list) {
     let rxnet: *mut rxrpc_net = container_of_service_conn_reap_timer(timer);
@@ -29,14 +29,14 @@ unsafe fn rxrpc_peer_keepalive_timeout(timer: *mut timer_list) {
 /*
  * Initialise a per-network namespace record.
  */
-unsafe fn rxrpc_init_net(net: *mut net) -> libc::c_int {
+unsafe fn rxrpc_init_net(net: *mut net) -> core::ffi::c_int {
     let rxnet: *mut rxrpc_net = rxrpc_net(net);
-    let mut ret: libc::c_int;
+    let mut ret: core::ffi::c_int;
     let mut i: usize;
 
     (*rxnet).live = true;
     get_random_bytes(
-        &mut (*rxnet).epoch as *mut _ as *mut libc::c_void,
+        &mut (*rxnet).epoch as *mut _ as *mut core::ffi::c_void,
         core::mem::size_of_val(&(*rxnet).epoch),
     );
     (*rxnet).epoch |= RXRPC_RANDOM_EPOCH;

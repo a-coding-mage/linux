@@ -7,7 +7,7 @@
 
 unsafe extern "C" {
     fn relocate_new_kernel();
-    static relocate_new_kernel_size: core::ffi::c_uint;
+    static relocate_new_kernel_size: kernel::ffi::c_uint;
 }
 
 static mut waiting_for_crash_ipi: atomic_t = atomic_t::new(0);
@@ -18,11 +18,11 @@ static mut waiting_for_crash_ipi: atomic_t = atomic_t::new(0);
  */
 
 #[no_mangle]
-pub unsafe extern "C" fn machine_kexec_prepare(image: *mut kimage) -> core::ffi::c_int {
+pub unsafe extern "C" fn machine_kexec_prepare(image: *mut kimage) -> kernel::ffi::c_int {
     let mut current_segment: *mut kexec_segment;
     let mut header: __be32 = 0;
-    let mut i: core::ffi::c_int;
-    let mut err: core::ffi::c_int;
+    let mut i: kernel::ffi::c_int;
+    let mut err: kernel::ffi::c_int;
 
     (*image).arch.kernel_r2 = (*image).start
         .wrapping_sub(KEXEC_ARM_ZIMAGE_OFFSET)
@@ -73,7 +73,7 @@ pub unsafe extern "C" fn machine_kexec_prepare(image: *mut kimage) -> core::ffi:
 #[no_mangle]
 pub unsafe extern "C" fn machine_kexec_cleanup(_image: *mut kimage) {}
 
-unsafe extern "C" fn machine_crash_nonpanic_core(_unused: *mut core::ffi::c_void) {
+unsafe extern "C" fn machine_crash_nonpanic_core(_unused: *mut kernel::ffi::c_void) {
     let mut regs: pt_regs = core::mem::zeroed();
 
     local_fiq_disable();
@@ -97,10 +97,10 @@ static mut cpu_stop_csd: per_cpu<call_single_data_t> =
 
 #[no_mangle]
 pub unsafe extern "C" fn crash_smp_send_stop() {
-    static mut cpus_stopped: core::ffi::c_int = 0;
-    let mut msecs: core::ffi::c_ulong;
+    static mut cpus_stopped: kernel::ffi::c_int = 0;
+    let mut msecs: kernel::ffi::c_ulong;
     let mut csd: *mut call_single_data_t;
-    let this_cpu: core::ffi::c_int = raw_smp_processor_id();
+    let this_cpu: kernel::ffi::c_int = raw_smp_processor_id();
 
     if cpus_stopped != 0 {
         return;
@@ -141,11 +141,11 @@ pub unsafe extern "C" fn machine_crash_shutdown(regs: *mut pt_regs) {
 
 #[no_mangle]
 pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
-    let mut page_list: core::ffi::c_ulong;
-    let mut reboot_entry_phys: core::ffi::c_ulong;
+    let mut page_list: kernel::ffi::c_ulong;
+    let mut reboot_entry_phys: kernel::ffi::c_ulong;
     let data: *mut kexec_relocate_data;
     let reboot_entry: Option<unsafe extern "C" fn()>;
-    let reboot_code_buffer: *mut core::ffi::c_void;
+    let reboot_code_buffer: *mut kernel::ffi::c_void;
 
     /*
      * This can only happen if machine_shutdown() failed to disable some
@@ -162,7 +162,7 @@ pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
     /* copy our kernel relocation code to the control code page */
     reboot_entry = fncpy(
         reboot_code_buffer,
-        relocate_new_kernel as *const core::ffi::c_void,
+        relocate_new_kernel as *const kernel::ffi::c_void,
         relocate_new_kernel_size,
     );
 

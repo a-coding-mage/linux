@@ -5,13 +5,13 @@
 #[cfg(CONFIG_RSEQ_STATS)]
 #[repr(C)]
 pub struct rseq_stats {
-    pub exit: ::core::ffi::c_ulong, pub signal: ::core::ffi::c_ulong,
-    pub slowpath: ::core::ffi::c_ulong, pub fastpath: ::core::ffi::c_ulong,
-    pub ids: ::core::ffi::c_ulong, pub cs: ::core::ffi::c_ulong,
-    pub clear: ::core::ffi::c_ulong, pub fixup: ::core::ffi::c_ulong,
-    pub s_granted: ::core::ffi::c_ulong, pub s_expired: ::core::ffi::c_ulong,
-    pub s_revoked: ::core::ffi::c_ulong, pub s_yielded: ::core::ffi::c_ulong,
-    pub s_aborted: ::core::ffi::c_ulong,
+    pub exit: ::kernel::ffi::c_ulong, pub signal: ::kernel::ffi::c_ulong,
+    pub slowpath: ::kernel::ffi::c_ulong, pub fastpath: ::kernel::ffi::c_ulong,
+    pub ids: ::kernel::ffi::c_ulong, pub cs: ::kernel::ffi::c_ulong,
+    pub clear: ::kernel::ffi::c_ulong, pub fixup: ::kernel::ffi::c_ulong,
+    pub s_granted: ::kernel::ffi::c_ulong, pub s_expired: ::kernel::ffi::c_ulong,
+    pub s_revoked: ::kernel::ffi::c_ulong, pub s_yielded: ::kernel::ffi::c_ulong,
+    pub s_aborted: ::kernel::ffi::c_ulong,
 }
 
 #[cfg(CONFIG_RSEQ_STATS)]
@@ -21,16 +21,16 @@ extern "C" {
 
 #[cfg(CONFIG_RSEQ_STATS)]
 #[inline(always)]
-pub unsafe fn rseq_stat_inc(_which: *mut ::core::ffi::c_ulong) {
+pub unsafe fn rseq_stat_inc(_which: *mut ::kernel::ffi::c_ulong) {
     /* this_cpu_inc/raw_cpu_inc are supplied by the kernel integration. */
 }
 #[cfg(not(CONFIG_RSEQ_STATS))]
 #[inline(always)]
-pub unsafe fn rseq_stat_inc(_which: *mut ::core::ffi::c_ulong) {}
+pub unsafe fn rseq_stat_inc(_which: *mut ::kernel::ffi::c_ulong) {}
 
 #[cfg(CONFIG_RSEQ)]
 extern "C" {
-    pub static mut rseq_debug_enabled: ::core::ffi::c_int;
+    pub static mut rseq_debug_enabled: ::kernel::ffi::c_int;
     pub fn __rseq_trace_update(t: *mut task_struct);
     pub fn __rseq_trace_ip_fixup(ip: u64, start_ip: u64, offset: u64, abort_ip: u64);
     pub fn rseq_debug_update_user_cs(t: *mut task_struct, regs: *mut pt_regs, csaddr: u64) -> bool;
@@ -87,16 +87,16 @@ pub unsafe fn rseq_slice_clear_grant(_t: *mut task_struct) {}
 
 #[cfg(CONFIG_RSEQ)]
 #[inline(always)]
-pub unsafe fn rseq_grant_slice_extension(_ti_work: ::core::ffi::c_ulong,
-                                         _mask: ::core::ffi::c_ulong) -> bool { false }
+pub unsafe fn rseq_grant_slice_extension(_ti_work: ::kernel::ffi::c_ulong,
+                                         _mask: ::kernel::ffi::c_ulong) -> bool { false }
 #[cfg(not(CONFIG_RSEQ))]
 #[inline(always)]
-pub unsafe fn rseq_grant_slice_extension(_ti_work: ::core::ffi::c_ulong,
-                                         _mask: ::core::ffi::c_ulong) -> bool { false }
+pub unsafe fn rseq_grant_slice_extension(_ti_work: ::kernel::ffi::c_ulong,
+                                         _mask: ::kernel::ffi::c_ulong) -> bool { false }
 
 #[cfg(CONFIG_RSEQ)]
 pub unsafe fn rseq_update_user_cs(_t: *mut task_struct, _regs: *mut pt_regs,
-                                  _csaddr: ::core::ffi::c_ulong) -> bool {
+                                  _csaddr: ::kernel::ffi::c_ulong) -> bool {
     /* The user-access regions (unsafe_get_user/unsafe_put_user) are kernel
      * primitives and must be supplied by the target architecture. */
     false
@@ -113,7 +113,7 @@ pub unsafe fn rseq_update_usr(_t: *mut task_struct, _regs: *mut pt_regs,
 #[cfg(CONFIG_RSEQ)]
 #[inline(always)]
 pub unsafe fn rseq_exit_to_user_mode_restart(_regs: *mut pt_regs,
-                                             _ti_work: ::core::ffi::c_ulong) -> bool { false }
+                                             _ti_work: ::kernel::ffi::c_ulong) -> bool { false }
 
 #[cfg(CONFIG_RSEQ)]
 #[inline(always)]
@@ -130,7 +130,7 @@ pub unsafe fn rseq_debug_syscall_return(_regs: *mut pt_regs) {
 #[cfg(not(CONFIG_RSEQ))]
 #[inline(always)]
 pub unsafe fn rseq_exit_to_user_mode_restart(_regs: *mut pt_regs,
-                                             _ti_work: ::core::ffi::c_ulong) -> bool { false }
+                                             _ti_work: ::kernel::ffi::c_ulong) -> bool { false }
 #[cfg(not(CONFIG_RSEQ))]
 #[inline(always)]
 pub unsafe fn rseq_syscall_exit_to_user_mode() {}

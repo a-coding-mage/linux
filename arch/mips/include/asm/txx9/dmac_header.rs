@@ -45,7 +45,7 @@ pub struct txx9dmac_slave {
 unsafe extern "C" {
     pub fn txx9_dmac_init(
         id: i32,
-        baseaddr: ::core::ffi::c_ulong,
+        baseaddr: ::kernel::ffi::c_ulong,
         irq: i32,
         pdata: *const txx9dmac_platform_data,
     );

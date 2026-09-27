@@ -7,9 +7,9 @@
 // External kernel, KUnit, and string-stream declarations are supplied by
 // other translation units.
 
-const KUNIT_DEBUGFS_ROOT: *const core::ffi::c_char = b"kunit\0".as_ptr() as *const _;
-const KUNIT_DEBUGFS_RESULTS: *const core::ffi::c_char = b"results\0".as_ptr() as *const _;
-const KUNIT_DEBUGFS_RUN: *const core::ffi::c_char = b"run\0".as_ptr() as *const _;
+const KUNIT_DEBUGFS_ROOT: *const kernel::ffi::c_char = b"kunit\0".as_ptr() as *const _;
+const KUNIT_DEBUGFS_RESULTS: *const kernel::ffi::c_char = b"results\0".as_ptr() as *const _;
+const KUNIT_DEBUGFS_RUN: *const kernel::ffi::c_char = b"run\0".as_ptr() as *const _;
 
 #[repr(C)]
 pub struct dentry {
@@ -17,7 +17,7 @@ pub struct dentry {
 }
 #[repr(C)]
 pub struct inode {
-    pub i_private: *mut core::ffi::c_void,
+    pub i_private: *mut kernel::ffi::c_void,
 }
 #[repr(C)]
 pub struct file {
@@ -25,7 +25,7 @@ pub struct file {
 }
 #[repr(C)]
 pub struct seq_file {
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
 }
 #[repr(C)]
 pub struct string_stream {
@@ -34,11 +34,11 @@ pub struct string_stream {
 #[repr(C)]
 pub struct kunit_suite {
     pub status: kunit_status,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub log: *mut string_stream,
     pub debugfs: *mut dentry,
     pub is_init: bool,
-    pub status_comment: *const core::ffi::c_char,
+    pub status_comment: *const kernel::ffi::c_char,
 }
 #[repr(C)]
 pub struct kunit_case {
@@ -48,7 +48,7 @@ pub struct kunit_case {
 pub struct file_operations {
     pub open: Option<unsafe extern "C" fn(*mut inode, *mut file) -> i32>,
     pub read: Option<unsafe extern "C" fn()>,
-    pub write: Option<unsafe extern "C" fn(*mut file, *const core::ffi::c_char, usize, *mut i64) -> isize>,
+    pub write: Option<unsafe extern "C" fn(*mut file, *const kernel::ffi::c_char, usize, *mut i64) -> isize>,
     pub llseek: Option<unsafe extern "C" fn()>,
     pub release: Option<unsafe extern "C" fn(*mut inode, *mut file) -> i32>,
 }
@@ -58,19 +58,19 @@ type kunit_status = i32;
 extern "C" {
     static mut debugfs_rootdir: *mut dentry;
     fn debugfs_remove_recursive(dentry: *mut dentry);
-    fn debugfs_create_dir(name: *const core::ffi::c_char, parent: *mut dentry) -> *mut dentry;
-    fn debugfs_create_file(name: *const core::ffi::c_char, mode: u32, parent: *mut dentry,
-                           data: *mut core::ffi::c_void, fops: *const file_operations) -> *mut dentry;
+    fn debugfs_create_dir(name: *const kernel::ffi::c_char, parent: *mut dentry) -> *mut dentry;
+    fn debugfs_create_file(name: *const kernel::ffi::c_char, mode: u32, parent: *mut dentry,
+                           data: *mut kernel::ffi::c_void, fops: *const file_operations) -> *mut dentry;
     fn single_release(inode: *mut inode, file: *mut file) -> i32;
-    fn single_open(file: *mut file, show: unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void) -> i32,
+    fn single_open(file: *mut file, show: unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void) -> i32,
                    data: *mut kunit_suite) -> i32;
     fn seq_read();
     fn seq_lseek();
-    fn seq_printf(seq: *mut seq_file, format: *const core::ffi::c_char, ...);
-    fn seq_puts(seq: *mut seq_file, string: *const core::ffi::c_char);
+    fn seq_printf(seq: *mut seq_file, format: *const kernel::ffi::c_char, ...);
+    fn seq_puts(seq: *mut seq_file, string: *const kernel::ffi::c_char);
     fn kunit_suite_has_succeeded(suite: *mut kunit_suite) -> kunit_status;
     fn kunit_suite_num_test_cases(suite: *mut kunit_suite) -> isize;
-    fn kunit_status_to_ok_not_ok(status: kunit_status) -> *const core::ffi::c_char;
+    fn kunit_status_to_ok_not_ok(status: kunit_status) -> *const kernel::ffi::c_char;
     fn alloc_string_stream(gfp: u32) -> *mut string_stream;
     fn string_stream_set_append_newlines(stream: *mut string_stream, append: bool);
     fn string_stream_destroy(stream: *mut string_stream);
@@ -92,7 +92,7 @@ pub unsafe extern "C" fn kunit_debugfs_init() {
     }
 }
 
-unsafe extern "C" fn debugfs_print_results(seq: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn debugfs_print_results(seq: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
     let suite = (*seq).private as *mut kunit_suite;
     if suite.is_null() { return 0; }
     let success = kunit_suite_has_succeeded(suite);
@@ -114,13 +114,13 @@ unsafe extern "C" fn debugfs_print_results(seq: *mut seq_file, _v: *mut core::ff
 
 unsafe extern "C" fn debugfs_release(i: *mut inode, f: *mut file) -> i32 { single_release(i, f) }
 unsafe extern "C" fn debugfs_results_open(i: *mut inode, f: *mut file) -> i32 { single_open(f, debugfs_print_results, (*i).i_private as *mut kunit_suite) }
-unsafe extern "C" fn debugfs_print_run(seq: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn debugfs_print_run(seq: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
     let suite = (*seq).private as *mut kunit_suite;
     seq_puts(seq, b"Write to this file to trigger the test suite to run.\n\0".as_ptr() as *const _);
     seq_printf(seq, b"usage: echo \"any string\" > /sys/kernel/debugfs/kunit/%s/run\n\0".as_ptr() as *const _, (*suite).name); 0
 }
 unsafe extern "C" fn debugfs_run_open(i: *mut inode, f: *mut file) -> i32 { single_open(f, debugfs_print_run, (*i).i_private as *mut kunit_suite) }
-unsafe extern "C" fn debugfs_run(file: *mut file, _buf: *const core::ffi::c_char, count: usize, _ppos: *mut i64) -> isize {
+unsafe extern "C" fn debugfs_run(file: *mut file, _buf: *const kernel::ffi::c_char, count: usize, _ppos: *mut i64) -> isize {
     let suite = (*(*file).f_inode).i_private as *mut kunit_suite;
     __kunit_test_suites_init(&mut (suite), 1, true); count as isize
 }
@@ -141,10 +141,10 @@ pub unsafe extern "C" fn kunit_debugfs_create_suite(suite: *mut kunit_suite) {
     string_stream_set_append_newlines(stream, true); (*suite).log = stream;
     (*suite).debugfs = debugfs_create_dir((*suite).name, debugfs_rootdir);
     debugfs_create_file(KUNIT_DEBUGFS_RESULTS, 0o100444, (*suite).debugfs,
-                        suite as *mut core::ffi::c_void, &DEBUGFS_RESULTS_FOPS);
+                        suite as *mut kernel::ffi::c_void, &DEBUGFS_RESULTS_FOPS);
     if !(*suite).is_init {
         debugfs_create_file(KUNIT_DEBUGFS_RUN, 0o100644, (*suite).debugfs,
-                            suite as *mut core::ffi::c_void, &DEBUGFS_RUN_FOPS);
+                            suite as *mut kernel::ffi::c_void, &DEBUGFS_RUN_FOPS);
     }
 }
 

@@ -42,17 +42,17 @@ pub const HOST_GS: usize = 26;
 /* Also defined in asm/ptrace-x86_64.h, but not in libc headers. */
 /* These are conditionally defined in C when FS_BASE is absent. */
 #[cfg(not(any(FS_BASE_DEFINED)))]
-pub const FS_BASE: usize = HOST_FS_BASE * core::mem::size_of::<core::ffi::c_long>();
+pub const FS_BASE: usize = HOST_FS_BASE * core::mem::size_of::<kernel::ffi::c_long>();
 #[cfg(not(any(FS_BASE_DEFINED)))]
-pub const GS_BASE: usize = HOST_GS_BASE * core::mem::size_of::<core::ffi::c_long>();
+pub const GS_BASE: usize = HOST_GS_BASE * core::mem::size_of::<kernel::ffi::c_long>();
 #[cfg(not(any(FS_BASE_DEFINED)))]
-pub const DS: usize = HOST_DS * core::mem::size_of::<core::ffi::c_long>();
+pub const DS: usize = HOST_DS * core::mem::size_of::<kernel::ffi::c_long>();
 #[cfg(not(any(FS_BASE_DEFINED)))]
-pub const ES: usize = HOST_ES * core::mem::size_of::<core::ffi::c_long>();
+pub const ES: usize = HOST_ES * core::mem::size_of::<kernel::ffi::c_long>();
 #[cfg(not(any(FS_BASE_DEFINED)))]
-pub const FS: usize = HOST_FS * core::mem::size_of::<core::ffi::c_long>();
+pub const FS: usize = HOST_FS * core::mem::size_of::<kernel::ffi::c_long>();
 #[cfg(not(any(FS_BASE_DEFINED)))]
-pub const GS: usize = HOST_GS * core::mem::size_of::<core::ffi::c_long>();
+pub const GS: usize = HOST_GS * core::mem::size_of::<kernel::ffi::c_long>();
 
 macro_rules! UPT_R8 {
     ($r:expr) => { REGS_R8!(($r).gp) };

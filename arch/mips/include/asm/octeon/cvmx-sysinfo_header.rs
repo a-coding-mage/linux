@@ -85,7 +85,7 @@ pub struct cvmx_sysinfo {
     pub board_rev_minor: u8,
     pub mac_addr_base: [u8; 6],
     pub mac_addr_count: u8,
-    pub board_serial_number: [core::ffi::c_char; OCTEON_SERIAL_LEN],
+    pub board_serial_number: [kernel::ffi::c_char; OCTEON_SERIAL_LEN],
     /*
      * Several boards support compact flash on the Octeon boot
      * bus.  The CF memory spaces may be mapped to different

@@ -10,10 +10,10 @@ static mut acpi_gbl_trace_method_object: *mut acpi_operand_object = core::ptr::n
 
 #[cfg(feature = "acpi_debug_output")]
 unsafe extern "C" {
-    fn acpi_ex_get_trace_event_name(type_: acpi_trace_event_type) -> *const core::ffi::c_char;
+    fn acpi_ex_get_trace_event_name(type_: acpi_trace_event_type) -> *const kernel::ffi::c_char;
 }
 
-unsafe fn acpi_ex_interpreter_trace_enabled(name: *mut core::ffi::c_char) -> u8 {
+unsafe fn acpi_ex_interpreter_trace_enabled(name: *mut kernel::ffi::c_char) -> u8 {
     if (acpi_gbl_trace_flags & ACPI_TRACE_ENABLED) == 0 {
         return FALSE;
     }
@@ -52,7 +52,7 @@ pub unsafe extern "C" fn acpi_ex_trace_point(
     type_: acpi_trace_event_type,
     begin: u8,
     aml: *mut u8,
-    pathname: *mut core::ffi::c_char,
+    pathname: *mut kernel::ffi::c_char,
 ) {
     if !pathname.is_null() {
         acpi_debug_print_trace_point(

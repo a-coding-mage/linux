@@ -445,7 +445,7 @@ extern "C" {
 
 #[repr(C)]
 pub struct omap_prcm_irq {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub offset: u32,
     pub priority: bool,
 }
@@ -474,14 +474,14 @@ pub struct omap_prcm_irq_setup {
 #[repr(C)]
 pub struct omap_domain_base {
     pub pa: u32,
-    pub va: *mut core::ffi::c_void,
+    pub va: *mut kernel::ffi::c_void,
     pub offset: i16,
 }
 
 #[repr(C)]
 pub struct omap_prcm_init_data {
     pub index: i32,
-    pub mem: *mut core::ffi::c_void,
+    pub mem: *mut kernel::ffi::c_void,
     pub phys: u32,
     pub offset: i16,
     pub flags: u16,
@@ -497,7 +497,7 @@ pub struct device_node {
 
 extern "C" {
     pub fn omap_prcm_register_chain_handler(irq_setup: *mut omap_prcm_irq_setup) -> i32;
-    pub fn omap_prcm_event_to_irq(event: *const core::ffi::c_char) -> i32;
+    pub fn omap_prcm_event_to_irq(event: *const kernel::ffi::c_char) -> i32;
     pub fn omap_prcm_irq_prepare();
     pub fn omap_prcm_irq_complete();
 }

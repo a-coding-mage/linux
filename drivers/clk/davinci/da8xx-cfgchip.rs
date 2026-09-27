@@ -6,7 +6,7 @@
 const DA8XX_GATE_CLOCK_IS_DIV4P5: u32 = 1 << 1;
 
 #[repr(C)]
-struct da8xx_cfgchip_gate_clk_info { name: *const core::ffi::c_char, cfgchip: u32, bit: u32, flags: u32 }
+struct da8xx_cfgchip_gate_clk_info { name: *const kernel::ffi::c_char, cfgchip: u32, bit: u32, flags: u32 }
 #[repr(C)]
 struct da8xx_cfgchip_gate_clk { hw: clk_hw, regmap: *mut regmap, reg: u32, mask: u32 }
 

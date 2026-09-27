@@ -27,8 +27,8 @@ pub unsafe fn schid_equal(
     schid2: *mut subchannel_id,
 ) -> i32 {
     let equal = memcmp(
-        schid1 as *const libc::c_void,
-        schid2 as *const libc::c_void,
+        schid1 as *const core::ffi::c_void,
+        schid2 as *const core::ffi::c_void,
         core::mem::size_of::<subchannel_id>(),
     ) == 0;
     (!equal) as i32

@@ -3,7 +3,7 @@
 // Dependency equivalents supplied by the surrounding Linux headers:
 // linux/types.h and linux/if.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Opaque type declared by the netfilter rate-estimator implementation.
 #[repr(C)]

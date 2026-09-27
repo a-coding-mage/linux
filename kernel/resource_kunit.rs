@@ -130,34 +130,34 @@ const RES_TEST_RAM3_OFFSET: resource_size_t = RES_TEST_RAM2_OFFSET + RES_TEST_RA
 const RES_TEST_RAM3_SIZE: resource_size_t = SZ_1M;
 const RES_TEST_TOTAL_SIZE: resource_size_t = RES_TEST_WIN1_OFFSET + RES_TEST_WIN1_SIZE;
 
-unsafe fn remove_free_resource(ctx: *mut core::ffi::c_void) {
+unsafe fn remove_free_resource(ctx: *mut kernel::ffi::c_void) {
     let res = ctx as *mut resource;
     remove_resource(res);
     kfree(res);
 }
 
-unsafe fn kfree_wrapper(ctx: *mut core::ffi::c_void) {
-    kfree(ctx as *const core::ffi::c_void);
+unsafe fn kfree_wrapper(ctx: *mut kernel::ffi::c_void) {
+    kfree(ctx as *const kernel::ffi::c_void);
 }
 
 unsafe fn resource_test_add_action_or_abort(test: *mut kunit,
-                                             action: unsafe fn(*mut core::ffi::c_void),
-                                             ctx: *mut core::ffi::c_void) {
+                                             action: unsafe fn(*mut kernel::ffi::c_void),
+                                             ctx: *mut kernel::ffi::c_void) {
     KUNIT_ASSERT_EQ_MSG(test, 0, kunit_add_action_or_reset(test, action, ctx), "Fail to add action");
 }
 
 // The remaining KUnit/resource operations retain their C interfaces through external dependencies.
 unsafe fn resource_test_request_region(test: *mut kunit, parent: *mut resource,
                                        start: resource_size_t, size: resource_size_t,
-                                       name: *const core::ffi::c_char, flags: c_ulong) {
+                                       name: *const kernel::ffi::c_char, flags: c_ulong) {
     let res = __request_region(parent, start, size, name, flags);
     KUNIT_ASSERT_NOT_NULL(test, res);
-    resource_test_add_action_or_abort(test, remove_free_resource, res as *mut core::ffi::c_void);
+    resource_test_add_action_or_abort(test, remove_free_resource, res as *mut kernel::ffi::c_void);
 }
 
 unsafe fn resource_test_insert_resource(test: *mut kunit, parent: *mut resource,
                                         start: resource_size_t, size: resource_size_t,
-                                        name: *const core::ffi::c_char, flags: c_ulong) {
+                                        name: *const kernel::ffi::c_char, flags: c_ulong) {
     let res = kzalloc_resource();
     KUNIT_ASSERT_NOT_NULL(test, res);
     (*res).name = name;
@@ -165,10 +165,10 @@ unsafe fn resource_test_insert_resource(test: *mut kunit, parent: *mut resource,
     (*res).end = start + size - 1;
     (*res).flags = flags;
     if insert_resource(parent, res) != 0 {
-        resource_test_add_action_or_abort(test, kfree_wrapper, res as *mut core::ffi::c_void);
+        resource_test_add_action_or_abort(test, kfree_wrapper, res as *mut kernel::ffi::c_void);
         KUNIT_FAIL_AND_ABORT(test, "Fail to insert resource %pR\n", res);
     }
-    resource_test_add_action_or_abort(test, remove_free_resource, res as *mut core::ffi::c_void);
+    resource_test_add_action_or_abort(test, remove_free_resource, res as *mut kernel::ffi::c_void);
 }
 
 unsafe fn resource_test_region_intersects(test: *mut kunit) {
@@ -176,7 +176,7 @@ unsafe fn resource_test_region_intersects(test: *mut kunit) {
     let parent = alloc_free_mem_region(&mut iomem_resource, RES_TEST_TOTAL_SIZE, SZ_1M, c"test resources".as_ptr());
     KUNIT_ASSERT_NOT_ERR_OR_NULL(test, parent);
     let start = (*parent).start;
-    resource_test_add_action_or_abort(test, remove_free_resource, parent as *mut core::ffi::c_void);
+    resource_test_add_action_or_abort(test, remove_free_resource, parent as *mut kernel::ffi::c_void);
     resource_test_request_region(test, parent, start + RES_TEST_RAM0_OFFSET, RES_TEST_RAM0_SIZE, c"Test System RAM 0".as_ptr(), flags);
     resource_test_insert_resource(test, parent, start + RES_TEST_WIN0_OFFSET, RES_TEST_WIN0_SIZE, c"Test CXL Window 0".as_ptr(), IORESOURCE_MEM);
     resource_test_request_region(test, parent, start + RES_TEST_RAM1_OFFSET, RES_TEST_RAM1_SIZE, c"Test System RAM 1".as_ptr(), flags);
@@ -184,7 +184,7 @@ unsafe fn resource_test_region_intersects(test: *mut kunit) {
     resource_test_request_region(test, parent, start + RES_TEST_RAM2_OFFSET, RES_TEST_RAM2_SIZE, c"Test System RAM 2".as_ptr(), flags);
     resource_test_insert_resource(test, parent, start + RES_TEST_CODE_OFFSET, RES_TEST_CODE_SIZE, c"Test Code".as_ptr(), flags);
     resource_test_request_region(test, parent, start + RES_TEST_RAM3_OFFSET, RES_TEST_RAM3_SIZE, c"Test System RAM 3".as_ptr(), flags);
-    kunit_release_action(test, remove_free_resource, parent as *mut core::ffi::c_void);
+    kunit_release_action(test, remove_free_resource, parent as *mut kernel::ffi::c_void);
 
     KUNIT_EXPECT_EQ(test, REGION_INTERSECTS, region_intersects(start + RES_TEST_RAM0_OFFSET, PAGE_SIZE, IORESOURCE_SYSTEM_RAM, IORES_DESC_NONE));
     KUNIT_EXPECT_EQ(test, REGION_INTERSECTS, region_intersects(start + RES_TEST_RAM0_OFFSET + RES_TEST_RAM0_SIZE - PAGE_SIZE, 2 * PAGE_SIZE, IORESOURCE_SYSTEM_RAM, IORES_DESC_NONE));
@@ -199,10 +199,10 @@ unsafe fn resource_test_region_intersects(test: *mut kunit) {
 }
 
 #[allow(non_upper_case_globals)]
-static mut resource_test_cases: [*const core::ffi::c_void; 4] = [
-    resource_test_union as *const core::ffi::c_void,
-    resource_test_intersection as *const core::ffi::c_void,
-    resource_test_region_intersects as *const core::ffi::c_void,
+static mut resource_test_cases: [*const kernel::ffi::c_void; 4] = [
+    resource_test_union as *const kernel::ffi::c_void,
+    resource_test_intersection as *const kernel::ffi::c_void,
+    resource_test_region_intersects as *const kernel::ffi::c_void,
     core::ptr::null(),
 ];
 

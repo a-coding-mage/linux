@@ -16,16 +16,16 @@
 // omap-wakeupgen.h, common.h, powerdomain.h
 
 unsafe extern "C" {
-    fn omap_get_wakeupgen_base() -> *mut core::ffi::c_void;
+    fn omap_get_wakeupgen_base() -> *mut kernel::ffi::c_void;
     fn omap_secure_apis_support() -> bool;
     fn omap_modify_auxcoreboot0(value: u32, mask: u32) -> u32;
     fn omap4_hotplug_cpu(cpu: u32, power_state: u32);
     fn omap_read_auxcoreboot0() -> u32;
     fn smp_processor_id() -> u32;
-    fn writel_relaxed(value: u32, address: *mut core::ffi::c_void);
-    fn readl_relaxed(address: *mut core::ffi::c_void) -> u32;
-    fn pr_err(format: *const core::ffi::c_char, ...);
-    fn pr_debug(format: *const core::ffi::c_char, ...);
+    fn writel_relaxed(value: u32, address: *mut kernel::ffi::c_void);
+    fn readl_relaxed(address: *mut kernel::ffi::c_void) -> u32;
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
+    fn pr_debug(format: *const kernel::ffi::c_char, ...);
 }
 
 // OMAP_AUX_CORE_BOOT_0 and PWRDM_POWER_OFF are supplied by the platform
@@ -49,7 +49,7 @@ pub unsafe fn omap4_cpu_die(cpu: u32) {
      */
     if omap_secure_apis_support() {
         if omap_modify_auxcoreboot0(0x0, 0x200) != 0x0 {
-            pr_err(b"Secure clear status failed\0".as_ptr() as *const core::ffi::c_char);
+            pr_err(b"Secure clear status failed\0".as_ptr() as *const kernel::ffi::c_char);
         }
     } else {
         writel_relaxed(0, base.add(OMAP_AUX_CORE_BOOT_0));
@@ -73,7 +73,7 @@ pub unsafe fn omap4_cpu_die(cpu: u32) {
              */
             break;
         }
-        pr_debug(b"CPU%u: spurious wakeup call\n\0".as_ptr() as *const core::ffi::c_char, cpu);
+        pr_debug(b"CPU%u: spurious wakeup call\n\0".as_ptr() as *const kernel::ffi::c_char, cpu);
     }
 }
 

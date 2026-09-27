@@ -6,9 +6,9 @@
 
 // C dependencies supplied by the surrounding kernel translation unit.
 
-pub static mut riscv_nousercfi: ::core::ffi::c_ulong = 0;
+pub static mut riscv_nousercfi: ::kernel::ffi::c_ulong = 0;
 
-const SHSTK_ENTRY_SIZE: usize = core::mem::size_of::<*mut core::ffi::c_void>();
+const SHSTK_ENTRY_SIZE: usize = core::mem::size_of::<*mut kernel::ffi::c_void>();
 
 pub unsafe fn is_shstk_enabled(task: *mut task_struct) -> bool {
     (*task).thread_info.user_cfi_state.ubcfi_en != 0

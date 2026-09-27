@@ -3,20 +3,20 @@
 // CONFIG_CPU_HAS_PTEAEX selects the PTEAEX-based implementation.
 #[cfg(CONFIG_CPU_HAS_PTEAEX)]
 #[inline]
-pub unsafe fn set_asid(asid: ::core::ffi::c_ulong) {
+pub unsafe fn set_asid(asid: ::kernel::ffi::c_ulong) {
     __raw_writel(asid, MMU_PTEAEX);
 }
 
 #[cfg(CONFIG_CPU_HAS_PTEAEX)]
 #[inline]
-pub unsafe fn get_asid() -> ::core::ffi::c_ulong {
+pub unsafe fn get_asid() -> ::kernel::ffi::c_ulong {
     __raw_readl(MMU_PTEAEX) & MMU_CONTEXT_ASID_MASK
 }
 
 #[cfg(not(CONFIG_CPU_HAS_PTEAEX))]
 #[inline]
-pub unsafe fn set_asid(asid: ::core::ffi::c_ulong) {
-    let mut __dummy: ::core::ffi::c_ulong;
+pub unsafe fn set_asid(asid: ::kernel::ffi::c_ulong) {
+    let mut __dummy: ::kernel::ffi::c_ulong;
 
     // Original SH inline assembly:
     // mov.l %2, %0; and %3, %0; or %1, %0; mov.l %0, %2
@@ -27,8 +27,8 @@ pub unsafe fn set_asid(asid: ::core::ffi::c_ulong) {
 
 #[cfg(not(CONFIG_CPU_HAS_PTEAEX))]
 #[inline]
-pub unsafe fn get_asid() -> ::core::ffi::c_ulong {
-    let mut asid: ::core::ffi::c_ulong;
+pub unsafe fn get_asid() -> ::kernel::ffi::c_ulong {
+    let mut asid: ::kernel::ffi::c_ulong;
 
     // Original SH inline assembly: mov.l %1, %0
     // The SH-specific inline assembly is intentionally preserved here as a
@@ -41,7 +41,7 @@ pub unsafe fn get_asid() -> ::core::ffi::c_ulong {
 /* MMU_TTB is used for optimizing the fault handling. */
 #[inline]
 pub unsafe fn set_TTB(pgd: *mut pgd_t) {
-    __raw_writel(pgd as ::core::ffi::c_ulong, MMU_TTB);
+    __raw_writel(pgd as ::kernel::ffi::c_ulong, MMU_TTB);
 }
 
 #[inline]

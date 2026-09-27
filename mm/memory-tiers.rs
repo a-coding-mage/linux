@@ -42,7 +42,7 @@ static mut default_dram_perf_lock: mutex = DEFINE_MUTEX!();
 static mut default_dram_perf_error: bool = false;
 static mut default_dram_perf: access_coordinate = access_coordinate { read_latency: 0, write_latency: 0, read_bandwidth: 0, write_bandwidth: 0 };
 static mut default_dram_perf_ref_nid: i32 = NUMA_NO_NODE;
-static mut default_dram_perf_ref_source: *const core::ffi::c_char = core::ptr::null();
+static mut default_dram_perf_ref_source: *const kernel::ffi::c_char = core::ptr::null();
 
 unsafe fn to_memory_tier(device: *mut device) -> *mut memory_tier {
     container_of!(device, memory_tier, dev)
@@ -59,10 +59,10 @@ unsafe fn get_memtier_nodemask(memtier: *mut memory_tier) -> nodemask_t {
 
 unsafe extern "C" fn memory_tier_device_release(dev: *mut device) {
     let tier = to_memory_tier(dev);
-    kfree(tier as *mut core::ffi::c_void);
+    kfree(tier as *mut kernel::ffi::c_void);
 }
 
-unsafe extern "C" fn nodelist_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> ssize_t {
+unsafe extern "C" fn nodelist_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut kernel::ffi::c_char) -> ssize_t {
     mutex_lock(&mut memory_tier_lock);
     let nmask = get_memtier_nodemask(to_memory_tier(dev));
     let ret = sysfs_emit(buf, "%*pbl\n", nodemask_pr_args!(&nmask));
@@ -97,7 +97,7 @@ pub static mut numa_demotion_enabled: bool = false;
 
 pub unsafe fn alloc_memory_type(adistance: i32) -> *mut memory_dev_type { let p = kmalloc_obj::<memory_dev_type>(); if p.is_null() { return ERR_PTR!(-ENOMEM); } (*p).adistance = adistance; INIT_LIST_HEAD!(&mut (*p).tier_sibling); (*p).nodes = NODE_MASK_NONE; kref_init!(&mut (*p).kref); p }
 pub unsafe fn put_memory_type(memtype: *mut memory_dev_type) { kref_put!(&mut (*memtype).kref, release_memtype); }
-unsafe fn release_memtype(kref: *mut kref) { let memtype = container_of!(kref, memory_dev_type, kref); kfree(memtype as *mut core::ffi::c_void); }
+unsafe fn release_memtype(kref: *mut kref) { let memtype = container_of!(kref, memory_dev_type, kref); kfree(memtype as *mut kernel::ffi::c_void); }
 
 pub unsafe fn init_node_memory_type(node: i32, memtype: *mut memory_dev_type) { mutex_lock(&mut memory_tier_lock); __init_node_memory_type(node, memtype); mutex_unlock(&mut memory_tier_lock); }
 unsafe fn __init_node_memory_type(node: i32, memtype: *mut memory_dev_type) { if (*node_memory_types.as_mut_ptr().add(node as usize)).memtype.is_null() { (*node_memory_types.as_mut_ptr().add(node as usize)).memtype = memtype; } if (*node_memory_types.as_mut_ptr().add(node as usize)).memtype == memtype { if (*node_memory_types.as_mut_ptr().add(node as usize)).map_count == 0 { kref_get!(&mut (*memtype).kref); } (*node_memory_types.as_mut_ptr().add(node as usize)).map_count += 1; } }
@@ -106,10 +106,10 @@ pub unsafe fn clear_node_memory_type(node: i32, memtype: *mut memory_dev_type) {
 pub unsafe fn mt_find_alloc_memory_type(adist: i32, memory_types: *mut list_head) -> *mut memory_dev_type { let mut mtype: *mut memory_dev_type; list_for_each_entry!(mtype, memory_types, list, { if (*mtype).adistance == adist { return mtype; } }); let mtype = alloc_memory_type(adist); if IS_ERR!(mtype) { return mtype; } list_add!(&mut (*mtype).list, memory_types); mtype }
 pub unsafe fn mt_put_memory_types(memory_types: *mut list_head) { let mut mtype: *mut memory_dev_type; let mut mtn: *mut memory_dev_type; list_for_each_entry_safe!(mtype, mtn, memory_types, list, { list_del!(&mut (*mtype).list); put_memory_type(mtype); }); }
 
-pub unsafe fn mt_set_default_dram_perf(_nid: i32, _perf: *mut access_coordinate, _source: *const core::ffi::c_char) -> i32 { if default_dram_perf_error { return -EIO; } 0 }
+pub unsafe fn mt_set_default_dram_perf(_nid: i32, _perf: *mut access_coordinate, _source: *const kernel::ffi::c_char) -> i32 { if default_dram_perf_error { return -EIO; } 0 }
 pub unsafe fn mt_perf_to_adistance(_perf: *mut access_coordinate, _adist: *mut i32) -> i32 { if default_dram_perf_error { -EIO } else { -ENOENT } }
 pub unsafe fn register_mt_adistance_algorithm(nb: *mut notifier_block) -> i32 { blocking_notifier_chain_register!(&mut mt_adistance_algorithms, nb) }
 pub unsafe fn unregister_mt_adistance_algorithm(nb: *mut notifier_block) -> i32 { blocking_notifier_chain_unregister!(&mut mt_adistance_algorithms, nb) }
-pub unsafe fn mt_calc_adistance(node: i32, adist: *mut i32) -> i32 { blocking_notifier_call_chain!(&mut mt_adistance_algorithms, node as usize, adist as *mut core::ffi::c_void) }
+pub unsafe fn mt_calc_adistance(node: i32, adist: *mut i32) -> i32 { blocking_notifier_call_chain!(&mut mt_adistance_algorithms, node as usize, adist as *mut kernel::ffi::c_void) }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

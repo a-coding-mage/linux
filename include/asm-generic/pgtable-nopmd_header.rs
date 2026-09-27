@@ -2,7 +2,7 @@
 
 // Dependency supplied by <asm-generic/pgtable-nopud.h>.
 // This header is excluded when building assembler code in the C source.
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 pub struct mm_struct;
 

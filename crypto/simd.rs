@@ -29,7 +29,7 @@
 
 #[repr(C)]
 pub struct simd_aead_alg {
-    pub ialg_name: *const core::ffi::c_char,
+    pub ialg_name: *const kernel::ffi::c_char,
     pub alg: aead_alg,
 }
 
@@ -116,9 +116,9 @@ unsafe fn simd_aead_init(tfm: *mut crypto_aead) -> i32 {
 
 unsafe fn simd_aead_create_compat(
     ialg: *mut aead_alg,
-    algname: *const core::ffi::c_char,
-    drvname: *const core::ffi::c_char,
-    basename: *const core::ffi::c_char,
+    algname: *const kernel::ffi::c_char,
+    drvname: *const kernel::ffi::c_char,
+    basename: *const kernel::ffi::c_char,
 ) -> *mut simd_aead_alg {
     let salg = kzalloc_obj::<simd_aead_alg>();
     if salg.is_null() {
@@ -132,13 +132,13 @@ unsafe fn simd_aead_create_compat(
     if snprintf((*alg).base.cra_name.as_mut_ptr(), CRYPTO_MAX_ALG_NAME, c"%s", algname)
         >= CRYPTO_MAX_ALG_NAME
     {
-        kfree(salg as *mut core::ffi::c_void);
+        kfree(salg as *mut kernel::ffi::c_void);
         return ERR_PTR(err);
     }
     if snprintf((*alg).base.cra_driver_name.as_mut_ptr(), CRYPTO_MAX_ALG_NAME, c"%s", drvname)
         >= CRYPTO_MAX_ALG_NAME
     {
-        kfree(salg as *mut core::ffi::c_void);
+        kfree(salg as *mut kernel::ffi::c_void);
         return ERR_PTR(err);
     }
 
@@ -160,7 +160,7 @@ unsafe fn simd_aead_create_compat(
 
     err = crypto_register_aead(alg);
     if err != 0 {
-        kfree(salg as *mut core::ffi::c_void);
+        kfree(salg as *mut kernel::ffi::c_void);
         return ERR_PTR(err);
     }
     salg
@@ -168,7 +168,7 @@ unsafe fn simd_aead_create_compat(
 
 unsafe fn simd_aead_free(salg: *mut simd_aead_alg) {
     crypto_unregister_aead(&mut (*salg).alg);
-    kfree(salg as *mut core::ffi::c_void);
+    kfree(salg as *mut kernel::ffi::c_void);
 }
 
 pub unsafe fn simd_register_aeads_compat(

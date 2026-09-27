@@ -72,7 +72,7 @@ pub type UmcFunc = unsafe extern "C" fn(
     node_inst: u32,
     umc_inst: u32,
     ch_inst: u32,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) -> i32;
 
 #[repr(C)]
@@ -80,8 +80,8 @@ pub struct amdgpu_umc_ras {
     pub ras_block: amdgpu_ras_block_object,
     pub err_cnt_init: Option<unsafe extern "C" fn(*mut amdgpu_device)>,
     pub query_ras_poison_mode: Option<unsafe extern "C" fn(*mut amdgpu_device) -> bool>,
-    pub ecc_info_query_ras_error_count: Option<unsafe extern "C" fn(*mut amdgpu_device, *mut core::ffi::c_void)>,
-    pub ecc_info_query_ras_error_address: Option<unsafe extern "C" fn(*mut amdgpu_device, *mut core::ffi::c_void)>,
+    pub ecc_info_query_ras_error_count: Option<unsafe extern "C" fn(*mut amdgpu_device, *mut kernel::ffi::c_void)>,
+    pub ecc_info_query_ras_error_address: Option<unsafe extern "C" fn(*mut amdgpu_device, *mut kernel::ffi::c_void)>,
 }
 
 #[repr(C)]
@@ -101,22 +101,22 @@ pub struct amdgpu_umc {
     pub ras_if: *mut ras_common_if,
     pub funcs: *const amdgpu_umc_funcs,
     pub ras: *mut amdgpu_umc_ras,
-    pub active_mask: core::ffi::c_ulong,
-    pub err_addr_cnt: core::ffi::c_ulong,
+    pub active_mask: kernel::ffi::c_ulong,
+    pub err_addr_cnt: kernel::ffi::c_ulong,
 }
 
 extern "C" {
     pub fn amdgpu_umc_ras_sw_init(adev: *mut amdgpu_device) -> i32;
     pub fn amdgpu_umc_ras_late_init(adev: *mut amdgpu_device, ras_block: *mut ras_common_if) -> i32;
     pub fn amdgpu_umc_poison_handler(adev: *mut amdgpu_device, block: amdgpu_ras_block, reset: u32) -> i32;
-    pub fn amdgpu_umc_pasid_poison_handler(adev: *mut amdgpu_device, block: amdgpu_ras_block, pasid: u16, pasid_fn: pasid_notify, data: *mut core::ffi::c_void, reset: u32) -> i32;
+    pub fn amdgpu_umc_pasid_poison_handler(adev: *mut amdgpu_device, block: amdgpu_ras_block, pasid: u16, pasid_fn: pasid_notify, data: *mut kernel::ffi::c_void, reset: u32) -> i32;
     pub fn amdgpu_umc_process_ecc_irq(adev: *mut amdgpu_device, source: *mut amdgpu_irq_src, entry: *mut amdgpu_iv_entry) -> i32;
     pub fn amdgpu_umc_uniras_process_ecc_irq(adev: *mut amdgpu_device, source: *mut amdgpu_irq_src, entry: *mut amdgpu_iv_entry) -> i32;
     pub fn amdgpu_umc_fill_error_record(err_data: *mut ras_err_data, err_addr: u64, retired_page: u64, channel_index: u32, umc_inst: u32) -> i32;
-    pub fn amdgpu_umc_process_ras_data_cb(adev: *mut amdgpu_device, ras_error_status: *mut core::ffi::c_void, entry: *mut amdgpu_iv_entry) -> i32;
+    pub fn amdgpu_umc_process_ras_data_cb(adev: *mut amdgpu_device, ras_error_status: *mut kernel::ffi::c_void, entry: *mut amdgpu_iv_entry) -> i32;
     pub fn amdgpu_umc_page_retirement_mca(adev: *mut amdgpu_device, err_addr: u64, ch_inst: u32, umc_inst: u32) -> i32;
-    pub fn amdgpu_umc_loop_channels(adev: *mut amdgpu_device, func: UmcFunc, data: *mut core::ffi::c_void) -> i32;
-    pub fn amdgpu_umc_handle_bad_pages(adev: *mut amdgpu_device, ras_error_status: *mut core::ffi::c_void);
+    pub fn amdgpu_umc_loop_channels(adev: *mut amdgpu_device, func: UmcFunc, data: *mut kernel::ffi::c_void) -> i32;
+    pub fn amdgpu_umc_handle_bad_pages(adev: *mut amdgpu_device, ras_error_status: *mut kernel::ffi::c_void);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

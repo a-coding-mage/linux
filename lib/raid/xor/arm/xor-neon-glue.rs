@@ -7,8 +7,8 @@
 extern "C" {
     fn kernel_neon_begin();
     fn xor_gen_neon_inner(
-        dest: *mut core::ffi::c_void,
-        srcs: *mut *mut core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        srcs: *mut *mut kernel::ffi::c_void,
         src_cnt: u32,
         bytes: u32,
     );
@@ -16,8 +16,8 @@ extern "C" {
 }
 
 unsafe fn xor_gen_neon(
-    dest: *mut core::ffi::c_void,
-    srcs: *mut *mut core::ffi::c_void,
+    dest: *mut kernel::ffi::c_void,
+    srcs: *mut *mut kernel::ffi::c_void,
     src_cnt: u32,
     bytes: u32,
 ) {
@@ -30,7 +30,7 @@ unsafe fn xor_gen_neon(
 
 #[no_mangle]
 pub static mut xor_block_neon: xor_block_template = xor_block_template {
-    name: b"neon\0".as_ptr() as *const core::ffi::c_char,
+    name: b"neon\0".as_ptr() as *const kernel::ffi::c_char,
     xor_gen: xor_gen_neon,
 };
 

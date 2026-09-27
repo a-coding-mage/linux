@@ -17,25 +17,25 @@ pub struct olpc_platform_t {
 
 extern "C" {
     pub static mut olpc_platform_info: olpc_platform_t;
-    fn get_option(str_: *mut *mut core::ffi::c_char, value: *mut i32) -> i32;
-    fn printk(level: *const core::ffi::c_char, ...) -> i32;
+    fn get_option(str_: *mut *mut kernel::ffi::c_char, value: *mut i32) -> i32;
+    fn printk(level: *const kernel::ffi::c_char, ...) -> i32;
     fn inb(port: u16) -> u8;
     fn outb(value: u8, port: u16);
     fn mdelay(ms: u32);
-    fn pr_devel(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
-    fn of_get_property(root: *mut device_node, name: *const core::ffi::c_char,
+    fn pr_devel(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
+    fn of_get_property(root: *mut device_node, name: *const kernel::ffi::c_char,
                        lenp: *mut i32) -> *const u8;
-    fn of_find_node_by_path(path: *const core::ffi::c_char) -> *mut device_node;
+    fn of_find_node_by_path(path: *const kernel::ffi::c_char) -> *mut device_node;
     fn of_node_put(node: *mut device_node);
     fn be32_to_cpu(value: u32) -> u32;
-    fn platform_device_register_simple(name: *const core::ffi::c_char, id: i32,
-                                       data: *const core::ffi::c_void, size: u32)
+    fn platform_device_register_simple(name: *const kernel::ffi::c_char, id: i32,
+                                       data: *const kernel::ffi::c_void, size: u32)
         -> *mut platform_device;
     fn olpc_ec_cmd(cmd: u8, inbuf: *const u8, inlen: usize,
                    outbuf: *mut u8, outlen: usize) -> i32;
     fn olpc_ofw_present() -> bool;
-    fn olpc_ec_driver_register(driver: *mut olpc_ec_driver, arg: *const core::ffi::c_void);
+    fn olpc_ec_driver_register(driver: *mut olpc_ec_driver, arg: *const kernel::ffi::c_void);
     fn olpc_board_pre(value: u32) -> u32;
     fn olpc_board(value: u32) -> u32;
     fn olpc_board_at_least(value: u32) -> bool;
@@ -48,7 +48,7 @@ extern "C" {
 const EC_BASE_TIMEOUT: i32 = 20;
 static mut ec_timeout: i32 = EC_BASE_TIMEOUT;
 
-unsafe fn olpc_ec_timeout_set(str_: *mut core::ffi::c_char) -> i32 {
+unsafe fn olpc_ec_timeout_set(str_: *mut kernel::ffi::c_char) -> i32 {
     if get_option(&mut (str_ as *mut _), &mut ec_timeout) != 1 { ec_timeout = EC_BASE_TIMEOUT; }
     1
 }
@@ -71,7 +71,7 @@ unsafe fn __wait_on_obf(line: u32, port: u32, desired: i32) -> i32 {
     (state != desired) as i32
 }
 
-unsafe fn olpc_xo1_ec_cmd(cmd: u8, inbuf: *const u8, inlen: usize, outbuf: *mut u8, outlen: usize, _arg: *mut core::ffi::c_void) -> i32 {
+unsafe fn olpc_xo1_ec_cmd(cmd: u8, inbuf: *const u8, inlen: usize, outbuf: *mut u8, outlen: usize, _arg: *mut kernel::ffi::c_void) -> i32 {
     let mut ret = -5i32;
     let mut i = 0usize;
     let mut restarts = 0;
@@ -115,7 +115,7 @@ unsafe extern "C" fn olpc_xo1_ec_resume(_pdev: *mut platform_device) -> i32 {
     0
 }
 
-#[repr(C)] struct olpc_ec_driver { suspend: Option<unsafe extern "C" fn(*mut platform_device) -> i32>, resume: Option<unsafe extern "C" fn(*mut platform_device) -> i32>, ec_cmd: Option<unsafe extern "C" fn(u8,*const u8,usize,*mut u8,usize,*mut core::ffi::c_void)->i32>, wakeup_available: bool }
+#[repr(C)] struct olpc_ec_driver { suspend: Option<unsafe extern "C" fn(*mut platform_device) -> i32>, resume: Option<unsafe extern "C" fn(*mut platform_device) -> i32>, ec_cmd: Option<unsafe extern "C" fn(u8,*const u8,usize,*mut u8,usize,*mut kernel::ffi::c_void)->i32>, wakeup_available: bool }
 
 static mut ec_xo1_driver: olpc_ec_driver = olpc_ec_driver { suspend: Some(olpc_xo1_ec_suspend), resume: Some(olpc_xo1_ec_resume), ec_cmd: Some(olpc_xo1_ec_cmd), wakeup_available: false };
 static mut ec_xo1_5_driver: olpc_ec_driver = olpc_ec_driver { suspend: None, resume: None, ec_cmd: Some(olpc_xo1_ec_cmd), wakeup_available: false };

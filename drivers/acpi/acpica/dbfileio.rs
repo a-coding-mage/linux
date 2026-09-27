@@ -20,29 +20,29 @@ pub unsafe fn acpi_db_close_debug_file() {
         acpi_gbl_debug_file = core::ptr::null_mut();
         acpi_gbl_db_output_to_file = FALSE;
         acpi_os_printf(
-            b"Debug output file %s closed\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Debug output file %s closed\n\0".as_ptr() as *const kernel::ffi::c_char,
             acpi_gbl_db_debug_filename,
         );
     }
 }
 
 #[cfg(all(feature = "ACPI_APPLICATION", feature = "ACPI_DEBUGGER"))]
-pub unsafe fn acpi_db_open_debug_file(name: *mut core::ffi::c_char) {
+pub unsafe fn acpi_db_open_debug_file(name: *mut kernel::ffi::c_char) {
     acpi_db_close_debug_file();
     acpi_gbl_debug_file = fopen(
         name,
-        b"w+\0".as_ptr() as *const core::ffi::c_char,
+        b"w+\0".as_ptr() as *const kernel::ffi::c_char,
     );
     if acpi_gbl_debug_file.is_null() {
         acpi_os_printf(
-            b"Could not open debug file %s\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Could not open debug file %s\n\0".as_ptr() as *const kernel::ffi::c_char,
             name,
         );
         return;
     }
 
     acpi_os_printf(
-        b"Debug output file %s opened\n\0".as_ptr() as *const core::ffi::c_char,
+        b"Debug output file %s opened\n\0".as_ptr() as *const kernel::ffi::c_char,
         name,
     );
     acpi_ut_safe_strncpy(
@@ -71,13 +71,13 @@ pub unsafe fn acpi_db_load_tables(
             if status == AE_ALREADY_EXISTS {
                 acpi_os_printf(
                     b"Table %4.4s is already installed\n\0".as_ptr()
-                        as *const core::ffi::c_char,
+                        as *const kernel::ffi::c_char,
                     (*table).signature.as_ptr(),
                 );
             } else {
                 acpi_os_printf(
                     b"Could not install table, %s\n\0".as_ptr()
-                        as *const core::ffi::c_char,
+                        as *const kernel::ffi::c_char,
                     acpi_format_exception(status),
                 );
             }
@@ -87,7 +87,7 @@ pub unsafe fn acpi_db_load_tables(
 
         acpi_os_printf(
             b"Acpi table [%4.4s] successfully installed and loaded\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
             (*table).signature.as_ptr(),
         );
 

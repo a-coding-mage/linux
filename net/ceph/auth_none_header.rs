@@ -12,8 +12,8 @@
 #[repr(C)]
 pub struct ceph_none_authorizer {
     pub base: ceph_authorizer,
-    pub buf: [core::ffi::c_char; 128],
-    pub buf_len: core::ffi::c_int,
+    pub buf: [kernel::ffi::c_char; 128],
+    pub buf_len: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -22,7 +22,7 @@ pub struct ceph_auth_none_info {
 }
 
 unsafe extern "C" {
-    pub fn ceph_auth_none_init(ac: *mut ceph_auth_client) -> core::ffi::c_int;
+    pub fn ceph_auth_none_init(ac: *mut ceph_auth_client) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

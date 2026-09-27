@@ -63,11 +63,11 @@ pub struct pci_dev {
 }
 
 unsafe extern "C" {
-    pub fn pdsc_register_notify(nb: *mut notifier_block) -> ::core::ffi::c_int;
+    pub fn pdsc_register_notify(nb: *mut notifier_block) -> ::kernel::ffi::c_int;
     pub fn pdsc_unregister_notify(nb: *mut notifier_block);
-    pub fn pdsc_get_pf_struct(vf_pdev: *mut pci_dev) -> *mut ::core::ffi::c_void;
-    pub fn pds_client_register(pf: *mut pdsc, devname: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    pub fn pds_client_unregister(pf: *mut pdsc, client_id: u16) -> ::core::ffi::c_int;
+    pub fn pdsc_get_pf_struct(vf_pdev: *mut pci_dev) -> *mut ::kernel::ffi::c_void;
+    pub fn pds_client_register(pf: *mut pdsc, devname: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
+    pub fn pds_client_unregister(pf: *mut pdsc, client_id: u16) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

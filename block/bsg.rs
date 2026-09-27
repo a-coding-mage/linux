@@ -150,7 +150,7 @@ unsafe fn bsg_init() -> i32 {
     let ret = alloc_chrdev_region(&mut devid, 0, BSG_MAX_DEVS, b"bsg\0".as_ptr() as *const i8);
     if ret != 0 { class_unregister(&bsg_class); return ret; }
     bsg_major = major(devid);
-    printk(KERN_INFO, b"%s version %s loaded (major %d)\n\0".as_ptr() as *const i8, BSG_DESCRIPTION.as_ptr(), BSG_VERSION.as_ptr(), bsg_major);
+    printk(c"\x016%s version %s loaded (major %d)\n".as_ptr() as *const i8, BSG_DESCRIPTION.as_ptr(), BSG_VERSION.as_ptr(), bsg_major);
     0
 }
 

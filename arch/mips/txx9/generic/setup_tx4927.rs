@@ -28,7 +28,7 @@ pub unsafe fn tx4927_wdt_init() {
     txx9_wdt_init(TX4927_TMR_REG(2) & 0xfffffffff_u64);
 }
 
-unsafe fn tx4927_machine_restart(_command: *mut core::ffi::c_char) {
+unsafe fn tx4927_machine_restart(_command: *mut kernel::ffi::c_char) {
     local_irq_disable();
     pr_emerg!("Rebooting (with {} watchdog reset)...\n",
         if (____raw_readq(&(*tx4927_ccfgptr).ccfg) & TX4927_CCFG_WDREXEN) != 0 {

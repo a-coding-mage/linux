@@ -10,11 +10,11 @@ pub const XIVE_INVALID_VP: u32 = 0xffff_ffff;
 // below are available.
 #[cfg(CONFIG_PPC_XIVE)]
 mod xive {
-    use core::ffi::c_void;
+    use kernel::ffi::c_void;
 
     extern "C" {
         pub static mut xive_tima: *mut c_void;
-        pub static mut xive_tima_os: ::core::ffi::c_ulong;
+        pub static mut xive_tima_os: ::kernel::ffi::c_ulong;
         pub static mut xive_tima_offset: u32;
         pub static mut __xive_enabled: bool;
     }
@@ -64,7 +64,7 @@ mod xive {
         pub fn xive_spapr_init() -> bool;
         pub fn xive_native_init() -> bool;
         pub fn xive_smp_probe() -> i32;
-        pub fn xive_smp_prepare_cpu(cpu: ::core::ffi::c_uint) -> i32;
+        pub fn xive_smp_prepare_cpu(cpu: ::kernel::ffi::c_uint) -> i32;
         pub fn xive_smp_setup_cpu();
         pub fn xive_smp_disable_cpu();
         pub fn xive_teardown_cpu();
@@ -127,7 +127,7 @@ pub const fn xive_smp_probe() -> i32 { -22 /* -EINVAL */ }
 
 #[cfg(not(CONFIG_PPC_XIVE))]
 #[inline]
-pub const fn xive_smp_prepare_cpu(_cpu: ::core::ffi::c_uint) -> i32 { -22 /* -EINVAL */ }
+pub const fn xive_smp_prepare_cpu(_cpu: ::kernel::ffi::c_uint) -> i32 { -22 /* -EINVAL */ }
 
 #[cfg(not(CONFIG_PPC_XIVE))]
 #[inline]

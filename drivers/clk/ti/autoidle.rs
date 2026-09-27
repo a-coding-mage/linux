@@ -14,7 +14,7 @@ pub struct clk_ti_autoidle {
     pub reg: clk_omap_reg,
     pub shift: u8,
     pub flags: u8,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub node: list_head,
 }
 
@@ -111,7 +111,7 @@ pub unsafe fn of_ti_clk_autoidle_setup(node: *mut device_node) -> i32 {
     (*clk).shift = shift as u8;
     (*clk).name = ti_dt_clk_name(node);
     let ret = ti_clk_get_reg_addr(node, 0, &mut (*clk).reg);
-    if ret != 0 { kfree(clk as *mut core::ffi::c_void); return ret; }
+    if ret != 0 { kfree(clk as *mut kernel::ffi::c_void); return ret; }
     if of_property_read_bool(node, b"ti,invert-autoidle-bit\0".as_ptr() as _) {
         (*clk).flags |= AUTOIDLE_LOW;
     }

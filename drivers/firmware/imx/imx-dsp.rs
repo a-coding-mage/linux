@@ -9,15 +9,15 @@
 // Dependencies and types are supplied by the corresponding kernel bindings.
 
 extern "C" {
-    fn mbox_send_message(chan: *mut mbox_chan, msg: *mut core::ffi::c_void) -> i32;
-    fn mbox_request_channel_byname(cl: *mut mbox_client, name: *mut core::ffi::c_char) -> *mut mbox_chan;
+    fn mbox_send_message(chan: *mut mbox_chan, msg: *mut kernel::ffi::c_void) -> i32;
+    fn mbox_request_channel_byname(cl: *mut mbox_client, name: *mut kernel::ffi::c_char) -> *mut mbox_chan;
     fn mbox_free_channel(chan: *mut mbox_chan);
-    fn kasprintf(gfp: u32, fmt: *const core::ffi::c_char, ...) -> *mut core::ffi::c_char;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn devm_kzalloc(dev: *mut device, size: usize, gfp: u32) -> *mut core::ffi::c_void;
+    fn kasprintf(gfp: u32, fmt: *const kernel::ffi::c_char, ...) -> *mut kernel::ffi::c_char;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn devm_kzalloc(dev: *mut device, size: usize, gfp: u32) -> *mut kernel::ffi::c_void;
     fn device_set_of_node_from_dev(dev: *mut device, parent: *mut device);
-    fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
+    fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
 }
 
 // These declarations correspond to types and symbols provided by the kernel headers.
@@ -38,7 +38,7 @@ pub struct mbox_client {
     pub dev: *mut device,
     pub tx_block: bool,
     pub knows_txdone: bool,
-    pub rx_callback: Option<unsafe extern "C" fn(*mut mbox_client, *mut core::ffi::c_void)>,
+    pub rx_callback: Option<unsafe extern "C" fn(*mut mbox_client, *mut kernel::ffi::c_void)>,
 }
 #[repr(C)]
 pub struct imx_dsp_ops {
@@ -49,7 +49,7 @@ pub struct imx_dsp_ops {
 pub struct imx_dsp_chan {
     pub cl: mbox_client,
     pub ch: *mut mbox_chan,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub ipc: *mut imx_dsp_ipc,
     pub idx: usize,
 }
@@ -86,7 +86,7 @@ pub unsafe extern "C" fn imx_dsp_ring_doorbell(ipc: *mut imx_dsp_ipc, idx: u32) 
  * Users of DSP IPC will need to privde handle_reply and handle_request
  * callbacks.
  */
-unsafe extern "C" fn imx_dsp_handle_rx(c: *mut mbox_client, _msg: *mut core::ffi::c_void) {
+unsafe extern "C" fn imx_dsp_handle_rx(c: *mut mbox_client, _msg: *mut kernel::ffi::c_void) {
     // container_of(c, struct imx_dsp_chan, cl); the enclosing layout is supplied by the bindings.
     let chan = c as *mut imx_dsp_chan;
     if (*chan).idx == 0 {

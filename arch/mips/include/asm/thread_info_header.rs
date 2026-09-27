@@ -17,12 +17,12 @@
 #[repr(C)]
 pub struct thread_info {
     pub task: *mut task_struct,       /* main task structure */
-    pub flags: ::core::ffi::c_ulong,  /* low level flags */
-    pub tp_value: ::core::ffi::c_ulong, /* thread pointer */
+    pub flags: ::kernel::ffi::c_ulong,  /* low level flags */
+    pub tp_value: ::kernel::ffi::c_ulong, /* thread pointer */
     pub cpu: u32,                     /* current CPU */
-    pub preempt_count: ::core::ffi::c_int, /* 0 => preemptible, <0 => BUG */
+    pub preempt_count: ::kernel::ffi::c_int, /* 0 => preemptible, <0 => BUG */
     pub regs: *mut pt_regs,
-    pub syscall: ::core::ffi::c_long, /* syscall number */
+    pub syscall: ::kernel::ffi::c_long, /* syscall number */
 }
 
 /*

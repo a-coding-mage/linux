@@ -115,25 +115,25 @@ extern "C" {
     pub static mut omap4_iva_vc_data: omap_vc_param;
     pub static mut omap4_core_vc_data: omap_vc_param;
 
-    pub fn omap3_vc_set_pmic_signaling(core_next_state: core::ffi::c_int);
-    pub fn omap4_vc_set_pmic_signaling(core_next_state: core::ffi::c_int);
+    pub fn omap3_vc_set_pmic_signaling(core_next_state: kernel::ffi::c_int);
+    pub fn omap4_vc_set_pmic_signaling(core_next_state: kernel::ffi::c_int);
     pub fn omap_vc_init_channel(voltdm: *mut voltagedomain);
     pub fn omap_vc_pre_scale(
         voltdm: *mut voltagedomain,
-        target_volt: core::ffi::c_ulong,
+        target_volt: kernel::ffi::c_ulong,
         target_vsel: *mut u8,
         current_vsel: *mut u8,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn omap_vc_post_scale(
         voltdm: *mut voltagedomain,
-        target_volt: core::ffi::c_ulong,
+        target_volt: kernel::ffi::c_ulong,
         target_vsel: u8,
         current_vsel: u8,
     );
     pub fn omap_vc_bypass_scale(
         voltdm: *mut voltagedomain,
-        target_volt: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        target_volt: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

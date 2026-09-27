@@ -69,8 +69,8 @@ pub struct cpt_request_info {
     pub may_sleep: bool,
     pub r#in: [buf_ptr; MAX_BUF_CNT],
     pub out: [buf_ptr; MAX_BUF_CNT],
-    pub callback: Option<unsafe extern "C" fn(i32, *mut core::ffi::c_void)>,
-    pub callback_arg: *mut core::ffi::c_void,
+    pub callback: Option<unsafe extern "C" fn(i32, *mut kernel::ffi::c_void)>,
+    pub callback_arg: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -102,7 +102,7 @@ pub struct sglist_component {
 #[repr(C)]
 pub struct cpt_info_buffer {
     pub cptvf: *mut cpt_vf,
-    pub time_in: core::ffi::c_ulong,
+    pub time_in: kernel::ffi::c_ulong,
     pub extra_time: u8,
     pub req: *mut cpt_request_info,
     pub dptr_baddr: dma_addr_t,

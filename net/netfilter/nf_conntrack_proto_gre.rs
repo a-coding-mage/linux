@@ -39,14 +39,14 @@ unsafe fn gre_pernet(net: *mut net) -> *mut nf_gre_net {
 #[inline]
 unsafe fn gre_key_cmpfn(km: *const nf_ct_gre_keymap, t: *const nf_conntrack_tuple) -> bool {
     (*km).tuple.src.l3num == (*t).src.l3num
-        && libc::memcmp(
-            &(*km).tuple.src.u3 as *const _ as *const libc::c_void,
-            &(*t).src.u3 as *const _ as *const libc::c_void,
+        && memcmp(
+            &(*km).tuple.src.u3 as *const _ as *const core::ffi::c_void,
+            &(*t).src.u3 as *const _ as *const core::ffi::c_void,
             core::mem::size_of_val(&(*t).src.u3),
         ) == 0
-        && libc::memcmp(
-            &(*km).tuple.dst.u3 as *const _ as *const libc::c_void,
-            &(*t).dst.u3 as *const _ as *const libc::c_void,
+        && memcmp(
+            &(*km).tuple.dst.u3 as *const _ as *const core::ffi::c_void,
+            &(*t).dst.u3 as *const _ as *const core::ffi::c_void,
             core::mem::size_of_val(&(*t).dst.u3),
         ) == 0
         && (*km).tuple.dst.protonum == (*t).dst.protonum

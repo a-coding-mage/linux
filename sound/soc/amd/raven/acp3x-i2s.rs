@@ -11,30 +11,30 @@
 
 const DRV_NAME: &[u8] = b"acp3x_i2s_playcap\0";
 
-type u16 = ::core::ffi::c_ushort;
-type u32 = ::core::ffi::c_uint;
-type u64 = ::core::ffi::c_ulonglong;
+type u16 = ::kernel::ffi::c_ushort;
+type u32 = ::kernel::ffi::c_uint;
+type u64 = ::kernel::ffi::c_ulonglong;
 
 extern "C" {
-    static SND_SOC_DAIFMT_FORMAT_MASK: ::core::ffi::c_uint;
-    static SND_SOC_DAIFMT_I2S: ::core::ffi::c_int;
-    static SND_SOC_DAIFMT_DSP_A: ::core::ffi::c_int;
+    static SND_SOC_DAIFMT_FORMAT_MASK: ::kernel::ffi::c_uint;
+    static SND_SOC_DAIFMT_I2S: ::kernel::ffi::c_int;
+    static SND_SOC_DAIFMT_DSP_A: ::kernel::ffi::c_int;
     static TDM_DISABLE: u32;
     static TDM_ENABLE: u32;
-    static EINVAL: ::core::ffi::c_int;
-    static ENOMEM: ::core::ffi::c_int;
-    static ENODEV: ::core::ffi::c_int;
-    static SLOT_WIDTH_8: ::core::ffi::c_int;
-    static SLOT_WIDTH_16: ::core::ffi::c_int;
-    static SLOT_WIDTH_24: ::core::ffi::c_int;
-    static SLOT_WIDTH_32: ::core::ffi::c_int;
+    static EINVAL: ::kernel::ffi::c_int;
+    static ENOMEM: ::kernel::ffi::c_int;
+    static ENODEV: ::kernel::ffi::c_int;
+    static SLOT_WIDTH_8: ::kernel::ffi::c_int;
+    static SLOT_WIDTH_16: ::kernel::ffi::c_int;
+    static SLOT_WIDTH_24: ::kernel::ffi::c_int;
+    static SLOT_WIDTH_32: ::kernel::ffi::c_int;
     static FRM_LEN: u32;
-    static SNDRV_PCM_STREAM_PLAYBACK: ::core::ffi::c_int;
-    static SNDRV_PCM_FORMAT_U8: ::core::ffi::c_int;
-    static SNDRV_PCM_FORMAT_S8: ::core::ffi::c_int;
-    static SNDRV_PCM_FORMAT_S16_LE: ::core::ffi::c_int;
-    static SNDRV_PCM_FORMAT_S24_LE: ::core::ffi::c_int;
-    static SNDRV_PCM_FORMAT_S32_LE: ::core::ffi::c_int;
+    static SNDRV_PCM_STREAM_PLAYBACK: ::kernel::ffi::c_int;
+    static SNDRV_PCM_FORMAT_U8: ::kernel::ffi::c_int;
+    static SNDRV_PCM_FORMAT_S8: ::kernel::ffi::c_int;
+    static SNDRV_PCM_FORMAT_S16_LE: ::kernel::ffi::c_int;
+    static SNDRV_PCM_FORMAT_S24_LE: ::kernel::ffi::c_int;
+    static SNDRV_PCM_FORMAT_S32_LE: ::kernel::ffi::c_int;
     static I2S_BT_INSTANCE: u32;
     static I2S_SP_INSTANCE: u32;
     static mmACP_BTTDM_ITER: u32;
@@ -46,12 +46,12 @@ extern "C" {
     static mmACP_I2STDM_IRER: u32;
     static mmACP_I2STDM_RXFRMT: u32;
     static ACP3x_ITER_IRER_SAMP_LEN_MASK: u32;
-    static SNDRV_PCM_TRIGGER_START: ::core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_RESUME: ::core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_PAUSE_RELEASE: ::core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_STOP: ::core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_SUSPEND: ::core::ffi::c_int;
-    static SNDRV_PCM_TRIGGER_PAUSE_PUSH: ::core::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_START: ::kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_RESUME: ::kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_PAUSE_RELEASE: ::kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_STOP: ::kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_SUSPEND: ::kernel::ffi::c_int;
+    static SNDRV_PCM_TRIGGER_PAUSE_PUSH: ::kernel::ffi::c_int;
     static mmACP_BT_TX_INTR_WATERMARK_SIZE: u32;
     static mmACP_BT_TX_RINGBUFSIZE: u32;
     static mmACP_I2S_TX_INTR_WATERMARK_SIZE: u32;
@@ -71,33 +71,33 @@ extern "C" {
     static SNDRV_PCM_FMTBIT_S32_LE: u64;
     static SNDRV_PCM_RATE_8000_48000: u32;
     static GFP_KERNEL: gfp_t;
-    static IORESOURCE_MEM: ::core::ffi::c_uint;
+    static IORESOURCE_MEM: ::kernel::ffi::c_uint;
 
-    fn snd_soc_dai_get_drvdata(dai: *mut snd_soc_dai) -> *mut ::core::ffi::c_void;
+    fn snd_soc_dai_get_drvdata(dai: *mut snd_soc_dai) -> *mut ::kernel::ffi::c_void;
     fn snd_soc_substream_to_rtd(substream: *mut snd_pcm_substream) -> *mut snd_soc_pcm_runtime;
-    fn snd_soc_card_get_drvdata(card: *mut snd_soc_card) -> *mut ::core::ffi::c_void;
-    fn params_format(params: *mut snd_pcm_hw_params) -> ::core::ffi::c_int;
-    fn rv_readl(addr: *mut ::core::ffi::c_void) -> u32;
-    fn rv_writel(val: u32, addr: *mut ::core::ffi::c_void);
+    fn snd_soc_card_get_drvdata(card: *mut snd_soc_card) -> *mut ::kernel::ffi::c_void;
+    fn params_format(params: *mut snd_pcm_hw_params) -> ::kernel::ffi::c_int;
+    fn rv_readl(addr: *mut ::kernel::ffi::c_void) -> u32;
+    fn rv_writel(val: u32, addr: *mut ::kernel::ffi::c_void);
     fn frames_to_bytes(runtime: *mut snd_pcm_runtime, frames: snd_pcm_uframes_t) -> u32;
-    fn acp_get_byte_count(rtd: *mut i2s_stream_instance, stream: ::core::ffi::c_int) -> u64;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: gfp_t) -> *mut ::core::ffi::c_void;
+    fn acp_get_byte_count(rtd: *mut i2s_stream_instance, stream: ::kernel::ffi::c_int) -> u64;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: gfp_t) -> *mut ::kernel::ffi::c_void;
     fn platform_get_resource(
         pdev: *mut platform_device,
-        resource: ::core::ffi::c_uint,
-        num: ::core::ffi::c_uint,
+        resource: ::kernel::ffi::c_uint,
+        num: ::kernel::ffi::c_uint,
     ) -> *mut resource;
     fn devm_ioremap(dev: *mut device, offset: resource_size_t, size: resource_size_t)
-        -> *mut ::core::ffi::c_void;
+        -> *mut ::kernel::ffi::c_void;
     fn resource_size(res: *mut resource) -> resource_size_t;
-    fn dev_err(dev: *mut device, fmt: *const ::core::ffi::c_char, ...);
-    fn dev_set_drvdata(dev: *mut device, data: *mut ::core::ffi::c_void);
+    fn dev_err(dev: *mut device, fmt: *const ::kernel::ffi::c_char, ...);
+    fn dev_set_drvdata(dev: *mut device, data: *mut ::kernel::ffi::c_void);
     fn devm_snd_soc_register_component(
         dev: *mut device,
         component_driver: *const snd_soc_component_driver,
         dai_drv: *mut snd_soc_dai_driver,
-        num_dai: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        num_dai: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -117,7 +117,7 @@ pub struct snd_soc_card {
 
 #[repr(C)]
 pub struct snd_pcm_runtime {
-    pub private_data: *mut ::core::ffi::c_void,
+    pub private_data: *mut ::kernel::ffi::c_void,
     pub period_size: snd_pcm_uframes_t,
     pub buffer_size: snd_pcm_uframes_t,
 }
@@ -125,7 +125,7 @@ pub struct snd_pcm_runtime {
 #[repr(C)]
 pub struct snd_pcm_substream {
     pub runtime: *mut snd_pcm_runtime,
-    pub stream: ::core::ffi::c_int,
+    pub stream: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -141,7 +141,7 @@ pub struct acp3x_platform_info {
 
 #[repr(C)]
 pub struct i2s_dev_data {
-    pub acp3x_base: *mut ::core::ffi::c_void,
+    pub acp3x_base: *mut ::kernel::ffi::c_void,
     pub i2s_irq: resource_size_t,
     pub tdm_mode: u32,
     pub tdm_fmt: u32,
@@ -149,7 +149,7 @@ pub struct i2s_dev_data {
 
 #[repr(C)]
 pub struct i2s_stream_instance {
-    pub acp3x_base: *mut ::core::ffi::c_void,
+    pub acp3x_base: *mut ::kernel::ffi::c_void,
     pub i2s_instance: u32,
     pub xfer_resolution: u32,
     pub bytescount: u64,
@@ -170,26 +170,26 @@ pub struct resource {
     pub start: resource_size_t,
 }
 
-type gfp_t = ::core::ffi::c_uint;
-type resource_size_t = ::core::ffi::c_ulong;
-type snd_pcm_uframes_t = ::core::ffi::c_ulong;
+type gfp_t = ::kernel::ffi::c_uint;
+type resource_size_t = ::kernel::ffi::c_ulong;
+type snd_pcm_uframes_t = ::kernel::ffi::c_ulong;
 
 type HwParamsFn = unsafe extern "C" fn(
     *mut snd_pcm_substream,
     *mut snd_pcm_hw_params,
     *mut snd_soc_dai,
-) -> ::core::ffi::c_int;
+) -> ::kernel::ffi::c_int;
 type TriggerFn =
-    unsafe extern "C" fn(*mut snd_pcm_substream, ::core::ffi::c_int, *mut snd_soc_dai)
-        -> ::core::ffi::c_int;
-type SetFmtFn = unsafe extern "C" fn(*mut snd_soc_dai, ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    unsafe extern "C" fn(*mut snd_pcm_substream, ::kernel::ffi::c_int, *mut snd_soc_dai)
+        -> ::kernel::ffi::c_int;
+type SetFmtFn = unsafe extern "C" fn(*mut snd_soc_dai, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
 type SetTdmSlotFn = unsafe extern "C" fn(
     *mut snd_soc_dai,
     u32,
     u32,
-    ::core::ffi::c_int,
-    ::core::ffi::c_int,
-) -> ::core::ffi::c_int;
+    ::kernel::ffi::c_int,
+    ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int;
 
 #[repr(C)]
 pub struct snd_soc_dai_ops {
@@ -198,23 +198,23 @@ pub struct snd_soc_dai_ops {
     pub set_fmt: Option<SetFmtFn>,
     pub set_tdm_slot: Option<SetTdmSlotFn>,
     pub auto_selectable_formats: *const u64,
-    pub num_auto_selectable_formats: ::core::ffi::c_int,
+    pub num_auto_selectable_formats: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct snd_soc_component_driver {
-    pub name: *const ::core::ffi::c_char,
-    pub legacy_dai_naming: ::core::ffi::c_int,
+    pub name: *const ::kernel::ffi::c_char,
+    pub legacy_dai_naming: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct snd_soc_pcm_stream {
     pub rates: u32,
     pub formats: u64,
-    pub channels_min: ::core::ffi::c_uint,
-    pub channels_max: ::core::ffi::c_uint,
-    pub rate_min: ::core::ffi::c_uint,
-    pub rate_max: ::core::ffi::c_uint,
+    pub channels_min: ::kernel::ffi::c_uint,
+    pub channels_max: ::kernel::ffi::c_uint,
+    pub rate_min: ::kernel::ffi::c_uint,
+    pub rate_max: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -224,11 +224,11 @@ pub struct snd_soc_dai_driver {
     pub ops: *const snd_soc_dai_ops,
 }
 
-type ProbeFn = unsafe extern "C" fn(*mut platform_device) -> ::core::ffi::c_int;
+type ProbeFn = unsafe extern "C" fn(*mut platform_device) -> ::kernel::ffi::c_int;
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -243,19 +243,19 @@ unsafe fn BIT(nr: u32) -> u32 {
 }
 
 #[inline]
-unsafe fn acp3x_addr(base: *mut ::core::ffi::c_void, reg: u32) -> *mut ::core::ffi::c_void {
-    (base as *mut u8).add(reg as usize) as *mut ::core::ffi::c_void
+unsafe fn acp3x_addr(base: *mut ::kernel::ffi::c_void, reg: u32) -> *mut ::kernel::ffi::c_void {
+    (base as *mut u8).add(reg as usize) as *mut ::kernel::ffi::c_void
 }
 
 unsafe extern "C" fn acp3x_i2s_set_fmt(
     cpu_dai: *mut snd_soc_dai,
-    fmt: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    fmt: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let adata: *mut i2s_dev_data;
-    let mode: ::core::ffi::c_int;
+    let mode: ::kernel::ffi::c_int;
 
     adata = snd_soc_dai_get_drvdata(cpu_dai) as *mut i2s_dev_data;
-    mode = (fmt & SND_SOC_DAIFMT_FORMAT_MASK) as ::core::ffi::c_int;
+    mode = (fmt & SND_SOC_DAIFMT_FORMAT_MASK) as ::kernel::ffi::c_int;
     if mode == SND_SOC_DAIFMT_I2S {
         (*adata).tdm_mode = TDM_DISABLE;
     } else if mode == SND_SOC_DAIFMT_DSP_A {
@@ -270,9 +270,9 @@ unsafe extern "C" fn acp3x_i2s_set_tdm_slot(
     cpu_dai: *mut snd_soc_dai,
     _tx_mask: u32,
     _rx_mask: u32,
-    slots: ::core::ffi::c_int,
-    slot_width: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    slots: ::kernel::ffi::c_int,
+    slot_width: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let adata: *mut i2s_dev_data;
     let frm_len: u32;
     let slot_len: u16;
@@ -300,7 +300,7 @@ unsafe extern "C" fn acp3x_i2s_hwparams(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let rtd: *mut i2s_stream_instance;
     let prtd: *mut snd_soc_pcm_runtime;
     let card: *mut snd_soc_card;
@@ -365,9 +365,9 @@ unsafe extern "C" fn acp3x_i2s_hwparams(
 
 unsafe extern "C" fn acp3x_i2s_trigger(
     substream: *mut snd_pcm_substream,
-    cmd: ::core::ffi::c_int,
+    cmd: ::kernel::ffi::c_int,
     _dai: *mut snd_soc_dai,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let rtd: *mut i2s_stream_instance;
     let mut val: u32;
     let period_bytes: u32;
@@ -376,7 +376,7 @@ unsafe extern "C" fn acp3x_i2s_trigger(
     let water_val: u32;
     let buf_size: u32;
     let buf_reg: u32;
-    let ret: ::core::ffi::c_int;
+    let ret: ::kernel::ffi::c_int;
 
     rtd = (*(*substream).runtime).private_data as *mut i2s_stream_instance;
     period_bytes = frames_to_bytes((*substream).runtime, (*(*substream).runtime).period_size);
@@ -466,7 +466,7 @@ static acp3x_i2s_dai_ops: snd_soc_dai_ops = snd_soc_dai_ops {
 };
 
 static acp3x_dai_component: snd_soc_component_driver = snd_soc_component_driver {
-    name: DRV_NAME.as_ptr() as *const ::core::ffi::c_char,
+    name: DRV_NAME.as_ptr() as *const ::kernel::ffi::c_char,
     legacy_dai_naming: 1,
 };
 
@@ -500,10 +500,10 @@ static mut acp3x_i2s_dai: snd_soc_dai_driver = snd_soc_dai_driver {
     ops: unsafe { &acp3x_i2s_dai_ops as *const snd_soc_dai_ops },
 };
 
-unsafe extern "C" fn acp3x_dai_probe(pdev: *mut platform_device) -> ::core::ffi::c_int {
+unsafe extern "C" fn acp3x_dai_probe(pdev: *mut platform_device) -> ::kernel::ffi::c_int {
     let res: *mut resource;
     let adata: *mut i2s_dev_data;
-    let ret: ::core::ffi::c_int;
+    let ret: ::kernel::ffi::c_int;
 
     adata = devm_kzalloc(
         &mut (*pdev).dev,
@@ -518,7 +518,7 @@ unsafe extern "C" fn acp3x_dai_probe(pdev: *mut platform_device) -> ::core::ffi:
     if res.is_null() {
         dev_err(
             &mut (*pdev).dev,
-            b"IORESOURCE_MEM FAILED\n\0".as_ptr() as *const ::core::ffi::c_char,
+            b"IORESOURCE_MEM FAILED\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         );
         return -ENOMEM;
     }
@@ -528,7 +528,7 @@ unsafe extern "C" fn acp3x_dai_probe(pdev: *mut platform_device) -> ::core::ffi:
     }
 
     (*adata).i2s_irq = (*res).start;
-    dev_set_drvdata(&mut (*pdev).dev, adata as *mut ::core::ffi::c_void);
+    dev_set_drvdata(&mut (*pdev).dev, adata as *mut ::kernel::ffi::c_void);
     ret = devm_snd_soc_register_component(
         &mut (*pdev).dev,
         &acp3x_dai_component,
@@ -538,7 +538,7 @@ unsafe extern "C" fn acp3x_dai_probe(pdev: *mut platform_device) -> ::core::ffi:
     if ret != 0 {
         dev_err(
             &mut (*pdev).dev,
-            b"Fail to register acp i2s dai\n\0".as_ptr() as *const ::core::ffi::c_char,
+            b"Fail to register acp i2s dai\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         );
         return -ENODEV;
     }
@@ -548,7 +548,7 @@ unsafe extern "C" fn acp3x_dai_probe(pdev: *mut platform_device) -> ::core::ffi:
 static mut acp3x_dai_driver: platform_driver = platform_driver {
     probe: Some(acp3x_dai_probe),
     driver: device_driver {
-        name: b"acp3x_i2s_playcap\0".as_ptr() as *const ::core::ffi::c_char,
+        name: b"acp3x_i2s_playcap\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
 };
 

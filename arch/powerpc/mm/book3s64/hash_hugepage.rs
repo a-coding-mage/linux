@@ -17,29 +17,29 @@
  */
 
 pub unsafe fn __hash_page_thp(
-    ea: ::core::ffi::c_ulong,
-    access: ::core::ffi::c_ulong,
-    vsid: ::core::ffi::c_ulong,
+    ea: ::kernel::ffi::c_ulong,
+    access: ::kernel::ffi::c_ulong,
+    vsid: ::kernel::ffi::c_ulong,
     pmdp: *mut pmd_t,
-    trap: ::core::ffi::c_ulong,
-    flags: ::core::ffi::c_ulong,
-    ssize: ::core::ffi::c_int,
-    psize: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
-    let mut index: ::core::ffi::c_uint;
-    let mut valid: ::core::ffi::c_uint;
-    let mut hpte_slot_array: *mut ::core::ffi::c_uchar;
-    let mut rflags: ::core::ffi::c_ulong;
-    let mut pa: ::core::ffi::c_ulong;
-    let mut hidx: ::core::ffi::c_ulong;
-    let mut old_pmd: ::core::ffi::c_ulong;
-    let mut new_pmd: ::core::ffi::c_ulong;
-    let mut ret: ::core::ffi::c_int;
-    let lpsize: ::core::ffi::c_int = MMU_PAGE_16M;
-    let mut vpn: ::core::ffi::c_ulong;
-    let mut hash: ::core::ffi::c_ulong;
-    let mut shift: ::core::ffi::c_ulong;
-    let mut slot: ::core::ffi::c_ulong;
+    trap: ::kernel::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
+    ssize: ::kernel::ffi::c_int,
+    psize: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
+    let mut index: ::kernel::ffi::c_uint;
+    let mut valid: ::kernel::ffi::c_uint;
+    let mut hpte_slot_array: *mut ::kernel::ffi::c_uchar;
+    let mut rflags: ::kernel::ffi::c_ulong;
+    let mut pa: ::kernel::ffi::c_ulong;
+    let mut hidx: ::kernel::ffi::c_ulong;
+    let mut old_pmd: ::kernel::ffi::c_ulong;
+    let mut new_pmd: ::kernel::ffi::c_ulong;
+    let mut ret: ::kernel::ffi::c_int;
+    let lpsize: ::kernel::ffi::c_int = MMU_PAGE_16M;
+    let mut vpn: ::kernel::ffi::c_ulong;
+    let mut hash: ::kernel::ffi::c_ulong;
+    let mut shift: ::kernel::ffi::c_ulong;
+    let mut slot: ::kernel::ffi::c_ulong;
 
     /*
      * atomically mark the linux large page PMD busy and dirty
@@ -89,7 +89,7 @@ pub unsafe fn __hash_page_thp(
      * Find the slot index details for this ea, using base page size.
      */
     shift = mmu_psize_defs[psize as usize].shift;
-    index = ((ea & !HPAGE_PMD_MASK) >> shift) as ::core::ffi::c_uint;
+    index = ((ea & !HPAGE_PMD_MASK) >> shift) as ::kernel::ffi::c_uint;
     BUG_ON(index >= PTE_FRAG_SIZE);
 
     vpn = hpt_vpn(ea, vsid, ssize);
@@ -141,7 +141,7 @@ pub unsafe fn __hash_page_thp(
     }
 
     if valid == 0 {
-        let mut hpte_group: ::core::ffi::c_ulong;
+        let mut hpte_group: ::kernel::ffi::c_ulong;
 
         hash = hpt_hash(vpn, shift, ssize);
         /* insert new entry */

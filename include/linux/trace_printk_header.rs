@@ -15,25 +15,25 @@ pub enum FtraceDumpMode {
 extern "C" {
     pub fn tracing_on();
     pub fn tracing_off();
-    pub fn tracing_is_on() -> ::core::ffi::c_int;
+    pub fn tracing_is_on() -> ::kernel::ffi::c_int;
     pub fn tracing_snapshot();
     pub fn tracing_snapshot_alloc();
     pub fn tracing_start();
     pub fn tracing_stop();
 
-    pub fn __trace_bprintk(ip: ::core::ffi::c_ulong, fmt: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
-    pub fn __trace_printk(ip: ::core::ffi::c_ulong, fmt: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
-    pub fn __trace_bputs(ip: ::core::ffi::c_ulong, string: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
-    pub fn __trace_puts(ip: ::core::ffi::c_ulong, string: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
-    pub fn trace_dump_stack(skip: ::core::ffi::c_int);
-    pub fn __ftrace_vbprintk(ip: ::core::ffi::c_ulong, fmt: *const ::core::ffi::c_char, ap: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-    pub fn __ftrace_vprintk(ip: ::core::ffi::c_ulong, fmt: *const ::core::ffi::c_char, ap: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
+    pub fn __trace_bprintk(ip: ::kernel::ffi::c_ulong, fmt: *const ::kernel::ffi::c_char, ...) -> ::kernel::ffi::c_int;
+    pub fn __trace_printk(ip: ::kernel::ffi::c_ulong, fmt: *const ::kernel::ffi::c_char, ...) -> ::kernel::ffi::c_int;
+    pub fn __trace_bputs(ip: ::kernel::ffi::c_ulong, string: *const ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
+    pub fn __trace_puts(ip: ::kernel::ffi::c_ulong, string: *const ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
+    pub fn trace_dump_stack(skip: ::kernel::ffi::c_int);
+    pub fn __ftrace_vbprintk(ip: ::kernel::ffi::c_ulong, fmt: *const ::kernel::ffi::c_char, ap: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
+    pub fn __ftrace_vprintk(ip: ::kernel::ffi::c_ulong, fmt: *const ::kernel::ffi::c_char, ap: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
     pub fn ftrace_dump(oops_dump_mode: FtraceDumpMode);
 }
 
 #[cfg(CONFIG_TRACING)]
 #[inline(always)]
-pub unsafe fn ____trace_printk_check_format(_fmt: *const ::core::ffi::c_char, ...) {}
+pub unsafe fn ____trace_printk_check_format(_fmt: *const ::kernel::ffi::c_char, ...) {}
 
 #[cfg(CONFIG_TRACING)]
 #[macro_export]
@@ -88,7 +88,7 @@ pub fn tracing_start() {}
 pub fn tracing_stop() {}
 #[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
-pub fn trace_dump_stack(_skip: ::core::ffi::c_int) {}
+pub fn trace_dump_stack(_skip: ::kernel::ffi::c_int) {}
 #[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub fn tracing_on() {}
@@ -97,7 +97,7 @@ pub fn tracing_on() {}
 pub fn tracing_off() {}
 #[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
-pub fn tracing_is_on() -> ::core::ffi::c_int { 0 }
+pub fn tracing_is_on() -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub fn tracing_snapshot() {}
@@ -106,10 +106,10 @@ pub fn tracing_snapshot() {}
 pub fn tracing_snapshot_alloc() {}
 #[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
-pub unsafe fn trace_printk(_fmt: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int { 0 }
+pub unsafe fn trace_printk(_fmt: *const ::kernel::ffi::c_char, ...) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
-pub unsafe fn ftrace_vprintk(_fmt: *const ::core::ffi::c_char, _vargs: *mut ::core::ffi::c_void) -> ::core::ffi::c_int { 0 }
+pub unsafe fn ftrace_vprintk(_fmt: *const ::kernel::ffi::c_char, _vargs: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub fn ftrace_dump(_oops_dump_mode: FtraceDumpMode) {}

@@ -34,7 +34,7 @@
 #[repr(C)]
 pub struct led_regulator_platform_data {
     /// LED name as expected by LED class.
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     /// Initial brightness value.
     pub brightness: led_brightness,
 }

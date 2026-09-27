@@ -17,23 +17,23 @@ pub const __SECCOMP_ARCH_LE: i32 = 0;
 pub const __SECCOMP_ARCH_LE_NAME: &str = "";
 
 #[cfg(target_pointer_width = "64")]
-pub const SECCOMP_ARCH_NATIVE: _ = AUDIT_ARCH_PPC64 | __SECCOMP_ARCH_LE;
+pub const SECCOMP_ARCH_NATIVE: i32 = AUDIT_ARCH_PPC64 | __SECCOMP_ARCH_LE;
 #[cfg(target_pointer_width = "64")]
-pub const SECCOMP_ARCH_NATIVE_NR: _ = NR_syscalls;
+pub const SECCOMP_ARCH_NATIVE_NR: usize = NR_syscalls;
 #[cfg(target_pointer_width = "64")]
 pub const SECCOMP_ARCH_NATIVE_NAME: &str = concat!("ppc64", __SECCOMP_ARCH_LE_NAME);
 
 #[cfg(all(target_pointer_width = "64", CONFIG_COMPAT))]
-pub const SECCOMP_ARCH_COMPAT: _ = AUDIT_ARCH_PPC | __SECCOMP_ARCH_LE;
+pub const SECCOMP_ARCH_COMPAT: i32 = AUDIT_ARCH_PPC | __SECCOMP_ARCH_LE;
 #[cfg(all(target_pointer_width = "64", CONFIG_COMPAT))]
-pub const SECCOMP_ARCH_COMPAT_NR: _ = NR_syscalls;
+pub const SECCOMP_ARCH_COMPAT_NR: usize = NR_syscalls;
 #[cfg(all(target_pointer_width = "64", CONFIG_COMPAT))]
 pub const SECCOMP_ARCH_COMPAT_NAME: &str = concat!("ppc", __SECCOMP_ARCH_LE_NAME);
 
 #[cfg(not(target_pointer_width = "64"))]
-pub const SECCOMP_ARCH_NATIVE: _ = AUDIT_ARCH_PPC | __SECCOMP_ARCH_LE;
+pub const SECCOMP_ARCH_NATIVE: i32 = AUDIT_ARCH_PPC | __SECCOMP_ARCH_LE;
 #[cfg(not(target_pointer_width = "64"))]
-pub const SECCOMP_ARCH_NATIVE_NR: _ = NR_syscalls;
+pub const SECCOMP_ARCH_NATIVE_NR: usize = NR_syscalls;
 #[cfg(not(target_pointer_width = "64"))]
 pub const SECCOMP_ARCH_NATIVE_NAME: &str = concat!("ppc", __SECCOMP_ARCH_LE_NAME);
 

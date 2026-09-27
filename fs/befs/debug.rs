@@ -15,7 +15,7 @@
 
 pub unsafe extern "C" fn befs_error(
     sb: *const super_block,
-    fmt: *const core::ffi::c_char,
+    fmt: *const kernel::ffi::c_char,
     mut args: ...,
 ) {
     let mut vaf: va_format;
@@ -28,7 +28,7 @@ pub unsafe extern "C" fn befs_error(
 
 pub unsafe extern "C" fn befs_warning(
     sb: *const super_block,
-    fmt: *const core::ffi::c_char,
+    fmt: *const kernel::ffi::c_char,
     mut args: ...,
 ) {
     let mut vaf: va_format;
@@ -41,7 +41,7 @@ pub unsafe extern "C" fn befs_warning(
 
 pub unsafe extern "C" fn befs_debug(
     sb: *const super_block,
-    fmt: *const core::ffi::c_char,
+    fmt: *const kernel::ffi::c_char,
     mut args: ...,
 ) {
     // CONFIG_BEFS_DEBUG

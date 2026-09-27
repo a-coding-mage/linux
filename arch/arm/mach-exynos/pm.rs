@@ -106,10 +106,10 @@ pub unsafe fn exynos_enter_aftr() {
     cpu_pm_exit();
 }
 
-#[cfg(all(feature = "SMP", feature = "ARM_EXYNOS_CPUIDLE"))]
+#[cfg(all(CONFIG_SMP, CONFIG_ARM_EXYNOS_CPUIDLE))]
 static mut cpu1_wakeup: atomic_t = ATOMIC_INIT(0);
 
-#[cfg(all(feature = "SMP", feature = "ARM_EXYNOS_CPUIDLE"))]
+#[cfg(all(CONFIG_SMP, CONFIG_ARM_EXYNOS_CPUIDLE))]
 unsafe fn exynos_cpu0_enter_aftr() -> i32 {
     let mut ret = -1;
     if cpu_online(1) {
@@ -147,14 +147,14 @@ unsafe fn exynos_cpu0_enter_aftr() -> i32 {
     ret
 }
 
-#[cfg(all(feature = "SMP", feature = "ARM_EXYNOS_CPUIDLE"))]
+#[cfg(all(CONFIG_SMP, CONFIG_ARM_EXYNOS_CPUIDLE))]
 unsafe fn exynos_wfi_finisher(_flags: usize) -> i32 {
     if soc_is_exynos3250() { flush_cache_all(); }
     cpu_do_idle();
     -1
 }
 
-#[cfg(all(feature = "SMP", feature = "ARM_EXYNOS_CPUIDLE"))]
+#[cfg(all(CONFIG_SMP, CONFIG_ARM_EXYNOS_CPUIDLE))]
 unsafe fn exynos_cpu1_powerdown() -> i32 {
     let mut ret = -1;
     if cpu_pm_enter() != 0 {
@@ -171,13 +171,13 @@ unsafe fn exynos_cpu1_powerdown() -> i32 {
     ret
 }
 
-#[cfg(all(feature = "SMP", feature = "ARM_EXYNOS_CPUIDLE"))]
+#[cfg(all(CONFIG_SMP, CONFIG_ARM_EXYNOS_CPUIDLE))]
 unsafe fn exynos_pre_enter_aftr() { let boot_addr = __pa_symbol(exynos_cpu_resume); let _ = exynos_set_boot_addr(1, boot_addr); }
 
-#[cfg(all(feature = "SMP", feature = "ARM_EXYNOS_CPUIDLE"))]
+#[cfg(all(CONFIG_SMP, CONFIG_ARM_EXYNOS_CPUIDLE))]
 unsafe fn exynos_post_enter_aftr() { atomic_set(&mut cpu1_wakeup, 0); }
 
-#[cfg(all(feature = "SMP", feature = "ARM_EXYNOS_CPUIDLE"))]
+#[cfg(all(CONFIG_SMP, CONFIG_ARM_EXYNOS_CPUIDLE))]
 pub static mut cpuidle_coupled_exynos_data: cpuidle_exynos_data = cpuidle_exynos_data {
     cpu0_enter_aftr: exynos_cpu0_enter_aftr,
     cpu1_powerdown: exynos_cpu1_powerdown,

@@ -10,8 +10,8 @@
 // Kernel and architecture dependencies supplied by the surrounding tree.
 
 extern "C" {
-    fn ioremap(addr: usize, size: usize) -> *mut core::ffi::c_void;
-    fn l2x0_init(base: *mut core::ffi::c_void, aux_val: u32, aux_mask: u32);
+    fn ioremap(addr: usize, size: usize) -> *mut kernel::ffi::c_void;
+    fn l2x0_init(base: *mut kernel::ffi::c_void, aux_val: u32, aux_mask: u32);
 }
 
 const PAGE_SIZE: usize = 4096;
@@ -28,8 +28,8 @@ unsafe fn sh73a0_generic_init() {
 }
 
 // __initconst
-static SH73A0_BOARDS_COMPAT_DT: [&'static core::ffi::c_char; 2] = [
-    b"renesas,sh73a0\0".as_ptr() as *const core::ffi::c_char,
+static SH73A0_BOARDS_COMPAT_DT: [&'static kernel::ffi::c_char; 2] = [
+    b"renesas,sh73a0\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 

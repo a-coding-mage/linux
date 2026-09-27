@@ -112,7 +112,7 @@ pub union pseries_hp_errorlog_drc_u {
 	pub drc_index: __be32,
 	pub drc_count: __be32,
 	pub ic: pseries_hp_errorlog_ic,
-	pub drc_name: [::core::ffi::c_char; 1],
+	pub drc_name: [::kernel::ffi::c_char; 1],
 }
 
 /* RTAS pseries hotplug errorlog section */

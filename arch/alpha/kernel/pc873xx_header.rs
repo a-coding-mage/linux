@@ -21,9 +21,9 @@ pub const PC87332: u32 = 3;
 pub const PC87334: u32 = 4;
 
 extern "C" {
-    pub fn pc873xx_probe() -> ::core::ffi::c_int;
-    pub fn pc873xx_get_base() -> ::core::ffi::c_uint;
-    pub fn pc873xx_get_model() -> *mut ::core::ffi::c_char;
+    pub fn pc873xx_probe() -> ::kernel::ffi::c_int;
+    pub fn pc873xx_get_base() -> ::kernel::ffi::c_uint;
+    pub fn pc873xx_get_model() -> *mut ::kernel::ffi::c_char;
     pub fn pc873xx_enable_epp19();
     pub fn pc873xx_enable_ide();
 }

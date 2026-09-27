@@ -40,7 +40,7 @@ pub struct regmap_irq_chip_data;
 pub struct idio_16_regmap_config {
     pub parent: *mut device,
     pub map: *mut regmap,
-    pub regmap_irqs: *mut core::ffi::c_void,
+    pub regmap_irqs: *mut kernel::ffi::c_void,
     pub no_status: bool,
     pub irq: u32,
     pub num_regmap_irqs: u32,
@@ -53,15 +53,15 @@ pub enum gpio_regmap_operation { _Opaque }
 extern "C" {
     fn regmap_write(map: *mut regmap, reg: u32, val: u32) -> i32;
     fn regmap_read(map: *mut regmap, reg: u32, val: *mut u32) -> i32;
-    fn devm_kzalloc(dev: *const device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn dev_name(dev: *const device) -> *const core::ffi::c_char;
+    fn devm_kzalloc(dev: *const device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn dev_name(dev: *const device) -> *const kernel::ffi::c_char;
     fn devm_regmap_add_irq_chip(dev: *const device, map: *mut regmap, irq: u32, flags: u32,
         type_: u32, chip: *mut regmap_irq_chip, data: *mut *mut regmap_irq_chip_data) -> i32;
-    fn dev_err_probe(dev: *const device, err: i32, fmt: *const core::ffi::c_char) -> i32;
-    fn regmap_irq_get_domain(data: *mut regmap_irq_chip_data) -> *mut core::ffi::c_void;
+    fn dev_err_probe(dev: *const device, err: i32, fmt: *const kernel::ffi::c_char) -> i32;
+    fn regmap_irq_get_domain(data: *mut regmap_irq_chip_data) -> *mut kernel::ffi::c_void;
     fn devm_gpio_regmap_register(dev: *const device, config: *mut gpio_regmap_config) -> i32;
     fn gpio_regmap_addr(addr: u32) -> usize;
-    fn ptr_err_or_zero(ptr: *mut core::ffi::c_void) -> i32;
+    fn ptr_err_or_zero(ptr: *mut kernel::ffi::c_void) -> i32;
 }
 
 #[repr(C)]
@@ -69,12 +69,12 @@ struct gpio_regmap_config {
     parent: *mut device,
     regmap: *mut regmap,
     ngpio: usize,
-    names: *const *const core::ffi::c_char,
+    names: *const *const kernel::ffi::c_char,
     reg_dat_base: usize,
     reg_set_base: usize,
     ngpio_per_reg: u32,
     reg_stride: u32,
-    irq_domain: *mut core::ffi::c_void,
+    irq_domain: *mut kernel::ffi::c_void,
     reg_mask_xlate: Option<unsafe extern "C" fn(*mut gpio_regmap, gpio_regmap_operation, u32, u32, *mut u32, *mut u32) -> i32>,
     fixed_direction_output: *const u64,
 }
@@ -82,20 +82,20 @@ struct gpio_regmap_config {
 // Opaque kernel structure fields represented here to preserve assignments made by C.
 #[repr(C)]
 struct regmap_irq_chip_fields {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     status_base: u32,
     mask_base: u32,
     ack_base: u32,
     no_status: bool,
     num_regs: u32,
-    irqs: *mut core::ffi::c_void,
+    irqs: *mut kernel::ffi::c_void,
     num_irqs: u32,
-    handle_mask_sync: Option<unsafe extern "C" fn(i32, u32, u32, *mut core::ffi::c_void) -> i32>,
-    irq_drv_data: *mut core::ffi::c_void,
+    handle_mask_sync: Option<unsafe extern "C" fn(i32, u32, u32, *mut kernel::ffi::c_void) -> i32>,
+    irq_drv_data: *mut kernel::ffi::c_void,
 }
 
 unsafe extern "C" fn idio_16_handle_mask_sync(_index: i32, mask_buf_def: u32,
-    mask_buf: u32, irq_drv_data: *mut core::ffi::c_void) -> i32 {
+    mask_buf: u32, irq_drv_data: *mut kernel::ffi::c_void) -> i32 {
     let data = &mut *(irq_drv_data as *mut idio_16_data);
     let prev_mask = data.irq_mask;
     if mask_buf == prev_mask { return 0; }
@@ -150,7 +150,7 @@ pub unsafe extern "C" fn devm_idio_16_regmap_register(dev: *mut device,
     (*chip).irqs = (*config).regmap_irqs;
     (*chip).num_irqs = (*config).num_regmap_irqs;
     (*chip).handle_mask_sync = Some(idio_16_handle_mask_sync);
-    (*chip).irq_drv_data = data as *mut core::ffi::c_void;
+    (*chip).irq_drv_data = data as *mut kernel::ffi::c_void;
     let err = regmap_write((*data).map, IDIO_16_DISABLE_IRQ, 0x00);
     if err != 0 { return err; }
     let mut chip_data = core::ptr::null_mut();
@@ -163,7 +163,7 @@ pub unsafe extern "C" fn devm_idio_16_regmap_register(dev: *mut device,
     }
     let mut gpio_config: gpio_regmap_config = core::mem::zeroed();
     gpio_config.parent = (*config).parent; gpio_config.regmap = (*data).map; gpio_config.ngpio = IDIO_16_NGPIO;
-    gpio_config.names = IDIO_16_NAMES.as_ptr() as *const *const core::ffi::c_char;
+    gpio_config.names = IDIO_16_NAMES.as_ptr() as *const *const kernel::ffi::c_char;
     gpio_config.reg_dat_base = gpio_regmap_addr(IDIO_16_DAT_BASE); gpio_config.reg_set_base = gpio_regmap_addr(IDIO_16_DAT_BASE);
     gpio_config.ngpio_per_reg = IDIO_16_NGPIO_PER_REG; gpio_config.reg_stride = IDIO_16_REG_STRIDE;
     gpio_config.irq_domain = regmap_irq_get_domain(chip_data); gpio_config.reg_mask_xlate = Some(idio_16_reg_mask_xlate);

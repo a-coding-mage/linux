@@ -9,7 +9,7 @@ extern "C" {
     fn imx6_set_lpm(mode: u32);
     fn imx6sl_set_wait_clk(enable: bool);
     fn cpu_do_idle();
-    fn cpuidle_register(driver: *mut cpuidle_driver, device: *mut core::ffi::c_void) -> i32;
+    fn cpuidle_register(driver: *mut cpuidle_driver, device: *mut kernel::ffi::c_void) -> i32;
 }
 
 // The concrete definitions of these kernel types and constants are supplied externally.
@@ -20,8 +20,8 @@ pub struct cpuidle_device {
 
 #[repr(C)]
 pub struct cpuidle_driver {
-    pub name: *const core::ffi::c_char,
-    pub owner: *mut core::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
+    pub owner: *mut kernel::ffi::c_void,
     pub states: [cpuidle_state; 2],
     pub state_count: u32,
     pub safe_state_index: u32,
@@ -37,8 +37,8 @@ pub struct cpuidle_state {
         drv: *mut cpuidle_driver,
         index: i32,
     ) -> i32>,
-    pub name: *const core::ffi::c_char,
-    pub desc: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub desc: *const kernel::ffi::c_char,
 }
 
 const WAIT_UNCLOCKED: u32 = 0;
@@ -48,7 +48,7 @@ const CPUIDLE_FLAG_TIMER_STOP: u32 = 1;
 // `THIS_MODULE` and the ARM_CPUIDLE_WFI_STATE initializer are provided by
 // the kernel build environment; the WFI state has no file-local definition.
 extern "C" {
-    static mut THIS_MODULE: core::ffi::c_void;
+    static mut THIS_MODULE: kernel::ffi::c_void;
 }
 
 unsafe extern "C" fn imx6sl_enter_wait(
@@ -70,8 +70,8 @@ unsafe extern "C" fn imx6sl_enter_wait(
 }
 
 static mut imx6sl_cpuidle_driver: cpuidle_driver = cpuidle_driver {
-    name: b"imx6sl_cpuidle\0".as_ptr() as *const core::ffi::c_char,
-    owner: unsafe { &mut THIS_MODULE as *mut core::ffi::c_void },
+    name: b"imx6sl_cpuidle\0".as_ptr() as *const kernel::ffi::c_char,
+    owner: unsafe { &mut THIS_MODULE as *mut kernel::ffi::c_void },
     states: [
         // WFI (`ARM_CPUIDLE_WFI_STATE`).
         cpuidle_state {
@@ -88,8 +88,8 @@ static mut imx6sl_cpuidle_driver: cpuidle_driver = cpuidle_driver {
             target_residency: 75,
             flags: CPUIDLE_FLAG_TIMER_STOP,
             enter: Some(imx6sl_enter_wait),
-            name: b"WAIT\0".as_ptr() as *const core::ffi::c_char,
-            desc: b"Clock off\0".as_ptr() as *const core::ffi::c_char,
+            name: b"WAIT\0".as_ptr() as *const kernel::ffi::c_char,
+            desc: b"Clock off\0".as_ptr() as *const kernel::ffi::c_char,
         },
     ],
     state_count: 2,

@@ -99,14 +99,14 @@ extern "C" {
 
     pub fn utf8_casefold_hash(
         um: *const unicode_map,
-        salt: *const core::ffi::c_void,
+        salt: *const kernel::ffi::c_void,
         str_: *mut qstr,
     ) -> i32;
 
     pub fn utf8_load(version: u32) -> *mut unicode_map;
     pub fn utf8_unload(um: *mut unicode_map);
 
-    pub fn utf8_parse_version(version: *mut core::ffi::c_char) -> i32;
+    pub fn utf8_parse_version(version: *mut kernel::ffi::c_char) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

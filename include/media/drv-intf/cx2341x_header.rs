@@ -65,19 +65,19 @@ extern "C" {
 }
 
 pub type cx2341x_mbox_func = unsafe extern "C" fn(
-    priv_: *mut core::ffi::c_void, cmd: u32, input: i32, out: i32,
+    priv_: *mut kernel::ffi::c_void, cmd: u32, input: i32, out: i32,
     data: *mut u32,
 ) -> i32;
 
 extern "C" {
-    pub fn cx2341x_update(priv_: *mut core::ffi::c_void, func: cx2341x_mbox_func,
+    pub fn cx2341x_update(priv_: *mut kernel::ffi::c_void, func: cx2341x_mbox_func,
         old: *const cx2341x_mpeg_params, new: *const cx2341x_mpeg_params) -> i32;
     pub fn cx2341x_ctrl_query(params: *const cx2341x_mpeg_params, qctrl: *mut v4l2_queryctrl) -> i32;
-    pub fn cx2341x_ctrl_get_menu(p: *const cx2341x_mpeg_params, id: u32) -> *const *const core::ffi::c_char;
+    pub fn cx2341x_ctrl_get_menu(p: *const cx2341x_mpeg_params, id: u32) -> *const *const kernel::ffi::c_char;
     pub fn cx2341x_ext_ctrls(params: *mut cx2341x_mpeg_params, busy: i32,
         ctrls: *mut v4l2_ext_controls, cmd: u32) -> i32;
     pub fn cx2341x_fill_defaults(p: *mut cx2341x_mpeg_params);
-    pub fn cx2341x_log_status(p: *const cx2341x_mpeg_params, prefix: *const core::ffi::c_char);
+    pub fn cx2341x_log_status(p: *const cx2341x_mpeg_params, prefix: *const kernel::ffi::c_char);
 }
 
 pub enum cx2341x_handler {}
@@ -99,7 +99,7 @@ pub struct cx2341x_handler {
     pub is_50hz: u16,
     pub audio_properties: u32,
     pub hdl: v4l2_ctrl_handler,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
     pub func: cx2341x_mbox_func,
     pub ops: *const cx2341x_handler_ops,
     pub stream_vbi_fmt: *mut v4l2_ctrl,

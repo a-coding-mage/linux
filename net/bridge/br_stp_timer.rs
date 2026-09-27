@@ -11,15 +11,15 @@
 // referenced here rather than reimplemented in this translation unit.
 
 /* called under bridge lock */
-unsafe fn br_is_designated_for_some_port(br: *const net_bridge) -> libc::c_int {
+unsafe fn br_is_designated_for_some_port(br: *const net_bridge) -> kernel::ffi::c_int {
     let mut p: *mut net_bridge_port;
 
     // Equivalent of list_for_each_entry(p, &br->port_list, list).
     list_for_each_entry!(p, &(*br).port_list, list, {
         if (*p).state != BR_STATE_DISABLED
-            && libc::memcmp(
-                &(*p).designated_bridge as *const _ as *const libc::c_void,
-                &(*br).bridge_id as *const _ as *const libc::c_void,
+            && memcmp(
+                &(*p).designated_bridge as *const _ as *const kernel::ffi::c_void,
+                &(*br).bridge_id as *const _ as *const kernel::ffi::c_void,
                 8,
             ) == 0
         {
@@ -52,7 +52,7 @@ unsafe fn br_message_age_timer_expired(t: *mut timer_list) {
     let p: *mut net_bridge_port = timer_container_of!(p, t, message_age_timer);
     let br: *mut net_bridge = (*p).br;
     let id: *const bridge_id = &(*p).designated_bridge;
-    let mut was_root: libc::c_int;
+    let mut was_root: kernel::ffi::c_int;
     'unlock: {
 
     if (*p).state == BR_STATE_DISABLED {
@@ -62,7 +62,7 @@ unsafe fn br_message_age_timer_expired(t: *mut timer_list) {
     br_info!(
         br,
         "port %u(%s) neighbor %.2x%.2x.%pM lost\n",
-        (*p).port_no as libc::c_uint,
+        (*p).port_no as kernel::ffi::c_uint,
         (*(*p).dev).name,
         (*id).prio[0],
         (*id).prio[1],
@@ -98,7 +98,7 @@ unsafe fn br_forward_delay_timer_expired(t: *mut timer_list) {
     br_debug!(
         br,
         "port %u(%s) forward delay timer\n",
-        (*p).port_no as libc::c_uint,
+        (*p).port_no as kernel::ffi::c_uint,
         (*(*p).dev).name,
     );
     spin_lock(&mut (*br).lock);
@@ -149,7 +149,7 @@ unsafe fn br_hold_timer_expired(t: *mut timer_list) {
     br_debug!(
         (*p).br,
         "port %u(%s) hold timer expired\n",
-        (*p).port_no as libc::c_uint,
+        (*p).port_no as kernel::ffi::c_uint,
         (*(*p).dev).name,
     );
 
@@ -177,7 +177,7 @@ pub unsafe fn br_stp_port_timer_init(p: *mut net_bridge_port) {
 }
 
 /* Report ticks left (in USER_HZ) used for API */
-pub unsafe fn br_timer_value(timer: *const timer_list) -> libc::c_ulong {
+pub unsafe fn br_timer_value(timer: *const timer_list) -> kernel::ffi::c_ulong {
     if timer_pending(timer) {
         jiffies_delta_to_clock_t((*timer).expires.wrapping_sub(jiffies))
     } else {

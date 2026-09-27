@@ -7,7 +7,7 @@
 
 pub type AcpiStatus = u32;
 pub type AcpiObjectType = u8;
-pub type AcpiHandle = *mut core::ffi::c_void;
+pub type AcpiHandle = *mut kernel::ffi::c_void;
 
 pub const AE_OK: AcpiStatus = 0;
 pub const AE_BAD_PARAMETER: AcpiStatus = 1;
@@ -30,7 +30,7 @@ pub const ACPI_NS_NO_UPSEARCH: u32 = 1 << 0;
 
 #[repr(C)]
 pub struct AcpiNamespaceNode {
-    pub object: *mut core::ffi::c_void,
+    pub object: *mut kernel::ffi::c_void,
     pub flags: u8,
     pub name: AcpiName,
     pub type_: AcpiObjectType,
@@ -38,21 +38,21 @@ pub struct AcpiNamespaceNode {
 
 #[repr(C)]
 pub struct AcpiName {
-    pub ascii: *const core::ffi::c_char,
+    pub ascii: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct AcpiEvaluateInfo {
     pub prefix_node: *mut AcpiNamespaceNode,
-    pub relative_pathname: *const core::ffi::c_char,
+    pub relative_pathname: *const kernel::ffi::c_char,
     pub node: *mut AcpiNamespaceNode,
     pub parameters: *mut *mut AcpiOperandObject,
     pub return_object: *mut AcpiOperandObject,
     pub flags: u32,
     pub node_flags: u8,
     pub obj_desc: *mut AcpiOperandObject,
-    pub predefined: *mut core::ffi::c_void,
-    pub full_pathname: *mut core::ffi::c_char,
+    pub predefined: *mut kernel::ffi::c_void,
+    pub full_pathname: *mut kernel::ffi::c_char,
     pub param_count: u32,
 }
 
@@ -68,23 +68,23 @@ pub struct AcpiMethodObject {
 }
 
 extern "C" {
-    fn acpi_ns_get_node(prefix: *mut AcpiNamespaceNode, path: *const core::ffi::c_char, flags: u32, node: *mut *mut AcpiNamespaceNode) -> AcpiStatus;
+    fn acpi_ns_get_node(prefix: *mut AcpiNamespaceNode, path: *const kernel::ffi::c_char, flags: u32, node: *mut *mut AcpiNamespaceNode) -> AcpiStatus;
     fn acpi_ns_get_type(node: *mut AcpiNamespaceNode) -> AcpiObjectType;
     fn acpi_ns_get_attached_object(node: *mut AcpiNamespaceNode) -> *mut AcpiOperandObject;
-    fn acpi_ut_match_predefined_method(name: *const core::ffi::c_char) -> *mut core::ffi::c_void;
-    fn acpi_ns_get_normalized_pathname(node: *mut AcpiNamespaceNode, flag: bool) -> *mut core::ffi::c_char;
-    fn acpi_ut_get_type_name(type_: AcpiObjectType) -> *const core::ffi::c_char;
-    fn acpi_ns_check_acpi_compliance(path: *mut core::ffi::c_char, node: *mut AcpiNamespaceNode, predefined: *mut core::ffi::c_void);
-    fn acpi_ns_check_argument_count(path: *mut core::ffi::c_char, node: *mut AcpiNamespaceNode, count: u32, predefined: *mut core::ffi::c_void);
+    fn acpi_ut_match_predefined_method(name: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
+    fn acpi_ns_get_normalized_pathname(node: *mut AcpiNamespaceNode, flag: bool) -> *mut kernel::ffi::c_char;
+    fn acpi_ut_get_type_name(type_: AcpiObjectType) -> *const kernel::ffi::c_char;
+    fn acpi_ns_check_acpi_compliance(path: *mut kernel::ffi::c_char, node: *mut AcpiNamespaceNode, predefined: *mut kernel::ffi::c_void);
+    fn acpi_ns_check_argument_count(path: *mut kernel::ffi::c_char, node: *mut AcpiNamespaceNode, count: u32, predefined: *mut kernel::ffi::c_void);
     fn acpi_ns_check_argument_types(info: *mut AcpiEvaluateInfo);
     fn acpi_ex_enter_interpreter();
     fn acpi_ex_exit_interpreter();
     fn acpi_ps_execute_method(info: *mut AcpiEvaluateInfo) -> AcpiStatus;
-    fn acpi_ex_resolve_node_to_value(node: *mut *mut AcpiNamespaceNode, walk_state: *mut core::ffi::c_void) -> AcpiStatus;
+    fn acpi_ex_resolve_node_to_value(node: *mut *mut AcpiNamespaceNode, walk_state: *mut kernel::ffi::c_void) -> AcpiStatus;
     fn acpi_ns_check_return_value(node: *mut AcpiNamespaceNode, info: *mut AcpiEvaluateInfo, count: u32, status: AcpiStatus, ret: *mut *mut AcpiOperandObject);
     fn acpi_ut_remove_reference(object: *mut AcpiOperandObject);
-    fn acpi_ut_get_object_type_name(object: *mut AcpiOperandObject) -> *const core::ffi::c_char;
-    fn acpi_free(ptr: *mut core::ffi::c_void);
+    fn acpi_ut_get_object_type_name(object: *mut AcpiOperandObject) -> *const kernel::ffi::c_char;
+    fn acpi_free(ptr: *mut kernel::ffi::c_void);
 }
 
 #[inline]
@@ -144,7 +144,7 @@ pub unsafe extern "C" fn acpi_ns_evaluate(info: *mut AcpiEvaluateInfo) -> AcpiSt
     } else if acpi_failure(status) && !info.return_object.is_null() {
         acpi_ut_remove_reference(info.return_object); info.return_object = core::ptr::null_mut();
     }
-    acpi_free(info.full_pathname as *mut core::ffi::c_void);
+    acpi_free(info.full_pathname as *mut kernel::ffi::c_void);
     info.full_pathname = core::ptr::null_mut();
     status
 }

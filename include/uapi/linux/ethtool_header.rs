@@ -134,17 +134,17 @@ u32 ethtool_cmd_speed(const ethtool_cmd *ep)
  * set if there are known to be no such peripherals present or if
  * the driver only emulates clause 22 registers for compatibility.
  */
-pub const ETH_MDIO_SUPPORTS_C22: _ = 1;
+pub const ETH_MDIO_SUPPORTS_C22: u32 = 1;
 
 /* Device supports clause 45 register access to PHY or peripherals
  * using the interface defined in <linux/mii.h> and <linux/mdio.h>.
  * This should not be set if there are known to be no such peripherals
  * present.
  */
-pub const ETH_MDIO_SUPPORTS_C45: _ = 2;
-pub const ETHTOOL_FWVERS_LEN: _ = 32;
-pub const ETHTOOL_BUSINFO_LEN: _ = 32;
-pub const ETHTOOL_EROMVERS_LEN: _ = 32;
+pub const ETH_MDIO_SUPPORTS_C45: u32 = 2;
+pub const ETHTOOL_FWVERS_LEN: u32 = 32;
+pub const ETHTOOL_BUSINFO_LEN: u32 = 32;
+pub const ETHTOOL_EROMVERS_LEN: u32 = 32;
 
 /**
  * ethtool_drvinfo - general driver and device information
@@ -190,7 +190,7 @@ ethtool_drvinfo {
 	u32	eedump_len;
 	u32	regdump_len;
 };
-pub const SOPASS_MAX: _ = 6;
+pub const SOPASS_MAX: u32 = 6;
 
 /**
  * ethtool_wolinfo - Wake-On-Lan configuration
@@ -213,8 +213,8 @@ ethtool_value {
 	u32	cmd;
 	u32	data;
 };
-pub const PFC_STORM_PREVENTION_AUTO: _ = 0xffffu16;
-pub const PFC_STORM_PREVENTION_DISABLE: _ = 0;
+pub const PFC_STORM_PREVENTION_AUTO: u32 = 0xffffu16;
+pub const PFC_STORM_PREVENTION_DISABLE: u32 = 0;
 
 tunable_id {
 	ETHTOOL_ID_UNSPEC,
@@ -247,17 +247,17 @@ ethtool_tunable {
 	u32	id;
 	u32	type_id;
 	u32	len;
-	*mut core::ffi::c_voiddata[0];
+	*mut kernel::ffi::c_voiddata[0];
 };
-pub const DOWNSHIFT_DEV_DEFAULT_COUNT: _ = 0xffu8;
-pub const DOWNSHIFT_DEV_DISABLE: _ = 0;
+pub const DOWNSHIFT_DEV_DEFAULT_COUNT: u32 = 0xffu8;
+pub const DOWNSHIFT_DEV_DISABLE: u32 = 0;
 
 /* Time in msecs after which link is reported as down
  * 0 = lowest time supported by the PHY
  * 0xffu8 = off, link down detection according to standard
  */
-pub const ETHTOOL_PHY_FAST_LINK_DOWN_ON: _ = 0;
-pub const ETHTOOL_PHY_FAST_LINK_DOWN_OFF: _ = 0xffu8;
+pub const ETHTOOL_PHY_FAST_LINK_DOWN_ON: u32 = 0;
+pub const ETHTOOL_PHY_FAST_LINK_DOWN_OFF: u32 = 0xffu8;
 
 /* Energy Detect Power Down(EDPD) is a feature supported by some PHYs, where
  * the PHY's RX & TX blocks are put into a low-power mode when there is no
@@ -276,9 +276,9 @@ pub const ETHTOOL_PHY_FAST_LINK_DOWN_OFF: _ = 0xffu8;
  *  - to ~65 seconds which is quite a lot to wait for a link to come up when
  *    plugging a cable
  */
-pub const ETHTOOL_PHY_EDPD_DFLT_TX_MSECS: _ = 0xffffu16;
-pub const ETHTOOL_PHY_EDPD_NO_TX: _ = 0xfffeu16;
-pub const ETHTOOL_PHY_EDPD_DISABLE: _ = 0;
+pub const ETHTOOL_PHY_EDPD_DFLT_TX_MSECS: u32 = 0xffffu16;
+pub const ETHTOOL_PHY_EDPD_NO_TX: u32 = 0xfffeu16;
+pub const ETHTOOL_PHY_EDPD_DISABLE: u32 = 0;
 
 phy_tunable_id {
 	ETHTOOL_PHY_ID_UNSPEC,
@@ -649,7 +649,7 @@ ethtool_link_ext_substate_cable_issue {
 ethtool_link_ext_substate_module {
 	ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY = 1,
 };
-pub const ETH_GSTRING_LEN: _ = 32;
+pub const ETH_GSTRING_LEN: u32 = 32;
 
 /**
  * ethtool_stringset - string set ID
@@ -1273,7 +1273,7 @@ ethtool_ah_espip4_spec {
 	u32	spi;
 	u8    tos;
 };
-pub const ETH_RX_NFC_IP4: _ = 1;
+pub const ETH_RX_NFC_IP4: u32 = 1;
 
 /**
  * ethtool_usrip4_spec - general flow specification for IPv4
@@ -1418,9 +1418,9 @@ ethtool_rx_flow_spec {
  * space for this at this time. If a future patch consumes the next
  * byte it should be aware of this possibility.
  */
-pub const ETHTOOL_RX_FLOW_SPEC_RING: _ = 0x00000000FFFFFFFFu64;
-pub const ETHTOOL_RX_FLOW_SPEC_RING_VF: _ = 0x000000FF00000000u64;
-pub const ETHTOOL_RX_FLOW_SPEC_RING_VF_OFF: _ = 32;
+pub const ETHTOOL_RX_FLOW_SPEC_RING: u32 = 0x00000000FFFFFFFFu64;
+pub const ETHTOOL_RX_FLOW_SPEC_RING_VF: u64 = 0x000000FF00000000u64;
+pub const ETHTOOL_RX_FLOW_SPEC_RING_VF_OFF: u32 = 32;
 u64 ethtool_get_flow_spec_ring(ring_cookie: u64)
 {
 	return ETHTOOL_RX_FLOW_SPEC_RING & ring_cookie;
@@ -1568,8 +1568,8 @@ ethtool_rxfh {
 	u32	rsvd32;
 	u32   rss_config[0];
 };
-pub const ETH_RXFH_CONTEXT_ALLOC: _ = 0xffffffffu32;
-pub const ETH_RXFH_INDIR_NO_CHANGE: _ = 0xffffffffu32;
+pub const ETH_RXFH_CONTEXT_ALLOC: u32 = 0xffffffffu32;
+pub const ETH_RXFH_INDIR_NO_CHANGE: u32 = 0xffffffffu32;
 
 /**
  * ethtool_rx_ntuple_flow_spec - specification for RX flow filter
@@ -1606,8 +1606,8 @@ ethtool_rx_ntuple_flow_spec {
 	u64		data_mask;
 
 	i32		action;
-pub const ETHTOOL_RXNTUPLE_ACTION_DROP: _ = (-1)	/* drop packet */;
-pub const ETHTOOL_RXNTUPLE_ACTION_CLEAR: _ = (-2)	/* clear filter */;
+pub const ETHTOOL_RXNTUPLE_ACTION_DROP: u32 = (-1)	/* drop packet */;
+pub const ETHTOOL_RXNTUPLE_ACTION_CLEAR: u32 = (-2)	/* clear filter */;
 };
 
 /**
@@ -1619,7 +1619,7 @@ ethtool_rx_ntuple {
 	u32					cmd;
 	ethtool_rx_ntuple_flow_spec	fs;
 };
-pub const ETHTOOL_FLASH_MAX_FILENAME: _ = 128;
+pub const ETHTOOL_FLASH_MAX_FILENAME: u32 = 128;
 ethtool_flash_op_type {
 	ETHTOOL_FLASH_ALL_REGIONS	= 0,
 };
@@ -1652,7 +1652,7 @@ ethtool_dump {
 	u32	len;
 	u8	data[0];
 };
-pub const ETH_FW_DUMP_DISABLE: _ = 0;
+pub const ETH_FW_DUMP_DISABLE: u32 = 0;
 
 /* for returning and changing feature sets */
 
@@ -1769,7 +1769,7 @@ ethtool_sfeatures_retval_bits {
 pub const ETHTOOL_F_UNSUPPORTED: _ = ((1 << ETHTOOL_F_UNSUPPORTED__BIT));
 pub const ETHTOOL_F_WISH: _ = ((1 << ETHTOOL_F_WISH__BIT));
 pub const ETHTOOL_F_COMPAT: _ = ((1 << ETHTOOL_F_COMPAT__BIT));
-pub const MAX_NUM_QUEUE: _ = 4096;
+pub const MAX_NUM_QUEUE: u32 = 4096;
 
 /**
  * ethtool_per_queue_op - apply sub command to the queues in mask.
@@ -1857,88 +1857,88 @@ pub const ETHTOOL_GSET: _ = 0x00000001 /* DEPRECATED, Get settings.;
 pub const ETHTOOL_SSET: _ = 0x00000002 /* DEPRECATED, Set settings.;
 					    * Please use ETHTOOL_SLINKSETTINGS
 					    */
-pub const ETHTOOL_GDRVINFO: _ = 0x00000003 /* Get driver info. */;
-pub const ETHTOOL_GREGS: _ = 0x00000004 /* Get NIC registers. */;
-pub const ETHTOOL_GWOL: _ = 0x00000005 /* Get wake-on-lan options. */;
-pub const ETHTOOL_SWOL: _ = 0x00000006 /* Set wake-on-lan options. */;
-pub const ETHTOOL_GMSGLVL: _ = 0x00000007 /* Get driver message level */;
-pub const ETHTOOL_SMSGLVL: _ = 0x00000008 /* Set driver msg level. */;
-pub const ETHTOOL_NWAY_RST: _ = 0x00000009 /* Restart autonegotiation. */;
+pub const ETHTOOL_GDRVINFO: ata_port_info = 0x00000003 /* Get driver info. */;
+pub const ETHTOOL_GREGS: u32 = 0x00000004 /* Get NIC registers. */;
+pub const ETHTOOL_GWOL: c_uint = 0x00000005 /* Get wake-on-lan options. */;
+pub const ETHTOOL_SWOL: c_uint = 0x00000006 /* Set wake-on-lan options. */;
+pub const ETHTOOL_GMSGLVL: u32 = 0x00000007 /* Get driver message level */;
+pub const ETHTOOL_SMSGLVL: u32 = 0x00000008 /* Set driver msg level. */;
+pub const ETHTOOL_NWAY_RST: u32 = 0x00000009 /* Restart autonegotiation. */;
 /* Get link status for host, i.e. whether the interface *and* the
  * physical port(if there is one) are up(ethtool_value). */
-pub const ETHTOOL_GLINK: _ = 0x0000000a;
-pub const ETHTOOL_GEEPROM: _ = 0x0000000b /* Get EEPROM data */;
-pub const ETHTOOL_SEEPROM: _ = 0x0000000c /* Set EEPROM data. */;
-pub const ETHTOOL_GCOALESCE: _ = 0x0000000e /* Get coalesce config */;
-pub const ETHTOOL_SCOALESCE: _ = 0x0000000f /* Set coalesce config. */;
-pub const ETHTOOL_GRINGPARAM: _ = 0x00000010 /* Get ring parameters */;
-pub const ETHTOOL_SRINGPARAM: _ = 0x00000011 /* Set ring parameters. */;
-pub const ETHTOOL_GPAUSEPARAM: _ = 0x00000012 /* Get pause parameters */;
-pub const ETHTOOL_SPAUSEPARAM: _ = 0x00000013 /* Set pause parameters. */;
-pub const ETHTOOL_GRXCSUM: _ = 0x00000014 /* Get RX hw csum enable(ethtool_value) */;
-pub const ETHTOOL_SRXCSUM: _ = 0x00000015 /* Set RX hw csum enable(ethtool_value) */;
-pub const ETHTOOL_GTXCSUM: _ = 0x00000016 /* Get TX hw csum enable(ethtool_value) */;
-pub const ETHTOOL_STXCSUM: _ = 0x00000017 /* Set TX hw csum enable(ethtool_value) */;
+pub const ETHTOOL_GLINK: u32 = 0x0000000a;
+pub const ETHTOOL_GEEPROM: u32 = 0x0000000b /* Get EEPROM data */;
+pub const ETHTOOL_SEEPROM: u32 = 0x0000000c /* Set EEPROM data. */;
+pub const ETHTOOL_GCOALESCE: u32 = 0x0000000e /* Get coalesce config */;
+pub const ETHTOOL_SCOALESCE: u32 = 0x0000000f /* Set coalesce config. */;
+pub const ETHTOOL_GRINGPARAM: u32 = 0x00000010 /* Get ring parameters */;
+pub const ETHTOOL_SRINGPARAM: u32 = 0x00000011 /* Set ring parameters. */;
+pub const ETHTOOL_GPAUSEPARAM: u32 = 0x00000012 /* Get pause parameters */;
+pub const ETHTOOL_SPAUSEPARAM: u32 = 0x00000013 /* Set pause parameters. */;
+pub const ETHTOOL_GRXCSUM: u32 = 0x00000014 /* Get RX hw csum enable(ethtool_value) */;
+pub const ETHTOOL_SRXCSUM: u32 = 0x00000015 /* Set RX hw csum enable(ethtool_value) */;
+pub const ETHTOOL_GTXCSUM: u32 = 0x00000016 /* Get TX hw csum enable(ethtool_value) */;
+pub const ETHTOOL_STXCSUM: u32 = 0x00000017 /* Set TX hw csum enable(ethtool_value) */;
 pub const ETHTOOL_GSG: _ = 0x00000018 /* Get scatter-gather enable;
 					    * (ethtool_value) */
 pub const ETHTOOL_SSG: _ = 0x00000019 /* Set scatter-gather enable;
 					    * (ethtool_value). */
-pub const ETHTOOL_TEST: _ = 0x0000001a /* execute NIC self-test. */;
-pub const ETHTOOL_GSTRINGS: _ = 0x0000001b /* get specified string set */;
-pub const ETHTOOL_PHYS_ID: _ = 0x0000001c /* identify the NIC */;
-pub const ETHTOOL_GSTATS: _ = 0x0000001d /* get NIC-specific statistics */;
-pub const ETHTOOL_GTSO: _ = 0x0000001e /* Get TSO enable(ethtool_value) */;
-pub const ETHTOOL_STSO: _ = 0x0000001f /* Set TSO enable(ethtool_value) */;
-pub const ETHTOOL_GPERMADDR: _ = 0x00000020 /* Get permanent hardware address */;
-pub const ETHTOOL_GUFO: _ = 0x00000021 /* Get UFO enable(ethtool_value) */;
-pub const ETHTOOL_SUFO: _ = 0x00000022 /* Set UFO enable(ethtool_value) */;
-pub const ETHTOOL_GGSO: _ = 0x00000023 /* Get GSO enable(ethtool_value) */;
-pub const ETHTOOL_SGSO: _ = 0x00000024 /* Set GSO enable(ethtool_value) */;
-pub const ETHTOOL_GFLAGS: _ = 0x00000025 /* Get flags bitmap(ethtool_value) */;
-pub const ETHTOOL_SFLAGS: _ = 0x00000026 /* Set flags bitmap(ethtool_value) */;
-pub const ETHTOOL_GPFLAGS: _ = 0x00000027 /* Get driver-private flags bitmap */;
-pub const ETHTOOL_SPFLAGS: _ = 0x00000028 /* Set driver-private flags bitmap */;
-pub const ETHTOOL_GRXFH: _ = 0x00000029 /* Get RX flow hash configuration */;
-pub const ETHTOOL_SRXFH: _ = 0x0000002a /* Set RX flow hash configuration */;
-pub const ETHTOOL_GGRO: _ = 0x0000002b /* Get GRO enable(ethtool_value) */;
-pub const ETHTOOL_SGRO: _ = 0x0000002c /* Set GRO enable(ethtool_value) */;
-pub const ETHTOOL_GRXRINGS: _ = 0x0000002d /* Get RX rings available for LB */;
-pub const ETHTOOL_GRXCLSRLCNT: _ = 0x0000002e /* Get RX class rule count */;
-pub const ETHTOOL_GRXCLSRULE: _ = 0x0000002f /* Get RX classification rule */;
-pub const ETHTOOL_GRXCLSRLALL: _ = 0x00000030 /* Get all RX classification rule */;
-pub const ETHTOOL_SRXCLSRLDEL: _ = 0x00000031 /* Delete RX classification rule */;
-pub const ETHTOOL_SRXCLSRLINS: _ = 0x00000032 /* Insert RX classification rule */;
-pub const ETHTOOL_FLASHDEV: _ = 0x00000033 /* Flash firmware to device */;
-pub const ETHTOOL_RESET: _ = 0x00000034 /* Reset hardware */;
-pub const ETHTOOL_SRXNTUPLE: _ = 0x00000035 /* Add an n-tuple filter to device */;
-pub const ETHTOOL_GRXNTUPLE: _ = 0x00000036 /* deprecated */;
-pub const ETHTOOL_GSSET_INFO: _ = 0x00000037 /* Get string set info */;
-pub const ETHTOOL_GRXFHINDIR: _ = 0x00000038 /* Get RX flow hash indir'n table */;
-pub const ETHTOOL_SRXFHINDIR: _ = 0x00000039 /* Set RX flow hash indir'n table */;
-pub const ETHTOOL_GFEATURES: _ = 0x0000003a /* Get device offload settings */;
-pub const ETHTOOL_SFEATURES: _ = 0x0000003b /* Change device offload settings */;
-pub const ETHTOOL_GCHANNELS: _ = 0x0000003c /* Get no of channels */;
-pub const ETHTOOL_SCHANNELS: _ = 0x0000003d /* Set no of channels */;
-pub const ETHTOOL_SET_DUMP: _ = 0x0000003e /* Set dump settings */;
-pub const ETHTOOL_GET_DUMP_FLAG: _ = 0x0000003f /* Get dump settings */;
-pub const ETHTOOL_GET_DUMP_DATA: _ = 0x00000040 /* Get dump data */;
-pub const ETHTOOL_GET_TS_INFO: _ = 0x00000041 /* Get time stamping and PHC info */;
-pub const ETHTOOL_GMODULEINFO: _ = 0x00000042 /* Get plug-in module information */;
-pub const ETHTOOL_GMODULEEEPROM: _ = 0x00000043 /* Get plug-in module eeprom */;
-pub const ETHTOOL_GEEE: _ = 0x00000044 /* Get EEE settings */;
-pub const ETHTOOL_SEEE: _ = 0x00000045 /* Set EEE settings */;
-pub const ETHTOOL_GRSSH: _ = 0x00000046 /* Get RX flow hash configuration */;
-pub const ETHTOOL_SRSSH: _ = 0x00000047 /* Set RX flow hash configuration */;
-pub const ETHTOOL_GTUNABLE: _ = 0x00000048 /* Get tunable configuration */;
-pub const ETHTOOL_STUNABLE: _ = 0x00000049 /* Set tunable configuration */;
-pub const ETHTOOL_GPHYSTATS: _ = 0x0000004a /* get PHY-specific statistics */;
-pub const ETHTOOL_PERQUEUE: _ = 0x0000004b /* Set per queue options */;
-pub const ETHTOOL_GLINKSETTINGS: _ = 0x0000004c /* Get ethtool_link_settings */;
-pub const ETHTOOL_SLINKSETTINGS: _ = 0x0000004d /* Set ethtool_link_settings */;
-pub const ETHTOOL_PHY_GTUNABLE: _ = 0x0000004e /* Get PHY tunable configuration */;
-pub const ETHTOOL_PHY_STUNABLE: _ = 0x0000004f /* Set PHY tunable configuration */;
-pub const ETHTOOL_GFECPARAM: _ = 0x00000050 /* Get FEC settings */;
-pub const ETHTOOL_SFECPARAM: _ = 0x00000051 /* Set FEC settings */;
+pub const ETHTOOL_TEST: u32 = 0x0000001a /* execute NIC self-test. */;
+pub const ETHTOOL_GSTRINGS: u32 = 0x0000001b /* get specified string set */;
+pub const ETHTOOL_PHYS_ID: u32 = 0x0000001c /* identify the NIC */;
+pub const ETHTOOL_GSTATS: u32 = 0x0000001d /* get NIC-specific statistics */;
+pub const ETHTOOL_GTSO: u32 = 0x0000001e /* Get TSO enable(ethtool_value) */;
+pub const ETHTOOL_STSO: u32 = 0x0000001f /* Set TSO enable(ethtool_value) */;
+pub const ETHTOOL_GPERMADDR: snd_pcm_hardware = 0x00000020 /* Get permanent hardware address */;
+pub const ETHTOOL_GUFO: u32 = 0x00000021 /* Get UFO enable(ethtool_value) */;
+pub const ETHTOOL_SUFO: u32 = 0x00000022 /* Set UFO enable(ethtool_value) */;
+pub const ETHTOOL_GGSO: u32 = 0x00000023 /* Get GSO enable(ethtool_value) */;
+pub const ETHTOOL_SGSO: u32 = 0x00000024 /* Set GSO enable(ethtool_value) */;
+pub const ETHTOOL_GFLAGS: u32 = 0x00000025 /* Get flags bitmap(ethtool_value) */;
+pub const ETHTOOL_SFLAGS: u32 = 0x00000026 /* Set flags bitmap(ethtool_value) */;
+pub const ETHTOOL_GPFLAGS: u32 = 0x00000027 /* Get driver-private flags bitmap */;
+pub const ETHTOOL_SPFLAGS: u32 = 0x00000028 /* Set driver-private flags bitmap */;
+pub const ETHTOOL_GRXFH: u32 = 0x00000029 /* Get RX flow hash configuration */;
+pub const ETHTOOL_SRXFH: u32 = 0x0000002a /* Set RX flow hash configuration */;
+pub const ETHTOOL_GGRO: u32 = 0x0000002b /* Get GRO enable(ethtool_value) */;
+pub const ETHTOOL_SGRO: u32 = 0x0000002c /* Set GRO enable(ethtool_value) */;
+pub const ETHTOOL_GRXRINGS: u32 = 0x0000002d /* Get RX rings available for LB */;
+pub const ETHTOOL_GRXCLSRLCNT: u32 = 0x0000002e /* Get RX class rule count */;
+pub const ETHTOOL_GRXCLSRULE: u32 = 0x0000002f /* Get RX classification rule */;
+pub const ETHTOOL_GRXCLSRLALL: u32 = 0x00000030 /* Get all RX classification rule */;
+pub const ETHTOOL_SRXCLSRLDEL: u32 = 0x00000031 /* Delete RX classification rule */;
+pub const ETHTOOL_SRXCLSRLINS: u32 = 0x00000032 /* Insert RX classification rule */;
+pub const ETHTOOL_FLASHDEV: u32 = 0x00000033 /* Flash firmware to device */;
+pub const ETHTOOL_RESET: snd_pcm_hardware = 0x00000034 /* Reset hardware */;
+pub const ETHTOOL_SRXNTUPLE: u32 = 0x00000035 /* Add an n-tuple filter to device */;
+pub const ETHTOOL_GRXNTUPLE: u32 = 0x00000036 /* deprecated */;
+pub const ETHTOOL_GSSET_INFO: ata_port_info = 0x00000037 /* Get string set info */;
+pub const ETHTOOL_GRXFHINDIR: u32 = 0x00000038 /* Get RX flow hash indir'n table */;
+pub const ETHTOOL_SRXFHINDIR: u32 = 0x00000039 /* Set RX flow hash indir'n table */;
+pub const ETHTOOL_GFEATURES: u32 = 0x0000003a /* Get device offload settings */;
+pub const ETHTOOL_SFEATURES: u32 = 0x0000003b /* Change device offload settings */;
+pub const ETHTOOL_GCHANNELS: u32 = 0x0000003c /* Get no of channels */;
+pub const ETHTOOL_SCHANNELS: u32 = 0x0000003d /* Set no of channels */;
+pub const ETHTOOL_SET_DUMP: u32 = 0x0000003e /* Set dump settings */;
+pub const ETHTOOL_GET_DUMP_FLAG: u32 = 0x0000003f /* Get dump settings */;
+pub const ETHTOOL_GET_DUMP_DATA: u32 = 0x00000040 /* Get dump data */;
+pub const ETHTOOL_GET_TS_INFO: ata_port_info = 0x00000041 /* Get time stamping and PHC info */;
+pub const ETHTOOL_GMODULEINFO: u32 = 0x00000042 /* Get plug-in module information */;
+pub const ETHTOOL_GMODULEEEPROM: u32 = 0x00000043 /* Get plug-in module eeprom */;
+pub const ETHTOOL_GEEE: u32 = 0x00000044 /* Get EEE settings */;
+pub const ETHTOOL_SEEE: u32 = 0x00000045 /* Set EEE settings */;
+pub const ETHTOOL_GRSSH: u32 = 0x00000046 /* Get RX flow hash configuration */;
+pub const ETHTOOL_SRSSH: u32 = 0x00000047 /* Set RX flow hash configuration */;
+pub const ETHTOOL_GTUNABLE: u32 = 0x00000048 /* Get tunable configuration */;
+pub const ETHTOOL_STUNABLE: u32 = 0x00000049 /* Set tunable configuration */;
+pub const ETHTOOL_GPHYSTATS: u32 = 0x0000004a /* get PHY-specific statistics */;
+pub const ETHTOOL_PERQUEUE: u32 = 0x0000004b /* Set per queue options */;
+pub const ETHTOOL_GLINKSETTINGS: u32 = 0x0000004c /* Get ethtool_link_settings */;
+pub const ETHTOOL_SLINKSETTINGS: u32 = 0x0000004d /* Set ethtool_link_settings */;
+pub const ETHTOOL_PHY_GTUNABLE: u32 = 0x0000004e /* Get PHY tunable configuration */;
+pub const ETHTOOL_PHY_STUNABLE: u32 = 0x0000004f /* Set PHY tunable configuration */;
+pub const ETHTOOL_GFECPARAM: u32 = 0x00000050 /* Get FEC settings */;
+pub const ETHTOOL_SFECPARAM: u32 = 0x00000051 /* Set FEC settings */;
 
 /* compatibility with older code */
 pub const SPARC_ETH_GSET: _ = ETHTOOL_GSET;
@@ -2097,37 +2097,37 @@ ethtool_link_mode_bit_indices {
  * ETHTOOL_GLINKSETTINGS/ETHTOOL_SLINKSETTINGS API. Please do NOT
  * define any new SUPPORTED_* macro for bits > 31.
  */
-pub const SUPPORTED_10baseT_Half: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(10baseT_Half);
-pub const SUPPORTED_10baseT_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(10baseT_Full);
-pub const SUPPORTED_100baseT_Half: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(100baseT_Half);
-pub const SUPPORTED_100baseT_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(100baseT_Full);
-pub const SUPPORTED_1000baseT_Half: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseT_Half);
-pub const SUPPORTED_1000baseT_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseT_Full);
-pub const SUPPORTED_Autoneg: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(Autoneg);
-pub const SUPPORTED_TP: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(TP);
-pub const SUPPORTED_AUI: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(AUI);
-pub const SUPPORTED_MII: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(MII);
-pub const SUPPORTED_FIBRE: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(FIBRE);
-pub const SUPPORTED_BNC: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(BNC);
-pub const SUPPORTED_10000baseT_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseT_Full);
-pub const SUPPORTED_Pause: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(Pause);
-pub const SUPPORTED_Asym_Pause: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(Asym_Pause);
-pub const SUPPORTED_2500baseX_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(2500baseX_Full);
-pub const SUPPORTED_Backplane: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(Backplane);
-pub const SUPPORTED_1000baseKX_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseKX_Full);
-pub const SUPPORTED_10000baseKX4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseKX4_Full);
-pub const SUPPORTED_10000baseKR_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseKR_Full);
-pub const SUPPORTED_10000baseR_FEC: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseR_FEC);
-pub const SUPPORTED_20000baseMLD2_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(20000baseMLD2_Full);
-pub const SUPPORTED_20000baseKR2_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(20000baseKR2_Full);
-pub const SUPPORTED_40000baseKR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseKR4_Full);
-pub const SUPPORTED_40000baseCR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseCR4_Full);
-pub const SUPPORTED_40000baseSR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseSR4_Full);
-pub const SUPPORTED_40000baseLR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseLR4_Full);
-pub const SUPPORTED_56000baseKR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseKR4_Full);
-pub const SUPPORTED_56000baseCR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseCR4_Full);
-pub const SUPPORTED_56000baseSR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseSR4_Full);
-pub const SUPPORTED_56000baseLR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseLR4_Full);
+pub const SUPPORTED_10baseT_Half: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(10baseT_Half);
+pub const SUPPORTED_10baseT_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(10baseT_Full);
+pub const SUPPORTED_100baseT_Half: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(100baseT_Half);
+pub const SUPPORTED_100baseT_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(100baseT_Full);
+pub const SUPPORTED_1000baseT_Half: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseT_Half);
+pub const SUPPORTED_1000baseT_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseT_Full);
+pub const SUPPORTED_Autoneg: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(Autoneg);
+pub const SUPPORTED_TP: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(TP);
+pub const SUPPORTED_AUI: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(AUI);
+pub const SUPPORTED_MII: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(MII);
+pub const SUPPORTED_FIBRE: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(FIBRE);
+pub const SUPPORTED_BNC: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(BNC);
+pub const SUPPORTED_10000baseT_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseT_Full);
+pub const SUPPORTED_Pause: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(Pause);
+pub const SUPPORTED_Asym_Pause: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(Asym_Pause);
+pub const SUPPORTED_2500baseX_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(2500baseX_Full);
+pub const SUPPORTED_Backplane: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(Backplane);
+pub const SUPPORTED_1000baseKX_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseKX_Full);
+pub const SUPPORTED_10000baseKX4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseKX4_Full);
+pub const SUPPORTED_10000baseKR_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseKR_Full);
+pub const SUPPORTED_10000baseR_FEC: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseR_FEC);
+pub const SUPPORTED_20000baseMLD2_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(20000baseMLD2_Full);
+pub const SUPPORTED_20000baseKR2_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(20000baseKR2_Full);
+pub const SUPPORTED_40000baseKR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseKR4_Full);
+pub const SUPPORTED_40000baseCR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseCR4_Full);
+pub const SUPPORTED_40000baseSR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseSR4_Full);
+pub const SUPPORTED_40000baseLR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseLR4_Full);
+pub const SUPPORTED_56000baseKR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseKR4_Full);
+pub const SUPPORTED_56000baseCR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseCR4_Full);
+pub const SUPPORTED_56000baseSR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseSR4_Full);
+pub const SUPPORTED_56000baseLR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseLR4_Full);
 /* Please do not define any new SUPPORTED_* macro for bits > 31, see
  * notice above.
  */
@@ -2137,37 +2137,37 @@ pub const SUPPORTED_56000baseLR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000
  * ETHTOOL_GLINKSETTINGS/ETHTOOL_SLINKSETTINGS API. Please do NOT
  * define any new ADERTISE_* macro for bits > 31.
  */
-pub const ADVERTISED_10baseT_Half: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(10baseT_Half);
-pub const ADVERTISED_10baseT_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(10baseT_Full);
-pub const ADVERTISED_100baseT_Half: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(100baseT_Half);
-pub const ADVERTISED_100baseT_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(100baseT_Full);
-pub const ADVERTISED_1000baseT_Half: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseT_Half);
-pub const ADVERTISED_1000baseT_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseT_Full);
-pub const ADVERTISED_Autoneg: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(Autoneg);
-pub const ADVERTISED_TP: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(TP);
-pub const ADVERTISED_AUI: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(AUI);
-pub const ADVERTISED_MII: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(MII);
-pub const ADVERTISED_FIBRE: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(FIBRE);
-pub const ADVERTISED_BNC: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(BNC);
-pub const ADVERTISED_10000baseT_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseT_Full);
-pub const ADVERTISED_Pause: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(Pause);
-pub const ADVERTISED_Asym_Pause: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(Asym_Pause);
-pub const ADVERTISED_2500baseX_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(2500baseX_Full);
-pub const ADVERTISED_Backplane: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(Backplane);
-pub const ADVERTISED_1000baseKX_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseKX_Full);
-pub const ADVERTISED_10000baseKX4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseKX4_Full);
-pub const ADVERTISED_10000baseKR_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseKR_Full);
-pub const ADVERTISED_10000baseR_FEC: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseR_FEC);
-pub const ADVERTISED_20000baseMLD2_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(20000baseMLD2_Full);
-pub const ADVERTISED_20000baseKR2_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(20000baseKR2_Full);
-pub const ADVERTISED_40000baseKR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseKR4_Full);
-pub const ADVERTISED_40000baseCR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseCR4_Full);
-pub const ADVERTISED_40000baseSR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseSR4_Full);
-pub const ADVERTISED_40000baseLR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseLR4_Full);
-pub const ADVERTISED_56000baseKR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseKR4_Full);
-pub const ADVERTISED_56000baseCR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseCR4_Full);
-pub const ADVERTISED_56000baseSR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseSR4_Full);
-pub const ADVERTISED_56000baseLR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseLR4_Full);
+pub const ADVERTISED_10baseT_Half: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(10baseT_Half);
+pub const ADVERTISED_10baseT_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(10baseT_Full);
+pub const ADVERTISED_100baseT_Half: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(100baseT_Half);
+pub const ADVERTISED_100baseT_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(100baseT_Full);
+pub const ADVERTISED_1000baseT_Half: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseT_Half);
+pub const ADVERTISED_1000baseT_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseT_Full);
+pub const ADVERTISED_Autoneg: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(Autoneg);
+pub const ADVERTISED_TP: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(TP);
+pub const ADVERTISED_AUI: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(AUI);
+pub const ADVERTISED_MII: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(MII);
+pub const ADVERTISED_FIBRE: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(FIBRE);
+pub const ADVERTISED_BNC: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(BNC);
+pub const ADVERTISED_10000baseT_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseT_Full);
+pub const ADVERTISED_Pause: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(Pause);
+pub const ADVERTISED_Asym_Pause: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(Asym_Pause);
+pub const ADVERTISED_2500baseX_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(2500baseX_Full);
+pub const ADVERTISED_Backplane: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(Backplane);
+pub const ADVERTISED_1000baseKX_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseKX_Full);
+pub const ADVERTISED_10000baseKX4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseKX4_Full);
+pub const ADVERTISED_10000baseKR_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseKR_Full);
+pub const ADVERTISED_10000baseR_FEC: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseR_FEC);
+pub const ADVERTISED_20000baseMLD2_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(20000baseMLD2_Full);
+pub const ADVERTISED_20000baseKR2_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(20000baseKR2_Full);
+pub const ADVERTISED_40000baseKR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseKR4_Full);
+pub const ADVERTISED_40000baseCR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseCR4_Full);
+pub const ADVERTISED_40000baseSR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseSR4_Full);
+pub const ADVERTISED_40000baseLR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseLR4_Full);
+pub const ADVERTISED_56000baseKR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseKR4_Full);
+pub const ADVERTISED_56000baseCR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseCR4_Full);
+pub const ADVERTISED_56000baseSR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseSR4_Full);
+pub const ADVERTISED_56000baseLR4_Full: kernel::ffi::c_ulong = __ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseLR4_Full);
 /* Please do not define any new ADVERTISED_* macro for bits > 31, see
  * notice above.
  */
@@ -2182,25 +2182,25 @@ pub const ADVERTISED_56000baseLR4_Full: _ = __ETHTOOL_LINK_MODE_LEGACY_MASK(5600
  * Update drivers/net/phy/phy.c:phy_speed_to_str() and
  * drivers/net/bonding/bond_3ad.c:__get_link_speed() when adding new values.
  */
-pub const SPEED_10: _ = 10;
-pub const SPEED_100: _ = 100;
-pub const SPEED_1000: _ = 1000;
-pub const SPEED_2500: _ = 2500;
-pub const SPEED_5000: _ = 5000;
-pub const SPEED_10000: _ = 10000;
-pub const SPEED_14000: _ = 14000;
-pub const SPEED_20000: _ = 20000;
-pub const SPEED_25000: _ = 25000;
-pub const SPEED_40000: _ = 40000;
-pub const SPEED_50000: _ = 50000;
-pub const SPEED_56000: _ = 56000;
-pub const SPEED_80000: _ = 80000;
-pub const SPEED_100000: _ = 100000;
-pub const SPEED_200000: _ = 200000;
-pub const SPEED_400000: _ = 400000;
-pub const SPEED_800000: _ = 800000;
-pub const SPEED_1600000: _ = 1600000;
-pub const SPEED_UNKNOWN: _ = -1;
+pub const SPEED_10: u32 = 10;
+pub const SPEED_100: u32 = 100;
+pub const SPEED_1000: u32 = 1000;
+pub const SPEED_2500: u32 = 2500;
+pub const SPEED_5000: u32 = 5000;
+pub const SPEED_10000: u32 = 10000;
+pub const SPEED_14000: u32 = 14000;
+pub const SPEED_20000: u32 = 20000;
+pub const SPEED_25000: u32 = 25000;
+pub const SPEED_40000: u32 = 40000;
+pub const SPEED_50000: u32 = 50000;
+pub const SPEED_56000: u32 = 56000;
+pub const SPEED_80000: u32 = 80000;
+pub const SPEED_100000: u32 = 100000;
+pub const SPEED_200000: u32 = 200000;
+pub const SPEED_400000: u32 = 400000;
+pub const SPEED_800000: u32 = 800000;
+pub const SPEED_1600000: u32 = 1600000;
+pub const SPEED_UNKNOWN: u32 = -1;
 
 int ethtool_validate_speed(speed: u32)
 {
@@ -2208,9 +2208,9 @@ int ethtool_validate_speed(speed: u32)
 }
 
 /* Duplex, half or full. */
-pub const DUPLEX_HALF: _ = 0x00;
-pub const DUPLEX_FULL: _ = 0x01;
-pub const DUPLEX_UNKNOWN: _ = 0xffu8;
+pub const DUPLEX_HALF: u32 = 0x00;
+pub const DUPLEX_FULL: u32 = 0x01;
+pub const DUPLEX_UNKNOWN: u32 = 0xffu8;
 
 int ethtool_validate_duplex(duplex: u8)
 {
@@ -2223,17 +2223,17 @@ int ethtool_validate_duplex(duplex: u8)
 
 	return 0;
 }
-pub const MASTER_SLAVE_CFG_UNSUPPORTED: _ = 0;
-pub const MASTER_SLAVE_CFG_UNKNOWN: _ = 1;
-pub const MASTER_SLAVE_CFG_MASTER_PREFERRED: _ = 2;
-pub const MASTER_SLAVE_CFG_SLAVE_PREFERRED: _ = 3;
-pub const MASTER_SLAVE_CFG_MASTER_FORCE: _ = 4;
-pub const MASTER_SLAVE_CFG_SLAVE_FORCE: _ = 5;
-pub const MASTER_SLAVE_STATE_UNSUPPORTED: _ = 0;
-pub const MASTER_SLAVE_STATE_UNKNOWN: _ = 1;
-pub const MASTER_SLAVE_STATE_MASTER: _ = 2;
-pub const MASTER_SLAVE_STATE_SLAVE: _ = 3;
-pub const MASTER_SLAVE_STATE_ERR: _ = 4;
+pub const MASTER_SLAVE_CFG_UNSUPPORTED: u32 = 0;
+pub const MASTER_SLAVE_CFG_UNKNOWN: u32 = 1;
+pub const MASTER_SLAVE_CFG_MASTER_PREFERRED: u32 = 2;
+pub const MASTER_SLAVE_CFG_SLAVE_PREFERRED: u32 = 3;
+pub const MASTER_SLAVE_CFG_MASTER_FORCE: u32 = 4;
+pub const MASTER_SLAVE_CFG_SLAVE_FORCE: u32 = 5;
+pub const MASTER_SLAVE_STATE_UNSUPPORTED: u32 = 0;
+pub const MASTER_SLAVE_STATE_UNKNOWN: u32 = 1;
+pub const MASTER_SLAVE_STATE_MASTER: u32 = 2;
+pub const MASTER_SLAVE_STATE_SLAVE: u32 = 3;
+pub const MASTER_SLAVE_STATE_ERR: u32 = 4;
 
 /* These are used to throttle the rate of data on the phy interface when the
  * native speed of the interface is higher than the link speed. These should
@@ -2241,53 +2241,53 @@ pub const MASTER_SLAVE_STATE_ERR: _ = 4;
  * MII or SGMII).
  */
 /* No rate matching performed. */
-pub const RATE_MATCH_NONE: _ = 0;
+pub const RATE_MATCH_NONE: u32 = 0;
 /* The phy sends pause frames to throttle the MAC. */
-pub const RATE_MATCH_PAUSE: _ = 1;
+pub const RATE_MATCH_PAUSE: u32 = 1;
 /* The phy asserts CRS to prevent the MAC from transmitting. */
-pub const RATE_MATCH_CRS: _ = 2;
+pub const RATE_MATCH_CRS: u32 = 2;
 /* The MAC is programmed with a sufficiently-large IPG. */
-pub const RATE_MATCH_OPEN_LOOP: _ = 3;
+pub const RATE_MATCH_OPEN_LOOP: u32 = 3;
 
 /* Which connector port. */
-pub const PORT_TP: _ = 0x00;
-pub const PORT_AUI: _ = 0x01;
-pub const PORT_MII: _ = 0x02;
-pub const PORT_FIBRE: _ = 0x03;
-pub const PORT_BNC: _ = 0x04;
-pub const PORT_DA: _ = 0x05;
-pub const PORT_NONE: _ = 0xef;
-pub const PORT_OTHER: _ = 0xffu8;
+pub const PORT_TP: u32 = 0x00;
+pub const PORT_AUI: u32 = 0x01;
+pub const PORT_MII: u32 = 0x02;
+pub const PORT_FIBRE: u32 = 0x03;
+pub const PORT_BNC: u32 = 0x04;
+pub const PORT_DA: u32 = 0x05;
+pub const PORT_NONE: u32 = 0xef;
+pub const PORT_OTHER: u32 = 0xffu8;
 
 /* Which transceiver to use. */
-pub const XCVR_INTERNAL: _ = 0x00 /* PHY and MAC are in the same package */;
-pub const XCVR_EXTERNAL: _ = 0x01 /* PHY and MAC are in different packages */;
-pub const XCVR_DUMMY1: _ = 0x02;
-pub const XCVR_DUMMY2: _ = 0x03;
-pub const XCVR_DUMMY3: _ = 0x04;
+pub const XCVR_INTERNAL: u32 = 0x00 /* PHY and MAC are in the same package */;
+pub const XCVR_EXTERNAL: u32 = 0x01 /* PHY and MAC are in different packages */;
+pub const XCVR_DUMMY1: u32 = 0x02;
+pub const XCVR_DUMMY2: u32 = 0x03;
+pub const XCVR_DUMMY3: u32 = 0x04;
 
 /* Enable or disable autonegotiation. */
-pub const AUTONEG_DISABLE: _ = 0x00;
-pub const AUTONEG_ENABLE: _ = 0x01;
+pub const AUTONEG_DISABLE: u32 = 0x00;
+pub const AUTONEG_ENABLE: u32 = 0x01;
 
 /* MDI or MDI-X status/control - if MDI/MDI_X/AUTO is set then
  * the driver is required to renegotiate link
  */
-pub const ETH_TP_MDI_INVALID: _ = 0x00 /* pub status: unknown; control: unsupported */;
-pub const ETH_TP_MDI: _ = 0x01 /* pub status: MDI;     control: force MDI */;
-pub const ETH_TP_MDI_X: _ = 0x02 /* status: MDI-X;   control: force MDI-X */;
-pub const ETH_TP_MDI_AUTO: _ = 0x03 /*                  control: auto-select */;
+pub const ETH_TP_MDI_INVALID: u32 = 0x00 /* pub status: unknown; control: unsupported */;
+pub const ETH_TP_MDI: u32 = 0x01 /* pub status: MDI;     control: force MDI */;
+pub const ETH_TP_MDI_X: u32 = 0x02 /* status: MDI-X;   control: force MDI-X */;
+pub const ETH_TP_MDI_AUTO: u32 = 0x03 /*                  control: auto-select */;
 
 /* Wake-On-Lan options. */
-pub const WAKE_PHY: _ = (1 << 0);
-pub const WAKE_UCAST: _ = (1 << 1);
-pub const WAKE_MCAST: _ = (1 << 2);
-pub const WAKE_BCAST: _ = (1 << 3);
-pub const WAKE_ARP: _ = (1 << 4);
-pub const WAKE_MAGIC: _ = (1 << 5);
-pub const WAKE_MAGICSECURE: _ = (1 << 6) /* only meaningful if WAKE_MAGIC */;
-pub const WAKE_FILTER: _ = (1 << 7);
-pub const WOL_MODE_COUNT: _ = 8;
+pub const WAKE_PHY: u32 = (1 << 0);
+pub const WAKE_UCAST: u32 = (1 << 1);
+pub const WAKE_MCAST: u32 = (1 << 2);
+pub const WAKE_BCAST: u32 = (1 << 3);
+pub const WAKE_ARP: u32 = (1 << 4);
+pub const WAKE_MAGIC: u32 = (1 << 5);
+pub const WAKE_MAGICSECURE: u32 = (1 << 6) /* only meaningful if WAKE_MAGIC */;
+pub const WAKE_FILTER: u32 = (1 << 7);
+pub const WOL_MODE_COUNT: u32 = 8;
 
 /* RSS hash function data
  * XOR the corresponding source and destination fields of each specified
@@ -2295,12 +2295,12 @@ pub const WOL_MODE_COUNT: _ = 8;
  * calculation. Note that this XORing reduces the input set entropy and could
  * be exploited to reduce the RSS queue spread.
  */
-pub const RXH_XFRM_SYM_XOR: _ = (1 << 0);
+pub const RXH_XFRM_SYM_XOR: u32 = (1 << 0);
 /* Similar to SYM_XOR, except that one copy of the XOR'ed fields is replaced by
  * an OR of the same fields
  */
-pub const RXH_XFRM_SYM_OR_XOR: _ = (1 << 1);
-pub const RXH_XFRM_NO_CHANGE: _ = 0xffu8;
+pub const RXH_XFRM_SYM_OR_XOR: u32 = (1 << 1);
+pub const RXH_XFRM_NO_CHANGE: u32 = 0xffu8;
 
  {
 	/* L2-L4 network traffic flow types */
@@ -2373,42 +2373,42 @@ pub const RXH_XFRM_NO_CHANGE: _ = 0xffu8;
 };
 
 /* Flag to enable additional fields in ethtool_rx_flow_spec */
-pub const FLOW_EXT: _ = 0x80000000;
-pub const FLOW_MAC_EXT: _ = 0x40000000;
+pub const FLOW_EXT: u32 = 0x80000000;
+pub const FLOW_MAC_EXT: u32 = 0x40000000;
 /* Flag to enable RSS spreading of traffic matching rule(nfc only) */
-pub const FLOW_RSS: _ = 0x20000000;
+pub const FLOW_RSS: u32 = 0x20000000;
 
 /* L2-L4 network traffic flow hash options */
-pub const RXH_L2DA: _ = (1 << 1);
-pub const RXH_VLAN: _ = (1 << 2);
-pub const RXH_L3_PROTO: _ = (1 << 3);
-pub const RXH_IP_SRC: _ = (1 << 4);
-pub const RXH_IP_DST: _ = (1 << 5);
-pub const RXH_L4_B_0_1: _ = (1 << 6) /* src port in case of TCP/UDP/SCTP */;
-pub const RXH_L4_B_2_3: _ = (1 << 7) /* dst port in case of TCP/UDP/SCTP */;
-pub const RXH_GTP_TEID: _ = (1 << 8) /* teid in case of GTP */;
-pub const RXH_IP6_FL: _ = (1 << 9) /* IPv6 flow label */;
-pub const RXH_DISCARD: _ = (1 << 31);
-pub const RX_CLS_FLOW_DISC: _ = 0xffffffffffffffffULL;
-pub const RX_CLS_FLOW_WAKE: _ = 0xfffffffffffffffeULL;
+pub const RXH_L2DA: u32 = (1 << 1);
+pub const RXH_VLAN: u32 = (1 << 2);
+pub const RXH_L3_PROTO: u32 = (1 << 3);
+pub const RXH_IP_SRC: u32 = (1 << 4);
+pub const RXH_IP_DST: u32 = (1 << 5);
+pub const RXH_L4_B_0_1: __u16 = (1 << 6) /* src port in case of TCP/UDP/SCTP */;
+pub const RXH_L4_B_2_3: __u16 = (1 << 7) /* dst port in case of TCP/UDP/SCTP */;
+pub const RXH_GTP_TEID: u32 = (1 << 8) /* teid in case of GTP */;
+pub const RXH_IP6_FL: u32 = (1 << 9) /* IPv6 flow label */;
+pub const RXH_DISCARD: u32 = (1 << 31);
+pub const RX_CLS_FLOW_DISC: u64 = 0xffffffffffffffffULL;
+pub const RX_CLS_FLOW_WAKE: u64 = 0xfffffffffffffffeULL;
 
 /* Special RX classification rule insert location values */
-pub const RX_CLS_LOC_SPECIAL: _ = 0x80000000	/* flag */;
-pub const RX_CLS_LOC_ANY: _ = 0xffffffffu32;
-pub const RX_CLS_LOC_FIRST: _ = 0xfffffffe;
-pub const RX_CLS_LOC_LAST: _ = 0xfffffffd;
+pub const RX_CLS_LOC_SPECIAL: u32 = 0x80000000	/* flag */;
+pub const RX_CLS_LOC_ANY: u32 = 0xffffffffu32;
+pub const RX_CLS_LOC_FIRST: u32 = 0xfffffffe;
+pub const RX_CLS_LOC_LAST: u32 = 0xfffffffd;
 
 /* EEPROM Standards for plug in modules */
-pub const ETH_MODULE_SFF_8079: _ = 0x1;
-pub const ETH_MODULE_SFF_8079_LEN: _ = 256;
-pub const ETH_MODULE_SFF_8472: _ = 0x2;
-pub const ETH_MODULE_SFF_8472_LEN: _ = 512;
-pub const ETH_MODULE_SFF_8636: _ = 0x3;
-pub const ETH_MODULE_SFF_8636_LEN: _ = 256;
-pub const ETH_MODULE_SFF_8436: _ = 0x4;
-pub const ETH_MODULE_SFF_8436_LEN: _ = 256;
-pub const ETH_MODULE_SFF_8636_MAX_LEN: _ = 640;
-pub const ETH_MODULE_SFF_8436_MAX_LEN: _ = 640;
+pub const ETH_MODULE_SFF_8079: u32 = 0x1;
+pub const ETH_MODULE_SFF_8079_LEN: u32 = 256;
+pub const ETH_MODULE_SFF_8472: u32 = 0x2;
+pub const ETH_MODULE_SFF_8472_LEN: u32 = 512;
+pub const ETH_MODULE_SFF_8636: u32 = 0x3;
+pub const ETH_MODULE_SFF_8636_LEN: u32 = 256;
+pub const ETH_MODULE_SFF_8436: u32 = 0x4;
+pub const ETH_MODULE_SFF_8436_LEN: u32 = 256;
+pub const ETH_MODULE_SFF_8636_MAX_LEN: u32 = 640;
+pub const ETH_MODULE_SFF_8436_MAX_LEN: u32 = 640;
 
 /* Reset flags */
 /* The reset() operation must clear the flags for the components which
@@ -2439,7 +2439,7 @@ ethtool_reset_flags {
 	ETH_RESET_ALL		= 0xffffffffu32,	/* All components used by this
 						 * interface, even if shared */
 };
-pub const ETH_RESET_SHARED_SHIFT: _ = 16;
+pub const ETH_RESET_SHARED_SHIFT: u32 = 16;
 
 
 /**

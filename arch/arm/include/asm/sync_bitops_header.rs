@@ -46,16 +46,16 @@ macro_rules! sync_test_bit {
  */
 
 unsafe extern "C" {
-    pub fn _sync_test_and_set_bit(nr: ::core::ffi::c_int, p: *mut ::core::ffi::c_ulong)
-        -> ::core::ffi::c_int;
+    pub fn _sync_test_and_set_bit(nr: ::kernel::ffi::c_int, p: *mut ::kernel::ffi::c_ulong)
+        -> ::kernel::ffi::c_int;
     pub fn _sync_test_and_clear_bit(
-        nr: ::core::ffi::c_int,
-        p: *mut ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        nr: ::kernel::ffi::c_int,
+        p: *mut ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
     pub fn _sync_test_and_change_bit(
-        nr: ::core::ffi::c_int,
-        p: *mut ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        nr: ::kernel::ffi::c_int,
+        p: *mut ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 }
 
 macro_rules! sync_test_and_set_bit {

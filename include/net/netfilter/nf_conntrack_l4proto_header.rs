@@ -18,19 +18,19 @@ extern "C" {
 
 
 
-pub fn icmp_pkt_to_tuple(skb: *const sk_buff, dataoff: libc::c_uint, net: *mut net, tuple: *mut nf_conntrack_tuple) -> bool;
-pub fn icmpv6_pkt_to_tuple(skb: *const sk_buff, dataoff: libc::c_uint, net: *mut net, tuple: *mut nf_conntrack_tuple) -> bool;
+pub fn icmp_pkt_to_tuple(skb: *const sk_buff, dataoff: kernel::ffi::c_uint, net: *mut net, tuple: *mut nf_conntrack_tuple) -> bool;
+pub fn icmpv6_pkt_to_tuple(skb: *const sk_buff, dataoff: kernel::ffi::c_uint, net: *mut net, tuple: *mut nf_conntrack_tuple) -> bool;
 pub fn nf_conntrack_invert_icmp_tuple(tuple: *mut nf_conntrack_tuple, orig: *const nf_conntrack_tuple) -> bool;
 pub fn nf_conntrack_invert_icmpv6_tuple(tuple: *mut nf_conntrack_tuple, orig: *const nf_conntrack_tuple) -> bool;
-pub fn nf_conntrack_inet_error(tmpl: *mut nf_conn, skb: *mut sk_buff, dataoff: libc::c_uint, state: *const nf_hook_state, l4proto: u8, outer_daddr: *mut nf_inet_addr) -> i32;
-pub fn nf_conntrack_icmpv4_error(tmpl: *mut nf_conn, skb: *mut sk_buff, dataoff: libc::c_uint, state: *const nf_hook_state) -> i32;
-pub fn nf_conntrack_icmpv6_error(tmpl: *mut nf_conn, skb: *mut sk_buff, dataoff: libc::c_uint, state: *const nf_hook_state) -> i32;
+pub fn nf_conntrack_inet_error(tmpl: *mut nf_conn, skb: *mut sk_buff, dataoff: kernel::ffi::c_uint, state: *const nf_hook_state, l4proto: u8, outer_daddr: *mut nf_inet_addr) -> i32;
+pub fn nf_conntrack_icmpv4_error(tmpl: *mut nf_conn, skb: *mut sk_buff, dataoff: kernel::ffi::c_uint, state: *const nf_hook_state) -> i32;
+pub fn nf_conntrack_icmpv6_error(tmpl: *mut nf_conn, skb: *mut sk_buff, dataoff: kernel::ffi::c_uint, state: *const nf_hook_state) -> i32;
 pub fn nf_conntrack_icmp_packet(ct: *mut nf_conn, skb: *mut sk_buff, ctinfo: ip_conntrack_info, state: *const nf_hook_state) -> i32;
 pub fn nf_conntrack_icmpv6_packet(ct: *mut nf_conn, skb: *mut sk_buff, ctinfo: ip_conntrack_info, state: *const nf_hook_state) -> i32;
-pub fn nf_conntrack_udp_packet(ct: *mut nf_conn, skb: *mut sk_buff, dataoff: libc::c_uint, ctinfo: ip_conntrack_info, state: *const nf_hook_state) -> i32;
-pub fn nf_conntrack_tcp_packet(ct: *mut nf_conn, skb: *mut sk_buff, dataoff: libc::c_uint, ctinfo: ip_conntrack_info, state: *const nf_hook_state) -> i32;
-pub fn nf_conntrack_sctp_packet(ct: *mut nf_conn, skb: *mut sk_buff, dataoff: libc::c_uint, ctinfo: ip_conntrack_info, state: *const nf_hook_state) -> i32;
-pub fn nf_conntrack_gre_packet(ct: *mut nf_conn, skb: *mut sk_buff, dataoff: libc::c_uint, ctinfo: ip_conntrack_info, state: *const nf_hook_state) -> i32;
+pub fn nf_conntrack_udp_packet(ct: *mut nf_conn, skb: *mut sk_buff, dataoff: kernel::ffi::c_uint, ctinfo: ip_conntrack_info, state: *const nf_hook_state) -> i32;
+pub fn nf_conntrack_tcp_packet(ct: *mut nf_conn, skb: *mut sk_buff, dataoff: kernel::ffi::c_uint, ctinfo: ip_conntrack_info, state: *const nf_hook_state) -> i32;
+pub fn nf_conntrack_sctp_packet(ct: *mut nf_conn, skb: *mut sk_buff, dataoff: kernel::ffi::c_uint, ctinfo: ip_conntrack_info, state: *const nf_hook_state) -> i32;
+pub fn nf_conntrack_gre_packet(ct: *mut nf_conn, skb: *mut sk_buff, dataoff: kernel::ffi::c_uint, ctinfo: ip_conntrack_info, state: *const nf_hook_state) -> i32;
 
 pub fn nf_conntrack_generic_init_net(net: *mut net);
 pub fn nf_conntrack_tcp_init_net(net: *mut net);
@@ -45,12 +45,12 @@ pub fn nf_ct_l4proto_find(l4proto: u8) -> *const nf_conntrack_l4proto;
 
 pub fn nf_ct_port_tuple_to_nlattr(skb: *mut sk_buff, tuple: *const nf_conntrack_tuple) -> i32;
 pub fn nf_ct_port_nlattr_to_tuple(tb: *mut *mut nlattr, t: *mut nf_conntrack_tuple, flags: u32) -> i32;
-pub fn nf_ct_port_nlattr_tuple_size() -> libc::c_uint;
+pub fn nf_ct_port_nlattr_tuple_size() -> kernel::ffi::c_uint;
 pub static nf_ct_port_nla_policy: [nla_policy; 0];
 
 /* CONFIG_SYSCTL */
-pub fn nf_ct_l4proto_log_invalid(skb: *const sk_buff, ct: *const nf_conn, state: *const nf_hook_state, fmt: *const libc::c_char, ...) ;
-pub fn nf_l4proto_log_invalid(skb: *const sk_buff, state: *const nf_hook_state, protonum: u8, fmt: *const libc::c_char, ...);
+pub fn nf_ct_l4proto_log_invalid(skb: *const sk_buff, ct: *const nf_conn, state: *const nf_hook_state, fmt: *const kernel::ffi::c_char, ...) ;
+pub fn nf_l4proto_log_invalid(skb: *const sk_buff, state: *const nf_hook_state, protonum: u8, fmt: *const kernel::ffi::c_char, ...);
 
 /* CONFIG_NF_CONNTRACK: these inline functions require the corresponding
  * nf_conn and per-network namespace layouts from nf_conntrack.h. */
@@ -91,7 +91,7 @@ pub struct nf_conntrack_l4proto {
 	pub from_nlattr: Option<unsafe extern "C" fn(tb: *mut *mut nlattr, ct: *mut nf_conn) -> i32>,
 	pub tuple_to_nlattr: Option<unsafe extern "C" fn(skb: *mut sk_buff, t: *const nf_conntrack_tuple) -> i32>,
 	/* Calculate tuple nlattr size */
-	pub nlattr_tuple_size: Option<unsafe extern "C" fn() -> libc::c_uint>,
+	pub nlattr_tuple_size: Option<unsafe extern "C" fn() -> kernel::ffi::c_uint>,
 	pub nlattr_to_tuple: Option<unsafe extern "C" fn(tb: *mut *mut nlattr, t: *mut nf_conntrack_tuple, flags: u32) -> i32>,
 	pub nla_policy: *const nla_policy,
 
@@ -101,8 +101,8 @@ pub struct nf_conntrack_l4proto {
 }
 #[repr(C)]
 pub struct ctnl_timeout {
-	pub nlattr_to_obj: Option<unsafe extern "C" fn(tb: *mut *mut nlattr, net: *mut net, data: *mut libc::c_void) -> i32>,
-	pub obj_to_nlattr: Option<unsafe extern "C" fn(skb: *mut sk_buff, data: *const libc::c_void) -> i32>,
+	pub nlattr_to_obj: Option<unsafe extern "C" fn(tb: *mut *mut nlattr, net: *mut net, data: *mut kernel::ffi::c_void) -> i32>,
+	pub obj_to_nlattr: Option<unsafe extern "C" fn(skb: *mut sk_buff, data: *const kernel::ffi::c_void) -> i32>,
 	pub obj_size: u16,
 	pub nlattr_max: u16,
 	pub nla_policy: *const nla_policy,

@@ -57,21 +57,21 @@ unsafe fn spufs_calls_put(_calls: *mut spufs_calls) {}
 
 #[no_mangle]
 pub unsafe extern "C" fn spu_create(
-    name: *const core::ffi::c_char,
-    flags: core::ffi::c_uint,
+    name: *const kernel::ffi::c_char,
+    flags: kernel::ffi::c_uint,
     mode: umode_t,
-    neighbor_fd: core::ffi::c_int,
-) -> core::ffi::c_long {
+    neighbor_fd: kernel::ffi::c_int,
+) -> kernel::ffi::c_long {
     let calls = spufs_calls_get();
     if calls.is_null() {
-        return -ENOSYS as core::ffi::c_long;
+        return -ENOSYS as kernel::ffi::c_long;
     }
 
     if flags & SPU_CREATE_AFFINITY_SPU != 0 {
         let neighbor = fdget(neighbor_fd);
         if fd_empty(neighbor) {
             spufs_calls_put(calls);
-            return -EBADF as core::ffi::c_long;
+            return -EBADF as kernel::ffi::c_long;
         }
         let result = ((*calls).create_thread)(name, flags, mode, fd_file(neighbor));
         fdput(neighbor);
@@ -86,19 +86,19 @@ pub unsafe extern "C" fn spu_create(
 
 #[no_mangle]
 pub unsafe extern "C" fn spu_run(
-    fd: core::ffi::c_int,
+    fd: kernel::ffi::c_int,
     unpc: *mut u32,
     ustatus: *mut u32,
-) -> core::ffi::c_long {
+) -> kernel::ffi::c_long {
     let calls = spufs_calls_get();
     if calls.is_null() {
-        return -ENOSYS as core::ffi::c_long;
+        return -ENOSYS as kernel::ffi::c_long;
     }
 
     let arg = fdget(fd);
     if fd_empty(arg) {
         spufs_calls_put(calls);
-        return -EBADF as core::ffi::c_long;
+        return -EBADF as kernel::ffi::c_long;
     }
 
     let result = ((*calls).spu_run)(fd_file(arg), unpc, ustatus);
@@ -108,7 +108,7 @@ pub unsafe extern "C" fn spu_run(
 }
 
 #[cfg(CONFIG_COREDUMP)]
-pub unsafe extern "C" fn elf_coredump_extra_notes_size() -> core::ffi::c_int {
+pub unsafe extern "C" fn elf_coredump_extra_notes_size() -> kernel::ffi::c_int {
     let calls = spufs_calls_get();
     if calls.is_null() {
         return 0;
@@ -122,7 +122,7 @@ pub unsafe extern "C" fn elf_coredump_extra_notes_size() -> core::ffi::c_int {
 #[cfg(CONFIG_COREDUMP)]
 pub unsafe extern "C" fn elf_coredump_extra_notes_write(
     cprm: *mut coredump_params,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let calls = spufs_calls_get();
     if calls.is_null() {
         return 0;
@@ -145,7 +145,7 @@ pub unsafe extern "C" fn notify_spus_active() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn register_spu_syscalls(calls: *mut spufs_calls) -> core::ffi::c_int {
+pub unsafe extern "C" fn register_spu_syscalls(calls: *mut spufs_calls) -> kernel::ffi::c_int {
     if !spufs_calls.is_null() {
         return -EBUSY;
     }

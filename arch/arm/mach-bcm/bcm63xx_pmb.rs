@@ -50,21 +50,21 @@ const ARM_NEON_L2: u32 = 0x3c;
 pub struct DeviceNode { _private: [u8; 0] }
 
 extern "C" {
-    fn bpcm_wr(master: *mut core::ffi::c_void, addr: u32, off: u32, val: u32) -> i32;
-    fn bpcm_rd(master: *mut core::ffi::c_void, addr: u32, off: u32, val: *mut u32) -> i32;
+    fn bpcm_wr(master: *mut kernel::ffi::c_void, addr: u32, off: u32, val: u32) -> i32;
+    fn bpcm_rd(master: *mut kernel::ffi::c_void, addr: u32, off: u32, val: *mut u32) -> i32;
     fn cpu_relax();
     fn of_get_cpu_hwid(dn: *mut DeviceNode, index: u32) -> u32;
     fn of_parse_phandle_with_args(
         dn: *mut DeviceNode,
-        name: *const core::ffi::c_char,
-        cells_name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
+        cells_name: *const kernel::ffi::c_char,
         index: u32,
         args: *mut OfPhandleArgs,
     ) -> i32;
-    fn of_iomap(np: *mut DeviceNode, index: i32) -> *mut core::ffi::c_void;
-    fn iounmap(addr: *mut core::ffi::c_void);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn of_iomap(np: *mut DeviceNode, index: i32) -> *mut kernel::ffi::c_void;
+    fn iounmap(addr: *mut kernel::ffi::c_void);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
     fn warn_on(condition: bool) -> bool;
 }
 
@@ -81,7 +81,7 @@ static mut PMB_LOCK: u8 = 0;
  * shift is seen, masked with mask and is different from cond.
  */
 unsafe fn bpcm_wr_rd_mask(
-    master: *mut core::ffi::c_void,
+    master: *mut kernel::ffi::c_void,
     addr: u32,
     off: u32,
     val: *mut u32,
@@ -102,7 +102,7 @@ unsafe fn bpcm_wr_rd_mask(
 
 unsafe fn bcm63xx_pmb_get_resources(
     dn: *mut DeviceNode,
-    base: *mut *mut core::ffi::c_void,
+    base: *mut *mut kernel::ffi::c_void,
     cpu: *mut u32,
     addr: *mut u32,
 ) -> i32 {

@@ -15,24 +15,24 @@ pub struct ssb_sprom {
 extern "C" {
     pub fn bcm47xx_fill_sprom(
         sprom: *mut ssb_sprom,
-        prefix: *const core::ffi::c_char,
+        prefix: *const kernel::ffi::c_char,
         fallback: bool,
     );
-    pub fn bcm47xx_sprom_register_fallbacks() -> core::ffi::c_int;
+    pub fn bcm47xx_sprom_register_fallbacks() -> kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_BCM47XX_SPROM))]
 #[inline]
 pub fn bcm47xx_fill_sprom(
     _sprom: *mut ssb_sprom,
-    _prefix: *const core::ffi::c_char,
+    _prefix: *const kernel::ffi::c_char,
     _fallback: bool,
 ) {
 }
 
 #[cfg(not(CONFIG_BCM47XX_SPROM))]
 #[inline]
-pub fn bcm47xx_sprom_register_fallbacks() -> core::ffi::c_int {
+pub fn bcm47xx_sprom_register_fallbacks() -> kernel::ffi::c_int {
     // ENOTSUPP is provided by the translated Linux errno dependency.
     -ENOTSUPP
 }

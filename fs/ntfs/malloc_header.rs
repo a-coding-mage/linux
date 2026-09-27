@@ -21,7 +21,7 @@
  * Depending on @gfp_mask the allocation may be guaranteed to succeed.
  */
 #[inline]
-pub unsafe fn __ntfs_malloc(size: libc::c_ulong, gfp_mask: gfp_t) -> *mut libc::c_void {
+pub unsafe fn __ntfs_malloc(size: kernel::ffi::c_ulong, gfp_mask: gfp_t) -> *mut kernel::ffi::c_void {
     if likely(size <= PAGE_SIZE) {
         BUG_ON(!size);
         /* kmalloc() has per-CPU caches so is faster for now. */
@@ -44,7 +44,7 @@ pub unsafe fn __ntfs_malloc(size: libc::c_ulong, gfp_mask: gfp_t) -> *mut libc::
  * If there was insufficient memory to complete the request, return NULL.
  */
 #[inline]
-pub unsafe fn ntfs_malloc_nofs(size: libc::c_ulong) -> *mut libc::c_void {
+pub unsafe fn ntfs_malloc_nofs(size: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void {
     __ntfs_malloc(size, GFP_NOFS | __GFP_HIGHMEM)
 }
 
@@ -61,12 +61,12 @@ pub unsafe fn ntfs_malloc_nofs(size: libc::c_ulong) -> *mut libc::c_void {
  * If there was insufficient memory to complete the request, return NULL.
  */
 #[inline]
-pub unsafe fn ntfs_malloc_nofs_nofail(size: libc::c_ulong) -> *mut libc::c_void {
+pub unsafe fn ntfs_malloc_nofs_nofail(size: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void {
     __ntfs_malloc(size, GFP_NOFS | __GFP_HIGHMEM | __GFP_NOFAIL)
 }
 
 #[inline]
-pub unsafe fn ntfs_free(addr: *mut libc::c_void) {
+pub unsafe fn ntfs_free(addr: *mut kernel::ffi::c_void) {
     kvfree(addr);
 }
 

@@ -30,7 +30,7 @@ pub struct pt_regs {
 pub const NSIG: i32 = 32;
 
 #[cfg(not(feature = "kernel"))]
-pub type sigset_t = ::core::ffi::c_ulong;
+pub type sigset_t = ::kernel::ffi::c_ulong;
 
 pub const SIGHUP: i32 = 1;
 pub const SIGINT: i32 = 2;
@@ -83,14 +83,14 @@ pub type __sighandler_t = Option<unsafe extern "C" fn(i32)>;
 #[repr(C)]
 pub union sigaction__u {
     pub _sa_handler: __sighandler_t,
-    pub _sa_sigaction: Option<unsafe extern "C" fn(i32, *mut siginfo, *mut ::core::ffi::c_void)>,
+    pub _sa_sigaction: Option<unsafe extern "C" fn(i32, *mut siginfo, *mut ::kernel::ffi::c_void)>,
 }
 
 #[cfg(not(feature = "kernel"))]
 #[repr(C)]
 pub struct sigaction {
     pub _u: sigaction__u,
-    pub sa_flags: ::core::ffi::c_ulong,
+    pub sa_flags: ::kernel::ffi::c_ulong,
     pub sa_restorer: Option<unsafe extern "C" fn(void)>,
     pub sa_mask: sigset_t,
 }
@@ -102,7 +102,7 @@ pub type sa_sigaction = sigaction__u;
 
 #[repr(C)]
 pub struct stack_t {
-    pub ss_sp: *mut ::core::ffi::c_void,
+    pub ss_sp: *mut ::kernel::ffi::c_void,
     pub ss_flags: i32,
     pub ss_size: usize,
 }

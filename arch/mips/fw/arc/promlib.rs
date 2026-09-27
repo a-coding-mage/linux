@@ -20,7 +20,7 @@ extern "C" {
 // calls need to reside in CKSEG0/1.  Under this configuration these values
 // are static storage; otherwise the C macro leaves them as automatic locals.
 
-pub unsafe fn prom_putchar(c: core::ffi::c_char) {
+pub unsafe fn prom_putchar(c: kernel::ffi::c_char) {
     #[cfg(all(target_pointer_width = "64", CONFIG_FW_ARC32))]
     static mut CNT: ULONG = unsafe { core::mem::zeroed() };
     #[cfg(all(target_pointer_width = "64", CONFIG_FW_ARC32))]
@@ -47,7 +47,7 @@ pub unsafe fn prom_putchar(c: core::ffi::c_char) {
     }
 }
 
-pub unsafe fn prom_getchar() -> core::ffi::c_char {
+pub unsafe fn prom_getchar() -> kernel::ffi::c_char {
     #[cfg(all(target_pointer_width = "64", CONFIG_FW_ARC32))]
     static mut CNT: ULONG = unsafe { core::mem::zeroed() };
     #[cfg(all(target_pointer_width = "64", CONFIG_FW_ARC32))]
@@ -63,14 +63,14 @@ pub unsafe fn prom_getchar() -> core::ffi::c_char {
         bc_disable();
         ArcRead(0, &mut C, 1, &mut CNT);
         bc_enable();
-        C as core::ffi::c_char
+        C as kernel::ffi::c_char
     }
     #[cfg(not(all(target_pointer_width = "64", CONFIG_FW_ARC32)))]
     {
         bc_disable();
         ArcRead(0, &mut c, 1, &mut cnt);
         bc_enable();
-        c as core::ffi::c_char
+        c as kernel::ffi::c_char
     }
 }
 

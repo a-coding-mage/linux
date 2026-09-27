@@ -12,15 +12,15 @@
  * call-site evaluation semantics. */
 macro_rules! PSYCHO_CONFIG_BASE {
     ($pbm:expr) => {
-        unsafe { (*$pbm).config_space | (1 as ::core::ffi::c_ulong << 24) }
+        unsafe { (*$pbm).config_space | (1 as ::kernel::ffi::c_ulong << 24) }
     };
 }
 
 macro_rules! PSYCHO_CONFIG_ENCODE {
     ($bus:expr, $devfn:expr, $reg:expr) => {
-        (($bus as ::core::ffi::c_ulong << 16)
-            | ($devfn as ::core::ffi::c_ulong << 8)
-            | ($reg as ::core::ffi::c_ulong))
+        (($bus as ::kernel::ffi::c_ulong << 16)
+            | ($devfn as ::kernel::ffi::c_ulong << 8)
+            | ($reg as ::kernel::ffi::c_ulong))
     };
 }
 
@@ -29,10 +29,10 @@ pub unsafe fn psycho_pci_config_mkaddr(
     pbm: *mut pci_pbm_info,
     bus: u8,
     devfn: u32,
-    where_: ::core::ffi::c_int,
-) -> *mut ::core::ffi::c_void {
+    where_: ::kernel::ffi::c_int,
+) -> *mut ::kernel::ffi::c_void {
     (PSYCHO_CONFIG_BASE!(pbm) | PSYCHO_CONFIG_ENCODE!(bus, devfn, where_))
-        as *mut ::core::ffi::c_void
+        as *mut ::kernel::ffi::c_void
 }
 
 #[repr(C)]
@@ -46,26 +46,26 @@ pub enum psycho_error_type {
 extern "C" {
     pub fn psycho_check_iommu_error(
         pbm: *mut pci_pbm_info,
-        afsr: ::core::ffi::c_ulong,
-        afar: ::core::ffi::c_ulong,
+        afsr: ::kernel::ffi::c_ulong,
+        afar: ::kernel::ffi::c_ulong,
         type_: psycho_error_type,
     );
 
-    pub fn psycho_pcierr_intr(irq: ::core::ffi::c_int, dev_id: *mut ::core::ffi::c_void) -> irqreturn_t;
+    pub fn psycho_pcierr_intr(irq: ::kernel::ffi::c_int, dev_id: *mut ::kernel::ffi::c_void) -> irqreturn_t;
 
     pub fn psycho_iommu_init(
         pbm: *mut pci_pbm_info,
-        tsbsize: ::core::ffi::c_int,
+        tsbsize: ::kernel::ffi::c_int,
         dvma_offset: u32,
         dma_mask: u32,
-        write_complete_offset: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        write_complete_offset: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn psycho_pbm_init_common(
         pbm: *mut pci_pbm_info,
         op: *mut platform_device,
-        chip_name: *const ::core::ffi::c_char,
-        chip_type: ::core::ffi::c_int,
+        chip_name: *const ::kernel::ffi::c_char,
+        chip_type: ::kernel::ffi::c_int,
     );
 }
 

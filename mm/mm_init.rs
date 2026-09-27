@@ -9,7 +9,7 @@
 // C dependencies supplied by the surrounding kernel translation unit.
 
 #[cfg(not(CONFIG_NUMA))]
-pub static mut max_mapnr: ::core::ffi::c_ulong = 0;
+pub static mut max_mapnr: ::kernel::ffi::c_ulong = 0;
 
 #[cfg(not(CONFIG_NUMA))]
 pub static mut mem_map: *mut page = ::core::ptr::null_mut();
@@ -18,9 +18,9 @@ pub static mut mem_map: *mut page = ::core::ptr::null_mut();
  * high_memory defines the upper bound on direct map memory, then end
  * of ZONE_NORMAL.
  */
-pub static mut high_memory: *mut ::core::ffi::c_void = ::core::ptr::null_mut();
+pub static mut high_memory: *mut ::kernel::ffi::c_void = ::core::ptr::null_mut();
 
-pub static mut zero_page_pfn: ::core::ffi::c_ulong = 0;
+pub static mut zero_page_pfn: ::kernel::ffi::c_ulong = 0;
 
 #[cfg(not(__HAVE_COLOR_ZERO_PAGE))]
 #[repr(align(4096))]
@@ -30,11 +30,11 @@ pub static empty_zero_page: [u8; PAGE_SIZE] = [0; PAGE_SIZE];
 pub static mut __zero_page: *mut page = ::core::ptr::null_mut();
 
 #[cfg(CONFIG_DEBUG_MEMORY_INIT)]
-pub static mut mminit_loglevel: ::core::ffi::c_int = 0;
+pub static mut mminit_loglevel: ::kernel::ffi::c_int = 0;
 
 #[cfg(CONFIG_DEBUG_MEMORY_INIT)]
 pub unsafe extern "C" fn mminit_verify_zonelist() {
-    let nid: ::core::ffi::c_int;
+    let nid: ::kernel::ffi::c_int;
 
     if mminit_loglevel < MMINIT_VERIFY {
         return;
@@ -75,10 +75,10 @@ pub unsafe extern "C" fn mminit_verify_zonelist() {
 
 #[cfg(CONFIG_DEBUG_MEMORY_INIT)]
 pub unsafe extern "C" fn mminit_verify_pageflags_layout() {
-    let mut shift: ::core::ffi::c_int = BITS_PER_LONG;
+    let mut shift: ::kernel::ffi::c_int = BITS_PER_LONG;
     let width = shift - NR_NON_PAGEFLAG_BITS;
-    let mut or_mask: ::core::ffi::c_ulong;
-    let mut add_mask: ::core::ffi::c_ulong;
+    let mut or_mask: ::kernel::ffi::c_ulong;
+    let mut add_mask: ::kernel::ffi::c_ulong;
 
     mminit_dprintk(MMINIT_TRACE, "pageflags_layout_widths",
         "Section %d Node %d Zone %d Lastcpupid %d Kasantag %d Gen %d Tier %d Flags %d\n",
@@ -90,15 +90,15 @@ pub unsafe extern "C" fn mminit_verify_pageflags_layout() {
         KASAN_TAG_WIDTH);
     mminit_dprintk(MMINIT_TRACE, "pageflags_layout_pgshifts",
         "Section %lu Node %lu Zone %lu Lastcpupid %lu Kasantag %lu\n",
-        SECTIONS_PGSHIFT as ::core::ffi::c_ulong,
-        NODES_PGSHIFT as ::core::ffi::c_ulong,
-        ZONES_PGSHIFT as ::core::ffi::c_ulong,
-        LAST_CPUPID_PGSHIFT as ::core::ffi::c_ulong,
-        KASAN_TAG_PGSHIFT as ::core::ffi::c_ulong);
+        SECTIONS_PGSHIFT as ::kernel::ffi::c_ulong,
+        NODES_PGSHIFT as ::kernel::ffi::c_ulong,
+        ZONES_PGSHIFT as ::kernel::ffi::c_ulong,
+        LAST_CPUPID_PGSHIFT as ::kernel::ffi::c_ulong,
+        KASAN_TAG_PGSHIFT as ::kernel::ffi::c_ulong);
     mminit_dprintk(MMINIT_TRACE, "pageflags_layout_nodezoneid",
         "Node/Zone ID: %lu -> %lu\n",
-        (ZONEID_PGOFF + ZONEID_SHIFT) as ::core::ffi::c_ulong,
-        ZONEID_PGOFF as ::core::ffi::c_ulong);
+        (ZONEID_PGOFF + ZONEID_SHIFT) as ::kernel::ffi::c_ulong,
+        ZONEID_PGOFF as ::kernel::ffi::c_ulong);
     mminit_dprintk(MMINIT_TRACE, "pageflags_layout_usage",
         "location: %d -> %d layout %d -> %d unused %d -> %d page-flags\n",
         shift, width, width, NR_PAGEFLAGS, NR_PAGEFLAGS, 0);
@@ -127,7 +127,7 @@ pub unsafe extern "C" fn mminit_verify_pageflags_layout() {
 }
 
 #[cfg(CONFIG_DEBUG_MEMORY_INIT)]
-unsafe extern "C" fn set_mminit_loglevel(str_: *mut ::core::ffi::c_char) -> ::core::ffi::c_int {
+unsafe extern "C" fn set_mminit_loglevel(str_: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int {
     get_option(&mut str_, &mut mminit_loglevel);
     0
 }
@@ -138,11 +138,11 @@ pub static mut mm_kobj: *mut kobject = ::core::ptr::null_mut();
 pub static mut vm_committed_as_batch: s32 = 32;
 
 #[cfg(CONFIG_SMP)]
-pub unsafe extern "C" fn mm_compute_batch(overcommit_policy: ::core::ffi::c_int) {
+pub unsafe extern "C" fn mm_compute_batch(overcommit_policy: ::kernel::ffi::c_int) {
     let memsized_batch: u64;
     let nr: s32 = num_present_cpus();
     let batch: s32 = core::cmp::max(nr.wrapping_mul(2), 32);
-    let ram_pages: ::core::ffi::c_ulong = totalram_pages();
+    let ram_pages: ::kernel::ffi::c_ulong = totalram_pages();
 
     /*
      * For policy OVERCOMMIT_NEVER, set batch size to 0.4% of
@@ -151,9 +151,9 @@ pub unsafe extern "C" fn mm_compute_batch(overcommit_policy: ::core::ffi::c_int)
      * vm_committed_as, while the max limit is INT_MAX
      */
     if overcommit_policy == OVERCOMMIT_NEVER {
-        memsized_batch = core::cmp::min(ram_pages / nr as ::core::ffi::c_ulong / 256, INT_MAX as u64);
+        memsized_batch = core::cmp::min(ram_pages / nr as ::kernel::ffi::c_ulong / 256, INT_MAX as u64);
     } else {
-        memsized_batch = core::cmp::min(ram_pages / nr as ::core::ffi::c_ulong / 4, INT_MAX as u64);
+        memsized_batch = core::cmp::min(ram_pages / nr as ::kernel::ffi::c_ulong / 4, INT_MAX as u64);
     }
 
     vm_committed_as_batch = core::cmp::max(memsized_batch as s32, batch);
@@ -162,9 +162,9 @@ pub unsafe extern "C" fn mm_compute_batch(overcommit_policy: ::core::ffi::c_int)
 #[cfg(CONFIG_SMP)]
 unsafe extern "C" fn mm_compute_batch_notifier(
     _self: *mut notifier_block,
-    action: ::core::ffi::c_ulong,
-    _arg: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int {
+    action: ::kernel::ffi::c_ulong,
+    _arg: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int {
     match action {
         MEM_ONLINE | MEM_OFFLINE => mm_compute_batch(sysctl_overcommit_memory),
         _ => {}
@@ -173,7 +173,7 @@ unsafe extern "C" fn mm_compute_batch_notifier(
 }
 
 #[cfg(CONFIG_SMP)]
-unsafe extern "C" fn mm_compute_batch_init() -> ::core::ffi::c_int {
+unsafe extern "C" fn mm_compute_batch_init() -> ::kernel::ffi::c_int {
     mm_compute_batch(sysctl_overcommit_memory);
     hotplug_memory_notifier(mm_compute_batch_notifier, MM_COMPUTE_BATCH_PRI);
     0

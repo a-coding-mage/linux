@@ -5,11 +5,11 @@
 type IoctlFn = unsafe extern "C" fn(*mut file, *mut autofs_sb_info, *mut autofs_dev_ioctl) -> i32;
 
 unsafe fn check_name(name: *const i8) -> i32 {
-    if libc::strchr(name, b'/' as i32).is_null() { -EINVAL } else { 0 }
+    if strchr(name, b'/' as i32).is_null() { -EINVAL } else { 0 }
 }
 
 unsafe fn invalid_str(str_: *mut i8, size: usize) -> i32 {
-    if libc::memchr(str_ as *const _, 0, size).is_some() { 0 } else { -EINVAL }
+    if memchr(str_ as *const _, 0, size).is_some() { 0 } else { -EINVAL }
 }
 
 unsafe fn check_dev_ioctl_version(cmd: i32, param: *mut autofs_dev_ioctl) -> i32 {

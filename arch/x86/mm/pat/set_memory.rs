@@ -8,14 +8,14 @@
 
 #[repr(C)]
 pub struct CpaData {
-    pub vaddr: *mut ::core::ffi::c_ulong,
+    pub vaddr: *mut ::kernel::ffi::c_ulong,
     pub pgd: *mut PgdT,
     pub mask_set: PgprotT,
     pub mask_clr: PgprotT,
-    pub numpages: ::core::ffi::c_ulong,
-    pub curpage: ::core::ffi::c_ulong,
-    pub pfn: ::core::ffi::c_ulong,
-    pub flags: ::core::ffi::c_uint,
+    pub numpages: ::kernel::ffi::c_ulong,
+    pub curpage: ::kernel::ffi::c_ulong,
+    pub pfn: ::kernel::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_uint,
     pub force_split: bool,
     pub force_static_prot: bool,
     pub force_flush_all: bool,
@@ -24,18 +24,18 @@ pub struct CpaData {
 
 // These kernel types are supplied by the architecture and memory-management
 // layers when this file is included in the complete kernel translation.
-pub type PgdT = ::core::ffi::c_ulong;
-pub type PgprotT = ::core::ffi::c_ulong;
-pub type Page = ::core::ffi::c_void;
-pub type PteT = ::core::ffi::c_ulong;
-pub type PhysAddrT = ::core::ffi::c_ulong;
+pub type PgdT = ::kernel::ffi::c_ulong;
+pub type PgprotT = ::kernel::ffi::c_ulong;
+pub type Page = ::kernel::ffi::c_void;
+pub type PteT = ::kernel::ffi::c_ulong;
+pub type PhysAddrT = ::kernel::ffi::c_ulong;
 
-pub const CPA_FLUSHTLB: ::core::ffi::c_uint = 0x01;
-pub const CPA_ARRAY: ::core::ffi::c_uint = 0x02;
-pub const CPA_PAGES_ARRAY: ::core::ffi::c_uint = 0x04;
-pub const CPA_NO_CHECK_ALIAS: ::core::ffi::c_uint = 0x08;
-pub const CPA_COLLAPSE: ::core::ffi::c_uint = 0x10;
-pub const CPA_DEBUG_PAGEALLOC: ::core::ffi::c_uint = 0x20;
+pub const CPA_FLUSHTLB: ::kernel::ffi::c_uint = 0x01;
+pub const CPA_ARRAY: ::kernel::ffi::c_uint = 0x02;
+pub const CPA_PAGES_ARRAY: ::kernel::ffi::c_uint = 0x04;
+pub const CPA_NO_CHECK_ALIAS: ::kernel::ffi::c_uint = 0x08;
+pub const CPA_COLLAPSE: ::kernel::ffi::c_uint = 0x10;
+pub const CPA_DEBUG_PAGEALLOC: ::kernel::ffi::c_uint = 0x20;
 
 #[inline]
 pub const unsafe fn within(addr: usize, start: usize, end: usize) -> bool {

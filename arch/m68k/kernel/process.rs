@@ -16,11 +16,11 @@ extern "C" {
     static mut mach_reset: Option<unsafe extern "C" fn()>;
     static mut mach_halt: Option<unsafe extern "C" fn()>;
     fn do_kernel_power_off();
-    fn print_tainted() -> *const core::ffi::c_char;
+    fn print_tainted() -> *const kernel::ffi::c_char;
     fn rdusp() -> usize;
     fn kernel_clone(args: *const kernel_clone_args) -> i32;
     fn sys_clone3(args: *const clone_args, size: usize) -> i32;
-    fn task_stack_page(p: *mut task_struct) -> *mut core::ffi::c_void;
+    fn task_stack_page(p: *mut task_struct) -> *mut kernel::ffi::c_void;
     fn current_pt_regs() -> *mut pt_regs;
     fn task_thread_info(p: *mut task_struct) -> *mut thread_info;
     fn in_sched_functions(pc: usize) -> bool;
@@ -47,7 +47,7 @@ pub unsafe extern "C" fn arch_cpu_idle() {
     core::arch::asm!("stop #0x2000", options(nostack, preserves_flags));
 }
 
-pub unsafe extern "C" fn machine_restart(_unused: *mut core::ffi::c_char) -> ! {
+pub unsafe extern "C" fn machine_restart(_unused: *mut kernel::ffi::c_char) -> ! {
     if let Some(f) = mach_reset { f(); }
     loop {}
 }

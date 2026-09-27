@@ -8,7 +8,7 @@
 //! C header dependencies are expected to be supplied by the surrounding
 //! translation unit.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 // Opaque types supplied by the corresponding kernel headers.
 pub enum device {}
@@ -25,7 +25,7 @@ pub const STM32_NOTYPE_FIREWALL: u32 = 1u32 << 3;
 #[repr(C)]
 pub struct stm32_firewall_controller {
     /// Name of the firewall controller.
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     /// Device reference of the firewall controller.
     pub dev: *mut device,
     /// Base address of the firewall controller.

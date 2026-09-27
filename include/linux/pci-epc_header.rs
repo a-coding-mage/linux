@@ -27,8 +27,8 @@ pub struct pci_epc_map {
     pub map_size: usize,
     pub phys_base: phys_addr_t,
     pub phys_addr: phys_addr_t,
-    pub virt_base: *mut core::ffi::c_void,
-    pub virt_addr: *mut core::ffi::c_void,
+    pub virt_base: *mut kernel::ffi::c_void,
+    pub virt_addr: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -71,7 +71,7 @@ pub struct pci_epc_ops {
     pub get_msi: Option<unsafe extern "C" fn(*mut pci_epc, u8, u8) -> i32>,
     pub set_msix: Option<unsafe extern "C" fn(*mut pci_epc, u8, u8, u16, pci_barno, u32) -> i32>,
     pub get_msix: Option<unsafe extern "C" fn(*mut pci_epc, u8, u8) -> i32>,
-    pub raise_irq: Option<unsafe extern "C" fn(*mut pci_epc, u8, u8, core::ffi::c_uint, u16) -> i32>,
+    pub raise_irq: Option<unsafe extern "C" fn(*mut pci_epc, u8, u8, kernel::ffi::c_uint, u16) -> i32>,
     pub map_msi_irq: Option<unsafe extern "C" fn(*mut pci_epc, u8, u8, phys_addr_t, u8, u32, *mut u32, *mut u32) -> i32>,
     pub start: Option<unsafe extern "C" fn(*mut pci_epc) -> i32>,
     pub stop: Option<unsafe extern "C" fn(*mut pci_epc)>,
@@ -91,7 +91,7 @@ pub struct pci_epc_mem_window {
 #[repr(C)]
 pub struct pci_epc_mem {
     pub window: pci_epc_mem_window,
-    pub bitmap: *mut core::ffi::c_ulong,
+    pub bitmap: *mut kernel::ffi::c_ulong,
     pub pages: i32,
     pub lock: mutex,
 }
@@ -104,12 +104,12 @@ pub struct pci_epc {
     pub ops: *const pci_epc_ops,
     pub windows: *mut *mut pci_epc_mem,
     pub mem: *mut pci_epc_mem,
-    pub num_windows: core::ffi::c_uint,
+    pub num_windows: kernel::ffi::c_uint,
     pub max_functions: u8,
     pub max_vfs: *mut u8,
     pub group: *mut config_group,
     pub lock: mutex,
-    pub function_num_map: core::ffi::c_ulong,
+    pub function_num_map: kernel::ffi::c_ulong,
     pub domain_nr: i32,
     pub init_complete: bool,
 }
@@ -160,11 +160,11 @@ pub struct pci_epc_features {
     pub align: usize,
 }
 
-pub unsafe fn epc_set_drvdata(epc: *mut pci_epc, data: *mut core::ffi::c_void) {
+pub unsafe fn epc_set_drvdata(epc: *mut pci_epc, data: *mut kernel::ffi::c_void) {
     dev_set_drvdata(unsafe { &mut (*epc).dev }, data);
 }
 
-pub unsafe fn epc_get_drvdata(epc: *mut pci_epc) -> *mut core::ffi::c_void {
+pub unsafe fn epc_get_drvdata(epc: *mut pci_epc) -> *mut kernel::ffi::c_void {
     dev_get_drvdata(unsafe { &mut (*epc).dev })
 }
 
@@ -191,7 +191,7 @@ extern "C" {
     pub fn pci_epc_set_msix(epc: *mut pci_epc, func_no: u8, vfunc_no: u8, nr_irqs: u16, bar: pci_barno, offset: u32) -> i32;
     pub fn pci_epc_get_msix(epc: *mut pci_epc, func_no: u8, vfunc_no: u8) -> i32;
     pub fn pci_epc_map_msi_irq(epc: *mut pci_epc, func_no: u8, vfunc_no: u8, phys_addr: phys_addr_t, interrupt_num: u8, entry_size: u32, msi_data: *mut u32, msi_addr_offset: *mut u32) -> i32;
-    pub fn pci_epc_raise_irq(epc: *mut pci_epc, func_no: u8, vfunc_no: u8, type_: core::ffi::c_uint, interrupt_num: u16) -> i32;
+    pub fn pci_epc_raise_irq(epc: *mut pci_epc, func_no: u8, vfunc_no: u8, type_: kernel::ffi::c_uint, interrupt_num: u16) -> i32;
     pub fn pci_epc_start(epc: *mut pci_epc) -> i32;
     pub fn pci_epc_stop(epc: *mut pci_epc);
     pub fn pci_epc_get_features(epc: *mut pci_epc, func_no: u8, vfunc_no: u8) -> *const pci_epc_features;
@@ -199,20 +199,20 @@ extern "C" {
     pub fn pci_epc_get_aux_resources(epc: *mut pci_epc, func_no: u8, vfunc_no: u8, resources: *mut pci_epc_aux_resource, num_resources: i32) -> i32;
     pub fn pci_epc_get_first_free_bar(features: *const pci_epc_features) -> pci_barno;
     pub fn pci_epc_get_next_free_bar(features: *const pci_epc_features, bar: pci_barno) -> pci_barno;
-    pub fn pci_epc_get(epc_name: *const core::ffi::c_char) -> *mut pci_epc;
+    pub fn pci_epc_get(epc_name: *const kernel::ffi::c_char) -> *mut pci_epc;
     pub fn pci_epc_put(epc: *mut pci_epc);
     pub fn pci_epc_mem_init(epc: *mut pci_epc, base: phys_addr_t, size: usize, page_size: usize) -> i32;
-    pub fn pci_epc_multi_mem_init(epc: *mut pci_epc, window: *mut pci_epc_mem_window, num_windows: core::ffi::c_uint) -> i32;
+    pub fn pci_epc_multi_mem_init(epc: *mut pci_epc, window: *mut pci_epc_mem_window, num_windows: kernel::ffi::c_uint) -> i32;
     pub fn pci_epc_mem_exit(epc: *mut pci_epc);
-    pub fn pci_epc_mem_alloc_addr(epc: *mut pci_epc, phys_addr: *mut phys_addr_t, size: usize) -> *mut core::ffi::c_void;
-    pub fn pci_epc_mem_free_addr(epc: *mut pci_epc, phys_addr: phys_addr_t, virt_addr: *mut core::ffi::c_void, size: usize);
+    pub fn pci_epc_mem_alloc_addr(epc: *mut pci_epc, phys_addr: *mut phys_addr_t, size: usize) -> *mut kernel::ffi::c_void;
+    pub fn pci_epc_mem_free_addr(epc: *mut pci_epc, phys_addr: phys_addr_t, virt_addr: *mut kernel::ffi::c_void, size: usize);
     pub fn pci_epc_mem_map(epc: *mut pci_epc, func_no: u8, vfunc_no: u8, pci_addr: u64, pci_size: usize, map: *mut pci_epc_map) -> i32;
     pub fn pci_epc_mem_unmap(epc: *mut pci_epc, func_no: u8, vfunc_no: u8, map: *mut pci_epc_map);
 }
 
 extern "C" {
-    fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
+    fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
 }
 
 // When CONFIG_PCI_ENDPOINT is disabled, these inline C stubs replace the

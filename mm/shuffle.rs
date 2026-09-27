@@ -8,9 +8,9 @@ static mut PAGE_ALLOC_SHUFFLE_KEY: StaticKeyFalse = StaticKeyFalse;
 static mut shuffle_param: bool = false;
 
 unsafe extern "C" fn shuffle_param_set(
-    val: *const core::ffi::c_char,
+    val: *const kernel::ffi::c_char,
     kp: *const kernel_param,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     if param_set_bool(val, kp) != 0 {
         return -EINVAL;
     }
@@ -32,7 +32,7 @@ static shuffle_param_ops: kernel_param_ops = kernel_param_ops {
 unsafe extern "C" fn shuffle_valid_page(
     zone: *mut zone,
     pfn: c_ulong,
-    order: core::ffi::c_int,
+    order: kernel::ffi::c_int,
 ) -> *mut page {
     let page = pfn_to_online_page(pfn);
 
@@ -78,14 +78,14 @@ unsafe extern "C" fn shuffle_valid_page(
  * for attacks that exploit the predictability of page allocations, but need not
  * be a perfect shuffle.
  */
-const SHUFFLE_RETRY: core::ffi::c_int = 10;
+const SHUFFLE_RETRY: kernel::ffi::c_int = 10;
 
 unsafe extern "C" fn __shuffle_zone(z: *mut zone) {
     let mut i: c_ulong;
     let mut flags: c_ulong;
     let mut start_pfn = (*z).zone_start_pfn;
     let end_pfn = zone_end_pfn(z);
-    let order: core::ffi::c_int = SHUFFLE_ORDER;
+    let order: kernel::ffi::c_int = SHUFFLE_ORDER;
     let order_pages: c_ulong = 1u32.wrapping_shl(order as u32) as c_ulong;
 
     spin_lock_irqsave(&mut (*z).lock, &mut flags);
@@ -93,8 +93,8 @@ unsafe extern "C" fn __shuffle_zone(z: *mut zone) {
     i = start_pfn;
     while i < end_pfn {
         let mut j: c_ulong;
-        let mut migratetype: core::ffi::c_int;
-        let mut retry: core::ffi::c_int;
+        let mut migratetype: kernel::ffi::c_int;
+        let mut retry: kernel::ffi::c_int;
         let page_i: *mut page;
         let mut page_j: *mut page;
 

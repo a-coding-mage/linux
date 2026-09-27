@@ -5,7 +5,7 @@
  * Copyright (C) 2004-2010 Markus Grabner (line6@grabner-graz.at)
  */
 
-use core::ffi::{c_int, c_uint, c_void};
+use kernel::ffi::{c_int, c_uint, c_void};
 
 // Opaque types for kernel structures
 #[repr(C)]
@@ -82,7 +82,7 @@ fn clamp(val: i32, min: i32, max: i32) -> i16 {
 
 // External functions from kernel
 extern "C" {
-    fn find_first_zero_bit(addr: *const core::ffi::c_ulong, nbits: c_uint) -> c_int;
+    fn find_first_zero_bit(addr: *const kernel::ffi::c_ulong, nbits: c_uint) -> c_int;
     fn dev_err(dev: *mut c_void, fmt: *const c_int, ...);
     fn memcpy(dest: *mut c_void, src: *const c_void, n: usize) -> *mut c_void;
     fn memset(s: *mut c_void, c: c_int, n: usize) -> *mut c_void;
@@ -92,8 +92,8 @@ extern "C" {
     fn test_and_clear_bit(nr: c_uint, addr: *mut c_void) -> c_int;
     fn spin_lock_nested(lock: *mut c_void, subclass: c_uint);
     fn spin_unlock(lock: *mut c_void);
-    fn spin_lock_irqsave(lock: *mut c_void, flags: *mut core::ffi::c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut c_void, flags: core::ffi::c_ulong);
+    fn spin_lock_irqsave(lock: *mut c_void, flags: *mut kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut c_void, flags: kernel::ffi::c_ulong);
     fn usb_submit_urb(urb: *mut urb, mem_flags: c_uint) -> c_int;
     fn usb_alloc_urb(iso_packets: c_int, mem_flags: c_uint) -> *mut urb;
     fn usb_sndisocpipe(dev: *mut c_void, endpoint: c_uint) -> c_uint;
@@ -115,7 +115,7 @@ extern "C" {
     pub fn snd_line6_hw_free(substream: *mut snd_pcm_substream) -> c_int;
     pub fn snd_line6_prepare(substream: *mut snd_pcm_substream) -> c_int;
     pub fn snd_line6_trigger(substream: *mut snd_pcm_substream, cmd: c_int) -> c_int;
-    pub fn snd_line6_pointer(substream: *mut snd_pcm_substream) -> core::ffi::c_ulong;
+    pub fn snd_line6_pointer(substream: *mut snd_pcm_substream) -> kernel::ffi::c_ulong;
 }
 
 /*
@@ -332,12 +332,12 @@ unsafe fn submit_audio_out_urb(line6pcm: *mut snd_line6_pcm) -> c_int {
         let runtime: *mut snd_pcm_runtime =
             (*get_substream(line6pcm, SNDRV_PCM_STREAM_PLAYBACK)).runtime;
 
-        if (*line6pcm).out.pos + urb_frames as core::ffi::c_ulong > (*runtime).buffer_size {
+        if (*line6pcm).out.pos + urb_frames as kernel::ffi::c_ulong > (*runtime).buffer_size {
             /*
                The transferred area goes over buffer boundary,
                copy the data to the temp buffer.
              */
-            let len: core::ffi::c_ulong;
+            let len: kernel::ffi::c_ulong;
 
             len = (*runtime).buffer_size - (*line6pcm).out.pos;
 
@@ -345,7 +345,7 @@ unsafe fn submit_audio_out_urb(line6pcm: *mut snd_line6_pcm) -> c_int {
                 memcpy(
                     (*urb_out).transfer_buffer,
                     ((*runtime).dma_area as usize
-                        + ((*line6pcm).out.pos * bytes_per_frame as core::ffi::c_ulong) as usize)
+                        + ((*line6pcm).out.pos * bytes_per_frame as kernel::ffi::c_ulong) as usize)
                         as *const c_void,
                     (len as c_int * bytes_per_frame) as usize,
                 );
@@ -366,13 +366,13 @@ unsafe fn submit_audio_out_urb(line6pcm: *mut snd_line6_pcm) -> c_int {
             memcpy(
                 (*urb_out).transfer_buffer,
                 ((*runtime).dma_area as usize
-                    + ((*line6pcm).out.pos * bytes_per_frame as core::ffi::c_ulong) as usize)
+                    + ((*line6pcm).out.pos * bytes_per_frame as kernel::ffi::c_ulong) as usize)
                     as *const c_void,
                 (*urb_out).transfer_buffer_length,
             );
         }
 
-        (*line6pcm).out.pos += urb_frames as core::ffi::c_ulong;
+        (*line6pcm).out.pos += urb_frames as kernel::ffi::c_ulong;
         if (*line6pcm).out.pos >= (*runtime).buffer_size {
             (*line6pcm).out.pos -= (*runtime).buffer_size;
         }
@@ -468,7 +468,7 @@ extern "C" fn audio_out_callback(urb: *mut urb) {
     let index: c_int;
     let mut length: c_int = 0;
     let mut shutdown: c_int = 0;
-    let flags: core::ffi::c_ulong;
+    let flags: kernel::ffi::c_ulong;
     let line6pcm: *mut snd_line6_pcm = unsafe { (*urb).context as *mut snd_line6_pcm };
     let substream: *mut snd_pcm_substream = unsafe { get_substream(line6pcm, SNDRV_PCM_STREAM_PLAYBACK) };
     let bytes_per_frame: c_int =
@@ -507,13 +507,13 @@ extern "C" fn audio_out_callback(urb: *mut urb) {
             i += 1;
         }
 
-        spin_lock_irqsave(&mut (*line6pcm).out.lock as *mut _ as *mut c_void, &mut flags as *mut core::ffi::c_ulong);
+        spin_lock_irqsave(&mut (*line6pcm).out.lock as *mut _ as *mut c_void, &mut flags as *mut kernel::ffi::c_ulong);
 
         if test_bit(LINE6_STREAM_PCM, &(*line6pcm).out.running as *const _ as *const c_void) != 0
         {
             let runtime: *mut snd_pcm_runtime = (*substream).runtime;
 
-            (*line6pcm).out.pos_done += (length / bytes_per_frame) as core::ffi::c_ulong;
+            (*line6pcm).out.pos_done += (length / bytes_per_frame) as kernel::ffi::c_ulong;
 
             if (*line6pcm).out.pos_done >= (*runtime).buffer_size {
                 (*line6pcm).out.pos_done -= (*runtime).buffer_size;
@@ -543,12 +543,12 @@ extern "C" fn audio_out_callback(urb: *mut urb) {
             if test_bit(LINE6_STREAM_PCM, &(*line6pcm).out.running as *const _ as *const c_void)
                 != 0
             {
-                (*line6pcm).out.bytes += length as core::ffi::c_ulong;
+                (*line6pcm).out.bytes += length as kernel::ffi::c_ulong;
                 if (*line6pcm).out.bytes >= (*line6pcm).out.period {
                     (*line6pcm).out.bytes %= (*line6pcm).out.period;
                     spin_unlock(&mut (*line6pcm).out.lock as *mut _ as *mut c_void);
                     snd_pcm_period_elapsed(substream);
-                    spin_lock_irqsave(&mut (*line6pcm).out.lock as *mut _ as *mut c_void, &mut flags as *mut core::ffi::c_ulong);
+                    spin_lock_irqsave(&mut (*line6pcm).out.lock as *mut _ as *mut c_void, &mut flags as *mut kernel::ffi::c_ulong);
                 }
             }
         }
@@ -592,7 +592,7 @@ pub struct snd_pcm_ops {
     pub hw_free: Option<extern "C" fn(*mut snd_pcm_substream) -> c_int>,
     pub prepare: Option<extern "C" fn(*mut snd_pcm_substream) -> c_int>,
     pub trigger: Option<extern "C" fn(*mut snd_pcm_substream, c_int) -> c_int>,
-    pub pointer: Option<extern "C" fn(*mut snd_pcm_substream) -> core::ffi::c_ulong>,
+    pub pointer: Option<extern "C" fn(*mut snd_pcm_substream) -> kernel::ffi::c_ulong>,
 }
 
 pub const SND_LINE6_PLAYBACK_OPS: snd_pcm_ops = snd_pcm_ops {

@@ -9,7 +9,7 @@
 #[no_mangle]
 pub static mut initial_dtb: u64 = 0;
 #[no_mangle]
-pub static mut cmd_line: [core::ffi::c_char; COMMAND_LINE_SIZE] = [0; COMMAND_LINE_SIZE];
+pub static mut cmd_line: [kernel::ffi::c_char; COMMAND_LINE_SIZE] = [0; COMMAND_LINE_SIZE];
 #[no_mangle]
 pub static mut of_ioapic: i32 = 0;
 
@@ -138,7 +138,7 @@ static mut of_ioapic_type: [of_ioapic_type; 4] = [
 ];
 
 #[cfg(CONFIG_X86_IO_APIC)]
-unsafe fn dt_irqdomain_alloc(domain: *mut irq_domain, virq: u32, nr_irqs: u32, arg: *mut core::ffi::c_void) -> i32 {
+unsafe fn dt_irqdomain_alloc(domain: *mut irq_domain, virq: u32, nr_irqs: u32, arg: *mut kernel::ffi::c_void) -> i32 {
     let fwspec = arg as *mut irq_fwspec;
     if WARN_ON!((*fwspec).param_count < 2) { return -EINVAL; }
     let type_index = (*fwspec).param[1] as usize;
@@ -183,7 +183,7 @@ pub unsafe fn x86_flattree_get_config() {
     #[cfg(CONFIG_OF_EARLY_FLATTREE)]
     {
         let mut map_len: u32;
-        let mut dt: *mut core::ffi::c_void;
+        let mut dt: *mut kernel::ffi::c_void;
         if initial_dtb != 0 {
             map_len = core::cmp::max(PAGE_SIZE - (initial_dtb & !PAGE_MASK), 128) as u32;
             dt = early_memremap(initial_dtb, map_len as usize);

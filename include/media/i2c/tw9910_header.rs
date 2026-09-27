@@ -32,7 +32,7 @@ pub enum tw9910_mpout_pin {
  */
 #[repr(C)]
 pub struct tw9910_video_info {
-    pub buswidth: ::core::ffi::c_ulong,
+    pub buswidth: ::kernel::ffi::c_ulong,
     pub mpout: tw9910_mpout_pin,
 }
 

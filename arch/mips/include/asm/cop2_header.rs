@@ -71,7 +71,7 @@ pub enum cu2_ops {
 
 extern "C" {
     pub fn register_cu2_notifier(nb: *mut notifier_block) -> i32;
-    pub fn cu2_notifier_call_chain(val: ::core::ffi::c_ulong, v: *mut ::core::ffi::c_void) -> i32;
+    pub fn cu2_notifier_call_chain(val: ::kernel::ffi::c_ulong, v: *mut ::kernel::ffi::c_void) -> i32;
 }
 
 #[macro_export]

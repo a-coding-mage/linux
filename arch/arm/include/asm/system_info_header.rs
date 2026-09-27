@@ -15,13 +15,13 @@ pub const CPU_ARCH_ARMv7M: i32 = 10;
 /* information about the system we're running on */
 unsafe extern "C" {
     pub static mut system_rev: u32;
-    pub static system_serial: *const core::ffi::c_char;
+    pub static system_serial: *const kernel::ffi::c_char;
     pub static mut system_serial_low: u32;
     pub static mut system_serial_high: u32;
     pub static mut mem_fclk_21285: u32;
 
     /* __pure */
-    pub fn cpu_architecture() -> core::ffi::c_int;
+    pub fn cpu_architecture() -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

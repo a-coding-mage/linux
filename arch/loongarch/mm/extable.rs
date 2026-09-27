@@ -8,14 +8,14 @@
 // asm/asm-extable.h, and asm/branch.h.
 
 #[inline]
-unsafe fn get_ex_fixup(ex: *const exception_table_entry) -> libc::c_ulong {
-    ((core::ptr::addr_of!((*ex).fixup) as libc::c_ulong).wrapping_add((*ex).fixup as libc::c_ulong))
+unsafe fn get_ex_fixup(ex: *const exception_table_entry) -> kernel::ffi::c_ulong {
+    ((core::ptr::addr_of!((*ex).fixup) as kernel::ffi::c_ulong).wrapping_add((*ex).fixup as kernel::ffi::c_ulong))
 }
 
 #[inline]
-unsafe fn regs_set_gpr(regs: *mut pt_regs, offset: libc::c_uint, val: libc::c_ulong) {
+unsafe fn regs_set_gpr(regs: *mut pt_regs, offset: kernel::ffi::c_uint, val: kernel::ffi::c_ulong) {
     if offset != 0 && offset <= MAX_REG_OFFSET {
-        *((regs as libc::c_ulong).wrapping_add(offset as libc::c_ulong) as *mut libc::c_ulong) = val;
+        *((regs as kernel::ffi::c_ulong).wrapping_add(offset as kernel::ffi::c_ulong) as *mut kernel::ffi::c_ulong) = val;
     }
 }
 
@@ -35,8 +35,8 @@ unsafe fn ex_handler_uaccess_err_zero(
     let reg_err = FIELD_GET(EX_DATA_REG_ERR, (*ex).data);
     let reg_zero = FIELD_GET(EX_DATA_REG_ZERO, (*ex).data);
 
-    regs_set_gpr(regs, reg_err * core::mem::size_of::<libc::c_ulong>() as libc::c_uint, (-EFAULT) as libc::c_ulong);
-    regs_set_gpr(regs, reg_zero * core::mem::size_of::<libc::c_ulong>() as libc::c_uint, 0);
+    regs_set_gpr(regs, reg_err * core::mem::size_of::<kernel::ffi::c_ulong>() as kernel::ffi::c_uint, (-EFAULT) as kernel::ffi::c_ulong);
+    regs_set_gpr(regs, reg_zero * core::mem::size_of::<kernel::ffi::c_ulong>() as kernel::ffi::c_uint, 0);
     (*regs).csr_era = get_ex_fixup(ex);
 
     true

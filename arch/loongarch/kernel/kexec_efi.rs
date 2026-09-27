@@ -9,7 +9,7 @@
 // pr_fmt(fmt) "kexec_file(EFI): " fmt
 // Dependencies supplied by the surrounding kernel translation.
 
-unsafe fn efi_kexec_probe(kernel_buf: *const core::ffi::c_char, kernel_len: usize) -> i32 {
+unsafe fn efi_kexec_probe(kernel_buf: *const kernel::ffi::c_char, kernel_len: usize) -> i32 {
     let h = kernel_buf as *const loongarch_image_header;
 
     if h.is_null() || (kernel_len < core::mem::size_of::<loongarch_image_header>()) {
@@ -27,13 +27,13 @@ unsafe fn efi_kexec_probe(kernel_buf: *const core::ffi::c_char, kernel_len: usiz
 
 unsafe fn efi_kexec_load(
     image: *mut kimage,
-    kernel: *mut core::ffi::c_char,
+    kernel: *mut kernel::ffi::c_char,
     kernel_len: usize,
-    initrd: *mut core::ffi::c_char,
+    initrd: *mut kernel::ffi::c_char,
     initrd_len: usize,
-    cmdline: *mut core::ffi::c_char,
+    cmdline: *mut kernel::ffi::c_char,
     cmdline_len: usize,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     let mut ret: i32;
     let mut text_offset: usize;
     let mut kernel_segment_number: usize;

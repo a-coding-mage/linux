@@ -48,13 +48,13 @@ pub struct Test<T1, T2, T> {
 }
 
 extern "C" {
-    pub fn kunit_skip(test: *mut kunit, reason: *const core::ffi::c_char);
-    pub fn kunit_info(test: *mut kunit, fmt: *const core::ffi::c_char, ...);
-    pub fn kunit_device_register(test: *mut kunit, name: *const core::ffi::c_char) -> *mut device;
-    pub fn devm_kfree(dev: *mut device, ptr: *mut core::ffi::c_void);
-    pub fn kfree(ptr: *mut core::ffi::c_void);
-    pub fn vfree(ptr: *mut core::ffi::c_void);
-    pub fn kvfree(ptr: *mut core::ffi::c_void);
+    pub fn kunit_skip(test: *mut kunit, reason: *const kernel::ffi::c_char);
+    pub fn kunit_info(test: *mut kunit, fmt: *const kernel::ffi::c_char, ...);
+    pub fn kunit_device_register(test: *mut kunit, name: *const kernel::ffi::c_char) -> *mut device;
+    pub fn devm_kfree(dev: *mut device, ptr: *mut kernel::ffi::c_void);
+    pub fn kfree(ptr: *mut kernel::ffi::c_void);
+    pub fn vfree(ptr: *mut kernel::ffi::c_void);
+    pub fn kvfree(ptr: *mut kernel::ffi::c_void);
 }
 
 static mut global_counter: i32 = 0;

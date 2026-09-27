@@ -26,20 +26,20 @@ pub struct device {
  */
 #[repr(C)]
 pub struct gpio_keys_button {
-    pub code: ::core::ffi::c_uint,
+    pub code: ::kernel::ffi::c_uint,
     // Present only when CONFIG_GPIOLIB_LEGACY is enabled in the C build.
     #[cfg(CONFIG_GPIOLIB_LEGACY)]
-    pub gpio: ::core::ffi::c_int,
-    pub active_low: ::core::ffi::c_int,
-    pub desc: *const ::core::ffi::c_char,
-    pub type_: ::core::ffi::c_uint,
-    pub wakeup: ::core::ffi::c_int,
-    pub wakeup_event_action: ::core::ffi::c_int,
-    pub debounce_interval: ::core::ffi::c_int,
+    pub gpio: ::kernel::ffi::c_int,
+    pub active_low: ::kernel::ffi::c_int,
+    pub desc: *const ::kernel::ffi::c_char,
+    pub type_: ::kernel::ffi::c_uint,
+    pub wakeup: ::kernel::ffi::c_int,
+    pub wakeup_event_action: ::kernel::ffi::c_int,
+    pub debounce_interval: ::kernel::ffi::c_int,
     pub can_disable: bool,
-    pub value: ::core::ffi::c_int,
-    pub irq: ::core::ffi::c_uint,
-    pub wakeirq: ::core::ffi::c_uint,
+    pub value: ::kernel::ffi::c_int,
+    pub irq: ::kernel::ffi::c_uint,
+    pub wakeirq: ::kernel::ffi::c_uint,
 }
 
 /**
@@ -56,13 +56,13 @@ pub struct gpio_keys_button {
 #[repr(C)]
 pub struct gpio_keys_platform_data {
     pub buttons: *const gpio_keys_button,
-    pub nbuttons: ::core::ffi::c_int,
-    pub poll_interval: ::core::ffi::c_uint,
+    pub nbuttons: ::kernel::ffi::c_int,
+    pub poll_interval: ::kernel::ffi::c_uint,
     // C bit-field: unsigned int rep:1.
-    pub rep: ::core::ffi::c_uint,
-    pub enable: Option<unsafe extern "C" fn(dev: *mut device) -> ::core::ffi::c_int>,
+    pub rep: ::kernel::ffi::c_uint,
+    pub enable: Option<unsafe extern "C" fn(dev: *mut device) -> ::kernel::ffi::c_int>,
     pub disable: Option<unsafe extern "C" fn(dev: *mut device)>,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

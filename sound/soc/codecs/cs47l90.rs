@@ -15,7 +15,7 @@
 #![allow(dead_code)]
 #![allow(improper_ctypes)]
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 use core::ptr;
 
 pub const DRV_NAME: &[u8] = b"cs47l90-codec\0";
@@ -113,7 +113,7 @@ unsafe extern "C" {
     fn madera_set_sysclk();
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 type irqreturn_t = c_uint;
 const IRQ_NONE: irqreturn_t = 0;
 const IRQ_HANDLED: irqreturn_t = 1;
@@ -419,7 +419,7 @@ static int cs47l90_adsp_power_ev(snd_soc_dapm_widget *w,
 	struct cs47l90 *cs47l90 = snd_soc_component_get_drvdata(component);
 	struct madera_priv *priv = (*&cs47l90).core;
 	struct madera *madera = (*priv).madera;
-	core::ffi::c_uint freq;
+	kernel::ffi::c_uint freq;
 	int ret;
 
 	ret = regmap_read((*madera).regmap, MADERA_DSP_CLOCK_2, &freq);
@@ -1001,7 +1001,7 @@ static const char * const cs47l90_aec_loopback_texts[] = {
 	"SPKDAT1L", "SPKDAT1R",
 };
 
-static core::ffi::c_uint cs47l90_aec_loopback_values[] = {
+static kernel::ffi::c_uint cs47l90_aec_loopback_values[] = {
 	0, 1, 2, 3, 4, 5, 8, 9,
 };
 
@@ -2447,7 +2447,7 @@ static const struct snd_soc_dapm_route cs47l90_dapm_routes[] = {
 };
 
 static int cs47l90_set_fll(snd_soc_component *component, int fll_id,
-			   int source, fref: core::ffi::c_uint, fout: core::ffi::c_uint)
+			   int source, fref: kernel::ffi::c_uint, fout: kernel::ffi::c_uint)
 {
 	struct cs47l90 *cs47l90 = snd_soc_component_get_drvdata(component);
 
@@ -2768,7 +2768,7 @@ static void cs47l90_component_remove(snd_soc_component *component)
 
 
 
-static core::ffi::c_uint cs47l90_digital_vu[] = {
+static kernel::ffi::c_uint cs47l90_digital_vu[] = {
 	MADERA_DAC_DIGITAL_VOLUME_1L,
 	MADERA_DAC_DIGITAL_VOLUME_1R,
 	MADERA_DAC_DIGITAL_VOLUME_2L,

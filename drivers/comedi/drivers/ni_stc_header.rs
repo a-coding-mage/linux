@@ -1249,23 +1249,23 @@ struct ni_board_struct {
 	int isapnp_id;
 
 	int n_adchan;
-	core::ffi::c_uint ai_maxdata;
+	kernel::ffi::c_uint ai_maxdata;
 
 	int ai_fifo_depth;
-	core::ffi::c_uint alwaysdither:1;
+	kernel::ffi::c_uint alwaysdither:1;
 	int gainlkup;
 	int ai_speed;
 
 	int n_aochan;
-	core::ffi::c_uint ao_maxdata;
+	kernel::ffi::c_uint ao_maxdata;
 	int ao_fifo_depth;
 	const struct comedi_lrange *ao_range_table;
-	core::ffi::c_uint ao_speed;
+	kernel::ffi::c_uint ao_speed;
 
 	int reg_type;
-	core::ffi::c_uint has_8255:1;
-	core::ffi::c_uint has_32dio_chan:1;
-	core::ffi::c_uint dio_speed; /* not for e-series */
+	kernel::ffi::c_uint has_8255:1;
+	kernel::ffi::c_uint has_32dio_chan:1;
+	kernel::ffi::c_uint dio_speed; /* not for e-series */
 
 	enum caldac_enum caldac[3];
 };
@@ -1281,11 +1281,11 @@ pub const M_SERIES_EEPROM_SIZE: u32 = 1024;
 
 #[repr(C)]
 struct ni_private {
-	core::ffi::c_ushort dio_output;
-	core::ffi::c_ushort dio_control;
+	kernel::ffi::c_ushort dio_output;
+	kernel::ffi::c_ushort dio_control;
 	int aimode;
-	core::ffi::c_uint ai_calib_source;
-	core::ffi::c_uint ai_calib_source_enabled;
+	kernel::ffi::c_uint ai_calib_source;
+	kernel::ffi::c_uint ai_calib_source_enabled;
 	/* protects access to windowed registers */
 	spinlock_t window_lock;
 	/* protects interrupt/dma register access */
@@ -1294,48 +1294,48 @@ struct ni_private {
 	spinlock_t mite_channel_lock;
 
 	int changain_state;
-	core::ffi::c_uint changain_spec;
+	kernel::ffi::c_uint changain_spec;
 
-	core::ffi::c_uint caldac_maxdata_list[MAX_N_CALDACS];
-	core::ffi::c_ushort caldacs[MAX_N_CALDACS];
+	kernel::ffi::c_uint caldac_maxdata_list[MAX_N_CALDACS];
+	kernel::ffi::c_ushort caldacs[MAX_N_CALDACS];
 
-	core::ffi::c_ushort ai_cmd2;
+	kernel::ffi::c_ushort ai_cmd2;
 
-	core::ffi::c_ushort ao_conf[MAX_N_AO_CHAN];
-	core::ffi::c_ushort ao_mode1;
-	core::ffi::c_ushort ao_mode2;
-	core::ffi::c_ushort ao_mode3;
-	core::ffi::c_ushort ao_cmd1;
-	core::ffi::c_ushort ao_cmd2;
+	kernel::ffi::c_ushort ao_conf[MAX_N_AO_CHAN];
+	kernel::ffi::c_ushort ao_mode1;
+	kernel::ffi::c_ushort ao_mode2;
+	kernel::ffi::c_ushort ao_mode3;
+	kernel::ffi::c_ushort ao_cmd1;
+	kernel::ffi::c_ushort ao_cmd2;
 
 	struct ni_gpct_device *counter_dev;
-	core::ffi::c_ushort an_trig_etc_reg;
+	kernel::ffi::c_ushort an_trig_etc_reg;
 
-	core::ffi::c_uint ai_offset[512];
+	kernel::ffi::c_uint ai_offset[512];
 
-	core::ffi::c_ulong serial_interval_ns;
-	core::ffi::c_uchar serial_hw_mode;
-	core::ffi::c_ushort clock_and_fout;
-	core::ffi::c_ushort clock_and_fout2;
+	kernel::ffi::c_ulong serial_interval_ns;
+	kernel::ffi::c_uchar serial_hw_mode;
+	kernel::ffi::c_ushort clock_and_fout;
+	kernel::ffi::c_ushort clock_and_fout2;
 
-	core::ffi::c_ushort int_a_enable_reg;
-	core::ffi::c_ushort int_b_enable_reg;
-	core::ffi::c_ushort io_bidirection_pin_reg;
-	core::ffi::c_ushort rtsi_trig_direction_reg;
-	core::ffi::c_ushort rtsi_trig_a_output_reg;
-	core::ffi::c_ushort rtsi_trig_b_output_reg;
-	core::ffi::c_ushort pfi_output_select_reg[NUM_PFI_OUTPUT_SELECT_REGS];
-	core::ffi::c_ushort ai_ao_select_reg;
-	core::ffi::c_ushort g0_g1_select_reg;
-	core::ffi::c_ushort cdio_dma_select_reg;
+	kernel::ffi::c_ushort int_a_enable_reg;
+	kernel::ffi::c_ushort int_b_enable_reg;
+	kernel::ffi::c_ushort io_bidirection_pin_reg;
+	kernel::ffi::c_ushort rtsi_trig_direction_reg;
+	kernel::ffi::c_ushort rtsi_trig_a_output_reg;
+	kernel::ffi::c_ushort rtsi_trig_b_output_reg;
+	kernel::ffi::c_ushort pfi_output_select_reg[NUM_PFI_OUTPUT_SELECT_REGS];
+	kernel::ffi::c_ushort ai_ao_select_reg;
+	kernel::ffi::c_ushort g0_g1_select_reg;
+	kernel::ffi::c_ushort cdio_dma_select_reg;
 
-	core::ffi::c_uint clock_ns;
-	core::ffi::c_uint clock_source;
+	kernel::ffi::c_uint clock_ns;
+	kernel::ffi::c_uint clock_source;
 
-	core::ffi::c_ushort pwm_up_count;
-	core::ffi::c_ushort pwm_down_count;
+	kernel::ffi::c_ushort pwm_up_count;
+	kernel::ffi::c_ushort pwm_down_count;
 
-	core::ffi::c_ushort ai_fifo_buffer[0x2000];
+	kernel::ffi::c_ushort ai_fifo_buffer[0x2000];
 	u8 eeprom_buffer[M_SERIES_EEPROM_SIZE];
 
 	struct mite *mite;
@@ -1348,16 +1348,16 @@ struct ni_private {
 	struct mite_ring *gpct_mite_ring[NUM_GPCT];
 
 	/* ni_pcimio board type flags (based on the boardinfo reg_type) */
-	core::ffi::c_uint is_m_series:1;
-	core::ffi::c_uint is_6xxx:1;
-	core::ffi::c_uint is_611x:1;
-	core::ffi::c_uint is_6143:1;
-	core::ffi::c_uint is_622x:1;
-	core::ffi::c_uint is_625x:1;
-	core::ffi::c_uint is_628x:1;
-	core::ffi::c_uint is_67xx:1;
-	core::ffi::c_uint is_6711:1;
-	core::ffi::c_uint is_6713:1;
+	kernel::ffi::c_uint is_m_series:1;
+	kernel::ffi::c_uint is_6xxx:1;
+	kernel::ffi::c_uint is_611x:1;
+	kernel::ffi::c_uint is_6143:1;
+	kernel::ffi::c_uint is_622x:1;
+	kernel::ffi::c_uint is_625x:1;
+	kernel::ffi::c_uint is_628x:1;
+	kernel::ffi::c_uint is_67xx:1;
+	kernel::ffi::c_uint is_6711:1;
+	kernel::ffi::c_uint is_6713:1;
 
 	/*
 	 * Boolean value of whether device needs to be armed.
@@ -1371,7 +1371,7 @@ struct ni_private {
 	 * This variable helps to ensure that multiple DMA allocations are not
 	 * possible.
 	 */
-	core::ffi::c_uint ao_needs_arming:1;
+	kernel::ffi::c_uint ao_needs_arming:1;
 
 	/* device signal route tables */
 	struct ni_route_tables routing_tables;

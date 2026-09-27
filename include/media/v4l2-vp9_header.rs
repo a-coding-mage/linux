@@ -121,8 +121,8 @@ extern "C" {
 
     pub fn v4l2_vp9_seg_feat_enabled(
         feature_enabled: *const u8,
-        feature: libc::c_uint,
-        segid: libc::c_uint,
+        feature: core::ffi::c_uint,
+        segid: core::ffi::c_uint,
     ) -> bool;
 }
 

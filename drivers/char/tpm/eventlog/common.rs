@@ -27,13 +27,13 @@ unsafe extern "C" {
     fn seq_release(inode: *mut inode, file: *mut file) -> i32;
     fn seq_read(file: *mut file, p: *mut u8, count: usize, pos: *mut i64) -> isize;
     fn seq_lseek(file: *mut file, offset: i64, whence: i32) -> i64;
-    fn dev_name(dev: *const device) -> *const core::ffi::c_char;
-    fn securityfs_create_dir(name: *const core::ffi::c_char, parent: *mut dentry) -> *mut dentry;
+    fn dev_name(dev: *const device) -> *const kernel::ffi::c_char;
+    fn securityfs_create_dir(name: *const kernel::ffi::c_char, parent: *mut dentry) -> *mut dentry;
     fn securityfs_create_file(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         mode: u32,
         parent: *mut dentry,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         fops: *const file_operations,
     ) -> *mut dentry;
     fn securityfs_remove(dentry: *mut dentry);
@@ -42,12 +42,12 @@ unsafe extern "C" {
 #[repr(C)]
 pub struct inode {
     pub i_nlink: u32,
-    pub i_private: *mut core::ffi::c_void,
+    pub i_private: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct file {
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -57,7 +57,7 @@ pub struct dentry;
 
 #[repr(C)]
 pub struct seq_file {
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -65,7 +65,7 @@ pub struct seq_operations;
 
 #[repr(C)]
 pub struct file_operations {
-    pub owner: *mut core::ffi::c_void,
+    pub owner: *mut kernel::ffi::c_void,
     pub open: Option<unsafe extern "C" fn(*mut inode, *mut file) -> i32>,
     pub read: Option<unsafe extern "C" fn(*mut file, *mut u8, usize, *mut i64) -> isize>,
     pub llseek: Option<unsafe extern "C" fn(*mut file, i64, i32) -> i64>,
@@ -90,14 +90,14 @@ pub struct tpm_chip {
 
 #[repr(C)]
 pub struct tpm_chip_log {
-    pub bios_event_log: *mut core::ffi::c_void,
+    pub bios_event_log: *mut kernel::ffi::c_void,
 }
 
 unsafe extern "C" {
     static mut tpm2_binary_b_measurements_seqops: seq_operations;
     static mut tpm1_binary_b_measurements_seqops: seq_operations;
     static mut tpm1_ascii_b_measurements_seqops: seq_operations;
-    static mut THIS_MODULE: core::ffi::c_void;
+    static mut THIS_MODULE: kernel::ffi::c_void;
 }
 
 const ENODEV: i32 = 19;
@@ -121,7 +121,7 @@ unsafe extern "C" fn tpm_bios_measurements_open(inode: *mut inode, file: *mut fi
     let err = seq_open(file, seqops);
     if err == 0 {
         let seq = (*file).private_data as *mut seq_file;
-        (*seq).private = chip as *mut core::ffi::c_void;
+        (*seq).private = chip as *mut kernel::ffi::c_void;
     } else {
         put_device(&mut (*chip).dev);
     }
@@ -170,7 +170,7 @@ pub unsafe fn tpm_bios_log_setup(chip: *mut tpm_chip) {
         b"binary_bios_measurements\0".as_ptr() as *const _,
         0o440,
         (*chip).bios_dir,
-        &mut (*chip).bin_log_seqops as *mut _ as *mut core::ffi::c_void,
+        &mut (*chip).bin_log_seqops as *mut _ as *mut kernel::ffi::c_void,
         &TPM_BIOS_MEASUREMENTS_OPS,
     );
     if dentry.is_null() { tpm_bios_log_teardown(chip); return; }
@@ -181,7 +181,7 @@ pub unsafe fn tpm_bios_log_setup(chip: *mut tpm_chip) {
             b"ascii_bios_measurements\0".as_ptr() as *const _,
             0o440,
             (*chip).bios_dir,
-            &mut (*chip).ascii_log_seqops as *mut _ as *mut core::ffi::c_void,
+            &mut (*chip).ascii_log_seqops as *mut _ as *mut kernel::ffi::c_void,
             &TPM_BIOS_MEASUREMENTS_OPS,
         );
         if dentry.is_null() { tpm_bios_log_teardown(chip); }

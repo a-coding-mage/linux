@@ -11,7 +11,7 @@ static mut DEBUG_CALLTHUNKS: i32 = 0;
 pub struct CoreText {
     pub base: usize,
     pub end: usize,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 static mut THUNKS_INITIALIZED: bool = false;
@@ -30,15 +30,15 @@ extern "C" {
     fn paranoid_entry();
     fn __switch_to_asm();
     fn ret_from_fork();
-    fn insn_decode_kernel(insn: *mut Insn, addr: *mut core::ffi::c_void) -> i32;
+    fn insn_decode_kernel(insn: *mut Insn, addr: *mut kernel::ffi::c_void) -> i32;
     fn text_poke_apply_relocation(dst: *mut u8, src: *mut u8, len: u32,
                                   template: *const u8, template_len: u32);
     fn text_poke_copy_locked(dst: *mut u8, src: *const u8, len: u32, cross_modify: bool);
     fn __text_gen_insn(buf: *mut u8, opcode: u8, addr: *mut u8, target: *mut u8, len: u32);
     fn text_poke_early(addr: *mut u8, bytes: *const u8, len: u32);
-    fn mutex_lock(mutex: *mut core::ffi::c_void);
-    fn mutex_unlock(mutex: *mut core::ffi::c_void);
-    static text_mutex: core::ffi::c_void;
+    fn mutex_lock(mutex: *mut kernel::ffi::c_void);
+    fn mutex_unlock(mutex: *mut kernel::ffi::c_void);
+    static text_mutex: kernel::ffi::c_void;
 }
 
 #[repr(C)]
@@ -57,27 +57,27 @@ pub struct CallthunkSites {
 static BUILTIN_CORETEXT: CoreText = CoreText {
     base: unsafe { &_text as *const u8 as usize },
     end: unsafe { &_etext as *const u8 as usize },
-    name: b"builtin\0".as_ptr() as *const core::ffi::c_char,
+    name: b"builtin\0".as_ptr() as *const kernel::ffi::c_char,
 };
 
 #[inline]
-unsafe fn within_coretext(ct: *const CoreText, addr: *mut core::ffi::c_void) -> bool {
+unsafe fn within_coretext(ct: *const CoreText, addr: *mut kernel::ffi::c_void) -> bool {
     let p = addr as usize;
     !ct.is_null() && (*ct).base <= p && p < (*ct).end
 }
 
 #[inline]
-unsafe fn within_module_coretext(_addr: *mut core::ffi::c_void) -> bool {
+unsafe fn within_module_coretext(_addr: *mut kernel::ffi::c_void) -> bool {
     // CONFIG_MODULES implementation is provided by the kernel build.
     false
 }
 
-unsafe fn is_coretext(ct: *const CoreText, addr: *mut core::ffi::c_void) -> bool {
+unsafe fn is_coretext(ct: *const CoreText, addr: *mut kernel::ffi::c_void) -> bool {
     if within_coretext(ct, addr) || within_coretext(&BUILTIN_CORETEXT, addr) { return true; }
     within_module_coretext(addr)
 }
 
-unsafe fn skip_addr(dest: *mut core::ffi::c_void) -> bool {
+unsafe fn skip_addr(dest: *mut kernel::ffi::c_void) -> bool {
     if dest == error_entry as *mut _ || dest == paranoid_entry as *mut _ ||
        dest == xen_error_entry as *mut _ || dest == __switch_to_asm as *mut _ ||
        dest == ret_from_fork as *mut _ { return true; }
@@ -86,7 +86,7 @@ unsafe fn skip_addr(dest: *mut core::ffi::c_void) -> bool {
     false
 }
 
-unsafe fn call_get_dest(addr: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
+unsafe fn call_get_dest(addr: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void {
     let mut insn = core::mem::zeroed::<Insn>();
     let ret = insn_decode_kernel(&mut insn, addr);
     if ret != 0 { return ret as isize as *mut _; }
@@ -98,7 +98,7 @@ unsafe fn call_get_dest(addr: *mut core::ffi::c_void) -> *mut core::ffi::c_void 
 
 static NOPS: [u8; 32] = [0x90; 32];
 
-unsafe fn patch_dest(dest: *mut core::ffi::c_void, direct: bool) -> *mut core::ffi::c_void {
+unsafe fn patch_dest(dest: *mut kernel::ffi::c_void, direct: bool) -> *mut kernel::ffi::c_void {
     let tsize = (&skl_call_thunk_tail as *const u8 as usize)
         .wrapping_sub(&skl_call_thunk_template as *const u8 as usize) as u32;
     let mut insn_buff = [0u8; MAX_PATCH_LEN];
@@ -112,7 +112,7 @@ unsafe fn patch_dest(dest: *mut core::ffi::c_void, direct: bool) -> *mut core::f
     pad as *mut _
 }
 
-unsafe fn patch_call(addr: *mut core::ffi::c_void, ct: *const CoreText) {
+unsafe fn patch_call(addr: *mut kernel::ffi::c_void, ct: *const CoreText) {
     if !within_coretext(ct, addr) { return; }
     let dest = call_get_dest(addr);
     if dest.is_null() || !is_coretext(ct, dest) { return; }
@@ -144,14 +144,14 @@ pub unsafe fn callthunks_patch_builtin_calls() {
     mutex_unlock(&text_mutex as *const _ as *mut _);
 }
 
-pub unsafe fn callthunks_translate_call_dest(dest: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
+pub unsafe fn callthunks_translate_call_dest(dest: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void {
     if !THUNKS_INITIALIZED || skip_addr(dest) || !is_coretext(core::ptr::null(), dest) { return dest; }
     let target = patch_dest(dest, false);
     if target.is_null() { dest } else { target }
 }
 
 #[cfg(feature = "bpf_jit")]
-unsafe fn is_callthunk(addr: *mut core::ffi::c_void) -> bool {
+unsafe fn is_callthunk(addr: *mut kernel::ffi::c_void) -> bool {
     let tmpl_size = (&skl_call_thunk_tail as *const u8 as usize)
         .wrapping_sub(&skl_call_thunk_template as *const u8 as usize);
     let dest = (addr as usize + CONFIG_FUNCTION_ALIGNMENT - 1)
@@ -167,7 +167,7 @@ unsafe fn is_callthunk(addr: *mut core::ffi::c_void) -> bool {
 
 #[cfg(feature = "bpf_jit")]
 pub unsafe fn x86_call_depth_emit_accounting(
-    pprog: *mut *mut u8, func: *mut core::ffi::c_void, ip: *mut core::ffi::c_void,
+    pprog: *mut *mut u8, func: *mut kernel::ffi::c_void, ip: *mut kernel::ffi::c_void,
 ) -> u32 {
     let tmpl_size = (&skl_call_thunk_tail as *const u8 as usize)
         .wrapping_sub(&skl_call_thunk_template as *const u8 as usize);
@@ -192,7 +192,7 @@ pub unsafe fn callthunks_patch_module_calls(cs: *mut CallthunkSites, mod_ptr: *m
 
 #[cfg(feature = "modules")]
 #[repr(C)]
-pub struct Module { pub text_base: usize, pub text_size: usize, pub name: *const core::ffi::c_char }
+pub struct Module { pub text_base: usize, pub text_size: usize, pub name: *const kernel::ffi::c_char }
 
 // CONFIG_CALL_THUNKS_DEBUG and CONFIG_DEBUG_FS provide the per-CPU counters,
 // seq_file operations, debugfs_create_dir/debugfs_create_file, and initcall

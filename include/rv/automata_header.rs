@@ -14,22 +14,22 @@
 
 /* model_get_state_name - return the (string) name of the given state */
 #[inline]
-pub unsafe fn model_get_state_name(state: states) -> *mut ::core::ffi::c_char {
+pub unsafe fn model_get_state_name(state: states) -> *mut ::kernel::ffi::c_char {
     if (state as isize) < 0 || (state as isize) >= state_max_MONITOR_NAME as isize {
-        return b"INVALID\0".as_ptr() as *mut ::core::ffi::c_char;
+        return b"INVALID\0".as_ptr() as *mut ::kernel::ffi::c_char;
     }
 
-    automaton_MONITOR_NAME.state_names[state as usize] as *mut ::core::ffi::c_char
+    automaton_MONITOR_NAME.state_names[state as usize] as *mut ::kernel::ffi::c_char
 }
 
 /* model_get_event_name - return the (string) name of the given event */
 #[inline]
-pub unsafe fn model_get_event_name(event: events) -> *mut ::core::ffi::c_char {
+pub unsafe fn model_get_event_name(event: events) -> *mut ::kernel::ffi::c_char {
     if (event as isize) < 0 || (event as isize) >= event_max_MONITOR_NAME as isize {
-        return b"INVALID\0".as_ptr() as *mut ::core::ffi::c_char;
+        return b"INVALID\0".as_ptr() as *mut ::kernel::ffi::c_char;
     }
 
-    automaton_MONITOR_NAME.event_names[event as usize] as *mut ::core::ffi::c_char
+    automaton_MONITOR_NAME.event_names[event as usize] as *mut ::kernel::ffi::c_char
 }
 
 /* model_get_initial_state - return the automaton's initial state */

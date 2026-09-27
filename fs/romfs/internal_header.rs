@@ -10,12 +10,12 @@
 #[repr(C)]
 pub struct romfs_inode_info {
     pub vfs_inode: crate::inode,
-    pub i_metasize: libc::c_ulong,   /* size of non-data area */
-    pub i_dataoffset: libc::c_ulong, /* from the start of fs */
+    pub i_metasize: kernel::ffi::c_ulong,   /* size of non-data area */
+    pub i_dataoffset: kernel::ffi::c_ulong, /* from the start of fs */
 }
 
 pub unsafe fn romfs_maxsize(sb: *mut crate::super_block) -> usize {
-    (*sb).s_fs_info as libc::c_ulong as usize
+    (*sb).s_fs_info as kernel::ffi::c_ulong as usize
 }
 
 pub unsafe fn ROMFS_I(inode: *mut crate::inode) -> *mut romfs_inode_info {
@@ -41,23 +41,23 @@ pub use crate::generic_ro_fops as romfs_ro_fops;
 unsafe extern "C" {
     pub fn romfs_dev_read(
         sb: *mut crate::super_block,
-        pos: libc::c_ulong,
-        buf: *mut libc::c_void,
+        pos: kernel::ffi::c_ulong,
+        buf: *mut kernel::ffi::c_void,
         buflen: usize,
-    ) -> libc::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn romfs_dev_strnlen(
         sb: *mut crate::super_block,
-        pos: libc::c_ulong,
+        pos: kernel::ffi::c_ulong,
         maxlen: usize,
-    ) -> libc::ssize_t;
+    ) -> isize;
 
     pub fn romfs_dev_strcmp(
         sb: *mut crate::super_block,
-        pos: libc::c_ulong,
-        str_: *const libc::c_char,
+        pos: kernel::ffi::c_ulong,
+        str_: *const kernel::ffi::c_char,
         size: usize,
-    ) -> libc::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

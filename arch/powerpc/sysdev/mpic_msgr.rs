@@ -36,18 +36,18 @@ pub struct resource {
     pub start: usize,
 }
 pub struct property {
-    pub value: *const core::ffi::c_char,
+    pub value: *const kernel::ffi::c_char,
 }
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 pub struct platform_driver {
     pub driver: driver,
     pub probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32>,
 }
 pub struct driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
@@ -57,22 +57,22 @@ extern "C" {
     fn raw_spin_lock_irqsave(lock: *mut raw_spinlock_t, flags: *mut usize);
     fn raw_spin_unlock_irqrestore(lock: *mut raw_spinlock_t, flags: usize);
     fn raw_spin_lock_init(lock: *mut raw_spinlock_t);
-    fn of_find_node_by_name(from: *mut device_node, name: *const core::ffi::c_char) -> *mut device_node;
+    fn of_find_node_by_name(from: *mut device_node, name: *const kernel::ffi::c_char) -> *mut device_node;
     fn of_node_put(node: *mut device_node);
-    fn of_property_present(node: *mut device_node, name: *const core::ffi::c_char) -> bool;
-    fn snprintf(buf: *mut core::ffi::c_char, size: usize, fmt: *const core::ffi::c_char, ...);
-    fn of_find_property(node: *mut device_node, name: *const core::ffi::c_char, len: *mut usize) -> *mut property;
-    fn of_find_node_by_path(path: *const core::ffi::c_char) -> *mut device_node;
+    fn of_property_present(node: *mut device_node, name: *const kernel::ffi::c_char) -> bool;
+    fn snprintf(buf: *mut kernel::ffi::c_char, size: usize, fmt: *const kernel::ffi::c_char, ...);
+    fn of_find_property(node: *mut device_node, name: *const kernel::ffi::c_char, len: *mut usize) -> *mut property;
+    fn of_find_node_by_path(path: *const kernel::ffi::c_char) -> *mut device_node;
     fn of_address_to_resource(node: *mut device_node, index: u32, resource: *mut resource) -> i32;
-    fn devm_ioremap(dev: *mut core::ffi::c_void, start: usize, size: usize) -> *mut u8;
+    fn devm_ioremap(dev: *mut kernel::ffi::c_void, start: usize, size: usize) -> *mut u8;
     fn resource_size(resource: *const resource) -> usize;
-    fn of_get_property(node: *mut device_node, name: *const core::ffi::c_char, len: *mut usize) -> *const u32;
+    fn of_get_property(node: *mut device_node, name: *const kernel::ffi::c_char, len: *mut usize) -> *const u32;
     fn irq_of_parse_and_map(node: *mut device_node, index: u32) -> u32;
     fn platform_driver_register(driver: *mut platform_driver) -> i32;
-    fn kzalloc(size: usize) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn kzalloc(size: usize) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 unsafe fn _mpic_msgr_mer_write(msgr: *mut mpic_msgr, value: u32) {

@@ -8,7 +8,7 @@
 
 // Dependencies supplied by other translated headers are intentionally external.
 
-use core::ffi::{c_char, c_void};
+use kernel::ffi::{c_char, c_void};
 
 #[repr(C)]
 pub struct kunit {
@@ -56,7 +56,7 @@ pub struct kunit_loc {
 macro_rules! KUNIT_CURRENT_LOC {
     () => {
         $crate::kunit_loc {
-            file: concat!(file!(), "\0").as_ptr() as *const core::ffi::c_char,
+            file: concat!(file!(), "\0").as_ptr() as *const kernel::ffi::c_char,
             line: line!() as i32,
         }
     };

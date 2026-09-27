@@ -12,11 +12,11 @@ pub const _NSIG_BPW: usize = 64;
 
 pub const _NSIG_WORDS: usize = _NSIG / _NSIG_BPW;
 
-pub type old_sigset_t = core::ffi::c_ulong;
+pub type old_sigset_t = kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct sigset_t {
-    pub sig: [core::ffi::c_ulong; _NSIG_WORDS],
+    pub sig: [kernel::ffi::c_ulong; _NSIG_WORDS],
 }
 
 /* Non-uapi in-kernel SA_FLAGS indicating the ABI for a signal frame. */
@@ -43,7 +43,7 @@ pub unsafe fn __gen_sigaddset(set: *mut sigset_t, _sig: i32) {
 #[inline]
 pub unsafe fn __const_sigaddset(set: *mut sigset_t, _sig: i32) {
     let sig = (_sig - 1) as usize;
-    (*set).sig[sig / _NSIG_BPW] |= (1 as core::ffi::c_ulong) << (sig % _NSIG_BPW);
+    (*set).sig[sig / _NSIG_BPW] |= (1 as kernel::ffi::c_ulong) << (sig % _NSIG_BPW);
 }
 
 #[cfg(target_arch = "x86")]
@@ -61,7 +61,7 @@ pub unsafe fn __gen_sigdelset(set: *mut sigset_t, _sig: i32) {
 #[inline]
 pub unsafe fn __const_sigdelset(set: *mut sigset_t, _sig: i32) {
     let sig = (_sig - 1) as usize;
-    (*set).sig[sig / _NSIG_BPW] &= !((1 as core::ffi::c_ulong) << (sig % _NSIG_BPW));
+    (*set).sig[sig / _NSIG_BPW] &= !((1 as kernel::ffi::c_ulong) << (sig % _NSIG_BPW));
 }
 
 #[cfg(target_arch = "x86")]

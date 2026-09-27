@@ -42,7 +42,7 @@ pub const type_unknown: u16 = 0xffff;
 pub struct type_descriptor {
     pub type_kind: u16,
     pub type_info: u16,
-    pub type_name: [core::ffi::c_char; 0],
+    pub type_name: [kernel::ffi::c_char; 0],
 }
 
 #[repr(C)]
@@ -59,7 +59,7 @@ pub union source_location_data {
 
 #[repr(C)]
 pub struct source_location {
-    pub file_name: *const core::ffi::c_char,
+    pub file_name: *const kernel::ffi::c_char,
     pub data: source_location_data,
 }
 
@@ -105,7 +105,7 @@ pub struct type_mismatch_data_common {
 pub struct nonnull_arg_data {
     pub location: source_location,
     pub attr_location: source_location,
-    pub arg_index: core::ffi::c_int,
+    pub arg_index: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -153,22 +153,22 @@ pub type u_max = u64;
  * The conditional ubsan_linkage macro selects the platform calling
  * convention; Rust declarations below use the C ABI.
  */
-pub type c_ulong = core::ffi::c_ulong;
+pub type c_ulong = kernel::ffi::c_ulong;
 
 extern "C" {
-    pub fn __ubsan_handle_add_overflow(data: *mut core::ffi::c_void, lhs: *mut core::ffi::c_void, rhs: *mut core::ffi::c_void);
-    pub fn __ubsan_handle_sub_overflow(data: *mut core::ffi::c_void, lhs: *mut core::ffi::c_void, rhs: *mut core::ffi::c_void);
-    pub fn __ubsan_handle_mul_overflow(data: *mut core::ffi::c_void, lhs: *mut core::ffi::c_void, rhs: *mut core::ffi::c_void);
-    pub fn __ubsan_handle_negate_overflow(data: *mut core::ffi::c_void, old_val: *mut core::ffi::c_void);
-    pub fn __ubsan_handle_divrem_overflow(data: *mut core::ffi::c_void, lhs: *mut core::ffi::c_void, rhs: *mut core::ffi::c_void);
-    pub fn __ubsan_handle_implicit_conversion(data: *mut core::ffi::c_void, lhs: *mut core::ffi::c_void, rhs: *mut core::ffi::c_void);
-    pub fn __ubsan_handle_type_mismatch(data: *mut type_mismatch_data, ptr: *mut core::ffi::c_void);
-    pub fn __ubsan_handle_type_mismatch_v1(data: *mut core::ffi::c_void, ptr: *mut core::ffi::c_void);
-    pub fn __ubsan_handle_out_of_bounds(data: *mut core::ffi::c_void, index: *mut core::ffi::c_void);
-    pub fn __ubsan_handle_shift_out_of_bounds(data: *mut core::ffi::c_void, lhs: *mut core::ffi::c_void, rhs: *mut core::ffi::c_void);
-    pub fn __ubsan_handle_builtin_unreachable(data: *mut core::ffi::c_void);
-    pub fn __ubsan_handle_load_invalid_value(data: *mut core::ffi::c_void, val: *mut core::ffi::c_void);
-    pub fn __ubsan_handle_alignment_assumption(data: *mut core::ffi::c_void, ptr: c_ulong, align: c_ulong, offset: c_ulong);
+    pub fn __ubsan_handle_add_overflow(data: *mut kernel::ffi::c_void, lhs: *mut kernel::ffi::c_void, rhs: *mut kernel::ffi::c_void);
+    pub fn __ubsan_handle_sub_overflow(data: *mut kernel::ffi::c_void, lhs: *mut kernel::ffi::c_void, rhs: *mut kernel::ffi::c_void);
+    pub fn __ubsan_handle_mul_overflow(data: *mut kernel::ffi::c_void, lhs: *mut kernel::ffi::c_void, rhs: *mut kernel::ffi::c_void);
+    pub fn __ubsan_handle_negate_overflow(data: *mut kernel::ffi::c_void, old_val: *mut kernel::ffi::c_void);
+    pub fn __ubsan_handle_divrem_overflow(data: *mut kernel::ffi::c_void, lhs: *mut kernel::ffi::c_void, rhs: *mut kernel::ffi::c_void);
+    pub fn __ubsan_handle_implicit_conversion(data: *mut kernel::ffi::c_void, lhs: *mut kernel::ffi::c_void, rhs: *mut kernel::ffi::c_void);
+    pub fn __ubsan_handle_type_mismatch(data: *mut type_mismatch_data, ptr: *mut kernel::ffi::c_void);
+    pub fn __ubsan_handle_type_mismatch_v1(data: *mut kernel::ffi::c_void, ptr: *mut kernel::ffi::c_void);
+    pub fn __ubsan_handle_out_of_bounds(data: *mut kernel::ffi::c_void, index: *mut kernel::ffi::c_void);
+    pub fn __ubsan_handle_shift_out_of_bounds(data: *mut kernel::ffi::c_void, lhs: *mut kernel::ffi::c_void, rhs: *mut kernel::ffi::c_void);
+    pub fn __ubsan_handle_builtin_unreachable(data: *mut kernel::ffi::c_void);
+    pub fn __ubsan_handle_load_invalid_value(data: *mut kernel::ffi::c_void, val: *mut kernel::ffi::c_void);
+    pub fn __ubsan_handle_alignment_assumption(data: *mut kernel::ffi::c_void, ptr: c_ulong, align: c_ulong, offset: c_ulong);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

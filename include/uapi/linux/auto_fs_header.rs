@@ -7,30 +7,30 @@ pub const AUTOFS_MAX_PROTO_VERSION: i32 = 5;
 pub const AUTOFS_PROTO_SUBVERSION: i32 = 6;
 
 /* On pure 64-bit architectures this is unsigned long; elsewhere unsigned int. */
-pub type autofs_wqt_t = ::core::ffi::c_uint;
+pub type autofs_wqt_t = ::kernel::ffi::c_uint;
 
 pub const autofs_ptype_missing: i32 = 0;
 pub const autofs_ptype_expire: i32 = 1;
 
 #[repr(C)]
 pub struct autofs_packet_hdr {
-    pub proto_version: ::core::ffi::c_int,
-    pub type_: ::core::ffi::c_int,
+    pub proto_version: ::kernel::ffi::c_int,
+    pub type_: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct autofs_packet_missing {
     pub hdr: autofs_packet_hdr,
     pub wait_queue_token: autofs_wqt_t,
-    pub len: ::core::ffi::c_int,
-    pub name: [::core::ffi::c_char; 256 + 1],
+    pub len: ::kernel::ffi::c_int,
+    pub name: [::kernel::ffi::c_char; 256 + 1],
 }
 
 #[repr(C)]
 pub struct autofs_packet_expire {
     pub hdr: autofs_packet_hdr,
-    pub len: ::core::ffi::c_int,
-    pub name: [::core::ffi::c_char; 256 + 1],
+    pub len: ::kernel::ffi::c_int,
+    pub name: [::kernel::ffi::c_char; 256 + 1],
 }
 
 pub const AUTOFS_IOCTL: u32 = 0x93;
@@ -53,9 +53,9 @@ const fn _iowr<T>(ty: u32, nr: u32) -> u32 { _ioc(3, ty, nr, core::mem::size_of:
 pub const AUTOFS_IOC_READY: u32 = _io(AUTOFS_IOCTL, AUTOFS_IOC_READY_CMD);
 pub const AUTOFS_IOC_FAIL: u32 = _io(AUTOFS_IOCTL, AUTOFS_IOC_FAIL_CMD);
 pub const AUTOFS_IOC_CATATONIC: u32 = _io(AUTOFS_IOCTL, AUTOFS_IOC_CATATONIC_CMD);
-pub const AUTOFS_IOC_PROTOVER: u32 = _ior::<::core::ffi::c_int>(AUTOFS_IOCTL, AUTOFS_IOC_PROTOVER_CMD);
-pub const AUTOFS_IOC_SETTIMEOUT32: u32 = _iowr::<::core::ffi::c_ulong>(AUTOFS_IOCTL, AUTOFS_IOC_SETTIMEOUT_CMD);
-pub const AUTOFS_IOC_SETTIMEOUT: u32 = _iowr::<::core::ffi::c_ulong>(AUTOFS_IOCTL, AUTOFS_IOC_SETTIMEOUT_CMD);
+pub const AUTOFS_IOC_PROTOVER: u32 = _ior::<::kernel::ffi::c_int>(AUTOFS_IOCTL, AUTOFS_IOC_PROTOVER_CMD);
+pub const AUTOFS_IOC_SETTIMEOUT32: u32 = _iowr::<::kernel::ffi::c_ulong>(AUTOFS_IOCTL, AUTOFS_IOC_SETTIMEOUT_CMD);
+pub const AUTOFS_IOC_SETTIMEOUT: u32 = _iowr::<::kernel::ffi::c_ulong>(AUTOFS_IOCTL, AUTOFS_IOC_SETTIMEOUT_CMD);
 pub const AUTOFS_IOC_EXPIRE: u32 = _ior::<autofs_packet_expire>(AUTOFS_IOCTL, AUTOFS_IOC_EXPIRE_CMD);
 
 pub const AUTOFS_EXP_NORMAL: u32 = 0x00;
@@ -101,8 +101,8 @@ pub const autofs_ptype_expire_direct: i32 = 6;
 pub struct autofs_packet_expire_multi {
     pub hdr: autofs_packet_hdr,
     pub wait_queue_token: autofs_wqt_t,
-    pub len: ::core::ffi::c_int,
-    pub name: [::core::ffi::c_char; 257],
+    pub len: ::kernel::ffi::c_int,
+    pub name: [::kernel::ffi::c_char; 257],
 }
 
 #[repr(C)]
@@ -124,7 +124,7 @@ pub struct autofs_v5_packet {
     pub pid: u32,
     pub tgid: u32,
     pub len: u32,
-    pub name: [::core::ffi::c_char; 257],
+    pub name: [::kernel::ffi::c_char; 257],
 }
 
 pub type autofs_packet_missing_indirect_t = autofs_v5_packet;
@@ -145,8 +145,8 @@ pub union autofs_v5_packet_union {
 pub const AUTOFS_IOC_EXPIRE_MULTI_CMD: u32 = 0x66;
 pub const AUTOFS_IOC_PROTOSUBVER_CMD: u32 = 0x67;
 pub const AUTOFS_IOC_ASKUMOUNT_CMD: u32 = 0x70;
-pub const AUTOFS_IOC_EXPIRE_MULTI: u32 = _iow::<::core::ffi::c_int>(AUTOFS_IOCTL, AUTOFS_IOC_EXPIRE_MULTI_CMD);
-pub const AUTOFS_IOC_PROTOSUBVER: u32 = _ior::<::core::ffi::c_int>(AUTOFS_IOCTL, AUTOFS_IOC_PROTOSUBVER_CMD);
-pub const AUTOFS_IOC_ASKUMOUNT: u32 = _ior::<::core::ffi::c_int>(AUTOFS_IOCTL, AUTOFS_IOC_ASKUMOUNT_CMD);
+pub const AUTOFS_IOC_EXPIRE_MULTI: u32 = _iow::<::kernel::ffi::c_int>(AUTOFS_IOCTL, AUTOFS_IOC_EXPIRE_MULTI_CMD);
+pub const AUTOFS_IOC_PROTOSUBVER: u32 = _ior::<::kernel::ffi::c_int>(AUTOFS_IOCTL, AUTOFS_IOC_PROTOSUBVER_CMD);
+pub const AUTOFS_IOC_ASKUMOUNT: u32 = _ior::<::kernel::ffi::c_int>(AUTOFS_IOCTL, AUTOFS_IOC_ASKUMOUNT_CMD);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -70,7 +70,7 @@ pub struct fr_proto_pvc {
 #[repr(C)]
 pub struct fr_proto_pvc_info {
     pub dlci: u32,
-    pub master: [core::ffi::c_char; IFNAMSIZ], /* Name of master FRAD device */
+    pub master: [kernel::ffi::c_char; IFNAMSIZ], /* Name of master FRAD device */
 }
 
 #[repr(C)]

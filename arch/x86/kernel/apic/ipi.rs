@@ -8,7 +8,7 @@ static mut apic_use_ipi_shorthand: bool = false;
 static mut apic_ipi_shorthand_off: i32 = 0;
 
 #[cfg(CONFIG_SMP)]
-unsafe fn apic_ipi_shorthand(mut str_: *mut core::ffi::c_char) -> i32 {
+unsafe fn apic_ipi_shorthand(mut str_: *mut kernel::ffi::c_char) -> i32 {
     get_option(&mut str_, &mut apic_ipi_shorthand_off);
     1
 }

@@ -7,7 +7,7 @@
 
 #[repr(C)]
 struct packing_test_case {
-    desc: *const core::ffi::c_char,
+    desc: *const kernel::ffi::c_char,
     pbuf: *const u8,
     pbuf_size: usize,
     uval: u64,
@@ -20,7 +20,7 @@ const NO_QUIRKS: u8 = 0;
 // QUIRK_LSW32_IS_FIRST, QUIRK_LITTLE_ENDIAN, and QUIRK_MSB_ON_THE_RIGHT are
 // provided by linux/packing.h.
 
-macro_rules! cstr { ($s:literal) => { concat!($s, "\0").as_ptr() as *const core::ffi::c_char }; }
+macro_rules! cstr { ($s:literal) => { concat!($s, "\0").as_ptr() as *const kernel::ffi::c_char }; }
 macro_rules! case {
     ($d:literal, [$($b:expr),* $(,)?], $v:expr, $s:expr, $e:expr, $q:expr) => {{
         const B: &[u8] = &[$($b),*];
@@ -74,14 +74,14 @@ const PACKED_BUF_SIZE: usize = 8;
 extern "C" {
     fn pack(pbuf: *mut u8, uval: u64, start_bit: usize, end_bit: usize, pbuf_size: usize, quirks: u8) -> i32;
     fn unpack(pbuf: *const u8, uval: *mut u64, start_bit: usize, end_bit: usize, pbuf_size: usize, quirks: u8) -> i32;
-    fn pack_fields(buf: *mut packed_buf_t, size: usize, data: *const test_data, fields: *const core::ffi::c_void, quirks: u8);
-    fn unpack_fields(buf: *const packed_buf_t, size: usize, data: *mut test_data, fields: *const core::ffi::c_void, quirks: u8);
+    fn pack_fields(buf: *mut packed_buf_t, size: usize, data: *const test_data, fields: *const kernel::ffi::c_void, quirks: u8);
+    fn unpack_fields(buf: *const packed_buf_t, size: usize, data: *mut test_data, fields: *const kernel::ffi::c_void, quirks: u8);
 }
 
 // KUNIT_ARRAY_PARAM_DESC(packing, cases, desc);
 // KUNIT_CASE_PARAM/KUNIT_CASE registrations and kunit_test_suite(packing_test_suite)
 // are supplied by the KUnit integration.  The test logic is preserved below.
-unsafe fn packing_test_pack(test: *mut core::ffi::c_void, params: *const packing_test_case) {
+unsafe fn packing_test_pack(test: *mut kernel::ffi::c_void, params: *const packing_test_case) {
     let mut pbuf = vec![0u8; (*params).pbuf_size];
     let err = pack(pbuf.as_mut_ptr(), (*params).uval, (*params).start_bit,
                    (*params).end_bit, (*params).pbuf_size, (*params).quirks);
@@ -90,7 +90,7 @@ unsafe fn packing_test_pack(test: *mut core::ffi::c_void, params: *const packing
     let _ = (test, err);
 }
 
-unsafe fn packing_test_unpack(test: *mut core::ffi::c_void, params: *const packing_test_case) {
+unsafe fn packing_test_unpack(test: *mut kernel::ffi::c_void, params: *const packing_test_case) {
     let mut uval = 0u64;
     let err = unpack((*params).pbuf, &mut uval, (*params).start_bit, (*params).end_bit,
                      (*params).pbuf_size, (*params).quirks);

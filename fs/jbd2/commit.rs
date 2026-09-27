@@ -183,7 +183,7 @@ unsafe fn journal_wait_on_commit_record(journal_t *journal,
 /* Send all the data buffers related to an inode */
 pub unsafe fn jbd2_submit_inode_data(journal_t *journal, jbd2_inodejinode)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	if (!jinode)
 		return 0;
@@ -202,7 +202,7 @@ pub unsafe fn jbd2_wait_inode_data(journal_t *journal, jbd2_inodejinode)
 {
 	struct address_spacemapping;
 	struct inodeinode;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	start_byte: i64, end_byte;
 
 	if (!jinode)
@@ -342,7 +342,7 @@ unsafe fn jbd2_checksum_data(crc32_sum: u32, buffer_headbh)
 }
 
 unsafe fn write_tag_block(journal_t *j, journal_block_tag_t *tag,
-				   block: core::ffi::c_ulonglong)
+				   block: kernel::ffi::c_ulonglong)
 {
 	tag.t_blocknr = cpu_to_be32(block & (u32)~0);
 	if (jbd2_has_feature_64bit(j))
@@ -387,7 +387,7 @@ pub unsafe fn jbd2_journal_commit_transaction(journal_t *journal)
 	int bufs;
 	int escape;
 	int err;
-	core::ffi::c_ulonglong blocknr;
+	kernel::ffi::c_ulonglong blocknr;
 	i64 start_time;
 	u64 commit_time;
 	chartagp = core::ptr::null_mut();
@@ -401,7 +401,7 @@ pub unsafe fn jbd2_journal_commit_transaction(journal_t *journal)
 	u32 crc32_sum = ~0;
 	struct blk_plug plug;
 	/* Tail of the journal */
-	core::ffi::c_ulong first_block;
+	kernel::ffi::c_ulong first_block;
 	u32 first_tid;
 	int update_tail;
 	int csum_size = 0;
@@ -646,7 +646,7 @@ pub unsafe fn jbd2_journal_commit_transaction(journal_t *journal)
 			}
 
 			jbd2_debug(4, "JBD2: got buffer %llu (%p)\n",
-				(core::ffi::c_ulonglong)descriptor.b_blocknr,
+				(kernel::ffi::c_ulonglong)descriptor.b_blocknr,
 				descriptor.b_data);
 			tagp = &descriptor.b_data[core::mem::size_of::<journal_header_t>()];
 			space_left = descriptor.b_size -

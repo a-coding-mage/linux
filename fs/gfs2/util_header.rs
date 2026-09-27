@@ -54,9 +54,9 @@ extern "C" {
 #[macro_export]
 macro_rules! gfs2_assert { ($sdp:expr, $assertion:expr) => {{ if !($assertion) { unsafe { gfs2_assert_i($sdp); BUG!(); } } }}; }
 #[macro_export]
-macro_rules! gfs2_assert_withdraw { ($sdp:expr, $assertion:expr) => {{ let b = $assertion; if !b { unsafe { gfs2_assert_withdraw_i($sdp, stringify!($assertion).as_ptr() as *mut c_char, concat!(module_path!(), "\0").as_ptr() as *const c_char, file!().as_ptr() as *mut c_char, line!()); } } !b }}; }
+macro_rules! gfs2_assert_withdraw { ($sdp:expr, $assertion:expr) => {{ let b = $assertion; if !b { unsafe { gfs2_assert_withdraw_i($sdp, concat!(stringify!($assertion), "\0").as_ptr() as *mut c_char, concat!(module_path!(), "\0").as_ptr() as *const c_char, file!().as_ptr() as *mut c_char, line!()); } } !b }}; }
 #[macro_export]
-macro_rules! gfs2_assert_warn { ($sdp:expr, $assertion:expr) => {{ let b = $assertion; if !b { unsafe { gfs2_assert_warn_i($sdp, stringify!($assertion).as_ptr() as *mut c_char, concat!(module_path!(), "\0").as_ptr() as *const c_char, file!().as_ptr() as *mut c_char, line!()); } } !b }}; }
+macro_rules! gfs2_assert_warn { ($sdp:expr, $assertion:expr) => {{ let b = $assertion; if !b { unsafe { gfs2_assert_warn_i($sdp, concat!(stringify!($assertion), "\0").as_ptr() as *mut c_char, concat!(module_path!(), "\0").as_ptr() as *const c_char, file!().as_ptr() as *mut c_char, line!()); } } !b }}; }
 #[macro_export] macro_rules! gfs2_consist { ($sdp:expr) => { unsafe { gfs2_consist_i($sdp, concat!(module_path!(), "\0").as_ptr() as *const c_char, file!().as_ptr() as *mut c_char, line!()) } }; }
 #[macro_export] macro_rules! gfs2_consist_inode { ($ip:expr) => { unsafe { gfs2_consist_inode_i($ip, concat!(module_path!(), "\0").as_ptr() as *const c_char, file!().as_ptr() as *mut c_char, line!()) } }; }
 #[macro_export] macro_rules! gfs2_consist_rgrpd { ($rgd:expr) => { unsafe { gfs2_consist_rgrpd_i($rgd, concat!(module_path!(), "\0").as_ptr() as *const c_char, file!().as_ptr() as *mut c_char, line!()) } }; }

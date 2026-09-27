@@ -135,7 +135,7 @@ pub struct sst_platform_info {
     pub ipc_info: *const sst_ipc_info,
     pub res_info: *const sst_res_info,
     pub lib_info: *const sst_lib_dnld_info,
-    pub platform: *const core::ffi::c_char,
+    pub platform: *const kernel::ffi::c_char,
     pub streams_lost_on_suspend: bool,
 }
 

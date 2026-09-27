@@ -105,7 +105,7 @@ pub const DOC_ECC_DIS: u8 = DOC_ECC_RESV;
 pub struct Nand {
     pub floor: i8,
     pub chip: i8,
-    pub curadr: libc::c_ulong,
+    pub curadr: kernel::ffi::c_ulong,
     pub curmode: u8,
 }
 
@@ -121,21 +121,21 @@ pub const ADDR_COLUMN_PAGE: usize = 3;
 
 #[repr(C)]
 pub struct DiskOnChip {
-    pub physadr: libc::c_ulong,
-    pub virtadr: *mut core::ffi::c_void,
-    pub totlen: libc::c_ulong,
+    pub physadr: kernel::ffi::c_ulong,
+    pub virtadr: *mut kernel::ffi::c_void,
+    pub totlen: kernel::ffi::c_ulong,
     pub ChipID: u8,
-    pub ioreg: libc::c_int,
-    pub mfr: libc::c_ulong,
-    pub id: libc::c_ulong,
-    pub chipshift: libc::c_int,
+    pub ioreg: kernel::ffi::c_int,
+    pub mfr: kernel::ffi::c_ulong,
+    pub id: kernel::ffi::c_ulong,
+    pub chipshift: kernel::ffi::c_int,
     pub page256: i8,
     pub pageadrlen: i8,
     pub interleave: i8,
-    pub erasesize: libc::c_ulong,
-    pub curfloor: libc::c_int,
-    pub curchip: libc::c_int,
-    pub numchips: libc::c_int,
+    pub erasesize: kernel::ffi::c_ulong,
+    pub curfloor: kernel::ffi::c_int,
+    pub curchip: kernel::ffi::c_int,
+    pub numchips: kernel::ffi::c_int,
     pub chips: *mut Nand,
     pub nextdoc: *mut mtd_info,
     pub lock: mutex,

@@ -16,20 +16,20 @@ pub struct octeon_cop2_state {
 extern "C" {
     fn preempt_disable();
     fn preempt_enable();
-    fn local_irq_save(flags: *mut ::core::ffi::c_ulong);
-    fn local_irq_restore(flags: ::core::ffi::c_ulong);
-    fn read_c0_status() -> ::core::ffi::c_int;
-    fn write_c0_status(status: ::core::ffi::c_int);
+    fn local_irq_save(flags: *mut ::kernel::ffi::c_ulong);
+    fn local_irq_restore(flags: ::kernel::ffi::c_ulong);
+    fn read_c0_status() -> ::kernel::ffi::c_int;
+    fn write_c0_status(status: ::kernel::ffi::c_int);
     fn octeon_cop2_save(state: *mut octeon_cop2_state);
     fn octeon_cop2_restore(state: *mut octeon_cop2_state);
 
     // Rust-facing forms of the kernel's KSTK_STATUS(current) access and
     // current->thread.cp2 access; their definitions are provided elsewhere.
-    fn octeon_current_kstk_status() -> *mut ::core::ffi::c_int;
+    fn octeon_current_kstk_status() -> *mut ::kernel::ffi::c_int;
     fn octeon_current_thread_cp2() -> *mut octeon_cop2_state;
 }
 
-const ST0_CU2: ::core::ffi::c_int = 1 << 30;
+const ST0_CU2: ::kernel::ffi::c_int = 1 << 30;
 
 /**
  * Enable access to Octeon's COP2 crypto hardware for kernel use. Wrap any
@@ -42,9 +42,9 @@ const ST0_CU2: ::core::ffi::c_int = 1 << 30;
  *
  * Returns: Flags to be passed to octeon_crypto_disable()
  */
-pub unsafe fn octeon_crypto_enable(state: *mut octeon_cop2_state) -> ::core::ffi::c_ulong {
-    let mut status: ::core::ffi::c_int;
-    let mut flags: ::core::ffi::c_ulong = 0;
+pub unsafe fn octeon_crypto_enable(state: *mut octeon_cop2_state) -> ::kernel::ffi::c_ulong {
+    let mut status: ::kernel::ffi::c_int;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
 
     preempt_disable();
     local_irq_save(&mut flags);
@@ -59,7 +59,7 @@ pub unsafe fn octeon_crypto_enable(state: *mut octeon_cop2_state) -> ::core::ffi
         octeon_cop2_save(state);
     }
     local_irq_restore(flags);
-    (status & ST0_CU2) as ::core::ffi::c_ulong
+    (status & ST0_CU2) as ::kernel::ffi::c_ulong
 }
 
 /**
@@ -72,12 +72,12 @@ pub unsafe fn octeon_crypto_enable(state: *mut octeon_cop2_state) -> ::core::ffi
  */
 pub unsafe fn octeon_crypto_disable(
     state: *mut octeon_cop2_state,
-    crypto_flags: ::core::ffi::c_ulong,
+    crypto_flags: ::kernel::ffi::c_ulong,
 ) {
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
 
     local_irq_save(&mut flags);
-    if (crypto_flags & ST0_CU2 as ::core::ffi::c_ulong) != 0 {
+    if (crypto_flags & ST0_CU2 as ::kernel::ffi::c_ulong) != 0 {
         octeon_cop2_restore(state);
     } else {
         write_c0_status(read_c0_status() & !ST0_CU2);

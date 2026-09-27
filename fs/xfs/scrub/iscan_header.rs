@@ -33,16 +33,16 @@ pub struct xchk_iscan {
     pub __visited_ino: xfs_ino_t,
 
     /* Operational state of the livescan. */
-    pub __opstate: libc::c_ulong,
+    pub __opstate: kernel::ffi::c_ulong,
 
     /* Give up on iterating @cursor_ino if we can't iget it by this time. */
-    pub __iget_deadline: libc::c_ulong,
+    pub __iget_deadline: kernel::ffi::c_ulong,
 
     /* Amount of time (in ms) that we will try to iget an inode. */
-    pub iget_timeout: libc::c_uint,
+    pub iget_timeout: kernel::ffi::c_uint,
 
     /* Wait this many ms to retry an iget. */
-    pub iget_retry_delay: libc::c_uint,
+    pub iget_retry_delay: kernel::ffi::c_uint,
 
     /*
      * The scan grabs batches of inodes and stashes them here before
@@ -56,10 +56,10 @@ pub struct xchk_iscan {
 }
 
 /* Set if the scan has been aborted due to some event in the fs. */
-pub const XCHK_ISCAN_OPSTATE_ABORTED: libc::c_ulong = 1;
+pub const XCHK_ISCAN_OPSTATE_ABORTED: kernel::ffi::c_ulong = 1;
 
 /* Use trylock to acquire the AGI */
-pub const XCHK_ISCAN_OPSTATE_TRYLOCK_AGI: libc::c_ulong = 2;
+pub const XCHK_ISCAN_OPSTATE_TRYLOCK_AGI: kernel::ffi::c_ulong = 2;
 
 #[inline]
 pub unsafe fn xchk_iscan_aborted(iscan: *const xchk_iscan) -> bool {
@@ -84,14 +84,14 @@ pub unsafe fn xchk_iscan_set_agi_trylock(iscan: *mut xchk_iscan) {
 extern "C" {
     pub fn xchk_iscan_start(
         sc: *mut xfs_scrub,
-        iget_timeout: libc::c_uint,
-        iget_retry_delay: libc::c_uint,
+        iget_timeout: kernel::ffi::c_uint,
+        iget_retry_delay: kernel::ffi::c_uint,
         iscan: *mut xchk_iscan,
     );
     pub fn xchk_iscan_finish_early(iscan: *mut xchk_iscan);
     pub fn xchk_iscan_teardown(iscan: *mut xchk_iscan);
 
-    pub fn xchk_iscan_iter(iscan: *mut xchk_iscan, ipp: *mut *mut xfs_inode) -> libc::c_int;
+    pub fn xchk_iscan_iter(iscan: *mut xchk_iscan, ipp: *mut *mut xfs_inode) -> kernel::ffi::c_int;
     pub fn xchk_iscan_iter_finish(iscan: *mut xchk_iscan);
 
     pub fn xchk_iscan_mark_visited(iscan: *mut xchk_iscan, ip: *mut xfs_inode);

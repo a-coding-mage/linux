@@ -96,24 +96,24 @@ pub struct device {
 
 /* CONFIG_CXL_FEATURES is a build-time kernel condition preserved here as a
  * Rust feature condition. */
-#[cfg(feature = "CXL_FEATURES")]
+#[cfg(CONFIG_CXL_FEATURES)]
 extern "C" {
     pub fn to_cxlfs(cxlds: *mut cxl_dev_state) -> *mut cxl_features_state;
     pub fn devm_cxl_setup_features(cxlds: *mut cxl_dev_state) -> i32;
     pub fn devm_cxl_setup_fwctl(host: *mut device, cxlmd: *mut cxl_memdev) -> i32;
 }
 
-#[cfg(not(feature = "CXL_FEATURES"))]
+#[cfg(not(CONFIG_CXL_FEATURES))]
 pub unsafe fn to_cxlfs(_cxlds: *mut cxl_dev_state) -> *mut cxl_features_state {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CXL_FEATURES"))]
+#[cfg(not(CONFIG_CXL_FEATURES))]
 pub unsafe fn devm_cxl_setup_features(_cxlds: *mut cxl_dev_state) -> i32 {
     -95
 }
 
-#[cfg(not(feature = "CXL_FEATURES"))]
+#[cfg(not(CONFIG_CXL_FEATURES))]
 pub unsafe fn devm_cxl_setup_fwctl(_host: *mut device, _cxlmd: *mut cxl_memdev) -> i32 {
     -95
 }

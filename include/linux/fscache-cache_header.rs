@@ -35,20 +35,20 @@ pub const NR__FSCACHE_CACHE_STATE: usize = fscache_cache_state::FSCACHE_CACHE_IS
 pub struct fscache_cache {
     pub ops: *const fscache_cache_ops,
     pub cache_link: list_head,
-    pub cache_priv: *mut core::ffi::c_void,
+    pub cache_priv: *mut kernel::ffi::c_void,
     pub ref_: refcount_t,
     pub n_volumes: atomic_t,
     pub n_accesses: atomic_t,
     pub object_count: atomic_t,
-    pub debug_id: core::ffi::c_uint,
+    pub debug_id: kernel::ffi::c_uint,
     pub state: fscache_cache_state,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
 }
 
 /* cache operations */
 #[repr(C)]
 pub struct fscache_cache_ops {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub acquire_volume: Option<unsafe extern "C" fn(volume: *mut fscache_volume)>,
     pub free_volume: Option<unsafe extern "C" fn(volume: *mut fscache_volume)>,
     pub lookup_cookie: Option<unsafe extern "C" fn(cookie: *mut fscache_cookie) -> bool>,
@@ -64,9 +64,9 @@ extern "C" {
     pub static mut fscache_clearance_waiters: wait_queue_head_t;
     pub static mut fscache_addremove_sem: rw_semaphore;
 
-    pub fn fscache_acquire_cache(name: *const core::ffi::c_char) -> *mut fscache_cache;
+    pub fn fscache_acquire_cache(name: *const kernel::ffi::c_char) -> *mut fscache_cache;
     pub fn fscache_relinquish_cache(cache: *mut fscache_cache);
-    pub fn fscache_add_cache(cache: *mut fscache_cache, ops: *const fscache_cache_ops, cache_priv: *mut core::ffi::c_void) -> core::ffi::c_int;
+    pub fn fscache_add_cache(cache: *mut fscache_cache, ops: *const fscache_cache_ops, cache_priv: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
     pub fn fscache_withdraw_cache(cache: *mut fscache_cache);
     pub fn fscache_withdraw_volume(volume: *mut fscache_volume);
     pub fn fscache_withdraw_cookie(cookie: *mut fscache_cookie);
@@ -87,9 +87,9 @@ pub unsafe fn fscache_cookie_state(cookie: *mut fscache_cookie) -> fscache_cooki
     smp_load_acquire(&(*cookie).state)
 }
 
-pub unsafe fn fscache_get_key(cookie: *mut fscache_cookie) -> *mut core::ffi::c_void {
+pub unsafe fn fscache_get_key(cookie: *mut fscache_cookie) -> *mut kernel::ffi::c_void {
     if (*cookie).key_len <= core::mem::size_of_val(&(*cookie).inline_key) {
-        (*cookie).inline_key.as_mut_ptr() as *mut core::ffi::c_void
+        (*cookie).inline_key.as_mut_ptr() as *mut kernel::ffi::c_void
     } else {
         (*cookie).key
     }

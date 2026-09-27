@@ -56,7 +56,7 @@ pub unsafe fn scx_cgroup_sched(cgrp: *mut cgroup) -> *mut scx_sched {
 
 #[cfg(CONFIG_EXT_SUB_SCHED)]
 #[inline]
-pub unsafe fn sch_cgrp_path(sch: *mut scx_sched) -> *const core::ffi::c_char { (*sch).cgrp_path }
+pub unsafe fn sch_cgrp_path(sch: *mut scx_sched) -> *const kernel::ffi::c_char { (*sch).cgrp_path }
 
 /* a dying sub's hot-path influence ends in scx_sched_free_rcu_work() */
 #[cfg(CONFIG_EXT_SUB_SCHED)]
@@ -74,7 +74,7 @@ pub unsafe fn scx_dec_has_subs(sch: *mut scx_sched) {
 #[cfg(not(CONFIG_EXT_SUB_SCHED))]
 #[inline] pub unsafe fn sch_cgroup(_sch: *mut scx_sched) -> *mut cgroup { core::ptr::null_mut() }
 #[cfg(not(CONFIG_EXT_SUB_SCHED))]
-#[inline] pub unsafe fn sch_cgrp_path(_sch: *mut scx_sched) -> *const core::ffi::c_char { b"/\0".as_ptr() as *const _ }
+#[inline] pub unsafe fn sch_cgrp_path(_sch: *mut scx_sched) -> *const kernel::ffi::c_char { b"/\0".as_ptr() as *const _ }
 #[cfg(not(CONFIG_EXT_SUB_SCHED))]
 #[inline] pub unsafe fn set_cgroup_sched(_cgrp: *mut cgroup, _sch: *mut scx_sched) {}
 #[cfg(not(CONFIG_EXT_SUB_SCHED))]

@@ -10,24 +10,24 @@
 
 const S3C_ADDR_BASE: usize = 0xF6000000;
 #[inline]
-unsafe fn S3C_ADDR(x: usize) -> *mut core::ffi::c_void {
-    (S3C_ADDR_BASE + x) as *mut core::ffi::c_void
+unsafe fn S3C_ADDR(x: usize) -> *mut kernel::ffi::c_void {
+    (S3C_ADDR_BASE + x) as *mut kernel::ffi::c_void
 }
 #[allow(non_upper_case_globals)]
-static S5P_VA_CHIPID: *mut core::ffi::c_void = S3C_ADDR(0x02000000);
+static S5P_VA_CHIPID: *mut kernel::ffi::c_void = S3C_ADDR(0x02000000);
 
 // CONFIG_ARM_EXYNOS_CPUIDLE selects the platform_data initializer here.
 #[repr(C)]
 static mut exynos_cpuidle: platform_device = platform_device {
-    name: "exynos_cpuidle" as *const str as *const core::ffi::c_char,
+    name: "exynos_cpuidle" as *const str as *const kernel::ffi::c_char,
     #[cfg(CONFIG_ARM_EXYNOS_CPUIDLE)]
-    dev: device { platform_data: exynos_enter_aftr as *const core::ffi::c_void },
+    dev: device { platform_data: exynos_enter_aftr as *const kernel::ffi::c_void },
     id: -1,
 };
 
-static mut sysram_base_addr: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut sysram_base_addr: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut sysram_base_phys: phys_addr_t = 0;
-static mut sysram_ns_base_addr: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut sysram_ns_base_addr: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 static mut exynos_cpu_id: usize = 0;
 static mut exynos_cpu_rev: u32 = 0;
@@ -59,8 +59,8 @@ pub unsafe fn exynos_sysram_init() {
     }
 }
 
-unsafe fn exynos_fdt_map_chipid(node: usize, _uname: *const core::ffi::c_char,
-                                _depth: i32, _data: *mut core::ffi::c_void) -> i32 {
+unsafe fn exynos_fdt_map_chipid(node: usize, _uname: *const kernel::ffi::c_char,
+                                _depth: i32, _data: *mut kernel::ffi::c_void) -> i32 {
     let mut iodesc: map_desc = core::mem::zeroed();
     let mut len: i32 = 0;
     if !of_flat_dt_is_compatible(node, "samsung,exynos4210-chipid") {
@@ -145,7 +145,7 @@ unsafe fn exynos_dt_machine_init() {
     }
 }
 
-static exynos_dt_compat: [*const core::ffi::c_char; 11] = [
+static exynos_dt_compat: [*const kernel::ffi::c_char; 11] = [
     "samsung,exynos3", "samsung,exynos3250", "samsung,exynos4",
     "samsung,exynos4210", "samsung,exynos4212", "samsung,exynos4412",
     "samsung,exynos5", "samsung,exynos5250", "samsung,exynos5260",

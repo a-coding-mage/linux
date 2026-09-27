@@ -16,18 +16,18 @@ pub const XFS_ERR_ENODEV: usize = 3;
 pub const XFS_ERR_ERRNO_MAX: usize = 4;
 pub const XFS_ERR_RETRY_FOREVER: i32 = -1;
 
-#[repr(C)] pub struct xfs_error_cfg { pub kobj: xfs_kobj, pub max_retries: i32, pub retry_timeout: libc::c_long }
+#[repr(C)] pub struct xfs_error_cfg { pub kobj: xfs_kobj, pub max_retries: i32, pub retry_timeout: kernel::ffi::c_long }
 #[repr(C)] pub struct xfs_inodegc { pub mp: *mut xfs_mount, pub list: llist_head, pub work: delayed_work, pub error: i32, pub items: u32, pub shrinker_hits: u32, pub cpu: u32 }
 #[repr(C)] pub struct xfs_groups { pub xa: xarray, pub blocks: u32, pub blklog: u8, pub has_daddr_gaps: bool, pub blkmask: u64, pub start_fsb: xfs_fsblock_t, pub awu_max: xfs_extlen_t }
 #[repr(C)] pub struct xfs_freecounter { pub count: percpu_counter, pub res_total: u64, pub res_avail: u64, pub res_saved: u64 }
 
 #[repr(C)] pub struct xfs_mount {
     pub m_sb: xfs_sb, pub m_super: *mut super_block, pub m_ail: *mut xfs_ail, pub m_sb_bp: *mut xfs_buf,
-    pub m_rtsb_bp: *mut xfs_buf, pub m_rtname: *mut libc::c_char, pub m_logname: *mut libc::c_char,
+    pub m_rtsb_bp: *mut xfs_buf, pub m_rtname: *mut kernel::ffi::c_char, pub m_logname: *mut kernel::ffi::c_char,
     pub m_dir_geo: *mut xfs_da_geometry, pub m_attr_geo: *mut xfs_da_geometry, pub m_log: *mut xlog,
     pub m_rootip: *mut xfs_inode, pub m_metadirip: *mut xfs_inode, pub m_rtdirip: *mut xfs_inode,
     pub m_quotainfo: *mut xfs_quotainfo, pub m_ddev_targp: *mut xfs_buftarg, pub m_logdev_targp: *mut xfs_buftarg,
-    pub m_rtdev_targp: *mut xfs_buftarg, pub m_inodegc: *mut libc::c_void, pub m_filestream: *mut xfs_mru_cache,
+    pub m_rtdev_targp: *mut xfs_buftarg, pub m_inodegc: *mut kernel::ffi::c_void, pub m_filestream: *mut xfs_mru_cache,
     pub m_buf_workqueue: *mut workqueue_struct, pub m_unwritten_workqueue: *mut workqueue_struct,
     pub m_reclaim_workqueue: *mut workqueue_struct, pub m_sync_workqueue: *mut workqueue_struct,
     pub m_blockgc_wq: *mut workqueue_struct, pub m_inodegc_wq: *mut workqueue_struct,
@@ -41,7 +41,7 @@ pub const XFS_ERR_RETRY_FOREVER: i32 = -1;
     pub m_ag_max_usable: uint, pub m_dalign: i32, pub m_swidth: i32, pub m_maxagi: xfs_agnumber_t, pub m_allocsize_log: uint,
     pub m_allocsize_blocks: uint, pub m_logbufs: i32, pub m_logbsize: i32, pub m_rsumlevels: uint, pub m_rsumblocks: xfs_filblks_t,
     pub m_fixedfsid: [i32;2], pub m_qflags: uint, pub m_features: u64, pub m_low_space: [u64;XFS_LOWSP_MAX], pub m_low_rtexts: [u64;XFS_LOWSP_MAX],
-    pub m_rtxblkmask: u64, pub m_ino_geo: xfs_ino_geometry, pub m_resv: xfs_trans_resv, pub m_opstate: libc::c_ulong,
+    pub m_rtxblkmask: u64, pub m_ino_geo: xfs_ino_geometry, pub m_resv: xfs_trans_resv, pub m_opstate: kernel::ffi::c_ulong,
     pub m_always_cow: bool, pub m_fail_unmount: bool, pub m_finobt_nores: bool, pub m_update_sb: bool, pub m_max_open_zones: uint,
     pub m_zonegc_low_space: uint, pub m_awu_max_bytes: u64, pub m_fs_checked: u8, pub m_fs_sick: u8, pub m_rt_checked: u8, pub m_rt_sick: u8,
     pub m_sb_lock: spinlock_t, pub m_icount: percpu_counter, pub m_ifree: percpu_counter, pub m_free: [xfs_freecounter; XC_FREE_NR],
@@ -53,7 +53,7 @@ pub const XFS_ERR_RETRY_FOREVER: i32 = -1;
     pub m_metafile_resv_target: u64, pub m_metafile_resv_used: u64, pub m_metafile_resv_avail: u64, pub m_inodegc_shrinker: *mut shrinker,
     pub m_flush_inodes_work: work_struct, pub m_generation: u32, pub m_growlock: mutex, pub m_inodegc_cpumask: cpumask,
     pub m_dir_update_hooks: xfs_hooks, pub m_healthmon: *mut xfs_healthmon, pub m_uuid_table_index: uint,
-    pub m_old_io_pages: libc::c_ulong, pub m_initial_io_pages: libc::c_ulong, pub m_old_ra_pages: libc::c_ulong, pub m_initial_ra_pages: libc::c_ulong,
+    pub m_old_io_pages: kernel::ffi::c_ulong, pub m_initial_io_pages: kernel::ffi::c_ulong, pub m_old_ra_pages: kernel::ffi::c_ulong, pub m_initial_ra_pages: kernel::ffi::c_ulong,
 }
 pub type xfs_mount_t = xfs_mount;
 
@@ -73,7 +73,7 @@ pub const XFS_MAX_IO_LOG:u32=30; pub const XFS_FDBLOCKS_BATCH:u64=1024; pub cons
 #[inline] pub unsafe fn xfs_should_warn(mp:*mut xfs_mount,nr:u32)->bool { !test_and_set_bit(nr,&mut (*mp).m_opstate) }
 
 pub const SHUTDOWN_META_IO_ERROR:u32=1<<0; pub const SHUTDOWN_LOG_IO_ERROR:u32=1<<1; pub const SHUTDOWN_FORCE_UMOUNT:u32=1<<2; pub const SHUTDOWN_CORRUPT_INCORE:u32=1<<3; pub const SHUTDOWN_CORRUPT_ONDISK:u32=1<<4; pub const SHUTDOWN_DEVICE_REMOVED:u32=1<<5;
-extern "C" { pub fn xfs_do_force_shutdown(mp:*mut xfs_mount,flags:u32,fname:*mut libc::c_char,lnnum:i32); pub fn xfs_uuid_table_free(); pub fn xfs_default_resblks(mp:*mut xfs_mount,ctr:xfs_free_counter)->u64; pub fn xfs_mountfs(mp:*mut xfs_mount)->i32; pub fn xfs_unmountfs(mp:*mut xfs_mount); pub fn xfs_freecounter_unavailable(mp:*mut xfs_mount,ctr:xfs_free_counter)->u64; pub fn xfs_readsb(mp:*mut xfs_mount,flags:i32)->i32; pub fn xfs_freesb(mp:*mut xfs_mount); pub fn xfs_fs_writable(mp:*mut xfs_mount,level:i32)->bool; pub fn xfs_sb_validate_fsb_count(sb:*mut xfs_sb,count:u64)->i32; pub fn xfs_dev_is_read_only(mp:*mut xfs_mount,name:*mut libc::c_char)->i32; pub fn xfs_set_low_space_thresholds(mp:*mut xfs_mount); pub fn xfs_zero_extent(ip:*mut xfs_inode,start:xfs_fsblock_t,count:xfs_off_t)->i32; pub fn xfs_error_get_cfg(mp:*mut xfs_mount,class:i32,error:i32)->*mut xfs_error_cfg; pub fn xfs_force_summary_recalc(mp:*mut xfs_mount); pub fn xfs_add_incompat_log_feature(mp:*mut xfs_mount,feature:u32)->i32; pub fn xfs_clear_incompat_log_features(mp:*mut xfs_mount)->bool; pub fn xfs_mod_delalloc(ip:*mut xfs_inode,data_delta:i64,ind_delta:i64); pub fn xfs_set_max_atomic_write_opt(mp:*mut xfs_mount,new_max_bytes:u64)->i32; }
+extern "C" { pub fn xfs_do_force_shutdown(mp:*mut xfs_mount,flags:u32,fname:*mut kernel::ffi::c_char,lnnum:i32); pub fn xfs_uuid_table_free(); pub fn xfs_default_resblks(mp:*mut xfs_mount,ctr:xfs_free_counter)->u64; pub fn xfs_mountfs(mp:*mut xfs_mount)->i32; pub fn xfs_unmountfs(mp:*mut xfs_mount); pub fn xfs_freecounter_unavailable(mp:*mut xfs_mount,ctr:xfs_free_counter)->u64; pub fn xfs_readsb(mp:*mut xfs_mount,flags:i32)->i32; pub fn xfs_freesb(mp:*mut xfs_mount); pub fn xfs_fs_writable(mp:*mut xfs_mount,level:i32)->bool; pub fn xfs_sb_validate_fsb_count(sb:*mut xfs_sb,count:u64)->i32; pub fn xfs_dev_is_read_only(mp:*mut xfs_mount,name:*mut kernel::ffi::c_char)->i32; pub fn xfs_set_low_space_thresholds(mp:*mut xfs_mount); pub fn xfs_zero_extent(ip:*mut xfs_inode,start:xfs_fsblock_t,count:xfs_off_t)->i32; pub fn xfs_error_get_cfg(mp:*mut xfs_mount,class:i32,error:i32)->*mut xfs_error_cfg; pub fn xfs_force_summary_recalc(mp:*mut xfs_mount); pub fn xfs_add_incompat_log_feature(mp:*mut xfs_mount,feature:u32)->i32; pub fn xfs_clear_incompat_log_features(mp:*mut xfs_mount)->bool; pub fn xfs_mod_delalloc(ip:*mut xfs_inode,data_delta:i64,ind_delta:i64); pub fn xfs_set_max_atomic_write_opt(mp:*mut xfs_mount,new_max_bytes:u64)->i32; }
 
 extern "C" {
     pub fn percpu_counter_sum_positive(c:*const percpu_counter)->i64;
@@ -84,7 +84,7 @@ extern "C" {
     pub fn percpu_counter_add(c:*mut percpu_counter,val:i64);
     pub fn xfs_dec_freecounter(mp:*mut xfs_mount,ctr:xfs_free_counter,delta:u64,rsvd:bool)->i32;
     pub fn xfs_add_freecounter(mp:*mut xfs_mount,ctr:xfs_free_counter,delta:u64);
-    pub fn test_and_set_bit(nr:u32,addr:*mut libc::c_ulong)->bool;
+    pub fn test_and_set_bit(nr:u32,addr:*mut kernel::ffi::c_ulong)->bool;
 }
 #[inline] pub unsafe fn xfs_sum_freecounter(mp:*mut xfs_mount,ctr:xfs_free_counter)->i64 { percpu_counter_sum_positive(&(*mp).m_free[ctr as usize].count) }
 #[inline] pub unsafe fn xfs_sum_freecounter_raw(mp:*mut xfs_mount,ctr:xfs_free_counter)->i64 { percpu_counter_sum(&(*mp).m_free[ctr as usize].count) }

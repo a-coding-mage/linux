@@ -52,7 +52,7 @@ pub enum rnbd_access_mode {
 #[derive(Copy, Clone)]
 pub struct rnbd_access_mode_entry {
     pub mode: rnbd_access_mode,
-    pub str_: *const core::ffi::c_char,
+    pub str_: *const kernel::ffi::c_char,
 }
 
 pub static rnbd_access_modes: [rnbd_access_mode_entry; 3] = [
@@ -205,7 +205,7 @@ pub unsafe fn rq_to_rnbd_flags(rq: *mut request) -> u32 {
 }
 
 extern "C" {
-    pub fn rnbd_access_mode_str(mode: rnbd_access_mode) -> *const core::ffi::c_char;
+    pub fn rnbd_access_mode_str(mode: rnbd_access_mode) -> *const kernel::ffi::c_char;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

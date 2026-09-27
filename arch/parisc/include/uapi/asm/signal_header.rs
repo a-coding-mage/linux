@@ -56,14 +56,14 @@ pub const SIGSTKSZ: usize = 8192;
 /* Supplied by <asm-generic/signal-defs.h>. */
 
 pub const _NSIG: i32 = 64;
-pub const _NSIG_BPW: usize = core::mem::size_of::<core::ffi::c_ulong>() * 8;
+pub const _NSIG_BPW: usize = core::mem::size_of::<kernel::ffi::c_ulong>() * 8;
 pub const _NSIG_WORDS: usize = (_NSIG as usize) / _NSIG_BPW;
 
-pub type old_sigset_t = core::ffi::c_ulong;
+pub type old_sigset_t = kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct sigset_t {
-    pub sig: [core::ffi::c_ulong; _NSIG_WORDS],
+    pub sig: [kernel::ffi::c_ulong; _NSIG_WORDS],
 }
 
 /* Avoid too many header ordering problems. */
@@ -74,8 +74,8 @@ pub struct siginfo {
 
 #[repr(C)]
 pub struct sigaltstack {
-    pub ss_sp: *mut core::ffi::c_void,
-    pub ss_flags: core::ffi::c_int,
+    pub ss_sp: *mut kernel::ffi::c_void,
+    pub ss_flags: kernel::ffi::c_int,
     pub ss_size: usize,
 }
 

@@ -13,14 +13,14 @@ pub const I3C_LVR_I2C_INDEX_MASK: u8 = 0xe0;
 pub const I3C_LVR_I2C_FM_MODE: u8 = 1 << 4;
 pub const I2C_MAX_ADDR: u8 = 0x7f;
 
-#[repr(C)] pub struct i3c_i2c_dev_desc { pub node: list_head, pub master: *mut i3c_master_controller, pub master_priv: *mut core::ffi::c_void }
+#[repr(C)] pub struct i3c_i2c_dev_desc { pub node: list_head, pub master: *mut i3c_master_controller, pub master_priv: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct i2c_dev_boardinfo { pub node: list_head, pub base: i2c_board_info, pub lvr: u8 }
 #[repr(C)] pub struct i2c_dev_desc { pub common: i3c_i2c_dev_desc, pub dev: *mut i2c_client, pub addr: u16, pub lvr: u8 }
-#[repr(C)] pub struct i3c_ibi_slot { pub work: work_struct, pub dev: *mut i3c_dev_desc, pub len: core::ffi::c_uint, pub data: *mut core::ffi::c_void }
+#[repr(C)] pub struct i3c_ibi_slot { pub work: work_struct, pub dev: *mut i3c_dev_desc, pub len: kernel::ffi::c_uint, pub data: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct i3c_device_ibi_info {
     pub all_ibis_handled: completion, pub pending_ibis: atomic_t,
-    pub max_payload_len: core::ffi::c_uint, pub num_slots: core::ffi::c_uint,
-    pub enabled: core::ffi::c_uint, pub wq: *mut workqueue_struct,
+    pub max_payload_len: kernel::ffi::c_uint, pub num_slots: kernel::ffi::c_uint,
+    pub enabled: kernel::ffi::c_uint, pub wq: *mut workqueue_struct,
     pub handler: Option<unsafe extern "C" fn(*mut i3c_device, *const i3c_ibi_payload)>,
 }
 #[repr(C)] pub struct i3c_dev_boardinfo { pub node: list_head, pub init_dyn_addr: u8, pub static_addr: u8, pub static_addr_method: u8, pub pid: u64, pub fwnode: *mut fwnode_handle }
@@ -55,12 +55,12 @@ pub const I3C_ADDR_SLOT_EXT_DESIRED: u32 = 1 << 2;
 pub const I3C_ADDR_SLOT_STATUS_BITS: usize = 4;
 
 #[repr(C)] pub struct i3c_bus {
-    pub cur_master: *mut i3c_dev_desc, pub id: core::ffi::c_int,
-    pub addrslots: [core::ffi::c_ulong; ((I2C_MAX_ADDR as usize + 1) * I3C_ADDR_SLOT_STATUS_BITS) / 64],
+    pub cur_master: *mut i3c_dev_desc, pub id: kernel::ffi::c_int,
+    pub addrslots: [kernel::ffi::c_ulong; ((I2C_MAX_ADDR as usize + 1) * I3C_ADDR_SLOT_STATUS_BITS) / 64],
     pub mode: i3c_bus_mode,
     pub scl_rate: i3c_bus_scl_rate, pub devs: i3c_bus_devs, pub lock: rw_semaphore,
 }
-#[repr(C)] pub struct i3c_bus_scl_rate { pub i3c: core::ffi::c_ulong, pub i2c: core::ffi::c_ulong }
+#[repr(C)] pub struct i3c_bus_scl_rate { pub i3c: kernel::ffi::c_ulong, pub i2c: kernel::ffi::c_ulong }
 #[repr(C)] pub struct i3c_bus_devs { pub i3c: list_head, pub i2c: list_head }
 
 #[repr(C)] pub struct i3c_master_controller_ops {
@@ -69,26 +69,26 @@ pub const I3C_ADDR_SLOT_STATUS_BITS: usize = 4;
     pub supports_ccc_cmd: Option<unsafe extern "C" fn(*mut i3c_master_controller, *const i3c_ccc_cmd) -> bool>, pub send_ccc_cmd: Option<unsafe extern "C" fn(*mut i3c_master_controller, *mut i3c_ccc_cmd) -> i32>, pub i3c_xfers: Option<unsafe extern "C" fn(*mut i3c_dev_desc, *mut i3c_xfer, i32, i3c_xfer_mode) -> i32>,
     pub attach_i2c_dev: Option<unsafe extern "C" fn(*mut i2c_dev_desc) -> i32>, pub detach_i2c_dev: Option<unsafe extern "C" fn(*mut i2c_dev_desc)>, pub i2c_xfers: Option<unsafe extern "C" fn(*mut i2c_dev_desc, *mut i2c_msg, i32) -> i32>,
     pub request_ibi: Option<unsafe extern "C" fn(*mut i3c_dev_desc, *const i3c_ibi_setup) -> i32>, pub free_ibi: Option<unsafe extern "C" fn(*mut i3c_dev_desc)>, pub enable_ibi: Option<unsafe extern "C" fn(*mut i3c_dev_desc) -> i32>, pub disable_ibi: Option<unsafe extern "C" fn(*mut i3c_dev_desc) -> i32>, pub recycle_ibi_slot: Option<unsafe extern "C" fn(*mut i3c_dev_desc, *mut i3c_ibi_slot)>,
-    pub enable_hotjoin: Option<unsafe extern "C" fn(*mut i3c_master_controller) -> i32>, pub disable_hotjoin: Option<unsafe extern "C" fn(*mut i3c_master_controller) -> i32>, pub set_speed: Option<unsafe extern "C" fn(*mut i3c_master_controller, i3c_open_drain_speed) -> i32>, pub set_dev_nack_retry: Option<unsafe extern "C" fn(*mut i3c_master_controller, core::ffi::c_uint) -> i32>,
+    pub enable_hotjoin: Option<unsafe extern "C" fn(*mut i3c_master_controller) -> i32>, pub disable_hotjoin: Option<unsafe extern "C" fn(*mut i3c_master_controller) -> i32>, pub set_speed: Option<unsafe extern "C" fn(*mut i3c_master_controller, i3c_open_drain_speed) -> i32>, pub set_dev_nack_retry: Option<unsafe extern "C" fn(*mut i3c_master_controller, kernel::ffi::c_uint) -> i32>,
 }
-#[repr(C)] pub struct i3c_master_controller { pub dev: device, pub this: *mut i3c_dev_desc, pub i2c: i2c_adapter, pub ops: *const i3c_master_controller_ops, pub secondary: u32, pub init_done: u32, pub hotjoin: u32, pub rpm_allowed: u32, pub rpm_ibi_allowed: u32, pub ibi_wakeup: u32, pub shutting_down: bool, pub boardinfo: i3c_bus_devs, pub bus: i3c_bus, pub addr_method: u8, pub wq: *mut workqueue_struct, pub hj_work: work_struct, pub reg_work: work_struct, pub dev_nack_retry_count: core::ffi::c_uint }
-#[repr(C)] pub struct i3c_dma { pub dev: *mut device, pub buf: *mut core::ffi::c_void, pub len: usize, pub map_len: usize, pub addr: dma_addr_t, pub dir: dma_data_direction, pub bounce_buf: *mut core::ffi::c_void }
+#[repr(C)] pub struct i3c_master_controller { pub dev: device, pub this: *mut i3c_dev_desc, pub i2c: i2c_adapter, pub ops: *const i3c_master_controller_ops, pub secondary: u32, pub init_done: u32, pub hotjoin: u32, pub rpm_allowed: u32, pub rpm_ibi_allowed: u32, pub ibi_wakeup: u32, pub shutting_down: bool, pub boardinfo: i3c_bus_devs, pub bus: i3c_bus, pub addr_method: u8, pub wq: *mut workqueue_struct, pub hj_work: work_struct, pub reg_work: work_struct, pub dev_nack_retry_count: kernel::ffi::c_uint }
+#[repr(C)] pub struct i3c_dma { pub dev: *mut device, pub buf: *mut kernel::ffi::c_void, pub len: usize, pub map_len: usize, pub addr: dma_addr_t, pub dir: dma_data_direction, pub bounce_buf: *mut kernel::ffi::c_void }
 
 extern "C" {
     pub static i3c_bus_type: bus_type;
     pub fn i3c_master_do_i2c_xfers(_: *mut i3c_master_controller, _: *const i2c_msg, _: i32) -> i32;
     pub fn i3c_master_disec_locked(_: *mut i3c_master_controller, _: u8, _: u8) -> i32; pub fn i3c_master_enec_locked(_: *mut i3c_master_controller, _: u8, _: u8) -> i32; pub fn i3c_master_enec_disec_locked(_: *mut i3c_master_controller, _: u8, _: bool, _: u8, _: bool) -> i32; pub fn i3c_master_entdaa_locked(_: *mut i3c_master_controller) -> i32; pub fn i3c_master_defslvs_locked(_: *mut i3c_master_controller) -> i32;
     pub fn i3c_master_get_free_addr(_: *mut i3c_master_controller, _: u8) -> i32; pub fn i3c_master_add_i3c_dev_locked(_: *mut i3c_master_controller, _: u8); pub fn i3c_master_do_daa(_: *mut i3c_master_controller) -> i32; pub fn i3c_master_do_daa_ext(_: *mut i3c_master_controller, _: bool) -> i32;
-    pub fn i3c_master_dma_map_single(_: *mut device, _: *mut core::ffi::c_void, _: usize, _: bool, _: dma_data_direction) -> *mut i3c_dma; pub fn i3c_master_dma_unmap_single(_: *mut i3c_dma);
+    pub fn i3c_master_dma_map_single(_: *mut device, _: *mut kernel::ffi::c_void, _: usize, _: bool, _: dma_data_direction) -> *mut i3c_dma; pub fn i3c_master_dma_unmap_single(_: *mut i3c_dma);
     pub fn i3c_master_reattach_i3c_dev_locked(_: *mut i3c_dev_desc, _: u8) -> i32; pub fn i3c_master_set_info(_: *mut i3c_master_controller, _: *const i3c_device_info) -> i32; pub fn i3c_master_register(_: *mut i3c_master_controller, _: *mut device, _: *const i3c_master_controller_ops, _: bool) -> i32; pub fn i3c_master_unregister(_: *mut i3c_master_controller); pub fn i3c_master_enable_hotjoin(_: *mut i3c_master_controller) -> i32; pub fn i3c_master_disable_hotjoin(_: *mut i3c_master_controller) -> i32; pub fn i3c_master_queue_hotjoin(_: *mut i3c_master_controller);
     pub fn i3c_master_queue_ibi(_: *mut i3c_dev_desc, _: *mut i3c_ibi_slot); pub fn i3c_master_has_wakeup_enabled_devs(_: *mut i3c_master_controller) -> bool; pub fn i3c_master_get_free_ibi_slot(_: *mut i3c_dev_desc) -> *mut i3c_ibi_slot;
-    pub fn i3c_for_each_bus_locked(_: Option<unsafe extern "C" fn(*mut i3c_bus, *mut core::ffi::c_void) -> i32>, *mut core::ffi::c_void); pub fn i3c_register_notifier(_: *mut notifier_block) -> i32; pub fn i3c_unregister_notifier(_: *mut notifier_block) -> i32;
+    pub fn i3c_for_each_bus_locked(_: Option<unsafe extern "C" fn(*mut i3c_bus, *mut kernel::ffi::c_void) -> i32>, *mut kernel::ffi::c_void); pub fn i3c_register_notifier(_: *mut notifier_block) -> i32; pub fn i3c_unregister_notifier(_: *mut notifier_block) -> i32;
 }
 
-#[inline] pub unsafe fn i3c_dev_get_master_data(dev: *const i3c_dev_desc) -> *mut core::ffi::c_void { (*dev).common.master_priv }
-#[inline] pub unsafe fn i3c_dev_set_master_data(dev: *mut i3c_dev_desc, data: *mut core::ffi::c_void) { (*dev).common.master_priv = data; }
-#[inline] pub unsafe fn i2c_dev_get_master_data(dev: *const i2c_dev_desc) -> *mut core::ffi::c_void { (*dev).common.master_priv }
-#[inline] pub unsafe fn i2c_dev_set_master_data(dev: *mut i2c_dev_desc, data: *mut core::ffi::c_void) { (*dev).common.master_priv = data; }
+#[inline] pub unsafe fn i3c_dev_get_master_data(dev: *const i3c_dev_desc) -> *mut kernel::ffi::c_void { (*dev).common.master_priv }
+#[inline] pub unsafe fn i3c_dev_set_master_data(dev: *mut i3c_dev_desc, data: *mut kernel::ffi::c_void) { (*dev).common.master_priv = data; }
+#[inline] pub unsafe fn i2c_dev_get_master_data(dev: *const i2c_dev_desc) -> *mut kernel::ffi::c_void { (*dev).common.master_priv }
+#[inline] pub unsafe fn i2c_dev_set_master_data(dev: *mut i2c_dev_desc, data: *mut kernel::ffi::c_void) { (*dev).common.master_priv = data; }
 #[inline] pub unsafe fn i3c_dev_get_master(dev: *mut i3c_dev_desc) -> *mut i3c_master_controller { (*dev).common.master }
 #[inline] pub unsafe fn i2c_dev_get_master(dev: *mut i2c_dev_desc) -> *mut i3c_master_controller { (*dev).common.master }
 #[inline] pub unsafe fn i3c_master_get_bus(master: *mut i3c_master_controller) -> *mut i3c_bus { &mut (*master).bus }

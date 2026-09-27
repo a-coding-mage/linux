@@ -41,8 +41,8 @@ pub const EROFS_INODE_LAYOUT_COMPACT:u32=0; pub const EROFS_INODE_LAYOUT_EXTENDE
 #[repr(C)] pub struct erofs_inode_extended { pub i_format:__le16,pub i_xattr_icount:__le16,pub i_mode:__le16,pub i_nb:erofs_inode_i_nb,pub i_size:__le64,pub i_u:erofs_inode_i_u,pub i_ino:__le32,pub i_uid:__le32,pub i_gid:__le32,pub i_mtime:__le64,pub i_mtime_nsec:__le32,pub i_nlink:__le32,pub i_reserved2:[u8;16] }
 #[repr(C)] pub struct erofs_xattr_ibody_header { pub h_name_filter:__le32,pub h_shared_count:u8,pub h_reserved2:[u8;7],pub h_shared_xattrs:[__le32;0] }
 pub const EROFS_XATTR_INDEX_USER:u32=1; pub const EROFS_XATTR_INDEX_POSIX_ACL_ACCESS:u32=2; pub const EROFS_XATTR_INDEX_POSIX_ACL_DEFAULT:u32=3; pub const EROFS_XATTR_INDEX_TRUSTED:u32=4; pub const EROFS_XATTR_INDEX_LUSTRE:u32=5; pub const EROFS_XATTR_INDEX_SECURITY:u32=6; pub const EROFS_XATTR_LONG_PREFIX:u8=0x80; pub const EROFS_XATTR_LONG_PREFIX_MASK:u8=0x7f; pub const EROFS_XATTR_FILTER_BITS:u32=32; pub const EROFS_XATTR_FILTER_DEFAULT:u32=u32::MAX; pub const EROFS_XATTR_FILTER_SEED:u32=0x25BBE08F;
-#[repr(C)] pub struct erofs_xattr_entry { pub e_name_len:u8,pub e_name_index:u8,pub e_value_size:__le16,pub e_name:[core::ffi::c_char;0] }
-#[repr(C)] pub struct erofs_xattr_long_prefix { pub base_index:u8,pub infix:[core::ffi::c_char;0] }
+#[repr(C)] pub struct erofs_xattr_entry { pub e_name_len:u8,pub e_name_index:u8,pub e_value_size:__le16,pub e_name:[kernel::ffi::c_char;0] }
+#[repr(C)] pub struct erofs_xattr_long_prefix { pub base_index:u8,pub infix:[kernel::ffi::c_char;0] }
 #[inline] pub fn erofs_xattr_ibody_size(i:__le16)->u32 { if i==0 {0} else {12 + 4 * (le16_to_cpu(i)-1) } }
 #[inline] pub unsafe fn erofs_xattr_entry_size(e:*const erofs_xattr_entry)->u32 { EROFS_XATTR_ALIGN(core::mem::size_of::<erofs_xattr_entry>() as u32 + (*e).e_name_len as u32 + le16_to_cpu((*e).e_value_size) as u32) }
 pub const EROFS_NULL_ADDR:i32=-1; pub const EROFS_BLOCK_MAP_ENTRY_SIZE:usize=core::mem::size_of::<__le32>();

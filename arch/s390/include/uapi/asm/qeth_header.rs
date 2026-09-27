@@ -121,7 +121,7 @@ pub union qeth_arp_query_user_data_u {
 pub struct qeth_arp_query_user_data {
     pub u: qeth_arp_query_user_data_u,
     pub mask_bits: u16,
-    pub entries: *mut core::ffi::c_char,
+    pub entries: *mut kernel::ffi::c_char,
 }
 
 #[repr(C)]

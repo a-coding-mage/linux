@@ -15,10 +15,10 @@
 extern "C" {
     fn unwind_stack(
         trace: *mut stack_trace,
-        sp: *mut ::core::ffi::c_ulong,
-        callback: unsafe extern "C" fn(*mut ::core::ffi::c_void, ::core::ffi::c_ulong, ::core::ffi::c_int),
+        sp: *mut ::kernel::ffi::c_ulong,
+        callback: unsafe extern "C" fn(*mut ::kernel::ffi::c_void, ::kernel::ffi::c_ulong, ::kernel::ffi::c_int),
     );
-    fn in_sched_functions(addr: ::core::ffi::c_ulong) -> bool;
+    fn in_sched_functions(addr: ::kernel::ffi::c_ulong) -> bool;
     fn try_get_task_stack(tsk: *mut task_struct) -> bool;
     fn put_task_stack(tsk: *mut task_struct);
     fn task_thread_info(tsk: *mut task_struct) -> *mut thread_info;
@@ -29,9 +29,9 @@ extern "C" {
  * Save stack-backtrace addresses into a stack_trace buffer.
  */
 unsafe extern "C" fn save_stack_address(
-    data: *mut ::core::ffi::c_void,
-    addr: ::core::ffi::c_ulong,
-    reliable: ::core::ffi::c_int,
+    data: *mut ::kernel::ffi::c_void,
+    addr: ::kernel::ffi::c_ulong,
+    reliable: ::kernel::ffi::c_int,
 ) {
     let trace = data as *mut stack_trace;
 
@@ -54,15 +54,15 @@ unsafe extern "C" fn save_stack_address(
 pub unsafe extern "C" fn save_stack_trace(trace: *mut stack_trace) {
     unwind_stack(
         trace,
-        (&trace as *const *mut stack_trace) as *mut ::core::ffi::c_ulong,
+        (&trace as *const *mut stack_trace) as *mut ::kernel::ffi::c_ulong,
         save_stack_address,
     );
 }
 
 unsafe extern "C" fn save_stack_address_nosched(
-    data: *mut ::core::ffi::c_void,
-    addr: ::core::ffi::c_ulong,
-    reliable: ::core::ffi::c_int,
+    data: *mut ::kernel::ffi::c_void,
+    addr: ::kernel::ffi::c_ulong,
+    reliable: ::kernel::ffi::c_int,
 ) {
     let trace = data as *mut stack_trace;
 
@@ -90,23 +90,23 @@ pub unsafe extern "C" fn save_stack_trace_tsk(
     tsk: *mut task_struct,
     trace: *mut stack_trace,
 ) {
-    let mut sp: *mut ::core::ffi::c_ulong = ::core::ptr::null_mut();
+    let mut sp: *mut ::kernel::ffi::c_ulong = ::core::ptr::null_mut();
 
     if !try_get_task_stack(tsk) {
         return;
     }
 
     if tsk == current {
-        sp = (&sp as *const *mut ::core::ffi::c_ulong) as *mut ::core::ffi::c_ulong;
+        sp = (&sp as *const *mut ::kernel::ffi::c_ulong) as *mut ::kernel::ffi::c_ulong;
     } else {
-        let mut ksp: ::core::ffi::c_ulong;
+        let mut ksp: ::kernel::ffi::c_ulong;
 
         /* Locate stack from kernel context */
         ksp = (*task_thread_info(tsk)).ksp;
         ksp += STACK_FRAME_OVERHEAD;
-        ksp += ::core::mem::size_of::<pt_regs>() as ::core::ffi::c_ulong;
+        ksp += ::core::mem::size_of::<pt_regs>() as ::kernel::ffi::c_ulong;
 
-        sp = ksp as *mut ::core::ffi::c_ulong;
+        sp = ksp as *mut ::kernel::ffi::c_ulong;
     }
 
     unwind_stack(trace, sp, save_stack_address_nosched);
@@ -120,7 +120,7 @@ pub unsafe extern "C" fn save_stack_trace_regs(
 ) {
     unwind_stack(
         trace,
-        (*regs).sp as *mut ::core::ffi::c_ulong,
+        (*regs).sp as *mut ::kernel::ffi::c_ulong,
         save_stack_address_nosched,
     );
 }

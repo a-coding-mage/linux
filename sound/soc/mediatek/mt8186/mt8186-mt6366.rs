@@ -35,7 +35,7 @@ const DA7219_CODEC_PRESENT: u32 = BIT!(0);
 #[repr(C)]
 struct mt8186_mt6366_rt1019_rt5682s_priv {
     dmic_sel: *mut gpio_desc,
-    dmic_switch: core::ffi::c_int,
+    dmic_switch: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -77,7 +77,7 @@ static mut mt8186_mt6366_rt1019_rt5682s_codec_conf: [snd_soc_codec_conf; 3] = [
 unsafe extern "C" fn dmic_get(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let dapm = snd_soc_dapm_kcontrol_to_dapm(kcontrol);
     let card = snd_soc_dapm_to_card(dapm);
     let soc_card_data = snd_soc_card_get_drvdata(card) as *mut mtk_soc_card_data;
@@ -90,13 +90,13 @@ unsafe extern "C" fn dmic_get(
 unsafe extern "C" fn dmic_set(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let dapm = snd_soc_dapm_kcontrol_to_dapm(kcontrol);
     let card = snd_soc_dapm_to_card(dapm);
     let soc_card_data = snd_soc_card_get_drvdata(card) as *mut mtk_soc_card_data;
     let priv_ = (*soc_card_data).mach_priv as *mut mt8186_mt6366_rt1019_rt5682s_priv;
 
-    (*priv_).dmic_switch = (*ucontrol).value.integer.value[0] as core::ffi::c_int;
+    (*priv_).dmic_switch = (*ucontrol).value.integer.value[0] as kernel::ffi::c_int;
     if !(*priv_).dmic_sel.is_null() {
         gpiod_set_value((*priv_).dmic_sel, (*priv_).dmic_switch);
         dev_dbg!((*card).dev, "dmic_set_value %d\n", (*priv_).dmic_switch);
@@ -105,7 +105,7 @@ unsafe extern "C" fn dmic_set(
 }
 
 kernel_static! {
-static dmic_mux_text: [*const core::ffi::c_char; 2] = [
+static dmic_mux_text: [*const kernel::ffi::c_char; 2] = [
     c_str!("Front Mic"),
     c_str!("Rear Mic"),
 ];
@@ -127,12 +127,12 @@ static dmic_map: [snd_soc_dapm_route; 2] = [
 ];
 }
 
-unsafe extern "C" fn primary_codec_init(rtd: *mut snd_soc_pcm_runtime) -> core::ffi::c_int {
+unsafe extern "C" fn primary_codec_init(rtd: *mut snd_soc_pcm_runtime) -> kernel::ffi::c_int {
     let card = (*rtd).card;
     let dapm = snd_soc_card_to_dapm(card);
     let soc_card_data = snd_soc_card_get_drvdata(card) as *mut mtk_soc_card_data;
     let priv_ = (*soc_card_data).mach_priv as *mut mt8186_mt6366_rt1019_rt5682s_priv;
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     ret = mt8186_mt6366_init(rtd);
 
@@ -162,7 +162,7 @@ unsafe extern "C" fn primary_codec_init(rtd: *mut snd_soc_pcm_runtime) -> core::
     ret
 }
 
-unsafe extern "C" fn mt8186_headset_codec_init(rtd: *mut snd_soc_pcm_runtime) -> core::ffi::c_int {
+unsafe extern "C" fn mt8186_headset_codec_init(rtd: *mut snd_soc_pcm_runtime) -> kernel::ffi::c_int {
     let cmpnt_afe = snd_soc_rtdcom_lookup(rtd, AFE_PCM_NAME);
     let afe = snd_soc_component_get_drvdata(cmpnt_afe) as *mut mtk_base_afe;
     let soc_card_data = snd_soc_card_get_drvdata((*rtd).card) as *mut mtk_soc_card_data;
@@ -170,9 +170,9 @@ unsafe extern "C" fn mt8186_headset_codec_init(rtd: *mut snd_soc_pcm_runtime) ->
     let cmpnt_codec = (*snd_soc_rtd_to_codec(rtd, 0)).component;
     let hs_keys_rt5682 = [KEY_PLAYPAUSE, KEY_VOLUMEUP, KEY_VOLUMEDOWN, KEY_VOICECOMMAND];
     let hs_keys_da7219 = [KEY_PLAYPAUSE, KEY_VOICECOMMAND, KEY_VOLUMEUP, KEY_VOLUMEDOWN];
-    let hs_keys: *const core::ffi::c_int;
-    let mut ret: core::ffi::c_int;
-    let mut type_: core::ffi::c_int;
+    let hs_keys: *const kernel::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
+    let mut type_: kernel::ffi::c_int;
 
     ret = mt8186_dai_i2s_set_share(afe, c_str!("I2S1"), c_str!("I2S0"));
     if ret != 0 {
@@ -205,22 +205,22 @@ unsafe extern "C" fn mt8186_headset_codec_init(rtd: *mut snd_soc_pcm_runtime) ->
     snd_jack_set_key((*jack).jack, SND_JACK_BTN_3, *hs_keys.add(3));
 
     type_ = SND_JACK_HEADSET | SND_JACK_BTN_0 | SND_JACK_BTN_1 | SND_JACK_BTN_2 | SND_JACK_BTN_3;
-    snd_soc_component_set_jack(cmpnt_codec, jack, &mut type_ as *mut _ as *mut core::ffi::c_void)
+    snd_soc_component_set_jack(cmpnt_codec, jack, &mut type_ as *mut _ as *mut kernel::ffi::c_void)
 }
 
 unsafe extern "C" fn mt8186_da7219_i2s_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let rtd = snd_soc_substream_to_rtd(substream);
     let cpu_dai = snd_soc_rtd_to_cpu(rtd, 0);
     let mut codec_dai: *mut snd_soc_dai;
-    let rate: core::ffi::c_uint = params_rate(params);
-    let mclk_fs_ratio: core::ffi::c_uint = 256;
-    let mclk_fs: core::ffi::c_uint = rate.wrapping_mul(mclk_fs_ratio);
-    let mut freq: core::ffi::c_uint;
-    let mut ret: core::ffi::c_int;
-    let mut j: core::ffi::c_int = 0;
+    let rate: kernel::ffi::c_uint = params_rate(params);
+    let mclk_fs_ratio: kernel::ffi::c_uint = 256;
+    let mclk_fs: kernel::ffi::c_uint = rate.wrapping_mul(mclk_fs_ratio);
+    let mut freq: kernel::ffi::c_uint;
+    let mut ret: kernel::ffi::c_int;
+    let mut j: kernel::ffi::c_int = 0;
 
     ret = snd_soc_dai_set_sysclk(cpu_dai, 0, mclk_fs, SND_SOC_CLOCK_OUT);
     if ret < 0 {
@@ -255,11 +255,11 @@ unsafe extern "C" fn mt8186_da7219_i2s_hw_params(
     0
 }
 
-unsafe extern "C" fn mt8186_da7219_i2s_hw_free(substream: *mut snd_pcm_substream) -> core::ffi::c_int {
+unsafe extern "C" fn mt8186_da7219_i2s_hw_free(substream: *mut snd_pcm_substream) -> kernel::ffi::c_int {
     let rtd = snd_soc_substream_to_rtd(substream);
     let mut codec_dai: *mut snd_soc_dai;
-    let mut j: core::ffi::c_int = 0;
-    let mut ret: core::ffi::c_int;
+    let mut j: kernel::ffi::c_int = 0;
+    let mut ret: kernel::ffi::c_int;
 
     for_each_rtd_codec_dais!(rtd, j, codec_dai, {
         if strcmp((*(*codec_dai).component).name, c_str!("da7219.5-001a")) != 0 {
@@ -286,16 +286,16 @@ static mt8186_da7219_i2s_ops: snd_soc_ops = snd_soc_ops {
 unsafe extern "C" fn mt8186_rt5682s_i2s_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let rtd = snd_soc_substream_to_rtd(substream);
     let card = (*rtd).card;
     let cpu_dai = snd_soc_rtd_to_cpu(rtd, 0);
     let codec_dai = snd_soc_rtd_to_codec(rtd, 0);
-    let rate: core::ffi::c_uint = params_rate(params);
-    let mclk_fs_ratio: core::ffi::c_uint = 128;
-    let mclk_fs: core::ffi::c_uint = rate.wrapping_mul(mclk_fs_ratio);
-    let bitwidth: core::ffi::c_int;
-    let mut ret: core::ffi::c_int;
+    let rate: kernel::ffi::c_uint = params_rate(params);
+    let mclk_fs_ratio: kernel::ffi::c_uint = 128;
+    let mclk_fs: kernel::ffi::c_uint = rate.wrapping_mul(mclk_fs_ratio);
+    let bitwidth: kernel::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     bitwidth = snd_pcm_format_width(params_format(params));
     if bitwidth < 0 {
@@ -341,13 +341,13 @@ static mt8186_rt5682s_i2s_ops: snd_soc_ops = snd_soc_ops {
 };
 }
 
-unsafe extern "C" fn mt8186_mt6366_rt1019_rt5682s_hdmi_init(rtd: *mut snd_soc_pcm_runtime) -> core::ffi::c_int {
+unsafe extern "C" fn mt8186_mt6366_rt1019_rt5682s_hdmi_init(rtd: *mut snd_soc_pcm_runtime) -> kernel::ffi::c_int {
     let cmpnt_afe = snd_soc_rtdcom_lookup(rtd, AFE_PCM_NAME);
     let afe = snd_soc_component_get_drvdata(cmpnt_afe) as *mut mtk_base_afe;
     let cmpnt_codec = (*snd_soc_rtd_to_codec(rtd, 0)).component;
     let soc_card_data = snd_soc_card_get_drvdata((*rtd).card) as *mut mtk_soc_card_data;
     let jack = &mut (*(*soc_card_data).card_data).jacks[mt8186_jacks::MT8186_JACK_HDMI as usize] as *mut snd_soc_jack;
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     ret = mt8186_dai_i2s_set_share(afe, c_str!("I2S2"), c_str!("I2S3"));
     if ret != 0 {
@@ -368,7 +368,7 @@ unsafe extern "C" fn mt8186_hw_params_fixup(
     rtd: *mut snd_soc_pcm_runtime,
     params: *mut snd_pcm_hw_params,
     fmt: snd_pcm_format_t,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let channels = hw_param_interval(params, SNDRV_PCM_HW_PARAM_CHANNELS);
 
     dev_dbg!((*rtd).dev, "%s(), fix format to %d\n", c_str!("mt8186_hw_params_fixup"), fmt);
@@ -388,14 +388,14 @@ unsafe extern "C" fn mt8186_hw_params_fixup(
 unsafe extern "C" fn mt8186_i2s_hw_params_24le_fixup(
     rtd: *mut snd_soc_pcm_runtime,
     params: *mut snd_pcm_hw_params,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     mt8186_hw_params_fixup(rtd, params, SNDRV_PCM_FORMAT_S24_LE)
 }
 
 unsafe extern "C" fn mt8186_i2s_hw_params_32le_fixup(
     rtd: *mut snd_soc_pcm_runtime,
     params: *mut snd_pcm_hw_params,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     mt8186_hw_params_fixup(rtd, params, SNDRV_PCM_FORMAT_S32_LE)
 }
 
@@ -403,7 +403,7 @@ unsafe extern "C" fn mt8186_i2s_hw_params_32le_fixup(
 unsafe extern "C" fn mt8186_sof_dai_link_fixup(
     rtd: *mut snd_soc_pcm_runtime,
     params: *mut snd_pcm_hw_params,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let soc_card_data = snd_soc_card_get_drvdata((*rtd).card) as *mut mtk_soc_card_data;
     let ret = mtk_sof_dai_link_fixup(rtd, params);
 
@@ -655,15 +655,15 @@ static mut mt8186_mt6366_rt5650_soc_card: snd_soc_card = {
 
 unsafe extern "C" fn mt8186_mt6366_legacy_probe(
     soc_card_data: *mut mtk_soc_card_data,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let card_data = (*soc_card_data).card_data;
     let card = (*card_data).card;
     let dev = (*card).dev;
     let mut dai_link: *mut snd_soc_dai_link;
     let headset_codec: *mut device_node;
     let playback_codec: *mut device_node;
-    let mut ret: core::ffi::c_int = 0;
-    let mut i: core::ffi::c_int = 0;
+    let mut ret: kernel::ffi::c_int = 0;
+    let mut i: kernel::ffi::c_int = 0;
 
     playback_codec = of_get_child_by_name((*dev).of_node, c_str!("playback-codecs"));
     if playback_codec.is_null() {
@@ -704,14 +704,14 @@ unsafe extern "C" fn mt8186_mt6366_legacy_probe(
 unsafe extern "C" fn mt8186_mt6366_soc_card_probe(
     soc_card_data: *mut mtk_soc_card_data,
     legacy: bool,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let card_data = (*soc_card_data).card_data;
     let card = (*card_data).card;
     let mut dai_link: *mut snd_soc_dai_link;
     let mach_priv: *mut mt8186_mt6366_rt1019_rt5682s_priv;
     let dev = (*card).dev;
-    let mut i: core::ffi::c_int = 0;
-    let mut ret: core::ffi::c_int;
+    let mut i: kernel::ffi::c_int = 0;
+    let mut ret: kernel::ffi::c_int;
 
     mach_priv = devm_kzalloc(dev, core::mem::size_of::<mt8186_mt6366_rt1019_rt5682s_priv>(), GFP_KERNEL)
         as *mut mt8186_mt6366_rt1019_rt5682s_priv;
@@ -719,7 +719,7 @@ unsafe extern "C" fn mt8186_mt6366_soc_card_probe(
         return -ENOMEM;
     }
 
-    (*soc_card_data).mach_priv = mach_priv as *mut core::ffi::c_void;
+    (*soc_card_data).mach_priv = mach_priv as *mut kernel::ffi::c_void;
 
     (*mach_priv).dmic_sel = devm_gpiod_get_optional(dev, c_str!("dmic"), GPIOD_OUT_LOW);
     if IS_ERR((*mach_priv).dmic_sel) {
@@ -763,9 +763,9 @@ unsafe extern "C" fn mt8186_mt6366_soc_card_probe(
 }
 
 kernel_data! {
-static mt8186_pcm_playback_channels: [core::ffi::c_uint; 1] = [2];
-static mt8186_pcm_capture_channels: [core::ffi::c_uint; 2] = [1, 2];
-static mt8186_pcm_rates: [core::ffi::c_uint; 1] = [48000];
+static mt8186_pcm_playback_channels: [kernel::ffi::c_uint; 1] = [2];
+static mt8186_pcm_capture_channels: [kernel::ffi::c_uint; 2] = [1, 2];
+static mt8186_pcm_rates: [kernel::ffi::c_uint; 1] = [48000];
 
 static mt8186_rate_constraint: snd_pcm_hw_constraint_list = {
     .list = mt8186_pcm_rates,

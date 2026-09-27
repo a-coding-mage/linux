@@ -100,23 +100,23 @@ pub const QM_ECC_MBIT: u32 = 1 << 2;
 #[repr(C)] pub enum qm_cap_bits { QM_SUPPORT_DB_ISOLATION = 0, QM_SUPPORT_FUNC_QOS, QM_SUPPORT_STOP_QP, QM_SUPPORT_STOP_FUNC, QM_SUPPORT_MB_COMMAND, QM_SUPPORT_SVA_PREFETCH, QM_SUPPORT_RPM, QM_SUPPORT_DAE }
 #[repr(C)] pub enum acc_err_result { ACC_ERR_NONE, ACC_ERR_NEED_RESET, ACC_ERR_RECOVERED, ACC_ERR_NEED_FUNC_RESET }
 
-#[repr(C)] pub struct qm_dev_alg { pub alg_msk: u64, pub alg: *const core::ffi::c_char }
+#[repr(C)] pub struct qm_dev_alg { pub alg_msk: u64, pub alg: *const kernel::ffi::c_char }
 #[repr(C)] pub struct qm_dev_dfx { pub dev_state: u32, pub dev_timeout: u32 }
 #[repr(C)] pub struct dfx_diff_registers { pub regs: *mut u32, pub reg_offset: u32, pub reg_len: u32 }
 #[repr(C)] pub struct qm_dfx { pub err_irq_cnt: atomic64_t, pub aeq_irq_cnt: atomic64_t, pub abnormal_irq_cnt: atomic64_t, pub create_qp_err_cnt: atomic64_t, pub mb_err_cnt: atomic64_t }
 #[repr(C)] pub struct debugfs_file { pub index: qm_debug_file, pub lock: mutex, pub debug: *mut qm_debug }
 #[repr(C)] pub struct qm_debug { pub curr_qm_qp_num: u32, pub sqe_mask_offset: u32, pub sqe_mask_len: u32, pub dfx: qm_dfx, pub debug_root: *mut dentry, pub qm_d: *mut dentry, pub files: [debugfs_file; 4], pub dev_dfx: qm_dev_dfx, pub qm_last_words: *mut u32, pub last_words: *mut u32, pub qm_diff_regs: *mut dfx_diff_registers, pub acc_diff_regs: *mut dfx_diff_registers }
 #[repr(C)] pub struct qm_shaper_factor { pub func_qos: u32, pub cir_b: u64, pub cir_u: u64, pub cir_s: u64, pub cbs_s: u64 }
-#[repr(C)] pub struct qm_dma { pub va: *mut core::ffi::c_void, pub dma: dma_addr_t, pub size: usize }
+#[repr(C)] pub struct qm_dma { pub va: *mut kernel::ffi::c_void, pub dma: dma_addr_t, pub size: usize }
 #[repr(C)] pub struct hisi_qm_status { pub eq_head: u32, pub eqc_phase: bool, pub aeq_head: u32, pub aeqc_phase: bool, pub flags: atomic_t, pub stop_reason: i32 }
 #[repr(C)] pub struct hisi_qm_err_mask { pub ecc_2bits_mask: u32, pub shutdown_mask: u32, pub reset_mask: u32, pub ce: u32, pub nfe: u32, pub fe: u32 }
-#[repr(C)] pub struct hisi_qm_err_info { pub acpi_rst: *mut core::ffi::c_char, pub msi_wr_port: u32, pub qm_err: hisi_qm_err_mask, pub dev_err: hisi_qm_err_mask }
+#[repr(C)] pub struct hisi_qm_err_info { pub acpi_rst: *mut kernel::ffi::c_char, pub msi_wr_port: u32, pub qm_err: hisi_qm_err_mask, pub dev_err: hisi_qm_err_mask }
 #[repr(C)] pub struct hisi_qm_err_status { pub is_qm_ecc_mbit: u32, pub is_dev_ecc_mbit: u32 }
 #[repr(C)] pub struct hisi_qm_cap_info { pub type_: u32, pub offset: u32, pub shift: u32, pub mask: u32, pub v1_val: u32, pub v2_val: u32, pub v3_val: u32 }
-#[repr(C)] pub struct hisi_qm_cap_query_info { pub type_: u32, pub name: *const core::ffi::c_char, pub offset: u32, pub v1_val: u32, pub v2_val: u32, pub v3_val: u32 }
-#[repr(C)] pub struct hisi_qm_cap_record { pub type_: u32, pub name: *const core::ffi::c_char, pub cap_val: u32 }
+#[repr(C)] pub struct hisi_qm_cap_query_info { pub type_: u32, pub name: *const kernel::ffi::c_char, pub offset: u32, pub v1_val: u32, pub v2_val: u32, pub v3_val: u32 }
+#[repr(C)] pub struct hisi_qm_cap_record { pub type_: u32, pub name: *const kernel::ffi::c_char, pub cap_val: u32 }
 #[repr(C)] pub struct hisi_qm_cap_tables { pub qm_cap_size: u32, pub qm_cap_table: *mut hisi_qm_cap_record, pub dev_cap_size: u32, pub dev_cap_table: *mut hisi_qm_cap_record }
-#[repr(C)] pub struct qm_channel { pub channel_num: i32, pub channel_name: [*const core::ffi::c_char; QM_MAX_CHANNEL_NUM] }
+#[repr(C)] pub struct qm_channel { pub channel_num: i32, pub channel_name: [*const kernel::ffi::c_char; QM_MAX_CHANNEL_NUM] }
 #[repr(C)] pub struct hisi_qm_list { pub lock: mutex, pub list: list_head, pub register_to_crypto: Option<unsafe extern "C" fn(*mut hisi_qm) -> i32>, pub unregister_from_crypto: Option<unsafe extern "C" fn(*mut hisi_qm)> }
 #[repr(C)] pub struct hisi_qm_poll_data { pub qm: *mut hisi_qm, pub work: work_struct, pub qp_finish_id: *mut u16, pub eqe_num: u16 }
 #[repr(C)] pub struct qm_err_isolate { pub isolate_lock: mutex, pub err_threshold: u32, pub is_isolate: bool, pub qm_hw_errs: list_head }
@@ -139,12 +139,12 @@ pub enum hisi_qp {}
 #[repr(C)] pub struct hisi_qm_err_ini { pub hw_init: Option<unsafe extern "C" fn(*mut hisi_qm)->i32>, pub hw_err_enable: Option<unsafe extern "C" fn(*mut hisi_qm)>, pub hw_err_disable: Option<unsafe extern "C" fn(*mut hisi_qm)>, pub get_dev_hw_err_status: Option<unsafe extern "C" fn(*mut hisi_qm)->u32>, pub clear_dev_hw_err_status: Option<unsafe extern "C" fn(*mut hisi_qm,u32)>, pub open_axi_master_ooo: Option<unsafe extern "C" fn(*mut hisi_qm)>, pub close_axi_master_ooo: Option<unsafe extern "C" fn(*mut hisi_qm)>, pub open_sva_prefetch: Option<unsafe extern "C" fn(*mut hisi_qm)>, pub close_sva_prefetch: Option<unsafe extern "C" fn(*mut hisi_qm)>, pub show_last_dfx_regs: Option<unsafe extern "C" fn(*mut hisi_qm)>, pub err_info_init: Option<unsafe extern "C" fn(*mut hisi_qm)>, pub get_err_result: Option<unsafe extern "C" fn(*mut hisi_qm)->acc_err_result>, pub dev_is_abnormal: Option<unsafe extern "C" fn(*mut hisi_qm)->bool>, pub set_priv_status: Option<unsafe extern "C" fn(*mut hisi_qm)->i32>, pub disable_axi_error: Option<unsafe extern "C" fn(*mut hisi_qm)>, pub enable_axi_error: Option<unsafe extern "C" fn(*mut hisi_qm)> }
 
 #[repr(C)] pub struct hisi_qp_status { pub used: atomic_t, pub sq_tail: u16, pub cq_head: u16, pub cqc_phase: bool, pub flags: atomic_t }
-#[repr(C)] pub struct hisi_qp_ops { pub fill_sqe: Option<unsafe extern "C" fn(*mut core::ffi::c_void,*mut core::ffi::c_void,*mut core::ffi::c_void)->i32> }
+#[repr(C)] pub struct hisi_qp_ops { pub fill_sqe: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void,*mut kernel::ffi::c_void,*mut kernel::ffi::c_void)->i32> }
 #[repr(C)] pub struct instance_backlog { pub list: list_head, pub lock: spinlock_t }
-#[repr(C)] pub struct hisi_qp { pub qp_id:u32, pub sq_depth:u16, pub cq_depth:u16, pub alg_type:u8, pub qdma:qm_dma, pub sqe:*mut core::ffi::c_void, pub cqe:*mut qm_cqe, pub sqe_dma:dma_addr_t, pub cqe_dma:dma_addr_t, pub qp_status:hisi_qp_status, pub hw_ops:*mut hisi_qp_ops, pub req_cb:Option<unsafe extern "C" fn(*mut hisi_qp,*mut core::ffi::c_void)>, pub event_cb:Option<unsafe extern "C" fn(*mut hisi_qp)>, pub qm:*mut hisi_qm, pub is_resetting:bool, pub is_in_kernel:bool, pub pasid:u16, pub uacce_q:*mut uacce_queue, pub ref_count:u32, pub qp_lock:spinlock_t, pub backlog:instance_backlog, pub msg:*mut *const core::ffi::c_void }
+#[repr(C)] pub struct hisi_qp { pub qp_id:u32, pub sq_depth:u16, pub cq_depth:u16, pub alg_type:u8, pub qdma:qm_dma, pub sqe:*mut kernel::ffi::c_void, pub cqe:*mut qm_cqe, pub sqe_dma:dma_addr_t, pub cqe_dma:dma_addr_t, pub qp_status:hisi_qp_status, pub hw_ops:*mut hisi_qp_ops, pub req_cb:Option<unsafe extern "C" fn(*mut hisi_qp,*mut kernel::ffi::c_void)>, pub event_cb:Option<unsafe extern "C" fn(*mut hisi_qp)>, pub qm:*mut hisi_qm, pub is_resetting:bool, pub is_in_kernel:bool, pub pasid:u16, pub uacce_q:*mut uacce_queue, pub ref_count:u32, pub qp_lock:spinlock_t, pub backlog:instance_backlog, pub msg:*mut *const kernel::ffi::c_void }
 
 extern "C" {
-    pub fn hisi_qm_register_uacce(qm:*mut hisi_qm)->i32; pub fn hisi_qm_q_num_set(val:*const core::ffi::c_char,kp:*const kernel_param,device:u32)->i32; pub fn hisi_qm_init(qm:*mut hisi_qm)->i32; pub fn hisi_qm_uninit(qm:*mut hisi_qm); pub fn hisi_qm_start(qm:*mut hisi_qm)->i32; pub fn hisi_qm_stop(qm:*mut hisi_qm,r:qm_stop_reason)->i32; pub fn hisi_qp_send(qp:*mut hisi_qp,msg:*const core::ffi::c_void)->i32;
+    pub fn hisi_qm_register_uacce(qm:*mut hisi_qm)->i32; pub fn hisi_qm_q_num_set(val:*const kernel::ffi::c_char,kp:*const kernel_param,device:u32)->i32; pub fn hisi_qm_init(qm:*mut hisi_qm)->i32; pub fn hisi_qm_uninit(qm:*mut hisi_qm); pub fn hisi_qm_start(qm:*mut hisi_qm)->i32; pub fn hisi_qm_stop(qm:*mut hisi_qm,r:qm_stop_reason)->i32; pub fn hisi_qp_send(qp:*mut hisi_qp,msg:*const kernel::ffi::c_void)->i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

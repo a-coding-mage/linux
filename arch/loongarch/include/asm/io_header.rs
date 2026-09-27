@@ -9,8 +9,8 @@
  * and asm-generic/io.h. */
 
 extern "C" {
-    pub fn early_ioremap(phys_addr: phys_addr_t, size: c_ulong) -> *mut core::ffi::c_void;
-    pub fn early_iounmap(addr: *mut core::ffi::c_void, size: c_ulong);
+    pub fn early_ioremap(phys_addr: phys_addr_t, size: c_ulong) -> *mut kernel::ffi::c_void;
+    pub fn early_iounmap(addr: *mut kernel::ffi::c_void, size: c_ulong);
 
     pub fn valid_phys_addr_range(addr: phys_addr_t, size: usize) -> c_int;
     pub fn valid_mmap_phys_addr_range(pfn: c_ulong, size: usize) -> c_int;
@@ -30,15 +30,15 @@ pub unsafe fn ioremap_prot(
     offset: phys_addr_t,
     _size: c_ulong,
     prot: pgprot_t,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     if offset > TO_PHYS_MASK {
         return core::ptr::null_mut();
     }
 
     match pgprot_val(prot) & _CACHE_MASK {
-        _CACHE_CC => (CACHE_BASE + offset) as c_ulong as *mut core::ffi::c_void,
-        _CACHE_SUC => (UNCACHE_BASE + offset) as c_ulong as *mut core::ffi::c_void,
-        _CACHE_WUC => (WRITECOMBINE_BASE + offset) as c_ulong as *mut core::ffi::c_void,
+        _CACHE_CC => (CACHE_BASE + offset) as c_ulong as *mut kernel::ffi::c_void,
+        _CACHE_SUC => (UNCACHE_BASE + offset) as c_ulong as *mut kernel::ffi::c_void,
+        _CACHE_WUC => (WRITECOMBINE_BASE + offset) as c_ulong as *mut kernel::ffi::c_void,
         _ => core::ptr::null_mut(),
     }
 }
@@ -89,7 +89,7 @@ macro_rules! __io_aw {
 /* CONFIG_KFENCE is a build-time condition from the C header. */
 #[cfg(CONFIG_KFENCE)]
 extern "C" {
-    static mut __kfence_pool: *mut core::ffi::c_char;
+    static mut __kfence_pool: *mut kernel::ffi::c_char;
 }
 
 #[cfg(CONFIG_KFENCE)]

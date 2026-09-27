@@ -48,8 +48,8 @@ pub struct lpddr_private {
     pub ManufactId: u16,
     pub DevId: u16,
     pub qinfo: *mut qinfo_chip,
-    pub numchips: core::ffi::c_int,
-    pub chipshift: core::ffi::c_ulong,
+    pub numchips: kernel::ffi::c_int,
+    pub chipshift: kernel::ffi::c_ulong,
     pub chips: [flchip; 0],
 }
 
@@ -64,8 +64,8 @@ pub struct lpddr_private {
 pub struct qinfo_query_info {
     pub major: u8,
     pub minor: u8,
-    pub id_str: *mut core::ffi::c_char,
-    pub desc: *mut core::ffi::c_char,
+    pub id_str: *mut kernel::ffi::c_char,
+    pub desc: *mut kernel::ffi::c_char,
 }
 
 /* defines for fixup usage */
@@ -74,7 +74,7 @@ pub const LPDDR_ID_ANY: u16 = 0xffff;
 pub const NUMONYX_MFGR_ID: u16 = 0x0089;
 pub const R18_DEVICE_ID_1G: u16 = 0x893c;
 
-pub unsafe fn lpddr_build_cmd(cmd: core::ffi::c_ulong, _map: *mut map_info) -> map_word {
+pub unsafe fn lpddr_build_cmd(cmd: kernel::ffi::c_ulong, _map: *mut map_info) -> map_word {
     let mut val: map_word = core::mem::zeroed();
     val.x[0] = cmd;
     val

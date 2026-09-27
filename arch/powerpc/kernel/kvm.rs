@@ -62,14 +62,14 @@ static mut KVM_TMP_INDEX: usize = 0;
 
 extern "C" {
     fn flush_icache_range(start: usize, end: usize);
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn memcpy(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void;
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn memcpy(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize) -> *mut kernel::ffi::c_void;
     fn get_rt(rt: u32) -> u32;
-    fn on_each_cpu(func: unsafe extern "C" fn(*mut core::ffi::c_void), info: *mut core::ffi::c_void, wait: i32);
-    fn fault_in_readable(addr: *const core::ffi::c_void, size: usize) -> i32;
+    fn on_each_cpu(func: unsafe extern "C" fn(*mut kernel::ffi::c_void), info: *mut kernel::ffi::c_void, wait: i32);
+    fn fault_in_readable(addr: *const kernel::ffi::c_void, size: usize) -> i32;
     fn local_irq_disable();
     fn local_irq_enable();
-    fn kvm_map_magic_page(data: *mut core::ffi::c_void);
+    fn kvm_map_magic_page(data: *mut kernel::ffi::c_void);
     fn kvm_para_available() -> bool;
     fn kvm_para_has_feature(feature: u32) -> bool;
     fn epapr_hypercall(input: *const usize, output: *mut usize, token: u32);
@@ -112,7 +112,7 @@ unsafe fn patch_chunk(inst: *mut u32, len: u32, template: *mut u32, branch: u32,
     flush_icache_range(p as usize, p as usize + (len * 4) as usize); kvm_patch_ins_b(inst, start);
 }
 
-unsafe fn kvm_map_magic_page_impl(data: *mut core::ffi::c_void) {
+unsafe fn kvm_map_magic_page_impl(data: *mut kernel::ffi::c_void) {
     let features = data as *mut u32; let input = [KVM_MAGIC_PAGE as usize, (KVM_MAGIC_PAGE as usize) | 1, 0,0,0,0,0,0]; let mut output = [0usize; 8];
     epapr_hypercall(input.as_ptr(), output.as_mut_ptr(), 0); *features = output[0];
 }

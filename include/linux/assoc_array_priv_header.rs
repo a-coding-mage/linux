@@ -30,7 +30,7 @@ pub struct assoc_array_node {
     pub back_pointer: *mut assoc_array_ptr,
     pub parent_slot: u8,
     pub slots: [*mut assoc_array_ptr; ASSOC_ARRAY_FAN_OUT],
-    pub nr_leaves_on_branch: ::core::ffi::c_ulong,
+    pub nr_leaves_on_branch: ::kernel::ffi::c_ulong,
 }
 
 /* A shortcut through the index space out to where a collection of nodes/leaves
@@ -39,10 +39,10 @@ pub struct assoc_array_node {
 #[repr(C)]
 pub struct assoc_array_shortcut {
     pub back_pointer: *mut assoc_array_ptr,
-    pub parent_slot: ::core::ffi::c_int,
-    pub skip_to_level: ::core::ffi::c_int,
+    pub parent_slot: ::kernel::ffi::c_int,
+    pub skip_to_level: ::kernel::ffi::c_int,
     pub next_node: *mut assoc_array_ptr,
-    pub index_key: [::core::ffi::c_ulong; 0],
+    pub index_key: [::kernel::ffi::c_ulong; 0],
 }
 
 /* Preallocation cache. */
@@ -61,7 +61,7 @@ pub struct assoc_array_edit {
     pub set_backpointers: [*mut *mut assoc_array_ptr; ASSOC_ARRAY_FAN_OUT],
     pub set_backpointers_to: *mut assoc_array_ptr,
     pub adjust_count_on: *mut assoc_array_node,
-    pub adjust_count_by: ::core::ffi::c_long,
+    pub adjust_count_by: ::kernel::ffi::c_long,
     pub set: [assoc_array_edit_set; 2],
     pub set_parent_slot: [assoc_array_edit_set_parent_slot; 1],
     pub segment_cache: [u8; ASSOC_ARRAY_FAN_OUT + 1],
@@ -107,8 +107,8 @@ pub unsafe fn assoc_array_ptr_is_node(x: *const assoc_array_ptr) -> bool {
 }
 
 #[inline]
-pub unsafe fn assoc_array_ptr_to_leaf(x: *const assoc_array_ptr) -> *mut ::core::ffi::c_void {
-    (x as usize & !ASSOC_ARRAY_PTR_TYPE_MASK) as *mut ::core::ffi::c_void
+pub unsafe fn assoc_array_ptr_to_leaf(x: *const assoc_array_ptr) -> *mut ::kernel::ffi::c_void {
+    (x as usize & !ASSOC_ARRAY_PTR_TYPE_MASK) as *mut ::kernel::ffi::c_void
 }
 
 #[inline]
@@ -127,24 +127,24 @@ pub unsafe fn assoc_array_ptr_to_shortcut(x: *const assoc_array_ptr) -> *mut ass
 }
 
 #[inline]
-pub unsafe fn __assoc_array_x_to_ptr(p: *const ::core::ffi::c_void, t: usize) -> *mut assoc_array_ptr {
+pub unsafe fn __assoc_array_x_to_ptr(p: *const ::kernel::ffi::c_void, t: usize) -> *mut assoc_array_ptr {
     ((p as usize) | t) as *mut assoc_array_ptr
 }
 
 #[inline]
-pub unsafe fn assoc_array_leaf_to_ptr(p: *const ::core::ffi::c_void) -> *mut assoc_array_ptr {
+pub unsafe fn assoc_array_leaf_to_ptr(p: *const ::kernel::ffi::c_void) -> *mut assoc_array_ptr {
     __assoc_array_x_to_ptr(p, ASSOC_ARRAY_PTR_LEAF_TYPE)
 }
 
 #[inline]
 pub unsafe fn assoc_array_node_to_ptr(p: *const assoc_array_node) -> *mut assoc_array_ptr {
-    __assoc_array_x_to_ptr(p as *const ::core::ffi::c_void,
+    __assoc_array_x_to_ptr(p as *const ::kernel::ffi::c_void,
                            ASSOC_ARRAY_PTR_META_TYPE | ASSOC_ARRAY_PTR_NODE_SUBTYPE)
 }
 
 #[inline]
 pub unsafe fn assoc_array_shortcut_to_ptr(p: *const assoc_array_shortcut) -> *mut assoc_array_ptr {
-    __assoc_array_x_to_ptr(p as *const ::core::ffi::c_void,
+    __assoc_array_x_to_ptr(p as *const ::kernel::ffi::c_void,
                            ASSOC_ARRAY_PTR_META_TYPE | ASSOC_ARRAY_PTR_SHORTCUT_SUBTYPE)
 }
 

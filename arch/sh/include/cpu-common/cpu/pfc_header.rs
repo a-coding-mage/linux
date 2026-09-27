@@ -8,7 +8,7 @@
 // Translated from the C header. The original include of <linux/types.h>
 // supplies u32; Rust's u32 is used directly here.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct resource {

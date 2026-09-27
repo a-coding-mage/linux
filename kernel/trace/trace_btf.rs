@@ -2,7 +2,7 @@
 // Translated from trace_btf.c. Linux BTF/kernel/slab declarations are supplied
 // by the surrounding build environment.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn bpf_find_btf_id(

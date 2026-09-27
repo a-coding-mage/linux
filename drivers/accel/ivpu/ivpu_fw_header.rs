@@ -18,8 +18,8 @@ pub enum ivpu_addr_range {}
 #[repr(C)]
 pub struct ivpu_fw_info {
     pub file: *const firmware,
-    pub name: *const core::ffi::c_char,
-    pub version: [core::ffi::c_char; FW_VERSION_STR_SIZE],
+    pub name: *const kernel::ffi::c_char,
+    pub version: [kernel::ffi::c_char; FW_VERSION_STR_SIZE],
     pub mem_bp: *mut ivpu_bo,
     pub mem_fw_ver: *mut ivpu_bo,
     pub mem: *mut ivpu_bo,

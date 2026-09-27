@@ -9,41 +9,41 @@
 
 const HIX5HD2_BOOT_ADDRESS: usize = 0xffff0000;
 
-static mut ctrl_base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut ctrl_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 extern "C" {
     fn cpu_logical_map(cpu: i32) -> i32;
-    fn writel_relaxed(value: u32, address: *mut core::ffi::c_void);
-    fn readl_relaxed(address: *mut core::ffi::c_void) -> u32;
-    fn __pa_symbol(address: *const core::ffi::c_void) -> usize;
+    fn writel_relaxed(value: u32, address: *mut kernel::ffi::c_void);
+    fn readl_relaxed(address: *mut kernel::ffi::c_void) -> u32;
+    fn __pa_symbol(address: *const kernel::ffi::c_void) -> usize;
     fn scu_a9_has_base() -> bool;
     fn scu_a9_get_base() -> usize;
-    fn ioremap(address: usize, size: usize) -> *mut core::ffi::c_void;
-    fn iounmap(address: *mut core::ffi::c_void);
-    fn scu_enable(address: *mut core::ffi::c_void);
-    fn pr_err(message: *const core::ffi::c_char, ...);
+    fn ioremap(address: usize, size: usize) -> *mut kernel::ffi::c_void;
+    fn iounmap(address: *mut kernel::ffi::c_void);
+    fn scu_enable(address: *mut kernel::ffi::c_void);
+    fn pr_err(message: *const kernel::ffi::c_char, ...);
     fn of_find_compatible_node(
         from: *mut device_node,
-        type_: *const core::ffi::c_char,
-        compatible: *const core::ffi::c_char,
+        type_: *const kernel::ffi::c_char,
+        compatible: *const kernel::ffi::c_char,
     ) -> *mut device_node;
-    fn of_iomap(node: *mut device_node, index: i32) -> *mut core::ffi::c_void;
+    fn of_iomap(node: *mut device_node, index: i32) -> *mut kernel::ffi::c_void;
     fn of_node_put(node: *mut device_node);
     fn of_property_read_u32(
         node: *mut device_node,
-        property: *const core::ffi::c_char,
+        property: *const kernel::ffi::c_char,
         value: *mut u32,
     ) -> i32;
     fn hi3xxx_set_cpu(cpu: u32, enable: bool);
     fn hi3xxx_cpu_die(cpu: u32);
     fn hi3xxx_cpu_kill(cpu: u32) -> bool;
     fn secondary_startup();
-    fn arch_send_wakeup_ipi_mask(mask: *const core::ffi::c_void);
-    fn cpumask_of(cpu: u32) -> *const core::ffi::c_void;
+    fn arch_send_wakeup_ipi_mask(mask: *const kernel::ffi::c_void);
+    fn cpumask_of(cpu: u32) -> *const kernel::ffi::c_void;
     fn hix5hd2_set_cpu(cpu: u32, enable: bool);
     fn hix5hd2_cpu_die(cpu: u32);
     fn hip01_set_cpu(cpu: u32, enable: bool);
-    fn phys_to_virt(address: usize) -> *mut core::ffi::c_void;
+    fn phys_to_virt(address: usize) -> *mut kernel::ffi::c_void;
     fn barrier();
     fn warn_on(condition: bool) -> bool;
 }
@@ -58,7 +58,7 @@ struct task_struct {
     _private: [u8; 0],
 }
 
-pub unsafe fn hi3xxx_set_cpu_jump(mut cpu: i32, jump_addr: *mut core::ffi::c_void) {
+pub unsafe fn hi3xxx_set_cpu_jump(mut cpu: i32, jump_addr: *mut kernel::ffi::c_void) {
     cpu = cpu_logical_map(cpu);
     if cpu == 0 || ctrl_base.is_null() {
         return;
@@ -76,7 +76,7 @@ pub unsafe fn hi3xxx_get_cpu_jump(mut cpu: i32) -> u32 {
 
 unsafe fn hisi_enable_scu_a9() {
     let mut base: usize = 0;
-    let mut scu_base: *mut core::ffi::c_void = core::ptr::null_mut();
+    let mut scu_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
     if scu_a9_has_base() {
         base = scu_a9_get_base();
         scu_base = ioremap(base, 0x1000);

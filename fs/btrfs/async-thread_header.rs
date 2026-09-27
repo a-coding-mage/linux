@@ -7,7 +7,7 @@
 // Translated from btrfs/async-thread.h. Linux workqueue and list types are
 // supplied by the corresponding external Rust declarations.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct btrfs_fs_info {
@@ -38,7 +38,7 @@ pub struct btrfs_work {
     pub normal_work: work_struct,
     pub ordered_list: list_head,
     pub wq: *mut btrfs_workqueue,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
 }
 
 pub type btrfs_func_t = Option<unsafe extern "C" fn(arg: *mut btrfs_work)>;

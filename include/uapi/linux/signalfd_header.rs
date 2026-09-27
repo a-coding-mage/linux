@@ -10,8 +10,8 @@
 // linux/types.h; O_CLOEXEC and O_NONBLOCK are supplied by linux/fcntl.h.
 
 /* Flags for signalfd4.  */
-pub const SFD_CLOEXEC: _ = O_CLOEXEC;
-pub const SFD_NONBLOCK: _ = O_NONBLOCK;
+pub const SFD_CLOEXEC: u32 = O_CLOEXEC;
+pub const SFD_NONBLOCK: u32 = O_NONBLOCK;
 
 #[repr(C)]
 pub struct signalfd_siginfo {

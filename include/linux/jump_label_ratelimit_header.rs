@@ -7,7 +7,7 @@
 #[repr(C)]
 pub struct static_key_deferred {
     pub key: static_key,
-    pub timeout: ::core::ffi::c_ulong,
+    pub timeout: ::kernel::ffi::c_ulong,
     pub work: delayed_work,
 }
 
@@ -15,7 +15,7 @@ pub struct static_key_deferred {
 #[repr(C)]
 pub struct static_key_true_deferred {
     pub key: static_key_true,
-    pub timeout: ::core::ffi::c_ulong,
+    pub timeout: ::kernel::ffi::c_ulong,
     pub work: delayed_work,
 }
 
@@ -23,7 +23,7 @@ pub struct static_key_true_deferred {
 #[repr(C)]
 pub struct static_key_false_deferred {
     pub key: static_key_false,
-    pub timeout: ::core::ffi::c_ulong,
+    pub timeout: ::kernel::ffi::c_ulong,
     pub work: delayed_work,
 }
 
@@ -32,10 +32,10 @@ extern "C" {
     pub fn __static_key_slow_dec_deferred(
         key: *mut static_key,
         work: *mut delayed_work,
-        timeout: ::core::ffi::c_ulong,
+        timeout: ::kernel::ffi::c_ulong,
     );
-    pub fn __static_key_deferred_flush(key: *mut ::core::ffi::c_void, work: *mut delayed_work);
-    pub fn jump_label_rate_limit(key: *mut static_key_deferred, rl: ::core::ffi::c_ulong);
+    pub fn __static_key_deferred_flush(key: *mut ::kernel::ffi::c_void, work: *mut delayed_work);
+    pub fn jump_label_rate_limit(key: *mut static_key_deferred, rl: ::kernel::ffi::c_ulong);
     pub fn jump_label_update_timeout(work: *mut work_struct);
 }
 
@@ -61,7 +61,7 @@ pub unsafe fn static_branch_slow_dec_deferred(x: *mut static_key_true_deferred) 
 
 #[cfg(CONFIG_JUMP_LABEL)]
 #[inline]
-pub unsafe fn static_key_deferred_flush(x: *mut ::core::ffi::c_void) {
+pub unsafe fn static_key_deferred_flush(x: *mut ::kernel::ffi::c_void) {
     __static_key_deferred_flush(x, &mut (*(x as *mut static_key_deferred)).work);
 }
 
@@ -100,7 +100,7 @@ pub unsafe fn static_key_slow_dec_deferred(key: *mut static_key_deferred) {
 
 #[cfg(not(CONFIG_JUMP_LABEL))]
 #[inline]
-pub unsafe fn static_key_deferred_flush(key: *mut ::core::ffi::c_void) {
+pub unsafe fn static_key_deferred_flush(key: *mut ::kernel::ffi::c_void) {
     STATIC_KEY_CHECK_USE(key);
 }
 
@@ -108,7 +108,7 @@ pub unsafe fn static_key_deferred_flush(key: *mut ::core::ffi::c_void) {
 #[inline]
 pub unsafe fn jump_label_rate_limit(
     key: *mut static_key_deferred,
-    rl: ::core::ffi::c_ulong,
+    rl: ::kernel::ffi::c_ulong,
 ) {
     STATIC_KEY_CHECK_USE(key);
 }

@@ -26,7 +26,7 @@ pub struct spi_device {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct spi_device_id {
-    pub name: [::core::ffi::c_char; 32],
+    pub name: [::kernel::ffi::c_char; 32],
     pub driver_data: usize,
 }
 
@@ -39,14 +39,14 @@ pub struct regmap_config {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct device_driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct spi_driver {
     pub driver: device_driver,
-    pub probe: Option<unsafe extern "C" fn(*mut spi_device) -> ::core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(*mut spi_device) -> ::kernel::ffi::c_int>,
     pub id_table: *const spi_device_id,
 }
 
@@ -54,15 +54,15 @@ unsafe extern "C" {
     static adav80x_regmap_config: regmap_config;
 
     fn devm_regmap_init_spi(spi: *mut spi_device, config: *const regmap_config) -> *mut regmap;
-    fn adav80x_bus_probe(dev: *mut device, regmap: *mut regmap) -> ::core::ffi::c_int;
+    fn adav80x_bus_probe(dev: *mut device, regmap: *mut regmap) -> ::kernel::ffi::c_int;
 }
 
-const fn spi_device_id_name(name: &[u8]) -> [::core::ffi::c_char; 32] {
-    let mut out = [0 as ::core::ffi::c_char; 32];
+const fn spi_device_id_name(name: &[u8]) -> [::kernel::ffi::c_char; 32] {
+    let mut out = [0 as ::kernel::ffi::c_char; 32];
     let mut i = 0;
 
     while i < name.len() && i < 31 {
-        out[i] = name[i] as ::core::ffi::c_char;
+        out[i] = name[i] as ::kernel::ffi::c_char;
         i += 1;
     }
 
@@ -75,14 +75,14 @@ static adav80x_spi_id: [spi_device_id; 2] = [
         driver_data: 0,
     },
     spi_device_id {
-        name: [0 as ::core::ffi::c_char; 32],
+        name: [0 as ::kernel::ffi::c_char; 32],
         driver_data: 0,
     },
 ];
 
 // MODULE_DEVICE_TABLE(spi, adav80x_spi_id);
 
-unsafe extern "C" fn adav80x_spi_probe(spi: *mut spi_device) -> ::core::ffi::c_int {
+unsafe extern "C" fn adav80x_spi_probe(spi: *mut spi_device) -> ::kernel::ffi::c_int {
     let mut config: regmap_config;
 
     unsafe {

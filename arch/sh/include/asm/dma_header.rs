@@ -38,19 +38,19 @@ extern "C" {
 
 #[repr(C)]
 pub struct dma_channel {
-    pub dev_id: [core::ffi::c_char; 16],
+    pub dev_id: [kernel::ffi::c_char; 16],
     pub chan: u32,
     pub vchan: u32,
     pub mode: u32,
     pub count: u32,
     pub sar: c_ulong,
     pub dar: c_ulong,
-    pub caps: *const *const core::ffi::c_char,
+    pub caps: *const *const kernel::ffi::c_char,
     pub flags: c_ulong,
     pub busy: atomic_t,
     pub wait_queue: wait_queue_head_t,
     pub dev: device,
-    pub priv_data: *mut core::ffi::c_void,
+    pub priv_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -65,7 +65,7 @@ pub struct dma_ops {
 #[repr(C)]
 pub struct dma_info {
     pub pdev: *mut platform_device,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub nr_channels: u32,
     pub flags: c_ulong,
     pub ops: *mut dma_ops,
@@ -78,7 +78,7 @@ pub struct dma_info {
 #[repr(C)]
 pub struct dma_chan_caps {
     pub ch_num: i32,
-    pub caplist: *const *const core::ffi::c_char,
+    pub caplist: *const *const kernel::ffi::c_char,
 }
 
 /* Equivalent to: container_of(channel, struct dma_channel, dev). */

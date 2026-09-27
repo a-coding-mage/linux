@@ -8,25 +8,25 @@
 
 #[repr(C)]
 pub struct SbiCallEntry {
-    pub ext: ::core::ffi::c_int,
-    pub fid: ::core::ffi::c_int,
+    pub ext: ::kernel::ffi::c_int,
+    pub fid: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct SbiReturnEntry {
-    pub error: ::core::ffi::c_long,
-    pub value: ::core::ffi::c_long,
+    pub error: ::kernel::ffi::c_long,
+    pub value: ::kernel::ffi::c_long,
 }
 
 /// Condition from `TRACE_EVENT_CONDITION(sbi_call, ...)`.
 #[inline]
-pub const unsafe fn sbi_call_condition(ext: ::core::ffi::c_int) -> bool {
+pub const unsafe fn sbi_call_condition(ext: ::kernel::ffi::c_int) -> bool {
     ext != SBI_EXT_HSM
 }
 
 /// Condition from `TRACE_EVENT_CONDITION(sbi_return, ...)`.
 #[inline]
-pub const unsafe fn sbi_return_condition(ext: ::core::ffi::c_int) -> bool {
+pub const unsafe fn sbi_return_condition(ext: ::kernel::ffi::c_int) -> bool {
     ext != SBI_EXT_HSM
 }
 
@@ -34,8 +34,8 @@ pub const unsafe fn sbi_return_condition(ext: ::core::ffi::c_int) -> bool {
 #[inline]
 pub unsafe fn sbi_call_fast_assign(
     entry: *mut SbiCallEntry,
-    ext: ::core::ffi::c_int,
-    fid: ::core::ffi::c_int,
+    ext: ::kernel::ffi::c_int,
+    fid: ::kernel::ffi::c_int,
 ) {
     (*entry).ext = ext;
     (*entry).fid = fid;
@@ -45,8 +45,8 @@ pub unsafe fn sbi_call_fast_assign(
 #[inline]
 pub unsafe fn sbi_return_fast_assign(
     entry: *mut SbiReturnEntry,
-    error: ::core::ffi::c_long,
-    value: ::core::ffi::c_long,
+    error: ::kernel::ffi::c_long,
+    value: ::kernel::ffi::c_long,
 ) {
     (*entry).error = error;
     (*entry).value = value;

@@ -43,7 +43,7 @@ static NI660X_REG_DATA: [Ni660xRegisterData; NI660X_NUM_REGS as usize] = [/* reg
 const NI660X_CHIP_OFFSET: u32 = 0x800;
 
 #[repr(u32)] #[derive(Copy, Clone)] enum Ni660xBoardId { BoardPci6601, BoardPci6602, BoardPxi6602, BoardPci6608, BoardPxi6608, BoardPci6624, BoardPxi6624 }
-#[repr(C)] struct Ni660xBoard { name: *const core::ffi::c_char, n_chips: u32 }
+#[repr(C)] struct Ni660xBoard { name: *const kernel::ffi::c_char, n_chips: u32 }
 static NI660X_BOARDS: [Ni660xBoard; 7] = [
     Ni660xBoard { name: b"PCI-6601\0".as_ptr() as _, n_chips: 1 },
     Ni660xBoard { name: b"PCI-6602\0".as_ptr() as _, n_chips: 2 },
@@ -102,7 +102,7 @@ unsafe fn ni_660x_cancel(_dev: *mut ComediDevice, s: *mut ComediSubdevice) -> i3
 unsafe fn set_tio_counterswap(dev: *mut ComediDevice, chip: i32) { ni_660x_write(dev, chip as u32, if chip != 0 { NI660X_CLK_CFG_COUNTER_SWAP } else { 0 }, Ni660xRegister::Ni660xClkCfg); }
 unsafe fn ni_660x_handle_gpct_interrupt(dev: *mut ComediDevice, s: *mut ComediSubdevice) { let c = (*s).private as *mut NiGpct; ni_tio_handle_interrupt(c, s); comedi_handle_events(dev, s); }
 
-unsafe extern "C" fn ni_660x_interrupt(_irq: i32, d: *mut core::ffi::c_void) -> Irqreturn { let dev = d as *mut ComediDevice; if !(*dev).attached { return IRQ_NONE; } smp_mb(); let p = &mut *((*dev).private as *mut Ni660xPrivate); spin_lock_irqsave(&mut p.interrupt_lock); for i in 0..(*dev).n_subdevices { let s = (*dev).subdevices.add(i as usize); if (*s).type_ == COMEDI_SUBD_COUNTER { ni_660x_handle_gpct_interrupt(dev, s); } } spin_unlock_irqrestore(&mut p.interrupt_lock); IRQ_HANDLED }
+unsafe extern "C" fn ni_660x_interrupt(_irq: i32, d: *mut kernel::ffi::c_void) -> Irqreturn { let dev = d as *mut ComediDevice; if !(*dev).attached { return IRQ_NONE; } smp_mb(); let p = &mut *((*dev).private as *mut Ni660xPrivate); spin_lock_irqsave(&mut p.interrupt_lock); for i in 0..(*dev).n_subdevices { let s = (*dev).subdevices.add(i as usize); if (*s).type_ == COMEDI_SUBD_COUNTER { ni_660x_handle_gpct_interrupt(dev, s); } } spin_unlock_irqrestore(&mut p.interrupt_lock); IRQ_HANDLED }
 unsafe fn ni_660x_input_poll(_dev: *mut ComediDevice, s: *mut ComediSubdevice) -> i32 { let c = (*s).private as *mut NiGpct; mite_sync_dma((*c).mite_chan, s); comedi_buf_read_n_available(s) }
 unsafe fn ni_660x_buf_change(dev: *mut ComediDevice, s: *mut ComediSubdevice) -> i32 { let c = (*s).private as *mut NiGpct; let p = &mut *((*dev).private as *mut Ni660xPrivate); mite_buf_change(p.ring[(*c).chip_index as usize][(*c).counter_index as usize], s) }
 

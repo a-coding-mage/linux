@@ -17,27 +17,27 @@ const MASK_TCS_TC: u8 = 0x80;
 
 #[repr(C)]
 pub struct gxp_timer {
-    pub counter: *mut core::ffi::c_void,
-    pub control: *mut core::ffi::c_void,
+    pub counter: *mut kernel::ffi::c_void,
+    pub control: *mut kernel::ffi::c_void,
     pub evt: clock_event_device,
 }
 
 static mut gxp_timer: *mut gxp_timer = core::ptr::null_mut();
-static mut system_clock: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut system_clock: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 #[repr(C)]
 pub struct clock_event_device {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub rating: i32,
     pub features: u32,
     pub set_next_event: Option<unsafe extern "C" fn(usize, *mut clock_event_device) -> i32>,
-    pub cpumask: *const core::ffi::c_void,
+    pub cpumask: *const kernel::ffi::c_void,
     pub event_handler: Option<unsafe extern "C" fn(*mut clock_event_device)>,
 }
 
 #[repr(C)]
 pub struct device_node {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -47,7 +47,7 @@ pub struct platform_device {
 
 #[repr(C)]
 pub struct device {
-    pub platform_data: *mut core::ffi::c_void,
+    pub platform_data: *mut kernel::ffi::c_void,
     pub parent: *mut device,
 }
 
@@ -73,7 +73,7 @@ unsafe extern "C" fn gxp_time_set_next_event(
     0
 }
 
-unsafe extern "C" fn gxp_timer_interrupt(_irq: i32, dev_id: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn gxp_timer_interrupt(_irq: i32, dev_id: *mut kernel::ffi::c_void) -> i32 {
     let timer = dev_id as *mut gxp_timer;
 
     if (readb_relaxed((*timer).control) & MASK_TCS_TC) == 0 {
@@ -90,7 +90,7 @@ unsafe extern "C" fn gxp_timer_interrupt(_irq: i32, dev_id: *mut core::ffi::c_vo
 }
 
 unsafe extern "C" fn gxp_timer_init(node: *mut device_node) -> i32 {
-    let mut base: *mut core::ffi::c_void;
+    let mut base: *mut kernel::ffi::c_void;
     let mut clk: *mut clk;
     let mut freq: u32;
     let mut ret: i32;
@@ -124,9 +124,9 @@ unsafe extern "C" fn gxp_timer_init(node: *mut device_node) -> i32 {
     }
 
     /* Set the offsets to the clock register and timer registers */
-    (*gxp_timer).counter = (base as *mut u8).add(GXP_TIMER_CNT_OFS) as *mut core::ffi::c_void;
-    (*gxp_timer).control = (base as *mut u8).add(GXP_TIMER_CTRL_OFS) as *mut core::ffi::c_void;
-    system_clock = (base as *mut u8).add(GXP_TIMESTAMP_OFS) as *mut core::ffi::c_void;
+    (*gxp_timer).counter = (base as *mut u8).add(GXP_TIMER_CNT_OFS) as *mut kernel::ffi::c_void;
+    (*gxp_timer).control = (base as *mut u8).add(GXP_TIMER_CTRL_OFS) as *mut kernel::ffi::c_void;
+    system_clock = (base as *mut u8).add(GXP_TIMESTAMP_OFS) as *mut kernel::ffi::c_void;
 
     (*gxp_timer).evt.name = (*node).name;
     (*gxp_timer).evt.rating = 300;
@@ -158,7 +158,7 @@ unsafe extern "C" fn gxp_timer_init(node: *mut device_node) -> i32 {
     }
 
     clockevents_config_and_register(&mut (*gxp_timer).evt, TIMER0_FREQ, 0xf, 0xffffffff);
-    ret = request_irq(irq, gxp_timer_interrupt, IRQF_TIMER | IRQF_SHARED, (*node).name, gxp_timer as *mut core::ffi::c_void);
+    ret = request_irq(irq, gxp_timer_interrupt, IRQF_TIMER | IRQF_SHARED, (*node).name, gxp_timer as *mut kernel::ffi::c_void);
     if ret != 0 {
         pr_err("%pOFn request_irq() failed: %d\n", node, ret);
         goto_err_exit(base, clk, ret);
@@ -202,7 +202,7 @@ unsafe extern "C" fn gxp_timer_probe(pdev: *mut platform_device) -> i32 {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -213,7 +213,7 @@ pub struct platform_driver {
 
 #[repr(C)]
 pub struct driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
     pub suppress_bind_attrs: bool,
 }

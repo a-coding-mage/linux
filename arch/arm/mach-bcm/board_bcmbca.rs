@@ -4,7 +4,7 @@
 // Translated from the C implementation.  The following names and types are
 // supplied by the architecture headers and kernel build configuration.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct map_desc {

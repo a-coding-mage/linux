@@ -8,16 +8,16 @@
 
 #[repr(C)]
 pub struct snd_sof_of_mach {
-    pub compatible: *const core::ffi::c_char,
-    pub drv_name: *const core::ffi::c_char,
-    pub fw_filename: *const core::ffi::c_char,
-    pub sof_tplg_filename: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
+    pub drv_name: *const kernel::ffi::c_char,
+    pub fw_filename: *const kernel::ffi::c_char,
+    pub sof_tplg_filename: *const kernel::ffi::c_char,
 }
 
 unsafe extern "C" {
     pub static sof_of_pm: dev_pm_ops;
 
-    pub fn sof_of_probe(pdev: *mut platform_device) -> core::ffi::c_int;
+    pub fn sof_of_probe(pdev: *mut platform_device) -> kernel::ffi::c_int;
     pub fn sof_of_remove(pdev: *mut platform_device);
     pub fn sof_of_shutdown(pdev: *mut platform_device);
 }

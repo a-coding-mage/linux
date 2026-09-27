@@ -23,7 +23,7 @@
 // Dependencies supplied by other translation units:
 // linux/kref.h, drm/drm_lease.h
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const DRM_OBJECT_MAX_PROPERTY: usize = 64;
 
@@ -71,7 +71,7 @@ pub struct drm_mode_object {
 /** Property tracking for drm_mode_object. */
 #[repr(C)]
 pub struct drm_object_properties {
-    pub count: core::ffi::c_int,
+    pub count: kernel::ffi::c_int,
     pub properties: [*mut drm_property; DRM_OBJECT_MAX_PROPERTY],
     pub values: [u64; DRM_OBJECT_MAX_PROPERTY],
 }
@@ -80,7 +80,7 @@ pub struct drm_object_properties {
 #[macro_export]
 macro_rules! DRM_ENUM_NAME_FN {
     ($fnname:ident, $list:expr) => {
-        unsafe extern "C" fn $fnname(val: core::ffi::c_int) -> *const c_char {
+        unsafe extern "C" fn $fnname(val: kernel::ffi::c_int) -> *const c_char {
             let mut i = 0usize;
             while i < ($list).len() {
                 if ($list)[i].type_ == val {
@@ -107,22 +107,22 @@ extern "C" {
         obj: *mut drm_mode_object,
         property: *mut drm_property,
         val: u64,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn drm_object_property_get_value(
         obj: *mut drm_mode_object,
         property: *mut drm_property,
         value: *mut u64,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn drm_object_property_get_default_value(
         obj: *mut drm_mode_object,
         property: *mut drm_property,
         val: *mut u64,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn drm_object_immutable_property_get_value(
         obj: *mut drm_mode_object,
         property: *mut drm_property,
         val: *mut u64,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn drm_object_attach_property(
         obj: *mut drm_mode_object,

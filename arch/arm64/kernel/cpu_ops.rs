@@ -18,7 +18,7 @@ extern "C" {
 
 #[repr(C)]
 pub struct cpu_operations {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 // Supplied by the surrounding kernel dependencies.
@@ -26,21 +26,21 @@ extern "C" {
     static acpi_disabled: bool;
     static mut cpu_ops: [*const cpu_operations; NR_CPUS];
 
-    fn of_get_cpu_node(cpu: core::ffi::c_int, thread: *mut core::ffi::c_int)
+    fn of_get_cpu_node(cpu: kernel::ffi::c_int, thread: *mut kernel::ffi::c_int)
         -> *mut device_node;
     fn of_get_property(
         node: *const device_node,
-        name: *const core::ffi::c_char,
-        length: *mut core::ffi::c_int,
-    ) -> *const core::ffi::c_char;
+        name: *const kernel::ffi::c_char,
+        length: *mut kernel::ffi::c_int,
+    ) -> *const kernel::ffi::c_char;
     fn of_node_put(node: *mut device_node);
-    fn acpi_get_enable_method(cpu: core::ffi::c_int) -> *const core::ffi::c_char;
+    fn acpi_get_enable_method(cpu: kernel::ffi::c_int) -> *const kernel::ffi::c_char;
     fn strcmp(
-        left: *const core::ffi::c_char,
-        right: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
-    fn pr_err(format: *const core::ffi::c_char, ...);
-    fn pr_warn(format: *const core::ffi::c_char, ...);
+        left: *const kernel::ffi::c_char,
+        right: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
+    fn pr_warn(format: *const kernel::ffi::c_char, ...);
 }
 
 pub const NR_CPUS: usize = 0;
@@ -69,7 +69,7 @@ static mut ACPI_SUPPORTED_CPU_OPS: [*const cpu_operations; 2] = [
     core::ptr::null(),
 ];
 
-unsafe fn cpu_get_ops(name: *const core::ffi::c_char) -> *const cpu_operations {
+unsafe fn cpu_get_ops(name: *const kernel::ffi::c_char) -> *const cpu_operations {
     let mut ops: *const *const cpu_operations = if acpi_disabled {
         DT_SUPPORTED_CPU_OPS.as_ptr()
     } else {
@@ -86,8 +86,8 @@ unsafe fn cpu_get_ops(name: *const core::ffi::c_char) -> *const cpu_operations {
     core::ptr::null()
 }
 
-unsafe fn cpu_read_enable_method(cpu: core::ffi::c_int) -> *const core::ffi::c_char {
-    let enable_method: *const core::ffi::c_char;
+unsafe fn cpu_read_enable_method(cpu: kernel::ffi::c_int) -> *const kernel::ffi::c_char {
+    let enable_method: *const kernel::ffi::c_char;
 
     if acpi_disabled {
         let dn = of_get_cpu_node(cpu, core::ptr::null_mut());
@@ -136,7 +136,7 @@ unsafe fn cpu_read_enable_method(cpu: core::ffi::c_int) -> *const core::ffi::c_c
 /*
  * Read a cpu's enable method and record it in cpu_ops.
  */
-pub unsafe fn init_cpu_ops(cpu: core::ffi::c_int) -> core::ffi::c_int {
+pub unsafe fn init_cpu_ops(cpu: kernel::ffi::c_int) -> kernel::ffi::c_int {
     let enable_method = cpu_read_enable_method(cpu);
 
     if enable_method.is_null() {
@@ -155,7 +155,7 @@ pub unsafe fn init_cpu_ops(cpu: core::ffi::c_int) -> core::ffi::c_int {
     0
 }
 
-pub unsafe fn get_cpu_ops(cpu: core::ffi::c_int) -> *const cpu_operations {
+pub unsafe fn get_cpu_ops(cpu: kernel::ffi::c_int) -> *const cpu_operations {
     cpu_ops[cpu as usize]
 }
 

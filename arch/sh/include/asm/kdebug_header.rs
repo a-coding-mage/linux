@@ -12,12 +12,12 @@ pub enum die_val {
 
 /* arch/sh/kernel/dumpstack.c */
 unsafe extern "C" {
-    pub fn printk_address(address: ::core::ffi::c_ulong, reliable: ::core::ffi::c_int);
+    pub fn printk_address(address: ::kernel::ffi::c_ulong, reliable: ::kernel::ffi::c_int);
     pub fn dump_mem(
-        str_: *const ::core::ffi::c_char,
-        loglvl: *const ::core::ffi::c_char,
-        bottom: ::core::ffi::c_ulong,
-        top: ::core::ffi::c_ulong,
+        str_: *const ::kernel::ffi::c_char,
+        loglvl: *const ::kernel::ffi::c_char,
+        bottom: ::kernel::ffi::c_ulong,
+        top: ::kernel::ffi::c_ulong,
     );
 }
 

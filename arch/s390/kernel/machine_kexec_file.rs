@@ -32,7 +32,7 @@ pub unsafe fn s390_verify_sig(kernel: *const c_char, mut kernel_len: c_ulong) ->
         return -EKEYREJECTED;
     }
 
-    if libc::memcmp(
+    if memcmp(
         kernel.add((kernel_len - marker_len) as usize) as *const c_void,
         MODULE_SIGNATURE_MARKER.as_ptr() as *const c_void,
         marker_len as usize,

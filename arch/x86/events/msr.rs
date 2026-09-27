@@ -19,10 +19,10 @@ enum PerfMsrId {
 
 unsafe extern "C" {
     static mut boot_cpu_data: BootCpuData;
-    static mut msr_mask: ::core::ffi::c_ulong;
+    static mut msr_mask: ::kernel::ffi::c_ulong;
 
     fn boot_cpu_has(feature: u32) -> bool;
-    fn perf_msr_probe(msr: *mut PerfMsr, max: u32, check: bool, data: *mut ::core::ffi::c_void) -> ::core::ffi::c_ulong;
+    fn perf_msr_probe(msr: *mut PerfMsr, max: u32, check: bool, data: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_ulong;
     fn perf_pmu_register(pmu: *mut Pmu, name: *const u8, context: i32) -> i32;
     fn rdtsc_ordered() -> u64;
     fn rdmsrq(msr: u32, value: &mut u64);
@@ -47,7 +47,7 @@ struct Local64 {
 struct PerfMsr {
     msr: u32,
     group: *mut AttributeGroup,
-    test: Option<unsafe extern "C" fn(i32, *mut ::core::ffi::c_void) -> bool>,
+    test: Option<unsafe extern "C" fn(i32, *mut ::kernel::ffi::c_void) -> bool>,
     no_check: bool,
 }
 
@@ -114,11 +114,11 @@ static mut msr: [PerfMsr; PerfMsrId::PerfMsrEventMax as usize] = [
     PerfMsr { msr: MSR_IA32_THERM_STATUS, group: &raw mut group_therm, test: Some(test_therm_status), no_check: false },
 ];
 
-unsafe extern "C" fn test_aperfmperf(_idx: i32, _data: *mut ::core::ffi::c_void) -> bool { boot_cpu_has(X86_FEATURE_APERFMPERF) }
-unsafe extern "C" fn test_ptsc(_idx: i32, _data: *mut ::core::ffi::c_void) -> bool { boot_cpu_has(X86_FEATURE_PTSC) }
-unsafe extern "C" fn test_irperf(_idx: i32, _data: *mut ::core::ffi::c_void) -> bool { boot_cpu_has(X86_FEATURE_IRPERF) }
-unsafe extern "C" fn test_therm_status(_idx: i32, _data: *mut ::core::ffi::c_void) -> bool { boot_cpu_has(X86_FEATURE_DTHERM) }
-unsafe extern "C" fn test_intel(_idx: i32, _data: *mut ::core::ffi::c_void) -> bool {
+unsafe extern "C" fn test_aperfmperf(_idx: i32, _data: *mut ::kernel::ffi::c_void) -> bool { boot_cpu_has(X86_FEATURE_APERFMPERF) }
+unsafe extern "C" fn test_ptsc(_idx: i32, _data: *mut ::kernel::ffi::c_void) -> bool { boot_cpu_has(X86_FEATURE_PTSC) }
+unsafe extern "C" fn test_irperf(_idx: i32, _data: *mut ::kernel::ffi::c_void) -> bool { boot_cpu_has(X86_FEATURE_IRPERF) }
+unsafe extern "C" fn test_therm_status(_idx: i32, _data: *mut ::kernel::ffi::c_void) -> bool { boot_cpu_has(X86_FEATURE_DTHERM) }
+unsafe extern "C" fn test_intel(_idx: i32, _data: *mut ::kernel::ffi::c_void) -> bool {
     if boot_cpu_data.x86_vendor != X86_VENDOR_INTEL { return false; }
     true
 }

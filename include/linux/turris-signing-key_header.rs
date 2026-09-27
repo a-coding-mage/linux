@@ -23,16 +23,16 @@ pub struct turris_signing_key_subtype {
     pub data_size: u8,
     pub sig_size: u8,
     pub public_key_size: u8,
-    pub hash_algo: *const core::ffi::c_char,
+    pub hash_algo: *const kernel::ffi::c_char,
     pub get_public_key: Option<
-        unsafe extern "C" fn(key: *const key) -> *const core::ffi::c_void,
+        unsafe extern "C" fn(key: *const key) -> *const kernel::ffi::c_void,
     >,
     pub sign: Option<
         unsafe extern "C" fn(
             key: *const key,
-            msg: *const core::ffi::c_void,
-            signature: *mut core::ffi::c_void,
-        ) -> core::ffi::c_int,
+            msg: *const kernel::ffi::c_void,
+            signature: *mut kernel::ffi::c_void,
+        ) -> kernel::ffi::c_int,
     >,
 }
 
@@ -51,8 +51,8 @@ unsafe extern "C" {
     pub fn devm_turris_signing_key_create(
         dev: *mut device,
         subtype: *const turris_signing_key_subtype,
-        desc: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        desc: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

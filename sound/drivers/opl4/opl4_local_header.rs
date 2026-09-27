@@ -196,17 +196,17 @@ pub struct opl4_region {
 
 #[repr(C)]
 pub struct opl4_region_ptr {
-    pub count: core::ffi::c_int,
+    pub count: kernel::ffi::c_int,
     pub regions: *const opl4_region,
 }
 
 #[repr(C)]
 pub struct opl4_voice {
     pub list: list_head,
-    pub number: core::ffi::c_int,
+    pub number: kernel::ffi::c_int,
     pub chan: *mut snd_midi_channel,
-    pub note: core::ffi::c_int,
-    pub velocity: core::ffi::c_int,
+    pub note: kernel::ffi::c_int,
+    pub velocity: kernel::ffi::c_int,
     pub sound: *const opl4_sound,
     pub level_direct: u8,
     pub reg_f_number: u8,
@@ -216,24 +216,24 @@ pub struct opl4_voice {
 
 #[repr(C)]
 pub struct snd_opl4 {
-    pub fm_port: core::ffi::c_ulong,
-    pub pcm_port: core::ffi::c_ulong,
+    pub fm_port: kernel::ffi::c_ulong,
+    pub pcm_port: kernel::ffi::c_ulong,
     pub res_fm_port: *mut resource,
     pub res_pcm_port: *mut resource,
-    pub hardware: core::ffi::c_ushort,
+    pub hardware: kernel::ffi::c_ushort,
     pub reg_lock: spinlock_t,
     pub card: *mut snd_card,
 
     /* Present in C when CONFIG_SND_PROC_FS is defined. */
     pub proc_entry: *mut snd_info_entry,
-    pub memory_access: core::ffi::c_int,
+    pub memory_access: kernel::ffi::c_int,
 
     pub access_mutex: mutex,
 
     /* Present in C when IS_ENABLED(CONFIG_SND_SEQUENCER). */
-    pub used: core::ffi::c_int,
-    pub seq_dev_num: core::ffi::c_int,
-    pub seq_client: core::ffi::c_int,
+    pub used: kernel::ffi::c_int,
+    pub seq_dev_num: kernel::ffi::c_int,
+    pub seq_client: kernel::ffi::c_int,
     pub seq_dev: *mut snd_seq_device,
 
     pub chset: *mut snd_midi_channel_set,
@@ -248,66 +248,66 @@ unsafe extern "C" {
     pub fn snd_opl4_read(opl4: *mut snd_opl4, reg: u8) -> u8;
     pub fn snd_opl4_read_memory(
         opl4: *mut snd_opl4,
-        buf: *mut core::ffi::c_char,
-        offset: core::ffi::c_int,
-        size: core::ffi::c_int,
+        buf: *mut kernel::ffi::c_char,
+        offset: kernel::ffi::c_int,
+        size: kernel::ffi::c_int,
     );
     pub fn snd_opl4_write_memory(
         opl4: *mut snd_opl4,
-        buf: *const core::ffi::c_char,
-        offset: core::ffi::c_int,
-        size: core::ffi::c_int,
+        buf: *const kernel::ffi::c_char,
+        offset: kernel::ffi::c_int,
+        size: kernel::ffi::c_int,
     );
 
     /* opl4_mixer.c */
-    pub fn snd_opl4_create_mixer(opl4: *mut snd_opl4) -> core::ffi::c_int;
+    pub fn snd_opl4_create_mixer(opl4: *mut snd_opl4) -> kernel::ffi::c_int;
 
     /*
      * opl4_proc.c
      * In C, these are external declarations when CONFIG_SND_PROC_FS is defined;
      * otherwise static inline functions below provide no-op behavior.
      */
-    pub fn snd_opl4_create_proc(opl4: *mut snd_opl4) -> core::ffi::c_int;
+    pub fn snd_opl4_create_proc(opl4: *mut snd_opl4) -> kernel::ffi::c_int;
     pub fn snd_opl4_free_proc(opl4: *mut snd_opl4);
 
     /* opl4_seq.c */
-    pub static mut volume_boost: core::ffi::c_int;
+    pub static mut volume_boost: kernel::ffi::c_int;
 
     /* opl4_synth.c */
     pub fn snd_opl4_synth_reset(opl4: *mut snd_opl4);
     pub fn snd_opl4_synth_shutdown(opl4: *mut snd_opl4);
     pub fn snd_opl4_note_on(
-        p: *mut core::ffi::c_void,
-        note: core::ffi::c_int,
-        vel: core::ffi::c_int,
+        p: *mut kernel::ffi::c_void,
+        note: kernel::ffi::c_int,
+        vel: kernel::ffi::c_int,
         chan: *mut snd_midi_channel,
     );
     pub fn snd_opl4_note_off(
-        p: *mut core::ffi::c_void,
-        note: core::ffi::c_int,
-        vel: core::ffi::c_int,
+        p: *mut kernel::ffi::c_void,
+        note: kernel::ffi::c_int,
+        vel: kernel::ffi::c_int,
         chan: *mut snd_midi_channel,
     );
     pub fn snd_opl4_terminate_note(
-        p: *mut core::ffi::c_void,
-        note: core::ffi::c_int,
+        p: *mut kernel::ffi::c_void,
+        note: kernel::ffi::c_int,
         chan: *mut snd_midi_channel,
     );
     pub fn snd_opl4_control(
-        p: *mut core::ffi::c_void,
-        type_: core::ffi::c_int,
+        p: *mut kernel::ffi::c_void,
+        type_: kernel::ffi::c_int,
         chan: *mut snd_midi_channel,
     );
     pub fn snd_opl4_sysex(
-        p: *mut core::ffi::c_void,
-        buf: *mut core::ffi::c_uchar,
-        len: core::ffi::c_int,
-        parsed: core::ffi::c_int,
+        p: *mut kernel::ffi::c_void,
+        buf: *mut kernel::ffi::c_uchar,
+        len: kernel::ffi::c_int,
+        parsed: kernel::ffi::c_int,
         chset: *mut snd_midi_channel_set,
     );
 
     /* yrw801.c */
-    pub fn snd_yrw801_detect(opl4: *mut snd_opl4) -> core::ffi::c_int;
+    pub fn snd_yrw801_detect(opl4: *mut snd_opl4) -> kernel::ffi::c_int;
     pub static snd_yrw801_regions: [opl4_region_ptr; 0];
 }
 
@@ -317,7 +317,7 @@ unsafe extern "C" {
  * static inline void snd_opl4_free_proc(struct snd_opl4 *opl4) {}
  */
 #[inline]
-pub unsafe fn snd_opl4_create_proc_noop(_opl4: *mut snd_opl4) -> core::ffi::c_int {
+pub unsafe fn snd_opl4_create_proc_noop(_opl4: *mut snd_opl4) -> kernel::ffi::c_int {
     0
 }
 

@@ -159,13 +159,13 @@ unsafe fn xen_hvm_guest_init() {
     { machine_ops.crash_shutdown = xen_hvm_crash_shutdown; }
 }
 
-unsafe fn xen_parse_nopv(_arg: *mut ::core::ffi::c_char) -> i32 {
+unsafe fn xen_parse_nopv(_arg: *mut ::kernel::ffi::c_char) -> i32 {
     pr_notice!("\"xen_nopv\" is deprecated, please use \"nopv\" instead\n");
     if xen_cpuid_base() != 0 { nopv = true; }
     0
 }
 
-unsafe fn xen_parse_no_vector_callback(_arg: *mut ::core::ffi::c_char) -> i32 {
+unsafe fn xen_parse_no_vector_callback(_arg: *mut ::kernel::ffi::c_char) -> i32 {
     xen_have_vector_callback = false;
     0
 }

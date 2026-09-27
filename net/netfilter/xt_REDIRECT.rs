@@ -13,12 +13,12 @@
 unsafe extern "C" {
     fn nf_nat_redirect_ipv6(
         skb: *mut sk_buff,
-        targinfo: *const core::ffi::c_void,
+        targinfo: *const kernel::ffi::c_void,
         hooknum: u8,
     ) -> u32;
     fn nf_ct_netns_get(net: *mut net, family: u8) -> i32;
     fn nf_ct_netns_put(net: *mut net, family: u8);
-    fn pr_info_ratelimited(fmt: *const core::ffi::c_char, ...);
+    fn pr_info_ratelimited(fmt: *const kernel::ffi::c_char, ...);
     fn nf_nat_redirect_ipv4(
         skb: *mut sk_buff,
         range: *const nf_nat_range2,
@@ -67,12 +67,12 @@ struct nf_nat_proto_range {
 
 #[repr(C)]
 struct xt_action_param {
-    targinfo: *const core::ffi::c_void,
+    targinfo: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 struct xt_tgchk_param {
-    targinfo: *const core::ffi::c_void,
+    targinfo: *const kernel::ffi::c_void,
     net: *mut net,
     family: u8,
 }
@@ -92,10 +92,10 @@ struct module;
 
 #[repr(C)]
 struct xt_target {
-    name: [core::ffi::c_char; 29],
+    name: [kernel::ffi::c_char; 29],
     revision: u8,
     family: u8,
-    table: *const core::ffi::c_char,
+    table: *const kernel::ffi::c_char,
     checkentry: Option<unsafe extern "C" fn(*const xt_tgchk_param) -> i32>,
     destroy: Option<unsafe extern "C" fn(*const xt_tgdtor_param)>,
     target: Option<unsafe extern "C" fn(*mut sk_buff, *const xt_action_param) -> u32>,

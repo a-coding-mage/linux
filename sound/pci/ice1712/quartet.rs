@@ -12,7 +12,7 @@
 // linux/string.h, sound/core.h, sound/tlv.h, sound/info.h,
 // ice1712.h, envy24ht.h, sound/ak4113.h, quartet.h.
 
-use core::ffi::{c_char, c_int, c_uint, c_uchar, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_uchar, c_void};
 
 #[repr(C)]
 pub struct qtet_spec {
@@ -1298,6 +1298,6 @@ pub struct mutex {
 }
 
 #[allow(non_camel_case_types)]
-type c_long = core::ffi::c_long;
+type c_long = kernel::ffi::c_long;
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

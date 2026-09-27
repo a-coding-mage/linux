@@ -35,7 +35,7 @@ macro_rules! assert {
                     c"%s".as_ptr(),
                     line!() as core::ffi::c_int,
                     c"%s".as_ptr(),
-                    stringify!($expr).as_ptr(),
+                    concat!(stringify!($expr), "\0").as_ptr(),
                 );
                 abort();
             }

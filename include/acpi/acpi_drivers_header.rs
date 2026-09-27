@@ -46,16 +46,16 @@ pub const ACPI_FIXED_HARDWARE_EVENT: u32 = 0x100;
 /* ACPI PCI Interrupt Link */
 
 extern "C" {
-    pub fn acpi_irq_penalty_init() -> ::core::ffi::c_int;
+    pub fn acpi_irq_penalty_init() -> ::kernel::ffi::c_int;
     pub fn acpi_pci_link_allocate_irq(
         handle: acpi_handle,
-        index: ::core::ffi::c_int,
-        triggering: *mut ::core::ffi::c_int,
-        polarity: *mut ::core::ffi::c_int,
-        name: *mut *mut ::core::ffi::c_char,
+        index: ::kernel::ffi::c_int,
+        triggering: *mut ::kernel::ffi::c_int,
+        polarity: *mut ::kernel::ffi::c_int,
+        name: *mut *mut ::kernel::ffi::c_char,
         gsi: *mut u32,
-    ) -> ::core::ffi::c_int;
-    pub fn acpi_pci_link_free_irq(handle: acpi_handle) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn acpi_pci_link_free_irq(handle: acpi_handle) -> ::kernel::ffi::c_int;
 }
 
 /* ACPI PCI Device Binding */
@@ -102,12 +102,12 @@ pub fn pci_acpi_crs_quirks() {}
 
 #[cfg(CONFIG_ACPI_DOCK)]
 extern "C" {
-    pub fn is_dock_device(adev: *mut acpi_device) -> ::core::ffi::c_int;
+    pub fn is_dock_device(adev: *mut acpi_device) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_ACPI_DOCK))]
 #[inline]
-pub fn is_dock_device(_adev: *mut acpi_device) -> ::core::ffi::c_int {
+pub fn is_dock_device(_adev: *mut acpi_device) -> ::kernel::ffi::c_int {
     0
 }
 

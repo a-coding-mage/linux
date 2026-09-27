@@ -8,14 +8,14 @@
 // C dependencies: <linux/time.h>, <sound/core.h>, <sound/emu10k1.h>
 
 pub unsafe extern "C" fn snd_emu10k1_interrupt(
-    irq: ::core::ffi::c_int,
-    dev_id: *mut ::core::ffi::c_void,
+    irq: ::kernel::ffi::c_int,
+    dev_id: *mut ::kernel::ffi::c_void,
 ) -> irqreturn_t {
     let emu: *mut snd_emu10k1 = dev_id as *mut snd_emu10k1;
-    let mut status: ::core::ffi::c_uint;
-    let mut orig_status: ::core::ffi::c_uint;
-    let mut handled: ::core::ffi::c_int = 0;
-    let mut timeout: ::core::ffi::c_int = 0;
+    let mut status: ::kernel::ffi::c_uint;
+    let mut orig_status: ::kernel::ffi::c_uint;
+    let mut handled: ::kernel::ffi::c_int = 0;
+    let mut timeout: ::kernel::ffi::c_int = 0;
 
     loop {
         status = inl((*emu).port + IPR);
@@ -27,7 +27,7 @@ pub unsafe extern "C" fn snd_emu10k1_interrupt(
         if (status & 0xffffffff) == 0xffffffff {
             dev_info(
                 (*(*emu).card).dev,
-                b"Suspected sound card removal\n\0".as_ptr() as *const ::core::ffi::c_char,
+                b"Suspected sound card removal\n\0".as_ptr() as *const ::kernel::ffi::c_char,
             );
             break;
         }
@@ -35,7 +35,7 @@ pub unsafe extern "C" fn snd_emu10k1_interrupt(
         if timeout == 1000 {
             dev_info(
                 (*(*emu).card).dev,
-                b"emu10k1 irq routine failure\n\0".as_ptr() as *const ::core::ffi::c_char,
+                b"emu10k1 irq routine failure\n\0".as_ptr() as *const ::kernel::ffi::c_char,
             );
             break;
         }
@@ -43,7 +43,7 @@ pub unsafe extern "C" fn snd_emu10k1_interrupt(
         if (status & IPR_PCIERROR) != 0 {
             dev_err(
                 (*(*emu).card).dev,
-                b"interrupt: PCI error\n\0".as_ptr() as *const ::core::ffi::c_char,
+                b"interrupt: PCI error\n\0".as_ptr() as *const ::kernel::ffi::c_char,
             );
             snd_emu10k1_intr_disable(emu, INTE_PCIERRORENABLE);
             status &= !IPR_PCIERROR;
@@ -61,9 +61,9 @@ pub unsafe extern "C" fn snd_emu10k1_interrupt(
         }
         if (status & IPR_CHANNELLOOP) != 0 {
             let mut pvoice: *mut snd_emu10k1_voice;
-            let mut voice: ::core::ffi::c_int;
-            let voice_max: ::core::ffi::c_int =
-                (status & IPR_CHANNELNUMBERMASK) as ::core::ffi::c_int;
+            let mut voice: ::kernel::ffi::c_int;
+            let voice_max: ::kernel::ffi::c_int =
+                (status & IPR_CHANNELNUMBERMASK) as ::kernel::ffi::c_int;
             let mut val: u32;
 
             val = snd_emu10k1_ptr_read(emu, CLIPL, 0);
@@ -194,7 +194,7 @@ pub unsafe extern "C" fn snd_emu10k1_interrupt(
         if status != 0 {
             dev_err(
                 (*(*emu).card).dev,
-                b"unhandled interrupt: 0x%08x\n\0".as_ptr() as *const ::core::ffi::c_char,
+                b"unhandled interrupt: 0x%08x\n\0".as_ptr() as *const ::kernel::ffi::c_char,
                 status,
             );
         }

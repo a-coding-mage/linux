@@ -7,7 +7,7 @@
  */
 
 // Dependency supplied by rust_binder.h in the C source.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub static binder_command_strings: [*const c_char; 22] = [
     b"BC_TRANSACTION\0".as_ptr() as *const c_char,

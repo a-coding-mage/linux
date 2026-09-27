@@ -10,34 +10,34 @@
 #[repr(C)]
 pub struct MmpPmDomain {
     pub genpd: GenericPmDomain,
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub lock: *mut Spinlock,
     pub power_on: u32,
     pub reset: u32,
     pub clock_enable: u32,
-    pub flags: core::ffi::c_uint,
+    pub flags: kernel::ffi::c_uint,
 }
 
 // C build-time definitions supplied by the surrounding source tree.
 extern "C" {
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn spin_lock_irqsave(lock: *mut Spinlock, flags: *mut core::ffi::c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut Spinlock, flags: core::ffi::c_ulong);
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn spin_lock_irqsave(lock: *mut Spinlock, flags: *mut kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut Spinlock, flags: kernel::ffi::c_ulong);
     fn pm_genpd_init(
         genpd: *mut GenericPmDomain,
-        gov: *mut core::ffi::c_void,
+        gov: *mut kernel::ffi::c_void,
         is_off: bool,
     );
     fn kzalloc_obj<T>() -> *mut T;
-    fn err_ptr(error: core::ffi::c_long) -> *mut GenericPmDomain;
+    fn err_ptr(error: kernel::ffi::c_long) -> *mut GenericPmDomain;
 }
 
 #[repr(C)]
 pub struct GenericPmDomain {
-    pub name: *const core::ffi::c_char,
-    pub power_on: Option<unsafe extern "C" fn(*mut GenericPmDomain) -> core::ffi::c_int>,
-    pub power_off: Option<unsafe extern "C" fn(*mut GenericPmDomain) -> core::ffi::c_int>,
+    pub name: *const kernel::ffi::c_char,
+    pub power_on: Option<unsafe extern "C" fn(*mut GenericPmDomain) -> kernel::ffi::c_int>,
+    pub power_off: Option<unsafe extern "C" fn(*mut GenericPmDomain) -> kernel::ffi::c_int>,
 }
 
 #[repr(C)]
@@ -45,7 +45,7 @@ pub struct Spinlock {
     _private: [u8; 0],
 }
 
-pub const MMP_PM_DOMAIN_NO_DISABLE: core::ffi::c_uint = 1 << 0;
+pub const MMP_PM_DOMAIN_NO_DISABLE: kernel::ffi::c_uint = 1 << 0;
 
 unsafe fn to_mmp_pm_domain(genpd: *mut GenericPmDomain) -> *mut MmpPmDomain {
     genpd.cast::<u8>().sub(core::mem::offset_of!(MmpPmDomain, genpd)).cast()
@@ -53,9 +53,9 @@ unsafe fn to_mmp_pm_domain(genpd: *mut GenericPmDomain) -> *mut MmpPmDomain {
 
 unsafe extern "C" fn mmp_pm_domain_power_on(
     genpd: *mut GenericPmDomain,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let pm_domain = to_mmp_pm_domain(genpd);
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let mut val: u32;
 
     if !(*pm_domain).lock.is_null() {
@@ -97,9 +97,9 @@ unsafe extern "C" fn mmp_pm_domain_power_on(
 
 unsafe extern "C" fn mmp_pm_domain_power_off(
     genpd: *mut GenericPmDomain,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let pm_domain = to_mmp_pm_domain(genpd);
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let mut val: u32;
 
     if (*pm_domain).flags & MMP_PM_DOMAIN_NO_DISABLE != 0 {
@@ -124,12 +124,12 @@ unsafe extern "C" fn mmp_pm_domain_power_off(
 }
 
 pub unsafe extern "C" fn mmp_pm_domain_register(
-    name: *const core::ffi::c_char,
-    reg: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    reg: *mut kernel::ffi::c_void,
     power_on: u32,
     reset: u32,
     clock_enable: u32,
-    flags: core::ffi::c_uint,
+    flags: kernel::ffi::c_uint,
     lock: *mut Spinlock,
 ) -> *mut GenericPmDomain {
     let pm_domain = kzalloc_obj::<MmpPmDomain>();

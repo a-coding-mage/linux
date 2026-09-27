@@ -16,8 +16,8 @@
 // translation unit's normal single-definition semantics.
 
 unsafe extern "C" {
-    pub static mut __stack_chk_guard: libc::c_ulong;
-    pub fn get_random_canary() -> libc::c_ulong;
+    pub static mut __stack_chk_guard: kernel::ffi::c_ulong;
+    pub fn get_random_canary() -> kernel::ffi::c_ulong;
 }
 
 /*
@@ -28,7 +28,7 @@ unsafe extern "C" {
  */
 #[inline(always)]
 pub unsafe fn boot_init_stack_canary() {
-    let canary: libc::c_ulong = unsafe { get_random_canary() };
+    let canary: kernel::ffi::c_ulong = unsafe { get_random_canary() };
 
     // `current->stack_canary = canary;` requires the kernel's external
     // `current` task pointer and its task_struct definition.

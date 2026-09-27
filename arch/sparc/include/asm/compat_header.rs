@@ -77,8 +77,8 @@ pub struct compat_ipc64_perm {
     pub mode: compat_mode_t,
     pub __pad2: u16,
     pub seq: u16,
-    pub __unused1: core::ffi::c_ulong,
-    pub __unused2: core::ffi::c_ulong,
+    pub __unused1: kernel::ffi::c_ulong,
+    pub __unused2: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]

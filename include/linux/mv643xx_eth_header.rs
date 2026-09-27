@@ -90,9 +90,9 @@ pub struct mv643xx_eth_platform_data {
      * and sufficient to contain all descriptors for the requested
      * ring sizes.
      */
-    pub rx_sram_addr: ::core::ffi::c_ulong,
+    pub rx_sram_addr: ::kernel::ffi::c_ulong,
     pub rx_sram_size: i32,
-    pub tx_sram_addr: ::core::ffi::c_ulong,
+    pub tx_sram_addr: ::kernel::ffi::c_ulong,
     pub tx_sram_size: i32,
 }
 

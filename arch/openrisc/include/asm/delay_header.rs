@@ -12,6 +12,6 @@
 
 // Dependency equivalent of: #include <asm-generic/delay.h>
 
-pub static mut loops_per_jiffy: core::ffi::c_ulong;
+pub static mut loops_per_jiffy: kernel::ffi::c_ulong;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

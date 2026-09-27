@@ -88,7 +88,7 @@ pub const NUMREGBYTES: usize = (regnames::GDB_Y as usize + 1) * 8;
 pub struct pt_regs;
 
 extern "C" {
-    pub fn kgdb_trap(trap_level: libc::c_ulong, regs: *mut pt_regs);
+    pub fn kgdb_trap(trap_level: kernel::ffi::c_ulong, regs: *mut pt_regs);
     pub fn arch_kgdb_breakpoint();
 }
 

@@ -77,7 +77,7 @@ pub const SCAN_STATUS: &[(ScanStatus, &str)] = &[
 // struct mm_struct, struct folio, struct file, and pgoff_t are external Linux types.
 #[repr(C)]
 pub struct MmKhugepagedScanPmd {
-    pub mm: *mut core::ffi::c_void,
+    pub mm: *mut kernel::ffi::c_void,
     pub pfn: u64,
     pub referenced: i32,
     pub none_or_zero: i32,
@@ -86,17 +86,17 @@ pub struct MmKhugepagedScanPmd {
 }
 
 #[repr(C)]
-pub struct MmCollapseHugePage { pub mm: *mut core::ffi::c_void, pub isolated: i32, pub status: i32, pub order: u32 }
+pub struct MmCollapseHugePage { pub mm: *mut kernel::ffi::c_void, pub isolated: i32, pub status: i32, pub order: u32 }
 #[repr(C)]
 pub struct MmCollapseHugePageIsolate { pub pfn: u64, pub none_or_zero: i32, pub referenced: i32, pub status: i32, pub order: u32 }
 #[repr(C)]
-pub struct MmCollapseHugePageSwapin { pub mm: *mut core::ffi::c_void, pub swapped_in: i32, pub referenced: i32, pub ret: i32, pub order: u32 }
+pub struct MmCollapseHugePageSwapin { pub mm: *mut kernel::ffi::c_void, pub swapped_in: i32, pub referenced: i32, pub ret: i32, pub order: u32 }
 #[repr(C)]
-pub struct MmKhugepagedScanFile { pub mm: *mut core::ffi::c_void, pub pfn: u64, pub filename: *const core::ffi::c_char, pub present: i32, pub swap: i32, pub result: i32 }
+pub struct MmKhugepagedScanFile { pub mm: *mut kernel::ffi::c_void, pub pfn: u64, pub filename: *const kernel::ffi::c_char, pub present: i32, pub swap: i32, pub result: i32 }
 #[repr(C)]
-pub struct MmKhugepagedCollapseFile { pub mm: *mut core::ffi::c_void, pub hpfn: u64, pub index: isize, pub addr: u64, pub is_shmem: bool, pub filename: *const core::ffi::c_char, pub nr: i32, pub result: i32 }
+pub struct MmKhugepagedCollapseFile { pub mm: *mut kernel::ffi::c_void, pub hpfn: u64, pub index: isize, pub addr: u64, pub is_shmem: bool, pub filename: *const kernel::ffi::c_char, pub nr: i32, pub result: i32 }
 #[repr(C)]
-pub struct MmKhugepagedScan { pub mm: *mut core::ffi::c_void, pub progress: u32, pub full_scan_finished: bool }
+pub struct MmKhugepagedScan { pub mm: *mut kernel::ffi::c_void, pub progress: u32, pub full_scan_finished: bool }
 
 // TRACE_EVENT declarations:
 // mm_khugepaged_scan_pmd(mm, folio, referenced, none_or_zero, status, unmapped)

@@ -6,7 +6,7 @@ pub const XT_MAX_COMMENT_LEN: usize = 256;
 
 #[repr(C)]
 pub struct xt_comment_info {
-    pub comment: [core::ffi::c_char; XT_MAX_COMMENT_LEN],
+    pub comment: [kernel::ffi::c_char; XT_MAX_COMMENT_LEN],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

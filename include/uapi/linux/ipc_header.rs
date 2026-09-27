@@ -52,7 +52,7 @@ pub const IPC_64: u32 = 0x0100;
 #[repr(C)]
 pub struct ipc_kludge {
     pub msgp: *mut msgbuf,
-    pub msgtyp: ::core::ffi::c_long,
+    pub msgtyp: ::kernel::ffi::c_long,
 }
 
 pub const SEMOP: u32 = 1;

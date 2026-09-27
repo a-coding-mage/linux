@@ -33,7 +33,7 @@ const MEN_Z127_DB_MAX_US: u32 = 0xffff * MEN_Z127_DB_MIN_US;
 #[repr(C)]
 pub struct men_z127_gpio {
     pub chip: gpio_generic_chip,
-    pub reg_base: *mut core::ffi::c_void,
+    pub reg_base: *mut kernel::ffi::c_void,
     pub mem: *mut resource,
 }
 
@@ -65,22 +65,22 @@ extern "C" {
     fn fls(x: u32) -> u32;
     fn roundup(x: u32, y: u32) -> u32;
     fn rounddown(x: u32, y: u32) -> u32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
     fn pinconf_to_config_param(config: usize) -> pin_config_param;
     fn pinconf_to_config_argument(config: usize) -> u32;
     fn mcb_release_mem(res: *mut resource);
-    fn mcb_request_mem(mdev: *mut mcb_device, name: *const core::ffi::c_char) -> *mut resource;
-    fn dev_name(dev: *mut device) -> *const core::ffi::c_char;
+    fn mcb_request_mem(mdev: *mut mcb_device, name: *const kernel::ffi::c_char) -> *mut resource;
+    fn dev_name(dev: *mut device) -> *const kernel::ffi::c_char;
     fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut men_z127_gpio;
-    fn devm_add_action_or_reset(dev: *mut device, action: unsafe extern "C" fn(*mut core::ffi::c_void), data: *mut core::ffi::c_void) -> i32;
-    fn devm_ioremap(dev: *mut device, start: usize, size: usize) -> *mut core::ffi::c_void;
+    fn devm_add_action_or_reset(dev: *mut device, action: unsafe extern "C" fn(*mut kernel::ffi::c_void), data: *mut kernel::ffi::c_void) -> i32;
+    fn devm_ioremap(dev: *mut device, start: usize, size: usize) -> *mut kernel::ffi::c_void;
     fn resource_size(res: *mut resource) -> usize;
     fn mcb_set_drvdata(mdev: *mut mcb_device, data: *mut men_z127_gpio);
     fn gpio_generic_chip_init(chip: *mut gpio_generic_chip, config: *mut gpio_generic_chip_config) -> i32;
     fn devm_gpiochip_add_data(dev: *mut device, gc: *mut gpio_chip, data: *mut men_z127_gpio) -> i32;
-    fn dev_err_probe(dev: *mut device, err: i32, fmt: *const core::ffi::c_char, ... ) -> i32;
+    fn dev_err_probe(dev: *mut device, err: i32, fmt: *const kernel::ffi::c_char, ... ) -> i32;
 }
 
 unsafe fn men_z127_debounce(gc: *mut gpio_chip, gpio: u32, mut debounce: u32) -> i32 {
@@ -98,7 +98,7 @@ unsafe fn men_z127_debounce(gc: *mut gpio_chip, gpio: u32, mut debounce: u32) ->
         debounce /= 50;
     }
     // Corresponds to guard(gpio_generic_lock)(&priv_->chip).
-    let db_en_addr = (priv_.reg_base as *mut u8).add(MEN_Z127_DBER) as *mut core::ffi::c_void;
+    let db_en_addr = (priv_.reg_base as *mut u8).add(MEN_Z127_DBER) as *mut kernel::ffi::c_void;
     let mut db_en = readl(db_en_addr);
     let db_cnt;
     if debounce == 0 { db_en &= !(1 << gpio); db_cnt = 0; }
@@ -125,7 +125,7 @@ unsafe extern "C" fn men_z127_set_config(gc: *mut gpio_chip, offset: u32, config
     }
 }
 
-unsafe extern "C" fn men_z127_release_mem(data: *mut core::ffi::c_void) { mcb_release_mem(data as *mut resource); }
+unsafe extern "C" fn men_z127_release_mem(data: *mut kernel::ffi::c_void) { mcb_release_mem(data as *mut resource); }
 
 unsafe extern "C" fn men_z127_probe(mdev: *mut mcb_device, _id: *const mcb_device_id) -> i32 {
     let dev = &mut (*mdev).dev as *mut device;

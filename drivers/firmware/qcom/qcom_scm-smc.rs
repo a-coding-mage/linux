@@ -10,7 +10,7 @@
 
 #[repr(C)]
 pub struct arm_smccc_args {
-    pub args: [core::ffi::c_ulong; 8],
+    pub args: [kernel::ffi::c_ulong; 8],
 }
 
 static mut qcom_scm_lock: DEFINE_MUTEX_TYPE = DEFINE_MUTEX!();
@@ -72,7 +72,7 @@ unsafe fn fill_wq_resume_args(resume: *mut arm_smccc_args, smc_call_ctx: u32) {
     );
 
     (*resume).args[1] = QCOM_SCM_ARGS(1);
-    (*resume).args[2] = smc_call_ctx as core::ffi::c_ulong;
+    (*resume).args[2] = smc_call_ctx as kernel::ffi::c_ulong;
 }
 
 pub unsafe fn scm_get_wq_ctx(

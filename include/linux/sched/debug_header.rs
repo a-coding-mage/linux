@@ -15,12 +15,12 @@ pub struct pid_namespace {
 }
 
 unsafe extern "C" {
-    pub fn dump_cpu_task(cpu: ::core::ffi::c_int);
+    pub fn dump_cpu_task(cpu: ::kernel::ffi::c_int);
 
     /*
      * Only dump TASK_* tasks. (0 for all tasks)
      */
-    pub fn show_state_filter(state_filter: ::core::ffi::c_uint);
+    pub fn show_state_filter(state_filter: ::kernel::ffi::c_uint);
 }
 
 #[inline]
@@ -47,8 +47,8 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn show_stack(
         task: *mut task_struct,
-        sp: *mut ::core::ffi::c_ulong,
-        loglvl: *const ::core::ffi::c_char,
+        sp: *mut ::kernel::ffi::c_ulong,
+        loglvl: *const ::kernel::ffi::c_char,
     );
 
     pub fn sched_show_task(p: *mut task_struct);
@@ -73,13 +73,13 @@ unsafe extern "C" {
 
 /* Linker adds these: start and end of __sched functions */
 unsafe extern "C" {
-    pub static mut __sched_text_start: ::core::ffi::c_char;
-    pub static mut __sched_text_end: ::core::ffi::c_char;
+    pub static mut __sched_text_start: ::kernel::ffi::c_char;
+    pub static mut __sched_text_end: ::kernel::ffi::c_char;
 }
 
 /* Is this address in the __sched functions? */
 unsafe extern "C" {
-    pub fn in_sched_functions(addr: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn in_sched_functions(addr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

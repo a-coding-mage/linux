@@ -19,7 +19,7 @@ unsafe fn bridge_platform_create(nasid: nasid_t, widget: i32, masterwid: i32) {
     let mut pdev_wd: *mut platform_device;
     let mut pdev_bd: *mut platform_device;
     let mut w1_res: resource = core::mem::zeroed();
-    let offset: libc::c_ulong = NODE_OFFSET(nasid);
+    let offset: kernel::ffi::c_ulong = NODE_OFFSET(nasid);
 
     wd = kzalloc_obj::<sgi_w1_platform_data>();
     if wd.is_null() {
@@ -28,9 +28,9 @@ unsafe fn bridge_platform_create(nasid: nasid_t, widget: i32, masterwid: i32) {
     }
 
     snprintf((*wd).dev_id.as_mut_ptr(), core::mem::size_of_val(&(*wd).dev_id),
-             "bridge-%012lx", offset + ((widget as libc::c_ulong) << SWIN_SIZE_BITS));
+             "bridge-%012lx", offset + ((widget as kernel::ffi::c_ulong) << SWIN_SIZE_BITS));
 
-    w1_res.start = offset + ((widget as libc::c_ulong) << SWIN_SIZE_BITS)
+    w1_res.start = offset + ((widget as kernel::ffi::c_ulong) << SWIN_SIZE_BITS)
         + core::mem::offset_of!(bridge_regs, b_nic);
     w1_res.end = w1_res.start + 3;
     w1_res.flags = IORESOURCE_MEM;
@@ -81,13 +81,13 @@ unsafe fn bridge_platform_create(nasid: nasid_t, widget: i32, masterwid: i32) {
     (*bd).nasid = nasid;
     (*bd).masterwid = masterwid;
     (*bd).mem.name = "Bridge PCI MEM";
-    (*bd).mem.start = offset + ((widget as libc::c_ulong) << SWIN_SIZE_BITS) + BRIDGE_DEVIO0;
-    (*bd).mem.end = offset + ((widget as libc::c_ulong) << SWIN_SIZE_BITS) + SWIN_SIZE - 1;
+    (*bd).mem.start = offset + ((widget as kernel::ffi::c_ulong) << SWIN_SIZE_BITS) + BRIDGE_DEVIO0;
+    (*bd).mem.end = offset + ((widget as kernel::ffi::c_ulong) << SWIN_SIZE_BITS) + SWIN_SIZE - 1;
     (*bd).mem.flags = IORESOURCE_MEM;
     (*bd).mem_offset = offset;
     (*bd).io.name = "Bridge PCI IO";
-    (*bd).io.start = offset + ((widget as libc::c_ulong) << SWIN_SIZE_BITS) + BRIDGE_DEVIO0;
-    (*bd).io.end = offset + ((widget as libc::c_ulong) << SWIN_SIZE_BITS) + SWIN_SIZE - 1;
+    (*bd).io.start = offset + ((widget as kernel::ffi::c_ulong) << SWIN_SIZE_BITS) + BRIDGE_DEVIO0;
+    (*bd).io.end = offset + ((widget as kernel::ffi::c_ulong) << SWIN_SIZE_BITS) + SWIN_SIZE - 1;
     (*bd).io.flags = IORESOURCE_IO;
     (*bd).io_offset = offset;
 

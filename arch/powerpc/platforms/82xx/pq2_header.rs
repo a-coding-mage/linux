@@ -3,18 +3,18 @@
 // `CONFIG_PCI` is represented as the Rust feature `CONFIG_PCI`.
 
 extern "C" {
-    pub fn pq2_restart(cmd: *mut core::ffi::c_char) -> !;
+    pub fn pq2_restart(cmd: *mut kernel::ffi::c_char) -> !;
 }
 
 #[cfg(CONFIG_PCI)]
 extern "C" {
-    pub fn pq2ads_pci_init_irq() -> core::ffi::c_int;
+    pub fn pq2ads_pci_init_irq() -> kernel::ffi::c_int;
     pub fn pq2_init_pci();
 }
 
 #[cfg(not(CONFIG_PCI))]
 #[inline]
-pub fn pq2ads_pci_init_irq() -> core::ffi::c_int {
+pub fn pq2ads_pci_init_irq() -> kernel::ffi::c_int {
     0
 }
 

@@ -61,11 +61,11 @@ pub struct nft_expr_ops {
 #[repr(C)]
 pub struct nft_expr_type {
     pub family: u32,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const nft_expr_ops,
-    pub policy: *const core::ffi::c_void,
+    pub policy: *const kernel::ffi::c_void,
     pub maxattr: u32,
-    pub owner: *mut core::ffi::c_void,
+    pub owner: *mut kernel::ffi::c_void,
 }
 
 const NFT_BREAK: i32 = 0;
@@ -136,7 +136,7 @@ unsafe extern "C" fn nft_fib_netdev_validate(
 
 static mut nft_fib_netdev_type: nft_expr_type = nft_expr_type {
     family: NFPROTO_NETDEV,
-    name: b"fib\0".as_ptr() as *const core::ffi::c_char,
+    name: b"fib\0".as_ptr() as *const kernel::ffi::c_char,
     ops: core::ptr::addr_of!(nft_fib_netdev_ops),
     policy: core::ptr::null(),
     maxattr: NFTA_FIB_MAX,

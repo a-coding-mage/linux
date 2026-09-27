@@ -20,13 +20,13 @@
 /* Following declarations are specific to this NUMA platform. */
 #[cfg(CONFIG_NUMA)]
 extern "C" {
-    pub static mut numa_cpu_lookup_table: *mut ::core::ffi::c_int;
+    pub static mut numa_cpu_lookup_table: *mut ::kernel::ffi::c_int;
     pub static mut node_to_cpumask_map: *mut cpumask_var_t;
 }
 
 #[cfg(all(CONFIG_NUMA, CONFIG_MEMORY_HOTPLUG))]
 extern "C" {
-    pub static mut max_pfn: ::core::ffi::c_ulong;
+    pub static mut max_pfn: ::kernel::ffi::c_ulong;
     pub fn memory_hotplug_max() -> u64;
     pub fn hot_add_drconf_memory_max() -> u64;
 }

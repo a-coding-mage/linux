@@ -31,7 +31,7 @@ extern "C" {
     fn irq_set_chained_handler(virq: i32, handler: unsafe extern "C" fn(*mut irq_desc));
     fn cpuhp_setup_state(
         state: u32,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         startup: unsafe extern "C" fn(u32) -> i32,
         teardown: Option<unsafe extern "C" fn(u32) -> i32>,
     ) -> i32;
@@ -118,7 +118,7 @@ pub unsafe extern "C" fn sbi_ipi_init() {
      */
     cpuhp_setup_state(
         CPUHP_AP_IRQ_RISCV_SBI_IPI_STARTING,
-        b"irqchip/sbi-ipi:starting\\0".as_ptr() as *const core::ffi::c_char,
+        b"irqchip/sbi-ipi:starting\\0".as_ptr() as *const kernel::ffi::c_char,
         sbi_ipi_starting_cpu,
         None,
     );

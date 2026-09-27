@@ -28,10 +28,10 @@ pub const KARATSUBA_THRESHOLD: usize = 16;
 // Build-time configurations defining a smaller value must use 2 instead.
 
 pub type mpi_ptr_t = *mut mpi_limb_t; /* pointer to a limb */
-pub type mpi_size_t = libc::c_int; /* must be a signed type */
+pub type mpi_size_t = kernel::ffi::c_int; /* must be a signed type */
 
 #[inline]
-pub unsafe fn RESIZE_IF_NEEDED(a: MPI, b: libc::c_uint) -> libc::c_int {
+pub unsafe fn RESIZE_IF_NEEDED(a: MPI, b: kernel::ffi::c_uint) -> kernel::ffi::c_int {
     if (*a).alloced < b {
         mpi_resize(a, b)
     } else {
@@ -65,7 +65,7 @@ macro_rules! MPN_COPY_DECR {
 #[macro_export]
 macro_rules! MPN_ZERO {
     ($d:expr, $n:expr) => {{
-        let mut _i: libc::c_int = 0;
+        let mut _i: kernel::ffi::c_int = 0;
         while _i < $n {
             *$d.add(_i as usize) = 0;
             _i += 1;
@@ -127,9 +127,9 @@ macro_rules! UDIV_QRNND_PREINV {
 }
 
 extern "C" {
-    pub fn mpi_alloc_limb_space(nlimbs: libc::c_uint) -> mpi_ptr_t;
+    pub fn mpi_alloc_limb_space(nlimbs: kernel::ffi::c_uint) -> mpi_ptr_t;
     pub fn mpi_free_limb_space(a: mpi_ptr_t);
-    pub fn mpi_assign_limb_space(a: MPI, ap: mpi_ptr_t, nlimbs: libc::c_uint);
+    pub fn mpi_assign_limb_space(a: MPI, ap: mpi_ptr_t, nlimbs: kernel::ffi::c_uint);
 
     pub fn mpihelp_add_1(res_ptr: mpi_ptr_t, s1_ptr: mpi_ptr_t, s1_size: mpi_size_t, s2_limb: mpi_limb_t) -> mpi_limb_t;
     pub fn mpihelp_add_n(res_ptr: mpi_ptr_t, s1_ptr: mpi_ptr_t, s2_ptr: mpi_ptr_t, size: mpi_size_t) -> mpi_limb_t;
@@ -137,21 +137,21 @@ extern "C" {
     pub fn mpihelp_sub_1(res_ptr: mpi_ptr_t, s1_ptr: mpi_ptr_t, s1_size: mpi_size_t, s2_limb: mpi_limb_t) -> mpi_limb_t;
     pub fn mpihelp_sub_n(res_ptr: mpi_ptr_t, s1_ptr: mpi_ptr_t, s2_ptr: mpi_ptr_t, size: mpi_size_t) -> mpi_limb_t;
     pub fn mpihelp_sub(res_ptr: mpi_ptr_t, s1_ptr: mpi_ptr_t, s1_size: mpi_size_t, s2_ptr: mpi_ptr_t, s2_size: mpi_size_t) -> mpi_limb_t;
-    pub fn mpihelp_cmp(op1_ptr: mpi_ptr_t, op2_ptr: mpi_ptr_t, size: mpi_size_t) -> libc::c_int;
+    pub fn mpihelp_cmp(op1_ptr: mpi_ptr_t, op2_ptr: mpi_ptr_t, size: mpi_size_t) -> kernel::ffi::c_int;
 
     pub fn mpihelp_release_karatsuba_ctx(ctx: *mut karatsuba_ctx);
     pub fn mpihelp_addmul_1(res_ptr: mpi_ptr_t, s1_ptr: mpi_ptr_t, s1_size: mpi_size_t, s2_limb: mpi_limb_t) -> mpi_limb_t;
     pub fn mpihelp_submul_1(res_ptr: mpi_ptr_t, s1_ptr: mpi_ptr_t, s1_size: mpi_size_t, s2_limb: mpi_limb_t) -> mpi_limb_t;
-    pub fn mpihelp_mul(prodp: mpi_ptr_t, up: mpi_ptr_t, usize_: mpi_size_t, vp: mpi_ptr_t, vsize: mpi_size_t, result: *mut mpi_limb_t) -> libc::c_int;
+    pub fn mpihelp_mul(prodp: mpi_ptr_t, up: mpi_ptr_t, usize_: mpi_size_t, vp: mpi_ptr_t, vsize: mpi_size_t, result: *mut mpi_limb_t) -> kernel::ffi::c_int;
     pub fn mpih_sqr_n_basecase(prodp: mpi_ptr_t, up: mpi_ptr_t, size: mpi_size_t);
     pub fn mpih_sqr_n(prodp: mpi_ptr_t, up: mpi_ptr_t, size: mpi_size_t, tspace: mpi_ptr_t);
-    pub fn mpihelp_mul_karatsuba_case(prodp: mpi_ptr_t, up: mpi_ptr_t, usize_: mpi_size_t, vp: mpi_ptr_t, vsize: mpi_size_t, ctx: *mut karatsuba_ctx) -> libc::c_int;
+    pub fn mpihelp_mul_karatsuba_case(prodp: mpi_ptr_t, up: mpi_ptr_t, usize_: mpi_size_t, vp: mpi_ptr_t, vsize: mpi_size_t, ctx: *mut karatsuba_ctx) -> kernel::ffi::c_int;
     pub fn mpihelp_mul_1(res_ptr: mpi_ptr_t, s1_ptr: mpi_ptr_t, s1_size: mpi_size_t, s2_limb: mpi_limb_t) -> mpi_limb_t;
     pub fn mpihelp_mod_1(dividend_ptr: mpi_ptr_t, dividend_size: mpi_size_t, divisor_limb: mpi_limb_t) -> mpi_limb_t;
     pub fn mpihelp_divrem(qp: mpi_ptr_t, qextra_limbs: mpi_size_t, np: mpi_ptr_t, nsize: mpi_size_t, dp: mpi_ptr_t, dsize: mpi_size_t) -> mpi_limb_t;
     pub fn mpihelp_divmod_1(quot_ptr: mpi_ptr_t, dividend_ptr: mpi_ptr_t, dividend_size: mpi_size_t, divisor_limb: mpi_limb_t) -> mpi_limb_t;
-    pub fn mpihelp_lshift(wp: mpi_ptr_t, up: mpi_ptr_t, usize_: mpi_size_t, cnt: libc::c_uint) -> mpi_limb_t;
-    pub fn mpihelp_rshift(wp: mpi_ptr_t, up: mpi_ptr_t, usize_: mpi_size_t, cnt: libc::c_uint) -> mpi_limb_t;
+    pub fn mpihelp_lshift(wp: mpi_ptr_t, up: mpi_ptr_t, usize_: mpi_size_t, cnt: kernel::ffi::c_uint) -> mpi_limb_t;
+    pub fn mpihelp_rshift(wp: mpi_ptr_t, up: mpi_ptr_t, usize_: mpi_size_t, cnt: kernel::ffi::c_uint) -> mpi_limb_t;
 }
 
 #[repr(C)]
@@ -167,12 +167,12 @@ pub struct karatsuba_ctx {
 // C: #define W_TYPE_SIZE BITS_PER_MPI_LIMB
 pub const W_TYPE_SIZE: usize = BITS_PER_MPI_LIMB;
 pub type UWtype = mpi_limb_t;
-pub type UHWtype = libc::c_uint;
-pub type UQItype = libc::c_uchar;
-pub type SItype = libc::c_int;
-pub type USItype = libc::c_uint;
-pub type DItype = libc::c_long;
-pub type UDItype = libc::c_ulong;
+pub type UHWtype = kernel::ffi::c_uint;
+pub type UQItype = kernel::ffi::c_uchar;
+pub type SItype = kernel::ffi::c_int;
+pub type USItype = kernel::ffi::c_uint;
+pub type DItype = kernel::ffi::c_long;
+pub type UDItype = kernel::ffi::c_ulong;
 
 // GCC-only mpi-inline.h declarations are supplied by the surrounding build.
 

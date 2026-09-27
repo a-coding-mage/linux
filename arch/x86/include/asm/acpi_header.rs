@@ -5,28 +5,28 @@
 
 #[cfg(CONFIG_ACPI)]
 extern "C" {
-    pub static mut acpi_lapic: ::core::ffi::c_int;
-    pub static mut acpi_ioapic: ::core::ffi::c_int;
-    pub static mut acpi_noirq: ::core::ffi::c_int;
-    pub static mut acpi_strict: ::core::ffi::c_int;
-    pub static mut acpi_disabled: ::core::ffi::c_int;
-    pub static mut acpi_pci_disabled: ::core::ffi::c_int;
-    pub static mut acpi_skip_timer_override: ::core::ffi::c_int;
-    pub static mut acpi_use_timer_override: ::core::ffi::c_int;
-    pub static mut acpi_fix_pin2_polarity: ::core::ffi::c_int;
-    pub static mut acpi_disable_cmcff: ::core::ffi::c_int;
+    pub static mut acpi_lapic: ::kernel::ffi::c_int;
+    pub static mut acpi_ioapic: ::kernel::ffi::c_int;
+    pub static mut acpi_noirq: ::kernel::ffi::c_int;
+    pub static mut acpi_strict: ::kernel::ffi::c_int;
+    pub static mut acpi_disabled: ::kernel::ffi::c_int;
+    pub static mut acpi_pci_disabled: ::kernel::ffi::c_int;
+    pub static mut acpi_skip_timer_override: ::kernel::ffi::c_int;
+    pub static mut acpi_use_timer_override: ::kernel::ffi::c_int;
+    pub static mut acpi_fix_pin2_polarity: ::kernel::ffi::c_int;
+    pub static mut acpi_disable_cmcff: ::kernel::ffi::c_int;
     pub static mut acpi_int_src_ovr: [bool; NR_IRQS_LEGACY];
     pub static mut acpi_sci_flags: u8;
     pub static mut acpi_sci_override_gsi: u32;
-    pub fn acpi_pic_sci_set_trigger(trigger: ::core::ffi::c_uint, polarity: u16);
+    pub fn acpi_pic_sci_set_trigger(trigger: ::kernel::ffi::c_uint, polarity: u16);
     pub static mut __acpi_register_gsi:
-        Option<unsafe extern "C" fn(*mut device, u32, ::core::ffi::c_int, ::core::ffi::c_int) -> ::core::ffi::c_int>;
+        Option<unsafe extern "C" fn(*mut device, u32, ::kernel::ffi::c_int, ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>;
     pub static mut __acpi_unregister_gsi: Option<unsafe extern "C" fn(u32)>;
-    pub fn acpi_gsi_to_irq(gsi: u32, irq: *mut ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn acpi_blacklisted() -> ::core::ffi::c_int;
-    pub static mut acpi_suspend_lowlevel: Option<unsafe extern "C" fn() -> ::core::ffi::c_int>;
-    pub fn acpi_get_wakeup_address() -> ::core::ffi::c_ulong;
-    pub fn acpi_parse_mp_wake(header: *mut acpi_subtable_headers, end: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn acpi_gsi_to_irq(gsi: u32, irq: *mut ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn acpi_blacklisted() -> ::kernel::ffi::c_int;
+    pub static mut acpi_suspend_lowlevel: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_int>;
+    pub fn acpi_get_wakeup_address() -> ::kernel::ffi::c_ulong;
+    pub fn acpi_parse_mp_wake(header: *mut acpi_subtable_headers, end: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
     pub fn asm_acpi_mp_play_dead(reset_vector: u64, pgd_pa: u64);
     pub fn acpi_generic_reduced_hw_init();
     pub fn x86_default_set_root_pointer(addr: u64);
@@ -68,7 +68,7 @@ pub fn acpi_skip_set_wakeup_address() -> bool {
 }
 
 #[cfg(CONFIG_ACPI)]
-pub unsafe fn acpi_processor_cstate_check(mut max_cstate: ::core::ffi::c_uint) -> ::core::ffi::c_uint {
+pub unsafe fn acpi_processor_cstate_check(mut max_cstate: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint {
     if boot_cpu_data.x86 == 0x0f && boot_cpu_data.x86_vendor == X86_VENDOR_AMD
         && boot_cpu_data.x86_model <= 0x05 && boot_cpu_data.x86_stepping < 0x0a {
         1
@@ -132,7 +132,7 @@ pub fn acpi_get_mp_wakeup_mailbox_paddr() -> u64 { 0 }
 pub const ARCH_HAS_POWER_INIT: i32 = 1;
 
 #[cfg(CONFIG_ACPI_NUMA)]
-extern "C" { pub fn x86_acpi_numa_init() -> ::core::ffi::c_int; }
+extern "C" { pub fn x86_acpi_numa_init() -> ::kernel::ffi::c_int; }
 
 #[repr(C)]
 pub struct cper_ia_proc_ctx { _private: [u8; 0] }
@@ -141,9 +141,9 @@ pub struct cper_ia_proc_ctx { _private: [u8; 0] }
 pub unsafe fn arch_apei_get_mem_attribute(_addr: phys_addr_t) -> pgprot_t { PAGE_KERNEL_NOENC }
 
 #[cfg(CONFIG_ACPI_APEI)]
-extern "C" { pub fn arch_apei_report_x86_error(ctx_info: *mut cper_ia_proc_ctx, lapic_id: u64) -> ::core::ffi::c_int; }
+extern "C" { pub fn arch_apei_report_x86_error(ctx_info: *mut cper_ia_proc_ctx, lapic_id: u64) -> ::kernel::ffi::c_int; }
 #[cfg(not(CONFIG_ACPI_APEI))]
-pub unsafe fn arch_apei_report_x86_error(_ctx_info: *mut cper_ia_proc_ctx, _lapic_id: u64) -> ::core::ffi::c_int { -EINVAL }
+pub unsafe fn arch_apei_report_x86_error(_ctx_info: *mut cper_ia_proc_ctx, _lapic_id: u64) -> ::kernel::ffi::c_int { -EINVAL }
 
 pub const ACPI_TABLE_UPGRADE_MAX_PHYS: usize = max_low_pfn_mapped << PAGE_SHIFT;
 

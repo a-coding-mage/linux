@@ -4,7 +4,7 @@
 // linux/swap.h, linux/pagemap.h, asm/tlbflush.h, asm/mmu_context.h,
 // and asm-generic/tlb.h.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct mm_struct;

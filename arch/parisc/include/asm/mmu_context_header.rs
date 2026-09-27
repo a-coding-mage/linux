@@ -7,15 +7,15 @@
  * for them.  prumpf */
 
 extern "C" {
-    pub fn alloc_sid() -> ::core::ffi::c_ulong;
-    pub fn free_sid(space_id: ::core::ffi::c_ulong);
+    pub fn alloc_sid() -> ::kernel::ffi::c_ulong;
+    pub fn free_sid(space_id: ::kernel::ffi::c_ulong);
 }
 
 #[inline]
 pub unsafe fn init_new_context(
     tsk: *mut task_struct,
     mm: *mut mm_struct,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let _ = tsk;
     BUG_ON(atomic_read(&(*mm).mm_users) != 1);
 
@@ -30,7 +30,7 @@ pub unsafe fn destroy_context(mm: *mut mm_struct) {
 }
 
 #[inline]
-pub unsafe fn __space_to_prot(context: mm_context_t) -> ::core::ffi::c_ulong {
+pub unsafe fn __space_to_prot(context: mm_context_t) -> ::kernel::ffi::c_ulong {
     // When SPACEID_SHIFT is zero, the C source shifts left; otherwise it shifts
     // right by SPACEID_SHIFT - 1.  Select the branch using the build-time value.
     if SPACEID_SHIFT == 0 {
@@ -75,7 +75,7 @@ pub unsafe fn switch_mm(
     next: *mut mm_struct,
     tsk: *mut task_struct,
 ) {
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
 
     if prev == next {
         return;

@@ -20,7 +20,7 @@ pub struct kdf_testvec {
 #[inline]
 pub unsafe fn kdf_test(
     test: *const kdf_testvec,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     crypto_kdf_setkey: unsafe extern "C" fn(
         kmd: *mut crypto_shash,
         key: *const u8,
@@ -48,7 +48,7 @@ pub unsafe fn kdf_test(
     if IS_ERR(kmd) {
         pr_err(
             b"alg: kdf: could not allocate hash handle for %s\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
             name,
         );
         kfree(buf);

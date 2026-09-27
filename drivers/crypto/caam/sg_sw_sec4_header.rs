@@ -27,11 +27,11 @@ extern "C" {
     fn cpu_to_caam_dma64(value: dma_addr_t) -> u64;
     fn cpu_to_caam32(value: u32) -> u32;
     fn print_hex_dump_debug(
-        prefix: *const core::ffi::c_char,
+        prefix: *const kernel::ffi::c_char,
         prefix_type: i32,
         rowsize: i32,
         groupsize: i32,
-        buffer: *const core::ffi::c_void,
+        buffer: *const kernel::ffi::c_void,
         length: usize,
         ascii: i32,
     );
@@ -79,11 +79,11 @@ pub unsafe fn dma_to_sec4_sg_one(
     }
 
     print_hex_dump_debug(
-        b"sec4_sg_ptr@: \0".as_ptr() as *const core::ffi::c_char,
+        b"sec4_sg_ptr@: \0".as_ptr() as *const kernel::ffi::c_char,
         DUMP_PREFIX_ADDRESS,
         16,
         4,
-        sec4_sg_ptr as *const core::ffi::c_void,
+        sec4_sg_ptr as *const kernel::ffi::c_void,
         core::mem::size_of::<sec4_sg_entry>(),
         1,
     );

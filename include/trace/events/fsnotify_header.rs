@@ -6,7 +6,7 @@
 // kernel translation.  TRACE_HEADER_MULTI_READ and the include guard are
 // preprocessor-only controls and have no executable Rust equivalent.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub type __u32 = u32;
 pub type u32_t = u32;
@@ -19,7 +19,7 @@ pub struct super_block {
 
 #[repr(C)]
 pub struct inode {
-    pub i_ino: libc::c_ulong,
+    pub i_ino: kernel::ffi::c_ulong,
     pub i_sb: *mut super_block,
 }
 
@@ -31,10 +31,10 @@ pub struct qstr {
 #[repr(C)]
 pub struct FsnotifyEntry {
     pub mask: __u32,
-    pub dir_ino: libc::c_ulong,
-    pub ino: libc::c_ulong,
+    pub dir_ino: kernel::ffi::c_ulong,
+    pub ino: kernel::ffi::c_ulong,
     pub s_dev: dev_t,
-    pub data_type: libc::c_int,
+    pub data_type: kernel::ffi::c_int,
     pub cookie: u32_t,
     // __string(file_name, ...) is a dynamically sized trace entry string.
     pub file_name: *const c_char,
@@ -42,8 +42,8 @@ pub struct FsnotifyEntry {
 
 extern "C" {
     pub fn show_fsnotify_mask(mask: __u32) -> *const c_char;
-    pub fn major(dev: dev_t) -> libc::c_uint;
-    pub fn minor(dev: dev_t) -> libc::c_uint;
+    pub fn major(dev: dev_t) -> kernel::ffi::c_uint;
+    pub fn minor(dev: dev_t) -> kernel::ffi::c_uint;
 }
 
 /// Translation of the TRACE_EVENT(fsnotify) TP_fast_assign block.
@@ -51,8 +51,8 @@ extern "C" {
 pub unsafe fn fsnotify_fast_assign(
     entry: *mut FsnotifyEntry,
     mask: __u32,
-    _data: *const core::ffi::c_void,
-    data_type: libc::c_int,
+    _data: *const kernel::ffi::c_void,
+    data_type: kernel::ffi::c_int,
     dir: *mut inode,
     file_name: *const qstr,
     inode_: *const inode,

@@ -11,7 +11,7 @@
 // #include <sound/soc-acpi-intel-match.h>
 // #include "soc-acpi-intel-sdw-mockup-match.h"
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 const fn BIT(nr: u32) -> u32 {
 	1u32 << nr

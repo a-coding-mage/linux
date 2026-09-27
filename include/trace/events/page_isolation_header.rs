@@ -6,17 +6,17 @@
 
 #[repr(C)]
 pub struct TestPagesIsolatedEntry {
-    pub start_pfn: core::ffi::c_ulong,
-    pub end_pfn: core::ffi::c_ulong,
-    pub fin_pfn: core::ffi::c_ulong,
+    pub start_pfn: kernel::ffi::c_ulong,
+    pub end_pfn: kernel::ffi::c_ulong,
+    pub fin_pfn: kernel::ffi::c_ulong,
 }
 
 impl TestPagesIsolatedEntry {
     #[inline]
     pub const fn new(
-        start_pfn: core::ffi::c_ulong,
-        end_pfn: core::ffi::c_ulong,
-        fin_pfn: core::ffi::c_ulong,
+        start_pfn: kernel::ffi::c_ulong,
+        end_pfn: kernel::ffi::c_ulong,
+        fin_pfn: kernel::ffi::c_ulong,
     ) -> Self {
         Self {
             start_pfn,

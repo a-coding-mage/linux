@@ -31,7 +31,7 @@ pub const SNDRV_SFNT_PATCH_NAME_LEN: usize = 32;
 pub struct soundfont_open_parm {
     pub r#type: u16,
     pub reserved: i16,
-    pub name: [core::ffi::c_char; SNDRV_SFNT_PATCH_NAME_LEN],
+    pub name: [kernel::ffi::c_char; SNDRV_SFNT_PATCH_NAME_LEN],
 }
 pub const SNDRV_SFNT_PAT_TYPE_MISC: u16 = 0;
 pub const SNDRV_SFNT_PAT_TYPE_GUS: u16 = 6;

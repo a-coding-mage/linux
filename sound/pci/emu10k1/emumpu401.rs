@@ -19,7 +19,7 @@ unsafe fn mpu401_read(
     if (*emu).audigy != 0 {
         snd_emu10k1_ptr_read(emu, (*mpu).port + idx as u32, 0) as u8
     } else {
-        inb((*emu).port + (*mpu).port as libc::c_ulong + idx as libc::c_ulong)
+        inb((*emu).port + (*mpu).port as kernel::ffi::c_ulong + idx as kernel::ffi::c_ulong)
     }
 }
 
@@ -33,7 +33,7 @@ unsafe fn mpu401_write(
     if (*emu).audigy != 0 {
         snd_emu10k1_ptr_write(emu, (*mpu).port + idx as u32, 0, data);
     } else {
-        outb(data, (*emu).port + (*mpu).port as libc::c_ulong + idx as libc::c_ulong);
+        outb(data, (*emu).port + (*mpu).port as kernel::ffi::c_ulong + idx as kernel::ffi::c_ulong);
     }
 }
 
@@ -355,7 +355,7 @@ unsafe fn emu10k1_midi_init(
     emu: *mut snd_emu10k1,
     midi: *mut snd_emu10k1_midi,
     device: i32,
-    name: *mut libc::c_char,
+    name: *mut kernel::ffi::c_char,
 ) -> i32 {
     let mut rmidi: *mut snd_rawmidi = core::ptr::null_mut();
     let err: i32;
@@ -381,7 +381,7 @@ unsafe fn emu10k1_midi_init(
     );
     (*rmidi).info_flags |=
         SNDRV_RAWMIDI_INFO_OUTPUT | SNDRV_RAWMIDI_INFO_INPUT | SNDRV_RAWMIDI_INFO_DUPLEX;
-    (*rmidi).private_data = midi as *mut libc::c_void;
+    (*rmidi).private_data = midi as *mut kernel::ffi::c_void;
     (*rmidi).private_free = Some(snd_emu10k1_midi_free);
     (*midi).rmidi = rmidi;
     0
@@ -395,7 +395,7 @@ pub unsafe fn snd_emu10k1_midi(emu: *mut snd_emu10k1) -> i32 {
         emu,
         midi,
         0,
-        c"EMU10K1 MPU-401 (UART)".as_ptr() as *mut libc::c_char,
+        c"EMU10K1 MPU-401 (UART)".as_ptr() as *mut kernel::ffi::c_char,
     );
     if err < 0 {
         return err;
@@ -419,7 +419,7 @@ pub unsafe fn snd_emu10k1_audigy_midi(emu: *mut snd_emu10k1) -> i32 {
         emu,
         midi,
         0,
-        c"Audigy MPU-401 (UART)".as_ptr() as *mut libc::c_char,
+        c"Audigy MPU-401 (UART)".as_ptr() as *mut kernel::ffi::c_char,
     );
     if err < 0 {
         return err;
@@ -437,7 +437,7 @@ pub unsafe fn snd_emu10k1_audigy_midi(emu: *mut snd_emu10k1) -> i32 {
         emu,
         midi,
         1,
-        c"Audigy MPU-401 #2".as_ptr() as *mut libc::c_char,
+        c"Audigy MPU-401 #2".as_ptr() as *mut kernel::ffi::c_char,
     );
     if err < 0 {
         return err;

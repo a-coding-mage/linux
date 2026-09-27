@@ -5,7 +5,7 @@
 //! infrastructure and therefore remain represented here as the corresponding
 //! declaration and operation comments rather than being reimplemented.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /// Payload declared by `TP_STRUCT__entry(__string(msg, msg))`.
 ///

@@ -8,18 +8,18 @@ pub enum ksym_flags {
 
 /* This ignores the intensely annoying "mapping symbols" found in ELF files. */
 #[inline]
-pub unsafe fn is_mapping_symbol(str_: *const core::ffi::c_char) -> bool {
-    if *str_ == b'.' as core::ffi::c_char &&
-       *str_.add(1) == b'L' as core::ffi::c_char
+pub unsafe fn is_mapping_symbol(str_: *const kernel::ffi::c_char) -> bool {
+    if *str_ == b'.' as kernel::ffi::c_char &&
+       *str_.add(1) == b'L' as kernel::ffi::c_char
     {
         return true;
     }
-    if *str_ == b'L' as core::ffi::c_char &&
-       *str_.add(1) == b'0' as core::ffi::c_char
+    if *str_ == b'L' as kernel::ffi::c_char &&
+       *str_.add(1) == b'0' as kernel::ffi::c_char
     {
         return true;
     }
-    *str_ == b'$' as core::ffi::c_char
+    *str_ == b'$' as kernel::ffi::c_char
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

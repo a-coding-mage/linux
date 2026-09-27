@@ -18,8 +18,8 @@
  */
 #[repr(C)]
 pub struct trans_pgd_info {
-	pub trans_alloc_page: Option<unsafe extern "C" fn(arg: *mut core::ffi::c_void) -> *mut core::ffi::c_void>,
-	pub trans_alloc_arg: *mut core::ffi::c_void,
+	pub trans_alloc_page: Option<unsafe extern "C" fn(arg: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void>,
+	pub trans_alloc_arg: *mut kernel::ffi::c_void,
 }
 
 extern "C" {
@@ -34,7 +34,7 @@ extern "C" {
 		info: *mut trans_pgd_info,
 		trans_ttbr0: *mut phys_addr_t,
 		t0sz: *mut usize,
-		page: *mut core::ffi::c_void,
+		page: *mut kernel::ffi::c_void,
 	) -> i32;
 
 	pub fn trans_pgd_copy_el2_vectors(
@@ -42,7 +42,7 @@ extern "C" {
 		el2_vectors: *mut phys_addr_t,
 	) -> i32;
 
-	pub static mut trans_pgd_stub_vectors: [core::ffi::c_char; 0];
+	pub static mut trans_pgd_stub_vectors: [kernel::ffi::c_char; 0];
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

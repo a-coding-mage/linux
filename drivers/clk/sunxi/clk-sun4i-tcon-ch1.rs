@@ -23,7 +23,7 @@ const TCON_CH1_SCLK1_HALF_BIT: u32 = 1u32 << 11;
 struct TconCh1Clk {
     hw: ClkHw,
     lock: Spinlock,
-    reg: *mut core::ffi::c_void,
+    reg: *mut kernel::ffi::c_void,
 }
 
 // External kernel types and functions supplied by other translation units.
@@ -34,11 +34,11 @@ struct TconCh1Clk {
     best_parent_rate: usize,
     best_parent_hw: *mut ClkHw,
 }
-#[repr(C)] struct DeviceNode { name: *const core::ffi::c_char }
+#[repr(C)] struct DeviceNode { name: *const kernel::ffi::c_char }
 #[repr(C)] struct ClkInitData {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     ops: *const ClkOps,
-    parent_names: *const *const core::ffi::c_char,
+    parent_names: *const *const kernel::ffi::c_char,
     num_parents: usize,
     flags: u32,
 }
@@ -56,24 +56,24 @@ struct TconCh1Clk {
 #[repr(C)] struct Resource { start: usize }
 
 extern "C" {
-    fn readl(reg: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, reg: *mut core::ffi::c_void);
+    fn readl(reg: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, reg: *mut kernel::ffi::c_void);
     fn spin_lock_irqsave(lock: *mut Spinlock, flags: *mut usize);
     fn spin_unlock_irqrestore(lock: *mut Spinlock, flags: usize);
     fn spin_lock_init(lock: *mut Spinlock);
     fn clk_hw_get_num_parents(hw: *mut ClkHw) -> i32;
     fn clk_hw_get_parent_by_index(hw: *mut ClkHw, index: i32) -> *mut ClkHw;
     fn clk_hw_get_rate(hw: *mut ClkHw) -> usize;
-    fn of_property_read_string(node: *mut DeviceNode, name: *const u8, out: *mut *const core::ffi::c_char) -> i32;
-    fn of_io_request_and_map(node: *mut DeviceNode, index: i32, name: *const core::ffi::c_char) -> *mut core::ffi::c_void;
-    fn of_node_full_name(node: *mut DeviceNode) -> *const core::ffi::c_char;
-    fn of_clk_parent_fill(node: *mut DeviceNode, parents: *mut *const core::ffi::c_char, count: usize) -> i32;
+    fn of_property_read_string(node: *mut DeviceNode, name: *const u8, out: *mut *const kernel::ffi::c_char) -> i32;
+    fn of_io_request_and_map(node: *mut DeviceNode, index: i32, name: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
+    fn of_node_full_name(node: *mut DeviceNode) -> *const kernel::ffi::c_char;
+    fn of_clk_parent_fill(node: *mut DeviceNode, parents: *mut *const kernel::ffi::c_char, count: usize) -> i32;
     fn kzalloc_obj<T>() -> *mut T;
-    fn clk_register(dev: *mut core::ffi::c_void, hw: *mut ClkHw) -> *mut Clk;
-    fn of_clk_add_provider(node: *mut DeviceNode, get: *const core::ffi::c_void, clk: *mut Clk) -> i32;
+    fn clk_register(dev: *mut kernel::ffi::c_void, hw: *mut ClkHw) -> *mut Clk;
+    fn of_clk_add_provider(node: *mut DeviceNode, get: *const kernel::ffi::c_void, clk: *mut Clk) -> i32;
     fn clk_unregister(clk: *mut Clk);
     fn kfree(ptr: *mut TconCh1Clk);
-    fn iounmap(reg: *mut core::ffi::c_void);
+    fn iounmap(reg: *mut kernel::ffi::c_void);
     fn of_address_to_resource(node: *mut DeviceNode, index: i32, res: *mut Resource) -> i32;
     fn resource_size(res: *const Resource) -> usize;
     fn release_mem_region(start: usize, size: usize);
@@ -200,7 +200,7 @@ static TCON_CH1_OPS: ClkOps = ClkOps {
 };
 
 unsafe extern "C" fn tcon_ch1_setup(node: *mut DeviceNode) {
-    let mut parents: [*const core::ffi::c_char; TCON_CH1_SCLK2_PARENTS] = [core::ptr::null(); TCON_CH1_SCLK2_PARENTS];
+    let mut parents: [*const kernel::ffi::c_char; TCON_CH1_SCLK2_PARENTS] = [core::ptr::null(); TCON_CH1_SCLK2_PARENTS];
     let mut clk_name = (*node).name;
     let mut init: ClkInitData = core::mem::zeroed();
     let mut res: Resource = core::mem::zeroed();

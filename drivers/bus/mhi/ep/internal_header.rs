@@ -146,7 +146,7 @@ pub struct mhi_ep_ring {
 
 #[repr(C)]
 pub struct mhi_ep_chan {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub mhi_dev: *mut mhi_ep_device,
     pub ring: mhi_ep_ring,
     pub lock: mutex,

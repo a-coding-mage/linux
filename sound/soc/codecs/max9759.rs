@@ -13,7 +13,7 @@
 // sound/soc-dapm.h
 // sound/tlv.h
 
-const DRV_NAME: *const ::core::ffi::c_char = b"max9759\0".as_ptr() as *const ::core::ffi::c_char;
+const DRV_NAME: *const ::kernel::ffi::c_char = b"max9759\0".as_ptr() as *const ::kernel::ffi::c_char;
 
 #[repr(C)]
 struct max9759 {
@@ -21,14 +21,14 @@ struct max9759 {
     gpiod_mute: *mut gpio_desc,
     gpiod_gain: *mut gpio_descs,
     is_mute: bool,
-    gain: ::core::ffi::c_uint,
+    gain: ::kernel::ffi::c_uint,
 }
 
 unsafe extern "C" fn pga_event(
     w: *mut snd_soc_dapm_widget,
     control: *mut snd_kcontrol,
-    event: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    event: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let c: *mut snd_soc_component = snd_soc_dapm_to_component((*w).dapm);
     let priv_: *mut max9759 = snd_soc_component_get_drvdata(c) as *mut max9759;
 
@@ -43,12 +43,12 @@ unsafe extern "C" fn pga_event(
 
 /* From 6dB to 24dB in steps of 6dB */
 // static const DECLARE_TLV_DB_SCALE(speaker_gain_tlv, 600, 600, 0);
-static speaker_gain_tlv: [::core::ffi::c_uint; 4] = DECLARE_TLV_DB_SCALE(600, 600, 0);
+static speaker_gain_tlv: [::kernel::ffi::c_uint; 4] = DECLARE_TLV_DB_SCALE(600, 600, 0);
 
 unsafe extern "C" fn speaker_gain_control_get(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let c: *mut snd_soc_component = snd_kcontrol_chip(kcontrol);
     let priv_: *mut max9759 = snd_soc_component_get_drvdata(c) as *mut max9759;
 
@@ -68,7 +68,7 @@ static speaker_gain_table: [[bool; 2]; 4] = [
 unsafe extern "C" fn speaker_gain_control_put(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let c: *mut snd_soc_component = snd_kcontrol_chip(kcontrol);
     let priv_: *mut max9759 = snd_soc_component_get_drvdata(c) as *mut max9759;
 
@@ -76,17 +76,17 @@ unsafe extern "C" fn speaker_gain_control_put(
         return -EINVAL;
     }
 
-    (*priv_).gain = (*ucontrol).value.integer.value[0] as ::core::ffi::c_uint;
+    (*priv_).gain = (*ucontrol).value.integer.value[0] as ::kernel::ffi::c_uint;
 
     /* G1 */
     gpiod_set_value_cansleep(
         *(*(*priv_).gpiod_gain).desc.add(0),
-        speaker_gain_table[(*priv_).gain as usize][0] as ::core::ffi::c_int,
+        speaker_gain_table[(*priv_).gain as usize][0] as ::kernel::ffi::c_int,
     );
     /* G2 */
     gpiod_set_value_cansleep(
         *(*(*priv_).gpiod_gain).desc.add(1),
-        speaker_gain_table[(*priv_).gain as usize][1] as ::core::ffi::c_int,
+        speaker_gain_table[(*priv_).gain as usize][1] as ::kernel::ffi::c_int,
     );
 
     1
@@ -95,7 +95,7 @@ unsafe extern "C" fn speaker_gain_control_put(
 unsafe extern "C" fn speaker_mute_get(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let c: *mut snd_soc_component = snd_kcontrol_chip(kcontrol);
     let priv_: *mut max9759 = snd_soc_component_get_drvdata(c) as *mut max9759;
 
@@ -107,13 +107,13 @@ unsafe extern "C" fn speaker_mute_get(
 unsafe extern "C" fn speaker_mute_put(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let c: *mut snd_soc_component = snd_kcontrol_chip(kcontrol);
     let priv_: *mut max9759 = snd_soc_component_get_drvdata(c) as *mut max9759;
 
     (*priv_).is_mute = !((*ucontrol).value.integer.value[0] != 0);
 
-    gpiod_set_value_cansleep((*priv_).gpiod_mute, (*priv_).is_mute as ::core::ffi::c_int);
+    gpiod_set_value_cansleep((*priv_).gpiod_mute, (*priv_).is_mute as ::kernel::ffi::c_int);
 
     1
 }
@@ -179,14 +179,14 @@ static max9759_dapm_routes: [snd_soc_dapm_route; 4] = [
 
 static max9759_component_driver: snd_soc_component_driver = snd_soc_component_driver {
     controls: max9759_dapm_controls.as_ptr(),
-    num_controls: max9759_dapm_controls.len() as ::core::ffi::c_uint,
+    num_controls: max9759_dapm_controls.len() as ::kernel::ffi::c_uint,
     dapm_widgets: max9759_dapm_widgets.as_ptr(),
-    num_dapm_widgets: max9759_dapm_widgets.len() as ::core::ffi::c_uint,
+    num_dapm_widgets: max9759_dapm_widgets.len() as ::kernel::ffi::c_uint,
     dapm_routes: max9759_dapm_routes.as_ptr(),
-    num_dapm_routes: max9759_dapm_routes.len() as ::core::ffi::c_uint,
+    num_dapm_routes: max9759_dapm_routes.len() as ::kernel::ffi::c_uint,
 };
 
-unsafe extern "C" fn max9759_probe(pdev: *mut platform_device) -> ::core::ffi::c_int {
+unsafe extern "C" fn max9759_probe(pdev: *mut platform_device) -> ::kernel::ffi::c_int {
     let dev: *mut device = &mut (*pdev).dev;
     let mut priv_: *mut max9759;
 
@@ -199,32 +199,32 @@ unsafe extern "C" fn max9759_probe(pdev: *mut platform_device) -> ::core::ffi::c
         return -ENOMEM;
     }
 
-    platform_set_drvdata(pdev, priv_ as *mut ::core::ffi::c_void);
+    platform_set_drvdata(pdev, priv_ as *mut ::kernel::ffi::c_void);
 
     (*priv_).gpiod_shutdown = devm_gpiod_get(dev, c"shutdown".as_ptr(), GPIOD_OUT_HIGH);
-    if IS_ERR((*priv_).gpiod_shutdown as *const ::core::ffi::c_void) {
+    if IS_ERR((*priv_).gpiod_shutdown as *const ::kernel::ffi::c_void) {
         return dev_err_probe(
             dev,
-            PTR_ERR((*priv_).gpiod_shutdown as *const ::core::ffi::c_void),
+            PTR_ERR((*priv_).gpiod_shutdown as *const ::kernel::ffi::c_void),
             c"Failed to get 'shutdown' gpio".as_ptr(),
         );
     }
 
     (*priv_).gpiod_mute = devm_gpiod_get(dev, c"mute".as_ptr(), GPIOD_OUT_HIGH);
-    if IS_ERR((*priv_).gpiod_mute as *const ::core::ffi::c_void) {
+    if IS_ERR((*priv_).gpiod_mute as *const ::kernel::ffi::c_void) {
         return dev_err_probe(
             dev,
-            PTR_ERR((*priv_).gpiod_mute as *const ::core::ffi::c_void),
+            PTR_ERR((*priv_).gpiod_mute as *const ::kernel::ffi::c_void),
             c"Failed to get 'mute' gpio".as_ptr(),
         );
     }
     (*priv_).is_mute = true;
 
     (*priv_).gpiod_gain = devm_gpiod_get_array(dev, c"gain".as_ptr(), GPIOD_OUT_HIGH);
-    if IS_ERR((*priv_).gpiod_gain as *const ::core::ffi::c_void) {
+    if IS_ERR((*priv_).gpiod_gain as *const ::kernel::ffi::c_void) {
         return dev_err_probe(
             dev,
-            PTR_ERR((*priv_).gpiod_gain as *const ::core::ffi::c_void),
+            PTR_ERR((*priv_).gpiod_gain as *const ::kernel::ffi::c_void),
             c"Failed to get 'gain' gpios".as_ptr(),
         );
     }

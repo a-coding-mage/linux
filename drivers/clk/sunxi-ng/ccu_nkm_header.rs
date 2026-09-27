@@ -21,9 +21,9 @@ pub struct ccu_nkm {
     pub m: ccu_div_internal,
     pub mux: ccu_mux_internal,
 
-    pub fixed_post_div: ::core::ffi::c_uint,
-    pub max_m_n_ratio: ::core::ffi::c_ulong,
-    pub min_parent_m_ratio: ::core::ffi::c_ulong,
+    pub fixed_post_div: ::kernel::ffi::c_uint,
+    pub max_m_n_ratio: ::kernel::ffi::c_ulong,
+    pub min_parent_m_ratio: ::kernel::ffi::c_ulong,
 
     pub common: ccu_common,
 }

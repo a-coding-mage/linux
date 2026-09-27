@@ -12,16 +12,16 @@ pub const CAMELLIA_AESNI_PARALLEL_BLOCKS: usize = 16;
 pub const CAMELLIA_AESNI_AVX2_PARALLEL_BLOCKS: usize = 32;
 
 extern "C" {
-    pub fn camellia_ecb_enc_32way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn camellia_ecb_dec_32way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn camellia_cbc_dec_32way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn camellia_ecb_enc_16way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn camellia_ecb_dec_16way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn camellia_enc_blk_2way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn camellia_dec_blk_2way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn camellia_enc_blk(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn camellia_dec_blk(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn camellia_decrypt_cbc_2way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_ecb_enc_32way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_ecb_dec_32way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_cbc_dec_32way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_ecb_enc_16way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_ecb_dec_16way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_enc_blk_2way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_dec_blk_2way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_enc_blk(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_dec_blk(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_decrypt_cbc_2way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
 }
 
 unsafe fn camellia_setkey(
@@ -77,7 +77,7 @@ static mut camellia_algs: [skcipher_alg; 2] = [
 ];
 
 unsafe fn camellia_aesni_init() -> i32 {
-    let mut feature_name: *const core::ffi::c_char = core::ptr::null();
+    let mut feature_name: *const kernel::ffi::c_char = core::ptr::null();
     if !boot_cpu_has(X86_FEATURE_AVX) || !boot_cpu_has(X86_FEATURE_AVX2) || !boot_cpu_has(X86_FEATURE_AES) || !boot_cpu_has(X86_FEATURE_OSXSAVE) {
         pr_info!("AVX2 or AES-NI instructions are not detected.\n");
         return -ENODEV;

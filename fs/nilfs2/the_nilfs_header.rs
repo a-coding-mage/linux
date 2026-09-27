@@ -18,8 +18,8 @@ pub enum nilfs_sysfs_dev_subgroups {}
 
 #[repr(C)]
 pub struct the_nilfs {
-    pub ns_flags: ::core::ffi::c_ulong,
-    pub ns_flushed_device: ::core::ffi::c_int,
+    pub ns_flags: ::kernel::ffi::c_ulong,
+    pub ns_flushed_device: ::kernel::ffi::c_int,
     pub ns_sb: *mut super_block,
     pub ns_bdev: *mut block_device,
     pub ns_sem: rw_semaphore,
@@ -34,7 +34,7 @@ pub struct the_nilfs {
     pub ns_seg_seq: u64,
     pub ns_segnum: u64,
     pub ns_nextnum: u64,
-    pub ns_pseg_offset: ::core::ffi::c_ulong,
+    pub ns_pseg_offset: ::kernel::ffi::c_ulong,
     pub ns_cno: u64,
     pub ns_ctime: i64,
     pub ns_nongc_ctime: i64,
@@ -55,19 +55,19 @@ pub struct the_nilfs {
     pub ns_dirty_files: list_head,
     pub ns_inode_lock: spinlock_t,
     pub ns_gc_inodes: list_head,
-    pub ns_mount_opt: ::core::ffi::c_ulong,
+    pub ns_mount_opt: ::kernel::ffi::c_ulong,
     pub ns_resuid: uid_t,
     pub ns_resgid: gid_t,
-    pub ns_interval: ::core::ffi::c_ulong,
-    pub ns_watermark: ::core::ffi::c_ulong,
+    pub ns_interval: ::kernel::ffi::c_ulong,
+    pub ns_watermark: ::kernel::ffi::c_ulong,
     pub ns_blocksize_bits: u32,
     pub ns_blocksize: u32,
-    pub ns_nsegments: ::core::ffi::c_ulong,
-    pub ns_blocks_per_segment: ::core::ffi::c_ulong,
-    pub ns_r_segments_percentage: ::core::ffi::c_ulong,
-    pub ns_nrsvsegs: ::core::ffi::c_ulong,
-    pub ns_first_data_block: ::core::ffi::c_ulong,
-    pub ns_inode_size: ::core::ffi::c_int,
+    pub ns_nsegments: ::kernel::ffi::c_ulong,
+    pub ns_blocks_per_segment: ::kernel::ffi::c_ulong,
+    pub ns_r_segments_percentage: ::kernel::ffi::c_ulong,
+    pub ns_nrsvsegs: ::kernel::ffi::c_ulong,
+    pub ns_first_data_block: ::kernel::ffi::c_ulong,
+    pub ns_inode_size: ::kernel::ffi::c_int,
     pub ns_first_ino: u32,
     pub ns_crc_seed: u32,
     pub ns_dev_kobj: kobject,
@@ -120,8 +120,8 @@ extern "C" {
     pub fn destroy_nilfs(nilfs: *mut the_nilfs);
     pub fn init_nilfs(nilfs: *mut the_nilfs, sb: *mut super_block) -> i32;
     pub fn load_nilfs(nilfs: *mut the_nilfs, sb: *mut super_block) -> i32;
-    pub fn nilfs_nrsvsegs(nilfs: *mut the_nilfs, nsegs: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn nilfs_set_nsegments(nilfs: *mut the_nilfs, nsegs: ::core::ffi::c_ulong);
+    pub fn nilfs_nrsvsegs(nilfs: *mut the_nilfs, nsegs: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn nilfs_set_nsegments(nilfs: *mut the_nilfs, nsegs: ::kernel::ffi::c_ulong);
     pub fn nilfs_discard_segments(nilfs: *mut the_nilfs, segnums: *mut u64, n: usize) -> i32;
     pub fn nilfs_count_free_blocks(nilfs: *mut the_nilfs, nfree: *mut sector_t) -> i32;
     pub fn nilfs_lookup_root(nilfs: *mut the_nilfs, cno: u64) -> *mut nilfs_root;

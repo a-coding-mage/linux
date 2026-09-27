@@ -39,7 +39,7 @@ pub const PID_MAX_DEFAULT: usize = if cfg!(CONFIG_BASE_SMALL) {
  */
 pub const PID_MAX_LIMIT: usize = if cfg!(CONFIG_BASE_SMALL) {
     PAGE_SIZE * 8
-} else if core::mem::size_of::<core::ffi::c_long>() > 4 {
+} else if core::mem::size_of::<kernel::ffi::c_long>() > 4 {
     4 * 1024 * 1024
 } else {
     PID_MAX_DEFAULT

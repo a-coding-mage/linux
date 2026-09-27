@@ -48,7 +48,7 @@ const DT2821_SUPCSR_DS_AD_TRIG: u32 = supcsr_ds(3);
 #[inline] const fn tmr_prescale(x: u32) -> u32 { (x & 0xf) << 8 }
 #[inline] const fn tmr_divider(x: u32) -> u32 { 255 - (x & 0xff) }
 
-#[repr(C)] pub struct Dt282xBoard { pub name: *const core::ffi::c_char, pub ai_maxdata: u32, pub adchan_se: i32, pub adchan_di: i32, pub ai_speed: i32, pub ispgl: i32, pub dachan: i32, pub ao_maxdata: u32 }
+#[repr(C)] pub struct Dt282xBoard { pub name: *const kernel::ffi::c_char, pub ai_maxdata: u32, pub adchan_se: i32, pub adchan_di: i32, pub ai_speed: i32, pub ispgl: i32, pub dachan: i32, pub ao_maxdata: u32 }
 #[repr(C)] pub struct Dt282xPrivate { pub dma: *mut comedi_isadma, pub ad_2scomp: u32, pub divisor: u32, pub dacsr: i32, pub adcsr: i32, pub supcsr: i32, pub ntrig: i32, pub nread: i32, pub dma_dir: i32 }
 
 static mut BOARDTYPES: [Dt282xBoard; 12] = [
@@ -88,7 +88,7 @@ unsafe fn dt282x_munge(_: *mut comedi_device, _: *mut comedi_subdevice, _: *mut 
 unsafe fn dt282x_ao_setup_dma(_: *mut comedi_device, _: *mut comedi_subdevice, _: i32) -> u32 { 0 }
 unsafe fn dt282x_ao_dma_interrupt(_: *mut comedi_device, _: *mut comedi_subdevice) {}
 unsafe fn dt282x_ai_dma_interrupt(_: *mut comedi_device, _: *mut comedi_subdevice) {}
-unsafe fn dt282x_interrupt(_: i32, _: *mut core::ffi::c_void) -> i32 { 0 }
+unsafe fn dt282x_interrupt(_: i32, _: *mut kernel::ffi::c_void) -> i32 { 0 }
 unsafe fn dt282x_load_changain(_: *mut comedi_device, _: i32, _: *mut u32) {}
 unsafe fn dt282x_ai_timeout(_: *mut comedi_device, _: *mut comedi_subdevice, _: *mut comedi_insn, _: usize) -> i32 { -16 }
 unsafe fn dt282x_ai_insn_read(_: *mut comedi_device, _: *mut comedi_subdevice, _: *mut comedi_insn, _: *mut u32) -> i32 { 0 }

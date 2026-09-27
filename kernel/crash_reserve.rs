@@ -8,7 +8,7 @@
 
 #[repr(C)]
 pub struct Resource {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub start: u64,
     pub end: u64,
     pub flags: u64,
@@ -25,7 +25,7 @@ const SUFFIX_HIGH: usize = 0;
 const SUFFIX_LOW: usize = 1;
 const SUFFIX_CMA: usize = 2;
 const SUFFIX_NULL: usize = 3;
-static mut suffix_tbl: [*mut core::ffi::c_char; 4] = [b",high\0".as_ptr() as *mut _, b",low\0".as_ptr() as *mut _, b",cma\0".as_ptr() as *mut _, core::ptr::null_mut()];
+static mut suffix_tbl: [*mut kernel::ffi::c_char; 4] = [b",high\0".as_ptr() as *mut _, b",low\0".as_ptr() as *mut _, b",cma\0".as_ptr() as *mut _, core::ptr::null_mut()];
 
 unsafe fn parse_crashkernel_mem(mut cmdline: *mut u8, system_ram: u64, crash_size: *mut u64, crash_base: *mut u64) -> i32 {
     let mut total_mem = roundup(system_ram, SZ_128M);
@@ -74,7 +74,7 @@ unsafe fn parse_crashkernel_simple(cmdline: *mut u8, crash_size: *mut u64, crash
     0
 }
 
-unsafe fn parse_crashkernel_suffix(cmdline: *mut u8, crash_size: *mut u64, suffix: *const core::ffi::c_char) -> i32 {
+unsafe fn parse_crashkernel_suffix(cmdline: *mut u8, crash_size: *mut u64, suffix: *const kernel::ffi::c_char) -> i32 {
     let mut cur = cmdline;
     *crash_size = memparse(cmdline, &mut cur);
     if cmdline == cur { pr_warn!("crashkernel: memory value expected\n"); return -EINVAL; }
@@ -82,7 +82,7 @@ unsafe fn parse_crashkernel_suffix(cmdline: *mut u8, crash_size: *mut u64, suffi
     cur = cur.add(len); if *cur != b' ' && *cur != 0 { pr_warn!("crashkernel: unrecognized char: %c\n", *cur); return -EINVAL; } 0
 }
 
-unsafe fn get_last_crashkernel(mut cmdline: *mut u8, name: *const u8, suffix: *const core::ffi::c_char) -> *mut u8 {
+unsafe fn get_last_crashkernel(mut cmdline: *mut u8, name: *const u8, suffix: *const kernel::ffi::c_char) -> *mut u8 {
     let mut p = strstr(cmdline, name); let mut result = core::ptr::null_mut();
     while !p.is_null() { let mut end_p = strchr(p, b' '); if end_p.is_null() { end_p = p.add(strlen(p)); }
         if suffix.is_null() { let mut i = 0; while !suffix_tbl[i].is_null() { let q = end_p.sub(strlen(suffix_tbl[i])); if strncmp(q, suffix_tbl[i], strlen(suffix_tbl[i])) == 0 { p = strstr(p.add(1), name); continue; } i += 1; } result = p; }
@@ -91,7 +91,7 @@ unsafe fn get_last_crashkernel(mut cmdline: *mut u8, name: *const u8, suffix: *c
     } result
 }
 
-unsafe fn __parse_crashkernel(cmdline: *mut u8, system_ram: u64, crash_size: *mut u64, crash_base: *mut u64, suffix: *const core::ffi::c_char) -> i32 {
+unsafe fn __parse_crashkernel(cmdline: *mut u8, system_ram: u64, crash_size: *mut u64, crash_base: *mut u64, suffix: *const kernel::ffi::c_char) -> i32 {
     BUG_ON!(crash_size.is_null() || crash_base.is_null()); *crash_size = 0; *crash_base = 0;
     let mut p = get_last_crashkernel(cmdline, b"crashkernel=\0".as_ptr(), suffix); if p.is_null() { return -ENOENT; }
     p = p.add(strlen(b"crashkernel=\0".as_ptr()));
@@ -116,8 +116,8 @@ unsafe fn parse_crashkernel_dummy(_arg: *mut u8) -> i32 { 0 }
 extern "C" {
     fn memparse(s: *mut u8, endp: *mut *mut u8) -> u64;
     fn roundup(x: u64, y: u64) -> u64;
-    fn strlen(s: *const core::ffi::c_char) -> usize;
-    fn strncmp(a: *const u8, b: *const core::ffi::c_char, n: usize) -> i32;
+    fn strlen(s: *const kernel::ffi::c_char) -> usize;
+    fn strncmp(a: *const u8, b: *const kernel::ffi::c_char, n: usize) -> i32;
     fn strstr(a: *mut u8, b: *const u8) -> *mut u8;
     fn strchr(a: *mut u8, c: u8) -> *mut u8;
 }

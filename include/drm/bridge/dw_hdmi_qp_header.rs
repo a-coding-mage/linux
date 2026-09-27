@@ -4,7 +4,7 @@
  * Copyright (c) 2024 Collabora Ltd.
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct device {
@@ -45,7 +45,7 @@ pub struct dw_hdmi_qp_plat_data {
     pub phy_data: *mut c_void,
     pub main_irq: i32,
     pub cec_irq: i32,
-    pub ref_clk_rate: core::ffi::c_ulong,
+    pub ref_clk_rate: kernel::ffi::c_ulong,
     /* Supported output formats: bitmask of @drm_output_color_format */
     pub supported_formats: u32,
     /* Maximum bits per color channel: 8, 10 or 12 */

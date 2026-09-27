@@ -15,38 +15,38 @@ pub struct xfs_buf {
 
 unsafe extern "C" {
     pub fn xfs_printk_level(
-        kern_level: *const ::core::ffi::c_char,
+        kern_level: *const ::kernel::ffi::c_char,
         mp: *const xfs_mount,
-        fmt: *const ::core::ffi::c_char,
+        fmt: *const ::kernel::ffi::c_char,
         ...,
     );
 
     pub fn _xfs_alert_tag(
         mp: *const xfs_mount,
         tag: u32,
-        fmt: *const ::core::ffi::c_char,
+        fmt: *const ::kernel::ffi::c_char,
         ...,
     );
 
     pub fn assfail(
         mp: *mut xfs_mount,
-        expr: *mut ::core::ffi::c_char,
-        f: *mut ::core::ffi::c_char,
-        l: ::core::ffi::c_int,
+        expr: *mut ::kernel::ffi::c_char,
+        f: *mut ::kernel::ffi::c_char,
+        l: ::kernel::ffi::c_int,
     );
     pub fn asswarn(
         mp: *mut xfs_mount,
-        expr: *mut ::core::ffi::c_char,
-        f: *mut ::core::ffi::c_char,
-        l: ::core::ffi::c_int,
+        expr: *mut ::kernel::ffi::c_char,
+        f: *mut ::kernel::ffi::c_char,
+        l: ::kernel::ffi::c_int,
     );
 
-    pub fn xfs_hex_dump(p: *const ::core::ffi::c_void, length: ::core::ffi::c_int);
+    pub fn xfs_hex_dump(p: *const ::kernel::ffi::c_void, length: ::kernel::ffi::c_int);
 
     pub fn xfs_buf_alert_ratelimited(
         bp: *mut xfs_buf,
-        rlmsg: *const ::core::ffi::c_char,
-        fmt: *const ::core::ffi::c_char,
+        rlmsg: *const ::kernel::ffi::c_char,
+        fmt: *const ::kernel::ffi::c_char,
         ...,
     );
 }

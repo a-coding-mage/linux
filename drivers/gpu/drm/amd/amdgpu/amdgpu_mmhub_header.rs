@@ -19,7 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // External types supplied by other translation units.
 pub struct amdgpu_ras_block_object;

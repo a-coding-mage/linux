@@ -30,7 +30,7 @@ pub struct edac_ecs_dev_attr {
 
 #[repr(C)]
 pub struct edac_ecs_fru_context {
-    pub name: [core::ffi::c_char; EDAC_FEAT_NAME_LEN],
+    pub name: [kernel::ffi::c_char; EDAC_FEAT_NAME_LEN],
     pub dev_attr: [edac_ecs_dev_attr; ECS_MAX_ATTRS],
     pub ecs_attrs: [*mut attribute; ECS_MAX_ATTRS + 1],
     pub group: attribute_group,
@@ -50,7 +50,7 @@ unsafe fn to_ecs_dev_attr(dev_attr: *mut device_attribute) -> *mut edac_ecs_dev_
 unsafe extern "C" fn log_entry_type_show(
     ras_feat_dev: *mut device,
     attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
     let dev_attr = &*to_ecs_dev_attr(attr);
     let ctx = &*(dev_get_drvdata(ras_feat_dev) as *mut edac_dev_feat_ctx);
@@ -66,7 +66,7 @@ unsafe extern "C" fn log_entry_type_show(
 unsafe extern "C" fn mode_show(
     ras_feat_dev: *mut device,
     attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
     let dev_attr = &*to_ecs_dev_attr(attr);
     let ctx = &*(dev_get_drvdata(ras_feat_dev) as *mut edac_dev_feat_ctx);
@@ -82,7 +82,7 @@ unsafe extern "C" fn mode_show(
 unsafe extern "C" fn threshold_show(
     ras_feat_dev: *mut device,
     attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
     let dev_attr = &*to_ecs_dev_attr(attr);
     let ctx = &*(dev_get_drvdata(ras_feat_dev) as *mut edac_dev_feat_ctx);
@@ -97,9 +97,9 @@ unsafe extern "C" fn threshold_show(
 
 unsafe fn ecs_attr_store(
     ras_feat_dev: *mut device, attr: *mut device_attribute,
-    buf: *const core::ffi::c_char, len: usize,
-    convert: unsafe extern "C" fn(*const core::ffi::c_char, u32, *mut c_ulong) -> i32,
-    set: unsafe extern "C" fn(*mut device, *mut core::ffi::c_void, i32, c_ulong) -> i32,
+    buf: *const kernel::ffi::c_char, len: usize,
+    convert: unsafe extern "C" fn(*const kernel::ffi::c_char, u32, *mut c_ulong) -> i32,
+    set: unsafe extern "C" fn(*mut device, *mut kernel::ffi::c_void, i32, c_ulong) -> i32,
 ) -> ssize_t {
     let dev_attr = &*to_ecs_dev_attr(attr);
     let ctx = &*(dev_get_drvdata(ras_feat_dev) as *mut edac_dev_feat_ctx);

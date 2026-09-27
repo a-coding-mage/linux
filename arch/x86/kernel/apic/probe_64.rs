@@ -16,7 +16,7 @@
 pub struct apic {
     pub probe: Option<unsafe extern "C" fn() -> bool>,
     pub acpi_madt_oem_check:
-        Option<unsafe extern "C" fn(*mut ::core::ffi::c_char, *mut ::core::ffi::c_char) -> bool>,
+        Option<unsafe extern "C" fn(*mut ::kernel::ffi::c_char, *mut ::kernel::ffi::c_char) -> bool>,
 }
 
 unsafe extern "C" {
@@ -47,8 +47,8 @@ pub unsafe extern "C" fn x86_64_probe_apic() {
 }
 
 pub unsafe extern "C" fn default_acpi_madt_oem_check(
-    oem_id: *mut ::core::ffi::c_char,
-    oem_table_id: *mut ::core::ffi::c_char,
+    oem_id: *mut ::kernel::ffi::c_char,
+    oem_table_id: *mut ::kernel::ffi::c_char,
 ) -> i32 {
     let mut drv: *mut *mut apic;
 

@@ -39,7 +39,7 @@ pub enum da7219_dai_clks {
 pub struct da7219_pdata {
     pub wakeup_source: bool,
 
-    pub dai_clk_names: [*const core::ffi::c_char; DA7219_DAI_NUM_CLKS as usize],
+    pub dai_clk_names: [*const kernel::ffi::c_char; DA7219_DAI_NUM_CLKS as usize],
 
     /* Mic */
     pub micbias_lvl: da7219_micbias_voltage,

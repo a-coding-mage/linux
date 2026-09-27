@@ -11,11 +11,11 @@ extern "C" {
 
 #[repr(C)]
 pub struct serio {
-    pub port_data: *mut core::ffi::c_void,
+    pub port_data: *mut kernel::ffi::c_void,
 
-    pub name: [core::ffi::c_char; 32],
-    pub phys: [core::ffi::c_char; 32],
-    pub firmware_id: [core::ffi::c_char; 128],
+    pub name: [kernel::ffi::c_char; 32],
+    pub phys: [kernel::ffi::c_char; 32],
+    pub firmware_id: [kernel::ffi::c_char; 128],
 
     pub manual_bind: bool,
 
@@ -24,10 +24,10 @@ pub struct serio {
     /* Protects critical sections from port's interrupt handler */
     pub lock: spinlock_t,
 
-    pub write: Option<unsafe extern "C" fn(*mut serio, u8) -> core::ffi::c_int>,
-    pub open: Option<unsafe extern "C" fn(*mut serio) -> core::ffi::c_int>,
+    pub write: Option<unsafe extern "C" fn(*mut serio, u8) -> kernel::ffi::c_int>,
+    pub open: Option<unsafe extern "C" fn(*mut serio) -> kernel::ffi::c_int>,
     pub close: Option<unsafe extern "C" fn(*mut serio)>,
-    pub start: Option<unsafe extern "C" fn(*mut serio) -> core::ffi::c_int>,
+    pub start: Option<unsafe extern "C" fn(*mut serio) -> kernel::ffi::c_int>,
     pub stop: Option<unsafe extern "C" fn(*mut serio)>,
 
     pub parent: *mut serio,
@@ -60,16 +60,16 @@ pub struct serio {
 
 #[repr(C)]
 pub struct serio_driver {
-    pub description: *const core::ffi::c_char,
+    pub description: *const kernel::ffi::c_char,
 
     pub id_table: *const serio_device_id,
     pub manual_bind: bool,
 
     pub write_wakeup: Option<unsafe extern "C" fn(*mut serio)>,
     pub interrupt: Option<unsafe extern "C" fn(*mut serio, u8, u32) -> irqreturn_t>,
-    pub connect: Option<unsafe extern "C" fn(*mut serio, *mut serio_driver) -> core::ffi::c_int>,
-    pub reconnect: Option<unsafe extern "C" fn(*mut serio) -> core::ffi::c_int>,
-    pub fast_reconnect: Option<unsafe extern "C" fn(*mut serio) -> core::ffi::c_int>,
+    pub connect: Option<unsafe extern "C" fn(*mut serio, *mut serio_driver) -> kernel::ffi::c_int>,
+    pub reconnect: Option<unsafe extern "C" fn(*mut serio) -> kernel::ffi::c_int>,
+    pub fast_reconnect: Option<unsafe extern "C" fn(*mut serio) -> kernel::ffi::c_int>,
     pub disconnect: Option<unsafe extern "C" fn(*mut serio)>,
     pub cleanup: Option<unsafe extern "C" fn(*mut serio)>,
 
@@ -79,7 +79,7 @@ pub struct serio_driver {
 /* C: container_of_const(d, struct serio_driver, driver) */
 
 extern "C" {
-    pub fn serio_open(serio: *mut serio, drv: *mut serio_driver) -> core::ffi::c_int;
+    pub fn serio_open(serio: *mut serio, drv: *mut serio_driver) -> kernel::ffi::c_int;
     pub fn serio_close(serio: *mut serio);
     pub fn serio_rescan(serio: *mut serio);
     pub fn serio_reconnect(serio: *mut serio);
@@ -92,8 +92,8 @@ extern "C" {
     pub fn __serio_register_driver(
         drv: *mut serio_driver,
         owner: *mut module,
-        mod_name: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        mod_name: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
     pub fn serio_unregister_driver(drv: *mut serio_driver);
 }
 
@@ -104,7 +104,7 @@ extern "C" {
  */
 
 #[inline]
-pub unsafe fn serio_write(serio: *mut serio, data: u8) -> core::ffi::c_int {
+pub unsafe fn serio_write(serio: *mut serio, data: u8) -> kernel::ffi::c_int {
     match (*serio).write {
         Some(write) => write(serio, data),
         None => -1,
@@ -125,12 +125,12 @@ pub unsafe fn serio_drv_write_wakeup(serio: *mut serio) {
  * driver-specific data.
  */
 #[inline]
-pub unsafe fn serio_get_drvdata(serio: *mut serio) -> *mut core::ffi::c_void {
+pub unsafe fn serio_get_drvdata(serio: *mut serio) -> *mut kernel::ffi::c_void {
     dev_get_drvdata(&mut (*serio).dev)
 }
 
 #[inline]
-pub unsafe fn serio_set_drvdata(serio: *mut serio, data: *mut core::ffi::c_void) {
+pub unsafe fn serio_set_drvdata(serio: *mut serio, data: *mut kernel::ffi::c_void) {
     dev_set_drvdata(&mut (*serio).dev, data);
 }
 

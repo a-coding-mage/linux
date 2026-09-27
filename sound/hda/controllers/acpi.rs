@@ -12,7 +12,7 @@ pub struct hda_acpi {
     pub azx: azx,
     pub card: *mut snd_card,
     pub pdev: *mut platform_device,
-    pub regs: *mut core::ffi::c_void,
+    pub regs: *mut kernel::ffi::c_void,
     pub probe_work: work_struct,
     pub data: *const hda_data,
 }
@@ -30,12 +30,12 @@ pub struct hda_acpi {
  */
 #[repr(C)]
 pub struct hda_data {
-    pub short_name: *const core::ffi::c_char,
-    pub long_name: *const core::ffi::c_char,
-    pub flags: core::ffi::c_ulong,
+    pub short_name: *const kernel::ffi::c_char,
+    pub long_name: *const kernel::ffi::c_char,
+    pub flags: kernel::ffi::c_ulong,
 }
 
-unsafe extern "C" fn hda_acpi_dev_disconnect(device: *mut snd_device) -> core::ffi::c_int {
+unsafe extern "C" fn hda_acpi_dev_disconnect(device: *mut snd_device) -> kernel::ffi::c_int {
     let chip: *mut azx = unsafe { (*device).device_data as *mut azx };
 
     unsafe {
@@ -44,7 +44,7 @@ unsafe extern "C" fn hda_acpi_dev_disconnect(device: *mut snd_device) -> core::f
     0
 }
 
-unsafe extern "C" fn hda_acpi_dev_free(device: *mut snd_device) -> core::ffi::c_int {
+unsafe extern "C" fn hda_acpi_dev_free(device: *mut snd_device) -> kernel::ffi::c_int {
     let azx: *mut azx = unsafe { (*device).device_data as *mut azx };
     let hda: *mut hda_acpi = unsafe { container_of!(azx, hda_acpi, azx) };
 
@@ -63,17 +63,17 @@ unsafe extern "C" fn hda_acpi_dev_free(device: *mut snd_device) -> core::ffi::c_
     0
 }
 
-unsafe extern "C" fn hda_acpi_init(hda: *mut hda_acpi) -> core::ffi::c_int {
+unsafe extern "C" fn hda_acpi_init(hda: *mut hda_acpi) -> kernel::ffi::c_int {
     let bus: *mut hdac_bus = unsafe { azx_bus(&mut (*hda).azx) };
     let card: *mut snd_card = unsafe { (*hda).azx.card };
     let dev: *mut device = unsafe { &mut (*(*hda).pdev).dev };
     let azx: *mut azx = unsafe { &mut (*hda).azx };
     let mut res: *mut resource = core::ptr::null_mut();
-    let mut gcap: core::ffi::c_ushort;
-    let sname: *const core::ffi::c_char;
-    let lname: *const core::ffi::c_char;
-    let mut err: core::ffi::c_int;
-    let irq: core::ffi::c_int;
+    let mut gcap: kernel::ffi::c_ushort;
+    let sname: *const kernel::ffi::c_char;
+    let lname: *const kernel::ffi::c_char;
+    let mut err: kernel::ffi::c_int;
+    let irq: kernel::ffi::c_int;
 
     /*
      * The base address for the HDA registers and the interrupt are wrapped
@@ -89,7 +89,7 @@ unsafe extern "C" fn hda_acpi_init(hda: *mut hda_acpi) -> core::ffi::c_int {
 
         (*hda).regs = devm_platform_get_and_ioremap_resource((*hda).pdev, 0, &mut res);
         if IS_ERR((*hda).regs) {
-            return PTR_ERR((*hda).regs) as core::ffi::c_int;
+            return PTR_ERR((*hda).regs) as kernel::ffi::c_int;
         }
 
         (*bus).remap_addr = (*hda).regs;
@@ -101,7 +101,7 @@ unsafe extern "C" fn hda_acpi_init(hda: *mut hda_acpi) -> core::ffi::c_int {
             Some(azx_interrupt),
             IRQF_SHARED,
             KBUILD_MODNAME,
-            azx as *mut core::ffi::c_void,
+            azx as *mut kernel::ffi::c_void,
         );
         if err != 0 {
             dev_err(
@@ -116,7 +116,7 @@ unsafe extern "C" fn hda_acpi_init(hda: *mut hda_acpi) -> core::ffi::c_int {
         (*card).sync_irq = (*bus).irq;
 
         gcap = azx_readw(azx, GCAP);
-        dev_dbg(dev, c"chipset global capabilities = 0x%x\n".as_ptr(), gcap as core::ffi::c_int);
+        dev_dbg(dev, c"chipset global capabilities = 0x%x\n".as_ptr(), gcap as kernel::ffi::c_int);
 
         (*azx).align_buffer_size = 1;
 
@@ -181,7 +181,7 @@ unsafe extern "C" fn hda_acpi_init(hda: *mut hda_acpi) -> core::ffi::c_int {
 unsafe extern "C" fn hda_acpi_probe_work(work: *mut work_struct) {
     let hda: *mut hda_acpi = unsafe { container_of!(work, hda_acpi, probe_work) };
     let chip: *mut azx = unsafe { &mut (*hda).azx };
-    let mut err: core::ffi::c_int;
+    let mut err: kernel::ffi::c_int;
 
     unsafe {
         err = hda_acpi_init(hda);
@@ -208,14 +208,14 @@ unsafe extern "C" fn hda_acpi_probe_work(work: *mut work_struct) {
     }
 }
 
-unsafe extern "C" fn hda_acpi_create(hda: *mut hda_acpi) -> core::ffi::c_int {
+unsafe extern "C" fn hda_acpi_create(hda: *mut hda_acpi) -> kernel::ffi::c_int {
     static OPS: snd_device_ops = snd_device_ops {
         dev_disconnect: Some(hda_acpi_dev_disconnect),
         dev_free: Some(hda_acpi_dev_free),
     };
     static NULL_OPS: hda_controller_ops = hda_controller_ops {};
     let azx: *mut azx = unsafe { &mut (*hda).azx };
-    let mut err: core::ffi::c_int;
+    let mut err: kernel::ffi::c_int;
 
     unsafe {
         mutex_init(&mut (*azx).open_mutex);
@@ -235,7 +235,7 @@ unsafe extern "C" fn hda_acpi_create(hda: *mut hda_acpi) -> core::ffi::c_int {
         err = snd_device_new(
             (*hda).card,
             SNDRV_DEV_LOWLEVEL,
-            &mut (*hda).azx as *mut azx as *mut core::ffi::c_void,
+            &mut (*hda).azx as *mut azx as *mut kernel::ffi::c_void,
             &OPS,
         );
         if err < 0 {
@@ -247,9 +247,9 @@ unsafe extern "C" fn hda_acpi_create(hda: *mut hda_acpi) -> core::ffi::c_int {
     0
 }
 
-unsafe extern "C" fn hda_acpi_probe(pdev: *mut platform_device) -> core::ffi::c_int {
+unsafe extern "C" fn hda_acpi_probe(pdev: *mut platform_device) -> kernel::ffi::c_int {
     let hda: *mut hda_acpi;
-    let mut err: core::ffi::c_int;
+    let mut err: kernel::ffi::c_int;
 
     unsafe {
         hda = devm_kzalloc(
@@ -296,9 +296,9 @@ unsafe extern "C" fn hda_acpi_probe(pdev: *mut platform_device) -> core::ffi::c_
             snd_card_free((*hda).card);
             return err;
         }
-        (*(*hda).card).private_data = &mut (*hda).azx as *mut azx as *mut core::ffi::c_void;
+        (*(*hda).card).private_data = &mut (*hda).azx as *mut azx as *mut kernel::ffi::c_void;
 
-        dev_set_drvdata(&mut (*pdev).dev, (*hda).card as *mut core::ffi::c_void);
+        dev_set_drvdata(&mut (*pdev).dev, (*hda).card as *mut kernel::ffi::c_void);
 
         schedule_work(&mut (*hda).probe_work);
     }
@@ -327,9 +327,9 @@ unsafe extern "C" fn hda_acpi_shutdown(pdev: *mut platform_device) {
     }
 }
 
-unsafe extern "C" fn hda_acpi_suspend(dev: *mut device) -> core::ffi::c_int {
+unsafe extern "C" fn hda_acpi_suspend(dev: *mut device) -> kernel::ffi::c_int {
     let card: *mut snd_card = unsafe { dev_get_drvdata(dev) as *mut snd_card };
-    let rc: core::ffi::c_int;
+    let rc: kernel::ffi::c_int;
 
     unsafe {
         rc = pm_runtime_force_suspend(dev);
@@ -342,9 +342,9 @@ unsafe extern "C" fn hda_acpi_suspend(dev: *mut device) -> core::ffi::c_int {
     0
 }
 
-unsafe extern "C" fn hda_acpi_resume(dev: *mut device) -> core::ffi::c_int {
+unsafe extern "C" fn hda_acpi_resume(dev: *mut device) -> kernel::ffi::c_int {
     let card: *mut snd_card = unsafe { dev_get_drvdata(dev) as *mut snd_card };
-    let rc: core::ffi::c_int;
+    let rc: kernel::ffi::c_int;
 
     unsafe {
         rc = pm_runtime_force_resume(dev);

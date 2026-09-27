@@ -62,7 +62,7 @@ pub struct gsm_netconfig {
     pub adaption: u32,
     pub protocol: u16,
     pub unused2: u16,
-    pub if_name: [core::ffi::c_char; IFNAMSIZ],
+    pub if_name: [kernel::ffi::c_char; IFNAMSIZ],
     pub unused: [u8; 28],
 }
 

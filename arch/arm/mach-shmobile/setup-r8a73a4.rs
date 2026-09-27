@@ -7,7 +7,7 @@
  */
 
 // C dependencies supplied by the kernel headers and common implementation.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn shmobile_init_late();

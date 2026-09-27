@@ -6,7 +6,7 @@
 #[repr(C)]
 pub struct asid_info {
     pub generation: atomic64_t,
-    pub map: *mut ::core::ffi::c_ulong,
+    pub map: *mut ::kernel::ffi::c_ulong,
     pub active: *mut atomic64_t,
     pub reserved: *mut u64,
     pub bits: u32,
@@ -15,43 +15,43 @@ pub struct asid_info {
     /* Which CPU requires context flush on next call */
     pub flush_pending: cpumask_t,
     /* Number of ASID allocated by context (shift value) */
-    pub ctxt_shift: ::core::ffi::c_uint,
+    pub ctxt_shift: ::kernel::ffi::c_uint,
     /* Callback to locally flush the context. */
     pub flush_cpu_ctxt_cb: Option<unsafe extern "C" fn()>,
 }
 
 #[inline]
-pub const unsafe fn NUM_ASIDS(info: *const asid_info) -> ::core::ffi::c_ulong {
-    (1 as ::core::ffi::c_ulong) << (*info).bits
+pub const unsafe fn NUM_ASIDS(info: *const asid_info) -> ::kernel::ffi::c_ulong {
+    (1 as ::kernel::ffi::c_ulong) << (*info).bits
 }
 
 #[inline]
-pub const unsafe fn NUM_CTXT_ASIDS(info: *const asid_info) -> ::core::ffi::c_ulong {
+pub const unsafe fn NUM_CTXT_ASIDS(info: *const asid_info) -> ::kernel::ffi::c_ulong {
     NUM_ASIDS(info) >> (*info).ctxt_shift
 }
 
 // C: #define active_asid(info, cpu) *per_cpu_ptr((info)->active, cpu)
 #[inline]
-pub unsafe fn active_asid(info: *mut asid_info, cpu: ::core::ffi::c_uint) -> atomic64_t {
+pub unsafe fn active_asid(info: *mut asid_info, cpu: ::kernel::ffi::c_uint) -> atomic64_t {
     *per_cpu_ptr((*info).active, cpu)
 }
 
 extern "C" {
-    pub fn per_cpu_ptr<T>(ptr: *mut T, cpu: ::core::ffi::c_uint) -> *mut T;
+    pub fn per_cpu_ptr<T>(ptr: *mut T, cpu: ::kernel::ffi::c_uint) -> *mut T;
 
     pub fn asid_new_context(
         info: *mut asid_info,
         pasid: *mut atomic64_t,
-        cpu: ::core::ffi::c_uint,
+        cpu: ::kernel::ffi::c_uint,
         mm: *mut mm_struct,
     );
 
     pub fn asid_allocator_init(
         info: *mut asid_info,
         bits: u32,
-        asid_per_ctxt: ::core::ffi::c_uint,
+        asid_per_ctxt: ::kernel::ffi::c_uint,
         flush_cpu_ctxt_cb: Option<unsafe extern "C" fn()>,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 /*
@@ -64,7 +64,7 @@ extern "C" {
 pub unsafe fn asid_check_context(
     info: *mut asid_info,
     pasid: *mut atomic64_t,
-    cpu: ::core::ffi::c_uint,
+    cpu: ::kernel::ffi::c_uint,
     mm: *mut mm_struct,
 ) {
     let asid: u64;

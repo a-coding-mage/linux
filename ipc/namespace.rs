@@ -50,21 +50,21 @@ extern "C" {
     fn ns_tree_add_raw(ns: *mut ipc_namespace);
     fn retire_ipc_sysctls(ns: *mut ipc_namespace);
     fn retire_mq_sysctls(ns: *mut ipc_namespace);
-    fn mntput(mnt: *mut core::ffi::c_void);
+    fn mntput(mnt: *mut kernel::ffi::c_void);
     fn put_user_ns(ns: *mut user_namespace);
     fn ns_common_free(ns: *mut ipc_namespace);
     fn kfree(ns: *mut ipc_namespace);
     fn get_ipc_ns(ns: *mut ipc_namespace) -> *mut ipc_namespace;
-    fn down_write(sem: *mut core::ffi::c_void);
-    fn up_write(sem: *mut core::ffi::c_void);
-    fn idr_find(idr: *mut core::ffi::c_void, id: i32) -> *mut kern_ipc_perm;
+    fn down_write(sem: *mut kernel::ffi::c_void);
+    fn up_write(sem: *mut kernel::ffi::c_void);
+    fn idr_find(idr: *mut kernel::ffi::c_void, id: i32) -> *mut kern_ipc_perm;
     fn rcu_read_lock();
     fn ipc_lock_object(perm: *mut kern_ipc_perm);
-    fn mnt_make_shortterm(mnt: *mut core::ffi::c_void);
+    fn mnt_make_shortterm(mnt: *mut kernel::ffi::c_void);
     fn synchronize_rcu();
-    fn ns_ref_put_and_lock(ns: *mut ipc_namespace, lock: *mut core::ffi::c_void) -> bool;
+    fn ns_ref_put_and_lock(ns: *mut ipc_namespace, lock: *mut kernel::ffi::c_void) -> bool;
     fn mq_clear_sbinfo(ns: *mut ipc_namespace);
-    fn spin_unlock(lock: *mut core::ffi::c_void);
+    fn spin_unlock(lock: *mut kernel::ffi::c_void);
     fn ns_tree_remove(ns: *mut ipc_namespace);
     fn llist_add(node: *mut llist_node, head: *mut llist_node) -> bool;
     fn schedule_work(work: *mut work_struct);
@@ -217,7 +217,7 @@ extern "C" {
 
 #[repr(C)]
 pub struct proc_ns_operations {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub get: unsafe fn(*mut task_struct) -> *mut ns_common,
     pub put: unsafe fn(*mut ns_common),
     pub install: unsafe fn(*mut nsset, *mut ns_common) -> i32,
@@ -226,7 +226,7 @@ pub struct proc_ns_operations {
 
 #[no_mangle]
 pub static ipcns_operations: proc_ns_operations = proc_ns_operations {
-    name: b"ipc\0".as_ptr() as *const core::ffi::c_char,
+    name: b"ipc\0".as_ptr() as *const kernel::ffi::c_char,
     get: ipcns_get,
     put: ipcns_put,
     install: ipcns_install,

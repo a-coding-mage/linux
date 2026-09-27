@@ -9,12 +9,12 @@
  */
 
 #[inline]
-unsafe fn _futex_hash_index(ua: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+unsafe fn _futex_hash_index(ua: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     (ua >> 2) & 0x3fc
 }
 
 #[inline]
-unsafe fn _futex_spin_lock_irqsave(s: *mut arch_spinlock_t, flags: *mut ::core::ffi::c_ulong) {
+unsafe fn _futex_spin_lock_irqsave(s: *mut arch_spinlock_t, flags: *mut ::kernel::ffi::c_ulong) {
     local_irq_save(*flags);
     arch_spin_lock(s);
 }
@@ -22,7 +22,7 @@ unsafe fn _futex_spin_lock_irqsave(s: *mut arch_spinlock_t, flags: *mut ::core::
 #[inline]
 unsafe fn _futex_spin_unlock_irqrestore(
     s: *mut arch_spinlock_t,
-    flags: *mut ::core::ffi::c_ulong,
+    flags: *mut ::kernel::ffi::c_ulong,
 ) {
     arch_spin_unlock(s);
     local_irq_restore(*flags);
@@ -30,21 +30,21 @@ unsafe fn _futex_spin_unlock_irqrestore(
 
 #[inline]
 unsafe fn arch_futex_atomic_op_inuser(
-    op: ::core::ffi::c_int,
-    oparg: ::core::ffi::c_int,
-    oval: *mut ::core::ffi::c_int,
+    op: ::kernel::ffi::c_int,
+    oparg: ::kernel::ffi::c_int,
+    oval: *mut ::kernel::ffi::c_int,
     uaddr: *mut u32,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     unsafe extern "C" {
         static mut lws_lock_start: u32;
     }
 
-    let ua = uaddr as ::core::ffi::c_ulong;
+    let ua = uaddr as ::kernel::ffi::c_ulong;
     let s: *mut arch_spinlock_t =
         (&raw mut lws_lock_start).add(_futex_hash_index(ua) as usize) as *mut arch_spinlock_t;
-    let mut flags: ::core::ffi::c_ulong = 0;
-    let mut oldval: ::core::ffi::c_int;
-    let mut ret: ::core::ffi::c_int;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
+    let mut oldval: ::kernel::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
     let mut tmp: u32;
 
     _futex_spin_lock_irqsave(s, &mut flags);
@@ -89,16 +89,16 @@ unsafe fn futex_atomic_cmpxchg_inatomic(
     uaddr: *mut u32,
     oldval: u32,
     newval: u32,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     unsafe extern "C" {
         static mut lws_lock_start: u32;
     }
 
-    let ua = uaddr as ::core::ffi::c_ulong;
+    let ua = uaddr as ::kernel::ffi::c_ulong;
     let s: *mut arch_spinlock_t =
         (&raw mut lws_lock_start).add(_futex_hash_index(ua) as usize) as *mut arch_spinlock_t;
     let mut val: u32;
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
 
     if !access_ok(uaddr, core::mem::size_of::<u32>()) {
         return -EFAULT;

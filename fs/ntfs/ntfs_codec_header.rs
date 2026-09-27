@@ -34,41 +34,41 @@ pub enum ntfs_codec_id {
 #[repr(C)]
 pub struct ntfs_codec_ops {
     pub id: ntfs_codec_id,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub scratch_size: Option<unsafe extern "C" fn(chunk_size: u32) -> usize>,
     pub decompress_chunk: Option<
         unsafe extern "C" fn(
-            scratch: *mut ::core::ffi::c_void,
-            src: *const ::core::ffi::c_void,
+            scratch: *mut ::kernel::ffi::c_void,
+            src: *const ::kernel::ffi::c_void,
             src_len: usize,
-            dst: *mut ::core::ffi::c_void,
+            dst: *mut ::kernel::ffi::c_void,
             dst_len: usize,
             chunk_size: u32,
-        ) -> ::core::ffi::c_int,
+        ) -> ::kernel::ffi::c_int,
     >,
     pub decompress_pages: Option<
         unsafe extern "C" fn(
             dest_pages: *mut *mut page,
-            completed_pages: *mut ::core::ffi::c_int,
-            dest_index: *mut ::core::ffi::c_int,
-            dest_ofs: *mut ::core::ffi::c_int,
-            dest_max_index: ::core::ffi::c_int,
-            dest_max_ofs: ::core::ffi::c_int,
-            xpage: ::core::ffi::c_int,
-            xpage_done: *mut ::core::ffi::c_char,
+            completed_pages: *mut ::kernel::ffi::c_int,
+            dest_index: *mut ::kernel::ffi::c_int,
+            dest_ofs: *mut ::kernel::ffi::c_int,
+            dest_max_index: ::kernel::ffi::c_int,
+            dest_max_ofs: ::kernel::ffi::c_int,
+            xpage: ::kernel::ffi::c_int,
+            xpage_done: *mut ::kernel::ffi::c_char,
             cb_start: *mut u8,
             cb_size: u32,
             i_size: i64,
             initialized_size: i64,
-        ) -> ::core::ffi::c_int,
+        ) -> ::kernel::ffi::c_int,
     >,
     pub compress_subblock: Option<
         unsafe extern "C" fn(
             pctx: *mut compress_context,
-            inbuf: *const ::core::ffi::c_char,
-            bufsize: ::core::ffi::c_int,
-            outbuf: *mut ::core::ffi::c_char,
-        ) -> ::core::ffi::c_int,
+            inbuf: *const ::kernel::ffi::c_char,
+            bufsize: ::kernel::ffi::c_int,
+            outbuf: *mut ::kernel::ffi::c_char,
+        ) -> ::kernel::ffi::c_int,
     >,
 }
 

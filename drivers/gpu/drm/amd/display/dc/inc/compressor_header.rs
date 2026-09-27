@@ -134,36 +134,36 @@ pub struct compressor {
 #[derive(Copy, Clone)]
 pub struct fbc_input_info {
     pub dynamic_fbc_buffer_alloc: bool,
-    pub source_view_width: libc::c_uint,
-    pub source_view_height: libc::c_uint,
-    pub num_of_active_targets: libc::c_uint,
+    pub source_view_width: core::ffi::c_uint,
+    pub source_view_height: core::ffi::c_uint,
+    pub num_of_active_targets: core::ffi::c_uint,
 }
 
 #[repr(C)]
 pub union fbc_requested_compressed_size_flags_union {
     pub bits: fbc_requested_compressed_size_flags_bits,
-    pub flags: libc::c_uint,
+    pub flags: core::ffi::c_uint,
 }
 
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct fbc_requested_compressed_size_flags_bits {
-    pub value: libc::c_uint,
+    pub value: core::ffi::c_uint,
 }
 
 impl fbc_requested_compressed_size_flags_bits {
-    pub const PREFERRED_MUST_BE_FRAMEBUFFER_POOL: libc::c_uint = 1 << 0;
-    pub const MIN_MUST_BE_FRAMEBUFFER_POOL: libc::c_uint = 1 << 1;
+    pub const PREFERRED_MUST_BE_FRAMEBUFFER_POOL: core::ffi::c_uint = 1 << 0;
+    pub const MIN_MUST_BE_FRAMEBUFFER_POOL: core::ffi::c_uint = 1 << 1;
 }
 
 #[repr(C)]
 pub struct fbc_requested_compressed_size {
     // Above preferedSize must be allocated in FB pool
-    pub preferred_size: libc::c_uint,
-    pub preferred_size_alignment: libc::c_uint,
+    pub preferred_size: core::ffi::c_uint,
+    pub preferred_size_alignment: core::ffi::c_uint,
     // Above minSize must be allocated in FB pool
-    pub min_size: libc::c_uint,
-    pub min_size_alignment: libc::c_uint,
+    pub min_size: core::ffi::c_uint,
+    pub min_size_alignment: core::ffi::c_uint,
     pub flags_union: fbc_requested_compressed_size_flags_union,
 }
 

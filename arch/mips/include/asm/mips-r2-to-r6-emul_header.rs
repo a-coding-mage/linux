@@ -88,7 +88,7 @@ extern "C" {
         regs: *mut pt_regs,
         code: u32,
         si_code: i32,
-        str_: *const core::ffi::c_char,
+        str_: *const kernel::ffi::c_char,
     );
 }
 

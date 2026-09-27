@@ -18,7 +18,7 @@ const OVERRIDE_WIDTH: u32 = 0x8;
 
 #[repr(C)]
 pub struct EfifbDmiInfo {
-    pub optname: *const core::ffi::c_char,
+    pub optname: *const kernel::ffi::c_char,
     pub base: u64,
     pub stride: u32,
     pub width: u32,
@@ -59,7 +59,7 @@ pub static mut efifb_dmi_list: [EfifbDmiInfo; M_UNKNOWN as usize + 1] = [
     EfifbDmiInfo { optname: core::ptr::null(), base: 0, stride: 0, width: 0, height: 0, flags: OVERRIDE_NONE },
 ];
 
-pub unsafe fn efifb_setup_from_dmi(si: *mut screen_info, opt: *const core::ffi::c_char) {
+pub unsafe fn efifb_setup_from_dmi(si: *mut screen_info, opt: *const kernel::ffi::c_char) {
     let mut i = 0;
     while i < M_UNKNOWN {
         let info = &efifb_dmi_list[i as usize];

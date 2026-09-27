@@ -12,12 +12,12 @@
 /* Ultravisor */
 #[cfg(any(CONFIG_PPC_POWERNV, CONFIG_PPC_SVM))]
 unsafe extern "C" {
-    pub fn ucall_norets(opcode: ::core::ffi::c_ulong, ...) -> ::core::ffi::c_long;
+    pub fn ucall_norets(opcode: ::kernel::ffi::c_ulong, ...) -> ::kernel::ffi::c_long;
 }
 
 #[cfg(not(any(CONFIG_PPC_POWERNV, CONFIG_PPC_SVM)))]
 #[inline]
-pub unsafe fn ucall_norets(_opcode: ::core::ffi::c_ulong, ...) -> ::core::ffi::c_long {
+pub unsafe fn ucall_norets(_opcode: ::kernel::ffi::c_ulong, ...) -> ::kernel::ffi::c_long {
     U_NOT_AVAILABLE
 }
 
@@ -96,12 +96,12 @@ pub unsafe fn kvmppc_restore_tm_hv(
 
 unsafe extern "C" {
     pub fn kvmppc_p9_enter_guest(vcpu: *mut kvm_vcpu);
-    pub fn kvmppc_h_set_dabr(vcpu: *mut kvm_vcpu, dabr: ::core::ffi::c_ulong) -> ::core::ffi::c_long;
+    pub fn kvmppc_h_set_dabr(vcpu: *mut kvm_vcpu, dabr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_long;
     pub fn kvmppc_h_set_xdabr(
         vcpu: *mut kvm_vcpu,
-        dabr: ::core::ffi::c_ulong,
-        dabrx: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_long;
+        dabr: ::kernel::ffi::c_ulong,
+        dabrx: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_long;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

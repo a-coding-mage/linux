@@ -34,7 +34,7 @@ macro_rules! declare_event_class {
         #[repr(C)]
         pub struct trace_event_raw_$name {
             pub ent: trace_entry,
-            pub __data: [core::ffi::c_char; 0],
+            pub __data: [kernel::ffi::c_char; 0],
         }
         static mut event_class_$name: trace_event_class = trace_event_class::default();
     };
@@ -126,7 +126,7 @@ macro_rules! declare_event_get_offsets {
 
 /* Stage 6 callback and buffering logic. */
 #[cfg(CONFIG_PERF_EVENTS)]
-macro_rules! trace_perf_proto { ($call:ident, $proto:tt) => { unsafe fn perf_trace_$call($data: *mut core::ffi::c_void, $proto); }; }
+macro_rules! trace_perf_proto { ($call:ident, $proto:tt) => { unsafe fn perf_trace_$call($data: *mut kernel::ffi::c_void, $proto); }; }
 #[cfg(CONFIG_PERF_EVENTS)]
 macro_rules! trace_perf_init { ($call:ident) => { perf_probe: perf_trace_$call, }; }
 #[cfg(not(CONFIG_PERF_EVENTS))]
@@ -149,7 +149,7 @@ macro_rules! trace_btf_ids_init { ($call:ident) => {}; }
 #[allow(unused_macros)]
 macro_rules! declare_final_event_class {
     ($call:ident, $proto:tt, $print:tt) => {
-        static mut print_fmt_$call: [core::ffi::c_char; 0] = [];
+        static mut print_fmt_$call: [kernel::ffi::c_char; 0] = [];
         static mut event_class_$call: trace_event_class = trace_event_class::default();
     };
 }

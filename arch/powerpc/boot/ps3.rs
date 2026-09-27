@@ -110,13 +110,13 @@ unsafe fn ps3_repository_read_rm_size(rm_size: *mut u64) -> i32 {
         b"%s:%d: ppe_id  %lu \n\0".as_ptr() as *const i8,
         b"ps3_repository_read_rm_size\0".as_ptr(),
         line!() as i32,
-        ppe_id as libc::c_ulong,
+        ppe_id as core::ffi::c_ulong,
     );
     printf(
         b"%s:%d: lpar_id %lu \n\0".as_ptr() as *const i8,
         b"ps3_repository_read_rm_size\0".as_ptr(),
         line!() as i32,
-        lpar_id as libc::c_ulong,
+        lpar_id as core::ffi::c_ulong,
     );
     printf(
         b"%s:%d: rm_size %llxh \n\0".as_ptr() as *const i8,
@@ -140,7 +140,7 @@ pub unsafe extern "C" fn ps3_copy_vectors() {
 pub unsafe extern "C" fn platform_init() {
     let heapsize: u32 = 0x1000000u32.wrapping_sub(&_end as *const u8 as u32);
     let mut chosen: *mut core::ffi::c_void;
-    let mut ft_addr: libc::c_ulong;
+    let mut ft_addr: core::ffi::c_ulong;
     let mut rm_size: u64 = 0;
 
     console_ops.write = Some(ps3_console_write);

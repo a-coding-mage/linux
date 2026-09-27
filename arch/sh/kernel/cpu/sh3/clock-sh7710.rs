@@ -26,7 +26,7 @@ static mut SH7710_MASTER_CLK_OPS: sh_clk_ops = sh_clk_ops {
     init: Some(master_clk_init),
 };
 
-unsafe fn module_clk_recalc(clk: *mut clk) -> ::core::ffi::c_ulong {
+unsafe fn module_clk_recalc(clk: *mut clk) -> ::kernel::ffi::c_ulong {
     let idx: i32 = (__raw_readw(FRQCR) & 0x0007) as i32;
     (*clk).parent.as_ref().unwrap().rate / MD_TABLE[idx as usize] as _
 }
@@ -35,7 +35,7 @@ static mut SH7710_MODULE_CLK_OPS: sh_clk_ops = sh_clk_ops {
     recalc: Some(module_clk_recalc),
 };
 
-unsafe fn bus_clk_recalc(clk: *mut clk) -> ::core::ffi::c_ulong {
+unsafe fn bus_clk_recalc(clk: *mut clk) -> ::kernel::ffi::c_ulong {
     let idx: i32 = ((__raw_readw(FRQCR) & 0x0700) >> 8) as i32;
     (*clk).parent.as_ref().unwrap().rate / MD_TABLE[idx as usize] as _
 }
@@ -44,7 +44,7 @@ static mut SH7710_BUS_CLK_OPS: sh_clk_ops = sh_clk_ops {
     recalc: Some(bus_clk_recalc),
 };
 
-unsafe fn cpu_clk_recalc(clk: *mut clk) -> ::core::ffi::c_ulong {
+unsafe fn cpu_clk_recalc(clk: *mut clk) -> ::kernel::ffi::c_ulong {
     let idx: i32 = ((__raw_readw(FRQCR) & 0x0070) >> 4) as i32;
     (*clk).parent.as_ref().unwrap().rate / MD_TABLE[idx as usize] as _
 }

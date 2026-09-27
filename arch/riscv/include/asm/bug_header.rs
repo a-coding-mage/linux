@@ -73,7 +73,7 @@ pub struct task_struct;
 
 extern "C" {
     pub fn __show_regs(regs: *mut pt_regs);
-    pub fn die(regs: *mut pt_regs, str_: *const core::ffi::c_char);
+    pub fn die(regs: *mut pt_regs, str_: *const kernel::ffi::c_char);
     pub fn do_trap(regs: *mut pt_regs, signo: i32, code: i32, addr: usize);
 }
 

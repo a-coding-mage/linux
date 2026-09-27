@@ -24,7 +24,7 @@ unsafe extern "C" fn snd_ak4531_dump(ak4531: *mut snd_ak4531) {
     idx = 0;
     while idx < 0x19 {
         printk(
-            KERN_DEBUG b"ak4531 0x%x: 0x%x\n\0".as_ptr() as *const c_char,
+            c"\x017ak4531 0x%x: 0x%x\n".as_ptr() as *const c_char,
             idx,
             (*ak4531).regs[idx as usize] as c_int,
         );

@@ -641,7 +641,7 @@ bool ex_handler_bpf(const struct exception_table_entry *ex,
 
 	if (dst_reg != REG_DONT_CLEAR_MARKER)
 		regs->regs[dst_reg] = 0;
-	regs->csr_era = (core::ffi::c_ulong)&ex->fixup - offset;
+	regs->csr_era = (kernel::ffi::c_ulong)&ex->fixup - offset;
 
 	return true;
 }
@@ -651,7 +651,7 @@ static int add_exception_handler(const struct bpf_insn *insn,
 				 jit_ctx *ctx,
 				 int dst_reg)
 {
-	core::ffi::c_ulong pc;
+	kernel::ffi::c_ulong pc;
 	off_t ins_offset, fixup_offset;
 	struct exception_table_entry *ex;
 
@@ -667,7 +667,7 @@ static int add_exception_handler(const struct bpf_insn *insn,
 		return -EINVAL;
 
 	ex = &ctx->prog->aux->extable[ctx->num_exentries];
-	pc = (core::ffi::c_ulong)&ctx->ro_image[ctx->idx - 1];
+	pc = (kernel::ffi::c_ulong)&ctx->ro_image[ctx->idx - 1];
 
 	/*
 	 * This is the relative offset of the instruction that may fault from
@@ -1513,7 +1513,7 @@ static int build_body(jit_ctx *ctx, extra_pass: bool)
 }
 
 /* Fill space with break instructions */
-static void jit_fill_hole(void *area, size: core::ffi::c_uint)
+static void jit_fill_hole(void *area, size: kernel::ffi::c_uint)
 {
 	u32 *ptr;
 
@@ -1602,8 +1602,8 @@ int bpf_arch_text_poke(void *ip, bpf_text_poke_type old_t,
 {
 	int ret;
 	bool is_call;
-	core::ffi::c_ulong size = 0;
-	core::ffi::c_ulong offset = 0;
+	kernel::ffi::c_ulong size = 0;
+	kernel::ffi::c_ulong offset = 0;
 	void *image = NULL;
 	char namebuf[KSYM_NAME_LEN];
 	u32 old_insns[LOONGARCH_LONG_JUMP_NINSNS] = {[0 ... 4] = INSN_NOP};
@@ -1612,7 +1612,7 @@ int bpf_arch_text_poke(void *ip, bpf_text_poke_type old_t,
 	/* Only poking bpf text is supported. Since kernel function entry
 	 * is set up by ftrace, we rely on ftrace to poke kernel functions.
 	 */
-	if (!bpf_address_lookup((core::ffi::c_ulong)ip, &size, &offset, namebuf))
+	if (!bpf_address_lookup((kernel::ffi::c_ulong)ip, &size, &offset, namebuf))
 		return -ENOTSUPP;
 
 	image = ip - offset;
@@ -1800,17 +1800,17 @@ static int invoke_bpf(jit_ctx *ctx, bpf_tramp_nodes *tn,
 	return 0;
 }
 
-void *arch_alloc_bpf_trampoline(size: core::ffi::c_uint)
+void *arch_alloc_bpf_trampoline(size: kernel::ffi::c_uint)
 {
 	return bpf_prog_pack_alloc(size, jit_fill_hole, false);
 }
 
-void arch_free_bpf_trampoline(void *image, size: core::ffi::c_uint)
+void arch_free_bpf_trampoline(void *image, size: kernel::ffi::c_uint)
 {
 	bpf_prog_pack_free(image, size);
 }
 
-int arch_protect_bpf_trampoline(void *image, size: core::ffi::c_uint)
+int arch_protect_bpf_trampoline(void *image, size: kernel::ffi::c_uint)
 {
 	return 0;
 }
@@ -1820,7 +1820,7 @@ int arch_protect_bpf_trampoline(void *image, size: core::ffi::c_uint)
  */
 static void sign_extend(jit_ctx *ctx, int rd, int rj, size: u8, sign: bool)
 {
-	/* ABI requires core::ffi::c_uchar/short to be zero-extended */
+	/* ABI requires kernel::ffi::c_uchar/short to be zero-extended */
 	if (!sign && (size == 1 || size == 2)) {
 		if (rd != rj)
 			move_reg(ctx, rd, rj);
@@ -1854,7 +1854,7 @@ static int __arch_prepare_bpf_trampoline(jit_ctx *ctx, bpf_tramp_image *im,
 	int cookie_cnt, cookie_off;
 	int stack_size, args_off, stk_args_off, nr_arg_slots = 0;
 	int retval_off, func_meta_off, ip_off, run_ctx_off, sreg_off, tcc_ptr_off;
-	core::ffi::c_ulonglong func_meta;
+	kernel::ffi::c_ulonglong func_meta;
 	bool is_struct_ops = flags & BPF_TRAMP_F_INDIRECT;
 	void *orig_call = func_addr;
 	struct bpf_tramp_nodes *fentry = &tnodes[BPF_TRAMP_FENTRY];
@@ -2020,11 +2020,11 @@ static int __arch_prepare_bpf_trampoline(jit_ctx *ctx, bpf_tramp_image *im,
 
 	/* To traced function */
 	/* Ftrace jump skips 2 NOP instructions */
-	if (is_kernel_text((core::ffi::c_ulong)orig_call) ||
-	    is_module_text_address((core::ffi::c_ulong)orig_call))
+	if (is_kernel_text((kernel::ffi::c_ulong)orig_call) ||
+	    is_module_text_address((kernel::ffi::c_ulong)orig_call))
 		orig_call += LOONGARCH_FENTRY_NBYTES;
 	/* Direct jump skips 5 NOP instructions */
-	else if (is_bpf_text_address((core::ffi::c_ulong)orig_call))
+	else if (is_bpf_text_address((kernel::ffi::c_ulong)orig_call))
 		orig_call += LOONGARCH_BPF_FENTRY_NBYTES;
 
 	if (flags & BPF_TRAMP_F_CALL_ORIG) {
@@ -2170,7 +2170,7 @@ int arch_prepare_bpf_trampoline(bpf_tramp_image *im, void *ro_image,
 	ctx.ro_image = (loongarch_instruction *)ro_image;
 	ctx.idx = 0;
 
-	jit_fill_hole(image, (core::ffi::c_uint)(ro_image_end - ro_image));
+	jit_fill_hole(image, (kernel::ffi::c_uint)(ro_image_end - ro_image));
 	ret = __arch_prepare_bpf_trampoline(&ctx, im, m, tnodes, func_addr, flags);
 	if (ret < 0)
 		goto out;
@@ -2388,17 +2388,17 @@ void bpf_jit_free(bpf_prog *prog)
 #include <asm/unwind.h>
 
 static noinline void walk_bpf_stackframe(bool (*consume_fn)(void *cookie, ip: u64, sp: u64, bp: u64),
-					 void *cookie, fp: core::ffi::c_ulong)
+					 void *cookie, fp: kernel::ffi::c_ulong)
 {
-	core::ffi::c_ulong addr;
+	kernel::ffi::c_ulong addr;
 	struct unwind_state state;
 	struct pt_regs dummyregs;
 	struct pt_regs *regs = &dummyregs;
 
 	regs->regs[1] = 0;
 	regs->regs[22] = fp;
-	regs->regs[3] = (core::ffi::c_ulong)__builtin_frame_address(0);
-	regs->csr_era = (core::ffi::c_ulong)__builtin_return_address(0);
+	regs->regs[3] = (kernel::ffi::c_ulong)__builtin_frame_address(0);
+	regs->csr_era = (kernel::ffi::c_ulong)__builtin_return_address(0);
 
 	for (unwind_start(&state, current, regs);
 	     !unwind_done(&state); unwind_next_frame(&state)) {
@@ -2409,7 +2409,7 @@ static noinline void walk_bpf_stackframe(bool (*consume_fn)(void *cookie, ip: u6
 }
 
 void arch_bpf_stack_walk!(bool (*consume_fn)(void *cookie, ip: u64, sp: u64, bp: u64), void *cookie, {
-	core::ffi::c_ulong fp;
+	kernel::ffi::c_ulong fp;
 
 	/*
 	 * Capture the live frame pointer ($r22) at the very front-line before

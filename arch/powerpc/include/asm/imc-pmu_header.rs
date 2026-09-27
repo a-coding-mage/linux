@@ -33,9 +33,9 @@ pub struct imc_mem_info {
 #[repr(C)]
 pub struct imc_events {
     pub value: u32,
-    pub name: *mut core::ffi::c_char,
-    pub unit: *mut core::ffi::c_char,
-    pub scale: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
+    pub unit: *mut kernel::ffi::c_char,
+    pub scale: *mut kernel::ffi::c_char,
 }
 
 /*

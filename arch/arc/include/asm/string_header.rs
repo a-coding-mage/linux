@@ -21,30 +21,30 @@ pub const __HAVE_ARCH_STRCMP: bool = true;
 pub const __HAVE_ARCH_STRLEN: bool = true;
 
 unsafe extern "C" {
-    pub fn memset(ptr: *mut core::ffi::c_void, c: core::ffi::c_int, size: __kernel_size_t)
-        -> *mut core::ffi::c_void;
+    pub fn memset(ptr: *mut kernel::ffi::c_void, c: kernel::ffi::c_int, size: __kernel_size_t)
+        -> *mut kernel::ffi::c_void;
     pub fn memcpy(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         size: __kernel_size_t,
-    ) -> *mut core::ffi::c_void;
-    pub fn memzero(ptr: *mut core::ffi::c_void, n: __kernel_size_t);
+    ) -> *mut kernel::ffi::c_void;
+    pub fn memzero(ptr: *mut kernel::ffi::c_void, n: __kernel_size_t);
     pub fn memcmp(
-        lhs: *const core::ffi::c_void,
-        rhs: *const core::ffi::c_void,
+        lhs: *const kernel::ffi::c_void,
+        rhs: *const kernel::ffi::c_void,
         size: __kernel_size_t,
-    ) -> core::ffi::c_int;
-    pub fn strchr(s: *const core::ffi::c_char, c: core::ffi::c_int)
-        -> *mut core::ffi::c_char;
+    ) -> kernel::ffi::c_int;
+    pub fn strchr(s: *const kernel::ffi::c_char, c: kernel::ffi::c_int)
+        -> *mut kernel::ffi::c_char;
     pub fn strcpy(
-        dest: *mut core::ffi::c_char,
-        src: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_char;
+        dest: *mut kernel::ffi::c_char,
+        src: *const kernel::ffi::c_char,
+    ) -> *mut kernel::ffi::c_char;
     pub fn strcmp(
-        cs: *const core::ffi::c_char,
-        ct: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
-    pub fn strlen(s: *const core::ffi::c_char) -> __kernel_size_t;
+        cs: *const kernel::ffi::c_char,
+        ct: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
+    pub fn strlen(s: *const kernel::ffi::c_char) -> __kernel_size_t;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

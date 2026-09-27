@@ -24,7 +24,7 @@ unsafe extern "C" {
     pub fn caam_strstatus(dev: *mut device, status: u32, qi_v2: bool) -> i32;
 
     pub fn caam_dump_sg(
-        prefix_str: *const core::ffi::c_char,
+        prefix_str: *const kernel::ffi::c_char,
         prefix_type: i32,
         rowsize: i32,
         groupsize: i32,

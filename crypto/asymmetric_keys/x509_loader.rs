@@ -5,9 +5,9 @@
 
 pub unsafe fn x509_load_certificate_list(
     cert_list: *const u8,
-    list_size: ::core::ffi::c_ulong,
+    list_size: ::kernel::ffi::c_ulong,
     keyring: *const key,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let mut key: key_ref_t;
     let mut p: *const u8;
     let end: *const u8;
@@ -59,7 +59,7 @@ pub unsafe fn x509_load_certificate_list(
 
     // C label `dodgy_cert`; this macro preserves the original branch target.
     #[allow(unreachable_code)]
-    fn dodgy_cert() -> ::core::ffi::c_int {
+    fn dodgy_cert() -> ::kernel::ffi::c_int {
         pr_err!(b"Problem parsing in-kernel X.509 certificate list\n\0".as_ptr());
         0
     }

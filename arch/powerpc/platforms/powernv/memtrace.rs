@@ -8,12 +8,12 @@
 
 #[repr(C)]
 pub struct memtrace_entry {
-    pub mem: *mut core::ffi::c_void,
+    pub mem: *mut kernel::ffi::c_void,
     pub start: u64,
     pub size: u64,
     pub nid: u32,
     pub dir: *mut dentry,
-    pub name: [core::ffi::c_char; 16],
+    pub name: [kernel::ffi::c_char; 16],
 }
 
 extern "C" {
@@ -43,7 +43,7 @@ const FLUSH_CHUNK_SIZE: usize = 1 << 30;
 
 unsafe fn memtrace_read(
     filp: *mut file,
-    ubuf: *mut core::ffi::c_void,
+    ubuf: *mut kernel::ffi::c_void,
     count: usize,
     ppos: *mut i64,
 ) -> isize {
@@ -53,7 +53,7 @@ unsafe fn memtrace_read(
 
 #[repr(C)]
 struct file_private {
-    private_data: *mut core::ffi::c_void,
+    private_data: *mut kernel::ffi::c_void,
 }
 
 unsafe fn memtrace_mmap(filp: *mut file, vma: *mut vm_area_struct) -> i32 {
@@ -201,14 +201,14 @@ unsafe fn memtrace_free_regions() -> i32 {
         i -= 1;
     }
     if ret != 0 { return ret; }
-    kfree(memtrace_array as *mut core::ffi::c_void);
+    kfree(memtrace_array as *mut kernel::ffi::c_void);
     memtrace_array = core::ptr::null_mut();
     memtrace_size = 0;
     memtrace_array_nr = 0;
     0
 }
 
-unsafe fn memtrace_enable_set(_data: *mut core::ffi::c_void, val: u64) -> i32 {
+unsafe fn memtrace_enable_set(_data: *mut kernel::ffi::c_void, val: u64) -> i32 {
     let mut rc = -EAGAIN;
     let bytes = memory_block_size_bytes();
     if val & (bytes - 1) != 0 {
@@ -226,7 +226,7 @@ unsafe fn memtrace_enable_set(_data: *mut core::ffi::c_void, val: u64) -> i32 {
     rc
 }
 
-unsafe fn memtrace_enable_get(_data: *mut core::ffi::c_void, val: *mut u64) -> i32 {
+unsafe fn memtrace_enable_get(_data: *mut kernel::ffi::c_void, val: *mut u64) -> i32 {
     *val = memtrace_size;
     0
 }

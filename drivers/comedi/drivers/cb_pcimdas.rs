@@ -63,45 +63,45 @@ static cb_pcimdas_ai_uni_range: comedi_lrange = comedi_lrange { length: 4, range
 static cb_pcimdas_ao_range: comedi_lrange = comedi_lrange { length: 6, range: [BIP_RANGE(10), BIP_RANGE(5), UNI_RANGE(10), UNI_RANGE(5), RANGE_ext(-1, 1), RANGE_ext(0, 1)] };
 
 #[repr(C)]
-struct cb_pcimdas_private { daqio: libc::c_ulong, BADR3: libc::c_ulong }
+struct cb_pcimdas_private { daqio: kernel::ffi::c_ulong, BADR3: kernel::ffi::c_ulong }
 
-unsafe fn cb_pcimdas_ai_eoc(dev: *mut comedi_device, _s: *mut comedi_subdevice, _insn: *mut comedi_insn, _context: libc::c_ulong) -> libc::c_int {
+unsafe fn cb_pcimdas_ai_eoc(dev: *mut comedi_device, _s: *mut comedi_subdevice, _insn: *mut comedi_insn, _context: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     let devpriv = (*dev).private as *mut cb_pcimdas_private;
-    let status = inb((*devpriv).BADR3 + PCIMDAS_STATUS_REG as libc::c_ulong);
+    let status = inb((*devpriv).BADR3 + PCIMDAS_STATUS_REG as kernel::ffi::c_ulong);
     if status & PCIMDAS_STATUS_EOC != 0 { 0 } else { -EBUSY }
 }
 
-unsafe fn cb_pcimdas_ai_insn_read(dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut libc::c_uint) -> libc::c_int {
+unsafe fn cb_pcimdas_ai_insn_read(dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut kernel::ffi::c_uint) -> kernel::ffi::c_int {
     let devpriv = (*dev).private as *mut cb_pcimdas_private;
     let chan = CR_CHAN((*insn).chanspec); let range = CR_RANGE((*insn).chanspec);
-    let mut d = inb((*devpriv).BADR3 + PCIMDAS_PACER_REG as libc::c_ulong);
-    if d & PCIMDAS_PACER_SRC_MASK != PCIMDAS_PACER_SRC_POLLED { d &= !PCIMDAS_PACER_SRC_MASK; d |= PCIMDAS_PACER_SRC_POLLED; outb(d, (*devpriv).BADR3 + PCIMDAS_PACER_REG as libc::c_ulong); }
-    outb(PCIMDAS_BURST_CONV_EN, (*devpriv).BADR3 + PCIMDAS_BURST_REG as libc::c_ulong);
-    outb(range, (*devpriv).BADR3 + PCIMDAS_GAIN_REG as libc::c_ulong);
-    outb(PCIMDAS_MUX(chan, chan), (*devpriv).BADR3 + PCIMDAS_MUX_REG as libc::c_ulong);
-    let mut n = 0; while n < (*insn).n { outw(0, (*devpriv).daqio + PCIMDAS_AI_SOFTTRIG_REG as libc::c_ulong); let ret = comedi_timeout(dev, s, insn, Some(cb_pcimdas_ai_eoc), 0); if ret != 0 { return ret; } *data.add(n as usize) = inw((*devpriv).daqio + PCIMDAS_AI_REG as libc::c_ulong); n += 1; } n as libc::c_int
+    let mut d = inb((*devpriv).BADR3 + PCIMDAS_PACER_REG as kernel::ffi::c_ulong);
+    if d & PCIMDAS_PACER_SRC_MASK != PCIMDAS_PACER_SRC_POLLED { d &= !PCIMDAS_PACER_SRC_MASK; d |= PCIMDAS_PACER_SRC_POLLED; outb(d, (*devpriv).BADR3 + PCIMDAS_PACER_REG as kernel::ffi::c_ulong); }
+    outb(PCIMDAS_BURST_CONV_EN, (*devpriv).BADR3 + PCIMDAS_BURST_REG as kernel::ffi::c_ulong);
+    outb(range, (*devpriv).BADR3 + PCIMDAS_GAIN_REG as kernel::ffi::c_ulong);
+    outb(PCIMDAS_MUX(chan, chan), (*devpriv).BADR3 + PCIMDAS_MUX_REG as kernel::ffi::c_ulong);
+    let mut n = 0; while n < (*insn).n { outw(0, (*devpriv).daqio + PCIMDAS_AI_SOFTTRIG_REG as kernel::ffi::c_ulong); let ret = comedi_timeout(dev, s, insn, Some(cb_pcimdas_ai_eoc), 0); if ret != 0 { return ret; } *data.add(n as usize) = inw((*devpriv).daqio + PCIMDAS_AI_REG as kernel::ffi::c_ulong); n += 1; } n as kernel::ffi::c_int
 }
 
-unsafe fn cb_pcimdas_ao_insn_write(_dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut libc::c_uint) -> libc::c_int {
-    let devpriv = (*_dev).private as *mut cb_pcimdas_private; let chan = CR_CHAN((*insn).chanspec); let mut val = (*s).readback[chan as usize]; let mut i = 0; while i < (*insn).n { val = *data.add(i as usize); outw(val, (*devpriv).daqio + PCIMDAS_AO_REG(chan as usize) as libc::c_ulong); i += 1; } (*s).readback[chan as usize] = val; (*insn).n as libc::c_int
+unsafe fn cb_pcimdas_ao_insn_write(_dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut kernel::ffi::c_uint) -> kernel::ffi::c_int {
+    let devpriv = (*_dev).private as *mut cb_pcimdas_private; let chan = CR_CHAN((*insn).chanspec); let mut val = (*s).readback[chan as usize]; let mut i = 0; while i < (*insn).n { val = *data.add(i as usize); outw(val, (*devpriv).daqio + PCIMDAS_AO_REG(chan as usize) as kernel::ffi::c_ulong); i += 1; } (*s).readback[chan as usize] = val; (*insn).n as kernel::ffi::c_int
 }
 
-unsafe fn cb_pcimdas_di_insn_bits(_dev: *mut comedi_device, _s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut libc::c_uint) -> libc::c_int { let devpriv = (*_dev).private as *mut cb_pcimdas_private; *data.add(1) = inb((*devpriv).BADR3 + PCIMDAS_DI_DO_REG as libc::c_ulong) & 0x0f; (*insn).n as libc::c_int }
-unsafe fn cb_pcimdas_do_insn_bits(_dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut libc::c_uint) -> libc::c_int { let devpriv = (*_dev).private as *mut cb_pcimdas_private; if comedi_dio_update_state(s, data) != 0 { outb((*s).state, (*devpriv).BADR3 + PCIMDAS_DI_DO_REG as libc::c_ulong); } *data.add(1) = (*s).state; (*insn).n as libc::c_int }
+unsafe fn cb_pcimdas_di_insn_bits(_dev: *mut comedi_device, _s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut kernel::ffi::c_uint) -> kernel::ffi::c_int { let devpriv = (*_dev).private as *mut cb_pcimdas_private; *data.add(1) = inb((*devpriv).BADR3 + PCIMDAS_DI_DO_REG as kernel::ffi::c_ulong) & 0x0f; (*insn).n as kernel::ffi::c_int }
+unsafe fn cb_pcimdas_do_insn_bits(_dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut kernel::ffi::c_uint) -> kernel::ffi::c_int { let devpriv = (*_dev).private as *mut cb_pcimdas_private; if comedi_dio_update_state(s, data) != 0 { outb((*s).state, (*devpriv).BADR3 + PCIMDAS_DI_DO_REG as kernel::ffi::c_ulong); } *data.add(1) = (*s).state; (*insn).n as kernel::ffi::c_int }
 
-unsafe fn cb_pcimdas_counter_insn_config(_dev: *mut comedi_device, _s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut libc::c_uint) -> libc::c_int { let devpriv = (*_dev).private as *mut cb_pcimdas_private; match *data { INSN_CONFIG_SET_CLOCK_SRC => match *data.add(1) { 0 => outb(PCIMDAS_USER_CNTR_CTR1_CLK_SEL, (*devpriv).BADR3 + PCIMDAS_USER_CNTR_REG as libc::c_ulong), 1 => outb(0, (*devpriv).BADR3 + PCIMDAS_USER_CNTR_REG as libc::c_ulong), _ => return -EINVAL }, INSN_CONFIG_GET_CLOCK_SRC => { let ctrl = inb((*devpriv).BADR3 + PCIMDAS_USER_CNTR_REG as libc::c_ulong); if ctrl & PCIMDAS_USER_CNTR_CTR1_CLK_SEL != 0 { *data.add(1)=0; *data.add(2)=I8254_OSC_BASE_100KHZ; } else { *data.add(1)=1; *data.add(2)=0; } }, _ => return -EINVAL } (*insn).n as libc::c_int }
+unsafe fn cb_pcimdas_counter_insn_config(_dev: *mut comedi_device, _s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut kernel::ffi::c_uint) -> kernel::ffi::c_int { let devpriv = (*_dev).private as *mut cb_pcimdas_private; match *data { INSN_CONFIG_SET_CLOCK_SRC => match *data.add(1) { 0 => outb(PCIMDAS_USER_CNTR_CTR1_CLK_SEL, (*devpriv).BADR3 + PCIMDAS_USER_CNTR_REG as kernel::ffi::c_ulong), 1 => outb(0, (*devpriv).BADR3 + PCIMDAS_USER_CNTR_REG as kernel::ffi::c_ulong), _ => return -EINVAL }, INSN_CONFIG_GET_CLOCK_SRC => { let ctrl = inb((*devpriv).BADR3 + PCIMDAS_USER_CNTR_REG as kernel::ffi::c_ulong); if ctrl & PCIMDAS_USER_CNTR_CTR1_CLK_SEL != 0 { *data.add(1)=0; *data.add(2)=I8254_OSC_BASE_100KHZ; } else { *data.add(1)=1; *data.add(2)=0; } }, _ => return -EINVAL } (*insn).n as kernel::ffi::c_int }
 
-unsafe fn cb_pcimdas_pacer_clk(dev: *mut comedi_device) -> libc::c_uint { let p = (*dev).private as *mut cb_pcimdas_private; if inb((*p).BADR3 + PCIMDAS_STATUS_REG as libc::c_ulong) & PCIMDAS_STATUS_CLK != 0 { I8254_OSC_BASE_10MHZ } else { I8254_OSC_BASE_1MHZ } }
-unsafe fn cb_pcimdas_is_ai_se(dev: *mut comedi_device) -> bool { let p=(*dev).private as *mut cb_pcimdas_private; inb((*p).BADR3+PCIMDAS_STATUS_REG as libc::c_ulong)&PCIMDAS_STATUS_MUX != 0 }
-unsafe fn cb_pcimdas_is_ai_uni(dev: *mut comedi_device) -> bool { let p=(*dev).private as *mut cb_pcimdas_private; inb((*p).BADR3+PCIMDAS_STATUS_REG as libc::c_ulong)&PCIMDAS_STATUS_UB != 0 }
+unsafe fn cb_pcimdas_pacer_clk(dev: *mut comedi_device) -> kernel::ffi::c_uint { let p = (*dev).private as *mut cb_pcimdas_private; if inb((*p).BADR3 + PCIMDAS_STATUS_REG as kernel::ffi::c_ulong) & PCIMDAS_STATUS_CLK != 0 { I8254_OSC_BASE_10MHZ } else { I8254_OSC_BASE_1MHZ } }
+unsafe fn cb_pcimdas_is_ai_se(dev: *mut comedi_device) -> bool { let p=(*dev).private as *mut cb_pcimdas_private; inb((*p).BADR3+PCIMDAS_STATUS_REG as kernel::ffi::c_ulong)&PCIMDAS_STATUS_MUX != 0 }
+unsafe fn cb_pcimdas_is_ai_uni(dev: *mut comedi_device) -> bool { let p=(*dev).private as *mut cb_pcimdas_private; inb((*p).BADR3+PCIMDAS_STATUS_REG as kernel::ffi::c_ulong)&PCIMDAS_STATUS_UB != 0 }
 
-unsafe fn cb_pcimdas_auto_attach(dev: *mut comedi_device, _context_unused: libc::c_ulong) -> libc::c_int {
+unsafe fn cb_pcimdas_auto_attach(dev: *mut comedi_device, _context_unused: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     let pcidev = comedi_to_pci_dev(dev);
     let devpriv = comedi_alloc_devpriv(dev, core::mem::size_of::<cb_pcimdas_private>()) as *mut cb_pcimdas_private;
     if devpriv.is_null() { return -ENOMEM; }
     let ret = comedi_pci_enable(dev); if ret != 0 { return ret; }
     (*devpriv).daqio = pci_resource_start(pcidev, 2); (*devpriv).BADR3 = pci_resource_start(pcidev, 3); (*dev).iobase = pci_resource_start(pcidev, 4);
-    (*dev).pacer = comedi_8254_io_alloc((*devpriv).BADR3 + PCIMDAS_8254_BASE as libc::c_ulong, cb_pcimdas_pacer_clk(dev), I8254_IO8, 0);
+    (*dev).pacer = comedi_8254_io_alloc((*devpriv).BADR3 + PCIMDAS_8254_BASE as kernel::ffi::c_ulong, cb_pcimdas_pacer_clk(dev), I8254_IO8, 0);
     if IS_ERR((*dev).pacer) { return PTR_ERR((*dev).pacer); }
     let ret = comedi_alloc_subdevices(dev, 6); if ret != 0 { return ret; }
     let s = (*dev).subdevices.add(0); (*s).type_ = COMEDI_SUBD_AI; (*s).subdev_flags = SDF_READABLE;

@@ -2,7 +2,7 @@
 /* Direct Rust translation of clk-mt7988-topckgen.c.  Kernel dependencies and
  * the macro data constructors are supplied by the surrounding crate. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 static mut MT7988_CLK_LOCK: SpinLock = DEFINE_SPINLOCK!();
 

@@ -32,7 +32,7 @@ pub struct amdgpu_userq_fence {
      */
     pub lock: spinlock_t,
     pub link: list_head,
-    pub fence_drv_array_count: core::ffi::c_ulong,
+    pub fence_drv_array_count: kernel::ffi::c_ulong,
     pub fence_drv: *mut amdgpu_userq_fence_driver,
     pub fence_drv_array: *mut *mut amdgpu_userq_fence_driver,
 }
@@ -51,7 +51,7 @@ pub struct amdgpu_userq_fence_driver {
     pub fence_list_lock: spinlock_t,
     pub fences: list_head,
     pub adev: *mut amdgpu_device,
-    pub timeline_name: [core::ffi::c_char; TASK_COMM_LEN],
+    pub timeline_name: [kernel::ffi::c_char; TASK_COMM_LEN],
 }
 
 extern "C" {
@@ -64,25 +64,25 @@ extern "C" {
     pub fn amdgpu_userq_fence_driver_alloc(
         adev: *mut amdgpu_device,
         fence_drv_req: *mut *mut amdgpu_userq_fence_driver,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn amdgpu_userq_fence_driver_free(userq: *mut amdgpu_usermode_queue);
     pub fn amdgpu_userq_fence_driver_process(
         fence_drv: *mut amdgpu_userq_fence_driver,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn amdgpu_userq_fence_driver_force_completion(
         userq: *mut amdgpu_usermode_queue,
     );
     pub fn amdgpu_userq_fence_driver_destroy(ref_: *mut kref);
     pub fn amdgpu_userq_signal_ioctl(
         dev: *mut drm_device,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         filp: *mut drm_file,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn amdgpu_userq_wait_ioctl(
         dev: *mut drm_device,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         filp: *mut drm_file,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

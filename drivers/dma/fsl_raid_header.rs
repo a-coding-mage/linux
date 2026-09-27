@@ -154,7 +154,7 @@ pub const FSL_RE_HWDESC_FMT_MASK: u32 = 0x3 << FSL_RE_HWDESC_FMT_SHIFT;
 pub struct fsl_re_drv_private {
     pub total_chans: u8,
     pub dma_dev: dma_device,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub re_jrs: [*mut fsl_re_chan; FSL_RE_MAX_CHANS],
     pub cf_desc_pool: *mut dma_pool,
     pub hw_desc_pool: *mut dma_pool,
@@ -162,7 +162,7 @@ pub struct fsl_re_drv_private {
 
 #[repr(C)]
 pub struct fsl_re_chan {
-    pub name: [core::ffi::c_char; 16], pub desc_lock: spinlock_t, pub ack_q: list_head, pub active_q: list_head,
+    pub name: [kernel::ffi::c_char; 16], pub desc_lock: spinlock_t, pub ack_q: list_head, pub active_q: list_head,
     pub submit_q: list_head, pub free_q: list_head, pub dev: *mut device, pub re_dev: *mut fsl_re_drv_private,
     pub chan: dma_chan, pub jrregs: *mut fsl_re_chan_cfg, pub irq: i32, pub irqtask: tasklet_struct, pub alloc_count: u32,
     pub inb_phys_addr: dma_addr_t, pub inb_ring_virt_addr: *mut fsl_re_hw_desc, pub inb_count: u32,
@@ -172,8 +172,8 @@ pub struct fsl_re_chan {
 #[repr(C)]
 pub struct fsl_re_desc {
     pub async_tx: dma_async_tx_descriptor, pub node: list_head, pub hwdesc: fsl_re_hw_desc,
-    pub re_chan: *mut fsl_re_chan, pub cf_addr: *mut core::ffi::c_void, pub cf_paddr: dma_addr_t,
-    pub cdb_addr: *mut core::ffi::c_void, pub cdb_paddr: dma_addr_t, pub status: i32,
+    pub re_chan: *mut fsl_re_chan, pub cf_addr: *mut kernel::ffi::c_void, pub cf_paddr: dma_addr_t,
+    pub cdb_addr: *mut kernel::ffi::c_void, pub cdb_paddr: dma_addr_t, pub status: i32,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -25,7 +25,7 @@ struct imx_aipstz_config {
 
 #[repr(C)]
 struct imx_aipstz_data {
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     default_cfg: *const imx_aipstz_config,
 }
 
@@ -40,8 +40,8 @@ unsafe fn imx_aipstz_apply_default(data: *mut imx_aipstz_data) {
 
 #[repr(C)]
 struct of_device_id {
-    compatible: *const core::ffi::c_char,
-    data: *const core::ffi::c_void,
+    compatible: *const kernel::ffi::c_char,
+    data: *const kernel::ffi::c_void,
 }
 
 static IMX_AIPSTZ_MATCH_TABLE: &[of_device_id] = &[
@@ -66,7 +66,7 @@ unsafe fn imx_aipstz_probe(pdev: *mut platform_device) -> i32 {
 
     (*data).default_cfg = of_device_get_match_data(&mut (*pdev).dev);
     imx_aipstz_apply_default(data);
-    dev_set_drvdata(&mut (*pdev).dev, data as *mut core::ffi::c_void);
+    dev_set_drvdata(&mut (*pdev).dev, data as *mut kernel::ffi::c_void);
     pm_runtime_set_active(&mut (*pdev).dev);
     devm_pm_runtime_enable(&mut (*pdev).dev);
     of_platform_populate((*pdev).dev.of_node, IMX_AIPSTZ_MATCH_TABLE.as_ptr(), core::ptr::null(), &mut (*pdev).dev)
@@ -108,7 +108,7 @@ static IMX8MP_AIPSTZ_DEFAULT_CFG: imx_aipstz_config = imx_aipstz_config {
 static IMX_AIPSTZ_OF_IDS: &[of_device_id] = &[
     of_device_id {
         compatible: c"fsl,imx8mp-aipstz".as_ptr(),
-        data: &IMX8MP_AIPSTZ_DEFAULT_CFG as *const _ as *const core::ffi::c_void,
+        data: &IMX8MP_AIPSTZ_DEFAULT_CFG as *const _ as *const kernel::ffi::c_void,
     },
     of_device_id { compatible: core::ptr::null(), data: core::ptr::null() },
 ];
@@ -129,18 +129,18 @@ extern "C" {
     type device;
     static GFP_KERNEL: u32;
     static ENOMEM: i32;
-    fn writel(value: u32, address: *mut core::ffi::c_void);
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn dev_err_probe(dev: *mut device, error: i32, fmt: *const core::ffi::c_char) -> i32;
-    fn devm_platform_get_and_ioremap_resource(pdev: *mut platform_device, index: i32, resource: *mut *mut core::ffi::c_void) -> *mut core::ffi::c_void;
-    fn is_err(ptr: *mut core::ffi::c_void) -> bool;
+    fn writel(value: u32, address: *mut kernel::ffi::c_void);
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn dev_err_probe(dev: *mut device, error: i32, fmt: *const kernel::ffi::c_char) -> i32;
+    fn devm_platform_get_and_ioremap_resource(pdev: *mut platform_device, index: i32, resource: *mut *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+    fn is_err(ptr: *mut kernel::ffi::c_void) -> bool;
     fn of_device_get_match_data(dev: *mut device) -> *const imx_aipstz_config;
-    fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
+    fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
     fn pm_runtime_set_active(dev: *mut device);
     fn devm_pm_runtime_enable(dev: *mut device);
-    fn of_platform_populate(node: *mut core::ffi::c_void, matches: *const of_device_id, data: *const core::ffi::c_void, parent: *mut device) -> i32;
+    fn of_platform_populate(node: *mut kernel::ffi::c_void, matches: *const of_device_id, data: *const kernel::ffi::c_void, parent: *mut device) -> i32;
     fn of_platform_depopulate(dev: *mut device);
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

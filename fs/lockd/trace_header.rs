@@ -32,7 +32,7 @@
 
 /// Symbolic NLM status formatting supplied by the tracepoint implementation.
 extern "C" {
-    pub fn show_nlm_status(status: ::core::ffi::c_ulong) -> *const ::core::ffi::c_char;
+    pub fn show_nlm_status(status: ::kernel::ffi::c_ulong) -> *const ::kernel::ffi::c_char;
 }
 
 /// Data captured by `nlmclnt_lock_event`.
@@ -41,7 +41,7 @@ pub struct NlmclntLockEventEntry {
     pub oh: u32,
     pub svid: u32,
     pub fh: u32,
-    pub status: ::core::ffi::c_ulong,
+    pub status: ::kernel::ffi::c_ulong,
     pub start: i64,
     pub end: i64,
     // `__sockaddr(addr, addrlen)` is an inline tracepoint sockaddr payload.

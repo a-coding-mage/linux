@@ -23,7 +23,7 @@ pub struct qcom_scm_pas_context {
     pub pas_id: u32,
     pub mem_phys: phys_addr_t,
     pub mem_size: usize,
-    pub ptr: *mut core::ffi::c_void,
+    pub ptr: *mut kernel::ffi::c_void,
     pub phys: dma_addr_t,
     pub size: isize,
     pub use_tzmem: bool,
@@ -79,18 +79,18 @@ pub const fn QCOM_SCM_VERSION(major: u32, minor: u32) -> u32 {
 
 extern "C" {
     pub fn qcom_scm_is_available() -> bool;
-    pub fn qcom_scm_set_cold_boot_addr(entry: *mut core::ffi::c_void) -> i32;
-    pub fn qcom_scm_set_warm_boot_addr(entry: *mut core::ffi::c_void) -> i32;
+    pub fn qcom_scm_set_cold_boot_addr(entry: *mut kernel::ffi::c_void) -> i32;
+    pub fn qcom_scm_set_warm_boot_addr(entry: *mut kernel::ffi::c_void) -> i32;
     pub fn qcom_scm_cpu_power_down(flags: u32);
     pub fn qcom_scm_set_remote_state(state: u32, id: u32) -> i32;
     pub fn devm_qcom_scm_pas_context_alloc(dev: *mut device, pas_id: u32, mem_phys: phys_addr_t, mem_size: usize) -> *mut qcom_scm_pas_context;
-    pub fn qcom_scm_pas_init_image(pas_id: u32, metadata: *const core::ffi::c_void, size: usize, ctx: *mut qcom_scm_pas_context) -> i32;
+    pub fn qcom_scm_pas_init_image(pas_id: u32, metadata: *const kernel::ffi::c_void, size: usize, ctx: *mut qcom_scm_pas_context) -> i32;
     pub fn qcom_scm_pas_metadata_release(ctx: *mut qcom_scm_pas_context);
     pub fn qcom_scm_pas_mem_setup(pas_id: u32, addr: phys_addr_t, size: phys_addr_t) -> i32;
     pub fn qcom_scm_pas_auth_and_reset(pas_id: u32) -> i32;
     pub fn qcom_scm_pas_shutdown(pas_id: u32) -> i32;
     pub fn qcom_scm_pas_supported(pas_id: u32) -> bool;
-    pub fn qcom_scm_pas_get_rsc_table(ctx: *mut qcom_scm_pas_context, input_rt: *mut core::ffi::c_void, input_rt_size: usize, output_rt_size: *mut usize) -> *mut resource_table;
+    pub fn qcom_scm_pas_get_rsc_table(ctx: *mut qcom_scm_pas_context, input_rt: *mut kernel::ffi::c_void, input_rt_size: usize, output_rt_size: *mut usize) -> *mut resource_table;
     pub fn qcom_scm_pas_prepare_and_auth_reset(ctx: *mut qcom_scm_pas_context) -> i32;
     pub fn qcom_scm_io_readl(addr: phys_addr_t, val: *mut u32) -> i32;
     pub fn qcom_scm_io_writel(addr: phys_addr_t, val: u32) -> i32;
@@ -128,15 +128,15 @@ extern "C" {
 
 #[cfg(CONFIG_QCOM_QSEECOM)]
 extern "C" {
-    pub fn qcom_scm_qseecom_app_get_id(app_name: *const core::ffi::c_char, app_id: *mut u32) -> i32;
-    pub fn qcom_scm_qseecom_app_send(app_id: u32, req: *mut core::ffi::c_void, req_size: usize, rsp: *mut core::ffi::c_void, rsp_size: usize) -> i32;
+    pub fn qcom_scm_qseecom_app_get_id(app_name: *const kernel::ffi::c_char, app_id: *mut u32) -> i32;
+    pub fn qcom_scm_qseecom_app_send(app_id: u32, req: *mut kernel::ffi::c_void, req_size: usize, rsp: *mut kernel::ffi::c_void, rsp_size: usize) -> i32;
 }
 
 #[cfg(not(CONFIG_QCOM_QSEECOM))]
-pub unsafe fn qcom_scm_qseecom_app_get_id(_app_name: *const core::ffi::c_char, _app_id: *mut u32) -> i32 { -22 }
+pub unsafe fn qcom_scm_qseecom_app_get_id(_app_name: *const kernel::ffi::c_char, _app_id: *mut u32) -> i32 { -22 }
 
 #[cfg(not(CONFIG_QCOM_QSEECOM))]
-pub unsafe fn qcom_scm_qseecom_app_send(_app_id: u32, _req: *mut core::ffi::c_void, _req_size: usize, _rsp: *mut core::ffi::c_void, _rsp_size: usize) -> i32 { -22 }
+pub unsafe fn qcom_scm_qseecom_app_send(_app_id: u32, _req: *mut kernel::ffi::c_void, _req_size: usize, _rsp: *mut kernel::ffi::c_void, _rsp_size: usize) -> i32 { -22 }
 
 extern "C" {
     pub fn qcom_scm_qtee_invoke_smc(inbuf: phys_addr_t, inbuf_size: usize, outbuf: phys_addr_t, outbuf_size: usize, result: *mut u64, response_type: *mut u64) -> i32;

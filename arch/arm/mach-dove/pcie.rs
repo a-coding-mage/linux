@@ -11,9 +11,9 @@
 struct PciePort {
     index: u8,
     root_bus_nr: u8,
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     conf_lock: SpinlockT,
-    mem_space_name: [core::ffi::c_char; 16],
+    mem_space_name: [kernel::ffi::c_char; 16],
     res: Resource,
 }
 
@@ -27,7 +27,7 @@ unsafe fn dove_pcie_setup(nr: i32, sys: *mut PciSysData) -> i32 {
     if nr >= NUM_PCIE_PORTS { return 0; }
 
     pp = &mut PCIE_PORT[nr as usize];
-    (*sys).private_data = pp as *mut core::ffi::c_void;
+    (*sys).private_data = pp as *mut kernel::ffi::c_void;
     (*pp).root_bus_nr = (*sys).busnr as u8;
 
     // Generic PCIe unit setup.
@@ -110,7 +110,7 @@ unsafe fn dove_pcie_scan_bus(nr: i32, bridge: *mut PciHostBridge) -> i32 {
     if nr >= NUM_PCIE_PORTS { BUG!(); return -EINVAL; }
     list_splice_init(&mut (*sys).resources, &mut (*bridge).windows);
     (*bridge).dev.parent = core::ptr::null_mut();
-    (*bridge).sysdata = sys as *mut core::ffi::c_void;
+    (*bridge).sysdata = sys as *mut kernel::ffi::c_void;
     (*bridge).busnr = (*sys).busnr;
     (*bridge).ops = &mut PCIE_OPS;
     pci_scan_root_bus_bridge(bridge)
@@ -124,7 +124,7 @@ unsafe fn dove_pcie_map_irq(dev: *const PciDev, _slot: u8, _pin: u8) -> i32 {
 
 static mut DOVE_PCI: HwPci = HwPci { nr_controllers: 2, setup: Some(dove_pcie_setup), scan: Some(dove_pcie_scan_bus), map_irq: Some(dove_pcie_map_irq) };
 
-unsafe fn add_pcie_port(index: i32, base: *mut core::ffi::c_void) {
+unsafe fn add_pcie_port(index: i32, base: *mut kernel::ffi::c_void) {
     printk(KERN_INFO, b"Dove PCIe port %d: \0".as_ptr(), index);
     if orion_pcie_link_up(base) {
         let pp = &mut PCIE_PORT[NUM_PCIE_PORTS as usize]; NUM_PCIE_PORTS += 1;

@@ -10,7 +10,7 @@
 // This header requires CONFIG_SMP.
 
 #[inline(always)]
-pub unsafe fn raw_smp_processor_id() -> ::core::ffi::c_int {
+pub unsafe fn raw_smp_processor_id() -> ::kernel::ffi::c_int {
     current_thread_info().cpu
 }
 
@@ -19,16 +19,16 @@ pub struct seq_file;
 
 /* generate IPI list text */
 extern "C" {
-    pub fn show_ipi_list(file: *mut seq_file, cpu: ::core::ffi::c_int);
+    pub fn show_ipi_list(file: *mut seq_file, cpu: ::kernel::ffi::c_int);
 
     /* Called from C code, this handles an IPI. */
-    pub fn handle_IPI(ipinr: ::core::ffi::c_int, regs: *mut pt_regs);
+    pub fn handle_IPI(ipinr: ::kernel::ffi::c_int, regs: *mut pt_regs);
 
     /* Setup the set of possible CPUs (via set_cpu_possible) */
     pub fn smp_init_cpus();
 
     /* Register IPI interrupts with the arch SMP code */
-    pub fn set_smp_ipi_range(ipi_base: ::core::ffi::c_int, nr_ipi: ::core::ffi::c_int);
+    pub fn set_smp_ipi_range(ipi_base: ::kernel::ffi::c_int, nr_ipi: ::kernel::ffi::c_int);
 
     /* Called from platform specific assembly code, this is the secondary CPU entry point. */
     pub fn secondary_start_kernel(task: *mut task_struct);
@@ -37,16 +37,16 @@ extern "C" {
     pub fn secondary_startup();
     pub fn secondary_startup_arm();
 
-    pub fn __cpu_disable() -> ::core::ffi::c_int;
+    pub fn __cpu_disable() -> ::kernel::ffi::c_int;
 
-    pub fn arch_send_call_function_single_ipi(cpu: ::core::ffi::c_int);
+    pub fn arch_send_call_function_single_ipi(cpu: ::kernel::ffi::c_int);
     pub fn arch_send_call_function_ipi_mask(mask: *const cpumask);
     pub fn arch_send_wakeup_ipi_mask(mask: *const cpumask);
 
     pub fn register_ipi_completion(
         completion: *mut completion,
-        cpu: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        cpu: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn smp_set_ops(ops: *const smp_operations);
 }
@@ -61,8 +61,8 @@ pub union secondary_data_union {
 #[repr(C)]
 pub struct secondary_data {
     pub _union: secondary_data_union,
-    pub swapper_pg_dir: ::core::ffi::c_ulong,
-    pub stack: *mut ::core::ffi::c_void,
+    pub swapper_pg_dir: ::kernel::ffi::c_ulong,
+    pub stack: *mut ::kernel::ffi::c_void,
     pub task: *mut task_struct,
 }
 
@@ -80,16 +80,16 @@ pub struct smp_operations {
     /* Boot a secondary CPU, and assign it the specified idle task.
      * This also gives us the initial stack to use for this CPU. */
     pub smp_boot_secondary:
-        Option<unsafe extern "C" fn(cpu: u32, idle: *mut task_struct) -> ::core::ffi::c_int>,
-    pub cpu_kill: Option<unsafe extern "C" fn(cpu: u32) -> ::core::ffi::c_int>,
+        Option<unsafe extern "C" fn(cpu: u32, idle: *mut task_struct) -> ::kernel::ffi::c_int>,
+    pub cpu_kill: Option<unsafe extern "C" fn(cpu: u32) -> ::kernel::ffi::c_int>,
     pub cpu_die: Option<unsafe extern "C" fn(cpu: u32)>,
     pub cpu_can_disable: Option<unsafe extern "C" fn(cpu: u32) -> bool>,
-    pub cpu_disable: Option<unsafe extern "C" fn(cpu: u32) -> ::core::ffi::c_int>,
+    pub cpu_disable: Option<unsafe extern "C" fn(cpu: u32) -> ::kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct of_cpu_method {
-    pub method: *const ::core::ffi::c_char,
+    pub method: *const ::kernel::ffi::c_char,
     pub ops: *const smp_operations,
 }
 

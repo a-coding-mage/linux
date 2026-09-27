@@ -16,20 +16,20 @@
 unsafe fn do_cache_op(
     paddr: phys_addr_t,
     mut size: usize,
-    fn_: unsafe extern "C" fn(core::ffi::c_ulong, core::ffi::c_ulong),
+    fn_: unsafe extern "C" fn(kernel::ffi::c_ulong, kernel::ffi::c_ulong),
 ) {
-    let mut off: core::ffi::c_ulong = paddr & (PAGE_SIZE - 1);
-    let pfn: core::ffi::c_ulong = PFN_DOWN(paddr);
+    let mut off: kernel::ffi::c_ulong = paddr & (PAGE_SIZE - 1);
+    let pfn: kernel::ffi::c_ulong = PFN_DOWN(paddr);
     let mut page: *mut page = pfn_to_page(pfn);
 
     if !PageHighMem(page) {
-        fn_(phys_to_virt(paddr) as core::ffi::c_ulong, size as core::ffi::c_ulong);
+        fn_(phys_to_virt(paddr) as kernel::ffi::c_ulong, size as kernel::ffi::c_ulong);
     } else {
         while size > 0 {
             let sz: usize = core::cmp::min(size, PAGE_SIZE - off as usize);
-            let vaddr: *mut core::ffi::c_void = kmap_atomic(page);
+            let vaddr: *mut kernel::ffi::c_void = kmap_atomic(page);
 
-            fn_(vaddr as core::ffi::c_ulong + off, sz as core::ffi::c_ulong);
+            fn_(vaddr as kernel::ffi::c_ulong + off, sz as kernel::ffi::c_ulong);
             kunmap_atomic(vaddr);
             off = 0;
             page = page.add(1);
@@ -73,7 +73,7 @@ pub unsafe fn arch_sync_dma_for_device(
 }
 
 pub unsafe fn arch_dma_prep_coherent(page: *mut page, size: usize) {
-    __invalidate_dcache_range(page_address(page) as core::ffi::c_ulong, size as core::ffi::c_ulong);
+    __invalidate_dcache_range(page_address(page) as kernel::ffi::c_ulong, size as kernel::ffi::c_ulong);
 }
 
 /*
@@ -83,11 +83,11 @@ pub unsafe fn arch_dma_prep_coherent(page: *mut page, size: usize) {
  */
 #[cfg(CONFIG_MMU)]
 pub unsafe fn arch_dma_set_uncached(
-    p: *mut core::ffi::c_void,
+    p: *mut kernel::ffi::c_void,
     _size: usize,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     (p as *mut u8).offset((XCHAL_KSEG_BYPASS_VADDR - XCHAL_KSEG_CACHED_VADDR) as isize)
-        as *mut core::ffi::c_void
+        as *mut kernel::ffi::c_void
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

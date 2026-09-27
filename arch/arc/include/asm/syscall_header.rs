@@ -7,17 +7,17 @@
 // helpers are supplied by the surrounding translation unit.
 
 extern "C" {
-    pub static mut sys_call_table: [*mut core::ffi::c_void; 0];
+    pub static mut sys_call_table: [*mut kernel::ffi::c_void; 0];
 }
 
 #[inline]
 pub unsafe fn syscall_get_nr(
     task: *mut task_struct,
     regs: *mut pt_regs,
-) -> libc::c_long {
+) -> kernel::ffi::c_long {
     let _ = task;
     if user_mode(regs) && in_syscall(regs) {
-        (*regs).r8 as libc::c_long
+        (*regs).r8 as kernel::ffi::c_long
     } else {
         -1
     }
@@ -27,7 +27,7 @@ pub unsafe fn syscall_get_nr(
 pub unsafe fn syscall_set_nr(
     task: *mut task_struct,
     regs: *mut pt_regs,
-    nr: libc::c_int,
+    nr: kernel::ffi::c_int,
 ) {
     let _ = task;
     /*
@@ -48,7 +48,7 @@ pub unsafe fn syscall_rollback(task: *mut task_struct, regs: *mut pt_regs) {
 pub unsafe fn syscall_get_error(
     task: *mut task_struct,
     regs: *mut pt_regs,
-) -> libc::c_long {
+) -> kernel::ffi::c_long {
     let _ = task;
     /* 0 if syscall succeeded, otherwise -Errorcode */
     if IS_ERR_VALUE((*regs).r0) {
@@ -62,7 +62,7 @@ pub unsafe fn syscall_get_error(
 pub unsafe fn syscall_get_return_value(
     task: *mut task_struct,
     regs: *mut pt_regs,
-) -> libc::c_long {
+) -> kernel::ffi::c_long {
     let _ = task;
     (*regs).r0
 }
@@ -71,11 +71,11 @@ pub unsafe fn syscall_get_return_value(
 pub unsafe fn syscall_set_return_value(
     task: *mut task_struct,
     regs: *mut pt_regs,
-    error: libc::c_int,
-    val: libc::c_long,
+    error: kernel::ffi::c_int,
+    val: kernel::ffi::c_long,
 ) {
     let _ = task;
-    (*regs).r0 = if error != 0 { error as libc::c_long } else { val };
+    (*regs).r0 = if error != 0 { error as kernel::ffi::c_long } else { val };
 }
 
 /*
@@ -86,12 +86,12 @@ pub unsafe fn syscall_set_return_value(
 pub unsafe fn syscall_get_arguments(
     task: *mut task_struct,
     regs: *mut pt_regs,
-    args: *mut libc::c_ulong,
+    args: *mut kernel::ffi::c_ulong,
 ) {
     let _ = task;
-    let mut inside_ptregs: *mut libc::c_ulong = &mut (*regs).r0;
-    let mut n: libc::c_uint = 6;
-    let mut i: libc::c_uint = 0;
+    let mut inside_ptregs: *mut kernel::ffi::c_ulong = &mut (*regs).r0;
+    let mut n: kernel::ffi::c_uint = 6;
+    let mut i: kernel::ffi::c_uint = 0;
 
     while n != 0 {
         *args.add(i as usize) = *inside_ptregs;
@@ -105,12 +105,12 @@ pub unsafe fn syscall_get_arguments(
 pub unsafe fn syscall_set_arguments(
     task: *mut task_struct,
     regs: *mut pt_regs,
-    args: *const libc::c_ulong,
+    args: *const kernel::ffi::c_ulong,
 ) {
     let _ = task;
-    let mut inside_ptregs: *mut libc::c_ulong = &mut (*regs).r0;
-    let mut n: libc::c_uint = 6;
-    let mut i: libc::c_uint = 0;
+    let mut inside_ptregs: *mut kernel::ffi::c_ulong = &mut (*regs).r0;
+    let mut n: kernel::ffi::c_uint = 6;
+    let mut i: kernel::ffi::c_uint = 0;
 
     while n != 0 {
         *inside_ptregs = *args.add(i as usize);
@@ -121,16 +121,16 @@ pub unsafe fn syscall_set_arguments(
 }
 
 #[inline]
-pub unsafe fn syscall_get_arch(task: *mut task_struct) -> libc::c_int {
+pub unsafe fn syscall_get_arch(task: *mut task_struct) -> kernel::ffi::c_int {
     let _ = task;
     // CONFIG_ISA_ARCOMPACT / CONFIG_CPU_BIG_ENDIAN are build-time conditions.
-    if cfg!(feature = "ISA_ARCOMPACT") {
-        if cfg!(feature = "CPU_BIG_ENDIAN") {
+    if cfg!(CONFIG_ISA_ARCOMPACT) {
+        if cfg!(CONFIG_CPU_BIG_ENDIAN) {
             AUDIT_ARCH_ARCOMPACTBE
         } else {
             AUDIT_ARCH_ARCOMPACT
         }
-    } else if cfg!(feature = "CPU_BIG_ENDIAN") {
+    } else if cfg!(CONFIG_CPU_BIG_ENDIAN) {
         AUDIT_ARCH_ARCV2BE
     } else {
         AUDIT_ARCH_ARCV2

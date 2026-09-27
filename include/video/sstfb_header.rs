@@ -197,14 +197,14 @@ pub struct pll_timing { pub m: u32, pub n: u32, pub p: u32 }
 
 #[repr(C)]
 pub struct dac_switch {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub detect: Option<unsafe extern "C" fn(*mut fb_info) -> i32>,
     pub set_pll: Option<unsafe extern "C" fn(*mut fb_info, *const pll_timing, i32) -> i32>,
     pub set_vidmod: Option<unsafe extern "C" fn(*mut fb_info, i32)>,
 }
 
 #[repr(C)]
-pub struct sst_spec { pub name: *mut core::ffi::c_char, pub default_gfx_clock: i32, pub max_gfxclk: i32 }
+pub struct sst_spec { pub name: *mut kernel::ffi::c_char, pub default_gfx_clock: i32, pub max_gfxclk: i32 }
 
 #[repr(C)]
 pub struct sstfb_par {

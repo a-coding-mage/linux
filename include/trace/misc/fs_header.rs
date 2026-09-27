@@ -47,7 +47,7 @@ macro_rules! show_fs_fcntl_open_flags {
 }
 
 macro_rules! __fmode_flag {
-    ($x:ident) => { { (FMODE_$x as core::ffi::c_ulong), stringify!($x) } };
+    ($x:ident) => { { (FMODE_$x as kernel::ffi::c_ulong), stringify!($x) } };
 }
 
 macro_rules! show_fs_fmode_flags {

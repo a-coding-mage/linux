@@ -15,7 +15,7 @@ pub struct pch_fivr_resp {
 
 unsafe fn pch_fivr_read(
     handle: acpi_handle,
-    method: *mut core::ffi::c_char,
+    method: *mut kernel::ffi::c_char,
     fivr_resp: *mut pch_fivr_resp,
 ) -> i32 {
     let mut resp = acpi_buffer {
@@ -28,7 +28,7 @@ unsafe fn pch_fivr_read(
     };
     let mut format = acpi_buffer {
         length: core::mem::size_of::<[u8; 3]>(),
-        pointer: b"NN\0".as_ptr() as *mut core::ffi::c_void,
+        pointer: b"NN\0".as_ptr() as *mut kernel::ffi::c_void,
     };
     let mut obj: *mut acpi_object;
     let mut status: acpi_status;
@@ -65,47 +65,47 @@ unsafe fn release_buffer(buffer: *mut acpi_buffer, ret: i32) -> i32 {
 unsafe fn freq_mhz_low_clock_show(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
-    pch_fivr_show(dev, buf, b"GFC0\0".as_ptr() as *mut core::ffi::c_char)
+    pch_fivr_show(dev, buf, b"GFC0\0".as_ptr() as *mut kernel::ffi::c_char)
 }
 
 unsafe fn freq_mhz_high_clock_show(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
-    pch_fivr_show(dev, buf, b"GFC1\0".as_ptr() as *mut core::ffi::c_char)
+    pch_fivr_show(dev, buf, b"GFC1\0".as_ptr() as *mut kernel::ffi::c_char)
 }
 
 unsafe fn ssc_clock_info_show(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
-    pch_fivr_show(dev, buf, b"GEMI\0".as_ptr() as *mut core::ffi::c_char)
+    pch_fivr_show(dev, buf, b"GEMI\0".as_ptr() as *mut kernel::ffi::c_char)
 }
 
 unsafe fn fivr_switching_freq_mhz_show(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
-    pch_fivr_show(dev, buf, b"GFCS\0".as_ptr() as *mut core::ffi::c_char)
+    pch_fivr_show(dev, buf, b"GFCS\0".as_ptr() as *mut kernel::ffi::c_char)
 }
 
 unsafe fn fivr_switching_fault_status_show(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
-    pch_fivr_show(dev, buf, b"GFFS\0".as_ptr() as *mut core::ffi::c_char)
+    pch_fivr_show(dev, buf, b"GFFS\0".as_ptr() as *mut kernel::ffi::c_char)
 }
 
 unsafe fn pch_fivr_show(
     dev: *mut device,
-    buf: *mut core::ffi::c_char,
-    method: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
+    method: *mut kernel::ffi::c_char,
 ) -> ssize_t {
     let acpi_dev: *mut acpi_device = dev_get_drvdata(dev).cast();
     let mut fivr_resp = pch_fivr_resp { status: 0, result: 0 };
@@ -115,32 +115,32 @@ unsafe fn pch_fivr_show(
         return status as ssize_t;
     }
 
-    sprintf(buf, b"%llu\n\0".as_ptr() as *const core::ffi::c_char, fivr_resp.result)
+    sprintf(buf, b"%llu\n\0".as_ptr() as *const kernel::ffi::c_char, fivr_resp.result)
 }
 
 unsafe fn freq_mhz_low_clock_store(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     count: size_t,
 ) -> ssize_t {
-    pch_fivr_store(dev, buf, count, b"RFC0\0".as_ptr() as *mut core::ffi::c_char)
+    pch_fivr_store(dev, buf, count, b"RFC0\0".as_ptr() as *mut kernel::ffi::c_char)
 }
 
 unsafe fn freq_mhz_high_clock_store(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     count: size_t,
 ) -> ssize_t {
-    pch_fivr_store(dev, buf, count, b"RFC1\0".as_ptr() as *mut core::ffi::c_char)
+    pch_fivr_store(dev, buf, count, b"RFC1\0".as_ptr() as *mut kernel::ffi::c_char)
 }
 
 unsafe fn pch_fivr_store(
     dev: *mut device,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     count: size_t,
-    method: *mut core::ffi::c_char,
+    method: *mut kernel::ffi::c_char,
 ) -> ssize_t {
     let acpi_dev: *mut acpi_device = dev_get_drvdata(dev).cast();
     let mut val: u32 = 0;
@@ -168,7 +168,7 @@ static mut fivr_attrs: [*mut attribute; 6] = [
 
 static pch_fivr_attribute_group: attribute_group = attribute_group {
     attrs: unsafe { core::ptr::addr_of_mut!(fivr_attrs).cast() },
-    name: b"pch_fivr_switch_frequency\0".as_ptr() as *const core::ffi::c_char,
+    name: b"pch_fivr_switch_frequency\0".as_ptr() as *const kernel::ffi::c_char,
 };
 
 unsafe fn pch_fivr_add(pdev: *mut platform_device) -> i32 {

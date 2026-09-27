@@ -7,7 +7,7 @@
  * Author: Brendan Higgins <brendanhiggins@google.com>
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /// Function type used by the try/catch interface.
 pub type kunit_try_catch_func_t = unsafe extern "C" fn(*mut c_void);
@@ -46,7 +46,7 @@ pub struct kunit_try_catch {
     pub try_result: i32,
     pub r#try: Option<kunit_try_catch_func_t>,
     pub catch: Option<kunit_try_catch_func_t>,
-    pub timeout: core::ffi::c_ulong,
+    pub timeout: kernel::ffi::c_ulong,
     pub context: *mut c_void,
 }
 

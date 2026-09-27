@@ -25,11 +25,11 @@ extern "C" {
     /* low-level resume entry point */
     pub fn tegra_resume();
 
-    pub fn tegra30_pm_secondary_cpu_suspend(arg: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn tegra30_pm_secondary_cpu_suspend(arg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
     pub fn tegra_pm_clear_cpu_in_lp2();
     pub fn tegra_pm_set_cpu_in_lp2();
-    pub fn tegra_pm_enter_lp2() -> ::core::ffi::c_int;
-    pub fn tegra_pm_park_secondary_cpu(cpu: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn tegra_pm_enter_lp2() -> ::kernel::ffi::c_int;
+    pub fn tegra_pm_park_secondary_cpu(cpu: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
     pub fn tegra_pm_init_suspend();
 }
 
@@ -46,7 +46,7 @@ pub fn tegra_resume() {}
 
 #[cfg(not(all(CONFIG_PM_SLEEP, CONFIG_ARM, CONFIG_ARCH_TEGRA)))]
 #[inline]
-pub fn tegra30_pm_secondary_cpu_suspend(arg: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+pub fn tegra30_pm_secondary_cpu_suspend(arg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     let _ = arg;
     -ENOTSUPP
 }
@@ -61,13 +61,13 @@ pub fn tegra_pm_set_cpu_in_lp2() {}
 
 #[cfg(not(all(CONFIG_PM_SLEEP, CONFIG_ARM, CONFIG_ARCH_TEGRA)))]
 #[inline]
-pub fn tegra_pm_enter_lp2() -> ::core::ffi::c_int {
+pub fn tegra_pm_enter_lp2() -> ::kernel::ffi::c_int {
     -ENOTSUPP
 }
 
 #[cfg(not(all(CONFIG_PM_SLEEP, CONFIG_ARM, CONFIG_ARCH_TEGRA)))]
 #[inline]
-pub fn tegra_pm_park_secondary_cpu(cpu: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+pub fn tegra_pm_park_secondary_cpu(cpu: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     let _ = cpu;
     -ENOTSUPP
 }

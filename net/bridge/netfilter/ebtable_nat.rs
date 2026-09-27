@@ -44,7 +44,7 @@ static mut initial_table: ebt_replace_kernel = ebt_replace_kernel {
         entries[NF_BR_POST_ROUTING as usize] = unsafe { &raw mut initial_chains[2] };
         entries
     },
-    entries: unsafe { initial_chains.as_mut_ptr() as *mut core::ffi::c_char },
+    entries: unsafe { initial_chains.as_mut_ptr() as *mut kernel::ffi::c_char },
     ..unsafe { core::mem::zeroed() }
 };
 
@@ -85,11 +85,11 @@ unsafe fn frame_nat_table_init(net: *mut net) -> i32 {
 }
 
 unsafe fn frame_nat_net_pre_exit(net: *mut net) {
-    ebt_unregister_table_pre_exit(net, b"nat\0".as_ptr() as *const core::ffi::c_char);
+    ebt_unregister_table_pre_exit(net, b"nat\0".as_ptr() as *const kernel::ffi::c_char);
 }
 
 unsafe fn frame_nat_net_exit(net: *mut net) {
-    ebt_unregister_table(net, b"nat\0".as_ptr() as *const core::ffi::c_char);
+    ebt_unregister_table(net, b"nat\0".as_ptr() as *const kernel::ffi::c_char);
 }
 
 static mut frame_nat_net_ops: pernet_operations = pernet_operations {

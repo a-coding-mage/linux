@@ -17,7 +17,7 @@ unsafe extern "C" {
 #[repr(C)]
 pub struct dyn_arch_ftrace {
     // CONFIG_ARM_MODULE_PLTS controls this field in the original header.
-    pub mod_: *mut core::ffi::c_void,
+    pub mod_: *mut kernel::ffi::c_void,
 }
 
 #[inline]
@@ -30,30 +30,30 @@ pub const MCOUNT_ADDR: usize = __gnu_mcount_nc as usize;
 
 // CONFIG_FRAME_POINTER && !CONFIG_ARM_UNWIND selects the external declaration.
 unsafe extern "C" {
-    pub fn return_address(level: u32) -> *mut core::ffi::c_void;
+    pub fn return_address(level: u32) -> *mut kernel::ffi::c_void;
 }
 
 // The alternative inline definition when the frame-pointer/unwind condition is
 // not selected is represented here as a separate implementation.
 #[inline]
-pub fn return_address_null(_level: u32) -> *mut core::ffi::c_void {
+pub fn return_address_null(_level: u32) -> *mut kernel::ffi::c_void {
     core::ptr::null_mut()
 }
 
 #[inline]
-pub unsafe fn ftrace_return_address(n: u32) -> *mut core::ffi::c_void {
+pub unsafe fn ftrace_return_address(n: u32) -> *mut kernel::ffi::c_void {
     return_address(n)
 }
 
 unsafe extern "C" {
-    fn strcmp(lhs: *const core::ffi::c_char, rhs: *const core::ffi::c_char) -> i32;
-    fn strcasecmp(lhs: *const core::ffi::c_char, rhs: *const core::ffi::c_char) -> i32;
+    fn strcmp(lhs: *const kernel::ffi::c_char, rhs: *const kernel::ffi::c_char) -> i32;
+    fn strcasecmp(lhs: *const kernel::ffi::c_char, rhs: *const kernel::ffi::c_char) -> i32;
 }
 
 #[inline]
 pub unsafe fn arch_syscall_match_sym_name(
-    mut sym: *const core::ffi::c_char,
-    name: *const core::ffi::c_char,
+    mut sym: *const kernel::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> bool {
     if strcmp(sym, c"sys_mmap2".as_ptr()) == 0 {
         sym = c"sys_mmap_pgoff".as_ptr();

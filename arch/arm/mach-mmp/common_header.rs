@@ -2,7 +2,7 @@
 // Dependency intent: declarations from <linux/reboot.h> are supplied externally.
 
 unsafe extern "C" {
-    pub fn mmp_timer_init(irq: ::core::ffi::c_int, rate: ::core::ffi::c_ulong);
+    pub fn mmp_timer_init(irq: ::kernel::ffi::c_int, rate: ::kernel::ffi::c_ulong);
 
     // The C __init annotation is a linker/build attribute and has no direct
     // file-local Rust equivalent.

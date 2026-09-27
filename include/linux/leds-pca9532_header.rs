@@ -31,8 +31,8 @@ pub enum pca9532_state {
 pub struct pca9532_led {
     pub id: u8,
     pub client: *mut i2c_client,
-    pub name: *const core::ffi::c_char,
-    pub default_trigger: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub default_trigger: *const kernel::ffi::c_char,
     pub ldev: led_classdev,
     pub work: work_struct,
     pub type_: u32,
@@ -44,7 +44,7 @@ pub struct pca9532_platform_data {
     pub leds: [pca9532_led; 16],
     pub pwm: [u8; 2],
     pub psc: [u8; 2],
-    pub gpio_base: core::ffi::c_int,
+    pub gpio_base: kernel::ffi::c_int,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

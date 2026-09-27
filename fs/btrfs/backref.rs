@@ -145,7 +145,7 @@ static int find_extent_in_eb(btrfs_backref_walk_ctx *ctx,
 
 struct preftree {
 	struct rb_root_cached root;
-	core::ffi::c_uint count;
+	kernel::ffi::c_uint count;
 };
 
 #define PREFTREE_INIT	{ .root = RB_ROOT_CACHED, .count = 0 }
@@ -1018,8 +1018,8 @@ static int add_inline_refs(btrfs_backref_walk_ctx *ctx,
 	struct extent_buffer *leaf;
 	struct btrfs_key key;
 	struct btrfs_key found_key;
-	core::ffi::c_ulong ptr;
-	core::ffi::c_ulong end;
+	kernel::ffi::c_ulong ptr;
+	kernel::ffi::c_ulong end;
 	struct btrfs_extent_item *ei;
 	u64 flags;
 	u64 item_size;
@@ -1042,8 +1042,8 @@ static int add_inline_refs(btrfs_backref_walk_ctx *ctx,
 	flags = btrfs_extent_flags(leaf, ei);
 	btrfs_item_key_to_cpu(leaf, &found_key, slot);
 
-	ptr = (core::ffi::c_ulong)(ei + 1);
-	end = (core::ffi::c_ulong)ei + item_size;
+	ptr = (kernel::ffi::c_ulong)(ei + 1);
+	end = (kernel::ffi::c_ulong)ei + item_size;
 
 	if (found_key.r#type == BTRFS_EXTENT_ITEM_KEY &&
 	    flags & BTRFS_EXTENT_FLAG_TREE_BLOCK) {
@@ -1928,7 +1928,7 @@ int btrfs_is_data_extent_shared(btrfs_inode *inode, bytenr: u64,
 	level = -1;
 	ULIST_ITER_INIT(&uiter);
 	while (1) {
-		const core::ffi::c_ulong prev_ref_count = ctx->refs.nnodes;
+		const kernel::ffi::c_ulong prev_ref_count = ctx->refs.nnodes;
 
 		walk_ctx.bytenr = bytenr;
 		ret = find_parent_nodes(&walk_ctx, &shared);
@@ -2063,7 +2063,7 @@ int btrfs_find_one_extref(btrfs_root *root, inode_objectid: u64,
 	struct btrfs_key found_key;
 	struct btrfs_inode_extref *extref;
 	const struct extent_buffer *leaf;
-	core::ffi::c_ulong ptr;
+	kernel::ffi::c_ulong ptr;
 
 	key.objectid = inode_objectid;
 	key.r#type = BTRFS_INODE_EXTREF_KEY;
@@ -2136,7 +2136,7 @@ int btrfs_find_one_extref(btrfs_root *root, inode_objectid: u64,
  * value will be smaller than dest. callers must check this!
  */
 char *btrfs_ref_to_path(btrfs_root *fs_root, btrfs_path *path,
-			name_len: u32, name_off: core::ffi::c_ulong,
+			name_len: u32, name_off: kernel::ffi::c_ulong,
 			extent_buffer *eb_in, parent: u64,
 			char *dest, size: u32)
 {
@@ -2185,7 +2185,7 @@ char *btrfs_ref_to_path(btrfs_root *fs_root, btrfs_path *path,
 		iref = btrfs_item_ptr(eb, slot, btrfs_inode_ref);
 
 		name_len = btrfs_inode_ref_name_len(eb, iref);
-		name_off = (core::ffi::c_ulong)(iref + 1);
+		name_off = (kernel::ffi::c_ulong)(iref + 1);
 
 		parent = next_inum;
 		--bytes_left;
@@ -2294,7 +2294,7 @@ int extent_from_logical(btrfs_fs_info *fs_info, logical: u64,
  * next ref. after the last ref was processed, 1 is returned.
  * returns <0 on error
  */
-static int get_extent_inline_ref(core::ffi::c_ulong *ptr,
+static int get_extent_inline_ref(kernel::ffi::c_ulong *ptr,
 				 const struct extent_buffer *eb,
 				 const struct btrfs_key *key,
 				 const struct btrfs_extent_item *ei,
@@ -2302,7 +2302,7 @@ static int get_extent_inline_ref(core::ffi::c_ulong *ptr,
 				 btrfs_extent_inline_ref **out_eiref,
 				 int *out_type)
 {
-	core::ffi::c_ulong end;
+	kernel::ffi::c_ulong end;
 	u64 flags;
 	struct btrfs_tree_block_info *info;
 
@@ -2323,12 +2323,12 @@ static int get_extent_inline_ref(core::ffi::c_ulong *ptr,
 		} else {
 			*out_eiref = (btrfs_extent_inline_ref *)(ei + 1);
 		}
-		*ptr = (core::ffi::c_ulong)*out_eiref;
-		if ((core::ffi::c_ulong)(*ptr) >= (core::ffi::c_ulong)ei + item_size)
+		*ptr = (kernel::ffi::c_ulong)*out_eiref;
+		if ((kernel::ffi::c_ulong)(*ptr) >= (kernel::ffi::c_ulong)ei + item_size)
 			return -ENOENT;
 	}
 
-	end = (core::ffi::c_ulong)ei + item_size;
+	end = (kernel::ffi::c_ulong)ei + item_size;
 	*out_eiref = (btrfs_extent_inline_ref *)(*ptr);
 	*out_type = btrfs_get_extent_inline_ref_type(eb, *out_eiref,
 						     BTRFS_REF_TYPE_ANY);
@@ -2350,14 +2350,14 @@ static int get_extent_inline_ref(core::ffi::c_ulong *ptr,
  * returns 0 if data was provided, 1 if there was no more data to provide or
  * <0 on error.
  */
-int tree_backref_for_extent!(core::ffi::c_ulong *ptr, extent_buffer *eb,
+int tree_backref_for_extent!(kernel::ffi::c_ulong *ptr, extent_buffer *eb,
 			    btrfs_key *key, btrfs_extent_item *ei,
 			    item_size: u32, u64 *out_root, u8 *out_level, {
 	int ret;
 	int type;
 	struct btrfs_extent_inline_ref *eiref;
 
-	if (*ptr == (core::ffi::c_ulong)-1)
+	if (*ptr == (kernel::ffi::c_ulong)-1)
 		return 1;
 
 	while (1) {
@@ -2388,7 +2388,7 @@ int tree_backref_for_extent!(core::ffi::c_ulong *ptr, extent_buffer *eb,
 	}
 
 	if (ret == 1)
-		*ptr = (core::ffi::c_ulong)-1;
+		*ptr = (kernel::ffi::c_ulong)-1;
 
 	return 0;
 });
@@ -2596,7 +2596,7 @@ int iterate_inodes_from_logical(logical: u64, btrfs_fs_info *fs_info,
 	return iterate_extent_inodes(&walk_ctx, false, build_ino_list, ctx);
 }
 
-static int inode_to_path(inum: u64, name_len: u32, name_off: core::ffi::c_ulong,
+static int inode_to_path(inum: u64, name_len: u32, name_off: kernel::ffi::c_ulong,
 			 extent_buffer *eb, inode_fs_paths *ipath);
 
 static int iterate_inode_refs(inum: u64, inode_fs_paths *ipath)
@@ -2646,7 +2646,7 @@ static int iterate_inode_refs(inum: u64, inode_fs_paths *ipath)
 				cur, found_key.objectid,
 				btrfs_root_id(fs_root));
 			ret = inode_to_path(parent, name_len,
-				      (core::ffi::c_ulong)(iref + 1), eb, ipath);
+				      (kernel::ffi::c_ulong)(iref + 1), eb, ipath);
 			if (ret)
 				break;
 			len = sizeof(*iref) + name_len;
@@ -2673,7 +2673,7 @@ static int iterate_inode_extrefs(inum: u64, inode_fs_paths *ipath)
 	struct btrfs_inode_extref *extref;
 	u32 item_size;
 	u32 cur_offset;
-	core::ffi::c_ulong ptr;
+	kernel::ffi::c_ulong ptr;
 
 	while (1) {
 		ret = btrfs_find_one_extref(fs_root, inum, offset, path, &extref,
@@ -2705,7 +2705,7 @@ static int iterate_inode_extrefs(inum: u64, inode_fs_paths *ipath)
 			parent = btrfs_inode_extref_parent(eb, extref);
 			name_len = btrfs_inode_extref_name_len(eb, extref);
 			ret = inode_to_path(parent, name_len,
-				      (core::ffi::c_ulong)&extref->name, eb, ipath);
+				      (kernel::ffi::c_ulong)&extref->name, eb, ipath);
 			if (ret)
 				break;
 
@@ -2726,7 +2726,7 @@ static int iterate_inode_extrefs(inum: u64, inode_fs_paths *ipath)
  * returns 0 if the path could be dumped (probably truncated)
  * returns <0 in case of an error
  */
-static int inode_to_path(inum: u64, name_len: u32, name_off: core::ffi::c_ulong,
+static int inode_to_path(inum: u64, name_len: u32, name_off: kernel::ffi::c_ulong,
 			 extent_buffer *eb, inode_fs_paths *ipath)
 {
 	char *fspath;
@@ -2745,7 +2745,7 @@ static int inode_to_path(inum: u64, name_len: u32, name_off: core::ffi::c_ulong,
 		return PTR_ERR(fspath);
 
 	if (fspath > fspath_min) {
-		ipath->fspath->val[i] = (u64)(core::ffi::c_ulong)fspath;
+		ipath->fspath->val[i] = (u64)(kernel::ffi::c_ulong)fspath;
 		++ipath->fspath->elem_cnt;
 		ipath->fspath->bytes_left = fspath - fspath_min;
 	} else {
@@ -2996,7 +2996,7 @@ int btrfs_backref_iter_next(btrfs_fs_info *fs_info, btrfs_backref_iter *iter)
 			int type;
 
 			iref = (btrfs_extent_inline_ref *)
-				((core::ffi::c_ulong)iter->cur_ptr);
+				((kernel::ffi::c_ulong)iter->cur_ptr);
 			type = btrfs_extent_inline_ref_type(eb, iref);
 
 			size = btrfs_extent_inline_ref_size(type);
@@ -3529,7 +3529,7 @@ int btrfs_backref_add_tree_node(btrfs_trans_handle *trans,
 
 			/* Update key for inline backref */
 			iref = (btrfs_extent_inline_ref *)
-				((core::ffi::c_ulong)iter->cur_ptr);
+				((kernel::ffi::c_ulong)iter->cur_ptr);
 			type = btrfs_get_extent_inline_ref_type(eb, iref,
 							BTRFS_REF_TYPE_BLOCK);
 			if (unlikely(type == BTRFS_REF_TYPE_INVALID)) {

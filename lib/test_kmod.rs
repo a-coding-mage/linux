@@ -5,11 +5,11 @@
 // environment; they are intentionally not reimplemented here.
 
 const TEST_START_NUM_THREADS: u32 = 50;
-const TEST_START_DRIVER: *const core::ffi::c_char = c"test_module".as_ptr();
+const TEST_START_DRIVER: *const kernel::ffi::c_char = c"test_module".as_ptr();
 
 static mut force_init_test: bool = false;
-static mut start_driver: *mut core::ffi::c_char = core::ptr::null_mut();
-static mut start_test_fs: *mut core::ffi::c_char = core::ptr::null_mut();
+static mut start_driver: *mut kernel::ffi::c_char = core::ptr::null_mut();
+static mut start_test_fs: *mut kernel::ffi::c_char = core::ptr::null_mut();
 
 static mut reg_dev_mutex: mutex = unsafe { core::mem::zeroed() };
 static mut reg_test_devs: list_head = unsafe { core::mem::zeroed() };
@@ -26,8 +26,8 @@ enum kmod_test_case {
 
 #[repr(C)]
 struct test_config {
-    test_driver: *mut core::ffi::c_char,
-    test_fs: *mut core::ffi::c_char,
+    test_driver: *mut kernel::ffi::c_char,
+    test_fs: *mut kernel::ffi::c_char,
     num_threads: u32,
     test_case: kmod_test_case,
     test_result: i32,
@@ -59,7 +59,7 @@ struct kmod_test_device {
     info: *mut kmod_test_device_info,
 }
 
-unsafe fn test_case_str(test_case: kmod_test_case) -> *const core::ffi::c_char {
+unsafe fn test_case_str(test_case: kmod_test_case) -> *const kernel::ffi::c_char {
     match test_case {
         kmod_test_case::TEST_KMOD_DRIVER => c"TEST_KMOD_DRIVER".as_ptr(),
         kmod_test_case::TEST_KMOD_FS_TYPE => c"TEST_KMOD_FS_TYPE".as_ptr(),
@@ -102,7 +102,7 @@ unsafe fn test_kmod_put_module(info: *mut kmod_test_device_info) {
     (*info).need_mod_put = true;
 }
 
-unsafe extern "C" fn run_request(data: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn run_request(data: *mut kernel::ffi::c_void) -> i32 {
     let info = data as *mut kmod_test_device_info;
     let test_dev = (*info).test_dev;
     let config = &mut (*test_dev).config;
@@ -183,6 +183,6 @@ unsafe fn __trigger_config_run(test_dev:*mut kmod_test_device)->i32 { (*test_dev
 unsafe fn trigger_config_run(test_dev:*mut kmod_test_device)->i32 { mutex_lock!(&mut (*test_dev).trigger_mutex); mutex_lock!(&mut (*test_dev).config_mutex); let mut ret=__trigger_config_run(test_dev); if ret>=0 {dev_info!((*test_dev).dev,"General test result: %d\n",(*test_dev).config.test_result);ret=0;} mutex_unlock!(&mut (*test_dev).config_mutex);mutex_unlock!(&mut (*test_dev).trigger_mutex);ret }
 
 // External kernel declarations used by the translated implementation.
-extern "C" { fn dev_get_drvdata(_: *mut device)->*mut miscdevice; fn module_put(_: *mut module); fn request_module(_: *const core::ffi::c_char,...)->i32; fn get_fs_type(_: *mut core::ffi::c_char)->*mut file_system_type; }
+extern "C" { fn dev_get_drvdata(_: *mut device)->*mut miscdevice; fn module_put(_: *mut module); fn request_module(_: *const kernel::ffi::c_char,...)->i32; fn get_fs_type(_: *mut kernel::ffi::c_char)->*mut file_system_type; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

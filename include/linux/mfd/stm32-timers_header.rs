@@ -155,8 +155,8 @@ pub struct stm32_timers {
     pub regmap: *mut regmap,
     pub max_arr: u32,
     pub dma: stm32_timers_dma,
-    pub nr_irqs: core::ffi::c_uint,
-    pub irq: [core::ffi::c_int; STM32_TIMERS_MAX_IRQS as usize],
+    pub nr_irqs: kernel::ffi::c_uint,
+    pub irq: [kernel::ffi::c_int; STM32_TIMERS_MAX_IRQS as usize],
 }
 
 // IS_REACHABLE(CONFIG_MFD_STM32_TIMERS) is a build-time kernel condition.
@@ -167,10 +167,10 @@ extern "C" {
         buf: *mut u32,
         id: stm32_timers_dmas,
         reg: u32,
-        num_reg: core::ffi::c_uint,
-        bursts: core::ffi::c_uint,
-        tmo_ms: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        num_reg: kernel::ffi::c_uint,
+        bursts: kernel::ffi::c_uint,
+        tmo_ms: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_MFD_STM32_TIMERS))]
@@ -180,10 +180,10 @@ pub unsafe fn stm32_timers_dma_burst_read(
     _buf: *mut u32,
     _id: stm32_timers_dmas,
     _reg: u32,
-    _num_reg: core::ffi::c_uint,
-    _bursts: core::ffi::c_uint,
-    _tmo_ms: core::ffi::c_ulong,
-) -> core::ffi::c_int {
+    _num_reg: kernel::ffi::c_uint,
+    _bursts: kernel::ffi::c_uint,
+    _tmo_ms: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     -ENODEV
 }
 

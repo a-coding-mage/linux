@@ -18,11 +18,11 @@ const PTI_LEVEL_KERNEL_IMAGE: pti_clone_level = pti_clone_level::PTI_CLONE_PTE;
 
 const __GFP_NOTRACK: usize = 0;
 
-unsafe fn pti_print_if_insecure(reason: *const core::ffi::c_char) {
+unsafe fn pti_print_if_insecure(reason: *const kernel::ffi::c_char) {
     if boot_cpu_has_bug(X86_BUG_CPU_MELTDOWN) { pr_info("%s\n", reason); }
 }
 
-unsafe fn pti_print_if_secure(reason: *const core::ffi::c_char) {
+unsafe fn pti_print_if_secure(reason: *const kernel::ffi::c_char) {
     if !boot_cpu_has_bug(X86_BUG_CPU_MELTDOWN) { pr_info("%s\n", reason); }
 }
 
@@ -42,7 +42,7 @@ pub unsafe fn pti_check_boottime_disable() {
     if cpu_feature_enabled(X86_FEATURE_FRED) { pr_debug("PTI enabled, disabling FRED\n"); setup_clear_cpu_cap(X86_FEATURE_FRED); }
 }
 
-unsafe fn pti_parse_cmdline(arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn pti_parse_cmdline(arg: *mut kernel::ffi::c_char) -> i32 {
     if strcmp(arg, c"off".as_ptr()) == 0 { pti_mode = pti_mode_t::PTI_FORCE_OFF; }
     else if strcmp(arg, c"on".as_ptr()) == 0 { pti_mode = pti_mode_t::PTI_FORCE_ON; }
     else if strcmp(arg, c"auto".as_ptr()) == 0 { pti_mode = pti_mode_t::PTI_AUTO; }
@@ -51,7 +51,7 @@ unsafe fn pti_parse_cmdline(arg: *mut core::ffi::c_char) -> i32 {
 }
 // early_param("pti", pti_parse_cmdline);
 
-unsafe fn pti_parse_cmdline_nopti(_arg: *mut core::ffi::c_char) -> i32 { pti_mode = pti_mode_t::PTI_FORCE_OFF; 0 }
+unsafe fn pti_parse_cmdline_nopti(_arg: *mut kernel::ffi::c_char) -> i32 { pti_mode = pti_mode_t::PTI_FORCE_OFF; 0 }
 // early_param("nopti", pti_parse_cmdline_nopti);
 
 pub unsafe fn __pti_set_user_pgtbl(pgdp: *mut pgd_t, mut pgd: pgd_t) -> pgd_t {
@@ -134,7 +134,7 @@ unsafe fn pti_clone_p4d(addr: usize) { let user = pti_user_pagetable_walk_p4d(ad
 #[cfg(target_pointer_width = "64")]
 unsafe fn pti_clone_user_shared() {
     pti_clone_p4d(CPU_ENTRY_AREA_BASE);
-    for_each_possible_cpu(|cpu| { let va = &per_cpu(cpu_tss_rw, cpu) as *const _ as usize; let pa = per_cpu_ptr_to_phys(va as *mut core::ffi::c_void); let target = pti_user_pagetable_walk_pte(va, false); if WARN_ON(target.is_null()) { return; } target.write(pfn_pte(pa >> PAGE_SHIFT, PAGE_KERNEL)); });
+    for_each_possible_cpu(|cpu| { let va = &per_cpu(cpu_tss_rw, cpu) as *const _ as usize; let pa = per_cpu_ptr_to_phys(va as *mut kernel::ffi::c_void); let target = pti_user_pagetable_walk_pte(va, false); if WARN_ON(target.is_null()) { return; } target.write(pfn_pte(pa >> PAGE_SHIFT, PAGE_KERNEL)); });
 }
 #[cfg(not(target_pointer_width = "64"))]
 unsafe fn pti_clone_user_shared() { let start = CPU_ENTRY_AREA_BASE; pti_clone_pgtable(start, start + PAGE_SIZE * CPU_ENTRY_AREA_PAGES, pti_clone_level::PTI_CLONE_PMD, false); }

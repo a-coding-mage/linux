@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 // External Linux kernel headers and ../bus.h provide the declarations used here.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct device;
@@ -9,7 +9,7 @@ pub struct device;
 pub struct work_struct;
 #[repr(C)]
 pub struct resource {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub start: usize,
     pub end: usize,
     pub flags: u64,
@@ -20,7 +20,7 @@ pub struct resource {
 
 #[repr(C)]
 pub struct platform_device {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: i32,
 }
 
@@ -37,14 +37,14 @@ extern "C" {
     fn mutex_lock(lock: *mut c_void);
     fn mutex_unlock(lock: *mut c_void);
     fn __request_region(parent: *mut resource, start: usize, n: usize,
-                        name: *const core::ffi::c_char, flags: u64) -> *mut resource;
+                        name: *const kernel::ffi::c_char, flags: u64) -> *mut resource;
     fn resource_size(res: *mut resource) -> usize;
     fn platform_device_register(pdev: *mut platform_device) -> i32;
     fn phys_to_target_node(start: usize) -> i32;
     fn walk_soft_reserve_res(start: usize, end: usize, data: *mut c_void,
                              fn_: unsafe extern "C" fn(*mut resource, *mut c_void) -> i32);
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
-    fn pr_err_once(fmt: *const core::ffi::c_char, ...);
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err_once(fmt: *const kernel::ffi::c_char, ...);
 }
 
 static mut nohmem: bool = false;
@@ -54,7 +54,7 @@ static mut platform_initialized: bool = false;
 const IORESOURCE_MEM: u64 = 0x0000_0200;
 
 static mut hmem_active: resource = resource {
-    name: b"HMEM devices\0".as_ptr() as *const core::ffi::c_char,
+    name: b"HMEM devices\0".as_ptr() as *const kernel::ffi::c_char,
     start: 0,
     end: usize::MAX,
     flags: IORESOURCE_MEM,
@@ -65,7 +65,7 @@ static mut hmem_active: resource = resource {
 
 static mut hmem_platform: hmem_platform_device = hmem_platform_device {
     pdev: platform_device {
-        name: b"hmem_platform\0".as_ptr() as *const core::ffi::c_char,
+        name: b"hmem_platform\0".as_ptr() as *const kernel::ffi::c_char,
         id: 0,
     },
     // __WORK_INITIALIZER(hmem_platform.work, hmem_work);
@@ -103,11 +103,11 @@ unsafe fn __hmem_register_resource(target_nid: i32, res: *mut resource) {
         &mut hmem_active,
         (*res).start,
         resource_size(res),
-        b"\0".as_ptr() as *const core::ffi::c_char,
+        b"\0".as_ptr() as *const kernel::ffi::c_char,
         0,
     );
     if new.is_null() {
-        pr_debug(b"hmem range %pr already active\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_debug(b"hmem range %pr already active\n\0".as_ptr() as *const kernel::ffi::c_char);
         return;
     }
 
@@ -120,7 +120,7 @@ unsafe fn __hmem_register_resource(target_nid: i32, res: *mut resource) {
     let rc = platform_device_register(&mut hmem_platform.pdev);
     if rc != 0 {
         pr_err_once(b"failed to register device-dax hmem_platform device\n\0".as_ptr()
-            as *const core::ffi::c_char);
+            as *const kernel::ffi::c_char);
         return;
     }
 

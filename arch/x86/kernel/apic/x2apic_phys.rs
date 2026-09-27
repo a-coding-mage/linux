@@ -13,7 +13,7 @@ pub unsafe fn x2apic_set_max_apicid(apicid: u32) {
     }
 }
 
-unsafe fn set_x2apic_phys_mode(_arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn set_x2apic_phys_mode(_arg: *mut kernel::ffi::c_char) -> i32 {
     x2apic_phys = 1;
     0
 }
@@ -36,8 +36,8 @@ unsafe fn x2apic_fadt_phys() -> bool {
 }
 
 unsafe fn x2apic_acpi_madt_oem_check(
-    _oem_id: *mut core::ffi::c_char,
-    _oem_table_id: *mut core::ffi::c_char,
+    _oem_id: *mut kernel::ffi::c_char,
+    _oem_table_id: *mut kernel::ffi::c_char,
 ) -> i32 {
     (x2apic_enabled() && (x2apic_phys != 0 || x2apic_fadt_phys())) as i32
 }
@@ -117,7 +117,7 @@ pub unsafe fn x2apic_get_apic_id(id: u32) -> u32 {
 }
 
 static mut apic_x2apic_phys: apic = apic {
-    name: "physical x2apic\0".as_ptr() as *const core::ffi::c_char,
+    name: "physical x2apic\0".as_ptr() as *const kernel::ffi::c_char,
     probe: Some(x2apic_phys_probe),
     acpi_madt_oem_check: Some(x2apic_acpi_madt_oem_check),
     dest_mode_logical: false,

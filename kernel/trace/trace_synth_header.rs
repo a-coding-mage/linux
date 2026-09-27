@@ -10,8 +10,8 @@ pub const STR_VAR_LEN_MAX: usize = MAX_FILTER_STR_VAL;
 
 #[repr(C)]
 pub struct synth_field {
-    pub type_: *mut core::ffi::c_char,
-    pub name: *mut core::ffi::c_char,
+    pub type_: *mut kernel::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub size: usize,
     pub offset: u32,
     pub field_pos: u32,
@@ -25,7 +25,7 @@ pub struct synth_field {
 pub struct synth_event {
     pub devent: dyn_event,
     pub ref_: i32,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub fields: *mut *mut synth_field,
     pub n_fields: u32,
     pub dynamic_fields: *mut *mut synth_field,
@@ -38,7 +38,7 @@ pub struct synth_event {
 }
 
 extern "C" {
-    pub fn find_synth_event(name: *const core::ffi::c_char) -> *mut synth_event;
+    pub fn find_synth_event(name: *const kernel::ffi::c_char) -> *mut synth_event;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

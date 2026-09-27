@@ -11,7 +11,7 @@
 // Linux and architecture headers from the original implementation provide
 // the declarations referenced below.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct DeviceNode {

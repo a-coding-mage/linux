@@ -210,7 +210,7 @@ pub struct ip_set_counter_match { pub value: u64, pub op: u8 }
 pub const SO_IP_SET: u32 = 83;
 
 #[repr(C)]
-pub union ip_set_name_index { pub name: [core::ffi::c_char; IPSET_MAXNAMELEN], pub index: ip_set_id_t }
+pub union ip_set_name_index { pub name: [kernel::ffi::c_char; IPSET_MAXNAMELEN], pub index: ip_set_id_t }
 
 pub const IP_SET_OP_GET_BYNAME: u32 = 0x00000006;
 #[repr(C)]

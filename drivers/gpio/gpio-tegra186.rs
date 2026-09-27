@@ -43,15 +43,15 @@ const fn tegra186_gpio_int_route_mapping(p: usize, x: usize) -> usize { 0x14 + p
 const fn tegra186_gpio_interrupt_status(x: usize) -> usize { 0x100 + x * 4 }
 
 #[repr(C)]
-pub struct tegra_gpio_port { pub name: *const core::ffi::c_char, pub bank: u32, pub port: u32, pub pins: u32 }
+pub struct tegra_gpio_port { pub name: *const kernel::ffi::c_char, pub bank: u32, pub port: u32, pub pins: u32 }
 #[repr(C)]
-pub struct tegra186_pin_range { pub offset: u32, pub group: *const core::ffi::c_char }
+pub struct tegra186_pin_range { pub offset: u32, pub group: *const kernel::ffi::c_char }
 #[repr(C)]
 pub struct tegra_gpio_soc {
-    pub ports: *const tegra_gpio_port, pub num_ports: u32, pub name: *const core::ffi::c_char,
-    pub prefix: *const core::ffi::c_char, pub instance: u32, pub num_irqs_per_bank: u32,
+    pub ports: *const tegra_gpio_port, pub num_ports: u32, pub name: *const kernel::ffi::c_char,
+    pub prefix: *const kernel::ffi::c_char, pub instance: u32, pub num_irqs_per_bank: u32,
     pub pin_ranges: *const tegra186_pin_range, pub num_pin_ranges: u32,
-    pub pinmux: *const core::ffi::c_char, pub has_gte: bool, pub has_vm_support: bool,
+    pub pinmux: *const kernel::ffi::c_char, pub has_gte: bool, pub has_vm_support: bool,
 }
 #[repr(C)]
 pub struct tegra_gpio { pub gpio: gpio_chip, pub num_irq: u32, pub soc: *const tegra_gpio_soc,
@@ -92,7 +92,7 @@ unsafe fn tegra186_gpio_is_accessible(gpio: *mut tegra_gpio, pin: u32) -> bool {
 // The remaining callbacks and SoC tables retain the C driver's ABI and are
 // declared here for linkage with the kernel translation unit.
 extern "C" {
-    pub fn tegra186_gpio_probe(pdev: *mut core::ffi::c_void) -> i32;
+    pub fn tegra186_gpio_probe(pdev: *mut kernel::ffi::c_void) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

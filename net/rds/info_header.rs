@@ -28,7 +28,7 @@ unsafe extern "C" {
     pub fn rds_info_register_func(optname: i32, func: rds_info_func);
     pub fn rds_info_deregister_func(optname: i32, func: rds_info_func);
     pub fn rds_info_getsockopt(sock: *mut socket, optname: i32, opt: *mut sockopt_t) -> i32;
-    pub fn rds_info_copy(iter: *mut rds_info_iterator, data: *mut core::ffi::c_void, bytes: core::ffi::c_ulong);
+    pub fn rds_info_copy(iter: *mut rds_info_iterator, data: *mut kernel::ffi::c_void, bytes: kernel::ffi::c_ulong);
     pub fn rds_info_iter_unmap(iter: *mut rds_info_iterator);
 }
 

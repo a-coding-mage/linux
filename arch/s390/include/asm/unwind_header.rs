@@ -28,12 +28,12 @@
 #[repr(C)]
 pub struct unwind_state {
     pub stack_info: stack_info,
-    pub stack_mask: ::core::ffi::c_ulong,
+    pub stack_mask: ::kernel::ffi::c_ulong,
     pub task: *mut task_struct,
     pub regs: *mut pt_regs,
-    pub sp: ::core::ffi::c_ulong,
-    pub ip: ::core::ffi::c_ulong,
-    pub graph_idx: ::core::ffi::c_int,
+    pub sp: ::kernel::ffi::c_ulong,
+    pub ip: ::kernel::ffi::c_ulong,
+    pub graph_idx: ::kernel::ffi::c_int,
     pub kr_cur: *mut llist_node,
     pub reliable: bool,
     pub error: bool,
@@ -43,13 +43,13 @@ pub struct unwind_state {
 #[inline]
 pub unsafe fn unwind_recover_ret_addr(
     state: *mut unwind_state,
-    mut ip: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_ulong {
+    mut ip: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_ulong {
     ip = ftrace_graph_ret_addr(
         (*state).task,
         &mut (*state).graph_idx,
         ip,
-        (*state).sp as *mut ::core::ffi::c_void,
+        (*state).sp as *mut ::kernel::ffi::c_void,
     );
     // CONFIG_RETHOOK controls this block in the C build.
     #[cfg(CONFIG_RETHOOK)]
@@ -66,10 +66,10 @@ extern "C" {
         state: *mut unwind_state,
         task: *mut task_struct,
         regs: *mut pt_regs,
-        first_frame: ::core::ffi::c_ulong,
+        first_frame: ::kernel::ffi::c_ulong,
     );
     pub fn unwind_next_frame(state: *mut unwind_state) -> bool;
-    pub fn unwind_get_return_address(state: *mut unwind_state) -> ::core::ffi::c_ulong;
+    pub fn unwind_get_return_address(state: *mut unwind_state) -> ::kernel::ffi::c_ulong;
 }
 
 #[inline]
@@ -87,7 +87,7 @@ pub unsafe fn unwind_start(
     state: *mut unwind_state,
     mut task: *mut task_struct,
     regs: *mut pt_regs,
-    mut first_frame: ::core::ffi::c_ulong,
+    mut first_frame: ::kernel::ffi::c_ulong,
 ) {
     if task.is_null() {
         task = current;
@@ -120,9 +120,9 @@ pub fn unwind_init() {}
 #[inline]
 pub fn unwind_module_init(
     _mod: *mut module,
-    _orc_ip: *mut ::core::ffi::c_void,
+    _orc_ip: *mut ::kernel::ffi::c_void,
     _orc_ip_size: usize,
-    _orc: *mut ::core::ffi::c_void,
+    _orc: *mut ::kernel::ffi::c_void,
     _orc_size: usize,
 ) {
 }

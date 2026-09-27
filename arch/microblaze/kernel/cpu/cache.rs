@@ -1,7 +1,7 @@
 /* Cache control for MicroBlaze cache memories. */
 
 /* Dependencies supplied by the surrounding kernel translation. */
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[allow(non_camel_case_types)]
 type ulong = c_ulong;

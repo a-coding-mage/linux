@@ -11,12 +11,12 @@ extern "C" {
     // The C declaration carries __printf(4, 5), indicating printf-style
     // format checking for the fourth argument and subsequent variadic args.
     pub fn mac80211_format_buffer(
-        userbuf: *mut core::ffi::c_char,
+        userbuf: *mut kernel::ffi::c_char,
         count: size_t,
         ppos: *mut loff_t,
-        fmt: *mut core::ffi::c_char,
+        fmt: *mut kernel::ffi::c_char,
         ...,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_MAC80211_DEBUGFS))]

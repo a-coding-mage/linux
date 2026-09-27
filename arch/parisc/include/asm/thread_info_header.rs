@@ -5,11 +5,11 @@
 #[repr(C)]
 pub struct thread_info {
     /* thread_info flags (see TIF_*) */
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     /* 0=premptable, <0=BUG; will also serve as bh-counter */
-    pub preempt_count: ::core::ffi::c_int,
+    pub preempt_count: ::kernel::ffi::c_int,
     #[cfg(CONFIG_SMP)]
-    pub cpu: ::core::ffi::c_uint,
+    pub cpu: ::kernel::ffi::c_uint,
 }
 
 /* INIT_PREEMPT_COUNT is supplied by the corresponding dependency. */

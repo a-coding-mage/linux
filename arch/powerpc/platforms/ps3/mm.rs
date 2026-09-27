@@ -24,8 +24,8 @@ static mut MAP: Map = Map { total: 0, vas_id: 0, htab_size: 0,
 
 extern "C" {
     fn is_kernel_addr(a: usize) -> bool;
-    fn ps3_result(r: i32) -> *const core::ffi::c_char;
-    fn panic(s: *const core::ffi::c_char) -> !;
+    fn ps3_result(r: i32) -> *const kernel::ffi::c_char;
+    fn panic(s: *const kernel::ffi::c_char) -> !;
     fn BUG();
     fn lv1_query_logical_partition_address_region_info(_: u64,_: *mut u64,_: *mut u64,_: *mut u64,_: *mut u64,_: *mut u64)->i32;
     fn lv1_construct_virtual_address_space(_: u64,_: u64,_: u64,_: *mut u64,_: *mut u64)->i32;
@@ -98,7 +98,7 @@ extern "C" {
     fn dma_map(r: *mut Ps3DmaRegion, virt_addr: usize, len: usize, bus_addr: *mut DmaAddr, iopte_flag: u64) -> i32;
     fn dma_unmap(r: *mut Ps3DmaRegion, bus_addr: DmaAddr, len: usize) -> i32;
 }
-#[no_mangle] pub unsafe extern "C" fn ps3_dma_region_init(dev:*mut Ps3SystemBusDevice,r:*mut Ps3DmaRegion,page_size:Ps3DmaPageSize,region_type:Ps3DmaRegionType,addr:*mut core::ffi::c_void,len:usize)->i32 { let _=(dev,r,page_size,region_type,addr,len); -22 }
+#[no_mangle] pub unsafe extern "C" fn ps3_dma_region_init(dev:*mut Ps3SystemBusDevice,r:*mut Ps3DmaRegion,page_size:Ps3DmaPageSize,region_type:Ps3DmaRegionType,addr:*mut kernel::ffi::c_void,len:usize)->i32 { let _=(dev,r,page_size,region_type,addr,len); -22 }
 #[no_mangle] pub unsafe extern "C" fn ps3_dma_region_create(r:*mut Ps3DmaRegion)->i32 { dma_region_create(r) }
 #[no_mangle] pub unsafe extern "C" fn ps3_dma_region_free(r:*mut Ps3DmaRegion)->i32 { dma_region_free(r) }
 #[no_mangle] pub unsafe extern "C" fn ps3_dma_map(r:*mut Ps3DmaRegion,v:usize,l:usize,b:*mut DmaAddr,f:u64)->i32 { dma_map(r,v,l,b,f) }

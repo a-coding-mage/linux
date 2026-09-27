@@ -6,19 +6,19 @@
  *	MyungJoo Ham <myungjoo.ham@samsung.com>
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 struct userspace_data {
-    user_frequency: libc::c_ulong,
+    user_frequency: kernel::ffi::c_ulong,
     valid: bool,
 }
 
 // Types and functions below are supplied by the surrounding kernel bindings.
 #[allow(non_camel_case_types)]
-type ssize_t = libc::ssize_t;
+type ssize_t = isize;
 
-unsafe fn devfreq_userspace_func(df: *mut devfreq, freq: *mut libc::c_ulong) -> libc::c_int {
+unsafe fn devfreq_userspace_func(df: *mut devfreq, freq: *mut kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     let data = (*df).governor_data as *mut userspace_data;
 
     if (*data).valid {
@@ -33,13 +33,13 @@ unsafe fn devfreq_userspace_func(df: *mut devfreq, freq: *mut libc::c_ulong) -> 
 unsafe fn set_freq_store(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *const libc::c_char,
-    count: libc::size_t,
+    buf: *const kernel::ffi::c_char,
+    count: usize,
 ) -> ssize_t {
     let devfreq = to_devfreq(dev);
     let mut data: *mut userspace_data;
-    let mut wanted: libc::c_ulong = 0;
-    let mut err: libc::c_int = 0;
+    let mut wanted: kernel::ffi::c_ulong = 0;
+    let mut err: kernel::ffi::c_int = 0;
 
     err = kstrtoul(buf, 0, &mut wanted);
     if err != 0 {
@@ -53,7 +53,7 @@ unsafe fn set_freq_store(
     (*data).valid = true;
     err = update_devfreq(devfreq);
     if err == 0 {
-        err = count as libc::c_int;
+        err = count as kernel::ffi::c_int;
     }
     mutex_unlock(&mut (*devfreq).lock);
     err as ssize_t
@@ -62,11 +62,11 @@ unsafe fn set_freq_store(
 unsafe fn set_freq_show(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut libc::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
     let devfreq = to_devfreq(dev);
     let data: *mut userspace_data;
-    let mut err: libc::c_int = 0;
+    let mut err: kernel::ffi::c_int = 0;
 
     mutex_lock(&mut (*devfreq).lock);
     data = (*devfreq).governor_data as *mut userspace_data;
@@ -91,8 +91,8 @@ static mut dev_attr_group: attribute_group = attribute_group {
     attrs: unsafe { &raw mut dev_entries },
 };
 
-unsafe fn userspace_init(devfreq: *mut devfreq) -> libc::c_int {
-    let mut err: libc::c_int = 0;
+unsafe fn userspace_init(devfreq: *mut devfreq) -> kernel::ffi::c_int {
+    let mut err: kernel::ffi::c_int = 0;
     let data = kzalloc_obj::<userspace_data>();
 
     if data.is_null() {
@@ -121,10 +121,10 @@ unsafe fn userspace_exit(devfreq: *mut devfreq) {
 
 unsafe fn devfreq_userspace_handler(
     devfreq: *mut devfreq,
-    event: libc::c_uint,
+    event: kernel::ffi::c_uint,
     _data: *mut c_void,
-) -> libc::c_int {
-    let mut ret: libc::c_int = 0;
+) -> kernel::ffi::c_int {
+    let mut ret: kernel::ffi::c_int = 0;
 
     match event {
         DEVFREQ_GOV_START => {
@@ -145,14 +145,14 @@ static mut devfreq_userspace: devfreq_governor = devfreq_governor {
     event_handler: Some(devfreq_userspace_handler),
 };
 
-unsafe fn devfreq_userspace_init() -> libc::c_int {
+unsafe fn devfreq_userspace_init() -> kernel::ffi::c_int {
     devfreq_add_governor(&raw mut devfreq_userspace)
 }
 
 // subsys_initcall(devfreq_userspace_init);
 
 unsafe fn devfreq_userspace_exit() {
-    let ret: libc::c_int;
+    let ret: kernel::ffi::c_int;
 
     ret = devfreq_remove_governor(&raw mut devfreq_userspace);
     if ret != 0 {

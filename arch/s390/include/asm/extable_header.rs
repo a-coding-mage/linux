@@ -34,13 +34,13 @@ extern "C" {
     pub static mut __start_amode31_ex_table: exception_table_entry;
     pub static mut __stop_amode31_ex_table: exception_table_entry;
 
-    pub fn s390_search_extables(addr: ::core::ffi::c_ulong) -> *const exception_table_entry;
+    pub fn s390_search_extables(addr: ::kernel::ffi::c_ulong) -> *const exception_table_entry;
 }
 
 #[inline]
-pub unsafe fn extable_fixup(x: *const exception_table_entry) -> ::core::ffi::c_ulong {
+pub unsafe fn extable_fixup(x: *const exception_table_entry) -> ::kernel::ffi::c_ulong {
     (core::ptr::addr_of!((*x).fixup) as usize)
-        .wrapping_add((*x).fixup as isize as usize) as ::core::ffi::c_ulong
+        .wrapping_add((*x).fixup as isize as usize) as ::kernel::ffi::c_ulong
 }
 
 // ARCH_HAS_RELATIVE_EXTABLE

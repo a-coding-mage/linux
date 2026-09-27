@@ -5,8 +5,8 @@
 pub type __s8 = i8; pub type __u8 = u8; pub type __s16 = i16; pub type __u16 = u16;
 pub type __s32 = i32; pub type __u32 = u32; pub type __s64 = i64; pub type __u64 = u64;
 pub type __kernel_size_t = usize;
-pub type drm_handle_t = libc::c_uint;
-pub type drm_context_t = libc::c_uint; pub type drm_drawable_t = libc::c_uint; pub type drm_magic_t = libc::c_uint;
+pub type drm_handle_t = core::ffi::c_uint;
+pub type drm_context_t = core::ffi::c_uint; pub type drm_drawable_t = core::ffi::c_uint; pub type drm_magic_t = core::ffi::c_uint;
 
 pub const DRM_NAME: &str = "drm"; pub const DRM_MIN_ORDER: u32 = 5; pub const DRM_MAX_ORDER: u32 = 22; pub const DRM_RAM_PERCENT: u32 = 10;
 pub const _DRM_LOCK_HELD: u32 = 0x80000000; pub const _DRM_LOCK_CONT: u32 = 0x40000000;

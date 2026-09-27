@@ -4,7 +4,7 @@
 //! C-only includes and configuration guards are represented by Rust comments;
 //! dependent kernel types and symbols are expected to be supplied externally.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct device { _private: [u8; 0] }

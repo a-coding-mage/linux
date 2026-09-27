@@ -6,15 +6,15 @@
 
 #[repr(C)]
 pub struct HwPressureUpdateEntry {
-    pub hw_pressure: ::core::ffi::c_ulong,
-    pub cpu: ::core::ffi::c_int,
+    pub hw_pressure: ::kernel::ffi::c_ulong,
+    pub cpu: ::kernel::ffi::c_int,
 }
 
 impl HwPressureUpdateEntry {
     #[inline]
     pub const unsafe fn new(
-        cpu: ::core::ffi::c_int,
-        hw_pressure: ::core::ffi::c_ulong,
+        cpu: ::kernel::ffi::c_int,
+        hw_pressure: ::kernel::ffi::c_ulong,
     ) -> Self {
         Self {
             hw_pressure,
@@ -39,8 +39,8 @@ impl HwPressureUpdateEntry {
 
 extern "C" {
     pub fn trace_hw_pressure_update(
-        cpu: ::core::ffi::c_int,
-        hw_pressure: ::core::ffi::c_ulong,
+        cpu: ::kernel::ffi::c_int,
+        hw_pressure: ::kernel::ffi::c_ulong,
     );
 }
 

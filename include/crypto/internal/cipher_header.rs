@@ -10,16 +10,16 @@
 
 // Dependency declarations supplied by the translated crypto API.
 extern "C" {
-    fn crypto_alloc_base(alg_name: *const core::ffi::c_char, type_: u32, mask: u32) -> *mut crypto_tfm;
+    fn crypto_alloc_base(alg_name: *const kernel::ffi::c_char, type_: u32, mask: u32) -> *mut crypto_tfm;
     fn crypto_free_tfm(tfm: *mut crypto_tfm);
-    fn crypto_has_alg(alg_name: *const core::ffi::c_char, type_: u32, mask: u32) -> i32;
+    fn crypto_has_alg(alg_name: *const kernel::ffi::c_char, type_: u32, mask: u32) -> i32;
     fn crypto_tfm_alg_blocksize(tfm: *mut crypto_tfm) -> u32;
     fn crypto_tfm_alg_alignmask(tfm: *mut crypto_tfm) -> u32;
     fn crypto_tfm_get_flags(tfm: *mut crypto_tfm) -> u32;
     fn crypto_tfm_set_flags(tfm: *mut crypto_tfm, flags: u32);
     fn crypto_tfm_clear_flags(tfm: *mut crypto_tfm, flags: u32);
     fn crypto_grab_spawn(base: *mut crypto_spawn, inst: *mut crypto_instance,
-                         name: *const core::ffi::c_char, type_: u32, mask: u32) -> i32;
+                         name: *const kernel::ffi::c_char, type_: u32, mask: u32) -> i32;
     fn crypto_drop_spawn(base: *mut crypto_spawn);
     fn crypto_spawn_tfm(base: *mut crypto_spawn, type_: u32, mask: u32) -> *mut crypto_tfm;
 }
@@ -35,7 +35,7 @@ pub unsafe fn __crypto_cipher_cast(tfm: *mut crypto_tfm) -> *mut crypto_cipher {
 }
 
 #[inline]
-pub unsafe fn crypto_alloc_cipher(alg_name: *const core::ffi::c_char, mut type_: u32, mut mask: u32) -> *mut crypto_cipher {
+pub unsafe fn crypto_alloc_cipher(alg_name: *const kernel::ffi::c_char, mut type_: u32, mut mask: u32) -> *mut crypto_cipher {
     type_ &= !CRYPTO_ALG_TYPE_MASK;
     type_ |= CRYPTO_ALG_TYPE_CIPHER;
     mask |= CRYPTO_ALG_TYPE_MASK;
@@ -53,7 +53,7 @@ pub unsafe fn crypto_free_cipher(tfm: *mut crypto_cipher) {
 }
 
 #[inline]
-pub unsafe fn crypto_has_cipher(alg_name: *const core::ffi::c_char, mut type_: u32, mut mask: u32) -> i32 {
+pub unsafe fn crypto_has_cipher(alg_name: *const kernel::ffi::c_char, mut type_: u32, mut mask: u32) -> i32 {
     type_ &= !CRYPTO_ALG_TYPE_MASK;
     type_ |= CRYPTO_ALG_TYPE_CIPHER;
     mask |= CRYPTO_ALG_TYPE_MASK;
@@ -98,7 +98,7 @@ pub struct crypto_cipher_spawn {
 
 #[inline]
 pub unsafe fn crypto_grab_cipher(spawn: *mut crypto_cipher_spawn, inst: *mut crypto_instance,
-                                 name: *const core::ffi::c_char, mut type_: u32, mut mask: u32) -> i32 {
+                                 name: *const kernel::ffi::c_char, mut type_: u32, mut mask: u32) -> i32 {
     type_ &= !CRYPTO_ALG_TYPE_MASK;
     type_ |= CRYPTO_ALG_TYPE_CIPHER;
     mask |= CRYPTO_ALG_TYPE_MASK;

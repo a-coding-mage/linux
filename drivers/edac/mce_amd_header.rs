@@ -72,7 +72,7 @@ macro_rules! r4_msg {
 }
 
 extern "C" {
-    pub static pp_msgs: *const *const core::ffi::c_char;
+    pub static pp_msgs: *const *const kernel::ffi::c_char;
 }
 
 #[repr(u32)]

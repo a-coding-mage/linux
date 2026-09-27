@@ -22,7 +22,7 @@ pub const MAX_SUBCORE_PER_CORE: usize = 4;
 #[cfg(CONFIG_KVM_BOOK3S_HV_POSSIBLE)]
 #[repr(C)]
 pub struct sibling_subcore_state {
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub in_guest: [u8; MAX_SUBCORE_PER_CORE],
 }
 
@@ -46,7 +46,7 @@ pub struct pt_regs {
 }
 
 unsafe extern "C" {
-    pub fn hmi_handle_debugtrig(regs: *mut pt_regs) -> core::ffi::c_long;
+    pub fn hmi_handle_debugtrig(regs: *mut pt_regs) -> kernel::ffi::c_long;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -3,10 +3,10 @@
 
 #[cfg(CONFIG_ACPI_DEBUG)]
 #[repr(C)]
-struct acpi_dlayer { name: *const core::ffi::c_char, value: libc::c_ulong }
+struct acpi_dlayer { name: *const kernel::ffi::c_char, value: kernel::ffi::c_ulong }
 #[cfg(CONFIG_ACPI_DEBUG)]
 #[repr(C)]
-struct acpi_dlevel { name: *const core::ffi::c_char, value: libc::c_ulong }
+struct acpi_dlevel { name: *const kernel::ffi::c_char, value: kernel::ffi::c_ulong }
 
 #[cfg(CONFIG_ACPI_DEBUG)]
 static ACPI_DEBUG_LAYERS: &[acpi_dlayer] = &[
@@ -106,13 +106,13 @@ unsafe fn fixed_event_count(event_number: u32) {
     else { (*all_counters.add((num_gpes + ACPI_NUM_FIXED_EVENTS + COUNT_ERROR as u32) as usize)).count += 1; }
 }
 
-unsafe extern "C" fn acpi_global_event_handler(event_type: u32, _device: acpi_handle, event_number: u32, _context: *mut core::ffi::c_void) {
+unsafe extern "C" fn acpi_global_event_handler(event_type: u32, _device: acpi_handle, event_number: u32, _context: *mut kernel::ffi::c_void) {
     if event_type == ACPI_EVENT_TYPE_GPE { gpe_count(event_number); }
     else if event_type == ACPI_EVENT_TYPE_FIXED { fixed_event_count(event_number); }
 }
 
 // Preserve the remaining source-level interfaces and initialization flow.
-unsafe extern "C" fn acpi_sysfs_table_handler(event: u32, _table: *mut core::ffi::c_void, _context: *mut core::ffi::c_void) -> acpi_status {
+unsafe extern "C" fn acpi_sysfs_table_handler(event: u32, _table: *mut kernel::ffi::c_void, _context: *mut kernel::ffi::c_void) -> acpi_status {
     match event { ACPI_TABLE_EVENT_INSTALL | ACPI_TABLE_EVENT_LOAD | ACPI_TABLE_EVENT_UNLOAD | ACPI_TABLE_EVENT_UNINSTALL => AE_OK, _ => AE_BAD_PARAMETER }
 }
 
@@ -140,7 +140,7 @@ pub unsafe extern "C" fn acpi_sysfs_init() -> i32 {
 
 // Dependency declarations supplied by other translation units.
 extern "C" {
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn test_bit(nr: usize, addr: *const usize) -> bool;
     fn acpi_get_gpe_device(gpe: u16, handle: *mut acpi_handle) -> acpi_status;
     fn acpi_mask_gpe(handle: acpi_handle, gpe: u16, action: u32) -> acpi_status;

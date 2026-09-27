@@ -26,15 +26,15 @@ pub struct mtd_partition {
 
 #[repr(C)]
 pub struct platdata_mtd_ram {
-    pub mapname: *const core::ffi::c_char,
-    pub map_probes: *const *const core::ffi::c_char,
-    pub probes: *const *const core::ffi::c_char,
+    pub mapname: *const kernel::ffi::c_char,
+    pub map_probes: *const *const kernel::ffi::c_char,
+    pub probes: *const *const kernel::ffi::c_char,
     pub partitions: *mut mtd_partition,
-    pub nr_partitions: core::ffi::c_int,
-    pub bankwidth: core::ffi::c_int,
+    pub nr_partitions: kernel::ffi::c_int,
+    pub bankwidth: kernel::ffi::c_int,
 
     /* control callbacks */
-    pub set_rw: Option<unsafe extern "C" fn(dev: *mut device, to: core::ffi::c_int)>,
+    pub set_rw: Option<unsafe extern "C" fn(dev: *mut device, to: kernel::ffi::c_int)>,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

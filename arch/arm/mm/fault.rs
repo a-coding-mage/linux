@@ -9,12 +9,12 @@
 // CONFIG_MMU
 
 #[inline]
-pub unsafe fn copy_from_kernel_nofault_allowed(unsafe_src: *const core::ffi::c_void, size: usize) -> bool {
+pub unsafe fn copy_from_kernel_nofault_allowed(unsafe_src: *const kernel::ffi::c_void, size: usize) -> bool {
     let addr = unsafe_src as usize;
     addr >= TASK_SIZE && usize::MAX - addr >= size
 }
 
-pub unsafe fn show_pte(lvl: *const core::ffi::c_char, mut mm: *mut mm_struct, addr: usize) {
+pub unsafe fn show_pte(lvl: *const kernel::ffi::c_char, mut mm: *mut mm_struct, addr: usize) {
     if mm.is_null() { mm = &raw mut init_mm; }
     let pgd = pgd_offset(mm, addr);
     printk(b"%s[%08lx] *pgd=%08llx\0".as_ptr() as _, lvl, addr, pgd_val(*pgd) as i64);
@@ -43,7 +43,7 @@ pub unsafe fn show_pte(lvl: *const core::ffi::c_char, mut mm: *mut mm_struct, ad
 
 #[inline] unsafe fn is_write_fault(fsr: u32) -> bool { (fsr & FSR_WRITE) != 0 && (fsr & FSR_CM) == 0 }
 
-unsafe fn die_kernel_fault(msg: *const core::ffi::c_char, mm: *mut mm_struct, addr: usize, fsr: u32, regs: *mut pt_regs) {
+unsafe fn die_kernel_fault(msg: *const kernel::ffi::c_char, mm: *mut mm_struct, addr: usize, fsr: u32, regs: *mut pt_regs) {
     bust_spinlocks(1); pr_alert(b"8<--- cut here ---\n\0".as_ptr() as _);
     pr_alert(b"Unable to handle kernel %s at virtual address %08lx when %s\n\0".as_ptr() as _, msg, addr, if fsr & FSR_LNX_PF != 0 { b"execute\0".as_ptr() as _ } else { str_write_read(fsr & FSR_WRITE) });
     show_pte(KERN_ALERT, mm, addr); die(b"Oops\0".as_ptr() as _, regs, fsr); bust_spinlocks(0); make_task_dead(SIGKILL);
@@ -58,7 +58,7 @@ unsafe fn __do_kernel_fault(mm: *mut mm_struct, addr: usize, fsr: u32, regs: *mu
 unsafe fn __do_user_fault(addr: usize, fsr: u32, sig: u32, code: i32, regs: *mut pt_regs) {
     let tsk = current; local_irq_enable();
     tsk.thread.address = addr; tsk.thread.error_code = fsr; tsk.thread.trap_no = 14;
-    force_sig_fault(sig, code, addr as *mut core::ffi::c_void);
+    force_sig_fault(sig, code, addr as *mut kernel::ffi::c_void);
 }
 
 pub unsafe fn do_bad_area(addr: usize, fsr: u32, regs: *mut pt_regs) {

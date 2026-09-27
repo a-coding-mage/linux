@@ -3,10 +3,10 @@
 
 /* Dependencies supplied by the surrounding kernel translation unit. */
 extern "C" {
-    fn mtcr(reg: *const core::ffi::c_char, value: u32);
+    fn mtcr(reg: *const kernel::ffi::c_char, value: u32);
     fn sync_is();
     fn irqs_disabled() -> bool;
-    fn on_each_cpu(func: unsafe extern "C" fn(*mut core::ffi::c_void), info: *mut core::ffi::c_void, wait: i32);
+    fn on_each_cpu(func: unsafe extern "C" fn(*mut kernel::ffi::c_void), info: *mut kernel::ffi::c_void, wait: i32);
 }
 
 /* for L1-cache */
@@ -21,8 +21,8 @@ extern "C" {
     static L1_CACHE_BYTES: usize;
 }
 
-pub unsafe extern "C" fn local_icache_inv_all(_priv: *mut core::ffi::c_void) {
-    mtcr(b"cr17\0".as_ptr() as *const core::ffi::c_char, INS_CACHE | CACHE_INV);
+pub unsafe extern "C" fn local_icache_inv_all(_priv: *mut kernel::ffi::c_void) {
+    mtcr(b"cr17\0".as_ptr() as *const kernel::ffi::c_char, INS_CACHE | CACHE_INV);
     sync_is();
 }
 
@@ -59,12 +59,12 @@ extern "C" {
 #[cfg(not(CONFIG_CPU_HAS_ICACHE_INS))]
 #[inline]
 unsafe fn cache_op_line(i: usize, val: u32) {
-    mtcr(b"cr22\0".as_ptr() as *const core::ffi::c_char, i as u32);
-    mtcr(b"cr17\0".as_ptr() as *const core::ffi::c_char, val);
+    mtcr(b"cr22\0".as_ptr() as *const kernel::ffi::c_char, i as u32);
+    mtcr(b"cr17\0".as_ptr() as *const kernel::ffi::c_char, val);
 }
 
 #[cfg(not(CONFIG_CPU_HAS_ICACHE_INS))]
-pub unsafe extern "C" fn local_icache_inv_range(priv_: *mut core::ffi::c_void) {
+pub unsafe extern "C" fn local_icache_inv_range(priv_: *mut kernel::ffi::c_void) {
     let param = &*(priv_ as *const CacheRange);
     let mut i = param.start & !(L1_CACHE_BYTES - 1);
     let mut flags: usize = 0;
@@ -82,9 +82,9 @@ pub unsafe extern "C" fn local_icache_inv_range(priv_: *mut core::ffi::c_void) {
 pub unsafe extern "C" fn icache_inv_range(start: usize, end: usize) {
     let mut param = CacheRange { start, end };
     if irqs_disabled() {
-        local_icache_inv_range(&mut param as *mut _ as *mut core::ffi::c_void);
+        local_icache_inv_range(&mut param as *mut _ as *mut kernel::ffi::c_void);
     } else {
-        on_each_cpu(local_icache_inv_range, &mut param as *mut _ as *mut core::ffi::c_void, 1);
+        on_each_cpu(local_icache_inv_range, &mut param as *mut _ as *mut kernel::ffi::c_void, 1);
     }
 }
 

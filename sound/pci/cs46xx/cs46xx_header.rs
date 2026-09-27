@@ -1160,9 +1160,9 @@ pub struct snd_cs46xx_pcm {
 
 #[repr(C)]
 pub struct snd_cs46xx_region {
-    pub name: [::core::ffi::c_char; 24],
+    pub name: [::kernel::ffi::c_char; 24],
     pub base: c_ulong,
-    pub remap_addr: *mut ::core::ffi::c_void,
+    pub remap_addr: *mut ::kernel::ffi::c_void,
     pub size: c_ulong,
 }
 

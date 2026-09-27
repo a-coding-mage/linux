@@ -73,22 +73,22 @@ pub const PTE_BITS_NON_RWX_IN_PD1: u32 = PAGE_MASK_PHYS | _PAGE_CACHEABLE;
 /* External declarations supplied by dependent code. */
 pub struct mm_struct;
 extern "C" {
-    pub fn pae40_exist_but_not_enab() -> ::core::ffi::c_int;
-    pub fn write_aux_reg(reg: u32, value: ::core::ffi::c_ulong);
+    pub fn pae40_exist_but_not_enab() -> ::kernel::ffi::c_int;
+    pub fn write_aux_reg(reg: u32, value: ::kernel::ffi::c_ulong);
 }
 
-pub unsafe fn is_pae40_enabled() -> ::core::ffi::c_int {
+pub unsafe fn is_pae40_enabled() -> ::kernel::ffi::c_int {
     if cfg!(CONFIG_ARC_HAS_PAE40) { 1 } else { 0 }
 }
 
-pub unsafe fn mmu_setup_asid(_mm: *mut mm_struct, asid: ::core::ffi::c_ulong) {
-    write_aux_reg(ARC_REG_PID, asid | MMU_ENABLE as ::core::ffi::c_ulong);
+pub unsafe fn mmu_setup_asid(_mm: *mut mm_struct, asid: ::kernel::ffi::c_ulong) {
+    write_aux_reg(ARC_REG_PID, asid | MMU_ENABLE as ::kernel::ffi::c_ulong);
 }
 
-pub unsafe fn mmu_setup_pgd(_mm: *mut mm_struct, pgd: *mut ::core::ffi::c_void) {
+pub unsafe fn mmu_setup_pgd(_mm: *mut mm_struct, pgd: *mut ::kernel::ffi::c_void) {
     /* PGD cached in MMU reg to avoid 3 mem lookups: task->mm->pgd */
     #[cfg(CONFIG_ISA_ARCV2)]
-    write_aux_reg(ARC_REG_SCRATCH_DATA0, pgd as u32 as ::core::ffi::c_ulong);
+    write_aux_reg(ARC_REG_SCRATCH_DATA0, pgd as u32 as ::kernel::ffi::c_ulong);
 }
 
 /* The assembler-only ARC_MMU_REENABLE macro is preserved as an interface note:

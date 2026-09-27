@@ -12,7 +12,7 @@ const BCM63268_TIMER_RESET_SLEEP_MAX_US: u32 = 20000;
 
 #[repr(C)]
 struct Bcm63268TclkrstHw {
-    regs: *mut core::ffi::c_void,
+    regs: *mut kernel::ffi::c_void,
     lock: SpinlockT,
     rcdev: ResetControllerDev,
     data: ClkHwOnecellData,
@@ -20,15 +20,15 @@ struct Bcm63268TclkrstHw {
 
 #[repr(C)]
 struct Bcm63268TclkTableEntry {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     bit: u8,
 }
 
 extern "C" {
     fn spin_lock_irqsave(lock: *mut SpinlockT, flags: *mut c_ulong);
     fn spin_unlock_irqrestore(lock: *mut SpinlockT, flags: c_ulong);
-    fn __raw_readl(addr: *mut core::ffi::c_void) -> u32;
-    fn __raw_writel(value: u32, addr: *mut core::ffi::c_void);
+    fn __raw_readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn __raw_writel(value: u32, addr: *mut kernel::ffi::c_void);
     fn usleep_range(min: u32, max: u32);
 }
 
@@ -63,11 +63,11 @@ static BCM63268_TIMER_CLOCKS: [Bcm63268TclkTableEntry; 13] = [
     Bcm63268TclkTableEntry { name: core::ptr::null(), bit: 0 },
 ];
 
-type CInt = core::ffi::c_int;
-type CLong = core::ffi::c_long;
-type CULong = core::ffi::c_ulong;
+type CInt = kernel::ffi::c_int;
+type CLong = kernel::ffi::c_long;
+type CULong = kernel::ffi::c_ulong;
 type c_ulong = CULong;
-type SpinlockT = core::ffi::c_void;
+type SpinlockT = kernel::ffi::c_void;
 
 #[repr(C)]
 struct ResetControllerDev {
@@ -174,7 +174,7 @@ unsafe extern "C" fn bcm63268_tclk_probe(pdev: *mut PlatformDevice) -> CInt {
 
 #[repr(C)]
 struct OfDeviceId {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]

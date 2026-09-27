@@ -12,8 +12,8 @@ pub struct clk_hw {
 
 #[repr(C)]
 pub struct clk_rate_request {
-    pub rate: ::core::ffi::c_ulong,
-    pub best_parent_rate: ::core::ffi::c_ulong,
+    pub rate: ::kernel::ffi::c_ulong,
+    pub best_parent_rate: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -23,38 +23,38 @@ pub struct clk {
 
 #[repr(C)]
 pub struct clk_init_data {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub ops: *const clk_ops,
     pub flags: u32,
-    pub parent_names: *const *const ::core::ffi::c_char,
+    pub parent_names: *const *const ::kernel::ffi::c_char,
     pub num_parents: u8,
 }
 
 #[repr(C)]
 pub struct clk_ops {
-    pub recalc_rate: Option<unsafe extern "C" fn(*mut clk_hw, ::core::ffi::c_ulong) -> ::core::ffi::c_ulong>,
+    pub recalc_rate: Option<unsafe extern "C" fn(*mut clk_hw, ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong>,
     pub determine_rate: Option<unsafe extern "C" fn(*mut clk_hw, *mut clk_rate_request) -> i32>,
-    pub set_rate: Option<unsafe extern "C" fn(*mut clk_hw, ::core::ffi::c_ulong, ::core::ffi::c_ulong) -> i32>,
+    pub set_rate: Option<unsafe extern "C" fn(*mut clk_hw, ::kernel::ffi::c_ulong, ::kernel::ffi::c_ulong) -> i32>,
 }
 
 extern "C" {
     static mut mxs_lock: u8;
-    fn readl_relaxed(reg: *mut ::core::ffi::c_void) -> u32;
-    fn writel_relaxed(value: u32, reg: *mut ::core::ffi::c_void);
-    fn mxs_clk_wait(reg: *mut ::core::ffi::c_void, busy: u8) -> i32;
-    fn clk_register(dev: *mut ::core::ffi::c_void, hw: *mut clk_hw) -> *mut clk;
+    fn readl_relaxed(reg: *mut ::kernel::ffi::c_void) -> u32;
+    fn writel_relaxed(value: u32, reg: *mut ::kernel::ffi::c_void);
+    fn mxs_clk_wait(reg: *mut ::kernel::ffi::c_void, busy: u8) -> i32;
+    fn clk_register(dev: *mut ::kernel::ffi::c_void, hw: *mut clk_hw) -> *mut clk;
     fn kfree(ptr: *mut clk_frac);
     fn kzalloc_obj<T>() -> *mut T;
     fn err_ptr(error: isize) -> *mut clk;
-    fn spin_lock_irqsave(lock: *mut u8, flags: *mut ::core::ffi::c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut u8, flags: ::core::ffi::c_ulong);
+    fn spin_lock_irqsave(lock: *mut u8, flags: *mut ::kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut u8, flags: ::kernel::ffi::c_ulong);
     fn is_err(ptr: *mut clk) -> bool;
 }
 
 #[repr(C)]
 pub struct clk_frac {
     pub hw: clk_hw,
-    pub reg: *mut ::core::ffi::c_void,
+    pub reg: *mut ::kernel::ffi::c_void,
     pub shift: u8,
     pub width: u8,
     pub busy: u8,
@@ -66,14 +66,14 @@ unsafe fn to_clk_frac(hw: *mut clk_hw) -> *mut clk_frac {
 
 unsafe extern "C" fn clk_frac_recalc_rate(
     hw: *mut clk_hw,
-    parent_rate: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_ulong {
+    parent_rate: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_ulong {
     let frac = &*to_clk_frac(hw);
     let mut div = readl_relaxed(frac.reg) >> frac.shift;
     div &= (1u32 << frac.width) - 1;
 
     let tmp_rate = (parent_rate as u64).wrapping_mul(div as u64);
-    (tmp_rate >> frac.width) as ::core::ffi::c_ulong
+    (tmp_rate >> frac.width) as ::kernel::ffi::c_ulong
 }
 
 unsafe extern "C" fn clk_frac_determine_rate(
@@ -101,18 +101,18 @@ unsafe extern "C" fn clk_frac_determine_rate(
     if (result << frac.width) < tmp_rate {
         result += 1;
     }
-    (*req).rate = result as ::core::ffi::c_ulong;
+    (*req).rate = result as ::kernel::ffi::c_ulong;
 
     0
 }
 
 unsafe extern "C" fn clk_frac_set_rate(
     hw: *mut clk_hw,
-    rate: ::core::ffi::c_ulong,
-    parent_rate: ::core::ffi::c_ulong,
+    rate: ::kernel::ffi::c_ulong,
+    parent_rate: ::kernel::ffi::c_ulong,
 ) -> i32 {
     let frac = &*to_clk_frac(hw);
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
     let mut tmp = rate as u64;
 
     if rate > parent_rate {
@@ -146,9 +146,9 @@ static clk_frac_ops: clk_ops = clk_ops {
 };
 
 pub unsafe extern "C" fn mxs_clk_frac(
-    name: *const ::core::ffi::c_char,
-    parent_name: *const ::core::ffi::c_char,
-    reg: *mut ::core::ffi::c_void,
+    name: *const ::kernel::ffi::c_char,
+    parent_name: *const ::kernel::ffi::c_char,
+    reg: *mut ::kernel::ffi::c_void,
     shift: u8,
     width: u8,
     busy: u8,

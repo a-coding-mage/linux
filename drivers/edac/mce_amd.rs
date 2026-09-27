@@ -14,12 +14,12 @@ pub struct amd_decoder_ops {
 }
 
 extern "C" {
-    fn pr_cont(fmt: *const core::ffi::c_char, ...);
-    fn pr_emerg(fmt: *const core::ffi::c_char, ...);
-    fn pr_warn_once(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn memcpy(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize);
+    fn pr_cont(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_emerg(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_warn_once(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn memcpy(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize);
     fn x86_family(cpuid: u32) -> u32;
     fn x86_model(cpuid: u32) -> u32;
     fn x86_stepping(cpuid: u32) -> u32;
@@ -34,7 +34,7 @@ extern "C" {
 }
 
 #[repr(C)] pub struct cpuinfo_x86 { pub x86_vendor: u32, pub x86: u32, pub x86_model: u32 }
-#[repr(C)] pub struct notifier_block { pub notifier_call: Option<unsafe extern "C" fn(*mut notifier_block, usize, *mut core::ffi::c_void) -> i32>, pub priority: i32 }
+#[repr(C)] pub struct notifier_block { pub notifier_call: Option<unsafe extern "C" fn(*mut notifier_block, usize, *mut kernel::ffi::c_void) -> i32>, pub priority: i32 }
 #[repr(C)] pub struct mce { pub status: u64, pub mcgstatus: u64, pub extcpu: i32, pub bank: i32, pub cpuid: u32, pub addr: u64, pub ppin: u64, pub ipid: u64, pub synd: u64, pub tsc: u64, pub kflags: u64 }
 #[repr(C)] pub struct mce_hw_err { pub vendor: mce_vendor }
 #[repr(C)] pub struct mce_vendor { pub amd: mce_amd_vendor }
@@ -83,7 +83,7 @@ unsafe extern "C" fn decode_mc5_mce(m:*mut mce){let fam=x86_family((*m).cpuid);l
 unsafe extern "C" fn decode_mc6_mce(m:*mut mce){let x=XEC((*m).status,xec_mask);pr_emerg(b"MC6 Error: \0".as_ptr() as _);if x<=5{pr_cont(b"%s parity error.\n\0".as_ptr() as _,mc6_mce_desc[x as usize].as_ptr())}else{pr_emerg(b"Corrupted MC6 MCE info?\n\0".as_ptr() as _)} }
 
 unsafe extern "C" fn decode_smca_error(m:*mut mce){let bank=smca_get_bank_type((*m).extcpu,(*m).bank);let x=XEC((*m).status,xec_mask);if bank==SMCA_RESERVED{pr_emerg(b"Bank %d is reserved.\n\0".as_ptr() as _,(*m).bank);return}if bank>=N_SMCA_BANK_TYPES{return}if (bank==SMCA_UMC||bank==SMCA_UMC_V2)&&x==0{if let Some(f)=decode_dram_ecc{f(topology_amd_node_id((*m).extcpu),m)}}}
-unsafe extern "C" fn amd_decode_mce(_nb:*mut notifier_block,_val:usize,data:*mut core::ffi::c_void)->i32{let m=data as *mut mce;if (*m).kflags&MCE_HANDLED_CEC!=0{return NOTIFY_DONE} ;pr_emerg(b"%s\n\0".as_ptr() as _,decode_error_status(m));if boot_cpu_has(X86_FEATURE_SMCA){decode_smca_error(m)}else if fam_ops.mc0_mce.is_some(){match (*m).bank{0=>decode_mc0_mce(m),1=>decode_mc1_mce(m),2=>decode_mc2_mce(m),3=>decode_mc3_mce(m),4=>decode_mc4_mce(m),5=>decode_mc5_mce(m),6=>decode_mc6_mce(m),_=>{}}}amd_decode_err_code(EC((*m).status));(*m).kflags|=MCE_HANDLED_EDAC;NOTIFY_OK}
+unsafe extern "C" fn amd_decode_mce(_nb:*mut notifier_block,_val:usize,data:*mut kernel::ffi::c_void)->i32{let m=data as *mut mce;if (*m).kflags&MCE_HANDLED_CEC!=0{return NOTIFY_DONE} ;pr_emerg(b"%s\n\0".as_ptr() as _,decode_error_status(m));if boot_cpu_has(X86_FEATURE_SMCA){decode_smca_error(m)}else if fam_ops.mc0_mce.is_some(){match (*m).bank{0=>decode_mc0_mce(m),1=>decode_mc1_mce(m),2=>decode_mc2_mce(m),3=>decode_mc3_mce(m),4=>decode_mc4_mce(m),5=>decode_mc5_mce(m),6=>decode_mc6_mce(m),_=>{}}}amd_decode_err_code(EC((*m).status));(*m).kflags|=MCE_HANDLED_EDAC;NOTIFY_OK}
 static mut amd_mce_dec_nb:notifier_block=notifier_block{notifier_call:Some(amd_decode_mce),priority:MCE_PRIO_EDAC};
 #[no_mangle] pub unsafe extern "C" fn amd_register_ecc_decoder(f:Option<unsafe extern "C" fn(i32,*mut mce)>){decode_dram_ecc=f}
 #[no_mangle] pub unsafe extern "C" fn amd_unregister_ecc_decoder(f:Option<unsafe extern "C" fn(i32,*mut mce)>){if decode_dram_ecc.is_some(){if decode_dram_ecc!=f{ }decode_dram_ecc=None}}

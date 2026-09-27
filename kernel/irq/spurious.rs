@@ -99,7 +99,7 @@ unsafe fn __report_bad_irq(desc: *mut irq_desc, action_ret: irqreturn_t) {
     let irq = irq_desc_get_irq(desc);
     let mut action: *mut irqaction;
     if bad_action_ret(action_ret) != 0 { pr_err!("irq event %d: bogus return value %x\n", irq, action_ret); }
-    else { pr_err!("irq %d: nobody cared (try booting with the \\"irqpoll\\" option)\n", irq); }
+    else { pr_err!("irq %d: nobody cared (try booting with the \"irqpoll\" option)\n", irq); }
     dump_stack!();
     pr_err!("handlers:\n");
     let _guard = guard_raw_spinlock_irqsave(&mut (*desc).lock);

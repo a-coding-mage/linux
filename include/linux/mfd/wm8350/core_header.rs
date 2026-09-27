@@ -602,19 +602,19 @@ extern "C" {
     pub fn wm8350_irq_exit(wm8350: *mut wm8350) -> i32;
 }
 
-pub type irq_handler_t = Option<unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> i32>;
+pub type irq_handler_t = Option<unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> i32>;
 
-pub unsafe fn wm8350_register_irq(wm8350: *mut wm8350, irq: i32, handler: irq_handler_t, flags: u64, name: *const core::ffi::c_char, data: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn wm8350_register_irq(wm8350: *mut wm8350, irq: i32, handler: irq_handler_t, flags: u64, name: *const kernel::ffi::c_char, data: *mut kernel::ffi::c_void) -> i32 {
     if (*wm8350).irq_base == 0 { return -19; /* -ENODEV */ }
     request_threaded_irq(irq + (*wm8350).irq_base, None, handler, flags | IRQF_ONESHOT, name, data)
 }
-pub unsafe fn wm8350_free_irq(wm8350: *mut wm8350, irq: i32, data: *mut core::ffi::c_void) { free_irq(irq + (*wm8350).irq_base, data); }
+pub unsafe fn wm8350_free_irq(wm8350: *mut wm8350, irq: i32, data: *mut kernel::ffi::c_void) { free_irq(irq + (*wm8350).irq_base, data); }
 pub unsafe fn wm8350_mask_irq(wm8350: *mut wm8350, irq: i32) { disable_irq(irq + (*wm8350).irq_base); }
 pub unsafe fn wm8350_unmask_irq(wm8350: *mut wm8350, irq: i32) { enable_irq(irq + (*wm8350).irq_base); }
 
 extern "C" {
-    fn request_threaded_irq(irq: i32, primary: irq_handler_t, threaded: irq_handler_t, flags: u64, name: *const core::ffi::c_char, data: *mut core::ffi::c_void) -> i32;
-    fn free_irq(irq: i32, data: *mut core::ffi::c_void);
+    fn request_threaded_irq(irq: i32, primary: irq_handler_t, threaded: irq_handler_t, flags: u64, name: *const kernel::ffi::c_char, data: *mut kernel::ffi::c_void) -> i32;
+    fn free_irq(irq: i32, data: *mut kernel::ffi::c_void);
     fn disable_irq(irq: i32);
     fn enable_irq(irq: i32);
 }

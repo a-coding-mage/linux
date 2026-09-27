@@ -9,15 +9,15 @@
 // Kernel headers and symbols referenced by this translation are supplied by
 // the surrounding kernel bindings.
 
-static mut PERF_TRACE_BUF: [*mut core::ffi::c_char; PERF_NR_CONTEXTS] =
+static mut PERF_TRACE_BUF: [*mut kernel::ffi::c_char; PERF_NR_CONTEXTS] =
     [core::ptr::null_mut(); PERF_NR_CONTEXTS];
 
-/* Force it to be aligned to core::ffi::c_ulong to avoid misaligned accesses. */
+/* Force it to be aligned to kernel::ffi::c_ulong to avoid misaligned accesses. */
 #[repr(C)]
-struct PerfTrace([core::ffi::c_ulong; PERF_MAX_TRACE_SIZE / core::mem::size_of::<core::ffi::c_ulong>()]);
+struct PerfTrace([kernel::ffi::c_ulong; PERF_MAX_TRACE_SIZE / core::mem::size_of::<kernel::ffi::c_ulong>()]);
 
 /* Count the events in use (per event id, not per instance). */
-static mut TOTAL_REF_COUNT: core::ffi::c_int = 0;
+static mut TOTAL_REF_COUNT: kernel::ffi::c_int = 0;
 
 unsafe fn perf_trace_event_perm(tp_event: *mut trace_event_call, p_event: *mut perf_event) -> i32 {
     let mut ret: i32;
@@ -53,7 +53,7 @@ unsafe fn perf_trace_event_reg(tp_event: *mut trace_event_call, p_event: *mut pe
     (*tp_event).perf_events = list;
     if TOTAL_REF_COUNT == 0 {
         for i in 0..PERF_NR_CONTEXTS {
-            let buf = alloc_percpu::<PerfTrace>() as *mut core::ffi::c_char;
+            let buf = alloc_percpu::<PerfTrace>() as *mut kernel::ffi::c_char;
             if buf.is_null() { goto_fail(tp_event, ret); return ret; }
             PERF_TRACE_BUF[i] = buf;
         }
@@ -136,7 +136,7 @@ pub unsafe fn perf_trace_add(p: *mut perf_event, flags: i32) -> i32 {
 }
 pub unsafe fn perf_trace_del(p: *mut perf_event, _flags: i32) { let t = (*p).tp_event; if ((*(*t).class).reg)(t, TRACE_REG_PERF_DEL, p) == 0 { hlist_del_rcu(&mut (*p).hlist_entry); } }
 
-pub unsafe fn perf_trace_buf_alloc(size: i32, regs: *mut *mut pt_regs, rctxp: *mut i32) -> *mut core::ffi::c_void {
+pub unsafe fn perf_trace_buf_alloc(size: i32, regs: *mut *mut pt_regs, rctxp: *mut i32) -> *mut kernel::ffi::c_void {
     BUILD_BUG_ON!(PERF_MAX_TRACE_SIZE % core::mem::size_of::<usize>() != 0);
     if WARN_ONCE(size > PERF_MAX_TRACE_SIZE, "perf buffer not large enough, wanted %d, have %d", size, PERF_MAX_TRACE_SIZE) { return core::ptr::null_mut(); }
     let rctx = perf_swevent_get_recursion_context(); *rctxp = rctx; if rctx < 0 { return core::ptr::null_mut(); }
@@ -144,7 +144,7 @@ pub unsafe fn perf_trace_buf_alloc(size: i32, regs: *mut *mut pt_regs, rctxp: *m
     let raw = this_cpu_ptr(PERF_TRACE_BUF[rctx as usize]);
     core::ptr::write_bytes(raw.add(size as usize - core::mem::size_of::<u64>()), 0, core::mem::size_of::<u64>()); raw as *mut _
 }
-pub unsafe fn perf_trace_buf_update(record: *mut core::ffi::c_void, typ: u16) { tracing_generic_entry_update(record as *mut trace_entry, typ, tracing_gen_ctx()); }
+pub unsafe fn perf_trace_buf_update(record: *mut kernel::ffi::c_void, typ: u16) { tracing_generic_entry_update(record as *mut trace_entry, typ, tracing_gen_ctx()); }
 
 #[cfg(CONFIG_FUNCTION_TRACER)]
 unsafe fn perf_ftrace_function_call(ip: usize, parent_ip: usize, ops: *mut ftrace_ops, fregs: *mut ftrace_regs) {
@@ -164,7 +164,7 @@ unsafe fn perf_ftrace_function_register(event: *mut perf_event) -> i32 { (*event
 unsafe fn perf_ftrace_function_unregister(event: *mut perf_event) -> i32 { let ops = &mut (*event).ftrace_ops; let mut ret = 0; if ops.flags & FTRACE_OPS_FL_ENABLED != 0 { ret = unregister_ftrace_function(ops); } ftrace_free_filter(ops); ret }
 
 #[cfg(CONFIG_FUNCTION_TRACER)]
-pub unsafe fn perf_ftrace_event_register(_call: *mut trace_event_call, typ: trace_reg, data: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn perf_ftrace_event_register(_call: *mut trace_event_call, typ: trace_reg, data: *mut kernel::ffi::c_void) -> i32 {
     match typ { TRACE_REG_REGISTER | TRACE_REG_UNREGISTER => {}, TRACE_REG_PERF_REGISTER | TRACE_REG_PERF_UNREGISTER => return 0, TRACE_REG_PERF_OPEN => return perf_ftrace_function_register(data as *mut _), TRACE_REG_PERF_CLOSE => return perf_ftrace_function_unregister(data as *mut _), TRACE_REG_PERF_ADD => { (*(data as *mut perf_event)).ftrace_ops.private = smp_processor_id() as *mut _; return 1; }, TRACE_REG_PERF_DEL => { (*(data as *mut perf_event)).ftrace_ops.private = nr_cpu_ids as *mut _; return 1; } }
     -EINVAL
 }

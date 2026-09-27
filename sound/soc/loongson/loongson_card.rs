@@ -7,13 +7,13 @@
 //         Binbin Zhou <zhoubinbin@loongson.cn>
 //
 
-static mut codec_name: [::core::ffi::c_char; SND_ACPI_I2C_ID_LEN] =
+static mut codec_name: [::kernel::ffi::c_char; SND_ACPI_I2C_ID_LEN] =
     [0; SND_ACPI_I2C_ID_LEN];
 
 #[repr(C)]
 struct loongson_card_data {
     snd_card: snd_soc_card,
-    mclk_fs: ::core::ffi::c_uint,
+    mclk_fs: ::kernel::ffi::c_uint,
     gpiod_hp_det: *mut gpio_desc,
     gpiod_hp_ctl: *mut gpio_desc,
     gpiod_spkr_en: *mut gpio_desc,
@@ -22,7 +22,7 @@ struct loongson_card_data {
 
 #[repr(C)]
 struct loongson_card_config {
-    fmt: ::core::ffi::c_uint,
+    fmt: ::kernel::ffi::c_uint,
     add_hp_jack: bool,
     add_dapm_widgets: bool,
     add_dapm_routes: bool,
@@ -52,8 +52,8 @@ static ls2k0300_dl2k0300b_card_config: loongson_card_config = loongson_card_conf
 unsafe extern "C" fn loongson_asoc_machine_event(
     w: *mut snd_soc_dapm_widget,
     k: *mut snd_kcontrol,
-    event: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    event: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let card: *mut snd_soc_card = snd_soc_dapm_to_card((*w).dapm);
     let priv_: *mut loongson_card_data = snd_soc_card_get_drvdata(card) as *mut loongson_card_data;
 
@@ -100,11 +100,11 @@ static mut loongson_asoc_hp_jack_gpio: snd_soc_jack_gpio = snd_soc_jack_gpio {
 
 unsafe extern "C" fn loongson_asoc_machine_init(
     rtd: *mut snd_soc_pcm_runtime,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let card: *mut snd_soc_card = (*rtd).card;
     let ls_priv: *mut loongson_card_data =
         snd_soc_card_get_drvdata(card) as *mut loongson_card_data;
-    let mut ret: ::core::ffi::c_int = 0;
+    let mut ret: ::kernel::ffi::c_int = 0;
 
     if !(*(*ls_priv).cfg).add_hp_jack || (*ls_priv).gpiod_hp_det.is_null() {
         return 0;
@@ -144,20 +144,20 @@ unsafe extern "C" fn loongson_asoc_machine_init(
 unsafe extern "C" fn loongson_card_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let rtd: *mut snd_soc_pcm_runtime = snd_soc_substream_to_rtd(substream);
     let ls_card: *mut loongson_card_data =
         snd_soc_card_get_drvdata((*rtd).card) as *mut loongson_card_data;
     let codec_dai: *mut snd_soc_dai = snd_soc_rtd_to_codec(rtd, 0);
     let cpu_dai: *mut snd_soc_dai = snd_soc_rtd_to_cpu(rtd, 0);
-    let mut ret: ::core::ffi::c_int;
-    let mclk: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
+    let mclk: ::kernel::ffi::c_int;
 
     if (*ls_card).mclk_fs == 0 {
         return 0;
     }
 
-    mclk = ((*ls_card).mclk_fs * params_rate(params)) as ::core::ffi::c_int;
+    mclk = ((*ls_card).mclk_fs * params_rate(params)) as ::kernel::ffi::c_int;
     ret = snd_soc_dai_set_sysclk(cpu_dai, 0, mclk, SND_SOC_CLOCK_OUT);
     if ret < 0 {
         dev_err((*codec_dai).dev, c"cpu_dai clock not set\n".as_ptr());
@@ -196,14 +196,14 @@ static mut loongson_dai_links: [snd_soc_dai_link; 1] = [snd_soc_dai_link {
 
 unsafe extern "C" fn loongson_card_acpi_find_device(
     card: *mut snd_soc_card,
-    name: *const ::core::ffi::c_char,
+    name: *const ::kernel::ffi::c_char,
 ) -> *mut acpi_device {
     let fwnode: *mut fwnode_handle = (*(*card).dev).fwnode;
     let mut args: fwnode_reference_args = ::core::mem::zeroed();
-    let status: ::core::ffi::c_int;
+    let status: ::kernel::ffi::c_int;
 
     memset(
-        &mut args as *mut _ as *mut ::core::ffi::c_void,
+        &mut args as *mut _ as *mut ::kernel::ffi::c_void,
         0,
         ::core::mem::size_of_val(&args),
     );
@@ -218,13 +218,13 @@ unsafe extern "C" fn loongson_card_acpi_find_device(
 
 unsafe extern "C" fn loongson_card_parse_acpi(
     data: *mut loongson_card_data,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let card: *mut snd_soc_card = &mut (*data).snd_card;
-    let mut codec_dai_name: *const ::core::ffi::c_char = ::core::ptr::null();
+    let mut codec_dai_name: *const ::kernel::ffi::c_char = ::core::ptr::null();
     let mut adev: *mut acpi_device;
     let phy_dev: *mut device;
-    let mut i: ::core::ffi::c_int;
-    let mut ret: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     /* fixup platform name based on reference node */
     adev = loongson_card_acpi_find_device(card, c"cpu".as_ptr());
@@ -267,27 +267,27 @@ unsafe extern "C" fn loongson_card_parse_acpi(
 
 unsafe extern "C" fn loongson_card_parse_of(
     data: *mut loongson_card_data,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let card: *mut snd_soc_card = &mut (*data).snd_card;
     let mut cpu: *mut device_node;
     let mut codec: *mut device_node;
     let dev: *mut device = (*card).dev;
-    let mut ret: ::core::ffi::c_int;
-    let mut i: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
 
     (*data).gpiod_hp_det = devm_gpiod_get_optional(dev, c"hp-det".as_ptr(), GPIOD_IN);
     if IS_ERR((*data).gpiod_hp_det) {
-        return PTR_ERR((*data).gpiod_hp_det) as ::core::ffi::c_int;
+        return PTR_ERR((*data).gpiod_hp_det) as ::kernel::ffi::c_int;
     }
 
     (*data).gpiod_hp_ctl = devm_gpiod_get_optional(dev, c"hp-ctl".as_ptr(), GPIOD_OUT_LOW);
     if IS_ERR((*data).gpiod_hp_ctl) {
-        return PTR_ERR((*data).gpiod_hp_ctl) as ::core::ffi::c_int;
+        return PTR_ERR((*data).gpiod_hp_ctl) as ::kernel::ffi::c_int;
     }
 
     (*data).gpiod_spkr_en = devm_gpiod_get_optional(dev, c"spkr-en".as_ptr(), GPIOD_OUT_LOW);
     if IS_ERR((*data).gpiod_spkr_en) {
-        return PTR_ERR((*data).gpiod_spkr_en) as ::core::ffi::c_int;
+        return PTR_ERR((*data).gpiod_spkr_en) as ::kernel::ffi::c_int;
     }
 
     if (*(*data).cfg).add_dapm_routes {
@@ -353,11 +353,11 @@ unsafe fn goto_err(cpu: *mut device_node, codec: *mut device_node) {
 
 unsafe extern "C" fn loongson_asoc_card_probe(
     pdev: *mut platform_device,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let mut ls_priv: *mut loongson_card_data;
     let dev: *mut device = &mut (*pdev).dev;
     let card: *mut snd_soc_card;
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     ls_priv = devm_kzalloc(
         dev,
@@ -385,7 +385,7 @@ unsafe extern "C" fn loongson_asoc_card_probe(
         (*card).num_dapm_widgets = ARRAY_SIZE(&loongson_asoc_dapm_widgets);
     }
 
-    snd_soc_card_set_drvdata(card, ls_priv as *mut ::core::ffi::c_void);
+    snd_soc_card_set_drvdata(card, ls_priv as *mut ::kernel::ffi::c_void);
 
     ret = device_property_read_string(dev, c"model".as_ptr(), &mut (*card).name);
     if ret != 0 {
@@ -413,17 +413,17 @@ static loongson_asoc_dt_ids: [of_device_id; 4] = [
     /* Loongson-2K1000/Loongson-2K2000/LS7A */
     of_device_id {
         compatible: c"loongson,ls-audio-card".as_ptr(),
-        data: &ls2k1000_card_config as *const _ as *const ::core::ffi::c_void,
+        data: &ls2k1000_card_config as *const _ as *const ::kernel::ffi::c_void,
         ..unsafe { ::core::mem::zeroed() }
     },
     of_device_id {
         compatible: c"loongson,ls2k0300-forever-pi-audio-card".as_ptr(),
-        data: &ls2k0300_forever_pi_card_config as *const _ as *const ::core::ffi::c_void,
+        data: &ls2k0300_forever_pi_card_config as *const _ as *const ::kernel::ffi::c_void,
         ..unsafe { ::core::mem::zeroed() }
     },
     of_device_id {
         compatible: c"loongson,ls2k0300-dl2k0300b-audio-card".as_ptr(),
-        data: &ls2k0300_dl2k0300b_card_config as *const _ as *const ::core::ffi::c_void,
+        data: &ls2k0300_dl2k0300b_card_config as *const _ as *const ::kernel::ffi::c_void,
         ..unsafe { ::core::mem::zeroed() }
     },
     of_device_id {

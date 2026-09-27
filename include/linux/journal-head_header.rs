@@ -10,7 +10,7 @@
 
 /* The C header guard and include are represented by Rust's external symbols. */
 
-pub type tid_t = ::core::ffi::c_uint; /* Unique transaction ID */
+pub type tid_t = ::kernel::ffi::c_uint; /* Unique transaction ID */
 
 /* Compound transaction type. */
 #[repr(C)]
@@ -39,7 +39,7 @@ pub struct journal_head {
 
     /* Reference count - see description in journal.c
      * [jbd_lock_bh_journal_head()] */
-    pub b_jcount: ::core::ffi::c_int,
+    pub b_jcount: ::kernel::ffi::c_int,
 
     /*
      * Journalling list for this buffer [b_state_lock]
@@ -48,21 +48,21 @@ pub struct journal_head {
      * very unuseful) make 64-bit accesses to the bitfield and clobber
      * b_jcount if its update races with bitfield modification.
      */
-    pub b_jlist: ::core::ffi::c_uint,
+    pub b_jlist: ::kernel::ffi::c_uint,
 
     /* This flag signals the buffer has been modified by
      * the currently running transaction
      * [b_state_lock] */
-    pub b_modified: ::core::ffi::c_uint,
+    pub b_modified: ::kernel::ffi::c_uint,
 
     /* Copy of the buffer data frozen for writing to the log.
      * [b_state_lock] */
-    pub b_frozen_data: *mut ::core::ffi::c_char,
+    pub b_frozen_data: *mut ::kernel::ffi::c_char,
 
     /* Pointer to a saved copy of the buffer containing no uncommitted
      * deallocation references, so that allocations can avoid overwriting
      * uncommitted deletes. [b_state_lock] */
-    pub b_committed_data: *mut ::core::ffi::c_char,
+    pub b_committed_data: *mut ::kernel::ffi::c_char,
 
     /* Pointer to the compound transaction which owns this buffer's
      * metadata: either the running transaction or the committing

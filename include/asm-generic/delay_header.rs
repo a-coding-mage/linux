@@ -4,7 +4,7 @@
  * linux/math.h and vdso/time64.h
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 /* Undefined functions to get compile-time errors */
 unsafe extern "C" {

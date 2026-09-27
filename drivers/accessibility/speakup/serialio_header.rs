@@ -17,7 +17,7 @@ pub struct old_serial_port {
 }
 
 /* countdown values for serial timeouts in us */
-pub const SPK_SERIAL_TIMEOUT: _ = SPK_SYNTH_TIMEOUT;
+pub const SPK_SERIAL_TIMEOUT: u32 = SPK_SYNTH_TIMEOUT;
 /* countdown values transmitter/dsr timeouts in us */
 pub const SPK_XMITR_TIMEOUT: ::core::ffi::c_uint = 100000;
 /* countdown values cts timeouts in us */

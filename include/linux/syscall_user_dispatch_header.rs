@@ -16,23 +16,23 @@ extern "C" {
     pub fn syscall_user_dispatch(regs: *mut pt_regs) -> bool;
 
     pub fn set_syscall_user_dispatch(
-        mode: ::core::ffi::c_ulong,
-        offset: ::core::ffi::c_ulong,
-        len: ::core::ffi::c_ulong,
-        selector: *mut ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        mode: ::kernel::ffi::c_ulong,
+        offset: ::kernel::ffi::c_ulong,
+        len: ::kernel::ffi::c_ulong,
+        selector: *mut ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn syscall_user_dispatch_get_config(
         task: *mut task_struct,
-        size: ::core::ffi::c_ulong,
-        data: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        size: ::kernel::ffi::c_ulong,
+        data: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn syscall_user_dispatch_set_config(
         task: *mut task_struct,
-        size: ::core::ffi::c_ulong,
-        data: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        size: ::kernel::ffi::c_ulong,
+        data: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
 }
 
 /* Supplied by the scheduler definitions included by the original header. */
@@ -66,11 +66,11 @@ pub unsafe fn clear_syscall_work_syscall_user_dispatch(tsk: *mut task_struct) {
 
 #[cfg(CONFIG_SYSCALL_USER_DISPATCH)]
 extern "C" {
-    fn clear_task_syscall_work(tsk: *mut task_struct, work: ::core::ffi::c_ulong);
+    fn clear_task_syscall_work(tsk: *mut task_struct, work: ::kernel::ffi::c_ulong);
 }
 
 #[cfg(CONFIG_SYSCALL_USER_DISPATCH)]
-pub const SYSCALL_USER_DISPATCH: ::core::ffi::c_ulong = 0;
+pub const SYSCALL_USER_DISPATCH: ::kernel::ffi::c_ulong = 0;
 
 #[cfg(not(CONFIG_SYSCALL_USER_DISPATCH))]
 #[inline(always)]
@@ -87,11 +87,11 @@ pub unsafe fn syscall_user_dispatch_clear_on_dispatch() -> bool {
 #[cfg(not(CONFIG_SYSCALL_USER_DISPATCH))]
 #[inline]
 pub unsafe fn set_syscall_user_dispatch(
-    _mode: ::core::ffi::c_ulong,
-    _offset: ::core::ffi::c_ulong,
-    _len: ::core::ffi::c_ulong,
-    _selector: *mut ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
+    _mode: ::kernel::ffi::c_ulong,
+    _offset: ::kernel::ffi::c_ulong,
+    _len: ::kernel::ffi::c_ulong,
+    _selector: *mut ::kernel::ffi::c_char,
+) -> ::kernel::ffi::c_int {
     -22 /* -EINVAL */
 }
 
@@ -103,9 +103,9 @@ pub unsafe fn clear_syscall_work_syscall_user_dispatch(_tsk: *mut task_struct) {
 #[inline]
 pub unsafe fn syscall_user_dispatch_get_config(
     _task: *mut task_struct,
-    _size: ::core::ffi::c_ulong,
-    _data: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int {
+    _size: ::kernel::ffi::c_ulong,
+    _data: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int {
     -22 /* -EINVAL */
 }
 
@@ -113,9 +113,9 @@ pub unsafe fn syscall_user_dispatch_get_config(
 #[inline]
 pub unsafe fn syscall_user_dispatch_set_config(
     _task: *mut task_struct,
-    _size: ::core::ffi::c_ulong,
-    _data: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int {
+    _size: ::kernel::ffi::c_ulong,
+    _data: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int {
     -22 /* -EINVAL */
 }
 

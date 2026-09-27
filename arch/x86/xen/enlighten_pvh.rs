@@ -143,7 +143,7 @@ pub unsafe fn xen_pvh_init(boot_params: *mut boot_params) {
             xen_init_vga(
                 &mut op.u.dom0_console,
                 core::cmp::min(
-                    (ret as usize).wrapping_mul(core::mem::size_of::<core::ffi::c_char>()),
+                    (ret as usize).wrapping_mul(core::mem::size_of::<kernel::ffi::c_char>()),
                     core::mem::size_of_val(&op.u.dom0_console),
                 ),
                 &mut (*boot_params).screen_info,

@@ -165,7 +165,7 @@ pub struct sockaddr_nfc_llcp {
     pub nfc_protocol: __u32,
     pub dsap: __u8, // Destination SAP, if known
     pub ssap: __u8, // Source SAP to be bound to
-    pub service_name: [core::ffi::c_char; NFC_LLCP_MAX_SERVICE_NAME], // Service name URI
+    pub service_name: [kernel::ffi::c_char; NFC_LLCP_MAX_SERVICE_NAME], // Service name URI
     pub service_name_len: __kernel_size_t,
 }
 

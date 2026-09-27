@@ -10,7 +10,7 @@ pub const RTAS_WORK_AREA_MIN_ALLOC_SZ: i32 = roundup_pow_of_two(80);
 
 struct RwaState {
     gen_pool: *mut gen_pool,
-    arena: *mut core::ffi::c_char,
+    arena: *mut kernel::ffi::c_char,
     mutex: mutex, /* serializes allocations */
     wqh: wait_queue_head,
     descriptor_pool: mempool_t,
@@ -33,10 +33,10 @@ static mut rwa_state: RwaState = RwaState {
  */
 static mut early_work_area_in_use: bool = false;
 #[repr(align(4096))]
-static mut early_work_area_buf: [core::ffi::c_char; SZ_4K] = [0; SZ_4K];
+static mut early_work_area_buf: [kernel::ffi::c_char; SZ_4K] = [0; SZ_4K];
 static mut early_work_area: rtas_work_area = rtas_work_area {
     buf: unsafe { early_work_area_buf.as_mut_ptr() },
-    size: core::mem::size_of::<[core::ffi::c_char; SZ_4K]>(),
+    size: core::mem::size_of::<[kernel::ffi::c_char; SZ_4K]>(),
 };
 
 unsafe fn rtas_work_area_alloc_early(size: usize) -> *mut rtas_work_area {
@@ -82,7 +82,7 @@ unsafe fn __rtas_work_area_alloc(size: usize) -> *mut rtas_work_area {
     mutex_unlock(&raw mut rwa_state.mutex);
 
     area = mempool_alloc(&raw mut rwa_state.descriptor_pool, GFP_KERNEL);
-    (*area).buf = addr as *mut core::ffi::c_char;
+    (*area).buf = addr as *mut kernel::ffi::c_char;
     (*area).size = size;
 
     area

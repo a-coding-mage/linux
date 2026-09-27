@@ -8,24 +8,24 @@
 
 #[repr(C)]
 pub struct mod_arch_syminfo {
-    pub got_offset: ::core::ffi::c_ulong,
-    pub plt_offset: ::core::ffi::c_ulong,
-    pub got_initialized: ::core::ffi::c_int,
-    pub plt_initialized: ::core::ffi::c_int,
+    pub got_offset: ::kernel::ffi::c_ulong,
+    pub plt_offset: ::kernel::ffi::c_ulong,
+    pub got_initialized: ::kernel::ffi::c_int,
+    pub plt_initialized: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct mod_arch_specific {
     /* Starting offset of got in the module core memory. */
-    pub got_offset: ::core::ffi::c_ulong,
+    pub got_offset: ::kernel::ffi::c_ulong,
     /* Starting offset of plt in the module core memory. */
-    pub plt_offset: ::core::ffi::c_ulong,
+    pub plt_offset: ::kernel::ffi::c_ulong,
     /* Size of the got. */
-    pub got_size: ::core::ffi::c_ulong,
+    pub got_size: ::kernel::ffi::c_ulong,
     /* Size of the plt. */
-    pub plt_size: ::core::ffi::c_ulong,
+    pub plt_size: ::kernel::ffi::c_ulong,
     /* Number of symbols in syminfo. */
-    pub nsyms: ::core::ffi::c_int,
+    pub nsyms: ::kernel::ffi::c_int,
     /* Additional symbol information (got and plt offsets). */
     pub syminfo: *mut mod_arch_syminfo,
     /*
@@ -46,11 +46,11 @@ pub struct mod_arch_specific {
 pub unsafe fn find_section(
     hdr: *const Elf_Ehdr,
     sechdrs: *const Elf_Shdr,
-    name: *const ::core::ffi::c_char,
+    name: *const ::kernel::ffi::c_char,
 ) -> *const Elf_Shdr {
     let secstrs = (hdr as *const u8)
         .add((*sechdrs.add((*hdr).e_shstrndx as usize)).sh_offset as usize)
-        as *const ::core::ffi::c_char;
+        as *const ::kernel::ffi::c_char;
     let mut s = sechdrs;
     let se = sechdrs.add((*hdr).e_shnum as usize);
 

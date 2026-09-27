@@ -6,7 +6,7 @@
 // C dependencies supplied by other translation units:
 // linux/device.h, linux/uuid.h, linux/device-id/mei_cl.h
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub struct mei_cl_device;
 pub struct mei_device;
@@ -21,11 +21,11 @@ pub struct module;
 pub struct mei_cl_device_id;
 pub struct uuid_le;
 
-pub type u8 = ::core::ffi::c_uchar;
-pub type u32 = ::core::ffi::c_uint;
+pub type u8 = ::kernel::ffi::c_uchar;
+pub type u32 = ::kernel::ffi::c_uint;
 pub type size_t = usize;
 pub type ssize_t = isize;
-pub type c_ulong = ::core::ffi::c_ulong;
+pub type c_ulong = ::kernel::ffi::c_ulong;
 
 pub const MEI_CL_NAME_SIZE: usize = 32; // Supplied by linux/device-id/mei_cl.h.
 
@@ -77,7 +77,7 @@ pub struct mei_cl_device {
 #[repr(C)]
 pub struct mei_cl_driver {
     pub driver: device_driver,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub id_table: *const mei_cl_device_id,
     pub probe: Option<unsafe extern "C" fn(
         cldev: *mut mei_cl_device,

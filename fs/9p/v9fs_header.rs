@@ -47,36 +47,36 @@ pub enum P9CacheBits {
 
 #[repr(C)]
 pub struct V9fsSessionInfo {
-    pub flags: ::core::ffi::c_uint,
-    pub nodev: ::core::ffi::c_uchar,
-    pub debug: ::core::ffi::c_ushort,
-    pub afid: ::core::ffi::c_uint,
-    pub cache: ::core::ffi::c_uint,
-    pub ndentry_timeout_ms: ::core::ffi::c_uint,
+    pub flags: ::kernel::ffi::c_uint,
+    pub nodev: ::kernel::ffi::c_uchar,
+    pub debug: ::kernel::ffi::c_ushort,
+    pub afid: ::kernel::ffi::c_uint,
+    pub cache: ::kernel::ffi::c_uint,
+    pub ndentry_timeout_ms: ::kernel::ffi::c_uint,
     #[cfg(CONFIG_9P_FSCACHE)]
-    pub cachetag: *mut ::core::ffi::c_char,
+    pub cachetag: *mut ::kernel::ffi::c_char,
     #[cfg(CONFIG_9P_FSCACHE)]
     pub fscache: *mut fscache_volume,
-    pub uname: *mut ::core::ffi::c_char,
-    pub aname: *mut ::core::ffi::c_char,
-    pub maxdata: ::core::ffi::c_uint,
+    pub uname: *mut ::kernel::ffi::c_char,
+    pub aname: *mut ::kernel::ffi::c_char,
+    pub maxdata: ::kernel::ffi::c_uint,
     pub dfltuid: kuid_t,
     pub dfltgid: kgid_t,
     pub uid: kuid_t,
     pub clnt: *mut p9_client,
     pub slist: list_head,
     pub rename_sem: rw_semaphore,
-    pub session_lock_timeout: ::core::ffi::c_long,
+    pub session_lock_timeout: ::kernel::ffi::c_long,
 }
 
-pub const NDENTRY_TIMEOUT_NEVER: ::core::ffi::c_uint = !0;
-pub const V9FS_INO_INVALID_ATTR: ::core::ffi::c_uint = 0x01;
+pub const NDENTRY_TIMEOUT_NEVER: ::kernel::ffi::c_uint = !0;
+pub const V9FS_INO_INVALID_ATTR: ::kernel::ffi::c_uint = 0x01;
 
 #[repr(C)]
 pub struct V9fsInode {
     pub netfs: netfs_inode,
     pub qid: p9_qid,
-    pub cache_validity: ::core::ffi::c_uint,
+    pub cache_validity: ::kernel::ffi::c_uint,
     pub v_mutex: mutex,
 }
 
@@ -103,25 +103,25 @@ pub unsafe fn v9fs_session_cache(v9ses: *mut V9fsSessionInfo) -> *mut fscache_vo
 
 extern "C" {
     pub static v9fs_param_spec: [fs_parameter_spec; 0];
-    pub fn v9fs_parse_param(fc: *mut fs_context, param: *mut fs_parameter) -> ::core::ffi::c_int;
-    pub fn v9fs_show_options(m: *mut seq_file, root: *mut dentry) -> ::core::ffi::c_int;
+    pub fn v9fs_parse_param(fc: *mut fs_context, param: *mut fs_parameter) -> ::kernel::ffi::c_int;
+    pub fn v9fs_show_options(m: *mut seq_file, root: *mut dentry) -> ::kernel::ffi::c_int;
     pub fn v9fs_session_init(v9ses: *mut V9fsSessionInfo, fc: *mut fs_context) -> *mut p9_fid;
     pub fn v9fs_session_close(v9ses: *mut V9fsSessionInfo);
     pub fn v9fs_session_cancel(v9ses: *mut V9fsSessionInfo);
     pub fn v9fs_session_begin_cancel(v9ses: *mut V9fsSessionInfo);
-    pub fn v9fs_vfs_lookup(dir: *mut inode, dentry: *mut dentry, flags: ::core::ffi::c_uint) -> *mut dentry;
-    pub fn v9fs_vfs_unlink(i: *mut inode, d: *mut dentry) -> ::core::ffi::c_int;
-    pub fn v9fs_vfs_rmdir(i: *mut inode, d: *mut dentry) -> ::core::ffi::c_int;
-    pub fn v9fs_vfs_rename(idmap: *mut mnt_idmap, old_dir: *mut inode, old_dentry: *mut dentry, new_dir: *mut inode, new_dentry: *mut dentry, flags: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn v9fs_inode_from_fid(v9ses: *mut V9fsSessionInfo, fid: *mut p9_fid, sb: *mut super_block, new_: ::core::ffi::c_int) -> *mut inode;
+    pub fn v9fs_vfs_lookup(dir: *mut inode, dentry: *mut dentry, flags: ::kernel::ffi::c_uint) -> *mut dentry;
+    pub fn v9fs_vfs_unlink(i: *mut inode, d: *mut dentry) -> ::kernel::ffi::c_int;
+    pub fn v9fs_vfs_rmdir(i: *mut inode, d: *mut dentry) -> ::kernel::ffi::c_int;
+    pub fn v9fs_vfs_rename(idmap: *mut mnt_idmap, old_dir: *mut inode, old_dentry: *mut dentry, new_dir: *mut inode, new_dentry: *mut dentry, flags: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn v9fs_inode_from_fid(v9ses: *mut V9fsSessionInfo, fid: *mut p9_fid, sb: *mut super_block, new_: ::kernel::ffi::c_int) -> *mut inode;
     pub static v9fs_dir_inode_operations_dotl: inode_operations;
     pub static v9fs_file_inode_operations_dotl: inode_operations;
     pub static v9fs_symlink_inode_operations_dotl: inode_operations;
     pub static v9fs_req_ops: netfs_request_ops;
-    pub fn v9fs_inode_from_fid_dotl(v9ses: *mut V9fsSessionInfo, fid: *mut p9_fid, sb: *mut super_block, new_: ::core::ffi::c_int) -> *mut inode;
+    pub fn v9fs_inode_from_fid_dotl(v9ses: *mut V9fsSessionInfo, fid: *mut p9_fid, sb: *mut super_block, new_: ::kernel::ffi::c_int) -> *mut inode;
 }
 
-pub const V9FS_PORT: ::core::ffi::c_uint = 564;
+pub const V9FS_PORT: ::kernel::ffi::c_uint = 564;
 pub const V9FS_DEFUSER: &[u8] = b"nobody\0";
 pub const V9FS_DEFANAME: &[u8] = b"\0";
 // KUIDT_INIT(-2) and KGIDT_INIT(-2) are supplied by the kernel type layer.
@@ -139,13 +139,13 @@ pub unsafe fn v9fs_dentry2v9ses(dentry: *const dentry) -> *mut V9fsSessionInfo {
 }
 
 #[inline]
-pub unsafe fn v9fs_proto_dotu(v9ses: *mut V9fsSessionInfo) -> ::core::ffi::c_int {
-    ((*v9ses).flags & V9FS_PROTO_2000U as u32) as ::core::ffi::c_int
+pub unsafe fn v9fs_proto_dotu(v9ses: *mut V9fsSessionInfo) -> ::kernel::ffi::c_int {
+    ((*v9ses).flags & V9FS_PROTO_2000U as u32) as ::kernel::ffi::c_int
 }
 
 #[inline]
-pub unsafe fn v9fs_proto_dotl(v9ses: *mut V9fsSessionInfo) -> ::core::ffi::c_int {
-    ((*v9ses).flags & V9FS_PROTO_2000L as u32) as ::core::ffi::c_int
+pub unsafe fn v9fs_proto_dotl(v9ses: *mut V9fsSessionInfo) -> ::kernel::ffi::c_int {
+    ((*v9ses).flags & V9FS_PROTO_2000L as u32) as ::kernel::ffi::c_int
 }
 
 #[inline]

@@ -16,7 +16,7 @@ unsafe fn to_gov_attr(attr: *mut attribute) -> *mut governor_attr {
 unsafe fn governor_show(
     kobj: *mut kobject,
     attr: *mut attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let gattr: *mut governor_attr = to_gov_attr(attr);
 
@@ -26,7 +26,7 @@ unsafe fn governor_show(
 unsafe fn governor_store(
     kobj: *mut kobject,
     attr: *mut attribute,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     count: usize,
 ) -> isize {
     let attr_set: *mut gov_attr_set = to_gov_attr_set(kobj);

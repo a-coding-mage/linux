@@ -9,13 +9,13 @@ pub struct stackframe {
      * FP member should hold R7 when CONFIG_THUMB2_KERNEL is enabled
      * and R11 otherwise.
      */
-    pub fp: ::core::ffi::c_ulong,
-    pub sp: ::core::ffi::c_ulong,
-    pub lr: ::core::ffi::c_ulong,
-    pub pc: ::core::ffi::c_ulong,
+    pub fp: ::kernel::ffi::c_ulong,
+    pub sp: ::kernel::ffi::c_ulong,
+    pub lr: ::kernel::ffi::c_ulong,
+    pub pc: ::kernel::ffi::c_ulong,
 
     /* address of the LR value on the stack */
-    pub lr_addr: *mut ::core::ffi::c_ulong,
+    pub lr_addr: *mut ::kernel::ffi::c_ulong,
     #[cfg(CONFIG_KRETPROBES)]
     pub kr_cur: *mut llist_node,
     #[cfg(CONFIG_KRETPROBES)]
@@ -25,7 +25,7 @@ pub struct stackframe {
 }
 
 pub unsafe fn on_thread_stack() -> bool {
-    let delta: ::core::ffi::c_ulong = current_stack_pointer ^ (current as *mut task_struct as ::core::ffi::c_ulong);
+    let delta: ::kernel::ffi::c_ulong = current_stack_pointer ^ (current as *mut task_struct as ::kernel::ffi::c_ulong);
 
     delta < THREAD_SIZE
 }
@@ -48,22 +48,22 @@ pub unsafe fn arm_get_current_stackframe(regs: *mut pt_regs, frame: *mut stackfr
 }
 
 extern "C" {
-    pub fn unwind_frame(frame: *mut stackframe) -> ::core::ffi::c_int;
+    pub fn unwind_frame(frame: *mut stackframe) -> ::kernel::ffi::c_int;
     pub fn walk_stackframe(
         frame: *mut stackframe,
-        fn_: Option<unsafe extern "C" fn(*mut ::core::ffi::c_void, ::core::ffi::c_ulong) -> bool>,
-        data: *mut ::core::ffi::c_void,
+        fn_: Option<unsafe extern "C" fn(*mut ::kernel::ffi::c_void, ::kernel::ffi::c_ulong) -> bool>,
+        data: *mut ::kernel::ffi::c_void,
     );
     pub fn dump_mem(
-        lvl: *const ::core::ffi::c_char,
-        str_: *const ::core::ffi::c_char,
-        bottom: ::core::ffi::c_ulong,
-        top: ::core::ffi::c_ulong,
+        lvl: *const ::kernel::ffi::c_char,
+        str_: *const ::kernel::ffi::c_char,
+        bottom: ::kernel::ffi::c_ulong,
+        top: ::kernel::ffi::c_ulong,
     );
     pub fn dump_backtrace(
         regs: *mut pt_regs,
         tsk: *mut task_struct,
-        loglvl: *const ::core::ffi::c_char,
+        loglvl: *const ::kernel::ffi::c_char,
     );
 }
 

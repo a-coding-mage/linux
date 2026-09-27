@@ -15,7 +15,9 @@
 
 // Dependencies are supplied by the surrounding kernel translation unit.
 
-inline fn to_htlb1_esel(esel: usize) -> usize {
+#[inline]
+
+fn to_htlb1_esel(esel: usize) -> usize {
     host_tlb_params[1].entries - esel - 1
 }
 
@@ -24,11 +26,15 @@ static mut host_tlb_params: [kvmppc_e500_tlb_params; E500_TLB_NUM] = [
     kvmppc_e500_tlb_params { entries: 0, ways: 0, sets: 0 },
 ];
 
-inline fn tlb1_max_shadow_size() -> u32 {
+#[inline]
+
+fn tlb1_max_shadow_size() -> u32 {
     unsafe { host_tlb_params[1].entries - tlbcam_index - 1 }
 }
 
-inline fn e500_shadow_mas3_attrib(mut mas3: u32, writable: bool, usermode: i32) -> u32 {
+#[inline]
+
+fn e500_shadow_mas3_attrib(mut mas3: u32, writable: bool, usermode: i32) -> u32 {
     mas3 &= MAS3_ATTRIB_MASK;
     if !writable { mas3 &= !(MAS3_UW | MAS3_SW); }
     // CONFIG_KVM_BOOKE_HV condition is preserved by the source build.
@@ -40,7 +46,9 @@ inline fn e500_shadow_mas3_attrib(mut mas3: u32, writable: bool, usermode: i32) 
     mas3
 }
 
-inline unsafe fn __write_host_tlbe(stlbe: *mut kvm_book3e_206_tlb_entry, mas0: u32, lpid: u32) {
+#[inline]
+
+unsafe fn __write_host_tlbe(stlbe: *mut kvm_book3e_206_tlb_entry, mas0: u32, lpid: u32) {
     let mut flags: ulong = 0;
     local_irq_save(&mut flags);
     mtspr(SPRN_MAS0, mas0); mtspr(SPRN_MAS1, (*stlbe).mas1);

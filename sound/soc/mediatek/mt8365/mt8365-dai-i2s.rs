@@ -726,7 +726,7 @@ static mut mtk_dai_i2s_driver: [snd_soc_dai_driver; 2] = [
     },
 ];
 
-static fmi2sin_text: [*const core::ffi::c_char; 2] = [
+static fmi2sin_text: [*const kernel::ffi::c_char; 2] = [
     c"OPEN".as_ptr(),
     c"FM_2ND_I2S_IN".as_ptr(),
 ];
@@ -762,7 +762,7 @@ unsafe fn mt8365_dai_i2s_set_priv(afe: *mut mtk_base_afe) -> i32 {
             afe,
             mt8365_i2s_priv[i as usize].id,
             core::mem::size_of_val(&mt8365_i2s_priv[i as usize]),
-            &mt8365_i2s_priv[i as usize] as *const mtk_afe_i2s_priv as *const core::ffi::c_void,
+            &mt8365_i2s_priv[i as usize] as *const mtk_afe_i2s_priv as *const kernel::ffi::c_void,
         );
         if ret != 0 {
             return ret;

@@ -5,10 +5,10 @@
  */
 
 // Dependencies supplied by the surrounding kernel translation.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[allow(non_camel_case_types)]
-pub type u32 = core::ffi::c_uint;
+pub type u32 = kernel::ffi::c_uint;
 
 #[repr(C)]
 pub struct regmap {
@@ -96,14 +96,14 @@ macro_rules! ccu_update {
 }
 
 extern "C" {
-    pub fn regmap_read(map: *mut regmap, reg: u32, val: *mut u32) -> core::ffi::c_int;
+    pub fn regmap_read(map: *mut regmap, reg: u32, val: *mut u32) -> kernel::ffi::c_int;
     pub fn regmap_update_bits(
         map: *mut regmap,
         reg: u32,
         mask: u32,
         val: u32,
-    ) -> core::ffi::c_int;
-    pub fn spacemit_ccu_probe(pdev: *mut platform_device, compat: *const c_char) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
+    pub fn spacemit_ccu_probe(pdev: *mut platform_device, compat: *const c_char) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

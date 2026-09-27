@@ -13,7 +13,7 @@
 
 #[repr(C)]
 pub struct SquashfsStream {
-    pub stream: *mut core::ffi::c_void,
+    pub stream: *mut kernel::ffi::c_void,
     pub lock: LocalLock,
 }
 
@@ -25,21 +25,21 @@ pub struct LocalLock {
 
 #[repr(C)]
 pub struct SquashfsSbInfo {
-    pub stream: *mut core::ffi::c_void,
+    pub stream: *mut kernel::ffi::c_void,
     pub decompressor: *const SquashfsDecompressor,
 }
 
 #[repr(C)]
 pub struct SquashfsDecompressor {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub init: unsafe extern "C" fn(
         msblk: *mut SquashfsSbInfo,
-        comp_opts: *mut core::ffi::c_void,
-    ) -> *mut core::ffi::c_void,
-    pub free: unsafe extern "C" fn(stream: *mut core::ffi::c_void),
+        comp_opts: *mut kernel::ffi::c_void,
+    ) -> *mut kernel::ffi::c_void,
+    pub free: unsafe extern "C" fn(stream: *mut kernel::ffi::c_void),
     pub decompress: unsafe extern "C" fn(
         msblk: *mut SquashfsSbInfo,
-        stream: *mut core::ffi::c_void,
+        stream: *mut kernel::ffi::c_void,
         bio: *mut Bio,
         offset: i32,
         length: i32,
@@ -59,7 +59,7 @@ pub struct SquashfsPageActor {
 
 #[repr(C)]
 pub struct SquashfsDecompressorThreadOps {
-    pub create: Option<unsafe extern "C" fn(*mut SquashfsSbInfo, *mut core::ffi::c_void) -> *mut core::ffi::c_void>,
+    pub create: Option<unsafe extern "C" fn(*mut SquashfsSbInfo, *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void>,
     pub destroy: Option<unsafe extern "C" fn(*mut SquashfsSbInfo)>,
     pub decompress: Option<unsafe extern "C" fn(*mut SquashfsSbInfo, *mut Bio, i32, i32, *mut SquashfsPageActor) -> i32>,
     pub max_decompressors: Option<unsafe extern "C" fn() -> i32>,
@@ -68,23 +68,23 @@ pub struct SquashfsDecompressorThreadOps {
 extern "C" {
     fn alloc_percpu() -> *mut SquashfsStream;
     fn free_percpu(percpu: *mut SquashfsStream);
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn local_lock_init(lock: *mut LocalLock);
     fn local_lock(lock: *mut LocalLock);
     fn local_unlock(lock: *mut LocalLock);
     fn num_possible_cpus() -> i32;
     fn per_cpu_ptr(percpu: *mut SquashfsStream, cpu: i32) -> *mut SquashfsStream;
     fn this_cpu_ptr(percpu: *mut SquashfsStream) -> *mut SquashfsStream;
-    fn error_decompression_failed(name: *const core::ffi::c_char);
+    fn error_decompression_failed(name: *const kernel::ffi::c_char);
 }
 
 unsafe fn squashfs_decompressor_create(
     msblk: *mut SquashfsSbInfo,
-    comp_opts: *mut core::ffi::c_void,
-) -> *mut core::ffi::c_void {
+    comp_opts: *mut kernel::ffi::c_void,
+) -> *mut kernel::ffi::c_void {
     let percpu = alloc_percpu();
     if percpu.is_null() {
-        return (-12isize) as *mut core::ffi::c_void;
+        return (-12isize) as *mut kernel::ffi::c_void;
     }
 
     let mut cpu = 0;
@@ -104,14 +104,14 @@ unsafe fn squashfs_decompressor_create(
                 cleanup_cpu += 1;
             }
             free_percpu(percpu);
-            return err as *mut core::ffi::c_void;
+            return err as *mut kernel::ffi::c_void;
         }
         local_lock_init(&mut (*stream).lock);
         cpu += 1;
     }
 
     kfree(comp_opts);
-    percpu as *mut core::ffi::c_void
+    percpu as *mut kernel::ffi::c_void
 }
 
 unsafe fn squashfs_decompressor_destroy(msblk: *mut SquashfsSbInfo) {

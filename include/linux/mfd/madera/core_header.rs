@@ -153,7 +153,7 @@ pub struct madera {
     pub dev: *mut device,
     pub type_: madera_type,
     pub rev: u32,
-    pub type_name: *const core::ffi::c_char,
+    pub type_name: *const kernel::ffi::c_char,
     pub num_core_supplies: i32,
     pub core_supplies: [regulator_bulk_data; MADERA_MAX_CORE_SUPPLIES],
     pub dcvdd: *mut regulator,

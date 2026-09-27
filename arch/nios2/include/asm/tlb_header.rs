@@ -11,7 +11,7 @@
 // Dependency supplied by linux/pagemap.h and asm-generic/tlb.h in the source.
 
 unsafe extern "C" {
-    pub fn set_mmu_pid(pid: ::core::ffi::c_ulong);
+    pub fn set_mmu_pid(pid: ::kernel::ffi::c_ulong);
 }
 
 /*

@@ -52,24 +52,24 @@ extern "C" {
 // CONFIG_KVM_GUEST && CONFIG_INTEL_TDX_GUEST
 extern "C" {
     pub fn tdx_kvm_hypercall(
-        nr: core::ffi::c_uint,
-        p1: core::ffi::c_ulong,
-        p2: core::ffi::c_ulong,
-        p3: core::ffi::c_ulong,
-        p4: core::ffi::c_ulong,
-    ) -> core::ffi::c_long;
+        nr: kernel::ffi::c_uint,
+        p1: kernel::ffi::c_ulong,
+        p2: kernel::ffi::c_ulong,
+        p3: kernel::ffi::c_ulong,
+        p4: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_long;
 }
 
 // CONFIG_INTEL_TDX_HOST
 extern "C" {
     pub fn tdx_init();
     pub fn tdx_cpu_enable() -> i32;
-    pub fn tdx_dump_mce_info(m: *mut mce) -> *const core::ffi::c_char;
+    pub fn tdx_dump_mce_info(m: *mut mce) -> *const kernel::ffi::c_char;
     pub fn tdx_get_sysinfo() -> *const tdx_sys_info;
     pub fn tdx_guest_keyid_alloc() -> i32;
     pub fn tdx_get_nr_guest_keyids() -> u32;
-    pub fn tdx_guest_keyid_free(keyid: core::ffi::c_uint);
-    pub fn tdx_quirk_reset_paddr(base: core::ffi::c_ulong, size: core::ffi::c_ulong);
+    pub fn tdx_guest_keyid_free(keyid: kernel::ffi::c_uint);
+    pub fn tdx_quirk_reset_paddr(base: kernel::ffi::c_ulong, size: kernel::ffi::c_ulong);
 }
 
 #[inline]

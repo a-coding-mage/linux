@@ -45,12 +45,12 @@ extern "C" {
     pub fn spk_var_show(
         kobj: *mut kobject,
         attr: *mut kobj_attribute,
-        buf: *mut ::core::ffi::c_char,
+        buf: *mut ::kernel::ffi::c_char,
     ) -> isize;
     pub fn spk_var_store(
         kobj: *mut kobject,
         attr: *mut kobj_attribute,
-        buf: *const ::core::ffi::c_char,
+        buf: *const ::kernel::ffi::c_char,
         count: usize,
     ) -> isize;
 
@@ -58,12 +58,12 @@ extern "C" {
     pub fn spk_ttyio_synth_probe(synth: *mut spk_synth) -> i32;
     pub fn spk_serial_synth_immediate(
         synth: *mut spk_synth,
-        buff: *const ::core::ffi::c_char,
-    ) -> *const ::core::ffi::c_char;
+        buff: *const ::kernel::ffi::c_char,
+    ) -> *const ::kernel::ffi::c_char;
     pub fn spk_ttyio_synth_immediate(
         synth: *mut spk_synth,
-        buff: *const ::core::ffi::c_char,
-    ) -> *const ::core::ffi::c_char;
+        buff: *const ::kernel::ffi::c_char,
+    ) -> *const ::kernel::ffi::c_char;
     pub fn spk_do_catch_up(synth: *mut spk_synth);
     pub fn spk_do_catch_up_unicode(synth: *mut spk_synth);
     pub fn spk_synth_flush(synth: *mut spk_synth);
@@ -71,13 +71,13 @@ extern "C" {
     pub fn spk_synth_is_alive_nop(synth: *mut spk_synth) -> i32;
     pub fn spk_synth_is_alive_restart(synth: *mut spk_synth) -> i32;
     // __printf(1, 2)
-    pub fn synth_printf(buf: *const ::core::ffi::c_char, ...);
+    pub fn synth_printf(buf: *const ::kernel::ffi::c_char, ...);
     pub fn synth_putwc(wc: u16);
     pub fn synth_putwc_s(wc: u16);
     pub fn synth_putws(buf: *const u16);
     pub fn synth_putws_s(buf: *const u16);
-    pub fn synth_request_region(start: ::core::ffi::c_ulong, n: ::core::ffi::c_ulong) -> i32;
-    pub fn synth_release_region(start: ::core::ffi::c_ulong, n: ::core::ffi::c_ulong) -> i32;
+    pub fn synth_request_region(start: ::kernel::ffi::c_ulong, n: ::kernel::ffi::c_ulong) -> i32;
+    pub fn synth_release_region(start: ::kernel::ffi::c_ulong, n: ::kernel::ffi::c_ulong) -> i32;
     pub fn synth_add(in_synth: *mut spk_synth) -> i32;
     pub fn synth_remove(in_synth: *mut spk_synth);
     pub fn synth_current() -> *mut spk_synth;

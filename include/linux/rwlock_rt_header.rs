@@ -5,7 +5,7 @@
 extern "C" {
     pub fn __rt_rwlock_init(
         rwlock: *mut rwlock_t,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         key: *mut lock_class_key,
     );
 }
@@ -14,7 +14,7 @@ extern "C" {
 #[inline(always)]
 pub unsafe fn __rt_rwlock_init(
     _rwlock: *mut rwlock_t,
-    _name: *mut core::ffi::c_char,
+    _name: *mut kernel::ffi::c_char,
     _key: *mut lock_class_key,
 ) {
 }
@@ -29,7 +29,7 @@ macro_rules! rwlock_init {
             init_rwbase_rt(&mut (*($rwl)).rwbase);
             __rt_rwlock_init(
                 $rwl,
-                concat!(stringify!($rwl), "\0").as_ptr() as *const core::ffi::c_char,
+                concat!(stringify!($rwl), "\0").as_ptr() as *const kernel::ffi::c_char,
                 &mut __KEY,
             );
         }
@@ -38,11 +38,11 @@ macro_rules! rwlock_init {
 
 extern "C" {
     pub fn rt_read_lock(rwlock: *mut rwlock_t);
-    pub fn rt_read_trylock(rwlock: *mut rwlock_t) -> core::ffi::c_int;
+    pub fn rt_read_trylock(rwlock: *mut rwlock_t) -> kernel::ffi::c_int;
     pub fn rt_read_unlock(rwlock: *mut rwlock_t);
     pub fn rt_write_lock(rwlock: *mut rwlock_t);
-    pub fn rt_write_lock_nested(rwlock: *mut rwlock_t, subclass: core::ffi::c_int);
-    pub fn rt_write_trylock(rwlock: *mut rwlock_t) -> core::ffi::c_int;
+    pub fn rt_write_lock_nested(rwlock: *mut rwlock_t, subclass: kernel::ffi::c_int);
+    pub fn rt_write_trylock(rwlock: *mut rwlock_t) -> kernel::ffi::c_int;
     pub fn rt_write_unlock(rwlock: *mut rwlock_t);
 }
 
@@ -92,7 +92,7 @@ pub unsafe fn read_unlock_irq(rwlock: *mut rwlock_t) {
 }
 
 #[inline(always)]
-pub unsafe fn read_unlock_irqrestore(rwlock: *mut rwlock_t, _flags: libc::c_ulong) {
+pub unsafe fn read_unlock_irqrestore(rwlock: *mut rwlock_t, _flags: kernel::ffi::c_ulong) {
     rt_read_unlock(rwlock);
 }
 
@@ -103,7 +103,7 @@ pub unsafe fn write_lock(rwlock: *mut rwlock_t) {
 
 #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
 #[inline(always)]
-pub unsafe fn write_lock_nested(rwlock: *mut rwlock_t, subclass: core::ffi::c_int) {
+pub unsafe fn write_lock_nested(rwlock: *mut rwlock_t, subclass: kernel::ffi::c_int) {
     rt_write_lock_nested(rwlock, subclass);
 }
 
@@ -141,7 +141,7 @@ pub unsafe fn write_trylock(lock: *mut rwlock_t) -> bool {
 }
 
 #[inline(always)]
-pub unsafe fn _write_trylock_irqsave(rwlock: *mut rwlock_t, flags: *mut libc::c_ulong) -> bool {
+pub unsafe fn _write_trylock_irqsave(rwlock: *mut rwlock_t, flags: *mut kernel::ffi::c_ulong) -> bool {
     *flags = 0;
     rt_write_trylock(rwlock) != 0
 }
@@ -170,12 +170,12 @@ pub unsafe fn write_unlock_irq(rwlock: *mut rwlock_t) {
 }
 
 #[inline(always)]
-pub unsafe fn write_unlock_irqrestore(rwlock: *mut rwlock_t, _flags: libc::c_ulong) {
+pub unsafe fn write_unlock_irqrestore(rwlock: *mut rwlock_t, _flags: kernel::ffi::c_ulong) {
     rt_write_unlock(rwlock);
 }
 
 #[inline(always)]
-pub unsafe fn rwlock_is_contended<T>(_lock: *mut T) -> core::ffi::c_int {
+pub unsafe fn rwlock_is_contended<T>(_lock: *mut T) -> kernel::ffi::c_int {
     0
 }
 

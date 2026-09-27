@@ -46,7 +46,7 @@ pub static mut early_page_ext: bool = true;
 #[cfg(not(CONFIG_MEM_ALLOC_PROFILING_DEBUG))]
 pub static mut early_page_ext: bool = false;
 
-unsafe extern "C" fn setup_early_page_ext(_str: *mut core::ffi::c_char) -> i32 {
+unsafe extern "C" fn setup_early_page_ext(_str: *mut kernel::ffi::c_char) -> i32 {
     early_page_ext = true;
     0
 }
@@ -142,7 +142,7 @@ unsafe fn lookup_page_ext(page: *const page) -> *mut page_ext {
 }
 
 #[cfg(CONFIG_SPARSEMEM)]
-unsafe fn alloc_page_ext(size: usize, nid: i32) -> *mut core::ffi::c_void {
+unsafe fn alloc_page_ext(size: usize, nid: i32) -> *mut kernel::ffi::c_void {
     let flags = GFP_KERNEL | __GFP_ZERO | __GFP_NOWARN;
     let mut addr = alloc_pages_exact_nid(nid, size, flags);
     if !addr.is_null() { kmemleak_alloc(addr, size, 1, flags); } else { addr = vzalloc_node(size, nid); }
@@ -165,7 +165,7 @@ unsafe fn init_section_page_ext(mut pfn: usize, nid: i32) -> i32 {
 }
 
 #[cfg(CONFIG_SPARSEMEM)]
-unsafe fn free_page_ext(addr: *mut core::ffi::c_void) {
+unsafe fn free_page_ext(addr: *mut kernel::ffi::c_void) {
     let table_size = page_ext_size * PAGES_PER_SECTION;
     memmap_pages_add(-(div_round_up(table_size, PAGE_SIZE) as isize));
     if is_vmalloc_addr(addr) { vfree(addr); } else { let p = virt_to_page(addr); BUG_ON!(PageReserved(p)); kmemleak_free(addr); free_pages_exact(addr, table_size); }

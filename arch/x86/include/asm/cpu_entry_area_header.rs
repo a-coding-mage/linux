@@ -16,19 +16,19 @@ pub const VC_EXCEPTION_STKSZ: usize = 0;
 #[cfg(CONFIG_X86_64)]
 #[repr(C)]
 pub struct estacks_members<const GUARDSIZE: usize, const OPTIONAL_STACK_SIZE: usize> {
-    pub DF_stack_guard: [core::ffi::c_char; GUARDSIZE],
-    pub DF_stack: [core::ffi::c_char; EXCEPTION_STKSZ],
-    pub NMI_stack_guard: [core::ffi::c_char; GUARDSIZE],
-    pub NMI_stack: [core::ffi::c_char; EXCEPTION_STKSZ],
-    pub DB_stack_guard: [core::ffi::c_char; GUARDSIZE],
-    pub DB_stack: [core::ffi::c_char; EXCEPTION_STKSZ],
-    pub MCE_stack_guard: [core::ffi::c_char; GUARDSIZE],
-    pub MCE_stack: [core::ffi::c_char; EXCEPTION_STKSZ],
-    pub VC_stack_guard: [core::ffi::c_char; GUARDSIZE],
-    pub VC_stack: [core::ffi::c_char; OPTIONAL_STACK_SIZE],
-    pub VC2_stack_guard: [core::ffi::c_char; GUARDSIZE],
-    pub VC2_stack: [core::ffi::c_char; OPTIONAL_STACK_SIZE],
-    pub IST_top_guard: [core::ffi::c_char; GUARDSIZE],
+    pub DF_stack_guard: [kernel::ffi::c_char; GUARDSIZE],
+    pub DF_stack: [kernel::ffi::c_char; EXCEPTION_STKSZ],
+    pub NMI_stack_guard: [kernel::ffi::c_char; GUARDSIZE],
+    pub NMI_stack: [kernel::ffi::c_char; EXCEPTION_STKSZ],
+    pub DB_stack_guard: [kernel::ffi::c_char; GUARDSIZE],
+    pub DB_stack: [kernel::ffi::c_char; EXCEPTION_STKSZ],
+    pub MCE_stack_guard: [kernel::ffi::c_char; GUARDSIZE],
+    pub MCE_stack: [kernel::ffi::c_char; EXCEPTION_STKSZ],
+    pub VC_stack_guard: [kernel::ffi::c_char; GUARDSIZE],
+    pub VC_stack: [kernel::ffi::c_char; OPTIONAL_STACK_SIZE],
+    pub VC2_stack_guard: [kernel::ffi::c_char; GUARDSIZE],
+    pub VC2_stack: [kernel::ffi::c_char; OPTIONAL_STACK_SIZE],
+    pub IST_top_guard: [kernel::ffi::c_char; GUARDSIZE],
 }
 
 /* The exception stacks' physical storage. No guard pages required */
@@ -71,7 +71,7 @@ macro_rules! CEA_ESTACK_SIZE {
 #[macro_export]
 macro_rules! CEA_ESTACK_BOT {
     ($ceastp:expr, $st:ident) => {
-        ::kernel::macros::paste!(core::ptr::addr_of!((*$ceastp).[<$st _stack>]) as core::ffi::c_ulong)
+        ::kernel::macros::paste!(core::ptr::addr_of!((*$ceastp).[<$st _stack>]) as kernel::ffi::c_ulong)
     };
 }
 
@@ -79,7 +79,7 @@ macro_rules! CEA_ESTACK_BOT {
 #[macro_export]
 macro_rules! CEA_ESTACK_TOP {
     ($ceastp:expr, $st:ident) => {
-        CEA_ESTACK_BOT!($ceastp, $st) + CEA_ESTACK_SIZE!($st) as core::ffi::c_ulong
+        CEA_ESTACK_BOT!($ceastp, $st) + CEA_ESTACK_SIZE!($st) as kernel::ffi::c_ulong
     };
 }
 
@@ -97,7 +97,7 @@ pub const CEA_ESTACK_PAGES: usize = core::mem::size_of::<cea_exception_stacks>()
 #[cfg(CONFIG_X86_32)]
 #[repr(C, align(4096))]
 pub struct doublefault_stack {
-    pub stack: [core::ffi::c_ulong; (PAGE_SIZE - core::mem::size_of::<x86_hw_tss>()) / core::mem::size_of::<core::ffi::c_ulong>()],
+    pub stack: [kernel::ffi::c_ulong; (PAGE_SIZE - core::mem::size_of::<x86_hw_tss>()) / core::mem::size_of::<kernel::ffi::c_ulong>()],
     pub tss: x86_hw_tss,
 }
 
@@ -109,12 +109,12 @@ pub struct doublefault_stack {
  * There is no direct allocation of a struct cpu_entry_area. */
 #[repr(C)]
 pub struct cpu_entry_area {
-    pub gdt: [core::ffi::c_char; PAGE_SIZE],
+    pub gdt: [kernel::ffi::c_char; PAGE_SIZE],
     #[cfg(CONFIG_X86_32)]
-    pub guard_entry_stack: [core::ffi::c_char; PAGE_SIZE],
+    pub guard_entry_stack: [kernel::ffi::c_char; PAGE_SIZE],
     pub entry_stack_page: entry_stack_page,
     #[cfg(CONFIG_X86_32)]
-    pub guard_doublefault_stack: [core::ffi::c_char; PAGE_SIZE],
+    pub guard_doublefault_stack: [kernel::ffi::c_char; PAGE_SIZE],
     #[cfg(CONFIG_X86_32)]
     pub doublefault_stack: doublefault_stack,
     pub tss: tss_struct,
@@ -131,12 +131,12 @@ pub const CPU_ENTRY_AREA_SIZE: usize = core::mem::size_of::<cpu_entry_area>();
 
 extern "C" {
     pub fn setup_cpu_entry_areas();
-    pub fn cea_set_pte(cea_vaddr: *mut core::ffi::c_void, pa: phys_addr_t, flags: pgprot_t);
-    pub fn get_cpu_entry_area(cpu: core::ffi::c_int) -> *mut cpu_entry_area;
+    pub fn cea_set_pte(cea_vaddr: *mut kernel::ffi::c_void, pa: phys_addr_t, flags: pgprot_t);
+    pub fn get_cpu_entry_area(cpu: kernel::ffi::c_int) -> *mut cpu_entry_area;
 }
 
 #[inline(always)]
-pub unsafe fn cpu_entry_stack(cpu: core::ffi::c_int) -> *mut entry_stack {
+pub unsafe fn cpu_entry_stack(cpu: kernel::ffi::c_int) -> *mut entry_stack {
     core::ptr::addr_of_mut!((*get_cpu_entry_area(cpu)).entry_stack_page.stack)
 }
 

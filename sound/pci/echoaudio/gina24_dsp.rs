@@ -18,21 +18,21 @@
 // locking helpers, and DSP/ASIC support routines.
 
 unsafe extern "C" {
-    fn write_control_reg(chip: *mut echoaudio, value: u32, force: core::ffi::c_char) -> core::ffi::c_int;
-    fn set_professional_spdif(chip: *mut echoaudio, prof: core::ffi::c_char) -> core::ffi::c_int;
-    fn set_digital_mode(chip: *mut echoaudio, mode: u8) -> core::ffi::c_int;
-    fn load_asic_generic(chip: *mut echoaudio, cmd: u32, asic: core::ffi::c_short) -> core::ffi::c_int;
-    fn check_asic_status(chip: *mut echoaudio) -> core::ffi::c_int;
+    fn write_control_reg(chip: *mut echoaudio, value: u32, force: kernel::ffi::c_char) -> kernel::ffi::c_int;
+    fn set_professional_spdif(chip: *mut echoaudio, prof: kernel::ffi::c_char) -> kernel::ffi::c_int;
+    fn set_digital_mode(chip: *mut echoaudio, mode: u8) -> kernel::ffi::c_int;
+    fn load_asic_generic(chip: *mut echoaudio, cmd: u32, asic: kernel::ffi::c_short) -> kernel::ffi::c_int;
+    fn check_asic_status(chip: *mut echoaudio) -> kernel::ffi::c_int;
 }
 
 unsafe fn init_hw(
     chip: *mut echoaudio,
     device_id: u16,
     subdevice_id: u16,
-) -> core::ffi::c_int {
-    let mut err: core::ffi::c_int;
+) -> kernel::ffi::c_int {
+    let mut err: kernel::ffi::c_int;
 
-    if snd_BUG_ON(((subdevice_id as core::ffi::c_int) & 0xfff0) != GINA24) {
+    if snd_BUG_ON(((subdevice_id as kernel::ffi::c_int) & 0xfff0) != GINA24) {
         return -ENODEV;
     }
 
@@ -77,7 +77,7 @@ unsafe fn init_hw(
     err
 }
 
-unsafe fn set_mixer_defaults(chip: *mut echoaudio) -> core::ffi::c_int {
+unsafe fn set_mixer_defaults(chip: *mut echoaudio) -> kernel::ffi::c_int {
     (*chip).digital_mode = DIGITAL_MODE_SPDIF_RCA;
     (*chip).professional_spdif = false;
     (*chip).digital_in_automute = true;
@@ -111,10 +111,10 @@ unsafe fn detect_input_clocks(chip: *const echoaudio) -> u32 {
 
 /* Gina24 has an ASIC on the PCI card which must be loaded for anything
 interesting to happen. */
-unsafe fn load_asic(chip: *mut echoaudio) -> core::ffi::c_int {
+unsafe fn load_asic(chip: *mut echoaudio) -> kernel::ffi::c_int {
     let mut control_reg: u32;
-    let mut err: core::ffi::c_int;
-    let asic: core::ffi::c_short;
+    let mut err: kernel::ffi::c_int;
+    let asic: kernel::ffi::c_short;
 
     if (*chip).asic_loaded {
         return 1;
@@ -146,12 +146,12 @@ unsafe fn load_asic(chip: *mut echoaudio) -> core::ffi::c_int {
        48 kHz, internal clock, S/PDIF RCA mode */
     if err == 0 {
         control_reg = GML_CONVERTER_ENABLE | GML_48KHZ;
-        err = write_control_reg(chip, control_reg, true as core::ffi::c_char);
+        err = write_control_reg(chip, control_reg, true as kernel::ffi::c_char);
     }
     err
 }
 
-unsafe fn set_sample_rate(chip: *mut echoaudio, rate: u32) -> core::ffi::c_int {
+unsafe fn set_sample_rate(chip: *mut echoaudio, rate: u32) -> kernel::ffi::c_int {
     let mut control_reg: u32;
     let mut clock: u32;
 
@@ -229,10 +229,10 @@ unsafe fn set_sample_rate(chip: *mut echoaudio, rate: u32) -> core::ffi::c_int {
         clock,
     );
 
-    write_control_reg(chip, control_reg, false as core::ffi::c_char)
+    write_control_reg(chip, control_reg, false as kernel::ffi::c_char)
 }
 
-unsafe fn set_input_clock(chip: *mut echoaudio, clock: u16) -> core::ffi::c_int {
+unsafe fn set_input_clock(chip: *mut echoaudio, clock: u16) -> kernel::ffi::c_int {
     let mut control_reg: u32;
     let clocks_from_dsp: u32;
 
@@ -282,25 +282,25 @@ unsafe fn set_input_clock(chip: *mut echoaudio, clock: u16) -> core::ffi::c_int 
     }
 
     (*chip).input_clock = clock;
-    write_control_reg(chip, control_reg, true as core::ffi::c_char)
+    write_control_reg(chip, control_reg, true as kernel::ffi::c_char)
 }
 
-unsafe fn dsp_set_digital_mode(chip: *mut echoaudio, mode: u8) -> core::ffi::c_int {
+unsafe fn dsp_set_digital_mode(chip: *mut echoaudio, mode: u8) -> kernel::ffi::c_int {
     let mut control_reg: u32;
-    let err: core::ffi::c_int;
-    let mut incompatible_clock: core::ffi::c_int;
+    let err: kernel::ffi::c_int;
+    let mut incompatible_clock: kernel::ffi::c_int;
 
     /* Set clock to "internal" if it's not compatible with the new mode */
-    incompatible_clock = false as core::ffi::c_int;
+    incompatible_clock = false as kernel::ffi::c_int;
     match mode {
         DIGITAL_MODE_SPDIF_OPTICAL | DIGITAL_MODE_SPDIF_CDROM | DIGITAL_MODE_SPDIF_RCA => {
             if (*chip).input_clock == ECHO_CLOCK_ADAT {
-                incompatible_clock = true as core::ffi::c_int;
+                incompatible_clock = true as kernel::ffi::c_int;
             }
         }
         DIGITAL_MODE_ADAT => {
             if (*chip).input_clock == ECHO_CLOCK_SPDIF {
-                incompatible_clock = true as core::ffi::c_int;
+                incompatible_clock = true as kernel::ffi::c_int;
             }
         }
         _ => {
@@ -346,7 +346,7 @@ unsafe fn dsp_set_digital_mode(chip: *mut echoaudio, mode: u8) -> core::ffi::c_i
         _ => {}
     }
 
-    err = write_control_reg(chip, control_reg, true as core::ffi::c_char);
+    err = write_control_reg(chip, control_reg, true as kernel::ffi::c_char);
     if err < 0 {
         return err;
     }

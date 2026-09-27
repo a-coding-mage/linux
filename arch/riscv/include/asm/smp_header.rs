@@ -6,12 +6,12 @@
 // The C header includes linux/cpumask.h, linux/irqreturn.h, and
 // linux/thread_info.h. Their Rust declarations are supplied externally.
 
-pub const INVALID_HARTID: ::core::ffi::c_ulong = ::core::primitive::usize::MAX as ::core::ffi::c_ulong;
+pub const INVALID_HARTID: ::kernel::ffi::c_ulong = ::core::primitive::usize::MAX as ::kernel::ffi::c_ulong;
 
 pub enum seq_file {}
 
 extern "C" {
-    pub static mut boot_cpu_hartid: ::core::ffi::c_ulong;
+    pub static mut boot_cpu_hartid: ::kernel::ffi::c_ulong;
 }
 
 // CONFIG_SMP is a build-time configuration condition preserved from the C header.
@@ -21,16 +21,16 @@ pub mod config_smp {
 
     // Mapping between linux logical cpu index and hartid.
     extern "C" {
-        pub static mut __cpuid_to_hartid_map: [::core::ffi::c_ulong; NR_CPUS];
+        pub static mut __cpuid_to_hartid_map: [::kernel::ffi::c_ulong; NR_CPUS];
     }
 
-    pub unsafe fn cpuid_to_hartid_map(cpu: usize) -> ::core::ffi::c_ulong {
+    pub unsafe fn cpuid_to_hartid_map(cpu: usize) -> ::kernel::ffi::c_ulong {
         __cpuid_to_hartid_map[cpu]
     }
 
     /* print IPI stats */
     extern "C" {
-        pub fn show_ipi_stats(p: *mut seq_file, prec: ::core::ffi::c_int);
+        pub fn show_ipi_stats(p: *mut seq_file, prec: ::kernel::ffi::c_int);
 
         /* SMP initialization hook for setup_arch */
         pub fn setup_smp();
@@ -39,9 +39,9 @@ pub mod config_smp {
         pub fn arch_send_call_function_ipi_mask(mask: *mut cpumask);
 
         /* Hook for the generic smp_call_function_single() routine. */
-        pub fn arch_send_call_function_single_ipi(cpu: ::core::ffi::c_int);
+        pub fn arch_send_call_function_single_ipi(cpu: ::kernel::ffi::c_int);
 
-        pub fn riscv_hartid_to_cpuid(hartid: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+        pub fn riscv_hartid_to_cpuid(hartid: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
 
         /* Enable IPI for CPU hotplug */
         pub fn riscv_ipi_enable();
@@ -53,7 +53,7 @@ pub mod config_smp {
         pub fn riscv_ipi_have_virq_range() -> bool;
 
         /* Set the IPI interrupt numbers for arch (called by irqchip drivers) */
-        pub fn riscv_ipi_set_virq_range(virq: ::core::ffi::c_int, nr: ::core::ffi::c_int);
+        pub fn riscv_ipi_set_virq_range(virq: ::kernel::ffi::c_int, nr: ::kernel::ffi::c_int);
 
         /* Check other CPUs stop or not */
         pub fn smp_crash_stop_failed() -> bool;
@@ -62,16 +62,16 @@ pub mod config_smp {
         pub fn smp_callin();
 
         #[cfg(CONFIG_HOTPLUG_CPU)]
-        pub fn __cpu_disable() -> ::core::ffi::c_int;
+        pub fn __cpu_disable() -> ::kernel::ffi::c_int;
     }
 
     /* Obtains the hart ID of the currently executing task. */
-    pub unsafe fn raw_smp_processor_id() -> ::core::ffi::c_uint {
+    pub unsafe fn raw_smp_processor_id() -> ::kernel::ffi::c_uint {
         current_thread_info().cpu
     }
 
     #[cfg(CONFIG_HOTPLUG_CPU)]
-    pub unsafe fn __cpu_die(_cpu: ::core::ffi::c_uint) {}
+    pub unsafe fn __cpu_die(_cpu: ::kernel::ffi::c_uint) {}
 }
 
 // CONFIG_SMP is disabled in this configuration.
@@ -79,16 +79,16 @@ pub mod config_smp {
 pub mod config_no_smp {
     use super::{seq_file, boot_cpu_hartid};
 
-    pub unsafe fn show_ipi_stats(_p: *mut seq_file, _prec: ::core::ffi::c_int) {}
+    pub unsafe fn show_ipi_stats(_p: *mut seq_file, _prec: ::kernel::ffi::c_int) {}
 
-    pub unsafe fn riscv_hartid_to_cpuid(hartid: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+    pub unsafe fn riscv_hartid_to_cpuid(hartid: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
         if hartid == boot_cpu_hartid {
             return 0;
         }
         -1
     }
 
-    pub unsafe fn cpuid_to_hartid_map(_cpu: ::core::ffi::c_int) -> ::core::ffi::c_ulong {
+    pub unsafe fn cpuid_to_hartid_map(_cpu: ::kernel::ffi::c_int) -> ::kernel::ffi::c_ulong {
         boot_cpu_hartid
     }
 
@@ -99,17 +99,17 @@ pub mod config_no_smp {
         false
     }
 
-    pub unsafe fn riscv_ipi_set_virq_range(_virq: ::core::ffi::c_int, _nr: ::core::ffi::c_int) {}
+    pub unsafe fn riscv_ipi_set_virq_range(_virq: ::kernel::ffi::c_int, _nr: ::kernel::ffi::c_int) {}
 }
 
 // CONFIG_HOTPLUG_CPU is a build-time configuration condition preserved from the C header.
 #[cfg(CONFIG_HOTPLUG_CPU)]
 extern "C" {
-    pub fn cpu_has_hotplug(cpu: ::core::ffi::c_uint) -> bool;
+    pub fn cpu_has_hotplug(cpu: ::kernel::ffi::c_uint) -> bool;
 }
 
 #[cfg(not(CONFIG_HOTPLUG_CPU))]
-pub unsafe fn cpu_has_hotplug(_cpu: ::core::ffi::c_uint) -> bool {
+pub unsafe fn cpu_has_hotplug(_cpu: ::kernel::ffi::c_uint) -> bool {
     false
 }
 

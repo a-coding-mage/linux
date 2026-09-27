@@ -20,7 +20,7 @@
 // Flag indicating whether initialization completed.
 // C declaration used __initdata storage annotation.
 unsafe extern "C" {
-    pub static mut safesetid_initialized: core::ffi::c_int;
+    pub static mut safesetid_initialized: kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -68,7 +68,7 @@ pub const INVALID_ID: kid_t = kid_t { uid: INVALID_UID };
 pub struct setid_ruleset {
     // DECLARE_HASHTABLE(rules, SETID_HASH_BITS);
     pub rules: [hlist_head; 1usize << SETID_HASH_BITS],
-    pub policy_str: *mut core::ffi::c_char,
+    pub policy_str: *mut kernel::ffi::c_char,
     pub rcu: rcu_head,
 
     // Flag to signal if ruleset is for UID's or GID's.
@@ -88,7 +88,7 @@ unsafe extern "C" {
     pub static mut safesetid_setuid_rules: *mut setid_ruleset;
     pub static mut safesetid_setgid_rules: *mut setid_ruleset;
 
-    pub fn safesetid_init_securityfs() -> core::ffi::c_int;
+    pub fn safesetid_init_securityfs() -> kernel::ffi::c_int;
 }
 
 

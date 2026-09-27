@@ -12,33 +12,33 @@
 // Linux and SuperH dependencies are supplied by the surrounding kernel.
 
 pub unsafe fn old_mmap(
-    addr: ::core::ffi::c_ulong,
-    len: ::core::ffi::c_ulong,
-    prot: ::core::ffi::c_ulong,
-    flags: ::core::ffi::c_ulong,
-    fd: ::core::ffi::c_int,
-    off: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    addr: ::kernel::ffi::c_ulong,
+    len: ::kernel::ffi::c_ulong,
+    prot: ::kernel::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
+    fd: ::kernel::ffi::c_int,
+    off: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     if off & !PAGE_MASK != 0 {
         return -EINVAL;
     }
-    ksys_mmap_pgoff(addr, len, prot, flags, fd as ::core::ffi::c_ulong, off >> PAGE_SHIFT)
+    ksys_mmap_pgoff(addr, len, prot, flags, fd as ::kernel::ffi::c_ulong, off >> PAGE_SHIFT)
 }
 
 pub unsafe fn sys_mmap2(
-    addr: ::core::ffi::c_ulong,
-    len: ::core::ffi::c_ulong,
-    prot: ::core::ffi::c_ulong,
-    flags: ::core::ffi::c_ulong,
-    fd: ::core::ffi::c_ulong,
-    mut pgoff: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_long {
+    addr: ::kernel::ffi::c_ulong,
+    len: ::kernel::ffi::c_ulong,
+    prot: ::kernel::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
+    fd: ::kernel::ffi::c_ulong,
+    mut pgoff: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_long {
     /*
      * The shift for mmap2 is constant, regardless of PAGE_SIZE
      * setting.
      */
     if pgoff & ((1 << (PAGE_SHIFT - 12)) - 1) != 0 {
-        return -EINVAL as ::core::ffi::c_long;
+        return -EINVAL as ::kernel::ffi::c_long;
     }
 
     pgoff >>= PAGE_SHIFT - 12;
@@ -48,10 +48,10 @@ pub unsafe fn sys_mmap2(
 
 /* sys_cacheflush -- flush (part of) the processor cache.  */
 pub unsafe fn sys_cacheflush(
-    addr: ::core::ffi::c_ulong,
-    len: ::core::ffi::c_ulong,
-    op: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    addr: ::kernel::ffi::c_ulong,
+    len: ::kernel::ffi::c_ulong,
+    op: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let mut vma: *mut vm_area_struct;
 
     if (op <= 0) || (op > (CACHEFLUSH_D_PURGE | CACHEFLUSH_I)) {
@@ -78,13 +78,13 @@ pub unsafe fn sys_cacheflush(
 
     match op & CACHEFLUSH_D_PURGE {
         CACHEFLUSH_D_INVAL => {
-            __flush_invalidate_region(addr as *mut ::core::ffi::c_void, len);
+            __flush_invalidate_region(addr as *mut ::kernel::ffi::c_void, len);
         }
         CACHEFLUSH_D_WB => {
-            __flush_wback_region(addr as *mut ::core::ffi::c_void, len);
+            __flush_wback_region(addr as *mut ::kernel::ffi::c_void, len);
         }
         CACHEFLUSH_D_PURGE => {
-            __flush_purge_region(addr as *mut ::core::ffi::c_void, len);
+            __flush_purge_region(addr as *mut ::kernel::ffi::c_void, len);
         }
         _ => {}
     }

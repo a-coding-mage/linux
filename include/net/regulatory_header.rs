@@ -16,10 +16,10 @@ pub enum environment_cap {
 #[repr(C)]
 pub struct regulatory_request {
     pub rcu_head: crate::rcu_head,
-    pub wiphy_idx: ::core::ffi::c_int,
+    pub wiphy_idx: ::kernel::ffi::c_int,
     pub initiator: crate::nl80211_reg_initiator,
     pub user_reg_hint_type: crate::nl80211_user_reg_hint_type,
-    pub alpha2: [::core::ffi::c_char; 3],
+    pub alpha2: [::kernel::ffi::c_char; 3],
     pub dfs_region: crate::nl80211_dfs_regions,
     pub intersect: bool,
     pub processed: bool,
@@ -82,7 +82,7 @@ pub struct ieee80211_reg_rule {
 pub struct ieee80211_regdomain {
     pub rcu_head: crate::rcu_head,
     pub n_reg_rules: u32,
-    pub alpha2: [::core::ffi::c_char; 3],
+    pub alpha2: [::kernel::ffi::c_char; 3],
     pub dfs_region: crate::nl80211_dfs_regions,
     pub reg_rules: [ieee80211_reg_rule; 0],
 }

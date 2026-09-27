@@ -11,9 +11,9 @@ extern "C" {
     pub fn cpu_resume_no_hyp();
     pub fn cpu_resume_arm();
     pub fn cpu_suspend(
-        arg: core::ffi::c_ulong,
-        fn_ptr: Option<unsafe extern "C" fn(core::ffi::c_ulong) -> core::ffi::c_int>,
-    ) -> core::ffi::c_int;
+        arg: kernel::ffi::c_ulong,
+        fn_ptr: Option<unsafe extern "C" fn(kernel::ffi::c_ulong) -> kernel::ffi::c_int>,
+    ) -> kernel::ffi::c_int;
     pub fn __cpu_suspend_save(
         ptr: *mut u32,
         ptrsz: u32,

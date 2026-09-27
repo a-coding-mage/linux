@@ -17,8 +17,8 @@ pub struct device {
 
 #[repr(C)]
 pub struct acpi_dma_spec {
-    pub chan_id: core::ffi::c_int,
-    pub slave_id: core::ffi::c_int,
+    pub chan_id: kernel::ffi::c_int,
+    pub slave_id: kernel::ffi::c_int,
     pub dev: *mut device,
 }
 
@@ -28,7 +28,7 @@ pub struct acpi_dma {
     pub dev: *mut device,
     pub acpi_dma_xlate:
         Option<unsafe extern "C" fn(*mut acpi_dma_spec, *mut acpi_dma) -> *mut dma_chan>,
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
     pub base_request_line: u16,
     pub end_request_line: u16,
 }
@@ -45,14 +45,14 @@ extern "C" {
     pub fn acpi_dma_controller_register(
         dev: *mut device,
         acpi_dma_xlate: Option<unsafe extern "C" fn(*mut acpi_dma_spec, *mut acpi_dma) -> *mut dma_chan>,
-        data: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
-    pub fn acpi_dma_controller_free(dev: *mut device) -> core::ffi::c_int;
+        data: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
+    pub fn acpi_dma_controller_free(dev: *mut device) -> kernel::ffi::c_int;
     pub fn devm_acpi_dma_controller_register(
         dev: *mut device,
         acpi_dma_xlate: Option<unsafe extern "C" fn(*mut acpi_dma_spec, *mut acpi_dma) -> *mut dma_chan>,
-        data: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        data: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
 
     pub fn acpi_dma_request_slave_chan_by_index(
         dev: *mut device,
@@ -60,7 +60,7 @@ extern "C" {
     ) -> *mut dma_chan;
     pub fn acpi_dma_request_slave_chan_by_name(
         dev: *mut device,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> *mut dma_chan;
 
     pub fn acpi_dma_simple_xlate(
@@ -73,13 +73,13 @@ extern "C" {
 pub unsafe fn acpi_dma_controller_register(
     _dev: *mut device,
     _acpi_dma_xlate: Option<unsafe extern "C" fn(*mut acpi_dma_spec, *mut acpi_dma) -> *mut dma_chan>,
-    _data: *mut core::ffi::c_void,
-) -> core::ffi::c_int {
+    _data: *mut kernel::ffi::c_void,
+) -> kernel::ffi::c_int {
     -ENODEV
 }
 
 #[cfg(not(CONFIG_DMA_ACPI))]
-pub unsafe fn acpi_dma_controller_free(_dev: *mut device) -> core::ffi::c_int {
+pub unsafe fn acpi_dma_controller_free(_dev: *mut device) -> kernel::ffi::c_int {
     -ENODEV
 }
 
@@ -87,8 +87,8 @@ pub unsafe fn acpi_dma_controller_free(_dev: *mut device) -> core::ffi::c_int {
 pub unsafe fn devm_acpi_dma_controller_register(
     _dev: *mut device,
     _acpi_dma_xlate: Option<unsafe extern "C" fn(*mut acpi_dma_spec, *mut acpi_dma) -> *mut dma_chan>,
-    _data: *mut core::ffi::c_void,
-) -> core::ffi::c_int {
+    _data: *mut kernel::ffi::c_void,
+) -> kernel::ffi::c_int {
     -ENODEV
 }
 
@@ -103,7 +103,7 @@ pub unsafe fn acpi_dma_request_slave_chan_by_index(
 #[cfg(not(CONFIG_DMA_ACPI))]
 pub unsafe fn acpi_dma_request_slave_chan_by_name(
     _dev: *mut device,
-    _name: *const core::ffi::c_char,
+    _name: *const kernel::ffi::c_char,
 ) -> *mut dma_chan {
     (-ENODEV as isize) as *mut dma_chan
 }

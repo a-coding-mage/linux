@@ -10,8 +10,8 @@
 
 #[repr(C)]
 struct R8a7778Rate {
-    plla_mult: ::core::ffi::c_ulong,
-    pllb_mult: ::core::ffi::c_ulong,
+    plla_mult: ::kernel::ffi::c_ulong,
+    pllb_mult: ::kernel::ffi::c_ulong,
 }
 
 /* PLL multipliers per bits 11, 12, and 18 of MODEMR */
@@ -28,7 +28,7 @@ static R8A7778_RATES: [R8a7778Rate; 8] = [
 
 #[repr(C)]
 struct R8a7778Div {
-    name: *const ::core::ffi::c_char,
+    name: *const ::kernel::ffi::c_char,
     div: [u32; 4],
 }
 
@@ -49,30 +49,30 @@ extern "C" {
     type DeviceNode;
     type Clk;
 
-    fn strcmp(a: *const ::core::ffi::c_char, b: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
-    fn of_clk_get_parent_name(np: *mut DeviceNode, index: u32) -> *const ::core::ffi::c_char;
+    fn strcmp(a: *const ::kernel::ffi::c_char, b: *const ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
+    fn of_clk_get_parent_name(np: *mut DeviceNode, index: u32) -> *const ::kernel::ffi::c_char;
     fn clk_register_fixed_factor(
-        dev: *mut ::core::ffi::c_void,
-        name: *const ::core::ffi::c_char,
-        parent_name: *const ::core::ffi::c_char,
+        dev: *mut ::kernel::ffi::c_void,
+        name: *const ::kernel::ffi::c_char,
+        parent_name: *const ::kernel::ffi::c_char,
         flags: u32,
-        mult: ::core::ffi::c_ulong,
-        div: ::core::ffi::c_ulong,
+        mult: ::kernel::ffi::c_ulong,
+        div: ::kernel::ffi::c_ulong,
     ) -> *mut Clk;
-    fn rcar_rst_read_mode_pins(mode: *mut u32) -> ::core::ffi::c_int;
-    fn of_property_count_strings(np: *mut DeviceNode, propname: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
+    fn rcar_rst_read_mode_pins(mode: *mut u32) -> ::kernel::ffi::c_int;
+    fn of_property_count_strings(np: *mut DeviceNode, propname: *const ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
     fn of_property_read_string_index(
         np: *mut DeviceNode,
-        propname: *const ::core::ffi::c_char,
+        propname: *const ::kernel::ffi::c_char,
         index: u32,
-        output: *mut *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
-    fn of_clk_add_provider(np: *mut DeviceNode, get: *const ::core::ffi::c_void, data: *mut ClkOnecellData) -> ::core::ffi::c_int;
+        output: *mut *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
+    fn of_clk_add_provider(np: *mut DeviceNode, get: *const ::kernel::ffi::c_void, data: *mut ClkOnecellData) -> ::kernel::ffi::c_int;
     fn cpg_mstp_add_clk_domain(np: *mut DeviceNode);
-    fn kzalloc(size: usize, flags: u32) -> *mut ::core::ffi::c_void;
+    fn kzalloc(size: usize, flags: u32) -> *mut ::kernel::ffi::c_void;
 }
 
-unsafe fn r8a7778_cpg_register_clock(np: *mut DeviceNode, name: *const ::core::ffi::c_char) -> *mut Clk {
+unsafe fn r8a7778_cpg_register_clock(np: *mut DeviceNode, name: *const ::kernel::ffi::c_char) -> *mut Clk {
     if strcmp(name, b"plla\0".as_ptr() as *const _) == 0 {
         return clk_register_fixed_factor(::core::ptr::null_mut(), b"plla\0".as_ptr() as *const _,
             of_clk_get_parent_name(np, 0), 0, R8A7778_RATES[CPG_MODE_RATES as usize].plla_mult, 1);
@@ -85,7 +85,7 @@ unsafe fn r8a7778_cpg_register_clock(np: *mut DeviceNode, name: *const ::core::f
             if !R8A7778_DIVS[i].name.is_null() && strcmp(name, R8A7778_DIVS[i].name) == 0 {
                 return clk_register_fixed_factor(::core::ptr::null_mut(), R8A7778_DIVS[i].name,
                     b"plla\0".as_ptr() as *const _, 0, 1,
-                    R8A7778_DIVS[i].div[CPG_MODE_DIVS as usize] as ::core::ffi::c_ulong);
+                    R8A7778_DIVS[i].div[CPG_MODE_DIVS as usize] as ::kernel::ffi::c_ulong);
             }
             i += 1;
         }
@@ -134,7 +134,7 @@ unsafe fn r8a7778_cpg_clocks_init(np: *mut DeviceNode) {
 
     let mut i = 0u32;
     while i < num_clks as u32 {
-        let mut name: *const ::core::ffi::c_char = ::core::ptr::null();
+        let mut name: *const ::kernel::ffi::c_char = ::core::ptr::null();
         of_property_read_string_index(np, b"clock-output-names\0".as_ptr() as *const _, i, &mut name);
 
         let clk = r8a7778_cpg_register_clock(np, name);

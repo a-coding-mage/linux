@@ -7,9 +7,9 @@
 
 #[cfg(CONFIG_ALPHA_BROKEN_IRQ_MASK)]
 #[no_mangle]
-pub static mut __min_ipl: ::core::ffi::c_int = 0;
+pub static mut __min_ipl: ::kernel::ffi::c_int = 0;
 
-unsafe fn dummy_perf(vector: ::core::ffi::c_ulong, regs: *mut pt_regs) {
+unsafe fn dummy_perf(vector: ::kernel::ffi::c_ulong, regs: *mut pt_regs) {
     let _ = vector;
     let _ = regs;
     irq_err_count += 1;
@@ -17,13 +17,13 @@ unsafe fn dummy_perf(vector: ::core::ffi::c_ulong, regs: *mut pt_regs) {
 }
 
 #[no_mangle]
-pub static mut perf_irq: unsafe fn(::core::ffi::c_ulong, *mut pt_regs) = dummy_perf;
+pub static mut perf_irq: unsafe fn(::kernel::ffi::c_ulong, *mut pt_regs) = dummy_perf;
 
 #[no_mangle]
 pub unsafe extern "C" fn do_entInt(
-    type_: ::core::ffi::c_ulong,
-    vector: ::core::ffi::c_ulong,
-    la_ptr: ::core::ffi::c_ulong,
+    type_: ::kernel::ffi::c_ulong,
+    vector: ::kernel::ffi::c_ulong,
+    la_ptr: ::kernel::ffi::c_ulong,
     regs: *mut pt_regs,
 ) {
     let old_regs: *mut pt_regs;
@@ -77,7 +77,7 @@ pub unsafe extern "C" fn do_entInt(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn lockdep_on_restore(ps: ::core::ffi::c_ulong, ip: ::core::ffi::c_ulong) {
+pub unsafe extern "C" fn lockdep_on_restore(ps: ::kernel::ffi::c_ulong, ip: ::kernel::ffi::c_ulong) {
     #[cfg(CONFIG_PROVE_LOCKING)]
     {
         if (ps & 7) == 7 {
@@ -108,26 +108,26 @@ pub unsafe extern "C" fn init_IRQ() {
     alpha_mv.init_irq();
 }
 
-pub const MCHK_K_TPERR: ::core::ffi::c_int = 0x0080;
-pub const MCHK_K_TCPERR: ::core::ffi::c_int = 0x0082;
-pub const MCHK_K_HERR: ::core::ffi::c_int = 0x0084;
-pub const MCHK_K_ECC_C: ::core::ffi::c_int = 0x0086;
-pub const MCHK_K_ECC_NC: ::core::ffi::c_int = 0x0088;
-pub const MCHK_K_OS_BUGCHECK: ::core::ffi::c_int = 0x008A;
-pub const MCHK_K_PAL_BUGCHECK: ::core::ffi::c_int = 0x0090;
+pub const MCHK_K_TPERR: ::kernel::ffi::c_int = 0x0080;
+pub const MCHK_K_TCPERR: ::kernel::ffi::c_int = 0x0082;
+pub const MCHK_K_HERR: ::kernel::ffi::c_int = 0x0084;
+pub const MCHK_K_ECC_C: ::kernel::ffi::c_int = 0x0086;
+pub const MCHK_K_ECC_NC: ::kernel::ffi::c_int = 0x0088;
+pub const MCHK_K_OS_BUGCHECK: ::kernel::ffi::c_int = 0x008A;
+pub const MCHK_K_PAL_BUGCHECK: ::kernel::ffi::c_int = 0x0090;
 
 #[cfg(not(CONFIG_SMP))]
 pub static mut __mcheck_info: mcheck_info = mcheck_info::zeroed();
 
 #[no_mangle]
 pub unsafe extern "C" fn process_mcheck_info(
-    vector: ::core::ffi::c_ulong,
-    la_ptr: ::core::ffi::c_ulong,
-    machine: *const ::core::ffi::c_char,
-    expected: ::core::ffi::c_int,
+    vector: ::kernel::ffi::c_ulong,
+    la_ptr: ::kernel::ffi::c_ulong,
+    machine: *const ::kernel::ffi::c_char,
+    expected: ::kernel::ffi::c_int,
 ) {
     let mchk_header = la_ptr as *mut el_common;
-    let reason: *const ::core::ffi::c_char;
+    let reason: *const ::kernel::ffi::c_char;
 
     #[cfg(CONFIG_VERBOSE_MCHECK)]
     if alpha_verbose_mcheck > 1 {
@@ -176,7 +176,7 @@ pub unsafe extern "C" fn process_mcheck_info(
         0x21f => "EISA software generated NMI\0",
         0x221 => "unexpected ev5 IRQ[3] interrupt\0",
         _ => "unknown\0",
-    }.as_ptr() as *const ::core::ffi::c_char;
+    }.as_ptr() as *const ::kernel::ffi::c_char;
 
     printk(KERN_CRIT, "machine check type: %s%s\n", reason,
            if (*mchk_header).retry != 0 { " (retryable)" } else { "" });
@@ -184,10 +184,10 @@ pub unsafe extern "C" fn process_mcheck_info(
 
     #[cfg(CONFIG_VERBOSE_MCHECK)]
     if alpha_verbose_mcheck > 1 {
-        let ptr = la_ptr as *const ::core::ffi::c_ulong;
+        let ptr = la_ptr as *const ::kernel::ffi::c_ulong;
         let mut i = 0;
-        while i < (*mchk_header).size / core::mem::size_of::<::core::ffi::c_long>() {
-            printk(KERN_CRIT, "   +%8lx %016lx %016lx\n", i * core::mem::size_of::<::core::ffi::c_long>(), *ptr.add(i), *ptr.add(i + 1));
+        while i < (*mchk_header).size / core::mem::size_of::<::kernel::ffi::c_long>() {
+            printk(KERN_CRIT, "   +%8lx %016lx %016lx\n", i * core::mem::size_of::<::kernel::ffi::c_long>(), *ptr.add(i), *ptr.add(i + 1));
             i += 2;
         }
     }

@@ -103,9 +103,9 @@ pub const EXT4_FC_REASON_MAX: usize = 13;
 #[cfg(feature = "__KERNEL__")]
 #[repr(C)]
 pub struct ext4_fc_dentry_update {
-    pub fcd_op: core::ffi::c_int,
-    pub fcd_parent: core::ffi::c_int,
-    pub fcd_ino: core::ffi::c_int,
+    pub fcd_op: kernel::ffi::c_int,
+    pub fcd_parent: kernel::ffi::c_int,
+    pub fcd_ino: kernel::ffi::c_int,
     pub fcd_name: name_snapshot,
     pub fcd_list: list_head,
     pub fcd_dilist: list_head,
@@ -114,12 +114,12 @@ pub struct ext4_fc_dentry_update {
 #[cfg(feature = "__KERNEL__")]
 #[repr(C)]
 pub struct ext4_fc_stats {
-    pub fc_ineligible_reason_count: [core::ffi::c_uint; EXT4_FC_REASON_MAX],
-    pub fc_num_commits: core::ffi::c_ulong,
-    pub fc_ineligible_commits: core::ffi::c_ulong,
-    pub fc_failed_commits: core::ffi::c_ulong,
-    pub fc_skipped_commits: core::ffi::c_ulong,
-    pub fc_numblks: core::ffi::c_ulong,
+    pub fc_ineligible_reason_count: [kernel::ffi::c_uint; EXT4_FC_REASON_MAX],
+    pub fc_num_commits: kernel::ffi::c_ulong,
+    pub fc_ineligible_commits: kernel::ffi::c_ulong,
+    pub fc_failed_commits: kernel::ffi::c_ulong,
+    pub fc_skipped_commits: kernel::ffi::c_ulong,
+    pub fc_numblks: kernel::ffi::c_ulong,
     pub s_fc_avg_commit_time: u64,
 }
 
@@ -131,25 +131,25 @@ pub const EXT4_FC_REPLAY_REALLOC_INCREMENT: i32 = 4;
 pub struct ext4_fc_alloc_region {
     pub lblk: ext4_lblk_t,
     pub pblk: ext4_fsblk_t,
-    pub ino: core::ffi::c_int,
-    pub len: core::ffi::c_int,
+    pub ino: kernel::ffi::c_int,
+    pub len: kernel::ffi::c_int,
 }
 
 #[cfg(feature = "__KERNEL__")]
 #[repr(C)]
 pub struct ext4_fc_replay_state {
-    pub fc_replay_num_tags: core::ffi::c_int,
-    pub fc_replay_expected_off: core::ffi::c_int,
-    pub fc_current_pass: core::ffi::c_int,
-    pub fc_cur_tag: core::ffi::c_int,
-    pub fc_crc: core::ffi::c_int,
+    pub fc_replay_num_tags: kernel::ffi::c_int,
+    pub fc_replay_expected_off: kernel::ffi::c_int,
+    pub fc_current_pass: kernel::ffi::c_int,
+    pub fc_cur_tag: kernel::ffi::c_int,
+    pub fc_crc: kernel::ffi::c_int,
     pub fc_regions: *mut ext4_fc_alloc_region,
-    pub fc_regions_size: core::ffi::c_int,
-    pub fc_regions_used: core::ffi::c_int,
-    pub fc_regions_valid: core::ffi::c_int,
-    pub fc_modified_inodes: *mut core::ffi::c_int,
-    pub fc_modified_inodes_used: core::ffi::c_int,
-    pub fc_modified_inodes_size: core::ffi::c_int,
+    pub fc_regions_size: kernel::ffi::c_int,
+    pub fc_regions_used: kernel::ffi::c_int,
+    pub fc_regions_valid: kernel::ffi::c_int,
+    pub fc_modified_inodes: *mut kernel::ffi::c_int,
+    pub fc_modified_inodes_used: kernel::ffi::c_int,
+    pub fc_modified_inodes_size: kernel::ffi::c_int,
 }
 
 #[cfg(feature = "__KERNEL__")]

@@ -31,11 +31,11 @@ pub struct ieee802154_llsec_key;
 
 #[repr(C)]
 pub struct cfg802154_ops {
-    pub add_virtual_intf_deprecated: Option<unsafe extern "C" fn(*mut wpan_phy, *const core::ffi::c_char, u8, i32) -> *mut net_device>,
+    pub add_virtual_intf_deprecated: Option<unsafe extern "C" fn(*mut wpan_phy, *const kernel::ffi::c_char, u8, i32) -> *mut net_device>,
     pub del_virtual_intf_deprecated: Option<unsafe extern "C" fn(*mut wpan_phy, *mut net_device)>,
     pub suspend: Option<unsafe extern "C" fn(*mut wpan_phy) -> i32>,
     pub resume: Option<unsafe extern "C" fn(*mut wpan_phy) -> i32>,
-    pub add_virtual_intf: Option<unsafe extern "C" fn(*mut wpan_phy, *const core::ffi::c_char, u8, nl802154_iftype, __le64) -> i32>,
+    pub add_virtual_intf: Option<unsafe extern "C" fn(*mut wpan_phy, *const kernel::ffi::c_char, u8, nl802154_iftype, __le64) -> i32>,
     pub del_virtual_intf: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev) -> i32>,
     pub set_channel: Option<unsafe extern "C" fn(*mut wpan_phy, u8, u8) -> i32>,
     pub set_cca_mode: Option<unsafe extern "C" fn(*mut wpan_phy, *const wpan_phy_cca) -> i32>,
@@ -133,7 +133,7 @@ pub enum wpan_phy_flags {
 
 #[repr(C)]
 pub struct wpan_phy {
-    pub privid: *const core::ffi::c_void,
+    pub privid: *const kernel::ffi::c_void,
     pub flags: c_ulong,
     pub current_channel: u8,
     pub current_page: u8,
@@ -166,13 +166,13 @@ pub unsafe fn ieee802154_chan_is_valid(phy: *const wpan_phy, page: u8, channel: 
 
 pub unsafe fn wpan_phy_set_dev(phy: *mut wpan_phy, dev: *mut device) { (*phy).dev.parent = dev; }
 
-pub unsafe fn wpan_phy_priv(phy: *mut wpan_phy) -> *mut core::ffi::c_void {
+pub unsafe fn wpan_phy_priv(phy: *mut wpan_phy) -> *mut kernel::ffi::c_void {
     // BUG_ON(!phy)
-    &mut (*phy).priv_ as *mut [u8; 0] as *mut core::ffi::c_void
+    &mut (*phy).priv_ as *mut [u8; 0] as *mut kernel::ffi::c_void
 }
 
 pub unsafe fn wpan_phy_put(phy: *mut wpan_phy) { put_device(&mut (*phy).dev); }
-pub unsafe fn wpan_phy_name(phy: *mut wpan_phy) -> *const core::ffi::c_char { dev_name(&(*phy).dev) }
+pub unsafe fn wpan_phy_name(phy: *mut wpan_phy) -> *const kernel::ffi::c_char { dev_name(&(*phy).dev) }
 
 #[repr(C)]
 pub union ieee802154_addr_union { pub short_addr: __le16, pub extended_addr: __le64 }
@@ -233,8 +233,8 @@ extern "C" {
     pub fn wpan_phy_register(phy: *mut wpan_phy) -> i32;
     pub fn wpan_phy_unregister(phy: *mut wpan_phy);
     pub fn wpan_phy_free(phy: *mut wpan_phy);
-    pub fn wpan_phy_for_each(fn_: Option<unsafe extern "C" fn(*mut wpan_phy, *mut core::ffi::c_void) -> i32>, data: *mut core::ffi::c_void) -> i32;
-    pub fn wpan_phy_find(str_: *const core::ffi::c_char) -> *mut wpan_phy;
+    pub fn wpan_phy_for_each(fn_: Option<unsafe extern "C" fn(*mut wpan_phy, *mut kernel::ffi::c_void) -> i32>, data: *mut kernel::ffi::c_void) -> i32;
+    pub fn wpan_phy_find(str_: *const kernel::ffi::c_char) -> *mut wpan_phy;
     pub fn ieee802154_configure_durations(phy: *mut wpan_phy, page: c_uint, channel: c_uint);
     pub fn cfg802154_device_is_associated(wpan_dev: *mut wpan_dev) -> bool;
     pub fn cfg802154_device_is_parent(wpan_dev: *mut wpan_dev, target: *mut ieee802154_addr) -> bool;
@@ -242,7 +242,7 @@ extern "C" {
     pub fn cfg802154_set_max_associations(wpan_dev: *mut wpan_dev, max: c_uint) -> c_uint;
     pub fn cfg802154_get_free_short_addr(wpan_dev: *mut wpan_dev) -> __le16;
     pub fn put_device(dev: *mut device);
-    pub fn dev_name(dev: *const device) -> *const core::ffi::c_char;
+    pub fn dev_name(dev: *const device) -> *const kernel::ffi::c_char;
     pub fn read_pnet(net: *const possible_net_t) -> *mut net;
     pub fn write_pnet(net: *mut possible_net_t, value: *mut net);
 }

@@ -3,30 +3,30 @@
 // Dependencies supplied by the surrounding kernel translation.
 
 unsafe extern "C" {
-    fn relocate_new_kernel(head: ::core::ffi::c_ulong,
-                           start: ::core::ffi::c_ulong,
-                           phys: ::core::ffi::c_ulong);
+    fn relocate_new_kernel(head: ::kernel::ffi::c_ulong,
+                           start: ::kernel::ffi::c_ulong,
+                           phys: ::kernel::ffi::c_ulong);
 
-    static relocate_new_kernel_size: ::core::ffi::c_uint;
-    static mut kexec_initrd_start_offset: ::core::ffi::c_uint;
-    static mut kexec_initrd_end_offset: ::core::ffi::c_uint;
-    static mut kexec_cmdline_offset: ::core::ffi::c_uint;
-    static mut kexec_free_mem_offset: ::core::ffi::c_uint;
+    static relocate_new_kernel_size: ::kernel::ffi::c_uint;
+    static mut kexec_initrd_start_offset: ::kernel::ffi::c_uint;
+    static mut kexec_initrd_end_offset: ::kernel::ffi::c_uint;
+    static mut kexec_cmdline_offset: ::kernel::ffi::c_uint;
+    static mut kexec_free_mem_offset: ::kernel::ffi::c_uint;
 }
 
-unsafe fn kexec_show_segment_info(kimage: *const kimage, n: ::core::ffi::c_ulong) {
+unsafe fn kexec_show_segment_info(kimage: *const kimage, n: ::kernel::ffi::c_ulong) {
     pr_debug!(
         "    segment[%lu]: %016lx - %016lx, 0x%lx bytes, %lu pages\n",
         n,
         (*kimage).segment[n as usize].mem,
         (*kimage).segment[n as usize].mem + (*kimage).segment[n as usize].memsz,
-        (*kimage).segment[n as usize].memsz as ::core::ffi::c_ulong,
-        (*kimage).segment[n as usize].memsz as ::core::ffi::c_ulong / PAGE_SIZE,
+        (*kimage).segment[n as usize].memsz as ::kernel::ffi::c_ulong,
+        (*kimage).segment[n as usize].memsz as ::kernel::ffi::c_ulong / PAGE_SIZE,
     );
 }
 
 unsafe fn kexec_image_info(kimage: *const kimage) {
-    let mut i: ::core::ffi::c_ulong = 0;
+    let mut i: ::kernel::ffi::c_ulong = 0;
 
     pr_debug!("kexec kimage info:\n");
     pr_debug!("  type:        %d\n", (*kimage).type_);
@@ -44,7 +44,7 @@ unsafe fn kexec_image_info(kimage: *const kimage) {
     if (*kimage).file_mode {
         pr_debug!(
             "cmdline: %.*s\n",
-            (*kimage).cmdline_buf_len as ::core::ffi::c_int,
+            (*kimage).cmdline_buf_len as ::kernel::ffi::c_int,
             (*kimage).cmdline_buf,
         );
     }
@@ -71,12 +71,12 @@ pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
     #[cfg(CONFIG_64BIT)]
     let mut desc: Elf64_Fdesc = ::core::mem::zeroed();
 
-    let reloc: unsafe extern "C" fn(::core::ffi::c_ulong,
-                                     ::core::ffi::c_ulong,
-                                     ::core::ffi::c_ulong);
+    let reloc: unsafe extern "C" fn(::kernel::ffi::c_ulong,
+                                     ::kernel::ffi::c_ulong,
+                                     ::kernel::ffi::c_ulong);
 
     let phys = page_to_phys((*image).control_code_page);
-    let virt = __fix_to_virt(FIX_TEXT_KEXEC) as *mut ::core::ffi::c_void;
+    let virt = __fix_to_virt(FIX_TEXT_KEXEC) as *mut ::kernel::ffi::c_void;
     let arch: *mut kimage_arch = &mut (*image).arch;
 
     set_fixmap(FIX_TEXT_KEXEC, phys);
@@ -87,7 +87,7 @@ pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
     #[cfg(CONFIG_64BIT)]
     {
         reloc = ::core::mem::transmute(&desc);
-        desc.addr = virt as ::core::ffi::c_longlong;
+        desc.addr = virt as ::kernel::ffi::c_longlong;
     }
     // #else
     #[cfg(not(CONFIG_64BIT))]
@@ -97,14 +97,14 @@ pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
 
     memcpy(
         virt,
-        dereference_function_descriptor(relocate_new_kernel as *const ::core::ffi::c_void),
+        dereference_function_descriptor(relocate_new_kernel as *const ::kernel::ffi::c_void),
         relocate_new_kernel_size as usize,
     );
 
-    *((virt as *mut u8).add(kexec_cmdline_offset as usize) as *mut ::core::ffi::c_ulong) = (*arch).cmdline;
-    *((virt as *mut u8).add(kexec_initrd_start_offset as usize) as *mut ::core::ffi::c_ulong) = (*arch).initrd_start;
-    *((virt as *mut u8).add(kexec_initrd_end_offset as usize) as *mut ::core::ffi::c_ulong) = (*arch).initrd_end;
-    *((virt as *mut u8).add(kexec_free_mem_offset as usize) as *mut ::core::ffi::c_ulong) = PAGE0.mem_free;
+    *((virt as *mut u8).add(kexec_cmdline_offset as usize) as *mut ::kernel::ffi::c_ulong) = (*arch).cmdline;
+    *((virt as *mut u8).add(kexec_initrd_start_offset as usize) as *mut ::kernel::ffi::c_ulong) = (*arch).initrd_start;
+    *((virt as *mut u8).add(kexec_initrd_end_offset as usize) as *mut ::kernel::ffi::c_ulong) = (*arch).initrd_end;
+    *((virt as *mut u8).add(kexec_free_mem_offset as usize) as *mut ::kernel::ffi::c_ulong) = PAGE0.mem_free;
 
     flush_cache_all();
     flush_tlb_all();
@@ -114,7 +114,7 @@ pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn machine_kexec_prepare(image: *mut kimage) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn machine_kexec_prepare(image: *mut kimage) -> ::kernel::ffi::c_int {
     kexec_image_info(image);
     0
 }

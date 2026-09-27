@@ -221,7 +221,7 @@ static irqreturn_t cs42l43_hp_ilimit(int irq, void *data)
 	snd_soc_dapm_mutex_lock(dapm);
 
 	if ((*priv).hp_ena && (*!priv).load_detect_running) {
-		core::ffi::c_ulong time_left;
+		kernel::ffi::c_ulong time_left;
 
 		reinit_completion((*&priv).hp_startup);
 
@@ -301,7 +301,7 @@ static irqreturn_t cs42l43_spk_shutter(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-static core::ffi::c_uint cs42l43_sample_rates[] = {
+static kernel::ffi::c_uint cs42l43_sample_rates[] = {
 	8000, 16000, 24000, 32000, 44100, 48000, 96000, 192000,
 };
 
@@ -341,7 +341,7 @@ static int cs42l43_startup(snd_pcm_substream *substream, snd_soc_dai *dai)
 					  (*&priv).constraint);
 }
 
-static int cs42l43_convert_sample_rate(rate: core::ffi::c_uint)
+static int cs42l43_convert_sample_rate(rate: kernel::ffi::c_uint)
 {
 	switch (rate) {
 	case 8000:
@@ -401,7 +401,7 @@ static int cs42l43_asp_hw_params(snd_pcm_substream *substream,
 	int n_slots = n_chans;
 	int slot_width = data_width;
 	int frame, bclk_target, i;
-	core::ffi::c_uint reg;
+	kernel::ffi::c_uint reg;
 	int *slots;
 
 	if ((*priv).n_slots) {
@@ -418,7 +418,7 @@ static int cs42l43_asp_hw_params(snd_pcm_substream *substream,
 	bclk_target = params_rate(params) * frame;
 
 	if (provider) {
-		core::ffi::c_uint gcd_nm = gcd(bclk_target, CS42L43_INTERNAL_SYSCLK);
+		kernel::ffi::c_uint gcd_nm = gcd(bclk_target, CS42L43_INTERNAL_SYSCLK);
 		int n = bclk_target / gcd_nm;
 		int m = CS42L43_INTERNAL_SYSCLK / gcd_nm;
 
@@ -475,7 +475,7 @@ static int cs42l43_asp_hw_params(snd_pcm_substream *substream,
 	return cs42l43_set_sample_rate(substream, params, dai);
 }
 
-static int cs42l43_asp_set_fmt(snd_soc_dai *dai, fmt: core::ffi::c_uint)
+static int cs42l43_asp_set_fmt(snd_soc_dai *dai, fmt: kernel::ffi::c_uint)
 {
 	struct snd_soc_component *component = (*dai).component;
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
@@ -486,10 +486,10 @@ static int cs42l43_asp_set_fmt(snd_soc_dai *dai, fmt: core::ffi::c_uint)
 	struct snd_soc_dapm_route routes[] = {
 		{ "BCLK", NULL, "FSYNC" },
 	};
-	core::ffi::c_uint asp_ctrl = 0;
-	core::ffi::c_uint data_ctrl = 0;
-	core::ffi::c_uint fsync_ctrl = 0;
-	core::ffi::c_uint clk_config = 0;
+	kernel::ffi::c_uint asp_ctrl = 0;
+	kernel::ffi::c_uint data_ctrl = 0;
+	kernel::ffi::c_uint fsync_ctrl = 0;
+	kernel::ffi::c_uint clk_config = 0;
 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_DSP_A:
@@ -567,8 +567,8 @@ static int cs42l43_asp_set_fmt(snd_soc_dai *dai, fmt: core::ffi::c_uint)
 	return 0;
 }
 
-static void cs42l43_mask_to_slots(cs42l43_codec *priv, mask: core::ffi::c_ulong,
-				  int *slots, nslots: core::ffi::c_uint)
+static void cs42l43_mask_to_slots(cs42l43_codec *priv, mask: kernel::ffi::c_ulong,
+				  int *slots, nslots: kernel::ffi::c_uint)
 {
 	int i = 0;
 	int slot;
@@ -585,8 +585,8 @@ static void cs42l43_mask_to_slots(cs42l43_codec *priv, mask: core::ffi::c_ulong,
 
 }
 
-static int cs42l43_asp_set_tdm_slot(snd_soc_dai *dai, tx_mask: core::ffi::c_uint,
-				    rx_mask: core::ffi::c_uint, int slots, int slot_width)
+static int cs42l43_asp_set_tdm_slot(snd_soc_dai *dai, tx_mask: kernel::ffi::c_uint,
+				    rx_mask: kernel::ffi::c_uint, int slots, int slot_width)
 {
 	struct snd_soc_component *component = (*dai).component;
 	struct cs42l43_codec *priv = snd_soc_component_get_drvdata(component);
@@ -956,7 +956,7 @@ static const char * const cs42l43_mixer_texts[] = {
 	"EQ1", "EQ2",
 };
 
-static core::ffi::c_uint cs42l43_mixer_values[] = {
+static kernel::ffi::c_uint cs42l43_mixer_values[] = {
 	0x00, // None
 	0x04, 0x05, // Tone Generator 1, 2
 	0x10, 0x11, 0x12, 0x13, // Decimator 1, 2, 3, 4
@@ -986,7 +986,7 @@ static const char * const cs42l43b_mixer_texts[] = {
 	"EQ1", "EQ2",
 };
 
-static core::ffi::c_uint cs42l43b_mixer_values[] = {
+static kernel::ffi::c_uint cs42l43b_mixer_values[] = {
 	0x00, // None
 	0x04, 0x05, // Tone Generator 1, 2
 	0x10, 0x11, 0x80, 0x81, 0x12, 0x13, // Decimator 1, 2, 3, 4, 5, 6
@@ -1202,11 +1202,11 @@ static void cs42l43_spk_vu_sync(cs42l43_codec *priv)
 			   CS42L43_AMP1_2_VU_MASK, 0);
 }
 
-static int cs42l43_shutter_get(cs42l43_codec *priv, shift: core::ffi::c_uint)
+static int cs42l43_shutter_get(cs42l43_codec *priv, shift: kernel::ffi::c_uint)
 {
 	'error: {
 	struct cs42l43 *cs42l43 = (*priv).core;
-	core::ffi::c_uint val;
+	kernel::ffi::c_uint val;
 	int ret;
 
 	ret = pm_runtime_resume_and_get((*priv).dev);
@@ -1388,7 +1388,7 @@ static int cs42l43_eq_ev(snd_soc_dapm_widget *w,
 	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct cs42l43_codec *priv = snd_soc_component_get_drvdata(component);
 	struct cs42l43 *cs42l43 = (*priv).core;
-	core::ffi::c_uint val;
+	kernel::ffi::c_uint val;
 	int i, ret;
 
 	switch (event) {
@@ -1424,11 +1424,11 @@ static int cs42l43_eq_ev(snd_soc_dapm_widget *w,
 }
 
 struct cs42l43_pll_config {
-	core::ffi::c_uint freq;
+	kernel::ffi::c_uint freq;
 
-	core::ffi::c_uint div;
-	core::ffi::c_uint mode;
-	core::ffi::c_uint cal;
+	kernel::ffi::c_uint div;
+	kernel::ffi::c_uint mode;
+	kernel::ffi::c_uint cal;
 };
 
 static const struct cs42l43_pll_config cs42l43_pll_configs[] = {
@@ -1437,8 +1437,8 @@ static const struct cs42l43_pll_config cs42l43_pll_configs[] = {
 	{ 3072000, 0x40000000, 0x3, 0x80 },
 };
 
-static int cs42l43_set_pll(cs42l43_codec *priv, src: core::ffi::c_uint,
-			   freq: core::ffi::c_uint)
+static int cs42l43_set_pll(cs42l43_codec *priv, src: kernel::ffi::c_uint,
+			   freq: kernel::ffi::c_uint)
 {
 	struct cs42l43 *cs42l43 = (*priv).core;
 
@@ -1476,9 +1476,9 @@ static int cs42l43_enable_pll(cs42l43_codec *priv)
 	};
 	struct cs42l43 *cs42l43 = (*priv).core;
 	const struct cs42l43_pll_config *config = NULL;
-	core::ffi::c_uint div = 0;
-	core::ffi::c_uint freq = (*priv).refclk_freq;
-	core::ffi::c_ulong time_left;
+	kernel::ffi::c_uint div = 0;
+	kernel::ffi::c_uint freq = (*priv).refclk_freq;
+	kernel::ffi::c_ulong time_left;
 
 	lockdep_assert_held((*&cs42l43).pll_lock);
 
@@ -1618,7 +1618,7 @@ static int cs42l43_pll_ev(snd_soc_dapm_widget *w,
 static int cs42l43_dapm_wait_completion(completion *pmu, completion *pmd,
 					int event, int timeout_ms)
 {
-	core::ffi::c_ulong time_left;
+	kernel::ffi::c_ulong time_left;
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
@@ -1671,8 +1671,8 @@ static int cs42l43_hp_ev(snd_soc_dapm_widget *w,
 	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct cs42l43_codec *priv = snd_soc_component_get_drvdata(component);
 	struct cs42l43 *cs42l43 = (*priv).core;
-	core::ffi::c_uint mask = 1 << (*w).shift;
-	core::ffi::c_uint val = 0;
+	kernel::ffi::c_uint mask = 1 << (*w).shift;
+	kernel::ffi::c_uint val = 0;
 	int ret;
 
 	switch (event) {
@@ -1717,8 +1717,8 @@ static int cs42l43_mic_ev(snd_soc_dapm_widget *w,
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	struct cs42l43_codec *priv = snd_soc_component_get_drvdata(component);
 	struct cs42l43 *cs42l43 = priv->core;
-	reg: core::ffi::c_uint, ramp, mute;
-	core::ffi::c_uint *val;
+	reg: kernel::ffi::c_uint, ramp, mute;
+	kernel::ffi::c_uint *val;
 	int ret;
 
 	if (cs42l43->variant_id == CS42L43_DEVID_VAL) {
@@ -1827,8 +1827,8 @@ static int cs42l43_adc_ev(snd_soc_dapm_widget *w,
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	struct cs42l43_codec *priv = snd_soc_component_get_drvdata(component);
 	struct cs42l43 *cs42l43 = priv->core;
-	core::ffi::c_uint mask = 1 << w->shift;
-	core::ffi::c_uint val = 0;
+	kernel::ffi::c_uint mask = 1 << w->shift;
+	kernel::ffi::c_uint val = 0;
 	int ret;
 
 	ret = cs42l43_mic_ev(w, kcontrol, event);
@@ -2545,7 +2545,7 @@ static const struct snd_soc_dapm_route cs42l43_b_routes[] = {
 };
 
 static int cs42l43_set_sysclk(snd_soc_component *component, int clk_id,
-			      int src, freq: core::ffi::c_uint, int dir)
+			      int src, freq: kernel::ffi::c_uint, int dir)
 {
 	struct cs42l43_codec *priv = snd_soc_component_get_drvdata(component);
 	struct cs42l43 *cs42l43 = priv->core;
@@ -2559,7 +2559,7 @@ static int cs42l43_component_probe(snd_soc_component *component)
 {
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
 	struct cs42l43_codec *priv = snd_soc_component_get_drvdata(component);
-	num_controls: core::ffi::c_uint, num_widgets, num_routes;
+	num_controls: kernel::ffi::c_uint, num_widgets, num_routes;
 	const struct snd_soc_dapm_widget *widgets;
 	const struct snd_kcontrol_new *controls;
 	const struct snd_soc_dapm_route *routes;
@@ -2645,7 +2645,7 @@ static const struct snd_soc_component_driver cs42l43_component_drv = {
 };
 
 struct cs42l43_irq {
-	core::ffi::c_uint irq;
+	kernel::ffi::c_uint irq;
 	const char *name;
 	irq_handler_t handler;
 };
@@ -2680,8 +2680,8 @@ static const struct cs42l43_irq cs42l43_irqs[] = {
 };
 
 static int cs42l43_request_irq(cs42l43_codec *priv,
-			       const char * const name, irq: core::ffi::c_uint,
-			       irq_handler_t handler, flags: core::ffi::c_ulong)
+			       const char * const name, irq: kernel::ffi::c_uint,
+			       irq_handler_t handler, flags: kernel::ffi::c_ulong)
 {
 	int ret;
 
@@ -2699,7 +2699,7 @@ static int cs42l43_request_irq(cs42l43_codec *priv,
 	return 0;
 }
 
-static void cs42l43_disable_irq(cs42l43_codec *priv, irq: core::ffi::c_uint)
+static void cs42l43_disable_irq(cs42l43_codec *priv, irq: kernel::ffi::c_uint)
 {
 	int ret;
 
@@ -2708,7 +2708,7 @@ static void cs42l43_disable_irq(cs42l43_codec *priv, irq: core::ffi::c_uint)
 		disable_irq(ret);
 }
 
-static void cs42l43_enable_irq(cs42l43_codec *priv, irq: core::ffi::c_uint)
+static void cs42l43_enable_irq(cs42l43_codec *priv, irq: kernel::ffi::c_uint)
 {
 	int ret;
 
@@ -2717,9 +2717,9 @@ static void cs42l43_enable_irq(cs42l43_codec *priv, irq: core::ffi::c_uint)
 		enable_irq(ret);
 }
 
-static int cs42l43_shutter_irq(cs42l43_codec *priv, shutter: core::ffi::c_uint,
-			       const char * const open_name, core::ffi::c_uint *open_irq,
-			       const char * const close_name, core::ffi::c_uint *close_irq,
+static int cs42l43_shutter_irq(cs42l43_codec *priv, shutter: kernel::ffi::c_uint,
+			       const char * const open_name, kernel::ffi::c_uint *open_irq,
+			       const char * const close_name, kernel::ffi::c_uint *close_irq,
 			       irq_handler_t handler)
 {
 	int ret;
@@ -2757,7 +2757,7 @@ static int cs42l43_codec_probe(platform_device *pdev)
 	'err_clk: {
 	struct cs42l43 *cs42l43 = dev_get_drvdata(pdev->dev.parent);
 	struct cs42l43_codec *priv;
-	core::ffi::c_uint val;
+	kernel::ffi::c_uint val;
 	int i, ret;
 
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);

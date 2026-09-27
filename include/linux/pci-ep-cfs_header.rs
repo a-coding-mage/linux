@@ -7,7 +7,7 @@
  */
 
 // Original dependency: <linux/configfs.h>
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Opaque type supplied by the configfs dependency.
 #[repr(C)]

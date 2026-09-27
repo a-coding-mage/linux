@@ -10,32 +10,32 @@ pub const IORING_OFF_ZCRX_SHIFT: u32 = 16;
 
 extern "C" {
     pub fn io_pin_pages(
-        uaddr: ::core::ffi::c_ulong,
-        len: ::core::ffi::c_ulong,
-        npages: *mut ::core::ffi::c_int,
+        uaddr: ::kernel::ffi::c_ulong,
+        len: ::kernel::ffi::c_ulong,
+        npages: *mut ::kernel::ffi::c_int,
     ) -> *mut *mut page;
 
     // CONFIG_MMU is a build-time condition from the C header.
     #[cfg(not(CONFIG_MMU))]
-    pub fn io_uring_nommu_mmap_capabilities(file: *mut file) -> ::core::ffi::c_uint;
+    pub fn io_uring_nommu_mmap_capabilities(file: *mut file) -> ::kernel::ffi::c_uint;
 
     pub fn io_uring_get_unmapped_area(
         file: *mut file,
-        addr: ::core::ffi::c_ulong,
-        len: ::core::ffi::c_ulong,
-        pgoff: ::core::ffi::c_ulong,
-        flags: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_ulong;
+        addr: ::kernel::ffi::c_ulong,
+        len: ::kernel::ffi::c_ulong,
+        pgoff: ::kernel::ffi::c_ulong,
+        flags: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_ulong;
 
-    pub fn io_uring_mmap(file: *mut file, vma: *mut vm_area_struct) -> ::core::ffi::c_int;
+    pub fn io_uring_mmap(file: *mut file, vma: *mut vm_area_struct) -> ::kernel::ffi::c_int;
 
     pub fn io_free_region(user: *mut user_struct, mr: *mut io_mapped_region);
     pub fn io_create_region(
         ctx: *mut io_ring_ctx,
         mr: *mut io_mapped_region,
         reg: *mut io_uring_region_desc,
-        mmap_offset: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        mmap_offset: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // Opaque types supplied by other headers.
@@ -46,13 +46,13 @@ pub enum user_struct {}
 pub enum io_ring_ctx {}
 #[repr(C)]
 pub struct io_mapped_region {
-    pub ptr: *mut ::core::ffi::c_void,
-    pub nr_pages: ::core::ffi::c_ulong,
+    pub ptr: *mut ::kernel::ffi::c_void,
+    pub nr_pages: ::kernel::ffi::c_ulong,
 }
 pub enum io_uring_region_desc {}
 
 #[inline]
-pub unsafe fn io_region_get_ptr(mr: *mut io_mapped_region) -> *mut ::core::ffi::c_void {
+pub unsafe fn io_region_get_ptr(mr: *mut io_mapped_region) -> *mut ::kernel::ffi::c_void {
     (*mr).ptr
 }
 

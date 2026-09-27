@@ -16,24 +16,24 @@ pub struct clk_hw {
 
 #[repr(C)]
 pub struct clk_init_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const clk_ops,
-    pub flags: core::ffi::c_ulong,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub flags: kernel::ffi::c_ulong,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: u8,
 }
 
 #[repr(C)]
 pub struct clk_ops {
-    pub recalc_rate: Option<unsafe extern "C" fn(*mut clk_hw, core::ffi::c_ulong) -> core::ffi::c_ulong>,
+    pub recalc_rate: Option<unsafe extern "C" fn(*mut clk_hw, kernel::ffi::c_ulong) -> kernel::ffi::c_ulong>,
     pub determine_rate: Option<unsafe extern "C" fn(*mut clk_hw, *mut clk_rate_request) -> i32>,
-    pub set_rate: Option<unsafe extern "C" fn(*mut clk_hw, core::ffi::c_ulong, core::ffi::c_ulong) -> i32>,
+    pub set_rate: Option<unsafe extern "C" fn(*mut clk_hw, kernel::ffi::c_ulong, kernel::ffi::c_ulong) -> i32>,
 }
 
 #[repr(C)]
 pub struct clk_rate_request {
-    pub rate: core::ffi::c_ulong,
-    pub best_parent_rate: core::ffi::c_ulong,
+    pub rate: kernel::ffi::c_ulong,
+    pub best_parent_rate: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -60,7 +60,7 @@ pub struct aux_rate_tbl {
 pub struct clk_aux {
     pub hw: clk_hw,
     pub masks: *const aux_clk_masks,
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub rtbl: *mut aux_rate_tbl,
     pub rtbl_cnt: u8,
     pub lock: *mut spinlock_t,
@@ -87,32 +87,32 @@ unsafe extern "C" {
     static AUX_YSCALE_SHIFT: u32;
     static AUX_SYNT_ENB: u32;
 
-    fn readl_relaxed(addr: *mut core::ffi::c_void) -> u32;
-    fn writel_relaxed(value: u32, addr: *mut core::ffi::c_void);
+    fn readl_relaxed(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel_relaxed(value: u32, addr: *mut kernel::ffi::c_void);
     fn clk_round_rate_index(
         hw: *mut clk_hw,
-        rate: core::ffi::c_ulong,
-        parent_rate: core::ffi::c_ulong,
-        callback: unsafe extern "C" fn(*mut clk_hw, core::ffi::c_ulong, i32) -> core::ffi::c_ulong,
+        rate: kernel::ffi::c_ulong,
+        parent_rate: kernel::ffi::c_ulong,
+        callback: unsafe extern "C" fn(*mut clk_hw, kernel::ffi::c_ulong, i32) -> kernel::ffi::c_ulong,
         count: u8,
         index: *mut i32,
-    ) -> core::ffi::c_ulong;
+    ) -> kernel::ffi::c_ulong;
     fn clk_register(parent: *mut clk, hw: *mut clk_hw) -> *mut clk;
     fn clk_register_gate(
         parent: *mut clk,
-        name: *const core::ffi::c_char,
-        parent_name: *const core::ffi::c_char,
-        flags: core::ffi::c_ulong,
-        reg: *mut core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        parent_name: *const kernel::ffi::c_char,
+        flags: kernel::ffi::c_ulong,
+        reg: *mut kernel::ffi::c_void,
         bit_idx: u32,
         flags2: u8,
         lock: *mut spinlock_t,
     ) -> *mut clk;
-    fn kzalloc(size: usize) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kzalloc(size: usize) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
 }
 
-const CLK_SET_RATE_PARENT: core::ffi::c_ulong = 1 << 2;
+const CLK_SET_RATE_PARENT: kernel::ffi::c_ulong = 1 << 2;
 const EINVAL: i32 = 22;
 const ENOMEM: i32 = 12;
 
@@ -128,12 +128,12 @@ static DEFAULT_AUX_MASKS: aux_clk_masks = aux_clk_masks {
     enable_bit: unsafe { AUX_SYNT_ENB },
 };
 
-unsafe fn aux_calc_rate(hw: *mut clk_hw, prate: core::ffi::c_ulong, index: i32) -> core::ffi::c_ulong {
+unsafe fn aux_calc_rate(hw: *mut clk_hw, prate: kernel::ffi::c_ulong, index: i32) -> kernel::ffi::c_ulong {
     let aux = &*(hw as *mut clk_aux);
     let rtbl = &*aux.rtbl.add(index as usize);
     let eq = if rtbl.eq != 0 { 1 } else { 2 };
-    (((prate / 10000) * rtbl.xscale as core::ffi::c_ulong)
-        / (rtbl.yscale as core::ffi::c_ulong * eq)) * 10000
+    (((prate / 10000) * rtbl.xscale as kernel::ffi::c_ulong)
+        / (rtbl.yscale as kernel::ffi::c_ulong * eq)) * 10000
 }
 
 unsafe fn clk_aux_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request) -> i32 {
@@ -144,7 +144,7 @@ unsafe fn clk_aux_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request) ->
     0
 }
 
-unsafe fn clk_aux_recalc_rate(hw: *mut clk_hw, parent_rate: core::ffi::c_ulong) -> core::ffi::c_ulong {
+unsafe fn clk_aux_recalc_rate(hw: *mut clk_hw, parent_rate: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     let aux = &*(hw as *mut clk_aux);
     let mut num = 1u32;
     let mut den = 1u32;
@@ -158,10 +158,10 @@ unsafe fn clk_aux_recalc_rate(hw: *mut clk_hw, parent_rate: core::ffi::c_ulong) 
     num = (val >> masks.xscale_sel_shift) & masks.xscale_sel_mask;
     den *= (val >> masks.yscale_sel_shift) & masks.yscale_sel_mask;
     if den == 0 { return 0; }
-    (((parent_rate / 10000) * num as core::ffi::c_ulong) / den as core::ffi::c_ulong) * 10000
+    (((parent_rate / 10000) * num as kernel::ffi::c_ulong) / den as kernel::ffi::c_ulong) * 10000
 }
 
-unsafe fn clk_aux_set_rate(hw: *mut clk_hw, drate: core::ffi::c_ulong, prate: core::ffi::c_ulong) -> i32 {
+unsafe fn clk_aux_set_rate(hw: *mut clk_hw, drate: kernel::ffi::c_ulong, prate: kernel::ffi::c_ulong) -> i32 {
     let aux = &*(hw as *mut clk_aux);
     let mut i = 0i32;
     clk_round_rate_index(hw, drate, prate, aux_calc_rate, aux.rtbl_cnt, &mut i);
@@ -190,9 +190,9 @@ static CLK_AUX_OPS: clk_ops = clk_ops {
 };
 
 pub unsafe fn clk_register_aux(
-    aux_name: *const core::ffi::c_char, gate_name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char, flags: core::ffi::c_ulong,
-    reg: *mut core::ffi::c_void, masks: *const aux_clk_masks,
+    aux_name: *const kernel::ffi::c_char, gate_name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char, flags: kernel::ffi::c_ulong,
+    reg: *mut kernel::ffi::c_void, masks: *const aux_clk_masks,
     rtbl: *mut aux_rate_tbl, rtbl_cnt: u8, lock: *mut spinlock_t,
     gate_clk: *mut *mut clk,
 ) -> *mut clk {
@@ -207,11 +207,11 @@ pub unsafe fn clk_register_aux(
         parent_names: &parent_name, num_parents: 1 };
     (*aux).hw.init = &mut init;
     let clk = clk_register(core::ptr::null_mut(), &mut (*aux).hw);
-    if clk.is_null() { kfree(aux as *mut core::ffi::c_void); return core::ptr::null_mut(); }
+    if clk.is_null() { kfree(aux as *mut kernel::ffi::c_void); return core::ptr::null_mut(); }
     if !gate_name.is_null() {
         let gate = clk_register_gate(core::ptr::null_mut(), gate_name, aux_name, CLK_SET_RATE_PARENT,
             reg, (*(*aux).masks).enable_bit, 0, lock);
-        if gate.is_null() { kfree(aux as *mut core::ffi::c_void); return core::ptr::null_mut(); }
+        if gate.is_null() { kfree(aux as *mut kernel::ffi::c_void); return core::ptr::null_mut(); }
         if !gate_clk.is_null() { *gate_clk = gate; }
     }
     clk

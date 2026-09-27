@@ -114,23 +114,23 @@ unsafe extern "C" {
     pub fn drmem_lmb_memory_max() -> u64;
     pub fn walk_drmem_lmbs(
         dn: *mut device_node,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         func: Option<unsafe extern "C" fn(
             *mut drmem_lmb,
             *const *const u32,
-            *mut core::ffi::c_void,
+            *mut kernel::ffi::c_void,
         ) -> i32>,
     ) -> i32;
     pub fn drmem_update_dt() -> i32;
 
     #[cfg(CONFIG_PPC_PSERIES)]
     pub fn walk_drmem_lmbs_early(
-        node: core::ffi::c_ulong,
-        data: *mut core::ffi::c_void,
+        node: kernel::ffi::c_ulong,
+        data: *mut kernel::ffi::c_void,
         func: Option<unsafe extern "C" fn(
             *mut drmem_lmb,
             *const *const u32,
-            *mut core::ffi::c_void,
+            *mut kernel::ffi::c_void,
         ) -> i32>,
     ) -> i32;
 

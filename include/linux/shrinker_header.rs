@@ -17,7 +17,7 @@ pub struct shrinker_info_unit {
 #[repr(C)]
 pub struct shrinker_info {
     pub rcu: rcu_head,
-    pub map_nr_max: ::core::ffi::c_int,
+    pub map_nr_max: ::kernel::ffi::c_int,
     pub unit: [*mut shrinker_info_unit; 0],
 }
 
@@ -32,55 +32,55 @@ pub struct shrinker_info {
 pub struct shrink_control {
     pub gfp_mask: gfp_t,
     /* current node being shrunk (for NUMA aware shrinkers) */
-    pub nid: ::core::ffi::c_int,
+    pub nid: ::kernel::ffi::c_int,
     /* How many objects scan_objects should scan and try to reclaim. */
-    pub nr_to_scan: ::core::ffi::c_ulong,
+    pub nr_to_scan: ::kernel::ffi::c_ulong,
     /* How many objects did scan_objects process? */
-    pub nr_scanned: ::core::ffi::c_ulong,
+    pub nr_scanned: ::kernel::ffi::c_ulong,
     /* current memcg being shrunk (for memcg aware shrinkers) */
     pub memcg: *mut mem_cgroup,
 }
 
-pub const SHRINK_STOP: ::core::ffi::c_ulong = !0;
-pub const SHRINK_EMPTY: ::core::ffi::c_ulong = !0 - 1;
+pub const SHRINK_STOP: ::kernel::ffi::c_ulong = !0;
+pub const SHRINK_EMPTY: ::kernel::ffi::c_ulong = !0 - 1;
 
 #[repr(C)]
 pub struct shrinker {
-    pub count_objects: Option<unsafe extern "C" fn(*mut shrinker, *mut shrink_control) -> ::core::ffi::c_ulong>,
-    pub scan_objects: Option<unsafe extern "C" fn(*mut shrinker, *mut shrink_control) -> ::core::ffi::c_ulong>,
-    pub batch: ::core::ffi::c_long,
-    pub seeks: ::core::ffi::c_int,
-    pub flags: ::core::ffi::c_uint,
+    pub count_objects: Option<unsafe extern "C" fn(*mut shrinker, *mut shrink_control) -> ::kernel::ffi::c_ulong>,
+    pub scan_objects: Option<unsafe extern "C" fn(*mut shrinker, *mut shrink_control) -> ::kernel::ffi::c_ulong>,
+    pub batch: ::kernel::ffi::c_long,
+    pub seeks: ::kernel::ffi::c_int,
+    pub flags: ::kernel::ffi::c_uint,
     pub refcount: refcount_t,
     pub done: completion,
     pub rcu: rcu_head,
-    pub private_data: *mut ::core::ffi::c_void,
+    pub private_data: *mut ::kernel::ffi::c_void,
     pub list: list_head,
     #[cfg(CONFIG_MEMCG)]
-    pub id: ::core::ffi::c_int,
+    pub id: ::kernel::ffi::c_int,
     #[cfg(CONFIG_SHRINKER_DEBUG)]
-    pub debugfs_id: ::core::ffi::c_int,
+    pub debugfs_id: ::kernel::ffi::c_int,
     #[cfg(CONFIG_SHRINKER_DEBUG)]
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     #[cfg(CONFIG_SHRINKER_DEBUG)]
     pub debugfs_entry: *mut dentry,
     pub nr_deferred: *mut atomic_long_t,
 }
 
-pub const DEFAULT_SEEKS: ::core::ffi::c_int = 2;
-pub const SHRINKER_REGISTERED: ::core::ffi::c_uint = BIT(0);
-pub const SHRINKER_ALLOCATED: ::core::ffi::c_uint = BIT(1);
-pub const SHRINKER_NUMA_AWARE: ::core::ffi::c_uint = BIT(2);
-pub const SHRINKER_MEMCG_AWARE: ::core::ffi::c_uint = BIT(3);
-pub const SHRINKER_NONSLAB: ::core::ffi::c_uint = BIT(4);
+pub const DEFAULT_SEEKS: ::kernel::ffi::c_int = 2;
+pub const SHRINKER_REGISTERED: ::kernel::ffi::c_uint = BIT(0);
+pub const SHRINKER_ALLOCATED: ::kernel::ffi::c_uint = BIT(1);
+pub const SHRINKER_NUMA_AWARE: ::kernel::ffi::c_uint = BIT(2);
+pub const SHRINKER_MEMCG_AWARE: ::kernel::ffi::c_uint = BIT(3);
+pub const SHRINKER_NONSLAB: ::kernel::ffi::c_uint = BIT(4);
 
 unsafe extern "C" {
-    pub fn shrinker_alloc(flags: ::core::ffi::c_uint, fmt: *const ::core::ffi::c_char, ...) -> *mut shrinker;
+    pub fn shrinker_alloc(flags: ::kernel::ffi::c_uint, fmt: *const ::kernel::ffi::c_char, ...) -> *mut shrinker;
     pub fn shrinker_register(shrinker: *mut shrinker);
     pub fn shrinker_free(shrinker: *mut shrinker);
 
     #[cfg(CONFIG_SHRINKER_DEBUG)]
-    pub fn shrinker_debugfs_rename(shrinker: *mut shrinker, fmt: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    pub fn shrinker_debugfs_rename(shrinker: *mut shrinker, fmt: *const ::kernel::ffi::c_char, ...) -> ::kernel::ffi::c_int;
 }
 
 #[inline]
@@ -99,9 +99,9 @@ pub unsafe fn shrinker_put(shrinker: *mut shrinker) {
 #[inline]
 pub unsafe fn shrinker_debugfs_rename(
     _shrinker: *mut shrinker,
-    _fmt: *const ::core::ffi::c_char,
+    _fmt: *const ::kernel::ffi::c_char,
     ...,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     0
 }
 

@@ -11,7 +11,7 @@
 // Dependencies supplied by the surrounding kernel translation:
 // nodemask types, scatterlist/allocator types, and I/O definitions.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct device {
@@ -27,12 +27,12 @@ pub struct dma_pool {
 #[cfg(CONFIG_HAS_DMA)]
 extern "C" {
     pub fn dma_pool_create_node(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         dev: *mut device,
         size: usize,
         align: usize,
         boundary: usize,
-        node: core::ffi::c_int,
+        node: kernel::ffi::c_int,
     ) -> *mut dma_pool;
 
     pub fn dma_pool_destroy(pool: *mut dma_pool);
@@ -47,7 +47,7 @@ extern "C" {
 
     /* Managed DMA pool */
     pub fn dmam_pool_create(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         dev: *mut device,
         size: usize,
         align: usize,
@@ -61,12 +61,12 @@ extern "C" {
 #[cfg(not(CONFIG_HAS_DMA))]
 #[inline]
 pub unsafe fn dma_pool_create_node(
-    _name: *const core::ffi::c_char,
+    _name: *const kernel::ffi::c_char,
     _dev: *mut device,
     _size: usize,
     _align: usize,
     _boundary: usize,
-    _node: core::ffi::c_int,
+    _node: kernel::ffi::c_int,
 ) -> *mut dma_pool {
     core::ptr::null_mut()
 }
@@ -92,7 +92,7 @@ pub unsafe fn dma_pool_free(_pool: *mut dma_pool, _vaddr: *mut c_void, _addr: dm
 #[cfg(not(CONFIG_HAS_DMA))]
 #[inline]
 pub unsafe fn dmam_pool_create(
-    _name: *const core::ffi::c_char,
+    _name: *const kernel::ffi::c_char,
     _dev: *mut device,
     _size: usize,
     _align: usize,
@@ -107,7 +107,7 @@ pub unsafe fn dmam_pool_destroy(_pool: *mut dma_pool) {}
 
 #[inline]
 pub unsafe fn dma_pool_create(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     dev: *mut device,
     size: usize,
     align: usize,

@@ -14,8 +14,8 @@ pub unsafe fn io_xattr_cleanup(req: *mut io_kiocb) {
     let ix: *mut io_xattr = io_kiocb_to_cmd(req);
 
     dismiss_delayed_filename(&mut (*ix).filename);
-    kfree((*ix).ctx.kname as *mut core::ffi::c_void);
-    kvfree((*ix).ctx.kvalue as *mut core::ffi::c_void);
+    kfree((*ix).ctx.kname as *mut kernel::ffi::c_void);
+    kvfree((*ix).ctx.kvalue as *mut kernel::ffi::c_void);
 }
 
 unsafe fn io_xattr_finish(req: *mut io_kiocb, ret: i32) {
@@ -30,7 +30,7 @@ unsafe fn __io_getxattr_prep(
     sqe: *const io_uring_sqe,
 ) -> i32 {
     let ix: *mut io_xattr = io_kiocb_to_cmd(req);
-    let name: *const core::ffi::c_char;
+    let name: *const kernel::ffi::c_char;
     let mut ret: i32;
 
     INIT_DELAYED_FILENAME!(&mut (*ix).filename);
@@ -51,7 +51,7 @@ unsafe fn __io_getxattr_prep(
 
     ret = import_xattr_name((*ix).ctx.kname, name);
     if ret != 0 {
-        kfree((*ix).ctx.kname as *mut core::ffi::c_void);
+        kfree((*ix).ctx.kname as *mut kernel::ffi::c_void);
         return ret;
     }
 
@@ -66,7 +66,7 @@ pub unsafe fn io_fgetxattr_prep(req: *mut io_kiocb, sqe: *const io_uring_sqe) ->
 
 pub unsafe fn io_getxattr_prep(req: *mut io_kiocb, sqe: *const io_uring_sqe) -> i32 {
     let ix: *mut io_xattr = io_kiocb_to_cmd(req);
-    let path: *const core::ffi::c_char;
+    let path: *const kernel::ffi::c_char;
     let mut ret: i32;
 
     if unlikely!((*req).flags & REQ_F_FIXED_FILE != 0) {
@@ -108,7 +108,7 @@ unsafe fn __io_setxattr_prep(
     sqe: *const io_uring_sqe,
 ) -> i32 {
     let ix: *mut io_xattr = io_kiocb_to_cmd(req);
-    let name: *const core::ffi::c_char;
+    let name: *const kernel::ffi::c_char;
     let mut ret: i32;
 
     INIT_DELAYED_FILENAME!(&mut (*ix).filename);
@@ -125,7 +125,7 @@ unsafe fn __io_setxattr_prep(
 
     ret = setxattr_copy(name, &mut (*ix).ctx);
     if ret != 0 {
-        kfree((*ix).ctx.kname as *mut core::ffi::c_void);
+        kfree((*ix).ctx.kname as *mut kernel::ffi::c_void);
         return ret;
     }
 
@@ -136,7 +136,7 @@ unsafe fn __io_setxattr_prep(
 
 pub unsafe fn io_setxattr_prep(req: *mut io_kiocb, sqe: *const io_uring_sqe) -> i32 {
     let ix: *mut io_xattr = io_kiocb_to_cmd(req);
-    let path: *const core::ffi::c_char;
+    let path: *const kernel::ffi::c_char;
     let mut ret: i32;
 
     if unlikely!((*req).flags & REQ_F_FIXED_FILE != 0) {

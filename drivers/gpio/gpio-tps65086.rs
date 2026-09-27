@@ -15,7 +15,7 @@ pub struct Tps65086Gpio {
 }
 
 extern "C" {
-    pub fn gpiochip_get_data(chip: *mut GpioChip) -> *mut core::ffi::c_void;
+    pub fn gpiochip_get_data(chip: *mut GpioChip) -> *mut kernel::ffi::c_void;
     pub fn regmap_update_bits(
         regmap: *mut Regmap,
         reg: u32,
@@ -23,19 +23,19 @@ extern "C" {
         val: u32,
     ) -> i32;
     pub fn regmap_read(regmap: *mut Regmap, reg: u32, val: *mut i32) -> i32;
-    pub fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    pub fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     pub fn dev_get_drvdata(dev: *mut Device) -> *mut Tps65086;
     pub fn devm_gpiochip_add_data(
         dev: *mut Device,
         chip: *mut GpioChip,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
 }
 
 #[repr(C)]
 pub struct GpioChip {
-    pub label: *const core::ffi::c_char,
-    pub owner: *mut core::ffi::c_void,
+    pub label: *const kernel::ffi::c_char,
+    pub owner: *mut kernel::ffi::c_void,
     pub get_direction: Option<unsafe extern "C" fn(*mut GpioChip, u32) -> i32>,
     pub direction_input: Option<unsafe extern "C" fn(*mut GpioChip, u32) -> i32>,
     pub direction_output: Option<unsafe extern "C" fn(*mut GpioChip, u32, i32) -> i32>,
@@ -133,7 +133,7 @@ unsafe extern "C" fn tps65086_gpio_set(
 }
 
 static mut TEMPLATE_CHIP: GpioChip = GpioChip {
-    label: b"tps65086-gpio\0".as_ptr() as *const core::ffi::c_char,
+    label: b"tps65086-gpio\0".as_ptr() as *const kernel::ffi::c_char,
     owner: core::ptr::null_mut(),
     get_direction: Some(tps65086_gpio_get_direction),
     direction_input: Some(tps65086_gpio_direction_input),
@@ -160,7 +160,7 @@ unsafe extern "C" fn tps65086_gpio_probe(pdev: *mut PlatformDevice) -> i32 {
     (*gpio).chip = TEMPLATE_CHIP;
     (*gpio).chip.parent = (*gpio).tps.as_ref().unwrap().dev;
 
-    devm_gpiochip_add_data(&mut (*pdev).dev, &mut (*gpio).chip, gpio as *mut core::ffi::c_void)
+    devm_gpiochip_add_data(&mut (*pdev).dev, &mut (*gpio).chip, gpio as *mut kernel::ffi::c_void)
 }
 
 // Platform device ID table: { .name = "tps65086-gpio" }, { /* sentinel */ }.

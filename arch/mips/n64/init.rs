@@ -7,20 +7,20 @@
 
 // Linux and MIPS headers provide the types, constants, and functions referenced below.
 
-const IO_MEM_RESOURCE_START: ::core::ffi::c_ulong = 0;
-const IO_MEM_RESOURCE_END: ::core::ffi::c_ulong = 0x1fffffff;
+const IO_MEM_RESOURCE_START: ::kernel::ffi::c_ulong = 0;
+const IO_MEM_RESOURCE_END: ::kernel::ffi::c_ulong = 0x1fffffff;
 
 /*
  * System-specifc irq names for clarity
  */
-const MIPS_SOFTINT0_IRQ: ::core::ffi::c_int = MIPS_CPU_IRQ_BASE + 0;
-const MIPS_SOFTINT1_IRQ: ::core::ffi::c_int = MIPS_CPU_IRQ_BASE + 1;
-const RCP_IRQ: ::core::ffi::c_int = MIPS_CPU_IRQ_BASE + 2;
-const CART_IRQ: ::core::ffi::c_int = MIPS_CPU_IRQ_BASE + 3;
-const PRENMI_IRQ: ::core::ffi::c_int = MIPS_CPU_IRQ_BASE + 4;
-const RDBR_IRQ: ::core::ffi::c_int = MIPS_CPU_IRQ_BASE + 5;
-const RDBW_IRQ: ::core::ffi::c_int = MIPS_CPU_IRQ_BASE + 6;
-const TIMER_IRQ: ::core::ffi::c_int = MIPS_CPU_IRQ_BASE + 7;
+const MIPS_SOFTINT0_IRQ: ::kernel::ffi::c_int = MIPS_CPU_IRQ_BASE + 0;
+const MIPS_SOFTINT1_IRQ: ::kernel::ffi::c_int = MIPS_CPU_IRQ_BASE + 1;
+const RCP_IRQ: ::kernel::ffi::c_int = MIPS_CPU_IRQ_BASE + 2;
+const CART_IRQ: ::kernel::ffi::c_int = MIPS_CPU_IRQ_BASE + 3;
+const PRENMI_IRQ: ::kernel::ffi::c_int = MIPS_CPU_IRQ_BASE + 4;
+const RDBR_IRQ: ::kernel::ffi::c_int = MIPS_CPU_IRQ_BASE + 5;
+const RDBW_IRQ: ::kernel::ffi::c_int = MIPS_CPU_IRQ_BASE + 6;
+const TIMER_IRQ: ::kernel::ffi::c_int = MIPS_CPU_IRQ_BASE + 7;
 
 unsafe fn iomem_resource_init() {
     iomem_resource.start = IO_MEM_RESOURCE_START;
@@ -28,8 +28,8 @@ unsafe fn iomem_resource_init() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn get_system_type() -> *const ::core::ffi::c_char {
-    b"Nintendo 64\0".as_ptr() as *const ::core::ffi::c_char
+pub unsafe extern "C" fn get_system_type() -> *const ::kernel::ffi::c_char {
+    b"Nintendo 64\0".as_ptr() as *const ::kernel::ffi::c_char
 }
 
 pub unsafe extern "C" fn prom_init() {
@@ -60,13 +60,13 @@ const NUM_PI_REGS: usize = 5;
 const SI_REG_BASE: usize = 0x4800000;
 const NUM_SI_REGS: usize = 7;
 
-unsafe fn n64_platform_init() -> ::core::ffi::c_int {
+unsafe fn n64_platform_init() -> ::kernel::ffi::c_int {
     static SIMPLEFB_RESNAME: &[u8] = b"FB\0";
     let mode = simplefb_platform_data {
         width: W as _,
         height: H as _,
         stride: (W * 2) as _,
-        format: b"r5g5b5a1\0".as_ptr() as *const ::core::ffi::c_char,
+        format: b"r5g5b5a1\0".as_ptr() as *const ::kernel::ffi::c_char,
     };
     let mut res: [resource; 3] = ::core::mem::zeroed();
 
@@ -114,7 +114,7 @@ unsafe fn n64_platform_init() -> ::core::ffi::c_int {
     /* setup IORESOURCE_MEM as framebuffer memory */
     res[0] = ::core::mem::zeroed();
     res[0].flags = IORESOURCE_MEM;
-    res[0].name = SIMPLEFB_RESNAME.as_ptr() as *const ::core::ffi::c_char;
+    res[0].name = SIMPLEFB_RESNAME.as_ptr() as *const ::kernel::ffi::c_char;
     res[0].start = phys;
     res[0].end = phys + (W * H * 2 - 1) as _;
     platform_device_register_resndata(::core::ptr::null_mut(), b"simple-framebuffer\0".as_ptr() as _, 0, res.as_ptr(), 1, &mode as *const _, ::core::mem::size_of_val(&mode));

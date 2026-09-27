@@ -22,8 +22,8 @@ pub struct ipc64_perm {
     pub mode: __kernel_mode_t,
     pub __pad1: u16,
     pub seq: u16,
-    pub __unused1: ::core::ffi::c_ulong,
-    pub __unused2: ::core::ffi::c_ulong,
+    pub __unused1: ::kernel::ffi::c_ulong,
+    pub __unused2: ::kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

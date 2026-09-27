@@ -12,7 +12,7 @@
 
 #[repr(C)]
 struct sq_mapping {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     sq_addr: usize,
     addr: usize,
     size: u32,
@@ -20,9 +20,9 @@ struct sq_mapping {
 }
 
 static mut SQ_MAPPING_LIST: *mut sq_mapping = core::ptr::null_mut();
-static mut SQ_MAPPING_LOCK: core::ffi::c_ulong = 0;
-static mut SQ_CACHE: *mut core::ffi::c_void = core::ptr::null_mut();
-static mut SQ_BITMAP: *mut core::ffi::c_ulong = core::ptr::null_mut();
+static mut SQ_MAPPING_LOCK: kernel::ffi::c_ulong = 0;
+static mut SQ_CACHE: *mut kernel::ffi::c_void = core::ptr::null_mut();
+static mut SQ_BITMAP: *mut kernel::ffi::c_ulong = core::ptr::null_mut();
 
 #[inline]
 unsafe fn store_queue_barrier() {
@@ -93,7 +93,7 @@ unsafe fn __sq_remap(map: *mut sq_mapping, prot: pgprot_t) -> i32 {
 }
 
 pub unsafe extern "C" fn sq_remap(mut phys: usize, mut size: u32,
-                                   name: *const core::ffi::c_char, prot: pgprot_t) -> usize {
+                                   name: *const kernel::ffi::c_char, prot: pgprot_t) -> usize {
     let end = phys.wrapping_add(size as usize).wrapping_sub(1);
     if size == 0 || end < phys { return (-EINVAL) as usize; }
     if phys < virt_to_phys(high_memory) { return (-EINVAL) as usize; }
@@ -107,13 +107,13 @@ pub unsafe extern "C" fn sq_remap(mut phys: usize, mut size: u32,
     let page = bitmap_find_free_region(SQ_BITMAP, 0x04000000usize >> PAGE_SHIFT,
                                        get_order(size as usize));
     if page < 0 {
-        kmem_cache_free(SQ_CACHE, map as *mut core::ffi::c_void);
+        kmem_cache_free(SQ_CACHE, map as *mut kernel::ffi::c_void);
         return (-ENOSPC) as usize;
     }
     (*map).sq_addr = P4SEG_STORE_QUE + ((page as usize) << PAGE_SHIFT);
     let ret = __sq_remap(map, prot);
     if ret != 0 {
-        kmem_cache_free(SQ_CACHE, map as *mut core::ffi::c_void);
+        kmem_cache_free(SQ_CACHE, map as *mut kernel::ffi::c_void);
         return ret as usize;
     }
     let _psz = (size as usize + PAGE_SIZE - 1) >> PAGE_SHIFT;
@@ -141,38 +141,38 @@ pub unsafe extern "C" fn sq_unmap(vaddr: usize) {
     bitmap_release_region(SQ_BITMAP, page, get_order((*map).size as usize));
     #[cfg(CONFIG_MMU)]
     {
-        let vma = remove_vm_area(((*map).sq_addr & PAGE_MASK) as *mut core::ffi::c_void);
+        let vma = remove_vm_area(((*map).sq_addr & PAGE_MASK) as *mut kernel::ffi::c_void);
         if vma.is_null() {
             printk(c"\x013%s: bad address 0x%08lx\n".as_ptr(), __func__, (*map).sq_addr);
             return;
         }
     }
     sq_mapping_list_del(map);
-    kmem_cache_free(SQ_CACHE, map as *mut core::ffi::c_void);
+    kmem_cache_free(SQ_CACHE, map as *mut kernel::ffi::c_void);
 }
 
 #[repr(C)]
 struct sq_sysfs_attr {
     attr: attribute,
-    show: Option<unsafe extern "C" fn(*mut core::ffi::c_char) -> isize>,
-    store: Option<unsafe extern "C" fn(*const core::ffi::c_char, usize) -> isize>,
+    show: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char) -> isize>,
+    store: Option<unsafe extern "C" fn(*const kernel::ffi::c_char, usize) -> isize>,
 }
 
 static mut SQ_KOBJECT: [*mut kobject; NR_CPUS] = [core::ptr::null_mut(); NR_CPUS];
 
 unsafe extern "C" fn sq_sysfs_show(_kobj: *mut kobject, attr: *mut attribute,
-                                    buf: *mut core::ffi::c_char) -> isize {
+                                    buf: *mut kernel::ffi::c_char) -> isize {
     let sattr = container_of_sq_attr(attr);
     match (*sattr).show { Some(show) => show(buf), None => (-EIO) as isize }
 }
 
 unsafe extern "C" fn sq_sysfs_store(_kobj: *mut kobject, attr: *mut attribute,
-                                     buf: *const core::ffi::c_char, count: usize) -> isize {
+                                     buf: *const kernel::ffi::c_char, count: usize) -> isize {
     let sattr = container_of_sq_attr(attr);
     match (*sattr).store { Some(store) => store(buf, count), None => (-EIO) as isize }
 }
 
-unsafe extern "C" fn mapping_show(buf: *mut core::ffi::c_char) -> isize {
+unsafe extern "C" fn mapping_show(buf: *mut kernel::ffi::c_char) -> isize {
     let mut list = &raw mut SQ_MAPPING_LIST;
     let mut p = buf;
     while !(*list).is_null() {
@@ -184,7 +184,7 @@ unsafe extern "C" fn mapping_show(buf: *mut core::ffi::c_char) -> isize {
     p.offset_from(buf) as isize
 }
 
-unsafe extern "C" fn mapping_store(buf: *const core::ffi::c_char, count: usize) -> isize {
+unsafe extern "C" fn mapping_store(buf: *const kernel::ffi::c_char, count: usize) -> isize {
     let mut base = 0usize;
     let mut len = 0usize;
     sscanf_mapping(buf, &mut base, &mut len);
@@ -198,25 +198,25 @@ unsafe extern "C" fn mapping_store(buf: *const core::ffi::c_char, count: usize) 
 
 extern "C" {
     fn container_of_sq_attr(attr: *mut attribute) -> *mut sq_sysfs_attr;
-    fn sprintf_mapping(buf: *mut core::ffi::c_char, va: usize, end: usize, pa: usize,
-                       name: *const core::ffi::c_char) -> usize;
-    fn sscanf_mapping(buf: *const core::ffi::c_char, base: *mut usize, len: *mut usize);
+    fn sprintf_mapping(buf: *mut kernel::ffi::c_char, va: usize, end: usize, pa: usize,
+                       name: *const kernel::ffi::c_char) -> usize;
+    fn sscanf_mapping(buf: *const kernel::ffi::c_char, base: *mut usize, len: *mut usize);
 }
 
 extern "C" {
     fn __raw_readl(addr: usize) -> u32;
     fn __raw_writel(value: u32, addr: usize);
     fn prefetchw(addr: *mut usize);
-    fn spin_lock_irq(lock: *mut core::ffi::c_ulong);
-    fn spin_unlock_irq(lock: *mut core::ffi::c_ulong);
+    fn spin_lock_irq(lock: *mut kernel::ffi::c_ulong);
+    fn spin_unlock_irq(lock: *mut kernel::ffi::c_ulong);
     fn virt_to_phys(addr: usize) -> usize;
-    fn kmem_cache_alloc(cache: *mut core::ffi::c_void, flags: usize) -> *mut core::ffi::c_void;
-    fn kmem_cache_free(cache: *mut core::ffi::c_void, obj: *mut core::ffi::c_void);
-    fn bitmap_find_free_region(bitmap: *mut core::ffi::c_ulong, bits: usize, order: usize) -> i32;
-    fn bitmap_release_region(bitmap: *mut core::ffi::c_ulong, pos: usize, order: usize);
+    fn kmem_cache_alloc(cache: *mut kernel::ffi::c_void, flags: usize) -> *mut kernel::ffi::c_void;
+    fn kmem_cache_free(cache: *mut kernel::ffi::c_void, obj: *mut kernel::ffi::c_void);
+    fn bitmap_find_free_region(bitmap: *mut kernel::ffi::c_ulong, bits: usize, order: usize) -> i32;
+    fn bitmap_release_region(bitmap: *mut kernel::ffi::c_ulong, pos: usize, order: usize);
     fn get_order(size: usize) -> usize;
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

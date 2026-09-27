@@ -89,47 +89,47 @@ pub const KDB_MAXBPT: usize = 16;
 #[repr(C)]
 pub struct kdb_symtab_t {
     pub value: usize,
-    pub mod_name: *const core::ffi::c_char,
+    pub mod_name: *const kernel::ffi::c_char,
     pub mod_start: usize,
     pub mod_end: usize,
-    pub sec_name: *const core::ffi::c_char,
+    pub sec_name: *const kernel::ffi::c_char,
     pub sec_start: usize,
     pub sec_end: usize,
-    pub sym_name: *const core::ffi::c_char,
+    pub sym_name: *const kernel::ffi::c_char,
     pub sym_start: usize,
     pub sym_end: usize,
 }
 
 unsafe extern "C" {
-    pub fn kallsyms_symbol_next(prefix_name: *mut core::ffi::c_char, flag: i32, buf_size: i32) -> i32;
-    pub fn kallsyms_symbol_complete(prefix_name: *mut core::ffi::c_char, max_len: i32) -> i32;
-    pub fn kdb_getarea_size(dst: *mut core::ffi::c_void, addr: usize, size: usize) -> i32;
-    pub fn kdb_putarea_size(addr: usize, src: *mut core::ffi::c_void, size: usize) -> i32;
+    pub fn kallsyms_symbol_next(prefix_name: *mut kernel::ffi::c_char, flag: i32, buf_size: i32) -> i32;
+    pub fn kallsyms_symbol_complete(prefix_name: *mut kernel::ffi::c_char, max_len: i32) -> i32;
+    pub fn kdb_getarea_size(dst: *mut kernel::ffi::c_void, addr: usize, size: usize) -> i32;
+    pub fn kdb_putarea_size(addr: usize, src: *mut kernel::ffi::c_void, size: usize) -> i32;
     pub fn kdb_getphysword(word: *mut usize, addr: usize, size: usize) -> i32;
     pub fn kdb_getword(word: *mut usize, addr: usize, size: usize) -> i32;
     pub fn kdb_putword(addr: usize, word: usize, size: usize) -> i32;
-    pub fn kdbgetularg(arg: *const core::ffi::c_char, value: *mut usize) -> i32;
-    pub fn kdbgetu64arg(arg: *const core::ffi::c_char, value: *mut u64) -> i32;
-    pub fn kdbgetenv(name: *const core::ffi::c_char) -> *mut core::ffi::c_char;
-    pub fn kdbgetsymval(symname: *const core::ffi::c_char, value: *mut kdb_symtab_t) -> i32;
+    pub fn kdbgetularg(arg: *const kernel::ffi::c_char, value: *mut usize) -> i32;
+    pub fn kdbgetu64arg(arg: *const kernel::ffi::c_char, value: *mut u64) -> i32;
+    pub fn kdbgetenv(name: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    pub fn kdbgetsymval(symname: *const kernel::ffi::c_char, value: *mut kdb_symtab_t) -> i32;
     pub fn kdbnearsym(addr: usize, value: *mut kdb_symtab_t) -> i32;
-    pub fn kdb_strdup(str_: *const core::ffi::c_char, type_: usize) -> *mut core::ffi::c_char;
-    pub fn kdb_strdup_dequote(str_: *const core::ffi::c_char, type_: usize) -> *mut core::ffi::c_char;
+    pub fn kdb_strdup(str_: *const kernel::ffi::c_char, type_: usize) -> *mut kernel::ffi::c_char;
+    pub fn kdb_strdup_dequote(str_: *const kernel::ffi::c_char, type_: usize) -> *mut kernel::ffi::c_char;
     pub fn kdb_symbol_print(addr: usize, symtab: *const kdb_symtab_t, ssize: u32);
-    pub fn kdb_print_state(text: *const core::ffi::c_char, value: i32);
-    pub fn kdb_register_table(kp: *mut core::ffi::c_void, len: usize);
-    pub fn kdb_bt(argc: i32, argv: *const *const core::ffi::c_char) -> i32;
+    pub fn kdb_print_state(text: *const kernel::ffi::c_char, value: i32);
+    pub fn kdb_register_table(kp: *mut kernel::ffi::c_void, len: usize);
+    pub fn kdb_bt(argc: i32, argv: *const *const kernel::ffi::c_char) -> i32;
     pub fn kdb_initbptab();
-    pub fn kdb_bp_install(regs: *mut core::ffi::c_void);
+    pub fn kdb_bp_install(regs: *mut kernel::ffi::c_void);
     pub fn kdb_bp_remove();
-    pub fn kdb_main_loop(reason: i32, reason2: i32, error: i32, db: i32, regs: *mut core::ffi::c_void) -> i32;
-    pub fn kdb_task_state_char(task: *const core::ffi::c_void) -> core::ffi::c_char;
-    pub fn kdb_task_state(task: *const core::ffi::c_void, mask: *const core::ffi::c_char) -> bool;
+    pub fn kdb_main_loop(reason: i32, reason2: i32, error: i32, db: i32, regs: *mut kernel::ffi::c_void) -> i32;
+    pub fn kdb_task_state_char(task: *const kernel::ffi::c_void) -> kernel::ffi::c_char;
+    pub fn kdb_task_state(task: *const kernel::ffi::c_void, mask: *const kernel::ffi::c_char) -> bool;
     pub fn kdb_ps_suppressed();
-    pub fn kdb_ps1(task: *const core::ffi::c_void);
-    pub fn kdb_getchar() -> core::ffi::c_char;
-    pub fn kdb_getstr(buf: *mut core::ffi::c_char, size: usize, prompt: *const core::ffi::c_char) -> *mut core::ffi::c_char;
-    pub fn kdb_gdb_state_pass(buf: *mut core::ffi::c_char);
+    pub fn kdb_ps1(task: *const kernel::ffi::c_void);
+    pub fn kdb_getchar() -> kernel::ffi::c_char;
+    pub fn kdb_getstr(buf: *mut kernel::ffi::c_char, size: usize, prompt: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    pub fn kdb_gdb_state_pass(buf: *mut kernel::ffi::c_char);
     #[cfg(CONFIG_KDB_KEYBOARD)]
     pub fn kdb_kbd_cleanup_state();
 }
@@ -180,13 +180,13 @@ pub const KDB_SP_DEFAULT: u32 = KDB_SP_VALUE | KDB_SP_PAREN;
 unsafe extern "C" {
     pub static mut kdb_breakpoints: [kdb_bp_t; KDB_MAXBPT];
     pub static mut kdb_grepping_flag: i32;
-    pub static mut kdb_grep_string: [core::ffi::c_char; KDB_GREP_STRLEN];
+    pub static mut kdb_grep_string: [kernel::ffi::c_char; KDB_GREP_STRLEN];
     pub static mut kdb_grep_leading: i32;
     pub static mut kdb_grep_trailing: i32;
-    pub static mut kdb_cmds: *mut *mut core::ffi::c_char;
-    pub static mut kdb_current_task: *mut core::ffi::c_void;
-    pub static mut kdb_current_regs: *mut core::ffi::c_void;
-    pub static mut kdb_prompt_str: [core::ffi::c_char; 0];
+    pub static mut kdb_cmds: *mut *mut kernel::ffi::c_char;
+    pub static mut kdb_current_task: *mut kernel::ffi::c_void;
+    pub static mut kdb_current_regs: *mut kernel::ffi::c_void;
+    pub static mut kdb_prompt_str: [kernel::ffi::c_char; 0];
 }
 
 pub const KDB_WORD_SIZE: usize = core::mem::size_of::<usize>();

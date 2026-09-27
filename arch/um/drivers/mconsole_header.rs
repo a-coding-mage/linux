@@ -60,11 +60,11 @@ pub struct mconsole_command {
 
 #[repr(C)]
 pub struct mc_request {
-    pub len: libc::c_int,
-    pub as_interrupt: libc::c_int,
+    pub len: core::ffi::c_int,
+    pub as_interrupt: core::ffi::c_int,
 
-    pub originating_fd: libc::c_int,
-    pub originlen: libc::c_uint,
+    pub originating_fd: core::ffi::c_int,
+    pub originlen: core::ffi::c_uint,
     pub origin: [u8; 128], /* sockaddr_un */
 
     pub request: mconsole_request,
@@ -75,20 +75,20 @@ pub struct mc_request {
 extern "C" {
     pub static mut mconsole_socket_name: [c_char; 0];
 
-    pub fn mconsole_unlink_socket() -> libc::c_int;
+    pub fn mconsole_unlink_socket() -> core::ffi::c_int;
     pub fn mconsole_reply_len(
         req: *mut mc_request,
         reply: *const c_char,
-        len: libc::c_int,
-        err: libc::c_int,
-        more: libc::c_int,
-    ) -> libc::c_int;
+        len: core::ffi::c_int,
+        err: core::ffi::c_int,
+        more: core::ffi::c_int,
+    ) -> core::ffi::c_int;
     pub fn mconsole_reply(
         req: *mut mc_request,
         str_: *const c_char,
-        err: libc::c_int,
-        more: libc::c_int,
-    ) -> libc::c_int;
+        err: core::ffi::c_int,
+        more: core::ffi::c_int,
+    ) -> core::ffi::c_int;
 
     pub fn mconsole_version(req: *mut mc_request);
     pub fn mconsole_help(req: *mut mc_request);
@@ -104,13 +104,13 @@ extern "C" {
     pub fn mconsole_proc(req: *mut mc_request);
     pub fn mconsole_stack(req: *mut mc_request);
 
-    pub fn mconsole_get_request(fd: libc::c_int, req: *mut mc_request) -> libc::c_int;
+    pub fn mconsole_get_request(fd: core::ffi::c_int, req: *mut mc_request) -> core::ffi::c_int;
     pub fn mconsole_notify(
         sock_name: *mut c_char,
-        type_: libc::c_int,
+        type_: core::ffi::c_int,
         data: *const c_void,
-        len: libc::c_int,
-    ) -> libc::c_int;
+        len: core::ffi::c_int,
+    ) -> core::ffi::c_int;
     pub fn mconsole_notify_socket() -> *mut c_char;
     pub fn lock_notify();
     pub fn unlock_notify();

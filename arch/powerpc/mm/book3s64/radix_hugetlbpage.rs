@@ -5,9 +5,9 @@
 
 pub unsafe fn radix__flush_hugetlb_page(
     vma: *mut vm_area_struct,
-    vmaddr: ::core::ffi::c_ulong,
+    vmaddr: ::kernel::ffi::c_ulong,
 ) {
-    let psize: ::core::ffi::c_int;
+    let psize: ::kernel::ffi::c_int;
     let hstate: *mut hstate = hstate_file((*vma).vm_file);
 
     psize = hstate_get_psize(hstate);
@@ -16,9 +16,9 @@ pub unsafe fn radix__flush_hugetlb_page(
 
 pub unsafe fn radix__local_flush_hugetlb_page(
     vma: *mut vm_area_struct,
-    vmaddr: ::core::ffi::c_ulong,
+    vmaddr: ::kernel::ffi::c_ulong,
 ) {
-    let psize: ::core::ffi::c_int;
+    let psize: ::kernel::ffi::c_int;
     let hstate: *mut hstate = hstate_file((*vma).vm_file);
 
     psize = hstate_get_psize(hstate);
@@ -27,10 +27,10 @@ pub unsafe fn radix__local_flush_hugetlb_page(
 
 pub unsafe fn radix__flush_hugetlb_tlb_range(
     vma: *mut vm_area_struct,
-    start: ::core::ffi::c_ulong,
-    end: ::core::ffi::c_ulong,
+    start: ::kernel::ffi::c_ulong,
+    end: ::kernel::ffi::c_ulong,
 ) {
-    let psize: ::core::ffi::c_int;
+    let psize: ::kernel::ffi::c_int;
     let hstate: *mut hstate = hstate_file((*vma).vm_file);
 
     psize = hstate_get_psize(hstate);
@@ -47,13 +47,13 @@ pub unsafe fn radix__flush_hugetlb_tlb_range(
 
 pub unsafe fn radix__huge_ptep_modify_prot_commit(
     vma: *mut vm_area_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
     old_pte: pte_t,
     pte: pte_t,
 ) {
     let mm: *mut mm_struct = (*vma).vm_mm;
-    let psize: ::core::ffi::c_ulong = huge_page_size(hstate_vma(vma));
+    let psize: ::kernel::ffi::c_ulong = huge_page_size(hstate_vma(vma));
 
     /*
      * POWER9 NMMU must flush the TLB after clearing the PTE before

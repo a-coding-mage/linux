@@ -5,7 +5,7 @@
  * Copyright (C) 2015 Intel Corporation. All rights reserved.
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub const ENOENT: i32 = 2;
 pub const ACPI_ALLOCATE_BUFFER: usize = usize::MAX;
@@ -54,7 +54,7 @@ pub type acpi_status = u64;
 unsafe extern "C" {
     fn acpi_evaluate_object(
         handle: acpi_handle,
-        pathname: *const core::ffi::c_char,
+        pathname: *const kernel::ffi::c_char,
         parameter_objects: *mut c_void,
         return_object_buffer: *mut acpi_buffer,
     ) -> acpi_status;
@@ -135,7 +135,7 @@ pub unsafe fn acpi_lpat_get_conversion_table(
     };
     let status = acpi_evaluate_object(
         handle,
-        b"LPAT\0".as_ptr() as *const core::ffi::c_char,
+        b"LPAT\0".as_ptr() as *const kernel::ffi::c_char,
         core::ptr::null_mut(),
         &mut buffer,
     );

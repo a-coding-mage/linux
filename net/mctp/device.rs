@@ -10,7 +10,7 @@
 
 #[repr(C)]
 pub struct mctp_dump_cb {
-    pub ifindex: ::core::ffi::c_ulong,
+    pub ifindex: ::kernel::ffi::c_ulong,
     pub a_idx: usize,
 }
 
@@ -185,7 +185,7 @@ unsafe fn mctp_unregister(dev: *mut net_device) { let mdev = mctp_dev_get_rtnl(d
 unsafe fn mctp_register(dev: *mut net_device) -> i32 { if !rtnl_dereference((*dev).mctp_ptr).is_null() || !mctp_known(dev) { return 0; } let mdev = mctp_add_dev(dev); if IS_ERR(mdev) { return PTR_ERR(mdev); } 0 }
 unsafe fn mctp_register_netdevice(dev: *mut net_device, ops: *const mctp_netdev_ops, binding: mctp_phys_binding) -> i32 { let mdev = mctp_add_dev(dev); if IS_ERR(mdev) { return PTR_ERR(mdev); } (*mdev).ops = ops; (*mdev).binding = binding; register_netdevice(dev) }
 
-unsafe extern "C" fn mctp_dev_notify(_this: *mut notifier_block, event: ::core::ffi::c_ulong, ptr: *mut ::core::ffi::c_void) -> i32 {
+unsafe extern "C" fn mctp_dev_notify(_this: *mut notifier_block, event: ::kernel::ffi::c_ulong, ptr: *mut ::kernel::ffi::c_void) -> i32 {
     let dev = netdev_notifier_info_to_dev(ptr); match event { NETDEV_REGISTER => { let rc = mctp_register(dev); if rc != 0 { return notifier_from_errno(rc); } }, NETDEV_UNREGISTER => mctp_unregister(dev), _ => {} } NOTIFY_OK
 }
 

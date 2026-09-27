@@ -6,7 +6,7 @@
 // Dependencies supplied by the surrounding kernel translation unit:
 // linux/kernel.h, asm/v7m.h, and asm/mach/arch.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Corresponds to the external ARMv7-M restart routine.
 extern "C" {

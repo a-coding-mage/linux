@@ -7,16 +7,16 @@
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct HugepageSetEntry {
-    pub addr: ::core::ffi::c_ulong,
-    pub pte: ::core::ffi::c_ulong,
+    pub addr: ::kernel::ffi::c_ulong,
+    pub pte: ::kernel::ffi::c_ulong,
 }
 
 #[cfg(CONFIG_PPC_BOOK3S_64)]
 #[inline]
 pub unsafe fn hugepage_set_fast_assign(
     entry: *mut HugepageSetEntry,
-    addr: ::core::ffi::c_ulong,
-    pte: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
+    pte: ::kernel::ffi::c_ulong,
 ) {
     (*entry).addr = addr;
     (*entry).pte = pte;
@@ -30,8 +30,8 @@ pub const HUGEPage_SET_PRINTK: &str =
 #[inline]
 pub unsafe fn hugepage_set_pmd(
     entry: *mut HugepageSetEntry,
-    addr: ::core::ffi::c_ulong,
-    pmd: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
+    pmd: ::kernel::ffi::c_ulong,
 ) {
     hugepage_set_fast_assign(entry, addr, pmd);
 }
@@ -40,8 +40,8 @@ pub unsafe fn hugepage_set_pmd(
 #[inline]
 pub unsafe fn hugepage_set_pud(
     entry: *mut HugepageSetEntry,
-    addr: ::core::ffi::c_ulong,
-    pud: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
+    pud: ::kernel::ffi::c_ulong,
 ) {
     hugepage_set_fast_assign(entry, addr, pud);
 }
@@ -50,20 +50,20 @@ pub unsafe fn hugepage_set_pud(
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct HugepageUpdateEntry {
-    pub addr: ::core::ffi::c_ulong,
-    pub pte: ::core::ffi::c_ulong,
-    pub clr: ::core::ffi::c_ulong,
-    pub set: ::core::ffi::c_ulong,
+    pub addr: ::kernel::ffi::c_ulong,
+    pub pte: ::kernel::ffi::c_ulong,
+    pub clr: ::kernel::ffi::c_ulong,
+    pub set: ::kernel::ffi::c_ulong,
 }
 
 #[cfg(CONFIG_PPC_BOOK3S_64)]
 #[inline]
 pub unsafe fn hugepage_update_fast_assign(
     entry: *mut HugepageUpdateEntry,
-    addr: ::core::ffi::c_ulong,
-    pte: ::core::ffi::c_ulong,
-    clr: ::core::ffi::c_ulong,
-    set: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
+    pte: ::kernel::ffi::c_ulong,
+    clr: ::kernel::ffi::c_ulong,
+    set: ::kernel::ffi::c_ulong,
 ) {
     (*entry).addr = addr;
     (*entry).pte = pte;
@@ -79,10 +79,10 @@ pub const HUGEPage_UPDATE_PRINTK: &str =
 #[inline]
 pub unsafe fn hugepage_update_pmd(
     entry: *mut HugepageUpdateEntry,
-    addr: ::core::ffi::c_ulong,
-    pmd: ::core::ffi::c_ulong,
-    clr: ::core::ffi::c_ulong,
-    set: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
+    pmd: ::kernel::ffi::c_ulong,
+    clr: ::kernel::ffi::c_ulong,
+    set: ::kernel::ffi::c_ulong,
 ) {
     hugepage_update_fast_assign(entry, addr, pmd, clr, set);
 }
@@ -91,10 +91,10 @@ pub unsafe fn hugepage_update_pmd(
 #[inline]
 pub unsafe fn hugepage_update_pud(
     entry: *mut HugepageUpdateEntry,
-    addr: ::core::ffi::c_ulong,
-    pud: ::core::ffi::c_ulong,
-    clr: ::core::ffi::c_ulong,
-    set: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
+    pud: ::kernel::ffi::c_ulong,
+    clr: ::kernel::ffi::c_ulong,
+    set: ::kernel::ffi::c_ulong,
 ) {
     hugepage_update_fast_assign(entry, addr, pud, clr, set);
 }
@@ -102,15 +102,15 @@ pub unsafe fn hugepage_update_pud(
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct MigrationPmdEntry {
-    pub addr: ::core::ffi::c_ulong,
-    pub pmd: ::core::ffi::c_ulong,
+    pub addr: ::kernel::ffi::c_ulong,
+    pub pmd: ::kernel::ffi::c_ulong,
 }
 
 #[inline]
 pub unsafe fn migration_pmd_fast_assign(
     entry: *mut MigrationPmdEntry,
-    addr: ::core::ffi::c_ulong,
-    pmd: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
+    pmd: ::kernel::ffi::c_ulong,
 ) {
     (*entry).addr = addr;
     (*entry).pmd = pmd;
@@ -121,8 +121,8 @@ pub const MIGRATION_PMD_PRINTK: &str = "addr=%lx, pmd=%lx";
 #[inline]
 pub unsafe fn set_migration_pmd(
     entry: *mut MigrationPmdEntry,
-    addr: ::core::ffi::c_ulong,
-    pmd: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
+    pmd: ::kernel::ffi::c_ulong,
 ) {
     migration_pmd_fast_assign(entry, addr, pmd);
 }
@@ -130,8 +130,8 @@ pub unsafe fn set_migration_pmd(
 #[inline]
 pub unsafe fn remove_migration_pmd(
     entry: *mut MigrationPmdEntry,
-    addr: ::core::ffi::c_ulong,
-    pmd: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
+    pmd: ::kernel::ffi::c_ulong,
 ) {
     migration_pmd_fast_assign(entry, addr, pmd);
 }

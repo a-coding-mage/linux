@@ -11,7 +11,7 @@
 
 // Dependency: <linux/param.h> supplies the build-time HZ value.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 unsafe extern "C" {
     pub fn __delay(loops: c_ulong);

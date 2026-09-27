@@ -25,7 +25,7 @@ unsafe extern "C" {
 }
 
 unsafe extern "C" {
-    fn memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void;
+    fn memcpy(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize) -> *mut kernel::ffi::c_void;
 }
 
 #[repr(C)]
@@ -41,7 +41,7 @@ pub struct snd_soc_pcm_stream {
 #[repr(C)]
 pub struct snd_soc_dai_driver {
     pub id: i32,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub playback: snd_soc_pcm_stream,
     pub capture: snd_soc_pcm_stream,
 }
@@ -164,14 +164,14 @@ pub static mut sof_renoir_ops: snd_sof_dsp_ops = snd_sof_dsp_ops {
 // EXPORT_SYMBOL_NS(sof_renoir_ops, "SND_SOC_SOF_AMD_COMMON");
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn sof_renoir_ops_init(sdev: *mut snd_sof_dev) -> core::ffi::c_int {
+pub unsafe extern "C" fn sof_renoir_ops_init(sdev: *mut snd_sof_dev) -> kernel::ffi::c_int {
     let _ = sdev;
 
     /* common defaults */
     unsafe {
         memcpy(
-            (&raw mut sof_renoir_ops).cast::<core::ffi::c_void>(),
-            (&raw const sof_acp_common_ops).cast::<core::ffi::c_void>(),
+            (&raw mut sof_renoir_ops).cast::<kernel::ffi::c_void>(),
+            (&raw const sof_acp_common_ops).cast::<kernel::ffi::c_void>(),
             core::mem::size_of::<snd_sof_dsp_ops>(),
         );
 

@@ -24,7 +24,7 @@ pub unsafe fn snd_use_lock_free(lockp: *mut snd_use_lock_t) {
 
 /* wait until all locks are released */
 unsafe extern "C" {
-    pub fn snd_use_lock_sync_helper(lock: *mut snd_use_lock_t, file: *const ::core::ffi::c_char, line: ::core::ffi::c_int);
+    pub fn snd_use_lock_sync_helper(lock: *mut snd_use_lock_t, file: *const ::kernel::ffi::c_char, line: ::kernel::ffi::c_int);
 }
 
 #[macro_export]
@@ -33,8 +33,8 @@ macro_rules! snd_use_lock_sync {
         unsafe {
             snd_use_lock_sync_helper(
                 $lockp,
-                concat!(file!(), "\0").as_ptr() as *const ::core::ffi::c_char,
-                line!() as ::core::ffi::c_int,
+                concat!(file!(), "\0").as_ptr() as *const ::kernel::ffi::c_char,
+                line!() as ::kernel::ffi::c_int,
             )
         }
     };

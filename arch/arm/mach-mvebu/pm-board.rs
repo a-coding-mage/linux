@@ -27,29 +27,29 @@ pub struct OfPhandleArgs {
     pub args: [u32; 16],
 }
 
-static mut GPIO_CTRL: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut GPIO_CTRL: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut PIC_GPIOS: [*mut GpioDesc; ARMADA_PIC_NR_GPIOS] = [core::ptr::null_mut(); ARMADA_PIC_NR_GPIOS];
 static mut PIC_RAW_GPIOS: [i32; ARMADA_PIC_NR_GPIOS] = [0; ARMADA_PIC_NR_GPIOS];
 
 extern "C" {
-    fn of_machine_is_compatible(compat: *const core::ffi::c_char) -> bool;
-    fn of_find_node_by_name(from: *mut DeviceNode, name: *const core::ffi::c_char) -> *mut DeviceNode;
-    fn kasprintf(flags: u32, fmt: *const core::ffi::c_char, ...) -> *mut core::ffi::c_char;
-    fn fwnode_gpiod_get_index(fwnode: *mut core::ffi::c_void, con_id: *const core::ffi::c_char, index: usize, flags: u32, label: *const core::ffi::c_char) -> *mut GpioDesc;
+    fn of_machine_is_compatible(compat: *const kernel::ffi::c_char) -> bool;
+    fn of_find_node_by_name(from: *mut DeviceNode, name: *const kernel::ffi::c_char) -> *mut DeviceNode;
+    fn kasprintf(flags: u32, fmt: *const kernel::ffi::c_char, ...) -> *mut kernel::ffi::c_char;
+    fn fwnode_gpiod_get_index(fwnode: *mut kernel::ffi::c_void, con_id: *const kernel::ffi::c_char, index: usize, flags: u32, label: *const kernel::ffi::c_char) -> *mut GpioDesc;
     fn ptr_err_or_zero<T>(ptr: *mut T) -> i32;
-    fn kfree(ptr: *mut core::ffi::c_char);
-    fn of_fwnode_handle(node: *mut DeviceNode) -> *mut core::ffi::c_void;
-    fn of_parse_phandle_with_fixed_args(node: *mut DeviceNode, list: *const core::ffi::c_char, cells: usize, index: usize, args: *mut OfPhandleArgs) -> i32;
+    fn kfree(ptr: *mut kernel::ffi::c_char);
+    fn of_fwnode_handle(node: *mut DeviceNode) -> *mut kernel::ffi::c_void;
+    fn of_parse_phandle_with_fixed_args(node: *mut DeviceNode, list: *const kernel::ffi::c_char, cells: usize, index: usize, args: *mut OfPhandleArgs) -> i32;
     fn gpiod_put(desc: *mut GpioDesc);
     fn of_node_put(node: *mut DeviceNode);
-    fn of_iomap(node: *mut DeviceNode, index: usize) -> *mut core::ffi::c_void;
-    fn mvebu_pm_suspend_init(enter: unsafe extern "C" fn(*mut core::ffi::c_void, u32));
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
+    fn of_iomap(node: *mut DeviceNode, index: usize) -> *mut kernel::ffi::c_void;
+    fn mvebu_pm_suspend_init(enter: unsafe extern "C" fn(*mut kernel::ffi::c_void, u32));
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
     fn mdelay(milliseconds: u32);
 }
 
-unsafe extern "C" fn mvebu_armada_pm_enter(sdram_reg: *mut core::ffi::c_void, mut srcmd: u32) {
+unsafe extern "C" fn mvebu_armada_pm_enter(sdram_reg: *mut kernel::ffi::c_void, mut srcmd: u32) {
     let mut reg: u32;
     let mut ackcmd: u32;
     let mut i: usize;

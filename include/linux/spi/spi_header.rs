@@ -55,8 +55,8 @@ extern "C" { pub fn spi_delay_to_ns(d: *mut spi_delay, xfer: *mut spi_transfer) 
 pub struct spi_device {
     pub dev: device, pub controller: *mut spi_controller, pub max_speed_hz: u32,
     pub bits_per_word: u8, pub rt: bool, pub mode: u32, pub irq: i32,
-    pub controller_state: *mut core::ffi::c_void, pub controller_data: *mut core::ffi::c_void,
-    pub modalias: [core::ffi::c_char; SPI_NAME_SIZE as usize],
+    pub controller_state: *mut kernel::ffi::c_void, pub controller_data: *mut kernel::ffi::c_void,
+    pub modalias: [kernel::ffi::c_char; SPI_NAME_SIZE as usize],
     pub pcpu_statistics: *mut spi_statistics, pub word_delay: spi_delay,
     pub cs_setup: spi_delay, pub cs_hold: spi_delay, pub cs_inactive: spi_delay,
     pub chip_select: [u8; SPI_DEVICE_CS_CNT_MAX], pub num_chipselect: u8,
@@ -116,9 +116,9 @@ pub struct spi_controller {
     pub put_offload: Option<unsafe extern "C" fn(*mut spi_offload)>, pub cs_gpiods: *mut *mut gpio_desc,
     pub use_gpio_descriptors: bool, pub unused_native_cs: i8, pub max_native_cs: i8,
     pub pcpu_statistics: *mut spi_statistics, pub dma_tx: *mut dma_chan, pub dma_rx: *mut dma_chan,
-    pub dummy_rx: *mut core::ffi::c_void, pub dummy_tx: *mut core::ffi::c_void,
+    pub dummy_rx: *mut kernel::ffi::c_void, pub dummy_tx: *mut kernel::ffi::c_void,
     pub fw_translate_cs: Option<unsafe extern "C" fn(*mut spi_controller,u32)->i32>,
-    pub ptp_sts_supported: bool, pub irq_flags: core::ffi::c_ulong, pub queue_empty: bool,
+    pub ptp_sts_supported: bool, pub irq_flags: kernel::ffi::c_ulong, pub queue_empty: bool,
     pub must_async: bool, pub defer_optimize_message: bool,
     #[cfg(CONFIG_SPI_DYNAMIC)] pub userspace_clients: list_head,
     #[cfg(CONFIG_SPI_DYNAMIC)] pub userspace_registered: bool,
@@ -133,7 +133,7 @@ pub const SPI_NBITS_SINGLE: u8 = 1; pub const SPI_NBITS_DUAL: u8 = 2;
 pub const SPI_NBITS_QUAD: u8 = 4; pub const SPI_NBITS_OCTAL: u8 = 8;
 
 #[repr(C)] pub struct spi_transfer {
-    pub tx_buf: *const core::ffi::c_void, pub rx_buf: *mut core::ffi::c_void, pub len: u32, pub error: u16,
+    pub tx_buf: *const kernel::ffi::c_void, pub rx_buf: *mut kernel::ffi::c_void, pub len: u32, pub error: u16,
     pub tx_sg_mapped: bool, pub rx_sg_mapped: bool, pub tx_sg: sg_table, pub rx_sg: sg_table,
     pub tx_dma: dma_addr_t, pub rx_dma: dma_addr_t, pub dummy_data: u32, pub cs_off: u32,
     pub cs_change: u32, pub tx_nbits: u32, pub rx_nbits: u32, pub multi_lane_mode: u32,
@@ -145,15 +145,15 @@ pub const SPI_NBITS_QUAD: u8 = 4; pub const SPI_NBITS_OCTAL: u8 = 8;
 
 #[repr(C)] pub struct spi_message {
     pub transfers: list_head, pub spi: *mut spi_device, pub pre_optimized: bool, pub optimized: bool,
-    pub prepared: bool, pub status: i32, pub complete: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
-    pub context: *mut core::ffi::c_void, pub frame_length: u32, pub actual_length: u32,
-    pub queue: list_head, pub state: *mut core::ffi::c_void, pub opt_state: *mut core::ffi::c_void,
+    pub prepared: bool, pub status: i32, pub complete: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
+    pub context: *mut kernel::ffi::c_void, pub frame_length: u32, pub actual_length: u32,
+    pub queue: list_head, pub state: *mut kernel::ffi::c_void, pub opt_state: *mut kernel::ffi::c_void,
     pub offload: *mut spi_offload, pub resources: list_head,
 }
 
 #[repr(C)] pub struct spi_driver { pub id_table: *const spi_device_id, pub probe: Option<unsafe extern "C" fn(*mut spi_device)->i32>, pub remove: Option<unsafe extern "C" fn(*mut spi_device)>, pub shutdown: Option<unsafe extern "C" fn(*mut spi_device)>, pub driver: device_driver }
-pub type spi_res_release_t = Option<unsafe extern "C" fn(*mut spi_controller,*mut spi_message,*mut core::ffi::c_void)>;
-#[repr(C)] pub struct spi_res { pub entry: list_head, pub release: spi_res_release_t, pub data: [core::ffi::c_ulonglong; 0] }
+pub type spi_res_release_t = Option<unsafe extern "C" fn(*mut spi_controller,*mut spi_message,*mut kernel::ffi::c_void)>;
+#[repr(C)] pub struct spi_res { pub entry: list_head, pub release: spi_res_release_t, pub data: [kernel::ffi::c_ulonglong; 0] }
 
 extern "C" {
     pub fn spi_unregister_driver(sdrv: *mut spi_driver);

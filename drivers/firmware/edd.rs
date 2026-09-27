@@ -153,7 +153,7 @@ unsafe fn edd_num_devices()->c_int{core::cmp::max(core::cmp::min(EDD_MBR_SIG_MAX
 unsafe extern "C" fn edd_init()->c_int{if edd_num_devices()==0{return -ENODEV;} edd_kset=kset_create_and_add(b"edd\0".as_ptr() as *const c_char,core::ptr::null_mut(),firmware_kobj);if edd_kset.is_null(){return -ENOMEM;}for i in 0..edd_num_devices(){let d=kzalloc(core::mem::size_of::<edd_device>(),GFP_KERNEL) as *mut edd_device;if d.is_null(){return -ENOMEM;}edd_dev_set_info(d,i);(*d).kobj.kset=edd_kset;let r=kobject_init_and_add(&mut (*d).kobj,&EDD_KTYPE,core::ptr::null_mut(),b"int13_dev%02x\0".as_ptr() as *const c_char,0x80+i);if r!=0{kfree(d as *mut c_void);return r;}edd_populate_dir(d);kobject_uevent(&mut (*d).kobj,KOBJ_ADD);EDD_DEVICES[i as usize]=d;}0}
 unsafe extern "C" fn edd_exit(){for i in 0..edd_num_devices(){let d=EDD_DEVICES[i as usize];if !d.is_null(){edd_device_unregister(d);}}kset_unregister(edd_kset);}
 
-macro_rules! edd_device_attr { ($name:ident,$show:ident,$test:ident) => { static mut $name: edd_attribute = edd_attribute { attr: attribute { name: stringify!($name).as_ptr() as *const c_char, mode: 0o444 }, show: Some($show), test: Some($test) }; }; }
+macro_rules! edd_device_attr { ($name:ident,$show:ident,$test:ident) => { static mut $name: edd_attribute = edd_attribute { attr: attribute { name: concat!(stringify!($name), "\0").as_ptr() as *const c_char, mode: 0o444 }, show: Some($show), test: Some($test) }; }; }
 edd_device_attr!(edd_attr_raw_data, edd_show_raw_data, edd_has_edd_info);
 edd_device_attr!(edd_attr_version, edd_show_version, edd_has_edd_info);
 edd_device_attr!(edd_attr_extensions, edd_show_extensions, edd_has_edd_info);

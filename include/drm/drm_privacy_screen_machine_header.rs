@@ -20,11 +20,11 @@ pub struct drm_privacy_screen_lookup {
     /** @list: Lookup list list-entry. */
     pub list: list_head,
     /** @dev_id: Consumer device name or NULL to match all devices. */
-    pub dev_id: *const ::core::ffi::c_char,
+    pub dev_id: *const ::kernel::ffi::c_char,
     /** @con_id: Consumer connector name or NULL to match all connectors. */
-    pub con_id: *const ::core::ffi::c_char,
+    pub con_id: *const ::kernel::ffi::c_char,
     /** @provider: dev_name() of the privacy_screen provider. */
-    pub provider: *const ::core::ffi::c_char,
+    pub provider: *const ::kernel::ffi::c_char,
 }
 
 unsafe extern "C" {

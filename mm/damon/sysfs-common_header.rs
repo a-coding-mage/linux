@@ -5,7 +5,7 @@
 
 // C dependencies: <linux/damon.h>, <linux/kobject.h>
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Opaque types supplied by the corresponding Linux/DAMON dependencies.
 pub enum mutex {}
@@ -44,7 +44,7 @@ extern "C" {
 pub struct damon_sysfs_schemes {
     pub kobj: kobject,
     pub schemes_arr: *mut *mut damon_sysfs_scheme,
-    pub nr: core::ffi::c_int,
+    pub nr: kernel::ffi::c_int,
 }
 
 extern "C" {
@@ -56,7 +56,7 @@ extern "C" {
     pub fn damon_sysfs_add_schemes(
         ctx: *mut damon_ctx,
         sysfs_schemes: *mut damon_sysfs_schemes,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn damon_sysfs_schemes_update_stats(
         sysfs_schemes: *mut damon_sysfs_schemes,
@@ -75,12 +75,12 @@ extern "C" {
 
     pub fn damon_sysfs_schemes_clear_regions(
         sysfs_schemes: *mut damon_sysfs_schemes,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn damos_sysfs_set_quota_scores(
         sysfs_schemes: *mut damon_sysfs_schemes,
         ctx: *mut damon_ctx,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn damos_sysfs_update_effective_quotas(
         sysfs_schemes: *mut damon_sysfs_schemes,
@@ -90,7 +90,7 @@ extern "C" {
     pub fn damon_sysfs_memcg_path_to_id(
         memcg_path: *mut c_char,
         id: *mut u64,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

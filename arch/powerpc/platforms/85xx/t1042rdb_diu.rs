@@ -38,16 +38,16 @@ extern "C" {
     static mut cpld_node: *mut device_node;
     static mut diu_ops: DiuOps;
 
-    fn of_iomap(node: *mut device_node, index: i32) -> *mut core::ffi::c_void;
+    fn of_iomap(node: *mut device_node, index: i32) -> *mut kernel::ffi::c_void;
     fn of_node_put(node: *mut device_node);
     fn of_find_compatible_node(
         from: *mut device_node,
-        ty: *const core::ffi::c_char,
-        compatible: *const core::ffi::c_char,
+        ty: *const kernel::ffi::c_char,
+        compatible: *const kernel::ffi::c_char,
     ) -> *mut device_node;
-    fn iounmap(addr: *mut core::ffi::c_void);
+    fn iounmap(addr: *mut kernel::ffi::c_void);
     fn fsl_get_sys_freq() -> u64;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -102,7 +102,7 @@ unsafe extern "C" fn t1042rdb_set_monitor_port(port: fsl_diu_monitor_port) {
         }
     }
 
-    iounmap(cpld_base as *mut core::ffi::c_void);
+    iounmap(cpld_base as *mut kernel::ffi::c_void);
     of_node_put(cpld_node);
 }
 
@@ -139,7 +139,7 @@ unsafe extern "C" fn t1042rdb_set_pixel_clock(pixclock: u32) {
     setbits32(scfg.add(CCSR_SCFG_PIXCLKCR) as *mut u32,
               PIXCLKCR_PXCKEN | (pxclk << 16));
 
-    iounmap(scfg as *mut core::ffi::c_void);
+    iounmap(scfg as *mut kernel::ffi::c_void);
 }
 
 /**

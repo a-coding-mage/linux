@@ -9,14 +9,14 @@
 
 extern "C" {
     static mut amba_system_id: u32;
-    static mut leon3_irqctrl_regs: *mut core::ffi::c_void;
+    static mut leon3_irqctrl_regs: *mut kernel::ffi::c_void;
     static mut sparc_cpu_model: i32;
     static sparc_leon: i32;
     static mut sparc_idle: Option<unsafe extern "C" fn()>;
 
     fn raw_local_irq_enable();
     fn raw_local_irq_disable();
-    fn printk(format: *const core::ffi::c_char, ...);
+    fn printk(format: *const kernel::ffi::c_char, ...);
 }
 
 /* List of Systems that need fixup instructions around power-down instruction */
@@ -93,7 +93,7 @@ unsafe extern "C" fn leon_pmc_install() -> i32 {
         }
 
         // printk(KERN_INFO "leon: power management initialized\n");
-        printk(core::ffi::c_str!("leon: power management initialized\n").as_ptr());
+        printk(kernel::ffi::c_str!("leon: power management initialized\n").as_ptr());
     }
 
     0

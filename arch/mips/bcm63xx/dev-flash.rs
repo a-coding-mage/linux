@@ -14,7 +14,7 @@
 
 #[repr(C)]
 pub struct MtdPartition {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub offset: u64,
     pub size: u64,
 }
@@ -23,7 +23,7 @@ pub struct MtdPartition {
 pub struct PhysmapFlashData {
     pub width: u32,
     pub parts: *mut MtdPartition,
-    pub part_probe_types: *const *const ::core::ffi::c_char,
+    pub part_probe_types: *const *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -35,12 +35,12 @@ pub struct Resource {
 
 #[repr(C)]
 pub struct Device {
-    pub platform_data: *mut ::core::ffi::c_void,
+    pub platform_data: *mut ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct PlatformDevice {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub resource: *mut Resource,
     pub num_resources: usize,
     pub dev: Device,
@@ -52,8 +52,8 @@ extern "C" {
     fn bcm_gpio_readl(reg: u32) -> u32;
     fn bcm_mpi_readl(reg: u32) -> u32;
     fn platform_device_register(dev: *mut PlatformDevice) -> i32;
-    fn pr_warn(fmt: *const ::core::ffi::c_char, ...);
-    fn pr_err(fmt: *const ::core::ffi::c_char, ...);
+    fn pr_warn(fmt: *const ::kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const ::kernel::ffi::c_char, ...);
 }
 
 extern "C" {
@@ -73,7 +73,7 @@ static mut MTD_PARTITIONS: [MtdPartition; 1] = [MtdPartition {
     size: 0x40000,
 }];
 
-static BCM63XX_PART_TYPES: [*const ::core::ffi::c_char; 2] =
+static BCM63XX_PART_TYPES: [*const ::kernel::ffi::c_char; 2] =
     [b"bcm63xxpart\0".as_ptr() as *const _, ::core::ptr::null()];
 
 static mut FLASH_DATA: PhysmapFlashData = PhysmapFlashData {
@@ -92,7 +92,7 @@ static mut MTD_DEV: PlatformDevice = PlatformDevice {
     name: b"physmap-flash\0".as_ptr() as *const _,
     resource: MTD_RESOURCES.as_ptr() as *mut Resource,
     num_resources: 1,
-    dev: Device { platform_data: &mut FLASH_DATA as *mut _ as *mut ::core::ffi::c_void },
+    dev: Device { platform_data: &mut FLASH_DATA as *mut _ as *mut ::kernel::ffi::c_void },
 };
 
 pub unsafe fn bcm63xx_detect_flash_type() -> i32 {

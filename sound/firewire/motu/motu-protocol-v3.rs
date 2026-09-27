@@ -9,12 +9,12 @@
 // #include <linux/delay.h>
 // #include "motu.h"
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 use core::mem::size_of;
 use core::ptr;
 
 type __be32 = u32;
-type u32 = core::ffi::c_uint;
+type u32 = kernel::ffi::c_uint;
 
 const V3_CLOCK_STATUS_OFFSET: c_uint = 0x0b14;
 const V3_FETCH_PCM_FRAMES: u32 = 0x02000000;
@@ -65,7 +65,7 @@ extern "C" {
     fn msecs_to_jiffies(msecs: c_uint) -> c_long;
 }
 
-type c_long = core::ffi::c_long;
+type c_long = kernel::ffi::c_long;
 
 extern "C" {
     static EIO: c_int;

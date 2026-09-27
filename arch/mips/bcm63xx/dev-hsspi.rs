@@ -9,7 +9,7 @@
 // C dependencies: linux/init.h, linux/kernel.h, linux/platform_device.h,
 // bcm63xx_cpu.h, bcm63xx_dev_hsspi.h, and bcm63xx_regs.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn BCMCPU_IS_6328() -> bool;

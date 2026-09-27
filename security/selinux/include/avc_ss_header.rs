@@ -8,14 +8,14 @@
 // C dependency: <linux/types.h> provides u32.
 
 unsafe extern "C" {
-    pub fn avc_ss_reset(seqno: u32) -> core::ffi::c_int;
+    pub fn avc_ss_reset(seqno: u32) -> kernel::ffi::c_int;
 }
 
 /* Class/perm mapping support */
 #[repr(C)]
 pub struct security_class_mapping {
-    pub name: *const core::ffi::c_char,
-    pub perms: [*const core::ffi::c_char; core::mem::size_of::<u32>() * 8 + 1],
+    pub name: *const kernel::ffi::c_char,
+    pub perms: [*const kernel::ffi::c_char; core::mem::size_of::<u32>() * 8 + 1],
 }
 
 unsafe extern "C" {

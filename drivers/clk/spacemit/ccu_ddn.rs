@@ -21,24 +21,24 @@
 // external types, functions, constants, and macros referenced below.
 
 unsafe fn ccu_ddn_calc_rate(
-    prate: libc::c_ulong,
-    num: libc::c_ulong,
-    den: libc::c_ulong,
-    pre_div: libc::c_uint,
-) -> libc::c_ulong {
-    prate.wrapping_mul(den) / pre_div as libc::c_ulong / num
+    prate: kernel::ffi::c_ulong,
+    num: kernel::ffi::c_ulong,
+    den: kernel::ffi::c_ulong,
+    pre_div: kernel::ffi::c_uint,
+) -> kernel::ffi::c_ulong {
+    prate.wrapping_mul(den) / pre_div as kernel::ffi::c_ulong / num
 }
 
 unsafe fn ccu_ddn_calc_best_rate(
     ddn: *mut ccu_ddn,
-    rate: libc::c_ulong,
-    prate: libc::c_ulong,
-    num: *mut libc::c_ulong,
-    den: *mut libc::c_ulong,
-) -> libc::c_ulong {
+    rate: kernel::ffi::c_ulong,
+    prate: kernel::ffi::c_ulong,
+    num: *mut kernel::ffi::c_ulong,
+    den: *mut kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     rational_best_approximation(
         rate,
-        prate / (*ddn).pre_div as libc::c_ulong,
+        prate / (*ddn).pre_div as kernel::ffi::c_ulong,
         (*ddn).den_mask >> (*ddn).den_shift,
         (*ddn).num_mask >> (*ddn).num_shift,
         den,
@@ -50,10 +50,10 @@ unsafe fn ccu_ddn_calc_best_rate(
 unsafe extern "C" fn ccu_ddn_determine_rate(
     hw: *mut clk_hw,
     req: *mut clk_rate_request,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let ddn = hw_to_ccu_ddn(hw);
-    let mut num: libc::c_ulong = 0;
-    let mut den: libc::c_ulong = 0;
+    let mut num: kernel::ffi::c_ulong = 0;
+    let mut den: kernel::ffi::c_ulong = 0;
 
     (*req).rate = ccu_ddn_calc_best_rate(
         ddn,
@@ -68,25 +68,25 @@ unsafe extern "C" fn ccu_ddn_determine_rate(
 
 unsafe extern "C" fn ccu_ddn_recalc_rate(
     hw: *mut clk_hw,
-    prate: libc::c_ulong,
-) -> libc::c_ulong {
+    prate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     let ddn = hw_to_ccu_ddn(hw);
-    let val: libc::c_uint = ccu_read(&mut (*ddn).common, ctrl);
+    let val: kernel::ffi::c_uint = ccu_read(&mut (*ddn).common, ctrl);
 
     let num = (val & (*ddn).num_mask) >> (*ddn).num_shift;
     let den = (val & (*ddn).den_mask) >> (*ddn).den_shift;
 
-    ccu_ddn_calc_rate(prate, num as libc::c_ulong, den as libc::c_ulong, (*ddn).pre_div)
+    ccu_ddn_calc_rate(prate, num as kernel::ffi::c_ulong, den as kernel::ffi::c_ulong, (*ddn).pre_div)
 }
 
 unsafe extern "C" fn ccu_ddn_set_rate(
     hw: *mut clk_hw,
-    rate: libc::c_ulong,
-    prate: libc::c_ulong,
-) -> libc::c_int {
+    rate: kernel::ffi::c_ulong,
+    prate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let ddn = hw_to_ccu_ddn(hw);
-    let mut num: libc::c_ulong = 0;
-    let mut den: libc::c_ulong = 0;
+    let mut num: kernel::ffi::c_ulong = 0;
+    let mut den: kernel::ffi::c_ulong = 0;
 
     ccu_ddn_calc_best_rate(ddn, rate, prate, &mut num, &mut den);
 

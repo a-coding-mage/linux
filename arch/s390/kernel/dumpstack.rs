@@ -7,7 +7,7 @@
 
 // Kernel and architecture dependencies supplied by other translation units.
 
-pub unsafe fn stack_type_name(type_: stack_type) -> *const core::ffi::c_char {
+pub unsafe fn stack_type_name(type_: stack_type) -> *const kernel::ffi::c_char {
     match type_ {
         STACK_TYPE_TASK => b"task\0".as_ptr() as *const _,
         STACK_TYPE_IRQ => b"irq\0".as_ptr() as *const _,
@@ -97,7 +97,7 @@ pub unsafe fn show_stack(task: *mut task_struct, stack: *mut c_ulong, loglvl: *c
     unwind_for_each_frame!(&mut state, task, core::ptr::null_mut(), stack as c_ulong, {
         printk(
             if state.reliable { b"%s [<%016lx>] %pSR \n\0" } else { b"%s([<%016lx>] %pSR)\n\0" }.as_ptr() as *const _,
-            loglvl, state.ip, state.ip as *mut core::ffi::c_void,
+            loglvl, state.ip, state.ip as *mut kernel::ffi::c_void,
         );
     });
     debug_show_held_locks(if !task.is_null() { task } else { current });

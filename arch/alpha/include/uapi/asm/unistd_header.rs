@@ -4,8 +4,8 @@
 
 /* These are traditionally the names linux-alpha uses for
  * the two otherwise generic system calls */
-pub const __NR_umount: _ = __NR_umount2;
-pub const __NR_osf_shmat: _ = __NR_shmat;
+pub const __NR_umount: u32 = __NR_umount2;
+pub const __NR_osf_shmat: u32 = __NR_shmat;
 
 /* These return an extra value but can be used as aliases */
 pub const __NR_getpid: _ = __NR_getxpid;

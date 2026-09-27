@@ -36,12 +36,12 @@ struct TpmI2cCr50PrivData {
 }
 
 extern "C" {
-    fn dev_get_drvdata(dev: *mut Device) -> *mut core::ffi::c_void;
+    fn dev_get_drvdata(dev: *mut Device) -> *mut kernel::ffi::c_void;
     fn complete(c: *mut Completion);
     fn msleep(ms: u64);
     fn wait_for_completion_timeout(c: *mut Completion, timeout: u64) -> bool;
-    fn dev_warn(dev: *mut Device, fmt: *const core::ffi::c_char, ...);
-    fn dev_err(dev: *mut Device, fmt: *const core::ffi::c_char, ...);
+    fn dev_warn(dev: *mut Device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_err(dev: *mut Device, fmt: *const kernel::ffi::c_char, ...);
     fn enable_irq(irq: i32);
     fn disable_irq(irq: i32);
     fn reinit_completion(c: *mut Completion);
@@ -52,22 +52,22 @@ extern "C" {
     fn i2c_lock_bus(adapter: *mut I2cAdapter, flags: u32);
     fn time_before(a: u64, b: u64) -> bool;
     fn time_after(a: u64, b: u64) -> bool;
-    fn device_property_read_u8(dev: *mut Device, name: *const core::ffi::c_char, val: *mut u8) -> i32;
+    fn device_property_read_u8(dev: *mut Device, name: *const kernel::ffi::c_char, val: *mut u8) -> i32;
     fn i2c_check_functionality(adapter: *mut I2cAdapter, functionality: u32) -> bool;
     fn tpmm_chip_alloc(dev: *mut Device, ops: *const TpmClassOps) -> *mut TpmChip;
     fn is_err(p: *mut TpmChip) -> bool;
     fn ptr_err(p: *mut TpmChip) -> i32;
-    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn dev_set_drvdata(dev: *mut Device, data: *mut core::ffi::c_void);
+    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn dev_set_drvdata(dev: *mut Device, data: *mut kernel::ffi::c_void);
     fn init_completion(c: *mut Completion);
-    fn devm_request_irq(dev: *mut Device, irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> i32, flags: u32, name: *const core::ffi::c_char, data: *mut TpmChip) -> i32;
+    fn devm_request_irq(dev: *mut Device, irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> i32, flags: u32, name: *const kernel::ffi::c_char, data: *mut TpmChip) -> i32;
     fn tpm_chip_register(chip: *mut TpmChip) -> i32;
     fn i2c_get_clientdata(client: *mut I2cClient) -> *mut TpmChip;
     fn tpm_chip_unregister(chip: *mut TpmChip);
 }
 
 #[repr(C)] struct Device { parent: *mut Device, driver: *mut Driver }
-#[repr(C)] struct Driver { name: *const core::ffi::c_char }
+#[repr(C)] struct Driver { name: *const kernel::ffi::c_char }
 #[repr(C)] struct Completion;
 #[repr(C)] struct I2cAdapter;
 #[repr(C)] struct I2cClient { dev: Device, adapter: *mut I2cAdapter, addr: u16, irq: i32 }
@@ -85,7 +85,7 @@ const TPM_STS_COMMAND_READY: u8 = 0x40; const TPM_STS_VALID: u8 = 0x80;
 const TPM_STS_DATA_AVAIL: u8 = 0x10; const TPM_STS_DATA_EXPECT: u8 = 0x08; const TPM_STS_GO: u8 = 0x20;
 const TPM_HEADER_SIZE: usize = 10;
 
-unsafe extern "C" fn tpm_cr50_i2c_int_handler(_dummy: i32, tpm_info: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn tpm_cr50_i2c_int_handler(_dummy: i32, tpm_info: *mut kernel::ffi::c_void) -> i32 {
     let chip = tpm_info as *mut TpmChip;
     let priv_data = dev_get_drvdata(&mut (*chip).dev) as *mut TpmI2cCr50PrivData;
     complete(&mut (*priv_data).tpm_ready); 1

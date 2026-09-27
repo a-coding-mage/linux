@@ -28,13 +28,13 @@ pub struct pkcs7_signed_info {
     pub blacklisted: bool,
 
     /* Message digest - the digest of the Content Data (or NULL) */
-    pub msgdigest: *const core::ffi::c_void,
+    pub msgdigest: *const kernel::ffi::c_void,
     pub msgdigest_len: u32,
 
     /* Authenticated Attribute data (or NULL) */
     pub authattrs_len: u32,
-    pub authattrs: *const core::ffi::c_void,
-    pub aa_set: core::ffi::c_ulong,
+    pub authattrs: *const kernel::ffi::c_void,
+    pub aa_set: kernel::ffi::c_ulong,
 
     pub signing_time: i64,
 
@@ -72,7 +72,7 @@ pub struct pkcs7_message {
     pub data_type: OID, /* Type of Data */
     pub data_len: usize, /* Length of Data */
     pub data_hdrlen: usize, /* Length of Data ASN.1 header */
-    pub data: *const core::ffi::c_void, /* Content Data (or 0) */
+    pub data: *const kernel::ffi::c_void, /* Content Data (or 0) */
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

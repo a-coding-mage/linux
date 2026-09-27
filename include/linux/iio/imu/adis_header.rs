@@ -2,7 +2,7 @@
 /* Common library for ADIS16XXX devices. Rust translation of adis.h. */
 
 // Dependencies supplied by the surrounding kernel translation.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const ADIS_WRITE_REG: fn(u32) -> u32 = |reg| 0x80 | reg;
 pub const ADIS_READ_REG: fn(u32) -> u32 = |reg| reg & 0x7f;
@@ -28,12 +28,12 @@ pub struct spi_message;
 #[repr(C)]
 pub struct spi_transfer;
 
-pub type u8 = core::ffi::c_uchar;
-pub type u16 = core::ffi::c_ushort;
-pub type u32 = core::ffi::c_uint;
-pub type c_int = core::ffi::c_int;
-pub type c_uint = core::ffi::c_uint;
-pub type c_ulong = core::ffi::c_ulong;
+pub type u8 = kernel::ffi::c_uchar;
+pub type u16 = kernel::ffi::c_ushort;
+pub type u32 = kernel::ffi::c_uint;
+pub type c_int = kernel::ffi::c_int;
+pub type c_uint = kernel::ffi::c_uint;
+pub type c_ulong = kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct adis_timeout {
@@ -88,7 +88,7 @@ pub struct adis {
     pub xfer: *mut spi_transfer,
     pub current_page: c_uint,
     pub irq_flag: c_ulong,
-    pub buffer: *mut core::ffi::c_void,
+    pub buffer: *mut kernel::ffi::c_void,
     pub tx: [u8; 10],
     pub rx: [u8; 4],
 }

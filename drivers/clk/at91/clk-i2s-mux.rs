@@ -51,8 +51,8 @@ static clk_i2s_mux_ops: clk_ops = clk_ops {
 
 unsafe extern "C" fn at91_clk_i2s_mux_register(
     regmap: *mut regmap,
-    name: *const core::ffi::c_char,
-    parent_names: *const *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    parent_names: *const *const kernel::ffi::c_char,
     num_parents: u32,
     bus_id: u8,
 ) -> *mut clk_hw {
@@ -76,7 +76,7 @@ unsafe extern "C" fn at91_clk_i2s_mux_register(
 
     ret = clk_hw_register(core::ptr::null_mut(), &mut (*i2s_ck).hw);
     if ret != 0 {
-        kfree(i2s_ck as *mut core::ffi::c_void);
+        kfree(i2s_ck as *mut kernel::ffi::c_void);
         return ERR_PTR(ret);
     }
 

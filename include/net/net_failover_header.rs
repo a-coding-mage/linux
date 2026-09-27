@@ -30,14 +30,14 @@ extern "C" {
 	pub fn net_failover_destroy(failover: *mut failover);
 }
 
-pub const FAILOVER_VLAN_FEATURES: _ = NETIF_F_HW_CSUM
+pub const FAILOVER_VLAN_FEATURES: u64 = NETIF_F_HW_CSUM
 	| NETIF_F_SG
 	| NETIF_F_FRAGLIST
 	| NETIF_F_ALL_TSO
 	| NETIF_F_HIGHDMA
 	| NETIF_F_LRO;
 
-pub const FAILOVER_ENC_FEATURES: _ = NETIF_F_HW_CSUM
+pub const FAILOVER_ENC_FEATURES: u64 = NETIF_F_HW_CSUM
 	| NETIF_F_SG
 	| NETIF_F_RXCSUM
 	| NETIF_F_ALL_TSO;

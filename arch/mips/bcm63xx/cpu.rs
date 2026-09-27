@@ -10,30 +10,30 @@
 // Linux and BCM63xx headers from the original implementation provide the
 // constants, macros, types, and external functions referenced below.
 
-pub static mut bcm63xx_regs_base: *const ::core::ffi::c_ulong = ::core::ptr::null();
-pub static mut bcm63xx_irqs: *const ::core::ffi::c_int = ::core::ptr::null();
+pub static mut bcm63xx_regs_base: *const ::kernel::ffi::c_ulong = ::core::ptr::null();
+pub static mut bcm63xx_irqs: *const ::kernel::ffi::c_int = ::core::ptr::null();
 pub static mut bcm63xx_cpu_id: u16 = 0;
 
 static mut bcm63xx_cpu_rev: u8 = 0;
 static mut bcm63xx_cpu_freq: u32 = 0;
 static mut bcm63xx_memory_size: u32 = 0;
 
-static bcm3368_regs_base: [::core::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(3368)];
-static bcm3368_irqs: [::core::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(3368)];
-static bcm6328_regs_base: [::core::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6328)];
-static bcm6328_irqs: [::core::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6328)];
-static bcm6338_regs_base: [::core::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6338)];
-static bcm6338_irqs: [::core::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6338)];
-static bcm6345_regs_base: [::core::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6345)];
-static bcm6345_irqs: [::core::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6345)];
-static bcm6348_regs_base: [::core::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6348)];
-static bcm6348_irqs: [::core::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6348)];
-static bcm6358_regs_base: [::core::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6358)];
-static bcm6358_irqs: [::core::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6358)];
-static bcm6362_regs_base: [::core::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6362)];
-static bcm6362_irqs: [::core::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6362)];
-static bcm6368_regs_base: [::core::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6368)];
-static bcm6368_irqs: [::core::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6368)];
+static bcm3368_regs_base: [::kernel::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(3368)];
+static bcm3368_irqs: [::kernel::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(3368)];
+static bcm6328_regs_base: [::kernel::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6328)];
+static bcm6328_irqs: [::kernel::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6328)];
+static bcm6338_regs_base: [::kernel::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6338)];
+static bcm6338_irqs: [::kernel::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6338)];
+static bcm6345_regs_base: [::kernel::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6345)];
+static bcm6345_irqs: [::kernel::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6345)];
+static bcm6348_regs_base: [::kernel::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6348)];
+static bcm6348_irqs: [::kernel::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6348)];
+static bcm6358_regs_base: [::kernel::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6358)];
+static bcm6358_irqs: [::kernel::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6358)];
+static bcm6362_regs_base: [::kernel::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6362)];
+static bcm6362_irqs: [::kernel::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6362)];
+static bcm6368_regs_base: [::kernel::ffi::c_ulong; 0] = [__GEN_CPU_REGS_TABLE!(6368)];
+static bcm6368_irqs: [::kernel::ffi::c_int; 0] = [__GEN_CPU_IRQ_TABLE!(6368)];
 
 pub unsafe fn bcm63xx_get_cpu_rev() -> u8 { bcm63xx_cpu_rev }
 pub unsafe fn bcm63xx_get_cpu_freq() -> u32 { bcm63xx_cpu_freq }

@@ -14,7 +14,7 @@ static mut orc_init: bool = false;
 static mut unwind_debug: bool = false;
 static mut lookup_num_blocks: u32 = 0;
 
-unsafe extern "C" fn unwind_debug_cmdline(_str: *mut core::ffi::c_char) -> i32 {
+unsafe extern "C" fn unwind_debug_cmdline(_str: *mut kernel::ffi::c_char) -> i32 {
     unwind_debug = true;
     0
 }
@@ -40,7 +40,7 @@ unsafe fn unwind_dump(state: *mut unwind_state) {
         while sp < stack_info.end {
             word = READ_ONCE_NOCHECK(sp);
             printk_deferred(b"%0*lx: %0*lx (%pB)\n\0".as_ptr(), BITS_PER_LONG / 4,
-                sp as usize, BITS_PER_LONG / 4, word, word as *const core::ffi::c_void);
+                sp as usize, BITS_PER_LONG / 4, word, word as *const kernel::ffi::c_void);
             sp = sp.add(1);
         }
         sp = PTR_ALIGN(stack_info.next_sp, core::mem::size_of::<usize>()) as *mut usize;
@@ -112,7 +112,7 @@ unsafe fn orc_find(ip: usize) -> *mut orc_entry {
 
 unsafe fn stack_access_ok(state: *mut unwind_state, addr: usize, len: usize) -> bool {
     let info = &mut (*state).stack_info;
-    let p = addr as *mut core::ffi::c_void;
+    let p = addr as *mut kernel::ffi::c_void;
     if on_stack(info, p, len) { return true; }
     get_stack_info(p, (*state).task, info, &mut (*state).stack_mask) == 0 && on_stack(info, p, len)
 }

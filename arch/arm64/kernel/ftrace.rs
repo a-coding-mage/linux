@@ -2,7 +2,7 @@
 /* arch/arm64/kernel/ftrace.c -- direct Rust translation. */
 
 #[repr(C)]
-pub struct FregsOffset { pub name: *const core::ffi::c_char, pub offset: i32 }
+pub struct FregsOffset { pub name: *const kernel::ffi::c_char, pub offset: i32 }
 
 // CONFIG_DYNAMIC_FTRACE_WITH_ARGS
 #[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
@@ -17,12 +17,12 @@ static FREGS_OFFSETS: [FregsOffset; 14] = [
 ];
 
 #[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
-pub unsafe fn ftrace_regs_query_register_offset(_name: *const core::ffi::c_char) -> i32 {
+pub unsafe fn ftrace_regs_query_register_offset(_name: *const kernel::ffi::c_char) -> i32 {
     // The offsets are offsetof(__arch_ftrace_regs, field); supplied by the architecture layout.
     for roff in FREGS_OFFSETS.iter() {
-        if libc::strcmp(roff.name, _name) == 0 { return roff.offset; }
+        if strcmp(roff.name, _name) == 0 { return roff.offset; }
     }
-    -libc::EINVAL
+    -EINVAL
 }
 
 pub unsafe fn ftrace_call_adjust(mut addr: usize) -> usize {
@@ -30,14 +30,14 @@ pub unsafe fn ftrace_call_adjust(mut addr: usize) -> usize {
     if !cfg!(CONFIG_DYNAMIC_FTRACE_WITH_ARGS) { return addr; }
     if !cfg!(CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS) { return addr + AARCH64_INSN_SIZE; }
     if addr % core::mem::size_of::<usize>() != 0 {
-        warn_ratelimit(1, "Misaligned patch-site %pS\n", (addr + 8) as *const core::ffi::c_void);
+        warn_ratelimit(1, "Misaligned patch-site %pS\n", (addr + 8) as *const kernel::ffi::c_void);
         return 0;
     }
     addr += 2 * AARCH64_INSN_SIZE;
     if cfg!(CONFIG_ARM64_BTI_KERNEL) {
         let insn = u32::from_le(*(addr as *const u32));
         if aarch64_insn_is_bti(insn) { addr += AARCH64_INSN_SIZE; }
-        else if insn != aarch64_insn_gen_nop() { warn_ratelimit(1, "unexpected insn in patch-site %pS: 0x%08x\n", addr as *const core::ffi::c_void, insn); }
+        else if insn != aarch64_insn_gen_nop() { warn_ratelimit(1, "unexpected insn in patch-site %pS: 0x%08x\n", addr as *const kernel::ffi::c_void, insn); }
     }
     addr + AARCH64_INSN_SIZE
 }
@@ -57,10 +57,10 @@ pub unsafe fn arch_ftrace_get_symaddr(fentry_ip: usize) -> usize {
 unsafe fn ftrace_modify_code(pc: usize, old: u32, new: u32, validate: bool) -> i32 {
     if validate {
         let mut replaced = 0u32;
-        if aarch64_insn_read(pc as *const core::ffi::c_void, &mut replaced) != 0 { return -libc::EFAULT; }
-        if replaced != old { return -libc::EINVAL; }
+        if aarch64_insn_read(pc as *const kernel::ffi::c_void, &mut replaced) != 0 { return -EFAULT; }
+        if replaced != old { return -EINVAL; }
     }
-    if aarch64_insn_patch_text_nosync(pc as *mut core::ffi::c_void, new) != 0 { return -libc::EPERM; }
+    if aarch64_insn_patch_text_nosync(pc as *mut kernel::ffi::c_void, new) != 0 { return -EPERM; }
     0
 }
 
@@ -100,7 +100,7 @@ unsafe fn arm64_rec_get_ops(_: *mut dyn_ftrace) -> *const ftrace_ops { &ftrace_l
 #[cfg(any(CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS, CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS))]
 pub unsafe fn ftrace_modify_call(rec: *mut dyn_ftrace, mut old_addr: usize, mut addr: usize) -> i32 {
     let pc = (*rec).ip; let ret = ftrace_rec_update_ops(rec); if ret != 0 { return ret; }
-    if !ftrace_find_callable_addr(rec, core::ptr::null_mut(), &mut old_addr) || !ftrace_find_callable_addr(rec, core::ptr::null_mut(), &mut addr) { return -libc::EINVAL; }
+    if !ftrace_find_callable_addr(rec, core::ptr::null_mut(), &mut old_addr) || !ftrace_find_callable_addr(rec, core::ptr::null_mut(), &mut addr) { return -EINVAL; }
     ftrace_modify_code(pc, aarch64_insn_gen_branch_imm(pc, old_addr, AARCH64_INSN_BRANCH_LINK), aarch64_insn_gen_branch_imm(pc, addr, AARCH64_INSN_BRANCH_LINK), true)
 }
 
@@ -113,7 +113,7 @@ pub unsafe fn ftrace_init_nop(_: *mut module, rec: *mut dyn_ftrace) -> i32 {
 pub unsafe fn ftrace_make_call(rec: *mut dyn_ftrace, mut addr: usize) -> i32 {
     let pc = (*rec).ip;
     let ret = ftrace_rec_update_ops(rec); if ret != 0 { return ret; }
-    if !ftrace_find_callable_addr(rec, core::ptr::null_mut(), &mut addr) { return -libc::EINVAL; }
+    if !ftrace_find_callable_addr(rec, core::ptr::null_mut(), &mut addr) { return -EINVAL; }
     ftrace_modify_code(pc, aarch64_insn_gen_nop(), aarch64_insn_gen_branch_imm(pc, addr, AARCH64_INSN_BRANCH_LINK), true)
 }
 
@@ -121,14 +121,14 @@ pub unsafe fn ftrace_make_nop(mod_: *mut module, rec: *mut dyn_ftrace, mut addr:
     let pc = (*rec).ip; let new = aarch64_insn_gen_nop();
     let ret = ftrace_rec_set_nop_ops(rec); if ret != 0 { return ret; }
     if !cfg!(CONFIG_DYNAMIC_FTRACE_WITH_ARGS) && !mod_.is_null() { return aarch64_insn_patch_text_nosync(pc as *mut _, new); }
-    if !ftrace_find_callable_addr(rec, mod_, &mut addr) { return -libc::EINVAL; }
+    if !ftrace_find_callable_addr(rec, mod_, &mut addr) { return -EINVAL; }
     ftrace_modify_code(pc, aarch64_insn_gen_branch_imm(pc, addr, AARCH64_INSN_BRANCH_LINK), new, true)
 }
 
 pub unsafe fn arch_ftrace_update_code(mut command: i32) { command |= FTRACE_MAY_SLEEP; ftrace_modify_all_code(command); }
 
 // External architecture/kernel declarations and configuration-dependent helpers.
-extern "C" { fn warn_ratelimit(_: i32, _: *const core::ffi::c_char, ...); fn get_kernel_nofault(_: *mut u32, _: *mut u32) -> i32; fn aarch64_insn_is_bti(_: u32) -> bool; fn aarch64_insn_gen_nop() -> u32; fn aarch64_insn_gen_move_reg(_: i32, _: i32, _: i32) -> u32; fn aarch64_insn_read(_: *const core::ffi::c_void, _: *mut u32) -> i32; fn aarch64_insn_patch_text_nosync(_: *mut core::ffi::c_void, _: u32) -> i32; fn aarch64_insn_gen_branch_imm(_: usize, _: usize, _: i32) -> u32; fn aarch64_insn_write_literal_u64(_: *mut core::ffi::c_void, _: usize) -> i32; fn ftrace_call(); fn ftrace_modify_all_code(_: i32); }
+extern "C" { fn warn_ratelimit(_: i32, _: *const kernel::ffi::c_char, ...); fn get_kernel_nofault(_: *mut u32, _: *mut u32) -> i32; fn aarch64_insn_is_bti(_: u32) -> bool; fn aarch64_insn_gen_nop() -> u32; fn aarch64_insn_gen_move_reg(_: i32, _: i32, _: i32) -> u32; fn aarch64_insn_read(_: *const kernel::ffi::c_void, _: *mut u32) -> i32; fn aarch64_insn_patch_text_nosync(_: *mut kernel::ffi::c_void, _: u32) -> i32; fn aarch64_insn_gen_branch_imm(_: usize, _: usize, _: i32) -> u32; fn aarch64_insn_write_literal_u64(_: *mut kernel::ffi::c_void, _: usize) -> i32; fn ftrace_call(); fn ftrace_modify_all_code(_: i32); }
 #[repr(C)] pub struct dyn_ftrace { pub ip: usize, pub flags: u32 }
 #[repr(C)] pub struct module { _private: [u8; 0] }
 const AARCH64_INSN_SIZE: usize = 4; const PAGE_MASK: usize = !0xfff; const SZ_128M: usize = 128 * 1024 * 1024; const FTRACE_MAY_SLEEP: i32 = 1 << 0; const AARCH64_INSN_BRANCH_LINK: i32 = 1;

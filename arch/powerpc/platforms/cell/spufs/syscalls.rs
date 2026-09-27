@@ -2,7 +2,7 @@
 // Dependencies supplied by the Linux kernel and spufs headers are referenced
 // here but intentionally not reimplemented.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     static spufs_context_fops: file_operations;

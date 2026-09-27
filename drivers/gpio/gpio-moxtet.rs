@@ -40,7 +40,7 @@ struct device_node;
 #[repr(C)]
 struct gpio_chip {
     parent: *mut device,
-    label: *const core::ffi::c_char,
+    label: *const kernel::ffi::c_char,
     get_direction: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>,
     direction_input: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>,
     direction_output: Option<unsafe extern "C" fn(*mut gpio_chip, u32, i32) -> i32>,
@@ -49,7 +49,7 @@ struct gpio_chip {
     base: i32,
     ngpio: u32,
     can_sleep: bool,
-    owner: *mut core::ffi::c_void,
+    owner: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -61,12 +61,12 @@ struct moxtet_driver {
 }
 #[repr(C)]
 struct driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     of_match_table: *const of_device_id,
     probe: Option<unsafe extern "C" fn(*mut device) -> i32>,
 }
 #[repr(C)]
-struct of_device_id { compatible: *const core::ffi::c_char }
+struct of_device_id { compatible: *const kernel::ffi::c_char }
 
 extern "C" {
     fn gpiochip_get_data(gc: *mut gpio_chip) -> *mut moxtet_gpio_chip;
@@ -74,10 +74,10 @@ extern "C" {
     fn moxtet_device_written(dev: *mut device) -> i32;
     fn moxtet_device_write(dev: *mut device, value: i32) -> i32;
     fn to_moxtet_device(dev: *mut device) -> *mut moxtet_device;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
-    fn dev_name(dev: *mut device) -> *const core::ffi::c_char;
-    fn devm_gpiochip_add_data(dev: *mut device, gc: *mut gpio_chip, data: *mut core::ffi::c_void) -> i32;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
+    fn dev_name(dev: *mut device) -> *const kernel::ffi::c_char;
+    fn devm_gpiochip_add_data(dev: *mut device, gc: *mut gpio_chip, data: *mut kernel::ffi::c_void) -> i32;
 }
 
 const GPIO_LINE_DIRECTION_IN: i32 = 1;
@@ -138,7 +138,7 @@ unsafe extern "C" fn moxtet_gpio_probe(dev: *mut device) -> i32 {
     (*chip).dev = dev;
     (*chip).gpio_chip.parent = dev;
     (*chip).desc = &descs[id as usize];
-    dev_set_drvdata(dev, chip as *mut core::ffi::c_void);
+    dev_set_drvdata(dev, chip as *mut kernel::ffi::c_void);
     (*chip).gpio_chip.label = dev_name(dev);
     (*chip).gpio_chip.get_direction = Some(moxtet_gpio_get_direction);
     (*chip).gpio_chip.direction_input = Some(moxtet_gpio_direction_input);
@@ -148,7 +148,7 @@ unsafe extern "C" fn moxtet_gpio_probe(dev: *mut device) -> i32 {
     (*chip).gpio_chip.base = -1;
     (*chip).gpio_chip.ngpio = MOXTET_GPIO_NGPIOS;
     (*chip).gpio_chip.can_sleep = true;
-    devm_gpiochip_add_data(dev, &mut (*chip).gpio_chip, chip as *mut core::ffi::c_void)
+    devm_gpiochip_add_data(dev, &mut (*chip).gpio_chip, chip as *mut kernel::ffi::c_void)
 }
 
 static moxtet_gpio_dt_ids: [of_device_id; 2] = [

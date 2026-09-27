@@ -40,7 +40,7 @@ pub struct usb_driver {
 pub struct snd_usb_audio_quirk {
     pub ifnum: i32,
     pub type_: u16,
-    pub data: *const core::ffi::c_void,
+    pub data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -48,8 +48,8 @@ pub struct usb_device {
     pub dev: device,
     pub actconfig: *mut usb_host_config,
     pub descriptor: usb_device_descriptor,
-    pub manufacturer: *const core::ffi::c_char,
-    pub product: *const core::ffi::c_char,
+    pub manufacturer: *const kernel::ffi::c_char,
+    pub product: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -186,8 +186,8 @@ pub struct list_head {
 
 #[repr(C)]
 pub struct usb_string_match {
-    pub manufacturer: *const core::ffi::c_char,
-    pub product: *const core::ffi::c_char,
+    pub manufacturer: *const kernel::ffi::c_char,
+    pub product: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -317,14 +317,14 @@ extern "C" {
     pub fn snd_usb_create_quirk(chip: *mut snd_usb_audio, iface: *mut usb_interface,
                                 driver: *mut usb_driver, quirk: *const snd_usb_audio_quirk) -> i32;
     pub fn usb_driver_claim_interface(driver: *mut usb_driver, iface: *mut usb_interface,
-                                      priv_: *const core::ffi::c_void) -> i32;
+                                      priv_: *const kernel::ffi::c_void) -> i32;
     pub fn snd_usb_midi_v2_create(chip: *mut snd_usb_audio, intf: *mut usb_interface,
                                   quirk: *const snd_usb_audio_quirk, flags: u32) -> i32;
     pub fn snd_usb_parse_audio_interface(chip: *mut snd_usb_audio, ifnum: u32) -> i32;
     pub fn usb_set_interface(dev: *mut usb_device, ifnum: u32, altnum: u32) -> i32;
     pub fn snd_usb_audioformat_set_sync_ep(chip: *mut snd_usb_audio, fp: *mut audioformat);
     pub fn snd_usb_add_audio_stream(chip: *mut snd_usb_audio, stream: u32, fp: *mut audioformat,
-                                    fmt: *const core::ffi::c_void) -> i32;
+                                    fmt: *const kernel::ffi::c_void) -> i32;
     pub fn snd_usb_add_endpoint(chip: *mut snd_usb_audio, ep: u32, type_: u32) -> i32;
     pub fn snd_usb_parse_datainterval(chip: *mut snd_usb_audio, alts: *mut usb_host_interface) -> u32;
     pub fn le16_to_cpu(x: u16) -> u16;
@@ -338,20 +338,20 @@ extern "C" {
     pub fn usb_endpoint_xfer_isoc(epd: *const usb_endpoint_descriptor) -> i32;
     pub fn usb_endpoint_xfer_bulk(epd: *const usb_endpoint_descriptor) -> i32;
     pub fn usb_endpoint_xfer_int(epd: *const usb_endpoint_descriptor) -> i32;
-    pub fn snd_usb_validate_midi_desc(desc: *const core::ffi::c_void) -> i32;
+    pub fn snd_usb_validate_midi_desc(desc: *const kernel::ffi::c_void) -> i32;
     pub fn snd_usb_ctl_msg(dev: *mut usb_device, pipe: u32, request: u8, requesttype: u8,
-                           value: u16, index: u16, data: *mut core::ffi::c_void, size: u16) -> i32;
+                           value: u16, index: u16, data: *mut kernel::ffi::c_void, size: u16) -> i32;
     pub fn usb_sndctrlpipe(dev: *mut usb_device, endpoint: u32) -> u32;
     pub fn usb_rcvctrlpipe(dev: *mut usb_device, endpoint: u32) -> u32;
     pub fn usb_sndintpipe(dev: *mut usb_device, endpoint: u32) -> u32;
     pub fn usb_rcvintpipe(dev: *mut usb_device, endpoint: u32) -> u32;
     pub fn usb_reset_configuration(dev: *mut usb_device) -> i32;
     pub fn usb_control_msg(dev: *mut usb_device, pipe: u32, request: u8, requesttype: u8,
-                           value: u16, index: u16, data: *mut core::ffi::c_void, size: u16,
+                           value: u16, index: u16, data: *mut kernel::ffi::c_void, size: u16,
                            timeout: u32) -> i32;
     pub fn usb_reset_device(dev: *mut usb_device) -> i32;
     pub fn usb_pipe_type_check(dev: *mut usb_device, pipe: u32) -> i32;
-    pub fn usb_interrupt_msg(dev: *mut usb_device, pipe: u32, data: *mut core::ffi::c_void,
+    pub fn usb_interrupt_msg(dev: *mut usb_device, pipe: u32, data: *mut kernel::ffi::c_void,
                              len: i32, actual_length: *mut i32, timeout: u32) -> i32;
     pub fn usb_driver_set_configuration(dev: *mut usb_device, config: i32) -> i32;
     pub fn snd_usb_create_mixer(chip: *mut snd_usb_audio, ifnum: u32) -> i32;
@@ -359,19 +359,19 @@ extern "C" {
                                 midi_list: *mut list_head, quirk: *const snd_usb_audio_quirk,
                                 usb_id: u32, num_rawmidis: *mut i32) -> i32;
     pub fn snd_emuusb_set_samplerate(chip: *mut snd_usb_audio, sr: u32);
-    pub fn dev_dbg(dev: *const device, fmt: *const core::ffi::c_char, ...);
-    pub fn dev_info(dev: *const device, fmt: *const core::ffi::c_char, ...);
-    pub fn dev_warn(dev: *const device, fmt: *const core::ffi::c_char, ...);
-    pub fn dev_err(dev: *const device, fmt: *const core::ffi::c_char, ...);
-    pub fn usb_audio_dbg(chip: *mut snd_usb_audio, fmt: *const core::ffi::c_char, ...);
-    pub fn usb_audio_err(chip: *mut snd_usb_audio, fmt: *const core::ffi::c_char, ...);
-    pub fn usb_audio_warn(chip: *mut snd_usb_audio, fmt: *const core::ffi::c_char, ...);
+    pub fn dev_dbg(dev: *const device, fmt: *const kernel::ffi::c_char, ...);
+    pub fn dev_info(dev: *const device, fmt: *const kernel::ffi::c_char, ...);
+    pub fn dev_warn(dev: *const device, fmt: *const kernel::ffi::c_char, ...);
+    pub fn dev_err(dev: *const device, fmt: *const kernel::ffi::c_char, ...);
+    pub fn usb_audio_dbg(chip: *mut snd_usb_audio, fmt: *const kernel::ffi::c_char, ...);
+    pub fn usb_audio_err(chip: *mut snd_usb_audio, fmt: *const kernel::ffi::c_char, ...);
+    pub fn usb_audio_warn(chip: *mut snd_usb_audio, fmt: *const kernel::ffi::c_char, ...);
     pub fn msleep(msecs: u32);
     pub fn usleep_range(min: u32, max: u32);
-    pub fn print_hex_dump(level: *const core::ffi::c_char, prefix: *const core::ffi::c_char,
+    pub fn print_hex_dump(level: *const kernel::ffi::c_char, prefix: *const kernel::ffi::c_char,
                           prefix_type: u32, rowsize: u32, groupsize: u32,
-                          buf: *const core::ffi::c_void, len: usize, ascii: bool);
-    pub fn dev_get_drvdata(dev: *const device) -> *mut core::ffi::c_void;
+                          buf: *const kernel::ffi::c_void, len: usize, ascii: bool);
+    pub fn dev_get_drvdata(dev: *const device) -> *mut kernel::ffi::c_void;
     pub fn USB_ID(vendor: u32, product: u32) -> u32;
     pub fn USB_ID_VENDOR(id: u32) -> u16;
     pub fn USB_ID_PRODUCT(id: u32) -> u16;
@@ -422,7 +422,7 @@ pub const QUIRK_AUDIO_EDIROL_UAXX: u16 = 17;
 pub const QUIRK_AUDIO_STANDARD_MIXER: u16 = 18;
 pub const QUIRK_TYPE_COUNT: u16 = 19;
 
-pub const USB_AUDIO_IFACE_UNUSED: *const core::ffi::c_void = core::ptr::null();
+pub const USB_AUDIO_IFACE_UNUSED: *const kernel::ffi::c_void = core::ptr::null();
 
 pub const USB_DIR_IN: u32 = 0x80;
 pub const USB_DIR_OUT: u32 = 0x00;
@@ -521,7 +521,7 @@ pub const ENODEV: i32 = -19;
 pub const ENXIO: i32 = -6;
 pub const EAGAIN: i32 = -11;
 
-pub const KERN_DEBUG: *const core::ffi::c_char = b"KERN_DEBUG\0" as *const u8 as *const core::ffi::c_char;
+pub const KERN_DEBUG: *const kernel::ffi::c_char = b"KERN_DEBUG\0" as *const u8 as *const kernel::ffi::c_char;
 pub const DUMP_PREFIX_NONE: u32 = 0;
 
 pub const MAX_NR_RATES: u32 = 384;
@@ -855,7 +855,7 @@ pub unsafe fn snd_usb_audigy2nx_boot_quirk(dev: *mut usb_device) -> i32 {
     let mut buf: u8 = 1;
     snd_usb_ctl_msg(dev, usb_rcvctrlpipe(dev, 0), 0x2a,
                     (USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_OTHER) as u8,
-                    0, 0, &mut buf as *mut u8 as *mut core::ffi::c_void, 1);
+                    0, 0, &mut buf as *mut u8 as *mut kernel::ffi::c_void, 1);
     if buf == 0 {
         snd_usb_ctl_msg(dev, usb_sndctrlpipe(dev, 0), 0x29,
                         (USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_OTHER) as u8,
@@ -890,7 +890,7 @@ pub unsafe fn snd_usb_cm106_write_int_reg(dev: *mut usb_device, reg: i32, value:
     buf[3] = reg as u8;
     snd_usb_ctl_msg(dev, usb_sndctrlpipe(dev, 0), USB_REQ_SET_CONFIGURATION,
                    (USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_ENDPOINT) as u8,
-                   0, 0, buf.as_mut_ptr() as *mut core::ffi::c_void, 4)
+                   0, 0, buf.as_mut_ptr() as *mut kernel::ffi::c_void, 4)
 }
 
 pub unsafe fn snd_usb_cm106_boot_quirk(dev: *mut usb_device) -> i32 {
@@ -925,7 +925,7 @@ pub unsafe fn snd_usb_gamecon780_boot_quirk(dev: *mut usb_device) -> i32 {
     snd_usb_ctl_msg(dev, usb_sndctrlpipe(dev, 0), UAC_SET_CUR,
                    (USB_RECIP_INTERFACE | USB_TYPE_CLASS | USB_DIR_OUT) as u8,
                    (UAC_FU_VOLUME as u16) << 8, 9 << 8,
-                   buf.as_ptr() as *const core::ffi::c_void as *mut core::ffi::c_void, 2)
+                   buf.as_ptr() as *const kernel::ffi::c_void as *mut kernel::ffi::c_void, 2)
 }
 
 pub unsafe fn snd_usb_novation_boot_quirk(dev: *mut usb_device) -> i32 {
@@ -958,16 +958,16 @@ pub unsafe fn mbox2_setup_48_24_magic(dev: *mut usb_device) {
 
     snd_usb_ctl_msg(dev, usb_rcvctrlpipe(dev, 0),
                    0x01, 0x22, 0x0100, 0x0085,
-                   temp.as_mut_ptr() as *mut core::ffi::c_void, 0x0003);
+                   temp.as_mut_ptr() as *mut kernel::ffi::c_void, 0x0003);
     snd_usb_ctl_msg(dev, usb_sndctrlpipe(dev, 0),
                    0x81, 0xa2, 0x0100, 0x0085,
-                   srate.as_mut_ptr() as *mut core::ffi::c_void, 0x0003);
+                   srate.as_mut_ptr() as *mut kernel::ffi::c_void, 0x0003);
     snd_usb_ctl_msg(dev, usb_sndctrlpipe(dev, 0),
                    0x81, 0xa2, 0x0100, 0x0086,
-                   srate.as_mut_ptr() as *mut core::ffi::c_void, 0x0003);
+                   srate.as_mut_ptr() as *mut kernel::ffi::c_void, 0x0003);
     snd_usb_ctl_msg(dev, usb_sndctrlpipe(dev, 0),
                    0x81, 0xa2, 0x0100, 0x0003,
-                   srate.as_mut_ptr() as *mut core::ffi::c_void, 0x0003);
+                   srate.as_mut_ptr() as *mut kernel::ffi::c_void, 0x0003);
 }
 
 pub unsafe fn snd_usb_mbox2_boot_quirk(dev: *mut usb_device) -> i32 {
@@ -1265,7 +1265,7 @@ pub unsafe fn pioneer_djm_set_format_quirk(subs: *mut snd_usb_substream, windex:
     snd_usb_ctl_msg((*(*subs).stream).chip,
                    usb_sndctrlpipe((*(*subs).stream).chip, 0),
                    0x01, 0x22, 0x0100, windex as u16,
-                   sr.as_mut_ptr() as *mut core::ffi::c_void, 0x0003);
+                   sr.as_mut_ptr() as *mut kernel::ffi::c_void, 0x0003);
     0
 }
 
@@ -1377,7 +1377,7 @@ pub unsafe fn snd_usb_ctl_msg_quirk(
     requesttype: u8,
     _value: u16,
     _index: u16,
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
     _size: u16,
 ) {
     let chip = dev_get_drvdata(&(*dev).dev) as *mut snd_usb_audio;
@@ -1517,12 +1517,12 @@ static QUIRK_FLAGS_TABLE: [usb_audio_quirk_flags_table; 1] = [
     }
 ];
 
-pub unsafe fn snd_usb_quirk_flags_from_name(_name: *const core::ffi::c_char) -> u64 {
+pub unsafe fn snd_usb_quirk_flags_from_name(_name: *const kernel::ffi::c_char) -> u64 {
     0
 }
 
 pub unsafe fn snd_usb_apply_flag_dbg(
-    _reason: *const core::ffi::c_char,
+    _reason: *const kernel::ffi::c_char,
     _chip: *mut snd_usb_audio,
     _flag: u64,
 ) {}
@@ -1536,6 +1536,6 @@ pub unsafe fn snd_usb_init_quirk_flags_table(chip: *mut snd_usb_audio) {
     }
 }
 
-pub unsafe fn snd_usb_init_quirk_flags_parse_string(_chip: *mut snd_usb_audio, _str: *const core::ffi::c_char) {}
+pub unsafe fn snd_usb_init_quirk_flags_parse_string(_chip: *mut snd_usb_audio, _str: *const kernel::ffi::c_char) {}
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

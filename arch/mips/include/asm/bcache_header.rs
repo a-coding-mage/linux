@@ -16,8 +16,8 @@
 pub struct bcache_ops {
     pub bc_enable: Option<unsafe extern "C" fn()>,
     pub bc_disable: Option<unsafe extern "C" fn()>,
-    pub bc_wback_inv: Option<unsafe extern "C" fn(page: ::core::ffi::c_ulong, size: ::core::ffi::c_ulong)>,
-    pub bc_inv: Option<unsafe extern "C" fn(page: ::core::ffi::c_ulong, size: ::core::ffi::c_ulong)>,
+    pub bc_wback_inv: Option<unsafe extern "C" fn(page: ::kernel::ffi::c_ulong, size: ::kernel::ffi::c_ulong)>,
+    pub bc_inv: Option<unsafe extern "C" fn(page: ::kernel::ffi::c_ulong, size: ::kernel::ffi::c_ulong)>,
     pub bc_prefetch_enable: Option<unsafe extern "C" fn()>,
     pub bc_prefetch_disable: Option<unsafe extern "C" fn()>,
     pub bc_prefetch_is_enabled: Option<unsafe extern "C" fn() -> bool>,
@@ -47,13 +47,13 @@ pub unsafe fn bc_disable() {
 
 #[cfg(CONFIG_BOARD_SCACHE)]
 #[inline]
-pub unsafe fn bc_wback_inv(page: ::core::ffi::c_ulong, size: ::core::ffi::c_ulong) {
+pub unsafe fn bc_wback_inv(page: ::kernel::ffi::c_ulong, size: ::kernel::ffi::c_ulong) {
     ((*bcops).bc_wback_inv.unwrap())(page, size);
 }
 
 #[cfg(CONFIG_BOARD_SCACHE)]
 #[inline]
-pub unsafe fn bc_inv(page: ::core::ffi::c_ulong, size: ::core::ffi::c_ulong) {
+pub unsafe fn bc_inv(page: ::kernel::ffi::c_ulong, size: ::kernel::ffi::c_ulong) {
     ((*bcops).bc_inv.unwrap())(page, size);
 }
 
@@ -95,11 +95,11 @@ pub fn bc_disable() {}
 
 #[cfg(not(CONFIG_BOARD_SCACHE))]
 #[inline]
-pub fn bc_wback_inv(_page: ::core::ffi::c_ulong, _size: ::core::ffi::c_ulong) {}
+pub fn bc_wback_inv(_page: ::kernel::ffi::c_ulong, _size: ::kernel::ffi::c_ulong) {}
 
 #[cfg(not(CONFIG_BOARD_SCACHE))]
 #[inline]
-pub fn bc_inv(_page: ::core::ffi::c_ulong, _size: ::core::ffi::c_ulong) {}
+pub fn bc_inv(_page: ::kernel::ffi::c_ulong, _size: ::kernel::ffi::c_ulong) {}
 
 #[cfg(not(CONFIG_BOARD_SCACHE))]
 #[inline]

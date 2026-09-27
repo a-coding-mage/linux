@@ -9,12 +9,12 @@
  */
 
 pub unsafe fn cpu_probe() {
-    let mut pvr: ::core::ffi::c_ulong;
-    let mut prr: ::core::ffi::c_ulong;
-    let mut cvr: ::core::ffi::c_ulong;
-    let mut size: ::core::ffi::c_ulong;
+    let mut pvr: ::kernel::ffi::c_ulong;
+    let mut prr: ::kernel::ffi::c_ulong;
+    let mut cvr: ::kernel::ffi::c_ulong;
+    let mut size: ::kernel::ffi::c_ulong;
 
-    static SIZES: [::core::ffi::c_ulong; 16] = [
+    static SIZES: [::kernel::ffi::c_ulong; 16] = [
         0, 1 << 12, 1 << 13, 0, 1 << 14, 0, 0, 0,
         1 << 15, 1 << 16, 0, 0, 0, 0, 0, 0,
     ];

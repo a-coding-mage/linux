@@ -31,12 +31,12 @@ const SLAVE_CODE_SIZE: usize = 256; /* First 0x100 bytes */
  */
 pub unsafe fn setup_kdump_cmdline(
     image: *mut kimage,
-    cmdline: *mut core::ffi::c_char,
-    cmdline_len: core::ffi::c_ulong,
-) -> *mut core::ffi::c_char {
-    let cmdline_ptr: *mut core::ffi::c_char;
+    cmdline: *mut kernel::ffi::c_char,
+    cmdline_len: kernel::ffi::c_ulong,
+) -> *mut kernel::ffi::c_char {
+    let cmdline_ptr: *mut kernel::ffi::c_char;
 
-    cmdline_ptr = kmalloc(COMMAND_LINE_SIZE, GFP_KERNEL) as *mut core::ffi::c_char;
+    cmdline_ptr = kmalloc(COMMAND_LINE_SIZE, GFP_KERNEL) as *mut kernel::ffi::c_char;
     if cmdline_ptr.is_null() {
         return core::ptr::null_mut();
     }
@@ -51,9 +51,9 @@ pub unsafe fn setup_kdump_cmdline(
         } else {
             c"".as_ptr()
         },
-    ) >= COMMAND_LINE_SIZE as core::ffi::c_int {
+    ) >= COMMAND_LINE_SIZE as kernel::ffi::c_int {
         pr_err(c"Prepending elfcorehdr=<addr> exceeds cmdline size\n".as_ptr());
-        kfree(cmdline_ptr as *mut core::ffi::c_void);
+        kfree(cmdline_ptr as *mut kernel::ffi::c_void);
         return core::ptr::null_mut();
     }
 
@@ -72,16 +72,16 @@ pub unsafe fn setup_kdump_cmdline(
  */
 pub unsafe fn setup_purgatory(
     image: *mut kimage,
-    slave_code: *const core::ffi::c_void,
-    _fdt: *const core::ffi::c_void,
-    kernel_load_addr: core::ffi::c_ulong,
-    fdt_load_addr: core::ffi::c_ulong,
-) -> core::ffi::c_int {
-    let slave_code_buf: *mut core::ffi::c_uint;
-    let mut master_entry: core::ffi::c_uint;
-    let mut ret: core::ffi::c_int;
+    slave_code: *const kernel::ffi::c_void,
+    _fdt: *const kernel::ffi::c_void,
+    kernel_load_addr: kernel::ffi::c_ulong,
+    fdt_load_addr: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
+    let slave_code_buf: *mut kernel::ffi::c_uint;
+    let mut master_entry: kernel::ffi::c_uint;
+    let mut ret: kernel::ffi::c_int;
 
-    slave_code_buf = kmalloc(SLAVE_CODE_SIZE, GFP_KERNEL) as *mut core::ffi::c_uint;
+    slave_code_buf = kmalloc(SLAVE_CODE_SIZE, GFP_KERNEL) as *mut kernel::ffi::c_uint;
     if slave_code_buf.is_null() {
         return -ENOMEM;
     }
@@ -90,18 +90,18 @@ pub unsafe fn setup_purgatory(
     ret = kexec_purgatory_get_set_symbol(
         image,
         c"purgatory_start".as_ptr(),
-        slave_code_buf as *mut core::ffi::c_void,
+        slave_code_buf as *mut kernel::ffi::c_void,
         SLAVE_CODE_SIZE,
         true,
     );
     if ret != 0 {
-        kfree(slave_code_buf as *mut core::ffi::c_void);
+        kfree(slave_code_buf as *mut kernel::ffi::c_void);
         return ret;
     }
 
     master_entry = *slave_code_buf;
     memcpy(
-        slave_code_buf as *mut core::ffi::c_void,
+        slave_code_buf as *mut kernel::ffi::c_void,
         slave_code,
         SLAVE_CODE_SIZE,
     );
@@ -109,16 +109,16 @@ pub unsafe fn setup_purgatory(
     ret = kexec_purgatory_get_set_symbol(
         image,
         c"purgatory_start".as_ptr(),
-        slave_code_buf as *mut core::ffi::c_void,
+        slave_code_buf as *mut kernel::ffi::c_void,
         SLAVE_CODE_SIZE,
         false,
     );
-    kfree(slave_code_buf as *mut core::ffi::c_void);
+    kfree(slave_code_buf as *mut kernel::ffi::c_void);
 
     ret = kexec_purgatory_get_set_symbol(
         image,
         c"kernel".as_ptr(),
-        &kernel_load_addr as *const _ as *mut core::ffi::c_void,
+        &kernel_load_addr as *const _ as *mut kernel::ffi::c_void,
         core::mem::size_of_val(&kernel_load_addr),
         false,
     );
@@ -128,7 +128,7 @@ pub unsafe fn setup_purgatory(
     ret = kexec_purgatory_get_set_symbol(
         image,
         c"dt_offset".as_ptr(),
-        &fdt_load_addr as *const _ as *mut core::ffi::c_void,
+        &fdt_load_addr as *const _ as *mut kernel::ffi::c_void,
         core::mem::size_of_val(&fdt_load_addr),
         false,
     );

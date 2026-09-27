@@ -3,7 +3,7 @@
 // printk formatting are represented by the entry layouts and assignment
 // functions below; the referenced kernel types and constants are external.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct io_wq_work;
@@ -22,7 +22,7 @@ pub struct io_uring_sqe {
 }
 
 extern "C" {
-    pub fn io_uring_get_opcode(opcode: u8) -> *const core::ffi::c_char;
+    pub fn io_uring_get_opcode(opcode: u8) -> *const kernel::ffi::c_char;
 }
 
 pub const IORING_SETUP_CQE32: u32 = 1 << 10;
@@ -32,16 +32,16 @@ pub const IORING_CQE_F_32: u32 = 1 << 1;
 #[repr(C)] pub struct io_uring_create_entry { pub fd: i32, pub ctx: *mut c_void, pub sq_entries: u32, pub cq_entries: u32, pub flags: u32 }
 #[repr(C)] pub struct io_uring_register_entry { pub ctx: *mut c_void, pub opcode: u32, pub nr_files: u32, pub nr_bufs: u32, pub ret: i64 }
 #[repr(C)] pub struct io_uring_file_get_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub fd: i32 }
-#[repr(C)] pub struct io_uring_queue_async_work_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub opcode: u8, pub flags: u64, pub work: *mut io_wq_work, pub hashed: bool, pub op_str: *const core::ffi::c_char }
-#[repr(C)] pub struct io_uring_defer_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub data: u64, pub opcode: u8, pub op_str: *const core::ffi::c_char }
+#[repr(C)] pub struct io_uring_queue_async_work_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub opcode: u8, pub flags: u64, pub work: *mut io_wq_work, pub hashed: bool, pub op_str: *const kernel::ffi::c_char }
+#[repr(C)] pub struct io_uring_defer_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub data: u64, pub opcode: u8, pub op_str: *const kernel::ffi::c_char }
 #[repr(C)] pub struct io_uring_link_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub target_req: *mut c_void }
 #[repr(C)] pub struct io_uring_cqring_wait_entry { pub ctx: *mut c_void, pub min_events: i32 }
-#[repr(C)] pub struct io_uring_fail_link_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub opcode: u8, pub link: *mut c_void, pub op_str: *const core::ffi::c_char }
+#[repr(C)] pub struct io_uring_fail_link_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub opcode: u8, pub link: *mut c_void, pub op_str: *const kernel::ffi::c_char }
 #[repr(C)] pub struct io_uring_complete_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub res: i32, pub cflags: u32, pub extra1: u64, pub extra2: u64 }
-#[repr(C)] pub struct io_uring_submit_req_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub opcode: u8, pub flags: u64, pub sq_thread: bool, pub op_str: *const core::ffi::c_char }
-#[repr(C)] pub struct io_uring_poll_arm_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub opcode: u8, pub mask: i32, pub events: i32, pub op_str: *const core::ffi::c_char }
-#[repr(C)] pub struct io_uring_task_add_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub opcode: u8, pub mask: i32, pub op_str: *const core::ffi::c_char }
-#[repr(C)] pub struct io_uring_req_failed_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub opcode: u8, pub flags: u8, pub ioprio: u8, pub off: u64, pub addr: u64, pub len: u32, pub op_flags: u32, pub buf_index: u16, pub personality: u16, pub file_index: u32, pub pad1: u64, pub addr3: u64, pub error: i32, pub op_str: *const core::ffi::c_char }
+#[repr(C)] pub struct io_uring_submit_req_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub opcode: u8, pub flags: u64, pub sq_thread: bool, pub op_str: *const kernel::ffi::c_char }
+#[repr(C)] pub struct io_uring_poll_arm_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub opcode: u8, pub mask: i32, pub events: i32, pub op_str: *const kernel::ffi::c_char }
+#[repr(C)] pub struct io_uring_task_add_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub opcode: u8, pub mask: i32, pub op_str: *const kernel::ffi::c_char }
+#[repr(C)] pub struct io_uring_req_failed_entry { pub ctx: *mut c_void, pub req: *mut c_void, pub user_data: u64, pub opcode: u8, pub flags: u8, pub ioprio: u8, pub off: u64, pub addr: u64, pub len: u32, pub op_flags: u32, pub buf_index: u16, pub personality: u16, pub file_index: u32, pub pad1: u64, pub addr3: u64, pub error: i32, pub op_str: *const kernel::ffi::c_char }
 #[repr(C)] pub struct io_uring_cqe_overflow_entry { pub ctx: *mut c_void, pub user_data: u64, pub res: i32, pub cflags: u32, pub ocqe: *mut c_void }
 #[repr(C)] pub struct io_uring_task_work_run_entry { pub tctx: *mut c_void, pub count: u32 }
 #[repr(C)] pub struct io_uring_short_write_entry { pub ctx: *mut c_void, pub fpos: u64, pub wanted: u64, pub got: u64 }

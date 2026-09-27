@@ -138,10 +138,10 @@ pub const FB_CAP_FOURCC: u32 = 1;
 
 #[repr(C)]
 pub struct fb_fix_screeninfo {
-    pub id: [i8; 16], pub smem_start: ::core::ffi::c_ulong, pub smem_len: __u32,
+    pub id: [i8; 16], pub smem_start: ::kernel::ffi::c_ulong, pub smem_len: __u32,
     pub type_: __u32, pub type_aux: __u32, pub visual: __u32,
     pub xpanstep: __u16, pub ypanstep: __u16, pub ywrapstep: __u16,
-    pub line_length: __u32, pub mmio_start: ::core::ffi::c_ulong, pub mmio_len: __u32,
+    pub line_length: __u32, pub mmio_start: ::kernel::ffi::c_ulong, pub mmio_len: __u32,
     pub accel: __u32, pub capabilities: __u16, pub reserved: [__u16; 2],
 }
 
@@ -180,8 +180,8 @@ pub const FB_ROTATE_CW: u32 = 1;
 pub const FB_ROTATE_UD: u32 = 2;
 pub const FB_ROTATE_CCW: u32 = 3;
 
-#[inline] pub const fn PICOS2KHZ(a: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong { 1_000_000_000u64 as ::core::ffi::c_ulong / a }
-#[inline] pub const fn KHZ2PICOS(a: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong { 1_000_000_000u64 as ::core::ffi::c_ulong / a }
+#[inline] pub const fn PICOS2KHZ(a: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong { 1_000_000_000u64 as ::kernel::ffi::c_ulong / a }
+#[inline] pub const fn KHZ2PICOS(a: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong { 1_000_000_000u64 as ::kernel::ffi::c_ulong / a }
 
 #[repr(C)]
 pub struct fb_var_screeninfo {

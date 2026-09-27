@@ -7,17 +7,17 @@ pub const _NSIG: usize = 64;
 pub const _NSIG_BPW: usize = 32;
 pub const _NSIG_WORDS: usize = _NSIG / _NSIG_BPW;
 
-pub type old_sigset_t = core::ffi::c_ulong; /* at least 32 bits */
+pub type old_sigset_t = kernel::ffi::c_ulong; /* at least 32 bits */
 
 #[repr(C)]
 pub struct sigset_t {
-    pub sig: [core::ffi::c_ulong; _NSIG_WORDS],
+    pub sig: [kernel::ffi::c_ulong; _NSIG_WORDS],
 }
 
 // __ARCH_UAPI_SA_FLAGS = (SA_THIRTYTWO | SA_RESTORER), where those symbols
 // are supplied by <uapi/asm/signal.h>.
-pub const __ARCH_UAPI_SA_FLAGS: core::ffi::c_ulong =
-    (SA_THIRTYTWO | SA_RESTORER) as core::ffi::c_ulong;
+pub const __ARCH_UAPI_SA_FLAGS: kernel::ffi::c_ulong =
+    (SA_THIRTYTWO | SA_RESTORER) as kernel::ffi::c_ulong;
 
 // __ARCH_HAS_SA_RESTORER
 

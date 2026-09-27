@@ -11,7 +11,7 @@ pub const KEXEC_CONTROL_MEMORY_LIMIT: usize = usize::MAX;
 
 pub const KEXEC_CONTROL_PAGE_SIZE: usize = 4096;
 
-pub const KEXEC_ARCH: _ = KEXEC_ARCH_68K;
+pub const KEXEC_ARCH: u32 = KEXEC_ARCH_68K;
 
 /* __ASSEMBLER__ */
 

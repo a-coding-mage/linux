@@ -161,7 +161,7 @@ pub const PF_HP_LAZYSWAP: u32 = 0x0400_0000;
 pub const PF_HP_SBP: u32 = 0x0800_0000;
 pub const ELF_PLATFORM: &str = "PARISC";
 
-pub type elf_greg_t = libc::c_ulong;
+pub type elf_greg_t = kernel::ffi::c_ulong;
 pub const ELF_NGREG: usize = 80;
 pub type elf_gregset_t = [elf_greg_t; ELF_NGREG];
 pub const ELF_NFPREG: usize = 32;

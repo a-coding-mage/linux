@@ -2,7 +2,7 @@
 // Translated from ip27-nmi.c. Kernel and SGI architecture dependencies are
 // supplied by the surrounding translation environment.
 
-type MachregT = ::core::ffi::c_ulong;
+type MachregT = ::kernel::ffi::c_ulong;
 
 // #if 0: NODE_NUM_CPUS(n) is CNODE_NUM_CPUS(n); otherwise it is CPUS_PER_NODE.
 const NODE_NUM_CPUS: usize = CPUS_PER_NODE;

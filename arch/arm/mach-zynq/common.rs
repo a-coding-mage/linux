@@ -12,7 +12,7 @@ const ZYNQ_DEVCFG_MCTRL: usize = 0x80;
 const ZYNQ_DEVCFG_PS_VERSION_SHIFT: u32 = 28;
 const ZYNQ_DEVCFG_PS_VERSION_MASK: u32 = 0xF;
 
-static mut zynq_scu_base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut zynq_scu_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 /// zynq_memory_init - Initialize special memory
 ///
@@ -112,7 +112,7 @@ unsafe fn zynq_scu_map_io() {
     // Expected address is in vmalloc area that's why simple assign here.
     zynq_cortex_a9_scu_map.virtual_ = base;
     iotable_init(&raw mut zynq_cortex_a9_scu_map, 1);
-    zynq_scu_base = base as *mut core::ffi::c_void;
+    zynq_scu_base = base as *mut kernel::ffi::c_void;
     BUG_ON(zynq_scu_base.is_null());
 }
 
@@ -127,7 +127,7 @@ unsafe fn zynq_irq_init() {
     irqchip_init();
 }
 
-static zynq_dt_match: [*const core::ffi::c_char; 2] = [
+static zynq_dt_match: [*const kernel::ffi::c_char; 2] = [
     c"xlnx,zynq-7000".as_ptr(),
     core::ptr::null(),
 ];

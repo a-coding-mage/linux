@@ -15,29 +15,29 @@ pub const UV_MMTIMER_DESC: &[u8] = b"SGI UV Memory Mapped RTC Timer\0";
 pub const UV_MMTIMER_VERSION: &[u8] = b"1.0\0";
 
 extern "C" {
-    static mut uv_mmtimer_femtoperiod: ::core::ffi::c_ulong;
-    static mut sn_rtc_cycles_per_second: ::core::ffi::c_ulong;
+    static mut uv_mmtimer_femtoperiod: ::kernel::ffi::c_ulong;
+    static mut sn_rtc_cycles_per_second: ::kernel::ffi::c_ulong;
 
-    fn uv_get_min_hub_revision_id() -> ::core::ffi::c_int;
-    fn uv_blade_processor_id() -> ::core::ffi::c_ulong;
-    fn uv_local_mmr_address(reg: ::core::ffi::c_ulong) -> *mut ::core::ffi::c_void;
+    fn uv_get_min_hub_revision_id() -> ::kernel::ffi::c_int;
+    fn uv_blade_processor_id() -> ::kernel::ffi::c_ulong;
+    fn uv_local_mmr_address(reg: ::kernel::ffi::c_ulong) -> *mut ::kernel::ffi::c_void;
     fn is_uv_system() -> bool;
     fn copy_to_user(
-        to: *mut ::core::ffi::c_void,
-        from: *const ::core::ffi::c_void,
+        to: *mut ::kernel::ffi::c_void,
+        from: *const ::kernel::ffi::c_void,
         n: usize,
-    ) -> ::core::ffi::c_ulong;
-    fn hweight64(x: u64) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_ulong;
+    fn hweight64(x: u64) -> ::kernel::ffi::c_int;
     fn pgprot_noncached(prot: usize) -> usize;
     fn remap_pfn_range(
         vma: *mut vm_area_struct,
-        start: ::core::ffi::c_ulong,
-        pfn: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        pfn: ::kernel::ffi::c_ulong,
         size: usize,
         prot: usize,
-    ) -> ::core::ffi::c_int;
-    fn misc_register(dev: *mut miscdevice) -> ::core::ffi::c_int;
-    fn printk(fmt: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    fn misc_register(dev: *mut miscdevice) -> ::kernel::ffi::c_int;
+    fn printk(fmt: *const ::kernel::ffi::c_char, ...) -> ::kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -47,24 +47,24 @@ pub struct file {
 
 #[repr(C)]
 pub struct vm_area_struct {
-    pub vm_start: ::core::ffi::c_ulong,
-    pub vm_end: ::core::ffi::c_ulong,
-    pub vm_flags: ::core::ffi::c_ulong,
+    pub vm_start: ::kernel::ffi::c_ulong,
+    pub vm_end: ::kernel::ffi::c_ulong,
+    pub vm_flags: ::kernel::ffi::c_ulong,
     pub vm_page_prot: usize,
 }
 
 #[repr(C)]
 pub struct file_operations {
-    pub owner: *mut ::core::ffi::c_void,
-    pub mmap: Option<unsafe extern "C" fn(*mut file, *mut vm_area_struct) -> ::core::ffi::c_int>,
-    pub unlocked_ioctl: Option<unsafe extern "C" fn(*mut file, u32, ::core::ffi::c_ulong) -> ::core::ffi::c_long>,
-    pub llseek: *mut ::core::ffi::c_void,
+    pub owner: *mut ::kernel::ffi::c_void,
+    pub mmap: Option<unsafe extern "C" fn(*mut file, *mut vm_area_struct) -> ::kernel::ffi::c_int>,
+    pub unlocked_ioctl: Option<unsafe extern "C" fn(*mut file, u32, ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_long>,
+    pub llseek: *mut ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct miscdevice {
-    pub minor: ::core::ffi::c_int,
-    pub name: *const ::core::ffi::c_char,
+    pub minor: ::kernel::ffi::c_int,
+    pub name: *const ::kernel::ffi::c_char,
     pub fops: *const file_operations,
 }
 
@@ -74,12 +74,12 @@ pub const MMTIMER_GETFREQ: u32 = 2;
 pub const MMTIMER_GETBITS: u32 = 3;
 pub const MMTIMER_MMAPAVAIL: u32 = 4;
 pub const MMTIMER_GETCOUNTER: u32 = 5;
-pub const UVH_RTC: ::core::ffi::c_ulong = 0;
+pub const UVH_RTC: ::kernel::ffi::c_ulong = 0;
 pub const UVH_RTC_REAL_TIME_CLOCK_MASK: u64 = 0xffff_ffff_ffff_ffff;
-pub const UV_LOCAL_MMR_BASE: ::core::ffi::c_ulong = 0;
-pub const L1_CACHE_BYTES: ::core::ffi::c_ulong = 64;
-pub const PAGE_SIZE: ::core::ffi::c_ulong = 4096;
-pub const VM_WRITE: ::core::ffi::c_ulong = 0x0000_0002;
+pub const UV_LOCAL_MMR_BASE: ::kernel::ffi::c_ulong = 0;
+pub const L1_CACHE_BYTES: ::kernel::ffi::c_ulong = 64;
+pub const PAGE_SIZE: ::kernel::ffi::c_ulong = 4096;
+pub const VM_WRITE: ::kernel::ffi::c_ulong = 0x0000_0002;
 
 static UV_MMTIMER_FOPS: file_operations = file_operations {
     owner: core::ptr::null_mut(),
@@ -91,9 +91,9 @@ static UV_MMTIMER_FOPS: file_operations = file_operations {
 unsafe extern "C" fn uv_mmtimer_ioctl(
     _file: *mut file,
     cmd: u32,
-    arg: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_long {
-    let mut ret: ::core::ffi::c_long = 0;
+    arg: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_long {
+    let mut ret: ::kernel::ffi::c_long = 0;
 
     match cmd {
         MMTIMER_GETOFFSET => {
@@ -105,25 +105,25 @@ unsafe extern "C" fn uv_mmtimer_ioctl(
         }
         MMTIMER_GETRES => {
             if copy_to_user(
-                arg as *mut ::core::ffi::c_void,
-                &uv_mmtimer_femtoperiod as *const _ as *const ::core::ffi::c_void,
-                core::mem::size_of::<::core::ffi::c_ulong>(),
+                arg as *mut ::kernel::ffi::c_void,
+                &uv_mmtimer_femtoperiod as *const _ as *const ::kernel::ffi::c_void,
+                core::mem::size_of::<::kernel::ffi::c_ulong>(),
             ) != 0 { ret = -14; }
         }
         MMTIMER_GETFREQ => {
             if copy_to_user(
-                arg as *mut ::core::ffi::c_void,
-                &sn_rtc_cycles_per_second as *const _ as *const ::core::ffi::c_void,
-                core::mem::size_of::<::core::ffi::c_ulong>(),
+                arg as *mut ::kernel::ffi::c_void,
+                &sn_rtc_cycles_per_second as *const _ as *const ::kernel::ffi::c_void,
+                core::mem::size_of::<::kernel::ffi::c_ulong>(),
             ) != 0 { ret = -14; }
         }
         MMTIMER_GETBITS => ret = hweight64(UVH_RTC_REAL_TIME_CLOCK_MASK) as _,
         MMTIMER_MMAPAVAIL => ret = 1,
         MMTIMER_GETCOUNTER => {
             if copy_to_user(
-                arg as *mut ::core::ffi::c_void,
-                uv_local_mmr_address(UVH_RTC) as *const ::core::ffi::c_void,
-                core::mem::size_of::<::core::ffi::c_ulong>(),
+                arg as *mut ::kernel::ffi::c_void,
+                uv_local_mmr_address(UVH_RTC) as *const ::kernel::ffi::c_void,
+                core::mem::size_of::<::kernel::ffi::c_ulong>(),
             ) != 0 { ret = -14; }
         }
         _ => ret = -25,
@@ -134,7 +134,7 @@ unsafe extern "C" fn uv_mmtimer_ioctl(
 unsafe extern "C" fn uv_mmtimer_mmap(
     _file: *mut file,
     vma: *mut vm_area_struct,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     if (*vma).vm_end - (*vma).vm_start != PAGE_SIZE { return -22; }
     if (*vma).vm_flags & VM_WRITE != 0 { return -1; }
     if PAGE_SIZE > (1 << 16) { return -38; }
@@ -157,7 +157,7 @@ static mut UV_MMTIMER_MISCDEV: miscdevice = miscdevice {
     fops: &UV_MMTIMER_FOPS,
 };
 
-unsafe extern "C" fn uv_mmtimer_init() -> ::core::ffi::c_int {
+unsafe extern "C" fn uv_mmtimer_init() -> ::kernel::ffi::c_int {
     if !is_uv_system() { return -1; }
     if sn_rtc_cycles_per_second < 100000 { return -1; }
 

@@ -34,11 +34,11 @@ pub unsafe fn ERR_getErrorCode(code: usize) -> ERR_enum {
 
 /* The error-code enum and ERROR!/ZSTD_error_* names are supplied externally. */
 extern "C" {
-    pub fn ERR_getErrorString(code: ERR_enum) -> *const ::core::ffi::c_char;
+    pub fn ERR_getErrorString(code: ERR_enum) -> *const ::kernel::ffi::c_char;
 }
 
 #[inline]
-pub unsafe fn ERR_getErrorName(code: usize) -> *const ::core::ffi::c_char {
+pub unsafe fn ERR_getErrorName(code: usize) -> *const ::kernel::ffi::c_char {
     ERR_getErrorString(ERR_getErrorCode(code))
 }
 
@@ -53,7 +53,7 @@ pub unsafe fn ERR_getErrorName(code: usize) -> *const ::core::ffi::c_char {
  */
 #[allow(improper_ctypes_definitions)]
 pub unsafe extern "C" fn _force_has_format_string(
-    _format: *const ::core::ffi::c_char,
+    _format: *const ::kernel::ffi::c_char,
     ...,
 ) {
 }

@@ -24,9 +24,9 @@
 // C header guard: _SFP_MACHINE_H
 
 pub const _FP_W_TYPE_SIZE: usize = 64;
-pub type _FP_W_TYPE = ::core::ffi::c_ulong;
-pub type _FP_WS_TYPE = ::core::ffi::c_long;
-pub type _FP_I_TYPE = ::core::ffi::c_long;
+pub type _FP_W_TYPE = ::kernel::ffi::c_ulong;
+pub type _FP_WS_TYPE = ::kernel::ffi::c_long;
+pub type _FP_I_TYPE = ::kernel::ffi::c_long;
 
 macro_rules! _FP_MUL_MEAT_S {
     ($R:ident, $X:ident, $Y:ident) => {

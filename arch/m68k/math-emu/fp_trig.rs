@@ -15,7 +15,7 @@
 
 */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Declarations supplied by the surrounding emulator sources.
 #[repr(C)]

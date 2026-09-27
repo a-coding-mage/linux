@@ -50,10 +50,10 @@ unsafe fn sun7i_a20_gmac_clk_setup(node: *mut device_node) {
     let mut clk: *mut clk;
     let mux: *mut clk_mux;
     let gate: *mut clk_gate;
-    let mut clk_name: *const core::ffi::c_char = (*node).name;
-    let mut parents: [*const core::ffi::c_char; SUN7I_A20_GMAC_PARENTS] =
+    let mut clk_name: *const kernel::ffi::c_char = (*node).name;
+    let mut parents: [*const kernel::ffi::c_char; SUN7I_A20_GMAC_PARENTS] =
         [core::ptr::null(); SUN7I_A20_GMAC_PARENTS];
-    let mut reg: *mut core::ffi::c_void;
+    let mut reg: *mut kernel::ffi::c_void;
 
     if of_property_read_string(
         node,

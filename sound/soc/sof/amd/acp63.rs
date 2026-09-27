@@ -26,9 +26,9 @@ pub const PDM_DMIC_INSTANCE: usize = 3;
 pub const I2S_HS_VIRTUAL_INSTANCE: usize = 4;
 
 unsafe extern "C" {
-    fn memcpy(dest: *mut core::ffi::c_void,
-              src: *const core::ffi::c_void,
-              n: usize) -> *mut core::ffi::c_void;
+    fn memcpy(dest: *mut kernel::ffi::c_void,
+              src: *const kernel::ffi::c_void,
+              n: usize) -> *mut kernel::ffi::c_void;
 
     static sof_acp_common_ops: snd_sof_dsp_ops;
 }
@@ -36,7 +36,7 @@ unsafe extern "C" {
 static mut acp63_sof_dai: [snd_soc_dai_driver; 5] = [
     snd_soc_dai_driver {
         id: I2S_HS_INSTANCE as i32,
-        name: b"acp-sof-hs\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp-sof-hs\0".as_ptr() as *const kernel::ffi::c_char,
         playback: snd_soc_pcm_stream {
             rates: SNDRV_PCM_RATE_8000_96000,
             formats: SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S8 |
@@ -63,7 +63,7 @@ static mut acp63_sof_dai: [snd_soc_dai_driver; 5] = [
 
     snd_soc_dai_driver {
         id: I2S_BT_INSTANCE as i32,
-        name: b"acp-sof-bt\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp-sof-bt\0".as_ptr() as *const kernel::ffi::c_char,
         playback: snd_soc_pcm_stream {
             rates: SNDRV_PCM_RATE_8000_96000,
             formats: SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S8 |
@@ -90,7 +90,7 @@ static mut acp63_sof_dai: [snd_soc_dai_driver; 5] = [
 
     snd_soc_dai_driver {
         id: I2S_SP_INSTANCE as i32,
-        name: b"acp-sof-sp\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp-sof-sp\0".as_ptr() as *const kernel::ffi::c_char,
         playback: snd_soc_pcm_stream {
             rates: SNDRV_PCM_RATE_8000_96000,
             formats: SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S8 |
@@ -117,7 +117,7 @@ static mut acp63_sof_dai: [snd_soc_dai_driver; 5] = [
 
     snd_soc_dai_driver {
         id: PDM_DMIC_INSTANCE as i32,
-        name: b"acp-sof-dmic\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp-sof-dmic\0".as_ptr() as *const kernel::ffi::c_char,
         capture: snd_soc_pcm_stream {
             rates: SNDRV_PCM_RATE_8000_48000,
             formats: SNDRV_PCM_FMTBIT_S32_LE,
@@ -132,7 +132,7 @@ static mut acp63_sof_dai: [snd_soc_dai_driver; 5] = [
 
     snd_soc_dai_driver {
         id: I2S_HS_VIRTUAL_INSTANCE as i32,
-        name: b"acp-sof-hs-virtual\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp-sof-hs-virtual\0".as_ptr() as *const kernel::ffi::c_char,
         playback: snd_soc_pcm_stream {
             rates: SNDRV_PCM_RATE_8000_96000,
             formats: SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S8 |
@@ -155,8 +155,8 @@ pub static mut sof_acp63_ops: snd_sof_dsp_ops = unsafe { core::mem::zeroed() };
 #[no_mangle]
 pub unsafe extern "C" fn sof_acp63_ops_init(sdev: *mut snd_sof_dev) -> i32 {
     /* common defaults */
-    memcpy(&raw mut sof_acp63_ops as *mut core::ffi::c_void,
-           &raw const sof_acp_common_ops as *const core::ffi::c_void,
+    memcpy(&raw mut sof_acp63_ops as *mut kernel::ffi::c_void,
+           &raw const sof_acp_common_ops as *const kernel::ffi::c_void,
            core::mem::size_of::<snd_sof_dsp_ops>());
 
     sof_acp63_ops.drv = (&raw mut acp63_sof_dai) as *mut snd_soc_dai_driver;

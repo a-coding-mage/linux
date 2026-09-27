@@ -7,12 +7,12 @@ pub const FUSE_NAME_LOW_MAX: usize = 1024;
 pub const FUSE_CTL_NUM_DENTRIES: usize = 5;
 
 extern "C" {
-    pub static mut inval_wq: ::core::ffi::c_uint;
-    pub static mut fuse_max_pages_limit: ::core::ffi::c_uint;
+    pub static mut inval_wq: ::kernel::ffi::c_uint;
+    pub static mut fuse_max_pages_limit: ::kernel::ffi::c_uint;
     pub static mut fuse_conn_list: list_head;
     pub static mut fuse_mutex: mutex;
-    pub static mut max_user_bgreq: ::core::ffi::c_uint;
-    pub static mut max_user_congthresh: ::core::ffi::c_uint;
+    pub static mut max_user_bgreq: ::kernel::ffi::c_uint;
+    pub static mut max_user_congthresh: ::kernel::ffi::c_uint;
 }
 
 #[repr(C)] pub struct fuse_submount_lookup { pub count: refcount_t, pub nodeid: u64, pub forget: *mut fuse_forget_link }
@@ -23,7 +23,7 @@ pub struct fuse_inode {
     pub inode: inode, pub nodeid: u64, pub nlookup: u64, pub forget: *mut fuse_forget_link,
     pub i_time: u64, pub inval_mask: u32, pub orig_i_mode: umode_t, pub i_btime: timespec64,
     pub orig_ino: u64, pub attr_version: u64,
-    pub data: fuse_inode_data, pub state: ::core::ffi::c_ulong, pub mutex: mutex, pub lock: spinlock_t,
+    pub data: fuse_inode_data, pub state: ::kernel::ffi::c_ulong, pub mutex: mutex, pub lock: spinlock_t,
     #[cfg(CONFIG_FUSE_DAX)] pub dax: *mut fuse_inode_dax,
     pub submount_lookup: *mut fuse_submount_lookup,
     #[cfg(CONFIG_FUSE_PASSTHROUGH)] pub fb: *mut fuse_backing,
@@ -45,14 +45,14 @@ pub const FUSE_I_BTIME: u32 = 4; pub const FUSE_I_CACHE_IO_MODE: u32 = 5; pub co
 
 #[repr(C)] pub enum fuse_dax_mode { FUSE_DAX_INODE_DEFAULT, FUSE_DAX_ALWAYS, FUSE_DAX_NEVER, FUSE_DAX_INODE_USER }
 #[inline] pub unsafe fn fuse_is_inode_dax_mode(mode: fuse_dax_mode) -> bool { matches!(mode, fuse_dax_mode::FUSE_DAX_INODE_DEFAULT | fuse_dax_mode::FUSE_DAX_INODE_USER) }
-#[repr(C)] pub struct fuse_fs_context { pub fud: *mut fuse_dev, pub rootmode: u32, pub user_id: kuid_t, pub group_id: kgid_t, pub is_bdev: bool, pub rootmode_present: bool, pub user_id_present: bool, pub group_id_present: bool, pub default_permissions: bool, pub allow_other: bool, pub destroy: bool, pub no_control: bool, pub no_force_umount: bool, pub legacy_opts_show: bool, pub dax_mode: fuse_dax_mode, pub max_read: u32, pub blksize: u32, pub subtype: *const ::core::ffi::c_char, pub dax_dev: *mut dax_device }
+#[repr(C)] pub struct fuse_fs_context { pub fud: *mut fuse_dev, pub rootmode: u32, pub user_id: kuid_t, pub group_id: kgid_t, pub is_bdev: bool, pub rootmode_present: bool, pub user_id_present: bool, pub group_id_present: bool, pub default_permissions: bool, pub allow_other: bool, pub destroy: bool, pub no_control: bool, pub no_force_umount: bool, pub legacy_opts_show: bool, pub dax_mode: fuse_dax_mode, pub max_read: u32, pub blksize: u32, pub subtype: *const ::kernel::ffi::c_char, pub dax_dev: *mut dax_device }
 #[repr(C)] pub struct fuse_sync_bucket { pub count: atomic_t, pub waitq: wait_queue_head_t, pub rcu: rcu_head }
 
 #[repr(C)] pub struct fuse_conn {
  pub lock: spinlock_t, pub count: refcount_t, pub epoch: atomic_t, pub epoch_work: work_struct, pub rcu: rcu_head,
  pub user_id: kuid_t, pub group_id: kgid_t, pub pid_ns: *mut pid_namespace, pub user_ns: *mut user_namespace,
- pub max_read: ::core::ffi::c_uint, pub max_write: ::core::ffi::c_uint, pub max_pages: u32, pub max_pages_limit: u32, pub chan: *mut fuse_chan, pub khctr: atomic64_t, pub polled_files: rb_root, pub congestion_threshold: ::core::ffi::c_uint,
- pub flags: u64, pub max_stack_depth: i32, pub minor: ::core::ffi::c_uint, pub entry: list_head, pub dev: dev_t, pub scramble_key: [u32;4], pub attr_version: atomic64_t, pub evict_ctr: atomic64_t, pub name_max: u32, pub release: Option<unsafe extern "C" fn(*mut fuse_conn)>, pub killsb: rw_semaphore,
+ pub max_read: ::kernel::ffi::c_uint, pub max_write: ::kernel::ffi::c_uint, pub max_pages: u32, pub max_pages_limit: u32, pub chan: *mut fuse_chan, pub khctr: atomic64_t, pub polled_files: rb_root, pub congestion_threshold: ::kernel::ffi::c_uint,
+ pub flags: u64, pub max_stack_depth: i32, pub minor: ::kernel::ffi::c_uint, pub entry: list_head, pub dev: dev_t, pub scramble_key: [u32;4], pub attr_version: atomic64_t, pub evict_ctr: atomic64_t, pub name_max: u32, pub release: Option<unsafe extern "C" fn(*mut fuse_conn)>, pub killsb: rw_semaphore,
  #[cfg(CONFIG_FUSE_DAX)] pub dax_mode: fuse_dax_mode, #[cfg(CONFIG_FUSE_DAX)] pub dax: *mut fuse_conn_dax,
  pub mounts: list_head, pub curr_bucket: *mut fuse_sync_bucket, #[cfg(CONFIG_FUSE_PASSTHROUGH)] pub backing_files_map: idr,
 }
@@ -97,10 +97,10 @@ extern "C" {
 extern "C" {
     pub fn fuse_change_attributes(inode:*mut inode,attr:*mut fuse_attr,sx:*mut fuse_statx,valid:u64,version:u64);
     pub fn fuse_update_attributes(inode:*mut inode,file:*mut file,mask:u32)->i32;
-    pub fn fuse_setxattr(inode:*mut inode,name:*const ::core::ffi::c_char,value:*const ::core::ffi::c_void,size:usize,flags:i32,extra_flags:u32)->i32;
-    pub fn fuse_getxattr(inode:*mut inode,name:*const ::core::ffi::c_char,value:*mut ::core::ffi::c_void,size:usize)->ssize_t;
-    pub fn fuse_listxattr(entry:*mut dentry,list:*mut ::core::ffi::c_char,size:usize)->ssize_t;
-    pub fn fuse_removexattr(inode:*mut inode,name:*const ::core::ffi::c_char)->i32;
+    pub fn fuse_setxattr(inode:*mut inode,name:*const ::kernel::ffi::c_char,value:*const ::kernel::ffi::c_void,size:usize,flags:i32,extra_flags:u32)->i32;
+    pub fn fuse_getxattr(inode:*mut inode,name:*const ::kernel::ffi::c_char,value:*mut ::kernel::ffi::c_void,size:usize)->ssize_t;
+    pub fn fuse_listxattr(entry:*mut dentry,list:*mut ::kernel::ffi::c_char,size:usize)->ssize_t;
+    pub fn fuse_removexattr(inode:*mut inode,name:*const ::kernel::ffi::c_char)->i32;
     pub fn fuse_sync_release(fi:*mut fuse_inode,ff:*mut fuse_file,flags:u32);
     pub fn fuse_notify_poll_wakeup(fc:*mut fuse_conn,outarg:*mut fuse_notify_poll_wakeup_out)->i32;
     pub fn fuse_init_file_inode(inode:*mut inode,flags:u32); pub fn fuse_init_common(inode:*mut inode); pub fn fuse_init_dir(inode:*mut inode); pub fn fuse_init_symlink(inode:*mut inode);

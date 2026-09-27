@@ -20,8 +20,8 @@ pub const FF_ADDR_LEN: usize = INET6_ADDRSTRLEN + 8;
 
 #[repr(C)]
 pub struct pnfs_ff_netaddr {
-    pub netid: [core::ffi::c_char; FF_NETID_LEN + 1],
-    pub addr: [core::ffi::c_char; FF_ADDR_LEN + 1],
+    pub netid: [kernel::ffi::c_char; FF_NETID_LEN + 1],
+    pub addr: [kernel::ffi::c_char; FF_ADDR_LEN + 1],
     pub netid_len: u32,
     pub addr_len: u32,
 }

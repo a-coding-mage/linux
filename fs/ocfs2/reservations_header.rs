@@ -17,14 +17,14 @@ pub const OCFS2_MIN_RESV_LEVEL: u32 = 0;
 pub struct ocfs2_alloc_reservation {
     pub r_node: rb_node,
 
-    pub r_start: core::ffi::c_uint, /* Beginning of current window */
-    pub r_len: core::ffi::c_uint, /* Length of the window */
+    pub r_start: kernel::ffi::c_uint, /* Beginning of current window */
+    pub r_len: kernel::ffi::c_uint, /* Length of the window */
 
-    pub r_last_len: core::ffi::c_uint, /* Length of most recent alloc */
-    pub r_last_start: core::ffi::c_uint, /* Start of most recent alloc */
+    pub r_last_len: kernel::ffi::c_uint, /* Length of most recent alloc */
+    pub r_last_start: kernel::ffi::c_uint, /* Start of most recent alloc */
     pub r_lru: list_head, /* LRU list head */
 
-    pub r_flags: core::ffi::c_uint,
+    pub r_flags: kernel::ffi::c_uint,
 }
 
 pub const OCFS2_RESV_FLAG_INUSE: u32 = 0x01; /* Set when r_node is part of a btree */
@@ -36,7 +36,7 @@ pub const OCFS2_RESV_FLAG_DIR: u32 = 0x04; /* Reservation is for an unindexed
 #[repr(C)]
 pub struct ocfs2_reservation_map {
     pub m_reservations: rb_root,
-    pub m_disk_bitmap: *mut core::ffi::c_char,
+    pub m_disk_bitmap: *mut kernel::ffi::c_char,
 
     pub m_osb: *mut ocfs2_super,
 
@@ -56,10 +56,10 @@ unsafe extern "C" {
 
     pub fn ocfs2_resv_set_type(
         resv: *mut ocfs2_alloc_reservation,
-        flags: core::ffi::c_uint,
+        flags: kernel::ffi::c_uint,
     );
 
-    pub fn ocfs2_dir_resv_allowed(osb: *mut ocfs2_super) -> core::ffi::c_int;
+    pub fn ocfs2_dir_resv_allowed(osb: *mut ocfs2_super) -> kernel::ffi::c_int;
 
     /**
      * ocfs2_resv_discard() - truncate a reservation
@@ -99,8 +99,8 @@ unsafe extern "C" {
      */
     pub fn ocfs2_resmap_restart(
         resmap: *mut ocfs2_reservation_map,
-        clen: core::ffi::c_uint,
-        disk_bitmap: *mut core::ffi::c_char,
+        clen: kernel::ffi::c_uint,
+        disk_bitmap: *mut kernel::ffi::c_char,
     );
 
     /**
@@ -129,9 +129,9 @@ unsafe extern "C" {
     pub fn ocfs2_resmap_resv_bits(
         resmap: *mut ocfs2_reservation_map,
         resv: *mut ocfs2_alloc_reservation,
-        cstart: *mut core::ffi::c_int,
-        clen: *mut core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        cstart: *mut kernel::ffi::c_int,
+        clen: *mut kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 
     /**
      * ocfs2_resmap_claimed_bits() - Tell the reservation code that bits were used.

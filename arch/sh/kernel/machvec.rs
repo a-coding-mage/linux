@@ -13,18 +13,18 @@ extern "C" {
     static __machvec_start: u8;
     static __machvec_end: u8;
     static mut sh_mv: sh_machine_vector;
-    static mut machvec_selected: core::ffi::c_uint;
+    static mut machvec_selected: kernel::ffi::c_uint;
 
-    fn strcasecmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> core::ffi::c_int;
-    fn strchr(s: *const core::ffi::c_char, c: core::ffi::c_int) -> *mut core::ffi::c_char;
-    fn strlen(s: *const core::ffi::c_char) -> usize;
-    fn memcpy(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void;
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> core::ffi::c_int;
-    fn get_system_type() -> *const core::ffi::c_char;
-    fn panic(format: *const core::ffi::c_char, ...);
-    fn pr_info(format: *const core::ffi::c_char, ...);
-    fn pr_cont(format: *const core::ffi::c_char, ...);
-    fn pr_notice(format: *const core::ffi::c_char, ...);
+    fn strcasecmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    fn strchr(s: *const kernel::ffi::c_char, c: kernel::ffi::c_int) -> *mut kernel::ffi::c_char;
+    fn strlen(s: *const kernel::ffi::c_char) -> usize;
+    fn memcpy(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize) -> *mut kernel::ffi::c_void;
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    fn get_system_type() -> *const kernel::ffi::c_char;
+    fn panic(format: *const kernel::ffi::c_char, ...);
+    fn pr_info(format: *const kernel::ffi::c_char, ...);
+    fn pr_cont(format: *const kernel::ffi::c_char, ...);
+    fn pr_notice(format: *const kernel::ffi::c_char, ...);
 
     static generic_irq_demux: unsafe extern "C" fn();
     static generic_mode_pins: unsafe extern "C" fn();
@@ -33,7 +33,7 @@ extern "C" {
 
 #[repr(C)]
 pub struct sh_machine_vector {
-    pub mv_name: *const core::ffi::c_char,
+    pub mv_name: *const kernel::ffi::c_char,
     pub mv_irq_demux: Option<unsafe extern "C" fn()>,
     pub mv_mode_pins: Option<unsafe extern "C" fn()>,
     pub mv_mem_init: Option<unsafe extern "C" fn()>,
@@ -41,7 +41,7 @@ pub struct sh_machine_vector {
 
 const MV_NAME_SIZE: usize = 32;
 
-unsafe fn get_mv_byname(name: *const core::ffi::c_char) -> *mut sh_machine_vector {
+unsafe fn get_mv_byname(name: *const kernel::ffi::c_char) -> *mut sh_machine_vector {
     let mut mv = &__machvec_start as *const u8 as *mut sh_machine_vector;
     let end = &__machvec_end as *const u8 as usize;
 
@@ -55,21 +55,21 @@ unsafe fn get_mv_byname(name: *const core::ffi::c_char) -> *mut sh_machine_vecto
     core::ptr::null_mut()
 }
 
-unsafe extern "C" fn early_parse_mv(mut from: *mut core::ffi::c_char) -> core::ffi::c_int {
-    let mut mv_name = [0 as core::ffi::c_char; MV_NAME_SIZE];
-    let mut mv_end = strchr(from, b' ' as core::ffi::c_int);
+unsafe extern "C" fn early_parse_mv(mut from: *mut kernel::ffi::c_char) -> kernel::ffi::c_int {
+    let mut mv_name = [0 as kernel::ffi::c_char; MV_NAME_SIZE];
+    let mut mv_end = strchr(from, b' ' as kernel::ffi::c_int);
     if mv_end.is_null() {
         mv_end = from.add(strlen(from));
     }
 
-    let _mv_comma = strchr(from, b',' as core::ffi::c_int);
+    let _mv_comma = strchr(from, b',' as kernel::ffi::c_int);
     let mut mv_len = mv_end.offset_from(from) as usize;
     if mv_len > MV_NAME_SIZE - 1 {
         mv_len = MV_NAME_SIZE - 1;
     }
     memcpy(
-        mv_name.as_mut_ptr() as *mut core::ffi::c_void,
-        from as *const core::ffi::c_void,
+        mv_name.as_mut_ptr() as *mut kernel::ffi::c_void,
+        from as *const kernel::ffi::c_void,
         mv_len,
     );
     mv_name[mv_len] = 0;
@@ -78,21 +78,21 @@ unsafe extern "C" fn early_parse_mv(mut from: *mut core::ffi::c_char) -> core::f
     machvec_selected = 1;
 
     /* Boot with the generic vector */
-    if strcmp(mv_name.as_ptr(), b"generic\0".as_ptr() as *const core::ffi::c_char) == 0 {
+    if strcmp(mv_name.as_ptr(), b"generic\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
         return 0;
     }
 
     let mvp = get_mv_byname(mv_name.as_ptr());
     if mvp.is_null() {
-        pr_info(b"Available vectors:\n\n\t'%s', \0".as_ptr() as *const core::ffi::c_char, sh_mv.mv_name);
+        pr_info(b"Available vectors:\n\n\t'%s', \0".as_ptr() as *const kernel::ffi::c_char, sh_mv.mv_name);
         let mut current = &__machvec_start as *const u8 as *mut sh_machine_vector;
         while !current.is_null() && (current as usize) < (&__machvec_end as *const u8 as usize) {
-            pr_cont(b"'%s', \0".as_ptr() as *const core::ffi::c_char, (*current).mv_name);
+            pr_cont(b"'%s', \0".as_ptr() as *const kernel::ffi::c_char, (*current).mv_name);
             current = current.add(1);
         }
-        pr_cont(b"\n\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_cont(b"\n\n\0".as_ptr() as *const kernel::ffi::c_char);
         panic(
-            b"Failed to select machvec '%s' -- halting.\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Failed to select machvec '%s' -- halting.\n\0".as_ptr() as *const kernel::ffi::c_char,
             mv_name.as_ptr(),
         );
     } else {
@@ -118,7 +118,7 @@ pub unsafe extern "C" fn sh_mv_setup() {
          * __initmv hasn't been misused.
          */
         if machvec_size % core::mem::size_of::<sh_machine_vector>() != 0 {
-            panic(b"machvec misaligned, invalid __initmv use?\0".as_ptr() as *const core::ffi::c_char);
+            panic(b"machvec misaligned, invalid __initmv use?\0".as_ptr() as *const kernel::ffi::c_char);
         }
 
         /*
@@ -131,7 +131,7 @@ pub unsafe extern "C" fn sh_mv_setup() {
     }
 
     pr_notice(
-        b"Booting machvec: %s\n\0".as_ptr() as *const core::ffi::c_char,
+        b"Booting machvec: %s\n\0".as_ptr() as *const kernel::ffi::c_char,
         get_system_type(),
     );
 

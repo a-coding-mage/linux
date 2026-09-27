@@ -16,9 +16,9 @@ extern "C" {
 
 #[repr(C)]
 pub struct snd_soc_acpi_mach {
-    pub id: *const ::core::ffi::c_char,
-    pub drv_name: *const ::core::ffi::c_char,
-    pub sof_tplg_filename: *const ::core::ffi::c_char,
+    pub id: *const ::kernel::ffi::c_char,
+    pub drv_name: *const ::kernel::ffi::c_char,
+    pub sof_tplg_filename: *const ::kernel::ffi::c_char,
     pub tplg_quirk_mask: u64,
 }
 
@@ -27,8 +27,8 @@ pub static mut snd_soc_acpi_intel_hda_machines: [snd_soc_acpi_mach; 2] = [
     snd_soc_acpi_mach {
         /* .id is not used in this file */
         id: ::core::ptr::null(),
-        drv_name: b"skl_hda_dsp_generic\0".as_ptr() as *const ::core::ffi::c_char,
-        sof_tplg_filename: b"sof-hda-generic\0".as_ptr() as *const ::core::ffi::c_char, /* the tplg suffix is added at run time */
+        drv_name: b"skl_hda_dsp_generic\0".as_ptr() as *const ::kernel::ffi::c_char,
+        sof_tplg_filename: b"sof-hda-generic\0".as_ptr() as *const ::kernel::ffi::c_char, /* the tplg suffix is added at run time */
         tplg_quirk_mask: unsafe { SND_SOC_ACPI_TPLG_INTEL_DMIC_NUMBER },
     },
     snd_soc_acpi_mach {

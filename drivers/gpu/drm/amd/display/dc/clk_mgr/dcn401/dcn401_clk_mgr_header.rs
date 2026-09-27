@@ -76,7 +76,7 @@ pub struct update_pstate_support_params {
 #[derive(Copy, Clone)]
 pub struct update_cab_for_uclk_params {
     // inputs
-    pub num_ways: libc::c_uint,
+    pub num_ways: core::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -122,7 +122,7 @@ pub struct update_dentist_params {
 pub struct update_psr_wait_loop_params {
     // inputs
     pub dmcu: *mut dmcu,
-    pub wait: libc::c_uint,
+    pub wait: core::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -157,7 +157,7 @@ pub struct dcn401_clk_mgr_block_sequence {
 pub struct dcn401_clk_mgr {
     pub base: clk_mgr_internal,
     pub block_sequence: [dcn401_clk_mgr_block_sequence; DCN401_CLK_MGR_MAX_SEQUENCE_SIZE],
-    pub num_block_sequence_steps: libc::c_uint,
+    pub num_block_sequence_steps: core::ffi::c_uint,
 }
 
 extern "C" {
@@ -165,7 +165,7 @@ extern "C" {
     pub fn dcn401_is_dc_mode_present(clk_mgr_base: *mut clk_mgr) -> bool;
     pub fn dcn401_clk_mgr_construct(ctx: *mut dc_context, dccg: *mut dccg) -> *mut clk_mgr_internal;
     pub fn dcn401_clk_mgr_destroy(clk_mgr: *mut clk_mgr_internal);
-    pub fn dcn401_get_max_clock_khz(clk_mgr_base: *mut clk_mgr, clk_type: clk_type) -> libc::c_uint;
+    pub fn dcn401_get_max_clock_khz(clk_mgr_base: *mut clk_mgr, clk_type: clk_type) -> core::ffi::c_uint;
 }
 
 pub struct block_sequence_state;

@@ -26,8 +26,8 @@ pub enum ltl_atom {
 // C static_assert: LTL_NUM_ATOM <= RV_MAX_LTL_ATOM.
 
 unsafe extern "C" {
-    fn test_bit(nr: ltl_atom, addr: *const core::ffi::c_ulong) -> bool;
-    fn __set_bit(nr: usize, addr: *mut core::ffi::c_ulong);
+    fn test_bit(nr: ltl_atom, addr: *const kernel::ffi::c_ulong) -> bool;
+    fn __set_bit(nr: usize, addr: *mut kernel::ffi::c_ulong);
 }
 
 #[repr(C)]
@@ -37,11 +37,11 @@ pub struct task_struct {
 
 #[repr(C)]
 pub struct ltl_monitor {
-    pub atoms: *mut core::ffi::c_ulong,
-    pub states: *mut core::ffi::c_ulong,
+    pub atoms: *mut kernel::ffi::c_ulong,
+    pub states: *mut kernel::ffi::c_ulong,
 }
 
-pub unsafe fn ltl_atom_str(atom: ltl_atom) -> *const core::ffi::c_char {
+pub unsafe fn ltl_atom_str(atom: ltl_atom) -> *const kernel::ffi::c_char {
     static NAMES: [&[u8]; 6] = [
         b"bl_on_rt_mu\0",
         b"fu_lo_pi\0",
@@ -51,7 +51,7 @@ pub unsafe fn ltl_atom_str(atom: ltl_atom) -> *const core::ffi::c_char {
         b"wo_so\0",
     ];
 
-    NAMES[atom as usize].as_ptr() as *const core::ffi::c_char
+    NAMES[atom as usize].as_ptr() as *const kernel::ffi::c_char
 }
 
 #[repr(C)]
@@ -88,7 +88,7 @@ pub unsafe fn ltl_start(_task: *mut task_struct, mon: *mut ltl_monitor) {
 pub unsafe fn ltl_possible_next_states(
     mon: *mut ltl_monitor,
     state: u32,
-    next: *mut core::ffi::c_ulong,
+    next: *mut kernel::ffi::c_ulong,
 ) {
     let woken_by_softirq = test_bit(ltl_atom::LTL_WOKEN_BY_SOFTIRQ, (*mon).atoms);
     let woken_by_lower_prio = test_bit(ltl_atom::LTL_WOKEN_BY_LOWER_PRIO, (*mon).atoms);

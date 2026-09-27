@@ -7,7 +7,7 @@ struct nft_flow_offload {
     flowtable: *mut nft_flowtable,
 }
 
-unsafe fn nft_flow_offload_skip(skb: *mut sk_buff, family: libc::c_int) -> bool {
+unsafe fn nft_flow_offload_skip(skb: *mut sk_buff, family: kernel::ffi::c_int) -> bool {
     if !skb_sec_path(skb).is_null() {
         return true;
     }
@@ -44,7 +44,7 @@ unsafe fn nft_flow_offload_eval(
     let mut flow: *mut flow_offload;
     let mut dir: ip_conntrack_dir;
     let mut ct: *mut nf_conn;
-    let mut ret: libc::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     if nft_flow_offload_skip((*pkt).skb, nft_pf(pkt)) {
         (*regs).verdict.code = NFT_BREAK;
@@ -120,8 +120,8 @@ unsafe fn nft_flow_offload_eval(
     }
 }
 
-unsafe fn nft_flow_offload_validate(ctx: *const nft_ctx, _expr: *const nft_expr) -> libc::c_int {
-    let hook_mask: libc::c_uint = 1 << NF_INET_FORWARD;
+unsafe fn nft_flow_offload_validate(ctx: *const nft_ctx, _expr: *const nft_expr) -> kernel::ffi::c_int {
+    let hook_mask: kernel::ffi::c_uint = 1 << NF_INET_FORWARD;
     if (*ctx).family != NFPROTO_IPV4 && (*ctx).family != NFPROTO_IPV6 && (*ctx).family != NFPROTO_INET {
         return -EOPNOTSUPP;
     }
@@ -134,7 +134,7 @@ static nft_flow_offload_policy: [nla_policy; NFTA_FLOW_MAX as usize + 1] = {
     p
 };
 
-unsafe fn nft_flow_offload_init(ctx: *const nft_ctx, expr: *const nft_expr, tb: *const *const nlattr) -> libc::c_int {
+unsafe fn nft_flow_offload_init(ctx: *const nft_ctx, expr: *const nft_expr, tb: *const *const nlattr) -> kernel::ffi::c_int {
     let priv_: *mut nft_flow_offload = nft_expr_priv(expr);
     let genmask: u8 = nft_genmask_next((*ctx).net);
     if (*tb.add(NFTA_FLOW_TABLE_NAME as usize)).is_null() { return -EINVAL; }
@@ -159,7 +159,7 @@ unsafe fn nft_flow_offload_destroy(ctx: *const nft_ctx, _expr: *const nft_expr) 
     nf_ct_netns_put((*ctx).net, (*ctx).family);
 }
 
-unsafe fn nft_flow_offload_dump(skb: *mut sk_buff, expr: *const nft_expr, _reset: bool) -> libc::c_int {
+unsafe fn nft_flow_offload_dump(skb: *mut sk_buff, expr: *const nft_expr, _reset: bool) -> kernel::ffi::c_int {
     let priv_: *mut nft_flow_offload = nft_expr_priv(expr);
     if nla_put_string(skb, NFTA_FLOW_TABLE_NAME, (*priv_).flowtable.as_ref().unwrap().name.as_ptr()) != 0 { return -1; }
     0
@@ -174,7 +174,7 @@ static mut nft_flow_offload_type: nft_expr_type = nft_expr_type {
     name: b"flow_offload\0".as_ptr() as *const _, ops: unsafe { &nft_flow_offload_ops }, policy: nft_flow_offload_policy.as_ptr(), maxattr: NFTA_FLOW_MAX, owner: THIS_MODULE,
 };
 
-unsafe fn flow_offload_netdev_event(_this: *mut notifier_block, event: libc::c_ulong, ptr: *mut libc::c_void) -> libc::c_int {
+unsafe fn flow_offload_netdev_event(_this: *mut notifier_block, event: kernel::ffi::c_ulong, ptr: *mut kernel::ffi::c_void) -> kernel::ffi::c_int {
     let dev = netdev_notifier_info_to_dev(ptr);
     if event != NETDEV_DOWN { return NOTIFY_DONE; }
     nf_flow_table_cleanup(dev);
@@ -183,7 +183,7 @@ unsafe fn flow_offload_netdev_event(_this: *mut notifier_block, event: libc::c_u
 
 static mut flow_offload_netdev_notifier: notifier_block = notifier_block { notifier_call: Some(flow_offload_netdev_event) };
 
-unsafe fn nft_flow_offload_module_init() -> libc::c_int {
+unsafe fn nft_flow_offload_module_init() -> kernel::ffi::c_int {
     let mut err = register_netdevice_notifier(&mut flow_offload_netdev_notifier);
     if err != 0 { return err; }
     err = nft_register_expr(&mut nft_flow_offload_type);

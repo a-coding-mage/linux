@@ -9,26 +9,26 @@ pub const LATENCY_TYPE_LEN: usize = 8;
 
 #[repr(C)]
 pub struct KyberLatencyEntry {
-    pub dev: libc::dev_t,
-    pub domain: [libc::c_char; DOMAIN_LEN],
-    pub type_: [libc::c_char; LATENCY_TYPE_LEN],
+    pub dev: dev_t,
+    pub domain: [kernel::ffi::c_char; DOMAIN_LEN],
+    pub type_: [kernel::ffi::c_char; LATENCY_TYPE_LEN],
     pub percentile: u8,
     pub numerator: u8,
     pub denominator: u8,
-    pub samples: libc::c_uint,
+    pub samples: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct KyberAdjustEntry {
-    pub dev: libc::dev_t,
-    pub domain: [libc::c_char; DOMAIN_LEN],
-    pub depth: libc::c_uint,
+    pub dev: dev_t,
+    pub domain: [kernel::ffi::c_char; DOMAIN_LEN],
+    pub depth: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct KyberThrottledEntry {
-    pub dev: libc::dev_t,
-    pub domain: [libc::c_char; DOMAIN_LEN],
+    pub dev: dev_t,
+    pub domain: [kernel::ffi::c_char; DOMAIN_LEN],
 }
 
 // Corresponds to TRACE_EVENT(kyber_latency,

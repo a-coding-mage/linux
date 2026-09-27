@@ -14,7 +14,7 @@ pub unsafe fn kunit_assert_prologue(
     assertion_type: kunit_assert_type,
     stream: *mut string_stream,
 ) {
-    let expect_or_assert: *const core::ffi::c_char = match assertion_type {
+    let expect_or_assert: *const kernel::ffi::c_char = match assertion_type {
         KUNIT_EXPECTATION => c"EXPECTATION".as_ptr(),
         KUNIT_ASSERTION => c"ASSERTION".as_ptr(),
         _ => core::ptr::null(),
@@ -77,7 +77,7 @@ pub unsafe fn kunit_ptr_not_err_assert_format(
 }
 
 /* Checks if `text` is a literal representing `value`, e.g. "5" and 5 */
-pub unsafe fn is_literal(text: *const core::ffi::c_char, value: i64) -> bool {
+pub unsafe fn is_literal(text: *const kernel::ffi::c_char, value: i64) -> bool {
     let len = snprintf_len(value);
     if strlen(text) != len { return false; }
     let buffer = kmalloc((len + 1) as usize, GFP_KERNEL);
@@ -117,7 +117,7 @@ pub unsafe fn kunit_binary_ptr_assert_format(
 }
 
 /* Checks if KUNIT_EXPECT_STREQ() args were string literals. */
-pub unsafe fn is_str_literal(text: *const core::ffi::c_char, value: *const core::ffi::c_char) -> bool {
+pub unsafe fn is_str_literal(text: *const kernel::ffi::c_char, value: *const kernel::ffi::c_char) -> bool {
     let len = strlen(text);
     if len < 2 || *text != b'"' as i8 || *text.add(len - 1) != b'"' as i8 { return false; }
     strncmp(text.add(1), value, len - 2) == 0
@@ -131,7 +131,7 @@ pub unsafe fn kunit_binary_str_assert_format(assertion: *const kunit_assert, mes
     kunit_assert_print_msg(message, stream);
 }
 
-pub unsafe fn kunit_assert_hexdump(stream: *mut string_stream, buf: *const core::ffi::c_void, compared_buf: *const core::ffi::c_void, len: usize) {
+pub unsafe fn kunit_assert_hexdump(stream: *mut string_stream, buf: *const kernel::ffi::c_void, compared_buf: *const kernel::ffi::c_void, len: usize) {
     let buf1 = buf as *const u8;
     let buf2 = compared_buf as *const u8;
     string_stream_add(stream, c"".as_ptr());

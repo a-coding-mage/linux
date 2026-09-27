@@ -15,18 +15,18 @@ const RNG_PHY_SEED: usize = 0x14;
 
 #[repr(C)]
 pub struct hisi_rng {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub rng: hwrng,
 }
 
 #[repr(C)]
 pub struct hwrng {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub init: Option<unsafe extern "C" fn(rng: *mut hwrng) -> i32>,
     pub cleanup: Option<unsafe extern "C" fn(rng: *mut hwrng)>,
     pub read: Option<unsafe extern "C" fn(
         rng: *mut hwrng,
-        buf: *mut core::ffi::c_void,
+        buf: *mut kernel::ffi::c_void,
         max: usize,
         wait: bool,
     ) -> i32>,
@@ -35,27 +35,27 @@ pub struct hwrng {
 static mut seed_sel: i32 = 0;
 
 extern "C" {
-    fn get_random_bytes(buf: *mut core::ffi::c_void, len: usize);
-    fn writel_relaxed(value: u32, addr: *mut core::ffi::c_void);
-    fn readl_relaxed(addr: *mut core::ffi::c_void) -> u32;
-    fn devm_kzalloc(dev: *mut core::ffi::c_void, size: usize, flags: u32) -> *mut hisi_rng;
+    fn get_random_bytes(buf: *mut kernel::ffi::c_void, len: usize);
+    fn writel_relaxed(value: u32, addr: *mut kernel::ffi::c_void);
+    fn readl_relaxed(addr: *mut kernel::ffi::c_void) -> u32;
+    fn devm_kzalloc(dev: *mut kernel::ffi::c_void, size: usize, flags: u32) -> *mut hisi_rng;
     fn devm_platform_ioremap_resource(
         pdev: *mut platform_device,
         index: u32,
-    ) -> *mut core::ffi::c_void;
-    fn ptr_err(ptr: *mut core::ffi::c_void) -> i32;
-    fn devm_hwrng_register(dev: *mut core::ffi::c_void, rng: *mut hwrng) -> i32;
+    ) -> *mut kernel::ffi::c_void;
+    fn ptr_err(ptr: *mut kernel::ffi::c_void) -> i32;
+    fn devm_hwrng_register(dev: *mut kernel::ffi::c_void, rng: *mut hwrng) -> i32;
     fn dev_err_probe(
-        dev: *mut core::ffi::c_void,
+        dev: *mut kernel::ffi::c_void,
         err: i32,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
     ) -> i32;
 }
 
 #[repr(C)]
 pub struct platform_device {
-    pub dev: core::ffi::c_void,
-    pub name: *const core::ffi::c_char,
+    pub dev: kernel::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
 }
 
 unsafe fn to_hisi_rng(rng: *mut hwrng) -> *mut hisi_rng {
@@ -69,11 +69,11 @@ unsafe extern "C" fn hisi_rng_init(rng: *mut hwrng) -> i32 {
 
     /* get a random number as initial seed */
     get_random_bytes(
-        &mut seed as *mut u32 as *mut core::ffi::c_void,
+        &mut seed as *mut u32 as *mut kernel::ffi::c_void,
         core::mem::size_of::<u32>(),
     );
 
-    writel_relaxed(seed, (*hrng).base.cast::<u8>().add(RNG_SEED) as *mut core::ffi::c_void);
+    writel_relaxed(seed, (*hrng).base.cast::<u8>().add(RNG_SEED) as *mut kernel::ffi::c_void);
 
     /**
      * The seed is reload periodically, there are two choice
@@ -84,30 +84,30 @@ unsafe extern "C" fn hisi_rng_init(rng: *mut hwrng) -> i32 {
         val |= RNG_RING_EN | RNG_SEED_SEL;
     }
 
-    writel_relaxed(val, (*hrng).base.cast::<u8>().add(RNG_CTRL) as *mut core::ffi::c_void);
+    writel_relaxed(val, (*hrng).base.cast::<u8>().add(RNG_CTRL) as *mut kernel::ffi::c_void);
     0
 }
 
 unsafe extern "C" fn hisi_rng_cleanup(rng: *mut hwrng) {
     let hrng = to_hisi_rng(rng);
-    writel_relaxed(0, (*hrng).base.cast::<u8>().add(RNG_CTRL) as *mut core::ffi::c_void);
+    writel_relaxed(0, (*hrng).base.cast::<u8>().add(RNG_CTRL) as *mut kernel::ffi::c_void);
 }
 
 unsafe extern "C" fn hisi_rng_read(
     rng: *mut hwrng,
-    buf: *mut core::ffi::c_void,
+    buf: *mut kernel::ffi::c_void,
     _max: usize,
     _wait: bool,
 ) -> i32 {
     let hrng = to_hisi_rng(rng);
     *(buf as *mut u32) = readl_relaxed(
-        (*hrng).base.cast::<u8>().add(RNG_RAN_NUM) as *mut core::ffi::c_void,
+        (*hrng).base.cast::<u8>().add(RNG_RAN_NUM) as *mut kernel::ffi::c_void,
     );
     4
 }
 
 unsafe extern "C" fn hisi_rng_probe(pdev: *mut platform_device) -> i32 {
-    let rng = devm_kzalloc(&mut (*pdev).dev as *mut _ as *mut core::ffi::c_void,
+    let rng = devm_kzalloc(&mut (*pdev).dev as *mut _ as *mut kernel::ffi::c_void,
                            core::mem::size_of::<hisi_rng>(), 0);
     if rng.is_null() {
         return -12;
@@ -124,14 +124,14 @@ unsafe extern "C" fn hisi_rng_probe(pdev: *mut platform_device) -> i32 {
     (*rng).rng.read = Some(hisi_rng_read);
 
     let ret = devm_hwrng_register(
-        &mut (*pdev).dev as *mut _ as *mut core::ffi::c_void,
+        &mut (*pdev).dev as *mut _ as *mut kernel::ffi::c_void,
         &mut (*rng).rng,
     );
     if ret != 0 {
         return dev_err_probe(
-            &mut (*pdev).dev as *mut _ as *mut core::ffi::c_void,
+            &mut (*pdev).dev as *mut _ as *mut kernel::ffi::c_void,
             ret,
-            b"failed to register hwrng\0".as_ptr() as *const core::ffi::c_char,
+            b"failed to register hwrng\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
@@ -140,26 +140,26 @@ unsafe extern "C" fn hisi_rng_probe(pdev: *mut platform_device) -> i32 {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 
 #[allow(dead_code)]
 static hisi_rng_dt_ids: [of_device_id; 3] = [
-    of_device_id { compatible: b"hisilicon,hip04-rng\0".as_ptr() as *const core::ffi::c_char },
-    of_device_id { compatible: b"hisilicon,hip05-rng\0".as_ptr() as *const core::ffi::c_char },
+    of_device_id { compatible: b"hisilicon,hip04-rng\0".as_ptr() as *const kernel::ffi::c_char },
+    of_device_id { compatible: b"hisilicon,hip05-rng\0".as_ptr() as *const kernel::ffi::c_char },
     of_device_id { compatible: core::ptr::null() },
 ];
 
 #[repr(C)]
 pub struct platform_driver {
     pub probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32>,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
 static mut hisi_rng_driver: platform_driver = platform_driver {
     probe: Some(hisi_rng_probe),
-    name: b"hisi-rng\0".as_ptr() as *const core::ffi::c_char,
+    name: b"hisi-rng\0".as_ptr() as *const kernel::ffi::c_char,
     of_match_table: hisi_rng_dt_ids.as_ptr(),
 };
 

@@ -11,30 +11,30 @@ pub const __HAVE_ARCH_MEMMOVE: bool = true;
 
 unsafe extern "C" {
     // `asmlinkage` is a platform calling-convention annotation in the source.
-    pub fn memset(dest: *mut core::ffi::c_void, value: core::ffi::c_int, n: usize)
-        -> *mut core::ffi::c_void;
-    pub fn __memset(dest: *mut core::ffi::c_void, value: core::ffi::c_int, n: usize)
-        -> *mut core::ffi::c_void;
+    pub fn memset(dest: *mut kernel::ffi::c_void, value: kernel::ffi::c_int, n: usize)
+        -> *mut kernel::ffi::c_void;
+    pub fn __memset(dest: *mut kernel::ffi::c_void, value: kernel::ffi::c_int, n: usize)
+        -> *mut kernel::ffi::c_void;
     pub fn memcpy(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn __memcpy(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn memmove(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn __memmove(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 // The following declarations are omitted when CONFIG_KASAN_GENERIC or
@@ -54,19 +54,19 @@ pub const __HAVE_ARCH_STRRCHR: bool = true;
 
 #[cfg(not(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS)))]
 unsafe extern "C" {
-    pub fn strcmp(cs: *const core::ffi::c_char, ct: *const core::ffi::c_char)
-        -> core::ffi::c_int;
-    pub fn strlen(s: *const core::ffi::c_char) -> usize;
+    pub fn strcmp(cs: *const kernel::ffi::c_char, ct: *const kernel::ffi::c_char)
+        -> kernel::ffi::c_int;
+    pub fn strlen(s: *const kernel::ffi::c_char) -> usize;
     pub fn strncmp(
-        cs: *const core::ffi::c_char,
-        ct: *const core::ffi::c_char,
+        cs: *const kernel::ffi::c_char,
+        ct: *const kernel::ffi::c_char,
         count: usize,
-    ) -> core::ffi::c_int;
-    pub fn strnlen(s: *const core::ffi::c_char, maxlen: usize) -> usize;
-    pub fn strchr(s: *const core::ffi::c_char, c: core::ffi::c_int)
-        -> *mut core::ffi::c_char;
-    pub fn strrchr(s: *const core::ffi::c_char, c: core::ffi::c_int)
-        -> *mut core::ffi::c_char;
+    ) -> kernel::ffi::c_int;
+    pub fn strnlen(s: *const kernel::ffi::c_char, maxlen: usize) -> usize;
+    pub fn strchr(s: *const kernel::ffi::c_char, c: kernel::ffi::c_int)
+        -> *mut kernel::ffi::c_char;
+    pub fn strrchr(s: *const kernel::ffi::c_char, c: kernel::ffi::c_int)
+        -> *mut kernel::ffi::c_char;
 }
 
 // For those files which don't want to check by kasan.

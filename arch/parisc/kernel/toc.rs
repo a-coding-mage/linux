@@ -13,14 +13,14 @@ static mut toc_stack: [u8; 16384] = [0; 16384];
 extern "C" {
     static mut boot_cpu_data: BootCpuData;
     static mut PAGE0: *mut PageZero;
-    static toc_handler: *const core::ffi::c_void;
+    static toc_handler: *const kernel::ffi::c_void;
     static toc_handler_size: u32;
     static mut toc_handler_csum: u32;
     static mut kgdb_active: AtomicInt;
 
     fn pdc_pim_toc20(data: *mut PdcTocPim20) -> i32;
     fn pdc_pim_toc11(data: *mut PdcTocPim11) -> i32;
-    fn panic(message: *const core::ffi::c_char) -> !;
+    fn panic(message: *const kernel::ffi::c_char) -> !;
     fn nmi_enter();
     fn atomic_read(value: *const AtomicInt) -> i32;
     fn kgdb_nmicallback(cpu: i32, regs: *mut PtRegs);
@@ -29,10 +29,10 @@ extern "C" {
     fn show_regs(regs: *mut PtRegs);
     fn raw_smp_processor_id() -> i32;
     fn mdelay(milliseconds: u32);
-    fn machine_restart(command: *const core::ffi::c_char) -> !;
-    fn dereference_function_descriptor(function: *const core::ffi::c_void) -> *const core::ffi::c_void;
+    fn machine_restart(command: *const kernel::ffi::c_char) -> !;
+    fn dereference_function_descriptor(function: *const kernel::ffi::c_void) -> *const kernel::ffi::c_void;
     fn __pa(address: usize) -> usize;
-    fn pr_info(message: *const core::ffi::c_char);
+    fn pr_info(message: *const kernel::ffi::c_char);
 }
 
 unsafe fn toc20_to_pt_regs(regs: *mut PtRegs, toc: *mut PdcTocPim20) {
@@ -86,13 +86,13 @@ pub unsafe fn toc_intr(regs: *mut PtRegs) -> ! {
     if boot_cpu_data.cpu_type >= pcxu {
         let mut pim_data20: PdcTocPim20 = core::mem::zeroed();
         if pdc_pim_toc20(&mut pim_data20) != 0 {
-            panic(b"Failed to get PIM data\0".as_ptr() as *const core::ffi::c_char);
+            panic(b"Failed to get PIM data\0".as_ptr() as *const kernel::ffi::c_char);
         }
         toc20_to_pt_regs(regs, &mut pim_data20);
     } else {
         let mut pim_data11: PdcTocPim11 = core::mem::zeroed();
         if pdc_pim_toc11(&mut pim_data11) != 0 {
-            panic(b"Failed to get PIM data\0".as_ptr() as *const core::ffi::c_char);
+            panic(b"Failed to get PIM data\0".as_ptr() as *const kernel::ffi::c_char);
         }
         toc11_to_pt_regs(regs, &mut pim_data11);
     }
@@ -123,10 +123,10 @@ pub unsafe fn toc_intr(regs: *mut PtRegs) -> ! {
     // give other CPUs time to show their backtrace
     mdelay(2000);
 
-    machine_restart(b"TOC\0".as_ptr() as *const core::ffi::c_char);
+    machine_restart(b"TOC\0".as_ptr() as *const kernel::ffi::c_char);
 
     // should never reach this
-    panic(b"TOC\0".as_ptr() as *const core::ffi::c_char);
+    panic(b"TOC\0".as_ptr() as *const kernel::ffi::c_char);
 }
 
 unsafe fn setup_toc() -> i32 {
@@ -145,7 +145,7 @@ unsafe fn setup_toc() -> i32 {
         csum = csum.wrapping_add(*((toc_code as *const u32).add(i as usize)));
     }
     toc_handler_csum = csum.wrapping_neg();
-    pr_info(b"TOC handler registered\n\0".as_ptr() as *const core::ffi::c_char);
+    pr_info(b"TOC handler registered\n\0".as_ptr() as *const kernel::ffi::c_char);
     0
 }
 

@@ -5,7 +5,7 @@
 #[cfg(debug_assertions)]
 extern "C" {
     static xfs_errortag_random_default: *const u32;
-    static xfs_errortag_names: *const *const core::ffi::c_char;
+    static xfs_errortag_names: *const *const kernel::ffi::c_char;
 }
 
 extern "C" {
@@ -28,7 +28,7 @@ pub unsafe extern "C" fn xfs_errortag_del(mp: *mut xfs_mount) {
 #[cfg(debug_assertions)]
 #[no_mangle]
 pub unsafe extern "C" fn xfs_errortag_test(
-    mp: *mut xfs_mount, file: *const core::ffi::c_char, line: i32,
+    mp: *mut xfs_mount, file: *const kernel::ffi::c_char, line: i32,
     error_tag: u32,
 ) -> bool {
     let randfactor = core::ptr::read_volatile((*mp).m_errortag.as_ptr().add(error_tag as usize));
@@ -42,7 +42,7 @@ pub unsafe extern "C" fn xfs_errortag_test(
 #[cfg(debug_assertions)]
 #[no_mangle]
 pub unsafe extern "C" fn xfs_errortag_delay(
-    mp: *mut xfs_mount, file: *const core::ffi::c_char, line: i32,
+    mp: *mut xfs_mount, file: *const kernel::ffi::c_char, line: i32,
     error_tag: u32,
 ) {
     might_sleep();
@@ -64,7 +64,7 @@ pub unsafe extern "C" fn xfs_errortag_add(mp: *mut xfs_mount, error_tag: u32) ->
 
 #[cfg(debug_assertions)]
 #[no_mangle]
-pub unsafe extern "C" fn xfs_errortag_add_name(mp: *mut xfs_mount, tag_name: *const core::ffi::c_char) -> i32 {
+pub unsafe extern "C" fn xfs_errortag_add_name(mp: *mut xfs_mount, tag_name: *const kernel::ffi::c_char) -> i32 {
     for i in 0..XFS_ERRTAG_MAX {
         let name = *xfs_errortag_names.add(i as usize);
         if !name.is_null() && strcmp(name, tag_name) == 0 { return xfs_errortag_add(mp, i); }
@@ -89,8 +89,8 @@ pub unsafe extern "C" fn xfs_errortag_clearall(mp: *mut xfs_mount) -> i32 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn xfs_error_report(tag: *const core::ffi::c_char, level: i32,
-    mp: *mut xfs_mount, filename: *const core::ffi::c_char, linenum: i32,
+pub unsafe extern "C" fn xfs_error_report(tag: *const kernel::ffi::c_char, level: i32,
+    mp: *mut xfs_mount, filename: *const kernel::ffi::c_char, linenum: i32,
     failaddr: xfs_failaddr_t) {
     if level <= xfs_error_level {
         xfs_alert_tag(mp, XFS_PTAG_ERROR_REPORT, b"Internal error %s at line %d of file %s.  Caller %pS\0".as_ptr() as *const _, tag, linenum, filename, failaddr);
@@ -99,9 +99,9 @@ pub unsafe extern "C" fn xfs_error_report(tag: *const core::ffi::c_char, level: 
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn xfs_corruption_error(tag: *const core::ffi::c_char, level: i32,
-    mp: *mut xfs_mount, buf: *const core::ffi::c_void, bufsize: usize,
-    filename: *const core::ffi::c_char, linenum: i32, failaddr: xfs_failaddr_t) {
+pub unsafe extern "C" fn xfs_corruption_error(tag: *const kernel::ffi::c_char, level: i32,
+    mp: *mut xfs_mount, buf: *const kernel::ffi::c_void, bufsize: usize,
+    filename: *const kernel::ffi::c_char, linenum: i32, failaddr: xfs_failaddr_t) {
     if !buf.is_null() && level <= xfs_error_level { xfs_hex_dump(buf, bufsize); }
     xfs_error_report(tag, level, mp, filename, linenum, failaddr);
     xfs_alert(mp, b"Corruption detected. Unmount and run xfs_repair\0".as_ptr() as *const _);
@@ -117,7 +117,7 @@ pub unsafe extern "C" fn xfs_buf_corruption_error(bp: *mut xfs_buf, fa: xfs_fail
 
 #[no_mangle]
 pub unsafe extern "C" fn xfs_buf_verifier_error(bp: *mut xfs_buf, error: i32,
-    name: *const core::ffi::c_char, buf: *const core::ffi::c_void, bufsz: usize,
+    name: *const kernel::ffi::c_char, buf: *const kernel::ffi::c_void, bufsz: usize,
     failaddr: xfs_failaddr_t) {
     let mp = (*bp).b_mount;
     let fa = if failaddr != 0 { failaddr } else { __return_address() };
@@ -135,7 +135,7 @@ pub unsafe extern "C" fn xfs_verifier_error(bp: *mut xfs_buf, error: i32, failad
 
 #[no_mangle]
 pub unsafe extern "C" fn xfs_inode_verifier_error(ip: *mut xfs_inode, error: i32,
-    name: *const core::ffi::c_char, buf: *const core::ffi::c_void, bufsz: usize,
+    name: *const kernel::ffi::c_char, buf: *const kernel::ffi::c_void, bufsz: usize,
     failaddr: xfs_failaddr_t) {
     let mp = (*ip).i_mount;
     let fa = if failaddr != 0 { failaddr } else { __return_address() };

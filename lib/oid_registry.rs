@@ -13,7 +13,7 @@ unsafe extern "C" {
     static oid_search_table: [OidSearchTable; OID__NR as usize];
     static oid_index: [u32; (OID__NR as usize) + 1];
     static oid_data: [u8; 0];
-    fn snprintf(buffer: *mut core::ffi::c_char, size: usize, format: *const core::ffi::c_char, ...) -> i32;
+    fn snprintf(buffer: *mut kernel::ffi::c_char, size: usize, format: *const kernel::ffi::c_char, ...) -> i32;
 }
 
 #[repr(C)]
@@ -36,7 +36,7 @@ pub const ENOBUFS: i32 = 105;
  * @datasize: Size of the binary representation
  */
 #[no_mangle]
-pub unsafe extern "C" fn look_up_OID(data: *const core::ffi::c_void, datasize: usize) -> OID {
+pub unsafe extern "C" fn look_up_OID(data: *const kernel::ffi::c_void, datasize: usize) -> OID {
     let octets = data as *const u8;
     let mut xhash: u8;
     let mut oid: OID;
@@ -105,7 +105,7 @@ pub unsafe extern "C" fn look_up_OID(data: *const core::ffi::c_void, datasize: u
  * @oid: Pointer to oid to return result
  */
 #[no_mangle]
-pub unsafe extern "C" fn parse_OID(data: *const core::ffi::c_void, datasize: usize, oid: *mut OID) -> i32 {
+pub unsafe extern "C" fn parse_OID(data: *const kernel::ffi::c_void, datasize: usize, oid: *mut OID) -> i32 {
     let v = data as *const u8;
     if datasize < 3 || *v != ASN1_OID || *v.add(1) as usize != datasize - 2 {
         return -EBADMSG;
@@ -120,9 +120,9 @@ pub unsafe extern "C" fn parse_OID(data: *const core::ffi::c_void, datasize: usi
  */
 #[no_mangle]
 pub unsafe extern "C" fn sprint_oid(
-    data: *const core::ffi::c_void,
+    data: *const kernel::ffi::c_void,
     datasize: usize,
-    mut buffer: *mut core::ffi::c_char,
+    mut buffer: *mut kernel::ffi::c_char,
     mut bufsize: usize,
 ) -> i32 {
     let mut v = data as *const u8;

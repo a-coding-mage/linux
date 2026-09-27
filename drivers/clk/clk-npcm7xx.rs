@@ -12,7 +12,7 @@
 #[repr(C)]
 pub struct Npcm7xxClkPll {
     pub hw: clk_hw,
-    pub pllcon: *mut core::ffi::c_void,
+    pub pllcon: *mut kernel::ffi::c_void,
     pub flags: u8,
 }
 
@@ -40,22 +40,22 @@ unsafe fn npcm7xx_clk_pll_recalc_rate(hw: *mut clk_hw, parent_rate: usize) -> us
 
 #[repr(C)]
 pub struct Npcm7xxClkMuxData {
-    pub shift: u8, pub mask: u8, pub table: *mut u32, pub name: *const core::ffi::c_char,
-    pub parent_names: *const *const core::ffi::c_char, pub num_parents: u8,
+    pub shift: u8, pub mask: u8, pub table: *mut u32, pub name: *const kernel::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char, pub num_parents: u8,
     pub flags: usize, pub onecell_idx: i32,
 }
 
 #[repr(C)]
 pub struct Npcm7xxClkDivData {
-    pub reg: u32, pub shift: u8, pub width: u8, pub name: *const core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char, pub clk_divider_flags: u8,
+    pub reg: u32, pub shift: u8, pub width: u8, pub name: *const kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char, pub clk_divider_flags: u8,
     pub flags: usize, pub onecell_idx: i32,
 }
 
 #[repr(C)]
 pub struct Npcm7xxClkPllData {
-    pub reg: u32, pub name: *const core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char, pub flags: usize, pub onecell_idx: i32,
+    pub reg: u32, pub name: *const kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char, pub flags: usize, pub onecell_idx: i32,
 }
 
 pub const NPCM7XX_CLKEN1: u32 = 0x00;
@@ -87,58 +87,58 @@ pub const NPCM7XX_AHBCKFI: u32 = 0x64;
 pub const NPCM7XX_SECCNT: u32 = 0x68;
 pub const NPCM7XX_CNTR25M: u32 = 0x6c;
 
-macro_rules! cstr { ($s:literal) => { concat!($s, "\0").as_ptr() as *const core::ffi::c_char }; }
-pub const NPCM7XX_CLK_S_REFCLK: *const core::ffi::c_char = cstr!("refclk");
-pub const NPCM7XX_CLK_S_SYSBYPCK: *const core::ffi::c_char = cstr!("sysbypck");
-pub const NPCM7XX_CLK_S_MCBYPCK: *const core::ffi::c_char = cstr!("mcbypck");
-pub const NPCM7XX_CLK_S_GFXBYPCK: *const core::ffi::c_char = cstr!("gfxbypck");
-pub const NPCM7XX_CLK_S_PLL0: *const core::ffi::c_char = cstr!("pll0");
-pub const NPCM7XX_CLK_S_PLL1: *const core::ffi::c_char = cstr!("pll1");
-pub const NPCM7XX_CLK_S_PLL1_DIV2: *const core::ffi::c_char = cstr!("pll1_div2");
-pub const NPCM7XX_CLK_S_PLL2: *const core::ffi::c_char = cstr!("pll2");
-pub const NPCM7XX_CLK_S_PLL_GFX: *const core::ffi::c_char = cstr!("pll_gfx");
-pub const NPCM7XX_CLK_S_PLL2_DIV2: *const core::ffi::c_char = cstr!("pll2_div2");
-pub const NPCM7XX_CLK_S_PIX_MUX: *const core::ffi::c_char = cstr!("gfx_pixel");
-pub const NPCM7XX_CLK_S_GPRFSEL_MUX: *const core::ffi::c_char = cstr!("gprfsel_mux");
-pub const NPCM7XX_CLK_S_MC_MUX: *const core::ffi::c_char = cstr!("mc_phy");
-pub const NPCM7XX_CLK_S_CPU_MUX: *const core::ffi::c_char = cstr!("cpu");
-pub const NPCM7XX_CLK_S_MC: *const core::ffi::c_char = cstr!("mc");
-pub const NPCM7XX_CLK_S_AXI: *const core::ffi::c_char = cstr!("axi");
-pub const NPCM7XX_CLK_S_AHB: *const core::ffi::c_char = cstr!("ahb");
-pub const NPCM7XX_CLK_S_CLKOUT_MUX: *const core::ffi::c_char = cstr!("clkout_mux");
-pub const NPCM7XX_CLK_S_UART_MUX: *const core::ffi::c_char = cstr!("uart_mux");
-pub const NPCM7XX_CLK_S_TIM_MUX: *const core::ffi::c_char = cstr!("timer_mux");
-pub const NPCM7XX_CLK_S_SD_MUX: *const core::ffi::c_char = cstr!("sd_mux");
-pub const NPCM7XX_CLK_S_GFXM_MUX: *const core::ffi::c_char = cstr!("gfxm_mux");
-pub const NPCM7XX_CLK_S_SU_MUX: *const core::ffi::c_char = cstr!("serial_usb_mux");
-pub const NPCM7XX_CLK_S_DVC_MUX: *const core::ffi::c_char = cstr!("dvc_mux");
-pub const NPCM7XX_CLK_S_GFX_MUX: *const core::ffi::c_char = cstr!("gfx_mux");
-pub const NPCM7XX_CLK_S_GFX_PIXEL: *const core::ffi::c_char = cstr!("gfx_pixel");
-pub const NPCM7XX_CLK_S_SPI0: *const core::ffi::c_char = cstr!("spi0");
-pub const NPCM7XX_CLK_S_SPI3: *const core::ffi::c_char = cstr!("spi3");
-pub const NPCM7XX_CLK_S_SPIX: *const core::ffi::c_char = cstr!("spix");
-pub const NPCM7XX_CLK_S_APB1: *const core::ffi::c_char = cstr!("apb1");
-pub const NPCM7XX_CLK_S_APB2: *const core::ffi::c_char = cstr!("apb2");
-pub const NPCM7XX_CLK_S_APB3: *const core::ffi::c_char = cstr!("apb3");
-pub const NPCM7XX_CLK_S_APB4: *const core::ffi::c_char = cstr!("apb4");
-pub const NPCM7XX_CLK_S_APB5: *const core::ffi::c_char = cstr!("apb5");
-pub const NPCM7XX_CLK_S_TOCK: *const core::ffi::c_char = cstr!("tock");
-pub const NPCM7XX_CLK_S_CLKOUT: *const core::ffi::c_char = cstr!("clkout");
-pub const NPCM7XX_CLK_S_UART: *const core::ffi::c_char = cstr!("uart");
-pub const NPCM7XX_CLK_S_TIMER: *const core::ffi::c_char = cstr!("timer");
-pub const NPCM7XX_CLK_S_MMC: *const core::ffi::c_char = cstr!("mmc");
-pub const NPCM7XX_CLK_S_SDHC: *const core::ffi::c_char = cstr!("sdhc");
-pub const NPCM7XX_CLK_S_ADC: *const core::ffi::c_char = cstr!("adc");
-pub const NPCM7XX_CLK_S_GFX: *const core::ffi::c_char = cstr!("gfx0_gfx1_mem");
-pub const NPCM7XX_CLK_S_USBIF: *const core::ffi::c_char = cstr!("serial_usbif");
-pub const NPCM7XX_CLK_S_USB_HOST: *const core::ffi::c_char = cstr!("usb_host");
-pub const NPCM7XX_CLK_S_USB_BRIDGE: *const core::ffi::c_char = cstr!("usb_bridge");
-pub const NPCM7XX_CLK_S_PCI: *const core::ffi::c_char = cstr!("pci");
+macro_rules! cstr { ($s:literal) => { concat!($s, "\0").as_ptr() as *const kernel::ffi::c_char }; }
+pub const NPCM7XX_CLK_S_REFCLK: *const kernel::ffi::c_char = cstr!("refclk");
+pub const NPCM7XX_CLK_S_SYSBYPCK: *const kernel::ffi::c_char = cstr!("sysbypck");
+pub const NPCM7XX_CLK_S_MCBYPCK: *const kernel::ffi::c_char = cstr!("mcbypck");
+pub const NPCM7XX_CLK_S_GFXBYPCK: *const kernel::ffi::c_char = cstr!("gfxbypck");
+pub const NPCM7XX_CLK_S_PLL0: *const kernel::ffi::c_char = cstr!("pll0");
+pub const NPCM7XX_CLK_S_PLL1: *const kernel::ffi::c_char = cstr!("pll1");
+pub const NPCM7XX_CLK_S_PLL1_DIV2: *const kernel::ffi::c_char = cstr!("pll1_div2");
+pub const NPCM7XX_CLK_S_PLL2: *const kernel::ffi::c_char = cstr!("pll2");
+pub const NPCM7XX_CLK_S_PLL_GFX: *const kernel::ffi::c_char = cstr!("pll_gfx");
+pub const NPCM7XX_CLK_S_PLL2_DIV2: *const kernel::ffi::c_char = cstr!("pll2_div2");
+pub const NPCM7XX_CLK_S_PIX_MUX: *const kernel::ffi::c_char = cstr!("gfx_pixel");
+pub const NPCM7XX_CLK_S_GPRFSEL_MUX: *const kernel::ffi::c_char = cstr!("gprfsel_mux");
+pub const NPCM7XX_CLK_S_MC_MUX: *const kernel::ffi::c_char = cstr!("mc_phy");
+pub const NPCM7XX_CLK_S_CPU_MUX: *const kernel::ffi::c_char = cstr!("cpu");
+pub const NPCM7XX_CLK_S_MC: *const kernel::ffi::c_char = cstr!("mc");
+pub const NPCM7XX_CLK_S_AXI: *const kernel::ffi::c_char = cstr!("axi");
+pub const NPCM7XX_CLK_S_AHB: *const kernel::ffi::c_char = cstr!("ahb");
+pub const NPCM7XX_CLK_S_CLKOUT_MUX: *const kernel::ffi::c_char = cstr!("clkout_mux");
+pub const NPCM7XX_CLK_S_UART_MUX: *const kernel::ffi::c_char = cstr!("uart_mux");
+pub const NPCM7XX_CLK_S_TIM_MUX: *const kernel::ffi::c_char = cstr!("timer_mux");
+pub const NPCM7XX_CLK_S_SD_MUX: *const kernel::ffi::c_char = cstr!("sd_mux");
+pub const NPCM7XX_CLK_S_GFXM_MUX: *const kernel::ffi::c_char = cstr!("gfxm_mux");
+pub const NPCM7XX_CLK_S_SU_MUX: *const kernel::ffi::c_char = cstr!("serial_usb_mux");
+pub const NPCM7XX_CLK_S_DVC_MUX: *const kernel::ffi::c_char = cstr!("dvc_mux");
+pub const NPCM7XX_CLK_S_GFX_MUX: *const kernel::ffi::c_char = cstr!("gfx_mux");
+pub const NPCM7XX_CLK_S_GFX_PIXEL: *const kernel::ffi::c_char = cstr!("gfx_pixel");
+pub const NPCM7XX_CLK_S_SPI0: *const kernel::ffi::c_char = cstr!("spi0");
+pub const NPCM7XX_CLK_S_SPI3: *const kernel::ffi::c_char = cstr!("spi3");
+pub const NPCM7XX_CLK_S_SPIX: *const kernel::ffi::c_char = cstr!("spix");
+pub const NPCM7XX_CLK_S_APB1: *const kernel::ffi::c_char = cstr!("apb1");
+pub const NPCM7XX_CLK_S_APB2: *const kernel::ffi::c_char = cstr!("apb2");
+pub const NPCM7XX_CLK_S_APB3: *const kernel::ffi::c_char = cstr!("apb3");
+pub const NPCM7XX_CLK_S_APB4: *const kernel::ffi::c_char = cstr!("apb4");
+pub const NPCM7XX_CLK_S_APB5: *const kernel::ffi::c_char = cstr!("apb5");
+pub const NPCM7XX_CLK_S_TOCK: *const kernel::ffi::c_char = cstr!("tock");
+pub const NPCM7XX_CLK_S_CLKOUT: *const kernel::ffi::c_char = cstr!("clkout");
+pub const NPCM7XX_CLK_S_UART: *const kernel::ffi::c_char = cstr!("uart");
+pub const NPCM7XX_CLK_S_TIMER: *const kernel::ffi::c_char = cstr!("timer");
+pub const NPCM7XX_CLK_S_MMC: *const kernel::ffi::c_char = cstr!("mmc");
+pub const NPCM7XX_CLK_S_SDHC: *const kernel::ffi::c_char = cstr!("sdhc");
+pub const NPCM7XX_CLK_S_ADC: *const kernel::ffi::c_char = cstr!("adc");
+pub const NPCM7XX_CLK_S_GFX: *const kernel::ffi::c_char = cstr!("gfx0_gfx1_mem");
+pub const NPCM7XX_CLK_S_USBIF: *const kernel::ffi::c_char = cstr!("serial_usbif");
+pub const NPCM7XX_CLK_S_USB_HOST: *const kernel::ffi::c_char = cstr!("usb_host");
+pub const NPCM7XX_CLK_S_USB_BRIDGE: *const kernel::ffi::c_char = cstr!("usb_bridge");
+pub const NPCM7XX_CLK_S_PCI: *const kernel::ffi::c_char = cstr!("pci");
 
 // The remaining registration tables and init routine preserve the C driver's
 // data and control flow; kernel clock APIs and binding constants are external.
 unsafe extern "C" {
-    fn npcm7xx_clk_register_pll(pllcon: *mut core::ffi::c_void, name: *const core::ffi::c_char, parent_name: *const core::ffi::c_char, flags: usize) -> *mut clk_hw;
+    fn npcm7xx_clk_register_pll(pllcon: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, parent_name: *const kernel::ffi::c_char, flags: usize) -> *mut clk_hw;
     fn npcm7xx_clk_init(clk_np: *mut device_node);
 }
 
@@ -153,14 +153,14 @@ pub static mut CLKOUTSEL_MUX_TABLE: [u32; 5] = [0, 1, 2, 3, 4];
 pub static mut GFXMSEL_MUX_TABLE: [u32; 2] = [2, 3];
 pub static mut DVCSEL_MUX_TABLE: [u32; 2] = [2, 3];
 
-pub static PLL_MUX_PARENTS: [*const core::ffi::c_char; 4] = [NPCM7XX_CLK_S_PLL0, NPCM7XX_CLK_S_PLL1_DIV2, NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_PLL2_DIV2];
-pub static CPUCK_MUX_PARENTS: [*const core::ffi::c_char; 4] = [NPCM7XX_CLK_S_PLL0, NPCM7XX_CLK_S_PLL1_DIV2, NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_SYSBYPCK];
-pub static PIXCKSEL_MUX_PARENTS: [*const core::ffi::c_char; 2] = [NPCM7XX_CLK_S_PLL_GFX, NPCM7XX_CLK_S_REFCLK];
-pub static SUCKSEL_MUX_PARENTS: [*const core::ffi::c_char; 2] = [NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_PLL2_DIV2];
-pub static MCCKSEL_MUX_PARENTS: [*const core::ffi::c_char; 3] = [NPCM7XX_CLK_S_PLL1_DIV2, NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_MCBYPCK];
-pub static CLKOUTSEL_MUX_PARENTS: [*const core::ffi::c_char; 5] = [NPCM7XX_CLK_S_PLL0, NPCM7XX_CLK_S_PLL1_DIV2, NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_PLL_GFX, NPCM7XX_CLK_S_PLL2_DIV2];
-pub static GFXMSEL_MUX_PARENTS: [*const core::ffi::c_char; 2] = [NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_PLL2_DIV2];
-pub static DVCSEL_MUX_PARENTS: [*const core::ffi::c_char; 2] = [NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_PLL2];
+pub static PLL_MUX_PARENTS: [*const kernel::ffi::c_char; 4] = [NPCM7XX_CLK_S_PLL0, NPCM7XX_CLK_S_PLL1_DIV2, NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_PLL2_DIV2];
+pub static CPUCK_MUX_PARENTS: [*const kernel::ffi::c_char; 4] = [NPCM7XX_CLK_S_PLL0, NPCM7XX_CLK_S_PLL1_DIV2, NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_SYSBYPCK];
+pub static PIXCKSEL_MUX_PARENTS: [*const kernel::ffi::c_char; 2] = [NPCM7XX_CLK_S_PLL_GFX, NPCM7XX_CLK_S_REFCLK];
+pub static SUCKSEL_MUX_PARENTS: [*const kernel::ffi::c_char; 2] = [NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_PLL2_DIV2];
+pub static MCCKSEL_MUX_PARENTS: [*const kernel::ffi::c_char; 3] = [NPCM7XX_CLK_S_PLL1_DIV2, NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_MCBYPCK];
+pub static CLKOUTSEL_MUX_PARENTS: [*const kernel::ffi::c_char; 5] = [NPCM7XX_CLK_S_PLL0, NPCM7XX_CLK_S_PLL1_DIV2, NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_PLL_GFX, NPCM7XX_CLK_S_PLL2_DIV2];
+pub static GFXMSEL_MUX_PARENTS: [*const kernel::ffi::c_char; 2] = [NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_PLL2_DIV2];
+pub static DVCSEL_MUX_PARENTS: [*const kernel::ffi::c_char; 2] = [NPCM7XX_CLK_S_REFCLK, NPCM7XX_CLK_S_PLL2];
 
 // C's __initconst tables are retained as external-layout records.  The
 // complete per-clock entries are consumed by the registration routine below.

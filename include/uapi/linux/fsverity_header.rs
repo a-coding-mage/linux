@@ -73,7 +73,7 @@ pub struct fsverity_descriptor {
  */
 #[repr(C)]
 pub struct fsverity_formatted_digest {
-    pub magic: [::core::ffi::c_char; 8], // must be "FSVerity"
+    pub magic: [::kernel::ffi::c_char; 8], // must be "FSVerity"
     pub digest_algorithm: __le16,
     pub digest_size: __le16,
     pub digest: [__u8; 0],
@@ -92,8 +92,8 @@ pub struct fsverity_read_metadata_arg {
     pub __reserved: __u64,
 }
 
-pub const FS_IOC_ENABLE_VERITY: _ = _IOW(b'f', 133, fsverity_enable_arg);
-pub const FS_IOC_MEASURE_VERITY: _ = _IOWR(b'f', 134, fsverity_digest);
-pub const FS_IOC_READ_VERITY_METADATA: _ = _IOWR(b'f', 135, fsverity_read_metadata_arg);
+pub const FS_IOC_ENABLE_VERITY: u32 = _IOW(b'f', 133, fsverity_enable_arg);
+pub const FS_IOC_MEASURE_VERITY: u32 = _IOWR(b'f', 134, fsverity_digest);
+pub const FS_IOC_READ_VERITY_METADATA: u32 = _IOWR(b'f', 135, fsverity_read_metadata_arg);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

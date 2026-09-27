@@ -7,7 +7,7 @@
 
 #[repr(C)]
 pub struct pt_regs_offset {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub offset: i32,
 }
 
@@ -113,7 +113,7 @@ unsafe fn genregs_get(target: *mut task_struct, _regset: *const user_regset, mut
     membuf_store(&mut to, stop_pc)
 }
 
-unsafe fn genregs_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, kbuf: *const ::core::ffi::c_void, ubuf: *const ::core::ffi::c_void) -> i32 {
+unsafe fn genregs_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, kbuf: *const ::kernel::ffi::c_void, ubuf: *const ::kernel::ffi::c_void) -> i32 {
     let ptregs = task_pt_regs(target); let cregs = task_callee_regs_local(target); let mut ret = 0;
     macro_rules! one { ($loc:expr, $ptr:expr) => { if ret == 0 { ret = user_regset_copyin(&mut pos, &mut count, &mut (kbuf as *mut _), &mut (ubuf as *mut _), $ptr, $loc, $loc + 4); } }; }
     macro_rules! ignore { ($loc:expr) => { if ret == 0 { user_regset_copyin_ignore(&mut pos, &mut count, &mut (kbuf as *mut _), &mut (ubuf as *mut _), $loc, $loc + 4); } }; }
@@ -131,22 +131,22 @@ unsafe fn arcv2regs_get(target: *mut task_struct, _regset: *const user_regset, m
 }
 
 #[cfg(CONFIG_ISA_ARCV2)]
-unsafe fn arcv2regs_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, kbuf: *const ::core::ffi::c_void, ubuf: *const ::core::ffi::c_void) -> i32 {
+unsafe fn arcv2regs_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, kbuf: *const ::kernel::ffi::c_void, ubuf: *const ::kernel::ffi::c_void) -> i32 {
     let regs = task_pt_regs(target);
     let copy_sz = if IS_ENABLED(CONFIG_ARC_HAS_ACCL_REGS) { core::mem::size_of::<user_regs_arcv2>() } else { 4 };
     user_regset_copyin(&mut pos, &mut count, &mut (kbuf as *mut _), &mut (ubuf as *mut _), &mut (*regs).r30 as *mut _ as *mut _, 0, copy_sz)
 }
 
 #[repr(C)]
-pub struct user_regset { pub n: usize, pub size: usize, pub align: usize, pub regset_get: Option<unsafe fn(*mut task_struct, *const user_regset, membuf) -> i32>, pub set: Option<unsafe fn(*mut task_struct, *const user_regset, u32, u32, *const ::core::ffi::c_void, *const ::core::ffi::c_void) -> i32> }
+pub struct user_regset { pub n: usize, pub size: usize, pub align: usize, pub regset_get: Option<unsafe fn(*mut task_struct, *const user_regset, membuf) -> i32>, pub set: Option<unsafe fn(*mut task_struct, *const user_regset, u32, u32, *const ::kernel::ffi::c_void, *const ::kernel::ffi::c_void) -> i32> }
 
 #[repr(C)]
-pub struct user_regset_view { pub name: *const ::core::ffi::c_char, pub e_machine: u32, pub regsets: *const user_regset, pub n: usize }
+pub struct user_regset_view { pub name: *const ::kernel::ffi::c_char, pub e_machine: u32, pub regsets: *const user_regset, pub n: usize }
 
 #[repr(C)]
 pub struct membuf;
 #[repr(C)] pub struct task_struct { pub thread: thread_struct }
-#[repr(C)] pub struct thread_struct { pub callee_reg: *mut ::core::ffi::c_void, pub fault_address: usize }
+#[repr(C)] pub struct thread_struct { pub callee_reg: *mut ::kernel::ffi::c_void, pub fault_address: usize }
 #[repr(C)] pub struct callee_regs { pub r25:u32,pub r24:u32,pub r23:u32,pub r22:u32,pub r21:u32,pub r20:u32,pub r19:u32,pub r18:u32,pub r17:u32,pub r16:u32,pub r15:u32,pub r14:u32,pub r13:u32 }
 #[repr(C)] pub struct pt_regs { pub bta:u32,pub lp_start:u32,pub lp_end:u32,pub lp_count:u32,pub status32:u32,pub ret:u32,pub blink:u32,pub fp:u32,pub r26:u32,pub r12:u32,pub r11:u32,pub r10:u32,pub r9:u32,pub r8:i32,pub r7:u32,pub r6:u32,pub r5:u32,pub r4:u32,pub r3:u32,pub r2:u32,pub r1:u32,pub r0:u32,pub sp:u32 }
 
@@ -174,11 +174,11 @@ pub unsafe fn syscall_trace_exit(regs: *mut pt_regs) {
     #[cfg(CONFIG_HAVE_SYSCALL_TRACEPOINTS)] if test_thread_flag(TIF_SYSCALL_TRACEPOINT) { trace_sys_exit(regs, regs_return_value(regs)); }
 }
 
-pub unsafe fn regs_query_register_offset(name: *const ::core::ffi::c_char) -> i32 {
+pub unsafe fn regs_query_register_offset(name: *const ::kernel::ffi::c_char) -> i32 {
     for roff in regoffset_table { if !roff.name.is_null() && strcmp(roff.name, name) == 0 { return roff.offset; } } -22
 }
 
-pub unsafe fn regs_query_register_name(offset: u32) -> *const ::core::ffi::c_char {
+pub unsafe fn regs_query_register_name(offset: u32) -> *const ::kernel::ffi::c_char {
     for roff in regoffset_table { if !roff.name.is_null() && roff.offset as u32 == offset { return roff.name; } } core::ptr::null()
 }
 

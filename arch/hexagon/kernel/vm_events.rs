@@ -8,17 +8,17 @@
 // Dependencies supplied by the surrounding kernel translation.
 
 extern "C" {
-    fn show_regs_print_info(loglevel: *const core::ffi::c_char);
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn pt_elr(regs: *mut pt_regs) -> ::core::ffi::c_ulong;
-    fn pt_cause(regs: *mut pt_regs) -> ::core::ffi::c_ulong;
-    fn user_mode(regs: *mut pt_regs) -> ::core::ffi::c_int;
-    fn pt_psp(regs: *mut pt_regs) -> ::core::ffi::c_ulong;
-    fn pt_badva(regs: *mut pt_regs) -> ::core::ffi::c_ulong;
-    fn ints_enabled(regs: *mut pt_regs) -> ::core::ffi::c_int;
+    fn show_regs_print_info(loglevel: *const kernel::ffi::c_char);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn pt_elr(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong;
+    fn pt_cause(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong;
+    fn user_mode(regs: *mut pt_regs) -> ::kernel::ffi::c_int;
+    fn pt_psp(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong;
+    fn pt_badva(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong;
+    fn ints_enabled(regs: *mut pt_regs) -> ::kernel::ffi::c_int;
     fn set_irq_regs(regs: *mut pt_regs) -> *mut pt_regs;
     fn irq_enter();
-    fn generic_handle_irq(irq: ::core::ffi::c_int);
+    fn generic_handle_irq(irq: ::kernel::ffi::c_int);
     fn irq_exit();
 }
 
@@ -28,7 +28,7 @@ pub use crate::pt_regs;
 const KERN_EMERG: &[u8] = b"<0>\0";
 
 pub unsafe fn show_regs(regs: *mut pt_regs) {
-    show_regs_print_info(KERN_EMERG.as_ptr() as *const core::ffi::c_char);
+    show_regs_print_info(KERN_EMERG.as_ptr() as *const kernel::ffi::c_char);
 
     printk(b"<0>restart_r0: \t0x%08lx   syscall_nr: %ld\n\0".as_ptr() as _, (*regs).restart_r0, (*regs).syscall_nr);
     printk(b"<0>preds: \t\t0x%08lx\n\0".as_ptr() as _, (*regs).preds);
@@ -49,7 +49,7 @@ pub unsafe fn show_regs(regs: *mut pt_regs) {
 }
 
 pub unsafe fn arch_do_IRQ(regs: *mut pt_regs) {
-    let irq: ::core::ffi::c_int = pt_cause(regs) as ::core::ffi::c_int;
+    let irq: ::kernel::ffi::c_int = pt_cause(regs) as ::kernel::ffi::c_int;
     let old_regs: *mut pt_regs = set_irq_regs(regs);
 
     irq_enter();

@@ -11,13 +11,13 @@
 struct O2quoState {
     qs_lock: spinlock_t,
     qs_work: work_struct,
-    qs_pending: ::core::ffi::c_int,
-    qs_heartbeating: ::core::ffi::c_int,
-    qs_hb_bm: [::core::ffi::c_ulong; BITS_TO_LONGS(O2NM_MAX_NODES)],
-    qs_connected: ::core::ffi::c_int,
-    qs_conn_bm: [::core::ffi::c_ulong; BITS_TO_LONGS(O2NM_MAX_NODES)],
-    qs_holds: ::core::ffi::c_int,
-    qs_hold_bm: [::core::ffi::c_ulong; BITS_TO_LONGS(O2NM_MAX_NODES)],
+    qs_pending: ::kernel::ffi::c_int,
+    qs_heartbeating: ::kernel::ffi::c_int,
+    qs_hb_bm: [::kernel::ffi::c_ulong; BITS_TO_LONGS(O2NM_MAX_NODES)],
+    qs_connected: ::kernel::ffi::c_int,
+    qs_conn_bm: [::kernel::ffi::c_ulong; BITS_TO_LONGS(O2NM_MAX_NODES)],
+    qs_holds: ::kernel::ffi::c_int,
+    qs_hold_bm: [::kernel::ffi::c_ulong; BITS_TO_LONGS(O2NM_MAX_NODES)],
 }
 
 static mut o2quo_state: O2quoState = unsafe { ::core::mem::zeroed() };
@@ -40,16 +40,16 @@ pub unsafe fn o2quo_disk_timeout() {
 }
 
 unsafe fn o2quo_make_decision(_work: *mut work_struct) {
-    let mut quorum: ::core::ffi::c_int;
-    let mut lowest_hb: ::core::ffi::c_int;
-    let mut lowest_reachable: ::core::ffi::c_int = 0;
-    let mut fence: ::core::ffi::c_int = 0;
+    let mut quorum: ::kernel::ffi::c_int;
+    let mut lowest_hb: ::kernel::ffi::c_int;
+    let mut lowest_reachable: ::kernel::ffi::c_int = 0;
+    let mut fence: ::kernel::ffi::c_int = 0;
     let qs = &mut o2quo_state;
 
     spin_lock_bh(&mut qs.qs_lock);
     lowest_hb = find_first_bit(qs.qs_hb_bm.as_ptr(), O2NM_MAX_NODES);
     if lowest_hb != O2NM_MAX_NODES {
-        lowest_reachable = test_bit(lowest_hb, qs.qs_conn_bm.as_ptr()) as ::core::ffi::c_int;
+        lowest_reachable = test_bit(lowest_hb, qs.qs_conn_bm.as_ptr()) as ::kernel::ffi::c_int;
     }
     mlog(0, "heartbeating: %d, connected: %d, lowest: %d (%sreachable)\n",
          qs.qs_heartbeating, qs.qs_connected, lowest_hb,

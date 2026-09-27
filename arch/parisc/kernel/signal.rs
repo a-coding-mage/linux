@@ -17,10 +17,10 @@ macro_rules! DBG {
 }
 
 #[inline]
-unsafe fn A<T>(x: *const T) -> ::core::ffi::c_ulong { x as usize as ::core::ffi::c_ulong }
+unsafe fn A<T>(x: *const T) -> ::kernel::ffi::c_ulong { x as usize as ::kernel::ffi::c_ulong }
 
-unsafe fn restore_sigcontext(sc: *mut sigcontext, regs: *mut pt_regs) -> ::core::ffi::c_long {
-    let mut err: ::core::ffi::c_long = 0;
+unsafe fn restore_sigcontext(sc: *mut sigcontext, regs: *mut pt_regs) -> ::kernel::ffi::c_long {
+    let mut err: ::kernel::ffi::c_long = 0;
     err |= __copy_from_user((*regs).gr.as_mut_ptr() as *mut _, (*sc).sc_gr.as_ptr() as *const _, core::mem::size_of_val(&(*regs).gr));
     err |= __copy_from_user((*regs).fr.as_mut_ptr() as *mut _, (*sc).sc_fr.as_ptr() as *const _, core::mem::size_of_val(&(*regs).fr));
     err |= __copy_from_user((*regs).iaoq.as_mut_ptr() as *mut _, (*sc).sc_iaoq.as_ptr() as *const _, core::mem::size_of_val(&(*regs).iaoq));
@@ -59,13 +59,13 @@ pub unsafe extern "C" fn sys_rt_sigreturn(regs: *mut pt_regs, in_syscall: i32) {
 }
 
 #[inline]
-unsafe fn get_sigframe(ka: *mut k_sigaction, mut sp: ::core::ffi::c_ulong, _frame_size: usize) -> *mut core::ffi::c_void {
+unsafe fn get_sigframe(ka: *mut k_sigaction, mut sp: ::kernel::ffi::c_ulong, _frame_size: usize) -> *mut kernel::ffi::c_void {
     if ((*ka).sa.sa_flags & SA_ONSTACK) != 0 && sas_ss_flags(sp) == 0 { sp = ((*current).sas_ss_sp + 0x7f) & !0x3f; }
-    sp as *mut core::ffi::c_void
+    sp as *mut kernel::ffi::c_void
 }
 
-unsafe fn setup_sigcontext(sc: *mut sigcontext, regs: *mut pt_regs, in_syscall: ::core::ffi::c_long) -> ::core::ffi::c_long {
-    let mut flags: ::core::ffi::c_ulong = 0; let mut err: ::core::ffi::c_long = 0;
+unsafe fn setup_sigcontext(sc: *mut sigcontext, regs: *mut pt_regs, in_syscall: ::kernel::ffi::c_long) -> ::kernel::ffi::c_long {
+    let mut flags: ::kernel::ffi::c_ulong = 0; let mut err: ::kernel::ffi::c_long = 0;
     if on_sig_stack(sc as usize as _) { flags |= PARISC_SC_FLAG_ONSTACK; }
     if in_syscall != 0 {
         flags |= PARISC_SC_FLAG_IN_SYSCALL;
@@ -79,7 +79,7 @@ unsafe fn setup_sigcontext(sc: *mut sigcontext, regs: *mut pt_regs, in_syscall: 
     err |= __put_user((*regs).sar, &mut (*sc).sc_sar); err
 }
 
-unsafe fn setup_rt_frame(ksig: *mut ksignal, set: *mut sigset_t, regs: *mut pt_regs, in_syscall: ::core::ffi::c_long) -> i32 {
+unsafe fn setup_rt_frame(ksig: *mut ksignal, set: *mut sigset_t, regs: *mut pt_regs, in_syscall: ::kernel::ffi::c_long) -> i32 {
     let mut usp = (*regs).gr[30] & !1; let mut size = PARISC_RT_SIGFRAME_SIZE;
     #[cfg(CONFIG_COMPAT)] if is_compat_task() { usp = usp as u32 as _; size = PARISC_RT_SIGFRAME_SIZE32; }
     let frame = get_sigframe(&mut (*ksig).ka, usp, size) as *mut rt_sigframe;
@@ -97,7 +97,7 @@ unsafe fn setup_rt_frame(ksig: *mut ksignal, set: *mut sigset_t, regs: *mut pt_r
     (*regs).gr[25] = A(&(*frame).info); (*regs).gr[24] = A(&(*frame).uc); (*regs).gr[30] = A(frame) + size; 0
 }
 
-unsafe fn handle_signal(ksig: *mut ksignal, regs: *mut pt_regs, in_syscall: ::core::ffi::c_long) { let oldset = sigmask_to_save(); let ret = setup_rt_frame(ksig, oldset, regs, in_syscall); signal_setup_done(ret, ksig, test_thread_flag(TIF_SINGLESTEP) || test_thread_flag(TIF_BLOCKSTEP)); }
+unsafe fn handle_signal(ksig: *mut ksignal, regs: *mut pt_regs, in_syscall: ::kernel::ffi::c_long) { let oldset = sigmask_to_save(); let ret = setup_rt_frame(ksig, oldset, regs, in_syscall); signal_setup_done(ret, ksig, test_thread_flag(TIF_SINGLESTEP) || test_thread_flag(TIF_BLOCKSTEP)); }
 
 unsafe fn check_syscallno_in_delay_branch(regs: *mut pt_regs) {
     let mut opcode = 0u32; (*regs).gr[31] = (*regs).gr[31].wrapping_sub(8);
@@ -110,8 +110,8 @@ unsafe fn syscall_restart(regs: *mut pt_regs, ka: *mut k_sigaction) { if (*regs)
 
 unsafe fn insert_restart_trampoline(regs: *mut pt_regs) { if (*regs).orig_r28 != 0 { return; } (*regs).orig_r28 = 1; match (*regs).gr[28] { case if case == -ERESTART_RESTARTBLOCK => { (*regs).gr[31] = VDSO32_SYMBOL(current, restart_syscall); }, case if case == -ERESTARTNOHAND || case == -ERESTARTSYS || case == -ERESTARTNOINTR => check_syscallno_in_delay_branch(regs), _ => {} } }
 
-unsafe fn do_signal(regs: *mut pt_regs, in_syscall: ::core::ffi::c_long) { let mut ksig: ksignal = core::mem::zeroed(); let restart = in_syscall != 0; if get_signal(&mut ksig) { if restart { syscall_restart(regs, &mut ksig.ka); } handle_signal(&mut ksig, regs, in_syscall); } else { if restart { insert_restart_trampoline(regs); } restore_saved_sigmask(); } }
+unsafe fn do_signal(regs: *mut pt_regs, in_syscall: ::kernel::ffi::c_long) { let mut ksig: ksignal = core::mem::zeroed(); let restart = in_syscall != 0; if get_signal(&mut ksig) { if restart { syscall_restart(regs, &mut ksig.ka); } handle_signal(&mut ksig, regs, in_syscall); } else { if restart { insert_restart_trampoline(regs); } restore_saved_sigmask(); } }
 
-pub unsafe extern "C" fn do_notify_resume(regs: *mut pt_regs, in_syscall: ::core::ffi::c_long) { if test_thread_flag(TIF_SIGPENDING) || test_thread_flag(TIF_NOTIFY_SIGNAL) { do_signal(regs, in_syscall); } if test_thread_flag(TIF_NOTIFY_RESUME) { resume_user_mode_work(regs); } }
+pub unsafe extern "C" fn do_notify_resume(regs: *mut pt_regs, in_syscall: ::kernel::ffi::c_long) { if test_thread_flag(TIF_SIGPENDING) || test_thread_flag(TIF_NOTIFY_SIGNAL) { do_signal(regs, in_syscall); } if test_thread_flag(TIF_NOTIFY_RESUME) { resume_user_mode_work(regs); } }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

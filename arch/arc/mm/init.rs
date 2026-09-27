@@ -15,27 +15,27 @@ pub struct pgd_t {
 #[repr(align(4096))]
 pub static mut swapper_pg_dir: [pgd_t; PTRS_PER_PGD] = [pgd_t { _private: [] }; PTRS_PER_PGD];
 
-static low_mem_start: ::core::ffi::c_ulong = CONFIG_LINUX_RAM_BASE;
-static mut low_mem_sz: ::core::ffi::c_ulong = 0;
+static low_mem_start: ::kernel::ffi::c_ulong = CONFIG_LINUX_RAM_BASE;
+static mut low_mem_sz: ::kernel::ffi::c_ulong = 0;
 
 #[cfg(CONFIG_HIGHMEM)]
-static mut min_high_pfn: ::core::ffi::c_ulong = 0;
+static mut min_high_pfn: ::kernel::ffi::c_ulong = 0;
 #[cfg(CONFIG_HIGHMEM)]
-static mut max_high_pfn: ::core::ffi::c_ulong = 0;
+static mut max_high_pfn: ::kernel::ffi::c_ulong = 0;
 #[cfg(CONFIG_HIGHMEM)]
 static mut high_mem_start: phys_addr_t = 0;
 #[cfg(CONFIG_HIGHMEM)]
 static mut high_mem_sz: phys_addr_t = 0;
 #[cfg(CONFIG_HIGHMEM)]
 #[no_mangle]
-pub static mut arch_pfn_offset: ::core::ffi::c_ulong = 0;
+pub static mut arch_pfn_offset: ::kernel::ffi::c_ulong = 0;
 
-pub unsafe extern "C" fn arc_get_mem_sz() -> ::core::ffi::c_long {
-    low_mem_sz as ::core::ffi::c_long
+pub unsafe extern "C" fn arc_get_mem_sz() -> ::kernel::ffi::c_long {
+    low_mem_sz as ::kernel::ffi::c_long
 }
 
 /* User can over-ride above with "mem=nnn[KkMm]" in cmdline */
-unsafe extern "C" fn setup_mem_sz(str_: *mut ::core::ffi::c_char) -> ::core::ffi::c_int {
+unsafe extern "C" fn setup_mem_sz(str_: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int {
     low_mem_sz = memparse(str_, core::ptr::null_mut()) & PAGE_MASK;
 
     /* early console might not be setup yet - it will show up later */
@@ -47,14 +47,14 @@ unsafe extern "C" fn setup_mem_sz(str_: *mut ::core::ffi::c_char) -> ::core::ffi
 /* early_param("mem", setup_mem_sz); */
 
 pub unsafe extern "C" fn early_init_dt_add_memory_arch(base: u64, size: u64) {
-    let mut in_use: ::core::ffi::c_int = 0;
+    let mut in_use: ::kernel::ffi::c_int = 0;
 
     if low_mem_sz == 0 {
         if base != low_mem_start as u64 {
             panic(c"CONFIG_LINUX_RAM_BASE != DT memory { }");
         }
 
-        low_mem_sz = size as ::core::ffi::c_ulong;
+        low_mem_sz = size as ::kernel::ffi::c_ulong;
         in_use = 1;
         memblock_add_node(base, size, 0, MEMBLOCK_NONE);
     } else {
@@ -71,7 +71,7 @@ pub unsafe extern "C" fn early_init_dt_add_memory_arch(base: u64, size: u64) {
     pr_info(c"Memory @ %llx [%lldM] %s\n", base, TO_MB(size), if in_use == 0 { c"Not used" } else { c"" });
 }
 
-pub unsafe extern "C" fn arch_zone_limits_init(max_zone_pfn: *mut ::core::ffi::c_ulong) {
+pub unsafe extern "C" fn arch_zone_limits_init(max_zone_pfn: *mut ::kernel::ffi::c_ulong) {
     /*----------------- node/zones setup --------------------------*/
     *max_zone_pfn.add(ZONE_NORMAL) = max_low_pfn;
 
@@ -100,7 +100,7 @@ pub unsafe extern "C" fn setup_arch_memory() {
     setup_initial_init_mm(_text, _etext, _edata, _end);
 
     /* first page of system - kernel .vector starts here */
-    min_low_pfn = virt_to_pfn(CONFIG_LINUX_RAM_BASE as *mut ::core::ffi::c_void);
+    min_low_pfn = virt_to_pfn(CONFIG_LINUX_RAM_BASE as *mut ::kernel::ffi::c_void);
 
     /* Last usable page of low mem */
     max_low_pfn = PFN_DOWN(low_mem_start + low_mem_sz);
@@ -124,7 +124,7 @@ pub unsafe extern "C" fn setup_arch_memory() {
     #[cfg(CONFIG_BLK_DEV_INITRD)]
     if phys_initrd_size != 0 {
         memblock_reserve(phys_initrd_start, phys_initrd_size);
-        initrd_start = __va(phys_initrd_start) as ::core::ffi::c_ulong;
+        initrd_start = __va(phys_initrd_start) as ::kernel::ffi::c_ulong;
         initrd_end = initrd_start + phys_initrd_size;
     }
 
@@ -164,9 +164,9 @@ pub unsafe extern "C" fn arch_mm_preinit() {
 }
 
 #[cfg(CONFIG_HIGHMEM)]
-pub unsafe extern "C" fn pfn_valid(pfn: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn pfn_valid(pfn: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     ((pfn >= min_high_pfn && pfn <= max_high_pfn)
-        || (pfn >= min_low_pfn && pfn <= max_low_pfn)) as ::core::ffi::c_int
+        || (pfn >= min_low_pfn && pfn <= max_low_pfn)) as ::kernel::ffi::c_int
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

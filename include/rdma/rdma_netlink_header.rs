@@ -3,7 +3,7 @@
 // C header dependencies:
 // <linux/netlink.h>, <uapi/rdma/rdma_netlink.h>, and <rdma/ib_verbs.h>
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub struct ib_device;
 pub struct sk_buff;
@@ -121,9 +121,9 @@ pub unsafe extern "C" fn rdma_nl_notify_event(
 #[repr(C)]
 pub struct rdma_link_ops {
     pub list: list_head,
-    pub type_: *const core::ffi::c_char,
+    pub type_: *const kernel::ffi::c_char,
     pub newlink: Option<unsafe extern "C" fn(
-        ibdev_name: *const core::ffi::c_char,
+        ibdev_name: *const kernel::ffi::c_char,
         ndev: *mut net_device,
     ) -> i32>,
     pub dellink: Option<unsafe extern "C" fn(dev: *mut ib_device) -> i32>,

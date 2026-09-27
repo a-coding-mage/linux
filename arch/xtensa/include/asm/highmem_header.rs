@@ -26,7 +26,7 @@ pub const fn PKMAP_ADDR(nr: usize) -> usize {
     PKMAP_BASE + (nr << PAGE_SHIFT)
 }
 
-pub const kmap_prot: _ = PAGE_KERNEL_EXEC;
+pub const kmap_prot: pgprot_t = PAGE_KERNEL_EXEC;
 
 // This section corresponds to: #if DCACHE_WAY_SIZE > PAGE_SIZE.
 #[inline]

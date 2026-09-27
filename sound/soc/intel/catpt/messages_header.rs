@@ -7,7 +7,7 @@
 
 /* Translated from C header: soc/intel/catpt/messages.h */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub enum catpt_dev {}
 pub enum resource {}

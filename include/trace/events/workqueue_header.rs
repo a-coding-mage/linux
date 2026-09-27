@@ -3,7 +3,7 @@
 // C header guard: _TRACE_WORKQUEUE_H (also available for multi-read inclusion)
 // C dependencies: linux/tracepoint.h, linux/workqueue.h, trace/define_trace.h
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 // External types supplied by the Linux workqueue/tracepoint dependencies.
 #[repr(C)]
@@ -14,7 +14,7 @@ pub struct pool_workqueue {
 
 #[repr(C)]
 pub struct workqueue_struct {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -33,7 +33,7 @@ pub type work_func_t = *mut c_void;
 pub struct WorkqueueQueueWorkEntry {
     pub work: *mut c_void,
     pub function: *mut c_void,
-    pub workqueue: *const core::ffi::c_char,
+    pub workqueue: *const kernel::ffi::c_char,
     pub req_cpu: i32,
     pub cpu: i32,
 }

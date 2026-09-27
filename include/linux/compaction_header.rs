@@ -57,7 +57,7 @@ pub struct capture_control {
  * to make sure compaction has reasonable chance of not running out of free
  * pages that it needs to isolate as migration target during its work. */
 #[inline]
-pub fn compact_gap(order: core::ffi::c_uint) -> core::ffi::c_ulong {
+pub fn compact_gap(order: kernel::ffi::c_uint) -> kernel::ffi::c_ulong {
     /* Although all the isolations for migration are temporary, compaction
      * free scanner may have up to 1 << order pages on its list and then
      * try to split an (order - 1) free page. At that point, a gap of
@@ -68,23 +68,23 @@ pub fn compact_gap(order: core::ffi::c_uint) -> core::ffi::c_ulong {
      * scanner is only invoked when the number of isolated free pages is
      * lower than that. */
     unsafe {
-        core::cmp::min(2u64.wrapping_shl(order), COMPACT_CLUSTER_MAX as u64) as core::ffi::c_ulong
+        core::cmp::min(2u64.wrapping_shl(order), COMPACT_CLUSTER_MAX as u64) as kernel::ffi::c_ulong
     }
 }
 
 #[inline]
-pub unsafe fn current_is_kcompactd() -> core::ffi::c_int {
+pub unsafe fn current_is_kcompactd() -> kernel::ffi::c_int {
     (*current).flags & PF_KCOMPACTD
 }
 
 #[cfg(CONFIG_COMPACTION)]
 extern "C" {
-    pub fn extfrag_for_order(zone: *mut zone, order: core::ffi::c_uint) -> core::ffi::c_uint;
-    pub fn fragmentation_index(zone: *mut zone, order: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn extfrag_for_order(zone: *mut zone, order: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
+    pub fn fragmentation_index(zone: *mut zone, order: kernel::ffi::c_uint) -> kernel::ffi::c_int;
     pub fn try_to_compact_pages(
         gfp_mask: gfp_t,
-        order: core::ffi::c_uint,
-        alloc_flags: core::ffi::c_uint,
+        order: kernel::ffi::c_uint,
+        alloc_flags: kernel::ffi::c_uint,
         ac: *const alloc_context,
         prio: compact_priority,
         capc: *mut capture_control,
@@ -92,24 +92,24 @@ extern "C" {
     pub fn reset_isolation_suitable(pgdat: *mut pg_data_t);
     pub fn compaction_suitable(
         zone: *mut zone,
-        order: core::ffi::c_int,
-        watermark: core::ffi::c_ulong,
-        highest_zoneidx: core::ffi::c_int,
+        order: kernel::ffi::c_int,
+        watermark: kernel::ffi::c_ulong,
+        highest_zoneidx: kernel::ffi::c_int,
     ) -> bool;
     pub fn compaction_defer_reset(
         zone: *mut zone,
-        order: core::ffi::c_int,
+        order: kernel::ffi::c_int,
         alloc_success: bool,
     );
     pub fn compaction_zonelist_suitable(
         ac: *mut alloc_context,
-        order: core::ffi::c_int,
-        alloc_flags: core::ffi::c_int,
+        order: kernel::ffi::c_int,
+        alloc_flags: kernel::ffi::c_int,
         gfp_mask: gfp_t,
     ) -> bool;
-    pub fn kcompactd_run(nid: core::ffi::c_int);
-    pub fn kcompactd_stop(nid: core::ffi::c_int);
-    pub fn wakeup_kcompactd(pgdat: *mut pg_data_t, order: core::ffi::c_int, highest_zoneidx: core::ffi::c_int);
+    pub fn kcompactd_run(nid: kernel::ffi::c_int);
+    pub fn kcompactd_stop(nid: kernel::ffi::c_int);
+    pub fn wakeup_kcompactd(pgdat: *mut pg_data_t, order: kernel::ffi::c_int, highest_zoneidx: kernel::ffi::c_int);
 }
 
 #[cfg(not(CONFIG_COMPACTION))]
@@ -118,19 +118,19 @@ pub unsafe fn reset_isolation_suitable(_pgdat: *mut pg_data_t) {}
 
 #[cfg(not(CONFIG_COMPACTION))]
 #[inline]
-pub unsafe fn compaction_suitable(_zone: *mut zone, _order: core::ffi::c_int, _watermark: core::ffi::c_ulong, _highest_zoneidx: core::ffi::c_int) -> bool { false }
+pub unsafe fn compaction_suitable(_zone: *mut zone, _order: kernel::ffi::c_int, _watermark: kernel::ffi::c_ulong, _highest_zoneidx: kernel::ffi::c_int) -> bool { false }
 
 #[cfg(not(CONFIG_COMPACTION))]
 #[inline]
-pub unsafe fn kcompactd_run(_nid: core::ffi::c_int) {}
+pub unsafe fn kcompactd_run(_nid: kernel::ffi::c_int) {}
 
 #[cfg(not(CONFIG_COMPACTION))]
 #[inline]
-pub unsafe fn kcompactd_stop(_nid: core::ffi::c_int) {}
+pub unsafe fn kcompactd_stop(_nid: kernel::ffi::c_int) {}
 
 #[cfg(not(CONFIG_COMPACTION))]
 #[inline]
-pub unsafe fn wakeup_kcompactd(_pgdat: *mut pg_data_t, _order: core::ffi::c_int, _highest_zoneidx: core::ffi::c_int) {}
+pub unsafe fn wakeup_kcompactd(_pgdat: *mut pg_data_t, _order: kernel::ffi::c_int, _highest_zoneidx: kernel::ffi::c_int) {}
 
 #[repr(C)]
 pub struct node {
@@ -139,13 +139,13 @@ pub struct node {
 
 #[cfg(all(CONFIG_COMPACTION, CONFIG_SYSFS, CONFIG_NUMA))]
 extern "C" {
-    pub fn compaction_register_node(node: *mut node) -> core::ffi::c_int;
+    pub fn compaction_register_node(node: *mut node) -> kernel::ffi::c_int;
     pub fn compaction_unregister_node(node: *mut node);
 }
 
 #[cfg(not(all(CONFIG_COMPACTION, CONFIG_SYSFS, CONFIG_NUMA)))]
 #[inline]
-pub unsafe fn compaction_register_node(_node: *mut node) -> core::ffi::c_int { 0 }
+pub unsafe fn compaction_register_node(_node: *mut node) -> kernel::ffi::c_int { 0 }
 
 #[cfg(not(all(CONFIG_COMPACTION, CONFIG_SYSFS, CONFIG_NUMA)))]
 #[inline]

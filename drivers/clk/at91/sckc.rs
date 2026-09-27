@@ -15,35 +15,35 @@ const AT91_SCKC_CR: usize = 0x00;
 #[repr(C)]
 struct clk_slow_bits { cr_rcen: u32, cr_osc32en: u32, cr_osc32byp: u32, cr_oscsel: u32 }
 #[repr(C)]
-struct clk_slow_osc { hw: clk_hw, sckcr: *mut core::ffi::c_void, bits: *const clk_slow_bits, startup_usec: usize }
+struct clk_slow_osc { hw: clk_hw, sckcr: *mut kernel::ffi::c_void, bits: *const clk_slow_bits, startup_usec: usize }
 #[repr(C)]
-struct clk_sama5d4_slow_osc { hw: clk_hw, sckcr: *mut core::ffi::c_void, bits: *const clk_slow_bits, startup_usec: usize, prepared: bool }
+struct clk_sama5d4_slow_osc { hw: clk_hw, sckcr: *mut kernel::ffi::c_void, bits: *const clk_slow_bits, startup_usec: usize, prepared: bool }
 #[repr(C)]
-struct clk_slow_rc_osc { hw: clk_hw, sckcr: *mut core::ffi::c_void, bits: *const clk_slow_bits, frequency: usize, accuracy: usize, startup_usec: usize }
+struct clk_slow_rc_osc { hw: clk_hw, sckcr: *mut kernel::ffi::c_void, bits: *const clk_slow_bits, frequency: usize, accuracy: usize, startup_usec: usize }
 #[repr(C)]
-struct clk_sam9x5_slow { hw: clk_hw, sckcr: *mut core::ffi::c_void, bits: *const clk_slow_bits, parent: u8 }
+struct clk_sam9x5_slow { hw: clk_hw, sckcr: *mut kernel::ffi::c_void, bits: *const clk_slow_bits, parent: u8 }
 
 extern "C" {
     static mut system_state: i32;
-    fn readl(p: *mut core::ffi::c_void) -> u32;
-    fn writel(v: u32, p: *mut core::ffi::c_void);
+    fn readl(p: *mut kernel::ffi::c_void) -> u32;
+    fn writel(v: u32, p: *mut kernel::ffi::c_void);
     fn udelay(v: usize); fn usleep_range(a: usize, b: usize);
-    fn clk_hw_register(p: *mut core::ffi::c_void, h: *mut clk_hw) -> i32;
+    fn clk_hw_register(p: *mut kernel::ffi::c_void, h: *mut clk_hw) -> i32;
     fn clk_hw_unregister(h: *mut clk_hw);
-    fn kfree(p: *mut core::ffi::c_void);
-    fn of_iomap(n: *mut device_node, i: i32) -> *mut core::ffi::c_void;
-    fn of_clk_get_parent_name(n: *mut device_node, i: i32) -> *const core::ffi::c_char;
-    fn of_get_compatible_child(n: *mut device_node, s: *const core::ffi::c_char) -> *mut device_node;
-    fn of_property_read_bool(n: *mut device_node, s: *const core::ffi::c_char) -> bool;
-    fn of_clk_add_hw_provider(n: *mut device_node, f: *const core::ffi::c_void, h: *mut core::ffi::c_void) -> i32;
-    fn clk_hw_register_fixed_rate_with_accuracy(a: *mut core::ffi::c_void, n: *const core::ffi::c_char, p: *const core::ffi::c_char, f: u64, r: usize, ac: usize) -> *mut clk_hw;
-    fn clk_hw_register_fixed_rate_parent_hw(a: *mut core::ffi::c_void, n: *const core::ffi::c_char, p: *mut clk_hw, f: u64, r: usize) -> *mut clk_hw;
+    fn kfree(p: *mut kernel::ffi::c_void);
+    fn of_iomap(n: *mut device_node, i: i32) -> *mut kernel::ffi::c_void;
+    fn of_clk_get_parent_name(n: *mut device_node, i: i32) -> *const kernel::ffi::c_char;
+    fn of_get_compatible_child(n: *mut device_node, s: *const kernel::ffi::c_char) -> *mut device_node;
+    fn of_property_read_bool(n: *mut device_node, s: *const kernel::ffi::c_char) -> bool;
+    fn of_clk_add_hw_provider(n: *mut device_node, f: *const kernel::ffi::c_void, h: *mut kernel::ffi::c_void) -> i32;
+    fn clk_hw_register_fixed_rate_with_accuracy(a: *mut kernel::ffi::c_void, n: *const kernel::ffi::c_char, p: *const kernel::ffi::c_char, f: u64, r: usize, ac: usize) -> *mut clk_hw;
+    fn clk_hw_register_fixed_rate_parent_hw(a: *mut kernel::ffi::c_void, n: *const kernel::ffi::c_char, p: *mut clk_hw, f: u64, r: usize) -> *mut clk_hw;
 }
 
 #[repr(C)] struct clk_hw { init: *const clk_init_data }
-#[repr(C)] struct clk_init_data { name: *const core::ffi::c_char, ops: *const clk_ops, parent_data: *const clk_parent_data, parent_hws: *const *const clk_hw, parent_names: *const *const core::ffi::c_char, num_parents: usize, flags: u32 }
-#[repr(C)] struct clk_parent_data { name: *const core::ffi::c_char, fw_name: *const core::ffi::c_char }
-#[repr(C)] struct clk_ops { prepare: Option<unsafe extern "C" fn(*mut clk_hw)->i32>, unprepare: Option<unsafe extern "C" fn(*mut clk_hw)>, is_prepared: Option<unsafe extern "C" fn(*mut clk_hw)->i32>, recalc_rate: Option<unsafe extern "C" fn(*mut clk_hw,usize)->usize>, recalc_accuracy: Option<unsafe extern "C" fn(*mut clk_hw,usize)->usize>, set_parent: Option<unsafe extern "C" fn(*mut clk_hw,u8)->i32>, get_parent: Option<unsafe extern "C" fn(*mut clk_hw)->u8>, determine_rate: *const core::ffi::c_void }
+#[repr(C)] struct clk_init_data { name: *const kernel::ffi::c_char, ops: *const clk_ops, parent_data: *const clk_parent_data, parent_hws: *const *const clk_hw, parent_names: *const *const kernel::ffi::c_char, num_parents: usize, flags: u32 }
+#[repr(C)] struct clk_parent_data { name: *const kernel::ffi::c_char, fw_name: *const kernel::ffi::c_char }
+#[repr(C)] struct clk_ops { prepare: Option<unsafe extern "C" fn(*mut clk_hw)->i32>, unprepare: Option<unsafe extern "C" fn(*mut clk_hw)>, is_prepared: Option<unsafe extern "C" fn(*mut clk_hw)->i32>, recalc_rate: Option<unsafe extern "C" fn(*mut clk_hw,usize)->usize>, recalc_accuracy: Option<unsafe extern "C" fn(*mut clk_hw,usize)->usize>, set_parent: Option<unsafe extern "C" fn(*mut clk_hw,u8)->i32>, get_parent: Option<unsafe extern "C" fn(*mut clk_hw)->u8>, determine_rate: *const kernel::ffi::c_void }
 #[repr(C)] struct device_node;
 const SYSTEM_RUNNING: i32 = 1; const CLK_IGNORE_UNUSED: u32 = 1;
 const EINVAL: i32 = 22; const ENOMEM: i32 = 12;
@@ -72,7 +72,7 @@ unsafe extern "C" fn clk_sama5d4_slow_osc_is_prepared(hw:*mut clk_hw)->i32{(*sam
 // The remaining registration and SoC setup routines retain the C driver's external
 // kernel dependencies and are represented with their original control-flow shape.
 #[allow(dead_code)]
-unsafe fn at91_clk_register_slow_osc(sckcr:*mut core::ffi::c_void,name:*const core::ffi::c_char,parent_data:*const clk_parent_data,startup:usize,bypass:bool,bits:*const clk_slow_bits)->*mut clk_hw { if sckcr.is_null()||name.is_null()||parent_data.is_null(){return ERR_PTR(-EINVAL)} let o=Box::into_raw(Box::new(clk_slow_osc{hw:clk_hw{init:core::ptr::null()},sckcr,bits,startup_usec:startup})); if bypass {writel((readl(sckcr)&!(*bits).cr_osc32en)|(*bits).cr_osc32byp,sckcr)} let r=clk_hw_register(core::ptr::null_mut(),&mut (*o).hw); if r!=0{kfree(o as *mut _);ERR_PTR(r)}else{&mut (*o).hw} }
+unsafe fn at91_clk_register_slow_osc(sckcr:*mut kernel::ffi::c_void,name:*const kernel::ffi::c_char,parent_data:*const clk_parent_data,startup:usize,bypass:bool,bits:*const clk_slow_bits)->*mut clk_hw { if sckcr.is_null()||name.is_null()||parent_data.is_null(){return ERR_PTR(-EINVAL)} let o=Box::into_raw(Box::new(clk_slow_osc{hw:clk_hw{init:core::ptr::null()},sckcr,bits,startup_usec:startup})); if bypass {writel((readl(sckcr)&!(*bits).cr_osc32en)|(*bits).cr_osc32byp,sckcr)} let r=clk_hw_register(core::ptr::null_mut(),&mut (*o).hw); if r!=0{kfree(o as *mut _);ERR_PTR(r)}else{&mut (*o).hw} }
 unsafe fn at91_clk_unregister_slow_osc(hw:*mut clk_hw){let o=slow_osc(hw);clk_hw_unregister(hw);kfree(o as *mut _)}
 
 // Additional C-only provider-registration glue is intentionally kept as declarations;

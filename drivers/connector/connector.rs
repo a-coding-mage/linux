@@ -47,7 +47,7 @@ pub unsafe fn cn_netlink_send_mult(
     __group: u32,
     gfp_mask: gfp_t,
     filter: netlink_filter_fn,
-    filter_data: *mut core::ffi::c_void,
+    filter_data: *mut kernel::ffi::c_void,
 ) -> i32 {
     let mut _cbq: *mut cn_callback_entry;
     let mut size: usize;
@@ -170,7 +170,7 @@ unsafe fn cn_rx_skb(skb: *mut sk_buff) {
     }
 }
 
-pub unsafe fn cn_add_callback(id: *const cb_id, name: *const core::ffi::c_char,
+pub unsafe fn cn_add_callback(id: *const cb_id, name: *const kernel::ffi::c_char,
                               callback: Option<unsafe extern "C" fn(*mut cn_msg, *mut netlink_skb_parms)>) -> i32 {
     let dev: *mut cn_dev = &raw mut cdev;
     if cn_already_initialized == 0 { return -EAGAIN; }
@@ -181,7 +181,7 @@ pub unsafe fn cn_del_callback(id: *const cb_id) {
     cn_queue_del_callback((*cdev).cbdev, id);
 }
 
-unsafe fn cn_proc_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
+unsafe fn cn_proc_show(m: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
     let dev = cdev.cbdev;
     let mut cbq: *mut cn_callback_entry;
     seq_printf(m, "Name            ID\n");

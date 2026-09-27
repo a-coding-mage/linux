@@ -19,8 +19,8 @@ pub type u32 = u32;
 pub type u8 = u8;
 pub type __le32 = u32;
 pub type ktime_t = i64;
-pub type spinlock_t = core::ffi::c_void;
-pub type wait_queue_head_t = core::ffi::c_void;
+pub type spinlock_t = kernel::ffi::c_void;
+pub type wait_queue_head_t = kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct snd_card {
@@ -122,11 +122,11 @@ pub const SND_FF_STREAM_MODE_COUNT: usize =
 
 #[repr(C)]
 pub struct snd_ff_spec {
-    pub pcm_capture_channels: [core::ffi::c_uint; SND_FF_STREAM_MODE_COUNT],
-    pub pcm_playback_channels: [core::ffi::c_uint; SND_FF_STREAM_MODE_COUNT],
+    pub pcm_capture_channels: [kernel::ffi::c_uint; SND_FF_STREAM_MODE_COUNT],
+    pub pcm_playback_channels: [kernel::ffi::c_uint; SND_FF_STREAM_MODE_COUNT],
 
-    pub midi_in_ports: core::ffi::c_uint,
-    pub midi_out_ports: core::ffi::c_uint,
+    pub midi_in_ports: kernel::ffi::c_uint,
+    pub midi_out_ports: kernel::ffi::c_uint,
 
     pub protocol: *const snd_ff_protocol,
     pub midi_high_addr: u64,
@@ -156,21 +156,21 @@ pub struct snd_ff {
     pub transactions: [fw_transaction; SND_FF_OUT_MIDI_PORTS],
     pub next_ktime: [ktime_t; SND_FF_OUT_MIDI_PORTS],
     pub rx_midi_error: [bool; SND_FF_OUT_MIDI_PORTS],
-    pub rx_bytes: [core::ffi::c_uint; SND_FF_OUT_MIDI_PORTS],
+    pub rx_bytes: [kernel::ffi::c_uint; SND_FF_OUT_MIDI_PORTS],
 
-    pub substreams_counter: core::ffi::c_uint,
+    pub substreams_counter: kernel::ffi::c_uint,
     pub tx_stream: amdtp_stream,
     pub rx_stream: amdtp_stream,
     pub tx_resources: fw_iso_resources,
     pub rx_resources: fw_iso_resources,
 
-    pub dev_lock_count: core::ffi::c_int,
+    pub dev_lock_count: kernel::ffi::c_int,
     pub dev_lock_changed: bool,
     pub hwdep_wait: wait_queue_head_t,
 
     pub domain: amdtp_domain,
 
-    pub msg_parser: *mut core::ffi::c_void,
+    pub msg_parser: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -192,14 +192,14 @@ pub struct snd_ff_protocol {
     pub copy_msg_to_user: Option<
         unsafe extern "C" fn(
             ff: *mut snd_ff,
-            buf: *mut core::ffi::c_char,
-            count: core::ffi::c_long,
-        ) -> core::ffi::c_long,
+            buf: *mut kernel::ffi::c_char,
+            count: kernel::ffi::c_long,
+        ) -> kernel::ffi::c_long,
     >,
     pub handle_msg: Option<
         unsafe extern "C" fn(
             ff: *mut snd_ff,
-            offset: core::ffi::c_uint,
+            offset: kernel::ffi::c_uint,
             buf: *const __le32,
             length: size_t,
             tstamp: u32,
@@ -209,22 +209,22 @@ pub struct snd_ff_protocol {
         unsafe extern "C" fn(
             ff: *mut snd_ff,
             substream: *mut snd_rawmidi_substream,
-            port: core::ffi::c_uint,
-        ) -> core::ffi::c_int,
+            port: kernel::ffi::c_uint,
+        ) -> kernel::ffi::c_int,
     >,
     pub get_clock: Option<
         unsafe extern "C" fn(
             ff: *mut snd_ff,
-            rate: *mut core::ffi::c_uint,
+            rate: *mut kernel::ffi::c_uint,
             src: *mut snd_ff_clock_src,
-        ) -> core::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
     pub switch_fetching_mode:
-        Option<unsafe extern "C" fn(ff: *mut snd_ff, enable: bool) -> core::ffi::c_int>,
+        Option<unsafe extern "C" fn(ff: *mut snd_ff, enable: bool) -> kernel::ffi::c_int>,
     pub allocate_resources:
-        Option<unsafe extern "C" fn(ff: *mut snd_ff, rate: core::ffi::c_uint) -> core::ffi::c_int>,
+        Option<unsafe extern "C" fn(ff: *mut snd_ff, rate: kernel::ffi::c_uint) -> kernel::ffi::c_int>,
     pub begin_session:
-        Option<unsafe extern "C" fn(ff: *mut snd_ff, rate: core::ffi::c_uint) -> core::ffi::c_int>,
+        Option<unsafe extern "C" fn(ff: *mut snd_ff, rate: kernel::ffi::c_uint) -> kernel::ffi::c_int>,
     pub finish_session: Option<unsafe extern "C" fn(ff: *mut snd_ff)>,
     pub dump_status:
         Option<unsafe extern "C" fn(ff: *mut snd_ff, buffer: *mut snd_info_buffer)>,
@@ -235,56 +235,56 @@ unsafe extern "C" {
     pub static snd_ff_protocol_ff400: snd_ff_protocol;
     pub static snd_ff_protocol_latter: snd_ff_protocol;
 
-    pub fn snd_ff_transaction_register(ff: *mut snd_ff) -> core::ffi::c_int;
-    pub fn snd_ff_transaction_reregister(ff: *mut snd_ff) -> core::ffi::c_int;
+    pub fn snd_ff_transaction_register(ff: *mut snd_ff) -> kernel::ffi::c_int;
+    pub fn snd_ff_transaction_reregister(ff: *mut snd_ff) -> kernel::ffi::c_int;
     pub fn snd_ff_transaction_unregister(ff: *mut snd_ff);
 
     pub fn amdtp_ff_set_parameters(
         s: *mut amdtp_stream,
-        rate: core::ffi::c_uint,
-        pcm_channels: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        rate: kernel::ffi::c_uint,
+        pcm_channels: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
     pub fn amdtp_ff_add_pcm_hw_constraints(
         s: *mut amdtp_stream,
         runtime: *mut snd_pcm_runtime,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn amdtp_ff_init(
         s: *mut amdtp_stream,
         unit: *mut fw_unit,
         dir: amdtp_stream_direction,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn snd_ff_stream_get_multiplier_mode(
         sfc: cip_sfc,
         mode: *mut snd_ff_stream_mode,
-    ) -> core::ffi::c_int;
-    pub fn snd_ff_stream_init_duplex(ff: *mut snd_ff) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
+    pub fn snd_ff_stream_init_duplex(ff: *mut snd_ff) -> kernel::ffi::c_int;
     pub fn snd_ff_stream_destroy_duplex(ff: *mut snd_ff);
     pub fn snd_ff_stream_reserve_duplex(
         ff: *mut snd_ff,
-        rate: core::ffi::c_uint,
-        frames_per_period: core::ffi::c_uint,
-        frames_per_buffer: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        rate: kernel::ffi::c_uint,
+        frames_per_period: kernel::ffi::c_uint,
+        frames_per_buffer: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
     pub fn snd_ff_stream_start_duplex(
         ff: *mut snd_ff,
-        rate: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        rate: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
     pub fn snd_ff_stream_stop_duplex(ff: *mut snd_ff);
     pub fn snd_ff_stream_update_duplex(ff: *mut snd_ff);
 
     pub fn snd_ff_stream_lock_changed(ff: *mut snd_ff);
-    pub fn snd_ff_stream_lock_try(ff: *mut snd_ff) -> core::ffi::c_int;
+    pub fn snd_ff_stream_lock_try(ff: *mut snd_ff) -> kernel::ffi::c_int;
     pub fn snd_ff_stream_lock_release(ff: *mut snd_ff);
 
     pub fn snd_ff_proc_init(ff: *mut snd_ff);
-    pub fn snd_ff_proc_get_clk_label(src: snd_ff_clock_src) -> *const core::ffi::c_char;
+    pub fn snd_ff_proc_get_clk_label(src: snd_ff_clock_src) -> *const kernel::ffi::c_char;
 
-    pub fn snd_ff_create_midi_devices(ff: *mut snd_ff) -> core::ffi::c_int;
+    pub fn snd_ff_create_midi_devices(ff: *mut snd_ff) -> kernel::ffi::c_int;
 
-    pub fn snd_ff_create_pcm_devices(ff: *mut snd_ff) -> core::ffi::c_int;
+    pub fn snd_ff_create_pcm_devices(ff: *mut snd_ff) -> kernel::ffi::c_int;
 
-    pub fn snd_ff_create_hwdep_devices(ff: *mut snd_ff) -> core::ffi::c_int;
+    pub fn snd_ff_create_hwdep_devices(ff: *mut snd_ff) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

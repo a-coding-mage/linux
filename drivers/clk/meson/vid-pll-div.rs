@@ -6,7 +6,9 @@
 
 // Dependencies supplied by the surrounding kernel clock implementation.
 
-inline fn meson_vid_pll_div_data(clk: *mut clk_regmap) -> *mut meson_vid_pll_div_data {
+#[inline]
+
+fn meson_vid_pll_div_data(clk: *mut clk_regmap) -> *mut meson_vid_pll_div_data {
     unsafe { (*clk).data as *mut meson_vid_pll_div_data }
 }
 

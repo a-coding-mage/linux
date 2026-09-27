@@ -8,7 +8,7 @@
  */
 
 // C dependencies: linux/init.h and asm/mach_desc.h.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 static mut TB10X_COMPAT: [*const c_char; 2] = [
     b"abilis,arc-tb10x\0".as_ptr() as *const c_char,

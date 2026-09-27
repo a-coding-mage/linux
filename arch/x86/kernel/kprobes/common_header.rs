@@ -69,15 +69,15 @@ pub const RESTORE_REGS_STRING: &str =
     "\taddl $7*4, %esp\n";
 
 extern "C" {
-    pub fn can_boost(insn: *mut insn, orig_addr: *mut core::ffi::c_void) -> bool;
+    pub fn can_boost(insn: *mut insn, orig_addr: *mut kernel::ffi::c_void) -> bool;
     pub fn recover_probed_instruction(buf: *mut kprobe_opcode_t, addr: c_ulong) -> c_ulong;
     pub fn __copy_instruction(
         dest: *mut u8,
         src: *mut u8,
         real: *mut u8,
         insn: *mut insn) -> c_int;
-    pub fn synthesize_reljump(dest: *mut core::ffi::c_void, from: *mut core::ffi::c_void, to: *mut core::ffi::c_void);
-    pub fn synthesize_relcall(dest: *mut core::ffi::c_void, from: *mut core::ffi::c_void, to: *mut core::ffi::c_void);
+    pub fn synthesize_reljump(dest: *mut kernel::ffi::c_void, from: *mut kernel::ffi::c_void, to: *mut kernel::ffi::c_void);
+    pub fn synthesize_relcall(dest: *mut kernel::ffi::c_void, from: *mut kernel::ffi::c_void, to: *mut kernel::ffi::c_void);
 }
 
 #[cfg(CONFIG_OPTPROBES)]
@@ -93,8 +93,8 @@ pub unsafe fn setup_detour_execution(_p: *mut kprobe, _regs: *mut pt_regs, _reen
 pub unsafe fn __recover_optprobed_insn(_buf: *mut kprobe_opcode_t, addr: c_ulong) -> c_ulong { addr }
 
 // Types and aliases below are supplied by the surrounding translation unit.
-type c_int = core::ffi::c_int;
-type c_ulong = core::ffi::c_ulong;
+type c_int = kernel::ffi::c_int;
+type c_ulong = kernel::ffi::c_ulong;
 // struct insn; struct kprobe; struct pt_regs; type kprobe_opcode_t = ...;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

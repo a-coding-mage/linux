@@ -6,7 +6,7 @@
 // by the surrounding translation unit.
 
 pub unsafe fn machine_check_4xx(regs: *mut pt_regs) -> i32 {
-    let reason: ::core::ffi::c_ulong = (*regs).esr;
+    let reason: ::kernel::ffi::c_ulong = (*regs).esr;
 
     if reason & ESR_IMCP != 0 {
         printk(c"Instruction".as_ptr());
@@ -21,7 +21,7 @@ pub unsafe fn machine_check_4xx(regs: *mut pt_regs) -> i32 {
 }
 
 pub unsafe fn machine_check_440A(regs: *mut pt_regs) -> i32 {
-    let reason: ::core::ffi::c_ulong = (*regs).esr;
+    let reason: ::kernel::ffi::c_ulong = (*regs).esr;
 
     printk(c"Machine check in kernel mode.\n".as_ptr());
     if reason & ESR_IMCP != 0 {
@@ -63,7 +63,7 @@ pub unsafe fn machine_check_440A(regs: *mut pt_regs) -> i32 {
 
 // #ifdef CONFIG_PPC_47x
 pub unsafe fn machine_check_47x(regs: *mut pt_regs) -> i32 {
-    let reason: ::core::ffi::c_ulong = (*regs).esr;
+    let reason: ::kernel::ffi::c_ulong = (*regs).esr;
     let mcsr: u32;
 
     printk(KERN_ERR.as_ptr());

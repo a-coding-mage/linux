@@ -19,21 +19,21 @@
  */
 #[repr(C)]
 pub struct pt_regs {
-    pub gr: [core::ffi::c_ulong; 32], /* PSW is in gr[0] */
+    pub gr: [kernel::ffi::c_ulong; 32], /* PSW is in gr[0] */
     pub fr: [u64; 32],
-    pub sr: [core::ffi::c_ulong; 8],
-    pub iasq: [core::ffi::c_ulong; 2],
-    pub iaoq: [core::ffi::c_ulong; 2],
-    pub cr27: core::ffi::c_ulong,
-    pub pad0: core::ffi::c_ulong, /* available for other uses */
-    pub orig_r28: core::ffi::c_ulong,
-    pub ksp: core::ffi::c_ulong,
-    pub kpc: core::ffi::c_ulong,
-    pub sar: core::ffi::c_ulong, /* CR11 */
-    pub iir: core::ffi::c_ulong, /* CR19 */
-    pub isr: core::ffi::c_ulong, /* CR20 */
-    pub ior: core::ffi::c_ulong, /* CR21 */
-    pub ipsw: core::ffi::c_ulong, /* CR22 */
+    pub sr: [kernel::ffi::c_ulong; 8],
+    pub iasq: [kernel::ffi::c_ulong; 2],
+    pub iaoq: [kernel::ffi::c_ulong; 2],
+    pub cr27: kernel::ffi::c_ulong,
+    pub pad0: kernel::ffi::c_ulong, /* available for other uses */
+    pub orig_r28: kernel::ffi::c_ulong,
+    pub ksp: kernel::ffi::c_ulong,
+    pub kpc: kernel::ffi::c_ulong,
+    pub sar: kernel::ffi::c_ulong, /* CR11 */
+    pub iir: kernel::ffi::c_ulong, /* CR19 */
+    pub isr: kernel::ffi::c_ulong, /* CR20 */
+    pub ior: kernel::ffi::c_ulong, /* CR21 */
+    pub ipsw: kernel::ffi::c_ulong, /* CR22 */
 }
 
 /**
@@ -47,31 +47,31 @@ pub struct pt_regs {
  */
 #[repr(C)]
 pub struct user_regs_struct {
-    pub gr: [core::ffi::c_ulong; 32], /* PSW is in gr[0] */
-    pub sr: [core::ffi::c_ulong; 8],
-    pub iaoq: [core::ffi::c_ulong; 2],
-    pub iasq: [core::ffi::c_ulong; 2],
-    pub sar: core::ffi::c_ulong, /* CR11 */
-    pub iir: core::ffi::c_ulong, /* CR19 */
-    pub isr: core::ffi::c_ulong, /* CR20 */
-    pub ior: core::ffi::c_ulong, /* CR21 */
-    pub ipsw: core::ffi::c_ulong, /* CR22 */
-    pub cr0: core::ffi::c_ulong,
-    pub cr24: core::ffi::c_ulong,
-    pub cr25: core::ffi::c_ulong,
-    pub cr26: core::ffi::c_ulong,
-    pub cr27: core::ffi::c_ulong,
-    pub cr28: core::ffi::c_ulong,
-    pub cr29: core::ffi::c_ulong,
-    pub cr30: core::ffi::c_ulong,
-    pub cr31: core::ffi::c_ulong,
-    pub cr8: core::ffi::c_ulong,
-    pub cr9: core::ffi::c_ulong,
-    pub cr12: core::ffi::c_ulong,
-    pub cr13: core::ffi::c_ulong,
-    pub cr10: core::ffi::c_ulong,
-    pub cr15: core::ffi::c_ulong,
-    pub _pad: [core::ffi::c_ulong; 80 - 64], /* pad to ELF_NGREG (80) */
+    pub gr: [kernel::ffi::c_ulong; 32], /* PSW is in gr[0] */
+    pub sr: [kernel::ffi::c_ulong; 8],
+    pub iaoq: [kernel::ffi::c_ulong; 2],
+    pub iasq: [kernel::ffi::c_ulong; 2],
+    pub sar: kernel::ffi::c_ulong, /* CR11 */
+    pub iir: kernel::ffi::c_ulong, /* CR19 */
+    pub isr: kernel::ffi::c_ulong, /* CR20 */
+    pub ior: kernel::ffi::c_ulong, /* CR21 */
+    pub ipsw: kernel::ffi::c_ulong, /* CR22 */
+    pub cr0: kernel::ffi::c_ulong,
+    pub cr24: kernel::ffi::c_ulong,
+    pub cr25: kernel::ffi::c_ulong,
+    pub cr26: kernel::ffi::c_ulong,
+    pub cr27: kernel::ffi::c_ulong,
+    pub cr28: kernel::ffi::c_ulong,
+    pub cr29: kernel::ffi::c_ulong,
+    pub cr30: kernel::ffi::c_ulong,
+    pub cr31: kernel::ffi::c_ulong,
+    pub cr8: kernel::ffi::c_ulong,
+    pub cr9: kernel::ffi::c_ulong,
+    pub cr12: kernel::ffi::c_ulong,
+    pub cr13: kernel::ffi::c_ulong,
+    pub cr10: kernel::ffi::c_ulong,
+    pub cr15: kernel::ffi::c_ulong,
+    pub _pad: [kernel::ffi::c_ulong; 80 - 64], /* pad to ELF_NGREG (80) */
 }
 
 /**

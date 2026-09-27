@@ -56,12 +56,12 @@ pub const DRM_CRC_ENTRIES_NR: usize = 128;
 #[repr(C)]
 pub struct drm_crtc_crc {
     pub lock: spinlock_t,
-    pub source: *const core::ffi::c_char,
+    pub source: *const kernel::ffi::c_char,
     pub opened: bool,
     pub overflow: bool,
     pub entries: *mut drm_crtc_crc_entry,
-    pub head: core::ffi::c_int,
-    pub tail: core::ffi::c_int,
+    pub head: kernel::ffi::c_int,
+    pub tail: kernel::ffi::c_int,
     pub values_cnt: usize,
     pub wq: wait_queue_head_t,
 }
@@ -74,7 +74,7 @@ extern "C" {
         has_frame: bool,
         frame: u32,
         crcs: *mut u32,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // When CONFIG_DEBUG_FS is disabled, the C header provides this inline stub.
@@ -85,7 +85,7 @@ pub unsafe fn drm_crtc_add_crc_entry(
     _has_frame: bool,
     _frame: u32,
     _crcs: *mut u32,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     -EINVAL
 }
 

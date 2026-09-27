@@ -66,7 +66,7 @@ struct ixp4xx_eb {
 
 #[repr(C)]
 struct ixp4xx_exp_tim_prop {
-    prop: *const core::ffi::c_char,
+    prop: *const kernel::ffi::c_char,
     max: u32,
     mask: u32,
     shift: u16,
@@ -94,18 +94,18 @@ static IXP4XX_EXP_TIM_PROPS: &[ixp4xx_exp_tim_prop] = &[
 extern "C" {
     fn regmap_read(map: *mut regmap, reg: u32, val: *mut u32) -> i32;
     fn regmap_write(map: *mut regmap, reg: u32, val: u32) -> i32;
-    fn of_property_read_u32(np: *mut device_node, prop: *const core::ffi::c_char, val: *mut u32) -> i32;
-    fn of_property_count_elems_of_size(np: *mut device_node, prop: *const core::ffi::c_char, size: usize) -> i32;
-    fn of_property_read_u32_index(np: *mut device_node, prop: *const core::ffi::c_char, index: usize, val: *mut u32) -> i32;
-    fn of_node_full_name(np: *mut device_node) -> *const core::ffi::c_char;
-    fn of_device_is_compatible(np: *mut device_node, compat: *const core::ffi::c_char) -> bool;
+    fn of_property_read_u32(np: *mut device_node, prop: *const kernel::ffi::c_char, val: *mut u32) -> i32;
+    fn of_property_count_elems_of_size(np: *mut device_node, prop: *const kernel::ffi::c_char, size: usize) -> i32;
+    fn of_property_read_u32_index(np: *mut device_node, prop: *const kernel::ffi::c_char, index: usize, val: *mut u32) -> i32;
+    fn of_node_full_name(np: *mut device_node) -> *const kernel::ffi::c_char;
+    fn of_device_is_compatible(np: *mut device_node, compat: *const kernel::ffi::c_char) -> bool;
     fn syscon_node_to_regmap(np: *mut device_node) -> *mut regmap;
     fn roundup_pow_of_two(value: u32) -> u32;
     fn ilog2(value: u32) -> i32;
-    fn of_platform_default_populate(np: *mut device_node, matches: *const core::ffi::c_void, parent: *mut device) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_dbg(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn of_platform_default_populate(np: *mut device_node, matches: *const kernel::ffi::c_void, parent: *mut device) -> i32;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_dbg(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 unsafe fn ixp4xx_exp_setup_chipselect(eb: *mut ixp4xx_eb, np: *mut device_node, cs_index: u32, cs_size: u32) {
@@ -182,7 +182,7 @@ unsafe fn ixp4xx_exp_probe(pdev: *mut platform_device) -> i32 {
 }
 
 #[repr(C)]
-struct of_device_id { compatible: *const core::ffi::c_char }
+struct of_device_id { compatible: *const kernel::ffi::c_char }
 
 static IXP4XX_EXP_OF_MATCH: &[of_device_id] = &[
     of_device_id { compatible: c"intel,ixp42x-expansion-bus-controller".as_ptr() },
@@ -193,7 +193,7 @@ static IXP4XX_EXP_OF_MATCH: &[of_device_id] = &[
 ];
 
 #[repr(C)]
-struct platform_driver { probe: unsafe fn(*mut platform_device) -> i32, name: *const core::ffi::c_char, of_match_table: *const of_device_id }
+struct platform_driver { probe: unsafe fn(*mut platform_device) -> i32, name: *const kernel::ffi::c_char, of_match_table: *const of_device_id }
 
 static IXP4XX_EXP_DRIVER: platform_driver = platform_driver {
     probe: ixp4xx_exp_probe,

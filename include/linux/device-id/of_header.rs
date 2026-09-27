@@ -7,10 +7,10 @@
  */
 #[repr(C)]
 pub struct of_device_id {
-    pub name: [core::ffi::c_char; 32],
-    pub type_: [core::ffi::c_char; 32],
-    pub compatible: [core::ffi::c_char; 128],
-    pub data: *const core::ffi::c_void,
+    pub name: [kernel::ffi::c_char; 32],
+    pub type_: [kernel::ffi::c_char; 32],
+    pub compatible: [kernel::ffi::c_char; 128],
+    pub data: *const kernel::ffi::c_void,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -6,8 +6,8 @@ pub struct OverrideStatusId {
     pub hid: [AcpiDeviceId; 2],
     pub cpu_ids: [X86CpuId; 2],
     pub dmi_ids: [DmiSystemId; 2],
-    pub uid: *const core::ffi::c_char,
-    pub path: *const core::ffi::c_char,
+    pub uid: *const kernel::ffi::c_char,
+    pub path: *const kernel::ffi::c_char,
     pub status: u64,
 }
 
@@ -18,31 +18,31 @@ extern "C" {
     pub static mut boot_option_idle_override: i32;
     fn x86_match_cpu(ids: *const X86CpuId) -> bool;
     fn dmi_check_system(ids: *const DmiSystemId) -> i32;
-    fn acpi_get_name(handle: *mut core::ffi::c_void, typ: u32, path: *mut AcpiBuffer) -> i32;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
+    fn acpi_get_name(handle: *mut kernel::ffi::c_void, typ: u32, path: *mut AcpiBuffer) -> i32;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
     fn acpi_match_device_ids(adev: *mut AcpiDevice, ids: *const AcpiDeviceId) -> i32;
-    fn acpi_dev_uid_match(adev: *mut AcpiDevice, uid: *const core::ffi::c_char) -> bool;
+    fn acpi_dev_uid_match(adev: *mut AcpiDevice, uid: *const kernel::ffi::c_char) -> bool;
     fn cpu_feature_enabled(feature: u32) -> bool;
     fn dmi_first_match(ids: *const DmiSystemId) -> *const DmiSystemId;
     fn acpi_dev_uid_to_integer(adev: *mut AcpiDevice, uid: *mut u64) -> i32;
     fn dev_is_pci(dev: *mut Device) -> bool;
     fn dev_is_platform(dev: *mut Device) -> bool;
     fn to_pci_dev(dev: *mut Device) -> *mut PciDev;
-    fn acpi_dev_hid_match(adev: *mut AcpiDevice, hid: *const core::ffi::c_char) -> bool;
-    fn platform_device_register_simple(name: *const core::ffi::c_char, id: i32, data: *mut core::ffi::c_void, size: u32) -> *mut Device;
-    fn acpi_dev_present(hid: *const core::ffi::c_char, uid: *const core::ffi::c_char, hrv: i32) -> bool;
-    fn pr_info_once(fmt: *const core::ffi::c_char, ...);
-    fn pr_notice(fmt: *const core::ffi::c_char, ...);
+    fn acpi_dev_hid_match(adev: *mut AcpiDevice, hid: *const kernel::ffi::c_char) -> bool;
+    fn platform_device_register_simple(name: *const kernel::ffi::c_char, id: i32, data: *mut kernel::ffi::c_void, size: u32) -> *mut Device;
+    fn acpi_dev_present(hid: *const kernel::ffi::c_char, uid: *const kernel::ffi::c_char, hrv: i32) -> bool;
+    fn pr_info_once(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_notice(fmt: *const kernel::ffi::c_char, ...);
 }
 
-#[repr(C)] pub struct AcpiDeviceId { pub hid: *const core::ffi::c_char, pub driver_data: usize }
+#[repr(C)] pub struct AcpiDeviceId { pub hid: *const kernel::ffi::c_char, pub driver_data: usize }
 #[repr(C)] pub struct X86CpuId { pub family: u16, pub model: u16, pub feature: u16, pub driver_data: usize }
-#[repr(C)] pub struct DmiSystemId { pub matches: [DmiMatch; 8], pub callback: Option<unsafe extern "C" fn(*const DmiSystemId) -> i32>, pub ident: *const core::ffi::c_char, pub driver_data: *mut core::ffi::c_void }
-#[repr(C)] pub struct DmiMatch { pub slot: i32, pub substr: *const core::ffi::c_char }
-#[repr(C)] pub struct AcpiBuffer { pub length: usize, pub pointer: *mut core::ffi::c_void }
+#[repr(C)] pub struct DmiSystemId { pub matches: [DmiMatch; 8], pub callback: Option<unsafe extern "C" fn(*const DmiSystemId) -> i32>, pub ident: *const kernel::ffi::c_char, pub driver_data: *mut kernel::ffi::c_void }
+#[repr(C)] pub struct DmiMatch { pub slot: i32, pub substr: *const kernel::ffi::c_char }
+#[repr(C)] pub struct AcpiBuffer { pub length: usize, pub pointer: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct AcpiFadt { pub flags: u32 }
-#[repr(C)] pub struct AcpiDevice { pub handle: *mut core::ffi::c_void }
+#[repr(C)] pub struct AcpiDevice { pub handle: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct Device { _private: [u8; 0] }
 #[repr(C)] pub struct PciDev { pub devfn: u8 }
 

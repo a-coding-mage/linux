@@ -66,8 +66,8 @@ macro_rules! next_node { ($n:expr,$a:expr) => { unsafe { __next_node($n,&$a) } }
 macro_rules! next_node_in { ($n:expr,$a:expr) => { unsafe { __next_node_in($n,&$a) } }; }
 macro_rules! first_unset_node { ($a:expr) => { unsafe { __first_unset_node(&$a) } }; }
 
-#[inline(always)] pub unsafe fn __nodemask_parse_user(buf: *const core::ffi::c_char, len: i32, d: *mut nodemask_t, n: i32) -> i32 { bitmap_parse_user(buf,len,(*d).bits.as_mut_ptr(),n) }
-#[inline(always)] pub unsafe fn __nodelist_parse(buf: *const core::ffi::c_char, d: *mut nodemask_t, n: i32) -> i32 { bitmap_parselist(buf,(*d).bits.as_mut_ptr(),n) }
+#[inline(always)] pub unsafe fn __nodemask_parse_user(buf: *const kernel::ffi::c_char, len: i32, d: *mut nodemask_t, n: i32) -> i32 { bitmap_parse_user(buf,len,(*d).bits.as_mut_ptr(),n) }
+#[inline(always)] pub unsafe fn __nodelist_parse(buf: *const kernel::ffi::c_char, d: *mut nodemask_t, n: i32) -> i32 { bitmap_parselist(buf,(*d).bits.as_mut_ptr(),n) }
 #[inline(always)] pub unsafe fn __node_remap(o: i32, old: *const nodemask_t, new: *const nodemask_t, n: i32) -> i32 { bitmap_bitremap(o,(*old).bits.as_ptr(),(*new).bits.as_ptr(),n) }
 #[inline(always)] pub unsafe fn __nodes_remap(d:*mut nodemask_t,s:*const nodemask_t,o:*const nodemask_t,nm:*const nodemask_t,nb:i32){bitmap_remap((*d).bits.as_mut_ptr(),(*s).bits.as_ptr(),(*o).bits.as_ptr(),(*nm).bits.as_ptr(),nb)}
 #[inline(always)] pub unsafe fn __nodes_onto(d:*mut nodemask_t,s:*const nodemask_t,r:*const nodemask_t,n:i32){bitmap_onto((*d).bits.as_mut_ptr(),(*s).bits.as_ptr(),(*r).bits.as_ptr(),n)}

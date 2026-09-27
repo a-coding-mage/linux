@@ -26,11 +26,11 @@ pub struct CpuData {
 
 extern "C" {
     static mut boot_cpu_data: CpuData;
-    static SH_CCR: *mut core::ffi::c_void;
+    static SH_CCR: *mut kernel::ffi::c_void;
 
-    fn __raw_readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel_uncached(value: u32, addr: *mut core::ffi::c_void);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn __raw_readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel_uncached(value: u32, addr: *mut kernel::ffi::c_void);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 pub unsafe fn shx3_cache_init() {
@@ -49,7 +49,7 @@ pub unsafe fn shx3_cache_init() {
         (*core::ptr::addr_of_mut!(boot_cpu_data)).icache.n_aliases = 0;
         (*core::ptr::addr_of_mut!(boot_cpu_data)).dcache.n_aliases = 0;
 
-        pr_info(b"Enabling hardware synonym avoidance\0".as_ptr() as *const core::ffi::c_char);
+        pr_info(b"Enabling hardware synonym avoidance\0".as_ptr() as *const kernel::ffi::c_char);
     }
 
     // CONFIG_SMP: Broadcast I-cache block invalidations by default.

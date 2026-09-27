@@ -8,11 +8,11 @@
 // Dependencies supplied by the kernel/module environment are intentionally
 // referenced here rather than reimplemented.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
-    fn set_vm_flush_reset_perms(addr: *mut core::ffi::c_void);
-    fn execmem_restore_rox(base: *mut core::ffi::c_void, size: usize) -> i32;
+    fn set_vm_flush_reset_perms(addr: *mut kernel::ffi::c_void);
+    fn execmem_restore_rox(base: *mut kernel::ffi::c_void, size: usize) -> i32;
     fn set_memory_rox(start: usize, num_pages: i32) -> i32;
     fn set_memory_x(start: usize, num_pages: i32) -> i32;
     fn set_memory_ro(start: usize, num_pages: i32) -> i32;
@@ -26,7 +26,7 @@ extern "C" {
 
 #[repr(C)]
 pub struct module_memory {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub size: usize,
     pub is_rox: bool,
 }

@@ -10,21 +10,21 @@ use crate::clk_mtk::{mtk_clk_desc, mtk_clk_simple_probe, mtk_clk_simple_remove};
 
 #[repr(C)]
 pub struct OfDeviceId {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct PlatformDriverDriver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const OfDeviceId,
 }
 
 #[repr(C)]
 pub struct PlatformDriver {
     pub driver: PlatformDriverDriver,
-    pub probe: unsafe extern "C" fn(*mut core::ffi::c_void) -> i32,
-    pub remove: unsafe extern "C" fn(*mut core::ffi::c_void) -> i32,
+    pub probe: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32,
+    pub remove: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32,
 }
 
 extern "C" {
@@ -55,7 +55,7 @@ static MFG_DESC: mtk_clk_desc = mtk_clk_desc {
 };
 
 static OF_MATCH_CLK_MT6795_MFG: [OfDeviceId; 2] = [
-    OfDeviceId { compatible: b"mediatek,mt6795-mfgcfg\0".as_ptr() as *const _, data: &MFG_DESC as *const _ as *const core::ffi::c_void },
+    OfDeviceId { compatible: b"mediatek,mt6795-mfgcfg\0".as_ptr() as *const _, data: &MFG_DESC as *const _ as *const kernel::ffi::c_void },
     OfDeviceId { compatible: core::ptr::null(), data: core::ptr::null() },
 ];
 

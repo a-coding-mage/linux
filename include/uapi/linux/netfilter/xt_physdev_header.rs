@@ -11,10 +11,10 @@ pub const XT_PHYSDEV_OP_MASK: u32 = 0x20 - 1;
 
 #[repr(C)]
 pub struct xt_physdev_info {
-    pub physindev: [::core::ffi::c_char; crate::IFNAMSIZ],
-    pub in_mask: [::core::ffi::c_char; crate::IFNAMSIZ],
-    pub physoutdev: [::core::ffi::c_char; crate::IFNAMSIZ],
-    pub out_mask: [::core::ffi::c_char; crate::IFNAMSIZ],
+    pub physindev: [::kernel::ffi::c_char; crate::IFNAMSIZ],
+    pub in_mask: [::kernel::ffi::c_char; crate::IFNAMSIZ],
+    pub physoutdev: [::kernel::ffi::c_char; crate::IFNAMSIZ],
+    pub out_mask: [::kernel::ffi::c_char; crate::IFNAMSIZ],
     pub invert: u8,
     pub bitmask: u8,
 }

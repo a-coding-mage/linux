@@ -79,7 +79,7 @@ pub struct fsl_asrc_pair {
     pub pos: u32,
     pub req_dma_chan: bool,
 
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
 
     /* used for m2m */
     pub complete: [completion; 2],
@@ -136,7 +136,7 @@ pub struct fsl_asrc {
     pub dma_params_tx: snd_dmaengine_dai_dma_data,
     pub pdev: *mut platform_device,
     pub regmap: *mut regmap,
-    pub paddr: core::ffi::c_ulong,
+    pub paddr: kernel::ffi::c_ulong,
     pub mem_clk: *mut clk,
     pub ipg_clk: *mut clk,
     pub spba_clk: *mut clk,
@@ -175,7 +175,7 @@ pub struct fsl_asrc {
     pub get_output_fifo_size: Option<unsafe extern "C" fn(pair: *mut fsl_asrc_pair) -> u32>,
     pub pair_priv_size: usize,
 
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
 }
 
 pub const DRV_NAME: &[u8; 13] = b"fsl-asrc-dai\0";

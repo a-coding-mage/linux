@@ -20,7 +20,7 @@ static __cpu_method_of_table_sentinel: of_cpu_method = of_cpu_method {
 
 #[cfg(CONFIG_SMP)]
 unsafe fn set_smp_ops_by_method(node: *mut device_node) -> i32 {
-    let mut method: *const core::ffi::c_char = core::ptr::null();
+    let mut method: *const kernel::ffi::c_char = core::ptr::null();
     let mut m: *mut of_cpu_method = core::ptr::addr_of_mut!(__cpu_method_of_table);
 
     if of_property_read_string(node, b"enable-method\0".as_ptr() as *const _, &mut method) != 0 {
@@ -138,7 +138,7 @@ pub unsafe fn arch_match_cpu_phys_id(cpu: i32, phys_id: u64) -> bool {
     phys_id == cpu_logical_map(cpu)
 }
 
-unsafe fn arch_get_next_mach(match_: *mut *const *const core::ffi::c_char) -> *const core::ffi::c_void {
+unsafe fn arch_get_next_mach(match_: *mut *const *const kernel::ffi::c_char) -> *const kernel::ffi::c_void {
     static mut mdesc: *const machine_desc = core::ptr::addr_of!(__arch_info_begin);
     let m = mdesc;
 
@@ -148,7 +148,7 @@ unsafe fn arch_get_next_mach(match_: *mut *const *const core::ffi::c_char) -> *c
 
     mdesc = mdesc.add(1);
     *match_ = (*m).dt_compat;
-    m as *const core::ffi::c_void
+    m as *const kernel::ffi::c_void
 }
 
 static __mach_desc_GENERIC_DT: machine_desc = machine_desc {
@@ -156,7 +156,7 @@ static __mach_desc_GENERIC_DT: machine_desc = machine_desc {
     l2c_aux_mask: !0x0,
 };
 
-pub unsafe fn setup_machine_fdt(dt_virt: *mut core::ffi::c_void) -> *const machine_desc {
+pub unsafe fn setup_machine_fdt(dt_virt: *mut kernel::ffi::c_void) -> *const machine_desc {
     let mut mdesc: *const machine_desc;
     let mut mdesc_best: *const machine_desc = core::ptr::null();
 
@@ -169,9 +169,9 @@ pub unsafe fn setup_machine_fdt(dt_virt: *mut core::ffi::c_void) -> *const machi
     mdesc = of_flat_dt_match_machine(mdesc_best, arch_get_next_mach);
 
     if mdesc.is_null() {
-        let mut prop: *const core::ffi::c_char;
+        let mut prop: *const kernel::ffi::c_char;
         let mut size: i32;
-        let dt_root: core::ffi::c_ulong;
+        let dt_root: kernel::ffi::c_ulong;
 
         early_print(b"\nError: unrecognized/unsupported device tree compatible list:\n[ \0".as_ptr() as *const _);
 

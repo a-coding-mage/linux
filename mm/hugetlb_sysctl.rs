@@ -5,12 +5,12 @@
  */
 
 // Dependencies supplied by the kernel headers and hugetlb_internal.h.
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 use core::mem::size_of;
 
 #[repr(C)]
 pub struct ctl_table {
-    pub procname: *const core::ffi::c_char,
+    pub procname: *const kernel::ffi::c_char,
     pub data: *mut c_void,
     pub maxlen: usize,
     pub mode: u16,
@@ -38,7 +38,7 @@ extern "C" {
     fn hstate_is_gigantic_no_runtime(h: *const hstate) -> bool;
     fn spin_lock_irq(lock: *mut c_void);
     fn spin_unlock_irq(lock: *mut c_void);
-    fn register_sysctl_init(name: *const core::ffi::c_char, table: *const ctl_table);
+    fn register_sysctl_init(name: *const kernel::ffi::c_char, table: *const ctl_table);
     fn proc_dointvec(table: *const ctl_table, write: i32, buffer: *mut c_void,
                      length: *mut usize, ppos: *mut i64) -> i32;
 }

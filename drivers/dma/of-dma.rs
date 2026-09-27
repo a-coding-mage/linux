@@ -36,7 +36,7 @@ unsafe fn of_dma_router_xlate(
     let mut chan: *mut DmaChan;
     let ofdma_target: *mut OfDma;
     let mut dma_spec_target: OfPhandleArgs = core::ptr::read(dma_spec);
-    let route_data: *mut core::ffi::c_void;
+    let route_data: *mut kernel::ffi::c_void;
     'err: {
 
     // translate the request for the real DMA controller
@@ -94,7 +94,7 @@ unsafe fn of_dma_router_xlate(
 pub unsafe fn of_dma_controller_register(
     np: *mut DeviceNode,
     of_dma_xlate: Option<unsafe extern "C" fn(*mut OfPhandleArgs, *mut OfDma) -> *mut DmaChan>,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) -> i32 {
     let ofdma = kzalloc_obj::<OfDma>();
 
@@ -134,7 +134,7 @@ pub unsafe fn of_dma_controller_free(np: *mut DeviceNode) {
 /// Register a DMA router to DT DMA helpers as a controller.
 pub unsafe fn of_dma_router_register(
     np: *mut DeviceNode,
-    of_dma_route_allocate: Option<unsafe extern "C" fn(*mut OfPhandleArgs, *mut OfDma) -> *mut core::ffi::c_void>,
+    of_dma_route_allocate: Option<unsafe extern "C" fn(*mut OfPhandleArgs, *mut OfDma) -> *mut kernel::ffi::c_void>,
     dma_router: *mut DmaRouter,
 ) -> i32 {
     let ofdma = kzalloc_obj::<OfDma>();
@@ -161,11 +161,11 @@ pub unsafe fn of_dma_router_register(
 
 unsafe fn of_dma_match_channel(
     np: *mut DeviceNode,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     index: i32,
     dma_spec: *mut OfPhandleArgs,
 ) -> i32 {
-    let mut s: *const core::ffi::c_char = core::ptr::null();
+    let mut s: *const kernel::ffi::c_char = core::ptr::null();
     if of_property_read_string_index(np, b"dma-names\0".as_ptr() as _, index, &mut s) != 0 {
         return -ENODEV;
     }
@@ -178,7 +178,7 @@ unsafe fn of_dma_match_channel(
     0
 }
 
-pub unsafe fn of_dma_request_slave_channel(np: *mut DeviceNode, name: *const core::ffi::c_char) -> *mut DmaChan {
+pub unsafe fn of_dma_request_slave_channel(np: *mut DeviceNode, name: *const kernel::ffi::c_char) -> *mut DmaChan {
     let mut dma_spec = core::mem::MaybeUninit::<OfPhandleArgs>::uninit();
     let mut chan: *mut DmaChan;
     let mut count: i32;

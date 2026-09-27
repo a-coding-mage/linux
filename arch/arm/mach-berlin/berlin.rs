@@ -8,7 +8,7 @@
  *  (c) Marvell International Ltd.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // The original source includes <asm/mach/arch.h>, which supplies the
 // DT_MACHINE_START/MACHINE_END declarations and machine descriptor type.

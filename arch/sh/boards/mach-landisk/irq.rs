@@ -39,7 +39,7 @@ pub struct IntcMaskReg {
 
 #[repr(C)]
 pub struct IntcDesc {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub vectors: *const IntcVect,
     pub nr_vectors: usize,
     pub mask_registers: *const IntcMaskReg,
@@ -76,7 +76,7 @@ static MASK_REGISTERS_LANDISK: [IntcMaskReg; 1] = [IntcMaskReg {
 static LANDISK_NAME: &[u8] = b"landisk\0";
 
 static INTC_DESC_LANDISK: IntcDesc = IntcDesc {
-    name: LANDISK_NAME.as_ptr() as *const core::ffi::c_char,
+    name: LANDISK_NAME.as_ptr() as *const kernel::ffi::c_char,
     vectors: VECTORS_LANDISK.as_ptr(),
     nr_vectors: VECTORS_LANDISK.len(),
     mask_registers: MASK_REGISTERS_LANDISK.as_ptr(),

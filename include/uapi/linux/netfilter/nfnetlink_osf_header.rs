@@ -46,7 +46,7 @@ pub struct nf_osf_opt {
 
 #[repr(C)]
 pub struct nf_osf_info {
-    pub genre: [core::ffi::c_char; MAXGENRELEN],
+    pub genre: [kernel::ffi::c_char; MAXGENRELEN],
     pub len: u32,
     pub flags: u32,
     pub loglevel: u32,
@@ -61,9 +61,9 @@ pub struct nf_osf_user_finger {
     pub ss: u16,
     pub mss: u16,
     pub opt_num: u16,
-    pub genre: [core::ffi::c_char; MAXGENRELEN],
-    pub version: [core::ffi::c_char; MAXGENRELEN],
-    pub subtype: [core::ffi::c_char; MAXGENRELEN],
+    pub genre: [kernel::ffi::c_char; MAXGENRELEN],
+    pub version: [kernel::ffi::c_char; MAXGENRELEN],
+    pub subtype: [kernel::ffi::c_char; MAXGENRELEN],
     // MAX_IPOPTLEN is maximum if all options are NOPs or EOLs
     pub opt: [nf_osf_opt; MAX_IPOPTLEN],
 }

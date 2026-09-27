@@ -4,7 +4,7 @@
 // The tracepoint implementation and registration are supplied by the tracepoint
 // dependency; these declarations preserve the event payloads and call interface.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct SchedExtDumpEntry {

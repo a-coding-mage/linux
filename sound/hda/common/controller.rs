@@ -347,7 +347,7 @@ unsafe fn azx_scale64(mut base: u64, num: u32, den: u32) -> u64 {
 unsafe fn azx_get_sync_time(
     device: *mut ktime_t,
     system: *mut system_counterval_t,
-    ctx: *mut core::ffi::c_void,
+    ctx: *mut kernel::ffi::c_void,
 ) -> i32 {
     let substream: *mut snd_pcm_substream = ctx as *mut snd_pcm_substream;
     let azx_dev: *mut azx_dev = get_azx_dev(substream);
@@ -460,7 +460,7 @@ unsafe fn azx_get_crosststamp(
     substream: *mut snd_pcm_substream,
     xtstamp: *mut system_device_crosststamp,
 ) -> i32 {
-    get_device_system_crosststamp(Some(azx_get_sync_time), substream as *mut core::ffi::c_void,
+    get_device_system_crosststamp(Some(azx_get_sync_time), substream as *mut kernel::ffi::c_void,
                                   core::ptr::null_mut(), xtstamp)
 }
 
@@ -577,7 +577,7 @@ unsafe fn azx_pcm_open(substream: *mut snd_pcm_substream) -> i32 {
         err = -EBUSY;
         goto_unlock!(chip, apcm, err);
     }
-    (*runtime).private_data = azx_dev as *mut core::ffi::c_void;
+    (*runtime).private_data = azx_dev as *mut kernel::ffi::c_void;
 
     (*runtime).hw = azx_pcm_hw;
     if (*chip).gts_present {
@@ -669,7 +669,7 @@ unsafe fn azx_pcm_free(pcm: *mut snd_pcm) {
     if !apcm.is_null() {
         list_del(&mut (*apcm).list);
         (*(*apcm).info).pcm = core::ptr::null_mut();
-        kfree(apcm as *mut core::ffi::c_void);
+        kfree(apcm as *mut kernel::ffi::c_void);
     }
 }
 
@@ -706,14 +706,14 @@ pub unsafe extern "C" fn snd_hda_attach_pcm_stream(
     strscpy((*pcm).name.as_mut_ptr(), (*cpcm).name, core::mem::size_of_val(&(*pcm).name));
     apcm = kzalloc_obj::<azx_pcm>();
     if apcm.is_null() {
-        snd_device_free((*chip).card, pcm as *mut core::ffi::c_void);
+        snd_device_free((*chip).card, pcm as *mut kernel::ffi::c_void);
         return -ENOMEM;
     }
     (*apcm).chip = chip;
     (*apcm).pcm = pcm;
     (*apcm).codec = codec;
     (*apcm).info = cpcm;
-    (*pcm).private_data = apcm as *mut core::ffi::c_void;
+    (*pcm).private_data = apcm as *mut kernel::ffi::c_void;
     (*pcm).private_free = Some(azx_pcm_free);
     if (*cpcm).pcm_type == HDA_PCM_TYPE_MODEM {
         (*pcm).dev_class = SNDRV_PCM_CLASS_MODEM;
@@ -1049,7 +1049,7 @@ unsafe fn stream_update(bus: *mut hdac_bus, s: *mut hdac_stream) {
     }
 }
 
-pub unsafe extern "C" fn azx_interrupt(_irq: i32, dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+pub unsafe extern "C" fn azx_interrupt(_irq: i32, dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     let chip: *mut azx = dev_id as *mut azx;
     let bus: *mut hdac_bus = azx_bus(chip);
     let mut status: u32;
@@ -1152,7 +1152,7 @@ pub unsafe extern "C" fn snd_hda_bus_reset(bus: *mut hda_bus) {
 }
 
 /* HD-audio bus initialization */
-pub unsafe extern "C" fn azx_bus_init(chip: *mut azx, model: *const core::ffi::c_char) -> i32 {
+pub unsafe extern "C" fn azx_bus_init(chip: *mut azx, model: *const kernel::ffi::c_char) -> i32 {
     let bus: *mut hda_bus = &mut (*chip).bus;
     let mut err: i32;
 
@@ -1314,7 +1314,7 @@ pub unsafe extern "C" fn azx_free_streams(chip: *mut azx) {
     while !list_empty(&mut (*bus).stream_list) {
         s = list_first_entry!(&mut (*bus).stream_list, hdac_stream, list);
         list_del(&mut (*s).list);
-        kfree(stream_to_azx_dev(s) as *mut core::ffi::c_void);
+        kfree(stream_to_azx_dev(s) as *mut kernel::ffi::c_void);
     }
 }
 

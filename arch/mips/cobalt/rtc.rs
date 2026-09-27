@@ -26,7 +26,7 @@ pub const IORESOURCE_IRQ: u64 = 0x0000_0200;
 extern "C" {
     static RTC_IRQ: u64;
 
-    fn platform_device_alloc(name: *const core::ffi::c_char, id: i32) -> *mut platform_device;
+    fn platform_device_alloc(name: *const kernel::ffi::c_char, id: i32) -> *mut platform_device;
     fn platform_device_add_resources(
         pdev: *mut platform_device,
         resources: *const resource,
@@ -61,7 +61,7 @@ unsafe fn cobalt_rtc_add() -> i32 {
     let pdev: *mut platform_device;
     let retval: i32;
 
-    pdev = platform_device_alloc(b"rtc_cmos\0".as_ptr() as *const core::ffi::c_char, -1);
+    pdev = platform_device_alloc(b"rtc_cmos\0".as_ptr() as *const kernel::ffi::c_char, -1);
     if pdev.is_null() {
         return -12; // -ENOMEM
     }

@@ -68,7 +68,7 @@ pub enum interruption_class {
 
 #[repr(C)]
 pub struct irq_stat {
-    pub irqs: [core::ffi::c_uint; NR_ARCH_IRQS as usize],
+    pub irqs: [kernel::ffi::c_uint; NR_ARCH_IRQS as usize],
 }
 
 /* DECLARE_PER_CPU_SHARED_ALIGNED(struct irq_stat, irq_stat); */
@@ -101,11 +101,11 @@ pub struct ext_code {
     pub value: ext_code_union,
 }
 
-pub type ext_int_handler_t = unsafe extern "C" fn(ext_code, u32, core::ffi::c_ulong);
+pub type ext_int_handler_t = unsafe extern "C" fn(ext_code, u32, kernel::ffi::c_ulong);
 
 extern "C" {
-    pub fn register_external_irq(code: u16, handler: ext_int_handler_t) -> core::ffi::c_int;
-    pub fn unregister_external_irq(code: u16, handler: ext_int_handler_t) -> core::ffi::c_int;
+    pub fn register_external_irq(code: u16, handler: ext_int_handler_t) -> kernel::ffi::c_int;
+    pub fn unregister_external_irq(code: u16, handler: ext_int_handler_t) -> kernel::ffi::c_int;
 }
 
 #[repr(i32)]

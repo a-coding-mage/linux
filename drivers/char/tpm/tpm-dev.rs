@@ -17,34 +17,34 @@
 // translation unit.
 
 extern "C" {
-    fn test_and_set_bit(nr: ::core::ffi::c_ulong, addr: *mut ::core::ffi::c_ulong) -> bool;
-    fn clear_bit(nr: ::core::ffi::c_ulong, addr: *mut ::core::ffi::c_ulong);
-    fn dev_dbg(dev: *const device, fmt: *const ::core::ffi::c_char, ...);
+    fn test_and_set_bit(nr: ::kernel::ffi::c_ulong, addr: *mut ::kernel::ffi::c_ulong) -> bool;
+    fn clear_bit(nr: ::kernel::ffi::c_ulong, addr: *mut ::kernel::ffi::c_ulong);
+    fn dev_dbg(dev: *const device, fmt: *const ::kernel::ffi::c_char, ...);
     fn tpm_common_open(
         file: *mut file,
         chip: *mut tpm_chip,
         priv_data: *mut file_priv,
-        arg: *mut ::core::ffi::c_void,
+        arg: *mut ::kernel::ffi::c_void,
     );
-    fn nonseekable_open(inode: *mut inode, file: *mut file) -> ::core::ffi::c_int;
+    fn nonseekable_open(inode: *mut inode, file: *mut file) -> ::kernel::ffi::c_int;
     fn tpm_common_release(file: *mut file, priv_data: *mut file_priv);
-    fn kfree(ptr: *mut ::core::ffi::c_void);
+    fn kfree(ptr: *mut ::kernel::ffi::c_void);
     fn tpm_common_read(
         file: *mut file,
-        buf: *mut ::core::ffi::c_char,
+        buf: *mut ::kernel::ffi::c_char,
         count: usize,
         offset: *mut loff_t,
     ) -> isize;
     fn tpm_common_write(
         file: *mut file,
-        buf: *const ::core::ffi::c_char,
+        buf: *const ::kernel::ffi::c_char,
         count: usize,
         offset: *mut loff_t,
     ) -> isize;
     fn tpm_common_poll(file: *mut file, wait: *mut poll_table_struct) -> __poll_t;
 }
 
-unsafe fn tpm_open(inode: *mut inode, file: *mut file) -> ::core::ffi::c_int {
+unsafe fn tpm_open(inode: *mut inode, file: *mut file) -> ::kernel::ffi::c_int {
     let chip: *mut tpm_chip = container_of!((*inode).i_cdev, tpm_chip, cdev);
     let mut priv_data: *mut file_priv;
 
@@ -70,12 +70,12 @@ unsafe fn tpm_open(inode: *mut inode, file: *mut file) -> ::core::ffi::c_int {
 /*
  * Called on file close
  */
-unsafe fn tpm_release(_inode: *mut inode, file: *mut file) -> ::core::ffi::c_int {
+unsafe fn tpm_release(_inode: *mut inode, file: *mut file) -> ::kernel::ffi::c_int {
     let priv_data: *mut file_priv = (*file).private_data as *mut file_priv;
 
     tpm_common_release(file, priv_data);
     clear_bit(0, &mut (*(*priv_data).chip).is_open);
-    kfree(priv_data as *mut ::core::ffi::c_void);
+    kfree(priv_data as *mut ::kernel::ffi::c_void);
 
     0
 }

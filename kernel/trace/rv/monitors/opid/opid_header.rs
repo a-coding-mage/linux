@@ -37,23 +37,23 @@ pub enum envs_opid {
 
 #[repr(C)]
 pub struct automaton_opid {
-    pub state_names: [*mut core::ffi::c_char; 1],
-    pub event_names: [*mut core::ffi::c_char; 2],
-    pub env_names: [*mut core::ffi::c_char; 2],
+    pub state_names: [*mut kernel::ffi::c_char; 1],
+    pub event_names: [*mut kernel::ffi::c_char; 2],
+    pub env_names: [*mut kernel::ffi::c_char; 2],
     pub function: [[u8; 2]; 1],
     pub initial_state: states_opid,
     pub final_states: [bool; 1],
 }
 
 pub static automaton_opid: automaton_opid = automaton_opid {
-    state_names: [b"any\0".as_ptr() as *mut core::ffi::c_char],
+    state_names: [b"any\0".as_ptr() as *mut kernel::ffi::c_char],
     event_names: [
-        b"sched_need_resched\0".as_ptr() as *mut core::ffi::c_char,
-        b"sched_waking\0".as_ptr() as *mut core::ffi::c_char,
+        b"sched_need_resched\0".as_ptr() as *mut kernel::ffi::c_char,
+        b"sched_waking\0".as_ptr() as *mut kernel::ffi::c_char,
     ],
     env_names: [
-        b"irq_off\0".as_ptr() as *mut core::ffi::c_char,
-        b"preempt_off\0".as_ptr() as *mut core::ffi::c_char,
+        b"irq_off\0".as_ptr() as *mut kernel::ffi::c_char,
+        b"preempt_off\0".as_ptr() as *mut kernel::ffi::c_char,
     ],
     function: [[states_opid::any_opid as u8, states_opid::any_opid as u8]],
     initial_state: states_opid::any_opid,

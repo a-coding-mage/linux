@@ -7,7 +7,7 @@ pub unsafe fn pte_free_kernel(mm: *mut mm_struct, pte: *mut pte_t) {
 }
 
 unsafe extern "C" {
-    pub static bad_pmd_string: core::ffi::c_char;
+    pub static bad_pmd_string: kernel::ffi::c_char;
 }
 
 pub unsafe fn pte_alloc_one_kernel(mm: *mut mm_struct) -> *mut pte_t {
@@ -29,7 +29,7 @@ pub unsafe fn pte_alloc_one_kernel(mm: *mut mm_struct) -> *mut pte_t {
 
 pub unsafe fn pmd_alloc_kernel(
     pgd: *mut pgd_t,
-    address: core::ffi::c_ulong,
+    address: kernel::ffi::c_ulong,
 ) -> *mut pmd_t {
     pgd as *mut pmd_t
 }
@@ -39,7 +39,7 @@ pub unsafe fn pmd_populate(
     pmd: *mut pmd_t,
     pte: *mut pte_t,
 ) {
-    (*pmd).val = pte as core::ffi::c_ulong;
+    (*pmd).val = pte as kernel::ffi::c_ulong;
 }
 
 pub unsafe fn pmd_populate_kernel(
@@ -53,7 +53,7 @@ pub unsafe fn pmd_populate_kernel(
 pub unsafe fn __pte_free_tlb(
     tlb: *mut mmu_gather,
     pgtable: pgtable_t,
-    address: core::ffi::c_ulong,
+    address: kernel::ffi::c_ulong,
 ) {
     let ptdesc = virt_to_ptdesc(pgtable);
 
@@ -110,12 +110,12 @@ pub unsafe fn pgd_alloc(mm: *mut mm_struct) -> *mut pgd_t {
     new_pgd = ptdesc_address(ptdesc);
 
     memcpy(
-        new_pgd as *mut core::ffi::c_void,
-        swapper_pg_dir as *const core::ffi::c_void,
+        new_pgd as *mut kernel::ffi::c_void,
+        swapper_pg_dir as *const kernel::ffi::c_void,
         PTRS_PER_PGD * core::mem::size_of::<pgd_t>(),
     );
     memset(
-        new_pgd as *mut core::ffi::c_void,
+        new_pgd as *mut kernel::ffi::c_void,
         0,
         PAGE_OFFSET >> PGDIR_SHIFT,
     );

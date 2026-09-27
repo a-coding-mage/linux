@@ -11,22 +11,22 @@
 pub unsafe fn module_frob_arch_sections(
     hdr: *mut Elf_Ehdr,
     sechdrs: *mut Elf_Shdr,
-    secstrings: *mut core::ffi::c_char,
+    secstrings: *mut kernel::ffi::c_char,
     mod_: *mut module,
-) -> core::ffi::c_int {
-    let mut found: core::ffi::c_int = 0;
+) -> kernel::ffi::c_int {
+    let mut found: kernel::ffi::c_int = 0;
 
     // Look for .plt and/or .got.plt and/or .init.plt sections
     for i in 0..(*hdr).e_shnum as usize {
         let name = secstrings.add((*sechdrs.add(i)).sh_name as usize);
-        if strcmp(name, b".plt\0".as_ptr() as *const core::ffi::c_char) == 0 {
-            found = i as core::ffi::c_int + 1;
+        if strcmp(name, b".plt\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
+            found = i as kernel::ffi::c_int + 1;
         }
-        if strcmp(name, b".got.plt\0".as_ptr() as *const core::ffi::c_char) == 0 {
-            found = i as core::ffi::c_int + 1;
+        if strcmp(name, b".got.plt\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
+            found = i as kernel::ffi::c_int + 1;
         }
-        if strcmp(name, b".rela.plt\0".as_ptr() as *const core::ffi::c_char) == 0 {
-            found = i as core::ffi::c_int + 1;
+        if strcmp(name, b".rela.plt\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
+            found = i as kernel::ffi::c_int + 1;
         }
     }
 
@@ -34,7 +34,7 @@ pub unsafe fn module_frob_arch_sections(
     if found != 0 {
         printk(
             KERN_WARNING,
-            b"Module '%s' contains unexpected .plt/.got sections.\0".as_ptr() as *const core::ffi::c_char,
+            b"Module '%s' contains unexpected .plt/.got sections.\0".as_ptr() as *const kernel::ffi::c_char,
             (*mod_).name,
         );
         // return -ENOEXEC;
@@ -45,11 +45,11 @@ pub unsafe fn module_frob_arch_sections(
 
 pub unsafe fn apply_relocate_add(
     sechdrs: *mut Elf_Shdr,
-    strtab: *const core::ffi::c_char,
+    strtab: *const kernel::ffi::c_char,
     symindex: u32,
     relsec: u32,
     module: *mut module,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let nrelocs = (*sechdrs.add(relsec as usize)).sh_size as usize / core::mem::size_of::<Elf32_Rela>();
     let rela = (*sechdrs.add(relsec as usize)).sh_addr as *mut Elf32_Rela;
     let sym_info = (*sechdrs.add(relsec as usize)).sh_info;

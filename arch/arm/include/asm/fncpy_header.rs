@@ -10,7 +10,7 @@
 pub const FNCPY_ALIGN: usize = 8;
 
 extern "C" {
-    fn flush_icache_range(start: libc::c_ulong, end: libc::c_ulong);
+    fn flush_icache_range(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong);
 }
 
 /// Copy a low-level function body and return a callable pointer preserving
@@ -36,8 +36,8 @@ macro_rules! fncpy {
                 __size,
             );
             $crate::flush_icache_range(
-                __dest_buf as libc::c_ulong,
-                (__dest_buf as usize + __size) as libc::c_ulong,
+                __dest_buf as kernel::ffi::c_ulong,
+                (__dest_buf as usize + __size) as kernel::ffi::c_ulong,
             );
             core::mem::transmute::<usize, _>(
                 (__dest_buf as usize) | (__funcp_address & 1usize),

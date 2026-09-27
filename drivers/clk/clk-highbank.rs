@@ -31,7 +31,7 @@ const HB_A9_PCLK_DIV: u32 = 0x00000001;
 #[repr(C)]
 struct hb_clk {
     hw: clk_hw,
-    reg: *mut core::ffi::c_void,
+    reg: *mut kernel::ffi::c_void,
 }
 
 unsafe fn to_hb_clk(p: *mut clk_hw) -> *mut hb_clk {
@@ -172,7 +172,7 @@ unsafe fn hb_clk_init(node: *mut device_node, ops: *const clk_ops, clkflags: u64
     let mut reg = 0u32;
     let mut hb_clk: *mut hb_clk;
     let mut clk_name = (*node).name;
-    let mut parent_name: *const core::ffi::c_char;
+    let mut parent_name: *const kernel::ffi::c_char;
     let mut init: clk_init_data;
     let srnp: *mut device_node;
     let rc = of_property_read_u32(node, b"reg\0".as_ptr() as _, &mut reg);

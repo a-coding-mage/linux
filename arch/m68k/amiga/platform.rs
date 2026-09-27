@@ -10,7 +10,7 @@
 
 #[repr(C)]
 pub struct Resource {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub start: usize,
     pub end: usize,
     pub flags: u64,
@@ -41,14 +41,14 @@ unsafe extern "C" {
     static zorro_num_autocon: usize;
     static zorro_autocon_init: *const ZorroAutocon;
     fn platform_device_register_simple(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         id: i32,
         resource: *const Resource,
         num_resources: u32,
     ) -> *mut PlatformDevice;
     fn platform_device_add_data(
         pdev: *mut PlatformDevice,
-        data: *const ::core::ffi::c_void,
+        data: *const ::kernel::ffi::c_void,
         size: usize,
     ) -> i32;
     fn ptr_err_or_zero(ptr: *mut PlatformDevice) -> i32;

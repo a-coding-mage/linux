@@ -21,10 +21,10 @@ pub struct resource {
 
 extern "C" {
     pub fn sh_pfc_register(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         resources: *mut resource,
         num_resources: usize,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // Supplied by the Linux I/O resource definitions.
@@ -39,9 +39,9 @@ static mut sh7203_pfc_resources: [resource; 1] = [resource {
 }];
 
 // __init
-unsafe fn plat_pinmux_setup() -> core::ffi::c_int {
+unsafe fn plat_pinmux_setup() -> kernel::ffi::c_int {
     sh_pfc_register(
-        b"pfc-sh7203\0".as_ptr() as *const core::ffi::c_char,
+        b"pfc-sh7203\0".as_ptr() as *const kernel::ffi::c_char,
         sh7203_pfc_resources.as_mut_ptr(),
         sh7203_pfc_resources.len(),
     )

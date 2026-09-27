@@ -30,10 +30,10 @@ macro_rules! flush_insn_slot {
         if unsafe { (*$p).addr } != 0 {
             unsafe {
                 flush_icache_range(
-                    (*$p).addr as ::core::ffi::c_ulong,
-                    (*$p).addr as ::core::ffi::c_ulong
+                    (*$p).addr as ::kernel::ffi::c_ulong,
+                    (*$p).addr as ::kernel::ffi::c_ulong
                         + (MAX_INSN_SIZE * ::core::mem::size_of::<kprobe_opcode_t>())
-                            as ::core::ffi::c_ulong,
+                            as ::kernel::ffi::c_ulong,
                 );
             }
         }
@@ -44,8 +44,8 @@ pub const kretprobe_blacklist_size: usize = 0;
 
 extern "C" {
     pub fn arch_remove_kprobe(p: *mut kprobe);
-    pub fn kprobe_fault_handler(regs: *mut pt_regs, trapnr: ::core::ffi::c_int)
-        -> ::core::ffi::c_int;
+    pub fn kprobe_fault_handler(regs: *mut pt_regs, trapnr: ::kernel::ffi::c_int)
+        -> ::kernel::ffi::c_int;
 }
 
 /* Architecture specific copy of original instruction */
@@ -58,10 +58,10 @@ pub struct arch_specific_insn {
 #[repr(C)]
 pub struct prev_kprobe {
     pub kp: *mut kprobe,
-    pub status: ::core::ffi::c_ulong,
-    pub old_SR: ::core::ffi::c_ulong,
-    pub saved_SR: ::core::ffi::c_ulong,
-    pub saved_epc: ::core::ffi::c_ulong,
+    pub status: ::kernel::ffi::c_ulong,
+    pub old_SR: ::kernel::ffi::c_ulong,
+    pub saved_SR: ::kernel::ffi::c_ulong,
+    pub saved_epc: ::kernel::ffi::c_ulong,
 }
 
 pub const SKIP_DELAYSLOT: u32 = 0x0001;
@@ -69,13 +69,13 @@ pub const SKIP_DELAYSLOT: u32 = 0x0001;
 /* per-cpu kprobe control block */
 #[repr(C)]
 pub struct kprobe_ctlblk {
-    pub kprobe_status: ::core::ffi::c_ulong,
-    pub kprobe_old_SR: ::core::ffi::c_ulong,
-    pub kprobe_saved_SR: ::core::ffi::c_ulong,
-    pub kprobe_saved_epc: ::core::ffi::c_ulong,
+    pub kprobe_status: ::kernel::ffi::c_ulong,
+    pub kprobe_old_SR: ::kernel::ffi::c_ulong,
+    pub kprobe_saved_SR: ::kernel::ffi::c_ulong,
+    pub kprobe_saved_epc: ::kernel::ffi::c_ulong,
     /* Per-thread fields, used while emulating branches */
-    pub flags: ::core::ffi::c_ulong,
-    pub target_epc: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
+    pub target_epc: ::kernel::ffi::c_ulong,
     pub prev_kprobe: prev_kprobe,
 }
 

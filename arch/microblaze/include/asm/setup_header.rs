@@ -7,7 +7,7 @@
 
 // C dependency: <uapi/asm/setup.h> supplies COMMAND_LINE_SIZE.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 unsafe extern "C" {
     pub static mut cmd_line: [c_char; COMMAND_LINE_SIZE];

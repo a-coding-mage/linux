@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* AM43XX Clock init */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // The following types, constants, and functions are supplied by the translated
 // kernel clock framework and device-tree bindings.

@@ -9,7 +9,7 @@
  * machinery.
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 /// Opaque register state supplied by the architecture-specific code.
 #[repr(C)]

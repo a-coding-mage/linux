@@ -28,7 +28,7 @@ struct st_ahci_drv_data {
 struct reset_control;
 #[repr(C)]
 struct ahci_host_priv {
-    plat_data: *mut core::ffi::c_void,
+    plat_data: *mut kernel::ffi::c_void,
     mmio: *mut u8,
 }
 #[repr(C)]
@@ -58,9 +58,9 @@ extern "C" {
     fn writel(value: u32, addr: *mut u8);
     fn reset_control_deassert(reset: *mut reset_control) -> i32;
     fn reset_control_assert(reset: *mut reset_control) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_dbg(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_dbg(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     fn ahci_platform_disable_resources(hpriv: *mut ahci_host_priv);
     fn ahci_platform_enable_resources(hpriv: *mut ahci_host_priv) -> i32;
     fn ahci_platform_get_resources(pdev: *mut platform_device, port: i32) -> *mut ahci_host_priv;
@@ -72,9 +72,9 @@ extern "C" {
     ) -> i32;
     fn ahci_platform_suspend_host(dev: *mut device) -> i32;
     fn ahci_platform_resume_host(dev: *mut device) -> i32;
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
-    fn devm_reset_control_get(dev: *mut device, id: *const core::ffi::c_char) -> *mut reset_control;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
+    fn devm_reset_control_get(dev: *mut device, id: *const kernel::ffi::c_char) -> *mut reset_control;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn ata_platform_remove_one(pdev: *mut platform_device) -> i32;
 }
 
@@ -134,7 +134,7 @@ unsafe fn st_ahci_probe(pdev: *mut platform_device) -> i32 {
     if drv_data.is_null() { return -12; }
     let hpriv = ahci_platform_get_resources(pdev, 0);
     if hpriv as usize == usize::MAX { return -1; }
-    (*hpriv).plat_data = drv_data as *mut core::ffi::c_void;
+    (*hpriv).plat_data = drv_data as *mut kernel::ffi::c_void;
     let mut err = st_ahci_probe_resets(hpriv, &mut (*pdev).dev);
     if err != 0 { return err; }
     err = ahci_platform_enable_resources(hpriv);

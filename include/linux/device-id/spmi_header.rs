@@ -5,14 +5,14 @@
 // Preserved from the C build condition: this alias is available only when
 // compiling for the kernel (__KERNEL__).
 #[cfg(__KERNEL__)]
-pub type kernel_ulong_t = ::core::ffi::c_ulong;
+pub type kernel_ulong_t = ::kernel::ffi::c_ulong;
 
 pub const SPMI_NAME_SIZE: usize = 32;
 pub const SPMI_MODULE_PREFIX: &str = "spmi:";
 
 #[repr(C)]
 pub struct spmi_device_id {
-    pub name: [::core::ffi::c_char; SPMI_NAME_SIZE],
+    pub name: [::kernel::ffi::c_char; SPMI_NAME_SIZE],
     pub driver_data: kernel_ulong_t, // Data private to the driver
 }
 

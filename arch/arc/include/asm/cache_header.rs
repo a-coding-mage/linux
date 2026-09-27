@@ -17,7 +17,7 @@ pub const ARC_UNCACHED_ADDR_SPACE: u32 = 0xc000_0000;
 
 /* Uncached access macros. */
 #[inline]
-pub unsafe fn arc_read_uncached_32(ptr: *const core::ffi::c_void) -> u32 {
+pub unsafe fn arc_read_uncached_32(ptr: *const kernel::ffi::c_void) -> u32 {
     let ret: u32;
     core::arch::asm!(
         "ld.di {ret}, [{ptr}]",
@@ -29,7 +29,7 @@ pub unsafe fn arc_read_uncached_32(ptr: *const core::ffi::c_void) -> u32 {
 }
 
 #[inline]
-pub unsafe fn arc_write_uncached_32(ptr: *mut core::ffi::c_void, data: u32) {
+pub unsafe fn arc_write_uncached_32(ptr: *mut kernel::ffi::c_void, data: u32) {
     core::arch::asm!(
         "st.di {data}, [{ptr}]",
         data = in(reg) data,
@@ -55,9 +55,9 @@ pub const ARCH_DMA_MINALIGN: usize = SMP_CACHE_BYTES;
 pub const ARCH_SLAB_MINALIGN: usize = 8;
 
 unsafe extern "C" {
-    pub static mut ioc_enable: core::ffi::c_int;
-    pub static mut perip_base: core::ffi::c_ulong;
-    pub static mut perip_end: core::ffi::c_ulong;
+    pub static mut ioc_enable: kernel::ffi::c_int;
+    pub static mut perip_base: kernel::ffi::c_ulong;
+    pub static mut perip_end: kernel::ffi::c_ulong;
 }
 
 /* Instruction cache related Auxiliary registers. */

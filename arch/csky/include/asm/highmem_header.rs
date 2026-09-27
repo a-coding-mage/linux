@@ -10,8 +10,8 @@ pub const HIGHMEM_DEBUG: i32 = 1;
 
 /* declarations for highmem.c */
 extern "C" {
-    pub static mut highstart_pfn: ::core::ffi::c_ulong;
-    pub static mut highend_pfn: ::core::ffi::c_ulong;
+    pub static mut highstart_pfn: ::kernel::ffi::c_ulong;
+    pub static mut highend_pfn: ::kernel::ffi::c_ulong;
 
     pub static mut pkmap_page_table: *mut pte_t;
 }
@@ -36,7 +36,7 @@ pub const unsafe fn PKMAP_ADDR(nr: usize) -> usize {
 
 /* ARCH_HAS_KMAP_FLUSH_TLB */
 extern "C" {
-    pub fn kmap_flush_tlb(addr: ::core::ffi::c_ulong);
+    pub fn kmap_flush_tlb(addr: ::kernel::ffi::c_ulong);
 
     pub fn kmap_init();
 }

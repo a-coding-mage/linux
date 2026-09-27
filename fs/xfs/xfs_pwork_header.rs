@@ -31,7 +31,7 @@ pub struct xfs_mount {
 }
 
 pub type xfs_pwork_work_fn =
-    Option<unsafe extern "C" fn(mp: *mut xfs_mount, pwork: *mut xfs_pwork) -> ::core::ffi::c_int>;
+    Option<unsafe extern "C" fn(mp: *mut xfs_mount, pwork: *mut xfs_pwork) -> ::kernel::ffi::c_int>;
 
 /*
  * Parallel work coordination structure.
@@ -43,7 +43,7 @@ pub struct xfs_pwork_ctl {
     pub work_fn: xfs_pwork_work_fn,
     pub poll_wait: wait_queue_head,
     pub nr_work: atomic_t,
-    pub error: ::core::ffi::c_int,
+    pub error: ::kernel::ffi::c_int,
 }
 
 /*
@@ -84,10 +84,10 @@ unsafe extern "C" {
         mp: *mut xfs_mount,
         pctl: *mut xfs_pwork_ctl,
         work_fn: xfs_pwork_work_fn,
-        tag: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        tag: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
     pub fn xfs_pwork_queue(pctl: *mut xfs_pwork_ctl, pwork: *mut xfs_pwork);
-    pub fn xfs_pwork_destroy(pctl: *mut xfs_pwork_ctl) -> ::core::ffi::c_int;
+    pub fn xfs_pwork_destroy(pctl: *mut xfs_pwork_ctl) -> ::kernel::ffi::c_int;
     pub fn xfs_pwork_poll(pctl: *mut xfs_pwork_ctl);
 }
 

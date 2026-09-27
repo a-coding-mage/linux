@@ -21,18 +21,18 @@ extern "C" {
     fn schedule_timeout_interruptible(timeout: i64);
     fn clocksource_unregister(cs: *mut Clocksource);
     fn clocksource_register_khz(cs: *mut Clocksource, khz: u32) -> i32;
-    fn kthread_run(f: unsafe extern "C" fn(*mut core::ffi::c_void) -> i32,
-                   data: *mut core::ffi::c_void,
-                   name: *const core::ffi::c_char) -> *mut TaskStruct;
+    fn kthread_run(f: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32,
+                   data: *mut kernel::ffi::c_void,
+                   name: *const kernel::ffi::c_char) -> *mut TaskStruct;
     fn kthread_stop(task: *mut TaskStruct) -> i32;
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
     fn ptr_err<T>(ptr: *mut T) -> i32;
 }
 
 #[repr(C)]
 pub struct Clocksource {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub rating: i32,
     pub read: Option<unsafe extern "C" fn(*mut Clocksource) -> u64>,
     pub mask: u64,
@@ -135,7 +135,7 @@ unsafe fn wdtest_run(percpu: bool) -> bool {
     wdtest_execute(WdtestStates::WDTEST_INJECT_NEGATIVE, percpu, CLOCK_SOURCE_UNSTABLE, 8)
 }
 
-unsafe extern "C" fn wdtest_func(_arg: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn wdtest_func(_arg: *mut kernel::ffi::c_void) -> i32 {
     clocksource_register_khz(&raw mut clocksource_wdtest_ktime, 1000 * 1000);
     let _ = wdtest_run(false) && wdtest_run(true);
     clocksource_unregister(&raw mut clocksource_wdtest_ktime);

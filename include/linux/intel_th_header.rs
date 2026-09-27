@@ -15,7 +15,7 @@ pub const MSC_MODE_DEBUG: i32 = 3;
 
 #[repr(C)]
 pub struct msu_buffer {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     /*
      * ->assign() called when buffer 'mode' is set to this driver
      *   (aka mode_store())
@@ -28,9 +28,9 @@ pub struct msu_buffer {
     pub assign: Option<unsafe extern "C" fn(
         dev: *mut device,
         mode: *mut i32,
-    ) -> *mut core::ffi::c_void>,
+    ) -> *mut kernel::ffi::c_void>,
     /* ->unassign(): some other mode is selected, clean up */
-    pub unassign: Option<unsafe extern "C" fn(priv_: *mut core::ffi::c_void)>,
+    pub unassign: Option<unsafe extern "C" fn(priv_: *mut kernel::ffi::c_void)>,
     /*
      * ->alloc_window(): allocate memory for the window of a given size
      * @sgt: pointer to sg_table, can be overridden by the buffer driver,
@@ -39,18 +39,18 @@ pub struct msu_buffer {
      * 0 is treated as an allocation failure.
      */
     pub alloc_window: Option<unsafe extern "C" fn(
-        priv_: *mut core::ffi::c_void,
+        priv_: *mut kernel::ffi::c_void,
         sgt: *mut *mut sg_table,
         size: usize,
     ) -> i32>,
     pub free_window: Option<unsafe extern "C" fn(
-        priv_: *mut core::ffi::c_void,
+        priv_: *mut kernel::ffi::c_void,
         sgt: *mut sg_table,
     )>,
     /* ->activate(): trace has started */
-    pub activate: Option<unsafe extern "C" fn(priv_: *mut core::ffi::c_void)>,
+    pub activate: Option<unsafe extern "C" fn(priv_: *mut kernel::ffi::c_void)>,
     /* ->deactivate(): trace is about to stop */
-    pub deactivate: Option<unsafe extern "C" fn(priv_: *mut core::ffi::c_void)>,
+    pub deactivate: Option<unsafe extern "C" fn(priv_: *mut kernel::ffi::c_void)>,
     /*
      * ->ready(): window @sgt is filled up to the last block OR tracing is
      * stopped by the user; this window contains @bytes data. The window in
@@ -59,7 +59,7 @@ pub struct msu_buffer {
      * to the hardware again, call intel_th_msc_window_unlock().
      */
     pub ready: Option<unsafe extern "C" fn(
-        priv_: *mut core::ffi::c_void,
+        priv_: *mut kernel::ffi::c_void,
         sgt: *mut sg_table,
         bytes: usize,
     ) -> i32>,

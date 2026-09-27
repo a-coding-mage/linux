@@ -11,7 +11,7 @@
 // Requires: emux_voice.h, sound/asoundef.h from kernel headers
 // This module depends on external structures defined in those headers
 
-use core::ffi::c_int;
+use kernel::ffi::c_int;
 use core::mem;
 use core::ptr;
 
@@ -53,7 +53,7 @@ extern "C" {
 
     fn snd_BUG_ON(cond: bool) -> bool;
     fn snd_soundfont_search_zone(
-        sflist: *mut libc::c_void,
+        sflist: *mut kernel::ffi::c_void,
         notep: *mut i32,
         vel: i32,
         preset: i32,
@@ -70,13 +70,13 @@ extern "C" {
         val: i32,
         flag: i32);
     fn snd_emux_setup_effect(vp: *mut snd_emux_voice);
-    fn mod_timer(timer: *mut libc::c_void, expires: libc::c_ulong);
-    fn jiffies() -> libc::c_ulong;
-    fn dev_warn(dev: *mut libc::c_void, fmt: *const libc::c_char, ...);
+    fn mod_timer(timer: *mut kernel::ffi::c_void, expires: kernel::ffi::c_ulong);
+    fn jiffies() -> kernel::ffi::c_ulong;
+    fn dev_warn(dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
     fn timer_container_of(
         emu: *mut snd_emux,
-        t: *mut libc::c_void,
-        field: *const libc::c_char) -> *mut snd_emux;
+        t: *mut kernel::ffi::c_void,
+        field: *const kernel::ffi::c_char) -> *mut snd_emux;
 
     // External tables
     static snd_sf_vol_table: [i32; 128];
@@ -175,7 +175,7 @@ fn sf_is_drum_bank(bank: i32) -> bool {
  * Start a note.
  */
 pub unsafe extern "C" fn snd_emux_note_on(
-    p: *mut libc::c_void,
+    p: *mut kernel::ffi::c_void,
     note: i32,
     vel: i32,
     chan: *mut snd_midi_channel,
@@ -283,7 +283,7 @@ pub unsafe extern "C" fn snd_emux_note_on(
  * Release a note in response to a midi note off.
  */
 pub unsafe extern "C" fn snd_emux_note_off(
-    p: *mut libc::c_void,
+    p: *mut kernel::ffi::c_void,
     note: i32,
     vel: i32,
     chan: *mut snd_midi_channel,
@@ -311,7 +311,7 @@ pub unsafe extern "C" fn snd_emux_note_off(
                  */
                 (*vp).state = SNDRV_EMUX_ST_PENDING;
                 if (*emu).timer_active == 0 {
-                    mod_timer(&mut (*emu).tlist as *mut _ as *mut libc::c_void, jiffies() + 1);
+                    mod_timer(&mut (*emu).tlist as *mut _ as *mut kernel::ffi::c_void, jiffies() + 1);
                     (*emu).timer_active = 1;
                 }
             } else {
@@ -328,7 +328,7 @@ pub unsafe extern "C" fn snd_emux_note_off(
  *
  * release the pending note-offs
  */
-pub unsafe extern "C" fn snd_emux_timer_callback(t: *mut libc::c_void) {
+pub unsafe extern "C" fn snd_emux_timer_callback(t: *mut kernel::ffi::c_void) {
     let emu = timer_container_of(ptr::null_mut(), t, ptr::null());
     let mut do_again = 0;
 
@@ -345,7 +345,7 @@ pub unsafe extern "C" fn snd_emux_timer_callback(t: *mut libc::c_void) {
         }
     }
     if do_again != 0 {
-        mod_timer(&mut (*emu).tlist as *mut _ as *mut libc::c_void, jiffies() + 1);
+        mod_timer(&mut (*emu).tlist as *mut _ as *mut kernel::ffi::c_void, jiffies() + 1);
         (*emu).timer_active = 1;
     } else {
         (*emu).timer_active = 0;
@@ -357,7 +357,7 @@ pub unsafe extern "C" fn snd_emux_timer_callback(t: *mut libc::c_void) {
  * key pressure change
  */
 pub unsafe extern "C" fn snd_emux_key_press(
-    p: *mut libc::c_void,
+    p: *mut kernel::ffi::c_void,
     note: i32,
     vel: i32,
     chan: *mut snd_midi_channel,
@@ -438,7 +438,7 @@ pub unsafe extern "C" fn snd_emux_update_port(port: *mut snd_emux_port, update: 
  * control events, not just the midi controllers
  */
 pub unsafe extern "C" fn snd_emux_control(
-    p: *mut libc::c_void,
+    p: *mut kernel::ffi::c_void,
     type_: i32,
     chan: *mut snd_midi_channel,
 ) {
@@ -505,7 +505,7 @@ unsafe fn terminate_note1(
 /*
  * terminate note - exported for midi emulation
  */
-pub unsafe extern "C" fn snd_emux_terminate_note(p: *mut libc::c_void, note: i32, chan: *mut snd_midi_channel) {
+pub unsafe extern "C" fn snd_emux_terminate_note(p: *mut kernel::ffi::c_void, note: i32, chan: *mut snd_midi_channel) {
     let port = p as *mut snd_emux_port;
     if snd_BUG_ON(port.is_null() || chan.is_null()) {
         return;
@@ -1059,7 +1059,7 @@ pub unsafe extern "C" fn snd_emux_lock_voice(emu: *mut snd_emux, voice: i32) {
     } else {
         dev_warn(
             (*(*emu).card).dev,
-            b"invalid voice for lock %d (state = %x)\n\0" as *const _ as *const libc::c_char,
+            b"invalid voice for lock %d (state = %x)\n\0" as *const _ as *const kernel::ffi::c_char,
             voice,
             (*emu).voices[voice as usize].state,
         );
@@ -1079,7 +1079,7 @@ pub unsafe extern "C" fn snd_emux_unlock_voice(emu: *mut snd_emux, voice: i32) {
     } else {
         dev_warn(
             (*(*emu).card).dev,
-            b"invalid voice for unlock %d (state = %x)\n\0" as *const _ as *const libc::c_char,
+            b"invalid voice for unlock %d (state = %x)\n\0" as *const _ as *const kernel::ffi::c_char,
             voice,
             (*emu).voices[voice as usize].state,
         );

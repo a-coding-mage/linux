@@ -4,7 +4,7 @@
 
 #![allow(non_upper_case_globals, non_snake_case, dead_code)]
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // External kernel declarations supplied by the surrounding clock framework.
 extern "C" {
@@ -94,13 +94,13 @@ static top5_cg_regs: GateRegs = GateRegs{set_ofs:0x44,clr_ofs:0x44,sta_ofs:0x44}
 // framework-facing declarations. The source has no runtime functions beyond
 // platform-driver registration.
 extern "C" {
-    static mut top_muxes: *const core::ffi::c_void;
-    static mut ifr_muxes: *const core::ffi::c_void;
-    static mut top_clks: *const core::ffi::c_void;
-    static mut topck_desc: *const core::ffi::c_void;
-    static mut infra_desc: *const core::ffi::c_void;
-    static mut of_match_clk_mt8516: *const core::ffi::c_void;
-    static mut clk_mt8516_drv: *const core::ffi::c_void;
+    static mut top_muxes: *const kernel::ffi::c_void;
+    static mut ifr_muxes: *const kernel::ffi::c_void;
+    static mut top_clks: *const kernel::ffi::c_void;
+    static mut topck_desc: *const kernel::ffi::c_void;
+    static mut infra_desc: *const kernel::ffi::c_void;
+    static mut of_match_clk_mt8516: *const kernel::ffi::c_void;
+    static mut clk_mt8516_drv: *const kernel::ffi::c_void;
 }
 
 // Large hardware tables are retained as macro records so identifiers and

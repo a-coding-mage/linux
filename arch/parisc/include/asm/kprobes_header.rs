@@ -34,10 +34,10 @@ macro_rules! flush_insn_slot {
     ($p:expr) => {{
         unsafe {
             flush_icache_range(
-                (&(*$p).ainsn.insn[0] as *const _ as usize) as ::core::ffi::c_ulong,
+                (&(*$p).ainsn.insn[0] as *const _ as usize) as ::kernel::ffi::c_ulong,
                 ((&(*$p).ainsn.insn[0] as *const _ as usize)
                     + MAX_INSN_SIZE * ::core::mem::size_of::<kprobe_opcode_t>())
-                    as ::core::ffi::c_ulong,
+                    as ::kernel::ffi::c_ulong,
             );
         }
     }};
@@ -53,26 +53,26 @@ pub struct arch_specific_insn {
 #[repr(C)]
 pub struct prev_kprobe {
     pub kp: *mut kprobe,
-    pub status: ::core::ffi::c_ulong,
+    pub status: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct kprobe_ctlblk {
-    pub kprobe_status: ::core::ffi::c_uint,
+    pub kprobe_status: ::kernel::ffi::c_uint,
     pub prev_kprobe: prev_kprobe,
-    pub iaoq: [::core::ffi::c_ulong; 2],
+    pub iaoq: [::kernel::ffi::c_ulong; 2],
 }
 
 // `__kprobes` is a source-level annotation with no direct Rust equivalent.
 unsafe extern "C" {
-    pub fn parisc_kprobe_break_handler(regs: *mut pt_regs) -> ::core::ffi::c_int;
-    pub fn parisc_kprobe_ss_handler(regs: *mut pt_regs) -> ::core::ffi::c_int;
+    pub fn parisc_kprobe_break_handler(regs: *mut pt_regs) -> ::kernel::ffi::c_int;
+    pub fn parisc_kprobe_ss_handler(regs: *mut pt_regs) -> ::kernel::ffi::c_int;
 }
 
 pub unsafe fn kprobe_fault_handler(
     _regs: *mut pt_regs,
-    _trapnr: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    _trapnr: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     0
 }
 

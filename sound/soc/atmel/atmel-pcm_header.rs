@@ -27,11 +27,11 @@ pub const ATMEL_SSC_DMABUF_SIZE: usize = 64 * 1024;
  */
 #[repr(C)]
 pub struct atmel_pdc_regs {
-    pub xpr: ::core::ffi::c_uint,  /* PDC recv/trans pointer */
-    pub xcr: ::core::ffi::c_uint,  /* PDC recv/trans counter */
-    pub xnpr: ::core::ffi::c_uint, /* PDC next recv/trans pointer */
-    pub xncr: ::core::ffi::c_uint, /* PDC next recv/trans counter */
-    pub ptcr: ::core::ffi::c_uint, /* PDC transfer control */
+    pub xpr: ::kernel::ffi::c_uint,  /* PDC recv/trans pointer */
+    pub xcr: ::kernel::ffi::c_uint,  /* PDC recv/trans counter */
+    pub xnpr: ::kernel::ffi::c_uint, /* PDC next recv/trans pointer */
+    pub xncr: ::kernel::ffi::c_uint, /* PDC next recv/trans counter */
+    pub ptcr: ::kernel::ffi::c_uint, /* PDC transfer control */
 }
 
 #[repr(C)]
@@ -70,8 +70,8 @@ pub struct device {
  */
 #[repr(C)]
 pub struct atmel_pcm_dma_params {
-    pub name: *mut ::core::ffi::c_char, /* stream identifier */
-    pub pdc_xfer_size: ::core::ffi::c_int, /* PDC counter increment in bytes */
+    pub name: *mut ::kernel::ffi::c_char, /* stream identifier */
+    pub pdc_xfer_size: ::kernel::ffi::c_int, /* PDC counter increment in bytes */
     pub ssc: *mut ssc_device,          /* SSC device for stream */
     pub pdc: *mut atmel_pdc_regs,      /* PDC receive or transmit registers */
     pub mask: *mut atmel_ssc_mask,     /* SSC & PDC status bits */
@@ -94,7 +94,7 @@ pub unsafe fn ssc_writex(base: *mut u8, reg: usize, value: u32) {
 
 /* C conditional intent: #if IS_ENABLED(CONFIG_SND_ATMEL_SOC_PDC) */
 unsafe extern "C" {
-    pub fn atmel_pcm_pdc_platform_register(dev: *mut device) -> ::core::ffi::c_int;
+    pub fn atmel_pcm_pdc_platform_register(dev: *mut device) -> ::kernel::ffi::c_int;
 }
 /* C fallback when CONFIG_SND_ATMEL_SOC_PDC is disabled:
  * static inline int atmel_pcm_pdc_platform_register(struct device *dev) { return 0; }
@@ -102,7 +102,7 @@ unsafe extern "C" {
 
 /* C conditional intent: #if IS_ENABLED(CONFIG_SND_ATMEL_SOC_DMA) */
 unsafe extern "C" {
-    pub fn atmel_pcm_dma_platform_register(dev: *mut device) -> ::core::ffi::c_int;
+    pub fn atmel_pcm_dma_platform_register(dev: *mut device) -> ::kernel::ffi::c_int;
 }
 /* C fallback when CONFIG_SND_ATMEL_SOC_DMA is disabled:
  * static inline int atmel_pcm_dma_platform_register(struct device *dev) { return 0; }

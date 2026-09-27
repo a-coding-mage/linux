@@ -10,10 +10,10 @@
 // here but are not reimplemented in this file.
 
 unsafe fn regmap_ram_write(
-    context: *mut core::ffi::c_void,
-    reg: core::ffi::c_uint,
-    val: core::ffi::c_uint,
-) -> core::ffi::c_int {
+    context: *mut kernel::ffi::c_void,
+    reg: kernel::ffi::c_uint,
+    val: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let data = context as *mut regmap_ram_data;
 
     unsafe {
@@ -25,10 +25,10 @@ unsafe fn regmap_ram_write(
 }
 
 unsafe fn regmap_ram_read(
-    context: *mut core::ffi::c_void,
-    reg: core::ffi::c_uint,
-    val: *mut core::ffi::c_uint,
-) -> core::ffi::c_int {
+    context: *mut kernel::ffi::c_void,
+    reg: kernel::ffi::c_uint,
+    val: *mut kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let data = context as *mut regmap_ram_data;
 
     unsafe {
@@ -39,7 +39,7 @@ unsafe fn regmap_ram_read(
     0
 }
 
-unsafe fn regmap_ram_free_context(context: *mut core::ffi::c_void) {
+unsafe fn regmap_ram_free_context(context: *mut kernel::ffi::c_void) {
     let data = context as *mut regmap_ram_data;
 
     unsafe {
@@ -62,7 +62,7 @@ pub unsafe fn __regmap_init_ram(
     config: *const regmap_config,
     data: *mut regmap_ram_data,
     lock_key: *mut lock_class_key,
-    lock_name: *const core::ffi::c_char,
+    lock_name: *const kernel::ffi::c_char,
 ) -> *mut regmap {
     let mut map: *mut regmap;
 

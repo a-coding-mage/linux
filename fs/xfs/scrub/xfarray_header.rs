@@ -41,21 +41,21 @@ pub struct xfarray {
 
 extern "C" {
     pub fn xfarray_create(
-        descr: *const core::ffi::c_char,
+        descr: *const kernel::ffi::c_char,
         required_capacity: u64,
         obj_size: usize,
         arrayp: *mut *mut xfarray,
     ) -> i32;
     pub fn xfarray_destroy(array: *mut xfarray);
-    pub fn xfarray_load(array: *mut xfarray, idx: xfarray_idx_t, ptr: *mut core::ffi::c_void) -> i32;
+    pub fn xfarray_load(array: *mut xfarray, idx: xfarray_idx_t, ptr: *mut kernel::ffi::c_void) -> i32;
     pub fn xfarray_unset(array: *mut xfarray, idx: xfarray_idx_t) -> i32;
-    pub fn xfarray_store(array: *mut xfarray, idx: xfarray_idx_t, ptr: *const core::ffi::c_void) -> i32;
-    pub fn xfarray_store_anywhere(array: *mut xfarray, ptr: *const core::ffi::c_void) -> i32;
-    pub fn xfarray_element_is_null(array: *mut xfarray, ptr: *const core::ffi::c_void) -> bool;
+    pub fn xfarray_store(array: *mut xfarray, idx: xfarray_idx_t, ptr: *const kernel::ffi::c_void) -> i32;
+    pub fn xfarray_store_anywhere(array: *mut xfarray, ptr: *const kernel::ffi::c_void) -> i32;
+    pub fn xfarray_element_is_null(array: *mut xfarray, ptr: *const kernel::ffi::c_void) -> bool;
     pub fn xfarray_truncate(array: *mut xfarray);
     pub fn xfarray_bytes(array: *mut xfarray) -> u64;
     pub fn xfarray_length(array: *mut xfarray) -> u64;
-    pub fn xfarray_load_next(array: *mut xfarray, idx: *mut xfarray_idx_t, rec: *mut core::ffi::c_void) -> i32;
+    pub fn xfarray_load_next(array: *mut xfarray, idx: *mut xfarray_idx_t, rec: *mut kernel::ffi::c_void) -> i32;
     pub fn xfarray_sort(array: *mut xfarray, cmp_fn: xfarray_cmp_fn, flags: u32) -> i32;
 }
 
@@ -63,7 +63,7 @@ extern "C" {
  * haven't stored to that array element yet.
  */
 #[inline]
-pub unsafe fn xfarray_load_sparse(array: *mut xfarray, idx: u64, rec: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn xfarray_load_sparse(array: *mut xfarray, idx: u64, rec: *mut kernel::ffi::c_void) -> i32 {
     let error = xfarray_load(array, idx, rec);
     if error == -ENODATA {
         core::ptr::write_bytes(rec, 0, (*array).obj_size);
@@ -74,13 +74,13 @@ pub unsafe fn xfarray_load_sparse(array: *mut xfarray, idx: u64, rec: *mut core:
 
 /* Append an element to the array. */
 #[inline]
-pub unsafe fn xfarray_append(array: *mut xfarray, ptr: *const core::ffi::c_void) -> i32 {
+pub unsafe fn xfarray_append(array: *mut xfarray, ptr: *const kernel::ffi::c_void) -> i32 {
     xfarray_store(array, (*array).nr, ptr)
 }
 
 /* Iterate the non-null elements in a sparse xfarray. */
 #[inline]
-pub unsafe fn xfarray_iter(array: *mut xfarray, idx: *mut xfarray_idx_t, rec: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn xfarray_iter(array: *mut xfarray, idx: *mut xfarray_idx_t, rec: *mut kernel::ffi::c_void) -> i32 {
     let ret = xfarray_load_next(array, idx, rec);
     if ret == -ENODATA { return 0; }
     if ret == 0 { return 1; }

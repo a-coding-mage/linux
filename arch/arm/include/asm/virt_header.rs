@@ -10,7 +10,7 @@
  * CPU.  The zImage loader stashes this value in an SPSR, so we need an
  * architecturally defined flag bit here.
  */
-pub const BOOT_CPU_MODE_MISMATCH: _ = PSR_N_BIT;
+pub const BOOT_CPU_MODE_MISMATCH: u32 = PSR_N_BIT;
 
 /* CONFIG_ARM_VIRT_EXT controls which boot-mode representation is used. */
 #[cfg(CONFIG_ARM_VIRT_EXT)]
@@ -30,7 +30,7 @@ pub unsafe fn sync_boot_mode() {
 }
 
 #[cfg(not(CONFIG_ARM_VIRT_EXT))]
-pub const __boot_cpu_mode: _ = SVC_MODE;
+pub const __boot_cpu_mode: u32 = SVC_MODE;
 
 #[cfg(not(CONFIG_ARM_VIRT_EXT))]
 #[inline]

@@ -10,7 +10,7 @@
  * Copyright (c) 2006 MontaVista Software, Inc.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Declarations supplied by the Linux PowerPC and platform dependencies.
 #[repr(C)]

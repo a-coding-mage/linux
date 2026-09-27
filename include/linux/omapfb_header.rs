@@ -13,8 +13,8 @@
 
 #[repr(C)]
 pub struct omap_lcd_config {
-    pub panel_name: [core::ffi::c_char; 16],
-    pub ctrl_name: [core::ffi::c_char; 16],
+    pub panel_name: [kernel::ffi::c_char; 16],
+    pub ctrl_name: [kernel::ffi::c_char; 16],
     pub nreset_gpio: i16,
     pub data_lines: u8,
 }

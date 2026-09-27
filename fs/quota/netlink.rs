@@ -42,7 +42,7 @@ pub unsafe extern "C" fn quota_send_warning(qid: kqid, dev: dev_t, warntype: i8)
      * fs to free some data could cause deadlocks. */
     skb = genlmsg_new(msg_size, GFP_NOFS);
     if skb.is_null() {
-        printk(KERN_ERR, b"VFS: Not enough memory to send quota warning.\n\0".as_ptr());
+        printk(c"\x013VFS: Not enough memory to send quota warning.\n".as_ptr());
         return;
     }
     msg_head = genlmsg_put(
@@ -54,7 +54,7 @@ pub unsafe extern "C" fn quota_send_warning(qid: kqid, dev: dev_t, warntype: i8)
         QUOTA_NL_C_WARNING,
     );
     if msg_head.is_null() {
-        printk(KERN_ERR, b"VFS: Cannot store netlink header in quota warning.\n\0".as_ptr());
+        printk(c"\x013VFS: Cannot store netlink header in quota warning.\n".as_ptr());
         goto err_out;
     }
     ret = nla_put_u32(skb, QUOTA_NL_A_QTYPE, qid.type_);
@@ -84,7 +84,7 @@ pub unsafe extern "C" fn quota_send_warning(qid: kqid, dev: dev_t, warntype: i8)
     genlmsg_multicast(&quota_genl_family, skb, 0, 0, GFP_NOFS);
     return;
 attr_err_out:
-    printk(KERN_ERR, b"VFS: Not enough space to compose quota message!\n\0".as_ptr());
+    printk(c"\x013VFS: Not enough space to compose quota message!\n".as_ptr());
 err_out:
     kfree_skb(skb);
 }
@@ -94,7 +94,7 @@ static quota_send_warning_export: unsafe extern "C" fn(kqid, dev_t, i8) = quota_
 
 unsafe extern "C" fn quota_init() -> i32 {
     if genl_register_family(&mut quota_genl_family) != 0 {
-        printk(KERN_ERR, b"VFS: Failed to create quota netlink interface.\n\0".as_ptr());
+        printk(c"\x013VFS: Failed to create quota netlink interface.\n".as_ptr());
     }
     0
 }

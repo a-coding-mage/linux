@@ -16,7 +16,7 @@
 /* Local prototypes */
 unsafe fn acpi_rs_match_vendor_resource(
     resource: *mut acpi_resource,
-    context: *mut core::ffi::c_void,
+    context: *mut kernel::ffi::c_void,
 ) -> acpi_status;
 
 unsafe fn acpi_rs_validate_parameters(
@@ -159,32 +159,32 @@ pub unsafe fn acpi_resource_to_address64(
 
 pub unsafe fn acpi_get_vendor_resource(
     device_handle: acpi_handle,
-    name: *mut core::ffi::c_char,
+    name: *mut kernel::ffi::c_char,
     uuid: *mut acpi_vendor_uuid,
     ret_buffer: *mut acpi_buffer,
 ) -> acpi_status {
     if uuid.is_null() || ret_buffer.is_null() { return AE_BAD_PARAMETER; }
     let mut info = acpi_vendor_walk_info { uuid, buffer: ret_buffer, status: AE_NOT_EXIST };
-    let status = acpi_walk_resources(device_handle, name, Some(acpi_rs_match_vendor_resource), &mut info as *mut _ as *mut core::ffi::c_void);
+    let status = acpi_walk_resources(device_handle, name, Some(acpi_rs_match_vendor_resource), &mut info as *mut _ as *mut kernel::ffi::c_void);
     if ACPI_FAILURE(status) { return status; }
     info.status
 }
 
-unsafe fn acpi_rs_match_vendor_resource(resource: *mut acpi_resource, context: *mut core::ffi::c_void) -> acpi_status {
+unsafe fn acpi_rs_match_vendor_resource(resource: *mut acpi_resource, context: *mut kernel::ffi::c_void) -> acpi_status {
     if (*resource).type_ != ACPI_RESOURCE_TYPE_VENDOR { return AE_OK; }
     let info = &mut *(context as *mut acpi_vendor_walk_info);
     let vendor = &(*resource).data.vendor_typed;
     if vendor.byte_length < ACPI_UUID_LENGTH + 1 || vendor.uuid_subtype != (*info.uuid).subtype ||
-        libc::memcmp(vendor.uuid.as_ptr() as *const _, (*info.uuid).data.as_ptr() as *const _, ACPI_UUID_LENGTH) != 0 { return AE_OK; }
+        memcmp(vendor.uuid.as_ptr() as *const _, (*info.uuid).data.as_ptr() as *const _, ACPI_UUID_LENGTH) != 0 { return AE_OK; }
     let status = acpi_ut_initialize_buffer(info.buffer, (*resource).length);
     if ACPI_FAILURE(status) { return status; }
-    libc::memcpy((*info.buffer).pointer, resource as *const _, (*resource).length);
+    memcpy((*info.buffer).pointer, resource as *const _, (*resource).length);
     (*info.buffer).length = (*resource).length;
     info.status = AE_OK;
     AE_CTRL_TERMINATE
 }
 
-pub unsafe fn acpi_walk_resource_buffer(buffer: *mut acpi_buffer, user_function: acpi_walk_resource_callback, context: *mut core::ffi::c_void) -> acpi_status {
+pub unsafe fn acpi_walk_resource_buffer(buffer: *mut acpi_buffer, user_function: acpi_walk_resource_callback, context: *mut kernel::ffi::c_void) -> acpi_status {
     if buffer.is_null() || (*buffer).pointer.is_null() || user_function.is_none() { return AE_BAD_PARAMETER; }
     let mut resource = (*buffer).pointer as *mut acpi_resource;
     let resource_end = (*buffer).pointer.add((*buffer).length) as *mut acpi_resource;
@@ -203,7 +203,7 @@ pub unsafe fn acpi_walk_resource_buffer(buffer: *mut acpi_buffer, user_function:
     status
 }
 
-pub unsafe fn acpi_walk_resources(device_handle: acpi_handle, name: *mut core::ffi::c_char, user_function: acpi_walk_resource_callback, context: *mut core::ffi::c_void) -> acpi_status {
+pub unsafe fn acpi_walk_resources(device_handle: acpi_handle, name: *mut kernel::ffi::c_char, user_function: acpi_walk_resource_callback, context: *mut kernel::ffi::c_void) -> acpi_status {
     if device_handle.is_null() || user_function.is_none() || name.is_null() ||
         (!ACPI_COMPARE_NAMESEG(name, METHOD_NAME__CRS) && !ACPI_COMPARE_NAMESEG(name, METHOD_NAME__PRS) && !ACPI_COMPARE_NAMESEG(name, METHOD_NAME__AEI) && !ACPI_COMPARE_NAMESEG(name, METHOD_NAME__DMA)) { return AE_BAD_PARAMETER; }
     let mut buffer = acpi_buffer { length: ACPI_ALLOCATE_LOCAL_BUFFER, pointer: core::ptr::null_mut() };

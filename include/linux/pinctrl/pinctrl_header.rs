@@ -28,8 +28,8 @@ pub struct pinmux_ops;
 
 #[repr(C)]
 pub struct pingroup {
-    pub name: *const ::core::ffi::c_char,
-    pub pins: *const ::core::ffi::c_uint,
+    pub name: *const ::kernel::ffi::c_char,
+    pub pins: *const ::kernel::ffi::c_uint,
     pub npins: usize,
 }
 
@@ -42,9 +42,9 @@ macro_rules! PINCTRL_PINGROUP {
 
 #[repr(C)]
 pub struct pinctrl_pin_desc {
-    pub number: ::core::ffi::c_uint,
-    pub name: *const ::core::ffi::c_char,
-    pub drv_data: *mut ::core::ffi::c_void,
+    pub number: ::kernel::ffi::c_uint,
+    pub name: *const ::kernel::ffi::c_char,
+    pub drv_data: *mut ::kernel::ffi::c_void,
 }
 
 #[macro_export]
@@ -65,37 +65,37 @@ macro_rules! PINCTRL_PIN_ANON {
 pub struct pinctrl_gpio_range {
     // Supplied by the Linux list implementation.
     pub node: crate::list_head,
-    pub name: *const ::core::ffi::c_char,
-    pub id: ::core::ffi::c_uint,
-    pub base: ::core::ffi::c_uint,
-    pub pin_base: ::core::ffi::c_uint,
-    pub npins: ::core::ffi::c_uint,
-    pub pins: *const ::core::ffi::c_uint,
+    pub name: *const ::kernel::ffi::c_char,
+    pub id: ::kernel::ffi::c_uint,
+    pub base: ::kernel::ffi::c_uint,
+    pub pin_base: ::kernel::ffi::c_uint,
+    pub npins: ::kernel::ffi::c_uint,
+    pub pins: *const ::kernel::ffi::c_uint,
     pub gc: *mut gpio_chip,
 }
 
 #[repr(C)]
 pub struct pinctrl_ops {
-    pub get_groups_count: Option<unsafe extern "C" fn(*mut pinctrl_dev) -> ::core::ffi::c_int>,
-    pub get_group_name: Option<unsafe extern "C" fn(*mut pinctrl_dev, ::core::ffi::c_uint) -> *const ::core::ffi::c_char>,
-    pub get_group_pins: Option<unsafe extern "C" fn(*mut pinctrl_dev, ::core::ffi::c_uint, *mut *const ::core::ffi::c_uint, *mut ::core::ffi::c_uint) -> ::core::ffi::c_int>,
-    pub pin_dbg_show: Option<unsafe extern "C" fn(*mut pinctrl_dev, *mut seq_file, ::core::ffi::c_uint)>,
-    pub dt_node_to_map: Option<unsafe extern "C" fn(*mut pinctrl_dev, *mut device_node, *mut *mut pinctrl_map, *mut ::core::ffi::c_uint) -> ::core::ffi::c_int>,
-    pub dt_free_map: Option<unsafe extern "C" fn(*mut pinctrl_dev, *mut pinctrl_map, ::core::ffi::c_uint)>,
+    pub get_groups_count: Option<unsafe extern "C" fn(*mut pinctrl_dev) -> ::kernel::ffi::c_int>,
+    pub get_group_name: Option<unsafe extern "C" fn(*mut pinctrl_dev, ::kernel::ffi::c_uint) -> *const ::kernel::ffi::c_char>,
+    pub get_group_pins: Option<unsafe extern "C" fn(*mut pinctrl_dev, ::kernel::ffi::c_uint, *mut *const ::kernel::ffi::c_uint, *mut ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>,
+    pub pin_dbg_show: Option<unsafe extern "C" fn(*mut pinctrl_dev, *mut seq_file, ::kernel::ffi::c_uint)>,
+    pub dt_node_to_map: Option<unsafe extern "C" fn(*mut pinctrl_dev, *mut device_node, *mut *mut pinctrl_map, *mut ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>,
+    pub dt_free_map: Option<unsafe extern "C" fn(*mut pinctrl_dev, *mut pinctrl_map, ::kernel::ffi::c_uint)>,
 }
 
 #[repr(C)]
 pub struct pinctrl_desc {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub pins: *const pinctrl_pin_desc,
-    pub npins: ::core::ffi::c_uint,
+    pub npins: ::kernel::ffi::c_uint,
     pub pctlops: *const pinctrl_ops,
     pub pmxops: *const pinmux_ops,
     pub confops: *const pinconf_ops,
     pub owner: *mut module,
     // Present only when CONFIG_GENERIC_PINCONF is enabled.
     #[cfg(CONFIG_GENERIC_PINCONF)]
-    pub num_custom_params: ::core::ffi::c_uint,
+    pub num_custom_params: ::kernel::ffi::c_uint,
     #[cfg(CONFIG_GENERIC_PINCONF)]
     pub custom_params: *const pinconf_generic_params,
     #[cfg(CONFIG_GENERIC_PINCONF)]
@@ -104,28 +104,28 @@ pub struct pinctrl_desc {
 }
 
 extern "C" {
-    pub fn pinctrl_register_and_init(desc: *const pinctrl_desc, dev: *mut device, driver_data: *mut ::core::ffi::c_void, pctldev: *mut *mut pinctrl_dev) -> ::core::ffi::c_int;
-    pub fn pinctrl_enable(pctldev: *mut pinctrl_dev) -> ::core::ffi::c_int;
-    pub fn pinctrl_register(desc: *const pinctrl_desc, dev: *mut device, driver_data: *mut ::core::ffi::c_void) -> *mut pinctrl_dev;
+    pub fn pinctrl_register_and_init(desc: *const pinctrl_desc, dev: *mut device, driver_data: *mut ::kernel::ffi::c_void, pctldev: *mut *mut pinctrl_dev) -> ::kernel::ffi::c_int;
+    pub fn pinctrl_enable(pctldev: *mut pinctrl_dev) -> ::kernel::ffi::c_int;
+    pub fn pinctrl_register(desc: *const pinctrl_desc, dev: *mut device, driver_data: *mut ::kernel::ffi::c_void) -> *mut pinctrl_dev;
     pub fn pinctrl_unregister(pctldev: *mut pinctrl_dev);
-    pub fn devm_pinctrl_register_and_init(dev: *mut device, desc: *const pinctrl_desc, driver_data: *mut ::core::ffi::c_void, pctldev: *mut *mut pinctrl_dev) -> ::core::ffi::c_int;
-    pub fn devm_pinctrl_register(dev: *mut device, desc: *const pinctrl_desc, driver_data: *mut ::core::ffi::c_void) -> *mut pinctrl_dev;
+    pub fn devm_pinctrl_register_and_init(dev: *mut device, desc: *const pinctrl_desc, driver_data: *mut ::kernel::ffi::c_void, pctldev: *mut *mut pinctrl_dev) -> ::kernel::ffi::c_int;
+    pub fn devm_pinctrl_register(dev: *mut device, desc: *const pinctrl_desc, driver_data: *mut ::kernel::ffi::c_void) -> *mut pinctrl_dev;
     pub fn pinctrl_add_gpio_range(pctldev: *mut pinctrl_dev, range: *mut pinctrl_gpio_range);
-    pub fn pinctrl_add_gpio_ranges(pctldev: *mut pinctrl_dev, ranges: *mut pinctrl_gpio_range, nranges: ::core::ffi::c_uint);
+    pub fn pinctrl_add_gpio_ranges(pctldev: *mut pinctrl_dev, ranges: *mut pinctrl_gpio_range, nranges: ::kernel::ffi::c_uint);
     pub fn pinctrl_remove_gpio_range(pctldev: *mut pinctrl_dev, range: *mut pinctrl_gpio_range);
-    pub fn pinctrl_find_and_add_gpio_range(devname: *const ::core::ffi::c_char, range: *mut pinctrl_gpio_range) -> *mut pinctrl_dev;
-    pub fn pinctrl_find_gpio_range_from_pin(pctldev: *mut pinctrl_dev, pin: ::core::ffi::c_uint) -> *mut pinctrl_gpio_range;
-    pub fn pinctrl_get_group_pins(pctldev: *mut pinctrl_dev, pin_group: *const ::core::ffi::c_char, pins: *mut *const ::core::ffi::c_uint, num_pins: *mut ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    pub fn pinctrl_find_and_add_gpio_range(devname: *const ::kernel::ffi::c_char, range: *mut pinctrl_gpio_range) -> *mut pinctrl_dev;
+    pub fn pinctrl_find_gpio_range_from_pin(pctldev: *mut pinctrl_dev, pin: ::kernel::ffi::c_uint) -> *mut pinctrl_gpio_range;
+    pub fn pinctrl_get_group_pins(pctldev: *mut pinctrl_dev, pin_group: *const ::kernel::ffi::c_char, pins: *mut *const ::kernel::ffi::c_uint, num_pins: *mut ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
 }
 
-pub const PINFUNCTION_FLAG_GPIO: ::core::ffi::c_ulong = 1 << 0;
+pub const PINFUNCTION_FLAG_GPIO: ::kernel::ffi::c_ulong = 1 << 0;
 
 #[repr(C)]
 pub struct pinfunction {
-    pub name: *const ::core::ffi::c_char,
-    pub groups: *const *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
+    pub groups: *const *const ::kernel::ffi::c_char,
     pub ngroups: usize,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
 }
 
 #[macro_export]
@@ -155,9 +155,9 @@ pub unsafe fn of_pinctrl_get(_np: *mut device_node) -> *mut pinctrl_dev {
 }
 
 extern "C" {
-    pub fn pinctrl_dev_get_name(pctldev: *mut pinctrl_dev) -> *const ::core::ffi::c_char;
-    pub fn pinctrl_dev_get_devname(pctldev: *mut pinctrl_dev) -> *const ::core::ffi::c_char;
-    pub fn pinctrl_dev_get_drvdata(pctldev: *mut pinctrl_dev) -> *mut ::core::ffi::c_void;
+    pub fn pinctrl_dev_get_name(pctldev: *mut pinctrl_dev) -> *const ::kernel::ffi::c_char;
+    pub fn pinctrl_dev_get_devname(pctldev: *mut pinctrl_dev) -> *const ::kernel::ffi::c_char;
+    pub fn pinctrl_dev_get_drvdata(pctldev: *mut pinctrl_dev) -> *mut ::kernel::ffi::c_void;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

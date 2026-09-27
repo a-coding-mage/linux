@@ -15,7 +15,7 @@ pub const BCM963XX_NVRAM_OFFSET: usize = 0x580;
  * as external types here and are expected to be provided by the translation
  * unit that includes this declaration.
  */
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 /*
  * board definition

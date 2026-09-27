@@ -7,7 +7,7 @@
 // Dependencies supplied by the corresponding Linux/RDMA headers:
 // linux/in.h and rdma/ib_cm.h
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub struct iw_cm_id;
 
@@ -24,7 +24,7 @@ pub enum iw_cm_event_type {
 #[repr(C)]
 pub struct iw_cm_event {
     pub event: iw_cm_event_type,
-    pub status: core::ffi::c_int,
+    pub status: kernel::ffi::c_int,
     pub local_addr: sockaddr_storage,
     pub remote_addr: sockaddr_storage,
     pub private_data: *mut c_void,
@@ -38,13 +38,13 @@ pub struct iw_cm_event {
 pub type iw_cm_handler = unsafe extern "C" fn(
     cm_id: *mut iw_cm_id,
     event: *mut iw_cm_event,
-) -> core::ffi::c_int;
+) -> kernel::ffi::c_int;
 
 /// Function called by the provider when delivering provider events to the IW CM.
 pub type iw_event_handler = unsafe extern "C" fn(
     cm_id: *mut iw_cm_id,
     event: *mut iw_cm_event,
-) -> core::ffi::c_int;
+) -> kernel::ffi::c_int;
 
 #[repr(C)]
 pub struct iw_cm_id {
@@ -96,21 +96,21 @@ extern "C" {
         context: *mut c_void,
     ) -> *mut iw_cm_id;
     pub fn iw_destroy_cm_id(cm_id: *mut iw_cm_id);
-    pub fn iw_cm_listen(cm_id: *mut iw_cm_id, backlog: core::ffi::c_int) -> core::ffi::c_int;
-    pub fn iw_cm_accept(cm_id: *mut iw_cm_id, iw_param: *mut iw_cm_conn_param) -> core::ffi::c_int;
+    pub fn iw_cm_listen(cm_id: *mut iw_cm_id, backlog: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub fn iw_cm_accept(cm_id: *mut iw_cm_id, iw_param: *mut iw_cm_conn_param) -> kernel::ffi::c_int;
     pub fn iw_cm_reject(
         cm_id: *mut iw_cm_id,
         private_data: *const c_void,
         private_data_len: u8,
-    ) -> core::ffi::c_int;
-    pub fn iw_cm_connect(cm_id: *mut iw_cm_id, iw_param: *mut iw_cm_conn_param) -> core::ffi::c_int;
-    pub fn iw_cm_disconnect(cm_id: *mut iw_cm_id, abrupt: core::ffi::c_int) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
+    pub fn iw_cm_connect(cm_id: *mut iw_cm_id, iw_param: *mut iw_cm_conn_param) -> kernel::ffi::c_int;
+    pub fn iw_cm_disconnect(cm_id: *mut iw_cm_id, abrupt: kernel::ffi::c_int) -> kernel::ffi::c_int;
     pub fn iw_cm_init_qp_attr(
         cm_id: *mut iw_cm_id,
         qp_attr: *mut ib_qp_attr,
-        qp_attr_mask: *mut core::ffi::c_int,
-    ) -> core::ffi::c_int;
-    pub fn iwcm_reject_msg(reason: core::ffi::c_int) -> *const core::ffi::c_char;
+        qp_attr_mask: *mut kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
+    pub fn iwcm_reject_msg(reason: kernel::ffi::c_int) -> *const kernel::ffi::c_char;
 }
 
 

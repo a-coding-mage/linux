@@ -18,11 +18,11 @@ pub struct err_log_info {
 
 #[repr(C)]
 pub struct nvram_os_partition {
-    pub name: *const ::core::ffi::c_char,
-    pub req_size: ::core::ffi::c_int, // desired size, in bytes
-    pub min_size: ::core::ffi::c_int, // minimum acceptable size (0 means req_size)
-    pub size: ::core::ffi::c_long, // size of data portion (excluding err_log_info)
-    pub index: ::core::ffi::c_long, // offset of data portion of partition
+    pub name: *const ::kernel::ffi::c_char,
+    pub req_size: ::kernel::ffi::c_int, // desired size, in bytes
+    pub min_size: ::kernel::ffi::c_int, // minimum acceptable size (0 means req_size)
+    pub size: ::kernel::ffi::c_long, // size of data portion (excluding err_log_info)
+    pub index: ::kernel::ffi::c_long, // offset of data portion of partition
     pub os_partition: bool, // partition initialized by OS, not FW
 }
 
@@ -40,82 +40,82 @@ extern "C" {
     pub static mut rtas_log_partition: nvram_os_partition;
 
     pub fn nvram_write_error_log(
-        buff: *mut ::core::ffi::c_char,
-        length: ::core::ffi::c_int,
-        err_type: ::core::ffi::c_uint,
-        err_seq: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        buff: *mut ::kernel::ffi::c_char,
+        length: ::kernel::ffi::c_int,
+        err_type: ::kernel::ffi::c_uint,
+        err_seq: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
     pub fn nvram_read_error_log(
-        buff: *mut ::core::ffi::c_char,
-        length: ::core::ffi::c_int,
-        err_type: *mut ::core::ffi::c_uint,
-        err_seq: *mut ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
-    pub fn nvram_clear_error_log() -> ::core::ffi::c_int;
-    pub fn pSeries_nvram_init() -> ::core::ffi::c_int;
+        buff: *mut ::kernel::ffi::c_char,
+        length: ::kernel::ffi::c_int,
+        err_type: *mut ::kernel::ffi::c_uint,
+        err_seq: *mut ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
+    pub fn nvram_clear_error_log() -> ::kernel::ffi::c_int;
+    pub fn pSeries_nvram_init() -> ::kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_MMIO_NVRAM)]
 extern "C" {
-    pub fn mmio_nvram_init() -> ::core::ffi::c_int;
+    pub fn mmio_nvram_init() -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_MMIO_NVRAM))]
 #[inline]
-pub unsafe fn mmio_nvram_init() -> ::core::ffi::c_int {
+pub unsafe fn mmio_nvram_init() -> ::kernel::ffi::c_int {
     -ENODEV
 }
 
 extern "C" {
-    pub fn nvram_scan_partitions() -> ::core::ffi::c_int;
+    pub fn nvram_scan_partitions() -> ::kernel::ffi::c_int;
     pub fn nvram_create_partition(
-        name: *const ::core::ffi::c_char,
-        sig: ::core::ffi::c_int,
-        req_size: ::core::ffi::c_int,
-        min_size: ::core::ffi::c_int,
+        name: *const ::kernel::ffi::c_char,
+        sig: ::kernel::ffi::c_int,
+        req_size: ::kernel::ffi::c_int,
+        min_size: ::kernel::ffi::c_int,
     ) -> loff_t;
     pub fn nvram_remove_partition(
-        name: *const ::core::ffi::c_char,
-        sig: ::core::ffi::c_int,
-        exceptions: *const *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
-    pub fn nvram_get_partition_size(data_index: loff_t) -> ::core::ffi::c_int;
+        name: *const ::kernel::ffi::c_char,
+        sig: ::kernel::ffi::c_int,
+        exceptions: *const *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
+    pub fn nvram_get_partition_size(data_index: loff_t) -> ::kernel::ffi::c_int;
     pub fn nvram_find_partition(
-        name: *const ::core::ffi::c_char,
-        sig: ::core::ffi::c_int,
-        out_size: *mut ::core::ffi::c_int,
+        name: *const ::kernel::ffi::c_char,
+        sig: ::kernel::ffi::c_int,
+        out_size: *mut ::kernel::ffi::c_int,
     ) -> loff_t;
 
     /* Return partition offset in nvram */
-    pub fn pmac_get_partition(partition: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn pmac_get_partition(partition: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
 
     /* Direct access to XPRAM on PowerMacs */
-    pub fn pmac_xpram_read(xpaddr: ::core::ffi::c_int) -> u8;
-    pub fn pmac_xpram_write(xpaddr: ::core::ffi::c_int, data: u8);
+    pub fn pmac_xpram_read(xpaddr: ::kernel::ffi::c_int) -> u8;
+    pub fn pmac_xpram_write(xpaddr: ::kernel::ffi::c_int, data: u8);
 
     /* Initialize NVRAM OS partition */
-    pub fn nvram_init_os_partition(part: *mut nvram_os_partition) -> ::core::ffi::c_int;
+    pub fn nvram_init_os_partition(part: *mut nvram_os_partition) -> ::kernel::ffi::c_int;
 
     /* Initialize NVRAM oops partition */
-    pub fn nvram_init_oops_partition(rtas_partition_exists: ::core::ffi::c_int);
+    pub fn nvram_init_oops_partition(rtas_partition_exists: ::kernel::ffi::c_int);
 
     /* Read a NVRAM partition */
     pub fn nvram_read_partition(
         part: *mut nvram_os_partition,
-        buff: *mut ::core::ffi::c_char,
-        length: ::core::ffi::c_int,
-        err_type: *mut ::core::ffi::c_uint,
-        error_log_cnt: *mut ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        buff: *mut ::kernel::ffi::c_char,
+        length: ::kernel::ffi::c_int,
+        err_type: *mut ::kernel::ffi::c_uint,
+        error_log_cnt: *mut ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 
     /* Write to NVRAM OS partition */
     pub fn nvram_write_os_partition(
         part: *mut nvram_os_partition,
-        buff: *mut ::core::ffi::c_char,
-        length: ::core::ffi::c_int,
-        err_type: ::core::ffi::c_uint,
-        error_log_cnt: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        buff: *mut ::kernel::ffi::c_char,
+        length: ::kernel::ffi::c_int,
+        err_type: ::kernel::ffi::c_uint,
+        error_log_cnt: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

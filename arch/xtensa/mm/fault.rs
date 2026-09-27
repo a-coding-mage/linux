@@ -142,7 +142,7 @@ pub unsafe fn do_page_fault(regs: *mut pt_regs) {
         if fault & VM_FAULT_ERROR != 0 {
             if fault & VM_FAULT_OOM != 0 { mmap_read_unlock(mm); if !user_mode(regs) { bad_page_fault(regs, address as u64, SIGKILL); } else { pagefault_out_of_memory(); } return; }
             if fault & VM_FAULT_SIGSEGV != 0 { break; }
-            if fault & VM_FAULT_SIGBUS != 0 { mmap_read_unlock(mm); force_sig_fault(SIGBUS, BUS_ADRERR, address as *mut core::ffi::c_void); if !user_mode(regs) { bad_page_fault(regs, address as u64, SIGBUS); } return; }
+            if fault & VM_FAULT_SIGBUS != 0 { mmap_read_unlock(mm); force_sig_fault(SIGBUS, BUS_ADRERR, address as *mut kernel::ffi::c_void); if !user_mode(regs) { bad_page_fault(regs, address as u64, SIGBUS); } return; }
             BUG!();
         }
         if fault & VM_FAULT_RETRY != 0 { flags |= FAULT_FLAG_TRIED; continue; }
@@ -151,12 +151,12 @@ pub unsafe fn do_page_fault(regs: *mut pt_regs) {
     }
 
     mmap_read_unlock(mm);
-    if user_mode(regs) { force_sig_fault(SIGSEGV, code, address as *mut core::ffi::c_void); return; }
+    if user_mode(regs) { force_sig_fault(SIGSEGV, code, address as *mut kernel::ffi::c_void); return; }
     bad_page_fault(regs, address as u64, SIGSEGV);
 }
 
 pub unsafe fn bad_page_fault(regs: *mut pt_regs, address: u64, sig: i32) {
-    extern "C" { fn die(msg: *const core::ffi::c_char, regs: *mut pt_regs, sig: i64) -> !; }
+    extern "C" { fn die(msg: *const kernel::ffi::c_char, regs: *mut pt_regs, sig: i64) -> !; }
     let entry = search_exception_tables((*regs).pc);
     if !entry.is_null() {
         pr_debug!("%s: Exception at pc=%#010lx (%lx)\\n", (*current).comm, (*regs).pc, (*entry).fixup);
@@ -164,7 +164,7 @@ pub unsafe fn bad_page_fault(regs: *mut pt_regs, address: u64, sig: i32) {
         return;
     }
     pr_alert!("Unable to handle kernel paging request at virtual address %08lx\\n pc = %08lx, ra = %08lx\\n", address, (*regs).pc, (*regs).areg[0]);
-    die(b"Oops\\0".as_ptr() as *const core::ffi::c_char, regs, sig as i64);
+    die(b"Oops\\0".as_ptr() as *const kernel::ffi::c_char, regs, sig as i64);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

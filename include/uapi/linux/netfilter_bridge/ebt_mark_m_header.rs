@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 
 // Translated from <linux/types.h>; `c_ulong` preserves C `unsigned long` ABI width.
-use ::core::ffi::c_ulong;
+use ::kernel::ffi::c_ulong;
 
 pub const EBT_MARK_AND: u32 = 0x01;
 pub const EBT_MARK_OR: u32 = 0x02;

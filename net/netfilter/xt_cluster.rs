@@ -30,19 +30,19 @@ unsafe extern "C" {
 #[repr(C)] pub struct nf_conntrack_man_proto { pub u3: nf_conntrack_address }
 #[repr(C)] pub union nf_conntrack_address { pub ip: u32, pub ip6: [u32; 4] }
 #[repr(C)] pub struct sk_buff { pub pkt_type: u8 }
-#[repr(C)] pub struct xt_action_param { pub matchinfo: *const core::ffi::c_void }
-#[repr(C)] pub struct xt_mtchk_param { pub matchinfo: *mut core::ffi::c_void, pub net: *mut net, pub family: u8 }
+#[repr(C)] pub struct xt_action_param { pub matchinfo: *const kernel::ffi::c_void }
+#[repr(C)] pub struct xt_mtchk_param { pub matchinfo: *mut kernel::ffi::c_void, pub net: *mut net, pub family: u8 }
 #[repr(C)] pub struct xt_mtdtor_param { pub net: *mut net, pub family: u8 }
 #[repr(C)] pub struct xt_cluster_match_info { pub hash_seed: u32, pub total_nodes: u32, pub node_mask: u64, pub flags: u32 }
 #[repr(C)] pub struct net;
 #[repr(C)] pub struct in6_addr { pub s6_addr32: [u32; 4] }
 #[repr(C)] pub struct xt_match {
-    pub name: *const core::ffi::c_char, pub family: u8,
+    pub name: *const kernel::ffi::c_char, pub family: u8,
     pub match_: Option<unsafe extern "C" fn(*const sk_buff, *mut xt_action_param) -> bool>,
     pub checkentry: Option<unsafe extern "C" fn(*const xt_mtchk_param) -> i32>,
     pub matchsize: usize,
     pub destroy: Option<unsafe extern "C" fn(*const xt_mtdtor_param)>,
-    pub me: *mut core::ffi::c_void,
+    pub me: *mut kernel::ffi::c_void,
 }
 pub type ip_conntrack_info = i32;
 
@@ -75,7 +75,7 @@ unsafe fn xt_cluster_hash_ipv4(ip: u32, info: *const xt_cluster_match_info) -> u
 }
 
 #[inline]
-unsafe fn xt_cluster_hash_ipv6(ip: *const core::ffi::c_void, info: *const xt_cluster_match_info) -> u32 {
+unsafe fn xt_cluster_hash_ipv6(ip: *const kernel::ffi::c_void, info: *const xt_cluster_match_info) -> u32 {
     unsafe { jhash2(ip as *const u32, (NF_CT_TUPLE_L3SIZE / core::mem::size_of::<u32>()) as u32, (*info).hash_seed) }
 }
 

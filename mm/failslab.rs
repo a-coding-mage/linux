@@ -55,7 +55,7 @@ pub unsafe fn should_failslab(s: *mut kmem_cache, gfpflags: gfp_t) -> i32 {
 
 // ALLOW_ERROR_INJECTION(should_failslab, ERRNO)
 
-unsafe fn setup_failslab(str_: *mut core::ffi::c_char) -> i32 {
+unsafe fn setup_failslab(str_: *mut kernel::ffi::c_char) -> i32 {
     setup_fault_attr(&mut failslab.attr, str_)
 }
 

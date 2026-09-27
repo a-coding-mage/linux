@@ -28,8 +28,8 @@
 
 #[repr(C)]
 pub struct user_m68kfp_struct {
-    pub fpregs: [core::ffi::c_ulong; 8 * 3], // fp0-fp7 registers
-    pub fpcntl: [core::ffi::c_ulong; 3],     // fp control regs
+    pub fpregs: [kernel::ffi::c_ulong; 8 * 3], // fp0-fp7 registers
+    pub fpcntl: [kernel::ffi::c_ulong; 3],     // fp control regs
 }
 
 // This is the old layout of "struct pt_regs" as of Linux 1.x, and
@@ -37,28 +37,28 @@ pub struct user_m68kfp_struct {
 // all registers).
 #[repr(C)]
 pub struct user_regs_struct {
-    pub d1: core::ffi::c_long,
-    pub d2: core::ffi::c_long,
-    pub d3: core::ffi::c_long,
-    pub d4: core::ffi::c_long,
-    pub d5: core::ffi::c_long,
-    pub d6: core::ffi::c_long,
-    pub d7: core::ffi::c_long,
-    pub a0: core::ffi::c_long,
-    pub a1: core::ffi::c_long,
-    pub a2: core::ffi::c_long,
-    pub a3: core::ffi::c_long,
-    pub a4: core::ffi::c_long,
-    pub a5: core::ffi::c_long,
-    pub a6: core::ffi::c_long,
-    pub d0: core::ffi::c_long,
-    pub usp: core::ffi::c_long,
-    pub orig_d0: core::ffi::c_long,
-    pub stkadj: core::ffi::c_short,
-    pub sr: core::ffi::c_short,
-    pub pc: core::ffi::c_long,
-    pub fmtvec: core::ffi::c_short,
-    pub __fill: core::ffi::c_short,
+    pub d1: kernel::ffi::c_long,
+    pub d2: kernel::ffi::c_long,
+    pub d3: kernel::ffi::c_long,
+    pub d4: kernel::ffi::c_long,
+    pub d5: kernel::ffi::c_long,
+    pub d6: kernel::ffi::c_long,
+    pub d7: kernel::ffi::c_long,
+    pub a0: kernel::ffi::c_long,
+    pub a1: kernel::ffi::c_long,
+    pub a2: kernel::ffi::c_long,
+    pub a3: kernel::ffi::c_long,
+    pub a4: kernel::ffi::c_long,
+    pub a5: kernel::ffi::c_long,
+    pub a6: kernel::ffi::c_long,
+    pub d0: kernel::ffi::c_long,
+    pub usp: kernel::ffi::c_long,
+    pub orig_d0: kernel::ffi::c_long,
+    pub stkadj: kernel::ffi::c_short,
+    pub sr: kernel::ffi::c_short,
+    pub pc: kernel::ffi::c_long,
+    pub fmtvec: kernel::ffi::c_short,
+    pub __fill: kernel::ffi::c_short,
 }
 
 // When the kernel dumps core, it starts by dumping the user struct -
@@ -70,25 +70,25 @@ pub struct user {
     // from the ptrace(3,...) function.
     pub regs: user_regs_struct, // Where the registers are actually stored
     // ptrace does not yet supply these.  Someday....
-    pub u_fpvalid: core::ffi::c_int, // True if math co-processor being used.
+    pub u_fpvalid: kernel::ffi::c_int, // True if math co-processor being used.
     // for this mess. Not yet used.
     pub m68kfp: user_m68kfp_struct, // Math Co-processor registers.
     // The rest of this junk is to help gdb figure out what goes where
-    pub u_tsize: core::ffi::c_ulong, // Text segment size (pages).
-    pub u_dsize: core::ffi::c_ulong, // Data segment size (pages).
-    pub u_ssize: core::ffi::c_ulong, // Stack segment size (pages).
-    pub start_code: core::ffi::c_ulong, // Starting virtual address of text.
+    pub u_tsize: kernel::ffi::c_ulong, // Text segment size (pages).
+    pub u_dsize: kernel::ffi::c_ulong, // Data segment size (pages).
+    pub u_ssize: kernel::ffi::c_ulong, // Stack segment size (pages).
+    pub start_code: kernel::ffi::c_ulong, // Starting virtual address of text.
     // Starting virtual address of stack area. This is actually the bottom
     // of the stack, the top of the stack is always found in the esp register.
-    pub start_stack: core::ffi::c_ulong,
-    pub signal: core::ffi::c_long, // Signal that caused the core dump.
-    pub reserved: core::ffi::c_int, // No longer used
+    pub start_stack: kernel::ffi::c_ulong,
+    pub signal: kernel::ffi::c_long, // Signal that caused the core dump.
+    pub reserved: kernel::ffi::c_int, // No longer used
     // Used by gdb to help find the values for the registers.
-    pub u_ar0: core::ffi::c_ulong,
+    pub u_ar0: kernel::ffi::c_ulong,
     // Math Co-processor pointer.
     pub u_fpstate: *mut user_m68kfp_struct,
-    pub magic: core::ffi::c_ulong, // To uniquely identify a core file
-    pub u_comm: [core::ffi::c_char; 32], // User command that was responsible
+    pub magic: kernel::ffi::c_ulong, // To uniquely identify a core file
+    pub u_comm: [kernel::ffi::c_char; 32], // User command that was responsible
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

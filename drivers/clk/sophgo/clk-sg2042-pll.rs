@@ -20,7 +20,7 @@ const R_DPLL1_CONTROL: u32 = 0xFC - R_PLL_BEGIN;
 struct Sg2042PllClock {
     hw: ClkHw,
     id: u32,
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     lock: *mut Spinlock,
     offset_ctrl: u32,
     shift_status_lock: u8,
@@ -160,14 +160,14 @@ unsafe fn sg2042_clk_pll_set_rate(hw: *mut ClkHw, rate: u64, parent_rate: u64) -
 
 // The following declarations preserve the kernel-facing operation tables and driver objects.
 #[repr(C)] struct ClkHw { init: *const ClkInit }
-#[repr(C)] struct ClkInit { name: *const core::ffi::c_char }
+#[repr(C)] struct ClkInit { name: *const kernel::ffi::c_char }
 #[repr(C)] struct Spinlock;
 #[repr(C)] struct ClkRateRequest { rate: u64, max_rate: u64, best_parent_rate: u64 }
 #[repr(C)] struct PlatformDevice;
 extern "C" {
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn readl_poll_timeout_atomic(addr: *mut core::ffi::c_void, value: *mut u32, condition: bool, delay: u32, timeout: u32) -> i32;
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn readl_poll_timeout_atomic(addr: *mut kernel::ffi::c_void, value: *mut u32, condition: bool, delay: u32, timeout: u32) -> i32;
     fn spin_lock_irqsave(lock: *mut Spinlock);
     fn spin_unlock_irqrestore(lock: *mut Spinlock);
     fn container_of_pll(hw: *mut ClkHw) -> *mut Sg2042PllClock;
@@ -178,7 +178,7 @@ extern "C" {
 static mut sg2042_pll_clks: [Sg2042PllClock; 4] = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
 static mut sg2042_clk_lock: Spinlock = Spinlock;
 
-unsafe fn sg2042_clk_register_plls(_dev: *mut core::ffi::c_void, clk_data: *mut Sg2042ClkData,
+unsafe fn sg2042_clk_register_plls(_dev: *mut kernel::ffi::c_void, clk_data: *mut Sg2042ClkData,
                                    pll_clks: *mut Sg2042PllClock, num_pll_clks: i32) -> i32 {
     for i in 0..num_pll_clks {
         (*pll_clks.add(i as usize)).base = (*clk_data).iobase;
@@ -188,7 +188,7 @@ unsafe fn sg2042_clk_register_plls(_dev: *mut core::ffi::c_void, clk_data: *mut 
     0
 }
 
-#[repr(C)] struct Sg2042ClkData { iobase: *mut core::ffi::c_void }
+#[repr(C)] struct Sg2042ClkData { iobase: *mut kernel::ffi::c_void }
 unsafe fn sg2042_init_clkdata(_pdev: *mut PlatformDevice, _num_clks: i32,
                               pp_clk_data: *mut *mut Sg2042ClkData) -> i32 {
     *pp_clk_data = core::ptr::null_mut();

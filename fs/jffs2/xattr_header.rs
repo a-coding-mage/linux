@@ -17,7 +17,7 @@ pub const JFFS2_XFLAGS_INVALID: u8 = 0x80; // This datum contains crc error
 
 #[repr(C)]
 pub struct jffs2_xattr_datum {
-    pub always_null: *mut core::ffi::c_void,
+    pub always_null: *mut kernel::ffi::c_void,
     pub node: *mut jffs2_raw_node_ref,
     pub class: u8,
     pub flags: u8,
@@ -28,15 +28,15 @@ pub struct jffs2_xattr_datum {
     pub version: u32,
     pub data_crc: u32,
     pub hashkey: u32,
-    pub xname: *mut core::ffi::c_char, // XATTR name without prefix
+    pub xname: *mut kernel::ffi::c_char, // XATTR name without prefix
     pub name_len: u32, // length of xname
-    pub xvalue: *mut core::ffi::c_char, // XATTR value
+    pub xvalue: *mut kernel::ffi::c_char, // XATTR value
     pub value_len: u32, // length of xvalue
 }
 
 #[repr(C)]
 pub struct jffs2_xattr_ref {
-    pub always_null: *mut core::ffi::c_void,
+    pub always_null: *mut kernel::ffi::c_void,
     pub node: *mut jffs2_raw_node_ref,
     pub class: u8,
     pub flags: u8, // Currently unused
@@ -82,18 +82,18 @@ extern "C" {
     pub fn jffs2_verify_xattr(c: *mut jffs2_sb_info) -> i32;
     pub fn jffs2_release_xattr_datum(c: *mut jffs2_sb_info, xd: *mut jffs2_xattr_datum);
     pub fn jffs2_release_xattr_ref(c: *mut jffs2_sb_info, ref_: *mut jffs2_xattr_ref);
-    pub fn do_jffs2_getxattr(inode: *mut inode, xprefix: i32, xname: *const core::ffi::c_char, buffer: *mut core::ffi::c_char, size: usize) -> i32;
-    pub fn do_jffs2_setxattr(inode: *mut inode, xprefix: i32, xname: *const core::ffi::c_char, buffer: *const core::ffi::c_char, size: usize, flags: i32) -> i32;
+    pub fn do_jffs2_getxattr(inode: *mut inode, xprefix: i32, xname: *const kernel::ffi::c_char, buffer: *mut kernel::ffi::c_char, size: usize) -> i32;
+    pub fn do_jffs2_setxattr(inode: *mut inode, xprefix: i32, xname: *const kernel::ffi::c_char, buffer: *const kernel::ffi::c_char, size: usize, flags: i32) -> i32;
     pub static jffs2_xattr_handlers: *const *const xattr_handler;
     pub static jffs2_user_xattr_handler: xattr_handler;
     pub static jffs2_trusted_xattr_handler: xattr_handler;
-    pub fn jffs2_listxattr(dentry: *mut dentry, buffer: *mut core::ffi::c_char, size: usize) -> isize;
+    pub fn jffs2_listxattr(dentry: *mut dentry, buffer: *mut kernel::ffi::c_char, size: usize) -> isize;
 }
 
 #[cfg(not(CONFIG_JFFS2_FS_XATTR))]
 pub const jffs2_xattr_handlers: *const *const xattr_handler = core::ptr::null();
 #[cfg(not(CONFIG_JFFS2_FS_XATTR))]
-pub const jffs2_listxattr: Option<unsafe extern "C" fn(*mut dentry, *mut core::ffi::c_char, usize) -> isize> = None;
+pub const jffs2_listxattr: Option<unsafe extern "C" fn(*mut dentry, *mut kernel::ffi::c_char, usize) -> isize> = None;
 
 #[cfg(CONFIG_JFFS2_FS_SECURITY)]
 extern "C" {

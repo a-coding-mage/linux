@@ -163,7 +163,7 @@ pub struct lp855x_rom_data {
  */
 #[repr(C)]
 pub struct lp855x_platform_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub device_control: u8,
     pub initial_brightness: u8,
     pub period_ns: u32,

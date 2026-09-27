@@ -27,7 +27,7 @@ pub const FSL_MC_SEND_CMD_IOCTL_TYPE: u8 = b'R';
 pub const FSL_MC_SEND_CMD_IOCTL_SEQ: u8 = 0xE0;
 
 // _IOWR is supplied by the target ioctl definitions.
-pub const FSL_MC_SEND_MC_COMMAND: _ = _IOWR!(
+pub const FSL_MC_SEND_MC_COMMAND: u32 = _IOWR!(
     FSL_MC_SEND_CMD_IOCTL_TYPE,
     FSL_MC_SEND_CMD_IOCTL_SEQ,
     fsl_mc_command

@@ -57,29 +57,29 @@ pub const FW_GINA24_361_ASIC: usize = 4;
 #[repr(C)]
 pub struct firmware {
     pub data: usize,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 pub static card_fw: [firmware; 5] = [
     firmware {
         data: 0,
-        name: b"loader_dsp.fw\0".as_ptr() as *const ::core::ffi::c_char,
+        name: b"loader_dsp.fw\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     firmware {
         data: 0,
-        name: b"gina24_301_dsp.fw\0".as_ptr() as *const ::core::ffi::c_char,
+        name: b"gina24_301_dsp.fw\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     firmware {
         data: 0,
-        name: b"gina24_361_dsp.fw\0".as_ptr() as *const ::core::ffi::c_char,
+        name: b"gina24_361_dsp.fw\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     firmware {
         data: 0,
-        name: b"gina24_301_asic.fw\0".as_ptr() as *const ::core::ffi::c_char,
+        name: b"gina24_301_asic.fw\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     firmware {
         data: 0,
-        name: b"gina24_361_asic.fw\0".as_ptr() as *const ::core::ffi::c_char,
+        name: b"gina24_361_asic.fw\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
 ];
 

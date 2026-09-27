@@ -19,9 +19,9 @@ const FPGA_REGS_SIZE: usize = 0x490;
  * components can be determined dynamically from its section mapping
  * registers.
  */
-unsafe fn sdk7786_fpga_probe() -> *mut core::ffi::c_void {
+unsafe fn sdk7786_fpga_probe() -> *mut kernel::ffi::c_void {
     let mut area: usize;
-    let mut base: *mut core::ffi::c_void;
+    let mut base: *mut kernel::ffi::c_void;
 
     /*
      * Iterate over all of the areas where the FPGA could be mapped.
@@ -51,7 +51,7 @@ unsafe fn sdk7786_fpga_probe() -> *mut core::ffi::c_void {
     core::ptr::null_mut()
 }
 
-pub static mut sdk7786_fpga_base: *mut core::ffi::c_void = core::ptr::null_mut();
+pub static mut sdk7786_fpga_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 pub unsafe fn sdk7786_fpga_init() {
     let version: u16;
@@ -59,7 +59,7 @@ pub unsafe fn sdk7786_fpga_init() {
 
     sdk7786_fpga_base = sdk7786_fpga_probe();
     if sdk7786_fpga_base.is_null() {
-        panic("FPGA detection failed.\0".as_ptr() as *const core::ffi::c_char);
+        panic("FPGA detection failed.\0".as_ptr() as *const kernel::ffi::c_char);
         return;
     }
 
@@ -68,7 +68,7 @@ pub unsafe fn sdk7786_fpga_init() {
 
     pr_info(
         "\tFPGA version:\t%d.%d (built on %d/%d/%d)\n\0".as_ptr()
-            as *const core::ffi::c_char,
+            as *const kernel::ffi::c_char,
         bcd2bin(version >> 8) & 0xf,
         bcd2bin(version & 0xf),
         ((date >> 12) & 0xf) + 2000,
@@ -86,13 +86,13 @@ extern "C" {
     static FPGAVR: usize;
     static FPGADR: usize;
 
-    fn ioremap(addr: usize, size: usize) -> *mut core::ffi::c_void;
-    fn iounmap(addr: *mut core::ffi::c_void);
+    fn ioremap(addr: usize, size: usize) -> *mut kernel::ffi::c_void;
+    fn iounmap(addr: *mut kernel::ffi::c_void);
     fn ioread16(addr: *mut u8) -> u16;
     fn fpga_read_reg(reg: usize) -> u16;
     fn bcd2bin(value: u16) -> u16;
-    fn panic(message: *const core::ffi::c_char) -> !;
-    fn pr_info(format: *const core::ffi::c_char, ...);
+    fn panic(message: *const kernel::ffi::c_char) -> !;
+    fn pr_info(format: *const kernel::ffi::c_char, ...);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

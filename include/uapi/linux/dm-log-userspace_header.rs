@@ -50,8 +50,8 @@ pub struct dm_ulog_request {
 	 * logs being swapped with the same uuid.
 	 */
 	pub luid: __u64,
-	pub uuid: [::core::ffi::c_char; DM_UUID_LEN],
-	pub padding: [::core::ffi::c_char; 3],
+	pub uuid: [::kernel::ffi::c_char; DM_UUID_LEN],
+	pub padding: [::kernel::ffi::c_char; 3],
 
 	pub version: __u32,
 	pub error: __s32,
@@ -60,7 +60,7 @@ pub struct dm_ulog_request {
 	pub request_type: __u32,
 	pub data_size: __u32,
 
-	pub data: [::core::ffi::c_char; 0],
+	pub data: [::kernel::ffi::c_char; 0],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -136,8 +136,8 @@ pub struct aat2870_data {
 #[repr(C)]
 pub struct aat2870_subdev_info {
     pub id: i32,
-    pub name: *const core::ffi::c_char,
-    pub platform_data: *mut core::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
+    pub platform_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]

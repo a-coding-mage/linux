@@ -9,7 +9,7 @@
 
 #[repr(C)]
 struct MeshPreqParseTestCase {
-    desc: *const core::ffi::c_char,
+    desc: *const kernel::ffi::c_char,
     len: u8,
     ae_enabled: bool,
     target_count: u8,
@@ -31,7 +31,7 @@ static MESH_PREQ_PARSE_CASES: [MeshPreqParseTestCase; 11] = [
 ];
 
 #[repr(C)]
-struct MeshPrepParseTestCase { desc: *const core::ffi::c_char, len: u8, ae_enabled: bool, result: bool }
+struct MeshPrepParseTestCase { desc: *const kernel::ffi::c_char, len: u8, ae_enabled: bool, result: bool }
 static MESH_PREP_PARSE_CASES: [MeshPrepParseTestCase; 5] = [
     MeshPrepParseTestCase { desc: c"shorter than header".as_ptr(), len: 12, ae_enabled: false, result: false },
     MeshPrepParseTestCase { desc: c"non AE short".as_ptr(), len: 30, ae_enabled: false, result: false },
@@ -41,7 +41,7 @@ static MESH_PREP_PARSE_CASES: [MeshPrepParseTestCase; 5] = [
 ];
 
 #[repr(C)]
-struct MeshPerrParseTestCase { desc: *const core::ffi::c_char, len: u8, number_of_dst: u8, ae_enabled_idx: i32, result: bool }
+struct MeshPerrParseTestCase { desc: *const kernel::ffi::c_char, len: u8, number_of_dst: u8, ae_enabled_idx: i32, result: bool }
 static MESH_PERR_PARSE_CASES: [MeshPerrParseTestCase; 13] = [
     MeshPerrParseTestCase { desc: c"shorter than header".as_ptr(), len: 1, number_of_dst: 1, ae_enabled_idx: -1, result: false },
     MeshPerrParseTestCase { desc: c"number_of_dst is 0".as_ptr(), len: 2, number_of_dst: 0, ae_enabled_idx: -1, result: true },

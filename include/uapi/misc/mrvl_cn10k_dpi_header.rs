@@ -31,9 +31,9 @@ pub struct dpi_engine_cfg {
 pub const DPI_MAGIC_NUM: u32 = 0xB8;
 
 /* Set MPS & MRRS parameters */
-pub const DPI_MPS_MRRS_CFG: _ = _IOW(DPI_MAGIC_NUM, 1, dpi_mps_mrrs_cfg);
+pub const DPI_MPS_MRRS_CFG: u32 = _IOW(DPI_MAGIC_NUM, 1, dpi_mps_mrrs_cfg);
 
 /* Set Engine FIFO configuration */
-pub const DPI_ENGINE_CFG: _ = _IOW(DPI_MAGIC_NUM, 2, dpi_engine_cfg);
+pub const DPI_ENGINE_CFG: u32 = _IOW(DPI_MAGIC_NUM, 2, dpi_engine_cfg);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

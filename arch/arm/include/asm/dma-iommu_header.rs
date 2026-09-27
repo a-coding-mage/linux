@@ -4,7 +4,7 @@
 // The following declarations are conditional on the C build configuration
 // (__KERNEL__). This condition is preserved here as source-level intent.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct dma_iommu_mapping {

@@ -16,7 +16,7 @@ pub unsafe fn prefill_possible_map_disabled() {}
 
 // extern char cpu_irqstacks[NR_CPUS][THREAD_SIZE] __aligned(THREAD_SIZE);
 unsafe extern "C" {
-    pub static mut cpu_irqstacks: [[core::ffi::c_char; THREAD_SIZE]; NR_CPUS];
+    pub static mut cpu_irqstacks: [[kernel::ffi::c_char; THREAD_SIZE]; NR_CPUS];
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -39,7 +39,7 @@ pub struct hyperbus_device {
     pub mtd: *mut mtd_info,
     pub ctlr: *mut hyperbus_ctlr,
     pub memtype: hyperbus_memtype,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
 }
 
 /**
@@ -54,10 +54,10 @@ pub struct hyperbus_device {
  */
 #[repr(C)]
 pub struct hyperbus_ops {
-    pub read16: Option<unsafe extern "C" fn(hbdev: *mut hyperbus_device, addr: libc::c_ulong) -> u16>,
-    pub write16: Option<unsafe extern "C" fn(hbdev: *mut hyperbus_device, addr: libc::c_ulong, val: u16)>,
-    pub copy_from: Option<unsafe extern "C" fn(hbdev: *mut hyperbus_device, to: *mut core::ffi::c_void, from: libc::c_ulong, len: isize)>,
-    pub copy_to: Option<unsafe extern "C" fn(dev: *mut hyperbus_device, to: libc::c_ulong, from: *const core::ffi::c_void, len: isize)>,
+    pub read16: Option<unsafe extern "C" fn(hbdev: *mut hyperbus_device, addr: kernel::ffi::c_ulong) -> u16>,
+    pub write16: Option<unsafe extern "C" fn(hbdev: *mut hyperbus_device, addr: kernel::ffi::c_ulong, val: u16)>,
+    pub copy_from: Option<unsafe extern "C" fn(hbdev: *mut hyperbus_device, to: *mut kernel::ffi::c_void, from: kernel::ffi::c_ulong, len: isize)>,
+    pub copy_to: Option<unsafe extern "C" fn(dev: *mut hyperbus_device, to: kernel::ffi::c_ulong, from: *const kernel::ffi::c_void, len: isize)>,
     pub calibrate: Option<unsafe extern "C" fn(dev: *mut hyperbus_device) -> i32>,
 }
 

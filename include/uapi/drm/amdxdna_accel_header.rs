@@ -4,8 +4,8 @@
 // Translated from uapi/drm/amdxdna_accel.h.
 // Required external Linux/DRM definitions are intentionally left as dependencies.
 
-pub const AMDXDNA_INVALID_CMD_HANDLE: ::core::ffi::c_ulong = !0;
-pub const AMDXDNA_INVALID_ADDR: ::core::ffi::c_ulong = !0;
+pub const AMDXDNA_INVALID_CMD_HANDLE: ::kernel::ffi::c_ulong = !0;
+pub const AMDXDNA_INVALID_ADDR: ::kernel::ffi::c_ulong = !0;
 pub const AMDXDNA_INVALID_CTX_HANDLE: u32 = 0;
 pub const AMDXDNA_INVALID_BO_HANDLE: u32 = 0;
 pub const AMDXDNA_INVALID_FENCE_HANDLE: u32 = 0;

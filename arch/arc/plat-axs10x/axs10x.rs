@@ -23,14 +23,14 @@ unsafe fn axs10x_enable_gpio_intc_wire() {
     const GPIO_INT_POLARITY: usize = AXC001_GPIO_INTC + 0x3c;
     const MB_TO_GPIO_IRQ: u32 = 12;
 
-    iowrite32(!(1u32 << MB_TO_GPIO_IRQ), GPIO_INTMASK as *mut core::ffi::c_void);
-    iowrite32(0, GPIO_INTTYPE_LEVEL as *mut core::ffi::c_void);
-    iowrite32(!0, GPIO_INT_POLARITY as *mut core::ffi::c_void);
-    iowrite32(1u32 << MB_TO_GPIO_IRQ, GPIO_INTEN as *mut core::ffi::c_void);
+    iowrite32(!(1u32 << MB_TO_GPIO_IRQ), GPIO_INTMASK as *mut kernel::ffi::c_void);
+    iowrite32(0, GPIO_INTTYPE_LEVEL as *mut kernel::ffi::c_void);
+    iowrite32(!0, GPIO_INT_POLARITY as *mut kernel::ffi::c_void);
+    iowrite32(1u32 << MB_TO_GPIO_IRQ, GPIO_INTEN as *mut kernel::ffi::c_void);
 }
 
-unsafe fn axs10x_print_board_ver(creg: u32, str_: *const core::ffi::c_char) {
-    let val = ioread32(creg as usize as *mut core::ffi::c_void);
+unsafe fn axs10x_print_board_ver(creg: u32, str_: *const kernel::ffi::c_char) {
+    let val = ioread32(creg as usize as *mut kernel::ffi::c_void);
     let d = val & 0x1f;
     let m = (val >> 5) & 0xf;
     let y = (val >> 9) & 0xfff;
@@ -38,7 +38,7 @@ unsafe fn axs10x_print_board_ver(creg: u32, str_: *const core::ffi::c_char) {
 }
 
 unsafe fn axs10x_early_init() {
-    let mb_rev: i32 = if ioread32(CREG_MB_CONFIG as *mut core::ffi::c_void) & (1 << 28) != 0 { 3 } else { 2 };
+    let mb_rev: i32 = if ioread32(CREG_MB_CONFIG as *mut kernel::ffi::c_void) & (1 << 28) != 0 { 3 } else { 2 };
     axs10x_enable_gpio_intc_wire();
     let mut mb = [0i8; 32];
     scnprintf(mb.as_mut_ptr(), 32, "MainBoard v%d\0", mb_rev);
@@ -101,29 +101,29 @@ const axs_mb_memmap: [aperture; 16] = [
     aperture{slave_sel:3,slave_off:0,pad:0}, aperture{slave_sel:3,slave_off:0,pad:0}, aperture{slave_sel:0,slave_off:0,pad:0}, aperture{slave_sel:0,slave_off:0,pad:0}, aperture{slave_sel:0,slave_off:0,pad:0}, aperture{slave_sel:0,slave_off:0,pad:0}, aperture{slave_sel:0,slave_off:0,pad:0}, aperture{slave_sel:0,slave_off:0,pad:0}, aperture{slave_sel:1,slave_off:8,pad:0}, aperture{slave_sel:1,slave_off:9,pad:0}, aperture{slave_sel:1,slave_off:10,pad:0}, aperture{slave_sel:1,slave_off:11,pad:0}, aperture{slave_sel:0,slave_off:0,pad:0}, aperture{slave_sel:2,slave_off:13,pad:0}, aperture{slave_sel:4,slave_off:0,pad:0}, aperture{slave_sel:1,slave_off:15,pad:0}];
 
 #[cfg(CONFIG_AXS101)]
-unsafe fn axs101_set_memmap(base: *mut core::ffi::c_void, map: *const aperture) {
+unsafe fn axs101_set_memmap(base: *mut kernel::ffi::c_void, map: *const aperture) {
     let mut slave_select = 0u32;
     let mut slave_offset = 0u32;
     for i in 0..8usize { slave_select |= (*map.add(i)).slave_sel << (i << 2); slave_offset |= (*map.add(i)).slave_off << (i << 2); }
-    iowrite32(slave_select, (base as usize) as *mut core::ffi::c_void);
-    iowrite32(slave_offset, (base as usize + 8) as *mut core::ffi::c_void);
+    iowrite32(slave_select, (base as usize) as *mut kernel::ffi::c_void);
+    iowrite32(slave_offset, (base as usize + 8) as *mut kernel::ffi::c_void);
     slave_select = 0; slave_offset = 0;
     for i in 0..8usize { slave_select |= (*map.add(i + 8)).slave_sel << (i << 2); slave_offset |= (*map.add(i + 8)).slave_off << (i << 2); }
-    iowrite32(slave_select, (base as usize + 4) as *mut core::ffi::c_void);
-    iowrite32(slave_offset, (base as usize + 12) as *mut core::ffi::c_void);
+    iowrite32(slave_select, (base as usize + 4) as *mut kernel::ffi::c_void);
+    iowrite32(slave_offset, (base as usize + 12) as *mut kernel::ffi::c_void);
 }
 
 #[cfg(CONFIG_AXS101)]
 unsafe fn axs101_early_init() {
     axs101_set_memmap(CREG_CPU_ADDR_770 as *mut _, axc001_memmap.as_ptr());
-    iowrite32(1, CREG_CPU_ADDR_770_UPD as *mut core::ffi::c_void);
+    iowrite32(1, CREG_CPU_ADDR_770_UPD as *mut kernel::ffi::c_void);
     axs101_set_memmap(CREG_CPU_ADDR_TUNN as *mut _, axc001_axi_tunnel_memmap.as_ptr());
     for i in AXS_MB_MST_TUNNEL_CPU..=AXS_MB_MST_USB_OHCI { axs101_set_memmap((AXS_MB_CREG + (i << 4)) as *mut _, axs_mb_memmap.as_ptr()); }
-    iowrite32(0x3ff, (AXS_MB_CREG + 0x100) as *mut core::ffi::c_void);
-    iowrite32(1, CREG_CPU_GPIO_UART_MUX as *mut core::ffi::c_void);
-    iowrite32(1, CREG_MB_IRQ_MUX as *mut core::ffi::c_void);
-    iowrite32(0x18, CREG_MB_SW_RESET as *mut core::ffi::c_void);
-    iowrite32(0x52, CREG_CPU_ARC770_IRQ_MUX as *mut core::ffi::c_void);
+    iowrite32(0x3ff, (AXS_MB_CREG + 0x100) as *mut kernel::ffi::c_void);
+    iowrite32(1, CREG_CPU_GPIO_UART_MUX as *mut kernel::ffi::c_void);
+    iowrite32(1, CREG_MB_IRQ_MUX as *mut kernel::ffi::c_void);
+    iowrite32(0x18, CREG_MB_SW_RESET as *mut kernel::ffi::c_void);
+    iowrite32(0x52, CREG_CPU_ARC770_IRQ_MUX as *mut kernel::ffi::c_void);
     axs10x_early_init();
 }
 

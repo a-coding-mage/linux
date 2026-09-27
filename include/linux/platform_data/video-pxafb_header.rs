@@ -43,41 +43,41 @@ pub const LCD_ALTERNATE_MAPPING: u32 = 1 << 20;
 
 #[repr(C)]
 pub struct pxafb_mode_info {
-    pub pixclock: libc::c_ulong,
-    pub xres: libc::c_ushort,
-    pub yres: libc::c_ushort,
-    pub bpp: libc::c_uchar,
+    pub pixclock: kernel::ffi::c_ulong,
+    pub xres: kernel::ffi::c_ushort,
+    pub yres: kernel::ffi::c_ushort,
+    pub bpp: kernel::ffi::c_uchar,
     /* C bit-fields: cmap_greyscale:1, depth:8, transparency:1, unused:22. */
-    pub flags: libc::c_uint,
-    pub hsync_len: libc::c_uchar,
-    pub left_margin: libc::c_uchar,
-    pub right_margin: libc::c_uchar,
-    pub vsync_len: libc::c_uchar,
-    pub upper_margin: libc::c_uchar,
-    pub lower_margin: libc::c_uchar,
-    pub sync: libc::c_uchar,
-    pub a0csrd_set_hld: libc::c_uint,
-    pub a0cswr_set_hld: libc::c_uint,
-    pub wr_pulse_width: libc::c_uint,
-    pub rd_pulse_width: libc::c_uint,
-    pub cmd_inh_time: libc::c_uint,
-    pub op_hold_time: libc::c_uint,
+    pub flags: kernel::ffi::c_uint,
+    pub hsync_len: kernel::ffi::c_uchar,
+    pub left_margin: kernel::ffi::c_uchar,
+    pub right_margin: kernel::ffi::c_uchar,
+    pub vsync_len: kernel::ffi::c_uchar,
+    pub upper_margin: kernel::ffi::c_uchar,
+    pub lower_margin: kernel::ffi::c_uchar,
+    pub sync: kernel::ffi::c_uchar,
+    pub a0csrd_set_hld: kernel::ffi::c_uint,
+    pub a0cswr_set_hld: kernel::ffi::c_uint,
+    pub wr_pulse_width: kernel::ffi::c_uint,
+    pub rd_pulse_width: kernel::ffi::c_uint,
+    pub cmd_inh_time: kernel::ffi::c_uint,
+    pub op_hold_time: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct pxafb_mach_info {
     pub modes: *mut pxafb_mode_info,
-    pub num_modes: libc::c_uint,
-    pub lcd_conn: libc::c_uint,
-    pub video_mem_size: libc::c_ulong,
+    pub num_modes: kernel::ffi::c_uint,
+    pub lcd_conn: kernel::ffi::c_uint,
+    pub video_mem_size: kernel::ffi::c_ulong,
     /* C bit-fields: fixed_modes:1, cmap_inverse:1, cmap_static:1,
      * acceleration_enabled:1, unused:28. */
-    pub flags: libc::c_uint,
-    pub lccr0: libc::c_uint,
-    pub lccr3: libc::c_uint,
-    pub lccr4: libc::c_uint,
-    pub pxafb_backlight_power: Option<unsafe extern "C" fn(libc::c_int)>,
-    pub pxafb_lcd_power: Option<unsafe extern "C" fn(libc::c_int, *mut fb_var_screeninfo)>,
+    pub flags: kernel::ffi::c_uint,
+    pub lccr0: kernel::ffi::c_uint,
+    pub lccr3: kernel::ffi::c_uint,
+    pub lccr4: kernel::ffi::c_uint,
+    pub pxafb_backlight_power: Option<unsafe extern "C" fn(kernel::ffi::c_int)>,
+    pub pxafb_lcd_power: Option<unsafe extern "C" fn(kernel::ffi::c_int, *mut fb_var_screeninfo)>,
     pub smart_update: Option<unsafe extern "C" fn(*mut fb_info)>,
 }
 
@@ -101,16 +101,16 @@ pub const fn smart_delay(ms: u32) -> u32 { SMART_CMD_DELAY | (ms & 0xff) }
 
 #[cfg(CONFIG_FB_PXA_SMARTPANEL)]
 unsafe extern "C" {
-    pub fn pxafb_smart_queue(info: *mut fb_info, cmds: *mut u16, n: libc::c_int) -> libc::c_int;
-    pub fn pxafb_smart_flush(info: *mut fb_info) -> libc::c_int;
+    pub fn pxafb_smart_queue(info: *mut fb_info, cmds: *mut u16, n: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub fn pxafb_smart_flush(info: *mut fb_info) -> kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_FB_PXA_SMARTPANEL))]
 pub unsafe extern "C" fn pxafb_smart_queue(
-    _info: *mut fb_info, _cmds: *mut u16, _n: libc::c_int,
-) -> libc::c_int { 0 }
+    _info: *mut fb_info, _cmds: *mut u16, _n: kernel::ffi::c_int,
+) -> kernel::ffi::c_int { 0 }
 
 #[cfg(not(CONFIG_FB_PXA_SMARTPANEL))]
-pub unsafe extern "C" fn pxafb_smart_flush(_info: *mut fb_info) -> libc::c_int { 0 }
+pub unsafe extern "C" fn pxafb_smart_flush(_info: *mut fb_info) -> kernel::ffi::c_int { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

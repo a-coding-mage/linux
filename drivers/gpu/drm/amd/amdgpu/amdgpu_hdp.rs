@@ -28,7 +28,7 @@ pub struct amdgpu_device {
     pub rmmio_remap: amdgpu_rmmio_remap,
     pub nbio: amdgpu_nbio,
     pub asic_funcs: *mut amdgpu_asic_funcs,
-    pub dev: *mut core::ffi::c_void,
+    pub dev: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -71,7 +71,7 @@ pub const KFD_MMIO_REMAP_HDP_MEM_FLUSH_CNTL: u32 = 0;
 
 unsafe extern "C" {
     fn amdgpu_ras_register_ras_block(adev: *mut amdgpu_device, block: *mut amdgpu_ras_block) -> i32;
-    fn dev_err(dev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
     fn WREG32(reg: u32, value: u32);
     fn amdgpu_ring_emit_wreg(ring: *mut amdgpu_ring, reg: u32, value: u32);
 }

@@ -125,7 +125,7 @@ extern "C" {
         logged: bool,
         missing: access_mask_t,
         path: *const path,
-        pathname: *const core::ffi::c_char,
+        pathname: *const kernel::ffi::c_char,
     );
 
     fn trace_landlock_deny_access_net_enabled() -> bool;
@@ -166,18 +166,18 @@ extern "C" {
         sk: *mut sock,
     );
 
-    fn __getname() -> *mut core::ffi::c_char;
-    fn __putname(name: *mut core::ffi::c_char);
+    fn __getname() -> *mut kernel::ffi::c_char;
+    fn __putname(name: *mut kernel::ffi::c_char);
     fn dentry_path_raw(
         dentry: *mut dentry,
-        buf: *mut core::ffi::c_char,
+        buf: *mut kernel::ffi::c_char,
         buflen: usize,
-    ) -> *const core::ffi::c_char;
-    fn resolve_path_for_trace(path: *const path, buf: *mut core::ffi::c_char)
-        -> *const core::ffi::c_char;
-    fn WARN_ONCE(condition: i32, fmt: *const core::ffi::c_char, ...);
-    fn IS_ERR(ptr: *const core::ffi::c_char) -> bool;
-    fn PTR_ERR(ptr: *const core::ffi::c_char) -> isize;
+    ) -> *const kernel::ffi::c_char;
+    fn resolve_path_for_trace(path: *const path, buf: *mut kernel::ffi::c_char)
+        -> *const kernel::ffi::c_char;
+    fn WARN_ONCE(condition: i32, fmt: *const kernel::ffi::c_char, ...);
+    fn IS_ERR(ptr: *const kernel::ffi::c_char) -> bool;
+    fn PTR_ERR(ptr: *const kernel::ffi::c_char) -> isize;
 }
 
 #[inline]
@@ -258,7 +258,7 @@ pub unsafe extern "C" fn landlock_trace_denial(
                     mnt: core::ptr::null_mut(),
                     dentry: core::ptr::null_mut(),
                 };
-                let pathname: *const core::ffi::c_char;
+                let pathname: *const kernel::ffi::c_char;
                 let mut path_ptr: *const path = core::ptr::null();
 
                 /*
@@ -295,7 +295,7 @@ pub unsafe extern "C" fn landlock_trace_denial(
                     _ => {
                         WARN_ONCE(
                             1,
-                            UNHANDLED_FS_AUDIT_TYPE.as_ptr() as *const core::ffi::c_char,
+                            UNHANDLED_FS_AUDIT_TYPE.as_ptr() as *const kernel::ffi::c_char,
                             (*request).audit.type_,
                         );
                     }
@@ -309,15 +309,15 @@ pub unsafe extern "C" fn landlock_trace_denial(
                 }
 
                 if buf.is_null() {
-                    pathname = NO_MEM.as_ptr() as *const core::ffi::c_char;
+                    pathname = NO_MEM.as_ptr() as *const kernel::ffi::c_char;
                 } else if (*request).audit.type_ == LSM_AUDIT_DATA_DENTRY {
                     /* No vfsmount: render the dentry path alone. */
                     let raw_pathname = dentry_path_raw((*request).audit.u.dentry, buf, PATH_MAX);
                     if IS_ERR(raw_pathname) {
                         pathname = if PTR_ERR(raw_pathname) == -ENAMETOOLONG {
-                            TOO_LONG.as_ptr() as *const core::ffi::c_char
+                            TOO_LONG.as_ptr() as *const kernel::ffi::c_char
                         } else {
-                            UNREACHABLE.as_ptr() as *const core::ffi::c_char
+                            UNREACHABLE.as_ptr() as *const kernel::ffi::c_char
                         };
                     } else {
                         pathname = raw_pathname;
@@ -389,7 +389,7 @@ pub unsafe extern "C" fn landlock_trace_denial(
         _ => {
             WARN_ONCE(
                 1,
-                UNHANDLED_REQUEST_TYPE.as_ptr() as *const core::ffi::c_char,
+                UNHANDLED_REQUEST_TYPE.as_ptr() as *const kernel::ffi::c_char,
                 (*request).type_,
             );
         }

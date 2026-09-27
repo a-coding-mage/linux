@@ -158,7 +158,7 @@ pub unsafe fn do_shash(
     }
     if rc == 0 { rc = crypto_shash_final(&mut (*sdesc).shash, result); }
     crypto_free_shash(hash);
-    kfree(sdesc as *mut core::ffi::c_void);
+    kfree(sdesc as *mut kernel::ffi::c_void);
     rc
 }
 
@@ -202,10 +202,10 @@ pub unsafe fn __dump_sg(sg: *mut scatterlist, skip: u32, len: u32) {
 }
 
 unsafe fn spu_debugfs_read(
-    filp: *mut file, ubuf: *mut core::ffi::c_char, count: usize, offp: *mut loff_t,
+    filp: *mut file, ubuf: *mut kernel::ffi::c_char, count: usize, offp: *mut loff_t,
 ) -> isize {
     let out_count: isize = 2048;
-    let buf = kmalloc(out_count as usize, GFP_KERNEL) as *mut core::ffi::c_char;
+    let buf = kmalloc(out_count as usize, GFP_KERNEL) as *mut kernel::ffi::c_char;
     if buf.is_null() { return -ENOMEM as isize; }
     let ipriv = (*filp).private_data as *mut bcm_device_private;
     let mut out_offset: isize = 0;
@@ -235,7 +235,7 @@ unsafe fn spu_debugfs_read(
     }
     if out_offset > out_count { out_offset = out_count; }
     let ret = simple_read_from_buffer(ubuf, count, offp, buf, out_offset as usize);
-    kfree(buf as *mut core::ffi::c_void);
+    kfree(buf as *mut kernel::ffi::c_void);
     ret
 }
 

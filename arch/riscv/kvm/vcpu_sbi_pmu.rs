@@ -17,7 +17,7 @@ unsafe fn kvm_sbi_ext_pmu_handler(
     let mut ret: i32 = 0;
     let cp: *mut kvm_cpu_context = &mut (*vcpu).arch.guest_context;
     let kvpmu: *mut kvm_pmu = vcpu_to_pmu(vcpu);
-    let funcid: ::core::ffi::c_ulong = (*cp).a6;
+    let funcid: ::kernel::ffi::c_ulong = (*cp).a6;
     let mut temp: u64;
 
     if !(*kvpmu).init_done {
@@ -76,7 +76,7 @@ unsafe fn kvm_sbi_ext_pmu_handler(
     ret
 }
 
-unsafe fn kvm_sbi_ext_pmu_probe(vcpu: *mut kvm_vcpu) -> ::core::ffi::c_ulong {
+unsafe fn kvm_sbi_ext_pmu_probe(vcpu: *mut kvm_vcpu) -> ::kernel::ffi::c_ulong {
     let kvpmu: *mut kvm_pmu = vcpu_to_pmu(vcpu);
 
     (*kvpmu).init_done

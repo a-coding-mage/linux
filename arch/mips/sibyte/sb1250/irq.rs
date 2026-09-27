@@ -12,7 +12,7 @@ extern "C" {
 }
 
 extern "C" {
-    static mut sb1250_irq_owner: [core::ffi::c_int; SB1250_NR_IRQS as usize];
+    static mut sb1250_irq_owner: [kernel::ffi::c_int; SB1250_NR_IRQS as usize];
 }
 
 extern "C" {
@@ -22,15 +22,15 @@ extern "C" {
     fn ____raw_writeq(value: u64, addr: usize);
     fn __raw_readq(addr: usize) -> u64;
     fn __raw_writeq(value: u64, addr: usize);
-    fn cpu_logical_map(cpu: core::ffi::c_int) -> core::ffi::c_int;
-    fn cpumask_first_and(mask: *const CpuMask, online: *const CpuMask) -> core::ffi::c_int;
-    fn smp_processor_id() -> core::ffi::c_uint;
-    fn irq_set_chip_and_handler(irq: core::ffi::c_uint, chip: *mut IrqChip, handler: unsafe extern "C" fn());
-    fn do_IRQ(irq: core::ffi::c_int);
-    fn fls64(value: u64) -> core::ffi::c_int;
-    fn read_c0_cause() -> core::ffi::c_uint;
-    fn read_c0_status() -> core::ffi::c_uint;
-    fn change_c0_status(mask: core::ffi::c_uint, value: core::ffi::c_uint);
+    fn cpu_logical_map(cpu: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    fn cpumask_first_and(mask: *const CpuMask, online: *const CpuMask) -> kernel::ffi::c_int;
+    fn smp_processor_id() -> kernel::ffi::c_uint;
+    fn irq_set_chip_and_handler(irq: kernel::ffi::c_uint, chip: *mut IrqChip, handler: unsafe extern "C" fn());
+    fn do_IRQ(irq: kernel::ffi::c_int);
+    fn fls64(value: u64) -> kernel::ffi::c_int;
+    fn read_c0_cause() -> kernel::ffi::c_uint;
+    fn read_c0_status() -> kernel::ffi::c_uint;
+    fn change_c0_status(mask: kernel::ffi::c_uint, value: kernel::ffi::c_uint);
     fn sb1250_mailbox_interrupt();
     fn spurious_interrupt();
     fn handle_level_irq();
@@ -41,19 +41,19 @@ pub struct RawSpinLock;
 #[repr(C)]
 pub struct CpuMask;
 #[repr(C)]
-pub struct IrqData { pub irq: core::ffi::c_uint }
+pub struct IrqData { pub irq: kernel::ffi::c_uint }
 #[repr(C)]
 pub struct IrqChip {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub irq_mask_ack: Option<unsafe extern "C" fn(*mut IrqData)>,
     pub irq_unmask: Option<unsafe extern "C" fn(*mut IrqData)>,
     pub irq_mask: Option<unsafe extern "C" fn(*mut IrqData)>,
-    pub irq_set_affinity: Option<unsafe extern "C" fn(*mut IrqData, *const CpuMask, bool) -> core::ffi::c_int>,
+    pub irq_set_affinity: Option<unsafe extern "C" fn(*mut IrqData, *const CpuMask, bool) -> kernel::ffi::c_int>,
 }
 
 static mut sb1250_imr_lock: RawSpinLock = RawSpinLock;
 
-pub unsafe extern "C" fn sb1250_mask_irq(cpu: core::ffi::c_int, irq: core::ffi::c_int) {
+pub unsafe extern "C" fn sb1250_mask_irq(cpu: kernel::ffi::c_int, irq: kernel::ffi::c_int) {
     let mut flags = 0usize;
     raw_spin_lock_irqsave(&mut sb1250_imr_lock, &mut flags);
     let mut cur_ints = ____raw_readq(IOADDR(A_IMR_MAPPER(cpu) + R_IMR_INTERRUPT_MASK));
@@ -62,7 +62,7 @@ pub unsafe extern "C" fn sb1250_mask_irq(cpu: core::ffi::c_int, irq: core::ffi::
     raw_spin_unlock_irqrestore(&mut sb1250_imr_lock, flags);
 }
 
-pub unsafe extern "C" fn sb1250_unmask_irq(cpu: core::ffi::c_int, irq: core::ffi::c_int) {
+pub unsafe extern "C" fn sb1250_unmask_irq(cpu: kernel::ffi::c_int, irq: kernel::ffi::c_int) {
     let mut flags = 0usize;
     raw_spin_lock_irqsave(&mut sb1250_imr_lock, &mut flags);
     let mut cur_ints = ____raw_readq(IOADDR(A_IMR_MAPPER(cpu) + R_IMR_INTERRUPT_MASK));
@@ -72,7 +72,7 @@ pub unsafe extern "C" fn sb1250_unmask_irq(cpu: core::ffi::c_int, irq: core::ffi
 }
 
 #[cfg(CONFIG_SMP)]
-unsafe extern "C" fn sb1250_set_affinity(d: *mut IrqData, mask: *const CpuMask, _force: bool) -> core::ffi::c_int {
+unsafe extern "C" fn sb1250_set_affinity(d: *mut IrqData, mask: *const CpuMask, _force: bool) -> kernel::ffi::c_int {
     let i = cpumask_first_and(mask, cpu_online_mask);
     let cpu = cpu_logical_map(i);
     let mut flags = 0usize;

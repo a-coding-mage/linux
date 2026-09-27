@@ -89,9 +89,9 @@ pub struct psil_endpoint_config {
 extern "C" {
     pub fn psil_set_new_ep_config(
         dev: *mut device,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         ep_config: *mut psil_endpoint_config,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

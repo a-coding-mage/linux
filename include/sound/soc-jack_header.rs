@@ -11,28 +11,28 @@
 #[repr(C)]
 pub struct snd_soc_jack_pin {
     pub list: list_head,
-    pub pin: *const ::core::ffi::c_char,
-    pub mask: ::core::ffi::c_int,
+    pub pin: *const ::kernel::ffi::c_char,
+    pub mask: ::kernel::ffi::c_int,
     pub invert: bool,
 }
 
 #[repr(C)]
 pub struct snd_soc_jack_zone {
-    pub min_mv: ::core::ffi::c_uint,
-    pub max_mv: ::core::ffi::c_uint,
-    pub jack_type: ::core::ffi::c_uint,
-    pub debounce_time: ::core::ffi::c_uint,
+    pub min_mv: ::kernel::ffi::c_uint,
+    pub max_mv: ::kernel::ffi::c_uint,
+    pub jack_type: ::kernel::ffi::c_uint,
+    pub debounce_time: ::kernel::ffi::c_uint,
     pub list: list_head,
 }
 
 #[repr(C)]
 pub struct snd_soc_jack_gpio {
-    pub idx: ::core::ffi::c_uint,
+    pub idx: ::kernel::ffi::c_uint,
     pub gpiod_dev: *mut device,
-    pub name: *const ::core::ffi::c_char,
-    pub report: ::core::ffi::c_int,
-    pub invert: ::core::ffi::c_int,
-    pub debounce_time: ::core::ffi::c_int,
+    pub name: *const ::kernel::ffi::c_char,
+    pub report: ::kernel::ffi::c_int,
+    pub invert: ::kernel::ffi::c_int,
+    pub debounce_time: ::kernel::ffi::c_int,
     pub wake: bool,
 
     /* private: */
@@ -41,10 +41,10 @@ pub struct snd_soc_jack_gpio {
     pub pm_notifier: notifier_block,
     pub desc: *mut gpio_desc,
 
-    pub data: *mut ::core::ffi::c_void,
+    pub data: *mut ::kernel::ffi::c_void,
     /* public: */
     pub jack_status_check:
-        Option<unsafe extern "C" fn(data: *mut ::core::ffi::c_void) -> ::core::ffi::c_int>,
+        Option<unsafe extern "C" fn(data: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int>,
 }
 
 #[repr(C)]
@@ -53,7 +53,7 @@ pub struct snd_soc_jack {
     pub jack: *mut snd_jack,
     pub card: *mut snd_soc_card,
     pub pins: list_head,
-    pub status: ::core::ffi::c_int,
+    pub status: ::kernel::ffi::c_int,
     pub notifier: blocking_notifier_head,
     pub jack_zones: list_head,
 }
@@ -61,14 +61,14 @@ pub struct snd_soc_jack {
 extern "C" {
     pub fn snd_soc_jack_report(
         jack: *mut snd_soc_jack,
-        status: ::core::ffi::c_int,
-        mask: ::core::ffi::c_int,
+        status: ::kernel::ffi::c_int,
+        mask: ::kernel::ffi::c_int,
     );
     pub fn snd_soc_jack_add_pins(
         jack: *mut snd_soc_jack,
-        count: ::core::ffi::c_int,
+        count: ::kernel::ffi::c_int,
         pins: *mut snd_soc_jack_pin,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_soc_jack_notifier_register(
         jack: *mut snd_soc_jack,
         nb: *mut notifier_block,
@@ -79,13 +79,13 @@ extern "C" {
     );
     pub fn snd_soc_jack_add_zones(
         jack: *mut snd_soc_jack,
-        count: ::core::ffi::c_int,
+        count: ::kernel::ffi::c_int,
         zones: *mut snd_soc_jack_zone,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_soc_jack_get_type(
         jack: *mut snd_soc_jack,
-        micbias_voltage: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        micbias_voltage: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 /* CONFIG_GPIOLIB declarations; when disabled, the C header supplies inline stubs. */
@@ -93,18 +93,18 @@ extern "C" {
 extern "C" {
     pub fn snd_soc_jack_add_gpios(
         jack: *mut snd_soc_jack,
-        count: ::core::ffi::c_int,
+        count: ::kernel::ffi::c_int,
         gpios: *mut snd_soc_jack_gpio,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_soc_jack_add_gpiods(
         gpiod_dev: *mut device,
         jack: *mut snd_soc_jack,
-        count: ::core::ffi::c_int,
+        count: ::kernel::ffi::c_int,
         gpios: *mut snd_soc_jack_gpio,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_soc_jack_free_gpios(
         jack: *mut snd_soc_jack,
-        count: ::core::ffi::c_int,
+        count: ::kernel::ffi::c_int,
         gpios: *mut snd_soc_jack_gpio,
     );
 }
@@ -112,9 +112,9 @@ extern "C" {
 #[cfg(not(CONFIG_GPIOLIB))]
 pub unsafe fn snd_soc_jack_add_gpios(
     _jack: *mut snd_soc_jack,
-    _count: ::core::ffi::c_int,
+    _count: ::kernel::ffi::c_int,
     _gpios: *mut snd_soc_jack_gpio,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -122,16 +122,16 @@ pub unsafe fn snd_soc_jack_add_gpios(
 pub unsafe fn snd_soc_jack_add_gpiods(
     _gpiod_dev: *mut device,
     _jack: *mut snd_soc_jack,
-    _count: ::core::ffi::c_int,
+    _count: ::kernel::ffi::c_int,
     _gpios: *mut snd_soc_jack_gpio,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     0
 }
 
 #[cfg(not(CONFIG_GPIOLIB))]
 pub unsafe fn snd_soc_jack_free_gpios(
     _jack: *mut snd_soc_jack,
-    _count: ::core::ffi::c_int,
+    _count: ::kernel::ffi::c_int,
     _gpios: *mut snd_soc_jack_gpio,
 ) {
 }

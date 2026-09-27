@@ -2,13 +2,13 @@
 
 // Kernel and KUnit declarations are supplied by the surrounding build.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 use core::ptr;
 
 #[repr(C)]
 pub struct kprobe {
     pub offset: i32,
-    pub addr: *mut core::ffi::c_void,
+    pub addr: *mut kernel::ffi::c_void,
     pub symbol_name: *const c_char,
 }
 

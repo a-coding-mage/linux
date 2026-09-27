@@ -5,7 +5,7 @@
 
 /* Dependencies supplied by the surrounding kernel/NFC translation. */
 
-use core::ffi::{c_char, c_int, c_void};
+use kernel::ffi::{c_char, c_int, c_void};
 
 #[repr(C)]
 pub struct nfc_hci_dev;
@@ -32,10 +32,10 @@ pub struct nfc_llc;
 #[repr(C)]
 pub struct nfc_vendor_cmd;
 
-pub type u8 = core::ffi::c_uchar;
-pub type u32 = core::ffi::c_uint;
+pub type u8 = kernel::ffi::c_uchar;
+pub type u32 = kernel::ffi::c_uint;
 pub type size_t = usize;
-pub type c_ulong = core::ffi::c_ulong;
+pub type c_ulong = kernel::ffi::c_ulong;
 pub type data_exchange_cb_t = unsafe extern "C" fn(*mut c_void, *mut sk_buff);
 pub type se_io_cb_t = unsafe extern "C" fn(*mut c_void, *mut sk_buff);
 

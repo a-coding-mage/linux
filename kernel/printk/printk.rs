@@ -139,7 +139,7 @@ enum devkmsg_log_masks {
 /* Keep both the 'on' and 'off' bits clear, i.e. ratelimit by default: */
 // #define DEVKMSG_LOG_MASK_DEFAULT	0
 
-static core::ffi::c_uint __read_mostly devkmsg_log = DEVKMSG_LOG_MASK_DEFAULT;
+static kernel::ffi::c_uint __read_mostly devkmsg_log = DEVKMSG_LOG_MASK_DEFAULT;
 
 static int __control_devkmsg(char *str)
 {
@@ -203,7 +203,7 @@ int devkmsg_sysctl_set_loglvl(const struct ctl_table *table, int write,
 			      void *buffer, size_t *lenp, loff_t *ppos)
 {
 	char old_str[DEVKMSG_STR_MAX_SIZE];
-	core::ffi::c_uint old;
+	kernel::ffi::c_uint old;
 	int err;
 
 	if (write) {
@@ -315,10 +315,10 @@ EXPORT_SYMBOL(console_srcu_read_unlock);
 // 	mutex_acquire(&console_lock_dep_map, 0, 0, _RET_IP_);\
 // } while (0)
 
-static int __down_trylock_console_sem(ip: core::ffi::c_ulong)
+static int __down_trylock_console_sem(ip: kernel::ffi::c_ulong)
 {
 	int lock_failed;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	/*
 	 * Here and in __up_console_sem() we need to be in safe mode,
@@ -336,9 +336,9 @@ static int __down_trylock_console_sem(ip: core::ffi::c_ulong)
 }
 // #define down_trylock_console_sem() __down_trylock_console_sem(_RET_IP_)
 
-static void __up_console_sem(ip: core::ffi::c_ulong)
+static void __up_console_sem(ip: kernel::ffi::c_ulong)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	mutex_release(&console_lock_dep_map, ip);
 
@@ -548,8 +548,8 @@ static void latched_seq_write(latched_seq *ls, val: u64)
 /* Can be called from any context. */
 static u64 latched_seq_read_nolock(latched_seq *ls)
 {
-	core::ffi::c_uint seq;
-	core::ffi::c_uint idx;
+	kernel::ffi::c_uint seq;
+	kernel::ffi::c_uint idx;
 	u64 val;
 
 	do {
@@ -663,14 +663,14 @@ static ssize_t info_print_ext_header(char *buf, size_t size,
 
 static ssize_t msg_add_ext_text(char *buf, size_t size,
 				const char *text, size_t text_len,
-				endc: core::ffi::c_uchar)
+				endc: kernel::ffi::c_uchar)
 {
 	char *p = buf, *e = buf + size;
 	size_t i;
 
 	/* escape non-printable characters */
 	for (i = 0; i < text_len; i++) {
-		core::ffi::c_uchar c = text[i];
+		kernel::ffi::c_uchar c = text[i];
 
 		if (c < ' ' || c >= 127 || c == '\\')
 			p += scnprintf(p, e - p, "\\x%02x", c);
@@ -785,7 +785,7 @@ static ssize_t devkmsg_write(kiocb *iocb, iov_iter *from)
 	line = buf;
 	if (line[0] == '<') {
 		char *endp = NULL;
-		core::ffi::c_uint u;
+		kernel::ffi::c_uint u;
 
 		u = simple_strtoul(line + 1, &endp, 10);
 		if (endp && endp[0] == '>') {
@@ -1044,7 +1044,7 @@ void log_buf_vmcoreinfo_setup(void)
 // #endif
 
 /* requested log_buf_len from kernel cmdline */
-static core::ffi::c_ulong __initdata new_log_buf_len;
+static kernel::ffi::c_ulong __initdata new_log_buf_len;
 
 /* we practice scaling the ring buffer by powers of 2 */
 static void __init log_buf_len_update(size: u64)
@@ -1057,7 +1057,7 @@ static void __init log_buf_len_update(size: u64)
 	if (size)
 		size = roundup_pow_of_two(size);
 	if (size > log_buf_len)
-		new_log_buf_len = (core::ffi::c_ulong)size;
+		new_log_buf_len = (kernel::ffi::c_ulong)size;
 }
 
 /* save requested log_buf_len since it's too early to process it */
@@ -1081,7 +1081,7 @@ early_param("log_buf_len", log_buf_len_setup);
 
 static void __init log_buf_add_cpu(void)
 {
-	core::ffi::c_uint cpu_extra;
+	kernel::ffi::c_uint cpu_extra;
 
 	/*
 	 * archs should set up cpu_possible_bits properly with
@@ -1114,7 +1114,7 @@ static void __init set_percpu_data_ready(void)
 	__printk_percpu_data_ready = true;
 }
 
-static core::ffi::c_uint __init add_to_rb(printk_ringbuffer *rb,
+static kernel::ffi::c_uint __init add_to_rb(printk_ringbuffer *rb,
 				     printk_record *r)
 {
 	struct prb_reserved_entry e;
@@ -1143,7 +1143,7 @@ static char setup_text_buf[PRINTKRB_RECORD_MAX] __initdata;
 
 static void print_log_buf_usage_stats(void)
 {
-	core::ffi::c_uint descs_count = log_buf_len >> PRB_AVGBITS;
+	kernel::ffi::c_uint descs_count = log_buf_len >> PRB_AVGBITS;
 	size_t meta_data_size;
 
 	meta_data_size = descs_count * (sizeof(prb_desc) + sizeof(printk_info));
@@ -1158,16 +1158,16 @@ void __init setup_log_buf(int early)
 	'err_free_log_buf: {
 	'err_free_descs: {
 	struct printk_info *new_infos;
-	core::ffi::c_uint new_descs_count;
+	kernel::ffi::c_uint new_descs_count;
 	struct prb_desc *new_descs;
 	struct printk_info info;
 	struct printk_record r;
-	core::ffi::c_uint text_size;
+	kernel::ffi::c_uint text_size;
 	size_t new_descs_size;
 	size_t new_infos_size;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	char *new_log_buf;
-	core::ffi::c_uint free;
+	kernel::ffi::c_uint free;
 	u64 seq;
 
 	/*
@@ -1303,14 +1303,14 @@ static bool suppress_message_printing(int level)
 // #ifdef CONFIG_BOOT_PRINTK_DELAY
 
 static int boot_delay; /* msecs delay after each printk during bootup */
-static core::ffi::c_ulonglong loops_per_msec;	/* based on boot_delay */
+static kernel::ffi::c_ulonglong loops_per_msec;	/* based on boot_delay */
 
 static int __init boot_delay_setup(char *str)
 {
-	core::ffi::c_ulong lpj;
+	kernel::ffi::c_ulong lpj;
 
 	lpj = preset_lpj ? preset_lpj : 1000000;	/* some guess */
-	loops_per_msec = (core::ffi::c_ulonglong)lpj / 1000 * HZ;
+	loops_per_msec = (kernel::ffi::c_ulonglong)lpj / 1000 * HZ;
 
 	get_option(&str, &boot_delay);
 	if (boot_delay > 10 * 1000)
@@ -1325,15 +1325,15 @@ early_param("boot_delay", boot_delay_setup);
 
 static void boot_delay_msec(int level)
 {
-	core::ffi::c_ulonglong k;
-	core::ffi::c_ulong timeout;
+	kernel::ffi::c_ulonglong k;
+	kernel::ffi::c_ulong timeout;
 	bool suppress = !is_printk_force_console() &&
 			suppress_message_printing(level);
 
 	if ((boot_delay == 0 || system_state >= SYSTEM_RUNNING) || suppress)
 		return;
 
-	k = (core::ffi::c_ulonglong)loops_per_msec * boot_delay;
+	k = (kernel::ffi::c_ulonglong)loops_per_msec * boot_delay;
 
 	timeout = jiffies + msecs_to_jiffies(boot_delay);
 	while (k) {
@@ -1358,17 +1358,17 @@ void boot_delay_msec(int level)
 static bool printk_time = IS_ENABLED(CONFIG_PRINTK_TIME);
 module_param_named(time, printk_time, bool, S_IRUGO | S_IWUSR);
 
-static size_t print_syslog(level: core::ffi::c_uint, char *buf)
+static size_t print_syslog(level: kernel::ffi::c_uint, char *buf)
 {
 	return sprintf(buf, "<%u>", level);
 }
 
 static size_t print_time(ts: u64, char *buf)
 {
-	core::ffi::c_ulong rem_nsec = do_div(ts, 1000000000);
+	kernel::ffi::c_ulong rem_nsec = do_div(ts, 1000000000);
 
 	return sprintf(buf, "[%5lu.%06lu]",
-		       (core::ffi::c_ulong)ts, rem_nsec / 1000);
+		       (kernel::ffi::c_ulong)ts, rem_nsec / 1000);
 }
 
 // #ifdef CONFIG_PRINTK_CALLER
@@ -1524,7 +1524,7 @@ static size_t record_print_text(printk_record *r, syslog: bool,
 }
 
 static size_t get_record_print_text_size(printk_info *info,
-					 line_count: core::ffi::c_uint,
+					 line_count: kernel::ffi::c_uint,
 					 syslog: bool, time: bool)
 {
 	char prefix[PRINTK_PREFIX_MAX];
@@ -1551,7 +1551,7 @@ static u64 find_first_fitting_seq(start_seq: u64, max_seq: u64, size_t size,
 				  syslog: bool, time: bool)
 {
 	struct printk_info info;
-	core::ffi::c_uint line_count;
+	kernel::ffi::c_uint line_count;
 	size_t len = 0;
 	u64 seq;
 
@@ -1838,7 +1838,7 @@ int do_syslog(int type, char __user *buf, int len, int source)
 			error = prb_next_seq(prb) - syslog_seq;
 		} else {
 			bool time = syslog_partial ? syslog_time : printk_time;
-			core::ffi::c_uint line_count;
+			kernel::ffi::c_uint line_count;
 			u64 seq;
 
 			prb_for_each_info!(syslog_seq, prb, seq, &info,
@@ -1996,7 +1996,7 @@ static int console_trylock_spinning(void)
 	struct task_struct *owner = NULL;
 	bool waiter;
 	bool spin = false;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	if (console_trylock())
 		return 1;
@@ -2288,7 +2288,7 @@ int vprintk_store(int facility, int level,
 	struct prb_reserved_entry e;
 	enum printk_info_flags flags = 0;
 	struct printk_record r;
-	core::ffi::c_ulong irqflags;
+	kernel::ffi::c_ulong irqflags;
 	u16 trunc_msg_len = 0;
 	char prefix_buf[8];
 	u8 *recursion_ptr;
@@ -2877,7 +2877,7 @@ void console_resume_all(void)
  * This function is called when a new CPU comes online (or fails to come
  * up) or goes offline.
  */
-static int console_cpu_notify(cpu: core::ffi::c_uint)
+static int console_cpu_notify(cpu: kernel::ffi::c_uint)
 {
 	struct console_flush_type ft;
 
@@ -3005,7 +3005,7 @@ static void console_prepend_message(printk_message *pmsg, const char *fmt, ...)
  *
  * @dropped is the dropped count to report in the dropped message.
  */
-void console_prepend_dropped(printk_message *pmsg, dropped: core::ffi::c_ulong)
+void console_prepend_dropped(printk_message *pmsg, dropped: kernel::ffi::c_ulong)
 {
 	console_prepend_message(pmsg, "** %lu printk messages dropped **\n", dropped);
 }
@@ -3149,7 +3149,7 @@ static bool console_emit_next_record(console *con, bool *handover, int cookie)
 	struct printk_message pmsg = {
 		pbufs: &printk_shared_pbufs,
 	};
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	*handover = false;
 
@@ -4085,7 +4085,7 @@ void register_console(console *newcon)
 	bool bootcon_registered = false;
 	bool realcon_registered = false;
 	struct console *con;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u64 init_seq;
 	int err;
 
@@ -4262,7 +4262,7 @@ static int unregister_console_locked(console *console)
 	bool found_legacy_con = false;
 	bool found_nbcon_con = false;
 	bool found_boot_con = false;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	struct console *c;
 	int res;
 
@@ -4499,8 +4499,8 @@ late_initcall(printk_late_init);
 /* If @con is specified, only wait for that console. Otherwise wait for all. */
 static bool __pr_flush(console *con, int timeout_ms, reset_on_progress: bool)
 {
-	core::ffi::c_ulong timeout_jiffies = msecs_to_jiffies(timeout_ms);
-	core::ffi::c_ulong remaining_jiffies = timeout_jiffies;
+	kernel::ffi::c_ulong timeout_jiffies = msecs_to_jiffies(timeout_ms);
+	kernel::ffi::c_ulong remaining_jiffies = timeout_jiffies;
 	struct console_flush_type ft;
 	struct console *c;
 	u64 last_diff = 0;
@@ -4528,8 +4528,8 @@ static bool __pr_flush(console *con, int timeout_ms, reset_on_progress: bool)
 	}
 
 	for (;;) {
-		core::ffi::c_ulong begin_jiffies;
-		core::ffi::c_ulong slept_jiffies;
+		kernel::ffi::c_ulong begin_jiffies;
+		kernel::ffi::c_ulong slept_jiffies;
 
 		diff = 0;
 
@@ -4780,10 +4780,10 @@ EXPORT_SYMBOL(__printk_ratelimit);
  * milliseconds have elapsed since the last time printk_timed_ratelimit()
  * returned true.
  */
-bool printk_timed_ratelimit(core::ffi::c_ulong *caller_jiffies,
-			interval_msecs: core::ffi::c_uint)
+bool printk_timed_ratelimit(kernel::ffi::c_ulong *caller_jiffies,
+			interval_msecs: kernel::ffi::c_uint)
 {
-	core::ffi::c_ulong elapsed = jiffies - *caller_jiffies;
+	kernel::ffi::c_ulong elapsed = jiffies - *caller_jiffies;
 
 	if (*caller_jiffies && elapsed <= msecs_to_jiffies(interval_msecs))
 		return false;
@@ -4806,7 +4806,7 @@ static LIST_HEAD(dump_list);
  */
 int kmsg_dump_register(kmsg_dumper *dumper)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int err = -EBUSY;
 
 	/* The dump callback needs to be set */
@@ -4835,7 +4835,7 @@ EXPORT_SYMBOL_GPL(kmsg_dump_register);
  */
 int kmsg_dump_unregister(kmsg_dumper *dumper)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int err = -EINVAL;
 
 	spin_lock_irqsave(&dump_list_lock, flags);
@@ -4932,7 +4932,7 @@ bool kmsg_dump_get_line(kmsg_dump_iter *iter, syslog: bool,
 	'out: {
 	u64 min_seq = latched_seq_read_nolock(&clear_seq);
 	struct printk_info info;
-	core::ffi::c_uint line_count;
+	kernel::ffi::c_uint line_count;
 	struct printk_record r;
 	size_t l = 0;
 	bool ret = false;

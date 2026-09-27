@@ -50,9 +50,9 @@ pub struct gpio_get_set_state {
 }
 
 extern "C" {
-    fn gpiochip_get_data(gc: *mut gpio_chip) -> *mut core::ffi::c_void;
-    fn rpi_firmware_property(fw: *mut rpi_firmware, tag: u32, data: *mut core::ffi::c_void, len: usize) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn gpiochip_get_data(gc: *mut gpio_chip) -> *mut kernel::ffi::c_void;
+    fn rpi_firmware_property(fw: *mut rpi_firmware, tag: u32, data: *mut kernel::ffi::c_void, len: usize) -> i32;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)] pub struct gpio_chip { pub parent: *mut device, pub label: *const u8, pub owner: *mut module, pub base: i32, pub ngpio: u32, pub direction_input: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>, pub direction_output: Option<unsafe extern "C" fn(*mut gpio_chip, u32, i32) -> i32>, pub get_direction: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>, pub get: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>, pub set: Option<unsafe extern "C" fn(*mut gpio_chip, u32, i32)>, pub can_sleep: bool }

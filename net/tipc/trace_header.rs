@@ -72,12 +72,12 @@ pub fn evt_sym(val: u32) -> Option<&'static str> {
 #[repr(C)] pub struct TipcNode { _private: [u8; 0] }
 
 extern "C" {
-    pub static mut sysctl_tipc_sk_filter: [core::ffi::c_ulong; 5];
-    pub fn tipc_skb_dump(skb: *mut SkBuff, more: bool, buf: *mut core::ffi::c_char) -> i32;
-    pub fn tipc_list_dump(list: *mut SkBuffHead, more: bool, buf: *mut core::ffi::c_char) -> i32;
-    pub fn tipc_sk_dump(sk: *mut Sock, dqueues: u16, buf: *mut core::ffi::c_char) -> i32;
-    pub fn tipc_link_dump(l: *mut TipcLink, dqueues: u16, buf: *mut core::ffi::c_char) -> i32;
-    pub fn tipc_node_dump(n: *mut TipcNode, more: bool, buf: *mut core::ffi::c_char) -> i32;
+    pub static mut sysctl_tipc_sk_filter: [kernel::ffi::c_ulong; 5];
+    pub fn tipc_skb_dump(skb: *mut SkBuff, more: bool, buf: *mut kernel::ffi::c_char) -> i32;
+    pub fn tipc_list_dump(list: *mut SkBuffHead, more: bool, buf: *mut kernel::ffi::c_char) -> i32;
+    pub fn tipc_sk_dump(sk: *mut Sock, dqueues: u16, buf: *mut kernel::ffi::c_char) -> i32;
+    pub fn tipc_link_dump(l: *mut TipcLink, dqueues: u16, buf: *mut kernel::ffi::c_char) -> i32;
+    pub fn tipc_node_dump(n: *mut TipcNode, more: bool, buf: *mut kernel::ffi::c_char) -> i32;
     pub fn tipc_sk_filtering(sk: *mut Sock) -> bool;
 }
 

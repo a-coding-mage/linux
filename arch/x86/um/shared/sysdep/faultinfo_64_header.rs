@@ -19,9 +19,9 @@
  */
 #[repr(C)]
 pub struct faultinfo {
-    pub error_code: core::ffi::c_int, /* in ptrace_faultinfo misleadingly called is_write */
-    pub cr2: core::ffi::c_ulong, /* in ptrace_faultinfo called addr */
-    pub trap_no: core::ffi::c_int, /* missing in ptrace_faultinfo */
+    pub error_code: kernel::ffi::c_int, /* in ptrace_faultinfo misleadingly called is_write */
+    pub cr2: kernel::ffi::c_ulong, /* in ptrace_faultinfo called addr */
+    pub trap_no: kernel::ffi::c_int, /* missing in ptrace_faultinfo */
 }
 
 #[macro_export]
@@ -46,7 +46,7 @@ macro_rules! SEGV_IS_FIXABLE {
     };
 }
 
-pub const PTRACE_FULL_FAULTINFO: core::ffi::c_int = 1;
+pub const PTRACE_FULL_FAULTINFO: kernel::ffi::c_int = 1;
 
 /*
  * The C macro uses architecture-specific inline assembly and the external

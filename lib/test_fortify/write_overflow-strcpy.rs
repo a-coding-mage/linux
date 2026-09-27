@@ -2,8 +2,8 @@
 
 // Dependency supplied by the original "test_fortify.h" include.
 unsafe extern "C" {
-    fn strcpy(dest: *mut core::ffi::c_char, src: *const core::ffi::c_char)
-        -> *mut core::ffi::c_char;
+    fn strcpy(dest: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char)
+        -> *mut kernel::ffi::c_char;
 }
 
 macro_rules! TEST {

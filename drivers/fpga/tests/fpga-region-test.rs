@@ -50,7 +50,7 @@ unsafe extern "C" fn fpga_region_unregister_wrapper(region: *mut fpga_region) {
 
 unsafe extern "C" fn op_write(
     mgr: *mut fpga_manager,
-    _buf: *const core::ffi::c_char,
+    _buf: *const kernel::ffi::c_char,
     _count: usize,
 ) -> i32 {
     let stats = (*mgr).priv_ as *mut mgr_stats;
@@ -92,7 +92,7 @@ unsafe extern "C" fn fake_region_get_bridges(region: *mut fpga_region) -> i32 {
     fpga_bridge_get_to_list((*bridge).dev.parent, (*region).info, &mut (*region).bridge_list)
 }
 
-unsafe extern "C" fn fake_region_match(dev: *mut device, data: *const core::ffi::c_void) -> i32 {
+unsafe extern "C" fn fake_region_match(dev: *mut device, data: *const kernel::ffi::c_void) -> i32 {
     if (*dev).parent == data as *mut device { 1 } else { 0 }
 }
 
@@ -173,7 +173,7 @@ unsafe extern "C" fn fpga_region_test_init(test: *mut kunit) -> i32 {
 
     let region_info = fpga_region_info {
         mgr: (*ctx).mgr,
-        priv_: (*ctx).bridge as *mut core::ffi::c_void,
+        priv_: (*ctx).bridge as *mut kernel::ffi::c_void,
         get_bridges: Some(fake_region_get_bridges),
     };
 
@@ -183,7 +183,7 @@ unsafe extern "C" fn fpga_region_test_init(test: *mut kunit) -> i32 {
     ret = kunit_add_action_or_reset(test, Some(fpga_region_unregister_wrapper), (*ctx).region);
     kunit_assert_eq(test, ret, 0);
 
-    (*test).priv_ = ctx as *mut core::ffi::c_void;
+    (*test).priv_ = ctx as *mut kernel::ffi::c_void;
 
     0
 }

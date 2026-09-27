@@ -14,8 +14,8 @@
 
 extern "C" {
     static mut init_uts_ns: uts_namespace;
-    fn strscpy(dst: *mut core::ffi::c_char, src: *const core::ffi::c_char, count: usize) -> isize;
-    fn pr_warn(format: *const core::ffi::c_char, ...);
+    fn strscpy(dst: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char, count: usize) -> isize;
+    fn pr_warn(format: *const kernel::ffi::c_char, ...);
 }
 
 // The following type and constants are supplied by the corresponding kernel
@@ -23,7 +23,7 @@ extern "C" {
 #[allow(non_camel_case_types)]
 type uts_namespace = crate::uts_namespace;
 
-unsafe fn early_hostname(arg: *mut core::ffi::c_char) -> core::ffi::c_int {
+unsafe fn early_hostname(arg: *mut kernel::ffi::c_char) -> kernel::ffi::c_int {
     let bufsize: usize = core::mem::size_of_val(&(*core::ptr::addr_of!(init_uts_ns)).name.nodename);
     let maxlen: usize = bufsize - 1;
     let arglen: isize;
@@ -35,7 +35,7 @@ unsafe fn early_hostname(arg: *mut core::ffi::c_char) -> core::ffi::c_int {
     );
     if arglen < 0 {
         pr_warn(
-            b"hostname parameter exceeds %zd characters and will be truncated\0".as_ptr() as *const core::ffi::c_char,
+            b"hostname parameter exceeds %zd characters and will be truncated\0".as_ptr() as *const kernel::ffi::c_char,
             maxlen,
         );
     }

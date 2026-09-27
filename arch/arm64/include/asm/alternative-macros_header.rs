@@ -104,11 +104,11 @@ macro_rules! ALTERNATIVE {
 
 /* External dependencies supplied by the surrounding kernel translation. */
 extern "C" {
-    fn cpucap_is_possible(cpucap: libc::c_ulong) -> bool;
+    fn cpucap_is_possible(cpucap: kernel::ffi::c_ulong) -> bool;
 }
 
 #[inline(always)]
-pub unsafe fn alternative_has_cap_likely(cpucap: libc::c_ulong) -> bool {
+pub unsafe fn alternative_has_cap_likely(cpucap: kernel::ffi::c_ulong) -> bool {
     if !cpucap_is_possible(cpucap) {
         return false;
     }
@@ -120,7 +120,7 @@ pub unsafe fn alternative_has_cap_likely(cpucap: libc::c_ulong) -> bool {
 }
 
 #[inline(always)]
-pub unsafe fn alternative_has_cap_unlikely(cpucap: libc::c_ulong) -> bool {
+pub unsafe fn alternative_has_cap_unlikely(cpucap: kernel::ffi::c_ulong) -> bool {
     if !cpucap_is_possible(cpucap) {
         return false;
     }

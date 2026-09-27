@@ -72,19 +72,19 @@ pub const SLIM_DEVICE_MAX_PORTS: u32 = 32;
 
 #[repr(C)]
 pub struct slim_stream_config {
-    pub rate: ::core::ffi::c_uint,
-    pub bps: ::core::ffi::c_uint,
-    pub ch_count: ::core::ffi::c_uint,
-    pub chs: *mut ::core::ffi::c_uint,
-    pub port_mask: ::core::ffi::c_ulong,
-    pub direction: ::core::ffi::c_int,
+    pub rate: ::kernel::ffi::c_uint,
+    pub bps: ::kernel::ffi::c_uint,
+    pub ch_count: ::kernel::ffi::c_uint,
+    pub chs: *mut ::kernel::ffi::c_uint,
+    pub port_mask: ::kernel::ffi::c_ulong,
+    pub direction: ::kernel::ffi::c_int,
 }
 
 extern "C" {
     pub fn __slim_driver_register(drv: *mut slim_driver, owner: *mut module) -> i32;
     pub fn slim_driver_unregister(drv: *mut slim_driver);
-    pub fn dev_get_drvdata(dev: *const device) -> *mut ::core::ffi::c_void;
-    pub fn dev_set_drvdata(dev: *mut device, data: *mut ::core::ffi::c_void);
+    pub fn dev_get_drvdata(dev: *const device) -> *mut ::kernel::ffi::c_void;
+    pub fn dev_set_drvdata(dev: *mut device, data: *mut ::kernel::ffi::c_void);
     pub fn of_slim_get_device(ctrl: *mut slim_controller, np: *mut device_node) -> *mut slim_device;
     pub fn slim_get_device(ctrl: *mut slim_controller, e_addr: *mut slim_eaddr) -> *mut slim_device;
     pub fn slim_get_logical_addr(sbdev: *mut slim_device) -> i32;
@@ -117,6 +117,6 @@ pub const SLIM_MSG_MC_CHANGE_VALUE: u8 = 0x68;
 // The C container_of/container_of_const macros are provided by the kernel support layer.
 // slim_driver_register and module_slim_driver retain their C macro intent here.
 
-pub type c_void = ::core::ffi::c_void;
+pub type c_void = ::kernel::ffi::c_void;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -44,10 +44,10 @@ unsafe fn kgdb_transition_check(buffer: *mut c_char) -> c_int {
     if *buffer != b'+' as c_char && *buffer != b'$' as c_char {
         kdb_printf(b"%s\0".as_ptr() as *const c_char, buffer);
     } else {
-        let slen = libc::strlen(buffer);
+        let slen = strlen(buffer);
         if slen > 3 && *buffer.add(slen - 3) == b'#' as c_char {
             kdb_gdb_state_pass(buffer);
-            libc::strcpy(buffer, b"kgdb\0".as_ptr() as *const c_char);
+            strcpy(buffer, b"kgdb\0".as_ptr() as *const c_char);
             return 1;
         }
     }
@@ -117,30 +117,30 @@ unsafe fn kdb_read(buffer: *mut c_char, bufsize: usize) -> *mut c_char {
     let mut tmpbuffer = [0 as c_char; CMD_BUFLEN];
     let mut dtab = 0;
     if kdbgetintenv(b"DTABCOUNT\0".as_ptr() as *const c_char, &mut dtab) != 0 { dtab = 30; }
-    let len = libc::strlen(buffer);
+    let len = strlen(buffer);
     cp = cp.add(len);
     if len > 0 && *buffer.add(len - 1) == 10 { cp = cp.sub(1); }
     lastchar = cp; *cp = 0; kdb_printf(b"%s\0".as_ptr() as *const c_char, buffer);
     loop {
         let key = kdb_getchar() as c_int; if key != 9 { tab = 0; }
         match key {
-            8 if cp > buffer => { libc::memmove(cp.sub(1) as *mut c_void, cp as *const c_void, lastchar.offset_from(cp) as usize + 1); lastchar = lastchar.sub(1); cp = cp.sub(1); kdb_printf(b"\b%s \0".as_ptr() as *const c_char, cp); kdb_position_cursor(kdb_prompt_str.as_mut_ptr(), buffer, cp); }
+            8 if cp > buffer => { memmove(cp.sub(1) as *mut c_void, cp as *const c_void, lastchar.offset_from(cp) as usize + 1); lastchar = lastchar.sub(1); cp = cp.sub(1); kdb_printf(b"\x08%s \0".as_ptr() as *const c_char, cp); kdb_position_cursor(kdb_prompt_str.as_mut_ptr(), buffer, cp); }
             10 | 13 => { *lastchar = 10; *lastchar.add(1) = 0; kdb_printf(b"\n\0".as_ptr() as *const c_char); return buffer; }
-            4 if cp < lastchar => { libc::memmove(cp as *mut c_void, cp.add(1) as *const c_void, lastchar.offset_from(cp) as usize); lastchar = lastchar.sub(1); kdb_printf(b"%s \0".as_ptr() as *const c_char, cp); kdb_position_cursor(kdb_prompt_str.as_mut_ptr(), buffer, cp); }
+            4 if cp < lastchar => { memmove(cp as *mut c_void, cp.add(1) as *const c_void, lastchar.offset_from(cp) as usize); lastchar = lastchar.sub(1); kdb_printf(b"%s \0".as_ptr() as *const c_char, cp); kdb_position_cursor(kdb_prompt_str.as_mut_ptr(), buffer, cp); }
             1 => { cp = buffer; kdb_position_cursor(kdb_prompt_str.as_mut_ptr(), buffer, cp); }
             5 => { kdb_printf(b"%s\0".as_ptr() as *const c_char, cp); cp = lastchar; }
-            2 if cp > buffer => { kdb_printf(b"\b\0".as_ptr() as *const c_char); cp = cp.sub(1); }
+            2 if cp > buffer => { kdb_printf(b"\x08\0".as_ptr() as *const c_char); cp = cp.sub(1); }
             6 if cp < lastchar => { kdb_printf(b"%c\0".as_ptr() as *const c_char, *cp as c_int); cp = cp.add(1); }
             14 | 16 => { *lastchar = key as c_char; *lastchar.add(1) = 0; return lastchar; }
-            9 => { if tab < 2 { tab += 1; } let old = *cp; *cp = 0; let start = libc::strrchr(buffer, b' ' as c_int); let start = if start.is_null() { buffer } else { start.add(1) }; libc::strcpy(tmpbuffer.as_mut_ptr(), start); *cp = old; let oldlen = libc::strlen(tmpbuffer.as_mut_ptr()); let count = kallsyms_symbol_complete(tmpbuffer.as_mut_ptr(), CMD_BUFLEN); if tab != 2 && count > 0 { let mut n = libc::strlen(tmpbuffer.as_mut_ptr()) - oldlen; if lastchar.add(n) >= bufend { n = bufend.offset_from(lastchar) as usize; } if n != 0 { libc::memmove(cp.add(n) as *mut c_void, cp as *const c_void, lastchar.offset_from(cp) as usize + 1); libc::memcpy(cp as *mut c_void, tmpbuffer.as_ptr().add(oldlen) as *const c_void, n); cp = cp.add(n); lastchar = lastchar.add(n); } } }
-            c if c >= 32 && lastchar < bufend => { if cp < lastchar { libc::memmove(cp.add(1) as *mut c_void, cp as *const c_void, lastchar.offset_from(cp) as usize + 1); lastchar = lastchar.add(1); *cp = c as c_char; cp = cp.add(1); } else { lastchar = lastchar.add(1); *lastchar = 0; *cp = c as c_char; cp = cp.add(1); } }
+            9 => { if tab < 2 { tab += 1; } let old = *cp; *cp = 0; let start = strrchr(buffer, b' ' as c_int); let start = if start.is_null() { buffer } else { start.add(1) }; strcpy(tmpbuffer.as_mut_ptr(), start); *cp = old; let oldlen = strlen(tmpbuffer.as_mut_ptr()); let count = kallsyms_symbol_complete(tmpbuffer.as_mut_ptr(), CMD_BUFLEN); if tab != 2 && count > 0 { let mut n = strlen(tmpbuffer.as_mut_ptr()) - oldlen; if lastchar.add(n) >= bufend { n = bufend.offset_from(lastchar) as usize; } if n != 0 { memmove(cp.add(n) as *mut c_void, cp as *const c_void, lastchar.offset_from(cp) as usize + 1); memcpy(cp as *mut c_void, tmpbuffer.as_ptr().add(oldlen) as *const c_void, n); cp = cp.add(n); lastchar = lastchar.add(n); } } }
+            c if c >= 32 && lastchar < bufend => { if cp < lastchar { memmove(cp.add(1) as *mut c_void, cp as *const c_void, lastchar.offset_from(cp) as usize + 1); lastchar = lastchar.add(1); *cp = c as c_char; cp = cp.add(1); } else { lastchar = lastchar.add(1); *lastchar = 0; *cp = c as c_char; cp = cp.add(1); } }
             _ => {}
         }
     }
 }
 
 pub unsafe fn kdb_getstr(buffer: *mut c_char, bufsize: usize, prompt: *const c_char) -> *mut c_char {
-    if !prompt.is_null() { libc::strcpy(kdb_prompt_str.as_mut_ptr(), prompt); }
+    if !prompt.is_null() { strcpy(kdb_prompt_str.as_mut_ptr(), prompt); }
     kdb_printf(b"%s\0".as_ptr() as *const c_char, kdb_prompt_str.as_mut_ptr());
     kdb_read(buffer, bufsize)
 }

@@ -11,25 +11,25 @@
 // linux/errno.h, linux/fs.h, linux/buffer_head.h, and mdt.h.
 
 #[inline]
-pub unsafe fn nilfs_sufile_get_nsegments(sufile: *mut inode) -> ::core::ffi::c_ulong {
+pub unsafe fn nilfs_sufile_get_nsegments(sufile: *mut inode) -> ::kernel::ffi::c_ulong {
     (*((*sufile).i_sb).s_fs_info as *mut the_nilfs).as_ref().unwrap().ns_nsegments
 }
 
 extern "C" {
-    pub fn nilfs_sufile_get_ncleansegs(sufile: *mut inode) -> ::core::ffi::c_ulong;
+    pub fn nilfs_sufile_get_ncleansegs(sufile: *mut inode) -> ::kernel::ffi::c_ulong;
     pub fn nilfs_sufile_set_alloc_range(sufile: *mut inode, start: u64, end: u64) -> i32;
     pub fn nilfs_sufile_alloc(sufile: *mut inode, segnum: *mut u64) -> i32;
     pub fn nilfs_sufile_mark_dirty(sufile: *mut inode, segnum: u64) -> i32;
     pub fn nilfs_sufile_set_segment_usage(
-        sufile: *mut inode, segnum: u64, nblocks: ::core::ffi::c_ulong, modtime: time64_t,
+        sufile: *mut inode, segnum: u64, nblocks: ::kernel::ffi::c_ulong, modtime: time64_t,
     ) -> i32;
     pub fn nilfs_sufile_get_stat(sufile: *mut inode, stat: *mut nilfs_sustat) -> i32;
     pub fn nilfs_sufile_get_suinfo(
-        sufile: *mut inode, segnum: u64, buf: *mut ::core::ffi::c_void,
+        sufile: *mut inode, segnum: u64, buf: *mut ::kernel::ffi::c_void,
         nitems: u32, bufsz: usize,
     ) -> isize;
     pub fn nilfs_sufile_set_suinfo(
-        sufile: *mut inode, buf: *mut ::core::ffi::c_void, nitems: u32, bufsz: usize,
+        sufile: *mut inode, buf: *mut ::kernel::ffi::c_void, nitems: u32, bufsz: usize,
     ) -> isize;
     pub fn nilfs_sufile_updatev(
         sufile: *mut inode, segnumv: *mut u64, nsegs: usize, create: i32,

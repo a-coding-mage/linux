@@ -4,12 +4,12 @@
 const PIC_VEC_SPURRIOUS: u32 = 15;
 
 static mut mpc8xx_pic_host: *mut irq_domain = core::ptr::null_mut();
-static mut mpc8xx_cached_irq_mask: libc::c_ulong = 0;
+static mut mpc8xx_cached_irq_mask: kernel::ffi::c_ulong = 0;
 static mut siu_reg: *mut sysconf8xx_t = core::ptr::null_mut();
 
 #[inline]
-unsafe fn mpc8xx_irqd_to_bit(d: *mut irq_data) -> libc::c_ulong {
-    0x80000000u32 as libc::c_ulong >> irqd_to_hwirq(d)
+unsafe fn mpc8xx_irqd_to_bit(d: *mut irq_data) -> kernel::ffi::c_ulong {
+    0x80000000u32 as kernel::ffi::c_ulong >> irqd_to_hwirq(d)
 }
 
 unsafe fn mpc8xx_unmask_irq(d: *mut irq_data) {
@@ -31,7 +31,7 @@ unsafe fn mpc8xx_end_irq(d: *mut irq_data) {
     out_be32(&mut (*siu_reg).sc_simask, mpc8xx_cached_irq_mask);
 }
 
-unsafe fn mpc8xx_set_irq_type(d: *mut irq_data, flow_type: libc::c_uint) -> libc::c_int {
+unsafe fn mpc8xx_set_irq_type(d: *mut irq_data, flow_type: kernel::ffi::c_uint) -> kernel::ffi::c_int {
     /* only external IRQ senses are programmable */
     if (flow_type & IRQ_TYPE_EDGE_FALLING) != 0 && (irqd_to_hwirq(d) & 1) == 0 {
         let mut siel = in_be32(&(*siu_reg).sc_siel);
@@ -43,7 +43,7 @@ unsafe fn mpc8xx_set_irq_type(d: *mut irq_data, flow_type: libc::c_uint) -> libc
 }
 
 static mut mpc8xx_pic: irq_chip = irq_chip {
-    name: b"8XX SIU\0".as_ptr() as *const libc::c_char,
+    name: b"8XX SIU\0".as_ptr() as *const kernel::ffi::c_char,
     irq_unmask: Some(mpc8xx_unmask_irq),
     irq_mask: Some(mpc8xx_mask_irq),
     irq_ack: Some(mpc8xx_ack),
@@ -51,7 +51,7 @@ static mut mpc8xx_pic: irq_chip = irq_chip {
     irq_set_type: Some(mpc8xx_set_irq_type),
 };
 
-pub unsafe fn mpc8xx_get_irq() -> libc::c_uint {
+pub unsafe fn mpc8xx_get_irq() -> kernel::ffi::c_uint {
     /* For MPC8xx, read the SIVEC register and shift the bits down
      * to get the irq number.
      */
@@ -66,9 +66,9 @@ pub unsafe fn mpc8xx_get_irq() -> libc::c_uint {
 
 unsafe fn mpc8xx_pic_host_map(
     _h: *mut irq_domain,
-    virq: libc::c_uint,
+    virq: kernel::ffi::c_uint,
     hw: irq_hw_number_t,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     pr_debug!("mpc8xx_pic_host_map({}, 0x{:lx})\n", virq, hw);
 
     /* Set default irq handle */
@@ -80,11 +80,11 @@ unsafe fn mpc8xx_pic_host_xlate(
     _h: *mut irq_domain,
     _ct: *mut device_node,
     intspec: *const u32,
-    intsize: libc::c_uint,
+    intsize: kernel::ffi::c_uint,
     out_hwirq: *mut irq_hw_number_t,
-    out_flags: *mut libc::c_uint,
-) -> libc::c_int {
-    static map_pic_senses: [libc::c_uint; 4] = [
+    out_flags: *mut kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
+    static map_pic_senses: [kernel::ffi::c_uint; 4] = [
         IRQ_TYPE_EDGE_RISING,
         IRQ_TYPE_LEVEL_LOW,
         IRQ_TYPE_LEVEL_HIGH,
@@ -113,11 +113,11 @@ static mpc8xx_pic_host_ops: irq_domain_ops = irq_domain_ops {
 pub unsafe fn mpc8xx_pic_init() {
     let mut res: resource = core::mem::zeroed();
     let mut np: *mut device_node;
-    let ret: libc::c_int;
+    let ret: kernel::ffi::c_int;
 
-    np = of_find_compatible_node(core::ptr::null_mut(), core::ptr::null_mut(), b"fsl,pq1-pic\0".as_ptr() as *const libc::c_char);
+    np = of_find_compatible_node(core::ptr::null_mut(), core::ptr::null_mut(), b"fsl,pq1-pic\0".as_ptr() as *const kernel::ffi::c_char);
     if np.is_null() {
-        np = of_find_node_by_type(core::ptr::null_mut(), b"mpc8xx-pic\0".as_ptr() as *const libc::c_char);
+        np = of_find_node_by_type(core::ptr::null_mut(), b"mpc8xx-pic\0".as_ptr() as *const kernel::ffi::c_char);
     }
     if np.is_null() {
         printk!(KERN_ERR "Could not find fsl,pq1-pic node\n");

@@ -31,14 +31,14 @@ pub struct debug_obj_descr;
 pub struct debug_obj {
     pub node: hlist_node,
     pub state: debug_obj_state,
-    pub astate: ::core::ffi::c_uint,
+    pub astate: ::kernel::ffi::c_uint,
     pub object: debug_obj_object,
     pub descr: *const debug_obj_descr,
 }
 
 #[repr(C)]
 pub union debug_obj_object {
-    pub object: *mut ::core::ffi::c_void,
+    pub object: *mut ::kernel::ffi::c_void,
     pub batch_last: *mut hlist_node,
 }
 
@@ -56,14 +56,14 @@ pub union debug_obj_object {
  */
 #[repr(C)]
 pub struct debug_obj_descr {
-    pub name: *const ::core::ffi::c_char,
-    pub debug_hint: Option<unsafe extern "C" fn(addr: *mut ::core::ffi::c_void) -> *mut ::core::ffi::c_void>,
-    pub is_static_object: Option<unsafe extern "C" fn(addr: *mut ::core::ffi::c_void) -> bool>,
-    pub fixup_init: Option<unsafe extern "C" fn(addr: *mut ::core::ffi::c_void, state: debug_obj_state) -> bool>,
-    pub fixup_activate: Option<unsafe extern "C" fn(addr: *mut ::core::ffi::c_void, state: debug_obj_state) -> bool>,
-    pub fixup_destroy: Option<unsafe extern "C" fn(addr: *mut ::core::ffi::c_void, state: debug_obj_state) -> bool>,
-    pub fixup_free: Option<unsafe extern "C" fn(addr: *mut ::core::ffi::c_void, state: debug_obj_state) -> bool>,
-    pub fixup_assert_init: Option<unsafe extern "C" fn(addr: *mut ::core::ffi::c_void, state: debug_obj_state) -> bool>,
+    pub name: *const ::kernel::ffi::c_char,
+    pub debug_hint: Option<unsafe extern "C" fn(addr: *mut ::kernel::ffi::c_void) -> *mut ::kernel::ffi::c_void>,
+    pub is_static_object: Option<unsafe extern "C" fn(addr: *mut ::kernel::ffi::c_void) -> bool>,
+    pub fixup_init: Option<unsafe extern "C" fn(addr: *mut ::kernel::ffi::c_void, state: debug_obj_state) -> bool>,
+    pub fixup_activate: Option<unsafe extern "C" fn(addr: *mut ::kernel::ffi::c_void, state: debug_obj_state) -> bool>,
+    pub fixup_destroy: Option<unsafe extern "C" fn(addr: *mut ::kernel::ffi::c_void, state: debug_obj_state) -> bool>,
+    pub fixup_free: Option<unsafe extern "C" fn(addr: *mut ::kernel::ffi::c_void, state: debug_obj_state) -> bool>,
+    pub fixup_assert_init: Option<unsafe extern "C" fn(addr: *mut ::kernel::ffi::c_void, state: debug_obj_state) -> bool>,
 }
 
 #[repr(C)]
@@ -71,32 +71,32 @@ pub struct hlist_node;
 
 #[cfg(CONFIG_DEBUG_OBJECTS)]
 extern "C" {
-    pub fn debug_object_init(addr: *mut ::core::ffi::c_void, descr: *const debug_obj_descr);
-    pub fn debug_object_init_on_stack(addr: *mut ::core::ffi::c_void, descr: *const debug_obj_descr);
-    pub fn debug_object_activate(addr: *mut ::core::ffi::c_void, descr: *const debug_obj_descr) -> ::core::ffi::c_int;
-    pub fn debug_object_deactivate(addr: *mut ::core::ffi::c_void, descr: *const debug_obj_descr);
-    pub fn debug_object_destroy(addr: *mut ::core::ffi::c_void, descr: *const debug_obj_descr);
-    pub fn debug_object_free(addr: *mut ::core::ffi::c_void, descr: *const debug_obj_descr);
-    pub fn debug_object_assert_init(addr: *mut ::core::ffi::c_void, descr: *const debug_obj_descr);
-    pub fn debug_object_active_state(addr: *mut ::core::ffi::c_void, descr: *const debug_obj_descr, expect: ::core::ffi::c_uint, next: ::core::ffi::c_uint);
+    pub fn debug_object_init(addr: *mut ::kernel::ffi::c_void, descr: *const debug_obj_descr);
+    pub fn debug_object_init_on_stack(addr: *mut ::kernel::ffi::c_void, descr: *const debug_obj_descr);
+    pub fn debug_object_activate(addr: *mut ::kernel::ffi::c_void, descr: *const debug_obj_descr) -> ::kernel::ffi::c_int;
+    pub fn debug_object_deactivate(addr: *mut ::kernel::ffi::c_void, descr: *const debug_obj_descr);
+    pub fn debug_object_destroy(addr: *mut ::kernel::ffi::c_void, descr: *const debug_obj_descr);
+    pub fn debug_object_free(addr: *mut ::kernel::ffi::c_void, descr: *const debug_obj_descr);
+    pub fn debug_object_assert_init(addr: *mut ::kernel::ffi::c_void, descr: *const debug_obj_descr);
+    pub fn debug_object_active_state(addr: *mut ::kernel::ffi::c_void, descr: *const debug_obj_descr, expect: ::kernel::ffi::c_uint, next: ::kernel::ffi::c_uint);
     pub fn debug_objects_early_init();
     pub fn debug_objects_mem_init();
 }
 
 #[cfg(not(CONFIG_DEBUG_OBJECTS))]
-pub unsafe fn debug_object_init(_: *mut ::core::ffi::c_void, _: *const debug_obj_descr) {}
+pub unsafe fn debug_object_init(_: *mut ::kernel::ffi::c_void, _: *const debug_obj_descr) {}
 #[cfg(not(CONFIG_DEBUG_OBJECTS))]
-pub unsafe fn debug_object_init_on_stack(_: *mut ::core::ffi::c_void, _: *const debug_obj_descr) {}
+pub unsafe fn debug_object_init_on_stack(_: *mut ::kernel::ffi::c_void, _: *const debug_obj_descr) {}
 #[cfg(not(CONFIG_DEBUG_OBJECTS))]
-pub unsafe fn debug_object_activate(_: *mut ::core::ffi::c_void, _: *const debug_obj_descr) -> ::core::ffi::c_int { 0 }
+pub unsafe fn debug_object_activate(_: *mut ::kernel::ffi::c_void, _: *const debug_obj_descr) -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_DEBUG_OBJECTS))]
-pub unsafe fn debug_object_deactivate(_: *mut ::core::ffi::c_void, _: *const debug_obj_descr) {}
+pub unsafe fn debug_object_deactivate(_: *mut ::kernel::ffi::c_void, _: *const debug_obj_descr) {}
 #[cfg(not(CONFIG_DEBUG_OBJECTS))]
-pub unsafe fn debug_object_destroy(_: *mut ::core::ffi::c_void, _: *const debug_obj_descr) {}
+pub unsafe fn debug_object_destroy(_: *mut ::kernel::ffi::c_void, _: *const debug_obj_descr) {}
 #[cfg(not(CONFIG_DEBUG_OBJECTS))]
-pub unsafe fn debug_object_free(_: *mut ::core::ffi::c_void, _: *const debug_obj_descr) {}
+pub unsafe fn debug_object_free(_: *mut ::kernel::ffi::c_void, _: *const debug_obj_descr) {}
 #[cfg(not(CONFIG_DEBUG_OBJECTS))]
-pub unsafe fn debug_object_assert_init(_: *mut ::core::ffi::c_void, _: *const debug_obj_descr) {}
+pub unsafe fn debug_object_assert_init(_: *mut ::kernel::ffi::c_void, _: *const debug_obj_descr) {}
 #[cfg(not(CONFIG_DEBUG_OBJECTS))]
 pub unsafe fn debug_objects_early_init() {}
 #[cfg(not(CONFIG_DEBUG_OBJECTS))]
@@ -104,10 +104,10 @@ pub unsafe fn debug_objects_mem_init() {}
 
 #[cfg(CONFIG_DEBUG_OBJECTS_FREE)]
 extern "C" {
-    pub fn debug_check_no_obj_freed(address: *const ::core::ffi::c_void, size: ::core::ffi::c_ulong);
+    pub fn debug_check_no_obj_freed(address: *const ::kernel::ffi::c_void, size: ::kernel::ffi::c_ulong);
 }
 
 #[cfg(not(CONFIG_DEBUG_OBJECTS_FREE))]
-pub unsafe fn debug_check_no_obj_freed(_: *const ::core::ffi::c_void, _: ::core::ffi::c_ulong) {}
+pub unsafe fn debug_check_no_obj_freed(_: *const ::kernel::ffi::c_void, _: ::kernel::ffi::c_ulong) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

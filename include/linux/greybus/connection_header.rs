@@ -51,12 +51,12 @@ pub struct gb_connection {
     pub state: gb_connection_state,
     pub operations: list_head,
 
-    pub name: [core::ffi::c_char; 16],
+    pub name: [kernel::ffi::c_char; 16],
     pub wq: *mut workqueue_struct,
 
     pub op_cycle: atomic_t,
 
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
 
     pub mode_switch: bool,
 }
@@ -132,14 +132,14 @@ pub unsafe fn gb_connection_is_control(connection: *mut gb_connection) -> bool {
 }
 
 #[inline]
-pub unsafe fn gb_connection_get_data(connection: *mut gb_connection) -> *mut core::ffi::c_void {
+pub unsafe fn gb_connection_get_data(connection: *mut gb_connection) -> *mut kernel::ffi::c_void {
     unsafe { (*connection).private }
 }
 
 #[inline]
 pub unsafe fn gb_connection_set_data(
     connection: *mut gb_connection,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) {
     unsafe { (*connection).private = data; }
 }

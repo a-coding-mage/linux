@@ -61,7 +61,7 @@ pub const PLPKS_FLUSH_SLEEP: u32 = 10000; // usec
 #[cfg(CONFIG_PSERIES_PLPKS)]
 #[repr(C)]
 pub struct plpks_var {
-    pub component: *mut core::ffi::c_char,
+    pub component: *mut kernel::ffi::c_char,
     pub name: *mut u8,
     pub data: *mut u8,
     pub policy: u32,
@@ -88,7 +88,7 @@ pub struct plpks_var_name_list {
 extern "C" {
     pub fn plpks_signed_update_var(var: *mut plpks_var, flags: u64) -> i32;
     pub fn plpks_write_var(var: plpks_var) -> i32;
-    pub fn plpks_remove_var(component: *mut core::ffi::c_char, varos: u8, vname: plpks_var_name) -> i32;
+    pub fn plpks_remove_var(component: *mut kernel::ffi::c_char, varos: u8, vname: plpks_var_name) -> i32;
     pub fn plpks_read_os_var(var: *mut plpks_var) -> i32;
     pub fn plpks_read_fw_var(var: *mut plpks_var) -> i32;
     pub fn plpks_read_bootloader_var(var: *mut plpks_var) -> i32;
@@ -106,7 +106,7 @@ extern "C" {
     pub fn plpks_get_wrappingfeatures() -> u64;
     pub fn plpks_get_passwordlen() -> u16;
     pub fn plpks_early_init_devtree();
-    pub fn plpks_populate_fdt(fdt: *mut core::ffi::c_void) -> i32;
+    pub fn plpks_populate_fdt(fdt: *mut kernel::ffi::c_void) -> i32;
     pub fn plpks_config_create_softlink(from: *mut kobject) -> i32;
     pub fn plpks_wrapping_is_supported() -> bool;
     pub fn plpks_gen_wrapping_key() -> i32;
@@ -121,7 +121,7 @@ pub fn plpks_get_passwordlen() -> u16 { panic!("BUILD_BUG") }
 #[cfg(not(CONFIG_PSERIES_PLPKS))]
 pub fn plpks_early_init_devtree() {}
 #[cfg(not(CONFIG_PSERIES_PLPKS))]
-pub fn plpks_populate_fdt(_fdt: *mut core::ffi::c_void) -> i32 { panic!("BUILD_BUG") }
+pub fn plpks_populate_fdt(_fdt: *mut kernel::ffi::c_void) -> i32 { panic!("BUILD_BUG") }
 #[cfg(not(CONFIG_PSERIES_PLPKS))]
 pub fn plpks_config_create_softlink(_from: *mut kobject) -> i32 { 0 }
 

@@ -3,7 +3,7 @@
  * types are intentionally left as external Rust dependencies.
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct ttm_tt {

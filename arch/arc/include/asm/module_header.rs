@@ -10,10 +10,10 @@
 #[repr(C)]
 pub struct mod_arch_specific {
     #[cfg(CONFIG_ARC_DW2_UNWIND)]
-    pub unw_info: *mut core::ffi::c_void,
+    pub unw_info: *mut kernel::ffi::c_void,
     #[cfg(CONFIG_ARC_DW2_UNWIND)]
-    pub unw_sec_idx: core::ffi::c_int,
-    pub secstr: *const core::ffi::c_char,
+    pub unw_sec_idx: kernel::ffi::c_int,
+    pub secstr: *const kernel::ffi::c_char,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

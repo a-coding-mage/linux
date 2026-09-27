@@ -4,24 +4,24 @@
 
 #[cfg(CONFIG_HAVE_STATIC_CALL)]
 extern "C" {
-    pub fn arch_static_call_transform(site: *mut core::ffi::c_void,
-                                      tramp: *mut core::ffi::c_void,
-                                      func: *mut core::ffi::c_void,
+    pub fn arch_static_call_transform(site: *mut kernel::ffi::c_void,
+                                      tramp: *mut kernel::ffi::c_void,
+                                      func: *mut kernel::ffi::c_void,
                                       tail: bool);
 }
 
 #[cfg(CONFIG_HAVE_STATIC_CALL_INLINE)]
 extern "C" {
-    pub static mut static_call_initialized: core::ffi::c_int;
-    pub fn static_call_init() -> core::ffi::c_int;
+    pub static mut static_call_initialized: kernel::ffi::c_int;
+    pub fn static_call_init() -> kernel::ffi::c_int;
     pub fn static_call_force_reinit();
     pub fn __static_call_update(key: *mut static_call_key,
-                                tramp: *mut core::ffi::c_void,
-                                func: *mut core::ffi::c_void);
-    pub fn static_call_mod_init(module: *mut module) -> core::ffi::c_int;
-    pub fn static_call_text_reserved(start: *mut core::ffi::c_void,
-                                     end: *mut core::ffi::c_void) -> core::ffi::c_int;
-    pub fn __static_call_return0() -> core::ffi::c_long;
+                                tramp: *mut kernel::ffi::c_void,
+                                func: *mut kernel::ffi::c_void);
+    pub fn static_call_mod_init(module: *mut module) -> kernel::ffi::c_int;
+    pub fn static_call_text_reserved(start: *mut kernel::ffi::c_void,
+                                     end: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn __static_call_return0() -> kernel::ffi::c_long;
 }
 
 #[cfg(CONFIG_HAVE_STATIC_CALL_INLINE)]
@@ -41,19 +41,19 @@ pub struct static_call_tramp_key {
 
 #[cfg(not(CONFIG_HAVE_STATIC_CALL_INLINE))]
 #[cfg(CONFIG_HAVE_STATIC_CALL)]
-pub const static_call_initialized: core::ffi::c_int = 0;
+pub const static_call_initialized: kernel::ffi::c_int = 0;
 
 #[cfg(not(CONFIG_HAVE_STATIC_CALL_INLINE))]
 #[cfg(CONFIG_HAVE_STATIC_CALL)]
 #[inline]
-pub unsafe fn static_call_init() -> core::ffi::c_int { 0 }
+pub unsafe fn static_call_init() -> kernel::ffi::c_int { 0 }
 
 #[cfg(not(CONFIG_HAVE_STATIC_CALL_INLINE))]
 #[cfg(CONFIG_HAVE_STATIC_CALL)]
 #[inline]
 pub unsafe fn __static_call_update(key: *mut static_call_key,
-                                   tramp: *mut core::ffi::c_void,
-                                   func: *mut core::ffi::c_void) {
+                                   tramp: *mut kernel::ffi::c_void,
+                                   func: *mut kernel::ffi::c_void) {
     cpus_read_lock();
     WRITE_ONCE((*key).func, func);
     arch_static_call_transform(core::ptr::null_mut(), tramp, func, false);
@@ -63,19 +63,19 @@ pub unsafe fn __static_call_update(key: *mut static_call_key,
 #[cfg(not(CONFIG_HAVE_STATIC_CALL_INLINE))]
 #[cfg(CONFIG_HAVE_STATIC_CALL)]
 #[inline]
-pub unsafe fn static_call_text_reserved(_start: *mut core::ffi::c_void,
-                                         _end: *mut core::ffi::c_void) -> core::ffi::c_int { 0 }
+pub unsafe fn static_call_text_reserved(_start: *mut kernel::ffi::c_void,
+                                         _end: *mut kernel::ffi::c_void) -> kernel::ffi::c_int { 0 }
 
 #[cfg(not(CONFIG_HAVE_STATIC_CALL))]
-pub const static_call_initialized: core::ffi::c_int = 0;
-
-#[cfg(not(CONFIG_HAVE_STATIC_CALL))]
-#[inline]
-pub unsafe fn static_call_init() -> core::ffi::c_int { 0 }
+pub const static_call_initialized: kernel::ffi::c_int = 0;
 
 #[cfg(not(CONFIG_HAVE_STATIC_CALL))]
 #[inline]
-pub unsafe fn __static_call_return0() -> core::ffi::c_long { 0 }
+pub unsafe fn static_call_init() -> kernel::ffi::c_int { 0 }
+
+#[cfg(not(CONFIG_HAVE_STATIC_CALL))]
+#[inline]
+pub unsafe fn __static_call_return0() -> kernel::ffi::c_long { 0 }
 
 #[cfg(not(CONFIG_HAVE_STATIC_CALL))]
 #[inline]
@@ -84,15 +84,15 @@ pub unsafe fn __static_call_nop() {}
 #[cfg(not(CONFIG_HAVE_STATIC_CALL))]
 #[inline]
 pub unsafe fn __static_call_update(key: *mut static_call_key,
-                                   _tramp: *mut core::ffi::c_void,
-                                   func: *mut core::ffi::c_void) {
+                                   _tramp: *mut kernel::ffi::c_void,
+                                   func: *mut kernel::ffi::c_void) {
     WRITE_ONCE((*key).func, func);
 }
 
 #[cfg(not(CONFIG_HAVE_STATIC_CALL))]
 #[inline]
-pub unsafe fn static_call_text_reserved(_start: *mut core::ffi::c_void,
-                                         _end: *mut core::ffi::c_void) -> core::ffi::c_int { 0 }
+pub unsafe fn static_call_text_reserved(_start: *mut kernel::ffi::c_void,
+                                         _end: *mut kernel::ffi::c_void) -> kernel::ffi::c_int { 0 }
 
 // The following macro interfaces retain the C header's externally supplied
 // STATIC_CALL_*, DECLARE_STATIC_CALL, ARCH_*, READ_ONCE/WRITE_ONCE, and export

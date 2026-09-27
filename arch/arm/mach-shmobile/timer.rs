@@ -19,7 +19,7 @@ extern "C" {
 
     fn of_property_read_u32(
         np: *const device_node,
-        property: *const core::ffi::c_char,
+        property: *const kernel::ffi::c_char,
         value: *mut u32,
     ) -> i32;
 
@@ -38,7 +38,7 @@ pub unsafe fn shmobile_init_delay() {
 
         if of_property_read_u32(
             np as *const device_node,
-            b"clock-frequency\0".as_ptr() as *const core::ffi::c_char,
+            b"clock-frequency\0".as_ptr() as *const kernel::ffi::c_char,
             &mut freq,
         ) == 0
         {

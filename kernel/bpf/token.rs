@@ -9,12 +9,12 @@ extern "C" {
     fn security_bpf_token_free(token: *mut bpf_token);
     fn put_user_ns(ns: *mut user_namespace);
     fn get_user_ns(ns: *mut user_namespace);
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn atomic64_inc(v: *mut atomic64_t);
     fn atomic64_dec_and_test(v: *mut atomic64_t) -> bool;
     fn INIT_WORK(work: *mut work_struct, func: unsafe extern "C" fn(*mut work_struct));
     fn schedule_work(work: *mut work_struct);
-    fn seq_printf(m: *mut seq_file, fmt: *const core::ffi::c_char, ...);
+    fn seq_printf(m: *mut seq_file, fmt: *const kernel::ffi::c_char, ...);
     fn path_permission(path: *const path, mask: u32) -> i32;
     fn current_user_ns() -> *mut user_namespace;
     fn current_umask() -> u32;
@@ -25,14 +25,14 @@ extern "C" {
     fn alloc_file_pseudo(
         inode: *mut inode,
         mnt: *mut vfsmount,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         flags: i32,
         fops: *const file_operations) -> *mut file;
     fn fd_empty(f: *const fd) -> bool;
     fn fd_file(f: *const fd) -> *mut file;
     fn fd_prepare_file(f: fd_prepare) -> *mut file;
     fn fd_publish(f: fd_prepare) -> i32;
-    fn copy_to_user(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, n: usize) -> usize;
+    fn copy_to_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, n: usize) -> usize;
     fn put_user(value: u32, to: *mut u32) -> i32;
     fn security_bpf_token_create(token: *mut bpf_token, attr: *const bpf_attr, path: *const path) -> i32;
     fn security_bpf_token_cmd(token: *const bpf_token, cmd: bpf_cmd) -> i32;
@@ -44,10 +44,10 @@ extern "C" {
 #[repr(C)] pub struct work_struct { _private: [u8; 0] }
 #[repr(C)] pub struct seq_file { _private: [u8; 0] }
 #[repr(C)] pub struct inode { i_op: *const inode_operations, i_fop: *const file_operations }
-#[repr(C)] pub struct file { private_data: *mut core::ffi::c_void, f_op: *const file_operations, f_path: path }
+#[repr(C)] pub struct file { private_data: *mut kernel::ffi::c_void, f_op: *const file_operations, f_path: path }
 #[repr(C)] pub struct path { dentry: *mut dentry, mnt: *mut vfsmount }
 #[repr(C)] pub struct dentry { d_sb: *mut super_block }
-#[repr(C)] pub struct super_block { s_root: *mut dentry, s_op: *const super_operations, s_user_ns: *mut user_namespace, s_fs_info: *mut core::ffi::c_void }
+#[repr(C)] pub struct super_block { s_root: *mut dentry, s_op: *const super_operations, s_user_ns: *mut user_namespace, s_fs_info: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct inode_operations { _private: [u8; 0] }
 #[repr(C)] pub struct file_operations { release: Option<unsafe extern "C" fn(*mut inode, *mut file) -> i32>, show_fdinfo: Option<unsafe extern "C" fn(*mut seq_file, *mut file)> }
 #[repr(C)] pub struct super_operations { _private: [u8; 0] }

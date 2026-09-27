@@ -13,7 +13,7 @@
 pub static mut rtc_lock: u8 = 0;
 
 #[no_mangle]
-pub static mut est_cycle_freq: ::core::ffi::c_ulong = 0;
+pub static mut est_cycle_freq: ::kernel::ffi::c_ulong = 0;
 
 #[cfg(CONFIG_IRQ_WORK)]
 #[no_mangle]
@@ -37,8 +37,8 @@ static mut cpu_ce: ::core::mem::MaybeUninit<clock_event_device> =
 
 #[no_mangle]
 pub unsafe extern "C" fn rtc_timer_interrupt(
-    irq: ::core::ffi::c_int,
-    dev: *mut ::core::ffi::c_void,
+    irq: ::kernel::ffi::c_int,
+    dev: *mut ::kernel::ffi::c_void,
 ) -> irqreturn_t {
     let cpu = smp_processor_id();
     let ce = &mut *per_cpu_ptr(&mut cpu_ce as *mut _, cpu);
@@ -58,9 +58,9 @@ pub unsafe extern "C" fn rtc_timer_interrupt(
 }
 
 unsafe extern "C" fn rtc_ce_set_next_event(
-    evt: ::core::ffi::c_ulong,
+    evt: ::kernel::ffi::c_ulong,
     ce: *mut clock_event_device,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     /* This hook is for oneshot mode, which we don't support. */
     -EINVAL
 }
@@ -97,7 +97,7 @@ static mut qemu_cs: clocksource = clocksource {
 
 /* The QEMU alarm as a clock_event_device primitive. */
 
-unsafe extern "C" fn qemu_ce_shutdown(ce: *mut clock_event_device) -> ::core::ffi::c_int {
+unsafe extern "C" fn qemu_ce_shutdown(ce: *mut clock_event_device) -> ::kernel::ffi::c_int {
     /* The mode member of CE is updated for us in generic code.
        Just make sure that the event is disabled. */
     qemu_set_alarm_abs(0);
@@ -105,16 +105,16 @@ unsafe extern "C" fn qemu_ce_shutdown(ce: *mut clock_event_device) -> ::core::ff
 }
 
 unsafe extern "C" fn qemu_ce_set_next_event(
-    evt: ::core::ffi::c_ulong,
+    evt: ::kernel::ffi::c_ulong,
     ce: *mut clock_event_device,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     qemu_set_alarm_rel(evt);
     0
 }
 
 unsafe extern "C" fn qemu_timer_interrupt(
-    irq: ::core::ffi::c_int,
-    dev: *mut ::core::ffi::c_void,
+    irq: ::kernel::ffi::c_int,
+    dev: *mut ::kernel::ffi::c_void,
 ) -> irqreturn_t {
     let cpu = smp_processor_id();
     let ce = &mut *per_cpu_ptr(&mut cpu_ce as *mut _, cpu);
@@ -190,7 +190,7 @@ static mut clocksource_rpcc: clocksource = clocksource {
     ..::core::mem::zeroed()
 };
 
-unsafe fn validate_cc_value(cc: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+unsafe fn validate_cc_value(cc: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     #[repr(C)]
     struct Bounds { min: u32, max: u32 }
     let cpu_hz: [Bounds; 17] = [
@@ -214,7 +214,7 @@ unsafe fn validate_cc_value(cc: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
 const CALIBRATE_LATCH: u32 = 0xffff;
 const TIMEOUT_COUNT: i32 = 0x100000;
 
-unsafe fn calibrate_cc_with_pit() -> ::core::ffi::c_ulong {
+unsafe fn calibrate_cc_with_pit() -> ::kernel::ffi::c_ulong {
     let mut count = 0;
     outb((inb(0x61) & !0x02) | 0x01, 0x61);
     outb(0xb0, 0x43);
@@ -227,7 +227,7 @@ unsafe fn calibrate_cc_with_pit() -> ::core::ffi::c_ulong {
     ((cc as i64 * PIT_TICK_RATE as i64) / (CALIBRATE_LATCH as i64 + 1)) as _
 }
 
-unsafe fn rpcc_after_update_in_progress() -> ::core::ffi::c_ulong {
+unsafe fn rpcc_after_update_in_progress() -> ::kernel::ffi::c_ulong {
     while CMOS_READ(RTC_FREQ_SELECT) & RTC_UIP == 0 {}
     while CMOS_READ(RTC_FREQ_SELECT) & RTC_UIP != 0 {}
     rpcc() as _
@@ -236,8 +236,8 @@ unsafe fn rpcc_after_update_in_progress() -> ::core::ffi::c_ulong {
 pub unsafe fn time_init() {
     let mut cc1: u32;
     let mut cc2: u32;
-    let mut cycle_freq: ::core::ffi::c_ulong;
-    let mut tolerance: ::core::ffi::c_ulong;
+    let mut cycle_freq: ::kernel::ffi::c_ulong;
+    let mut tolerance: ::kernel::ffi::c_ulong;
     let mut diff: i64;
     if alpha_using_qemu {
         clocksource_register_hz(&mut qemu_cs, NSEC_PER_SEC);

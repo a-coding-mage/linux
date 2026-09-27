@@ -9,7 +9,7 @@ unsafe extern "C" {
     static pgtable_l5_enabled: unsafe extern "C" fn() -> bool;
     static kaslr_offset: unsafe extern "C" fn() -> usize;
     static KERNEL_IMAGE_SIZE: u64;
-    unsafe fn vmcoreinfo_append_str(format: *const core::ffi::c_char, ...);
+    unsafe fn vmcoreinfo_append_str(format: *const kernel::ffi::c_char, ...);
 
     // Rust declarations corresponding to the VMCOREINFO_* macros.
     unsafe fn VMCOREINFO_NUMBER(value: *const u8);

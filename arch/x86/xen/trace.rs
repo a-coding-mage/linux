@@ -3,7 +3,7 @@
 // Dependencies supplied by the Linux/Xen environment:
 // linux/ftrace.h, xen/interface/xen.h, and xen/interface/xen-mca.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // The C HYPERCALL macro and the generated entries from
 // <asm/xen-hypercalls.h> are build-time input.  The generated table is

@@ -5,12 +5,12 @@
 
 #[cfg(not(feature = "assembler"))]
 extern "C" {
-    pub static mut __start___lwsync_fixup: ::core::ffi::c_uint;
-    pub static mut __stop___lwsync_fixup: ::core::ffi::c_uint;
+    pub static mut __start___lwsync_fixup: ::kernel::ffi::c_uint;
+    pub static mut __stop___lwsync_fixup: ::kernel::ffi::c_uint;
     pub fn do_lwsync_fixups(
-        value: ::core::ffi::c_ulong,
-        fixup_start: *mut ::core::ffi::c_void,
-        fixup_end: *mut ::core::ffi::c_void,
+        value: ::kernel::ffi::c_ulong,
+        fixup_start: *mut ::kernel::ffi::c_void,
+        fixup_end: *mut ::kernel::ffi::c_void,
     );
 
     #[inline]

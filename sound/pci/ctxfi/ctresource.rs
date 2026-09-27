@@ -13,15 +13,15 @@
 
 // C dependencies: "ctresource.h", "cthardware.h", <linux/err.h>, <linux/slab.h>
 
-pub type u8 = core::ffi::c_uchar;
-pub type u32 = core::ffi::c_uint;
+pub type u8 = kernel::ffi::c_uchar;
+pub type u32 = kernel::ffi::c_uint;
 
-pub const ENOENT: core::ffi::c_int = 2;
-pub const EINVAL: core::ffi::c_int = 22;
-pub const ENOMEM: core::ffi::c_int = 12;
-pub const GFP_KERNEL: core::ffi::c_uint = 0;
+pub const ENOENT: kernel::ffi::c_int = 2;
+pub const EINVAL: kernel::ffi::c_int = 22;
+pub const ENOMEM: kernel::ffi::c_int = 12;
+pub const GFP_KERNEL: kernel::ffi::c_uint = 0;
 
-const AUDIO_SLOT_BLOCK_NUM: core::ffi::c_uint = 256;
+const AUDIO_SLOT_BLOCK_NUM: kernel::ffi::c_uint = 256;
 
 #[repr(C)]
 pub struct device {
@@ -50,29 +50,29 @@ use RSCTYP::{AMIXER, DAIO, NUM_RSCTYP, SRC, SRCIMP, SUM};
 pub struct hw {
     pub card: *mut card,
     pub src_rsc_get_ctrl_blk:
-        unsafe extern "C" fn(ctrl_blk: *mut *mut core::ffi::c_void) -> core::ffi::c_int,
+        unsafe extern "C" fn(ctrl_blk: *mut *mut kernel::ffi::c_void) -> kernel::ffi::c_int,
     pub amixer_rsc_get_ctrl_blk:
-        unsafe extern "C" fn(ctrl_blk: *mut *mut core::ffi::c_void) -> core::ffi::c_int,
-    pub src_rsc_put_ctrl_blk: unsafe extern "C" fn(ctrl_blk: *mut core::ffi::c_void),
-    pub amixer_rsc_put_ctrl_blk: unsafe extern "C" fn(ctrl_blk: *mut core::ffi::c_void),
+        unsafe extern "C" fn(ctrl_blk: *mut *mut kernel::ffi::c_void) -> kernel::ffi::c_int,
+    pub src_rsc_put_ctrl_blk: unsafe extern "C" fn(ctrl_blk: *mut kernel::ffi::c_void),
+    pub amixer_rsc_put_ctrl_blk: unsafe extern "C" fn(ctrl_blk: *mut kernel::ffi::c_void),
     pub src_mgr_get_ctrl_blk:
-        unsafe extern "C" fn(ctrl_blk: *mut *mut core::ffi::c_void) -> core::ffi::c_int,
+        unsafe extern "C" fn(ctrl_blk: *mut *mut kernel::ffi::c_void) -> kernel::ffi::c_int,
     pub srcimp_mgr_get_ctrl_blk:
-        unsafe extern "C" fn(ctrl_blk: *mut *mut core::ffi::c_void) -> core::ffi::c_int,
+        unsafe extern "C" fn(ctrl_blk: *mut *mut kernel::ffi::c_void) -> kernel::ffi::c_int,
     pub amixer_mgr_get_ctrl_blk:
-        unsafe extern "C" fn(ctrl_blk: *mut *mut core::ffi::c_void) -> core::ffi::c_int,
+        unsafe extern "C" fn(ctrl_blk: *mut *mut kernel::ffi::c_void) -> kernel::ffi::c_int,
     pub daio_mgr_get_ctrl_blk:
-        unsafe extern "C" fn(hw: *mut hw, ctrl_blk: *mut *mut core::ffi::c_void) -> core::ffi::c_int,
-    pub src_mgr_put_ctrl_blk: unsafe extern "C" fn(ctrl_blk: *mut core::ffi::c_void),
-    pub srcimp_mgr_put_ctrl_blk: unsafe extern "C" fn(ctrl_blk: *mut core::ffi::c_void),
-    pub amixer_mgr_put_ctrl_blk: unsafe extern "C" fn(ctrl_blk: *mut core::ffi::c_void),
-    pub daio_mgr_put_ctrl_blk: unsafe extern "C" fn(ctrl_blk: *mut core::ffi::c_void),
+        unsafe extern "C" fn(hw: *mut hw, ctrl_blk: *mut *mut kernel::ffi::c_void) -> kernel::ffi::c_int,
+    pub src_mgr_put_ctrl_blk: unsafe extern "C" fn(ctrl_blk: *mut kernel::ffi::c_void),
+    pub srcimp_mgr_put_ctrl_blk: unsafe extern "C" fn(ctrl_blk: *mut kernel::ffi::c_void),
+    pub amixer_mgr_put_ctrl_blk: unsafe extern "C" fn(ctrl_blk: *mut kernel::ffi::c_void),
+    pub daio_mgr_put_ctrl_blk: unsafe extern "C" fn(ctrl_blk: *mut kernel::ffi::c_void),
 }
 
 #[repr(C)]
 pub struct rsc_ops {
-    pub index: unsafe extern "C" fn(rsc: *const rsc) -> core::ffi::c_int,
-    pub output_slot: unsafe extern "C" fn(rsc: *const rsc) -> core::ffi::c_int,
+    pub index: unsafe extern "C" fn(rsc: *const rsc) -> kernel::ffi::c_int,
+    pub output_slot: unsafe extern "C" fn(rsc: *const rsc) -> kernel::ffi::c_int,
     pub master: unsafe extern "C" fn(rsc: *mut rsc),
     pub next_conj: unsafe extern "C" fn(rsc: *mut rsc),
 }
@@ -85,49 +85,49 @@ pub struct rsc {
     pub msr: u32,
     pub hw: *mut hw,
     pub ops: *const rsc_ops,
-    pub ctrl_blk: *mut core::ffi::c_void,
+    pub ctrl_blk: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct rsc_mgr {
     pub type_: RSCTYP,
     pub rscs: *mut u8,
-    pub ctrl_blk: *mut core::ffi::c_void,
-    pub avail: core::ffi::c_uint,
-    pub amount: core::ffi::c_uint,
+    pub ctrl_blk: *mut kernel::ffi::c_void,
+    pub avail: kernel::ffi::c_uint,
+    pub amount: kernel::ffi::c_uint,
     pub hw: *mut hw,
 }
 
 unsafe extern "C" {
-    fn kzalloc(size: usize, flags: core::ffi::c_uint) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn kzalloc(size: usize, flags: kernel::ffi::c_uint) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
-const fn div_round_up(n: core::ffi::c_uint, d: core::ffi::c_uint) -> core::ffi::c_uint {
+const fn div_round_up(n: kernel::ffi::c_uint, d: kernel::ffi::c_uint) -> kernel::ffi::c_uint {
     (n + d - 1) / d
 }
 
 /* Resource allocation based on bit-map management mechanism */
 unsafe fn get_resource(
     rscs: *mut u8,
-    amount: core::ffi::c_uint,
-    multi: core::ffi::c_uint,
-    ridx: *mut core::ffi::c_uint,
-) -> core::ffi::c_int {
-    let mut i: core::ffi::c_int;
-    let mut j: core::ffi::c_int;
-    let mut k: core::ffi::c_int;
-    let mut n: core::ffi::c_int;
+    amount: kernel::ffi::c_uint,
+    multi: kernel::ffi::c_uint,
+    ridx: *mut kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
+    let mut i: kernel::ffi::c_int;
+    let mut j: kernel::ffi::c_int;
+    let mut k: kernel::ffi::c_int;
+    let mut n: kernel::ffi::c_int;
 
     /* Check whether there are sufficient resources to meet request. */
     i = 0;
-    n = multi as core::ffi::c_int;
-    while i < amount as core::ffi::c_int {
+    n = multi as kernel::ffi::c_int;
+    while i < amount as kernel::ffi::c_int {
         j = i / 8;
         k = i % 8;
         if *rscs.add(j as usize) & ((1 as u8) << k) != 0 {
-            n = multi as core::ffi::c_int;
+            n = multi as kernel::ffi::c_int;
             i += 1;
             continue;
         }
@@ -138,13 +138,13 @@ unsafe fn get_resource(
         i += 1;
     }
 
-    if i >= amount as core::ffi::c_int {
+    if i >= amount as kernel::ffi::c_int {
         /* Can not find sufficient contiguous resources */
         return -ENOENT;
     }
 
     /* Mark the contiguous bits in resource bit-map as used */
-    n = multi as core::ffi::c_int;
+    n = multi as kernel::ffi::c_int;
     while n > 0 {
         j = i / 8;
         k = i % 8;
@@ -153,20 +153,20 @@ unsafe fn get_resource(
         n -= 1;
     }
 
-    *ridx = (i + 1) as core::ffi::c_uint;
+    *ridx = (i + 1) as kernel::ffi::c_uint;
 
     0
 }
 
 unsafe fn put_resource(
     rscs: *mut u8,
-    multi: core::ffi::c_uint,
-    idx: core::ffi::c_uint,
-) -> core::ffi::c_int {
-    let mut i: core::ffi::c_uint;
-    let mut j: core::ffi::c_uint;
-    let mut k: core::ffi::c_uint;
-    let mut n: core::ffi::c_uint;
+    multi: kernel::ffi::c_uint,
+    idx: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
+    let mut i: kernel::ffi::c_uint;
+    let mut j: kernel::ffi::c_uint;
+    let mut k: kernel::ffi::c_uint;
+    let mut n: kernel::ffi::c_uint;
 
     /* Mark the contiguous bits in resource bit-map as used */
     n = multi;
@@ -185,10 +185,10 @@ unsafe fn put_resource(
 #[no_mangle]
 pub unsafe extern "C" fn mgr_get_resource(
     mgr: *mut rsc_mgr,
-    n: core::ffi::c_uint,
-    ridx: *mut core::ffi::c_uint,
-) -> core::ffi::c_int {
-    let err: core::ffi::c_int;
+    n: kernel::ffi::c_uint,
+    ridx: *mut kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
+    let err: kernel::ffi::c_int;
 
     if n > (*mgr).avail {
         return -ENOENT;
@@ -205,16 +205,16 @@ pub unsafe extern "C" fn mgr_get_resource(
 #[no_mangle]
 pub unsafe extern "C" fn mgr_put_resource(
     mgr: *mut rsc_mgr,
-    n: core::ffi::c_uint,
-    idx: core::ffi::c_uint,
-) -> core::ffi::c_int {
+    n: kernel::ffi::c_uint,
+    idx: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     put_resource((*mgr).rscs, n, idx);
     (*mgr).avail += n;
 
     0
 }
 
-static offset_in_audio_slot_block: [core::ffi::c_uchar; NUM_RSCTYP as usize] = {
+static offset_in_audio_slot_block: [kernel::ffi::c_uchar; NUM_RSCTYP as usize] = {
     let mut a = [0; NUM_RSCTYP as usize];
     /* SRC channel is at Audio Ring slot 1 every 16 slots. */
     a[SRC as usize] = 0x1;
@@ -223,17 +223,17 @@ static offset_in_audio_slot_block: [core::ffi::c_uchar; NUM_RSCTYP as usize] = {
     a
 };
 
-unsafe extern "C" fn rsc_index(rsc: *const rsc) -> core::ffi::c_int {
-    (*rsc).conj as core::ffi::c_int
+unsafe extern "C" fn rsc_index(rsc: *const rsc) -> kernel::ffi::c_int {
+    (*rsc).conj as kernel::ffi::c_int
 }
 
-unsafe extern "C" fn audio_ring_slot(rsc: *const rsc) -> core::ffi::c_int {
+unsafe extern "C" fn audio_ring_slot(rsc: *const rsc) -> kernel::ffi::c_int {
     (((*rsc).conj << 4) + offset_in_audio_slot_block[(*rsc).type_ as usize] as u32)
-        as core::ffi::c_int
+        as kernel::ffi::c_int
 }
 
 unsafe extern "C" fn rsc_next_conj(rsc: *mut rsc) {
-    let mut i: core::ffi::c_uint;
+    let mut i: kernel::ffi::c_uint;
     i = 0;
     while i < 8 && ((*rsc).msr & (0x1 << i)) == 0 {
         i += 1;
@@ -259,8 +259,8 @@ pub unsafe extern "C" fn rsc_init(
     type_: RSCTYP,
     msr: u32,
     hw: *mut hw,
-) -> core::ffi::c_int {
-    let mut err: core::ffi::c_int = 0;
+) -> kernel::ffi::c_int {
+    let mut err: kernel::ffi::c_int = 0;
 
     (*rsc).idx = idx;
     (*rsc).conj = idx;
@@ -284,8 +284,8 @@ pub unsafe extern "C" fn rsc_init(
         _ => {
             dev_err(
                 (*(*hw).card).dev,
-                b"Invalid resource type value %d!\n\0".as_ptr() as *const core::ffi::c_char,
-                type_ as core::ffi::c_int,
+                b"Invalid resource type value %d!\n\0".as_ptr() as *const kernel::ffi::c_char,
+                type_ as kernel::ffi::c_int,
             );
             return -EINVAL;
         }
@@ -294,7 +294,7 @@ pub unsafe extern "C" fn rsc_init(
     if err != 0 {
         dev_err(
             (*(*hw).card).dev,
-            b"Failed to get resource control block!\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Failed to get resource control block!\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
         return err;
     }
@@ -303,7 +303,7 @@ pub unsafe extern "C" fn rsc_init(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn rsc_uninit(rsc: *mut rsc) -> core::ffi::c_int {
+pub unsafe extern "C" fn rsc_uninit(rsc: *mut rsc) -> kernel::ffi::c_int {
     if !(*rsc).hw.is_null() && !(*rsc).ctrl_blk.is_null() {
         match (*rsc).type_ {
             SRC => {
@@ -316,8 +316,8 @@ pub unsafe extern "C" fn rsc_uninit(rsc: *mut rsc) -> core::ffi::c_int {
             _ => {
                 dev_err(
                     (*(*(*rsc).hw).card).dev,
-                    b"Invalid resource type value %d!\n\0".as_ptr() as *const core::ffi::c_char,
-                    (*rsc).type_ as core::ffi::c_int,
+                    b"Invalid resource type value %d!\n\0".as_ptr() as *const kernel::ffi::c_char,
+                    (*rsc).type_ as kernel::ffi::c_int,
                 );
             }
         }
@@ -338,10 +338,10 @@ pub unsafe extern "C" fn rsc_uninit(rsc: *mut rsc) -> core::ffi::c_int {
 pub unsafe extern "C" fn rsc_mgr_init(
     mgr: *mut rsc_mgr,
     type_: RSCTYP,
-    amount: core::ffi::c_uint,
+    amount: kernel::ffi::c_uint,
     hw: *mut hw,
-) -> core::ffi::c_int {
-    let mut err: core::ffi::c_int = 0;
+) -> kernel::ffi::c_int {
+    let mut err: kernel::ffi::c_int = 0;
 
     (*mgr).type_ = NUM_RSCTYP;
 
@@ -367,11 +367,11 @@ pub unsafe extern "C" fn rsc_mgr_init(
         _ => {
             dev_err(
                 (*(*hw).card).dev,
-                b"Invalid resource type value %d!\n\0".as_ptr() as *const core::ffi::c_char,
-                type_ as core::ffi::c_int,
+                b"Invalid resource type value %d!\n\0".as_ptr() as *const kernel::ffi::c_char,
+                type_ as kernel::ffi::c_int,
             );
             err = -EINVAL;
-            kfree((*mgr).rscs as *mut core::ffi::c_void);
+            kfree((*mgr).rscs as *mut kernel::ffi::c_void);
             return err;
         }
     }
@@ -379,9 +379,9 @@ pub unsafe extern "C" fn rsc_mgr_init(
     if err != 0 {
         dev_err(
             (*(*hw).card).dev,
-            b"Failed to get manager control block!\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Failed to get manager control block!\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
-        kfree((*mgr).rscs as *mut core::ffi::c_void);
+        kfree((*mgr).rscs as *mut kernel::ffi::c_void);
         return err;
     }
 
@@ -394,8 +394,8 @@ pub unsafe extern "C" fn rsc_mgr_init(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn rsc_mgr_uninit(mgr: *mut rsc_mgr) -> core::ffi::c_int {
-    kfree((*mgr).rscs as *mut core::ffi::c_void);
+pub unsafe extern "C" fn rsc_mgr_uninit(mgr: *mut rsc_mgr) -> kernel::ffi::c_int {
+    kfree((*mgr).rscs as *mut kernel::ffi::c_void);
     (*mgr).rscs = core::ptr::null_mut();
 
     if !(*mgr).hw.is_null() && !(*mgr).ctrl_blk.is_null() {
@@ -416,8 +416,8 @@ pub unsafe extern "C" fn rsc_mgr_uninit(mgr: *mut rsc_mgr) -> core::ffi::c_int {
             _ => {
                 dev_err(
                     (*(*(*mgr).hw).card).dev,
-                    b"Invalid resource type value %d!\n\0".as_ptr() as *const core::ffi::c_char,
-                    (*mgr).type_ as core::ffi::c_int,
+                    b"Invalid resource type value %d!\n\0".as_ptr() as *const kernel::ffi::c_char,
+                    (*mgr).type_ as kernel::ffi::c_int,
                 );
             }
         }

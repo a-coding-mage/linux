@@ -15,21 +15,21 @@ pub type fsid_t = __kernel_fsid_t;
 
 #[repr(C)]
 pub struct statfs {
-    pub f_type: core::ffi::c_long,
+    pub f_type: kernel::ffi::c_long,
     // #define f_fstyp f_type
-    pub f_bsize: core::ffi::c_long,
-    pub f_frsize: core::ffi::c_long, // Fragment size - unsupported
-    pub f_blocks: core::ffi::c_long,
-    pub f_bfree: core::ffi::c_long,
-    pub f_files: core::ffi::c_long,
-    pub f_ffree: core::ffi::c_long,
-    pub f_bavail: core::ffi::c_long,
+    pub f_bsize: kernel::ffi::c_long,
+    pub f_frsize: kernel::ffi::c_long, // Fragment size - unsupported
+    pub f_blocks: kernel::ffi::c_long,
+    pub f_bfree: kernel::ffi::c_long,
+    pub f_files: kernel::ffi::c_long,
+    pub f_ffree: kernel::ffi::c_long,
+    pub f_bavail: kernel::ffi::c_long,
 
     // Linux specials
     pub f_fsid: __kernel_fsid_t,
-    pub f_namelen: core::ffi::c_long,
-    pub f_flags: core::ffi::c_long,
-    pub f_spare: [core::ffi::c_long; 5],
+    pub f_namelen: kernel::ffi::c_long,
+    pub f_flags: kernel::ffi::c_long,
+    pub f_spare: [kernel::ffi::c_long; 5],
 }
 
 // Corresponds to:
@@ -56,20 +56,20 @@ pub struct statfs64 {
 #[cfg(feature = "mips_abi64")]
 #[repr(C)]
 pub struct statfs64 {
-    pub f_type: core::ffi::c_long,
-    pub f_bsize: core::ffi::c_long,
-    pub f_frsize: core::ffi::c_long, // Fragment size - unsupported
-    pub f_blocks: core::ffi::c_long,
-    pub f_bfree: core::ffi::c_long,
-    pub f_files: core::ffi::c_long,
-    pub f_ffree: core::ffi::c_long,
-    pub f_bavail: core::ffi::c_long,
+    pub f_type: kernel::ffi::c_long,
+    pub f_bsize: kernel::ffi::c_long,
+    pub f_frsize: kernel::ffi::c_long, // Fragment size - unsupported
+    pub f_blocks: kernel::ffi::c_long,
+    pub f_bfree: kernel::ffi::c_long,
+    pub f_files: kernel::ffi::c_long,
+    pub f_ffree: kernel::ffi::c_long,
+    pub f_bavail: kernel::ffi::c_long,
 
     // Linux specials
     pub f_fsid: __kernel_fsid_t,
-    pub f_namelen: core::ffi::c_long,
-    pub f_flags: core::ffi::c_long,
-    pub f_spare: [core::ffi::c_long; 5],
+    pub f_namelen: kernel::ffi::c_long,
+    pub f_flags: kernel::ffi::c_long,
+    pub f_spare: [kernel::ffi::c_long; 5],
 }
 
 #[cfg(feature = "mips_abi64")]

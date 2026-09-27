@@ -52,8 +52,8 @@ pub struct cpu_context {
 #[repr(C)]
 pub struct thread_info {
     pub task: *mut task_struct, /* main task structure */
-    pub flags: libc::c_ulong, /* low level flags */
-    pub status: libc::c_ulong, /* thread-synchronous flags */
+    pub flags: kernel::ffi::c_ulong, /* low level flags */
+    pub status: kernel::ffi::c_ulong, /* thread-synchronous flags */
     pub cpu: u32, /* current CPU */
     pub preempt_count: i32, /* 0 => preemptable,< 0 => BUG*/
     pub cpu_context: cpu_context,

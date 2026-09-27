@@ -2,11 +2,11 @@
 // Translation of trace/events/irq.h.  The Linux tracepoint framework and the
 // SOFTIRQ constants are supplied by other translation units.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct irqaction {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -54,14 +54,14 @@ pub fn show_softirq_name(val: u32) -> Option<&'static str> {
 
 #[repr(C)]
 pub struct irq_handler_entry {
-    pub irq: core::ffi::c_int,
-    pub name: *const core::ffi::c_char,
+    pub irq: kernel::ffi::c_int,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct irq_handler_exit {
-    pub irq: core::ffi::c_int,
-    pub ret: core::ffi::c_int,
+    pub irq: kernel::ffi::c_int,
+    pub ret: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -77,12 +77,12 @@ pub struct tasklet {
 
 // TRACE_EVENT(irq_handler_entry): called immediately before the irq action
 // handler.  The tracepoint registration is provided by the trace subsystem.
-pub unsafe fn irq_handler_entry(irq: core::ffi::c_int, action: *mut irqaction) -> irq_handler_entry {
+pub unsafe fn irq_handler_entry(irq: kernel::ffi::c_int, action: *mut irqaction) -> irq_handler_entry {
     irq_handler_entry { irq, name: (*action).name }
 }
 
 // TRACE_EVENT(irq_handler_exit): called immediately after the irq action handler returns.
-pub fn irq_handler_exit(irq: core::ffi::c_int, ret: core::ffi::c_int) -> irq_handler_exit {
+pub fn irq_handler_exit(irq: kernel::ffi::c_int, ret: kernel::ffi::c_int) -> irq_handler_exit {
     irq_handler_exit { irq, ret }
 }
 

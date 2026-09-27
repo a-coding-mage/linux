@@ -15,7 +15,7 @@
 unsafe fn pc236_intr_update(dev: *mut comedi_device, enable: bool) {
     let board = (*dev).board_ptr;
     let devpriv = (*dev).private;
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     spin_lock_irqsave(&mut (*dev).spinlock, &mut flags);
     (*devpriv).enable_irq = enable;
@@ -36,7 +36,7 @@ unsafe fn pc236_intr_check(dev: *mut comedi_device) -> bool {
     let board = (*dev).board_ptr;
     let devpriv = (*dev).private;
     let mut retval = false;
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     spin_lock_irqsave(&mut (*dev).spinlock, &mut flags);
     if (*devpriv).enable_irq {
@@ -55,18 +55,18 @@ unsafe fn pc236_intr_insn(
     _dev: *mut comedi_device,
     _s: *mut comedi_subdevice,
     insn: *mut comedi_insn,
-    data: *mut libc::c_uint,
-) -> libc::c_int {
+    data: *mut kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     *data.add(1) = 0;
-    (*insn).n as libc::c_int
+    (*insn).n as kernel::ffi::c_int
 }
 
 unsafe fn pc236_intr_cmdtest(
     _dev: *mut comedi_device,
     _s: *mut comedi_subdevice,
     cmd: *mut comedi_cmd,
-) -> libc::c_int {
-    let mut err: libc::c_int = 0;
+) -> kernel::ffi::c_int {
+    let mut err: kernel::ffi::c_int = 0;
 
     /* Step 1 : check if triggers are trivially valid */
     err |= comedi_check_trigger_src(&mut (*cmd).start_src, TRIG_NOW);
@@ -98,23 +98,23 @@ unsafe fn pc236_intr_cmdtest(
     0
 }
 
-unsafe fn pc236_intr_cmd(_dev: *mut comedi_device, _s: *mut comedi_subdevice) -> libc::c_int {
+unsafe fn pc236_intr_cmd(_dev: *mut comedi_device, _s: *mut comedi_subdevice) -> kernel::ffi::c_int {
     pc236_intr_update(_dev, true);
     0
 }
 
-unsafe fn pc236_intr_cancel(_dev: *mut comedi_device, _s: *mut comedi_subdevice) -> libc::c_int {
+unsafe fn pc236_intr_cancel(_dev: *mut comedi_device, _s: *mut comedi_subdevice) -> kernel::ffi::c_int {
     pc236_intr_update(_dev, false);
     0
 }
 
-unsafe extern "C" fn pc236_interrupt(irq: libc::c_int, d: *mut libc::c_void) -> irqreturn_t {
+unsafe extern "C" fn pc236_interrupt(irq: kernel::ffi::c_int, d: *mut kernel::ffi::c_void) -> irqreturn_t {
     let dev = d as *mut comedi_device;
     let s = (*dev).read_subdev;
     let handled = pc236_intr_check(dev);
     if (*dev).attached && handled {
-        let val: libc::c_ushort = 0;
-        comedi_buf_write_samples(s, &val as *const _ as *const libc::c_void, 1);
+        let val: kernel::ffi::c_ushort = 0;
+        comedi_buf_write_samples(s, &val as *const _ as *const kernel::ffi::c_void, 1);
         comedi_handle_events(dev, s);
     }
     IRQ_RETVAL(handled)
@@ -122,12 +122,12 @@ unsafe extern "C" fn pc236_interrupt(irq: libc::c_int, d: *mut libc::c_void) -> 
 
 pub unsafe fn amplc_pc236_common_attach(
     dev: *mut comedi_device,
-    iobase: libc::c_ulong,
-    irq: libc::c_uint,
-    req_irq_flags: libc::c_ulong,
-) -> libc::c_int {
+    iobase: kernel::ffi::c_ulong,
+    irq: kernel::ffi::c_uint,
+    req_irq_flags: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let mut s: *mut comedi_subdevice;
-    let ret: libc::c_int;
+    let ret: kernel::ffi::c_int;
 
     (*dev).iobase = iobase;
     ret = comedi_alloc_subdevices(dev, 2);

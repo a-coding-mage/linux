@@ -63,7 +63,7 @@ unsafe fn ip_vs_fo_schedule(
 }
 
 static mut ip_vs_fo_scheduler: IpVsScheduler = IpVsScheduler {
-    name: b"fo\0".as_ptr() as *const core::ffi::c_char,
+    name: b"fo\0".as_ptr() as *const kernel::ffi::c_char,
     refcnt: AtomicT::init(0),
     module: THIS_MODULE,
     n_list: crate::linux::list::ListHead::new(),

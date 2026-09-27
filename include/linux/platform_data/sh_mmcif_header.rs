@@ -23,10 +23,10 @@
 
 #[repr(C)]
 pub struct sh_mmcif_plat_data {
-    pub slave_id_tx: ::core::ffi::c_uint,
-    pub slave_id_rx: ::core::ffi::c_uint,
+    pub slave_id_tx: ::kernel::ffi::c_uint,
+    pub slave_id_rx: ::kernel::ffi::c_uint,
     pub sup_pclk: u8,
-    pub caps: ::core::ffi::c_ulong,
+    pub caps: ::kernel::ffi::c_ulong,
     pub ocr: u32,
 }
 
@@ -87,18 +87,18 @@ pub unsafe fn sh_mmcif_writel(addr: *mut u8, reg: u32, val: u32) {
 pub const SH_MMCIF_BBS: usize = 512;
 
 #[inline]
-pub unsafe fn sh_mmcif_boot_cmd_send(base: *mut u8, cmd: ::core::ffi::c_ulong, arg: ::core::ffi::c_ulong) {
+pub unsafe fn sh_mmcif_boot_cmd_send(base: *mut u8, cmd: ::kernel::ffi::c_ulong, arg: ::kernel::ffi::c_ulong) {
     sh_mmcif_writel(base, MMCIF_CE_INT, 0);
     sh_mmcif_writel(base, MMCIF_CE_ARG, arg as u32);
     sh_mmcif_writel(base, MMCIF_CE_CMD_SET, cmd as u32);
 }
 
 #[inline]
-pub unsafe fn sh_mmcif_boot_cmd_poll(base: *mut u8, mask: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
-    let mut tmp: ::core::ffi::c_ulong;
-    let mut cnt: ::core::ffi::c_int = 0;
+pub unsafe fn sh_mmcif_boot_cmd_poll(base: *mut u8, mask: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
+    let mut tmp: ::kernel::ffi::c_ulong;
+    let mut cnt: ::kernel::ffi::c_int = 0;
     while cnt < 1000000 {
-        tmp = sh_mmcif_readl(base, MMCIF_CE_INT) as ::core::ffi::c_ulong;
+        tmp = sh_mmcif_readl(base, MMCIF_CE_INT) as ::kernel::ffi::c_ulong;
         if tmp & mask != 0 {
             sh_mmcif_writel(base, MMCIF_CE_INT, (tmp & !mask) as u32);
             return 0;
@@ -109,35 +109,35 @@ pub unsafe fn sh_mmcif_boot_cmd_poll(base: *mut u8, mask: ::core::ffi::c_ulong) 
 }
 
 #[inline]
-pub unsafe fn sh_mmcif_boot_cmd(base: *mut u8, cmd: ::core::ffi::c_ulong, arg: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+pub unsafe fn sh_mmcif_boot_cmd(base: *mut u8, cmd: ::kernel::ffi::c_ulong, arg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     sh_mmcif_boot_cmd_send(base, cmd, arg);
     sh_mmcif_boot_cmd_poll(base, 0x00010000)
 }
 
 #[inline]
-pub unsafe fn sh_mmcif_boot_do_read_single(base: *mut u8, block_nr: u32, buf: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+pub unsafe fn sh_mmcif_boot_do_read_single(base: *mut u8, block_nr: u32, buf: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     sh_mmcif_boot_cmd(base, 0x0d400000, 0x00010000);
     if sh_mmcif_readl(base, MMCIF_CE_RESP0) != 0x0900 { return -1; }
-    sh_mmcif_boot_cmd(base, 0x11480000, (block_nr as usize * SH_MMCIF_BBS) as ::core::ffi::c_ulong);
+    sh_mmcif_boot_cmd(base, 0x11480000, (block_nr as usize * SH_MMCIF_BBS) as ::kernel::ffi::c_ulong);
     if sh_mmcif_boot_cmd_poll(base, 0x00100000) < 0 { return -1; }
     let mut k = 0;
     while k < SH_MMCIF_BBS / 4 {
-        *buf.add(k) = sh_mmcif_readl(base, MMCIF_CE_DATA) as ::core::ffi::c_ulong;
+        *buf.add(k) = sh_mmcif_readl(base, MMCIF_CE_DATA) as ::kernel::ffi::c_ulong;
         k += 1;
     }
     0
 }
 
 #[inline]
-pub unsafe fn sh_mmcif_boot_do_read(base: *mut u8, first_block: ::core::ffi::c_ulong, nr_blocks: ::core::ffi::c_ulong, buf: *mut u8) -> ::core::ffi::c_int {
-    let mut k: ::core::ffi::c_ulong = 0;
-    let mut ret: ::core::ffi::c_int = 0;
+pub unsafe fn sh_mmcif_boot_do_read(base: *mut u8, first_block: ::kernel::ffi::c_ulong, nr_blocks: ::kernel::ffi::c_ulong, buf: *mut u8) -> ::kernel::ffi::c_int {
+    let mut k: ::kernel::ffi::c_ulong = 0;
+    let mut ret: ::kernel::ffi::c_int = 0;
     sh_mmcif_writel(base, MMCIF_CE_CLK_CTRL, CLK_ENABLE | CLKDIV_4 | SRSPTO_256 | SRBSYTO_29 | SRWDTO_29 | SCCSTO_29);
     sh_mmcif_boot_cmd(base, 0x09806000, 0x00010000);
     sh_mmcif_boot_cmd(base, 0x07400000, 0x00010000);
-    sh_mmcif_boot_cmd(base, 0x10400000, SH_MMCIF_BBS as ::core::ffi::c_ulong);
+    sh_mmcif_boot_cmd(base, 0x10400000, SH_MMCIF_BBS as ::kernel::ffi::c_ulong);
     while ret == 0 && k < nr_blocks {
-        ret = sh_mmcif_boot_do_read_single(base, (first_block + k) as u32, buf.add((k as usize) * SH_MMCIF_BBS) as *mut ::core::ffi::c_ulong);
+        ret = sh_mmcif_boot_do_read_single(base, (first_block + k) as u32, buf.add((k as usize) * SH_MMCIF_BBS) as *mut ::kernel::ffi::c_ulong);
         k += 1;
     }
     ret

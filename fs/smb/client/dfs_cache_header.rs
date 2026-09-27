@@ -16,14 +16,14 @@ extern "C" {
 
 #[repr(C)]
 pub struct dfs_cache_tgt_list {
-    pub tl_numtgts: ::core::ffi::c_int,
+    pub tl_numtgts: ::kernel::ffi::c_int,
     pub tl_list: list_head,
 }
 
 #[repr(C)]
 pub struct dfs_cache_tgt_iterator {
-    pub it_name: *mut ::core::ffi::c_char,
-    pub it_path_consumed: ::core::ffi::c_int,
+    pub it_name: *mut ::kernel::ffi::c_char,
+    pub it_path_consumed: ::kernel::ffi::c_int,
     pub it_list: list_head,
 }
 
@@ -47,45 +47,45 @@ macro_rules! DFS_CACHE_TGT_LIST {
 }
 
 extern "C" {
-    pub fn dfs_cache_init() -> ::core::ffi::c_int;
+    pub fn dfs_cache_init() -> ::kernel::ffi::c_int;
     pub fn dfs_cache_destroy();
     pub static dfscache_proc_ops: proc_ops;
 
     pub fn dfs_cache_find(
-        xid: ::core::ffi::c_uint,
+        xid: ::kernel::ffi::c_uint,
         ses: *mut cifs_ses,
         cp: *const nls_table,
-        remap: ::core::ffi::c_int,
-        path: *const ::core::ffi::c_char,
+        remap: ::kernel::ffi::c_int,
+        path: *const ::kernel::ffi::c_char,
         ref_: *mut dfs_info3_param,
         tgt_list: *mut dfs_cache_tgt_list,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn dfs_cache_noreq_find(
-        path: *const ::core::ffi::c_char,
+        path: *const ::kernel::ffi::c_char,
         ref_: *mut dfs_info3_param,
         tgt_list: *mut dfs_cache_tgt_list,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn dfs_cache_noreq_update_tgthint(
-        path: *const ::core::ffi::c_char,
+        path: *const ::kernel::ffi::c_char,
         it: *const dfs_cache_tgt_iterator,
     );
     pub fn dfs_cache_get_tgt_referral(
-        path: *const ::core::ffi::c_char,
+        path: *const ::kernel::ffi::c_char,
         it: *const dfs_cache_tgt_iterator,
         ref_: *mut dfs_info3_param,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn dfs_cache_get_tgt_share(
-        path: *mut ::core::ffi::c_char,
+        path: *mut ::kernel::ffi::c_char,
         it: *const dfs_cache_tgt_iterator,
-        share: *mut *mut ::core::ffi::c_char,
-        prefix: *mut *mut ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        share: *mut *mut ::kernel::ffi::c_char,
+        prefix: *mut *mut ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
     pub fn dfs_cache_canonical_path(
-        path: *const ::core::ffi::c_char,
+        path: *const ::kernel::ffi::c_char,
         cp: *const nls_table,
-        remap: ::core::ffi::c_int,
-    ) -> *mut ::core::ffi::c_char;
-    pub fn dfs_cache_remount_fs(cifs_sb: *mut cifs_sb_info) -> ::core::ffi::c_int;
+        remap: ::kernel::ffi::c_int,
+    ) -> *mut ::kernel::ffi::c_char;
+    pub fn dfs_cache_remount_fs(cifs_sb: *mut cifs_sb_info) -> ::kernel::ffi::c_int;
     pub fn dfs_cache_refresh(work: *mut work_struct);
 }
 
@@ -133,17 +133,17 @@ pub unsafe fn dfs_cache_free_tgts(tl: *mut dfs_cache_tgt_list) {
 #[inline]
 pub unsafe fn dfs_cache_get_tgt_name(
     it: *const dfs_cache_tgt_iterator,
-) -> *mut ::core::ffi::c_char {
+) -> *mut ::kernel::ffi::c_char {
     if it.is_null() { core::ptr::null_mut() } else { (*it).it_name }
 }
 
 #[inline]
-pub unsafe fn dfs_cache_get_nr_tgts(tl: *const dfs_cache_tgt_list) -> ::core::ffi::c_int {
+pub unsafe fn dfs_cache_get_nr_tgts(tl: *const dfs_cache_tgt_list) -> ::kernel::ffi::c_int {
     if tl.is_null() { 0 } else { (*tl).tl_numtgts }
 }
 
 #[inline]
-pub unsafe fn dfs_cache_get_ttl() -> ::core::ffi::c_int {
+pub unsafe fn dfs_cache_get_ttl() -> ::kernel::ffi::c_int {
     atomic_read(&dfs_cache_ttl)
 }
 

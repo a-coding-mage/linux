@@ -151,8 +151,8 @@ static mut CCP_AES_RFC3686_DEFAULTS: skcipher_alg = skcipher_alg {
 struct ccp_aes_def {
     mode: ccp_aes_mode,
     version: u32,
-    name: *const core::ffi::c_char,
-    driver_name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    driver_name: *const kernel::ffi::c_char,
     blocksize: u32,
     ivsize: u32,
     alg_defaults: *const skcipher_alg,

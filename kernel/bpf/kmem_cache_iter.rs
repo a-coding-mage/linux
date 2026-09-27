@@ -29,7 +29,7 @@ extern "C" {
     fn kmem_cache_destroy(cache: *mut kmem_cache);
     fn bpf_iter_get_info(meta: *mut bpf_iter_meta, in_stop: bool) -> *mut bpf_prog;
     fn bpf_iter_run_prog(prog: *mut bpf_prog, ctx: *mut bpf_iter__kmem_cache) -> i32;
-    fn seq_puts(seq: *mut seq_file, s: *const core::ffi::c_char);
+    fn seq_puts(seq: *mut seq_file, s: *const kernel::ffi::c_char);
     fn bpf_iter_reg_target(info: *mut bpf_iter_reg) -> i32;
 }
 
@@ -37,18 +37,18 @@ extern "C" {
 #[repr(C)] pub struct kmem_cache { pub list: list_head, pub refcount: i32 }
 #[repr(C)] pub struct mutex { _private: [u8; 0] }
 #[repr(C)] pub struct list_head { pub next: *mut list_head, pub prev: *mut list_head }
-#[repr(C)] pub struct seq_file { pub private: *mut core::ffi::c_void }
+#[repr(C)] pub struct seq_file { pub private: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct bpf_prog { _private: [u8; 0] }
 #[repr(C)] pub struct bpf_iter_meta { pub seq: *mut seq_file }
 #[repr(C)] pub struct bpf_iter_aux_info { _private: [u8; 0] }
 #[repr(C)] pub struct bpf_iter_seq_info { pub seq_ops: *const seq_operations, pub seq_priv_size: usize }
 #[repr(C)] pub struct seq_operations {
-    pub start: Option<unsafe extern "C" fn(*mut seq_file, *mut i64) -> *mut core::ffi::c_void>,
-    pub next: Option<unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void, *mut i64) -> *mut core::ffi::c_void>,
-    pub stop: Option<unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void)>,
-    pub show: Option<unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void) -> i32>,
+    pub start: Option<unsafe extern "C" fn(*mut seq_file, *mut i64) -> *mut kernel::ffi::c_void>,
+    pub next: Option<unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void, *mut i64) -> *mut kernel::ffi::c_void>,
+    pub stop: Option<unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void)>,
+    pub show: Option<unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void) -> i32>,
 }
-#[repr(C)] pub struct bpf_iter_reg { pub target: *const core::ffi::c_char, pub feature: u32, pub show_fdinfo: Option<unsafe extern "C" fn(*const bpf_iter_aux_info, *mut seq_file)>, pub ctx_arg_info_size: u32, pub ctx_arg_info: [bpf_ctx_arg_info; 1], pub seq_info: *const bpf_iter_seq_info }
+#[repr(C)] pub struct bpf_iter_reg { pub target: *const kernel::ffi::c_char, pub feature: u32, pub show_fdinfo: Option<unsafe extern "C" fn(*const bpf_iter_aux_info, *mut seq_file)>, pub ctx_arg_info_size: u32, pub ctx_arg_info: [bpf_ctx_arg_info; 1], pub seq_info: *const bpf_iter_seq_info }
 #[repr(C)] pub struct bpf_ctx_arg_info { pub offset: usize, pub type_: u32, pub btf_id: u32 }
 
 #[repr(C)]
@@ -107,7 +107,7 @@ pub unsafe extern "C" fn bpf_iter_kmem_cache_destroy(it: *mut bpf_iter_kmem_cach
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn kmem_cache_iter_seq_start(seq: *mut seq_file, pos: *mut i64) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn kmem_cache_iter_seq_start(seq: *mut seq_file, pos: *mut i64) -> *mut kernel::ffi::c_void {
     let mut cnt = 0i64;
     let mut found = false;
     let p = (*seq).private as *mut kmem_cache_iter_priv;
@@ -122,11 +122,11 @@ pub unsafe extern "C" fn kmem_cache_iter_seq_start(seq: *mut seq_file, pos: *mut
     mutex_unlock(&raw mut slab_mutex);
     if !found { s = core::ptr::null_mut(); }
     (*p).kit.pos = s;
-    s as *mut core::ffi::c_void
+    s as *mut kernel::ffi::c_void
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn kmem_cache_iter_seq_stop(seq: *mut seq_file, v: *mut core::ffi::c_void) {
+pub unsafe extern "C" fn kmem_cache_iter_seq_stop(seq: *mut seq_file, v: *mut kernel::ffi::c_void) {
     let mut meta = bpf_iter_meta { seq };
     let mut ctx = bpf_iter__kmem_cache { meta: &mut meta, s: v as *mut kmem_cache };
     let prog = bpf_iter_get_info(&mut meta, true);
@@ -136,14 +136,14 @@ pub unsafe extern "C" fn kmem_cache_iter_seq_stop(seq: *mut seq_file, v: *mut co
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn kmem_cache_iter_seq_next(seq: *mut seq_file, _v: *mut core::ffi::c_void, pos: *mut i64) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn kmem_cache_iter_seq_next(seq: *mut seq_file, _v: *mut kernel::ffi::c_void, pos: *mut i64) -> *mut kernel::ffi::c_void {
     let p = (*seq).private as *mut kmem_cache_iter_priv;
     *pos += 1;
-    bpf_iter_kmem_cache_next(&mut (*p).it) as *mut core::ffi::c_void
+    bpf_iter_kmem_cache_next(&mut (*p).it) as *mut kernel::ffi::c_void
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn kmem_cache_iter_seq_show(seq: *mut seq_file, v: *mut core::ffi::c_void) -> i32 {
+pub unsafe extern "C" fn kmem_cache_iter_seq_show(seq: *mut seq_file, v: *mut kernel::ffi::c_void) -> i32 {
     let mut meta = bpf_iter_meta { seq };
     let mut ctx = bpf_iter__kmem_cache { meta: &mut meta, s: v as *mut kmem_cache };
     let prog = bpf_iter_get_info(&mut meta, false);
@@ -151,7 +151,7 @@ pub unsafe extern "C" fn kmem_cache_iter_seq_show(seq: *mut seq_file, v: *mut co
 }
 
 pub unsafe extern "C" fn bpf_iter_kmem_cache_show_fdinfo(_aux: *const bpf_iter_aux_info, seq: *mut seq_file) {
-    seq_puts(seq, b"kmem_cache iter\n\0".as_ptr() as *const core::ffi::c_char);
+    seq_puts(seq, b"kmem_cache iter\n\0".as_ptr() as *const kernel::ffi::c_char);
 }
 
 pub unsafe extern "C" fn bpf_iter_kmem_cache_init() -> i32 {

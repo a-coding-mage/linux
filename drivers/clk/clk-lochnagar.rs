@@ -15,7 +15,7 @@ const LOCHNAGAR_NUM_CLOCKS: usize = LOCHNAGAR_SPDIF_CLKOUT + 1;
 
 #[repr(C)]
 struct lochnagar_clk {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     hw: clk_hw,
     priv_: *mut lochnagar_clk_priv,
     cfg_reg: u16,
@@ -40,23 +40,23 @@ struct lochnagar_config {
 
 // External kernel types, constants, functions, and registration facilities.
 #[repr(C)] struct clk_hw { init: *const clk_init_data }
-#[repr(C)] struct clk_parent_data { name: *const core::ffi::c_char, fw_name: *const core::ffi::c_char }
-#[repr(C)] struct clk_init_data { ops: *const clk_ops, name: *const core::ffi::c_char, parent_data: *const clk_parent_data, num_parents: i32 }
+#[repr(C)] struct clk_parent_data { name: *const kernel::ffi::c_char, fw_name: *const kernel::ffi::c_char }
+#[repr(C)] struct clk_init_data { ops: *const clk_ops, name: *const kernel::ffi::c_char, parent_data: *const clk_parent_data, num_parents: i32 }
 #[repr(C)] struct clk_ops { prepare: Option<unsafe extern "C" fn(*mut clk_hw) -> i32>, unprepare: Option<unsafe extern "C" fn(*mut clk_hw)>, determine_rate: Option<unsafe extern "C" fn()>, set_parent: Option<unsafe extern "C" fn(*mut clk_hw, u8) -> i32>, get_parent: Option<unsafe extern "C" fn(*mut clk_hw) -> u8> }
 #[repr(C)] struct device { parent: *mut device }
 #[repr(C)] struct regmap;
 #[repr(C)] struct platform_device { dev: device }
 #[repr(C)] struct of_phandle_args { args: [u32; 1] }
-#[repr(C)] struct of_device_id { compatible: *const core::ffi::c_char, data: *const core::ffi::c_void }
+#[repr(C)] struct of_device_id { compatible: *const kernel::ffi::c_char, data: *const kernel::ffi::c_void }
 
 extern "C" {
     fn regmap_update_bits(_: *mut regmap, _: u16, _: u16, _: u16) -> i32;
     fn regmap_read(_: *mut regmap, _: u16, _: *mut u32) -> i32;
     fn clk_hw_get_num_parents(_: *mut clk_hw) -> u8;
-    fn dev_get_regmap(_: *mut device, _: *const core::ffi::c_char) -> *mut regmap;
-    fn device_get_match_data(_: *mut device) -> *const core::ffi::c_void;
+    fn dev_get_regmap(_: *mut device, _: *const kernel::ffi::c_char) -> *mut regmap;
+    fn device_get_match_data(_: *mut device) -> *const kernel::ffi::c_void;
     fn devm_clk_hw_register(_: *mut device, _: *mut clk_hw) -> i32;
-    fn devm_of_clk_add_hw_provider(_: *mut device, _: unsafe extern "C" fn(*mut of_phandle_args, *mut core::ffi::c_void) -> *mut clk_hw, *mut lochnagar_clk_priv) -> i32;
+    fn devm_of_clk_add_hw_provider(_: *mut device, _: unsafe extern "C" fn(*mut of_phandle_args, *mut kernel::ffi::c_void) -> *mut clk_hw, *mut lochnagar_clk_priv) -> i32;
 }
 
 static LOCHNAGAR1_CLK_PARENTS: [clk_parent_data; 11] = [
@@ -94,7 +94,7 @@ static LOCHNAGAR_CLK_OPS: clk_ops = clk_ops { prepare: Some(lochnagar_clk_prepar
 
 unsafe fn lochnagar_hw_to_lclk(hw: *mut clk_hw) -> *mut lochnagar_clk { hw as *mut lochnagar_clk }
 
-unsafe extern "C" fn lochnagar_of_clk_hw_get(clkspec: *mut of_phandle_args, data: *mut core::ffi::c_void) -> *mut clk_hw { let priv_ = data as *mut lochnagar_clk_priv; let idx = (*clkspec).args[0] as usize; if idx >= LOCHNAGAR_NUM_CLOCKS { return core::ptr::null_mut(); } &mut (*priv_).lclks[idx].hw }
+unsafe extern "C" fn lochnagar_of_clk_hw_get(clkspec: *mut of_phandle_args, data: *mut kernel::ffi::c_void) -> *mut clk_hw { let priv_ = data as *mut lochnagar_clk_priv; let idx = (*clkspec).args[0] as usize; if idx >= LOCHNAGAR_NUM_CLOCKS { return core::ptr::null_mut(); } &mut (*priv_).lclks[idx].hw }
 
 unsafe extern "C" fn lochnagar_clk_probe(pdev: *mut platform_device) -> i32 {
     let dev = &mut (*pdev).dev;

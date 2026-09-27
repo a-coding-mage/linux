@@ -4,7 +4,7 @@
  * convention. See PV_CALL_SAVE_REGS_THUNK below. */
 #[repr(C)]
 pub struct paravirt_callee_save {
-    pub func: *mut core::ffi::c_void,
+    pub func: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -13,13 +13,13 @@ pub struct pv_info {
     #[cfg(CONFIG_PARAVIRT_XXL)]
     pub extra_user_64bit_cs: u16,
     pub io_delay: bool,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 unsafe extern "C" {
     pub fn default_banner();
     pub static mut pv_info: pv_info;
-    pub fn paravirt_ret0() -> core::ffi::c_ulong;
+    pub fn paravirt_ret0() -> kernel::ffi::c_ulong;
     /* CONFIG_PARAVIRT_XXL */
     #[cfg(CONFIG_PARAVIRT_XXL)]
     pub fn _paravirt_ident_64(value: u64) -> u64;

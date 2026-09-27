@@ -8,39 +8,39 @@
 #[cfg(CONFIG_ARC_DW2_UNWIND)]
 #[repr(C)]
 pub struct arc700_regs {
-    pub r0: ::core::ffi::c_ulong,
-    pub r1: ::core::ffi::c_ulong,
-    pub r2: ::core::ffi::c_ulong,
-    pub r3: ::core::ffi::c_ulong,
-    pub r4: ::core::ffi::c_ulong,
-    pub r5: ::core::ffi::c_ulong,
-    pub r6: ::core::ffi::c_ulong,
-    pub r7: ::core::ffi::c_ulong,
-    pub r8: ::core::ffi::c_ulong,
-    pub r9: ::core::ffi::c_ulong,
-    pub r10: ::core::ffi::c_ulong,
-    pub r11: ::core::ffi::c_ulong,
-    pub r12: ::core::ffi::c_ulong,
-    pub r13: ::core::ffi::c_ulong,
-    pub r14: ::core::ffi::c_ulong,
-    pub r15: ::core::ffi::c_ulong,
-    pub r16: ::core::ffi::c_ulong,
-    pub r17: ::core::ffi::c_ulong,
-    pub r18: ::core::ffi::c_ulong,
-    pub r19: ::core::ffi::c_ulong,
-    pub r20: ::core::ffi::c_ulong,
-    pub r21: ::core::ffi::c_ulong,
-    pub r22: ::core::ffi::c_ulong,
-    pub r23: ::core::ffi::c_ulong,
-    pub r24: ::core::ffi::c_ulong,
-    pub r25: ::core::ffi::c_ulong,
-    pub r26: ::core::ffi::c_ulong,
-    pub r27: ::core::ffi::c_ulong, /* fp */
-    pub r28: ::core::ffi::c_ulong, /* sp */
-    pub r29: ::core::ffi::c_ulong,
-    pub r30: ::core::ffi::c_ulong,
-    pub r31: ::core::ffi::c_ulong, /* blink */
-    pub r63: ::core::ffi::c_ulong, /* pc */
+    pub r0: ::kernel::ffi::c_ulong,
+    pub r1: ::kernel::ffi::c_ulong,
+    pub r2: ::kernel::ffi::c_ulong,
+    pub r3: ::kernel::ffi::c_ulong,
+    pub r4: ::kernel::ffi::c_ulong,
+    pub r5: ::kernel::ffi::c_ulong,
+    pub r6: ::kernel::ffi::c_ulong,
+    pub r7: ::kernel::ffi::c_ulong,
+    pub r8: ::kernel::ffi::c_ulong,
+    pub r9: ::kernel::ffi::c_ulong,
+    pub r10: ::kernel::ffi::c_ulong,
+    pub r11: ::kernel::ffi::c_ulong,
+    pub r12: ::kernel::ffi::c_ulong,
+    pub r13: ::kernel::ffi::c_ulong,
+    pub r14: ::kernel::ffi::c_ulong,
+    pub r15: ::kernel::ffi::c_ulong,
+    pub r16: ::kernel::ffi::c_ulong,
+    pub r17: ::kernel::ffi::c_ulong,
+    pub r18: ::kernel::ffi::c_ulong,
+    pub r19: ::kernel::ffi::c_ulong,
+    pub r20: ::kernel::ffi::c_ulong,
+    pub r21: ::kernel::ffi::c_ulong,
+    pub r22: ::kernel::ffi::c_ulong,
+    pub r23: ::kernel::ffi::c_ulong,
+    pub r24: ::kernel::ffi::c_ulong,
+    pub r25: ::kernel::ffi::c_ulong,
+    pub r26: ::kernel::ffi::c_ulong,
+    pub r27: ::kernel::ffi::c_ulong, /* fp */
+    pub r28: ::kernel::ffi::c_ulong, /* sp */
+    pub r29: ::kernel::ffi::c_ulong,
+    pub r30: ::kernel::ffi::c_ulong,
+    pub r31: ::kernel::ffi::c_ulong, /* blink */
+    pub r63: ::kernel::ffi::c_ulong, /* pc */
 }
 
 #[cfg(CONFIG_ARC_DW2_UNWIND)]
@@ -83,25 +83,25 @@ macro_rules! STACK_LIMIT { ($ptr:expr) => { (($ptr) - 1) & !(THREAD_SIZE - 1) };
 
 #[cfg(CONFIG_ARC_DW2_UNWIND)]
 extern "C" {
-    pub fn arc_unwind(frame: *mut unwind_frame_info) -> ::core::ffi::c_int;
+    pub fn arc_unwind(frame: *mut unwind_frame_info) -> ::kernel::ffi::c_int;
     pub fn arc_unwind_init();
     pub fn unwind_add_table(
         module: *mut module,
-        table_start: *const ::core::ffi::c_void,
-        table_size: ::core::ffi::c_ulong,
-    ) -> *mut ::core::ffi::c_void;
-    pub fn unwind_remove_table(handle: *mut ::core::ffi::c_void, init_only: ::core::ffi::c_int);
+        table_start: *const ::kernel::ffi::c_void,
+        table_size: ::kernel::ffi::c_ulong,
+    ) -> *mut ::kernel::ffi::c_void;
+    pub fn unwind_remove_table(handle: *mut ::kernel::ffi::c_void, init_only: ::kernel::ffi::c_int);
 }
 
 #[cfg(CONFIG_ARC_DW2_UNWIND)]
 pub unsafe fn arch_unwind_init_running(
     _info: *mut unwind_frame_info,
-    _callback: Option<unsafe extern "C" fn(*mut unwind_frame_info, *mut ::core::ffi::c_void) -> ::core::ffi::c_int>,
-    _arg: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int { 0 }
+    _callback: Option<unsafe extern "C" fn(*mut unwind_frame_info, *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int>,
+    _arg: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int { 0 }
 
 #[cfg(CONFIG_ARC_DW2_UNWIND)]
-pub unsafe fn arch_unw_user_mode(_info: *const unwind_frame_info) -> ::core::ffi::c_int { 0 }
+pub unsafe fn arch_unw_user_mode(_info: *const unwind_frame_info) -> ::kernel::ffi::c_int { 0 }
 
 #[cfg(CONFIG_ARC_DW2_UNWIND)]
 pub unsafe fn arch_unw_init_blocked(_info: *mut unwind_frame_info) {}

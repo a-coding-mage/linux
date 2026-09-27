@@ -34,17 +34,17 @@ static mut pm_csrs_rows: [pm_status_row; 2] = [
 
 unsafe fn adf_gen6_print_pm_status(
     accel_dev: *mut adf_accel_dev,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     count: usize,
     pos: *mut loff_t,
 ) -> ssize_t {
-    let pmisc: *mut core::ffi::c_void = adf_get_pmisc_base(accel_dev);
+    let pmisc: *mut kernel::ffi::c_void = adf_get_pmisc_base(accel_dev);
     let mut pm_info: *mut icp_qat_fw_init_admin_pm_info =
         kzalloc(PAGE_SIZE, GFP_KERNEL) as *mut icp_qat_fw_init_admin_pm_info;
     let p_state_addr: dma_addr_t;
     let mut pm_info_regs: *mut u32;
     let mut len: usize = 0;
-    let mut pm_kv: *mut core::ffi::c_char;
+    let mut pm_kv: *mut kernel::ffi::c_char;
     let mut val: u32;
     let mut ret: i32;
 
@@ -52,18 +52,18 @@ unsafe fn adf_gen6_print_pm_status(
         return -ENOMEM as ssize_t;
     }
 
-    pm_kv = kzalloc(PAGE_SIZE, GFP_KERNEL) as *mut core::ffi::c_char;
+    pm_kv = kzalloc(PAGE_SIZE, GFP_KERNEL) as *mut kernel::ffi::c_char;
     if pm_kv.is_null() {
-        kfree(pm_info as *mut core::ffi::c_void);
+        kfree(pm_info as *mut kernel::ffi::c_void);
         return -ENOMEM as ssize_t;
     }
 
-    p_state_addr = dma_map_single(&mut GET_DEV!(accel_dev), pm_info as *mut core::ffi::c_void,
+    p_state_addr = dma_map_single(&mut GET_DEV!(accel_dev), pm_info as *mut kernel::ffi::c_void,
                                   PAGE_SIZE, DMA_FROM_DEVICE);
     ret = dma_mapping_error(&mut GET_DEV!(accel_dev), p_state_addr);
     if ret != 0 {
-        kfree(pm_info as *mut core::ffi::c_void);
-        kfree(pm_kv as *mut core::ffi::c_void);
+        kfree(pm_info as *mut kernel::ffi::c_void);
+        kfree(pm_kv as *mut kernel::ffi::c_void);
         return ret as ssize_t;
     }
 
@@ -71,8 +71,8 @@ unsafe fn adf_gen6_print_pm_status(
     ret = adf_get_pm_info(accel_dev, p_state_addr, PAGE_SIZE);
     dma_unmap_single(&mut GET_DEV!(accel_dev), p_state_addr, PAGE_SIZE, DMA_FROM_DEVICE);
     if ret != 0 {
-        kfree(pm_info as *mut core::ffi::c_void);
-        kfree(pm_kv as *mut core::ffi::c_void);
+        kfree(pm_info as *mut kernel::ffi::c_void);
+        kfree(pm_kv as *mut kernel::ffi::c_void);
         return ret as ssize_t;
     }
 
@@ -107,8 +107,8 @@ unsafe fn adf_gen6_print_pm_status(
     len += scnprintf(pm_kv.add(len), PAGE_SIZE - len, "CPM_PM_INTERRUPT: %#x\n", val);
     ret = simple_read_from_buffer(buf, count, pos, pm_kv, len);
 
-    kfree(pm_info as *mut core::ffi::c_void);
-    kfree(pm_kv as *mut core::ffi::c_void);
+    kfree(pm_info as *mut kernel::ffi::c_void);
+    kfree(pm_kv as *mut kernel::ffi::c_void);
     ret as ssize_t
 }
 

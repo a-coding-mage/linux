@@ -6,11 +6,11 @@
 // C dependencies supplied by the surrounding kernel translation.
 
 #[cfg(CONFIG_X86_32)]
-pub static mut cmos_lock: ::core::ffi::c_ulong = 0;
+pub static mut cmos_lock: ::kernel::ffi::c_ulong = 0;
 
 // DEFINE_SPINLOCK(rtc_lock);
 extern "C" {
-    pub static mut rtc_lock: ::core::ffi::c_void;
+    pub static mut rtc_lock: ::kernel::ffi::c_void;
 }
 
 /*
@@ -20,10 +20,10 @@ extern "C" {
  * the next second precisely 500 ms later. Check the Motorola MC146818A or
  * Dallas DS12887 data sheet for details.
  */
-pub unsafe fn mach_set_cmos_time(now: *const timespec64) -> ::core::ffi::c_int {
-    let nowtime: ::core::ffi::c_ulonglong = (*now).tv_sec as ::core::ffi::c_ulonglong;
+pub unsafe fn mach_set_cmos_time(now: *const timespec64) -> ::kernel::ffi::c_int {
+    let nowtime: ::kernel::ffi::c_ulonglong = (*now).tv_sec as ::kernel::ffi::c_ulonglong;
     let mut tm: rtc_time = ::core::mem::zeroed();
-    let mut retval: ::core::ffi::c_int = 0;
+    let mut retval: ::kernel::ffi::c_int = 0;
 
     rtc_time64_to_tm(nowtime, &mut tm);
     if rtc_valid_tm(&tm) == 0 {
@@ -73,8 +73,8 @@ pub unsafe fn mach_get_cmos_time(now: *mut timespec64) {
 }
 
 /* Routines for accessing the CMOS RAM/RTC. */
-pub unsafe fn rtc_cmos_read(addr: ::core::ffi::c_uchar) -> ::core::ffi::c_uchar {
-    let val: ::core::ffi::c_uchar;
+pub unsafe fn rtc_cmos_read(addr: ::kernel::ffi::c_uchar) -> ::kernel::ffi::c_uchar {
+    let val: ::kernel::ffi::c_uchar;
 
     lock_cmos_prefix(addr);
     outb(addr, RTC_PORT(0));
@@ -85,8 +85,8 @@ pub unsafe fn rtc_cmos_read(addr: ::core::ffi::c_uchar) -> ::core::ffi::c_uchar 
 }
 
 pub unsafe fn rtc_cmos_write(
-    val: ::core::ffi::c_uchar,
-    addr: ::core::ffi::c_uchar,
+    val: ::kernel::ffi::c_uchar,
+    addr: ::kernel::ffi::c_uchar,
 ) {
     lock_cmos_prefix(addr);
     outb(addr, RTC_PORT(0));
@@ -94,7 +94,7 @@ pub unsafe fn rtc_cmos_write(
     lock_cmos_suffix(addr);
 }
 
-pub unsafe fn update_persistent_clock64(now: timespec64) -> ::core::ffi::c_int {
+pub unsafe fn update_persistent_clock64(now: timespec64) -> ::kernel::ffi::c_int {
     x86_platform.set_wallclock(&now)
 }
 
@@ -123,7 +123,7 @@ static mut rtc_device: platform_device = platform_device {
     num_resources: rtc_resources.len(),
 };
 
-unsafe fn add_rtc_cmos() -> ::core::ffi::c_int {
+unsafe fn add_rtc_cmos() -> ::kernel::ffi::c_int {
     if cmos_rtc_platform_device_present {
         return 0;
     }

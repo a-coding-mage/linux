@@ -9,7 +9,7 @@
 
 #[repr(C)]
 pub struct math_emu_info {
-    pub ___orig_eip: core::ffi::c_long,
+    pub ___orig_eip: kernel::ffi::c_long,
     pub regs: *mut pt_regs,
 }
 

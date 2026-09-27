@@ -11,11 +11,11 @@ const HB_STATS_MAX_STRLEN: usize = 16;
 
 unsafe fn adf_hb_stats_read(
     file: *mut file,
-    user_buffer: *mut core::ffi::c_char,
+    user_buffer: *mut kernel::ffi::c_char,
     count: usize,
     ppos: *mut loff_t,
 ) -> isize {
-    let mut buf = [0 as core::ffi::c_char; HB_STATS_MAX_STRLEN];
+    let mut buf = [0 as kernel::ffi::c_char; HB_STATS_MAX_STRLEN];
     let value: *mut u32;
     let len: i32;
 
@@ -38,12 +38,12 @@ static adf_hb_stats_fops: file_operations = file_operations {
 
 unsafe fn adf_hb_status_read(
     file: *mut file,
-    user_buf: *mut core::ffi::c_char,
+    user_buf: *mut kernel::ffi::c_char,
     count: usize,
     ppos: *mut loff_t,
 ) -> isize {
     let mut hb_status: adf_device_heartbeat_status;
-    let mut ret_str = [0 as core::ffi::c_char; HB_STATUS_MAX_STRLEN];
+    let mut ret_str = [0 as kernel::ffi::c_char; HB_STATUS_MAX_STRLEN];
     let accel_dev: *mut adf_accel_dev;
     let mut ret_code: i32;
     let len: usize;
@@ -73,11 +73,11 @@ static adf_hb_status_fops: file_operations = file_operations {
 
 unsafe fn adf_hb_cfg_read(
     file: *mut file,
-    user_buf: *mut core::ffi::c_char,
+    user_buf: *mut kernel::ffi::c_char,
     count: usize,
     ppos: *mut loff_t,
 ) -> isize {
-    let mut timer_str = [0 as core::ffi::c_char; ADF_CFG_MAX_VAL_LEN_IN_BYTES];
+    let mut timer_str = [0 as kernel::ffi::c_char; ADF_CFG_MAX_VAL_LEN_IN_BYTES];
     let accel_dev: *mut adf_accel_dev;
     let timer_ms: u32;
     let len: i32;
@@ -94,11 +94,11 @@ unsafe fn adf_hb_cfg_read(
 
 unsafe fn adf_hb_cfg_write(
     file: *mut file,
-    user_buf: *const core::ffi::c_char,
+    user_buf: *const kernel::ffi::c_char,
     count: usize,
     ppos: *mut loff_t,
 ) -> isize {
-    let mut input_str = [0 as core::ffi::c_char; ADF_CFG_MAX_VAL_LEN_IN_BYTES];
+    let mut input_str = [0 as kernel::ffi::c_char; ADF_CFG_MAX_VAL_LEN_IN_BYTES];
     let accel_dev: *mut adf_accel_dev;
     let mut ret: i32;
     let written_chars: i32;
@@ -146,9 +146,9 @@ static adf_hb_cfg_fops: file_operations = file_operations {
     ..unsafe { core::mem::zeroed() }
 };
 
-unsafe fn adf_hb_error_inject_write(file: *mut file, user_buf: *const core::ffi::c_char, count: usize, ppos: *mut loff_t) -> isize {
+unsafe fn adf_hb_error_inject_write(file: *mut file, user_buf: *const kernel::ffi::c_char, count: usize, ppos: *mut loff_t) -> isize {
     let accel_dev = (*file).private_data as *mut adf_accel_dev;
-    let mut buf = [0 as core::ffi::c_char; 3];
+    let mut buf = [0 as kernel::ffi::c_char; 3];
     if *ppos != 0 || count != 2 { return -EINVAL; }
     if copy_from_user(buf.as_mut_ptr() as *mut _, user_buf as *const _, count) != 0 { return -EFAULT; }
     buf[count] = 0;

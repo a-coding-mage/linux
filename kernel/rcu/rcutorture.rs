@@ -28,22 +28,22 @@ pub const RCU_TORTURE_PIPE_LEN: usize = 10;
 
 #[repr(C)]
 pub struct rcu_torture_reader_check {
-    pub rtc_myloops: ::core::ffi::c_ulong,
-    pub rtc_chkrdr: ::core::ffi::c_int,
-    pub rtc_chkloops: ::core::ffi::c_ulong,
-    pub rtc_ready: ::core::ffi::c_int,
+    pub rtc_myloops: ::kernel::ffi::c_ulong,
+    pub rtc_chkrdr: ::kernel::ffi::c_int,
+    pub rtc_chkloops: ::kernel::ffi::c_ulong,
+    pub rtc_ready: ::kernel::ffi::c_int,
     pub rtc_assigner: *mut rcu_torture_reader_check,
 }
 
 #[repr(C)]
 pub struct rt_read_seg {
-    pub rt_readstate: ::core::ffi::c_int,
-    pub rt_delay_jiffies: ::core::ffi::c_ulong,
-    pub rt_delay_ms: ::core::ffi::c_ulong,
-    pub rt_delay_us: ::core::ffi::c_ulong,
+    pub rt_readstate: ::kernel::ffi::c_int,
+    pub rt_delay_jiffies: ::kernel::ffi::c_ulong,
+    pub rt_delay_ms: ::kernel::ffi::c_ulong,
+    pub rt_delay_us: ::kernel::ffi::c_ulong,
     pub rt_preempted: bool,
-    pub rt_cpu: ::core::ffi::c_int,
-    pub rt_end_cpu: ::core::ffi::c_int,
+    pub rt_cpu: ::kernel::ffi::c_int,
+    pub rt_end_cpu: ::kernel::ffi::c_int,
     pub rt_gp_seq: u64,
     pub rt_gp_seq_end: u64,
     pub rt_ts: u64,

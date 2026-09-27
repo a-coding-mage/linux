@@ -40,7 +40,7 @@ pub enum knav_queue_ctrl_cmd {
 }
 
 /* Queue notifier callback prototype */
-pub type knav_queue_notify_fn = unsafe extern "C" fn(arg: *mut core::ffi::c_void);
+pub type knav_queue_notify_fn = unsafe extern "C" fn(arg: *mut kernel::ffi::c_void);
 
 /**
  * struct knav_queue_notify_config: Notifier configuration
@@ -50,61 +50,61 @@ pub type knav_queue_notify_fn = unsafe extern "C" fn(arg: *mut core::ffi::c_void
 #[repr(C)]
 pub struct knav_queue_notify_config {
     pub fn_: knav_queue_notify_fn,
-    pub fn_arg: *mut core::ffi::c_void,
+    pub fn_arg: *mut kernel::ffi::c_void,
 }
 
 extern "C" {
     pub fn knav_queue_open(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         id: u32,
         flags: u32,
-    ) -> *mut core::ffi::c_void;
-    pub fn knav_queue_close(qhandle: *mut core::ffi::c_void);
+    ) -> *mut kernel::ffi::c_void;
+    pub fn knav_queue_close(qhandle: *mut kernel::ffi::c_void);
     pub fn knav_queue_device_control(
-        qhandle: *mut core::ffi::c_void,
+        qhandle: *mut kernel::ffi::c_void,
         cmd: knav_queue_ctrl_cmd,
-        arg: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        arg: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
     pub fn knav_queue_pop(
-        qhandle: *mut core::ffi::c_void,
+        qhandle: *mut kernel::ffi::c_void,
         size: *mut u32,
     ) -> dma_addr_t;
     pub fn knav_queue_push(
-        qhandle: *mut core::ffi::c_void,
+        qhandle: *mut kernel::ffi::c_void,
         dma: dma_addr_t,
         size: u32,
         flags: u32,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn knav_pool_create(
-        name: *const core::ffi::c_char,
-        num_desc: core::ffi::c_int,
-        region_id: core::ffi::c_int,
-    ) -> *mut core::ffi::c_void;
-    pub fn knav_pool_destroy(ph: *mut core::ffi::c_void);
-    pub fn knav_pool_count(ph: *mut core::ffi::c_void) -> core::ffi::c_int;
-    pub fn knav_pool_desc_get(ph: *mut core::ffi::c_void) -> *mut core::ffi::c_void;
-    pub fn knav_pool_desc_put(ph: *mut core::ffi::c_void, desc: *mut core::ffi::c_void);
+        name: *const kernel::ffi::c_char,
+        num_desc: kernel::ffi::c_int,
+        region_id: kernel::ffi::c_int,
+    ) -> *mut kernel::ffi::c_void;
+    pub fn knav_pool_destroy(ph: *mut kernel::ffi::c_void);
+    pub fn knav_pool_count(ph: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn knav_pool_desc_get(ph: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+    pub fn knav_pool_desc_put(ph: *mut kernel::ffi::c_void, desc: *mut kernel::ffi::c_void);
     pub fn knav_pool_desc_map(
-        ph: *mut core::ffi::c_void,
-        desc: *mut core::ffi::c_void,
+        ph: *mut kernel::ffi::c_void,
+        desc: *mut kernel::ffi::c_void,
         size: u32,
         dma: *mut dma_addr_t,
         dma_sz: *mut u32,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn knav_pool_desc_unmap(
-        ph: *mut core::ffi::c_void,
+        ph: *mut kernel::ffi::c_void,
         dma: dma_addr_t,
         dma_sz: u32,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn knav_pool_desc_virt_to_dma(
-        ph: *mut core::ffi::c_void,
-        virt: *mut core::ffi::c_void,
+        ph: *mut kernel::ffi::c_void,
+        virt: *mut kernel::ffi::c_void,
     ) -> dma_addr_t;
     pub fn knav_pool_desc_dma_to_virt(
-        ph: *mut core::ffi::c_void,
+        ph: *mut kernel::ffi::c_void,
         dma: dma_addr_t,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn knav_qmss_device_ready() -> bool;
 }
 

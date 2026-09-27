@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 // Translation of uapi/linux/if_link.h; external Linux types are referenced as aliases.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 type __u8 = u8; type __u16 = u16; type __u32 = u32; type __u64 = u64; type __be16 = u16;
 
 #[repr(C)]

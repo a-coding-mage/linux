@@ -50,10 +50,10 @@ extern "C" {
     fn fp_decode_sourcespec_impl(); fn fp_decode_dest_format_impl(); fn fp_decode_src_reg_impl();
     fn fp_decode_addr_mode_impl(); fn fp_decode_addr_reg_impl(); fn fp_decode_disp8_impl();
     fn fp_decode_index_impl(); fn fp_decode_basedisp_impl(); fn fp_decode_outerdisp_impl();
-    fn fp_get_test_extword_impl(label: *const core::ffi::c_char);
-    fn fp_test_basereg_d16_impl(label: *const core::ffi::c_char);
-    fn fp_test_basereg_ext_impl(label: *const core::ffi::c_char);
-    fn fp_test_suppr_index_impl(label: *const core::ffi::c_char);
+    fn fp_get_test_extword_impl(label: *const kernel::ffi::c_char);
+    fn fp_test_basereg_d16_impl(label: *const kernel::ffi::c_char);
+    fn fp_test_basereg_ext_impl(label: *const kernel::ffi::c_char);
+    fn fp_test_suppr_index_impl(label: *const kernel::ffi::c_char);
     fn fp_mode_data_direct_impl(); fn fp_mode_addr_indirect_impl(); fn fp_test_sp_byte_move_impl();
     fn fp_mode_addr_indirect_postinc_impl(); fn fp_mode_addr_indirect_predec_impl();
     fn fp_mode_addr_indirect_disp16_impl(); fn fp_do_preindex_impl(); fn fp_do_postindex_impl();

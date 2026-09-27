@@ -22,7 +22,7 @@ pub struct idletimer_tg;
 #[repr(C)]
 pub struct idletimer_tg_info {
     pub timeout: u32,
-    pub label: [core::ffi::c_char; MAX_IDLETIMER_LABEL_SIZE],
+    pub label: [kernel::ffi::c_char; MAX_IDLETIMER_LABEL_SIZE],
     // For kernel module internal use only. The C declaration requests 8-byte alignment.
     pub timer: *mut idletimer_tg,
 }
@@ -30,7 +30,7 @@ pub struct idletimer_tg_info {
 #[repr(C)]
 pub struct idletimer_tg_info_v1 {
     pub timeout: u32,
-    pub label: [core::ffi::c_char; MAX_IDLETIMER_LABEL_SIZE],
+    pub label: [kernel::ffi::c_char; MAX_IDLETIMER_LABEL_SIZE],
     pub send_nl_msg: u8, // Unused: for compatibility with Android.
     pub timer_type: u8,
     // For kernel module internal use only. The C declaration requests 8-byte alignment.

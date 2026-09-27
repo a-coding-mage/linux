@@ -9,7 +9,7 @@
  * declared here while preserving that binding intent.
  */
 unsafe extern "C" {
-    pub static mut current_stack_pointer: core::ffi::c_ulong;
+    pub static mut current_stack_pointer: kernel::ffi::c_ulong;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

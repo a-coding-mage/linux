@@ -119,10 +119,10 @@ pub const WM8766_FLAG_ALC: u16 = 1 << 4;
 #[repr(C)]
 pub struct snd_wm8766_ctl {
     pub kctl: *mut crate::snd_kcontrol,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub type_: crate::snd_ctl_elem_type_t,
-    pub enum_names: [*const ::core::ffi::c_char; WM8766_ENUM_MAX],
-    pub tlv: *const ::core::ffi::c_uint,
+    pub enum_names: [*const ::kernel::ffi::c_char; WM8766_ENUM_MAX],
+    pub tlv: *const ::kernel::ffi::c_uint,
     pub reg1: u16,
     pub reg2: u16,
     pub mask1: u16,
@@ -156,7 +156,7 @@ unsafe extern "C" {
     pub fn snd_wm8766_resume(wm: *mut snd_wm8766);
     pub fn snd_wm8766_set_if(wm: *mut snd_wm8766, dac: u16);
     pub fn snd_wm8766_volume_restore(wm: *mut snd_wm8766);
-    pub fn snd_wm8766_build_controls(wm: *mut snd_wm8766) -> ::core::ffi::c_int;
+    pub fn snd_wm8766_build_controls(wm: *mut snd_wm8766) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -15,7 +15,7 @@
  */
 
 /* Valid FD_FLAGS are O_CLOEXEC, O_RDONLY, O_WRONLY, O_RDWR */
-pub const DMA_HEAP_VALID_FD_FLAGS: _ = O_CLOEXEC | O_ACCMODE;
+pub const DMA_HEAP_VALID_FD_FLAGS: u32 = O_CLOEXEC | O_ACCMODE;
 
 /* Currently no heap flags */
 pub const DMA_HEAP_VALID_HEAP_FLAGS: u64 = 0u64;
@@ -47,7 +47,7 @@ pub const DMA_HEAP_IOC_MAGIC: u8 = b'H';
  * Takes a dma_heap_allocation_data struct and returns it with the fd field
  * populated with the dmabuf handle of the allocation.
  */
-pub const DMA_HEAP_IOCTL_ALLOC: _ = _IOWR(
+pub const DMA_HEAP_IOCTL_ALLOC: u32 = _IOWR(
     DMA_HEAP_IOC_MAGIC,
     0x0,
     dma_heap_allocation_data,

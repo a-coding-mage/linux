@@ -24,18 +24,18 @@ unsafe fn ext4_encrypted_get_link(
     dentry: *mut dentry,
     inode: *mut inode,
     done: *mut delayed_call,
-) -> *const core::ffi::c_char {
+) -> *const kernel::ffi::c_char {
     let mut bh: *mut buffer_head = core::ptr::null_mut();
-    let caddr: *const core::ffi::c_void;
+    let caddr: *const kernel::ffi::c_void;
     let max_size: u32;
-    let paddr: *const core::ffi::c_char;
+    let paddr: *const kernel::ffi::c_char;
 
     if dentry.is_null() {
         return ERR_PTR(-ECHILD);
     }
 
     if ext4_inode_is_fast_symlink(inode) {
-        caddr = unsafe { (*EXT4_I(inode)).i_data.as_ptr() as *const core::ffi::c_void };
+        caddr = unsafe { (*EXT4_I(inode)).i_data.as_ptr() as *const kernel::ffi::c_void };
         max_size = core::mem::size_of_val(unsafe { &(*EXT4_I(inode)).i_data }) as u32;
     } else {
         bh = ext4_bread(core::ptr::null_mut(), inode, 0, 0);
@@ -46,7 +46,7 @@ unsafe fn ext4_encrypted_get_link(
             EXT4_ERROR_INODE(inode, "bad symlink.");
             return ERR_PTR(-EFSCORRUPTED);
         }
-        caddr = unsafe { (*bh).b_data as *const core::ffi::c_void };
+        caddr = unsafe { (*bh).b_data as *const kernel::ffi::c_void };
         max_size = unsafe { (*(*inode).i_sb).s_blocksize };
     }
 
@@ -66,7 +66,7 @@ unsafe fn ext4_encrypted_symlink_getattr(
     fscrypt_symlink_getattr(path, stat)
 }
 
-unsafe fn ext4_free_link(bh: *mut core::ffi::c_void) {
+unsafe fn ext4_free_link(bh: *mut kernel::ffi::c_void) {
     brelse(bh as *mut buffer_head);
 }
 
@@ -74,9 +74,9 @@ unsafe fn ext4_get_link(
     dentry: *mut dentry,
     inode: *mut inode,
     callback: *mut delayed_call,
-) -> *const core::ffi::c_char {
+) -> *const kernel::ffi::c_char {
     let bh: *mut buffer_head;
-    let inline_link: *mut core::ffi::c_char;
+    let inline_link: *mut kernel::ffi::c_char;
 
     /*
      * Create a new inlined symlink is not supported, just provide a
@@ -119,7 +119,7 @@ unsafe fn ext4_get_link(
         }
     }
 
-    set_delayed_call(callback, ext4_free_link, bh as *mut core::ffi::c_void);
+    set_delayed_call(callback, ext4_free_link, bh as *mut kernel::ffi::c_void);
     nd_terminate_link(
         (*bh).b_data,
         (*inode).i_size,

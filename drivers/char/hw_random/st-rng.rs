@@ -34,13 +34,13 @@ const ST_RNG_FILL_FIFO_TIMEOUT: i32 = 12 * 2;
 
 #[repr(C)]
 pub struct st_rng_data {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub ops: hwrng,
 }
 
 unsafe fn st_rng_read(
     rng: *mut hwrng,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
     max: usize,
     _wait: bool,
 ) -> i32 {
@@ -75,7 +75,7 @@ unsafe fn st_rng_read(
 unsafe fn st_rng_probe(pdev: *mut platform_device) -> i32 {
     let mut ddata: *mut st_rng_data;
     let mut clk: *mut clk;
-    let mut base: *mut core::ffi::c_void;
+    let mut base: *mut kernel::ffi::c_void;
     let mut ret: i32;
 
     ddata = devm_kzalloc(&mut (*pdev).dev, core::mem::size_of::<st_rng_data>(), GFP_KERNEL);
@@ -111,7 +111,7 @@ unsafe fn st_rng_probe(pdev: *mut platform_device) -> i32 {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 
 static ST_RNG_MATCH: [of_device_id; 2] = [

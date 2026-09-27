@@ -27,17 +27,17 @@ pub const LED_CMD_REG_NONE: i32 = 0; // NULL == no addr for the cmd register
 unsafe extern "C" {
     // register_led_driver()
     pub fn register_led_driver(
-        model: core::ffi::c_int,
-        cmd_reg: core::ffi::c_ulong,
-        data_reg: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        model: kernel::ffi::c_int,
+        cmd_reg: kernel::ffi::c_ulong,
+        data_reg: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
 }
 
 // The following declaration is present only when CONFIG_CHASSIS_LCD_LED is enabled.
 #[cfg(CONFIG_CHASSIS_LCD_LED)]
 unsafe extern "C" {
     // writes a string to the LCD display (if possible on this h/w)
-    pub fn lcd_print(str_: *const core::ffi::c_char);
+    pub fn lcd_print(str_: *const kernel::ffi::c_char);
 }
 
 

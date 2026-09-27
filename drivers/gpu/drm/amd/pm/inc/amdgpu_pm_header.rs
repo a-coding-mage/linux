@@ -20,7 +20,7 @@
 #[repr(C)]
 pub struct cg_flag_name {
     pub flag: u64,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]

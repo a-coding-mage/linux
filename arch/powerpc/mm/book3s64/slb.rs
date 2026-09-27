@@ -7,12 +7,12 @@
 static mut STRESS_SLB_ENABLED: bool = false;
 static mut NO_SLB_PRELOAD: bool = false;
 
-unsafe fn parse_stress_slb(_p: *mut core::ffi::c_char) -> i32 {
+unsafe fn parse_stress_slb(_p: *mut kernel::ffi::c_char) -> i32 {
     STRESS_SLB_ENABLED = true;
     0
 }
 
-unsafe fn parse_no_slb_preload(_p: *mut core::ffi::c_char) -> i32 {
+unsafe fn parse_no_slb_preload(_p: *mut kernel::ffi::c_char) -> i32 {
     NO_SLB_PRELOAD = true;
     0
 }

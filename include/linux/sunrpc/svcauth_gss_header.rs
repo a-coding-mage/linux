@@ -13,7 +13,7 @@
 // linux/sunrpc/svcauth.h, linux/sunrpc/svcsock.h, and
 // linux/sunrpc/auth_gss.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct net {

@@ -43,15 +43,15 @@ pub struct cros_ec_command {
 
 #[repr(C)]
 pub struct cros_ec_device {
-    pub phys_name: *const core::ffi::c_char,
+    pub phys_name: *const kernel::ffi::c_char,
     pub dev: *mut device,
     pub cros_class: *mut class,
-    pub cmd_readmem: Option<unsafe extern "C" fn(*mut cros_ec_device, u32, u32, *mut core::ffi::c_void) -> i32>,
+    pub cmd_readmem: Option<unsafe extern "C" fn(*mut cros_ec_device, u32, u32, *mut kernel::ffi::c_void) -> i32>,
     pub max_request: u16,
     pub max_response: u16,
     pub max_passthru: u16,
     pub proto_version: u16,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
     pub irq: i32,
     pub din: *mut u8,
     pub dout: *mut u8,
@@ -81,7 +81,7 @@ pub struct cros_ec_device {
 
 #[repr(C)]
 pub struct cros_ec_platform {
-    pub ec_name: *const core::ffi::c_char,
+    pub ec_name: *const kernel::ffi::c_char,
     pub cmd_offset: u16,
 }
 
@@ -114,8 +114,8 @@ extern "C" {
     pub fn cros_ec_read_features(ec: *mut cros_ec_dev) -> i32;
     pub fn cros_ec_check_features(ec: *mut cros_ec_dev, feature: i32) -> bool;
     pub fn cros_ec_get_sensor_count(ec: *mut cros_ec_dev) -> i32;
-    pub fn cros_ec_cmd(ec_dev: *mut cros_ec_device, version: u32, command: i32, outdata: *const core::ffi::c_void, outsize: usize, indata: *mut core::ffi::c_void, insize: usize) -> i32;
-    pub fn cros_ec_cmd_readmem(ec_dev: *mut cros_ec_device, offset: u8, size: u8, dest: *mut core::ffi::c_void) -> i32;
+    pub fn cros_ec_cmd(ec_dev: *mut cros_ec_device, version: u32, command: i32, outdata: *const kernel::ffi::c_void, outsize: usize, indata: *mut kernel::ffi::c_void, insize: usize) -> i32;
+    pub fn cros_ec_cmd_readmem(ec_dev: *mut cros_ec_device, offset: u8, size: u8, dest: *mut kernel::ffi::c_void) -> i32;
     pub fn cros_ec_get_cmd_versions(ec_dev: *mut cros_ec_device, cmd: u16) -> i32;
     pub fn cros_ec_device_registered(ec_dev: *mut cros_ec_device) -> bool;
 }

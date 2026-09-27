@@ -21,17 +21,17 @@ const NPCM_RNG_POLL_USEC: u32 = 1000;
 
 #[repr(C)]
 pub struct npcm_rng {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub rng: hwrng,
     pub dev: *mut device,
     pub clkp: u32,
 }
 
 extern "C" {
-    fn writel(value: u32, address: *mut core::ffi::c_void);
-    fn readb(address: *mut core::ffi::c_void) -> u8;
+    fn writel(value: u32, address: *mut kernel::ffi::c_void);
+    fn readb(address: *mut kernel::ffi::c_void) -> u8;
     fn readb_poll_timeout(
-        address: *mut core::ffi::c_void,
+        address: *mut kernel::ffi::c_void,
         value: *mut u8,
         condition: bool,
         delay_us: u32,
@@ -39,32 +39,32 @@ extern "C" {
     ) -> i32;
     fn pm_runtime_get_sync(dev: *mut device) -> i32;
     fn pm_runtime_put_sync_autosuspend(dev: *mut device) -> i32;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_platform_ioremap_resource(
         pdev: *mut platform_device,
         index: u32,
-    ) -> *mut core::ffi::c_void;
-    fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
+    ) -> *mut kernel::ffi::c_void;
+    fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
     fn pm_runtime_set_autosuspend_delay(dev: *mut device, delay: i32);
     fn pm_runtime_use_autosuspend(dev: *mut device);
     fn pm_runtime_enable(dev: *mut device);
     fn pm_runtime_disable(dev: *mut device);
     fn pm_runtime_set_suspended(dev: *mut device);
-    fn of_device_get_match_data(dev: *mut device) -> *const core::ffi::c_void;
+    fn of_device_get_match_data(dev: *mut device) -> *const kernel::ffi::c_void;
     fn devm_hwrng_register(dev: *mut device, rng: *mut hwrng) -> i32;
     fn devm_hwrng_unregister(dev: *mut device, rng: *mut hwrng);
-    fn platform_get_drvdata(pdev: *mut platform_device) -> *mut core::ffi::c_void;
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
+    fn platform_get_drvdata(pdev: *mut platform_device) -> *mut kernel::ffi::c_void;
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
     fn EIO() -> i32;
     fn ENOMEM() -> i32;
 }
 
 #[repr(C)]
 pub struct hwrng {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub init: Option<unsafe extern "C" fn(*mut hwrng) -> i32>,
     pub cleanup: Option<unsafe extern "C" fn(*mut hwrng)>,
-    pub read: Option<unsafe extern "C" fn(*mut hwrng, *mut core::ffi::c_void, usize, bool) -> i32>,
+    pub read: Option<unsafe extern "C" fn(*mut hwrng, *mut kernel::ffi::c_void, usize, bool) -> i32>,
 }
 
 #[repr(C)]
@@ -75,7 +75,7 @@ pub struct device {
 #[repr(C)]
 pub struct platform_device {
     pub dev: device,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 unsafe fn npcm_rng_init(rng: *mut hwrng) -> i32 {
@@ -91,7 +91,7 @@ unsafe fn npcm_rng_cleanup(rng: *mut hwrng) {
 
 unsafe fn npcm_rng_read(
     rng: *mut hwrng,
-    mut buf: *mut core::ffi::c_void,
+    mut buf: *mut kernel::ffi::c_void,
     mut max: usize,
     wait: bool,
 ) -> i32 {
@@ -129,7 +129,7 @@ unsafe fn npcm_rng_probe(pdev: *mut platform_device) -> i32 {
     let priv_ = devm_kzalloc(&mut (*pdev).dev, core::mem::size_of::<npcm_rng>(), 0) as *mut npcm_rng;
     if priv_.is_null() { return -ENOMEM(); }
     (*priv_).base = devm_platform_ioremap_resource(pdev, 0);
-    dev_set_drvdata(&mut (*pdev).dev, priv_ as *mut core::ffi::c_void);
+    dev_set_drvdata(&mut (*pdev).dev, priv_ as *mut kernel::ffi::c_void);
     pm_runtime_set_autosuspend_delay(&mut (*pdev).dev, 100);
     pm_runtime_use_autosuspend(&mut (*pdev).dev);
     pm_runtime_enable(&mut (*pdev).dev);
@@ -169,8 +169,8 @@ unsafe fn npcm_rng_runtime_resume(dev: *mut device) -> i32 {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 #[no_mangle]

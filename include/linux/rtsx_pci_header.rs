@@ -1104,7 +1104,7 @@ struct pcr_ops {
 	int		(*card_power_off)(rtsx_pcr *pcr, int card);
 	int		(*switch_output_voltage)(rtsx_pcr *pcr,
 						voltage: u8);
-	core::ffi::c_uint	(*cd_deglitch)(rtsx_pcr *pcr);
+	kernel::ffi::c_uint	(*cd_deglitch)(rtsx_pcr *pcr);
 	int		(*conv_clk_and_div_n)(int clk, int dir);
 	void		(*fetch_vendor_settings)(rtsx_pcr *pcr);
 	void		(*force_power_down)(rtsx_pcr *pcr, pm_state: u8, runtime: bool);
@@ -1186,12 +1186,12 @@ struct rtsx_hw_param {
 
 struct rtsx_pcr {
 	struct pci_dev			*pci;
-	core::ffi::c_uint			id;
+	kernel::ffi::c_uint			id;
 	struct rtsx_cr_option	option;
 	struct rtsx_hw_param hw_param;
 
 	/* pci resources */
-	core::ffi::c_ulong			addr;
+	kernel::ffi::c_ulong			addr;
 	void __iomem			*remap_addr;
 	int				irq;
 
@@ -1210,9 +1210,9 @@ struct rtsx_pcr {
 	u32				bier;
 	char				trans_result;
 
-	core::ffi::c_uint			card_inserted;
-	core::ffi::c_uint			card_removed;
-	core::ffi::c_uint			card_exist;
+	kernel::ffi::c_uint			card_inserted;
+	kernel::ffi::c_uint			card_removed;
+	kernel::ffi::c_uint			card_exist;
 
 	struct delayed_work		carddet_work;
 
@@ -1221,7 +1221,7 @@ struct rtsx_pcr {
 	struct completion		*done;
 	struct completion		*finish_me;
 
-	core::ffi::c_uint			cur_clock;
+	kernel::ffi::c_uint			cur_clock;
 	bool				remove_pci;
 	bool				msi_en;
 
@@ -1327,13 +1327,13 @@ int rtsx_pci_read_ppbuf(rtsx_pcr *pcr, u8 *buf, int buf_len);
 int rtsx_pci_write_ppbuf(rtsx_pcr *pcr, u8 *buf, int buf_len);
 int rtsx_pci_card_pull_ctl_enable(rtsx_pcr *pcr, int card);
 int rtsx_pci_card_pull_ctl_disable(rtsx_pcr *pcr, int card);
-int rtsx_pci_switch_clock(rtsx_pcr *pcr, card_clock: core::ffi::c_uint,
+int rtsx_pci_switch_clock(rtsx_pcr *pcr, card_clock: kernel::ffi::c_uint,
 		ssc_depth: u8, initial_mode: bool, double_clk: bool, vpclk: bool);
 int rtsx_pci_card_power_on(rtsx_pcr *pcr, int card);
 int rtsx_pci_card_power_off(rtsx_pcr *pcr, int card);
 int rtsx_pci_card_exclusive_check(rtsx_pcr *pcr, int card);
 int rtsx_pci_switch_output_voltage(rtsx_pcr *pcr, voltage: u8);
-core::ffi::c_uint rtsx_pci_card_exist(rtsx_pcr *pcr);
+kernel::ffi::c_uint rtsx_pci_card_exist(rtsx_pcr *pcr);
 void rtsx_pci_complete_unfinished_transfer(rtsx_pcr *pcr);
 
 u8 *rtsx_pci_get_cmd_data(rtsx_pcr *pcr)

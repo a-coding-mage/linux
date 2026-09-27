@@ -9,7 +9,7 @@
 // The C header includes <linux/tracepoint.h>.  Its TRACE_EVENT machinery is
 // supplied by that dependency and is intentionally not reimplemented here.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /// Payload of the `bpf_trace_printk` trace event.
 ///

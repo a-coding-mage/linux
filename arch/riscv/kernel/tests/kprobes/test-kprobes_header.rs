@@ -11,10 +11,10 @@ pub const KPROBE_TEST_MAGIC_UPPER: u32 = 0xcafe0000;
 
 /* array of addresses to install kprobes */
 unsafe extern "C" {
-    pub static mut test_kprobes_addresses: [*mut core::ffi::c_void];
+    pub static mut test_kprobes_addresses: [*mut kernel::ffi::c_void];
 
     /* array of functions that return KPROBE_TEST_MAGIC */
-    pub static mut test_kprobes_functions: [unsafe extern "C" fn() -> core::ffi::c_long];
+    pub static mut test_kprobes_functions: [unsafe extern "C" fn() -> kernel::ffi::c_long];
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -74,7 +74,7 @@ pub struct liveupdate_ioctl_create_session {
     pub name: [u8; LIVEUPDATE_SESSION_NAME_LENGTH],
 }
 
-pub const LIVEUPDATE_IOCTL_CREATE_SESSION: _ = _IO!(LIVEUPDATE_IOCTL_TYPE, LIVEUPDATE_CMD_CREATE_SESSION);
+pub const LIVEUPDATE_IOCTL_CREATE_SESSION: u32 = _IO!(LIVEUPDATE_IOCTL_TYPE, LIVEUPDATE_CMD_CREATE_SESSION);
 
 /** See the C header documentation for session retrieval semantics. */
 #[repr(C)]
@@ -84,7 +84,7 @@ pub struct liveupdate_ioctl_retrieve_session {
     pub name: [u8; LIVEUPDATE_SESSION_NAME_LENGTH],
 }
 
-pub const LIVEUPDATE_IOCTL_RETRIEVE_SESSION: _ = _IO!(LIVEUPDATE_IOCTL_TYPE, LIVEUPDATE_CMD_RETRIEVE_SESSION);
+pub const LIVEUPDATE_IOCTL_RETRIEVE_SESSION: u32 = _IO!(LIVEUPDATE_IOCTL_TYPE, LIVEUPDATE_CMD_RETRIEVE_SESSION);
 
 /* Session specific IOCTLs */
 
@@ -95,7 +95,7 @@ pub struct liveupdate_session_preserve_fd {
     pub token: u64,
 }
 
-pub const LIVEUPDATE_SESSION_PRESERVE_FD: _ = _IO!(LIVEUPDATE_IOCTL_TYPE, LIVEUPDATE_CMD_SESSION_PRESERVE_FD);
+pub const LIVEUPDATE_SESSION_PRESERVE_FD: u32 = _IO!(LIVEUPDATE_IOCTL_TYPE, LIVEUPDATE_CMD_SESSION_PRESERVE_FD);
 
 #[repr(C)]
 pub struct liveupdate_session_retrieve_fd {
@@ -104,7 +104,7 @@ pub struct liveupdate_session_retrieve_fd {
     pub token: u64,
 }
 
-pub const LIVEUPDATE_SESSION_RETRIEVE_FD: _ = _IO!(LIVEUPDATE_IOCTL_TYPE, LIVEUPDATE_CMD_SESSION_RETRIEVE_FD);
+pub const LIVEUPDATE_SESSION_RETRIEVE_FD: u32 = _IO!(LIVEUPDATE_IOCTL_TYPE, LIVEUPDATE_CMD_SESSION_RETRIEVE_FD);
 
 #[repr(C)]
 pub struct liveupdate_session_finish {
@@ -112,7 +112,7 @@ pub struct liveupdate_session_finish {
     pub reserved: u32,
 }
 
-pub const LIVEUPDATE_SESSION_FINISH: _ = _IO!(LIVEUPDATE_IOCTL_TYPE, LIVEUPDATE_CMD_SESSION_FINISH);
+pub const LIVEUPDATE_SESSION_FINISH: u32 = _IO!(LIVEUPDATE_IOCTL_TYPE, LIVEUPDATE_CMD_SESSION_FINISH);
 
 #[repr(C)]
 pub struct liveupdate_session_get_name {
@@ -121,6 +121,6 @@ pub struct liveupdate_session_get_name {
     pub name: [u8; LIVEUPDATE_SESSION_NAME_LENGTH],
 }
 
-pub const LIVEUPDATE_SESSION_GET_NAME: _ = _IO!(LIVEUPDATE_IOCTL_TYPE, LIVEUPDATE_CMD_SESSION_GET_NAME);
+pub const LIVEUPDATE_SESSION_GET_NAME: u32 = _IO!(LIVEUPDATE_IOCTL_TYPE, LIVEUPDATE_CMD_SESSION_GET_NAME);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

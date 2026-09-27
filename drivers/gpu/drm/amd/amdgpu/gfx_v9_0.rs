@@ -509,7 +509,7 @@ enum ta_ras_gfx_subblock {
 };
 
 struct ras_gfx_subblock {
-	core::ffi::c_uchar *name;
+	kernel::ffi::c_uchar *name;
 	int ta_subblock;
 	int hw_supported_error_type;
 	int sw_supported_error_type;
@@ -920,7 +920,7 @@ static int gfx_v9_0_ras_error_inject(amdgpu_device *adev,
 				     void *inject_if, uint32_t instance_mask);
 static void gfx_v9_0_reset_ras_error_count(amdgpu_device *adev);
 static void gfx_v9_0_update_spm_vmid_internal(amdgpu_device *adev,
-					      vmid: core::ffi::c_uint);
+					      vmid: kernel::ffi::c_uint);
 static void gfx_v9_0_set_safe_mode(amdgpu_device *adev, int xcc_id);
 static void gfx_v9_0_unset_safe_mode(amdgpu_device *adev, int xcc_id);
 
@@ -2164,7 +2164,7 @@ static int gfx_v9_0_compute_ring_init(amdgpu_device *adev, int ring_id,
 {
 	unsigned irq_type;
 	struct amdgpu_ring *ring = &adev->gfx.compute_ring[ring_id];
-	core::ffi::c_uint hw_prio;
+	kernel::ffi::c_uint hw_prio;
 
 	ring = &adev->gfx.compute_ring[ring_id];
 
@@ -2225,7 +2225,7 @@ static int gfx_v9_0_sw_init(amdgpu_ip_block *ip_block)
 	int xcc_id = 0;
 	struct amdgpu_ring *ring;
 	struct amdgpu_device *adev = ip_block->adev;
-	core::ffi::c_uint hw_prio;
+	kernel::ffi::c_uint hw_prio;
 
 	switch (amdgpu_ip_version(adev, GC_HWIP, 0)) {
 	case IP_VERSION(9, 0, 1):
@@ -4270,7 +4270,7 @@ static uint64_t gfx_v9_0_kiq_read_clock(amdgpu_device *adev)
 	'failed_unlock: {
 	'failed_undo: {
 	signed long r, cnt = 0;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	uint32_t seq, reg_val_offs = 0;
 	uint64_t value = 0;
 	struct amdgpu_kiq *kiq = &adev->gfx.kiq[0];
@@ -5220,7 +5220,7 @@ static int gfx_v9_0_update_gfx_clock_gating(amdgpu_device *adev,
 }
 
 static void gfx_v9_0_update_spm_vmid_internal(amdgpu_device *adev,
-					      vmid: core::ffi::c_uint)
+					      vmid: kernel::ffi::c_uint)
 {
 	reg: u32, data;
 
@@ -5240,7 +5240,7 @@ static void gfx_v9_0_update_spm_vmid_internal(amdgpu_device *adev,
 }
 
 static void gfx_v9_0_update_spm_vmid(amdgpu_device *adev, int xcc_id,
-		amdgpu_ring *ring, vmid: core::ffi::c_uint)
+		amdgpu_ring *ring, vmid: kernel::ffi::c_uint)
 {
 	amdgpu_gfx_off_ctrl(adev, false);
 
@@ -5649,7 +5649,7 @@ static void gfx_v9_0_ring_emit_event_write(amdgpu_ring *ring,
 
 static void gfx_v9_0_emit_mem_sync(amdgpu_ring *ring)
 {
-	const core::ffi::c_uint cp_coher_cntl =
+	const kernel::ffi::c_uint cp_coher_cntl =
 			PACKET3_ACQUIRE_MEM_CP_COHER_CNTL_SH_ICACHE_ACTION_ENA(1) |
 			PACKET3_ACQUIRE_MEM_CP_COHER_CNTL_SH_KCACHE_ACTION_ENA(1) |
 			PACKET3_ACQUIRE_MEM_CP_COHER_CNTL_TC_ACTION_ENA(1) |
@@ -5723,7 +5723,7 @@ static void gfx_v9_0_ring_set_wptr_compute(amdgpu_ring *ring)
 }
 
 static void gfx_v9_0_ring_emit_fence_kiq(amdgpu_ring *ring, addr: u64,
-					 seq: u64, flags: core::ffi::c_uint)
+					 seq: u64, flags: kernel::ffi::c_uint)
 {
 	struct amdgpu_device *adev = ring->adev;
 
@@ -5790,7 +5790,7 @@ static int gfx_v9_0_ring_preempt_ib(amdgpu_ring *ring)
 	struct amdgpu_device *adev = ring->adev;
 	struct amdgpu_kiq *kiq = &adev->gfx.kiq[0];
 	struct amdgpu_ring *kiq_ring = &kiq->ring;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	if (!kiq->pmf || !kiq->pmf->kiq_unmap_queues)
 		return -EINVAL;
@@ -7260,13 +7260,13 @@ static void gfx_v9_0_ring_emit_wreg_me(amdgpu_ring *ring,
 }
 
 static int gfx_v9_0_reset_kgq(amdgpu_ring *ring,
-			      vmid: core::ffi::c_uint,
+			      vmid: kernel::ffi::c_uint,
 			      amdgpu_fence *timedout_fence)
 {
 	struct amdgpu_device *adev = ring->adev;
 	struct amdgpu_kiq *kiq = &adev->gfx.kiq[0];
 	struct amdgpu_ring *kiq_ring = &kiq->ring;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u32 tmp;
 	int r;
 
@@ -7324,13 +7324,13 @@ static int gfx_v9_0_reset_kgq(amdgpu_ring *ring,
 }
 
 static int gfx_v9_0_reset_kcq(amdgpu_ring *ring,
-			      vmid: core::ffi::c_uint,
+			      vmid: kernel::ffi::c_uint,
 			      amdgpu_fence *timedout_fence)
 {
 	struct amdgpu_device *adev = ring->adev;
 	struct amdgpu_kiq *kiq = &adev->gfx.kiq[0];
 	struct amdgpu_ring *kiq_ring = &kiq->ring;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int i, r;
 
 	if (!kiq->pmf || !kiq->pmf->kiq_unmap_queues)

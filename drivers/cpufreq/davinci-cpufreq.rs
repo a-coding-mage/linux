@@ -19,7 +19,7 @@
 // External kernel types and functions supplied by other translated units.
 #[repr(C)]
 pub struct device {
-    pub platform_data: *mut core::ffi::c_void,
+    pub platform_data: *mut kernel::ffi::c_void,
 }
 #[repr(C)]
 pub struct clk;
@@ -46,12 +46,12 @@ pub struct cpufreq_driver {
     pub target_index: Option<unsafe extern "C" fn(*mut cpufreq_policy, u32) -> i32>,
     pub get: Option<unsafe extern "C" fn(*mut cpufreq_policy) -> u32>,
     pub init: Option<unsafe extern "C" fn(*mut cpufreq_policy) -> i32>,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 extern "C" {
     fn clk_set_rate(clk: *mut clk, rate: u32) -> i32;
-    fn clk_get(dev: *mut device, id: *const core::ffi::c_char) -> *mut clk;
+    fn clk_get(dev: *mut device, id: *const kernel::ffi::c_char) -> *mut clk;
     fn clk_get_rate(clk: *mut clk) -> u32;
     fn clk_put(clk: *mut clk);
     fn cpufreq_generic_init(policy: *mut cpufreq_policy, table: *mut cpufreq_frequency_table, latency: u32);
@@ -60,7 +60,7 @@ extern "C" {
     fn cpufreq_register_driver(driver: *mut cpufreq_driver) -> i32;
     fn cpufreq_unregister_driver(driver: *mut cpufreq_driver);
     fn platform_driver_probe(driver: *mut platform_driver, probe: unsafe extern "C" fn(*mut platform_device) -> i32) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char);
     fn is_err(ptr: *mut clk) -> bool;
     fn ptr_err(ptr: *mut clk) -> i32;
 }
@@ -68,7 +68,7 @@ extern "C" {
 pub const CPUFREQ_NEED_INITIAL_FREQ_CHECK: u32 = 1;
 
 #[repr(C)]
-pub struct platform_driver_driver { pub name: *const core::ffi::c_char }
+pub struct platform_driver_driver { pub name: *const kernel::ffi::c_char }
 #[repr(C)]
 pub struct platform_driver {
     pub driver: platform_driver_driver,

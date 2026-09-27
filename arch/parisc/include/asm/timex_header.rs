@@ -6,7 +6,7 @@
  */
 
 // Dependency supplied by asm/special_insns.h.
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 pub type cycles_t = c_ulong;
 

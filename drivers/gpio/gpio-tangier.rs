@@ -19,8 +19,8 @@ pub struct TngGpioContext { pub level: u32, pub gpdr: u32, pub grer: u32, pub gf
 
 extern "C" {
     fn gpiochip_get_data(chip: *mut gpio_chip) -> *mut tng_gpio;
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
     fn gpiochip_generic_config(chip: *mut gpio_chip, offset: u32, config: usize) -> i32;
     fn pinconf_to_config_param(config: usize) -> u32;
     fn pinconf_to_config_argument(config: usize) -> u32;
@@ -28,25 +28,25 @@ extern "C" {
     fn irq_data_get_irq_chip_data(d: *mut irq_data) -> *mut gpio_chip;
     fn irq_desc_get_handler_data(d: *mut irq_desc) -> *mut gpio_chip;
     fn irq_desc_get_chip(d: *mut irq_desc) -> *mut irq_chip;
-    fn generic_handle_domain_irq(domain: *mut core::ffi::c_void, irq: usize);
+    fn generic_handle_domain_irq(domain: *mut kernel::ffi::c_void, irq: usize);
     fn chained_irq_enter(chip: *mut irq_chip, desc: *mut irq_desc);
     fn chained_irq_exit(chip: *mut irq_chip, desc: *mut irq_desc);
     fn gpiochip_disable_irq(chip: *mut gpio_chip, gpio: usize);
     fn gpiochip_enable_irq(chip: *mut gpio_chip, gpio: usize);
-    fn irq_set_handler_locked(d: *mut irq_data, handler: *const core::ffi::c_void);
-    fn devm_kcalloc(dev: *mut device, n: usize, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn dev_name(dev: *mut device) -> *const core::ffi::c_char;
+    fn irq_set_handler_locked(d: *mut irq_data, handler: *const kernel::ffi::c_void);
+    fn devm_kcalloc(dev: *mut device, n: usize, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn dev_name(dev: *mut device) -> *const kernel::ffi::c_char;
     fn raw_spin_lock_init(lock: *mut raw_spinlock_t);
     fn devm_gpiochip_add_data(dev: *mut device, chip: *mut gpio_chip, data: *mut tng_gpio) -> i32;
-    fn dev_err_probe(dev: *mut device, ret: i32, fmt: *const core::ffi::c_char) -> i32;
-    fn str_enable_disable(on: u32) -> *const core::ffi::c_char;
+    fn dev_err_probe(dev: *mut device, ret: i32, fmt: *const kernel::ffi::c_char) -> i32;
+    fn str_enable_disable(on: u32) -> *const kernel::ffi::c_char;
 }
 
-#[repr(C)] pub struct gpio_chip { pub irq: gpio_irq_chip, pub ngpio: u32, pub base: i32, pub parent: *mut device, pub label: *const core::ffi::c_char, pub domain: *mut core::ffi::c_void }
-#[repr(C)] pub struct gpio_irq_chip { pub chip: *const irq_chip, pub init_hw: Option<unsafe extern "C" fn(*mut gpio_chip) -> i32>, pub parent_handler: Option<unsafe extern "C" fn(*mut irq_desc)>, pub num_parents: u32, pub parents: *mut u32, pub first: u32, pub default_type: u32, pub handler: *const core::ffi::c_void }
+#[repr(C)] pub struct gpio_chip { pub irq: gpio_irq_chip, pub ngpio: u32, pub base: i32, pub parent: *mut device, pub label: *const kernel::ffi::c_char, pub domain: *mut kernel::ffi::c_void }
+#[repr(C)] pub struct gpio_irq_chip { pub chip: *const irq_chip, pub init_hw: Option<unsafe extern "C" fn(*mut gpio_chip) -> i32>, pub parent_handler: Option<unsafe extern "C" fn(*mut irq_desc)>, pub num_parents: u32, pub parents: *mut u32, pub first: u32, pub default_type: u32, pub handler: *const kernel::ffi::c_void }
 #[repr(C)] pub struct tng_gpio_info { pub ngpio: u32, pub base: i32, pub first: u32 }
 #[repr(C)] pub struct tng_gpio_pinrange { pub gpio_base: u32, pub pin_base: u32, pub npins: u32 }
-#[repr(C)] pub struct tng_gpio_pin_info { pub nranges: u32, pub pin_ranges: *const tng_gpio_pinrange, pub name: *const core::ffi::c_char }
+#[repr(C)] pub struct tng_gpio_pin_info { pub nranges: u32, pub pin_ranges: *const tng_gpio_pinrange, pub name: *const kernel::ffi::c_char }
 #[repr(C)] pub struct tng_gpio_wake_regs { pub gwmr: usize, pub gwsr: usize }
 #[repr(C)] pub struct tng_gpio { pub chip: gpio_chip, pub info: tng_gpio_info, pub pin_info: tng_gpio_pin_info, pub wake_regs: tng_gpio_wake_regs, pub reg_base: *mut u8, pub lock: raw_spinlock_t, pub ctx: *mut TngGpioContext, pub irq: u32, pub dev: *mut device }
 #[repr(C)] pub struct raw_spinlock_t { _private: [u8; 0] }
@@ -56,8 +56,8 @@ extern "C" {
 #[repr(C)] pub struct irq_chip { _private: [u8; 0] }
 
 const BIT: fn(u8) -> u32 = |n| 1u32 << n;
-unsafe fn gpio_reg(chip: *mut gpio_chip, offset: u32, reg: usize) -> *mut core::ffi::c_void { let p = gpiochip_get_data(chip); (*p).reg_base.add(reg + ((offset / 32) * 4) as usize) as *mut _ }
-unsafe fn gpio_reg_and_bit(chip: *mut gpio_chip, offset: u32, reg: usize, bit: *mut u8) -> *mut core::ffi::c_void { *bit = (offset % 32) as u8; gpio_reg(chip, offset, reg) }
+unsafe fn gpio_reg(chip: *mut gpio_chip, offset: u32, reg: usize) -> *mut kernel::ffi::c_void { let p = gpiochip_get_data(chip); (*p).reg_base.add(reg + ((offset / 32) * 4) as usize) as *mut _ }
+unsafe fn gpio_reg_and_bit(chip: *mut gpio_chip, offset: u32, reg: usize, bit: *mut u8) -> *mut kernel::ffi::c_void { *bit = (offset % 32) as u8; gpio_reg(chip, offset, reg) }
 
 pub unsafe extern "C" fn tng_gpio_get(chip: *mut gpio_chip, offset: u32) -> i32 { let mut s=0; let r=gpio_reg_and_bit(chip,offset,GPLR,&mut s); ((readl(r)&BIT(s))!=0) as i32 }
 pub unsafe extern "C" fn tng_gpio_set(chip:*mut gpio_chip,offset:u32,value:i32)->i32 { let mut s=0; let r=gpio_reg_and_bit(chip,offset,if value!=0{GPSR}else{GPCR},&mut s); writel(BIT(s),r); 0 }

@@ -70,7 +70,7 @@ pub enum amd_asic_type {
 
 extern "C" {
     // The C declaration is an externally defined array with unspecified length.
-    pub static amdgpu_asic_name: *const *const core::ffi::c_char;
+    pub static amdgpu_asic_name: *const *const kernel::ffi::c_char;
 }
 
 #[repr(C)]

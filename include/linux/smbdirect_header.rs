@@ -80,9 +80,9 @@ extern "C" {
     pub fn smbdirect_socket_set_initial_parameters(sc: *mut smbdirect_socket, sp: *const smbdirect_socket_parameters) -> i32;
     pub fn smbdirect_socket_get_current_parameters(sc: *mut smbdirect_socket) -> *const smbdirect_socket_parameters;
     pub fn smbdirect_socket_set_kernel_settings(sc: *mut smbdirect_socket, poll_ctx: ib_poll_context, gfp_mask: gfp_t) -> i32;
-    pub fn smbdirect_socket_set_logging(sc: *mut smbdirect_socket, private_ptr: *mut core::ffi::c_void,
-        needed: Option<unsafe extern "C" fn(*mut smbdirect_socket, *mut core::ffi::c_void, u32, u32) -> bool>,
-        vaprintf: Option<unsafe extern "C" fn(*mut smbdirect_socket, *const core::ffi::c_char, u32, *mut core::ffi::c_void, u32, u32, *mut va_format)>);
+    pub fn smbdirect_socket_set_logging(sc: *mut smbdirect_socket, private_ptr: *mut kernel::ffi::c_void,
+        needed: Option<unsafe extern "C" fn(*mut smbdirect_socket, *mut kernel::ffi::c_void, u32, u32) -> bool>,
+        vaprintf: Option<unsafe extern "C" fn(*mut smbdirect_socket, *const kernel::ffi::c_char, u32, *mut kernel::ffi::c_void, u32, u32, *mut va_format)>);
     pub fn smbdirect_connection_is_connected(sc: *mut smbdirect_socket) -> bool;
     pub fn smbdirect_connection_wait_for_connected(sc: *mut smbdirect_socket) -> i32;
     pub fn smbdirect_socket_bind(sc: *mut smbdirect_socket, addr: *mut sockaddr) -> i32;
@@ -98,7 +98,7 @@ extern "C" {
     pub fn smbdirect_connect_sync(sc: *mut smbdirect_socket, dst: *const sockaddr) -> i32;
     pub fn smbdirect_socket_listen(sc: *mut smbdirect_socket, backlog: i32) -> i32;
     pub fn smbdirect_socket_accept(lsc: *mut smbdirect_socket, timeo: i64, arg: *mut proto_accept_arg) -> *mut smbdirect_socket;
-    pub fn smbdirect_connection_rdma_xmit(sc: *mut smbdirect_socket, buf: *mut core::ffi::c_void, buf_len: usize, desc: *mut smbdirect_buffer_descriptor_v1, desc_len: usize, is_read: bool) -> i32;
+    pub fn smbdirect_connection_rdma_xmit(sc: *mut smbdirect_socket, buf: *mut kernel::ffi::c_void, buf_len: usize, desc: *mut smbdirect_buffer_descriptor_v1, desc_len: usize, is_read: bool) -> i32;
     pub fn smbdirect_connection_register_mr_io(sc: *mut smbdirect_socket, iter: *mut iov_iter, writing: bool, need_invalidate: bool) -> *mut smbdirect_mr_io;
     pub fn smbdirect_mr_io_fill_buffer_descriptor(mr: *mut smbdirect_mr_io, v1: *mut smbdirect_buffer_descriptor_v1);
     pub fn smbdirect_connection_deregister_mr_io(mr: *mut smbdirect_mr_io);

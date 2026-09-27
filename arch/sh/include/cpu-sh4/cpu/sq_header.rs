@@ -30,13 +30,13 @@ pub const SQ_ADDRMAX: usize = P4SEG_STORE_QUE + 0x04000000;
 // arch/sh/kernel/cpu/sh4/sq.c
 extern "C" {
     pub fn sq_remap(
-        phys: ::core::ffi::c_ulong,
-        size: ::core::ffi::c_uint,
-        name: *const ::core::ffi::c_char,
+        phys: ::kernel::ffi::c_ulong,
+        size: ::kernel::ffi::c_uint,
+        name: *const ::kernel::ffi::c_char,
         prot: pgprot_t,
-    ) -> ::core::ffi::c_ulong;
-    pub fn sq_unmap(vaddr: ::core::ffi::c_ulong);
-    pub fn sq_flush_range(start: ::core::ffi::c_ulong, len: ::core::ffi::c_uint);
+    ) -> ::kernel::ffi::c_ulong;
+    pub fn sq_unmap(vaddr: ::kernel::ffi::c_ulong);
+    pub fn sq_flush_range(start: ::kernel::ffi::c_ulong, len: ::kernel::ffi::c_uint);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

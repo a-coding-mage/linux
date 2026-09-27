@@ -18,8 +18,8 @@ extern "C" {
     fn da_monitor_destroy();
     fn da_monitor_reset_all();
 
-    fn rv_attach_trace_probe(name: *const ::core::ffi::c_char, event: *const ::core::ffi::c_char, probe: unsafe extern "C" fn(*mut ::core::ffi::c_void));
-    fn rv_detach_trace_probe(name: *const ::core::ffi::c_char, event: *const ::core::ffi::c_char, probe: unsafe extern "C" fn(*mut ::core::ffi::c_void));
+    fn rv_attach_trace_probe(name: *const ::kernel::ffi::c_char, event: *const ::kernel::ffi::c_char, probe: unsafe extern "C" fn(*mut ::kernel::ffi::c_void));
+    fn rv_detach_trace_probe(name: *const ::kernel::ffi::c_char, event: *const ::kernel::ffi::c_char, probe: unsafe extern "C" fn(*mut ::kernel::ffi::c_void));
     fn rv_register_monitor(monitor: *mut rv_monitor, sched: *mut rv_sched) -> i32;
     fn rv_unregister_monitor(monitor: *mut rv_monitor);
 
@@ -43,7 +43,7 @@ extern "C" {
 
 #[cfg(feature = "config_x86_local_apic")]
 unsafe extern "C" fn handle_vector_irq_entry(
-    _data: *mut ::core::ffi::c_void,
+    _data: *mut ::kernel::ffi::c_void,
     _vector: i32,
 ) {
     da_handle_event(irq_entry_sts);
@@ -81,12 +81,12 @@ unsafe fn attach_vector_irq() {}
 #[cfg(not(feature = "config_x86_local_apic"))]
 unsafe fn detach_vector_irq() {}
 
-unsafe extern "C" fn handle_irq_disable(_data: *mut ::core::ffi::c_void, _ip: usize, _parent_ip: usize) { da_handle_event(irq_disable_sts); }
-unsafe extern "C" fn handle_irq_enable(_data: *mut ::core::ffi::c_void, _ip: usize, _parent_ip: usize) { da_handle_event(irq_enable_sts); }
-unsafe extern "C" fn handle_irq_entry(_data: *mut ::core::ffi::c_void, _irq: i32, _action: *mut irqaction) { da_handle_event(irq_entry_sts); }
-unsafe extern "C" fn handle_sched_switch(_data: *mut ::core::ffi::c_void, _preempt: bool, _prev: *mut task_struct, _next: *mut task_struct, _prev_state: u32) { da_handle_event(sched_switch_sts); }
-unsafe extern "C" fn handle_schedule_entry(_data: *mut ::core::ffi::c_void, _preempt: bool) { da_handle_event(schedule_entry_sts); }
-unsafe extern "C" fn handle_schedule_exit(_data: *mut ::core::ffi::c_void, _is_switch: bool) { da_handle_start_event(schedule_exit_sts); }
+unsafe extern "C" fn handle_irq_disable(_data: *mut ::kernel::ffi::c_void, _ip: usize, _parent_ip: usize) { da_handle_event(irq_disable_sts); }
+unsafe extern "C" fn handle_irq_enable(_data: *mut ::kernel::ffi::c_void, _ip: usize, _parent_ip: usize) { da_handle_event(irq_enable_sts); }
+unsafe extern "C" fn handle_irq_entry(_data: *mut ::kernel::ffi::c_void, _irq: i32, _action: *mut irqaction) { da_handle_event(irq_entry_sts); }
+unsafe extern "C" fn handle_sched_switch(_data: *mut ::kernel::ffi::c_void, _preempt: bool, _prev: *mut task_struct, _next: *mut task_struct, _prev_state: u32) { da_handle_event(sched_switch_sts); }
+unsafe extern "C" fn handle_schedule_entry(_data: *mut ::kernel::ffi::c_void, _preempt: bool) { da_handle_event(schedule_entry_sts); }
+unsafe extern "C" fn handle_schedule_exit(_data: *mut ::kernel::ffi::c_void, _is_switch: bool) { da_handle_start_event(schedule_exit_sts); }
 
 unsafe fn enable_sts() -> i32 {
     let retval = da_monitor_init();
@@ -131,13 +131,13 @@ unsafe fn unregister_sts() { rv_unregister_monitor(&mut rv_this); }
 pub struct rv_sts_ops {
     pub mon: (), // RV_MON_OPS_INIT(), supplied by the monitor framework.
     #[cfg(feature = "config_x86_local_apic")]
-    pub handle_vector_irq_entry: unsafe extern "C" fn(*mut ::core::ffi::c_void, i32),
-    pub handle_irq_disable: unsafe extern "C" fn(*mut ::core::ffi::c_void, usize, usize),
-    pub handle_irq_enable: unsafe extern "C" fn(*mut ::core::ffi::c_void, usize, usize),
-    pub handle_irq_entry: unsafe extern "C" fn(*mut ::core::ffi::c_void, i32, *mut irqaction),
-    pub handle_sched_switch: unsafe extern "C" fn(*mut ::core::ffi::c_void, bool, *mut task_struct, *mut task_struct, u32),
-    pub handle_schedule_entry: unsafe extern "C" fn(*mut ::core::ffi::c_void, bool),
-    pub handle_schedule_exit: unsafe extern "C" fn(*mut ::core::ffi::c_void, bool),
+    pub handle_vector_irq_entry: unsafe extern "C" fn(*mut ::kernel::ffi::c_void, i32),
+    pub handle_irq_disable: unsafe extern "C" fn(*mut ::kernel::ffi::c_void, usize, usize),
+    pub handle_irq_enable: unsafe extern "C" fn(*mut ::kernel::ffi::c_void, usize, usize),
+    pub handle_irq_entry: unsafe extern "C" fn(*mut ::kernel::ffi::c_void, i32, *mut irqaction),
+    pub handle_sched_switch: unsafe extern "C" fn(*mut ::kernel::ffi::c_void, bool, *mut task_struct, *mut task_struct, u32),
+    pub handle_schedule_entry: unsafe extern "C" fn(*mut ::kernel::ffi::c_void, bool),
+    pub handle_schedule_exit: unsafe extern "C" fn(*mut ::kernel::ffi::c_void, bool),
 }
 
 #[cfg(feature = "config_rv_monitors_kunit_test")]

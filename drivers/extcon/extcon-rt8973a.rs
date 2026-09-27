@@ -11,7 +11,7 @@
 const DELAY_MS_DEFAULT: u32 = 20000;
 
 #[repr(C)]
-struct muic_irq { irq: u32, name: *const core::ffi::c_char, virq: u32 }
+struct muic_irq { irq: u32, name: *const kernel::ffi::c_char, virq: u32 }
 
 #[repr(C)]
 struct reg_data { reg: u8, mask: u8, val: u8, invert: bool }
@@ -124,7 +124,7 @@ unsafe fn rt8973a_muic_irq_work(work: *mut work_struct) {
     mutex_unlock(&mut (*info).mutex);
 }
 
-unsafe fn rt8973a_muic_irq_handler(irq: i32, data: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe fn rt8973a_muic_irq_handler(irq: i32, data: *mut kernel::ffi::c_void) -> irqreturn_t {
     let info = data as *mut rt8973a_muic_info;
     let mut irq_type: i32 = -1;
     for i in 0..(*info).num_muic_irqs as isize { if irq as u32 == (*info).muic_irqs.offset(i).as_ref().unwrap().virq { irq_type = (*info).muic_irqs.offset(i).as_ref().unwrap().irq as i32; } }

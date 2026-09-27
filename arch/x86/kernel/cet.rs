@@ -126,14 +126,14 @@ unsafe fn do_kernel_cp_fault(regs: *mut pt_regs, error_code: usize) {
     pr_err!("Missing ENDBR: %pS\n", instruction_pointer(regs));
     if !ibt_fatal {
         printk!(KERN_DEFAULT, CUT_HERE);
-        __warn(file!(), line!(), (*regs).ip as *mut core::ffi::c_void, TAINT_WARN, regs, core::ptr::null_mut());
+        __warn(file!(), line!(), (*regs).ip as *mut kernel::ffi::c_void, TAINT_WARN, regs, core::ptr::null_mut());
         ibt_clear_fred_wfe(regs);
         return;
     }
     BUG!();
 }
 
-unsafe fn ibt_setup(str_: *mut core::ffi::c_char) -> i32 {
+unsafe fn ibt_setup(str_: *mut kernel::ffi::c_char) -> i32 {
     if strcmp(str_, c"off".as_ptr()) == 0 {
         setup_clear_cpu_cap(X86_FEATURE_IBT);
     }

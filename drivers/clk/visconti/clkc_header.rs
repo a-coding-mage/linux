@@ -22,26 +22,26 @@ pub struct visconti_clk_provider {
 
 #[repr(C)]
 pub struct visconti_clk_gate_table {
-    pub id: ::core::ffi::c_uint,
-    pub name: *const ::core::ffi::c_char,
+    pub id: ::kernel::ffi::c_uint,
+    pub name: *const ::kernel::ffi::c_char,
     pub parent_data: *const clk_parent_data,
     pub num_parents: u8,
     pub flags: u8,
     pub ckon_offset: u32,
     pub ckoff_offset: u32,
     pub ck_idx: u8,
-    pub div: ::core::ffi::c_uint,
+    pub div: ::kernel::ffi::c_uint,
     pub rs_id: u8,
 }
 
 #[repr(C)]
 pub struct visconti_fixed_clk {
-    pub id: ::core::ffi::c_uint,
-    pub name: *const ::core::ffi::c_char,
-    pub parent: *const ::core::ffi::c_char,
-    pub flag: ::core::ffi::c_ulong,
-    pub mult: ::core::ffi::c_uint,
-    pub div: ::core::ffi::c_uint,
+    pub id: ::kernel::ffi::c_uint,
+    pub name: *const ::kernel::ffi::c_char,
+    pub parent: *const ::kernel::ffi::c_char,
+    pub flag: ::kernel::ffi::c_ulong,
+    pub mult: ::kernel::ffi::c_uint,
+    pub div: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -62,16 +62,16 @@ extern "C" {
     pub fn visconti_init_clk(
         dev: *mut device,
         regmap: *mut regmap,
-        nr_clks: ::core::ffi::c_ulong,
+        nr_clks: ::kernel::ffi::c_ulong,
     ) -> *mut visconti_clk_provider;
 
     pub fn visconti_clk_register_gates(
         data: *mut visconti_clk_provider,
         clks: *const visconti_clk_gate_table,
-        num_gate: ::core::ffi::c_int,
+        num_gate: ::kernel::ffi::c_int,
         reset: *const visconti_reset_data,
         lock: *mut spinlock_t,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 pub const NO_RESET: u32 = 0xFF;

@@ -31,7 +31,7 @@ pub const WMFW_CTL_TYPE_FWEVENT: u32 = 0x1004; // firmware event control
 
 #[repr(C, packed)]
 pub struct wmfw_header {
-    pub magic: [core::ffi::c_char; 4],
+    pub magic: [kernel::ffi::c_char; 4],
     pub len: __le32,
     pub rev: __le16,
     pub core: u8,

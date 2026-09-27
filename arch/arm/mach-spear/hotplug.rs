@@ -10,9 +10,9 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 extern "C" {
-    static mut spear_pen_release: ::core::ffi::c_uint;
+    static mut spear_pen_release: ::kernel::ffi::c_uint;
     fn wfi();
-    fn pr_warn(fmt: *const ::core::ffi::c_char, ...);
+    fn pr_warn(fmt: *const ::kernel::ffi::c_char, ...);
 }
 
 // CR_C is supplied by the ARM CP15 definitions.

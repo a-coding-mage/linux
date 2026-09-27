@@ -8,7 +8,7 @@
 // Translated from the C header. Types supplied by included kernel headers are
 // intentionally referenced but not defined here.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub struct iio_dev;
 pub struct device;
@@ -20,10 +20,10 @@ pub struct mutex;
 pub struct notifier_block;
 pub struct ec_response_motion_sense_fifo_info;
 
-pub type u8 = core::ffi::c_uchar;
-pub type s16 = core::ffi::c_short;
-pub type s32 = core::ffi::c_int;
-pub type s64 = core::ffi::c_long;
+pub type u8 = kernel::ffi::c_uchar;
+pub type s16 = kernel::ffi::c_short;
+pub type s32 = kernel::ffi::c_int;
+pub type s64 = kernel::ffi::c_long;
 pub type ktime_t = s64;
 pub type bool_ = u8;
 
@@ -81,7 +81,7 @@ pub struct cros_ec_sensors_ts_filter_state {
     pub x_history: [s64; CROS_EC_SENSORHUB_TS_HISTORY_SIZE],
     pub y_history: [s64; CROS_EC_SENSORHUB_TS_HISTORY_SIZE],
     pub m_history: [s64; CROS_EC_SENSORHUB_TS_HISTORY_SIZE],
-    pub history_len: core::ffi::c_int,
+    pub history_len: kernel::ffi::c_int,
     pub temp_buf: [s64; CROS_EC_SENSORHUB_TS_HISTORY_SIZE],
     pub median_m: s64,
     pub median_error: s64,
@@ -91,9 +91,9 @@ pub struct cros_ec_sensors_ts_filter_state {
 #[repr(C)]
 pub struct cros_ec_sensors_ts_batch_state {
     pub penul_ts: s64,
-    pub penul_len: core::ffi::c_int,
+    pub penul_len: kernel::ffi::c_int,
     pub last_ts: s64,
-    pub last_len: core::ffi::c_int,
+    pub last_len: kernel::ffi::c_int,
     pub newest_sensor_event: s64,
 }
 
@@ -102,7 +102,7 @@ pub struct cros_ec_sensors_ts_batch_state {
 pub struct cros_ec_sensorhub {
     pub dev: *mut device,
     pub ec: *mut cros_ec_dev,
-    pub sensor_num: core::ffi::c_int,
+    pub sensor_num: kernel::ffi::c_int,
     pub msg: *mut cros_ec_command,
     pub params: *mut ec_params_motion_sense,
     pub resp: *mut ec_response_motion_sense,
@@ -111,12 +111,12 @@ pub struct cros_ec_sensorhub {
     pub ring: *mut cros_ec_sensors_ring_sample,
     pub fifo_timestamp: [ktime_t; CROS_EC_SENSOR_ALL_TS as usize],
     pub fifo_info: *mut ec_response_motion_sense_fifo_info,
-    pub fifo_size: core::ffi::c_int,
+    pub fifo_size: kernel::ffi::c_int,
     pub batch_state: *mut cros_ec_sensors_ts_batch_state,
     pub overflow_a: cros_ec_sensors_ec_overflow_state,
     pub overflow_b: cros_ec_sensors_ec_overflow_state,
     pub filter: cros_ec_sensors_ts_filter_state,
-    pub tight_timestamps: core::ffi::c_int,
+    pub tight_timestamps: kernel::ffi::c_int,
     pub future_timestamp_count: s32,
     pub future_timestamp_total_ns: s64,
     pub push_data: *mut cros_ec_sensorhub_sensor_push_data,

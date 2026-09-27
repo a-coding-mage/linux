@@ -19,9 +19,9 @@ pub struct Gdsc {
 
 #[repr(C)]
 pub struct GdscPowerDomain {
-    pub name: *const core::ffi::c_char,
-    pub power_on: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
-    pub power_off: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
+    pub name: *const kernel::ffi::c_char,
+    pub power_on: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
+    pub power_off: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
 }
 
 #[repr(C)]
@@ -43,12 +43,12 @@ pub struct QcomCcDesc {
 
 #[repr(C)]
 pub struct OfDeviceId {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct PlatformDevice {
-    pub dev: core::ffi::c_void,
+    pub dev: kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -59,16 +59,16 @@ pub struct PlatformDriver {
 
 #[repr(C)]
 pub struct Driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const OfDeviceId,
 }
 
 // External kernel symbols and constants supplied by included headers.
 extern "C" {
-    fn gdsc_gx_do_nothing_enable(dev: *mut core::ffi::c_void) -> i32;
-    fn gdsc_gx_disable(dev: *mut core::ffi::c_void) -> i32;
+    fn gdsc_gx_do_nothing_enable(dev: *mut kernel::ffi::c_void) -> i32;
+    fn gdsc_gx_disable(dev: *mut kernel::ffi::c_void) -> i32;
     fn qcom_cc_probe(pdev: *mut PlatformDevice, desc: *const QcomCcDesc) -> i32;
-    fn pm_runtime_disable(dev: *mut core::ffi::c_void);
+    fn pm_runtime_disable(dev: *mut kernel::ffi::c_void);
     fn module_platform_driver(driver: *mut PlatformDriver);
 }
 
@@ -85,7 +85,7 @@ static mut GX_CLKCTL_GX_GDSC: Gdsc = Gdsc {
     en_few_wait_val: 0x2,
     clk_dis_wait_val: 0xf,
     pd: GdscPowerDomain {
-        name: b"gx_clkctl_gx_gdsc\0".as_ptr() as *const core::ffi::c_char,
+        name: b"gx_clkctl_gx_gdsc\0".as_ptr() as *const kernel::ffi::c_char,
         power_on: Some(gdsc_gx_do_nothing_enable),
         power_off: Some(gdsc_gx_disable),
     },
@@ -111,10 +111,10 @@ static GX_CLKCTL_KAANAPALI_DESC: QcomCcDesc = QcomCcDesc {
 };
 
 static GX_CLKCTL_KAANAPALI_MATCH_TABLE: [OfDeviceId; 5] = [
-    OfDeviceId { compatible: b"qcom,glymur-gxclkctl\0".as_ptr() as *const core::ffi::c_char },
-    OfDeviceId { compatible: b"qcom,kaanapali-gxclkctl\0".as_ptr() as *const core::ffi::c_char },
-    OfDeviceId { compatible: b"qcom,milos-gxclkctl\0".as_ptr() as *const core::ffi::c_char },
-    OfDeviceId { compatible: b"qcom,sm8750-gxclkctl\0".as_ptr() as *const core::ffi::c_char },
+    OfDeviceId { compatible: b"qcom,glymur-gxclkctl\0".as_ptr() as *const kernel::ffi::c_char },
+    OfDeviceId { compatible: b"qcom,kaanapali-gxclkctl\0".as_ptr() as *const kernel::ffi::c_char },
+    OfDeviceId { compatible: b"qcom,milos-gxclkctl\0".as_ptr() as *const kernel::ffi::c_char },
+    OfDeviceId { compatible: b"qcom,sm8750-gxclkctl\0".as_ptr() as *const kernel::ffi::c_char },
     OfDeviceId { compatible: core::ptr::null() },
 ];
 
@@ -131,7 +131,7 @@ unsafe extern "C" fn gx_clkctl_kaanapali_probe(pdev: *mut PlatformDevice) -> i32
 static mut GX_CLKCTL_KAANAPALI_DRIVER: PlatformDriver = PlatformDriver {
     probe: Some(gx_clkctl_kaanapali_probe),
     driver: Driver {
-        name: b"gxclkctl-kaanapali\0".as_ptr() as *const core::ffi::c_char,
+        name: b"gxclkctl-kaanapali\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: GX_CLKCTL_KAANAPALI_MATCH_TABLE.as_ptr(),
     },
 };

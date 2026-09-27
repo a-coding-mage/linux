@@ -43,15 +43,15 @@ extern "C" {
     fn comedi_dio_update_state(s: *mut comedi_subdevice, data: *mut u32) -> bool;
     fn comedi_check_request_region(dev: *mut comedi_device, start: u32, len: u32,
                                    from: u32, to: u32, align: u32) -> i32;
-    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t,
-                   flags: u32, name: *const core::ffi::c_char, dev: *mut core::ffi::c_void) -> i32;
+    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t,
+                   flags: u32, name: *const kernel::ffi::c_char, dev: *mut kernel::ffi::c_void) -> i32;
     fn comedi_alloc_subdevices(dev: *mut comedi_device, n: u32) -> i32;
     fn comedi_legacy_detach(dev: *mut comedi_device) -> i32;
 }
 
 // External types, constants, and globals are defined by Comedi bindings.
-#[repr(C)] pub struct comedi_device { pub iobase: u32, pub attached: bool, pub read_subdev: *mut comedi_subdevice, pub irq: u32, pub board_name: *const core::ffi::c_char, pub subdevices: *mut comedi_subdevice }
-#[repr(C)] pub struct comedi_subdevice { pub state: u32, pub type_: u32, pub subdev_flags: u32, pub n_chan: u32, pub maxdata: u32, pub range_table: *const core::ffi::c_void, pub insn_bits: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_subdevice, *mut comedi_insn, *mut u32) -> i32>, pub len_chanlist: u32, pub do_cmdtest: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_subdevice, *mut comedi_cmd) -> i32>, pub do_cmd: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_subdevice) -> i32>, pub cancel: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_subdevice) -> i32> }
+#[repr(C)] pub struct comedi_device { pub iobase: u32, pub attached: bool, pub read_subdev: *mut comedi_subdevice, pub irq: u32, pub board_name: *const kernel::ffi::c_char, pub subdevices: *mut comedi_subdevice }
+#[repr(C)] pub struct comedi_subdevice { pub state: u32, pub type_: u32, pub subdev_flags: u32, pub n_chan: u32, pub maxdata: u32, pub range_table: *const kernel::ffi::c_void, pub insn_bits: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_subdevice, *mut comedi_insn, *mut u32) -> i32>, pub len_chanlist: u32, pub do_cmdtest: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_subdevice, *mut comedi_cmd) -> i32>, pub do_cmd: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_subdevice) -> i32>, pub cancel: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_subdevice) -> i32> }
 #[repr(C)] pub struct comedi_insn { pub n: u32 }
 #[repr(C)] pub struct comedi_cmd { pub start_src: u32, pub scan_begin_src: u32, pub convert_src: u32, pub scan_end_src: u32, pub stop_src: u32, pub start_arg: u32, pub scan_begin_arg: u32, pub convert_arg: u32, pub scan_end_arg: u32, pub stop_arg: u32, pub chanlist_len: u32 }
 #[repr(C)] pub struct comedi_devconfig { pub options: [u32; 4] }
@@ -60,14 +60,14 @@ pub const IRQ_NONE: irqreturn_t = 0;
 pub const IRQ_HANDLED: irqreturn_t = 1;
 pub const TRIG_NOW: u32 = 1; pub const TRIG_EXT: u32 = 2; pub const TRIG_FOLLOW: u32 = 4; pub const TRIG_COUNT: u32 = 8; pub const TRIG_NONE: u32 = 16;
 pub const COMEDI_SUBD_DO: u32 = 1; pub const COMEDI_SUBD_DI: u32 = 2; pub const SDF_WRITABLE: u32 = 1; pub const SDF_READABLE: u32 = 2; pub const SDF_CMD_READ: u32 = 4; pub const SDF_LSAMPL: u32 = 8;
-extern "C" { static range_digital: core::ffi::c_void; }
+extern "C" { static range_digital: kernel::ffi::c_void; }
 
 unsafe fn aio_iiro_16_read_inputs(dev: *mut comedi_device) -> u32 {
     inb((*dev).iobase + AIO_IIRO_16_INPUT_0_7) as u32 |
         ((inb((*dev).iobase + AIO_IIRO_16_INPUT_8_15) as u32) << 8)
 }
 
-pub unsafe extern "C" fn aio_iiro_16_cos(irq: i32, d: *mut core::ffi::c_void) -> irqreturn_t {
+pub unsafe extern "C" fn aio_iiro_16_cos(irq: i32, d: *mut kernel::ffi::c_void) -> irqreturn_t {
     let dev = d as *mut comedi_device;
     let s = (*dev).read_subdev;
     if !(*dev).attached { return IRQ_NONE; }
@@ -116,7 +116,7 @@ unsafe extern "C" fn aio_iiro_16_attach(dev: *mut comedi_device, it: *mut comedi
     aio_iiro_enable_irq(dev, false);
     let irq = (*it).options[1];
     if irq > 0 && irq < 16 && ((1u32 << irq) & 0xdcfc) != 0 {
-        ret = request_irq(irq as i32, aio_iiro_16_cos, 0, (*dev).board_name, dev as *mut core::ffi::c_void);
+        ret = request_irq(irq as i32, aio_iiro_16_cos, 0, (*dev).board_name, dev as *mut kernel::ffi::c_void);
         if ret == 0 { (*dev).irq = irq; }
     }
     ret = comedi_alloc_subdevices(dev, 2);
@@ -136,7 +136,7 @@ unsafe extern "C" fn aio_iiro_16_attach(dev: *mut comedi_device, it: *mut comedi
     0
 }
 
-#[repr(C)] pub struct comedi_driver { pub driver_name: *const core::ffi::c_char, pub module: *mut core::ffi::c_void, pub attach: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_devconfig) -> i32>, pub detach: Option<unsafe extern "C" fn(*mut comedi_device) -> i32> }
+#[repr(C)] pub struct comedi_driver { pub driver_name: *const kernel::ffi::c_char, pub module: *mut kernel::ffi::c_void, pub attach: Option<unsafe extern "C" fn(*mut comedi_device, *mut comedi_devconfig) -> i32>, pub detach: Option<unsafe extern "C" fn(*mut comedi_device) -> i32> }
 #[no_mangle] pub static mut aio_iiro_16_driver: comedi_driver = comedi_driver {
     driver_name: b"aio_iiro_16\0".as_ptr() as *const _, module: core::ptr::null_mut(), attach: Some(aio_iiro_16_attach), detach: Some(comedi_legacy_detach),
 };

@@ -104,12 +104,12 @@ pub enum AMDGPU_DEBUGFS_GPRWAVE_CMDS {
 
 // reg2 interface
 // _IOWR(0x20, AMDGPU_DEBUGFS_REGS2_CMD_SET_STATE, struct amdgpu_debugfs_regs2_iocdata)
-pub const AMDGPU_DEBUGFS_REGS2_IOC_SET_STATE: _ = _IOWR(0x20, AMDGPU_DEBUGFS_REGS2_CMD_SET_STATE as _, amdgpu_debugfs_regs2_iocdata);
+pub const AMDGPU_DEBUGFS_REGS2_IOC_SET_STATE: u32 = _IOWR(0x20, AMDGPU_DEBUGFS_REGS2_CMD_SET_STATE as _, amdgpu_debugfs_regs2_iocdata);
 // _IOWR(0x20, AMDGPU_DEBUGFS_REGS2_CMD_SET_STATE_V2, struct amdgpu_debugfs_regs2_iocdata_v2)
-pub const AMDGPU_DEBUGFS_REGS2_IOC_SET_STATE_V2: _ = _IOWR(0x20, AMDGPU_DEBUGFS_REGS2_CMD_SET_STATE_V2 as _, amdgpu_debugfs_regs2_iocdata_v2);
+pub const AMDGPU_DEBUGFS_REGS2_IOC_SET_STATE_V2: u32 = _IOWR(0x20, AMDGPU_DEBUGFS_REGS2_CMD_SET_STATE_V2 as _, amdgpu_debugfs_regs2_iocdata_v2);
 
 // gprwave interface
 // _IOWR(0x20, AMDGPU_DEBUGFS_GPRWAVE_CMD_SET_STATE, struct amdgpu_debugfs_gprwave_iocdata)
-pub const AMDGPU_DEBUGFS_GPRWAVE_IOC_SET_STATE: _ = _IOWR(0x20, AMDGPU_DEBUGFS_GPRWAVE_CMD_SET_STATE as _, amdgpu_debugfs_gprwave_iocdata);
+pub const AMDGPU_DEBUGFS_GPRWAVE_IOC_SET_STATE: u32 = _IOWR(0x20, AMDGPU_DEBUGFS_GPRWAVE_CMD_SET_STATE as _, amdgpu_debugfs_gprwave_iocdata);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

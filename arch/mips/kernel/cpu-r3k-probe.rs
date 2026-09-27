@@ -12,7 +12,7 @@
 // externally defined types, constants, functions, and globals used below.
 
 /* Hardware capabilities */
-pub static mut elf_hwcap: ::core::ffi::c_uint = 0;
+pub static mut elf_hwcap: ::kernel::ffi::c_uint = 0;
 
 pub unsafe fn check_bugs32() {}
 
@@ -22,18 +22,18 @@ pub unsafe fn check_bugs32() {}
  * It's used by cpu_probe to distinguish between R3000A and R3081.
  */
 #[inline]
-unsafe fn cpu_has_confreg() -> ::core::ffi::c_int {
+unsafe fn cpu_has_confreg() -> ::kernel::ffi::c_int {
     #[cfg(CONFIG_CPU_R3000)]
     {
-        let mut size1: ::core::ffi::c_ulong;
-        let mut size2: ::core::ffi::c_ulong;
-        let cfg: ::core::ffi::c_ulong = read_c0_conf();
+        let mut size1: ::kernel::ffi::c_ulong;
+        let mut size2: ::kernel::ffi::c_ulong;
+        let cfg: ::kernel::ffi::c_ulong = read_c0_conf();
 
         size1 = r3k_cache_size(ST0_ISC);
         write_c0_conf(cfg ^ R30XX_CONF_AC);
         size2 = r3k_cache_size(ST0_ISC);
         write_c0_conf(cfg);
-        return (size1 != size2) as ::core::ffi::c_int;
+        return (size1 != size2) as ::kernel::ffi::c_int;
     }
     #[cfg(not(CONFIG_CPU_R3000))]
     {
@@ -42,25 +42,25 @@ unsafe fn cpu_has_confreg() -> ::core::ffi::c_int {
 }
 
 #[inline]
-unsafe fn set_elf_platform(cpu: ::core::ffi::c_int, plat: *const ::core::ffi::c_char) {
+unsafe fn set_elf_platform(cpu: ::kernel::ffi::c_int, plat: *const ::kernel::ffi::c_char) {
     if cpu == 0 {
         __elf_platform = plat;
     }
 }
 
-pub static mut __cpu_name: [*const ::core::ffi::c_char; NR_CPUS] = [core::ptr::null(); NR_CPUS];
-pub static mut __elf_platform: *const ::core::ffi::c_char = core::ptr::null();
-pub static mut __elf_base_platform: *const ::core::ffi::c_char = core::ptr::null();
+pub static mut __cpu_name: [*const ::kernel::ffi::c_char; NR_CPUS] = [core::ptr::null(); NR_CPUS];
+pub static mut __elf_platform: *const ::kernel::ffi::c_char = core::ptr::null();
+pub static mut __elf_base_platform: *const ::kernel::ffi::c_char = core::ptr::null();
 
 pub unsafe fn cpu_probe() {
     let c: *mut cpuinfo_mips = &raw mut current_cpu_data;
-    let cpu: ::core::ffi::c_uint = smp_processor_id();
+    let cpu: ::kernel::ffi::c_uint = smp_processor_id();
 
     /*
      * Set a default elf platform, cpu probe may later
      * overwrite it with a more precise value
      */
-    set_elf_platform(cpu as ::core::ffi::c_int, c"mips".as_ptr());
+    set_elf_platform(cpu as ::kernel::ffi::c_int, c"mips".as_ptr());
 
     (*c).processor_id = PRID_IMP_UNKNOWN;
     (*c).fpu_id = FPIR_IMP_NONE;

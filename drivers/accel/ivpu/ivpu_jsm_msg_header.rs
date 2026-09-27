@@ -6,7 +6,7 @@
 // Translated from ivpu_jsm_msg.h. The declarations below are supplied by
 // vpu_jsm_api.h and other parts of the surrounding C interface.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub enum vpu_ipc_msg_type {}
 pub enum ivpu_device {}

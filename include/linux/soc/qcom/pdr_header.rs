@@ -28,14 +28,14 @@ pub enum servreg_service_state {
 
 unsafe extern "C" {
     pub fn pdr_handle_alloc(
-        status: Option<unsafe extern "C" fn(state: i32, service_path: *mut core::ffi::c_char, priv_: *mut core::ffi::c_void)>,
-        priv_: *mut core::ffi::c_void,
+        status: Option<unsafe extern "C" fn(state: i32, service_path: *mut kernel::ffi::c_char, priv_: *mut kernel::ffi::c_void)>,
+        priv_: *mut kernel::ffi::c_void,
     ) -> *mut pdr_handle;
 
     pub fn pdr_add_lookup(
         pdr: *mut pdr_handle,
-        service_name: *const core::ffi::c_char,
-        service_path: *const core::ffi::c_char,
+        service_name: *const kernel::ffi::c_char,
+        service_path: *const kernel::ffi::c_char,
     ) -> *mut pdr_service;
 
     pub fn pdr_restart_pd(pdr: *mut pdr_handle, pds: *mut pdr_service) -> i32;

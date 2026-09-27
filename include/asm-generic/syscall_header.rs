@@ -87,7 +87,7 @@ extern "C" {
      * from a system call, due to %SYSCALL_WORK_SYSCALL_TRACE or
      * %SYSCALL_WORK_SYSCALL_AUDIT.
      */
-    pub fn syscall_get_error(task: *mut task_struct, regs: *mut pt_regs) -> core::ffi::c_long;
+    pub fn syscall_get_error(task: *mut task_struct, regs: *mut pt_regs) -> kernel::ffi::c_long;
 
     /**
      * syscall_get_return_value - get the return value of a traced system call
@@ -101,7 +101,7 @@ extern "C" {
      * from a system call, due to %SYSCALL_WORK_SYSCALL_TRACE or
      * %SYSCALL_WORK_SYSCALL_AUDIT.
      */
-    pub fn syscall_get_return_value(task: *mut task_struct, regs: *mut pt_regs) -> core::ffi::c_long;
+    pub fn syscall_get_return_value(task: *mut task_struct, regs: *mut pt_regs) -> kernel::ffi::c_long;
 
     /**
      * syscall_set_return_value - change the return value of a traced system call
@@ -123,7 +123,7 @@ extern "C" {
         task: *mut task_struct,
         regs: *mut pt_regs,
         error: i32,
-        val: core::ffi::c_long,
+        val: kernel::ffi::c_long,
     );
 
     /**
@@ -142,7 +142,7 @@ extern "C" {
     pub fn syscall_get_arguments(
         task: *mut task_struct,
         regs: *mut pt_regs,
-        args: *mut core::ffi::c_ulong,
+        args: *mut kernel::ffi::c_ulong,
     );
 
     /**
@@ -161,7 +161,7 @@ extern "C" {
     pub fn syscall_set_arguments(
         task: *mut task_struct,
         regs: *mut pt_regs,
-        args: *const core::ffi::c_ulong,
+        args: *const kernel::ffi::c_ulong,
     );
 
     /**

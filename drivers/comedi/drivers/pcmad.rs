@@ -37,17 +37,17 @@ const PCMAD_CONVERT: usize = 1;
 
 #[repr(C)]
 struct pcmad_board_struct {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     ai_maxdata: u32,
 }
 
 static pcmad_boards: [pcmad_board_struct; 2] = [
     pcmad_board_struct {
-        name: b"pcmad12\0".as_ptr() as *const core::ffi::c_char,
+        name: b"pcmad12\0".as_ptr() as *const kernel::ffi::c_char,
         ai_maxdata: 0x0fff,
     },
     pcmad_board_struct {
-        name: b"pcmad16\0".as_ptr() as *const core::ffi::c_char,
+        name: b"pcmad16\0".as_ptr() as *const kernel::ffi::c_char,
         ai_maxdata: 0xffff,
     },
 ];

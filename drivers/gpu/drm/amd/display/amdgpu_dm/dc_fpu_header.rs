@@ -26,8 +26,8 @@
 extern "C" {
     pub fn dc_assert_fp_enabled();
     pub fn dc_is_fp_enabled() -> bool;
-    pub fn dc_fpu_begin(function_name: *const core::ffi::c_char, line: core::ffi::c_int);
-    pub fn dc_fpu_end(function_name: *const core::ffi::c_char, line: core::ffi::c_int);
+    pub fn dc_fpu_begin(function_name: *const kernel::ffi::c_char, line: kernel::ffi::c_int);
+    pub fn dc_fpu_end(function_name: *const kernel::ffi::c_char, line: kernel::ffi::c_int);
 }
 
 // C build condition: _LINUX_FPU_COMPILATION_UNIT.
@@ -37,8 +37,8 @@ extern "C" {
 macro_rules! DC_FP_START {
     () => {
         unsafe {
-            $crate::dc_fpu_begin(concat!(module_path!(), "\0").as_ptr() as *const core::ffi::c_char,
-                line!() as core::ffi::c_int)
+            $crate::dc_fpu_begin(concat!(module_path!(), "\0").as_ptr() as *const kernel::ffi::c_char,
+                line!() as kernel::ffi::c_int)
         }
     };
 }
@@ -48,8 +48,8 @@ macro_rules! DC_FP_START {
 macro_rules! DC_FP_END {
     () => {
         unsafe {
-            $crate::dc_fpu_end(concat!(module_path!(), "\0").as_ptr() as *const core::ffi::c_char,
-                line!() as core::ffi::c_int)
+            $crate::dc_fpu_end(concat!(module_path!(), "\0").as_ptr() as *const kernel::ffi::c_char,
+                line!() as kernel::ffi::c_int)
         }
     };
 }

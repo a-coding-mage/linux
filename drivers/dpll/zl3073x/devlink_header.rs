@@ -20,8 +20,8 @@ unsafe extern "C" {
 
     pub fn zl3073x_devlink_flash_notify(
         zldev: *mut zl3073x_dev,
-        msg: *const core::ffi::c_char,
-        component: *const core::ffi::c_char,
+        msg: *const kernel::ffi::c_char,
+        component: *const kernel::ffi::c_char,
         done: u32,
         total: u32,
     );

@@ -11,7 +11,7 @@
 // Dependencies supplied by the surrounding kernel translation.
 
 /* XXX spear_pen_release is cargo culted code - DO NOT COPY XXX */
-static mut spear_pen_release: core::ffi::c_int = -1;
+static mut spear_pen_release: kernel::ffi::c_int = -1;
 
 /*
  * XXX CARGO CULTED CODE - DO NOT COPY XXX
@@ -20,7 +20,7 @@ static mut spear_pen_release: core::ffi::c_int = -1;
  * all observers, irrespective of whether they're taking part in coherency
  * or not.  This is necessary for the hotplug code to work reliably.
  */
-unsafe fn spear_write_pen_release(val: core::ffi::c_int) {
+unsafe fn spear_write_pen_release(val: kernel::ffi::c_int) {
     spear_pen_release = val;
     smp_wmb();
     sync_cache_w(&raw mut spear_pen_release);
@@ -28,9 +28,9 @@ unsafe fn spear_write_pen_release(val: core::ffi::c_int) {
 
 static mut boot_lock: SpinLock = DEFINE_SPINLOCK!();
 
-static mut scu_base: *mut core::ffi::c_void = IOMEM(VA_SCU_BASE);
+static mut scu_base: *mut kernel::ffi::c_void = IOMEM(VA_SCU_BASE);
 
-unsafe fn spear13xx_secondary_init(_cpu: core::ffi::c_uint) {
+unsafe fn spear13xx_secondary_init(_cpu: kernel::ffi::c_uint) {
     /*
      * let the primary processor know we're out of the
      * pen, then head off into the C entry point
@@ -45,10 +45,10 @@ unsafe fn spear13xx_secondary_init(_cpu: core::ffi::c_uint) {
 }
 
 unsafe fn spear13xx_boot_secondary(
-    cpu: core::ffi::c_uint,
+    cpu: kernel::ffi::c_uint,
     _idle: *mut task_struct,
-) -> core::ffi::c_int {
-    let mut timeout: core::ffi::c_ulong;
+) -> kernel::ffi::c_int {
+    let mut timeout: kernel::ffi::c_ulong;
 
     /*
      * set synchronisation state between this boot processor
@@ -64,7 +64,7 @@ unsafe fn spear13xx_boot_secondary(
      * Note that "spear_pen_release" is the hardware CPU ID, whereas
      * "cpu" is Linux's internal ID.
      */
-    spear_write_pen_release(cpu as core::ffi::c_int);
+    spear_write_pen_release(cpu as kernel::ffi::c_int);
 
     timeout = jiffies.wrapping_add(1 * HZ);
     while time_before(jiffies, timeout) {
@@ -90,7 +90,7 @@ unsafe fn spear13xx_boot_secondary(
  * which may be present or become present in the system.
  */
 unsafe fn spear13xx_smp_init_cpus() {
-    let mut ncores: core::ffi::c_uint = scu_get_core_count(scu_base);
+    let mut ncores: kernel::ffi::c_uint = scu_get_core_count(scu_base);
 
     if ncores > nr_cpu_ids {
         pr_warn!("SMP: %u cores greater than maximum (%u), clipping\\n",
@@ -103,7 +103,7 @@ unsafe fn spear13xx_smp_init_cpus() {
     }
 }
 
-unsafe fn spear13xx_smp_prepare_cpus(_max_cpus: core::ffi::c_uint) {
+unsafe fn spear13xx_smp_prepare_cpus(_max_cpus: kernel::ffi::c_uint) {
     scu_enable(scu_base);
 
     /*

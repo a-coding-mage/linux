@@ -18,7 +18,7 @@ pub struct nfsd3_sattrargs {
 #[repr(C)]
 pub struct nfsd3_diropargs {
     pub fh: svc_fh,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub len: u32,
 }
 
@@ -41,7 +41,7 @@ pub struct nfsd3_writeargs {
 #[repr(C)]
 pub struct nfsd3_createargs {
     pub fh: svc_fh,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub len: u32,
     pub createmode: i32,
     pub attrs: iattr,
@@ -51,7 +51,7 @@ pub struct nfsd3_createargs {
 #[repr(C)]
 pub struct nfsd3_mknodargs {
     pub fh: svc_fh,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub len: u32,
     pub ftype: u32,
     pub major: u32,
@@ -62,10 +62,10 @@ pub struct nfsd3_mknodargs {
 #[repr(C)]
 pub struct nfsd3_renameargs {
     pub ffh: svc_fh,
-    pub fname: *mut core::ffi::c_char,
+    pub fname: *mut kernel::ffi::c_char,
     pub flen: u32,
     pub tfh: svc_fh,
-    pub tname: *mut core::ffi::c_char,
+    pub tname: *mut kernel::ffi::c_char,
     pub tlen: u32,
 }
 
@@ -73,16 +73,16 @@ pub struct nfsd3_renameargs {
 pub struct nfsd3_linkargs {
     pub ffh: svc_fh,
     pub tfh: svc_fh,
-    pub tname: *mut core::ffi::c_char,
+    pub tname: *mut kernel::ffi::c_char,
     pub tlen: u32,
 }
 
 #[repr(C)]
 pub struct nfsd3_symlinkargs {
     pub ffh: svc_fh,
-    pub fname: *mut core::ffi::c_char,
+    pub fname: *mut kernel::ffi::c_char,
     pub flen: u32,
-    pub tname: *mut core::ffi::c_char,
+    pub tname: *mut kernel::ffi::c_char,
     pub tlen: u32,
     pub attrs: iattr,
     pub first: kvec,
@@ -239,8 +239,8 @@ extern "C" {
     pub fn nfs3svc_release_fhandle(rqstp: *mut svc_rqst);
     pub fn nfs3svc_release_fhandle2(rqstp: *mut svc_rqst);
     pub fn nfs3svc_encode_cookie3(resp: *mut nfsd3_readdirres, offset: u64);
-    pub fn nfs3svc_encode_entry3(data: *mut core::ffi::c_void, name: *const core::ffi::c_char, namlen: i32, offset: loff_t, ino: u64, d_type: u32) -> i32;
-    pub fn nfs3svc_encode_entryplus3(data: *mut core::ffi::c_void, name: *const core::ffi::c_char, namlen: i32, offset: loff_t, ino: u64, d_type: u32) -> i32;
+    pub fn nfs3svc_encode_entry3(data: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, namlen: i32, offset: loff_t, ino: u64, d_type: u32) -> i32;
+    pub fn nfs3svc_encode_entryplus3(data: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, namlen: i32, offset: loff_t, ino: u64, d_type: u32) -> i32;
     pub fn svcxdr_decode_nfs_fh3(xdr: *mut xdr_stream, fhp: *mut svc_fh) -> bool;
     pub fn svcxdr_encode_nfsstat3(xdr: *mut xdr_stream, status: __be32) -> bool;
     pub fn svcxdr_encode_post_op_attr(rqstp: *mut svc_rqst, xdr: *mut xdr_stream, fhp: *const svc_fh) -> bool;

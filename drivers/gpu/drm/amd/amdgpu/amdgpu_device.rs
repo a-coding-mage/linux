@@ -18,7 +18,7 @@ pub const AMDGPU_VBIOS_SKIP: u32 = 1 << 0;
 pub const AMDGPU_VBIOS_OPTIONAL: u32 = 1 << 1;
 
 extern "C" {
-    pub static mut amdgpu_asic_name: [*const core::ffi::c_char; 38];
+    pub static mut amdgpu_asic_name: [*const kernel::ffi::c_char; 38];
 }
 
 #[repr(C)]

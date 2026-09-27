@@ -53,7 +53,7 @@ static mut UBIFS_GROUPS: [*mut AttributeGroup; 2] = [
 unsafe fn ubifs_attr_show(
     kobj: *mut Kobject,
     attr: *mut Attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> Isize {
     let sbi = container_of!(kobj, UbifsInfo, kobj);
     let a = container_of!(attr, UbifsAttr, attr);

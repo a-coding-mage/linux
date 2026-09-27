@@ -13,8 +13,8 @@ pub const KCSAN_CHECK_ADJACENT: usize = 1;
 pub const NUM_SLOTS: usize = 1 + 2 * KCSAN_CHECK_ADJACENT;
 
 extern "C" {
-    pub static mut kcsan_udelay_task: core::ffi::c_uint;
-    pub static mut kcsan_udelay_interrupt: core::ffi::c_uint;
+    pub static mut kcsan_udelay_task: kernel::ffi::c_uint;
+    pub static mut kcsan_udelay_interrupt: kernel::ffi::c_uint;
 }
 
 /* Globally enable and disable KCSAN. */
@@ -74,7 +74,7 @@ extern "C" {
  * (offsets are ignored) should *not* be reported.
  */
 extern "C" {
-    pub fn kcsan_skip_report_debugfs(func_addr: core::ffi::c_ulong) -> bool;
+    pub fn kcsan_skip_report_debugfs(func_addr: kernel::ffi::c_ulong) -> bool;
 }
 
 /* Value-change states. */
@@ -98,11 +98,11 @@ pub enum kcsan_value_change {
  */
 extern "C" {
     pub fn kcsan_report_set_info(
-        ptr: *const core::ffi::c_void,
+        ptr: *const kernel::ffi::c_void,
         size: usize,
-        access_type: core::ffi::c_int,
-        ip: core::ffi::c_ulong,
-        watchpoint_idx: core::ffi::c_int,
+        access_type: kernel::ffi::c_int,
+        ip: kernel::ffi::c_ulong,
+        watchpoint_idx: kernel::ffi::c_int,
     );
 
     /*
@@ -111,12 +111,12 @@ extern "C" {
      * thread.
      */
     pub fn kcsan_report_known_origin(
-        ptr: *const core::ffi::c_void,
+        ptr: *const kernel::ffi::c_void,
         size: usize,
-        access_type: core::ffi::c_int,
-        ip: core::ffi::c_ulong,
+        access_type: kernel::ffi::c_int,
+        ip: kernel::ffi::c_ulong,
         value_change: kcsan_value_change,
-        watchpoint_idx: core::ffi::c_int,
+        watchpoint_idx: kernel::ffi::c_int,
         old: u64,
         new: u64,
         mask: u64,
@@ -127,10 +127,10 @@ extern "C" {
      * before and after the stall differs. Reports a race of "unknown origin".
      */
     pub fn kcsan_report_unknown_origin(
-        ptr: *const core::ffi::c_void,
+        ptr: *const kernel::ffi::c_void,
         size: usize,
-        access_type: core::ffi::c_int,
-        ip: core::ffi::c_ulong,
+        access_type: kernel::ffi::c_int,
+        ip: kernel::ffi::c_ulong,
         old: u64,
         new: u64,
         mask: u64,

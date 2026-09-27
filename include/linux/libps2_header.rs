@@ -28,7 +28,7 @@ pub enum ps2_disposition {
 pub type ps2_pre_receive_handler_t = Option<unsafe extern "C" fn(
     *mut ps2dev,
     u8,
-    core::ffi::c_uint,
+    kernel::ffi::c_uint,
 ) -> ps2_disposition>;
 pub type ps2_receive_handler_t = Option<unsafe extern "C" fn(*mut ps2dev, u8)>;
 
@@ -51,7 +51,7 @@ pub struct ps2dev {
     pub serio: *mut serio,
     pub cmd_mutex: mutex,
     pub wait: wait_queue_head_t,
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub cmdbuf: [u8; 8],
     pub cmdcnt: u8,
     pub nak: u8,
@@ -67,23 +67,23 @@ extern "C" {
         pre_receive_handler: ps2_pre_receive_handler_t,
         receive_handler: ps2_receive_handler_t,
     );
-    pub fn ps2_sendbyte(ps2dev: *mut ps2dev, byte: u8, timeout: core::ffi::c_uint) -> i32;
+    pub fn ps2_sendbyte(ps2dev: *mut ps2dev, byte: u8, timeout: kernel::ffi::c_uint) -> i32;
     pub fn ps2_drain(
         ps2dev: *mut ps2dev,
         maxbytes: usize,
-        timeout: core::ffi::c_uint,
+        timeout: kernel::ffi::c_uint,
     );
     pub fn ps2_begin_command(ps2dev: *mut ps2dev);
     pub fn ps2_end_command(ps2dev: *mut ps2dev);
     pub fn __ps2_command(
         ps2dev: *mut ps2dev,
         param: *mut u8,
-        command: core::ffi::c_uint,
+        command: kernel::ffi::c_uint,
     ) -> i32;
     pub fn ps2_command(
         ps2dev: *mut ps2dev,
         param: *mut u8,
-        command: core::ffi::c_uint,
+        command: kernel::ffi::c_uint,
     ) -> i32;
     pub fn ps2_sliced_command(ps2dev: *mut ps2dev, command: u8) -> i32;
     pub fn ps2_is_keyboard_id(id: u8) -> bool;
@@ -91,7 +91,7 @@ extern "C" {
     pub fn ps2_interrupt(
         serio: *mut serio,
         data: u8,
-        flags: core::ffi::c_uint,
+        flags: kernel::ffi::c_uint,
     ) -> irqreturn_t;
 }
 

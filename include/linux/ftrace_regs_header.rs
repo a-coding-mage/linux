@@ -64,7 +64,7 @@ pub unsafe fn ftrace_override_function_with_return(fregs: *mut ftrace_regs) -> _
 
 #[cfg(not(feature = "HAVE_ARCH_FTRACE_REGS"))]
 #[inline(always)]
-pub unsafe fn ftrace_regs_query_register_offset(name: *const core::ffi::c_char) -> _ {
+pub unsafe fn ftrace_regs_query_register_offset(name: *const kernel::ffi::c_char) -> _ {
     regs_query_register_offset(name)
 }
 

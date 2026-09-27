@@ -5,7 +5,7 @@
  * Copyright 2009 Wolfson Microelectronics. PLC.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct wm9081_retune_mobile_setting {

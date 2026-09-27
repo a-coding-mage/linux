@@ -2,20 +2,20 @@
 /* Copyright Altera Corporation (C) 2014. All rights reserved.
  */
 
-pub type cycles_t = ::core::ffi::c_ulong;
+pub type cycles_t = ::kernel::ffi::c_ulong;
 
 extern "C" {
     pub fn get_cycles() -> cycles_t;
-    pub fn random_get_entropy_fallback() -> ::core::ffi::c_ulong;
+    pub fn random_get_entropy_fallback() -> ::kernel::ffi::c_ulong;
 }
 
 // C macro: #define get_cycles get_cycles
 
 #[inline]
-pub unsafe fn random_get_entropy() -> ::core::ffi::c_ulong {
+pub unsafe fn random_get_entropy() -> ::kernel::ffi::c_ulong {
     let cycles = get_cycles();
     if cycles != 0 {
-        cycles as ::core::ffi::c_ulong
+        cycles as ::kernel::ffi::c_ulong
     } else {
         random_get_entropy_fallback()
     }

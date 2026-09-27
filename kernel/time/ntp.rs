@@ -4,27 +4,27 @@
 
 #[repr(C)]
 pub struct ntp_data {
-    pub tick_usec: libc::c_ulong, pub tick_length: u64, pub time_state: i32,
+    pub tick_usec: kernel::ffi::c_ulong, pub tick_length: u64, pub time_state: i32,
     pub time_status: i32, pub time_offset: i64, pub skew_delta: i64,
-    pub time_constant: libc::c_long, pub time_maxerror: libc::c_long,
-    pub time_esterror: libc::c_long, pub time_freq: i64, pub time_reftime: i64,
-    pub time_adjust: libc::c_long, pub time_adjust_frac: i64,
+    pub time_constant: kernel::ffi::c_long, pub time_maxerror: kernel::ffi::c_long,
+    pub time_esterror: kernel::ffi::c_long, pub time_freq: i64, pub time_reftime: i64,
+    pub time_adjust: kernel::ffi::c_long, pub time_adjust_frac: i64,
     pub ntp_tick_adj: i64, pub cs_tick_adj: i64, pub ntp_next_leap_sec: i64,
     #[cfg(CONFIG_NTP_PPS)] pub pps_valid: i32,
-    #[cfg(CONFIG_NTP_PPS)] pub pps_tf: [libc::c_long; 3],
-    #[cfg(CONFIG_NTP_PPS)] pub pps_jitter: libc::c_long,
+    #[cfg(CONFIG_NTP_PPS)] pub pps_tf: [kernel::ffi::c_long; 3],
+    #[cfg(CONFIG_NTP_PPS)] pub pps_jitter: kernel::ffi::c_long,
     #[cfg(CONFIG_NTP_PPS)] pub pps_fbase: timespec64,
     #[cfg(CONFIG_NTP_PPS)] pub pps_shift: i32,
     #[cfg(CONFIG_NTP_PPS)] pub pps_intcnt: i32,
     #[cfg(CONFIG_NTP_PPS)] pub pps_freq: i64,
-    #[cfg(CONFIG_NTP_PPS)] pub pps_stabil: libc::c_long,
-    #[cfg(CONFIG_NTP_PPS)] pub pps_calcnt: libc::c_long,
-    #[cfg(CONFIG_NTP_PPS)] pub pps_jitcnt: libc::c_long,
-    #[cfg(CONFIG_NTP_PPS)] pub pps_stbcnt: libc::c_long,
-    #[cfg(CONFIG_NTP_PPS)] pub pps_errcnt: libc::c_long,
+    #[cfg(CONFIG_NTP_PPS)] pub pps_stabil: kernel::ffi::c_long,
+    #[cfg(CONFIG_NTP_PPS)] pub pps_calcnt: kernel::ffi::c_long,
+    #[cfg(CONFIG_NTP_PPS)] pub pps_jitcnt: kernel::ffi::c_long,
+    #[cfg(CONFIG_NTP_PPS)] pub pps_stbcnt: kernel::ffi::c_long,
+    #[cfg(CONFIG_NTP_PPS)] pub pps_errcnt: kernel::ffi::c_long,
 }
 
-#[repr(C)] pub struct timespec64 { pub tv_sec: i64, pub tv_nsec: libc::c_long }
+#[repr(C)] pub struct timespec64 { pub tv_sec: i64, pub tv_nsec: kernel::ffi::c_long }
 extern "C" {
     static mut tk_ntp_data: [ntp_data; TIMEKEEPERS_MAX as usize];
     fn shift_right(x: i64, s: i32) -> i64;

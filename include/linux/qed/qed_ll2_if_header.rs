@@ -90,7 +90,7 @@ pub union qed_ll2_comp_rx_data_u {
 
 #[repr(C)]
 pub struct qed_ll2_comp_rx_data {
-    pub cookie: *mut core::ffi::c_void,
+    pub cookie: *mut kernel::ffi::c_void,
     pub rx_buf_addr: dma_addr_t,
     pub parse_flags: u16,
     pub err_flags: u16,
@@ -105,11 +105,11 @@ pub struct qed_ll2_comp_rx_data {
     pub u: qed_ll2_comp_rx_data_u,
 }
 
-pub type qed_ll2_complete_rx_packet_cb = unsafe extern "C" fn(*mut core::ffi::c_void, *mut qed_ll2_comp_rx_data);
-pub type qed_ll2_release_rx_packet_cb = unsafe extern "C" fn(*mut core::ffi::c_void, u8, *mut core::ffi::c_void, dma_addr_t, bool);
-pub type qed_ll2_complete_tx_packet_cb = unsafe extern "C" fn(*mut core::ffi::c_void, u8, *mut core::ffi::c_void, dma_addr_t, bool, bool);
-pub type qed_ll2_release_tx_packet_cb = unsafe extern "C" fn(*mut core::ffi::c_void, u8, *mut core::ffi::c_void, dma_addr_t, bool, bool);
-pub type qed_ll2_slowpath_cb = unsafe extern "C" fn(*mut core::ffi::c_void, u8, u32, u32);
+pub type qed_ll2_complete_rx_packet_cb = unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut qed_ll2_comp_rx_data);
+pub type qed_ll2_release_rx_packet_cb = unsafe extern "C" fn(*mut kernel::ffi::c_void, u8, *mut kernel::ffi::c_void, dma_addr_t, bool);
+pub type qed_ll2_complete_tx_packet_cb = unsafe extern "C" fn(*mut kernel::ffi::c_void, u8, *mut kernel::ffi::c_void, dma_addr_t, bool, bool);
+pub type qed_ll2_release_tx_packet_cb = unsafe extern "C" fn(*mut kernel::ffi::c_void, u8, *mut kernel::ffi::c_void, dma_addr_t, bool, bool);
+pub type qed_ll2_slowpath_cb = unsafe extern "C" fn(*mut kernel::ffi::c_void, u8, u32, u32);
 
 #[repr(C)]
 pub struct qed_ll2_cbs {
@@ -118,7 +118,7 @@ pub struct qed_ll2_cbs {
     pub tx_comp_cb: Option<qed_ll2_complete_tx_packet_cb>,
     pub tx_release_cb: Option<qed_ll2_release_tx_packet_cb>,
     pub slowpath_cb: Option<qed_ll2_slowpath_cb>,
-    pub cookie: *mut core::ffi::c_void,
+    pub cookie: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -149,7 +149,7 @@ pub struct qed_ll2_acquire_data {
 
 #[repr(C)]
 pub struct qed_ll2_tx_pkt_info {
-    pub cookie: *mut core::ffi::c_void,
+    pub cookie: *mut kernel::ffi::c_void,
     pub first_frag: dma_addr_t,
     pub tx_dest: qed_ll2_tx_dest,
     pub qed_roce_flavor: qed_ll2_roce_flavor_type,
@@ -168,8 +168,8 @@ pub const QED_LL2_UNUSED_HANDLE: u8 = 0xff;
 
 #[repr(C)]
 pub struct qed_ll2_cb_ops {
-    pub rx_cb: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut sk_buff, u32, u32) -> i32>,
-    pub tx_cb: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut sk_buff, bool) -> i32>,
+    pub rx_cb: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut sk_buff, u32, u32) -> i32>,
+    pub tx_cb: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut sk_buff, bool) -> i32>,
 }
 
 #[repr(C)]
@@ -192,8 +192,8 @@ pub enum qed_ll2_xmit_flags {
 pub struct qed_ll2_ops {
     pub start: Option<unsafe extern "C" fn(*mut qed_dev, *mut qed_ll2_params) -> i32>,
     pub stop: Option<unsafe extern "C" fn(*mut qed_dev) -> i32>,
-    pub start_xmit: Option<unsafe extern "C" fn(*mut qed_dev, *mut sk_buff, core::ffi::c_ulong) -> i32>,
-    pub register_cb_ops: Option<unsafe extern "C" fn(*mut qed_dev, *const qed_ll2_cb_ops, *mut core::ffi::c_void)>,
+    pub start_xmit: Option<unsafe extern "C" fn(*mut qed_dev, *mut sk_buff, kernel::ffi::c_ulong) -> i32>,
+    pub register_cb_ops: Option<unsafe extern "C" fn(*mut qed_dev, *const qed_ll2_cb_ops, *mut kernel::ffi::c_void)>,
     pub get_stats: Option<unsafe extern "C" fn(*mut qed_dev, *mut qed_ll2_stats) -> i32>,
 }
 

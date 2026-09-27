@@ -10,25 +10,25 @@ pub const TIMER_OF_IRQ: u32 = 0x4;
 pub struct of_timer_irq {
     pub irq: i32,
     pub index: i32,
-    pub name: *const core::ffi::c_char,
-    pub flags: libc::c_ulong,
+    pub name: *const kernel::ffi::c_char,
+    pub flags: kernel::ffi::c_ulong,
     pub handler: irq_handler_t,
 }
 
 #[repr(C)]
 pub struct of_timer_base {
-    pub base: *mut core::ffi::c_void,
-    pub name: *const core::ffi::c_char,
+    pub base: *mut kernel::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
     pub index: i32,
 }
 
 #[repr(C)]
 pub struct of_timer_clk {
     pub clk: *mut clk,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub index: i32,
-    pub rate: libc::c_ulong,
-    pub period: libc::c_ulong,
+    pub rate: kernel::ffi::c_ulong,
+    pub period: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -39,7 +39,7 @@ pub struct timer_of {
     pub of_base: of_timer_base,
     pub of_irq: of_timer_irq,
     pub of_clk: of_timer_clk,
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
 }
 
 #[inline]
@@ -48,7 +48,7 @@ pub unsafe fn to_timer_of(clkevt: *mut clock_event_device) -> *mut timer_of {
 }
 
 #[inline]
-pub unsafe fn timer_of_base(to: *mut timer_of) -> *mut core::ffi::c_void {
+pub unsafe fn timer_of_base(to: *mut timer_of) -> *mut kernel::ffi::c_void {
     (*to).of_base.base
 }
 
@@ -58,12 +58,12 @@ pub unsafe fn timer_of_irq(to: *mut timer_of) -> i32 {
 }
 
 #[inline]
-pub unsafe fn timer_of_rate(to: *mut timer_of) -> libc::c_ulong {
+pub unsafe fn timer_of_rate(to: *mut timer_of) -> kernel::ffi::c_ulong {
     (*to).of_clk.rate
 }
 
 #[inline]
-pub unsafe fn timer_of_period(to: *mut timer_of) -> libc::c_ulong {
+pub unsafe fn timer_of_period(to: *mut timer_of) -> kernel::ffi::c_ulong {
     (*to).of_clk.period
 }
 

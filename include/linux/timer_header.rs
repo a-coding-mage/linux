@@ -45,7 +45,7 @@ extern "C" {
         timer: *mut timer_list,
         func: Option<unsafe extern "C" fn(*mut timer_list)>,
         flags: u32,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         key: *mut lock_class_key,
     );
 
@@ -54,7 +54,7 @@ extern "C" {
         timer: *mut timer_list,
         func: Option<unsafe extern "C" fn(*mut timer_list)>,
         flags: u32,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         key: *mut lock_class_key,
     );
 
@@ -94,7 +94,7 @@ pub unsafe fn timer_init_key_on_stack(
     timer: *mut timer_list,
     func: Option<unsafe extern "C" fn(*mut timer_list)>,
     flags: u32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     key: *mut lock_class_key,
 ) {
     timer_init_key(timer, func, flags, name, key);

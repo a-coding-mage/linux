@@ -4,7 +4,7 @@
 // #include <linux/ns_common.h>
 // #include <uapi/linux/utsname.h>
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 // Declaration supplied by another translation unit.
 pub enum UserNamespace {}

@@ -39,9 +39,9 @@ static mut elog_base: u64 = 0;
 static mut elog_size: usize = 0;
 static mut l1_dirbase: u64 = 0;
 static mut l1_size: usize = 0;
-static mut extlog_l1_addr: *mut core::ffi::c_void = core::ptr::null_mut();
-static mut elog_addr: *mut core::ffi::c_void = core::ptr::null_mut();
-static mut elog_buf: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut extlog_l1_addr: *mut kernel::ffi::c_void = core::ptr::null_mut();
+static mut elog_addr: *mut kernel::ffi::c_void = core::ptr::null_mut();
+static mut elog_buf: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut l1_entry_base: *mut u64 = core::ptr::null_mut();
 static mut l1_percpu_entry: u32 = 0;
 
@@ -81,7 +81,7 @@ unsafe fn extlog_elog_entry_check(cpu: i32, bank: i32) -> *mut acpi_hest_generic
 }
 
 unsafe fn __print_extlog_rcd(
-    mut pfx: *const core::ffi::c_char,
+    mut pfx: *const kernel::ffi::c_char,
     estatus: *mut acpi_hest_generic_status,
     cpu: i32,
 ) {
@@ -103,7 +103,7 @@ unsafe fn __print_extlog_rcd(
 }
 
 unsafe fn print_extlog_rcd(
-    pfx: *const core::ffi::c_char,
+    pfx: *const kernel::ffi::c_char,
     estatus: *mut acpi_hest_generic_status,
     cpu: i32,
 ) -> i32 {
@@ -162,7 +162,7 @@ unsafe fn extlog_cxl_cper_handle_prot_err(
     // #endif
 }
 
-unsafe fn extlog_print(nb: *mut notifier_block, val: u64, data: *mut core::ffi::c_void) -> i32 {
+unsafe fn extlog_print(nb: *mut notifier_block, val: u64, data: *mut kernel::ffi::c_void) -> i32 {
     let mce = data as *mut mce;
     let bank = (*mce).bank;
     let cpu = (*mce).extcpu;
@@ -235,7 +235,7 @@ static mut extlog_mce_dec: notifier_block = notifier_block {
 
 unsafe fn extlog_init() -> i32 {
     let mut l1_head: *mut extlog_l1_head;
-    let mut extlog_l1_hdr: *mut core::ffi::c_void;
+    let mut extlog_l1_hdr: *mut kernel::ffi::c_void;
     let l1_hdr_size = core::mem::size_of::<extlog_l1_head>();
     let mut r: *mut resource;
     let mut cap: u64 = 0;

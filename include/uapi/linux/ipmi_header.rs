@@ -8,44 +8,44 @@ pub const IPMI_MAX_ADDR_SIZE: usize = 32;
 
 #[repr(C)]
 pub struct ipmi_addr {
-    pub addr_type: core::ffi::c_int,
-    pub channel: core::ffi::c_short,
-    pub data: [core::ffi::c_char; IPMI_MAX_ADDR_SIZE],
+    pub addr_type: kernel::ffi::c_int,
+    pub channel: kernel::ffi::c_short,
+    pub data: [kernel::ffi::c_char; IPMI_MAX_ADDR_SIZE],
 }
 
-pub const IPMI_SYSTEM_INTERFACE_ADDR_TYPE: core::ffi::c_int = 0x0c;
+pub const IPMI_SYSTEM_INTERFACE_ADDR_TYPE: kernel::ffi::c_int = 0x0c;
 #[repr(C)]
 pub struct ipmi_system_interface_addr {
-    pub addr_type: core::ffi::c_int,
-    pub channel: core::ffi::c_short,
+    pub addr_type: kernel::ffi::c_int,
+    pub channel: kernel::ffi::c_short,
     pub lun: u8,
 }
 
-pub const IPMI_IPMB_ADDR_TYPE: core::ffi::c_int = 0x01;
-pub const IPMI_IPMB_BROADCAST_ADDR_TYPE: core::ffi::c_int = 0x41;
+pub const IPMI_IPMB_ADDR_TYPE: kernel::ffi::c_int = 0x01;
+pub const IPMI_IPMB_BROADCAST_ADDR_TYPE: kernel::ffi::c_int = 0x41;
 #[repr(C)]
 pub struct ipmi_ipmb_addr {
-    pub addr_type: core::ffi::c_int,
-    pub channel: core::ffi::c_short,
+    pub addr_type: kernel::ffi::c_int,
+    pub channel: kernel::ffi::c_short,
     pub slave_addr: u8,
     pub lun: u8,
 }
 
-pub const IPMI_IPMB_DIRECT_ADDR_TYPE: core::ffi::c_int = 0x81;
+pub const IPMI_IPMB_DIRECT_ADDR_TYPE: kernel::ffi::c_int = 0x81;
 #[repr(C)]
 pub struct ipmi_ipmb_direct_addr {
-    pub addr_type: core::ffi::c_int,
-    pub channel: core::ffi::c_short,
+    pub addr_type: kernel::ffi::c_int,
+    pub channel: kernel::ffi::c_short,
     pub slave_addr: u8,
     pub rs_lun: u8,
     pub rq_lun: u8,
 }
 
-pub const IPMI_LAN_ADDR_TYPE: core::ffi::c_int = 0x04;
+pub const IPMI_LAN_ADDR_TYPE: kernel::ffi::c_int = 0x04;
 #[repr(C)]
 pub struct ipmi_lan_addr {
-    pub addr_type: core::ffi::c_int,
-    pub channel: core::ffi::c_short,
+    pub addr_type: kernel::ffi::c_int,
+    pub channel: kernel::ffi::c_short,
     pub privilege: u8,
     pub session_handle: u8,
     pub remote_SWID: u8,
@@ -77,15 +77,15 @@ pub const IPMI_INVALID_CMD_COMPLETION_CODE: u8 = 0xC1;
 pub const IPMI_TIMEOUT_COMPLETION_CODE: u8 = 0xC3;
 pub const IPMI_UNKNOWN_ERR_COMPLETION_CODE: u8 = 0xff;
 
-pub const IPMI_RESPONSE_RECV_TYPE: core::ffi::c_int = 1;
-pub const IPMI_ASYNC_EVENT_RECV_TYPE: core::ffi::c_int = 2;
-pub const IPMI_CMD_RECV_TYPE: core::ffi::c_int = 3;
-pub const IPMI_RESPONSE_RESPONSE_TYPE: core::ffi::c_int = 4;
-pub const IPMI_OEM_RECV_TYPE: core::ffi::c_int = 5;
+pub const IPMI_RESPONSE_RECV_TYPE: kernel::ffi::c_int = 1;
+pub const IPMI_ASYNC_EVENT_RECV_TYPE: kernel::ffi::c_int = 2;
+pub const IPMI_CMD_RECV_TYPE: kernel::ffi::c_int = 3;
+pub const IPMI_RESPONSE_RESPONSE_TYPE: kernel::ffi::c_int = 4;
+pub const IPMI_OEM_RECV_TYPE: kernel::ffi::c_int = 5;
 
-pub const IPMI_MAINTENANCE_MODE_AUTO: core::ffi::c_int = 0;
-pub const IPMI_MAINTENANCE_MODE_OFF: core::ffi::c_int = 1;
-pub const IPMI_MAINTENANCE_MODE_ON: core::ffi::c_int = 2;
+pub const IPMI_MAINTENANCE_MODE_AUTO: kernel::ffi::c_int = 0;
+pub const IPMI_MAINTENANCE_MODE_OFF: kernel::ffi::c_int = 1;
+pub const IPMI_MAINTENANCE_MODE_ON: kernel::ffi::c_int = 2;
 
 pub const IPMI_IOC_MAGIC: u8 = b'i';
 
@@ -93,23 +93,23 @@ pub const IPMI_IOC_MAGIC: u8 = b'i';
 pub struct ipmi_req {
     pub addr: *mut u8, // __user pointer
     pub addr_len: u32,
-    pub msgid: core::ffi::c_long,
+    pub msgid: kernel::ffi::c_long,
     pub msg: ipmi_msg,
 }
 
 #[repr(C)]
 pub struct ipmi_req_settime {
     pub req: ipmi_req,
-    pub retries: core::ffi::c_int,
+    pub retries: kernel::ffi::c_int,
     pub retry_time_ms: u32,
 }
 
 #[repr(C)]
 pub struct ipmi_recv {
-    pub recv_type: core::ffi::c_int,
+    pub recv_type: kernel::ffi::c_int,
     pub addr: *mut u8, // __user pointer
     pub addr_len: u32,
-    pub msgid: core::ffi::c_long,
+    pub msgid: kernel::ffi::c_long,
     pub msg: ipmi_msg,
 }
 
@@ -157,7 +157,7 @@ pub struct ipmi_channel_lun_address_set {
 
 #[repr(C)]
 pub struct ipmi_timing_parms {
-    pub retries: core::ffi::c_int,
+    pub retries: kernel::ffi::c_int,
     pub retry_time_ms: u32,
 }
 

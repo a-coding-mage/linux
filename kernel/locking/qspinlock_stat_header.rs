@@ -34,17 +34,17 @@ mod lock_event_counts_paravirt {
         fn do_div(value: *mut u64, divisor: u64) -> u64;
         fn DIV_ROUND_CLOSEST_ULL(value: u64, divisor: u64) -> u64;
         fn simple_read_from_buffer(
-            user_buf: *mut core::ffi::c_char,
+            user_buf: *mut kernel::ffi::c_char,
             count: usize,
             ppos: *mut i64,
-            buf: *const core::ffi::c_char,
+            buf: *const kernel::ffi::c_char,
             len: i32,
         ) -> isize;
         fn file_inode(file: *mut file) -> *mut inode;
         fn snprintf(
-            buf: *mut core::ffi::c_char,
+            buf: *mut kernel::ffi::c_char,
             size: usize,
-            fmt: *const core::ffi::c_char,
+            fmt: *const kernel::ffi::c_char,
             ...,
         ) -> i32;
     }
@@ -55,17 +55,17 @@ mod lock_event_counts_paravirt {
     }
     #[repr(C)]
     pub struct inode {
-        pub i_private: *mut core::ffi::c_void,
+        pub i_private: *mut kernel::ffi::c_void,
     }
 
     // Function to read and return the PV qspinlock counts.
     pub unsafe fn lockevent_read(
         file: *mut file,
-        user_buf: *mut core::ffi::c_char,
+        user_buf: *mut kernel::ffi::c_char,
         count: usize,
         ppos: *mut i64,
     ) -> isize {
-        let mut buf = [0 as core::ffi::c_char; 64];
+        let mut buf = [0 as kernel::ffi::c_char; 64];
         let mut cpu: i32;
         let id: i32;
         let len: i32;

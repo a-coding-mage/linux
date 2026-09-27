@@ -9,7 +9,7 @@ extern "C" {
         dev: *mut device,
         ops: *const hdac_bus_ops,
         ext_ops: *const hdac_ext_bus_ops,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn snd_hdac_ext_bus_exit(bus: *mut hdac_bus);
     pub fn snd_hdac_ext_bus_device_remove(bus: *mut hdac_bus);
@@ -17,31 +17,31 @@ extern "C" {
     pub fn snd_hdac_ext_bus_ppcap_enable(chip: *mut hdac_bus, enable: bool);
     pub fn snd_hdac_ext_bus_ppcap_int_enable(chip: *mut hdac_bus, enable: bool);
 
-    pub fn snd_hdac_ext_bus_get_ml_capabilities(bus: *mut hdac_bus) -> ::core::ffi::c_int;
+    pub fn snd_hdac_ext_bus_get_ml_capabilities(bus: *mut hdac_bus) -> ::kernel::ffi::c_int;
     pub fn snd_hdac_ext_bus_get_hlink_by_id(bus: *mut hdac_bus, id: u32) -> *mut hdac_ext_link;
     pub fn snd_hdac_ext_bus_get_hlink_by_addr(
         bus: *mut hdac_bus,
-        addr: ::core::ffi::c_int,
+        addr: ::kernel::ffi::c_int,
     ) -> *mut hdac_ext_link;
     pub fn snd_hdac_ext_bus_get_hlink_by_name(
         bus: *mut hdac_bus,
-        codec_name: *const ::core::ffi::c_char,
+        codec_name: *const ::kernel::ffi::c_char,
     ) -> *mut hdac_ext_link;
 
     pub fn snd_hdac_ext_stream_init_all(
         bus: *mut hdac_bus,
-        start_idx: ::core::ffi::c_int,
-        num_stream: ::core::ffi::c_int,
-        dir: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        start_idx: ::kernel::ffi::c_int,
+        num_stream: ::kernel::ffi::c_int,
+        dir: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_hdac_ext_stream_free_all(bus: *mut hdac_bus);
     pub fn snd_hdac_ext_link_free_all(bus: *mut hdac_bus);
     pub fn snd_hdac_ext_stream_assign(
         bus: *mut hdac_bus,
         substream: *mut snd_pcm_substream,
-        stream_type: ::core::ffi::c_int,
+        stream_type: ::kernel::ffi::c_int,
     ) -> *mut hdac_ext_stream;
-    pub fn snd_hdac_ext_stream_release(stream: *mut hdac_ext_stream, stream_type: ::core::ffi::c_int);
+    pub fn snd_hdac_ext_stream_release(stream: *mut hdac_ext_stream, stream_type: ::kernel::ffi::c_int);
     pub fn snd_hdac_ext_cstream_assign(
         bus: *mut hdac_bus,
         cstream: *mut snd_compr_stream,
@@ -61,24 +61,24 @@ extern "C" {
     pub fn snd_hdac_ext_stream_reset(stream: *mut hdac_ext_stream);
     pub fn snd_hdac_ext_stream_setup(
         stream: *mut hdac_ext_stream,
-        fmt: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        fmt: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_hdac_ext_host_stream_setup(
         stream: *mut hdac_ext_stream,
         code_loading: bool,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
-    pub fn snd_hdac_ext_bus_link_power_up(link: *mut hdac_ext_link) -> ::core::ffi::c_int;
-    pub fn snd_hdac_ext_bus_link_power_down(link: *mut hdac_ext_link) -> ::core::ffi::c_int;
-    pub fn snd_hdac_ext_bus_link_power_up_all(bus: *mut hdac_bus) -> ::core::ffi::c_int;
-    pub fn snd_hdac_ext_bus_link_power_down_all(bus: *mut hdac_bus) -> ::core::ffi::c_int;
-    pub fn snd_hdac_ext_bus_link_set_stream_id(link: *mut hdac_ext_link, stream: ::core::ffi::c_int);
-    pub fn snd_hdac_ext_bus_link_clear_stream_id(link: *mut hdac_ext_link, stream: ::core::ffi::c_int);
-    pub fn snd_hdac_ext_bus_link_get(bus: *mut hdac_bus, link: *mut hdac_ext_link) -> ::core::ffi::c_int;
-    pub fn snd_hdac_ext_bus_link_put(bus: *mut hdac_bus, link: *mut hdac_ext_link) -> ::core::ffi::c_int;
+    pub fn snd_hdac_ext_bus_link_power_up(link: *mut hdac_ext_link) -> ::kernel::ffi::c_int;
+    pub fn snd_hdac_ext_bus_link_power_down(link: *mut hdac_ext_link) -> ::kernel::ffi::c_int;
+    pub fn snd_hdac_ext_bus_link_power_up_all(bus: *mut hdac_bus) -> ::kernel::ffi::c_int;
+    pub fn snd_hdac_ext_bus_link_power_down_all(bus: *mut hdac_bus) -> ::kernel::ffi::c_int;
+    pub fn snd_hdac_ext_bus_link_set_stream_id(link: *mut hdac_ext_link, stream: ::kernel::ffi::c_int);
+    pub fn snd_hdac_ext_bus_link_clear_stream_id(link: *mut hdac_ext_link, stream: ::kernel::ffi::c_int);
+    pub fn snd_hdac_ext_bus_link_get(bus: *mut hdac_bus, link: *mut hdac_ext_link) -> ::kernel::ffi::c_int;
+    pub fn snd_hdac_ext_bus_link_put(bus: *mut hdac_bus, link: *mut hdac_ext_link) -> ::kernel::ffi::c_int;
     pub fn snd_hdac_ext_bus_link_power(codec: *mut hdac_device, enable: bool);
 
-    pub fn snd_hda_ext_driver_register(drv: *mut hdac_driver) -> ::core::ffi::c_int;
+    pub fn snd_hda_ext_driver_register(drv: *mut hdac_driver) -> ::kernel::ffi::c_int;
     pub fn snd_hda_ext_driver_unregister(drv: *mut hdac_driver);
 }
 
@@ -92,8 +92,8 @@ pub enum hdac_ext_stream_type {
 #[repr(C)]
 pub struct hdac_ext_stream {
     pub hstream: hdac_stream,
-    pub pphc_addr: *mut ::core::ffi::c_void,
-    pub pplc_addr: *mut ::core::ffi::c_void,
+    pub pphc_addr: *mut ::kernel::ffi::c_void,
+    pub pplc_addr: *mut ::kernel::ffi::c_void,
     pub pphcllpl: u32,
     pub pphcllpu: u32,
     pub pphcldpl: u32,
@@ -104,33 +104,33 @@ pub struct hdac_ext_stream {
     pub decoupled: u8,
     pub link_locked: u8,
     pub link_prepared: bool,
-    pub host_setup: Option<unsafe extern "C" fn(*mut hdac_stream, bool) -> ::core::ffi::c_int>,
+    pub host_setup: Option<unsafe extern "C" fn(*mut hdac_stream, bool) -> ::kernel::ffi::c_int>,
     pub link_substream: *mut snd_pcm_substream,
 }
 
 #[repr(C)]
 pub struct hdac_ext_link {
     pub bus: *mut hdac_bus,
-    pub index: ::core::ffi::c_int,
-    pub ml_addr: *mut ::core::ffi::c_void,
+    pub index: ::kernel::ffi::c_int,
+    pub ml_addr: *mut ::kernel::ffi::c_void,
     pub lcaps: u32,
     pub lsdiid: u16,
     pub id: u32,
     pub slcount: u8,
-    pub ref_count: ::core::ffi::c_int,
+    pub ref_count: ::kernel::ffi::c_int,
     pub list: list_head,
 }
 
 #[repr(C)]
 pub struct hdac_ext_codec_ops {
-    pub build_controls: Option<unsafe extern "C" fn(*mut hdac_ext_device) -> ::core::ffi::c_int>,
-    pub init: Option<unsafe extern "C" fn(*mut hdac_ext_device) -> ::core::ffi::c_int>,
+    pub build_controls: Option<unsafe extern "C" fn(*mut hdac_ext_device) -> ::kernel::ffi::c_int>,
+    pub init: Option<unsafe extern "C" fn(*mut hdac_ext_device) -> ::kernel::ffi::c_int>,
     pub free: Option<unsafe extern "C" fn(*mut hdac_ext_device)>,
 }
 
 #[repr(C)]
 pub struct hda_dai_map {
-    pub dai_name: *mut ::core::ffi::c_char,
+    pub dai_name: *mut ::kernel::ffi::c_char,
     pub nid: hda_nid_t,
     pub maxbps: u32,
 }
@@ -160,7 +160,7 @@ macro_rules! HDA_CODEC_REV_EXT_ENTRY {
             rev_id: $rev,
             name: $name,
             api_version: HDA_DEV_ASOC,
-            driver_data: $drv_data as ::core::ffi::c_ulong,
+            driver_data: $drv_data as ::kernel::ffi::c_ulong,
         }
     };
 }

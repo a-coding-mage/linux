@@ -3,7 +3,7 @@
  * Translated from the C header; included kernel dependencies are external.
  */
 
-use core::ffi::{c_char, c_void};
+use kernel::ffi::{c_char, c_void};
 
 // C dependencies: linux/irq.h, linux/delay.h, linux/i2c.h,
 // linux/mfd/twl.h, linux/platform_data/i2c-omap.h, linux/reboot.h,
@@ -123,7 +123,7 @@ pub const L2C_AUX_CTRL_SHARED_OVERRIDE: u32 = 0;
 pub const L310_AUX_CTRL_DATA_PREFETCH: u32 = 0;
 pub const L310_AUX_CTRL_INSTR_PREFETCH: u32 = 0;
 
-pub type CLong = core::ffi::c_ulong;
+pub type CLong = kernel::ffi::c_ulong;
 pub type c_ulong = usize;
 
 #[inline]

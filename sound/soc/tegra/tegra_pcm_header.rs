@@ -20,39 +20,39 @@ unsafe extern "C" {
     pub fn tegra_pcm_new(
         component: *mut snd_soc_component,
         rtd: *mut snd_soc_pcm_runtime,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn tegra_pcm_open(
         component: *mut snd_soc_component,
         substream: *mut snd_pcm_substream,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn tegra_pcm_close(
         component: *mut snd_soc_component,
         substream: *mut snd_pcm_substream,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn tegra_pcm_hw_params(
         component: *mut snd_soc_component,
         substream: *mut snd_pcm_substream,
         params: *mut snd_pcm_hw_params,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn tegra_pcm_pointer(
         component: *mut snd_soc_component,
         substream: *mut snd_pcm_substream,
     ) -> snd_pcm_uframes_t;
 
-    pub fn tegra_pcm_platform_register(dev: *mut device) -> ::core::ffi::c_int;
+    pub fn tegra_pcm_platform_register(dev: *mut device) -> ::kernel::ffi::c_int;
 
-    pub fn devm_tegra_pcm_platform_register(dev: *mut device) -> ::core::ffi::c_int;
+    pub fn devm_tegra_pcm_platform_register(dev: *mut device) -> ::kernel::ffi::c_int;
 
     pub fn tegra_pcm_platform_register_with_chan_names(
         dev: *mut device,
         config: *mut snd_dmaengine_pcm_config,
-        txdmachan: *mut ::core::ffi::c_char,
-        rxdmachan: *mut ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        txdmachan: *mut ::kernel::ffi::c_char,
+        rxdmachan: *mut ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn tegra_pcm_platform_unregister(dev: *mut device);
 }

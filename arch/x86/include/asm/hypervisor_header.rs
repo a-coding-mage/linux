@@ -39,7 +39,7 @@ pub enum x86_hypervisor_type {
 #[repr(C)]
 pub struct hypervisor_x86 {
     /* Hypervisor name */
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 
     /* Detection routine */
     pub detect: Option<unsafe extern "C" fn() -> u32>,

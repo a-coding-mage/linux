@@ -60,19 +60,19 @@ pub enum krb5_crypto_mode {
 
 #[repr(C)]
 pub struct krb5_buffer {
-    pub len: core::ffi::c_uint,
-    pub data: *mut core::ffi::c_void,
+    pub len: kernel::ffi::c_uint,
+    pub data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct krb5_enctype {
     pub etype: i32,
     pub ctype: i32,
-    pub name: *const core::ffi::c_char,
-    pub encrypt_name: *const core::ffi::c_char,
-    pub cksum_name: *const core::ffi::c_char,
-    pub hash_name: *const core::ffi::c_char,
-    pub derivation_enc: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub encrypt_name: *const kernel::ffi::c_char,
+    pub cksum_name: *const kernel::ffi::c_char,
+    pub hash_name: *const kernel::ffi::c_char,
+    pub derivation_enc: *const kernel::ffi::c_char,
     pub block_len: u16,
     pub conf_len: u16,
     pub cksum_len: u16,
@@ -105,11 +105,11 @@ extern "C" {
     pub fn crypto_krb5_check_data_len(krb5: *const krb5_enctype, mode: krb5_crypto_mode, len: usize, min_content: usize) -> i32;
     pub fn crypto_krb5_prepare_encryption(krb5: *const krb5_enctype, tk: *const krb5_buffer, usage: u32, gfp: u32) -> *mut crypto_aead;
     pub fn crypto_krb5_prepare_checksum(krb5: *const krb5_enctype, tk: *const krb5_buffer, usage: u32, gfp: u32) -> *mut crypto_shash;
-    pub fn crypto_krb5_encrypt(krb5: *const krb5_enctype, aead: *mut crypto_aead, sg: *mut scatterlist, nr_sg: core::ffi::c_uint, sg_len: usize, data_offset: usize, data_len: usize, preconfounded: bool) -> isize;
-    pub fn crypto_krb5_decrypt(krb5: *const krb5_enctype, aead: *mut crypto_aead, sg: *mut scatterlist, nr_sg: core::ffi::c_uint, offset: *mut usize, len: *mut usize) -> i32;
-    pub fn crypto_krb5_get_mic(krb5: *const krb5_enctype, shash: *mut crypto_shash, metadata: *const krb5_buffer, sg: *mut scatterlist, nr_sg: core::ffi::c_uint, sg_len: usize, data_offset: usize, data_len: usize) -> isize;
-    pub fn crypto_krb5_verify_mic(krb5: *const krb5_enctype, shash: *mut crypto_shash, metadata: *const krb5_buffer, sg: *mut scatterlist, nr_sg: core::ffi::c_uint, offset: *mut usize, len: *mut usize) -> i32;
-    pub fn crypto_krb5_calc_PRFplus(krb5: *const krb5_enctype, k: *const krb5_buffer, l: core::ffi::c_uint, s: *const krb5_buffer, result: *mut krb5_buffer, gfp: u32) -> i32;
+    pub fn crypto_krb5_encrypt(krb5: *const krb5_enctype, aead: *mut crypto_aead, sg: *mut scatterlist, nr_sg: kernel::ffi::c_uint, sg_len: usize, data_offset: usize, data_len: usize, preconfounded: bool) -> isize;
+    pub fn crypto_krb5_decrypt(krb5: *const krb5_enctype, aead: *mut crypto_aead, sg: *mut scatterlist, nr_sg: kernel::ffi::c_uint, offset: *mut usize, len: *mut usize) -> i32;
+    pub fn crypto_krb5_get_mic(krb5: *const krb5_enctype, shash: *mut crypto_shash, metadata: *const krb5_buffer, sg: *mut scatterlist, nr_sg: kernel::ffi::c_uint, sg_len: usize, data_offset: usize, data_len: usize) -> isize;
+    pub fn crypto_krb5_verify_mic(krb5: *const krb5_enctype, shash: *mut crypto_shash, metadata: *const krb5_buffer, sg: *mut scatterlist, nr_sg: kernel::ffi::c_uint, offset: *mut usize, len: *mut usize) -> i32;
+    pub fn crypto_krb5_calc_PRFplus(krb5: *const krb5_enctype, k: *const krb5_buffer, l: kernel::ffi::c_uint, s: *const krb5_buffer, result: *mut krb5_buffer, gfp: u32) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

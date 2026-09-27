@@ -25,13 +25,13 @@ extern "C" {
     fn cpu_has_feature(feature: u64) -> bool;
     fn prep_irq_for_idle() -> bool;
     fn power4_idle_nap();
-    fn register_sysctl(name: *const ::core::ffi::c_char,
+    fn register_sysctl(name: *const ::kernel::ffi::c_char,
                         table: *const CtlTable) -> *mut CtlTable;
     fn proc_dointvec();
 }
 
 #[no_mangle]
-pub static mut cpuidle_disable: ::core::ffi::c_ulong = IDLE_NO_OVERRIDE;
+pub static mut cpuidle_disable: ::kernel::ffi::c_ulong = IDLE_NO_OVERRIDE;
 
 #[repr(C)]
 struct PowerpcMachineDesc {
@@ -40,16 +40,16 @@ struct PowerpcMachineDesc {
 
 #[repr(C)]
 struct CtlTable {
-    procname: *const ::core::ffi::c_char,
-    data: *mut ::core::ffi::c_void,
-    maxlen: ::core::ffi::c_ulong,
-    mode: ::core::ffi::c_uint,
+    procname: *const ::kernel::ffi::c_char,
+    data: *mut ::kernel::ffi::c_void,
+    maxlen: ::kernel::ffi::c_ulong,
+    mode: ::kernel::ffi::c_uint,
     proc_handler: Option<unsafe extern "C" fn()>,
 }
 
 // These constants and platform helpers are provided by the kernel headers.
-const IDLE_NO_OVERRIDE: ::core::ffi::c_ulong = 0;
-const IDLE_POWERSAVE_OFF: ::core::ffi::c_ulong = 1;
+const IDLE_NO_OVERRIDE: ::kernel::ffi::c_ulong = 0;
+const IDLE_POWERSAVE_OFF: ::kernel::ffi::c_ulong = 1;
 const CPU_FTR_CAN_NAP: u64 = 0;
 const CPU_FTR_ALTIVEC: u64 = 0;
 
@@ -62,7 +62,7 @@ extern "C" {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn powersave_off(_arg: *mut ::core::ffi::c_char) -> i32 {
+pub unsafe extern "C" fn powersave_off(_arg: *mut ::kernel::ffi::c_char) -> i32 {
     ppc_md.power_save = None;
     cpuidle_disable = IDLE_POWERSAVE_OFF;
     1
@@ -119,16 +119,16 @@ pub unsafe extern "C" fn power4_idle() {
 
 #[cfg(CONFIG_SYSCTL)]
 static powersave_nap_ctl_table: [CtlTable; 1] = [CtlTable {
-    procname: b"powersave-nap\0".as_ptr() as *const ::core::ffi::c_char,
-    data: unsafe { &raw mut powersave_nap as *mut ::core::ffi::c_void },
-    maxlen: ::core::mem::size_of::<i32>() as ::core::ffi::c_ulong,
+    procname: b"powersave-nap\0".as_ptr() as *const ::kernel::ffi::c_char,
+    data: unsafe { &raw mut powersave_nap as *mut ::kernel::ffi::c_void },
+    maxlen: ::core::mem::size_of::<i32>() as ::kernel::ffi::c_ulong,
     mode: 0o644,
     proc_handler: Some(proc_dointvec),
 }];
 
 #[cfg(CONFIG_SYSCTL)]
 unsafe extern "C" fn register_powersave_nap_sysctl() -> i32 {
-    register_sysctl(b"kernel\0".as_ptr() as *const ::core::ffi::c_char,
+    register_sysctl(b"kernel\0".as_ptr() as *const ::kernel::ffi::c_char,
                     powersave_nap_ctl_table.as_ptr());
     0
 }

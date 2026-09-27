@@ -10,7 +10,7 @@ unsafe fn erofs_ishare_iget5_eq(inode: *mut inode, data: *mut core::ffi::c_void)
     let fp2: *mut erofs_inode_fingerprint = data as *mut erofs_inode_fingerprint;
 
     ((*fp1).size == (*fp2).size
-        && libc::memcmp((*fp1).opaque as *const core::ffi::c_void,
+        && memcmp((*fp1).opaque as *const core::ffi::c_void,
                         (*fp2).opaque as *const core::ffi::c_void,
                         (*fp2).size as usize) == 0) as i32
 }

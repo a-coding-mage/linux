@@ -33,13 +33,13 @@ pub enum bq2415x_mode {
 
 #[repr(C)]
 pub struct bq2415x_platform_data {
-    pub current_limit: ::core::ffi::c_int,              /* mA */
-    pub weak_battery_voltage: ::core::ffi::c_int,       /* mV */
-    pub battery_regulation_voltage: ::core::ffi::c_int, /* mV */
-    pub charge_current: ::core::ffi::c_int,             /* mA */
-    pub termination_current: ::core::ffi::c_int,        /* mA */
-    pub resistor_sense: ::core::ffi::c_int,             /* m ohm */
-    pub notify_device: *const ::core::ffi::c_char,      /* name */
+    pub current_limit: ::kernel::ffi::c_int,              /* mA */
+    pub weak_battery_voltage: ::kernel::ffi::c_int,       /* mV */
+    pub battery_regulation_voltage: ::kernel::ffi::c_int, /* mV */
+    pub charge_current: ::kernel::ffi::c_int,             /* mA */
+    pub termination_current: ::kernel::ffi::c_int,        /* mA */
+    pub resistor_sense: ::kernel::ffi::c_int,             /* m ohm */
+    pub notify_device: *const ::kernel::ffi::c_char,      /* name */
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

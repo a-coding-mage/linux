@@ -3,7 +3,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-pub unsafe fn __init_waitqueue_head(wq_head: *mut wait_queue_head, name: *const core::ffi::c_char, key: *mut lock_class_key) {
+pub unsafe fn __init_waitqueue_head(wq_head: *mut wait_queue_head, name: *const kernel::ffi::c_char, key: *mut lock_class_key) {
     spin_lock_init(unsafe { &mut (*wq_head).lock });
     lockdep_set_class_and_name(unsafe { &mut (*wq_head).lock }, key, name);
     INIT_LIST_HEAD(unsafe { &mut (*wq_head).head });

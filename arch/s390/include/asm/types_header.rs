@@ -12,8 +12,8 @@ pub union register_pair {
 #[cfg(not(asm))]
 #[repr(C)]
 pub struct register_pair_fields {
-    pub even: core::ffi::c_ulong,
-    pub odd: core::ffi::c_ulong,
+    pub even: kernel::ffi::c_ulong,
+    pub odd: kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

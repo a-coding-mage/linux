@@ -14,17 +14,17 @@ const SYNC2_MASK: u32 = 0xf;
 extern "C" {
     fn of_platform_populate(
         node: *mut device_node,
-        matches: *const core::ffi::c_void,
-        lookup: *const core::ffi::c_void,
+        matches: *const kernel::ffi::c_void,
+        lookup: *const kernel::ffi::c_void,
         parent: *mut device,
     ) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     fn pm_runtime_enable(dev: *mut device);
-    fn of_device_is_compatible(node: *mut device_node, compatible: *const core::ffi::c_char) -> bool;
+    fn of_device_is_compatible(node: *mut device_node, compatible: *const kernel::ffi::c_char) -> bool;
     fn platform_get_resource(pdev: *mut platform_device, resource_type: u32, index: u32) -> *mut resource;
-    fn devm_ioremap_resource(dev: *mut device, res: *mut resource) -> *mut core::ffi::c_void;
-    fn is_err(ptr: *mut core::ffi::c_void) -> bool;
-    fn ptr_err(ptr: *mut core::ffi::c_void) -> i32;
+    fn devm_ioremap_resource(dev: *mut device, res: *mut resource) -> *mut kernel::ffi::c_void;
+    fn is_err(ptr: *mut kernel::ffi::c_void) -> bool;
+    fn ptr_err(ptr: *mut kernel::ffi::c_void) -> i32;
     fn pm_runtime_get_sync(dev: *mut device) -> i32;
     fn readl_relaxed(addr: *mut u8) -> u32;
     fn writel_relaxed(value: u32, addr: *mut u8);
@@ -92,8 +92,8 @@ unsafe fn omap_ocp2scp_probe(pdev: *mut platform_device) -> i32 {
     if !of_device_is_compatible(np, b"ti,am437x-ocp2scp\0".as_ptr() as *const _) {
         res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
         regs = devm_ioremap_resource(&mut (*pdev).dev, res) as *mut u8;
-        if is_err(regs as *mut core::ffi::c_void) {
-            ret = ptr_err(regs as *mut core::ffi::c_void);
+        if is_err(regs as *mut kernel::ffi::c_void) {
+            ret = ptr_err(regs as *mut kernel::ffi::c_void);
             pm_runtime_disable(&mut (*pdev).dev);
             of_platform_depopulate(&mut (*pdev).dev);
             return ret;
@@ -119,7 +119,7 @@ unsafe fn omap_ocp2scp_remove(pdev: *mut platform_device) {
 #[cfg(CONFIG_OF)]
 #[repr(C)]
 struct of_device_id {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -131,7 +131,7 @@ struct platform_driver {
 
 #[repr(C)]
 struct driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     of_match_table: *const of_device_id,
 }
 

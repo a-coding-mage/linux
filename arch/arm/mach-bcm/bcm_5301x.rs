@@ -12,8 +12,8 @@ const FSR_EXTERNAL: u32 = 1 << 12;
 const FSR_READ: u32 = 0 << 10;
 const FSR_IMPRECISE: u32 = 0x0406;
 
-static BCM5301X_DT_COMPAT: [&'static core::ffi::c_char; 2] = [
-    b"brcm,bcm4708\0".as_ptr() as *const core::ffi::c_char,
+static BCM5301X_DT_COMPAT: [&'static kernel::ffi::c_char; 2] = [
+    b"brcm,bcm4708\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -26,19 +26,19 @@ unsafe extern "C" {
     fn hook_fault_code(
         nr: i32,
         fnc: unsafe extern "C" fn(
-            addr: libc::c_ulong,
-            fsr: libc::c_uint,
+            addr: kernel::ffi::c_ulong,
+            fsr: kernel::ffi::c_uint,
             regs: *mut PtRegs,
         ) -> i32,
         sig: i32,
         code: i32,
-        name: *const libc::c_char,
+        name: *const kernel::ffi::c_char,
     );
 }
 
 unsafe extern "C" fn bcm5301x_abort_handler(
-    _addr: libc::c_ulong,
-    fsr: libc::c_uint,
+    _addr: kernel::ffi::c_ulong,
+    fsr: kernel::ffi::c_uint,
     _regs: *mut PtRegs,
 ) -> i32 {
     /*
@@ -60,7 +60,7 @@ unsafe extern "C" fn bcm5301x_init_early() {
         bcm5301x_abort_handler,
         SIGBUS,
         BUS_OBJERR,
-        b"imprecise external abort\0".as_ptr() as *const libc::c_char,
+        b"imprecise external abort\0".as_ptr() as *const kernel::ffi::c_char,
     );
 }
 
@@ -68,9 +68,9 @@ unsafe extern "C" fn bcm5301x_init_early() {
 // The surrounding ARM platform bindings provide the machine-descriptor type.
 #[repr(C)]
 pub struct Bcm5301xMachine {
-    pub l2c_aux_val: libc::c_ulong,
-    pub l2c_aux_mask: libc::c_ulong,
-    pub dt_compat: *const *const libc::c_char,
+    pub l2c_aux_val: kernel::ffi::c_ulong,
+    pub l2c_aux_mask: kernel::ffi::c_ulong,
+    pub dt_compat: *const *const kernel::ffi::c_char,
     pub init_early: Option<unsafe extern "C" fn()>,
 }
 

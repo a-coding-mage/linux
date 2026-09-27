@@ -24,7 +24,7 @@ pub const USER_DLM_LOCK_ID_MAX_LEN: usize = 32;
 pub struct user_lock_res {
     pub l_lock: spinlock_t,
     pub l_flags: i32,
-    pub l_name: [core::ffi::c_char; USER_DLM_LOCK_ID_MAX_LEN],
+    pub l_name: [kernel::ffi::c_char; USER_DLM_LOCK_ID_MAX_LEN],
     pub l_namelen: i32,
     pub l_level: i32,
     pub l_ro_holders: u32,
@@ -49,10 +49,10 @@ extern "C" {
     pub fn user_dlm_cluster_unlock(lockres: *mut user_lock_res, level: i32);
     pub fn user_dlm_write_lvb(
         inode: *mut inode,
-        val: *const core::ffi::c_char,
+        val: *const kernel::ffi::c_char,
         len: u32,
     );
-    pub fn user_dlm_read_lvb(inode: *mut inode, val: *mut core::ffi::c_char) -> bool;
+    pub fn user_dlm_read_lvb(inode: *mut inode, val: *mut kernel::ffi::c_char) -> bool;
     pub fn user_dlm_register(name: *const qstr) -> *mut ocfs2_cluster_connection;
     pub fn user_dlm_unregister(conn: *mut ocfs2_cluster_connection);
     pub fn user_dlm_set_locking_protocol();

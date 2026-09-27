@@ -11,7 +11,7 @@
 #[repr(C)]
 pub struct ClkApmu {
     pub hw: ClkHw,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub rst_mask: u32,
     pub enable_mask: u32,
     pub lock: *mut SpinlockT,
@@ -24,10 +24,10 @@ pub struct ClkHw {
 
 #[repr(C)]
 pub struct ClkInitData {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const ClkOps,
     pub flags: u32,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: u8,
 }
 
@@ -46,13 +46,13 @@ pub struct SpinlockT;
 const CLK_SET_RATE_PARENT: u32 = 1 << 2;
 
 unsafe extern "C" {
-    fn readl_relaxed(addr: *mut core::ffi::c_void) -> u32;
-    fn writel_relaxed(value: u32, addr: *mut core::ffi::c_void);
+    fn readl_relaxed(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel_relaxed(value: u32, addr: *mut kernel::ffi::c_void);
     fn spin_lock_irqsave(lock: *mut SpinlockT, flags: *mut usize);
     fn spin_unlock_irqrestore(lock: *mut SpinlockT, flags: usize);
     fn kzalloc_obj<T>() -> *mut T;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn clk_register(hw: *mut core::ffi::c_void, init: *mut ClkHw) -> *mut Clk;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn clk_register(hw: *mut kernel::ffi::c_void, init: *mut ClkHw) -> *mut Clk;
     fn is_err<T>(ptr: *mut T) -> bool;
 }
 
@@ -104,9 +104,9 @@ static CLK_APMU_OPS: ClkOps = ClkOps {
 
 #[no_mangle]
 pub unsafe extern "C" fn mmp_clk_register_apmu(
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
-    base: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
+    base: *mut kernel::ffi::c_void,
     enable_mask: u32,
     lock: *mut SpinlockT,
 ) -> *mut Clk {
@@ -138,7 +138,7 @@ pub unsafe extern "C" fn mmp_clk_register_apmu(
     clk = clk_register(core::ptr::null_mut(), &mut (*apmu).hw);
 
     if is_err(clk) {
-        kfree(apmu as *mut core::ffi::c_void);
+        kfree(apmu as *mut kernel::ffi::c_void);
     }
 
     clk

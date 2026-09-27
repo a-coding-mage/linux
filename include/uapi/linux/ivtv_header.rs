@@ -47,9 +47,9 @@
 pub struct ivtv_dma_frame {
     pub r#type: v4l2_buf_type, /* V4L2_BUF_TYPE_VIDEO_OUTPUT */
     pub pixelformat: __u32,    /* 0 == same as destination */
-    pub y_source: *mut core::ffi::c_void, /* if NULL and type == V4L2_BUF_TYPE_VIDEO_OUTPUT,
+    pub y_source: *mut kernel::ffi::c_void, /* if NULL and type == V4L2_BUF_TYPE_VIDEO_OUTPUT,
                                              then just switch to user DMA YUV output mode */
-    pub uv_source: *mut core::ffi::c_void, /* Unused for RGB pixelformats */
+    pub uv_source: *mut kernel::ffi::c_void, /* Unused for RGB pixelformats */
     pub src: v4l2_rect,
     pub dst: v4l2_rect,
     pub src_width: __u32,
@@ -57,14 +57,14 @@ pub struct ivtv_dma_frame {
 }
 
 // #define IVTV_IOC_DMA_FRAME _IOW ('V', BASE_VIDIOC_PRIVATE+0, struct ivtv_dma_frame)
-pub const IVTV_IOC_DMA_FRAME: libc::c_ulong =
-    _IOW(b'V' as libc::c_ulong, BASE_VIDIOC_PRIVATE + 0, core::mem::size_of::<ivtv_dma_frame>());
+pub const IVTV_IOC_DMA_FRAME: kernel::ffi::c_ulong =
+    _IOW(b'V' as kernel::ffi::c_ulong, BASE_VIDIOC_PRIVATE + 0, core::mem::size_of::<ivtv_dma_frame>());
 
 /* Select the passthrough mode (if the argument is non-zero). In the passthrough
    mode the output of the encoder is passed immediately into the decoder. */
 // #define IVTV_IOC_PASSTHROUGH_MODE _IOW ('V', BASE_VIDIOC_PRIVATE+1, int)
-pub const IVTV_IOC_PASSTHROUGH_MODE: libc::c_ulong =
-    _IOW(b'V' as libc::c_ulong, BASE_VIDIOC_PRIVATE + 1, core::mem::size_of::<libc::c_int>());
+pub const IVTV_IOC_PASSTHROUGH_MODE: kernel::ffi::c_ulong =
+    _IOW(b'V' as kernel::ffi::c_ulong, BASE_VIDIOC_PRIVATE + 1, core::mem::size_of::<kernel::ffi::c_int>());
 
 /* Deprecated defines: applications should use the defines from videodev2.h */
 pub const IVTV_SLICED_TYPE_TELETEXT_B: u32 = V4L2_MPEG_VBI_IVTV_TELETEXT_B;

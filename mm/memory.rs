@@ -13,7 +13,7 @@
 extern "C" {
     fn userfaultfd_wp(vma: *mut vm_area_struct) -> bool;
     fn pte_is_uffd_wp_marker(pte: pte_t) -> bool;
-    fn register_sysctl_init(name: *const core::ffi::c_char, table: *const ctl_table);
+    fn register_sysctl_init(name: *const kernel::ffi::c_char, table: *const ctl_table);
     fn proc_dointvec() -> usize;
     fn trace_rss_stat(mm: *mut mm_struct, member: i32);
 }
@@ -23,7 +23,7 @@ pub struct vm_fault { pub vma: *mut vm_area_struct, pub flags: usize, pub orig_p
 #[repr(C)] pub struct vm_area_struct { pub vm_start: usize, pub vm_end: usize }
 #[repr(C)] pub struct mm_struct;
 #[repr(C)] pub struct ctl_table {
-    pub procname: *const core::ffi::c_char,
+    pub procname: *const kernel::ffi::c_char,
     pub data: *mut i32,
     pub maxlen: usize,
     pub mode: u16,
@@ -52,7 +52,7 @@ unsafe extern "C" fn init_mm_sysctl() -> i32 {
     0
 }
 
-unsafe extern "C" fn disable_randmaps(_s: *mut core::ffi::c_char) -> i32 {
+unsafe extern "C" fn disable_randmaps(_s: *mut kernel::ffi::c_char) -> i32 {
     randomize_va_space = 0;
     1
 }

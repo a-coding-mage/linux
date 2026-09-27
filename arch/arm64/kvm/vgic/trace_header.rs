@@ -7,7 +7,7 @@
 
 #[repr(C)]
 pub struct VgicUpdateIrqPendingEntry {
-    pub vcpu_id: ::core::ffi::c_ulong,
+    pub vcpu_id: ::kernel::ffi::c_ulong,
     pub irq: u32,
     pub level: bool,
 }
@@ -15,7 +15,7 @@ pub struct VgicUpdateIrqPendingEntry {
 impl VgicUpdateIrqPendingEntry {
     #[inline]
     pub const unsafe fn new(
-        vcpu_id: ::core::ffi::c_ulong,
+        vcpu_id: ::kernel::ffi::c_ulong,
         irq: u32,
         level: bool,
     ) -> Self {

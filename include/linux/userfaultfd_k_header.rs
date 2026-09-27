@@ -10,7 +10,7 @@ pub const __VM_UFFD_FLAGS: u64 = VM_UFFD_MISSING | VM_UFFD_MINOR | VM_UFFD_WP | 
 #[cfg(CONFIG_USERFAULTFD)]
 pub const __VMA_UFFD_FLAGS: _ = mk_vma_flags_from_masks(VMA_UFFD_MISSING, VMA_UFFD_WP, VMA_UFFD_MINOR, VMA_UFFD_RWP);
 #[cfg(CONFIG_USERFAULTFD)]
-pub const UFFD_SHARED_FCNTL_FLAGS: _ = O_CLOEXEC | O_NONBLOCK;
+pub const UFFD_SHARED_FCNTL_FLAGS: u32 = O_CLOEXEC | O_NONBLOCK;
 
 #[cfg(CONFIG_USERFAULTFD)]
 #[repr(C)]
@@ -21,8 +21,8 @@ pub struct userfaultfd_ctx {
     pub event_wqh: wait_queue_head_t,
     pub refile_seq: seqcount_spinlock_t,
     pub refcount: refcount_t,
-    pub flags: core::ffi::c_uint,
-    pub features: core::ffi::c_uint,
+    pub flags: kernel::ffi::c_uint,
+    pub features: kernel::ffi::c_uint,
     pub released: bool,
     pub map_changing_lock: rw_semaphore,
     pub mmap_changing: atomic_t,
@@ -31,7 +31,7 @@ pub struct userfaultfd_ctx {
 
 #[cfg(CONFIG_USERFAULTFD)]
 extern "C" {
-    pub fn handle_userfault(vmf: *mut vm_fault, reason: core::ffi::c_ulong) -> vm_fault_t;
+    pub fn handle_userfault(vmf: *mut vm_fault, reason: kernel::ffi::c_ulong) -> vm_fault_t;
 }
 
 #[cfg(CONFIG_USERFAULTFD)]
@@ -39,13 +39,13 @@ extern "C" {
 pub struct vm_uffd_ops {
     pub can_userfault: Option<unsafe extern "C" fn(*mut vm_area_struct, vm_flags_t) -> bool>,
     pub get_folio_noalloc: Option<unsafe extern "C" fn(*mut inode, pgoff_t) -> *mut folio>,
-    pub alloc_folio: Option<unsafe extern "C" fn(*mut vm_area_struct, core::ffi::c_ulong) -> *mut folio>,
-    pub filemap_add: Option<unsafe extern "C" fn(*mut folio, *mut vm_area_struct, core::ffi::c_ulong) -> core::ffi::c_int>,
+    pub alloc_folio: Option<unsafe extern "C" fn(*mut vm_area_struct, kernel::ffi::c_ulong) -> *mut folio>,
+    pub filemap_add: Option<unsafe extern "C" fn(*mut folio, *mut vm_area_struct, kernel::ffi::c_ulong) -> kernel::ffi::c_int>,
     pub filemap_remove: Option<unsafe extern "C" fn(*mut folio, *mut vm_area_struct)>,
 }
 
 #[cfg(CONFIG_USERFAULTFD)]
-pub type uffd_flags_t = core::ffi::c_uint;
+pub type uffd_flags_t = kernel::ffi::c_uint;
 
 #[cfg(CONFIG_USERFAULTFD)]
 #[repr(C)]
@@ -73,11 +73,11 @@ pub fn uffd_flags_mode_is(flags: uffd_flags_t, expected: mfill_atomic_mode) -> b
 pub fn uffd_flags_set_mode(mut flags: uffd_flags_t, mode: mfill_atomic_mode) -> uffd_flags_t { flags &= !MFILL_ATOMIC_MODE_MASK; flags | mode as uffd_flags_t }
 
 extern "C" {
-    #[cfg(CONFIG_USERFAULTFD)] pub fn uffd_wp_range(vma: *mut vm_area_struct, start: core::ffi::c_ulong, len: core::ffi::c_ulong, enable_wp: bool) -> core::ffi::c_long;
-    #[cfg(CONFIG_USERFAULTFD)] pub fn mrwprotect_range(ctx: *mut userfaultfd_ctx, start: core::ffi::c_ulong, len: core::ffi::c_ulong, enable_rwp: bool) -> core::ffi::c_int;
+    #[cfg(CONFIG_USERFAULTFD)] pub fn uffd_wp_range(vma: *mut vm_area_struct, start: kernel::ffi::c_ulong, len: kernel::ffi::c_ulong, enable_wp: bool) -> kernel::ffi::c_long;
+    #[cfg(CONFIG_USERFAULTFD)] pub fn mrwprotect_range(ctx: *mut userfaultfd_ctx, start: kernel::ffi::c_ulong, len: kernel::ffi::c_ulong, enable_rwp: bool) -> kernel::ffi::c_int;
     #[cfg(CONFIG_USERFAULTFD)] pub fn double_pt_lock(ptl1: *mut spinlock_t, ptl2: *mut spinlock_t);
     #[cfg(CONFIG_USERFAULTFD)] pub fn double_pt_unlock(ptl1: *mut spinlock_t, ptl2: *mut spinlock_t);
-    #[cfg(CONFIG_USERFAULTFD)] pub fn move_pages_huge_pmd(mm: *mut mm_struct, dst_pmd: *mut pmd_t, src_pmd: *mut pmd_t, dst_pmdval: pmd_t, dst_vma: *mut vm_area_struct, src_vma: *mut vm_area_struct, dst_addr: core::ffi::c_ulong, src_addr: core::ffi::c_ulong) -> core::ffi::c_int;
+    #[cfg(CONFIG_USERFAULTFD)] pub fn move_pages_huge_pmd(mm: *mut mm_struct, dst_pmd: *mut pmd_t, src_pmd: *mut pmd_t, dst_pmdval: pmd_t, dst_vma: *mut vm_area_struct, src_vma: *mut vm_area_struct, dst_addr: kernel::ffi::c_ulong, src_addr: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_USERFAULTFD)]
@@ -110,11 +110,11 @@ extern "C" {
 /* Remaining external operations and CONFIG_USERFAULTFD-disabled stubs retain
  * the header's declarations and behavior. */
 #[cfg(not(CONFIG_USERFAULTFD))]
-#[inline] pub fn handle_userfault(_vmf: *mut vm_fault, _reason: core::ffi::c_ulong) -> vm_fault_t { VM_FAULT_SIGBUS }
+#[inline] pub fn handle_userfault(_vmf: *mut vm_fault, _reason: kernel::ffi::c_ulong) -> vm_fault_t { VM_FAULT_SIGBUS }
 #[cfg(not(CONFIG_USERFAULTFD))]
-#[inline] pub fn uffd_wp_range(_vma: *mut vm_area_struct, _start: core::ffi::c_ulong, _len: core::ffi::c_ulong, _enable_wp: bool) -> core::ffi::c_long { 0 }
+#[inline] pub fn uffd_wp_range(_vma: *mut vm_area_struct, _start: kernel::ffi::c_ulong, _len: kernel::ffi::c_ulong, _enable_wp: bool) -> kernel::ffi::c_long { 0 }
 #[cfg(not(CONFIG_USERFAULTFD))]
-#[inline] pub fn userfaultfd_remove(_vma: *mut vm_area_struct, _start: core::ffi::c_ulong, _end: core::ffi::c_ulong) -> bool { true }
+#[inline] pub fn userfaultfd_remove(_vma: *mut vm_area_struct, _start: kernel::ffi::c_ulong, _end: kernel::ffi::c_ulong) -> bool { true }
 #[cfg(not(CONFIG_USERFAULTFD))]
 #[inline] pub fn userfaultfd_missing(_vma: *mut vm_area_struct) -> bool { false }
 #[cfg(not(CONFIG_USERFAULTFD))]
@@ -131,14 +131,14 @@ extern "C" {
 #[cfg(CONFIG_USERFAULTFD)]
 extern "C" {
     pub fn vma_has_uffd_without_event_remap(vma: *mut vm_area_struct) -> bool;
-    pub fn dup_userfaultfd(vma: *mut vm_area_struct, l: *mut list_head) -> core::ffi::c_int;
+    pub fn dup_userfaultfd(vma: *mut vm_area_struct, l: *mut list_head) -> kernel::ffi::c_int;
     pub fn dup_userfaultfd_complete(l: *mut list_head);
     pub fn dup_userfaultfd_fail(l: *mut list_head);
     pub fn mremap_userfaultfd_prep(vma: *mut vm_area_struct, ctx: *mut vm_userfaultfd_ctx);
-    pub fn mremap_userfaultfd_complete(ctx: *mut vm_userfaultfd_ctx, from: core::ffi::c_ulong, to: core::ffi::c_ulong, len: core::ffi::c_ulong);
+    pub fn mremap_userfaultfd_complete(ctx: *mut vm_userfaultfd_ctx, from: kernel::ffi::c_ulong, to: kernel::ffi::c_ulong, len: kernel::ffi::c_ulong);
     pub fn mremap_userfaultfd_fail(ctx: *mut vm_userfaultfd_ctx);
-    pub fn userfaultfd_remove(vma: *mut vm_area_struct, start: core::ffi::c_ulong, end: core::ffi::c_ulong) -> bool;
-    pub fn userfaultfd_unmap_prep(vma: *mut vm_area_struct, start: core::ffi::c_ulong, end: core::ffi::c_ulong, uf: *mut list_head) -> core::ffi::c_int;
+    pub fn userfaultfd_remove(vma: *mut vm_area_struct, start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong) -> bool;
+    pub fn userfaultfd_unmap_prep(vma: *mut vm_area_struct, start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong, uf: *mut list_head) -> kernel::ffi::c_int;
     pub fn userfaultfd_unmap_complete(mm: *mut mm_struct, uf: *mut list_head);
     pub fn userfaultfd_wp_unpopulated(vma: *mut vm_area_struct) -> bool;
     pub fn userfaultfd_wp_async(vma: *mut vm_area_struct) -> bool;

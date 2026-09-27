@@ -117,7 +117,7 @@ pub unsafe extern "C" fn rd_load_image() -> i32 {
     if buf.is_null() { printk!(c"\x013RAMDISK: could not allocate buffer\n".as_ptr()); fput(IN_FILE); fput(OUT_FILE); goto_out!(res, buf); }
     let nr_disks = ((nblocks as c_ulong - 1) / devblocks) + 1;
     pr_notice!("RAMDISK: Loading %dKiB [%ld disk%s] into ram disk... ", nblocks, nr_disks, str_plural(nr_disks));
-    for i in 0..nblocks { if i != 0 && (i as c_ulong) % devblocks == 0 { pr_cont!("done disk #1.\n"); rotate = 0; fput(IN_FILE); break; } kernel_read(IN_FILE, buf as *mut _, BLOCK_SIZE as usize, &mut IN_POS); kernel_write(OUT_FILE, buf as *mut _, BLOCK_SIZE as usize, &mut OUT_POS); if !IS_ENABLED!(CONFIG_S390) && i % 16 == 0 { pr_cont!("%c\b", rotator[(rotate & 3) as usize]); rotate += 1; } }
+    for i in 0..nblocks { if i != 0 && (i as c_ulong) % devblocks == 0 { pr_cont!("done disk #1.\n"); rotate = 0; fput(IN_FILE); break; } kernel_read(IN_FILE, buf as *mut _, BLOCK_SIZE as usize, &mut IN_POS); kernel_write(OUT_FILE, buf as *mut _, BLOCK_SIZE as usize, &mut OUT_POS); if !IS_ENABLED!(CONFIG_S390) && i % 16 == 0 { pr_cont!("%c\x08", rotator[(rotate & 3) as usize]); rotate += 1; } }
     pr_cont!("done.\n"); res = 1;
     fput(IN_FILE); fput(OUT_FILE);
     goto_out!(res, buf)

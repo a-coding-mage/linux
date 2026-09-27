@@ -4,7 +4,7 @@
 // External kernel symbols and types are supplied by the surrounding Rust translation.
 
 static mut BCM_SMC_BUFFER_PHYS: u32 = 0; // physical address
-static mut BCM_SMC_BUFFER: *mut core::ffi::c_void = core::ptr::null_mut(); // virtual address
+static mut BCM_SMC_BUFFER: *mut kernel::ffi::c_void = core::ptr::null_mut(); // virtual address
 
 #[repr(C)]
 struct BcmKonaSmcData {
@@ -18,7 +18,7 @@ struct BcmKonaSmcData {
 
 #[repr(C)]
 struct OfDeviceId {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 static BCM_KONA_SMC_IDS: &[OfDeviceId] = &[
@@ -29,7 +29,7 @@ static BCM_KONA_SMC_IDS: &[OfDeviceId] = &[
 
 // Map in the args buffer area
 unsafe fn bcm_kona_smc_init() -> i32 {
-    let mut node: *mut core::ffi::c_void;
+    let mut node: *mut kernel::ffi::c_void;
     let mut res = Resource { start: 0, end: 0 };
     let ret: i32;
 
@@ -107,7 +107,7 @@ unsafe fn bcm_kona_do_smc(service_id: u32, buffer_phys: u32) -> i32 {
 }
 
 /* __bcm_kona_smc() should only run on CPU 0, with pre-emption disabled */
-unsafe extern "C" fn __bcm_kona_smc(info: *mut core::ffi::c_void) {
+unsafe extern "C" fn __bcm_kona_smc(info: *mut kernel::ffi::c_void) {
     let data = &mut *(info as *mut BcmKonaSmcData);
     let mut args = BCM_SMC_BUFFER as *mut u32;
 
@@ -150,7 +150,7 @@ unsafe fn bcm_kona_smc(
      * Due to a limitation of the secure monitor, we must use the SMP
      * infrastructure to forward all secure monitor calls to Core 0.
      */
-    smp_call_function_single(0, __bcm_kona_smc, &mut data as *mut _ as *mut core::ffi::c_void, 1);
+    smp_call_function_single(0, __bcm_kona_smc, &mut data as *mut _ as *mut kernel::ffi::c_void, 1);
 
     data.result
 }

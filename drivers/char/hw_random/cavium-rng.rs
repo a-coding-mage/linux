@@ -13,7 +13,7 @@ pub const THUNDERX_RNM_RNG_EN: u64 = 0x2;
 
 #[repr(C)]
 pub struct cavium_rng_pf {
-    pub control_status: *mut core::ffi::c_void,
+    pub control_status: *mut kernel::ffi::c_void,
 }
 
 // Opaque Linux kernel types and externally supplied functions.
@@ -36,18 +36,18 @@ unsafe extern "C" {
         dev: *mut device,
         size: usize,
         flags: u32,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn pcim_iomap(
         pdev: *mut pci_dev,
         bar: i32,
         maxlen: usize,
-    ) -> *mut core::ffi::c_void;
-    pub fn writeq(value: u64, address: *mut core::ffi::c_void);
-    pub fn pci_set_drvdata(pdev: *mut pci_dev, data: *mut core::ffi::c_void);
-    pub fn pci_get_drvdata(pdev: *mut pci_dev) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
+    pub fn writeq(value: u64, address: *mut kernel::ffi::c_void);
+    pub fn pci_set_drvdata(pdev: *mut pci_dev, data: *mut kernel::ffi::c_void);
+    pub fn pci_get_drvdata(pdev: *mut pci_dev) -> *mut kernel::ffi::c_void;
     pub fn pci_enable_sriov(pdev: *mut pci_dev, num_vfs: u16) -> i32;
     pub fn pci_disable_sriov(pdev: *mut pci_dev);
-    pub fn dev_err(dev: *mut device, format: *const core::ffi::c_char, ...);
+    pub fn dev_err(dev: *mut device, format: *const kernel::ffi::c_char, ...);
 }
 
 pub const GFP_KERNEL: u32 = 0;
@@ -92,7 +92,7 @@ pub unsafe extern "C" fn cavium_rng_probe(
         (*rng).control_status,
     );
 
-    pci_set_drvdata(pdev, rng as *mut core::ffi::c_void);
+    pci_set_drvdata(pdev, rng as *mut kernel::ffi::c_void);
 
     /* Enable the Cavium RNG as a VF */
     iov_err = pci_enable_sriov(pdev, 1);
@@ -133,7 +133,7 @@ pub static cavium_rng_pf_id_table: [pci_device_id; 2] = [
 
 #[repr(C)]
 pub struct pci_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id_table: *const pci_device_id,
     pub probe: Option<unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> i32>,
     pub remove: Option<unsafe extern "C" fn(*mut pci_dev)>,

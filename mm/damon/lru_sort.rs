@@ -114,7 +114,7 @@ unsafe fn damon_lru_sort_apply_parameters() -> i32 {
     damon_destroy_ctx(param_ctx); err
 }
 
-unsafe fn damon_lru_sort_commit_inputs_fn(_arg: *mut core::ffi::c_void) -> i32 { damon_lru_sort_apply_parameters() }
+unsafe fn damon_lru_sort_commit_inputs_fn(_arg: *mut kernel::ffi::c_void) -> i32 { damon_lru_sort_apply_parameters() }
 
 unsafe fn damon_lru_sort_turn(on: bool) -> i32 {
     if !on { damon_stop(&mut CTX, 1); return 0; }
@@ -130,7 +130,7 @@ static mut CALL_CONTROL: damon_call_control = damon_call_control { fn_: None, re
 unsafe fn damon_lru_sort_enabled() -> bool { !CTX.is_null() && damon_is_running(CTX) }
 
 unsafe fn damon_lru_sort_commit_inputs_store(
-    val: *const core::ffi::c_char, _kp: *const kernel_param,
+    val: *const kernel::ffi::c_char, _kp: *const kernel_param,
 ) -> i32 {
     let requested = if val.is_null() { true } else {
         let mut value = false;
@@ -145,7 +145,7 @@ unsafe fn damon_lru_sort_commit_inputs_store(
     if err != 0 { err } else { control.return_code }
 }
 
-unsafe fn damon_lru_sort_damon_call_fn(arg: *mut core::ffi::c_void) -> i32 {
+unsafe fn damon_lru_sort_damon_call_fn(arg: *mut kernel::ffi::c_void) -> i32 {
     let c = arg as *mut damon_ctx;
     let mut s: *mut damos = core::ptr::null_mut();
     while let Some(next) = damon_next_scheme(c, s) {
@@ -156,7 +156,7 @@ unsafe fn damon_lru_sort_damon_call_fn(arg: *mut core::ffi::c_void) -> i32 {
     0
 }
 
-unsafe fn damon_lru_sort_addr_unit_store(val: *const core::ffi::c_char, _kp: *const kernel_param) -> i32 {
+unsafe fn damon_lru_sort_addr_unit_store(val: *const kernel::ffi::c_char, _kp: *const kernel_param) -> i32 {
     let mut input = 0usize;
     let err = kstrtoul(val, 0, &mut input);
     if err != 0 { return err; }
@@ -165,7 +165,7 @@ unsafe fn damon_lru_sort_addr_unit_store(val: *const core::ffi::c_char, _kp: *co
     0
 }
 
-unsafe fn damon_lru_sort_enabled_store(val: *const core::ffi::c_char, _kp: *const kernel_param) -> i32 {
+unsafe fn damon_lru_sort_enabled_store(val: *const kernel::ffi::c_char, _kp: *const kernel_param) -> i32 {
     let mut value = false;
     let err = kstrtobool(val, &mut value);
     if err != 0 { return err; }
@@ -176,13 +176,13 @@ unsafe fn damon_lru_sort_enabled_store(val: *const core::ffi::c_char, _kp: *cons
     damon_lru_sort_turn(ENABLED)
 }
 
-unsafe fn damon_lru_sort_enabled_load(buffer: *mut core::ffi::c_char, _kp: *const kernel_param) -> i32 {
+unsafe fn damon_lru_sort_enabled_load(buffer: *mut kernel::ffi::c_char, _kp: *const kernel_param) -> i32 {
     sprintf(buffer, if damon_lru_sort_enabled() { "%c\n" } else { "%c\n" }, if damon_lru_sort_enabled() { b'Y' } else { b'N' })
 }
 
-unsafe fn damon_lru_sort_kdamond_pid_store(_val: *const core::ffi::c_char, _kp: *const kernel_param) -> i32 { 0 }
+unsafe fn damon_lru_sort_kdamond_pid_store(_val: *const kernel::ffi::c_char, _kp: *const kernel_param) -> i32 { 0 }
 
-unsafe fn damon_lru_sort_kdamond_pid_load(buffer: *mut core::ffi::c_char, _kp: *const kernel_param) -> i32 {
+unsafe fn damon_lru_sort_kdamond_pid_load(buffer: *mut kernel::ffi::c_char, _kp: *const kernel_param) -> i32 {
     let mut pid = -1;
     if !CTX.is_null() { pid = damon_kdamond_pid(CTX); if pid < 0 { pid = -1; } }
     sprintf(buffer, "%d\n", pid)

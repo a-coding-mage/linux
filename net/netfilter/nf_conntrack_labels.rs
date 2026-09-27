@@ -79,7 +79,7 @@ pub unsafe fn nf_connlabels_replace(
 pub unsafe fn nf_connlabels_get(net: *mut net, bits: u32) -> i32 {
     let v: i32;
 
-    if bit_word(bits) >= NF_CT_LABELS_MAX_SIZE / core::mem::size_of::<libc::c_long>() {
+    if bit_word(bits) >= NF_CT_LABELS_MAX_SIZE / core::mem::size_of::<kernel::ffi::c_long>() {
         return -ERANGE;
     }
 

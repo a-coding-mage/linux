@@ -11,13 +11,13 @@
 extern "C" {
     fn clk_register_gate(
         dev: *mut device,
-        name: *const core::ffi::c_char,
-        parent_name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
+        parent_name: *const kernel::ffi::c_char,
         flags: c_ulong,
-        reg: *mut core::ffi::c_void,
+        reg: *mut kernel::ffi::c_void,
         bit_idx: u8,
         clk_gate_flags: u32,
-        lock: *mut core::ffi::c_void,
+        lock: *mut kernel::ffi::c_void,
     ) -> *mut clk;
     fn rockchip_clk_set_lookup(ctx: *mut rockchip_clk_provider, clk: *mut clk, id: i32);
     fn rockchip_clk_get_lookup(ctx: *mut rockchip_clk_provider, id: i32) -> *mut clk;
@@ -26,14 +26,14 @@ extern "C" {
     fn devm_pm_clk_create(dev: *mut device) -> i32;
     fn pm_clk_add_clk(dev: *mut device, clk: *mut clk) -> i32;
     fn pm_clk_remove_clk(dev: *mut device, clk: *mut clk);
-    fn dev_err_probe(dev: *mut device, err: i32, fmt: *const core::ffi::c_char) -> i32;
+    fn dev_err_probe(dev: *mut device, err: i32, fmt: *const kernel::ffi::c_char) -> i32;
     fn platform_driver_register(driver: *mut platform_driver) -> i32;
     fn pm_clk_suspend(dev: *mut device) -> i32;
     fn pm_clk_resume(dev: *mut device) -> i32;
 }
 
 // External types and constants supplied by the Linux/Rockchip headers.
-use core::ffi::{c_char, c_ulong};
+use kernel::ffi::{c_char, c_ulong};
 
 const CLK_SET_RATE_PARENT: c_ulong = 1 << 2;
 const ENODEV: i32 = 19;
@@ -54,7 +54,7 @@ unsafe fn rk_clk_gate_link_register(
         (*ctx).reg_base.add((*clkbr).gate_offset as usize),
         (*clkbr).gate_shift,
         (*clkbr).gate_flags,
-        &mut (*ctx).lock as *mut _ as *mut core::ffi::c_void,
+        &mut (*ctx).lock as *mut _ as *mut kernel::ffi::c_void,
     );
 
     if (clk as isize) < 0 {

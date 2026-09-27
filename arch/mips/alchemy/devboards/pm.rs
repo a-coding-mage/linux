@@ -7,43 +7,43 @@
 
 // Linux and Alchemy platform dependencies supplied by other translation units.
 
-static mut db1x_pm_sleep_secs: libc::c_ulong = 0;
-static mut db1x_pm_wakemsk: libc::c_ulong = 0;
-static mut db1x_pm_last_wakesrc: libc::c_ulong = 0;
+static mut db1x_pm_sleep_secs: kernel::ffi::c_ulong = 0;
+static mut db1x_pm_wakemsk: kernel::ffi::c_ulong = 0;
+static mut db1x_pm_last_wakesrc: kernel::ffi::c_ulong = 0;
 
 unsafe extern "C" {
-    fn bcsr_read(reg: libc::c_int) -> libc::c_ushort;
-    fn bcsr_write(reg: libc::c_int, value: libc::c_ushort);
+    fn bcsr_read(reg: kernel::ffi::c_int) -> kernel::ffi::c_ushort;
+    fn bcsr_write(reg: kernel::ffi::c_int, value: kernel::ffi::c_ushort);
     fn alchemy_gpio1_input_enable();
-    fn alchemy_wrsys(value: libc::c_ulong, reg: libc::c_int);
-    fn alchemy_rdsys(reg: libc::c_int) -> libc::c_ulong;
+    fn alchemy_wrsys(value: kernel::ffi::c_ulong, reg: kernel::ffi::c_int);
+    fn alchemy_rdsys(reg: kernel::ffi::c_int) -> kernel::ffi::c_ulong;
     fn au_sleep();
-    fn printk(format: *const libc::c_char, ...) -> libc::c_int;
+    fn printk(format: *const kernel::ffi::c_char, ...) -> kernel::ffi::c_int;
     fn suspend_valid_only_mem(state: suspend_state_t) -> bool;
     fn suspend_set_ops(ops: *const platform_suspend_ops);
-    fn sysfs_create_group(kobj: *mut kobject, group: *const attribute_group) -> libc::c_int;
+    fn sysfs_create_group(kobj: *mut kobject, group: *const attribute_group) -> kernel::ffi::c_int;
     fn kstrtoul(
-        string: *const libc::c_char,
-        base: libc::c_uint,
-        result: *mut libc::c_ulong,
-    ) -> libc::c_int;
-    fn sprintf(buf: *mut libc::c_char, format: *const libc::c_char, ...) -> libc::c_int;
+        string: *const kernel::ffi::c_char,
+        base: kernel::ffi::c_uint,
+        result: *mut kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
+    fn sprintf(buf: *mut kernel::ffi::c_char, format: *const kernel::ffi::c_char, ...) -> kernel::ffi::c_int;
 }
 
-type suspend_state_t = libc::c_int;
+type suspend_state_t = kernel::ffi::c_int;
 
 #[repr(C)]
 struct platform_suspend_ops {
     valid: Option<unsafe extern "C" fn(suspend_state_t) -> bool>,
-    begin: Option<unsafe extern "C" fn(suspend_state_t) -> libc::c_int>,
-    enter: Option<unsafe extern "C" fn(suspend_state_t) -> libc::c_int>,
+    begin: Option<unsafe extern "C" fn(suspend_state_t) -> kernel::ffi::c_int>,
+    enter: Option<unsafe extern "C" fn(suspend_state_t) -> kernel::ffi::c_int>,
     end: Option<unsafe extern "C" fn()>,
 }
 
 #[repr(C)]
 struct attribute {
-    name: *const libc::c_char,
-    mode: libc::c_uint,
+    name: *const kernel::ffi::c_char,
+    mode: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -54,23 +54,23 @@ struct kobject {
 #[repr(C)]
 struct kobj_attribute {
     attr: attribute,
-    show: Option<unsafe extern "C" fn(*mut kobject, *mut kobj_attribute, *mut libc::c_char) -> isize>,
-    store: Option<unsafe extern "C" fn(*mut kobject, *mut kobj_attribute, *const libc::c_char, usize) -> isize>,
+    show: Option<unsafe extern "C" fn(*mut kobject, *mut kobj_attribute, *mut kernel::ffi::c_char) -> isize>,
+    store: Option<unsafe extern "C" fn(*mut kobject, *mut kobj_attribute, *const kernel::ffi::c_char, usize) -> isize>,
 }
 
 #[repr(C)]
 struct attribute_group {
-    name: *const libc::c_char,
+    name: *const kernel::ffi::c_char,
     attrs: *mut *mut attribute,
 }
 
-unsafe fn db1x_pm_enter(_state: suspend_state_t) -> libc::c_int {
+unsafe fn db1x_pm_enter(_state: suspend_state_t) -> kernel::ffi::c_int {
     let mut bcsrs = [0u16; 16];
-    let mut i: libc::c_int;
-    let mut j: libc::c_int;
-    let hasint: libc::c_int;
+    let mut i: kernel::ffi::c_int;
+    let mut j: kernel::ffi::c_int;
+    let hasint: kernel::ffi::c_int;
 
-    hasint = (bcsr_read(BCSR_WHOAMI) >= BCSR_WHOAMI_DB1200 as libc::c_ushort) as libc::c_int;
+    hasint = (bcsr_read(BCSR_WHOAMI) >= BCSR_WHOAMI_DB1200 as kernel::ffi::c_ushort) as kernel::ffi::c_int;
     j = if hasint != 0 { BCSR_MASKSET } else { BCSR_SYSTEM };
 
     i = BCSR_STATUS;
@@ -113,10 +113,10 @@ unsafe fn db1x_pm_enter(_state: suspend_state_t) -> libc::c_int {
     0
 }
 
-unsafe fn db1x_pm_begin(_state: suspend_state_t) -> libc::c_int {
+unsafe fn db1x_pm_begin(_state: suspend_state_t) -> kernel::ffi::c_int {
     if db1x_pm_wakemsk == 0 {
-        printk(b"db1x: no wakeup source activated!\0".as_ptr() as *const libc::c_char);
-        return -libc::EINVAL;
+        printk(b"db1x: no wakeup source activated!\0".as_ptr() as *const kernel::ffi::c_char);
+        return -EINVAL;
     }
     0
 }
@@ -137,59 +137,59 @@ static db1x_pm_ops: platform_suspend_ops = platform_suspend_ops {
 unsafe fn db1x_pmattr_show(
     _kobj: *mut kobject,
     attr: *mut kobj_attribute,
-    buf: *mut libc::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let name = (*attr).attr.name;
-    if libc::strcmp(name, b"timer_timeout\0".as_ptr() as *const libc::c_char) == 0 {
-        sprintf(buf, b"%lu\n\0".as_ptr() as *const libc::c_char, db1x_pm_sleep_secs) as isize
-    } else if libc::strcmp(name, b"timer\0".as_ptr() as *const libc::c_char) == 0 {
-        sprintf(buf, b"%u\n\0".as_ptr() as *const libc::c_char,
-            (db1x_pm_wakemsk & SYS_WAKEMSK_M2 != 0) as libc::c_uint) as isize
-    } else if libc::strcmp(name, b"wakesrc\0".as_ptr() as *const libc::c_char) == 0 {
-        sprintf(buf, b"%lu\n\0".as_ptr() as *const libc::c_char, db1x_pm_last_wakesrc) as isize
-    } else if (*name.add(0) == b'g' as libc::c_char) && (*name.add(1) == b'p' as libc::c_char) {
-        let idx = (*name.add(4) - b'0' as libc::c_char) as usize;
-        sprintf(buf, b"%d\n\0".as_ptr() as *const libc::c_char,
-            (db1x_pm_wakemsk & SYS_WAKEMSK_GPIO(idx as libc::c_int) != 0) as libc::c_int) as isize
-    } else if libc::strcmp(name, b"wakemsk\0".as_ptr() as *const libc::c_char) == 0 {
-        sprintf(buf, b"%08lx\n\0".as_ptr() as *const libc::c_char, db1x_pm_wakemsk) as isize
+    if strcmp(name, b"timer_timeout\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
+        sprintf(buf, b"%lu\n\0".as_ptr() as *const kernel::ffi::c_char, db1x_pm_sleep_secs) as isize
+    } else if strcmp(name, b"timer\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
+        sprintf(buf, b"%u\n\0".as_ptr() as *const kernel::ffi::c_char,
+            (db1x_pm_wakemsk & SYS_WAKEMSK_M2 != 0) as kernel::ffi::c_uint) as isize
+    } else if strcmp(name, b"wakesrc\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
+        sprintf(buf, b"%lu\n\0".as_ptr() as *const kernel::ffi::c_char, db1x_pm_last_wakesrc) as isize
+    } else if (*name.add(0) == b'g' as kernel::ffi::c_char) && (*name.add(1) == b'p' as kernel::ffi::c_char) {
+        let idx = (*name.add(4) - b'0' as kernel::ffi::c_char) as usize;
+        sprintf(buf, b"%d\n\0".as_ptr() as *const kernel::ffi::c_char,
+            (db1x_pm_wakemsk & SYS_WAKEMSK_GPIO(idx as kernel::ffi::c_int) != 0) as kernel::ffi::c_int) as isize
+    } else if strcmp(name, b"wakemsk\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
+        sprintf(buf, b"%08lx\n\0".as_ptr() as *const kernel::ffi::c_char, db1x_pm_wakemsk) as isize
     } else {
-        -libc::ENOENT as isize
+        -ENOENT as isize
     }
 }
 
 unsafe fn db1x_pmattr_store(
     _kobj: *mut kobject,
     attr: *mut kobj_attribute,
-    instr: *const libc::c_char,
+    instr: *const kernel::ffi::c_char,
     mut bytes: usize,
 ) -> isize {
-    let mut value = 0 as libc::c_ulong;
+    let mut value = 0 as kernel::ffi::c_ulong;
     let name = (*attr).attr.name;
-    if libc::strcmp(name, b"timer_timeout\0".as_ptr() as *const libc::c_char) == 0 {
+    if strcmp(name, b"timer_timeout\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
         let result = kstrtoul(instr, 0, &mut value);
         if result != 0 { return result as isize; }
         db1x_pm_sleep_secs = value;
-    } else if libc::strcmp(name, b"timer\0".as_ptr() as *const libc::c_char) == 0 {
-        if *instr != b'0' as libc::c_char { db1x_pm_wakemsk |= SYS_WAKEMSK_M2; }
+    } else if strcmp(name, b"timer\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
+        if *instr != b'0' as kernel::ffi::c_char { db1x_pm_wakemsk |= SYS_WAKEMSK_M2; }
         else { db1x_pm_wakemsk &= !SYS_WAKEMSK_M2; }
-    } else if *name == b'g' as libc::c_char && *name.add(1) == b'p' as libc::c_char {
-        let idx = (*name.add(4) - b'0' as libc::c_char) as libc::c_int;
-        if *instr != b'0' as libc::c_char { db1x_pm_wakemsk |= SYS_WAKEMSK_GPIO(idx); }
+    } else if *name == b'g' as kernel::ffi::c_char && *name.add(1) == b'p' as kernel::ffi::c_char {
+        let idx = (*name.add(4) - b'0' as kernel::ffi::c_char) as kernel::ffi::c_int;
+        if *instr != b'0' as kernel::ffi::c_char { db1x_pm_wakemsk |= SYS_WAKEMSK_GPIO(idx); }
         else { db1x_pm_wakemsk &= !SYS_WAKEMSK_GPIO(idx); }
-    } else if libc::strcmp(name, b"wakemsk\0".as_ptr() as *const libc::c_char) == 0 {
+    } else if strcmp(name, b"wakemsk\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
         let result = kstrtoul(instr, 0, &mut value);
         if result != 0 { return result as isize; }
         db1x_pm_wakemsk = value & 0x0000003f;
     } else {
-        bytes = (-libc::ENOENT) as usize;
+        bytes = (-ENOENT) as usize;
     }
     bytes as isize
 }
 
 // Attribute objects are emitted individually to preserve the C declarations.
 macro_rules! attr { ($n:ident, $s:literal) => {
-    static mut $n: kobj_attribute = kobj_attribute { attr: attribute { name: concat!($s, "\0").as_ptr() as *const libc::c_char, mode: 0o664 }, show: Some(db1x_pmattr_show), store: Some(db1x_pmattr_store) };
+    static mut $n: kobj_attribute = kobj_attribute { attr: attribute { name: concat!($s, "\0").as_ptr() as *const kernel::ffi::c_char, mode: 0o664 }, show: Some(db1x_pmattr_show), store: Some(db1x_pmattr_store) };
 }; }
 attr!(gpio0_attribute, "gpio0"); attr!(gpio1_attribute, "gpio1"); attr!(gpio2_attribute, "gpio2"); attr!(gpio3_attribute, "gpio3"); attr!(gpio4_attribute, "gpio4"); attr!(gpio5_attribute, "gpio5"); attr!(gpio6_attribute, "gpio6"); attr!(gpio7_attribute, "gpio7");
 attr!(timer_attribute, "timer"); attr!(timer_timeout_attribute, "timer_timeout"); attr!(wakesrc_attribute, "wakesrc"); attr!(wakemsk_attribute, "wakemsk");
@@ -199,9 +199,9 @@ static mut db1x_pmattrs: [*mut attribute; 13] = [
     unsafe { &mut gpio4_attribute.attr }, unsafe { &mut gpio5_attribute.attr }, unsafe { &mut gpio6_attribute.attr }, unsafe { &mut gpio7_attribute.attr },
     unsafe { &mut timer_attribute.attr }, unsafe { &mut timer_timeout_attribute.attr }, unsafe { &mut wakesrc_attribute.attr }, unsafe { &mut wakemsk_attribute.attr }, core::ptr::null_mut(),
 ];
-static mut db1x_pmattr_group: attribute_group = attribute_group { name: b"db1x\0".as_ptr() as *const libc::c_char, attrs: db1x_pmattrs.as_mut_ptr() };
+static mut db1x_pmattr_group: attribute_group = attribute_group { name: b"db1x\0".as_ptr() as *const kernel::ffi::c_char, attrs: db1x_pmattrs.as_mut_ptr() };
 
-unsafe fn db1x_pm_init() -> libc::c_int {
+unsafe fn db1x_pm_init() -> kernel::ffi::c_int {
     if alchemy_rdsys(AU1000_SYS_TOYTRIM) != 32767 {
         alchemy_wrsys(32767, AU1000_SYS_TOYTRIM);
     }

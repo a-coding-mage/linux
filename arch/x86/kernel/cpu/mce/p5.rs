@@ -16,8 +16,8 @@ extern "C" {
     pub fn add_taint(taint: u32, lockdep: u32);
     pub fn cr4_set_bits(bits: u32);
     pub fn cpu_has(c: *const cpuinfo_x86, feature: u32) -> bool;
-    pub fn pr_emerg(format: *const core::ffi::c_char, ...);
-    pub fn pr_info(format: *const core::ffi::c_char, ...);
+    pub fn pr_emerg(format: *const kernel::ffi::c_char, ...);
+    pub fn pr_info(format: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -49,7 +49,7 @@ pub unsafe extern "C" fn pentium_machine_check(regs: *mut pt_regs) {
     rdmsrq(MSR_IA32_P5_MC_TYPE, &mut machine_type as *mut u64);
 
     pr_emerg(
-        b"CPU#%d: Machine Check Exception:  0x%8X (type 0x%8X).\n\0".as_ptr() as *const core::ffi::c_char,
+        b"CPU#%d: Machine Check Exception:  0x%8X (type 0x%8X).\n\0".as_ptr() as *const kernel::ffi::c_char,
         smp_processor_id(),
         addr as u32,
         machine_type as u32,
@@ -58,7 +58,7 @@ pub unsafe extern "C" fn pentium_machine_check(regs: *mut pt_regs) {
     if machine_type & (1 << 5) != 0 {
         pr_emerg(
             b"CPU#%d: Possible thermal failure (CPU on fire ?).\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
             smp_processor_id(),
         );
     }
@@ -87,14 +87,14 @@ pub unsafe extern "C" fn intel_p5_mcheck_init(c: *mut cpuinfo_x86) {
     rdmsrq(MSR_IA32_P5_MC_TYPE, &mut q as *mut u64);
     pr_info(
         b"Intel old style machine check architecture supported.\n\0".as_ptr()
-            as *const core::ffi::c_char,
+            as *const kernel::ffi::c_char,
     );
 
     /* Enable MCE: */
     cr4_set_bits(X86_CR4_MCE);
     pr_info(
         b"Intel old style machine check reporting enabled on CPU#%d.\n\0".as_ptr()
-            as *const core::ffi::c_char,
+            as *const kernel::ffi::c_char,
         smp_processor_id(),
     );
 }

@@ -55,7 +55,7 @@ pub struct amdgpu_wb {
     pub num_wb: u32,
 
     /// Track the writeback slot already used.
-    pub used: [core::ffi::c_ulong; (AMDGPU_MAX_WB + (BITS_PER_LONG as usize) - 1) / (BITS_PER_LONG as usize)],
+    pub used: [kernel::ffi::c_ulong; (AMDGPU_MAX_WB + (BITS_PER_LONG as usize) - 1) / (BITS_PER_LONG as usize)],
 
     /// Protects read and write of the used field array.
     pub lock: spinlock_t,
@@ -66,8 +66,8 @@ pub enum amdgpu_device {}
 
 extern "C" {
     pub fn amdgpu_wb_fini(adev: *mut amdgpu_device);
-    pub fn amdgpu_wb_init(adev: *mut amdgpu_device) -> core::ffi::c_int;
-    pub fn amdgpu_wb_get(adev: *mut amdgpu_device, wb: *mut u32) -> core::ffi::c_int;
+    pub fn amdgpu_wb_init(adev: *mut amdgpu_device) -> kernel::ffi::c_int;
+    pub fn amdgpu_wb_get(adev: *mut amdgpu_device, wb: *mut u32) -> kernel::ffi::c_int;
     pub fn amdgpu_wb_free(adev: *mut amdgpu_device, wb: u32);
 }
 

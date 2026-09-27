@@ -11,31 +11,31 @@
 
 #[repr(C)]
 struct JfsMap {
-    jfs_flag: libc::c_long,
-    ext2_flag: libc::c_long,
+    jfs_flag: kernel::ffi::c_long,
+    ext2_flag: kernel::ffi::c_long,
 }
 
 static mut JFS_MAP: [JfsMap; 8] = [
-    JfsMap { jfs_flag: JFS_NOATIME_FL as libc::c_long, ext2_flag: FS_NOATIME_FL as libc::c_long },
-    JfsMap { jfs_flag: JFS_DIRSYNC_FL as libc::c_long, ext2_flag: FS_DIRSYNC_FL as libc::c_long },
-    JfsMap { jfs_flag: JFS_SYNC_FL as libc::c_long, ext2_flag: FS_SYNC_FL as libc::c_long },
-    JfsMap { jfs_flag: JFS_SECRM_FL as libc::c_long, ext2_flag: FS_SECRM_FL as libc::c_long },
-    JfsMap { jfs_flag: JFS_UNRM_FL as libc::c_long, ext2_flag: FS_UNRM_FL as libc::c_long },
-    JfsMap { jfs_flag: JFS_APPEND_FL as libc::c_long, ext2_flag: FS_APPEND_FL as libc::c_long },
-    JfsMap { jfs_flag: JFS_IMMUTABLE_FL as libc::c_long, ext2_flag: FS_IMMUTABLE_FL as libc::c_long },
+    JfsMap { jfs_flag: JFS_NOATIME_FL as kernel::ffi::c_long, ext2_flag: FS_NOATIME_FL as kernel::ffi::c_long },
+    JfsMap { jfs_flag: JFS_DIRSYNC_FL as kernel::ffi::c_long, ext2_flag: FS_DIRSYNC_FL as kernel::ffi::c_long },
+    JfsMap { jfs_flag: JFS_SYNC_FL as kernel::ffi::c_long, ext2_flag: FS_SYNC_FL as kernel::ffi::c_long },
+    JfsMap { jfs_flag: JFS_SECRM_FL as kernel::ffi::c_long, ext2_flag: FS_SECRM_FL as kernel::ffi::c_long },
+    JfsMap { jfs_flag: JFS_UNRM_FL as kernel::ffi::c_long, ext2_flag: FS_UNRM_FL as kernel::ffi::c_long },
+    JfsMap { jfs_flag: JFS_APPEND_FL as kernel::ffi::c_long, ext2_flag: FS_APPEND_FL as kernel::ffi::c_long },
+    JfsMap { jfs_flag: JFS_IMMUTABLE_FL as kernel::ffi::c_long, ext2_flag: FS_IMMUTABLE_FL as kernel::ffi::c_long },
     JfsMap { jfs_flag: 0, ext2_flag: 0 },
 ];
 
-unsafe fn jfs_map_ext2(flags: libc::c_ulong, from: libc::c_int) -> libc::c_long {
+unsafe fn jfs_map_ext2(flags: kernel::ffi::c_ulong, from: kernel::ffi::c_int) -> kernel::ffi::c_long {
     let mut index: usize = 0;
-    let mut mapped: libc::c_long = 0;
+    let mut mapped: kernel::ffi::c_long = 0;
 
     while JFS_MAP[index].jfs_flag != 0 {
         if from != 0 {
-            if (JFS_MAP[index].ext2_flag as libc::c_ulong) & flags != 0 {
+            if (JFS_MAP[index].ext2_flag as kernel::ffi::c_ulong) & flags != 0 {
                 mapped |= JFS_MAP[index].jfs_flag;
             }
-        } else if (JFS_MAP[index].jfs_flag as libc::c_ulong) & flags != 0 {
+        } else if (JFS_MAP[index].jfs_flag as kernel::ffi::c_ulong) & flags != 0 {
             mapped |= JFS_MAP[index].ext2_flag;
         }
         index += 1;
@@ -46,7 +46,7 @@ unsafe fn jfs_map_ext2(flags: libc::c_ulong, from: libc::c_int) -> libc::c_long 
 pub unsafe fn jfs_fileattr_get(
     dentry: *mut struct_dentry,
     fa: *mut struct_file_kattr,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let jfs_inode = JFS_IP(d_inode(dentry));
     let flags = (*jfs_inode).mode2 & JFS_FL_USER_VISIBLE;
 
@@ -54,7 +54,7 @@ pub unsafe fn jfs_fileattr_get(
         return -ENOTTY;
     }
 
-    fileattr_fill_flags(fa, jfs_map_ext2(flags as libc::c_ulong, 0));
+    fileattr_fill_flags(fa, jfs_map_ext2(flags as kernel::ffi::c_ulong, 0));
     0
 }
 
@@ -62,11 +62,11 @@ pub unsafe fn jfs_fileattr_set(
     idmap: *mut struct_mnt_idmap,
     dentry: *mut struct_dentry,
     fa: *mut struct_file_kattr,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let _ = idmap;
     let inode = d_inode(dentry);
     let jfs_inode = JFS_IP(inode);
-    let mut flags: libc::c_uint;
+    let mut flags: kernel::ffi::c_uint;
 
     if d_is_special(dentry) {
         return -ENOTTY;
@@ -75,7 +75,7 @@ pub unsafe fn jfs_fileattr_set(
         return -EOPNOTSUPP;
     }
 
-    flags = jfs_map_ext2((*fa).flags as libc::c_ulong, 1) as libc::c_uint;
+    flags = jfs_map_ext2((*fa).flags as kernel::ffi::c_ulong, 1) as kernel::ffi::c_uint;
     if !S_ISDIR((*inode).i_mode) {
         flags &= !JFS_DIRSYNC_FL;
     }
@@ -97,9 +97,9 @@ pub unsafe fn jfs_fileattr_set(
 
 pub unsafe fn jfs_ioctl(
     filp: *mut struct_file,
-    cmd: libc::c_uint,
-    arg: libc::c_ulong,
-) -> libc::c_long {
+    cmd: kernel::ffi::c_uint,
+    arg: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_long {
     let inode = file_inode(filp);
 
     match cmd {
@@ -109,16 +109,16 @@ pub unsafe fn jfs_ioctl(
             let mut ret: i64 = 0;
 
             if !capable(CAP_SYS_ADMIN) {
-                return -EPERM as libc::c_long;
+                return -EPERM as kernel::ffi::c_long;
             }
             if bdev_max_discard_sectors((*sb).s_bdev) == 0 {
                 jfs_warn("FITRIM not supported on device");
-                return -EOPNOTSUPP as libc::c_long;
+                return -EOPNOTSUPP as kernel::ffi::c_long;
             }
-            if copy_from_user(&mut range as *mut _ as *mut core::ffi::c_void,
-                              arg as *const core::ffi::c_void,
+            if copy_from_user(&mut range as *mut _ as *mut kernel::ffi::c_void,
+                              arg as *const kernel::ffi::c_void,
                               core::mem::size_of::<struct_fstrim_range>()) != 0 {
-                return -EFAULT as libc::c_long;
+                return -EFAULT as kernel::ffi::c_long;
             }
 
             range.minlen = core::cmp::max(
@@ -127,16 +127,16 @@ pub unsafe fn jfs_ioctl(
             );
             ret = jfs_ioc_trim(inode, &mut range);
             if ret < 0 {
-                return ret as libc::c_long;
+                return ret as kernel::ffi::c_long;
             }
-            if copy_to_user(arg as *mut core::ffi::c_void,
-                            &range as *const _ as *const core::ffi::c_void,
+            if copy_to_user(arg as *mut kernel::ffi::c_void,
+                            &range as *const _ as *const kernel::ffi::c_void,
                             core::mem::size_of::<struct_fstrim_range>()) != 0 {
-                return -EFAULT as libc::c_long;
+                return -EFAULT as kernel::ffi::c_long;
             }
             0
         }
-        _ => -ENOTTY as libc::c_long,
+        _ => -ENOTTY as kernel::ffi::c_long,
     }
 }
 

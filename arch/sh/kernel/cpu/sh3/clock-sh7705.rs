@@ -33,7 +33,7 @@ static mut sh7705_master_clk_ops: sh_clk_ops = sh_clk_ops {
     init: Some(master_clk_init),
 };
 
-unsafe fn module_clk_recalc(clk: *mut clk) -> libc::c_ulong {
+unsafe fn module_clk_recalc(clk: *mut clk) -> kernel::ffi::c_ulong {
     let idx = (__raw_readw(FRQCR) & 0x0003) as usize;
     (*clk).parent.as_ref().unwrap().rate / pfc_divisors[idx] as _
 }
@@ -42,7 +42,7 @@ static mut sh7705_module_clk_ops: sh_clk_ops = sh_clk_ops {
     recalc: Some(module_clk_recalc),
 };
 
-unsafe fn bus_clk_recalc(clk: *mut clk) -> libc::c_ulong {
+unsafe fn bus_clk_recalc(clk: *mut clk) -> kernel::ffi::c_ulong {
     let idx = ((__raw_readw(FRQCR) & 0x0300) >> 8) as usize;
     (*clk).parent.as_ref().unwrap().rate / stc_multipliers[idx] as _
 }
@@ -51,7 +51,7 @@ static mut sh7705_bus_clk_ops: sh_clk_ops = sh_clk_ops {
     recalc: Some(bus_clk_recalc),
 };
 
-unsafe fn cpu_clk_recalc(clk: *mut clk) -> libc::c_ulong {
+unsafe fn cpu_clk_recalc(clk: *mut clk) -> kernel::ffi::c_ulong {
     let idx = ((__raw_readw(FRQCR) & 0x0030) >> 4) as usize;
     (*clk).parent.as_ref().unwrap().rate / ifc_divisors[idx] as _
 }

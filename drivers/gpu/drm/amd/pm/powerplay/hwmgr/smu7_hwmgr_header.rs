@@ -46,7 +46,7 @@ pub struct gpu_pt_config_reg { pub offset: u32, pub mask: u32, pub shift: u32, p
 #[repr(C)]
 pub struct smu7_performance_level { pub memory_clock: u32, pub engine_clock: u32, pub pcie_gen: u16, pub pcie_lane: u16 }
 #[repr(C)]
-pub struct smu7_thermal_temperature_setting { pub temperature_low: libc::c_long, pub temperature_high: libc::c_long, pub temperature_shutdown: libc::c_long }
+pub struct smu7_thermal_temperature_setting { pub temperature_low: kernel::ffi::c_long, pub temperature_high: kernel::ffi::c_long, pub temperature_shutdown: kernel::ffi::c_long }
 #[repr(C)]
 pub struct smu7_uvd_clocks { pub vclk: u32, pub dclk: u32 }
 #[repr(C)]

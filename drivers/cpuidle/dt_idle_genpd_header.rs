@@ -29,7 +29,7 @@ extern "C" {
 
     pub fn dt_idle_pd_remove_topology(np: *mut device_node) -> i32;
 
-    pub fn dt_idle_attach_cpu(cpu: i32, name: *const core::ffi::c_char) -> *mut device;
+    pub fn dt_idle_attach_cpu(cpu: i32, name: *const kernel::ffi::c_char) -> *mut device;
 
     pub fn dt_idle_detach_cpu(dev: *mut device);
 }
@@ -61,7 +61,7 @@ pub unsafe fn dt_idle_pd_remove_topology(_np: *mut device_node) -> i32 {
 
 #[cfg(not(CONFIG_DT_IDLE_GENPD))]
 #[inline]
-pub unsafe fn dt_idle_attach_cpu(_cpu: i32, _name: *const core::ffi::c_char) -> *mut device {
+pub unsafe fn dt_idle_attach_cpu(_cpu: i32, _name: *const kernel::ffi::c_char) -> *mut device {
     core::ptr::null_mut()
 }
 

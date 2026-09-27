@@ -35,32 +35,32 @@ pub struct pkvm_hyp_vm {
 extern "C" {
     pub static mut vm_table_lock: hyp_spinlock_t;
 
-    pub fn pkvm_hyp_vm_table_init(tbl: *mut core::ffi::c_void);
+    pub fn pkvm_hyp_vm_table_init(tbl: *mut kernel::ffi::c_void);
 
-    pub fn __pkvm_reserve_vm() -> core::ffi::c_int;
+    pub fn __pkvm_reserve_vm() -> kernel::ffi::c_int;
     pub fn __pkvm_unreserve_vm(handle: pkvm_handle_t);
     pub fn __pkvm_init_vm(
         host_kvm: *mut kvm,
-        vm_hva: core::ffi::c_ulong,
-        pgd_hva: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        vm_hva: kernel::ffi::c_ulong,
+        pgd_hva: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
     pub fn __pkvm_init_vcpu(
         handle: pkvm_handle_t,
         host_vcpu: *mut kvm_vcpu,
-        vcpu_hva: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        vcpu_hva: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
 
     pub fn __pkvm_reclaim_dying_guest_page(
         handle: pkvm_handle_t,
         gfn: u64,
-    ) -> core::ffi::c_int;
-    pub fn __pkvm_start_teardown_vm(handle: pkvm_handle_t) -> core::ffi::c_int;
-    pub fn __pkvm_finalize_teardown_vm(handle: pkvm_handle_t) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
+    pub fn __pkvm_start_teardown_vm(handle: pkvm_handle_t) -> kernel::ffi::c_int;
+    pub fn __pkvm_finalize_teardown_vm(handle: pkvm_handle_t) -> kernel::ffi::c_int;
 
     pub fn get_vm_by_handle(handle: pkvm_handle_t) -> *mut pkvm_hyp_vm;
     pub fn pkvm_load_hyp_vcpu(
         handle: pkvm_handle_t,
-        vcpu_idx: core::ffi::c_uint,
+        vcpu_idx: kernel::ffi::c_uint,
     ) -> *mut pkvm_hyp_vcpu;
     pub fn pkvm_put_hyp_vcpu(hyp_vcpu: *mut pkvm_hyp_vcpu);
     pub fn pkvm_get_loaded_hyp_vcpu() -> *mut pkvm_hyp_vcpu;
@@ -73,7 +73,7 @@ extern "C" {
     pub fn kvm_handle_pvm_sysreg(vcpu: *mut kvm_vcpu, exit_code: *mut u64) -> bool;
     pub fn kvm_handle_pvm_restricted(vcpu: *mut kvm_vcpu, exit_code: *mut u64) -> bool;
     pub fn kvm_init_pvm_id_regs(vcpu: *mut kvm_vcpu);
-    pub fn kvm_check_pvm_sysreg_table() -> core::ffi::c_int;
+    pub fn kvm_check_pvm_sysreg_table() -> kernel::ffi::c_int;
 }
 
 #[inline]

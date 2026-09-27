@@ -29,8 +29,8 @@ type u8 = u8;
 unsafe extern "C" {
     fn regmap_write(map: *mut regmap, reg: c_uint, val: c_uint) -> c_int;
     fn regmap_read(map: *mut regmap, reg: c_uint, val: *mut c_uint) -> c_int;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn pr_err_ratelimited(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err_ratelimited(fmt: *const kernel::ffi::c_char, ...);
 
     static SND_JACK_BTN_0: c_int;
     static SND_JACK_BTN_1: c_int;

@@ -25,29 +25,29 @@ pub const PTRS_PER_PMD: usize = (1usize << PGDIR_SHIFT) / PMD_SIZE;
 
 #[repr(C)]
 pub struct PmdFields {
-    pub pmd_low: libc::c_ulong,
-    pub pmd_high: libc::c_ulong,
+    pub pmd_low: kernel::ffi::c_ulong,
+    pub pmd_high: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub union pmd_t {
     pub fields: PmdFields,
-    pub pmd: libc::c_ulonglong,
+    pub pmd: kernel::ffi::c_ulonglong,
 }
 
 #[inline]
-pub unsafe fn pmd_val(x: pmd_t) -> libc::c_ulonglong {
+pub unsafe fn pmd_val(x: pmd_t) -> kernel::ffi::c_ulonglong {
     unsafe { x.pmd }
 }
 
 #[inline]
-pub const fn __pmd(x: libc::c_ulonglong) -> pmd_t {
+pub const fn __pmd(x: kernel::ffi::c_ulonglong) -> pmd_t {
     pmd_t { pmd: x }
 }
 
 #[inline]
 pub unsafe fn pud_pgtable(pud: pud_t) -> *mut pmd_t {
-    (pud_val(pud) as libc::c_ulong as usize) as *mut pmd_t
+    (pud_val(pud) as kernel::ffi::c_ulong as usize) as *mut pmd_t
 }
 
 /* only used by the stubbed out hugetlb gup code, should never be called */

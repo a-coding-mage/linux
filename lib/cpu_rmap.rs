@@ -32,16 +32,16 @@ pub unsafe fn alloc_cpu_rmap(size: u32, flags: gfp_t) -> *mut cpu_rmap {
     /* Offset of object pointer array from base structure */
     obj_offset = ALIGN(
         core::mem::offset_of!(cpu_rmap, near) + nr_cpu_ids as usize * core::mem::size_of::<cpu_rmap_near>(),
-        core::mem::size_of::<*mut core::ffi::c_void>(),
+        core::mem::size_of::<*mut kernel::ffi::c_void>(),
     );
 
-    rmap = kzalloc(obj_offset + size as usize * core::mem::size_of::<*mut core::ffi::c_void>(), flags);
+    rmap = kzalloc(obj_offset + size as usize * core::mem::size_of::<*mut kernel::ffi::c_void>(), flags);
     if rmap.is_null() {
         return core::ptr::null_mut();
     }
 
     kref_init(&mut (*rmap).refcount);
-    (*rmap).obj = (rmap as *mut u8).add(obj_offset) as *mut *mut core::ffi::c_void;
+    (*rmap).obj = (rmap as *mut u8).add(obj_offset) as *mut *mut kernel::ffi::c_void;
 
     /* Initially assign CPUs to objects on a rota, since we have
      * no idea where the objects are.  Use infinite distance, so
@@ -101,7 +101,7 @@ unsafe fn cpu_rmap_copy_neigh(
 }
 
 #[cfg(feature = "DEBUG")]
-unsafe fn debug_print_rmap(rmap: *const cpu_rmap, prefix: *const core::ffi::c_char) {
+unsafe fn debug_print_rmap(rmap: *const cpu_rmap, prefix: *const kernel::ffi::c_char) {
     let mut index: u32;
     let mut cpu: u32;
 
@@ -119,7 +119,7 @@ unsafe fn debug_print_rmap(rmap: *const cpu_rmap, prefix: *const core::ffi::c_ch
 }
 
 #[cfg(not(feature = "DEBUG"))]
-unsafe fn debug_print_rmap(_rmap: *const cpu_rmap, _prefix: *const core::ffi::c_char) {}
+unsafe fn debug_print_rmap(_rmap: *const cpu_rmap, _prefix: *const kernel::ffi::c_char) {}
 
 unsafe fn get_free_index(rmap: *mut cpu_rmap) -> i32 {
     let mut i: u32;
@@ -138,7 +138,7 @@ unsafe fn get_free_index(rmap: *mut cpu_rmap) -> i32 {
 /// @obj: Object to add to rmap
 ///
 /// Return index of object or -ENOSPC if no free entry was found
-pub unsafe fn cpu_rmap_add(rmap: *mut cpu_rmap, obj: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn cpu_rmap_add(rmap: *mut cpu_rmap, obj: *mut kernel::ffi::c_void) -> i32 {
     let index = get_free_index(rmap);
 
     if index < 0 {
@@ -295,7 +295,7 @@ pub unsafe fn irq_cpu_rmap_add(rmap: *mut cpu_rmap, irq: i32) -> i32 {
     (*glue).notify.release = Some(irq_cpu_rmap_release);
     (*glue).rmap = rmap;
     cpu_rmap_get(rmap);
-    rc = cpu_rmap_add(rmap, glue as *mut core::ffi::c_void);
+    rc = cpu_rmap_add(rmap, glue as *mut kernel::ffi::c_void);
     if rc < 0 {
         cpu_rmap_put((*glue).rmap);
         kfree(glue);

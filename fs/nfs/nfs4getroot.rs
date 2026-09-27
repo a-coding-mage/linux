@@ -17,13 +17,13 @@ extern "C" {
         auth_probe: bool,
     ) -> i32;
     fn nfs_free_fattr(fattr: *mut nfs_fattr);
-    fn dprintk(fmt: *const core::ffi::c_char, ...);
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn dprintk(fmt: *const kernel::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
     fn memcpy(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 extern "C" {
@@ -78,7 +78,7 @@ pub unsafe fn nfs4_get_rootfh(
     ret = nfs4_proc_get_rootfh(server, mntfh, fattr, auth_probe);
     if ret < 0 {
         dprintk(
-            b"nfs4_get_rootfh: getroot error = %d\n\0".as_ptr() as *const core::ffi::c_char,
+            b"nfs4_get_rootfh: getroot error = %d\n\0".as_ptr() as *const kernel::ffi::c_char,
             -ret,
         );
         nfs_free_fattr(fattr);
@@ -88,7 +88,7 @@ pub unsafe fn nfs4_get_rootfh(
     if ((*fattr).valid & NFS_ATTR_FATTR_TYPE) == 0 || !s_isdir((*fattr).mode) {
         printk(
             b"nfs4_get_rootfh: getroot encountered non-directory\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
         );
         ret = -ENOTDIR;
         nfs_free_fattr(fattr);
@@ -96,8 +96,8 @@ pub unsafe fn nfs4_get_rootfh(
     }
 
     memcpy(
-        core::ptr::addr_of_mut!((*server).fsid) as *mut core::ffi::c_void,
-        core::ptr::addr_of!((*fattr).fsid) as *const core::ffi::c_void,
+        core::ptr::addr_of_mut!((*server).fsid) as *mut kernel::ffi::c_void,
+        core::ptr::addr_of!((*fattr).fsid) as *const kernel::ffi::c_void,
         core::mem::size_of::<nfs_fsid>(),
     );
     nfs_free_fattr(fattr);

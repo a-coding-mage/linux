@@ -12,7 +12,7 @@
 #[cfg(CONFIG_OF)]
 #[repr(C)]
 struct CpuEfficiency {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
     efficiency: usize,
 }
 
@@ -35,11 +35,11 @@ extern "C" {
     static nr_cpu_ids: usize;
     static cpu_topology: CpuTopology;
     fn kcalloc(n: usize, size: usize, flags: u32) -> *mut usize;
-    fn of_get_cpu_node(cpu: i32, thread: *mut core::ffi::c_void) -> *mut DeviceNode;
+    fn of_get_cpu_node(cpu: i32, thread: *mut kernel::ffi::c_void) -> *mut DeviceNode;
     fn of_node_put(node: *mut DeviceNode);
     fn topology_parse_cpu_capacity(node: *mut DeviceNode, cpu: i32) -> i32;
-    fn of_device_is_compatible(node: *mut DeviceNode, compatible: *const core::ffi::c_char) -> bool;
-    fn of_get_property(node: *mut DeviceNode, name: *const core::ffi::c_char, len: *mut i32) -> *const u32;
+    fn of_device_is_compatible(node: *mut DeviceNode, compatible: *const kernel::ffi::c_char) -> bool;
+    fn of_get_property(node: *mut DeviceNode, name: *const kernel::ffi::c_char, len: *mut i32) -> *const u32;
     fn be32_to_cpup(value: *const u32) -> u32;
     fn topology_normalize_cpu_scale();
     fn topology_set_cpu_scale(cpu: u32, scale: usize);
@@ -63,7 +63,7 @@ extern "C" {
     fn update_siblings_masks(cpu: u32);
     fn reset_cpu_topology();
     fn smp_wmb();
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[cfg(CONFIG_OF)]

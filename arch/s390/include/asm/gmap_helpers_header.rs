@@ -5,7 +5,7 @@
  *    Copyright IBM Corp. 2025
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 extern "C" {
     pub fn gmap_helper_zap_one_page(mm: *mut mm_struct, vmaddr: c_ulong);

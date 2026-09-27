@@ -12,8 +12,8 @@ pub struct sharpsl_nand_platform_data {
     pub badblock_pattern: *mut nand_bbt_descr,
     pub ecc_layout: *const mtd_ooblayout_ops,
     pub partitions: *mut mtd_partition,
-    pub nr_partitions: core::ffi::c_uint,
-    pub part_parsers: *const *const core::ffi::c_char,
+    pub nr_partitions: kernel::ffi::c_uint,
+    pub part_parsers: *const *const kernel::ffi::c_char,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -46,7 +46,7 @@ extern "C" {
     pub fn dmub_abm_get_target_backlight(abm: *mut abm) -> u32;
     pub fn dmub_abm_init_config(
         abm: *mut abm,
-        src: *const core::ffi::c_char,
+        src: *const kernel::ffi::c_char,
         bytes: u32,
         inst: u32,
     );

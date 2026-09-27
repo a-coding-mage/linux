@@ -53,6 +53,6 @@ pub const AMD_SRIOV_UNIRAS_BLOCKS_BUF_SIZE:usize=4096; pub const AMD_SRIOV_UNIRA
 #[repr(C)] pub struct AmdSriovUnirasSharedMem { pub blocks_ecc_buf:[u8;AMD_SRIOV_UNIRAS_BLOCKS_BUF_SIZE],pub cmd_buf:[u8;AMD_SRIOV_UNIRAS_CMD_MAX_SIZE] }
 #[repr(C)] pub struct AmdsriovRasTelemetry { pub header:AmdSriovRasTelemetryHeader,pub body:AmdSriovRasHostPush,pub uniras_shared_mem:AmdSriovUnirasSharedMem }
 #[repr(u32)] pub enum AmdSriovGpuInitDataVersion { GPU_INIT_DATA_READY_V1=1 }
-extern "C" { pub fn amd_sriov_msg_checksum(obj:*mut core::ffi::c_void,obj_size:core::ffi::c_ulong,key:core::ffi::c_uint,checksum:core::ffi::c_uint)->core::ffi::c_uint; }
+extern "C" { pub fn amd_sriov_msg_checksum(obj:*mut kernel::ffi::c_void,obj_size:kernel::ffi::c_ulong,key:kernel::ffi::c_uint,checksum:kernel::ffi::c_uint)->kernel::ffi::c_uint; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

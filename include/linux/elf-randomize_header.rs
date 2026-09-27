@@ -6,7 +6,7 @@ pub struct mm_struct;
 // CONFIG_ARCH_HAS_ELF_RANDOMIZE selects the architecture-specific declarations.
 #[cfg(not(CONFIG_ARCH_HAS_ELF_RANDOMIZE))]
 #[inline]
-pub fn arch_mmap_rnd() -> libc::c_ulong {
+pub fn arch_mmap_rnd() -> kernel::ffi::c_ulong {
     0
 }
 
@@ -34,8 +34,8 @@ macro_rules! arch_randomize_brk {
 
 #[cfg(CONFIG_ARCH_HAS_ELF_RANDOMIZE)]
 unsafe extern "C" {
-    pub fn arch_mmap_rnd() -> libc::c_ulong;
-    pub fn arch_randomize_brk(mm: *mut mm_struct) -> libc::c_ulong;
+    pub fn arch_mmap_rnd() -> kernel::ffi::c_ulong;
+    pub fn arch_randomize_brk(mm: *mut mm_struct) -> kernel::ffi::c_ulong;
 }
 
 #[cfg(all(

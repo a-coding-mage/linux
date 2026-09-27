@@ -11,8 +11,8 @@
 unsafe extern "C" {
     fn read_c0_count() -> u32;
     fn num_possible_cpus() -> u32;
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
     fn clocksource_mark_unstable(cs: *mut clocksource);
     fn cpufreq_register_notifier(nb: *mut notifier_block, notifier: u32) -> i32;
     fn clocksource_register_hz(cs: *mut clocksource, hz: u32) -> i32;
@@ -21,7 +21,7 @@ unsafe extern "C" {
 
 #[repr(C)]
 struct clocksource {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     read: Option<unsafe extern "C" fn(*mut clocksource) -> u64>,
     mask: u64,
     flags: u32,
@@ -31,7 +31,7 @@ struct clocksource {
 
 #[repr(C)]
 struct notifier_block {
-    notifier_call: Option<unsafe extern "C" fn(*mut notifier_block, u64, *mut core::ffi::c_void) -> i32>,
+    notifier_call: Option<unsafe extern "C" fn(*mut notifier_block, u64, *mut kernel::ffi::c_void) -> i32>,
 }
 
 unsafe extern "C" {
@@ -49,7 +49,7 @@ unsafe extern "C" fn c0_hpt_read(_cs: *mut clocksource) -> u64 {
 }
 
 static mut clocksource_mips: clocksource = clocksource {
-    name: b"MIPS\0".as_ptr() as *const core::ffi::c_char,
+    name: b"MIPS\0".as_ptr() as *const kernel::ffi::c_char,
     read: Some(c0_hpt_read),
     mask: (1u64 << 32) - 1,
     flags: CLOCK_SOURCE_IS_CONTINUOUS,
@@ -92,7 +92,7 @@ unsafe fn rdhwr_count_usable() -> bool {
         prev = curr;
     }
 
-    pr_warn(b"Not using R4K clocksource in VDSO due to broken RDHWR\n\0".as_ptr() as *const core::ffi::c_char);
+    pr_warn(b"Not using R4K clocksource in VDSO due to broken RDHWR\n\0".as_ptr() as *const kernel::ffi::c_char);
     false
 }
 
@@ -115,12 +115,12 @@ unsafe fn count_can_be_sched_clock() -> bool {
 static mut r4k_clock_unstable: bool = false;
 
 #[cfg(CONFIG_CPU_FREQ)]
-unsafe fn r4k_clocksource_unstable(reason: *mut core::ffi::c_char) {
+unsafe fn r4k_clocksource_unstable(reason: *mut kernel::ffi::c_char) {
     if r4k_clock_unstable {
         return;
     }
     r4k_clock_unstable = true;
-    pr_info(b"R4K timer is unstable due to %s\n\0".as_ptr() as *const core::ffi::c_char, reason);
+    pr_info(b"R4K timer is unstable due to %s\n\0".as_ptr() as *const kernel::ffi::c_char, reason);
     clocksource_mark_unstable(&raw mut clocksource_mips);
 }
 
@@ -128,10 +128,10 @@ unsafe fn r4k_clocksource_unstable(reason: *mut core::ffi::c_char) {
 unsafe extern "C" fn r4k_cpufreq_callback(
     _nb: *mut notifier_block,
     val: u64,
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
 ) -> i32 {
     if val == CPUFREQ_POSTCHANGE {
-        r4k_clocksource_unstable(b"CPU frequency change\0".as_ptr() as *mut core::ffi::c_char);
+        r4k_clocksource_unstable(b"CPU frequency change\0".as_ptr() as *mut kernel::ffi::c_char);
     }
     0
 }

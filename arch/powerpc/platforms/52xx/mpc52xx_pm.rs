@@ -2,7 +2,7 @@
 // External Linux/kernel headers and build-time configuration are supplied by
 // the surrounding translation unit.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 extern "C" {
     fn mpc52xx_deep_sleep(
@@ -12,9 +12,9 @@ extern "C" {
         intr: *mut mpc52xx_intr,
     );
     static mpc52xx_ds_sram: u8;
-    static mpc52xx_ds_sram_size: libc::c_long;
+    static mpc52xx_ds_sram_size: kernel::ffi::c_long;
     static mpc52xx_ds_cached: u8;
-    static mpc52xx_ds_cached_size: libc::c_long;
+    static mpc52xx_ds_cached_size: kernel::ffi::c_long;
 }
 
 #[repr(C)]

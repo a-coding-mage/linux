@@ -4,8 +4,8 @@
 // Dependencies supplied by the surrounding ACPICA translation.
 
 pub unsafe fn acpi_ut_is_pci_root_bridge(id: *mut i8) -> u8 {
-    if libc::strcmp(id, PCI_ROOT_HID_STRING) == 0 ||
-       libc::strcmp(id, PCI_EXPRESS_ROOT_HID_STRING) == 0 {
+    if strcmp(id, PCI_ROOT_HID_STRING) == 0 ||
+       strcmp(id, PCI_EXPRESS_ROOT_HID_STRING) == 0 {
         return TRUE;
     }
     FALSE

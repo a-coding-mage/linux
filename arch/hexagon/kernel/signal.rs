@@ -9,7 +9,7 @@
 
 #[repr(C)]
 pub struct RtSigframe {
-    pub tramp: [::core::ffi::c_ulong; 2],
+    pub tramp: [::kernel::ffi::c_ulong; 2],
     pub info: Siginfo,
     pub uc: Ucontext,
 }
@@ -18,20 +18,20 @@ unsafe fn get_sigframe(
     ksig: *mut Ksignal,
     regs: *mut PtRegs,
     frame_size: usize,
-) -> *mut ::core::ffi::c_void {
+) -> *mut ::kernel::ffi::c_void {
     let sp = sigsp((*regs).r29, ksig);
-    ((sp.wrapping_sub(frame_size as ::core::ffi::c_ulong))
-        & !(::core::mem::size_of::<u64>() as ::core::ffi::c_ulong - 1)) as *mut ::core::ffi::c_void
+    ((sp.wrapping_sub(frame_size as ::kernel::ffi::c_ulong))
+        & !(::core::mem::size_of::<u64>() as ::kernel::ffi::c_ulong - 1)) as *mut ::kernel::ffi::c_void
 }
 
 unsafe fn setup_sigcontext(regs: *mut PtRegs, sc: *mut Sigcontext) -> i32 {
-    let mut tmp: ::core::ffi::c_ulong;
+    let mut tmp: ::kernel::ffi::c_ulong;
     let mut err: i32 = 0;
 
     err |= copy_to_user(
-        &mut (*sc).sc_regs.r0 as *mut _ as *mut ::core::ffi::c_void,
-        &(*regs).r00 as *const _ as *const ::core::ffi::c_void,
-        32 * ::core::mem::size_of::<::core::ffi::c_ulong>(),
+        &mut (*sc).sc_regs.r0 as *mut _ as *mut ::kernel::ffi::c_void,
+        &(*regs).r00 as *const _ as *const ::kernel::ffi::c_void,
+        32 * ::core::mem::size_of::<::kernel::ffi::c_ulong>(),
     );
 
     err |= __put_user((*regs).sa0, &mut (*sc).sc_regs.sa0);
@@ -54,13 +54,13 @@ unsafe fn setup_sigcontext(regs: *mut PtRegs, sc: *mut Sigcontext) -> i32 {
 }
 
 unsafe fn restore_sigcontext(regs: *mut PtRegs, sc: *mut Sigcontext) -> i32 {
-    let mut tmp: ::core::ffi::c_ulong = 0;
+    let mut tmp: ::kernel::ffi::c_ulong = 0;
     let mut err: i32 = 0;
 
     err |= copy_from_user(
-        &mut (*regs).r00 as *mut _ as *mut ::core::ffi::c_void,
-        &(*sc).sc_regs.r0 as *const _ as *const ::core::ffi::c_void,
-        32 * ::core::mem::size_of::<::core::ffi::c_ulong>(),
+        &mut (*regs).r00 as *mut _ as *mut ::kernel::ffi::c_void,
+        &(*sc).sc_regs.r0 as *const _ as *const ::kernel::ffi::c_void,
+        32 * ::core::mem::size_of::<::kernel::ffi::c_ulong>(),
     );
     err |= __get_user(&mut (*regs).sa0, &(*sc).sc_regs.sa0);
     err |= __get_user(&mut (*regs).lc0, &(*sc).sc_regs.lc0);
@@ -85,7 +85,7 @@ unsafe fn setup_rt_frame(ksig: *mut Ksignal, set: *mut Sigset, regs: *mut PtRegs
     let frame = get_sigframe(ksig, regs, ::core::mem::size_of::<RtSigframe>()) as *mut RtSigframe;
     let vdso = (*(*current()).mm).context.vdso;
 
-    if !access_ok(frame as *const ::core::ffi::c_void, ::core::mem::size_of::<RtSigframe>()) { return -EFAULT; }
+    if !access_ok(frame as *const ::kernel::ffi::c_void, ::core::mem::size_of::<RtSigframe>()) { return -EFAULT; }
     if copy_siginfo_to_user(&mut (*frame).info, &(*ksig).info) != 0 { return -EFAULT; }
     /* The on-stack signal trampoline is no longer executed;
      * however, the libgcc signal frame unwinding code checks for
@@ -99,12 +99,12 @@ unsafe fn setup_rt_frame(ksig: *mut Ksignal, set: *mut Sigset, regs: *mut PtRegs
     if err != 0 { return -EFAULT; }
 
     /* Load r0/r1 pair with signumber/siginfo pointer... */
-    (*regs).r0100 = (((&(*frame).info as *const _) as ::core::ffi::c_ulonglong) << 32)
-        | (*ksig).sig as ::core::ffi::c_ulonglong;
-    (*regs).r02 = &(*frame).uc as *const _ as ::core::ffi::c_ulong;
-    (*regs).r31 = (*vdso).rt_signal_trampoline as ::core::ffi::c_ulong;
-    pt_psp(regs) = frame as ::core::ffi::c_ulong;
-    pt_set_elr(regs, (*ksig).ka.sa.sa_handler as ::core::ffi::c_ulong);
+    (*regs).r0100 = (((&(*frame).info as *const _) as ::kernel::ffi::c_ulonglong) << 32)
+        | (*ksig).sig as ::kernel::ffi::c_ulonglong;
+    (*regs).r02 = &(*frame).uc as *const _ as ::kernel::ffi::c_ulong;
+    (*regs).r31 = (*vdso).rt_signal_trampoline as ::kernel::ffi::c_ulong;
+    pt_psp(regs) = frame as ::kernel::ffi::c_ulong;
+    pt_set_elr(regs, (*ksig).ka.sa.sa_handler as ::kernel::ffi::c_ulong);
     0
 }
 
@@ -144,7 +144,7 @@ pub unsafe fn do_signal(regs: *mut PtRegs) {
 }
 
 /* Architecture-specific wrapper for signal-related system call */
-pub unsafe fn rt_sigreturn() -> ::core::ffi::c_long {
+pub unsafe fn rt_sigreturn() -> ::kernel::ffi::c_long {
     let regs = current_pt_regs();
     let frame = pt_psp(regs) as *mut RtSigframe;
     let mut blocked = ::core::mem::zeroed::<Sigset>();
@@ -156,7 +156,7 @@ pub unsafe fn rt_sigreturn() -> ::core::ffi::c_long {
     pt_psp(regs) = (*regs).r29;
     (*regs).syscall_nr = -1;
     if restore_altstack(&(*frame).uc.uc_stack) != 0 { force_sig(SIGSEGV); return 0; }
-    (*regs).r00 as ::core::ffi::c_long
+    (*regs).r00 as ::kernel::ffi::c_long
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

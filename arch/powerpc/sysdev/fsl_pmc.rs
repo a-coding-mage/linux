@@ -91,7 +91,7 @@ extern "C" {
     fn setbits32(addr: *mut u32, mask: u32);
     fn in_be32(addr: *const u32) -> u32;
     fn spin_event_timeout(condition: bool, timeout: u32, delay: u32) -> bool;
-    fn dev_err(dev: *mut device, format: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, format: *const kernel::ffi::c_char, ...);
     fn of_iomap(node: *mut device_node, index: i32) -> *mut pmc_regs;
     fn suspend_set_ops(ops: *const platform_suspend_ops);
     fn builtin_platform_driver(driver: *mut platform_driver);

@@ -14,11 +14,11 @@
 
 extern "C" {
     fn platform_device_register_simple(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         id: i32,
         resource: *mut resource,
         num: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 #[repr(C)]
@@ -53,7 +53,7 @@ unsafe fn mcf8390_platform_init() -> i32 {
     static NAME: &[u8] = b"mcf8390\0";
 
     platform_device_register_simple(
-        NAME.as_ptr() as *const core::ffi::c_char,
+        NAME.as_ptr() as *const kernel::ffi::c_char,
         -1,
         MCF8390_RESOURCES.as_mut_ptr(),
         MCF8390_RESOURCES.len(),

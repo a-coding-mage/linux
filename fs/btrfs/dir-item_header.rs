@@ -43,7 +43,7 @@ pub struct btrfs_dir_item {
 }
 
 extern "C" {
-    pub fn crc32c(crc: u32, address: *const core::ffi::c_void, length: usize) -> u32;
+    pub fn crc32c(crc: u32, address: *const kernel::ffi::c_void, length: usize) -> u32;
 
     pub fn btrfs_check_dir_item_collision(
         root: *mut btrfs_root,
@@ -92,9 +92,9 @@ extern "C" {
         root: *mut btrfs_root,
         path: *mut btrfs_path,
         objectid: u64,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         name_len: u16,
-        data: *const core::ffi::c_void,
+        data: *const kernel::ffi::c_void,
         data_len: u16,
     ) -> i32;
     pub fn btrfs_lookup_xattr(
@@ -102,20 +102,20 @@ extern "C" {
         root: *mut btrfs_root,
         path: *mut btrfs_path,
         dir: u64,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         name_len: u16,
         mod_: i32,
     ) -> *mut btrfs_dir_item;
     pub fn btrfs_match_dir_item_name(
         path: *const btrfs_path,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         name_len: i32,
     ) -> *mut btrfs_dir_item;
 }
 
 #[inline]
-pub unsafe fn btrfs_name_hash(name: *const core::ffi::c_char, len: i32) -> u64 {
-    crc32c((!1u32), name.cast::<core::ffi::c_void>(), len as usize) as u64
+pub unsafe fn btrfs_name_hash(name: *const kernel::ffi::c_char, len: i32) -> u64 {
+    crc32c((!1u32), name.cast::<kernel::ffi::c_void>(), len as usize) as u64
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

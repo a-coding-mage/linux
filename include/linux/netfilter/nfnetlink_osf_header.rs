@@ -26,15 +26,15 @@ pub struct nf_osf_finger {
 
 #[repr(C)]
 pub struct nf_osf_data {
-    pub genre: *const core::ffi::c_char,
-    pub version: *const core::ffi::c_char,
+    pub genre: *const kernel::ffi::c_char,
+    pub version: *const kernel::ffi::c_char,
 }
 
 extern "C" {
     pub fn nf_osf_match(
         skb: *const sk_buff,
         family: u8,
-        hooknum: core::ffi::c_int,
+        hooknum: kernel::ffi::c_int,
         input: *mut net_device,
         output: *mut net_device,
         info: *const nf_osf_info,
@@ -45,7 +45,7 @@ extern "C" {
     pub fn nf_osf_find(
         skb: *const sk_buff,
         nf_osf_fingers: *const list_head,
-        ttl_check: core::ffi::c_int,
+        ttl_check: kernel::ffi::c_int,
         data: *mut nf_osf_data,
     ) -> bool;
 }

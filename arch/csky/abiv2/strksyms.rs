@@ -7,10 +7,10 @@
 // to loadable modules. The corresponding implementations are provided by the
 // surrounding kernel environment.
 unsafe extern "C" {
-    pub fn memcmp(s1: *const core::ffi::c_void, s2: *const core::ffi::c_void, n: usize) -> i32;
-    pub fn strcmp(s1: *const core::ffi::c_char, s2: *const core::ffi::c_char) -> i32;
-    pub fn strcpy(dest: *mut core::ffi::c_char, src: *const core::ffi::c_char) -> *mut core::ffi::c_char;
-    pub fn strlen(s: *const core::ffi::c_char) -> usize;
+    pub fn memcmp(s1: *const kernel::ffi::c_void, s2: *const kernel::ffi::c_void, n: usize) -> i32;
+    pub fn strcmp(s1: *const kernel::ffi::c_char, s2: *const kernel::ffi::c_char) -> i32;
+    pub fn strcpy(dest: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    pub fn strlen(s: *const kernel::ffi::c_char) -> usize;
 }
 
 // CONFIG_HAVE_EFFICIENT_UNALIGNED_STRING_OPS

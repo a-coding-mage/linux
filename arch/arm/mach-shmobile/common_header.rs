@@ -5,30 +5,30 @@
 extern "C" {
     pub fn shmobile_init_delay();
     pub fn shmobile_boot_vector();
-    pub static mut shmobile_boot_fn: core::ffi::c_ulong;
-    pub static mut shmobile_boot_size: core::ffi::c_ulong;
+    pub static mut shmobile_boot_fn: kernel::ffi::c_ulong;
+    pub static mut shmobile_boot_size: kernel::ffi::c_ulong;
     pub fn shmobile_boot_vector_gen2();
-    pub static mut shmobile_boot_fn_gen2: core::ffi::c_ulong;
-    pub static mut shmobile_boot_cpu_gen2: core::ffi::c_ulong;
-    pub static mut shmobile_boot_size_gen2: core::ffi::c_ulong;
+    pub static mut shmobile_boot_fn_gen2: kernel::ffi::c_ulong;
+    pub static mut shmobile_boot_cpu_gen2: kernel::ffi::c_ulong;
+    pub static mut shmobile_boot_size_gen2: kernel::ffi::c_ulong;
     pub fn shmobile_smp_boot();
     pub fn shmobile_smp_sleep();
-    pub fn shmobile_smp_hook(cpu: core::ffi::c_uint, fn_: core::ffi::c_ulong,
-                             arg: core::ffi::c_ulong);
-    pub fn shmobile_smp_cpu_can_disable(cpu: core::ffi::c_uint) -> bool;
+    pub fn shmobile_smp_hook(cpu: kernel::ffi::c_uint, fn_: kernel::ffi::c_ulong,
+                             arg: kernel::ffi::c_ulong);
+    pub fn shmobile_smp_cpu_can_disable(cpu: kernel::ffi::c_uint) -> bool;
     pub fn shmobile_boot_apmu();
     pub fn shmobile_boot_scu();
     pub fn shmobile_smp_scu_prepare_cpus(scu_base_phys: phys_addr_t,
-                                         max_cpus: core::ffi::c_uint);
-    pub fn shmobile_smp_scu_cpu_die(cpu: core::ffi::c_uint);
-    pub fn shmobile_smp_scu_cpu_kill(cpu: core::ffi::c_uint) -> core::ffi::c_int;
+                                         max_cpus: kernel::ffi::c_uint);
+    pub fn shmobile_smp_scu_cpu_die(cpu: kernel::ffi::c_uint);
+    pub fn shmobile_smp_scu_cpu_kill(cpu: kernel::ffi::c_uint) -> kernel::ffi::c_int;
     pub static mut shmobile_suspend_ops: platform_suspend_ops;
 }
 
 // CONFIG_SUSPEND controls which C implementation is used at build time.
 #[cfg(CONFIG_SUSPEND)]
 extern "C" {
-    pub fn shmobile_suspend_init() -> core::ffi::c_int;
+    pub fn shmobile_suspend_init() -> kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_SUSPEND)]
@@ -37,7 +37,7 @@ extern "C" {
 }
 
 #[cfg(not(CONFIG_SUSPEND))]
-pub const unsafe fn shmobile_suspend_init() -> core::ffi::c_int {
+pub const unsafe fn shmobile_suspend_init() -> kernel::ffi::c_int {
     0
 }
 

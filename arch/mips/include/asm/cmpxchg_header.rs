@@ -5,12 +5,12 @@
  */
 
 unsafe extern "C" {
-    fn __cmpxchg_called_with_bad_pointer() -> libc::c_ulong;
-    fn __cmpxchg64_unsupported() -> libc::c_ulong;
-    fn __xchg_called_with_bad_pointer() -> libc::c_ulong;
-    fn __xchg_small(ptr: *mut core::ffi::c_void, val: libc::c_ulong, size: u32) -> libc::c_ulong;
-    fn __cmpxchg_small(ptr: *mut core::ffi::c_void, old: libc::c_ulong,
-                       new: libc::c_ulong, size: u32) -> libc::c_ulong;
+    fn __cmpxchg_called_with_bad_pointer() -> kernel::ffi::c_ulong;
+    fn __cmpxchg64_unsupported() -> kernel::ffi::c_ulong;
+    fn __xchg_called_with_bad_pointer() -> kernel::ffi::c_ulong;
+    fn __xchg_small(ptr: *mut kernel::ffi::c_void, val: kernel::ffi::c_ulong, size: u32) -> kernel::ffi::c_ulong;
+    fn __cmpxchg_small(ptr: *mut kernel::ffi::c_void, old: kernel::ffi::c_ulong,
+                       new: kernel::ffi::c_ulong, size: u32) -> kernel::ffi::c_ulong;
 }
 
 // Supplied by the surrounding kernel translation.
@@ -18,10 +18,10 @@ unsafe extern "C" {
     static kernel_uses_llsc: bool;
     static __SYNC_loongson3_war: i32;
     static cpu_has_64bits: bool;
-    fn raw_local_irq_save(flags: *mut libc::c_ulong);
-    fn raw_local_irq_restore(flags: libc::c_ulong);
-    fn local_irq_save(flags: *mut libc::c_ulong);
-    fn local_irq_restore(flags: libc::c_ulong);
+    fn raw_local_irq_save(flags: *mut kernel::ffi::c_ulong);
+    fn raw_local_irq_restore(flags: kernel::ffi::c_ulong);
+    fn local_irq_save(flags: *mut kernel::ffi::c_ulong);
+    fn local_irq_restore(flags: kernel::ffi::c_ulong);
     fn smp_mb__before_llsc();
     fn smp_llsc_mb();
 }
@@ -43,13 +43,13 @@ unsafe fn __xchg_asm<T: Copy>(m: *mut T, val: T) -> T {
 }
 
 #[inline(always)]
-pub unsafe fn __arch_xchg(ptr: *mut core::ffi::c_void, x: libc::c_ulong, size: i32) -> libc::c_ulong {
+pub unsafe fn __arch_xchg(ptr: *mut kernel::ffi::c_void, x: kernel::ffi::c_ulong, size: i32) -> kernel::ffi::c_ulong {
     match size {
         1 | 2 => __xchg_small(ptr, x, size as u32),
-        4 => __xchg_asm(ptr as *mut u32, x as u32) as libc::c_ulong,
+        4 => __xchg_asm(ptr as *mut u32, x as u32) as kernel::ffi::c_ulong,
         8 => {
             // CONFIG_64BIT is a build-time condition from the original header.
-            __xchg_asm(ptr as *mut u64, x as u64) as libc::c_ulong
+            __xchg_asm(ptr as *mut u64, x as u64) as kernel::ffi::c_ulong
         }
         _ => __xchg_called_with_bad_pointer(),
     }
@@ -58,7 +58,7 @@ pub unsafe fn __arch_xchg(ptr: *mut core::ffi::c_void, x: libc::c_ulong, size: i
 #[inline(always)]
 pub unsafe fn arch_xchg<T: Copy>(ptr: *mut T, x: T) -> T {
     if __SYNC_loongson3_war == 0 { smp_mb__before_llsc(); }
-    let res = __arch_xchg(ptr.cast(), x as libc::c_ulong, core::mem::size_of::<T>() as i32) as T;
+    let res = __arch_xchg(ptr.cast(), x as kernel::ffi::c_ulong, core::mem::size_of::<T>() as i32) as T;
     smp_llsc_mb();
     res
 }
@@ -78,19 +78,19 @@ unsafe fn __cmpxchg_asm<T: Copy + PartialEq>(m: *mut T, old: T, new: T) -> T {
 }
 
 #[inline(always)]
-pub unsafe fn __cmpxchg<T: Copy + PartialEq>(ptr: *mut T, old: libc::c_ulong,
-                                             new: libc::c_ulong, size: u32) -> libc::c_ulong {
+pub unsafe fn __cmpxchg<T: Copy + PartialEq>(ptr: *mut T, old: kernel::ffi::c_ulong,
+                                             new: kernel::ffi::c_ulong, size: u32) -> kernel::ffi::c_ulong {
     match size {
         1 | 2 => __cmpxchg_small(ptr.cast(), old, new, size),
-        4 => __cmpxchg_asm(ptr as *mut u32, old as u32, new as u32) as libc::c_ulong,
-        8 => __cmpxchg_asm(ptr as *mut u64, old as u64, new as u64) as libc::c_ulong,
+        4 => __cmpxchg_asm(ptr as *mut u32, old as u32, new as u32) as kernel::ffi::c_ulong,
+        8 => __cmpxchg_asm(ptr as *mut u64, old as u64, new as u64) as kernel::ffi::c_ulong,
         _ => __cmpxchg_called_with_bad_pointer(),
     }
 }
 
 #[inline(always)]
 pub unsafe fn arch_cmpxchg_local<T: Copy + PartialEq>(ptr: *mut T, old: T, new: T) -> T {
-    __cmpxchg(ptr, old as libc::c_ulong, new as libc::c_ulong,
+    __cmpxchg(ptr, old as kernel::ffi::c_ulong, new as kernel::ffi::c_ulong,
               core::mem::size_of::<T>() as u32) as T
 }
 

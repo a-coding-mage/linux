@@ -29,21 +29,21 @@ macro_rules! zpci_err {
             debug_text_event(
                 pci_debug_err_id,
                 0,
-                debug_buffer.as_mut_ptr() as *mut core::ffi::c_char,
+                debug_buffer.as_mut_ptr() as *mut kernel::ffi::c_char,
             );
         }
     }};
 }
 
 #[inline]
-pub unsafe fn zpci_err_hex_level(level: i32, addr: *mut core::ffi::c_void, len: i32) {
+pub unsafe fn zpci_err_hex_level(level: i32, addr: *mut kernel::ffi::c_void, len: i32) {
     unsafe {
         debug_event(pci_debug_err_id, level, addr, len);
     }
 }
 
 #[inline]
-pub unsafe fn zpci_err_hex(addr: *mut core::ffi::c_void, len: i32) {
+pub unsafe fn zpci_err_hex(addr: *mut kernel::ffi::c_void, len: i32) {
     unsafe {
         zpci_err_hex_level(0, addr, len);
     }

@@ -12,7 +12,7 @@
 #[cfg(any(feature = "acpi_debug_output", feature = "acpi_debugger"))]
 unsafe fn acpi_ds_print_node_pathname(
     node: *mut acpi_namespace_node,
-    message: *const core::ffi::c_char,
+    message: *const kernel::ffi::c_char,
 ) {
     let mut buffer: acpi_buffer = core::mem::zeroed();
     let status: acpi_status;

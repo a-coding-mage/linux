@@ -10,7 +10,7 @@
 pub struct xchk_dirpath_step {
     /* Directory entry name associated with this parent link. */
     pub name_cookie: xfblob_cookie,
-    pub name_len: ::core::ffi::c_uint,
+    pub name_len: ::kernel::ffi::c_uint,
 
     /* Handle of the parent directory. */
     pub pptr_rec: xfs_parent_rec,
@@ -46,10 +46,10 @@ pub struct xchk_dirpath {
     pub seen_inodes: xino_bitmap,
 
     /* Number of steps in this path. */
-    pub nr_steps: ::core::ffi::c_uint,
+    pub nr_steps: ::kernel::ffi::c_uint,
 
     /* Which path is this? */
-    pub path_nr: ::core::ffi::c_uint,
+    pub path_nr: ::kernel::ffi::c_uint,
 
     /* What did we conclude from following this path? */
     pub outcome: xchk_dirpath_outcome,
@@ -58,13 +58,13 @@ pub struct xchk_dirpath {
 #[repr(C)]
 pub struct xchk_dirtree_outcomes {
     /* Number of XCHK_DIRPATH_DELETE */
-    pub bad: ::core::ffi::c_uint,
+    pub bad: ::kernel::ffi::c_uint,
 
     /* Number of XCHK_DIRPATH_CORRUPT or XCHK_DIRPATH_LOOP */
-    pub suspect: ::core::ffi::c_uint,
+    pub suspect: ::kernel::ffi::c_uint,
 
     /* Number of XCHK_DIRPATH_OK */
-    pub good: ::core::ffi::c_uint,
+    pub good: ::kernel::ffi::c_uint,
 
     /* Directory needs to be added to lost+found */
     pub needs_adoption: bool,
@@ -89,7 +89,7 @@ pub struct xchk_dirtree {
 
     /* Name buffer */
     pub xname: xfs_name,
-    pub namebuf: [::core::ffi::c_char; MAXNAMELEN],
+    pub namebuf: [::kernel::ffi::c_char; MAXNAMELEN],
 
     /* Information for reparenting this directory. */
     pub adoption: xrep_adoption,
@@ -117,10 +117,10 @@ pub struct xchk_dirtree {
     pub path_list: list_head,
 
     /* Number of paths in path_list. */
-    pub nr_paths: ::core::ffi::c_uint,
+    pub nr_paths: ::kernel::ffi::c_uint,
 
     /* Number of parents found by a pptr scan. */
-    pub parents_found: ::core::ffi::c_uint,
+    pub parents_found: ::kernel::ffi::c_uint,
 
     /* Have the path data been invalidated by a concurrent update? */
     pub stale: bool,
@@ -145,14 +145,14 @@ macro_rules! xchk_dirtree_for_each_path {
 
 extern "C" {
     pub fn xchk_dirtree_parentless(dl: *const xchk_dirtree) -> bool;
-    pub fn xchk_dirtree_find_paths_to_root(dl: *mut xchk_dirtree) -> ::core::ffi::c_int;
+    pub fn xchk_dirtree_find_paths_to_root(dl: *mut xchk_dirtree) -> ::kernel::ffi::c_int;
     pub fn xchk_dirpath_append(
         dl: *mut xchk_dirtree,
         ip: *mut xfs_inode,
         path: *mut xchk_dirpath,
         name: *const xfs_name,
         pptr: *const xfs_parent_rec,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn xchk_dirtree_evaluate(
         dl: *mut xchk_dirtree,
         oc: *mut xchk_dirtree_outcomes,

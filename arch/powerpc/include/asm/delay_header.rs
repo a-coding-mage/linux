@@ -12,8 +12,8 @@
  */
 
 unsafe extern "C" {
-    pub fn __delay(loops: ::core::ffi::c_ulong);
-    pub fn udelay(usecs: ::core::ffi::c_ulong);
+    pub fn __delay(loops: ::kernel::ffi::c_ulong);
+    pub fn udelay(usecs: ::kernel::ffi::c_ulong);
 }
 
 /*

@@ -14,39 +14,39 @@ extern "C" {
 
 #[repr(C)]
 pub struct clkgen_field {
-    pub offset: ::core::ffi::c_uint,
-    pub mask: ::core::ffi::c_uint,
-    pub shift: ::core::ffi::c_uint,
+    pub offset: ::kernel::ffi::c_uint,
+    pub mask: ::kernel::ffi::c_uint,
+    pub shift: ::kernel::ffi::c_uint,
 }
 
 #[inline]
 pub unsafe fn clkgen_read(
-    base: *mut ::core::ffi::c_void,
+    base: *mut ::kernel::ffi::c_void,
     field: *mut clkgen_field,
-) -> ::core::ffi::c_ulong {
-    (readl((base as *mut u8).add((*field).offset as usize) as *mut ::core::ffi::c_void)
+) -> ::kernel::ffi::c_ulong {
+    (readl((base as *mut u8).add((*field).offset as usize) as *mut ::kernel::ffi::c_void)
         >> (*field).shift)
-        & (*field).mask as ::core::ffi::c_ulong
+        & (*field).mask as ::kernel::ffi::c_ulong
 }
 
 #[inline]
 pub unsafe fn clkgen_write(
-    base: *mut ::core::ffi::c_void,
+    base: *mut ::kernel::ffi::c_void,
     field: *mut clkgen_field,
-    val: ::core::ffi::c_ulong,
+    val: ::kernel::ffi::c_ulong,
 ) {
     writel(
-        (readl((base as *mut u8).add((*field).offset as usize) as *mut ::core::ffi::c_void)
-            & !(((*field).mask as ::core::ffi::c_ulong) << (*field).shift))
+        (readl((base as *mut u8).add((*field).offset as usize) as *mut ::kernel::ffi::c_void)
+            & !(((*field).mask as ::kernel::ffi::c_ulong) << (*field).shift))
             | (val << (*field).shift),
-        (base as *mut u8).add((*field).offset as usize) as *mut ::core::ffi::c_void,
+        (base as *mut u8).add((*field).offset as usize) as *mut ::kernel::ffi::c_void,
     );
 }
 
 // Dependency intent from the original header: readl and writel are supplied by other code.
 extern "C" {
-    fn readl(addr: *mut ::core::ffi::c_void) -> ::core::ffi::c_ulong;
-    fn writel(value: ::core::ffi::c_ulong, addr: *mut ::core::ffi::c_void);
+    fn readl(addr: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_ulong;
+    fn writel(value: ::kernel::ffi::c_ulong, addr: *mut ::kernel::ffi::c_void);
 }
 
 #[macro_export]

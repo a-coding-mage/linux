@@ -11,7 +11,7 @@
 static mut CPU_TO_NODE_MAP: [i32; NR_CPUS] = [NUMA_NO_NODE; NR_CPUS];
 pub static mut numa_off: bool = false;
 
-unsafe fn numa_parse_early_param(opt: *mut core::ffi::c_char) -> i32 {
+unsafe fn numa_parse_early_param(opt: *mut kernel::ffi::c_char) -> i32 {
     if opt.is_null() { return -EINVAL; }
     if str_has_prefix(opt, b"off\0".as_ptr() as *const _) { numa_off = true; }
     if !strncmp(opt, b"fake=\0".as_ptr() as *const _, 5) {

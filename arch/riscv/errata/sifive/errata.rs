@@ -10,12 +10,12 @@ pub struct alt_entry {
 }
 
 extern "C" {
-    static mut text_mutex: core::ffi::c_void;
-    fn mutex_lock(lock: *mut core::ffi::c_void);
-    fn mutex_unlock(lock: *mut core::ffi::c_void);
-    fn patch_text_nosync(old: *mut core::ffi::c_void, new: *mut core::ffi::c_void, len: u32);
-    fn ALT_OLD_PTR(alt: *mut alt_entry) -> *mut core::ffi::c_void;
-    fn ALT_ALT_PTR(alt: *mut alt_entry) -> *mut core::ffi::c_void;
+    static mut text_mutex: kernel::ffi::c_void;
+    fn mutex_lock(lock: *mut kernel::ffi::c_void);
+    fn mutex_unlock(lock: *mut kernel::ffi::c_void);
+    fn patch_text_nosync(old: *mut kernel::ffi::c_void, new: *mut kernel::ffi::c_void, len: u32);
+    fn ALT_OLD_PTR(alt: *mut alt_entry) -> *mut kernel::ffi::c_void;
+    fn ALT_ALT_PTR(alt: *mut alt_entry) -> *mut kernel::ffi::c_void;
     #[cfg(feature = "mmu")]
     static mut tlb_flush_all_threshold: usize;
 }
@@ -28,7 +28,7 @@ const RISCV_ALTERNATIVES_EARLY_BOOT: u32 = 0;
 
 #[repr(C)]
 struct errata_info_t {
-    name: [core::ffi::c_char; 32],
+    name: [kernel::ffi::c_char; 32],
     check_func: Option<unsafe extern "C" fn(usize, usize) -> bool>,
 }
 
@@ -57,8 +57,8 @@ unsafe extern "C" fn errata_cip_1200_check_func(arch_id: usize, impid: usize) ->
 }
 
 // C string literals are represented as fixed-size arrays in the C layout.
-const CIP_453_NAME: [core::ffi::c_char; 32] = [99,105,112,45,52,53,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-const CIP_1200_NAME: [core::ffi::c_char; 32] = [99,105,112,45,49,50,48,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+const CIP_453_NAME: [kernel::ffi::c_char; 32] = [99,105,112,45,52,53,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+const CIP_1200_NAME: [kernel::ffi::c_char; 32] = [99,105,112,45,49,50,48,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 static mut errata_list: [errata_info_t; 2] = [
     errata_info_t { name: CIP_453_NAME, check_func: Some(errata_cip_453_check_func) },

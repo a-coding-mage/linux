@@ -5,7 +5,7 @@
 
 // C dependencies: <asm/mach/arch.h> and "common.h".
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn mx31_map_io();

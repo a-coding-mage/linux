@@ -13,10 +13,10 @@
 // kunit/test.h, smb1proto.h, nterr.h, and smberr.h.
 
 unsafe extern "C" {
-    fn kunit_assert_not_null(test: *mut kunit, value: *const core::ffi::c_void);
+    fn kunit_assert_not_null(test: *mut kunit, value: *const kernel::ffi::c_void);
     fn kunit_expect_eq(test: *mut kunit, left: u64, right: u64);
-    fn kunit_expect_streq(test: *mut kunit, left: *const core::ffi::c_char,
-                          right: *const core::ffi::c_char);
+    fn kunit_expect_streq(test: *mut kunit, left: *const kernel::ffi::c_char,
+                          right: *const kernel::ffi::c_char);
 }
 
 #[repr(C)]
@@ -29,7 +29,7 @@ pub struct ntstatus_to_dos_err {
     pub dos_class: u32,
     pub dos_code: u32,
     pub ntstatus: u32,
-    pub nt_errstr: *const core::ffi::c_char,
+    pub nt_errstr: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -83,7 +83,7 @@ unsafe extern "C" fn check_search_ntstatus_to_dos_map(test: *mut kunit) {
         let expect = (core::ptr::addr_of!(ntstatus_to_dos_map) as *const ntstatus_to_dos_err)
             .add(i as usize);
         let result = search_ntstatus_to_dos_map_test((*expect).ntstatus);
-        kunit_assert_not_null(test, result as *const core::ffi::c_void);
+        kunit_assert_not_null(test, result as *const kernel::ffi::c_void);
         test_cmp_ntstatus_to_dos_err(test, expect, result);
     }
 }
@@ -94,7 +94,7 @@ unsafe extern "C" fn check_search_mapping_table_ERRDOS(test: *mut kunit) {
         let expect = (core::ptr::addr_of!(mapping_table_ERRDOS) as *const smb_to_posix_error)
             .add(i as usize);
         let result = search_mapping_table_ERRDOS_test((*expect).smb_err);
-        kunit_assert_not_null(test, result as *const core::ffi::c_void);
+        kunit_assert_not_null(test, result as *const kernel::ffi::c_void);
         test_cmp_smb_to_posix_error(test, expect, result);
     }
 }
@@ -105,7 +105,7 @@ unsafe extern "C" fn check_search_mapping_table_ERRSRV(test: *mut kunit) {
         let expect = (core::ptr::addr_of!(mapping_table_ERRSRV) as *const smb_to_posix_error)
             .add(i as usize);
         let result = search_mapping_table_ERRSRV_test((*expect).smb_err);
-        kunit_assert_not_null(test, result as *const core::ffi::c_void);
+        kunit_assert_not_null(test, result as *const kernel::ffi::c_void);
         test_cmp_smb_to_posix_error(test, expect, result);
     }
 }
@@ -128,13 +128,13 @@ pub static mut maperror_test_cases: [kunit_case; 4] = [
 
 #[repr(C)]
 pub struct kunit_suite {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub test_cases: *mut kunit_case,
 }
 
 #[no_mangle]
 pub static mut maperror_suite: kunit_suite = kunit_suite {
-    name: b"smb1_maperror\0".as_ptr() as *const core::ffi::c_char,
+    name: b"smb1_maperror\0".as_ptr() as *const kernel::ffi::c_char,
     test_cases: core::ptr::addr_of_mut!(maperror_test_cases) as *mut kunit_case,
 };
 

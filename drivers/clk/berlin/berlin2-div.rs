@@ -15,7 +15,7 @@ const DIV_SELECT_MASK: u32 = 0x7;
 #[repr(C)]
 pub struct berlin2_div {
     pub hw: clk_hw,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub map: berlin2_div_map,
     pub lock: *mut spinlock_t,
 }
@@ -158,10 +158,10 @@ static BERLIN2_DIV_MUX_OPS: clk_ops = clk_ops {
 
 pub unsafe fn berlin2_div_register(
     map: *const berlin2_div_map,
-    base: *mut core::ffi::c_void,
-    name: *const core::ffi::c_char,
+    base: *mut kernel::ffi::c_void,
+    name: *const kernel::ffi::c_char,
     div_flags: u8,
-    parent_names: *const *const core::ffi::c_char,
+    parent_names: *const *const kernel::ffi::c_char,
     num_parents: i32,
     flags: u32,
     lock: *mut spinlock_t,
@@ -185,8 +185,8 @@ pub unsafe fn berlin2_div_register(
 extern "C" {
     fn kzalloc_berlin2_div() -> *mut berlin2_div;
     fn clk_hw_register_composite(
-        dev: *mut core::ffi::c_void, name: *const core::ffi::c_char,
-        parent_names: *const *const core::ffi::c_char, num_parents: i32,
+        dev: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char,
+        parent_names: *const *const kernel::ffi::c_char, num_parents: i32,
         mux_hw: *mut clk_hw, mux_ops: *const clk_ops, rate_hw: *mut clk_hw,
         rate_ops: *const clk_ops, gate_hw: *mut clk_hw, gate_ops: *const clk_ops,
         flags: u32,

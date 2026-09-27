@@ -35,7 +35,7 @@ pub struct SsamDevice {
     pub dev: Device,
     pub ctrl: *mut SsamController,
     pub uid: SsamDeviceUid,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -50,7 +50,7 @@ extern "C" {
     pub static ssam_device_type: DeviceType;
     pub fn ssam_device_id_match(table: *const SsamDeviceId, uid: SsamDeviceUid) -> *const SsamDeviceId;
     pub fn ssam_device_get_match(dev: *const SsamDevice) -> *const SsamDeviceId;
-    pub fn ssam_device_get_match_data(dev: *const SsamDevice) -> *const ::core::ffi::c_void;
+    pub fn ssam_device_get_match_data(dev: *const SsamDevice) -> *const ::kernel::ffi::c_void;
     pub fn ssam_device_alloc(ctrl: *mut SsamController, uid: SsamDeviceUid) -> *mut SsamDevice;
     pub fn ssam_device_add(sdev: *mut SsamDevice) -> i32;
     pub fn ssam_device_remove(sdev: *mut SsamDevice);
@@ -92,12 +92,12 @@ pub unsafe fn ssam_device_put(sdev: *mut SsamDevice) {
 }
 
 #[inline]
-pub unsafe fn ssam_device_get_drvdata(sdev: *mut SsamDevice) -> *mut ::core::ffi::c_void {
+pub unsafe fn ssam_device_get_drvdata(sdev: *mut SsamDevice) -> *mut ::kernel::ffi::c_void {
     dev_get_drvdata(&mut (*sdev).dev)
 }
 
 #[inline]
-pub unsafe fn ssam_device_set_drvdata(sdev: *mut SsamDevice, data: *mut ::core::ffi::c_void) {
+pub unsafe fn ssam_device_set_drvdata(sdev: *mut SsamDevice, data: *mut ::kernel::ffi::c_void) {
     dev_set_drvdata(&mut (*sdev).dev, data);
 }
 

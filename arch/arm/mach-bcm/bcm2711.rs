@@ -10,9 +10,9 @@
 static BCM2711_COMPAT_ENTRY: &[u8] = b"brcm,bcm2711\0";
 
 // The C source terminates the compatibility list with a NULL pointer.
-static BCM2711_COMPAT: &[*const core::ffi::c_char] = &[
+static BCM2711_COMPAT: &[*const kernel::ffi::c_char] = &[
     #[cfg(CONFIG_ARCH_MULTI_V7)]
-    BCM2711_COMPAT_ENTRY.as_ptr() as *const core::ffi::c_char,
+    BCM2711_COMPAT_ENTRY.as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -30,7 +30,7 @@ extern "C" {
 pub struct Bcm2711Machine {
     #[cfg(CONFIG_ZONE_DMA)]
     pub dma_zone_size: usize,
-    pub dt_compat: *const *const core::ffi::c_char,
+    pub dt_compat: *const *const kernel::ffi::c_char,
     pub smp: *const SmpOperations,
 }
 

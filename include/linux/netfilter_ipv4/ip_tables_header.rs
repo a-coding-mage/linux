@@ -22,9 +22,9 @@ extern "C" {
         table: *const xt_table,
         repl: *const ipt_replace,
         ops: *const nf_hook_ops,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
-    pub fn ipt_unregister_table_exit(net: *mut net, name: *const core::ffi::c_char);
+    pub fn ipt_unregister_table_exit(net: *mut net, name: *const kernel::ffi::c_char);
 }
 
 /* Standard entry. */
@@ -90,12 +90,12 @@ macro_rules! IPT_ERROR_INIT {
 }
 
 extern "C" {
-    pub fn ipt_alloc_initial_table(table: *const xt_table) -> *mut core::ffi::c_void;
+    pub fn ipt_alloc_initial_table(table: *const xt_table) -> *mut kernel::ffi::c_void;
     pub fn ipt_do_table(
-        priv_: *mut core::ffi::c_void,
+        priv_: *mut kernel::ffi::c_void,
         skb: *mut sk_buff,
         state: *const nf_hook_state,
-    ) -> core::ffi::c_uint;
+    ) -> kernel::ffi::c_uint;
 }
 
 // Preserved from CONFIG_NETFILTER_XTABLES_COMPAT. Enable this block when the

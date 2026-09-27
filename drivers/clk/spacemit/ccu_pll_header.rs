@@ -19,7 +19,7 @@
  */
 #[repr(C)]
 pub struct ccu_pll_rate_tbl {
-    pub rate: ::core::ffi::c_ulong,
+    pub rate: ::kernel::ffi::c_ulong,
     pub swcr1: u32,
     pub swcr2: u32,
     pub swcr3: u32,

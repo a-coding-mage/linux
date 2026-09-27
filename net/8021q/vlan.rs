@@ -6,7 +6,7 @@
 
 pub const DRV_VERSION: &str = "1.8";
 
-pub static mut vlan_net_id: ::core::ffi::c_uint = 0;
+pub static mut vlan_net_id: ::kernel::ffi::c_uint = 0;
 pub static vlan_fullname: &[u8] = b"802.1Q VLAN Support\0";
 pub static vlan_version: &[u8] = b"1.8\0";
 
@@ -95,7 +95,7 @@ pub unsafe fn register_vlan_dev(dev: *mut net_device, extack: *mut netlink_ext_a
 // module-init, and module-exit entry points; external kernel symbols are left
 // unresolved for the surrounding translation unit.
 
-pub unsafe fn vlan_device_event(unused: *mut notifier_block, event: ::core::ffi::c_ulong, ptr: *mut ::core::ffi::c_void) -> i32 {
+pub unsafe fn vlan_device_event(unused: *mut notifier_block, event: ::kernel::ffi::c_ulong, ptr: *mut ::kernel::ffi::c_void) -> i32 {
     let dev = netdev_notifier_info_to_dev(ptr);
     if is_vlan_dev(dev) { let err = __vlan_device_event(dev, event); if err != 0 { return notifier_from_errno(err); } }
     if event == NETDEV_UP { vlan_vid0_add(dev); } else if event == NETDEV_DOWN { vlan_vid0_del(dev); }

@@ -4,7 +4,7 @@
 // Linux and architecture headers from the original translation unit provide
 // the external types, constants, functions, and macros referenced below.
 
-pub static mut show_unhandled_signals: ::core::ffi::c_int = 1;
+pub static mut show_unhandled_signals: ::kernel::ffi::c_int = 1;
 
 // Defined in entry.S
 extern "C" {
@@ -22,7 +22,7 @@ extern "C" {
 }
 
 pub unsafe extern "C" fn pre_trap_init() {
-    let mut i: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
 
     mtcr("vbr", vec_base);
 
@@ -55,16 +55,16 @@ pub unsafe extern "C" fn trap_init() {
     #[cfg(CONFIG_SMP)]
     {
         mtcr("cr<28, 0>", virt_to_phys(vec_base));
-        VEC_INIT(VEC_RESET, virt_to_phys(_start_smp_secondary) as *mut ::core::ffi::c_void);
+        VEC_INIT(VEC_RESET, virt_to_phys(_start_smp_secondary) as *mut ::kernel::ffi::c_void);
     }
     // #endif
 }
 
 static mut die_lock: DEFINE_SPINLOCK = DEFINE_SPINLOCK_INIT;
 
-pub unsafe extern "C" fn die(regs: *mut pt_regs, str_: *const ::core::ffi::c_char) {
-    static mut die_counter: ::core::ffi::c_int = 0;
-    let ret: ::core::ffi::c_int;
+pub unsafe extern "C" fn die(regs: *mut pt_regs, str_: *const ::kernel::ffi::c_char) {
+    static mut die_counter: ::kernel::ffi::c_int = 0;
+    let ret: ::kernel::ffi::c_int;
 
     oops_enter();
     spin_lock_irq(&mut die_lock);
@@ -75,7 +75,7 @@ pub unsafe extern "C" fn die(regs: *mut pt_regs, str_: *const ::core::ffi::c_cha
     pr_emerg("%s [#%d]\n", str_, die_counter);
     print_modules();
     show_regs(regs);
-    show_stack(current, (*regs).regs[4] as *mut ::core::ffi::c_ulong, KERN_INFO);
+    show_stack(current, (*regs).regs[4] as *mut ::kernel::ffi::c_ulong, KERN_INFO);
 
     ret = notify_die(DIE_OOPS, str_, regs, 0, trap_no(regs), SIGSEGV);
 
@@ -95,8 +95,8 @@ pub unsafe extern "C" fn die(regs: *mut pt_regs, str_: *const ::core::ffi::c_cha
     }
 }
 
-pub unsafe extern "C" fn do_trap(regs: *mut pt_regs, signo: ::core::ffi::c_int,
-                                  code: ::core::ffi::c_int, addr: ::core::ffi::c_ulong) {
+pub unsafe extern "C" fn do_trap(regs: *mut pt_regs, signo: ::kernel::ffi::c_int,
+                                  code: ::kernel::ffi::c_int, addr: ::kernel::ffi::c_ulong) {
     let tsk = current;
 
     if show_unhandled_signals != 0 && unhandled_signal(tsk, signo) != 0
@@ -108,12 +108,12 @@ pub unsafe extern "C" fn do_trap(regs: *mut pt_regs, signo: ::core::ffi::c_int,
         show_regs(regs);
     }
 
-    force_sig_fault(signo, code, addr as *mut ::core::ffi::c_void);
+    force_sig_fault(signo, code, addr as *mut ::kernel::ffi::c_void);
 }
 
-unsafe fn do_trap_error(regs: *mut pt_regs, signo: ::core::ffi::c_int,
-                        code: ::core::ffi::c_int, addr: ::core::ffi::c_ulong,
-                        str_: *const ::core::ffi::c_char) {
+unsafe fn do_trap_error(regs: *mut pt_regs, signo: ::kernel::ffi::c_int,
+                        code: ::kernel::ffi::c_int, addr: ::kernel::ffi::c_ulong,
+                        str_: *const ::kernel::ffi::c_char) {
     (*current).thread.trap_no = trap_no(regs);
 
     if user_mode(regs) != 0 {

@@ -27,11 +27,11 @@ pub struct psil_ep {
  */
 #[repr(C)]
 pub struct psil_ep_map {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub src: *mut psil_ep,
-    pub src_count: core::ffi::c_int,
+    pub src_count: kernel::ffi::c_int,
     pub dst: *mut psil_ep,
-    pub dst_count: core::ffi::c_int,
+    pub dst_count: kernel::ffi::c_int,
 }
 
 pub unsafe extern "C" fn psil_get_ep_config(thread_id: u32) -> *mut psil_endpoint_config;

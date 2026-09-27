@@ -20,10 +20,10 @@ pub const SEV_TIO_MAX_COMMAND_LENGTH: usize = 128;
 
 #[repr(C)]
 pub struct tsm_spdm {
-    pub req_len: ::core::ffi::c_ulong,
-    pub req: *mut ::core::ffi::c_void,
-    pub rsp_len: ::core::ffi::c_ulong,
-    pub rsp: *mut ::core::ffi::c_void,
+    pub req_len: ::kernel::ffi::c_ulong,
+    pub req: *mut ::kernel::ffi::c_void,
+    pub rsp_len: ::kernel::ffi::c_ulong,
+    pub rsp: *mut ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -45,7 +45,7 @@ pub struct tsm_dsm_tio {
     pub psp_ret: i32,
     pub cmd_data: [u8; SEV_TIO_MAX_COMMAND_LENGTH],
     /// Data page for DEV_STATUS/TDI_STATUS/TDI_INFO/ASID_FENCE
-    pub data_pg: *mut ::core::ffi::c_void,
+    pub data_pg: *mut ::kernel::ffi::c_void,
     pub ide: [*mut pci_ide; TIO_IDE_MAX_TC],
 }
 
@@ -116,7 +116,7 @@ pub struct sev_tio_status {
 }
 
 unsafe extern "C" {
-    pub fn sev_tio_init_locked(tio_status_page: *mut ::core::ffi::c_void) -> i32;
+    pub fn sev_tio_init_locked(tio_status_page: *mut ::kernel::ffi::c_void) -> i32;
     pub fn sev_tio_continue(dev_data: *mut tsm_dsm_tio) -> i32;
     pub fn sev_tio_dev_create(
         dev_data: *mut tsm_dsm_tio,

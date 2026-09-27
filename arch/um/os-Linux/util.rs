@@ -6,29 +6,29 @@
 // C headers and project headers are supplied by the surrounding translation.
 
 extern "C" {
-    fn mprotect(addr: *mut core::ffi::c_void, len: usize, prot: i32) -> i32;
-    fn panic(fmt: *const core::ffi::c_char, ...);
+    fn mprotect(addr: *mut kernel::ffi::c_void, len: usize, prot: i32) -> i32;
+    fn panic(fmt: *const kernel::ffi::c_char, ...);
     fn tcgetattr(fd: i32, termios_p: *mut termios) -> i32;
     fn tcsetattr(fd: i32, optional_actions: i32, termios_p: *const termios) -> i32;
     fn cfmakeraw(termios_p: *mut termios);
     fn uname(buf: *mut utsname) -> i32;
-    fn strcmp(s1: *const core::ffi::c_char, s2: *const core::ffi::c_char) -> i32;
-    fn strcpy(dest: *mut core::ffi::c_char, src: *const core::ffi::c_char) -> *mut core::ffi::c_char;
-    fn snprintf(s: *mut core::ffi::c_char, n: usize, format: *const core::ffi::c_char, ... ) -> i32;
-    fn fflush(stream: *mut core::ffi::c_void) -> i32;
+    fn strcmp(s1: *const kernel::ffi::c_char, s2: *const kernel::ffi::c_char) -> i32;
+    fn strcpy(dest: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    fn snprintf(s: *mut kernel::ffi::c_char, n: usize, format: *const kernel::ffi::c_char, ... ) -> i32;
+    fn fflush(stream: *mut kernel::ffi::c_void) -> i32;
     fn sigemptyset(set: *mut sigset_t) -> i32;
     fn sigaddset(set: *mut sigset_t, signum: i32) -> i32;
     fn sigprocmask(how: i32, set: *const sigset_t, oldset: *mut sigset_t) -> i32;
     fn kill(pid: i32, sig: i32) -> i32;
     fn getpid() -> i32;
     fn exit(status: i32) -> !;
-    fn getrandom(buf: *mut core::ffi::c_void, len: usize, flags: u32) -> isize;
+    fn getrandom(buf: *mut kernel::ffi::c_void, len: usize, flags: u32) -> isize;
     fn signal(signum: i32, handler: usize) -> usize;
     fn waitpid(pid: i32, status: *mut i32, options: i32) -> i32;
-    fn printf(format: *const core::ffi::c_char, ... ) -> i32;
-    fn fwrite(ptr: *const core::ffi::c_void, size: usize, nmemb: usize, stream: *mut core::ffi::c_void) -> usize;
+    fn printf(format: *const kernel::ffi::c_char, ... ) -> i32;
+    fn fwrite(ptr: *const kernel::ffi::c_void, size: usize, nmemb: usize, stream: *mut kernel::ffi::c_void) -> usize;
     fn os_kill_ptraced_process(pid: i32, reap: i32);
-    fn vscnprintf(buf: *mut core::ffi::c_char, size: usize, fmt: *const core::ffi::c_char, args: *mut core::ffi::c_void) -> i32;
+    fn vscnprintf(buf: *mut kernel::ffi::c_char, size: usize, fmt: *const kernel::ffi::c_char, args: *mut kernel::ffi::c_void) -> i32;
 }
 
 #[repr(C)]
@@ -38,12 +38,12 @@ struct termios {
 
 #[repr(C)]
 struct utsname {
-    sysname: [core::ffi::c_char; 65],
-    nodename: [core::ffi::c_char; 65],
-    release: [core::ffi::c_char; 65],
-    version: [core::ffi::c_char; 65],
-    machine: [core::ffi::c_char; 65],
-    _domainname: [core::ffi::c_char; 65],
+    sysname: [kernel::ffi::c_char; 65],
+    nodename: [kernel::ffi::c_char; 65],
+    release: [kernel::ffi::c_char; 65],
+    version: [kernel::ffi::c_char; 65],
+    machine: [kernel::ffi::c_char; 65],
+    _domainname: [kernel::ffi::c_char; 65],
 }
 
 type sigset_t = [u64; 16];
@@ -70,7 +70,7 @@ extern "C" {
 }
 
 pub unsafe fn stack_protections(address: u64) {
-    if mprotect(address as *mut core::ffi::c_void, UM_THREAD_SIZE, PROT_READ | PROT_WRITE) < 0 {
+    if mprotect(address as *mut kernel::ffi::c_void, UM_THREAD_SIZE, PROT_READ | PROT_WRITE) < 0 {
         panic(b"protecting stack failed, errno = %d\0".as_ptr() as _, 0);
     }
 }
@@ -85,14 +85,14 @@ pub unsafe fn raw(fd: i32) -> i32 {
     0
 }
 
-pub unsafe fn setup_machinename(machine_out: *mut core::ffi::c_char) {
+pub unsafe fn setup_machinename(machine_out: *mut kernel::ffi::c_char) {
     let mut host = core::mem::zeroed::<utsname>();
     uname(&mut host);
     // CONFIG_UML_X86 / CONFIG_64BIT build-time conditions are preserved here.
     strcpy(machine_out, host.machine.as_ptr());
 }
 
-pub unsafe fn setup_hostinfo(buf: *mut core::ffi::c_char, len: i32) {
+pub unsafe fn setup_hostinfo(buf: *mut kernel::ffi::c_char, len: i32) {
     let mut host = core::mem::zeroed::<utsname>();
     uname(&mut host);
     snprintf(buf, len as usize, b"%s %s %s %s %s\0".as_ptr() as _, host.sysname.as_ptr(), host.nodename.as_ptr(), host.release.as_ptr(), host.version.as_ptr(), host.machine.as_ptr());
@@ -108,7 +108,7 @@ unsafe fn uml_abort() -> ! {
     loop { if kill(getpid(), SIGABRT) < 0 { exit(127); } }
 }
 
-pub unsafe fn os_getrandom(buf: *mut core::ffi::c_void, len: usize, flags: u32) -> isize { getrandom(buf, len, flags) }
+pub unsafe fn os_getrandom(buf: *mut kernel::ffi::c_void, len: usize, flags: u32) -> isize { getrandom(buf, len, flags) }
 
 pub unsafe fn os_fix_helper_signals() {
     signal(SIGWINCH, SIG_IGN); signal(SIGINT, SIG_DFL); signal(SIGTERM, SIG_DFL);
@@ -121,10 +121,10 @@ pub unsafe fn os_dump_core() {
     uml_abort();
 }
 
-pub unsafe fn um_early_printk(s: *const core::ffi::c_char, n: u32) { printf(b"%.*s\0".as_ptr() as _, n, s); }
+pub unsafe fn um_early_printk(s: *const kernel::ffi::c_char, n: u32) { printf(b"%.*s\0".as_ptr() as _, n, s); }
 
 static mut quiet_info: i32 = 0;
-unsafe fn quiet_cmd_param(_str: *mut core::ffi::c_char, _add: *mut i32) -> i32 { quiet_info = 1; 0 }
+unsafe fn quiet_cmd_param(_str: *mut kernel::ffi::c_char, _add: *mut i32) -> i32 { quiet_info = 1; 0 }
 // __uml_setup!("quiet", quiet_cmd_param,
 //     "quiet\n    Turns off information messages during boot.\n\n");
 
@@ -132,9 +132,9 @@ unsafe fn quiet_cmd_param(_str: *mut core::ffi::c_char, _add: *mut i32) -> i32 {
 // format into a fixed 256-byte buffer with vscnprintf and write it to stderr;
 // the external vscnprintf declaration above is retained for the surrounding
 // ABI translation.
-pub unsafe fn os_info(_fmt: *const core::ffi::c_char, ...) {
+pub unsafe fn os_info(_fmt: *const kernel::ffi::c_char, ...) {
     if quiet_info != 0 { return; }
 }
-pub unsafe fn os_warn(_fmt: *const core::ffi::c_char, ...) {}
+pub unsafe fn os_warn(_fmt: *const kernel::ffi::c_char, ...) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -31,7 +31,7 @@ const EXIT_DPF_BYPASS_0: u32 = 1 << 16;
 const EXIT_DPF_BYPASS_1: u32 = 1 << 17;
 const CLK0_DIVIDER: u32 = 0x30;
 
-const NULL: *mut core::ffi::c_void = core::ptr::null_mut();
+const NULL: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 #[repr(C)]
 pub struct device {
@@ -50,7 +50,7 @@ pub struct snd_soc_dai_ops {
 
 #[repr(C)]
 pub struct snd_soc_pcm_stream {
-    pub stream_name: *const core::ffi::c_char,
+    pub stream_name: *const kernel::ffi::c_char,
     pub rates: u32,
     pub formats: u64,
     pub channels_min: u32,
@@ -61,7 +61,7 @@ pub struct snd_soc_pcm_stream {
 
 #[repr(C)]
 pub struct snd_soc_dai_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: i32,
     pub playback: snd_soc_pcm_stream,
     pub capture: snd_soc_pcm_stream,
@@ -86,7 +86,7 @@ pub struct spinlock_t {
 
 #[repr(C)]
 pub struct acp_chip_info {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub acp_rev: i32,
     pub dev: *mut device,
     pub dai_driver: *mut snd_soc_dai_driver,
@@ -124,7 +124,7 @@ pub struct dev_pm_ops {
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub pm: *const dev_pm_ops,
 }
 
@@ -183,8 +183,8 @@ unsafe extern "C" {
     fn amd_smn_read(node: u16, address: u32, value: *mut u32) -> i32;
     fn amd_smn_write(node: u16, address: u32, value: u32) -> i32;
     fn dev_get_platdata(dev: *mut device) -> *mut acp_chip_info;
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     fn acp_hw_en_interrupts(chip: *mut acp_chip_info) -> i32;
     fn acp_hw_dis_interrupts(chip: *mut acp_chip_info) -> i32;
     fn acp_platform_register(dev: *mut device);
@@ -214,10 +214,10 @@ unsafe fn list_entry(ptr: *mut list_head) -> *mut acp_stream {
 
 static mut acp63_dai: [snd_soc_dai_driver; 4] = [
     snd_soc_dai_driver {
-        name: b"acp-i2s-sp\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp-i2s-sp\0".as_ptr() as *const kernel::ffi::c_char,
         id: unsafe { I2S_SP_INSTANCE },
         playback: snd_soc_pcm_stream {
-            stream_name: b"I2S SP Playback\0".as_ptr() as *const core::ffi::c_char,
+            stream_name: b"I2S SP Playback\0".as_ptr() as *const kernel::ffi::c_char,
             rates: unsafe { SNDRV_PCM_RATE_8000_96000 },
             formats: unsafe {
                 SNDRV_PCM_FMTBIT_S16_LE
@@ -231,7 +231,7 @@ static mut acp63_dai: [snd_soc_dai_driver; 4] = [
             rate_max: 96000,
         },
         capture: snd_soc_pcm_stream {
-            stream_name: b"I2S SP Capture\0".as_ptr() as *const core::ffi::c_char,
+            stream_name: b"I2S SP Capture\0".as_ptr() as *const kernel::ffi::c_char,
             rates: unsafe { SNDRV_PCM_RATE_8000_48000 },
             formats: unsafe {
                 SNDRV_PCM_FMTBIT_S16_LE
@@ -247,10 +247,10 @@ static mut acp63_dai: [snd_soc_dai_driver; 4] = [
         ops: unsafe { &asoc_acp_cpu_dai_ops },
     },
     snd_soc_dai_driver {
-        name: b"acp-i2s-bt\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp-i2s-bt\0".as_ptr() as *const kernel::ffi::c_char,
         id: unsafe { I2S_BT_INSTANCE },
         playback: snd_soc_pcm_stream {
-            stream_name: b"I2S BT Playback\0".as_ptr() as *const core::ffi::c_char,
+            stream_name: b"I2S BT Playback\0".as_ptr() as *const kernel::ffi::c_char,
             rates: unsafe { SNDRV_PCM_RATE_8000_96000 },
             formats: unsafe {
                 SNDRV_PCM_FMTBIT_S16_LE
@@ -264,7 +264,7 @@ static mut acp63_dai: [snd_soc_dai_driver; 4] = [
             rate_max: 96000,
         },
         capture: snd_soc_pcm_stream {
-            stream_name: b"I2S BT Capture\0".as_ptr() as *const core::ffi::c_char,
+            stream_name: b"I2S BT Capture\0".as_ptr() as *const kernel::ffi::c_char,
             rates: unsafe { SNDRV_PCM_RATE_8000_48000 },
             formats: unsafe {
                 SNDRV_PCM_FMTBIT_S16_LE
@@ -280,10 +280,10 @@ static mut acp63_dai: [snd_soc_dai_driver; 4] = [
         ops: unsafe { &asoc_acp_cpu_dai_ops },
     },
     snd_soc_dai_driver {
-        name: b"acp-i2s-hs\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp-i2s-hs\0".as_ptr() as *const kernel::ffi::c_char,
         id: unsafe { I2S_HS_INSTANCE },
         playback: snd_soc_pcm_stream {
-            stream_name: b"I2S HS Playback\0".as_ptr() as *const core::ffi::c_char,
+            stream_name: b"I2S HS Playback\0".as_ptr() as *const kernel::ffi::c_char,
             rates: unsafe { SNDRV_PCM_RATE_8000_96000 },
             formats: unsafe {
                 SNDRV_PCM_FMTBIT_S16_LE
@@ -297,7 +297,7 @@ static mut acp63_dai: [snd_soc_dai_driver; 4] = [
             rate_max: 96000,
         },
         capture: snd_soc_pcm_stream {
-            stream_name: b"I2S HS Capture\0".as_ptr() as *const core::ffi::c_char,
+            stream_name: b"I2S HS Capture\0".as_ptr() as *const kernel::ffi::c_char,
             rates: unsafe { SNDRV_PCM_RATE_8000_48000 },
             formats: unsafe {
                 SNDRV_PCM_FMTBIT_S16_LE
@@ -313,7 +313,7 @@ static mut acp63_dai: [snd_soc_dai_driver; 4] = [
         ops: unsafe { &asoc_acp_cpu_dai_ops },
     },
     snd_soc_dai_driver {
-        name: b"acp-pdm-dmic\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp-pdm-dmic\0".as_ptr() as *const kernel::ffi::c_char,
         id: unsafe { DMIC_INSTANCE },
         playback: snd_soc_pcm_stream {
             stream_name: core::ptr::null(),
@@ -408,7 +408,7 @@ unsafe extern "C" fn acp63_audio_probe(pdev: *mut platform_device) -> i32 {
     if chip.is_null() || (*chip).base.is_null() {
         dev_err(
             &mut (*pdev).dev,
-            b"ACP chip data is NULL\n\0".as_ptr() as *const core::ffi::c_char,
+            b"ACP chip data is NULL\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
         return -ENODEV;
     }
@@ -416,7 +416,7 @@ unsafe extern "C" fn acp63_audio_probe(pdev: *mut platform_device) -> i32 {
     if (*chip).acp_rev != ACP63_PCI_ID {
         dev_err(
             &mut (*pdev).dev,
-            b"Un-supported ACP Revision %d\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Un-supported ACP Revision %d\n\0".as_ptr() as *const kernel::ffi::c_char,
             (*chip).acp_rev,
         );
         return -ENODEV;
@@ -436,7 +436,7 @@ unsafe extern "C" fn acp63_audio_probe(pdev: *mut platform_device) -> i32 {
     if ret != 0 {
         dev_err(
             dev,
-            b"ACP en-interrupts failed\n\0".as_ptr() as *const core::ffi::c_char,
+            b"ACP en-interrupts failed\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
         return ret;
     }
@@ -458,7 +458,7 @@ unsafe extern "C" fn acp63_audio_remove(pdev: *mut platform_device) {
     if ret != 0 {
         dev_err(
             dev,
-            b"ACP dis-interrupts failed\n\0".as_ptr() as *const core::ffi::c_char,
+            b"ACP dis-interrupts failed\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
@@ -508,7 +508,7 @@ static mut acp63_driver: platform_driver = platform_driver {
     probe: Some(acp63_audio_probe),
     remove: Some(acp63_audio_remove),
     driver: device_driver {
-        name: b"acp_asoc_acp63\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp_asoc_acp63\0".as_ptr() as *const kernel::ffi::c_char,
         // pm_ptr(&acp63_dma_pm_ops)
         pm: &acp63_dma_pm_ops,
     },

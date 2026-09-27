@@ -36,20 +36,20 @@ pub struct dlm_lock_params {
     pub parent: __u32,
     pub xid: __u64,
     pub timeout: __u64,
-    pub castparam: *mut core::ffi::c_void,
-    pub castaddr: *mut core::ffi::c_void,
-    pub bastparam: *mut core::ffi::c_void,
-    pub bastaddr: *mut core::ffi::c_void,
+    pub castparam: *mut kernel::ffi::c_void,
+    pub castaddr: *mut kernel::ffi::c_void,
+    pub bastparam: *mut kernel::ffi::c_void,
+    pub bastaddr: *mut kernel::ffi::c_void,
     pub lksb: *mut dlm_lksb,
-    pub lvb: [core::ffi::c_char; DLM_USER_LVB_LEN],
-    pub name: [core::ffi::c_char; 0],
+    pub lvb: [kernel::ffi::c_char; DLM_USER_LVB_LEN],
+    pub name: [kernel::ffi::c_char; 0],
 }
 
 #[repr(C)]
 pub struct dlm_lspace_params {
     pub flags: __u32,
     pub minor: __u32,
-    pub name: [core::ffi::c_char; 0],
+    pub name: [kernel::ffi::c_char; 0],
 }
 
 #[repr(C)]
@@ -86,8 +86,8 @@ pub struct dlm_device_version {
 pub struct dlm_lock_result {
     pub version: [__u32; 3],
     pub length: __u32,
-    pub user_astaddr: *mut core::ffi::c_void,
-    pub user_astparam: *mut core::ffi::c_void,
+    pub user_astaddr: *mut kernel::ffi::c_void,
+    pub user_astparam: *mut kernel::ffi::c_void,
     pub user_lksb: *mut dlm_lksb,
     pub lksb: dlm_lksb,
     pub bast_mode: __u8,

@@ -75,16 +75,16 @@ pub struct snd_dm_fm_params {
 }
 
 /* FM mode ioctl settings.  _IOR/_IOW/_IO are supplied by the target ABI. */
-pub const SNDRV_DM_FM_IOCTL_INFO: _ = _IOR(b'H', 0x20, snd_dm_fm_info);
-pub const SNDRV_DM_FM_IOCTL_RESET: _ = _IO(b'H', 0x21);
-pub const SNDRV_DM_FM_IOCTL_PLAY_NOTE: _ = _IOW(b'H', 0x22, snd_dm_fm_note);
-pub const SNDRV_DM_FM_IOCTL_SET_VOICE: _ = _IOW(b'H', 0x23, snd_dm_fm_voice);
-pub const SNDRV_DM_FM_IOCTL_SET_PARAMS: _ = _IOW(b'H', 0x24, snd_dm_fm_params);
-pub const SNDRV_DM_FM_IOCTL_SET_MODE: _ = _IOW(b'H', 0x25, i32);
+pub const SNDRV_DM_FM_IOCTL_INFO: u32 = _IOR(b'H', 0x20, snd_dm_fm_info);
+pub const SNDRV_DM_FM_IOCTL_RESET: u32 = _IO(b'H', 0x21);
+pub const SNDRV_DM_FM_IOCTL_PLAY_NOTE: u32 = _IOW(b'H', 0x22, snd_dm_fm_note);
+pub const SNDRV_DM_FM_IOCTL_SET_VOICE: u32 = _IOW(b'H', 0x23, snd_dm_fm_voice);
+pub const SNDRV_DM_FM_IOCTL_SET_PARAMS: u32 = _IOW(b'H', 0x24, snd_dm_fm_params);
+pub const SNDRV_DM_FM_IOCTL_SET_MODE: u32 = _IOW(b'H', 0x25, i32);
 /* for OPL3 only */
-pub const SNDRV_DM_FM_IOCTL_SET_CONNECTION: _ = _IOW(b'H', 0x26, i32);
+pub const SNDRV_DM_FM_IOCTL_SET_CONNECTION: u32 = _IOW(b'H', 0x26, i32);
 /* SBI patch management */
-pub const SNDRV_DM_FM_IOCTL_CLEAR_PATCHES: _ = _IO(b'H', 0x40);
+pub const SNDRV_DM_FM_IOCTL_CLEAR_PATCHES: u32 = _IO(b'H', 0x40);
 
 pub const SNDRV_DM_FM_OSS_IOCTL_RESET: u32 = 0x20;
 pub const SNDRV_DM_FM_OSS_IOCTL_PLAY_NOTE: u32 = 0x21;

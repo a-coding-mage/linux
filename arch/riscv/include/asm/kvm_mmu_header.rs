@@ -16,17 +16,17 @@ unsafe extern "C" {
         kvm: *mut crate::kvm,
         gpa: crate::gpa_t,
         hpa: crate::phys_addr_t,
-        size: core::ffi::c_ulong,
+        size: kernel::ffi::c_ulong,
         writable: bool,
         in_atomic: bool,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     /// void kvm_riscv_mmu_iounmap(struct kvm *kvm, gpa_t gpa,
     ///                             unsigned long size);
     pub fn kvm_riscv_mmu_iounmap(
         kvm: *mut crate::kvm,
         gpa: crate::gpa_t,
-        size: core::ffi::c_ulong,
+        size: kernel::ffi::c_ulong,
     );
 
     /// int kvm_riscv_mmu_map(struct kvm_vcpu *vcpu,
@@ -37,13 +37,13 @@ unsafe extern "C" {
         vcpu: *mut crate::kvm_vcpu,
         memslot: *mut crate::kvm_memory_slot,
         gpa: crate::gpa_t,
-        hva: core::ffi::c_ulong,
+        hva: kernel::ffi::c_ulong,
         is_write: bool,
         out_map: *mut crate::kvm_gstage_mapping,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     /// int kvm_riscv_mmu_alloc_pgd(struct kvm *kvm);
-    pub fn kvm_riscv_mmu_alloc_pgd(kvm: *mut crate::kvm) -> core::ffi::c_int;
+    pub fn kvm_riscv_mmu_alloc_pgd(kvm: *mut crate::kvm) -> kernel::ffi::c_int;
 
     /// void kvm_riscv_mmu_free_pgd(struct kvm *kvm);
     pub fn kvm_riscv_mmu_free_pgd(kvm: *mut crate::kvm);

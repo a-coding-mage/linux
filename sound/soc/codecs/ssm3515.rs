@@ -10,10 +10,10 @@
 #![allow(dead_code)]
 
 type bool_ = bool;
-type u8 = core::ffi::c_uchar;
-type c_char = core::ffi::c_char;
-type c_int = core::ffi::c_int;
-type c_uint = core::ffi::c_uint;
+type u8 = kernel::ffi::c_uchar;
+type c_char = kernel::ffi::c_char;
+type c_int = kernel::ffi::c_int;
+type c_uint = kernel::ffi::c_uint;
 type size_t = usize;
 
 const fn BIT(n: c_uint) -> c_uint {
@@ -260,11 +260,11 @@ unsafe extern "C" {
     fn params_width(params: *mut snd_pcm_hw_params) -> c_int;
     fn params_rate(params: *mut snd_pcm_hw_params) -> c_uint;
     fn dev_err(dev: *mut device, fmt: *const c_char, ...);
-    fn devm_kzalloc(dev: *mut device, size: size_t, flags: c_uint) -> *mut core::ffi::c_void;
-    fn i2c_set_clientdata(client: *mut i2c_client, data: *mut core::ffi::c_void);
+    fn devm_kzalloc(dev: *mut device, size: size_t, flags: c_uint) -> *mut kernel::ffi::c_void;
+    fn i2c_set_clientdata(client: *mut i2c_client, data: *mut kernel::ffi::c_void);
     fn devm_regmap_init_i2c(client: *mut i2c_client, config: *const regmap_config) -> *mut regmap;
-    fn IS_ERR(ptr: *const core::ffi::c_void) -> bool_;
-    fn PTR_ERR(ptr: *const core::ffi::c_void) -> c_int;
+    fn IS_ERR(ptr: *const kernel::ffi::c_void) -> bool_;
+    fn PTR_ERR(ptr: *const kernel::ffi::c_void) -> c_int;
     fn dev_err_probe(dev: *mut device, err: c_int, fmt: *const c_char, ...) -> c_int;
     fn regmap_update_bits(regmap: *mut regmap, reg: c_uint, mask: c_uint, val: c_uint) -> c_int;
     fn regmap_reinit_cache(regmap: *mut regmap, config: *const regmap_config);
@@ -723,13 +723,13 @@ unsafe extern "C" fn ssm3515_i2c_probe(client: *mut i2c_client) -> c_int {
     }
 
     (*data).dev = &mut (*client).dev;
-    i2c_set_clientdata(client, data as *mut core::ffi::c_void);
+    i2c_set_clientdata(client, data as *mut kernel::ffi::c_void);
 
     (*data).regmap = devm_regmap_init_i2c(client, &ssm3515_i2c_regmap);
-    if IS_ERR((*data).regmap as *const core::ffi::c_void) {
+    if IS_ERR((*data).regmap as *const kernel::ffi::c_void) {
         return dev_err_probe(
             (*data).dev,
-            PTR_ERR((*data).regmap as *const core::ffi::c_void),
+            PTR_ERR((*data).regmap as *const kernel::ffi::c_void),
             b"initializing register map\n\0".as_ptr() as *const c_char,
         );
     }

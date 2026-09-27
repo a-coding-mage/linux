@@ -28,7 +28,7 @@ pub struct device;
 pub struct stm32_firewall {
     pub firewall_ctrl: *mut stm32_firewall_controller,
     pub extra_args: [u32; STM32_FIREWALL_MAX_EXTRA_ARGS],
-    pub entry: *const core::ffi::c_char,
+    pub entry: *const kernel::ffi::c_char,
     pub extra_args_size: usize,
     pub firewall_id: u32,
 }

@@ -12,7 +12,7 @@
 static mut mt_fpu_cpumask: cpumask_t = cpumask_t::default();
 
 static mut fpaff_threshold: i32 = -1;
-static mut mt_fpemul_threshold: ::core::ffi::c_ulong = 0;
+static mut mt_fpemul_threshold: ::kernel::ffi::c_ulong = 0;
 
 /*
  * Replacement functions for the sys_sched_setaffinity() and
@@ -54,9 +54,9 @@ unsafe fn check_same_owner(p: *mut task_struct) -> bool {
  */
 unsafe fn mipsmt_sys_sched_setaffinity(
     pid: pid_t,
-    mut len: ::core::ffi::c_uint,
-    user_mask_ptr: *mut ::core::ffi::c_ulong,
-) -> ::core::ffi::c_long {
+    mut len: ::kernel::ffi::c_uint,
+    user_mask_ptr: *mut ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_long {
     let mut cpus_allowed: cpumask_var_t;
     let mut new_mask: cpumask_var_t;
     let mut effective_mask: cpumask_var_t;
@@ -73,7 +73,7 @@ unsafe fn mipsmt_sys_sched_setaffinity(
     if copy_from_user(new_mask, user_mask_ptr, len) != 0 {
         retval = -EFAULT;
         free_cpumask_var(new_mask);
-        return retval as ::core::ffi::c_long;
+        return retval as ::kernel::ffi::c_long;
     }
 
     cpus_read_lock();
@@ -83,7 +83,7 @@ unsafe fn mipsmt_sys_sched_setaffinity(
         rcu_read_unlock();
         cpus_read_unlock();
         free_cpumask_var(new_mask);
-        return -ESRCH as ::core::ffi::c_long;
+        return -ESRCH as ::kernel::ffi::c_long;
     }
     get_task_struct(p);
     rcu_read_unlock();
@@ -91,20 +91,20 @@ unsafe fn mipsmt_sys_sched_setaffinity(
     if !alloc_cpumask_var(&mut cpus_allowed, GFP_KERNEL) {
         retval = -ENOMEM;
         put_task_struct(p); cpus_read_unlock(); free_cpumask_var(new_mask);
-        return retval as ::core::ffi::c_long;
+        return retval as ::kernel::ffi::c_long;
     }
     if !alloc_cpumask_var(&mut effective_mask, GFP_KERNEL) {
         retval = -ENOMEM;
         free_cpumask_var(cpus_allowed); put_task_struct(p); cpus_read_unlock();
         free_cpumask_var(new_mask);
-        return retval as ::core::ffi::c_long;
+        return retval as ::kernel::ffi::c_long;
     }
     if !check_same_owner(p) && !capable(CAP_SYS_NICE) { retval = -EPERM; }
     else { retval = security_task_setscheduler(p); }
     if retval != 0 {
         free_cpumask_var(effective_mask); free_cpumask_var(cpus_allowed);
         put_task_struct(p); cpus_read_unlock(); free_cpumask_var(new_mask);
-        return retval as ::core::ffi::c_long;
+        return retval as ::kernel::ffi::c_long;
     }
 
     cpumask_copy(&mut (*p).thread.user_cpus_allowed, new_mask);
@@ -133,22 +133,22 @@ unsafe fn mipsmt_sys_sched_setaffinity(
     put_task_struct(p);
     cpus_read_unlock();
     free_cpumask_var(new_mask);
-    retval as ::core::ffi::c_long
+    retval as ::kernel::ffi::c_long
 }
 
 /*
  * mipsmt_sys_sched_getaffinity - get the cpu affinity of a process
  */
 unsafe fn mipsmt_sys_sched_getaffinity(
-    pid: pid_t, len: ::core::ffi::c_uint,
-    user_mask_ptr: *mut ::core::ffi::c_ulong,
-) -> ::core::ffi::c_long {
+    pid: pid_t, len: ::kernel::ffi::c_uint,
+    user_mask_ptr: *mut ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_long {
     let real_len = core::mem::size_of::<cpumask_t>();
     let mut allowed = cpumask_t::default();
     let mut mask = cpumask_t::default();
     let mut retval: i32;
     let p: *mut task_struct;
-    if (len as usize) < real_len { return -EINVAL as ::core::ffi::c_long; }
+    if (len as usize) < real_len { return -EINVAL as ::kernel::ffi::c_long; }
     cpus_read_lock(); rcu_read_lock();
     retval = -ESRCH;
     p = find_process_by_pid(pid);
@@ -160,12 +160,12 @@ unsafe fn mipsmt_sys_sched_getaffinity(
         }
     }
     rcu_read_unlock(); cpus_read_unlock();
-    if retval != 0 { return retval as ::core::ffi::c_long; }
-    if copy_to_user(user_mask_ptr, &mask, real_len) != 0 { return -EFAULT as ::core::ffi::c_long; }
-    real_len as ::core::ffi::c_long
+    if retval != 0 { return retval as ::kernel::ffi::c_long; }
+    if copy_to_user(user_mask_ptr, &mask, real_len) != 0 { return -EFAULT as ::kernel::ffi::c_long; }
+    real_len as ::kernel::ffi::c_long
 }
 
-unsafe fn fpaff_thresh(mut str_: *mut ::core::ffi::c_char) -> i32 {
+unsafe fn fpaff_thresh(mut str_: *mut ::kernel::ffi::c_char) -> i32 {
     get_option(&mut str_, &mut fpaff_threshold);
     1
 }
@@ -174,9 +174,9 @@ const FPUSEFACTOR: i32 = 2000;
 
 unsafe fn mt_fp_affinity_init() -> i32 {
     if fpaff_threshold >= 0 {
-        mt_fpemul_threshold = fpaff_threshold as ::core::ffi::c_ulong;
+        mt_fpemul_threshold = fpaff_threshold as ::kernel::ffi::c_ulong;
     } else {
-        mt_fpemul_threshold = (FPUSEFACTOR as ::core::ffi::c_ulong
+        mt_fpemul_threshold = (FPUSEFACTOR as ::kernel::ffi::c_ulong
             * (loops_per_jiffy / (500000 / HZ))) / HZ;
     }
     printk!(KERN_DEBUG, "FPU Affinity set after {} emulations\n", mt_fpemul_threshold);

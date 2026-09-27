@@ -46,10 +46,10 @@ pub const MMTIMER_IOCTL_BASE: u32 = b'm' as u32;
 
 /* `_IO` and `_IOR` are supplied by the target ioctl definitions. */
 pub const MMTIMER_GETOFFSET: u32 = _IO!(MMTIMER_IOCTL_BASE, 0);
-pub const MMTIMER_GETRES: u32 = _IOR!(MMTIMER_IOCTL_BASE, 1, ::core::ffi::c_ulong);
-pub const MMTIMER_GETFREQ: u32 = _IOR!(MMTIMER_IOCTL_BASE, 2, ::core::ffi::c_ulong);
+pub const MMTIMER_GETRES: u32 = _IOR!(MMTIMER_IOCTL_BASE, 1, ::kernel::ffi::c_ulong);
+pub const MMTIMER_GETFREQ: u32 = _IOR!(MMTIMER_IOCTL_BASE, 2, ::kernel::ffi::c_ulong);
 pub const MMTIMER_GETBITS: u32 = _IO!(MMTIMER_IOCTL_BASE, 4);
 pub const MMTIMER_MMAPAVAIL: u32 = _IO!(MMTIMER_IOCTL_BASE, 6);
-pub const MMTIMER_GETCOUNTER: u32 = _IOR!(MMTIMER_IOCTL_BASE, 9, ::core::ffi::c_ulong);
+pub const MMTIMER_GETCOUNTER: u32 = _IOR!(MMTIMER_IOCTL_BASE, 9, ::kernel::ffi::c_ulong);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

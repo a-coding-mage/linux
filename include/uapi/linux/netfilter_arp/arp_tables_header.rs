@@ -18,8 +18,8 @@ pub const ARPT_DEV_ADDR_LEN_MAX: usize = 16;
 
 #[repr(C)]
 pub struct arpt_devaddr_info {
-    pub addr: [core::ffi::c_char; ARPT_DEV_ADDR_LEN_MAX],
-    pub mask: [core::ffi::c_char; ARPT_DEV_ADDR_LEN_MAX],
+    pub addr: [kernel::ffi::c_char; ARPT_DEV_ADDR_LEN_MAX],
+    pub mask: [kernel::ffi::c_char; ARPT_DEV_ADDR_LEN_MAX],
 }
 
 #[repr(C)]
@@ -38,8 +38,8 @@ pub struct arpt_arp {
     pub arhrd_mask: __be16,
     pub arpro: __be16,
     pub arpro_mask: __be16,
-    pub iniface: [core::ffi::c_char; IFNAMSIZ],
-    pub outiface: [core::ffi::c_char; IFNAMSIZ],
+    pub iniface: [kernel::ffi::c_char; IFNAMSIZ],
+    pub outiface: [kernel::ffi::c_char; IFNAMSIZ],
     pub iniface_mask: [u8; IFNAMSIZ],
     pub outiface_mask: [u8; IFNAMSIZ],
     pub flags: __u8,
@@ -64,7 +64,7 @@ pub struct arpt_entry {
     pub arp: arpt_arp,
     pub target_offset: __u16,
     pub next_offset: __u16,
-    pub comefrom: core::ffi::c_uint,
+    pub comefrom: kernel::ffi::c_uint,
     pub counters: xt_counters,
     pub elems: [u8; 0],
 }
@@ -80,31 +80,31 @@ pub const ARPT_SO_GET_MAX: u32 = ARPT_SO_GET_REVISION_TARGET;
 
 #[repr(C)]
 pub struct arpt_getinfo {
-    pub name: [core::ffi::c_char; XT_TABLE_MAXNAMELEN],
-    pub valid_hooks: core::ffi::c_uint,
-    pub hook_entry: [core::ffi::c_uint; NF_ARP_NUMHOOKS],
-    pub underflow: [core::ffi::c_uint; NF_ARP_NUMHOOKS],
-    pub num_entries: core::ffi::c_uint,
-    pub size: core::ffi::c_uint,
+    pub name: [kernel::ffi::c_char; XT_TABLE_MAXNAMELEN],
+    pub valid_hooks: kernel::ffi::c_uint,
+    pub hook_entry: [kernel::ffi::c_uint; NF_ARP_NUMHOOKS],
+    pub underflow: [kernel::ffi::c_uint; NF_ARP_NUMHOOKS],
+    pub num_entries: kernel::ffi::c_uint,
+    pub size: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct arpt_replace {
-    pub name: [core::ffi::c_char; XT_TABLE_MAXNAMELEN],
-    pub valid_hooks: core::ffi::c_uint,
-    pub num_entries: core::ffi::c_uint,
-    pub size: core::ffi::c_uint,
-    pub hook_entry: [core::ffi::c_uint; NF_ARP_NUMHOOKS],
-    pub underflow: [core::ffi::c_uint; NF_ARP_NUMHOOKS],
-    pub num_counters: core::ffi::c_uint,
+    pub name: [kernel::ffi::c_char; XT_TABLE_MAXNAMELEN],
+    pub valid_hooks: kernel::ffi::c_uint,
+    pub num_entries: kernel::ffi::c_uint,
+    pub size: kernel::ffi::c_uint,
+    pub hook_entry: [kernel::ffi::c_uint; NF_ARP_NUMHOOKS],
+    pub underflow: [kernel::ffi::c_uint; NF_ARP_NUMHOOKS],
+    pub num_counters: kernel::ffi::c_uint,
     pub counters: *mut xt_counters,
     pub entries: [arpt_entry; 0],
 }
 
 #[repr(C)]
 pub struct arpt_get_entries {
-    pub name: [core::ffi::c_char; XT_TABLE_MAXNAMELEN],
-    pub size: core::ffi::c_uint,
+    pub name: [kernel::ffi::c_char; XT_TABLE_MAXNAMELEN],
+    pub size: kernel::ffi::c_uint,
     pub entrytable: [arpt_entry; 0],
 }
 

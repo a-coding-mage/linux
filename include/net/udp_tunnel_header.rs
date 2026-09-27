@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 // Translated from net/udp_tunnel.h. C header dependencies are supplied externally.
 
-pub const UDP_TUNNEL_PARTIAL_FEATURES: _ = NETIF_F_GSO_ENCAP_ALL;
-pub const UDP_TUNNEL_STRIPPED_GSO_TYPES: _ =
+pub const UDP_TUNNEL_PARTIAL_FEATURES: u64 = NETIF_F_GSO_ENCAP_ALL;
+pub const UDP_TUNNEL_STRIPPED_GSO_TYPES: u32 =
     (UDP_TUNNEL_PARTIAL_FEATURES | NETIF_F_GSO_PARTIAL) >> NETIF_F_GSO_SHIFT;
 
 #[repr(C)]

@@ -29,18 +29,18 @@
  * Initialize a new pgd / pmd table with invalid pointers.
  */
 unsafe fn pgd_init(pgd: *mut pgd_t) {
-    let p = pgd as *mut ::core::ffi::c_ulong;
-    let mut i: ::core::ffi::c_int = 0;
+    let p = pgd as *mut ::kernel::ffi::c_ulong;
+    let mut i: ::kernel::ffi::c_int = 0;
 
     while i < USER_PTRS_PER_PGD {
-        *p.add((i + 0) as usize) = invalid_pte_table as usize as ::core::ffi::c_ulong;
-        *p.add((i + 1) as usize) = invalid_pte_table as usize as ::core::ffi::c_ulong;
-        *p.add((i + 2) as usize) = invalid_pte_table as usize as ::core::ffi::c_ulong;
-        *p.add((i + 3) as usize) = invalid_pte_table as usize as ::core::ffi::c_ulong;
-        *p.add((i + 4) as usize) = invalid_pte_table as usize as ::core::ffi::c_ulong;
-        *p.add((i + 5) as usize) = invalid_pte_table as usize as ::core::ffi::c_ulong;
-        *p.add((i + 6) as usize) = invalid_pte_table as usize as ::core::ffi::c_ulong;
-        *p.add((i + 7) as usize) = invalid_pte_table as usize as ::core::ffi::c_ulong;
+        *p.add((i + 0) as usize) = invalid_pte_table as usize as ::kernel::ffi::c_ulong;
+        *p.add((i + 1) as usize) = invalid_pte_table as usize as ::kernel::ffi::c_ulong;
+        *p.add((i + 2) as usize) = invalid_pte_table as usize as ::kernel::ffi::c_ulong;
+        *p.add((i + 3) as usize) = invalid_pte_table as usize as ::kernel::ffi::c_ulong;
+        *p.add((i + 4) as usize) = invalid_pte_table as usize as ::kernel::ffi::c_ulong;
+        *p.add((i + 5) as usize) = invalid_pte_table as usize as ::kernel::ffi::c_ulong;
+        *p.add((i + 6) as usize) = invalid_pte_table as usize as ::kernel::ffi::c_ulong;
+        *p.add((i + 7) as usize) = invalid_pte_table as usize as ::kernel::ffi::c_ulong;
         i += 8;
     }
 }

@@ -60,14 +60,14 @@ unsafe fn omap_crypto_copy_sgs(
     new_sg: *mut scatterlist,
     flags: u16,
 ) -> i32 {
-    let mut buf: *mut core::ffi::c_void;
+    let mut buf: *mut kernel::ffi::c_void;
     let pages: i32;
     let new_len: i32;
 
     new_len = ALIGN(total, bs);
     pages = get_order(new_len);
 
-    buf = __get_free_pages(GFP_ATOMIC, pages) as *mut core::ffi::c_void;
+    buf = __get_free_pages(GFP_ATOMIC, pages) as *mut kernel::ffi::c_void;
     if buf.is_null() {
         pr_err!("{}: Couldn't allocate pages for unaligned cases.\n", __func__);
         return -ENOMEM;
@@ -145,7 +145,7 @@ pub unsafe fn omap_crypto_align_sg(
     new_sg: *mut scatterlist,
     flags: u16,
     flags_shift: u8,
-    dd_flags: *mut libc::c_ulong,
+    dd_flags: *mut kernel::ffi::c_ulong,
 ) -> i32 {
     let mut ret: i32;
 
@@ -185,8 +185,8 @@ unsafe fn omap_crypto_copy_data(
     mut len: i32,
 ) {
     let mut amt: i32;
-    let mut srcb: *mut core::ffi::c_void;
-    let mut dstb: *mut core::ffi::c_void;
+    let mut srcb: *mut kernel::ffi::c_void;
+    let mut dstb: *mut kernel::ffi::c_void;
     let mut srco = 0;
     let mut dsto = offset;
 
@@ -228,9 +228,9 @@ pub unsafe fn omap_crypto_cleanup(
     offset: i32,
     len: i32,
     flags_shift: u8,
-    mut flags: libc::c_ulong,
+    mut flags: kernel::ffi::c_ulong,
 ) {
-    let buf: *mut core::ffi::c_void;
+    let buf: *mut kernel::ffi::c_void;
     let pages: i32;
 
     flags >>= flags_shift;
@@ -248,7 +248,7 @@ pub unsafe fn omap_crypto_cleanup(
     }
 
     if flags & OMAP_CRYPTO_DATA_COPIED != 0 {
-        free_pages(buf as libc::c_ulong, pages);
+        free_pages(buf as kernel::ffi::c_ulong, pages);
     } else if flags & OMAP_CRYPTO_SG_COPIED != 0 {
         kfree(sg);
     }

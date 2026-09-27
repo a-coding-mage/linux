@@ -32,24 +32,24 @@ pub unsafe fn to_ttm_range_mgr_node(res: *mut ttm_resource) -> *mut ttm_range_mg
 extern "C" {
     pub fn ttm_range_man_init_nocheck(
         bdev: *mut ttm_device,
-        type_: core::ffi::c_uint,
+        type_: kernel::ffi::c_uint,
         use_tt: bool,
-        p_size: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        p_size: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
 
     pub fn ttm_range_man_fini_nocheck(
         bdev: *mut ttm_device,
-        type_: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        type_: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
 }
 
 #[inline(always)]
 pub unsafe fn ttm_range_man_init(
     bdev: *mut ttm_device,
-    type_: core::ffi::c_uint,
+    type_: kernel::ffi::c_uint,
     use_tt: bool,
-    p_size: core::ffi::c_ulong,
-) -> core::ffi::c_int {
+    p_size: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     // BUILD_BUG_ON(__builtin_constant_p(type) && type >= TTM_NUM_MEM_TYPES);
     ttm_range_man_init_nocheck(bdev, type_, use_tt, p_size)
 }
@@ -57,8 +57,8 @@ pub unsafe fn ttm_range_man_init(
 #[inline(always)]
 pub unsafe fn ttm_range_man_fini(
     bdev: *mut ttm_device,
-    type_: core::ffi::c_uint,
-) -> core::ffi::c_int {
+    type_: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     // BUILD_BUG_ON(__builtin_constant_p(type) && type >= TTM_NUM_MEM_TYPES);
     ttm_range_man_fini_nocheck(bdev, type_)
 }

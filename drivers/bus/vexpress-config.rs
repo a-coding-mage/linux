@@ -27,7 +27,7 @@ const VEXPRESS_SITE_MASTER: u32 = 0xf;
 #[repr(C)]
 pub struct vexpress_syscfg {
     pub dev: *mut device,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub funcs: list_head,
 }
 
@@ -42,14 +42,14 @@ pub struct vexpress_syscfg_func {
 
 #[repr(C)]
 pub struct vexpress_config_bridge_ops {
-    pub regmap_init: Option<unsafe extern "C" fn(*mut device, *mut core::ffi::c_void) -> *mut regmap>,
-    pub regmap_exit: Option<unsafe extern "C" fn(*mut regmap, *mut core::ffi::c_void)>,
+    pub regmap_init: Option<unsafe extern "C" fn(*mut device, *mut kernel::ffi::c_void) -> *mut regmap>,
+    pub regmap_exit: Option<unsafe extern "C" fn(*mut regmap, *mut kernel::ffi::c_void)>,
 }
 
 #[repr(C)]
 pub struct vexpress_config_bridge {
     pub ops: *mut vexpress_config_bridge_ops,
-    pub context: *mut core::ffi::c_void,
+    pub context: *mut kernel::ffi::c_void,
 }
 
 static mut VEXPRESS_CONFIG_SITE_MASTER: u32 = VEXPRESS_SITE_MASTER;
@@ -58,10 +58,10 @@ unsafe fn vexpress_config_set_master(site: u32) {
     VEXPRESS_CONFIG_SITE_MASTER = site;
 }
 
-unsafe extern "C" fn vexpress_config_lock(_arg: *mut core::ffi::c_void) { mutex_lock(&raw mut vexpress_config_mutex); }
-unsafe extern "C" fn vexpress_config_unlock(_arg: *mut core::ffi::c_void) { mutex_unlock(&raw mut vexpress_config_mutex); }
+unsafe extern "C" fn vexpress_config_lock(_arg: *mut kernel::ffi::c_void) { mutex_lock(&raw mut vexpress_config_mutex); }
+unsafe extern "C" fn vexpress_config_unlock(_arg: *mut kernel::ffi::c_void) { mutex_unlock(&raw mut vexpress_config_mutex); }
 
-unsafe fn vexpress_config_find_prop(mut node: *mut device_node, name: *const core::ffi::c_char, val: *mut u32) {
+unsafe fn vexpress_config_find_prop(mut node: *mut device_node, name: *const kernel::ffi::c_char, val: *mut u32) {
     *val = 0;
     of_node_get(node);
     while !node.is_null() {
@@ -82,7 +82,7 @@ unsafe fn vexpress_config_get_topo(node: *mut device_node, site: *mut u32, posit
     0
 }
 
-unsafe extern "C" fn vexpress_config_devres_release(dev: *mut device, res: *mut core::ffi::c_void) {
+unsafe extern "C" fn vexpress_config_devres_release(dev: *mut device, res: *mut kernel::ffi::c_void) {
     let bridge = dev_get_drvdata((*dev).parent) as *mut vexpress_config_bridge;
     let regmap = res as *mut regmap;
     ((*(*bridge).ops).regmap_exit.unwrap())(regmap, (*bridge).context);
@@ -132,8 +132,8 @@ unsafe fn vexpress_syscfg_exec(func: *mut vexpress_syscfg_func, index: i32, writ
     0
 }
 
-unsafe extern "C" fn vexpress_syscfg_read(context: *mut core::ffi::c_void, index: u32, val: *mut u32) -> i32 { vexpress_syscfg_exec(context as *mut _, index as i32, false, val) }
-unsafe extern "C" fn vexpress_syscfg_write(context: *mut core::ffi::c_void, index: u32, val: u32) -> i32 { let mut value = val; vexpress_syscfg_exec(context as *mut _, index as i32, true, &mut value) }
+unsafe extern "C" fn vexpress_syscfg_read(context: *mut kernel::ffi::c_void, index: u32, val: *mut u32) -> i32 { vexpress_syscfg_exec(context as *mut _, index as i32, false, val) }
+unsafe extern "C" fn vexpress_syscfg_write(context: *mut kernel::ffi::c_void, index: u32, val: u32) -> i32 { let mut value = val; vexpress_syscfg_exec(context as *mut _, index as i32, true, &mut value) }
 
 static mut VEXPRESS_SYSCFG_REGMAP_CONFIG: regmap_config = regmap_config {
     lock: Some(vexpress_config_lock), unlock: Some(vexpress_config_unlock), reg_bits: 32,
@@ -141,7 +141,7 @@ static mut VEXPRESS_SYSCFG_REGMAP_CONFIG: regmap_config = regmap_config {
     reg_format_endian: REGMAP_ENDIAN_LITTLE, val_format_endian: REGMAP_ENDIAN_LITTLE,
 };
 
-unsafe extern "C" fn vexpress_syscfg_regmap_init(dev: *mut device, context: *mut core::ffi::c_void) -> *mut regmap {
+unsafe extern "C" fn vexpress_syscfg_regmap_init(dev: *mut device, context: *mut kernel::ffi::c_void) -> *mut regmap {
     let syscfg = context as *mut vexpress_syscfg;
     let mut site = 0; let mut position = 0; let mut dcc = 0;
     let err = vexpress_config_get_topo((*dev).of_node, &mut site, &mut position, &mut dcc);
@@ -170,7 +170,7 @@ unsafe extern "C" fn vexpress_syscfg_regmap_init(dev: *mut device, context: *mut
     (*func).regmap = map; list_add(&mut (*func).list, &mut (*syscfg).funcs); map
 }
 
-unsafe extern "C" fn vexpress_syscfg_regmap_exit(regmap: *mut regmap, context: *mut core::ffi::c_void) {
+unsafe extern "C" fn vexpress_syscfg_regmap_exit(regmap: *mut regmap, context: *mut kernel::ffi::c_void) {
     let syscfg = context as *mut vexpress_syscfg; regmap_exit(regmap);
     let mut func = (*syscfg).funcs.next as *mut vexpress_syscfg_func;
     while func != syscfg as *mut _ {

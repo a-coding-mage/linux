@@ -10,18 +10,18 @@
 // C includes and symbols supplied by the surrounding kernel are external dependencies.
 
 extern "C" {
-    fn __raw_readl(addr: *const core::ffi::c_void) -> u32;
-    fn __raw_writel(value: u32, addr: *mut core::ffi::c_void);
-    fn io_p2v(addr: usize) -> *mut core::ffi::c_void;
+    fn __raw_readl(addr: *const kernel::ffi::c_void) -> u32;
+    fn __raw_writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn io_p2v(addr: usize) -> *mut kernel::ffi::c_void;
     fn iotable_init(desc: *mut map_desc, num: usize);
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
     static mut system_serial_low: u32;
     static mut system_serial_high: u32;
 }
 
 // Constants and types below are supplied by lpc32xx.h and common.h.
 extern "C" {
-    static LPC32XX_CLKPWR_DEVID: unsafe extern "C" fn(usize) -> *mut core::ffi::c_void;
+    static LPC32XX_CLKPWR_DEVID: unsafe extern "C" fn(usize) -> *mut kernel::ffi::c_void;
 }
 
 type DmaAddr = usize;
@@ -52,13 +52,13 @@ pub unsafe fn lpc32xx_get_uid(devid: *mut u32) {
  * Detects and returns IRAM size for the device variation
  */
 pub unsafe fn lpc32xx_return_iram(
-    mapbase: *mut *mut core::ffi::c_void,
+    mapbase: *mut *mut kernel::ffi::c_void,
     dmaaddr: *mut DmaAddr,
 ) -> u32 {
     if iram_size == 0 {
         let (savedval1, savedval2): (u32, u32);
-        let iramptr1: *mut core::ffi::c_void;
-        let iramptr2: *mut core::ffi::c_void;
+        let iramptr1: *mut kernel::ffi::c_void;
+        let iramptr2: *mut kernel::ffi::c_void;
 
         iramptr1 = io_p2v(LPC32XX_IRAM_BASE as usize);
         iramptr2 = io_p2v((LPC32XX_IRAM_BASE + LPC32XX_IRAM_BANK_SIZE) as usize);

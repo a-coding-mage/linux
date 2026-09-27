@@ -7,8 +7,8 @@
 #[repr(C)]
 pub struct IrqStatInfo {
     pub skip_vector: u32,
-    pub symbol: *const core::ffi::c_char,
-    pub text: *const core::ffi::c_char,
+    pub symbol: *const kernel::ffi::c_char,
+    pub text: *const kernel::ffi::c_char,
 }
 
 pub const DEFAULT_SUPPRESSED_VECTOR: u32 = u32::MAX;
@@ -20,8 +20,8 @@ pub const DEFAULT_SUPPRESSED_VECTOR: u32 = u32::MAX;
 extern "C" {
     fn printk_ratelimit() -> bool;
     fn apic_eoi();
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn pr_emerg_ratelimited(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_emerg_ratelimited(fmt: *const kernel::ffi::c_char, ...);
     fn test_bit(bit: usize, addr: *const usize) -> bool;
     fn set_bit(bit: usize, addr: *mut usize);
     fn clear_bit(bit: usize, addr: *mut usize);
@@ -58,13 +58,13 @@ pub unsafe fn irq_stat_inc_and_enable(which: usize) {
     // set_bit(which, irq_stat_count_show);
 }
 
-pub unsafe fn handle_irq(desc: *mut core::ffi::c_void, regs: *mut core::ffi::c_void) {
+pub unsafe fn handle_irq(desc: *mut kernel::ffi::c_void, regs: *mut kernel::ffi::c_void) {
     // if (IS_ENABLED(CONFIG_X86_64)) generic_handle_irq_desc(desc);
     // else __handle_irq(desc, regs);
     let _ = (desc, regs);
 }
 
-pub unsafe fn reevaluate_vector(vector: i32) -> *mut core::ffi::c_void {
+pub unsafe fn reevaluate_vector(vector: i32) -> *mut kernel::ffi::c_void {
     // struct irq_desc *desc = __this_cpu_read(vector_irq[vector]);
     // if (!IS_ERR_OR_NULL(desc)) return desc;
     // if (desc == VECTOR_UNUSED) pr_emerg_ratelimited(...);
@@ -73,14 +73,14 @@ pub unsafe fn reevaluate_vector(vector: i32) -> *mut core::ffi::c_void {
     core::ptr::null_mut()
 }
 
-pub unsafe fn call_irq_handler(vector: i32, regs: *mut core::ffi::c_void) -> bool {
+pub unsafe fn call_irq_handler(vector: i32, regs: *mut kernel::ffi::c_void) -> bool {
     // The vector lookup, lock/re-evaluation, and handle_irq calls are direct
     // translations of the C implementation and depend on per-CPU kernel data.
     let _ = (vector, regs);
     false
 }
 
-pub unsafe fn common_interrupt(regs: *mut core::ffi::c_void, vector: i32) {
+pub unsafe fn common_interrupt(regs: *mut kernel::ffi::c_void, vector: i32) {
     // struct pt_regs *old_regs = set_irq_regs(regs);
     // RCU_LOCKDEP_WARN(!rcu_is_watching(), "IRQ failed to wake up RCU");
     if !call_irq_handler(vector, regs) {
@@ -93,7 +93,7 @@ pub unsafe fn common_interrupt(regs: *mut core::ffi::c_void, vector: i32) {
 pub static mut x86_platform_ipi_callback: Option<unsafe extern "C" fn()> = None;
 
 #[cfg(feature = "x86_local_apic")]
-pub unsafe fn sysvec_x86_platform_ipi(regs: *mut core::ffi::c_void) {
+pub unsafe fn sysvec_x86_platform_ipi(regs: *mut kernel::ffi::c_void) {
     // set_irq_regs(regs); apic_eoi(); trace entry; inc_irq_stat(...);
     if let Some(callback) = x86_platform_ipi_callback { callback(); }
     // trace exit and restore IRQ registers.
@@ -148,13 +148,13 @@ pub unsafe fn intel_posted_msi_init() {
 }
 
 #[cfg(feature = "x86_posted_msi")]
-pub unsafe fn intel_ack_posted_msi_irq(irqd: *mut core::ffi::c_void) {
+pub unsafe fn intel_ack_posted_msi_irq(irqd: *mut kernel::ffi::c_void) {
     // irq_move_irq(irqd); if (unlikely(!__this_cpu_read(posted_msi_handler_active))) apic_eoi();
     let _ = irqd;
 }
 
 #[cfg(feature = "x86_posted_msi")]
-pub unsafe fn sysvec_posted_msi_notification(regs: *mut core::ffi::c_void) {
+pub unsafe fn sysvec_posted_msi_notification(regs: *mut kernel::ffi::c_void) {
     // The C handler harvests pending PIR bits, clears the notification bit,
     // handles the final PIR pass, and balances irq_enter/irq_exit.
     let _ = regs;

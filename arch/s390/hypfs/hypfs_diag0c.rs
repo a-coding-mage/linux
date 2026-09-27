@@ -14,8 +14,8 @@ const DBFS_D0C_HDR_VERSION: u32 = 0;
 /*
  * Get hypfs_diag0c_entry from CPU vector and store diag0c data
  */
-unsafe fn diag0c_fn(data: *mut core::ffi::c_void) {
-    diag0c((*(data as *mut *mut core::ffi::c_void)).add(smp_processor_id()));
+unsafe fn diag0c_fn(data: *mut kernel::ffi::c_void) {
+    diag0c((*(data as *mut *mut kernel::ffi::c_void)).add(smp_processor_id()));
 }
 
 /*
@@ -26,7 +26,7 @@ unsafe fn diag0c_store(count: *mut u32) -> *mut hypfs_diag0c_data {
     let cpu_count: u32;
     let mut cpu: u32;
     let mut i: u32;
-    let cpu_vec: *mut *mut core::ffi::c_void;
+    let cpu_vec: *mut *mut kernel::ffi::c_void;
 
     cpus_read_lock();
     cpu_count = num_online_cpus();
@@ -38,7 +38,7 @@ unsafe fn diag0c_store(count: *mut u32) -> *mut hypfs_diag0c_data {
     /* Note: Diag 0c needs 8 byte alignment and real storage */
     diag0c_data = kzalloc_flex(cpu_count);
     if diag0c_data.is_null() {
-        kfree(cpu_vec as *mut core::ffi::c_void);
+        kfree(cpu_vec as *mut kernel::ffi::c_void);
         cpus_read_unlock();
         return ERR_PTR(-12);
     }
@@ -46,13 +46,13 @@ unsafe fn diag0c_store(count: *mut u32) -> *mut hypfs_diag0c_data {
     /* Fill CPU vector for each online CPU */
     for_each_online_cpu!(cpu, {
         (*diag0c_data).entry.add(i as usize).as_mut().unwrap().cpu = cpu;
-        *cpu_vec.add(cpu as usize) = (*diag0c_data).entry.add(i as usize) as *mut core::ffi::c_void;
+        *cpu_vec.add(cpu as usize) = (*diag0c_data).entry.add(i as usize) as *mut kernel::ffi::c_void;
         i = i.wrapping_add(1);
     });
     /* Collect data all CPUs */
-    on_each_cpu(Some(diag0c_fn), cpu_vec as *mut core::ffi::c_void, 1);
+    on_each_cpu(Some(diag0c_fn), cpu_vec as *mut kernel::ffi::c_void, 1);
     *count = cpu_count;
-    kfree(cpu_vec as *mut core::ffi::c_void);
+    kfree(cpu_vec as *mut kernel::ffi::c_void);
     cpus_read_unlock();
     diag0c_data
 }
@@ -60,25 +60,25 @@ unsafe fn diag0c_store(count: *mut u32) -> *mut hypfs_diag0c_data {
 /*
  * Hypfs DBFS callback: Free diag 0c data
  */
-unsafe extern "C" fn dbfs_diag0c_free(data: *const core::ffi::c_void) {
-    kfree(data as *mut core::ffi::c_void);
+unsafe extern "C" fn dbfs_diag0c_free(data: *const kernel::ffi::c_void) {
+    kfree(data as *mut kernel::ffi::c_void);
 }
 
 /*
  * Hypfs DBFS callback: Create diag 0c data
  */
 unsafe extern "C" fn dbfs_diag0c_create(
-    data: *mut *mut core::ffi::c_void,
-    data_free_ptr: *mut *mut core::ffi::c_void,
+    data: *mut *mut kernel::ffi::c_void,
+    data_free_ptr: *mut *mut kernel::ffi::c_void,
     size: *mut usize,
 ) -> i32 {
     let mut count: u32 = 0;
     let diag0c_data = diag0c_store(&mut count);
-    if IS_ERR(diag0c_data as *const core::ffi::c_void) {
-        return PTR_ERR(diag0c_data as *const core::ffi::c_void);
+    if IS_ERR(diag0c_data as *const kernel::ffi::c_void) {
+        return PTR_ERR(diag0c_data as *const kernel::ffi::c_void);
     }
     memset(
-        &mut (*diag0c_data).hdr as *mut _ as *mut core::ffi::c_void,
+        &mut (*diag0c_data).hdr as *mut _ as *mut kernel::ffi::c_void,
         0,
         core::mem::size_of_val(&(*diag0c_data).hdr),
     );
@@ -86,8 +86,8 @@ unsafe extern "C" fn dbfs_diag0c_create(
     (*diag0c_data).hdr.len = count as usize * core::mem::size_of::<hypfs_diag0c_entry>();
     (*diag0c_data).hdr.version = DBFS_D0C_HDR_VERSION;
     (*diag0c_data).hdr.count = count;
-    *data = diag0c_data as *mut core::ffi::c_void;
-    *data_free_ptr = diag0c_data as *mut core::ffi::c_void;
+    *data = diag0c_data as *mut kernel::ffi::c_void;
+    *data_free_ptr = diag0c_data as *mut kernel::ffi::c_void;
     *size = (*diag0c_data).hdr.len + core::mem::size_of::<hypfs_diag0c_hdr>();
     0
 }
@@ -96,7 +96,7 @@ unsafe extern "C" fn dbfs_diag0c_create(
  * Hypfs DBFS file structure
  */
 static mut dbfs_file_0c: hypfs_dbfs_file = hypfs_dbfs_file {
-    name: b"diag_0c\0".as_ptr() as *const core::ffi::c_char,
+    name: b"diag_0c\0".as_ptr() as *const kernel::ffi::c_char,
     data_create: Some(dbfs_diag0c_create),
     data_free: Some(dbfs_diag0c_free),
 };

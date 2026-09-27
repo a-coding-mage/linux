@@ -12,7 +12,7 @@
 
 #[repr(C)]
 pub struct mtd_partition {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub offset: usize,
     pub size: usize,
 }
@@ -26,7 +26,7 @@ pub struct physmap_flash_data {
 
 #[repr(C)]
 pub struct resource {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub start: usize,
     pub end: usize,
     pub flags: u64,
@@ -34,12 +34,12 @@ pub struct resource {
 
 #[repr(C)]
 pub struct device {
-    pub platform_data: *mut core::ffi::c_void,
+    pub platform_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct platform_device {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: i32,
     pub num_resources: usize,
     pub resource: *mut resource,
@@ -48,8 +48,8 @@ pub struct platform_device {
 
 #[repr(C)]
 pub struct regulator_consumer_supply {
-    pub supply: *const core::ffi::c_char,
-    pub dev_name: *const core::ffi::c_char,
+    pub supply: *const kernel::ffi::c_char,
+    pub dev_name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -70,11 +70,11 @@ unsafe extern "C" {
         num_supplies: usize,
     ) -> i32;
     fn platform_add_devices(devices: *mut *mut platform_device, num: usize) -> i32;
-    fn clk_get(dev: *mut core::ffi::c_void, id: *const core::ffi::c_char) -> *mut clk;
+    fn clk_get(dev: *mut kernel::ffi::c_void, id: *const kernel::ffi::c_char) -> *mut clk;
     fn clk_set_rate(clk: *mut clk, rate: u32) -> i32;
     fn clk_put(clk: *mut clk);
     fn plat_irq_setup_pins(mode: u32);
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
 }
 
 const MTDPART_OFS_APPEND: usize = usize::MAX;
@@ -167,7 +167,7 @@ unsafe fn apsh4a3a_clk_init() -> i32 {
 }
 
 /* Initialize the board */
-unsafe fn apsh4a3a_setup(_cmdline_p: *mut *mut core::ffi::c_char) {
+unsafe fn apsh4a3a_setup(_cmdline_p: *mut *mut kernel::ffi::c_char) {
     printk(b"Alpha Project AP-SH4A-3A support:\n\0".as_ptr() as _);
 }
 
@@ -188,8 +188,8 @@ fn apsh4a3a_mode_pins() -> i32 {
 /* The Machine Vector */
 #[repr(C)]
 struct sh_machine_vector {
-    mv_name: *const core::ffi::c_char,
-    mv_setup: unsafe fn(*mut *mut core::ffi::c_char),
+    mv_name: *const kernel::ffi::c_char,
+    mv_setup: unsafe fn(*mut *mut kernel::ffi::c_char),
     mv_clk_init: unsafe fn() -> i32,
     mv_init_irq: unsafe fn(),
     mv_mode_pins: fn() -> i32,

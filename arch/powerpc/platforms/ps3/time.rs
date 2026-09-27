@@ -14,9 +14,9 @@ extern "C" {
     fn ps3_os_area_get_rtc_diff() -> u64;
     fn firmware_has_feature(feature: u64) -> bool;
     fn platform_device_register_simple(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         id: i32,
-        res: *const core::ffi::c_void,
+        res: *const kernel::ffi::c_void,
         num: u32,
     ) -> *mut platform_device;
     fn ptr_err_or_zero(ptr: *mut platform_device) -> i32;
@@ -76,7 +76,7 @@ unsafe fn ps3_rtc_init() -> i32 {
     }
 
     pdev = platform_device_register_simple(
-        b"rtc-ps3\0".as_ptr() as *const core::ffi::c_char,
+        b"rtc-ps3\0".as_ptr() as *const kernel::ffi::c_char,
         -1,
         core::ptr::null(),
         0,

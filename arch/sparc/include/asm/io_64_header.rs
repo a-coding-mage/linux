@@ -4,8 +4,8 @@
 /* External kernel types and ASI constants are supplied by other headers. */
 
 extern "C" {
-    pub static mut kern_base: ::core::ffi::c_ulong;
-    pub static mut kern_size: ::core::ffi::c_ulong;
+    pub static mut kern_base: ::kernel::ffi::c_ulong;
+    pub static mut kern_size: ::kernel::ffi::c_ulong;
 }
 
 /* BIO layer definitions. */
@@ -44,20 +44,20 @@ pub unsafe fn __raw_writeq(q: u64, addr: *const u8) { ::core::arch::asm!("stxa {
 #[inline(always)] pub unsafe fn outl(l:u32,addr:usize){writel(l,addr as *mut u8)}
 
 extern "C" {
-    pub fn outsb(port: usize, buf: *const core::ffi::c_void, count: usize);
-    pub fn outsw(port: usize, buf: *const core::ffi::c_void, count: usize);
-    pub fn outsl(port: usize, buf: *const core::ffi::c_void, count: usize);
-    pub fn insb(port: usize, buf: *mut core::ffi::c_void, count: usize);
-    pub fn insw(port: usize, buf: *mut core::ffi::c_void, count: usize);
-    pub fn insl(port: usize, buf: *mut core::ffi::c_void, count: usize);
+    pub fn outsb(port: usize, buf: *const kernel::ffi::c_void, count: usize);
+    pub fn outsw(port: usize, buf: *const kernel::ffi::c_void, count: usize);
+    pub fn outsl(port: usize, buf: *const kernel::ffi::c_void, count: usize);
+    pub fn insb(port: usize, buf: *mut kernel::ffi::c_void, count: usize);
+    pub fn insw(port: usize, buf: *mut kernel::ffi::c_void, count: usize);
+    pub fn insl(port: usize, buf: *mut kernel::ffi::c_void, count: usize);
 }
 
-#[inline(always)] pub unsafe fn readsb(port:*const u8,buf:*mut core::ffi::c_void,count:usize){insb(port as usize,buf,count)}
-#[inline(always)] pub unsafe fn readsw(port:*const u8,buf:*mut core::ffi::c_void,count:usize){insw(port as usize,buf,count)}
-#[inline(always)] pub unsafe fn readsl(port:*const u8,buf:*mut core::ffi::c_void,count:usize){insl(port as usize,buf,count)}
-#[inline(always)] pub unsafe fn writesb(port:*mut u8,buf:*const core::ffi::c_void,count:usize){outsb(port as usize,buf,count)}
-#[inline(always)] pub unsafe fn writesw(port:*mut u8,buf:*const core::ffi::c_void,count:usize){outsw(port as usize,buf,count)}
-#[inline(always)] pub unsafe fn writesl(port:*mut u8,buf:*const core::ffi::c_void,count:usize){outsl(port as usize,buf,count)}
+#[inline(always)] pub unsafe fn readsb(port:*const u8,buf:*mut kernel::ffi::c_void,count:usize){insb(port as usize,buf,count)}
+#[inline(always)] pub unsafe fn readsw(port:*const u8,buf:*mut kernel::ffi::c_void,count:usize){insw(port as usize,buf,count)}
+#[inline(always)] pub unsafe fn readsl(port:*const u8,buf:*mut kernel::ffi::c_void,count:usize){insl(port as usize,buf,count)}
+#[inline(always)] pub unsafe fn writesb(port:*mut u8,buf:*const kernel::ffi::c_void,count:usize){outsb(port as usize,buf,count)}
+#[inline(always)] pub unsafe fn writesw(port:*mut u8,buf:*const kernel::ffi::c_void,count:usize){outsw(port as usize,buf,count)}
+#[inline(always)] pub unsafe fn writesl(port:*mut u8,buf:*const kernel::ffi::c_void,count:usize){outsl(port as usize,buf,count)}
 
 pub const IO_SPACE_LIMIT: u64 = 0xffff_ffff_ffff_ffff;
 

@@ -25,7 +25,7 @@ unsafe fn wait_xfered() {
     }
 }
 
-pub unsafe extern "C" fn prom_putchar(c: core::ffi::c_char) {
+pub unsafe extern "C" fn prom_putchar(c: kernel::ffi::c_char) {
     wait_xfered();
     bcm_uart0_writel(c as u32, UART_FIFO_REG);
     wait_xfered();

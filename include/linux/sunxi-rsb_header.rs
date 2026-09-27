@@ -39,14 +39,14 @@ pub unsafe fn to_sunxi_rsb_device(d: *mut device) -> *mut sunxi_rsb_device {
 #[inline]
 pub unsafe fn sunxi_rsb_device_get_drvdata(
     rdev: *const sunxi_rsb_device,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     dev_get_drvdata!(&(*rdev).dev)
 }
 
 #[inline]
 pub unsafe fn sunxi_rsb_device_set_drvdata(
     rdev: *mut sunxi_rsb_device,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) {
     dev_set_drvdata!(&mut (*rdev).dev, data);
 }
@@ -96,7 +96,7 @@ pub unsafe extern "C" fn __devm_regmap_init_sunxi_rsb(
     rdev: *mut sunxi_rsb_device,
     config: *const regmap_config,
     lock_key: *mut lock_class_key,
-    lock_name: *const core::ffi::c_char,
+    lock_name: *const kernel::ffi::c_char,
 ) -> *mut regmap;
 
 /**

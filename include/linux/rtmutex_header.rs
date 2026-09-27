@@ -6,7 +6,7 @@
  * C header dependencies are supplied by the surrounding kernel translation.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     pub static mut max_lock_depth: i32;

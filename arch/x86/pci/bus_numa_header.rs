@@ -16,26 +16,26 @@ pub struct pci_root_info {
     pub name: [i8; 12],
     pub resources: list_head,
     pub busn: resource,
-    pub node: ::core::ffi::c_int,
-    pub link: ::core::ffi::c_int,
+    pub node: ::kernel::ffi::c_int,
+    pub link: ::kernel::ffi::c_int,
 }
 
 extern "C" {
     pub static mut pci_root_infos: list_head;
 
     pub fn alloc_pci_root_info(
-        bus_min: ::core::ffi::c_int,
-        bus_max: ::core::ffi::c_int,
-        node: ::core::ffi::c_int,
-        link: ::core::ffi::c_int,
+        bus_min: ::kernel::ffi::c_int,
+        bus_max: ::kernel::ffi::c_int,
+        node: ::kernel::ffi::c_int,
+        link: ::kernel::ffi::c_int,
     ) -> *mut pci_root_info;
 
     pub fn update_res(
         info: *mut pci_root_info,
         start: resource_size_t,
         end: resource_size_t,
-        flags: ::core::ffi::c_ulong,
-        merge: ::core::ffi::c_int,
+        flags: ::kernel::ffi::c_ulong,
+        merge: ::kernel::ffi::c_int,
     );
 }
 

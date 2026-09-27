@@ -3,7 +3,7 @@
  * Copyright (c) 2023, Linaro Ltd.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct device {
@@ -41,7 +41,7 @@ extern "C" {
         first_id: u32,
         num_clocks: u32,
         data: *const icc_clk_data,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn icc_clk_unregister(provider: *mut icc_provider);
 }

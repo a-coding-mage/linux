@@ -9,34 +9,34 @@
 pub const MAX_PHYS_ADDRESS: usize = 1usize << MAX_PHYS_ADDRESS_BITS;
 
 unsafe extern "C" {
-    pub static mut kern_linear_pte_xor: [core::ffi::c_ulong; 4];
-    pub static mut sparc64_highest_unlocked_tlb_ent: core::ffi::c_uint;
-    pub static mut sparc64_kern_pri_context: core::ffi::c_ulong;
-    pub static mut sparc64_kern_pri_nuc_bits: core::ffi::c_ulong;
-    pub static mut sparc64_kern_sec_context: core::ffi::c_ulong;
+    pub static mut kern_linear_pte_xor: [kernel::ffi::c_ulong; 4];
+    pub static mut sparc64_highest_unlocked_tlb_ent: kernel::ffi::c_uint;
+    pub static mut sparc64_kern_pri_context: kernel::ffi::c_ulong;
+    pub static mut sparc64_kern_pri_nuc_bits: kernel::ffi::c_ulong;
+    pub static mut sparc64_kern_sec_context: kernel::ffi::c_ulong;
     pub fn mmu_info(m: *mut seq_file);
 }
 
 #[repr(C)]
 pub struct linux_prom_translation {
-    pub virt: core::ffi::c_ulong,
-    pub size: core::ffi::c_ulong,
-    pub data: core::ffi::c_ulong,
+    pub virt: kernel::ffi::c_ulong,
+    pub size: kernel::ffi::c_ulong,
+    pub data: kernel::ffi::c_ulong,
 }
 
 /* Exported for kernel TLB miss handling in ktlb.S */
 unsafe extern "C" {
     pub static mut prom_trans: [linux_prom_translation; 512];
-    pub static mut prom_trans_ents: core::ffi::c_uint;
+    pub static mut prom_trans_ents: kernel::ffi::c_uint;
 }
 
 /* Exported for SMP bootup purposes. */
 unsafe extern "C" {
-    pub static mut kern_locked_tte_data: core::ffi::c_ulong;
+    pub static mut kern_locked_tte_data: kernel::ffi::c_ulong;
 }
 
 unsafe extern "C" {
-    pub fn prom_world(enter: core::ffi::c_int);
+    pub fn prom_world(enter: kernel::ffi::c_int);
 }
 
 // Opaque declaration corresponding to struct seq_file from the kernel headers.

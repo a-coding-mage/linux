@@ -22,14 +22,14 @@ extern "C" {
         type_: *const key_type,
         payload: *const key_payload,
         restriction_key: *mut key,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn restrict_link_by_digsig_builtin(
         dest_keyring: *mut key,
         type_: *const key_type,
         payload: *const key_payload,
         restriction_key: *mut key,
-    ) -> ::core::ffi::c_int;
-    pub fn load_module_cert(keyring: *mut key) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn load_module_cert(keyring: *mut key) -> ::kernel::ffi::c_int;
 }
 
 // When CONFIG_SYSTEM_TRUSTED_KEYRING is disabled:
@@ -37,7 +37,7 @@ extern "C" {
 // restrict_link_reject, and load_module_cert returns 0.
 // The aliases and fallback are selected by the build configuration.
 #[inline]
-pub unsafe fn load_module_cert_disabled(_keyring: *mut key) -> ::core::ffi::c_int {
+pub unsafe fn load_module_cert_disabled(_keyring: *mut key) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -48,14 +48,14 @@ extern "C" {
         type_: *const key_type,
         payload: *const key_payload,
         restriction_key: *mut key,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn restrict_link_by_digsig_builtin_and_secondary(
         keyring: *mut key,
         type_: *const key_type,
         payload: *const key_payload,
         restriction_key: *mut key,
-    ) -> ::core::ffi::c_int;
-    pub fn add_to_secondary_keyring(source: *const ::core::ffi::c_char, data: *const ::core::ffi::c_void, len: usize);
+    ) -> ::kernel::ffi::c_int;
+    pub fn add_to_secondary_keyring(source: *const ::kernel::ffi::c_char, data: *const ::kernel::ffi::c_void, len: usize);
 }
 
 // When CONFIG_SECONDARY_TRUSTED_KEYRING is disabled, the restriction
@@ -63,8 +63,8 @@ extern "C" {
 // an empty inline function.
 #[inline]
 pub unsafe fn add_to_secondary_keyring_disabled(
-    _source: *const ::core::ffi::c_char,
-    _data: *const ::core::ffi::c_void,
+    _source: *const ::kernel::ffi::c_char,
+    _data: *const ::kernel::ffi::c_void,
     _len: usize,
 ) {
 }
@@ -76,7 +76,7 @@ extern "C" {
         type_: *const key_type,
         payload: *const key_payload,
         restrict_key: *mut key,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn set_machine_trusted_keys(keyring: *mut key);
 }
 
@@ -93,13 +93,13 @@ extern "C" {
         hash: *const u8,
         hash_len: usize,
         hash_type: blacklist_hash_type,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn is_hash_blacklisted(
         hash: *const u8,
         hash_len: usize,
         hash_type: blacklist_hash_type,
-    ) -> ::core::ffi::c_int;
-    pub fn is_binary_blacklisted(hash: *const u8, hash_len: usize) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn is_binary_blacklisted(hash: *const u8, hash_len: usize) -> ::kernel::ffi::c_int;
 }
 
 // When CONFIG_SYSTEM_BLACKLIST_KEYRING is disabled, is_hash_blacklisted and
@@ -109,12 +109,12 @@ pub unsafe fn is_hash_blacklisted_disabled(
     _hash: *const u8,
     _hash_len: usize,
     _hash_type: blacklist_hash_type,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     0
 }
 
 #[inline]
-pub unsafe fn is_binary_blacklisted_disabled(_hash: *const u8, _hash_len: usize) -> ::core::ffi::c_int {
+pub unsafe fn is_binary_blacklisted_disabled(_hash: *const u8, _hash_len: usize) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -125,22 +125,22 @@ pub struct pkcs7_message {
 
 // CONFIG_SYSTEM_REVOCATION_LIST
 extern "C" {
-    pub fn add_key_to_revocation_list(data: *const ::core::ffi::c_char, size: usize) -> ::core::ffi::c_int;
-    pub fn is_key_on_revocation_list(pkcs7: *mut pkcs7_message) -> ::core::ffi::c_int;
+    pub fn add_key_to_revocation_list(data: *const ::kernel::ffi::c_char, size: usize) -> ::kernel::ffi::c_int;
+    pub fn is_key_on_revocation_list(pkcs7: *mut pkcs7_message) -> ::kernel::ffi::c_int;
 }
 
 // When CONFIG_SYSTEM_REVOCATION_LIST is disabled, add_key_to_revocation_list
 // returns 0 and is_key_on_revocation_list returns -ENOKEY.
 #[inline]
 pub unsafe fn add_key_to_revocation_list_disabled(
-    _data: *const ::core::ffi::c_char,
+    _data: *const ::kernel::ffi::c_char,
     _size: usize,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     0
 }
 
 #[inline]
-pub unsafe fn is_key_on_revocation_list_disabled(_pkcs7: *mut pkcs7_message) -> ::core::ffi::c_int {
+pub unsafe fn is_key_on_revocation_list_disabled(_pkcs7: *mut pkcs7_message) -> ::kernel::ffi::c_int {
     -ENOKEY
 }
 

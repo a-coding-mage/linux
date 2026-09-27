@@ -20,13 +20,13 @@ pub struct pwrseq_device {
 }
 
 pub type pwrseq_power_state_func =
-    Option<unsafe extern "C" fn(*mut pwrseq_device) -> core::ffi::c_int>;
+    Option<unsafe extern "C" fn(*mut pwrseq_device) -> kernel::ffi::c_int>;
 pub type pwrseq_match_func = Option<
-    unsafe extern "C" fn(*mut pwrseq_device, *mut device) -> core::ffi::c_int,
+    unsafe extern "C" fn(*mut pwrseq_device, *mut device) -> kernel::ffi::c_int,
 >;
 
-pub const PWRSEQ_NO_MATCH: core::ffi::c_int = 0;
-pub const PWRSEQ_MATCH_OK: core::ffi::c_int = 1;
+pub const PWRSEQ_NO_MATCH: kernel::ffi::c_int = 0;
+pub const PWRSEQ_MATCH_OK: kernel::ffi::c_int = 1;
 
 /**
  * struct pwrseq_unit_data - Configuration of a single power sequencing
@@ -41,7 +41,7 @@ pub const PWRSEQ_MATCH_OK: core::ffi::c_int = 1;
  */
 #[repr(C)]
 pub struct pwrseq_unit_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub deps: *const *const pwrseq_unit_data,
     pub enable: pwrseq_power_state_func,
     pub disable: pwrseq_power_state_func,
@@ -59,7 +59,7 @@ pub struct pwrseq_unit_data {
  */
 #[repr(C)]
 pub struct pwrseq_target_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub unit: *const pwrseq_unit_data,
     pub post_enable: pwrseq_power_state_func,
 }
@@ -76,7 +76,7 @@ pub struct pwrseq_target_data {
 pub struct pwrseq_config {
     pub parent: *mut device,
     pub owner: *mut module,
-    pub drvdata: *mut core::ffi::c_void,
+    pub drvdata: *mut kernel::ffi::c_void,
     pub r#match: pwrseq_match_func,
     pub targets: *const *const pwrseq_target_data,
 }
@@ -88,7 +88,7 @@ unsafe extern "C" {
         dev: *mut device,
         config: *const pwrseq_config,
     ) -> *mut pwrseq_device;
-    pub fn pwrseq_device_get_drvdata(pwrseq: *mut pwrseq_device) -> *mut core::ffi::c_void;
+    pub fn pwrseq_device_get_drvdata(pwrseq: *mut pwrseq_device) -> *mut kernel::ffi::c_void;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

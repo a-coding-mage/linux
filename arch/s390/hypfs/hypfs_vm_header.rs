@@ -32,13 +32,13 @@ pub struct diag2fc_data {
     pub idle_samp: u32,
     pub other_samp: u32,
     pub total_samp: u32,
-    pub guest_name: [core::ffi::c_char; DIAG2FC_NAME_LEN],
+    pub guest_name: [kernel::ffi::c_char; DIAG2FC_NAME_LEN],
 }
 
 #[repr(C)]
 pub struct diag2fc_parm_list {
-    pub userid: [core::ffi::c_char; DIAG2FC_NAME_LEN],
-    pub aci_grp: [core::ffi::c_char; DIAG2FC_NAME_LEN],
+    pub userid: [kernel::ffi::c_char; DIAG2FC_NAME_LEN],
+    pub aci_grp: [kernel::ffi::c_char; DIAG2FC_NAME_LEN],
     pub addr: u64,
     pub size: u32,
     pub fmt: u32,
@@ -46,12 +46,12 @@ pub struct diag2fc_parm_list {
 
 extern "C" {
     pub fn diag2fc_store(
-        query: *mut core::ffi::c_char,
-        count: *mut core::ffi::c_uint,
-        offset: core::ffi::c_int,
-    ) -> *mut core::ffi::c_void;
-    pub fn diag2fc_free(data: *const core::ffi::c_void);
-    pub static mut diag2fc_guest_query: *mut core::ffi::c_char;
+        query: *mut kernel::ffi::c_char,
+        count: *mut kernel::ffi::c_uint,
+        offset: kernel::ffi::c_int,
+    ) -> *mut kernel::ffi::c_void;
+    pub fn diag2fc_free(data: *const kernel::ffi::c_void);
+    pub static mut diag2fc_guest_query: *mut kernel::ffi::c_char;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

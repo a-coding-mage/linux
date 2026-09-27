@@ -25,7 +25,7 @@ pub unsafe fn __cryptd_aead_cast(tfm: *mut crypto_aead) -> *mut cryptd_aead {
 
 unsafe extern "C" {
     pub fn cryptd_alloc_aead(
-        alg_name: *const core::ffi::c_char,
+        alg_name: *const kernel::ffi::c_char,
         type_: u32,
         mask: u32,
     ) -> *mut cryptd_aead;

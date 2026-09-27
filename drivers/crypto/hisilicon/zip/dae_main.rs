@@ -37,7 +37,7 @@ const DAE_AXI_SHUTDOWN_EN_MASK: u32 = BIT(0) | BIT(5);
 #[repr(C)]
 struct HisiDaeHwError {
     int_msk: u32,
-    msg: *const core::ffi::c_char,
+    msg: *const kernel::ffi::c_char,
 }
 
 static DAE_HW_ERROR: [HisiDaeHwError; 5] = [

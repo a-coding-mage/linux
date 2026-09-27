@@ -65,7 +65,7 @@ static cs_info: [cs_data; 6] = [
 
 #[repr(C)]
 struct ebi2_xmem_prop {
-    prop: *const core::ffi::c_char,
+    prop: *const kernel::ffi::c_char,
     max: u32,
     slowreg: bool,
     shift: u16,
@@ -84,7 +84,7 @@ static xmem_props: [ebi2_xmem_prop; 9] = [
 ];
 
 // The following function bodies retain the C driver's logic; kernel symbols and types are external dependencies.
-unsafe fn qcom_ebi2_setup_chipselect(np: *mut device_node, dev: *mut device, ebi2_base: *mut core::ffi::c_void, ebi2_xmem: *mut core::ffi::c_void, csindex: u32) {
+unsafe fn qcom_ebi2_setup_chipselect(np: *mut device_node, dev: *mut device, ebi2_base: *mut kernel::ffi::c_void, ebi2_xmem: *mut kernel::ffi::c_void, csindex: u32) {
     let csd = &cs_info[csindex as usize];
     let mut val = readl(ebi2_base);
     val |= csd.enable_mask;
@@ -114,8 +114,8 @@ unsafe fn qcom_ebi2_probe(pdev: *mut platform_device) -> i32 {
     let np = (*(*pdev).dev.of_node);
     let dev = &mut (*pdev).dev as *mut device;
     let mut res: *mut resource;
-    let mut ebi2_base: *mut core::ffi::c_void;
-    let mut ebi2_xmem: *mut core::ffi::c_void;
+    let mut ebi2_base: *mut kernel::ffi::c_void;
+    let mut ebi2_xmem: *mut kernel::ffi::c_void;
     let ebi2xclk = devm_clk_get_enabled(dev, b"ebi2x\0".as_ptr() as *const _);
     if is_err(ebi2xclk) { return ptr_err(ebi2xclk); }
     let ebi2clk = devm_clk_get_enabled(dev, b"ebi2\0".as_ptr() as *const _);
@@ -147,7 +147,7 @@ unsafe fn qcom_ebi2_probe(pdev: *mut platform_device) -> i32 {
 }
 
 #[repr(C)]
-struct of_device_id { compatible: *const core::ffi::c_char }
+struct of_device_id { compatible: *const kernel::ffi::c_char }
 static qcom_ebi2_of_match: [of_device_id; 3] = [
     of_device_id { compatible: b"qcom,msm8660-ebi2\0".as_ptr() as *const _ },
     of_device_id { compatible: b"qcom,apq8060-ebi2\0".as_ptr() as *const _ },

@@ -119,7 +119,7 @@ macro_rules! FEATURE_STATUS {
     ($name_:expr, $macro_:ident) => {
         feature_status {
             name: $name_.as_ptr(),
-            macro_: stringify!($macro_).as_ptr() as *const c_char,
+            macro_: concat!(stringify!($macro_), "\0").as_ptr() as *const c_char,
             tip: core::ptr::null(),
             is_builtin: unsafe { IS_BUILTIN($macro_) },
         }
@@ -130,7 +130,7 @@ macro_rules! FEATURE_STATUS_TIP {
     ($name_:expr, $macro_:ident, $tip_:expr) => {
         feature_status {
             name: $name_.as_ptr(),
-            macro_: stringify!($macro_).as_ptr() as *const c_char,
+            macro_: concat!(stringify!($macro_), "\0").as_ptr() as *const c_char,
             tip: $tip_.as_ptr(),
             is_builtin: unsafe { IS_BUILTIN($macro_) },
         }

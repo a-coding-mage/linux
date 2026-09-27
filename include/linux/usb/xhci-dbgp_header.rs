@@ -14,14 +14,14 @@
 // configuration in which it is disabled.
 #[cfg(CONFIG_EARLY_PRINTK_USB_XDBC)]
 extern "C" {
-    pub fn early_xdbc_parse_parameter(s: *mut core::ffi::c_char, keep_early: core::ffi::c_int) -> core::ffi::c_int;
-    pub fn early_xdbc_setup_hardware() -> core::ffi::c_int;
+    pub fn early_xdbc_parse_parameter(s: *mut kernel::ffi::c_char, keep_early: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub fn early_xdbc_setup_hardware() -> kernel::ffi::c_int;
     pub fn early_xdbc_register_console();
 }
 
 #[cfg(not(CONFIG_EARLY_PRINTK_USB_XDBC))]
 #[inline]
-pub unsafe fn early_xdbc_setup_hardware() -> core::ffi::c_int {
+pub unsafe fn early_xdbc_setup_hardware() -> kernel::ffi::c_int {
     // -ENODEV
     -19
 }

@@ -11,9 +11,9 @@
 struct uniphier_clk_mux {
     hw: clk_hw,
     regmap: *mut regmap,
-    reg: ::core::ffi::c_uint,
-    masks: *const ::core::ffi::c_uint,
-    vals: *const ::core::ffi::c_uint,
+    reg: ::kernel::ffi::c_uint,
+    masks: *const ::kernel::ffi::c_uint,
+    vals: *const ::kernel::ffi::c_uint,
 }
 
 // Equivalent to container_of(_hw, struct uniphier_clk_mux, hw).
@@ -21,7 +21,7 @@ unsafe fn to_uniphier_clk_mux(hw: *mut clk_hw) -> *mut uniphier_clk_mux {
     hw as *mut uniphier_clk_mux
 }
 
-unsafe fn uniphier_clk_mux_set_parent(hw: *mut clk_hw, index: u8) -> ::core::ffi::c_int {
+unsafe fn uniphier_clk_mux_set_parent(hw: *mut clk_hw, index: u8) -> ::kernel::ffi::c_int {
     let mux = &mut *to_uniphier_clk_mux(hw);
 
     regmap_write_bits(
@@ -34,15 +34,15 @@ unsafe fn uniphier_clk_mux_set_parent(hw: *mut clk_hw, index: u8) -> ::core::ffi
 
 unsafe fn uniphier_clk_mux_get_parent(hw: *mut clk_hw) -> u8 {
     let mux = &mut *to_uniphier_clk_mux(hw);
-    let num_parents: ::core::ffi::c_uint = clk_hw_get_num_parents(hw);
-    let mut val: ::core::ffi::c_uint = 0;
+    let num_parents: ::kernel::ffi::c_uint = clk_hw_get_num_parents(hw);
+    let mut val: ::kernel::ffi::c_uint = 0;
 
     let ret = regmap_read(mux.regmap, mux.reg, &mut val);
     if ret != 0 {
         return ret as u8;
     }
 
-    let mut i: ::core::ffi::c_uint = 0;
+    let mut i: ::kernel::ffi::c_uint = 0;
     while i < num_parents {
         if (*mux.masks.add(i as usize) & val) == *mux.vals.add(i as usize) {
             return i as u8;
@@ -62,7 +62,7 @@ static uniphier_clk_mux_ops: clk_ops = clk_ops {
 unsafe fn uniphier_clk_register_mux(
     dev: *mut device,
     regmap: *mut regmap,
-    name: *const ::core::ffi::c_char,
+    name: *const ::kernel::ffi::c_char,
     data: *const uniphier_clk_mux_data,
 ) -> *mut clk_hw {
     let mux = devm_kzalloc(

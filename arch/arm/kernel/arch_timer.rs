@@ -8,20 +8,20 @@
 
 // Declarations supplied by the corresponding kernel headers.
 extern "C" {
-    fn arch_timer_read_counter() -> ::core::ffi::c_ulong;
+    fn arch_timer_read_counter() -> ::kernel::ffi::c_ulong;
     fn arch_timer_get_rate() -> u32;
     fn register_current_timer_delay(timer: *mut delay_timer);
 }
 
 #[repr(C)]
 struct delay_timer {
-    read_current_timer: Option<unsafe extern "C" fn() -> ::core::ffi::c_ulong>,
+    read_current_timer: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_ulong>,
     freq: u32,
 }
 
 const ENXIO: i32 = 6;
 
-unsafe fn arch_timer_read_counter_long() -> ::core::ffi::c_ulong {
+unsafe fn arch_timer_read_counter_long() -> ::kernel::ffi::c_ulong {
     arch_timer_read_counter()
 }
 

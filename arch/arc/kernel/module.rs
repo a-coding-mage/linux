@@ -6,7 +6,7 @@
 // Linux kernel dependencies are supplied by the surrounding translation unit.
 
 #[inline]
-unsafe fn arc_write_me(addr: *mut u16, value: ::core::ffi::c_ulong) {
+unsafe fn arc_write_me(addr: *mut u16, value: ::kernel::ffi::c_ulong) {
     *addr = ((value & 0xffff0000) >> 16) as u16;
     *addr.add(1) = (value & 0xffff) as u16;
 }
@@ -18,7 +18,7 @@ unsafe fn arc_write_me(addr: *mut u16, value: ::core::ffi::c_ulong) {
 pub unsafe fn module_frob_arch_sections(
     _hdr: *mut Elf_Ehdr,
     _sechdrs: *mut Elf_Shdr,
-    secstr: *mut ::core::ffi::c_char,
+    secstr: *mut ::kernel::ffi::c_char,
     mod_: *mut module,
 ) -> i32 {
     #[cfg(CONFIG_ARC_DW2_UNWIND)]
@@ -39,7 +39,7 @@ pub unsafe fn module_arch_cleanup(mod_: *mut module) {
 
 pub unsafe fn apply_relocate_add(
     sechdrs: *mut Elf32_Shdr,
-    strtab: *const ::core::ffi::c_char,
+    strtab: *const ::kernel::ffi::c_char,
     symindex: u32, // sec index for sym tbl
     relsec: u32, // sec index for relo sec
     module: *mut module,
@@ -66,7 +66,7 @@ pub unsafe fn apply_relocate_add(
 
     i = 0;
     while i < n {
-        let s: *const ::core::ffi::c_char;
+        let s: *const ::kernel::ffi::c_char;
         location = tgt_addr.wrapping_add((*rel_entry.add(i as usize)).r_offset);
         sym_entry = sym_sec.add(ELF32_R_SYM((*rel_entry.add(i as usize)).r_info) as usize);
         relocation = (*sym_entry).st_value.wrapping_add((*rel_entry.add(i as usize)).r_addend as Elf32_Addr);
@@ -81,7 +81,7 @@ pub unsafe fn apply_relocate_add(
         relo_type = ELF32_R_TYPE((*rel_entry.add(i as usize)).r_info) as i32;
 
         if R_ARC_32_ME == relo_type {
-            arc_write_me(location as *mut u16, relocation as ::core::ffi::c_ulong);
+            arc_write_me(location as *mut u16, relocation as ::kernel::ffi::c_ulong);
         } else if R_ARC_32 == relo_type {
             *(location as *mut Elf32_Addr) = relocation;
         } else if R_ARC_32_PCREL == relo_type {

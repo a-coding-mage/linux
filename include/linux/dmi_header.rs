@@ -87,8 +87,8 @@ pub struct dmi_header {
 pub struct dmi_device {
     pub list: list_head,
     pub type_: i32,
-    pub name: *const core::ffi::c_char,
-    pub device_data: *mut core::ffi::c_void, /* Type specific data */
+    pub name: *const kernel::ffi::c_char,
+    pub device_data: *mut kernel::ffi::c_void, /* Type specific data */
 }
 
 pub const DMI_A_INFO_ENT_MIN_SIZE: usize = 0x6;
@@ -123,24 +123,24 @@ extern "C" {
     pub static mut dmi_kobj: *mut kobject;
     pub fn dmi_check_system(list: *const dmi_system_id) -> i32;
     pub fn dmi_first_match(list: *const dmi_system_id) -> *const dmi_system_id;
-    pub fn dmi_get_system_info(field: i32) -> *const core::ffi::c_char;
-    pub fn dmi_find_device(type_: i32, name: *const core::ffi::c_char,
+    pub fn dmi_get_system_info(field: i32) -> *const kernel::ffi::c_char;
+    pub fn dmi_find_device(type_: i32, name: *const kernel::ffi::c_char,
         from: *const dmi_device) -> *const dmi_device;
     pub fn dmi_setup();
     pub fn dmi_get_date(field: i32, yearp: *mut i32, monthp: *mut i32, dayp: *mut i32) -> bool;
     pub fn dmi_get_bios_year() -> i32;
-    pub fn dmi_name_in_vendors(string: *const core::ffi::c_char) -> i32;
-    pub fn dmi_name_in_serial(string: *const core::ffi::c_char) -> i32;
+    pub fn dmi_name_in_vendors(string: *const kernel::ffi::c_char) -> i32;
+    pub fn dmi_name_in_serial(string: *const kernel::ffi::c_char) -> i32;
     pub static mut dmi_available: i32;
-    pub fn dmi_walk(decode: Option<unsafe extern "C" fn(*const dmi_header, *mut core::ffi::c_void)>,
-        private_data: *mut core::ffi::c_void) -> i32;
-    pub fn dmi_match(f: dmi_field, string: *const core::ffi::c_char) -> bool;
-    pub fn dmi_memdev_name(handle: u16, bank: *mut *const core::ffi::c_char,
-        device: *mut *const core::ffi::c_char);
+    pub fn dmi_walk(decode: Option<unsafe extern "C" fn(*const dmi_header, *mut kernel::ffi::c_void)>,
+        private_data: *mut kernel::ffi::c_void) -> i32;
+    pub fn dmi_match(f: dmi_field, string: *const kernel::ffi::c_char) -> bool;
+    pub fn dmi_memdev_name(handle: u16, bank: *mut *const kernel::ffi::c_char,
+        device: *mut *const kernel::ffi::c_char);
     pub fn dmi_memdev_size(handle: u16) -> u64;
     pub fn dmi_memdev_type(handle: u16) -> u8;
     pub fn dmi_memdev_handle(slot: i32) -> u16;
-    pub fn dmi_string_nosave(dm: *const dmi_header, s: u8) -> *const core::ffi::c_char;
+    pub fn dmi_string_nosave(dm: *const dmi_header, s: u8) -> *const kernel::ffi::c_char;
 }
 
 #[cfg(not(CONFIG_DMI))]
@@ -149,9 +149,9 @@ pub const dmi_available: i32 = 0;
 #[cfg(not(CONFIG_DMI))]
 pub unsafe fn dmi_check_system(_list: *const dmi_system_id) -> i32 { 0 }
 #[cfg(not(CONFIG_DMI))]
-pub unsafe fn dmi_get_system_info(_field: i32) -> *const core::ffi::c_char { core::ptr::null() }
+pub unsafe fn dmi_get_system_info(_field: i32) -> *const kernel::ffi::c_char { core::ptr::null() }
 #[cfg(not(CONFIG_DMI))]
-pub unsafe fn dmi_find_device(_type_: i32, _name: *const core::ffi::c_char, _from: *const dmi_device) -> *const dmi_device { core::ptr::null() }
+pub unsafe fn dmi_find_device(_type_: i32, _name: *const kernel::ffi::c_char, _from: *const dmi_device) -> *const dmi_device { core::ptr::null() }
 #[cfg(not(CONFIG_DMI))]
 pub unsafe fn dmi_setup() {}
 #[cfg(not(CONFIG_DMI))]
@@ -164,15 +164,15 @@ pub unsafe fn dmi_get_date(_field: i32, yearp: *mut i32, monthp: *mut i32, dayp:
 #[cfg(not(CONFIG_DMI))]
 pub unsafe fn dmi_get_bios_year() -> i32 { -6 /* -ENXIO */ }
 #[cfg(not(CONFIG_DMI))]
-pub unsafe fn dmi_name_in_vendors(_s: *const core::ffi::c_char) -> i32 { 0 }
+pub unsafe fn dmi_name_in_vendors(_s: *const kernel::ffi::c_char) -> i32 { 0 }
 #[cfg(not(CONFIG_DMI))]
-pub unsafe fn dmi_name_in_serial(_s: *const core::ffi::c_char) -> i32 { 0 }
+pub unsafe fn dmi_name_in_serial(_s: *const kernel::ffi::c_char) -> i32 { 0 }
 #[cfg(not(CONFIG_DMI))]
-pub unsafe fn dmi_walk(_decode: Option<unsafe extern "C" fn(*const dmi_header, *mut core::ffi::c_void)>, _private_data: *mut core::ffi::c_void) -> i32 { -6 /* -ENXIO */ }
+pub unsafe fn dmi_walk(_decode: Option<unsafe extern "C" fn(*const dmi_header, *mut kernel::ffi::c_void)>, _private_data: *mut kernel::ffi::c_void) -> i32 { -6 /* -ENXIO */ }
 #[cfg(not(CONFIG_DMI))]
-pub unsafe fn dmi_match(_f: dmi_field, _str_: *const core::ffi::c_char) -> bool { false }
+pub unsafe fn dmi_match(_f: dmi_field, _str_: *const kernel::ffi::c_char) -> bool { false }
 #[cfg(not(CONFIG_DMI))]
-pub unsafe fn dmi_memdev_name(_handle: u16, _bank: *mut *const core::ffi::c_char, _device: *mut *const core::ffi::c_char) {}
+pub unsafe fn dmi_memdev_name(_handle: u16, _bank: *mut *const kernel::ffi::c_char, _device: *mut *const kernel::ffi::c_char) {}
 #[cfg(not(CONFIG_DMI))]
 pub unsafe fn dmi_memdev_size(_handle: u16) -> u64 { u64::MAX }
 #[cfg(not(CONFIG_DMI))]
@@ -182,6 +182,6 @@ pub unsafe fn dmi_memdev_handle(_slot: i32) -> u16 { 0xffff }
 #[cfg(not(CONFIG_DMI))]
 pub unsafe fn dmi_first_match(_list: *const dmi_system_id) -> *const dmi_system_id { core::ptr::null() }
 #[cfg(not(CONFIG_DMI))]
-pub unsafe fn dmi_string_nosave(_dm: *const dmi_header, _s: u8) -> *const core::ffi::c_char { b"\0".as_ptr() as *const core::ffi::c_char }
+pub unsafe fn dmi_string_nosave(_dm: *const dmi_header, _s: u8) -> *const kernel::ffi::c_char { b"\0".as_ptr() as *const kernel::ffi::c_char }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

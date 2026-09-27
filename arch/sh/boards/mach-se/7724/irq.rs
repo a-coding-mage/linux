@@ -14,8 +14,8 @@
 
 #[repr(C)]
 struct fpga_irq {
-    sraddr: ::core::ffi::c_ulong,
-    mraddr: ::core::ffi::c_ulong,
+    sraddr: ::kernel::ffi::c_ulong,
+    mraddr: ::kernel::ffi::c_ulong,
     mask: u16,
     base: u32,
 }
@@ -63,7 +63,7 @@ unsafe fn enable_se7724_irq(data: *mut irq_data) {
 }
 
 static mut se7724_irq_chip: irq_chip = irq_chip {
-    name: "SE7724-FPGA\\0".as_ptr() as *const ::core::ffi::c_char,
+    name: "SE7724-FPGA\\0".as_ptr() as *const ::kernel::ffi::c_char,
     irq_mask: Some(disable_se7724_irq),
     irq_unmask: Some(enable_se7724_irq),
 };
@@ -117,7 +117,7 @@ unsafe fn init_se7724_IRQ() {
             irq_base + i,
             &raw mut se7724_irq_chip,
             handle_level_irq,
-            "level\\0".as_ptr() as *const ::core::ffi::c_char,
+            "level\\0".as_ptr() as *const ::kernel::ffi::c_char,
         );
         i += 1;
     }

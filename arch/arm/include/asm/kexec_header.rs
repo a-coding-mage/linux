@@ -9,7 +9,7 @@ pub const KEXEC_CONTROL_MEMORY_LIMIT: usize = usize::MAX;
 
 pub const KEXEC_CONTROL_PAGE_SIZE: usize = 4096;
 
-pub const KEXEC_ARCH: _ = KEXEC_ARCH_ARM;
+pub const KEXEC_ARCH: u32 = KEXEC_ARCH_ARM;
 
 pub const KEXEC_ARM_ATAGS_OFFSET: usize = 0x1000;
 pub const KEXEC_ARM_ZIMAGE_OFFSET: usize = 0x8000;

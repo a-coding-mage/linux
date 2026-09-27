@@ -8,20 +8,20 @@
 
 #[repr(C)]
 struct _ccu_nk {
-    n: ::core::ffi::c_ulong,
-    min_n: ::core::ffi::c_ulong,
-    max_n: ::core::ffi::c_ulong,
-    k: ::core::ffi::c_ulong,
-    min_k: ::core::ffi::c_ulong,
-    max_k: ::core::ffi::c_ulong,
+    n: ::kernel::ffi::c_ulong,
+    min_n: ::kernel::ffi::c_ulong,
+    max_n: ::kernel::ffi::c_ulong,
+    k: ::kernel::ffi::c_ulong,
+    min_k: ::kernel::ffi::c_ulong,
+    max_k: ::kernel::ffi::c_ulong,
 }
 
 unsafe fn ccu_nk_find_best(
-    parent: ::core::ffi::c_ulong,
-    rate: ::core::ffi::c_ulong,
+    parent: ::kernel::ffi::c_ulong,
+    rate: ::kernel::ffi::c_ulong,
     nk: *mut _ccu_nk,
-) -> ::core::ffi::c_ulong {
-    let mut best_rate: ::core::ffi::c_ulong = 0;
+) -> ::kernel::ffi::c_ulong {
+    let mut best_rate: ::kernel::ffi::c_ulong = 0;
     let mut best_k: u32 = 0;
     let mut best_n: u32 = 0;
     let mut _k: u32 = (*nk).min_k as u32;
@@ -60,7 +60,7 @@ unsafe fn ccu_nk_is_enabled(hw: *mut clk_hw) -> i32 {
     ccu_gate_helper_is_enabled(&mut (*nk).common, (*nk).enable)
 }
 
-unsafe fn ccu_nk_recalc_rate(hw: *mut clk_hw, parent_rate: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+unsafe fn ccu_nk_recalc_rate(hw: *mut clk_hw, parent_rate: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     let nk = hw_to_ccu_nk(hw);
     let reg = readl((*nk).common.base.add((*nk).common.reg as usize));
     let mut n = (reg >> (*nk).n.shift) & ((1u32 << (*nk).n.width) - 1);
@@ -87,7 +87,7 @@ unsafe fn ccu_nk_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request) -> 
     0
 }
 
-unsafe fn ccu_nk_set_rate(hw: *mut clk_hw, rate: ::core::ffi::c_ulong, parent_rate: ::core::ffi::c_ulong) -> i32 {
+unsafe fn ccu_nk_set_rate(hw: *mut clk_hw, rate: ::kernel::ffi::c_ulong, parent_rate: ::kernel::ffi::c_ulong) -> i32 {
     let nk = hw_to_ccu_nk(hw);
     let mut _nk = _ccu_nk { n: 0, min_n: 0, max_n: 0, k: 0, min_k: 0, max_k: 0 };
     let mut rate = rate;
@@ -98,7 +98,7 @@ unsafe fn ccu_nk_set_rate(hw: *mut clk_hw, rate: ::core::ffi::c_ulong, parent_ra
     _nk.max_k = if (*nk).k.max != 0 { (*nk).k.max as _ } else { 1 << (*nk).k.width };
     ccu_nk_find_best(parent_rate, rate, &mut _nk);
 
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
     spin_lock_irqsave((*nk).common.lock, &mut flags);
     let mut reg = readl((*nk).common.base.add((*nk).common.reg as usize));
     reg &= !genmask((*nk).n.width + (*nk).n.shift - 1, (*nk).n.shift);
@@ -116,9 +116,9 @@ pub struct clk_ops {
     pub disable: Option<unsafe fn(*mut clk_hw)>,
     pub enable: Option<unsafe fn(*mut clk_hw) -> i32>,
     pub is_enabled: Option<unsafe fn(*mut clk_hw) -> i32>,
-    pub recalc_rate: Option<unsafe fn(*mut clk_hw, ::core::ffi::c_ulong) -> ::core::ffi::c_ulong>,
+    pub recalc_rate: Option<unsafe fn(*mut clk_hw, ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong>,
     pub determine_rate: Option<unsafe fn(*mut clk_hw, *mut clk_rate_request) -> i32>,
-    pub set_rate: Option<unsafe fn(*mut clk_hw, ::core::ffi::c_ulong, ::core::ffi::c_ulong) -> i32>,
+    pub set_rate: Option<unsafe fn(*mut clk_hw, ::kernel::ffi::c_ulong, ::kernel::ffi::c_ulong) -> i32>,
 }
 
 pub static ccu_nk_ops: clk_ops = clk_ops {

@@ -14,13 +14,13 @@ pub struct work_struct {
 }
 
 extern "C" {
-    fn pr_info(format: *const core::ffi::c_char, ...);
+    fn pr_info(format: *const kernel::ffi::c_char, ...);
     fn dump_stack();
-    fn queue_work(workqueue: *mut core::ffi::c_void, work: *mut work_struct) -> bool;
+    fn queue_work(workqueue: *mut kernel::ffi::c_void, work: *mut work_struct) -> bool;
     fn flush_work(work: *mut work_struct);
     fn stack_trace_save(entries: *mut usize, size: usize, skipnr: usize) -> u32;
     fn stack_trace_print(entries: *const usize, nr_entries: u32, spaces: usize);
-    static mut system_bh_wq: *mut core::ffi::c_void;
+    static mut system_bh_wq: *mut kernel::ffi::c_void;
 }
 
 unsafe extern "C" fn backtrace_test_bh_workfn(_work: *mut work_struct) {

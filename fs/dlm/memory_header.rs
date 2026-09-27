@@ -11,7 +11,7 @@
 
 // C header guard: __MEMORY_DOT_H__
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Opaque types declared in other headers.
 #[repr(C)]

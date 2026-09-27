@@ -74,13 +74,13 @@ pub struct pt_regs {
 }
 
 unsafe extern "C" {
-    pub fn die(msg: *const core::ffi::c_char, regs: *mut pt_regs, err: i32);
+    pub fn die(msg: *const kernel::ffi::c_char, regs: *mut pt_regs, err: i32);
     pub fn arm_notify_die(
-        str_: *const core::ffi::c_char,
+        str_: *const kernel::ffi::c_char,
         regs: *mut pt_regs,
         signo: i32,
         si_code: i32,
-        addr: *mut core::ffi::c_void,
+        addr: *mut kernel::ffi::c_void,
         err: usize,
         trap: usize,
     );
@@ -98,9 +98,9 @@ pub const FAULT_CODE_DEBUG: i32 = 2;
 pub type FaultHandler = unsafe extern "C" fn(usize, u32, *mut pt_regs) -> i32;
 
 unsafe extern "C" {
-    pub fn hook_fault_code(nr: i32, f: FaultHandler, sig: i32, code: i32, name: *const core::ffi::c_char);
-    pub fn hook_ifault_code(nr: i32, f: FaultHandler, sig: i32, code: i32, name: *const core::ffi::c_char);
-    pub fn c_backtrace(fp: usize, pmode: i32, loglvl: *const core::ffi::c_char);
+    pub fn hook_fault_code(nr: i32, f: FaultHandler, sig: i32, code: i32, name: *const kernel::ffi::c_char);
+    pub fn hook_ifault_code(nr: i32, f: FaultHandler, sig: i32, code: i32, name: *const kernel::ffi::c_char);
+    pub fn c_backtrace(fp: usize, pmode: i32, loglvl: *const kernel::ffi::c_char);
 }
 
 #[repr(C)]
@@ -109,7 +109,7 @@ pub struct mm_struct {
 }
 
 unsafe extern "C" {
-    pub fn show_pte(lvl: *const core::ffi::c_char, mm: *mut mm_struct, addr: usize);
+    pub fn show_pte(lvl: *const kernel::ffi::c_char, mm: *mut mm_struct, addr: usize);
     pub fn __show_regs(regs: *mut pt_regs);
     pub fn __show_regs_alloc_free(regs: *mut pt_regs);
 }

@@ -12,7 +12,7 @@
 // Corresponds to <linux/init.h> and <uapi/asm/setup.h>.
 
 unsafe extern "C" {
-    pub static mut external_cmdline_buffer: core::ffi::c_char;
+    pub static mut external_cmdline_buffer: kernel::ffi::c_char;
 
     // C __init annotation is build-system/linker metadata; preserve its intent here.
     pub fn setup_arch_memory();

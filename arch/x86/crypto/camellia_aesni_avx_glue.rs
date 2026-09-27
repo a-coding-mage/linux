@@ -13,9 +13,9 @@ pub const CAMELLIA_AESNI_PARALLEL_BLOCKS: usize = 16;
 
 /* 16-way parallel cipher functions (avx/aes-ni) */
 extern "C" {
-    pub fn camellia_ecb_enc_16way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn camellia_ecb_dec_16way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
-    pub fn camellia_cbc_dec_16way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_ecb_enc_16way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_ecb_dec_16way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
+    pub fn camellia_cbc_dec_16way(ctx: *const kernel::ffi::c_void, dst: *mut u8, src: *const u8);
 }
 
 unsafe fn camellia_setkey(
@@ -97,7 +97,7 @@ static mut camellia_algs: [skcipher_alg; 2] = [
 ];
 
 unsafe fn camellia_aesni_init() -> i32 {
-    let mut feature_name: *const core::ffi::c_char;
+    let mut feature_name: *const kernel::ffi::c_char;
 
     if !boot_cpu_has(X86_FEATURE_AVX)
         || !boot_cpu_has(X86_FEATURE_AES)

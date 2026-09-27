@@ -15,7 +15,7 @@
 
 extern "C" {
     pub fn mmu_context_init();
-    pub fn get_pid_from_context(ctx: *mut mm_context_t) -> ::core::ffi::c_ulong;
+    pub fn get_pid_from_context(ctx: *mut mm_context_t) -> ::kernel::ffi::c_ulong;
 
     /*
      * For the fast tlb miss handlers, we keep a pointer to the current pgd.
@@ -36,7 +36,7 @@ extern "C" {
 pub unsafe fn init_new_context(
     _tsk: *mut task_struct,
     mm: *mut mm_struct,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     (*mm).context = 0;
     0
 }

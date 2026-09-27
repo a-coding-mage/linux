@@ -42,9 +42,9 @@ extern "C" {
     pub static mut s3c_hsmmc3_def_platdata: s3c_sdhci_platdata;
 
     /* Helper function availability */
-    pub fn s3c64xx_setup_sdhci0_cfg_gpio(dev: *mut platform_device, w: ::core::ffi::c_int);
-    pub fn s3c64xx_setup_sdhci1_cfg_gpio(dev: *mut platform_device, w: ::core::ffi::c_int);
-    pub fn s3c64xx_setup_sdhci2_cfg_gpio(dev: *mut platform_device, w: ::core::ffi::c_int);
+    pub fn s3c64xx_setup_sdhci0_cfg_gpio(dev: *mut platform_device, w: ::kernel::ffi::c_int);
+    pub fn s3c64xx_setup_sdhci1_cfg_gpio(dev: *mut platform_device, w: ::kernel::ffi::c_int);
+    pub fn s3c64xx_setup_sdhci2_cfg_gpio(dev: *mut platform_device, w: ::kernel::ffi::c_int);
 }
 
 // S3C64XX SDHCI setup. CONFIG_S3C64XX_SETUP_SDHCI and the CONFIG_S3C_DEV_HSMMC*
@@ -98,7 +98,7 @@ pub unsafe fn s3c6400_default_sdhci1() {}
 #[cfg(not(CONFIG_S3C64XX_SETUP_SDHCI))]
 pub unsafe fn s3c6400_default_sdhci2() {}
 
-pub unsafe fn s3c_sdhci_setname(id: ::core::ffi::c_int, name: *mut ::core::ffi::c_char) {
+pub unsafe fn s3c_sdhci_setname(id: ::kernel::ffi::c_int, name: *mut ::kernel::ffi::c_char) {
     match id {
         #[cfg(CONFIG_S3C_DEV_HSMMC)]
         0 => { s3c_device_hsmmc0.name = name; }

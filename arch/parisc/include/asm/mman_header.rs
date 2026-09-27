@@ -15,8 +15,8 @@ pub const fn arch_memory_deny_write_exec_supported() -> bool {
 #[inline]
 pub unsafe fn arch_calc_vm_flag_bits(
     file: *mut file,
-    flags: core::ffi::c_ulong,
-) -> core::ffi::c_ulong {
+    flags: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     // The stack on parisc grows upwards, so if userspace requests memory
     // for a stack, mark it with VM_GROWSUP so that the stack expansion in
     // the fault handler will work.

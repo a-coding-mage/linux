@@ -7,7 +7,7 @@
 
 #[repr(C)]
 pub struct snd_pcm_oss_setup {
-    pub task_name: *mut ::core::ffi::c_char,
+    pub task_name: *mut ::kernel::ffi::c_char,
     /* C bit-fields: disable, direct, block, nonblock, partialfrag,
      * nosilence, and buggyptr, each one bit. */
     pub disable: u32,
@@ -17,8 +17,8 @@ pub struct snd_pcm_oss_setup {
     pub partialfrag: u32,
     pub nosilence: u32,
     pub buggyptr: u32,
-    pub periods: ::core::ffi::c_uint,
-    pub period_size: ::core::ffi::c_uint,
+    pub periods: ::kernel::ffi::c_uint,
+    pub period_size: ::kernel::ffi::c_uint,
     pub next: *mut snd_pcm_oss_setup,
 }
 
@@ -29,20 +29,20 @@ pub struct snd_pcm_oss_runtime {
     pub prepare: u32,
     pub trigger: u32,
     pub sync_trigger: u32,
-    pub rate: ::core::ffi::c_int,
-    pub format: ::core::ffi::c_int,
-    pub channels: ::core::ffi::c_uint,
-    pub fragshift: ::core::ffi::c_uint,
-    pub maxfrags: ::core::ffi::c_uint,
-    pub subdivision: ::core::ffi::c_uint,
+    pub rate: ::kernel::ffi::c_int,
+    pub format: ::kernel::ffi::c_int,
+    pub channels: ::kernel::ffi::c_uint,
+    pub fragshift: ::kernel::ffi::c_uint,
+    pub maxfrags: ::kernel::ffi::c_uint,
+    pub subdivision: ::kernel::ffi::c_uint,
     pub period_bytes: usize,
     pub period_frames: usize,
     pub period_ptr: usize,
-    pub periods: ::core::ffi::c_uint,
+    pub periods: ::kernel::ffi::c_uint,
     pub buffer_bytes: usize,
     pub bytes: usize,
     pub mmap_bytes: usize,
-    pub buffer: *mut ::core::ffi::c_char,
+    pub buffer: *mut ::kernel::ffi::c_char,
     pub buffer_used: usize,
     pub params_lock: mutex,
     pub rw_ref: atomic_t,
@@ -51,7 +51,7 @@ pub struct snd_pcm_oss_runtime {
     pub plugin_first: *mut snd_pcm_plugin,
     #[cfg(CONFIG_SND_PCM_OSS_PLUGINS)]
     pub plugin_last: *mut snd_pcm_plugin,
-    pub prev_hw_ptr_period: ::core::ffi::c_uint,
+    pub prev_hw_ptr_period: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -77,8 +77,8 @@ pub struct snd_pcm_oss_stream {
 
 #[repr(C)]
 pub struct snd_pcm_oss {
-    pub reg: ::core::ffi::c_int,
-    pub reg_mask: ::core::ffi::c_uint,
+    pub reg: ::kernel::ffi::c_int,
+    pub reg_mask: ::kernel::ffi::c_uint,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

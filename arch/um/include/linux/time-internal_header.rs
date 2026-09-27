@@ -103,9 +103,9 @@ macro_rules! time_travel_del_event {
 }
 
 extern "C" {
-    pub static mut tt_extra_sched_jiffies: libc::c_ulong;
-    pub fn time_travel_ndelay(nsec: libc::c_ulong);
-    pub fn um_setup_timer() -> libc::c_int;
+    pub static mut tt_extra_sched_jiffies: kernel::ffi::c_ulong;
+    pub fn time_travel_ndelay(nsec: kernel::ffi::c_ulong);
+    pub fn um_setup_timer() -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -4,7 +4,7 @@
 
 /* GSO */
 
-static HDR: [core::ffi::c_char; 9] = *b"abcdefgh\0";
+static HDR: [kernel::ffi::c_char; 9] = *b"abcdefgh\0";
 const GSO_TEST_SIZE: u32 = 1000;
 
 unsafe fn __init_skb(skb: *mut sk_buff) {
@@ -38,7 +38,7 @@ enum gso_test_nr {
 #[repr(C)]
 struct gso_test_case {
     id: gso_test_nr,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     linear_len: u32,
     nr_frags: u32,
     frags: *const u32,
@@ -72,7 +72,7 @@ static mut cases: [gso_test_case; 9] = [
     gso_test_case { id: gso_test_nr::GSO_TEST_GSO_BY_FRAGS, name: b"gso_by_frags\0".as_ptr() as _, linear_len: 0, nr_frags: 0, frags: core::ptr::null(), nr_frag_skbs: 4, frag_skbs: GSO_BY_FRAGS.as_ptr(), nr_segs: 4, segs: GSO_BY_FRAGS.as_ptr() },
 ];
 
-unsafe fn gso_test_case_to_desc(t: *mut gso_test_case, desc: *mut core::ffi::c_char) {
+unsafe fn gso_test_case_to_desc(t: *mut gso_test_case, desc: *mut kernel::ffi::c_char) {
     sprintf(desc, b"%s\0".as_ptr() as _, (*t).name);
 }
 
@@ -158,7 +158,7 @@ unsafe fn gso_test_func(test: *mut kunit) {
 
 #[repr(C)]
 struct ip_tunnel_flags_test {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     src_bits: *const u16,
     exp_bits: *const u16,
     src_num: u8,
@@ -178,7 +178,7 @@ static ip_tunnel_flags_test: [ip_tunnel_flags_test; 3] = [
     ip_tunnel_flags_test { name: b"new\0".as_ptr() as _, src_bits: ip_tunnel_flags_3_src.as_ptr(), exp_bits: ip_tunnel_flags_3_exp.as_ptr(), src_num: 4, exp_num: 1, exp_val: cpu_to_be16(BIT(IP_TUNNEL_VXLAN_OPT_BIT)), exp_comp: false },
 ];
 
-unsafe fn ip_tunnel_flags_test_case_to_desc(t: *const ip_tunnel_flags_test, desc: *mut core::ffi::c_char) {
+unsafe fn ip_tunnel_flags_test_case_to_desc(t: *const ip_tunnel_flags_test, desc: *mut kernel::ffi::c_char) {
     strscpy(desc, (*t).name, KUNIT_PARAM_DESC_SIZE);
 }
 

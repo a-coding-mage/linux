@@ -8,7 +8,7 @@ extern "C" {
     pub fn __io_uring_cancel(cancel_all: bool);
     pub fn __io_uring_free(tsk: *mut task_struct);
     pub fn io_uring_unreg_ringfd();
-    pub fn io_uring_get_opcode(opcode: u8) -> *const core::ffi::c_char;
+    pub fn io_uring_get_opcode(opcode: u8) -> *const kernel::ffi::c_char;
     pub fn io_is_uring_fops(file: *mut file) -> bool;
     pub fn __io_uring_fork(tsk: *mut task_struct) -> i32;
 }
@@ -68,8 +68,8 @@ pub fn io_uring_free(_tsk: *mut task_struct) {}
 
 #[cfg(not(CONFIG_IO_URING))]
 #[inline]
-pub fn io_uring_get_opcode(_opcode: u8) -> *const core::ffi::c_char {
-    b"\0".as_ptr() as *const core::ffi::c_char
+pub fn io_uring_get_opcode(_opcode: u8) -> *const kernel::ffi::c_char {
+    b"\0".as_ptr() as *const kernel::ffi::c_char
 }
 
 #[cfg(not(CONFIG_IO_URING))]

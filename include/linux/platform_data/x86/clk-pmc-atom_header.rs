@@ -15,9 +15,9 @@
  */
 #[repr(C)]
 pub struct pmc_clk {
-    pub name: *const core::ffi::c_char,
-    pub freq: core::ffi::c_ulong,
-    pub parent_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub freq: kernel::ffi::c_ulong,
+    pub parent_name: *const kernel::ffi::c_char,
 }
 
 /**
@@ -30,7 +30,7 @@ pub struct pmc_clk {
  */
 #[repr(C)]
 pub struct pmc_clk_data {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub clks: *const pmc_clk,
     pub critical: bool,
 }

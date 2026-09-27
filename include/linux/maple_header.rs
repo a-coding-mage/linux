@@ -47,8 +47,8 @@ pub struct device_driver;
 
 #[repr(C)]
 pub struct maple_buffer {
-    pub bufx: [core::ffi::c_char; 0x400],
-    pub buf: *mut core::ffi::c_void,
+    pub bufx: [kernel::ffi::c_char; 0x400],
+    pub buf: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -56,20 +56,20 @@ pub struct mapleq {
     pub list: list_head,
     pub dev: *mut maple_device,
     pub recvbuf: *mut maple_buffer,
-    pub sendbuf: *mut core::ffi::c_void,
-    pub recvbuf_p2: *mut core::ffi::c_void,
+    pub sendbuf: *mut kernel::ffi::c_void,
+    pub recvbuf_p2: *mut kernel::ffi::c_void,
     pub length: u8,
     pub command: maple_code,
 }
 
 #[repr(C)]
 pub struct maple_devinfo {
-    pub function: core::ffi::c_ulong,
-    pub function_data: [core::ffi::c_ulong; 3],
+    pub function: kernel::ffi::c_ulong,
+    pub function_data: [kernel::ffi::c_ulong; 3],
     pub area_code: u8,
     pub connector_direction: u8,
-    pub product_name: [core::ffi::c_char; 31],
-    pub product_licence: [core::ffi::c_char; 61],
+    pub product_name: [kernel::ffi::c_char; 31],
+    pub product_licence: [kernel::ffi::c_char; 61],
     pub standby_power: u16,
     pub max_power: u16,
 }
@@ -79,16 +79,16 @@ pub struct maple_device {
     pub driver: *mut maple_driver,
     pub mq: *mut mapleq,
     pub callback: Option<unsafe extern "C" fn(*mut mapleq)>,
-    pub fileerr_handler: Option<unsafe extern "C" fn(*mut maple_device, *mut core::ffi::c_void)>,
+    pub fileerr_handler: Option<unsafe extern "C" fn(*mut maple_device, *mut kernel::ffi::c_void)>,
     pub can_unload: Option<unsafe extern "C" fn(*mut maple_device) -> i32>,
-    pub when: core::ffi::c_ulong,
-    pub interval: core::ffi::c_ulong,
-    pub function: core::ffi::c_ulong,
+    pub when: kernel::ffi::c_ulong,
+    pub interval: kernel::ffi::c_ulong,
+    pub function: kernel::ffi::c_ulong,
     pub devinfo: maple_devinfo,
     pub port: u8,
     pub unit: u8,
-    pub product_name: [core::ffi::c_char; 32],
-    pub product_licence: [core::ffi::c_char; 64],
+    pub product_name: [kernel::ffi::c_char; 32],
+    pub product_licence: [kernel::ffi::c_char; 64],
     pub busy: atomic_t,
     pub maple_wait: wait_queue_head_t,
     pub dev: device,
@@ -96,7 +96,7 @@ pub struct maple_device {
 
 #[repr(C)]
 pub struct maple_driver {
-    pub function: core::ffi::c_ulong,
+    pub function: kernel::ffi::c_ulong,
     pub drv: device_driver,
 }
 
@@ -104,8 +104,8 @@ extern "C" {
     pub fn maple_getcond_callback(
         dev: *mut maple_device,
         callback: Option<unsafe extern "C" fn(*mut mapleq)>,
-        interval: core::ffi::c_ulong,
-        function: core::ffi::c_ulong,
+        interval: kernel::ffi::c_ulong,
+        function: kernel::ffi::c_ulong,
     );
     pub fn maple_driver_register(driver: *mut maple_driver) -> i32;
     pub fn maple_driver_unregister(driver: *mut maple_driver);
@@ -114,13 +114,13 @@ extern "C" {
         function: u32,
         command: u32,
         length: u32,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
     pub fn maple_clear_dev(mdev: *mut maple_device);
-    pub fn container_of<T>(ptr: *const core::ffi::c_void) -> *mut T;
-    pub fn container_of_const<T>(ptr: *const core::ffi::c_void) -> *const T;
-    pub fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
-    pub fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
+    pub fn container_of<T>(ptr: *const kernel::ffi::c_void) -> *mut T;
+    pub fn container_of_const<T>(ptr: *const kernel::ffi::c_void) -> *const T;
+    pub fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
+    pub fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
 }
 
 #[inline]
@@ -134,12 +134,12 @@ pub unsafe fn to_maple_driver(n: *const device_driver) -> *const maple_driver {
 }
 
 #[inline]
-pub unsafe fn maple_get_drvdata(d: *mut maple_device) -> *mut core::ffi::c_void {
+pub unsafe fn maple_get_drvdata(d: *mut maple_device) -> *mut kernel::ffi::c_void {
     dev_get_drvdata(&mut (*d).dev)
 }
 
 #[inline]
-pub unsafe fn maple_set_drvdata(d: *mut maple_device, p: *mut core::ffi::c_void) {
+pub unsafe fn maple_set_drvdata(d: *mut maple_device, p: *mut kernel::ffi::c_void) {
     dev_set_drvdata(&mut (*d).dev, p)
 }
 

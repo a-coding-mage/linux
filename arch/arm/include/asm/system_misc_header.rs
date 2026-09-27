@@ -6,7 +6,7 @@
 #[allow(improper_ctypes)]
 extern "C" {
     pub fn cpu_init();
-    pub fn soft_restart(arg: ::core::ffi::c_ulong);
+    pub fn soft_restart(arg: ::kernel::ffi::c_ulong);
     pub static mut arm_pm_idle: Option<unsafe extern "C" fn()>;
 }
 
@@ -17,7 +17,7 @@ pub type harden_branch_predictor_fn_t = unsafe extern "C" fn();
 extern "C" {
     /* DECLARE_PER_CPU(harden_branch_predictor_fn_t, harden_branch_predictor_fn) */
     pub static mut harden_branch_predictor_fn: harden_branch_predictor_fn_t;
-    pub fn smp_processor_id() -> ::core::ffi::c_int;
+    pub fn smp_processor_id() -> ::kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_HARDEN_BRANCH_PREDICTOR)]
@@ -32,14 +32,14 @@ pub unsafe fn harden_branch_predictor() {
 #[inline]
 pub fn harden_branch_predictor() {}
 
-pub const UDBG_UNDEFINED: ::core::ffi::c_uint = 1 << 0;
-pub const UDBG_SYSCALL: ::core::ffi::c_uint = 1 << 1;
-pub const UDBG_BADABORT: ::core::ffi::c_uint = 1 << 2;
-pub const UDBG_SEGV: ::core::ffi::c_uint = 1 << 3;
-pub const UDBG_BUS: ::core::ffi::c_uint = 1 << 4;
+pub const UDBG_UNDEFINED: ::kernel::ffi::c_uint = 1 << 0;
+pub const UDBG_SYSCALL: ::kernel::ffi::c_uint = 1 << 1;
+pub const UDBG_BADABORT: ::kernel::ffi::c_uint = 1 << 2;
+pub const UDBG_SEGV: ::kernel::ffi::c_uint = 1 << 3;
+pub const UDBG_BUS: ::kernel::ffi::c_uint = 1 << 4;
 
 extern "C" {
-    pub static mut user_debug: ::core::ffi::c_uint;
+    pub static mut user_debug: ::kernel::ffi::c_uint;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

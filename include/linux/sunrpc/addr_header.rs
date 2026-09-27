@@ -7,12 +7,12 @@
 extern "C" {
     pub fn rpc_ntop(
         sap: *const sockaddr,
-        buf: *mut core::ffi::c_char,
+        buf: *mut kernel::ffi::c_char,
         buflen: usize,
     ) -> usize;
     pub fn rpc_pton(
         net: *mut net,
-        buf: *const core::ffi::c_char,
+        buf: *const kernel::ffi::c_char,
         buflen: usize,
         sap: *mut sockaddr,
         salen: usize,
@@ -20,10 +20,10 @@ extern "C" {
     pub fn rpc_sockaddr2uaddr(
         sap: *const sockaddr,
         gfp: gfp_t,
-    ) -> *mut core::ffi::c_char;
+    ) -> *mut kernel::ffi::c_char;
     pub fn rpc_uaddr2sockaddr(
         net: *mut net,
-        uaddr: *const core::ffi::c_char,
+        uaddr: *const kernel::ffi::c_char,
         uaddr_len: usize,
         sap: *mut sockaddr,
         salen: usize,

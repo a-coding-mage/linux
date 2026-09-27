@@ -11,7 +11,7 @@
  */
 
 // C dependencies supplied by the surrounding kernel translation.
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 extern "C" {
     fn mfspr(spr: c_ulong) -> c_ulong;

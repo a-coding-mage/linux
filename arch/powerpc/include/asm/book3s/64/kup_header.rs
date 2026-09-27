@@ -11,7 +11,7 @@ pub const AMR_KUEP_BLOCKED: u64 = 0x5455_5555_5555_5555;
 pub const AMR_KUAP_BLOCKED: u64 = AMR_KUAP_BLOCK_READ | AMR_KUAP_BLOCK_WRITE;
 
 extern "C" {
-    pub static mut uaccess_flush_key: core::ffi::c_ulong;
+    pub static mut uaccess_flush_key: kernel::ffi::c_ulong;
 }
 
 #[cfg(CONFIG_PPC_PKEY)]
@@ -29,7 +29,7 @@ extern "C" {
     fn mtspr(spr: u64, value: u64);
     fn isync();
     fn do_uaccess_flush();
-    fn static_branch_unlikely(key: *mut core::ffi::c_ulong) -> bool;
+    fn static_branch_unlikely(key: *mut kernel::ffi::c_ulong) -> bool;
     fn current_thread_amr() -> u64;
     fn warn_on_once(condition: bool);
 }
@@ -97,7 +97,7 @@ pub unsafe fn __bad_kuap_fault(regs: *const pt_regs, _address: u64, is_write: bo
 }
 
 #[inline(always)]
-pub unsafe fn allow_user_access(_to: *mut core::ffi::c_void, dir: u64) {
+pub unsafe fn allow_user_access(_to: *mut kernel::ffi::c_void, dir: u64) {
     let mut thread_amr = 0;
     if mmu_has_feature(MMU_FTR_PKEY) { thread_amr = current_thread_amr(); }
     if dir == KUAP_READ { set_kuap(thread_amr | AMR_KUAP_BLOCK_WRITE); }

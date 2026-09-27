@@ -12,7 +12,7 @@ pub unsafe fn bpfptr_is_kernel(bpfptr: bpfptr_t) -> bool {
 }
 
 #[inline]
-pub unsafe fn KERNEL_BPFPTR(p: *mut core::ffi::c_void) -> bpfptr_t {
+pub unsafe fn KERNEL_BPFPTR(p: *mut kernel::ffi::c_void) -> bpfptr_t {
     bpfptr_t {
         kernel: p,
         is_kernel: true,
@@ -20,7 +20,7 @@ pub unsafe fn KERNEL_BPFPTR(p: *mut core::ffi::c_void) -> bpfptr_t {
 }
 
 #[inline]
-pub unsafe fn USER_BPFPTR(p: *mut core::ffi::c_void) -> bpfptr_t {
+pub unsafe fn USER_BPFPTR(p: *mut kernel::ffi::c_void) -> bpfptr_t {
     bpfptr_t {
         user: p,
         is_kernel: false,
@@ -30,7 +30,7 @@ pub unsafe fn USER_BPFPTR(p: *mut core::ffi::c_void) -> bpfptr_t {
 #[inline]
 pub unsafe fn make_bpfptr(addr: u64, is_kernel: bool) -> bpfptr_t {
     if is_kernel {
-        KERNEL_BPFPTR(addr as usize as *mut core::ffi::c_void)
+        KERNEL_BPFPTR(addr as usize as *mut kernel::ffi::c_void)
     } else {
         USER_BPFPTR(u64_to_user_ptr(addr))
     }
@@ -56,7 +56,7 @@ pub unsafe fn bpfptr_add(bpfptr: *mut bpfptr_t, val: usize) {
 
 #[inline]
 pub unsafe fn copy_from_bpfptr_offset(
-    dst: *mut core::ffi::c_void,
+    dst: *mut kernel::ffi::c_void,
     src: bpfptr_t,
     offset: usize,
     size: usize,
@@ -70,7 +70,7 @@ pub unsafe fn copy_from_bpfptr_offset(
 
 #[inline]
 pub unsafe fn copy_from_bpfptr(
-    dst: *mut core::ffi::c_void,
+    dst: *mut kernel::ffi::c_void,
     src: bpfptr_t,
     size: usize,
 ) -> i32 {
@@ -81,7 +81,7 @@ pub unsafe fn copy_from_bpfptr(
 pub unsafe fn copy_to_bpfptr_offset(
     dst: bpfptr_t,
     offset: usize,
-    src: *const core::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     size: usize,
 ) -> i32 {
     copy_to_sockptr_offset(dst, offset, src, size)
@@ -91,7 +91,7 @@ pub unsafe fn copy_to_bpfptr_offset(
 pub unsafe fn kvmemdup_bpfptr_noprof(
     src: bpfptr_t,
     len: usize,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     let p = kvmalloc_node_align_noprof(
         len,
         1,
@@ -113,7 +113,7 @@ pub unsafe fn kvmemdup_bpfptr_noprof(
 
 #[inline]
 pub unsafe fn strncpy_from_bpfptr(
-    dst: *mut core::ffi::c_char,
+    dst: *mut kernel::ffi::c_char,
     src: bpfptr_t,
     count: usize,
 ) -> isize {

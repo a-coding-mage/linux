@@ -72,7 +72,7 @@ pub unsafe extern "C" fn octeon_get_pci_interrupts() -> *const u8 {
 pub unsafe extern "C" fn octeon_pci_pcibios_map_irq(dev: *const pci_dev, slot: u8, pin: u8) -> i32 {
     let interrupts = octeon_get_pci_interrupts();
     let dev_num = ((*dev).devfn >> 3) as usize;
-    let len = libc::strlen(interrupts);
+    let len = strlen(interrupts);
     let irq_num = if dev_num < len { ((*interrupts.add(dev_num) as i32 - b'A' as i32 + pin as i32 - 1) & 3) + OCTEON_IRQ_PCI_INT0 } else { (((slot as i32 + pin as i32 - 3) & 3) + OCTEON_IRQ_PCI_INT0) };
     irq_num
 }

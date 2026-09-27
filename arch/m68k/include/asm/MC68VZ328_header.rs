@@ -17,14 +17,14 @@
 
 // The C accessors are volatile lvalues at fixed addresses; here they yield the
 // register pointer, to be accessed with `read_volatile`/`write_volatile`.
-pub const fn BYTE_REF(addr: usize) -> *mut core::ffi::c_uchar {
-    addr as *mut core::ffi::c_uchar
+pub const fn BYTE_REF(addr: usize) -> *mut kernel::ffi::c_uchar {
+    addr as *mut kernel::ffi::c_uchar
 }
-pub const fn WORD_REF(addr: usize) -> *mut core::ffi::c_ushort {
-    addr as *mut core::ffi::c_ushort
+pub const fn WORD_REF(addr: usize) -> *mut kernel::ffi::c_ushort {
+    addr as *mut kernel::ffi::c_ushort
 }
-pub const fn LONG_REF(addr: usize) -> *mut core::ffi::c_ulong {
-    addr as *mut core::ffi::c_ulong
+pub const fn LONG_REF(addr: usize) -> *mut kernel::ffi::c_ulong {
+    addr as *mut kernel::ffi::c_ulong
 }
 
 macro_rules! PUT_FIELD {

@@ -13,9 +13,9 @@ unsafe extern "C" {
         fd: i32,
         irq_type: um_irq_type,
         handler: irq_handler_t,
-        irqflags: core::ffi::c_ulong,
-        devname: *const core::ffi::c_char,
-        dev_id: *mut core::ffi::c_void,
+        irqflags: kernel::ffi::c_ulong,
+        devname: *const kernel::ffi::c_char,
+        dev_id: *mut kernel::ffi::c_void,
     ) -> i32;
 }
 
@@ -27,14 +27,14 @@ unsafe extern "C" {
         fd: i32,
         irq_type: um_irq_type,
         handler: irq_handler_t,
-        irqflags: core::ffi::c_ulong,
-        devname: *const core::ffi::c_char,
-        dev_id: *mut core::ffi::c_void,
+        irqflags: kernel::ffi::c_ulong,
+        devname: *const kernel::ffi::c_char,
+        dev_id: *mut kernel::ffi::c_void,
         timetravel_handler: Option<
             unsafe extern "C" fn(
                 i32,
                 i32,
-                *mut core::ffi::c_void,
+                *mut kernel::ffi::c_void,
                 *mut time_travel_event,
             ),
         >,
@@ -47,14 +47,14 @@ pub unsafe fn um_request_irq_tt(
     fd: i32,
     irq_type: um_irq_type,
     handler: irq_handler_t,
-    irqflags: core::ffi::c_ulong,
-    devname: *const core::ffi::c_char,
-    dev_id: *mut core::ffi::c_void,
+    irqflags: kernel::ffi::c_ulong,
+    devname: *const kernel::ffi::c_char,
+    dev_id: *mut kernel::ffi::c_void,
     _timetravel_handler: Option<
         unsafe extern "C" fn(
             i32,
             i32,
-            *mut core::ffi::c_void,
+            *mut kernel::ffi::c_void,
             *mut time_travel_event,
         ),
     >,
@@ -67,7 +67,7 @@ pub unsafe fn um_irq_timetravel_handler_used() -> bool {
 }
 
 unsafe extern "C" {
-    pub fn um_free_irq(irq: i32, dev_id: *mut core::ffi::c_void);
+    pub fn um_free_irq(irq: i32, dev_id: *mut kernel::ffi::c_void);
     pub fn free_irqs();
 }
 

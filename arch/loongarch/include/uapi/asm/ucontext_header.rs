@@ -11,7 +11,7 @@
  */
 #[repr(C)]
 pub struct ucontext {
-    pub uc_flags: core::ffi::c_ulong,
+    pub uc_flags: kernel::ffi::c_ulong,
     pub uc_link: *mut ucontext,
     pub uc_stack: stack_t,
     pub uc_sigmask: sigset_t,

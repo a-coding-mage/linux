@@ -8,17 +8,17 @@
 #[cfg(CONFIG_RV_MON_SSSW)]
 extern "C" {
     pub fn event_sssw(
-        id: ::core::ffi::c_int,
-        state: *mut ::core::ffi::c_char,
-        event: *mut ::core::ffi::c_char,
-        next_state: *mut ::core::ffi::c_char,
+        id: ::kernel::ffi::c_int,
+        state: *mut ::kernel::ffi::c_char,
+        event: *mut ::kernel::ffi::c_char,
+        next_state: *mut ::kernel::ffi::c_char,
         final_state: bool,
     );
 
     pub fn error_sssw(
-        id: ::core::ffi::c_int,
-        state: *mut ::core::ffi::c_char,
-        event: *mut ::core::ffi::c_char,
+        id: ::kernel::ffi::c_int,
+        state: *mut ::kernel::ffi::c_char,
+        event: *mut ::kernel::ffi::c_char,
     );
 }
 

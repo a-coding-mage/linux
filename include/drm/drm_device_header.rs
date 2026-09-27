@@ -9,7 +9,7 @@ pub const DRM_WEDGE_RECOVERY_VENDOR: u32 = 1 << 3; // vendor specific recovery m
 #[repr(C)]
 pub struct drm_wedge_task_info {
     pub pid: pid_t,
-    pub comm: [core::ffi::c_char; TASK_COMM_LEN],
+    pub comm: [kernel::ffi::c_char; TASK_COMM_LEN],
 }
 
 #[repr(C)]
@@ -23,13 +23,13 @@ pub enum switch_power_state {
 
 #[repr(C)]
 pub struct drm_device {
-    pub if_version: core::ffi::c_int,
+    pub if_version: kernel::ffi::c_int,
     pub ref_: kref,
     pub dev: *mut device,
     pub dma_dev: *mut device,
     pub managed: drm_device_managed,
     pub driver: *const drm_driver,
-    pub dev_private: *mut core::ffi::c_void,
+    pub dev_private: *mut kernel::ffi::c_void,
     pub primary: *mut drm_minor,
     pub render: *mut drm_minor,
     pub accel: *mut drm_minor,
@@ -41,7 +41,7 @@ pub struct drm_device {
     pub driver_features: u32,
     pub unplugged: bool,
     pub anon_inode: *mut inode,
-    pub unique: *mut core::ffi::c_char,
+    pub unique: *mut kernel::ffi::c_char,
     pub master_mutex: mutex,
     pub open_count: atomic_t,
     pub filelist_mutex: mutex,
@@ -57,7 +57,7 @@ pub struct drm_device {
     pub max_vblank_count: u32,
     pub vblank_event_list: list_head,
     pub event_lock: spinlock_t,
-    pub num_crtcs: core::ffi::c_uint,
+    pub num_crtcs: kernel::ffi::c_uint,
     pub mode_config: drm_mode_config,
     pub object_name_lock: mutex,
     pub object_name_idr: idr,
@@ -72,7 +72,7 @@ pub struct drm_device {
 #[repr(C)]
 pub struct drm_device_managed {
     pub resources: list_head,
-    pub final_kfree: *mut core::ffi::c_void,
+    pub final_kfree: *mut kernel::ffi::c_void,
     pub lock: spinlock_t,
 }
 
@@ -90,7 +90,7 @@ pub unsafe fn drm_dev_dma_dev(dev: *mut drm_device) -> *mut device {
 }
 
 // External kernel types and constants referenced by this header.
-pub type pid_t = core::ffi::c_int;
+pub type pid_t = kernel::ffi::c_int;
 pub const TASK_COMM_LEN: usize = 16;
 pub struct kref;
 pub struct device;

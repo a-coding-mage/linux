@@ -17,7 +17,7 @@ pub unsafe fn pmd_populate_kernel(
     pte: *mut pte_t,
 ) {
     let _ = mm;
-    set_pmd(pmd, __pmd(pte as usize as ::core::ffi::c_ulong));
+    set_pmd(pmd, __pmd(pte as usize as ::kernel::ffi::c_ulong));
 }
 
 #[inline]
@@ -29,7 +29,7 @@ pub unsafe fn pmd_populate(
     let _ = mm;
     set_pmd(
         pmd,
-        __pmd(page_address(pte) as usize as ::core::ffi::c_ulong),
+        __pmd(page_address(pte) as usize as ::kernel::ffi::c_ulong),
     );
 }
 

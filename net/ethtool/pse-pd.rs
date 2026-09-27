@@ -119,7 +119,7 @@ unsafe fn pse_fill_reply(skb: *mut sk_buff, _req_base: *const ethnl_req_info, re
 
 unsafe fn pse_cleanup_data(reply_base: *mut ethnl_reply_data) {
     let data = reply_base as *const pse_reply_data;
-    kfree((*data).status.c33_pw_limit_ranges as *mut core::ffi::c_void);
+    kfree((*data).status.c33_pw_limit_ranges as *mut kernel::ffi::c_void);
 }
 
 // PSE_SET
@@ -151,7 +151,7 @@ unsafe fn ethnl_set_pse(req_info: *mut ethnl_req_info, info: *mut genl_info) -> 
     ret
 }
 
-pub unsafe fn ethnl_pse_send_ntf(netdev: *mut net_device, notifs: core::ffi::c_ulong) {
+pub unsafe fn ethnl_pse_send_ntf(netdev: *mut net_device, notifs: kernel::ffi::c_ulong) {
     ASSERT_RTNL();
     if netdev.is_null() || notifs == 0 { return; }
     let reply_len = ethnl_reply_header_size() + nla_total_size(core::mem::size_of::<u32>());

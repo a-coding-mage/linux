@@ -9,37 +9,37 @@
 
 extern "C" {
     fn ksys_mmap_pgoff(
-        addr: ::core::ffi::c_ulong,
-        len: ::core::ffi::c_ulong,
-        prot: ::core::ffi::c_ulong,
-        flags: ::core::ffi::c_ulong,
-        fd: ::core::ffi::c_ulong,
-        pgoff: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_long;
-    fn flush_icache_mm(mm: *mut ::core::ffi::c_void, local: ::core::ffi::c_ulong);
-    static mut current: *mut ::core::ffi::c_void;
+        addr: ::kernel::ffi::c_ulong,
+        len: ::kernel::ffi::c_ulong,
+        prot: ::kernel::ffi::c_ulong,
+        flags: ::kernel::ffi::c_ulong,
+        fd: ::kernel::ffi::c_ulong,
+        pgoff: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_long;
+    fn flush_icache_mm(mm: *mut ::kernel::ffi::c_void, local: ::kernel::ffi::c_ulong);
+    static mut current: *mut ::kernel::ffi::c_void;
 }
 
-const EINVAL: ::core::ffi::c_long = 22;
-const ENOSYS: ::core::ffi::c_long = 38;
+const EINVAL: ::kernel::ffi::c_long = 22;
+const ENOSYS: ::kernel::ffi::c_long = 38;
 
 // These values are supplied by the kernel headers in the original source.
-const PAGE_MASK: ::core::ffi::c_ulong = !0;
-const PAGE_SHIFT: ::core::ffi::c_ulong = 12;
-const PROT_READ: ::core::ffi::c_ulong = 0x1;
-const PROT_WRITE: ::core::ffi::c_ulong = 0x2;
-const SYS_RISCV_FLUSH_ICACHE_ALL: ::core::ffi::c_ulong = 0x1;
-const SYS_RISCV_FLUSH_ICACHE_LOCAL: ::core::ffi::c_ulong = 0x2;
+const PAGE_MASK: ::kernel::ffi::c_ulong = !0;
+const PAGE_SHIFT: ::kernel::ffi::c_ulong = 12;
+const PROT_READ: ::kernel::ffi::c_ulong = 0x1;
+const PROT_WRITE: ::kernel::ffi::c_ulong = 0x2;
+const SYS_RISCV_FLUSH_ICACHE_ALL: ::kernel::ffi::c_ulong = 0x1;
+const SYS_RISCV_FLUSH_ICACHE_LOCAL: ::kernel::ffi::c_ulong = 0x2;
 
 unsafe fn riscv_sys_mmap(
-    addr: ::core::ffi::c_ulong,
-    len: ::core::ffi::c_ulong,
-    mut prot: ::core::ffi::c_ulong,
-    flags: ::core::ffi::c_ulong,
-    fd: ::core::ffi::c_ulong,
-    offset: ::core::ffi::c_ulong,
-    page_shift_offset: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_long {
+    addr: ::kernel::ffi::c_ulong,
+    len: ::kernel::ffi::c_ulong,
+    mut prot: ::kernel::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
+    fd: ::kernel::ffi::c_ulong,
+    offset: ::kernel::ffi::c_ulong,
+    page_shift_offset: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_long {
     if (offset & (!PAGE_MASK >> page_shift_offset)) != 0 {
         return -EINVAL;
     }
@@ -59,25 +59,25 @@ unsafe fn riscv_sys_mmap(
 
 #[cfg(target_pointer_width = "64")]
 pub unsafe extern "C" fn mmap(
-    addr: ::core::ffi::c_ulong,
-    len: ::core::ffi::c_ulong,
-    prot: ::core::ffi::c_ulong,
-    flags: ::core::ffi::c_ulong,
-    fd: ::core::ffi::c_ulong,
-    offset: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_long {
+    addr: ::kernel::ffi::c_ulong,
+    len: ::kernel::ffi::c_ulong,
+    prot: ::kernel::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
+    fd: ::kernel::ffi::c_ulong,
+    offset: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_long {
     riscv_sys_mmap(addr, len, prot, flags, fd, offset, 0)
 }
 
 #[cfg(any(target_pointer_width = "32", feature = "compat"))]
 pub unsafe extern "C" fn mmap2(
-    addr: ::core::ffi::c_ulong,
-    len: ::core::ffi::c_ulong,
-    prot: ::core::ffi::c_ulong,
-    flags: ::core::ffi::c_ulong,
-    fd: ::core::ffi::c_ulong,
-    offset: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_long {
+    addr: ::kernel::ffi::c_ulong,
+    len: ::kernel::ffi::c_ulong,
+    prot: ::kernel::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
+    fd: ::kernel::ffi::c_ulong,
+    offset: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_long {
     /* Note that the shift for mmap2 is constant (12), regardless of PAGE_SIZE. */
     riscv_sys_mmap(addr, len, prot, flags, fd, offset, 12)
 }
@@ -100,15 +100,15 @@ pub unsafe extern "C" fn riscv_flush_icache(
     _start: usize,
     _end: usize,
     flags: usize,
-) -> ::core::ffi::c_long {
+) -> ::kernel::ffi::c_long {
     /* Check the reserved flags. */
-    if (flags as ::core::ffi::c_ulong & !SYS_RISCV_FLUSH_ICACHE_ALL) != 0 {
+    if (flags as ::kernel::ffi::c_ulong & !SYS_RISCV_FLUSH_ICACHE_ALL) != 0 {
         return -EINVAL;
     }
 
     flush_icache_mm(
-        (*(core::ptr::addr_of_mut!(current))).cast::<::core::ffi::c_void>(),
-        flags as ::core::ffi::c_ulong & SYS_RISCV_FLUSH_ICACHE_LOCAL,
+        (*(core::ptr::addr_of_mut!(current))).cast::<::kernel::ffi::c_void>(),
+        flags as ::kernel::ffi::c_ulong & SYS_RISCV_FLUSH_ICACHE_LOCAL,
     );
 
     0
@@ -116,8 +116,8 @@ pub unsafe extern "C" fn riscv_flush_icache(
 
 /* Not defined using SYSCALL_DEFINE0 to avoid error injection */
 pub unsafe extern "C" fn __riscv_sys_ni_syscall(
-    _unused: *const ::core::ffi::c_void,
-) -> ::core::ffi::c_long {
+    _unused: *const ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_long {
     -ENOSYS
 }
 

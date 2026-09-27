@@ -28,7 +28,7 @@
 // include <net/sock.h>
 // include <net/tcp.h>
 
-const TAPRIO_STAT_NOT_SET: _ = (~0ULL);
+const TAPRIO_STAT_NOT_SET: u32 = (~0ULL);
 
 // include "sch_mqprio_lib.h"
 
@@ -36,18 +36,18 @@ static mut taprio_list: ListHead = ListHead::new();
 static mut taprio_have_broken_mqprio: static_key_false;
 static mut taprio_have_working_mqprio: static_key_false;
 
-const TAPRIO_ALL_GATES_OPEN: _ = -1;
+const TAPRIO_ALL_GATES_OPEN: u32 = -1;
 
 #define TXTIME_ASSIST_IS_ENABLED(flags) ((flags) & TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST)
 #define FULL_OFFLOAD_IS_ENABLED(flags) ((flags) & TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD)
-const TAPRIO_SUPPORTED_FLAGS: _ = \;
+const TAPRIO_SUPPORTED_FLAGS: u32 = \;
 	(TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST | TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD)
-const TAPRIO_FLAGS_INVALID: _ = U32_MAX;
+const TAPRIO_FLAGS_INVALID: u32 = U32_MAX;
 /* Minimum value for picos_per_byte to ensure non-zero duration
  * for minimum-sized Ethernet frames (ETH_ZLEN = 60).
  * 60 * 17 > PSEC_PER_NSEC (1000)
  */
-const TAPRIO_PICOS_PER_BYTE_MIN: _ = 17;
+const TAPRIO_PICOS_PER_BYTE_MIN: u32 = 17;
 
 #[repr(C)] struct sched_entry {
 	/* Durations between this GCL entry and the GCL entry where the
@@ -418,7 +418,7 @@ unsafe fn is_valid_interval(sk_buff *skb, Qdisc *sch)
 /* This returns the tstamp value set by TCP in terms of the set clock. */
 unsafe fn get_tcp_tstamp(taprio_sched *q, sk_buff *skb)
 {
-	core::ffi::c_uint offset = skb_network_offset(skb);
+	kernel::ffi::c_uint offset = skb_network_offset(skb);
 	const struct ipv6hdr *ipv6h;
 	const struct iphdr *iph;
 	struct ipv6hdr _ipv6h;
@@ -584,7 +584,7 @@ unsafe fn taprio_enqueue_segmented(sk_buff *skb, Qdisc *sch,
 				    Qdisc *child,
 				    sk_buff **to_free)
 {
-	core::ffi::c_uint slen = 0, numsegs = 0, len = qdisc_pkt_len(skb);
+	kernel::ffi::c_uint slen = 0, numsegs = 0, len = qdisc_pkt_len(skb);
 	netdev_features_t features = netif_skb_features(skb);
 	struct sk_buff *segs, *nskb;
 	int ret;
@@ -1326,11 +1326,11 @@ unsafe fn taprio_set_picos_per_byte(net_device *dev,
 
 	atomic64_set((*&q).picos_per_byte, picos_per_byte);
 	netdev_dbg(dev, "taprio: set %s's picos_per_byte to: %lld, linkspeed: %d\n",
-		   (*dev).name, (core::ffi::c_longlong)atomic64_read((*&q).picos_per_byte),
+		   (*dev).name, (kernel::ffi::c_longlong)atomic64_read((*&q).picos_per_byte),
 		   speed);
 }
 
-unsafe fn taprio_dev_notifier(notifier_block *nb, event: core::ffi::c_ulong,
+unsafe fn taprio_dev_notifier(notifier_block *nb, event: kernel::ffi::c_ulong,
 			       void *ptr)
 {
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
@@ -1710,7 +1710,7 @@ unsafe fn taprio_parse_tc_entry(Qdisc *sch,
 				 nlattr *opt,
 				 u32 max_sdu[TC_QOPT_MAX_QUEUE],
 				 u32 fp[TC_QOPT_MAX_QUEUE],
-				 core::ffi::c_ulong *seen_tcs,
+				 kernel::ffi::c_ulong *seen_tcs,
 				 netlink_ext_ack *extack)
 {
 	struct nlattr *tb[TCA_TAPRIO_TC_ENTRY_MAX + 1] = { };
@@ -1761,7 +1761,7 @@ unsafe fn taprio_parse_tc_entries(Qdisc *sch,
 	struct net_device *dev = qdisc_dev(sch);
 	u32 max_sdu[TC_QOPT_MAX_QUEUE];
 	bool have_preemption = false;
-	core::ffi::c_ulong seen_tcs = 0;
+	kernel::ffi::c_ulong seen_tcs = 0;
 	u32 fp[TC_QOPT_MAX_QUEUE];
 	struct nlattr *n;
 	int tc, rem;
@@ -1838,7 +1838,7 @@ unsafe fn taprio_change(Qdisc *sch, nlattr *opt,
 	struct taprio_sched *q = qdisc_priv(sch);
 	struct net_device *dev = qdisc_dev(sch);
 	struct tc_mqprio_qopt *mqprio = NULL;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u32 taprio_flags;
 	ktime_t start;
 	int i, err;
@@ -2044,7 +2044,7 @@ unsafe fn taprio_destroy(Qdisc *sch)
 	struct taprio_sched *q = qdisc_priv(sch);
 	struct net_device *dev = qdisc_dev(sch);
 	struct sched_gate_list *oper, *admin;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	list_del(&q->taprio_list);
 
@@ -2147,7 +2147,7 @@ unsafe fn taprio_attach(Qdisc *sch)
 {
 	struct taprio_sched *q = qdisc_priv(sch);
 	struct net_device *dev = qdisc_dev(sch);
-	core::ffi::c_uint ntx;
+	kernel::ffi::c_uint ntx;
 
 	/* Attach underlying qdisc */
 	for (ntx = 0; ntx < dev->num_tx_queues; ntx++) {
@@ -2180,10 +2180,10 @@ unsafe fn taprio_attach(Qdisc *sch)
 }
 
 unsafe fn taprio_queue_get(Qdisc *sch,
-					     cl: core::ffi::c_ulong)
+					     cl: kernel::ffi::c_ulong)
 {
 	struct net_device *dev = qdisc_dev(sch);
-	core::ffi::c_ulong ntx = cl - 1;
+	kernel::ffi::c_ulong ntx = cl - 1;
 
 	if (ntx >= dev->num_tx_queues)
 		return NULL;
@@ -2191,7 +2191,7 @@ unsafe fn taprio_queue_get(Qdisc *sch,
 	return netdev_get_tx_queue(dev, ntx);
 }
 
-unsafe fn taprio_graft(Qdisc *sch, cl: core::ffi::c_ulong,
+unsafe fn taprio_graft(Qdisc *sch, cl: kernel::ffi::c_ulong,
 			Qdisc *new, Qdisc **old,
 			netlink_ext_ack *extack)
 {
@@ -2480,11 +2480,11 @@ unsafe fn taprio_dump(Qdisc *sch, sk_buff *skb)
 	return -ENOSPC;
 }
 
-unsafe fn taprio_leaf(Qdisc *sch, cl: core::ffi::c_ulong)
+unsafe fn taprio_leaf(Qdisc *sch, cl: kernel::ffi::c_ulong)
 {
 	struct taprio_sched *q = qdisc_priv(sch);
 	struct net_device *dev = qdisc_dev(sch);
-	core::ffi::c_uint ntx = cl - 1;
+	kernel::ffi::c_uint ntx = cl - 1;
 
 	if (ntx >= dev->num_tx_queues)
 		return NULL;
@@ -2492,16 +2492,16 @@ unsafe fn taprio_leaf(Qdisc *sch, cl: core::ffi::c_ulong)
 	return q->qdiscs[ntx];
 }
 
-static core::ffi::c_ulong taprio_find(Qdisc *sch, classid: u32)
+static kernel::ffi::c_ulong taprio_find(Qdisc *sch, classid: u32)
 {
-	core::ffi::c_uint ntx = TC_H_MIN(classid);
+	kernel::ffi::c_uint ntx = TC_H_MIN(classid);
 
 	if (!taprio_queue_get(sch, ntx))
 		return 0;
 	return ntx;
 }
 
-unsafe fn taprio_dump_class(Qdisc *sch, cl: core::ffi::c_ulong,
+unsafe fn taprio_dump_class(Qdisc *sch, cl: kernel::ffi::c_ulong,
 			     sk_buff *skb, tcmsg *tcm)
 {
 	struct Qdisc *child = taprio_leaf(sch, cl);
@@ -2513,7 +2513,7 @@ unsafe fn taprio_dump_class(Qdisc *sch, cl: core::ffi::c_ulong,
 	return 0;
 }
 
-unsafe fn taprio_dump_class_stats(Qdisc *sch, cl: core::ffi::c_ulong,
+unsafe fn taprio_dump_class_stats(Qdisc *sch, cl: kernel::ffi::c_ulong,
 				   gnet_dump *d)
 	__releases(d->lock)
 	__acquires(d->lock)
@@ -2535,7 +2535,7 @@ unsafe fn taprio_dump_class_stats(Qdisc *sch, cl: core::ffi::c_ulong,
 
 unsafe fn taprio_walk(Qdisc *sch, qdisc_walker *arg) {
 	struct net_device *dev = qdisc_dev(sch);
-	core::ffi::c_ulong ntx;
+	kernel::ffi::c_ulong ntx;
 
 	if (arg->stop)
 		return;

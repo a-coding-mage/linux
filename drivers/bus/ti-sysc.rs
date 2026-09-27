@@ -63,7 +63,7 @@ enum sysc_soc {
 };
 
 struct sysc_address {
-	core::ffi::c_ulong base;
+	kernel::ffi::c_ulong base;
 	struct list_head node;
 };
 
@@ -73,7 +73,7 @@ struct sysc_module {
 };
 
 struct sysc_soc_info {
-	core::ffi::c_ulong general_purpose:1;
+	kernel::ffi::c_ulong general_purpose:1;
 	enum sysc_soc soc;
 	struct mutex list_lock;	/* disabled and restored modules list lock */
 	struct list_head disabled_modules;
@@ -155,10 +155,10 @@ struct sysc {
 	const char *name;
 	u32 revision;
 	u32 sysconfig;
-	core::ffi::c_uint reserved:1;
-	core::ffi::c_uint enabled:1;
-	core::ffi::c_uint needs_resume:1;
-	core::ffi::c_uint child_needs_resume:1;
+	kernel::ffi::c_uint reserved:1;
+	kernel::ffi::c_uint enabled:1;
+	kernel::ffi::c_uint needs_resume:1;
+	kernel::ffi::c_uint child_needs_resume:1;
 	struct delayed_work idle_work;
 	void (*pre_reset_quirk)(sysc *sysc);
 	void (*post_reset_quirk)(sysc *sysc);
@@ -1918,7 +1918,7 @@ static void sysc_post_reset_quirk_i2c(sysc *ddata)
 static void sysc_quirk_rtc(sysc *ddata, lock: bool)
 {
 	val: u32, kick0_val = 0, kick1_val = 0;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int error;
 
 	if (!lock) {
@@ -2466,7 +2466,7 @@ static void sysc_reinit_modules(sysc_soc_info *soc)
  * on CPU_PM CPU_PM_CLUSTER_EXIT notifier. This is needed at least for am335x
  * OTG and GPMC target modules even if the modules are unused.
  */
-static int sysc_context_notifier(notifier_block *nb, cmd: core::ffi::c_ulong,
+static int sysc_context_notifier(notifier_block *nb, cmd: kernel::ffi::c_ulong,
 				 void *v)
 {
 	struct sysc_soc_info *soc;
@@ -2516,7 +2516,7 @@ static void sysc_add_restored(sysc *ddata)
 }
 
 static int sysc_notifier_call(notifier_block *nb,
-			      event: core::ffi::c_ulong, void *device)
+			      event: kernel::ffi::c_ulong, void *device)
 {
 	struct device *dev = device;
 	struct sysc *ddata;
@@ -2974,7 +2974,7 @@ static const struct soc_device_attribute sysc_soc_feat_match[] = {
 	{ /* sentinel */ }
 };
 
-static int sysc_add_disabled(base: core::ffi::c_ulong)
+static int sysc_add_disabled(base: kernel::ffi::c_ulong)
 {
 	struct sysc_address *disabled_module;
 
@@ -3003,7 +3003,7 @@ static int sysc_init_static_data(sysc *ddata)
 {
 	const struct soc_device_attribute *match;
 	struct ti_sysc_platform_data *pdata;
-	core::ffi::c_ulong features = 0;
+	kernel::ffi::c_ulong features = 0;
 	struct device_node *np;
 
 	if (sysc_soc)
@@ -3063,7 +3063,7 @@ static int sysc_init_static_data(sysc *ddata)
 		return 0;
 
 	if (match->data)
-		features = (core::ffi::c_ulong)match->data;
+		features = (kernel::ffi::c_ulong)match->data;
 
 	/*
 	 * Add disabled devices to the list based on the module base.

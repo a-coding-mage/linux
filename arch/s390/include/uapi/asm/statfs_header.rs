@@ -18,34 +18,34 @@ pub type fsid_t = __kernel_fsid_t;
 
 #[repr(C)]
 pub struct statfs {
-    pub f_type: core::ffi::c_uint,
-    pub f_bsize: core::ffi::c_uint,
-    pub f_blocks: core::ffi::c_ulong,
-    pub f_bfree: core::ffi::c_ulong,
-    pub f_bavail: core::ffi::c_ulong,
-    pub f_files: core::ffi::c_ulong,
-    pub f_ffree: core::ffi::c_ulong,
+    pub f_type: kernel::ffi::c_uint,
+    pub f_bsize: kernel::ffi::c_uint,
+    pub f_blocks: kernel::ffi::c_ulong,
+    pub f_bfree: kernel::ffi::c_ulong,
+    pub f_bavail: kernel::ffi::c_ulong,
+    pub f_files: kernel::ffi::c_ulong,
+    pub f_ffree: kernel::ffi::c_ulong,
     pub f_fsid: __kernel_fsid_t,
-    pub f_namelen: core::ffi::c_uint,
-    pub f_frsize: core::ffi::c_uint,
-    pub f_flags: core::ffi::c_uint,
-    pub f_spare: [core::ffi::c_uint; 5],
+    pub f_namelen: kernel::ffi::c_uint,
+    pub f_frsize: kernel::ffi::c_uint,
+    pub f_flags: kernel::ffi::c_uint,
+    pub f_spare: [kernel::ffi::c_uint; 5],
 }
 
 #[repr(C)]
 pub struct statfs64 {
-    pub f_type: core::ffi::c_uint,
-    pub f_bsize: core::ffi::c_uint,
-    pub f_blocks: core::ffi::c_ulonglong,
-    pub f_bfree: core::ffi::c_ulonglong,
-    pub f_bavail: core::ffi::c_ulonglong,
-    pub f_files: core::ffi::c_ulonglong,
-    pub f_ffree: core::ffi::c_ulonglong,
+    pub f_type: kernel::ffi::c_uint,
+    pub f_bsize: kernel::ffi::c_uint,
+    pub f_blocks: kernel::ffi::c_ulonglong,
+    pub f_bfree: kernel::ffi::c_ulonglong,
+    pub f_bavail: kernel::ffi::c_ulonglong,
+    pub f_files: kernel::ffi::c_ulonglong,
+    pub f_ffree: kernel::ffi::c_ulonglong,
     pub f_fsid: __kernel_fsid_t,
-    pub f_namelen: core::ffi::c_uint,
-    pub f_frsize: core::ffi::c_uint,
-    pub f_flags: core::ffi::c_uint,
-    pub f_spare: [core::ffi::c_uint; 5],
+    pub f_namelen: kernel::ffi::c_uint,
+    pub f_frsize: kernel::ffi::c_uint,
+    pub f_flags: kernel::ffi::c_uint,
+    pub f_spare: [kernel::ffi::c_uint; 5],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

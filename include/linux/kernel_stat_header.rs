@@ -38,7 +38,7 @@ pub struct kernel_cpustat {
 
 #[repr(C)]
 pub struct kernel_stat {
-    pub irqs_sum: ::core::ffi::c_ulong,
+    pub irqs_sum: ::kernel::ffi::c_ulong,
     pub softirqs: [u32; NR_SOFTIRQS as usize],
 }
 
@@ -89,7 +89,7 @@ pub unsafe fn kstat_snapshot_irqs() {}
 #[cfg(not(CONFIG_GENERIC_IRQ_STAT_SNAPSHOT))]
 pub unsafe fn kstat_get_irq_since_snapshot(_irq: u32) -> u32 { 0 }
 
-pub unsafe fn kstat_cpu_irqs_sum(cpu: u32) -> ::core::ffi::c_ulong {
+pub unsafe fn kstat_cpu_irqs_sum(cpu: u32) -> ::kernel::ffi::c_ulong {
     kstat_cpu(cpu as i32).irqs_sum
 }
 

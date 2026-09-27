@@ -1862,7 +1862,7 @@ static int btintel_legacy_rom_setup(hci_dev *hdev,
 static int btintel_download_wait(hci_dev *hdev, ktime_t calltime, int msec)
 {
 	ktime_t delta, rettime;
-	core::ffi::c_ulonglong duration;
+	kernel::ffi::c_ulonglong duration;
 	int err;
 
 	btintel_set_flag(hdev, INTEL_FIRMWARE_LOADED);
@@ -1889,7 +1889,7 @@ static int btintel_download_wait(hci_dev *hdev, ktime_t calltime, int msec)
 
 	rettime = ktime_get();
 	delta = ktime_sub(rettime, calltime);
-	duration = (core::ffi::c_ulonglong)ktime_to_ns(delta) >> 10;
+	duration = (kernel::ffi::c_ulonglong)ktime_to_ns(delta) >> 10;
 
 	bt_dev_info(hdev, "Firmware loaded in %llu usecs", duration);
 
@@ -1899,7 +1899,7 @@ static int btintel_download_wait(hci_dev *hdev, ktime_t calltime, int msec)
 static int btintel_boot_wait(hci_dev *hdev, ktime_t calltime, int msec)
 {
 	ktime_t delta, rettime;
-	core::ffi::c_ulonglong duration;
+	kernel::ffi::c_ulonglong duration;
 	int err;
 
 	bt_dev_info(hdev, "Waiting for device to boot");
@@ -1919,7 +1919,7 @@ static int btintel_boot_wait(hci_dev *hdev, ktime_t calltime, int msec)
 
 	rettime = ktime_get();
 	delta = ktime_sub(rettime, calltime);
-	duration = (core::ffi::c_ulonglong) ktime_to_ns(delta) >> 10;
+	duration = (kernel::ffi::c_ulonglong) ktime_to_ns(delta) >> 10;
 
 	bt_dev_info(hdev, "Device booted in %llu usecs", duration);
 
@@ -1930,7 +1930,7 @@ static int btintel_boot_wait_d0(hci_dev *hdev, ktime_t calltime,
 				int msec)
 {
 	ktime_t delta, rettime;
-	core::ffi::c_ulonglong duration;
+	kernel::ffi::c_ulonglong duration;
 	int err;
 
 	bt_dev_info(hdev, "Waiting for device transition to d0");
@@ -1950,7 +1950,7 @@ static int btintel_boot_wait_d0(hci_dev *hdev, ktime_t calltime,
 
 	rettime = ktime_get();
 	delta = ktime_sub(rettime, calltime);
-	duration = (core::ffi::c_ulonglong)ktime_to_ns(delta) >> 10;
+	duration = (kernel::ffi::c_ulonglong)ktime_to_ns(delta) >> 10;
 
 	bt_dev_info(hdev, "Device moved to D0 in %llu usecs", duration);
 
@@ -2796,7 +2796,7 @@ static int btintel_uefi_get_dsbr(u32 *dsbr_var)
 	} __packed data;
 
 	efi_status_t status;
-	core::ffi::c_ulong data_size = sizeof(data);
+	kernel::ffi::c_ulong data_size = sizeof(data);
 	efi_guid_t guid = EFI_GUID(0xe65d8884, 0xd4af, 0x4b20, 0x8d, 0x03,
 				   0x77, 0x2e, 0xcc, 0x3d, 0xa5, 0x31);
 
@@ -4002,7 +4002,7 @@ int btintel_recv_event(hci_dev *hdev, sk_buff *skb)
 
 	if (skb->len > HCI_EVENT_HDR_SIZE && hdr->evt == 0xff) {
 		const void *ptr = skb->data + HCI_EVENT_HDR_SIZE + 1;
-		core::ffi::c_uint len = skb->len - HCI_EVENT_HDR_SIZE - 1;
+		kernel::ffi::c_uint len = skb->len - HCI_EVENT_HDR_SIZE - 1;
 
 		if (btintel_test_flag(hdev, INTEL_BOOTLOADER)) {
 			switch (skb->data[2]) {
@@ -4040,7 +4040,7 @@ int btintel_recv_event(hci_dev *hdev, sk_buff *skb)
 }
 
 
-void btintel_bootup(hci_dev *hdev, const void *ptr, len: core::ffi::c_uint)
+void btintel_bootup(hci_dev *hdev, const void *ptr, len: kernel::ffi::c_uint)
 {
 	const struct intel_bootup *evt = ptr;
 
@@ -4053,7 +4053,7 @@ void btintel_bootup(hci_dev *hdev, const void *ptr, len: core::ffi::c_uint)
 
 
 void btintel_secure_send_result(hci_dev *hdev,
-				const void *ptr, len: core::ffi::c_uint)
+				const void *ptr, len: kernel::ffi::c_uint)
 {
 	const struct intel_secure_send_result *evt = ptr;
 

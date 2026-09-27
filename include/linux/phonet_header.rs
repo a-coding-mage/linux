@@ -9,7 +9,7 @@
 
 /* Dependency intent: declarations from <uapi/linux/phonet.h> are supplied externally. */
 
-pub const SIOCPNGAUTOCONF: _ = SIOCDEVPRIVATE + 0;
+pub const SIOCPNGAUTOCONF: u32 = SIOCDEVPRIVATE + 0;
 
 #[repr(C)]
 pub struct IfPhonetAutoconf {
@@ -23,7 +23,7 @@ pub union IfPhonetReqIfru {
 
 #[repr(C)]
 pub struct IfPhonetReq {
-    pub ifr_phonet_name: [core::ffi::c_char; 16],
+    pub ifr_phonet_name: [kernel::ffi::c_char; 16],
     pub ifr_ifru: IfPhonetReqIfru,
 }
 

@@ -34,9 +34,9 @@ const RB500_CF_REG_DBUF32: usize = 0x0C00;
 
 #[repr(C)]
 pub struct rb532_cf_info {
-    pub iobase: *mut core::ffi::c_void,
+    pub iobase: *mut kernel::ffi::c_void,
     pub gpio_line: *mut gpio_desc,
-    pub irq: core::ffi::c_uint,
+    pub irq: kernel::ffi::c_uint,
 }
 
 unsafe extern "C" {
@@ -51,47 +51,47 @@ unsafe extern "C" {
     static rb532_pata_sht: scsi_host_template;
 
     fn gpiod_get_value(desc: *mut gpio_desc) -> i32;
-    fn irq_set_irq_type(irq: core::ffi::c_uint, irq_type: core::ffi::c_uint);
-    fn ata_sff_interrupt(irq: core::ffi::c_uint, dev_instance: *mut core::ffi::c_void);
+    fn irq_set_irq_type(irq: kernel::ffi::c_uint, irq_type: kernel::ffi::c_uint);
+    fn ata_sff_interrupt(irq: kernel::ffi::c_uint, dev_instance: *mut kernel::ffi::c_void);
     fn ata_sff_data_xfer32();
-    fn ata_host_alloc(dev: *mut core::ffi::c_void, max_ports: usize) -> *mut ata_host;
+    fn ata_host_alloc(dev: *mut kernel::ffi::c_void, max_ports: usize) -> *mut ata_host;
     fn devm_platform_ioremap_resource(
         pdev: *mut platform_device,
         index: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     fn platform_get_irq(pdev: *mut platform_device, index: usize) -> i32;
     fn devm_gpiod_get(
-        dev: *mut core::ffi::c_void,
-        con_id: *const core::ffi::c_char,
-        flags: core::ffi::c_uint,
+        dev: *mut kernel::ffi::c_void,
+        con_id: *const kernel::ffi::c_char,
+        flags: kernel::ffi::c_uint,
     ) -> *mut gpio_desc;
-    fn gpiod_set_consumer_name(desc: *mut gpio_desc, name: *const core::ffi::c_char);
+    fn gpiod_set_consumer_name(desc: *mut gpio_desc, name: *const kernel::ffi::c_char);
     fn devm_kzalloc(
-        dev: *mut core::ffi::c_void,
+        dev: *mut kernel::ffi::c_void,
         size: usize,
-        flags: core::ffi::c_uint,
-    ) -> *mut core::ffi::c_void;
+        flags: kernel::ffi::c_uint,
+    ) -> *mut kernel::ffi::c_void;
     fn ata_host_activate(
         host: *mut ata_host,
-        irq: core::ffi::c_uint,
-        handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> i32,
-        flags: core::ffi::c_uint,
+        irq: kernel::ffi::c_uint,
+        handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> i32,
+        flags: kernel::ffi::c_uint,
         sht: *const scsi_host_template,
     ) -> i32;
     fn ata_host_detach(host: *mut ata_host);
-    fn ata_sff_std_ports(ioaddr: *mut core::ffi::c_void);
+    fn ata_sff_std_ports(ioaddr: *mut kernel::ffi::c_void);
 }
 
-const IRQ_TYPE_LEVEL_LOW: core::ffi::c_uint = 0;
-const IRQ_TYPE_LEVEL_HIGH: core::ffi::c_uint = 1;
-const IRQF_TRIGGER_LOW: core::ffi::c_uint = 1;
-const GPIOD_IN: core::ffi::c_uint = 0;
+const IRQ_TYPE_LEVEL_LOW: kernel::ffi::c_uint = 0;
+const IRQ_TYPE_LEVEL_HIGH: kernel::ffi::c_uint = 1;
+const IRQF_TRIGGER_LOW: kernel::ffi::c_uint = 1;
+const GPIOD_IN: kernel::ffi::c_uint = 0;
 const ATA_PIO4: u32 = 0x10;
 
 #[no_mangle]
 pub unsafe extern "C" fn rb532_pata_irq_handler(
     irq: i32,
-    dev_instance: *mut core::ffi::c_void,
+    dev_instance: *mut kernel::ffi::c_void,
 ) -> i32 {
     let ah = dev_instance as *mut ata_host;
     let info = (*(ah as *mut ata_host_private)).private_data as *mut rb532_cf_info;
@@ -108,7 +108,7 @@ pub unsafe extern "C" fn rb532_pata_irq_handler(
 
 #[repr(C)]
 struct ata_host_private {
-    private_data: *mut core::ffi::c_void,
+    private_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -147,29 +147,29 @@ pub unsafe extern "C" fn rb532_pata_driver_probe(pdev: *mut platform_device) -> 
         return -22;
     }
 
-    let gpiod = devm_gpiod_get(pdev as *mut core::ffi::c_void, core::ptr::null(), GPIOD_IN);
+    let gpiod = devm_gpiod_get(pdev as *mut kernel::ffi::c_void, core::ptr::null(), GPIOD_IN);
     if gpiod.is_null() {
         return -1;
     }
-    gpiod_set_consumer_name(gpiod, DRV_NAME.as_ptr() as *const core::ffi::c_char);
+    gpiod_set_consumer_name(gpiod, DRV_NAME.as_ptr() as *const kernel::ffi::c_char);
 
-    let ah = ata_host_alloc(pdev as *mut core::ffi::c_void, RB500_CF_MAXPORTS);
+    let ah = ata_host_alloc(pdev as *mut kernel::ffi::c_void, RB500_CF_MAXPORTS);
     if ah.is_null() {
         return -12;
     }
 
-    let info = devm_kzalloc(pdev as *mut core::ffi::c_void, core::mem::size_of::<rb532_cf_info>(), 0)
+    let info = devm_kzalloc(pdev as *mut kernel::ffi::c_void, core::mem::size_of::<rb532_cf_info>(), 0)
         as *mut rb532_cf_info;
     if info.is_null() {
         return -12;
     }
 
     (*info).gpio_line = gpiod;
-    (*info).irq = irq as core::ffi::c_uint;
+    (*info).irq = irq as kernel::ffi::c_uint;
     (*info).iobase = iobase;
     rb532_pata_setup_ports(ah);
 
-    let ret = ata_host_activate(ah, irq as core::ffi::c_uint, rb532_pata_irq_handler, IRQF_TRIGGER_LOW, &rb532_pata_sht);
+    let ret = ata_host_activate(ah, irq as kernel::ffi::c_uint, rb532_pata_irq_handler, IRQF_TRIGGER_LOW, &rb532_pata_sht);
     if ret != 0 { return ret; }
     0
 }

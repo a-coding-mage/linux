@@ -30,44 +30,44 @@ const HACRIER: usize = 0x58;
 const HACRSR: usize = 0x5C;
 const HACACR: usize = 0x60;
 
-const CR_CR: libc::c_ulong = 1 << 15; /* "codec-ready" indicator */
-const CR_CDRT: libc::c_ulong = 1 << 11; /* cold reset */
-const CR_WMRT: libc::c_ulong = 1 << 10; /* warm reset */
-const CR_B9: libc::c_ulong = 1 << 9; /* the mysterious "bit 9" */
-const CR_ST: libc::c_ulong = 1 << 5; /* AC97 link start bit */
+const CR_CR: kernel::ffi::c_ulong = 1 << 15; /* "codec-ready" indicator */
+const CR_CDRT: kernel::ffi::c_ulong = 1 << 11; /* cold reset */
+const CR_WMRT: kernel::ffi::c_ulong = 1 << 10; /* warm reset */
+const CR_B9: kernel::ffi::c_ulong = 1 << 9; /* the mysterious "bit 9" */
+const CR_ST: kernel::ffi::c_ulong = 1 << 5; /* AC97 link start bit */
 
-const CSAR_RD: libc::c_ulong = 1 << 19; /* AC97 data read bit */
-const CSAR_WR: libc::c_ulong = 0;
+const CSAR_RD: kernel::ffi::c_ulong = 1 << 19; /* AC97 data read bit */
+const CSAR_WR: kernel::ffi::c_ulong = 0;
 
-const TSR_CMDAMT: libc::c_ulong = 1 << 31;
-const TSR_CMDDMT: libc::c_ulong = 1 << 30;
+const TSR_CMDAMT: kernel::ffi::c_ulong = 1 << 31;
+const TSR_CMDDMT: kernel::ffi::c_ulong = 1 << 30;
 
-const RSR_STARY: libc::c_ulong = 1 << 22;
-const RSR_STDRY: libc::c_ulong = 1 << 21;
+const RSR_STARY: kernel::ffi::c_ulong = 1 << 22;
+const RSR_STDRY: kernel::ffi::c_ulong = 1 << 21;
 
-const ACR_DMARX16: libc::c_ulong = 1 << 30;
-const ACR_DMATX16: libc::c_ulong = 1 << 29;
-const ACR_TX12ATOM: libc::c_ulong = 1 << 26;
-const ACR_DMARX20: libc::c_ulong = (1 << 24) | (1 << 22);
-const ACR_DMATX20: libc::c_ulong = (1 << 23) | (1 << 21);
+const ACR_DMARX16: kernel::ffi::c_ulong = 1 << 30;
+const ACR_DMATX16: kernel::ffi::c_ulong = 1 << 29;
+const ACR_TX12ATOM: kernel::ffi::c_ulong = 1 << 26;
+const ACR_DMARX20: kernel::ffi::c_ulong = (1 << 24) | (1 << 22);
+const ACR_DMATX20: kernel::ffi::c_ulong = (1 << 23) | (1 << 21);
 
-const CSDR_SHIFT: libc::c_uint = 4;
-const CSDR_MASK: libc::c_ulong = 0xffff << CSDR_SHIFT;
-const CSAR_SHIFT: libc::c_uint = 12;
-const CSAR_MASK: libc::c_ulong = 0x7f << CSAR_SHIFT;
+const CSDR_SHIFT: kernel::ffi::c_uint = 4;
+const CSDR_MASK: kernel::ffi::c_ulong = 0xffff << CSDR_SHIFT;
+const CSAR_SHIFT: kernel::ffi::c_uint = 12;
+const CSAR_MASK: kernel::ffi::c_ulong = 0x7f << CSAR_SHIFT;
 
-const AC97_WRITE_RETRY: libc::c_uint = 1;
-const AC97_READ_RETRY: libc::c_uint = 5;
+const AC97_WRITE_RETRY: kernel::ffi::c_uint = 1;
+const AC97_READ_RETRY: kernel::ffi::c_uint = 5;
 
 /* manual-suggested AC97 codec access timeouts (us) */
-const TMO_E1: libc::c_uint = 500; /* 21 < E1 < 1000 */
-const TMO_E2: libc::c_uint = 13; /* 13 < E2 */
-const TMO_E3: libc::c_uint = 21; /* 21 < E3 */
-const TMO_E4: libc::c_uint = 500; /* 21 < E4 < 1000 */
+const TMO_E1: kernel::ffi::c_uint = 500; /* 21 < E1 < 1000 */
+const TMO_E2: kernel::ffi::c_uint = 13; /* 13 < E2 */
+const TMO_E3: kernel::ffi::c_uint = 21; /* 21 < E3 */
+const TMO_E4: kernel::ffi::c_uint = 500; /* 21 < E4 < 1000 */
 
 #[repr(C)]
 struct hac_priv {
-    mmio: libc::c_ulong, /* HAC base address */
+    mmio: kernel::ffi::c_ulong, /* HAC base address */
 }
 
 // Original C selects this initializer with CONFIG_CPU_SUBTYPE_SH7760,
@@ -82,19 +82,19 @@ static mut hac_cpu_data: [hac_priv; 2] = [
 static mut hac_cpu_data: [hac_priv; 1] = [hac_priv { mmio: 0xFFE40000 }];
 
 extern "C" {
-    fn udelay(usecs: libc::c_ulong);
-    fn msleep(msecs: libc::c_uint);
+    fn udelay(usecs: kernel::ffi::c_ulong);
+    fn msleep(msecs: kernel::ffi::c_uint);
     fn local_irq_disable();
     fn local_irq_enable();
-    fn printk(fmt: *const libc::c_char, ...) -> libc::c_int;
-    fn pr_debug(fmt: *const libc::c_char, ...);
-    fn snd_soc_set_ac97_ops(ops: *mut snd_ac97_bus_ops) -> libc::c_int;
+    fn printk(fmt: *const kernel::ffi::c_char, ...) -> kernel::ffi::c_int;
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
+    fn snd_soc_set_ac97_ops(ops: *mut snd_ac97_bus_ops) -> kernel::ffi::c_int;
     fn devm_snd_soc_register_component(
         dev: *mut device,
         cmpnt_drv: *const snd_soc_component_driver,
         dai_drv: *mut snd_soc_dai_driver,
-        num_dai: libc::c_int,
-    ) -> libc::c_int;
+        num_dai: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -104,17 +104,17 @@ struct snd_ac97 {
 
 #[repr(C)]
 struct snd_pcm_substream {
-    stream: libc::c_int,
+    stream: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 struct snd_pcm_hw_params {
-    msbits: libc::c_int,
+    msbits: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 struct snd_soc_dai {
-    id: libc::c_int,
+    id: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -129,8 +129,8 @@ struct platform_device {
 
 #[repr(C)]
 struct snd_ac97_bus_ops {
-    read: Option<unsafe extern "C" fn(*mut snd_ac97, libc::c_ushort) -> libc::c_ushort>,
-    write: Option<unsafe extern "C" fn(*mut snd_ac97, libc::c_ushort, libc::c_ushort)>,
+    read: Option<unsafe extern "C" fn(*mut snd_ac97, kernel::ffi::c_ushort) -> kernel::ffi::c_ushort>,
+    write: Option<unsafe extern "C" fn(*mut snd_ac97, kernel::ffi::c_ushort, kernel::ffi::c_ushort)>,
     reset: Option<unsafe extern "C" fn(*mut snd_ac97)>,
     warm_reset: Option<unsafe extern "C" fn(*mut snd_ac97)>,
 }
@@ -142,22 +142,22 @@ struct snd_soc_dai_ops {
             *mut snd_pcm_substream,
             *mut snd_pcm_hw_params,
             *mut snd_soc_dai,
-        ) -> libc::c_int,
+        ) -> kernel::ffi::c_int,
     >,
 }
 
 #[repr(C)]
 struct snd_soc_pcm_stream {
-    rates: libc::c_uint,
-    formats: libc::c_ulonglong,
-    channels_min: libc::c_uint,
-    channels_max: libc::c_uint,
+    rates: kernel::ffi::c_uint,
+    formats: kernel::ffi::c_ulonglong,
+    channels_min: kernel::ffi::c_uint,
+    channels_max: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 struct snd_soc_dai_driver {
-    name: *const libc::c_char,
-    id: libc::c_int,
+    name: *const kernel::ffi::c_char,
+    id: kernel::ffi::c_int,
     playback: snd_soc_pcm_stream,
     capture: snd_soc_pcm_stream,
     ops: *const snd_soc_dai_ops,
@@ -165,46 +165,46 @@ struct snd_soc_dai_driver {
 
 #[repr(C)]
 struct snd_soc_component_driver {
-    name: *const libc::c_char,
-    legacy_dai_naming: libc::c_uint,
+    name: *const kernel::ffi::c_char,
+    legacy_dai_naming: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 struct device_driver {
-    name: *const libc::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 struct platform_driver {
     driver: device_driver,
-    probe: Option<unsafe extern "C" fn(*mut platform_device) -> libc::c_int>,
+    probe: Option<unsafe extern "C" fn(*mut platform_device) -> kernel::ffi::c_int>,
     remove: Option<unsafe extern "C" fn(*mut platform_device)>,
 }
 
-const SNDRV_PCM_STREAM_PLAYBACK: libc::c_int = 0;
-const SNDRV_PCM_RATE_8000_192000: libc::c_uint = 0;
-const SNDRV_PCM_FMTBIT_S16_LE: libc::c_ulonglong = 0;
-const EINVAL: libc::c_int = 22;
+const SNDRV_PCM_STREAM_PLAYBACK: kernel::ffi::c_int = 0;
+const SNDRV_PCM_RATE_8000_192000: kernel::ffi::c_uint = 0;
+const SNDRV_PCM_FMTBIT_S16_LE: kernel::ffi::c_ulonglong = 0;
+const EINVAL: kernel::ffi::c_int = 22;
 const KERN_INFO: &[u8] = b"\0";
 
-unsafe fn HACREG(hac: *mut hac_priv, reg: usize) -> *mut libc::c_ulong {
-    ((*hac).mmio as usize + reg) as *mut libc::c_ulong
+unsafe fn HACREG(hac: *mut hac_priv, reg: usize) -> *mut kernel::ffi::c_ulong {
+    ((*hac).mmio as usize + reg) as *mut kernel::ffi::c_ulong
 }
 
-unsafe fn hacreg_read(hac: *mut hac_priv, reg: usize) -> libc::c_ulong {
+unsafe fn hacreg_read(hac: *mut hac_priv, reg: usize) -> kernel::ffi::c_ulong {
     core::ptr::read_volatile(HACREG(hac, reg))
 }
 
-unsafe fn hacreg_write(hac: *mut hac_priv, reg: usize, val: libc::c_ulong) {
+unsafe fn hacreg_write(hac: *mut hac_priv, reg: usize, val: kernel::ffi::c_ulong) {
     core::ptr::write_volatile(HACREG(hac, reg), val);
 }
 
-unsafe fn hacreg_and(hac: *mut hac_priv, reg: usize, mask: libc::c_ulong) {
+unsafe fn hacreg_and(hac: *mut hac_priv, reg: usize, mask: kernel::ffi::c_ulong) {
     let p = HACREG(hac, reg);
     core::ptr::write_volatile(p, core::ptr::read_volatile(p) & mask);
 }
 
-unsafe fn hacreg_or(hac: *mut hac_priv, reg: usize, bits: libc::c_ulong) {
+unsafe fn hacreg_or(hac: *mut hac_priv, reg: usize, bits: kernel::ffi::c_ulong) {
     let p = HACREG(hac, reg);
     core::ptr::write_volatile(p, core::ptr::read_volatile(p) | bits);
 }
@@ -214,13 +214,13 @@ unsafe fn hacreg_or(hac: *mut hac_priv, reg: usize, bits: libc::c_ulong) {
  */
 unsafe extern "C" fn hac_get_codec_data(
     hac: *mut hac_priv,
-    r: libc::c_ushort,
-    v: *mut libc::c_ushort,
-) -> libc::c_int {
-    let mut to1: libc::c_uint;
-    let mut to2: libc::c_uint;
-    let mut i: libc::c_uint;
-    let mut adr: libc::c_ushort;
+    r: kernel::ffi::c_ushort,
+    v: *mut kernel::ffi::c_ushort,
+) -> kernel::ffi::c_int {
+    let mut to1: kernel::ffi::c_uint;
+    let mut to2: kernel::ffi::c_uint;
+    let mut i: kernel::ffi::c_uint;
+    let mut adr: kernel::ffi::c_ushort;
 
     i = AC97_READ_RETRY;
     while i != 0 {
@@ -241,8 +241,8 @@ unsafe extern "C" fn hac_get_codec_data(
             return 0; /* codec comm is down */
         }
 
-        adr = ((hacreg_read(hac, HACCSAR) & CSAR_MASK) >> CSAR_SHIFT) as libc::c_ushort;
-        *v = ((hacreg_read(hac, HACCSDR) & CSDR_MASK) >> CSDR_SHIFT) as libc::c_ushort;
+        adr = ((hacreg_read(hac, HACCSAR) & CSAR_MASK) >> CSAR_SHIFT) as kernel::ffi::c_ushort;
+        *v = ((hacreg_read(hac, HACCSDR) & CSDR_MASK) >> CSDR_SHIFT) as kernel::ffi::c_ushort;
 
         hacreg_and(hac, HACRSR, !(RSR_STDRY | RSR_STARY));
 
@@ -255,23 +255,23 @@ unsafe extern "C" fn hac_get_codec_data(
         i = i.wrapping_sub(1);
     }
     hacreg_and(hac, HACRSR, !(RSR_STDRY | RSR_STARY));
-    i as libc::c_int
+    i as kernel::ffi::c_int
 }
 
 unsafe extern "C" fn hac_read_codec_aux(
     hac: *mut hac_priv,
-    reg: libc::c_ushort,
-) -> libc::c_ushort {
-    let mut val: libc::c_ushort;
-    let mut i: libc::c_uint;
-    let mut to: libc::c_uint;
+    reg: kernel::ffi::c_ushort,
+) -> kernel::ffi::c_ushort {
+    let mut val: kernel::ffi::c_ushort;
+    let mut i: kernel::ffi::c_uint;
+    let mut to: kernel::ffi::c_uint;
 
     i = AC97_READ_RETRY;
     while i != 0 {
         /* send_read_request */
         local_irq_disable();
         hacreg_and(hac, HACTSR, !TSR_CMDAMT);
-        hacreg_write(hac, HACCSAR, ((reg as libc::c_ulong) << CSAR_SHIFT) | CSAR_RD);
+        hacreg_write(hac, HACCSAR, ((reg as kernel::ffi::c_ulong) << CSAR_SHIFT) | CSAR_RD);
         local_irq_enable();
 
         to = TMO_E3;
@@ -291,19 +291,19 @@ unsafe extern "C" fn hac_read_codec_aux(
     if i != 0 {
         val
     } else {
-        !0 as libc::c_ushort
+        !0 as kernel::ffi::c_ushort
     }
 }
 
 unsafe extern "C" fn hac_ac97_write(
     ac97: *mut snd_ac97,
-    reg: libc::c_ushort,
-    val: libc::c_ushort,
+    reg: kernel::ffi::c_ushort,
+    val: kernel::ffi::c_ushort,
 ) {
-    let unit_id: libc::c_int = 0; /* ac97->private_data */
+    let unit_id: kernel::ffi::c_int = 0; /* ac97->private_data */
     let hac: *mut hac_priv = &mut hac_cpu_data[unit_id as usize];
-    let mut i: libc::c_uint;
-    let mut to: libc::c_uint;
+    let mut i: kernel::ffi::c_uint;
+    let mut to: kernel::ffi::c_uint;
     let _ = ac97;
     /* write_codec_aux */
     i = AC97_WRITE_RETRY;
@@ -311,8 +311,8 @@ unsafe extern "C" fn hac_ac97_write(
         /* send_write_request */
         local_irq_disable();
         hacreg_and(hac, HACTSR, !(TSR_CMDDMT | TSR_CMDAMT));
-        hacreg_write(hac, HACCSDR, (val as libc::c_ulong) << CSDR_SHIFT);
-        hacreg_write(hac, HACCSAR, ((reg as libc::c_ulong) << CSAR_SHIFT) & !CSAR_RD);
+        hacreg_write(hac, HACCSDR, (val as kernel::ffi::c_ulong) << CSDR_SHIFT);
+        hacreg_write(hac, HACCSAR, ((reg as kernel::ffi::c_ulong) << CSAR_SHIFT) & !CSAR_RD);
         local_irq_enable();
 
         /* poll-wait for CMDAMT and CMDDMT */
@@ -333,18 +333,18 @@ unsafe extern "C" fn hac_ac97_write(
 
 unsafe extern "C" fn hac_ac97_read(
     ac97: *mut snd_ac97,
-    reg: libc::c_ushort,
-) -> libc::c_ushort {
-    let unit_id: libc::c_int = 0; /* ac97->private_data */
+    reg: kernel::ffi::c_ushort,
+) -> kernel::ffi::c_ushort {
+    let unit_id: kernel::ffi::c_int = 0; /* ac97->private_data */
     let hac: *mut hac_priv = &mut hac_cpu_data[unit_id as usize];
     let _ = ac97;
     hac_read_codec_aux(hac, reg)
 }
 
 unsafe extern "C" fn hac_ac97_warmrst(ac97: *mut snd_ac97) {
-    let unit_id: libc::c_int = 0; /* ac97->private_data */
+    let unit_id: kernel::ffi::c_int = 0; /* ac97->private_data */
     let hac: *mut hac_priv = &mut hac_cpu_data[unit_id as usize];
-    let mut tmo: libc::c_uint;
+    let mut tmo: kernel::ffi::c_uint;
     let _ = ac97;
 
     hacreg_write(hac, HACCR, CR_WMRT | CR_ST | CR_B9);
@@ -359,7 +359,7 @@ unsafe extern "C" fn hac_ac97_warmrst(ac97: *mut snd_ac97) {
     if tmo == 0 {
         printk(
             concat!(core::str::from_utf8_unchecked(KERN_INFO), "hac: reset: AC97 link down!\n\0")
-                .as_ptr() as *const libc::c_char,
+                .as_ptr() as *const kernel::ffi::c_char,
         );
     }
     /* settings this bit lets us have a conversation with codec */
@@ -367,7 +367,7 @@ unsafe extern "C" fn hac_ac97_warmrst(ac97: *mut snd_ac97) {
 }
 
 unsafe extern "C" fn hac_ac97_coldrst(ac97: *mut snd_ac97) {
-    let unit_id: libc::c_int = 0; /* ac97->private_data */
+    let unit_id: kernel::ffi::c_int = 0; /* ac97->private_data */
     let hac: *mut hac_priv;
     hac = &mut hac_cpu_data[unit_id as usize];
 
@@ -388,9 +388,9 @@ unsafe extern "C" fn hac_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let hac: *mut hac_priv = &mut hac_cpu_data[(*dai).id as usize];
-    let d: libc::c_int = if (*substream).stream == SNDRV_PCM_STREAM_PLAYBACK {
+    let d: kernel::ffi::c_int = if (*substream).stream == SNDRV_PCM_STREAM_PLAYBACK {
         0
     } else {
         1
@@ -407,7 +407,7 @@ unsafe extern "C" fn hac_hw_params(
         }
         _ => {
             pr_debug(
-                b"hac: invalid depth %d bit\n\0".as_ptr() as *const libc::c_char,
+                b"hac: invalid depth %d bit\n\0".as_ptr() as *const kernel::ffi::c_char,
                 (*params).msbits,
             );
             return -EINVAL;
@@ -417,9 +417,9 @@ unsafe extern "C" fn hac_hw_params(
     0
 }
 
-const AC97_RATES: libc::c_uint = SNDRV_PCM_RATE_8000_192000;
+const AC97_RATES: kernel::ffi::c_uint = SNDRV_PCM_RATE_8000_192000;
 
-const AC97_FMTS: libc::c_ulonglong = SNDRV_PCM_FMTBIT_S16_LE;
+const AC97_FMTS: kernel::ffi::c_ulonglong = SNDRV_PCM_FMTBIT_S16_LE;
 
 static hac_dai_ops: snd_soc_dai_ops = snd_soc_dai_ops {
     hw_params: Some(hac_hw_params),
@@ -428,7 +428,7 @@ static hac_dai_ops: snd_soc_dai_ops = snd_soc_dai_ops {
 #[cfg(CONFIG_CPU_SUBTYPE_SH7760)]
 static mut sh4_hac_dai: [snd_soc_dai_driver; 2] = [
     snd_soc_dai_driver {
-        name: b"hac-dai.0\0".as_ptr() as *const libc::c_char,
+        name: b"hac-dai.0\0".as_ptr() as *const kernel::ffi::c_char,
         id: 0,
         playback: snd_soc_pcm_stream {
             rates: AC97_RATES,
@@ -445,7 +445,7 @@ static mut sh4_hac_dai: [snd_soc_dai_driver; 2] = [
         ops: &hac_dai_ops,
     },
     snd_soc_dai_driver {
-        name: b"hac-dai.1\0".as_ptr() as *const libc::c_char,
+        name: b"hac-dai.1\0".as_ptr() as *const kernel::ffi::c_char,
         id: 1,
         playback: snd_soc_pcm_stream {
             rates: AC97_RATES,
@@ -465,7 +465,7 @@ static mut sh4_hac_dai: [snd_soc_dai_driver; 2] = [
 
 #[cfg(not(CONFIG_CPU_SUBTYPE_SH7760))]
 static mut sh4_hac_dai: [snd_soc_dai_driver; 1] = [snd_soc_dai_driver {
-    name: b"hac-dai.0\0".as_ptr() as *const libc::c_char,
+    name: b"hac-dai.0\0".as_ptr() as *const kernel::ffi::c_char,
     id: 0,
     playback: snd_soc_pcm_stream {
         rates: AC97_RATES,
@@ -483,12 +483,12 @@ static mut sh4_hac_dai: [snd_soc_dai_driver; 1] = [snd_soc_dai_driver {
 }];
 
 static sh4_hac_component: snd_soc_component_driver = snd_soc_component_driver {
-    name: b"sh4-hac\0".as_ptr() as *const libc::c_char,
+    name: b"sh4-hac\0".as_ptr() as *const kernel::ffi::c_char,
     legacy_dai_naming: 1,
 };
 
-unsafe extern "C" fn hac_soc_platform_probe(pdev: *mut platform_device) -> libc::c_int {
-    let mut ret: libc::c_int;
+unsafe extern "C" fn hac_soc_platform_probe(pdev: *mut platform_device) -> kernel::ffi::c_int {
+    let mut ret: kernel::ffi::c_int;
 
     ret = snd_soc_set_ac97_ops(&mut hac_ac97_ops);
     if ret != 0 {
@@ -499,7 +499,7 @@ unsafe extern "C" fn hac_soc_platform_probe(pdev: *mut platform_device) -> libc:
         &mut (*pdev).dev,
         &sh4_hac_component,
         sh4_hac_dai.as_mut_ptr(),
-        sh4_hac_dai.len() as libc::c_int,
+        sh4_hac_dai.len() as kernel::ffi::c_int,
     )
 }
 
@@ -510,7 +510,7 @@ unsafe extern "C" fn hac_soc_platform_remove(pdev: *mut platform_device) {
 
 static mut hac_pcm_driver: platform_driver = platform_driver {
     driver: device_driver {
-        name: b"hac-pcm-audio\0".as_ptr() as *const libc::c_char,
+        name: b"hac-pcm-audio\0".as_ptr() as *const kernel::ffi::c_char,
     },
     probe: Some(hac_soc_platform_probe),
     remove: Some(hac_soc_platform_remove),

@@ -2,8 +2,8 @@
 
 #[repr(C)]
 pub struct xt_helper_info {
-    pub invert: ::core::ffi::c_int,
-    pub name: [::core::ffi::c_char; 30],
+    pub invert: ::kernel::ffi::c_int,
+    pub name: [::kernel::ffi::c_char; 30],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

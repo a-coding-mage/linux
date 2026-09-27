@@ -14,7 +14,7 @@ macro_rules! ubsan_test {
 }
 
 extern "C" {
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 unsafe fn test_ubsan_add_overflow() {

@@ -50,8 +50,8 @@ pub const IPPROTO_L2TP: u16 = 0x73;
 #[repr(C)]
 pub struct arglist {
     pub numargs: i32,
-    pub tokens: [*mut core::ffi::c_char; MAXVARGS],
-    pub values: [*mut core::ffi::c_char; MAXVARGS],
+    pub tokens: [*mut kernel::ffi::c_char; MAXVARGS],
+    pub values: [*mut kernel::ffi::c_char; MAXVARGS],
 }
 
 /* Separating read and write FDs allows us to have different
@@ -62,38 +62,38 @@ pub struct arglist {
 pub struct vector_fds {
     pub rx_fd: i32,
     pub tx_fd: i32,
-    pub remote_addr: *mut core::ffi::c_void,
+    pub remote_addr: *mut kernel::ffi::c_void,
     pub remote_addr_size: i32,
 }
 
 pub const VECTOR_READ: i32 = 1;
 
 extern "C" {
-    pub fn uml_parse_vector_ifspec(arg: *mut core::ffi::c_char) -> *mut arglist;
+    pub fn uml_parse_vector_ifspec(arg: *mut kernel::ffi::c_char) -> *mut arglist;
     pub fn uml_vector_user_open(unit: i32, parsed: *mut arglist) -> *mut vector_fds;
     pub fn uml_vector_fetch_arg(
         ifspec: *mut arglist,
-        token: *mut core::ffi::c_char,
-    ) -> *mut core::ffi::c_char;
-    pub fn uml_vector_recvmsg(fd: i32, hdr: *mut core::ffi::c_void, flags: i32) -> i32;
-    pub fn uml_vector_sendmsg(fd: i32, hdr: *mut core::ffi::c_void, flags: i32) -> i32;
-    pub fn uml_vector_writev(fd: i32, hdr: *mut core::ffi::c_void, iovcount: i32) -> i32;
+        token: *mut kernel::ffi::c_char,
+    ) -> *mut kernel::ffi::c_char;
+    pub fn uml_vector_recvmsg(fd: i32, hdr: *mut kernel::ffi::c_void, flags: i32) -> i32;
+    pub fn uml_vector_sendmsg(fd: i32, hdr: *mut kernel::ffi::c_void, flags: i32) -> i32;
+    pub fn uml_vector_writev(fd: i32, hdr: *mut kernel::ffi::c_void, iovcount: i32) -> i32;
     pub fn uml_vector_sendmmsg(
         fd: i32,
-        msgvec: *mut core::ffi::c_void,
+        msgvec: *mut kernel::ffi::c_void,
         vlen: u32,
         flags: u32,
     ) -> i32;
     pub fn uml_vector_recvmmsg(
         fd: i32,
-        msgvec: *mut core::ffi::c_void,
+        msgvec: *mut kernel::ffi::c_void,
         vlen: u32,
         flags: u32,
     ) -> i32;
-    pub fn uml_vector_default_bpf(mac: *const core::ffi::c_void) -> *mut core::ffi::c_void;
-    pub fn uml_vector_user_bpf(filename: *mut core::ffi::c_char) -> *mut core::ffi::c_void;
-    pub fn uml_vector_attach_bpf(fd: i32, bpf: *mut core::ffi::c_void) -> i32;
-    pub fn uml_vector_detach_bpf(fd: i32, bpf: *mut core::ffi::c_void) -> i32;
+    pub fn uml_vector_default_bpf(mac: *const kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+    pub fn uml_vector_user_bpf(filename: *mut kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
+    pub fn uml_vector_attach_bpf(fd: i32, bpf: *mut kernel::ffi::c_void) -> i32;
+    pub fn uml_vector_detach_bpf(fd: i32, bpf: *mut kernel::ffi::c_void) -> i32;
     pub fn uml_raw_enable_qdisc_bypass(fd: i32) -> bool;
     pub fn uml_raw_enable_vnet_headers(fd: i32) -> bool;
     pub fn uml_tap_enable_vnet_headers(fd: i32) -> bool;

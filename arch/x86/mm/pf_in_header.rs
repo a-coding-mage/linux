@@ -18,13 +18,13 @@ pub enum reason_type {
 pub struct pt_regs;
 
 extern "C" {
-    pub fn get_ins_type(ins_addr: core::ffi::c_ulong) -> reason_type;
-    pub fn get_ins_mem_width(ins_addr: core::ffi::c_ulong) -> core::ffi::c_uint;
+    pub fn get_ins_type(ins_addr: kernel::ffi::c_ulong) -> reason_type;
+    pub fn get_ins_mem_width(ins_addr: kernel::ffi::c_ulong) -> kernel::ffi::c_uint;
     pub fn get_ins_reg_val(
-        ins_addr: core::ffi::c_ulong,
+        ins_addr: kernel::ffi::c_ulong,
         regs: *mut pt_regs,
-    ) -> core::ffi::c_ulong;
-    pub fn get_ins_imm_val(ins_addr: core::ffi::c_ulong) -> core::ffi::c_ulong;
+    ) -> kernel::ffi::c_ulong;
+    pub fn get_ins_imm_val(ins_addr: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

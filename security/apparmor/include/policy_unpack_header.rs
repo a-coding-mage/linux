@@ -7,8 +7,8 @@
 // Copyright (C) 1998-2008 Novell/SUSE
 // Copyright 2009-2010 Canonical Ltd.
 
-use core::ffi::c_void;
-use core::ffi::c_char;
+use kernel::ffi::c_void;
+use kernel::ffi::c_char;
 
 pub struct list_head;
 pub struct kref;

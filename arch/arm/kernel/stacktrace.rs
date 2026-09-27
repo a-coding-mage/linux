@@ -3,8 +3,8 @@
 
 #[cfg(all(CONFIG_FRAME_POINTER, not(CONFIG_ARM_UNWIND)))]
 extern "C" {
-    static mut call_with_stack_end: ::core::ffi::c_ulong;
-    static mut call_with_stack: ::core::ffi::c_void;
+    static mut call_with_stack_end: ::kernel::ffi::c_ulong;
+    static mut call_with_stack: ::kernel::ffi::c_void;
 }
 
 #[cfg(all(CONFIG_FRAME_POINTER, not(CONFIG_ARM_UNWIND)))]
@@ -54,14 +54,14 @@ pub unsafe fn unwind_frame(frame: *mut stackframe) -> i32 {
     #[cfg(CONFIG_CC_IS_CLANG)]
     {
         (*frame).sp = (*frame).fp;
-        (*frame).fp = core::ptr::read_volatile(fp as *const ::core::ffi::c_ulong);
-        (*frame).pc = core::ptr::read_volatile((fp + 4) as *const ::core::ffi::c_ulong);
+        (*frame).fp = core::ptr::read_volatile(fp as *const ::kernel::ffi::c_ulong);
+        (*frame).pc = core::ptr::read_volatile((fp + 4) as *const ::kernel::ffi::c_ulong);
     }
     #[cfg(not(CONFIG_CC_IS_CLANG))]
     {
-        (*frame).fp = core::ptr::read_volatile((fp - 12) as *const ::core::ffi::c_ulong);
-        (*frame).sp = core::ptr::read_volatile((fp - 8) as *const ::core::ffi::c_ulong);
-        (*frame).pc = core::ptr::read_volatile((fp - 4) as *const ::core::ffi::c_ulong);
+        (*frame).fp = core::ptr::read_volatile((fp - 12) as *const ::kernel::ffi::c_ulong);
+        (*frame).sp = core::ptr::read_volatile((fp - 8) as *const ::kernel::ffi::c_ulong);
+        (*frame).pc = core::ptr::read_volatile((fp - 4) as *const ::kernel::ffi::c_ulong);
     }
 
     #[cfg(CONFIG_KRETPROBES)]
@@ -77,8 +77,8 @@ pub unsafe fn unwind_frame(frame: *mut stackframe) -> i32 {
 
 pub unsafe fn walk_stackframe(
     frame: *mut stackframe,
-    fn_: Option<unsafe extern "C" fn(*mut ::core::ffi::c_void, usize) -> bool>,
-    data: *mut ::core::ffi::c_void,
+    fn_: Option<unsafe extern "C" fn(*mut ::kernel::ffi::c_void, usize) -> bool>,
+    data: *mut ::kernel::ffi::c_void,
 ) {
     loop {
         if !fn_.expect("callback is non-null")(data, (*frame).pc) {
@@ -116,8 +116,8 @@ unsafe fn start_stack_trace(
 
 #[cfg(CONFIG_STACKTRACE)]
 pub unsafe fn arch_stack_walk(
-    consume_entry: Option<unsafe extern "C" fn(*mut ::core::ffi::c_void, usize) -> bool>,
-    cookie: *mut ::core::ffi::c_void,
+    consume_entry: Option<unsafe extern "C" fn(*mut ::kernel::ffi::c_void, usize) -> bool>,
+    cookie: *mut ::kernel::ffi::c_void,
     task: *mut task_struct,
     regs: *mut pt_regs,
 ) {

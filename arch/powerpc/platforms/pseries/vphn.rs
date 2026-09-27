@@ -20,9 +20,9 @@
  *
  * Convert to the sequence they would appear in the ibm,associativity property.
  */
-unsafe fn vphn_unpack_associativity(packed: *const libc::c_long, unpacked: *mut __be32) -> libc::c_int {
+unsafe fn vphn_unpack_associativity(packed: *const kernel::ffi::c_long, unpacked: *mut __be32) -> kernel::ffi::c_int {
     let mut be_packed: [u64; VPHN_REGISTER_COUNT] = [0; VPHN_REGISTER_COUNT];
-    let mut nr_assoc_doms: libc::c_int = 0;
+    let mut nr_assoc_doms: kernel::ffi::c_int = 0;
     let mut field = be_packed.as_ptr() as *const __be16;
     let mut last: u16 = 0;
     let mut is_32bit = false;

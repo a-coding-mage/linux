@@ -3,7 +3,7 @@
 pub type probe_opcode_t = u32;
 pub type probes_handler_t = unsafe extern "C" fn(
     opcode: u32,
-    addr: core::ffi::c_ulong,
+    addr: kernel::ffi::c_ulong,
     regs: *mut pt_regs,
 ) -> bool;
 
@@ -15,7 +15,7 @@ pub struct arch_probe_insn {
     pub insn: *mut probe_opcode_t,
     pub handler: Option<probes_handler_t>,
     /* restore address after simulation */
-    pub restore: core::ffi::c_ulong,
+    pub restore: kernel::ffi::c_ulong,
 }
 
 /* Corresponds to the C CONFIG_KPROBES build-time condition. */

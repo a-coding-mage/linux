@@ -5,7 +5,7 @@
  * Copyright (c) 2017, Intel Corporation.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Dependencies in the original C source:
 // #include <linux/dmi.h>

@@ -86,7 +86,7 @@ pub struct hidp_connadd_req {
     pub version: __u16,
     pub flags: __u32,
     pub idle_to: __u32,
-    pub name: [core::ffi::c_char; 128],
+    pub name: [kernel::ffi::c_char; 128],
 }
 
 #[repr(C)]
@@ -103,7 +103,7 @@ pub struct hidp_conninfo {
     pub vendor: __u16,
     pub product: __u16,
     pub version: __u16,
-    pub name: [core::ffi::c_char; 128],
+    pub name: [kernel::ffi::c_char; 128],
 }
 
 #[repr(C)]

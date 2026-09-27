@@ -42,49 +42,49 @@ pub struct platform_device;
 pub struct pci_dev;
 pub struct fch_clk_data {
     pub base: *mut u8,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 extern "C" {
-    fn dev_get_platdata(dev: *mut core::ffi::c_void) -> *mut fch_clk_data;
+    fn dev_get_platdata(dev: *mut kernel::ffi::c_void) -> *mut fch_clk_data;
     fn pci_get_domain_bus_and_slot(domain: u32, bus: u32, devfn: u32) -> *mut pci_dev;
     fn pci_match_id(ids: *const pci_device_id, dev: *mut pci_dev) -> bool;
     fn pci_dev_put(dev: *mut pci_dev);
     fn clk_hw_register_fixed_rate(
-        dev: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
-        parent_name: *const core::ffi::c_char,
+        dev: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        parent_name: *const kernel::ffi::c_char,
         flags: u32,
         rate: u64,
     ) -> *mut clk_hw;
     fn clk_hw_register_mux(
-        dev: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
-        parent_names: *const *const core::ffi::c_char,
+        dev: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        parent_names: *const *const kernel::ffi::c_char,
         num_parents: u32,
         flags: u32,
         reg: *mut u8,
         shift: u8,
         width: u8,
         clk_gate_flags: u8,
-        lock: *mut core::ffi::c_void,
+        lock: *mut kernel::ffi::c_void,
     ) -> *mut clk_hw;
     fn clk_set_parent(clk: *mut clk, parent: *mut clk) -> i32;
     fn clk_hw_register_gate(
-        dev: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
-        parent_name: *const core::ffi::c_char,
+        dev: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        parent_name: *const kernel::ffi::c_char,
         flags: u32,
         reg: *mut u8,
         bit_idx: u8,
         clk_gate_flags: u8,
-        lock: *mut core::ffi::c_void,
+        lock: *mut kernel::ffi::c_void,
     ) -> *mut clk_hw;
     fn devm_clk_hw_register_clkdev(
-        dev: *mut core::ffi::c_void,
+        dev: *mut kernel::ffi::c_void,
         hw: *mut clk_hw,
-        con_id: *const core::ffi::c_char,
-        dev_id: *const core::ffi::c_char,
+        con_id: *const kernel::ffi::c_char,
+        dev_id: *const kernel::ffi::c_char,
     ) -> i32;
     fn clk_hw_unregister(hw: *mut clk_hw);
 }
@@ -104,7 +104,7 @@ unsafe fn fch_clk_probe(pdev: *mut platform_device) -> i32 {
     let fch_data: *mut fch_clk_data;
     let rdev: *mut pci_dev;
 
-    fch_data = dev_get_platdata(pdev as *mut core::ffi::c_void);
+    fch_data = dev_get_platdata(pdev as *mut kernel::ffi::c_void);
     if fch_data.is_null() || (*fch_data).base.is_null() {
         return -22;
     }

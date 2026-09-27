@@ -57,7 +57,7 @@ pub struct device {
 extern "C" {
     pub fn pru_rproc_get(
         np: *mut device_node,
-        index: ::core::ffi::c_int,
+        index: ::kernel::ffi::c_int,
         pru_id: *mut pruss_pru_id,
     ) -> *mut rproc;
     pub fn pru_rproc_put(rproc: *mut rproc);
@@ -65,19 +65,19 @@ extern "C" {
         rproc: *mut rproc,
         c: pru_ctable_idx,
         addr: u32,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 // If CONFIG_PRU_REMOTEPROC is disabled, the C header provides inline stubs
 // returning -EOPNOTSUPP (and ERR_PTR(-EOPNOTSUPP) for pru_rproc_get).
 
 extern "C" {
-    pub fn dev_driver_string(dev: *const device) -> *const ::core::ffi::c_char;
+    pub fn dev_driver_string(dev: *const device) -> *const ::kernel::ffi::c_char;
     pub fn strncmp(
-        s1: *const ::core::ffi::c_char,
-        s2: *const ::core::ffi::c_char,
+        s1: *const ::kernel::ffi::c_char,
+        s2: *const ::kernel::ffi::c_char,
         n: usize,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[inline]
@@ -86,7 +86,7 @@ pub unsafe fn is_pru_rproc(dev: *mut device) -> bool {
 
     if strncmp(
         drv_name,
-        PRU_RPROC_DRVNAME.as_ptr() as *const ::core::ffi::c_char,
+        PRU_RPROC_DRVNAME.as_ptr() as *const ::kernel::ffi::c_char,
         PRU_RPROC_DRVNAME.len() + 1,
     ) != 0
     {

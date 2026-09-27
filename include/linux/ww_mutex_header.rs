@@ -14,9 +14,9 @@ pub struct ww_class {
     pub stamp: atomic_long_t,
     pub acquire_key: lock_class_key,
     pub mutex_key: lock_class_key,
-    pub acquire_name: *const core::ffi::c_char,
-    pub mutex_name: *const core::ffi::c_char,
-    pub is_wait_die: core::ffi::c_uint,
+    pub acquire_name: *const kernel::ffi::c_char,
+    pub mutex_name: *const kernel::ffi::c_char,
+    pub is_wait_die: kernel::ffi::c_uint,
 }
 
 // Under CONFIG_PREEMPT_RT, `base` is an rt_mutex; otherwise it is a mutex.
@@ -31,24 +31,24 @@ pub struct ww_mutex {
 #[repr(C)]
 pub struct ww_acquire_ctx {
     pub task: *mut task_struct,
-    pub stamp: core::ffi::c_ulong,
-    pub acquired: core::ffi::c_uint,
-    pub wounded: core::ffi::c_ushort,
-    pub is_wait_die: core::ffi::c_ushort,
+    pub stamp: kernel::ffi::c_ulong,
+    pub acquired: kernel::ffi::c_uint,
+    pub wounded: kernel::ffi::c_ushort,
+    pub is_wait_die: kernel::ffi::c_ushort,
     #[cfg(any(feature = "DEBUG_WW_MUTEXES", CONFIG_DEBUG_MUTEXES))]
-    pub done_acquire: core::ffi::c_uint,
+    pub done_acquire: kernel::ffi::c_uint,
     #[cfg(any(feature = "DEBUG_WW_MUTEXES", CONFIG_DEBUG_MUTEXES))]
     pub ww_class: *mut ww_class,
     #[cfg(any(feature = "DEBUG_WW_MUTEXES", CONFIG_DEBUG_MUTEXES))]
-    pub contending_lock: *mut core::ffi::c_void,
+    pub contending_lock: *mut kernel::ffi::c_void,
     #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
     pub dep_map: lockdep_map,
     #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
     pub first_lock_dep_map: lockdep_map,
     #[cfg(CONFIG_DEBUG_WW_MUTEX_SLOWPATH)]
-    pub deadlock_inject_interval: core::ffi::c_uint,
+    pub deadlock_inject_interval: kernel::ffi::c_uint,
     #[cfg(CONFIG_DEBUG_WW_MUTEX_SLOWPATH)]
-    pub deadlock_inject_countdown: core::ffi::c_uint,
+    pub deadlock_inject_countdown: kernel::ffi::c_uint,
 }
 
 #[macro_export]
@@ -58,8 +58,8 @@ macro_rules! DEFINE_WD_CLASS {
             stamp: ATOMIC_LONG_INIT(0),
             acquire_key: unsafe { core::mem::zeroed() },
             mutex_key: unsafe { core::mem::zeroed() },
-            acquire_name: concat!(stringify!($classname), "_acquire").as_ptr() as *const core::ffi::c_char,
-            mutex_name: concat!(stringify!($classname), "_mutex").as_ptr() as *const core::ffi::c_char,
+            acquire_name: concat!(stringify!($classname), "_acquire").as_ptr() as *const kernel::ffi::c_char,
+            mutex_name: concat!(stringify!($classname), "_mutex").as_ptr() as *const kernel::ffi::c_char,
             is_wait_die: 1,
         };
     };
@@ -72,8 +72,8 @@ macro_rules! DEFINE_WW_CLASS {
             stamp: ATOMIC_LONG_INIT(0),
             acquire_key: unsafe { core::mem::zeroed() },
             mutex_key: unsafe { core::mem::zeroed() },
-            acquire_name: concat!(stringify!($classname), "_acquire").as_ptr() as *const core::ffi::c_char,
-            mutex_name: concat!(stringify!($classname), "_mutex").as_ptr() as *const core::ffi::c_char,
+            acquire_name: concat!(stringify!($classname), "_acquire").as_ptr() as *const kernel::ffi::c_char,
+            mutex_name: concat!(stringify!($classname), "_mutex").as_ptr() as *const kernel::ffi::c_char,
             is_wait_die: 0,
         };
     };
@@ -93,7 +93,7 @@ pub unsafe fn ww_acquire_init(ctx: *mut ww_acquire_ctx, ww_class: *mut ww_class)
     (*ctx).stamp = atomic_long_inc_return_relaxed(&mut (*ww_class).stamp);
     (*ctx).acquired = 0;
     (*ctx).wounded = 0;
-    (*ctx).is_wait_die = (*ww_class).is_wait_die as core::ffi::c_ushort;
+    (*ctx).is_wait_die = (*ww_class).is_wait_die as kernel::ffi::c_ushort;
     #[cfg(any(feature = "DEBUG_WW_MUTEXES", CONFIG_DEBUG_MUTEXES))]
     { (*ctx).ww_class = ww_class; (*ctx).done_acquire = 0; (*ctx).contending_lock = core::ptr::null_mut(); }
     #[cfg(CONFIG_DEBUG_WW_MUTEX_SLOWPATH)]
@@ -113,8 +113,8 @@ pub unsafe fn ww_acquire_fini(ctx: *mut ww_acquire_ctx) {
 }
 
 extern "C" {
-    pub fn ww_mutex_lock(lock: *mut ww_mutex, ctx: *mut ww_acquire_ctx) -> core::ffi::c_int;
-    pub fn ww_mutex_lock_interruptible(lock: *mut ww_mutex, ctx: *mut ww_acquire_ctx) -> core::ffi::c_int;
+    pub fn ww_mutex_lock(lock: *mut ww_mutex, ctx: *mut ww_acquire_ctx) -> kernel::ffi::c_int;
+    pub fn ww_mutex_lock_interruptible(lock: *mut ww_mutex, ctx: *mut ww_acquire_ctx) -> kernel::ffi::c_int;
 }
 
 #[inline]
@@ -125,7 +125,7 @@ pub unsafe fn ww_mutex_lock_slow(lock: *mut ww_mutex, ctx: *mut ww_acquire_ctx) 
 }
 
 #[inline]
-pub unsafe fn ww_mutex_lock_slow_interruptible(lock: *mut ww_mutex, ctx: *mut ww_acquire_ctx) -> core::ffi::c_int {
+pub unsafe fn ww_mutex_lock_slow_interruptible(lock: *mut ww_mutex, ctx: *mut ww_acquire_ctx) -> kernel::ffi::c_int {
     #[cfg(any(feature = "DEBUG_WW_MUTEXES", CONFIG_DEBUG_MUTEXES))]
     { DEBUG_LOCKS_WARN_ON((*ctx).contending_lock.is_null()); }
     ww_mutex_lock_interruptible(lock, ctx)
@@ -133,7 +133,7 @@ pub unsafe fn ww_mutex_lock_slow_interruptible(lock: *mut ww_mutex, ctx: *mut ww
 
 extern "C" {
     pub fn ww_mutex_unlock(lock: *mut ww_mutex);
-    pub fn ww_mutex_trylock(lock: *mut ww_mutex, ctx: *mut ww_acquire_ctx) -> core::ffi::c_int;
+    pub fn ww_mutex_trylock(lock: *mut ww_mutex, ctx: *mut ww_acquire_ctx) -> kernel::ffi::c_int;
 }
 
 #[inline]

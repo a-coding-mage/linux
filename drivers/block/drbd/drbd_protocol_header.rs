@@ -111,17 +111,17 @@ pub struct p_barrier { pub barrier: u32, pub pad: u32 }
 #[repr(C, packed)]
 pub struct p_barrier_ack { pub barrier: u32, pub set_size: u32 }
 #[repr(C, packed)]
-pub struct p_rs_param { pub resync_rate: u32, pub verify_alg: [core::ffi::c_char; 0] }
+pub struct p_rs_param { pub resync_rate: u32, pub verify_alg: [kernel::ffi::c_char; 0] }
 #[repr(C, packed)]
-pub struct p_rs_param_89 { pub resync_rate: u32, pub verify_alg: [core::ffi::c_char; SHARED_SECRET_MAX], pub csums_alg: [core::ffi::c_char; SHARED_SECRET_MAX] }
+pub struct p_rs_param_89 { pub resync_rate: u32, pub verify_alg: [kernel::ffi::c_char; SHARED_SECRET_MAX], pub csums_alg: [kernel::ffi::c_char; SHARED_SECRET_MAX] }
 #[repr(C, packed)]
-pub struct p_rs_param_95 { pub resync_rate: u32, pub verify_alg: [core::ffi::c_char; SHARED_SECRET_MAX], pub csums_alg: [core::ffi::c_char; SHARED_SECRET_MAX], pub c_plan_ahead: u32, pub c_delay_target: u32, pub c_fill_target: u32, pub c_max_rate: u32 }
+pub struct p_rs_param_95 { pub resync_rate: u32, pub verify_alg: [kernel::ffi::c_char; SHARED_SECRET_MAX], pub csums_alg: [kernel::ffi::c_char; SHARED_SECRET_MAX], pub c_plan_ahead: u32, pub c_delay_target: u32, pub c_fill_target: u32, pub c_max_rate: u32 }
 
 #[repr(i32)]
 pub enum drbd_conn_flags { CF_DISCARD_MY_DATA = 1, CF_DRY_RUN = 2 }
 
 #[repr(C, packed)]
-pub struct p_protocol { pub protocol: u32, pub after_sb_0p: u32, pub after_sb_1p: u32, pub after_sb_2p: u32, pub conn_flags: u32, pub two_primaries: u32, pub integrity_alg: [core::ffi::c_char; 0] }
+pub struct p_protocol { pub protocol: u32, pub after_sb_0p: u32, pub after_sb_1p: u32, pub after_sb_2p: u32, pub conn_flags: u32, pub two_primaries: u32, pub integrity_alg: [kernel::ffi::c_char; 0] }
 #[repr(C, packed)]
 pub struct p_uuids { pub uuid: [u64; UI_EXTENDED_SIZE] }
 #[repr(C, packed)]

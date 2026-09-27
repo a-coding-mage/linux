@@ -6,10 +6,10 @@
 // C dependency: <asm/asm.h>, <linux/bitops.h>
 
 extern "C" {
-    pub static x86_cap_flags: *const *const core::ffi::c_char;
-    pub static x86_power_flags: *const *const core::ffi::c_char;
-    pub static x86_bug_flags: *const *const core::ffi::c_char;
-    pub fn setup_clear_cpu_cap(bit: core::ffi::c_uint);
+    pub static x86_cap_flags: *const *const kernel::ffi::c_char;
+    pub static x86_power_flags: *const *const kernel::ffi::c_char;
+    pub static x86_bug_flags: *const *const kernel::ffi::c_char;
+    pub fn setup_clear_cpu_cap(bit: kernel::ffi::c_uint);
 }
 
 pub const X86_CAP_FMT: &str = "%s";

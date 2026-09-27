@@ -71,7 +71,7 @@ pub struct asoc_sdw_mc_private {
     pub amp_dev2: *mut device,
     pub append_dai_type: bool,
     pub ignore_internal_dmic: bool,
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
     pub mc_quirk: usize,
     pub codec_info_list_count: i32,
 }
@@ -79,9 +79,9 @@ pub struct asoc_sdw_mc_private {
 #[repr(C)]
 pub struct asoc_sdw_dai_info {
     pub direction: [bool; 2], /* playback & capture support */
-    pub codec_name: *const core::ffi::c_char,
-    pub dai_name: *const core::ffi::c_char,
-    pub component_name: *const core::ffi::c_char,
+    pub codec_name: *const kernel::ffi::c_char,
+    pub dai_name: *const kernel::ffi::c_char,
+    pub component_name: *const kernel::ffi::c_char,
     pub dai_type: i32,
     pub dailink: [i32; 2], /* dailink id for each direction */
     pub controls: *const snd_kcontrol_new,
@@ -96,12 +96,12 @@ pub struct asoc_sdw_dai_info {
     pub quirk_exclude: bool,
 }
 
-#[repr(C)] pub struct asoc_sdw_aux_info { pub codec_name: *const core::ffi::c_char }
+#[repr(C)] pub struct asoc_sdw_aux_info { pub codec_name: *const kernel::ffi::c_char }
 
 #[repr(C)]
 pub struct asoc_sdw_codec_info {
     pub vendor_id: i32, pub part_id: i32, pub version_id: i32,
-    pub name_prefix: *const core::ffi::c_char, pub amp_num: i32,
+    pub name_prefix: *const kernel::ffi::c_char, pub amp_num: i32,
     pub acpi_id: [u8; ACPI_ID_LEN], pub ignore_internal_dmic: bool,
     pub ops: *const snd_soc_ops, pub dais: [asoc_sdw_dai_info; SOC_SDW_MAX_DAI_NUM],
     pub dai_num: i32, pub auxs: [asoc_sdw_aux_info; SOC_SDW_MAX_AUX_NUM], pub aux_num: i32,
@@ -114,8 +114,8 @@ pub struct asoc_sdw_codec_info {
 
 #[repr(C)]
 pub struct asoc_sdw_endpoint {
-    pub list: list_head, pub link_mask: u32, pub codec_name: *const core::ffi::c_char,
-    pub name_prefix: *const core::ffi::c_char, pub include_sidecar: bool,
+    pub list: list_head, pub link_mask: u32, pub codec_name: *const kernel::ffi::c_char,
+    pub name_prefix: *const kernel::ffi::c_char, pub include_sidecar: bool,
     pub codec_info: *mut asoc_sdw_codec_info, pub dai_info: *const asoc_sdw_dai_info,
 }
 
@@ -136,15 +136,15 @@ extern "C" {
     pub fn asoc_sdw_hw_params(substream: *mut snd_pcm_substream, params: *mut snd_pcm_hw_params) -> i32;
     pub fn asoc_sdw_hw_free(substream: *mut snd_pcm_substream) -> i32;
     pub fn asoc_sdw_shutdown(substream: *mut snd_pcm_substream);
-    pub fn asoc_sdw_get_codec_name(dev: *mut device, dai_info: *const asoc_sdw_dai_info, adr_link: *const snd_soc_acpi_link_adr, adr_index: i32) -> *const core::ffi::c_char;
+    pub fn asoc_sdw_get_codec_name(dev: *mut device, dai_info: *const asoc_sdw_dai_info, adr_link: *const snd_soc_acpi_link_adr, adr_index: i32) -> *const kernel::ffi::c_char;
     pub fn asoc_sdw_find_codec_info_part(adr: u64) -> *mut asoc_sdw_codec_info;
     pub fn asoc_sdw_find_codec_info_acpi(acpi_id: *const u8) -> *mut asoc_sdw_codec_info;
-    pub fn asoc_sdw_find_codec_info_dai(dai_name: *const core::ffi::c_char, dai_index: *mut i32) -> *mut asoc_sdw_codec_info;
-    pub fn asoc_sdw_mc_find_codec_dai_used(card: *mut snd_soc_card, dai_name: *const core::ffi::c_char) -> *mut snd_soc_dai_link;
+    pub fn asoc_sdw_find_codec_info_dai(dai_name: *const kernel::ffi::c_char, dai_index: *mut i32) -> *mut asoc_sdw_codec_info;
+    pub fn asoc_sdw_mc_find_codec_dai_used(card: *mut snd_soc_card, dai_name: *const kernel::ffi::c_char) -> *mut snd_soc_dai_link;
     pub fn asoc_sdw_mc_dailink_exit_loop(card: *mut snd_soc_card);
     pub fn asoc_sdw_card_late_probe(card: *mut snd_soc_card) -> i32;
-    pub fn asoc_sdw_init_dai_link(dev: *mut device, dai_links: *mut snd_soc_dai_link, be_id: *mut i32, name: *mut core::ffi::c_char, playback: i32, capture: i32, cpus: *mut snd_soc_dai_link_component, cpus_num: i32, platform_component: *mut snd_soc_dai_link_component, num_platforms: i32, codecs: *mut snd_soc_dai_link_component, codecs_num: i32, no_pcm: i32, init: Option<unsafe extern "C" fn(*mut snd_soc_pcm_runtime) -> i32>, ops: *const snd_soc_ops);
-    pub fn asoc_sdw_init_simple_dai_link(dev: *mut device, dai_links: *mut snd_soc_dai_link, be_id: *mut i32, name: *mut core::ffi::c_char, playback: i32, capture: i32, cpu_dai_name: *const core::ffi::c_char, platform_comp_name: *const core::ffi::c_char, codec_name: *const core::ffi::c_char, codec_dai_name: *const core::ffi::c_char, no_pcm: i32, init: Option<unsafe extern "C" fn(*mut snd_soc_pcm_runtime) -> i32>, ops: *const snd_soc_ops) -> i32;
+    pub fn asoc_sdw_init_dai_link(dev: *mut device, dai_links: *mut snd_soc_dai_link, be_id: *mut i32, name: *mut kernel::ffi::c_char, playback: i32, capture: i32, cpus: *mut snd_soc_dai_link_component, cpus_num: i32, platform_component: *mut snd_soc_dai_link_component, num_platforms: i32, codecs: *mut snd_soc_dai_link_component, codecs_num: i32, no_pcm: i32, init: Option<unsafe extern "C" fn(*mut snd_soc_pcm_runtime) -> i32>, ops: *const snd_soc_ops);
+    pub fn asoc_sdw_init_simple_dai_link(dev: *mut device, dai_links: *mut snd_soc_dai_link, be_id: *mut i32, name: *mut kernel::ffi::c_char, playback: i32, capture: i32, cpu_dai_name: *const kernel::ffi::c_char, platform_comp_name: *const kernel::ffi::c_char, codec_name: *const kernel::ffi::c_char, codec_dai_name: *const kernel::ffi::c_char, no_pcm: i32, init: Option<unsafe extern "C" fn(*mut snd_soc_pcm_runtime) -> i32>, ops: *const snd_soc_ops) -> i32;
     pub fn asoc_sdw_count_sdw_endpoints(card: *mut snd_soc_card, num_devs: *mut i32, num_ends: *mut i32, num_aux: *mut i32) -> i32;
     pub fn asoc_sdw_find_dailink(dailinks: *mut asoc_sdw_dailink, new: *const snd_soc_acpi_endpoint) -> *mut asoc_sdw_dailink;
     pub fn asoc_sdw_get_dai_type(type_: u32) -> i32;
@@ -167,7 +167,7 @@ extern "C" {
     pub fn asoc_sdw_bridge_cs35l56_spk_init(card: *mut snd_soc_card, dai_links: *mut snd_soc_dai_link, info: *mut asoc_sdw_codec_info, playback: bool) -> i32;
     pub fn asoc_sdw_cs_amp_init(card: *mut snd_soc_card, dai_links: *mut snd_soc_dai_link, info: *mut asoc_sdw_codec_info, playback: bool) -> i32;
     pub fn asoc_sdw_cs_spk_feedback_rtd_init(rtd: *mut snd_soc_pcm_runtime, dai: *mut snd_soc_dai) -> i32;
-    pub fn asoc_sdw_cs35l56_volume_limit(card: *mut snd_soc_card, name_prefix: *const core::ffi::c_char) -> i32;
+    pub fn asoc_sdw_cs35l56_volume_limit(card: *mut snd_soc_card, name_prefix: *const kernel::ffi::c_char) -> i32;
     pub fn asoc_sdw_maxim_init(card: *mut snd_soc_card, dai_links: *mut snd_soc_dai_link, info: *mut asoc_sdw_codec_info, playback: bool) -> i32;
     pub fn asoc_sdw_rt_dmic_rtd_init(rtd: *mut snd_soc_pcm_runtime, dai: *mut snd_soc_dai) -> i32;
     pub fn asoc_sdw_rt_sdca_jack_rtd_init(rtd: *mut snd_soc_pcm_runtime, dai: *mut snd_soc_dai) -> i32;
@@ -189,7 +189,7 @@ extern "C" {
     pub fn asoc_sdw_ti_amp_init(card: *mut snd_soc_card, dai_links: *mut snd_soc_dai_link, info: *mut asoc_sdw_codec_info, playback: bool) -> i32;
     pub fn asoc_sdw_ti_spk_rtd_init(rtd: *mut snd_soc_pcm_runtime, dai: *mut snd_soc_dai) -> i32;
     pub fn asoc_sdw_ti_tac5xx2_spk_rtd_init(rtd: *mut snd_soc_pcm_runtime, dai: *mut snd_soc_dai) -> i32;
-    pub fn asoc_sdw_ti_amp_initial_settings(card: *mut snd_soc_card, name_prefix: *const core::ffi::c_char) -> i32;
+    pub fn asoc_sdw_ti_amp_initial_settings(card: *mut snd_soc_card, name_prefix: *const kernel::ffi::c_char) -> i32;
     pub fn asoc_sdw_ti_dmic_rtd_init(rtd: *mut snd_soc_pcm_runtime, dai: *mut snd_soc_dai) -> i32;
     pub fn asoc_sdw_ti_sdca_jack_rtd_init(rtd: *mut snd_soc_pcm_runtime, dai: *mut snd_soc_dai) -> i32;
     pub fn asoc_sdw_es9356_rtd_init(rtd: *mut snd_soc_pcm_runtime, dai: *mut snd_soc_dai) -> i32;

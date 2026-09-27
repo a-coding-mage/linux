@@ -15,7 +15,7 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  */
 
-pub const AMDGPU_BO_INVALID_OFFSET: libc::c_long = libc::LONG_MAX;
+pub const AMDGPU_BO_INVALID_OFFSET: kernel::ffi::c_long = kernel::ffi::c_long::MAX;
 pub const AMDGPU_BO_MAX_PLACEMENTS: usize = 3;
 pub const AMDGPU_AMDKFD_CREATE_USERPTR_BO: u64 = 1u64 << 63;
 
@@ -26,8 +26,8 @@ macro_rules! to_amdgpu_bo_vm { ($abo:expr) => { container_of!($abo, amdgpu_bo_vm
 
 #[repr(C)]
 pub struct amdgpu_bo_param {
-    pub size: libc::c_ulong,
-    pub byte_align: libc::c_int,
+    pub size: kernel::ffi::c_ulong,
+    pub byte_align: kernel::ffi::c_int,
     pub bo_ptr_size: u32,
     pub domain: u32,
     pub preferred_domain: u32,
@@ -54,13 +54,13 @@ pub struct amdgpu_bo_va_mapping {
 #[repr(C)]
 pub struct amdgpu_bo_va {
     pub base: amdgpu_vm_bo_base,
-    pub ref_count: libc::c_uint,
+    pub ref_count: kernel::ffi::c_uint,
     pub last_pt_update: *mut dma_fence,
     pub invalids: list_head,
     pub valids: list_head,
     pub cleared: bool,
     pub is_xgmi: bool,
-    pub queue_refcount: libc::c_uint,
+    pub queue_refcount: kernel::ffi::c_uint,
     pub userq_va_mapped: bool,
 }
 
@@ -86,7 +86,7 @@ pub struct amdgpu_bo_user {
     pub bo: amdgpu_bo,
     pub tiling_flags: u64,
     pub metadata_flags: u64,
-    pub metadata: *mut libc::c_void,
+    pub metadata: *mut kernel::ffi::c_void,
     pub metadata_size: u32,
 }
 
@@ -116,7 +116,7 @@ pub fn amdgpu_mem_type_to_domain(mem_type: u32) -> u32 {
 }
 
 #[inline]
-pub unsafe fn amdgpu_bo_reserve(bo: *mut amdgpu_bo, no_intr: bool) -> libc::c_int {
+pub unsafe fn amdgpu_bo_reserve(bo: *mut amdgpu_bo, no_intr: bool) -> kernel::ffi::c_int {
     let adev = amdgpu_ttm_adev((*bo).tbo.bdev);
     let r = ttm_bo_reserve(&mut (*bo).tbo, !no_intr, false, core::ptr::null_mut());
     if r != 0 {
@@ -127,9 +127,9 @@ pub unsafe fn amdgpu_bo_reserve(bo: *mut amdgpu_bo, no_intr: bool) -> libc::c_in
 }
 
 #[inline] pub unsafe fn amdgpu_bo_unreserve(bo: *mut amdgpu_bo) { ttm_bo_unreserve(&mut (*bo).tbo); }
-#[inline] pub unsafe fn amdgpu_bo_size(bo: *mut amdgpu_bo) -> libc::c_ulong { (*bo).tbo.base.size }
-#[inline] pub unsafe fn amdgpu_bo_ngpu_pages(bo: *mut amdgpu_bo) -> libc::c_uint { (*bo).tbo.base.size / AMDGPU_GPU_PAGE_SIZE }
-#[inline] pub unsafe fn amdgpu_bo_gpu_page_alignment(bo: *mut amdgpu_bo) -> libc::c_uint { ((*bo).tbo.page_alignment << PAGE_SHIFT) / AMDGPU_GPU_PAGE_SIZE }
+#[inline] pub unsafe fn amdgpu_bo_size(bo: *mut amdgpu_bo) -> kernel::ffi::c_ulong { (*bo).tbo.base.size }
+#[inline] pub unsafe fn amdgpu_bo_ngpu_pages(bo: *mut amdgpu_bo) -> kernel::ffi::c_uint { (*bo).tbo.base.size / AMDGPU_GPU_PAGE_SIZE }
+#[inline] pub unsafe fn amdgpu_bo_gpu_page_alignment(bo: *mut amdgpu_bo) -> kernel::ffi::c_uint { ((*bo).tbo.page_alignment << PAGE_SHIFT) / AMDGPU_GPU_PAGE_SIZE }
 #[inline] pub unsafe fn amdgpu_bo_mmap_offset(bo: *mut amdgpu_bo) -> u64 { drm_vma_node_offset_addr(&(*bo).tbo.base.vma_node) }
 #[inline] pub unsafe fn amdgpu_bo_explicit_sync(bo: *mut amdgpu_bo) -> bool { (*bo).flags & AMDGPU_GEM_CREATE_EXPLICIT_SYNC != 0 }
 #[inline] pub unsafe fn amdgpu_bo_encrypted(bo: *mut amdgpu_bo) -> bool { (*bo).flags & AMDGPU_GEM_CREATE_ENCRYPTED != 0 }
@@ -137,34 +137,34 @@ pub unsafe fn amdgpu_bo_reserve(bo: *mut amdgpu_bo, no_intr: bool) -> libc::c_in
 extern "C" {
     pub fn amdgpu_bo_is_amdgpu_bo(bo: *mut ttm_buffer_object) -> bool;
     pub fn amdgpu_bo_placement_from_domain(abo: *mut amdgpu_bo, domain: u32);
-    pub fn amdgpu_bo_create(adev: *mut amdgpu_device, bp: *mut amdgpu_bo_param, bo_ptr: *mut *mut amdgpu_bo) -> libc::c_int;
-    pub fn amdgpu_bo_create_reserved(adev: *mut amdgpu_device, size: libc::c_ulong, align: libc::c_int, domain: u32, bo_ptr: *mut *mut amdgpu_bo, gpu_addr: *mut u64, cpu_addr: *mut *mut libc::c_void) -> libc::c_int;
-    pub fn amdgpu_bo_create_kernel(adev: *mut amdgpu_device, size: libc::c_ulong, align: libc::c_int, domain: u32, bo_ptr: *mut *mut amdgpu_bo, gpu_addr: *mut u64, cpu_addr: *mut *mut libc::c_void) -> libc::c_int;
-    pub fn amdgpu_bo_create_isp_user(adev: *mut amdgpu_device, dbuf: *mut dma_buf, domain: u32, bo: *mut *mut amdgpu_bo, gpu_addr: *mut u64) -> libc::c_int;
-    pub fn amdgpu_bo_create_kernel_at(adev: *mut amdgpu_device, offset: u64, size: u64, bo_ptr: *mut *mut amdgpu_bo, cpu_addr: *mut *mut libc::c_void) -> libc::c_int;
-    pub fn amdgpu_bo_create_user(adev: *mut amdgpu_device, bp: *mut amdgpu_bo_param, ubo_ptr: *mut *mut amdgpu_bo_user) -> libc::c_int;
-    pub fn amdgpu_bo_create_vm(adev: *mut amdgpu_device, bp: *mut amdgpu_bo_param, ubo_ptr: *mut *mut amdgpu_bo_vm) -> libc::c_int;
-    pub fn amdgpu_bo_free_kernel(bo: *mut *mut amdgpu_bo, gpu_addr: *mut u64, cpu_addr: *mut *mut libc::c_void);
+    pub fn amdgpu_bo_create(adev: *mut amdgpu_device, bp: *mut amdgpu_bo_param, bo_ptr: *mut *mut amdgpu_bo) -> kernel::ffi::c_int;
+    pub fn amdgpu_bo_create_reserved(adev: *mut amdgpu_device, size: kernel::ffi::c_ulong, align: kernel::ffi::c_int, domain: u32, bo_ptr: *mut *mut amdgpu_bo, gpu_addr: *mut u64, cpu_addr: *mut *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn amdgpu_bo_create_kernel(adev: *mut amdgpu_device, size: kernel::ffi::c_ulong, align: kernel::ffi::c_int, domain: u32, bo_ptr: *mut *mut amdgpu_bo, gpu_addr: *mut u64, cpu_addr: *mut *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn amdgpu_bo_create_isp_user(adev: *mut amdgpu_device, dbuf: *mut dma_buf, domain: u32, bo: *mut *mut amdgpu_bo, gpu_addr: *mut u64) -> kernel::ffi::c_int;
+    pub fn amdgpu_bo_create_kernel_at(adev: *mut amdgpu_device, offset: u64, size: u64, bo_ptr: *mut *mut amdgpu_bo, cpu_addr: *mut *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn amdgpu_bo_create_user(adev: *mut amdgpu_device, bp: *mut amdgpu_bo_param, ubo_ptr: *mut *mut amdgpu_bo_user) -> kernel::ffi::c_int;
+    pub fn amdgpu_bo_create_vm(adev: *mut amdgpu_device, bp: *mut amdgpu_bo_param, ubo_ptr: *mut *mut amdgpu_bo_vm) -> kernel::ffi::c_int;
+    pub fn amdgpu_bo_free_kernel(bo: *mut *mut amdgpu_bo, gpu_addr: *mut u64, cpu_addr: *mut *mut kernel::ffi::c_void);
     pub fn amdgpu_bo_free_isp_user(bo: *mut amdgpu_bo);
-    pub fn amdgpu_bo_kmap(bo: *mut amdgpu_bo, ptr: *mut *mut libc::c_void) -> libc::c_int;
-    pub fn amdgpu_bo_kptr(bo: *mut amdgpu_bo) -> *mut libc::c_void;
+    pub fn amdgpu_bo_kmap(bo: *mut amdgpu_bo, ptr: *mut *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn amdgpu_bo_kptr(bo: *mut amdgpu_bo) -> *mut kernel::ffi::c_void;
     pub fn amdgpu_bo_kunmap(bo: *mut amdgpu_bo);
     pub fn amdgpu_bo_ref(bo: *mut amdgpu_bo) -> *mut amdgpu_bo;
     pub fn amdgpu_bo_unref(bo: *mut *mut amdgpu_bo);
-    pub fn amdgpu_bo_pin(bo: *mut amdgpu_bo, domain: u32) -> libc::c_int;
+    pub fn amdgpu_bo_pin(bo: *mut amdgpu_bo, domain: u32) -> kernel::ffi::c_int;
     pub fn amdgpu_bo_unpin(bo: *mut amdgpu_bo);
-    pub fn amdgpu_bo_init(adev: *mut amdgpu_device) -> libc::c_int;
+    pub fn amdgpu_bo_init(adev: *mut amdgpu_device) -> kernel::ffi::c_int;
     pub fn amdgpu_bo_fini(adev: *mut amdgpu_device);
-    pub fn amdgpu_bo_set_tiling_flags(bo: *mut amdgpu_bo, tiling_flags: u64) -> libc::c_int;
+    pub fn amdgpu_bo_set_tiling_flags(bo: *mut amdgpu_bo, tiling_flags: u64) -> kernel::ffi::c_int;
     pub fn amdgpu_bo_get_tiling_flags(bo: *mut amdgpu_bo, tiling_flags: *mut u64);
-    pub fn amdgpu_bo_set_metadata(bo: *mut amdgpu_bo, metadata: *mut libc::c_void, metadata_size: u32, flags: u64) -> libc::c_int;
-    pub fn amdgpu_bo_get_metadata(bo: *mut amdgpu_bo, buffer: *mut libc::c_void, buffer_size: usize, metadata_size: *mut u32, flags: *mut u64) -> libc::c_int;
+    pub fn amdgpu_bo_set_metadata(bo: *mut amdgpu_bo, metadata: *mut kernel::ffi::c_void, metadata_size: u32, flags: u64) -> kernel::ffi::c_int;
+    pub fn amdgpu_bo_get_metadata(bo: *mut amdgpu_bo, buffer: *mut kernel::ffi::c_void, buffer_size: usize, metadata_size: *mut u32, flags: *mut u64) -> kernel::ffi::c_int;
     pub fn amdgpu_bo_move_notify(bo: *mut ttm_buffer_object, evict: bool, new_mem: *mut ttm_resource);
     pub fn amdgpu_bo_release_notify(bo: *mut ttm_buffer_object);
     pub fn amdgpu_bo_fault_reserve_notify(bo: *mut ttm_buffer_object) -> vm_fault_t;
     pub fn amdgpu_bo_fence(bo: *mut amdgpu_bo, fence: *mut dma_fence, shared: bool);
-    pub fn amdgpu_bo_sync_wait_resv(adev: *mut amdgpu_device, resv: *mut dma_resv, sync_mode: amdgpu_sync_mode, owner: *mut libc::c_void, intr: bool) -> libc::c_int;
-    pub fn amdgpu_bo_sync_wait(bo: *mut amdgpu_bo, owner: *mut libc::c_void, intr: bool) -> libc::c_int;
+    pub fn amdgpu_bo_sync_wait_resv(adev: *mut amdgpu_device, resv: *mut dma_resv, sync_mode: amdgpu_sync_mode, owner: *mut kernel::ffi::c_void, intr: bool) -> kernel::ffi::c_int;
+    pub fn amdgpu_bo_sync_wait(bo: *mut amdgpu_bo, owner: *mut kernel::ffi::c_void, intr: bool) -> kernel::ffi::c_int;
     pub fn amdgpu_bo_gpu_offset(bo: *mut amdgpu_bo) -> u64;
     pub fn amdgpu_bo_fb_aper_addr(bo: *mut amdgpu_bo) -> u64;
     pub fn amdgpu_bo_gpu_offset_no_check(bo: *mut amdgpu_bo) -> u64;

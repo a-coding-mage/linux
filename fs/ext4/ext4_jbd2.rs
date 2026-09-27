@@ -6,7 +6,7 @@
 // Dependencies supplied by the surrounding kernel translation are intentionally
 // left external; this file is a source-level translation of ext4_jbd2.c.
 
-pub unsafe fn ext4_inode_journal_mode(inode: *mut inode) -> libc::c_int {
+pub unsafe fn ext4_inode_journal_mode(inode: *mut inode) -> kernel::ffi::c_int {
     if EXT4_JOURNAL(inode).is_null() {
         return EXT4_INODE_WRITEBACK_DATA_MODE; /* writeback */
     }
@@ -70,7 +70,7 @@ unsafe fn ext4_put_nojournal(handle: *mut handle_t) {
 /*
  * Wrappers for jbd2_journal_start/end.
  */
-unsafe fn ext4_journal_check_start(sb: *mut super_block) -> libc::c_int {
+unsafe fn ext4_journal_check_start(sb: *mut super_block) -> kernel::ffi::c_int {
     let ret;
     let journal;
 
@@ -102,11 +102,11 @@ unsafe fn ext4_journal_check_start(sb: *mut super_block) -> libc::c_int {
 pub unsafe fn __ext4_journal_start_sb(
     inode: *mut inode,
     sb: *mut super_block,
-    line: libc::c_uint,
-    r#type: libc::c_int,
-    blocks: libc::c_int,
-    rsv_blocks: libc::c_int,
-    revoke_creds: libc::c_int,
+    line: kernel::ffi::c_uint,
+    r#type: kernel::ffi::c_int,
+    blocks: kernel::ffi::c_int,
+    rsv_blocks: kernel::ffi::c_int,
+    revoke_creds: kernel::ffi::c_int,
 ) -> *mut handle_t {
     let journal;
     let err;
@@ -128,10 +128,10 @@ pub unsafe fn __ext4_journal_start_sb(
 }
 
 pub unsafe fn __ext4_journal_stop(
-    where_: *const libc::c_char,
-    line: libc::c_uint,
+    where_: *const kernel::ffi::c_char,
+    line: kernel::ffi::c_uint,
     handle: *mut handle_t,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let sb;
     let err;
     let rc;
@@ -162,8 +162,8 @@ pub unsafe fn __ext4_journal_stop(
 
 pub unsafe fn __ext4_journal_start_reserved(
     handle: *mut handle_t,
-    line: libc::c_uint,
-    r#type: libc::c_int,
+    line: kernel::ffi::c_uint,
+    r#type: kernel::ffi::c_int,
 ) -> *mut handle_t {
     let sb;
     let err;
@@ -189,10 +189,10 @@ pub unsafe fn __ext4_journal_start_reserved(
 
 pub unsafe fn __ext4_journal_ensure_credits(
     handle: *mut handle_t,
-    check_cred: libc::c_int,
-    mut extend_cred: libc::c_int,
-    mut revoke_cred: libc::c_int,
-) -> libc::c_int {
+    check_cred: kernel::ffi::c_int,
+    mut extend_cred: kernel::ffi::c_int,
+    mut revoke_cred: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     if !ext4_handle_valid(handle) {
         return 0;
     }
@@ -210,14 +210,14 @@ pub unsafe fn __ext4_journal_ensure_credits(
 }
 
 unsafe fn ext4_journal_abort_handle(
-    caller: *const libc::c_char,
-    line: libc::c_uint,
-    err_fn: *const libc::c_char,
+    caller: *const kernel::ffi::c_char,
+    line: kernel::ffi::c_uint,
+    err_fn: *const kernel::ffi::c_char,
     bh: *mut buffer_head,
     handle: *mut handle_t,
-    err: libc::c_int,
+    err: kernel::ffi::c_int,
 ) {
-    let mut nbuf = [0 as libc::c_char; 16];
+    let mut nbuf = [0 as kernel::ffi::c_char; 16];
     let errstr = ext4_decode_error(core::ptr::null_mut(), err, nbuf.as_mut_ptr());
 
     BUG_ON(!ext4_handle_valid(handle));
@@ -260,13 +260,13 @@ unsafe fn ext4_check_bdev_write_error(sb: *mut super_block) {
 }
 
 pub unsafe fn __ext4_journal_get_write_access(
-    where_: *const libc::c_char,
-    line: libc::c_uint,
+    where_: *const kernel::ffi::c_char,
+    line: kernel::ffi::c_uint,
     handle: *mut handle_t,
     sb: *mut super_block,
     bh: *mut buffer_head,
     trigger_type: ext4_journal_trigger_type,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let err;
 
     might_sleep();
@@ -298,14 +298,14 @@ pub unsafe fn __ext4_journal_get_write_access(
  * still needs to be revoked.
  */
 pub unsafe fn __ext4_forget(
-    where_: *const libc::c_char,
-    line: libc::c_uint,
+    where_: *const kernel::ffi::c_char,
+    line: kernel::ffi::c_uint,
     handle: *mut handle_t,
-    is_metadata: libc::c_int,
+    is_metadata: kernel::ffi::c_int,
     inode: *mut inode,
     bh: *mut buffer_head,
     blocknr: ext4_fsblk_t,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let mut err;
 
     might_sleep();
@@ -360,13 +360,13 @@ pub unsafe fn __ext4_forget(
 }
 
 pub unsafe fn __ext4_journal_get_create_access(
-    where_: *const libc::c_char,
-    line: libc::c_uint,
+    where_: *const kernel::ffi::c_char,
+    line: kernel::ffi::c_uint,
     handle: *mut handle_t,
     sb: *mut super_block,
     bh: *mut buffer_head,
     trigger_type: ext4_journal_trigger_type,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let err;
 
     if !ext4_handle_valid(handle) {
@@ -402,12 +402,12 @@ unsafe fn ext4_inode_attach_mmb(inode: *mut inode) {
 }
 
 pub unsafe fn __ext4_handle_dirty_metadata(
-    where_: *const libc::c_char,
-    line: libc::c_uint,
+    where_: *const kernel::ffi::c_char,
+    line: kernel::ffi::c_uint,
     handle: *mut handle_t,
     inode: *mut inode,
     bh: *mut buffer_head,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let mut err = 0;
 
     might_sleep();

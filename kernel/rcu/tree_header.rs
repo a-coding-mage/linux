@@ -3,7 +3,7 @@
 
 /* C build configuration controls these declarations in the original header. */
 extern "C" {
-    pub static HZ: ::core::ffi::c_ulong;
+    pub static HZ: ::kernel::ffi::c_ulong;
 }
 
 pub const RCU_KTHREAD_STOPPED: i32 = 0;

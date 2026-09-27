@@ -25,7 +25,7 @@ pub struct MemblockType {
     pub cnt: usize,
     pub max: usize,
     pub total_size: PhysAddr,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 static mut SYSTEM_HAS_SOME_MIRROR: bool = false;

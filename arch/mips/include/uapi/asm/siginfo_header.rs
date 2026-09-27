@@ -9,8 +9,8 @@
  */
 
 pub const __ARCH_SIGEV_PREAMBLE_SIZE: usize =
-    core::mem::size_of::<core::ffi::c_long>()
-        + 2 * core::mem::size_of::<core::ffi::c_int>();
+    core::mem::size_of::<kernel::ffi::c_long>()
+        + 2 * core::mem::size_of::<kernel::ffi::c_int>();
 
 // __ARCH_HAS_SWAPPED_SIGINFO
 

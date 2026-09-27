@@ -138,7 +138,7 @@ unsafe extern "C" fn acpi_ns_get_device_callback(obj_handle: acpi_handle, nestin
     if node.is_null() { return AE_BAD_PARAMETER; }
     if !(*info).hid.is_null() {
         let mut hid = core::ptr::null_mut(); status = acpi_ut_execute_HID(node, &mut hid); if status == AE_NOT_FOUND { return AE_OK; } if ACPI_FAILURE(status) { return AE_CTRL_DEPTH; }
-        let matched = libc::strcmp((*hid).string, (*info).hid) == 0; ACPI_FREE(hid);
+        let matched = strcmp((*hid).string, (*info).hid) == 0; ACPI_FREE(hid);
         if !matched { return AE_OK; }
     }
     let mut flags = 0; status = acpi_ut_execute_STA(node, &mut flags); if ACPI_FAILURE(status) { return AE_CTRL_DEPTH; }

@@ -19,7 +19,7 @@ static mut cxl_dax_region_attribute_groups: [*const attribute_group; 2] = [
 
 #[repr(C)]
 static cxl_dax_region_type: device_type = device_type {
-    name: "cxl_dax_region\0".as_ptr() as *const core::ffi::c_char,
+    name: "cxl_dax_region\0".as_ptr() as *const kernel::ffi::c_char,
     release: Some(cxl_dax_region_release),
     groups: unsafe { cxl_dax_region_attribute_groups.as_ptr() },
 };
@@ -33,7 +33,7 @@ pub unsafe fn to_cxl_dax_region(dev: *mut device) -> *mut cxl_dax_region {
     if dev_WARN_ONCE(
         dev,
         !is_cxl_dax_region(dev),
-        "not a cxl_dax_region device\n\0".as_ptr() as *const core::ffi::c_char,
+        "not a cxl_dax_region device\n\0".as_ptr() as *const kernel::ffi::c_char,
     ) {
         return core::ptr::null_mut();
     }
@@ -72,7 +72,7 @@ unsafe fn cxl_dax_region_alloc(cxlr: *mut cxl_region) -> *mut cxl_dax_region {
     cxlr_dax
 }
 
-unsafe fn cxlr_dax_unregister(_cxlr_dax: *mut core::ffi::c_void) {
+unsafe fn cxlr_dax_unregister(_cxlr_dax: *mut kernel::ffi::c_void) {
     let cxlr_dax = _cxlr_dax as *mut cxl_dax_region;
     device_unregister(&mut (*cxlr_dax).dev);
 }
@@ -86,7 +86,7 @@ pub unsafe fn devm_cxl_add_dax_region(cxlr: *mut cxl_region) -> i32 {
     }
 
     let dev = &mut (*cxlr_dax).dev;
-    rc = dev_set_name(dev, "dax_region%d\0".as_ptr() as *const core::ffi::c_char, (*cxlr).id);
+    rc = dev_set_name(dev, "dax_region%d\0".as_ptr() as *const kernel::ffi::c_char, (*cxlr).id);
     if rc != 0 {
         return rc;
     }
@@ -98,7 +98,7 @@ pub unsafe fn devm_cxl_add_dax_region(cxlr: *mut cxl_region) -> i32 {
 
     dev_dbg(
         &mut (*cxlr).dev,
-        "%s: register %s\n\0".as_ptr() as *const core::ffi::c_char,
+        "%s: register %s\n\0".as_ptr() as *const kernel::ffi::c_char,
         dev_name((*dev).parent),
         dev_name(dev),
     );
@@ -106,7 +106,7 @@ pub unsafe fn devm_cxl_add_dax_region(cxlr: *mut cxl_region) -> i32 {
     devm_add_action_or_reset(
         &mut (*cxlr).dev,
         Some(cxlr_dax_unregister),
-        cxlr_dax as *mut core::ffi::c_void,
+        cxlr_dax as *mut kernel::ffi::c_void,
     )
 }
 

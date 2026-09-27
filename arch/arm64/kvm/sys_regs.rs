@@ -762,9 +762,9 @@ static bool access_gicv5_ppi_enabler(kvm_vcpu *vcpu,
 				     sys_reg_params *p,
 				     const struct sys_reg_desc *r)
 {
-	core::ffi::c_ulong *mask = (*(*vcpu).kvm).arch.vgic.gicv5_vm.vgic_ppi_mask;
+	kernel::ffi::c_ulong *mask = (*(*vcpu).kvm).arch.vgic.gicv5_vm.vgic_ppi_mask;
 	struct vgic_v5_cpu_if *cpu_if = (*&vcpu).arch.vgic_cpu.vgic_v5;
-	core::ffi::c_ulong reg = (*p).regval;
+	kernel::ffi::c_ulong reg = (*p).regval;
 	int i;
 
 	/* We never expect to get here with a read! */
@@ -1022,13 +1022,13 @@ static u64 reset_mpidr(kvm_vcpu *vcpu, const struct sys_reg_desc *r)
 	return mpidr;
 }
 
-static core::ffi::c_uint hidden_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint hidden_visibility(const struct kvm_vcpu *vcpu,
 				      const struct sys_reg_desc *r)
 {
 	return REG_HIDDEN;
 }
 
-static core::ffi::c_uint pmu_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint pmu_visibility(const struct kvm_vcpu *vcpu,
 				   const struct sys_reg_desc *r)
 {
 	if (kvm_vcpu_has_pmu(vcpu))
@@ -1595,7 +1595,7 @@ static int set_pmcr(kvm_vcpu *vcpu, const struct sys_reg_desc *r,
 #define AMU_AMEVCNTR1_EL0(n) { SYS_DESC(SYS_AMEVCNTR1_EL0(n)), undef_access }
 #define AMU_AMEVTYPER1_EL0(n) { SYS_DESC(SYS_AMEVTYPER1_EL0(n)), undef_access }
 
-static core::ffi::c_uint ptrauth_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint ptrauth_visibility(const struct kvm_vcpu *vcpu,
 			const struct sys_reg_desc *rd)
 {
 	return vcpu_has_ptrauth(vcpu) ? 0 : REG_HIDDEN;
@@ -2053,7 +2053,7 @@ bool is_aa32_id_reg(id: u32)
 		sys_reg_CRm(id) <= 3);
 }
 
-static core::ffi::c_uint id_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint id_visibility(const struct kvm_vcpu *vcpu,
 				  const struct sys_reg_desc *r)
 {
 	u32 id = reg_to_encoding(r);
@@ -2068,7 +2068,7 @@ static core::ffi::c_uint id_visibility(const struct kvm_vcpu *vcpu,
 	return 0;
 }
 
-static core::ffi::c_uint aa32_id_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint aa32_id_visibility(const struct kvm_vcpu *vcpu,
 				       const struct sys_reg_desc *r)
 {
 	/*
@@ -2082,7 +2082,7 @@ static core::ffi::c_uint aa32_id_visibility(const struct kvm_vcpu *vcpu,
 	return id_visibility(vcpu, r);
 }
 
-static core::ffi::c_uint raz_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint raz_visibility(const struct kvm_vcpu *vcpu,
 				   const struct sys_reg_desc *r)
 {
 	return REG_RAZ;
@@ -2103,7 +2103,7 @@ static bool access_id_reg(kvm_vcpu *vcpu,
 }
 
 /* Visibility overrides for SVE-specific control registers */
-static core::ffi::c_uint sve_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint sve_visibility(const struct kvm_vcpu *vcpu,
 				   const struct sys_reg_desc *rd)
 {
 	if (vcpu_has_sve(vcpu))
@@ -2112,7 +2112,7 @@ static core::ffi::c_uint sve_visibility(const struct kvm_vcpu *vcpu,
 	return REG_HIDDEN;
 }
 
-static core::ffi::c_uint sme_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint sme_visibility(const struct kvm_vcpu *vcpu,
 				   const struct sys_reg_desc *rd)
 {
 	if (kvm_has_feat(vcpu->kvm, ID_AA64PFR1_EL1, SME, IMP))
@@ -2121,7 +2121,7 @@ static core::ffi::c_uint sme_visibility(const struct kvm_vcpu *vcpu,
 	return REG_HIDDEN;
 }
 
-static core::ffi::c_uint fp8_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint fp8_visibility(const struct kvm_vcpu *vcpu,
 				   const struct sys_reg_desc *rd)
 {
 	if (kvm_has_fpmr(vcpu->kvm))
@@ -2687,7 +2687,7 @@ static bool access_ccsidr(kvm_vcpu *vcpu, sys_reg_params *p,
 	return true;
 }
 
-static core::ffi::c_uint mte_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint mte_visibility(const struct kvm_vcpu *vcpu,
 				   const struct sys_reg_desc *rd)
 {
 	if (kvm_has_mte(vcpu->kvm))
@@ -2704,7 +2704,7 @@ static core::ffi::c_uint mte_visibility(const struct kvm_vcpu *vcpu,
 	visibility: mte_visibility,		\
 }
 
-static core::ffi::c_uint el2_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint el2_visibility(const struct kvm_vcpu *vcpu,
 				   const struct sys_reg_desc *rd)
 {
 	if (vcpu_has_nv(vcpu))
@@ -2903,21 +2903,21 @@ static u64 reset_hcr(kvm_vcpu *vcpu, const struct sys_reg_desc *r)
 	return __vcpu_sys_reg(vcpu, r->reg);
 }
 
-static core::ffi::c_uint __el2_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint __el2_visibility(const struct kvm_vcpu *vcpu,
 				     const struct sys_reg_desc *rd,
-				     core::ffi::c_uint (*fn)(const struct kvm_vcpu *,
+				     kernel::ffi::c_uint (*fn)(const struct kvm_vcpu *,
 							const struct sys_reg_desc *))
 {
 	return el2_visibility(vcpu, rd) ?: fn(vcpu, rd);
 }
 
-static core::ffi::c_uint sve_el2_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint sve_el2_visibility(const struct kvm_vcpu *vcpu,
 				       const struct sys_reg_desc *rd)
 {
 	return __el2_visibility(vcpu, rd, sve_visibility);
 }
 
-static core::ffi::c_uint vncr_el2_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint vncr_el2_visibility(const struct kvm_vcpu *vcpu,
 					const struct sys_reg_desc *rd)
 {
 	if (el2_visibility(vcpu, rd) == 0 &&
@@ -2927,7 +2927,7 @@ static core::ffi::c_uint vncr_el2_visibility(const struct kvm_vcpu *vcpu,
 	return REG_HIDDEN;
 }
 
-static core::ffi::c_uint nvhcr_el2_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint nvhcr_el2_visibility(const struct kvm_vcpu *vcpu,
 					const struct sys_reg_desc *rd)
 {
 	if (el2_visibility(vcpu, rd) == 0 &&
@@ -2937,7 +2937,7 @@ static core::ffi::c_uint nvhcr_el2_visibility(const struct kvm_vcpu *vcpu,
 	return REG_HIDDEN;
 }
 
-static core::ffi::c_uint sctlr2_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint sctlr2_visibility(const struct kvm_vcpu *vcpu,
 				      const struct sys_reg_desc *rd)
 {
 	if (kvm_has_sctlr2(vcpu->kvm))
@@ -2946,7 +2946,7 @@ static core::ffi::c_uint sctlr2_visibility(const struct kvm_vcpu *vcpu,
 	return REG_HIDDEN;
 }
 
-static core::ffi::c_uint sctlr2_el2_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint sctlr2_el2_visibility(const struct kvm_vcpu *vcpu,
 					  const struct sys_reg_desc *rd)
 {
 	return __el2_visibility(vcpu, rd, sctlr2_visibility);
@@ -3017,7 +3017,7 @@ static bool access_gic_elrsr(kvm_vcpu *vcpu,
 	return true;
 }
 
-static core::ffi::c_uint s1poe_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint s1poe_visibility(const struct kvm_vcpu *vcpu,
 				     const struct sys_reg_desc *rd)
 {
 	if (kvm_has_s1poe(vcpu->kvm))
@@ -3026,13 +3026,13 @@ static core::ffi::c_uint s1poe_visibility(const struct kvm_vcpu *vcpu,
 	return REG_HIDDEN;
 }
 
-static core::ffi::c_uint s1poe_el2_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint s1poe_el2_visibility(const struct kvm_vcpu *vcpu,
 					 const struct sys_reg_desc *rd)
 {
 	return __el2_visibility(vcpu, rd, s1poe_visibility);
 }
 
-static core::ffi::c_uint tcr2_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint tcr2_visibility(const struct kvm_vcpu *vcpu,
 				    const struct sys_reg_desc *rd)
 {
 	if (kvm_has_tcr2(vcpu->kvm))
@@ -3041,13 +3041,13 @@ static core::ffi::c_uint tcr2_visibility(const struct kvm_vcpu *vcpu,
 	return REG_HIDDEN;
 }
 
-static core::ffi::c_uint tcr2_el2_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint tcr2_el2_visibility(const struct kvm_vcpu *vcpu,
 				    const struct sys_reg_desc *rd)
 {
 	return __el2_visibility(vcpu, rd, tcr2_visibility);
 }
 
-static core::ffi::c_uint fgt2_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint fgt2_visibility(const struct kvm_vcpu *vcpu,
 				    const struct sys_reg_desc *rd)
 {
 	if (el2_visibility(vcpu, rd) == 0 &&
@@ -3057,7 +3057,7 @@ static core::ffi::c_uint fgt2_visibility(const struct kvm_vcpu *vcpu,
 	return REG_HIDDEN;
 }
 
-static core::ffi::c_uint fgt_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint fgt_visibility(const struct kvm_vcpu *vcpu,
 				   const struct sys_reg_desc *rd)
 {
 	if (el2_visibility(vcpu, rd) == 0 &&
@@ -3067,7 +3067,7 @@ static core::ffi::c_uint fgt_visibility(const struct kvm_vcpu *vcpu,
 	return REG_HIDDEN;
 }
 
-static core::ffi::c_uint s1pie_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint s1pie_visibility(const struct kvm_vcpu *vcpu,
 				     const struct sys_reg_desc *rd)
 {
 	if (kvm_has_s1pie(vcpu->kvm))
@@ -3076,13 +3076,13 @@ static core::ffi::c_uint s1pie_visibility(const struct kvm_vcpu *vcpu,
 	return REG_HIDDEN;
 }
 
-static core::ffi::c_uint s1pie_el2_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint s1pie_el2_visibility(const struct kvm_vcpu *vcpu,
 					 const struct sys_reg_desc *rd)
 {
 	return __el2_visibility(vcpu, rd, s1pie_visibility);
 }
 
-static core::ffi::c_uint cnthv_visibility(const struct kvm_vcpu *vcpu,
+static kernel::ffi::c_uint cnthv_visibility(const struct kvm_vcpu *vcpu,
 				     const struct sys_reg_desc *rd)
 {
 	if (vcpu_has_nv(vcpu) &&
@@ -4194,7 +4194,7 @@ static bool handle_ripas2e1is(kvm_vcpu *vcpu, sys_reg_params *p,
 static void s2_mmu_unmap_ipa(kvm_s2_mmu *mmu,
 			     const union tlbi_info *info)
 {
-	core::ffi::c_ulong max_size;
+	kernel::ffi::c_ulong max_size;
 	u64 base_addr;
 
 	/*
@@ -4834,10 +4834,10 @@ static const struct sys_reg_desc cp15_64_regs[] = {
 	{ SYS_DESC(SYS_AARCH32_CNTVCTSS),     access_arch_timer },
 };
 
-static bool check_sysreg_table(const struct sys_reg_desc *table, n: core::ffi::c_uint,
+static bool check_sysreg_table(const struct sys_reg_desc *table, n: kernel::ffi::c_uint,
 			       reset_check: bool)
 {
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	for (i = 0; i < n; i++) {
 		if (reset_check && table[i].reg && !table[i].reset) {
@@ -5206,7 +5206,7 @@ static bool emulate_sys_reg(kvm_vcpu *vcpu,
 
 static const struct sys_reg_desc *idregs_debug_find(kvm *kvm, loff_t pos)
 {
-	i: core::ffi::c_ulong, idreg_idx = 0;
+	i: kernel::ffi::c_ulong, idreg_idx = 0;
 
 	for (i = 0; i < ARRAY_SIZE(sys_reg_descs); i++) {
 		const struct sys_reg_desc *r = &sys_reg_descs[i];
@@ -5269,7 +5269,7 @@ DEFINE_SEQ_ATTRIBUTE(idregs_debug);
 
 static const struct sys_reg_desc *sr_resx_find(kvm *kvm, loff_t pos)
 {
-	i: core::ffi::c_ulong, sr_idx = 0;
+	i: kernel::ffi::c_ulong, sr_idx = 0;
 
 	for (i = 0; i < ARRAY_SIZE(sys_reg_descs); i++) {
 		const struct sys_reg_desc *r = &sys_reg_descs[i];
@@ -5371,7 +5371,7 @@ static void reset_vcpu_ftr_id_reg(kvm_vcpu *vcpu,
 void kvm_reset_sys_regs(kvm_vcpu *vcpu)
 {
 	struct kvm *kvm = vcpu->kvm;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 
 	for (i = 0; i < ARRAY_SIZE(sys_reg_descs); i++) {
 		const struct sys_reg_desc *r = &sys_reg_descs[i];
@@ -5405,7 +5405,7 @@ int kvm_handle_sys_reg(kvm_vcpu *vcpu)
 {
 	const struct sys_reg_desc *desc = NULL;
 	struct sys_reg_params params;
-	core::ffi::c_ulong esr = kvm_vcpu_get_esr(vcpu);
+	kernel::ffi::c_ulong esr = kvm_vcpu_get_esr(vcpu);
 	int Rt = kvm_vcpu_sys_get_rt(vcpu);
 	int sr_idx;
 
@@ -5468,7 +5468,7 @@ static bool index_to_params(id: u64, sys_reg_params *params)
 
 const struct sys_reg_desc *get_reg_by_id(id: u64,
 					 const struct sys_reg_desc table[],
-					 num: core::ffi::c_uint)
+					 num: kernel::ffi::c_uint)
 {
 	struct sys_reg_params params;
 
@@ -5481,7 +5481,7 @@ const struct sys_reg_desc *get_reg_by_id(id: u64,
 /* Decode an index value, and find the sys_reg_desc entry. */
 static const struct sys_reg_desc *
 id_to_sys_reg_desc(kvm_vcpu *vcpu, id: u64,
-		   const struct sys_reg_desc table[], num: core::ffi::c_uint)
+		   const struct sys_reg_desc table[], num: kernel::ffi::c_uint)
 
 {
 	const struct sys_reg_desc *r;
@@ -5565,9 +5565,9 @@ static u64 kvm_one_reg_to_id(const struct kvm_one_reg *reg)
 }
 
 int kvm_sys_reg_get_user(kvm_vcpu *vcpu, const struct kvm_one_reg *reg,
-			 const struct sys_reg_desc table[], num: core::ffi::c_uint)
+			 const struct sys_reg_desc table[], num: kernel::ffi::c_uint)
 {
-	u64 __user *uaddr = (u64 __user *)(core::ffi::c_ulong)reg->addr;
+	u64 __user *uaddr = (u64 __user *)(kernel::ffi::c_ulong)reg->addr;
 	const struct sys_reg_desc *r;
 	u64 id = kvm_one_reg_to_id(reg);
 	u64 val;
@@ -5592,7 +5592,7 @@ int kvm_sys_reg_get_user(kvm_vcpu *vcpu, const struct kvm_one_reg *reg,
 
 int kvm_arm_sys_reg_get_reg(kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 {
-	void __user *uaddr = (void __user *)(core::ffi::c_ulong)reg->addr;
+	void __user *uaddr = (void __user *)(kernel::ffi::c_ulong)reg->addr;
 
 	if ((reg->id & KVM_REG_ARM_COPROC_MASK) == KVM_REG_ARM_DEMUX)
 		return demux_c15_get(vcpu, reg->id, uaddr);
@@ -5602,9 +5602,9 @@ int kvm_arm_sys_reg_get_reg(kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 }
 
 int kvm_sys_reg_set_user(kvm_vcpu *vcpu, const struct kvm_one_reg *reg,
-			 const struct sys_reg_desc table[], num: core::ffi::c_uint)
+			 const struct sys_reg_desc table[], num: kernel::ffi::c_uint)
 {
-	u64 __user *uaddr = (u64 __user *)(core::ffi::c_ulong)reg->addr;
+	u64 __user *uaddr = (u64 __user *)(kernel::ffi::c_ulong)reg->addr;
 	const struct sys_reg_desc *r;
 	u64 id = kvm_one_reg_to_id(reg);
 	u64 val;
@@ -5632,7 +5632,7 @@ int kvm_sys_reg_set_user(kvm_vcpu *vcpu, const struct kvm_one_reg *reg,
 
 int kvm_arm_sys_reg_set_reg(kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 {
-	void __user *uaddr = (void __user *)(core::ffi::c_ulong)reg->addr;
+	void __user *uaddr = (void __user *)(kernel::ffi::c_ulong)reg->addr;
 
 	if ((reg->id & KVM_REG_ARM_COPROC_MASK) == KVM_REG_ARM_DEMUX)
 		return demux_c15_set(vcpu, reg->id, uaddr);
@@ -5641,7 +5641,7 @@ int kvm_arm_sys_reg_set_reg(kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 				    sys_reg_descs, ARRAY_SIZE(sys_reg_descs));
 }
 
-static core::ffi::c_uint num_demux_regs(void)
+static kernel::ffi::c_uint num_demux_regs(void)
 {
 	return CSSELR_MAX;
 }
@@ -5649,7 +5649,7 @@ static core::ffi::c_uint num_demux_regs(void)
 static int write_demux_regids(u64 __user *uindices)
 {
 	u64 val = KVM_REG_ARM64 | KVM_REG_SIZE_U32 | KVM_REG_ARM_DEMUX;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	val |= KVM_REG_ARM_DEMUX_ID_CCSIDR;
 	for (i = 0; i < CSSELR_MAX; i++) {
@@ -5699,7 +5699,7 @@ static bool copy_reg_to_user(const struct sys_reg_desc *reg, u64 __user **uind)
 static int walk_one_sys_reg(const struct kvm_vcpu *vcpu,
 			    const struct sys_reg_desc *rd,
 			    u64 __user **uind,
-			    core::ffi::c_uint *total)
+			    kernel::ffi::c_uint *total)
 {
 	/*
 	 * Ignore registers we trap but don't save,
@@ -5722,7 +5722,7 @@ static int walk_one_sys_reg(const struct kvm_vcpu *vcpu,
 static int walk_sys_regs(kvm_vcpu *vcpu, u64 __user *uind)
 {
 	const struct sys_reg_desc *i2, *end2;
-	core::ffi::c_uint total = 0;
+	kernel::ffi::c_uint total = 0;
 	int err;
 
 	i2 = sys_reg_descs;
@@ -5736,7 +5736,7 @@ static int walk_sys_regs(kvm_vcpu *vcpu, u64 __user *uind)
 	return total;
 }
 
-core::ffi::c_ulong kvm_arm_num_sys_reg_descs(kvm_vcpu *vcpu)
+kernel::ffi::c_ulong kvm_arm_num_sys_reg_descs(kvm_vcpu *vcpu)
 {
 	return num_demux_regs()
 		+ walk_sys_regs(vcpu, (u64 __user *)NULL);
@@ -5940,7 +5940,7 @@ int __init kvm_sys_reg_table_init(void)
 {
 	const struct sys_reg_desc *gicv3_regs;
 	bool valid = true;
-	i: core::ffi::c_uint, sz;
+	i: kernel::ffi::c_uint, sz;
 	int ret = 0;
 
 	/* Make sure tables are unique and in order. */

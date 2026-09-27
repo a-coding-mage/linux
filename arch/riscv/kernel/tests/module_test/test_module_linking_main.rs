@@ -13,31 +13,31 @@ pub struct kunit {
 }
 
 extern "C" {
-    pub fn test_set32() -> core::ffi::c_int;
-    pub fn test_set16() -> core::ffi::c_int;
-    pub fn test_set8() -> core::ffi::c_int;
-    pub fn test_set6() -> core::ffi::c_int;
-    pub fn test_sub64() -> core::ffi::c_long;
-    pub fn test_sub32() -> core::ffi::c_int;
-    pub fn test_sub16() -> core::ffi::c_int;
-    pub fn test_sub8() -> core::ffi::c_int;
-    pub fn test_sub6() -> core::ffi::c_int;
+    pub fn test_set32() -> kernel::ffi::c_int;
+    pub fn test_set16() -> kernel::ffi::c_int;
+    pub fn test_set8() -> kernel::ffi::c_int;
+    pub fn test_set6() -> kernel::ffi::c_int;
+    pub fn test_sub64() -> kernel::ffi::c_long;
+    pub fn test_sub32() -> kernel::ffi::c_int;
+    pub fn test_sub16() -> kernel::ffi::c_int;
+    pub fn test_sub8() -> kernel::ffi::c_int;
+    pub fn test_sub6() -> kernel::ffi::c_int;
 
     // Present when CONFIG_AS_HAS_ULEB128 is enabled.
     #[cfg(CONFIG_AS_HAS_ULEB128)]
-    pub fn test_uleb_basic() -> core::ffi::c_int;
+    pub fn test_uleb_basic() -> kernel::ffi::c_int;
     #[cfg(CONFIG_AS_HAS_ULEB128)]
-    pub fn test_uleb_large() -> core::ffi::c_int;
+    pub fn test_uleb_large() -> kernel::ffi::c_int;
 
     // KUnit assertion supplied by the kernel KUnit implementation.
     pub fn kunit_assert_eq(
         test: *mut kunit,
         lhs: isize,
         rhs: isize,
-        lhs_name: *const core::ffi::c_char,
-        rhs_name: *const core::ffi::c_char,
-        file: *const core::ffi::c_char,
-        line: core::ffi::c_uint,
+        lhs_name: *const kernel::ffi::c_char,
+        rhs_name: *const kernel::ffi::c_char,
+        file: *const kernel::ffi::c_char,
+        line: kernel::ffi::c_uint,
     );
 }
 
@@ -48,9 +48,9 @@ macro_rules! check_eq {
                 $test,
                 ($lhs) as isize,
                 ($rhs) as isize,
-                concat!(stringify!($lhs), "\0").as_ptr() as *const core::ffi::c_char,
-                concat!(stringify!($rhs), "\0").as_ptr() as *const core::ffi::c_char,
-                concat!(file!(), "\0").as_ptr() as *const core::ffi::c_char,
+                concat!(stringify!($lhs), "\0").as_ptr() as *const kernel::ffi::c_char,
+                concat!(stringify!($rhs), "\0").as_ptr() as *const kernel::ffi::c_char,
+                concat!(file!(), "\0").as_ptr() as *const kernel::ffi::c_char,
                 line!(),
             );
         }
@@ -101,7 +101,7 @@ pub struct kunit_case {
 #[allow(non_camel_case_types)]
 #[repr(C)]
 pub struct kunit_suite {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub test_cases: *mut kunit_case,
 }
 
@@ -117,7 +117,7 @@ pub static mut riscv_module_linking_test_cases: [kunit_case; 3] = [
 
 #[used]
 pub static mut riscv_module_linking_test_suite: kunit_suite = kunit_suite {
-    name: b"riscv_checksum\0".as_ptr() as *const core::ffi::c_char,
+    name: b"riscv_checksum\0".as_ptr() as *const kernel::ffi::c_char,
     test_cases: unsafe { riscv_module_linking_test_cases.as_mut_ptr() },
 };
 

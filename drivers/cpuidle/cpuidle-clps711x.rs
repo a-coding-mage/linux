@@ -7,22 +7,22 @@
 
 // Linux kernel dependencies supplied by the surrounding translation unit.
 
-const CLPS711X_CPUIDLE_NAME: *const core::ffi::c_char =
-    b"clps711x-cpuidle\0".as_ptr() as *const core::ffi::c_char;
+const CLPS711X_CPUIDLE_NAME: *const kernel::ffi::c_char =
+    b"clps711x-cpuidle\0".as_ptr() as *const kernel::ffi::c_char;
 
-static mut clps711x_halt: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut clps711x_halt: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 unsafe extern "C" {
-    fn writel(value: u32, address: *mut core::ffi::c_void);
+    fn writel(value: u32, address: *mut kernel::ffi::c_void);
     fn devm_platform_ioremap_resource(
         pdev: *mut platform_device,
         index: u32,
-    ) -> *mut core::ffi::c_void;
-    fn IS_ERR(pointer: *mut core::ffi::c_void) -> bool;
-    fn PTR_ERR(pointer: *mut core::ffi::c_void) -> i32;
+    ) -> *mut kernel::ffi::c_void;
+    fn IS_ERR(pointer: *mut kernel::ffi::c_void) -> bool;
+    fn PTR_ERR(pointer: *mut kernel::ffi::c_void) -> i32;
     fn cpuidle_register(
         driver: *mut cpuidle_driver,
-        device: *mut core::ffi::c_void,
+        device: *mut kernel::ffi::c_void,
     ) -> i32;
 }
 
@@ -33,8 +33,8 @@ pub struct cpuidle_device {
 
 #[repr(C)]
 pub struct cpuidle_state {
-    pub name: *const core::ffi::c_char,
-    pub desc: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub desc: *const kernel::ffi::c_char,
     pub enter: Option<
         unsafe extern "C" fn(
             dev: *mut cpuidle_device,
@@ -47,8 +47,8 @@ pub struct cpuidle_state {
 
 #[repr(C)]
 pub struct cpuidle_driver {
-    pub name: *const core::ffi::c_char,
-    pub owner: *mut core::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
+    pub owner: *mut kernel::ffi::c_void,
     pub states: [cpuidle_state; 1],
     pub state_count: u32,
 }
@@ -65,7 +65,7 @@ pub struct platform_driver {
 
 #[repr(C)]
 pub struct platform_driver_base {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 unsafe extern "C" fn clps711x_cpuidle_halt(
@@ -82,8 +82,8 @@ static mut clps711x_idle_driver: cpuidle_driver = cpuidle_driver {
     name: CLPS711X_CPUIDLE_NAME,
     owner: core::ptr::null_mut(), // THIS_MODULE
     states: [cpuidle_state {
-        name: b"HALT\0".as_ptr() as *const core::ffi::c_char,
-        desc: b"CLPS711X HALT\0".as_ptr() as *const core::ffi::c_char,
+        name: b"HALT\0".as_ptr() as *const kernel::ffi::c_char,
+        desc: b"CLPS711X HALT\0".as_ptr() as *const kernel::ffi::c_char,
         enter: Some(clps711x_cpuidle_halt),
         exit_latency: 1,
     }],

@@ -3,7 +3,7 @@
 /*
  * If you have a cycle counter, return the value here.
  */
-pub type cycles_t = ::core::ffi::c_ulong;
+pub type cycles_t = ::kernel::ffi::c_ulong;
 
 /* C conditional: provide this only when get_cycles is not supplied externally. */
 #[inline]

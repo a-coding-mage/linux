@@ -11,30 +11,30 @@
 // Dependency declarations and build-time configuration supplied by the kernel.
 
 extern "C" {
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn get_cpu_device(cpu: core::ffi::c_int) -> *mut device;
-    fn clk_get(dev: *mut device, id: *const core::ffi::c_char) -> *mut clk;
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn get_cpu_device(cpu: kernel::ffi::c_int) -> *mut device;
+    fn clk_get(dev: *mut device, id: *const kernel::ffi::c_char) -> *mut clk;
     fn clk_put(clk: *mut clk);
     fn clk_is_match(a: *mut clk, b: *mut clk) -> bool;
     fn clk_get_rate(clk: *mut clk) -> u32;
-    fn cpumask_set_cpu(cpu: core::ffi::c_int, mask: *mut cpumask);
+    fn cpumask_set_cpu(cpu: kernel::ffi::c_int, mask: *mut cpumask);
     fn cpumask_copy(dst: *mut cpumask, src: *const cpumask);
     fn cpumask_clear(mask: *mut cpumask);
     fn cpumask_andnot(dst: *mut cpumask, a: *const cpumask, b: *const cpumask);
-    fn num_possible_cpus() -> core::ffi::c_int;
+    fn num_possible_cpus() -> kernel::ffi::c_int;
     fn of_find_matching_node_and_match(node: *mut device_node, match_table: *const of_device_id, data: *mut *const of_device_id) -> *mut device_node;
     fn of_device_is_available(node: *mut device_node) -> bool;
     fn of_node_put(node: *mut device_node);
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_pm_opp_add(dev: *mut device, freq: u32, u_volt: u32) -> core::ffi::c_int;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_pm_opp_add(dev: *mut device, freq: u32, u_volt: u32) -> kernel::ffi::c_int;
     fn dev_pm_opp_remove(dev: *mut device, freq: u32);
     fn dev_pm_opp_set_sharing_cpus(dev: *mut device, mask: *const cpumask);
-    fn platform_device_register_simple(name: *const core::ffi::c_char, id: core::ffi::c_int, res: *const core::ffi::c_void, num: u32) -> *mut platform_device;
+    fn platform_device_register_simple(name: *const kernel::ffi::c_char, id: kernel::ffi::c_int, res: *const kernel::ffi::c_void, num: u32) -> *mut platform_device;
     fn platform_device_unregister(pdev: *mut platform_device);
-    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut core::ffi::c_void);
-    fn platform_get_drvdata(pdev: *mut platform_device) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut kernel::ffi::c_void);
+    fn platform_get_drvdata(pdev: *mut platform_device) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
 }
 
 #[repr(C)] pub struct device { _private: [u8; 0] }
@@ -45,7 +45,7 @@ extern "C" {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 
 static mut ARMADA_8K_CPUFREQ_PDEV: *mut platform_device = core::ptr::null_mut();
@@ -78,7 +78,7 @@ unsafe fn armada_8k_get_sharing_cpus(cur_clk: *mut clk, cpumask: *mut cpumask) {
     }
 }
 
-unsafe fn armada_8k_add_opp(clk: *mut clk, cpu_dev: *mut device, freq_tables: *mut freq_table, opps_index: usize) -> core::ffi::c_int {
+unsafe fn armada_8k_add_opp(clk: *mut clk, cpu_dev: *mut device, freq_tables: *mut freq_table, opps_index: usize) -> kernel::ffi::c_int {
     let cur_frequency = clk_get_rate(clk);
     if cur_frequency == 0 {
         dev_err(cpu_dev, b"Failed to get clock rate for this CPU\n\0".as_ptr() as _);
@@ -109,7 +109,7 @@ unsafe fn armada_8k_cpufreq_free_table(freq_tables: *mut freq_table) {
     kfree(freq_tables.cast());
 }
 
-unsafe fn armada_8k_cpufreq_init() -> core::ffi::c_int {
+unsafe fn armada_8k_cpufreq_init() -> kernel::ffi::c_int {
     static mut CPUS: cpumask = cpumask { _private: [] };
     static mut SHARED_CPUS: cpumask = cpumask { _private: [] };
     let mut ret = 0;

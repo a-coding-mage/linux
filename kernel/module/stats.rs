@@ -17,7 +17,7 @@ pub static mut failed_decompress: atomic_t = atomic_t::zero();
 static mut failed_becoming: atomic_t = atomic_t::zero();
 static mut failed_load_modules: atomic_t = atomic_t::zero();
 
-unsafe fn mod_fail_to_str(mod_fail: *mut mod_fail_load) -> *const core::ffi::c_char {
+unsafe fn mod_fail_to_str(mod_fail: *mut mod_fail_load) -> *const kernel::ffi::c_char {
     if test_bit(FAIL_DUP_MOD_BECOMING, &(*mod_fail).dup_fail_mask)
         && test_bit(FAIL_DUP_MOD_LOAD, &(*mod_fail).dup_fail_mask)
     {
@@ -52,7 +52,7 @@ pub unsafe fn mod_stat_bump_becoming(info: *mut load_info, flags: i32) {
 }
 
 pub unsafe fn try_add_failed_module(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     reason: fail_dup_mod_reason,
 ) -> i32 {
     let mut mod_fail: *mut mod_fail_load;
@@ -82,7 +82,7 @@ const MAX_BYTES_PER_MOD: usize = 64;
 
 unsafe fn read_file_mod_stats(
     _file: *mut file,
-    user_buf: *mut core::ffi::c_char,
+    user_buf: *mut kernel::ffi::c_char,
     count: usize,
     ppos: *mut loff_t,
 ) -> ssize_t {

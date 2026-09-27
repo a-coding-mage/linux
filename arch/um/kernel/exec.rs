@@ -29,13 +29,13 @@ extern "C" {
     fn arch_flush_thread(arch: *mut arch_thread);
     fn current_pt_regs() -> *mut pt_regs;
     fn current() -> *mut task_struct;
-    fn get_safe_registers(gp: *mut core::ffi::c_void, fp: *mut core::ffi::c_void);
-    fn clear_thread_flag(flag: core::ffi::c_int);
-    fn pt_regs_gp(regs: *mut pt_regs) -> *mut core::ffi::c_void;
-    fn pt_regs_fp(regs: *mut pt_regs) -> *mut core::ffi::c_void;
+    fn get_safe_registers(gp: *mut kernel::ffi::c_void, fp: *mut kernel::ffi::c_void);
+    fn clear_thread_flag(flag: kernel::ffi::c_int);
+    fn pt_regs_gp(regs: *mut pt_regs) -> *mut kernel::ffi::c_void;
+    fn pt_regs_fp(regs: *mut pt_regs) -> *mut kernel::ffi::c_void;
     fn pt_regs_ip(regs: *mut pt_regs) -> *mut c_ulong;
     fn pt_regs_sp(regs: *mut pt_regs) -> *mut c_ulong;
-    static TIF_SINGLESTEP: core::ffi::c_int;
+    static TIF_SINGLESTEP: kernel::ffi::c_int;
 }
 
 // PT_REGS_IP, PT_REGS_SP, TIF_SINGLESTEP, and the register layout are supplied
@@ -53,6 +53,6 @@ pub unsafe fn start_thread(regs: *mut pt_regs, eip: c_ulong, esp: c_ulong) {
     clear_thread_flag(TIF_SINGLESTEP);
 }
 
-pub type c_ulong = core::ffi::c_ulong;
+pub type c_ulong = kernel::ffi::c_ulong;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

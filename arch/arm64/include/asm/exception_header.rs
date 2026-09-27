@@ -13,14 +13,14 @@
 // the corresponding external ABI directly.
 
 #[inline]
-pub unsafe fn disr_to_esr(disr: u64) -> ::core::ffi::c_ulong {
-    let mut esr: ::core::ffi::c_ulong =
-        (ESR_ELx_EC_SERROR << ESR_ELx_EC_SHIFT) as ::core::ffi::c_ulong;
+pub unsafe fn disr_to_esr(disr: u64) -> ::kernel::ffi::c_ulong {
+    let mut esr: ::kernel::ffi::c_ulong =
+        (ESR_ELx_EC_SERROR << ESR_ELx_EC_SHIFT) as ::kernel::ffi::c_ulong;
 
     if (disr & DISR_EL1_IDS) == 0 {
-        esr |= (disr & DISR_EL1_ESR_MASK) as ::core::ffi::c_ulong;
+        esr |= (disr & DISR_EL1_ESR_MASK) as ::kernel::ffi::c_ulong;
     } else {
-        esr |= (disr & ESR_ELx_ISS_MASK) as ::core::ffi::c_ulong;
+        esr |= (disr & ESR_ELx_ISS_MASK) as ::kernel::ffi::c_ulong;
     }
 
     esr
@@ -52,53 +52,53 @@ extern "C" {
     pub fn call_on_irq_stack(regs: *mut pt_regs, func: Option<unsafe extern "C" fn(*mut pt_regs)>);
     pub fn asm_exit_to_user_mode(regs: *mut pt_regs);
 
-    pub fn do_mem_abort(far: ::core::ffi::c_ulong, esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn do_el0_undef(regs: *mut pt_regs, esr: ::core::ffi::c_ulong);
-    pub fn do_el1_undef(regs: *mut pt_regs, esr: ::core::ffi::c_ulong);
+    pub fn do_mem_abort(far: ::kernel::ffi::c_ulong, esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_el0_undef(regs: *mut pt_regs, esr: ::kernel::ffi::c_ulong);
+    pub fn do_el1_undef(regs: *mut pt_regs, esr: ::kernel::ffi::c_ulong);
     pub fn do_el0_bti(regs: *mut pt_regs);
-    pub fn do_el1_bti(regs: *mut pt_regs, esr: ::core::ffi::c_ulong);
-    pub fn do_el0_gcs(regs: *mut pt_regs, esr: ::core::ffi::c_ulong);
-    pub fn do_el1_gcs(regs: *mut pt_regs, esr: ::core::ffi::c_ulong);
+    pub fn do_el1_bti(regs: *mut pt_regs, esr: ::kernel::ffi::c_ulong);
+    pub fn do_el0_gcs(regs: *mut pt_regs, esr: ::kernel::ffi::c_ulong);
+    pub fn do_el1_gcs(regs: *mut pt_regs, esr: ::kernel::ffi::c_ulong);
 
     // CONFIG_HAVE_HW_BREAKPOINT controls these declarations in the C header.
     #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
-    pub fn do_breakpoint(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_breakpoint(esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
     #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
-    pub fn do_watchpoint(addr: ::core::ffi::c_ulong, esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_watchpoint(addr: ::kernel::ffi::c_ulong, esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
 
-    pub fn do_el0_softstep(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn do_el1_softstep(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn do_el0_brk64(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn do_el1_brk64(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn do_bkpt32(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn do_fpsimd_acc(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn do_sve_acc(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn do_sme_acc(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn do_fpsimd_exc(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn do_el0_sys(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn do_sp_pc_abort(addr: ::core::ffi::c_ulong, esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn bad_el0_sync(regs: *mut pt_regs, reason: ::core::ffi::c_int, esr: ::core::ffi::c_ulong);
-    pub fn do_el0_cp15(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    pub fn do_compat_alignment_fixup(addr: ::core::ffi::c_ulong, regs: *mut pt_regs) -> ::core::ffi::c_int;
+    pub fn do_el0_softstep(esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_el1_softstep(esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_el0_brk64(esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_el1_brk64(esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_bkpt32(esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_fpsimd_acc(esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_sve_acc(esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_sme_acc(esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_fpsimd_exc(esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_el0_sys(esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_sp_pc_abort(addr: ::kernel::ffi::c_ulong, esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn bad_el0_sync(regs: *mut pt_regs, reason: ::kernel::ffi::c_int, esr: ::kernel::ffi::c_ulong);
+    pub fn do_el0_cp15(esr: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_compat_alignment_fixup(addr: ::kernel::ffi::c_ulong, regs: *mut pt_regs) -> ::kernel::ffi::c_int;
     pub fn do_el0_svc(regs: *mut pt_regs);
     pub fn do_el0_svc_compat(regs: *mut pt_regs);
-    pub fn do_el0_fpac(regs: *mut pt_regs, esr: ::core::ffi::c_ulong);
-    pub fn do_el1_fpac(regs: *mut pt_regs, esr: ::core::ffi::c_ulong);
-    pub fn do_el0_mops(regs: *mut pt_regs, esr: ::core::ffi::c_ulong);
-    pub fn do_el1_mops(regs: *mut pt_regs, esr: ::core::ffi::c_ulong);
-    pub fn do_serror(regs: *mut pt_regs, esr: ::core::ffi::c_ulong);
-    pub fn panic_bad_stack(regs: *mut pt_regs, esr: ::core::ffi::c_ulong, far: ::core::ffi::c_ulong) -> !;
+    pub fn do_el0_fpac(regs: *mut pt_regs, esr: ::kernel::ffi::c_ulong);
+    pub fn do_el1_fpac(regs: *mut pt_regs, esr: ::kernel::ffi::c_ulong);
+    pub fn do_el0_mops(regs: *mut pt_regs, esr: ::kernel::ffi::c_ulong);
+    pub fn do_el1_mops(regs: *mut pt_regs, esr: ::kernel::ffi::c_ulong);
+    pub fn do_serror(regs: *mut pt_regs, esr: ::kernel::ffi::c_ulong);
+    pub fn panic_bad_stack(regs: *mut pt_regs, esr: ::kernel::ffi::c_ulong, far: ::kernel::ffi::c_ulong) -> !;
 }
 
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
 #[inline]
-pub unsafe fn do_breakpoint(_esr: ::core::ffi::c_ulong, _regs: *mut pt_regs) {}
+pub unsafe fn do_breakpoint(_esr: ::kernel::ffi::c_ulong, _regs: *mut pt_regs) {}
 
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
 #[inline]
 pub unsafe fn do_watchpoint(
-    _addr: ::core::ffi::c_ulong,
-    _esr: ::core::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
+    _esr: ::kernel::ffi::c_ulong,
     _regs: *mut pt_regs,
 ) {}
 

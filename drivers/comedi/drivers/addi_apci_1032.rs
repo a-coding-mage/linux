@@ -34,7 +34,7 @@ pub const APCI1032_CTRL_INT_ENA: u32 = 1 << 2;
 
 #[repr(C)]
 pub struct apci1032_private {
-    pub amcc_iobase: libc::c_ulong,
+    pub amcc_iobase: kernel::ffi::c_ulong,
     pub mode1: u32,
     pub mode2: u32,
     pub ctrl: u32,
@@ -113,7 +113,7 @@ unsafe fn apci1032_cos_cmd(dev: *mut comedi_device, _s: *mut comedi_subdevice) -
 
 unsafe fn apci1032_cos_cancel(dev: *mut comedi_device, _s: *mut comedi_subdevice) -> i32 { apci1032_reset(dev) }
 
-unsafe extern "C" fn apci1032_interrupt(_irq: i32, d: *mut libc::c_void) -> irqreturn_t {
+unsafe extern "C" fn apci1032_interrupt(_irq: i32, d: *mut kernel::ffi::c_void) -> irqreturn_t {
     let dev = d as *mut comedi_device;
     let p = (*dev).private as *mut apci1032_private;
     let s = (*dev).read_subdev;
@@ -136,14 +136,14 @@ unsafe fn apci1032_di_insn_bits(dev: *mut comedi_device, _s: *mut comedi_subdevi
 // Remaining PCI registration and subdevice initialization are represented by
 // the corresponding external kernel/comedi declarations and retain the C
 // driver's externally visible interfaces.
-unsafe fn apci1032_auto_attach(dev: *mut comedi_device, _context_unused: libc::c_ulong) -> i32 {
+unsafe fn apci1032_auto_attach(dev: *mut comedi_device, _context_unused: kernel::ffi::c_ulong) -> i32 {
     let pcidev = comedi_to_pci_dev(dev);
     let p = comedi_alloc_devpriv(dev, core::mem::size_of::<apci1032_private>()) as *mut apci1032_private;
     if p.is_null() { return -ENOMEM; }
     let mut ret = comedi_pci_enable(dev); if ret != 0 { return ret; }
     (*p).amcc_iobase = pci_resource_start(pcidev, 0);
     (*dev).iobase = pci_resource_start(pcidev, 1); apci1032_reset(dev);
-    if (*pcidev).irq > 0 { ret = request_irq((*pcidev).irq, apci1032_interrupt, IRQF_SHARED, (*dev).board_name, dev as *mut libc::c_void); if ret == 0 { (*dev).irq = (*pcidev).irq; } }
+    if (*pcidev).irq > 0 { ret = request_irq((*pcidev).irq, apci1032_interrupt, IRQF_SHARED, (*dev).board_name, dev as *mut kernel::ffi::c_void); if ret == 0 { (*dev).irq = (*pcidev).irq; } }
     ret = comedi_alloc_subdevices(dev, 2); if ret != 0 { return ret; }
     let s = (*dev).subdevices;
     (*s).type_ = COMEDI_SUBD_DI; (*s).subdev_flags = SDF_READABLE; (*s).n_chan = 32; (*s).maxdata = 1; (*s).range_table = &range_digital; (*s).insn_bits = Some(apci1032_di_insn_bits);

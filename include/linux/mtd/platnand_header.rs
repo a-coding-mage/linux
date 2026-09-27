@@ -23,14 +23,14 @@
  */
 #[repr(C)]
 pub struct platform_nand_chip {
-    pub nr_chips: ::core::ffi::c_int,
-    pub chip_offset: ::core::ffi::c_int,
-    pub nr_partitions: ::core::ffi::c_int,
+    pub nr_chips: ::kernel::ffi::c_int,
+    pub chip_offset: ::kernel::ffi::c_int,
+    pub nr_partitions: ::kernel::ffi::c_int,
     pub partitions: *mut mtd_partition,
-    pub chip_delay: ::core::ffi::c_int,
-    pub options: ::core::ffi::c_uint,
-    pub bbt_options: ::core::ffi::c_uint,
-    pub part_probe_types: *const *const ::core::ffi::c_char,
+    pub chip_delay: ::kernel::ffi::c_int,
+    pub options: ::kernel::ffi::c_uint,
+    pub bbt_options: ::kernel::ffi::c_uint,
+    pub part_probe_types: *const *const ::kernel::ffi::c_char,
 }
 
 /**
@@ -49,26 +49,26 @@ pub struct platform_nand_chip {
  */
 #[repr(C)]
 pub struct platform_nand_ctrl {
-    pub probe: Option<unsafe extern "C" fn(pdev: *mut platform_device) -> ::core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(pdev: *mut platform_device) -> ::kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(pdev: *mut platform_device)>,
-    pub dev_ready: Option<unsafe extern "C" fn(chip: *mut nand_chip) -> ::core::ffi::c_int>,
-    pub select_chip: Option<unsafe extern "C" fn(chip: *mut nand_chip, cs: ::core::ffi::c_int)>,
+    pub dev_ready: Option<unsafe extern "C" fn(chip: *mut nand_chip) -> ::kernel::ffi::c_int>,
+    pub select_chip: Option<unsafe extern "C" fn(chip: *mut nand_chip, cs: ::kernel::ffi::c_int)>,
     pub cmd_ctrl: Option<unsafe extern "C" fn(
         chip: *mut nand_chip,
-        dat: ::core::ffi::c_int,
-        ctrl: ::core::ffi::c_uint,
+        dat: ::kernel::ffi::c_int,
+        ctrl: ::kernel::ffi::c_uint,
     )>,
     pub write_buf: Option<unsafe extern "C" fn(
         chip: *mut nand_chip,
         buf: *const u8,
-        len: ::core::ffi::c_int,
+        len: ::kernel::ffi::c_int,
     )>,
     pub read_buf: Option<unsafe extern "C" fn(
         chip: *mut nand_chip,
         buf: *mut u8,
-        len: ::core::ffi::c_int,
+        len: ::kernel::ffi::c_int,
     )>,
-    pub priv_: *mut ::core::ffi::c_void,
+    pub priv_: *mut ::kernel::ffi::c_void,
 }
 
 /**

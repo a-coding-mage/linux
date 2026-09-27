@@ -1390,7 +1390,7 @@ struct btrfs_trans_handle *btrfs_start_trans_remove_block_group(
 {
 	struct btrfs_root *root = btrfs_block_group_root(fs_info);
 	struct btrfs_chunk_map *map;
-	core::ffi::c_uint num_items;
+	kernel::ffi::c_uint num_items;
 
 	if (unlikely(!root)) {
 		btrfs_err(fs_info, #"#missing block group root#"#);
@@ -2080,7 +2080,7 @@ static int btrfs_reclaim_block_group(btrfs_block_group *bg, int *reclaimed)
 	return ret;
 }
 
-void btrfs_reclaim_block_groups(btrfs_fs_info *fs_info, limit: core::ffi::c_uint)
+void btrfs_reclaim_block_groups(btrfs_fs_info *fs_info, limit: kernel::ffi::c_uint)
 {
 	struct btrfs_block_group *bg;
 	struct btrfs_space_info *space_info;
@@ -3283,7 +3283,7 @@ static int update_block_group_item(btrfs_trans_handle *trans,
 	struct btrfs_fs_info *fs_info = trans->fs_info;
 	int ret;
 	struct btrfs_root *root = btrfs_block_group_root(fs_info);
-	core::ffi::c_ulong bi;
+	kernel::ffi::c_ulong bi;
 	struct extent_buffer *leaf;
 	struct btrfs_block_group_item_v2 bgi;
 	struct btrfs_key key;

@@ -17,14 +17,14 @@ static mut ftrace_graph_enable: bool = false;
 
 #[cfg(CONFIG_FUNCTION_GRAPH_TRACER)]
 #[inline(never)]
-unsafe fn prepare_ftrace_return(parent: *mut libc::c_ulong, self_addr: libc::c_ulong) {
+unsafe fn prepare_ftrace_return(parent: *mut kernel::ffi::c_ulong, self_addr: kernel::ffi::c_ulong) {
     extern "C" {
-        static mut current: *mut libc::c_void;
-        static parisc_return_to_handler: libc::c_int;
+        static mut current: *mut kernel::ffi::c_void;
+        static parisc_return_to_handler: kernel::ffi::c_int;
         fn ftrace_graph_is_dead() -> bool;
-        fn atomic_read(v: *const libc::c_int) -> libc::c_int;
-        fn function_graph_enter(old: libc::c_ulong, self_addr: libc::c_ulong,
-                                depth: libc::c_int, data: *mut libc::c_void) -> bool;
+        fn atomic_read(v: *const kernel::ffi::c_int) -> kernel::ffi::c_int;
+        fn function_graph_enter(old: kernel::ffi::c_ulong, self_addr: kernel::ffi::c_ulong,
+                                depth: kernel::ffi::c_int, data: *mut kernel::ffi::c_void) -> bool;
     }
 
     if ftrace_graph_is_dead() {
@@ -35,17 +35,17 @@ unsafe fn prepare_ftrace_return(parent: *mut libc::c_ulong, self_addr: libc::c_u
     let _ = atomic_read;
     let old = *parent;
     if !function_graph_enter(old, self_addr, 0, core::ptr::null_mut()) {
-        *parent = (&parisc_return_to_handler as *const _ as libc::c_ulong);
+        *parent = (&parisc_return_to_handler as *const _ as kernel::ffi::c_ulong);
     }
 }
 
-static mut ftrace_func: Option<unsafe extern "C" fn(libc::c_ulong, libc::c_ulong,
+static mut ftrace_func: Option<unsafe extern "C" fn(kernel::ffi::c_ulong, kernel::ffi::c_ulong,
                                                       *mut ftrace_ops, *mut ftrace_regs)> = None;
 
 unsafe extern "C" fn ftrace_function_trampoline(
-    parent: libc::c_ulong,
-    self_addr: libc::c_ulong,
-    org_sp_gr3: libc::c_ulong,
+    parent: kernel::ffi::c_ulong,
+    self_addr: kernel::ffi::c_ulong,
+    org_sp_gr3: kernel::ffi::c_ulong,
     fregs: *mut ftrace_regs,
 ) {
     extern "C" {
@@ -59,7 +59,7 @@ unsafe extern "C" fn ftrace_function_trampoline(
     #[cfg(CONFIG_FUNCTION_GRAPH_TRACER)]
     {
         if ftrace_graph_enable {
-            let parent_rp = (org_sp_gr3.wrapping_sub(RP_OFFSET)) as *mut libc::c_ulong;
+            let parent_rp = (org_sp_gr3.wrapping_sub(RP_OFFSET)) as *mut kernel::ffi::c_ulong;
             if *parent_rp != parent {
                 return;
             }
@@ -70,43 +70,43 @@ unsafe extern "C" fn ftrace_function_trampoline(
 }
 
 #[cfg(all(CONFIG_DYNAMIC_FTRACE, CONFIG_FUNCTION_GRAPH_TRACER))]
-unsafe extern "C" fn ftrace_enable_ftrace_graph_caller() -> libc::c_int {
+unsafe extern "C" fn ftrace_enable_ftrace_graph_caller() -> kernel::ffi::c_int {
     ftrace_graph_enable = true;
     0
 }
 
 #[cfg(all(CONFIG_DYNAMIC_FTRACE, CONFIG_FUNCTION_GRAPH_TRACER))]
-unsafe extern "C" fn ftrace_disable_ftrace_graph_caller() -> libc::c_int {
+unsafe extern "C" fn ftrace_disable_ftrace_graph_caller() -> kernel::ffi::c_int {
     ftrace_graph_enable = false;
     0
 }
 
 #[cfg(CONFIG_DYNAMIC_FTRACE)]
-unsafe extern "C" fn ftrace_update_ftrace_func(func: ftrace_func_t) -> libc::c_int {
+unsafe extern "C" fn ftrace_update_ftrace_func(func: ftrace_func_t) -> kernel::ffi::c_int {
     ftrace_func = Some(func);
     0
 }
 
 #[cfg(CONFIG_DYNAMIC_FTRACE)]
-unsafe extern "C" fn ftrace_modify_call(_rec: *mut dyn_ftrace, _old_addr: libc::c_ulong,
-                                         _addr: libc::c_ulong) -> libc::c_int { 0 }
+unsafe extern "C" fn ftrace_modify_call(_rec: *mut dyn_ftrace, _old_addr: kernel::ffi::c_ulong,
+                                         _addr: kernel::ffi::c_ulong) -> kernel::ffi::c_int { 0 }
 
 #[cfg(CONFIG_DYNAMIC_FTRACE)]
-unsafe extern "C" fn ftrace_call_adjust(addr: libc::c_ulong) -> libc::c_ulong {
+unsafe extern "C" fn ftrace_call_adjust(addr: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     addr.wrapping_add((FTRACE_PATCHABLE_FUNCTION_SIZE - 1) * 4)
 }
 
 #[cfg(CONFIG_DYNAMIC_FTRACE)]
-unsafe extern "C" fn ftrace_make_call(rec: *mut dyn_ftrace, addr: libc::c_ulong) -> libc::c_int {
+unsafe extern "C" fn ftrace_make_call(rec: *mut dyn_ftrace, addr: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     extern "C" {
-        fn dereference_function_descriptor(p: *mut libc::c_void) -> *mut libc::c_void;
-        fn copy_from_kernel_nofault(dst: *mut libc::c_void, src: *const libc::c_void, size: usize) -> libc::c_int;
-        fn __patch_text_multiple(ip: *mut libc::c_void, tramp: *const u32, size: usize);
+        fn dereference_function_descriptor(p: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+        fn copy_from_kernel_nofault(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, size: usize) -> kernel::ffi::c_int;
+        fn __patch_text_multiple(ip: *mut kernel::ffi::c_void, tramp: *const u32, size: usize);
     }
     let mut insn = [0u32; FTRACE_PATCHABLE_FUNCTION_SIZE as usize];
     let mut tramp = [0u32; FTRACE_PATCHABLE_FUNCTION_SIZE as usize];
     let size = core::mem::size_of_val(&tramp);
-    let ip = ((*rec).ip.wrapping_add(4).wrapping_sub(size as libc::c_ulong)) as *mut libc::c_void;
+    let ip = ((*rec).ip.wrapping_add(4).wrapping_sub(size as kernel::ffi::c_ulong)) as *mut kernel::ffi::c_void;
     let ret = copy_from_kernel_nofault(insn.as_mut_ptr() as *mut _, ip, size);
     if ret != 0 { return ret; }
     for i in 0..(size / 4) { if insn[i] != INSN_NOP { return -22; } }
@@ -117,21 +117,21 @@ unsafe extern "C" fn ftrace_make_call(rec: *mut dyn_ftrace, addr: libc::c_ulong)
 
 #[cfg(CONFIG_DYNAMIC_FTRACE)]
 unsafe extern "C" fn ftrace_make_nop(_mod: *mut module, rec: *mut dyn_ftrace,
-                                      _addr: libc::c_ulong) -> libc::c_int {
-    extern "C" { fn __patch_text(ip: *mut libc::c_void, insn: u32); fn __patch_text_multiple(ip: *mut libc::c_void, insn: *const u32, size: usize); }
+                                      _addr: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
+    extern "C" { fn __patch_text(ip: *mut kernel::ffi::c_void, insn: u32); fn __patch_text_multiple(ip: *mut kernel::ffi::c_void, insn: *const u32, size: usize); }
     let insn = [INSN_NOP; FTRACE_PATCHABLE_FUNCTION_SIZE as usize];
     __patch_text((*rec).ip as *mut _, INSN_NOP);
-    __patch_text_multiple(((*rec).ip + 4 - core::mem::size_of_val(&insn) as libc::c_ulong) as *mut _, insn.as_ptr(), core::mem::size_of_val(&insn) - 4);
+    __patch_text_multiple(((*rec).ip + 4 - core::mem::size_of_val(&insn) as kernel::ffi::c_ulong) as *mut _, insn.as_ptr(), core::mem::size_of_val(&insn) - 4);
     0
 }
 
 #[cfg(CONFIG_KPROBES_ON_FTRACE)]
-unsafe extern "C" fn kprobe_ftrace_handler(_ip: libc::c_ulong, _parent_ip: libc::c_ulong,
+unsafe extern "C" fn kprobe_ftrace_handler(_ip: kernel::ffi::c_ulong, _parent_ip: kernel::ffi::c_ulong,
                                             _ops: *mut ftrace_ops, fregs: *mut ftrace_regs) {
     extern "C" {
         static mut kprobe_ftrace_disabled: bool;
-        fn ftrace_test_recursion_trylock(ip: libc::c_ulong, parent: libc::c_ulong) -> libc::c_int;
-        fn ftrace_test_recursion_unlock(bit: libc::c_int);
+        fn ftrace_test_recursion_trylock(ip: kernel::ffi::c_ulong, parent: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+        fn ftrace_test_recursion_unlock(bit: kernel::ffi::c_int);
         fn ftrace_get_regs(fregs: *mut ftrace_regs) -> *mut pt_regs;
         fn get_kprobe(addr: *mut kprobe_opcode_t) -> *mut kprobe;
         fn kprobe_disabled(p: *mut kprobe) -> bool;
@@ -140,8 +140,8 @@ unsafe extern "C" fn kprobe_ftrace_handler(_ip: libc::c_ulong, _parent_ip: libc:
         fn get_kprobe_ctlblk() -> *mut kprobe_ctlblk;
         static mut current_kprobe: *mut kprobe;
     }
-const KPROBE_HIT_ACTIVE: libc::c_int;
-const KPROBE_HIT_SSDONE: libc::c_int;
+const KPROBE_HIT_ACTIVE: kernel::ffi::c_int;
+const KPROBE_HIT_SSDONE: kernel::ffi::c_int;
     if kprobe_ftrace_disabled { return; }
     let bit = ftrace_test_recursion_trylock(_ip, _parent_ip);
     if bit < 0 { return; }
@@ -171,7 +171,7 @@ const KPROBE_HIT_SSDONE: libc::c_int;
 }
 
 #[cfg(CONFIG_KPROBES_ON_FTRACE)]
-unsafe extern "C" fn arch_prepare_kprobe_ftrace(p: *mut kprobe) -> libc::c_int {
+unsafe extern "C" fn arch_prepare_kprobe_ftrace(p: *mut kprobe) -> kernel::ffi::c_int {
     (*p).ainsn.insn = core::ptr::null_mut();
     0
 }

@@ -24,9 +24,9 @@ pub struct debug_info {
 #[repr(C)]
 pub struct thread_struct {
     /* fault info */
-    pub address: ::core::ffi::c_ulong,
-    pub trap_no: ::core::ffi::c_ulong,
-    pub error_code: ::core::ffi::c_ulong,
+    pub address: ::kernel::ffi::c_ulong,
+    pub trap_no: ::kernel::ffi::c_ulong,
+    pub error_code: ::kernel::ffi::c_ulong,
     /* debugging */
     pub debug: debug_info,
 }
@@ -35,8 +35,8 @@ pub struct thread_struct {
  * hardened usercopy whitelist is needed. */
 #[inline]
 pub unsafe fn arch_thread_struct_whitelist(
-    offset: *mut ::core::ffi::c_ulong,
-    size: *mut ::core::ffi::c_ulong,
+    offset: *mut ::kernel::ffi::c_ulong,
+    size: *mut ::kernel::ffi::c_ulong,
 ) {
     *offset = 0;
     *size = 0;
@@ -49,9 +49,9 @@ macro_rules! INIT_THREAD { () => { thread_struct { address: 0, trap_no: 0, error
  * arguments and surrounding kernel state are supplied by dependent headers. */
 macro_rules! start_thread {
     ($regs:expr, $pc:expr, $sp:expr) => {{
-        let mut r7: ::core::ffi::c_ulong = 0;
-        let mut r8: ::core::ffi::c_ulong = 0;
-        let mut r9: ::core::ffi::c_ulong = 0;
+        let mut r7: ::kernel::ffi::c_ulong = 0;
+        let mut r8: ::kernel::ffi::c_ulong = 0;
+        let mut r9: ::kernel::ffi::c_ulong = 0;
         if cfg!(CONFIG_BINFMT_ELF_FDPIC) {
             r7 = $regs.ARM_r7;
             r8 = $regs.ARM_r8;
@@ -79,7 +79,7 @@ macro_rules! start_thread {
 
 /* Forward declaration, a strange C thing. */
 pub struct task_struct;
-extern "C" { pub fn __get_wchan(p: *mut task_struct) -> ::core::ffi::c_ulong; }
+extern "C" { pub fn __get_wchan(p: *mut task_struct) -> ::kernel::ffi::c_ulong; }
 
 macro_rules! task_pt_regs { ($p:expr) => { ((THREAD_START_SP + task_stack_page($p)) as *mut pt_regs).offset(-1) }; }
 macro_rules! KSTK_EIP { ($tsk:expr) => { (*task_pt_regs!($tsk)).ARM_pc }; }
@@ -94,13 +94,13 @@ macro_rules! __ALT_SMP_ASM { ($smp:expr, $up:expr) => { $up }; }
 /* Prefetching support is available only for ARMv5 and later. */
 #[cfg(any(feature = "ARM_ARCH_5", feature = "ARM_ARCH_6", feature = "ARM_ARCH_7"))]
 #[inline]
-pub unsafe fn prefetch(ptr: *const ::core::ffi::c_void) {
+pub unsafe fn prefetch(ptr: *const ::kernel::ffi::c_void) {
     core::arch::asm!("pld {0}", in(reg) ptr, options(nostack));
 }
 
 #[cfg(all(feature = "ARM_ARCH_7", CONFIG_SMP))]
 #[inline]
-pub unsafe fn prefetchw(ptr: *const ::core::ffi::c_void) {
+pub unsafe fn prefetchw(ptr: *const ::kernel::ffi::c_void) {
     core::arch::asm!("pldw {0}", in(reg) ptr, options(nostack));
 }
 

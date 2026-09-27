@@ -10,29 +10,29 @@ struct stedma40_platform_data {
 	int				 num_of_memcpy_chans;
 	int				 num_of_phy_chans;
 };
-const D40_NAME: _ = "dma40";
-const D40_PHY_CHAN: _ = -1;
+const D40_NAME: u32 = "dma40";
+const D40_PHY_CHAN: u32 = -1;
 
 
 #define D40_CHAN_POS(chan)  (2 * (chan / 2))
 #define D40_CHAN_POS_MASK(chan) (0x3 << D40_CHAN_POS(chan))
-const D40_SUSPEND_MAX_IT: _ = 500;
-const DMA40_AUTOSUSPEND_DELAY: _ = 100;
-const LCLA_ALIGNMENT: _ = 0x40000;
-const D40_LCLA_LINK_PER_EVENT_GRP: _ = 128;
-const D40_LCLA_END: _ = D40_LCLA_LINK_PER_EVENT_GRP;
-const D40_MAX_LOG_CHAN_PER_PHY: _ = 32;
-const MAX_LCLA_ALLOC_ATTEMPTS: _ = 256;
-const D40_ALLOC_FREE: _ = (1 << (31));
-const D40_ALLOC_PHY: _ = (1 << (30));
-const D40_ALLOC_LOG_FREE: _ = 0;
-const D40_MEMCPY_MAX_CHANS: _ = 8;
-const DB8500_DMA_MEMCPY_EV_0: _ = 51;
-const DB8500_DMA_MEMCPY_EV_1: _ = 56;
-const DB8500_DMA_MEMCPY_EV_2: _ = 57;
-const DB8500_DMA_MEMCPY_EV_3: _ = 58;
-const DB8500_DMA_MEMCPY_EV_4: _ = 59;
-const DB8500_DMA_MEMCPY_EV_5: _ = 60;
+const D40_SUSPEND_MAX_IT: u32 = 500;
+const DMA40_AUTOSUSPEND_DELAY: u32 = 100;
+const LCLA_ALIGNMENT: u32 = 0x40000;
+const D40_LCLA_LINK_PER_EVENT_GRP: u32 = 128;
+const D40_LCLA_END: u32 = D40_LCLA_LINK_PER_EVENT_GRP;
+const D40_MAX_LOG_CHAN_PER_PHY: u32 = 32;
+const MAX_LCLA_ALLOC_ATTEMPTS: u32 = 256;
+const D40_ALLOC_FREE: u32 = (1 << (31));
+const D40_ALLOC_PHY: u32 = (1 << (30));
+const D40_ALLOC_LOG_FREE: u32 = 0;
+const D40_MEMCPY_MAX_CHANS: u32 = 8;
+const DB8500_DMA_MEMCPY_EV_0: u32 = 51;
+const DB8500_DMA_MEMCPY_EV_1: u32 = 56;
+const DB8500_DMA_MEMCPY_EV_2: u32 = 57;
+const DB8500_DMA_MEMCPY_EV_3: u32 = 58;
+const DB8500_DMA_MEMCPY_EV_4: u32 = 59;
+const DB8500_DMA_MEMCPY_EV_5: u32 = 60;
 
 int dma40_memcpy_channels[] = {
 	DB8500_DMA_MEMCPY_EV_0,
@@ -101,7 +101,7 @@ u32 d40_backup_regs[] = {
 	D40_DREG_PRMOE,
 	D40_DREG_PRMOO,
 };
-const BACKUP_REGS_SZ: _ = (d40_backup_regs.len());
+const BACKUP_REGS_SZ: u32 = (d40_backup_regs.len());
 
 
 u32 d40_backup_regs_v4a[] = {
@@ -122,7 +122,7 @@ u32 d40_backup_regs_v4a[] = {
 	D40_DREG_RCEG3,
 	D40_DREG_RCEG4,
 };
-const BACKUP_REGS_SZ_V4A: _ = (d40_backup_regs_v4a.len());
+const BACKUP_REGS_SZ_V4A: u32 = (d40_backup_regs_v4a.len());
 
 u32 d40_backup_regs_v4b[] = {
 	D40_DREG_CPSEG1,
@@ -146,7 +146,7 @@ u32 d40_backup_regs_v4b[] = {
 	D40_DREG_CRCEG4,
 	D40_DREG_CRCEG5,
 };
-const BACKUP_REGS_SZ_V4B: _ = (d40_backup_regs_v4b.len());
+const BACKUP_REGS_SZ_V4B: u32 = (d40_backup_regs_v4b.len());
 
 u32 d40_backup_regs_chan[] = {
 	D40_CHAN_REG_SSCFG,
@@ -158,7 +158,7 @@ u32 d40_backup_regs_chan[] = {
 	D40_CHAN_REG_SDPTR,
 	D40_CHAN_REG_SDLNK,
 };
-const BACKUP_REGS_SZ_MAX: _ = ((BACKUP_REGS_SZ_V4A > BACKUP_REGS_SZ_V4B) ? \;
+const BACKUP_REGS_SZ_MAX: u32 = ((BACKUP_REGS_SZ_V4A > BACKUP_REGS_SZ_V4B) ? \;
 			     BACKUP_REGS_SZ_V4A : BACKUP_REGS_SZ_V4B)
 
 
@@ -202,8 +202,8 @@ struct d40_interrupt_lookup il_v4b[] = {
 
 #[repr(C)]
 struct d40_reg_val {
-	core::ffi::c_uint reg;
-	core::ffi::c_uint val;
+	kernel::ffi::c_uint reg;
+	kernel::ffi::c_uint val;
 };
 
 struct d40_reg_val dma_init_reg_v4a[] = {
@@ -485,7 +485,7 @@ unsafe fn d40_pool_lli_free(d40_chan *d40c, d40_desc *d40d)
 unsafe fn d40_lcla_alloc_one(d40_chan *d40c,
 			      d40_desc *d40d)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int i;
 	int ret = -EINVAL;
 
@@ -513,7 +513,7 @@ unsafe fn d40_lcla_alloc_one(d40_chan *d40c,
 unsafe fn d40_lcla_free_all(d40_chan *d40c,
 			     d40_desc *d40d)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int i;
 	int ret = -EINVAL;
 
@@ -638,7 +638,7 @@ unsafe fn d40_log_lli_to_lcxa(d40_chan *chan, d40_desc *desc)
 
 	
 	if (!linkback || curr_lcla == -EINVAL) {
-		core::ffi::c_uint flags = 0;
+		kernel::ffi::c_uint flags = 0;
 
 		if (curr_lcla == -EINVAL)
 			flags |= LLI_TERM_INT;
@@ -655,10 +655,10 @@ unsafe fn d40_log_lli_to_lcxa(d40_chan *chan, d40_desc *desc)
 		break 'set_current;
 
 	for (; lli_current < lli_len; lli_current++) {
-		core::ffi::c_uint lcla_offset = chan.phy_chan.num * 1024 +
+		kernel::ffi::c_uint lcla_offset = chan.phy_chan.num * 1024 +
 					   8 * curr_lcla * 2;
 		struct d40_log_lli *lcla = pool.base + lcla_offset;
-		core::ffi::c_uint flags = 0;
+		kernel::ffi::c_uint flags = 0;
 		int next_lcla;
 
 		if (lli_current + 1 < lli_len)
@@ -803,7 +803,7 @@ unsafe fn __d40_execute_command_phy(d40_chan *d40c,
 	int i;
 	void  *active_reg;
 	int ret = 0;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u32 wmask;
 
 	if (command == D40_DMA_STOP) {
@@ -1020,7 +1020,7 @@ u32 d40_chan_has_events(d40_chan *d40c)
 
 unsafe fn __d40_execute_command_log(d40_chan *d40c, d40_command command)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int ret = 0;
 	u32 active_status;
 	void  *active_reg;
@@ -1077,7 +1077,7 @@ unsafe fn d40_channel_execute_command(d40_chan *d40c,
 
 u32 d40_get_prmo(d40_chan *d40c)
 {
-	const core::ffi::c_uint phy_map[] = {
+	const kernel::ffi::c_uint phy_map[] = {
 		[STEDMA40_PCHAN_BASIC_MODE]
 			= D40_DREG_PRMO_PCHAN_BASIC,
 		[STEDMA40_PCHAN_MODULO_MODE]
@@ -1085,7 +1085,7 @@ u32 d40_get_prmo(d40_chan *d40c)
 		[STEDMA40_PCHAN_DOUBLE_DST_MODE]
 			= D40_DREG_PRMO_PCHAN_DOUBLE_DST,
 	};
-	const core::ffi::c_uint log_map[] = {
+	const kernel::ffi::c_uint log_map[] = {
 		[STEDMA40_LCHAN_SRC_PHY_DST_LOG]
 			= D40_DREG_PRMO_LCHAN_SRC_PHY_DST_LOG,
 		[STEDMA40_LCHAN_SRC_LOG_DST_PHY]
@@ -1169,7 +1169,7 @@ unsafe fn d40_pause(dma_chan *chan)
 {
 	struct d40_chan *d40c = container_of(chan, d40_chan, chan);
 	int res = 0;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	if (d40c.phy_chan == core::ptr::null_mut()) {
 		chan_err(d40c, "Channel is not allocated!\n");
@@ -1193,7 +1193,7 @@ unsafe fn d40_resume(dma_chan *chan)
 {
 	struct d40_chan *d40c = container_of(chan, d40_chan, chan);
 	int res = 0;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	if (d40c.phy_chan == core::ptr::null_mut()) {
 		chan_err(d40c, "Channel is not allocated!\n");
@@ -1221,7 +1221,7 @@ dma_cookie_t d40_tx_submit(dma_async_tx_descriptor *tx)
 					     d40_chan,
 					     chan);
 	struct d40_desc *d40d = container_of(tx, d40_desc, txd);
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	dma_cookie_t cookie;
 
 	spin_lock_irqsave(&d40c.lock, flags);
@@ -1323,7 +1323,7 @@ unsafe fn dma_tasklet(tasklet_struct *t)
 	'check_pending_tx: {
 	struct d40_chan *d40c = from_tasklet(d40c, t, tasklet);
 	struct d40_desc *d40d;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	bool callback_active;
 	struct dmaengine_desc_callback cb;
 
@@ -1402,7 +1402,7 @@ irqreturn_t d40_handle_interrupt(int irq, void *data)
 
 	for (;;) {
 
-		chan = find_next_bit((core::ffi::c_ulong *)regs,
+		chan = find_next_bit((kernel::ffi::c_ulong *)regs,
 				     BITS_PER_LONG * il_size, chan + 1);
 
 		
@@ -1484,7 +1484,7 @@ bool d40_alloc_mask_set(d40_phy_res *phy,
 {
 	'found_unlock: {
 	'not_found_unlock: {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	spin_lock_irqsave(&phy.lock, flags);
 
 	*first_user = ((phy.allocated_src | phy.allocated_dst)
@@ -1540,7 +1540,7 @@ bool d40_alloc_mask_free(d40_phy_res *phy, is_src: bool,
 			       int log_event_line)
 {
 	'unlock: {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	bool is_free = false;
 
 	spin_lock_irqsave(&phy.lock, flags);
@@ -1805,7 +1805,7 @@ bool d40_is_paused(d40_chan *d40c)
 	'unlock: {
 	void  *chanbase = chan_base(d40c);
 	bool is_paused = false;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	void  *active_reg;
 	u32 status;
 	u32 event = D40_TYPE_TO_EVENT(d40c.dma_cfg.dev_type);
@@ -1853,7 +1853,7 @@ u32 stedma40_residue(dma_chan *chan)
 	struct d40_chan *d40c =
 		container_of(chan, d40_chan, chan);
 	u32 bytes_left;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave(&d40c.lock, flags);
 	bytes_left = d40_residue(d40c);
@@ -1864,7 +1864,7 @@ u32 stedma40_residue(dma_chan *chan)
 
 unsafe fn d40_prep_sg_log(d40_chan *chan, d40_desc *desc,
 		scatterlist *sg_src, scatterlist *sg_dst,
-		sg_len: core::ffi::c_uint, dma_addr_t src_dev_addr,
+		sg_len: kernel::ffi::c_uint, dma_addr_t src_dev_addr,
 		dma_addr_t dst_dev_addr)
 {
 	struct stedma40_chan_cfg *cfg = &chan.dma_cfg;
@@ -1891,13 +1891,13 @@ unsafe fn d40_prep_sg_log(d40_chan *chan, d40_desc *desc,
 
 unsafe fn d40_prep_sg_phy(d40_chan *chan, d40_desc *desc,
 		scatterlist *sg_src, scatterlist *sg_dst,
-		sg_len: core::ffi::c_uint, dma_addr_t src_dev_addr,
+		sg_len: kernel::ffi::c_uint, dma_addr_t src_dev_addr,
 		dma_addr_t dst_dev_addr)
 {
 	struct stedma40_chan_cfg *cfg = &chan.dma_cfg;
 	struct stedma40_half_channel_info *src_info = &cfg.src_info;
 	struct stedma40_half_channel_info *dst_info = &cfg.dst_info;
-	core::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong flags = 0;
 	int ret;
 
 	if (desc.cyclic)
@@ -1923,7 +1923,7 @@ unsafe fn d40_prep_sg_phy(d40_chan *chan, d40_desc *desc,
 
 struct d40_desc *
 d40_prep_desc(d40_chan *chan, scatterlist *sg,
-	      sg_len: core::ffi::c_uint, dma_flags: core::ffi::c_ulong)
+	      sg_len: kernel::ffi::c_uint, dma_flags: kernel::ffi::c_ulong)
 {
 	'free_desc: {
 	struct stedma40_chan_cfg *cfg;
@@ -1963,8 +1963,8 @@ d40_prep_desc(d40_chan *chan, scatterlist *sg,
 
 struct dma_async_tx_descriptor *
 d40_prep_sg(dma_chan *dchan, scatterlist *sg_src,
-	    scatterlist *sg_dst, sg_len: core::ffi::c_uint,
-	    dma_transfer_direction direction, dma_flags: core::ffi::c_ulong)
+	    scatterlist *sg_dst, sg_len: kernel::ffi::c_uint,
+	    dma_transfer_direction direction, dma_flags: kernel::ffi::c_ulong)
 {
 	'unlock: {
 	'free_desc: {
@@ -1972,7 +1972,7 @@ d40_prep_sg(dma_chan *dchan, scatterlist *sg_src,
 	dma_addr_t src_dev_addr;
 	dma_addr_t dst_dev_addr;
 	struct d40_desc *desc;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int ret;
 
 	if (!chan.phy_chan) {
@@ -2139,7 +2139,7 @@ unsafe fn d40_alloc_chan_resources(dma_chan *chan)
 {
 	'mark_last_busy: {
 	int err;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	struct d40_chan *d40c =
 		container_of(chan, d40_chan, chan);
 	bool is_free_phy;
@@ -2202,7 +2202,7 @@ unsafe fn d40_free_chan_resources(dma_chan *chan)
 	struct d40_chan *d40c =
 		container_of(chan, d40_chan, chan);
 	int err;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	if (d40c.phy_chan == core::ptr::null_mut()) {
 		chan_err(d40c, "Cannot free unallocated channel\n");
@@ -2222,7 +2222,7 @@ struct dma_async_tx_descriptor *d40_prep_memcpy(dma_chan *chan,
 						       dma_addr_t dst,
 						       dma_addr_t src,
 						       size_t size,
-						       dma_flags: core::ffi::c_ulong)
+						       dma_flags: kernel::ffi::c_ulong)
 {
 	struct scatterlist dst_sg;
 	struct scatterlist src_sg;
@@ -2242,8 +2242,8 @@ struct dma_async_tx_descriptor *d40_prep_memcpy(dma_chan *chan,
 
 struct dma_async_tx_descriptor *
 d40_prep_slave_sg(dma_chan *chan, scatterlist *sgl,
-		  sg_len: core::ffi::c_uint, dma_transfer_direction direction,
-		  dma_flags: core::ffi::c_ulong, void *context)
+		  sg_len: kernel::ffi::c_uint, dma_transfer_direction direction,
+		  dma_flags: kernel::ffi::c_ulong, void *context)
 {
 	if (!is_slave_direction(direction))
 		return core::ptr::null_mut();
@@ -2254,9 +2254,9 @@ d40_prep_slave_sg(dma_chan *chan, scatterlist *sgl,
 struct dma_async_tx_descriptor *
 dma40_prep_dma_cyclic(dma_chan *chan, dma_addr_t dma_addr,
 		     size_t buf_len, size_t period_len,
-		     dma_transfer_direction direction, flags: core::ffi::c_ulong)
+		     dma_transfer_direction direction, flags: kernel::ffi::c_ulong)
 {
-	core::ffi::c_uint periods = buf_len / period_len;
+	kernel::ffi::c_uint periods = buf_len / period_len;
 	struct dma_async_tx_descriptor *txd;
 	struct scatterlist *sg;
 	int i;
@@ -2308,7 +2308,7 @@ enum dma_status d40_tx_status(dma_chan *chan,
 unsafe fn d40_issue_pending(dma_chan *chan)
 {
 	struct d40_chan *d40c = container_of(chan, d40_chan, chan);
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	if (d40c.phy_chan == core::ptr::null_mut()) {
 		chan_err(d40c, "Channel is not allocated!\n");
@@ -2328,7 +2328,7 @@ unsafe fn d40_issue_pending(dma_chan *chan)
 
 unsafe fn d40_terminate_all(dma_chan *chan)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	struct d40_chan *d40c = container_of(chan, d40_chan, chan);
 	int ret;
 
@@ -3094,7 +3094,7 @@ int  d40_lcla_allocate(d40_base *base)
 {
 	'free_page_list: {
 	struct d40_lcla_pool *pool = &base.lcla_pool;
-	core::ffi::c_ulong *page_list;
+	kernel::ffi::c_ulong *page_list;
 	int i, j;
 	int ret;
 
@@ -3383,7 +3383,7 @@ int  d40_probe(platform_device *pdev)
 				 DMA_TO_DEVICE);
 
 	if (!base.lcla_pool.base_unaligned && base.lcla_pool.base)
-		free_pages((core::ffi::c_ulong)base.lcla_pool.base,
+		free_pages((kernel::ffi::c_ulong)base.lcla_pool.base,
 			   base.lcla_pool.pages);
 
 	kfree(base.lcla_pool.base_unaligned);

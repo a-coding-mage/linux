@@ -33,11 +33,11 @@ pub union zcomp_params__bindgen_ty_1 {
 
 #[repr(C)]
 pub struct zcomp_params {
-    pub dict: *mut core::ffi::c_void,
+    pub dict: *mut kernel::ffi::c_void,
     pub dict_sz: usize,
     pub level: i32,
     pub __bindgen_anon_1: zcomp_params__bindgen_ty_1,
-    pub drv_data: *mut core::ffi::c_void,
+    pub drv_data: *mut kernel::ffi::c_void,
 }
 
 /*
@@ -47,16 +47,16 @@ pub struct zcomp_params {
  */
 #[repr(C)]
 pub struct zcomp_ctx {
-    pub context: *mut core::ffi::c_void,
+    pub context: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct zcomp_strm {
     pub lock: mutex,
     /* compression buffer */
-    pub buffer: *mut core::ffi::c_void,
+    pub buffer: *mut kernel::ffi::c_void,
     /* local copy of handle memory */
-    pub local_copy: *mut core::ffi::c_void,
+    pub local_copy: *mut kernel::ffi::c_void,
     pub ctx: zcomp_ctx,
 }
 
@@ -87,7 +87,7 @@ pub struct zcomp_ops {
     pub destroy_ctx: Option<unsafe extern "C" fn(ctx: *mut zcomp_ctx)>,
     pub setup_params: Option<unsafe extern "C" fn(params: *mut zcomp_params) -> i32>,
     pub release_params: Option<unsafe extern "C" fn(params: *mut zcomp_params)>,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 /* dynamic per-device compression frontend */
@@ -102,13 +102,13 @@ pub struct zcomp {
 extern "C" {
     pub fn zcomp_cpu_up_prepare(cpu: u32, node: *mut hlist_node) -> i32;
     pub fn zcomp_cpu_dead(cpu: u32, node: *mut hlist_node) -> i32;
-    pub fn zcomp_available_show(comp: *const core::ffi::c_char,
-                                buf: *mut core::ffi::c_char,
+    pub fn zcomp_available_show(comp: *const kernel::ffi::c_char,
+                                buf: *mut kernel::ffi::c_char,
                                 at: isize) -> isize;
-    pub fn zcomp_lookup_backend_name(comp: *const core::ffi::c_char)
-        -> *const core::ffi::c_char;
+    pub fn zcomp_lookup_backend_name(comp: *const kernel::ffi::c_char)
+        -> *const kernel::ffi::c_char;
 
-    pub fn zcomp_create(alg: *const core::ffi::c_char,
+    pub fn zcomp_create(alg: *const kernel::ffi::c_char,
                         params: *mut zcomp_params) -> *mut zcomp;
     pub fn zcomp_destroy(comp: *mut zcomp);
 
@@ -117,13 +117,13 @@ extern "C" {
 
     pub fn zcomp_compress(comp: *mut zcomp,
                           zstrm: *mut zcomp_strm,
-                          src: *const core::ffi::c_void,
+                          src: *const kernel::ffi::c_void,
                           dst_len: *mut u32) -> i32;
     pub fn zcomp_decompress(comp: *mut zcomp,
                             zstrm: *mut zcomp_strm,
-                            src: *const core::ffi::c_void,
+                            src: *const kernel::ffi::c_void,
                             src_len: u32,
-                            dst: *mut core::ffi::c_void) -> i32;
+                            dst: *mut kernel::ffi::c_void) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

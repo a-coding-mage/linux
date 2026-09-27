@@ -6,8 +6,8 @@
 extern "C" {
     pub fn chrp_nvram_init();
     pub fn chrp_get_rtc_time(time: *mut rtc_time);
-    pub fn chrp_set_rtc_time(time: *mut rtc_time) -> ::core::ffi::c_int;
-    pub fn chrp_time_init() -> ::core::ffi::c_long;
+    pub fn chrp_set_rtc_time(time: *mut rtc_time) -> ::kernel::ffi::c_int;
+    pub fn chrp_time_init() -> ::kernel::ffi::c_long;
 
     pub fn chrp_find_bridges();
 }

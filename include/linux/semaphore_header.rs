@@ -13,12 +13,12 @@
 #[repr(C)]
 pub struct semaphore {
     pub lock: raw_spinlock_t,
-    pub count: core::ffi::c_uint,
+    pub count: kernel::ffi::c_uint,
     pub first_waiter: *mut semaphore_waiter,
 
     // Preserved from CONFIG_DETECT_HUNG_TASK_BLOCKER.
     #[cfg(CONFIG_DETECT_HUNG_TASK_BLOCKER)]
-    pub last_holder: core::ffi::c_ulong,
+    pub last_holder: kernel::ffi::c_ulong,
 }
 
 // Unlike mutexes, binary semaphores do not have an owner, so up() can
@@ -28,7 +28,7 @@ pub struct semaphore {
 
 #[cfg(CONFIG_DETECT_HUNG_TASK_BLOCKER)]
 macro_rules! __LAST_HOLDER_SEMAPHORE_INITIALIZER {
-    () => { last_holder: 0usize as core::ffi::c_ulong };
+    () => { last_holder: 0usize as kernel::ffi::c_ulong };
 }
 
 #[cfg(not(CONFIG_DETECT_HUNG_TASK_BLOCKER))]
@@ -53,7 +53,7 @@ macro_rules! DEFINE_SEMAPHORE {
     };
 }
 
-pub unsafe fn sema_init(sem: *mut semaphore, val: core::ffi::c_int) {
+pub unsafe fn sema_init(sem: *mut semaphore, val: kernel::ffi::c_int) {
     static mut __KEY: lock_class_key = lock_class_key::default();
     *sem = __SEMAPHORE_INITIALIZER!(*sem, val);
     lockdep_init_map(
@@ -66,12 +66,12 @@ pub unsafe fn sema_init(sem: *mut semaphore, val: core::ffi::c_int) {
 
 unsafe extern "C" {
     pub fn down(sem: *mut semaphore);
-    pub fn down_interruptible(sem: *mut semaphore) -> core::ffi::c_int;
-    pub fn down_killable(sem: *mut semaphore) -> core::ffi::c_int;
-    pub fn down_trylock(sem: *mut semaphore) -> core::ffi::c_int;
-    pub fn down_timeout(sem: *mut semaphore, jiffies: core::ffi::c_long) -> core::ffi::c_int;
+    pub fn down_interruptible(sem: *mut semaphore) -> kernel::ffi::c_int;
+    pub fn down_killable(sem: *mut semaphore) -> kernel::ffi::c_int;
+    pub fn down_trylock(sem: *mut semaphore) -> kernel::ffi::c_int;
+    pub fn down_timeout(sem: *mut semaphore, jiffies: kernel::ffi::c_long) -> kernel::ffi::c_int;
     pub fn up(sem: *mut semaphore);
-    pub fn sem_last_holder(sem: *mut semaphore) -> core::ffi::c_ulong;
+    pub fn sem_last_holder(sem: *mut semaphore) -> kernel::ffi::c_ulong;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

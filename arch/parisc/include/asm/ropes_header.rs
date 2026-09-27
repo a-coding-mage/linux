@@ -12,8 +12,8 @@ pub const ROPES_PER_IOC: usize = 8;
 
 #[repr(C)]
 pub struct Ioc {
-    pub ioc_hpa: *mut core::ffi::c_void,
-    pub res_map: *mut core::ffi::c_char,
+    pub ioc_hpa: *mut kernel::ffi::c_void,
+    pub res_map: *mut kernel::ffi::c_char,
     pub pdir_base: *mut __le64,
     pub ibase: c_ulong,
     pub imask: c_ulong,
@@ -64,8 +64,8 @@ pub struct SbaDmaPair {
 pub struct SbaDevice {
     pub next: *mut SbaDevice,
     pub dev: *mut parisc_device,
-    pub name: *const core::ffi::c_char,
-    pub sba_hpa: *mut core::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
+    pub sba_hpa: *mut kernel::ffi::c_void,
     pub sba_lock: spinlock_t,
     pub flags: c_uint,
     pub hw_rev: c_uint,
@@ -147,9 +147,9 @@ pub const SBA_PERF_CNT3: c_uint = 0x210;
 pub struct LbaDevice {
     pub hba: pci_hba_data,
     pub lba_lock: spinlock_t,
-    pub iosapic_obj: *mut core::ffi::c_void,
+    pub iosapic_obj: *mut kernel::ffi::c_void,
     #[cfg(target_pointer_width = "64")]
-    pub iop_base: *mut core::ffi::c_void,
+    pub iop_base: *mut kernel::ffi::c_void,
     pub flags: c_int,
     pub hw_rev: c_int,
 }
@@ -161,14 +161,14 @@ pub const QUICKSILVER_HVERS: c_uint = 0x784;
 #[inline] pub unsafe fn IS_MERCURY(d: *mut parisc_device) -> c_int { (unsafe { (*d).id.hversion == MERCURY_HVERS }) as c_int }
 #[inline] pub unsafe fn IS_QUICKSILVER(d: *mut parisc_device) -> c_int { (unsafe { (*d).id.hversion == QUICKSILVER_HVERS }) as c_int }
 
-pub unsafe fn agp_mode_mercury(hpa: *mut core::ffi::c_void) -> c_int {
-    let bus_mode: u64 = readl((hpa as *mut u8).add(0x0620) as *const core::ffi::c_void);
+pub unsafe fn agp_mode_mercury(hpa: *mut kernel::ffi::c_void) -> c_int {
+    let bus_mode: u64 = readl((hpa as *mut u8).add(0x0620) as *const kernel::ffi::c_void);
     (bus_mode & 1) as c_int
 }
 
 unsafe extern "C" {
-    pub fn iosapic_register(hpa: c_ulong, vaddr: *mut core::ffi::c_void) -> *mut core::ffi::c_void;
-    pub fn iosapic_fixup_irq(obj: *mut core::ffi::c_void, pcidev: *mut pci_dev) -> c_int;
+    pub fn iosapic_register(hpa: c_ulong, vaddr: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+    pub fn iosapic_fixup_irq(obj: *mut kernel::ffi::c_void, pcidev: *mut pci_dev) -> c_int;
 }
 
 pub const LBA_FUNC_ID: c_uint = 0x0000; pub const LBA_FCLASS: c_uint = 0x0008;

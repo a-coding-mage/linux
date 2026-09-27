@@ -10,8 +10,8 @@
 
 // Dependency supplied by the architecture I/O implementation.
 
-pub unsafe fn fd_cacheflush(addr: *mut core::ffi::c_char, size: core::ffi::c_long) {
-    dma_cache_wback_inv(addr as core::ffi::c_ulong, size);
+pub unsafe fn fd_cacheflush(addr: *mut kernel::ffi::c_char, size: kernel::ffi::c_long) {
+    dma_cache_wback_inv(addr as kernel::ffi::c_ulong, size);
 }
 
 pub const MAX_BUFFER_SECTORS: i32 = 24;

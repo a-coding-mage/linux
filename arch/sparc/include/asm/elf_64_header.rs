@@ -85,56 +85,56 @@ pub const ELF_ARCH: u32 = EM_SPARCV9;
 pub const ELF_CLASS: u32 = ELFCLASS64;
 pub const ELF_DATA: u32 = ELFDATA2MSB;
 
-pub type ElfGregT = ::core::ffi::c_ulong;
+pub type ElfGregT = ::kernel::ffi::c_ulong;
 pub const ELF_NGREG: usize = 36;
 pub type ElfGregsetT = [ElfGregT; ELF_NGREG];
 
 #[repr(C)]
 pub struct ElfFpregsetT {
-    pub pr_regs: [::core::ffi::c_ulong; 32],
-    pub pr_fsr: ::core::ffi::c_ulong,
-    pub pr_gsr: ::core::ffi::c_ulong,
-    pub pr_fprs: ::core::ffi::c_ulong,
+    pub pr_regs: [::kernel::ffi::c_ulong; 32],
+    pub pr_fsr: ::kernel::ffi::c_ulong,
+    pub pr_gsr: ::kernel::ffi::c_ulong,
+    pub pr_fprs: ::kernel::ffi::c_ulong,
 }
 
-pub type CompatElfGregT = ::core::ffi::c_uint;
+pub type CompatElfGregT = ::kernel::ffi::c_uint;
 pub const COMPAT_ELF_NGREG: usize = 38;
 pub type CompatElfGregsetT = [CompatElfGregT; COMPAT_ELF_NGREG];
 
 #[repr(C)]
 pub union CompatElfFpRegs {
-    pub pr_regs: [::core::ffi::c_uint; 32],
-    pub pr_dregs: [::core::ffi::c_ulong; 16],
+    pub pr_regs: [::kernel::ffi::c_uint; 32],
+    pub pr_dregs: [::kernel::ffi::c_ulong; 16],
 }
 
 #[repr(C)]
 pub struct CompatElfFpregsetT {
     pub pr_fr: CompatElfFpRegs,
-    pub __unused: ::core::ffi::c_uint,
-    pub pr_fsr: ::core::ffi::c_uint,
+    pub __unused: ::kernel::ffi::c_uint,
+    pub pr_fsr: ::kernel::ffi::c_uint,
     pub pr_qcnt: u8,
     pub pr_q_entrysize: u8,
     pub pr_en: u8,
-    pub pr_q: [::core::ffi::c_uint; 64],
+    pub pr_q: [::kernel::ffi::c_uint; 64],
 }
 
 /* UltraSparc extensions. Still unused, but will be eventually. */
 #[repr(C)]
 pub struct ElfXregsetT {
-    pub pr_type: ::core::ffi::c_uint,
-    pub pr_align: ::core::ffi::c_uint,
+    pub pr_type: ::kernel::ffi::c_uint,
+    pub pr_align: ::kernel::ffi::c_uint,
     pub pr_un: ElfXregsetUnion,
 }
 
 #[repr(C)]
 pub union ElfXregsetUnion {
     pub pr_v8p: ElfV8p,
-    pub pr_xfsr: ::core::ffi::c_uint,
-    pub pr_fprs: ::core::ffi::c_uint,
-    pub pr_xg: [::core::ffi::c_uint; 8],
-    pub pr_xo: [::core::ffi::c_uint; 8],
-    pub pr_tstate: ::core::ffi::c_ulong,
-    pub pr_filler: [::core::ffi::c_uint; 8],
+    pub pr_xfsr: ::kernel::ffi::c_uint,
+    pub pr_fprs: ::kernel::ffi::c_uint,
+    pub pr_xg: [::kernel::ffi::c_uint; 8],
+    pub pr_xo: [::kernel::ffi::c_uint; 8],
+    pub pr_tstate: ::kernel::ffi::c_ulong,
+    pub pr_filler: [::kernel::ffi::c_uint; 8],
 }
 
 #[repr(C)]
@@ -144,8 +144,8 @@ pub struct ElfV8p {
 
 #[repr(C)]
 pub union ElfXfr {
-    pub pr_regs: [::core::ffi::c_uint; 32],
-    pub pr_dregs: [::core::ffi::c_ulong; 16],
+    pub pr_regs: [::kernel::ffi::c_uint; 32],
+    pub pr_dregs: [::kernel::ffi::c_ulong; 16],
     pub pr_qregs: [u128; 8],
 }
 
@@ -155,16 +155,16 @@ macro_rules! elf_check_arch { ($x:expr) => { ($x).e_machine == $crate::ELF_ARCH 
 macro_rules! compat_elf_check_arch { ($x:expr) => { ($x).e_machine == EM_SPARC || ($x).e_machine == EM_SPARC32PLUS }; }
 pub use start_thread32 as compat_start_thread;
 pub const ELF_EXEC_PAGESIZE: usize = PAGE_SIZE;
-pub const ELF_ET_DYN_BASE: ::core::ffi::c_ulong = 0x0000010000000000;
-pub const COMPAT_ELF_ET_DYN_BASE: ::core::ffi::c_ulong = 0x0000000070000000;
+pub const ELF_ET_DYN_BASE: ::kernel::ffi::c_ulong = 0x0000010000000000;
+pub const COMPAT_ELF_ET_DYN_BASE: ::kernel::ffi::c_ulong = 0x0000000070000000;
 
 unsafe extern "C" {
-    pub static mut sparc64_elf_hwcap: ::core::ffi::c_ulong;
-    pub static mut vdso_enabled: ::core::ffi::c_uint;
-    pub fn arch_setup_additional_pages(bprm: *mut LinuxBinprm, uses_interp: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub static mut sparc64_elf_hwcap: ::kernel::ffi::c_ulong;
+    pub static mut vdso_enabled: ::kernel::ffi::c_uint;
+    pub fn arch_setup_additional_pages(bprm: *mut LinuxBinprm, uses_interp: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
 }
-pub const ELF_HWCAP: *mut ::core::ffi::c_ulong = unsafe { &raw mut sparc64_elf_hwcap };
-pub const ELF_PLATFORM: *const core::ffi::c_char = core::ptr::null();
+pub const ELF_HWCAP: *mut ::kernel::ffi::c_ulong = unsafe { &raw mut sparc64_elf_hwcap };
+pub const ELF_PLATFORM: *const kernel::ffi::c_char = core::ptr::null();
 
 #[repr(C)]
 pub struct LinuxBinprm;

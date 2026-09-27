@@ -53,29 +53,29 @@ unsafe fn multiq3_set_ctrl(dev: *mut comedi_device, bits: u16) {
     outw(MULTIQ3_CTRL_SH | MULTIQ3_CTRL_CLK | bits, (*dev).iobase + MULTIQ3_CTRL_REG as u32);
 }
 
-unsafe extern "C" fn multiq3_ai_status(dev: *mut comedi_device, _s: *mut comedi_subdevice, _insn: *mut comedi_insn, context: libc::c_ulong) -> libc::c_int {
-    let status = inw((*dev).iobase + MULTIQ3_STATUS_REG as u32) as libc::c_ulong;
-    if status & context != 0 { 0 } else { -libc::EBUSY }
+unsafe extern "C" fn multiq3_ai_status(dev: *mut comedi_device, _s: *mut comedi_subdevice, _insn: *mut comedi_insn, context: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
+    let status = inw((*dev).iobase + MULTIQ3_STATUS_REG as u32) as kernel::ffi::c_ulong;
+    if status & context != 0 { 0 } else { -EBUSY }
 }
 
-unsafe extern "C" fn multiq3_ai_insn_read(dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut u32) -> libc::c_int {
+unsafe extern "C" fn multiq3_ai_insn_read(dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut u32) -> kernel::ffi::c_int {
     let chan = CR_CHAN((*insn).chanspec);
     multiq3_set_ctrl(dev, MULTIQ3_CTRL_EN | MULTIQ3_CTRL_AI_CHAN(chan as u16));
-    let mut ret = comedi_timeout(dev, s, insn, Some(multiq3_ai_status), MULTIQ3_STATUS_EOC as libc::c_ulong);
+    let mut ret = comedi_timeout(dev, s, insn, Some(multiq3_ai_status), MULTIQ3_STATUS_EOC as kernel::ffi::c_ulong);
     if ret != 0 { return ret; }
     for i in 0..(*insn).n as isize {
         outw(0, (*dev).iobase + MULTIQ3_AI_CONV_REG as u32);
-        ret = comedi_timeout(dev, s, insn, Some(multiq3_ai_status), MULTIQ3_STATUS_EOC_I as libc::c_ulong);
+        ret = comedi_timeout(dev, s, insn, Some(multiq3_ai_status), MULTIQ3_STATUS_EOC_I as kernel::ffi::c_ulong);
         if ret != 0 { return ret; }
         let mut val = (inb((*dev).iobase + MULTIQ3_AI_REG as u32) as u32) << 8;
         val |= inb((*dev).iobase + MULTIQ3_AI_REG as u32) as u32;
         val &= (*s).maxdata;
         *data.offset(i) = comedi_offset_munge(s, val);
     }
-    (*insn).n as libc::c_int
+    (*insn).n as kernel::ffi::c_int
 }
 
-unsafe extern "C" fn multiq3_ao_insn_write(dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut u32) -> libc::c_int {
+unsafe extern "C" fn multiq3_ao_insn_write(dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut u32) -> kernel::ffi::c_int {
     let chan = CR_CHAN((*insn).chanspec) as isize;
     let mut val = *(*s).readback.offset(chan);
     for i in 0..(*insn).n as isize {
@@ -85,21 +85,21 @@ unsafe extern "C" fn multiq3_ao_insn_write(dev: *mut comedi_device, s: *mut come
         multiq3_set_ctrl(dev, 0);
     }
     *(*s).readback.offset(chan) = val;
-    (*insn).n as libc::c_int
+    (*insn).n as kernel::ffi::c_int
 }
 
-unsafe extern "C" fn multiq3_di_insn_bits(dev: *mut comedi_device, _s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut u32) -> libc::c_int {
+unsafe extern "C" fn multiq3_di_insn_bits(dev: *mut comedi_device, _s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut u32) -> kernel::ffi::c_int {
     *data.offset(1) = inw((*dev).iobase + MULTIQ3_DI_REG as u32) as u32;
-    (*insn).n as libc::c_int
+    (*insn).n as kernel::ffi::c_int
 }
 
-unsafe extern "C" fn multiq3_do_insn_bits(dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut u32) -> libc::c_int {
+unsafe extern "C" fn multiq3_do_insn_bits(dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut u32) -> kernel::ffi::c_int {
     if comedi_dio_update_state(s, data) != 0 { outw((*s).state as u16, (*dev).iobase + MULTIQ3_DO_REG as u32); }
     *data.offset(1) = (*s).state;
-    (*insn).n as libc::c_int
+    (*insn).n as kernel::ffi::c_int
 }
 
-unsafe extern "C" fn multiq3_encoder_insn_read(dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut u32) -> libc::c_int {
+unsafe extern "C" fn multiq3_encoder_insn_read(dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut u32) -> kernel::ffi::c_int {
     let chan = CR_CHAN((*insn).chanspec) as u16;
     for i in 0..(*insn).n as isize {
         multiq3_set_ctrl(dev, MULTIQ3_CTRL_EN | MULTIQ3_CTRL_E_CHAN(chan));
@@ -110,7 +110,7 @@ unsafe extern "C" fn multiq3_encoder_insn_read(dev: *mut comedi_device, s: *mut 
         val |= (inb((*dev).iobase + MULTIQ3_ENC_DATA_REG as u32) as u32) << 16;
         *data.offset(i) = val.wrapping_add(((*s).maxdata + 1) >> 1) & (*s).maxdata;
     }
-    (*insn).n as libc::c_int
+    (*insn).n as kernel::ffi::c_int
 }
 
 unsafe fn multiq3_encoder_reset(dev: *mut comedi_device, chan: u32) {
@@ -124,10 +124,10 @@ unsafe fn multiq3_encoder_reset(dev: *mut comedi_device, chan: u32) {
     outb(MULTIQ3_CNTR_RESET, (*dev).iobase + MULTIQ3_ENC_CTRL_REG as u32);
 }
 
-unsafe extern "C" fn multiq3_encoder_insn_config(dev: *mut comedi_device, _s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut u32) -> libc::c_int {
+unsafe extern "C" fn multiq3_encoder_insn_config(dev: *mut comedi_device, _s: *mut comedi_subdevice, insn: *mut comedi_insn, data: *mut u32) -> kernel::ffi::c_int {
     let chan = CR_CHAN((*insn).chanspec);
-    match *data { INSN_CONFIG_RESET => multiq3_encoder_reset(dev, chan), _ => return -libc::EINVAL }
-    (*insn).n as libc::c_int
+    match *data { INSN_CONFIG_RESET => multiq3_encoder_reset(dev, chan), _ => return -EINVAL }
+    (*insn).n as kernel::ffi::c_int
 }
 
 // External kernel/comedi declarations and driver registration are supplied by the surrounding crate.
@@ -135,17 +135,17 @@ extern "C" {
     fn outw(value: u16, port: u32); fn inw(port: u32) -> u16;
     fn outb(value: u8, port: u32); fn inb(port: u32) -> u8;
     fn CR_CHAN(chanspec: u32) -> u32;
-    fn comedi_timeout(dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, f: Option<unsafe extern "C" fn(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,libc::c_ulong)->libc::c_int>, context: libc::c_ulong) -> libc::c_int;
+    fn comedi_timeout(dev: *mut comedi_device, s: *mut comedi_subdevice, insn: *mut comedi_insn, f: Option<unsafe extern "C" fn(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,kernel::ffi::c_ulong)->kernel::ffi::c_int>, context: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
     fn comedi_offset_munge(s: *mut comedi_subdevice, val: u32) -> u32;
-    fn comedi_dio_update_state(s: *mut comedi_subdevice, data: *mut u32) -> libc::c_int;
+    fn comedi_dio_update_state(s: *mut comedi_subdevice, data: *mut u32) -> kernel::ffi::c_int;
 }
 #[repr(C)] pub struct comedi_device { pub iobase: u32, pub subdevices: *mut comedi_subdevice }
-#[repr(C)] pub struct comedi_subdevice { pub state: u32, pub maxdata: u32, pub readback: *mut u32, pub type_: u32, pub subdev_flags: u32, pub n_chan: u32, pub range_table: *const core::ffi::c_void, pub insn_read: Option<unsafe extern "C" fn(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut u32)->libc::c_int>, pub insn_write: Option<unsafe extern "C" fn(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut u32)->libc::c_int>, pub insn_bits: Option<unsafe extern "C" fn(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut u32)->libc::c_int>, pub insn_config: Option<unsafe extern "C" fn(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut u32)->libc::c_int> }
+#[repr(C)] pub struct comedi_subdevice { pub state: u32, pub maxdata: u32, pub readback: *mut u32, pub type_: u32, pub subdev_flags: u32, pub n_chan: u32, pub range_table: *const kernel::ffi::c_void, pub insn_read: Option<unsafe extern "C" fn(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut u32)->kernel::ffi::c_int>, pub insn_write: Option<unsafe extern "C" fn(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut u32)->kernel::ffi::c_int>, pub insn_bits: Option<unsafe extern "C" fn(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut u32)->kernel::ffi::c_int>, pub insn_config: Option<unsafe extern "C" fn(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut u32)->kernel::ffi::c_int> }
 #[repr(C)] pub struct comedi_insn { pub chanspec: u32, pub n: u32 }
 #[repr(C)] pub struct comedi_devconfig { pub options: [u32; 8] }
 const INSN_CONFIG_RESET: u32 = 0;
 
-unsafe extern "C" fn multiq3_attach(dev: *mut comedi_device, it: *mut comedi_devconfig) -> libc::c_int {
+unsafe extern "C" fn multiq3_attach(dev: *mut comedi_device, it: *mut comedi_devconfig) -> kernel::ffi::c_int {
     let mut ret = comedi_check_request_region(dev, (*it).options[0], 0x10, 0, 0x3ff, 16);
     if ret != 0 { return ret; }
     ret = comedi_alloc_subdevices(dev, 5);
@@ -158,8 +158,8 @@ unsafe extern "C" fn multiq3_attach(dev: *mut comedi_device, it: *mut comedi_dev
     let s = &mut *subs.add(4); s.type_ = COMEDI_SUBD_COUNTER; s.subdev_flags = SDF_READABLE | SDF_LSAMPL; s.n_chan = (*it).options[2] * 2; s.maxdata = 0x00ffffff; s.range_table = &range_unknown; s.insn_read = Some(multiq3_encoder_insn_read); s.insn_config = Some(multiq3_encoder_insn_config); if s.n_chan > MULTIQ3_MAX_ENC_CHANS { s.n_chan = MULTIQ3_MAX_ENC_CHANS; }
     for i in 0..s.n_chan { multiq3_encoder_reset(dev, i); } 0
 }
-extern "C" { fn comedi_check_request_region(_: *mut comedi_device,_: u32,_: u32,_: u32,_: u32,_: u32)->libc::c_int; fn comedi_alloc_subdevices(_: *mut comedi_device,_: u32)->libc::c_int; fn comedi_alloc_subdev_readback(_: *mut comedi_subdevice)->libc::c_int; }
-extern "C" { static range_bipolar5: core::ffi::c_void; static range_digital: core::ffi::c_void; static range_unknown: core::ffi::c_void; }
+extern "C" { fn comedi_check_request_region(_: *mut comedi_device,_: u32,_: u32,_: u32,_: u32,_: u32)->kernel::ffi::c_int; fn comedi_alloc_subdevices(_: *mut comedi_device,_: u32)->kernel::ffi::c_int; fn comedi_alloc_subdev_readback(_: *mut comedi_subdevice)->kernel::ffi::c_int; }
+extern "C" { static range_bipolar5: kernel::ffi::c_void; static range_digital: kernel::ffi::c_void; static range_unknown: kernel::ffi::c_void; }
 const COMEDI_SUBD_AI:u32=1; const COMEDI_SUBD_AO:u32=2; const COMEDI_SUBD_DI:u32=3; const COMEDI_SUBD_DO:u32=4; const COMEDI_SUBD_COUNTER:u32=5; const SDF_READABLE:u32=1; const SDF_WRITABLE:u32=2; const SDF_GROUND:u32=4; const SDF_LSAMPL:u32=8;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

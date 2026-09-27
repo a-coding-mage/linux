@@ -43,7 +43,7 @@ pub static acpi_gbl_map_to_uuid_offset: [u8; UUID_BUFFER_LENGTH as usize] = [
  ******************************************************************************/
 
 pub unsafe fn acpi_ut_convert_string_to_uuid(
-    in_string: *mut core::ffi::c_char,
+    in_string: *mut kernel::ffi::c_char,
     uuid_buffer: *mut u8,
 ) {
     let mut i: u32 = 0;
@@ -74,8 +74,8 @@ pub unsafe fn acpi_ut_convert_string_to_uuid(
  ******************************************************************************/
 
 pub unsafe fn acpi_ut_convert_uuid_to_string(
-    uuid_buffer: *mut core::ffi::c_char,
-    out_string: *mut core::ffi::c_char,
+    uuid_buffer: *mut kernel::ffi::c_char,
+    out_string: *mut kernel::ffi::c_char,
 ) -> acpi_status {
     let mut i: u32;
 
@@ -86,21 +86,21 @@ pub unsafe fn acpi_ut_convert_uuid_to_string(
     i = 0;
     while i < UUID_BUFFER_LENGTH {
         *out_string.add(acpi_gbl_map_to_uuid_offset[i as usize] as usize) =
-            acpi_ut_hex_to_ascii_char(*uuid_buffer.add(i as usize) as u8, 4) as core::ffi::c_char;
+            acpi_ut_hex_to_ascii_char(*uuid_buffer.add(i as usize) as u8, 4) as kernel::ffi::c_char;
 
         *out_string.add((acpi_gbl_map_to_uuid_offset[i as usize] + 1) as usize) =
-            acpi_ut_hex_to_ascii_char(*uuid_buffer.add(i as usize) as u8, 0) as core::ffi::c_char;
+            acpi_ut_hex_to_ascii_char(*uuid_buffer.add(i as usize) as u8, 0) as kernel::ffi::c_char;
         i += 1;
     }
 
     /* Insert required hyphens (dashes) */
 
-    *out_string.add(UUID_HYPHEN1_OFFSET as usize) = '-' as core::ffi::c_char;
-    *out_string.add(UUID_HYPHEN2_OFFSET as usize) = '-' as core::ffi::c_char;
-    *out_string.add(UUID_HYPHEN3_OFFSET as usize) = '-' as core::ffi::c_char;
-    *out_string.add(UUID_HYPHEN4_OFFSET as usize) = '-' as core::ffi::c_char;
+    *out_string.add(UUID_HYPHEN1_OFFSET as usize) = '-' as kernel::ffi::c_char;
+    *out_string.add(UUID_HYPHEN2_OFFSET as usize) = '-' as kernel::ffi::c_char;
+    *out_string.add(UUID_HYPHEN3_OFFSET as usize) = '-' as kernel::ffi::c_char;
+    *out_string.add(UUID_HYPHEN4_OFFSET as usize) = '-' as kernel::ffi::c_char;
 
-    *out_string.add(UUID_STRING_LENGTH as usize) = 0 as core::ffi::c_char; // Null terminate
+    *out_string.add(UUID_STRING_LENGTH as usize) = 0 as kernel::ffi::c_char; // Null terminate
     AE_OK
 }
 // #endif

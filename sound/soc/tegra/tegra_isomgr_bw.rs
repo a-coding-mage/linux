@@ -23,20 +23,20 @@ const ENOMEM: i32 = 12;
 extern "C" {
     static STREAM_TYPE: u32;
 
-    fn snd_soc_dai_get_drvdata(dai: *mut snd_soc_dai) -> *mut core::ffi::c_void;
+    fn snd_soc_dai_get_drvdata(dai: *mut snd_soc_dai) -> *mut kernel::ffi::c_void;
     fn snd_pcm_format_width(format: i32) -> i32;
-    fn icc_set_bw(path: *mut core::ffi::c_void, avg_bw: u32, peak_bw: u32) -> i32;
+    fn icc_set_bw(path: *mut kernel::ffi::c_void, avg_bw: u32, peak_bw: u32) -> i32;
 
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn devm_kfree(dev: *mut device, p: *mut core::ffi::c_void);
-    fn devm_of_icc_get(dev: *mut device, name: *const core::ffi::c_char) -> *mut core::ffi::c_void;
-    fn IS_ERR(ptr: *const core::ffi::c_void) -> bool;
-    fn PTR_ERR(ptr: *const core::ffi::c_void) -> isize;
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn devm_kfree(dev: *mut device, p: *mut kernel::ffi::c_void);
+    fn devm_of_icc_get(dev: *mut device, name: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
+    fn IS_ERR(ptr: *const kernel::ffi::c_void) -> bool;
+    fn PTR_ERR(ptr: *const kernel::ffi::c_void) -> isize;
     fn dev_err_probe(
         dev: *mut device,
         err: isize,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
         ...
     ) -> i32;
 
@@ -45,8 +45,8 @@ extern "C" {
     fn mutex_lock(lock: *mut mutex);
     fn mutex_unlock(lock: *mut mutex);
 
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_dbg(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_dbg(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -97,7 +97,7 @@ pub struct mutex {
 
 #[repr(C)]
 pub struct tegra_adma_isomgr {
-    pub icc_path_handle: *mut core::ffi::c_void,
+    pub icc_path_handle: *mut kernel::ffi::c_void,
     pub max_pcm_device: u32,
     pub max_bw: u32,
     pub bw_per_dev: *mut *mut u32,
@@ -132,8 +132,8 @@ pub unsafe extern "C" fn tegra_isomgr_adma_setbw(
         dev_err(
             dev,
             b"%s: PCM device number %d is greater than %d\n\0".as_ptr()
-                as *const core::ffi::c_char,
-            b"tegra_isomgr_adma_setbw\0".as_ptr() as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
+            b"tegra_isomgr_adma_setbw\0".as_ptr() as *const kernel::ffi::c_char,
             (*pcm).device,
             (*adma_isomgr).max_pcm_device,
         );
@@ -183,7 +183,7 @@ pub unsafe extern "C" fn tegra_isomgr_adma_setbw(
 
     dev_dbg(
         dev,
-        b"Setting up bandwidth to %d KBps\n\0".as_ptr() as *const core::ffi::c_char,
+        b"Setting up bandwidth to %d KBps\n\0".as_ptr() as *const kernel::ffi::c_char,
         (*adma_isomgr).current_bandwidth,
     );
 
@@ -210,18 +210,18 @@ pub unsafe extern "C" fn tegra_isomgr_adma_register(dev: *mut device) -> i32 {
     }
 
     (*adma_isomgr).icc_path_handle =
-        devm_of_icc_get(dev, b"write\0".as_ptr() as *const core::ffi::c_char);
+        devm_of_icc_get(dev, b"write\0".as_ptr() as *const kernel::ffi::c_char);
     if IS_ERR((*adma_isomgr).icc_path_handle) {
         return dev_err_probe(
             dev,
             PTR_ERR((*adma_isomgr).icc_path_handle),
-            b"failed to acquire interconnect path\n\0".as_ptr() as *const core::ffi::c_char,
+            b"failed to acquire interconnect path\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
     /* Either INTERCONNECT config OR interconnect property is not defined */
     if (*adma_isomgr).icc_path_handle.is_null() {
-        devm_kfree(dev, adma_isomgr as *mut core::ffi::c_void);
+        devm_kfree(dev, adma_isomgr as *mut kernel::ffi::c_void);
         return 0;
     }
 

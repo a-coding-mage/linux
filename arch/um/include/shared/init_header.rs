@@ -6,16 +6,16 @@
  * here as comments; downstream platform/linker integration supplies them.
  */
 
-pub type InitcallT = unsafe extern "C" fn() -> ::core::ffi::c_int;
+pub type InitcallT = unsafe extern "C" fn() -> ::kernel::ffi::c_int;
 pub type ExitcallT = unsafe extern "C" fn();
 
 #[repr(C)]
 pub struct UmlParam {
-    pub str_: *const ::core::ffi::c_char,
+    pub str_: *const ::kernel::ffi::c_char,
     pub setup_func: Option<unsafe extern "C" fn(
-        *mut ::core::ffi::c_char,
-        *mut ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int>,
+        *mut ::kernel::ffi::c_char,
+        *mut ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int>,
 }
 
 /* __init, __initdata, __exitdata, and __exit_call are section/usage
@@ -25,8 +25,8 @@ pub struct UmlParam {
 extern "C" {
     pub static mut __uml_postsetup_start: InitcallT;
     pub static mut __uml_postsetup_end: InitcallT;
-    pub static __uml_help_start: *const ::core::ffi::c_char;
-    pub static __uml_help_end: *const ::core::ffi::c_char;
+    pub static __uml_help_start: *const ::kernel::ffi::c_char;
+    pub static __uml_help_end: *const ::kernel::ffi::c_char;
 }
 
 extern "C" {

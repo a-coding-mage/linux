@@ -4,9 +4,9 @@
 
 #[repr(C)]
 pub struct v4l2_m2m_ops {
-    pub device_run: Option<unsafe extern "C" fn(priv_: *mut core::ffi::c_void)>,
-    pub job_ready: Option<unsafe extern "C" fn(priv_: *mut core::ffi::c_void) -> i32>,
-    pub job_abort: Option<unsafe extern "C" fn(priv_: *mut core::ffi::c_void)>,
+    pub device_run: Option<unsafe extern "C" fn(priv_: *mut kernel::ffi::c_void)>,
+    pub job_ready: Option<unsafe extern "C" fn(priv_: *mut kernel::ffi::c_void) -> i32>,
+    pub job_abort: Option<unsafe extern "C" fn(priv_: *mut kernel::ffi::c_void)>,
 }
 
 #[repr(C)]
@@ -31,9 +31,9 @@ pub struct v4l2_m2m_ctx {
     pub cap_q_ctx: v4l2_m2m_queue_ctx,
     pub out_q_ctx: v4l2_m2m_queue_ctx,
     pub queue: list_head,
-    pub job_flags: core::ffi::c_ulong,
+    pub job_flags: kernel::ffi::c_ulong,
     pub finished: wait_queue_head_t,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -43,7 +43,7 @@ pub struct v4l2_m2m_buffer {
 }
 
 extern "C" {
-    pub fn v4l2_m2m_get_curr_priv(m2m_dev: *mut v4l2_m2m_dev) -> *mut core::ffi::c_void;
+    pub fn v4l2_m2m_get_curr_priv(m2m_dev: *mut v4l2_m2m_dev) -> *mut kernel::ffi::c_void;
     pub fn v4l2_m2m_get_vq(m2m_ctx: *mut v4l2_m2m_ctx, type_: v4l2_buf_type) -> *mut vb2_queue;
     pub fn v4l2_m2m_try_schedule(m2m_ctx: *mut v4l2_m2m_ctx);
     pub fn v4l2_m2m_job_finish(m2m_dev: *mut v4l2_m2m_dev, m2m_ctx: *mut v4l2_m2m_ctx);
@@ -67,7 +67,7 @@ extern "C" {
     pub fn v4l2_m2m_poll(file: *mut file, m2m_ctx: *mut v4l2_m2m_ctx, wait: *mut poll_table_struct) -> __poll_t;
     pub fn v4l2_m2m_mmap(file: *mut file, m2m_ctx: *mut v4l2_m2m_ctx, vma: *mut vm_area_struct) -> i32;
     /* CONFIG_MMU=n */
-    pub fn v4l2_m2m_get_unmapped_area(file: *mut file, addr: core::ffi::c_ulong, len: core::ffi::c_ulong, pgoff: core::ffi::c_ulong, flags: core::ffi::c_ulong) -> core::ffi::c_ulong;
+    pub fn v4l2_m2m_get_unmapped_area(file: *mut file, addr: kernel::ffi::c_ulong, len: kernel::ffi::c_ulong, pgoff: kernel::ffi::c_ulong, flags: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
     pub fn v4l2_m2m_init(m2m_ops: *const v4l2_m2m_ops) -> *mut v4l2_m2m_dev;
     /* CONFIG_MEDIA_CONTROLLER */
     pub fn v4l2_m2m_unregister_media_controller(m2m_dev: *mut v4l2_m2m_dev);
@@ -75,32 +75,32 @@ extern "C" {
     pub fn v4l2_m2m_release(m2m_dev: *mut v4l2_m2m_dev);
     pub fn v4l2_m2m_get(m2m_dev: *mut v4l2_m2m_dev);
     pub fn v4l2_m2m_put(m2m_dev: *mut v4l2_m2m_dev);
-    pub fn v4l2_m2m_ctx_init(m2m_dev: *mut v4l2_m2m_dev, drv_priv: *mut core::ffi::c_void, queue_init: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut vb2_queue, *mut vb2_queue) -> i32>) -> *mut v4l2_m2m_ctx;
+    pub fn v4l2_m2m_ctx_init(m2m_dev: *mut v4l2_m2m_dev, drv_priv: *mut kernel::ffi::c_void, queue_init: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut vb2_queue, *mut vb2_queue) -> i32>) -> *mut v4l2_m2m_ctx;
     pub fn v4l2_m2m_ctx_release(m2m_ctx: *mut v4l2_m2m_ctx);
     pub fn v4l2_m2m_buf_queue(m2m_ctx: *mut v4l2_m2m_ctx, vbuf: *mut vb2_v4l2_buffer);
     pub fn v4l2_m2m_next_buf(q_ctx: *mut v4l2_m2m_queue_ctx) -> *mut vb2_v4l2_buffer;
     pub fn v4l2_m2m_last_buf(q_ctx: *mut v4l2_m2m_queue_ctx) -> *mut vb2_v4l2_buffer;
     pub fn v4l2_m2m_buf_remove(q_ctx: *mut v4l2_m2m_queue_ctx) -> *mut vb2_v4l2_buffer;
     pub fn v4l2_m2m_buf_remove_by_buf(q_ctx: *mut v4l2_m2m_queue_ctx, vbuf: *mut vb2_v4l2_buffer);
-    pub fn v4l2_m2m_buf_remove_by_idx(q_ctx: *mut v4l2_m2m_queue_ctx, idx: core::ffi::c_uint) -> *mut vb2_v4l2_buffer;
+    pub fn v4l2_m2m_buf_remove_by_idx(q_ctx: *mut v4l2_m2m_queue_ctx, idx: kernel::ffi::c_uint) -> *mut vb2_v4l2_buffer;
     pub fn v4l2_m2m_buf_copy_metadata(out_vb: *const vb2_v4l2_buffer, cap_vb: *mut vb2_v4l2_buffer);
     pub fn v4l2_m2m_request_queue(req: *mut media_request);
-    pub fn v4l2_m2m_ioctl_reqbufs(file: *mut file, priv_: *mut core::ffi::c_void, rb: *mut v4l2_requestbuffers) -> i32;
-    pub fn v4l2_m2m_ioctl_create_bufs(file: *mut file, priv_: *mut core::ffi::c_void, create: *mut v4l2_create_buffers) -> i32;
-    pub fn v4l2_m2m_ioctl_remove_bufs(file: *mut file, priv_: *mut core::ffi::c_void, d: *mut v4l2_remove_buffers) -> i32;
-    pub fn v4l2_m2m_ioctl_querybuf(file: *mut file, priv_: *mut core::ffi::c_void, buf: *mut v4l2_buffer) -> i32;
-    pub fn v4l2_m2m_ioctl_expbuf(file: *mut file, priv_: *mut core::ffi::c_void, eb: *mut v4l2_exportbuffer) -> i32;
-    pub fn v4l2_m2m_ioctl_qbuf(file: *mut file, priv_: *mut core::ffi::c_void, buf: *mut v4l2_buffer) -> i32;
-    pub fn v4l2_m2m_ioctl_dqbuf(file: *mut file, priv_: *mut core::ffi::c_void, buf: *mut v4l2_buffer) -> i32;
-    pub fn v4l2_m2m_ioctl_prepare_buf(file: *mut file, priv_: *mut core::ffi::c_void, buf: *mut v4l2_buffer) -> i32;
-    pub fn v4l2_m2m_ioctl_streamon(file: *mut file, priv_: *mut core::ffi::c_void, type_: v4l2_buf_type) -> i32;
-    pub fn v4l2_m2m_ioctl_streamoff(file: *mut file, priv_: *mut core::ffi::c_void, type_: v4l2_buf_type) -> i32;
-    pub fn v4l2_m2m_ioctl_encoder_cmd(file: *mut file, priv_: *mut core::ffi::c_void, ec: *mut v4l2_encoder_cmd) -> i32;
-    pub fn v4l2_m2m_ioctl_decoder_cmd(file: *mut file, priv_: *mut core::ffi::c_void, dc: *mut v4l2_decoder_cmd) -> i32;
-    pub fn v4l2_m2m_ioctl_try_encoder_cmd(file: *mut file, priv_: *mut core::ffi::c_void, ec: *mut v4l2_encoder_cmd) -> i32;
-    pub fn v4l2_m2m_ioctl_try_decoder_cmd(file: *mut file, priv_: *mut core::ffi::c_void, dc: *mut v4l2_decoder_cmd) -> i32;
-    pub fn v4l2_m2m_ioctl_stateless_try_decoder_cmd(file: *mut file, priv_: *mut core::ffi::c_void, dc: *mut v4l2_decoder_cmd) -> i32;
-    pub fn v4l2_m2m_ioctl_stateless_decoder_cmd(file: *mut file, priv_: *mut core::ffi::c_void, dc: *mut v4l2_decoder_cmd) -> i32;
+    pub fn v4l2_m2m_ioctl_reqbufs(file: *mut file, priv_: *mut kernel::ffi::c_void, rb: *mut v4l2_requestbuffers) -> i32;
+    pub fn v4l2_m2m_ioctl_create_bufs(file: *mut file, priv_: *mut kernel::ffi::c_void, create: *mut v4l2_create_buffers) -> i32;
+    pub fn v4l2_m2m_ioctl_remove_bufs(file: *mut file, priv_: *mut kernel::ffi::c_void, d: *mut v4l2_remove_buffers) -> i32;
+    pub fn v4l2_m2m_ioctl_querybuf(file: *mut file, priv_: *mut kernel::ffi::c_void, buf: *mut v4l2_buffer) -> i32;
+    pub fn v4l2_m2m_ioctl_expbuf(file: *mut file, priv_: *mut kernel::ffi::c_void, eb: *mut v4l2_exportbuffer) -> i32;
+    pub fn v4l2_m2m_ioctl_qbuf(file: *mut file, priv_: *mut kernel::ffi::c_void, buf: *mut v4l2_buffer) -> i32;
+    pub fn v4l2_m2m_ioctl_dqbuf(file: *mut file, priv_: *mut kernel::ffi::c_void, buf: *mut v4l2_buffer) -> i32;
+    pub fn v4l2_m2m_ioctl_prepare_buf(file: *mut file, priv_: *mut kernel::ffi::c_void, buf: *mut v4l2_buffer) -> i32;
+    pub fn v4l2_m2m_ioctl_streamon(file: *mut file, priv_: *mut kernel::ffi::c_void, type_: v4l2_buf_type) -> i32;
+    pub fn v4l2_m2m_ioctl_streamoff(file: *mut file, priv_: *mut kernel::ffi::c_void, type_: v4l2_buf_type) -> i32;
+    pub fn v4l2_m2m_ioctl_encoder_cmd(file: *mut file, priv_: *mut kernel::ffi::c_void, ec: *mut v4l2_encoder_cmd) -> i32;
+    pub fn v4l2_m2m_ioctl_decoder_cmd(file: *mut file, priv_: *mut kernel::ffi::c_void, dc: *mut v4l2_decoder_cmd) -> i32;
+    pub fn v4l2_m2m_ioctl_try_encoder_cmd(file: *mut file, priv_: *mut kernel::ffi::c_void, ec: *mut v4l2_encoder_cmd) -> i32;
+    pub fn v4l2_m2m_ioctl_try_decoder_cmd(file: *mut file, priv_: *mut kernel::ffi::c_void, dc: *mut v4l2_decoder_cmd) -> i32;
+    pub fn v4l2_m2m_ioctl_stateless_try_decoder_cmd(file: *mut file, priv_: *mut kernel::ffi::c_void, dc: *mut v4l2_decoder_cmd) -> i32;
+    pub fn v4l2_m2m_ioctl_stateless_decoder_cmd(file: *mut file, priv_: *mut kernel::ffi::c_void, dc: *mut v4l2_decoder_cmd) -> i32;
     pub fn v4l2_m2m_fop_mmap(file: *mut file, vma: *mut vm_area_struct) -> i32;
     pub fn v4l2_m2m_fop_poll(file: *mut file, wait: *mut poll_table) -> __poll_t;
 }
@@ -142,9 +142,9 @@ pub unsafe fn v4l2_m2m_src_buf_remove_by_buf(ctx: *mut v4l2_m2m_ctx, vbuf: *mut 
 #[inline]
 pub unsafe fn v4l2_m2m_dst_buf_remove_by_buf(ctx: *mut v4l2_m2m_ctx, vbuf: *mut vb2_v4l2_buffer) { v4l2_m2m_buf_remove_by_buf(&mut (*ctx).cap_q_ctx, vbuf); }
 #[inline]
-pub unsafe fn v4l2_m2m_src_buf_remove_by_idx(ctx: *mut v4l2_m2m_ctx, idx: core::ffi::c_uint) -> *mut vb2_v4l2_buffer { v4l2_m2m_buf_remove_by_idx(&mut (*ctx).out_q_ctx, idx) }
+pub unsafe fn v4l2_m2m_src_buf_remove_by_idx(ctx: *mut v4l2_m2m_ctx, idx: kernel::ffi::c_uint) -> *mut vb2_v4l2_buffer { v4l2_m2m_buf_remove_by_idx(&mut (*ctx).out_q_ctx, idx) }
 #[inline]
-pub unsafe fn v4l2_m2m_dst_buf_remove_by_idx(ctx: *mut v4l2_m2m_ctx, idx: core::ffi::c_uint) -> *mut vb2_v4l2_buffer { v4l2_m2m_buf_remove_by_idx(&mut (*ctx).cap_q_ctx, idx) }
+pub unsafe fn v4l2_m2m_dst_buf_remove_by_idx(ctx: *mut v4l2_m2m_ctx, idx: kernel::ffi::c_uint) -> *mut vb2_v4l2_buffer { v4l2_m2m_buf_remove_by_idx(&mut (*ctx).cap_q_ctx, idx) }
 
 /* C preprocessor list-iteration macros are preserved as Rust documentation. */
 // v4l2_m2m_for_each_dst_buf(m2m_ctx, b): list_for_each_entry(b, &m2m_ctx->cap_q_ctx.rdy_queue, list)

@@ -48,7 +48,7 @@ pub struct iaa_wq {
 
 #[repr(C)]
 pub struct iaa_device_compression_mode {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub aecs_comp_table: *mut aecs_comp_table_record,
     pub aecs_comp_table_dma_addr: dma_addr_t,
 }
@@ -105,7 +105,7 @@ pub type iaa_dev_comp_free_fn_t = Option<unsafe extern "C" fn(mode: *mut iaa_dev
 
 #[repr(C)]
 pub struct iaa_compression_mode {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ll_table: *mut u32,
     pub ll_table_size: i32,
     pub d_table: *mut u32,
@@ -116,7 +116,7 @@ pub struct iaa_compression_mode {
 
 extern "C" {
     pub fn add_iaa_compression_mode(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         ll_table: *const u32,
         ll_table_size: i32,
         d_table: *const u32,
@@ -125,7 +125,7 @@ extern "C" {
         free: iaa_dev_comp_free_fn_t,
     ) -> i32;
 
-    pub fn remove_iaa_compression_mode(name: *const core::ffi::c_char);
+    pub fn remove_iaa_compression_mode(name: *const kernel::ffi::c_char);
 }
 
 #[repr(C)]

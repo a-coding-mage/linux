@@ -4,7 +4,7 @@
 const DELAY_MS_DEFAULT: u32 = 17000;
 
 #[repr(C)]
-pub struct muic_irq { pub irq: u32, pub name: *const core::ffi::c_char, pub virq: u32 }
+pub struct muic_irq { pub irq: u32, pub name: *const kernel::ffi::c_char, pub virq: u32 }
 #[repr(C)]
 pub struct reg_data { pub reg: u8, pub val: u32, pub invert: bool }
 #[repr(C)]
@@ -36,8 +36,8 @@ type device; type extcon_dev; type i2c_client; type regmap; type regmap_irq_chip
 type work_struct; type delayed_work; type mutex; type regmap_irq_chip; type regmap_irq;
 
 #[repr(C)] pub struct regmap_config { pub reg_bits: u32, pub val_bits: u32, pub volatile_reg: Option<unsafe extern "C" fn(*mut device,u32)->bool>, pub max_register: u32 }
-#[repr(C)] pub struct of_device_id { pub compatible: *const core::ffi::c_char, pub data: *const core::ffi::c_void }
-#[repr(C)] pub struct i2c_device_id { pub name: *const core::ffi::c_char, pub driver_data: usize }
+#[repr(C)] pub struct of_device_id { pub compatible: *const kernel::ffi::c_char, pub data: *const kernel::ffi::c_void }
+#[repr(C)] pub struct i2c_device_id { pub name: *const kernel::ffi::c_char, pub driver_data: usize }
 
 // Accessory ADC values and all SM5502/SM5504 constants are defined by extcon-sm5502.h.
 #[repr(C)] pub struct regmap_irq { pub reg_offset: u32, pub mask: u32 }
@@ -93,7 +93,7 @@ unsafe extern "C" fn sm5502_muic_cable_handler(info:*mut sm5502_muic_info, attac
 unsafe extern "C" fn sm5502_parse_irq(info:*mut sm5502_muic_info, irq:i32)->i32 { if irq==SM5502_IRQ_INT1_ATTACH {(*info).irq_attach=true;} else if irq==SM5502_IRQ_INT1_DETACH {(*info).irq_detach=true;} 0 }
 unsafe extern "C" fn sm5504_parse_irq(info:*mut sm5502_muic_info, irq:i32)->i32 { if irq==SM5504_IRQ_INT1_ATTACH {(*info).irq_attach=true;} else if irq==SM5504_IRQ_INT1_DETACH {(*info).irq_detach=true;} 0 }
 
-unsafe extern "C" fn sm5502_muic_irq_handler(_irq:i32, data:*mut core::ffi::c_void)->i32 {
+unsafe extern "C" fn sm5502_muic_irq_handler(_irq:i32, data:*mut kernel::ffi::c_void)->i32 {
     let info=data as *mut sm5502_muic_info;
     if (*info).r#type.is_null() { return 1; }
     schedule_work(&mut (*info).irq_work); 1

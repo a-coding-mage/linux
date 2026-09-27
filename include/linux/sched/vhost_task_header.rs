@@ -8,10 +8,10 @@ pub struct vhost_task {
 
 extern "C" {
     pub fn vhost_task_create(
-        fn_: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> bool>,
-        handle_kill: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
-        arg: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
+        fn_: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> bool>,
+        handle_kill: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
+        arg: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
     ) -> *mut vhost_task;
 
     pub fn vhost_task_start(vtsk: *mut vhost_task);

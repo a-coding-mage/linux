@@ -13,23 +13,23 @@ unsafe extern "C" {
     fn cn10k_cpt_get_uc_compcode() -> u32;
     fn cn10k_lmt_flush(val: u64, tar_addr: u64);
     fn dma_wmb();
-    fn dma_free_attrs(dev: *mut device, size: usize, cpu_addr: *mut core::ffi::c_void,
+    fn dma_free_attrs(dev: *mut device, size: usize, cpu_addr: *mut kernel::ffi::c_void,
                       dma_addr: u64, attrs: u64);
     fn dma_alloc_attrs(dev: *mut device, size: usize, dma_handle: *mut u64,
-                       flags: u32, attrs: u64) -> *mut core::ffi::c_void;
+                       flags: u32, attrs: u64) -> *mut kernel::ffi::c_void;
     fn otx2_cpt_lmtst_tbl_setup_msg(lfs: *mut otx2_cptlfs_info) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     fn is_dev_cn10ka_ax(pdev: *mut pci_dev) -> bool;
     fn cn10k_cpt_ctx_flush(pdev: *mut pci_dev, cptr: u64, inval: bool);
     fn dma_unmap_single(dev: *mut device, dma_addr: u64, size: usize, direction: u32);
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn kmalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn dma_map_single(dev: *mut device, ptr: *mut core::ffi::c_void,
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn kmalloc(size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn dma_map_single(dev: *mut device, ptr: *mut kernel::ffi::c_void,
                       size: usize, direction: u32) -> u64;
     fn dma_mapping_error(dev: *mut device, dma_addr: u64) -> bool;
-    fn otx2_cpt_write64(reg_base: *mut core::ffi::c_void, blkaddr: u32, slot: u32,
+    fn otx2_cpt_write64(reg_base: *mut kernel::ffi::c_void, blkaddr: u32, slot: u32,
                         offset: u32, value: u64);
-    fn otx2_cpt_read64(reg_base: *mut core::ffi::c_void, blkaddr: u32, slot: u32,
+    fn otx2_cpt_read64(reg_base: *mut kernel::ffi::c_void, blkaddr: u32, slot: u32,
                        offset: u32) -> u64;
     fn wmb();
     fn pci_get_drvdata(pdev: *mut pci_dev) -> *mut otx2_cptvf_dev;

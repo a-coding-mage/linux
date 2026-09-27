@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause */
 /* Translation of huf.h. External types and functions are supplied by dependencies. */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* Dependency type equivalents. */
 pub type BYTE = u8;
@@ -29,7 +29,7 @@ pub const HUF_CTABLEBOUND: usize = 129;
 extern "C" {
     pub fn HUF_compressBound(size: usize) -> usize;
     pub fn HUF_isError(code: usize) -> u32;
-    pub fn HUF_getErrorName(code: usize) -> *const core::ffi::c_char;
+    pub fn HUF_getErrorName(code: usize) -> *const kernel::ffi::c_char;
 }
 
 #[repr(C)]

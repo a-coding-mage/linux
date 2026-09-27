@@ -10,15 +10,15 @@
 
 /* Kernel and CIFS dependencies are supplied by the surrounding translation unit. */
 
-unsafe fn cifs_inet_pton(address_family: libc::c_int, cp: *const libc::c_char,
-                         len: libc::c_int, dst: *mut libc::c_void) -> libc::c_int {
-    let mut ret: libc::c_int = 0;
+unsafe fn cifs_inet_pton(address_family: kernel::ffi::c_int, cp: *const kernel::ffi::c_char,
+                         len: kernel::ffi::c_int, dst: *mut kernel::ffi::c_void) -> kernel::ffi::c_int {
+    let mut ret: kernel::ffi::c_int = 0;
 
     /* calculate length by finding first slash or NULL */
     if address_family == AF_INET {
-        ret = in4_pton(cp, len, dst, b'\\' as libc::c_char, core::ptr::null_mut());
+        ret = in4_pton(cp, len, dst, b'\\' as kernel::ffi::c_char, core::ptr::null_mut());
     } else if address_family == AF_INET6 {
-        ret = in6_pton(cp, len, dst, b'\\' as libc::c_char, core::ptr::null_mut());
+        ret = in6_pton(cp, len, dst, b'\\' as kernel::ffi::c_char, core::ptr::null_mut());
     }
 
     cifs_dbg(NOISY, "address conversion returned %d for %*.*s\n", ret, len, len, cp);
@@ -28,25 +28,25 @@ unsafe fn cifs_inet_pton(address_family: libc::c_int, cp: *const libc::c_char,
     ret
 }
 
-pub unsafe fn cifs_convert_address(dst: *mut sockaddr, src: *const libc::c_char,
-                                   len: libc::c_int) -> libc::c_int {
-    let mut rc: libc::c_int;
-    let mut alen: libc::c_int;
-    let mut slen: libc::c_int;
-    let pct: *const libc::c_char;
-    let mut scope_id = [0 as libc::c_char; 13];
+pub unsafe fn cifs_convert_address(dst: *mut sockaddr, src: *const kernel::ffi::c_char,
+                                   len: kernel::ffi::c_int) -> kernel::ffi::c_int {
+    let mut rc: kernel::ffi::c_int;
+    let mut alen: kernel::ffi::c_int;
+    let mut slen: kernel::ffi::c_int;
+    let pct: *const kernel::ffi::c_char;
+    let mut scope_id = [0 as kernel::ffi::c_char; 13];
     let s4 = dst as *mut sockaddr_in;
     let s6 = dst as *mut sockaddr_in6;
 
-    if cifs_inet_pton(AF_INET, src, len, core::ptr::addr_of_mut!((*s4).sin_addr.s_addr) as *mut libc::c_void) != 0 {
+    if cifs_inet_pton(AF_INET, src, len, core::ptr::addr_of_mut!((*s4).sin_addr.s_addr) as *mut kernel::ffi::c_void) != 0 {
         (*s4).sin_family = AF_INET as _;
         return 1;
     }
 
-    pct = memchr(src as *const libc::c_void, b'%' as libc::c_int, len as usize) as *const libc::c_char;
-    alen = if !pct.is_null() { pct.offset_from(src) as libc::c_int } else { len };
+    pct = memchr(src as *const kernel::ffi::c_void, b'%' as kernel::ffi::c_int, len as usize) as *const kernel::ffi::c_char;
+    alen = if !pct.is_null() { pct.offset_from(src) as kernel::ffi::c_int } else { len };
     rc = cifs_inet_pton(AF_INET6, src, alen,
-                        core::ptr::addr_of_mut!((*s6).sin6_addr.s6_addr) as *mut libc::c_void);
+                        core::ptr::addr_of_mut!((*s6).sin6_addr.s6_addr) as *mut kernel::ffi::c_void);
     if rc == 0 { return rc; }
 
     (*s6).sin6_family = AF_INET6 as _;
@@ -61,8 +61,8 @@ pub unsafe fn cifs_convert_address(dst: *mut sockaddr, src: *const libc::c_char,
     rc
 }
 
-pub unsafe fn cifs_set_port(addr: *mut sockaddr, port: libc::c_ushort) {
-    match (*addr).sa_family as libc::c_int {
+pub unsafe fn cifs_set_port(addr: *mut sockaddr, port: kernel::ffi::c_ushort) {
+    match (*addr).sa_family as kernel::ffi::c_int {
         AF_INET => (*((addr as *mut sockaddr_in))).sin_port = htons(port),
         AF_INET6 => (*((addr as *mut sockaddr_in6))).sin6_port = htons(port),
         _ => {}

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 // External Linux kernel declarations and constants are supplied by the surrounding build.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn setup_fault_attr(attr: *mut fault_attr, str_: *mut c_char) -> i32;

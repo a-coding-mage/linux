@@ -62,7 +62,7 @@ pub const PORTSCX_PTS_ULPI: u32 = 0x80000000;
  * mpc83xx_* files. Mostly for use by mpc83xx_setup
  */
 extern "C" {
-    pub fn mpc83xx_restart(cmd: *mut core::ffi::c_char) -> !;
+    pub fn mpc83xx_restart(cmd: *mut kernel::ffi::c_char) -> !;
     pub fn mpc83xx_time_init() -> isize;
     pub fn mpc837x_usb_cfg() -> i32;
     pub fn mpc834x_usb_cfg() -> i32;

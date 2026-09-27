@@ -45,7 +45,7 @@ const TIPC_MAX_IB_LINK_WIN: i32 = 500;
 /* convert InfiniBand address (media address format) media address to string */
 unsafe extern "C" fn tipc_ib_addr2str(
     a: *mut tipc_media_addr,
-    str_buf: *mut core::ffi::c_char,
+    str_buf: *mut kernel::ffi::c_char,
     str_size: i32,
 ) -> i32 {
     if str_size < 60 { /* 60 = 19 * strlen("xx:") + strlen("xx\0") */
@@ -58,7 +58,7 @@ unsafe extern "C" fn tipc_ib_addr2str(
 
 /* Convert from media address format to discovery message addr format */
 unsafe extern "C" fn tipc_ib_addr2msg(
-    msg: *mut core::ffi::c_char,
+    msg: *mut kernel::ffi::c_char,
     addr: *mut tipc_media_addr,
 ) -> i32 {
     memset(msg.cast(), 0, TIPC_MEDIA_INFO_SIZE as usize);
@@ -74,7 +74,7 @@ unsafe extern "C" fn tipc_ib_addr2msg(
 unsafe extern "C" fn tipc_ib_raw2addr(
     b: *mut tipc_bearer,
     addr: *mut tipc_media_addr,
-    msg: *const core::ffi::c_char,
+    msg: *const kernel::ffi::c_char,
 ) -> i32 {
     memset(addr.cast(), 0, core::mem::size_of::<tipc_media_addr>());
     memcpy((*addr).value.as_mut_ptr().cast(), msg.cast(), INFINIBAND_ALEN as usize);
@@ -91,7 +91,7 @@ unsafe extern "C" fn tipc_ib_raw2addr(
 unsafe extern "C" fn tipc_ib_msg2addr(
     b: *mut tipc_bearer,
     addr: *mut tipc_media_addr,
-    msg: *mut core::ffi::c_char,
+    msg: *mut kernel::ffi::c_char,
 ) -> i32 {
     tipc_ib_raw2addr(b, addr, msg)
 }
@@ -116,19 +116,19 @@ pub static mut ib_media_info: tipc_media = tipc_media {
 
 extern "C" {
     fn sprintf(
-        s: *mut core::ffi::c_char,
-        format: *const core::ffi::c_char,
+        s: *mut kernel::ffi::c_char,
+        format: *const kernel::ffi::c_char,
         ...,
     ) -> i32;
-    fn memset(s: *mut core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void;
+    fn memset(s: *mut kernel::ffi::c_void, c: i32, n: usize) -> *mut kernel::ffi::c_void;
     fn memcpy(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     fn memcmp(
-        s1: *const core::ffi::c_void,
-        s2: *const core::ffi::c_void,
+        s1: *const kernel::ffi::c_void,
+        s2: *const kernel::ffi::c_void,
         n: usize,
     ) -> i32;
 }

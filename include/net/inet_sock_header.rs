@@ -108,7 +108,7 @@ pub struct inet_sock {
     pub sk: sock,
     pub pinet6: *mut ipv6_pinfo,
     pub ipv6_fl_list: *mut ipv6_fl_socklist,
-    pub inet_flags: ::core::ffi::c_ulong,
+    pub inet_flags: ::kernel::ffi::c_ulong,
     pub inet_saddr: __be32,
     pub uc_ttl: i16,
     pub inet_sport: __be16,
@@ -163,18 +163,18 @@ pub const INET_FLAGS_RTALERT_ISOLATE: u32 = 28;
 pub const INET_FLAGS_SNDFLOW: u32 = 29;
 pub const INET_FLAGS_RTALERT: u32 = 30;
 
-pub const IP_CMSG_PKTINFO: ::core::ffi::c_ulong = 1 << INET_FLAGS_PKTINFO;
-pub const IP_CMSG_TTL: ::core::ffi::c_ulong = 1 << INET_FLAGS_TTL;
-pub const IP_CMSG_TOS: ::core::ffi::c_ulong = 1 << INET_FLAGS_TOS;
-pub const IP_CMSG_RECVOPTS: ::core::ffi::c_ulong = 1 << INET_FLAGS_RECVOPTS;
-pub const IP_CMSG_RETOPTS: ::core::ffi::c_ulong = 1 << INET_FLAGS_RETOPTS;
-pub const IP_CMSG_PASSSEC: ::core::ffi::c_ulong = 1 << INET_FLAGS_PASSSEC;
-pub const IP_CMSG_ORIGDSTADDR: ::core::ffi::c_ulong = 1 << INET_FLAGS_ORIGDSTADDR;
-pub const IP_CMSG_CHECKSUM: ::core::ffi::c_ulong = 1 << INET_FLAGS_CHECKSUM;
-pub const IP_CMSG_RECVFRAGSIZE: ::core::ffi::c_ulong = 1 << INET_FLAGS_RECVFRAGSIZE;
-pub const IP_CMSG_ALL: ::core::ffi::c_ulong = IP_CMSG_PKTINFO | IP_CMSG_TTL | IP_CMSG_TOS | IP_CMSG_RECVOPTS | IP_CMSG_RETOPTS | IP_CMSG_PASSSEC | IP_CMSG_ORIGDSTADDR | IP_CMSG_CHECKSUM | IP_CMSG_RECVFRAGSIZE;
+pub const IP_CMSG_PKTINFO: ::kernel::ffi::c_ulong = 1 << INET_FLAGS_PKTINFO;
+pub const IP_CMSG_TTL: ::kernel::ffi::c_ulong = 1 << INET_FLAGS_TTL;
+pub const IP_CMSG_TOS: ::kernel::ffi::c_ulong = 1 << INET_FLAGS_TOS;
+pub const IP_CMSG_RECVOPTS: ::kernel::ffi::c_ulong = 1 << INET_FLAGS_RECVOPTS;
+pub const IP_CMSG_RETOPTS: ::kernel::ffi::c_ulong = 1 << INET_FLAGS_RETOPTS;
+pub const IP_CMSG_PASSSEC: ::kernel::ffi::c_ulong = 1 << INET_FLAGS_PASSSEC;
+pub const IP_CMSG_ORIGDSTADDR: ::kernel::ffi::c_ulong = 1 << INET_FLAGS_ORIGDSTADDR;
+pub const IP_CMSG_CHECKSUM: ::kernel::ffi::c_ulong = 1 << INET_FLAGS_CHECKSUM;
+pub const IP_CMSG_RECVFRAGSIZE: ::kernel::ffi::c_ulong = 1 << INET_FLAGS_RECVFRAGSIZE;
+pub const IP_CMSG_ALL: ::kernel::ffi::c_ulong = IP_CMSG_PKTINFO | IP_CMSG_TTL | IP_CMSG_TOS | IP_CMSG_RECVOPTS | IP_CMSG_RETOPTS | IP_CMSG_PASSSEC | IP_CMSG_ORIGDSTADDR | IP_CMSG_CHECKSUM | IP_CMSG_RECVFRAGSIZE;
 
-#[inline] pub unsafe fn inet_cmsg_flags(inet: *const inet_sock) -> ::core::ffi::c_ulong { READ_ONCE((*inet).inet_flags) & IP_CMSG_ALL }
+#[inline] pub unsafe fn inet_cmsg_flags(inet: *const inet_sock) -> ::kernel::ffi::c_ulong { READ_ONCE((*inet).inet_flags) & IP_CMSG_ALL }
 #[inline] pub unsafe fn inet_sk_dscp(inet: *const inet_sock) -> dscp_t { inet_dsfield_to_dscp(READ_ONCE((*inet).tos)) }
 
 #[inline] pub unsafe fn sk_to_full_sk(mut sk: *mut sock) -> *mut sock {

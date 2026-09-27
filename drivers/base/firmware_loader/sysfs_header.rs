@@ -11,7 +11,7 @@ extern "C" {
 
 #[cfg(not(CONFIG_FW_LOADER_SYSFS))]
 #[inline]
-pub fn register_sysfs_loader() -> ::core::ffi::c_int { 0 }
+pub fn register_sysfs_loader() -> ::kernel::ffi::c_int { 0 }
 
 #[cfg(not(CONFIG_FW_LOADER_SYSFS))]
 #[inline]
@@ -21,34 +21,34 @@ pub fn unregister_sysfs_loader() {}
 /// Firmware fallback configuration settings.
 #[repr(C)]
 pub struct firmware_fallback_config {
-    pub force_sysfs_fallback: ::core::ffi::c_uint,
-    pub ignore_sysfs_fallback: ::core::ffi::c_uint,
-    pub old_timeout: ::core::ffi::c_int,
-    pub loading_timeout: ::core::ffi::c_int,
+    pub force_sysfs_fallback: ::kernel::ffi::c_uint,
+    pub ignore_sysfs_fallback: ::kernel::ffi::c_uint,
+    pub old_timeout: ::kernel::ffi::c_int,
+    pub loading_timeout: ::kernel::ffi::c_int,
 }
 
 // These getters are vetted to use int properly.
 #[inline]
-pub unsafe fn __firmware_loading_timeout() -> ::core::ffi::c_int {
+pub unsafe fn __firmware_loading_timeout() -> ::kernel::ffi::c_int {
     fw_fallback_config.loading_timeout
 }
 
 // These setters are vetted to use int properly.
 #[inline]
-pub unsafe fn __fw_fallback_set_timeout(timeout: ::core::ffi::c_int) {
+pub unsafe fn __fw_fallback_set_timeout(timeout: ::kernel::ffi::c_int) {
     fw_fallback_config.loading_timeout = timeout;
 }
 
 // CONFIG_FW_LOADER_SYSFS
 #[cfg(all(CONFIG_FW_LOADER_USER_HELPER, CONFIG_SYSCTL))]
 extern "C" {
-    pub fn register_sysfs_loader() -> ::core::ffi::c_int;
+    pub fn register_sysfs_loader() -> ::kernel::ffi::c_int;
     pub fn unregister_sysfs_loader();
 }
 
 #[cfg(not(all(CONFIG_FW_LOADER_USER_HELPER, CONFIG_SYSCTL)))]
 #[inline]
-pub fn register_firmware_config_sysctl() -> ::core::ffi::c_int { 0 }
+pub fn register_firmware_config_sysctl() -> ::kernel::ffi::c_int { 0 }
 
 #[cfg(not(all(CONFIG_FW_LOADER_USER_HELPER, CONFIG_SYSCTL)))]
 #[inline]
@@ -57,13 +57,13 @@ pub fn unregister_firmware_config_sysctl() {}
 // CONFIG_FW_LOADER_USER_HELPER && CONFIG_SYSCTL
 #[cfg(CONFIG_FW_UPLOAD)]
 extern "C" {
-    pub fn register_firmware_config_sysctl() -> ::core::ffi::c_int;
+    pub fn register_firmware_config_sysctl() -> ::kernel::ffi::c_int;
     pub fn unregister_firmware_config_sysctl();
 }
 
 #[cfg(not(CONFIG_FW_UPLOAD))]
 #[inline]
-pub fn fw_upload_start(_fw_sysfs: *mut fw_sysfs) -> ::core::ffi::c_int { 0 }
+pub fn fw_upload_start(_fw_sysfs: *mut fw_sysfs) -> ::kernel::ffi::c_int { 0 }
 
 #[cfg(not(CONFIG_FW_UPLOAD))]
 #[inline]
@@ -75,7 +75,7 @@ pub struct fw_sysfs {
     pub dev: device,
     pub fw_priv: *mut fw_priv,
     pub fw: *mut firmware,
-    pub fw_upload_priv: *mut ::core::ffi::c_void,
+    pub fw_upload_priv: *mut ::kernel::ffi::c_void,
 }
 
 // #define to_fw_sysfs(__dev) container_of_const(__dev, struct fw_sysfs, dev)
@@ -93,7 +93,7 @@ pub unsafe fn fw_load_abort(fw_sysfs: *mut fw_sysfs) {
 extern "C" {
     pub fn fw_create_instance(
         firmware: *mut firmware,
-        fw_name: *const ::core::ffi::c_char,
+        fw_name: *const ::kernel::ffi::c_char,
         device: *mut device,
         opt_flags: u32,
     ) -> *mut fw_sysfs;
@@ -106,12 +106,12 @@ extern "C" {
     pub static mut dev_attr_cancel: device_attribute;
     pub static mut dev_attr_remaining_size: device_attribute;
 
-    pub fn fw_upload_start(fw_sysfs: *mut fw_sysfs) -> ::core::ffi::c_int;
+    pub fn fw_upload_start(fw_sysfs: *mut fw_sysfs) -> ::kernel::ffi::c_int;
     pub fn fw_upload_free(fw_sysfs: *mut fw_sysfs);
     pub fn fw_upload_is_visible(
         kobj: *mut kobject,
         attr: *mut attribute,
-        n: ::core::ffi::c_int,
+        n: ::kernel::ffi::c_int,
     ) -> umode_t;
 }
 

@@ -26,7 +26,7 @@ unsafe fn sha512_blocks(
     mut nblocks: usize,
 ) {
     let mut cop2_state: octeon_cop2_state;
-    let flags: libc::c_ulong;
+    let flags: kernel::ffi::c_ulong;
 
     if !octeon_has_crypto() {
         return sha512_blocks_generic(state, data, nblocks);

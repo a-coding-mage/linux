@@ -40,21 +40,21 @@ pub const PARAM: usize = ZERO_PGE;
 #[macro_export]
 macro_rules! COMMAND_LINE {
     () => {
-        absolute_pointer($crate::PARAM + 0x0000) as *mut core::ffi::c_char
+        absolute_pointer($crate::PARAM + 0x0000) as *mut kernel::ffi::c_char
     };
 }
 
 #[macro_export]
 macro_rules! INITRD_START {
     () => {
-        *(($crate::PARAM + 0x100) as *const ::core::ffi::c_ulong)
+        *(($crate::PARAM + 0x100) as *const ::kernel::ffi::c_ulong)
     };
 }
 
 #[macro_export]
 macro_rules! INITRD_SIZE {
     () => {
-        *(($crate::PARAM + 0x108) as *const ::core::ffi::c_ulong)
+        *(($crate::PARAM + 0x108) as *const ::kernel::ffi::c_ulong)
     };
 }
 

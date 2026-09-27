@@ -170,7 +170,7 @@ static int mes_v12_0_submit_pkt_and_poll_completion(amdgpu_mes *mes,
 	struct MES_API_STATUS *api_status;
 	union MESAPI__MISC *x_pkt = pkt;
 	const char *op_str, *misc_op_str;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u64 status_gpu_addr;
 	seq: u32, status_offset;
 	u64 *status_ptr;
@@ -499,7 +499,7 @@ static int mes_v12_0_reset_gfx_pipe_mmio(amdgpu_device *adev,
 static void mes_v12_0_clear_hqds_on_mec_pipe(amdgpu_device *adev, me: u32,
 					     pipe: u32)
 {
-	core::ffi::c_uint q;
+	kernel::ffi::c_uint q;
 
 	for (q = 0; q < (*adev).gfx.mec.num_queue_per_pipe; q++) {
 		soc24_grbm_select(adev, me, pipe, q, 0);

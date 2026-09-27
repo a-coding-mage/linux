@@ -28,12 +28,12 @@ pub struct net_device_path_ctx {
 
 #[repr(C)]
 pub struct ppp_channel {
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
     pub ops: *const ppp_channel_ops,
-    pub mtu: core::ffi::c_int,
-    pub hdrlen: core::ffi::c_int,
-    pub ppp: *mut core::ffi::c_void,
-    pub speed: core::ffi::c_int,
+    pub mtu: kernel::ffi::c_int,
+    pub hdrlen: kernel::ffi::c_int,
+    pub ppp: *mut kernel::ffi::c_void,
+    pub speed: kernel::ffi::c_int,
     pub direct_xmit: bool,
 }
 
@@ -42,21 +42,21 @@ pub struct ppp_channel_ops {
     /* Send a packet (or multilink fragment) on this channel.
        Returns 1 if it was accepted, 0 if not. */
     pub start_xmit:
-        Option<unsafe extern "C" fn(*mut ppp_channel, *mut sk_buff) -> core::ffi::c_int>,
+        Option<unsafe extern "C" fn(*mut ppp_channel, *mut sk_buff) -> kernel::ffi::c_int>,
     /* Handle an ioctl call that has come in via /dev/ppp. */
     pub ioctl: Option<
         unsafe extern "C" fn(
             *mut ppp_channel,
-            core::ffi::c_uint,
-            core::ffi::c_ulong,
-        ) -> core::ffi::c_int,
+            kernel::ffi::c_uint,
+            kernel::ffi::c_ulong,
+        ) -> kernel::ffi::c_int,
     >,
     pub fill_forward_path: Option<
         unsafe extern "C" fn(
             *mut net_device_path_ctx,
             *mut net_device_path,
             *const ppp_channel,
-        ) -> core::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
 }
 
@@ -79,24 +79,24 @@ extern "C" {
     pub fn ppp_register_net_channel(
         net: *mut net,
         channel: *mut ppp_channel,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     /* Attach a channel to a given PPP unit. */
-    pub fn ppp_register_channel(channel: *mut ppp_channel) -> core::ffi::c_int;
+    pub fn ppp_register_channel(channel: *mut ppp_channel) -> kernel::ffi::c_int;
 
     /* Detach a channel from its PPP unit (e.g. on hangup). */
     pub fn ppp_unregister_channel(channel: *mut ppp_channel);
 
     /* Get the channel number for a channel */
-    pub fn ppp_channel_index(channel: *mut ppp_channel) -> core::ffi::c_int;
+    pub fn ppp_channel_index(channel: *mut ppp_channel) -> kernel::ffi::c_int;
 
     /* Get the unit number associated with a channel, or -1 if none */
-    pub fn ppp_unit_number(channel: *mut ppp_channel) -> core::ffi::c_int;
+    pub fn ppp_unit_number(channel: *mut ppp_channel) -> kernel::ffi::c_int;
 
     /* Get the device name associated with a channel, or NULL if none.
      * Caller must hold RCU read lock.
      */
-    pub fn ppp_dev_name(channel: *mut ppp_channel) -> *mut core::ffi::c_char;
+    pub fn ppp_dev_name(channel: *mut ppp_channel) -> *mut kernel::ffi::c_char;
 }
 
 /*

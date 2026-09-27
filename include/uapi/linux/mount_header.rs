@@ -128,7 +128,7 @@ pub struct statmount {
     pub fs_subtype: __u32, pub sb_source: __u32, pub opt_num: __u32, pub opt_array: __u32,
     pub opt_sec_num: __u32, pub opt_sec_array: __u32, pub supported_mask: __u64,
     pub mnt_uidmap_num: __u32, pub mnt_uidmap: __u32, pub mnt_gidmap_num: __u32, pub mnt_gidmap: __u32,
-    pub __spare2: [__u64; 43], pub str_: [core::ffi::c_char; 0],
+    pub __spare2: [__u64; 43], pub str_: [kernel::ffi::c_char; 0],
 }
 
 #[repr(C)]

@@ -19,7 +19,7 @@ pub const LED_MAX_NAME_SIZE: usize = 64;
 
 #[repr(C)]
 pub struct uleds_user_dev {
-    pub name: [core::ffi::c_char; LED_MAX_NAME_SIZE],
+    pub name: [kernel::ffi::c_char; LED_MAX_NAME_SIZE],
     pub max_brightness: i32,
 }
 

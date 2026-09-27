@@ -29,22 +29,22 @@ pub fn umul_ppmm(wh: &mut UDItype, wl: &mut UDItype, u: UDItype, v: UDItype) {
 
 extern "C" {
     pub fn __udiv_qrnnd(
-        remainder: *mut libc::c_ulong,
-        n1: libc::c_ulong,
-        n0: libc::c_ulong,
-        divisor: libc::c_ulong,
-    ) -> libc::c_ulong;
+        remainder: *mut kernel::ffi::c_ulong,
+        n1: kernel::ffi::c_ulong,
+        n0: kernel::ffi::c_ulong,
+        divisor: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_ulong;
 }
 
 #[inline]
 pub unsafe fn udiv_qrnnd(
-    q: &mut libc::c_ulong,
-    r: &mut libc::c_ulong,
-    n1: libc::c_ulong,
-    n0: libc::c_ulong,
-    d: libc::c_ulong,
+    q: &mut kernel::ffi::c_ulong,
+    r: &mut kernel::ffi::c_ulong,
+    n1: kernel::ffi::c_ulong,
+    n0: kernel::ffi::c_ulong,
+    d: kernel::ffi::c_ulong,
 ) {
-    let mut remainder: libc::c_ulong = 0;
+    let mut remainder: kernel::ffi::c_ulong = 0;
     *q = __udiv_qrnnd(&mut remainder, n1, n0, d);
     *r = remainder;
 }

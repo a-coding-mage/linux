@@ -29,7 +29,7 @@ pub unsafe fn acpi_ut_get_next_predefined_method(
 }
 
 pub unsafe fn acpi_ut_match_predefined_method(
-    name: *mut core::ffi::c_char,
+    name: *mut kernel::ffi::c_char,
 ) -> *const crate::acpi_predefined_info {
     if *(name as *const u8) != b'_' {
         return core::ptr::null();
@@ -47,11 +47,11 @@ pub unsafe fn acpi_ut_match_predefined_method(
 }
 
 pub unsafe fn acpi_ut_get_expected_return_types(
-    buffer: *mut core::ffi::c_char,
+    buffer: *mut kernel::ffi::c_char,
     expected_btypes: u32,
 ) {
     if expected_btypes == 0 {
-        crate::strcpy(buffer, b"NONE\0".as_ptr() as *const core::ffi::c_char);
+        crate::strcpy(buffer, b"NONE\0".as_ptr() as *const kernel::ffi::c_char);
         return;
     }
 
@@ -80,7 +80,7 @@ static UT_RESOURCE_TYPE_NAMES: [&[u8]; 8] = [
 
 #[cfg(any(feature = "acpi_asl_compiler", feature = "acpi_help_app"))]
 pub unsafe fn acpi_ut_match_resource_name(
-    name: *mut core::ffi::c_char,
+    name: *mut kernel::ffi::c_char,
 ) -> *const crate::acpi_predefined_info {
     if *(name as *const u8) != b'_' {
         return core::ptr::null();
@@ -98,7 +98,7 @@ pub unsafe fn acpi_ut_match_resource_name(
 
 #[cfg(any(feature = "acpi_asl_compiler", feature = "acpi_help_app"))]
 pub unsafe fn acpi_ut_display_predefined_method(
-    buffer: *mut core::ffi::c_char,
+    buffer: *mut kernel::ffi::c_char,
     this_name: *const crate::acpi_predefined_info,
     multi_line: u8,
 ) {
@@ -120,7 +120,7 @@ pub unsafe fn acpi_ut_display_predefined_method(
 }
 
 #[cfg(any(feature = "acpi_asl_compiler", feature = "acpi_help_app"))]
-unsafe fn acpi_ut_get_argument_types(buffer: *mut core::ffi::c_char, mut argument_types: u16) -> u32 {
+unsafe fn acpi_ut_get_argument_types(buffer: *mut kernel::ffi::c_char, mut argument_types: u16) -> u32 {
     *buffer = 0;
     let mut sub_index = 2usize;
     let arg_count = crate::METHOD_GET_ARG_COUNT(argument_types);
@@ -135,7 +135,7 @@ unsafe fn acpi_ut_get_argument_types(buffer: *mut core::ffi::c_char, mut argumen
 }
 
 #[cfg(any(feature = "acpi_asl_compiler", feature = "acpi_help_app"))]
-pub unsafe fn acpi_ut_get_resource_bit_width(buffer: *mut core::ffi::c_char, mut types: u16) -> u32 {
+pub unsafe fn acpi_ut_get_resource_bit_width(buffer: *mut kernel::ffi::c_char, mut types: u16) -> u32 {
     *buffer = 0;
     let mut sub_index = 1usize;
     let mut found = 0u32;

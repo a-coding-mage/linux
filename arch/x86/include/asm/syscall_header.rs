@@ -10,15 +10,15 @@
 /* C dependencies: linux/audit.h, linux/sched.h, linux/err.h,
  * asm/thread_info.h, and asm/unistd.h. */
 
-pub type SysCallPtrT = unsafe extern "C" fn(regs: *const PtRegs) -> libc::c_long;
+pub type SysCallPtrT = unsafe extern "C" fn(regs: *const PtRegs) -> kernel::ffi::c_long;
 pub static mut sys_call_table: *const SysCallPtrT = core::ptr::null();
 
 /* Only the low 32 bits of orig_ax are meaningful, so we return int. */
-pub unsafe fn syscall_get_nr(_task: *mut TaskStruct, regs: *mut PtRegs) -> libc::c_int {
-    (*regs).orig_ax as libc::c_int
+pub unsafe fn syscall_get_nr(_task: *mut TaskStruct, regs: *mut PtRegs) -> kernel::ffi::c_int {
+    (*regs).orig_ax as kernel::ffi::c_int
 }
 
-pub unsafe fn syscall_set_nr(_task: *mut TaskStruct, regs: *mut PtRegs, nr: libc::c_int) {
+pub unsafe fn syscall_set_nr(_task: *mut TaskStruct, regs: *mut PtRegs, nr: kernel::ffi::c_int) {
     (*regs).orig_ax = nr as _;
 }
 
@@ -26,31 +26,31 @@ pub unsafe fn syscall_rollback(_task: *mut TaskStruct, regs: *mut PtRegs) {
     (*regs).ax = (*regs).orig_ax;
 }
 
-pub unsafe fn syscall_get_error(task: *mut TaskStruct, regs: *mut PtRegs) -> libc::c_long {
-    let mut error = (*regs).ax as libc::c_ulong;
+pub unsafe fn syscall_get_error(task: *mut TaskStruct, regs: *mut PtRegs) -> kernel::ffi::c_long {
+    let mut error = (*regs).ax as kernel::ffi::c_ulong;
     #[cfg(CONFIG_IA32_EMULATION)]
     {
         /* TS_COMPAT is set for 32-bit syscall entries and remains set until
          * we return to user mode. */
         if ((*task).thread_info.status & (TS_COMPAT | TS_I386_REGS_POKED)) != 0 {
-            error = (error as libc::c_int) as libc::c_long as libc::c_ulong;
+            error = (error as kernel::ffi::c_int) as kernel::ffi::c_long as kernel::ffi::c_ulong;
         }
     }
-    if is_err_value(error) { error as libc::c_long } else { 0 }
+    if is_err_value(error) { error as kernel::ffi::c_long } else { 0 }
 }
 
-pub unsafe fn syscall_get_return_value(_task: *mut TaskStruct, regs: *mut PtRegs) -> libc::c_long {
-    (*regs).ax as libc::c_long
+pub unsafe fn syscall_get_return_value(_task: *mut TaskStruct, regs: *mut PtRegs) -> kernel::ffi::c_long {
+    (*regs).ax as kernel::ffi::c_long
 }
 
 pub unsafe fn syscall_set_return_value(
-    _task: *mut TaskStruct, regs: *mut PtRegs, error: libc::c_int, val: libc::c_long,
+    _task: *mut TaskStruct, regs: *mut PtRegs, error: kernel::ffi::c_int, val: kernel::ffi::c_long,
 ) {
-    (*regs).ax = if error != 0 { error as libc::c_long } else { val } as _;
+    (*regs).ax = if error != 0 { error as kernel::ffi::c_long } else { val } as _;
 }
 
 #[cfg(CONFIG_X86_32)]
-pub unsafe fn syscall_get_arguments(_task: *mut TaskStruct, regs: *mut PtRegs, args: *mut libc::c_ulong) {
+pub unsafe fn syscall_get_arguments(_task: *mut TaskStruct, regs: *mut PtRegs, args: *mut kernel::ffi::c_ulong) {
     *args.add(0) = (*regs).bx;
     *args.add(1) = (*regs).cx;
     *args.add(2) = (*regs).dx;
@@ -60,7 +60,7 @@ pub unsafe fn syscall_get_arguments(_task: *mut TaskStruct, regs: *mut PtRegs, a
 }
 
 #[cfg(CONFIG_X86_32)]
-pub unsafe fn syscall_set_arguments(_task: *mut TaskStruct, regs: *mut PtRegs, args: *const libc::c_ulong) {
+pub unsafe fn syscall_set_arguments(_task: *mut TaskStruct, regs: *mut PtRegs, args: *const kernel::ffi::c_ulong) {
     (*regs).bx = *args.add(0);
     (*regs).cx = *args.add(1);
     (*regs).dx = *args.add(2);
@@ -70,10 +70,10 @@ pub unsafe fn syscall_set_arguments(_task: *mut TaskStruct, regs: *mut PtRegs, a
 }
 
 #[cfg(CONFIG_X86_32)]
-pub unsafe fn syscall_get_arch(_task: *mut TaskStruct) -> libc::c_int { AUDIT_ARCH_I386 }
+pub unsafe fn syscall_get_arch(_task: *mut TaskStruct) -> kernel::ffi::c_int { AUDIT_ARCH_I386 }
 
 #[cfg(not(CONFIG_X86_32))]
-pub unsafe fn syscall_get_arguments(task: *mut TaskStruct, regs: *mut PtRegs, args: *mut libc::c_ulong) {
+pub unsafe fn syscall_get_arguments(task: *mut TaskStruct, regs: *mut PtRegs, args: *mut kernel::ffi::c_ulong) {
     #[cfg(CONFIG_IA32_EMULATION)]
     if ((*task).thread_info.status & TS_COMPAT) != 0 {
         *args.add(0) = (*regs).bx; *args.add(1) = (*regs).cx; *args.add(2) = (*regs).dx;
@@ -85,7 +85,7 @@ pub unsafe fn syscall_get_arguments(task: *mut TaskStruct, regs: *mut PtRegs, ar
 }
 
 #[cfg(not(CONFIG_X86_32))]
-pub unsafe fn syscall_set_arguments(task: *mut TaskStruct, regs: *mut PtRegs, args: *const libc::c_ulong) {
+pub unsafe fn syscall_set_arguments(task: *mut TaskStruct, regs: *mut PtRegs, args: *const kernel::ffi::c_ulong) {
     #[cfg(CONFIG_IA32_EMULATION)]
     if ((*task).thread_info.status & TS_COMPAT) != 0 {
         (*regs).bx = *args.add(0); (*regs).cx = *args.add(1); (*regs).dx = *args.add(2);
@@ -97,7 +97,7 @@ pub unsafe fn syscall_set_arguments(task: *mut TaskStruct, regs: *mut PtRegs, ar
 }
 
 #[cfg(not(CONFIG_X86_32))]
-pub unsafe fn syscall_get_arch(task: *mut TaskStruct) -> libc::c_int {
+pub unsafe fn syscall_get_arch(task: *mut TaskStruct) -> kernel::ffi::c_int {
     #[cfg(CONFIG_IA32_EMULATION)]
     { if ((*task).thread_info.status & TS_COMPAT) != 0 { return AUDIT_ARCH_I386; } }
     AUDIT_ARCH_X86_64
@@ -105,7 +105,7 @@ pub unsafe fn syscall_get_arch(task: *mut TaskStruct) -> libc::c_int {
 
 #[cfg(not(CONFIG_X86_32))]
 extern "C" {
-    pub fn do_syscall_64(regs: *mut PtRegs, nr: libc::c_long) -> bool;
+    pub fn do_syscall_64(regs: *mut PtRegs, nr: kernel::ffi::c_long) -> bool;
     pub fn do_int80_emulation(regs: *mut PtRegs);
 }
 

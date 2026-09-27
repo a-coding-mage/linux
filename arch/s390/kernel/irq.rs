@@ -10,9 +10,9 @@
 
 #[repr(C)]
 struct irq_class {
-    irq: ::core::ffi::c_int,
-    name: *mut ::core::ffi::c_char,
-    desc: *mut ::core::ffi::c_char,
+    irq: ::kernel::ffi::c_int,
+    name: *mut ::kernel::ffi::c_char,
+    desc: *mut ::kernel::ffi::c_char,
 }
 
 // The following declarations are supplied by the surrounding kernel translation.
@@ -33,11 +33,11 @@ struct irq_class_placeholder;
 // The irqclass_* initializers are retained as declarations because their
 // architecture constants and C string representation are supplied externally.
 
-unsafe fn show_msi_interrupt(p: *mut seq_file, irq: ::core::ffi::c_int) {
+unsafe fn show_msi_interrupt(p: *mut seq_file, irq: ::kernel::ffi::c_int) {
     rcu_read_lock();
     let desc = irq_to_desc(irq);
     if desc.is_null() { rcu_read_unlock(); return; }
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
     raw_spin_lock_irqsave(&mut (*desc).lock, &mut flags);
     seq_printf(p, c"%3d: ".as_ptr(), irq);
     let mut cpu = 0;
@@ -49,8 +49,8 @@ unsafe fn show_msi_interrupt(p: *mut seq_file, irq: ::core::ffi::c_int) {
     rcu_read_unlock();
 }
 
-pub unsafe fn show_interrupts(p: *mut seq_file, v: *mut ::core::ffi::c_void) -> ::core::ffi::c_int {
-    let mut index = *(v as *mut i64) as ::core::ffi::c_int;
+pub unsafe fn show_interrupts(p: *mut seq_file, v: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int {
+    let mut index = *(v as *mut i64) as ::kernel::ffi::c_int;
     let mut cpu = 0;
     cpus_read_lock();
     if index == 0 {
@@ -88,7 +88,7 @@ struct ext_int_info {
     code: u16,
 }
 
-unsafe fn do_IRQ(regs: *mut pt_regs, irq: ::core::ffi::c_int) {
+unsafe fn do_IRQ(regs: *mut pt_regs, irq: ::kernel::ffi::c_int) {
     let lc = get_lowcore();
     if tod_after_eq((*lc).int_clock.tod, (*lc).clock_comparator) {
         clock_comparator_work();
@@ -96,12 +96,12 @@ unsafe fn do_IRQ(regs: *mut pt_regs, irq: ::core::ffi::c_int) {
     generic_handle_irq(irq);
 }
 
-unsafe fn on_async_stack() -> ::core::ffi::c_int {
+unsafe fn on_async_stack() -> ::kernel::ffi::c_int {
     let frame = current_frame_address();
-    ((((*get_lowcore()).async_stack ^ frame) & !(THREAD_SIZE - 1)) == 0) as ::core::ffi::c_int
+    ((((*get_lowcore()).async_stack ^ frame) & !(THREAD_SIZE - 1)) == 0) as ::kernel::ffi::c_int
 }
 
-unsafe fn do_irq_async(regs: *mut pt_regs, irq: ::core::ffi::c_int) {
+unsafe fn do_irq_async(regs: *mut pt_regs, irq: ::kernel::ffi::c_int) {
     if on_async_stack() != 0 {
         do_IRQ(regs, irq);
     } else {
@@ -109,8 +109,8 @@ unsafe fn do_irq_async(regs: *mut pt_regs, irq: ::core::ffi::c_int) {
     }
 }
 
-unsafe fn irq_pending(_regs: *mut pt_regs) -> ::core::ffi::c_int {
-    let mut cc: ::core::ffi::c_int = 0;
+unsafe fn irq_pending(_regs: *mut pt_regs) -> ::kernel::ffi::c_int {
+    let mut cc: ::kernel::ffi::c_int = 0;
     // C condition-code assembly (tpi 0) is provided by the target architecture.
     asm!("tpi 0", out("cc") cc, options(nostack));
     CC_TRANSFORM(cc)
@@ -182,11 +182,11 @@ pub unsafe fn arch_dynirq_lower_bound(from: u32) -> u32 {
     if from < NR_IRQS_BASE { NR_IRQS_BASE } else { from }
 }
 
-unsafe fn ext_hash(code: u16) -> ::core::ffi::c_int {
-    ((code as u32 + ((code as u32) >> 9)) & 31) as ::core::ffi::c_int
+unsafe fn ext_hash(code: u16) -> ::kernel::ffi::c_int {
+    ((code as u32 + ((code as u32) >> 9)) & 31) as ::kernel::ffi::c_int
 }
 
-pub unsafe fn register_external_irq(code: u16, handler: ext_int_handler_t) -> ::core::ffi::c_int {
+pub unsafe fn register_external_irq(code: u16, handler: ext_int_handler_t) -> ::kernel::ffi::c_int {
     let p = kmalloc_obj::<ext_int_info>(GFP_ATOMIC);
     if p.is_null() { return -ENOMEM; }
     (*p).code = code;
@@ -198,7 +198,7 @@ pub unsafe fn register_external_irq(code: u16, handler: ext_int_handler_t) -> ::
     0
 }
 
-pub unsafe fn unregister_external_irq(code: u16, handler: ext_int_handler_t) -> ::core::ffi::c_int {
+pub unsafe fn unregister_external_irq(code: u16, handler: ext_int_handler_t) -> ::kernel::ffi::c_int {
     let index = ext_hash(code) as usize;
     spin_lock_irqsave(&mut ext_int_hash_lock);
     let mut p: *mut ext_int_info = core::ptr::null_mut();
@@ -212,7 +212,7 @@ pub unsafe fn unregister_external_irq(code: u16, handler: ext_int_handler_t) -> 
     0
 }
 
-unsafe fn do_ext_interrupt(_irq: ::core::ffi::c_int, _dummy: *mut ::core::ffi::c_void) -> irqreturn_t {
+unsafe fn do_ext_interrupt(_irq: ::kernel::ffi::c_int, _dummy: *mut ::kernel::ffi::c_void) -> irqreturn_t {
     let regs = get_irq_regs();
     let mut ext_code: ext_code = core::mem::zeroed();
     (*ext_code).int_code = (*regs).int_code;

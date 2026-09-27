@@ -77,7 +77,7 @@ unsafe fn mcf54xx_reset() {
 
 /***************************************************************************/
 
-pub unsafe extern "C" fn config_BSP(commandp: *mut core::ffi::c_char, size: i32) {
+pub unsafe extern "C" fn config_BSP(commandp: *mut kernel::ffi::c_char, size: i32) {
     mach_reset = Some(mcf54xx_reset);
     mach_sched_init = Some(hw_timer_init);
     m54xx_uarts_init();

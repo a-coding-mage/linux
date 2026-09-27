@@ -20,8 +20,8 @@ pub struct kvm_vcpu {
 
 #[repr(C)]
 pub struct kvm_vcpu_arch {
-    pub pc: ::core::ffi::c_ulong,
-    pub gprs: [::core::ffi::c_ulong; 32],
+    pub pc: ::kernel::ffi::c_ulong,
+    pub gprs: [::kernel::ffi::c_ulong; 32],
 }
 
 #[repr(C)]
@@ -42,7 +42,7 @@ pub enum emulation_result {
 
 extern "C" {
     // Provided by the kernel headers/translation unit.
-    static KVM_ENOSYS: ::core::ffi::c_int;
+    static KVM_ENOSYS: ::kernel::ffi::c_int;
 }
 
 pub fn kvm_mips_emul_hypcall(
@@ -64,18 +64,18 @@ pub fn kvm_mips_emul_hypcall(
 
 unsafe fn kvm_mips_hypercall(
     _vcpu: *mut kvm_vcpu,
-    _num: ::core::ffi::c_ulong,
-    _args: *const ::core::ffi::c_ulong,
-    hret: *mut ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    _num: ::kernel::ffi::c_ulong,
+    _args: *const ::kernel::ffi::c_ulong,
+    hret: *mut ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     /* Report unimplemented hypercall to guest */
-    *hret = (-(KVM_ENOSYS as isize)) as ::core::ffi::c_ulong;
+    *hret = (-(KVM_ENOSYS as isize)) as ::kernel::ffi::c_ulong;
     RESUME_GUEST
 }
 
-pub unsafe fn kvm_mips_handle_hypcall(vcpu: *mut kvm_vcpu) -> ::core::ffi::c_int {
-    let num: ::core::ffi::c_ulong;
-    let mut args = [0 as ::core::ffi::c_ulong; MAX_HYPCALL_ARGS];
+pub unsafe fn kvm_mips_handle_hypcall(vcpu: *mut kvm_vcpu) -> ::kernel::ffi::c_int {
+    let num: ::kernel::ffi::c_ulong;
+    let mut args = [0 as ::kernel::ffi::c_ulong; MAX_HYPCALL_ARGS];
 
     /* read hypcall number and arguments */
     num = (*vcpu).arch.gprs[2]; /* v0 */

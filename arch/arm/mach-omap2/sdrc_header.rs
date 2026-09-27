@@ -7,7 +7,7 @@
  * represented by a file-local Rust item.
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 extern "C" {
     pub static mut omap2_sdrc_base: *mut c_void;
@@ -56,7 +56,7 @@ pub unsafe fn sms_read_reg(reg: u16) -> u32 {
 
 #[repr(C)]
 pub struct omap_sdrc_params {
-    pub rate: core::ffi::c_ulong,
+    pub rate: kernel::ffi::c_ulong,
     pub actim_ctrla: u32,
     pub actim_ctrlb: u32,
     pub rfr_ctrl: u32,

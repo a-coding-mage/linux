@@ -73,7 +73,7 @@ pub struct kfd_node_properties {
     pub ctl_stack_size: u32,
     pub eop_buffer_size: u32,
     pub debug_memory_size: u32,
-    pub name: [core::ffi::c_char; KFD_TOPOLOGY_PUBLIC_NAME_SIZE],
+    pub name: [kernel::ffi::c_char; KFD_TOPOLOGY_PUBLIC_NAME_SIZE],
 }
 
 #[repr(C)]
@@ -133,7 +133,7 @@ pub struct kfd_iolink_properties {
 #[repr(C)]
 pub struct kfd_perf_properties {
     pub list: list_head,
-    pub block_name: [core::ffi::c_char; 16],
+    pub block_name: [kernel::ffi::c_char; 16],
     pub max_concurrent: u32,
     pub attr_group: *mut attribute_group,
 }

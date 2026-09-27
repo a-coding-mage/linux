@@ -118,7 +118,7 @@ pub unsafe fn smsc_fdc37m81x_init(port: usize) -> usize {
 }
 
 #[cfg(debug_assertions)]
-unsafe fn smsc_fdc37m81x_config_dump_one(key: *const core::ffi::c_char, dev: u8, reg: u8) {
+unsafe fn smsc_fdc37m81x_config_dump_one(key: *const kernel::ffi::c_char, dev: u8, reg: u8) {
     pr_info("{}: dev=0x{:02x} reg=0x{:02x} val=0x{:02x}\n", key, dev, reg,
             smsc_fdc37m81x_rd(reg));
 }

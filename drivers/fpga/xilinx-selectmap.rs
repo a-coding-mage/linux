@@ -14,14 +14,14 @@
 #[repr(C)]
 pub struct xilinx_selectmap_conf {
     pub core: xilinx_fpga_core,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
 }
 
 // External types and functions supplied by the included kernel interfaces.
 #[repr(C)]
 pub struct xilinx_fpga_core {
     pub dev: *mut device,
-    pub write: Option<unsafe extern "C" fn(*mut xilinx_fpga_core, *const core::ffi::c_char, usize) -> i32>,
+    pub write: Option<unsafe extern "C" fn(*mut xilinx_fpga_core, *const kernel::ffi::c_char, usize) -> i32>,
 }
 
 #[repr(C)]
@@ -41,31 +41,31 @@ pub struct gpio_desc {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
     _private: [u8; 0],
 }
 
 unsafe extern "C" {
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_platform_get_and_ioremap_resource(
         pdev: *mut platform_device,
         index: u32,
-        res: *mut *mut core::ffi::c_void,
-    ) -> *mut core::ffi::c_void;
-    fn is_err(ptr: *const core::ffi::c_void) -> bool;
-    fn ptr_err(ptr: *const core::ffi::c_void) -> i64;
+        res: *mut *mut kernel::ffi::c_void,
+    ) -> *mut kernel::ffi::c_void;
+    fn is_err(ptr: *const kernel::ffi::c_void) -> bool;
+    fn ptr_err(ptr: *const kernel::ffi::c_void) -> i64;
     fn dev_err_probe(
         dev: *mut device,
         err: i32,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
         ...,
     ) -> i32;
     fn devm_gpiod_get_optional(
         dev: *mut device,
-        con_id: *const core::ffi::c_char,
+        con_id: *const kernel::ffi::c_char,
         flags: u32,
     ) -> *mut gpio_desc;
-    fn writeb(value: u8, addr: *mut core::ffi::c_void);
+    fn writeb(value: u8, addr: *mut kernel::ffi::c_void);
     fn xilinx_core_probe(core: *mut xilinx_fpga_core) -> i32;
 }
 
@@ -80,7 +80,7 @@ unsafe fn to_xilinx_selectmap_conf(obj: *mut xilinx_fpga_core) -> *mut xilinx_se
 
 unsafe extern "C" fn xilinx_selectmap_write(
     core: *mut xilinx_fpga_core,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     count: usize,
 ) -> i32 {
     let conf = to_xilinx_selectmap_conf(core);
@@ -112,7 +112,7 @@ unsafe extern "C" fn xilinx_selectmap_probe(pdev: *mut platform_device) -> i32 {
         return dev_err_probe(
             (*conf).core.dev,
             ptr_err(base) as i32,
-            b"ioremap error\0".as_ptr() as *const core::ffi::c_char,
+            b"ioremap error\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
     (*conf).base = base;
@@ -120,28 +120,28 @@ unsafe extern "C" fn xilinx_selectmap_probe(pdev: *mut platform_device) -> i32 {
     /* CSI_B is active low */
     let gpio = devm_gpiod_get_optional(
         (*conf).core.dev,
-        b"csi\0".as_ptr() as *const core::ffi::c_char,
+        b"csi\0".as_ptr() as *const kernel::ffi::c_char,
         GPIOD_OUT_HIGH,
     );
-    if is_err(gpio as *mut core::ffi::c_void) {
+    if is_err(gpio as *mut kernel::ffi::c_void) {
         return dev_err_probe(
             (*conf).core.dev,
-            ptr_err(gpio as *mut core::ffi::c_void) as i32,
-            b"Failed to get CSI_B gpio\0".as_ptr() as *const core::ffi::c_char,
+            ptr_err(gpio as *mut kernel::ffi::c_void) as i32,
+            b"Failed to get CSI_B gpio\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
     /* RDWR_B is active low */
     let gpio = devm_gpiod_get_optional(
         (*conf).core.dev,
-        b"rdwr\0".as_ptr() as *const core::ffi::c_char,
+        b"rdwr\0".as_ptr() as *const kernel::ffi::c_char,
         GPIOD_OUT_HIGH,
     );
-    if is_err(gpio as *mut core::ffi::c_void) {
+    if is_err(gpio as *mut kernel::ffi::c_void) {
         return dev_err_probe(
             (*conf).core.dev,
-            ptr_err(gpio as *mut core::ffi::c_void) as i32,
-            b"Failed to get RDWR_B gpio\0".as_ptr() as *const core::ffi::c_char,
+            ptr_err(gpio as *mut kernel::ffi::c_void) as i32,
+            b"Failed to get RDWR_B gpio\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
@@ -156,7 +156,7 @@ pub struct platform_driver {
 
 #[repr(C)]
 pub struct driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 

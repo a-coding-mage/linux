@@ -26,7 +26,7 @@ pub union arch_uprobe {
 
 #[repr(C)]
 pub struct arch_uprobe_task {
-    pub saved_trap_nr: ::core::ffi::c_ulong,
+    pub saved_trap_nr: ::kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

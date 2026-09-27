@@ -8,12 +8,12 @@ pub struct screen_info {
 }
 
 extern "C" {
-    pub static mut vga_base: ::core::ffi::c_ulong;
+    pub static mut vga_base: ::kernel::ffi::c_ulong;
     pub static mut vgacon_screen_info: screen_info;
 }
 
 #[inline]
-pub unsafe fn VGA_MAP_MEM(x: ::core::ffi::c_ulong, _s: usize) -> ::core::ffi::c_ulong {
+pub unsafe fn VGA_MAP_MEM(x: ::kernel::ffi::c_ulong, _s: usize) -> ::kernel::ffi::c_ulong {
     vga_base + x
 }
 

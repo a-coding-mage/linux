@@ -17,18 +17,18 @@ unsafe extern "C" {
         cmd: u8,
         hdr_attrtype: u16,
         info: *mut genl_info,
-        ehdrp: *mut *mut core::ffi::c_void,
+        ehdrp: *mut *mut kernel::ffi::c_void,
     ) -> *mut sk_buff;
-    pub fn ethnl_dump_put(skb: *mut sk_buff, cb: *mut netlink_callback, cmd: u8) -> *mut core::ffi::c_void;
-    pub fn ethnl_bcastmsg_put(skb: *mut sk_buff, cmd: u8) -> *mut core::ffi::c_void;
-    pub fn ethnl_unicast_put(skb: *mut sk_buff, portid: u32, seq: u32, cmd: u8) -> *mut core::ffi::c_void;
+    pub fn ethnl_dump_put(skb: *mut sk_buff, cb: *mut netlink_callback, cmd: u8) -> *mut kernel::ffi::c_void;
+    pub fn ethnl_bcastmsg_put(skb: *mut sk_buff, cmd: u8) -> *mut kernel::ffi::c_void;
+    pub fn ethnl_unicast_put(skb: *mut sk_buff, portid: u32, seq: u32, cmd: u8) -> *mut kernel::ffi::c_void;
     pub fn ethnl_multicast(skb: *mut sk_buff, dev: *mut net_device) -> i32;
     pub fn ethnl_notify(dev: *mut net_device, cmd: u32, req_info: *const ethnl_req_info);
 
     pub fn nla_total_size(payload: usize) -> u32;
-    pub fn strnlen(s: *const core::ffi::c_char, maxlen: usize) -> usize;
+    pub fn strnlen(s: *const kernel::ffi::c_char, maxlen: usize) -> usize;
     pub fn nla_reserve(skb: *mut sk_buff, attrtype: u16, attrlen: usize) -> *mut nlattr;
-    pub fn nla_data(attr: *mut nlattr) -> *mut core::ffi::c_void;
+    pub fn nla_data(attr: *mut nlattr) -> *mut kernel::ffi::c_void;
     pub fn nla_get_u32(attr: *const nlattr) -> u32;
     pub fn nla_get_u8(attr: *const nlattr) -> u8;
     pub fn nla_len(attr: *const nlattr) -> usize;
@@ -41,12 +41,12 @@ unsafe extern "C" {
 }
 
 #[inline]
-pub unsafe fn ethnl_strz_size(s: *const core::ffi::c_char) -> i32 {
+pub unsafe fn ethnl_strz_size(s: *const kernel::ffi::c_char) -> i32 {
     nla_total_size(strnlen(s, ETH_GSTRING_LEN as usize) + 1) as i32
 }
 
 #[inline]
-pub unsafe fn ethnl_put_strz(skb: *mut sk_buff, attrtype: u16, s: *const core::ffi::c_char) -> i32 {
+pub unsafe fn ethnl_put_strz(skb: *mut sk_buff, attrtype: u16, s: *const kernel::ffi::c_char) -> i32 {
     let len = strnlen(s, ETH_GSTRING_LEN as usize);
     let attr = nla_reserve(skb, attrtype, len + 1);
     if attr.is_null() { return -EMSGSIZE; }
@@ -97,7 +97,7 @@ pub unsafe fn ethnl_update_bool(dst: *mut bool, attr: *const nlattr, mod_: *mut 
 }
 
 #[inline]
-pub unsafe fn ethnl_update_binary(dst: *mut core::ffi::c_void, mut len: usize, attr: *const nlattr, mod_: *mut bool) {
+pub unsafe fn ethnl_update_binary(dst: *mut kernel::ffi::c_void, mut len: usize, attr: *const nlattr, mod_: *mut bool) {
     if attr.is_null() { return; }
     let alen = nla_len(attr); if alen < len { len = alen; }
     if core::slice::from_raw_parts(dst as *const u8, len) == core::slice::from_raw_parts(nla_data(attr) as *const u8, len) { return; }

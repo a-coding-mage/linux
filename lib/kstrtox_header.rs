@@ -6,17 +6,17 @@ pub const KSTRTOX_OVERFLOW: u32 = 1u32 << 31;
 
 extern "C" {
     pub fn _parse_integer_fixup_radix(
-        s: *const core::ffi::c_char,
-        base: *mut core::ffi::c_uint,
-    ) -> *const core::ffi::c_char;
+        s: *const kernel::ffi::c_char,
+        base: *mut kernel::ffi::c_uint,
+    ) -> *const kernel::ffi::c_char;
 
     pub fn _parse_integer_limit(
-        s: *const core::ffi::c_char,
-        base: core::ffi::c_uint,
-        res: *mut core::ffi::c_ulonglong,
+        s: *const kernel::ffi::c_char,
+        base: kernel::ffi::c_uint,
+        res: *mut kernel::ffi::c_ulonglong,
         max_chars: usize,
-        init: core::ffi::c_ulonglong,
-    ) -> core::ffi::c_uint;
+        init: kernel::ffi::c_ulonglong,
+    ) -> kernel::ffi::c_uint;
 }
 
 #[macro_export]
@@ -27,7 +27,7 @@ macro_rules! _parse_integer0 {
                 $s,
                 $base,
                 $res,
-                ::core::ffi::c_int::MAX as usize,
+                ::kernel::ffi::c_int::MAX as usize,
                 0,
             )
         }

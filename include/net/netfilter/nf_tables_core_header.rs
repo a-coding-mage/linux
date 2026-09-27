@@ -24,7 +24,7 @@ extern "C" {
     pub static mut nft_secmark_obj_type: nft_object_type;
     pub static mut nft_counter_obj_type: nft_object_type;
 
-    pub fn nf_tables_core_module_init() -> ::core::ffi::c_int;
+    pub fn nf_tables_core_module_init() -> ::kernel::ffi::c_int;
     pub fn nf_tables_core_module_exit();
 }
 
@@ -145,7 +145,7 @@ pub const NFT_PAYLOAD_CTX_INNER_TH: u32 = 1 << 3;
 
 #[repr(C)]
 pub struct nft_inner_tun_ctx {
-    pub cookie: ::core::ffi::c_ulong,
+    pub cookie: ::kernel::ffi::c_ulong,
     pub type_: u16,
     pub inner_tunoff: u16,
     pub inner_lloff: u16,
@@ -157,7 +157,7 @@ pub struct nft_inner_tun_ctx {
 }
 
 extern "C" {
-    pub fn nft_payload_inner_offset(pkt: *const nft_pktinfo) -> ::core::ffi::c_int;
+    pub fn nft_payload_inner_offset(pkt: *const nft_pktinfo) -> ::kernel::ffi::c_int;
     pub fn nft_payload_inner_eval(expr: *const nft_expr, regs: *mut nft_regs, pkt: *const nft_pktinfo, ctx: *mut nft_inner_tun_ctx);
     pub fn nft_objref_eval(expr: *const nft_expr, regs: *mut nft_regs, pkt: *const nft_pktinfo);
     pub fn nft_objref_map_eval(expr: *const nft_expr, regs: *mut nft_regs, pkt: *const nft_pktinfo);

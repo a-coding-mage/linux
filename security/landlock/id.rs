@@ -19,9 +19,9 @@
 #![allow(dead_code)]
 
 type size_t = usize;
-type u8 = core::ffi::c_uchar;
-type u32 = core::ffi::c_uint;
-type u64 = core::ffi::c_ulonglong;
+type u8 = kernel::ffi::c_uchar;
+type u32 = kernel::ffi::c_uint;
+type u64 = kernel::ffi::c_ulonglong;
 
 const COUNTER_PRE_INIT: u64 = 0;
 const U32_MAX: u64 = u32::MAX as u64;
@@ -43,7 +43,7 @@ pub struct kunit_case {
 
 #[repr(C)]
 pub struct kunit_suite {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     test_cases: *mut kunit_case,
 }
 
@@ -63,7 +63,7 @@ unsafe extern "C" {
         test: *mut kunit,
         left: u64,
         right: u64,
-        message: *const core::ffi::c_char,
+        message: *const kernel::ffi::c_char,
     );
 }
 

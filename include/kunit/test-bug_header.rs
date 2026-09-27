@@ -8,7 +8,7 @@
 
 /* The C header guard and include directives are not emitted as Rust code. */
 
-use core::ffi::{c_char, c_int, c_void};
+use kernel::ffi::{c_char, c_int, c_void};
 
 /* Equivalent build-time condition for IS_ENABLED(CONFIG_KUNIT). */
 #[cfg(CONFIG_KUNIT)]
@@ -71,8 +71,8 @@ mod kunit_enabled {
             ) } {
                 unsafe {
                     if let Some(fail) = $crate::kunit_enabled::kunit_hooks.fail_current_test {
-                        fail(file!().as_ptr() as *const core::ffi::c_char,
-                             line!() as core::ffi::c_int,
+                        fail(file!().as_ptr() as *const kernel::ffi::c_char,
+                             line!() as kernel::ffi::c_int,
                              $fmt $(, $arg)*);
                     }
                 }

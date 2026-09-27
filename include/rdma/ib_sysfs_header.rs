@@ -16,13 +16,13 @@ pub struct ib_port_attribute {
         ibdev: *mut ib_device,
         port_num: u32,
         attr: *mut ib_port_attribute,
-        buf: *mut core::ffi::c_char,
+        buf: *mut kernel::ffi::c_char,
     ) -> isize>,
     pub store: Option<unsafe extern "C" fn(
         ibdev: *mut ib_device,
         port_num: u32,
         attr: *mut ib_port_attribute,
-        buf: *const core::ffi::c_char,
+        buf: *const kernel::ffi::c_char,
         count: usize,
     ) -> isize>,
 }

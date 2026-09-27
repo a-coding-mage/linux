@@ -507,17 +507,17 @@ static alc5632_spkoutn_mux_controls: snd_kcontrol_new =
 
 /* speaker amplifier */
 static alc5632_amp_names: [&[u8]; 2] = [b"AB Amp\0", b"D Amp\0"];
-static alc5632_amp_enum: _ =
+static alc5632_amp_enum: u32 =
     SOC_ENUM_SINGLE_DECL!(alc5632_amp_enum, ALC5632_OUTPUT_MIXER_CTRL, 13, alc5632_amp_names);
 static alc5632_amp_mux_controls: snd_kcontrol_new =
     SOC_DAPM_ENUM!("AB-D Amp Mux", alc5632_amp_enum);
 
-static alc5632_adcr_func_enum: _ =
+static alc5632_adcr_func_enum: u32 =
     SOC_ENUM_SINGLE_DECL!(alc5632_adcr_func_enum, ALC5632_DAC_FUNC_SELECT, 5, alc5632_adcr_func_sel);
 static alc5632_adcr_func_controls: snd_kcontrol_new =
     SOC_DAPM_ENUM!("ADCR Mux", alc5632_adcr_func_enum);
 
-static alc5632_i2s_out_enum: _ =
+static alc5632_i2s_out_enum: u32 =
     SOC_ENUM_SINGLE_DECL!(alc5632_i2s_out_enum, ALC5632_I2S_OUT_CTL, 5, alc5632_i2s_out_sel);
 static alc5632_i2s_out_controls: snd_kcontrol_new =
     SOC_DAPM_ENUM!("I2SOut Mux", alc5632_i2s_out_enum);

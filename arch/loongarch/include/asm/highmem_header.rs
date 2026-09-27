@@ -18,7 +18,7 @@
 extern "C" {
     pub static mut pkmap_page_table: *mut pte_t;
 
-    pub fn kmap_flush_tlb(addr: ::core::ffi::c_ulong);
+    pub fn kmap_flush_tlb(addr: ::kernel::ffi::c_ulong);
 }
 
 pub const ARCH_HAS_KMAP_FLUSH_TLB: bool = true;

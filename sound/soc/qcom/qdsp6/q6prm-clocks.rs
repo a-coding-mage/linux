@@ -12,7 +12,7 @@
 // q6dsp-lpass-clocks.h
 // q6prm.h
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 use core::ptr;
 
 macro_rules! Q6PRM_CLK {

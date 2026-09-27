@@ -37,13 +37,13 @@ extern "C" {
     pub fn iio_read_const_attr(
         dev: *mut device,
         attr: *mut device_attribute,
-        len: *mut core::ffi::c_char,
+        len: *mut kernel::ffi::c_char,
     ) -> isize;
 }
 
 #[repr(C)]
 pub struct iio_const_attr {
-    pub string: *const core::ffi::c_char,
+    pub string: *const kernel::ffi::c_char,
     pub dev_attr: device_attribute,
 }
 

@@ -47,9 +47,9 @@ pub struct receiver {
     pub can_id: canid_t,
     pub mask: canid_t,
     pub matches: atomic_long_t,
-    pub func: Option<unsafe extern "C" fn(skb: *mut sk_buff, data: *mut core::ffi::c_void)>,
-    pub data: *mut core::ffi::c_void,
-    pub ident: *mut core::ffi::c_char,
+    pub func: Option<unsafe extern "C" fn(skb: *mut sk_buff, data: *mut kernel::ffi::c_void)>,
+    pub data: *mut kernel::ffi::c_void,
+    pub ident: *mut kernel::ffi::c_char,
     pub sk: *mut sock,
     pub rcu: rcu_head,
 }
@@ -59,23 +59,23 @@ pub struct receiver {
 /* can be reset e.g. by can_init_stats() */
 #[repr(C)]
 pub struct can_pkg_stats {
-    pub jiffies_init: core::ffi::c_ulong,
+    pub jiffies_init: kernel::ffi::c_ulong,
 
     pub rx_frames: atomic_long_t,
     pub tx_frames: atomic_long_t,
     pub matches: atomic_long_t,
 
-    pub total_rx_rate: core::ffi::c_ulong,
-    pub total_tx_rate: core::ffi::c_ulong,
-    pub total_rx_match_ratio: core::ffi::c_ulong,
+    pub total_rx_rate: kernel::ffi::c_ulong,
+    pub total_tx_rate: kernel::ffi::c_ulong,
+    pub total_rx_match_ratio: kernel::ffi::c_ulong,
 
-    pub current_rx_rate: core::ffi::c_ulong,
-    pub current_tx_rate: core::ffi::c_ulong,
-    pub current_rx_match_ratio: core::ffi::c_ulong,
+    pub current_rx_rate: kernel::ffi::c_ulong,
+    pub current_tx_rate: kernel::ffi::c_ulong,
+    pub current_rx_match_ratio: kernel::ffi::c_ulong,
 
-    pub max_rx_rate: core::ffi::c_ulong,
-    pub max_tx_rate: core::ffi::c_ulong,
-    pub max_rx_match_ratio: core::ffi::c_ulong,
+    pub max_rx_rate: kernel::ffi::c_ulong,
+    pub max_tx_rate: kernel::ffi::c_ulong,
+    pub max_rx_match_ratio: kernel::ffi::c_ulong,
 
     pub rx_frames_delta: atomic_long_t,
     pub tx_frames_delta: atomic_long_t,
@@ -85,10 +85,10 @@ pub struct can_pkg_stats {
 /* persistent statistics */
 #[repr(C)]
 pub struct can_rcv_lists_stats {
-    pub stats_reset: core::ffi::c_ulong,
-    pub user_reset: core::ffi::c_ulong,
-    pub rcv_entries: core::ffi::c_ulong,
-    pub rcv_entries_max: core::ffi::c_ulong,
+    pub stats_reset: kernel::ffi::c_ulong,
+    pub user_reset: kernel::ffi::c_ulong,
+    pub rcv_entries: kernel::ffi::c_ulong,
+    pub rcv_entries_max: kernel::ffi::c_ulong,
 }
 
 /* function prototypes for the CAN networklayer procfs (proc.c) */

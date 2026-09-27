@@ -38,7 +38,7 @@ unsafe fn dragen2_reset() {
     }
 }
 
-pub unsafe fn init_dragen2(command: *mut core::ffi::c_char, size: core::ffi::c_int) {
+pub unsafe fn init_dragen2(command: *mut kernel::ffi::c_char, size: kernel::ffi::c_int) {
     let _ = (command, size);
     mach_reset = Some(dragen2_reset);
 

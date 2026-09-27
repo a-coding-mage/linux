@@ -7,7 +7,7 @@
 // TRACE_HEADER_MULTI_READ.  Rust items are emitted once by the module system.
 // Dependencies supplied by the original driver are intentionally left opaque.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Types supplied by ivpu_drv.h, ivpu_job.h, vpu_jsm_api.h, ivpu_jsm_msg.h,
 // and ivpu_ipc.h.

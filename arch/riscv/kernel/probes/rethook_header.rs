@@ -12,7 +12,7 @@ pub struct rethook_node {
 }
 
 extern "C" {
-    pub fn arch_rethook_trampoline_callback(regs: *mut pt_regs) -> ::core::ffi::c_ulong;
+    pub fn arch_rethook_trampoline_callback(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong;
     pub fn arch_rethook_prepare(
         rhn: *mut rethook_node,
         regs: *mut pt_regs,

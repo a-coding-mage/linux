@@ -62,10 +62,10 @@ pub struct fault_attr {
 
 #[inline]
 pub unsafe fn ivpu_hw_reg_poll_fld(
-    vdev: *mut ivpu_device, base: *mut core::ffi::c_void,
+    vdev: *mut ivpu_device, base: *mut kernel::ffi::c_void,
     reg_offset: u32, reg_mask: u32, exp_masked_val: u32, timeout_us: u32,
-    func_name: *const core::ffi::c_char, reg_name: *const core::ffi::c_char,
-    fld_name: *const core::ffi::c_char,
+    func_name: *const kernel::ffi::c_char, reg_name: *const kernel::ffi::c_char,
+    fld_name: *const kernel::ffi::c_char,
 ) -> i32 {
     let mut reg_val: u32 = 0;
     let mut ret: i32;
@@ -79,29 +79,29 @@ pub unsafe fn ivpu_hw_reg_poll_fld(
 }
 
 #[inline]
-pub unsafe fn ivpu_hw_reg_rd32(vdev: *mut ivpu_device, base: *mut core::ffi::c_void, reg: u32, name: *const core::ffi::c_char, func: *const core::ffi::c_char) -> u32 {
+pub unsafe fn ivpu_hw_reg_rd32(vdev: *mut ivpu_device, base: *mut kernel::ffi::c_void, reg: u32, name: *const kernel::ffi::c_char, func: *const kernel::ffi::c_char) -> u32 {
     let val = readl!((base as *mut u8).add(reg as usize));
     ivpu_dbg!(vdev, REG, "%s : %s (0x%08x) RD: 0x%08x\n", func, name, reg, val); val
 }
 
 #[inline]
-pub unsafe fn ivpu_hw_reg_rd64(vdev: *mut ivpu_device, base: *mut core::ffi::c_void, reg: u32, name: *const core::ffi::c_char, func: *const core::ffi::c_char) -> u64 {
+pub unsafe fn ivpu_hw_reg_rd64(vdev: *mut ivpu_device, base: *mut kernel::ffi::c_void, reg: u32, name: *const kernel::ffi::c_char, func: *const kernel::ffi::c_char) -> u64 {
     let val = readq!((base as *mut u8).add(reg as usize));
     ivpu_dbg!(vdev, REG, "%s : %s (0x%08x) RD: 0x%016llx\n", func, name, reg, val); val
 }
 
 #[inline]
-pub unsafe fn ivpu_hw_reg_wr32(vdev: *mut ivpu_device, base: *mut core::ffi::c_void, reg: u32, val: u32, name: *const core::ffi::c_char, func: *const core::ffi::c_char) {
+pub unsafe fn ivpu_hw_reg_wr32(vdev: *mut ivpu_device, base: *mut kernel::ffi::c_void, reg: u32, val: u32, name: *const kernel::ffi::c_char, func: *const kernel::ffi::c_char) {
     ivpu_dbg!(vdev, REG, "%s : %s (0x%08x) WR: 0x%08x\n", func, name, reg, val); writel!(val, (base as *mut u8).add(reg as usize));
 }
 
 #[inline]
-pub unsafe fn ivpu_hw_reg_wr64(vdev: *mut ivpu_device, base: *mut core::ffi::c_void, reg: u32, val: u64, name: *const core::ffi::c_char, func: *const core::ffi::c_char) {
+pub unsafe fn ivpu_hw_reg_wr64(vdev: *mut ivpu_device, base: *mut kernel::ffi::c_void, reg: u32, val: u64, name: *const kernel::ffi::c_char, func: *const kernel::ffi::c_char) {
     ivpu_dbg!(vdev, REG, "%s : %s (0x%08x) WR: 0x%016llx\n", func, name, reg, val); writeq!(val, (base as *mut u8).add(reg as usize));
 }
 
 #[inline]
-pub unsafe fn ivpu_hw_reg_wr32_index(vdev: *mut ivpu_device, base: *mut core::ffi::c_void, mut reg: u32, stride: u32, index: u32, val: u32, name: *const core::ffi::c_char, func: *const core::ffi::c_char) {
+pub unsafe fn ivpu_hw_reg_wr32_index(vdev: *mut ivpu_device, base: *mut kernel::ffi::c_void, mut reg: u32, stride: u32, index: u32, val: u32, name: *const kernel::ffi::c_char, func: *const kernel::ffi::c_char) {
     reg = reg.wrapping_add(index.wrapping_mul(stride));
     ivpu_dbg!(vdev, REG, "%s WR: %s_%d (0x%08x) <= 0x%08x\n", func, name, index, reg, val); writel!(val, (base as *mut u8).add(reg as usize));
 }

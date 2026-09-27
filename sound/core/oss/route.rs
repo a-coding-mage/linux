@@ -10,11 +10,11 @@ use core::ptr;
 
 unsafe fn zero_areas(
     mut dvp: *mut snd_pcm_plugin_channel,
-    ndsts: ::core::ffi::c_int,
+    ndsts: ::kernel::ffi::c_int,
     frames: snd_pcm_uframes_t,
     format: snd_pcm_format_t,
 ) {
-    let mut dst: ::core::ffi::c_int = 0;
+    let mut dst: ::kernel::ffi::c_int = 0;
     while dst < ndsts {
         if (*dvp).wanted != 0 {
             snd_pcm_area_silence(&mut (*dvp).area, 0, frames, format);
@@ -49,9 +49,9 @@ unsafe extern "C" fn route_transfer(
     dst_channels: *mut snd_pcm_plugin_channel,
     mut frames: snd_pcm_uframes_t,
 ) -> snd_pcm_sframes_t {
-    let nsrcs: ::core::ffi::c_int;
-    let ndsts: ::core::ffi::c_int;
-    let mut dst: ::core::ffi::c_int;
+    let nsrcs: ::kernel::ffi::c_int;
+    let ndsts: ::kernel::ffi::c_int;
+    let mut dst: ::kernel::ffi::c_int;
     let mut dvp: *mut snd_pcm_plugin_channel;
     let format: snd_pcm_format_t;
 
@@ -100,9 +100,9 @@ pub unsafe extern "C" fn snd_pcm_plugin_build_route(
     src_format: *mut snd_pcm_plugin_format,
     dst_format: *mut snd_pcm_plugin_format,
     r_plugin: *mut *mut snd_pcm_plugin,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let mut plugin: *mut snd_pcm_plugin = ptr::null_mut();
-    let err: ::core::ffi::c_int;
+    let err: ::kernel::ffi::c_int;
 
     if snd_BUG_ON(r_plugin.is_null()) {
         return -ENXIO;
@@ -117,7 +117,7 @@ pub unsafe extern "C" fn snd_pcm_plugin_build_route(
 
     err = snd_pcm_plugin_build(
         plug,
-        b"route conversion\0".as_ptr() as *const ::core::ffi::c_char,
+        b"route conversion\0".as_ptr() as *const ::kernel::ffi::c_char,
         src_format,
         dst_format,
         0,

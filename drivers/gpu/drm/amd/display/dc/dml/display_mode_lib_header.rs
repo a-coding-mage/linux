@@ -50,8 +50,8 @@ pub struct dml_funcs {
         dlg_regs: *mut display_dlg_regs_st,
         ttu_regs: *mut display_ttu_regs_st,
         e2e_pipe_param: *const display_e2e_pipe_params_st,
-        num_pipes: ::core::ffi::c_uint,
-        pipe_idx: ::core::ffi::c_uint,
+        num_pipes: ::kernel::ffi::c_uint,
+        pipe_idx: ::kernel::ffi::c_uint,
         cstate_en: bool,
         pstate_en: bool,
         vm_en: bool,
@@ -70,15 +70,15 @@ pub struct dml_funcs {
         dlg_regs: *mut display_dlg_regs_st,
         ttu_regs: *mut display_ttu_regs_st,
         e2e_pipe_param: *mut display_e2e_pipe_params_st,
-        num_pipes: ::core::ffi::c_uint,
-        pipe_idx: ::core::ffi::c_uint,
+        num_pipes: ::kernel::ffi::c_uint,
+        pipe_idx: ::kernel::ffi::c_uint,
     )>,
     pub rq_dlg_get_rq_reg_v2: Option<unsafe extern "C" fn(
         rq_regs: *mut display_rq_regs_st,
         mode_lib: *mut display_mode_lib,
         e2e_pipe_param: *const display_e2e_pipe_params_st,
-        num_pipes: ::core::ffi::c_uint,
-        pipe_idx: ::core::ffi::c_uint,
+        num_pipes: ::kernel::ffi::c_uint,
+        pipe_idx: ::kernel::ffi::c_uint,
     )>,
     pub recalculate: Option<unsafe extern "C" fn(mode_lib: *mut display_mode_lib)>,
     pub validate: Option<unsafe extern "C" fn(mode_lib: *mut display_mode_lib)>,
@@ -104,12 +104,12 @@ extern "C" {
         project: dml_project,
     );
 
-    pub fn dml_get_status_message(status: dm_validation_status) -> *const ::core::ffi::c_char;
+    pub fn dml_get_status_message(status: dm_validation_status) -> *const ::kernel::ffi::c_char;
 
     pub fn dml_log_pipe_params(
         mode_lib: *mut display_mode_lib,
         pipes: *mut display_e2e_pipe_params_st,
-        pipe_cnt: ::core::ffi::c_int,
+        pipe_cnt: ::kernel::ffi::c_int,
     );
 
     pub fn dml_log_mode_support_params(mode_lib: *mut display_mode_lib);

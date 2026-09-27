@@ -16,18 +16,18 @@ unsafe fn kvm_sbi_ext_base_handler(
 ) -> i32 {
     let cp: *mut kvm_cpu_context = &mut (*vcpu).arch.guest_context;
     let mut sbi_ext: *const kvm_vcpu_sbi_extension;
-    let out_val: *mut libc::c_ulong = &mut (*retdata).out_val;
+    let out_val: *mut kernel::ffi::c_ulong = &mut (*retdata).out_val;
 
     match (*cp).a6 {
         SBI_EXT_BASE_GET_SPEC_VERSION => {
             *out_val = ((KVM_SBI_VERSION_MAJOR << SBI_SPEC_VERSION_MAJOR_SHIFT)
-                | KVM_SBI_VERSION_MINOR) as libc::c_ulong;
+                | KVM_SBI_VERSION_MINOR) as kernel::ffi::c_ulong;
         }
         SBI_EXT_BASE_GET_IMP_ID => {
-            *out_val = KVM_SBI_IMPID as libc::c_ulong;
+            *out_val = KVM_SBI_IMPID as kernel::ffi::c_ulong;
         }
         SBI_EXT_BASE_GET_IMP_VERSION => {
-            *out_val = LINUX_VERSION_CODE as libc::c_ulong;
+            *out_val = LINUX_VERSION_CODE as kernel::ffi::c_ulong;
         }
         SBI_EXT_BASE_PROBE_EXT => {
             if ((*cp).a0 >= SBI_EXT_EXPERIMENTAL_START
@@ -43,7 +43,7 @@ unsafe fn kvm_sbi_ext_base_handler(
                 sbi_ext = kvm_vcpu_sbi_find_ext(vcpu, (*cp).a0);
                 *out_val = if !sbi_ext.is_null() {
                     if let Some(probe) = (*sbi_ext).probe {
-                        probe(vcpu) as libc::c_ulong
+                        probe(vcpu) as kernel::ffi::c_ulong
                     } else {
                         1
                     }

@@ -40,8 +40,8 @@ pub enum cm_batt_temp {
 
 #[repr(C)]
 pub struct charger_cable {
-    pub extcon_name: *const core::ffi::c_char,
-    pub name: *const core::ffi::c_char,
+    pub extcon_name: *const kernel::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub extcon_dev: *mut extcon_dev,
     pub extcon_type: u64,
     pub wq: work_struct,
@@ -55,7 +55,7 @@ pub struct charger_cable {
 
 #[repr(C)]
 pub struct charger_regulator {
-    pub regulator_name: *const core::ffi::c_char,
+    pub regulator_name: *const kernel::ffi::c_char,
     pub consumer: *mut regulator,
     pub externally_control: i32,
     pub cables: *mut charger_cable,
@@ -70,7 +70,7 @@ pub struct charger_regulator {
 
 #[repr(C)]
 pub struct charger_desc {
-    pub psy_name: *const core::ffi::c_char,
+    pub psy_name: *const kernel::ffi::c_char,
     pub polling_mode: polling_modes,
     pub polling_interval_ms: u32,
     pub fullbatt_vchkdrop_uV: u32,
@@ -78,12 +78,12 @@ pub struct charger_desc {
     pub fullbatt_soc: u32,
     pub fullbatt_full_capacity: u32,
     pub battery_present: data_source,
-    pub psy_charger_stat: *const *const core::ffi::c_char,
+    pub psy_charger_stat: *const *const kernel::ffi::c_char,
     pub num_charger_regulators: i32,
     pub charger_regulators: *mut charger_regulator,
     pub sysfs_groups: *const *const attribute_group,
-    pub psy_fuel_gauge: *const core::ffi::c_char,
-    pub thermal_zone: *const core::ffi::c_char,
+    pub psy_fuel_gauge: *const kernel::ffi::c_char,
+    pub thermal_zone: *const kernel::ffi::c_char,
     pub temp_min: i32,
     pub temp_max: i32,
     pub temp_diff: i32,
@@ -104,7 +104,7 @@ pub struct charger_manager {
     pub tzd_batt: *mut thermal_zone_device,
     pub charger_enabled: bool,
     pub emergency_stop: i32,
-    pub psy_name_buf: [core::ffi::c_char; PSY_NAME_MAX + 1],
+    pub psy_name_buf: [kernel::ffi::c_char; PSY_NAME_MAX + 1],
     pub charger_psy_desc: power_supply_desc,
     pub charger_psy: *mut power_supply,
     pub charging_start_time: u64,

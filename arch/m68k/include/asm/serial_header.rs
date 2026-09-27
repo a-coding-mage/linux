@@ -18,14 +18,14 @@ pub const BASE_BAUD: i32 = 1_843_200 / 16;
 /* Standard COM flags (except for COM4, because of the 8514 problem). */
 /* The CONFIG_SERIAL_8250_DETECT_IRQ build-time condition is preserved here. */
 #[cfg(CONFIG_SERIAL_8250_DETECT_IRQ)]
-pub const STD_COM_FLAGS: _ = UPF_BOOT_AUTOCONF | UPF_SKIP_TEST | UPF_AUTO_IRQ;
+pub const STD_COM_FLAGS: u32 = UPF_BOOT_AUTOCONF | UPF_SKIP_TEST | UPF_AUTO_IRQ;
 #[cfg(CONFIG_SERIAL_8250_DETECT_IRQ)]
-pub const STD_COM4_FLAGS: _ = UPF_BOOT_AUTOCONF | UPF_AUTO_IRQ;
+pub const STD_COM4_FLAGS: u32 = UPF_BOOT_AUTOCONF | UPF_AUTO_IRQ;
 
 #[cfg(not(CONFIG_SERIAL_8250_DETECT_IRQ))]
-pub const STD_COM_FLAGS: _ = UPF_BOOT_AUTOCONF | UPF_SKIP_TEST;
+pub const STD_COM_FLAGS: u32 = UPF_BOOT_AUTOCONF | UPF_SKIP_TEST;
 #[cfg(not(CONFIG_SERIAL_8250_DETECT_IRQ))]
-pub const STD_COM4_FLAGS: _ = UPF_BOOT_AUTOCONF;
+pub const STD_COM4_FLAGS: u32 = UPF_BOOT_AUTOCONF;
 
 /*
  * The CONFIG_ISA build-time condition is preserved here.  This macro

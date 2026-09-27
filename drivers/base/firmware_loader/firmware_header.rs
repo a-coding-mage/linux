@@ -35,7 +35,7 @@ pub struct FwPriv {
     pub list: ListHead,
     pub fwc: *mut FirmwareCache,
     pub fw_st: FwState,
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
     pub size: usize,
     pub allocated_size: usize,
     pub offset: usize,
@@ -52,7 +52,7 @@ pub struct FwPriv {
     pub need_uevent: bool,
     #[cfg(CONFIG_FW_LOADER_USER_HELPER)]
     pub pending_list: ListHead,
-    pub fw_name: *const core::ffi::c_char,
+    pub fw_name: *const kernel::ffi::c_char,
 }
 
 extern "C" {
@@ -66,10 +66,10 @@ extern "C" {
     pub fn write_once<T>(ptr: *mut T, value: T);
 
     pub fn alloc_lookup_fw_priv(
-        fw_name: *const core::ffi::c_char,
+        fw_name: *const kernel::ffi::c_char,
         fwc: *mut FirmwareCache,
         fw_priv: *mut *mut FwPriv,
-        dbuf: *mut core::ffi::c_void,
+        dbuf: *mut kernel::ffi::c_void,
         size: usize,
         offset: usize,
         opt_flags: u32,
@@ -124,7 +124,7 @@ pub unsafe fn fw_state_is_loading(fw_priv: *mut FwPriv) -> bool { __fw_state_che
 #[cfg(CONFIG_FW_LOADER)]
 extern "C" {
     pub fn firmware_is_builtin(fw: *const Firmware) -> bool;
-    pub fn firmware_request_builtin_buf(fw: *mut Firmware, name: *const core::ffi::c_char, buf: *mut core::ffi::c_void, size: usize) -> bool;
+    pub fn firmware_request_builtin_buf(fw: *mut Firmware, name: *const kernel::ffi::c_char, buf: *mut kernel::ffi::c_void, size: usize) -> bool;
 }
 
 #[cfg(not(CONFIG_FW_LOADER))]
@@ -132,7 +132,7 @@ extern "C" {
 pub unsafe fn firmware_is_builtin(_fw: *const Firmware) -> bool { false }
 #[cfg(not(CONFIG_FW_LOADER))]
 #[inline]
-pub unsafe fn firmware_request_builtin_buf(_fw: *mut Firmware, _name: *const core::ffi::c_char, _buf: *mut core::ffi::c_void, _size: usize) -> bool { false }
+pub unsafe fn firmware_request_builtin_buf(_fw: *mut Firmware, _name: *const kernel::ffi::c_char, _buf: *mut kernel::ffi::c_void, _size: usize) -> bool { false }
 
 #[cfg(CONFIG_FW_LOADER_PAGED_BUF)]
 extern "C" {

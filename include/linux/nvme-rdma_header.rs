@@ -32,18 +32,18 @@ pub enum nvme_rdma_cm_status {
     NVME_RDMA_CM_INVALID_CNTLID = 0x09,
 }
 
-pub unsafe fn nvme_rdma_cm_msg(status: nvme_rdma_cm_status) -> *const core::ffi::c_char {
+pub unsafe fn nvme_rdma_cm_msg(status: nvme_rdma_cm_status) -> *const kernel::ffi::c_char {
     match status {
-        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_LEN => b"invalid length\0".as_ptr() as *const core::ffi::c_char,
-        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_RECFMT => b"invalid record format\0".as_ptr() as *const core::ffi::c_char,
-        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_QID => b"invalid queue ID\0".as_ptr() as *const core::ffi::c_char,
-        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_HSQSIZE => b"invalid host SQ size\0".as_ptr() as *const core::ffi::c_char,
-        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_HRQSIZE => b"invalid host RQ size\0".as_ptr() as *const core::ffi::c_char,
-        nvme_rdma_cm_status::NVME_RDMA_CM_NO_RSC => b"resource not found\0".as_ptr() as *const core::ffi::c_char,
-        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_IRD => b"invalid IRD\0".as_ptr() as *const core::ffi::c_char,
-        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_ORD => b"Invalid ORD\0".as_ptr() as *const core::ffi::c_char,
-        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_CNTLID => b"invalid controller ID\0".as_ptr() as *const core::ffi::c_char,
-        _ => b"unrecognized reason\0".as_ptr() as *const core::ffi::c_char,
+        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_LEN => b"invalid length\0".as_ptr() as *const kernel::ffi::c_char,
+        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_RECFMT => b"invalid record format\0".as_ptr() as *const kernel::ffi::c_char,
+        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_QID => b"invalid queue ID\0".as_ptr() as *const kernel::ffi::c_char,
+        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_HSQSIZE => b"invalid host SQ size\0".as_ptr() as *const kernel::ffi::c_char,
+        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_HRQSIZE => b"invalid host RQ size\0".as_ptr() as *const kernel::ffi::c_char,
+        nvme_rdma_cm_status::NVME_RDMA_CM_NO_RSC => b"resource not found\0".as_ptr() as *const kernel::ffi::c_char,
+        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_IRD => b"invalid IRD\0".as_ptr() as *const kernel::ffi::c_char,
+        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_ORD => b"Invalid ORD\0".as_ptr() as *const kernel::ffi::c_char,
+        nvme_rdma_cm_status::NVME_RDMA_CM_INVALID_CNTLID => b"invalid controller ID\0".as_ptr() as *const kernel::ffi::c_char,
+        _ => b"unrecognized reason\0".as_ptr() as *const kernel::ffi::c_char,
     }
 }
 

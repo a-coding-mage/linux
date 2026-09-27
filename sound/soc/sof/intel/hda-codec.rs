@@ -15,23 +15,23 @@ extern "C" {
     static mut hda_codec_mask: i32;
 
     fn device_attach(dev: *mut device) -> i32;
-    fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
+    fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
     fn devm_kzalloc(
         dev: *mut device,
         size: usize,
         flags: gfp_t,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     fn hda_codec_dev(codec: *mut hda_codec) -> *mut device;
     fn hda_codec_jack_check(sdev: *mut snd_sof_dev);
     fn mutex_lock(lock: *mut mutex);
     fn mutex_unlock(lock: *mut mutex);
     fn pm_request_resume(dev: *mut device) -> i32;
     fn put_device(dev: *mut device);
-    fn request_module(name: *const core::ffi::c_char) -> i32;
+    fn request_module(name: *const kernel::ffi::c_char) -> i32;
     fn snd_hda_codec_device_init(
         bus: *mut hda_bus,
         addr: i32,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
         ...
     ) -> *mut hda_codec;
     fn snd_hdac_bus_get_response(bus: *mut hdac_bus, addr: i32, resp: *mut u32) -> i32;
@@ -44,7 +44,7 @@ extern "C" {
     fn snd_hdac_chip_updatew(bus: *mut hdac_bus, reg: u32, mask: u32, val: u32);
     fn snd_hdac_chip_writeb(bus: *mut hdac_bus, reg: u32, val: u8);
     fn snd_hdac_chip_writew(bus: *mut hdac_bus, reg: u32, val: u16);
-    fn snd_hdac_codec_modalias(codec: *mut hdac_device, buf: *mut core::ffi::c_char, size: usize);
+    fn snd_hdac_codec_modalias(codec: *mut hdac_device, buf: *mut kernel::ffi::c_char, size: usize);
     fn snd_hdac_device_register(codec: *mut hdac_device) -> i32;
     fn snd_hdac_device_unregister(codec: *mut hdac_device);
     fn snd_hdac_display_power(bus: *mut hdac_bus, idx: i32, enable: bool);
@@ -55,7 +55,7 @@ extern "C" {
     fn sof_debug_check_flag(flag: u32) -> bool;
     fn sof_to_bus(sdev: *mut snd_sof_dev) -> *mut hdac_bus;
     fn sof_to_hbus(sdev: *mut snd_sof_dev) -> *mut hda_bus;
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
     fn to_hda_bus(bus: *mut hdac_bus) -> *mut hda_bus;
 }
 
@@ -99,8 +99,8 @@ pub struct hda_codec {
 pub struct hdac_bus {
     pub dev: *mut device,
     pub idx: i32,
-    pub codec_mask: core::ffi::c_ulong,
-    pub audio_component: *mut core::ffi::c_void,
+    pub codec_mask: kernel::ffi::c_ulong,
+    pub audio_component: *mut kernel::ffi::c_void,
     pub cmd_dma_state: bool,
     pub cmd_mutex: mutex,
 }
@@ -108,7 +108,7 @@ pub struct hdac_bus {
 #[repr(C)]
 pub struct hda_bus {
     pub core: hdac_bus,
-    pub modelname: *const core::ffi::c_char,
+    pub modelname: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -168,8 +168,8 @@ const CONFIG_SND_HDA_CODEC_HDMI: bool = true;
 const MODULE: bool = false;
 const CONFIG_SND_HDA_GENERIC_MODULE: bool = false;
 
-unsafe fn HDA_IDISP_CODEC(mask: core::ffi::c_ulong) -> bool {
-    (mask & BIT(HDA_CODEC_IDX_CONTROLLER as u32) as core::ffi::c_ulong) != 0
+unsafe fn HDA_IDISP_CODEC(mask: kernel::ffi::c_ulong) -> bool {
+    (mask & BIT(HDA_CODEC_IDX_CONTROLLER as u32) as kernel::ffi::c_ulong) != 0
 }
 
 // module_param_named(codec_mask, hda_codec_mask, int, 0444);
@@ -178,8 +178,8 @@ unsafe fn HDA_IDISP_CODEC(mask: core::ffi::c_ulong) -> bool {
 // load the legacy HDA codec driver
 unsafe fn request_codec_module(codec: *mut hda_codec) -> i32 {
     if IS_ENABLED(MODULE) {
-        let mut alias: [core::ffi::c_char; MODULE_NAME_LEN] = [0; MODULE_NAME_LEN];
-        let mut mod_: *const core::ffi::c_char = core::ptr::null();
+        let mut alias: [kernel::ffi::c_char; MODULE_NAME_LEN] = [0; MODULE_NAME_LEN];
+        let mut mod_: *const kernel::ffi::c_char = core::ptr::null();
 
         match (*codec).probe_id {
             HDA_CODEC_ID_GENERIC => {
@@ -238,7 +238,7 @@ pub unsafe extern "C" fn hda_codec_jack_wake_enable(sdev: *mut snd_sof_dev, enab
     if enable {
         // list_for_each_codec(codec, hbus)
         for addr in 0..HDA_MAX_CODECS {
-            if ((*bus).codec_mask & BIT(addr as u32) as core::ffi::c_ulong) == 0 {
+            if ((*bus).codec_mask & BIT(addr as u32) as kernel::ffi::c_ulong) == 0 {
                 continue;
             }
 
@@ -258,7 +258,7 @@ pub unsafe extern "C" fn hda_codec_jack_wake_enable(sdev: *mut snd_sof_dev, enab
     } else {
         // list_for_each_codec(codec, hbus)
         for addr in 0..HDA_MAX_CODECS {
-            if ((*bus).codec_mask & BIT(addr as u32) as core::ffi::c_ulong) == 0 {
+            if ((*bus).codec_mask & BIT(addr as u32) as kernel::ffi::c_ulong) == 0 {
                 continue;
             }
 
@@ -295,7 +295,7 @@ pub unsafe extern "C" fn hda_codec_jack_check_exported(sdev: *mut snd_sof_dev) {
 
     // list_for_each_codec(codec, hbus)
     for addr in 0..HDA_MAX_CODECS {
-        if ((*bus).codec_mask & BIT(addr as u32) as core::ffi::c_ulong) == 0 {
+        if ((*bus).codec_mask & BIT(addr as u32) as kernel::ffi::c_ulong) == 0 {
             continue;
         }
 
@@ -389,7 +389,7 @@ unsafe fn hda_codec_probe(sdev: *mut snd_sof_dev, address: i32) -> i32 {
 
     (*hda_priv).codec = codec;
     (*hda_priv).dev_index = address;
-    dev_set_drvdata(&mut (*codec).core.dev, hda_priv as *mut core::ffi::c_void);
+    dev_set_drvdata(&mut (*codec).core.dev, hda_priv as *mut kernel::ffi::c_void);
 
     if (resp & 0xFFFF0000) == IDISP_VID_INTEL {
         if (*hbus).core.audio_component.is_null() {
@@ -441,7 +441,7 @@ pub unsafe extern "C" fn hda_codec_probe_bus(sdev: *mut snd_sof_dev) {
     // probe codecs in avail slots
     i = 0;
     while i < HDA_MAX_CODECS {
-        if ((*bus).codec_mask & (1_u64 << i) as core::ffi::c_ulong) == 0 {
+        if ((*bus).codec_mask & (1_u64 << i) as kernel::ffi::c_ulong) == 0 {
             i += 1;
             continue;
         }
@@ -449,7 +449,7 @@ pub unsafe extern "C" fn hda_codec_probe_bus(sdev: *mut snd_sof_dev) {
         ret = hda_codec_probe(sdev, i);
         if ret < 0 {
             // dev_warn(bus->dev, "codec #%d probe error, ret: %d\n", i, ret);
-            (*bus).codec_mask &= !(BIT(i as u32) as core::ffi::c_ulong);
+            (*bus).codec_mask &= !(BIT(i as u32) as kernel::ffi::c_ulong);
         }
 
         i += 1;
@@ -484,12 +484,12 @@ pub unsafe extern "C" fn hda_codec_detect_mask(sdev: *mut snd_sof_dev) {
 
     // detect codecs
     if (*bus).codec_mask == 0 {
-        (*bus).codec_mask = snd_hdac_chip_readw(bus, STATESTS) as core::ffi::c_ulong;
+        (*bus).codec_mask = snd_hdac_chip_readw(bus, STATESTS) as kernel::ffi::c_ulong;
         // dev_dbg(bus->dev, "codec_mask = 0x%lx\n", bus->codec_mask);
     }
 
     if hda_codec_mask != -1 {
-        (*bus).codec_mask &= hda_codec_mask as core::ffi::c_ulong;
+        (*bus).codec_mask &= hda_codec_mask as kernel::ffi::c_ulong;
         // dev_dbg(bus->dev, "filtered codec_mask = 0x%lx\n", bus->codec_mask);
     }
 }

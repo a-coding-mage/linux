@@ -94,7 +94,7 @@ smp_dev {
 smp_chan {
 	l2cap_conn	*conn;
 	delayed_work	security_timer;
-	core::ffi::c_ulong           allow_cmd; /* Bitmask of allowed commands */
+	kernel::ffi::c_ulong           allow_cmd; /* Bitmask of allowed commands */
 
 	u8		preq[7]; /* SMP Pairing Request */
 	u8		prsp[7]; /* SMP Pairing Response */
@@ -115,7 +115,7 @@ smp_chan {
 	smp_ltk	*responder_ltk;
 	smp_irk	*remote_irk;
 	u8		*link_key;
-	core::ffi::c_ulong	flags;
+	kernel::ffi::c_ulong	flags;
 	u8		method;
 	u8		passkey_round;
 
@@ -3186,8 +3186,8 @@ unsafe fn smp_recv_cb(l2cap_chan *chan, sk_buff *skb)
 }
 
 static sk_buff *smp_alloc_skb_cb(l2cap_chan *chan,
-					hdr_len: core::ffi::c_ulong,
-					len: core::ffi::c_ulong, int nb)
+					hdr_len: kernel::ffi::c_ulong,
+					len: kernel::ffi::c_ulong, int nb)
 {
 	sk_buff *skb;
 
@@ -3698,7 +3698,7 @@ unsafe fn __init run_selftests(crypto_kpp *tfm_ecdh)
 {
 	'done: {
 	ktime_t calltime, delta, rettime;
-	core::ffi::c_ulonglong duration;
+	kernel::ffi::c_ulonglong duration;
 	int err;
 
 	calltime = ktime_get();
@@ -3759,7 +3759,7 @@ unsafe fn __init run_selftests(crypto_kpp *tfm_ecdh)
 
 	rettime = ktime_get();
 	delta = ktime_sub(rettime, calltime);
-	duration = (core::ffi::c_ulonglong) ktime_to_ns(delta) >> 10;
+	duration = (kernel::ffi::c_ulonglong) ktime_to_ns(delta) >> 10;
 
 	BT_INFO("SMP test passed in %llu usecs", duration);
 	}

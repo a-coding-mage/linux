@@ -38,9 +38,9 @@ macro_rules! SCMI_QUIRK {
 extern "C" {
     pub fn scmi_quirks_initialize();
     pub fn scmi_quirks_enable(
-        dev: *mut core::ffi::c_void,
-        vend: *const core::ffi::c_char,
-        subv: *const core::ffi::c_char,
+        dev: *mut kernel::ffi::c_void,
+        vend: *const kernel::ffi::c_char,
+        subv: *const kernel::ffi::c_char,
         impl_: u32,
     );
 }
@@ -69,9 +69,9 @@ pub unsafe fn scmi_quirks_initialize() {}
 #[cfg(not(CONFIG_ARM_SCMI_QUIRKS))]
 #[inline]
 pub unsafe fn scmi_quirks_enable(
-    _dev: *mut core::ffi::c_void,
-    _vend: *const core::ffi::c_char,
-    _sub_vend: *const core::ffi::c_char,
+    _dev: *mut kernel::ffi::c_void,
+    _vend: *const kernel::ffi::c_char,
+    _sub_vend: *const kernel::ffi::c_char,
     _impl: u32,
 ) {
 }

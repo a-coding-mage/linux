@@ -133,7 +133,7 @@ pub enum btrfs_exclusive_operation { BTRFS_EXCLOP_NONE, BTRFS_EXCLOP_BALANCE_PAU
     pub global_root_lock: rwlock_t, pub global_root_tree: rb_root, pub fs_roots_radix_lock: spinlock_t, pub fs_roots_radix: radix_tree_root,
     pub block_group_cache_lock: rwlock_t, pub block_group_cache_tree: rb_root_cached, pub free_chunk_space: atomic64_t, pub excluded_extents: extent_io_tree, pub mapping_tree: rb_root_cached, pub mapping_tree_lock: rwlock_t,
     pub global_block_rsv: btrfs_block_rsv, pub trans_block_rsv: btrfs_block_rsv, pub chunk_block_rsv: btrfs_block_rsv, pub remap_block_rsv: btrfs_block_rsv, pub delayed_block_rsv: btrfs_block_rsv, pub delayed_refs_rsv: btrfs_block_rsv, pub treelog_rsv: btrfs_block_rsv, pub empty_block_rsv: btrfs_block_rsv,
-    pub generation: u64, pub last_trans_committed: u64, pub last_reloc_trans: u64, pub last_trans_log_full_commit: u64, pub mount_opt: u64, pub compr_wsm: [*mut core::ffi::c_void; BTRFS_NR_COMPRESS_TYPES], pub compress_type: i32, pub compress_level: i32, pub commit_interval: u32, pub max_inline: u64,
+    pub generation: u64, pub last_trans_committed: u64, pub last_reloc_trans: u64, pub last_trans_log_full_commit: u64, pub mount_opt: u64, pub compr_wsm: [*mut kernel::ffi::c_void; BTRFS_NR_COMPRESS_TYPES], pub compress_type: i32, pub compress_level: i32, pub commit_interval: u32, pub max_inline: u64,
     pub running_transaction: *mut btrfs_transaction, pub transaction_throttle: wait_queue_head_t, pub transaction_wait: wait_queue_head_t, pub transaction_blocked_wait: wait_queue_head_t, pub async_submit_wait: wait_queue_head_t,
     pub super_lock: spinlock_t, pub super_copy: *mut btrfs_super_block, pub super_for_commit: *mut btrfs_super_block, pub sb: *mut super_block, pub btree_inode: *mut inode, pub tree_log_mutex: mutex, pub transaction_kthread_mutex: mutex, pub cleaner_mutex: mutex, pub chunk_mutex: mutex, pub remap_mutex: mutex, pub ro_block_group_mutex: mutex, pub stripe_hash_table: *mut btrfs_stripe_hash_table, pub ordered_operations_mutex: mutex, pub commit_root_sem: rw_semaphore, pub cleanup_work_sem: rw_semaphore, pub subvol_sem: rw_semaphore, pub trans_lock: spinlock_t, pub reloc_mutex: mutex, pub reloc_ctl_lock: spinlock_t,
     pub trans_list: list_head, pub dead_roots: list_head, pub caching_block_groups: list_head, pub delayed_iput_lock: spinlock_t, pub delayed_iputs: list_head, pub nr_delayed_iputs: atomic_t, pub delayed_iputs_wait: wait_queue_head_t, pub tree_mod_seq: atomic64_t, pub tree_mod_log_lock: rwlock_t, pub tree_mod_log: rb_root, pub tree_mod_seq_list: list_head, pub async_delalloc_pages: atomic_t, pub ordered_root_lock: spinlock_t, pub ordered_roots: list_head, pub delalloc_root_mutex: mutex, pub delalloc_root_lock: spinlock_t, pub delalloc_roots: list_head,
@@ -175,16 +175,16 @@ extern "C" {
     pub fn btrfs_check_ioctl_vol_args_path(vol_args: *const btrfs_ioctl_vol_args) -> i32;
     pub fn btrfs_csum_type_size(ty: u16) -> u16;
     pub fn btrfs_super_csum_size(s: *const btrfs_super_block) -> i32;
-    pub fn btrfs_super_csum_name(csum_type: u16) -> *const core::ffi::c_char;
+    pub fn btrfs_super_csum_name(csum_type: u16) -> *const kernel::ffi::c_char;
     pub fn btrfs_get_num_csums() -> usize;
     pub fn btrfs_csum(csum_type: u16, data: *const u8, len: usize, out: *mut u8);
     pub fn btrfs_csum_init(ctx: *mut btrfs_csum_ctx, csum_type: u16);
     pub fn btrfs_csum_update(ctx: *mut btrfs_csum_ctx, data: *const u8, len: usize);
     pub fn btrfs_csum_final(ctx: *mut btrfs_csum_ctx, out: *mut u8);
-    pub fn __btrfs_set_fs_incompat(fs_info: *mut btrfs_fs_info, flag: u64, name: *const core::ffi::c_char);
-    pub fn __btrfs_clear_fs_incompat(fs_info: *mut btrfs_fs_info, flag: u64, name: *const core::ffi::c_char);
-    pub fn __btrfs_set_fs_compat_ro(fs_info: *mut btrfs_fs_info, flag: u64, name: *const core::ffi::c_char);
-    pub fn __btrfs_clear_fs_compat_ro(fs_info: *mut btrfs_fs_info, flag: u64, name: *const core::ffi::c_char);
+    pub fn __btrfs_set_fs_incompat(fs_info: *mut btrfs_fs_info, flag: u64, name: *const kernel::ffi::c_char);
+    pub fn __btrfs_clear_fs_incompat(fs_info: *mut btrfs_fs_info, flag: u64, name: *const kernel::ffi::c_char);
+    pub fn __btrfs_set_fs_compat_ro(fs_info: *mut btrfs_fs_info, flag: u64, name: *const kernel::ffi::c_char);
+    pub fn __btrfs_clear_fs_compat_ro(fs_info: *mut btrfs_fs_info, flag: u64, name: *const kernel::ffi::c_char);
 }
 
 #[repr(C)] pub union btrfs_csum_state { pub crc32: u32, pub xxh64: xxh64_state, pub sha256: sha256_ctx, pub blake2b: blake2b_ctx }

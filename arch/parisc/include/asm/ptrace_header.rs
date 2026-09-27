@@ -7,7 +7,7 @@
 // `TASK_REGS`, `PtRegs`, and `PRIV_KERNEL`.
 
 #[inline]
-pub unsafe fn task_regs(task: *mut core::ffi::c_void) -> *mut PtRegs {
+pub unsafe fn task_regs(task: *mut kernel::ffi::c_void) -> *mut PtRegs {
     (task as *mut u8).add(TASK_REGS) as *mut PtRegs
 }
 
@@ -59,8 +59,8 @@ pub unsafe fn instruction_pointer_set(regs: *mut PtRegs, val: u64) {
 
 /* Query offset/name of register from its name/offset */
 unsafe extern "C" {
-    pub fn regs_query_register_offset(name: *const core::ffi::c_char) -> i32;
-    pub fn regs_query_register_name(offset: u32) -> *const core::ffi::c_char;
+    pub fn regs_query_register_offset(name: *const kernel::ffi::c_char) -> i32;
+    pub fn regs_query_register_name(offset: u32) -> *const kernel::ffi::c_char;
 }
 
 pub const MAX_REG_OFFSET: usize = core::mem::offset_of!(PtRegs, ipsw);

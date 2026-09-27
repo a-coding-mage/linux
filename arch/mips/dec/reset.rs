@@ -19,7 +19,7 @@ unsafe fn back_to_prom() -> ! {
 	func();
 }
 
-pub unsafe extern "C" fn dec_machine_restart(_command: *mut core::ffi::c_char) -> ! {
+pub unsafe extern "C" fn dec_machine_restart(_command: *mut kernel::ffi::c_char) -> ! {
 	back_to_prom();
 }
 
@@ -33,8 +33,8 @@ pub unsafe extern "C" fn dec_machine_power_off() -> ! {
 }
 
 pub unsafe extern "C" fn dec_intr_halt(
-	_irq: core::ffi::c_int,
-	_dev_id: *mut core::ffi::c_void,
+	_irq: kernel::ffi::c_int,
+	_dev_id: *mut kernel::ffi::c_void,
 ) -> irqreturn_t {
 	dec_machine_halt();
 }

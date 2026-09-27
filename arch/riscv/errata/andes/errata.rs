@@ -66,7 +66,7 @@ unsafe fn errata_probe_iocp(
     static mut DONE: bool = false;
 
     // Build-time condition preserved from CONFIG_ERRATA_ANDES_CMO.
-    if !cfg!(feature = "ERRATA_ANDES_CMO") {
+    if !cfg!(CONFIG_ERRATA_ANDES_CMO) {
         return;
     }
 

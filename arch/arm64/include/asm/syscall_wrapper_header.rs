@@ -87,7 +87,7 @@ macro_rules! cond_syscall {
 
 // asmlinkage long __arm64_sys_ni_syscall(const struct pt_regs *__unused);
 extern "C" {
-    pub fn __arm64_sys_ni_syscall(__unused: *const crate::pt_regs) -> libc::c_long;
+    pub fn __arm64_sys_ni_syscall(__unused: *const crate::pt_regs) -> kernel::ffi::c_long;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

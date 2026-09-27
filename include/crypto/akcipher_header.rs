@@ -13,57 +13,57 @@ pub struct akcipher_request {
     pub base: crypto_async_request,
     pub src: *mut scatterlist,
     pub dst: *mut scatterlist,
-    pub src_len: ::core::ffi::c_uint,
-    pub dst_len: ::core::ffi::c_uint,
-    pub __ctx: [::core::ffi::c_void; 0],
+    pub src_len: ::kernel::ffi::c_uint,
+    pub dst_len: ::kernel::ffi::c_uint,
+    pub __ctx: [::kernel::ffi::c_void; 0],
 }
 
 #[repr(C)]
 pub struct crypto_akcipher {
-    pub reqsize: ::core::ffi::c_uint,
+    pub reqsize: ::kernel::ffi::c_uint,
     pub base: crypto_tfm,
 }
 
 #[repr(C)]
 pub struct akcipher_alg {
-    pub encrypt: Option<unsafe extern "C" fn(*mut akcipher_request) -> ::core::ffi::c_int>,
-    pub decrypt: Option<unsafe extern "C" fn(*mut akcipher_request) -> ::core::ffi::c_int>,
+    pub encrypt: Option<unsafe extern "C" fn(*mut akcipher_request) -> ::kernel::ffi::c_int>,
+    pub decrypt: Option<unsafe extern "C" fn(*mut akcipher_request) -> ::kernel::ffi::c_int>,
     pub set_pub_key: Option<unsafe extern "C" fn(
         *mut crypto_akcipher,
-        *const ::core::ffi::c_void,
-        ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int>,
+        *const ::kernel::ffi::c_void,
+        ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int>,
     pub set_priv_key: Option<unsafe extern "C" fn(
         *mut crypto_akcipher,
-        *const ::core::ffi::c_void,
-        ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int>,
-    pub max_size: Option<unsafe extern "C" fn(*mut crypto_akcipher) -> ::core::ffi::c_uint>,
-    pub init: Option<unsafe extern "C" fn(*mut crypto_akcipher) -> ::core::ffi::c_int>,
+        *const ::kernel::ffi::c_void,
+        ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int>,
+    pub max_size: Option<unsafe extern "C" fn(*mut crypto_akcipher) -> ::kernel::ffi::c_uint>,
+    pub init: Option<unsafe extern "C" fn(*mut crypto_akcipher) -> ::kernel::ffi::c_int>,
     pub exit: Option<unsafe extern "C" fn(*mut crypto_akcipher)>,
     pub base: crypto_alg,
 }
 
 unsafe extern "C" {
     pub fn crypto_alloc_akcipher(
-        alg_name: *const ::core::ffi::c_char,
+        alg_name: *const ::kernel::ffi::c_char,
         type_: u32,
         mask: u32,
     ) -> *mut crypto_akcipher;
     pub fn crypto_akcipher_sync_encrypt(
         tfm: *mut crypto_akcipher,
-        src: *const ::core::ffi::c_void,
-        slen: ::core::ffi::c_uint,
-        dst: *mut ::core::ffi::c_void,
-        dlen: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        src: *const ::kernel::ffi::c_void,
+        slen: ::kernel::ffi::c_uint,
+        dst: *mut ::kernel::ffi::c_void,
+        dlen: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
     pub fn crypto_akcipher_sync_decrypt(
         tfm: *mut crypto_akcipher,
-        src: *const ::core::ffi::c_void,
-        slen: ::core::ffi::c_uint,
-        dst: *mut ::core::ffi::c_void,
-        dlen: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        src: *const ::kernel::ffi::c_void,
+        slen: ::kernel::ffi::c_uint,
+        dst: *mut ::kernel::ffi::c_void,
+        dlen: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[inline]
@@ -87,7 +87,7 @@ pub unsafe fn crypto_akcipher_alg(tfm: *mut crypto_akcipher) -> *mut akcipher_al
 }
 
 #[inline]
-pub unsafe fn crypto_akcipher_reqsize(tfm: *mut crypto_akcipher) -> ::core::ffi::c_uint {
+pub unsafe fn crypto_akcipher_reqsize(tfm: *mut crypto_akcipher) -> ::kernel::ffi::c_uint {
     unsafe { (*tfm).reqsize }
 }
 
@@ -120,7 +120,7 @@ pub unsafe fn akcipher_request_alloc(
 
 #[inline]
 pub unsafe fn akcipher_request_free(req: *mut akcipher_request) {
-    unsafe { kfree_sensitive(req as *mut ::core::ffi::c_void); }
+    unsafe { kfree_sensitive(req as *mut ::kernel::ffi::c_void); }
 }
 
 #[inline]
@@ -128,7 +128,7 @@ pub unsafe fn akcipher_request_set_callback(
     req: *mut akcipher_request,
     flgs: u32,
     cmpl: crypto_completion_t,
-    data: *mut ::core::ffi::c_void,
+    data: *mut ::kernel::ffi::c_void,
 ) {
     unsafe {
         (*req).base.complete = cmpl;
@@ -142,8 +142,8 @@ pub unsafe fn akcipher_request_set_crypt(
     req: *mut akcipher_request,
     src: *mut scatterlist,
     dst: *mut scatterlist,
-    src_len: ::core::ffi::c_uint,
-    dst_len: ::core::ffi::c_uint,
+    src_len: ::kernel::ffi::c_uint,
+    dst_len: ::kernel::ffi::c_uint,
 ) {
     unsafe {
         (*req).src = src;
@@ -154,35 +154,35 @@ pub unsafe fn akcipher_request_set_crypt(
 }
 
 #[inline]
-pub unsafe fn crypto_akcipher_maxsize(tfm: *mut crypto_akcipher) -> ::core::ffi::c_uint {
+pub unsafe fn crypto_akcipher_maxsize(tfm: *mut crypto_akcipher) -> ::kernel::ffi::c_uint {
     unsafe { ((*crypto_akcipher_alg(tfm)).max_size.unwrap())(tfm) }
 }
 
 #[inline]
-pub unsafe fn crypto_akcipher_encrypt(req: *mut akcipher_request) -> ::core::ffi::c_int {
+pub unsafe fn crypto_akcipher_encrypt(req: *mut akcipher_request) -> ::kernel::ffi::c_int {
     unsafe { ((*crypto_akcipher_alg(crypto_akcipher_reqtfm(req))).encrypt.unwrap())(req) }
 }
 
 #[inline]
-pub unsafe fn crypto_akcipher_decrypt(req: *mut akcipher_request) -> ::core::ffi::c_int {
+pub unsafe fn crypto_akcipher_decrypt(req: *mut akcipher_request) -> ::kernel::ffi::c_int {
     unsafe { ((*crypto_akcipher_alg(crypto_akcipher_reqtfm(req))).decrypt.unwrap())(req) }
 }
 
 #[inline]
 pub unsafe fn crypto_akcipher_set_pub_key(
     tfm: *mut crypto_akcipher,
-    key: *const ::core::ffi::c_void,
-    keylen: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    key: *const ::kernel::ffi::c_void,
+    keylen: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     unsafe { ((*crypto_akcipher_alg(tfm)).set_pub_key.unwrap())(tfm, key, keylen) }
 }
 
 #[inline]
 pub unsafe fn crypto_akcipher_set_priv_key(
     tfm: *mut crypto_akcipher,
-    key: *const ::core::ffi::c_void,
-    keylen: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    key: *const ::kernel::ffi::c_void,
+    keylen: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     unsafe { ((*crypto_akcipher_alg(tfm)).set_priv_key.unwrap())(tfm, key, keylen) }
 }
 

@@ -9,7 +9,7 @@ const ECC_CS_COUNT_REG: usize = 0x18;
 
 #[repr(C)]
 struct loongson_edac_pvt {
-    ecc_base: *mut core::ffi::c_void,
+    ecc_base: *mut kernel::ffi::c_void,
 
     /*
      * The ECC register in this controller records the number of errors
@@ -77,7 +77,7 @@ unsafe fn dimm_config_init(mci: *mut mem_ctl_info) {
     (*dimm).grain = 8;
 }
 
-unsafe fn pvt_init(mci: *mut mem_ctl_info, vbase: *mut core::ffi::c_void) {
+unsafe fn pvt_init(mci: *mut mem_ctl_info, vbase: *mut kernel::ffi::c_void) {
     let pvt = (*mci).pvt_info as *mut loongson_edac_pvt;
 
     (*pvt).ecc_base = vbase;
@@ -87,7 +87,7 @@ unsafe fn pvt_init(mci: *mut mem_ctl_info, vbase: *mut core::ffi::c_void) {
 unsafe extern "C" fn edac_probe(pdev: *mut platform_device) -> i32 {
     let mut layers: [edac_mc_layer; 2] = core::mem::zeroed();
     let mci: *mut mem_ctl_info;
-    let vbase: *mut core::ffi::c_void;
+    let vbase: *mut kernel::ffi::c_void;
     let ret: i32;
 
     vbase = devm_platform_ioremap_resource(pdev, 0);
@@ -147,7 +147,7 @@ unsafe extern "C" fn edac_remove(pdev: *mut platform_device) {
 
 #[repr(C)]
 struct acpi_device_id {
-    id: *const core::ffi::c_char,
+    id: *const kernel::ffi::c_char,
     driver_data: usize,
 }
 

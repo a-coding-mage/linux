@@ -10,7 +10,7 @@
 // platform-driver, and Rockchip SAI register definitions are external
 // dependencies corresponding to the original includes.
 
-pub const DRV_NAME: *const ::core::ffi::c_char = c"rockchip-sai".as_ptr();
+pub const DRV_NAME: *const ::kernel::ffi::c_char = c"rockchip-sai".as_ptr();
 
 pub const CLK_SHIFT_RATE_HZ_MAX: u32 = 5;
 pub const FW_RATIO_MAX: u32 = 8;
@@ -236,7 +236,7 @@ unsafe fn rockchip_sai_xfer_clk_stop_and_wait(sai: *mut rk_sai_dev, to_restore: 
 
 unsafe extern "C" fn rockchip_sai_runtime_suspend(dev: *mut device) -> i32 {
     let sai = dev_get_drvdata(dev) as *mut rk_sai_dev;
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
 
     rockchip_sai_fsync_lost_detect(sai, false);
     rockchip_sai_fsync_err_detect(sai, false);
@@ -495,7 +495,7 @@ unsafe extern "C" fn rockchip_sai_set_fmt(dai: *mut snd_soc_dai, fmt: u32) -> i3
     let mut mask: u32;
     let mut val: u32;
     let mut clk_gates: u32 = 0;
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
     let mut ret: i32 = 0;
 
     pm_runtime_get_sync((*dai).dev);
@@ -592,7 +592,7 @@ unsafe extern "C" fn rockchip_sai_hw_params(
     let reg: u32;
     let mut lanes: u32;
     let req_lanes: u32;
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
     let mut ret: i32 = 0;
 
     if !rockchip_sai_stream_valid(substream, dai) {
@@ -744,7 +744,7 @@ unsafe extern "C" fn rockchip_sai_prepare(
     dai: *mut snd_soc_dai,
 ) -> i32 {
     let sai = snd_soc_dai_get_drvdata(dai) as *mut rk_sai_dev;
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
 
     if !rockchip_sai_stream_valid(substream, dai) {
         return 0;
@@ -813,7 +813,7 @@ unsafe fn rockchip_sai_path_prepare(
     np: *mut device_node,
     is_rx: bool,
 ) -> i32 {
-    let path_prop: *const ::core::ffi::c_char;
+    let path_prop: *const ::kernel::ffi::c_char;
     let data: *mut u32;
     let lanes: *mut u32;
     let mut i: i32;
@@ -989,7 +989,7 @@ unsafe extern "C" fn rockchip_sai_set_tdm_slot(
     slot_width: i32,
 ) -> i32 {
     let sai = snd_soc_dai_get_drvdata(dai) as *mut rk_sai_dev;
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
     let mut clk_gates: u32 = 0;
     let mut sw: i32 = slot_width;
 
@@ -1124,7 +1124,7 @@ unsafe fn rockchip_sai_init_dai(
     let node = (*(*sai).dev).of_node;
     let mut dai: *mut snd_soc_dai_driver;
     let mut dma_names: *mut property = ::core::ptr::null_mut();
-    let mut dma_name: *const ::core::ffi::c_char = ::core::ptr::null();
+    let mut dma_name: *const ::kernel::ffi::c_char = ::core::ptr::null();
 
     of_property_for_each_string!(node, c"dma-names".as_ptr(), dma_names, dma_name, {
         if strcmp(dma_name, c"tx".as_ptr()) == 0 {
@@ -1137,7 +1137,7 @@ unsafe fn rockchip_sai_init_dai(
 
     dai = devm_kmemdup(
         (*sai).dev,
-        &raw const rockchip_sai_dai as *const _ as *const ::core::ffi::c_void,
+        &raw const rockchip_sai_dai as *const _ as *const ::kernel::ffi::c_void,
         ::core::mem::size_of::<snd_soc_dai_driver>(),
         GFP_KERNEL,
     ) as *mut snd_soc_dai_driver;
@@ -1187,32 +1187,32 @@ unsafe fn rockchip_sai_init_dai(
     0
 }
 
-static mono_text: [*const ::core::ffi::c_char; 2] = [c"Disable".as_ptr(), c"Enable".as_ptr()];
+static mono_text: [*const ::kernel::ffi::c_char; 2] = [c"Disable".as_ptr(), c"Enable".as_ptr()];
 
 DECLARE_TLV_DB_SCALE!(rmss_tlv, 0, 128, 0);
 
-static lplrc_text: [*const ::core::ffi::c_char; 2] = [c"L:MIC R:LP".as_ptr(), c"L:LP R:MIC".as_ptr()];
-static lplr_text: [*const ::core::ffi::c_char; 2] = [c"Disable".as_ptr(), c"Enable".as_ptr()];
+static lplrc_text: [*const ::kernel::ffi::c_char; 2] = [c"L:MIC R:LP".as_ptr(), c"L:LP R:MIC".as_ptr()];
+static lplr_text: [*const ::kernel::ffi::c_char; 2] = [c"Disable".as_ptr(), c"Enable".as_ptr()];
 
-static lpx_text: [*const ::core::ffi::c_char; 4] = [
+static lpx_text: [*const ::kernel::ffi::c_char; 4] = [
     c"From SDO0".as_ptr(),
     c"From SDO1".as_ptr(),
     c"From SDO2".as_ptr(),
     c"From SDO3".as_ptr(),
 ];
 
-static lps_text: [*const ::core::ffi::c_char; 2] = [c"Disable".as_ptr(), c"Enable".as_ptr()];
-static sync_out_text: [*const ::core::ffi::c_char; 2] = [c"From CRU".as_ptr(), c"From IO".as_ptr()];
-static sync_in_text: [*const ::core::ffi::c_char; 2] = [c"From IO".as_ptr(), c"From Sync Port".as_ptr()];
+static lps_text: [*const ::kernel::ffi::c_char; 2] = [c"Disable".as_ptr(), c"Enable".as_ptr()];
+static sync_out_text: [*const ::kernel::ffi::c_char; 2] = [c"From CRU".as_ptr(), c"From IO".as_ptr()];
+static sync_in_text: [*const ::kernel::ffi::c_char; 2] = [c"From IO".as_ptr(), c"From Sync Port".as_ptr()];
 
-static rpaths_text: [*const ::core::ffi::c_char; 4] = [
+static rpaths_text: [*const ::kernel::ffi::c_char; 4] = [
     c"From SDI0".as_ptr(),
     c"From SDI1".as_ptr(),
     c"From SDI2".as_ptr(),
     c"From SDI3".as_ptr(),
 ];
 
-static tpaths_text: [*const ::core::ffi::c_char; 4] = [
+static tpaths_text: [*const ::kernel::ffi::c_char; 4] = [
     c"From PATH0".as_ptr(),
     c"From PATH1".as_ptr(),
     c"From PATH2".as_ptr(),
@@ -1377,7 +1377,7 @@ static mut rockchip_sai_component: snd_soc_component_driver = snd_soc_component_
     ..unsafe { ::core::mem::zeroed() }
 };
 
-unsafe extern "C" fn rockchip_sai_isr(_irq: i32, devid: *mut ::core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn rockchip_sai_isr(_irq: i32, devid: *mut ::kernel::ffi::c_void) -> irqreturn_t {
     let sai = devid as *mut rk_sai_dev;
     let mut substream: *mut snd_pcm_substream;
     let mut val: u32 = 0;
@@ -1423,7 +1423,7 @@ unsafe extern "C" fn rockchip_sai_probe(pdev: *mut platform_device) -> i32 {
     let mut sai: *mut rk_sai_dev;
     let mut dai: *mut snd_soc_dai_driver = ::core::ptr::null_mut();
     let mut res: *mut resource = ::core::ptr::null_mut();
-    let regs: *mut ::core::ffi::c_void;
+    let regs: *mut ::kernel::ffi::c_void;
     let mut ret: i32;
     let irq: i32;
 
@@ -1436,24 +1436,24 @@ unsafe extern "C" fn rockchip_sai_probe(pdev: *mut platform_device) -> i32 {
     (*sai).fw_ratio = 1;
     /* match to register default */
     (*sai).is_master_mode = true;
-    dev_set_drvdata(&mut (*pdev).dev, sai as *mut ::core::ffi::c_void);
+    dev_set_drvdata(&mut (*pdev).dev, sai as *mut ::kernel::ffi::c_void);
 
     spin_lock_init(&mut (*sai).xfer_lock);
 
     (*sai).rst_h = devm_reset_control_get_optional_exclusive(&mut (*pdev).dev, c"h".as_ptr());
-    if IS_ERR((*sai).rst_h as *const ::core::ffi::c_void) {
+    if IS_ERR((*sai).rst_h as *const ::kernel::ffi::c_void) {
         return dev_err_probe(
             &mut (*pdev).dev,
-            PTR_ERR((*sai).rst_h as *const ::core::ffi::c_void),
+            PTR_ERR((*sai).rst_h as *const ::kernel::ffi::c_void),
             c"Error in 'h' reset control\n".as_ptr(),
         );
     }
 
     (*sai).rst_m = devm_reset_control_get_optional_exclusive(&mut (*pdev).dev, c"m".as_ptr());
-    if IS_ERR((*sai).rst_m as *const ::core::ffi::c_void) {
+    if IS_ERR((*sai).rst_m as *const ::kernel::ffi::c_void) {
         return dev_err_probe(
             &mut (*pdev).dev,
-            PTR_ERR((*sai).rst_m as *const ::core::ffi::c_void),
+            PTR_ERR((*sai).rst_m as *const ::kernel::ffi::c_void),
             c"Error in 'm' reset control\n".as_ptr(),
         );
     }
@@ -1468,10 +1468,10 @@ unsafe extern "C" fn rockchip_sai_probe(pdev: *mut platform_device) -> i32 {
     }
 
     (*sai).regmap = devm_regmap_init_mmio(&mut (*pdev).dev, regs, &raw const rockchip_sai_regmap_config);
-    if IS_ERR((*sai).regmap as *const ::core::ffi::c_void) {
+    if IS_ERR((*sai).regmap as *const ::kernel::ffi::c_void) {
         return dev_err_probe(
             &mut (*pdev).dev,
-            PTR_ERR((*sai).regmap as *const ::core::ffi::c_void),
+            PTR_ERR((*sai).regmap as *const ::kernel::ffi::c_void),
             c"Failed to initialize regmap\n".as_ptr(),
         );
     }
@@ -1487,7 +1487,7 @@ unsafe extern "C" fn rockchip_sai_probe(pdev: *mut platform_device) -> i32 {
             Some(rockchip_sai_isr),
             IRQF_SHARED,
             (*node).name,
-            sai as *mut ::core::ffi::c_void,
+            sai as *mut ::kernel::ffi::c_void,
         );
         if ret != 0 {
             return ret;
@@ -1497,19 +1497,19 @@ unsafe extern "C" fn rockchip_sai_probe(pdev: *mut platform_device) -> i32 {
     }
 
     (*sai).mclk = devm_clk_get(&mut (*pdev).dev, c"mclk".as_ptr());
-    if IS_ERR((*sai).mclk as *const ::core::ffi::c_void) {
+    if IS_ERR((*sai).mclk as *const ::kernel::ffi::c_void) {
         return dev_err_probe(
             &mut (*pdev).dev,
-            PTR_ERR((*sai).mclk as *const ::core::ffi::c_void),
+            PTR_ERR((*sai).mclk as *const ::kernel::ffi::c_void),
             c"Failed to get mclk\n".as_ptr(),
         );
     }
 
     (*sai).hclk = devm_clk_get_enabled(&mut (*pdev).dev, c"hclk".as_ptr());
-    if IS_ERR((*sai).hclk as *const ::core::ffi::c_void) {
+    if IS_ERR((*sai).hclk as *const ::kernel::ffi::c_void) {
         return dev_err_probe(
             &mut (*pdev).dev,
-            PTR_ERR((*sai).hclk as *const ::core::ffi::c_void),
+            PTR_ERR((*sai).hclk as *const ::kernel::ffi::c_void),
             c"Failed to get hclk\n".as_ptr(),
         );
     }

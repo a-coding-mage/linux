@@ -23,13 +23,13 @@ pub struct changer_params {
 #[repr(C)]
 pub struct changer_vendor_params {
     pub cvp_n1: i32,
-    pub cvp_label1: [core::ffi::c_char; 16],
+    pub cvp_label1: [kernel::ffi::c_char; 16],
     pub cvp_n2: i32,
-    pub cvp_label2: [core::ffi::c_char; 16],
+    pub cvp_label2: [kernel::ffi::c_char; 16],
     pub cvp_n3: i32,
-    pub cvp_label3: [core::ffi::c_char; 16],
+    pub cvp_label3: [kernel::ffi::c_char; 16],
     pub cvp_n4: i32,
-    pub cvp_label4: [core::ffi::c_char; 16],
+    pub cvp_label4: [kernel::ffi::c_char; 16],
     pub reserved: [i32; 8],
 }
 
@@ -86,8 +86,8 @@ pub struct changer_get_element {
     pub cge_srcunit: i32,
     pub cge_id: i32,
     pub cge_lun: i32,
-    pub cge_pvoltag: [core::ffi::c_char; 36],
-    pub cge_avoltag: [core::ffi::c_char; 36],
+    pub cge_pvoltag: [kernel::ffi::c_char; 36],
+    pub cge_avoltag: [kernel::ffi::c_char; 36],
     pub cge_flags: i32,
 }
 pub const CGE_ERRNO: i32 = 0x01;
@@ -101,7 +101,7 @@ pub const CGE_AVOLTAG: i32 = 0x20;
 pub struct changer_set_voltag {
     pub csv_type: i32,
     pub csv_unit: i32,
-    pub csv_voltag: [core::ffi::c_char; 36],
+    pub csv_voltag: [kernel::ffi::c_char; 36],
     pub csv_flags: i32,
 }
 pub const CSV_PVOLTAG: i32 = 0x01;
@@ -109,16 +109,16 @@ pub const CSV_AVOLTAG: i32 = 0x02;
 pub const CSV_CLEARTAG: i32 = 0x04;
 
 /* The ioctl encoding macros are supplied by the platform headers. */
-pub const CHIOMOVE: _ = _IOW(b'c', 1, changer_move);
-pub const CHIOEXCHANGE: _ = _IOW(b'c', 2, changer_exchange);
-pub const CHIOPOSITION: _ = _IOW(b'c', 3, changer_position);
-pub const CHIOGPICKER: _ = _IOR(b'c', 4, i32); /* not impl. */
-pub const CHIOSPICKER: _ = _IOW(b'c', 5, i32); /* not impl. */
-pub const CHIOGPARAMS: _ = _IOR(b'c', 6, changer_params);
-pub const CHIOGSTATUS: _ = _IOW(b'c', 8, changer_element_status);
-pub const CHIOGELEM: _ = _IOW(b'c', 16, changer_get_element);
-pub const CHIOINITELEM: _ = _IO(b'c', 17);
-pub const CHIOSVOLTAG: _ = _IOW(b'c', 18, changer_set_voltag);
-pub const CHIOGVPARAMS: _ = _IOR(b'c', 19, changer_vendor_params);
+pub const CHIOMOVE: u32 = _IOW(b'c', 1, changer_move);
+pub const CHIOEXCHANGE: u32 = _IOW(b'c', 2, changer_exchange);
+pub const CHIOPOSITION: u32 = _IOW(b'c', 3, changer_position);
+pub const CHIOGPICKER: u32 = _IOR(b'c', 4, i32); /* not impl. */
+pub const CHIOSPICKER: u32 = _IOW(b'c', 5, i32); /* not impl. */
+pub const CHIOGPARAMS: u32 = _IOR(b'c', 6, changer_params);
+pub const CHIOGSTATUS: u32 = _IOW(b'c', 8, changer_element_status);
+pub const CHIOGELEM: u32 = _IOW(b'c', 16, changer_get_element);
+pub const CHIOINITELEM: u32 = _IO(b'c', 17);
+pub const CHIOSVOLTAG: u32 = _IOW(b'c', 18, changer_set_voltag);
+pub const CHIOGVPARAMS: u32 = _IOR(b'c', 19, changer_vendor_params);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

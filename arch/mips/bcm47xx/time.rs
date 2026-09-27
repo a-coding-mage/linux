@@ -14,10 +14,10 @@
 // External declarations supplied by the Linux/MIPS and BCM47xx dependencies.
 
 pub unsafe fn plat_time_init() {
-    let mut hz: ::core::ffi::c_ulong = 0;
+    let mut hz: ::kernel::ffi::c_ulong = 0;
     let mut chip_id: u16 = 0;
-    let mut buf: [::core::ffi::c_char; 10] = [0; 10];
-    let mut len: ::core::ffi::c_int;
+    let mut buf: [::kernel::ffi::c_char; 10] = [0; 10];
+    let mut len: ::kernel::ffi::c_int;
     let board: bcm47xx_board = bcm47xx_board_get();
 
     /*
@@ -43,7 +43,7 @@ pub unsafe fn plat_time_init() {
 
     if chip_id == 0x5354 {
         len = bcm47xx_nvram_getenv(
-            b"clkfreq\0".as_ptr() as *const ::core::ffi::c_char,
+            b"clkfreq\0".as_ptr() as *const ::kernel::ffi::c_char,
             buf.as_mut_ptr(),
             buf.len(),
         );

@@ -17,7 +17,7 @@ pub struct PlatSerial8250Port {
     pub irq: i32,
     pub uartclk: u32,
     pub iotype: u8,
-    pub membase: *mut core::ffi::c_void,
+    pub membase: *mut kernel::ffi::c_void,
     pub flags: u32,
     pub regshift: u32,
     pub mapbase: u64,
@@ -26,12 +26,12 @@ pub struct PlatSerial8250Port {
 
 #[repr(C)]
 pub struct Device {
-    pub platform_data: *mut core::ffi::c_void,
+    pub platform_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct PlatformDevice {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: i32,
     pub dev: Device,
 }
@@ -43,7 +43,7 @@ extern "C" {
 
     fn platform_device_register(device: *mut PlatformDevice) -> i32;
     fn platform_device_unregister(device: *mut PlatformDevice);
-    fn memset(dest: *mut core::ffi::c_void, value: i32, count: usize) -> *mut core::ffi::c_void;
+    fn memset(dest: *mut kernel::ffi::c_void, value: i32, count: usize) -> *mut kernel::ffi::c_void;
 }
 
 const UPIO_PORT: u8 = 0;
@@ -77,7 +77,7 @@ static mut UART8250_DATA: [PlatSerial8250Port; MACH_LOONGSON_END + 1] = [
 ];
 
 static mut UART8250_DEVICE: PlatformDevice = PlatformDevice {
-    name: b"serial8250\0".as_ptr() as *const core::ffi::c_char,
+    name: b"serial8250\0".as_ptr() as *const kernel::ffi::c_char,
     id: PLAT8250_DEV_PLATFORM,
     dev: Device { platform_data: core::ptr::null_mut() },
 };
@@ -87,17 +87,17 @@ pub unsafe extern "C" fn serial_init() -> i32 {
 
     if UPIO_MEM == iotype {
         UART8250_DATA[mips_machtype].mapbase = loongson_uart_base;
-        UART8250_DATA[mips_machtype].membase = _loongson_uart_base as *mut core::ffi::c_void;
+        UART8250_DATA[mips_machtype].membase = _loongson_uart_base as *mut kernel::ffi::c_void;
     } else if UPIO_PORT == iotype {
         UART8250_DATA[mips_machtype].iobase = loongson_uart_base - LOONGSON_PCIIO_BASE;
     }
 
     memset(
-        (&mut UART8250_DATA[mips_machtype + 1]) as *mut PlatSerial8250Port as *mut core::ffi::c_void,
+        (&mut UART8250_DATA[mips_machtype + 1]) as *mut PlatSerial8250Port as *mut kernel::ffi::c_void,
         0,
         core::mem::size_of::<PlatSerial8250Port>(),
     );
-    UART8250_DEVICE.dev.platform_data = (&mut UART8250_DATA[mips_machtype]) as *mut PlatSerial8250Port as *mut core::ffi::c_void;
+    UART8250_DEVICE.dev.platform_data = (&mut UART8250_DATA[mips_machtype]) as *mut PlatSerial8250Port as *mut kernel::ffi::c_void;
 
     platform_device_register(&mut UART8250_DEVICE)
 }

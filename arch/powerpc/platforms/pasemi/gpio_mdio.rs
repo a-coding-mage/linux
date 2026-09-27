@@ -12,7 +12,7 @@
 const DELAY: u32 = 1;
 
 extern "C" {
-    static mut gpio_regs: *mut core::ffi::c_void;
+    static mut gpio_regs: *mut kernel::ffi::c_void;
 }
 
 #[repr(C)]
@@ -22,18 +22,18 @@ struct gpio_priv {
 }
 
 #[allow(non_camel_case_types)]
-type u8 = core::ffi::c_uchar;
+type u8 = kernel::ffi::c_uchar;
 #[allow(non_camel_case_types)]
-type u16 = core::ffi::c_ushort;
+type u16 = kernel::ffi::c_ushort;
 
 #[repr(C)]
 struct mii_bus {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     read: Option<unsafe extern "C" fn(*mut mii_bus, i32, i32) -> i32>,
     write: Option<unsafe extern "C" fn(*mut mii_bus, i32, i32, u16) -> i32>,
     reset: Option<unsafe extern "C" fn(*mut mii_bus) -> i32>,
-    id: [core::ffi::c_char; 32],
-    priv_: *mut core::ffi::c_void,
+    id: [kernel::ffi::c_char; 32],
+    priv_: *mut kernel::ffi::c_void,
     parent: *mut device,
 }
 
@@ -44,31 +44,31 @@ struct device_node { _private: [u8; 0] }
 #[repr(C)]
 struct platform_device { dev: device }
 #[repr(C)]
-struct of_device_id { compatible: *const core::ffi::c_char }
+struct of_device_id { compatible: *const kernel::ffi::c_char }
 #[repr(C)]
 struct platform_driver { probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32>, remove: Option<unsafe extern "C" fn(*mut platform_device)>, driver: driver }
 #[repr(C)]
-struct driver { name: *const core::ffi::c_char, of_match_table: *const of_device_id }
+struct driver { name: *const kernel::ffi::c_char, of_match_table: *const of_device_id }
 
 extern "C" {
-    fn out_le32(addr: *mut core::ffi::c_void, value: u32);
-    fn in_le32(addr: *mut core::ffi::c_void) -> u32;
+    fn out_le32(addr: *mut kernel::ffi::c_void, value: u32);
+    fn in_le32(addr: *mut kernel::ffi::c_void) -> u32;
     fn udelay(usecs: u32);
     fn kzalloc_obj<T>() -> *mut T;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn mdiobus_alloc() -> *mut mii_bus;
     fn mdiobus_free(bus: *mut mii_bus);
     fn mdiobus_unregister(bus: *mut mii_bus);
-    fn of_get_property(np: *mut device_node, name: *const core::ffi::c_char, len: *mut usize) -> *const u32;
+    fn of_get_property(np: *mut device_node, name: *const kernel::ffi::c_char, len: *mut usize) -> *const u32;
     fn of_mdiobus_register(bus: *mut mii_bus, np: *mut device_node) -> i32;
-    fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
-    fn of_find_compatible_node(from: *mut device_node, typ: *const core::ffi::c_char, compatible: *const core::ffi::c_char) -> *mut device_node;
-    fn of_iomap(np: *mut device_node, index: i32) -> *mut core::ffi::c_void;
+    fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
+    fn of_find_compatible_node(from: *mut device_node, typ: *const kernel::ffi::c_char, compatible: *const kernel::ffi::c_char) -> *mut device_node;
+    fn of_iomap(np: *mut device_node, index: i32) -> *mut kernel::ffi::c_void;
     fn of_node_put(np: *mut device_node);
     fn platform_driver_register(driver: *mut platform_driver) -> i32;
     fn platform_driver_unregister(driver: *mut platform_driver);
-    fn iounmap(addr: *mut core::ffi::c_void);
+    fn iounmap(addr: *mut kernel::ffi::c_void);
 }
 
 unsafe fn mdio_lo(bus: *mut mii_bus) { out_le32((gpio_regs as *mut u8).add(0x10) as _, 1u32 << (*( (*bus).priv_ as *mut gpio_priv)).mdio_pin); }

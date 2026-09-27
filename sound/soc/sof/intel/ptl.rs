@@ -99,7 +99,7 @@ pub struct sof_intel_dsp_desc {
     pub power_down_dsp: Option<unsafe extern "C" fn()>,
     pub disable_interrupts: Option<unsafe extern "C" fn()>,
     pub hw_ip_version: u32_,
-    pub platform: *const core::ffi::c_char,
+    pub platform: *const kernel::ffi::c_char,
 }
 
 unsafe extern "C" {

@@ -27,8 +27,8 @@ pub enum max8660_regulator_id {
  */
 #[repr(C)]
 pub struct max8660_subdev_data {
-    pub id: ::core::ffi::c_int,
-    pub name: *const ::core::ffi::c_char,
+    pub id: ::kernel::ffi::c_int,
+    pub name: *const ::kernel::ffi::c_char,
     pub platform_data: *mut regulator_init_data,
 }
 
@@ -40,10 +40,10 @@ pub struct max8660_subdev_data {
  */
 #[repr(C)]
 pub struct max8660_platform_data {
-    pub num_subdevs: ::core::ffi::c_int,
+    pub num_subdevs: ::kernel::ffi::c_int,
     pub subdevs: *mut max8660_subdev_data,
     // C bit-field: unsigned en34_is_high:1;
-    pub en34_is_high: ::core::ffi::c_uint,
+    pub en34_is_high: ::kernel::ffi::c_uint,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

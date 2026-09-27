@@ -6,7 +6,7 @@
 // Translated from the C header.  The following types are supplied by the
 // corresponding Linux headers: tc_action, bpf_prog, and sock_filter.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub union tcf_bpf_bpf_fd_or_num_ops {

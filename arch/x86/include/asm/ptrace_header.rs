@@ -13,18 +13,60 @@ pub struct pt_regs {
     pub flags: c_ulong, pub sp: c_ulong, pub ss: u16, pub __ssh: u16,
 }
 
+/// FRED CS word: `cs:16, sl:2, wfe:1, :45`.
 #[cfg(target_arch = "x86_64")]
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct fred_cs { pub bits: u64 }
+
+/// FRED SS word: `ss:16, sti:1, swevent:1, nmi:1, :13, vector:8, :8,
+/// type:4, :4, enclave:1, l:1, nested:1, :1, insnlen:4`.
 #[cfg(target_arch = "x86_64")]
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct fred_ss { pub bits: u64 }
+
+macro_rules! fred_bitfield {
+    ($ty:ident: $($get:ident, $set:ident: $shift:literal, $width:literal;)*) => {
+        #[cfg(target_arch = "x86_64")]
+        impl $ty {
+            $(
+                pub const fn $get(&self) -> u64 {
+                    (self.bits >> $shift) & ((1u64 << $width) - 1)
+                }
+                pub fn $set(&mut self, v: u64) {
+                    let mask = ((1u64 << $width) - 1) << $shift;
+                    self.bits = (self.bits & !mask) | ((v << $shift) & mask);
+                }
+            )*
+        }
+    };
+}
+fred_bitfield!(fred_cs:
+    cs, set_cs: 0, 16;
+    sl, set_sl: 16, 2;
+    wfe, set_wfe: 18, 1;
+);
+fred_bitfield!(fred_ss:
+    ss, set_ss: 0, 16;
+    sti, set_sti: 16, 1;
+    swevent, set_swevent: 17, 1;
+    nmi, set_nmi: 18, 1;
+    vector, set_vector: 32, 8;
+    r#type, set_type: 48, 4;
+    enclave, set_enclave: 56, 1;
+    l, set_l: 57, 1;
+    nested, set_nested: 58, 1;
+    insnlen, set_insnlen: 60, 4;
+);
 
 #[cfg(target_arch = "x86_64")]
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub union pt_regs_cs { pub cs: u16, pub csx: u64, pub fred_cs: fred_cs }
 #[cfg(target_arch = "x86_64")]
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub union pt_regs_ss { pub ss: u16, pub ssx: u64, pub fred_ss: fred_ss }
 #[cfg(target_arch = "x86_64")]
 #[repr(C)]
@@ -46,9 +88,8 @@ extern "C" {
     pub fn copy_from_kernel_nofault(dst: *mut c_void, src: *const c_void, size: usize) -> c_long;
 }
 
-#[repr(C)] pub struct task_struct { _private: [u8; 0] }
-extern "C" { pub static boot_cpu_data: cpuinfo_x86; }
-#[repr(C)] pub struct cpuinfo_x86 { pub x86: u8 }
+// struct cpuinfo_x86; struct task_struct; (forward declarations: the types
+// and boot_cpu_data come from their defining headers.)
 
 #[inline(always)] pub unsafe fn regs_return_value(r: *mut pt_regs) -> c_ulong { (*r).ax }
 #[inline(always)] pub unsafe fn regs_set_return_value(r: *mut pt_regs, rc: c_ulong) { (*r).ax = rc; }

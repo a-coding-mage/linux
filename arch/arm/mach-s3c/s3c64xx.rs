@@ -13,14 +13,14 @@
 // NOTE: Code in this file is not used when booting with Device Tree support.
 
 /* External clock frequency */
-static mut xtal_f: ::core::ffi::c_ulong = 12000000;
-static mut xusbxti_f: ::core::ffi::c_ulong = 48000000;
+static mut xtal_f: ::kernel::ffi::c_ulong = 12000000;
+static mut xusbxti_f: ::kernel::ffi::c_ulong = 48000000;
 
-pub unsafe fn s3c64xx_set_xtal_freq(freq: ::core::ffi::c_ulong) { xtal_f = freq; }
-pub unsafe fn s3c64xx_set_xusbxti_freq(freq: ::core::ffi::c_ulong) { xusbxti_f = freq; }
+pub unsafe fn s3c64xx_set_xtal_freq(freq: ::kernel::ffi::c_ulong) { xtal_f = freq; }
+pub unsafe fn s3c64xx_set_xusbxti_freq(freq: ::kernel::ffi::c_ulong) { xusbxti_f = freq; }
 
 /* uart registration process */
-unsafe fn s3c64xx_init_uarts(cfg: *mut s3c2410_uartcfg, no: ::core::ffi::c_int) {
+unsafe fn s3c64xx_init_uarts(cfg: *mut s3c2410_uartcfg, no: ::kernel::ffi::c_int) {
     s3c24xx_init_uartdevs(b"s3c6400-uart\0".as_ptr() as *const _, s3c64xx_uart_resources, cfg, no);
 }
 
@@ -66,7 +66,7 @@ pub unsafe fn s3c64xx_timer_init() {
     samsung_pwm_clocksource_init(S3C_VA_TIMER, timer_irqs.as_ptr(), &raw const s3c64xx_pwm_variant);
 }
 
-pub unsafe fn s3c64xx_init_io(mach_desc: *mut map_desc, size: ::core::ffi::c_int) {
+pub unsafe fn s3c64xx_init_io(mach_desc: *mut map_desc, size: ::kernel::ffi::c_int) {
     iotable_init(s3c_iodesc.as_ptr(), s3c_iodesc.len());
     iotable_init(mach_desc, size as usize);
     s3c64xx_init_cpu();
@@ -74,7 +74,7 @@ pub unsafe fn s3c64xx_init_io(mach_desc: *mut map_desc, size: ::core::ffi::c_int
     samsung_pwm_set_platdata(&raw const s3c64xx_pwm_variant);
 }
 
-unsafe fn s3c64xx_dev_init() -> ::core::ffi::c_int {
+unsafe fn s3c64xx_dev_init() -> ::kernel::ffi::c_int {
     if of_have_populated_dt() || !soc_is_s3c64xx() { return 0; }
     subsys_system_register(&raw const s3c64xx_subsys, core::ptr::null());
     device_register(&raw mut s3c64xx_dev)

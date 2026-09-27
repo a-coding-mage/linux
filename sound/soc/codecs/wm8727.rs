@@ -21,14 +21,14 @@ extern "C" {
     static SNDRV_PCM_FMTBIT_S16_LE: u64;
     static SNDRV_PCM_FMTBIT_S24_LE: u64;
 
-    fn SND_SOC_DAPM_OUTPUT(name: *const ::core::ffi::c_char) -> snd_soc_dapm_widget;
+    fn SND_SOC_DAPM_OUTPUT(name: *const ::kernel::ffi::c_char) -> snd_soc_dapm_widget;
 
     fn devm_snd_soc_register_component(
         dev: *mut device,
         component_driver: *const snd_soc_component_driver,
         dai_drv: *mut snd_soc_dai_driver,
-        num_dai: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        num_dai: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -44,12 +44,12 @@ pub struct platform_device {
 #[repr(C)]
 pub struct platform_driver {
     pub driver: device_driver,
-    pub probe: Option<unsafe extern "C" fn(*mut platform_device) -> ::core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(*mut platform_device) -> ::kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -59,35 +59,35 @@ pub struct snd_soc_dapm_widget {
 
 #[repr(C)]
 pub struct snd_soc_dapm_route {
-    pub sink: *const ::core::ffi::c_char,
-    pub control: *const ::core::ffi::c_char,
-    pub source: *const ::core::ffi::c_char,
+    pub sink: *const ::kernel::ffi::c_char,
+    pub control: *const ::kernel::ffi::c_char,
+    pub source: *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct snd_soc_pcm_stream {
-    pub stream_name: *const ::core::ffi::c_char,
-    pub channels_min: ::core::ffi::c_uint,
-    pub channels_max: ::core::ffi::c_uint,
+    pub stream_name: *const ::kernel::ffi::c_char,
+    pub channels_min: ::kernel::ffi::c_uint,
+    pub channels_max: ::kernel::ffi::c_uint,
     pub rates: u32,
     pub formats: u64,
 }
 
 #[repr(C)]
 pub struct snd_soc_dai_driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub playback: snd_soc_pcm_stream,
 }
 
 #[repr(C)]
 pub struct snd_soc_component_driver {
     pub dapm_widgets: *const snd_soc_dapm_widget,
-    pub num_dapm_widgets: ::core::ffi::c_uint,
+    pub num_dapm_widgets: ::kernel::ffi::c_uint,
     pub dapm_routes: *const snd_soc_dapm_route,
-    pub num_dapm_routes: ::core::ffi::c_uint,
-    pub idle_bias_on: ::core::ffi::c_uint,
-    pub use_pmdown_time: ::core::ffi::c_uint,
-    pub endianness: ::core::ffi::c_uint,
+    pub num_dapm_routes: ::kernel::ffi::c_uint,
+    pub idle_bias_on: ::kernel::ffi::c_uint,
+    pub use_pmdown_time: ::kernel::ffi::c_uint,
+    pub endianness: ::kernel::ffi::c_uint,
 }
 
 static wm8727_dapm_widgets: [snd_soc_dapm_widget; 2] = unsafe {
@@ -137,15 +137,15 @@ static mut wm8727_dai: snd_soc_dai_driver = unsafe {
 
 static soc_component_dev_wm8727: snd_soc_component_driver = snd_soc_component_driver {
     dapm_widgets: wm8727_dapm_widgets.as_ptr(),
-    num_dapm_widgets: wm8727_dapm_widgets.len() as ::core::ffi::c_uint,
+    num_dapm_widgets: wm8727_dapm_widgets.len() as ::kernel::ffi::c_uint,
     dapm_routes: wm8727_dapm_routes.as_ptr(),
-    num_dapm_routes: wm8727_dapm_routes.len() as ::core::ffi::c_uint,
+    num_dapm_routes: wm8727_dapm_routes.len() as ::kernel::ffi::c_uint,
     idle_bias_on: 1,
     use_pmdown_time: 1,
     endianness: 1,
 };
 
-unsafe extern "C" fn wm8727_probe(pdev: *mut platform_device) -> ::core::ffi::c_int {
+unsafe extern "C" fn wm8727_probe(pdev: *mut platform_device) -> ::kernel::ffi::c_int {
     devm_snd_soc_register_component(
         &mut (*pdev).dev,
         &soc_component_dev_wm8727,

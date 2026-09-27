@@ -15,7 +15,7 @@ unsafe fn coda_symlink_filler(file: *mut file, folio: *mut folio) -> i32 {
     let mut error: i32;
     let cii: *mut coda_inode_info;
     let mut len: u32 = PAGE_SIZE;
-    let p: *mut core::ffi::c_char = folio_address(folio);
+    let p: *mut kernel::ffi::c_char = folio_address(folio);
 
     cii = ITOC!(inode);
 

@@ -13,30 +13,30 @@ pub const KVM_PAGE_WRITEABLE: usize = _PAGE_MODIFIED;
 pub const _KVM_FLUSH_PGTABLE: usize = 0x1;
 pub const _KVM_HAS_PGMASK: usize = 0x2;
 
-pub type kvm_pte_t = ::core::ffi::c_ulong;
+pub type kvm_pte_t = ::kernel::ffi::c_ulong;
 pub type kvm_ptw_ctx = kvm_ptw_ctx_struct;
 pub type kvm_pte_ops = unsafe extern "C" fn(
     pte: *mut kvm_pte_t,
     addr: phys_addr_t,
     ctx: *mut kvm_ptw_ctx,
-) -> ::core::ffi::c_int;
+) -> ::kernel::ffi::c_int;
 
 #[repr(C)]
 pub struct kvm_ptw_ctx_struct {
     pub ops: Option<kvm_pte_ops>,
-    pub flag: ::core::ffi::c_ulong,
+    pub flag: ::kernel::ffi::c_ulong,
 
     /* for kvm_arch_mmu_enable_log_dirty_pt_masked use */
-    pub mask: ::core::ffi::c_ulong,
-    pub gfn: ::core::ffi::c_ulong,
+    pub mask: ::kernel::ffi::c_ulong,
+    pub gfn: ::kernel::ffi::c_ulong,
 
     /* page walk mmu info */
-    pub level: ::core::ffi::c_uint,
-    pub pgtable_shift: ::core::ffi::c_ulong,
-    pub invalid_entry: ::core::ffi::c_ulong,
-    pub invalid_ptes: *mut ::core::ffi::c_ulong,
-    pub pte_shifts: *mut ::core::ffi::c_uint,
-    pub opaque: *mut ::core::ffi::c_void,
+    pub level: ::kernel::ffi::c_uint,
+    pub pgtable_shift: ::kernel::ffi::c_ulong,
+    pub invalid_entry: ::kernel::ffi::c_ulong,
+    pub invalid_ptes: *mut ::kernel::ffi::c_ulong,
+    pub pte_shifts: *mut ::kernel::ffi::c_uint,
+    pub opaque: *mut ::kernel::ffi::c_void,
 
     /* free pte table page list */
     pub list: list_head,
@@ -62,16 +62,16 @@ pub unsafe fn kvm_set_pte(ptep: *mut kvm_pte_t, val: kvm_pte_t) {
 }
 
 #[inline]
-pub unsafe fn kvm_pte_young(pte: kvm_pte_t) -> ::core::ffi::c_int { (pte & _PAGE_ACCESSED) as ::core::ffi::c_int }
+pub unsafe fn kvm_pte_young(pte: kvm_pte_t) -> ::kernel::ffi::c_int { (pte & _PAGE_ACCESSED) as ::kernel::ffi::c_int }
 
 #[inline]
-pub unsafe fn kvm_pte_huge(pte: kvm_pte_t) -> ::core::ffi::c_int { (pte & _PAGE_HUGE) as ::core::ffi::c_int }
+pub unsafe fn kvm_pte_huge(pte: kvm_pte_t) -> ::kernel::ffi::c_int { (pte & _PAGE_HUGE) as ::kernel::ffi::c_int }
 
 #[inline]
-pub unsafe fn kvm_pte_dirty(pte: kvm_pte_t) -> ::core::ffi::c_int { (pte & __WRITEABLE) as ::core::ffi::c_int }
+pub unsafe fn kvm_pte_dirty(pte: kvm_pte_t) -> ::kernel::ffi::c_int { (pte & __WRITEABLE) as ::kernel::ffi::c_int }
 
 #[inline]
-pub unsafe fn kvm_pte_writeable(pte: kvm_pte_t) -> ::core::ffi::c_int { (pte & KVM_PAGE_WRITEABLE) as ::core::ffi::c_int }
+pub unsafe fn kvm_pte_writeable(pte: kvm_pte_t) -> ::kernel::ffi::c_int { (pte & KVM_PAGE_WRITEABLE) as ::kernel::ffi::c_int }
 
 #[inline]
 pub unsafe fn kvm_pte_mkyoung(pte: kvm_pte_t) -> kvm_pte_t { pte | _PAGE_ACCESSED }
@@ -95,8 +95,8 @@ pub unsafe fn kvm_pte_mksmall(pte: kvm_pte_t) -> kvm_pte_t { pte & !_PAGE_HUGE }
 pub unsafe fn kvm_pte_mkwriteable(pte: kvm_pte_t) -> kvm_pte_t { pte | KVM_PAGE_WRITEABLE }
 
 #[inline]
-pub unsafe fn kvm_need_flush(ctx: *mut kvm_ptw_ctx) -> ::core::ffi::c_int {
-    ((*ctx).flag & _KVM_FLUSH_PGTABLE) as ::core::ffi::c_int
+pub unsafe fn kvm_need_flush(ctx: *mut kvm_ptw_ctx) -> ::kernel::ffi::c_int {
+    ((*ctx).flag & _KVM_FLUSH_PGTABLE) as ::kernel::ffi::c_int
 }
 
 #[inline]
@@ -116,30 +116,30 @@ pub unsafe fn kvm_pgtable_addr_end(ctx: *mut kvm_ptw_ctx, addr: phys_addr_t, end
 }
 
 #[inline]
-pub unsafe fn kvm_pte_present(ctx: *mut kvm_ptw_ctx, entry: *mut kvm_pte_t) -> ::core::ffi::c_int {
+pub unsafe fn kvm_pte_present(ctx: *mut kvm_ptw_ctx, entry: *mut kvm_pte_t) -> ::kernel::ffi::c_int {
     if ctx.is_null() || (*ctx).level == 0 {
-        ((*entry & _PAGE_PRESENT) != 0) as ::core::ffi::c_int
+        ((*entry & _PAGE_PRESENT) != 0) as ::kernel::ffi::c_int
     } else {
-        ((*entry != (*ctx).invalid_entry) as ::core::ffi::c_int)
+        ((*entry != (*ctx).invalid_entry) as ::kernel::ffi::c_int)
     }
 }
 
 #[inline]
-pub unsafe fn kvm_pte_none(ctx: *mut kvm_ptw_ctx, entry: *mut kvm_pte_t) -> ::core::ffi::c_int {
-    (*entry == (*ctx).invalid_entry) as ::core::ffi::c_int
+pub unsafe fn kvm_pte_none(ctx: *mut kvm_ptw_ctx, entry: *mut kvm_pte_t) -> ::kernel::ffi::c_int {
+    (*entry == (*ctx).invalid_entry) as ::kernel::ffi::c_int
 }
 
 #[inline]
 pub unsafe fn kvm_ptw_enter(ctx: *mut kvm_ptw_ctx) {
     (*ctx).level -= 1;
-    (*ctx).pgtable_shift = *(*ctx).pte_shifts.add((*ctx).level as usize) as ::core::ffi::c_ulong;
+    (*ctx).pgtable_shift = *(*ctx).pte_shifts.add((*ctx).level as usize) as ::kernel::ffi::c_ulong;
     (*ctx).invalid_entry = *(*ctx).invalid_ptes.add((*ctx).level as usize);
 }
 
 #[inline]
 pub unsafe fn kvm_ptw_exit(ctx: *mut kvm_ptw_ctx) {
     (*ctx).level += 1;
-    (*ctx).pgtable_shift = *(*ctx).pte_shifts.add((*ctx).level as usize) as ::core::ffi::c_ulong;
+    (*ctx).pgtable_shift = *(*ctx).pte_shifts.add((*ctx).level as usize) as ::kernel::ffi::c_ulong;
     (*ctx).invalid_entry = *(*ctx).invalid_ptes.add((*ctx).level as usize);
 }
 

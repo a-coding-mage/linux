@@ -15,7 +15,7 @@ unsafe fn prom_meminit_v0() -> i32 {
     index = 0;
     p = (*romvec).pv_v0mem.v0_available as *mut linux_mlist_v0;
     while !p.is_null() {
-        (*sp_banks.add(index as usize)).base_addr = (*p).start_adr as libc::c_ulong;
+        (*sp_banks.add(index as usize)).base_addr = (*p).start_adr as kernel::ffi::c_ulong;
         (*sp_banks.add(index as usize)).num_bytes = (*p).num_bytes;
         index += 1;
         p = (*p).theres_more;
@@ -31,11 +31,11 @@ unsafe fn prom_meminit_v2() -> i32 {
     let num_ents: i32;
     let mut i: i32;
 
-    node = prom_searchsiblings(prom_getchild(prom_root_node), b"memory\0".as_ptr() as *const libc::c_char);
+    node = prom_searchsiblings(prom_getchild(prom_root_node), b"memory\0".as_ptr() as *const kernel::ffi::c_char);
     size = prom_getproperty(
         node,
-        b"available\0".as_ptr() as *const libc::c_char,
-        reg.as_mut_ptr() as *mut libc::c_char,
+        b"available\0".as_ptr() as *const kernel::ffi::c_char,
+        reg.as_mut_ptr() as *mut kernel::ffi::c_char,
         core::mem::size_of::<[linux_prom_registers; 64]>() as i32,
     );
     num_ents = size / core::mem::size_of::<linux_prom_registers>() as i32;
@@ -50,7 +50,7 @@ unsafe fn prom_meminit_v2() -> i32 {
     num_ents
 }
 
-unsafe extern "C" fn sp_banks_cmp(a: *const libc::c_void, b: *const libc::c_void) -> i32 {
+unsafe extern "C" fn sp_banks_cmp(a: *const kernel::ffi::c_void, b: *const kernel::ffi::c_void) -> i32 {
     let x = a as *const sparc_phys_banks;
     let y = b as *const sparc_phys_banks;
 
@@ -78,7 +78,7 @@ pub unsafe fn prom_meminit() {
         _ => {}
     }
     sort(
-        sp_banks as *mut libc::c_void,
+        sp_banks as *mut kernel::ffi::c_void,
         num_ents as usize,
         core::mem::size_of::<sparc_phys_banks>(),
         Some(sp_banks_cmp),

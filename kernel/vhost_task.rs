@@ -13,11 +13,11 @@ pub enum vhost_task_flags {
 
 #[repr(C)]
 pub struct vhost_task {
-    pub fn_: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> bool>,
-    pub handle_sigkill: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
-    pub data: *mut core::ffi::c_void,
+    pub fn_: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> bool>,
+    pub handle_sigkill: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
+    pub data: *mut kernel::ffi::c_void,
     pub exited: completion,
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub task: *mut task_struct,
     // serialize SIGKILL and vhost_task_stop calls
     pub exit_mutex: mutex,
@@ -40,21 +40,21 @@ pub struct task_struct {
 
 #[repr(C)]
 pub struct kernel_clone_args {
-    pub flags: core::ffi::c_ulong,
-    pub fn_: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
-    pub name: *const core::ffi::c_char,
-    pub user_worker: core::ffi::c_ulong,
-    pub no_files: core::ffi::c_ulong,
-    pub fn_arg: *mut core::ffi::c_void,
+    pub flags: kernel::ffi::c_ulong,
+    pub fn_: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>,
+    pub name: *const kernel::ffi::c_char,
+    pub user_worker: kernel::ffi::c_ulong,
+    pub no_files: kernel::ffi::c_ulong,
+    pub fn_arg: *mut kernel::ffi::c_void,
 }
 
 extern "C" {
     fn signal_pending(task: *mut task_struct) -> bool;
-    fn get_signal(ksig: *mut core::ffi::c_void) -> bool;
+    fn get_signal(ksig: *mut kernel::ffi::c_void) -> bool;
     fn set_current_state(state: i32);
     fn __set_current_state(state: i32);
-    fn test_bit(nr: usize, addr: *const core::ffi::c_ulong) -> bool;
-    fn set_bit(nr: usize, addr: *mut core::ffi::c_ulong);
+    fn test_bit(nr: usize, addr: *const kernel::ffi::c_ulong) -> bool;
+    fn set_bit(nr: usize, addr: *mut kernel::ffi::c_ulong);
     fn schedule();
     fn current() -> *mut task_struct;
     fn mutex_lock(lock: *mut mutex);
@@ -64,11 +64,11 @@ extern "C" {
     fn wake_up_process(task: *mut task_struct);
     fn wait_for_completion(x: *mut completion);
     fn put_task_struct(task: *mut task_struct);
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn init_completion(x: *mut completion);
     fn mutex_init(lock: *mut mutex);
     fn copy_process(
-        clone_flags: *mut core::ffi::c_void,
+        clone_flags: *mut kernel::ffi::c_void,
         node: i32,
         numa_node: i32,
         args: *mut kernel_clone_args,
@@ -77,7 +77,7 @@ extern "C" {
     fn wake_up_new_task(task: *mut task_struct);
 }
 
-unsafe fn vhost_task_fn(data: *mut core::ffi::c_void) -> i32 {
+unsafe fn vhost_task_fn(data: *mut kernel::ffi::c_void) -> i32 {
     let vtsk = data as *mut vhost_task;
 
     loop {
@@ -85,7 +85,7 @@ unsafe fn vhost_task_fn(data: *mut core::ffi::c_void) -> i32 {
 
         if signal_pending(current()) {
             let mut ksig = core::mem::MaybeUninit::<[u8; 128]>::uninit();
-            if get_signal(ksig.as_mut_ptr() as *mut core::ffi::c_void) {
+            if get_signal(ksig.as_mut_ptr() as *mut kernel::ffi::c_void) {
                 break;
             }
         }
@@ -147,7 +147,7 @@ pub unsafe extern "C" fn vhost_task_stop(vtsk: *mut vhost_task) {
      */
     wait_for_completion(&mut (*vtsk).exited);
     put_task_struct((*vtsk).task);
-    kfree(vtsk as *mut core::ffi::c_void);
+    kfree(vtsk as *mut kernel::ffi::c_void);
 }
 
 /// vhost_task_create - create a copy of a task to be used by the kernel
@@ -156,10 +156,10 @@ pub unsafe extern "C" fn vhost_task_stop(vtsk: *mut vhost_task) {
 /// @arg: data to be passed to fn and handled_kill
 /// @name: the thread's name
 pub unsafe extern "C" fn vhost_task_create(
-    fn_: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> bool>,
-    handle_sigkill: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
-    arg: *mut core::ffi::c_void,
-    name: *const core::ffi::c_char,
+    fn_: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> bool>,
+    handle_sigkill: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
+    arg: *mut kernel::ffi::c_void,
+    name: *const kernel::ffi::c_char,
 ) -> *mut vhost_task {
     let mut args = kernel_clone_args {
         flags: 0,
@@ -179,10 +179,10 @@ pub unsafe extern "C" fn vhost_task_create(
     (*vtsk).fn_ = fn_;
     (*vtsk).handle_sigkill = handle_sigkill;
 
-    args.fn_arg = vtsk as *mut core::ffi::c_void;
+    args.fn_arg = vtsk as *mut kernel::ffi::c_void;
     let tsk = copy_process(core::ptr::null_mut(), 0, -1, &mut args);
     if (tsk as isize) < 0 {
-        kfree(vtsk as *mut core::ffi::c_void);
+        kfree(vtsk as *mut kernel::ffi::c_void);
         return tsk as *mut vhost_task;
     }
     (*vtsk).task = get_task_struct(tsk);

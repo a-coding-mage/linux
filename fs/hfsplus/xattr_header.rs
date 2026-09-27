@@ -19,41 +19,41 @@ extern "C" {
 
     pub fn __hfsplus_setxattr(
         inode: *mut inode,
-        name: *const core::ffi::c_char,
-        value: *const core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        value: *const kernel::ffi::c_void,
         size: usize,
-        flags: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        flags: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 
     pub fn hfsplus_setxattr(
         inode: *mut inode,
-        name: *const core::ffi::c_char,
-        value: *const core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        value: *const kernel::ffi::c_void,
         size: usize,
-        flags: core::ffi::c_int,
-        prefix: *const core::ffi::c_char,
+        flags: kernel::ffi::c_int,
+        prefix: *const kernel::ffi::c_char,
         prefixlen: usize,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn __hfsplus_getxattr(
         inode: *mut inode,
-        name: *const core::ffi::c_char,
-        value: *mut core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        value: *mut kernel::ffi::c_void,
         size: usize,
     ) -> isize;
 
     pub fn hfsplus_getxattr(
         inode: *mut inode,
-        name: *const core::ffi::c_char,
-        value: *mut core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        value: *mut kernel::ffi::c_void,
         size: usize,
-        prefix: *const core::ffi::c_char,
+        prefix: *const kernel::ffi::c_char,
         prefixlen: usize,
     ) -> isize;
 
     pub fn hfsplus_listxattr(
         dentry: *mut dentry,
-        buffer: *mut core::ffi::c_char,
+        buffer: *mut kernel::ffi::c_char,
         size: usize,
     ) -> isize;
 
@@ -61,7 +61,7 @@ extern "C" {
         inode: *mut inode,
         dir: *mut inode,
         qstr: *const qstr,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -27,8 +27,8 @@ pub enum prom_major_version {
 unsafe extern "C" {
     pub static mut prom_vers: prom_major_version;
     /* Revision, and firmware revision. */
-    pub static mut prom_rev: ::core::ffi::c_uint;
-    pub static mut prom_prev: ::core::ffi::c_uint;
+    pub static mut prom_rev: ::kernel::ffi::c_uint;
+    pub static mut prom_prev: ::kernel::ffi::c_uint;
     /* Root node of the prom device tree, this stays constant after
      * initialization is complete.
      */
@@ -47,12 +47,12 @@ unsafe extern "C" {
      */
     pub fn prom_init(rom_ptr: *mut linux_romvec);
     /* Boot argument acquisition, returns the boot command line string. */
-    pub fn prom_getbootargs() -> *mut ::core::ffi::c_char;
+    pub fn prom_getbootargs() -> *mut ::kernel::ffi::c_char;
     /* Miscellaneous routines, don't really fit in any category per se. */
     /* Reboot the machine with the command line passed. */
-    pub fn prom_reboot(boot_command: *mut ::core::ffi::c_char);
+    pub fn prom_reboot(boot_command: *mut ::kernel::ffi::c_char);
     /* Evaluate the forth string passed. */
-    pub fn prom_feval(forth_string: *mut ::core::ffi::c_char);
+    pub fn prom_feval(forth_string: *mut ::kernel::ffi::c_char);
     /* Enter the prom, with possibility of continuation with the 'go'
      * command in newer proms.
      */
@@ -77,39 +77,39 @@ unsafe extern "C" {
      * gets passed a buffer where you would like it stuffed.  The return value
      * is the format type of this idprom or 0xff on error.
      */
-    pub fn prom_get_idprom(idp_buffer: *mut ::core::ffi::c_char, idpbuf_size: ::core::ffi::c_int) -> ::core::ffi::c_uchar;
-    pub fn prom_version() -> ::core::ffi::c_int;
-    pub fn prom_getrev() -> ::core::ffi::c_int;
-    pub fn prom_getprev() -> ::core::ffi::c_int;
-    pub fn prom_console_write_buf(buf: *const ::core::ffi::c_char, len: ::core::ffi::c_int);
+    pub fn prom_get_idprom(idp_buffer: *mut ::kernel::ffi::c_char, idpbuf_size: ::kernel::ffi::c_int) -> ::kernel::ffi::c_uchar;
+    pub fn prom_version() -> ::kernel::ffi::c_int;
+    pub fn prom_getrev() -> ::kernel::ffi::c_int;
+    pub fn prom_getprev() -> ::kernel::ffi::c_int;
+    pub fn prom_console_write_buf(buf: *const ::kernel::ffi::c_char, len: ::kernel::ffi::c_int);
     /* Prom's internal routines, don't use in kernel/boot code. */
-    pub fn prom_printf(fmt: *const ::core::ffi::c_char, ...) -> ();
-    pub fn prom_write(buf: *const ::core::ffi::c_char, len: ::core::ffi::c_uint);
-    pub fn prom_startcpu(cpunode: ::core::ffi::c_int, context_table: *mut linux_prom_registers,
-                         context: ::core::ffi::c_int, program_counter: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
+    pub fn prom_printf(fmt: *const ::kernel::ffi::c_char, ...) -> ();
+    pub fn prom_write(buf: *const ::kernel::ffi::c_char, len: ::kernel::ffi::c_uint);
+    pub fn prom_startcpu(cpunode: ::kernel::ffi::c_int, context_table: *mut linux_prom_registers,
+                         context: ::kernel::ffi::c_int, program_counter: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
     pub fn prom_meminit();
     pub fn prom_getchild(parent_node: phandle) -> phandle;
     pub fn prom_getsibling(node: phandle) -> phandle;
-    pub fn prom_getproplen(thisnode: phandle, property: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
-    pub fn prom_getproperty(thisnode: phandle, property: *const ::core::ffi::c_char,
-                            prop_buffer: *mut ::core::ffi::c_char, propbuf_size: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn prom_getint(node: phandle, property: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    pub fn prom_getintdefault(node: phandle, property: *mut ::core::ffi::c_char, defval: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn prom_getbool(node: phandle, prop: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
-    pub fn prom_getstring(node: phandle, prop: *mut ::core::ffi::c_char, buf: *mut ::core::ffi::c_char, bufsize: ::core::ffi::c_int);
-    pub fn prom_searchsiblings(node_start: phandle, name: *mut ::core::ffi::c_char) -> phandle;
-    pub fn prom_nextprop(node: phandle, prev_property: *mut ::core::ffi::c_char, buffer: *mut ::core::ffi::c_char) -> *mut ::core::ffi::c_char;
-    pub fn prom_finddevice(name: *mut ::core::ffi::c_char) -> phandle;
-    pub fn prom_setprop(node: phandle, prop_name: *const ::core::ffi::c_char,
-                        prop_value: *mut ::core::ffi::c_char, value_size: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn prom_inst2pkg(arg: ::core::ffi::c_int) -> phandle;
-    pub fn prom_apply_obio_ranges(obioregs: *mut linux_prom_registers, nregs: ::core::ffi::c_int);
+    pub fn prom_getproplen(thisnode: phandle, property: *const ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
+    pub fn prom_getproperty(thisnode: phandle, property: *const ::kernel::ffi::c_char,
+                            prop_buffer: *mut ::kernel::ffi::c_char, propbuf_size: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn prom_getint(node: phandle, property: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
+    pub fn prom_getintdefault(node: phandle, property: *mut ::kernel::ffi::c_char, defval: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn prom_getbool(node: phandle, prop: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
+    pub fn prom_getstring(node: phandle, prop: *mut ::kernel::ffi::c_char, buf: *mut ::kernel::ffi::c_char, bufsize: ::kernel::ffi::c_int);
+    pub fn prom_searchsiblings(node_start: phandle, name: *mut ::kernel::ffi::c_char) -> phandle;
+    pub fn prom_nextprop(node: phandle, prev_property: *mut ::kernel::ffi::c_char, buffer: *mut ::kernel::ffi::c_char) -> *mut ::kernel::ffi::c_char;
+    pub fn prom_finddevice(name: *mut ::kernel::ffi::c_char) -> phandle;
+    pub fn prom_setprop(node: phandle, prop_name: *const ::kernel::ffi::c_char,
+                        prop_value: *mut ::kernel::ffi::c_char, value_size: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn prom_inst2pkg(arg: ::kernel::ffi::c_int) -> phandle;
+    pub fn prom_apply_obio_ranges(obioregs: *mut linux_prom_registers, nregs: ::kernel::ffi::c_int);
     pub fn prom_apply_generic_ranges(node: phandle, parent: phandle,
-                                     sbusregs: *mut linux_prom_registers, nregs: ::core::ffi::c_int);
+                                     sbusregs: *mut linux_prom_registers, nregs: ::kernel::ffi::c_int);
     pub fn prom_ranges_init();
-    pub fn cpu_find_by_instance(instance: ::core::ffi::c_int, prom_node: *mut phandle, mid: *mut ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn cpu_find_by_mid(mid: ::core::ffi::c_int, prom_node: *mut phandle) -> ::core::ffi::c_int;
-    pub fn cpu_get_hwmid(prom_node: phandle) -> ::core::ffi::c_int;
+    pub fn cpu_find_by_instance(instance: ::kernel::ffi::c_int, prom_node: *mut phandle, mid: *mut ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn cpu_find_by_mid(mid: ::kernel::ffi::c_int, prom_node: *mut phandle) -> ::kernel::ffi::c_int;
+    pub fn cpu_get_hwmid(prom_node: phandle) -> ::kernel::ffi::c_int;
     pub static mut prom_lock: spinlock_t;
 }
 

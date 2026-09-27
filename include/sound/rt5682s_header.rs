@@ -46,13 +46,13 @@ pub struct rt5682s_platform_data {
     pub dmic1_data_pin: rt5682s_dmic1_data_pin,
     pub dmic1_clk_pin: rt5682s_dmic1_clk_pin,
     pub jd_src: rt5682s_jd_src,
-    pub dmic_clk_rate: core::ffi::c_uint,
-    pub dmic_delay: core::ffi::c_uint,
-    pub amic_delay: core::ffi::c_uint,
-    pub ldo_dacref: core::ffi::c_uint,
+    pub dmic_clk_rate: kernel::ffi::c_uint,
+    pub dmic_delay: kernel::ffi::c_uint,
+    pub amic_delay: kernel::ffi::c_uint,
+    pub ldo_dacref: kernel::ffi::c_uint,
     pub dmic_clk_driving_high: bool,
 
-    pub dai_clk_names: [*const core::ffi::c_char; RT5682S_DAI_NUM_CLKS as usize],
+    pub dai_clk_names: [*const kernel::ffi::c_char; RT5682S_DAI_NUM_CLKS as usize],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

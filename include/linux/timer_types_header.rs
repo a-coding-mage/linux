@@ -11,7 +11,7 @@ pub struct timer_list {
 	 * same cacheline
 	 */
 	pub entry: hlist_node,
-	pub expires: ::core::ffi::c_ulong,
+	pub expires: ::kernel::ffi::c_ulong,
 	pub function: Option<unsafe extern "C" fn(*mut timer_list)>,
 	pub flags: u32,
 

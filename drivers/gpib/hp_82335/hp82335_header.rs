@@ -14,13 +14,13 @@
 #[repr(C)]
 pub struct hp82335_priv {
     pub tms9914_priv: tms9914_priv,
-    pub irq: ::core::ffi::c_uint,
-    pub raw_iobase: ::core::ffi::c_ulong,
+    pub irq: ::kernel::ffi::c_uint,
+    pub raw_iobase: ::kernel::ffi::c_ulong,
 }
 
 // size of io memory region used
-pub const hp82335_rom_size: ::core::ffi::c_int = 0x2000;
-pub const hp82335_upper_iomem_size: ::core::ffi::c_int = 0x2000;
+pub const hp82335_rom_size: ::kernel::ffi::c_int = 0x2000;
+pub const hp82335_upper_iomem_size: ::kernel::ffi::c_int = 0x2000;
 
 // hp82335 register offsets
 #[repr(i32)]

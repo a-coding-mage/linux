@@ -24,44 +24,44 @@
  */
 
 // Declarations supplied by mpi-internal.h and the kernel build environment.
-pub type MpiLimb = ::core::ffi::c_ulong;
+pub type MpiLimb = ::kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct MpiStruct {
-    pub nlimbs: ::core::ffi::c_uint,
-    pub sign: ::core::ffi::c_int,
+    pub nlimbs: ::kernel::ffi::c_uint,
+    pub sign: ::kernel::ffi::c_int,
     pub d: *mut MpiLimb,
 }
 
 pub type MPI = *mut MpiStruct;
 
 unsafe extern "C" {
-    fn mpi_resize(a: MPI, nlimbs: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    fn mpi_resize(a: MPI, nlimbs: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
     fn mpihelp_add_1(
         res_ptr: *mut MpiLimb,
         s1_ptr: *const MpiLimb,
-        size: ::core::ffi::c_uint,
+        size: ::kernel::ffi::c_uint,
         s2_limb: MpiLimb,
     ) -> MpiLimb;
     fn mpihelp_sub_1(
         res_ptr: *mut MpiLimb,
         s1_ptr: *const MpiLimb,
-        size: ::core::ffi::c_uint,
+        size: ::kernel::ffi::c_uint,
         s2_limb: MpiLimb,
     ) -> MpiLimb;
     fn mpi_normalize(a: MPI);
 }
 
-const ENOMEM: ::core::ffi::c_int = 12;
+const ENOMEM: ::kernel::ffi::c_int = 12;
 
-pub unsafe fn mpi_sub_ui(w: MPI, u: MPI, vval: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+pub unsafe fn mpi_sub_ui(w: MPI, u: MPI, vval: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     if (*u).nlimbs == 0 {
         if mpi_resize(w, 1) < 0 {
             return -ENOMEM;
         }
         *(*w).d = vval;
-        (*w).nlimbs = (vval != 0) as ::core::ffi::c_uint;
-        (*w).sign = (vval != 0) as ::core::ffi::c_int;
+        (*w).nlimbs = (vval != 0) as ::kernel::ffi::c_uint;
+        (*w).sign = (vval != 0) as ::kernel::ffi::c_int;
         return 0;
     }
 
@@ -75,7 +75,7 @@ pub unsafe fn mpi_sub_ui(w: MPI, u: MPI, vval: ::core::ffi::c_ulong) -> ::core::
 
         cy = mpihelp_add_1((*w).d, (*u).d, (*u).nlimbs, vval as MpiLimb);
         *(*w).d.add((*u).nlimbs as usize) = cy;
-        (*w).nlimbs = (*u).nlimbs + cy as ::core::ffi::c_uint;
+        (*w).nlimbs = (*u).nlimbs + cy as ::kernel::ffi::c_uint;
         (*w).sign = 1;
     } else {
         /* The signs are different.  Need exact comparison to determine
@@ -89,7 +89,7 @@ pub unsafe fn mpi_sub_ui(w: MPI, u: MPI, vval: ::core::ffi::c_ulong) -> ::core::
             mpihelp_sub_1((*w).d, (*u).d, (*u).nlimbs, vval as MpiLimb);
             /* Size can decrease with at most one limb. */
             (*w).nlimbs = (*u).nlimbs
-                - (*(*w).d.add(((*u).nlimbs - 1) as usize) == 0) as ::core::ffi::c_uint;
+                - (*(*w).d.add(((*u).nlimbs - 1) as usize) == 0) as ::kernel::ffi::c_uint;
             (*w).sign = 0;
         }
     }

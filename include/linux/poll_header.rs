@@ -95,9 +95,9 @@ pub struct poll_wqueues {
     pub pt: poll_table,
     pub table: *mut poll_table_page,
     pub polling_task: *mut task_struct,
-    pub triggered: core::ffi::c_int,
-    pub error: core::ffi::c_int,
-    pub inline_index: core::ffi::c_int,
+    pub triggered: kernel::ffi::c_int,
+    pub error: kernel::ffi::c_int,
+    pub inline_index: kernel::ffi::c_int,
     pub inline_entries: [poll_table_entry; N_INLINE_POLL_ENTRIES],
 }
 
@@ -111,14 +111,14 @@ pub const MAX_INT64_SECONDS: s64 = ((!0u64 >> 1) as s64 / HZ as s64) - 1;
 
 extern "C" {
     pub fn core_sys_select(
-        n: core::ffi::c_int,
+        n: kernel::ffi::c_int,
         inp: *mut fd_set,
         outp: *mut fd_set,
         exp: *mut fd_set,
         end_time: *mut timespec64,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
-    pub fn poll_select_set_timeout(to: *mut timespec64, sec: time64_t, nsec: core::ffi::c_long) -> core::ffi::c_int;
+    pub fn poll_select_set_timeout(to: *mut timespec64, sec: time64_t, nsec: kernel::ffi::c_long) -> kernel::ffi::c_int;
 }
 
 /// `__MAP(v, from, to)`: move the single-bit flag `from` in `v` to `to`.

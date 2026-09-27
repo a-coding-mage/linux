@@ -28,10 +28,10 @@ const fn IRQ_BIT(irq: i32) -> i32 {
 
 #[repr(C)]
 struct omap_irq_bank {
-    base_reg: ::core::ffi::c_ulong,
-    va: *mut ::core::ffi::c_void,
-    trigger_map: ::core::ffi::c_ulong,
-    wake_enable: ::core::ffi::c_ulong,
+    base_reg: ::kernel::ffi::c_ulong,
+    va: *mut ::kernel::ffi::c_void,
+    trigger_map: ::kernel::ffi::c_ulong,
+    wake_enable: ::kernel::ffi::c_ulong,
 }
 
 static mut omap_l2_irq: u32 = 0;
@@ -45,7 +45,7 @@ unsafe fn irq_bank_readl(bank: i32, offset: i32) -> u32 {
 }
 
 #[inline]
-unsafe fn irq_bank_writel(value: ::core::ffi::c_ulong, bank: i32, offset: i32) {
+unsafe fn irq_bank_writel(value: ::kernel::ffi::c_ulong, bank: i32, offset: i32) {
     writel_relaxed(value, (*irq_banks.add(bank as usize)).va.cast::<u8>().add(offset as usize));
 }
 
@@ -72,7 +72,7 @@ unsafe fn omap_mask_ack_irq(d: *mut irq_data) {
 unsafe fn omap_irq_set_cfg(mut irq: i32, mut fiq: i32, priority: i32, trigger: i32) {
     let bank: i32 = IRQ_BANK(irq);
     fiq = if bank != 0 { 0 } else { fiq & 0x1 };
-    let val: ::core::ffi::c_ulong = (fiq | ((priority & 0x1f) << 2) | ((trigger & 0x1) << 1)) as _;
+    let val: ::kernel::ffi::c_ulong = (fiq | ((priority & 0x1f) << 2) | ((trigger & 0x1) << 1)) as _;
     let offset = IRQ_ILR0_REG_OFFSET + IRQ_BIT(irq) * 0x4;
     irq_bank_writel(val, bank, offset);
 }
@@ -116,7 +116,7 @@ unsafe fn omap1_handle_irq(_regs: *mut pt_regs) {
     }
 }
 
-unsafe fn omap_alloc_gc(base: *mut ::core::ffi::c_void, irq_start: u32, num: u32) {
+unsafe fn omap_alloc_gc(base: *mut ::kernel::ffi::c_void, irq_start: u32, num: u32) {
     let gc = irq_alloc_generic_chip("MPU\0".as_ptr() as _, 1, irq_start, base, handle_level_irq);
     let ct = (*gc).chip_types;
     (*ct).chip.irq_ack = Some(omap_mask_ack_irq);

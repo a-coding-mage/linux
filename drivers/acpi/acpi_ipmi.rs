@@ -16,7 +16,7 @@ const ACPI_IPMI_UNKNOWN: i32 = 0x07;
 const IPMI_TIMEOUT: i32 = 5000;
 const ACPI_IPMI_MAX_MSG_LENGTH: usize = 64;
 /* 2s should be suffient for SMI being selected */
-const ACPI_IPMI_SMI_SELECTION_TIMEOUT: _ = 2 * HZ;
+const ACPI_IPMI_SMI_SELECTION_TIMEOUT: i32 = 2 * HZ;
 
 #[repr(C)]
 struct AcpiIpmiDevice {

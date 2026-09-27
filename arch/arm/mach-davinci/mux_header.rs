@@ -11,8 +11,8 @@
 
 #[repr(C)]
 pub struct mux_config {
-    pub name: *const ::core::ffi::c_char,
-    pub mux_reg_name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
+    pub mux_reg_name: *const ::kernel::ffi::c_char,
     pub mux_reg: u8,
     pub mask_offset: u8,
     pub mask: u8,
@@ -104,16 +104,16 @@ pub const fn PINMUX(x: u8) -> u8 { 4u8.wrapping_mul(x) }
 
 /* CONFIG_DAVINCI_MUX selects the external implementation at build time. */
 #[cfg(CONFIG_DAVINCI_MUX)]
-extern "C" { pub fn davinci_cfg_reg(reg_cfg: ::core::ffi::c_ulong) -> ::core::ffi::c_int; }
+extern "C" { pub fn davinci_cfg_reg(reg_cfg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int; }
 #[cfg(not(CONFIG_DAVINCI_MUX))]
 #[inline]
-pub unsafe fn davinci_cfg_reg(_reg_cfg: ::core::ffi::c_ulong) -> ::core::ffi::c_int { 0 }
+pub unsafe fn davinci_cfg_reg(_reg_cfg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int { 0 }
 
 #[macro_export]
 macro_rules! MUX_CFG {
     ($soc:ident, $desc:ident, $muxreg:expr, $mode_offset:expr, $mode_mask:expr, $mux_mode:expr, $dbg:expr) => {
-        $crate::mux_config { name: concat!(stringify!($desc), "\0").as_ptr() as *const ::core::ffi::c_char,
-            debug: $dbg, mux_reg_name: concat!("PINMUX", stringify!($muxreg), "\0").as_ptr() as *const ::core::ffi::c_char,
+        $crate::mux_config { name: concat!(stringify!($desc), "\0").as_ptr() as *const ::kernel::ffi::c_char,
+            debug: $dbg, mux_reg_name: concat!("PINMUX", stringify!($muxreg), "\0").as_ptr() as *const ::kernel::ffi::c_char,
             mux_reg: $crate::PINMUX($muxreg), mask_offset: $mode_offset, mask: $mode_mask, mode: $mux_mode }
     };
 }
@@ -121,8 +121,8 @@ macro_rules! MUX_CFG {
 #[macro_export]
 macro_rules! INT_CFG {
     ($soc:ident, $desc:ident, $mode_offset:expr, $mode_mask:expr, $mux_mode:expr, $dbg:expr) => {
-        $crate::mux_config { name: concat!(stringify!($desc), "\0").as_ptr() as *const ::core::ffi::c_char,
-            debug: $dbg, mux_reg_name: b"INTMUX\0".as_ptr() as *const ::core::ffi::c_char,
+        $crate::mux_config { name: concat!(stringify!($desc), "\0").as_ptr() as *const ::kernel::ffi::c_char,
+            debug: $dbg, mux_reg_name: b"INTMUX\0".as_ptr() as *const ::kernel::ffi::c_char,
             mux_reg: INTMUX, mask_offset: $mode_offset, mask: $mode_mask, mode: $mux_mode }
     };
 }
@@ -130,8 +130,8 @@ macro_rules! INT_CFG {
 #[macro_export]
 macro_rules! EVT_CFG {
     ($soc:ident, $desc:ident, $mode_offset:expr, $mode_mask:expr, $mux_mode:expr, $dbg:expr) => {
-        $crate::mux_config { name: concat!(stringify!($desc), "\0").as_ptr() as *const ::core::ffi::c_char,
-            debug: $dbg, mux_reg_name: b"EVTMUX\0".as_ptr() as *const ::core::ffi::c_char,
+        $crate::mux_config { name: concat!(stringify!($desc), "\0").as_ptr() as *const ::kernel::ffi::c_char,
+            debug: $dbg, mux_reg_name: b"EVTMUX\0".as_ptr() as *const ::kernel::ffi::c_char,
             mux_reg: EVTMUX, mask_offset: $mode_offset, mask: $mode_mask, mode: $mux_mode }
     };
 }

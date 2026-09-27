@@ -7,11 +7,11 @@
 
 // Dependency supplied by the architecture headers in the surrounding tree.
 
-pub static realview_dt_platform_compat: [*const core::ffi::c_char; 5] = [
-    b"arm,realview-eb\0".as_ptr() as *const core::ffi::c_char,
-    b"arm,realview-pb1176\0".as_ptr() as *const core::ffi::c_char,
-    b"arm,realview-pba8\0".as_ptr() as *const core::ffi::c_char,
-    b"arm,realview-pbx\0".as_ptr() as *const core::ffi::c_char,
+pub static realview_dt_platform_compat: [*const kernel::ffi::c_char; 5] = [
+    b"arm,realview-eb\0".as_ptr() as *const kernel::ffi::c_char,
+    b"arm,realview-pb1176\0".as_ptr() as *const kernel::ffi::c_char,
+    b"arm,realview-pba8\0".as_ptr() as *const kernel::ffi::c_char,
+    b"arm,realview-pbx\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -41,7 +41,7 @@ pub struct RealviewDtMachine {
     pub name: &'static str,
     #[cfg(CONFIG_ZONE_DMA)]
     pub dma_zone_size: usize,
-    pub dt_compat: &'static [*const core::ffi::c_char],
+    pub dt_compat: &'static [*const kernel::ffi::c_char],
     pub l2c_aux_val: u32,
     pub l2c_aux_mask: u32,
 }

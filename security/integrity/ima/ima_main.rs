@@ -33,7 +33,7 @@
 
 use core::mem;
 use core::ptr;
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // External type declarations - from linux kernel headers and ima.h
 #[repr(C)]
@@ -290,7 +290,7 @@ extern "C" {
     pub fn d_real(dentry: *const dentry, want_fallback: *mut dentry) -> *mut dentry;
     pub fn d_real_inode(dentry: *const dentry) -> *mut inode;
 
-    pub fn mapping_writably_mapped(mapping: *const libc::c_void) -> bool;
+    pub fn mapping_writably_mapped(mapping: *const kernel::ffi::c_void) -> bool;
     pub fn inode_lock(inode: *mut inode);
     pub fn inode_unlock(inode: *mut inode);
     pub fn atomic_read(v: *const i32) -> i32;
@@ -460,13 +460,13 @@ extern "C" {
 
     pub fn container_of(ptr: *const u8, type_: usize, member_: usize) -> *const u8;
     pub fn min_t(type_: usize, a: usize, b: usize) -> usize;
-    pub fn fd_empty(f: *const libc::c_void) -> bool;
-    pub fn fd_file(f: *const libc::c_void) -> *const file;
+    pub fn fd_empty(f: *const kernel::ffi::c_void) -> bool;
+    pub fn fd_file(f: *const kernel::ffi::c_void) -> *const file;
     pub fn CLASS(typ: i32, name: i32)(value: i32);
 
-    pub fn mutex_init(mutex: *mut libc::c_void);
-    pub fn mutex_lock(mutex: *mut libc::c_void);
-    pub fn mutex_unlock(mutex: *mut libc::c_void);
+    pub fn mutex_init(mutex: *mut kernel::ffi::c_void);
+    pub fn mutex_lock(mutex: *mut kernel::ffi::c_void);
+    pub fn mutex_unlock(mutex: *mut kernel::ffi::c_void);
 }
 
 pub const fn LSM_HOOK_INIT(hook: i32, function: extern "C" fn() -> i32) -> security_hook_list {
@@ -557,7 +557,7 @@ extern "C" fn mmap_violation_check(
         let mut rc = 0;
 
         if (func == MMAP_CHECK || func == MMAP_CHECK_REQPROT) &&
-            mapping_writably_mapped((*file).f_mapping as *const libc::c_void) {
+            mapping_writably_mapped((*file).f_mapping as *const kernel::ffi::c_void) {
             rc = ETXTBSY;
             let inode = file_inode(file);
 
@@ -680,7 +680,7 @@ extern "C" fn ima_check_last_writer(
             return;
         }
 
-        mutex_lock(&mut (*iint).mutex as *mut libc::c_void);
+        mutex_lock(&mut (*iint).mutex as *mut kernel::ffi::c_void);
         if atomic_read(&(*inode).i_writecount) == 1 {
             clear_bit(IMA_EMITTED_OPENWRITERS as i32, &mut (*iint).atomic_flags);
 
@@ -694,7 +694,7 @@ extern "C" fn ima_check_last_writer(
                 }
             }
         }
-        mutex_unlock(&mut (*iint).mutex as *mut libc::c_void);
+        mutex_unlock(&mut (*iint).mutex as *mut kernel::ffi::c_void);
     }
 }
 
@@ -804,7 +804,7 @@ extern "C" fn process_measurement(
             break 'out_label;
         }
 
-        mutex_lock(&mut (*iint).mutex as *mut libc::c_void);
+        mutex_lock(&mut (*iint).mutex as *mut kernel::ffi::c_void);
 
         if test_and_clear_bit(IMA_CHANGE_ATTR as i32, &mut (*iint).atomic_flags) {
             (*iint).flags &= !(IMA_APPRAISE | IMA_APPRAISED | IMA_APPRAISE_SUBMASK
@@ -965,7 +965,7 @@ extern "C" fn process_measurement(
             && ((*iint).flags & IMA_NEW_FILE) == 0 {
             rc = EACCES;
         }
-        mutex_unlock(&mut (*iint).mutex as *mut libc::c_void);
+        mutex_unlock(&mut (*iint).mutex as *mut kernel::ffi::c_void);
         kfree(xattr_value as *mut u8);
         ima_free_modsig(modsig);
         }
@@ -1184,10 +1184,10 @@ extern "C" fn ima_reset_action_flags(inode: *const inode) {
             return;
         }
 
-        mutex_lock(&mut (*iint).mutex as *mut libc::c_void);
+        mutex_lock(&mut (*iint).mutex as *mut kernel::ffi::c_void);
         (*iint).flags &= !IMA_DONE_MASK;
         (*iint).measured_pcrs = 0;
-        mutex_unlock(&mut (*iint).mutex as *mut libc::c_void);
+        mutex_unlock(&mut (*iint).mutex as *mut kernel::ffi::c_void);
     }
 }
 
@@ -1219,17 +1219,17 @@ extern "C" fn __ima_inode_hash(
         if ima_policy_flag != 0 {
             iint = ima_iint_find(inode);
             if !iint.is_null() {
-                mutex_lock(&mut (*iint).mutex as *mut libc::c_void);
+                mutex_lock(&mut (*iint).mutex as *mut kernel::ffi::c_void);
             }
         }
 
         if (iint.is_null() || ((*iint).flags & IMA_COLLECTED) == 0) && !file.is_null() {
             if !iint.is_null() {
-                mutex_unlock(&mut (*iint).mutex as *mut libc::c_void);
+                mutex_unlock(&mut (*iint).mutex as *mut kernel::ffi::c_void);
             }
 
             memset(&mut tmp_iint as *mut ima_iint_cache as *mut u8, 0, mem::size_of::<ima_iint_cache>());
-            mutex_init(&mut tmp_iint.mutex as *mut libc::c_void);
+            mutex_init(&mut tmp_iint.mutex as *mut kernel::ffi::c_void);
 
             rc = ima_collect_measurement(&mut tmp_iint, file, ptr::null(), 0, ima_hash_algo, ptr::null_mut());
             if rc < 0 {
@@ -1241,7 +1241,7 @@ extern "C" fn __ima_inode_hash(
             }
 
             iint = &mut tmp_iint;
-            mutex_lock(&mut (*iint).mutex as *mut libc::c_void);
+            mutex_lock(&mut (*iint).mutex as *mut kernel::ffi::c_void);
         }
 
         if iint.is_null() {
@@ -1249,7 +1249,7 @@ extern "C" fn __ima_inode_hash(
         }
 
         if iint.ima_hash.is_null() || ((*iint).flags & IMA_COLLECTED) == 0 {
-            mutex_unlock(&mut (*iint).mutex as *mut libc::c_void);
+            mutex_unlock(&mut (*iint).mutex as *mut kernel::ffi::c_void);
             return EOPNOTSUPP;
         }
 
@@ -1259,7 +1259,7 @@ extern "C" fn __ima_inode_hash(
             memcpy(buf as *mut u8, (*iint).ima_hash.digest as *const u8, copied_size);
         }
         let hash_algo = (*iint).ima_hash.algo;
-        mutex_unlock(&mut (*iint).mutex as *mut libc::c_void);
+        mutex_unlock(&mut (*iint).mutex as *mut kernel::ffi::c_void);
 
         if iint as *const ima_iint_cache == &tmp_iint as *const ima_iint_cache {
             kfree((*iint).ima_hash as *mut u8);
@@ -1607,11 +1607,11 @@ pub extern "C" fn ima_kexec_cmdline(kernel_fd: i32, buf: *const u8, size: i32) {
         }
 
         let f = kernel_fd;
-        if fd_empty(&f as *const i32 as *const libc::c_void) {
+        if fd_empty(&f as *const i32 as *const kernel::ffi::c_void) {
             return;
         }
 
-        let fd_file_ptr = fd_file(&f as *const i32 as *const libc::c_void);
+        let fd_file_ptr = fd_file(&f as *const i32 as *const kernel::ffi::c_void);
         process_buffer_measurement(
             file_mnt_idmap(fd_file_ptr),
             file_inode(fd_file_ptr),

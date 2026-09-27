@@ -12,7 +12,7 @@ const NUM_I2S_CLOCKS: usize = 2;
 #[repr(C)]
 struct Artpec6ClkctrlDrvdata {
     clk_table: [*mut Clk; ARTPEC6_CLK_NUMCLOCKS as usize],
-    syscon_base: *mut core::ffi::c_void,
+    syscon_base: *mut kernel::ffi::c_void,
     clk_data: ClkOnecellData,
     i2scfg_lock: Spinlock,
 }
@@ -24,7 +24,7 @@ static i2s_clk_indexes: [i32; NUM_I2S_CLOCKS] = [ARTPEC6_CLK_I2S0_CLK, ARTPEC6_C
 
 unsafe fn of_artpec6_clkctrl_setup(np: *mut DeviceNode) {
     let mut i: i32;
-    let sys_refclk_name: *const core::ffi::c_char;
+    let sys_refclk_name: *const kernel::ffi::c_char;
     let (mut pll_mode, mut pll_m, mut pll_n): (u32, u32, u32);
     let clks: *mut *mut Clk;
 
@@ -74,10 +74,10 @@ unsafe fn artpec6_clkctrl_probe(pdev: *mut PlatformDevice) -> i32 {
     let dev = &mut (*pdev).dev;
     let clks = (*clkdata).clk_table.as_mut_ptr();
     let mut propidx: i32;
-    let sys_refclk_name: *const core::ffi::c_char;
-    let mut i2s_refclk_name: *const core::ffi::c_char = core::ptr::null();
-    let mut frac_clk_name: [*const core::ffi::c_char; 2] = [core::ptr::null(); 2];
-    let mut i2s_mux_parents: [*const core::ffi::c_char; 2];
+    let sys_refclk_name: *const kernel::ffi::c_char;
+    let mut i2s_refclk_name: *const kernel::ffi::c_char = core::ptr::null();
+    let mut frac_clk_name: [*const kernel::ffi::c_char; 2] = [core::ptr::null(); 2];
+    let mut i2s_mux_parents: [*const kernel::ffi::c_char; 2];
     let mut muxreg: u32;
     let mut err = 0;
 

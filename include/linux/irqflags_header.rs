@@ -10,31 +10,31 @@ pub struct task_struct;
 
 #[cfg(CONFIG_PROVE_LOCKING)]
 extern "C" {
-    pub fn lockdep_softirqs_on(ip: libc::c_ulong);
-    pub fn lockdep_softirqs_off(ip: libc::c_ulong);
+    pub fn lockdep_softirqs_on(ip: kernel::ffi::c_ulong);
+    pub fn lockdep_softirqs_off(ip: kernel::ffi::c_ulong);
     pub fn lockdep_hardirqs_on_prepare();
-    pub fn lockdep_hardirqs_on(ip: libc::c_ulong);
-    pub fn lockdep_hardirqs_off(ip: libc::c_ulong);
-    pub fn lockdep_cleanup_dead_cpu(cpu: libc::c_uint, idle: *mut task_struct);
+    pub fn lockdep_hardirqs_on(ip: kernel::ffi::c_ulong);
+    pub fn lockdep_hardirqs_off(ip: kernel::ffi::c_ulong);
+    pub fn lockdep_cleanup_dead_cpu(cpu: kernel::ffi::c_uint, idle: *mut task_struct);
 }
 
 #[cfg(not(CONFIG_PROVE_LOCKING))]
-#[inline(always)] pub unsafe fn lockdep_softirqs_on(_ip: libc::c_ulong) {}
+#[inline(always)] pub unsafe fn lockdep_softirqs_on(_ip: kernel::ffi::c_ulong) {}
 #[cfg(not(CONFIG_PROVE_LOCKING))]
-#[inline(always)] pub unsafe fn lockdep_softirqs_off(_ip: libc::c_ulong) {}
+#[inline(always)] pub unsafe fn lockdep_softirqs_off(_ip: kernel::ffi::c_ulong) {}
 #[cfg(not(CONFIG_PROVE_LOCKING))]
 #[inline(always)] pub unsafe fn lockdep_hardirqs_on_prepare() {}
 #[cfg(not(CONFIG_PROVE_LOCKING))]
-#[inline(always)] pub unsafe fn lockdep_hardirqs_on(_ip: libc::c_ulong) {}
+#[inline(always)] pub unsafe fn lockdep_hardirqs_on(_ip: kernel::ffi::c_ulong) {}
 #[cfg(not(CONFIG_PROVE_LOCKING))]
-#[inline(always)] pub unsafe fn lockdep_hardirqs_off(_ip: libc::c_ulong) {}
+#[inline(always)] pub unsafe fn lockdep_hardirqs_off(_ip: kernel::ffi::c_ulong) {}
 #[cfg(not(CONFIG_PROVE_LOCKING))]
-#[inline(always)] pub unsafe fn lockdep_cleanup_dead_cpu(_cpu: libc::c_uint, _idle: *mut task_struct) {}
+#[inline(always)] pub unsafe fn lockdep_cleanup_dead_cpu(_cpu: kernel::ffi::c_uint, _idle: *mut task_struct) {}
 
 #[cfg(CONFIG_TRACE_IRQFLAGS)]
 extern "C" {
-    pub static mut hardirqs_enabled: libc::c_int;
-    pub static mut hardirq_context: libc::c_int;
+    pub static mut hardirqs_enabled: kernel::ffi::c_int;
+    pub static mut hardirq_context: kernel::ffi::c_int;
     pub fn trace_hardirqs_on_prepare();
     pub fn trace_hardirqs_off_finish();
     pub fn trace_hardirqs_on();
@@ -115,7 +115,7 @@ extern "C" { pub fn warn_bogus_irq_restore(); }
 #[macro_export] macro_rules! local_irq_restore { ($f:expr) => { if !raw_irqs_disabled_flags!($f) { trace_hardirqs_on!(); } raw_local_irq_restore!($f); }; }
 #[macro_export] macro_rules! safe_halt { () => { trace_hardirqs_on!(); raw_safe_halt!(); }; }
 #[macro_export] macro_rules! local_save_flags { ($f:expr) => { raw_local_save_flags!($f) }; }
-#[macro_export] macro_rules! irqs_disabled { () => {{ let mut flags: libc::c_ulong = 0; raw_local_save_flags!(flags); raw_irqs_disabled_flags!(flags) }}; }
+#[macro_export] macro_rules! irqs_disabled { () => {{ let mut flags: kernel::ffi::c_ulong = 0; raw_local_save_flags!(flags); raw_irqs_disabled_flags!(flags) }}; }
 #[macro_export] macro_rules! irqs_disabled_flags { ($f:expr) => { raw_irqs_disabled_flags!($f) }; }
 
 /* DEFINE_LOCK_GUARD_0(irq, ...) and DEFINE_LOCK_GUARD_0(irqsave, ...) are

@@ -20,10 +20,10 @@ pub unsafe fn ftrace_arch_code_modify_post_process() {
 }
 
 #[cfg(CONFIG_DYNAMIC_FTRACE)]
-unsafe fn ftrace_nop_replace() -> *const core::ffi::c_char { x86_nops[5] }
+unsafe fn ftrace_nop_replace() -> *const kernel::ffi::c_char { x86_nops[5] }
 
 #[cfg(CONFIG_DYNAMIC_FTRACE)]
-unsafe fn ftrace_call_replace(ip: usize, mut addr: usize) -> *const core::ffi::c_char {
+unsafe fn ftrace_call_replace(ip: usize, mut addr: usize) -> *const kernel::ffi::c_char {
     if ftrace_is_jmp(addr) {
         addr = ftrace_jmp_get(addr);
         text_gen_insn(JMP32_INSN_OPCODE, ip as *mut _, addr as *mut _)
@@ -33,7 +33,7 @@ unsafe fn ftrace_call_replace(ip: usize, mut addr: usize) -> *const core::ffi::c
 }
 
 #[cfg(CONFIG_DYNAMIC_FTRACE)]
-unsafe fn ftrace_verify_code(ip: usize, old_code: *const core::ffi::c_char) -> i32 {
+unsafe fn ftrace_verify_code(ip: usize, old_code: *const kernel::ffi::c_char) -> i32 {
     let mut cur_code = [0i8; MCOUNT_INSN_SIZE];
     if copy_from_kernel_nofault(cur_code.as_mut_ptr(), ip as *const _, MCOUNT_INSN_SIZE) != 0 {
         WARN_ON(1); return -EFAULT;
@@ -125,9 +125,9 @@ pub unsafe fn arch_ftrace_update_code(command: i32) { ftrace_modify_all_code(com
 // The x86_64 dynamic trampoline implementation and function-graph support retain
 // the same low-level operations as the C source; dependent kernel symbols are external.
 #[cfg(all(CONFIG_DYNAMIC_FTRACE, CONFIG_X86_64))]
-unsafe fn alloc_tramp(size: usize) -> *mut core::ffi::c_void { execmem_alloc_rw(EXECMEM_FTRACE, size) }
+unsafe fn alloc_tramp(size: usize) -> *mut kernel::ffi::c_void { execmem_alloc_rw(EXECMEM_FTRACE, size) }
 #[cfg(all(CONFIG_DYNAMIC_FTRACE, CONFIG_X86_64))]
-unsafe fn tramp_free(tramp: *mut core::ffi::c_void) { execmem_free(tramp); }
+unsafe fn tramp_free(tramp: *mut kernel::ffi::c_void) { execmem_free(tramp); }
 
 #[cfg(all(CONFIG_DYNAMIC_FTRACE, CONFIG_X86_64))]
 #[repr(C)]

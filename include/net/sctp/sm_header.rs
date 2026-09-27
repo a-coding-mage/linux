@@ -22,13 +22,13 @@ pub type sctp_state_fn_t = unsafe extern "C" fn(
     ep: *const sctp_endpoint,
     asoc: *const sctp_association,
     type_: sctp_subtype,
-    arg: *mut core::ffi::c_void,
+    arg: *mut kernel::ffi::c_void,
     commands: *mut sctp_cmd_seq,
 ) -> sctp_disposition;
 pub type sctp_timer_event_t = unsafe extern "C" fn(*mut timer_list);
 
 #[repr(C)]
-pub struct sctp_sm_table_entry { pub fn_: *mut sctp_state_fn_t, pub name: *const core::ffi::c_char }
+pub struct sctp_sm_table_entry { pub fn_: *mut sctp_state_fn_t, pub name: *const kernel::ffi::c_char }
 
 /* External types and constants are supplied by dependencies. */
 #[allow(non_camel_case_types)] pub type __u8 = u8;
@@ -37,7 +37,7 @@ pub struct sctp_sm_table_entry { pub fn_: *mut sctp_state_fn_t, pub name: *const
 #[allow(non_camel_case_types)] pub type __s16 = i16;
 #[allow(non_camel_case_types)] pub type __s32 = i32;
 #[allow(non_camel_case_types)] pub type __be16 = u16;
-pub type gfp_t = core::ffi::c_uint;
+pub type gfp_t = kernel::ffi::c_uint;
 #[repr(C)] pub struct net { _private: [u8; 0] }
 #[repr(C)] pub struct sctp_endpoint { _private: [u8; 0] }
 #[repr(C)] pub struct sctp_association { _private: [u8; 0] }
@@ -56,8 +56,8 @@ pub type gfp_t = core::ffi::c_uint;
 #[repr(C)] pub union sctp_subtype { pub u: __u32 }
 #[repr(C)] pub union sctp_params { pub u: __u32 }
 #[repr(C)] pub union sctp_addr { pub u: __u32 }
-pub type sctp_event_type = core::ffi::c_int;
-pub type sctp_state = core::ffi::c_int;
+pub type sctp_event_type = kernel::ffi::c_int;
+pub type sctp_state = kernel::ffi::c_int;
 pub const SCTP_NUM_TIMEOUT_TYPES: usize = 0; /* supplied by the SCTP dependency */
 
 macro_rules! sctp_state_decls { ($($name:ident),* $(,)?) => { $(extern "C" { pub fn $name; })* }; }
@@ -90,7 +90,7 @@ sctp_state_decls!(
 extern "C" {
     pub fn sctp_sm_lookup_event(_: *mut net, _: sctp_event_type, _: sctp_state, _: sctp_subtype) -> *const sctp_sm_table_entry;
     pub fn sctp_make_temp_asoc(_: *const sctp_endpoint, _: *mut sctp_chunk, _: gfp_t) -> *mut sctp_association;
-    pub fn sctp_do_sm(_: *mut net, _: sctp_event_type, _: sctp_subtype, _: sctp_state, _: *mut sctp_endpoint, _: *mut sctp_association, _: *mut core::ffi::c_void, _: gfp_t) -> core::ffi::c_int;
+    pub fn sctp_do_sm(_: *mut net, _: sctp_event_type, _: sctp_subtype, _: sctp_state, _: *mut sctp_endpoint, _: *mut sctp_association, _: *mut kernel::ffi::c_void, _: gfp_t) -> kernel::ffi::c_int;
     pub fn sctp_ootb_pkt_free(_: *mut sctp_packet);
     pub fn sctp_generate_tag(_: *const sctp_endpoint) -> __u32;
     pub fn sctp_generate_tsn(_: *const sctp_endpoint) -> __u32;
@@ -111,8 +111,8 @@ pub unsafe fn ADDIP_SERIAL_gte(a: __u32, b: __u32) -> bool { (b.wrapping_sub(a) 
 /* Inline functions involving chunk internals are represented with the same external helpers. */
 extern "C" {
     pub fn sctp_data_size(chunk: *mut sctp_chunk) -> __u16;
-    pub fn sctp_vtag_verify(chunk: *const sctp_chunk, asoc: *const sctp_association) -> core::ffi::c_int;
-    pub fn sctp_vtag_verify_either(chunk: *const sctp_chunk, asoc: *const sctp_association) -> core::ffi::c_int;
+    pub fn sctp_vtag_verify(chunk: *const sctp_chunk, asoc: *const sctp_association) -> kernel::ffi::c_int;
+    pub fn sctp_vtag_verify_either(chunk: *const sctp_chunk, asoc: *const sctp_association) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

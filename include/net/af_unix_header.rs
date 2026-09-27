@@ -18,14 +18,14 @@ pub unsafe fn unix_get_socket(_filp: *mut file) -> *mut unix_sock {
 #[repr(C)]
 pub struct unix_address {
     pub refcnt: refcount_t,
-    pub len: core::ffi::c_int,
+    pub len: kernel::ffi::c_int,
     pub name: [sockaddr_un; 0],
 }
 
 #[repr(C)]
 pub struct scm_stat {
     pub nr_fds: atomic_t,
-    pub nr_unix_fds: core::ffi::c_ulong,
+    pub nr_unix_fds: kernel::ffi::c_ulong,
 }
 
 /* The AF_UNIX socket */
@@ -44,7 +44,7 @@ pub struct unix_sock {
     pub peer_wq: socket_wq,
     pub peer_wake: wait_queue_entry_t,
     pub scm_stat: scm_stat,
-    pub inq_len: core::ffi::c_int,
+    pub inq_len: kernel::ffi::c_int,
     pub recvmsg_inq: bool,
     pub scm_rights_notrunc: bool,
     #[cfg(CONFIG_AF_UNIX_OOB)]

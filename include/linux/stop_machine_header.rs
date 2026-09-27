@@ -3,27 +3,27 @@
 // Dependencies supplied by the surrounding kernel translation are referenced
 // below; the original C include directives are intentionally omitted.
 
-pub type CpuStopFnT = unsafe extern "C" fn(arg: *mut core::ffi::c_void) -> core::ffi::c_int;
+pub type CpuStopFnT = unsafe extern "C" fn(arg: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
 
 #[cfg(CONFIG_SMP)]
 #[repr(C)]
 pub struct CpuStopWork {
     pub list: ListHead, // cpu_stopper->works
     pub fn_: CpuStopFnT,
-    pub caller: libc::c_ulong,
-    pub arg: *mut core::ffi::c_void,
+    pub caller: kernel::ffi::c_ulong,
+    pub arg: *mut kernel::ffi::c_void,
     pub done: *mut CpuStopDone,
 }
 
 #[cfg(CONFIG_SMP)]
 extern "C" {
-    pub fn stop_one_cpu(cpu: libc::c_uint, fn_: CpuStopFnT, arg: *mut core::ffi::c_void) -> libc::c_int;
-    pub fn stop_two_cpus(cpu1: libc::c_uint, cpu2: libc::c_uint, fn_: CpuStopFnT, arg: *mut core::ffi::c_void) -> libc::c_int;
-    pub fn stop_one_cpu_nowait(cpu: libc::c_uint, fn_: CpuStopFnT, arg: *mut core::ffi::c_void, work_buf: *mut CpuStopWork);
-    pub fn stop_machine_park(cpu: libc::c_int);
-    pub fn stop_machine_unpark(cpu: libc::c_int);
+    pub fn stop_one_cpu(cpu: kernel::ffi::c_uint, fn_: CpuStopFnT, arg: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn stop_two_cpus(cpu1: kernel::ffi::c_uint, cpu2: kernel::ffi::c_uint, fn_: CpuStopFnT, arg: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn stop_one_cpu_nowait(cpu: kernel::ffi::c_uint, fn_: CpuStopFnT, arg: *mut kernel::ffi::c_void, work_buf: *mut CpuStopWork);
+    pub fn stop_machine_park(cpu: kernel::ffi::c_int);
+    pub fn stop_machine_unpark(cpu: kernel::ffi::c_int);
     pub fn stop_machine_yield(cpumask: *const CpuMask);
-    pub fn print_stop_info(log_lvl: *const core::ffi::c_char, task: *mut TaskStruct);
+    pub fn print_stop_info(log_lvl: *const kernel::ffi::c_char, task: *mut TaskStruct);
 }
 
 #[cfg(not(CONFIG_SMP))]
@@ -31,13 +31,13 @@ extern "C" {
 pub struct CpuStopWork {
     pub work: WorkStruct,
     pub fn_: CpuStopFnT,
-    pub arg: *mut core::ffi::c_void,
+    pub arg: *mut kernel::ffi::c_void,
 }
 
 #[cfg(not(CONFIG_SMP))]
 #[inline]
-pub unsafe fn stop_one_cpu(cpu: libc::c_uint, fn_: CpuStopFnT, arg: *mut core::ffi::c_void) -> libc::c_int {
-    let mut ret: libc::c_int = -libc::ENOENT;
+pub unsafe fn stop_one_cpu(cpu: kernel::ffi::c_uint, fn_: CpuStopFnT, arg: *mut kernel::ffi::c_void) -> kernel::ffi::c_int {
+    let mut ret: kernel::ffi::c_int = -ENOENT;
     preempt_disable();
     if cpu == smp_processor_id() {
         ret = fn_(arg);
@@ -56,7 +56,7 @@ unsafe extern "C" fn stop_one_cpu_nowait_workfn(work: *mut WorkStruct) {
 
 #[cfg(not(CONFIG_SMP))]
 #[inline]
-pub unsafe fn stop_one_cpu_nowait(cpu: libc::c_uint, fn_: CpuStopFnT, arg: *mut core::ffi::c_void, work_buf: *mut CpuStopWork) {
+pub unsafe fn stop_one_cpu_nowait(cpu: kernel::ffi::c_uint, fn_: CpuStopFnT, arg: *mut kernel::ffi::c_void, work_buf: *mut CpuStopWork) {
     if warn_on_once(cpu != smp_processor_id()) {
         return;
     }
@@ -68,20 +68,20 @@ pub unsafe fn stop_one_cpu_nowait(cpu: libc::c_uint, fn_: CpuStopFnT, arg: *mut 
 
 #[cfg(not(CONFIG_SMP))]
 #[inline]
-pub unsafe fn print_stop_info(_log_lvl: *const core::ffi::c_char, _task: *mut TaskStruct) {}
+pub unsafe fn print_stop_info(_log_lvl: *const kernel::ffi::c_char, _task: *mut TaskStruct) {}
 
 #[cfg(any(CONFIG_SMP, CONFIG_HOTPLUG_CPU))]
 extern "C" {
-    pub fn stop_machine(fn_: CpuStopFnT, data: *mut core::ffi::c_void, cpus: *const CpuMask) -> libc::c_int;
-    pub fn stop_machine_cpuslocked(fn_: CpuStopFnT, data: *mut core::ffi::c_void, cpus: *const CpuMask) -> libc::c_int;
-    pub fn stop_core_cpuslocked(cpu: libc::c_uint, fn_: CpuStopFnT, data: *mut core::ffi::c_void) -> libc::c_int;
-    pub fn stop_machine_from_inactive_cpu(fn_: CpuStopFnT, data: *mut core::ffi::c_void, cpus: *const CpuMask) -> libc::c_int;
+    pub fn stop_machine(fn_: CpuStopFnT, data: *mut kernel::ffi::c_void, cpus: *const CpuMask) -> kernel::ffi::c_int;
+    pub fn stop_machine_cpuslocked(fn_: CpuStopFnT, data: *mut kernel::ffi::c_void, cpus: *const CpuMask) -> kernel::ffi::c_int;
+    pub fn stop_core_cpuslocked(cpu: kernel::ffi::c_uint, fn_: CpuStopFnT, data: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn stop_machine_from_inactive_cpu(fn_: CpuStopFnT, data: *mut kernel::ffi::c_void, cpus: *const CpuMask) -> kernel::ffi::c_int;
 }
 
 #[cfg(not(any(CONFIG_SMP, CONFIG_HOTPLUG_CPU)))]
 #[inline(always)]
-pub unsafe fn stop_machine_cpuslocked(fn_: CpuStopFnT, data: *mut core::ffi::c_void, _cpus: *const CpuMask) -> libc::c_int {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe fn stop_machine_cpuslocked(fn_: CpuStopFnT, data: *mut kernel::ffi::c_void, _cpus: *const CpuMask) -> kernel::ffi::c_int {
+    let mut flags: kernel::ffi::c_ulong = 0;
     local_irq_save(&mut flags);
     let ret = fn_(data);
     local_irq_restore(flags);
@@ -90,13 +90,13 @@ pub unsafe fn stop_machine_cpuslocked(fn_: CpuStopFnT, data: *mut core::ffi::c_v
 
 #[cfg(not(any(CONFIG_SMP, CONFIG_HOTPLUG_CPU)))]
 #[inline(always)]
-pub unsafe fn stop_machine(fn_: CpuStopFnT, data: *mut core::ffi::c_void, cpus: *const CpuMask) -> libc::c_int {
+pub unsafe fn stop_machine(fn_: CpuStopFnT, data: *mut kernel::ffi::c_void, cpus: *const CpuMask) -> kernel::ffi::c_int {
     stop_machine_cpuslocked(fn_, data, cpus)
 }
 
 #[cfg(not(any(CONFIG_SMP, CONFIG_HOTPLUG_CPU)))]
 #[inline(always)]
-pub unsafe fn stop_machine_from_inactive_cpu(fn_: CpuStopFnT, data: *mut core::ffi::c_void, cpus: *const CpuMask) -> libc::c_int {
+pub unsafe fn stop_machine_from_inactive_cpu(fn_: CpuStopFnT, data: *mut kernel::ffi::c_void, cpus: *const CpuMask) -> kernel::ffi::c_int {
     stop_machine(fn_, data, cpus)
 }
 
@@ -109,13 +109,13 @@ pub unsafe fn stop_machine_from_inactive_cpu(fn_: CpuStopFnT, data: *mut core::f
 extern "C" {
     fn preempt_disable();
     fn preempt_enable();
-    fn smp_processor_id() -> libc::c_uint;
+    fn smp_processor_id() -> kernel::ffi::c_uint;
     fn warn_on_once(condition: bool) -> bool;
     fn init_work(work: *mut WorkStruct, function: unsafe extern "C" fn(*mut WorkStruct));
     fn schedule_work(work: *mut WorkStruct);
     fn container_of<T>(ptr: *mut WorkStruct, offset: usize) -> *mut T;
-    fn local_irq_save(flags: *mut libc::c_ulong);
-    fn local_irq_restore(flags: libc::c_ulong);
+    fn local_irq_save(flags: *mut kernel::ffi::c_ulong);
+    fn local_irq_restore(flags: kernel::ffi::c_ulong);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

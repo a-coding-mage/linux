@@ -3,7 +3,7 @@
 // C dependencies supplied by other headers:
 // net/act_api.h, linux/etherdevice.h, linux/rtnetlink.h
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const ETH_ALEN: usize = 6;
 
@@ -61,7 +61,7 @@ pub unsafe fn to_ife(a: *mut tc_action) -> *mut tcf_ife_info {
 #[repr(C)]
 pub struct tcf_meta_info {
     pub ops: *const tcf_meta_ops,
-    pub metaval: *mut core::ffi::c_void,
+    pub metaval: *mut kernel::ffi::c_void,
     pub metaid: u16,
     pub metalist: list_head,
 }
@@ -77,18 +77,18 @@ pub struct tcf_meta_ops {
         Option<unsafe extern "C" fn(*mut sk_buff, *mut tcf_meta_info) -> i32>,
     pub encode: Option<unsafe extern "C" fn(
         *mut sk_buff,
-        *mut core::ffi::c_void,
+        *mut kernel::ffi::c_void,
         *mut tcf_meta_info,
     ) -> i32>,
-    pub decode: Option<unsafe extern "C" fn(*mut sk_buff, *mut core::ffi::c_void, u16) -> i32>,
+    pub decode: Option<unsafe extern "C" fn(*mut sk_buff, *mut kernel::ffi::c_void, u16) -> i32>,
     pub get: Option<unsafe extern "C" fn(*mut sk_buff, *mut tcf_meta_info) -> i32>,
     pub alloc: Option<unsafe extern "C" fn(
         *mut tcf_meta_info,
-        *mut core::ffi::c_void,
+        *mut kernel::ffi::c_void,
         gfp_t,
     ) -> i32>,
     pub release: Option<unsafe extern "C" fn(*mut tcf_meta_info)>,
-    pub validate: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32) -> i32>,
+    pub validate: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, i32) -> i32>,
     pub owner: *mut module,
 }
 
@@ -99,26 +99,26 @@ extern "C" {
     pub fn ife_get_meta_u16(skb: *mut sk_buff, mi: *mut tcf_meta_info) -> i32;
     pub fn ife_alloc_meta_u32(
         mi: *mut tcf_meta_info,
-        metaval: *mut core::ffi::c_void,
+        metaval: *mut kernel::ffi::c_void,
         gfp: gfp_t,
     ) -> i32;
     pub fn ife_alloc_meta_u16(
         mi: *mut tcf_meta_info,
-        metaval: *mut core::ffi::c_void,
+        metaval: *mut kernel::ffi::c_void,
         gfp: gfp_t,
     ) -> i32;
     pub fn ife_check_meta_u32(metaval: u32, mi: *mut tcf_meta_info) -> i32;
     pub fn ife_check_meta_u16(metaval: u16, mi: *mut tcf_meta_info) -> i32;
     pub fn ife_encode_meta_u32(
         metaval: u32,
-        skbdata: *mut core::ffi::c_void,
+        skbdata: *mut kernel::ffi::c_void,
         mi: *mut tcf_meta_info,
     ) -> i32;
-    pub fn ife_validate_meta_u32(val: *mut core::ffi::c_void, len: i32) -> i32;
-    pub fn ife_validate_meta_u16(val: *mut core::ffi::c_void, len: i32) -> i32;
+    pub fn ife_validate_meta_u32(val: *mut kernel::ffi::c_void, len: i32) -> i32;
+    pub fn ife_validate_meta_u16(val: *mut kernel::ffi::c_void, len: i32) -> i32;
     pub fn ife_encode_meta_u16(
         metaval: u16,
-        skbdata: *mut core::ffi::c_void,
+        skbdata: *mut kernel::ffi::c_void,
         mi: *mut tcf_meta_info,
     ) -> i32;
     pub fn ife_release_meta_gen(mi: *mut tcf_meta_info);

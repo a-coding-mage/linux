@@ -55,10 +55,10 @@ pub struct kvm_follow_pfn {
     pub slot: *const kvm_memory_slot,
     pub gfn: gfn_t,
 
-    pub hva: core::ffi::c_ulong,
+    pub hva: kernel::ffi::c_ulong,
 
     /* FOLL_* flags modifying lookup behavior, e.g. FOLL_WRITE. */
-    pub flags: core::ffi::c_uint,
+    pub flags: kernel::ffi::c_uint,
 
     /*
      * Pin the page (effectively FOLL_PIN, which is an mm/ internal flag).
@@ -92,8 +92,8 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn gfn_to_pfn_cache_invalidate_start(
         kvm: *mut kvm,
-        start: core::ffi::c_ulong,
-        end: core::ffi::c_ulong,
+        start: kernel::ffi::c_ulong,
+        end: kernel::ffi::c_ulong,
     );
 }
 
@@ -102,8 +102,8 @@ unsafe extern "C" {
 #[inline]
 pub unsafe fn gfn_to_pfn_cache_invalidate_start(
     kvm: *mut kvm,
-    start: core::ffi::c_ulong,
-    end: core::ffi::c_ulong,
+    start: kernel::ffi::c_ulong,
+    end: kernel::ffi::c_ulong,
 ) {
     let _ = (kvm, start, end);
 }

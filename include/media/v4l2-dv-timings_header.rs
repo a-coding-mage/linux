@@ -21,14 +21,14 @@ extern "C" {
         t: *const v4l2_dv_timings,
         cap: *const v4l2_dv_timings_cap,
         fnc: v4l2_check_dv_timings_fnc,
-        fnc_handle: *mut core::ffi::c_void,
+        fnc_handle: *mut kernel::ffi::c_void,
     ) -> bool;
 
     pub fn v4l2_enum_dv_timings_cap(
         t: *mut v4l2_enum_dv_timings,
         cap: *const v4l2_dv_timings_cap,
         fnc: v4l2_check_dv_timings_fnc,
-        fnc_handle: *mut core::ffi::c_void,
+        fnc_handle: *mut kernel::ffi::c_void,
     ) -> i32;
 
     pub fn v4l2_find_dv_timings_cap(
@@ -36,7 +36,7 @@ extern "C" {
         cap: *const v4l2_dv_timings_cap,
         pclock_delta: u32,
         fnc: v4l2_check_dv_timings_fnc,
-        fnc_handle: *mut core::ffi::c_void,
+        fnc_handle: *mut kernel::ffi::c_void,
     ) -> bool;
 
     pub fn v4l2_find_dv_timings_cea861_vic(t: *mut v4l2_dv_timings, vic: u8) -> bool;
@@ -49,8 +49,8 @@ extern "C" {
     ) -> bool;
 
     pub fn v4l2_print_dv_timings(
-        dev_prefix: *const core::ffi::c_char,
-        prefix: *const core::ffi::c_char,
+        dev_prefix: *const kernel::ffi::c_char,
+        prefix: *const kernel::ffi::c_char,
         t: *const v4l2_dv_timings,
         detailed: bool,
     );
@@ -83,7 +83,7 @@ extern "C" {
 
 pub type v4l2_check_dv_timings_fnc = unsafe extern "C" fn(
     t: *const v4l2_dv_timings,
-    handle: *mut core::ffi::c_void,
+    handle: *mut kernel::ffi::c_void,
 ) -> bool;
 
 pub unsafe fn can_reduce_fps(bt: *mut v4l2_bt_timings) -> bool {
@@ -132,9 +132,9 @@ pub const V4L2_DEBUGFS_IF_DRM: u32 = 1 << 4;
 
 pub type v4l2_debugfs_if_read_t = unsafe extern "C" fn(
     type_: u32,
-    priv_: *mut core::ffi::c_void,
+    priv_: *mut kernel::ffi::c_void,
     filp: *mut file,
-    ubuf: *mut core::ffi::c_char,
+    ubuf: *mut kernel::ffi::c_char,
     count: usize,
     ppos: *mut i64,
 ) -> isize;
@@ -142,7 +142,7 @@ pub type v4l2_debugfs_if_read_t = unsafe extern "C" fn(
 #[repr(C)]
 pub struct v4l2_debugfs_if {
     pub if_dir: *mut dentry,
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
     pub if_read: v4l2_debugfs_if_read_t,
 }
 
@@ -151,7 +151,7 @@ extern "C" {
     pub fn v4l2_debugfs_if_alloc(
         root: *mut dentry,
         if_types: u32,
-        priv_: *mut core::ffi::c_void,
+        priv_: *mut kernel::ffi::c_void,
         if_read: v4l2_debugfs_if_read_t,
     ) -> *mut v4l2_debugfs_if;
     pub fn v4l2_debugfs_if_free(infoframes: *mut v4l2_debugfs_if);
@@ -161,7 +161,7 @@ extern "C" {
 pub unsafe fn v4l2_debugfs_if_alloc(
     _root: *mut dentry,
     _if_types: u32,
-    _priv_: *mut core::ffi::c_void,
+    _priv_: *mut kernel::ffi::c_void,
     _if_read: v4l2_debugfs_if_read_t,
 ) -> *mut v4l2_debugfs_if {
     core::ptr::null_mut()

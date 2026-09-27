@@ -11,9 +11,9 @@ pub struct device_node {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub name: *const core::ffi::c_char,
-    pub type_: *const core::ffi::c_char,
-    pub compatible: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub type_: *const kernel::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
     pub data: Option<unsafe extern "C" fn(*mut device_node) -> i32>,
 }
 
@@ -22,9 +22,9 @@ pub type of_init_fn_1_ret = unsafe extern "C" fn(*mut device_node) -> i32;
 unsafe extern "C" {
     pub static mut __timer_of_table: of_device_id;
     fn of_device_is_available(np: *const device_node) -> bool;
-    fn acpi_probe_device_table(timer: core::ffi::c_int) -> u32;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn pr_crit(fmt: *const core::ffi::c_char, ...);
+    fn acpi_probe_device_table(timer: kernel::ffi::c_int) -> u32;
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_crit(fmt: *const kernel::ffi::c_char, ...);
 }
 
 // The linker section and __used attribute are represented by the corresponding
@@ -50,7 +50,7 @@ unsafe extern "C" {
 
 // The `timer` token passed to the ACPI table macro is supplied by the kernel.
 unsafe extern "C" {
-    static timer: core::ffi::c_int;
+    static timer: kernel::ffi::c_int;
 }
 
 #[inline]

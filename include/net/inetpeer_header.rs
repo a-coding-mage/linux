@@ -12,7 +12,7 @@
 #[repr(C)]
 pub struct ipv4_addr_key {
     pub addr: __be32,
-    pub vif: ::core::ffi::c_int,
+    pub vif: ::kernel::ffi::c_int,
 }
 
 pub const INETPEER_MAXKEYSZ: usize = core::mem::size_of::<in6_addr>() / core::mem::size_of::<u32>();
@@ -44,7 +44,7 @@ pub struct inet_peer {
     pub metrics: [u32; RTAX_MAX as usize],
     pub rate_tokens: u32, /* rate limiting for ICMP */
     pub n_redirects: u32,
-    pub rate_last: ::core::ffi::c_ulong,
+    pub rate_last: ::kernel::ffi::c_ulong,
     /*
      * Once inet_peer is queued for deletion (refcnt == 0), following field
      * is not available: rid
@@ -60,7 +60,7 @@ pub struct inet_peer {
 pub struct inet_peer_base {
     pub rb_root: rb_root,
     pub lock: seqlock_t,
-    pub total: ::core::ffi::c_int,
+    pub total: ::kernel::ffi::c_int,
 }
 
 extern "C" {
@@ -99,7 +99,7 @@ extern "C" {
 }
 
 #[inline]
-pub unsafe fn inet_getpeer_v4(base: *mut inet_peer_base, v4daddr: __be32, vif: ::core::ffi::c_int) -> *mut inet_peer {
+pub unsafe fn inet_getpeer_v4(base: *mut inet_peer_base, v4daddr: __be32, vif: ::kernel::ffi::c_int) -> *mut inet_peer {
     let mut daddr = inetpeer_addr { u: inetpeer_addr_union { a4: ipv4_addr_key { addr: v4daddr, vif } }, family: AF_INET as __u16 };
     inet_getpeer(base, &daddr)
 }
@@ -111,7 +111,7 @@ pub unsafe fn inet_getpeer_v6(base: *mut inet_peer_base, v6daddr: *const in6_add
 }
 
 #[inline]
-pub unsafe fn inetpeer_addr_cmp(a: *const inetpeer_addr, b: *const inetpeer_addr) -> ::core::ffi::c_int {
+pub unsafe fn inetpeer_addr_cmp(a: *const inetpeer_addr, b: *const inetpeer_addr) -> ::kernel::ffi::c_int {
     if (*a).family != (*b).family {
         return if (*a).family < (*b).family { -1 } else { 1 };
     }
@@ -132,7 +132,7 @@ pub unsafe fn inetpeer_addr_cmp(a: *const inetpeer_addr, b: *const inetpeer_addr
 /* can be called from BH context or outside */
 extern "C" {
     pub fn inet_putpeer(p: *mut inet_peer);
-    pub fn inet_peer_xrlim_allow(peer: *mut inet_peer, timeout: ::core::ffi::c_int) -> bool;
+    pub fn inet_peer_xrlim_allow(peer: *mut inet_peer, timeout: ::kernel::ffi::c_int) -> bool;
     pub fn inetpeer_invalidate_tree(base: *mut inet_peer_base);
 }
 

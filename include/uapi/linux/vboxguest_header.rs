@@ -94,7 +94,7 @@ pub struct vbg_ioctl_hgcm_call {
 }
 
 #[repr(C)]
-pub struct vbg_ioctl_log_in { pub msg: [core::ffi::c_char; 1] }
+pub struct vbg_ioctl_log_in { pub msg: [kernel::ffi::c_char; 1] }
 #[repr(C)]
 pub union vbg_ioctl_log_u { pub r#in: vbg_ioctl_log_in }
 #[repr(C)]

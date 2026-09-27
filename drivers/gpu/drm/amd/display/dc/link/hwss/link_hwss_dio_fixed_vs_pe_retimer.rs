@@ -70,7 +70,7 @@ unsafe fn set_dio_fixed_vs_pe_retimer_dp_link_test_pattern_override(
     match (*tp_params).dp_phy_pattern {
         DP_TEST_PATTERN_80BIT_CUSTOM => {
             if (*tp_params).custom_pattern_size == 0 ||
-                libc::memcmp((*tp_params).custom_pattern as *const _, pltpat_custom.as_ptr() as *const _, (*tp_params).custom_pattern_size) != 0 { return false; }
+                memcmp((*tp_params).custom_pattern as *const _, pltpat_custom.as_ptr() as *const _, (*tp_params).custom_pattern_size) != 0 { return false; }
             hw_tp_params.custom_pattern = (*tp_params).custom_pattern;
             hw_tp_params.custom_pattern_size = (*tp_params).custom_pattern_size;
         }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Synopsys HSDK SDP Generic PLL clock driver */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 const CGU_PLL_CTRL: u32 = 0x000;
 const CGU_PLL_STATUS: u32 = 0x004;

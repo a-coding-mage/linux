@@ -3,17 +3,17 @@
 
 #[repr(C)]
 pub struct prcm_config {
-    pub xtal_speed: ::core::ffi::c_ulong,
-    pub dpll_speed: ::core::ffi::c_ulong,
-    pub mpu_speed: ::core::ffi::c_ulong,
-    pub cm_clksel_mpu: ::core::ffi::c_ulong,
-    pub cm_clksel_dsp: ::core::ffi::c_ulong,
-    pub cm_clksel_gfx: ::core::ffi::c_ulong,
-    pub cm_clksel1_core: ::core::ffi::c_ulong,
-    pub cm_clksel1_pll: ::core::ffi::c_ulong,
-    pub cm_clksel2_pll: ::core::ffi::c_ulong,
-    pub cm_clksel_mdm: ::core::ffi::c_ulong,
-    pub base_sdrc_rfr: ::core::ffi::c_ulong,
+    pub xtal_speed: ::kernel::ffi::c_ulong,
+    pub dpll_speed: ::kernel::ffi::c_ulong,
+    pub mpu_speed: ::kernel::ffi::c_ulong,
+    pub cm_clksel_mpu: ::kernel::ffi::c_ulong,
+    pub cm_clksel_dsp: ::kernel::ffi::c_ulong,
+    pub cm_clksel_gfx: ::kernel::ffi::c_ulong,
+    pub cm_clksel1_core: ::kernel::ffi::c_ulong,
+    pub cm_clksel1_pll: ::kernel::ffi::c_ulong,
+    pub cm_clksel2_pll: ::kernel::ffi::c_ulong,
+    pub cm_clksel_mdm: ::kernel::ffi::c_ulong,
+    pub base_sdrc_rfr: ::kernel::ffi::c_ulong,
     pub flags: u16,
 }
 

@@ -5,10 +5,10 @@
  */
 extern "C" {
     pub fn add_wired_entry(
-        entrylo0: core::ffi::c_ulong,
-        entrylo1: core::ffi::c_ulong,
-        entryhi: core::ffi::c_ulong,
-        pagemask: core::ffi::c_ulong,
+        entrylo0: kernel::ffi::c_ulong,
+        entrylo1: kernel::ffi::c_ulong,
+        entryhi: kernel::ffi::c_ulong,
+        pagemask: kernel::ffi::c_ulong,
     );
 }
 

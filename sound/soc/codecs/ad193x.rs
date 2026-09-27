@@ -16,7 +16,7 @@
 struct ad193x_priv {
     regmap: *mut regmap,
     type_: ad193x_type,
-    sysclk: core::ffi::c_int,
+    sysclk: kernel::ffi::c_int,
 }
 
 /*
@@ -26,18 +26,18 @@ static ad193x_deemp_0: &[u8] = b"None\0";
 static ad193x_deemp_1: &[u8] = b"48kHz\0";
 static ad193x_deemp_2: &[u8] = b"44.1kHz\0";
 static ad193x_deemp_3: &[u8] = b"32kHz\0";
-static ad193x_deemp: [*const core::ffi::c_char; 4] = [
-    ad193x_deemp_0.as_ptr() as *const core::ffi::c_char,
-    ad193x_deemp_1.as_ptr() as *const core::ffi::c_char,
-    ad193x_deemp_2.as_ptr() as *const core::ffi::c_char,
-    ad193x_deemp_3.as_ptr() as *const core::ffi::c_char,
+static ad193x_deemp: [*const kernel::ffi::c_char; 4] = [
+    ad193x_deemp_0.as_ptr() as *const kernel::ffi::c_char,
+    ad193x_deemp_1.as_ptr() as *const kernel::ffi::c_char,
+    ad193x_deemp_2.as_ptr() as *const kernel::ffi::c_char,
+    ad193x_deemp_3.as_ptr() as *const kernel::ffi::c_char,
 ];
 
 SOC_ENUM_SINGLE_DECL!(ad193x_deemp_enum, AD193X_DAC_CTRL2, 1, ad193x_deemp);
 
 DECLARE_TLV_DB_MINMAX!(adau193x_tlv, -9563, 0);
 
-static ad193x_sb: [core::ffi::c_uint; 1] = [32];
+static ad193x_sb: [kernel::ffi::c_uint; 1] = [32];
 
 static mut constr: snd_pcm_hw_constraint_list = snd_pcm_hw_constraint_list {
     list: ad193x_sb.as_ptr(),
@@ -92,11 +92,11 @@ static ad193x_adc_widgets: [snd_soc_dapm_widget; 4] = [
 unsafe extern "C" fn ad193x_check_pll(
     source: *mut snd_soc_dapm_widget,
     _sink: *mut snd_soc_dapm_widget,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = snd_soc_dapm_to_component((*source).dapm);
     let ad193x: *mut ad193x_priv = snd_soc_component_get_drvdata(component) as *mut ad193x_priv;
 
-    ((*ad193x).sysclk != 0) as core::ffi::c_int
+    ((*ad193x).sysclk != 0) as kernel::ffi::c_int
 }
 
 static audio_paths: [snd_soc_dapm_route; 8] = [
@@ -133,9 +133,9 @@ unsafe fn ad193x_has_adc(ad193x: *const ad193x_priv) -> bool {
 
 unsafe extern "C" fn ad193x_mute(
     dai: *mut snd_soc_dai,
-    mute: core::ffi::c_int,
-    _direction: core::ffi::c_int,
-) -> core::ffi::c_int {
+    mute: kernel::ffi::c_int,
+    _direction: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let ad193x: *mut ad193x_priv =
         snd_soc_component_get_drvdata((*dai).component) as *mut ad193x_priv;
 
@@ -155,14 +155,14 @@ unsafe extern "C" fn ad193x_mute(
 
 unsafe extern "C" fn ad193x_set_tdm_slot(
     dai: *mut snd_soc_dai,
-    _tx_mask: core::ffi::c_uint,
-    _rx_mask: core::ffi::c_uint,
-    slots: core::ffi::c_int,
-    _width: core::ffi::c_int,
-) -> core::ffi::c_int {
+    _tx_mask: kernel::ffi::c_uint,
+    _rx_mask: kernel::ffi::c_uint,
+    slots: kernel::ffi::c_int,
+    _width: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let ad193x: *mut ad193x_priv =
         snd_soc_component_get_drvdata((*dai).component) as *mut ad193x_priv;
-    let channels: core::ffi::c_uint;
+    let channels: kernel::ffi::c_uint;
 
     match slots {
         2 => channels = AD193X_2_CHANNELS,
@@ -192,14 +192,14 @@ unsafe extern "C" fn ad193x_set_tdm_slot(
 
 unsafe extern "C" fn ad193x_set_dai_fmt(
     codec_dai: *mut snd_soc_dai,
-    fmt: core::ffi::c_uint,
-) -> core::ffi::c_int {
+    fmt: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let ad193x: *mut ad193x_priv =
         snd_soc_component_get_drvdata((*codec_dai).component) as *mut ad193x_priv;
-    let mut adc_serfmt: core::ffi::c_uint = 0;
-    let mut dac_serfmt: core::ffi::c_uint = 0;
-    let mut adc_fmt: core::ffi::c_uint = 0;
-    let mut dac_fmt: core::ffi::c_uint = 0;
+    let mut adc_serfmt: kernel::ffi::c_uint = 0;
+    let mut dac_serfmt: kernel::ffi::c_uint = 0;
+    let mut adc_fmt: kernel::ffi::c_uint = 0;
+    let mut dac_fmt: kernel::ffi::c_uint = 0;
 
     /* At present, the driver only support AUX ADC mode(SND_SOC_DAIFMT_I2S
      * with TDM), ADC&DAC TDM mode(SND_SOC_DAIFMT_DSP_A) and DAC I2S mode
@@ -281,10 +281,10 @@ unsafe extern "C" fn ad193x_set_dai_fmt(
 
 unsafe extern "C" fn ad193x_set_dai_sysclk(
     codec_dai: *mut snd_soc_dai,
-    clk_id: core::ffi::c_int,
-    freq: core::ffi::c_uint,
-    dir: core::ffi::c_int,
-) -> core::ffi::c_int {
+    clk_id: kernel::ffi::c_int,
+    freq: kernel::ffi::c_uint,
+    dir: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*codec_dai).component;
     let dapm: *mut snd_soc_dapm_context = snd_soc_component_to_dapm(component);
     let ad193x: *mut ad193x_priv = snd_soc_component_get_drvdata(component) as *mut ad193x_priv;
@@ -307,7 +307,7 @@ unsafe extern "C" fn ad193x_set_dai_sysclk(
     }
     match freq {
         12288000 | 18432000 | 24576000 | 36864000 => {
-            (*ad193x).sysclk = freq as core::ffi::c_int;
+            (*ad193x).sysclk = freq as kernel::ffi::c_int;
             return 0;
         }
         _ => {}
@@ -319,9 +319,9 @@ unsafe extern "C" fn ad193x_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
-    let mut word_len: core::ffi::c_int = 0;
-    let mut master_rate: core::ffi::c_int = 0;
+) -> kernel::ffi::c_int {
+    let mut word_len: kernel::ffi::c_int = 0;
+    let mut master_rate: kernel::ffi::c_int = 0;
     let component: *mut snd_soc_component = (*dai).component;
     let ad193x: *mut ad193x_priv = snd_soc_component_get_drvdata(component) as *mut ad193x_priv;
     let is_playback: bool = (*substream).stream == SNDRV_PCM_STREAM_PLAYBACK;
@@ -364,21 +364,21 @@ unsafe extern "C" fn ad193x_hw_params(
             }
         }
 
-        regmap_update_bits((*ad193x).regmap, AD193X_DAC_CTRL0, AD193X_DAC_SR_MASK, dacc0 as core::ffi::c_uint);
+        regmap_update_bits((*ad193x).regmap, AD193X_DAC_CTRL0, AD193X_DAC_SR_MASK, dacc0 as kernel::ffi::c_uint);
     }
 
     regmap_update_bits(
         (*ad193x).regmap,
         AD193X_PLL_CLK_CTRL0,
         AD193X_PLL_INPUT_MASK,
-        master_rate as core::ffi::c_uint,
+        master_rate as kernel::ffi::c_uint,
     );
 
     regmap_update_bits(
         (*ad193x).regmap,
         AD193X_DAC_CTRL2,
         AD193X_DAC_WORD_LEN_MASK,
-        (word_len as core::ffi::c_uint) << AD193X_DAC_WORD_LEN_SHFT,
+        (word_len as kernel::ffi::c_uint) << AD193X_DAC_WORD_LEN_SHFT,
     );
 
     if ad193x_has_adc(ad193x) {
@@ -386,7 +386,7 @@ unsafe extern "C" fn ad193x_hw_params(
             (*ad193x).regmap,
             AD193X_ADC_CTRL1,
             AD193X_ADC_WORD_LEN_MASK,
-            word_len as core::ffi::c_uint,
+            word_len as kernel::ffi::c_uint,
         );
     }
 
@@ -396,7 +396,7 @@ unsafe extern "C" fn ad193x_hw_params(
 unsafe extern "C" fn ad193x_startup(
     substream: *mut snd_pcm_substream,
     _dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     snd_pcm_hw_constraint_list(
         (*substream).runtime,
         0,
@@ -500,11 +500,11 @@ unsafe fn ad193x_reg_default_init(ad193x: *mut ad193x_priv) {
 
 unsafe extern "C" fn ad193x_component_probe(
     component: *mut snd_soc_component,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let ad193x: *mut ad193x_priv = snd_soc_component_get_drvdata(component) as *mut ad193x_priv;
     let dapm: *mut snd_soc_dapm_context = snd_soc_component_to_dapm(component);
-    let mut num: core::ffi::c_int;
-    let mut ret: core::ffi::c_int;
+    let mut num: kernel::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     /* default setting for ad193x */
     ad193x_reg_default_init(ad193x);
@@ -560,11 +560,11 @@ pub unsafe extern "C" fn ad193x_probe(
     dev: *mut device,
     regmap: *mut regmap,
     type_: ad193x_type,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let ad193x: *mut ad193x_priv;
 
-    if IS_ERR(regmap as *const core::ffi::c_void) {
-        return PTR_ERR(regmap as *const core::ffi::c_void);
+    if IS_ERR(regmap as *const kernel::ffi::c_void) {
+        return PTR_ERR(regmap as *const kernel::ffi::c_void);
     }
 
     ad193x = devm_kzalloc(dev, core::mem::size_of::<ad193x_priv>(), GFP_KERNEL) as *mut ad193x_priv;
@@ -575,7 +575,7 @@ pub unsafe extern "C" fn ad193x_probe(
     (*ad193x).regmap = regmap;
     (*ad193x).type_ = type_;
 
-    dev_set_drvdata(dev, ad193x as *mut core::ffi::c_void);
+    dev_set_drvdata(dev, ad193x as *mut kernel::ffi::c_void);
 
     if ad193x_has_adc(ad193x) {
         return devm_snd_soc_register_component(

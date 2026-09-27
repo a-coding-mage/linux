@@ -89,13 +89,13 @@ extern "C" {
     type Regmap;
     type RegmapConfig;
 
-    fn device_property_read_u32(dev: *mut Device, propname: *const core::ffi::c_char, out_value: *mut u32) -> i32;
-    fn dev_err_probe(dev: *mut Device, err: i32, fmt: *const core::ffi::c_char) -> i32;
+    fn device_property_read_u32(dev: *mut Device, propname: *const kernel::ffi::c_char, out_value: *mut u32) -> i32;
+    fn dev_err_probe(dev: *mut Device, err: i32, fmt: *const kernel::ffi::c_char) -> i32;
     fn devm_regmap_init_i2c(client: *mut I2cClient, config: *const RegmapConfig) -> *mut Regmap;
     fn is_err(ptr: *mut Regmap) -> bool;
     fn ptr_err(ptr: *mut Regmap) -> i32;
-    fn devm_gpio_regmap_register(dev: *mut Device, config: *const GpioRegmapConfig) -> *mut core::ffi::c_void;
-    fn ptr_err_or_zero(ptr: *mut core::ffi::c_void) -> i32;
+    fn devm_gpio_regmap_register(dev: *mut Device, config: *const GpioRegmapConfig) -> *mut kernel::ffi::c_void;
+    fn ptr_err_or_zero(ptr: *mut kernel::ffi::c_void) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

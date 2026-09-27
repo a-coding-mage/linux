@@ -53,8 +53,8 @@ unsafe fn get_node_num(e: *mut mrrm_mem_range_entry) -> i32 {
 unsafe extern "C" fn acpi_parse_mrrm(table: *mut acpi_table_header) -> i32 {
     let mut mre_entry: *mut acpi_mrrm_mem_range_entry;
     let mrrm: *mut acpi_table_mrrm;
-    let mut mre: *mut core::ffi::c_void;
-    let mrrm_end: *mut core::ffi::c_void;
+    let mut mre: *mut kernel::ffi::c_void;
+    let mrrm_end: *mut kernel::ffi::c_void;
     let mut mre_count = 0;
 
     mrrm = table as *mut acpi_table_mrrm;
@@ -70,12 +70,12 @@ unsafe extern "C" fn acpi_parse_mrrm(table: *mut acpi_table_header) -> i32 {
         return -EOPNOTSUPP;
     }
 
-    mrrm_end = (mrrm as *mut u8).add((*mrrm).header.length as usize - 1) as *mut core::ffi::c_void;
-    mre = (mrrm as *mut u8).add(core::mem::size_of::<acpi_table_mrrm>()) as *mut core::ffi::c_void;
+    mrrm_end = (mrrm as *mut u8).add((*mrrm).header.length as usize - 1) as *mut kernel::ffi::c_void;
+    mre = (mrrm as *mut u8).add(core::mem::size_of::<acpi_table_mrrm>()) as *mut kernel::ffi::c_void;
     while (mre as usize) < (mrrm_end as usize) {
         mre_entry = mre as *mut acpi_mrrm_mem_range_entry;
         mre_count += 1;
-        mre = (mre as *mut u8).add((*mre_entry).header.length as usize) as *mut core::ffi::c_void;
+        mre = (mre as *mut u8).add((*mre_entry).header.length as usize) as *mut kernel::ffi::c_void;
     }
     if mre_count == 0 {
         pr_info!(FW_BUG, "No ranges listed in MRRM table\n");
@@ -87,7 +87,7 @@ unsafe extern "C" fn acpi_parse_mrrm(table: *mut acpi_table_header) -> i32 {
         return -ENOMEM;
     }
 
-    mre = (mrrm as *mut u8).add(core::mem::size_of::<acpi_table_mrrm>()) as *mut core::ffi::c_void;
+    mre = (mrrm as *mut u8).add(core::mem::size_of::<acpi_table_mrrm>()) as *mut kernel::ffi::c_void;
     while (mre as usize) < (mrrm_end as usize) {
         let e: *mut mrrm_mem_range_entry;
 
@@ -110,7 +110,7 @@ unsafe extern "C" fn acpi_parse_mrrm(table: *mut acpi_table_header) -> i32 {
         }
 
         mrrm_mem_entry_num += 1;
-        mre = (mre as *mut u8).add((*mre_entry).header.length as usize) as *mut core::ffi::c_void;
+        mre = (mre as *mut u8).add((*mre_entry).header.length as usize) as *mut kernel::ffi::c_void;
     }
 
     max_mem_region = (*mrrm).max_mem_region;
@@ -123,10 +123,10 @@ macro_rules! range_attr {
         unsafe extern "C" fn ::kernel::macros::paste!([<$name _show>])(
             kobj: *mut kobject,
             _attr: *mut kobj_attribute,
-            buf: *mut core::ffi::c_char,
+            buf: *mut kernel::ffi::c_char,
         ) -> isize {
             let mre: *mut mrrm_mem_range_entry;
-            let kname: *const core::ffi::c_char = kobject_name(kobj);
+            let kname: *const kernel::ffi::c_char = kobject_name(kobj);
             let mut n: i32 = 0;
             let ret = kstrtoint(kname.add(5), 10, &mut n);
             if ret != 0 {
@@ -193,7 +193,7 @@ unsafe extern "C" fn add_boot_memory_ranges() -> i32 {
         i += 1;
     }
 
-    kfree(kobjs as *mut core::ffi::c_void);
+    kfree(kobjs as *mut kernel::ffi::c_void);
     return 0;
 
     // cleanup:
@@ -204,7 +204,7 @@ unsafe extern "C" fn add_boot_memory_ranges() -> i32 {
             kobject_put(obj);
         }
     }
-    kfree(kobjs as *mut core::ffi::c_void);
+    kfree(kobjs as *mut kernel::ffi::c_void);
     kobject_put(pkobj);
     ret
 }

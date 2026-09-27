@@ -42,7 +42,7 @@
 // Linux/comedi dependencies are supplied by the surrounding crate.
 
 unsafe extern "C" {
-    fn dev_warn(dev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
+    fn dev_warn(dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
     fn comedi_alloc_subdevices(dev: *mut comedi_device, n: i32) -> i32;
     fn __comedi_check_request_region(
         dev: *mut comedi_device,
@@ -75,7 +75,7 @@ struct ComediDevconfigOptions {
 
 // The concrete definitions and constants below are provided by comedidev.h.
 extern "C" {
-    static THIS_MODULE: *mut core::ffi::c_void;
+    static THIS_MODULE: *mut kernel::ffi::c_void;
 }
 
 const EINVAL: i32 = 22;

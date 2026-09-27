@@ -99,7 +99,7 @@ pub const LINUX_MIB_MPTCP_MAX: usize = __MPTCP_MIB_MAX as usize;
 
 #[repr(C)]
 pub struct mptcp_mib {
-	pub mibs: [::core::ffi::c_ulong; LINUX_MIB_MPTCP_MAX],
+	pub mibs: [::kernel::ffi::c_ulong; LINUX_MIB_MPTCP_MAX],
 }
 
 // The `net`, SNMP helpers, and the `likely` primitive are supplied by the

@@ -15,15 +15,15 @@
 
 /* Kernel dependencies supplied by the surrounding translation unit. */
 
-pub const vmpressure_win: ::core::ffi::c_ulong = SWAP_CLUSTER_MAX * 16;
+pub const vmpressure_win: ::kernel::ffi::c_ulong = SWAP_CLUSTER_MAX * 16;
 
-static vmpressure_level_med: ::core::ffi::c_uint = 60;
-static vmpressure_level_critical: ::core::ffi::c_uint = 95;
+static vmpressure_level_med: ::kernel::ffi::c_uint = 60;
+static vmpressure_level_critical: ::kernel::ffi::c_uint = 95;
 
-unsafe fn vmpressure_level(pressure: ::core::ffi::c_ulong) -> vmpressure_levels {
-	if pressure >= vmpressure_level_critical as ::core::ffi::c_ulong {
+unsafe fn vmpressure_level(pressure: ::kernel::ffi::c_ulong) -> vmpressure_levels {
+	if pressure >= vmpressure_level_critical as ::kernel::ffi::c_ulong {
 		VMPRESSURE_CRITICAL
-	} else if pressure >= vmpressure_level_med as ::core::ffi::c_ulong {
+	} else if pressure >= vmpressure_level_med as ::kernel::ffi::c_ulong {
 		VMPRESSURE_MEDIUM
 	} else {
 		VMPRESSURE_LOW
@@ -31,11 +31,11 @@ unsafe fn vmpressure_level(pressure: ::core::ffi::c_ulong) -> vmpressure_levels 
 }
 
 pub unsafe fn vmpressure_calc_level(
-	scanned: ::core::ffi::c_ulong,
-	reclaimed: ::core::ffi::c_ulong,
+	scanned: ::kernel::ffi::c_ulong,
+	reclaimed: ::kernel::ffi::c_ulong,
 ) -> vmpressure_levels {
 	let scale = scanned.wrapping_add(reclaimed);
-	let mut pressure: ::core::ffi::c_ulong = 0;
+	let mut pressure: ::kernel::ffi::c_ulong = 0;
 
 	/*
 	 * reclaimed can be greater than scanned for things such as reclaimed
@@ -61,11 +61,11 @@ pub unsafe fn vmpressure_calc_level(
 
 pub unsafe fn vmpressure(
 	gfp: gfp_t,
-	order: ::core::ffi::c_int,
+	order: ::kernel::ffi::c_int,
 	memcg: *mut mem_cgroup,
 	tree: bool,
-	mut scanned: ::core::ffi::c_ulong,
-	mut reclaimed: ::core::ffi::c_ulong,
+	mut scanned: ::kernel::ffi::c_ulong,
+	mut reclaimed: ::kernel::ffi::c_ulong,
 ) {
 	let vmpr: *mut vmpressure;
 

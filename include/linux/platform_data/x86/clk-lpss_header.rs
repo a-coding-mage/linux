@@ -12,12 +12,12 @@
 // `clk` is supplied by the surrounding kernel translation unit.
 #[repr(C)]
 pub struct lpss_clk_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub clk: *mut clk,
 }
 
 unsafe extern "C" {
-    pub fn lpss_atom_clk_init() -> core::ffi::c_int;
+    pub fn lpss_atom_clk_init() -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

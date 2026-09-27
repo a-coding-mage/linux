@@ -204,22 +204,22 @@ EXPORT_SYMBOL_GPL(drop_reasons_unregister_subsys);
  *	Keep out of line to prevent kernel bloat.
  *	__builtin_return_address is not used because it is not always reliable.
  */
-static void skb_panic(sk_buff *skb, sz: core::ffi::c_uint, void *addr,
+static void skb_panic(sk_buff *skb, sz: kernel::ffi::c_uint, void *addr,
 		      const char msg[])
 {
 	pr_emerg("%s: text:%px len:%d put:%d head:%px data:%px tail:%#lx end:%#lx dev:%s\n",
 		 msg, addr, (*skb).len, sz, (*skb).head, (*skb).data,
-		 (*(core::ffi::c_ulong)skb).tail, (*(core::ffi::c_ulong)skb).end,
+		 (*(kernel::ffi::c_ulong)skb).tail, (*(kernel::ffi::c_ulong)skb).end,
 		 (*skb).dev ? (*(*skb).dev).name : "<NULL>");
 	BUG();
 }
 
-static void skb_over_panic(sk_buff *skb, sz: core::ffi::c_uint, void *addr)
+static void skb_over_panic(sk_buff *skb, sz: kernel::ffi::c_uint, void *addr)
 {
 	skb_panic(skb, sz, addr, __func__);
 }
 
-static void skb_under_panic(sk_buff *skb, sz: core::ffi::c_uint, void *addr)
+static void skb_under_panic(sk_buff *skb, sz: kernel::ffi::c_uint, void *addr)
 {
 	skb_panic(skb, sz, addr, __func__);
 }
@@ -231,7 +231,7 @@ static void skb_under_panic(sk_buff *skb, sz: core::ffi::c_uint, void *addr)
 struct napi_alloc_cache {
 	local_lock_t bh_lock;
 	struct page_frag_cache page;
-	core::ffi::c_uint skb_count;
+	kernel::ffi::c_uint skb_count;
 	void *skb_cache[NAPI_SKB_CACHE_SIZE];
 };
 
@@ -240,7 +240,7 @@ static DEFINE_PER_CPU(napi_alloc_cache, napi_alloc_cache) = {
 	bh_lock: INIT_LOCAL_LOCK(bh_lock),
 };
 
-void *__napi_alloc_frag_align(fragsz: core::ffi::c_uint, align_mask: core::ffi::c_uint)
+void *__napi_alloc_frag_align(fragsz: kernel::ffi::c_uint, align_mask: kernel::ffi::c_uint)
 {
 	struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
 	void *data;
@@ -256,7 +256,7 @@ void *__napi_alloc_frag_align(fragsz: core::ffi::c_uint, align_mask: core::ffi::
 }
 EXPORT_SYMBOL(__napi_alloc_frag_align);
 
-void *__netdev_alloc_frag_align(fragsz: core::ffi::c_uint, align_mask: core::ffi::c_uint)
+void *__netdev_alloc_frag_align(fragsz: kernel::ffi::c_uint, align_mask: kernel::ffi::c_uint)
 {
 	void *data;
 
@@ -389,7 +389,7 @@ u32 napi_skb_cache_get_bulk(void **skbs, n: u32)
 EXPORT_SYMBOL_GPL(napi_skb_cache_get_bulk);
 
 void __finalize_skb_around(sk_buff *skb, void *data,
-					 size: core::ffi::c_uint)
+					 size: kernel::ffi::c_uint)
 {
 	struct skb_shared_info *shinfo;
 
@@ -413,7 +413,7 @@ void __finalize_skb_around(sk_buff *skb, void *data,
 	skb_set_kcov_handle(skb, kcov_common_handle());
 }
 
-void *__slab_build_skb(void *data, core::ffi::c_uint *size)
+void *__slab_build_skb(void *data, kernel::ffi::c_uint *size)
 {
 	void *resized;
 
@@ -438,7 +438,7 @@ void *__slab_build_skb(void *data, core::ffi::c_uint *size)
 struct sk_buff *slab_build_skb(void *data)
 {
 	struct sk_buff *skb;
-	core::ffi::c_uint size;
+	kernel::ffi::c_uint size;
 
 	skb = kmem_cache_alloc(net_hotdata.skbuff_cache,
 			       GFP_ATOMIC | __GFP_NOWARN);
@@ -455,9 +455,9 @@ EXPORT_SYMBOL(slab_build_skb);
 
 /* Caller must provide SKB that is memset cleared */
 static void __build_skb_around(sk_buff *skb, void *data,
-			       frag_size: core::ffi::c_uint)
+			       frag_size: kernel::ffi::c_uint)
 {
-	core::ffi::c_uint size = frag_size;
+	kernel::ffi::c_uint size = frag_size;
 
 	/* frag_size == 0 is considered deprecated now. Callers
 	 * using slab buffer should use slab_build_skb() instead.
@@ -488,7 +488,7 @@ static void __build_skb_around(sk_buff *skb, void *data,
  *  before giving packet to stack.
  *  RX rings only contains data buffers, not full skbs.
  */
-struct sk_buff *__build_skb(void *data, frag_size: core::ffi::c_uint)
+struct sk_buff *__build_skb(void *data, frag_size: kernel::ffi::c_uint)
 {
 	struct sk_buff *skb;
 
@@ -506,7 +506,7 @@ struct sk_buff *__build_skb(void *data, frag_size: core::ffi::c_uint)
 /* build_skb() is wrapper over __build_skb(), that specifically
  * takes care of skb->head and skb->pfmemalloc
  */
-struct sk_buff *build_skb(void *data, frag_size: core::ffi::c_uint)
+struct sk_buff *build_skb(void *data, frag_size: kernel::ffi::c_uint)
 {
 	struct sk_buff *skb = __build_skb(data, frag_size);
 
@@ -525,7 +525,7 @@ EXPORT_SYMBOL(build_skb);
  * @frag_size: size of data
  */
 struct sk_buff *build_skb_around(sk_buff *skb,
-				 void *data, frag_size: core::ffi::c_uint)
+				 void *data, frag_size: kernel::ffi::c_uint)
 {
 	if (unlikely(!skb))
 		return NULL;
@@ -550,7 +550,7 @@ EXPORT_SYMBOL(build_skb_around);
  *
  * Returns a new &sk_buff on success, %NULL on allocation failure.
  */
-static struct sk_buff *__napi_build_skb(void *data, frag_size: core::ffi::c_uint)
+static struct sk_buff *__napi_build_skb(void *data, frag_size: kernel::ffi::c_uint)
 {
 	struct sk_buff *skb;
 
@@ -574,7 +574,7 @@ static struct sk_buff *__napi_build_skb(void *data, frag_size: core::ffi::c_uint
  *
  * Returns a new &sk_buff on success, %NULL on allocation failure.
  */
-struct sk_buff *napi_build_skb(void *data, frag_size: core::ffi::c_uint)
+struct sk_buff *napi_build_skb(void *data, frag_size: kernel::ffi::c_uint)
 {
 	struct sk_buff *skb = __napi_build_skb(data, frag_size);
 
@@ -604,7 +604,7 @@ static void *kmalloc_pfmemalloc(size_t obj_size, gfp_t flags, int node)
  * may be used. Otherwise, the packet data may be discarded until enough
  * memory is free
  */
-static void *kmalloc_reserve(core::ffi::c_uint *size, gfp_t flags, int node,
+static void *kmalloc_reserve(kernel::ffi::c_uint *size, gfp_t flags, int node,
 			     sk_buff *skb)
 {
 	'out: {
@@ -630,7 +630,7 @@ static void *kmalloc_reserve(core::ffi::c_uint *size, gfp_t flags, int node,
 	/* The following cast might truncate high-order bits of obj_size, this
 	 * is harmless because kmalloc(obj_size >= 2^32) will fail anyway.
 	 */
-	*size = (core::ffi::c_uint)obj_size;
+	*size = (kernel::ffi::c_uint)obj_size;
 
 	/*
 	 * Try a regular allocation, when that fails and we're not entitled
@@ -674,7 +674,7 @@ static void *kmalloc_reserve(core::ffi::c_uint *size, gfp_t flags, int node,
  *	Buffers may only be allocated from interrupts using a @gfp_mask of
  *	%GFP_ATOMIC.
  */
-struct sk_buff *__alloc_skb(size: core::ffi::c_uint, gfp_t gfp_mask,
+struct sk_buff *__alloc_skb(size: kernel::ffi::c_uint, gfp_t gfp_mask,
 			    int flags, int node)
 {
 	'nodata: {
@@ -764,7 +764,7 @@ EXPORT_SYMBOL(__alloc_skb);
  *
  *	%NULL is returned if there is no free memory.
  */
-struct sk_buff *__netdev_alloc_skb(net_device *dev, len: core::ffi::c_uint,
+struct sk_buff *__netdev_alloc_skb(net_device *dev, len: kernel::ffi::c_uint,
 				   gfp_t gfp_mask)
 {
 	'skb_fail: {
@@ -843,7 +843,7 @@ EXPORT_SYMBOL(__netdev_alloc_skb);
  *
  *	%NULL is returned if there is no free memory.
  */
-struct sk_buff *napi_alloc_skb(napi_struct *napi, len: core::ffi::c_uint)
+struct sk_buff *napi_alloc_skb(napi_struct *napi, len: kernel::ffi::c_uint)
 {
 	'skb_fail: {
 	'skb_success: {
@@ -905,7 +905,7 @@ EXPORT_SYMBOL(napi_alloc_skb);
 
 
 void skb_coalesce_rx_frag(sk_buff *skb, int i, int size,
-			  truesize: core::ffi::c_uint)
+			  truesize: kernel::ffi::c_uint)
 {
 	skb_frag_t *frag = (*&skb_shinfo(skb)).frags[i];
 
@@ -950,7 +950,7 @@ static void skb_clone_fraglist(sk_buff *skb)
  * Return: 0 on success or a negative errno on failure.
  */
 int skb_pp_cow_data(page_pool *pool, sk_buff **pskb,
-		    headroom: core::ffi::c_uint)
+		    headroom: kernel::ffi::c_uint)
 {
 // #if IS_ENABLED(CONFIG_PAGE_POOL)
 	size: u32, truesize, len, max_head_size, off;
@@ -1094,7 +1094,7 @@ static void skb_kfree_head(void *head)
 
 static void skb_free_head(sk_buff *skb)
 {
-	core::ffi::c_uchar *head = (*skb).head;
+	kernel::ffi::c_uchar *head = (*skb).head;
 
 	if ((*skb).head_frag) {
 		if (skb_pp_recycle(skb, head))
@@ -1268,7 +1268,7 @@ EXPORT_SYMBOL(sk_skb_reason_drop);
 // #define KFREE_SKB_BULK_SIZE	16
 
 struct skb_free_array {
-	core::ffi::c_uint skb_count;
+	kernel::ffi::c_uint skb_count;
 	void *skb_array[KFREE_SKB_BULK_SIZE];
 };
 
@@ -1697,7 +1697,7 @@ EXPORT_SYMBOL_GPL(skb_morph);
 
 int mm_account_pinned_pages(mmpin *mmp, size_t size)
 {
-	max_pg: core::ffi::c_ulong, num_pg, new_pg, old_pg, rlim;
+	max_pg: kernel::ffi::c_ulong, num_pg, new_pg, old_pg, rlim;
 	struct user_struct *user;
 
 	if (capable(CAP_IPC_LOCK) || !size)
@@ -1855,7 +1855,7 @@ static void __msg_zerocopy_callback(ubuf_info_msgzc *uarg)
 	struct sock_exterr_skb *serr;
 	struct sock *sk = skb->sk;
 	struct sk_buff_head *q;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	bool is_zerocopy;
 	lo: u32, hi;
 	u16 len;
@@ -2048,7 +2048,7 @@ int skb_copy_ubufs(sk_buff *skb, gfp_t gfp_mask)
 			}
 			return -ENOMEM;
 		}
-		set_page_private(page, (core::ffi::c_ulong)head);
+		set_page_private(page, (kernel::ffi::c_ulong)head);
 		head = page;
 	}
 
@@ -2196,7 +2196,7 @@ int skb_alloc_rx_flag(const struct sk_buff *skb)
 struct sk_buff *skb_copy(const struct sk_buff *skb, gfp_t gfp_mask)
 {
 	struct sk_buff *n;
-	core::ffi::c_uint size;
+	kernel::ffi::c_uint size;
 	int headerlen;
 
 	if (!skb_frags_readable(skb))
@@ -2245,7 +2245,7 @@ struct sk_buff *__pskb_copy_fclone(sk_buff *skb, int headroom,
 				   gfp_t gfp_mask, fclone: bool)
 {
 	'out: {
-	core::ffi::c_uint size = skb_headlen(skb) + headroom;
+	kernel::ffi::c_uint size = skb_headlen(skb) + headroom;
 	int flags = skb_alloc_rx_flag(skb) | (fclone ? SKB_ALLOC_FCLONE : 0);
 	struct sk_buff *n = __alloc_skb(size, gfp_mask, flags, NUMA_NO_NODE);
 
@@ -2317,8 +2317,8 @@ int pskb_expand_head(sk_buff *skb, int nhead, int ntail,
 {
 	'nodata: {
 	'nofrags: {
-	core::ffi::c_uint osize = skb_end_offset(skb);
-	core::ffi::c_uint size = osize + nhead + ntail;
+	kernel::ffi::c_uint osize = skb_end_offset(skb);
+	kernel::ffi::c_uint size = osize + nhead + ntail;
 	long off;
 	u8 *data;
 	int i;
@@ -2402,7 +2402,7 @@ EXPORT_SYMBOL(pskb_expand_head);
 
 /* Make private copy of skb with writable head and some headroom */
 
-struct sk_buff *skb_realloc_headroom(sk_buff *skb, headroom: core::ffi::c_uint)
+struct sk_buff *skb_realloc_headroom(sk_buff *skb, headroom: kernel::ffi::c_uint)
 {
 	struct sk_buff *skb2;
 	int delta = headroom - skb_headroom(skb);
@@ -2424,7 +2424,7 @@ EXPORT_SYMBOL(skb_realloc_headroom);
 /* Note: We plan to rework this in linux-6.4 */
 int __skb_unclone_keeptruesize(sk_buff *skb, gfp_t pri)
 {
-	saved_end_offset: core::ffi::c_uint, saved_truesize;
+	saved_end_offset: kernel::ffi::c_uint, saved_truesize;
 	struct skb_shared_info *shinfo;
 	int res;
 
@@ -2466,7 +2466,7 @@ int __skb_unclone_keeptruesize(sk_buff *skb, gfp_t pri)
  *	It expect increased headroom and generates warning otherwise.
  */
 
-struct sk_buff *skb_expand_head(sk_buff *skb, headroom: core::ffi::c_uint)
+struct sk_buff *skb_expand_head(sk_buff *skb, headroom: kernel::ffi::c_uint)
 {
 	'fail: {
 	int delta = headroom - skb_headroom(skb);
@@ -2654,7 +2654,7 @@ EXPORT_SYMBOL_GPL(pskb_put);
  *	exceed the total buffer size the kernel will panic. A pointer to the
  *	first byte of the extra data is returned.
  */
-void *skb_put(sk_buff *skb, len: core::ffi::c_uint)
+void *skb_put(sk_buff *skb, len: kernel::ffi::c_uint)
 {
 	void *tmp = skb_tail_pointer(skb);
 	SKB_LINEAR_ASSERT(skb);
@@ -2675,7 +2675,7 @@ EXPORT_SYMBOL(skb_put);
  *	start. If this would exceed the total buffer headroom the kernel will
  *	panic. A pointer to the first byte of the extra data is returned.
  */
-void *skb_push(sk_buff *skb, len: core::ffi::c_uint)
+void *skb_push(sk_buff *skb, len: kernel::ffi::c_uint)
 {
 	skb->data -= len;
 	skb->len  += len;
@@ -2695,7 +2695,7 @@ EXPORT_SYMBOL(skb_push);
  *	is returned. Once the data has been pulled future pushes will overwrite
  *	the old data.
  */
-void *skb_pull(sk_buff *skb, len: core::ffi::c_uint)
+void *skb_pull(sk_buff *skb, len: kernel::ffi::c_uint)
 {
 	return skb_pull_inline(skb, len);
 }
@@ -2734,7 +2734,7 @@ EXPORT_SYMBOL(skb_pull_data);
  *	the buffer is already under the length specified it is not modified.
  *	The skb must be linear.
  */
-void skb_trim(sk_buff *skb, len: core::ffi::c_uint)
+void skb_trim(sk_buff *skb, len: kernel::ffi::c_uint)
 {
 	if (skb->len > len)
 		__skb_trim(skb, len);
@@ -2744,7 +2744,7 @@ EXPORT_SYMBOL(skb_trim);
 /* Trims skb to length len. It can change skb pointers.
  */
 
-int ___pskb_trim(sk_buff *skb, len: core::ffi::c_uint)
+int ___pskb_trim(sk_buff *skb, len: kernel::ffi::c_uint)
 {
 	'done: {
 	struct sk_buff **fragp;
@@ -2833,7 +2833,7 @@ int ___pskb_trim(sk_buff *skb, len: core::ffi::c_uint)
 }
 EXPORT_SYMBOL(___pskb_trim);
 
-static int pskb_trim_rcsum_complete(sk_buff *skb, len: core::ffi::c_uint)
+static int pskb_trim_rcsum_complete(sk_buff *skb, len: kernel::ffi::c_uint)
 {
 	int delta = skb->len - len;
 
@@ -2856,7 +2856,7 @@ static int pskb_trim_rcsum_complete(sk_buff *skb, len: core::ffi::c_uint)
 
 /* Note : use pskb_trim_rcsum() instead of calling this directly
  */
-int pskb_trim_rcsum_slow(sk_buff *skb, len: core::ffi::c_uint)
+int pskb_trim_rcsum_slow(sk_buff *skb, len: kernel::ffi::c_uint)
 {
 	if (skb->ip_summed == CHECKSUM_COMPLETE) {
 		int err;
@@ -3132,13 +3132,13 @@ EXPORT_SYMBOL(skb_copy_bits);
  * Callback from splice_to_pipe(), if we need to release some pages
  * at the end of the spd in case we error'ed out in filling the pipe.
  */
-static void sock_spd_release(splice_pipe_desc *spd, i: core::ffi::c_uint)
+static void sock_spd_release(splice_pipe_desc *spd, i: kernel::ffi::c_uint)
 {
 	put_page(spd->pages[i]);
 }
 
-static struct page *linear_to_page(page *page, core::ffi::c_uint *len,
-				   core::ffi::c_uint *offset,
+static struct page *linear_to_page(page *page, kernel::ffi::c_uint *len,
+				   kernel::ffi::c_uint *offset,
 				   sock *sk)
 {
 	struct page_frag *pfrag = sk_page_frag(sk);
@@ -3146,7 +3146,7 @@ static struct page *linear_to_page(page *page, core::ffi::c_uint *len,
 	if (!sk_page_frag_refill(sk, pfrag))
 		return NULL;
 
-	*len = min_t(core::ffi::c_uint, *len, pfrag->size - pfrag->offset);
+	*len = min_t(kernel::ffi::c_uint, *len, pfrag->size - pfrag->offset);
 
 	memcpy(page_address(pfrag->page) + pfrag->offset,
 	       page_address(page) + *offset, *len);
@@ -3158,7 +3158,7 @@ static struct page *linear_to_page(page *page, core::ffi::c_uint *len,
 
 static bool spd_can_coalesce(const struct splice_pipe_desc *spd,
 			     page *page,
-			     offset: core::ffi::c_uint)
+			     offset: kernel::ffi::c_uint)
 {
 	return	spd->nr_pages &&
 		spd->pages[spd->nr_pages - 1] == page &&
@@ -3170,7 +3170,7 @@ static bool spd_can_coalesce(const struct splice_pipe_desc *spd,
  * Fill page/offset/length into spd, if it can hold more pages.
  */
 static bool spd_fill_page(splice_pipe_desc *spd, page *page,
-			  core::ffi::c_uint *len, offset: core::ffi::c_uint, linear: bool,
+			  kernel::ffi::c_uint *len, offset: kernel::ffi::c_uint, linear: bool,
 			  sock *sk)
 {
 	if (unlikely(spd->nr_pages == MAX_SKB_FRAGS))
@@ -3194,9 +3194,9 @@ static bool spd_fill_page(splice_pipe_desc *spd, page *page,
 	return false;
 }
 
-static bool __splice_segment(page *page, poff: core::ffi::c_uint,
-			     plen: core::ffi::c_uint, core::ffi::c_uint *off,
-			     core::ffi::c_uint *len,
+static bool __splice_segment(page *page, poff: kernel::ffi::c_uint,
+			     plen: kernel::ffi::c_uint, kernel::ffi::c_uint *off,
+			     kernel::ffi::c_uint *len,
 			     splice_pipe_desc *spd, linear: bool,
 			     sock *sk)
 {
@@ -3215,7 +3215,7 @@ static bool __splice_segment(page *page, poff: core::ffi::c_uint,
 	*off = 0;
 
 	do {
-		core::ffi::c_uint flen = min(*len, plen);
+		kernel::ffi::c_uint flen = min(*len, plen);
 
 		if (spd_fill_page(spd, page, &flen, poff, linear, sk))
 			return true;
@@ -3234,7 +3234,7 @@ static bool __splice_segment(page *page, poff: core::ffi::c_uint,
  * pipe is full or if we already spliced the requested length.
  */
 static bool __skb_splice_bits(sk_buff *skb, pipe_inode_info *pipe,
-			      core::ffi::c_uint *offset, core::ffi::c_uint *len,
+			      kernel::ffi::c_uint *offset, kernel::ffi::c_uint *len,
 			      splice_pipe_desc *spd, sock *sk)
 {
 	struct sk_buff *iter;
@@ -3246,7 +3246,7 @@ static bool __skb_splice_bits(sk_buff *skb, pipe_inode_info *pipe,
 	 * we can avoid a copy since we own the head portion of this page.
 	 */
 	if (__splice_segment(virt_to_page(skb->data),
-			     (core::ffi::c_ulong) skb->data & (PAGE_SIZE - 1),
+			     (kernel::ffi::c_ulong) skb->data & (PAGE_SIZE - 1),
 			     skb_headlen(skb),
 			     offset, len, spd,
 			     skb_head_is_locked(skb),
@@ -3291,9 +3291,9 @@ static bool __skb_splice_bits(sk_buff *skb, pipe_inode_info *pipe,
  * Map data from the skb to a pipe. Should handle both the linear part,
  * the fragments, and the frag list.
  */
-int skb_splice_bits(sk_buff *skb, sock *sk, offset: core::ffi::c_uint,
-		    pipe_inode_info *pipe, tlen: core::ffi::c_uint,
-		    flags: core::ffi::c_uint)
+int skb_splice_bits(sk_buff *skb, sock *sk, offset: kernel::ffi::c_uint,
+		    pipe_inode_info *pipe, tlen: kernel::ffi::c_uint,
+		    flags: kernel::ffi::c_uint)
 {
 	struct partial_page partial[MAX_SKB_FRAGS];
 	struct page *pages[MAX_SKB_FRAGS];
@@ -3345,9 +3345,9 @@ static int __skb_send_sock(sock *sk, sk_buff *skb, int offset,
 	'error: {
 	'out: {
 	int more_hint = sk_is_tcp(sk) ? MSG_MORE : 0;
-	core::ffi::c_uint orig_len = len;
+	kernel::ffi::c_uint orig_len = len;
 	struct sk_buff *head = skb;
-	core::ffi::c_ushort fragidx;
+	kernel::ffi::c_ushort fragidx;
 	int slen, ret;
 
 do_frag_list:
@@ -3868,10 +3868,10 @@ EXPORT_SYMBOL(__skb_checksum_complete);
  *	Calculates the amount of linear headroom needed in the 'to' skb passed
  *	into skb_zerocopy().
  */
-core::ffi::c_uint
+kernel::ffi::c_uint
 skb_zerocopy_headlen(const struct sk_buff *from)
 {
-	core::ffi::c_uint hlen = 0;
+	kernel::ffi::c_uint hlen = 0;
 
 	if (!from->head_frag ||
 	    skb_headlen(from) < L1_CACHE_BYTES ||
@@ -3914,7 +3914,7 @@ skb_zerocopy(sk_buff *to, sk_buff *from, int len, int hlen)
 	int plen = 0; /* length of skb->head fragment */
 	int ret;
 	struct page *page;
-	core::ffi::c_uint offset;
+	kernel::ffi::c_uint offset;
 
 	BUG_ON(!from->head_frag && !hlen);
 
@@ -3931,7 +3931,7 @@ skb_zerocopy(sk_buff *to, sk_buff *from, int len, int hlen)
 		plen = min_t(int, skb_headlen(from), len);
 		if (plen) {
 			page = virt_to_head_page(from->head);
-			offset = from->data - (core::ffi::c_uchar *)page_address(page);
+			offset = from->data - (kernel::ffi::c_uchar *)page_address(page);
 			__skb_fill_netmem_desc(to, 0, page_to_netmem(page),
 					       offset, plen);
 			get_page(page);
@@ -4014,7 +4014,7 @@ EXPORT_SYMBOL(skb_copy_and_csum_dev);
 
 struct sk_buff *skb_dequeue(sk_buff_head *list)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	struct sk_buff *result;
 
 	spin_lock_irqsave(&list->lock, flags);
@@ -4034,7 +4034,7 @@ EXPORT_SYMBOL(skb_dequeue);
  */
 struct sk_buff *skb_dequeue_tail(sk_buff_head *list)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	struct sk_buff *result;
 
 	spin_lock_irqsave(&list->lock, flags);
@@ -4057,7 +4057,7 @@ void skb_queue_purge_reason(sk_buff_head *list,
 			    skb_drop_reason reason)
 {
 	struct sk_buff_head tmp;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	if (skb_queue_empty_lockless(list))
 		return;
@@ -4082,10 +4082,10 @@ EXPORT_SYMBOL(skb_queue_purge_reason);
  *	any lock. Synchronization should be handled by the caller (e.g., TCP
  *	out-of-order queue is protected by the socket lock).
  */
-core::ffi::c_uint skb_rbtree_purge(rb_root *root)
+kernel::ffi::c_uint skb_rbtree_purge(rb_root *root)
 {
 	struct rb_node *p = rb_first(root);
-	core::ffi::c_uint sum = 0;
+	kernel::ffi::c_uint sum = 0;
 
 	while (p) {
 		struct sk_buff *skb = rb_entry(p, sk_buff, rbnode);
@@ -4102,7 +4102,7 @@ void skb_errqueue_purge(sk_buff_head *list)
 {
 	struct sk_buff *skb, *next;
 	struct sk_buff_head kill;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	__skb_queue_head_init(&kill);
 
@@ -4132,7 +4132,7 @@ EXPORT_SYMBOL(skb_errqueue_purge);
  */
 void skb_queue_head(sk_buff_head *list, sk_buff *newsk)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave(&list->lock, flags);
 	__skb_queue_head(list, newsk);
@@ -4153,7 +4153,7 @@ EXPORT_SYMBOL(skb_queue_head);
  */
 void skb_queue_tail(sk_buff_head *list, sk_buff *newsk)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave(&list->lock, flags);
 	__skb_queue_tail(list, newsk);
@@ -4173,7 +4173,7 @@ EXPORT_SYMBOL(skb_queue_tail);
  */
 void skb_unlink(sk_buff *skb, sk_buff_head *list)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave(&list->lock, flags);
 	__skb_unlink(skb, list);
@@ -4193,7 +4193,7 @@ EXPORT_SYMBOL(skb_unlink);
  */
 void skb_append(sk_buff *old, sk_buff *newsk, sk_buff_head *list)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave(&list->lock, flags);
 	__skb_queue_after(list, old, newsk);
@@ -4444,8 +4444,8 @@ int skb_shift(sk_buff *tgt, sk_buff *skb, int shiftlen)
  * Initializes the specified state variable. Must be called before
  * invoking skb_seq_read() for the first time.
  */
-void skb_prepare_seq_read(sk_buff *skb, from: core::ffi::c_uint,
-			  to: core::ffi::c_uint, skb_seq_state *st)
+void skb_prepare_seq_read(sk_buff *skb, from: kernel::ffi::c_uint,
+			  to: kernel::ffi::c_uint, skb_seq_state *st)
 {
 	st->lower_offset = from;
 	st->upper_offset = to;
@@ -4481,10 +4481,10 @@ EXPORT_SYMBOL(skb_prepare_seq_read);
  *       at the moment, state->root_skb could be replaced with
  *       a stack for this purpose.
  */
-core::ffi::c_uint skb_seq_read(consumed: core::ffi::c_uint, const u8 **data,
+kernel::ffi::c_uint skb_seq_read(consumed: kernel::ffi::c_uint, const u8 **data,
 			  skb_seq_state *st)
 {
-	block_limit: core::ffi::c_uint, abs_offset = consumed + st->lower_offset;
+	block_limit: kernel::ffi::c_uint, abs_offset = consumed + st->lower_offset;
 	skb_frag_t *frag;
 
 	if (unlikely(abs_offset >= st->upper_offset)) {
@@ -4510,7 +4510,7 @@ next_skb:
 		st->stepped_offset += skb_headlen(st->cur_skb);
 
 	while (st->frag_idx < skb_shinfo(st->cur_skb)->nr_frags) {
-		pg_idx: core::ffi::c_uint, pg_off, pg_sz;
+		pg_idx: kernel::ffi::c_uint, pg_off, pg_sz;
 
 		frag = &skb_shinfo(st->cur_skb)->frags[st->frag_idx];
 
@@ -4521,7 +4521,7 @@ next_skb:
 		if (skb_frag_must_loop(skb_frag_page(frag))) {
 			pg_idx = (pg_off + st->frag_off) >> PAGE_SHIFT;
 			pg_off = offset_in_page(pg_off + st->frag_off);
-			pg_sz = min_t(core::ffi::c_uint, pg_sz - st->frag_off,
+			pg_sz = min_t(kernel::ffi::c_uint, pg_sz - st->frag_off,
 						    PAGE_SIZE - pg_off);
 		}
 
@@ -4619,7 +4619,7 @@ EXPORT_SYMBOL(skb_copy_seq_read);
 
 // #define TS_SKB_CB(state)	((skb_seq_state *) &((state)->cb))
 
-static core::ffi::c_uint skb_ts_get_next_block(offset: core::ffi::c_uint, const u8 **text,
+static kernel::ffi::c_uint skb_ts_get_next_block(offset: kernel::ffi::c_uint, const u8 **text,
 					  ts_config *conf,
 					  ts_state *state)
 {
@@ -4643,12 +4643,12 @@ static void skb_ts_finish(ts_config *conf, ts_state *state)
  * subsequent occurrences of the pattern. Returns the offset
  * to the first occurrence or UINT_MAX if no match was found.
  */
-core::ffi::c_uint skb_find_text(sk_buff *skb, from: core::ffi::c_uint,
-			   to: core::ffi::c_uint, ts_config *config)
+kernel::ffi::c_uint skb_find_text(sk_buff *skb, from: kernel::ffi::c_uint,
+			   to: kernel::ffi::c_uint, ts_config *config)
 {
-	core::ffi::c_uint patlen = config->ops->get_pattern_len(config);
+	kernel::ffi::c_uint patlen = config->ops->get_pattern_len(config);
 	struct ts_state state;
-	core::ffi::c_uint ret;
+	kernel::ffi::c_uint ret;
 
 	BUILD_BUG_ON(sizeof(skb_seq_state) > sizeof(state.cb));
 
@@ -4692,9 +4692,9 @@ EXPORT_SYMBOL_GPL(skb_append_pagefrags);
  *	that the checksum difference is zero (e.g., a valid IP header)
  *	or you are setting ip_summed to CHECKSUM_NONE.
  */
-void *skb_pull_rcsum(sk_buff *skb, len: core::ffi::c_uint)
+void *skb_pull_rcsum(sk_buff *skb, len: kernel::ffi::c_uint)
 {
-	core::ffi::c_uchar *data = skb->data;
+	kernel::ffi::c_uchar *data = skb->data;
 
 	BUG_ON(len > skb->len);
 	__skb_pull(skb, len);
@@ -4710,19 +4710,19 @@ skb_frag_t skb_head_frag_to_page_desc(sk_buff *frag_skb)
 
 	page = virt_to_head_page(frag_skb->head);
 	skb_frag_fill_page_desc(&head_frag, page, frag_skb->data -
-				(core::ffi::c_uchar *)page_address(page),
+				(kernel::ffi::c_uchar *)page_address(page),
 				skb_headlen(frag_skb));
 	return head_frag;
 }
 
 struct sk_buff *skb_segment_list(sk_buff *skb,
 				 netdev_features_t features,
-				 offset: core::ffi::c_uint)
+				 offset: kernel::ffi::c_uint)
 {
 	'err_linearize: {
 	struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
-	core::ffi::c_uint tnl_hlen = skb_tnl_header_len(skb);
-	core::ffi::c_uint delta_len = 0;
+	kernel::ffi::c_uint tnl_hlen = skb_tnl_header_len(skb);
+	kernel::ffi::c_uint delta_len = 0;
 	struct sk_buff *tail = NULL;
 	struct sk_buff *nskb, *tmp;
 	int len_diff, err;
@@ -4827,14 +4827,14 @@ struct sk_buff *skb_segment(sk_buff *head_skb,
 	struct sk_buff *segs = NULL;
 	struct sk_buff *tail = NULL;
 	struct sk_buff *list_skb = skb_shinfo(head_skb)->frag_list;
-	core::ffi::c_uint mss = skb_shinfo(head_skb)->gso_size;
+	kernel::ffi::c_uint mss = skb_shinfo(head_skb)->gso_size;
 	bool gso_by_frags = mss == GSO_BY_FRAGS;
-	core::ffi::c_uint doffset = head_skb->data - skb_mac_header(head_skb);
-	core::ffi::c_uint offset = doffset;
-	core::ffi::c_uint tnl_hlen = skb_tnl_header_len(head_skb);
-	core::ffi::c_uint partial_segs = 0;
-	core::ffi::c_uint headroom;
-	core::ffi::c_uint len = head_skb->len;
+	kernel::ffi::c_uint doffset = head_skb->data - skb_mac_header(head_skb);
+	kernel::ffi::c_uint offset = doffset;
+	kernel::ffi::c_uint tnl_hlen = skb_tnl_header_len(head_skb);
+	kernel::ffi::c_uint partial_segs = 0;
+	kernel::ffi::c_uint headroom;
+	kernel::ffi::c_uint len = head_skb->len;
 	struct sk_buff *frag_skb;
 	skb_frag_t *frag;
 	__be16 proto;
@@ -4875,7 +4875,7 @@ struct sk_buff *skb_segment(sk_buff *head_skb,
 	if (sg && csum && !gso_by_frags)  {
 		if (!(features & NETIF_F_GSO_PARTIAL)) {
 			struct sk_buff *iter;
-			core::ffi::c_uint frag_len;
+			kernel::ffi::c_uint frag_len;
 
 			if (!list_skb ||
 			    !net_gso_ok(features, skb_shinfo(head_skb)->gso_type))
@@ -5140,7 +5140,7 @@ struct sk_buff *skb_segment(sk_buff *head_skb,
 	if (partial_segs) {
 		struct sk_buff *iter;
 		int type = skb_shinfo(head_skb)->gso_type;
-		core::ffi::c_ushort gso_size = skb_shinfo(head_skb)->gso_size;
+		kernel::ffi::c_ushort gso_size = skb_shinfo(head_skb)->gso_size;
 
 		/* Update type to add partial and then remove dodgy if set */
 		type |= (features & NETIF_F_GSO_PARTIAL) / NETIF_F_GSO_PARTIAL * SKB_GSO_PARTIAL;
@@ -5207,9 +5207,9 @@ static const u8 skb_ext_type_len[] = {
 // #endif
 };
 
-static __always_inline __no_profile core::ffi::c_uint skb_ext_total_length(void)
+static __always_inline __no_profile kernel::ffi::c_uint skb_ext_total_length(void)
 {
-	core::ffi::c_uint l = SKB_EXT_CHUNKSIZEOF(skb_ext);
+	kernel::ffi::c_uint l = SKB_EXT_CHUNKSIZEOF(skb_ext);
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(skb_ext_type_len); i++)
@@ -5276,7 +5276,7 @@ void __init skb_init(void)
 
 static int
 __skb_to_sgvec(sk_buff *skb, scatterlist *sg, int offset, int len,
-	       recursion_level: core::ffi::c_uint)
+	       recursion_level: kernel::ffi::c_uint)
 {
 	int start = skb_headlen(skb);
 	int i, copy = start - offset;
@@ -5531,7 +5531,7 @@ static void skb_set_err_queue(sk_buff *skb)
 int sock_queue_err_skb(sock *sk, sk_buff *skb)
 {
 	if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=
-	    (core::ffi::c_uint)READ_ONCE(sk->sk_rcvbuf))
+	    (kernel::ffi::c_uint)READ_ONCE(sk->sk_rcvbuf))
 		return -ENOMEM;
 
 	skb_orphan(skb);
@@ -5561,7 +5561,7 @@ struct sk_buff *sock_dequeue_err_skb(sock *sk)
 	struct sk_buff_head *q = &sk->sk_error_queue;
 	struct sk_buff *skb, *skb_next = NULL;
 	bool icmp_next = false;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	if (skb_queue_empty_lockless(q))
 		return NULL;
@@ -5879,8 +5879,8 @@ bool skb_partial_csum_set(sk_buff *skb, start: u16, off: u16)
 }
 EXPORT_SYMBOL_GPL(skb_partial_csum_set);
 
-static int skb_maybe_pull_tail(sk_buff *skb, len: core::ffi::c_uint,
-			       max: core::ffi::c_uint)
+static int skb_maybe_pull_tail(sk_buff *skb, len: kernel::ffi::c_uint,
+			       max: kernel::ffi::c_uint)
 {
 	if (skb_headlen(skb) >= len)
 		return 0;
@@ -5904,7 +5904,7 @@ static int skb_maybe_pull_tail(sk_buff *skb, len: core::ffi::c_uint,
 
 static __sum16 *skb_checksum_setup_ip(sk_buff *skb,
 				      typeof(IPPROTO_IP) proto,
-				      off: core::ffi::c_uint)
+				      off: kernel::ffi::c_uint)
 {
 	int err;
 
@@ -5939,7 +5939,7 @@ static __sum16 *skb_checksum_setup_ip(sk_buff *skb,
 static int skb_checksum_setup_ipv4(sk_buff *skb, recalculate: bool)
 {
 	'out: {
-	core::ffi::c_uint off;
+	kernel::ffi::c_uint off;
 	bool fragment;
 	__sum16 *csum;
 	int err;
@@ -5990,8 +5990,8 @@ static int skb_checksum_setup_ipv6(sk_buff *skb, recalculate: bool)
 	'out: {
 	int err;
 	u8 nexthdr;
-	core::ffi::c_uint off;
-	core::ffi::c_uint len;
+	kernel::ffi::c_uint off;
+	kernel::ffi::c_uint len;
 	bool fragment;
 	bool done;
 	__sum16 *csum;
@@ -6127,10 +6127,10 @@ EXPORT_SYMBOL(skb_checksum_setup);
  * differs from the provided skb.
  */
 static struct sk_buff *skb_checksum_maybe_trim(sk_buff *skb,
-					       transport_len: core::ffi::c_uint)
+					       transport_len: kernel::ffi::c_uint)
 {
 	struct sk_buff *skb_chk;
-	core::ffi::c_uint len = skb_transport_offset(skb) + transport_len;
+	kernel::ffi::c_uint len = skb_transport_offset(skb) + transport_len;
 	int ret;
 
 	if (skb->len < len)
@@ -6167,12 +6167,12 @@ static struct sk_buff *skb_checksum_maybe_trim(sk_buff *skb,
  * differs from the provided skb.
  */
 struct sk_buff *skb_checksum_trimmed(sk_buff *skb,
-				     transport_len: core::ffi::c_uint,
+				     transport_len: kernel::ffi::c_uint,
 				     __sum16(*skb_chkf)(sk_buff *skb))
 {
 	'err: {
 	struct sk_buff *skb_chk;
-	core::ffi::c_uint offset = skb_transport_offset(skb);
+	kernel::ffi::c_uint offset = skb_transport_offset(skb);
 	__sum16 ret;
 
 	skb_chk = skb_checksum_maybe_trim(skb, transport_len);
@@ -6264,7 +6264,7 @@ bool skb_try_coalesce(sk_buff *to, sk_buff *from,
 
 	if (skb_headlen(from) != 0) {
 		struct page *page;
-		core::ffi::c_uint offset;
+		kernel::ffi::c_uint offset;
 
 		if (to_shinfo->nr_frags +
 		    from_shinfo->nr_frags >= MAX_SKB_FRAGS)
@@ -6276,7 +6276,7 @@ bool skb_try_coalesce(sk_buff *to, sk_buff *from,
 		delta = from->truesize - SKB_DATA_ALIGN(sizeof(sk_buff));
 
 		page = virt_to_head_page(from->head);
-		offset = from->data - (core::ffi::c_uchar *)page_address(page);
+		offset = from->data - (kernel::ffi::c_uchar *)page_address(page);
 
 		skb_fill_page_desc(to, to_shinfo->nr_frags,
 				   page, offset, skb_headlen(from));
@@ -6396,7 +6396,7 @@ struct sk_buff *skb_vlan_untag(sk_buff *skb)
 	if (unlikely(!skb))
 		break 'err_free;
 	/* We may access the two bytes after vlan_hdr in vlan_set_encap_proto(). */
-	if (unlikely(!pskb_may_pull(skb, VLAN_HLEN + sizeof(core::ffi::c_ushort))))
+	if (unlikely(!pskb_may_pull(skb, VLAN_HLEN + sizeof(kernel::ffi::c_ushort))))
 		break 'err_free;
 
 	vhdr = (vlan_hdr *)skb->data;
@@ -6423,7 +6423,7 @@ struct sk_buff *skb_vlan_untag(sk_buff *skb)
 }
 EXPORT_SYMBOL(skb_vlan_untag);
 
-int skb_ensure_writable(sk_buff *skb, write_len: core::ffi::c_uint)
+int skb_ensure_writable(sk_buff *skb, write_len: kernel::ffi::c_uint)
 {
 	if (!pskb_may_pull(skb, write_len))
 		return -ENOMEM;
@@ -6447,7 +6447,7 @@ int skb_ensure_writable_head_tail(sk_buff *skb, net_device *dev)
 	 */
 	if (unlikely(needed_tailroom && skb->len < ETH_ZLEN))
 		needed_tailroom += ETH_ZLEN - skb->len;
-	/* skb_headroom() returns core::ffi::c_uint... */
+	/* skb_headroom() returns kernel::ffi::c_uint... */
 	needed_headroom = max_t(int, needed_headroom - skb_headroom(skb), 0);
 	needed_tailroom = max_t(int, needed_tailroom - skb_tailroom(skb), 0);
 
@@ -6595,8 +6595,8 @@ EXPORT_SYMBOL(skb_eth_pop);
  *
  * Returns 0 on success, -errno otherwise.
  */
-int skb_eth_push(sk_buff *skb, const core::ffi::c_uchar *dst,
-		 const core::ffi::c_uchar *src)
+int skb_eth_push(sk_buff *skb, const kernel::ffi::c_uchar *dst,
+		 const kernel::ffi::c_uchar *src)
 {
 	struct ethhdr *eth;
 	int err;
@@ -6813,14 +6813,14 @@ EXPORT_SYMBOL_GPL(skb_mpls_dec_ttl);
  *
  * This can be used to allocate a paged skb, given a maximal order for frags.
  */
-struct sk_buff *alloc_skb_with_frags(header_len: core::ffi::c_ulong,
-				     data_len: core::ffi::c_ulong,
+struct sk_buff *alloc_skb_with_frags(header_len: kernel::ffi::c_ulong,
+				     data_len: kernel::ffi::c_ulong,
 				     int order,
 				     int *errcode,
 				     gfp_t gfp_mask)
 {
 	'failure: {
-	core::ffi::c_ulong chunk;
+	kernel::ffi::c_ulong chunk;
 	struct sk_buff *skb;
 	struct page *page;
 	int nr_frags = 0;
@@ -6854,7 +6854,7 @@ struct sk_buff *alloc_skb_with_frags(header_len: core::ffi::c_ulong,
 			if (!page)
 				break 'failure;
 		}
-		chunk = min_t(core::ffi::c_ulong, data_len,
+		chunk = min_t(kernel::ffi::c_ulong, data_len,
 			      PAGE_SIZE << order);
 		skb_fill_page_desc(skb, nr_frags, page, 0, chunk);
 		nr_frags++;
@@ -6874,7 +6874,7 @@ static int pskb_carve_inside_header(sk_buff *skb, const u32 off,
 				    const int headlen, gfp_t gfp_mask)
 {
 	int i;
-	core::ffi::c_uint size = skb_end_offset(skb);
+	kernel::ffi::c_uint size = skb_end_offset(skb);
 	int new_hlen = headlen - off;
 	u8 *data;
 
@@ -6995,7 +6995,7 @@ static int pskb_carve_inside_nonlinear(sk_buff *skb, const u32 off,
 				       int pos, gfp_t gfp_mask)
 {
 	int i, k = 0;
-	core::ffi::c_uint size = skb_end_offset(skb);
+	kernel::ffi::c_uint size = skb_end_offset(skb);
 	u8 *data;
 	const int nfrags = skb_shinfo(skb)->nr_frags;
 	struct skb_shared_info *shinfo;
@@ -7166,7 +7166,7 @@ struct skb_ext *__skb_ext_alloc(gfp_t flags)
 }
 
 static struct skb_ext *skb_ext_maybe_cow(skb_ext *old,
-					 old_active: core::ffi::c_uint)
+					 old_active: kernel::ffi::c_uint)
 {
 	struct skb_ext *new;
 
@@ -7183,7 +7183,7 @@ static struct skb_ext *skb_ext_maybe_cow(skb_ext *old,
 // #ifdef CONFIG_XFRM
 	if (old_active & (1 << SKB_EXT_SEC_PATH)) {
 		struct sec_path *sp = skb_ext_get_ptr(old, SKB_EXT_SEC_PATH);
-		core::ffi::c_uint i;
+		kernel::ffi::c_uint i;
 
 		for (i = 0; i < sp->len; i++)
 			xfrm_state_hold(sp->xvec[i]);
@@ -7214,7 +7214,7 @@ static struct skb_ext *skb_ext_maybe_cow(skb_ext *old,
 void *__skb_ext_set(sk_buff *skb, skb_ext_id id,
 		    skb_ext *ext)
 {
-	newlen: core::ffi::c_uint, newoff = SKB_EXT_CHUNKSIZEOF(*ext);
+	newlen: kernel::ffi::c_uint, newoff = SKB_EXT_CHUNKSIZEOF(*ext);
 
 	skb_ext_put(skb);
 	newlen = newoff + skb_ext_type_len[id];
@@ -7244,7 +7244,7 @@ void *skb_ext_add(sk_buff *skb, skb_ext_id id)
 {
 	'set_active: {
 	struct skb_ext *new, *old = NULL;
-	newlen: core::ffi::c_uint, newoff;
+	newlen: kernel::ffi::c_uint, newoff;
 
 	if (skb->active_extensions) {
 		old = skb->extensions;
@@ -7280,7 +7280,7 @@ EXPORT_SYMBOL(skb_ext_add);
 // #ifdef CONFIG_XFRM
 static void skb_ext_put_sp(sec_path *sp)
 {
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	for (i = 0; i < sp->len; i++)
 		xfrm_state_put(sp->xvec[i]);
@@ -7368,8 +7368,8 @@ DEFINE_STATIC_KEY_FALSE(skb_defer_disable_key);
 void skb_attempt_defer_free(sk_buff *skb)
 {
 	struct skb_defer_node *sdn;
-	core::ffi::c_ulong defer_count;
-	core::ffi::c_uint defer_max;
+	kernel::ffi::c_ulong defer_count;
+	kernel::ffi::c_uint defer_max;
 	bool kick;
 	int cpu;
 
@@ -7447,7 +7447,7 @@ ssize_t skb_splice_from_iter(sk_buff *skb, iov_iter *iter,
 	size_t frag_limit = READ_ONCE(net_hotdata.sysctl_max_skb_frags);
 	struct page *pages[8], **ppages = pages;
 	ssize_t spliced = 0, ret = 0;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	while (iter->count > 0) {
 		ssize_t space, nr, len;
@@ -7563,7 +7563,7 @@ struct vlan_type_depth __vlan_get_protocol_offset(const struct sk_buff *skb,
 						  __be16 type,
 						  int mac_offset)
 {
-	core::ffi::c_uint vlan_depth = skb->mac_len, parse_depth = VLAN_MAX_DEPTH;
+	kernel::ffi::c_uint vlan_depth = skb->mac_len, parse_depth = VLAN_MAX_DEPTH;
 
 	/* if type is 802.1Q/AD then the header should already be
 	 * present at mac_len - VLAN_HLEN (if mac_len > 0), or at

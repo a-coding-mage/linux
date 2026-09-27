@@ -19,13 +19,13 @@ type elf_auxv_t = Elf32_auxv_t;
 
 /* These are initialized very early in boot and never changed */
 #[no_mangle]
-pub static mut elf_aux_platform: *mut core::ffi::c_char = core::ptr::null_mut();
+pub static mut elf_aux_platform: *mut kernel::ffi::c_char = core::ptr::null_mut();
 #[no_mangle]
-pub static mut elf_aux_hwcap: core::ffi::c_long = 0;
+pub static mut elf_aux_hwcap: kernel::ffi::c_long = 0;
 
 // C __init annotation: this function is intended to run during early boot.
 #[no_mangle]
-pub unsafe extern "C" fn scan_elf_aux(mut envp: *mut *mut core::ffi::c_char) {
+pub unsafe extern "C" fn scan_elf_aux(mut envp: *mut *mut kernel::ffi::c_char) {
     let mut auxv: *mut elf_auxv_t;
 
     while !(*envp).is_null() {
@@ -36,15 +36,15 @@ pub unsafe extern "C" fn scan_elf_aux(mut envp: *mut *mut core::ffi::c_char) {
     while (*auxv).a_type != AT_NULL {
         match (*auxv).a_type {
             AT_HWCAP => {
-                elf_aux_hwcap = (*auxv).a_un.a_val as core::ffi::c_long;
+                elf_aux_hwcap = (*auxv).a_un.a_val as kernel::ffi::c_long;
             }
             AT_PLATFORM => {
                 /* elf.h removed the pointer elements from
                  * a_un, so we have to use a_val, which is
                  * all that's left.
                  */
-                elf_aux_platform = (*auxv).a_un.a_val as core::ffi::c_long
-                    as *mut core::ffi::c_char;
+                elf_aux_platform = (*auxv).a_un.a_val as kernel::ffi::c_long
+                    as *mut kernel::ffi::c_char;
             }
             _ => {}
         }

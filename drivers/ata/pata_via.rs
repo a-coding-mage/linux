@@ -21,7 +21,7 @@ const VIA_IDFLAG_SINGLE: u64 = 1 << 0;
 
 #[repr(C)]
 struct ViaIsaBridge {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     id: u16,
     rev_min: u8,
     rev_max: u8,
@@ -36,8 +36,8 @@ struct ViaPort { cached_device: u8 }
 // external dependencies supplied by the Linux kernel environment.
 extern "C" {
     static via_isa_bridges: [ViaIsaBridge; 27];
-    static no_atapi_dma_dmi_table: core::ffi::c_void;
-    static cable_dmi_table: core::ffi::c_void;
+    static no_atapi_dma_dmi_table: kernel::ffi::c_void;
+    static cable_dmi_table: kernel::ffi::c_void;
 }
 
 unsafe fn via_cable_override(pdev: *mut pci_dev) -> i32 {

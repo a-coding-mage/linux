@@ -8,7 +8,7 @@
 // C dependencies supplied by the surrounding kernel translation unit:
 // linux/module.h, linux/device.h, linux/iio/iio.h, linux/configfs.h
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // `module_iio_sw_device_driver` expands to the kernel's module_driver macro
 // with iio_register_sw_device_type and iio_unregister_sw_device_type.

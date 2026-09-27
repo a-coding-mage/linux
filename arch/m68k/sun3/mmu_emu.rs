@@ -16,14 +16,14 @@ pub const PAGES_PER_SEGMENT: usize = 16;
 pub const PMEGS_NUM: usize = 256;
 pub const PMEG_MASK: usize = 0xff;
 
-pub static mut m68k_vmalloc_end: libc::c_ulong = 0;
-pub static mut pmeg_vaddr: [libc::c_ulong; PMEGS_NUM] = [0; PMEGS_NUM];
-pub static mut pmeg_alloc: [libc::c_uchar; PMEGS_NUM] = [0; PMEGS_NUM];
-pub static mut pmeg_ctx: [libc::c_uchar; PMEGS_NUM] = [0; PMEGS_NUM];
+pub static mut m68k_vmalloc_end: kernel::ffi::c_ulong = 0;
+pub static mut pmeg_vaddr: [kernel::ffi::c_ulong; PMEGS_NUM] = [0; PMEGS_NUM];
+pub static mut pmeg_alloc: [kernel::ffi::c_uchar; PMEGS_NUM] = [0; PMEGS_NUM];
+pub static mut pmeg_ctx: [kernel::ffi::c_uchar; PMEGS_NUM] = [0; PMEGS_NUM];
 
 static mut ctx_alloc: [*mut mm_struct; CONTEXTS_NUM] = [core::ptr::null_mut(); CONTEXTS_NUM];
-static mut ctx_avail: libc::c_uchar = (CONTEXTS_NUM - 1) as libc::c_uchar;
-pub static mut rom_pages: [libc::c_ulong; 256] = [0; 256];
+static mut ctx_avail: kernel::ffi::c_uchar = (CONTEXTS_NUM - 1) as kernel::ffi::c_uchar;
+pub static mut rom_pages: [kernel::ffi::c_ulong; 256] = [0; 256];
 
 unsafe fn print_pte(pte: pte_t) {
     let val = pte_val(pte);
@@ -45,12 +45,12 @@ unsafe fn print_pte(pte: pte_t) {
     pr_cont!(" pte={:08x} [{:07x} {:?} {}]\n", val, (val & SUN3_PAGE_PGNUM_MASK) << PAGE_SHIFT, flags, kind);
 }
 
-pub unsafe fn print_pte_vaddr(vaddr: libc::c_ulong) {
+pub unsafe fn print_pte_vaddr(vaddr: kernel::ffi::c_ulong) {
     pr_cont!(" vaddr={:x} [{:02x}]", vaddr, sun3_get_segmap(vaddr));
     print_pte(__pte(sun3_get_pte(vaddr)));
 }
 
-pub unsafe fn mmu_emu_init(mut bootmem_end: libc::c_ulong) {
+pub unsafe fn mmu_emu_init(mut bootmem_end: kernel::ffi::c_ulong) {
     core::ptr::write_bytes(rom_pages.as_mut_ptr(), 0, rom_pages.len());
     core::ptr::write_bytes(pmeg_vaddr.as_mut_ptr(), 0, pmeg_vaddr.len());
     core::ptr::write_bytes(pmeg_alloc.as_mut_ptr(), 0, pmeg_alloc.len());
@@ -88,7 +88,7 @@ pub unsafe fn mmu_emu_init(mut bootmem_end: libc::c_ulong) {
     set_fc(USER_DATA);
 }
 
-pub unsafe fn clear_context(context: libc::c_ulong) {
+pub unsafe fn clear_context(context: kernel::ffi::c_ulong) {
     if context != 0 {
         if ctx_alloc[context as usize].is_null() { panic!("clear_context: context not allocated\n"); }
         (*ctx_alloc[context as usize]).context = SUN3_INVALID_CONTEXT;
@@ -106,9 +106,9 @@ pub unsafe fn clear_context(context: libc::c_ulong) {
     sun3_put_context(oldctx);
 }
 
-pub unsafe fn get_free_context(mm: *mut mm_struct) -> libc::c_ulong {
+pub unsafe fn get_free_context(mm: *mut mm_struct) -> kernel::ffi::c_ulong {
     let mut new = 1usize;
-    static mut next_to_die: libc::c_uchar = 1;
+    static mut next_to_die: kernel::ffi::c_uchar = 1;
     if ctx_avail == 0 {
         new = next_to_die as usize; clear_context(new as _);
         next_to_die = (next_to_die + 1) & 0x7; if next_to_die == 0 { next_to_die += 1; }
@@ -119,16 +119,16 @@ pub unsafe fn get_free_context(mm: *mut mm_struct) -> libc::c_ulong {
     ctx_alloc[new] = mm; ctx_avail -= 1; new as _
 }
 
-pub unsafe fn mmu_emu_map_pmeg(mut context: libc::c_int, mut vaddr: libc::c_int) {
-    static mut curr_pmeg: libc::c_uchar = 128;
-    vaddr &= !(SUN3_PMEG_MASK as libc::c_int);
+pub unsafe fn mmu_emu_map_pmeg(mut context: kernel::ffi::c_int, mut vaddr: kernel::ffi::c_int) {
+    static mut curr_pmeg: kernel::ffi::c_uchar = 128;
+    vaddr &= !(SUN3_PMEG_MASK as kernel::ffi::c_int);
     while pmeg_alloc[curr_pmeg as usize] == 2 { curr_pmeg += 1; }
     if pmeg_alloc[curr_pmeg as usize] == 1 {
         sun3_put_context(pmeg_ctx[curr_pmeg as usize] as _);
         sun3_put_segmap(pmeg_vaddr[curr_pmeg as usize], SUN3_INVALID_PMEG);
         sun3_put_context(context as _);
     }
-    if (vaddr as libc::c_ulong) >= PAGE_OFFSET {
+    if (vaddr as kernel::ffi::c_ulong) >= PAGE_OFFSET {
         for i in 0..CONTEXTS_NUM { sun3_put_context(i as _); sun3_put_segmap(vaddr as _, curr_pmeg as _); }
         sun3_put_context(context as _); pmeg_alloc[curr_pmeg as usize] = 2; pmeg_ctx[curr_pmeg as usize] = 0;
     } else {
@@ -136,18 +136,18 @@ pub unsafe fn mmu_emu_map_pmeg(mut context: libc::c_int, mut vaddr: libc::c_int)
     }
     pmeg_vaddr[curr_pmeg as usize] = vaddr as _;
     let mut i = 0;
-    while i < SUN3_PMEG_SIZE { sun3_put_pte(vaddr as libc::c_ulong + i, SUN3_PAGE_SYSTEM); i += SUN3_PTE_SIZE; }
+    while i < SUN3_PMEG_SIZE { sun3_put_pte(vaddr as kernel::ffi::c_ulong + i, SUN3_PAGE_SYSTEM); i += SUN3_PTE_SIZE; }
     curr_pmeg += 1;
 }
 
-pub unsafe fn mmu_emu_handle_fault(vaddr: libc::c_ulong, read_flag: libc::c_int, kernel_fault: libc::c_int) -> libc::c_int {
+pub unsafe fn mmu_emu_handle_fault(vaddr: kernel::ffi::c_ulong, read_flag: kernel::ffi::c_int, kernel_fault: kernel::ffi::c_int) -> kernel::ffi::c_int {
     let (crp, context) = if (*current).mm.is_null() { (swapper_pg_dir, 0) } else { ((*current).mm.as_ref().unwrap().pgd, (*current).mm.as_ref().unwrap().context) };
     let crp = if kernel_fault != 0 { swapper_pg_dir } else { crp };
     let segment = (vaddr >> SUN3_PMEG_SIZE_BITS) & 0x7ff;
     let offset = (vaddr >> SUN3_PTE_SIZE_BITS) & 0xf;
     let mut pte = pgd_val(*crp.add(segment as usize)) as *mut pte_t;
     if pte.is_null() { return 0; }
-    pte = __va(pte.add(offset as usize) as libc::c_ulong) as *mut pte_t;
+    pte = __va(pte.add(offset as usize) as kernel::ffi::c_ulong) as *mut pte_t;
     if pte_val(*pte) & SUN3_PAGE_VALID == 0 { return 0; }
     if sun3_get_segmap(vaddr & !SUN3_PMEG_MASK) == SUN3_INVALID_PMEG { mmu_emu_map_pmeg(context as _, vaddr as _); }
     sun3_put_pte(vaddr & PAGE_MASK, pte_val(*pte));

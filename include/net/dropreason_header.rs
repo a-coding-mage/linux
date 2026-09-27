@@ -35,7 +35,7 @@ pub enum skb_drop_reason_subsys {
 
 #[repr(C)]
 pub struct drop_reason_list {
-    pub reasons: *const *const ::core::ffi::c_char,
+    pub reasons: *const *const ::kernel::ffi::c_char,
     pub n_reasons: usize,
 }
 

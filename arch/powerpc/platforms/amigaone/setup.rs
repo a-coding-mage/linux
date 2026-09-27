@@ -25,7 +25,7 @@ unsafe fn amigaone_add_bridge(dev: *mut device_node) -> c_int {
     let bus_range: *const c_int;
     let hose: *mut pci_controller;
 
-    printk(KERN_INFO, c"Adding PCI host bridge %pOF\n".as_ptr(), dev);
+    printk(c"\x016Adding PCI host bridge %pOF\n".as_ptr(), dev);
 
     cfg_addr = of_get_address(dev, 0, core::ptr::null_mut(), core::ptr::null_mut());
     cfg_data = of_get_address(dev, 1, core::ptr::null_mut(), core::ptr::null_mut());
@@ -35,7 +35,7 @@ unsafe fn amigaone_add_bridge(dev: *mut device_node) -> c_int {
 
     bus_range = of_get_property(dev, c"bus-range".as_ptr(), &mut len);
     if bus_range.is_null() || len < 2 * core::mem::size_of::<c_int>() as c_int {
-        printk(KERN_WARNING, c"Can't get bus-range for %pOF, assume bus 0\n".as_ptr(), dev);
+        printk(c"\x014Can't get bus-range for %pOF, assume bus 0\n".as_ptr(), dev);
     }
 
     hose = pcibios_alloc_controller(dev);
@@ -94,7 +94,7 @@ unsafe fn amigaone_init_IRQ() {
     }
 
     if int_ack == 0 {
-        printk(KERN_WARNING, c"Cannot find PCI interrupt acknowledge address, polling\n".as_ptr());
+        printk(c"\x014Cannot find PCI interrupt acknowledge address, polling\n".as_ptr());
     }
 
     i8259_init(pic, int_ack);

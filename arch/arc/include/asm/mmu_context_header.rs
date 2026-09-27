@@ -31,7 +31,7 @@ pub unsafe fn hw_pid(mm: *mut mm_struct, cpu: usize) -> u32 {
 }
 
 extern "C" {
-    static mut asid_cache: per_cpu<core::ffi::c_uint>;
+    static mut asid_cache: per_cpu<kernel::ffi::c_uint>;
 }
 
 #[inline]
@@ -46,7 +46,7 @@ pub unsafe fn asid_cpu(cpu: usize) -> *mut u32 {
 #[inline]
 pub unsafe fn get_new_mmu_context(mm: *mut mm_struct) {
     let cpu: u32 = smp_processor_id();
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     local_irq_save(&mut flags);
 
@@ -90,7 +90,7 @@ pub unsafe fn init_new_context(_tsk: *mut task_struct, mm: *mut mm_struct) -> i3
 
 #[inline]
 pub unsafe fn destroy_context(mm: *mut mm_struct) {
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     /* Needed to elide CONFIG_DEBUG_PREEMPT warning */
     local_irq_save(&mut flags);

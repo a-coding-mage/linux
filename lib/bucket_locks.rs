@@ -12,31 +12,31 @@
 #[allow(non_camel_case_types)]
 pub unsafe fn __alloc_bucket_spinlocks(
     locks: *mut *mut spinlock_t,
-    locks_mask: *mut ::core::ffi::c_uint,
+    locks_mask: *mut ::kernel::ffi::c_uint,
     max_size: usize,
-    cpu_mult: ::core::ffi::c_uint,
+    cpu_mult: ::kernel::ffi::c_uint,
     gfp: gfp_t,
-    name: *const ::core::ffi::c_char,
+    name: *const ::kernel::ffi::c_char,
     key: *mut lock_class_key,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let mut tlocks: *mut spinlock_t = core::ptr::null_mut();
-    let mut i: ::core::ffi::c_uint;
-    let size: ::core::ffi::c_uint;
+    let mut i: ::kernel::ffi::c_uint;
+    let size: ::kernel::ffi::c_uint;
 
     // CONFIG_PROVE_LOCKING selects the fixed value in the original build.
     #[cfg(CONFIG_PROVE_LOCKING)]
-    let mut nr_pcpus: ::core::ffi::c_uint = 2;
+    let mut nr_pcpus: ::kernel::ffi::c_uint = 2;
     #[cfg(not(CONFIG_PROVE_LOCKING))]
-    let mut nr_pcpus: ::core::ffi::c_uint = num_possible_cpus();
+    let mut nr_pcpus: ::kernel::ffi::c_uint = num_possible_cpus();
 
     if cpu_mult != 0 {
         nr_pcpus = core::cmp::min(nr_pcpus, 64u32);
         size = core::cmp::min(
             nr_pcpus.wrapping_mul(cpu_mult),
-            max_size as ::core::ffi::c_uint,
+            max_size as ::kernel::ffi::c_uint,
         );
     } else {
-        size = max_size as ::core::ffi::c_uint;
+        size = max_size as ::kernel::ffi::c_uint;
     }
 
     if core::mem::size_of::<spinlock_t>() != 0 {

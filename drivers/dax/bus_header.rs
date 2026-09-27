@@ -16,7 +16,7 @@ extern "C" {
         range: *mut range,
         target_node: i32,
         align: u32,
-        flags: libc::c_ulong,
+        flags: kernel::ffi::c_ulong,
     ) -> *mut dax_region;
 }
 
@@ -62,7 +62,7 @@ extern "C" {
     pub fn __dax_driver_register(
         dax_drv: *mut dax_device_driver,
         module: *mut module,
-        mod_name: *const libc::c_char,
+        mod_name: *const kernel::ffi::c_char,
     ) -> i32;
     pub fn dax_driver_unregister(dax_drv: *mut dax_device_driver);
     pub fn kill_dev_dax(dev_dax: *mut dev_dax);

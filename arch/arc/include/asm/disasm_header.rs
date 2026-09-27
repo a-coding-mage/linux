@@ -66,7 +66,7 @@ pub const REG_LIMM: i32 = 62;
 
 #[repr(C)]
 pub struct disasm_state {
-    pub words: [core::ffi::c_ulong; 2],
+    pub words: [kernel::ffi::c_ulong; 2],
     pub instr_len: i32,
     pub major_opcode: i32,
     pub is_branch: i32,
@@ -85,18 +85,18 @@ pub fn sign_extend(mut value: i32, bits: i32) -> i32 {
 }
 
 #[inline]
-pub unsafe fn is_short_instr(addr: core::ffi::c_ulong) -> bool {
+pub unsafe fn is_short_instr(addr: kernel::ffi::c_ulong) -> bool {
     let word = *(addr as *const u16);
     let opcode = (word >> 11) & 0x1F;
     opcode >= 0x0B
 }
 
 extern "C" {
-    pub fn disasm_instr(addr: core::ffi::c_ulong, state: *mut disasm_state,
+    pub fn disasm_instr(addr: kernel::ffi::c_ulong, state: *mut disasm_state,
         userspace: i32, regs: *mut pt_regs, cregs: *mut callee_regs);
-    pub fn disasm_next_pc(pc: core::ffi::c_ulong, regs: *mut pt_regs,
-        cregs: *mut callee_regs, fall_thru: *mut core::ffi::c_ulong,
-        target: *mut core::ffi::c_ulong) -> i32;
+    pub fn disasm_next_pc(pc: kernel::ffi::c_ulong, regs: *mut pt_regs,
+        cregs: *mut callee_regs, fall_thru: *mut kernel::ffi::c_ulong,
+        target: *mut kernel::ffi::c_ulong) -> i32;
     pub fn get_reg(reg: i32, regs: *mut pt_regs, cregs: *mut callee_regs) -> i64;
     pub fn set_reg(reg: i32, val: i64, regs: *mut pt_regs, cregs: *mut callee_regs);
 }

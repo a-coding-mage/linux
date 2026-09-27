@@ -31,7 +31,7 @@ macro_rules! KSTK_EBP {
 #[macro_export]
 macro_rules! ARCH_IS_STACKGROW {
     ($address:expr) => {
-        $address + 65536 + 32 * core::mem::size_of::<core::ffi::c_ulong>()
+        $address + 65536 + 32 * core::mem::size_of::<kernel::ffi::c_ulong>()
             >= UPT_SP!(&current.thread.regs.regs)
     };
 }

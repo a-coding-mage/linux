@@ -25,11 +25,11 @@ extern "C" {
 
 // Types, constants, and helpers supplied by the kernel headers.
 #[allow(non_camel_case_types)]
-type c_ulong = ::core::ffi::c_ulong;
+type c_ulong = ::kernel::ffi::c_ulong;
 #[allow(non_camel_case_types)]
-type c_long = ::core::ffi::c_long;
+type c_long = ::kernel::ffi::c_long;
 #[allow(non_camel_case_types)]
-type c_int = ::core::ffi::c_int;
+type c_int = ::kernel::ffi::c_int;
 #[allow(non_camel_case_types)]
 type loff_t = i64;
 

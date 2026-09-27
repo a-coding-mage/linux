@@ -28,8 +28,8 @@ pub struct hda_verb_ioctl {
  * ioctls
  */
 // These ioctl request codes depend on the platform's _IOR/_IOWR definitions.
-pub const HDA_IOCTL_PVERSION: _ = _IOR('H', 0x10, core::ffi::c_int);
-pub const HDA_IOCTL_VERB_WRITE: _ = _IOWR('H', 0x11, hda_verb_ioctl);
-pub const HDA_IOCTL_GET_WCAP: _ = _IOWR('H', 0x12, hda_verb_ioctl);
+pub const HDA_IOCTL_PVERSION: u32 = _IOR('H', 0x10, core::ffi::c_int);
+pub const HDA_IOCTL_VERB_WRITE: u32 = _IOWR('H', 0x11, hda_verb_ioctl);
+pub const HDA_IOCTL_GET_WCAP: u32 = _IOWR('H', 0x12, hda_verb_ioctl);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

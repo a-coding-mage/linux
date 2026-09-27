@@ -74,20 +74,20 @@ pub struct binder_version { pub protocol_version: __s32 }
 #[repr(C)] #[derive(Copy, Clone)] pub struct binder_frozen_state_info { pub cookie: binder_uintptr_t, pub is_frozen: __u32, pub reserved: __u32 }
 #[repr(C)] #[derive(Copy, Clone)] pub struct binder_extended_error { pub id: __u32, pub command: __u32, pub param: __s32 }
 
-pub const BINDER_WRITE_READ: _ = _IOWR(b'b', 1, binder_write_read);
-pub const BINDER_SET_IDLE_TIMEOUT: _ = _IOW(b'b', 3, __s64);
-pub const BINDER_SET_MAX_THREADS: _ = _IOW(b'b', 5, __u32);
-pub const BINDER_SET_IDLE_PRIORITY: _ = _IOW(b'b', 6, __s32);
-pub const BINDER_SET_CONTEXT_MGR: _ = _IOW(b'b', 7, __s32);
-pub const BINDER_THREAD_EXIT: _ = _IOW(b'b', 8, __s32);
-pub const BINDER_VERSION: _ = _IOWR(b'b', 9, binder_version);
-pub const BINDER_GET_NODE_DEBUG_INFO: _ = _IOWR(b'b', 11, binder_node_debug_info);
-pub const BINDER_GET_NODE_INFO_FOR_REF: _ = _IOWR(b'b', 12, binder_node_info_for_ref);
-pub const BINDER_SET_CONTEXT_MGR_EXT: _ = _IOW(b'b', 13, flat_binder_object);
-pub const BINDER_FREEZE: _ = _IOW(b'b', 14, binder_freeze_info);
-pub const BINDER_GET_FROZEN_INFO: _ = _IOWR(b'b', 15, binder_frozen_status_info);
-pub const BINDER_ENABLE_ONEWAY_SPAM_DETECTION: _ = _IOW(b'b', 16, __u32);
-pub const BINDER_GET_EXTENDED_ERROR: _ = _IOWR(b'b', 17, binder_extended_error);
+pub const BINDER_WRITE_READ: u32 = _IOWR(b'b', 1, binder_write_read);
+pub const BINDER_SET_IDLE_TIMEOUT: u32 = _IOW(b'b', 3, __s64);
+pub const BINDER_SET_MAX_THREADS: u32 = _IOW(b'b', 5, __u32);
+pub const BINDER_SET_IDLE_PRIORITY: u32 = _IOW(b'b', 6, __s32);
+pub const BINDER_SET_CONTEXT_MGR: u32 = _IOW(b'b', 7, __s32);
+pub const BINDER_THREAD_EXIT: u32 = _IOW(b'b', 8, __s32);
+pub const BINDER_VERSION: u32 = _IOWR(b'b', 9, binder_version);
+pub const BINDER_GET_NODE_DEBUG_INFO: u32 = _IOWR(b'b', 11, binder_node_debug_info);
+pub const BINDER_GET_NODE_INFO_FOR_REF: u32 = _IOWR(b'b', 12, binder_node_info_for_ref);
+pub const BINDER_SET_CONTEXT_MGR_EXT: u32 = _IOW(b'b', 13, flat_binder_object);
+pub const BINDER_FREEZE: u32 = _IOW(b'b', 14, binder_freeze_info);
+pub const BINDER_GET_FROZEN_INFO: u32 = _IOWR(b'b', 15, binder_frozen_status_info);
+pub const BINDER_ENABLE_ONEWAY_SPAM_DETECTION: u32 = _IOW(b'b', 16, __u32);
+pub const BINDER_GET_EXTENDED_ERROR: u32 = _IOWR(b'b', 17, binder_extended_error);
 
 pub const TF_ONE_WAY: u32 = 0x01; pub const TF_ROOT_OBJECT: u32 = 0x04; pub const TF_STATUS_CODE: u32 = 0x08; pub const TF_ACCEPT_FDS: u32 = 0x10; pub const TF_CLEAR_BUF: u32 = 0x20; pub const TF_UPDATE_TXN: u32 = 0x40;
 #[repr(C)] #[derive(Copy, Clone)] pub union binder_transaction_data__target { pub handle: __u32, pub ptr: binder_uintptr_t }
@@ -101,8 +101,8 @@ pub const TF_ONE_WAY: u32 = 0x01; pub const TF_ROOT_OBJECT: u32 = 0x04; pub cons
 #[repr(C)] #[derive(Copy, Clone)] pub struct binder_pri_desc { pub priority: __s32, pub desc: __u32 }
 #[repr(C)] #[derive(Copy, Clone)] pub struct binder_pri_ptr_cookie { pub priority: __s32, pub ptr: binder_uintptr_t, pub cookie: binder_uintptr_t }
 
-pub const BR_ERROR: _ = _IOR(b'r', 0, __s32); pub const BR_OK: _ = _IO(b'r', 1); pub const BR_TRANSACTION_SEC_CTX: _ = _IOR(b'r', 2, binder_transaction_data_secctx); pub const BR_TRANSACTION: _ = _IOR(b'r', 2, binder_transaction_data); pub const BR_REPLY: _ = _IOR(b'r', 3, binder_transaction_data); pub const BR_ACQUIRE_RESULT: _ = _IOR(b'r', 4, __s32); pub const BR_DEAD_REPLY: _ = _IO(b'r', 5); pub const BR_TRANSACTION_COMPLETE: _ = _IO(b'r', 6); pub const BR_INCREFS: _ = _IOR(b'r', 7, binder_ptr_cookie); pub const BR_ACQUIRE: _ = _IOR(b'r', 8, binder_ptr_cookie); pub const BR_RELEASE: _ = _IOR(b'r', 9, binder_ptr_cookie); pub const BR_DECREFS: _ = _IOR(b'r', 10, binder_ptr_cookie); pub const BR_ATTEMPT_ACQUIRE: _ = _IOR(b'r', 11, binder_pri_ptr_cookie); pub const BR_NOOP: _ = _IO(b'r', 12); pub const BR_SPAWN_LOOPER: _ = _IO(b'r', 13); pub const BR_FINISHED: _ = _IO(b'r', 14); pub const BR_DEAD_BINDER: _ = _IOR(b'r', 15, binder_uintptr_t); pub const BR_CLEAR_DEATH_NOTIFICATION_DONE: _ = _IOR(b'r', 16, binder_uintptr_t); pub const BR_FAILED_REPLY: _ = _IO(b'r', 17); pub const BR_FROZEN_REPLY: _ = _IO(b'r', 18); pub const BR_ONEWAY_SPAM_SUSPECT: _ = _IO(b'r', 19); pub const BR_TRANSACTION_PENDING_FROZEN: _ = _IO(b'r', 20); pub const BR_FROZEN_BINDER: _ = _IOR(b'r', 21, binder_frozen_state_info); pub const BR_CLEAR_FREEZE_NOTIFICATION_DONE: _ = _IOR(b'r', 22, binder_uintptr_t);
+pub const BR_ERROR: u32 = _IOR(b'r', 0, __s32); pub const BR_OK: _ = _IO(b'r', 1); pub const BR_TRANSACTION_SEC_CTX: _ = _IOR(b'r', 2, binder_transaction_data_secctx); pub const BR_TRANSACTION: _ = _IOR(b'r', 2, binder_transaction_data); pub const BR_REPLY: _ = _IOR(b'r', 3, binder_transaction_data); pub const BR_ACQUIRE_RESULT: _ = _IOR(b'r', 4, __s32); pub const BR_DEAD_REPLY: _ = _IO(b'r', 5); pub const BR_TRANSACTION_COMPLETE: _ = _IO(b'r', 6); pub const BR_INCREFS: _ = _IOR(b'r', 7, binder_ptr_cookie); pub const BR_ACQUIRE: _ = _IOR(b'r', 8, binder_ptr_cookie); pub const BR_RELEASE: _ = _IOR(b'r', 9, binder_ptr_cookie); pub const BR_DECREFS: _ = _IOR(b'r', 10, binder_ptr_cookie); pub const BR_ATTEMPT_ACQUIRE: _ = _IOR(b'r', 11, binder_pri_ptr_cookie); pub const BR_NOOP: _ = _IO(b'r', 12); pub const BR_SPAWN_LOOPER: _ = _IO(b'r', 13); pub const BR_FINISHED: _ = _IO(b'r', 14); pub const BR_DEAD_BINDER: _ = _IOR(b'r', 15, binder_uintptr_t); pub const BR_CLEAR_DEATH_NOTIFICATION_DONE: _ = _IOR(b'r', 16, binder_uintptr_t); pub const BR_FAILED_REPLY: _ = _IO(b'r', 17); pub const BR_FROZEN_REPLY: _ = _IO(b'r', 18); pub const BR_ONEWAY_SPAM_SUSPECT: _ = _IO(b'r', 19); pub const BR_TRANSACTION_PENDING_FROZEN: _ = _IO(b'r', 20); pub const BR_FROZEN_BINDER: _ = _IOR(b'r', 21, binder_frozen_state_info); pub const BR_CLEAR_FREEZE_NOTIFICATION_DONE: _ = _IOR(b'r', 22, binder_uintptr_t);
 
-pub const BC_TRANSACTION: _ = _IOW(b'c', 0, binder_transaction_data); pub const BC_REPLY: _ = _IOW(b'c', 1, binder_transaction_data); pub const BC_ACQUIRE_RESULT: _ = _IOW(b'c', 2, __s32); pub const BC_FREE_BUFFER: _ = _IOW(b'c', 3, binder_uintptr_t); pub const BC_INCREFS: _ = _IOW(b'c', 4, __u32); pub const BC_ACQUIRE: _ = _IOW(b'c', 5, __u32); pub const BC_RELEASE: _ = _IOW(b'c', 6, __u32); pub const BC_DECREFS: _ = _IOW(b'c', 7, __u32); pub const BC_INCREFS_DONE: _ = _IOW(b'c', 8, binder_ptr_cookie); pub const BC_ACQUIRE_DONE: _ = _IOW(b'c', 9, binder_ptr_cookie); pub const BC_ATTEMPT_ACQUIRE: _ = _IOW(b'c', 10, binder_pri_desc); pub const BC_REGISTER_LOOPER: _ = _IO(b'c', 11); pub const BC_ENTER_LOOPER: _ = _IO(b'c', 12); pub const BC_EXIT_LOOPER: _ = _IO(b'c', 13); pub const BC_REQUEST_DEATH_NOTIFICATION: _ = _IOW(b'c', 14, binder_handle_cookie); pub const BC_CLEAR_DEATH_NOTIFICATION: _ = _IOW(b'c', 15, binder_handle_cookie); pub const BC_DEAD_BINDER_DONE: _ = _IOW(b'c', 16, binder_uintptr_t); pub const BC_TRANSACTION_SG: _ = _IOW(b'c', 17, binder_transaction_data_sg); pub const BC_REPLY_SG: _ = _IOW(b'c', 18, binder_transaction_data_sg); pub const BC_REQUEST_FREEZE_NOTIFICATION: _ = _IOW(b'c', 19, binder_handle_cookie); pub const BC_CLEAR_FREEZE_NOTIFICATION: _ = _IOW(b'c', 20, binder_handle_cookie); pub const BC_FREEZE_NOTIFICATION_DONE: _ = _IOW(b'c', 21, binder_uintptr_t);
+pub const BC_TRANSACTION: u32 = _IOW(b'c', 0, binder_transaction_data); pub const BC_REPLY: _ = _IOW(b'c', 1, binder_transaction_data); pub const BC_ACQUIRE_RESULT: _ = _IOW(b'c', 2, __s32); pub const BC_FREE_BUFFER: _ = _IOW(b'c', 3, binder_uintptr_t); pub const BC_INCREFS: _ = _IOW(b'c', 4, __u32); pub const BC_ACQUIRE: _ = _IOW(b'c', 5, __u32); pub const BC_RELEASE: _ = _IOW(b'c', 6, __u32); pub const BC_DECREFS: _ = _IOW(b'c', 7, __u32); pub const BC_INCREFS_DONE: _ = _IOW(b'c', 8, binder_ptr_cookie); pub const BC_ACQUIRE_DONE: _ = _IOW(b'c', 9, binder_ptr_cookie); pub const BC_ATTEMPT_ACQUIRE: _ = _IOW(b'c', 10, binder_pri_desc); pub const BC_REGISTER_LOOPER: _ = _IO(b'c', 11); pub const BC_ENTER_LOOPER: _ = _IO(b'c', 12); pub const BC_EXIT_LOOPER: _ = _IO(b'c', 13); pub const BC_REQUEST_DEATH_NOTIFICATION: _ = _IOW(b'c', 14, binder_handle_cookie); pub const BC_CLEAR_DEATH_NOTIFICATION: _ = _IOW(b'c', 15, binder_handle_cookie); pub const BC_DEAD_BINDER_DONE: _ = _IOW(b'c', 16, binder_uintptr_t); pub const BC_TRANSACTION_SG: _ = _IOW(b'c', 17, binder_transaction_data_sg); pub const BC_REPLY_SG: _ = _IOW(b'c', 18, binder_transaction_data_sg); pub const BC_REQUEST_FREEZE_NOTIFICATION: _ = _IOW(b'c', 19, binder_handle_cookie); pub const BC_CLEAR_FREEZE_NOTIFICATION: _ = _IOW(b'c', 20, binder_handle_cookie); pub const BC_FREEZE_NOTIFICATION_DONE: _ = _IOW(b'c', 21, binder_uintptr_t);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

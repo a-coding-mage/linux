@@ -6,12 +6,12 @@
 // Translated from the Linux kernel implementation. The included kernel
 // declarations and configuration symbols are supplied by other modules.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct Bcm2835MachineDesc {
     pub dt_compat: *const *const c_char,
-    pub smp: *const core::ffi::c_void,
+    pub smp: *const kernel::ffi::c_void,
 }
 
 // Equivalent to the CONFIG_ARCH_MULTI_V6/CONFIG_ARCH_MULTI_V7 conditional
@@ -41,7 +41,7 @@ static BCM2835_COMPAT: [*const c_char; 3] = [
 static BCM2835_COMPAT: [*const c_char; 1] = [core::ptr::null()];
 
 extern "C" {
-    static bcm2836_smp_ops: core::ffi::c_void;
+    static bcm2836_smp_ops: kernel::ffi::c_void;
 }
 
 // DT_MACHINE_START(BCM2835, "BCM2835")
@@ -49,7 +49,7 @@ extern "C" {
 pub static BCM2835: Bcm2835MachineDesc = Bcm2835MachineDesc {
     dt_compat: BCM2835_COMPAT.as_ptr(),
     // .smp = smp_ops(bcm2836_smp_ops)
-    smp: unsafe { &bcm2836_smp_ops as *const core::ffi::c_void },
+    smp: unsafe { &bcm2836_smp_ops as *const kernel::ffi::c_void },
 };
 
 // MACHINE_END

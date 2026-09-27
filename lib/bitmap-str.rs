@@ -12,32 +12,32 @@ pub struct region {
 }
 
 extern "C" {
-    fn memdup_user_nul(ubuf: *const core::ffi::c_char, ulen: u32) -> *mut core::ffi::c_char;
+    fn memdup_user_nul(ubuf: *const kernel::ffi::c_char, ulen: u32) -> *mut kernel::ffi::c_char;
     fn bitmap_zero(maskp: *mut usize, nbits: u32);
     fn bitmap_set(maskp: *mut usize, start: u32, nbits: u32);
     fn bitmap_clear(maskp: *mut usize, start: i32, nbits: i32);
     fn find_next_bit(addr: *const usize, size: i32, offset: i32) -> i32;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn bitmap_format_to_buf(list: bool, buf: *mut core::ffi::c_char, maskp: *const usize, nmaskbits: i32, off: i64, count: usize) -> isize;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn bitmap_format_to_buf(list: bool, buf: *mut kernel::ffi::c_char, maskp: *const usize, nmaskbits: i32, off: i64, count: usize) -> isize;
 }
 
-pub unsafe fn bitmap_parse_user(ubuf: *const core::ffi::c_char, ulen: u32, maskp: *mut usize, nmaskbits: i32) -> i32 {
+pub unsafe fn bitmap_parse_user(ubuf: *const kernel::ffi::c_char, ulen: u32, maskp: *mut usize, nmaskbits: i32) -> i32 {
     let buf = memdup_user_nul(ubuf, ulen);
     if buf.is_null() { return -12; }
     let ret = bitmap_parse(buf, u32::MAX, maskp, nmaskbits);
-    kfree(buf as *mut core::ffi::c_void);
+    kfree(buf as *mut kernel::ffi::c_void);
     ret
 }
 
-unsafe fn bitmap_print_to_buf(list: bool, buf: *mut core::ffi::c_char, maskp: *const usize, nmaskbits: i32, off: i64, count: usize) -> i32 {
+unsafe fn bitmap_print_to_buf(list: bool, buf: *mut kernel::ffi::c_char, maskp: *const usize, nmaskbits: i32, off: i64, count: usize) -> i32 {
     bitmap_format_to_buf(list, buf, maskp, nmaskbits, off, count) as i32
 }
 
-pub unsafe fn bitmap_print_bitmask_to_buf(buf: *mut core::ffi::c_char, maskp: *const usize, nmaskbits: i32, off: i64, count: usize) -> i32 {
+pub unsafe fn bitmap_print_bitmask_to_buf(buf: *mut kernel::ffi::c_char, maskp: *const usize, nmaskbits: i32, off: i64, count: usize) -> i32 {
     bitmap_print_to_buf(false, buf, maskp, nmaskbits, off, count)
 }
 
-pub unsafe fn bitmap_print_list_to_buf(buf: *mut core::ffi::c_char, maskp: *const usize, nmaskbits: i32, off: i64, count: usize) -> i32 {
+pub unsafe fn bitmap_print_list_to_buf(buf: *mut kernel::ffi::c_char, maskp: *const usize, nmaskbits: i32, off: i64, count: usize) -> i32 {
     bitmap_print_to_buf(true, buf, maskp, nmaskbits, off, count)
 }
 
@@ -55,7 +55,7 @@ unsafe fn bitmap_check_region(r: *const region) -> i32 {
     0
 }
 
-pub unsafe fn bitmap_parselist(_buf: *const core::ffi::c_char, maskp: *mut usize, nmaskbits: i32) -> i32 {
+pub unsafe fn bitmap_parselist(_buf: *const kernel::ffi::c_char, maskp: *mut usize, nmaskbits: i32) -> i32 {
     bitmap_zero(maskp, nmaskbits as u32);
     let mut p = _buf;
     while !p.is_null() && *p != 0 && *p != b'\n' as i8 {
@@ -73,15 +73,15 @@ pub unsafe fn bitmap_parselist(_buf: *const core::ffi::c_char, maskp: *mut usize
     0
 }
 
-pub unsafe fn bitmap_parselist_user(ubuf: *const core::ffi::c_char, ulen: u32, maskp: *mut usize, nmaskbits: i32) -> i32 {
+pub unsafe fn bitmap_parselist_user(ubuf: *const kernel::ffi::c_char, ulen: u32, maskp: *mut usize, nmaskbits: i32) -> i32 {
     let buf = memdup_user_nul(ubuf, ulen);
     if buf.is_null() { return -12; }
     let ret = bitmap_parselist(buf, maskp, nmaskbits);
-    kfree(buf as *mut core::ffi::c_void);
+    kfree(buf as *mut kernel::ffi::c_void);
     ret
 }
 
-pub unsafe fn bitmap_parse(start: *const core::ffi::c_char, buflen: u32, maskp: *mut usize, nmaskbits: i32) -> i32 {
+pub unsafe fn bitmap_parse(start: *const kernel::ffi::c_char, buflen: u32, maskp: *mut usize, nmaskbits: i32) -> i32 {
     bitmap_zero(maskp, nmaskbits as u32); let mut end = start; while (end.offset_from(start) as u32) < buflen && *end != 0 && *end != b'\n' as i8 { end = end.add(1); }
     let mut chunk = 0usize; while end > start { while end > start && (*end.offset(-1) == b',' as i8 || (*end.offset(-1) as u8).is_ascii_whitespace()) { end = end.offset(-1); } if end == start { break; }
         let mut value = 0u32; let mut n = 0; while end > start && n < 8 { let c = *end.offset(-1) as u8; let d = match c { b'0'..=b'9' => c-b'0', b'a'..=b'f' => c-b'a'+10, b'A'..=b'F' => c-b'A'+10, _ => break }; value |= (d as u32) << (n*4); n += 1; end = end.offset(-1); } if n == 0 { return -22; } *(maskp as *mut u32).add(chunk) = value; chunk += 1; }

@@ -14,11 +14,11 @@ macro_rules! perf_arch_fetch_caller_regs {
             // `__builtin_frame_address(0)` denotes the current frame address.
             let frame_address: usize;
             core::arch::asm!("mov {0}, fp", out(reg) frame_address);
-            regs_fp($regs) = frame_address as ::core::ffi::c_ulong;
+            regs_fp($regs) = frame_address as ::kernel::ffi::c_ulong;
 
             let user_stack_pointer: usize;
             core::arch::asm!("mov {0}, sp", out(reg) user_stack_pointer);
-            (*$regs).usp = user_stack_pointer as ::core::ffi::c_ulong;
+            (*$regs).usp = user_stack_pointer as ::kernel::ffi::c_ulong;
         }
     }};
 }

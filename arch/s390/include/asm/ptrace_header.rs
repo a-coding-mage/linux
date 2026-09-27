@@ -97,7 +97,7 @@ pub const PER_CONTROL_ALTERATION: usize = 0x00200000;
 #[inline] pub unsafe fn test_and_clear_pt_regs_flag(regs: *mut pt_regs, flag: i32) -> i32 { let ret = test_pt_regs_flag(regs, flag); clear_pt_regs_flag(regs, flag); ret }
 
 #[repr(C)] pub struct task_struct;
-extern "C" { pub fn update_cr_regs(task: *mut task_struct); pub fn regs_query_register_offset(name: *const core::ffi::c_char) -> i32; pub fn regs_query_register_name(offset: u32) -> *const core::ffi::c_char; }
+extern "C" { pub fn update_cr_regs(task: *mut task_struct); pub fn regs_query_register_offset(name: *const kernel::ffi::c_char) -> i32; pub fn regs_query_register_name(offset: u32) -> *const kernel::ffi::c_char; }
 pub const NR_REG_ARGUMENTS: u32 = 5;
 
 #[inline] pub const fn arch_has_single_step() -> bool { true }

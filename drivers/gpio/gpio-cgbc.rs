@@ -24,8 +24,8 @@ struct CgbcGpioData {
 
 #[repr(C)]
 struct GpioChip {
-    label: *const core::ffi::c_char,
-    owner: *mut core::ffi::c_void,
+    label: *const kernel::ffi::c_char,
+    owner: *mut kernel::ffi::c_void,
     parent: *mut Device,
     base: i32,
     direction_input: Option<unsafe extern "C" fn(*mut GpioChip, u32) -> i32>,
@@ -54,7 +54,7 @@ extern "C" {
         cmd_len: usize,
         value: *mut u8,
         value_len: usize,
-        extra: *mut core::ffi::c_void,
+        extra: *mut kernel::ffi::c_void,
     ) -> i32;
     fn gpiochip_get_data(chip: *mut GpioChip) -> *mut CgbcGpioData;
 }
@@ -134,7 +134,7 @@ unsafe extern "C" fn cgbc_gpio_probe(pdev: *mut PlatformDevice) -> i32 {
     let gpio = devm_kzalloc(dev, core::mem::size_of::<CgbcGpioData>(), 0);
     if gpio.is_null() { return -12; }
     (*gpio).cgbc = cgbc;
-    platform_set_drvdata(pdev, gpio as *mut core::ffi::c_void);
+    platform_set_drvdata(pdev, gpio as *mut kernel::ffi::c_void);
     let chip = &mut (*gpio).chip;
     chip.label = dev_name(dev);
     chip.owner = THIS_MODULE;
@@ -155,7 +155,7 @@ unsafe extern "C" fn cgbc_gpio_probe(pdev: *mut PlatformDevice) -> i32 {
 
 #[repr(C)]
 struct PlatformDriver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     probe: Option<unsafe extern "C" fn(*mut PlatformDevice) -> i32>,
 }
 
@@ -165,14 +165,14 @@ static mut CGBC_GPIO_DRIVER: PlatformDriver = PlatformDriver {
 };
 
 extern "C" {
-    static mut THIS_MODULE: *mut core::ffi::c_void;
+    static mut THIS_MODULE: *mut kernel::ffi::c_void;
     fn dev_get_drvdata(dev: *mut Device) -> *mut CgbcDeviceData;
     fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut CgbcGpioData;
-    fn platform_set_drvdata(pdev: *mut PlatformDevice, data: *mut core::ffi::c_void);
-    fn dev_name(dev: *mut Device) -> *const core::ffi::c_char;
+    fn platform_set_drvdata(pdev: *mut PlatformDevice, data: *mut kernel::ffi::c_void);
+    fn dev_name(dev: *mut Device) -> *const kernel::ffi::c_char;
     fn devm_mutex_init(dev: *mut Device, lock: *mut Mutex) -> i32;
     fn devm_gpiochip_add_data(dev: *mut Device, chip: *mut GpioChip, data: *mut CgbcGpioData) -> i32;
-    fn dev_err_probe(dev: *mut Device, err: i32, fmt: *const core::ffi::c_char) -> i32;
+    fn dev_err_probe(dev: *mut Device, err: i32, fmt: *const kernel::ffi::c_char) -> i32;
 }
 
 // module_platform_driver(cgbc_gpio_driver);

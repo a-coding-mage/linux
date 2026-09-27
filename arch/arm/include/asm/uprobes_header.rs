@@ -20,13 +20,13 @@ pub const UPROBE_SWBP_INSN_SIZE: usize = 4;
 #[repr(C)]
 pub struct arch_uprobe_task {
     pub backup: u32,
-    pub saved_trap_no: core::ffi::c_ulong,
+    pub saved_trap_no: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct arch_uprobe {
     pub insn: [u8; MAX_UINSN_BYTES],
-    pub ixol: [core::ffi::c_ulong; 2],
+    pub ixol: [kernel::ffi::c_ulong; 2],
     pub bpinsn: uprobe_opcode_t,
     pub simulate: bool,
     pub pcreg: u32,

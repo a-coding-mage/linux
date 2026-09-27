@@ -15,19 +15,19 @@
 // Kernel and architecture declarations are supplied by the surrounding tree.
 
 unsafe extern "C" {
-    fn printk(fmt: *const core::ffi::c_char, ...) -> core::ffi::c_int;
-    fn pci_name(dev: *const pci_dev) -> *const core::ffi::c_char;
+    fn printk(fmt: *const kernel::ffi::c_char, ...) -> kernel::ffi::c_int;
+    fn pci_name(dev: *const pci_dev) -> *const kernel::ffi::c_char;
     fn pcibios_resource_to_bus(bus: *mut pci_bus, region: *mut pci_bus_region,
                                res: *const resource);
     fn dma_declare_coherent_memory(dev: *mut device, phys_addr: usize,
-                                   dma_addr: u64, size: usize) -> core::ffi::c_int;
+                                   dma_addr: u64, size: usize) -> kernel::ffi::c_int;
     fn resource_size(res: *const resource) -> usize;
     fn bug_on(condition: bool);
 }
 
 #[repr(C)]
 struct pci_dev {
-    sysdata: *mut core::ffi::c_void,
+    sysdata: *mut kernel::ffi::c_void,
     device: u16,
     resource: [resource; 6],
     bus: *mut pci_bus,

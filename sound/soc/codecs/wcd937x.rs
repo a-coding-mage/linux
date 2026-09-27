@@ -9,10 +9,10 @@
 
 /* Rust translation note: C includes from linux/, sound/, and local wcd headers are external future dependencies. */
 
-type c_void = core::ffi::c_void;
-type c_char = core::ffi::c_char;
-type c_int = core::ffi::c_int;
-type c_uint = core::ffi::c_uint;
+type c_void = kernel::ffi::c_void;
+type c_char = kernel::ffi::c_char;
+type c_int = kernel::ffi::c_int;
+type c_uint = kernel::ffi::c_uint;
 type irqreturn_t = c_int;
 type irq_hw_number_t = usize;
 
@@ -146,7 +146,7 @@ struct wcd937x_priv {
 	struct irq_domain *virq;
 	struct regmap_irq_chip_data *irq_chip;
 	struct snd_soc_jack *jack;
-	core::ffi::c_ulong status_mask;
+	kernel::ffi::c_ulong status_mask;
 	s32 micb_ref[WCD937X_MAX_MICBIAS];
 	s32 pullup_ref[WCD937X_MAX_MICBIAS];
 	u32 hph_mode;
@@ -2527,7 +2527,7 @@ static const struct irq_chip wcd_irq_chip = {
 	name: "WCD937x",
 };
 
-static int wcd_irq_chip_map(irq_domain *irqd, virq: core::ffi::c_uint,
+static int wcd_irq_chip_map(irq_domain *irqd, virq: kernel::ffi::c_uint,
 			    irq_hw_number_t hw)
 {
 	irq_set_chip_and_handler(virq, &wcd_irq_chip, handle_simple_irq);
@@ -2733,8 +2733,8 @@ static int wcd937x_codec_set_sdw_stream(snd_soc_dai *dai,
 }
 
 static int wcd937x_get_channel_map(const struct snd_soc_dai *dai,
-				   core::ffi::c_uint *tx_num, core::ffi::c_uint *tx_slot,
-				   core::ffi::c_uint *rx_num, core::ffi::c_uint *rx_slot)
+				   kernel::ffi::c_uint *tx_num, kernel::ffi::c_uint *tx_slot,
+				   kernel::ffi::c_uint *rx_num, kernel::ffi::c_uint *rx_slot)
 {
 	struct wcd937x_priv *wcd937x = dev_get_drvdata(dai->dev);
 	struct wcd937x_sdw_priv *wcd = wcd937x->sdw_priv[dai->id];

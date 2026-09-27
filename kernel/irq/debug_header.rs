@@ -6,7 +6,7 @@
 macro_rules! ___P {
     ($f:expr) => {
         if unsafe { (*desc).status_use_accessors & $f } != 0 {
-            unsafe { printk(concat!("%14s set\n", "\0").as_ptr() as *const i8, stringify!($f).as_ptr() as *const i8); }
+            unsafe { printk(concat!("%14s set\n", "\0").as_ptr() as *const i8, concat!(stringify!($f), "\0").as_ptr() as *const i8); }
         }
     };
 }
@@ -14,7 +14,7 @@ macro_rules! ___P {
 macro_rules! ___PS {
     ($f:expr) => {
         if unsafe { (*desc).istate & $f } != 0 {
-            unsafe { printk(concat!("%14s set\n", "\0").as_ptr() as *const i8, stringify!($f).as_ptr() as *const i8); }
+            unsafe { printk(concat!("%14s set\n", "\0").as_ptr() as *const i8, concat!(stringify!($f), "\0").as_ptr() as *const i8); }
         }
     };
 }

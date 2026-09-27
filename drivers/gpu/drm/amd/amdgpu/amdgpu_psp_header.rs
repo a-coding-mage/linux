@@ -44,21 +44,21 @@ pub enum psp_shared_mem_size { PSP_ASD_SHARED_MEM_SIZE=0, PSP_XGMI_SHARED_MEM_SI
 #[repr(C)] pub struct psp_context {
     pub adev:*mut amdgpu_device, pub km_ring:psp_ring, pub cmd:*mut psp_gfx_cmd_resp,
     pub funcs:*const psp_funcs, pub ta_funcs:*const ta_funcs,
-    pub fw_pri_bo:*mut amdgpu_bo, pub fw_pri_mc_addr:u64, pub fw_pri_buf:*mut core::ffi::c_void,
+    pub fw_pri_bo:*mut amdgpu_bo, pub fw_pri_mc_addr:u64, pub fw_pri_buf:*mut kernel::ffi::c_void,
     pub sos_fw:*const firmware, pub sys:psp_bin_desc_real, pub sos:psp_bin_desc_real, pub toc:psp_bin_desc_real, pub kdb:psp_bin_desc_real, pub spl:psp_bin_desc_real, pub rl:psp_bin_desc_real, pub soc_drv:psp_bin_desc_real, pub intf_drv:psp_bin_desc_real, pub dbg_drv:psp_bin_desc_real, pub ras_drv:psp_bin_desc_real, pub ipkeymgr_drv:psp_bin_desc_real, pub spdm_drv:psp_bin_desc_real,
     pub tmr_bo:*mut amdgpu_bo, pub tmr_mc_addr:u64, pub asd_fw:*const firmware, pub toc_fw:*const firmware, pub cap_fw:*const firmware,
-    pub fence_buf_bo:*mut amdgpu_bo, pub fence_buf_mc_addr:u64, pub fence_buf:*mut core::ffi::c_void,
+    pub fence_buf_bo:*mut amdgpu_bo, pub fence_buf_mc_addr:u64, pub fence_buf:*mut kernel::ffi::c_void,
     pub cmd_buf_bo:*mut amdgpu_bo, pub cmd_buf_mc_addr:u64, pub cmd_buf_mem:*mut psp_gfx_cmd_resp,
     pub fence_value:atomic_t, pub autoload_supported:bool, pub boot_time_tmr:bool, pub pmfw_centralized_cstate_management:bool,
     pub ta_fw:*const firmware, pub ta_fw_version:u32, pub cap_fw_version:u32, pub cap_feature_version:u32, pub cap_ucode_size:u32,
     pub asd_context:ta_context, pub xgmi_context:psp_xgmi_context, pub ras_context:psp_ras_context, pub hdcp_context:ta_cp_context, pub dtm_context:ta_cp_context, pub rap_context:ta_cp_context, pub securedisplay_context:ta_cp_context, pub mutex:mutex, pub mem_train_ctx:psp_memory_training_context,
-    pub boot_cfg_bitmask:u32, pub sup_pd_fw_up:bool, pub sup_ifwi_up:bool, pub vbflash_tmp_buf:*mut core::ffi::c_char, pub vbflash_image_size:usize, pub vbflash_done:bool, pub spirom_dump_trip:*mut spirom_bo, pub ptl:amdgpu_ptl,
+    pub boot_cfg_bitmask:u32, pub sup_pd_fw_up:bool, pub sup_ifwi_up:bool, pub vbflash_tmp_buf:*mut kernel::ffi::c_char, pub vbflash_image_size:usize, pub vbflash_done:bool, pub spirom_dump_trip:*mut spirom_bo, pub ptl:amdgpu_ptl,
 }
 #[repr(C)] pub struct psp_xgmi_node_info;
 #[repr(C)] pub struct psp_xgmi_topology_info;
 #[repr(C)] pub struct psp_bin_desc;
 
-#[repr(C)] pub struct psp_ring { pub ring_type: psp_ring_type, pub ring_mem: *mut psp_gfx_rb_frame, pub ring_mem_mc_addr: u64, pub ring_mem_handle: *mut core::ffi::c_void, pub ring_size: u32, pub ring_wptr: u32 }
+#[repr(C)] pub struct psp_ring { pub ring_type: psp_ring_type, pub ring_mem: *mut psp_gfx_rb_frame, pub ring_mem_mc_addr: u64, pub ring_mem_handle: *mut kernel::ffi::c_void, pub ring_size: u32, pub ring_wptr: u32 }
 #[repr(C)] pub enum psp_reg_prog_id { PSP_REG_IH_RB_CNTL=0, PSP_REG_IH_RB_CNTL_RING1=1, PSP_REG_IH_RB_CNTL_RING2=2, PSP_REG_MMHUB_L1_TLB_CNTL=25, PSP_REG_LAST }
 
 pub type PspIntFn = Option<unsafe extern "C" fn(*mut psp_context) -> i32>;
@@ -73,7 +73,7 @@ pub type PspBoolFn = Option<unsafe extern "C" fn(*mut psp_context) -> bool>;
 #[repr(C)] pub struct psp_xgmi_node_info_real { pub node_id:u64, pub num_hops:u8, pub is_sharing_enabled:u8, pub sdma_engine:ta_xgmi_assigned_sdma_engine, pub num_links:u8, pub port_num:[xgmi_connected_port_num; TA_XGMI__MAX_PORT_NUM as usize] }
 #[repr(C)] pub struct psp_xgmi_topology_info_real { pub num_nodes:u32, pub nodes:[psp_xgmi_node_info_real; AMDGPU_XGMI_MAX_CONNECTED_NODES] }
 #[repr(C)] pub struct psp_bin_desc_real { pub fw_version:u32, pub feature_version:u32, pub size_bytes:u32, pub start_addr:*mut u8 }
-#[repr(C)] pub struct ta_mem_context { pub shared_bo:*mut amdgpu_bo, pub shared_mc_addr:u64, pub shared_buf:*mut core::ffi::c_void, pub shared_mem_size:psp_shared_mem_size }
+#[repr(C)] pub struct ta_mem_context { pub shared_bo:*mut amdgpu_bo, pub shared_mc_addr:u64, pub shared_buf:*mut kernel::ffi::c_void, pub shared_mem_size:psp_shared_mem_size }
 #[repr(C)] pub struct ta_context { pub initialized:bool, pub session_id:u32, pub resp_status:u32, pub mem_context:ta_mem_context, pub bin_desc:psp_bin_desc_real, pub ta_load_type:psp_gfx_cmd_id, pub ta_type:ta_type_id }
 #[repr(C)] pub struct ta_cp_context { pub context:ta_context, pub mutex:mutex }
 #[repr(C)] pub struct psp_xgmi_context { pub context:ta_context, pub top_info:psp_xgmi_topology_info_real, pub supports_extended_data:bool, pub supports_ext_link_info:bool, pub xgmi_ta_caps:u8 }
@@ -81,7 +81,7 @@ pub type PspBoolFn = Option<unsafe extern "C" fn(*mut psp_context) -> bool>;
 
 #[repr(C)] pub enum psp_memory_training_init_flag { PSP_MEM_TRAIN_NOT_SUPPORT=0, PSP_MEM_TRAIN_SUPPORT=1, PSP_MEM_TRAIN_INIT_FAILED=2, PSP_MEM_TRAIN_RESERVE_SUCCESS=4, PSP_MEM_TRAIN_INIT_SUCCESS=8 }
 #[repr(C)] pub enum psp_memory_training_ops { PSP_MEM_TRAIN_SEND_LONG_MSG=1, PSP_MEM_TRAIN_SAVE=2, PSP_MEM_TRAIN_RESTORE=4, PSP_MEM_TRAIN_SEND_SHORT_MSG=8, PSP_MEM_TRAIN_COLD_BOOT=1, PSP_MEM_TRAIN_RESUME=8 }
-#[repr(C)] pub struct psp_memory_training_context { pub train_data_size:u64, pub sys_cache:*mut core::ffi::c_void, pub p2c_train_data_offset:u64, pub c2p_train_data_offset:u64, pub init:psp_memory_training_init_flag, pub training_cnt:u32, pub enable_mem_training:bool }
+#[repr(C)] pub struct psp_memory_training_context { pub train_data_size:u64, pub sys_cache:*mut kernel::ffi::c_void, pub p2c_train_data_offset:u64, pub c2p_train_data_offset:u64, pub init:psp_memory_training_init_flag, pub training_cnt:u32, pub enable_mem_training:bool }
 #[repr(C)] pub enum psp_runtime_entry_type { PSP_RUNTIME_ENTRY_TYPE_INVALID=0, PSP_RUNTIME_ENTRY_TYPE_TEST=1, PSP_RUNTIME_ENTRY_TYPE_MGPU_COMMON=2, PSP_RUNTIME_ENTRY_TYPE_MGPU_WAFL=3, PSP_RUNTIME_ENTRY_TYPE_MGPU_XGMI=4, PSP_RUNTIME_ENTRY_TYPE_BOOT_CONFIG=5, PSP_RUNTIME_ENTRY_TYPE_PPTABLE_ERR_STATUS=6 }
 #[repr(C)] pub struct psp_runtime_data_header { pub cookie:u16, pub version:u16 }
 #[repr(C)] pub struct psp_runtime_entry { pub entry_type:u32, pub offset:u16, pub size:u16 }
@@ -96,7 +96,7 @@ pub type PspBoolFn = Option<unsafe extern "C" fn(*mut psp_context) -> bool>;
 #[repr(C)] pub struct psp_ptl_perf_req { pub req:psp_ptl_cmd, pub ptl_state:u32, pub pref_format1:u32, pub pref_format2:u32 }
 
 /* CONFIG_DEBUG_FS conditionally contains spirom_bo in the C header. */
-#[repr(C)] pub struct spirom_bo { pub bo:*mut amdgpu_bo, pub mc_addr:u64, pub cpu_addr:*mut core::ffi::c_void }
+#[repr(C)] pub struct spirom_bo { pub bo:*mut amdgpu_bo, pub mc_addr:u64, pub cpu_addr:*mut kernel::ffi::c_void }
 #[repr(C)] pub struct amdgpu_psp_funcs { pub check_fw_loading_status:Option<unsafe extern "C" fn(*mut amdgpu_device,AMDGPU_UCODE_ID)->bool> }
 
 /* C preprocessor dispatch helpers, retained as Rust functions. */
@@ -117,7 +117,7 @@ extern "C" {
     pub fn psp_ras_initialize(psp:*mut psp_context)->i32; pub fn psp_ras_invoke(psp:*mut psp_context, ta_cmd_id:u32)->i32; pub fn psp_ras_terminate(psp:*mut psp_context)->i32;
     pub fn psp_hdcp_invoke(psp:*mut psp_context, ta_cmd_id:u32)->i32; pub fn psp_dtm_invoke(psp:*mut psp_context, ta_cmd_id:u32)->i32; pub fn psp_securedisplay_invoke(psp:*mut psp_context, ta_cmd_id:u32)->i32; pub fn psp_rlc_autoload_start(psp:*mut psp_context)->i32;
     pub fn psp_reg_program(psp:*mut psp_context, reg:psp_reg_prog_id, value:u32)->i32; pub fn psp_ring_cmd_submit(psp:*mut psp_context, cmd_buf_mc_addr:u64, fence_mc_addr:u64, index:i32)->i32;
-    pub fn psp_init_asd_microcode(psp:*mut psp_context, chip_name:*const core::ffi::c_char)->i32; pub fn psp_init_toc_microcode(psp:*mut psp_context, chip_name:*const core::ffi::c_char)->i32; pub fn psp_init_sos_microcode(psp:*mut psp_context, chip_name:*const core::ffi::c_char)->i32; pub fn psp_init_ta_microcode(psp:*mut psp_context, chip_name:*const core::ffi::c_char)->i32; pub fn psp_init_cap_microcode(psp:*mut psp_context, chip_name:*const core::ffi::c_char)->i32;
+    pub fn psp_init_asd_microcode(psp:*mut psp_context, chip_name:*const kernel::ffi::c_char)->i32; pub fn psp_init_toc_microcode(psp:*mut psp_context, chip_name:*const kernel::ffi::c_char)->i32; pub fn psp_init_sos_microcode(psp:*mut psp_context, chip_name:*const kernel::ffi::c_char)->i32; pub fn psp_init_ta_microcode(psp:*mut psp_context, chip_name:*const kernel::ffi::c_char)->i32; pub fn psp_init_cap_microcode(psp:*mut psp_context, chip_name:*const kernel::ffi::c_char)->i32;
     pub fn psp_update_fw_reservation(psp:*mut psp_context)->i32; pub fn psp_spatial_partition(psp:*mut psp_context, mode:i32)->i32; pub fn psp_memory_partition(psp:*mut psp_context, mode:i32)->i32; pub fn is_psp_fw_valid(bin:psp_bin_desc_real)->i32; pub fn amdgpu_psp_wait_for_bootloader(adev:*mut amdgpu_device)->i32; pub fn amdgpu_psp_get_ras_capability(psp:*mut psp_context)->bool;
 }
 

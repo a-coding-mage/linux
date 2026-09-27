@@ -13,7 +13,7 @@ const IORESOURCE_MEM: u64 = 0x0000_0200;
 
 extern "C" {
     fn sh_pfc_register(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         resources: *mut resource,
         count: usize,
     ) -> i32;
@@ -35,7 +35,7 @@ static mut SH7734_PFC_RESOURCES: [resource; 2] = [
 unsafe fn plat_pinmux_setup() -> i32 {
     let name = b"pfc-sh7734\0";
     sh_pfc_register(
-        name.as_ptr() as *const core::ffi::c_char,
+        name.as_ptr() as *const kernel::ffi::c_char,
         SH7734_PFC_RESOURCES.as_mut_ptr(),
         SH7734_PFC_RESOURCES.len(),
     )

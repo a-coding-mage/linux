@@ -8,7 +8,7 @@
 
 // Linux kernel headers and "kdb_private.h" supply the declarations used below.
 
-unsafe fn kdb_show_stack(p: *mut task_struct, addr: *mut core::ffi::c_void) {
+unsafe fn kdb_show_stack(p: *mut task_struct, addr: *mut kernel::ffi::c_void) {
     kdb_trap_printk += 1;
 
     if addr.is_null() && kdb_task_has_cpu(p) {
@@ -61,8 +61,8 @@ unsafe fn kdb_show_stack(p: *mut task_struct, addr: *mut core::ffi::c_void) {
  *	to get a starting point for bt <address-expression>.
  */
 
-unsafe fn kdb_bt1(p: *mut task_struct, mask: *const core::ffi::c_char, btaprompt: bool) -> i32 {
-    let mut ch: core::ffi::c_char;
+unsafe fn kdb_bt1(p: *mut task_struct, mask: *const kernel::ffi::c_char, btaprompt: bool) -> i32 {
+    let mut ch: kernel::ffi::c_char;
 
     if kdb_getarea(&mut ch, p as usize) != 0
         || kdb_getarea(&mut ch, (p.add(1) as usize).wrapping_sub(1)) != 0
@@ -114,7 +114,7 @@ unsafe fn kdb_bt_cpu(cpu: u64) {
     kdb_bt1(kdb_tsk, c"A".as_ptr(), false);
 }
 
-pub unsafe fn kdb_bt(argc: i32, mut argv: *const *const core::ffi::c_char) -> i32 {
+pub unsafe fn kdb_bt(argc: i32, mut argv: *const *const kernel::ffi::c_char) -> i32 {
     let mut diag: i32;
     let mut btaprompt: i32 = 1;
     let mut nextarg: i32;
@@ -128,7 +128,7 @@ pub unsafe fn kdb_bt(argc: i32, mut argv: *const *const core::ffi::c_char) -> i3
         let mut g: *mut task_struct;
         let mut p: *mut task_struct;
         let mut cpu: u64;
-        let mask: *const core::ffi::c_char = if argc != 0 { *argv.add(1) } else { kdbgetenv(c"PS".as_ptr()) };
+        let mask: *const kernel::ffi::c_char = if argc != 0 { *argv.add(1) } else { kdbgetenv(c"PS".as_ptr()) };
 
         if argc == 0 {
             kdb_ps_suppressed();
@@ -158,7 +158,7 @@ pub unsafe fn kdb_bt(argc: i32, mut argv: *const *const core::ffi::c_char) -> i3
         if argc != 1 {
             return KDB_ARGCOUNT;
         }
-        diag = kdbgetularg(*argv.add(1) as *mut core::ffi::c_char, &mut pid);
+        diag = kdbgetularg(*argv.add(1) as *mut kernel::ffi::c_char, &mut pid);
         if diag != 0 {
             return diag;
         }
@@ -172,7 +172,7 @@ pub unsafe fn kdb_bt(argc: i32, mut argv: *const *const core::ffi::c_char) -> i3
         if argc != 1 {
             return KDB_ARGCOUNT;
         }
-        diag = kdbgetularg(*argv.add(1) as *mut core::ffi::c_char, &mut addr);
+        diag = kdbgetularg(*argv.add(1) as *mut kernel::ffi::c_char, &mut addr);
         if diag != 0 {
             return diag;
         }
@@ -183,7 +183,7 @@ pub unsafe fn kdb_bt(argc: i32, mut argv: *const *const core::ffi::c_char) -> i3
             return KDB_ARGCOUNT;
         }
         if argc == 1 {
-            diag = kdbgetularg(*argv.add(1) as *mut core::ffi::c_char, &mut cpu);
+            diag = kdbgetularg(*argv.add(1) as *mut kernel::ffi::c_char, &mut cpu);
             if diag != 0 {
                 return diag;
             }
@@ -212,7 +212,7 @@ pub unsafe fn kdb_bt(argc: i32, mut argv: *const *const core::ffi::c_char) -> i3
             if diag != 0 {
                 return diag;
             }
-            kdb_show_stack(kdb_current_task, addr as *mut core::ffi::c_void);
+            kdb_show_stack(kdb_current_task, addr as *mut kernel::ffi::c_void);
             return 0;
         } else {
             return kdb_bt1(kdb_current_task, c"A".as_ptr(), false);

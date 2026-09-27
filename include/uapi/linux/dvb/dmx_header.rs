@@ -135,7 +135,7 @@ macro_rules! dmx_ioctl_constants {
         pub const DMX_SET_FILTER: _ = $iow(b'o', 43, dmx_sct_filter_params);
         pub const DMX_SET_PES_FILTER: _ = $iow(b'o', 44, dmx_pes_filter_params);
         pub const DMX_SET_BUFFER_SIZE: _ = $io(b'o', 45);
-        pub const DMX_GET_PES_PIDS: _ = $ior(b'o', 47, [u16; 5]);
+        pub const DMX_GET_PES_PIDS: u8 = $ior(b'o', 47, [u16; 5]);
         pub const DMX_GET_STC: _ = $iowr(b'o', 50, dmx_stc);
         pub const DMX_ADD_PID: _ = $iow(b'o', 51, u16);
         pub const DMX_REMOVE_PID: _ = $iow(b'o', 52, u16);

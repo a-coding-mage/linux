@@ -10,7 +10,7 @@
 #[repr(C)]
 pub struct SwSyncCreateFenceData {
     pub value: u32,
-    pub name: [core::ffi::c_char; 32],
+    pub name: [kernel::ffi::c_char; 32],
     pub fence: i32,
 }
 
@@ -39,7 +39,7 @@ unsafe fn dma_fence_to_sync_pt(fence: *mut dma_fence) -> *mut sync_pt {
     container_of!(fence, sync_pt, base)
 }
 
-unsafe fn sync_timeline_create(name: *const core::ffi::c_char) -> *mut sync_timeline {
+unsafe fn sync_timeline_create(name: *const kernel::ffi::c_char) -> *mut sync_timeline {
     let obj = kzalloc_obj::<sync_timeline>();
     if obj.is_null() {
         return core::ptr::null_mut();
@@ -69,9 +69,9 @@ unsafe fn sync_timeline_put(obj: *mut sync_timeline) {
     kref_put(&mut (*obj).kref, Some(sync_timeline_free));
 }
 
-unsafe extern "C" fn timeline_fence_get_driver_name(_fence: *mut dma_fence) -> *const core::ffi::c_char { b"sw_sync\0".as_ptr().cast() }
+unsafe extern "C" fn timeline_fence_get_driver_name(_fence: *mut dma_fence) -> *const kernel::ffi::c_char { b"sw_sync\0".as_ptr().cast() }
 
-unsafe extern "C" fn timeline_fence_get_timeline_name(fence: *mut dma_fence) -> *const core::ffi::c_char {
+unsafe extern "C" fn timeline_fence_get_timeline_name(fence: *mut dma_fence) -> *const kernel::ffi::c_char {
     let parent = dma_fence_parent(fence);
     (*parent).name.as_ptr()
 }
@@ -173,7 +173,7 @@ unsafe fn sync_pt_create(obj: *mut sync_timeline, value: u32) -> *mut sync_pt {
 }
 
 unsafe extern "C" fn sw_sync_debugfs_open(_inode: *mut inode, file: *mut file) -> i32 {
-    let mut task_comm = [0 as core::ffi::c_char; TASK_COMM_LEN];
+    let mut task_comm = [0 as kernel::ffi::c_char; TASK_COMM_LEN];
     get_task_comm(task_comm.as_mut_ptr(), current);
     let obj = sync_timeline_create(task_comm.as_ptr());
     if obj.is_null() { return -ENOMEM; }

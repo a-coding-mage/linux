@@ -19,9 +19,9 @@ pub const SH_FSI_CLK_CPG: u32 = 1 << 2; // FSIxCK + FSI-DIV
 
 #[repr(C)]
 pub struct sh_fsi_port_info {
-    pub flags: core::ffi::c_ulong,
-    pub tx_id: core::ffi::c_int,
-    pub rx_id: core::ffi::c_int,
+    pub flags: kernel::ffi::c_ulong,
+    pub tx_id: kernel::ffi::c_int,
+    pub rx_id: kernel::ffi::c_int,
 }
 
 #[repr(C)]

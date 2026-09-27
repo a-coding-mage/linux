@@ -67,8 +67,8 @@ const MTK_AFE_ADDA_UL_RATE_48K_HD: u32 = 6;
 
 #[repr(C)]
 struct mtk_afe_adda_priv {
-    dl_rate: core::ffi::c_int,
-    ul_rate: core::ffi::c_int,
+    dl_rate: kernel::ffi::c_int,
+    ul_rate: kernel::ffi::c_int,
 }
 
 unsafe fn adda_dl_rate_transform(afe: *mut mtk_base_afe, rate: u32) -> u32 {
@@ -210,7 +210,7 @@ static mtk_adda_dl_ch4_mix: &[snd_kcontrol_new] = &[
     SOC_DAPM_SINGLE_AUTODISABLE!("HW_SRC_2_OUT_CH2", AFE_CONN017_6, I_SRC_2_OUT_CH2, 1, 0),
 ];
 
-unsafe fn mtk_adda_ul_src_enable_dmic(afe: *mut mtk_base_afe, id: core::ffi::c_int) -> core::ffi::c_int {
+unsafe fn mtk_adda_ul_src_enable_dmic(afe: *mut mtk_base_afe, id: kernel::ffi::c_int) -> kernel::ffi::c_int {
     let reg: u32;
     let reg1: u32;
 
@@ -255,8 +255,8 @@ unsafe fn mtk_adda_ul_src_enable_dmic(afe: *mut mtk_base_afe, id: core::ffi::c_i
 unsafe fn mtk_adda_ul_event(
     w: *mut snd_soc_dapm_widget,
     _kcontrol: *mut snd_kcontrol,
-    event: core::ffi::c_int,
-) -> core::ffi::c_int {
+    event: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let cmpnt = snd_soc_dapm_to_component((*w).dapm);
     let afe: *mut mtk_base_afe = snd_soc_component_get_drvdata(cmpnt);
     let afe_priv: *mut mt8189_afe_private = (*afe).platform_priv as *mut mt8189_afe_private;
@@ -299,8 +299,8 @@ unsafe fn mtk_adda_ul_event(
 unsafe fn mtk_adda_pad_top_event(
     w: *mut snd_soc_dapm_widget,
     _kcontrol: *mut snd_kcontrol,
-    event: core::ffi::c_int,
-) -> core::ffi::c_int {
+    event: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let cmpnt = snd_soc_dapm_to_component((*w).dapm);
     let afe: *mut mtk_base_afe = snd_soc_component_get_drvdata(cmpnt);
     let afe_priv: *mut mt8189_afe_private = (*afe).platform_priv as *mut mt8189_afe_private;
@@ -323,13 +323,13 @@ unsafe fn is_adda_mtkaif_need_phase_delay(afe_priv: *mut mt8189_afe_private) -> 
 unsafe fn mtk_adda_mtkaif_cfg_event(
     w: *mut snd_soc_dapm_widget,
     _kcontrol: *mut snd_kcontrol,
-    event: core::ffi::c_int,
-) -> core::ffi::c_int {
+    event: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let cmpnt = snd_soc_dapm_to_component((*w).dapm);
     let afe: *mut mtk_base_afe = snd_soc_component_get_drvdata(cmpnt);
     let afe_priv: *mut mt8189_afe_private = (*afe).platform_priv as *mut mt8189_afe_private;
-    let mut delay_data: core::ffi::c_int;
-    let mut delay_cycle: core::ffi::c_int;
+    let mut delay_data: kernel::ffi::c_int;
+    let mut delay_cycle: kernel::ffi::c_int;
 
     match event {
         SND_SOC_DAPM_PRE_PMU => {
@@ -403,8 +403,8 @@ unsafe fn mtk_adda_mtkaif_cfg_event(
 unsafe fn mtk_adda_dl_event(
     w: *mut snd_soc_dapm_widget,
     _kcontrol: *mut snd_kcontrol,
-    event: core::ffi::c_int,
-) -> core::ffi::c_int {
+    event: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let cmpnt = snd_soc_dapm_to_component((*w).dapm);
     let afe: *mut mtk_base_afe = snd_soc_component_get_drvdata(cmpnt);
 
@@ -449,7 +449,7 @@ unsafe fn mt6363_vs1_vote(afe: *mut mtk_base_afe) {
     }
 }
 
-unsafe fn mt_vs1_voter_dl_event(w: *mut snd_soc_dapm_widget, _kcontrol: *mut snd_kcontrol, event: core::ffi::c_int) -> core::ffi::c_int {
+unsafe fn mt_vs1_voter_dl_event(w: *mut snd_soc_dapm_widget, _kcontrol: *mut snd_kcontrol, event: kernel::ffi::c_int) -> kernel::ffi::c_int {
     let cmpnt = snd_soc_dapm_to_component((*w).dapm);
     let afe: *mut mtk_base_afe = snd_soc_component_get_drvdata(cmpnt);
     let afe_priv: *mut mt8189_afe_private = (*afe).platform_priv as *mut mt8189_afe_private;
@@ -471,7 +471,7 @@ unsafe fn mt_vs1_voter_dl_event(w: *mut snd_soc_dapm_widget, _kcontrol: *mut snd
     0
 }
 
-unsafe fn mt_vs1_voter_ul_event(w: *mut snd_soc_dapm_widget, _kcontrol: *mut snd_kcontrol, event: core::ffi::c_int) -> core::ffi::c_int {
+unsafe fn mt_vs1_voter_ul_event(w: *mut snd_soc_dapm_widget, _kcontrol: *mut snd_kcontrol, event: kernel::ffi::c_int) -> kernel::ffi::c_int {
     let cmpnt = snd_soc_dapm_to_component((*w).dapm);
     let afe: *mut mtk_base_afe = snd_soc_component_get_drvdata(cmpnt);
     let afe_priv: *mut mt8189_afe_private = (*afe).platform_priv as *mut mt8189_afe_private;
@@ -493,7 +493,7 @@ unsafe fn mt_vs1_voter_ul_event(w: *mut snd_soc_dapm_widget, _kcontrol: *mut snd
     0
 }
 
-unsafe fn mt8189_adda_dmic_get(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> core::ffi::c_int {
+unsafe fn mt8189_adda_dmic_get(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> kernel::ffi::c_int {
     let cmpnt = snd_kcontrol_chip(kcontrol);
     let afe: *mut mtk_base_afe = snd_soc_component_get_drvdata(cmpnt);
     let afe_priv: *mut mt8189_afe_private = (*afe).platform_priv as *mut mt8189_afe_private;
@@ -503,11 +503,11 @@ unsafe fn mt8189_adda_dmic_get(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_c
     0
 }
 
-unsafe fn mt8189_adda_dmic_set(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> core::ffi::c_int {
+unsafe fn mt8189_adda_dmic_set(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> kernel::ffi::c_int {
     let cmpnt = snd_kcontrol_chip(kcontrol);
     let afe: *mut mtk_base_afe = snd_soc_component_get_drvdata(cmpnt);
     let afe_priv: *mut mt8189_afe_private = (*afe).platform_priv as *mut mt8189_afe_private;
-    let dmic_on: core::ffi::c_int;
+    let dmic_on: kernel::ffi::c_int;
 
     dmic_on = if (*ucontrol).value.integer.value[0] != 0 { 1 } else { 0 };
 
@@ -525,7 +525,7 @@ unsafe fn mt8189_adda_dmic_set(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_c
     0
 }
 
-unsafe fn mt8189_adda_dl_max_vol_get(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> core::ffi::c_int {
+unsafe fn mt8189_adda_dl_max_vol_get(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> kernel::ffi::c_int {
     let cmpnt = snd_kcontrol_chip(kcontrol);
     let afe: *mut mtk_base_afe = snd_soc_component_get_drvdata(cmpnt);
     let afe_priv: *mut mt8189_afe_private = (*afe).platform_priv as *mut mt8189_afe_private;
@@ -535,7 +535,7 @@ unsafe fn mt8189_adda_dl_max_vol_get(kcontrol: *mut snd_kcontrol, ucontrol: *mut
     0
 }
 
-unsafe fn mt8189_adda_dl_max_vol_set(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> core::ffi::c_int {
+unsafe fn mt8189_adda_dl_max_vol_set(kcontrol: *mut snd_kcontrol, ucontrol: *mut snd_ctl_elem_value) -> kernel::ffi::c_int {
     let cmpnt = snd_kcontrol_chip(kcontrol);
     let afe: *mut mtk_base_afe = snd_soc_component_get_drvdata(cmpnt);
     let afe_priv: *mut mt8189_afe_private = (*afe).platform_priv as *mut mt8189_afe_private;
@@ -553,7 +553,7 @@ static mtk_adda_controls: &[snd_kcontrol_new] = &[
     SOC_SINGLE_BOOL_EXT!("ADDA_DL_MAX_VOL Switch", 0, mt8189_adda_dl_max_vol_get, mt8189_adda_dl_max_vol_set),
 ];
 
-static adda_ul_mux_texts: &[*const core::ffi::c_char] = &[
+static adda_ul_mux_texts: &[*const kernel::ffi::c_char] = &[
     c_str!("MTKAIF"),
     c_str!("AP_DMIC"),
     c_str!("AP_DMIC_MULTI_CH"),
@@ -678,7 +678,7 @@ static mtk_dai_adda_routes: &[snd_soc_dapm_route] = &[
 ];
 
 /* dai ops */
-unsafe fn set_playback_hw_params(params: *mut snd_pcm_hw_params, dai: *mut snd_soc_dai) -> core::ffi::c_int {
+unsafe fn set_playback_hw_params(params: *mut snd_pcm_hw_params, dai: *mut snd_soc_dai) -> kernel::ffi::c_int {
     let afe: *mut mtk_base_afe = snd_soc_dai_get_drvdata(dai);
     let afe_priv: *mut mt8189_afe_private = (*afe).platform_priv as *mut mt8189_afe_private;
     let rate: u32 = params_rate(params);
@@ -692,7 +692,7 @@ unsafe fn set_playback_hw_params(params: *mut snd_pcm_hw_params, dai: *mut snd_s
         return -EINVAL;
     }
 
-    (*adda_priv).dl_rate = rate as core::ffi::c_int;
+    (*adda_priv).dl_rate = rate as kernel::ffi::c_int;
 
     /* set sampling rate */
     dl_src_con0 = adda_dl_rate_transform(afe, rate) << AFE_DL_INPUT_MODE_CTL_SFT;
@@ -738,7 +738,7 @@ unsafe fn set_playback_hw_params(params: *mut snd_pcm_hw_params, dai: *mut snd_s
     0
 }
 
-unsafe fn set_capture_hw_params(params: *mut snd_pcm_hw_params, dai: *mut snd_soc_dai) -> core::ffi::c_int {
+unsafe fn set_capture_hw_params(params: *mut snd_pcm_hw_params, dai: *mut snd_soc_dai) -> kernel::ffi::c_int {
     let afe: *mut mtk_base_afe = snd_soc_dai_get_drvdata(dai);
     let afe_priv: *mut mt8189_afe_private = (*afe).platform_priv as *mut mt8189_afe_private;
     let rate: u32 = params_rate(params);
@@ -752,7 +752,7 @@ unsafe fn set_capture_hw_params(params: *mut snd_pcm_hw_params, dai: *mut snd_so
         return -EINVAL;
     }
 
-    (*adda_priv).ul_rate = rate as core::ffi::c_int;
+    (*adda_priv).ul_rate = rate as kernel::ffi::c_int;
 
     voice_mode = adda_ul_rate_transform(afe, rate);
 
@@ -808,7 +808,7 @@ unsafe fn mtk_dai_adda_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let afe: *mut mtk_base_afe = snd_soc_dai_get_drvdata(dai);
     let id = (*dai).id;
 
@@ -916,10 +916,10 @@ static mut mtk_dai_adda_driver: [snd_soc_dai_driver; 4] = [
     },
 ];
 
-unsafe fn init_adda_priv_data(afe: *mut mtk_base_afe) -> core::ffi::c_int {
+unsafe fn init_adda_priv_data(afe: *mut mtk_base_afe) -> kernel::ffi::c_int {
     let afe_priv: *mut mt8189_afe_private = (*afe).platform_priv as *mut mt8189_afe_private;
     let mut adda_priv: *mut mtk_afe_adda_priv;
-    static adda_dai_list: [core::ffi::c_int; 2] = [
+    static adda_dai_list: [kernel::ffi::c_int; 2] = [
         MT8189_DAI_ADDA,
         MT8189_DAI_ADDA_CH34,
     ];
@@ -930,7 +930,7 @@ unsafe fn init_adda_priv_data(afe: *mut mtk_base_afe) -> core::ffi::c_int {
             return -ENOMEM;
         }
 
-        (*afe_priv).dai_priv[adda_dai_list[i] as usize] = adda_priv as *mut core::ffi::c_void;
+        (*afe_priv).dai_priv[adda_dai_list[i] as usize] = adda_priv as *mut kernel::ffi::c_void;
     }
 
     /* ap dmic priv share with adda */
@@ -943,9 +943,9 @@ unsafe fn init_adda_priv_data(afe: *mut mtk_base_afe) -> core::ffi::c_int {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn mt8189_dai_adda_register(afe: *mut mtk_base_afe) -> core::ffi::c_int {
+pub unsafe extern "C" fn mt8189_dai_adda_register(afe: *mut mtk_base_afe) -> kernel::ffi::c_int {
     let dai: *mut mtk_base_afe_dai;
-    let ret: core::ffi::c_int;
+    let ret: kernel::ffi::c_int;
 
     dai = devm_kzalloc((*afe).dev, core::mem::size_of::<mtk_base_afe_dai>(), GFP_KERNEL) as *mut mtk_base_afe_dai;
     if dai.is_null() {

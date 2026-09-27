@@ -41,7 +41,7 @@ pub union xenfb_out_event {
     pub type_: u8,
     pub update: xenfb_update,
     pub resize: xenfb_resize,
-    pub pad: [core::ffi::c_char; XENFB_OUT_EVENT_SIZE],
+    pub pad: [kernel::ffi::c_char; XENFB_OUT_EVENT_SIZE],
 }
 
 /* In events (backend -> frontend). */
@@ -52,7 +52,7 @@ pub const XENFB_IN_EVENT_SIZE: usize = 40;
 #[derive(Copy, Clone)]
 pub union xenfb_in_event {
     pub type_: u8,
-    pub pad: [core::ffi::c_char; XENFB_IN_EVENT_SIZE],
+    pub pad: [kernel::ffi::c_char; XENFB_IN_EVENT_SIZE],
 }
 
 /* shared page */

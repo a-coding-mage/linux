@@ -1399,7 +1399,7 @@ pub const PVR_ARCH_INVALID: u64 = 0xffffffff;
 pub const __MTMSR: u64 = "mtmsrd";
 // #else
 // #define mtmsr(v)	asm volatile("mtmsr %0" : \
-// 				     : "r" ((core::ffi::c_ulong)(v)) \
+// 				     : "r" ((kernel::ffi::c_ulong)(v)) \
 // 				     : "memory")
 // #define __mtmsrd(v, l)	BUILD_BUG()
 pub const __MTMSR: u64 = "mtmsr";
@@ -1415,7 +1415,7 @@ pub const __MTMSR: u64 = "mtmsr";
 // 			asm volatile("mfspr %0," __stringify(rn) \
 // 				: "=r" (rval)); rval;})
 // #define mtspr(rn, v)	asm volatile("mtspr " __stringify(rn) ",%0" : \
-// 				     : "r" ((core::ffi::c_ulong)(v)) \
+// 				     : "r" ((kernel::ffi::c_ulong)(v)) \
 // 				     : "memory")
 // #define wrtspr(rn)	asm volatile("mtspr " __stringify(rn) ",2" : : : "memory")
 // #define wrtspr_sync(rn)	asm volatile("mtspr " __stringify(rn) ",2; sync" : : : "memory")
@@ -1461,7 +1461,7 @@ pub const __MTMSR: u64 = "mtmsr";
 
 // extern unsigned long current_stack_frame(void);
 
-register core::ffi::c_ulong current_stack_pointer asm("r1");
+register kernel::ffi::c_ulong current_stack_pointer asm("r1");
 
 // extern unsigned long scom970_read(unsigned int address);
 // extern void scom970_write(unsigned int address, unsigned long value);
@@ -1737,12 +1737,12 @@ register core::ffi::c_ulong current_stack_pointer asm("r1");
  * #define PVR_CFG(pvr)	(((pvr) >>  8) & 0xF)	/* Configuration field */
  * #define PVR_MAJ(pvr)	(((pvr) >>  4) & 0xF)	/* Major revision field */
  * #define PVR_MIN(pvr)	(((pvr) >>  0) & 0xF)	/* Minor revision field */
- * #define mfmsr()		({core::ffi::c_ulong rval; \
+ * #define mfmsr()		({kernel::ffi::c_ulong rval; \
  * #define __mtmsrd(v, l)	asm volatile("mtmsrd %0," __stringify(l) \
  * #define mtmsr(v)	__mtmsrd((v), 0)
  * #define mtmsr(v)	asm volatile("mtmsr %0" : \
  * #define __mtmsrd(v, l)	BUILD_BUG()
- * #define mfspr(rn)	({core::ffi::c_ulong rval; \
+ * #define mfspr(rn)	({kernel::ffi::c_ulong rval; \
  * #define mtspr(rn, v)	asm volatile("mtspr " __stringify(rn) ",%0" : \
  * #define wrtspr(rn)	asm volatile("mtspr " __stringify(rn) ",2" : : : "memory")
  * #define wrtspr_sync(rn)	asm volatile("mtspr " __stringify(rn) ",2; sync" : : : "memory")

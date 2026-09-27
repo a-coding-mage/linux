@@ -11,7 +11,7 @@
 unsafe fn afs_sample_volume(
     cell: *mut afs_cell,
     key: *mut key,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     namelen: u32,
 ) -> *mut afs_volume {
     let fc = afs_fs_context {
@@ -63,8 +63,8 @@ unsafe fn afs_compare_volume_slists(
         let server_a = (*la).servers[a as usize].server;
         let server_b = (*lb).servers[b as usize].server;
         let diff = memcmp(
-            &(*server_a).uuid as *const _ as *const core::ffi::c_void,
-            &(*server_b).uuid as *const _ as *const core::ffi::c_void,
+            &(*server_a).uuid as *const _ as *const kernel::ffi::c_void,
+            &(*server_b).uuid as *const _ as *const kernel::ffi::c_void,
             core::mem::size_of::<uuid_t>(),
         );
         if diff < 0 { a += 1; }
@@ -145,7 +145,7 @@ unsafe fn afs_query_for_alias(cell: *mut afs_cell, key: *mut key) -> i32 {
 }
 
 /* Look up a VLDB record for a volume. */
-unsafe fn afs_vl_get_cell_name(cell: *mut afs_cell, key: *mut key) -> *mut core::ffi::c_char {
+unsafe fn afs_vl_get_cell_name(cell: *mut afs_cell, key: *mut key) -> *mut kernel::ffi::c_char {
     let mut vc: afs_vl_cursor = core::mem::zeroed();
     let mut cell_name = err_ptr(-EDESTADDRREQ);
     let (mut skipped, mut not_skipped) = (false, false);
@@ -176,7 +176,7 @@ unsafe fn afs_do_cell_detect_alias(cell: *mut afs_cell, key: *mut key) -> i32 {
     _enter!("%s", (*cell).name);
     let ret = yfs_check_canonical_cell_name(cell, key);
     if ret != -EOPNOTSUPP { return ret; }
-    let root_volume = afs_sample_volume(cell, key, b"root.cell\0".as_ptr() as *const core::ffi::c_char, 9);
+    let root_volume = afs_sample_volume(cell, key, b"root.cell\0".as_ptr() as *const kernel::ffi::c_char, 9);
     if !is_err(root_volume) { (*cell).root_volume = root_volume; return afs_compare_cell_roots(cell); }
     if ptr_err(root_volume) != -ENOMEDIUM { return ptr_err(root_volume); }
     afs_query_for_alias(cell, key)

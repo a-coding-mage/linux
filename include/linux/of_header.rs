@@ -6,9 +6,9 @@ pub type ihandle = u32;
 
 #[repr(C)]
 pub struct property {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub length: i32,
-    pub value: *mut core::ffi::c_void,
+    pub value: *mut kernel::ffi::c_void,
     pub next: *mut property,
     #[cfg(any(CONFIG_OF_DYNAMIC, CONFIG_SPARC))] pub _flags: usize,
     #[cfg(CONFIG_OF_PROMTREE)] pub unique_id: u32,
@@ -16,9 +16,9 @@ pub struct property {
 }
 
 #[repr(C)] pub struct device_node {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub phandle: phandle,
-    pub full_name: *const core::ffi::c_char,
+    pub full_name: *const kernel::ffi::c_char,
     pub fwnode: fwnode_handle,
     pub properties: *mut property,
     pub deadprops: *mut property,
@@ -27,7 +27,7 @@ pub struct property {
     pub sibling: *mut device_node,
     #[cfg(CONFIG_OF_KOBJ)] pub kobj: kobject,
     pub _flags: usize,
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
     #[cfg(CONFIG_SPARC)] pub unique_id: u32,
     #[cfg(CONFIG_SPARC)] pub irq_trans: *mut of_irq_controller,
 }
@@ -35,7 +35,7 @@ pub struct property {
 pub const MAX_PHANDLE_ARGS: usize = NR_FWNODE_REFERENCE_ARGS as usize;
 #[repr(C)] pub struct of_phandle_args { pub np: *mut device_node, pub args_count: i32, pub args: [u32; MAX_PHANDLE_ARGS] }
 #[repr(C)] pub struct of_phandle_iterator {
-    pub cells_name: *const core::ffi::c_char, pub cell_count: i32, pub parent: *const device_node,
+    pub cells_name: *const kernel::ffi::c_char, pub cell_count: i32, pub parent: *const device_node,
     pub list_end: *const __be32, pub phandle_end: *const __be32, pub cur: *const __be32,
     pub cur_count: u32, pub phandle: phandle, pub node: *mut device_node,
 }
@@ -118,7 +118,7 @@ extern "C" {
     pub fn of_property_read_variable_u64_array(n: *const device_node, name: *const i8, out: *mut u64, min: usize, max: usize) -> i32;
     pub fn of_property_read_string(n: *const device_node, name: *const i8, out: *mut *const i8) -> i32;
     pub fn of_property_read_string_helper(n: *const device_node, name: *const i8, out: *mut *const i8, sz: usize, index: i32) -> i32;
-    pub fn of_get_property(n: *const device_node, name: *const i8, len: *mut i32) -> *const core::ffi::c_void;
+    pub fn of_get_property(n: *const device_node, name: *const i8, len: *mut i32) -> *const kernel::ffi::c_void;
     pub fn __of_parse_phandle_with_args(n: *const device_node, list: *const i8, cells: *const i8, count: i32, index: i32, out: *mut of_phandle_args) -> i32;
     pub fn of_phandle_iterator_init(it: *mut of_phandle_iterator, n: *const device_node, list: *const i8, cells: *const i8, count: i32) -> i32;
     pub fn of_phandle_iterator_next(it: *mut of_phandle_iterator) -> i32;
@@ -133,7 +133,7 @@ extern "C" {
     pub fn of_remove_property(n: *mut device_node, p: *mut property) -> i32;
     pub fn of_machine_compatible_match(c: *const *const i8) -> bool;
     pub fn of_machine_get_match(m: *const of_device_id) -> *const of_device_id;
-    pub fn of_machine_get_match_data(m: *const of_device_id) -> *const core::ffi::c_void;
+    pub fn of_machine_get_match_data(m: *const of_device_id) -> *const kernel::ffi::c_void;
 }
 
 #[inline] pub unsafe fn of_find_node_by_path(path: *const i8) -> *mut device_node { of_find_node_opts_by_path(path, core::ptr::null_mut()) }

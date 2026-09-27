@@ -28,7 +28,7 @@ unsafe fn xtfpga_restart(_unused: *mut sys_off_data) -> i32 {
 
 #[cfg(CONFIG_XTENSA_CALIBRATE_CCOUNT)]
 unsafe fn platform_calibrate_ccount() {
-    ccount_freq = core::ptr::read_volatile(XTFPGA_CLKFRQ_VADDR as *const libc::c_long);
+    ccount_freq = core::ptr::read_volatile(XTFPGA_CLKFRQ_VADDR as *const kernel::ffi::c_long);
 }
 
 unsafe fn xtfpga_register_handlers() {
@@ -96,11 +96,11 @@ unsafe fn update_local_mac(node: *mut device_node) {
     if newmac.is_null() {
         return;
     }
-    (*newmac).value = newmac.add(1) as *mut core::ffi::c_void;
+    (*newmac).value = newmac.add(1) as *mut kernel::ffi::c_void;
     (*newmac).length = MAC_LEN as u32;
     (*newmac).name = kstrdup(b"local-mac-address\0".as_ptr() as *const i8, GFP_KERNEL);
     if (*newmac).name.is_null() {
-        kfree(newmac as *mut core::ffi::c_void);
+        kfree(newmac as *mut kernel::ffi::c_void);
         return;
     }
 
@@ -166,10 +166,10 @@ static mut serial_platform_data: [plat_serial8250_port; 2] = [
 #[cfg(not(CONFIG_USE_OF))]
 unsafe fn xtavnet_init() -> i32 {
     ethoc_pdata.hwaddr[5] = core::ptr::read_volatile(DIP_SWITCHES_VADDR as *const u32) as u8;
-    serial_platform_data[0].uartclk = core::ptr::read_volatile(XTFPGA_CLKFRQ_VADDR as *const libc::c_long) as _;
+    serial_platform_data[0].uartclk = core::ptr::read_volatile(XTFPGA_CLKFRQ_VADDR as *const kernel::ffi::c_long) as _;
     platform_add_devices(platform_devices.as_mut_ptr(), platform_devices.len());
     pr_info(b"XTFPGA: Ethernet MAC %pM\n\0".as_ptr() as *const i8, ethoc_pdata.hwaddr.as_ptr());
-    ethoc_pdata.eth_clkfreq = core::ptr::read_volatile(XTFPGA_CLKFRQ_VADDR as *const libc::c_long) as _;
+    ethoc_pdata.eth_clkfreq = core::ptr::read_volatile(XTFPGA_CLKFRQ_VADDR as *const kernel::ffi::c_long) as _;
     xtfpga_register_handlers();
     0
 }

@@ -12,10 +12,10 @@
 #![allow(dead_code)]
 #![allow(improper_ctypes)]
 
-type u32 = core::ffi::c_uint;
-type c_int = core::ffi::c_int;
-type c_char = core::ffi::c_char;
-type c_void = core::ffi::c_void;
+type u32 = kernel::ffi::c_uint;
+type c_int = kernel::ffi::c_int;
+type c_char = kernel::ffi::c_char;
+type c_void = kernel::ffi::c_void;
 type size_t = usize;
 
 const SSIU_NAME: *const c_char = b"ssiu\0".as_ptr() as *const c_char;
@@ -31,7 +31,7 @@ pub struct rsnd_mod {
 pub struct rsnd_ssiu {
     pub mod_: rsnd_mod,
     pub busif_status: [u32; 8], /* for BUSIF0 - BUSIF7 */
-    pub usrcnt: core::ffi::c_uint,
+    pub usrcnt: kernel::ffi::c_uint,
     pub id: c_int,
     pub id_sub: c_int,
 }
@@ -69,7 +69,7 @@ static rzg3e_id: [c_int; 10] = [0, 4, 8, 12, 16, 20, 21, 22, 23, 24];
 
 #[repr(C)]
 pub struct rsnd_ssiu_ctrl {
-    pub busif_status_count: core::ffi::c_uint,
+    pub busif_status_count: kernel::ffi::c_uint,
 }
 
 unsafe fn rsnd_priv_to_ssiu_ctrl(priv_: *mut rsnd_priv) -> *mut rsnd_ssiu_ctrl {
@@ -103,7 +103,7 @@ unsafe fn rsnd_ssiu_busif_err_irq_ctrl(mod_: *mut rsnd_mod, enable: c_int) {
         _ => return,
     }
 
-    let mut i: core::ffi::c_uint = 0;
+    let mut i: kernel::ffi::c_uint = 0;
     while i < (*rsnd_priv_to_ssiu_ctrl(priv_)).busif_status_count {
         let reg = SSI_SYS_INT_ENABLE((i * 2).wrapping_add(offset as u32));
         let val: u32 = 0xfu32 << (shift * 4);
@@ -139,7 +139,7 @@ pub unsafe extern "C" fn rsnd_ssiu_busif_err_status_clear(mod_: *mut rsnd_mod) -
         _ => return error,
     }
 
-    let mut i: core::ffi::c_uint = 0;
+    let mut i: kernel::ffi::c_uint = 0;
     while i < (*rsnd_priv_to_ssiu_ctrl(priv_)).busif_status_count {
         let reg: u32 = SSI_SYS_STATUS(i * 2).wrapping_add(offset as u32);
         let mut status = rsnd_mod_read(mod_, reg);

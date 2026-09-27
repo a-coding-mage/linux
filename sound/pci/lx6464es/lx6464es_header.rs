@@ -42,14 +42,14 @@ pub struct lx_stream {
     pub status: lx_stream_status, /* free, open, running, draining
                                    * pause */
     /* C bitfield: unsigned int is_capture:1; */
-    pub is_capture: ::core::ffi::c_uint,
+    pub is_capture: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct lx6464es {
     pub card: *mut snd_card,
     pub pci: *mut pci_dev,
-    pub irq: ::core::ffi::c_int,
+    pub irq: ::kernel::ffi::c_int,
 
     pub mac_address: [u8; 6],
 
@@ -58,9 +58,9 @@ pub struct lx6464es {
                              * and close */
 
     /* ports */
-    pub port_plx: ::core::ffi::c_ulong, /* io port (size=256) */
-    pub port_plx_remapped: *mut ::core::ffi::c_void, /* remapped plx port */
-    pub port_dsp_bar: *mut ::core::ffi::c_void, /* memory port (32-bit,
+    pub port_plx: ::kernel::ffi::c_ulong, /* io port (size=256) */
+    pub port_plx_remapped: *mut ::kernel::ffi::c_void, /* remapped plx port */
+    pub port_dsp_bar: *mut ::kernel::ffi::c_void, /* memory port (32-bit,
                                                  * non-prefetchable,
                                                  * size=8K) */
 
@@ -71,10 +71,10 @@ pub struct lx6464es {
 
     /* configuration */
     /* C bitfield: uint freq_ratio : 2; */
-    pub freq_ratio: ::core::ffi::c_uint,
+    pub freq_ratio: ::kernel::ffi::c_uint,
     /* C bitfield: uint playback_mute : 1; */
-    pub playback_mute: ::core::ffi::c_uint,
-    pub hardware_running: [::core::ffi::c_uint; 2],
+    pub playback_mute: ::kernel::ffi::c_uint,
+    pub hardware_running: [::kernel::ffi::c_uint; 2],
     pub board_sample_rate: u32, /* sample rate read from
                                  * board */
     pub pcm_granularity: u16, /* board blocksize */

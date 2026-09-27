@@ -21,19 +21,19 @@ extern "C" {
     fn pud_alloc(mm: *mut mm_struct, p4d: *mut p4d_t, address: usize) -> *mut pud_t;
     fn pmd_alloc(mm: *mut mm_struct, pud: *mut pud_t, address: usize) -> *mut pmd_t;
     fn flush_tlb_all();
-    fn virt_to_phys(address: *mut core::ffi::c_void) -> usize;
-    fn __va(address: usize) -> *mut core::ffi::c_char;
-    fn virt_to_page(address: *mut core::ffi::c_char) -> *mut page;
+    fn virt_to_phys(address: *mut kernel::ffi::c_void) -> usize;
+    fn __va(address: usize) -> *mut kernel::ffi::c_char;
+    fn virt_to_page(address: *mut kernel::ffi::c_char) -> *mut page;
     fn PageReserved(page: *mut page) -> bool;
     fn get_vm_area(size: usize, flags: usize) -> *mut vm_struct;
-    fn vunmap(address: *mut core::ffi::c_void);
-    fn remove_vm_area(address: *mut core::ffi::c_void) -> *mut vm_struct;
+    fn vunmap(address: *mut kernel::ffi::c_void);
+    fn remove_vm_area(address: *mut kernel::ffi::c_void) -> *mut vm_struct;
     fn kfree(ptr: *mut vm_struct);
 }
 
 extern "C" {
     static mut init_mm: mm_struct;
-    static mut high_memory: *mut core::ffi::c_void;
+    static mut high_memory: *mut kernel::ffi::c_void;
 }
 
 const IS_MAPPABLE_UNCACHEABLE: fn(usize) -> bool = |addr| addr < 0x20000000usize;
@@ -115,7 +115,7 @@ unsafe fn remap_area_pages(mut address: usize, mut phys_addr: usize, size: usize
 
 /* Map some physical address range into the kernel address space. */
 #[no_mangle]
-pub unsafe extern "C" fn ioremap(mut phys_addr: usize, mut size: usize) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn ioremap(mut phys_addr: usize, mut size: usize) -> *mut kernel::ffi::c_void {
     let last_addr = phys_addr.wrapping_add(size).wrapping_sub(1);
     if size == 0 || last_addr < phys_addr { return core::ptr::null_mut(); }
     if phys_addr > PHYS_OFFSET && phys_addr < virt_to_phys(high_memory) {
@@ -128,7 +128,7 @@ pub unsafe extern "C" fn ioremap(mut phys_addr: usize, mut size: usize) -> *mut 
         }
     }
     if IS_MAPPABLE_UNCACHEABLE(phys_addr) && IS_MAPPABLE_UNCACHEABLE(last_addr) {
-        return (CONFIG_NIOS2_IO_REGION_BASE.wrapping_add(phys_addr)) as *mut core::ffi::c_void;
+        return (CONFIG_NIOS2_IO_REGION_BASE.wrapping_add(phys_addr)) as *mut kernel::ffi::c_void;
     }
     let offset = phys_addr & !PAGE_MASK;
     phys_addr &= PAGE_MASK;
@@ -140,13 +140,13 @@ pub unsafe extern "C" fn ioremap(mut phys_addr: usize, mut size: usize) -> *mut 
         vunmap(addr);
         return core::ptr::null_mut();
     }
-    (addr as usize + offset) as *mut core::ffi::c_void
+    (addr as usize + offset) as *mut kernel::ffi::c_void
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn iounmap(addr: *mut core::ffi::c_void) {
+pub unsafe extern "C" fn iounmap(addr: *mut kernel::ffi::c_void) {
     if addr as usize > CONFIG_NIOS2_IO_REGION_BASE { return; }
-    let p = remove_vm_area((PAGE_MASK & addr as usize) as *mut core::ffi::c_void);
+    let p = remove_vm_area((PAGE_MASK & addr as usize) as *mut kernel::ffi::c_void);
     if p.is_null() { pr_err("iounmap: bad address %p\n", addr); }
     kfree(p);
 }

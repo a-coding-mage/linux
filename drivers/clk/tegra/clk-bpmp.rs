@@ -13,10 +13,10 @@ const TEGRA_BPMP_CLK_IS_ROOT: u32 = 1 << 2;
 #[repr(C)]
 struct tegra_bpmp_clk_info {
     id: u32,
-    name: [::core::ffi::c_char; MRQ_CLK_NAME_MAXLEN],
+    name: [::kernel::ffi::c_char; MRQ_CLK_NAME_MAXLEN],
     parents: [u32; MRQ_CLK_MAX_PARENTS],
     num_parents: u32,
-    flags: ::core::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -43,13 +43,13 @@ struct tegra_bpmp_clk_message {
 
 #[repr(C)]
 struct tegra_bpmp_clk_message_tx {
-    data: *const ::core::ffi::c_void,
+    data: *const ::kernel::ffi::c_void,
     size: usize,
 }
 
 #[repr(C)]
 struct tegra_bpmp_clk_message_rx {
-    data: *mut ::core::ffi::c_void,
+    data: *mut ::kernel::ffi::c_void,
     size: usize,
     ret: i32,
 }
@@ -67,7 +67,7 @@ unsafe fn tegra_bpmp_clk_transfer(
         (*clk).tx.size,
     );
     msg.mrq = MRQ_CLK;
-    msg.tx.data = &mut request as *mut _ as *mut ::core::ffi::c_void;
+    msg.tx.data = &mut request as *mut _ as *mut ::kernel::ffi::c_void;
     msg.tx.size = ::core::mem::size_of::<mrq_clk_request>();
     msg.rx.data = (*clk).rx.data;
     msg.rx.size = (*clk).rx.size;
@@ -109,7 +109,7 @@ unsafe fn tegra_bpmp_clk_is_prepared(hw: *mut clk_hw) -> i32 {
     response.state
 }
 
-unsafe fn tegra_bpmp_clk_recalc_rate(hw: *mut clk_hw, _parent_rate: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+unsafe fn tegra_bpmp_clk_recalc_rate(hw: *mut clk_hw, _parent_rate: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     let clk = to_tegra_bpmp_clk(hw);
     let mut response: cmd_clk_get_rate_response = ::core::mem::zeroed();
     let request: cmd_clk_get_rate_request = ::core::mem::zeroed();
@@ -176,7 +176,7 @@ unsafe fn tegra_bpmp_clk_get_parent(hw: *mut clk_hw) -> u8 {
     u8::MAX
 }
 
-unsafe fn tegra_bpmp_clk_set_rate(hw: *mut clk_hw, rate: ::core::ffi::c_ulong, _parent_rate: ::core::ffi::c_ulong) -> i32 {
+unsafe fn tegra_bpmp_clk_set_rate(hw: *mut clk_hw, rate: ::kernel::ffi::c_ulong, _parent_rate: ::kernel::ffi::c_ulong) -> i32 {
     let clk = to_tegra_bpmp_clk(hw);
     let mut response: cmd_clk_set_rate_response = ::core::mem::zeroed();
     let mut request: cmd_clk_set_rate_request = ::core::mem::zeroed();
@@ -230,8 +230,8 @@ unsafe fn tegra_bpmp_clk_get_info(bpmp: *mut tegra_bpmp, id: u32, info: *mut teg
     0
 }
 
-unsafe fn tegra_bpmp_clk_info_dump(bpmp: *mut tegra_bpmp, level: *const ::core::ffi::c_char, info: *const tegra_bpmp_clk_info) {
-    let mut flags = [0 as ::core::ffi::c_char; 64];
+unsafe fn tegra_bpmp_clk_info_dump(bpmp: *mut tegra_bpmp, level: *const ::kernel::ffi::c_char, info: *const tegra_bpmp_clk_info) {
+    let mut flags = [0 as ::kernel::ffi::c_char; 64];
     let mut prefix = "";
     if (*info).flags != 0 { seq_buf_printf!(&mut flags, "("); }
     if (*info).flags & TEGRA_BPMP_CLK_HAS_MUX as _ != 0 { seq_buf_printf!(&mut flags, "{}mux", prefix); prefix = ", "; }
@@ -287,7 +287,7 @@ unsafe fn tegra_bpmp_clk_register(bpmp: *mut tegra_bpmp, info: *const tegra_bpmp
         init.ops = if (*info).flags & TEGRA_BPMP_CLK_HAS_SET_RATE as _ != 0 { &tegra_bpmp_clk_mux_rate_ops } else { &tegra_bpmp_clk_mux_ops };
     } else { init.ops = if (*info).flags & TEGRA_BPMP_CLK_HAS_SET_RATE as _ != 0 { &tegra_bpmp_clk_rate_ops } else { &tegra_bpmp_clk_gate_ops }; }
     init.num_parents = (*info).num_parents;
-    let parents = kcalloc!((*info).num_parents as usize, ::core::mem::size_of::<*const ::core::ffi::c_char>(), GFP_KERNEL) as *mut *const ::core::ffi::c_char;
+    let parents = kcalloc!((*info).num_parents as usize, ::core::mem::size_of::<*const ::kernel::ffi::c_char>(), GFP_KERNEL) as *mut *const ::kernel::ffi::c_char;
     if parents.is_null() { return ERR_PTR(-ENOMEM); }
     for i in 0..(*info).num_parents as usize {
         *(*clk).parents.add(i) = (*info).parents[i];
@@ -321,7 +321,7 @@ unsafe fn tegra_bpmp_unregister_clocks(bpmp: *mut tegra_bpmp) {
     for i in 0..(*bpmp).num_clocks as usize { clk_hw_unregister(&mut (*(*bpmp).clocks.add(i)).hw); }
 }
 
-unsafe fn tegra_bpmp_clk_of_xlate(clkspec: *mut of_phandle_args, data: *mut ::core::ffi::c_void) -> *mut clk_hw {
+unsafe fn tegra_bpmp_clk_of_xlate(clkspec: *mut of_phandle_args, data: *mut ::kernel::ffi::c_void) -> *mut clk_hw {
     let bpmp = data as *mut tegra_bpmp; let id = (*clkspec).args[0];
     for i in 0..(*bpmp).num_clocks as usize { let clk = *(*bpmp).clocks.add(i); if !clk.is_null() && (*clk).id == id { return &mut (*clk).hw; } } ::core::ptr::null_mut()
 }

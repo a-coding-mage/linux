@@ -153,34 +153,34 @@ extern "C" {
 	type snd_us16x08_meter_store;
 	type snd_us16x08_control_params;
 
-	fn snd_usb_ctl_msg(dev: *mut core::ffi::c_void, pipe: u32, request: u32, requesttype: u32,
-		value: u32, index: u32, buf: *mut core::ffi::c_void, size: i32) -> i32;
-	fn usb_rcvctrlpipe(dev: *mut core::ffi::c_void, endpoint: u32) -> u32;
-	fn usb_sndctrlpipe(dev: *mut core::ffi::c_void, endpoint: u32) -> u32;
+	fn snd_usb_ctl_msg(dev: *mut kernel::ffi::c_void, pipe: u32, request: u32, requesttype: u32,
+		value: u32, index: u32, buf: *mut kernel::ffi::c_void, size: i32) -> i32;
+	fn usb_rcvctrlpipe(dev: *mut kernel::ffi::c_void, endpoint: u32) -> u32;
+	fn usb_sndctrlpipe(dev: *mut kernel::ffi::c_void, endpoint: u32) -> u32;
 	fn snd_ctl_enum_info(uinfo: *mut snd_ctl_elem_info, channels: u32, items: u32,
-		names: *const *const core::ffi::c_char) -> i32;
+		names: *const *const kernel::ffi::c_char) -> i32;
 	fn snd_kcontrol_chip(kcontrol: *mut snd_kcontrol) -> *mut usb_mixer_elem_info;
-	fn usb_audio_dbg(chip: *mut snd_usb_audio, fmt: *const core::ffi::c_char, ...);
-	fn snd_ctl_new1(kcontrol: *const snd_kcontrol_new, private_data: *mut core::ffi::c_void) -> *mut snd_kcontrol;
-	fn snd_usb_mixer_add_control(head: *mut core::ffi::c_void, kctl: *mut snd_kcontrol) -> i32;
+	fn usb_audio_dbg(chip: *mut snd_usb_audio, fmt: *const kernel::ffi::c_char, ...);
+	fn snd_ctl_new1(kcontrol: *const snd_kcontrol_new, private_data: *mut kernel::ffi::c_void) -> *mut snd_kcontrol;
+	fn snd_usb_mixer_add_control(head: *mut kernel::ffi::c_void, kctl: *mut snd_kcontrol) -> i32;
 	fn snd_usb_mixer_elem_free(kctl: *mut snd_kcontrol);
-	fn memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void;
-	fn kmalloc_obj(obj: *mut core::ffi::c_void) -> *mut core::ffi::c_void;
-	fn kzalloc_obj(obj: *mut core::ffi::c_void) -> *mut core::ffi::c_void;
-	fn kfree(obj: *mut core::ffi::c_void);
+	fn memcpy(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize) -> *mut kernel::ffi::c_void;
+	fn kmalloc_obj(obj: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+	fn kzalloc_obj(obj: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+	fn kfree(obj: *mut kernel::ffi::c_void);
 	fn msleep(msecs: u32);
-	fn strscpy(dest: *mut core::ffi::c_char, src: *const core::ffi::c_char, size: usize) -> isize;
+	fn strscpy(dest: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char, size: usize) -> isize;
 }
 
 unsafe fn snd_us16x08_recv_urb(chip: *mut snd_usb_audio,
 	buf: *mut u8, size: i32) -> i32
 {
 	// guard(mutex)(&chip->mutex);
-	snd_usb_ctl_msg(chip as *mut core::ffi::c_void,
-		usb_rcvctrlpipe(chip as *mut core::ffi::c_void, 0),
+	snd_usb_ctl_msg(chip as *mut kernel::ffi::c_void,
+		usb_rcvctrlpipe(chip as *mut kernel::ffi::c_void, 0),
 		0, /* SND_US16X08_URB_METER_REQUEST */
 		0, /* SND_US16X08_URB_METER_REQUESTTYPE */
-		0, 0, buf as *mut core::ffi::c_void, size);
+		0, 0, buf as *mut kernel::ffi::c_void, size);
 	return 0;
 }
 
@@ -189,16 +189,16 @@ unsafe fn snd_us16x08_recv_urb(chip: *mut snd_usb_audio,
  */
 unsafe fn snd_us16x08_send_urb(chip: *mut snd_usb_audio, buf: *mut i8, size: i32) -> i32
 {
-	return snd_usb_ctl_msg(chip as *mut core::ffi::c_void, usb_sndctrlpipe(chip as *mut core::ffi::c_void, 0),
+	return snd_usb_ctl_msg(chip as *mut kernel::ffi::c_void, usb_sndctrlpipe(chip as *mut kernel::ffi::c_void, 0),
 			0, /* SND_US16X08_URB_REQUEST */
 			0, /* SND_US16X08_URB_REQUESTTYPE */
-			0, 0, buf as *mut core::ffi::c_void, size);
+			0, 0, buf as *mut kernel::ffi::c_void, size);
 }
 
 unsafe fn snd_us16x08_route_info(kcontrol: *mut snd_kcontrol,
 	uinfo: *mut snd_ctl_elem_info) -> i32
 {
-	return snd_ctl_enum_info(uinfo, 1, 10, ROUTE_NAMES.as_ptr() as *const *const core::ffi::c_char);
+	return snd_ctl_enum_info(uinfo, 1, 10, ROUTE_NAMES.as_ptr() as *const *const kernel::ffi::c_char);
 }
 
 unsafe fn snd_us16x08_route_get(kcontrol: *mut snd_kcontrol,
@@ -233,8 +233,8 @@ unsafe fn snd_us16x08_route_put(kcontrol: *mut snd_kcontrol,
 	}
 
 	/* prepare the message buffer from template */
-	memcpy(&mut buf as *mut u8 as *mut core::ffi::c_void,
-		ROUTE_MSG.as_ptr() as *const core::ffi::c_void, ROUTE_MSG.len());
+	memcpy(&mut buf as *mut u8 as *mut kernel::ffi::c_void,
+		ROUTE_MSG.as_ptr() as *const kernel::ffi::c_void, ROUTE_MSG.len());
 
 	if val < 2 {
 		/* input comes from a master channel */
@@ -304,8 +304,8 @@ unsafe fn snd_us16x08_master_put(kcontrol: *mut snd_kcontrol,
 	// 	return -EINVAL;
 
 	/* prepare the message buffer from template */
-	memcpy(&mut buf as *mut u8 as *mut core::ffi::c_void,
-		MIX_MSG_OUT.as_ptr() as *const core::ffi::c_void, MIX_MSG_OUT.len());
+	memcpy(&mut buf as *mut u8 as *mut kernel::ffi::c_void,
+		MIX_MSG_OUT.as_ptr() as *const kernel::ffi::c_void, MIX_MSG_OUT.len());
 
 	// buf[8] = val - SND_US16X08_KCBIAS(kcontrol);
 	// buf[6] = elem->head.id;
@@ -338,20 +338,20 @@ unsafe fn snd_us16x08_bus_put(kcontrol: *mut snd_kcontrol,
 	/* prepare the message buffer from template */
 	match (*elem).head.id {
 	0 => { /* SND_US16X08_ID_BYPASS */
-		memcpy(&mut buf as *mut u8 as *mut core::ffi::c_void,
-			BYPASS_MSG_OUT.as_ptr() as *const core::ffi::c_void, BYPASS_MSG_OUT.len());
+		memcpy(&mut buf as *mut u8 as *mut kernel::ffi::c_void,
+			BYPASS_MSG_OUT.as_ptr() as *const kernel::ffi::c_void, BYPASS_MSG_OUT.len());
 		buf[2] = val as u8;
 		err = snd_us16x08_send_urb(chip, &mut buf as *mut u8 as *mut i8, BYPASS_MSG_OUT.len() as i32);
 	},
 	1 => { /* SND_US16X08_ID_BUSS_OUT */
-		memcpy(&mut buf as *mut u8 as *mut core::ffi::c_void,
-			BUS_MSG_OUT.as_ptr() as *const core::ffi::c_void, BUS_MSG_OUT.len());
+		memcpy(&mut buf as *mut u8 as *mut kernel::ffi::c_void,
+			BUS_MSG_OUT.as_ptr() as *const kernel::ffi::c_void, BUS_MSG_OUT.len());
 		buf[2] = val as u8;
 		err = snd_us16x08_send_urb(chip, &mut buf as *mut u8 as *mut i8, BUS_MSG_OUT.len() as i32);
 	},
 	2 => { /* SND_US16X08_ID_MUTE */
-		memcpy(&mut buf as *mut u8 as *mut core::ffi::c_void,
-			MIX_MSG_OUT.as_ptr() as *const core::ffi::c_void, MIX_MSG_OUT.len());
+		memcpy(&mut buf as *mut u8 as *mut kernel::ffi::c_void,
+			MIX_MSG_OUT.as_ptr() as *const kernel::ffi::c_void, MIX_MSG_OUT.len());
 		buf[8] = val as u8;
 		buf[6] = (*elem).head.id as u8;
 		buf[5] = 1;
@@ -421,8 +421,8 @@ unsafe fn snd_us16x08_channel_put(kcontrol: *mut snd_kcontrol,
 	// 	return -EINVAL;
 
 	/* prepare URB message from template */
-	memcpy(&mut buf as *mut u8 as *mut core::ffi::c_void,
-		MIX_MSG_IN.as_ptr() as *const core::ffi::c_void, MIX_MSG_IN.len());
+	memcpy(&mut buf as *mut u8 as *mut kernel::ffi::c_void,
+		MIX_MSG_IN.as_ptr() as *const kernel::ffi::c_void, MIX_MSG_IN.len());
 
 	/* add the bias to the new value */
 	// buf[8] = val - SND_US16X08_KCBIAS(kcontrol);
@@ -525,8 +525,8 @@ unsafe fn snd_us16x08_comp_put(kcontrol: *mut snd_kcontrol,
 	// }
 
 	/* prepare compressor URB message from template  */
-	memcpy(&mut buf as *mut u8 as *mut core::ffi::c_void,
-		COMP_MSG.as_ptr() as *const core::ffi::c_void, COMP_MSG.len());
+	memcpy(&mut buf as *mut u8 as *mut kernel::ffi::c_void,
+		COMP_MSG.as_ptr() as *const kernel::ffi::c_void, COMP_MSG.len());
 
 	/* place comp values in message buffer watch bias! */
 	// buf[8] = threshold - SND_US16X08_COMP_THRESHOLD_BIAS;
@@ -584,8 +584,8 @@ unsafe fn snd_us16x08_eqswitch_put(kcontrol: *mut snd_kcontrol,
 	val = 0; /* ucontrol->value.integer.value[0] + SND_US16X08_KCBIAS(kcontrol) */
 
 	/* prepare URB message from EQ template */
-	memcpy(&mut buf as *mut u8 as *mut core::ffi::c_void,
-		EQS_MSQ.as_ptr() as *const core::ffi::c_void, EQS_MSQ.len());
+	memcpy(&mut buf as *mut u8 as *mut kernel::ffi::c_void,
+		EQS_MSQ.as_ptr() as *const kernel::ffi::c_void, EQS_MSQ.len());
 
 	/* place channel index in URB message */
 	buf[5] = (index + 1) as u8;
@@ -654,8 +654,8 @@ unsafe fn snd_us16x08_eq_put(kcontrol: *mut snd_kcontrol,
 	// 	return -EINVAL;
 
 	/* copy URB buffer from EQ template */
-	memcpy(&mut buf as *mut u8 as *mut core::ffi::c_void,
-		EQS_MSQ.as_ptr() as *const core::ffi::c_void, EQS_MSQ.len());
+	memcpy(&mut buf as *mut u8 as *mut kernel::ffi::c_void,
+		EQS_MSQ.as_ptr() as *const kernel::ffi::c_void, EQS_MSQ.len());
 
 	// buf[20] = p_idx == 3 ? val : store->val[b_idx][3][index];
 	// buf[17] = p_idx == 2 ? val : store->val[b_idx][2][index];
@@ -784,8 +784,8 @@ unsafe fn snd_us16x08_meter_get(kcontrol: *mut snd_kcontrol,
 	0 => {
 		let mut tmp: [u8; 4] = [0; 4];
 
-		memcpy(&mut tmp as *mut u8 as *mut core::ffi::c_void,
-			MIX_INIT_MSG1.as_ptr() as *const core::ffi::c_void, MIX_INIT_MSG1.len());
+		memcpy(&mut tmp as *mut u8 as *mut kernel::ffi::c_void,
+			MIX_INIT_MSG1.as_ptr() as *const kernel::ffi::c_void, MIX_INIT_MSG1.len());
 		snd_us16x08_send_urb(chip, &mut tmp as *mut u8 as *mut i8, 4);
 		snd_us16x08_recv_urb(chip, &mut meter_urb as *mut u8,
 			64);
@@ -804,8 +804,8 @@ unsafe fn snd_us16x08_meter_get(kcontrol: *mut snd_kcontrol,
 	3 => {
 		let mut tmp: [u8; 10] = [0; 10];
 
-		memcpy(&mut tmp as *mut u8 as *mut core::ffi::c_void,
-			MIX_INIT_MSG2.as_ptr() as *const core::ffi::c_void, MIX_INIT_MSG2.len());
+		memcpy(&mut tmp as *mut u8 as *mut kernel::ffi::c_void,
+			MIX_INIT_MSG2.as_ptr() as *const kernel::ffi::c_void, MIX_INIT_MSG2.len());
 		tmp[2] = snd_get_meter_comp_index(store) as u8;
 		snd_us16x08_send_urb(chip, &mut tmp as *mut u8 as *mut i8, 10);
 		snd_us16x08_recv_urb(chip, &mut meter_urb as *mut u8,
@@ -890,7 +890,7 @@ unsafe fn snd_us16x08_create_comp_store() -> *mut snd_us16x08_comp_store
 	let mut i: i32;
 	let tmp: *mut snd_us16x08_comp_store;
 
-	tmp = kmalloc_obj(0 as *mut core::ffi::c_void) as *mut snd_us16x08_comp_store;
+	tmp = kmalloc_obj(0 as *mut kernel::ffi::c_void) as *mut snd_us16x08_comp_store;
 	if tmp.is_null() {
 		return core::ptr::null_mut();
 	}
@@ -916,7 +916,7 @@ unsafe fn snd_us16x08_create_eq_store() -> *mut snd_us16x08_eq_store
 	let mut b_idx: i32;
 	let tmp: *mut snd_us16x08_eq_store;
 
-	tmp = kmalloc_obj(0 as *mut core::ffi::c_void) as *mut snd_us16x08_eq_store;
+	tmp = kmalloc_obj(0 as *mut kernel::ffi::c_void) as *mut snd_us16x08_eq_store;
 	if tmp.is_null() {
 		return core::ptr::null_mut();
 	}
@@ -957,7 +957,7 @@ unsafe fn snd_us16x08_create_meter_store() -> *mut snd_us16x08_meter_store
 {
 	let tmp: *mut snd_us16x08_meter_store;
 
-	tmp = kzalloc_obj(0 as *mut core::ffi::c_void) as *mut snd_us16x08_meter_store;
+	tmp = kzalloc_obj(0 as *mut kernel::ffi::c_void) as *mut snd_us16x08_meter_store;
 	if tmp.is_null() {
 		return core::ptr::null_mut();
 	}
@@ -974,14 +974,14 @@ unsafe fn elem_private_free(kctl: *mut snd_kcontrol)
 	if !elem.is_null() {
 		kfree((*elem).private_data);
 	}
-	kfree(elem as *mut core::ffi::c_void);
+	kfree(elem as *mut kernel::ffi::c_void);
 	(*kctl).private_data = core::ptr::null_mut();
 }
 
 unsafe fn add_new_ctl(mixer: *mut usb_mixer_interface,
 	ncontrol: *const snd_kcontrol_new,
 	index: i32, val_type: i32, channels: i32,
-	name: *const core::ffi::c_char, opt: *mut core::ffi::c_void,
+	name: *const kernel::ffi::c_char, opt: *mut kernel::ffi::c_void,
 	do_private_free: bool,
 	elem_ret: *mut *mut usb_mixer_elem_info) -> i32
 {
@@ -991,7 +991,7 @@ unsafe fn add_new_ctl(mixer: *mut usb_mixer_interface,
 
 	usb_audio_dbg((*mixer).chip, "us16x08 add mixer %s\n" as *const i8, name);
 
-	elem = kzalloc_obj(0 as *mut core::ffi::c_void) as *mut usb_mixer_elem_info;
+	elem = kzalloc_obj(0 as *mut kernel::ffi::c_void) as *mut usb_mixer_elem_info;
 	if elem.is_null() {
 		return -12; /* -ENOMEM */
 	}
@@ -1005,9 +1005,9 @@ unsafe fn add_new_ctl(mixer: *mut usb_mixer_interface,
 	// elem->channels = channels;
 	// elem->private_data = opt;
 
-	kctl = snd_ctl_new1(ncontrol, elem as *mut core::ffi::c_void);
+	kctl = snd_ctl_new1(ncontrol, elem as *mut kernel::ffi::c_void);
 	if kctl.is_null() {
-		kfree(elem as *mut core::ffi::c_void);
+		kfree(elem as *mut kernel::ffi::c_void);
 		return -12; /* -ENOMEM */
 	}
 

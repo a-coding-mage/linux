@@ -13,12 +13,12 @@
 
 #[cfg(not(feature = "assembler"))]
 unsafe extern "C" {
-    pub fn return_address(level: core::ffi::c_uint) -> core::ffi::c_ulong;
+    pub fn return_address(level: kernel::ffi::c_uint) -> kernel::ffi::c_ulong;
 }
 
 #[cfg(not(feature = "assembler"))]
 #[inline(always)]
-pub unsafe fn ftrace_return_address(n: core::ffi::c_uint) -> core::ffi::c_ulong {
+pub unsafe fn ftrace_return_address(n: kernel::ffi::c_uint) -> kernel::ffi::c_ulong {
     // C macro: return_address(n)
     unsafe { return_address(n) }
 }
@@ -42,9 +42,9 @@ pub unsafe fn mcount() {
 
 #[cfg(feature = "function_tracer")]
 #[inline(always)]
-pub fn mcount_addr() -> core::ffi::c_ulong {
+pub fn mcount_addr() -> kernel::ffi::c_ulong {
     // C macro: ((unsigned long)(_mcount))
-    _mcount as usize as core::ffi::c_ulong
+    _mcount as usize as kernel::ffi::c_ulong
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

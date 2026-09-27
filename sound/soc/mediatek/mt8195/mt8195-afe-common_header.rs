@@ -97,16 +97,16 @@ pub const MT8195_MTKAIF_MISO_NUM: u32 = 3;
 
 #[repr(C)]
 pub struct mtk_dai_memif_irq_priv {
-    pub asys_timing_sel: ::core::ffi::c_uint,
+    pub asys_timing_sel: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct mtkaif_param {
     pub mtkaif_calibration_ok: bool,
-    pub mtkaif_chosen_phase: [::core::ffi::c_int; MT8195_MTKAIF_MISO_NUM as usize],
-    pub mtkaif_phase_cycle: [::core::ffi::c_int; MT8195_MTKAIF_MISO_NUM as usize],
-    pub mtkaif_dmic_on: ::core::ffi::c_int,
-    pub mtkaif_adda6_only: ::core::ffi::c_int,
+    pub mtkaif_chosen_phase: [::kernel::ffi::c_int; MT8195_MTKAIF_MISO_NUM as usize],
+    pub mtkaif_phase_cycle: [::kernel::ffi::c_int; MT8195_MTKAIF_MISO_NUM as usize],
+    pub mtkaif_dmic_on: ::kernel::ffi::c_int,
+    pub mtkaif_adda6_only: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -142,25 +142,25 @@ pub struct mt8195_afe_private {
     pub clk: *mut *mut clk,
     pub lookup: *mut *mut clk_lookup,
     pub topckgen: *mut regmap,
-    pub pm_runtime_bypass_reg_ctl: ::core::ffi::c_int,
+    pub pm_runtime_bypass_reg_ctl: ::kernel::ffi::c_int,
     // Present in C only when CONFIG_DEBUG_FS is enabled:
     // pub debugfs_dentry: *mut *mut dentry,
-    pub afe_on_ref_cnt: ::core::ffi::c_int,
-    pub top_cg_ref_cnt: [::core::ffi::c_int; MT8195_TOP_CG_NUM as usize],
+    pub afe_on_ref_cnt: ::kernel::ffi::c_int,
+    pub top_cg_ref_cnt: [::kernel::ffi::c_int; MT8195_TOP_CG_NUM as usize],
     pub afe_ctrl_lock: spinlock_t, /* Lock for afe control */
     pub irq_priv: [mtk_dai_memif_irq_priv; MT8195_AFE_IRQ_NUM as usize],
     pub mtkaif_params: mtkaif_param,
 
     /* dai */
-    pub dai_priv: [*mut ::core::ffi::c_void; MT8195_DAI_NUM as usize],
+    pub dai_priv: [*mut ::kernel::ffi::c_void; MT8195_DAI_NUM as usize],
 }
 
 unsafe extern "C" {
-    pub fn mt8195_afe_fs_timing(rate: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    pub fn mt8195_afe_fs_timing(rate: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
     /* dai register */
-    pub fn mt8195_dai_adda_register(afe: *mut mtk_base_afe) -> ::core::ffi::c_int;
-    pub fn mt8195_dai_etdm_register(afe: *mut mtk_base_afe) -> ::core::ffi::c_int;
-    pub fn mt8195_dai_pcm_register(afe: *mut mtk_base_afe) -> ::core::ffi::c_int;
+    pub fn mt8195_dai_adda_register(afe: *mut mtk_base_afe) -> ::kernel::ffi::c_int;
+    pub fn mt8195_dai_etdm_register(afe: *mut mtk_base_afe) -> ::kernel::ffi::c_int;
+    pub fn mt8195_dai_pcm_register(afe: *mut mtk_base_afe) -> ::kernel::ffi::c_int;
 }
 
 macro_rules! MT8195_SOC_ENUM_EXT {
@@ -172,7 +172,7 @@ macro_rules! MT8195_SOC_ENUM_EXT {
             get: $xhandler_get,
             put: $xhandler_put,
             device: $id,
-            private_value: &$xenum as *const _ as ::core::ffi::c_ulong,
+            private_value: &$xenum as *const _ as ::kernel::ffi::c_ulong,
         }
     };
 }

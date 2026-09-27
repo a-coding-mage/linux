@@ -32,7 +32,7 @@ const FPGA2HPS_BRIDGE_NAME: &str = "fpga2hps";
 
 #[repr(C)]
 struct altera_hps2fpga_data {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     bridge_reset: *mut reset_control,
     l3reg: *mut regmap,
     remap_mask: u32,
@@ -118,36 +118,36 @@ static altera_hps2fpga_br_ops: fpga_bridge_ops_translation = fpga_bridge_ops_tra
 };
 
 static mut hps2fpga_data: altera_hps2fpga_data = altera_hps2fpga_data {
-    name: HPS2FPGA_BRIDGE_NAME.as_ptr() as *const core::ffi::c_char,
+    name: HPS2FPGA_BRIDGE_NAME.as_ptr() as *const kernel::ffi::c_char,
     bridge_reset: core::ptr::null_mut(), l3reg: core::ptr::null_mut(),
     remap_mask: ALT_L3_REMAP_H2F_MSK, clk: core::ptr::null_mut(),
 };
 static mut lwhps2fpga_data: altera_hps2fpga_data = altera_hps2fpga_data {
-    name: LWHPS2FPGA_BRIDGE_NAME.as_ptr() as *const core::ffi::c_char,
+    name: LWHPS2FPGA_BRIDGE_NAME.as_ptr() as *const kernel::ffi::c_char,
     bridge_reset: core::ptr::null_mut(), l3reg: core::ptr::null_mut(),
     remap_mask: ALT_L3_REMAP_LWH2F_MSK, clk: core::ptr::null_mut(),
 };
 static mut fpga2hps_data: altera_hps2fpga_data = altera_hps2fpga_data {
-    name: FPGA2HPS_BRIDGE_NAME.as_ptr() as *const core::ffi::c_char,
+    name: FPGA2HPS_BRIDGE_NAME.as_ptr() as *const kernel::ffi::c_char,
     bridge_reset: core::ptr::null_mut(), l3reg: core::ptr::null_mut(),
     remap_mask: 0, clk: core::ptr::null_mut(),
 };
 
 extern "C" {
-    fn device_get_match_data(dev: *mut device) -> *mut core::ffi::c_void;
+    fn device_get_match_data(dev: *mut device) -> *mut kernel::ffi::c_void;
     fn of_reset_control_get_exclusive_by_index(dev: *mut device, index: u32) -> *mut reset_control;
-    fn syscon_regmap_lookup_by_compatible(name: *const core::ffi::c_char) -> *mut regmap;
-    fn devm_clk_get(dev: *mut device, id: *const core::ffi::c_char) -> *mut clk;
+    fn syscon_regmap_lookup_by_compatible(name: *const kernel::ffi::c_char) -> *mut regmap;
+    fn devm_clk_get(dev: *mut device, id: *const kernel::ffi::c_char) -> *mut clk;
     fn clk_prepare_enable(clk: *mut clk) -> i32;
     fn clk_disable_unprepare(clk: *mut clk);
-    fn of_property_read_u32(node: *mut core::ffi::c_void, name: *const core::ffi::c_char, value: *mut u32) -> i32;
-    fn fpga_bridge_register(dev: *mut device, name: *const core::ffi::c_char, ops: *const fpga_bridge_ops_translation, priv_: *mut altera_hps2fpga_data) -> *mut fpga_bridge;
+    fn of_property_read_u32(node: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, value: *mut u32) -> i32;
+    fn fpga_bridge_register(dev: *mut device, name: *const kernel::ffi::c_char, ops: *const fpga_bridge_ops_translation, priv_: *mut altera_hps2fpga_data) -> *mut fpga_bridge;
     fn fpga_bridge_unregister(bridge: *mut fpga_bridge);
     fn platform_set_drvdata(pdev: *mut platform_device, data: *mut fpga_bridge);
     fn platform_get_drvdata(pdev: *mut platform_device) -> *mut fpga_bridge;
-    fn dev_err(dev: *mut device, message: *const core::ffi::c_char, ...);
-    fn dev_warn(dev: *mut device, message: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut device, message: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, message: *const kernel::ffi::c_char, ...);
+    fn dev_warn(dev: *mut device, message: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, message: *const kernel::ffi::c_char, ...);
 }
 
 unsafe fn alt_fpga_bridge_probe(pdev: *mut platform_device) -> i32 {
@@ -186,7 +186,7 @@ unsafe fn alt_fpga_bridge_remove(pdev: *mut platform_device) {
 struct platform_driver_translation {
     probe: unsafe fn(*mut platform_device) -> i32,
     remove: unsafe fn(*mut platform_device),
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 static mut alt_fpga_bridge_driver: platform_driver_translation = platform_driver_translation {

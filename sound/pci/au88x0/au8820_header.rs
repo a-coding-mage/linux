@@ -226,7 +226,7 @@ pub const VORTEX_IRQ_STAT: u32 = 0x1199c;
 /* DMA */
 pub const VORTEX_DMA_BUFFER: u32 = 0x10200;
 pub const VORTEX_ENGINE_CTRL: u32 = 0x1060c;
-pub const ENGINE_INIT: core::ffi::c_long = 0x0;
+pub const ENGINE_INIT: kernel::ffi::c_long = 0x0;
 
 /* MIDI *//* GAME. */
 pub const VORTEX_MIDI_DATA: u32 = 0x11000;

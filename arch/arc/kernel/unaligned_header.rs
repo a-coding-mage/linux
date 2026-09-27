@@ -12,19 +12,19 @@ pub struct callee_regs {
 #[cfg(CONFIG_ARC_EMUL_UNALIGNED)]
 extern "C" {
     pub fn misaligned_fixup(
-        address: core::ffi::c_ulong,
+        address: kernel::ffi::c_ulong,
         regs: *mut pt_regs,
         cregs: *mut callee_regs,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_ARC_EMUL_UNALIGNED))]
 #[inline]
 pub unsafe fn misaligned_fixup(
-    _address: core::ffi::c_ulong,
+    _address: kernel::ffi::c_ulong,
     _regs: *mut pt_regs,
     _cregs: *mut callee_regs,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     // Not fixed
     1
 }

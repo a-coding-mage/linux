@@ -41,11 +41,11 @@ pub struct file_ref_t {
 }
 
 extern "C" {
-    pub fn __file_ref_put(ref_: *mut file_ref_t, cnt: ::core::ffi::c_ulong) -> bool;
+    pub fn __file_ref_put(ref_: *mut file_ref_t, cnt: ::kernel::ffi::c_ulong) -> bool;
 }
 
 #[inline]
-pub unsafe fn file_ref_init(ref_: *mut file_ref_t, cnt: ::core::ffi::c_ulong) {
+pub unsafe fn file_ref_init(ref_: *mut file_ref_t, cnt: ::kernel::ffi::c_ulong) {
     atomic_long_set(&mut (*ref_).refcnt, cnt.wrapping_sub(1));
 }
 
@@ -56,28 +56,28 @@ pub unsafe fn file_ref_get(ref_: *mut file_ref_t) -> bool {
 
 #[inline]
 pub unsafe fn file_ref_inc(ref_: *mut file_ref_t) {
-    let prior: ::core::ffi::c_long = atomic_long_fetch_inc_relaxed(&mut (*ref_).refcnt);
+    let prior: ::kernel::ffi::c_long = atomic_long_fetch_inc_relaxed(&mut (*ref_).refcnt);
     WARN_ONCE(prior < 0, "file_ref_inc() on a released file reference");
 }
 
 #[inline]
 pub unsafe fn file_ref_put(ref_: *mut file_ref_t) -> bool {
     let _preempt_guard = guard(preempt());
-    let cnt: ::core::ffi::c_long = atomic_long_dec_return(&mut (*ref_).refcnt);
+    let cnt: ::kernel::ffi::c_long = atomic_long_dec_return(&mut (*ref_).refcnt);
     if cnt >= 0 {
         return false;
     }
-    __file_ref_put(ref_, cnt as ::core::ffi::c_ulong)
+    __file_ref_put(ref_, cnt as ::kernel::ffi::c_ulong)
 }
 
 #[inline]
 pub unsafe fn file_ref_put_close(ref_: *mut file_ref_t) -> bool {
-    let mut old: ::core::ffi::c_long = atomic_long_read(&(*ref_).refcnt);
-    if likely(old == FILE_REF_ONEREF as ::core::ffi::c_long) {
+    let mut old: ::kernel::ffi::c_long = atomic_long_read(&(*ref_).refcnt);
+    if likely(old == FILE_REF_ONEREF as ::kernel::ffi::c_long) {
         if likely(atomic_long_try_cmpxchg(
             &mut (*ref_).refcnt,
             &mut old,
-            FILE_REF_DEAD as ::core::ffi::c_long,
+            FILE_REF_DEAD as ::kernel::ffi::c_long,
         )) {
             return true;
         }
@@ -86,9 +86,9 @@ pub unsafe fn file_ref_put_close(ref_: *mut file_ref_t) -> bool {
 }
 
 #[inline]
-pub unsafe fn file_ref_read(ref_: *mut file_ref_t) -> ::core::ffi::c_ulong {
-    let c: ::core::ffi::c_ulong = atomic_long_read(&(*ref_).refcnt) as ::core::ffi::c_ulong;
-    if c >= FILE_REF_RELEASED as ::core::ffi::c_ulong {
+pub unsafe fn file_ref_read(ref_: *mut file_ref_t) -> ::kernel::ffi::c_ulong {
+    let c: ::kernel::ffi::c_ulong = atomic_long_read(&(*ref_).refcnt) as ::kernel::ffi::c_ulong;
+    if c >= FILE_REF_RELEASED as ::kernel::ffi::c_ulong {
         0
     } else {
         c.wrapping_add(1)
@@ -96,8 +96,8 @@ pub unsafe fn file_ref_read(ref_: *mut file_ref_t) -> ::core::ffi::c_ulong {
 }
 
 #[inline]
-pub unsafe fn __file_ref_read_raw(ref_: *mut file_ref_t) -> ::core::ffi::c_ulong {
-    atomic_long_read(&(*ref_).refcnt) as ::core::ffi::c_ulong
+pub unsafe fn __file_ref_read_raw(ref_: *mut file_ref_t) -> ::kernel::ffi::c_ulong {
+    atomic_long_read(&(*ref_).refcnt) as ::kernel::ffi::c_ulong
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

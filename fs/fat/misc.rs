@@ -24,13 +24,13 @@ pub unsafe fn __fat_fs_error(sb: *mut super_block, report: i32, fmt: *const i8, 
     let opts = &mut (*MSDOS_SB(sb)).options;
     if report != 0 {
         let mut vaf = va_format { fmt, va: &mut args };
-        fat_msg(sb, KERN_ERR, c"error, %pV", &mut vaf);
+        fat_msg(sb, c"\x013error, %pV", &mut vaf);
     }
     if opts.errors == FAT_ERRORS_PANIC {
         panic(c"FAT-fs (%s): fs panic from previous error\n", (*sb).s_id);
     } else if opts.errors == FAT_ERRORS_RO && sb_rdonly(sb) == 0 {
         (*sb).s_flags |= SB_RDONLY;
-        fat_msg(sb, KERN_ERR, c"Filesystem has been set read-only");
+        fat_msg(sb, c"\x013Filesystem has been set read-only");
     }
 }
 
@@ -44,12 +44,12 @@ pub unsafe fn fat_clusters_flush(sb: *mut super_block) -> i32 {
     if !is_fat32(sbi) { return 0; }
     let bh = sb_bread(sb, (*sbi).fsinfo_sector);
     if bh.is_null() {
-        fat_msg(sb, KERN_ERR, c"bread failed in fat_clusters_flush");
+        fat_msg(sb, c"\x013bread failed in fat_clusters_flush");
         return -EIO;
     }
     let fsinfo = (*bh).b_data as *mut fat_boot_fsinfo;
     if !IS_FSINFO(fsinfo) {
-        fat_msg(sb, KERN_ERR, c"Invalid FSINFO signature: 0x%08x, 0x%08x (sector = %lu)",
+        fat_msg(sb, c"\x013Invalid FSINFO signature: 0x%08x, 0x%08x (sector = %lu)",
             le32_to_cpu((*fsinfo).signature1), le32_to_cpu((*fsinfo).signature2), (*sbi).fsinfo_sector);
     } else {
         if (*sbi).free_clusters != -1 { (*fsinfo).free_clusters = cpu_to_le32((*sbi).free_clusters); }

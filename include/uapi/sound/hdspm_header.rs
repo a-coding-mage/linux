@@ -131,7 +131,7 @@ pub const HDSPM_ADDON_TCO: i32 = 1;
 #[derive(Copy, Clone)]
 pub struct hdspm_version {
     pub card_type: u8,
-    pub cardname: [core::ffi::c_char; 20],
+    pub cardname: [kernel::ffi::c_char; 20],
     pub serial: u32,
     pub firmware_rev: u16,
     pub addons: i32,

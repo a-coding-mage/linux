@@ -24,8 +24,8 @@ pub struct cma_kobject {
  */
 #[repr(C)]
 pub struct cma_memrange {
-    pub base_pfn: ::core::ffi::c_ulong,
-    pub count: ::core::ffi::c_ulong,
+    pub base_pfn: ::kernel::ffi::c_ulong,
+    pub count: ::kernel::ffi::c_ulong,
     pub _bindgen_anon_1: cma_memrange__bindgen_ty_1,
     #[cfg(CONFIG_CMA_DEBUGFS)]
     pub dfs_bitmap: debugfs_u32_array,
@@ -33,25 +33,25 @@ pub struct cma_memrange {
 
 #[repr(C)]
 pub union cma_memrange__bindgen_ty_1 {
-    pub early_pfn: ::core::ffi::c_ulong,
-    pub bitmap: *mut ::core::ffi::c_ulong,
+    pub early_pfn: ::kernel::ffi::c_ulong,
+    pub bitmap: *mut ::kernel::ffi::c_ulong,
 }
 
 pub const CMA_MAX_RANGES: usize = 8;
 
 #[repr(C)]
 pub struct cma {
-    pub count: ::core::ffi::c_ulong,
-    pub available_count: ::core::ffi::c_ulong,
-    pub order_per_bit: ::core::ffi::c_uint, /* Order of pages represented by one bit */
+    pub count: ::kernel::ffi::c_ulong,
+    pub available_count: ::kernel::ffi::c_ulong,
+    pub order_per_bit: ::kernel::ffi::c_uint, /* Order of pages represented by one bit */
     pub lock: spinlock_t,
     pub alloc_mutex: mutex,
     #[cfg(CONFIG_CMA_DEBUGFS)]
     pub mem_head: hlist_head,
     #[cfg(CONFIG_CMA_DEBUGFS)]
     pub mem_head_lock: spinlock_t,
-    pub name: [::core::ffi::c_char; CMA_MAX_NAME],
-    pub nranges: ::core::ffi::c_int,
+    pub name: [::kernel::ffi::c_char; CMA_MAX_NAME],
+    pub nranges: ::kernel::ffi::c_int,
     pub ranges: [cma_memrange; CMA_MAX_RANGES],
     #[cfg(CONFIG_CMA_SYSFS)]
     /* the number of CMA page successful allocations */
@@ -65,9 +65,9 @@ pub struct cma {
     #[cfg(CONFIG_CMA_SYSFS)]
     /* kobject requires dynamic object */
     pub cma_kobj: *mut cma_kobject,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     /* NUMA node (NUMA_NO_NODE if unspecified) */
-    pub nid: ::core::ffi::c_int,
+    pub nid: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -81,31 +81,31 @@ pub enum cma_flags {
 
 extern "C" {
     pub static mut cma_areas: [cma; MAX_CMA_AREAS];
-    pub static mut cma_area_count: ::core::ffi::c_uint;
+    pub static mut cma_area_count: ::kernel::ffi::c_uint;
 }
 
 #[inline]
-pub unsafe fn cma_bitmap_maxno(cma: *mut cma, cmr: *mut cma_memrange) -> ::core::ffi::c_ulong {
+pub unsafe fn cma_bitmap_maxno(cma: *mut cma, cmr: *mut cma_memrange) -> ::kernel::ffi::c_ulong {
     (*cmr).count >> (*cma).order_per_bit
 }
 
 #[cfg(CONFIG_CMA_SYSFS)]
 extern "C" {
-    pub fn cma_sysfs_account_success_pages(cma: *mut cma, nr_pages: ::core::ffi::c_ulong);
-    pub fn cma_sysfs_account_fail_pages(cma: *mut cma, nr_pages: ::core::ffi::c_ulong);
-    pub fn cma_sysfs_account_release_pages(cma: *mut cma, nr_pages: ::core::ffi::c_ulong);
+    pub fn cma_sysfs_account_success_pages(cma: *mut cma, nr_pages: ::kernel::ffi::c_ulong);
+    pub fn cma_sysfs_account_fail_pages(cma: *mut cma, nr_pages: ::kernel::ffi::c_ulong);
+    pub fn cma_sysfs_account_release_pages(cma: *mut cma, nr_pages: ::kernel::ffi::c_ulong);
 }
 
 #[cfg(not(CONFIG_CMA_SYSFS))]
 #[inline]
-pub unsafe fn cma_sysfs_account_success_pages(_cma: *mut cma, _nr_pages: ::core::ffi::c_ulong) {}
+pub unsafe fn cma_sysfs_account_success_pages(_cma: *mut cma, _nr_pages: ::kernel::ffi::c_ulong) {}
 
 #[cfg(not(CONFIG_CMA_SYSFS))]
 #[inline]
-pub unsafe fn cma_sysfs_account_fail_pages(_cma: *mut cma, _nr_pages: ::core::ffi::c_ulong) {}
+pub unsafe fn cma_sysfs_account_fail_pages(_cma: *mut cma, _nr_pages: ::kernel::ffi::c_ulong) {}
 
 #[cfg(not(CONFIG_CMA_SYSFS))]
 #[inline]
-pub unsafe fn cma_sysfs_account_release_pages(_cma: *mut cma, _nr_pages: ::core::ffi::c_ulong) {}
+pub unsafe fn cma_sysfs_account_release_pages(_cma: *mut cma, _nr_pages: ::kernel::ffi::c_ulong) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

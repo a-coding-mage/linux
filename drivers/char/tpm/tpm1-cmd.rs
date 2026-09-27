@@ -10,8 +10,8 @@ static TPM1_ORDINAL_DURATION: [u8; TPM_MAX_ORDINAL] = [
 ];
 
 extern "C" {
-    fn tpm1_getcap(chip: *mut tpm_chip, subcap_id: u32, cap: *mut cap_t, desc: *const core::ffi::c_char, min_cap_length: usize) -> isize;
-    fn tpm_transmit_cmd(chip: *mut tpm_chip, buf: *mut tpm_buf, min: usize, desc: *const core::ffi::c_char) -> i32;
+    fn tpm1_getcap(chip: *mut tpm_chip, subcap_id: u32, cap: *mut cap_t, desc: *const kernel::ffi::c_char, min_cap_length: usize) -> isize;
+    fn tpm_transmit_cmd(chip: *mut tpm_chip, buf: *mut tpm_buf, min: usize, desc: *const kernel::ffi::c_char) -> i32;
 }
 
 pub unsafe fn tpm1_calc_ordinal_duration(chip: *mut tpm_chip, ordinal: u32) -> usize {
@@ -42,9 +42,9 @@ pub unsafe fn tpm1_get_timeouts(chip: *mut tpm_chip) -> i32 {
     (*chip).duration[TPM_SHORT as usize]=usecs_to_jiffies(be32_to_cpu(cap.duration.tpm_short) as usize); (*chip).duration[TPM_MEDIUM as usize]=usecs_to_jiffies(be32_to_cpu(cap.duration.tpm_medium) as usize); (*chip).duration[TPM_LONG as usize]=usecs_to_jiffies(be32_to_cpu(cap.duration.tpm_long) as usize); (*chip).duration[TPM_LONG_LONG as usize]=0; (*chip).flags |= TPM_CHIP_FLAG_HAVE_TIMEOUTS; 0
 }
 
-pub unsafe fn tpm1_pcr_extend(chip:*mut tpm_chip,pcr_idx:u32,hash:*const u8,log_msg:*const core::ffi::c_char)->i32 { let b=kzalloc(TPM_BUFSIZE,GFP_KERNEL); if b.is_null(){return -ENOMEM;} tpm_buf_init(b,TPM_BUFSIZE);tpm_buf_reset(b,TPM_TAG_RQU_COMMAND,TPM_ORD_PCR_EXTEND);tpm_buf_append_u32(b,pcr_idx);tpm_buf_append(b,hash,TPM_DIGEST_SIZE);tpm_transmit_cmd(chip,b,TPM_DIGEST_SIZE,log_msg) }
+pub unsafe fn tpm1_pcr_extend(chip:*mut tpm_chip,pcr_idx:u32,hash:*const u8,log_msg:*const kernel::ffi::c_char)->i32 { let b=kzalloc(TPM_BUFSIZE,GFP_KERNEL); if b.is_null(){return -ENOMEM;} tpm_buf_init(b,TPM_BUFSIZE);tpm_buf_reset(b,TPM_TAG_RQU_COMMAND,TPM_ORD_PCR_EXTEND);tpm_buf_append_u32(b,pcr_idx);tpm_buf_append(b,hash,TPM_DIGEST_SIZE);tpm_transmit_cmd(chip,b,TPM_DIGEST_SIZE,log_msg) }
 
-pub unsafe fn tpm1_getcap(chip:*mut tpm_chip,subcap_id:u32,cap:*mut cap_t,desc:*const core::ffi::c_char,min_cap_length:usize)->isize { let b=kzalloc(TPM_BUFSIZE,GFP_KERNEL);if b.is_null(){return -ENOMEM as isize;}tpm_buf_init(b,TPM_BUFSIZE);tpm_buf_reset(b,TPM_TAG_RQU_COMMAND,TPM_ORD_GET_CAP);if subcap_id==TPM_CAP_VERSION_1_1||subcap_id==TPM_CAP_VERSION_1_2{tpm_buf_append_u32(b,subcap_id);tpm_buf_append_u32(b,0);}else{tpm_buf_append_u32(b,if subcap_id==TPM_CAP_FLAG_PERM||subcap_id==TPM_CAP_FLAG_VOL{TPM_CAP_FLAG}else{TPM_CAP_PROP});tpm_buf_append_u32(b,4);tpm_buf_append_u32(b,subcap_id);}let rc=tpm_transmit_cmd(chip,b,min_cap_length,desc) as isize;if rc==0{*cap=*(b.as_ref().unwrap().data.as_ptr().add(TPM_HEADER_SIZE+4) as *const cap_t);}rc }
+pub unsafe fn tpm1_getcap(chip:*mut tpm_chip,subcap_id:u32,cap:*mut cap_t,desc:*const kernel::ffi::c_char,min_cap_length:usize)->isize { let b=kzalloc(TPM_BUFSIZE,GFP_KERNEL);if b.is_null(){return -ENOMEM as isize;}tpm_buf_init(b,TPM_BUFSIZE);tpm_buf_reset(b,TPM_TAG_RQU_COMMAND,TPM_ORD_GET_CAP);if subcap_id==TPM_CAP_VERSION_1_1||subcap_id==TPM_CAP_VERSION_1_2{tpm_buf_append_u32(b,subcap_id);tpm_buf_append_u32(b,0);}else{tpm_buf_append_u32(b,if subcap_id==TPM_CAP_FLAG_PERM||subcap_id==TPM_CAP_FLAG_VOL{TPM_CAP_FLAG}else{TPM_CAP_PROP});tpm_buf_append_u32(b,4);tpm_buf_append_u32(b,subcap_id);}let rc=tpm_transmit_cmd(chip,b,min_cap_length,desc) as isize;if rc==0{*cap=*(b.as_ref().unwrap().data.as_ptr().add(TPM_HEADER_SIZE+4) as *const cap_t);}rc }
 
 pub unsafe fn tpm1_get_random(chip:*mut tpm_chip,dest:*mut u8,max:usize)->i32 { let b=kzalloc(TPM_BUFSIZE,GFP_KERNEL);if b.is_null(){return -ENOMEM;}let mut n=core::cmp::min(max,TPM_MAX_RNG_DATA as usize) as u32;let mut total=0usize;let mut retries=5; tpm_buf_init(b,TPM_BUFSIZE);tpm_buf_reset(b,TPM_TAG_RQU_COMMAND,TPM_ORD_GET_RANDOM);while retries>0&&total<max{tpm_buf_append_u32(b,n);let mut rc=tpm_transmit_cmd(chip,b,4,c"attempting get random".as_ptr());if rc!=0{return if rc>0{-EIO}else{rc}}let p=b.data.as_ptr().add(TPM_HEADER_SIZE);let recd=be32_to_cpu(*(p as *const u32));if recd>n||tpm_buf_length(b)<TPM_HEADER_SIZE+4+recd as usize{return -EFAULT;}core::ptr::copy_nonoverlapping(p.add(4),dest.add(total),recd as usize);total+=recd as usize;n-=recd;tpm_buf_reset(b,TPM_TAG_RQU_COMMAND,TPM_ORD_GET_RANDOM);retries-=1;}if total>0{total as i32}else{-EIO} }
 

@@ -8,7 +8,7 @@ pub struct dsa_mv88e6xxx_pdata {
      * without gory pointer manipulations
      */
     pub cd: dsa_chip_data,
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
     pub enabled_ports: u32,
     pub netdev: *mut net_device,
     pub eeprom_len: u32,

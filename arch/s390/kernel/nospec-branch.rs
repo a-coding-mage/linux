@@ -3,13 +3,13 @@
 // referenced here and are not implemented in this file.
 
 extern "C" {
-    fn kstrtobool(s: *mut core::ffi::c_char, result: *mut bool) -> i32;
+    fn kstrtobool(s: *mut kernel::ffi::c_char, result: *mut bool) -> i32;
     fn test_facility(facility: i32) -> bool;
     fn nospec_uses_trampoline() -> bool;
     fn nobp_enabled() -> bool;
     fn cpu_mitigations_off() -> bool;
     fn s390_kernel_write(addr: *mut u8, data: *const u8, size: usize);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 // IS_ENABLED(CONFIG_KERNEL_NOBP)
@@ -17,7 +17,7 @@ extern "C" {
 pub static mut nobp: i32 = 0;
 
 #[no_mangle]
-unsafe extern "C" fn nobp_setup_early(str_: *mut core::ffi::c_char) -> i32 {
+unsafe extern "C" fn nobp_setup_early(str_: *mut kernel::ffi::c_char) -> i32 {
     let mut enabled: bool = false;
     let rc = kstrtobool(str_, &mut enabled);
     if rc != 0 {
@@ -43,7 +43,7 @@ unsafe extern "C" fn nobp_setup_early(str_: *mut core::ffi::c_char) -> i32 {
 // early_param("nobp", nobp_setup_early);
 
 #[no_mangle]
-unsafe extern "C" fn nospec_setup_early(_str: *mut core::ffi::c_char) -> i32 {
+unsafe extern "C" fn nospec_setup_early(_str: *mut kernel::ffi::c_char) -> i32 {
     nobp = 0;
     0
 }
@@ -53,13 +53,13 @@ unsafe extern "C" fn nospec_setup_early(_str: *mut core::ffi::c_char) -> i32 {
 #[no_mangle]
 unsafe extern "C" fn nospec_report() -> i32 {
     if test_facility(156) {
-        pr_info(b"Spectre V2 mitigation: etokens\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_info(b"Spectre V2 mitigation: etokens\n\0".as_ptr() as *const kernel::ffi::c_char);
     }
     if nospec_uses_trampoline() {
-        pr_info(b"Spectre V2 mitigation: execute trampolines\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_info(b"Spectre V2 mitigation: execute trampolines\n\0".as_ptr() as *const kernel::ffi::c_char);
     }
     if nobp_enabled() {
-        pr_info(b"Spectre V2 mitigation: limited branch prediction\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_info(b"Spectre V2 mitigation: limited branch prediction\n\0".as_ptr() as *const kernel::ffi::c_char);
     }
     0
 }
@@ -77,7 +77,7 @@ mod expoline {
 
     #[no_mangle]
     unsafe extern "C" fn nospectre_v2_setup_early(
-        _str: *mut core::ffi::c_char,
+        _str: *mut kernel::ffi::c_char,
     ) -> i32 {
         nospec_disable = 1;
         0
@@ -112,7 +112,7 @@ mod expoline {
     }
 
     #[no_mangle]
-    unsafe extern "C" fn spectre_v2_setup_early(str_: *mut core::ffi::c_char) -> i32 {
+    unsafe extern "C" fn spectre_v2_setup_early(str_: *mut kernel::ffi::c_char) -> i32 {
         if !str_.is_null()
             && core::slice::from_raw_parts(str_ as *const u8, 2) == b"on"
         {

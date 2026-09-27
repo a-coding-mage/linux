@@ -8,9 +8,9 @@ pub const CPS_ENTRY_PATCH_INSNS: usize = 6;
 
 #[repr(C)]
 pub struct vpe_boot_config {
-    pub pc: ::core::ffi::c_ulong,
-    pub sp: ::core::ffi::c_ulong,
-    pub gp: ::core::ffi::c_ulong,
+    pub pc: ::kernel::ffi::c_ulong,
+    pub sp: ::kernel::ffi::c_ulong,
+    pub gp: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -21,7 +21,7 @@ pub struct core_boot_config {
 
 #[repr(C)]
 pub struct cluster_boot_config {
-    pub core_power: *mut ::core::ffi::c_ulong,
+    pub core_power: *mut ::kernel::ffi::c_ulong,
     pub cpumask: cpumask,
     pub core_config: *mut core_boot_config,
 }
@@ -29,10 +29,10 @@ pub struct cluster_boot_config {
 unsafe extern "C" {
     pub static mut mips_cps_cluster_bootcfg: *mut cluster_boot_config;
 
-    pub fn mips_cps_core_boot(cca: ::core::ffi::c_int, gcr_base: *mut ::core::ffi::c_void);
+    pub fn mips_cps_core_boot(cca: ::kernel::ffi::c_int, gcr_base: *mut ::kernel::ffi::c_void);
     pub fn mips_cps_core_init();
 
-    pub fn mips_cps_boot_vpes(cfg: *mut core_boot_config, vpe: ::core::ffi::c_uint);
+    pub fn mips_cps_boot_vpes(cfg: *mut core_boot_config, vpe: ::kernel::ffi::c_uint);
 
     pub fn mips_cps_pm_save();
     pub fn mips_cps_pm_restore();

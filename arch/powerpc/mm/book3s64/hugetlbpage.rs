@@ -10,28 +10,28 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-pub static mut hpage_shift: ::core::ffi::c_uint = 0;
+pub static mut hpage_shift: ::kernel::ffi::c_uint = 0;
 
 // CONFIG_PPC_64S_HASH_MMU
 pub unsafe fn __hash_page_huge(
-    ea: ::core::ffi::c_ulong,
-    access: ::core::ffi::c_ulong,
-    vsid: ::core::ffi::c_ulong,
+    ea: ::kernel::ffi::c_ulong,
+    access: ::kernel::ffi::c_ulong,
+    vsid: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
-    trap: ::core::ffi::c_ulong,
-    flags: ::core::ffi::c_ulong,
-    ssize: ::core::ffi::c_int,
-    shift: ::core::ffi::c_uint,
-    mmu_psize: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    trap: ::kernel::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
+    ssize: ::kernel::ffi::c_int,
+    shift: ::kernel::ffi::c_uint,
+    mmu_psize: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     let mut rpte: real_pte_t;
-    let vpn: ::core::ffi::c_ulong;
-    let mut old_pte: ::core::ffi::c_ulong;
-    let mut new_pte: ::core::ffi::c_ulong;
-    let mut rflags: ::core::ffi::c_ulong;
-    let mut pa: ::core::ffi::c_ulong;
-    let mut slot: ::core::ffi::c_long;
-    let offset: ::core::ffi::c_long;
+    let vpn: ::kernel::ffi::c_ulong;
+    let mut old_pte: ::kernel::ffi::c_ulong;
+    let mut new_pte: ::kernel::ffi::c_ulong;
+    let mut rflags: ::kernel::ffi::c_ulong;
+    let mut pa: ::kernel::ffi::c_ulong;
+    let mut slot: ::kernel::ffi::c_long;
+    let offset: ::kernel::ffi::c_long;
 
     BUG_ON(shift != mmu_psize_defs[mmu_psize as usize].shift);
 
@@ -102,13 +102,13 @@ pub unsafe fn __hash_page_huge(
     0
 }
 
-pub unsafe fn huge_ptep_modify_prot_start(vma: *mut vm_area_struct, addr: ::core::ffi::c_ulong, ptep: *mut pte_t) -> pte_t {
+pub unsafe fn huge_ptep_modify_prot_start(vma: *mut vm_area_struct, addr: ::kernel::ffi::c_ulong, ptep: *mut pte_t) -> pte_t {
     /* Clear _PAGE_PRESENT so no hardware parallel update is possible. */
     let pte_val = pte_update((*vma).vm_mm, addr, ptep, _PAGE_PRESENT, _PAGE_INVALID, 1);
     __pte(pte_val)
 }
 
-pub unsafe fn huge_ptep_modify_prot_commit(vma: *mut vm_area_struct, addr: ::core::ffi::c_ulong, ptep: *mut pte_t, old_pte: pte_t, pte: pte_t) {
+pub unsafe fn huge_ptep_modify_prot_commit(vma: *mut vm_area_struct, addr: ::kernel::ffi::c_ulong, ptep: *mut pte_t, old_pte: pte_t, pte: pte_t) {
     if radix_enabled() { return; }
     let psize = huge_page_size(hstate_vma(vma));
     set_huge_pte_at((*vma).vm_mm, addr, ptep, pte, psize);

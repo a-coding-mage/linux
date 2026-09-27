@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* Rust translation of hwmon.h. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub type UmodeT = u16;
 pub type U32 = u32;
@@ -62,7 +62,7 @@ macro_rules! hwmon_bit { ($name:ident, $value:ident) => { pub const $name: u32 =
 
 hwmon_bit!(HWMON_C_TEMP_RESET_HISTORY, hwmon_chip_attributes::hwmon_chip_temp_reset_history); hwmon_bit!(HWMON_C_IN_RESET_HISTORY, hwmon_chip_attributes::hwmon_chip_in_reset_history); hwmon_bit!(HWMON_C_CURR_RESET_HISTORY, hwmon_chip_attributes::hwmon_chip_curr_reset_history); hwmon_bit!(HWMON_C_POWER_RESET_HISTORY, hwmon_chip_attributes::hwmon_chip_power_reset_history); hwmon_bit!(HWMON_C_REGISTER_TZ, hwmon_chip_attributes::hwmon_chip_register_tz); hwmon_bit!(HWMON_C_UPDATE_INTERVAL, hwmon_chip_attributes::hwmon_chip_update_interval); hwmon_bit!(HWMON_C_UPDATE_INTERVAL_US, hwmon_chip_attributes::hwmon_chip_update_interval_us); hwmon_bit!(HWMON_C_ALARMS, hwmon_chip_attributes::hwmon_chip_alarms); hwmon_bit!(HWMON_C_SAMPLES, hwmon_chip_attributes::hwmon_chip_samples); hwmon_bit!(HWMON_C_CURR_SAMPLES, hwmon_chip_attributes::hwmon_chip_curr_samples); hwmon_bit!(HWMON_C_IN_SAMPLES, hwmon_chip_attributes::hwmon_chip_in_samples); hwmon_bit!(HWMON_C_POWER_SAMPLES, hwmon_chip_attributes::hwmon_chip_power_samples); hwmon_bit!(HWMON_C_TEMP_SAMPLES, hwmon_chip_attributes::hwmon_chip_temp_samples); hwmon_bit!(HWMON_C_BEEP_ENABLE, hwmon_chip_attributes::hwmon_chip_beep_enable); hwmon_bit!(HWMON_C_PEC, hwmon_chip_attributes::hwmon_chip_pec);
 
-#[repr(C)] pub struct hwmon_ops { pub visible: UmodeT, pub is_visible: Option<unsafe extern "C" fn(*const core::ffi::c_void, hwmon_sensor_types, U32, i32) -> UmodeT>, pub read: Option<unsafe extern "C" fn(*mut device, hwmon_sensor_types, U32, i32, *mut i64) -> i32>, pub read_string: Option<unsafe extern "C" fn(*mut device, hwmon_sensor_types, U32, i32, *mut *const c_char) -> i32>, pub write: Option<unsafe extern "C" fn(*mut device, hwmon_sensor_types, U32, i32, i64) -> i32> }
+#[repr(C)] pub struct hwmon_ops { pub visible: UmodeT, pub is_visible: Option<unsafe extern "C" fn(*const kernel::ffi::c_void, hwmon_sensor_types, U32, i32) -> UmodeT>, pub read: Option<unsafe extern "C" fn(*mut device, hwmon_sensor_types, U32, i32, *mut i64) -> i32>, pub read_string: Option<unsafe extern "C" fn(*mut device, hwmon_sensor_types, U32, i32, *mut *const c_char) -> i32>, pub write: Option<unsafe extern "C" fn(*mut device, hwmon_sensor_types, U32, i32, i64) -> i32> }
 #[repr(C)] pub struct hwmon_channel_info { pub type_: hwmon_sensor_types, pub config: *const U32 }
 #[repr(C)] pub struct hwmon_chip_info { pub ops: *const hwmon_ops, pub info: *const *const hwmon_channel_info }
 
@@ -71,11 +71,11 @@ macro_rules! HWMON_CHANNEL_INFO { ($stype:ident, $($config:expr),* $(,)?) => {{ 
 
 extern "C" {
     pub fn hwmon_device_register(dev: *mut device) -> *mut device;
-    pub fn hwmon_device_register_with_groups(dev: *mut device, name: *const c_char, drvdata: *mut core::ffi::c_void, groups: *const *const attribute_group) -> *mut device;
-    pub fn devm_hwmon_device_register_with_groups(dev: *mut device, name: *const c_char, drvdata: *mut core::ffi::c_void, groups: *const *const attribute_group) -> *mut device;
-    pub fn hwmon_device_register_with_info(dev: *mut device, name: *const c_char, drvdata: *mut core::ffi::c_void, info: *const hwmon_chip_info, extra_groups: *const *const attribute_group) -> *mut device;
-    pub fn hwmon_device_register_for_thermal(dev: *mut device, name: *const c_char, drvdata: *mut core::ffi::c_void) -> *mut device;
-    pub fn devm_hwmon_device_register_with_info(dev: *mut device, name: *const c_char, drvdata: *mut core::ffi::c_void, info: *const hwmon_chip_info, extra_groups: *const *const attribute_group) -> *mut device;
+    pub fn hwmon_device_register_with_groups(dev: *mut device, name: *const c_char, drvdata: *mut kernel::ffi::c_void, groups: *const *const attribute_group) -> *mut device;
+    pub fn devm_hwmon_device_register_with_groups(dev: *mut device, name: *const c_char, drvdata: *mut kernel::ffi::c_void, groups: *const *const attribute_group) -> *mut device;
+    pub fn hwmon_device_register_with_info(dev: *mut device, name: *const c_char, drvdata: *mut kernel::ffi::c_void, info: *const hwmon_chip_info, extra_groups: *const *const attribute_group) -> *mut device;
+    pub fn hwmon_device_register_for_thermal(dev: *mut device, name: *const c_char, drvdata: *mut kernel::ffi::c_void) -> *mut device;
+    pub fn devm_hwmon_device_register_with_info(dev: *mut device, name: *const c_char, drvdata: *mut kernel::ffi::c_void, info: *const hwmon_chip_info, extra_groups: *const *const attribute_group) -> *mut device;
     pub fn hwmon_device_unregister(dev: *mut device);
     pub fn hwmon_notify_event(dev: *mut device, type_: hwmon_sensor_types, attr: U32, channel: i32) -> i32;
     pub fn hwmon_sanitize_name(name: *const c_char) -> *mut c_char;

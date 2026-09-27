@@ -43,7 +43,7 @@ pub struct tree_desc {
 }
 
 pub type Pos = ush;
-pub type IPos = ::core::ffi::c_uint;
+pub type IPos = ::kernel::ffi::c_uint;
 
 #[repr(C)]
 pub struct deflate_state {
@@ -69,7 +69,7 @@ pub struct deflate_state {
     pub hash_bits: uInt,
     pub hash_mask: uInt,
     pub hash_shift: uInt,
-    pub block_start: ::core::ffi::c_long,
+    pub block_start: ::kernel::ffi::c_long,
     pub match_length: uInt,
     pub prev_match: IPos,
     pub match_available: i32,
@@ -122,9 +122,9 @@ pub unsafe fn MAX_DIST(s: *const deflate_state) -> uInt { (*s).w_size - MIN_LOOK
 extern "C" {
     pub fn zlib_tr_init(s: *mut deflate_state);
     pub fn zlib_tr_tally(s: *mut deflate_state, dist: u32, lc: u32) -> i32;
-    pub fn zlib_tr_flush_block(s: *mut deflate_state, buf: *mut ::core::ffi::c_char, stored_len: ulg, eof: i32) -> ulg;
+    pub fn zlib_tr_flush_block(s: *mut deflate_state, buf: *mut ::kernel::ffi::c_char, stored_len: ulg, eof: i32) -> ulg;
     pub fn zlib_tr_align(s: *mut deflate_state);
-    pub fn zlib_tr_stored_block(s: *mut deflate_state, buf: *mut ::core::ffi::c_char, stored_len: ulg, eof: i32);
+    pub fn zlib_tr_stored_block(s: *mut deflate_state, buf: *mut ::kernel::ffi::c_char, stored_len: ulg, eof: i32);
     pub fn zlib_tr_stored_type_only(s: *mut deflate_state);
 }
 
@@ -157,7 +157,7 @@ pub unsafe fn bi_windup(s: *mut deflate_state) {
 
 #[repr(C)]
 pub enum block_state { need_more, block_done, finish_started, finish_done }
-pub const Buf_size: i32 = 8 * 2 * ::core::mem::size_of::<::core::ffi::c_char>() as i32;
+pub const Buf_size: i32 = 8 * 2 * ::core::mem::size_of::<::kernel::ffi::c_char>() as i32;
 
 #[inline]
 pub unsafe fn zlib_tr_send_bits(s: *mut deflate_state, value: i32, length: i32) {

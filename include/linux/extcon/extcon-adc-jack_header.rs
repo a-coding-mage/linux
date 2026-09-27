@@ -52,8 +52,8 @@ pub struct adc_jack_cond {
  */
 #[repr(C)]
 pub struct adc_jack_pdata {
-    pub name: *const core::ffi::c_char,
-    pub consumer_channel: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub consumer_channel: *const kernel::ffi::c_char,
     pub cable_names: *const u32,
     /* The last entry's state should be 0 */
     pub adc_conditions: *mut adc_jack_cond,

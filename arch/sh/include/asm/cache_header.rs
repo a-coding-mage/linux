@@ -23,29 +23,29 @@ pub const ARCH_DMA_MINALIGN: usize = L1_CACHE_BYTES;
 
 #[repr(C)]
 pub struct cache_info {
-    pub ways: ::core::ffi::c_uint,      /* Number of cache ways */
-    pub sets: ::core::ffi::c_uint,      /* Number of cache sets */
-    pub linesz: ::core::ffi::c_uint,    /* Cache line size (bytes) */
+    pub ways: ::kernel::ffi::c_uint,      /* Number of cache ways */
+    pub sets: ::kernel::ffi::c_uint,      /* Number of cache sets */
+    pub linesz: ::kernel::ffi::c_uint,    /* Cache line size (bytes) */
 
-    pub way_size: ::core::ffi::c_uint,  /* sets * line size */
+    pub way_size: ::kernel::ffi::c_uint,  /* sets * line size */
 
     /*
      * way_incr is the address offset for accessing the next way
      * in memory mapped cache array ops.
      */
-    pub way_incr: ::core::ffi::c_uint,
-    pub entry_shift: ::core::ffi::c_uint,
-    pub entry_mask: ::core::ffi::c_uint,
+    pub way_incr: ::kernel::ffi::c_uint,
+    pub entry_shift: ::kernel::ffi::c_uint,
+    pub entry_mask: ::kernel::ffi::c_uint,
 
     /*
      * Compute a mask which selects the address bits which overlap between
      * 1. those used to select the cache set during indexing
      * 2. those in the physical page number.
      */
-    pub alias_mask: ::core::ffi::c_uint,
-    pub n_aliases: ::core::ffi::c_uint, /* Number of aliases */
+    pub alias_mask: ::kernel::ffi::c_uint,
+    pub n_aliases: ::kernel::ffi::c_uint, /* Number of aliases */
 
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

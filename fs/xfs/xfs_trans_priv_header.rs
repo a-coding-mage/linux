@@ -30,8 +30,8 @@ pub struct xfs_ail {
     pub ail_lock: spinlock_t,
     pub ail_last_pushed_lsn: xfs_lsn_t,
     pub ail_head_lsn: xfs_lsn_t,
-    pub ail_log_flush: ::core::ffi::c_int,
-    pub ail_opstate: ::core::ffi::c_ulong,
+    pub ail_log_flush: ::kernel::ffi::c_int,
+    pub ail_opstate: ::kernel::ffi::c_ulong,
     pub ail_buf_list: list_head,
     pub ail_empty: wait_queue_head_t,
     pub ail_target: xfs_lsn_t,
@@ -56,13 +56,13 @@ extern "C" {
         ailp: *mut xfs_ail,
         cur: *mut xfs_ail_cursor,
         log_items: *mut *mut xfs_log_item,
-        nr_items: ::core::ffi::c_int,
+        nr_items: ::kernel::ffi::c_int,
         lsn: xfs_lsn_t,
     );
     pub fn xfs_trans_ail_insert(ailp: *mut xfs_ail, lip: *mut xfs_log_item, lsn: xfs_lsn_t);
     pub fn xfs_ail_delete_one(ailp: *mut xfs_ail, lip: *mut xfs_log_item) -> xfs_lsn_t;
     pub fn xfs_ail_update_finish(ailp: *mut xfs_ail, old_lsn: xfs_lsn_t);
-    pub fn xfs_trans_ail_delete(lip: *mut xfs_log_item, shutdown_type: ::core::ffi::c_int);
+    pub fn xfs_trans_ail_delete(lip: *mut xfs_log_item, shutdown_type: ::kernel::ffi::c_int);
     pub fn xfs_ail_push_all_sync(ailp: *mut xfs_ail);
     pub fn xfs_ail_min_lsn(ailp: *mut xfs_ail) -> xfs_lsn_t;
     pub fn xfs_trans_ail_cursor_first(ailp: *mut xfs_ail, cur: *mut xfs_ail_cursor, lsn: xfs_lsn_t) -> *mut xfs_log_item;
@@ -72,13 +72,13 @@ extern "C" {
     pub fn __xfs_ail_assign_tail_lsn(ailp: *mut xfs_ail);
 }
 
-pub const XFS_AIL_OPSTATE_PUSH_ALL: ::core::ffi::c_uint = 0u32;
+pub const XFS_AIL_OPSTATE_PUSH_ALL: ::kernel::ffi::c_uint = 0u32;
 
 // Types and helpers below are supplied by other translated headers.
 extern "C" {
     fn list_first_entry_or_null(head: *mut list_head) -> *mut xfs_log_item;
     fn wake_up_process(task: *mut task_struct);
-    fn test_and_set_bit(nr: ::core::ffi::c_uint, addr: *mut ::core::ffi::c_ulong) -> bool;
+    fn test_and_set_bit(nr: ::kernel::ffi::c_uint, addr: *mut ::kernel::ffi::c_ulong) -> bool;
     fn spin_lock(lock: *mut spinlock_t);
     fn spin_unlock(lock: *mut spinlock_t);
 }

@@ -7,7 +7,7 @@
 
 #[repr(C)]
 pub struct min_heap_test_case {
-    pub str_: *const core::ffi::c_char,
+    pub str_: *const kernel::ffi::c_char,
     pub min_heap: bool,
 }
 
@@ -27,35 +27,35 @@ pub struct min_heap_test {
 
 #[repr(C)]
 pub struct min_heap_callbacks {
-    pub less: Option<unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void, *mut core::ffi::c_void) -> bool>,
-    pub swp: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void, *mut core::ffi::c_void)>,
+    pub less: Option<unsafe extern "C" fn(*const kernel::ffi::c_void, *const kernel::ffi::c_void, *mut kernel::ffi::c_void) -> bool>,
+    pub swp: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut kernel::ffi::c_void, *mut kernel::ffi::c_void)>,
 }
 
 extern "C" {
-    fn min_heapify_all_inline(heap: *mut min_heap_test, funcs: *const min_heap_callbacks, args: *mut core::ffi::c_void);
-    fn min_heap_pop_inline(heap: *mut min_heap_test, funcs: *const min_heap_callbacks, args: *mut core::ffi::c_void);
-    fn min_heap_push_inline(heap: *mut min_heap_test, element: *const i32, funcs: *const min_heap_callbacks, args: *mut core::ffi::c_void);
-    fn min_heap_pop_push_inline(heap: *mut min_heap_test, element: *const i32, funcs: *const min_heap_callbacks, args: *mut core::ffi::c_void);
-    fn min_heap_del_inline(heap: *mut min_heap_test, index: usize, funcs: *const min_heap_callbacks, args: *mut core::ffi::c_void);
+    fn min_heapify_all_inline(heap: *mut min_heap_test, funcs: *const min_heap_callbacks, args: *mut kernel::ffi::c_void);
+    fn min_heap_pop_inline(heap: *mut min_heap_test, funcs: *const min_heap_callbacks, args: *mut kernel::ffi::c_void);
+    fn min_heap_push_inline(heap: *mut min_heap_test, element: *const i32, funcs: *const min_heap_callbacks, args: *mut kernel::ffi::c_void);
+    fn min_heap_pop_push_inline(heap: *mut min_heap_test, element: *const i32, funcs: *const min_heap_callbacks, args: *mut kernel::ffi::c_void);
+    fn min_heap_del_inline(heap: *mut min_heap_test, index: usize, funcs: *const min_heap_callbacks, args: *mut kernel::ffi::c_void);
     fn min_heap_init_inline(heap: *mut min_heap_test, data: *mut i32, size: usize);
     fn get_random_u32() -> u32;
 }
 
-unsafe extern "C" fn less_than(lhs: *const core::ffi::c_void, rhs: *const core::ffi::c_void, _args: *mut core::ffi::c_void) -> bool {
+unsafe extern "C" fn less_than(lhs: *const kernel::ffi::c_void, rhs: *const kernel::ffi::c_void, _args: *mut kernel::ffi::c_void) -> bool {
     *(lhs as *const i32) < *(rhs as *const i32)
 }
 
-unsafe extern "C" fn greater_than(lhs: *const core::ffi::c_void, rhs: *const core::ffi::c_void, _args: *mut core::ffi::c_void) -> bool {
+unsafe extern "C" fn greater_than(lhs: *const kernel::ffi::c_void, rhs: *const kernel::ffi::c_void, _args: *mut kernel::ffi::c_void) -> bool {
     *(lhs as *const i32) > *(rhs as *const i32)
 }
 
 // The KUnit assertion and parameter interfaces are supplied by the C test framework.
 extern "C" {
-    fn kunit_expect_le(test: *mut core::ffi::c_void, lhs: i32, rhs: i32);
-    fn kunit_expect_ge(test: *mut core::ffi::c_void, lhs: i32, rhs: i32);
+    fn kunit_expect_le(test: *mut kernel::ffi::c_void, lhs: i32, rhs: i32);
+    fn kunit_expect_ge(test: *mut kernel::ffi::c_void, lhs: i32, rhs: i32);
 }
 
-unsafe fn pop_verify_heap(test: *mut core::ffi::c_void, is_min_heap: bool, heap: *mut min_heap_test, funcs: *const min_heap_callbacks) {
+unsafe fn pop_verify_heap(test: *mut kernel::ffi::c_void, is_min_heap: bool, heap: *mut min_heap_test, funcs: *const min_heap_callbacks) {
     let values = (*heap).data;
     let mut last = *values;
     min_heap_pop_inline(heap, funcs, core::ptr::null_mut());
@@ -67,7 +67,7 @@ unsafe fn pop_verify_heap(test: *mut core::ffi::c_void, is_min_heap: bool, heap:
     }
 }
 
-unsafe fn test_heapify_all(test: *mut core::ffi::c_void, params: *const min_heap_test_case) {
+unsafe fn test_heapify_all(test: *mut kernel::ffi::c_void, params: *const min_heap_test_case) {
     let mut values: [i32; 13] = [3, 1, 2, 4, 0x8000000, 0x7FFFFFF, 0, -3, -1, -2, -4, 0x8000000, 0x7FFFFFF];
     let mut heap = min_heap_test { data: values.as_mut_ptr(), nr: values.len(), size: values.len() };
     let funcs = min_heap_callbacks { less: Some(if (*params).min_heap { less_than } else { greater_than }), swp: None };
@@ -79,7 +79,7 @@ unsafe fn test_heapify_all(test: *mut core::ffi::c_void, params: *const min_heap
     pop_verify_heap(test, (*params).min_heap, &mut heap, &funcs);
 }
 
-unsafe fn test_heap_push(test: *mut core::ffi::c_void, params: *const min_heap_test_case) {
+unsafe fn test_heap_push(test: *mut kernel::ffi::c_void, params: *const min_heap_test_case) {
     let data: [i32; 13] = [3, 1, 2, 4, 0x80000000u32 as i32, 0x7FFFFFFF, 0, -3, -1, -2, -4, 0x80000000u32 as i32, 0x7FFFFFFF];
     let mut values = [0i32; 13];
     let mut heap = min_heap_test { data: values.as_mut_ptr(), nr: 0, size: values.len() };
@@ -93,7 +93,7 @@ unsafe fn test_heap_push(test: *mut core::ffi::c_void, params: *const min_heap_t
     pop_verify_heap(test, (*params).min_heap, &mut heap, &funcs);
 }
 
-unsafe fn test_heap_pop_push(test: *mut core::ffi::c_void, params: *const min_heap_test_case) {
+unsafe fn test_heap_pop_push(test: *mut kernel::ffi::c_void, params: *const min_heap_test_case) {
     let data: [i32; 13] = [3, 1, 2, 4, 0x80000000u32 as i32, 0x7FFFFFFF, 0, -3, -1, -2, -4, 0x80000000u32 as i32, 0x7FFFFFFF];
     let mut values = [0i32; 13];
     let mut heap = min_heap_test { data: values.as_mut_ptr(), nr: 0, size: values.len() };
@@ -108,7 +108,7 @@ unsafe fn test_heap_pop_push(test: *mut core::ffi::c_void, params: *const min_he
     pop_verify_heap(test, (*params).min_heap, &mut heap, &funcs);
 }
 
-unsafe fn test_heap_del(test: *mut core::ffi::c_void, params: *const min_heap_test_case) {
+unsafe fn test_heap_del(test: *mut kernel::ffi::c_void, params: *const min_heap_test_case) {
     let mut values: [i32; 13] = [3, 1, 2, 4, 0x8000000, 0x7FFFFFF, 0, -3, -1, -2, -4, 0x8000000, 0x7FFFFFF];
     let mut heap = min_heap_test { data: values.as_mut_ptr(), nr: values.len(), size: values.len() };
     let funcs = min_heap_callbacks { less: Some(if (*params).min_heap { less_than } else { greater_than }), swp: None };

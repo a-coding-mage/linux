@@ -8,9 +8,9 @@
    never generates arithmetic faults and (b) call_pal instructions
    are implied trap barriers. */
 
-pub unsafe fn rdfpcr() -> ::core::ffi::c_ulong {
-    let mut tmp: ::core::ffi::c_ulong;
-    let ret: ::core::ffi::c_ulong;
+pub unsafe fn rdfpcr() -> ::kernel::ffi::c_ulong {
+    let mut tmp: ::kernel::ffi::c_ulong;
+    let ret: ::kernel::ffi::c_ulong;
 
     preempt_disable();
     if (*current_thread_info()).status & TS_SAVED_FP != 0 {
@@ -46,8 +46,8 @@ pub unsafe fn rdfpcr() -> ::core::ffi::c_ulong {
     ret
 }
 
-pub unsafe fn wrfpcr(val: ::core::ffi::c_ulong) {
-    let mut tmp: ::core::ffi::c_ulong;
+pub unsafe fn wrfpcr(val: ::kernel::ffi::c_ulong) {
+    let mut tmp: ::kernel::ffi::c_ulong;
 
     preempt_disable();
     if (*current_thread_info()).status & TS_SAVED_FP != 0 {
@@ -83,9 +83,9 @@ pub unsafe fn wrfpcr(val: ::core::ffi::c_ulong) {
 }
 
 pub unsafe fn swcr_update_status(
-    mut swcr: ::core::ffi::c_ulong,
-    fpcr: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_ulong {
+    mut swcr: ::kernel::ffi::c_ulong,
+    fpcr: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_ulong {
     /* EV6 implements most of the bits in hardware.  Collect
        the acrued exception bits from the real fpcr. */
     if implver() == IMPLVER_EV6 {
@@ -96,10 +96,10 @@ pub unsafe fn swcr_update_status(
 }
 
 extern "C" {
-    pub fn alpha_read_fp_reg(reg: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn alpha_write_fp_reg(reg: ::core::ffi::c_ulong, val: ::core::ffi::c_ulong);
-    pub fn alpha_read_fp_reg_s(reg: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn alpha_write_fp_reg_s(reg: ::core::ffi::c_ulong, val: ::core::ffi::c_ulong);
+    pub fn alpha_read_fp_reg(reg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn alpha_write_fp_reg(reg: ::kernel::ffi::c_ulong, val: ::kernel::ffi::c_ulong);
+    pub fn alpha_read_fp_reg_s(reg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn alpha_write_fp_reg_s(reg: ::kernel::ffi::c_ulong, val: ::kernel::ffi::c_ulong);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

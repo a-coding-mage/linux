@@ -19,8 +19,8 @@
 #[repr(C)]
 pub struct bcom_sram {
     pub base_phys: phys_addr_t,
-    pub base_virt: *mut core::ffi::c_void,
-    pub size: core::ffi::c_uint,
+    pub base_virt: *mut kernel::ffi::c_void,
+    pub size: kernel::ffi::c_uint,
     pub rh: *mut rh_info_t,
     pub lock: spinlock_t,
 }
@@ -31,27 +31,27 @@ extern "C" {
 
 /* Public API */
 extern "C" {
-    pub fn bcom_sram_init(sram_node: *mut device_node, owner: *mut core::ffi::c_char)
-        -> core::ffi::c_int;
+    pub fn bcom_sram_init(sram_node: *mut device_node, owner: *mut kernel::ffi::c_char)
+        -> kernel::ffi::c_int;
     pub fn bcom_sram_cleanup();
 
     pub fn bcom_sram_alloc(
-        size: core::ffi::c_int,
-        align: core::ffi::c_int,
+        size: kernel::ffi::c_int,
+        align: kernel::ffi::c_int,
         phys: *mut phys_addr_t,
-    ) -> *mut core::ffi::c_void;
-    pub fn bcom_sram_free(ptr: *mut core::ffi::c_void);
+    ) -> *mut kernel::ffi::c_void;
+    pub fn bcom_sram_free(ptr: *mut kernel::ffi::c_void);
 }
 
-pub unsafe fn bcom_sram_va2pa(va: *mut core::ffi::c_void) -> phys_addr_t {
+pub unsafe fn bcom_sram_va2pa(va: *mut kernel::ffi::c_void) -> phys_addr_t {
     (*bcom_sram).base_phys
-        + (va as *mut u8).offset_from((*bcom_sram).base_virt as *mut u8) as core::ffi::c_ulong
+        + (va as *mut u8).offset_from((*bcom_sram).base_virt as *mut u8) as kernel::ffi::c_ulong
 }
 
-pub unsafe fn bcom_sram_pa2va(pa: phys_addr_t) -> *mut core::ffi::c_void {
+pub unsafe fn bcom_sram_pa2va(pa: phys_addr_t) -> *mut kernel::ffi::c_void {
     ((*bcom_sram).base_virt as *mut u8)
         .add((pa - (*bcom_sram).base_phys) as usize)
-        as *mut core::ffi::c_void
+        as *mut kernel::ffi::c_void
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

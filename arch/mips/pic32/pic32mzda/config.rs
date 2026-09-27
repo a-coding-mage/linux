@@ -13,20 +13,20 @@ const PIC32_CFGEBIC: u32 = 0x00d0;
 const PIC32_CFGCON2: u32 = 0x00f0;
 const PIC32_RCON: u32 = 0x1240;
 
-static mut pic32_conf_base: *mut core::ffi::c_void = core::ptr::null_mut();
-static mut config_lock: core::ffi::c_void = core::mem::zeroed();
+static mut pic32_conf_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
+static mut config_lock: kernel::ffi::c_void = core::mem::zeroed();
 static mut pic32_reset_status: u32 = 0;
 
 extern "C" {
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn ioremap(addr: usize, size: usize) -> *mut core::ffi::c_void;
-    fn panic(message: *const core::ffi::c_char) -> !;
-    fn pr_debug(format: *const core::ffi::c_char, ...);
-    fn pr_info(format: *const core::ffi::c_char, ...);
-    fn spin_lock_irqsave(lock: *mut core::ffi::c_void, flags: *mut usize);
-    fn spin_unlock_irqrestore(lock: *mut core::ffi::c_void, flags: usize);
-    fn PIC32_CLR(addr: *mut core::ffi::c_void) -> *mut core::ffi::c_void;
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn ioremap(addr: usize, size: usize) -> *mut kernel::ffi::c_void;
+    fn panic(message: *const kernel::ffi::c_char) -> !;
+    fn pr_debug(format: *const kernel::ffi::c_char, ...);
+    fn pr_info(format: *const kernel::ffi::c_char, ...);
+    fn spin_lock_irqsave(lock: *mut kernel::ffi::c_void, flags: *mut usize);
+    fn spin_unlock_irqrestore(lock: *mut kernel::ffi::c_void, flags: usize);
+    fn PIC32_CLR(addr: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
     static PIC32_BASE_CONFIG: usize;
 }
 
@@ -38,7 +38,7 @@ const fn bit(n: u32) -> u32 {
 unsafe fn pic32_conf_get_reg_field(offset: u32, rshift: u32, mask: u32) -> u32 {
     let mut v: u32;
 
-    v = readl((pic32_conf_base as *mut u8).add(offset as usize) as *mut core::ffi::c_void);
+    v = readl((pic32_conf_base as *mut u8).add(offset as usize) as *mut kernel::ffi::c_void);
     v >>= rshift;
     v &= mask;
 
@@ -50,10 +50,10 @@ unsafe fn pic32_conf_modify_atomic(offset: u32, mask: u32, set: u32) -> u32 {
     let mut flags: usize = 0;
 
     spin_lock_irqsave(&raw mut config_lock, &raw mut flags);
-    v = readl((pic32_conf_base as *mut u8).add(offset as usize) as *mut core::ffi::c_void);
+    v = readl((pic32_conf_base as *mut u8).add(offset as usize) as *mut kernel::ffi::c_void);
     v &= !mask;
     v |= set & mask;
-    writel(v, (pic32_conf_base as *mut u8).add(offset as usize) as *mut core::ffi::c_void);
+    writel(v, (pic32_conf_base as *mut u8).add(offset as usize) as *mut kernel::ffi::c_void);
     spin_unlock_irqrestore(&raw mut config_lock, flags);
 
     0
@@ -87,8 +87,8 @@ pub unsafe extern "C" fn pic32_set_sdhci_adma_fifo_threshold(rthrsh: u32, wthrsh
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn pic32_syskey_unlock_debug(func: *const core::ffi::c_char, line: usize) {
-    let syskey = (pic32_conf_base as *mut u8).add(PIC32_SYSKEY as usize) as *mut core::ffi::c_void;
+pub unsafe extern "C" fn pic32_syskey_unlock_debug(func: *const kernel::ffi::c_char, line: usize) {
+    let syskey = (pic32_conf_base as *mut u8).add(PIC32_SYSKEY as usize) as *mut kernel::ffi::c_void;
 
     // pr_debug("%s: called from %s:%lu\n", __func__, func, line);
     writel(0x00000000, syskey);
@@ -113,12 +113,12 @@ pub unsafe extern "C" fn pic32_get_boot_status() -> u32 {
 pub unsafe extern "C" fn pic32_config_init() {
     pic32_conf_base = ioremap(PIC32_BASE_CONFIG, 0x110);
     if pic32_conf_base.is_null() {
-        panic(b"pic32: config base not mapped\0".as_ptr() as *const core::ffi::c_char);
+        panic(b"pic32: config base not mapped\0".as_ptr() as *const kernel::ffi::c_char);
     }
 
     /* Boot Status */
-    pic32_reset_status = readl((pic32_conf_base as *mut u8).add(PIC32_RCON as usize) as *mut core::ffi::c_void);
-    writel(u32::MAX, PIC32_CLR((pic32_conf_base as *mut u8).add(PIC32_RCON as usize) as *mut core::ffi::c_void));
+    pic32_reset_status = readl((pic32_conf_base as *mut u8).add(PIC32_RCON as usize) as *mut kernel::ffi::c_void);
+    writel(u32::MAX, PIC32_CLR((pic32_conf_base as *mut u8).add(PIC32_RCON as usize) as *mut kernel::ffi::c_void));
 
     /* Device Information */
     // pr_info("Device Id: 0x%08x, Device Ver: 0x%04x\n",

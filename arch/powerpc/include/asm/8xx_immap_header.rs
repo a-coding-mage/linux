@@ -6,7 +6,7 @@
  * intentionally represented only by this comment; these items are kernel-side.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub type uint = u32;
 pub type ushort = u16;

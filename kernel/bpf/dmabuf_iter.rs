@@ -28,7 +28,7 @@ extern "C" {
     fn dma_buf_put(dmabuf: *mut dma_buf);
     fn bpf_iter_get_info(meta: *mut bpf_iter_meta, in_stop: bool) -> *mut bpf_prog;
     fn bpf_iter_run_prog(prog: *mut bpf_prog, ctx: *mut bpf_iter__dmabuf) -> i32;
-    fn seq_puts(seq: *mut seq_file, s: *const core::ffi::c_char);
+    fn seq_puts(seq: *mut seq_file, s: *const kernel::ffi::c_char);
     fn bpf_iter_reg_target(info: *mut bpf_iter_reg) -> i32;
 }
 
@@ -38,7 +38,7 @@ pub struct bpf_iter__dmabuf {
     pub dmabuf: *mut dma_buf,
 }
 
-unsafe fn __dmabuf_seq_show(seq: *mut seq_file, v: *mut core::ffi::c_void, in_stop: bool) -> i32 {
+unsafe fn __dmabuf_seq_show(seq: *mut seq_file, v: *mut kernel::ffi::c_void, in_stop: bool) -> i32 {
     let mut meta = bpf_iter_meta { seq };
     let mut ctx = bpf_iter__dmabuf {
         meta: &mut meta,
@@ -56,7 +56,7 @@ unsafe fn __dmabuf_seq_show(seq: *mut seq_file, v: *mut core::ffi::c_void, in_st
 unsafe extern "C" fn dmabuf_iter_seq_start(
     seq: *mut seq_file,
     pos: *mut i64,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     let p = (*seq).private as *mut dmabuf_iter_priv;
 
     if *pos != 0 {
@@ -68,32 +68,32 @@ unsafe extern "C" fn dmabuf_iter_seq_start(
 
         /* Always resume from where we stopped, regardless of the value of pos. */
         (*p).dmabuf = core::ptr::null_mut();
-        return dmabuf as *mut core::ffi::c_void;
+        return dmabuf as *mut kernel::ffi::c_void;
     }
 
-    dma_buf_iter_begin() as *mut core::ffi::c_void
+    dma_buf_iter_begin() as *mut kernel::ffi::c_void
 }
 
 unsafe extern "C" fn dmabuf_iter_seq_next(
     _seq: *mut seq_file,
-    v: *mut core::ffi::c_void,
+    v: *mut kernel::ffi::c_void,
     pos: *mut i64,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     let dmabuf = v as *mut dma_buf;
     *pos += 1;
-    dma_buf_iter_next(dmabuf) as *mut core::ffi::c_void
+    dma_buf_iter_next(dmabuf) as *mut kernel::ffi::c_void
 }
 
 unsafe extern "C" fn dmabuf_iter_seq_show(
     seq: *mut seq_file,
-    v: *mut core::ffi::c_void,
+    v: *mut kernel::ffi::c_void,
 ) -> i32 {
     __dmabuf_seq_show(seq, v, false)
 }
 
 unsafe extern "C" fn dmabuf_iter_seq_stop(
     seq: *mut seq_file,
-    v: *mut core::ffi::c_void,
+    v: *mut kernel::ffi::c_void,
 ) {
     let dmabuf = v as *mut dma_buf;
 
@@ -105,10 +105,10 @@ unsafe extern "C" fn dmabuf_iter_seq_stop(
 
 #[repr(C)]
 pub struct seq_operations {
-    pub start: Option<unsafe extern "C" fn(*mut seq_file, *mut i64) -> *mut core::ffi::c_void>,
-    pub next: Option<unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void, *mut i64) -> *mut core::ffi::c_void>,
-    pub stop: Option<unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void)>,
-    pub show: Option<unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void) -> i32>,
+    pub start: Option<unsafe extern "C" fn(*mut seq_file, *mut i64) -> *mut kernel::ffi::c_void>,
+    pub next: Option<unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void, *mut i64) -> *mut kernel::ffi::c_void>,
+    pub stop: Option<unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void)>,
+    pub show: Option<unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void) -> i32>,
 }
 
 static DMABUF_ITER_SEQ_OPS: seq_operations = seq_operations {
@@ -122,11 +122,11 @@ unsafe extern "C" fn bpf_iter_dmabuf_show_fdinfo(
     _aux: *const bpf_iter_aux_info,
     seq: *mut seq_file,
 ) {
-    seq_puts(seq, b"dmabuf iter\n\0".as_ptr() as *const core::ffi::c_char);
+    seq_puts(seq, b"dmabuf iter\n\0".as_ptr() as *const kernel::ffi::c_char);
 }
 
 unsafe extern "C" fn dmabuf_iter_seq_init(
-    priv_: *mut core::ffi::c_void,
+    priv_: *mut kernel::ffi::c_void,
     _aux: *mut bpf_iter_aux_info,
 ) -> i32 {
     let p = priv_ as *mut dmabuf_iter_priv;
@@ -134,7 +134,7 @@ unsafe extern "C" fn dmabuf_iter_seq_init(
     0
 }
 
-unsafe extern "C" fn dmabuf_iter_seq_fini(priv_: *mut core::ffi::c_void) {
+unsafe extern "C" fn dmabuf_iter_seq_fini(priv_: *mut kernel::ffi::c_void) {
     let p = priv_ as *mut dmabuf_iter_priv;
 
     if !(*p).dmabuf.is_null() {
@@ -145,8 +145,8 @@ unsafe extern "C" fn dmabuf_iter_seq_fini(priv_: *mut core::ffi::c_void) {
 #[repr(C)]
 pub struct bpf_iter_seq_info {
     pub seq_ops: *const seq_operations,
-    pub init_seq_private: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut bpf_iter_aux_info) -> i32>,
-    pub fini_seq_private: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
+    pub init_seq_private: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut bpf_iter_aux_info) -> i32>,
+    pub fini_seq_private: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
     pub seq_priv_size: usize,
 }
 
@@ -159,7 +159,7 @@ static DMABUF_ITER_SEQ_INFO: bpf_iter_seq_info = bpf_iter_seq_info {
 
 #[repr(C)]
 pub struct bpf_iter_reg {
-    pub target: *const core::ffi::c_char,
+    pub target: *const kernel::ffi::c_char,
     pub feature: u32,
     pub show_fdinfo: Option<unsafe extern "C" fn(*const bpf_iter_aux_info, *mut seq_file)>,
     pub ctx_arg_info_size: u32,
@@ -175,7 +175,7 @@ pub struct bpf_iter_arg_info {
 }
 
 static mut BPF_DMABUF_REG_INFO: bpf_iter_reg = bpf_iter_reg {
-    target: b"dmabuf\0".as_ptr() as *const core::ffi::c_char,
+    target: b"dmabuf\0".as_ptr() as *const kernel::ffi::c_char,
     feature: 1, // BPF_ITER_RESCHED
     show_fdinfo: Some(bpf_iter_dmabuf_show_fdinfo),
     ctx_arg_info_size: 1,

@@ -9,20 +9,20 @@
 #[repr(C)]
 pub struct vmemmap_backing {
     pub list: *mut vmemmap_backing,
-    pub phys: ::core::ffi::c_ulong,
-    pub virt_addr: ::core::ffi::c_ulong,
+    pub phys: ::kernel::ffi::c_ulong,
+    pub virt_addr: ::kernel::ffi::c_ulong,
 }
 
 pub static mut vmemmap_list: *mut vmemmap_backing = ::core::ptr::null_mut();
 
 pub unsafe fn p4d_populate(mm: *mut mm_struct, p4d: *mut p4d_t, pud: *mut pud_t) {
     let _ = mm;
-    p4d_set(p4d, pud as ::core::ffi::c_ulong);
+    p4d_set(p4d, pud as ::kernel::ffi::c_ulong);
 }
 
 pub unsafe fn pud_alloc_one(
     mm: *mut mm_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
 ) -> *mut pud_t {
     let _ = addr;
     kmem_cache_alloc(
@@ -38,7 +38,7 @@ pub unsafe fn pud_free(mm: *mut mm_struct, pud: *mut pud_t) {
 
 pub unsafe fn pud_populate(mm: *mut mm_struct, pud: *mut pud_t, pmd: *mut pmd_t) {
     let _ = mm;
-    pud_set(pud, pmd as ::core::ffi::c_ulong);
+    pud_set(pud, pmd as ::kernel::ffi::c_ulong);
 }
 
 pub unsafe fn pmd_populate_kernel(
@@ -47,7 +47,7 @@ pub unsafe fn pmd_populate_kernel(
     pte: *mut pte_t,
 ) {
     let _ = mm;
-    pmd_set(pmd, pte as ::core::ffi::c_ulong);
+    pmd_set(pmd, pte as ::kernel::ffi::c_ulong);
 }
 
 pub unsafe fn pmd_populate(
@@ -56,12 +56,12 @@ pub unsafe fn pmd_populate(
     pte_page: pgtable_t,
 ) {
     let _ = mm;
-    pmd_set(pmd, pte_page as ::core::ffi::c_ulong);
+    pmd_set(pmd, pte_page as ::kernel::ffi::c_ulong);
 }
 
 pub unsafe fn pmd_alloc_one(
     mm: *mut mm_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
 ) -> *mut pmd_t {
     let _ = addr;
     kmem_cache_alloc(

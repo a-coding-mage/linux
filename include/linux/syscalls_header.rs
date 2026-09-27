@@ -88,8 +88,8 @@ pub const unsafe fn SC_VAL64<T: Into<u64>>(hi: T, lo: u32) -> u64 { (hi.into() <
 /* CONFIG_FTRACE_SYSCALLS supplies metadata and trace-event declarations. */
 
 extern "C" {
-    pub fn sys_ni_syscall() -> ::core::ffi::c_long;
-    pub fn sys_ni_posix_timers() -> ::core::ffi::c_long;
+    pub fn sys_ni_syscall() -> ::kernel::ffi::c_long;
+    pub fn sys_ni_posix_timers() -> ::kernel::ffi::c_long;
 }
 
 /*
@@ -98,19 +98,19 @@ extern "C" {
  * signatures and referenced Linux types; no implementations are introduced.
  */
 extern "C" {
-    pub fn sys_io_setup(nr_reqs: u32, ctx: *mut u64) -> ::core::ffi::c_long;
-    pub fn sys_io_destroy(ctx: u64) -> ::core::ffi::c_long;
-    pub fn sys_read(fd: u32, buf: *mut i8, count: usize) -> ::core::ffi::c_long;
-    pub fn sys_write(fd: u32, buf: *const i8, count: usize) -> ::core::ffi::c_long;
-    pub fn sys_openat(dfd: i32, filename: *const i8, flags: i32, mode: u32) -> ::core::ffi::c_long;
-    pub fn sys_close(fd: u32) -> ::core::ffi::c_long;
-    pub fn sys_fork() -> ::core::ffi::c_long;
-    pub fn sys_vfork() -> ::core::ffi::c_long;
-    pub fn sys_execve(filename: *const i8, argv: *const *const i8, envp: *const *const i8) -> ::core::ffi::c_long;
-    pub fn sys_exit(error_code: i32) -> ::core::ffi::c_long;
-    pub fn sys_exit_group(error_code: i32) -> ::core::ffi::c_long;
-    pub fn sys_getpid() -> ::core::ffi::c_long;
-    pub fn sys_gettid() -> ::core::ffi::c_long;
+    pub fn sys_io_setup(nr_reqs: u32, ctx: *mut u64) -> ::kernel::ffi::c_long;
+    pub fn sys_io_destroy(ctx: u64) -> ::kernel::ffi::c_long;
+    pub fn sys_read(fd: u32, buf: *mut i8, count: usize) -> ::kernel::ffi::c_long;
+    pub fn sys_write(fd: u32, buf: *const i8, count: usize) -> ::kernel::ffi::c_long;
+    pub fn sys_openat(dfd: i32, filename: *const i8, flags: i32, mode: u32) -> ::kernel::ffi::c_long;
+    pub fn sys_close(fd: u32) -> ::kernel::ffi::c_long;
+    pub fn sys_fork() -> ::kernel::ffi::c_long;
+    pub fn sys_vfork() -> ::kernel::ffi::c_long;
+    pub fn sys_execve(filename: *const i8, argv: *const *const i8, envp: *const *const i8) -> ::kernel::ffi::c_long;
+    pub fn sys_exit(error_code: i32) -> ::kernel::ffi::c_long;
+    pub fn sys_exit_group(error_code: i32) -> ::kernel::ffi::c_long;
+    pub fn sys_getpid() -> ::kernel::ffi::c_long;
+    pub fn sys_gettid() -> ::kernel::ffi::c_long;
 }
 
 extern "C" {

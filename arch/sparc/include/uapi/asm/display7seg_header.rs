@@ -11,9 +11,9 @@
 // ioctl encoding macros are supplied by the surrounding UAPI environment.
 pub const D7S_IOC: u8 = b'p';
 
-pub const D7SIOCRD: _ = _IOR!(D7S_IOC, 0x45, i32); // Read device state
-pub const D7SIOCWR: _ = _IOW!(D7S_IOC, 0x46, i32); // Write device state
-pub const D7SIOCTM: _ = _IO!(D7S_IOC, 0x47); // Translate mode (FLIP)
+pub const D7SIOCRD: u32 = _IOR!(D7S_IOC, 0x45, i32); // Read device state
+pub const D7SIOCWR: u32 = _IOW!(D7S_IOC, 0x46, i32); // Write device state
+pub const D7SIOCTM: u32 = _IO!(D7S_IOC, 0x47); // Translate mode (FLIP)
 
 /*
  * ioctl flag definitions

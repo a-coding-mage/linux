@@ -154,7 +154,7 @@ static FONTS: &[*const FontDesc] = &[
 ];
 
 pub unsafe fn find_font(name: *const c_char) -> *const FontDesc {
-    for &f in FONTS { if libc::strcmp((*f).name, name) == 0 { return f; } }
+    for &f in FONTS { if strcmp((*f).name, name) == 0 { return f; } }
     ptr::null()
 }
 

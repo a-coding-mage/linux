@@ -31,9 +31,9 @@ pub struct pt_regs {
 #[repr(C)]
 pub struct thread_info {
     pub task: *mut task_struct,       /* main task structure */
-    pub flags: libc::c_ulong,         /* low level flags */
+    pub flags: kernel::ffi::c_ulong,         /* low level flags */
     pub cpu: u32,                     /* current cpu */
-    pub preempt_count: libc::c_int,   /* 0=>preemptible,<0=>BUG */
+    pub preempt_count: kernel::ffi::c_int,   /* 0=>preemptible,<0=>BUG */
     /*
      * used for syscalls somehow;
      * seems to have a function pointer and four arguments
@@ -45,7 +45,7 @@ pub struct thread_info {
      * not sure if this is used (it's not in the VM model it seems;
      * see thread_struct)
      */
-    pub sp: libc::c_ulong,
+    pub sp: kernel::ffi::c_ulong,
 }
 
 /* PAGE_SHIFT is an external build-time dependency from asm/page.h. */

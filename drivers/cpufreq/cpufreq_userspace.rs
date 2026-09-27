@@ -11,8 +11,8 @@
 
 #[repr(C)]
 struct userspace_policy {
-    is_managed: core::ffi::c_uint,
-    setspeed: core::ffi::c_uint,
+    is_managed: kernel::ffi::c_uint,
+    setspeed: kernel::ffi::c_uint,
     mutex: mutex,
 }
 
@@ -23,7 +23,7 @@ struct userspace_policy {
  *
  * Sets the CPU frequency to freq.
  */
-unsafe fn cpufreq_set(policy: *mut cpufreq_policy, freq: core::ffi::c_uint) -> i32 {
+unsafe fn cpufreq_set(policy: *mut cpufreq_policy, freq: kernel::ffi::c_uint) -> i32 {
     let mut ret: i32 = -EINVAL;
     let userspace = (*policy).governor_data as *mut userspace_policy;
 
@@ -42,7 +42,7 @@ unsafe fn cpufreq_set(policy: *mut cpufreq_policy, freq: core::ffi::c_uint) -> i
     ret
 }
 
-unsafe fn show_speed(policy: *mut cpufreq_policy, buf: *mut core::ffi::c_char) -> isize {
+unsafe fn show_speed(policy: *mut cpufreq_policy, buf: *mut kernel::ffi::c_char) -> isize {
     let userspace = (*policy).governor_data as *mut userspace_policy;
 
     sprintf!(buf, "%u\n", (*userspace).setspeed)
@@ -56,7 +56,7 @@ unsafe fn cpufreq_userspace_policy_init(policy: *mut cpufreq_policy) -> i32 {
 
     mutex_init(&mut (*userspace).mutex);
 
-    (*policy).governor_data = userspace as *mut core::ffi::c_void;
+    (*policy).governor_data = userspace as *mut kernel::ffi::c_void;
     0
 }
 

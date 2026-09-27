@@ -63,7 +63,7 @@ pub const ICMP_EXT_CTYPE_IIO_IFINDEX: u32 = 1u32 << 3;
 #[repr(C)]
 pub struct icmp_ext_iio_name_subobj {
     pub len: u8,
-    pub name: [core::ffi::c_char; IFNAMSIZ],
+    pub name: [kernel::ffi::c_char; IFNAMSIZ],
 }
 
 /* RFC 5837 - Incoming IP Interface Role */

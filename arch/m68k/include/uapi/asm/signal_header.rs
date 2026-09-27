@@ -8,7 +8,7 @@ pub struct siginfo {
 
 /* The following userland declarations correspond to the !__KERNEL__ branch. */
 pub const NSIG: u32 = 32;
-pub type sigset_t = ::core::ffi::c_ulong;
+pub type sigset_t = ::kernel::ffi::c_ulong;
 
 pub const SIGHUP: i32 = 1;
 pub const SIGINT: i32 = 2;
@@ -58,14 +58,14 @@ pub const SIGSTKSZ: usize = 8192;
 #[repr(C)]
 pub union sigaction_u {
     pub _sa_handler: __sighandler_t,
-    pub _sa_sigaction: Option<unsafe extern "C" fn(i32, *mut siginfo, *mut ::core::ffi::c_void)>,
+    pub _sa_sigaction: Option<unsafe extern "C" fn(i32, *mut siginfo, *mut ::kernel::ffi::c_void)>,
 }
 
 #[repr(C)]
 pub struct sigaction {
     pub _u: sigaction_u,
     pub sa_mask: sigset_t,
-    pub sa_flags: ::core::ffi::c_ulong,
+    pub sa_flags: ::kernel::ffi::c_ulong,
     pub sa_restorer: Option<unsafe extern "C" fn()>,
 }
 
@@ -73,7 +73,7 @@ pub struct sigaction {
 
 #[repr(C)]
 pub struct sigaltstack {
-    pub ss_sp: *mut ::core::ffi::c_void,
+    pub ss_sp: *mut ::kernel::ffi::c_void,
     pub ss_flags: i32,
     pub ss_size: __kernel_size_t,
 }

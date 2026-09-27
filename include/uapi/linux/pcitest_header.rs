@@ -36,12 +36,12 @@ const fn iow<T>(ty: u32, nr: u32) -> u32 {
 pub const PCITEST_BAR: u32 = io(b'P' as u32, 0x1);
 pub const PCITEST_INTX_IRQ: u32 = io(b'P' as u32, 0x2);
 pub const PCITEST_LEGACY_IRQ: u32 = PCITEST_INTX_IRQ;
-pub const PCITEST_MSI: u32 = iow::<core::ffi::c_int>(b'P' as u32, 0x3);
-pub const PCITEST_WRITE: u32 = iow::<core::ffi::c_ulong>(b'P' as u32, 0x4);
-pub const PCITEST_READ: u32 = iow::<core::ffi::c_ulong>(b'P' as u32, 0x5);
-pub const PCITEST_COPY: u32 = iow::<core::ffi::c_ulong>(b'P' as u32, 0x6);
-pub const PCITEST_MSIX: u32 = iow::<core::ffi::c_int>(b'P' as u32, 0x7);
-pub const PCITEST_SET_IRQTYPE: u32 = iow::<core::ffi::c_int>(b'P' as u32, 0x8);
+pub const PCITEST_MSI: u32 = iow::<kernel::ffi::c_int>(b'P' as u32, 0x3);
+pub const PCITEST_WRITE: u32 = iow::<kernel::ffi::c_ulong>(b'P' as u32, 0x4);
+pub const PCITEST_READ: u32 = iow::<kernel::ffi::c_ulong>(b'P' as u32, 0x5);
+pub const PCITEST_COPY: u32 = iow::<kernel::ffi::c_ulong>(b'P' as u32, 0x6);
+pub const PCITEST_MSIX: u32 = iow::<kernel::ffi::c_int>(b'P' as u32, 0x7);
+pub const PCITEST_SET_IRQTYPE: u32 = iow::<kernel::ffi::c_int>(b'P' as u32, 0x8);
 pub const PCITEST_GET_IRQTYPE: u32 = io(b'P' as u32, 0x9);
 pub const PCITEST_BARS: u32 = io(b'P' as u32, 0xa);
 pub const PCITEST_DOORBELL: u32 = io(b'P' as u32, 0xb);
@@ -58,8 +58,8 @@ pub const PCITEST_FLAGS_USE_DMA: u32 = 0x00000001;
 
 #[repr(C)]
 pub struct pci_endpoint_test_xfer_param {
-    pub size: core::ffi::c_ulong,
-    pub flags: core::ffi::c_uchar,
+    pub size: kernel::ffi::c_ulong,
+    pub flags: kernel::ffi::c_uchar,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

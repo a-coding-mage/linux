@@ -3,7 +3,7 @@
 
 /* Dependencies supplied by the surrounding kernel translation unit. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct file {
@@ -38,14 +38,14 @@ unsafe extern "C" {
     pub fn fput(file: *mut file);
     pub fn alloc_file_pseudo(
         inode: *mut inode, mnt: *mut vfsmount, name: *const c_char,
-        flags: core::ffi::c_int, fops: *const file_operations,
+        flags: kernel::ffi::c_int, fops: *const file_operations,
     ) -> *mut file;
     pub fn alloc_file_pseudo_noaccount(
         inode: *mut inode, mnt: *mut vfsmount, name: *const c_char,
-        flags: core::ffi::c_int, fops: *const file_operations,
+        flags: kernel::ffi::c_int, fops: *const file_operations,
     ) -> *mut file;
     pub fn alloc_file_clone(
-        file: *mut file, flags: core::ffi::c_int, fops: *const file_operations,
+        file: *mut file, flags: kernel::ffi::c_int, fops: *const file_operations,
     ) -> *mut file;
     pub fn fget(fd: u32) -> *mut file;
     pub fn fget_raw(fd: u32) -> *mut file;
@@ -55,16 +55,16 @@ unsafe extern "C" {
     pub fn fdget(fd: u32) -> fd;
     pub fn fdget_raw(fd: u32) -> fd;
     pub fn fdget_pos(fd: u32) -> fd;
-    pub fn f_dupfd(from: u32, file: *mut file, flags: u32) -> core::ffi::c_int;
-    pub fn replace_fd(fd: u32, file: *mut file, flags: u32) -> core::ffi::c_int;
-    pub fn set_close_on_exec(fd: u32, flag: core::ffi::c_int);
+    pub fn f_dupfd(from: u32, file: *mut file, flags: u32) -> kernel::ffi::c_int;
+    pub fn replace_fd(fd: u32, file: *mut file, flags: u32) -> kernel::ffi::c_int;
+    pub fn set_close_on_exec(fd: u32, flag: kernel::ffi::c_int);
     pub fn get_close_on_exec(fd: u32) -> bool;
-    pub fn __get_unused_fd_flags(flags: u32, nofile: usize) -> core::ffi::c_int;
-    pub fn get_unused_fd_flags(flags: u32) -> core::ffi::c_int;
+    pub fn __get_unused_fd_flags(flags: u32, nofile: usize) -> kernel::ffi::c_int;
+    pub fn get_unused_fd_flags(flags: u32) -> kernel::ffi::c_int;
     pub fn put_unused_fd(fd: u32);
     pub fn fd_install(fd: u32, file: *mut file);
-    pub fn receive_fd(file: *mut file, ufd: *mut core::ffi::c_int, o_flags: u32) -> core::ffi::c_int;
-    pub fn receive_fd_replace(new_fd: core::ffi::c_int, file: *mut file, o_flags: u32) -> core::ffi::c_int;
+    pub fn receive_fd(file: *mut file, ufd: *mut kernel::ffi::c_int, o_flags: u32) -> kernel::ffi::c_int;
+    pub fn receive_fd_replace(new_fd: kernel::ffi::c_int, file: *mut file, o_flags: u32) -> kernel::ffi::c_int;
     pub fn flush_delayed_fput();
     pub fn __fput_sync(file: *mut file);
 }

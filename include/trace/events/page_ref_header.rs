@@ -7,45 +7,45 @@
 #[repr(C)]
 pub struct Page {
     pub flags: PageFlags,
-    pub _mapcount: libc::c_int,
-    pub mapping: *mut libc::c_void,
+    pub _mapcount: kernel::ffi::c_int,
+    pub mapping: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub union PageFlags {
-    pub f: libc::c_ulong,
-    _opaque: [u8; core::mem::size_of::<libc::c_ulong>()],
+    pub f: kernel::ffi::c_ulong,
+    _opaque: [u8; core::mem::size_of::<kernel::ffi::c_ulong>()],
 }
 
 unsafe extern "C" {
-    fn page_to_pfn(page: *mut Page) -> libc::c_ulong;
-    fn page_ref_count(page: *mut Page) -> libc::c_int;
-    fn atomic_read(mapcount: *const libc::c_int) -> libc::c_int;
-    fn get_pageblock_migratetype(page: *mut Page) -> libc::c_int;
-    fn show_page_flags(flags: libc::c_ulong) -> *const libc::c_char;
+    fn page_to_pfn(page: *mut Page) -> kernel::ffi::c_ulong;
+    fn page_ref_count(page: *mut Page) -> kernel::ffi::c_int;
+    fn atomic_read(mapcount: *const kernel::ffi::c_int) -> kernel::ffi::c_int;
+    fn get_pageblock_migratetype(page: *mut Page) -> kernel::ffi::c_int;
+    fn show_page_flags(flags: kernel::ffi::c_ulong) -> *const kernel::ffi::c_char;
 }
 
 #[repr(C)]
 pub struct PageRefModTemplateEntry {
-    pub pfn: libc::c_ulong,
-    pub flags: libc::c_ulong,
-    pub count: libc::c_int,
-    pub mapcount: libc::c_int,
-    pub mapping: *mut libc::c_void,
-    pub mt: libc::c_int,
-    pub val: libc::c_int,
+    pub pfn: kernel::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
+    pub count: kernel::ffi::c_int,
+    pub mapcount: kernel::ffi::c_int,
+    pub mapping: *mut kernel::ffi::c_void,
+    pub mt: kernel::ffi::c_int,
+    pub val: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct PageRefModAndTestTemplateEntry {
-    pub pfn: libc::c_ulong,
-    pub flags: libc::c_ulong,
-    pub count: libc::c_int,
-    pub mapcount: libc::c_int,
-    pub mapping: *mut libc::c_void,
-    pub mt: libc::c_int,
-    pub val: libc::c_int,
-    pub ret: libc::c_int,
+    pub pfn: kernel::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
+    pub count: kernel::ffi::c_int,
+    pub mapcount: kernel::ffi::c_int,
+    pub mapping: *mut kernel::ffi::c_void,
+    pub mt: kernel::ffi::c_int,
+    pub val: kernel::ffi::c_int,
+    pub ret: kernel::ffi::c_int,
 }
 
 // TP_fast_assign for page_ref_mod_template.
@@ -53,7 +53,7 @@ pub struct PageRefModAndTestTemplateEntry {
 pub unsafe fn page_ref_mod_template_fast_assign(
     entry: *mut PageRefModTemplateEntry,
     page: *mut Page,
-    v: libc::c_int,
+    v: kernel::ffi::c_int,
 ) {
     (*entry).pfn = page_to_pfn(page);
     (*entry).flags = (*page).flags.f;
@@ -69,8 +69,8 @@ pub unsafe fn page_ref_mod_template_fast_assign(
 pub unsafe fn page_ref_mod_and_test_template_fast_assign(
     entry: *mut PageRefModAndTestTemplateEntry,
     page: *mut Page,
-    v: libc::c_int,
-    ret: libc::c_int,
+    v: kernel::ffi::c_int,
+    ret: kernel::ffi::c_int,
 ) {
     (*entry).pfn = page_to_pfn(page);
     (*entry).flags = (*page).flags.f;

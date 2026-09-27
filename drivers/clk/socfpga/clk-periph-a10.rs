@@ -20,7 +20,7 @@ unsafe fn to_socfpga_periph_clk(
 }
 
 unsafe extern "C" {
-    static mut clk_mgr_a10_base_addr: *mut core::ffi::c_void;
+    static mut clk_mgr_a10_base_addr: *mut kernel::ffi::c_void;
 }
 
 unsafe fn clk_periclk_recalc_rate(
@@ -72,7 +72,7 @@ unsafe fn __socfpga_periph_init(
     let mut hw_clk: *mut crate::clk::clk_hw;
     let mut periph_clk: *mut crate::clk::socfpga_periph_clk;
     let mut clk_name = (*node).name;
-    let mut parent_name: [*const core::ffi::c_char; crate::clk::SOCFPGA_MAX_PARENTS] =
+    let mut parent_name: [*const kernel::ffi::c_char; crate::clk::SOCFPGA_MAX_PARENTS] =
         [core::ptr::null(); crate::clk::SOCFPGA_MAX_PARENTS];
     let mut init: crate::clk::clk_init_data;
     let mut rc: i32;

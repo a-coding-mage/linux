@@ -50,21 +50,21 @@ unsafe extern "C" {
 
 /* ARC optimised assembler routines */
 unsafe extern "C" {
-    pub fn memset(dest: *mut core::ffi::c_void, value: i32, count: usize) -> *mut core::ffi::c_void;
+    pub fn memset(dest: *mut kernel::ffi::c_void, value: i32, count: usize) -> *mut kernel::ffi::c_void;
     pub fn memcpy(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         count: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn memcmp(
-        lhs: *const core::ffi::c_void,
-        rhs: *const core::ffi::c_void,
+        lhs: *const kernel::ffi::c_void,
+        rhs: *const kernel::ffi::c_void,
         count: usize,
     ) -> i32;
-    pub fn strchr(string: *const core::ffi::c_char, character: i32) -> *mut core::ffi::c_char;
-    pub fn strcpy(dest: *mut core::ffi::c_char, src: *const core::ffi::c_char) -> *mut core::ffi::c_char;
-    pub fn strcmp(lhs: *const core::ffi::c_char, rhs: *const core::ffi::c_char) -> i32;
-    pub fn strlen(string: *const core::ffi::c_char) -> usize;
+    pub fn strchr(string: *const kernel::ffi::c_char, character: i32) -> *mut kernel::ffi::c_char;
+    pub fn strcpy(dest: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    pub fn strcmp(lhs: *const kernel::ffi::c_char, rhs: *const kernel::ffi::c_char) -> i32;
+    pub fn strlen(string: *const kernel::ffi::c_char) -> usize;
 }
 
 // EXPORT_SYMBOL(memset);

@@ -22,13 +22,13 @@ pub const ASSABET_SCR_SA1111: i32 = 1 << 9; /* Neponset (0 = present) */
 pub const ASSABET_SCR_INIT: i32 = -1;
 
 unsafe extern "C" {
-    pub static mut SCR_value: ::core::ffi::c_ulong;
+    pub static mut SCR_value: ::kernel::ffi::c_ulong;
 }
 
 #[cfg(CONFIG_ASSABET_NEPONSET)]
 #[inline]
 pub unsafe fn machine_has_neponset() -> bool {
-    (SCR_value & ASSABET_SCR_SA1111 as ::core::ffi::c_ulong) == 0
+    (SCR_value & ASSABET_SCR_SA1111 as ::kernel::ffi::c_ulong) == 0
 }
 
 #[cfg(not(CONFIG_ASSABET_NEPONSET))]
@@ -77,7 +77,7 @@ unsafe extern "C" {
 pub fn ASSABET_BCR_frob(_x: u32, _y: u32) {}
 
 unsafe extern "C" {
-    pub fn assabet_uda1341_reset(set: ::core::ffi::c_int);
+    pub fn assabet_uda1341_reset(set: ::kernel::ffi::c_int);
 }
 
 #[inline]

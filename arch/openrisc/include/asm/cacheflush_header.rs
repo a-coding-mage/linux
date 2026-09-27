@@ -111,7 +111,7 @@ pub unsafe fn sync_icache_dcache(page: *mut page) {
  * they have not changed since last flush. New pages start with
  * PG_arch_1 not set and are therefore dirty by default.
  */
-pub const PG_DC_CLEAN: _ = PG_arch_1;
+pub const PG_DC_CLEAN: c_ulong = PG_arch_1;
 
 #[inline]
 pub unsafe fn flush_dcache_folio(folio: *mut folio) {

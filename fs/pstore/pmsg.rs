@@ -10,7 +10,7 @@ static mut PMSG_LOCK: Mutex = Mutex::new();
 
 unsafe fn write_pmsg(
     file: *mut File,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     count: usize,
     ppos: *mut LoffT,
 ) -> Isize {
@@ -48,7 +48,7 @@ const PMSG_NAME: &[u8] = b"pmsg\0";
 
 // pr_fmt(fmt) expands to "pmsg: " fmt in the original source.
 
-unsafe fn pmsg_devnode(dev: *const Device, mode: *mut UModeT) -> *mut core::ffi::c_char {
+unsafe fn pmsg_devnode(dev: *const Device, mode: *mut UModeT) -> *mut kernel::ffi::c_char {
     if !mode.is_null() {
         *mode = 0o220;
     }
@@ -65,7 +65,7 @@ pub unsafe fn pstore_register_pmsg() {
     }
 
     PMSG_CLASS = class_create(PMSG_NAME.as_ptr());
-    if is_err(PMSG_CLASS as *const core::ffi::c_void) {
+    if is_err(PMSG_CLASS as *const kernel::ffi::c_void) {
         pr_err(b"device class file already in use\n\0".as_ptr());
         unregister_chrdev(PMSG_MAJOR, PMSG_NAME.as_ptr());
         return;
@@ -80,7 +80,7 @@ pub unsafe fn pstore_register_pmsg() {
         PMSG_NAME.as_ptr(),
         0,
     );
-    if is_err(pmsg_device as *const core::ffi::c_void) {
+    if is_err(pmsg_device as *const kernel::ffi::c_void) {
         pr_err(b"failed to create device\n\0".as_ptr());
         class_destroy(PMSG_CLASS);
         unregister_chrdev(PMSG_MAJOR, PMSG_NAME.as_ptr());

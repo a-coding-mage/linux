@@ -73,7 +73,7 @@ pub const IPROC_CLK_PLL_CALC_PARAM: u32 = 1u32 << 10;
  */
 #[repr(C)]
 pub struct iproc_pll_vco_param {
-    pub rate: core::ffi::c_ulong,
+    pub rate: kernel::ffi::c_ulong,
     pub ndiv_int: u32,
     pub ndiv_frac: u32,
     pub pdiv: u32,
@@ -141,7 +141,7 @@ pub struct iproc_pll_vco_ctrl {
 /* Main PLL control parameters */
 #[repr(C)]
 pub struct iproc_pll_ctrl {
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub aon: iproc_pll_aon_pwr_ctrl,
     pub asiu: iproc_asiu_gate,
     pub reset: iproc_pll_reset_ctrl,
@@ -168,7 +168,7 @@ pub struct iproc_clk_enable_ctrl {
 #[repr(C)]
 pub struct iproc_clk_ctrl {
     pub channel: u32,
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub enable: iproc_clk_enable_ctrl,
     pub mdiv: iproc_clk_reg_op,
 }

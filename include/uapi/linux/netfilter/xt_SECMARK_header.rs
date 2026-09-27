@@ -16,13 +16,13 @@ pub const SECMARK_SECCTX_MAX: usize = 256;
 pub struct xt_secmark_target_info {
     pub mode: __u8,
     pub secid: __u32,
-    pub secctx: [core::ffi::c_char; SECMARK_SECCTX_MAX],
+    pub secctx: [kernel::ffi::c_char; SECMARK_SECCTX_MAX],
 }
 
 #[repr(C)]
 pub struct xt_secmark_target_info_v1 {
     pub mode: __u8,
-    pub secctx: [core::ffi::c_char; SECMARK_SECCTX_MAX],
+    pub secctx: [kernel::ffi::c_char; SECMARK_SECCTX_MAX],
     pub secid: __u32,
 }
 

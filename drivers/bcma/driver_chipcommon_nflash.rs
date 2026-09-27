@@ -10,17 +10,17 @@
 /* Alternate NAND controller driver name in order to allow both bcm47xxnflash
  * and bcma_brcmnand to be built into the same kernel image.
  */
-static mut BCMA_NFLASH_ALT_NAME: *const core::ffi::c_char =
-    b"bcma_brcmnand\0".as_ptr() as *const core::ffi::c_char;
+static mut BCMA_NFLASH_ALT_NAME: *const kernel::ffi::c_char =
+    b"bcma_brcmnand\0".as_ptr() as *const kernel::ffi::c_char;
 
 pub static mut bcma_nflash_dev: platform_device = platform_device {
-    name: b"bcma_nflash\0".as_ptr() as *const core::ffi::c_char,
+    name: b"bcma_nflash\0".as_ptr() as *const kernel::ffi::c_char,
     num_resources: 0,
     ..unsafe { core::mem::zeroed() }
 };
 
-static mut probes: [*const core::ffi::c_char; 2] = [
-    b"bcm47xxpart\0".as_ptr() as *const core::ffi::c_char,
+static mut probes: [*const kernel::ffi::c_char; 2] = [
+    b"bcm47xxpart\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -32,7 +32,7 @@ pub unsafe fn bcma_nflash_init(cc: *mut bcma_drv_cc) -> i32 {
     if (*bus).chipinfo.id != BCMA_CHIP_ID_BCM4706
         && (*(*cc).core).id.rev != 38
     {
-        bcma_err(bus, b"NAND flash on unsupported board!\n\0".as_ptr() as *const core::ffi::c_char);
+        bcma_err(bus, b"NAND flash on unsupported board!\n\0".as_ptr() as *const kernel::ffi::c_char);
         return -ENOTSUPP;
     }
 
@@ -40,7 +40,7 @@ pub unsafe fn bcma_nflash_init(cc: *mut bcma_drv_cc) -> i32 {
         bcma_err(
             bus,
             b"NAND flash not present according to ChipCommon\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
         );
         return -ENODEV;
     }
@@ -61,7 +61,7 @@ pub unsafe fn bcma_nflash_init(cc: *mut bcma_drv_cc) -> i32 {
 
     /* Prepare platform device, but don't register it yet. It's too early,
      * malloc (required by device_private_init) is not available yet. */
-    bcma_nflash_dev.dev.platform_data = &mut (*cc).nflash as *mut _ as *mut core::ffi::c_void;
+    bcma_nflash_dev.dev.platform_data = &mut (*cc).nflash as *mut _ as *mut kernel::ffi::c_void;
 
     0
 }

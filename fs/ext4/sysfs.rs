@@ -70,7 +70,7 @@ unsafe fn journal_task_show(sbi: *mut ext4_sb_info, buf: *mut i8) -> isize {
 }
 
 macro_rules! ext4_attr { ($name:ident, $mode:expr, $id:ident) => {
-    static mut $name: ext4_attr = ext4_attr { attr: attribute { name: stringify!($name).as_ptr() as *const i8, mode: $mode }, attr_id: attr_id_t::$id as i16, attr_ptr: 0, attr_size: 0, u: ext4_attr_union { offset: 0 } };
+    static mut $name: ext4_attr = ext4_attr { attr: attribute { name: concat!(stringify!($name), "\0").as_ptr() as *const i8, mode: $mode }, attr_id: attr_id_t::$id as i16, attr_ptr: 0, attr_size: 0, u: ext4_attr_union { offset: 0 } };
 }; }
 macro_rules! attr_offset { ($name:ident,$mode:expr,$id:ident,$ty:ident,$field:ident) => { ext4_attr!($name,$mode,$id); } }
 ext4_attr!(ext4_attr_delayed_allocation_blocks, 0o444, attr_delayed_allocation_blocks);

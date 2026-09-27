@@ -88,7 +88,7 @@ extern "C" {
     pub static mut phys_hi_rsvd: u32;
 
     pub fn mtrr_state_warn();
-    pub fn mtrr_attrib_to_str(x: i32) -> *const core::ffi::c_char;
+    pub fn mtrr_attrib_to_str(x: i32) -> *const kernel::ffi::c_char;
     pub fn mtrr_wrmsr(a: u32, b: u32, c: u32);
 }
 

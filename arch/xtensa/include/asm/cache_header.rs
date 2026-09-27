@@ -12,7 +12,7 @@
 
 pub const L1_CACHE_SHIFT: _ = XCHAL_DCACHE_LINEWIDTH;
 pub const L1_CACHE_BYTES: _ = XCHAL_DCACHE_LINESIZE;
-pub const SMP_CACHE_BYTES: _ = L1_CACHE_BYTES;
+pub const SMP_CACHE_BYTES: usize = L1_CACHE_BYTES;
 
 pub const DCACHE_WAY_SIZE: _ = XCHAL_DCACHE_SIZE / XCHAL_DCACHE_WAYS;
 pub const ICACHE_WAY_SIZE: _ = XCHAL_ICACHE_SIZE / XCHAL_ICACHE_WAYS;
@@ -26,7 +26,7 @@ pub const CACHE_WAY_SIZE: _ = if DCACHE_WAY_SIZE >= ICACHE_WAY_SIZE {
     ICACHE_WAY_SIZE
 };
 
-pub const ARCH_DMA_MINALIGN: _ = L1_CACHE_BYTES;
+pub const ARCH_DMA_MINALIGN: usize = L1_CACHE_BYTES;
 
 /*
  * R/O after init is actually writable, it cannot go to .rodata

@@ -51,7 +51,7 @@ pub enum atomic_t {}
 macro_rules! mutex_init {
     ($mutex:expr) => {{
         static mut __key: lock_class_key = lock_class_key {};
-        unsafe { __mutex_init($mutex, stringify!($mutex).as_ptr() as *const i8, &mut __key) };
+        unsafe { __mutex_init($mutex, concat!(stringify!($mutex), "\0").as_ptr() as *const i8, &mut __key) };
     }};
 }
 

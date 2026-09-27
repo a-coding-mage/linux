@@ -10,13 +10,13 @@
 
 #[repr(C)]
 pub struct pci_controller {
-    pub index: ::core::ffi::c_int,
+    pub index: ::kernel::ffi::c_int,
     pub next: *mut pci_controller,
     pub bus: *mut pci_bus,
-    pub arch_data: *mut ::core::ffi::c_void,
+    pub arch_data: *mut ::kernel::ffi::c_void,
 
-    pub first_busno: ::core::ffi::c_int,
-    pub last_busno: ::core::ffi::c_int,
+    pub first_busno: ::kernel::ffi::c_int,
+    pub last_busno: ::kernel::ffi::c_int,
 
     pub ops: *mut pci_ops,
     pub cfg_addr: *mut u32,
@@ -27,7 +27,7 @@ pub struct pci_controller {
      */
     pub io_resource: resource,
     pub mem_resources: [resource; 3],
-    pub mem_resource_count: ::core::ffi::c_int,
+    pub mem_resource_count: ::kernel::ffi::c_int,
 
     /* Host bridge I/O and Memory space
      * Used for BAR placement algorithms
@@ -36,7 +36,7 @@ pub struct pci_controller {
     pub mem_space: pci_space,
 
     /* Return the interrupt number fo a device. */
-    pub map_irq: Option<unsafe extern "C" fn(*mut pci_dev, u8, u8) -> ::core::ffi::c_int>,
+    pub map_irq: Option<unsafe extern "C" fn(*mut pci_dev, u8, u8) -> ::kernel::ffi::c_int>,
 }
 
 /*
@@ -46,15 +46,15 @@ pub struct pci_controller {
 unsafe extern "C" {
     pub fn pciauto_bus_scan(
         controller: *mut pci_controller,
-        busno: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        busno: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[repr(C)]
 pub struct pci_space {
-    pub start: ::core::ffi::c_ulong,
-    pub end: ::core::ffi::c_ulong,
-    pub base: ::core::ffi::c_ulong,
+    pub start: ::kernel::ffi::c_ulong,
+    pub end: ::kernel::ffi::c_ulong,
+    pub base: ::kernel::ffi::c_ulong,
 }
 
 /*
@@ -64,10 +64,10 @@ pub struct pci_space {
 #[inline]
 pub unsafe fn pcibios_init_resource(
     res: *mut resource,
-    start: ::core::ffi::c_ulong,
-    end: ::core::ffi::c_ulong,
-    flags: ::core::ffi::c_int,
-    name: *mut ::core::ffi::c_char,
+    start: ::kernel::ffi::c_ulong,
+    end: ::kernel::ffi::c_ulong,
+    flags: ::kernel::ffi::c_int,
+    name: *mut ::kernel::ffi::c_char,
 ) {
     (*res).start = start;
     (*res).end = end;

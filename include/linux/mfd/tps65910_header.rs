@@ -854,17 +854,17 @@ impl tps65910_sleep_keepon_data {
  */
 #[repr(C)]
 pub struct tps65910_board {
-    pub gpio_base: core::ffi::c_int,
-    pub irq: core::ffi::c_int,
-    pub irq_base: core::ffi::c_int,
-    pub vmbch_threshold: core::ffi::c_int,
-    pub vmbch2_threshold: core::ffi::c_int,
+    pub gpio_base: kernel::ffi::c_int,
+    pub irq: kernel::ffi::c_int,
+    pub irq_base: kernel::ffi::c_int,
+    pub vmbch_threshold: kernel::ffi::c_int,
+    pub vmbch2_threshold: kernel::ffi::c_int,
     pub en_ck32k_xtal: bool,
     pub en_dev_slp: bool,
     pub pm_off: bool,
     pub slp_keepon: tps65910_sleep_keepon_data,
     pub en_gpio_sleep: [bool; TPS6591X_MAX_NUM_GPIO as usize],
-    pub regulator_ext_sleep_control: [core::ffi::c_ulong; TPS65910_NUM_REGS as usize],
+    pub regulator_ext_sleep_control: [kernel::ffi::c_ulong; TPS65910_NUM_REGS as usize],
     pub tps65910_pmic_init_data: [*mut kernel::bindings::regulator_init_data; TPS65910_NUM_REGS as usize],
 }
 
@@ -876,30 +876,30 @@ pub struct tps65910 {
     pub dev: *mut kernel::bindings::device,
     pub i2c_client: *mut kernel::bindings::i2c_client,
     pub regmap: *mut kernel::bindings::regmap,
-    pub id: core::ffi::c_ulong,
+    pub id: kernel::ffi::c_ulong,
 
     /* Device node parsed board data */
     pub of_plat_data: *mut tps65910_board,
 
     /* IRQ Handling */
-    pub chip_irq: core::ffi::c_int,
+    pub chip_irq: kernel::ffi::c_int,
     pub irq_data: *mut kernel::bindings::regmap_irq_chip_data,
 }
 
 #[repr(C)]
 pub struct tps65910_platform_data {
-    pub irq: core::ffi::c_int,
-    pub irq_base: core::ffi::c_int,
+    pub irq: kernel::ffi::c_int,
+    pub irq_base: kernel::ffi::c_int,
 }
 
 /// # Safety
 ///
 /// `tps65910` must point to a live, initialized `struct tps65910`.
 #[inline]
-pub unsafe fn tps65910_chip_id(tps65910: *const tps65910) -> core::ffi::c_int {
+pub unsafe fn tps65910_chip_id(tps65910: *const tps65910) -> kernel::ffi::c_int {
     // SAFETY: the caller guarantees `tps65910` is valid for reads.
     // C returns the `unsigned long` id through an `int`, truncating it.
-    unsafe { (*tps65910).id as core::ffi::c_int }
+    unsafe { (*tps65910).id as kernel::ffi::c_int }
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

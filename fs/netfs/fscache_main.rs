@@ -10,7 +10,7 @@
 // and <trace/events/fscache.h>.
 // CREATE_TRACE_POINTS
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 
 #[repr(C)]
 pub struct workqueue_struct {
@@ -32,7 +32,7 @@ pub type __le32 = u32;
 extern "C" {
     pub static mut fscache_wq: *mut workqueue_struct;
     pub static mut fscache_cookie_jar: *mut kmem_cache;
-    pub static mut fscache_cookie_lru_timer: core::ffi::c_ulong;
+    pub static mut fscache_cookie_lru_timer: kernel::ffi::c_ulong;
 
     pub fn __hash_32(value: u32) -> u32;
     pub fn fscache_proc_init() -> c_int;
@@ -51,7 +51,7 @@ extern "C" {
     ) -> *mut kmem_cache;
     pub fn kmem_cache_destroy(cache: *mut kmem_cache);
     pub fn destroy_workqueue(wq: *mut workqueue_struct);
-    pub fn timer_shutdown_sync(timer: *mut core::ffi::c_ulong);
+    pub fn timer_shutdown_sync(timer: *mut kernel::ffi::c_ulong);
 }
 
 // EXPORT_TRACEPOINT_SYMBOL(fscache_access_cache);

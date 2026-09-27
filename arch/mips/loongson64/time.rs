@@ -29,13 +29,13 @@ extern "C" {
     static mut cpu_clock_freq: u64;
     static mut mips_hpt_frequency: u64;
 
-    fn of_clk_init(np: *mut core::ffi::c_void);
-    fn of_get_cpu_node(cpu: i32, node: *mut core::ffi::c_void) -> *mut device_node;
+    fn of_clk_init(np: *mut kernel::ffi::c_void);
+    fn of_get_cpu_node(cpu: i32, node: *mut kernel::ffi::c_void) -> *mut device_node;
     fn of_clk_get(np: *mut device_node, index: i32) -> *mut clk;
     fn clk_get_rate(clk: *mut clk) -> u64;
     fn clk_put(clk: *mut clk);
     fn setup_hpet_timer();
-    fn pr_err(format: *const core::ffi::c_char, ...);
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
 }
 
 pub const LOONGSON_DTB: i32 = 1;
@@ -59,14 +59,14 @@ pub unsafe extern "C" fn plat_time_init() {
 
         np = of_get_cpu_node(0, core::ptr::null_mut());
         if np.is_null() {
-            pr_err(b"Failed to get CPU node\0".as_ptr() as *const core::ffi::c_char);
+            pr_err(b"Failed to get CPU node\0".as_ptr() as *const kernel::ffi::c_char);
             return;
         }
 
         clk = of_clk_get(np, 0);
         if is_err(clk) {
             pr_err(
-                b"Failed to get CPU clock: %ld\n\0".as_ptr() as *const core::ffi::c_char,
+                b"Failed to get CPU clock: %ld\n\0".as_ptr() as *const kernel::ffi::c_char,
                 ptr_err(clk),
             );
             return;

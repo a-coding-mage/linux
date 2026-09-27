@@ -20,17 +20,17 @@ pub enum gpio_lookup_flags {
 
 #[repr(C)]
 pub struct gpiod_lookup {
-    pub key: *const core::ffi::c_char,
+    pub key: *const kernel::ffi::c_char,
     pub chip_hwnum: u16,
-    pub con_id: *const core::ffi::c_char,
-    pub idx: core::ffi::c_uint,
-    pub flags: core::ffi::c_ulong,
+    pub con_id: *const kernel::ffi::c_char,
+    pub idx: kernel::ffi::c_uint,
+    pub flags: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct gpiod_lookup_table {
     pub list: crate::linux::list::list_head,
-    pub dev_id: *const core::ffi::c_char,
+    pub dev_id: *const kernel::ffi::c_char,
     pub table: [gpiod_lookup; 0],
 }
 

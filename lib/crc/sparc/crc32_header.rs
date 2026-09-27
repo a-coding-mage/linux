@@ -14,7 +14,7 @@
 // environment corresponding to DEFINE_STATIC_KEY_FALSE.
 extern "C" {
     static have_crc32c_opcode: StaticKeyFalse;
-    static sparc64_elf_hwcap: ::core::ffi::c_ulong;
+    static sparc64_elf_hwcap: ::kernel::ffi::c_ulong;
 }
 
 // #define crc32_le_arch crc32_le_base /* not implemented on this arch */
@@ -26,7 +26,7 @@ extern "C" {
     fn static_branch_likely(key: *const StaticKeyFalse) -> bool;
     fn static_branch_enable(key: *mut StaticKeyFalse);
     fn static_key_enabled(key: *const StaticKeyFalse) -> bool;
-    fn pr_info(format: *const ::core::ffi::c_char, ...);
+    fn pr_info(format: *const ::kernel::ffi::c_char, ...);
 }
 
 #[inline]
@@ -58,7 +58,7 @@ pub unsafe fn crc32c_arch(mut crc: u32, mut data: *const u8, mut len: usize) -> 
 
 // #define crc32_mod_init_arch crc32_mod_init_arch
 unsafe fn crc32_mod_init_arch() {
-    let mut cfr: ::core::ffi::c_ulong;
+    let mut cfr: ::kernel::ffi::c_ulong;
 
     if (sparc64_elf_hwcap & HWCAP_SPARC_CRYPTO) == 0 {
         return;

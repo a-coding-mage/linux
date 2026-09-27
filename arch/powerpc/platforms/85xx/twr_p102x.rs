@@ -18,7 +18,7 @@ unsafe fn twr_p1025_pic_init() {
         MPIC_BIG_ENDIAN | MPIC_SINGLE_DEST_CPU,
         0,
         256,
-        b" OpenPIC  \0".as_ptr() as *const core::ffi::c_char,
+        b" OpenPIC  \0".as_ptr() as *const kernel::ffi::c_char,
     );
 
     BUG_ON(mpic.is_null());
@@ -32,7 +32,7 @@ unsafe fn twr_p1025_pic_init() {
  */
 unsafe fn twr_p1025_setup_arch() {
     if !ppc_md.progress.is_null() {
-        ((*ppc_md.progress))(b"twr_p1025_setup_arch()\0".as_ptr() as *const core::ffi::c_char, 0);
+        ((*ppc_md.progress))(b"twr_p1025_setup_arch()\0".as_ptr() as *const kernel::ffi::c_char, 0);
     }
 
     mpc85xx_smp_init();
@@ -54,7 +54,7 @@ unsafe fn twr_p1025_setup_arch() {
                 np = of_find_compatible_node(
                     core::ptr::null_mut(),
                     core::ptr::null_mut(),
-                    b"fsl,p1021-guts\0".as_ptr() as *const core::ffi::c_char,
+                    b"fsl,p1021-guts\0".as_ptr() as *const kernel::ffi::c_char,
                 );
                 if !np.is_null() {
                     guts = of_iomap(np, 0);
@@ -107,8 +107,8 @@ machine_arch_initcall!(twr_p1025, mpc85xx_common_publish_devices);
 
 // define_machine(twr_p1025)
 static twr_p1025: machine_desc = machine_desc {
-    name: b"TWR-P1025\0".as_ptr() as *const core::ffi::c_char,
-    compatible: b"fsl,TWR-P1025\0".as_ptr() as *const core::ffi::c_char,
+    name: b"TWR-P1025\0".as_ptr() as *const kernel::ffi::c_char,
+    compatible: b"fsl,TWR-P1025\0".as_ptr() as *const kernel::ffi::c_char,
     setup_arch: Some(twr_p1025_setup_arch),
     init_IRQ: Some(twr_p1025_pic_init),
     // CONFIG_PCI

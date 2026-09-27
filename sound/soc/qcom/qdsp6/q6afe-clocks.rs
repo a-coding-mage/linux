@@ -17,7 +17,7 @@ macro_rules! Q6AFE_CLK {
         q6dsp_clk_init {
             clk_id: $id,
             q6dsp_clk_id: $q6afe_id,
-            name: stringify!($id).as_ptr() as *const core::ffi::c_char,
+            name: concat!(stringify!($id), "\0").as_ptr() as *const kernel::ffi::c_char,
             rate: 19200000,
         }
     };
@@ -126,8 +126,8 @@ static q6dsp_clk_q6afe: q6dsp_clk_desc = q6dsp_clk_desc {
 #[cfg(CONFIG_OF)]
 static q6afe_clock_device_id: [of_device_id; 2] = [
     of_device_id {
-        compatible: "qcom,q6afe-clocks".as_ptr() as *const core::ffi::c_char,
-        data: &q6dsp_clk_q6afe as *const q6dsp_clk_desc as *const core::ffi::c_void,
+        compatible: "qcom,q6afe-clocks".as_ptr() as *const kernel::ffi::c_char,
+        data: &q6dsp_clk_q6afe as *const q6dsp_clk_desc as *const kernel::ffi::c_void,
         ..unsafe { core::mem::zeroed() }
     },
     of_device_id {
@@ -140,7 +140,7 @@ MODULE_DEVICE_TABLE!(of, q6afe_clock_device_id);
 
 static mut q6afe_clock_platform_driver: platform_driver = platform_driver {
     driver: device_driver {
-        name: "q6afe-clock".as_ptr() as *const core::ffi::c_char,
+        name: "q6afe-clock".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: of_match_ptr!(q6afe_clock_device_id),
         ..unsafe { core::mem::zeroed() }
     },

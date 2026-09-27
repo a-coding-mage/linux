@@ -10,10 +10,10 @@
 // OpenRISC bitops definitions.
 
 #[inline]
-pub unsafe fn set_bit(nr: i32, addr: *mut core::ffi::c_ulong) {
-    let mask: core::ffi::c_ulong = BIT_MASK(nr);
-    let p = (addr as *mut core::ffi::c_ulong).add(BIT_WORD(nr) as usize);
-    let mut tmp: core::ffi::c_ulong;
+pub unsafe fn set_bit(nr: i32, addr: *mut kernel::ffi::c_ulong) {
+    let mask: kernel::ffi::c_ulong = BIT_MASK(nr);
+    let p = (addr as *mut kernel::ffi::c_ulong).add(BIT_WORD(nr) as usize);
+    let mut tmp: kernel::ffi::c_ulong;
 
     core::arch::asm!(
         "1: l.lwa {tmp},0({p})",
@@ -29,10 +29,10 @@ pub unsafe fn set_bit(nr: i32, addr: *mut core::ffi::c_ulong) {
 }
 
 #[inline]
-pub unsafe fn clear_bit(nr: i32, addr: *mut core::ffi::c_ulong) {
-    let mask: core::ffi::c_ulong = BIT_MASK(nr);
-    let p = (addr as *mut core::ffi::c_ulong).add(BIT_WORD(nr) as usize);
-    let mut tmp: core::ffi::c_ulong;
+pub unsafe fn clear_bit(nr: i32, addr: *mut kernel::ffi::c_ulong) {
+    let mask: kernel::ffi::c_ulong = BIT_MASK(nr);
+    let p = (addr as *mut kernel::ffi::c_ulong).add(BIT_WORD(nr) as usize);
+    let mut tmp: kernel::ffi::c_ulong;
 
     core::arch::asm!(
         "1: l.lwa {tmp},0({p})",
@@ -48,10 +48,10 @@ pub unsafe fn clear_bit(nr: i32, addr: *mut core::ffi::c_ulong) {
 }
 
 #[inline]
-pub unsafe fn change_bit(nr: i32, addr: *mut core::ffi::c_ulong) {
-    let mask: core::ffi::c_ulong = BIT_MASK(nr);
-    let p = (addr as *mut core::ffi::c_ulong).add(BIT_WORD(nr) as usize);
-    let mut tmp: core::ffi::c_ulong;
+pub unsafe fn change_bit(nr: i32, addr: *mut kernel::ffi::c_ulong) {
+    let mask: kernel::ffi::c_ulong = BIT_MASK(nr);
+    let p = (addr as *mut kernel::ffi::c_ulong).add(BIT_WORD(nr) as usize);
+    let mut tmp: kernel::ffi::c_ulong;
 
     core::arch::asm!(
         "1: l.lwa {tmp},0({p})",
@@ -67,11 +67,11 @@ pub unsafe fn change_bit(nr: i32, addr: *mut core::ffi::c_ulong) {
 }
 
 #[inline]
-pub unsafe fn test_and_set_bit(nr: i32, addr: *mut core::ffi::c_ulong) -> i32 {
-    let mask: core::ffi::c_ulong = BIT_MASK(nr);
-    let p = (addr as *mut core::ffi::c_ulong).add(BIT_WORD(nr) as usize);
-    let mut old: core::ffi::c_ulong;
-    let mut tmp: core::ffi::c_ulong;
+pub unsafe fn test_and_set_bit(nr: i32, addr: *mut kernel::ffi::c_ulong) -> i32 {
+    let mask: kernel::ffi::c_ulong = BIT_MASK(nr);
+    let p = (addr as *mut kernel::ffi::c_ulong).add(BIT_WORD(nr) as usize);
+    let mut old: kernel::ffi::c_ulong;
+    let mut tmp: kernel::ffi::c_ulong;
 
     core::arch::asm!(
         "1: l.lwa {old},0({p})",
@@ -90,11 +90,11 @@ pub unsafe fn test_and_set_bit(nr: i32, addr: *mut core::ffi::c_ulong) -> i32 {
 }
 
 #[inline]
-pub unsafe fn test_and_clear_bit(nr: i32, addr: *mut core::ffi::c_ulong) -> i32 {
-    let mask: core::ffi::c_ulong = BIT_MASK(nr);
-    let p = (addr as *mut core::ffi::c_ulong).add(BIT_WORD(nr) as usize);
-    let mut old: core::ffi::c_ulong;
-    let mut tmp: core::ffi::c_ulong;
+pub unsafe fn test_and_clear_bit(nr: i32, addr: *mut kernel::ffi::c_ulong) -> i32 {
+    let mask: kernel::ffi::c_ulong = BIT_MASK(nr);
+    let p = (addr as *mut kernel::ffi::c_ulong).add(BIT_WORD(nr) as usize);
+    let mut old: kernel::ffi::c_ulong;
+    let mut tmp: kernel::ffi::c_ulong;
 
     core::arch::asm!(
         "1: l.lwa {old},0({p})",
@@ -113,11 +113,11 @@ pub unsafe fn test_and_clear_bit(nr: i32, addr: *mut core::ffi::c_ulong) -> i32 
 }
 
 #[inline]
-pub unsafe fn test_and_change_bit(nr: i32, addr: *mut core::ffi::c_ulong) -> i32 {
-    let mask: core::ffi::c_ulong = BIT_MASK(nr);
-    let p = (addr as *mut core::ffi::c_ulong).add(BIT_WORD(nr) as usize);
-    let mut old: core::ffi::c_ulong;
-    let mut tmp: core::ffi::c_ulong;
+pub unsafe fn test_and_change_bit(nr: i32, addr: *mut kernel::ffi::c_ulong) -> i32 {
+    let mask: kernel::ffi::c_ulong = BIT_MASK(nr);
+    let p = (addr as *mut kernel::ffi::c_ulong).add(BIT_WORD(nr) as usize);
+    let mut old: kernel::ffi::c_ulong;
+    let mut tmp: kernel::ffi::c_ulong;
 
     core::arch::asm!(
         "1: l.lwa {old},0({p})",

@@ -22,9 +22,9 @@ extern "C" {
     fn iotable_init(io_desc: *const MapDesc, nr: usize);
     fn readl(addr: usize) -> u32;
     fn sysflg1_verid(value: u32) -> u32;
-    fn add_device_randomness(buf: *const core::ffi::c_void, len: usize);
+    fn add_device_randomness(buf: *const kernel::ffi::c_void, len: usize);
     fn platform_device_register_simple(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         id: isize,
         resource: *const Resource,
         num_resources: usize,
@@ -99,7 +99,7 @@ enum RebootMode {
     Unknown,
 }
 
-unsafe fn clps711x_restart(_mode: RebootMode, _cmd: *const core::ffi::c_char) {
+unsafe fn clps711x_restart(_mode: RebootMode, _cmd: *const kernel::ffi::c_char) {
     soft_restart(0);
 }
 

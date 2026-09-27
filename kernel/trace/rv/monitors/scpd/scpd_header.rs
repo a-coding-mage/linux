@@ -21,8 +21,8 @@ pub const event_max_scpd: usize = 4;
 
 #[repr(C)]
 pub struct automaton_scpd {
-    pub state_names: [*const core::ffi::c_char; state_max_scpd],
-    pub event_names: [*const core::ffi::c_char; event_max_scpd],
+    pub state_names: [*const kernel::ffi::c_char; state_max_scpd],
+    pub event_names: [*const kernel::ffi::c_char; event_max_scpd],
     pub function: [[u8; event_max_scpd]; state_max_scpd],
     pub initial_state: u8,
     pub final_states: [bool; state_max_scpd],
@@ -30,14 +30,14 @@ pub struct automaton_scpd {
 
 pub static automaton_scpd: automaton_scpd = automaton_scpd {
     state_names: [
-        b"cant_sched\0".as_ptr() as *const core::ffi::c_char,
-        b"can_sched\0".as_ptr() as *const core::ffi::c_char,
+        b"cant_sched\0".as_ptr() as *const kernel::ffi::c_char,
+        b"can_sched\0".as_ptr() as *const kernel::ffi::c_char,
     ],
     event_names: [
-        b"preempt_disable\0".as_ptr() as *const core::ffi::c_char,
-        b"preempt_enable\0".as_ptr() as *const core::ffi::c_char,
-        b"schedule_entry\0".as_ptr() as *const core::ffi::c_char,
-        b"schedule_exit\0".as_ptr() as *const core::ffi::c_char,
+        b"preempt_disable\0".as_ptr() as *const kernel::ffi::c_char,
+        b"preempt_enable\0".as_ptr() as *const kernel::ffi::c_char,
+        b"schedule_entry\0".as_ptr() as *const kernel::ffi::c_char,
+        b"schedule_exit\0".as_ptr() as *const kernel::ffi::c_char,
     ],
     function: [
         [can_sched_scpd as u8, INVALID_STATE as u8, INVALID_STATE as u8, INVALID_STATE as u8],

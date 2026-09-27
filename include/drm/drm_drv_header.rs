@@ -64,8 +64,8 @@ pub enum DrmDriverFeature {
 
 #[repr(C)]
 pub struct DrmDriver {
-    pub load: Option<unsafe extern "C" fn(*mut DrmDevice, libc::c_ulong) -> libc::c_int>,
-    pub open: Option<unsafe extern "C" fn(*mut DrmDevice, *mut DrmFile) -> libc::c_int>,
+    pub load: Option<unsafe extern "C" fn(*mut DrmDevice, kernel::ffi::c_ulong) -> kernel::ffi::c_int>,
+    pub open: Option<unsafe extern "C" fn(*mut DrmDevice, *mut DrmFile) -> kernel::ffi::c_int>,
     pub postclose: Option<unsafe extern "C" fn(*mut DrmDevice, *mut DrmFile)>,
     pub unload: Option<unsafe extern "C" fn(*mut DrmDevice)>,
     pub release: Option<unsafe extern "C" fn(*mut DrmDevice)>,
@@ -73,41 +73,41 @@ pub struct DrmDriver {
     pub master_drop: Option<unsafe extern "C" fn(*mut DrmDevice, *mut DrmFile)>,
     pub debugfs_init: Option<unsafe extern "C" fn(*mut DrmMinor)>,
     pub gem_create_object: Option<unsafe extern "C" fn(*mut DrmDevice, usize) -> *mut DrmGemObject>,
-    pub prime_handle_to_fd: Option<unsafe extern "C" fn(*mut DrmDevice, *mut DrmFile, u32, u32, *mut libc::c_int) -> libc::c_int>,
-    pub prime_fd_to_handle: Option<unsafe extern "C" fn(*mut DrmDevice, *mut DrmFile, libc::c_int, *mut u32) -> libc::c_int>,
+    pub prime_handle_to_fd: Option<unsafe extern "C" fn(*mut DrmDevice, *mut DrmFile, u32, u32, *mut kernel::ffi::c_int) -> kernel::ffi::c_int>,
+    pub prime_fd_to_handle: Option<unsafe extern "C" fn(*mut DrmDevice, *mut DrmFile, kernel::ffi::c_int, *mut u32) -> kernel::ffi::c_int>,
     pub gem_prime_import: Option<unsafe extern "C" fn(*mut DrmDevice, *mut DmaBuf) -> *mut DrmGemObject>,
     pub gem_prime_import_sg_table: Option<unsafe extern "C" fn(*mut DrmDevice, *mut DmaBufAttachment, *mut SgTable) -> *mut DrmGemObject>,
-    pub dumb_create: Option<unsafe extern "C" fn(*mut DrmFile, *mut DrmDevice, *mut DrmModeCreateDumb) -> libc::c_int>,
-    pub dumb_map_offset: Option<unsafe extern "C" fn(*mut DrmFile, *mut DrmDevice, u32, *mut u64) -> libc::c_int>,
-    pub fbdev_probe: Option<unsafe extern "C" fn(*mut DrmFbHelper, *mut DrmFbHelperSurfaceSize) -> libc::c_int>,
+    pub dumb_create: Option<unsafe extern "C" fn(*mut DrmFile, *mut DrmDevice, *mut DrmModeCreateDumb) -> kernel::ffi::c_int>,
+    pub dumb_map_offset: Option<unsafe extern "C" fn(*mut DrmFile, *mut DrmDevice, u32, *mut u64) -> kernel::ffi::c_int>,
+    pub fbdev_probe: Option<unsafe extern "C" fn(*mut DrmFbHelper, *mut DrmFbHelperSurfaceSize) -> kernel::ffi::c_int>,
     pub show_fdinfo: Option<unsafe extern "C" fn(*mut DrmPrinter, *mut DrmFile)>,
-    pub major: libc::c_int,
-    pub minor: libc::c_int,
-    pub patchlevel: libc::c_int,
-    pub name: *mut libc::c_char,
-    pub desc: *mut libc::c_char,
+    pub major: kernel::ffi::c_int,
+    pub minor: kernel::ffi::c_int,
+    pub patchlevel: kernel::ffi::c_int,
+    pub name: *mut kernel::ffi::c_char,
+    pub desc: *mut kernel::ffi::c_char,
     pub driver_features: u32,
     pub ioctls: *const DrmIoctlDesc,
-    pub num_ioctls: libc::c_int,
+    pub num_ioctls: kernel::ffi::c_int,
     pub fops: *const FileOperations,
 }
 
 pub enum DrmDevice {}
 
 extern "C" {
-    pub fn __devm_drm_dev_alloc(parent: *mut Device, driver: *const DrmDriver, size: usize, offset: usize) -> *mut libc::c_void;
-    pub fn drmm_cgroup_register_region(dev: *mut DrmDevice, region_name: *const libc::c_char, init: *const DmemCgroupInit) -> *mut DmemCgroupRegion;
+    pub fn __devm_drm_dev_alloc(parent: *mut Device, driver: *const DrmDriver, size: usize, offset: usize) -> *mut kernel::ffi::c_void;
+    pub fn drmm_cgroup_register_region(dev: *mut DrmDevice, region_name: *const kernel::ffi::c_char, init: *const DmemCgroupInit) -> *mut DmemCgroupRegion;
     pub fn drm_dev_alloc(driver: *const DrmDriver, parent: *mut Device) -> *mut DrmDevice;
-    pub fn __drm_dev_alloc(parent: *mut Device, driver: *const DrmDriver, size: usize, offset: usize) -> *mut libc::c_void;
-    pub fn drm_dev_register(dev: *mut DrmDevice, flags: libc::c_ulong) -> libc::c_int;
+    pub fn __drm_dev_alloc(parent: *mut Device, driver: *const DrmDriver, size: usize, offset: usize) -> *mut kernel::ffi::c_void;
+    pub fn drm_dev_register(dev: *mut DrmDevice, flags: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
     pub fn drm_dev_unregister(dev: *mut DrmDevice);
     pub fn drm_dev_get(dev: *mut DrmDevice);
     pub fn drm_dev_put(dev: *mut DrmDevice);
     pub fn drm_put_dev(dev: *mut DrmDevice);
-    pub fn drm_dev_enter(dev: *mut DrmDevice, idx: *mut libc::c_int) -> bool;
-    pub fn drm_dev_exit(idx: libc::c_int);
+    pub fn drm_dev_enter(dev: *mut DrmDevice, idx: *mut kernel::ffi::c_int) -> bool;
+    pub fn drm_dev_exit(idx: kernel::ffi::c_int);
     pub fn drm_dev_unplug(dev: *mut DrmDevice);
-    pub fn drm_dev_wedged_event(dev: *mut DrmDevice, method: libc::c_ulong, info: *mut DrmWedgeTaskInfo) -> libc::c_int;
+    pub fn drm_dev_wedged_event(dev: *mut DrmDevice, method: kernel::ffi::c_ulong, info: *mut DrmWedgeTaskInfo) -> kernel::ffi::c_int;
     pub fn video_firmware_drivers_only() -> bool;
 }
 

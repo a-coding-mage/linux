@@ -18,12 +18,12 @@ const DELAY_ALIGN: &str = ".balignw 4, 0x4a8e\n\t";
 const DELAY_ALIGN: &str = "";
 
 extern "C" {
-    pub static mut loops_per_jiffy: ::core::ffi::c_ulong;
+    pub static mut loops_per_jiffy: ::kernel::ffi::c_ulong;
     pub fn __bad_udelay();
 }
 
 #[inline]
-pub unsafe fn __delay(mut loops: ::core::ffi::c_ulong) {
+pub unsafe fn __delay(mut loops: ::kernel::ffi::c_ulong) {
     // The original uses m68k inline assembly: subql #1,%0; jcc 1b.
     core::arch::asm!(
         "{align}1: subql #1,%0\n\t",
@@ -36,19 +36,19 @@ pub unsafe fn __delay(mut loops: ::core::ffi::c_ulong) {
 
 // CONFIG_CPU_HAS_NO_MULDIV64 selects the shift-and-32-bit-multiply path.
 #[cfg(CONFIG_CPU_HAS_NO_MULDIV64)]
-pub const HZSCALE: ::core::ffi::c_ulong =
+pub const HZSCALE: ::kernel::ffi::c_ulong =
     268435456 / (1000000 / HZ);
 
 #[cfg(CONFIG_CPU_HAS_NO_MULDIV64)]
 #[inline]
-pub unsafe fn __const_udelay(u: ::core::ffi::c_ulong) {
+pub unsafe fn __const_udelay(u: ::kernel::ffi::c_ulong) {
     __delay((((u * HZSCALE) >> 11) * (loops_per_jiffy >> 11)) >> 6);
 }
 
 #[cfg(not(CONFIG_CPU_HAS_NO_MULDIV64))]
 #[inline]
-pub unsafe fn __xdelay(mut xloops: ::core::ffi::c_ulong) {
-    let mut tmp: ::core::ffi::c_ulong;
+pub unsafe fn __xdelay(mut xloops: ::kernel::ffi::c_ulong) {
+    let mut tmp: ::kernel::ffi::c_ulong;
     core::arch::asm!(
         "mulul {xloops},{xloops}:{tmp}",
         xloops = inout("d0") xloops,
@@ -61,12 +61,12 @@ pub unsafe fn __xdelay(mut xloops: ::core::ffi::c_ulong) {
 // The const factor (4295 = 2**32 / 1000000) is kept at the call site.
 #[cfg(not(CONFIG_CPU_HAS_NO_MULDIV64))]
 #[inline]
-pub unsafe fn __const_udelay(n: ::core::ffi::c_ulong) {
+pub unsafe fn __const_udelay(n: ::kernel::ffi::c_ulong) {
     __xdelay(n * 4295);
 }
 
 #[inline]
-pub unsafe fn __udelay(usecs: ::core::ffi::c_ulong) {
+pub unsafe fn __udelay(usecs: ::kernel::ffi::c_ulong) {
     __const_udelay(usecs);
 }
 
@@ -78,7 +78,7 @@ pub unsafe fn __udelay(usecs: ::core::ffi::c_ulong) {
  * a constant)
  */
 #[inline]
-pub unsafe fn udelay(n: ::core::ffi::c_ulong) {
+pub unsafe fn udelay(n: ::kernel::ffi::c_ulong) {
     // __builtin_constant_p cannot be represented directly; callers may use
     // the constant path explicitly through __const_udelay.
     if n > 20000 {
@@ -108,11 +108,11 @@ pub unsafe fn udelay(n: ::core::ffi::c_ulong) {
  * This is a macro so that the const version can factor out the first
  * multiply and shift.
  */
-pub const HZSCALE_NSEC: ::core::ffi::c_ulong =
+pub const HZSCALE_NSEC: ::kernel::ffi::c_ulong =
     268435456 / (1000000 / HZ);
 
 #[inline]
-pub unsafe fn ndelay(nsec: ::core::ffi::c_ulong) {
+pub unsafe fn ndelay(nsec: ::kernel::ffi::c_ulong) {
     __delay(DIV_ROUND_UP(
         nsec * (((HZSCALE_NSEC >> 11) * (loops_per_jiffy >> 11)) >> 6),
         1000,

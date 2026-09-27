@@ -30,23 +30,23 @@ const PLLCON_PWDEN: u32 = 1 << 12;
 const PLLCON_OTDV1: u32 = 0x00000700;
 const PLLCON_INDV: u32 = 0x0000003f;
 
-static mut clk_base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut clk_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 #[repr(C)]
 struct npcm8xx_clk_pll {
-    pllcon: *mut core::ffi::c_void,
+    pllcon: *mut kernel::ffi::c_void,
     id: u32,
-    name: *const core::ffi::c_char,
-    flags: libc::c_ulong,
+    name: *const kernel::ffi::c_char,
+    flags: kernel::ffi::c_ulong,
     hw: clk_hw,
 }
 
 #[repr(C)]
 struct npcm8xx_clk_pll_data {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     parent: clk_parent_data,
     reg: usize,
-    flags: libc::c_ulong,
+    flags: kernel::ffi::c_ulong,
     hw: clk_hw,
 }
 
@@ -55,10 +55,10 @@ struct npcm8xx_clk_div_data {
     reg: u32,
     shift: u8,
     width: u8,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     parent_hw: *const clk_hw,
-    clk_divider_flags: libc::c_ulong,
-    flags: libc::c_ulong,
+    clk_divider_flags: kernel::ffi::c_ulong,
+    flags: kernel::ffi::c_ulong,
     onecell_idx: i32,
     hw: clk_hw,
 }
@@ -68,10 +68,10 @@ struct npcm8xx_clk_mux_data {
     shift: u8,
     mask: u32,
     table: *const u32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     parent_data: *const clk_parent_data,
     num_parents: u8,
-    flags: libc::c_ulong,
+    flags: kernel::ffi::c_ulong,
     hw: clk_hw,
 }
 
@@ -94,7 +94,7 @@ extern "C" {
     static npcm8xx_divs: [npcm8xx_clk_div_data; 21];
 }
 
-unsafe fn npcm8xx_clk_pll_recalc_rate(hw: *mut clk_hw, parent_rate: libc::c_ulong) -> libc::c_ulong {
+unsafe fn npcm8xx_clk_pll_recalc_rate(hw: *mut clk_hw, parent_rate: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     let pll = (hw as *mut u8).sub(core::mem::offset_of!(npcm8xx_clk_pll, hw)) as *mut npcm8xx_clk_pll;
     if parent_rate == 0 { return 0; }
     let val = readl_relaxed((*pll).pllcon as *const u32);
@@ -102,12 +102,12 @@ unsafe fn npcm8xx_clk_pll_recalc_rate(hw: *mut clk_hw, parent_rate: libc::c_ulon
     let fbdv = ((val & PLLCON_FBDV) >> 16) as u64;
     let otdv1 = ((val & PLLCON_OTDV1) >> 8) as u64;
     let otdv2 = ((val & PLLCON_OTDV2) >> 13) as u64;
-    ((parent_rate as u64).wrapping_mul(fbdv) / (indv * otdv1 * otdv2)) as libc::c_ulong
+    ((parent_rate as u64).wrapping_mul(fbdv) / (indv * otdv1 * otdv2)) as kernel::ffi::c_ulong
 }
 
 unsafe fn npcm8xx_clk_register_pll(
-    dev: *mut device, pllcon: *mut core::ffi::c_void, name: *const core::ffi::c_char,
-    parent: *const clk_parent_data, flags: libc::c_ulong,
+    dev: *mut device, pllcon: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char,
+    parent: *const clk_parent_data, flags: kernel::ffi::c_ulong,
 ) -> *mut clk_hw {
     let pll = devm_kzalloc(dev, core::mem::size_of::<npcm8xx_clk_pll>(), GFP_KERNEL) as *mut npcm8xx_clk_pll;
     if pll.is_null() { return ERR_PTR(-12); }
@@ -141,7 +141,7 @@ unsafe fn npcm8xx_clk_probe(adev: *mut auxiliary_device, _id: *const auxiliary_d
 extern "C" {
     fn register_remaining_npcm8xx_clocks(dev: *mut device, data: *mut clk_hw_onecell_data) -> i32;
     fn readl_relaxed(addr: *const u32) -> u32;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_clk_hw_register(dev: *mut device, hw: *mut clk_hw) -> i32;
 }
 

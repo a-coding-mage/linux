@@ -188,10 +188,10 @@ pub struct ieee80211_tx_queue_params {
 };
 
 pub struct ieee80211_low_level_stats {
-	core::ffi::c_uint dot11ACKFailureCount;
-	core::ffi::c_uint dot11RTSFailureCount;
-	core::ffi::c_uint dot11FCSErrorCount;
-	core::ffi::c_uint dot11RTSSuccessCount;
+	kernel::ffi::c_uint dot11ACKFailureCount;
+	kernel::ffi::c_uint dot11RTSFailureCount;
+	kernel::ffi::c_uint dot11FCSErrorCount;
+	kernel::ffi::c_uint dot11RTSSuccessCount;
 };
 
 /**
@@ -791,7 +791,7 @@ pub struct ieee80211_bss_conf {
 	pub struct cfg80211_bss *bss;
 
 	*const u8bssid;
-	core::ffi::c_uint link_id;
+	kernel::ffi::c_uint link_id;
 	u8 addr[ETH_ALEN] __aligned(2);
 	u8 htc_trig_based_pkt_ext;
 	bool uora_exists;
@@ -1376,7 +1376,7 @@ pub struct ieee80211_tx_info {
 					/* 14 bits free */
 				};
 				/* only needed before rate control */
-				core::ffi::c_ulong jiffies;
+				kernel::ffi::c_ulong jiffies;
 			};
 			/* NB: vif can be NULL for injected frames */
 			pub struct ieee80211_vif *vif;
@@ -2279,7 +2279,7 @@ pub unsafe fn bool ieee80211_vif_is_mld(const pub struct ieee80211_vif *vif)
  *	the vif is not an MLD and the link ID is 0; %false otherwise.
  */
 pub unsafe fn bool ieee80211_vif_link_active(const pub struct ieee80211_vif *vif,
-					     link_id: core::ffi::c_uint)
+					     link_id: kernel::ffi::c_uint)
 {
 	if (!ieee80211_vif_is_mld(vif))
 		return link_id == 0;
@@ -3271,9 +3271,9 @@ pub struct ieee80211_hw {
 	pub struct wiphy *wiphy;
 	const char *rate_control_algorithm;
 	void *priv;
-	core::ffi::c_ulong flags[BITS_TO_LONGS(NUM_IEEE80211_HW_FLAGS)];
-	core::ffi::c_uint extra_tx_headroom;
-	core::ffi::c_uint extra_beacon_tailroom;
+	kernel::ffi::c_ulong flags[BITS_TO_LONGS(NUM_IEEE80211_HW_FLAGS)];
+	kernel::ffi::c_uint extra_tx_headroom;
+	kernel::ffi::c_uint extra_beacon_tailroom;
 	int vif_data_size;
 	int sta_data_size;
 	int chanctx_data_size;
@@ -4766,13 +4766,13 @@ pub struct ieee80211_ops {
 	u64 (*prepare_multicast)(pub struct ieee80211_hw *hw,
 				 pub struct netdev_hw_addr_list *mc_list);
 	void (*configure_filter)(pub struct ieee80211_hw *hw,
-				 changed_flags: core::ffi::c_uint,
-				 core::ffi::c_uint *total_flags,
+				 changed_flags: kernel::ffi::c_uint,
+				 kernel::ffi::c_uint *total_flags,
 				 multicast: u64);
 	void (*config_iface_filter)(pub struct ieee80211_hw *hw,
 				    pub struct ieee80211_vif *vif,
-				    filter_flags: core::ffi::c_uint,
-				    changed_flags: core::ffi::c_uint);
+				    filter_flags: kernel::ffi::c_uint,
+				    changed_flags: kernel::ffi::c_uint);
 	int (*set_tim)(pub struct ieee80211_hw *hw, pub struct ieee80211_sta *sta,
 		       set: bool);
 	int (*set_key)(pub struct ieee80211_hw *hw, pub enum set_key_cmd cmd,
@@ -4857,7 +4857,7 @@ pub struct ieee80211_ops {
 			       pub struct station_info *sinfo);
 	int (*conf_tx)(pub struct ieee80211_hw *hw,
 		       pub struct ieee80211_vif *vif,
-		       link_id: core::ffi::c_uint, ac: u16,
+		       link_id: kernel::ffi::c_uint, ac: u16,
 		       const pub struct ieee80211_tx_queue_params *params);
 	u64 (*get_tsf)(pub struct ieee80211_hw *hw, pub struct ieee80211_vif *vif);
 	void (*set_tsf)(pub struct ieee80211_hw *hw, pub struct ieee80211_vif *vif,
@@ -4975,7 +4975,7 @@ pub struct ieee80211_ops {
 
 	void	(*mgd_protect_tdls_discover)(pub struct ieee80211_hw *hw,
 					     pub struct ieee80211_vif *vif,
-					     link_id: core::ffi::c_uint);
+					     link_id: kernel::ffi::c_uint);
 
 	int (*add_chanctx)(pub struct ieee80211_hw *hw,
 			   pub struct ieee80211_chanctx_conf *ctx);
@@ -5027,7 +5027,7 @@ pub struct ieee80211_ops {
 	u32 (*get_expected_throughput)(pub struct ieee80211_hw *hw,
 				       pub struct ieee80211_sta *sta);
 	int (*get_txpower)(pub struct ieee80211_hw *hw, pub struct ieee80211_vif *vif,
-			   link_id: core::ffi::c_uint, int *dbm);
+			   link_id: kernel::ffi::c_uint, int *dbm);
 
 	int (*tdls_channel_switch)(pub struct ieee80211_hw *hw,
 				   pub struct ieee80211_vif *vif,
@@ -5214,9 +5214,9 @@ const char *__ieee80211_get_assoc_led_name(pub struct ieee80211_hw *hw);
 const char *__ieee80211_get_radio_led_name(pub struct ieee80211_hw *hw);
 const char *
 __ieee80211_create_tpt_led_trigger(pub struct ieee80211_hw *hw,
-				   flags: core::ffi::c_uint,
+				   flags: kernel::ffi::c_uint,
 				   const pub struct ieee80211_tpt_blink *blink_table,
-				   blink_table_len: core::ffi::c_uint);
+				   blink_table_len: kernel::ffi::c_uint);
 #endif
 /**
  * ieee80211_get_tx_led_name - get name of TX LED
@@ -5315,9 +5315,9 @@ pub unsafe fn const char *ieee80211_get_radio_led_name(pub struct ieee80211_hw *
  * Note: This function must be called before ieee80211_register_hw().
  */
 pub unsafe fn const char *
-ieee80211_create_tpt_led_trigger(pub struct ieee80211_hw *hw, flags: core::ffi::c_uint,
+ieee80211_create_tpt_led_trigger(pub struct ieee80211_hw *hw, flags: kernel::ffi::c_uint,
 				 const pub struct ieee80211_tpt_blink *blink_table,
-				 blink_table_len: core::ffi::c_uint)
+				 blink_table_len: kernel::ffi::c_uint)
 {
 #ifdef CONFIG_MAC80211_LEDS
 	return __ieee80211_create_tpt_led_trigger(hw, flags, blink_table,
@@ -5773,7 +5773,7 @@ pub struct sk_buff *
 ieee80211_beacon_get_template(pub struct ieee80211_hw *hw,
 			      pub struct ieee80211_vif *vif,
 			      pub struct ieee80211_mutable_offsets *offs,
-			      link_id: core::ffi::c_uint);
+			      link_id: kernel::ffi::c_uint);
 
 /**
  * ieee80211_beacon_get_template_ema_index - EMA beacon template generation
@@ -5794,7 +5794,7 @@ pub struct sk_buff *
 ieee80211_beacon_get_template_ema_index(pub struct ieee80211_hw *hw,
 					pub struct ieee80211_vif *vif,
 					pub struct ieee80211_mutable_offsets *offs,
-					link_id: core::ffi::c_uint, ema_index: u8);
+					link_id: kernel::ffi::c_uint, ema_index: u8);
 
 /**
  * pub struct ieee80211_ema_beacons - List of EMA beacons
@@ -5832,7 +5832,7 @@ pub struct ieee80211_ema_beacons {
 pub struct ieee80211_ema_beacons *
 ieee80211_beacon_get_template_ema_list(pub struct ieee80211_hw *hw,
 				       pub struct ieee80211_vif *vif,
-				       link_id: core::ffi::c_uint);
+				       link_id: kernel::ffi::c_uint);
 
 /**
  * ieee80211_beacon_free_ema_list - free an EMA beacon template list
@@ -5870,7 +5870,7 @@ void ieee80211_beacon_free_ema_list(pub struct ieee80211_ema_beacons *ema_beacon
 pub struct sk_buff *ieee80211_beacon_get_tim(pub struct ieee80211_hw *hw,
 					 pub struct ieee80211_vif *vif,
 					 u16 *tim_offset, u16 *tim_length,
-					 link_id: core::ffi::c_uint);
+					 link_id: kernel::ffi::c_uint);
 
 /**
  * ieee80211_beacon_get - beacon generation function
@@ -5885,7 +5885,7 @@ pub struct sk_buff *ieee80211_beacon_get_tim(pub struct ieee80211_hw *hw,
  */
 pub unsafe fn pub struct sk_buff *ieee80211_beacon_get(pub struct ieee80211_hw *hw,
 						   pub struct ieee80211_vif *vif,
-						   link_id: core::ffi::c_uint)
+						   link_id: kernel::ffi::c_uint)
 {
 	return ieee80211_beacon_get_tim(hw, vif, NULL, NULL, link_id);
 }
@@ -5904,7 +5904,7 @@ pub unsafe fn pub struct sk_buff *ieee80211_beacon_get(pub struct ieee80211_hw *
  * Return: new countdown value
  */
 u8 ieee80211_beacon_update_cntdwn(pub struct ieee80211_vif *vif,
-				  link_id: core::ffi::c_uint);
+				  link_id: kernel::ffi::c_uint);
 
 /**
  * ieee80211_beacon_set_cntdwn - request mac80211 to set beacon countdown
@@ -5928,7 +5928,7 @@ void ieee80211_beacon_set_cntdwn(pub struct ieee80211_vif *vif, counter: u8);
  * announcement hits 1, this function must be called by the driver to
  * notify mac80211 that the channel can be changed.
  */
-void ieee80211_csa_finish(pub struct ieee80211_vif *vif, link_id: core::ffi::c_uint);
+void ieee80211_csa_finish(pub struct ieee80211_vif *vif, link_id: kernel::ffi::c_uint);
 
 /**
  * ieee80211_beacon_cntdwn_is_complete - find out if countdown reached 1
@@ -5938,7 +5938,7 @@ void ieee80211_csa_finish(pub struct ieee80211_vif *vif, link_id: core::ffi::c_u
  * Return: %true if the countdown reached 1, %false otherwise
  */
 bool ieee80211_beacon_cntdwn_is_complete(pub struct ieee80211_vif *vif,
-					 link_id: core::ffi::c_uint);
+					 link_id: kernel::ffi::c_uint);
 
 /**
  * ieee80211_color_change_finish - notify mac80211 about color change
@@ -6620,7 +6620,7 @@ void ieee80211_queue_work(pub struct ieee80211_hw *hw, pub struct work_struct *w
  */
 void ieee80211_queue_delayed_work(pub struct ieee80211_hw *hw,
 				  pub struct delayed_work *dwork,
-				  delay: core::ffi::c_ulong);
+				  delay: kernel::ffi::c_ulong);
 
 /**
  * ieee80211_refresh_tx_agg_session_timer - Refresh a tx agg session timer.
@@ -6746,7 +6746,7 @@ pub struct ieee80211_sta *
 ieee80211_find_sta_by_link_addrs(pub struct ieee80211_hw *hw,
 				 addr: *const u8,
 				 localaddr: *const u8,
-				 core::ffi::c_uint *link_id);
+				 kernel::ffi::c_uint *link_id);
 
 /**
  * ieee80211_sta_block_awake - block station from waking up
@@ -7124,7 +7124,7 @@ void ieee80211_radar_detected(pub struct ieee80211_hw *hw,
  * and wake up the suspended queues.
  */
 void ieee80211_chswitch_done(pub struct ieee80211_vif *vif, success: bool,
-			     link_id: core::ffi::c_uint);
+			     link_id: kernel::ffi::c_uint);
 
 /**
  * ieee80211_channel_switch_disconnect - disconnect due to channel switch error
@@ -7146,7 +7146,7 @@ void ieee80211_channel_switch_disconnect(pub struct ieee80211_vif *vif);
  * mode. This is useful when the driver has more information than
  * the stack about possible interference, for example by bluetooth.
  */
-void ieee80211_request_smps(pub struct ieee80211_vif *vif, link_id: core::ffi::c_uint,
+void ieee80211_request_smps(pub struct ieee80211_vif *vif, link_id: kernel::ffi::c_uint,
 			    pub enum ieee80211_smps_mode smps_mode);
 
 /**
@@ -7217,7 +7217,7 @@ void ieee80211_send_bar(pub struct ieee80211_vif *vif, u8 *ra, tid: u16, ssn: u1
  * @tid: the rx tid
  */
 void ieee80211_manage_rx_ba_offl(pub struct ieee80211_vif *vif, addr: *const u8,
-				 tid: core::ffi::c_uint);
+				 tid: kernel::ffi::c_uint);
 
 /**
  * ieee80211_start_rx_ba_session_offl - start a Rx BA session
@@ -7276,7 +7276,7 @@ pub unsafe fn void ieee80211_stop_rx_ba_session_offl(pub struct ieee80211_vif *v
  * @tid: the rx tid
  */
 void ieee80211_rx_ba_timer_expired(pub struct ieee80211_vif *vif,
-				   addr: *const u8, tid: core::ffi::c_uint);
+				   addr: *const u8, tid: kernel::ffi::c_uint);
 
 /* Rate control API */
 
@@ -7331,7 +7331,7 @@ pub enum rate_control_capabilities {
 };
 
 pub struct rate_control_ops {
-	core::ffi::c_ulong capa;
+	kernel::ffi::c_ulong capa;
 	const char *name;
 	void *(*alloc)(pub struct ieee80211_hw *hw);
 	void (*add_debugfs)(pub struct ieee80211_hw *hw, void *priv,
@@ -7392,7 +7392,7 @@ pub unsafe fn
 bool rate_usable_index_exists(pub struct ieee80211_supported_band *sband,
 			      pub struct ieee80211_sta *sta)
 {
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	for (i = 0; i < (*sband).n_bitrates; i++)
 		if (rate_supported(sta, (*sband).band, i))
@@ -7546,7 +7546,7 @@ ieee80211_get_uhr_iftype_cap_vif(const pub struct ieee80211_supported_band *sban
  * matching GroupId management frame.
  * Calls to this function need to be serialized with RX path.
  */
-void ieee80211_update_mu_groups(pub struct ieee80211_vif *vif, link_id: core::ffi::c_uint,
+void ieee80211_update_mu_groups(pub struct ieee80211_vif *vif, link_id: kernel::ffi::c_uint,
 				membership: *const u8, position: *const u8);
 
 void ieee80211_enable_rssi_reports(pub struct ieee80211_vif *vif,
@@ -7583,8 +7583,8 @@ int ieee80211_ave_rssi(pub struct ieee80211_vif *vif, int link_id);
  */
 u64 ieee80211_calculate_rx_timestamp(pub struct ieee80211_hw *hw,
 				     pub struct ieee80211_rx_status *status,
-				     mpdu_len: core::ffi::c_uint,
-				     mpdu_offset: core::ffi::c_uint);
+				     mpdu_len: kernel::ffi::c_uint,
+				     mpdu_offset: kernel::ffi::c_uint);
 
 /**
  * ieee80211_report_wowlan_wakeup - report WoWLAN wakeup
@@ -7897,8 +7897,8 @@ bool ieee80211_txq_may_transmit(pub struct ieee80211_hw *hw,
  * @byte_cnt: pointer to store byte count
  */
 void ieee80211_txq_get_depth(pub struct ieee80211_txq *txq,
-			     core::ffi::c_ulong *frame_cnt,
-			     core::ffi::c_ulong *byte_cnt);
+			     kernel::ffi::c_ulong *frame_cnt,
+			     kernel::ffi::c_ulong *byte_cnt);
 
 /**
  * ieee80211_nan_func_terminated - notify about NAN function termination.
@@ -8015,7 +8015,7 @@ u32 ieee80211_calc_tx_airtime(pub struct ieee80211_hw *hw,
  */
 pub struct sk_buff *ieee80211_get_fils_discovery_tmpl(pub struct ieee80211_hw *hw,
 						  pub struct ieee80211_vif *vif,
-						  link_id: core::ffi::c_uint);
+						  link_id: kernel::ffi::c_uint);
 
 /**
  * ieee80211_get_unsol_bcast_probe_resp_tmpl - Get unsolicited broadcast
@@ -8031,7 +8031,7 @@ pub struct sk_buff *ieee80211_get_fils_discovery_tmpl(pub struct ieee80211_hw *h
 pub struct sk_buff *
 ieee80211_get_unsol_bcast_probe_resp_tmpl(pub struct ieee80211_hw *hw,
 					  pub struct ieee80211_vif *vif,
-					  link_id: core::ffi::c_uint);
+					  link_id: kernel::ffi::c_uint);
 
 /**
  * ieee80211_obss_color_collision_notify - notify userland about a BSS color

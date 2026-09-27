@@ -37,15 +37,15 @@ pub const RMI_F11_DISABLE_ABS_REPORT: u32 = 1 << 0;
 pub struct rmi_2d_sensor_platform_data {
     pub axis_align: rmi_2d_axis_alignment,
     pub sensor_type: rmi_sensor_type,
-    pub x_mm: core::ffi::c_int,
-    pub y_mm: core::ffi::c_int,
-    pub disable_report_mask: core::ffi::c_int,
+    pub x_mm: kernel::ffi::c_int,
+    pub y_mm: kernel::ffi::c_int,
+    pub disable_report_mask: kernel::ffi::c_int,
     pub rezero_wait: u16,
     pub topbuttonpad: bool,
     pub kernel_tracking: bool,
-    pub dmax: core::ffi::c_int,
-    pub dribble: core::ffi::c_int,
-    pub palm_detect: core::ffi::c_int,
+    pub dmax: kernel::ffi::c_int,
+    pub dribble: kernel::ffi::c_int,
+    pub palm_detect: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -82,14 +82,14 @@ pub struct rmi_device_platform_data_spi {
     pub post_delay_us: u32,
     pub bits_per_word: u8,
     pub mode: u16,
-    pub cs_assert_data: *mut core::ffi::c_void,
-    pub cs_assert: Option<unsafe extern "C" fn(*const core::ffi::c_void, bool) -> core::ffi::c_int>,
+    pub cs_assert_data: *mut kernel::ffi::c_void,
+    pub cs_assert: Option<unsafe extern "C" fn(*const kernel::ffi::c_void, bool) -> kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct rmi_device_platform_data {
-    pub reset_delay_ms: core::ffi::c_int,
-    pub irq: core::ffi::c_int,
+    pub reset_delay_ms: kernel::ffi::c_int,
+    pub irq: kernel::ffi::c_int,
     pub spi_data: rmi_device_platform_data_spi,
     pub sensor_pdata: rmi_2d_sensor_platform_data,
     pub power_management: rmi_f01_power_management,
@@ -124,16 +124,16 @@ pub struct rmi_function;
 
 #[repr(C)]
 pub struct rmi_transport_ops {
-    pub write_block: Option<unsafe extern "C" fn(*mut rmi_transport_dev, u16, *const core::ffi::c_void, usize) -> core::ffi::c_int>,
-    pub read_block: Option<unsafe extern "C" fn(*mut rmi_transport_dev, u16, *mut core::ffi::c_void, usize) -> core::ffi::c_int>,
-    pub reset: Option<unsafe extern "C" fn(*mut rmi_transport_dev, u16) -> core::ffi::c_int>,
+    pub write_block: Option<unsafe extern "C" fn(*mut rmi_transport_dev, u16, *const kernel::ffi::c_void, usize) -> kernel::ffi::c_int>,
+    pub read_block: Option<unsafe extern "C" fn(*mut rmi_transport_dev, u16, *mut kernel::ffi::c_void, usize) -> kernel::ffi::c_int>,
+    pub reset: Option<unsafe extern "C" fn(*mut rmi_transport_dev, u16) -> kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct rmi_transport_dev {
     pub dev: *mut device,
     pub rmi_dev: *mut rmi_device,
-    pub proto_name: *const core::ffi::c_char,
+    pub proto_name: *const kernel::ffi::c_char,
     pub ops: *const rmi_transport_ops,
     pub pdata: rmi_device_platform_data,
     pub input: *mut input_dev,
@@ -142,27 +142,27 @@ pub struct rmi_transport_dev {
 #[repr(C)]
 pub struct rmi_driver {
     pub driver: device_driver,
-    pub reset_handler: Option<unsafe extern "C" fn(*mut rmi_device) -> core::ffi::c_int>,
-    pub clear_irq_bits: Option<unsafe extern "C" fn(*mut rmi_device, *mut core::ffi::c_ulong) -> core::ffi::c_int>,
-    pub set_irq_bits: Option<unsafe extern "C" fn(*mut rmi_device, *mut core::ffi::c_ulong) -> core::ffi::c_int>,
-    pub store_productid: Option<unsafe extern "C" fn(*mut rmi_device) -> core::ffi::c_int>,
-    pub set_input_params: Option<unsafe extern "C" fn(*mut rmi_device, *mut input_dev) -> core::ffi::c_int>,
-    pub data: *mut core::ffi::c_void,
+    pub reset_handler: Option<unsafe extern "C" fn(*mut rmi_device) -> kernel::ffi::c_int>,
+    pub clear_irq_bits: Option<unsafe extern "C" fn(*mut rmi_device, *mut kernel::ffi::c_ulong) -> kernel::ffi::c_int>,
+    pub set_irq_bits: Option<unsafe extern "C" fn(*mut rmi_device, *mut kernel::ffi::c_ulong) -> kernel::ffi::c_int>,
+    pub store_productid: Option<unsafe extern "C" fn(*mut rmi_device) -> kernel::ffi::c_int>,
+    pub set_input_params: Option<unsafe extern "C" fn(*mut rmi_device, *mut input_dev) -> kernel::ffi::c_int>,
+    pub data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct rmi_device {
     pub dev: device,
-    pub number: core::ffi::c_int,
+    pub number: kernel::ffi::c_int,
     pub driver: *mut rmi_driver,
     pub xport: *mut rmi_transport_dev,
 }
 
 #[repr(C)]
 pub struct rmi4_attn_data {
-    pub irq_status: core::ffi::c_ulong,
+    pub irq_status: kernel::ffi::c_ulong,
     pub size: usize,
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -172,13 +172,13 @@ pub struct rmi_driver_data {
     pub f01_container: *mut rmi_function,
     pub f34_container: *mut rmi_function,
     pub bootloader_mode: bool,
-    pub num_of_irq_regs: core::ffi::c_int,
-    pub irq_count: core::ffi::c_int,
-    pub irq_memory: *mut core::ffi::c_void,
-    pub irq_status: *mut core::ffi::c_ulong,
-    pub fn_irq_bits: *mut core::ffi::c_ulong,
-    pub current_irq_mask: *mut core::ffi::c_ulong,
-    pub new_irq_mask: *mut core::ffi::c_ulong,
+    pub num_of_irq_regs: kernel::ffi::c_int,
+    pub irq_count: kernel::ffi::c_int,
+    pub irq_memory: *mut kernel::ffi::c_void,
+    pub irq_status: *mut kernel::ffi::c_ulong,
+    pub fn_irq_bits: *mut kernel::ffi::c_ulong,
+    pub current_irq_mask: *mut kernel::ffi::c_ulong,
+    pub new_irq_mask: *mut kernel::ffi::c_ulong,
     pub irq_mutex: mutex,
     pub input: *mut input_dev,
     pub irqdomain: *mut irq_domain,
@@ -193,11 +193,11 @@ pub struct rmi_driver_data {
 }
 
 unsafe extern "C" {
-    pub fn rmi_register_transport_device(xport: *mut rmi_transport_dev) -> core::ffi::c_int;
+    pub fn rmi_register_transport_device(xport: *mut rmi_transport_dev) -> kernel::ffi::c_int;
     pub fn rmi_unregister_transport_device(xport: *mut rmi_transport_dev);
-    pub fn rmi_set_attn_data(rmi_dev: *mut rmi_device, irq_status: core::ffi::c_ulong, data: *mut core::ffi::c_void, size: usize);
-    pub fn rmi_driver_suspend(rmi_dev: *mut rmi_device, enable_wake: bool) -> core::ffi::c_int;
-    pub fn rmi_driver_resume(rmi_dev: *mut rmi_device, clear_wake: bool) -> core::ffi::c_int;
+    pub fn rmi_set_attn_data(rmi_dev: *mut rmi_device, irq_status: kernel::ffi::c_ulong, data: *mut kernel::ffi::c_void, size: usize);
+    pub fn rmi_driver_suspend(rmi_dev: *mut rmi_device, enable_wake: bool) -> kernel::ffi::c_int;
+    pub fn rmi_driver_resume(rmi_dev: *mut rmi_device, clear_wake: bool) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

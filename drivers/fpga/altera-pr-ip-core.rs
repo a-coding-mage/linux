@@ -24,12 +24,12 @@ const ALT_PR_CSR_STATUS_PR_SUCCESS: u32 = 5 << ALT_PR_CSR_STATUS_SFT;
 
 #[repr(C)]
 struct alt_pr_priv {
-    reg_base: *mut core::ffi::c_void,
+    reg_base: *mut kernel::ffi::c_void,
 }
 
 unsafe fn alt_pr_fpga_state(mgr: *mut fpga_manager) -> fpga_mgr_states {
     let priv_ = (*mgr).priv_ as *mut alt_pr_priv;
-    let mut err: *const core::ffi::c_char = c"unknown".as_ptr();
+    let mut err: *const kernel::ffi::c_char = c"unknown".as_ptr();
     let mut ret = FPGA_MGR_STATE_UNKNOWN;
     let mut val: u32;
 
@@ -59,7 +59,7 @@ unsafe fn alt_pr_fpga_state(mgr: *mut fpga_manager) -> fpga_mgr_states {
     ret
 }
 
-unsafe fn alt_pr_fpga_write_init(mgr: *mut fpga_manager, info: *mut fpga_image_info, _buf: *const core::ffi::c_char, _count: usize) -> i32 {
+unsafe fn alt_pr_fpga_write_init(mgr: *mut fpga_manager, info: *mut fpga_image_info, _buf: *const kernel::ffi::c_char, _count: usize) -> i32 {
     let priv_ = (*mgr).priv_ as *mut alt_pr_priv;
     if ((*info).flags & FPGA_MGR_PARTIAL_RECONFIG) == 0 {
         dev_err(&(*mgr).dev, c"%s Partial Reconfiguration flag not set\n".as_ptr(), c"alt_pr_fpga_write_init".as_ptr());
@@ -74,7 +74,7 @@ unsafe fn alt_pr_fpga_write_init(mgr: *mut fpga_manager, info: *mut fpga_image_i
     0
 }
 
-unsafe fn alt_pr_fpga_write(mgr: *mut fpga_manager, buf: *const core::ffi::c_char, mut count: usize) -> i32 {
+unsafe fn alt_pr_fpga_write(mgr: *mut fpga_manager, buf: *const kernel::ffi::c_char, mut count: usize) -> i32 {
     let priv_ = (*mgr).priv_ as *mut alt_pr_priv;
     let buffer_32 = buf as *const u32;
     let mut i = 0usize;
@@ -121,7 +121,7 @@ static alt_pr_ops: fpga_manager_ops = fpga_manager_ops {
     write_complete: Some(alt_pr_fpga_write_complete),
 };
 
-unsafe fn alt_pr_register(dev: *mut device, reg_base: *mut core::ffi::c_void) -> i32 {
+unsafe fn alt_pr_register(dev: *mut device, reg_base: *mut kernel::ffi::c_void) -> i32 {
     let priv_ = devm_kzalloc(dev, core::mem::size_of::<alt_pr_priv>(), GFP_KERNEL) as *mut alt_pr_priv;
     if priv_.is_null() { return -ENOMEM; }
     (*priv_).reg_base = reg_base;

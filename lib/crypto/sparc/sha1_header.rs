@@ -31,12 +31,12 @@ extern "C" {
 
     pub fn static_branch_likely(key: *const StaticKey) -> bool;
     pub fn static_branch_enable(key: *mut StaticKey);
-    pub fn pr_info(fmt: *const core::ffi::c_char, ...);
+    pub fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 // Build-time definitions supplied by the surrounding kernel translation.
 // The original header includes these architecture definitions.
-pub type c_ulong = core::ffi::c_ulong;
+pub type c_ulong = kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct StaticKey {
@@ -83,7 +83,7 @@ pub fn sha1_mod_init_arch() {
         }
 
         static_branch_enable(&mut have_sha1_opcodes);
-        pr_info(b"Using sparc64 sha1 opcode optimized SHA-1 implementation\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_info(b"Using sparc64 sha1 opcode optimized SHA-1 implementation\n\0".as_ptr() as *const kernel::ffi::c_char);
     }
 }
 

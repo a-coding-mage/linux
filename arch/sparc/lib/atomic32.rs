@@ -26,8 +26,8 @@ extern "C" {
 }
 
 extern "C" {
-    fn spin_lock_irqsave(lock: *mut crate::spinlock_t, flags: *mut libc::c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut crate::spinlock_t, flags: libc::c_ulong);
+    fn spin_lock_irqsave(lock: *mut crate::spinlock_t, flags: *mut kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut crate::spinlock_t, flags: kernel::ffi::c_ulong);
 }
 
 #[inline]
@@ -43,8 +43,8 @@ unsafe fn atomic_hash<T>(a: *const T) -> *mut crate::spinlock_t {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn arch_atomic_add_return(i: libc::c_int, v: *mut crate::atomic_t) -> libc::c_int {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn arch_atomic_add_return(i: kernel::ffi::c_int, v: *mut crate::atomic_t) -> kernel::ffi::c_int {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(v);
     spin_lock_irqsave(lock, &mut flags);
     (*v).counter += i;
@@ -54,8 +54,8 @@ pub unsafe extern "C" fn arch_atomic_add_return(i: libc::c_int, v: *mut crate::a
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn arch_atomic_fetch_add(i: libc::c_int, v: *mut crate::atomic_t) -> libc::c_int {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn arch_atomic_fetch_add(i: kernel::ffi::c_int, v: *mut crate::atomic_t) -> kernel::ffi::c_int {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(v);
     spin_lock_irqsave(lock, &mut flags);
     let ret = (*v).counter;
@@ -65,8 +65,8 @@ pub unsafe extern "C" fn arch_atomic_fetch_add(i: libc::c_int, v: *mut crate::at
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn arch_atomic_fetch_and(i: libc::c_int, v: *mut crate::atomic_t) -> libc::c_int {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn arch_atomic_fetch_and(i: kernel::ffi::c_int, v: *mut crate::atomic_t) -> kernel::ffi::c_int {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(v);
     spin_lock_irqsave(lock, &mut flags);
     let ret = (*v).counter;
@@ -76,8 +76,8 @@ pub unsafe extern "C" fn arch_atomic_fetch_and(i: libc::c_int, v: *mut crate::at
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn arch_atomic_fetch_or(i: libc::c_int, v: *mut crate::atomic_t) -> libc::c_int {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn arch_atomic_fetch_or(i: kernel::ffi::c_int, v: *mut crate::atomic_t) -> kernel::ffi::c_int {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(v);
     spin_lock_irqsave(lock, &mut flags);
     let ret = (*v).counter;
@@ -87,8 +87,8 @@ pub unsafe extern "C" fn arch_atomic_fetch_or(i: libc::c_int, v: *mut crate::ato
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn arch_atomic_fetch_xor(i: libc::c_int, v: *mut crate::atomic_t) -> libc::c_int {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn arch_atomic_fetch_xor(i: kernel::ffi::c_int, v: *mut crate::atomic_t) -> kernel::ffi::c_int {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(v);
     spin_lock_irqsave(lock, &mut flags);
     let ret = (*v).counter;
@@ -98,8 +98,8 @@ pub unsafe extern "C" fn arch_atomic_fetch_xor(i: libc::c_int, v: *mut crate::at
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn arch_atomic_xchg(v: *mut crate::atomic_t, new: libc::c_int) -> libc::c_int {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn arch_atomic_xchg(v: *mut crate::atomic_t, new: kernel::ffi::c_int) -> kernel::ffi::c_int {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(v);
     spin_lock_irqsave(lock, &mut flags);
     let ret = (*v).counter;
@@ -109,8 +109,8 @@ pub unsafe extern "C" fn arch_atomic_xchg(v: *mut crate::atomic_t, new: libc::c_
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn arch_atomic_cmpxchg(v: *mut crate::atomic_t, old: libc::c_int, new: libc::c_int) -> libc::c_int {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn arch_atomic_cmpxchg(v: *mut crate::atomic_t, old: kernel::ffi::c_int, new: kernel::ffi::c_int) -> kernel::ffi::c_int {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(v);
     spin_lock_irqsave(lock, &mut flags);
     let ret = (*v).counter;
@@ -120,8 +120,8 @@ pub unsafe extern "C" fn arch_atomic_cmpxchg(v: *mut crate::atomic_t, old: libc:
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn arch_atomic_fetch_add_unless(v: *mut crate::atomic_t, a: libc::c_int, u: libc::c_int) -> libc::c_int {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn arch_atomic_fetch_add_unless(v: *mut crate::atomic_t, a: kernel::ffi::c_int, u: kernel::ffi::c_int) -> kernel::ffi::c_int {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(v);
     spin_lock_irqsave(lock, &mut flags);
     let ret = (*v).counter;
@@ -131,8 +131,8 @@ pub unsafe extern "C" fn arch_atomic_fetch_add_unless(v: *mut crate::atomic_t, a
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn arch_atomic_set(v: *mut crate::atomic_t, i: libc::c_int) {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn arch_atomic_set(v: *mut crate::atomic_t, i: kernel::ffi::c_int) {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(v);
     spin_lock_irqsave(lock, &mut flags);
     (*v).counter = i;
@@ -140,8 +140,8 @@ pub unsafe extern "C" fn arch_atomic_set(v: *mut crate::atomic_t, i: libc::c_int
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn sp32___set_bit(addr: *mut libc::c_ulong, mask: libc::c_ulong) -> libc::c_ulong {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn sp32___set_bit(addr: *mut kernel::ffi::c_ulong, mask: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(addr);
     spin_lock_irqsave(lock, &mut flags);
     let old = *addr;
@@ -151,8 +151,8 @@ pub unsafe extern "C" fn sp32___set_bit(addr: *mut libc::c_ulong, mask: libc::c_
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn sp32___clear_bit(addr: *mut libc::c_ulong, mask: libc::c_ulong) -> libc::c_ulong {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn sp32___clear_bit(addr: *mut kernel::ffi::c_ulong, mask: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(addr);
     spin_lock_irqsave(lock, &mut flags);
     let old = *addr;
@@ -162,8 +162,8 @@ pub unsafe extern "C" fn sp32___clear_bit(addr: *mut libc::c_ulong, mask: libc::
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn sp32___change_bit(addr: *mut libc::c_ulong, mask: libc::c_ulong) -> libc::c_ulong {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn sp32___change_bit(addr: *mut kernel::ffi::c_ulong, mask: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(addr);
     spin_lock_irqsave(lock, &mut flags);
     let old = *addr;
@@ -176,7 +176,7 @@ macro_rules! cmpxchg {
     ($name:ident, $ty:ty) => {
         #[no_mangle]
         pub unsafe extern "C" fn $name(ptr: *mut $ty, old: $ty, new: $ty) -> $ty {
-            let mut flags: libc::c_ulong = 0;
+            let mut flags: kernel::ffi::c_ulong = 0;
             let lock = atomic_hash(ptr);
             spin_lock_irqsave(lock, &mut flags);
             let prev = *ptr;
@@ -193,14 +193,14 @@ cmpxchg!(__cmpxchg_u32, u32);
 cmpxchg!(__cmpxchg_u64, u64);
 
 #[no_mangle]
-pub unsafe extern "C" fn __xchg_u32(ptr: *mut u32, new: u32) -> libc::c_ulong {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe extern "C" fn __xchg_u32(ptr: *mut u32, new: u32) -> kernel::ffi::c_ulong {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let lock = atomic_hash(ptr);
     spin_lock_irqsave(lock, &mut flags);
     let prev = *ptr;
     *ptr = new;
     spin_unlock_irqrestore(lock, flags);
-    prev as libc::c_ulong
+    prev as kernel::ffi::c_ulong
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

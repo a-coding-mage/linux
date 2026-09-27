@@ -50,7 +50,7 @@ unsafe extern "C" {
     pub fn mt8196_mck_disable(afe: *mut mtk_base_afe, mck_id: i32) -> i32;
     pub fn mt8196_get_apll_rate(afe: *mut mtk_base_afe, apll: i32) -> i32;
     pub fn mt8196_get_apll_by_rate(afe: *mut mtk_base_afe, rate: i32) -> i32;
-    pub fn mt8196_get_apll_by_name(afe: *mut mtk_base_afe, name: *const ::core::ffi::c_char) -> i32;
+    pub fn mt8196_get_apll_by_name(afe: *mut mtk_base_afe, name: *const ::kernel::ffi::c_char) -> i32;
     pub fn mt8196_init_clock(afe: *mut mtk_base_afe) -> i32;
     pub fn mt8196_afe_enable_clk(afe: *mut mtk_base_afe, clk: *mut clk) -> i32;
     pub fn mt8196_afe_disable_clk(afe: *mut mtk_base_afe, clk: *mut clk);

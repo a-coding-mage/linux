@@ -1642,7 +1642,7 @@ unsafe fn btrfs_reserve_data_bytes(*mut btrfs_space_info space_info, bytes: u64,
 	       flush == BTRFS_RESERVE_NO_FLUSH, "flush=%d", flush);
 	ASSERT(!(*current).journal_info || flush != BTRFS_RESERVE_FLUSH_DATA,
 	       "(*current).journal_info=0x%lx flush=%d",
-	       (core::ffi::c_ulong)(*current).journal_info, flush);
+	       (kernel::ffi::c_ulong)(*current).journal_info, flush);
 
 	ret = reserve_bytes(space_info, bytes, flush);
 	if ret == -ENOSPC {

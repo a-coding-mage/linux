@@ -5,7 +5,7 @@
 #[repr(C)]
 pub struct dst_cache {
     pub cache: *mut dst_cache_pcpu,
-    pub reset_ts: ::core::ffi::c_ulong,
+    pub reset_ts: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
@@ -85,7 +85,7 @@ extern "C" {
      * @dst_cache: the cache
      * @gfp: allocation flags
      */
-    pub fn dst_cache_init(dst_cache: *mut dst_cache, gfp: gfp_t) -> ::core::ffi::c_int;
+    pub fn dst_cache_init(dst_cache: *mut dst_cache, gfp: gfp_t) -> ::kernel::ffi::c_int;
 
     /**
      * dst_cache_destroy - empty the cache and free the allocated storage

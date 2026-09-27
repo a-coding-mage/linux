@@ -21,12 +21,12 @@ pub struct sk_buff {
 
 #[repr(C)]
 pub struct xt_mtchk_param {
-    pub matchinfo: *const core::ffi::c_void,
+    pub matchinfo: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct xt_action_param {
-    pub matchinfo: *const core::ffi::c_void,
+    pub matchinfo: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -55,13 +55,13 @@ pub struct ipv6hdr {
 
 #[repr(C)]
 pub struct xt_match {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub revision: u8,
     pub family: u8,
     pub checkentry: Option<unsafe extern "C" fn(*const xt_mtchk_param) -> i32>,
     pub match_fn: Option<unsafe extern "C" fn(*const sk_buff, *mut xt_action_param) -> bool>,
     pub matchsize: usize,
-    pub me: *mut core::ffi::c_void,
+    pub me: *mut kernel::ffi::c_void,
 }
 
 const EINVAL: i32 = 22;
@@ -132,7 +132,7 @@ unsafe extern "C" fn hl_mt6(skb: *const sk_buff, par: *mut xt_action_param) -> b
 
 static mut HL_MT_REG: [xt_match; 2] = [
     xt_match {
-        name: b"ttl\0".as_ptr() as *const core::ffi::c_char,
+        name: b"ttl\0".as_ptr() as *const kernel::ffi::c_char,
         revision: 0,
         family: NFPROTO_IPV4,
         checkentry: Some(ttl_mt_check),
@@ -141,7 +141,7 @@ static mut HL_MT_REG: [xt_match; 2] = [
         me: core::ptr::null_mut(),
     },
     xt_match {
-        name: b"hl\0".as_ptr() as *const core::ffi::c_char,
+        name: b"hl\0".as_ptr() as *const kernel::ffi::c_char,
         revision: 0,
         family: NFPROTO_IPV6,
         checkentry: Some(hl_mt6_check),

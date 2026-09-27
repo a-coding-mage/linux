@@ -52,7 +52,7 @@ pub unsafe fn instruction_pointer_set(regs: *mut pt_regs, val: usize) {
 
 /* Query offset/name of register from its name/offset */
 unsafe extern "C" {
-    pub fn regs_query_register_offset(name: *const core::ffi::c_char) -> i32;
+    pub fn regs_query_register_offset(name: *const kernel::ffi::c_char) -> i32;
 }
 
 pub const MAX_REG_OFFSET: usize = core::mem::offset_of!(pt_regs, __last) - core::mem::size_of::<usize>();
@@ -151,11 +151,11 @@ pub unsafe fn profile_pc(regs: *mut pt_regs) -> usize {
 }
 
 unsafe extern "C" {
-    pub fn die(str_: *const core::ffi::c_char, regs: *mut pt_regs);
+    pub fn die(str_: *const kernel::ffi::c_char, regs: *mut pt_regs);
 }
 
 #[inline]
-pub unsafe fn die_if_kernel(str_: *const core::ffi::c_char, regs: *mut pt_regs) {
+pub unsafe fn die_if_kernel(str_: *const kernel::ffi::c_char, regs: *mut pt_regs) {
     if unsafe { !user_mode(regs) } {
         unsafe { die(str_, regs); }
     }

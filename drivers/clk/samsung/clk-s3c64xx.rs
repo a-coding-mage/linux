@@ -30,7 +30,7 @@ macro_rules! GATE_BUS { ($($x:tt)*) => { GATE!($($x)*) }; }
 macro_rules! GATE_SCLK { ($($x:tt)*) => { GATE!($($x)*) }; }
 macro_rules! GATE_ON { ($($x:tt)*) => { GATE!($($x)*) }; }
 
-static mut reg_base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut reg_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut is_s3c6400: bool = false;
 
 static s3c64xx_clk_regs: [u32; 14] = [APLL_LOCK, MPLL_LOCK, EPLL_LOCK, APLL_CON,
@@ -96,11 +96,11 @@ extern "C" {
     fn samsung_clk_register_div(ctx: *mut samsung_clk_provider, clocks: *const samsung_div_clock, count: usize);
     fn samsung_clk_register_gate(ctx: *mut samsung_clk_provider, clocks: *const samsung_gate_clock, count: usize);
     fn samsung_clk_register_alias(ctx: *mut samsung_clk_provider, aliases: *const samsung_clock_alias, count: usize);
-    fn samsung_clk_init(node: *mut device_node, base: *mut core::ffi::c_void, nr_clks: u32) -> *mut samsung_clk_provider;
-    fn samsung_clk_sleep_init(base: *mut core::ffi::c_void, lock: *mut core::ffi::c_void, regs: *const u32, count: usize);
+    fn samsung_clk_init(node: *mut device_node, base: *mut kernel::ffi::c_void, nr_clks: u32) -> *mut samsung_clk_provider;
+    fn samsung_clk_sleep_init(base: *mut kernel::ffi::c_void, lock: *mut kernel::ffi::c_void, regs: *const u32, count: usize);
     fn samsung_clk_of_add_provider(node: *mut device_node, ctx: *mut samsung_clk_provider);
-    fn of_iomap(node: *mut device_node, index: i32) -> *mut core::ffi::c_void;
-    fn panic(msg: *const core::ffi::c_char) -> !;
+    fn of_iomap(node: *mut device_node, index: i32) -> *mut kernel::ffi::c_void;
+    fn panic(msg: *const kernel::ffi::c_char) -> !;
 }
 
 unsafe fn s3c64xx_clk_register_fixed_ext(ctx: *mut samsung_clk_provider, fin_pll_f: usize, xusbxti_f: usize) {
@@ -109,7 +109,7 @@ unsafe fn s3c64xx_clk_register_fixed_ext(ctx: *mut samsung_clk_provider, fin_pll
     samsung_clk_register_fixed_rate(ctx, s3c64xx_fixed_rate_ext_clks.as_mut_ptr(), 2);
 }
 
-pub unsafe fn s3c64xx_clk_init(np: *mut device_node, xtal_f: usize, xusbxti_f: usize, s3c6400: bool, base: *mut core::ffi::c_void) {
+pub unsafe fn s3c64xx_clk_init(np: *mut device_node, xtal_f: usize, xusbxti_f: usize, s3c6400: bool, base: *mut kernel::ffi::c_void) {
     reg_base = base;
     is_s3c6400 = s3c6400;
     if !np.is_null() {

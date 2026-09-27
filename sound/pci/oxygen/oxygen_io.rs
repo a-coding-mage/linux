@@ -10,12 +10,12 @@
 #![allow(non_upper_case_globals)]
 #![allow(dead_code)]
 
-pub type u8 = ::core::ffi::c_uchar;
-pub type u16 = ::core::ffi::c_ushort;
-pub type u32 = ::core::ffi::c_uint;
+pub type u8 = ::kernel::ffi::c_uchar;
+pub type u16 = ::kernel::ffi::c_ushort;
+pub type u32 = ::kernel::ffi::c_uint;
 
-const EIO: ::core::ffi::c_int = 5;
-const UINT_MAX: ::core::ffi::c_uint = ::core::ffi::c_uint::MAX;
+const EIO: ::kernel::ffi::c_int = 5;
+const UINT_MAX: ::kernel::ffi::c_uint = ::kernel::ffi::c_uint::MAX;
 
 #[repr(C)]
 pub struct oxygen_saved_registers {
@@ -26,7 +26,7 @@ pub struct oxygen_saved_registers {
 
 #[repr(C)]
 pub struct oxygen {
-    pub addr: ::core::ffi::c_ulong,
+    pub addr: ::kernel::ffi::c_ulong,
     pub saved_registers: oxygen_saved_registers,
     pub ac97_waitqueue: wait_queue_head_t,
     pub saved_ac97_registers: [[u16; 0]; 0],
@@ -49,83 +49,83 @@ pub struct device {
 }
 
 unsafe extern "C" {
-    fn inb(port: ::core::ffi::c_ulong) -> u8;
-    fn inw(port: ::core::ffi::c_ulong) -> u16;
-    fn inl(port: ::core::ffi::c_ulong) -> u32;
-    fn outb(value: u8, port: ::core::ffi::c_ulong);
-    fn outw(value: u16, port: ::core::ffi::c_ulong);
-    fn outl(value: u32, port: ::core::ffi::c_ulong);
+    fn inb(port: ::kernel::ffi::c_ulong) -> u8;
+    fn inw(port: ::kernel::ffi::c_ulong) -> u16;
+    fn inl(port: ::kernel::ffi::c_ulong) -> u32;
+    fn outb(value: u8, port: ::kernel::ffi::c_ulong);
+    fn outw(value: u16, port: ::kernel::ffi::c_ulong);
+    fn outl(value: u32, port: ::kernel::ffi::c_ulong);
     fn cpu_to_le16(value: u16) -> u16;
     fn cpu_to_le32(value: u32) -> u32;
-    fn msecs_to_jiffies(m: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
+    fn msecs_to_jiffies(m: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
     fn wait_event_timeout(
         wq_head: *mut wait_queue_head_t,
-        condition: ::core::ffi::c_int,
-        timeout: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_long;
-    fn udelay(usecs: ::core::ffi::c_ulong);
-    fn msleep(msecs: ::core::ffi::c_uint);
-    fn dev_err(dev: *mut device, fmt: *const ::core::ffi::c_char, ...);
+        condition: ::kernel::ffi::c_int,
+        timeout: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_long;
+    fn udelay(usecs: ::kernel::ffi::c_ulong);
+    fn msleep(msecs: ::kernel::ffi::c_uint);
+    fn dev_err(dev: *mut device, fmt: *const ::kernel::ffi::c_char, ...);
 }
 
 unsafe extern "C" {
-    static OXYGEN_AC97_INTERRUPT_STATUS: ::core::ffi::c_uint;
-    static OXYGEN_AC97_REG_ADDR_SHIFT: ::core::ffi::c_uint;
+    static OXYGEN_AC97_INTERRUPT_STATUS: ::kernel::ffi::c_uint;
+    static OXYGEN_AC97_REG_ADDR_SHIFT: ::kernel::ffi::c_uint;
     static OXYGEN_AC97_REG_DIR_WRITE: u32;
-    static OXYGEN_AC97_REG_CODEC_SHIFT: ::core::ffi::c_uint;
-    static OXYGEN_AC97_REGS: ::core::ffi::c_uint;
-    static OXYGEN_AC97_INT_WRITE_DONE: ::core::ffi::c_uint;
+    static OXYGEN_AC97_REG_CODEC_SHIFT: ::kernel::ffi::c_uint;
+    static OXYGEN_AC97_REGS: ::kernel::ffi::c_uint;
+    static OXYGEN_AC97_INT_WRITE_DONE: ::kernel::ffi::c_uint;
     static OXYGEN_AC97_REG_DIR_READ: u32;
-    static OXYGEN_AC97_INT_READ_DONE: ::core::ffi::c_uint;
-    static OXYGEN_SPI_CONTROL: ::core::ffi::c_uint;
+    static OXYGEN_AC97_INT_READ_DONE: ::kernel::ffi::c_uint;
+    static OXYGEN_SPI_CONTROL: ::kernel::ffi::c_uint;
     static OXYGEN_SPI_BUSY: u8;
-    static OXYGEN_SPI_DATA1: ::core::ffi::c_uint;
-    static OXYGEN_SPI_DATA2: ::core::ffi::c_uint;
+    static OXYGEN_SPI_DATA1: ::kernel::ffi::c_uint;
+    static OXYGEN_SPI_DATA2: ::kernel::ffi::c_uint;
     static OXYGEN_SPI_DATA_LENGTH_3: u8;
-    static OXYGEN_SPI_DATA3: ::core::ffi::c_uint;
-    static OXYGEN_2WIRE_MAP: ::core::ffi::c_uint;
-    static OXYGEN_2WIRE_DATA: ::core::ffi::c_uint;
-    static OXYGEN_2WIRE_CONTROL: ::core::ffi::c_uint;
+    static OXYGEN_SPI_DATA3: ::kernel::ffi::c_uint;
+    static OXYGEN_2WIRE_MAP: ::kernel::ffi::c_uint;
+    static OXYGEN_2WIRE_DATA: ::kernel::ffi::c_uint;
+    static OXYGEN_2WIRE_CONTROL: ::kernel::ffi::c_uint;
     static OXYGEN_2WIRE_DIR_WRITE: u8;
-    static OXYGEN_MPU401: ::core::ffi::c_uint;
+    static OXYGEN_MPU401: ::kernel::ffi::c_uint;
     static MPU401_TX_FULL: u8;
     static MPU401_RESET: u8;
     static MPU401_ENTER_UART: u8;
-    static OXYGEN_EEPROM_CONTROL: ::core::ffi::c_uint;
+    static OXYGEN_EEPROM_CONTROL: ::kernel::ffi::c_uint;
     static OXYGEN_EEPROM_DIR_READ: u8;
-    static OXYGEN_EEPROM_STATUS: ::core::ffi::c_uint;
+    static OXYGEN_EEPROM_STATUS: ::kernel::ffi::c_uint;
     static OXYGEN_EEPROM_BUSY: u8;
-    static OXYGEN_EEPROM_DATA: ::core::ffi::c_uint;
+    static OXYGEN_EEPROM_DATA: ::kernel::ffi::c_uint;
     static OXYGEN_EEPROM_DIR_WRITE: u8;
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn oxygen_read8(chip: *mut oxygen, reg: ::core::ffi::c_uint) -> u8 {
-    unsafe { inb((*chip).addr.wrapping_add(reg as ::core::ffi::c_ulong)) }
+pub unsafe extern "C" fn oxygen_read8(chip: *mut oxygen, reg: ::kernel::ffi::c_uint) -> u8 {
+    unsafe { inb((*chip).addr.wrapping_add(reg as ::kernel::ffi::c_ulong)) }
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn oxygen_read16(chip: *mut oxygen, reg: ::core::ffi::c_uint) -> u16 {
-    unsafe { inw((*chip).addr.wrapping_add(reg as ::core::ffi::c_ulong)) }
+pub unsafe extern "C" fn oxygen_read16(chip: *mut oxygen, reg: ::kernel::ffi::c_uint) -> u16 {
+    unsafe { inw((*chip).addr.wrapping_add(reg as ::kernel::ffi::c_ulong)) }
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn oxygen_read32(chip: *mut oxygen, reg: ::core::ffi::c_uint) -> u32 {
-    unsafe { inl((*chip).addr.wrapping_add(reg as ::core::ffi::c_ulong)) }
+pub unsafe extern "C" fn oxygen_read32(chip: *mut oxygen, reg: ::kernel::ffi::c_uint) -> u32 {
+    unsafe { inl((*chip).addr.wrapping_add(reg as ::kernel::ffi::c_ulong)) }
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn oxygen_write8(chip: *mut oxygen, reg: ::core::ffi::c_uint, value: u8) {
+pub unsafe extern "C" fn oxygen_write8(chip: *mut oxygen, reg: ::kernel::ffi::c_uint, value: u8) {
     unsafe {
-        outb(value, (*chip).addr.wrapping_add(reg as ::core::ffi::c_ulong));
+        outb(value, (*chip).addr.wrapping_add(reg as ::kernel::ffi::c_ulong));
         *(*chip).saved_registers._8.as_mut_ptr().add(reg as usize) = value;
     }
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn oxygen_write16(chip: *mut oxygen, reg: ::core::ffi::c_uint, value: u16) {
+pub unsafe extern "C" fn oxygen_write16(chip: *mut oxygen, reg: ::kernel::ffi::c_uint, value: u16) {
     unsafe {
-        outw(value, (*chip).addr.wrapping_add(reg as ::core::ffi::c_ulong));
+        outw(value, (*chip).addr.wrapping_add(reg as ::kernel::ffi::c_ulong));
         *(*chip)
             .saved_registers
             ._16
@@ -135,9 +135,9 @@ pub unsafe extern "C" fn oxygen_write16(chip: *mut oxygen, reg: ::core::ffi::c_u
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn oxygen_write32(chip: *mut oxygen, reg: ::core::ffi::c_uint, value: u32) {
+pub unsafe extern "C" fn oxygen_write32(chip: *mut oxygen, reg: ::kernel::ffi::c_uint, value: u32) {
     unsafe {
-        outl(value, (*chip).addr.wrapping_add(reg as ::core::ffi::c_ulong));
+        outl(value, (*chip).addr.wrapping_add(reg as ::kernel::ffi::c_ulong));
         *(*chip)
             .saved_registers
             ._32
@@ -149,15 +149,15 @@ pub unsafe extern "C" fn oxygen_write32(chip: *mut oxygen, reg: ::core::ffi::c_u
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn oxygen_write8_masked(
     chip: *mut oxygen,
-    reg: ::core::ffi::c_uint,
+    reg: ::kernel::ffi::c_uint,
     value: u8,
     mask: u8,
 ) {
     unsafe {
-        let mut tmp: u8 = inb((*chip).addr.wrapping_add(reg as ::core::ffi::c_ulong));
+        let mut tmp: u8 = inb((*chip).addr.wrapping_add(reg as ::kernel::ffi::c_ulong));
         tmp &= !mask;
         tmp |= value & mask;
-        outb(tmp, (*chip).addr.wrapping_add(reg as ::core::ffi::c_ulong));
+        outb(tmp, (*chip).addr.wrapping_add(reg as ::kernel::ffi::c_ulong));
         *(*chip).saved_registers._8.as_mut_ptr().add(reg as usize) = tmp;
     }
 }
@@ -165,15 +165,15 @@ pub unsafe extern "C" fn oxygen_write8_masked(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn oxygen_write16_masked(
     chip: *mut oxygen,
-    reg: ::core::ffi::c_uint,
+    reg: ::kernel::ffi::c_uint,
     value: u16,
     mask: u16,
 ) {
     unsafe {
-        let mut tmp: u16 = inw((*chip).addr.wrapping_add(reg as ::core::ffi::c_ulong));
+        let mut tmp: u16 = inw((*chip).addr.wrapping_add(reg as ::kernel::ffi::c_ulong));
         tmp &= !mask;
         tmp |= value & mask;
-        outw(tmp, (*chip).addr.wrapping_add(reg as ::core::ffi::c_ulong));
+        outw(tmp, (*chip).addr.wrapping_add(reg as ::kernel::ffi::c_ulong));
         *(*chip)
             .saved_registers
             ._16
@@ -185,15 +185,15 @@ pub unsafe extern "C" fn oxygen_write16_masked(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn oxygen_write32_masked(
     chip: *mut oxygen,
-    reg: ::core::ffi::c_uint,
+    reg: ::kernel::ffi::c_uint,
     value: u32,
     mask: u32,
 ) {
     unsafe {
-        let mut tmp: u32 = inl((*chip).addr.wrapping_add(reg as ::core::ffi::c_ulong));
+        let mut tmp: u32 = inl((*chip).addr.wrapping_add(reg as ::kernel::ffi::c_ulong));
         tmp &= !mask;
         tmp |= value & mask;
-        outl(tmp, (*chip).addr.wrapping_add(reg as ::core::ffi::c_ulong));
+        outl(tmp, (*chip).addr.wrapping_add(reg as ::kernel::ffi::c_ulong));
         *(*chip)
             .saved_registers
             ._32
@@ -202,7 +202,7 @@ pub unsafe extern "C" fn oxygen_write32_masked(
     }
 }
 
-unsafe fn oxygen_ac97_wait(chip: *mut oxygen, mask: ::core::ffi::c_uint) -> ::core::ffi::c_int {
+unsafe fn oxygen_ac97_wait(chip: *mut oxygen, mask: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int {
     unsafe {
         let mut status: u8 = 0;
 
@@ -214,7 +214,7 @@ unsafe fn oxygen_ac97_wait(chip: *mut oxygen, mask: ::core::ffi::c_uint) -> ::co
             &mut (*chip).ac97_waitqueue,
             {
                 status |= oxygen_read8(chip, OXYGEN_AC97_INTERRUPT_STATUS);
-                (status as ::core::ffi::c_uint & mask) as ::core::ffi::c_int
+                (status as ::kernel::ffi::c_uint & mask) as ::kernel::ffi::c_int
             },
             msecs_to_jiffies(1).wrapping_add(1),
         );
@@ -223,7 +223,7 @@ unsafe fn oxygen_ac97_wait(chip: *mut oxygen, mask: ::core::ffi::c_uint) -> ::co
          * the AC'97 interrupt to be enabled.
          */
         status |= oxygen_read8(chip, OXYGEN_AC97_INTERRUPT_STATUS);
-        if status as ::core::ffi::c_uint & mask != 0 {
+        if status as ::kernel::ffi::c_uint & mask != 0 {
             0
         } else {
             -EIO
@@ -243,13 +243,13 @@ unsafe fn oxygen_ac97_wait(chip: *mut oxygen, mask: ::core::ffi::c_uint) -> ::co
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn oxygen_write_ac97(
     chip: *mut oxygen,
-    codec: ::core::ffi::c_uint,
-    index: ::core::ffi::c_uint,
+    codec: ::kernel::ffi::c_uint,
+    index: ::kernel::ffi::c_uint,
     data: u16,
 ) {
     unsafe {
-        let mut count: ::core::ffi::c_uint;
-        let mut succeeded: ::core::ffi::c_uint;
+        let mut count: ::kernel::ffi::c_uint;
+        let mut succeeded: ::kernel::ffi::c_uint;
         let mut reg: u32;
 
         reg = data as u32;
@@ -283,12 +283,12 @@ pub unsafe extern "C" fn oxygen_write_ac97(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn oxygen_read_ac97(
     chip: *mut oxygen,
-    codec: ::core::ffi::c_uint,
-    index: ::core::ffi::c_uint,
+    codec: ::kernel::ffi::c_uint,
+    index: ::kernel::ffi::c_uint,
 ) -> u16 {
     unsafe {
-        let mut count: ::core::ffi::c_uint;
-        let mut last_read: ::core::ffi::c_uint = UINT_MAX;
+        let mut count: ::kernel::ffi::c_uint;
+        let mut last_read: ::kernel::ffi::c_uint = UINT_MAX;
         let mut reg: u32;
 
         reg = index << OXYGEN_AC97_REG_ADDR_SHIFT;
@@ -302,10 +302,10 @@ pub unsafe extern "C" fn oxygen_read_ac97(
             if oxygen_ac97_wait(chip, OXYGEN_AC97_INT_READ_DONE) >= 0 {
                 let value: u16 = oxygen_read16(chip, OXYGEN_AC97_REGS);
                 /* we require two consecutive reads of the same value */
-                if value as ::core::ffi::c_uint == last_read {
+                if value as ::kernel::ffi::c_uint == last_read {
                     return value;
                 }
-                last_read = value as ::core::ffi::c_uint;
+                last_read = value as ::kernel::ffi::c_uint;
                 /*
                  * Invert the register value bits to make sure that two
                  * consecutive unsuccessful reads do not return the same
@@ -327,8 +327,8 @@ pub unsafe extern "C" fn oxygen_read_ac97(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn oxygen_write_ac97_masked(
     chip: *mut oxygen,
-    codec: ::core::ffi::c_uint,
-    index: ::core::ffi::c_uint,
+    codec: ::kernel::ffi::c_uint,
+    index: ::kernel::ffi::c_uint,
     data: u16,
     mask: u16,
 ) {
@@ -340,9 +340,9 @@ pub unsafe extern "C" fn oxygen_write_ac97_masked(
     }
 }
 
-unsafe fn oxygen_wait_spi(chip: *mut oxygen) -> ::core::ffi::c_int {
+unsafe fn oxygen_wait_spi(chip: *mut oxygen) -> ::kernel::ffi::c_int {
     unsafe {
-        let mut count: ::core::ffi::c_uint;
+        let mut count: ::kernel::ffi::c_uint;
 
         /*
          * Higher timeout to be sure: 200 us;
@@ -365,8 +365,8 @@ unsafe fn oxygen_wait_spi(chip: *mut oxygen) -> ::core::ffi::c_int {
 pub unsafe extern "C" fn oxygen_write_spi(
     chip: *mut oxygen,
     control: u8,
-    data: ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    data: ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     unsafe {
         /*
          * We need to wait AFTER initiating the SPI transaction,
@@ -394,7 +394,7 @@ pub unsafe extern "C" fn oxygen_write_i2c(chip: *mut oxygen, device: u8, map: u8
     }
 }
 
-unsafe fn _write_uart(chip: *mut oxygen, port: ::core::ffi::c_uint, data: u8) {
+unsafe fn _write_uart(chip: *mut oxygen, port: ::kernel::ffi::c_uint, data: u8) {
     unsafe {
         if oxygen_read8(chip, OXYGEN_MPU401 + 1) & MPU401_TX_FULL != 0 {
             msleep(1);
@@ -420,9 +420,9 @@ pub unsafe extern "C" fn oxygen_write_uart(chip: *mut oxygen, data: u8) {
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn oxygen_read_eeprom(chip: *mut oxygen, index: ::core::ffi::c_uint) -> u16 {
+pub unsafe extern "C" fn oxygen_read_eeprom(chip: *mut oxygen, index: ::kernel::ffi::c_uint) -> u16 {
     unsafe {
-        let mut timeout: ::core::ffi::c_uint;
+        let mut timeout: ::kernel::ffi::c_uint;
 
         oxygen_write8(chip, OXYGEN_EEPROM_CONTROL, (index as u8) | OXYGEN_EEPROM_DIR_READ);
         timeout = 0;
@@ -440,11 +440,11 @@ pub unsafe extern "C" fn oxygen_read_eeprom(chip: *mut oxygen, index: ::core::ff
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn oxygen_write_eeprom(
     chip: *mut oxygen,
-    index: ::core::ffi::c_uint,
+    index: ::kernel::ffi::c_uint,
     value: u16,
 ) {
     unsafe {
-        let mut timeout: ::core::ffi::c_uint;
+        let mut timeout: ::kernel::ffi::c_uint;
 
         oxygen_write16(chip, OXYGEN_EEPROM_DATA, value);
         oxygen_write8(

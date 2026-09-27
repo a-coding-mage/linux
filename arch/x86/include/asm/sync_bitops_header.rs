@@ -22,7 +22,7 @@
 /// Note that @nr may be almost arbitrarily large; this function is not
 /// restricted to acting on a single-word quantity.
 #[inline]
-pub unsafe fn sync_set_bit(nr: libc::c_long, addr: *mut libc::c_ulong) {
+pub unsafe fn sync_set_bit(nr: kernel::ffi::c_long, addr: *mut kernel::ffi::c_ulong) {
     core::arch::asm!(
         "lock bts {nr}, [{addr}]",
         nr = in(reg) nr,
@@ -40,7 +40,7 @@ pub unsafe fn sync_set_bit(nr: libc::c_long, addr: *mut libc::c_ulong) {
 /// you should call smp_mb__before_atomic() and/or smp_mb__after_atomic()
 /// in order to ensure changes are visible on other processors.
 #[inline]
-pub unsafe fn sync_clear_bit(nr: libc::c_long, addr: *mut libc::c_ulong) {
+pub unsafe fn sync_clear_bit(nr: kernel::ffi::c_long, addr: *mut kernel::ffi::c_ulong) {
     core::arch::asm!(
         "lock btr {nr}, [{addr}]",
         nr = in(reg) nr,
@@ -57,7 +57,7 @@ pub unsafe fn sync_clear_bit(nr: libc::c_long, addr: *mut libc::c_ulong) {
 /// Note that @nr may be almost arbitrarily large; this function is not
 /// restricted to acting on a single-word quantity.
 #[inline]
-pub unsafe fn sync_change_bit(nr: libc::c_long, addr: *mut libc::c_ulong) {
+pub unsafe fn sync_change_bit(nr: kernel::ffi::c_long, addr: *mut kernel::ffi::c_ulong) {
     core::arch::asm!(
         "lock btc {nr}, [{addr}]",
         nr = in(reg) nr,
@@ -73,7 +73,7 @@ pub unsafe fn sync_change_bit(nr: libc::c_long, addr: *mut libc::c_ulong) {
 /// This operation is atomic and cannot be reordered.
 /// It also implies a memory barrier.
 #[inline]
-pub unsafe fn sync_test_and_set_bit(nr: libc::c_long, addr: *mut libc::c_ulong) -> bool {
+pub unsafe fn sync_test_and_set_bit(nr: kernel::ffi::c_long, addr: *mut kernel::ffi::c_ulong) -> bool {
     let old: u8;
     core::arch::asm!(
         "lock bts {nr}, [{addr}]",
@@ -88,7 +88,7 @@ pub unsafe fn sync_test_and_set_bit(nr: libc::c_long, addr: *mut libc::c_ulong) 
 
 /// sync_test_and_clear_bit - Clear a bit and return its old value
 #[inline]
-pub unsafe fn sync_test_and_clear_bit(nr: libc::c_long, addr: *mut libc::c_ulong) -> libc::c_int {
+pub unsafe fn sync_test_and_clear_bit(nr: kernel::ffi::c_long, addr: *mut kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     let old: u8;
     core::arch::asm!(
         "lock btr {nr}, [{addr}]",
@@ -98,12 +98,12 @@ pub unsafe fn sync_test_and_clear_bit(nr: libc::c_long, addr: *mut libc::c_ulong
         old = out(reg_byte) old,
         options(nostack)
     );
-    old as libc::c_int
+    old as kernel::ffi::c_int
 }
 
 /// sync_test_and_change_bit - Change a bit and return its old value
 #[inline]
-pub unsafe fn sync_test_and_change_bit(nr: libc::c_long, addr: *mut libc::c_ulong) -> libc::c_int {
+pub unsafe fn sync_test_and_change_bit(nr: kernel::ffi::c_long, addr: *mut kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     let old: u8;
     core::arch::asm!(
         "lock btc {nr}, [{addr}]",
@@ -113,7 +113,7 @@ pub unsafe fn sync_test_and_change_bit(nr: libc::c_long, addr: *mut libc::c_ulon
         old = out(reg_byte) old,
         options(nostack)
     );
-    old as libc::c_int
+    old as kernel::ffi::c_int
 }
 
 /* Equivalent of: #define sync_test_bit(nr, addr) test_bit(nr, addr) */

@@ -49,7 +49,7 @@ extern "C" {
 
     pub fn acpi_tb_verify_temp_table(
         table_desc: *mut acpi_table_desc,
-        signature: *mut core::ffi::c_char,
+        signature: *mut kernel::ffi::c_char,
         table_index: *mut u32,
     ) -> acpi_status;
 
@@ -68,9 +68,9 @@ extern "C" {
      * tbfind - find ACPI table
      */
     pub fn acpi_tb_find_table(
-        signature: *mut core::ffi::c_char,
-        oem_id: *mut core::ffi::c_char,
-        oem_table_id: *mut core::ffi::c_char,
+        signature: *mut kernel::ffi::c_char,
+        oem_id: *mut kernel::ffi::c_char,
+        oem_table_id: *mut kernel::ffi::c_char,
         table_index: *mut u32,
     ) -> acpi_status;
 
@@ -117,7 +117,7 @@ extern "C" {
 
     pub fn acpi_tb_unload_table(table_index: u32) -> acpi_status;
 
-    pub fn acpi_tb_notify_table(event: u32, table: *mut core::ffi::c_void);
+    pub fn acpi_tb_notify_table(event: u32, table: *mut kernel::ffi::c_void);
 
     pub fn acpi_tb_terminate();
 

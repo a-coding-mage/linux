@@ -9,9 +9,9 @@
 #[repr(C)]
 pub struct openpromio {
     /* Actual size of the oprom_array. */
-    pub oprom_size: core::ffi::c_uint,
+    pub oprom_size: kernel::ffi::c_uint,
     /* Holds property names and values. */
-    pub oprom_array: [core::ffi::c_char; 0],
+    pub oprom_array: [kernel::ffi::c_char; 0],
 }
 
 /* Maximum size of oprom_array. */
@@ -52,15 +52,15 @@ pub const OPROMCONS_OPENPROM: u32 = 0x4;
 #[repr(C)]
 pub struct opiocdesc {
     /* PROM Node ID (value-result) */
-    pub op_nodeid: core::ffi::c_int,
+    pub op_nodeid: kernel::ffi::c_int,
     /* Length of op_name. */
-    pub op_namelen: core::ffi::c_int,
+    pub op_namelen: kernel::ffi::c_int,
     /* Pointer to the property name. */
-    pub op_name: *mut core::ffi::c_char,
+    pub op_name: *mut kernel::ffi::c_char,
     /* Length of op_buf (value-result) */
-    pub op_buflen: core::ffi::c_int,
+    pub op_buflen: kernel::ffi::c_int,
     /* Pointer to buffer. */
-    pub op_buf: *mut core::ffi::c_char,
+    pub op_buf: *mut kernel::ffi::c_char,
 }
 
 /* __user annotations are kernel-only and have no Rust representation. */
@@ -94,8 +94,8 @@ const fn ior<T>(ty: u32, nr: u32) -> u32 {
 pub const OPIOCGET: u32 = iowr::<opiocdesc>(b'O' as u32, 1);
 pub const OPIOCSET: u32 = iow::<opiocdesc>(b'O' as u32, 2);
 pub const OPIOCNEXTPROP: u32 = iowr::<opiocdesc>(b'O' as u32, 3);
-pub const OPIOCGETOPTNODE: u32 = ior::<core::ffi::c_int>(b'O' as u32, 4);
-pub const OPIOCGETNEXT: u32 = iowr::<core::ffi::c_int>(b'O' as u32, 5);
-pub const OPIOCGETCHILD: u32 = iowr::<core::ffi::c_int>(b'O' as u32, 6);
+pub const OPIOCGETOPTNODE: u32 = ior::<kernel::ffi::c_int>(b'O' as u32, 4);
+pub const OPIOCGETNEXT: u32 = iowr::<kernel::ffi::c_int>(b'O' as u32, 5);
+pub const OPIOCGETCHILD: u32 = iowr::<kernel::ffi::c_int>(b'O' as u32, 6);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -9,7 +9,7 @@
  * the loading address of main kernel image, but far from where the modules are
  * loaded.  Preserve the explicit-relocation/model conditional here.
  */
-#[cfg(all(feature = "MODULE", CONFIG_AS_HAS_EXPLICIT_RELOCS, CONFIG_64BIT))]
+#[cfg(all(MODULE, CONFIG_AS_HAS_EXPLICIT_RELOCS, CONFIG_64BIT))]
 // PER_CPU_ATTRIBUTES is the C compiler model("extreme") attribute.
 pub const PER_CPU_ATTRIBUTES: &str = "model(\"extreme\")";
 

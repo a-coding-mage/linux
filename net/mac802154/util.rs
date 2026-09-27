@@ -10,8 +10,8 @@
 // Dependencies supplied by the surrounding translation unit/build.
 
 /* privid for wpan_phys to determine whether they belong to us or not */
-pub static mac802154_wpan_phy_privid: *const core::ffi::c_void =
-    &mac802154_wpan_phy_privid as *const _ as *const core::ffi::c_void;
+pub static mac802154_wpan_phy_privid: *const kernel::ffi::c_void =
+    &mac802154_wpan_phy_privid as *const _ as *const kernel::ffi::c_void;
 
 /**
  * ieee802154_wake_queue - wake ieee802154 queue
@@ -63,7 +63,7 @@ unsafe fn ieee802154_stop_queue(hw: *mut ieee802154_hw) {
 }
 
 pub unsafe fn ieee802154_hold_queue(local: *mut ieee802154_local) {
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     spin_lock_irqsave!(&mut (*(*local).phy).queue_lock, flags);
     if !atomic_fetch_inc(&mut (*(*local).phy).hold_txs) {
@@ -73,7 +73,7 @@ pub unsafe fn ieee802154_hold_queue(local: *mut ieee802154_local) {
 }
 
 pub unsafe fn ieee802154_release_queue(local: *mut ieee802154_local) {
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     spin_lock_irqsave!(&mut (*(*local).phy).queue_lock, flags);
     if atomic_dec_and_test(&mut (*(*local).phy).hold_txs) {
@@ -150,7 +150,7 @@ pub unsafe fn ieee802154_xmit_complete(
 pub unsafe fn ieee802154_xmit_error(
     hw: *mut ieee802154_hw,
     skb: *mut sk_buff,
-    reason: core::ffi::c_int,
+    reason: kernel::ffi::c_int,
 ) {
     let local = hw_to_local(hw);
 

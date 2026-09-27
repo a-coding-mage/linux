@@ -9,14 +9,14 @@
 
 #[repr(C)]
 pub struct timer_list_iter {
-    pub cpu: core::ffi::c_int,
+    pub cpu: kernel::ffi::c_int,
     pub second_pass: bool,
     pub now: ktime_t,
 }
 
 pub unsafe extern "C" fn SEQ_printf(
     _m: *mut seq_file,
-    _fmt: *const core::ffi::c_char,
+    _fmt: *const kernel::ffi::c_char,
     ...
 ) {
     // The C implementation forwards the variadic arguments to seq_vprintf or vprintk.
@@ -26,7 +26,7 @@ unsafe fn print_timer(
     m: *mut seq_file,
     taddr: *mut hrtimer,
     timer: *mut hrtimer,
-    idx: core::ffi::c_int,
+    idx: kernel::ffi::c_int,
     now: ktime_t,
 ) {
     SEQ_printf(m, c" #%d: <%p>, %ps".as_ptr(), idx, taddr, ACCESS_PRIVATE(timer, function));
@@ -133,7 +133,7 @@ pub unsafe fn sysrq_timer_list_show() {
 }
 
 #[cfg(feature = "proc_fs")]
-unsafe fn timer_list_show(m: *mut seq_file, v: *mut core::ffi::c_void) -> c_int {
+unsafe fn timer_list_show(m: *mut seq_file, v: *mut kernel::ffi::c_void) -> c_int {
     let iter = v as *mut timer_list_iter;
     if (*iter).cpu == -1 && !(*iter).second_pass {
         timer_list_header(m, (*iter).now);
@@ -148,7 +148,7 @@ unsafe fn timer_list_show(m: *mut seq_file, v: *mut core::ffi::c_void) -> c_int 
 }
 
 #[cfg(feature = "proc_fs")]
-unsafe fn move_iter(iter: *mut timer_list_iter, mut offset: loff_t) -> *mut core::ffi::c_void {
+unsafe fn move_iter(iter: *mut timer_list_iter, mut offset: loff_t) -> *mut kernel::ffi::c_void {
     while offset != 0 {
         (*iter).cpu = cpumask_next((*iter).cpu, cpu_online_mask);
         if (*iter).cpu >= nr_cpu_ids {
@@ -165,7 +165,7 @@ unsafe fn move_iter(iter: *mut timer_list_iter, mut offset: loff_t) -> *mut core
 }
 
 #[cfg(feature = "proc_fs")]
-unsafe fn timer_list_start(file: *mut seq_file, offset: *mut loff_t) -> *mut core::ffi::c_void {
+unsafe fn timer_list_start(file: *mut seq_file, offset: *mut loff_t) -> *mut kernel::ffi::c_void {
     let iter = (*file).private as *mut timer_list_iter;
     if *offset == 0 { (*iter).now = ktime_get(); }
     (*iter).cpu = -1;
@@ -174,21 +174,21 @@ unsafe fn timer_list_start(file: *mut seq_file, offset: *mut loff_t) -> *mut cor
 }
 
 #[cfg(feature = "proc_fs")]
-unsafe fn timer_list_next(file: *mut seq_file, _v: *mut core::ffi::c_void, offset: *mut loff_t) -> *mut core::ffi::c_void {
+unsafe fn timer_list_next(file: *mut seq_file, _v: *mut kernel::ffi::c_void, offset: *mut loff_t) -> *mut kernel::ffi::c_void {
     let iter = (*file).private as *mut timer_list_iter;
     *offset += 1;
     move_iter(iter, 1)
 }
 
 #[cfg(feature = "proc_fs")]
-unsafe fn timer_list_stop(_seq: *mut seq_file, _v: *mut core::ffi::c_void) {}
+unsafe fn timer_list_stop(_seq: *mut seq_file, _v: *mut kernel::ffi::c_void) {}
 
 #[repr(C)]
 struct seq_operations {
-    start: Option<unsafe fn(*mut seq_file, *mut loff_t) -> *mut core::ffi::c_void>,
-    next: Option<unsafe fn(*mut seq_file, *mut core::ffi::c_void, *mut loff_t) -> *mut core::ffi::c_void>,
-    stop: Option<unsafe fn(*mut seq_file, *mut core::ffi::c_void)>,
-    show: Option<unsafe fn(*mut seq_file, *mut core::ffi::c_void) -> c_int>,
+    start: Option<unsafe fn(*mut seq_file, *mut loff_t) -> *mut kernel::ffi::c_void>,
+    next: Option<unsafe fn(*mut seq_file, *mut kernel::ffi::c_void, *mut loff_t) -> *mut kernel::ffi::c_void>,
+    stop: Option<unsafe fn(*mut seq_file, *mut kernel::ffi::c_void)>,
+    show: Option<unsafe fn(*mut seq_file, *mut kernel::ffi::c_void) -> c_int>,
 }
 
 #[cfg(feature = "proc_fs")]

@@ -4,7 +4,7 @@
  * Copyright (C) 2024 Joachim Vandersmissen <git@jvdsn.com>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /*
  * Set of X.509 certificates to provide public keys for the tests. These will

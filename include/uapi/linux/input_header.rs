@@ -40,14 +40,14 @@ pub const INPUT_KEYMAP_BY_INDEX: u32 = 1 << 0;
 #[repr(C)]
 pub struct input_mask { pub type_: __u32, pub codes_size: __u32, pub codes_ptr: __u64 }
 
-pub const EVIOCGVERSION: _ = _IOR!('E', 0x01, i32);
-pub const EVIOCGID: _ = _IOR!('E', 0x02, input_id);
-pub const EVIOCGREP: _ = _IOR!('E', 0x03, [u32; 2]);
-pub const EVIOCSREP: _ = _IOW!('E', 0x03, [u32; 2]);
-pub const EVIOCGKEYCODE: _ = _IOR!('E', 0x04, [u32; 2]);
-pub const EVIOCGKEYCODE_V2: _ = _IOR!('E', 0x04, input_keymap_entry);
-pub const EVIOCSKEYCODE: _ = _IOW!('E', 0x04, [u32; 2]);
-pub const EVIOCSKEYCODE_V2: _ = _IOW!('E', 0x04, input_keymap_entry);
+pub const EVIOCGVERSION: u32 = _IOR!('E', 0x01, i32);
+pub const EVIOCGID: u32 = _IOR!('E', 0x02, input_id);
+pub const EVIOCGREP: u32 = _IOR!('E', 0x03, [u32; 2]);
+pub const EVIOCSREP: u32 = _IOW!('E', 0x03, [u32; 2]);
+pub const EVIOCGKEYCODE: u32 = _IOR!('E', 0x04, [u32; 2]);
+pub const EVIOCGKEYCODE_V2: u32 = _IOR!('E', 0x04, input_keymap_entry);
+pub const EVIOCSKEYCODE: u32 = _IOW!('E', 0x04, [u32; 2]);
+pub const EVIOCSKEYCODE_V2: u32 = _IOW!('E', 0x04, input_keymap_entry);
 #[macro_export] macro_rules! EVIOCGNAME { ($len:expr) => { _IOC!(_IOC_READ, 'E', 0x06, $len) }; }
 #[macro_export] macro_rules! EVIOCGPHYS { ($len:expr) => { _IOC!(_IOC_READ, 'E', 0x07, $len) }; }
 #[macro_export] macro_rules! EVIOCGUNIQ { ($len:expr) => { _IOC!(_IOC_READ, 'E', 0x08, $len) }; }
@@ -60,14 +60,14 @@ pub const EVIOCSKEYCODE_V2: _ = _IOW!('E', 0x04, input_keymap_entry);
 #[macro_export] macro_rules! EVIOCGBIT { ($ev:expr, $len:expr) => { _IOC!(_IOC_READ, 'E', 0x20 + ($ev), $len) }; }
 #[macro_export] macro_rules! EVIOCGABS { ($abs:expr) => { _IOR!('E', 0x40 + ($abs), input_absinfo) }; }
 #[macro_export] macro_rules! EVIOCSABS { ($abs:expr) => { _IOW!('E', 0xc0 + ($abs), input_absinfo) }; }
-pub const EVIOCSFF: _ = _IOW!('E', 0x80, ff_effect);
-pub const EVIOCRMFF: _ = _IOW!('E', 0x81, i32);
-pub const EVIOCGEFFECTS: _ = _IOR!('E', 0x84, i32);
-pub const EVIOCGRAB: _ = _IOW!('E', 0x90, i32);
-pub const EVIOCREVOKE: _ = _IOW!('E', 0x91, i32);
-pub const EVIOCGMASK: _ = _IOR!('E', 0x92, input_mask);
-pub const EVIOCSMASK: _ = _IOW!('E', 0x93, input_mask);
-pub const EVIOCSCLOCKID: _ = _IOW!('E', 0xa0, i32);
+pub const EVIOCSFF: u32 = _IOW!('E', 0x80, ff_effect);
+pub const EVIOCRMFF: u32 = _IOW!('E', 0x81, i32);
+pub const EVIOCGEFFECTS: u32 = _IOR!('E', 0x84, i32);
+pub const EVIOCGRAB: u32 = _IOW!('E', 0x90, i32);
+pub const EVIOCREVOKE: u32 = _IOW!('E', 0x91, i32);
+pub const EVIOCGMASK: u32 = _IOR!('E', 0x92, input_mask);
+pub const EVIOCSMASK: u32 = _IOW!('E', 0x93, input_mask);
+pub const EVIOCSCLOCKID: u32 = _IOW!('E', 0xa0, i32);
 
 pub const ID_BUS: u32 = 0; pub const ID_VENDOR: u32 = 1; pub const ID_PRODUCT: u32 = 2; pub const ID_VERSION: u32 = 3;
 pub const BUS_PCI: u32 = 0x01; pub const BUS_ISAPNP: u32 = 0x02; pub const BUS_USB: u32 = 0x03; pub const BUS_HIL: u32 = 0x04; pub const BUS_BLUETOOTH: u32 = 0x05; pub const BUS_VIRTUAL: u32 = 0x06;

@@ -12,7 +12,7 @@ pub enum nf_ct_ecache_state {
 
 #[repr(C)]
 pub struct nf_conntrack_ecache {
-    pub cache: ::core::ffi::c_ulong,
+    pub cache: ::kernel::ffi::c_ulong,
     #[cfg(CONFIG_NF_CONNTRACK_TIMESTAMP)]
     pub timestamp: local64_t,
     pub ctmask: u16,
@@ -44,7 +44,7 @@ pub unsafe fn nf_ct_ecache_exist(ct: *const nf_conn) -> bool {
 pub struct nf_ct_event {
     pub ct: *mut nf_conn,
     pub portid: u32,
-    pub report: ::core::ffi::c_int,
+    pub report: ::kernel::ffi::c_int,
 }
 
 #[cfg(CONFIG_NF_CONNTRACK_EVENTS)]
@@ -52,14 +52,14 @@ pub struct nf_ct_event {
 pub struct nf_exp_event {
     pub exp: *mut nf_conntrack_expect,
     pub portid: u32,
-    pub report: ::core::ffi::c_int,
+    pub report: ::kernel::ffi::c_int,
 }
 
 #[cfg(CONFIG_NF_CONNTRACK_EVENTS)]
 #[repr(C)]
 pub struct nf_ct_event_notifier {
-    pub ct_event: Option<unsafe extern "C" fn(u32, *const nf_ct_event) -> ::core::ffi::c_int>,
-    pub exp_event: Option<unsafe extern "C" fn(u32, *const nf_exp_event) -> ::core::ffi::c_int>,
+    pub ct_event: Option<unsafe extern "C" fn(u32, *const nf_ct_event) -> ::kernel::ffi::c_int>,
+    pub exp_event: Option<unsafe extern "C" fn(u32, *const nf_exp_event) -> ::kernel::ffi::c_int>,
 }
 
 #[cfg(CONFIG_NF_CONNTRACK_EVENTS)]
@@ -67,7 +67,7 @@ extern "C" {
     pub fn nf_conntrack_register_notifier(net: *mut net, nb: *const nf_ct_event_notifier);
     pub fn nf_conntrack_unregister_notifier(net: *mut net);
     pub fn nf_ct_deliver_cached_events(ct: *mut nf_conn);
-    pub fn nf_conntrack_eventmask_report(eventmask: u32, ct: *mut nf_conn, portid: u32, report: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn nf_conntrack_eventmask_report(eventmask: u32, ct: *mut nf_conn, portid: u32, report: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
     pub fn nf_ct_ecache_ext_add(ct: *mut nf_conn, ctmask: u16, expmask: u16, gfp: gfp_t) -> bool;
 }
 
@@ -77,7 +77,7 @@ pub unsafe fn nf_ct_deliver_cached_events(_ct: *const nf_conn) {}
 
 #[cfg(not(CONFIG_NF_CONNTRACK_EVENTS))]
 #[inline]
-pub unsafe fn nf_conntrack_eventmask_report(_eventmask: u32, _ct: *mut nf_conn, _portid: u32, _report: ::core::ffi::c_int) -> ::core::ffi::c_int { 0 }
+pub unsafe fn nf_conntrack_eventmask_report(_eventmask: u32, _ct: *mut nf_conn, _portid: u32, _report: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int { 0 }
 
 #[cfg(not(CONFIG_NF_CONNTRACK_EVENTS))]
 #[inline]
@@ -102,14 +102,14 @@ pub unsafe fn nf_conntrack_event_cache(event: ip_conntrack_events, ct: *mut nf_c
 }
 
 #[inline]
-pub unsafe fn nf_conntrack_event_report(event: ip_conntrack_events, ct: *mut nf_conn, portid: u32, report: ::core::ffi::c_int) -> ::core::ffi::c_int {
+pub unsafe fn nf_conntrack_event_report(event: ip_conntrack_events, ct: *mut nf_conn, portid: u32, report: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     #[cfg(CONFIG_NF_CONNTRACK_EVENTS)]
     { if nf_ct_ecache_exist(ct) { return nf_conntrack_eventmask_report(1u32.wrapping_shl(event as u32), ct, portid, report); } }
     0
 }
 
 #[inline]
-pub unsafe fn nf_conntrack_event(event: ip_conntrack_events, ct: *mut nf_conn) -> ::core::ffi::c_int {
+pub unsafe fn nf_conntrack_event(event: ip_conntrack_events, ct: *mut nf_conn) -> ::kernel::ffi::c_int {
     #[cfg(CONFIG_NF_CONNTRACK_EVENTS)]
     { if nf_ct_ecache_exist(ct) { return nf_conntrack_eventmask_report(1u32.wrapping_shl(event as u32), ct, 0, 0); } }
     0
@@ -117,7 +117,7 @@ pub unsafe fn nf_conntrack_event(event: ip_conntrack_events, ct: *mut nf_conn) -
 
 #[cfg(CONFIG_NF_CONNTRACK_EVENTS)]
 extern "C" {
-    pub fn nf_ct_expect_event_report(event: ip_conntrack_expect_events, exp: *mut nf_conntrack_expect, portid: u32, report: ::core::ffi::c_int);
+    pub fn nf_ct_expect_event_report(event: ip_conntrack_expect_events, exp: *mut nf_conntrack_expect, portid: u32, report: ::kernel::ffi::c_int);
     pub fn nf_conntrack_ecache_work(net: *mut net, state: nf_ct_ecache_state);
     pub fn nf_conntrack_ecache_pernet_init(net: *mut net);
     pub fn nf_conntrack_ecache_pernet_fini(net: *mut net);
@@ -130,7 +130,7 @@ pub unsafe fn nf_conntrack_ecache_dwork_pending(net: *const net) -> bool { (*net
 
 #[cfg(not(CONFIG_NF_CONNTRACK_EVENTS))]
 #[inline]
-pub unsafe fn nf_ct_expect_event_report(_e: ip_conntrack_expect_events, _exp: *mut nf_conntrack_expect, _portid: u32, _report: ::core::ffi::c_int) {}
+pub unsafe fn nf_ct_expect_event_report(_e: ip_conntrack_expect_events, _exp: *mut nf_conntrack_expect, _portid: u32, _report: ::kernel::ffi::c_int) {}
 #[cfg(not(CONFIG_NF_CONNTRACK_EVENTS))]
 #[inline]
 pub unsafe fn nf_conntrack_ecache_work(_net: *mut net, _s: nf_ct_ecache_state) {}

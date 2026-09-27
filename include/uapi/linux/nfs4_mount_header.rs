@@ -20,7 +20,7 @@ pub const NFS4_MOUNT_VERSION: i32 = 1;
 #[repr(C)]
 pub struct nfs_string {
     pub len: u32,
-    pub data: *const core::ffi::c_char,
+    pub data: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]

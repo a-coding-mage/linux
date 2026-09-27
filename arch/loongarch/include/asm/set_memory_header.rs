@@ -7,23 +7,23 @@
  * Functions to change memory attributes.
  */
 extern "C" {
-    pub fn set_memory_x(addr: core::ffi::c_ulong, numpages: core::ffi::c_int)
-        -> core::ffi::c_int;
-    pub fn set_memory_nx(addr: core::ffi::c_ulong, numpages: core::ffi::c_int)
-        -> core::ffi::c_int;
-    pub fn set_memory_ro(addr: core::ffi::c_ulong, numpages: core::ffi::c_int)
-        -> core::ffi::c_int;
-    pub fn set_memory_rw(addr: core::ffi::c_ulong, numpages: core::ffi::c_int)
-        -> core::ffi::c_int;
+    pub fn set_memory_x(addr: kernel::ffi::c_ulong, numpages: kernel::ffi::c_int)
+        -> kernel::ffi::c_int;
+    pub fn set_memory_nx(addr: kernel::ffi::c_ulong, numpages: kernel::ffi::c_int)
+        -> kernel::ffi::c_int;
+    pub fn set_memory_ro(addr: kernel::ffi::c_ulong, numpages: kernel::ffi::c_int)
+        -> kernel::ffi::c_int;
+    pub fn set_memory_rw(addr: kernel::ffi::c_ulong, numpages: kernel::ffi::c_int)
+        -> kernel::ffi::c_int;
 
     pub fn kernel_page_present(page: *mut page) -> bool;
-    pub fn set_direct_map_default_noflush(page: *mut page) -> core::ffi::c_int;
-    pub fn set_direct_map_invalid_noflush(page: *mut page) -> core::ffi::c_int;
+    pub fn set_direct_map_default_noflush(page: *mut page) -> kernel::ffi::c_int;
+    pub fn set_direct_map_invalid_noflush(page: *mut page) -> kernel::ffi::c_int;
     pub fn set_direct_map_valid_noflush(
         page: *mut page,
-        nr: core::ffi::c_uint,
+        nr: kernel::ffi::c_uint,
         valid: bool,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 /* External dependency supplied by the surrounding kernel translation. */

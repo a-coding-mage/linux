@@ -20,7 +20,7 @@ const WHITE_LIST_SHIFT: u32 = 16;
 #[repr(C)]
 struct Imx93ClkGate {
     hw: ClkHw,
-    reg: *mut core::ffi::c_void,
+    reg: *mut kernel::ffi::c_void,
     bit_idx: u32,
     val: u32,
     mask: u32,
@@ -31,10 +31,10 @@ struct Imx93ClkGate {
 // External kernel types and functions.
 #[repr(C)] struct ClkHw { init: *mut ClkInitData }
 #[repr(C)] struct ClkInitData {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     ops: *const ClkOps,
     flags: u32,
-    parent_names: *const *const core::ffi::c_char,
+    parent_names: *const *const kernel::ffi::c_char,
     num_parents: u8,
 }
 #[repr(C)] struct ClkOps {
@@ -47,8 +47,8 @@ struct Imx93ClkGate {
 #[repr(C)] struct Device;
 extern "C" {
     static mut imx_ccm_lock: Spinlock;
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
     fn spin_lock_irqsave(lock: *mut Spinlock, flags: *mut usize);
     fn spin_unlock_irqrestore(lock: *mut Spinlock, flags: usize);
     fn clk_hw_register(dev: *mut Device, hw: *mut ClkHw) -> i32;
@@ -141,8 +141,8 @@ static IMX93_CLK_GATE_RO_OPS: ClkOps = ClkOps { enable: None, disable: None, dis
 
 #[no_mangle]
 pub unsafe extern "C" fn imx93_clk_gate(
-    dev: *mut Device, name: *const core::ffi::c_char, parent_name: *const core::ffi::c_char,
-    flags: u32, reg: *mut core::ffi::c_void, bit_idx: u32, val: u32, mask: u32,
+    dev: *mut Device, name: *const kernel::ffi::c_char, parent_name: *const kernel::ffi::c_char,
+    flags: u32, reg: *mut kernel::ffi::c_void, bit_idx: u32, val: u32, mask: u32,
     domain_id: u32, share_count: *mut u32,
 ) -> *mut ClkHw {
     let gate = kzalloc_obj();

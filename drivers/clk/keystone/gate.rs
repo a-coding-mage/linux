@@ -36,10 +36,10 @@ pub struct clk_hw {
 }
 #[repr(C)]
 pub struct clk_init_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const clk_ops,
     pub flags: u32,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: u8,
 }
 #[repr(C)]
@@ -52,7 +52,7 @@ pub struct device {
 }
 #[repr(C)]
 pub struct device_node {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 #[repr(C)]
 pub struct clk_ops {
@@ -60,28 +60,28 @@ pub struct clk_ops {
     pub disable: Option<unsafe extern "C" fn(*mut clk_hw)>,
     pub is_enabled: Option<unsafe extern "C" fn(*mut clk_hw) -> i32>,
 }
-pub type spinlock_t = core::ffi::c_ulong;
-pub type c_void = core::ffi::c_void;
+pub type spinlock_t = kernel::ffi::c_ulong;
+pub type c_void = kernel::ffi::c_void;
 
 extern "C" {
     fn readl(addr: *const c_void) -> u32;
     fn writel(value: u32, addr: *mut c_void);
-    fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut core::ffi::c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: core::ffi::c_ulong);
+    fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: kernel::ffi::c_ulong);
     fn clk_register(dev: *mut device, hw: *mut clk_hw) -> *mut clk;
-    fn of_property_match_string(node: *mut device_node, propname: *const core::ffi::c_char,
-                                value: *const core::ffi::c_char) -> i32;
+    fn of_property_match_string(node: *mut device_node, propname: *const kernel::ffi::c_char,
+                                value: *const kernel::ffi::c_char) -> i32;
     fn of_iomap(node: *mut device_node, index: i32) -> *mut c_void;
-    fn of_property_read_u32(node: *mut device_node, propname: *const core::ffi::c_char,
+    fn of_property_read_u32(node: *mut device_node, propname: *const kernel::ffi::c_char,
                             out_value: *mut u32) -> i32;
-    fn of_property_read_string(node: *mut device_node, propname: *const core::ffi::c_char,
-                               out_string: *mut *const core::ffi::c_char) -> i32;
-    fn of_clk_get_parent_name(node: *mut device_node, index: i32) -> *const core::ffi::c_char;
+    fn of_property_read_string(node: *mut device_node, propname: *const kernel::ffi::c_char,
+                               out_string: *mut *const kernel::ffi::c_char) -> i32;
+    fn of_clk_get_parent_name(node: *mut device_node, index: i32) -> *const kernel::ffi::c_char;
     fn of_clk_add_provider(node: *mut device_node, get: *const c_void, data: *mut clk) -> i32;
     fn iounmap(addr: *mut c_void);
     fn kfree(ptr: *mut c_void);
     fn kzalloc(size: usize, flags: u32) -> *mut c_void;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
     fn is_err(ptr: *mut clk) -> bool;
     fn err_ptr(error: i32) -> *mut clk;
 }
@@ -153,7 +153,7 @@ unsafe extern "C" fn keystone_clk_is_enabled(hw: *mut clk_hw) -> i32 {
 unsafe extern "C" fn keystone_clk_enable(hw: *mut clk_hw) -> i32 {
     let psc = hw as *mut clk_psc;
     let data = (*psc).psc_data;
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     if !(*psc).lock.is_null() { spin_lock_irqsave((*psc).lock, &mut flags); }
     psc_config((*data).control_base, (*data).domain_base, PSC_STATE_ENABLE, (*data).domain_id);
     if !(*psc).lock.is_null() { spin_unlock_irqrestore((*psc).lock, flags); }
@@ -163,7 +163,7 @@ unsafe extern "C" fn keystone_clk_enable(hw: *mut clk_hw) -> i32 {
 unsafe extern "C" fn keystone_clk_disable(hw: *mut clk_hw) {
     let psc = hw as *mut clk_psc;
     let data = (*psc).psc_data;
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     if !(*psc).lock.is_null() { spin_lock_irqsave((*psc).lock, &mut flags); }
     psc_config((*data).control_base, (*data).domain_base, PSC_STATE_DISABLE, (*data).domain_id);
     if !(*psc).lock.is_null() { spin_unlock_irqrestore((*psc).lock, flags); }
@@ -175,8 +175,8 @@ static clk_psc_ops: clk_ops = clk_ops {
     is_enabled: Some(keystone_clk_is_enabled),
 };
 
-unsafe fn clk_register_psc(_dev: *mut device, name: *const core::ffi::c_char,
-                           parent_name: *const core::ffi::c_char,
+unsafe fn clk_register_psc(_dev: *mut device, name: *const kernel::ffi::c_char,
+                           parent_name: *const kernel::ffi::c_char,
                            psc_data: *mut clk_psc_data, lock: *mut spinlock_t) -> *mut clk {
     let psc = kzalloc(core::mem::size_of::<clk_psc>(), 0) as *mut clk_psc;
     if psc.is_null() { return err_ptr(-12); }
@@ -199,13 +199,13 @@ unsafe fn clk_register_psc(_dev: *mut device, name: *const core::ffi::c_char,
 
 unsafe extern "C" fn of_psc_clk_init(node: *mut device_node, lock: *mut spinlock_t) {
     let mut clk_name = (*node).name;
-    let mut parent_name: *const core::ffi::c_char;
+    let mut parent_name: *const kernel::ffi::c_char;
     let data = kzalloc(core::mem::size_of::<clk_psc_data>(), 0) as *mut clk_psc_data;
     if data.is_null() { return; }
-    let control = b"control\0".as_ptr() as *const core::ffi::c_char;
-    let domain = b"domain\0".as_ptr() as *const core::ffi::c_char;
-    let domain_id = b"domain-id\0".as_ptr() as *const core::ffi::c_char;
-    let output_names = b"clock-output-names\0".as_ptr() as *const core::ffi::c_char;
+    let control = b"control\0".as_ptr() as *const kernel::ffi::c_char;
+    let domain = b"domain\0".as_ptr() as *const kernel::ffi::c_char;
+    let domain_id = b"domain-id\0".as_ptr() as *const kernel::ffi::c_char;
+    let output_names = b"clock-output-names\0".as_ptr() as *const kernel::ffi::c_char;
     let i = of_property_match_string(node, b"reg-names\0".as_ptr() as _, control);
     (*data).control_base = of_iomap(node, i);
     if (*data).control_base.is_null() { kfree(data as _); return; }

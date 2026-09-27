@@ -44,7 +44,7 @@ unsafe fn line6_start_listen(line6: *mut usb_line6) -> i32 {
             (*line6).buffer_listen as *mut u8,
             LINE6_BUFSIZE_LISTEN,
             Some(line6_data_received),
-            line6 as *mut libc::c_void,
+            line6 as *mut core::ffi::c_void,
             (*line6).interval,
         );
     } else {
@@ -55,14 +55,14 @@ unsafe fn line6_start_listen(line6: *mut usb_line6) -> i32 {
             (*line6).buffer_listen as *mut u8,
             LINE6_BUFSIZE_LISTEN,
             Some(line6_data_received),
-            line6 as *mut libc::c_void,
+            line6 as *mut core::ffi::c_void,
         );
     }
 
     // sanity checks of EP before actually submitting
     if usb_urb_ep_type_check((*line6).urb_listen) != 0 {
         dev_err((*line6).ifcdev, "invalid control EP\n");
-        return -libc::EINVAL;
+        return -EINVAL;
     }
 
     (*(*line6).urb_listen).actual_length = 0;
@@ -91,7 +91,7 @@ pub unsafe extern "C" fn line6_send_raw_message(line6: *mut usb_line6, buffer: *
             retval = usb_interrupt_msg(
                 (*line6).usbdev,
                 usb_sndintpipe((*line6).usbdev, (*properties).ep_ctrl_w),
-                frag_buf as *mut libc::c_char,
+                frag_buf as *mut core::ffi::c_char,
                 frag_size,
                 &mut partial,
                 LINE6_TIMEOUT,
@@ -100,7 +100,7 @@ pub unsafe extern "C" fn line6_send_raw_message(line6: *mut usb_line6, buffer: *
             retval = usb_bulk_msg(
                 (*line6).usbdev,
                 usb_sndbulkpipe((*line6).usbdev, (*properties).ep_ctrl_w),
-                frag_buf as *mut libc::c_char,
+                frag_buf as *mut core::ffi::c_char,
                 frag_size,
                 &mut partial,
                 LINE6_TIMEOUT,
@@ -125,7 +125,7 @@ unsafe extern "C" fn line6_async_request_sent(urb: *mut urb) {
 
     if (*msg).done >= (*msg).size {
         usb_free_urb(urb);
-        kfree(msg as *mut libc::c_void);
+        kfree(msg as *mut core::ffi::c_void);
     } else {
         let _ = line6_send_raw_message_async_part(msg, urb);
     }
@@ -146,7 +146,7 @@ unsafe fn line6_send_raw_message_async_part(msg: *mut message, urb: *mut urb) ->
             ((*msg).buffer as *mut i8).add(done as usize) as *mut u8,
             bytes,
             Some(line6_async_request_sent),
-            msg as *mut libc::c_void,
+            msg as *mut core::ffi::c_void,
             (*line6).interval,
         );
     } else {
@@ -157,7 +157,7 @@ unsafe fn line6_send_raw_message_async_part(msg: *mut message, urb: *mut urb) ->
             ((*msg).buffer as *mut i8).add(done as usize) as *mut u8,
             bytes,
             Some(line6_async_request_sent),
-            msg as *mut libc::c_void,
+            msg as *mut core::ffi::c_void,
         );
     }
 
@@ -168,7 +168,7 @@ unsafe fn line6_send_raw_message_async_part(msg: *mut message, urb: *mut urb) ->
     if retval < 0 {
         dev_err((*line6).ifcdev, "%s: usb_submit_urb failed (%d)\n", "__func__\0" as *const u8 as *const i8, retval);
         usb_free_urb(urb);
-        kfree(msg as *mut libc::c_void);
+        kfree(msg as *mut core::ffi::c_void);
         return retval;
     }
 
@@ -176,7 +176,7 @@ unsafe fn line6_send_raw_message_async_part(msg: *mut message, urb: *mut urb) ->
     if retval < 0 {
         dev_err((*line6).ifcdev, "%s: usb_submit_urb failed (%d)\n", "__func__\0" as *const u8 as *const i8, retval);
         usb_free_urb(urb);
-        kfree(msg as *mut libc::c_void);
+        kfree(msg as *mut core::ffi::c_void);
         return retval;
     }
 
@@ -191,15 +191,15 @@ pub unsafe extern "C" fn line6_send_raw_message_async(line6: *mut usb_line6, buf
     // create message:
     msg = kzalloc_obj::<message>(GFP_ATOMIC) as *mut message;
     if msg.is_null() {
-        return -libc::ENOMEM;
+        return -ENOMEM;
     }
 
     // create URB:
     urb = usb_alloc_urb(0, GFP_ATOMIC);
 
     if urb.is_null() {
-        kfree(msg as *mut libc::c_void);
-        return -libc::ENOMEM;
+        kfree(msg as *mut core::ffi::c_void);
+        return -ENOMEM;
     }
 
     // set message data:
@@ -218,16 +218,16 @@ pub unsafe extern "C" fn line6_version_request_async(line6: *mut usb_line6) -> i
     let retval: i32;
 
     buffer = kmemdup(
-        line6_request_version.as_ptr() as *const libc::c_void,
+        line6_request_version.as_ptr() as *const core::ffi::c_void,
         std::mem::size_of_val(&line6_request_version),
         GFP_ATOMIC,
     ) as *mut i8;
     if buffer.is_null() {
-        return -libc::ENOMEM;
+        return -ENOMEM;
     }
 
     retval = line6_send_raw_message_async(line6, buffer, std::mem::size_of_val(&line6_request_version) as i32);
-    kfree(buffer as *mut libc::c_void);
+    kfree(buffer as *mut core::ffi::c_void);
     retval
 }
 
@@ -252,9 +252,9 @@ pub unsafe extern "C" fn line6_alloc_sysex_buffer(
     }
 
     *buffer = LINE6_SYSEX_BEGIN as i8;
-    libc::memcpy(
-        buffer.add(1) as *mut libc::c_void,
-        line6_midi_id.as_ptr() as *const libc::c_void,
+    memcpy(
+        buffer.add(1) as *mut core::ffi::c_void,
+        line6_midi_id.as_ptr() as *const core::ffi::c_void,
         std::mem::size_of_val(&line6_midi_id),
     );
     *buffer.add(std::mem::size_of_val(&line6_midi_id) + 1) = code1 as i8;
@@ -269,7 +269,7 @@ unsafe extern "C" fn line6_data_received(urb: *mut urb) {
     let mb = &mut (*(*line6).line6midi).midibuf_in;
     let mut done: i32;
 
-    if (*urb).status == -libc::ESHUTDOWN {
+    if (*urb).status == -ESHUTDOWN {
         return;
     }
 
@@ -326,7 +326,7 @@ const LINE6_READ_WRITE_MAX_RETRIES: i32 = 50;
 pub unsafe extern "C" fn line6_read_data(
     line6: *mut usb_line6,
     address: u32,
-    data: *mut libc::c_void,
+    data: *mut core::ffi::c_void,
     datalen: u32,
 ) -> i32 {
     let usbdev = (*line6).usbdev;
@@ -335,7 +335,7 @@ pub unsafe extern "C" fn line6_read_data(
     let mut count: u32;
 
     if address > 0xffff || datalen > 0xff {
-        return -libc::EINVAL;
+        return -EINVAL;
     }
 
     // query the serial number:
@@ -343,7 +343,7 @@ pub unsafe extern "C" fn line6_read_data(
         usbdev,
         0,
         0x67,
-        (libc::USB_TYPE_VENDOR | libc::USB_RECIP_DEVICE | libc::USB_DIR_OUT) as u8,
+        (USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT) as u8,
         ((datalen << 8) | 0x21) as u16,
         address as u16,
         std::ptr::null_mut(),
@@ -365,10 +365,10 @@ pub unsafe extern "C" fn line6_read_data(
             usbdev,
             0,
             0x67,
-            (libc::USB_TYPE_VENDOR | libc::USB_RECIP_DEVICE | libc::USB_DIR_IN) as u8,
+            (USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN) as u8,
             0x0012,
             0x0000,
-            &mut len as *mut u8 as *mut libc::c_void,
+            &mut len as *mut u8 as *mut core::ffi::c_void,
             1,
             LINE6_TIMEOUT,
             GFP_KERNEL,
@@ -388,7 +388,7 @@ pub unsafe extern "C" fn line6_read_data(
         count += 1;
     }
 
-    ret = -libc::EIO;
+    ret = -EIO;
     if len == 0xff {
         dev_err(
             (*line6).ifcdev,
@@ -404,14 +404,14 @@ pub unsafe extern "C" fn line6_read_data(
             datalen as i32,
             len as i32,
         );
-        -libc::EIO
+        -EIO
     } else {
         // receive the result:
         ret = usb_control_msg_recv(
             usbdev,
             0,
             0x67,
-            (libc::USB_TYPE_VENDOR | libc::USB_RECIP_DEVICE | libc::USB_DIR_IN) as u8,
+            (USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN) as u8,
             0x0013,
             0x0000,
             data,
@@ -430,7 +430,7 @@ pub unsafe extern "C" fn line6_read_data(
 pub unsafe extern "C" fn line6_write_data(
     line6: *mut usb_line6,
     address: u32,
-    data: *mut libc::c_void,
+    data: *mut core::ffi::c_void,
     datalen: u32,
 ) -> i32 {
     let usbdev = (*line6).usbdev;
@@ -439,19 +439,19 @@ pub unsafe extern "C" fn line6_write_data(
     let mut count: i32;
 
     if address > 0xffff || datalen > 0xffff {
-        return -libc::EINVAL;
+        return -EINVAL;
     }
 
     status = kmalloc(1, GFP_KERNEL) as *mut u8;
     if status.is_null() {
-        return -libc::ENOMEM;
+        return -ENOMEM;
     }
 
     ret = usb_control_msg_send(
         usbdev,
         0,
         0x67,
-        (libc::USB_TYPE_VENDOR | libc::USB_RECIP_DEVICE | libc::USB_DIR_OUT) as u8,
+        (USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT) as u8,
         0x0022,
         address as u16,
         data,
@@ -465,7 +465,7 @@ pub unsafe extern "C" fn line6_write_data(
             "write request failed (error %d)\n",
             ret,
         );
-        kfree(status as *mut libc::c_void);
+        kfree(status as *mut core::ffi::c_void);
         return ret;
     }
 
@@ -477,10 +477,10 @@ pub unsafe extern "C" fn line6_write_data(
             usbdev,
             0,
             0x67,
-            (libc::USB_TYPE_VENDOR | libc::USB_RECIP_DEVICE | libc::USB_DIR_IN) as u8,
+            (USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN) as u8,
             0x0012,
             0x0000,
-            status as *mut libc::c_void,
+            status as *mut core::ffi::c_void,
             1,
             LINE6_TIMEOUT,
             GFP_KERNEL,
@@ -491,7 +491,7 @@ pub unsafe extern "C" fn line6_write_data(
                 "receiving status failed (error %d)\n",
                 ret,
             );
-            kfree(status as *mut libc::c_void);
+            kfree(status as *mut core::ffi::c_void);
             return ret;
         }
 
@@ -503,20 +503,20 @@ pub unsafe extern "C" fn line6_write_data(
 
     if *status == 0xff {
         dev_err((*line6).ifcdev, "write failed after %d retries\n", count);
-        ret = -libc::EIO;
+        ret = -EIO;
     } else if *status != 0 {
         dev_err((*line6).ifcdev, "write failed (error %d)\n", ret);
-        ret = -libc::EIO;
+        ret = -EIO;
     }
 
-    kfree(status as *mut libc::c_void);
+    kfree(status as *mut core::ffi::c_void);
     ret
 }
 
 // Read Line 6 device serial number.
 // (POD, TonePort, GuitarPort)
 pub unsafe extern "C" fn line6_read_serial_number(line6: *mut usb_line6, serial_number: *mut u32) -> i32 {
-    line6_read_data(line6, 0x80d0, serial_number as *mut libc::c_void, std::mem::size_of::<u32>() as u32)
+    line6_read_data(line6, 0x80d0, serial_number as *mut core::ffi::c_void, std::mem::size_of::<u32>() as u32)
 }
 
 // Card destructor.
@@ -526,9 +526,9 @@ unsafe extern "C" fn line6_destruct(card: *mut snd_card) {
 
     // Free buffer memory first. We cannot depend on the existence of private
     // data from the (podhd) module, it may be gone already during this call
-    kfree((*line6).buffer_message as *mut libc::c_void);
+    kfree((*line6).buffer_message as *mut core::ffi::c_void);
 
-    kfree((*line6).buffer_listen as *mut libc::c_void);
+    kfree((*line6).buffer_listen as *mut core::ffi::c_void);
 
     // then free URBs:
     usb_free_urb((*line6).urb_listen);
@@ -611,14 +611,14 @@ unsafe extern "C" fn line6_hwdep_read(
     let mut out_count: u32;
 
     if mutex_lock_interruptible(&mut (*line6).messages.read_lock) != 0 {
-        return -libc::ERESTARTSYS as i64;
+        return -ERESTARTSYS as i64;
     }
 
     while kfifo_len(&(*line6).messages.fifo) == 0 {
         mutex_unlock(&mut (*line6).messages.read_lock);
 
         if (*line6).messages.nonblock != 0 {
-            return -libc::EAGAIN as i64;
+            return -EAGAIN as i64;
         }
 
         rv = wait_event_interruptible(&(*line6).messages.wait_queue, kfifo_len(&(*line6).messages.fifo) != 0) as i64;
@@ -627,13 +627,13 @@ unsafe extern "C" fn line6_hwdep_read(
         }
 
         if mutex_lock_interruptible(&mut (*line6).messages.read_lock) != 0 {
-            return -libc::ERESTARTSYS as i64;
+            return -ERESTARTSYS as i64;
         }
     }
 
     if kfifo_peek_len(&(*line6).messages.fifo) > count as i32 {
         // Buffer too small; allow re-read of the current item...
-        rv = -libc::EINVAL as i64;
+        rv = -EINVAL as i64;
     } else {
         rv = kfifo_to_user(&(*line6).messages.fifo, buf, count as i32, &mut out_count) as i64;
         if rv == 0 {
@@ -658,17 +658,17 @@ unsafe extern "C" fn line6_hwdep_write(
 
     if count > ((*line6).max_packet_size * LINE6_RAW_MESSAGES_MAXCOUNT) as i64 {
         // This is an arbitrary limit - still better than nothing...
-        return -libc::EINVAL as i64;
+        return -EINVAL as i64;
     }
 
     data_copy = memdup_user(data, count as usize) as *mut i8;
-    if IS_ERR(data_copy as *const libc::c_void) != 0 {
-        return PTR_ERR(data_copy as *const libc::c_void) as i64;
+    if IS_ERR(data_copy as *const core::ffi::c_void) != 0 {
+        return PTR_ERR(data_copy as *const core::ffi::c_void) as i64;
     }
 
     rv = line6_send_raw_message(line6, data_copy, count as i32) as i64;
 
-    kfree(data_copy as *mut libc::c_void);
+    kfree(data_copy as *mut core::ffi::c_void);
     rv
 }
 
@@ -684,7 +684,7 @@ unsafe extern "C" fn line6_hwdep_poll(
     if kfifo_len(&(*line6).messages.fifo) == 0 {
         0
     } else {
-        libc::EPOLLIN | libc::EPOLLRDNORM
+        EPOLLIN | EPOLLRDNORM
     }
 }
 
@@ -729,7 +729,7 @@ unsafe fn line6_hwdep_init(line6: *mut usb_line6) -> i32 {
     strscpy((*hwdep).name.as_mut_ptr(), "config\0" as *const u8 as *const i8, 64);
     (*hwdep).iface = SNDRV_HWDEP_IFACE_LINE6;
     (*hwdep).ops = &hwdep_ops;
-    (*hwdep).private_data = line6 as *mut libc::c_void;
+    (*hwdep).private_data = line6 as *mut core::ffi::c_void;
     (*hwdep).exclusive = true;
 
     err
@@ -741,18 +741,18 @@ unsafe fn line6_init_cap_control(line6: *mut usb_line6) -> i32 {
     // initialize USB buffers:
     (*line6).buffer_listen = kzalloc(LINE6_BUFSIZE_LISTEN as usize, GFP_KERNEL) as *mut i8;
     if (*line6).buffer_listen.is_null() {
-        return -libc::ENOMEM;
+        return -ENOMEM;
     }
 
     (*line6).urb_listen = usb_alloc_urb(0, GFP_KERNEL);
     if (*line6).urb_listen.is_null() {
-        return -libc::ENOMEM;
+        return -ENOMEM;
     }
 
     if (*(*line6).properties).capabilities & LINE6_CAP_CONTROL_MIDI != 0 {
         (*line6).buffer_message = kzalloc(LINE6_MIDI_MESSAGE_MAXLEN as usize, GFP_KERNEL) as *mut i8;
         if (*line6).buffer_message.is_null() {
-            return -libc::ENOMEM;
+            return -ENOMEM;
         }
 
         ret = line6_init_midi(line6);
@@ -799,12 +799,12 @@ pub unsafe extern "C" fn line6_probe(
     let mut ret: i32;
 
     if data_size < std::mem::size_of::<usb_line6>() {
-        return -libc::EINVAL;
+        return -EINVAL;
     }
 
     // we don't handle multiple configurations
     if (*(*usbdev).descriptor).bNumConfigurations != 1 {
-        return -libc::ENODEV;
+        return -ENODEV;
     }
 
     ret = snd_card_new(
@@ -838,7 +838,7 @@ pub unsafe extern "C" fn line6_probe(
     );
     (*card).private_free = Some(line6_destruct);
 
-    usb_set_intfdata(interface, line6 as *mut libc::c_void);
+    usb_set_intfdata(interface, line6 as *mut core::ffi::c_void);
 
     // increment reference counters:
     usb_get_dev(usbdev);
@@ -973,7 +973,7 @@ extern "C" {
         transfer_buffer: *mut u8,
         buffer_length: i32,
         complete: Option<unsafe extern "C" fn(*mut urb)>,
-        context: *mut libc::c_void,
+        context: *mut core::ffi::c_void,
         interval: u8,
     );
     fn usb_fill_bulk_urb(
@@ -983,7 +983,7 @@ extern "C" {
         transfer_buffer: *mut u8,
         buffer_length: i32,
         complete: Option<unsafe extern "C" fn(*mut urb)>,
-        context: *mut libc::c_void,
+        context: *mut core::ffi::c_void,
     );
     fn usb_rcvintpipe(dev: *mut usb_device, endpoint: u8) -> u32;
     fn usb_rcvbulkpipe(dev: *mut usb_device, endpoint: u8) -> u32;
@@ -1018,7 +1018,7 @@ extern "C" {
         requesttype: u8,
         value: u16,
         index: u16,
-        data: *mut libc::c_void,
+        data: *mut core::ffi::c_void,
         size: u16,
         timeout: i32,
         mem_flags: u32,
@@ -1030,7 +1030,7 @@ extern "C" {
         requesttype: u8,
         value: u16,
         index: u16,
-        data: *mut libc::c_void,
+        data: *mut core::ffi::c_void,
         size: u16,
         timeout: i32,
         mem_flags: u32,
@@ -1038,27 +1038,27 @@ extern "C" {
     fn usb_get_dev(dev: *mut usb_device) -> *mut usb_device;
     fn usb_put_dev(dev: *mut usb_device);
     fn usb_set_interface(dev: *mut usb_device, ifnum: u8, alternate: u8) -> i32;
-    fn usb_get_intfdata(intf: *mut usb_interface) -> *mut libc::c_void;
-    fn usb_set_intfdata(intf: *mut usb_interface, data: *mut libc::c_void);
+    fn usb_get_intfdata(intf: *mut usb_interface) -> *mut core::ffi::c_void;
+    fn usb_set_intfdata(intf: *mut usb_interface, data: *mut core::ffi::c_void);
     fn interface_to_usbdev(intf: *mut usb_interface) -> *mut usb_device;
     fn dev_err(dev: *mut device, fmt: *const i8, ...);
     fn dev_info(dev: *mut device, fmt: *const i8, ...);
     fn dev_dbg(dev: *mut device, fmt: *const i8, ...);
-    fn kmalloc(size: usize, flags: u32) -> *mut libc::c_void;
-    fn kzalloc(size: usize, flags: u32) -> *mut libc::c_void;
-    fn kzalloc_obj(flags: u32) -> *mut libc::c_void;
-    fn kmemdup(src: *const libc::c_void, len: usize, flags: u32) -> *mut libc::c_void;
-    fn kfree(ptr: *mut libc::c_void);
+    fn kmalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn kzalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn kzalloc_obj(flags: u32) -> *mut core::ffi::c_void;
+    fn kmemdup(src: *const core::ffi::c_void, len: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn kfree(ptr: *mut core::ffi::c_void);
     fn memdup_user(src: *const i8, n: usize) -> *mut i8;
-    fn IS_ERR(ptr: *const libc::c_void) -> i32;
-    fn PTR_ERR(ptr: *const libc::c_void) -> i32;
+    fn IS_ERR(ptr: *const core::ffi::c_void) -> i32;
+    fn PTR_ERR(ptr: *const core::ffi::c_void) -> i32;
     fn mdelay(msecs: i32);
     fn le16_to_cpu(x: u16) -> u16;
     fn snd_card_new(
         parent: *mut device,
         idx: i32,
         xid: *const i8,
-        module: *mut libc::c_void,
+        module: *mut core::ffi::c_void,
         extra_size: usize,
         card_ret: *mut *mut snd_card,
     ) -> i32;

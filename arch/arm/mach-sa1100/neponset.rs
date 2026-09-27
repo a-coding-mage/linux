@@ -41,7 +41,7 @@ static NEPONSET_AUD_NAMES: [&'static str; 2] = ["sel_1341", "mute_1341"];
 
 #[repr(C)]
 struct NeponsetDrvdata {
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     sa1111: *mut PlatformDevice,
     smc91x: *mut PlatformDevice,
     irq_base: u32,
@@ -58,8 +58,8 @@ static mut NEP: *mut NeponsetDrvdata = core::ptr::null_mut();
 
 pub unsafe extern "C" fn neponset_ncr_frob(mask: u32, val: u32) {
     let n = NEP;
-    let mut m = mask as core::ffi::c_ulong;
-    let mut v = val as core::ffi::c_ulong;
+    let mut m = mask as kernel::ffi::c_ulong;
+    let mut v = val as kernel::ffi::c_ulong;
     if !n.is_null() {
         // n->gpio[0]->set_multiple(n->gpio[0], &m, &v)
         ((*(*n).gpio.as_mut_ptr()).set_multiple)((*n).gpio[0], &mut m, &mut v);
@@ -89,7 +89,7 @@ unsafe extern "C" fn neponset_irq_handler(desc: *mut IrqDesc) {
 unsafe extern "C" fn nochip_noop(_irq: *mut IrqData) {}
 
 unsafe fn neponset_init_gpio(gcp: *mut *mut GpioChip, dev: *mut Device, label: *const i8,
-    reg: *mut core::ffi::c_void, num: u32, input: bool, names: *const *const i8) -> i32 {
+    reg: *mut kernel::ffi::c_void, num: u32, input: bool, names: *const *const i8) -> i32 {
     let gc = gpio_reg_init(dev, reg, -1, num, label, if input { 0xffff_ffff } else { 0 },
         readl_relaxed(reg), names, core::ptr::null_mut(), core::ptr::null_mut());
     if IS_ERR(gc) { return PTR_ERR(gc); }

@@ -3,7 +3,7 @@
 // Dependency declarations corresponding to <linux/kexec.h> and
 // <linux/purgatory.h> are supplied by other translated files.
 
-use core::ffi::{c_int, c_ulong, c_void};
+use kernel::ffi::{c_int, c_ulong, c_void};
 
 #[repr(C)]
 pub struct kimage {
@@ -79,7 +79,7 @@ pub unsafe fn kexec_unlock() {
 #[cfg(CONFIG_KEXEC_FILE)]
 extern "C" {
     pub fn kimage_file_post_load_cleanup(image: *mut kimage);
-    pub static mut kexec_purgatory: [core::ffi::c_char; 0];
+    pub static mut kexec_purgatory: [kernel::ffi::c_char; 0];
     pub static mut kexec_purgatory_size: usize;
 }
 

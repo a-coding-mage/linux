@@ -18,12 +18,12 @@ const EISA_MAX_SLOTS: u32 = 8;
 #[repr(C)]
 pub struct device {
     pub release: Option<unsafe extern "C" fn(*mut device)>,
-    pub driver_data: *mut core::ffi::c_void,
+    pub driver_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct platform_device {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: i32,
     pub dev: device,
 }
@@ -48,9 +48,9 @@ extern "C" {
 
     fn platform_device_register(dev: *mut platform_device) -> i32;
     fn platform_device_unregister(dev: *mut platform_device);
-    fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
+    fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
     fn eisa_root_register(root: *mut eisa_root_device) -> i32;
-    fn module_param(param: *mut i32, ty: *const core::ffi::c_char, mode: u32);
+    fn module_param(param: *mut i32, ty: *const kernel::ffi::c_char, mode: u32);
     fn device_initcall(init: unsafe extern "C" fn() -> i32);
 }
 
@@ -59,7 +59,7 @@ static mut force_probe: i32 = EISA_FORCE_PROBE_DEFAULT;
 /* The default EISA device parent (virtual root device).
  * Now use a platform device, since that's the obvious choice. */
 static mut eisa_root_dev: platform_device = platform_device {
-    name: b"eisa\0".as_ptr() as *const core::ffi::c_char,
+    name: b"eisa\0".as_ptr() as *const kernel::ffi::c_char,
     id: 0,
     dev: device {
         release: Some(virtual_eisa_release),
@@ -92,7 +92,7 @@ unsafe extern "C" fn virtual_eisa_root_init() -> i32 {
 
     dev_set_drvdata(
         &raw mut eisa_root_dev.dev,
-        &raw mut eisa_bus_root as *mut eisa_root_device as *mut core::ffi::c_void,
+        &raw mut eisa_bus_root as *mut eisa_root_device as *mut kernel::ffi::c_void,
     );
 
     if eisa_root_register(&raw mut eisa_bus_root) != 0 {

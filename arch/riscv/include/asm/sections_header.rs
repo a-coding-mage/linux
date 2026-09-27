@@ -5,7 +5,7 @@
 
 // Dependency intent from <asm-generic/sections.h> and <linux/mm.h>.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     static mut _start: [c_char; 0];

@@ -7,32 +7,32 @@ unsafe extern "C" {
     fn get_auxio() -> u8;
     fn set_auxio(on: u8, off: u8);
     fn auxio_set_led(state: u8);
-    fn memdup_user_nul(buffer: *const core::ffi::c_char, count: usize) -> *mut core::ffi::c_char;
-    fn is_err(ptr: *const core::ffi::c_void) -> bool;
-    fn ptr_err(ptr: *const core::ffi::c_void) -> isize;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
+    fn memdup_user_nul(buffer: *const kernel::ffi::c_char, count: usize) -> *mut kernel::ffi::c_char;
+    fn is_err(ptr: *const kernel::ffi::c_void) -> bool;
+    fn ptr_err(ptr: *const kernel::ffi::c_void) -> isize;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
     fn simple_strtoul(
-        buffer: *const core::ffi::c_char,
-        end: *mut *mut core::ffi::c_char,
+        buffer: *const kernel::ffi::c_char,
+        end: *mut *mut kernel::ffi::c_char,
         base: u32,
     ) -> usize;
     fn timer_setup(timer: *mut timer_list, callback: unsafe extern "C" fn(*mut timer_list), flags: u32);
     fn timer_delete_sync(timer: *mut timer_list);
     fn add_timer(timer: *mut timer_list);
     fn proc_create(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         mode: u32,
         parent: *mut inode,
         ops: *const proc_ops,
-    ) -> *mut core::ffi::c_void;
-    fn remove_proc_entry(name: *const core::ffi::c_char, parent: *mut inode);
-    fn single_open(file: *mut file, show: unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void) -> i32, data: *mut core::ffi::c_void) -> i32;
-    fn seq_puts(m: *mut seq_file, s: *const core::ffi::c_char);
-    fn seq_read(file: *mut file, p: *mut core::ffi::c_void, pos: *mut loff_t) -> isize;
+    ) -> *mut kernel::ffi::c_void;
+    fn remove_proc_entry(name: *const kernel::ffi::c_char, parent: *mut inode);
+    fn single_open(file: *mut file, show: unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void) -> i32, data: *mut kernel::ffi::c_void) -> i32;
+    fn seq_puts(m: *mut seq_file, s: *const kernel::ffi::c_char);
+    fn seq_read(file: *mut file, p: *mut kernel::ffi::c_void, pos: *mut loff_t) -> isize;
     fn seq_lseek(file: *mut file, pos: loff_t, whence: i32) -> loff_t;
     fn single_release(inode: *mut inode, file: *mut file) -> i32;
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -52,10 +52,10 @@ type loff_t = i64;
 #[repr(C)]
 struct proc_ops {
     proc_open: Option<unsafe extern "C" fn(*mut inode, *mut file) -> i32>,
-    proc_read: Option<unsafe extern "C" fn(*mut file, *mut core::ffi::c_void, *mut loff_t) -> isize>,
+    proc_read: Option<unsafe extern "C" fn(*mut file, *mut kernel::ffi::c_void, *mut loff_t) -> isize>,
     proc_lseek: Option<unsafe extern "C" fn(*mut file, loff_t, i32) -> loff_t>,
     proc_release: Option<unsafe extern "C" fn(*mut inode, *mut file) -> i32>,
-    proc_write: Option<unsafe extern "C" fn(*mut file, *const core::ffi::c_char, usize, *mut loff_t) -> isize>,
+    proc_write: Option<unsafe extern "C" fn(*mut file, *const kernel::ffi::c_char, usize, *mut loff_t) -> isize>,
 }
 
 const AUXIO_LED: u8 = 1;
@@ -102,7 +102,7 @@ unsafe extern "C" fn led_blink(_unused: *mut timer_list) {
 }
 
 #[cfg(CONFIG_PROC_FS)]
-unsafe extern "C" fn led_proc_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn led_proc_show(m: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
     if get_auxio() & AUXIO_LED != 0 {
         seq_puts(m, c"on\n".as_ptr());
     } else {
@@ -117,7 +117,7 @@ unsafe extern "C" fn led_proc_open(_inode: *mut inode, file: *mut file) -> i32 {
 }
 
 #[cfg(CONFIG_PROC_FS)]
-unsafe extern "C" fn led_proc_write(_file: *mut file, buffer: *const core::ffi::c_char, mut count: usize, _ppos: *mut loff_t) -> isize {
+unsafe extern "C" fn led_proc_write(_file: *mut file, buffer: *const kernel::ffi::c_char, mut count: usize, _ppos: *mut loff_t) -> isize {
     if count > LED_MAX_LENGTH { count = LED_MAX_LENGTH; }
     let buf = memdup_user_nul(buffer, count);
     if is_err(buf.cast()) { return ptr_err(buf.cast()); }

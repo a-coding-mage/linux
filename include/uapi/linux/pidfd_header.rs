@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 
 /* Flags for pidfd_open(). */
-pub const PIDFD_NONBLOCK: _ = O_NONBLOCK;
-pub const PIDFD_THREAD: _ = O_EXCL;
+pub const PIDFD_NONBLOCK: u32 = O_NONBLOCK;
+pub const PIDFD_THREAD: u32 = O_EXCL;
 
 /* These flags are kernel-internal and are available only when building the kernel. */
 // #ifdef __KERNEL__
@@ -48,8 +48,8 @@ pub const PIDFD_COREDUMP_ROOT: u32 = 1u32 << 3; /* coredump was done as root. */
  *
  * For nearly all practical uses, a user will want to use PIDFD_SELF.
  */
-pub const PIDFD_SELF: _ = PIDFD_SELF_THREAD;
-pub const PIDFD_SELF_PROCESS: _ = PIDFD_SELF_THREAD_GROUP;
+pub const PIDFD_SELF: i32 = PIDFD_SELF_THREAD;
+pub const PIDFD_SELF_PROCESS: i32 = PIDFD_SELF_THREAD_GROUP;
 
 #[repr(C)]
 pub struct pidfd_info {
@@ -76,18 +76,18 @@ pub struct pidfd_info {
     pub supported_mask: __u64, /* Mask flags that this kernel supports */
 }
 
-pub const PIDFS_IOCTL_MAGIC: _ = 0xFF;
+pub const PIDFS_IOCTL_MAGIC: u32 = 0xFF;
 
-pub const PIDFD_GET_CGROUP_NAMESPACE: _ = _IO(PIDFS_IOCTL_MAGIC, 1);
-pub const PIDFD_GET_IPC_NAMESPACE: _ = _IO(PIDFS_IOCTL_MAGIC, 2);
-pub const PIDFD_GET_MNT_NAMESPACE: _ = _IO(PIDFS_IOCTL_MAGIC, 3);
-pub const PIDFD_GET_NET_NAMESPACE: _ = _IO(PIDFS_IOCTL_MAGIC, 4);
-pub const PIDFD_GET_PID_NAMESPACE: _ = _IO(PIDFS_IOCTL_MAGIC, 5);
-pub const PIDFD_GET_PID_FOR_CHILDREN_NAMESPACE: _ = _IO(PIDFS_IOCTL_MAGIC, 6);
-pub const PIDFD_GET_TIME_NAMESPACE: _ = _IO(PIDFS_IOCTL_MAGIC, 7);
-pub const PIDFD_GET_TIME_FOR_CHILDREN_NAMESPACE: _ = _IO(PIDFS_IOCTL_MAGIC, 8);
-pub const PIDFD_GET_USER_NAMESPACE: _ = _IO(PIDFS_IOCTL_MAGIC, 9);
-pub const PIDFD_GET_UTS_NAMESPACE: _ = _IO(PIDFS_IOCTL_MAGIC, 10);
-pub const PIDFD_GET_INFO: _ = _IOWR(PIDFS_IOCTL_MAGIC, 11, pidfd_info);
+pub const PIDFD_GET_CGROUP_NAMESPACE: u32 = _IO(PIDFS_IOCTL_MAGIC, 1);
+pub const PIDFD_GET_IPC_NAMESPACE: u32 = _IO(PIDFS_IOCTL_MAGIC, 2);
+pub const PIDFD_GET_MNT_NAMESPACE: u32 = _IO(PIDFS_IOCTL_MAGIC, 3);
+pub const PIDFD_GET_NET_NAMESPACE: u32 = _IO(PIDFS_IOCTL_MAGIC, 4);
+pub const PIDFD_GET_PID_NAMESPACE: u32 = _IO(PIDFS_IOCTL_MAGIC, 5);
+pub const PIDFD_GET_PID_FOR_CHILDREN_NAMESPACE: u32 = _IO(PIDFS_IOCTL_MAGIC, 6);
+pub const PIDFD_GET_TIME_NAMESPACE: u32 = _IO(PIDFS_IOCTL_MAGIC, 7);
+pub const PIDFD_GET_TIME_FOR_CHILDREN_NAMESPACE: u32 = _IO(PIDFS_IOCTL_MAGIC, 8);
+pub const PIDFD_GET_USER_NAMESPACE: u32 = _IO(PIDFS_IOCTL_MAGIC, 9);
+pub const PIDFD_GET_UTS_NAMESPACE: u32 = _IO(PIDFS_IOCTL_MAGIC, 10);
+pub const PIDFD_GET_INFO: u32 = _IOWR(PIDFS_IOCTL_MAGIC, 11, pidfd_info);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

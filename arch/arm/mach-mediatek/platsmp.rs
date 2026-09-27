@@ -12,10 +12,10 @@ const MTK_SMP_REG_SIZE: usize = 0x1000;
 
 #[repr(C)]
 struct MtkSmpBootInfo {
-    smp_base: libc::c_ulong,
-    jump_reg: libc::c_uint,
-    core_keys: [libc::c_uint; MTK_MAX_CPU - 1],
-    core_regs: [libc::c_uint; MTK_MAX_CPU - 1],
+    smp_base: kernel::ffi::c_ulong,
+    jump_reg: kernel::ffi::c_uint,
+    core_keys: [kernel::ffi::c_uint; MTK_MAX_CPU - 1],
+    core_regs: [kernel::ffi::c_uint; MTK_MAX_CPU - 1],
 }
 
 static MTK_MT8135_TZ_BOOT: MtkSmpBootInfo = MtkSmpBootInfo {
@@ -48,7 +48,7 @@ static MTK_MT7623_BOOT: MtkSmpBootInfo = MtkSmpBootInfo {
 
 #[repr(C)]
 struct OfDeviceId {
-    compatible: *const libc::c_char,
+    compatible: *const kernel::ffi::c_char,
     data: *const MtkSmpBootInfo,
 }
 
@@ -69,26 +69,26 @@ static MTK_SMP_BOOT_INFOS: [OfDeviceId; 6] = [
 ];
 
 // The device-tree tables are supplied by the kernel's OF interfaces.
-static mut mtk_smp_base: *mut libc::c_void = core::ptr::null_mut();
+static mut mtk_smp_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut mtk_smp_info: *const MtkSmpBootInfo = core::ptr::null();
 
 unsafe extern "C" {
-    fn writel_relaxed(value: libc::c_uint, addr: *mut libc::c_void);
-    fn arch_send_wakeup_ipi_mask(mask: *const libc::c_void);
-    fn cpumask_of(cpu: libc::c_uint) -> *const libc::c_void;
-    fn of_machine_is_compatible(compatible: *const libc::c_char) -> bool;
-    fn phys_to_virt(addr: libc::c_ulong) -> *mut libc::c_void;
-    fn ioremap(addr: libc::c_ulong, size: usize) -> *mut libc::c_void;
+    fn writel_relaxed(value: kernel::ffi::c_uint, addr: *mut kernel::ffi::c_void);
+    fn arch_send_wakeup_ipi_mask(mask: *const kernel::ffi::c_void);
+    fn cpumask_of(cpu: kernel::ffi::c_uint) -> *const kernel::ffi::c_void;
+    fn of_machine_is_compatible(compatible: *const kernel::ffi::c_char) -> bool;
+    fn phys_to_virt(addr: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void;
+    fn ioremap(addr: kernel::ffi::c_ulong, size: usize) -> *mut kernel::ffi::c_void;
     fn __pa_symbol(symbol: unsafe extern "C" fn());
     fn secondary_startup_arm();
 }
 
-unsafe fn mtk_boot_secondary(cpu: libc::c_uint, _idle: *mut libc::c_void) -> libc::c_int {
+unsafe fn mtk_boot_secondary(cpu: kernel::ffi::c_uint, _idle: *mut kernel::ffi::c_void) -> kernel::ffi::c_int {
     if mtk_smp_base.is_null() {
-        return -libc::EINVAL;
+        return -EINVAL;
     }
     if (*mtk_smp_info).core_keys[(cpu - 1) as usize] == 0 {
-        return -libc::EINVAL;
+        return -EINVAL;
     }
     writel_relaxed(
         (*mtk_smp_info).core_keys[(cpu - 1) as usize],
@@ -98,7 +98,7 @@ unsafe fn mtk_boot_secondary(cpu: libc::c_uint, _idle: *mut libc::c_void) -> lib
     0
 }
 
-unsafe fn __mtk_smp_prepare_cpus(_max_cpus: libc::c_uint, trustzone: libc::c_int) {
+unsafe fn __mtk_smp_prepare_cpus(_max_cpus: kernel::ffi::c_uint, trustzone: kernel::ffi::c_int) {
     let (infos, num) = if trustzone != 0 {
         (&MTK_TZ_SMP_BOOT_INFOS, MTK_TZ_SMP_BOOT_INFOS.len())
     } else {
@@ -128,11 +128,11 @@ unsafe fn __mtk_smp_prepare_cpus(_max_cpus: libc::c_uint, trustzone: libc::c_int
     );
 }
 
-unsafe fn mtk_tz_smp_prepare_cpus(max_cpus: libc::c_uint) {
+unsafe fn mtk_tz_smp_prepare_cpus(max_cpus: kernel::ffi::c_uint) {
     __mtk_smp_prepare_cpus(max_cpus, 1);
 }
 
-unsafe fn mtk_smp_prepare_cpus(max_cpus: libc::c_uint) {
+unsafe fn mtk_smp_prepare_cpus(max_cpus: kernel::ffi::c_uint) {
     __mtk_smp_prepare_cpus(max_cpus, 0);
 }
 

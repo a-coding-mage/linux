@@ -25,29 +25,29 @@ pub struct Device;
 #[repr(C)]
 pub struct PlatformDevice { pub dev: Device }
 #[repr(C)]
-pub struct GpioChip { pub parent: *mut Device, pub data: *mut core::ffi::c_void }
+pub struct GpioChip { pub parent: *mut Device, pub data: *mut kernel::ffi::c_void }
 #[repr(C)]
-pub struct OfDeviceId { pub compatible: *const core::ffi::c_char }
+pub struct OfDeviceId { pub compatible: *const kernel::ffi::c_char }
 #[repr(C)]
-pub struct PlatformDeviceId { pub name: *const core::ffi::c_char }
+pub struct PlatformDeviceId { pub name: *const kernel::ffi::c_char }
 #[repr(C)]
 pub struct PlatformDriver;
 
 extern "C" {
-    fn gpiochip_get_data(gc: *mut GpioChip) -> *mut core::ffi::c_void;
+    fn gpiochip_get_data(gc: *mut GpioChip) -> *mut kernel::ffi::c_void;
     fn gpiochip_line_is_open_source(gc: *mut GpioChip, offset: u32) -> bool;
     fn gpiochip_line_is_open_drain(gc: *mut GpioChip, offset: u32) -> bool;
     fn pinconf_to_config_param(config: c_ulong) -> PinConfigParam;
     fn regmap_read(map: *mut Regmap, reg: u32, val: *mut u32) -> i32;
     fn tps65218_set_bits(tps: *mut Tps65218, reg: u32, mask: u32, val: u32, protection: u32) -> i32;
     fn tps65218_clear_bits(tps: *mut Tps65218, reg: u32, mask: u32, protection: u32) -> i32;
-    fn dev_err(dev: *mut Device, message: *const core::ffi::c_char);
+    fn dev_err(dev: *mut Device, message: *const kernel::ffi::c_char);
     fn dev_get_drvdata(dev: *mut Device) -> *mut Tps65218;
-    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn devm_gpiochip_add_data(dev: *mut Device, chip: *mut GpioChip, data: *mut core::ffi::c_void) -> i32;
+    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn devm_gpiochip_add_data(dev: *mut Device, chip: *mut GpioChip, data: *mut kernel::ffi::c_void) -> i32;
 }
 
-use core::ffi::{c_ulong, c_void};
+use kernel::ffi::{c_ulong, c_void};
 
 #[repr(C)]
 #[derive(Clone, Copy)]

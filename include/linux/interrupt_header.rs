@@ -27,7 +27,7 @@ pub const IRQF_TIMER: u32 = __IRQF_TIMER | IRQF_NO_SUSPEND | IRQF_NO_THREAD;
 
 #[repr(C)]
 pub enum IrqcContext { IRQC_IS_HARDIRQ = 0, IRQC_IS_NESTED }
-pub type irq_handler_t = Option<unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t>;
+pub type irq_handler_t = Option<unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t>;
 
 pub type irqreturn_t = i32;
 #[repr(C)] pub struct cpumask { _private: [u8; 0] }
@@ -40,12 +40,12 @@ pub type cpumask_t = cpumask;
 #[repr(C)] pub struct seq_file { _private: [u8; 0] }
 #[repr(C)] pub struct atomic_t { pub counter: i32 }
 
-#[repr(C)] pub union irqaction_dev_id { pub dev_id: *mut core::ffi::c_void, pub percpu_dev_id: *mut core::ffi::c_void }
+#[repr(C)] pub union irqaction_dev_id { pub dev_id: *mut kernel::ffi::c_void, pub percpu_dev_id: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct irqaction {
     pub handler: irq_handler_t, pub dev_id: irqaction_dev_id, pub affinity: *const cpumask,
     pub next: *mut irqaction, pub thread_fn: irq_handler_t, pub thread: *mut task_struct,
     pub secondary: *mut irqaction, pub irq: u32, pub flags: u32, pub thread_flags: usize,
-    pub thread_mask: usize, pub name: *const core::ffi::c_char, pub dir: *mut proc_dir_entry,
+    pub thread_mask: usize, pub name: *const kernel::ffi::c_char, pub dir: *mut proc_dir_entry,
 }
 
 #[repr(C)] pub struct irq_affinity_notify {
@@ -57,7 +57,7 @@ pub const IRQ_AFFINITY_MAX_SETS: usize = 4;
 #[repr(C)] pub struct irq_affinity {
     pub pre_vectors: u32, pub post_vectors: u32, pub nr_sets: u32,
     pub set_size: [u32; IRQ_AFFINITY_MAX_SETS],
-    pub calc_sets: Option<unsafe extern "C" fn(*mut irq_affinity, u32)>, pub priv_: *mut core::ffi::c_void,
+    pub calc_sets: Option<unsafe extern "C" fn(*mut irq_affinity, u32)>, pub priv_: *mut kernel::ffi::c_void,
 }
 #[repr(C)] pub struct irq_affinity_desc { pub mask: cpumask, pub is_managed: u32 }
 
@@ -79,14 +79,14 @@ pub const TASKLET_STATE_SCHED: u32 = 0; pub const TASKLET_STATE_RUN: u32 = 1;
 #[repr(C)] pub enum irqchip_irq_state { IRQCHIP_STATE_PENDING, IRQCHIP_STATE_ACTIVE, IRQCHIP_STATE_MASKED, IRQCHIP_STATE_LINE_LEVEL }
 
 extern "C" {
-    pub fn no_action(cpl: i32, dev_id: *mut core::ffi::c_void) -> irqreturn_t;
-    pub fn request_threaded_irq(irq: u32, handler: irq_handler_t, thread_fn: irq_handler_t, flags: usize, name: *const core::ffi::c_char, dev: *mut core::ffi::c_void) -> i32;
-    pub fn request_any_context_irq(irq: u32, handler: irq_handler_t, flags: usize, name: *const core::ffi::c_char, dev_id: *mut core::ffi::c_void) -> i32;
-    pub fn request_nmi(irq: u32, handler: irq_handler_t, flags: usize, name: *const core::ffi::c_char, dev: *mut core::ffi::c_void) -> i32;
-    pub fn free_irq(irq: u32, dev_id: *mut core::ffi::c_void) -> *const core::ffi::c_void;
-    pub fn free_nmi(irq: u32, dev_id: *mut core::ffi::c_void) -> *const core::ffi::c_void;
+    pub fn no_action(cpl: i32, dev_id: *mut kernel::ffi::c_void) -> irqreturn_t;
+    pub fn request_threaded_irq(irq: u32, handler: irq_handler_t, thread_fn: irq_handler_t, flags: usize, name: *const kernel::ffi::c_char, dev: *mut kernel::ffi::c_void) -> i32;
+    pub fn request_any_context_irq(irq: u32, handler: irq_handler_t, flags: usize, name: *const kernel::ffi::c_char, dev_id: *mut kernel::ffi::c_void) -> i32;
+    pub fn request_nmi(irq: u32, handler: irq_handler_t, flags: usize, name: *const kernel::ffi::c_char, dev: *mut kernel::ffi::c_void) -> i32;
+    pub fn free_irq(irq: u32, dev_id: *mut kernel::ffi::c_void) -> *const kernel::ffi::c_void;
+    pub fn free_nmi(irq: u32, dev_id: *mut kernel::ffi::c_void) -> *const kernel::ffi::c_void;
     pub fn disable_irq_nosync(irq: u32); pub fn disable_hardirq(irq: u32) -> bool; pub fn disable_irq(irq: u32);
-    pub fn enable_irq(irq: u32); pub fn irq_wake_thread(irq: u32, dev_id: *mut core::ffi::c_void);
+    pub fn enable_irq(irq: u32); pub fn irq_wake_thread(irq: u32, dev_id: *mut kernel::ffi::c_void);
     pub fn irq_set_irq_wake(irq: u32, on: u32) -> i32;
     pub fn irq_get_irqchip_state(irq: u32, which: irqchip_irq_state, state: *mut bool) -> i32;
     pub fn irq_set_irqchip_state(irq: u32, which: irqchip_irq_state, state: bool) -> i32;
@@ -96,21 +96,21 @@ extern "C" {
     pub fn tasklet_kill(t: *mut tasklet_struct); pub fn tasklet_init(t: *mut tasklet_struct, func: Option<unsafe extern "C" fn(usize)>, data: usize);
     pub fn tasklet_setup(t: *mut tasklet_struct, callback: Option<unsafe extern "C" fn(*mut tasklet_struct)>);
     pub fn probe_irq_on() -> usize; pub fn probe_irq_off(val: usize) -> i32; pub fn probe_irq_mask(val: usize) -> u32;
-    pub fn show_interrupts(p: *mut seq_file, v: *mut core::ffi::c_void) -> i32; pub fn arch_show_interrupts(p: *mut seq_file, prec: i32) -> i32;
+    pub fn show_interrupts(p: *mut seq_file, v: *mut kernel::ffi::c_void) -> i32; pub fn arch_show_interrupts(p: *mut seq_file, prec: i32) -> i32;
     pub fn early_irq_init() -> i32; pub fn arch_probe_nr_irqs() -> i32; pub fn arch_early_irq_init() -> i32;
 }
 
-#[inline] pub unsafe fn request_irq(irq: u32, handler: irq_handler_t, flags: usize, name: *const core::ffi::c_char, dev: *mut core::ffi::c_void) -> i32 { request_threaded_irq(irq, handler, None, flags | IRQF_COND_ONESHOT as usize, name, dev) }
+#[inline] pub unsafe fn request_irq(irq: u32, handler: irq_handler_t, flags: usize, name: *const kernel::ffi::c_char, dev: *mut kernel::ffi::c_void) -> i32 { request_threaded_irq(irq, handler, None, flags | IRQF_COND_ONESHOT as usize, name, dev) }
 #[inline] pub unsafe fn enable_irq_wake(irq: u32) -> i32 { irq_set_irq_wake(irq, 1) }
 #[inline] pub unsafe fn disable_irq_wake(irq: u32) -> i32 { irq_set_irq_wake(irq, 0) }
 
 extern "C" {
-    pub fn request_percpu_irq_affinity(irq: u32, handler: irq_handler_t, devname: *const core::ffi::c_char, affinity: *const cpumask_t, percpu_dev_id: *mut core::ffi::c_void) -> i32;
-    pub fn request_percpu_irq(irq: u32, handler: irq_handler_t, devname: *const core::ffi::c_char, percpu_dev_id: *mut core::ffi::c_void) -> i32;
-    pub fn request_percpu_nmi(irq: u32, handler: irq_handler_t, name: *const core::ffi::c_char, affinity: *const cpumask, dev_id: *mut core::ffi::c_void) -> i32;
-    pub fn free_percpu_irq(irq: u32, dev_id: *mut core::ffi::c_void); pub fn free_percpu_nmi(irq: u32, dev_id: *mut core::ffi::c_void);
-    pub fn devm_request_threaded_irq(dev: *mut device, irq: u32, handler: irq_handler_t, thread_fn: irq_handler_t, irqflags: usize, devname: *const core::ffi::c_char, dev_id: *mut core::ffi::c_void) -> i32;
-    pub fn devm_free_irq(dev: *mut device, irq: u32, dev_id: *mut core::ffi::c_void);
+    pub fn request_percpu_irq_affinity(irq: u32, handler: irq_handler_t, devname: *const kernel::ffi::c_char, affinity: *const cpumask_t, percpu_dev_id: *mut kernel::ffi::c_void) -> i32;
+    pub fn request_percpu_irq(irq: u32, handler: irq_handler_t, devname: *const kernel::ffi::c_char, percpu_dev_id: *mut kernel::ffi::c_void) -> i32;
+    pub fn request_percpu_nmi(irq: u32, handler: irq_handler_t, name: *const kernel::ffi::c_char, affinity: *const cpumask, dev_id: *mut kernel::ffi::c_void) -> i32;
+    pub fn free_percpu_irq(irq: u32, dev_id: *mut kernel::ffi::c_void); pub fn free_percpu_nmi(irq: u32, dev_id: *mut kernel::ffi::c_void);
+    pub fn devm_request_threaded_irq(dev: *mut device, irq: u32, handler: irq_handler_t, thread_fn: irq_handler_t, irqflags: usize, devname: *const kernel::ffi::c_char, dev_id: *mut kernel::ffi::c_void) -> i32;
+    pub fn devm_free_irq(dev: *mut device, irq: u32, dev_id: *mut kernel::ffi::c_void);
     pub fn irq_has_action(irq: u32) -> bool; pub fn disable_percpu_irq(irq: u32); pub fn enable_percpu_irq(irq: u32, type_: u32); pub fn irq_percpu_is_enabled(irq: u32) -> bool;
     pub fn disable_nmi_nosync(irq: u32); pub fn disable_percpu_nmi(irq: u32); pub fn enable_nmi(irq: u32); pub fn enable_percpu_nmi(irq: u32, type_: u32);
     pub fn prepare_percpu_nmi(irq: u32) -> i32; pub fn teardown_percpu_nmi(irq: u32); pub fn irq_inject_interrupt(irq: u32) -> i32;

@@ -11,8 +11,8 @@ pub type func_desc_t = Elf64_Fdesc;
 
 /* nothing to see, move along */
 unsafe extern "C" {
-    pub static mut __alt_instructions: [core::ffi::c_char; 0];
-    pub static mut __alt_instructions_end: [core::ffi::c_char; 0];
+    pub static mut __alt_instructions: [kernel::ffi::c_char; 0];
+    pub static mut __alt_instructions_end: [kernel::ffi::c_char; 0];
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -24,17 +24,17 @@ pub enum watch_queue {}
 #[repr(C)]
 pub struct pipe_buffer {
     pub page: *mut page,
-    pub offset: core::ffi::c_uint,
-    pub len: core::ffi::c_uint,
+    pub offset: kernel::ffi::c_uint,
+    pub len: kernel::ffi::c_uint,
     pub ops: *const pipe_buf_operations,
-    pub flags: core::ffi::c_uint,
-    pub private: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_uint,
+    pub private: kernel::ffi::c_ulong,
 }
 
 #[cfg(CONFIG_64BIT)]
-pub type pipe_index_t = core::ffi::c_uint;
+pub type pipe_index_t = kernel::ffi::c_uint;
 #[cfg(not(CONFIG_64BIT))]
-pub type pipe_index_t = core::ffi::c_ushort;
+pub type pipe_index_t = kernel::ffi::c_ushort;
 
 #[repr(C)]
 pub struct pipe_index_pair {
@@ -44,14 +44,14 @@ pub struct pipe_index_pair {
 
 #[repr(C)]
 pub union pipe_index {
-    pub head_tail: core::ffi::c_ulong,
+    pub head_tail: kernel::ffi::c_ulong,
     pub fields: core::mem::ManuallyDrop<pipe_index_pair>,
 }
 
 #[repr(C)]
 pub struct anon_pipe_prealloc {
     pub pages: [*mut page; PIPE_PREALLOC_MAX],
-    pub count: core::ffi::c_uint,
+    pub count: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -60,14 +60,14 @@ pub struct pipe_inode_info {
     pub rd_wait: wait_queue_head_t,
     pub wr_wait: wait_queue_head_t,
     pub pipe_index: pipe_index,
-    pub max_usage: core::ffi::c_uint,
-    pub ring_size: core::ffi::c_uint,
-    pub nr_accounted: core::ffi::c_uint,
-    pub readers: core::ffi::c_uint,
-    pub writers: core::ffi::c_uint,
+    pub max_usage: kernel::ffi::c_uint,
+    pub ring_size: kernel::ffi::c_uint,
+    pub nr_accounted: kernel::ffi::c_uint,
+    pub readers: kernel::ffi::c_uint,
+    pub writers: kernel::ffi::c_uint,
     pub files: core::c_uint,
-    pub r_counter: core::ffi::c_uint,
-    pub w_counter: core::ffi::c_uint,
+    pub r_counter: kernel::ffi::c_uint,
+    pub w_counter: kernel::ffi::c_uint,
     pub pseudo_edgetrigger: bool,
     #[cfg(CONFIG_WATCH_QUEUE)]
     pub note_loss: bool,
@@ -82,7 +82,7 @@ pub struct pipe_inode_info {
 
 #[repr(C)]
 pub struct pipe_buf_operations {
-    pub confirm: Option<unsafe extern "C" fn(*mut pipe_inode_info, *mut pipe_buffer) -> core::ffi::c_int>,
+    pub confirm: Option<unsafe extern "C" fn(*mut pipe_inode_info, *mut pipe_buffer) -> kernel::ffi::c_int>,
     pub release: Option<unsafe extern "C" fn(*mut pipe_inode_info, *mut pipe_buffer)>,
     pub try_steal: Option<unsafe extern "C" fn(*mut pipe_inode_info, *mut pipe_buffer) -> bool>,
     pub get: Option<unsafe extern "C" fn(*mut pipe_inode_info, *mut pipe_buffer) -> bool>,
@@ -97,20 +97,20 @@ pub unsafe fn pipe_has_watch_queue(pipe: *const pipe_inode_info) -> bool {
 }
 
 #[inline]
-pub fn pipe_occupancy(head: core::ffi::c_uint, tail: core::ffi::c_uint) -> core::ffi::c_uint {
-    (head.wrapping_sub(tail)) as pipe_index_t as core::ffi::c_uint
+pub fn pipe_occupancy(head: kernel::ffi::c_uint, tail: kernel::ffi::c_uint) -> kernel::ffi::c_uint {
+    (head.wrapping_sub(tail)) as pipe_index_t as kernel::ffi::c_uint
 }
 
 #[inline]
-pub fn pipe_empty(head: core::ffi::c_uint, tail: core::ffi::c_uint) -> bool { pipe_occupancy(head, tail) == 0 }
+pub fn pipe_empty(head: kernel::ffi::c_uint, tail: kernel::ffi::c_uint) -> bool { pipe_occupancy(head, tail) == 0 }
 
 #[inline]
-pub fn pipe_full(head: core::ffi::c_uint, tail: core::ffi::c_uint, limit: core::ffi::c_uint) -> bool {
+pub fn pipe_full(head: kernel::ffi::c_uint, tail: kernel::ffi::c_uint, limit: kernel::ffi::c_uint) -> bool {
     pipe_occupancy(head, tail) >= limit
 }
 
 #[inline]
-pub unsafe fn pipe_buf(pipe: *const pipe_inode_info, slot: core::ffi::c_uint) -> *mut pipe_buffer {
+pub unsafe fn pipe_buf(pipe: *const pipe_inode_info, slot: kernel::ffi::c_uint) -> *mut pipe_buffer {
     (*pipe).bufs.add((slot & ((*pipe).ring_size - 1)) as usize)
 }
 
@@ -132,7 +132,7 @@ pub unsafe fn pipe_buf_release(pipe: *mut pipe_inode_info, buf: *mut pipe_buffer
 }
 
 #[inline]
-pub unsafe fn pipe_buf_confirm(pipe: *mut pipe_inode_info, buf: *mut pipe_buffer) -> core::ffi::c_int {
+pub unsafe fn pipe_buf_confirm(pipe: *mut pipe_inode_info, buf: *mut pipe_buffer) -> kernel::ffi::c_int {
     match (*(*buf).ops).confirm { Some(f) => f(pipe, buf), None => 0 }
 }
 
@@ -155,25 +155,25 @@ extern "C" {
     pub fn generic_pipe_buf_try_steal(pipe: *mut pipe_inode_info, buf: *mut pipe_buffer) -> bool;
     pub fn generic_pipe_buf_release(pipe: *mut pipe_inode_info, buf: *mut pipe_buffer);
     pub static nosteal_pipe_buf_ops: pipe_buf_operations;
-    pub fn account_pipe_buffers(user: *mut user_struct, old: core::ffi::c_ulong, new: core::ffi::c_ulong) -> core::ffi::c_ulong;
-    pub fn too_many_pipe_buffers_soft(user_bufs: core::ffi::c_ulong) -> bool;
-    pub fn too_many_pipe_buffers_hard(user_bufs: core::ffi::c_ulong) -> bool;
+    pub fn account_pipe_buffers(user: *mut user_struct, old: kernel::ffi::c_ulong, new: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
+    pub fn too_many_pipe_buffers_soft(user_bufs: kernel::ffi::c_ulong) -> bool;
+    pub fn too_many_pipe_buffers_hard(user_bufs: kernel::ffi::c_ulong) -> bool;
     pub fn pipe_is_unprivileged_user() -> bool;
-    pub fn pipe_resize_ring(pipe: *mut pipe_inode_info, nr_slots: core::ffi::c_uint) -> core::ffi::c_int;
-    pub fn pipe_fcntl(file: *mut file, cmd: core::ffi::c_uint, arg: core::ffi::c_uint) -> isize;
+    pub fn pipe_resize_ring(pipe: *mut pipe_inode_info, nr_slots: kernel::ffi::c_uint) -> kernel::ffi::c_int;
+    pub fn pipe_fcntl(file: *mut file, cmd: kernel::ffi::c_uint, arg: kernel::ffi::c_uint) -> isize;
     pub fn get_pipe_info(file: *mut file, for_splice: bool) -> *mut pipe_inode_info;
-    pub fn create_pipe_files(files: *mut *mut file, flags: core::ffi::c_int) -> core::ffi::c_int;
-    pub fn round_pipe_size(size: core::ffi::c_uint) -> core::ffi::c_uint;
+    pub fn create_pipe_files(files: *mut *mut file, flags: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub fn round_pipe_size(size: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
 }
 
 #[inline]
-pub unsafe fn pipe_head(pipe: *const pipe_inode_info) -> core::ffi::c_uint {
-    (*pipe).pipe_index.fields.head as core::ffi::c_uint
+pub unsafe fn pipe_head(pipe: *const pipe_inode_info) -> kernel::ffi::c_uint {
+    (*pipe).pipe_index.fields.head as kernel::ffi::c_uint
 }
 
 #[inline]
-pub unsafe fn pipe_tail(pipe: *const pipe_inode_info) -> core::ffi::c_uint {
-    (*pipe).pipe_index.fields.tail as core::ffi::c_uint
+pub unsafe fn pipe_tail(pipe: *const pipe_inode_info) -> kernel::ffi::c_uint {
+    (*pipe).pipe_index.fields.tail as kernel::ffi::c_uint
 }
 
 #[inline]
@@ -187,7 +187,7 @@ pub unsafe fn pipe_is_empty(pipe: *const pipe_inode_info) -> bool {
 }
 
 #[inline]
-pub unsafe fn pipe_buf_usage(pipe: *const pipe_inode_info) -> core::ffi::c_uint {
+pub unsafe fn pipe_buf_usage(pipe: *const pipe_inode_info) -> kernel::ffi::c_uint {
     pipe_occupancy(pipe_head(pipe), pipe_tail(pipe))
 }
 

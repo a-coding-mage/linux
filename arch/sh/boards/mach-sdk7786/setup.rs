@@ -56,7 +56,7 @@ static mut SMSC911X_DEVICE: PlatformDevice = PlatformDevice {
     num_resources: core::mem::size_of::<[Resource; 2]>() / core::mem::size_of::<Resource>(),
     resource: unsafe { &raw mut SMSC911X_RESOURCES[0] },
     dev: Device {
-        platform_data: unsafe { &raw mut SMSC911X_CONFIG as *mut core::ffi::c_void },
+        platform_data: unsafe { &raw mut SMSC911X_CONFIG as *mut kernel::ffi::c_void },
     },
 };
 
@@ -194,7 +194,7 @@ unsafe fn sdk7786_clk_init() -> i32 {
     0
 }
 
-unsafe fn sdk7786_restart(_cmd: *mut core::ffi::c_char) {
+unsafe fn sdk7786_restart(_cmd: *mut kernel::ffi::c_char) {
     fpga_write_reg(0xa5a5, SRSTR);
 }
 
@@ -212,7 +212,7 @@ unsafe fn sdk7786_power_off() {
 }
 
 /* Initialize the board */
-unsafe fn sdk7786_setup(_cmdline_p: *mut *mut core::ffi::c_char) {
+unsafe fn sdk7786_setup(_cmdline_p: *mut *mut kernel::ffi::c_char) {
     pr_info("Renesas Technology Europe SDK7786 support:\n");
 
     regulator_register_fixed(0, &raw mut DUMMY_SUPPLIES, 2);

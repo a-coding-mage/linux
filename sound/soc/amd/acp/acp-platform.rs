@@ -162,12 +162,12 @@ pub unsafe extern "C" fn config_pte_for_stream(
 pub unsafe extern "C" fn config_acp_dma(
     chip: *mut acp_chip_info,
     stream: *mut acp_stream,
-    size: libc::c_int,
+    size: core::ffi::c_int,
 ) {
     let substream: *mut snd_pcm_substream = (*stream).substream;
     let rsrc: *mut acp_resource = (*chip).rsrc;
     let mut addr: dma_addr_t = (*substream).dma_buffer.addr;
-    let num_pages: libc::c_int = (PAGE_ALIGN(size) >> PAGE_SHIFT) as libc::c_int;
+    let num_pages: core::ffi::c_int = (PAGE_ALIGN(size) >> PAGE_SHIFT) as core::ffi::c_int;
     let mut low: u32;
     let mut high: u32;
     let mut val: u32;
@@ -216,7 +216,7 @@ pub unsafe extern "C" fn config_acp_dma(
     }
 
     page_idx = 0;
-    while (page_idx as libc::c_int) < num_pages {
+    while (page_idx as core::ffi::c_int) < num_pages {
         /* Load the low address of page int ACP SRAM through SRBM */
         low = lower_32_bits(addr);
         high = upper_32_bits(addr);
@@ -235,12 +235,12 @@ pub unsafe extern "C" fn config_acp_dma(
 unsafe extern "C" fn acp_dma_open(
     component: *mut snd_soc_component,
     substream: *mut snd_pcm_substream,
-) -> libc::c_int {
+) -> core::ffi::c_int {
     let runtime: *mut snd_pcm_runtime = (*substream).runtime;
     let dev: *mut device = (*component).dev;
     let chip: *mut acp_chip_info;
     let stream: *mut acp_stream;
-    let mut ret: libc::c_int;
+    let mut ret: core::ffi::c_int;
 
     stream = kzalloc_obj_acp_stream();
     if stream.is_null() {
@@ -272,7 +272,7 @@ unsafe extern "C" fn acp_dma_open(
             (*component).dev,
             b"set hw constraint HW_PARAM_PERIOD_BYTES failed\n\0".as_ptr() as *const i8,
         );
-        kfree(stream as *mut libc::c_void);
+        kfree(stream as *mut core::ffi::c_void);
         return ret;
     }
 
@@ -282,7 +282,7 @@ unsafe extern "C" fn acp_dma_open(
             (*component).dev,
             b"set hw constraint HW_PARAM_BUFFER_BYTES failed\n\0".as_ptr() as *const i8,
         );
-        kfree(stream as *mut libc::c_void);
+        kfree(stream as *mut core::ffi::c_void);
         return ret;
     }
 
@@ -292,10 +292,10 @@ unsafe extern "C" fn acp_dma_open(
             (*component).dev,
             b"set integer constraint failed\n\0".as_ptr() as *const i8,
         );
-        kfree(stream as *mut libc::c_void);
+        kfree(stream as *mut core::ffi::c_void);
         return ret;
     }
-    (*runtime).private_data = stream as *mut libc::c_void;
+    (*runtime).private_data = stream as *mut core::ffi::c_void;
 
     writel(1, ACP_EXTERNAL_INTR_ENB(chip));
 
@@ -310,7 +310,7 @@ unsafe extern "C" fn acp_dma_hw_params(
     component: *mut snd_soc_component,
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
-) -> libc::c_int {
+) -> core::ffi::c_int {
     let dev: *mut device = (*component).dev;
     let chip: *mut acp_chip_info = dev_get_drvdata((*dev).parent) as *mut acp_chip_info;
     let stream: *mut acp_stream = (*(*substream).runtime).private_data as *mut acp_stream;
@@ -318,7 +318,7 @@ unsafe extern "C" fn acp_dma_hw_params(
 
     /* Configure ACP DMA block with params */
     config_pte_for_stream(chip, stream);
-    config_acp_dma(chip, stream, size as libc::c_int);
+    config_acp_dma(chip, stream, size as core::ffi::c_int);
 
     0
 }
@@ -350,7 +350,7 @@ unsafe extern "C" fn acp_dma_pointer(
 unsafe extern "C" fn acp_dma_new(
     component: *mut snd_soc_component,
     rtd: *mut snd_soc_pcm_runtime,
-) -> libc::c_int {
+) -> core::ffi::c_int {
     let parent: *mut device = (*(*component).dev).parent;
 
     snd_pcm_set_managed_buffer_all((*rtd).pcm, SNDRV_DMA_TYPE_DEV, parent, MIN_BUFFER, MAX_BUFFER);
@@ -360,7 +360,7 @@ unsafe extern "C" fn acp_dma_new(
 unsafe extern "C" fn acp_dma_close(
     component: *mut snd_soc_component,
     substream: *mut snd_pcm_substream,
-) -> libc::c_int {
+) -> core::ffi::c_int {
     let dev: *mut device = (*component).dev;
     let chip: *mut acp_chip_info = dev_get_drvdata((*dev).parent) as *mut acp_chip_info;
     let stream: *mut acp_stream = (*(*substream).runtime).private_data as *mut acp_stream;
@@ -369,7 +369,7 @@ unsafe extern "C" fn acp_dma_close(
     spin_lock_irq(&mut (*chip).acp_lock);
     list_del(&mut (*stream).list);
     spin_unlock_irq(&mut (*chip).acp_lock);
-    kfree(stream as *mut libc::c_void);
+    kfree(stream as *mut core::ffi::c_void);
 
     0
 }
@@ -385,10 +385,10 @@ static acp_pcm_component: snd_soc_component_driver = snd_soc_component_driver {
 };
 
 #[no_mangle]
-pub unsafe extern "C" fn acp_platform_register(dev: *mut device) -> libc::c_int {
+pub unsafe extern "C" fn acp_platform_register(dev: *mut device) -> core::ffi::c_int {
     let chip: *mut acp_chip_info;
     // C declaration-only statement preserved from source: struct snd_soc_dai_driver;
-    let status: libc::c_uint;
+    let status: core::ffi::c_uint;
 
     chip = dev_get_platdata(dev) as *mut acp_chip_info;
     if chip.is_null() || (*chip).base.is_null() {
@@ -407,7 +407,7 @@ pub unsafe extern "C" fn acp_platform_register(dev: *mut device) -> libc::c_int 
             dev,
             b"Fail to register acp i2s component\n\0".as_ptr() as *const i8,
         );
-        return status as libc::c_int;
+        return status as core::ffi::c_int;
     }
 
     0
@@ -415,7 +415,7 @@ pub unsafe extern "C" fn acp_platform_register(dev: *mut device) -> libc::c_int 
 // EXPORT_SYMBOL_NS_GPL(acp_platform_register, "SND_SOC_ACP_COMMON");
 
 #[no_mangle]
-pub unsafe extern "C" fn acp_platform_unregister(_dev: *mut device) -> libc::c_int {
+pub unsafe extern "C" fn acp_platform_unregister(_dev: *mut device) -> core::ffi::c_int {
     0
 }
 // EXPORT_SYMBOL_NS_GPL(acp_platform_unregister, "SND_SOC_ACP_COMMON");

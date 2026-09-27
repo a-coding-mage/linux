@@ -9,19 +9,19 @@
 // Dependency supplied by asm/kvm_guest.h.
 unsafe extern "C" {
     fn is_kvm_guest() -> bool;
-    fn epapr_hypercall0_1(token: ::core::ffi::c_ulong, r: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    fn epapr_hypercall0_1(token: ::kernel::ffi::c_ulong, r: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
 }
 
 // KVM_HCALL_TOKEN and KVM_HC_FEATURES are supplied by uapi/asm/kvm_para.h.
 
 #[inline]
-pub unsafe fn kvm_para_available() -> ::core::ffi::c_int {
-    (cfg!(CONFIG_KVM_GUEST) && unsafe { is_kvm_guest() }) as ::core::ffi::c_int
+pub unsafe fn kvm_para_available() -> ::kernel::ffi::c_int {
+    (cfg!(CONFIG_KVM_GUEST) && unsafe { is_kvm_guest() }) as ::kernel::ffi::c_int
 }
 
 #[inline]
-pub unsafe fn kvm_arch_para_features() -> ::core::ffi::c_uint {
-    let mut r: ::core::ffi::c_ulong = 0;
+pub unsafe fn kvm_arch_para_features() -> ::kernel::ffi::c_uint {
+    let mut r: ::kernel::ffi::c_ulong = 0;
 
     if unsafe { kvm_para_available() } == 0 {
         return 0;
@@ -31,11 +31,11 @@ pub unsafe fn kvm_arch_para_features() -> ::core::ffi::c_uint {
         return 0;
     }
 
-    r as ::core::ffi::c_uint
+    r as ::kernel::ffi::c_uint
 }
 
 #[inline]
-pub unsafe fn kvm_arch_para_hints() -> ::core::ffi::c_uint {
+pub unsafe fn kvm_arch_para_hints() -> ::kernel::ffi::c_uint {
     0
 }
 

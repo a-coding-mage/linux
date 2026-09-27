@@ -15,7 +15,7 @@ pub const GMAP_FLAG_EXPORT_ON_UNMAP: u32 = 8;
 
 #[repr(C)]
 pub struct Gmap {
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub edat_level: u8,
     pub invalidated: bool,
     pub kvm: *mut Kvm,
@@ -60,8 +60,8 @@ extern "C" {
     pub fn gmap_sync_dirty_log(gmap: *mut Gmap, start: Gfn, end: Gfn);
     pub fn gmap_set_limit(gmap: *mut Gmap, limit: Gfn) -> i32;
     pub fn gmap_ucas_translate(mc: *mut KvmS390MmuCache, gmap: *mut Gmap, gaddr: *mut Gpa) -> i32;
-    pub fn gmap_ucas_map(gmap: *mut Gmap, p_gfn: Gfn, c_gfn: Gfn, count: ::core::ffi::c_ulong) -> i32;
-    pub fn gmap_ucas_unmap(gmap: *mut Gmap, c_gfn: Gfn, count: ::core::ffi::c_ulong);
+    pub fn gmap_ucas_map(gmap: *mut Gmap, p_gfn: Gfn, c_gfn: Gfn, count: ::kernel::ffi::c_ulong) -> i32;
+    pub fn gmap_ucas_unmap(gmap: *mut Gmap, c_gfn: Gfn, count: ::kernel::ffi::c_ulong);
     pub fn gmap_pv_destroy_range(gmap: *mut Gmap, start: Gfn, end: Gfn, interruptible: bool) -> i32;
     pub fn gmap_insert_rmap(mc: *mut KvmS390MmuCache, sg: *mut Gmap, p_gfn: Gfn, r_gfn: Gfn, level: i32) -> i32;
     pub fn gmap_protect_rmap(mc: *mut KvmS390MmuCache, sg: *mut Gmap, p_gfn: Gfn, r_gfn: Gfn, pfn: KvmPfn, level: i32, wr: bool) -> i32;

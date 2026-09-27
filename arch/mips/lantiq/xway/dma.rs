@@ -38,41 +38,41 @@ const DMA_ETOP_ENDIANNESS: u32 = 0xf << 8;
 const DMA_WEIGHT: u32 = (1 << 17) | (1 << 16);
 
 extern "C" {
-    static mut ltq_dma_membase: *mut core::ffi::c_void;
-    static mut ltq_dma_lock: core::ffi::c_void;
-    fn ltq_r32(addr: *mut core::ffi::c_void) -> u32;
-    fn ltq_w32(value: u32, addr: *mut core::ffi::c_void);
-    fn ltq_w32_mask(clear: u32, set: u32, addr: *mut core::ffi::c_void);
-    fn spin_lock_irqsave(lock: *mut core::ffi::c_void, flags: *mut usize);
-    fn spin_unlock_irqrestore(lock: *mut core::ffi::c_void, flags: usize);
-    fn dma_alloc_coherent(dev: *mut core::ffi::c_void, size: usize,
-                          phys: *mut u64, flags: u32) -> *mut core::ffi::c_void;
-    fn dma_free_coherent(dev: *mut core::ffi::c_void, size: usize,
-                         addr: *mut core::ffi::c_void, phys: u64);
+    static mut ltq_dma_membase: *mut kernel::ffi::c_void;
+    static mut ltq_dma_lock: kernel::ffi::c_void;
+    fn ltq_r32(addr: *mut kernel::ffi::c_void) -> u32;
+    fn ltq_w32(value: u32, addr: *mut kernel::ffi::c_void);
+    fn ltq_w32_mask(clear: u32, set: u32, addr: *mut kernel::ffi::c_void);
+    fn spin_lock_irqsave(lock: *mut kernel::ffi::c_void, flags: *mut usize);
+    fn spin_unlock_irqrestore(lock: *mut kernel::ffi::c_void, flags: usize);
+    fn dma_alloc_coherent(dev: *mut kernel::ffi::c_void, size: usize,
+                          phys: *mut u64, flags: u32) -> *mut kernel::ffi::c_void;
+    fn dma_free_coherent(dev: *mut kernel::ffi::c_void, size: usize,
+                         addr: *mut kernel::ffi::c_void, phys: u64);
     fn wmb();
-    fn clk_get(dev: *mut core::ffi::c_void, id: *const core::ffi::c_char) -> *mut core::ffi::c_void;
-    fn clk_enable(clk: *mut core::ffi::c_void) -> i32;
+    fn clk_get(dev: *mut kernel::ffi::c_void, id: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
+    fn clk_enable(clk: *mut kernel::ffi::c_void) -> i32;
     fn usleep_range(min: u32, max: u32);
     fn platform_driver_register(driver: *mut platform_driver) -> i32;
     fn devm_platform_get_and_ioremap_resource(pdev: *mut platform_device, index: u32,
-                                              res: *mut *mut core::ffi::c_void) -> *mut core::ffi::c_void;
-    fn panic(message: *const core::ffi::c_char) -> !;
-    fn dev_info(dev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
+                                              res: *mut *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+    fn panic(message: *const kernel::ffi::c_char) -> !;
+    fn dev_info(dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
 pub struct ltq_dma_channel {
     pub nr: u32,
-    pub dev: *mut core::ffi::c_void,
+    pub dev: *mut kernel::ffi::c_void,
     pub desc: u32,
-    pub desc_base: *mut core::ffi::c_void,
+    pub desc_base: *mut kernel::ffi::c_void,
     pub phys: u64,
 }
 
 #[repr(C)]
-pub struct platform_device { pub dev: core::ffi::c_void }
+pub struct platform_device { pub dev: kernel::ffi::c_void }
 #[repr(C)]
-pub struct platform_driver { pub probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32>, pub driver: core::ffi::c_void }
+pub struct platform_driver { pub probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32>, pub driver: kernel::ffi::c_void }
 
 const LTQ_DESC_NUM: usize = 0;
 const LTQ_DESC_SIZE: usize = 0;
@@ -160,7 +160,7 @@ pub unsafe extern "C" fn ltq_dma_init_port(p: i32, tx_burst: i32, rx_burst: i32)
 
 #[no_mangle]
 pub unsafe extern "C" fn ltq_dma_init(pdev: *mut platform_device) -> i32 {
-    let mut clk: *mut core::ffi::c_void;
+    let mut clk: *mut kernel::ffi::c_void;
     let mut id: u32;
     let mut nchannels: u32;
     let mut i: i32;
@@ -191,7 +191,7 @@ pub unsafe extern "C" fn ltq_dma_init(pdev: *mut platform_device) -> i32 {
 
 #[no_mangle]
 pub unsafe extern "C" fn dma_init() -> i32 {
-    static mut DMA_DRIVER: platform_driver = platform_driver { probe: Some(ltq_dma_init), driver: core::ffi::c_void {} };
+    static mut DMA_DRIVER: platform_driver = platform_driver { probe: Some(ltq_dma_init), driver: kernel::ffi::c_void {} };
     platform_driver_register(&mut DMA_DRIVER)
 }
 

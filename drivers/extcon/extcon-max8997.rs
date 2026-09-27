@@ -22,7 +22,7 @@ enum max8997_muic_adc_debounce_time {
 #[repr(C)]
 struct max8997_muic_irq {
     irq: u32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     virq: u32,
 }
 
@@ -161,7 +161,7 @@ unsafe fn max8997_muic_chg_handler(info:*mut max8997_muic_info)->i32 { let mut a
 
 unsafe fn max8997_muic_irq_work(work:*mut work_struct) { let info=container_of!(work,max8997_muic_info,irq_work); if (*info).edev.is_null(){return;} mutex_lock(&mut (*info).mutex); let mut kind=0; for i in 0..muic_irqs.len(){if (*info).irq==muic_irqs[i].virq as i32{kind=muic_irqs[i].irq;}} let r=max8997_bulk_read((*info).muic,MAX8997_MUIC_REG_STATUS1,2,(*info).status.as_mut_ptr()); if r==0 {if kind==MAX8997_MUICIRQ_ADC as u32||kind==MAX8997_MUICIRQ_ADCLow as u32||kind==MAX8997_MUICIRQ_ADCError as u32 {max8997_muic_adc_handler(info);} else {max8997_muic_chg_handler(info);}} mutex_unlock(&mut (*info).mutex); }
 
-unsafe fn max8997_muic_irq_handler(irq:i32,data:*mut core::ffi::c_void)->irqreturn_t { let info=data as *mut max8997_muic_info; (*info).irq=irq; schedule_work(&mut (*info).irq_work); IRQ_HANDLED }
+unsafe fn max8997_muic_irq_handler(irq:i32,data:*mut kernel::ffi::c_void)->irqreturn_t { let info=data as *mut max8997_muic_info; (*info).irq=irq; schedule_work(&mut (*info).irq_work); IRQ_HANDLED }
 unsafe fn max8997_muic_detect_dev(info:*mut max8997_muic_info)->i32 { mutex_lock(&mut (*info).mutex); let r=max8997_bulk_read((*info).muic,MAX8997_MUIC_REG_STATUS1,2,(*info).status.as_mut_ptr()); if r!=0{mutex_unlock(&mut (*info).mutex);return r;} let mut a=false; let t=max8997_muic_get_cable_type(info,max8997_muic_cable_group::MAX8997_CABLE_GROUP_ADC,&mut a); if a&&t!=MAX8997_MUIC_ADC_OPEN as i32{max8997_muic_adc_handler(info);} let t=max8997_muic_get_cable_type(info,max8997_muic_cable_group::MAX8997_CABLE_GROUP_CHG,&mut a); if a&&t!=0{max8997_muic_chg_handler(info);} mutex_unlock(&mut (*info).mutex);0 }
 unsafe fn max8997_muic_detect_cable_wq(work:*mut work_struct){let info=container_of!(to_delayed_work(work),max8997_muic_info,wq_detcable);max8997_muic_detect_dev(info);}
 unsafe fn max8997_muic_probe(_pdev:*mut platform_device)->i32 { 0 }

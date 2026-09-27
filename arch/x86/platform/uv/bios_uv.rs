@@ -9,7 +9,7 @@
 
 // External kernel/EFI/UV declarations and macros are supplied by other files.
 
-pub static mut uv_systab_phys: ::core::ffi::c_ulong = EFI_INVALID_TABLE_ADDR;
+pub static mut uv_systab_phys: ::kernel::ffi::c_ulong = EFI_INVALID_TABLE_ADDR;
 pub static mut uv_systab: *mut uv_systab = core::ptr::null_mut();
 
 unsafe fn __uv_bios_call(which: uv_bios_cmd, a1: u64, a2: u64, a3: u64,
@@ -37,7 +37,7 @@ unsafe fn uv_bios_call(which: uv_bios_cmd, a1: u64, a2: u64, a3: u64,
 
 unsafe fn uv_bios_call_irqsave(which: uv_bios_cmd, a1: u64, a2: u64, a3: u64,
                                a4: u64, a5: u64) -> i64 {
-    let mut bios_flags: ::core::ffi::c_ulong = 0;
+    let mut bios_flags: ::kernel::ffi::c_ulong = 0;
     let ret: i64;
     if down_interruptible(&mut __efi_uv_runtime_lock) != 0 {
         return BIOS_STATUS_ABORT;
@@ -49,16 +49,16 @@ unsafe fn uv_bios_call_irqsave(which: uv_bios_cmd, a1: u64, a2: u64, a3: u64,
     ret
 }
 
-pub static mut sn_partition_id: ::core::ffi::c_long = 0;
-pub static mut sn_coherency_id: ::core::ffi::c_long = 0;
-pub static mut sn_region_size: ::core::ffi::c_long = 0;
-pub static mut system_serial_number: ::core::ffi::c_long = 0;
-pub static mut uv_type: ::core::ffi::c_int = 0;
+pub static mut sn_partition_id: ::kernel::ffi::c_long = 0;
+pub static mut sn_coherency_id: ::kernel::ffi::c_long = 0;
+pub static mut sn_region_size: ::kernel::ffi::c_long = 0;
+pub static mut system_serial_number: ::kernel::ffi::c_long = 0;
+pub static mut uv_type: ::kernel::ffi::c_int = 0;
 
-pub unsafe fn uv_bios_get_sn_info(fc: ::core::ffi::c_int,
-    uvtype: *mut ::core::ffi::c_int, partid: *mut ::core::ffi::c_long,
-    coher: *mut ::core::ffi::c_long, region: *mut ::core::ffi::c_long,
-    ssn: *mut ::core::ffi::c_long) -> i64 {
+pub unsafe fn uv_bios_get_sn_info(fc: ::kernel::ffi::c_int,
+    uvtype: *mut ::kernel::ffi::c_int, partid: *mut ::kernel::ffi::c_long,
+    coher: *mut ::kernel::ffi::c_long, region: *mut ::kernel::ffi::c_long,
+    ssn: *mut ::kernel::ffi::c_long) -> i64 {
     let mut v0: u64 = 0;
     let mut v1: u64 = 0;
     let mut part: partition_info_u = core::mem::zeroed();
@@ -74,8 +74,8 @@ pub unsafe fn uv_bios_get_sn_info(fc: ::core::ffi::c_int,
     ret
 }
 
-pub unsafe fn uv_bios_mq_watchlist_alloc(addr: ::core::ffi::c_ulong,
-    mq_size: ::core::ffi::c_uint, intr_mmr_offset: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+pub unsafe fn uv_bios_mq_watchlist_alloc(addr: ::kernel::ffi::c_ulong,
+    mq_size: ::kernel::ffi::c_uint, intr_mmr_offset: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     let mut watchlist: u64 = 0;
     /* bios returns watchlist number or negative error number. */
     let ret = uv_bios_call_irqsave(UV_BIOS_WATCHLIST_ALLOC, addr as u64,
@@ -130,7 +130,7 @@ pub unsafe fn uv_bios_get_pci_topology(size: u64, buf: *mut u64) -> i64 {
     uv_bios_call(UV_BIOS_GET_PCI_TOPOLOGY, buf as u64, size, 0, 0, 0)
 }
 
-pub unsafe fn get_uv_systab_phys(msg: bool) -> ::core::ffi::c_ulong {
+pub unsafe fn get_uv_systab_phys(msg: bool) -> ::kernel::ffi::c_ulong {
     if uv_systab_phys == EFI_INVALID_TABLE_ADDR || uv_systab_phys == 0 || efi_runtime_disabled() {
         if msg { pr_crit!("UV: UVsystab: missing\n"); }
         return 0;

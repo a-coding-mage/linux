@@ -40,12 +40,12 @@ pub struct cs35l56_private {
     pub supplies: [regulator_bulk_data; CS35L56_NUM_BULK_SUPPLIES],
     pub sdw_peripheral: *mut sdw_slave,
     pub sdw_bus_regmap: *mut regmap,
-    pub fallback_fw_suffix: *const ::core::ffi::c_char,
+    pub fallback_fw_suffix: *const ::kernel::ffi::c_char,
     pub soft_resetting: bool,
     pub sdw_attached: bool,
     pub init_completion: completion,
 
-    pub speaker_id: ::core::ffi::c_int,
+    pub speaker_id: ::kernel::ffi::c_int,
     pub rx_mask: u32,
     pub tx_mask: u32,
     pub asp_slot_width: u8,
@@ -72,29 +72,29 @@ unsafe extern "C" {
     pub fn cs35l56_mask_soundwire_interrupts(cs35l56: *mut cs35l56_private);
     pub fn cs35l56_unmask_soundwire_interrupts(cs35l56: *mut cs35l56_private);
 
-    pub fn cs35l56_system_suspend(dev: *mut device) -> ::core::ffi::c_int;
-    pub fn cs35l56_system_suspend_late(dev: *mut device) -> ::core::ffi::c_int;
-    pub fn cs35l56_system_suspend_no_irq(dev: *mut device) -> ::core::ffi::c_int;
-    pub fn cs35l56_system_resume_no_irq(dev: *mut device) -> ::core::ffi::c_int;
-    pub fn cs35l56_system_resume_early(dev: *mut device) -> ::core::ffi::c_int;
-    pub fn cs35l56_system_resume(dev: *mut device) -> ::core::ffi::c_int;
+    pub fn cs35l56_system_suspend(dev: *mut device) -> ::kernel::ffi::c_int;
+    pub fn cs35l56_system_suspend_late(dev: *mut device) -> ::kernel::ffi::c_int;
+    pub fn cs35l56_system_suspend_no_irq(dev: *mut device) -> ::kernel::ffi::c_int;
+    pub fn cs35l56_system_resume_no_irq(dev: *mut device) -> ::kernel::ffi::c_int;
+    pub fn cs35l56_system_resume_early(dev: *mut device) -> ::kernel::ffi::c_int;
+    pub fn cs35l56_system_resume(dev: *mut device) -> ::kernel::ffi::c_int;
     pub fn cs35l56_irq_request(
         cs35l56_base: *mut cs35l56_base,
-        irq: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        irq: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn cs35l56_common_probe(
         cs35l56: *mut cs35l56_private,
-        irq: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    pub fn cs35l56_init(cs35l56: *mut cs35l56_private) -> ::core::ffi::c_int;
+        irq: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
+    pub fn cs35l56_init(cs35l56: *mut cs35l56_private) -> ::kernel::ffi::c_int;
     pub fn cs35l56_remove(cs35l56: *mut cs35l56_private);
 
     // C conditional: #if IS_ENABLED(CONFIG_KUNIT)
-    pub fn cs35l56_set_fw_suffix(cs35l56: *mut cs35l56_private) -> ::core::ffi::c_int;
-    pub fn cs35l56_set_fw_name(component: *mut snd_soc_component) -> ::core::ffi::c_int;
+    pub fn cs35l56_set_fw_suffix(cs35l56: *mut cs35l56_private) -> ::kernel::ffi::c_int;
+    pub fn cs35l56_set_fw_name(component: *mut snd_soc_component) -> ::kernel::ffi::c_int;
     pub fn cs35l56_process_xu_properties(cs35l56: *mut cs35l56_private)
-        -> ::core::ffi::c_int;
-    pub fn cs35l56_get_firmware_uid(cs35l56: *mut cs35l56_private) -> ::core::ffi::c_int;
+        -> ::kernel::ffi::c_int;
+    pub fn cs35l56_get_firmware_uid(cs35l56: *mut cs35l56_private) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

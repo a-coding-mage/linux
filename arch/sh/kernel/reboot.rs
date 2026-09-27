@@ -12,7 +12,7 @@ extern "C" {
     fn cpu_sleep();
     fn smp_send_stop();
     fn do_kernel_power_off();
-    fn stop_this_cpu(arg: *mut core::ffi::c_void);
+    fn stop_this_cpu(arg: *mut kernel::ffi::c_void);
     #[cfg(CONFIG_KEXEC_CORE)]
     fn native_machine_crash_shutdown(regs: *mut pt_regs);
 }
@@ -26,7 +26,7 @@ pub struct pt_regs {
 pub struct machine_ops {
     pub power_off: unsafe extern "C" fn(),
     pub shutdown: unsafe extern "C" fn(),
-    pub restart: unsafe extern "C" fn(*mut core::ffi::c_char),
+    pub restart: unsafe extern "C" fn(*mut kernel::ffi::c_char),
     pub halt: unsafe extern "C" fn(),
     #[cfg(CONFIG_KEXEC_CORE)]
     pub crash_shutdown: unsafe extern "C" fn(*mut pt_regs),
@@ -40,7 +40,7 @@ unsafe extern "C" fn watchdog_trigger_immediate() {
     sh_wdt_write_csr(0xC2);
 }
 
-unsafe extern "C" fn native_machine_restart(_unused: *mut core::ffi::c_char) {
+unsafe extern "C" fn native_machine_restart(_unused: *mut kernel::ffi::c_char) {
     local_irq_disable();
 
     /* Destroy all of the TLBs in preparation for reset by MMU */
@@ -97,7 +97,7 @@ pub unsafe extern "C" fn machine_shutdown() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn machine_restart(cmd: *mut core::ffi::c_char) {
+pub unsafe extern "C" fn machine_restart(cmd: *mut kernel::ffi::c_char) {
     (machine_ops.restart)(cmd);
 }
 

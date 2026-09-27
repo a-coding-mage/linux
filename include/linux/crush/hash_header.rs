@@ -9,7 +9,7 @@ pub const CRUSH_HASH_RJENKINS1: i32 = 0;
 pub const CRUSH_HASH_DEFAULT: i32 = CRUSH_HASH_RJENKINS1;
 
 unsafe extern "C" {
-    pub fn crush_hash_name(type_: i32) -> *const core::ffi::c_char;
+    pub fn crush_hash_name(type_: i32) -> *const kernel::ffi::c_char;
 
     pub fn crush_hash32(type_: i32, a: u32) -> u32;
     pub fn crush_hash32_2(type_: i32, a: u32, b: u32) -> u32;

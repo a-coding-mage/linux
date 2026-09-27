@@ -9,29 +9,29 @@
 // Linux and architecture headers provide the declarations used below.
 
 #[cfg(CONFIG_64BIT)]
-pub static mut o32_stk: [core::ffi::c_ulong; O32_STK_SIZE] = [0; O32_STK_SIZE];
+pub static mut o32_stk: [kernel::ffi::c_ulong; O32_STK_SIZE] = [0; O32_STK_SIZE];
 
-pub static mut __rex_bootinit: Option<unsafe extern "C" fn() -> core::ffi::c_int> = None;
-pub static mut __rex_bootread: Option<unsafe extern "C" fn() -> core::ffi::c_int> = None;
-pub static mut __rex_getbitmap: Option<unsafe extern "C" fn(*mut memmap) -> core::ffi::c_int> = None;
+pub static mut __rex_bootinit: Option<unsafe extern "C" fn() -> kernel::ffi::c_int> = None;
+pub static mut __rex_bootread: Option<unsafe extern "C" fn() -> kernel::ffi::c_int> = None;
+pub static mut __rex_getbitmap: Option<unsafe extern "C" fn(*mut memmap) -> kernel::ffi::c_int> = None;
 pub static mut __rex_slot_address:
-    Option<unsafe extern "C" fn(core::ffi::c_int) -> *mut core::ffi::c_ulong> = None;
-pub static mut __rex_gettcinfo: Option<unsafe extern "C" fn() -> *mut core::ffi::c_void> = None;
-pub static mut __rex_getsysid: Option<unsafe extern "C" fn() -> core::ffi::c_int> = None;
+    Option<unsafe extern "C" fn(kernel::ffi::c_int) -> *mut kernel::ffi::c_ulong> = None;
+pub static mut __rex_gettcinfo: Option<unsafe extern "C" fn() -> *mut kernel::ffi::c_void> = None;
+pub static mut __rex_getsysid: Option<unsafe extern "C" fn() -> kernel::ffi::c_int> = None;
 pub static mut __rex_clear_cache: Option<unsafe extern "C" fn()> = None;
 
-pub static mut __prom_getchar: Option<unsafe extern "C" fn() -> core::ffi::c_int> = None;
+pub static mut __prom_getchar: Option<unsafe extern "C" fn() -> kernel::ffi::c_int> = None;
 pub static mut __prom_getenv:
-    Option<unsafe extern "C" fn(*mut core::ffi::c_char) -> *mut core::ffi::c_char> = None;
-pub static mut __prom_printf: Option<unsafe extern "C" fn(*mut core::ffi::c_char, ...)> = None;
+    Option<unsafe extern "C" fn(*mut kernel::ffi::c_char) -> *mut kernel::ffi::c_char> = None;
+pub static mut __prom_printf: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char, ...)> = None;
 
 pub static mut __pmax_open:
-    Option<unsafe extern "C" fn(*mut core::ffi::c_char, core::ffi::c_int) -> core::ffi::c_int> = None;
+    Option<unsafe extern "C" fn(*mut kernel::ffi::c_char, kernel::ffi::c_int) -> kernel::ffi::c_int> = None;
 pub static mut __pmax_lseek:
-    Option<unsafe extern "C" fn(core::ffi::c_int, core::ffi::c_long, core::ffi::c_int) -> core::ffi::c_int> = None;
+    Option<unsafe extern "C" fn(kernel::ffi::c_int, kernel::ffi::c_long, kernel::ffi::c_int) -> kernel::ffi::c_int> = None;
 pub static mut __pmax_read:
-    Option<unsafe extern "C" fn(core::ffi::c_int, *mut core::ffi::c_void, core::ffi::c_int) -> core::ffi::c_int> = None;
-pub static mut __pmax_close: Option<unsafe extern "C" fn(core::ffi::c_int) -> core::ffi::c_int> = None;
+    Option<unsafe extern "C" fn(kernel::ffi::c_int, *mut kernel::ffi::c_void, kernel::ffi::c_int) -> kernel::ffi::c_int> = None;
+pub static mut __pmax_close: Option<unsafe extern "C" fn(kernel::ffi::c_int) -> kernel::ffi::c_int> = None;
 
 /*
  * Detect which PROM the DECSTATION has, and set the callback vectors
@@ -85,16 +85,16 @@ pub unsafe fn prom_init() {
     #[cfg(CONFIG_CPU_R3000)]
     if current_cpu_type() == CPU_R4000SC || current_cpu_type() == CPU_R4400SC {
         static R4K_MSG: &[u8] = b"Please recompile with \"CONFIG_CPU_R4X00 = y\".\n\0";
-        printk(CPU_MSG.as_ptr() as *mut core::ffi::c_char);
-        printk(R4K_MSG.as_ptr() as *mut core::ffi::c_char);
+        printk(CPU_MSG.as_ptr() as *mut kernel::ffi::c_char);
+        printk(R4K_MSG.as_ptr() as *mut kernel::ffi::c_char);
         dec_machine_halt();
     }
 
     #[cfg(CONFIG_CPU_R4X00)]
     if current_cpu_type() == CPU_R3000 || current_cpu_type() == CPU_R3000A {
         static R3K_MSG: &[u8] = b"Please recompile with \"CONFIG_CPU_R3000 = y\".\n\0";
-        printk(CPU_MSG.as_ptr() as *mut core::ffi::c_char);
-        printk(R3K_MSG.as_ptr() as *mut core::ffi::c_char);
+        printk(CPU_MSG.as_ptr() as *mut kernel::ffi::c_char);
+        printk(R3K_MSG.as_ptr() as *mut kernel::ffi::c_char);
         dec_machine_halt();
     }
 

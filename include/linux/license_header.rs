@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn strcmp(lhs: *const c_char, rhs: *const c_char) -> i32;

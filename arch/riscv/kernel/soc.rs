@@ -3,12 +3,12 @@
  * Copyright (C) 2020 Western Digital Corporation or its affiliates.
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* Declarations supplied by the surrounding kernel sources. */
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
     pub data: Option<unsafe extern "C" fn(*const c_void)>,
 }
 
@@ -20,7 +20,7 @@ unsafe extern "C" {
     fn fdt_node_check_compatible(
         fdt: *const c_void,
         nodeoffset: i32,
-        compatible: *const core::ffi::c_char,
+        compatible: *const kernel::ffi::c_char,
     ) -> i32;
 }
 

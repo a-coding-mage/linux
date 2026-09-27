@@ -4,7 +4,7 @@
  * Author: James Liao <jamesjj.liao@mediatek.com>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct clk {

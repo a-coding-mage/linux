@@ -6,9 +6,9 @@
 
 pub unsafe extern "C" fn netdev_debug_event(
     nb: *mut notifier_block,
-    event: ::core::ffi::c_ulong,
-    ptr: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int {
+    event: ::kernel::ffi::c_ulong,
+    ptr: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int {
     let dev: *mut net_device = netdev_notifier_info_to_dev(ptr);
     let net: *mut net = dev_net(dev);
     let cmd: netdev_cmd = event as netdev_cmd;
@@ -69,9 +69,9 @@ pub unsafe extern "C" fn netdev_debug_event(
 
 // EXPORT_SYMBOL_NS_GPL(netdev_debug_event, "NETDEV_INTERNAL");
 
-static mut rtnl_net_debug_net_id: ::core::ffi::c_int = 0;
+static mut rtnl_net_debug_net_id: ::kernel::ffi::c_int = 0;
 
-unsafe extern "C" fn rtnl_net_debug_net_init(net: *mut net) -> ::core::ffi::c_int {
+unsafe extern "C" fn rtnl_net_debug_net_init(net: *mut net) -> ::kernel::ffi::c_int {
     let nb: *mut notifier_block = net_generic(net, &raw mut rtnl_net_debug_net_id);
     (*nb).notifier_call = Some(netdev_debug_event);
 
@@ -94,8 +94,8 @@ static mut rtnl_net_debug_block: notifier_block = notifier_block {
     notifier_call: Some(netdev_debug_event),
 };
 
-unsafe extern "C" fn rtnl_net_debug_init() -> ::core::ffi::c_int {
-    let mut ret: ::core::ffi::c_int;
+unsafe extern "C" fn rtnl_net_debug_init() -> ::kernel::ffi::c_int {
+    let mut ret: ::kernel::ffi::c_int;
 
     ret = register_pernet_subsys(&raw mut rtnl_net_debug_net_ops);
     if ret != 0 {

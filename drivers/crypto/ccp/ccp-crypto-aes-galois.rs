@@ -163,8 +163,8 @@ static mut CCP_AES_GCM_DEFAULTS: aead_alg = aead_alg {
 struct ccp_aes_aead_def {
     mode: ccp_aes_mode,
     version: u32,
-    name: *const core::ffi::c_char,
-    driver_name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    driver_name: *const kernel::ffi::c_char,
     blocksize: u32,
     ivsize: u32,
     alg_defaults: *mut aead_alg,

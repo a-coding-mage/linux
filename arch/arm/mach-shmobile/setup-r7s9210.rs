@@ -7,7 +7,7 @@
  *
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // C dependencies supplied by the kernel build.
 unsafe extern "C" {

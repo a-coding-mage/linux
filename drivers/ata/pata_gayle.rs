@@ -25,11 +25,11 @@ extern "C" {
     fn z_readb(addr: usize) -> u8;
     fn z_writeb(value: u8, addr: usize);
     fn ata_cable_unknown(ap: *mut ata_port) -> i32;
-    fn ata_sff_interrupt(irq: i32, dev_instance: *mut core::ffi::c_void) -> i32;
+    fn ata_sff_interrupt(irq: i32, dev_instance: *mut kernel::ffi::c_void) -> i32;
     fn ata_for_each_dev(dev: *mut ata_device, link: *mut ata_link, state: u32);
-    fn ata_dev_info(dev: *mut ata_device, fmt: *const core::ffi::c_char, ...);
+    fn ata_dev_info(dev: *mut ata_device, fmt: *const kernel::ffi::c_char, ...);
     fn ata_host_alloc(dev: *mut device, ports: i32) -> *mut ata_host;
-    fn ata_host_activate(host: *mut ata_host, irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> i32, flags: u32, sht: *const scsi_host_template) -> i32;
+    fn ata_host_activate(host: *mut ata_host, irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> i32, flags: u32, sht: *const scsi_host_template) -> i32;
     fn ata_host_detach(host: *mut ata_host);
 }
 
@@ -37,7 +37,7 @@ extern "C" {
 #[repr(C)] pub struct ata_queued_cmd { pub dev: *mut ata_device }
 #[repr(C)] pub struct ata_device { pub link: *mut ata_link, pub pio_mode: u8, pub xfer_mode: u8, pub xfer_shift: u8, pub flags: u32 }
 #[repr(C)] pub struct ata_link { pub ap: *mut ata_port }
-#[repr(C)] pub struct ata_port { pub ioaddr: ata_ioports, pub private_data: *mut core::ffi::c_void, pub ops: *mut ata_port_operations, pub pio_mask: u32, pub flags: u32 }
+#[repr(C)] pub struct ata_port { pub ioaddr: ata_ioports, pub private_data: *mut kernel::ffi::c_void, pub ops: *mut ata_port_operations, pub pio_mask: u32, pub flags: u32 }
 #[repr(C)] pub struct ata_ioports { pub data_addr: *mut u8, pub error_addr: *mut u8, pub feature_addr: *mut u8, pub nsect_addr: *mut u8, pub lbal_addr: *mut u8, pub lbam_addr: *mut u8, pub lbah_addr: *mut u8, pub device_addr: *mut u8, pub status_addr: *mut u8, pub command_addr: *mut u8, pub altstatus_addr: *mut u8, pub ctl_addr: *mut u8 }
 #[repr(C)] pub struct ata_port_operations { pub inherits: *const ata_port_operations, pub sff_data_xfer: Option<unsafe extern "C" fn(*mut ata_queued_cmd, *mut u8, u32, i32) -> u32>, pub sff_irq_check: Option<unsafe extern "C" fn(*mut ata_port) -> bool>, pub sff_irq_clear: Option<unsafe extern "C" fn(*mut ata_port)>, pub cable_detect: Option<unsafe extern "C" fn(*mut ata_port) -> i32>, pub set_mode: Option<unsafe extern "C" fn(*mut ata_link, *mut *mut ata_device) -> i32> }
 #[repr(C)] pub struct ata_host { pub ports: *mut *mut ata_port }
@@ -87,7 +87,7 @@ pub static mut pata_gayle_a1200_ops: ata_port_operations = ata_port_operations {
 pub static mut pata_gayle_a4000_ops: ata_port_operations = ata_port_operations { inherits: unsafe { &ata_sff_port_ops }, sff_data_xfer: Some(pata_gayle_data_xfer), sff_irq_check: None, sff_irq_clear: None, cable_detect: Some(ata_cable_unknown), set_mode: Some(pata_gayle_set_mode) };
 
 // The platform initialization and driver registration are provided by the kernel integration layer.
-pub static mut pata_gayle_driver: *mut core::ffi::c_void = core::ptr::null_mut();
+pub static mut pata_gayle_driver: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 pub unsafe extern "C" fn pata_gayle_init_one(_pdev: *mut platform_device) -> i32 {
     // Full platform resource acquisition and ATA host activation are external kernel APIs.

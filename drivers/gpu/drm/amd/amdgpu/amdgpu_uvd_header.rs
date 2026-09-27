@@ -43,9 +43,9 @@ macro_rules! AMDGPU_UVD_FIRMWARE_SIZE {
 #[repr(C)]
 pub struct amdgpu_uvd_inst {
     pub vcpu_bo: *mut amdgpu_bo,
-    pub cpu_addr: *mut core::ffi::c_void,
+    pub cpu_addr: *mut kernel::ffi::c_void,
     pub gpu_addr: u64,
-    pub saved_bo: *mut core::ffi::c_void,
+    pub saved_bo: *mut kernel::ffi::c_void,
     pub ring: amdgpu_ring,
     pub ring_enc: [amdgpu_ring; AMDGPU_MAX_UVD_ENC_RINGS],
     pub irq: amdgpu_irq_src,
@@ -89,7 +89,7 @@ extern "C" {
     pub fn amdgpu_uvd_ring_parse_cs(parser: *mut amdgpu_cs_parser, job: *mut amdgpu_job, ib: *mut amdgpu_ib) -> i32;
     pub fn amdgpu_uvd_ring_begin_use(ring: *mut amdgpu_ring);
     pub fn amdgpu_uvd_ring_end_use(ring: *mut amdgpu_ring);
-    pub fn amdgpu_uvd_ring_test_ib(ring: *mut amdgpu_ring, timeout: libc::c_long) -> i32;
+    pub fn amdgpu_uvd_ring_test_ib(ring: *mut amdgpu_ring, timeout: kernel::ffi::c_long) -> i32;
     pub fn amdgpu_uvd_used_handles(adev: *mut amdgpu_device) -> u32;
 }
 

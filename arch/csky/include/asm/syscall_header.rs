@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 // Dependencies supplied by the surrounding kernel translation.
 extern "C" {
@@ -11,7 +11,7 @@ extern "C" {
 pub unsafe fn syscall_get_nr(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     *regs_syscallid(regs)
 }
 
@@ -19,7 +19,7 @@ pub unsafe fn syscall_get_nr(
 pub unsafe fn syscall_set_nr(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    sysno: core::ffi::c_int,
+    sysno: kernel::ffi::c_int,
 ) {
     *regs_syscallid(regs) = sysno;
 }
@@ -33,11 +33,11 @@ pub unsafe fn syscall_rollback(_task: *mut task_struct, regs: *mut pt_regs) {
 pub unsafe fn syscall_get_error(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-) -> core::ffi::c_long {
+) -> kernel::ffi::c_long {
     let error: c_ulong = (*regs).a0 as c_ulong;
 
     if is_err_value(error) {
-        error as core::ffi::c_long
+        error as kernel::ffi::c_long
     } else {
         0
     }
@@ -47,7 +47,7 @@ pub unsafe fn syscall_get_error(
 pub unsafe fn syscall_get_return_value(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-) -> core::ffi::c_long {
+) -> kernel::ffi::c_long {
     (*regs).a0
 }
 
@@ -55,10 +55,10 @@ pub unsafe fn syscall_get_return_value(
 pub unsafe fn syscall_set_return_value(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    error: core::ffi::c_int,
-    val: core::ffi::c_long,
+    error: kernel::ffi::c_int,
+    val: kernel::ffi::c_long,
 ) {
-    (*regs).a0 = if error != 0 { error as core::ffi::c_long } else { val };
+    (*regs).a0 = if error != 0 { error as kernel::ffi::c_long } else { val };
 }
 
 #[inline]
@@ -96,7 +96,7 @@ pub unsafe fn syscall_set_arguments(
 }
 
 #[inline]
-pub unsafe fn syscall_get_arch(_task: *mut task_struct) -> core::ffi::c_int {
+pub unsafe fn syscall_get_arch(_task: *mut task_struct) -> kernel::ffi::c_int {
     AUDIT_ARCH_CSKY
 }
 

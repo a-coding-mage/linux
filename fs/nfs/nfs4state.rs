@@ -122,7 +122,7 @@ int nfs4_init_clientid(nfs_client *clp, const struct cred *cred)
 		clientid: (*clp).cl_clientid,
 		confirm: (*clp).cl_confirm,
 	};
-	core::ffi::c_ushort port;
+	kernel::ffi::c_ushort port;
 	int status;
 	struct nfs_net *nn = net_generic((*clp).cl_net, nfs_net_id);
 
@@ -521,7 +521,7 @@ static void nfs4_gc_state_owners(nfs_server *server)
 {
 	struct nfs_client *clp = (*server).nfs_client;
 	struct nfs4_state_owner *sp, *tmp;
-	time_min: core::ffi::c_ulong, time_max;
+	time_min: kernel::ffi::c_ulong, time_max;
 	LIST_HEAD(doomed);
 
 	spin_lock((*&clp).cl_lock);
@@ -1275,8 +1275,8 @@ int nfs4_schedule_migration_recovery(const struct nfs_server *server)
 
 	dprintk("%s: scheduling migration recovery for (%llx:%llx) on %s\n",
 			__func__,
-			(core::ffi::c_ulonglong)server->fsid.major,
-			(core::ffi::c_ulonglong)server->fsid.minor,
+			(kernel::ffi::c_ulonglong)server->fsid.major,
+			(kernel::ffi::c_ulonglong)server->fsid.minor,
 			clp->cl_hostname);
 
 	set_bit(NFS_MIG_IN_TRANSITION,
@@ -1327,7 +1327,7 @@ int nfs4_wait_clnt_recover(nfs_client *clp)
 
 int nfs4_client_recover_expired_lease(nfs_client *clp)
 {
-	core::ffi::c_uint loop;
+	kernel::ffi::c_uint loop;
 	int ret;
 
 	for (loop = NFS4_MAX_LOOP_ON_RECOVER; loop != 0; loop--) {
@@ -1625,7 +1625,7 @@ static int nfs4_reclaim_open_state(nfs4_state_owner *sp,
 {
 	'out_err: {
 	struct nfs4_state *state;
-	core::ffi::c_uint loop = 0;
+	kernel::ffi::c_uint loop = 0;
 	int status = 0;
 // conditional compilation preserved: #ifdef CONFIG_NFS_V4_2
 	bool found_ssc_copy_state = false;
@@ -2110,8 +2110,8 @@ static int nfs4_try_migration(nfs_server *server, const struct cred *cred)
 	int status, result;
 
 	dprintk("--> %s: FSID %llx:%llx on \"%s\"\n", __func__,
-			(core::ffi::c_ulonglong)server->fsid.major,
-			(core::ffi::c_ulonglong)server->fsid.minor,
+			(kernel::ffi::c_ulonglong)server->fsid.major,
+			(kernel::ffi::c_ulonglong)server->fsid.minor,
 			clp->cl_hostname);
 
 	page = alloc_page(GFP_KERNEL);
@@ -2584,7 +2584,7 @@ static void nfs4_state_manager(nfs_client *clp)
 {
 	'out_drain: {
 	'out_error: {
-	core::ffi::c_uint memflags;
+	kernel::ffi::c_uint memflags;
 	int status = 0;
 	const char *section = "", *section_sep = "";
 

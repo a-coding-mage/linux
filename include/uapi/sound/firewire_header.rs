@@ -80,7 +80,7 @@ pub const SNDRV_FIREWIRE_TYPE_FIREFACE: u32 = 8;
 
 #[repr(C)]
 pub struct snd_firewire_get_info {
-    pub type_: u32, pub card: u32, pub guid: [u8; 8], pub device_name: [core::ffi::c_char; 16],
+    pub type_: u32, pub card: u32, pub guid: [u8; 8], pub device_name: [kernel::ffi::c_char; 16],
 }
 pub const SNDRV_FIREWIRE_TASCAM_STATE_COUNT: usize = 64;
 #[repr(C)]

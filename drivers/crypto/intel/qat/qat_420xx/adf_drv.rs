@@ -14,8 +14,8 @@ extern "C" {
     fn adf_clean_hw_data_420xx(hw_device: *mut adf_hw_device_data);
     fn adf_dbgfs_exit(accel_dev: *mut adf_accel_dev);
     fn adf_cfg_dev_remove(accel_dev: *mut adf_accel_dev);
-    fn adf_devmgr_rm_dev(accel_dev: *mut adf_accel_dev, dev: *mut core::ffi::c_void);
-    fn adf_devmgr_add_dev(accel_dev: *mut adf_accel_dev, dev: *mut core::ffi::c_void) -> i32;
+    fn adf_devmgr_rm_dev(accel_dev: *mut adf_accel_dev, dev: *mut kernel::ffi::c_void);
+    fn adf_devmgr_add_dev(accel_dev: *mut adf_accel_dev, dev: *mut kernel::ffi::c_void) -> i32;
     fn adf_init_hw_data_420xx(hw_device: *mut adf_hw_device_data, device: u16);
     fn adf_cfg_dev_add(accel_dev: *mut adf_accel_dev) -> i32;
     fn adf_gen4_cfg_dev_init(accel_dev: *mut adf_accel_dev) -> i32;
@@ -51,7 +51,7 @@ struct pci_device_id {
 #[repr(C)]
 struct pci_driver {
     id_table: *const pci_device_id,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     probe: Option<unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> i32>,
     remove: Option<unsafe extern "C" fn(*mut pci_dev)>,
     shutdown: Option<unsafe extern "C" fn(*mut pci_dev)>,
@@ -63,16 +63,16 @@ struct pci_driver {
 // bindings and are represented here by their source-level names.
 extern "C" {
     fn num_possible_nodes() -> i32;
-    fn dev_to_node(dev: *mut core::ffi::c_void) -> i32;
-    fn devm_kzalloc(dev: *mut core::ffi::c_void, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn dev_to_node(dev: *mut kernel::ffi::c_void) -> i32;
+    fn devm_kzalloc(dev: *mut kernel::ffi::c_void, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn pci_read_config_byte(pdev: *mut pci_dev, where_: u32, val: *mut u8) -> i32;
     fn pci_read_config_dword(pdev: *mut pci_dev, where_: u32, val: *mut u32) -> i32;
     fn pci_select_bars(pdev: *mut pci_dev, mask: u32) -> u64;
     fn pcim_enable_device(pdev: *mut pci_dev) -> i32;
-    fn dma_set_mask_and_coherent(dev: *mut core::ffi::c_void, mask: u64) -> i32;
-    fn pcim_request_all_regions(pdev: *mut pci_dev, name: *const core::ffi::c_char) -> i32;
-    fn pci_name(pdev: *mut pci_dev) -> *const core::ffi::c_char;
-    fn pcim_iomap(pdev: *mut pci_dev, bar: u32, offset: usize) -> *mut core::ffi::c_void;
+    fn dma_set_mask_and_coherent(dev: *mut kernel::ffi::c_void, mask: u64) -> i32;
+    fn pcim_request_all_regions(pdev: *mut pci_dev, name: *const kernel::ffi::c_char) -> i32;
+    fn pci_name(pdev: *mut pci_dev) -> *const kernel::ffi::c_char;
+    fn pcim_iomap(pdev: *mut pci_dev, bar: u32, offset: usize) -> *mut kernel::ffi::c_void;
     fn pci_save_state(pdev: *mut pci_dev) -> i32;
 }
 
@@ -94,18 +94,18 @@ unsafe fn adf_cleanup_accel(accel_dev: *mut adf_accel_dev) {
 }
 
 unsafe extern "C" fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> i32 {
-    if num_possible_nodes() > 1 && dev_to_node(pdev as *mut core::ffi::c_void) < 0 {
+    if num_possible_nodes() > 1 && dev_to_node(pdev as *mut kernel::ffi::c_void) < 0 {
         return -22;
     }
 
-    let accel_dev = devm_kzalloc(pdev as *mut core::ffi::c_void, core::mem::size_of::<adf_accel_dev>(), 0) as *mut adf_accel_dev;
+    let accel_dev = devm_kzalloc(pdev as *mut kernel::ffi::c_void, core::mem::size_of::<adf_accel_dev>(), 0) as *mut adf_accel_dev;
     if accel_dev.is_null() { return -12; }
 
     if adf_devmgr_add_dev(accel_dev, ptr::null_mut()) != 0 {
         return -14;
     }
 
-    let hw_data = devm_kzalloc(pdev as *mut core::ffi::c_void, core::mem::size_of::<adf_hw_device_data>(), 0) as *mut adf_hw_device_data;
+    let hw_data = devm_kzalloc(pdev as *mut kernel::ffi::c_void, core::mem::size_of::<adf_hw_device_data>(), 0) as *mut adf_hw_device_data;
     if hw_data.is_null() {
         adf_cleanup_accel(accel_dev);
         return -12;
@@ -117,7 +117,7 @@ unsafe extern "C" fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) ->
     if ret != 0 { adf_cleanup_accel(accel_dev); return ret; }
     ret = pcim_enable_device(pdev);
     if ret != 0 { adf_cleanup_accel(accel_dev); return ret; }
-    ret = dma_set_mask_and_coherent(pdev as *mut core::ffi::c_void, u64::MAX);
+    ret = dma_set_mask_and_coherent(pdev as *mut kernel::ffi::c_void, u64::MAX);
     if ret != 0 { adf_cleanup_accel(accel_dev); return ret; }
     ret = adf_gen4_cfg_dev_init(accel_dev);
     if ret != 0 { adf_cleanup_accel(accel_dev); return ret; }
@@ -142,7 +142,7 @@ unsafe extern "C" fn adf_shutdown(pdev: *mut pci_dev) {
 
 static mut adf_driver: pci_driver = pci_driver {
     id_table: adf_pci_tbl.as_ptr(),
-    name: b"qat_420xx\0".as_ptr() as *const core::ffi::c_char,
+    name: b"qat_420xx\0".as_ptr() as *const kernel::ffi::c_char,
     probe: Some(adf_probe),
     remove: Some(adf_remove),
     shutdown: Some(adf_shutdown),

@@ -5,20 +5,20 @@
 // Dependency declarations from <linux/dsa/ocelot.h> and "tag.h" are supplied
 // by the surrounding translation unit.
 
-const OCELOT_NAME: *const core::ffi::c_char = b"ocelot\0".as_ptr() as *const _;
-const SEVILLE_NAME: *const core::ffi::c_char = b"seville\0".as_ptr() as *const _;
+const OCELOT_NAME: *const kernel::ffi::c_char = b"ocelot\0".as_ptr() as *const _;
+const SEVILLE_NAME: *const kernel::ffi::c_char = b"seville\0".as_ptr() as *const _;
 
 unsafe fn ocelot_xmit_common(
     skb: *mut sk_buff,
     netdev: *mut net_device,
     ifh_prefix: __be32,
-    ifh: *mut *mut core::ffi::c_void,
+    ifh: *mut *mut kernel::ffi::c_void,
 ) {
     let dp = dsa_user_to_port(netdev);
     let ds = (*dp).ds;
     let mut vlan_tci: u64 = 0;
     let mut tag_type: u64 = 0;
-    let injection: *mut core::ffi::c_void;
+    let injection: *mut kernel::ffi::c_void;
     let prefix: *mut __be32;
     let mut rew_op: u32 = 0;
     let qos_class: u64;
@@ -56,7 +56,7 @@ unsafe fn ocelot_xmit_common(
 }
 
 unsafe fn ocelot_xmit(skb: *mut sk_buff, netdev: *mut net_device) -> *mut sk_buff {
-    let mut injection: *mut core::ffi::c_void = core::ptr::null_mut();
+    let mut injection: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
     ocelot_xmit_common(skb, netdev, cpu_to_be32(0x8880000a), &mut injection);
     ocelot_ifh_set_dest(injection, dsa_xmit_port_mask(skb, netdev));
@@ -65,7 +65,7 @@ unsafe fn ocelot_xmit(skb: *mut sk_buff, netdev: *mut net_device) -> *mut sk_buf
 }
 
 unsafe fn seville_xmit(skb: *mut sk_buff, netdev: *mut net_device) -> *mut sk_buff {
-    let mut injection: *mut core::ffi::c_void = core::ptr::null_mut();
+    let mut injection: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
     ocelot_xmit_common(skb, netdev, cpu_to_be32(0x88800005), &mut injection);
     seville_ifh_set_dest(injection, dsa_xmit_port_mask(skb, netdev));

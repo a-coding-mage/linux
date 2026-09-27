@@ -16,7 +16,7 @@ macro_rules! wakeup_attr {
         unsafe fn $show(
             dev: *mut device,
             _attr: *mut device_attribute,
-            buf: *mut core::ffi::c_char,
+            buf: *mut kernel::ffi::c_char,
         ) -> isize {
             let ws: *mut wakeup_source = dev_get_drvdata(dev);
             sysfs_emit(buf, "%lu\n", (*ws).$name)
@@ -33,7 +33,7 @@ wakeup_attr!(relax_count, relax_count_show);
 unsafe fn active_time_ms_show(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let ws: *mut wakeup_source = dev_get_drvdata(dev);
     let active_time: ktime_t = if (*ws).active {
@@ -47,7 +47,7 @@ unsafe fn active_time_ms_show(
 unsafe fn total_time_ms_show(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let ws: *mut wakeup_source = dev_get_drvdata(dev);
     let mut total_time: ktime_t = (*ws).total_time;
@@ -61,7 +61,7 @@ unsafe fn total_time_ms_show(
 unsafe fn max_time_ms_show(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let ws: *mut wakeup_source = dev_get_drvdata(dev);
     let mut max_time: ktime_t = (*ws).max_time;
@@ -77,7 +77,7 @@ unsafe fn max_time_ms_show(
 unsafe fn last_change_ms_show(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let ws: *mut wakeup_source = dev_get_drvdata(dev);
     sysfs_emit(buf, "%lld\n", ktime_to_ms((*ws).last_time))
@@ -86,7 +86,7 @@ unsafe fn last_change_ms_show(
 unsafe fn name_show(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let ws: *mut wakeup_source = dev_get_drvdata(dev);
     sysfs_emit(buf, "%s\n", (*ws).name)
@@ -95,7 +95,7 @@ unsafe fn name_show(
 unsafe fn prevent_suspend_time_ms_show(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let ws: *mut wakeup_source = dev_get_drvdata(dev);
     let mut prevent_sleep_time: ktime_t = (*ws).prevent_sleep_time;

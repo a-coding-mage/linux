@@ -12,13 +12,13 @@
 
 #[repr(C)]
 pub struct BinderIoctlEntry {
-    pub cmd: core::ffi::c_uint,
-    pub arg: core::ffi::c_ulong,
+    pub cmd: kernel::ffi::c_uint,
+    pub arg: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct BinderFunctionReturnEntry {
-    pub ret: core::ffi::c_int,
+    pub ret: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -30,24 +30,24 @@ pub struct BinderWaitForWorkEntry {
 
 #[repr(C)]
 pub struct BinderTransactionEntry {
-    pub debug_id: core::ffi::c_int,
-    pub target_node: core::ffi::c_int,
-    pub to_proc: core::ffi::c_int,
-    pub to_thread: core::ffi::c_int,
-    pub reply: core::ffi::c_int,
-    pub code: core::ffi::c_uint,
-    pub flags: core::ffi::c_uint,
+    pub debug_id: kernel::ffi::c_int,
+    pub target_node: kernel::ffi::c_int,
+    pub to_proc: kernel::ffi::c_int,
+    pub to_thread: kernel::ffi::c_int,
+    pub reply: kernel::ffi::c_int,
+    pub code: kernel::ffi::c_uint,
+    pub flags: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct BinderTransactionReceivedEntry {
-    pub debug_id: core::ffi::c_int,
+    pub debug_id: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct BinderTransactionFdEntry {
-    pub debug_id: core::ffi::c_int,
-    pub fd: core::ffi::c_int,
+    pub debug_id: kernel::ffi::c_int,
+    pub fd: kernel::ffi::c_int,
     pub offset: usize,
 }
 
@@ -63,14 +63,14 @@ pub struct BinderReturnEntry {
 
 // TP_fast_assign for binder_ioctl.
 #[inline]
-pub const fn binder_ioctl_entry(cmd: core::ffi::c_uint, arg: core::ffi::c_ulong) -> BinderIoctlEntry {
+pub const fn binder_ioctl_entry(cmd: kernel::ffi::c_uint, arg: kernel::ffi::c_ulong) -> BinderIoctlEntry {
     BinderIoctlEntry { cmd, arg }
 }
 
 // TP_fast_assign for binder_function_return_class and its events:
 // binder_ioctl_done, binder_read_done, and binder_write_done.
 #[inline]
-pub const fn binder_function_return_entry(ret: core::ffi::c_int) -> BinderFunctionReturnEntry {
+pub const fn binder_function_return_entry(ret: kernel::ffi::c_int) -> BinderFunctionReturnEntry {
     BinderFunctionReturnEntry { ret }
 }
 
@@ -93,10 +93,10 @@ extern "C" {
 
     pub fn rust_binder_transaction_to_proc(t: *mut rust_binder_transaction) -> *mut rust_binder_process;
     pub fn rust_binder_transaction_target_node(t: *mut rust_binder_transaction) -> *mut rust_binder_node;
-    pub fn rust_binder_transaction_debug_id(t: *mut rust_binder_transaction) -> core::ffi::c_int;
-    pub fn rust_binder_transaction_code(t: *mut rust_binder_transaction) -> core::ffi::c_uint;
-    pub fn rust_binder_transaction_flags(t: *mut rust_binder_transaction) -> core::ffi::c_uint;
-    pub fn rust_binder_node_debug_id(node: *mut rust_binder_node) -> core::ffi::c_int;
+    pub fn rust_binder_transaction_debug_id(t: *mut rust_binder_transaction) -> kernel::ffi::c_int;
+    pub fn rust_binder_transaction_code(t: *mut rust_binder_transaction) -> kernel::ffi::c_uint;
+    pub fn rust_binder_transaction_flags(t: *mut rust_binder_transaction) -> kernel::ffi::c_uint;
+    pub fn rust_binder_node_debug_id(node: *mut rust_binder_node) -> kernel::ffi::c_int;
     pub fn rust_binder_process_task(process: *mut rust_binder_process) -> *mut task_struct;
 }
 
@@ -113,7 +113,7 @@ pub unsafe fn binder_transaction_entry(
         target_node: if !target_node.is_null() { rust_binder_node_debug_id(target_node) } else { 0 },
         to_proc: (*rust_binder_process_task(to)).pid,
         to_thread: if !thread.is_null() { (*thread).pid } else { 0 },
-        reply: reply as core::ffi::c_int,
+        reply: reply as kernel::ffi::c_int,
         code: rust_binder_transaction_code(t),
         flags: rust_binder_transaction_flags(t),
     }
@@ -125,7 +125,7 @@ pub unsafe fn binder_transaction_received_entry(t: *mut rust_binder_transaction)
 }
 
 #[inline]
-pub const fn binder_transaction_fd_entry(t_debug_id: core::ffi::c_int, fd: core::ffi::c_int, offset: usize) -> BinderTransactionFdEntry {
+pub const fn binder_transaction_fd_entry(t_debug_id: kernel::ffi::c_int, fd: kernel::ffi::c_int, offset: usize) -> BinderTransactionFdEntry {
     BinderTransactionFdEntry { debug_id: t_debug_id, fd, offset }
 }
 

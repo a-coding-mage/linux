@@ -50,14 +50,14 @@ pub struct kvm_kpic_state {
 pub struct kvm_pic {
     pub lock: spinlock_t,
     pub wakeup_needed: bool,
-    pub pending_acks: ::core::ffi::c_uint,
+    pub pending_acks: ::kernel::ffi::c_uint,
     pub kvm: *mut kvm,
     pub pics: [kvm_kpic_state; 2],
     pub output: i32,
     pub dev_master: kvm_io_device,
     pub dev_slave: kvm_io_device,
     pub dev_elcr: kvm_io_device,
-    pub irq_states: [::core::ffi::c_ulong; PIC_NUM_PINS],
+    pub irq_states: [::kernel::ffi::c_ulong; PIC_NUM_PINS],
 }
 
 #[cfg(CONFIG_KVM_IOAPIC)]

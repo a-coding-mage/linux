@@ -149,13 +149,13 @@ pub struct rockchip_ip {
 }
 
 #[repr(C)]
-pub struct rk_clks { pub name: *const core::ffi::c_char, pub max: c_ulong }
+pub struct rk_clks { pub name: *const kernel::ffi::c_char, pub max: c_ulong }
 #[repr(C)]
 pub struct rk_variant { pub num_clks: c_int, pub rkclks: [rk_clks; RK_MAX_CLKS] }
 #[repr(C)]
 pub struct rk_crypto_info {
     pub list: list_head, pub dev: *mut device, pub clks: *mut clk_bulk_data,
-    pub num_clks: c_int, pub rst: *mut reset_control, pub reg: *mut core::ffi::c_void,
+    pub num_clks: c_int, pub rst: *mut reset_control, pub reg: *mut kernel::ffi::c_void,
     pub irq: c_int, pub variant: *const rk_variant, pub nreq: c_ulong,
     pub engine: *mut crypto_engine, pub complete: completion, pub status: c_int,
 }

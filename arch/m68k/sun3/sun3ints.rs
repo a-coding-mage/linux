@@ -19,12 +19,12 @@ extern "C" {
     fn m68k_setup_user_interrupt(vector: u32, count: u32);
     fn request_irq(
         irq: u32,
-        handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t,
+        handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t,
         flags: u32,
-        name: *const core::ffi::c_char,
-        dev_id: *mut core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        dev_id: *mut kernel::ffi::c_void,
     ) -> i32;
-    fn pr_err(format: *const core::ffi::c_char, ...);
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
     #[cfg(CONFIG_SUN3)]
     fn intersil_clear();
 }
@@ -64,7 +64,7 @@ pub unsafe fn sun3_disable_irq(irq: u32) {
     core::ptr::write_volatile(sun3_intreg, value & !(1u8 << irq));
 }
 
-unsafe extern "C" fn sun3_int7(irq: i32, _dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn sun3_int7(irq: i32, _dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     let cnt = kstat_irqs_cpu(irq, 0);
     if cnt % 2000 == 0 {
         sun3_leds(led_pattern[(cnt % 16000 / 2000) as usize]);
@@ -72,7 +72,7 @@ unsafe extern "C" fn sun3_int7(irq: i32, _dev_id: *mut core::ffi::c_void) -> irq
     IRQ_HANDLED
 }
 
-unsafe extern "C" fn sun3_int5(irq: i32, _dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn sun3_int5(irq: i32, _dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     let mut flags: u64 = 0;
     local_irq_save(&mut flags);
     #[cfg(CONFIG_SUN3)]
@@ -90,7 +90,7 @@ unsafe extern "C" fn sun3_int5(irq: i32, _dev_id: *mut core::ffi::c_void) -> irq
     IRQ_HANDLED
 }
 
-unsafe extern "C" fn sun3_vec255(_irq: i32, _dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn sun3_vec255(_irq: i32, _dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     IRQ_HANDLED
 }
 

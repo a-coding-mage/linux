@@ -4,9 +4,9 @@
 // declarations/macros provided by <linux/vmcore_info.h>.
 
 unsafe extern "C" {
-    fn vmcoreinfo_append_str(fmt: *const core::ffi::c_char, ...);
+    fn vmcoreinfo_append_str(fmt: *const kernel::ffi::c_char, ...);
     fn early_radix_enabled() -> i32;
-    fn kaslr_offset() -> core::ffi::c_ulong;
+    fn kaslr_offset() -> kernel::ffi::c_ulong;
 }
 
 pub unsafe fn arch_crash_save_vmcoreinfo() {

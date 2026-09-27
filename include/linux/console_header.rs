@@ -4,7 +4,7 @@
  * Rust declarations and comments; dependent kernel definitions are external.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct vc_data { _private: [u8; 0] }
@@ -145,7 +145,7 @@ pub struct console {
     pub exit: Option<unsafe extern "C" fn(*mut console) -> i32>,
     pub r#match: Option<unsafe extern "C" fn(*mut console, *mut c_char, i32, *mut c_char) -> i32>,
     pub flags: i16, pub index: i16, pub cflag: i32, pub ispeed: uint, pub ospeed: uint,
-    pub seq: u64, pub dropped: usize, pub data: *mut core::ffi::c_void, pub node: hlist_node,
+    pub seq: u64, pub dropped: usize, pub data: *mut kernel::ffi::c_void, pub node: hlist_node,
     pub write_atomic: Option<unsafe extern "C" fn(*mut console, *mut nbcon_write_context)>,
     pub write_thread: Option<unsafe extern "C" fn(*mut console, *mut nbcon_write_context)>,
     pub device_lock: Option<unsafe extern "C" fn(*mut console, *mut usize)>,

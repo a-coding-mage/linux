@@ -38,7 +38,7 @@ pub const AMT_FCH_GPIO_REG_GEVT22: i32 = 0x09;
 pub struct amd_fch_gpio_pdata {
     pub gpio_num: i32,
     pub gpio_reg: *mut i32,
-    pub gpio_names: *const *const core::ffi::c_char,
+    pub gpio_names: *const *const kernel::ffi::c_char,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

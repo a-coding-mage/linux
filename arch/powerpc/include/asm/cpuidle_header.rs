@@ -80,7 +80,7 @@ pub const PNV_IDLE_NAME_LEN: usize = 16;
 
 #[repr(C)]
 pub struct pnv_idle_states_t {
-    pub name: [core::ffi::c_char; PNV_IDLE_NAME_LEN],
+    pub name: [kernel::ffi::c_char; PNV_IDLE_NAME_LEN],
     pub latency_ns: u32,
     pub residency_ns: u32,
     pub psscr_val: u64,
@@ -93,7 +93,7 @@ unsafe extern "C" {
     pub static mut pnv_idle_states: *mut pnv_idle_states_t;
     pub static mut nr_pnv_idle_states: i32;
 
-    pub fn pnv_cpu_offline(cpu: u32) -> core::ffi::c_ulong;
+    pub fn pnv_cpu_offline(cpu: u32) -> kernel::ffi::c_ulong;
     pub fn validate_psscr_val_mask(
         psscr_val: *mut u64,
         psscr_mask: *mut u64,
@@ -121,7 +121,7 @@ pub unsafe fn report_invalid_psscr_val(psscr_val: u64, err: i32) {
 }
 
 unsafe extern "C" {
-    fn pr_warn(format: *const core::ffi::c_char, ...);
+    fn pr_warn(format: *const kernel::ffi::c_char, ...);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

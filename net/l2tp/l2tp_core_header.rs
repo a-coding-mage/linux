@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* Rust translation of l2tp_core.h. Kernel-provided types and functions are external dependencies. */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* External kernel types and constants supplied by other translated headers. */
 #[repr(C)] pub struct sk_buff;
@@ -20,12 +20,12 @@ use core::ffi::c_void;
 #[repr(C)] pub struct hlist_node;
 #[repr(C)] pub struct work_struct;
 
-pub type u8 = core::ffi::c_uchar;
-pub type u16 = core::ffi::c_ushort;
-pub type u32 = core::ffi::c_uint;
-pub type c_int = core::ffi::c_int;
-pub type c_long = core::ffi::c_long;
-pub type ulong = core::ffi::c_ulong;
+pub type u8 = kernel::ffi::c_uchar;
+pub type u16 = kernel::ffi::c_ushort;
+pub type u32 = kernel::ffi::c_uint;
+pub type c_int = kernel::ffi::c_int;
+pub type c_long = kernel::ffi::c_long;
+pub type ulong = kernel::ffi::c_ulong;
 pub type IFNAMSIZ = usize;
 pub const L2TP_SESSION_MAGIC: c_int = 0x0C04EB7D;
 pub const L2TP_SESSION_NAME_MAX: usize = 32;

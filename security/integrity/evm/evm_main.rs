@@ -281,7 +281,7 @@ unsafe fn evm_set_fixmode() {
     }
 
     // strncmp comparison: "fix" with first 3 chars
-    if libc::strncmp(EVM_CMDLINE, b"fix\0".as_ptr() as *const i8, 3) == 0 {
+    if strncmp(EVM_CMDLINE, b"fix\0".as_ptr() as *const i8, 3) == 0 {
         if arch_get_secureboot() != 0 {
             pr_info("Secure boot enabled: ignoring evm=fix");
             return;
@@ -529,7 +529,7 @@ unsafe fn goto_portable_digsig(
 
 unsafe fn evm_protected_xattr_common(req_xattr_name: *const i8, all_xattrs: bool) -> i32 {
     let mut found = 0;
-    let namelen = libc::strlen(req_xattr_name);
+    let namelen = strlen(req_xattr_name);
 
     for i in 0..8 {
         let xattr = &EVM_CONFIG_DEFAULT_XATTRNAMES[i];
@@ -537,17 +537,17 @@ unsafe fn evm_protected_xattr_common(req_xattr_name: *const i8, all_xattrs: bool
             continue;
         }
 
-        let xattr_namelen = libc::strlen(xattr.name);
+        let xattr_namelen = strlen(xattr.name);
         if xattr_namelen == namelen
-            && libc::strncmp(req_xattr_name, xattr.name, namelen) == 0
+            && strncmp(req_xattr_name, xattr.name, namelen) == 0
         {
             found = 1;
             break;
         }
-        if libc::strncmp(
+        if strncmp(
             req_xattr_name,
             xattr.name.add(XATTR_SECURITY_PREFIX_LEN),
-            libc::strlen(req_xattr_name),
+            strlen(req_xattr_name),
         ) == 0
         {
             found = 1;
@@ -587,12 +587,12 @@ pub unsafe fn evm_read_protected_xattrs(
 
         match typ {
             b'n' => {
-                size = (libc::strlen(xattr.name) + 1) as i32;
+                size = (strlen(xattr.name) + 1) as i32;
                 if !buffer.is_null() {
                     if total_size > 0 {
                         *buffer.add(total_size as usize) = b'|';
                     }
-                    libc::memcpy(
+                    memcpy(
                         buffer.add(total_size as usize) as *mut u8,
                         xattr.name as *const u8,
                         size as usize,
@@ -675,7 +675,7 @@ unsafe fn evm_xattr_change(
     if rc < 0 {
         rc = 1;
     } else if rc == xattr_value_len as i32 {
-        rc = (libc::memcmp(xattr_value as *const u8, xattr_data as *const u8, rc as usize) != 0) as i32;
+        rc = (memcmp(xattr_value as *const u8, xattr_data as *const u8, rc as usize) != 0) as i32;
     } else {
         rc = 1;
     }
@@ -693,7 +693,7 @@ unsafe fn evm_protect_xattr(
 ) -> i32 {
     let mut evm_status: i32;
 
-    if libc::strcmp(xattr_name, b"security.evm\0".as_ptr() as *const i8) == 0 {
+    if strcmp(xattr_name, b"security.evm\0".as_ptr() as *const i8) == 0 {
         if !capable(1) {
             // CAP_SYS_ADMIN = 1
             return -EPERM;
@@ -789,7 +789,7 @@ pub unsafe fn evm_inode_setxattr(
         return 0;
     }
 
-    if libc::strcmp(xattr_name, b"security.evm\0".as_ptr() as *const i8) == 0 {
+    if strcmp(xattr_name, b"security.evm\0".as_ptr() as *const i8) == 0 {
         if xattr_value_len == 0 {
             return -EINVAL;
         }
@@ -923,7 +923,7 @@ pub unsafe fn evm_revalidate_status(xattr_name: *const i8) -> bool {
 
     if evm_protected_xattr(xattr_name) == 0
         && !posix_xattr_acl(xattr_name)
-        && libc::strcmp(xattr_name, b"security.evm\0".as_ptr() as *const i8) != 0
+        && strcmp(xattr_name, b"security.evm\0".as_ptr() as *const i8) != 0
     {
         return false;
     }
@@ -965,7 +965,7 @@ unsafe fn evm_inode_post_setxattr(
 
     evm_reset_status((*dentry).d_inode);
 
-    if libc::strcmp(xattr_name, b"security.evm\0".as_ptr() as *const i8) == 0 {
+    if strcmp(xattr_name, b"security.evm\0".as_ptr() as *const i8) == 0 {
         return;
     }
 
@@ -995,7 +995,7 @@ unsafe fn evm_inode_post_removexattr(dentry: *const Dentry, xattr_name: *const i
 
     evm_reset_status((*dentry).d_inode);
 
-    if libc::strcmp(xattr_name, b"security.evm\0".as_ptr() as *const i8) == 0 {
+    if strcmp(xattr_name, b"security.evm\0".as_ptr() as *const i8) == 0 {
         return;
     }
 
@@ -1100,7 +1100,7 @@ unsafe fn evm_inode_copy_up_xattr(src: *const Dentry, name: *const i8) -> i32 {
     let mut xattr_data: *mut EvmImaXattrData = core::ptr::null_mut();
     let mut rc: i32;
 
-    if libc::strcmp(name, b"security.evm\0".as_ptr() as *const i8) != 0 {
+    if strcmp(name, b"security.evm\0".as_ptr() as *const i8) != 0 {
         return -EOPNOTSUPP;
     }
 

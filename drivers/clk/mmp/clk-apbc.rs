@@ -25,10 +25,10 @@ pub struct clk {
 
 #[repr(C)]
 pub struct clk_init_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const clk_ops,
     pub flags: u32,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: u8,
 }
 
@@ -44,14 +44,14 @@ pub struct spinlock_t {
 }
 
 extern "C" {
-    fn readl_relaxed(addr: *mut core::ffi::c_void) -> u32;
-    fn writel_relaxed(value: u32, addr: *mut core::ffi::c_void);
+    fn readl_relaxed(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel_relaxed(value: u32, addr: *mut kernel::ffi::c_void);
     fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut usize);
     fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: usize);
     fn udelay(usecs: u32);
-    fn kzalloc(size: usize) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn clk_register(dev: *mut core::ffi::c_void, hw: *mut clk_hw) -> *mut clk;
+    fn kzalloc(size: usize) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn clk_register(dev: *mut kernel::ffi::c_void, hw: *mut clk_hw) -> *mut clk;
     fn is_err(ptr: *mut clk) -> bool;
 }
 
@@ -65,7 +65,7 @@ extern "C" {
 #[repr(C)]
 pub struct clk_apbc {
     pub hw: clk_hw,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub delay: u32,
     pub flags: u32,
     pub lock: *mut spinlock_t,
@@ -169,9 +169,9 @@ static clk_apbc_ops: clk_ops = clk_ops {
 };
 
 pub unsafe extern "C" fn mmp_clk_register_apbc(
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
-    base: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
+    base: *mut kernel::ffi::c_void,
     delay: u32,
     apbc_flags: u32,
     lock: *mut spinlock_t,
@@ -201,7 +201,7 @@ pub unsafe extern "C" fn mmp_clk_register_apbc(
     // clk_hw definition supplies that field.
     let clk = clk_register(core::ptr::null_mut(), &mut (*apbc).hw);
     if is_err(clk) {
-        kfree(apbc as *mut core::ffi::c_void);
+        kfree(apbc as *mut kernel::ffi::c_void);
     }
 
     clk

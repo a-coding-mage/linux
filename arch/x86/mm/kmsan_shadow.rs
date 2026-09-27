@@ -17,11 +17,11 @@
  * CPU entry area to addresses in cpu_entry_area_shadow/cpu_entry_area_origin.
  */
 // DEFINE_PER_CPU(char[CPU_ENTRY_AREA_SIZE], cpu_entry_area_shadow);
-pub static mut cpu_entry_area_shadow: [core::ffi::c_char; CPU_ENTRY_AREA_SIZE] =
-    [0 as core::ffi::c_char; CPU_ENTRY_AREA_SIZE];
+pub static mut cpu_entry_area_shadow: [kernel::ffi::c_char; CPU_ENTRY_AREA_SIZE] =
+    [0 as kernel::ffi::c_char; CPU_ENTRY_AREA_SIZE];
 
 // DEFINE_PER_CPU(char[CPU_ENTRY_AREA_SIZE], cpu_entry_area_origin);
-pub static mut cpu_entry_area_origin: [core::ffi::c_char; CPU_ENTRY_AREA_SIZE] =
-    [0 as core::ffi::c_char; CPU_ENTRY_AREA_SIZE];
+pub static mut cpu_entry_area_origin: [kernel::ffi::c_char; CPU_ENTRY_AREA_SIZE] =
+    [0 as kernel::ffi::c_char; CPU_ENTRY_AREA_SIZE];
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

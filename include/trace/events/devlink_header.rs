@@ -4,7 +4,7 @@
 
 #[cfg(CONFIG_NET_DEVLINK)]
 mod net_devlink_tracepoints {
-    use core::ffi::{c_char, c_void};
+    use kernel::ffi::{c_char, c_void};
 
     #[repr(C)]
     pub struct devlink {
@@ -118,7 +118,7 @@ mod net_devlink_tracepoints {
 /* CONFIG_NET_DEVLINK disabled: the C header supplies empty inline stubs. */
 #[cfg(not(CONFIG_NET_DEVLINK))]
 pub mod no_net_devlink_tracepoints {
-    use core::ffi::c_char;
+    use kernel::ffi::c_char;
 
     #[repr(C)]
     pub struct devlink {

@@ -9,7 +9,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /*
  * Urgs ...  Too many MIPS machines to handle this in a generic way.

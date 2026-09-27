@@ -15,11 +15,11 @@ extern "C" {
     fn dhry(iterations: i32) -> i32;
     fn get_cpu() -> u32;
     fn put_cpu();
-    fn param_set_bool(val: *const core::ffi::c_char, kp: *const kernel_param) -> i32;
+    fn param_set_bool(val: *const kernel::ffi::c_char, kp: *const kernel_param) -> i32;
     fn system_state_value() -> i32;
-    fn pr_info(format: *const core::ffi::c_char, ...);
-    fn pr_err(format: *const core::ffi::c_char, ...);
-    fn err_ptr(value: i32) -> *mut core::ffi::c_void;
+    fn pr_info(format: *const kernel::ffi::c_char, ...);
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
+    fn err_ptr(value: i32) -> *mut kernel::ffi::c_void;
 }
 
 #[repr(C)]
@@ -66,22 +66,22 @@ unsafe fn goto_report(cpu: u32, n: i32) {
     put_cpu();
     if n >= 0 {
         pr_info(
-            b"CPU%u: Dhrystones per Second: %d (%d DMIPS)\0".as_ptr() as *const core::ffi::c_char,
+            b"CPU%u: Dhrystones per Second: %d (%d DMIPS)\0".as_ptr() as *const kernel::ffi::c_char,
             cpu,
             n,
             n / DHRY_VAX,
         );
     } else if n == -11 {
-        pr_err(b"Please increase the number of iterations\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_err(b"Please increase the number of iterations\n\0".as_ptr() as *const kernel::ffi::c_char);
     } else {
         pr_err(
-            b"Dhrystone benchmark failed error %pe\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Dhrystone benchmark failed error %pe\n\0".as_ptr() as *const kernel::ffi::c_char,
             err_ptr(n),
         );
     }
 }
 
-unsafe fn dhry_run_set(val: *const core::ffi::c_char, kp: *const kernel_param) -> i32 {
+unsafe fn dhry_run_set(val: *const kernel::ffi::c_char, kp: *const kernel_param) -> i32 {
     let ret: i32;
 
     if !val.is_null() {

@@ -61,7 +61,7 @@ pub struct pxa168fb_info {
     pub clk: *mut clk,
     pub info: *mut fb_info,
 
-    pub reg_base: *mut core::ffi::c_void,
+    pub reg_base: *mut kernel::ffi::c_void,
     pub fb_start_dma: dma_addr_t,
     pub pseudo_palette: [u32; 16],
 
@@ -77,7 +77,7 @@ pub struct pxa168fb_info {
  */
 #[repr(C)]
 pub struct pxa168fb_mach_info {
-    pub id: [core::ffi::c_char; 16],
+    pub id: [kernel::ffi::c_char; 16],
 
     pub num_modes: i32,
     pub modes: *mut fb_videomode,

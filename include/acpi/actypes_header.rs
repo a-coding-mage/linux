@@ -24,11 +24,11 @@ pub type acpi_size = usize;
 pub type acpi_io_address = u64;
 pub type acpi_physical_address = u64;
 pub type acpi_cpu_flags = acpi_size;
-pub type acpi_spinlock = *mut ::core::ffi::c_void;
+pub type acpi_spinlock = *mut ::kernel::ffi::c_void;
 pub type acpi_raw_spinlock = acpi_spinlock;
-pub type acpi_semaphore = *mut ::core::ffi::c_void;
-pub type acpi_mutex = *mut ::core::ffi::c_void;
-pub type acpi_uintptr_t = *mut ::core::ffi::c_void;
+pub type acpi_semaphore = *mut ::kernel::ffi::c_void;
+pub type acpi_mutex = *mut ::kernel::ffi::c_void;
+pub type acpi_uintptr_t = *mut ::kernel::ffi::c_void;
 
 pub const ACPI_MAX_PTR: u64 = ACPI_UINT64_MAX;
 pub const ACPI_SIZE_MAX: u64 = ACPI_UINT64_MAX;
@@ -49,8 +49,8 @@ pub const ACPI_PM_TIMER_FREQUENCY: u32 = 3579545;
 
 pub type acpi_status = u32;
 pub type acpi_name = u32;
-pub type acpi_string = *mut ::core::ffi::c_char;
-pub type acpi_handle = *mut ::core::ffi::c_void;
+pub type acpi_string = *mut ::kernel::ffi::c_char;
+pub type acpi_handle = *mut ::kernel::ffi::c_void;
 pub type acpi_owner_id = u16;
 pub type acpi_integer = u64;
 pub const ACPI_OWNER_ID_MAX: u32 = 0xfff;
@@ -102,8 +102,8 @@ pub const ACPI_TYPE_INVALID: u32 = 0x1e;
 pub const ACPI_TYPE_NOT_FOUND: u32 = 0xff;
 
 #[repr(C)] pub struct acpi_object_list { pub count: u32, pub pointer: *mut acpi_object }
-#[repr(C)] pub struct acpi_buffer { pub length: acpi_size, pub pointer: *mut ::core::ffi::c_void }
-#[repr(C)] pub struct acpi_pnp_device_id { pub length: u32, pub string: *mut ::core::ffi::c_char }
+#[repr(C)] pub struct acpi_buffer { pub length: acpi_size, pub pointer: *mut ::kernel::ffi::c_void }
+#[repr(C)] pub struct acpi_pnp_device_id { pub length: u32, pub string: *mut ::kernel::ffi::c_char }
 #[repr(C)] pub struct acpi_pnp_device_id_list { pub count: u32, pub list_size: u32, pub ids: [acpi_pnp_device_id; 0] }
 #[repr(C)] pub struct acpi_pci_id { pub segment: u16, pub bus: u16, pub device: u16, pub function: u16 }
 #[repr(C)] pub struct acpi_connection_info { pub connection: *mut u8, pub length: u16, pub access_length: u8 }
@@ -114,20 +114,20 @@ pub const ACPI_TYPE_NOT_FOUND: u32 = 0xff;
 
 #[repr(C)] pub union acpi_object { pub type_: acpi_object_type, pub integer: acpi_object_integer, pub string: acpi_object_string, pub buffer: acpi_object_buffer, pub package: acpi_object_package, pub reference: acpi_object_reference, pub processor: acpi_object_processor, pub power_resource: acpi_object_power }
 #[repr(C)] pub struct acpi_object_integer { pub type_: acpi_object_type, pub value:u64 }
-#[repr(C)] pub struct acpi_object_string { pub type_: acpi_object_type, pub length:u32, pub pointer:*mut ::core::ffi::c_char }
+#[repr(C)] pub struct acpi_object_string { pub type_: acpi_object_type, pub length:u32, pub pointer:*mut ::kernel::ffi::c_char }
 #[repr(C)] pub struct acpi_object_buffer { pub type_: acpi_object_type, pub length:u32, pub pointer:*mut u8 }
 #[repr(C)] pub struct acpi_object_package { pub type_: acpi_object_type, pub count:u32, pub elements:*mut acpi_object }
 #[repr(C)] pub struct acpi_object_reference { pub type_: acpi_object_type, pub actual_type:acpi_object_type, pub handle:acpi_handle }
 #[repr(C)] pub struct acpi_object_processor { pub type_:acpi_object_type, pub proc_id:u32, pub pblk_address:acpi_io_address, pub pblk_length:u32 }
 #[repr(C)] pub struct acpi_object_power { pub type_:acpi_object_type, pub system_level:u32, pub resource_order:u32 }
 
-pub type acpi_sci_handler = Option<unsafe extern "C" fn(*mut ::core::ffi::c_void) -> u32>;
+pub type acpi_sci_handler = Option<unsafe extern "C" fn(*mut ::kernel::ffi::c_void) -> u32>;
 pub type acpi_event_handler = acpi_sci_handler;
-pub type acpi_gpe_handler = Option<unsafe extern "C" fn(acpi_handle,u32,*mut ::core::ffi::c_void)->u32>;
-pub type acpi_notify_handler = Option<unsafe extern "C" fn(acpi_handle,u32,*mut ::core::ffi::c_void)>;
-pub type acpi_object_handler = Option<unsafe extern "C" fn(acpi_handle,*mut ::core::ffi::c_void)>;
+pub type acpi_gpe_handler = Option<unsafe extern "C" fn(acpi_handle,u32,*mut ::kernel::ffi::c_void)->u32>;
+pub type acpi_notify_handler = Option<unsafe extern "C" fn(acpi_handle,u32,*mut ::kernel::ffi::c_void)>;
+pub type acpi_object_handler = Option<unsafe extern "C" fn(acpi_handle,*mut ::kernel::ffi::c_void)>;
 pub type acpi_init_handler = Option<unsafe extern "C" fn(acpi_handle,u32)->acpi_status>;
-pub type acpi_table_handler = Option<unsafe extern "C" fn(u32,*mut ::core::ffi::c_void,*mut ::core::ffi::c_void)->acpi_status>;
+pub type acpi_table_handler = Option<unsafe extern "C" fn(u32,*mut ::kernel::ffi::c_void,*mut ::kernel::ffi::c_void)->acpi_status>;
 pub type acpi_interface_handler = Option<unsafe extern "C" fn(acpi_string,u32)->u32>;
 
 pub const ACPI_READ:u32=0; pub const ACPI_WRITE:u32=1; pub const ACPI_IO_MASK:u32=1;

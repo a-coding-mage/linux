@@ -136,7 +136,7 @@ pub unsafe fn snd_gf1_compute_vibrato(cents: i16, fc_register: u16) -> i16 {
         241, 4834, 255, 5200,
     ];
 
-    let mut depth: libc::c_long;
+    let mut depth: kernel::ffi::c_long;
     let mut vi1: *const i16;
     let mut vi2: *const i16;
     let pcents: i16;
@@ -161,8 +161,8 @@ pub unsafe fn snd_gf1_compute_vibrato(cents: i16, fc_register: u16) -> i16 {
     /* is 2 * desired FC + 1.                                                  */
     depth = (((((*vi2.add(1) - *vi1) as i32) * ((pcents - *vi1) as i32)
         / ((*vi2 - *vi1) as i32))
-        + v1 as i32) as libc::c_long
-        * fc_register as libc::c_long)
+        + v1 as i32) as kernel::ffi::c_long
+        * fc_register as kernel::ffi::c_long)
         >> 14;
     if depth != 0 {
         depth += 1;
@@ -180,7 +180,7 @@ pub unsafe fn snd_gf1_compute_vibrato(cents: i16, fc_register: u16) -> i16 {
 // C source disabled this block with #if 0.
 #[cfg(any())]
 pub unsafe fn snd_gf1_compute_pitchbend(pitchbend: u16, sens: u16) -> u16 {
-    static LOG_TABLE: [libc::c_long; 12] = [
+    static LOG_TABLE: [kernel::ffi::c_long; 12] = [
         1024, 1085, 1149, 1218, 1290, 1367, 1448, 1534, 1625, 1722, 1825, 1933,
     ];
     let wheel: i32;

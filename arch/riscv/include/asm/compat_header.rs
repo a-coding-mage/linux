@@ -111,38 +111,38 @@ pub unsafe fn cregs_to_regs(
     cregs: *mut compat_user_regs_struct,
     regs: *mut pt_regs,
 ) {
-    (*regs).epc = (*cregs).pc as core::ffi::c_ulong;
-    (*regs).ra = (*cregs).ra as core::ffi::c_ulong;
-    (*regs).sp = (*cregs).sp as core::ffi::c_ulong;
-    (*regs).gp = (*cregs).gp as core::ffi::c_ulong;
-    (*regs).tp = (*cregs).tp as core::ffi::c_ulong;
-    (*regs).t0 = (*cregs).t0 as core::ffi::c_ulong;
-    (*regs).t1 = (*cregs).t1 as core::ffi::c_ulong;
-    (*regs).t2 = (*cregs).t2 as core::ffi::c_ulong;
-    (*regs).s0 = (*cregs).s0 as core::ffi::c_ulong;
-    (*regs).s1 = (*cregs).s1 as core::ffi::c_ulong;
-    (*regs).a0 = (*cregs).a0 as core::ffi::c_ulong;
-    (*regs).a1 = (*cregs).a1 as core::ffi::c_ulong;
-    (*regs).a2 = (*cregs).a2 as core::ffi::c_ulong;
-    (*regs).a3 = (*cregs).a3 as core::ffi::c_ulong;
-    (*regs).a4 = (*cregs).a4 as core::ffi::c_ulong;
-    (*regs).a5 = (*cregs).a5 as core::ffi::c_ulong;
-    (*regs).a6 = (*cregs).a6 as core::ffi::c_ulong;
-    (*regs).a7 = (*cregs).a7 as core::ffi::c_ulong;
-    (*regs).s2 = (*cregs).s2 as core::ffi::c_ulong;
-    (*regs).s3 = (*cregs).s3 as core::ffi::c_ulong;
-    (*regs).s4 = (*cregs).s4 as core::ffi::c_ulong;
-    (*regs).s5 = (*cregs).s5 as core::ffi::c_ulong;
-    (*regs).s6 = (*cregs).s6 as core::ffi::c_ulong;
-    (*regs).s7 = (*cregs).s7 as core::ffi::c_ulong;
-    (*regs).s8 = (*cregs).s8 as core::ffi::c_ulong;
-    (*regs).s9 = (*cregs).s9 as core::ffi::c_ulong;
-    (*regs).s10 = (*cregs).s10 as core::ffi::c_ulong;
-    (*regs).s11 = (*cregs).s11 as core::ffi::c_ulong;
-    (*regs).t3 = (*cregs).t3 as core::ffi::c_ulong;
-    (*regs).t4 = (*cregs).t4 as core::ffi::c_ulong;
-    (*regs).t5 = (*cregs).t5 as core::ffi::c_ulong;
-    (*regs).t6 = (*cregs).t6 as core::ffi::c_ulong;
+    (*regs).epc = (*cregs).pc as kernel::ffi::c_ulong;
+    (*regs).ra = (*cregs).ra as kernel::ffi::c_ulong;
+    (*regs).sp = (*cregs).sp as kernel::ffi::c_ulong;
+    (*regs).gp = (*cregs).gp as kernel::ffi::c_ulong;
+    (*regs).tp = (*cregs).tp as kernel::ffi::c_ulong;
+    (*regs).t0 = (*cregs).t0 as kernel::ffi::c_ulong;
+    (*regs).t1 = (*cregs).t1 as kernel::ffi::c_ulong;
+    (*regs).t2 = (*cregs).t2 as kernel::ffi::c_ulong;
+    (*regs).s0 = (*cregs).s0 as kernel::ffi::c_ulong;
+    (*regs).s1 = (*cregs).s1 as kernel::ffi::c_ulong;
+    (*regs).a0 = (*cregs).a0 as kernel::ffi::c_ulong;
+    (*regs).a1 = (*cregs).a1 as kernel::ffi::c_ulong;
+    (*regs).a2 = (*cregs).a2 as kernel::ffi::c_ulong;
+    (*regs).a3 = (*cregs).a3 as kernel::ffi::c_ulong;
+    (*regs).a4 = (*cregs).a4 as kernel::ffi::c_ulong;
+    (*regs).a5 = (*cregs).a5 as kernel::ffi::c_ulong;
+    (*regs).a6 = (*cregs).a6 as kernel::ffi::c_ulong;
+    (*regs).a7 = (*cregs).a7 as kernel::ffi::c_ulong;
+    (*regs).s2 = (*cregs).s2 as kernel::ffi::c_ulong;
+    (*regs).s3 = (*cregs).s3 as kernel::ffi::c_ulong;
+    (*regs).s4 = (*cregs).s4 as kernel::ffi::c_ulong;
+    (*regs).s5 = (*cregs).s5 as kernel::ffi::c_ulong;
+    (*regs).s6 = (*cregs).s6 as kernel::ffi::c_ulong;
+    (*regs).s7 = (*cregs).s7 as kernel::ffi::c_ulong;
+    (*regs).s8 = (*cregs).s8 as kernel::ffi::c_ulong;
+    (*regs).s9 = (*cregs).s9 as kernel::ffi::c_ulong;
+    (*regs).s10 = (*cregs).s10 as kernel::ffi::c_ulong;
+    (*regs).s11 = (*cregs).s11 as kernel::ffi::c_ulong;
+    (*regs).t3 = (*cregs).t3 as kernel::ffi::c_ulong;
+    (*regs).t4 = (*cregs).t4 as kernel::ffi::c_ulong;
+    (*regs).t5 = (*cregs).t5 as kernel::ffi::c_ulong;
+    (*regs).t6 = (*cregs).t6 as kernel::ffi::c_ulong;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

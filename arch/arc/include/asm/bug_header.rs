@@ -15,10 +15,10 @@ extern "C" {
     pub fn show_stacktrace(
         tsk: *mut task_struct,
         regs: *mut pt_regs,
-        loglvl: *const core::ffi::c_char,
+        loglvl: *const kernel::ffi::c_char,
     );
-    pub fn show_kernel_fault_diag(str_: *const core::ffi::c_char, regs: *mut pt_regs, address: usize);
-    pub fn die(str_: *const core::ffi::c_char, regs: *mut pt_regs, address: usize);
+    pub fn show_kernel_fault_diag(str_: *const kernel::ffi::c_char, regs: *mut pt_regs, address: usize);
+    pub fn die(str_: *const kernel::ffi::c_char, regs: *mut pt_regs, address: usize);
 }
 
 // Equivalent to the C BUG() macro. The pr_warn! and barrier_before_unreachable!

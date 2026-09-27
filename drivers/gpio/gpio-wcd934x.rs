@@ -37,7 +37,7 @@ pub struct GpioChip {
     pub parent: *mut Device,
     pub base: i32,
     pub ngpio: u32,
-    pub label: *const core::ffi::c_char,
+    pub label: *const kernel::ffi::c_char,
     pub can_sleep: bool,
 }
 
@@ -51,10 +51,10 @@ extern "C" {
     fn gpiochip_get_data(chip: *mut GpioChip) -> *mut WcdGpioData;
     fn regmap_read(map: *mut Regmap, reg: u32, value: *mut u32) -> i32;
     fn regmap_update_bits(map: *mut Regmap, reg: u32, mask: u32, value: u32) -> i32;
-    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn dev_get_regmap(dev: *mut Device, name: *const core::ffi::c_char) -> *mut Regmap;
-    fn dev_err(dev: *mut Device, fmt: *const core::ffi::c_char, ...);
-    fn dev_name(dev: *mut Device) -> *const core::ffi::c_char;
+    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn dev_get_regmap(dev: *mut Device, name: *const kernel::ffi::c_char) -> *mut Regmap;
+    fn dev_err(dev: *mut Device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_name(dev: *mut Device) -> *const kernel::ffi::c_char;
     fn devm_gpiochip_add_data(
         dev: *mut Device,
         chip: *mut GpioChip,
@@ -165,7 +165,7 @@ unsafe extern "C" fn wcd_gpio_probe(pdev: *mut PlatformDevice) -> i32 {
 // the Linux kernel's of_device_id, platform_driver, and module macros.
 #[repr(C)]
 struct OfDeviceId {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 static WCD_GPIO_OF_MATCH: [OfDeviceId; 3] = [

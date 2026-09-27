@@ -40,23 +40,23 @@ enum mf6x4_boardid { BOARD_MF634, BOARD_MF624 }
 
 #[repr(C)]
 struct mf6x4_board {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     bar_nums: [u32; 3],
 }
 
 #[repr(C)]
 struct mf6x4_private {
-    bar0_mem: *mut core::ffi::c_void,
-    bar2_mem: *mut core::ffi::c_void,
-    gpioc_reg: *mut core::ffi::c_void,
+    bar0_mem: *mut kernel::ffi::c_void,
+    bar2_mem: *mut kernel::ffi::c_void,
+    gpioc_reg: *mut kernel::ffi::c_void,
 }
 
 extern "C" {
     static mf6x4_boards: [mf6x4_board; 2];
-    fn ioread16(addr: *mut core::ffi::c_void) -> u16;
-    fn ioread32(addr: *mut core::ffi::c_void) -> u32;
-    fn iowrite16(value: u16, addr: *mut core::ffi::c_void);
-    fn iowrite32(value: u32, addr: *mut core::ffi::c_void);
+    fn ioread16(addr: *mut kernel::ffi::c_void) -> u16;
+    fn ioread32(addr: *mut kernel::ffi::c_void) -> u32;
+    fn iowrite16(value: u16, addr: *mut kernel::ffi::c_void);
+    fn iowrite32(value: u32, addr: *mut kernel::ffi::c_void);
 }
 
 unsafe fn mf6x4_di_insn_bits(dev: *mut comedi_device, _s: *mut comedi_subdevice,

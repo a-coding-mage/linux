@@ -3,7 +3,7 @@
 
 /* Dependency supplied by adf_cfg_strings.h. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct adf_accel_dev {

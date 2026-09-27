@@ -11,7 +11,7 @@ pub struct kstatfs;
 #[repr(C)]
 pub struct upc_req {
     pub uc_chain: list_head,
-    pub uc_data: *mut core::ffi::c_char,
+    pub uc_data: *mut kernel::ffi::c_char,
     pub uc_flags: u16,
     pub uc_inSize: u16,  /* Size is at most 5000 bytes */
     pub uc_outSize: u16,
@@ -28,7 +28,7 @@ pub const CODA_REQ_ABORT: i32 = 0x8;
 /* communication pending/processing queues */
 #[repr(C)]
 pub struct venus_comm {
-    pub vc_seq: core::ffi::c_ulong,
+    pub vc_seq: kernel::ffi::c_ulong,
     pub vc_waitq: wait_queue_head_t, /* Venus wait queue */
     pub vc_pending: list_head,
     pub vc_processing: list_head,
@@ -58,7 +58,7 @@ unsafe extern "C" {
     pub fn venus_lookup(
         sb: *mut super_block,
         fid: *mut CodaFid,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         length: i32,
         type_: *mut i32,
         resfid: *mut CodaFid,
@@ -78,7 +78,7 @@ unsafe extern "C" {
     pub fn venus_mkdir(
         sb: *mut super_block,
         dirfid: *mut CodaFid,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         length: i32,
         newfid: *mut CodaFid,
         attrs: *mut coda_vattr,
@@ -86,7 +86,7 @@ unsafe extern "C" {
     pub fn venus_create(
         sb: *mut super_block,
         dirfid: *mut CodaFid,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         length: i32,
         excl: i32,
         mode: i32,
@@ -96,19 +96,19 @@ unsafe extern "C" {
     pub fn venus_rmdir(
         sb: *mut super_block,
         dirfid: *mut CodaFid,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         length: i32,
     ) -> i32;
     pub fn venus_remove(
         sb: *mut super_block,
         dirfid: *mut CodaFid,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         length: i32,
     ) -> i32;
     pub fn venus_readlink(
         sb: *mut super_block,
         fid: *mut CodaFid,
-        buffer: *mut core::ffi::c_char,
+        buffer: *mut kernel::ffi::c_char,
         length: *mut i32,
     ) -> i32;
     pub fn venus_rename(
@@ -117,22 +117,22 @@ unsafe extern "C" {
         old_fid: *mut CodaFid,
         old_length: usize,
         new_length: usize,
-        old_name: *const core::ffi::c_char,
-        new_name: *const core::ffi::c_char,
+        old_name: *const kernel::ffi::c_char,
+        new_name: *const kernel::ffi::c_char,
     ) -> i32;
     pub fn venus_link(
         sb: *mut super_block,
         fid: *mut CodaFid,
         dirfid: *mut CodaFid,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         len: i32,
     ) -> i32;
     pub fn venus_symlink(
         sb: *mut super_block,
         fid: *mut CodaFid,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         len: i32,
-        symname: *const core::ffi::c_char,
+        symname: *const kernel::ffi::c_char,
         symlen: i32,
     ) -> i32;
     pub fn venus_access(sb: *mut super_block, fid: *mut CodaFid, mask: i32) -> i32;

@@ -8,8 +8,8 @@
 // Linux and architecture dependencies supplied by the surrounding kernel tree.
 
 extern "C" {
-    fn of_find_compatible_node(from: *mut device_node, type_: *const core::ffi::c_char,
-                                compatible: *const core::ffi::c_char) -> *mut device_node;
+    fn of_find_compatible_node(from: *mut device_node, type_: *const kernel::ffi::c_char,
+                                compatible: *const kernel::ffi::c_char) -> *mut device_node;
     fn of_iomap(np: *mut device_node, index: i32) -> *mut u8;
     fn of_node_put(np: *mut device_node);
     fn writel_relaxed(value: u32, address: *mut u8);
@@ -17,13 +17,13 @@ extern "C" {
     fn irqchip_init();
     fn db8500_prcmu_early_init();
     fn of_address_to_resource(np: *mut device_node, index: i32, resource: *mut resource);
-    fn pr_err(message: *const core::ffi::c_char);
+    fn pr_err(message: *const kernel::ffi::c_char);
     fn ux500_pm_init(start: u64, size: u64);
     fn db8500_prcmu_system_reset(value: u32);
     fn local_irq_disable();
     fn local_fiq_disable();
     fn of_platform_populate(parent: *mut device_node, matches: *const of_device_id,
-                            lookup: *const core::ffi::c_void, root: *mut device);
+                            lookup: *const kernel::ffi::c_void, root: *mut device);
 }
 
 #[repr(C)]
@@ -45,10 +45,10 @@ pub struct resource {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub name: *const core::ffi::c_char,
-    pub type_: *const core::ffi::c_char,
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
+    pub type_: *const kernel::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -113,7 +113,7 @@ unsafe extern "C" fn ux500_init_irq() {
     outer_cache.write_sec = Some(ux500_l2c310_write_sec);
 }
 
-unsafe extern "C" fn ux500_restart(_mode: i32, _cmd: *const core::ffi::c_char) {
+unsafe extern "C" fn ux500_restart(_mode: i32, _cmd: *const kernel::ffi::c_char) {
     local_irq_disable();
     local_fiq_disable();
     db8500_prcmu_system_reset(0);
@@ -131,7 +131,7 @@ unsafe extern "C" fn u8500_init_machine() {
                          core::ptr::null(), core::ptr::null_mut());
 }
 
-static STERICSSON_DT_PLATFORM_COMPAT: [*const core::ffi::c_char; 3] = [
+static STERICSSON_DT_PLATFORM_COMPAT: [*const kernel::ffi::c_char; 3] = [
     b"st-ericsson,u8500\0".as_ptr() as *const _,
     b"st-ericsson,u9500\0".as_ptr() as *const _,
     core::ptr::null(),

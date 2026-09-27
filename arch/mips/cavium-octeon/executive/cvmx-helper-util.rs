@@ -1,7 +1,7 @@
 /* Small helper utilities.  C header dependencies are supplied by the
  * surrounding OCTEON translation. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn cvmx_write_csr(address: u64, value: u64);

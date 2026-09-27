@@ -5,7 +5,7 @@
  * Copyright (C) 2000 - 2026, Intel Corp.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* Dependencies supplied by the ACPI headers and common implementation. */
 

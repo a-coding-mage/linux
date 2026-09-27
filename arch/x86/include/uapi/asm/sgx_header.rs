@@ -109,14 +109,14 @@ pub struct sgx_enclave_remove_pages {
 }
 
 pub type sgx_enclave_user_handler_t = unsafe extern "C" fn(
-    rdi: libc::c_long,
-    rsi: libc::c_long,
-    rdx: libc::c_long,
-    rsp: libc::c_long,
-    r8: libc::c_long,
-    r9: libc::c_long,
+    rdi: kernel::ffi::c_long,
+    rsi: kernel::ffi::c_long,
+    rdx: kernel::ffi::c_long,
+    rsp: kernel::ffi::c_long,
+    r8: kernel::ffi::c_long,
+    r9: kernel::ffi::c_long,
     run: *mut sgx_enclave_run,
-) -> libc::c_int;
+) -> kernel::ffi::c_int;
 
 #[repr(C)]
 pub struct sgx_enclave_run {
@@ -131,13 +131,13 @@ pub struct sgx_enclave_run {
 }
 
 pub type vdso_sgx_enter_enclave_t = unsafe extern "C" fn(
-    rdi: libc::c_ulong,
-    rsi: libc::c_ulong,
-    rdx: libc::c_ulong,
-    function: libc::c_uint,
-    r8: libc::c_ulong,
-    r9: libc::c_ulong,
+    rdi: kernel::ffi::c_ulong,
+    rsi: kernel::ffi::c_ulong,
+    rdx: kernel::ffi::c_ulong,
+    function: kernel::ffi::c_uint,
+    r8: kernel::ffi::c_ulong,
+    r9: kernel::ffi::c_ulong,
     run: *mut sgx_enclave_run,
-) -> libc::c_int;
+) -> kernel::ffi::c_int;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

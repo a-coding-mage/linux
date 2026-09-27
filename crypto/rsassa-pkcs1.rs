@@ -23,7 +23,7 @@ static HASH_PREFIX_SHA3_384: [u8; 19] = [0x30,0x41,0x30,0x0d,0x06,0x09,0x60,0x86
 static HASH_PREFIX_SHA3_512: [u8; 19] = [0x30,0x51,0x30,0x0d,0x06,0x09,0x60,0x86,0x48,0x01,0x65,0x03,0x04,0x02,0x0a,0x05,0x00,0x04,0x40];
 
 #[repr(C)]
-struct HashPrefix { name: *const core::ffi::c_char, data: *const u8, size: usize }
+struct HashPrefix { name: *const kernel::ffi::c_char, data: *const u8, size: usize }
 
 static HASH_PREFIXES: [HashPrefix; 11] = [
     HashPrefix { name: b"none\0".as_ptr() as _, data: HASH_PREFIX_NONE.as_ptr(), size: 0 },
@@ -39,7 +39,7 @@ static HASH_PREFIXES: [HashPrefix; 11] = [
     HashPrefix { name: b"sha3-512\0".as_ptr() as _, data: HASH_PREFIX_SHA3_512.as_ptr(), size: 19 },
 ];
 
-unsafe fn rsassa_pkcs1_find_hash_prefix(name: *const core::ffi::c_char) -> *const HashPrefix {
+unsafe fn rsassa_pkcs1_find_hash_prefix(name: *const kernel::ffi::c_char) -> *const HashPrefix {
     let mut i = 0;
     while i < HASH_PREFIXES.len() {
         if strcmp(name, HASH_PREFIXES[i].name) == 0 { return &HASH_PREFIXES[i]; }
@@ -57,7 +57,7 @@ unsafe fn rsassa_pkcs1_invalid_hash_len(len: u32, p: *const HashPrefix) -> bool 
 #[repr(C)] struct RsassaPkcs1Ctx { child: *mut crypto_akcipher, key_size: u32 }
 #[repr(C)] struct RsassaPkcs1InstCtx { spawn: crypto_akcipher_spawn, hash_prefix: *const HashPrefix }
 
-unsafe fn rsassa_pkcs1_sign(tfm: *mut crypto_sig, src: *const core::ffi::c_void, slen: u32, dst: *mut core::ffi::c_void, dlen: u32) -> i32 {
+unsafe fn rsassa_pkcs1_sign(tfm: *mut crypto_sig, src: *const kernel::ffi::c_void, slen: u32, dst: *mut kernel::ffi::c_void, dlen: u32) -> i32 {
     let ctx = crypto_sig_ctx(tfm) as *mut RsassaPkcs1Ctx;
     let hp = (*(sig_instance_ctx(sig_alg_instance(tfm)) as *mut RsassaPkcs1InstCtx)).hash_prefix;
     if (*ctx).key_size == 0 { return -EINVAL; }
@@ -80,7 +80,7 @@ unsafe fn rsassa_pkcs1_sign(tfm: *mut crypto_sig, src: *const core::ffi::c_void,
     (*ctx).key_size as i32
 }
 
-unsafe fn rsassa_pkcs1_verify(tfm: *mut crypto_sig, src: *const core::ffi::c_void, slen: u32, digest: *const core::ffi::c_void, dlen: u32) -> i32 {
+unsafe fn rsassa_pkcs1_verify(tfm: *mut crypto_sig, src: *const kernel::ffi::c_void, slen: u32, digest: *const kernel::ffi::c_void, dlen: u32) -> i32 {
     let c = crypto_sig_ctx(tfm) as *mut RsassaPkcs1Ctx;
     let hp = (*(sig_instance_ctx(sig_alg_instance(tfm)) as *mut RsassaPkcs1InstCtx)).hash_prefix;
     if (*c).key_size == 0 || slen != (*c).key_size || rsassa_pkcs1_invalid_hash_len(dlen, hp) { return -EINVAL; }
@@ -101,18 +101,18 @@ unsafe fn rsassa_pkcs1_verify(tfm: *mut crypto_sig, src: *const core::ffi::c_voi
     0
 }
 unsafe fn rsassa_pkcs1_key_size(tfm: *mut crypto_sig) -> u32 { (*(crypto_sig_ctx(tfm) as *mut RsassaPkcs1Ctx)).key_size * BITS_PER_BYTE }
-unsafe fn rsassa_pkcs1_set_pub_key(tfm: *mut crypto_sig, key: *const core::ffi::c_void, keylen: u32) -> i32 { let c=crypto_sig_ctx(tfm) as *mut RsassaPkcs1Ctx; rsa_set_key((*c).child, &mut (*c).key_size, RSA_PUB, key, keylen) }
-unsafe fn rsassa_pkcs1_set_priv_key(tfm: *mut crypto_sig, key: *const core::ffi::c_void, keylen: u32) -> i32 { let c=crypto_sig_ctx(tfm) as *mut RsassaPkcs1Ctx; rsa_set_key((*c).child, &mut (*c).key_size, RSA_PRIV, key, keylen) }
+unsafe fn rsassa_pkcs1_set_pub_key(tfm: *mut crypto_sig, key: *const kernel::ffi::c_void, keylen: u32) -> i32 { let c=crypto_sig_ctx(tfm) as *mut RsassaPkcs1Ctx; rsa_set_key((*c).child, &mut (*c).key_size, RSA_PUB, key, keylen) }
+unsafe fn rsassa_pkcs1_set_priv_key(tfm: *mut crypto_sig, key: *const kernel::ffi::c_void, keylen: u32) -> i32 { let c=crypto_sig_ctx(tfm) as *mut RsassaPkcs1Ctx; rsa_set_key((*c).child, &mut (*c).key_size, RSA_PRIV, key, keylen) }
 
 unsafe fn rsassa_pkcs1_init_tfm(_tfm: *mut crypto_sig) -> i32 { 0 }
 unsafe fn rsassa_pkcs1_exit_tfm(_tfm: *mut crypto_sig) {}
-unsafe fn rsassa_pkcs1_free(_inst: *mut core::ffi::c_void) {}
-unsafe fn rsassa_pkcs1_create(_tmpl: *mut CryptoTemplate, _tb: *mut *mut core::ffi::c_void) -> i32 { 0 }
+unsafe fn rsassa_pkcs1_free(_inst: *mut kernel::ffi::c_void) {}
+unsafe fn rsassa_pkcs1_create(_tmpl: *mut CryptoTemplate, _tb: *mut *mut kernel::ffi::c_void) -> i32 { 0 }
 
-#[repr(C)] struct CryptoTemplate { name: *const core::ffi::c_char, create: Option<unsafe fn(*mut CryptoTemplate, *mut *mut core::ffi::c_void) -> i32>, module: *mut core::ffi::c_void }
+#[repr(C)] struct CryptoTemplate { name: *const kernel::ffi::c_char, create: Option<unsafe fn(*mut CryptoTemplate, *mut *mut kernel::ffi::c_void) -> i32>, module: *mut kernel::ffi::c_void }
 #[no_mangle] static mut rsassa_pkcs1_tmpl: CryptoTemplate = CryptoTemplate { name: b"pkcs1\0".as_ptr() as _, create: None, module: core::ptr::null_mut() };
 
 // External symbols are supplied by the Linux crypto subsystem and other translated files.
-extern "C" { fn strcmp(_: *const core::ffi::c_char, _: *const core::ffi::c_char) -> i32; fn memcmp(_: *const u8, _: *const u8, _: usize) -> i32; fn crypto_memneq(_: *const u8, _: *const u8, _: usize) -> i32; fn crypto_sig_ctx(_: *mut crypto_sig) -> *mut core::ffi::c_void; fn sig_alg_instance(_: *mut crypto_sig) -> *mut core::ffi::c_void; fn sig_instance_ctx(_: *mut core::ffi::c_void) -> *mut core::ffi::c_void; fn crypto_akcipher_sync_decrypt(_: *mut crypto_akcipher, _: *mut u8, _: u32, _: *mut u8, _: u32) -> i32; fn crypto_akcipher_encrypt(_: *mut crypto_akcipher, _: *mut u8, _: u32) -> i32; fn rsa_set_key(_: *mut crypto_akcipher, _: *mut u32, _: i32, _: *const core::ffi::c_void, _: u32) -> i32; }
+extern "C" { fn strcmp(_: *const kernel::ffi::c_char, _: *const kernel::ffi::c_char) -> i32; fn memcmp(_: *const u8, _: *const u8, _: usize) -> i32; fn crypto_memneq(_: *const u8, _: *const u8, _: usize) -> i32; fn crypto_sig_ctx(_: *mut crypto_sig) -> *mut kernel::ffi::c_void; fn sig_alg_instance(_: *mut crypto_sig) -> *mut kernel::ffi::c_void; fn sig_instance_ctx(_: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void; fn crypto_akcipher_sync_decrypt(_: *mut crypto_akcipher, _: *mut u8, _: u32, _: *mut u8, _: u32) -> i32; fn crypto_akcipher_encrypt(_: *mut crypto_akcipher, _: *mut u8, _: u32) -> i32; fn rsa_set_key(_: *mut crypto_akcipher, _: *mut u32, _: i32, _: *const kernel::ffi::c_void, _: u32) -> i32; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

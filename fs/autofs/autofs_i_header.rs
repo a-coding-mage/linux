@@ -20,14 +20,14 @@ extern "C" {
 #[repr(C)]
 pub struct autofs_info {
     pub dentry: *mut dentry,
-    pub flags: ::core::ffi::c_int,
+    pub flags: ::kernel::ffi::c_int,
     pub expire_complete: completion,
     pub active: list_head,
     pub expiring: list_head,
     pub sbi: *mut autofs_sb_info,
-    pub exp_timeout: ::core::ffi::c_ulong,
-    pub last_used: ::core::ffi::c_ulong,
-    pub count: ::core::ffi::c_int,
+    pub exp_timeout: ::kernel::ffi::c_ulong,
+    pub last_used: ::kernel::ffi::c_ulong,
+    pub count: ::kernel::ffi::c_int,
     pub uid: kuid_t,
     pub gid: kgid_t,
     pub rcu: rcu_head,
@@ -51,7 +51,7 @@ pub struct autofs_wait_queue {
     pub gid: kgid_t,
     pub pid: pid_t,
     pub tgid: pid_t,
-    pub status: ::core::ffi::c_int,
+    pub status: ::kernel::ffi::c_int,
     pub wait_ctr: u32,
 }
 
@@ -63,16 +63,16 @@ pub const AUTOFS_SBI_IGNORE: u32 = 0x0004;
 #[repr(C)]
 pub struct autofs_sb_info {
     pub magic: u32,
-    pub pipefd: ::core::ffi::c_int,
+    pub pipefd: ::kernel::ffi::c_int,
     pub pipe: *mut file,
     pub oz_pgrp: *mut pid,
     pub mnt_ns_id: u64,
-    pub version: ::core::ffi::c_int,
-    pub sub_version: ::core::ffi::c_int,
-    pub min_proto: ::core::ffi::c_int,
-    pub max_proto: ::core::ffi::c_int,
+    pub version: ::kernel::ffi::c_int,
+    pub sub_version: ::kernel::ffi::c_int,
+    pub min_proto: ::kernel::ffi::c_int,
+    pub max_proto: ::kernel::ffi::c_int,
     pub flags: u32,
-    pub exp_timeout: ::core::ffi::c_ulong,
+    pub exp_timeout: ::kernel::ffi::c_ulong,
     pub type_: u32,
     pub sb: *mut super_block,
     pub wq_mutex: mutex,
@@ -96,7 +96,7 @@ pub unsafe fn autofs_dentry_ino(dentry: *mut dentry) -> *mut autofs_info {
 }
 
 #[inline]
-pub unsafe fn autofs_oz_mode(sbi: *mut autofs_sb_info) -> ::core::ffi::c_int {
+pub unsafe fn autofs_oz_mode(sbi: *mut autofs_sb_info) -> ::kernel::ffi::c_int {
     (( (*sbi).flags & AUTOFS_SBI_CATATONIC) != 0 || task_pgrp(current) == (*sbi).oz_pgrp) as _
 }
 
@@ -106,18 +106,18 @@ pub unsafe fn autofs_empty(ino: *mut autofs_info) -> bool { (*ino).count < 2 }
 extern "C" {
     pub fn autofs_get_inode(sb: *mut super_block, mode: umode_t) -> *mut inode;
     pub fn autofs_free_ino(ino: *mut autofs_info);
-    pub fn is_autofs_dentry(dentry: *mut dentry) -> ::core::ffi::c_int;
-    pub fn autofs_expire_wait(path: *const path, rcu_walk: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn autofs_expire_run(sb: *mut super_block, mnt: *mut vfsmount, sbi: *mut autofs_sb_info, pkt: *mut autofs_packet_expire) -> ::core::ffi::c_int;
-    pub fn autofs_do_expire_multi(sb: *mut super_block, mnt: *mut vfsmount, sbi: *mut autofs_sb_info, how: u32) -> ::core::ffi::c_int;
-    pub fn autofs_expire_multi(sb: *mut super_block, mnt: *mut vfsmount, sbi: *mut autofs_sb_info, arg: *mut ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn autofs_dev_ioctl_init() -> ::core::ffi::c_int;
+    pub fn is_autofs_dentry(dentry: *mut dentry) -> ::kernel::ffi::c_int;
+    pub fn autofs_expire_wait(path: *const path, rcu_walk: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn autofs_expire_run(sb: *mut super_block, mnt: *mut vfsmount, sbi: *mut autofs_sb_info, pkt: *mut autofs_packet_expire) -> ::kernel::ffi::c_int;
+    pub fn autofs_do_expire_multi(sb: *mut super_block, mnt: *mut vfsmount, sbi: *mut autofs_sb_info, how: u32) -> ::kernel::ffi::c_int;
+    pub fn autofs_expire_multi(sb: *mut super_block, mnt: *mut vfsmount, sbi: *mut autofs_sb_info, arg: *mut ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn autofs_dev_ioctl_init() -> ::kernel::ffi::c_int;
     pub fn autofs_dev_ioctl_exit();
-    pub fn autofs_init_fs_context(fc: *mut fs_context) -> ::core::ffi::c_int;
+    pub fn autofs_init_fs_context(fc: *mut fs_context) -> ::kernel::ffi::c_int;
     pub fn autofs_new_ino(sbi: *mut autofs_sb_info) -> *mut autofs_info;
     pub fn autofs_clean_ino(ino: *mut autofs_info);
-    pub fn autofs_wait(sbi: *mut autofs_sb_info, path: *const path, notify: autofs_notify) -> ::core::ffi::c_int;
-    pub fn autofs_wait_release(sbi: *mut autofs_sb_info, token: autofs_wqt_t, status: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn autofs_wait(sbi: *mut autofs_sb_info, path: *const path, notify: autofs_notify) -> ::kernel::ffi::c_int;
+    pub fn autofs_wait_release(sbi: *mut autofs_sb_info, token: autofs_wqt_t, status: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
     pub fn autofs_catatonic_mode(sbi: *mut autofs_sb_info);
     pub fn autofs_kill_sb(sb: *mut super_block);
 }
@@ -156,7 +156,7 @@ pub unsafe fn managed_dentry_clear_managed(dentry: *mut dentry) {
 }
 
 #[inline]
-pub unsafe fn autofs_check_pipe(pipe: *mut file) -> ::core::ffi::c_int {
+pub unsafe fn autofs_check_pipe(pipe: *mut file) -> ::kernel::ffi::c_int {
     if (*pipe).f_mode & FMODE_PATH != 0 { return -EINVAL; }
     if (*pipe).f_mode & FMODE_CAN_WRITE == 0 { return -EINVAL; }
     if !S_ISFIFO((*file_inode(pipe)).i_mode) { return -EINVAL; }
@@ -170,7 +170,7 @@ pub unsafe fn autofs_set_packet_pipe_flags(pipe: *mut file) {
 }
 
 #[inline]
-pub unsafe fn autofs_prepare_pipe(pipe: *mut file) -> ::core::ffi::c_int {
+pub unsafe fn autofs_prepare_pipe(pipe: *mut file) -> ::kernel::ffi::c_int {
     let ret = autofs_check_pipe(pipe);
     if ret < 0 { return ret; }
     autofs_set_packet_pipe_flags(pipe);

@@ -55,8 +55,8 @@ pub const BOOKE_IRQMASK_CE: i32 = (1 << BOOKE_IRQPRIO_DBELL_CRIT)
     | (1 << BOOKE_IRQPRIO_CRITICAL);
 
 extern "C" {
-    pub static mut kvmppc_booke_handlers: ::core::ffi::c_ulong;
-    pub static mut kvmppc_booke_handler_addr: [::core::ffi::c_ulong; 0];
+    pub static mut kvmppc_booke_handlers: ::kernel::ffi::c_ulong;
+    pub static mut kvmppc_booke_handler_addr: [::kernel::ffi::c_ulong; 0];
 
     pub fn kvmppc_set_msr(vcpu: *mut kvm_vcpu, new_msr: u32);
     pub fn kvmppc_mmu_msr_notify(vcpu: *mut kvm_vcpu, old_msr: u32);
@@ -66,29 +66,29 @@ extern "C" {
     pub fn kvmppc_set_tsr_bits(vcpu: *mut kvm_vcpu, tsr_bits: u32);
     pub fn kvmppc_clr_tsr_bits(vcpu: *mut kvm_vcpu, tsr_bits: u32);
 
-    pub fn kvmppc_booke_emulate_op(vcpu: *mut kvm_vcpu, inst: ::core::ffi::c_uint, advance: *mut ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn kvmppc_booke_emulate_mfspr(vcpu: *mut kvm_vcpu, sprn: ::core::ffi::c_int, spr_val: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn kvmppc_booke_emulate_mtspr(vcpu: *mut kvm_vcpu, sprn: ::core::ffi::c_int, spr_val: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn kvmppc_booke_emulate_op(vcpu: *mut kvm_vcpu, inst: ::kernel::ffi::c_uint, advance: *mut ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn kvmppc_booke_emulate_mfspr(vcpu: *mut kvm_vcpu, sprn: ::kernel::ffi::c_int, spr_val: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn kvmppc_booke_emulate_mtspr(vcpu: *mut kvm_vcpu, sprn: ::kernel::ffi::c_int, spr_val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
 
     pub fn kvmppc_load_guest_spe(vcpu: *mut kvm_vcpu);
     pub fn kvmppc_save_guest_spe(vcpu: *mut kvm_vcpu);
     pub fn kvmppc_vcpu_disable_spe(vcpu: *mut kvm_vcpu);
 
-    pub fn kvmppc_booke_vcpu_load(vcpu: *mut kvm_vcpu, cpu: ::core::ffi::c_int);
+    pub fn kvmppc_booke_vcpu_load(vcpu: *mut kvm_vcpu, cpu: ::kernel::ffi::c_int);
     pub fn kvmppc_booke_vcpu_put(vcpu: *mut kvm_vcpu);
 
     pub fn kvmppc_set_pending_interrupt(vcpu: *mut kvm_vcpu, type_: int_class);
 
-    pub fn kvmppc_core_emulate_op_e500(vcpu: *mut kvm_vcpu, inst: ::core::ffi::c_uint, advance: *mut ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn kvmppc_core_emulate_mtspr_e500(vcpu: *mut kvm_vcpu, sprn: ::core::ffi::c_int, spr_val: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn kvmppc_core_emulate_mfspr_e500(vcpu: *mut kvm_vcpu, sprn: ::core::ffi::c_int, spr_val: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn kvmppc_core_emulate_mtspr_e500(vcpu: *mut kvm_vcpu, sprn: ::core::ffi::c_int, spr_val: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn kvmppc_core_emulate_mfspr_e500(vcpu: *mut kvm_vcpu, sprn: ::core::ffi::c_int, spr_val: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn kvmppc_core_emulate_op_e500(vcpu: *mut kvm_vcpu, inst: ::kernel::ffi::c_uint, advance: *mut ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn kvmppc_core_emulate_mtspr_e500(vcpu: *mut kvm_vcpu, sprn: ::kernel::ffi::c_int, spr_val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn kvmppc_core_emulate_mfspr_e500(vcpu: *mut kvm_vcpu, sprn: ::kernel::ffi::c_int, spr_val: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn kvmppc_core_emulate_mtspr_e500(vcpu: *mut kvm_vcpu, sprn: ::kernel::ffi::c_int, spr_val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn kvmppc_core_emulate_mfspr_e500(vcpu: *mut kvm_vcpu, sprn: ::kernel::ffi::c_int, spr_val: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
 
-    pub fn mtspr(sprn: ::core::ffi::c_int, value: ::core::ffi::c_ulong);
-    pub fn mfspr(sprn: ::core::ffi::c_int) -> ::core::ffi::c_ulong;
+    pub fn mtspr(sprn: ::kernel::ffi::c_int, value: ::kernel::ffi::c_ulong);
+    pub fn mfspr(sprn: ::kernel::ffi::c_int) -> ::kernel::ffi::c_ulong;
 
-    pub fn kvmppc_handle_exit(vcpu: *mut kvm_vcpu, exit_nr: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    pub fn kvmppc_handle_exit(vcpu: *mut kvm_vcpu, exit_nr: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
 }
 
 #[repr(C)]

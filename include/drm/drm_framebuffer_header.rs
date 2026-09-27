@@ -31,7 +31,7 @@ pub struct drm_framebuffer {
     pub dev: *mut drm_device,
     pub head: list_head,
     pub base: drm_mode_object,
-    pub comm: [core::ffi::c_char; TASK_COMM_LEN],
+    pub comm: [kernel::ffi::c_char; TASK_COMM_LEN],
     pub format: *const drm_format_info,
     pub funcs: *const drm_framebuffer_funcs,
     pub pitches: [u32; DRM_FORMAT_MAX_PLANES],

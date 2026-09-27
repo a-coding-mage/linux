@@ -23,7 +23,7 @@ pub const PCI230_ADCG: usize = 0x0E;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct pci230_board {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: u16,
     pub ai_bits: u8,
     pub ao_bits: u8,

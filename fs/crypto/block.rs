@@ -16,7 +16,7 @@
 unsafe fn fscrypt_get_devices(
     sb: *mut super_block,
     devs: *mut *mut block_device,
-) -> libc::c_uint {
+) -> core::ffi::c_uint {
     if unsafe { (*(*sb).s_cop).get_devices }.is_some() {
         return unsafe { ((*(*sb).s_cop).get_devices.unwrap())(sb, devs) };
     }
@@ -24,24 +24,24 @@ unsafe fn fscrypt_get_devices(
     1
 }
 
-unsafe fn fscrypt_get_dun_bytes(ci: *const fscrypt_inode_info) -> libc::c_uint {
+unsafe fn fscrypt_get_dun_bytes(ci: *const fscrypt_inode_info) -> core::ffi::c_uint {
     let sb = unsafe { (*(*ci).ci_inode).i_sb };
     let flags = unsafe { fscrypt_policy_flags(&(*ci).ci_policy) };
-    let dun_bits: libc::c_int;
+    let dun_bits: core::ffi::c_int;
 
     if flags & FSCRYPT_POLICY_FLAG_DIRECT_KEY != 0 {
-        return core::mem::offset_of!(fscrypt_iv, nonce) as libc::c_uint;
+        return core::mem::offset_of!(fscrypt_iv, nonce) as core::ffi::c_uint;
     }
     if flags & FSCRYPT_POLICY_FLAG_IV_INO_LBLK_64 != 0 {
-        return core::mem::size_of::<__le64>() as libc::c_uint;
+        return core::mem::size_of::<__le64>() as core::ffi::c_uint;
     }
     if flags & FSCRYPT_POLICY_FLAG_IV_INO_LBLK_32 != 0 {
-        return core::mem::size_of::<__le32>() as libc::c_uint;
+        return core::mem::size_of::<__le32>() as core::ffi::c_uint;
     }
 
     // Default case: IVs are just the file data unit index
     dun_bits = unsafe { fscrypt_max_file_dun_bits(sb, (*ci).ci_data_unit_bits) };
-    ((dun_bits + 7) / 8) as libc::c_uint
+    ((dun_bits + 7) / 8) as core::ffi::c_uint
 }
 
 unsafe fn fscrypt_log_blk_crypto_impl(
@@ -64,7 +64,7 @@ pub unsafe fn fscrypt_prepare_inline_crypt_key(
     key_size: usize,
     is_hw_wrapped: bool,
     ci: *const fscrypt_inode_info,
-) -> libc::c_int {
+) -> core::ffi::c_int {
     let inode = unsafe { (*ci).ci_inode };
     let sb = unsafe { (*inode).i_sb };
     let inlinecrypt = unsafe { (*sb).s_flags & SB_INLINECRYPT != 0 };
@@ -72,8 +72,8 @@ pub unsafe fn fscrypt_prepare_inline_crypt_key(
     let key_type = if is_hw_wrapped { BLK_CRYPTO_KEY_TYPE_HW_WRAPPED } else { BLK_CRYPTO_KEY_TYPE_RAW };
     let mut blk_key: *mut blk_crypto_key;
     let mut devs: [*mut block_device; FSCRYPT_MAX_DEVICES] = [core::ptr::null_mut(); FSCRYPT_MAX_DEVICES];
-    let mut num_devs: libc::c_uint;
-    let mut err: libc::c_int;
+    let mut num_devs: core::ffi::c_uint;
+    let mut err: core::ffi::c_int;
 
     if is_hw_wrapped && !inlinecrypt {
         unsafe { fscrypt_err!(inode, "Hardware-wrapped keys require inline encryption (-o inlinecrypt)") };
@@ -120,7 +120,7 @@ pub unsafe fn fscrypt_destroy_inline_crypt_key(sb: *mut super_block, prep_key: *
     unsafe { kfree_sensitive(blk_key); }
 }
 
-pub unsafe fn fscrypt_derive_sw_secret(sb: *mut super_block, wrapped_key: *const u8, wrapped_key_size: usize, sw_secret: *mut u8) -> libc::c_int {
+pub unsafe fn fscrypt_derive_sw_secret(sb: *mut super_block, wrapped_key: *const u8, wrapped_key_size: usize, sw_secret: *mut u8) -> core::ffi::c_int {
     if unsafe { (*sb).s_flags & SB_INLINECRYPT == 0 } {
         unsafe { fscrypt_warn!(core::ptr::null_mut(), "%s: filesystem not mounted with inlinecrypt\n", (*sb).s_id) };
         return -EOPNOTSUPP;

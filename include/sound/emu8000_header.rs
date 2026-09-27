@@ -51,9 +51,9 @@ pub struct snd_emu8000 {
     pub fm_reverb_depth: i32, /* FM OPL3 reverb depth */
 
     pub mem_size: i32, /* memory size */
-    pub port1: libc::c_ulong, /* Port usually base+0 */
-    pub port2: libc::c_ulong, /* Port usually at base+0x400 */
-    pub port3: libc::c_ulong, /* Port usually at base+0x800 */
+    pub port1: kernel::ffi::c_ulong, /* Port usually base+0 */
+    pub port2: kernel::ffi::c_ulong, /* Port usually at base+0x400 */
+    pub port3: kernel::ffi::c_ulong, /* Port usually at base+0x800 */
     pub last_reg: u16, /* Last register command */
     pub reg_lock: spinlock_t,
 
@@ -79,7 +79,7 @@ pub const SNDRV_SEQ_DEV_ID_EMU8000: &str = "emu8000-synth";
 
 /* exported functions */
 extern "C" {
-    pub fn snd_emu8000_new(card: *mut snd_card, device: i32, port: libc::c_long,
+    pub fn snd_emu8000_new(card: *mut snd_card, device: i32, port: kernel::ffi::c_long,
                            seq_ports: i32, ret: *mut *mut snd_seq_device) -> i32;
     pub fn snd_emu8000_poke(emu: *mut snd_emu8000, port: u32, reg: u32, val: u32);
     pub fn snd_emu8000_peek(emu: *mut snd_emu8000, port: u32, reg: u32) -> u16;
@@ -93,9 +93,9 @@ extern "C" {
     pub fn snd_emu8000_update_reverb_mode(emu: *mut snd_emu8000);
     pub fn snd_emu8000_update_equalizer(emu: *mut snd_emu8000);
     pub fn snd_emu8000_load_chorus_fx(emu: *mut snd_emu8000, mode: i32,
-                                      buf: *const core::ffi::c_void, len: libc::c_long) -> i32;
+                                      buf: *const kernel::ffi::c_void, len: kernel::ffi::c_long) -> i32;
     pub fn snd_emu8000_load_reverb_fx(emu: *mut snd_emu8000, mode: i32,
-                                      buf: *const core::ffi::c_void, len: libc::c_long) -> i32;
+                                      buf: *const kernel::ffi::c_void, len: kernel::ffi::c_long) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -6,7 +6,7 @@ pub struct mtd_partition {
     _private: [u8; 0],
 }
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /**
  * struct flash_platform_data: board-specific flash data

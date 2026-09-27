@@ -20,13 +20,13 @@
 #![allow(dead_code)]
 #![allow(improper_ctypes)]
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 use core::mem::{offset_of, size_of};
 
-type u8 = ::core::ffi::c_uchar;
-type u32 = ::core::ffi::c_uint;
-type c_int = ::core::ffi::c_int;
-type c_ulong = ::core::ffi::c_ulong;
+type u8 = ::kernel::ffi::c_uchar;
+type u32 = ::kernel::ffi::c_uint;
+type c_int = ::kernel::ffi::c_int;
+type c_ulong = ::kernel::ffi::c_ulong;
 type bool_ = bool;
 
 const ICL_VS_LTRP_GB_ICCMAX: u8 = 95;

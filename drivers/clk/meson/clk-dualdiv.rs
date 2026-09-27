@@ -29,9 +29,9 @@ unsafe fn meson_clk_dualdiv_data(clk: *mut clk_regmap) -> *mut meson_clk_dualdiv
 }
 
 unsafe fn __dualdiv_param_to_rate(
-    parent_rate: libc::c_ulong,
+    parent_rate: kernel::ffi::c_ulong,
     p: *const meson_clk_dualdiv_param,
-) -> libc::c_ulong {
+) -> kernel::ffi::c_ulong {
     if !(*p).dual {
         return DIV_ROUND_CLOSEST(parent_rate, (*p).n1);
     }
@@ -46,8 +46,8 @@ unsafe fn __dualdiv_param_to_rate(
 
 unsafe fn meson_clk_dualdiv_recalc_rate(
     hw: *mut clk_hw,
-    parent_rate: libc::c_ulong,
-) -> libc::c_ulong {
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     let clk = to_clk_regmap(hw);
     let dualdiv = meson_clk_dualdiv_data(clk);
     let mut setting: meson_clk_dualdiv_param = core::mem::zeroed();
@@ -62,13 +62,13 @@ unsafe fn meson_clk_dualdiv_recalc_rate(
 }
 
 unsafe fn __dualdiv_get_setting(
-    rate: libc::c_ulong,
-    parent_rate: libc::c_ulong,
+    rate: kernel::ffi::c_ulong,
+    parent_rate: kernel::ffi::c_ulong,
     dualdiv: *mut meson_clk_dualdiv_data,
 ) -> *const meson_clk_dualdiv_param {
     let table = (*dualdiv).table;
-    let mut best: libc::c_ulong = 0;
-    let mut now: libc::c_ulong = 0;
+    let mut best: kernel::ffi::c_ulong = 0;
+    let mut now: kernel::ffi::c_ulong = 0;
     let mut best_i: usize = 0;
 
     if table.is_null() {
@@ -95,7 +95,7 @@ unsafe fn __dualdiv_get_setting(
 unsafe fn meson_clk_dualdiv_determine_rate(
     hw: *mut clk_hw,
     req: *mut clk_rate_request,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let clk = to_clk_regmap(hw);
     let dualdiv = meson_clk_dualdiv_data(clk);
     let setting = __dualdiv_get_setting((*req).rate, (*req).best_parent_rate, dualdiv);
@@ -111,9 +111,9 @@ unsafe fn meson_clk_dualdiv_determine_rate(
 
 unsafe fn meson_clk_dualdiv_set_rate(
     hw: *mut clk_hw,
-    rate: libc::c_ulong,
-    parent_rate: libc::c_ulong,
-) -> libc::c_int {
+    rate: kernel::ffi::c_ulong,
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let clk = to_clk_regmap(hw);
     let dualdiv = meson_clk_dualdiv_data(clk);
     let setting = __dualdiv_get_setting(rate, parent_rate, dualdiv);

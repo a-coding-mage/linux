@@ -19,33 +19,33 @@
 /* User space memory access functions */
 
 extern "C" {
-    pub fn __put_user_bad() -> libc::c_long;
-    pub fn __get_user_bad() -> libc::c_long;
-    pub fn __copy_tofrom_user(to: *mut libc::c_void, from: *const libc::c_void, size: libc::c_ulong) -> libc::c_ulong;
-    pub fn __clear_user(addr: *mut libc::c_void, size: libc::c_ulong) -> libc::c_ulong;
-    pub fn strncpy_from_user(dest: *mut libc::c_char, src: *const libc::c_char, count: libc::c_long) -> libc::c_long;
-    pub fn strnlen_user(str_: *const libc::c_char, n: libc::c_long) -> libc::c_long;
+    pub fn __put_user_bad() -> kernel::ffi::c_long;
+    pub fn __get_user_bad() -> kernel::ffi::c_long;
+    pub fn __copy_tofrom_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, size: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
+    pub fn __clear_user(addr: *mut kernel::ffi::c_void, size: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
+    pub fn strncpy_from_user(dest: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char, count: kernel::ffi::c_long) -> kernel::ffi::c_long;
+    pub fn strnlen_user(str_: *const kernel::ffi::c_char, n: kernel::ffi::c_long) -> kernel::ffi::c_long;
 }
 
 #[repr(C)]
 pub struct __large_struct {
-    pub buf: [libc::c_ulong; 100],
+    pub buf: [kernel::ffi::c_ulong; 100],
 }
 
 #[inline]
-pub unsafe fn raw_copy_from_user(to: *mut libc::c_void, from: *const libc::c_void, size: libc::c_ulong) -> libc::c_ulong {
+pub unsafe fn raw_copy_from_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, size: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     __copy_tofrom_user(to, from, size)
 }
 
 #[inline]
-pub unsafe fn raw_copy_to_user(to: *mut libc::c_void, from: *const libc::c_void, size: libc::c_ulong) -> libc::c_ulong {
+pub unsafe fn raw_copy_to_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, size: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     __copy_tofrom_user(to, from, size)
 }
 
 pub const INLINE_COPY_USER: bool = true;
 
 #[inline]
-pub unsafe fn clear_user(addr: *mut libc::c_void, mut size: libc::c_ulong) -> libc::c_ulong {
+pub unsafe fn clear_user(addr: *mut kernel::ffi::c_void, mut size: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     // access_ok(addr, size) is supplied by asm-generic/access_ok.h.
     if access_ok(addr, size) {
         size = __clear_user(addr, size);
@@ -102,7 +102,7 @@ macro_rules! __get_user_asm2 {
 
 // access_ok is an external dependency from asm-generic/access_ok.h.
 extern "Rust" {
-    fn access_ok(addr: *const libc::c_void, size: libc::c_ulong) -> bool;
+    fn access_ok(addr: *const kernel::ffi::c_void, size: kernel::ffi::c_ulong) -> bool;
 }
 
 #[macro_export]
@@ -136,7 +136,7 @@ macro_rules! __get_user_size {
 #[macro_export]
 macro_rules! __put_user_nocheck {
     ($x:expr, $ptr:expr, $size:expr) => {{
-        let mut __pu_err: libc::c_long;
+        let mut __pu_err: kernel::ffi::c_long;
         $crate::__put_user_size!($x, $ptr, $size, __pu_err);
         __pu_err
     }};
@@ -145,7 +145,7 @@ macro_rules! __put_user_nocheck {
 #[macro_export]
 macro_rules! __get_user_nocheck {
     ($x:expr, $ptr:expr, $size:expr) => {{
-        let mut __gu_err: libc::c_long;
+        let mut __gu_err: kernel::ffi::c_long;
         $crate::__get_user_size!($x, $ptr, $size, __gu_err);
         __gu_err
     }};
@@ -154,9 +154,9 @@ macro_rules! __get_user_nocheck {
 #[macro_export]
 macro_rules! __put_user_check {
     ($x:expr, $ptr:expr, $size:expr) => {{
-        let mut __pu_err: libc::c_long = -14;
+        let mut __pu_err: kernel::ffi::c_long = -14;
         let __pu_addr = $ptr;
-        if access_ok(__pu_addr as *const libc::c_void, $size) {
+        if access_ok(__pu_addr as *const kernel::ffi::c_void, $size) {
             $crate::__put_user_size!($x, __pu_addr, $size, __pu_err);
         }
         __pu_err
@@ -166,9 +166,9 @@ macro_rules! __put_user_check {
 #[macro_export]
 macro_rules! __get_user_check {
     ($x:expr, $ptr:expr, $size:expr) => {{
-        let mut __gu_err: libc::c_long = -14;
+        let mut __gu_err: kernel::ffi::c_long = -14;
         let __gu_addr = $ptr;
-        if access_ok(__gu_addr as *const libc::c_void, $size) {
+        if access_ok(__gu_addr as *const kernel::ffi::c_void, $size) {
             $crate::__get_user_size!($x, __gu_addr, $size, __gu_err);
         } else {
             $x = 0;

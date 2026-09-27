@@ -7,30 +7,30 @@
  * instead.
  */
 #[inline]
-pub unsafe fn __sb_end_write(sb: *mut super_block, level: ::core::ffi::c_int) {
+pub unsafe fn __sb_end_write(sb: *mut super_block, level: ::kernel::ffi::c_int) {
     percpu_up_read((*sb).s_writers.rw_sem.add((level - 1) as usize));
 }
 
 #[inline]
-pub unsafe fn __sb_start_write(sb: *mut super_block, level: ::core::ffi::c_int) {
+pub unsafe fn __sb_start_write(sb: *mut super_block, level: ::kernel::ffi::c_int) {
     percpu_down_read_freezable((*sb).s_writers.rw_sem.add((level - 1) as usize), true);
 }
 
 #[inline]
 pub unsafe fn __sb_start_write_trylock(
     sb: *mut super_block,
-    level: ::core::ffi::c_int,
+    level: ::kernel::ffi::c_int,
 ) -> bool {
     percpu_down_read_trylock((*sb).s_writers.rw_sem.add((level - 1) as usize))
 }
 
 #[inline]
-pub unsafe fn __sb_writers_acquired(sb: *mut super_block, lev: ::core::ffi::c_int) {
+pub unsafe fn __sb_writers_acquired(sb: *mut super_block, lev: ::kernel::ffi::c_int) {
     percpu_rwsem_acquire(&mut (*sb).s_writers.rw_sem[(lev - 1) as usize], 1, _THIS_IP_);
 }
 
 #[inline]
-pub unsafe fn __sb_writers_release(sb: *mut super_block, lev: ::core::ffi::c_int) {
+pub unsafe fn __sb_writers_release(sb: *mut super_block, lev: ::kernel::ffi::c_int) {
     percpu_rwsem_release(&mut (*sb).s_writers.rw_sem[(lev - 1) as usize], _THIS_IP_);
 }
 
@@ -44,7 +44,7 @@ pub unsafe fn __sb_writers_release(sb: *mut super_block, lev: ::core::ffi::c_int
  * * < 0 - !CONFIG_LOCKDEP/LOCK_STATE_UNKNOWN
  */
 #[inline]
-pub unsafe fn __sb_write_started(sb: *const super_block, level: ::core::ffi::c_int) -> ::core::ffi::c_int {
+pub unsafe fn __sb_write_started(sb: *const super_block, level: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     lockdep_is_held_type((*sb).s_writers.rw_sem.add((level - 1) as usize), 1)
 }
 
@@ -145,34 +145,34 @@ pub unsafe fn sb_has_encoding(sb: *const super_block) -> bool {
     !sb_encoding(sb).is_null()
 }
 
-pub extern "C" fn sb_set_blocksize(sb: *mut super_block, size: ::core::ffi::c_int) -> ::core::ffi::c_int;
-pub extern "C" fn sb_min_blocksize(sb: *mut super_block, size: ::core::ffi::c_int) -> ::core::ffi::c_int;
+pub extern "C" fn sb_set_blocksize(sb: *mut super_block, size: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+pub extern "C" fn sb_min_blocksize(sb: *mut super_block, size: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
 
 pub extern "C" fn freeze_super(
     super_: *mut super_block,
     who: freeze_holder,
-    freeze_owner: *const ::core::ffi::c_void,
-) -> ::core::ffi::c_int;
+    freeze_owner: *const ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int;
 pub extern "C" fn thaw_super(
     super_: *mut super_block,
     who: freeze_holder,
-    freeze_owner: *const ::core::ffi::c_void,
-) -> ::core::ffi::c_int;
+    freeze_owner: *const ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int;
 
-pub extern "C" fn sb_init_dio_done_wq(sb: *mut super_block) -> ::core::ffi::c_int;
+pub extern "C" fn sb_init_dio_done_wq(sb: *mut super_block) -> ::kernel::ffi::c_int;
 
 pub enum file {}
 
 pub extern "C" fn fs_bdev_file_open_by_dev(
     dev: dev_t,
     mode: blk_mode_t,
-    holder: *mut ::core::ffi::c_void,
+    holder: *mut ::kernel::ffi::c_void,
     sb: *mut super_block,
 ) -> *mut file;
 pub extern "C" fn fs_bdev_file_open_by_path(
-    path: *const ::core::ffi::c_char,
+    path: *const ::kernel::ffi::c_char,
     mode: blk_mode_t,
-    holder: *mut ::core::ffi::c_void,
+    holder: *mut ::kernel::ffi::c_void,
     sb: *mut super_block,
 ) -> *mut file;
 pub extern "C" fn fs_bdev_unregister(bdev_file: *mut file, sb: *mut super_block);

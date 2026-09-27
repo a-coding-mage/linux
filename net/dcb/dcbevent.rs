@@ -5,7 +5,7 @@
  * Author: John Fastabend <john.r.fastabend@intel.com>
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 use core::mem::MaybeUninit;
 
 // Types and functions supplied by the Linux notifier infrastructure.
@@ -35,7 +35,7 @@ extern "C" {
     ) -> i32;
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 // Corresponds to ATOMIC_NOTIFIER_HEAD(dcbevent_notif_chain).
 static mut dcbevent_notif_chain: MaybeUninit<atomic_notifier_head> = MaybeUninit::uninit();

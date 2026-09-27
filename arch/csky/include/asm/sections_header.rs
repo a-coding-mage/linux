@@ -4,14 +4,14 @@
 
 /// External linker-defined start symbol.
 unsafe extern "C" {
-    pub static mut _start: [core::ffi::c_char; 0];
+    pub static mut _start: [kernel::ffi::c_char; 0];
 }
 
 /// `asmlinkage void csky_start(unsigned int unused, void *dtb_start);`
 ///
 /// The `asmlinkage` calling-convention annotation is preserved by the C ABI.
 unsafe extern "C" {
-    pub fn csky_start(unused: u32, dtb_start: *mut core::ffi::c_void);
+    pub fn csky_start(unused: u32, dtb_start: *mut kernel::ffi::c_void);
 
     /// `asmlinkage void csky_start_secondary(void);`
     pub fn csky_start_secondary();

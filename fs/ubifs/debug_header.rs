@@ -76,7 +76,7 @@ unsafe extern "C" {
 // The following C preprocessor debugging macros are represented as Rust macros
 // so callers retain their source-level interfaces and variadic formatting behavior.
 #[macro_export]
-macro_rules! ubifs_assert { ($c:expr, $expr:expr) => { if !$expr { unsafe { ubifs_assert_failed($c as *mut ubifs_info, stringify!($expr).as_ptr() as *const c_char, file!().as_ptr() as *const c_char, line!() as i32); } } }; }
+macro_rules! ubifs_assert { ($c:expr, $expr:expr) => { if !$expr { unsafe { ubifs_assert_failed($c as *mut ubifs_info, concat!(stringify!($expr), "\0").as_ptr() as *const c_char, file!().as_ptr() as *const c_char, line!() as i32); } } }; }
 #[macro_export]
 macro_rules! ubifs_dbg_msg { ($type:expr, $($arg:tt)*) => { pr_debug!(concat!("UBIFS DBG ", $type, " (pid %d): ", $($arg)*, "\n"), current().pid); }; }
 pub const DBG_KEY_BUF_LEN: usize = 48;

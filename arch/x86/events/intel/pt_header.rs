@@ -55,7 +55,7 @@ pub struct pt_pmu {
     pub caps: [u32; PT_CPUID_REGS_NUM * PT_CPUID_LEAVES],
     pub vmx: bool,
     pub branch_en_always_on: bool,
-    pub max_nonturbo_ratio: ::core::ffi::c_ulong,
+    pub max_nonturbo_ratio: ::kernel::ffi::c_ulong,
     pub tsc_art_num: u32,
     pub tsc_art_den: u32,
 }
@@ -89,7 +89,7 @@ pub struct pt_buffer {
     pub cur: *mut topa,
     pub cur_idx: u32,
     pub output_off: usize,
-    pub nr_pages: ::core::ffi::c_ulong,
+    pub nr_pages: ::kernel::ffi::c_ulong,
     pub data_size: local_t,
     pub head: local64_t,
     pub snapshot: bool,
@@ -99,7 +99,7 @@ pub struct pt_buffer {
     pub intr_pos: isize,
     pub stop_te: *mut topa_entry,
     pub intr_te: *mut topa_entry,
-    pub data_pages: *mut *mut ::core::ffi::c_void,
+    pub data_pages: *mut *mut ::kernel::ffi::c_void,
 }
 
 pub const PT_FILTERS_NUM: usize = 4;
@@ -112,9 +112,9 @@ pub const PT_FILTERS_NUM: usize = 4;
  */
 #[repr(C)]
 pub struct pt_filter {
-    pub msr_a: ::core::ffi::c_ulong,
-    pub msr_b: ::core::ffi::c_ulong,
-    pub config: ::core::ffi::c_ulong,
+    pub msr_a: ::kernel::ffi::c_ulong,
+    pub msr_b: ::kernel::ffi::c_ulong,
+    pub config: ::kernel::ffi::c_ulong,
 }
 
 /**

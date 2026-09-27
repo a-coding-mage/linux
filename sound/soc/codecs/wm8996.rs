@@ -99,7 +99,7 @@ struct wm8996_priv {
  */
 #define WM8996_REGULATOR_EVENT(n) \
 static int wm8996_regulator_event_##n(notifier_block *nb, \
-				    event: core::ffi::c_ulong, void *data)	\
+				    event: kernel::ffi::c_ulong, void *data)	\
 { \
 	struct wm8996_priv *wm8996 = container_of(nb, wm8996_priv, \
 						  disable_nb[n]); \
@@ -653,7 +653,7 @@ static void wait_for_dc_servo!(snd_soc_component *component, mask: u16, {
 	struct i2c_client *i2c = to_i2c_client((*component).dev);
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 	int ret;
-	core::ffi::c_ulong time_left = 200;
+	kernel::ffi::c_ulong time_left = 200;
 
 	snd_soc_component_write(component, WM8996_DC_SERVO_2, mask);
 
@@ -1291,7 +1291,7 @@ static const struct snd_soc_dapm_route wm8996_dapm_routes[] = {
 	{ "SPKDAT", NULL, "SPKR PGA" },
 };
 
-static bool wm8996_readable_register(device *dev, reg: core::ffi::c_uint)
+static bool wm8996_readable_register(device *dev, reg: kernel::ffi::c_uint)
 {
 	/* Due to the sparseness of the register map the compiler
 	 * output from an explicit switch statement ends up being much
@@ -1498,7 +1498,7 @@ static bool wm8996_readable_register(device *dev, reg: core::ffi::c_uint)
 	}
 }
 
-static bool wm8996_volatile_register(device *dev, reg: core::ffi::c_uint)
+static bool wm8996_volatile_register(device *dev, reg: kernel::ffi::c_uint)
 {
 	switch (reg) {
 	case WM8996_SOFTWARE_RESET:
@@ -1626,7 +1626,7 @@ static int wm8996_set_bias_level(snd_soc_component *component,
 	return 0;
 }
 
-static int wm8996_set_fmt(snd_soc_dai *dai, fmt: core::ffi::c_uint)
+static int wm8996_set_fmt(snd_soc_dai *dai, fmt: kernel::ffi::c_uint)
 {
 	struct snd_soc_component *component = (*dai).component;
 	int aifctrl = 0;
@@ -1807,7 +1807,7 @@ static int wm8996_hw_params(snd_pcm_substream *substream,
 }
 
 static int wm8996_set_sysclk(snd_soc_dai *dai,
-		int clk_id, freq: core::ffi::c_uint, int dir)
+		int clk_id, freq: kernel::ffi::c_uint, int dir)
 {
 	struct snd_soc_component *component = (*dai).component;
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
@@ -1898,8 +1898,8 @@ struct _fll_div {
 };
 
 static struct {
-	core::ffi::c_uint min;
-	core::ffi::c_uint max;
+	kernel::ffi::c_uint min;
+	kernel::ffi::c_uint max;
 	u16 fll_fratio;
 	int ratio;
 } fll_fratios[] = {
@@ -1910,12 +1910,12 @@ static struct {
 	{ 1000000, 13500000, 0,  1 },
 };
 
-static int fll_factors(_fll_div *fll_div, core::ffi::c_uint Fref,
-		       core::ffi::c_uint Fout)
+static int fll_factors(_fll_div *fll_div, kernel::ffi::c_uint Fref,
+		       kernel::ffi::c_uint Fout)
 {
-	core::ffi::c_uint target;
-	core::ffi::c_uint div;
-	fratio: core::ffi::c_uint, gcd_fll;
+	kernel::ffi::c_uint target;
+	kernel::ffi::c_uint div;
+	fratio: kernel::ffi::c_uint, gcd_fll;
 	int i;
 
 	/* Fref must be <=13.5MHz */
@@ -1998,12 +1998,12 @@ static int fll_factors(_fll_div *fll_div, core::ffi::c_uint Fref,
 }
 
 static int wm8996_set_fll(snd_soc_component *component, int fll_id, int source,
-			  core::ffi::c_uint Fref, core::ffi::c_uint Fout)
+			  kernel::ffi::c_uint Fref, kernel::ffi::c_uint Fout)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 	struct i2c_client *i2c = to_i2c_client((*component).dev);
 	struct _fll_div fll_div;
-	timeout: core::ffi::c_ulong, time_left;
+	timeout: kernel::ffi::c_ulong, time_left;
 	int ret, reg, retry;
 
 	/* Any change? */
@@ -2136,7 +2136,7 @@ static int wm8996_set_fll(snd_soc_component *component, int fll_id, int source,
 
 // Original conditional: CONFIG_GPIOLIB
 #[cfg(CONFIG_GPIOLIB)]
-static int wm8996_gpio_set(gpio_chip *chip, offset: core::ffi::c_uint,
+static int wm8996_gpio_set(gpio_chip *chip, offset: kernel::ffi::c_uint,
 			   int value)
 {
 	struct wm8996_priv *wm8996 = gpiochip_get_data(chip);
@@ -2162,7 +2162,7 @@ static int wm8996_gpio_direction_out(gpio_chip *chip,
 static int wm8996_gpio_get(gpio_chip *chip, unsigned offset)
 {
 	struct wm8996_priv *wm8996 = gpiochip_get_data(chip);
-	core::ffi::c_uint reg;
+	kernel::ffi::c_uint reg;
 	int ret;
 
 	ret = regmap_read((*wm8996).regmap, WM8996_GPIO_1 + offset, &reg);
@@ -2761,7 +2761,7 @@ static int wm8996_i2c_probe(i2c_client *i2c)
 	'err_gpiolib: {
 	struct wm8996_priv *wm8996;
 	int ret, i;
-	core::ffi::c_uint reg;
+	kernel::ffi::c_uint reg;
 
 	wm8996 = devm_kzalloc(&i2c->dev, sizeof(wm8996_priv),
 			      GFP_KERNEL);

@@ -16,8 +16,8 @@ pub struct module {
 
 #[repr(C)]
 pub struct nls_table {
-    pub charset: *const core::ffi::c_char,
-    pub alias: *const core::ffi::c_char,
+    pub charset: *const kernel::ffi::c_char,
+    pub alias: *const kernel::ffi::c_char,
     pub uni2char: Option<unsafe extern "C" fn(uni: wchar_t, out: *mut u8, boundlen: i32) -> i32>,
     pub char2uni: Option<unsafe extern "C" fn(rawstring: *const u8, boundlen: i32, uni: *mut wchar_t) -> i32>,
     pub charset2lower: *const u8,
@@ -42,7 +42,7 @@ pub enum utf16_endian {
 unsafe extern "C" {
     pub fn __register_nls(table: *mut nls_table, owner: *mut module) -> i32;
     pub fn unregister_nls(table: *mut nls_table) -> i32;
-    pub fn load_nls(charset: *const core::ffi::c_char) -> *mut nls_table;
+    pub fn load_nls(charset: *const kernel::ffi::c_char) -> *mut nls_table;
     pub fn unload_nls(table: *mut nls_table);
     pub fn load_nls_default() -> *mut nls_table;
 

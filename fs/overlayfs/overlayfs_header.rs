@@ -36,7 +36,7 @@ pub unsafe fn ovl_metadata_digest_size(m: *const ovl_metacopy) -> i32 { if ((*m)
 pub const OVL_OPEN_FLAGS: u32 = O_NOATIME;
 
 extern "C" {
-    pub static ovl_xattr_table: [[*const core::ffi::c_char; 2]; 10];
+    pub static ovl_xattr_table: [[*const kernel::ffi::c_char; 2]; 10];
     pub fn ovl_upper_mnt_idmap(ofs: *mut ovl_fs) -> *mut mnt_idmap;
     pub fn ovl_upper_mnt(ofs: *mut ovl_fs) -> *mut vfsmount;
     pub fn ovl_get_dir_xattr_val(ofs: *mut ovl_fs, path: *const path, ox: ovl_xattr) -> u8;
@@ -46,12 +46,12 @@ extern "C" {
     pub fn ovl_set_flag(flag: usize, inode: *mut inode);
 }
 
-pub unsafe fn ovl_xattr(ofs: *mut ovl_fs, ox: ovl_xattr) -> *const core::ffi::c_char { ovl_xattr_table[ox as usize][(*ofs).config.userxattr as usize] }
+pub unsafe fn ovl_xattr(ofs: *mut ovl_fs, ox: ovl_xattr) -> *const kernel::ffi::c_char { ovl_xattr_table[ox as usize][(*ofs).config.userxattr as usize] }
 pub unsafe fn ovl_upper_is_whiteout(ofs: *mut ovl_fs, d: *mut dentry) -> bool { let p = path { dentry: d, mnt: ovl_upper_mnt(ofs) }; ovl_path_is_whiteout(ofs, &p) }
 pub unsafe fn ovl_check_origin_xattr(ofs: *mut ovl_fs, d: *mut dentry) -> bool { let p = path { dentry: d, mnt: ovl_upper_mnt(ofs) }; ovl_path_check_origin_xattr(ofs, &p) }
 
-#[repr(C)] pub struct ovl_inode_params { pub newinode: *mut inode, pub upperdentry: *mut dentry, pub oe: *mut ovl_entry, pub index: bool, pub redirect: *mut core::ffi::c_char, pub lowerdata_redirect: *mut core::ffi::c_char }
-#[repr(C)] pub struct ovl_cattr { pub rdev: dev_t, pub mode: umode_t, pub link: *const core::ffi::c_char, pub hardlink: *mut dentry }
+#[repr(C)] pub struct ovl_inode_params { pub newinode: *mut inode, pub upperdentry: *mut dentry, pub oe: *mut ovl_entry, pub index: bool, pub redirect: *mut kernel::ffi::c_char, pub lowerdata_redirect: *mut kernel::ffi::c_char }
+#[repr(C)] pub struct ovl_cattr { pub rdev: dev_t, pub mode: umode_t, pub link: *const kernel::ffi::c_char, pub hardlink: *mut dentry }
 
 extern "C" {
     pub fn ovl_get_write_access(d: *mut dentry) -> i32; pub fn ovl_put_write_access(d: *mut dentry); pub fn ovl_start_write(d: *mut dentry); pub fn ovl_end_write(d: *mut dentry); pub fn ovl_want_write(d: *mut dentry) -> i32; pub fn ovl_drop_write(d: *mut dentry);
@@ -70,7 +70,7 @@ extern "C" {
     pub fn ovl_update_time(inode: *mut inode, r#type: fs_update_time, flags: u32) -> i32;
     pub fn ovl_create_real(ofs: *mut ovl_fs, parent: *mut dentry, newdentry: *mut dentry, qname: *mut qstr, attr: *mut ovl_cattr) -> *mut dentry;
     pub fn ovl_cleanup(ofs: *mut ovl_fs, workdir: *mut dentry, dentry: *mut dentry) -> i32;
-    pub fn ovl_tempname(name: *mut core::ffi::c_char);
+    pub fn ovl_tempname(name: *mut kernel::ffi::c_char);
 }
 
 pub const OVL_TEMPNAME_SIZE: usize = 20;

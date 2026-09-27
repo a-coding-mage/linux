@@ -23,7 +23,7 @@ pub const PAGE_OFFSET: u32 = 0xc0000000u32;
 
 #[cfg(CONFIG_HEXAGON_PHYS_OFFSET)]
 unsafe extern "C" {
-    pub static mut __phys_offset: core::ffi::c_ulong;
+    pub static mut __phys_offset: kernel::ffi::c_ulong;
 }
 
 #[cfg(CONFIG_HEXAGON_PHYS_OFFSET)]
@@ -85,7 +85,7 @@ macro_rules! MIN_KERNEL_SEG {
 }
 
 unsafe extern "C" {
-    pub static mut max_kernel_seg: core::ffi::c_int;
+    pub static mut max_kernel_seg: kernel::ffi::c_int;
 }
 
 /*

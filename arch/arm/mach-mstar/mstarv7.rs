@@ -24,11 +24,11 @@ const MSTARV7_CPU1_UNLOCK_MAGIC: u16 = 0xbabe;
 
 static mut L3BRIDGE: *mut u8 = core::ptr::null_mut();
 
-static MSTARV7_BOARD_DT_COMPAT: [*const core::ffi::c_char; 5] = [
-    b"mstar,infinity\0".as_ptr() as *const core::ffi::c_char,
-    b"mstar,infinity2m\0".as_ptr() as *const core::ffi::c_char,
-    b"mstar,infinity3\0".as_ptr() as *const core::ffi::c_char,
-    b"mstar,mercury5\0".as_ptr() as *const core::ffi::c_char,
+static MSTARV7_BOARD_DT_COMPAT: [*const kernel::ffi::c_char; 5] = [
+    b"mstar,infinity\0".as_ptr() as *const kernel::ffi::c_char,
+    b"mstar,infinity2m\0".as_ptr() as *const kernel::ffi::c_char,
+    b"mstar,infinity3\0".as_ptr() as *const kernel::ffi::c_char,
+    b"mstar,mercury5\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -60,19 +60,19 @@ extern "C" {
     fn __pa_symbol(symbol: unsafe extern "C" fn());
     fn secondary_startup_arm();
     fn of_find_compatible_node(
-        from: *mut core::ffi::c_void,
-        type_: *const core::ffi::c_char,
-        compatible: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_void;
-    fn of_iomap(node: *mut core::ffi::c_void, index: i32) -> *mut u8;
+        from: *mut kernel::ffi::c_void,
+        type_: *const kernel::ffi::c_char,
+        compatible: *const kernel::ffi::c_char,
+    ) -> *mut kernel::ffi::c_void;
+    fn of_iomap(node: *mut kernel::ffi::c_void, index: i32) -> *mut u8;
     fn writew(value: u16, address: *mut u8);
-    fn arch_send_wakeup_ipi_mask(mask: *mut core::ffi::c_void);
-    fn cpumask_of(cpu: u32) -> *mut core::ffi::c_void;
+    fn arch_send_wakeup_ipi_mask(mask: *mut kernel::ffi::c_void);
+    fn cpumask_of(cpu: u32) -> *mut kernel::ffi::c_void;
     fn iounmap(address: *mut u8);
 }
 
 #[cfg(CONFIG_SMP)]
-unsafe fn mstarv7_boot_secondary(cpu: u32, _idle: *mut core::ffi::c_void) -> i32 {
+unsafe fn mstarv7_boot_secondary(cpu: u32, _idle: *mut kernel::ffi::c_void) -> i32 {
     /* right now we don't know how to boot anything except cpu 1. */
     if cpu != 1 {
         return -22; // -EINVAL
@@ -81,7 +81,7 @@ unsafe fn mstarv7_boot_secondary(cpu: u32, _idle: *mut core::ffi::c_void) -> i32
     let np = of_find_compatible_node(
         core::ptr::null_mut(),
         core::ptr::null(),
-        b"mstar,smpctrl\0".as_ptr() as *const core::ffi::c_char,
+        b"mstar,smpctrl\0".as_ptr() as *const kernel::ffi::c_char,
     );
     let smpctrl = of_iomap(np, 0);
 
@@ -110,14 +110,14 @@ unsafe fn mstarv7_boot_secondary(cpu: u32, _idle: *mut core::ffi::c_void) -> i32
 // Equivalent to: static const struct smp_operations mstarv7_smp_ops = {
 //     .smp_boot_secondary = mstarv7_boot_secondary,
 // };
-static MSTARV7_SMP_OPS: Option<unsafe fn(u32, *mut core::ffi::c_void) -> i32> =
+static MSTARV7_SMP_OPS: Option<unsafe fn(u32, *mut kernel::ffi::c_void) -> i32> =
     Some(mstarv7_boot_secondary);
 
 unsafe fn mstarv7_init() {
     let np = of_find_compatible_node(
         core::ptr::null_mut(),
         core::ptr::null(),
-        b"mstar,l3bridge\0".as_ptr() as *const core::ffi::c_char,
+        b"mstar,l3bridge\0".as_ptr() as *const kernel::ffi::c_char,
     );
     L3BRIDGE = of_iomap(np, 0);
     if !L3BRIDGE.is_null() {

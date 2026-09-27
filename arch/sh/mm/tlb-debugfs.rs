@@ -21,7 +21,7 @@ pub enum tlb_type {
 #[repr(C)]
 struct TlbSize {
     bits: i32,
-    size: *const core::ffi::c_char,
+    size: *const kernel::ffi::c_char,
 }
 
 static tlb_sizes: [TlbSize; 8] = [
@@ -35,7 +35,7 @@ static tlb_sizes: [TlbSize; 8] = [
     TlbSize { bits: 0xc, size: b" 64MB\0".as_ptr() as *const _ },
 ];
 
-unsafe fn tlb_seq_show(file: *mut seq_file, _iter: *mut core::ffi::c_void) -> i32 {
+unsafe fn tlb_seq_show(file: *mut seq_file, _iter: *mut kernel::ffi::c_void) -> i32 {
     let tlb_type = (*file).private as u32;
     let (mut addr1, mut addr2, mut data1, mut data2): (usize, usize, usize, usize);
     let mut flags: usize = 0;

@@ -44,14 +44,14 @@ pub struct saa7146_format {
 
 #[repr(C)]
 pub struct saa7146_standard {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub id: v4l2_std_id,
-    pub v_offset: core::ffi::c_int,
-    pub v_field: core::ffi::c_int,
-    pub h_offset: core::ffi::c_int,
-    pub h_pixels: core::ffi::c_int,
-    pub v_max_out: core::ffi::c_int,
-    pub h_max_out: core::ffi::c_int,
+    pub v_offset: kernel::ffi::c_int,
+    pub v_field: kernel::ffi::c_int,
+    pub h_offset: kernel::ffi::c_int,
+    pub h_pixels: kernel::ffi::c_int,
+    pub v_max_out: kernel::ffi::c_int,
+    pub h_max_out: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -62,7 +62,7 @@ pub struct saa7146_buf {
         *mut saa7146_dev,
         *mut saa7146_buf,
         *mut saa7146_buf,
-    ) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
     pub pt: [saa7146_pgtable; 3],
 }
 
@@ -86,10 +86,10 @@ pub struct saa7146_vv {
     pub last_field: v4l2_field,
     pub seqnr: u32,
     pub standard: *mut saa7146_standard,
-    pub vflip: core::ffi::c_int,
-    pub hflip: core::ffi::c_int,
-    pub current_hps_source: core::ffi::c_int,
-    pub current_hps_sync: core::ffi::c_int,
+    pub vflip: kernel::ffi::c_int,
+    pub hflip: kernel::ffi::c_int,
+    pub current_hps_source: kernel::ffi::c_int,
+    pub current_hps_sync: kernel::ffi::c_int,
     pub resources: u32,
 }
 
@@ -97,17 +97,17 @@ pub const SAA7146_USE_PORT_B_FOR_VBI: u32 = 0x2;
 
 #[repr(C)]
 pub struct saa7146_ext_vv {
-    pub inputs: core::ffi::c_int,
-    pub audios: core::ffi::c_int,
+    pub inputs: kernel::ffi::c_int,
+    pub audios: kernel::ffi::c_int,
     pub capabilities: u32,
-    pub flags: core::ffi::c_int,
+    pub flags: kernel::ffi::c_int,
     pub stds: *mut saa7146_standard,
-    pub num_stds: core::ffi::c_int,
-    pub std_callback: Option<unsafe extern "C" fn(*mut saa7146_dev, *mut saa7146_standard) -> core::ffi::c_int>,
+    pub num_stds: kernel::ffi::c_int,
+    pub std_callback: Option<unsafe extern "C" fn(*mut saa7146_dev, *mut saa7146_standard) -> kernel::ffi::c_int>,
     pub vid_ops: v4l2_ioctl_ops,
     pub vbi_ops: v4l2_ioctl_ops,
     pub core_ops: *const v4l2_ioctl_ops,
-    pub vbi_write: Option<unsafe extern "C" fn(*mut file, *const core::ffi::c_char, usize, *mut loff_t) -> isize>,
+    pub vbi_write: Option<unsafe extern "C" fn(*mut file, *const kernel::ffi::c_char, usize, *mut loff_t) -> isize>,
 }
 
 #[repr(C)]
@@ -123,21 +123,21 @@ extern "C" {
     pub static video_qops: vb2_ops;
     pub static saa7146_vbi_uops: saa7146_use_ops;
     pub static vbi_qops: vb2_ops;
-    pub fn saa7146_register_device(_: *mut video_device, _: *mut saa7146_dev, _: *mut core::ffi::c_char, _: core::ffi::c_int) -> core::ffi::c_int;
-    pub fn saa7146_unregister_device(_: *mut video_device, _: *mut saa7146_dev) -> core::ffi::c_int;
-    pub fn saa7146_buffer_finish(_: *mut saa7146_dev, _: *mut saa7146_dmaqueue, _: core::ffi::c_int);
-    pub fn saa7146_buffer_next(_: *mut saa7146_dev, _: *mut saa7146_dmaqueue, _: core::ffi::c_int);
-    pub fn saa7146_buffer_queue(_: *mut saa7146_dev, _: *mut saa7146_dmaqueue, _: *mut saa7146_buf) -> core::ffi::c_int;
+    pub fn saa7146_register_device(_: *mut video_device, _: *mut saa7146_dev, _: *mut kernel::ffi::c_char, _: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub fn saa7146_unregister_device(_: *mut video_device, _: *mut saa7146_dev) -> kernel::ffi::c_int;
+    pub fn saa7146_buffer_finish(_: *mut saa7146_dev, _: *mut saa7146_dmaqueue, _: kernel::ffi::c_int);
+    pub fn saa7146_buffer_next(_: *mut saa7146_dev, _: *mut saa7146_dmaqueue, _: kernel::ffi::c_int);
+    pub fn saa7146_buffer_queue(_: *mut saa7146_dev, _: *mut saa7146_dmaqueue, _: *mut saa7146_buf) -> kernel::ffi::c_int;
     pub fn saa7146_buffer_timeout(_: *mut timer_list);
-    pub fn saa7146_vv_init(_: *mut saa7146_dev, _: *mut saa7146_ext_vv) -> core::ffi::c_int;
-    pub fn saa7146_vv_release(_: *mut saa7146_dev) -> core::ffi::c_int;
+    pub fn saa7146_vv_init(_: *mut saa7146_dev, _: *mut saa7146_ext_vv) -> kernel::ffi::c_int;
+    pub fn saa7146_vv_release(_: *mut saa7146_dev) -> kernel::ffi::c_int;
     pub fn saa7146_set_capture(_: *mut saa7146_dev, _: *mut saa7146_buf, _: *mut saa7146_buf);
-    pub fn saa7146_write_out_dma(_: *mut saa7146_dev, _: core::ffi::c_int, _: *mut saa7146_video_dma);
-    pub fn saa7146_set_hps_source_and_sync(_: *mut saa7146_dev, _: core::ffi::c_int, _: core::ffi::c_int);
+    pub fn saa7146_write_out_dma(_: *mut saa7146_dev, _: kernel::ffi::c_int, _: *mut saa7146_video_dma);
+    pub fn saa7146_set_hps_source_and_sync(_: *mut saa7146_dev, _: kernel::ffi::c_int, _: kernel::ffi::c_int);
     pub fn saa7146_set_gpio(_: *mut saa7146_dev, _: u8, _: u8);
-    pub fn saa7146_video_do_ioctl(_: *mut file, _: u32, _: *mut core::ffi::c_void) -> isize;
-    pub fn saa7146_s_ctrl(_: *mut v4l2_ctrl) -> core::ffi::c_int;
-    pub fn saa7146_res_get(_: *mut saa7146_dev, _: u32) -> core::ffi::c_int;
+    pub fn saa7146_video_do_ioctl(_: *mut file, _: u32, _: *mut kernel::ffi::c_void) -> isize;
+    pub fn saa7146_s_ctrl(_: *mut v4l2_ctrl) -> kernel::ffi::c_int;
+    pub fn saa7146_res_get(_: *mut saa7146_dev, _: u32) -> kernel::ffi::c_int;
     pub fn saa7146_res_free(_: *mut saa7146_dev, _: u32);
 }
 

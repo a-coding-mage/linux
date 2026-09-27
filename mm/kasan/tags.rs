@@ -26,7 +26,7 @@ static mut kasan_arg_stacktrace: kasan_arg_stacktrace =
 pub static mut kasan_flag_stacktrace: static_key_true = static_key_true {};
 
 /* Non-zero, as initial pointer values are 0. */
-pub const STACK_RING_BUSY_PTR: *mut core::ffi::c_void = 1usize as *mut core::ffi::c_void;
+pub const STACK_RING_BUSY_PTR: *mut kernel::ffi::c_void = 1usize as *mut kernel::ffi::c_void;
 
 pub static mut stack_ring: kasan_stack_ring = kasan_stack_ring {
     lock: RW_LOCK_UNLOCKED,
@@ -34,15 +34,15 @@ pub static mut stack_ring: kasan_stack_ring = kasan_stack_ring {
 };
 
 /* kasan.stacktrace=off/on */
-fn early_kasan_flag_stacktrace(arg: *mut core::ffi::c_char) -> i32 {
+fn early_kasan_flag_stacktrace(arg: *mut kernel::ffi::c_char) -> i32 {
     unsafe {
         if arg.is_null() {
             return -EINVAL;
         }
 
-        if strcmp(arg, b"off\0".as_ptr() as *const core::ffi::c_char) == 0 {
+        if strcmp(arg, b"off\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
             kasan_arg_stacktrace = kasan_arg_stacktrace::KASAN_ARG_STACKTRACE_OFF;
-        } else if strcmp(arg, b"on\0".as_ptr() as *const core::ffi::c_char) == 0 {
+        } else if strcmp(arg, b"on\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
             kasan_arg_stacktrace = kasan_arg_stacktrace::KASAN_ARG_STACKTRACE_ON;
         } else {
             return -EINVAL;
@@ -54,7 +54,7 @@ fn early_kasan_flag_stacktrace(arg: *mut core::ffi::c_char) -> i32 {
 // early_param("kasan.stacktrace", early_kasan_flag_stacktrace);
 
 /* kasan.stack_ring_size=<number of entries> */
-fn early_kasan_flag_stack_ring_size(arg: *mut core::ffi::c_char) -> i32 {
+fn early_kasan_flag_stack_ring_size(arg: *mut kernel::ffi::c_char) -> i32 {
     unsafe {
         if arg.is_null() {
             return -EINVAL;
@@ -94,7 +94,7 @@ pub unsafe fn kasan_init_tags() {
 
 unsafe fn save_stack_info(
     cache: *mut kmem_cache,
-    object: *mut core::ffi::c_void,
+    object: *mut kernel::ffi::c_void,
     gfp_flags: gfp_t,
     is_free: bool,
 ) {
@@ -103,7 +103,7 @@ unsafe fn save_stack_info(
     let old_stack: depot_stack_handle_t;
     let mut pos: u64;
     let entry: *mut kasan_stack_ring_entry;
-    let mut old_ptr: *mut core::ffi::c_void;
+    let mut old_ptr: *mut kernel::ffi::c_void;
 
     stack = kasan_save_stack(gfp_flags, STACK_DEPOT_FLAG_CAN_ALLOC | STACK_DEPOT_FLAG_GET);
 
@@ -143,11 +143,11 @@ unsafe fn save_stack_info(
     }
 }
 
-pub unsafe fn kasan_save_alloc_info(cache: *mut kmem_cache, object: *mut core::ffi::c_void, flags: gfp_t) {
+pub unsafe fn kasan_save_alloc_info(cache: *mut kmem_cache, object: *mut kernel::ffi::c_void, flags: gfp_t) {
     save_stack_info(cache, object, flags, false);
 }
 
-pub unsafe fn kasan_save_free_info(cache: *mut kmem_cache, object: *mut core::ffi::c_void) {
+pub unsafe fn kasan_save_free_info(cache: *mut kmem_cache, object: *mut kernel::ffi::c_void) {
     save_stack_info(cache, object, 0, true);
 }
 

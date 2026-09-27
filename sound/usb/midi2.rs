@@ -9,7 +9,7 @@
 
 use core::mem;
 use core::ptr::{self, null_mut};
-use core::ffi::c_int;
+use kernel::ffi::c_int;
 
 // External types from Linux kernel (assumed to be available)
 // These are declared but implementations come from kernel bindings
@@ -31,37 +31,37 @@ extern "C" {
     type snd_rawmidi_substream;
     type usb_interface;
 
-    fn find_first_bit(addr: *const core::ffi::c_ulong, size: core::ffi::c_uint) -> core::ffi::c_int;
-    fn clear_bit(index: core::ffi::c_int, addr: *mut core::ffi::c_ulong);
-    fn set_bit(index: core::ffi::c_int, addr: *mut core::ffi::c_ulong);
-    fn usb_submit_urb(urb: *mut urb, gfp_mask: core::ffi::c_uint) -> c_int;
+    fn find_first_bit(addr: *const kernel::ffi::c_ulong, size: kernel::ffi::c_uint) -> kernel::ffi::c_int;
+    fn clear_bit(index: kernel::ffi::c_int, addr: *mut kernel::ffi::c_ulong);
+    fn set_bit(index: kernel::ffi::c_int, addr: *mut kernel::ffi::c_ulong);
+    fn usb_submit_urb(urb: *mut urb, gfp_mask: kernel::ffi::c_uint) -> c_int;
     fn usb_kill_urb(urb: *mut urb);
     fn usb_free_urb(urb: *mut urb);
-    fn usb_alloc_urb(iso_packets: c_int, gfp_mask: core::ffi::c_uint) -> *mut urb;
+    fn usb_alloc_urb(iso_packets: c_int, gfp_mask: kernel::ffi::c_uint) -> *mut urb;
     fn usb_alloc_coherent(
         dev: *mut usb_device,
         size: usize,
-        gfp: core::ffi::c_uint,
-        dma: *mut core::ffi::c_ulong,
-    ) -> *mut core::ffi::c_void;
+        gfp: kernel::ffi::c_uint,
+        dma: *mut kernel::ffi::c_ulong,
+    ) -> *mut kernel::ffi::c_void;
     fn usb_free_coherent(
         dev: *mut usb_device,
         size: usize,
-        addr: *mut core::ffi::c_void,
-        dma: core::ffi::c_ulong,
+        addr: *mut kernel::ffi::c_void,
+        dma: kernel::ffi::c_ulong,
     );
     fn usb_set_interface(
         dev: *mut usb_device,
-        ifnum: core::ffi::c_int,
-        alternate: core::ffi::c_int,
+        ifnum: kernel::ffi::c_int,
+        alternate: kernel::ffi::c_int,
     ) -> c_int;
-    fn usb_maxpacket(dev: *mut usb_device, pipe: core::ffi::c_uint) -> c_int;
-    fn usb_rcvintpipe(dev: *mut usb_device, endpoint: core::ffi::c_uint) -> core::ffi::c_uint;
-    fn usb_rcvbulkpipe(dev: *mut usb_device, endpoint: core::ffi::c_uint) -> core::ffi::c_uint;
-    fn usb_sndintpipe(dev: *mut usb_device, endpoint: core::ffi::c_uint) -> core::ffi::c_uint;
-    fn usb_sndbulkpipe(dev: *mut usb_device, endpoint: core::ffi::c_uint) -> core::ffi::c_uint;
-    fn usb_endpoint_xfer_int(desc: *const core::ffi::c_void) -> core::ffi::c_int;
-    fn usb_endpoint_xfer_bulk(desc: *const core::ffi::c_void) -> core::ffi::c_int;
+    fn usb_maxpacket(dev: *mut usb_device, pipe: kernel::ffi::c_uint) -> c_int;
+    fn usb_rcvintpipe(dev: *mut usb_device, endpoint: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
+    fn usb_rcvbulkpipe(dev: *mut usb_device, endpoint: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
+    fn usb_sndintpipe(dev: *mut usb_device, endpoint: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
+    fn usb_sndbulkpipe(dev: *mut usb_device, endpoint: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
+    fn usb_endpoint_xfer_int(desc: *const kernel::ffi::c_void) -> kernel::ffi::c_int;
+    fn usb_endpoint_xfer_bulk(desc: *const kernel::ffi::c_void) -> kernel::ffi::c_int;
     fn usb_urb_ep_type_check(urb: *mut urb) -> c_int;
     fn usb_string(
         dev: *mut usb_device,
@@ -71,17 +71,17 @@ extern "C" {
     ) -> c_int;
     fn snd_usb_ctl_msg(
         dev: *mut usb_device,
-        pipe: core::ffi::c_uint,
-        request: core::ffi::c_uint,
-        requesttype: core::ffi::c_uint,
-        value: core::ffi::c_uint,
-        index: core::ffi::c_uint,
-        data: *mut core::ffi::c_void,
+        pipe: kernel::ffi::c_uint,
+        request: kernel::ffi::c_uint,
+        requesttype: kernel::ffi::c_uint,
+        value: kernel::ffi::c_uint,
+        index: kernel::ffi::c_uint,
+        data: *mut kernel::ffi::c_void,
         size: c_int,
     ) -> c_int;
     fn snd_ump_transmit(
         ump: *mut snd_ump_endpoint,
-        buf: *mut core::ffi::c_void,
+        buf: *mut kernel::ffi::c_void,
         count: c_int,
     ) -> c_int;
     fn snd_ump_receive(
@@ -90,7 +90,7 @@ extern "C" {
         count: c_int,
     );
     fn snd_ump_endpoint_new(
-        card: *mut core::ffi::c_void,
+        card: *mut kernel::ffi::c_void,
         id: *const c_int,
         device: c_int,
         output: c_int,
@@ -113,22 +113,22 @@ extern "C" {
     ) -> c_int;
     fn snd_ump_update_group_attrs(ump: *mut snd_ump_endpoint);
     fn __snd_usbmidi_create(
-        card: *mut core::ffi::c_void,
+        card: *mut kernel::ffi::c_void,
         iface: *mut usb_interface,
-        midi_list: *mut core::ffi::c_void,
+        midi_list: *mut kernel::ffi::c_void,
         quirk: *const snd_usb_audio_quirk,
-        usb_id: core::ffi::c_uint,
+        usb_id: kernel::ffi::c_uint,
         num_rawmidis: *mut c_int,
     ) -> c_int;
     fn cpu_to_le32_array(buf: *mut u32, len: c_int);
     fn le32_to_cpu_array(buf: *mut u32, len: c_int);
     fn le16_to_cpu(val: u16) -> u16;
     fn __le16_to_cpu(val: u16) -> u16;
-    fn kzalloc(size: usize, flags: core::ffi::c_uint) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn spin_lock_init(lock: *mut core::ffi::c_void);
-    fn init_waitqueue_head(wait: *mut core::ffi::c_void);
-    fn msecs_to_jiffies(msecs: core::ffi::c_uint) -> c_int;
+    fn kzalloc(size: usize, flags: kernel::ffi::c_uint) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn spin_lock_init(lock: *mut kernel::ffi::c_void);
+    fn init_waitqueue_head(wait: *mut kernel::ffi::c_void);
+    fn msecs_to_jiffies(msecs: kernel::ffi::c_uint) -> c_int;
 }
 
 static mut MIDI2_ENABLE: bool = true;
@@ -162,20 +162,20 @@ pub struct snd_usb_midi2_endpoint {
     pub rmidi: *mut snd_usb_midi2_ump,
     pub ump: *mut snd_ump_endpoint,
     pub direction: c_int,
-    pub endpoint: core::ffi::c_uint,
-    pub pipe: core::ffi::c_uint,
-    pub packets: core::ffi::c_uint,
-    pub interval: core::ffi::c_uint,
-    pub wait: core::ffi::c_void,
-    pub lock: core::ffi::c_void,
+    pub endpoint: kernel::ffi::c_uint,
+    pub pipe: kernel::ffi::c_uint,
+    pub packets: kernel::ffi::c_uint,
+    pub interval: kernel::ffi::c_uint,
+    pub wait: kernel::ffi::c_void,
+    pub lock: kernel::ffi::c_void,
     pub substream: *mut snd_rawmidi_substream,
-    pub num_urbs: core::ffi::c_uint,
-    pub urb_free: core::ffi::c_ulong,
-    pub urb_free_mask: core::ffi::c_ulong,
-    pub running: core::ffi::c_int,
-    pub suspended: core::ffi::c_int,
+    pub num_urbs: kernel::ffi::c_uint,
+    pub urb_free: kernel::ffi::c_ulong,
+    pub urb_free_mask: kernel::ffi::c_ulong,
+    pub running: kernel::ffi::c_int,
+    pub suspended: kernel::ffi::c_int,
     pub disconnected: bool,
-    pub list: core::ffi::c_void,
+    pub list: kernel::ffi::c_void,
     pub urbs: [snd_usb_midi2_urb; NUM_URBS],
 }
 
@@ -187,9 +187,9 @@ pub struct snd_usb_midi2_ump {
     pub ump: *mut snd_ump_endpoint,
     pub eps: [*mut snd_usb_midi2_endpoint; 2],
     pub index: c_int,
-    pub usb_block_id: core::ffi::c_uchar,
+    pub usb_block_id: kernel::ffi::c_uchar,
     pub ump_parsed: bool,
-    pub list: core::ffi::c_void,
+    pub list: kernel::ffi::c_void,
 }
 
 /* top-level instance per USB MIDI interface */
@@ -199,11 +199,11 @@ pub struct snd_usb_midi2_interface {
     pub iface: *mut usb_interface,
     pub hostif: *mut usb_host_interface,
     pub blk_descs: *const c_int,
-    pub blk_desc_size: core::ffi::c_uint,
+    pub blk_desc_size: kernel::ffi::c_uint,
     pub disconnected: bool,
-    pub ep_list: core::ffi::c_void,
-    pub rawmidi_list: core::ffi::c_void,
-    pub list: core::ffi::c_void,
+    pub ep_list: kernel::ffi::c_void,
+    pub rawmidi_list: kernel::ffi::c_void,
+    pub list: kernel::ffi::c_void,
 }
 
 /* submit URBs as much as possible; used for both input and output */
@@ -221,7 +221,7 @@ unsafe fn do_submit_urbs_locked<F>(
     }
 
     while (*ep).urb_free != 0 {
-        index = find_first_bit(&(*ep).urb_free, (*ep).num_urbs as core::ffi::c_uint);
+        index = find_first_bit(&(*ep).urb_free, (*ep).num_urbs as kernel::ffi::c_uint);
         if index >= (*ep).num_urbs as c_int {
             return;
         }
@@ -389,8 +389,8 @@ unsafe fn free_midi_urbs(ep: *mut snd_usb_midi2_endpoint) {
 unsafe fn alloc_midi_urbs(ep: *mut snd_usb_midi2_endpoint) -> c_int {
     let mut i: c_int;
     let mut err: c_int;
-    let endpoint: core::ffi::c_uint;
-    let len: core::ffi::c_uint;
+    let endpoint: kernel::ffi::c_uint;
+    let len: kernel::ffi::c_uint;
 
     endpoint = (*ep).endpoint;
     len = (*ep).packets;
@@ -536,7 +536,7 @@ unsafe fn create_midi2_endpoint(
     ms_ep: *const usb_ms20_endpoint_descriptor,
 ) -> c_int {
     let ep: *mut snd_usb_midi2_endpoint;
-    let endpoint: core::ffi::c_uint;
+    let endpoint: kernel::ffi::c_uint;
     let dir: c_int;
 
     // usb_audio_dbg(umidi->chip, "Creating an EP 0x%02x, #GTB=%d\n",
@@ -574,7 +574,7 @@ unsafe fn create_midi2_endpoint(
             (*ep).pipe = usb_sndbulkpipe((*ep).dev, endpoint);
         }
     }
-    (*ep).packets = usb_maxpacket((*ep).dev, (*ep).pipe) as core::ffi::c_uint;
+    (*ep).packets = usb_maxpacket((*ep).dev, (*ep).pipe) as kernel::ffi::c_uint;
     // list_add_tail(&ep->list, &umidi->ep_list);
 
     return 0;
@@ -589,7 +589,7 @@ unsafe fn free_midi2_endpoint(ep: *mut snd_usb_midi2_endpoint) {
         drain_urb_queue(ep);
     }
     free_midi_urbs(ep);
-    kfree(ep as *mut core::ffi::c_void);
+    kfree(ep as *mut kernel::ffi::c_void);
 }
 
 /* call all endpoint destructors */
@@ -604,9 +604,9 @@ unsafe fn free_all_midi2_endpoints(umidi: *mut snd_usb_midi2_interface) {
 /* find a MIDI STREAMING descriptor with a given subtype */
 unsafe fn find_usb_ms_endpoint_descriptor(
     hostep: *mut usb_host_endpoint,
-    subtype: core::ffi::c_uchar,
-) -> *mut core::ffi::c_void {
-    let mut extra = (*hostep).extra as *mut core::ffi::c_uchar;
+    subtype: kernel::ffi::c_uchar,
+) -> *mut kernel::ffi::c_void {
+    let mut extra = (*hostep).extra as *mut kernel::ffi::c_uchar;
     let mut extralen = (*hostep).extralen as c_int;
 
     while extralen > 3 {
@@ -620,7 +620,7 @@ unsafe fn find_usb_ms_endpoint_descriptor(
         if length > 3 {
             // && ms_ep->bDescriptorType == USB_DT_CS_ENDPOINT
             // && ms_ep->bDescriptorSubtype == subtype
-            return ms_ep as *mut core::ffi::c_void;
+            return ms_ep as *mut kernel::ffi::c_void;
         }
         extralen -= length;
         extra = extra.offset(length as isize);
@@ -633,7 +633,7 @@ unsafe fn get_group_terminal_block_descs(umidi: *mut snd_usb_midi2_interface) ->
     let hostif = (*umidi).hostif;
     let dev = (*(*umidi).chip).dev;
     let mut header: usb_ms20_gr_trm_block_header_descriptor = mem::zeroed();
-    let data: *mut core::ffi::c_uchar;
+    let data: *mut kernel::ffi::c_uchar;
     let err: c_int;
     let size: c_int;
 
@@ -652,7 +652,7 @@ unsafe fn get_group_terminal_block_descs(umidi: *mut snd_usb_midi2_interface) ->
     //     return -EINVAL;
     // }
 
-    data = kzalloc(size as usize, 0x10000) as *mut core::ffi::c_uchar;
+    data = kzalloc(size as usize, 0x10000) as *mut kernel::ffi::c_uchar;
     if data.is_null() {
         return -12; // -ENOMEM
     }
@@ -668,7 +668,7 @@ unsafe fn get_group_terminal_block_descs(umidi: *mut snd_usb_midi2_interface) ->
     // }
 
     (*umidi).blk_descs = data as *const c_int;
-    (*umidi).blk_desc_size = size as core::ffi::c_uint;
+    (*umidi).blk_desc_size = size as kernel::ffi::c_uint;
     return 0;
 }
 
@@ -677,7 +677,7 @@ unsafe fn find_group_terminal_block(
     umidi: *mut snd_usb_midi2_interface,
     id: c_int,
 ) -> *const usb_ms20_gr_trm_block_descriptor {
-    let data = (*umidi).blk_descs as *const core::ffi::c_uchar;
+    let data = (*umidi).blk_descs as *const kernel::ffi::c_uchar;
     let mut size = (*umidi).blk_desc_size as c_int;
     let desc: *const usb_ms20_gr_trm_block_descriptor;
 
@@ -703,8 +703,8 @@ unsafe fn parse_group_terminal_block(
     desc: *const usb_ms20_gr_trm_block_descriptor,
 ) -> c_int {
     let ump = (*rmidi).ump;
-    let protocol: core::ffi::c_uint;
-    let protocol_caps: core::ffi::c_uint;
+    let protocol: kernel::ffi::c_uint;
+    let protocol_caps: kernel::ffi::c_uint;
 
     // set default protocol
     // switch (desc->bMIDIProtocol) {
@@ -829,7 +829,7 @@ unsafe fn create_midi2_ump(
     // INIT_LIST_HEAD(&rmidi->list);
     (*rmidi).dev = (*(*umidi).chip).dev;
     (*rmidi).umidi = umidi;
-    (*rmidi).usb_block_id = blk_id as core::ffi::c_uchar;
+    (*rmidi).usb_block_id = blk_id as kernel::ffi::c_uchar;
 
     (*rmidi).index = 0; // umidi->chip->num_rawmidis;
     // snprintf(idstr, sizeof(idstr), "UMP %d", rmidi->index);
@@ -846,7 +846,7 @@ unsafe fn create_midi2_ump(
     (*rmidi).ump = ump;
     // umidi->chip->num_rawmidis++;
 
-    (*ump).private_data = rmidi as *mut core::ffi::c_void;
+    (*ump).private_data = rmidi as *mut kernel::ffi::c_void;
     // ump->ops = &snd_usb_midi_v2_ump_ops;
     // ump->private_free = free_ump_private_data;
 
@@ -1030,8 +1030,8 @@ unsafe fn snd_usb_midi_v2_free(umidi: *mut snd_usb_midi2_interface) {
     free_all_midi2_endpoints(umidi);
     free_all_midi2_umps(umidi);
     // list_del(&umidi->list);
-    kfree((*umidi).blk_descs as *mut core::ffi::c_void);
-    kfree(umidi as *mut core::ffi::c_void);
+    kfree((*umidi).blk_descs as *mut kernel::ffi::c_void);
+    kfree(umidi as *mut kernel::ffi::c_void);
 }
 
 /* parse the interface for MIDI 2.0 */
@@ -1153,7 +1153,7 @@ pub unsafe extern "C" fn snd_usb_midi_v2_create(
     chip: *mut snd_usb_audio,
     iface: *mut usb_interface,
     quirk: *const snd_usb_audio_quirk,
-    usb_id: core::ffi::c_uint,
+    usb_id: kernel::ffi::c_uint,
 ) -> c_int {
     let umidi: *mut snd_usb_midi2_interface;
     let hostif: *mut usb_host_interface;
@@ -1258,7 +1258,7 @@ unsafe fn goto_fallback_to_midi1(
     chip: *mut snd_usb_audio,
     iface: *mut usb_interface,
     quirk: *const snd_usb_audio_quirk,
-    usb_id: core::ffi::c_uint,
+    usb_id: kernel::ffi::c_uint,
 ) -> c_int {
     return __snd_usbmidi_create(
         null_mut(), // chip->card

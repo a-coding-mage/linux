@@ -8,11 +8,11 @@
 // Rust translation of the C implementation source. Kernel/ALSA declarations
 // supplied by included headers in C are represented here as external items.
 
-type u8 = core::ffi::c_uchar;
-type u32 = core::ffi::c_uint;
-type c_int = core::ffi::c_int;
-type c_char = core::ffi::c_char;
-type c_void = core::ffi::c_void;
+type u8 = kernel::ffi::c_uchar;
+type u32 = kernel::ffi::c_uint;
+type c_int = kernel::ffi::c_int;
+type c_char = kernel::ffi::c_char;
+type c_void = kernel::ffi::c_void;
 type size_t = usize;
 type dma_addr_t = usize;
 type snd_pcm_uframes_t = usize;
@@ -146,7 +146,7 @@ extern "C" {
     ) -> c_int;
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 type gfp_t = c_uint;
 type ssize_t = isize;
 

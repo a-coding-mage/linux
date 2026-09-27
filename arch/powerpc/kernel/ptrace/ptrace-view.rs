@@ -4,9 +4,9 @@
 // and configuration symbols are intentionally referenced as external dependencies.
 
 #[repr(C)]
-struct pt_regs_offset { name: *const core::ffi::c_char, offset: i32 }
+struct pt_regs_offset { name: *const kernel::ffi::c_char, offset: i32 }
 
-#[inline] unsafe fn reg_offset(name: *const core::ffi::c_char, offset: i32) -> pt_regs_offset {
+#[inline] unsafe fn reg_offset(name: *const kernel::ffi::c_char, offset: i32) -> pt_regs_offset {
     pt_regs_offset { name, offset }
 }
 
@@ -14,10 +14,10 @@ struct pt_regs_offset { name: *const core::ffi::c_char, offset: i32 }
 // PowerPC kernel bindings.
 extern "C" {
     static regoffset_table: [pt_regs_offset; 0];
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
 }
 
-pub unsafe fn regs_query_register_offset(name: *const core::ffi::c_char) -> i32 {
+pub unsafe fn regs_query_register_offset(name: *const kernel::ffi::c_char) -> i32 {
     let mut roff = regoffset_table.as_ptr();
     while !(*roff).name.is_null() {
         if strcmp((*roff).name, name) == 0 { return (*roff).offset; }
@@ -26,7 +26,7 @@ pub unsafe fn regs_query_register_offset(name: *const core::ffi::c_char) -> i32 
     -EINVAL
 }
 
-pub unsafe fn regs_query_register_name(offset: u32) -> *const core::ffi::c_char {
+pub unsafe fn regs_query_register_name(offset: u32) -> *const kernel::ffi::c_char {
     let mut roff = regoffset_table.as_ptr();
     while !(*roff).name.is_null() {
         if (*roff).offset == offset as i32 { return (*roff).name; }
@@ -96,7 +96,7 @@ unsafe fn gpr_get(target: *mut task_struct, _regset: *const user_regset, mut to:
     membuf_zero(&mut to, ELF_NGREG * core::mem::size_of::<c_ulong>() - core::mem::size_of::<user_pt_regs>())
 }
 
-unsafe fn gpr_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const core::ffi::c_void, mut ubuf: *const core::ffi::c_void) -> i32 {
+unsafe fn gpr_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const kernel::ffi::c_void, mut ubuf: *const kernel::ffi::c_void) -> i32 {
     if (*target).thread.regs.is_null() { return -EIO; }
     let mut reg: c_ulong = 0;
     let mut ret = user_regset_copyin(&mut pos,&mut count,&mut kbuf,&mut ubuf,(*target).thread.regs as *mut _,0,PT_MSR as usize*core::mem::size_of::<c_ulong>());
@@ -116,12 +116,12 @@ pub unsafe fn gpr32_get_common(target: *mut task_struct, _regset: *const user_re
     membuf_zero(&mut to, (ELF_NGREG - PT_REGS_COUNT) * core::mem::size_of::<u32>())
 }
 
-pub unsafe fn gpr32_set_common(target: *mut task_struct, regset: *const user_regset, pos: u32, count: u32, kbuf: *const core::ffi::c_void, ubuf: *const core::ffi::c_void, regs: *mut c_ulong) -> i32 {
+pub unsafe fn gpr32_set_common(target: *mut task_struct, regset: *const user_regset, pos: u32, count: u32, kbuf: *const kernel::ffi::c_void, ubuf: *const kernel::ffi::c_void, regs: *mut c_ulong) -> i32 {
     if !kbuf.is_null() { return gpr32_set_common_kernel(target,regset,pos,count,kbuf,regs); }
     gpr32_set_common_user(target,regset,pos,count,ubuf,regs)
 }
 
-unsafe fn gpr32_set_common_kernel(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const core::ffi::c_void, regs: *mut c_ulong) -> i32 {
+unsafe fn gpr32_set_common_kernel(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const kernel::ffi::c_void, regs: *mut c_ulong) -> i32 {
     let k = kbuf as *const compat_ulong_t; pos /= core::mem::size_of::<compat_ulong_t>() as u32; count /= core::mem::size_of::<compat_ulong_t>() as u32;
     let mut p = pos; let mut q = k;
     while count > 0 && p < PT_MSR as u32 { *regs.add(p as usize)=*q as c_ulong; q=q.add(1); p+=1; count-=1; }
@@ -132,7 +132,7 @@ unsafe fn gpr32_set_common_kernel(target: *mut task_struct, _regset: *const user
     0
 }
 
-unsafe fn gpr32_set_common_user(target: *mut task_struct, _regset: *const user_regset, _pos: u32, _count: u32, _ubuf: *const core::ffi::c_void, _regs: *mut c_ulong) -> i32 { -EFAULT }
+unsafe fn gpr32_set_common_user(target: *mut task_struct, _regset: *const user_regset, _pos: u32, _count: u32, _ubuf: *const kernel::ffi::c_void, _regs: *mut c_ulong) -> i32 { -EFAULT }
 
 // Native and compat regset arrays contain the complete configuration-gated
 // entries from the C source (GPR/FPR, Altivec, VSX, SPE, transactional memory,

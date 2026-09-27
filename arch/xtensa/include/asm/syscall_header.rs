@@ -93,7 +93,7 @@ pub unsafe fn syscall_set_arguments(
 // `asmlinkage` declarations from the C header.
 extern "C" {
     pub fn xtensa_rt_sigreturn() -> i64;
-    pub fn xtensa_shmat(arg1: i32, arg2: *mut core::ffi::c_char, arg3: i32) -> i64;
+    pub fn xtensa_shmat(arg1: i32, arg2: *mut kernel::ffi::c_char, arg3: i32) -> i64;
     pub fn xtensa_fadvise64_64(arg1: i32, arg2: i32, arg3: u64, arg4: u64) -> i64;
 }
 

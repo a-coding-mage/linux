@@ -8,7 +8,7 @@
 **\tRewritten 15/9/2000 by Geert to use resource management
 */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Types, constants, and functions below are supplied by the surrounding kernel.
 #[repr(C)]
@@ -33,8 +33,8 @@ extern "C" {
         min: usize,
         max: usize,
         align: usize,
-        arch_data: *mut core::ffi::c_void,
-        alignf: *mut core::ffi::c_void,
+        arch_data: *mut kernel::ffi::c_void,
+        alignf: *mut kernel::ffi::c_void,
     ) -> i32;
     fn lookup_resource(root: *mut resource, start: usize) -> *mut resource;
     fn release_resource(old: *mut resource) -> i32;
@@ -43,10 +43,10 @@ extern "C" {
     fn atomic_add(i: i32, v: *mut atomic_t);
     fn atomic_read(v: *const atomic_t) -> i32;
     fn kzalloc_resource() -> *mut resource;
-    fn kfree(p: *mut core::ffi::c_void);
+    fn kfree(p: *mut kernel::ffi::c_void);
     fn page_align(size: usize) -> usize;
-    fn ztwo_vaddr(addr: usize) -> *mut core::ffi::c_void;
-    fn ztwo_paddr(ptr: *mut core::ffi::c_void) -> usize;
+    fn ztwo_vaddr(addr: usize) -> *mut kernel::ffi::c_void;
+    fn ztwo_paddr(ptr: *mut kernel::ffi::c_void) -> usize;
     fn amiga_hw_present_chip_ram() -> bool;
     fn pr_debug(fmt: *const c_char, ...);
     fn pr_err(fmt: *const c_char, ...);
@@ -73,7 +73,7 @@ pub unsafe fn amiga_chip_init() {
     atomic_set(&mut chipavail, amiga_chip_size as i32);
 }
 
-pub unsafe fn amiga_chip_alloc(size: usize, name: *const c_char) -> *mut core::ffi::c_void {
+pub unsafe fn amiga_chip_alloc(size: usize, name: *const c_char) -> *mut kernel::ffi::c_void {
     let res = kzalloc_resource();
     if res.is_null() {
         return core::ptr::null_mut();
@@ -82,7 +82,7 @@ pub unsafe fn amiga_chip_alloc(size: usize, name: *const c_char) -> *mut core::f
     (*res).name = name;
     let p = amiga_chip_alloc_res(size, res);
     if p.is_null() {
-        kfree(res as *mut core::ffi::c_void);
+        kfree(res as *mut kernel::ffi::c_void);
         return core::ptr::null_mut();
     }
 
@@ -98,7 +98,7 @@ pub unsafe fn amiga_chip_alloc(size: usize, name: *const c_char) -> *mut core::f
 pub unsafe fn amiga_chip_alloc_res(
     mut size: usize,
     res: *mut resource,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     size = page_align(size);
 
     pr_debug(b"amiga_chip_alloc_res: allocate %lu bytes\n\0".as_ptr() as *const c_char, size);
@@ -129,7 +129,7 @@ pub unsafe fn amiga_chip_alloc_res(
     ztwo_vaddr((*res).start)
 }
 
-pub unsafe fn amiga_chip_free(ptr: *mut core::ffi::c_void) {
+pub unsafe fn amiga_chip_free(ptr: *mut kernel::ffi::c_void) {
     let start = ztwo_paddr(ptr);
     let res = lookup_resource(&mut chipram_res, start);
     if res.is_null() {
@@ -149,7 +149,7 @@ pub unsafe fn amiga_chip_free(ptr: *mut core::ffi::c_void) {
     );
     atomic_add(size as i32, &mut chipavail);
     release_resource(res);
-    kfree(res as *mut core::ffi::c_void);
+    kfree(res as *mut kernel::ffi::c_void);
 }
 
 pub unsafe fn amiga_chip_avail() -> usize {

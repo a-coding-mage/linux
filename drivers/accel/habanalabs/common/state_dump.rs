@@ -6,8 +6,8 @@
 // Translated from the Linux kernel implementation. External kernel and driver
 // types, constants, macros, and functions are supplied by the surrounding crate.
 
-pub unsafe extern "C" fn hl_format_as_binary(mut buf: *mut core::ffi::c_char,
-    mut buf_len: usize, mut n: u32) -> *mut core::ffi::c_char {
+pub unsafe extern "C" fn hl_format_as_binary(mut buf: *mut kernel::ffi::c_char,
+    mut buf_len: usize, mut n: u32) -> *mut kernel::ffi::c_char {
     let mut leading0 = true;
     let mut wrptr = buf;
     if buf_len > 0 && buf_len < 3 {
@@ -33,11 +33,11 @@ pub unsafe extern "C" fn hl_format_as_binary(mut buf: *mut core::ffi::c_char,
     buf
 }
 
-unsafe fn resize_to_fit(buf: *mut *mut core::ffi::c_char, size: *mut usize,
+unsafe fn resize_to_fit(buf: *mut *mut kernel::ffi::c_char, size: *mut usize,
                         desired_size: usize) -> i32 {
     if *size >= desired_size { return 0; }
     let new_size = core::cmp::max(PAGE_SIZE, round_up(desired_size, PAGE_SIZE));
-    let resized_buf = vmalloc(new_size) as *mut core::ffi::c_char;
+    let resized_buf = vmalloc(new_size) as *mut kernel::ffi::c_char;
     if resized_buf.is_null() { return -ENOMEM; }
     memcpy(resized_buf as *mut _, *buf as *const _, *size);
     vfree(*buf as *mut _);
@@ -46,8 +46,8 @@ unsafe fn resize_to_fit(buf: *mut *mut core::ffi::c_char, size: *mut usize,
     1
 }
 
-pub unsafe extern "C" fn hl_snprintf_resize(buf: *mut *mut core::ffi::c_char,
-    size: *mut usize, offset: *mut usize, format: *const core::ffi::c_char, ...) -> i32 {
+pub unsafe extern "C" fn hl_snprintf_resize(buf: *mut *mut kernel::ffi::c_char,
+    size: *mut usize, offset: *mut usize, format: *const kernel::ffi::c_char, ...) -> i32 {
     if (*buf).is_null() && (*size != 0 || *offset != 0) { return -EINVAL; }
     let mut args: VaList;
     va_start(&mut args, format);
@@ -64,7 +64,7 @@ pub unsafe extern "C" fn hl_snprintf_resize(buf: *mut *mut core::ffi::c_char,
     0
 }
 
-pub unsafe extern "C" fn hl_sync_engine_to_string(engine_type: hl_sync_engine_type) -> *const core::ffi::c_char {
+pub unsafe extern "C" fn hl_sync_engine_to_string(engine_type: hl_sync_engine_type) -> *const kernel::ffi::c_char {
     match engine_type {
         ENGINE_DMA => b"DMA\0".as_ptr() as *const _,
         ENGINE_MME => b"MME\0".as_ptr() as *const _,

@@ -30,15 +30,15 @@ extern "C" {
         bp: *mut xfs_buf,
         ip: *mut xfs_inode,
         ifp: *mut xfs_ifork,
-        priv_: *mut core::ffi::c_void,
+        priv_: *mut kernel::ffi::c_void,
     );
-    pub fn xfs_symlink_shortform_verify(sfp: *mut core::ffi::c_void, size: i64) -> xfs_failaddr_t;
-    pub fn xfs_symlink_remote_read(ip: *mut xfs_inode, link: *mut core::ffi::c_char) -> i32;
+    pub fn xfs_symlink_shortform_verify(sfp: *mut kernel::ffi::c_void, size: i64) -> xfs_failaddr_t;
+    pub fn xfs_symlink_remote_read(ip: *mut xfs_inode, link: *mut kernel::ffi::c_char) -> i32;
     pub fn xfs_symlink_write_target(
         tp: *mut xfs_trans,
         ip: *mut xfs_inode,
         owner: xfs_ino_t,
-        target_path: *const core::ffi::c_char,
+        target_path: *const kernel::ffi::c_char,
         pathlen: i32,
         fs_blocks: xfs_fsblock_t,
         resblks: u32,

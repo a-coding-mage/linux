@@ -10,7 +10,7 @@
 // #include "common.h"
 // #include "mx35.h"
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 unsafe extern "C" {
     fn mx35_map_io();

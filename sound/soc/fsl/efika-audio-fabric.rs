@@ -17,15 +17,15 @@ pub const DRV_NAME: &[u8] = b"efika-audio-fabric\0";
 extern "C" {
     static mut THIS_MODULE: *mut module;
 
-    fn of_machine_is_compatible(compat: *const core::ffi::c_char) -> core::ffi::c_int;
+    fn of_machine_is_compatible(compat: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
     fn platform_device_alloc(
-        name: *const core::ffi::c_char,
-        id: core::ffi::c_int,
+        name: *const kernel::ffi::c_char,
+        id: kernel::ffi::c_int,
     ) -> *mut platform_device;
-    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut core::ffi::c_void);
-    fn platform_device_add(pdev: *mut platform_device) -> core::ffi::c_int;
+    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut kernel::ffi::c_void);
+    fn platform_device_add(pdev: *mut platform_device) -> kernel::ffi::c_int;
     fn platform_device_put(pdev: *mut platform_device);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -40,17 +40,17 @@ pub struct platform_device {
 
 #[repr(C)]
 pub struct snd_soc_dai_link {
-    pub name: *const core::ffi::c_char,
-    pub stream_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub stream_name: *const kernel::ffi::c_char,
     // Fields generated in C by SND_SOC_DAILINK_REG(...) are supplied externally.
 }
 
 #[repr(C)]
 pub struct snd_soc_card {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub owner: *mut module,
     pub dai_link: *mut snd_soc_dai_link,
-    pub num_links: core::ffi::c_int,
+    pub num_links: kernel::ffi::c_int,
 }
 
 extern "C" {
@@ -78,13 +78,13 @@ pub struct snd_soc_dai_link_component_definition {
 #[no_mangle]
 pub static mut efika_fabric_dai: [snd_soc_dai_link; 2] = [
     snd_soc_dai_link {
-        name: b"AC97\0".as_ptr() as *const core::ffi::c_char,
-        stream_name: b"AC97 Analog\0".as_ptr() as *const core::ffi::c_char,
+        name: b"AC97\0".as_ptr() as *const kernel::ffi::c_char,
+        stream_name: b"AC97 Analog\0".as_ptr() as *const kernel::ffi::c_char,
         // SND_SOC_DAILINK_REG(analog),
     },
     snd_soc_dai_link {
-        name: b"AC97\0".as_ptr() as *const core::ffi::c_char,
-        stream_name: b"AC97 IEC958\0".as_ptr() as *const core::ffi::c_char,
+        name: b"AC97\0".as_ptr() as *const kernel::ffi::c_char,
+        stream_name: b"AC97 IEC958\0".as_ptr() as *const kernel::ffi::c_char,
         // SND_SOC_DAILINK_REG(iec958),
     },
 ];
@@ -92,40 +92,40 @@ pub static mut efika_fabric_dai: [snd_soc_dai_link; 2] = [
 #[no_mangle]
 pub static mut card: snd_soc_card = unsafe {
     snd_soc_card {
-        name: b"Efika\0".as_ptr() as *const core::ffi::c_char,
+        name: b"Efika\0".as_ptr() as *const kernel::ffi::c_char,
         owner: THIS_MODULE,
         dai_link: efika_fabric_dai.as_mut_ptr(),
-        num_links: efika_fabric_dai.len() as core::ffi::c_int,
+        num_links: efika_fabric_dai.len() as kernel::ffi::c_int,
     }
 };
 
-pub const ENODEV: core::ffi::c_int = 19;
+pub const ENODEV: kernel::ffi::c_int = 19;
 
 #[no_mangle]
-pub unsafe extern "C" fn efika_fabric_init() -> core::ffi::c_int {
+pub unsafe extern "C" fn efika_fabric_init() -> kernel::ffi::c_int {
     let mut pdev: *mut platform_device;
-    let rc: core::ffi::c_int;
+    let rc: kernel::ffi::c_int;
 
-    if of_machine_is_compatible(b"bplan,efika\0".as_ptr() as *const core::ffi::c_char) == 0 {
+    if of_machine_is_compatible(b"bplan,efika\0".as_ptr() as *const kernel::ffi::c_char) == 0 {
         return -ENODEV;
     }
 
-    pdev = platform_device_alloc(b"soc-audio\0".as_ptr() as *const core::ffi::c_char, 1);
+    pdev = platform_device_alloc(b"soc-audio\0".as_ptr() as *const kernel::ffi::c_char, 1);
     if pdev.is_null() {
         pr_err(
             b"efika_fabric_init: platform_device_alloc() failed\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
         );
         return -ENODEV;
     }
 
-    platform_set_drvdata(pdev, &mut card as *mut snd_soc_card as *mut core::ffi::c_void);
+    platform_set_drvdata(pdev, &mut card as *mut snd_soc_card as *mut kernel::ffi::c_void);
 
     rc = platform_device_add(pdev);
     if rc != 0 {
         pr_err(
             b"efika_fabric_init: platform_device_add() failed\n\0".as_ptr()
-                as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
         );
         platform_device_put(pdev);
         return -ENODEV;

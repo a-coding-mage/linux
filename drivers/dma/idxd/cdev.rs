@@ -4,7 +4,7 @@
 
 #[repr(C)]
 pub struct idxd_cdev_context {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub devt: dev_t,
     pub minor_ida: ida,
 }

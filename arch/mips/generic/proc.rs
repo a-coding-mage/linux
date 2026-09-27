@@ -4,7 +4,7 @@
  * Author: Paul Burton <paul.burton@mips.com>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Supplied by the Linux device-tree interfaces.
 #[repr(C)]

@@ -12,13 +12,13 @@ pub struct task_struct {
 unsafe extern "C" {
     pub fn __switch_to_xtra(prev_p: *mut task_struct, next_p: *mut task_struct);
 
-    pub fn read_task_thread_flags(task: *mut task_struct) -> libc::c_ulong;
-    pub fn static_branch_likely(key: *const libc::c_void) -> bool;
+    pub fn read_task_thread_flags(task: *mut task_struct) -> kernel::ffi::c_ulong;
+    pub fn static_branch_likely(key: *const kernel::ffi::c_void) -> bool;
 }
 
 // External symbols and constants supplied by other translation units.
 unsafe extern "C" {
-    pub static switch_to_cond_stibp: libc::c_void;
+    pub static switch_to_cond_stibp: kernel::ffi::c_void;
 }
 
 /*
@@ -27,8 +27,8 @@ unsafe extern "C" {
  */
 #[inline]
 pub unsafe fn switch_to_extra(prev: *mut task_struct, next: *mut task_struct) {
-    let mut next_tif: libc::c_ulong = read_task_thread_flags(next);
-    let mut prev_tif: libc::c_ulong = read_task_thread_flags(prev);
+    let mut next_tif: kernel::ffi::c_ulong = read_task_thread_flags(next);
+    let mut prev_tif: kernel::ffi::c_ulong = read_task_thread_flags(prev);
 
     // Build-time condition corresponding to IS_ENABLED(CONFIG_SMP).
     if cfg!(CONFIG_SMP) {

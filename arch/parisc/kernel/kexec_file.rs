@@ -10,13 +10,13 @@
 
 unsafe fn elf_load(
     image: *mut kimage,
-    kernel_buf: *mut core::ffi::c_char,
+    kernel_buf: *mut kernel::ffi::c_char,
     kernel_len: c_ulong,
-    initrd: *mut core::ffi::c_char,
+    initrd: *mut kernel::ffi::c_char,
     initrd_len: c_ulong,
-    cmdline: *mut core::ffi::c_char,
+    cmdline: *mut kernel::ffi::c_char,
     cmdline_len: c_ulong,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     let mut ret: c_int;
     let mut i: c_int;
     let mut kernel_load_addr: c_ulong = 0;

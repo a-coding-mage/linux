@@ -9,7 +9,7 @@ pub unsafe fn acpi_ns_print_pathname(mut num_segments: u32, mut pathname: *const
     while num_segments != 0 {
         for i in 0..4 {
             let c = *pathname.add(i);
-            if libc::isprint(c as i32) != 0 { acpi_os_printf!("%c", c); }
+            if isprint(c as i32) != 0 { acpi_os_printf!("%c", c); }
             else { acpi_os_printf!("?"); }
         }
         pathname = pathname.add(ACPI_NAMESEG_SIZE as usize);

@@ -8,7 +8,7 @@
  *
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C, packed)]
 pub struct vtoc_ttr {

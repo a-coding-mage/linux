@@ -10,7 +10,7 @@
  * Based on ak4641.c by Harald Welte
  */
 
-use core::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
 
 const fn BIT(n: u32) -> u32 {
     1u32 << n
@@ -271,7 +271,7 @@ pub struct snd_ctl_elem_value_integer {
     pub value: [c_long; 128],
 }
 
-type c_long = core::ffi::c_long;
+type c_long = kernel::ffi::c_long;
 
 #[repr(C)]
 pub struct snd_pcm_substream {

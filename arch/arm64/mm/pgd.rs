@@ -58,7 +58,7 @@ unsafe fn pgtable_cache_init() {
 
     // Naturally aligned pgds required by the architecture.
     pgd_cache = kmem_cache_create(
-        b"pgd_cache\0".as_ptr() as *const core::ffi::c_char,
+        b"pgd_cache\0".as_ptr() as *const kernel::ffi::c_char,
         PGD_SIZE,
         PGD_SIZE,
         SLAB_PANIC,

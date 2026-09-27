@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 // Dependencies supplied by the surrounding kernel translation.
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 extern "C" {
     fn arch_rethook_trampoline();

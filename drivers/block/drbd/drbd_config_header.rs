@@ -5,7 +5,7 @@
  */
 
 unsafe extern "C" {
-    pub fn drbd_buildtag() -> *const core::ffi::c_char;
+    pub fn drbd_buildtag() -> *const kernel::ffi::c_char;
 }
 
 pub const REL_VERSION: &str = "8.4.11";

@@ -10,27 +10,27 @@ extern "C" {
     fn rv_get_current() -> *mut task_struct;
     fn ltl_monitor_init() -> i32;
     fn rv_attach_trace_probe(
-        monitor: *const core::ffi::c_char,
-        event: *const core::ffi::c_void,
+        monitor: *const kernel::ffi::c_char,
+        event: *const kernel::ffi::c_void,
         handler: unsafe extern "C" fn(
-            *mut core::ffi::c_void,
+            *mut kernel::ffi::c_void,
             usize,
             *mut pt_regs,
             usize,
         ),
     );
     fn rv_detach_trace_probe(
-        monitor: *const core::ffi::c_char,
-        event: *const core::ffi::c_void,
+        monitor: *const kernel::ffi::c_char,
+        event: *const kernel::ffi::c_void,
         handler: unsafe extern "C" fn(
-            *mut core::ffi::c_void,
+            *mut kernel::ffi::c_void,
             usize,
             *mut pt_regs,
             usize,
         ),
     );
     fn ltl_monitor_destroy();
-    fn rv_register_monitor(monitor: *mut rv_monitor, rv: *mut core::ffi::c_void) -> i32;
+    fn rv_register_monitor(monitor: *mut rv_monitor, rv: *mut kernel::ffi::c_void) -> i32;
     fn rv_unregister_monitor(monitor: *mut rv_monitor);
     fn handle_task_newtask();
 }
@@ -52,8 +52,8 @@ pub struct pt_regs {
 
 #[repr(C)]
 pub struct rv_monitor {
-    pub name: *const core::ffi::c_char,
-    pub description: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub description: *const kernel::ffi::c_char,
     pub enable: Option<unsafe extern "C" fn() -> i32>,
     pub disable: Option<unsafe extern "C" fn()>,
 }
@@ -82,7 +82,7 @@ unsafe extern "C" fn ltl_atoms_init(
 }
 
 unsafe extern "C" fn handle_page_fault(
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
     _address: usize,
     _regs: *mut pt_regs,
     _error_code: usize,
@@ -97,12 +97,12 @@ unsafe extern "C" fn enable_pagefault() -> i32 {
     }
 
     rv_attach_trace_probe(
-        b"rtapp_pagefault\0".as_ptr() as *const core::ffi::c_char,
+        b"rtapp_pagefault\0".as_ptr() as *const kernel::ffi::c_char,
         page_fault_kernel,
         handle_page_fault,
     );
     rv_attach_trace_probe(
-        b"rtapp_pagefault\0".as_ptr() as *const core::ffi::c_char,
+        b"rtapp_pagefault\0".as_ptr() as *const kernel::ffi::c_char,
         page_fault_user,
         handle_page_fault,
     );
@@ -112,12 +112,12 @@ unsafe extern "C" fn enable_pagefault() -> i32 {
 
 unsafe extern "C" fn disable_pagefault() {
     rv_detach_trace_probe(
-        b"rtapp_pagefault\0".as_ptr() as *const core::ffi::c_char,
+        b"rtapp_pagefault\0".as_ptr() as *const kernel::ffi::c_char,
         page_fault_kernel,
         handle_page_fault,
     );
     rv_detach_trace_probe(
-        b"rtapp_pagefault\0".as_ptr() as *const core::ffi::c_char,
+        b"rtapp_pagefault\0".as_ptr() as *const kernel::ffi::c_char,
         page_fault_user,
         handle_page_fault,
     );
@@ -126,9 +126,9 @@ unsafe extern "C" fn disable_pagefault() {
 }
 
 static mut rv_this: rv_monitor = rv_monitor {
-    name: b"pagefault\0".as_ptr() as *const core::ffi::c_char,
+    name: b"pagefault\0".as_ptr() as *const kernel::ffi::c_char,
     description: b"Monitor that RT tasks do not raise page faults\0".as_ptr()
-        as *const core::ffi::c_char,
+        as *const kernel::ffi::c_char,
     enable: Some(enable_pagefault),
     disable: Some(disable_pagefault),
 };
@@ -154,9 +154,9 @@ pub mod kunit {
 
     #[repr(C)]
     pub struct rv_pagefault_ops {
-        pub mon: *mut core::ffi::c_void,
+        pub mon: *mut kernel::ffi::c_void,
         pub handle_page_fault: unsafe extern "C" fn(
-            *mut core::ffi::c_void,
+            *mut kernel::ffi::c_void,
             usize,
             *mut pt_regs,
             usize,

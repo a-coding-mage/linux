@@ -23,12 +23,12 @@
  */
 #[repr(C)]
 pub struct completion {
-    pub done: core::ffi::c_uint,
+    pub done: kernel::ffi::c_uint,
     pub wait: swait_queue_head,
 }
 
 #[inline]
-pub unsafe fn init_completion_map(x: *mut completion, _m: *mut core::ffi::c_void) {
+pub unsafe fn init_completion_map(x: *mut completion, _m: *mut kernel::ffi::c_void) {
     init_completion(x);
 }
 
@@ -53,7 +53,7 @@ macro_rules! COMPLETION_INITIALIZER {
 macro_rules! COMPLETION_INITIALIZER_ONSTACK_MAP {
     ($work:expr, $map:expr) => {{
         unsafe {
-            init_completion_map(&mut $work as *mut _, &mut $map as *mut _ as *mut core::ffi::c_void);
+            init_completion_map(&mut $work as *mut _, &mut $map as *mut _ as *mut kernel::ffi::c_void);
         }
         $work
     }};
@@ -132,13 +132,13 @@ pub unsafe fn reinit_completion(x: *mut completion) {
 extern "C" {
     pub fn wait_for_completion(x: *mut completion);
     pub fn wait_for_completion_io(x: *mut completion);
-    pub fn wait_for_completion_interruptible(x: *mut completion) -> core::ffi::c_int;
-    pub fn wait_for_completion_killable(x: *mut completion) -> core::ffi::c_int;
-    pub fn wait_for_completion_state(x: *mut completion, state: core::ffi::c_uint) -> core::ffi::c_int;
-    pub fn wait_for_completion_timeout(x: *mut completion, timeout: core::ffi::c_ulong) -> core::ffi::c_ulong;
-    pub fn wait_for_completion_io_timeout(x: *mut completion, timeout: core::ffi::c_ulong) -> core::ffi::c_ulong;
-    pub fn wait_for_completion_interruptible_timeout(x: *mut completion, timeout: core::ffi::c_ulong) -> core::ffi::c_long;
-    pub fn wait_for_completion_killable_timeout(x: *mut completion, timeout: core::ffi::c_ulong) -> core::ffi::c_long;
+    pub fn wait_for_completion_interruptible(x: *mut completion) -> kernel::ffi::c_int;
+    pub fn wait_for_completion_killable(x: *mut completion) -> kernel::ffi::c_int;
+    pub fn wait_for_completion_state(x: *mut completion, state: kernel::ffi::c_uint) -> kernel::ffi::c_int;
+    pub fn wait_for_completion_timeout(x: *mut completion, timeout: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
+    pub fn wait_for_completion_io_timeout(x: *mut completion, timeout: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
+    pub fn wait_for_completion_interruptible_timeout(x: *mut completion, timeout: kernel::ffi::c_ulong) -> kernel::ffi::c_long;
+    pub fn wait_for_completion_killable_timeout(x: *mut completion, timeout: kernel::ffi::c_ulong) -> kernel::ffi::c_long;
     pub fn try_wait_for_completion(x: *mut completion) -> bool;
     pub fn completion_done(x: *mut completion) -> bool;
     pub fn complete(x: *mut completion);

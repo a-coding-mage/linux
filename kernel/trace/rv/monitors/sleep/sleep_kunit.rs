@@ -56,7 +56,7 @@ unsafe fn rv_test_sleep(test: *mut Kunit) {
 }
 
 // External kernel/RV declarations used by the translated implementation.
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 extern "C" {
     static mut rv_sleep_ops: RvSleepOps;
     fn rv_kunit_alloc_mock_task(test: *mut Kunit) -> *mut TaskStruct;

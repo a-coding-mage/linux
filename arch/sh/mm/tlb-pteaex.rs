@@ -14,12 +14,12 @@
 
 pub unsafe fn __update_tlb(
     vma: *mut vm_area_struct,
-    address: ::core::ffi::c_ulong,
+    address: ::kernel::ffi::c_ulong,
     pte: pte_t,
 ) {
-    let mut flags: ::core::ffi::c_ulong = 0;
-    let mut pteval: ::core::ffi::c_ulong;
-    let mut vpn: ::core::ffi::c_ulong;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
+    let mut pteval: ::kernel::ffi::c_ulong;
+    let mut vpn: ::kernel::ffi::c_ulong;
 
     /*
      * Handle debugger faulting in for debugee.
@@ -73,8 +73,8 @@ pub unsafe fn __update_tlb(
  * undefined behaviour.
  */
 pub unsafe fn local_flush_tlb_one(
-    asid: ::core::ffi::c_ulong,
-    page: ::core::ffi::c_ulong,
+    asid: ::kernel::ffi::c_ulong,
+    page: ::kernel::ffi::c_ulong,
 ) {
     jump_to_uncached();
     __raw_writel(page, MMU_UTLB_ADDRESS_ARRAY | MMU_PAGE_ASSOC_BIT);
@@ -85,8 +85,8 @@ pub unsafe fn local_flush_tlb_one(
 }
 
 pub unsafe fn local_flush_tlb_all() {
-    let mut flags: ::core::ffi::c_ulong = 0;
-    let mut status: ::core::ffi::c_ulong;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
+    let mut status: ::kernel::ffi::c_ulong;
     let mut i: i32;
 
     /*
@@ -104,13 +104,13 @@ pub unsafe fn local_flush_tlb_all() {
 
     i = 0;
     while (i < status as i32) {
-        __raw_writel(0x0, MMU_UTLB_ADDRESS_ARRAY | ((i as ::core::ffi::c_ulong) << 8));
+        __raw_writel(0x0, MMU_UTLB_ADDRESS_ARRAY | ((i as ::kernel::ffi::c_ulong) << 8));
         i += 1;
     }
 
     i = 0;
     while i < 4 {
-        __raw_writel(0x0, MMU_ITLB_ADDRESS_ARRAY | ((i as ::core::ffi::c_ulong) << 8));
+        __raw_writel(0x0, MMU_ITLB_ADDRESS_ARRAY | ((i as ::kernel::ffi::c_ulong) << 8));
         i += 1;
     }
 

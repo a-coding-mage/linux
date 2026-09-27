@@ -21,9 +21,9 @@
 // #include <sound/soundfont.h>
 // #include <sound/seq_oss_legacy.h>
 
-use core::ffi::c_int;
-use core::ffi::c_char;
-use core::ffi::c_void;
+use kernel::ffi::c_int;
+use kernel::ffi::c_char;
+use kernel::ffi::c_void;
 use core::ptr;
 use core::mem;
 

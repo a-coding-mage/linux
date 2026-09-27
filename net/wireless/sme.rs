@@ -1,6 +1,6 @@
 // Faithful low-level Rust translation boundary for the cfg80211 SME implementation.
 // The kernel-provided types, constants, macros, and operations below remain external dependencies.
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[allow(non_camel_case_types, non_snake_case, dead_code)]
 pub type u8 = core::primitive::u8;
@@ -482,7 +482,7 @@ void cfg80211_conn_work(work_struct *work)
  * 
  * static void cfg80211_wdev_release_bsses(wireless_dev *wdev)
  * {
- * 	core::ffi::c_uint link;
+ * 	kernel::ffi::c_uint link;
  * 
  * 	for_each_valid_link(wdev, link) {
  * 		if (!wdev->links[link].client.current_bss)
@@ -496,7 +496,7 @@ void cfg80211_conn_work(work_struct *work)
  * 
  * void cfg80211_wdev_release_link_bsses(wireless_dev *wdev, u16 link_mask)
  * {
- * 	core::ffi::c_uint link;
+ * 	kernel::ffi::c_uint link;
  * 
  * 	for_each_valid_link(wdev, link) {
  * 		if (!wdev->links[link].client.current_bss ||
@@ -732,7 +732,7 @@ void cfg80211_conn_work(work_struct *work)
  * cfg80211_connect_result_release_bsses(wireless_dev *wdev,
  * 				      struct cfg80211_connect_resp_params *cr)
  * {
- * 	core::ffi::c_uint link;
+ * 	kernel::ffi::c_uint link;
  * 
  * 	for_each_valid_link(cr, link) {
  * 		if (!cr->links[link].bss)
@@ -760,7 +760,7 @@ void cfg80211_conn_work(work_struct *work)
  * #ifdef CONFIG_CFG80211_WEXT
  * 	union iwreq_data wrqu;
  * #endif
- * 	core::ffi::c_uint link;
+ * 	kernel::ffi::c_uint link;
  * 	const u8 *connected_addr;
  * 	bool bss_not_found = false;
  * 
@@ -988,10 +988,10 @@ void cfg80211_conn_work(work_struct *work)
  * 	struct wireless_dev *wdev = dev->ieee80211_ptr;
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 	struct cfg80211_event *ev;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 	u8 *next;
  * 	size_t link_info_size = 0;
- * 	core::ffi::c_uint link;
+ * 	kernel::ffi::c_uint link;
  * 
  * 	for_each_valid_link(params, link) {
  * 		cfg80211_update_link_bss(wdev, &params->links[link].bss);
@@ -1098,7 +1098,7 @@ void cfg80211_conn_work(work_struct *work)
  * #ifdef CONFIG_CFG80211_WEXT
  * 	union iwreq_data wrqu;
  * #endif
- * 	core::ffi::c_uint link;
+ * 	kernel::ffi::c_uint link;
  * 	const u8 *connected_addr;
  * 
  * 	lockdep_assert_wiphy(wdev->wiphy);
@@ -1186,9 +1186,9 @@ void cfg80211_conn_work(work_struct *work)
  * 	struct wireless_dev *wdev = dev->ieee80211_ptr;
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 	struct cfg80211_event *ev;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 	u8 *next;
- * 	core::ffi::c_uint link;
+ * 	kernel::ffi::c_uint link;
  * 	size_t link_info_size = 0;
  * 	bool bss_not_found = false;
  * 
@@ -1330,7 +1330,7 @@ void cfg80211_conn_work(work_struct *work)
  * 	struct wireless_dev *wdev = dev->ieee80211_ptr;
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 	struct cfg80211_event *ev;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 
  * 	if (WARN_ON(!peer_addr))
  * 		return;
@@ -1427,7 +1427,7 @@ void cfg80211_conn_work(work_struct *work)
  * 	struct wireless_dev *wdev = dev->ieee80211_ptr;
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 	struct cfg80211_event *ev;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 
  * 	ev = kzalloc(sizeof(*ev) + ie_len, gfp);
  * 	if (!ev)

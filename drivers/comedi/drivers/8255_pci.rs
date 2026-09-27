@@ -28,7 +28,7 @@ pub enum Pci8255BoardId {
 
 #[repr(C)]
 pub struct Pci8255Boardinfo {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub dio_badr: i32,
     pub n_8255: i32,
     pub has_mite: u32,

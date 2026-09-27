@@ -30,13 +30,13 @@ pub const __ARCH_IRQ_EXIT_IRQS_DISABLED: bool = true;
 
 /// Acknowledge an unexpected interrupt vector.
 #[inline]
-pub unsafe fn ack_bad_irq(irq: ::core::ffi::c_uint) {
+pub unsafe fn ack_bad_irq(irq: ::kernel::ffi::c_uint) {
     // KERN_CRIT and printk are supplied by the surrounding kernel dependencies.
     printk(KERN_CRIT, b"unexpected IRQ trap at vector %02x\n\0".as_ptr().cast(), irq);
 }
 
 unsafe extern "C" {
-    fn printk(fmt: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn printk(fmt: *const ::kernel::ffi::c_char, ...) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

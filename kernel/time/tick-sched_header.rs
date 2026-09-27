@@ -59,61 +59,61 @@ pub const TS_FLAG_HIGHRES: usize = BIT(5);
 #[repr(C)]
 pub struct tick_sched {
     /* Common flags */
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
 
     /* Tick handling: jiffies stall check */
-    pub stalled_jiffies: ::core::ffi::c_uint,
-    pub last_tick_jiffies: ::core::ffi::c_ulong,
+    pub stalled_jiffies: ::kernel::ffi::c_uint,
+    pub last_tick_jiffies: ::kernel::ffi::c_ulong,
 
     /* Tick handling */
     pub sched_timer: hrtimer,
     pub last_tick: ktime_t,
     pub next_tick: ktime_t,
     pub idle_waketime: ktime_t,
-    pub got_idle_tick: ::core::ffi::c_uint,
+    pub got_idle_tick: ::kernel::ffi::c_uint,
 
     /* Idle entry */
     pub idle_entrytime: ktime_t,
 
     /* Tick stop */
-    pub last_jiffies: ::core::ffi::c_ulong,
+    pub last_jiffies: ::kernel::ffi::c_ulong,
     pub timer_expires_base: u64,
     pub timer_expires: u64,
     pub next_timer: u64,
     pub idle_expires: ktime_t,
-    pub idle_calls: ::core::ffi::c_ulong,
-    pub idle_sleeps: ::core::ffi::c_ulong,
+    pub idle_calls: ::kernel::ffi::c_ulong,
+    pub idle_sleeps: ::kernel::ffi::c_ulong,
 
     /* Full dynticks handling */
     pub tick_dep_mask: atomic_t,
 
     /* Clocksource changes */
-    pub check_clocks: ::core::ffi::c_ulong,
+    pub check_clocks: ::kernel::ffi::c_ulong,
 }
 
 unsafe extern "C" {
-    pub fn tick_get_tick_sched(cpu: ::core::ffi::c_int) -> *mut tick_sched;
+    pub fn tick_get_tick_sched(cpu: ::kernel::ffi::c_int) -> *mut tick_sched;
     pub fn tick_setup_sched_timer(hrtimer: bool);
 }
 
 #[cfg(CONFIG_TICK_ONESHOT)]
 unsafe extern "C" {
-    pub fn tick_sched_timer_dying(cpu: ::core::ffi::c_int);
+    pub fn tick_sched_timer_dying(cpu: ::kernel::ffi::c_int);
 }
 
 #[cfg(not(CONFIG_TICK_ONESHOT))]
 #[inline]
-pub fn tick_sched_timer_dying(_cpu: ::core::ffi::c_int) {}
+pub fn tick_sched_timer_dying(_cpu: ::kernel::ffi::c_int) {}
 
 #[cfg(CONFIG_GENERIC_CLOCKEVENTS_BROADCAST)]
 unsafe extern "C" {
-    pub fn __tick_broadcast_oneshot_control(state: tick_broadcast_state) -> ::core::ffi::c_int;
+    pub fn __tick_broadcast_oneshot_control(state: tick_broadcast_state) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_GENERIC_CLOCKEVENTS_BROADCAST))]
 #[inline]
-pub fn __tick_broadcast_oneshot_control(_state: tick_broadcast_state) -> ::core::ffi::c_int {
-    -(EBUSY as ::core::ffi::c_int)
+pub fn __tick_broadcast_oneshot_control(_state: tick_broadcast_state) -> ::kernel::ffi::c_int {
+    -(EBUSY as ::kernel::ffi::c_int)
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

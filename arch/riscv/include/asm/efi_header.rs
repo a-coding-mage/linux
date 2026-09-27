@@ -18,31 +18,31 @@ extern "C" {
 pub fn efi_init() {}
 
 extern "C" {
-    pub fn efi_create_mapping(mm: *mut mm_struct, md: *mut efi_memory_desc_t) -> ::core::ffi::c_int;
+    pub fn efi_create_mapping(mm: *mut mm_struct, md: *mut efi_memory_desc_t) -> ::kernel::ffi::c_int;
     pub fn efi_set_mapping_permissions(
         mm: *mut mm_struct,
         md: *mut efi_memory_desc_t,
         executable: bool,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn arch_efi_call_virt_setup();
     pub fn arch_efi_call_virt_teardown();
 
-    pub fn stext_offset() -> ::core::ffi::c_ulong;
+    pub fn stext_offset() -> ::kernel::ffi::c_ulong;
 
-    pub fn efi_icache_sync(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
+    pub fn efi_icache_sync(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
 }
 
-pub const ARCH_EFI_IRQ_FLAGS_MASK: _ = SR_IE | SR_SPIE;
+pub const ARCH_EFI_IRQ_FLAGS_MASK: usize = SR_IE | SR_SPIE;
 
 /* Load initrd anywhere in system RAM */
 #[inline]
-pub unsafe fn efi_get_max_initrd_addr(_image_addr: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
-    ::core::ffi::c_ulong::MAX
+pub unsafe fn efi_get_max_initrd_addr(_image_addr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
+    ::kernel::ffi::c_ulong::MAX
 }
 
 #[inline]
-pub fn efi_get_kimg_min_align() -> ::core::ffi::c_ulong {
+pub fn efi_get_kimg_min_align() -> ::kernel::ffi::c_ulong {
     /*
      * RISC-V requires the kernel image to placed 2 MB aligned base for 64
      * bit and 4MB for 32 bit.
@@ -54,7 +54,7 @@ pub fn efi_get_kimg_min_align() -> ::core::ffi::c_ulong {
     }
 }
 
-pub const EFI_KIMG_PREFERRED_ADDRESS: ::core::ffi::c_ulong = efi_get_kimg_min_align();
+pub const EFI_KIMG_PREFERRED_ADDRESS: ::kernel::ffi::c_ulong = efi_get_kimg_min_align();
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

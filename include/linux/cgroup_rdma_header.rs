@@ -35,7 +35,7 @@ pub struct rdma_cgroup {
 pub struct rdmacg_device {
     pub dev_node: list_head,
     pub rpools: list_head,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub index: u32,
 }
 
@@ -56,7 +56,7 @@ unsafe extern "C" {
         rdmacg: *mut *mut rdma_cgroup,
         device: *mut rdmacg_device,
         index: rdmacg_resource_type,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn rdmacg_uncharge(
         cg: *mut rdma_cgroup,
         device: *mut rdmacg_device,

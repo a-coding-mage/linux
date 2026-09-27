@@ -66,7 +66,7 @@ pub const USB_CAPABILITY_USB4: u8 = 1 << 2;
     pub type_: typec_port_type, pub data: typec_port_data, pub revision: u16, pub pd_revision: u16,
     pub svdm_version: usb_pd_svdm_ver, pub prefer_role: i32, pub accessory: [typec_accessory; TYPEC_MAX_ACCESSORY],
     pub orientation_aware: u32, pub usb_capability: u8, pub no_mode_control: bool,
-    pub fwnode: *mut fwnode_handle, pub driver_data: *mut core::ffi::c_void,
+    pub fwnode: *mut fwnode_handle, pub driver_data: *mut kernel::ffi::c_void,
     pub pd: *mut usb_power_delivery, pub ops: *const typec_operations,
 }
 pub const TYPEC_NO_PREFERRED_ROLE: i32 = -1;
@@ -88,7 +88,7 @@ extern "C" {
     pub fn typec_plug_set_num_altmodes(_: *mut typec_plug, _: i32) -> i32;
     pub fn typec_plug_register_altmode(_: *mut typec_plug, _: *const typec_altmode_desc) -> *mut typec_altmode;
     pub fn typec_port_register_altmode(_: *mut typec_port, _: *const typec_altmode_desc) -> *mut typec_altmode;
-    pub fn typec_port_register_altmodes(_: *mut typec_port, _: *const typec_altmode_ops, _: *mut core::ffi::c_void, _: *mut *mut typec_altmode, _: usize);
+    pub fn typec_port_register_altmodes(_: *mut typec_port, _: *const typec_altmode_ops, _: *mut kernel::ffi::c_void, _: *mut *mut typec_altmode, _: usize);
     pub fn typec_port_register_cable_ops(_: *mut *mut typec_altmode, _: i32, _: *const typec_cable_ops);
     pub fn typec_unregister_altmode(_: *mut typec_altmode);
     pub fn typec_altmode2port(_: *mut typec_altmode) -> *mut typec_port;
@@ -114,13 +114,13 @@ extern "C" {
     pub fn typec_set_orientation(_: *mut typec_port, _: typec_orientation) -> i32;
     pub fn typec_get_orientation(_: *mut typec_port) -> typec_orientation;
     pub fn typec_set_mode(_: *mut typec_port, _: i32) -> i32;
-    pub fn typec_get_drvdata(_: *mut typec_port) -> *mut core::ffi::c_void;
+    pub fn typec_get_drvdata(_: *mut typec_port) -> *mut kernel::ffi::c_void;
     pub fn typec_get_fw_cap(_: *mut typec_capability, _: *mut fwnode_handle) -> i32;
-    pub fn typec_find_pwr_opmode(_: *const core::ffi::c_char) -> i32;
-    pub fn typec_find_orientation(_: *const core::ffi::c_char) -> i32;
-    pub fn typec_find_port_power_role(_: *const core::ffi::c_char) -> i32;
-    pub fn typec_find_power_role(_: *const core::ffi::c_char) -> i32;
-    pub fn typec_find_port_data_role(_: *const core::ffi::c_char) -> i32;
+    pub fn typec_find_pwr_opmode(_: *const kernel::ffi::c_char) -> i32;
+    pub fn typec_find_orientation(_: *const kernel::ffi::c_char) -> i32;
+    pub fn typec_find_port_power_role(_: *const kernel::ffi::c_char) -> i32;
+    pub fn typec_find_power_role(_: *const kernel::ffi::c_char) -> i32;
+    pub fn typec_find_port_data_role(_: *const kernel::ffi::c_char) -> i32;
     pub fn typec_partner_set_svdm_version(_: *mut typec_partner, _: usb_pd_svdm_ver);
     pub fn typec_get_negotiated_svdm_version(_: *mut typec_port) -> i32;
     pub fn typec_get_cable_svdm_version(_: *mut typec_port) -> i32;

@@ -24,20 +24,20 @@ pub const FIRST_CONTEXT: u32 = 1;
 #[cfg(feature = "kernel")]
 extern "C" {
     pub fn set_context(context: mm_context_t, pgd: *mut pgd_t);
-    pub static mut context_map: [::core::ffi::c_ulong; 1];
+    pub static mut context_map: [::kernel::ffi::c_ulong; 1];
     pub static mut next_mmu_context: mm_context_t;
     pub static mut nr_free_contexts: atomic_t;
     pub static mut context_mm: [*mut mm_struct; (LAST_CONTEXT + 1) as usize];
     pub fn steal_context();
     pub fn atomic_dec_if_positive(v: *mut atomic_t) -> i32;
     pub fn atomic_inc(v: *mut atomic_t);
-    pub fn test_and_set_bit(nr: mm_context_t, addr: *mut ::core::ffi::c_ulong) -> bool;
+    pub fn test_and_set_bit(nr: mm_context_t, addr: *mut ::kernel::ffi::c_ulong) -> bool;
     pub fn find_next_zero_bit(
-        addr: *const ::core::ffi::c_ulong,
+        addr: *const ::kernel::ffi::c_ulong,
         size: mm_context_t,
         offset: mm_context_t,
     ) -> mm_context_t;
-    pub fn clear_bit(nr: mm_context_t, addr: *mut ::core::ffi::c_ulong);
+    pub fn clear_bit(nr: mm_context_t, addr: *mut ::kernel::ffi::c_ulong);
     pub fn mmu_context_init();
 }
 

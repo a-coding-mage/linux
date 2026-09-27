@@ -15,9 +15,9 @@ const PMAC_AMP_AVAIL: bool = true;
 #[cfg(PMAC_AMP_AVAIL)]
 #[repr(C)]
 struct awacs_amp {
-    amp_master: ::core::ffi::c_uchar,
-    amp_vol: [[::core::ffi::c_uchar; 2]; 2],
-    amp_tone: [::core::ffi::c_uchar; 2],
+    amp_master: ::kernel::ffi::c_uchar,
+    amp_vol: [[::kernel::ffi::c_uchar; 2]; 2],
+    amp_tone: [::kernel::ffi::c_uchar; 2],
 }
 
 #[cfg(PMAC_AMP_AVAIL)]
@@ -26,7 +26,7 @@ unsafe fn CHECK_CUDA_AMP() -> bool {
 }
 
 unsafe fn snd_pmac_screamer_wait(chip: *mut snd_pmac) {
-    let mut timeout: libc::c_long = 2000;
+    let mut timeout: kernel::ffi::c_long = 2000;
     while in_le32(&mut (*(*chip).awacs).codec_stat) & MASK_VALID == 0 {
         mdelay(1);
         timeout -= 1;
@@ -40,8 +40,8 @@ unsafe fn snd_pmac_screamer_wait(chip: *mut snd_pmac) {
 /*
  * write AWACS register
  */
-unsafe fn snd_pmac_awacs_write(chip: *mut snd_pmac, val: libc::c_int) {
-    let mut timeout: libc::c_long = 5000000;
+unsafe fn snd_pmac_awacs_write(chip: *mut snd_pmac, val: kernel::ffi::c_int) {
+    let mut timeout: kernel::ffi::c_long = 5000000;
 
     if (*chip).model == PMAC_SCREAMER {
         snd_pmac_screamer_wait(chip);
@@ -59,12 +59,12 @@ unsafe fn snd_pmac_awacs_write(chip: *mut snd_pmac, val: libc::c_int) {
     }
 }
 
-unsafe fn snd_pmac_awacs_write_reg(chip: *mut snd_pmac, reg: libc::c_int, val: libc::c_int) {
+unsafe fn snd_pmac_awacs_write_reg(chip: *mut snd_pmac, reg: kernel::ffi::c_int, val: kernel::ffi::c_int) {
     snd_pmac_awacs_write(chip, val | (reg << 12));
     (*chip).awacs_reg[reg as usize] = val;
 }
 
-unsafe fn snd_pmac_awacs_write_noreg(chip: *mut snd_pmac, reg: libc::c_int, val: libc::c_int) {
+unsafe fn snd_pmac_awacs_write_noreg(chip: *mut snd_pmac, reg: kernel::ffi::c_int, val: kernel::ffi::c_int) {
     snd_pmac_awacs_write(chip, val | (reg << 12));
 }
 
@@ -113,7 +113,7 @@ unsafe fn snd_pmac_awacs_set_format(chip: *mut snd_pmac) {
 unsafe fn snd_pmac_awacs_info_volume(
     _kcontrol: *mut snd_kcontrol,
     uinfo: *mut snd_ctl_elem_info,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     (*uinfo).type_ = SNDRV_CTL_ELEM_TYPE_INTEGER;
     (*uinfo).count = 2;
     (*uinfo).value.integer.min = 0;
@@ -124,12 +124,12 @@ unsafe fn snd_pmac_awacs_info_volume(
 unsafe fn snd_pmac_awacs_get_volume(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let reg = (*kcontrol).private_value & 0xff;
     let lshift = ((*kcontrol).private_value >> 8) & 0xff;
     let inverted = ((*kcontrol).private_value >> 16) & 1;
-    let mut vol = [0 as libc::c_int; 2];
+    let mut vol = [0 as kernel::ffi::c_int; 2];
 
     guard_spinlock_irqsave(&mut (*chip).reg_lock);
     vol[0] = ((*chip).awacs_reg[reg as usize] >> lshift) & 0xf;
@@ -146,15 +146,15 @@ unsafe fn snd_pmac_awacs_get_volume(
 unsafe fn snd_pmac_awacs_put_volume(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let reg = (*kcontrol).private_value & 0xff;
     let lshift = ((*kcontrol).private_value >> 8) & 0xff;
     let inverted = ((*kcontrol).private_value >> 16) & 1;
-    let mut vol = [0 as libc::c_uint; 2];
+    let mut vol = [0 as kernel::ffi::c_uint; 2];
 
-    vol[0] = (*ucontrol).value.integer.value[0] as libc::c_uint;
-    vol[1] = (*ucontrol).value.integer.value[1] as libc::c_uint;
+    vol[0] = (*ucontrol).value.integer.value[0] as kernel::ffi::c_uint;
+    vol[1] = (*ucontrol).value.integer.value[1] as kernel::ffi::c_uint;
     if vol[0] > 0x0f || vol[1] > 0x0f {
         return -EINVAL;
     }
@@ -167,15 +167,15 @@ unsafe fn snd_pmac_awacs_put_volume(
     guard_spinlock_irqsave(&mut (*chip).reg_lock);
     let oldval = (*chip).awacs_reg[reg as usize];
     let mut val = oldval & !(0xf | (0xf << lshift));
-    val |= (vol[0] as libc::c_int) << lshift;
-    val |= vol[1] as libc::c_int;
+    val |= (vol[0] as kernel::ffi::c_int) << lshift;
+    val |= vol[1] as kernel::ffi::c_int;
     if oldval != val {
         snd_pmac_awacs_write_reg(chip, reg, val);
     }
-    (oldval != reg) as libc::c_int
+    (oldval != reg) as kernel::ffi::c_int
 }
 
-const fn AWACS_VOLUME_PRIVATE(xreg: libc::c_long, xshift: libc::c_long, xinverted: libc::c_long) -> libc::c_long {
+const fn AWACS_VOLUME_PRIVATE(xreg: kernel::ffi::c_long, xshift: kernel::ffi::c_long, xinverted: kernel::ffi::c_long) -> kernel::ffi::c_long {
     xreg | (xshift << 8) | (xinverted << 16)
 }
 
@@ -185,7 +185,7 @@ const fn AWACS_VOLUME_PRIVATE(xreg: libc::c_long, xshift: libc::c_long, xinverte
 unsafe fn snd_pmac_awacs_get_switch(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let reg = (*kcontrol).private_value & 0xff;
     let shift = ((*kcontrol).private_value >> 8) & 0xff;
@@ -203,7 +203,7 @@ unsafe fn snd_pmac_awacs_get_switch(
 unsafe fn snd_pmac_awacs_put_switch(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let reg = (*kcontrol).private_value & 0xff;
     let shift = ((*kcontrol).private_value >> 8) & 0xff;
@@ -212,17 +212,17 @@ unsafe fn snd_pmac_awacs_put_switch(
 
     guard_spinlock_irqsave(&mut (*chip).reg_lock);
     let mut val = (*chip).awacs_reg[reg as usize] & !mask;
-    if ((*ucontrol).value.integer.value[0] as libc::c_long) != invert {
+    if ((*ucontrol).value.integer.value[0] as kernel::ffi::c_long) != invert {
         val |= mask;
     }
-    let changed = ((*chip).awacs_reg[reg as usize] != val) as libc::c_int;
+    let changed = ((*chip).awacs_reg[reg as usize] != val) as kernel::ffi::c_int;
     if changed != 0 {
         snd_pmac_awacs_write_reg(chip, reg, val);
     }
     changed
 }
 
-const fn AWACS_SWITCH_PRIVATE(xreg: libc::c_long, xshift: libc::c_long, xinvert: libc::c_long) -> libc::c_long {
+const fn AWACS_SWITCH_PRIVATE(xreg: kernel::ffi::c_long, xshift: kernel::ffi::c_long, xinvert: kernel::ffi::c_long) -> kernel::ffi::c_long {
     xreg | (xshift << 8) | (xinvert << 16)
 }
 
@@ -233,7 +233,7 @@ const fn AWACS_SWITCH_PRIVATE(xreg: libc::c_long, xshift: libc::c_long, xinvert:
  * TDA7433 connected via i2c address 0x45 (= 0x8a),
  * accessed through cuda
  */
-unsafe fn awacs_set_cuda(reg: libc::c_int, val: libc::c_int) {
+unsafe fn awacs_set_cuda(reg: kernel::ffi::c_int, val: kernel::ffi::c_int) {
     let mut req: adb_request = ::core::mem::zeroed();
     cuda_request(&mut req, core::ptr::null_mut(), 5, CUDA_PACKET, CUDA_GET_SET_IIC, 0x8a, reg, val);
     while !req.complete {
@@ -245,7 +245,7 @@ unsafe fn awacs_set_cuda(reg: libc::c_int, val: libc::c_int) {
 /*
  * level = 0 - 14, 7 = 0 dB
  */
-unsafe fn awacs_amp_set_tone(amp: *mut awacs_amp, mut bass: libc::c_int, mut treble: libc::c_int) {
+unsafe fn awacs_amp_set_tone(amp: *mut awacs_amp, mut bass: kernel::ffi::c_int, mut treble: kernel::ffi::c_int) {
     (*amp).amp_tone[0] = bass as _;
     (*amp).amp_tone[1] = treble as _;
     if bass > 7 {
@@ -263,14 +263,14 @@ unsafe fn awacs_amp_set_tone(amp: *mut awacs_amp, mut bass: libc::c_int, mut tre
  */
 unsafe fn awacs_amp_set_vol(
     amp: *mut awacs_amp,
-    index: libc::c_int,
-    lvol: libc::c_int,
-    rvol: libc::c_int,
-    do_check: libc::c_int,
-) -> libc::c_int {
+    index: kernel::ffi::c_int,
+    lvol: kernel::ffi::c_int,
+    rvol: kernel::ffi::c_int,
+    do_check: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     if do_check != 0
-        && (*amp).amp_vol[index as usize][0] as libc::c_int == lvol
-        && (*amp).amp_vol[index as usize][1] as libc::c_int == rvol
+        && (*amp).amp_vol[index as usize][0] as kernel::ffi::c_int == lvol
+        && (*amp).amp_vol[index as usize][1] as kernel::ffi::c_int == rvol
     {
         return 0;
     }
@@ -285,7 +285,7 @@ unsafe fn awacs_amp_set_vol(
 /*
  * 0 = -79 dB, 79 = 0 dB, 99 = +20 dB
  */
-unsafe fn awacs_amp_set_master(amp: *mut awacs_amp, mut vol: libc::c_int) {
+unsafe fn awacs_amp_set_master(amp: *mut awacs_amp, mut vol: kernel::ffi::c_int) {
     (*amp).amp_master = vol as _;
     if vol <= 79 {
         vol = 32 + (79 - vol);
@@ -313,7 +313,7 @@ unsafe fn awacs_amp_free(chip: *mut snd_pmac) {
 unsafe fn snd_pmac_awacs_info_volume_amp(
     _kcontrol: *mut snd_kcontrol,
     uinfo: *mut snd_ctl_elem_info,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     (*uinfo).type_ = SNDRV_CTL_ELEM_TYPE_INTEGER;
     (*uinfo).count = 2;
     (*uinfo).value.integer.min = 0;
@@ -325,7 +325,7 @@ unsafe fn snd_pmac_awacs_info_volume_amp(
 unsafe fn snd_pmac_awacs_get_volume_amp(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let index = (*kcontrol).private_value;
     let amp = (*chip).mixer_data as *mut awacs_amp;
@@ -339,16 +339,16 @@ unsafe fn snd_pmac_awacs_get_volume_amp(
 unsafe fn snd_pmac_awacs_put_volume_amp(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let index = (*kcontrol).private_value;
     let amp = (*chip).mixer_data as *mut awacs_amp;
-    let mut vol = [0 as libc::c_int; 2];
+    let mut vol = [0 as kernel::ffi::c_int; 2];
 
-    vol[0] = (31 - ((*ucontrol).value.integer.value[0] as libc::c_int & 31))
-        | ((*amp).amp_vol[index as usize][0] as libc::c_int & 32);
-    vol[1] = (31 - ((*ucontrol).value.integer.value[1] as libc::c_int & 31))
-        | ((*amp).amp_vol[index as usize][1] as libc::c_int & 32);
+    vol[0] = (31 - ((*ucontrol).value.integer.value[0] as kernel::ffi::c_int & 31))
+        | ((*amp).amp_vol[index as usize][0] as kernel::ffi::c_int & 32);
+    vol[1] = (31 - ((*ucontrol).value.integer.value[1] as kernel::ffi::c_int & 31))
+        | ((*amp).amp_vol[index as usize][1] as kernel::ffi::c_int & 32);
     awacs_amp_set_vol(amp, index as _, vol[0], vol[1], 1)
 }
 
@@ -356,7 +356,7 @@ unsafe fn snd_pmac_awacs_put_volume_amp(
 unsafe fn snd_pmac_awacs_get_switch_amp(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let index = (*kcontrol).private_value;
     let amp = (*chip).mixer_data as *mut awacs_amp;
@@ -370,16 +370,16 @@ unsafe fn snd_pmac_awacs_get_switch_amp(
 unsafe fn snd_pmac_awacs_put_switch_amp(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let index = (*kcontrol).private_value;
     let amp = (*chip).mixer_data as *mut awacs_amp;
-    let mut vol = [0 as libc::c_int; 2];
+    let mut vol = [0 as kernel::ffi::c_int; 2];
 
     vol[0] = if (*ucontrol).value.integer.value[0] != 0 { 0 } else { 32 }
-        | ((*amp).amp_vol[index as usize][0] as libc::c_int & 31);
+        | ((*amp).amp_vol[index as usize][0] as kernel::ffi::c_int & 31);
     vol[1] = if (*ucontrol).value.integer.value[1] != 0 { 0 } else { 32 }
-        | ((*amp).amp_vol[index as usize][1] as libc::c_int & 31);
+        | ((*amp).amp_vol[index as usize][1] as kernel::ffi::c_int & 31);
     awacs_amp_set_vol(amp, index as _, vol[0], vol[1], 1)
 }
 
@@ -387,7 +387,7 @@ unsafe fn snd_pmac_awacs_put_switch_amp(
 unsafe fn snd_pmac_awacs_info_tone_amp(
     _kcontrol: *mut snd_kcontrol,
     uinfo: *mut snd_ctl_elem_info,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     (*uinfo).type_ = SNDRV_CTL_ELEM_TYPE_INTEGER;
     (*uinfo).count = 1;
     (*uinfo).value.integer.min = 0;
@@ -399,7 +399,7 @@ unsafe fn snd_pmac_awacs_info_tone_amp(
 unsafe fn snd_pmac_awacs_get_tone_amp(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let index = (*kcontrol).private_value;
     let amp = (*chip).mixer_data as *mut awacs_amp;
@@ -412,16 +412,16 @@ unsafe fn snd_pmac_awacs_get_tone_amp(
 unsafe fn snd_pmac_awacs_put_tone_amp(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let index = (*kcontrol).private_value;
     let amp = (*chip).mixer_data as *mut awacs_amp;
-    let val = (*ucontrol).value.integer.value[0] as libc::c_uint;
+    let val = (*ucontrol).value.integer.value[0] as kernel::ffi::c_uint;
 
     if val > 14 {
         return -EINVAL;
     }
-    if val as libc::c_uchar != (*amp).amp_tone[index as usize] {
+    if val as kernel::ffi::c_uchar != (*amp).amp_tone[index as usize] {
         (*amp).amp_tone[index as usize] = val as _;
         awacs_amp_set_tone(amp, (*amp).amp_tone[0] as _, (*amp).amp_tone[1] as _);
         return 1;
@@ -433,7 +433,7 @@ unsafe fn snd_pmac_awacs_put_tone_amp(
 unsafe fn snd_pmac_awacs_info_master_amp(
     _kcontrol: *mut snd_kcontrol,
     uinfo: *mut snd_ctl_elem_info,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     (*uinfo).type_ = SNDRV_CTL_ELEM_TYPE_INTEGER;
     (*uinfo).count = 1;
     (*uinfo).value.integer.min = 0;
@@ -445,7 +445,7 @@ unsafe fn snd_pmac_awacs_info_master_amp(
 unsafe fn snd_pmac_awacs_get_master_amp(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let amp = (*chip).mixer_data as *mut awacs_amp;
 
@@ -457,15 +457,15 @@ unsafe fn snd_pmac_awacs_get_master_amp(
 unsafe fn snd_pmac_awacs_put_master_amp(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let amp = (*chip).mixer_data as *mut awacs_amp;
-    let val = (*ucontrol).value.integer.value[0] as libc::c_uint;
+    let val = (*ucontrol).value.integer.value[0] as kernel::ffi::c_uint;
 
     if val > 99 {
         return -EINVAL;
     }
-    if val as libc::c_uchar != (*amp).amp_master {
+    if val as kernel::ffi::c_uchar != (*amp).amp_master {
         (*amp).amp_master = val as _;
         awacs_amp_set_master(amp, (*amp).amp_master as _);
         return 1;
@@ -474,9 +474,9 @@ unsafe fn snd_pmac_awacs_put_master_amp(
 }
 
 #[cfg(PMAC_AMP_AVAIL)]
-const AMP_CH_SPK: libc::c_long = 0;
+const AMP_CH_SPK: kernel::ffi::c_long = 0;
 #[cfg(PMAC_AMP_AVAIL)]
-const AMP_CH_HD: libc::c_long = 1;
+const AMP_CH_HD: kernel::ffi::c_long = 1;
 
 #[cfg(PMAC_AMP_AVAIL)]
 static snd_pmac_awacs_amp_vol: [snd_kcontrol_new; 5] = [
@@ -515,7 +515,7 @@ static snd_pmac_awacs_amp_spk_sw: snd_kcontrol_new = snd_kcontrol_new {
 unsafe fn snd_pmac_screamer_mic_boost_info(
     _kcontrol: *mut snd_kcontrol,
     uinfo: *mut snd_ctl_elem_info,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     (*uinfo).type_ = SNDRV_CTL_ELEM_TYPE_INTEGER;
     (*uinfo).count = 1;
     (*uinfo).value.integer.min = 0;
@@ -526,7 +526,7 @@ unsafe fn snd_pmac_screamer_mic_boost_info(
 unsafe fn snd_pmac_screamer_mic_boost_get(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let mut val = 0;
 
@@ -544,7 +544,7 @@ unsafe fn snd_pmac_screamer_mic_boost_get(
 unsafe fn snd_pmac_screamer_mic_boost_put(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let chip: *mut snd_pmac = snd_kcontrol_chip(kcontrol);
     let mut changed = 0;
 
@@ -569,10 +569,10 @@ unsafe fn snd_pmac_screamer_mic_boost_put(
 }
 
 const fn AWACS_VOLUME(
-    xname: *const libc::c_char,
-    xreg: libc::c_long,
-    xshift: libc::c_long,
-    xinverted: libc::c_long,
+    xname: *const kernel::ffi::c_char,
+    xreg: kernel::ffi::c_long,
+    xshift: kernel::ffi::c_long,
+    xinverted: kernel::ffi::c_long,
 ) -> snd_kcontrol_new {
     snd_kcontrol_new {
         iface: SNDRV_CTL_ELEM_IFACE_MIXER,
@@ -587,10 +587,10 @@ const fn AWACS_VOLUME(
 }
 
 const fn AWACS_SWITCH(
-    xname: *const libc::c_char,
-    xreg: libc::c_long,
-    xshift: libc::c_long,
-    xinvert: libc::c_long,
+    xname: *const kernel::ffi::c_char,
+    xreg: kernel::ffi::c_long,
+    xshift: kernel::ffi::c_long,
+    xinvert: kernel::ffi::c_long,
 ) -> snd_kcontrol_new {
     snd_kcontrol_new {
         iface: SNDRV_CTL_ELEM_IFACE_MIXER,
@@ -724,9 +724,9 @@ static snd_pmac_awacs_speaker_sw_imac2: snd_kcontrol_new =
  */
 unsafe fn build_mixers(
     chip: *mut snd_pmac,
-    nums: libc::c_int,
+    nums: kernel::ffi::c_int,
     mixers: *const snd_kcontrol_new,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let mut i = 0;
     while i < nums {
         let err = snd_ctl_add((*chip).card, snd_ctl_new1(mixers.add(i as usize), chip as *mut _));
@@ -808,22 +808,22 @@ unsafe fn IS_LOMBARD() -> bool {
     of_machine_is_compatible(c"PowerBook1,1".as_ptr())
 }
 
-static mut imac1: libc::c_int = 0;
-static mut imac2: libc::c_int = 0;
+static mut imac1: kernel::ffi::c_int = 0;
+static mut imac2: kernel::ffi::c_int = 0;
 
 #[cfg(PMAC_SUPPORT_AUTOMUTE)]
 /*
  * auto-mute stuffs
  */
-unsafe fn snd_pmac_awacs_detect_headphone(chip: *mut snd_pmac) -> libc::c_int {
+unsafe fn snd_pmac_awacs_detect_headphone(chip: *mut snd_pmac) -> kernel::ffi::c_int {
     if in_le32(&mut (*(*chip).awacs).codec_stat) & (*chip).hp_stat_mask != 0 { 1 } else { 0 }
 }
 
 #[cfg(all(PMAC_SUPPORT_AUTOMUTE, PMAC_AMP_AVAIL))]
-unsafe fn toggle_amp_mute(amp: *mut awacs_amp, index: libc::c_int, mute: libc::c_int) -> libc::c_int {
-    let mut vol = [0 as libc::c_int; 2];
-    vol[0] = (*amp).amp_vol[index as usize][0] as libc::c_int & 31;
-    vol[1] = (*amp).amp_vol[index as usize][1] as libc::c_int & 31;
+unsafe fn toggle_amp_mute(amp: *mut awacs_amp, index: kernel::ffi::c_int, mute: kernel::ffi::c_int) -> kernel::ffi::c_int {
+    let mut vol = [0 as kernel::ffi::c_int; 2];
+    vol[0] = (*amp).amp_vol[index as usize][0] as kernel::ffi::c_int & 31;
+    vol[1] = (*amp).amp_vol[index as usize][1] as kernel::ffi::c_int & 31;
     if mute != 0 {
         vol[0] |= 32;
         vol[1] |= 32;
@@ -832,7 +832,7 @@ unsafe fn toggle_amp_mute(amp: *mut awacs_amp, index: libc::c_int, mute: libc::c
 }
 
 #[cfg(PMAC_SUPPORT_AUTOMUTE)]
-unsafe fn snd_pmac_awacs_update_automute(chip: *mut snd_pmac, do_notify: libc::c_int) {
+unsafe fn snd_pmac_awacs_update_automute(chip: *mut snd_pmac, do_notify: kernel::ffi::c_int) {
     if (*chip).auto_mute != 0 {
         #[cfg(PMAC_AMP_AVAIL)]
         if !(*chip).mixer_data.is_null() {
@@ -883,21 +883,21 @@ unsafe fn snd_pmac_awacs_update_automute(chip: *mut snd_pmac, do_notify: libc::c
 /*
  * initialize chip
  */
-pub unsafe fn snd_pmac_awacs_init(chip: *mut snd_pmac) -> libc::c_int {
-    let pm7500 = IS_PM7500() as libc::c_int;
-    let pm5500 = IS_PM5500() as libc::c_int;
-    let beige = IS_BEIGE() as libc::c_int;
-    let g4agp = IS_G4AGP() as libc::c_int;
-    let lombard = IS_LOMBARD() as libc::c_int;
-    let mut err: libc::c_int;
-    let mut vol: libc::c_int;
+pub unsafe fn snd_pmac_awacs_init(chip: *mut snd_pmac) -> kernel::ffi::c_int {
+    let pm7500 = IS_PM7500() as kernel::ffi::c_int;
+    let pm5500 = IS_PM5500() as kernel::ffi::c_int;
+    let beige = IS_BEIGE() as kernel::ffi::c_int;
+    let g4agp = IS_G4AGP() as kernel::ffi::c_int;
+    let lombard = IS_LOMBARD() as kernel::ffi::c_int;
+    let mut err: kernel::ffi::c_int;
+    let mut vol: kernel::ffi::c_int;
     let mut vmaster_sw: *mut snd_kcontrol;
     let mut vmaster_vol: *mut snd_kcontrol;
     let mut master_vol: *mut snd_kcontrol;
     let mut speaker_vol: *mut snd_kcontrol;
 
-    imac1 = IS_IMAC1() as libc::c_int;
-    imac2 = IS_IMAC2() as libc::c_int;
+    imac1 = IS_IMAC1() as kernel::ffi::c_int;
+    imac2 = IS_IMAC2() as kernel::ffi::c_int;
     let imac = imac1 != 0 || imac2 != 0;
     /* looks like MASK_GAINLINE triggers something, so we set here
      * as start-up

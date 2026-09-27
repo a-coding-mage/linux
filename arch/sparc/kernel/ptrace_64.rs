@@ -15,7 +15,7 @@
 
 #[repr(C)]
 pub struct pt_regs_offset {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub offset: i32,
 }
 
@@ -40,23 +40,23 @@ extern "C" {
     fn BUG_ON(condition: bool);
     fn preempt_disable();
     fn preempt_enable();
-    fn __pa(addr: *mut core::ffi::c_void) -> u64;
+    fn __pa(addr: *mut kernel::ffi::c_void) -> u64;
     fn local_cpu_data() -> CpuData;
     fn spitfire_put_dcache_tag(addr: u64, tag: u64);
     fn flushi(addr: u64);
-    fn copy_from_user(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, len: usize) -> usize;
-    fn copy_to_user(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, len: usize) -> usize;
-    fn access_process_vm(target: *mut task_struct, addr: u64, buf: *mut core::ffi::c_void, len: usize, flags: u32) -> i32;
+    fn copy_from_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, len: usize) -> usize;
+    fn copy_to_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, len: usize) -> usize;
+    fn access_process_vm(target: *mut task_struct, addr: u64, buf: *mut kernel::ffi::c_void, len: usize, flags: u32) -> i32;
     fn test_thread_64bit_stack(addr: u64) -> bool;
     fn task_pt_regs(target: *mut task_struct) -> *mut PtRegs;
     fn flushw_user();
     fn save_and_clear_fpu();
     fn task_thread_info(target: *mut task_struct) -> *mut ThreadInfo;
-    fn membuf_write(to: *mut Membuf, from: *const core::ffi::c_void, len: usize);
+    fn membuf_write(to: *mut Membuf, from: *const kernel::ffi::c_void, len: usize);
     fn membuf_zero(to: *mut Membuf, len: usize);
     fn membuf_store(to: *mut Membuf, value: u64) -> i32;
-    fn user_regset_copyin(pos: *mut u32, count: *mut u32, kbuf: *mut *const core::ffi::c_void, ubuf: *mut *const core::ffi::c_void, data: *mut core::ffi::c_void, start: usize, end: usize) -> i32;
-    fn user_regset_copyin_ignore(pos: *mut u32, count: *mut u32, kbuf: *mut *const core::ffi::c_void, ubuf: *mut *const core::ffi::c_void, start: usize, end: isize);
+    fn user_regset_copyin(pos: *mut u32, count: *mut u32, kbuf: *mut *const kernel::ffi::c_void, ubuf: *mut *const kernel::ffi::c_void, data: *mut kernel::ffi::c_void, start: usize, end: usize) -> i32;
+    fn user_regset_copyin_ignore(pos: *mut u32, count: *mut u32, kbuf: *mut *const kernel::ffi::c_void, ubuf: *mut *const kernel::ffi::c_void, start: usize, end: isize);
 }
 
 #[repr(C)]
@@ -101,7 +101,7 @@ pub static REGOFFSET_TABLE: &[pt_regs_offset] = &[
 
 pub unsafe extern "C" fn ptrace_disable(_child: *mut task_struct) { }
 
-pub unsafe extern "C" fn flush_ptrace_access(_vma: *mut vm_area_struct, _page: *mut page, uaddr: u64, kaddr: *mut core::ffi::c_void, len: u64, write: i32) {
+pub unsafe extern "C" fn flush_ptrace_access(_vma: *mut vm_area_struct, _page: *mut page, uaddr: u64, kaddr: *mut kernel::ffi::c_void, len: u64, write: i32) {
     BUG_ON(len as usize > PAGE_SIZE);
     if tlb_type == HYPERVISOR { return; }
     preempt_disable();
@@ -119,12 +119,12 @@ pub unsafe extern "C" fn flush_ptrace_access(_vma: *mut vm_area_struct, _page: *
     preempt_enable();
 }
 
-unsafe fn get_from_target(target: *mut task_struct, uaddr: u64, kbuf: *mut core::ffi::c_void, len: i32) -> i32 {
+unsafe fn get_from_target(target: *mut task_struct, uaddr: u64, kbuf: *mut kernel::ffi::c_void, len: i32) -> i32 {
     if target == current { if copy_from_user(kbuf, uaddr as *const _, len as usize) != 0 { return -EFAULT; } }
     else if access_process_vm(target, uaddr, kbuf, len as usize, FOLL_FORCE) != len { return -EFAULT; }
     0
 }
-unsafe fn set_to_target(target: *mut task_struct, uaddr: u64, kbuf: *mut core::ffi::c_void, len: i32) -> i32 {
+unsafe fn set_to_target(target: *mut task_struct, uaddr: u64, kbuf: *mut kernel::ffi::c_void, len: i32) -> i32 {
     if target == current { if copy_to_user(uaddr as *mut _, kbuf, len as usize) != 0 { return -EFAULT; } }
     else if access_process_vm(target, uaddr, kbuf, len as usize, FOLL_FORCE | FOLL_WRITE) != len { return -EFAULT; }
     0
@@ -149,7 +149,7 @@ unsafe fn genregs64_get(target: *mut task_struct, _regset: *const user_regset, t
     membuf_write(to, &window as *const _ as _, 16 * 8); membuf_write(to, &(*regs).tstate as *const _ as _, 3 * 8); membuf_store(to, (*regs).y)
 }
 
-unsafe fn genregs64_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const core::ffi::c_void, mut ubuf: *const core::ffi::c_void) -> i32 {
+unsafe fn genregs64_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const kernel::ffi::c_void, mut ubuf: *const kernel::ffi::c_void) -> i32 {
     let regs = task_pt_regs(target); if target == current { flushw_user(); }
     let mut ret = user_regset_copyin(&mut pos, &mut count, &mut (kbuf as *mut _), &mut (ubuf as *mut _), (*regs).u_regs.as_mut_ptr() as _, 0, 16*8);
     if ret == 0 && count != 0 && pos < 32*8 { let mut w = RegWindow { locals:[0;8], ins:[0;8] }; if regwindow64_get(target, regs, &mut w) != 0 { return -EFAULT; } ret = user_regset_copyin(&mut pos,&mut count,&mut (kbuf as *mut _),&mut (ubuf as *mut _),&mut w as *mut _ as _,16*8,32*8); if ret == 0 && regwindow64_set(target,regs,&mut w) != 0 { return -EFAULT; } }
@@ -160,13 +160,13 @@ unsafe fn genregs64_set(target: *mut task_struct, _regset: *const user_regset, m
 }
 
 unsafe fn getregs64_get(target: *mut task_struct, _regset: *const user_regset, to: *mut Membuf) -> i32 { let regs=task_pt_regs(target); if target==current {flushw_user();} membuf_write(to,(*regs).u_regs.as_ptr().add(1) as _,15*8); membuf_store(to,0); membuf_write(to,&(*regs).tstate as *const _ as _,3*8); membuf_store(to,(*regs).y) }
-unsafe fn setregs64_set(target:*mut task_struct,_regset:*const user_regset,mut pos:u32,mut count:u32,mut kbuf:*const core::ffi::c_void,mut ubuf:*const core::ffi::c_void)->i32 { let r=task_pt_regs(target); if target==current {flushw_user();} let mut ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),(*r).u_regs.as_mut_ptr().add(1) as _,0,15*8); if ret!=0{return ret;} user_regset_copyin_ignore(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),15*8,16*8); let mut ts=0; ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),&mut ts as *mut _ as _,16*8,17*8); if ret!=0{return ret;} ts&=TSTATE_ICC|TSTATE_XCC|TSTATE_SYSCALL; (*r).tstate=((*r).tstate&!(TSTATE_ICC|TSTATE_XCC|TSTATE_SYSCALL))|ts; ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),&mut(*r).tpc as *mut _ as _,17*8,19*8); if ret!=0{return ret;} let mut y=(*r).y; ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),&mut y as *mut _ as _,19*8,20*8); if ret==0 {(*r).y=y;} ret }
+unsafe fn setregs64_set(target:*mut task_struct,_regset:*const user_regset,mut pos:u32,mut count:u32,mut kbuf:*const kernel::ffi::c_void,mut ubuf:*const kernel::ffi::c_void)->i32 { let r=task_pt_regs(target); if target==current {flushw_user();} let mut ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),(*r).u_regs.as_mut_ptr().add(1) as _,0,15*8); if ret!=0{return ret;} user_regset_copyin_ignore(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),15*8,16*8); let mut ts=0; ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),&mut ts as *mut _ as _,16*8,17*8); if ret!=0{return ret;} ts&=TSTATE_ICC|TSTATE_XCC|TSTATE_SYSCALL; (*r).tstate=((*r).tstate&!(TSTATE_ICC|TSTATE_XCC|TSTATE_SYSCALL))|ts; ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),&mut(*r).tpc as *mut _ as _,17*8,19*8); if ret!=0{return ret;} let mut y=(*r).y; ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),&mut y as *mut _ as _,19*8,20*8); if ret==0 {(*r).y=y;} ret }
 
 // The source's user_regset arrays preserve the GENERAL and FP entries and their comments.
 // Exact kernel registration metadata is supplied by the translated regset definitions.
 
 unsafe fn fpregs64_get(target:*mut task_struct,_:*const user_regset,to:*mut Membuf)->i32 { let t=task_thread_info(target); if target==current {save_and_clear_fpu();} let f=(*t).fpsaved[0]; if f&FPRS_DL!=0 {membuf_write(to,(*t).fpregs as _,16*8);} else {membuf_zero(to,16*8);} if f&FPRS_DU!=0 {membuf_write(to,(*t).fpregs.add(16) as _,16*8);} else {membuf_zero(to,16*8);} if f&FPRS_FEF!=0 {membuf_store(to,(*t).xfsr[0]);membuf_store(to,(*t).gsr[0]);} else {membuf_zero(to,2*8);} membuf_store(to,f) }
-unsafe fn fpregs64_set(target:*mut task_struct,_:*const user_regset,mut pos:u32,mut count:u32,mut kbuf:*const core::ffi::c_void,mut ubuf:*const core::ffi::c_void)->i32 { let t=task_thread_info(target); if target==current {save_and_clear_fpu();} let mut ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),(*t).fpregs as _,0,32*8); if ret==0 {ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),(*t).xfsr.as_mut_ptr() as _,32*8,33*8);} if ret==0 {ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),(*t).gsr.as_mut_ptr() as _,33*8,34*8);} let mut f=(*t).fpsaved[0]; if ret==0&&count>0 {ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),&mut f as *mut _ as _,34*8,35*8);} f|=FPRS_FEF|FPRS_DL|FPRS_DU;(*t).fpsaved[0]=f;if ret==0{user_regset_copyin_ignore(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),35*8,-1);}ret }
+unsafe fn fpregs64_set(target:*mut task_struct,_:*const user_regset,mut pos:u32,mut count:u32,mut kbuf:*const kernel::ffi::c_void,mut ubuf:*const kernel::ffi::c_void)->i32 { let t=task_thread_info(target); if target==current {save_and_clear_fpu();} let mut ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),(*t).fpregs as _,0,32*8); if ret==0 {ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),(*t).xfsr.as_mut_ptr() as _,32*8,33*8);} if ret==0 {ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),(*t).gsr.as_mut_ptr() as _,33*8,34*8);} let mut f=(*t).fpsaved[0]; if ret==0&&count>0 {ret=user_regset_copyin(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),&mut f as *mut _ as _,34*8,35*8);} f|=FPRS_FEF|FPRS_DL|FPRS_DU;(*t).fpsaved[0]=f;if ret==0{user_regset_copyin_ignore(&mut pos,&mut count,&mut(kbuf as *mut _),&mut(ubuf as *mut _),35*8,-1);}ret }
 
 #[repr(C)] pub struct UserRegsetEntry { pub n:u32, pub size:usize, pub align:usize, pub get:unsafe fn(*mut task_struct,*const user_regset,*mut Membuf)->i32 }
 pub static SPARC64_REGSETS:[UserRegsetEntry;2]=[UserRegsetEntry{n:36,size:8,align:8,get:genregs64_get},UserRegsetEntry{n:35,size:8,align:8,get:fpregs64_get}];

@@ -83,9 +83,9 @@ pub struct mtpos {
     pub mt_blkno: c_long,
 }
 
-pub const MTIOCTOP: _ = _IOW('m' as _, 1, mtop);
-pub const MTIOCGET: _ = _IOR('m' as _, 2, mtget);
-pub const MTIOCPOS: _ = _IOR('m' as _, 3, mtpos);
+pub const MTIOCTOP: u32 = _IOW('m' as _, 1, mtop);
+pub const MTIOCGET: u32 = _IOR('m' as _, 2, mtget);
+pub const MTIOCPOS: u32 = _IOR('m' as _, 3, mtpos);
 
 pub const fn GMT_EOF(x: u32) -> u32 { x & 0x80000000 }
 pub const fn GMT_BOT(x: u32) -> u32 { x & 0x40000000 }

@@ -8,7 +8,7 @@
 #[repr(C)]
 pub struct nft_quota {
     pub quota: atomic64_t,
-    pub flags: libc::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub consumed: *mut atomic64_t,
 }
 
@@ -21,7 +21,7 @@ unsafe fn nft_overquota(priv_: *mut nft_quota, skb: *const sk_buff, report: *mut
 }
 
 #[inline]
-unsafe fn nft_quota_invert(priv_: *mut nft_quota) -> bool { ((*priv_).flags & NFT_QUOTA_F_INV as libc::c_ulong) != 0 }
+unsafe fn nft_quota_invert(priv_: *mut nft_quota) -> bool { ((*priv_).flags & NFT_QUOTA_F_INV as kernel::ffi::c_ulong) != 0 }
 
 #[inline]
 unsafe fn nft_quota_do_eval(priv_: *mut nft_quota, regs: *mut nft_regs, pkt: *const nft_pktinfo) {
@@ -30,7 +30,7 @@ unsafe fn nft_quota_do_eval(priv_: *mut nft_quota, regs: *mut nft_regs, pkt: *co
 
 static mut nft_quota_policy: [nla_policy; NFTA_QUOTA_MAX as usize + 1] = [nla_policy { type_: 0 }; NFTA_QUOTA_MAX as usize + 1];
 
-const NFT_QUOTA_DEPLETED_BIT: libc::c_ulong = 1;
+const NFT_QUOTA_DEPLETED_BIT: kernel::ffi::c_ulong = 1;
 
 unsafe fn nft_quota_obj_eval(obj: *mut nft_object, regs: *mut nft_regs, pkt: *const nft_pktinfo) {
     let priv_ = nft_obj_data(obj);
@@ -43,7 +43,7 @@ unsafe fn nft_quota_obj_eval(obj: *mut nft_object, regs: *mut nft_regs, pkt: *co
 }
 
 unsafe fn nft_quota_do_init(tb: *const *const nlattr, priv_: *mut nft_quota) -> i32 {
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let mut quota: u64;
     let mut consumed: u64 = 0;
     if (*tb.add(NFTA_QUOTA_BYTES as usize)).is_null() { return -EINVAL; }
@@ -54,9 +54,9 @@ unsafe fn nft_quota_do_init(tb: *const *const nlattr, priv_: *mut nft_quota) -> 
         if consumed > quota { return -EINVAL; }
     }
     if !(*tb.add(NFTA_QUOTA_FLAGS as usize)).is_null() {
-        flags = ntohl(nla_get_be32(*tb.add(NFTA_QUOTA_FLAGS as usize))) as libc::c_ulong;
-        if flags & !(NFT_QUOTA_F_INV as libc::c_ulong) != 0 { return -EINVAL; }
-        if flags & NFT_QUOTA_F_DEPLETED as libc::c_ulong != 0 { return -EOPNOTSUPP; }
+        flags = ntohl(nla_get_be32(*tb.add(NFTA_QUOTA_FLAGS as usize))) as kernel::ffi::c_ulong;
+        if flags & !(NFT_QUOTA_F_INV as kernel::ffi::c_ulong) != 0 { return -EINVAL; }
+        if flags & NFT_QUOTA_F_DEPLETED as kernel::ffi::c_ulong != 0 { return -EOPNOTSUPP; }
     }
     (*priv_).consumed = kmalloc_obj::<atomic64_t>(GFP_KERNEL_ACCOUNT);
     if (*priv_).consumed.is_null() { return -ENOMEM; }

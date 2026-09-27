@@ -9,45 +9,45 @@
 pub struct KvmBook3s64MmuMap {
     pub flag_w: u8,
     pub flag_x: u8,
-    pub eaddr: libc::c_ulong,
-    pub hpteg: libc::c_ulong,
-    pub va: libc::c_ulong,
+    pub eaddr: kernel::ffi::c_ulong,
+    pub hpteg: kernel::ffi::c_ulong,
+    pub va: kernel::ffi::c_ulong,
     pub vpage: u64,
-    pub hpaddr: libc::c_ulong,
+    pub hpaddr: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct KvmBook3sReenter {
-    pub r: libc::c_uint,
-    pub pc: libc::c_ulong,
+    pub r: kernel::ffi::c_uint,
+    pub pc: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct KvmBook3sMmuMap {
     pub host_vpn: u64,
     pub pfn: u64,
-    pub eaddr: libc::c_ulong,
+    pub eaddr: kernel::ffi::c_ulong,
     pub vpage: u64,
-    pub raddr: libc::c_ulong,
-    pub flags: libc::c_int,
+    pub raddr: kernel::ffi::c_ulong,
+    pub flags: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct KvmBook3sMmuInvalidate {
     pub host_vpn: u64,
     pub pfn: u64,
-    pub eaddr: libc::c_ulong,
+    pub eaddr: kernel::ffi::c_ulong,
     pub vpage: u64,
-    pub raddr: libc::c_ulong,
-    pub flags: libc::c_int,
+    pub raddr: kernel::ffi::c_ulong,
+    pub flags: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct KvmBook3sMmuFlush {
-    pub count: libc::c_int,
+    pub count: kernel::ffi::c_int,
     pub p1: u64,
     pub p2: u64,
-    pub type_: *const libc::c_char,
+    pub type_: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -77,12 +77,12 @@ pub struct KvmBook3sSlbmte {
 
 #[repr(C)]
 pub struct KvmExit {
-    pub exit_nr: libc::c_uint,
-    pub pc: libc::c_ulong,
-    pub msr: libc::c_ulong,
-    pub dar: libc::c_ulong,
-    pub srr1: libc::c_ulong,
-    pub last_inst: libc::c_ulong,
+    pub exit_nr: kernel::ffi::c_uint,
+    pub pc: kernel::ffi::c_ulong,
+    pub msr: kernel::ffi::c_ulong,
+    pub dar: kernel::ffi::c_ulong,
+    pub srr1: kernel::ffi::c_ulong,
+    pub last_inst: kernel::ffi::c_ulong,
 }
 
 // TRACE_EVENT(kvm_book3s_reenter):

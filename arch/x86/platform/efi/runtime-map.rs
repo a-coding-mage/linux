@@ -16,30 +16,30 @@ static mut map_entries: *mut *mut EfiRuntimeMapEntry = core::ptr::null_mut();
 #[repr(C)]
 struct MapAttribute {
     attr: attribute,
-    show: Option<unsafe extern "C" fn(*mut EfiRuntimeMapEntry, *mut core::ffi::c_char) -> ssize_t>,
+    show: Option<unsafe extern "C" fn(*mut EfiRuntimeMapEntry, *mut kernel::ffi::c_char) -> ssize_t>,
 }
 
 unsafe fn to_map_attr(attr: *mut attribute) -> *mut MapAttribute {
     container_of!(attr, MapAttribute, attr)
 }
 
-unsafe extern "C" fn type_show(entry: *mut EfiRuntimeMapEntry, buf: *mut core::ffi::c_char) -> ssize_t {
+unsafe extern "C" fn type_show(entry: *mut EfiRuntimeMapEntry, buf: *mut kernel::ffi::c_char) -> ssize_t {
     snprintf!(buf, PAGE_SIZE, "0x%x\n", (*entry).md.type_)
 }
 
-unsafe extern "C" fn phys_addr_show(entry: *mut EfiRuntimeMapEntry, buf: *mut core::ffi::c_char) -> ssize_t {
+unsafe extern "C" fn phys_addr_show(entry: *mut EfiRuntimeMapEntry, buf: *mut kernel::ffi::c_char) -> ssize_t {
     snprintf!(buf, PAGE_SIZE, "0x%llx\n", (*entry).md.phys_addr)
 }
 
-unsafe extern "C" fn virt_addr_show(entry: *mut EfiRuntimeMapEntry, buf: *mut core::ffi::c_char) -> ssize_t {
+unsafe extern "C" fn virt_addr_show(entry: *mut EfiRuntimeMapEntry, buf: *mut kernel::ffi::c_char) -> ssize_t {
     snprintf!(buf, PAGE_SIZE, "0x%llx\n", (*entry).md.virt_addr)
 }
 
-unsafe extern "C" fn num_pages_show(entry: *mut EfiRuntimeMapEntry, buf: *mut core::ffi::c_char) -> ssize_t {
+unsafe extern "C" fn num_pages_show(entry: *mut EfiRuntimeMapEntry, buf: *mut kernel::ffi::c_char) -> ssize_t {
     snprintf!(buf, PAGE_SIZE, "0x%llx\n", (*entry).md.num_pages)
 }
 
-unsafe extern "C" fn attribute_show(entry: *mut EfiRuntimeMapEntry, buf: *mut core::ffi::c_char) -> ssize_t {
+unsafe extern "C" fn attribute_show(entry: *mut EfiRuntimeMapEntry, buf: *mut kernel::ffi::c_char) -> ssize_t {
     snprintf!(buf, PAGE_SIZE, "0x%llx\n", (*entry).md.attribute)
 }
 
@@ -50,7 +50,7 @@ unsafe fn to_map_entry(kobj: *mut kobject) -> *mut EfiRuntimeMapEntry {
 unsafe extern "C" fn map_attr_show(
     kobj: *mut kobject,
     attr: *mut attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
     let entry = to_map_entry(kobj);
     let map_attr = to_map_attr(attr);
@@ -139,7 +139,7 @@ pub unsafe extern "C" fn efi_get_runtime_map_desc_size() -> i32 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn efi_runtime_map_copy(buf: *mut core::ffi::c_void, bufsz: usize) -> i32 {
+pub unsafe extern "C" fn efi_runtime_map_copy(buf: *mut kernel::ffi::c_void, bufsz: usize) -> i32 {
     let mut sz = efi_get_runtime_map_size() as usize;
     if sz > bufsz {
         sz = bufsz;

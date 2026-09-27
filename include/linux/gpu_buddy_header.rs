@@ -40,10 +40,10 @@ pub struct gpu_buddy_block {
     pub left: *mut gpu_buddy_block,
     pub right: *mut gpu_buddy_block,
     pub parent: *mut gpu_buddy_block,
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
     pub rb_or_link: gpu_buddy_block_rb_or_link,
     pub tmp_link: list_head,
-    pub subtree_max_alignment: core::ffi::c_uint,
+    pub subtree_max_alignment: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -60,8 +60,8 @@ pub struct gpu_buddy {
     pub roots: *mut *mut gpu_buddy_block,
     pub free_scoreboard: *mut u64,
     pub used_scoreboard: *mut u64,
-    pub n_roots: core::ffi::c_uint,
-    pub max_order: core::ffi::c_uint,
+    pub n_roots: kernel::ffi::c_uint,
+    pub max_order: kernel::ffi::c_uint,
     pub chunk_size: u64,
     pub size: u64,
     pub avail: u64,
@@ -98,8 +98,8 @@ pub unsafe fn gpu_buddy_block_offset(block: *const gpu_buddy_block) -> u64 {
     (*block).header & GPU_BUDDY_HEADER_OFFSET
 }
 
-pub unsafe fn gpu_buddy_block_order(block: *mut gpu_buddy_block) -> core::ffi::c_uint {
-    ((*block).header & GPU_BUDDY_HEADER_ORDER) as core::ffi::c_uint
+pub unsafe fn gpu_buddy_block_order(block: *mut gpu_buddy_block) -> kernel::ffi::c_uint {
+    ((*block).header & GPU_BUDDY_HEADER_ORDER) as kernel::ffi::c_uint
 }
 
 pub unsafe fn gpu_buddy_block_is_free(block: *mut gpu_buddy_block) -> bool {
@@ -116,19 +116,19 @@ pub unsafe fn gpu_buddy_block_size(mm: *mut gpu_buddy,
 }
 
 unsafe extern "C" {
-    pub fn gpu_buddy_init(mm: *mut gpu_buddy, size: u64, chunk_size: u64) -> core::ffi::c_int;
+    pub fn gpu_buddy_init(mm: *mut gpu_buddy, size: u64, chunk_size: u64) -> kernel::ffi::c_int;
     pub fn gpu_buddy_fini(mm: *mut gpu_buddy);
     pub fn gpu_buddy_alloc_blocks(mm: *mut gpu_buddy, start: u64, end: u64, size: u64,
                                   min_page_size: u64, blocks: *mut list_head,
-                                  flags: core::ffi::c_ulong) -> core::ffi::c_int;
+                                  flags: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
     pub fn gpu_buddy_block_trim(mm: *mut gpu_buddy, start: *mut u64, new_size: u64,
-                                blocks: *mut list_head) -> core::ffi::c_int;
+                                blocks: *mut list_head) -> kernel::ffi::c_int;
     pub fn gpu_buddy_reset_clear(mm: *mut gpu_buddy, is_clear: bool);
     pub fn gpu_buddy_free_block(mm: *mut gpu_buddy, block: *mut gpu_buddy_block);
     pub fn gpu_buddy_allocated_addr_to_block(mm: *mut gpu_buddy, addr: u64)
         -> *mut gpu_buddy_block;
     pub fn gpu_buddy_free_list(mm: *mut gpu_buddy, objects: *mut list_head,
-                               flags: core::ffi::c_uint);
+                               flags: kernel::ffi::c_uint);
     pub fn gpu_buddy_print(mm: *mut gpu_buddy);
     pub fn gpu_buddy_block_print(mm: *mut gpu_buddy, block: *mut gpu_buddy_block);
 }

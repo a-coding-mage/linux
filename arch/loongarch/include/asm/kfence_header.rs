@@ -12,9 +12,9 @@
 #[inline]
 pub unsafe fn arch_kfence_init_pool() -> bool {
     let mut err: i32;
-    let mut kaddr: *mut core::ffi::c_char;
-    let mut vaddr: *mut core::ffi::c_char;
-    let kfence_pool: *mut core::ffi::c_char = __kfence_pool;
+    let mut kaddr: *mut kernel::ffi::c_char;
+    let mut vaddr: *mut kernel::ffi::c_char;
+    let kfence_pool: *mut kernel::ffi::c_char = __kfence_pool;
     let mut area: *mut vm_struct;
 
     area = __get_vm_area_caller(
@@ -28,11 +28,11 @@ pub unsafe fn arch_kfence_init_pool() -> bool {
         return false;
     }
 
-    __kfence_pool = (*area).addr as *mut core::ffi::c_char;
+    __kfence_pool = (*area).addr as *mut kernel::ffi::c_char;
     err = ioremap_page_range(
         __kfence_pool as usize as u64,
         (__kfence_pool as usize as u64).wrapping_add(KFENCE_POOL_SIZE),
-        virt_to_phys(kfence_pool as *mut core::ffi::c_void),
+        virt_to_phys(kfence_pool as *mut kernel::ffi::c_void),
         PAGE_KERNEL,
     );
     if err != 0 {
@@ -44,7 +44,7 @@ pub unsafe fn arch_kfence_init_pool() -> bool {
     kaddr = kfence_pool;
     vaddr = __kfence_pool;
     while (kaddr as usize) < (kfence_pool as usize).wrapping_add(KFENCE_POOL_SIZE as usize) {
-        set_page_address(virt_to_page(kaddr as *mut core::ffi::c_void), vaddr);
+        set_page_address(virt_to_page(kaddr as *mut kernel::ffi::c_void), vaddr);
         kaddr = kaddr.add(PAGE_SIZE as usize);
         vaddr = vaddr.add(PAGE_SIZE as usize);
     }

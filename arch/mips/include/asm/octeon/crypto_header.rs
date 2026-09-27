@@ -14,8 +14,8 @@
 pub const OCTEON_CR_OPCODE_PRIORITY: i32 = 300;
 
 extern "C" {
-    pub fn octeon_crypto_enable(state: *mut octeon_cop2_state) -> libc::c_ulong;
-    pub fn octeon_crypto_disable(state: *mut octeon_cop2_state, flags: libc::c_ulong);
+    pub fn octeon_crypto_enable(state: *mut octeon_cop2_state) -> kernel::ffi::c_ulong;
+    pub fn octeon_crypto_disable(state: *mut octeon_cop2_state, flags: kernel::ffi::c_ulong);
 }
 
 #[repr(C)]

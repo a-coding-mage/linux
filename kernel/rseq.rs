@@ -17,7 +17,7 @@ unsafe fn rseq_control_debug(on: bool) {
     else { static_branch_disable(&mut rseq_debug_enabled); }
 }
 
-unsafe fn rseq_setup_debug(str_: *mut core::ffi::c_char) -> i32 {
+unsafe fn rseq_setup_debug(str_: *mut kernel::ffi::c_char) -> i32 {
     let mut on = false;
     if kstrtobool(str_, &mut on) != 0 { return -EINVAL; }
     rseq_control_debug(on);
@@ -36,7 +36,7 @@ pub unsafe fn __rseq_trace_ip_fixup(ip: usize, start_ip: usize, offset: usize, a
 static mut rseq_stats: PerCpu<rseq_stats> = PerCpu::new();
 
 #[cfg(CONFIG_RSEQ_STATS)]
-unsafe fn rseq_stats_show(m: *mut seq_file, _p: *mut core::ffi::c_void) -> i32 {
+unsafe fn rseq_stats_show(m: *mut seq_file, _p: *mut kernel::ffi::c_void) -> i32 {
     let mut stats = rseq_stats { ..Default::default() };
     let mut cpu: u32 = 0;
     for_each_possible_cpu!(cpu, {
@@ -77,13 +77,13 @@ unsafe fn rseq_stats_show(m: *mut seq_file, _p: *mut core::ffi::c_void) -> i32 {
 #[cfg(not(CONFIG_RSEQ_STATS))]
 #[inline] unsafe fn rseq_stats_init(_root_dir: *mut dentry) {}
 
-unsafe fn rseq_debug_show(m: *mut seq_file, _p: *mut core::ffi::c_void) -> i32 {
+unsafe fn rseq_debug_show(m: *mut seq_file, _p: *mut kernel::ffi::c_void) -> i32 {
     let on = static_branch_unlikely(&rseq_debug_enabled);
     seq_printf(m, "%d\n", on as i32);
     0
 }
 
-unsafe fn rseq_debug_write(_file: *mut file, ubuf: *const core::ffi::c_char, count: usize, _ppos: *mut loff_t) -> isize {
+unsafe fn rseq_debug_write(_file: *mut file, ubuf: *const kernel::ffi::c_char, count: usize, _ppos: *mut loff_t) -> isize {
     let mut on = false;
     if kstrtobool_from_user(ubuf, count, &mut on) != 0 { return -EINVAL as isize; }
     rseq_control_debug(on);

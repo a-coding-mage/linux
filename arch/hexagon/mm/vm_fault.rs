@@ -11,21 +11,21 @@
  * execptions.
  */
 
-const FLT_IFETCH: libc::c_long = -1;
-const FLT_LOAD: libc::c_long = 0;
-const FLT_STORE: libc::c_long = 1;
+const FLT_IFETCH: kernel::ffi::c_long = -1;
+const FLT_LOAD: kernel::ffi::c_long = 0;
+const FLT_STORE: kernel::ffi::c_long = 1;
 
 /*
  * Canonical page fault handler
  */
-unsafe fn do_page_fault(address: libc::c_ulong, cause: libc::c_long, regs: *mut pt_regs) {
+unsafe fn do_page_fault(address: kernel::ffi::c_ulong, cause: kernel::ffi::c_long, regs: *mut pt_regs) {
     let mut vma: *mut vm_area_struct;
     let mm: *mut mm_struct = (*current).mm;
-    let mut si_signo: libc::c_int;
-    let mut si_code: libc::c_int = SEGV_MAPERR;
+    let mut si_signo: kernel::ffi::c_int;
+    let mut si_code: kernel::ffi::c_int = SEGV_MAPERR;
     let mut fault: vm_fault_t;
     let fixup: *const exception_table_entry;
-    let mut flags: libc::c_uint = FAULT_FLAG_DEFAULT;
+    let mut flags: kernel::ffi::c_uint = FAULT_FLAG_DEFAULT;
 
     /*
      * If we're in an interrupt or have no user context,
@@ -125,32 +125,32 @@ unsafe fn do_page_fault(address: libc::c_ulong, cause: libc::c_long, regs: *mut 
             si_signo = SIGSEGV;
             si_code = SEGV_ACCERR;
         }
-        force_sig_fault(si_signo, si_code, address as *mut libc::c_void);
+        force_sig_fault(si_signo, si_code, address as *mut kernel::ffi::c_void);
         return;
     }
 }
 
 unsafe fn mmap_bad_area(
-    mm: *mut mm_struct, regs: *mut pt_regs, si_code: libc::c_int,
-    address: libc::c_ulong, fixup: &mut *const exception_table_entry,
+    mm: *mut mm_struct, regs: *mut pt_regs, si_code: kernel::ffi::c_int,
+    address: kernel::ffi::c_ulong, fixup: &mut *const exception_table_entry,
 ) {
     mmap_read_unlock(mm);
     mmap_bad_area_nosemaphore(regs, si_code, address, fixup);
 }
 
 unsafe fn mmap_bad_area_nosemaphore(
-    regs: *mut pt_regs, si_code: libc::c_int, address: libc::c_ulong,
+    regs: *mut pt_regs, si_code: kernel::ffi::c_int, address: kernel::ffi::c_ulong,
     fixup: &mut *const exception_table_entry,
 ) {
     if user_mode(regs) != 0 {
-        force_sig_fault(SIGSEGV, si_code, address as *mut libc::c_void);
+        force_sig_fault(SIGSEGV, si_code, address as *mut kernel::ffi::c_void);
         return;
     }
     goto_no_context(address, regs, fixup);
 }
 
 unsafe fn goto_no_context(
-    address: libc::c_ulong, regs: *mut pt_regs,
+    address: kernel::ffi::c_ulong, regs: *mut pt_regs,
     fixup: &mut *const exception_table_entry,
 ) {
     *fixup = search_exception_tables(pt_elr(regs));
@@ -164,17 +164,17 @@ unsafe fn goto_no_context(
 }
 
 pub unsafe fn read_protection_fault(regs: *mut pt_regs) {
-    let badvadr: libc::c_ulong = pt_badva(regs);
+    let badvadr: kernel::ffi::c_ulong = pt_badva(regs);
     do_page_fault(badvadr, FLT_LOAD, regs);
 }
 
 pub unsafe fn write_protection_fault(regs: *mut pt_regs) {
-    let badvadr: libc::c_ulong = pt_badva(regs);
+    let badvadr: kernel::ffi::c_ulong = pt_badva(regs);
     do_page_fault(badvadr, FLT_STORE, regs);
 }
 
 pub unsafe fn execute_protection_fault(regs: *mut pt_regs) {
-    let badvadr: libc::c_ulong = pt_badva(regs);
+    let badvadr: kernel::ffi::c_ulong = pt_badva(regs);
     do_page_fault(badvadr, FLT_IFETCH, regs);
 }
 

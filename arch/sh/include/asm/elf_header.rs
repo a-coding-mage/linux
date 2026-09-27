@@ -64,7 +64,7 @@ pub const R_SH_IMM_MEDLOW16_PCREL: u32 = 249;
 pub const R_SH_NUM: u32 = 256;
 
 /* ELF register definitions. */
-pub type elf_greg_t = libc::c_ulong;
+pub type elf_greg_t = kernel::ffi::c_ulong;
 pub const ELF_NGREG: usize = core::mem::size_of::<crate::pt_regs>() / core::mem::size_of::<elf_greg_t>();
 pub type elf_gregset_t = [elf_greg_t; ELF_NGREG];
 pub type elf_fpregset_t = crate::user_fpu_struct;
@@ -150,12 +150,12 @@ macro_rules! arch_dlinfo {
 }
 
 extern "C" {
-    pub fn arch_setup_additional_pages(bprm: *mut crate::linux_binprm, uses_interp: libc::c_int) -> libc::c_int;
-    pub static mut vdso_enabled: libc::c_uint;
+    pub fn arch_setup_additional_pages(bprm: *mut crate::linux_binprm, uses_interp: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub static mut vdso_enabled: kernel::ffi::c_uint;
     pub static mut __kernel_vsyscall: (); 
-    pub static mut l1i_cache_shape: libc::c_int;
-    pub static mut l1d_cache_shape: libc::c_int;
-    pub static mut l2_cache_shape: libc::c_int;
+    pub static mut l1i_cache_shape: kernel::ffi::c_int;
+    pub static mut l1d_cache_shape: kernel::ffi::c_int;
+    pub static mut l2_cache_shape: kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

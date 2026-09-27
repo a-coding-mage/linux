@@ -17,8 +17,8 @@ pub const JH71X0_CLK_FRAC_MAX: u64 = 25599;
 // Clock data.
 #[repr(C)]
 pub struct jh71x0_clk_data {
-    pub name: *const core::ffi::c_char,
-    pub flags: core::ffi::c_ulong,
+    pub name: *const kernel::ffi::c_char,
+    pub flags: kernel::ffi::c_ulong,
     pub max: u32,
     pub parents: [u8; 4],
 }
@@ -134,8 +134,8 @@ macro_rules! JH71X0__INV {
 #[repr(C)]
 pub struct jh71x0_clk {
     pub hw: clk_hw,
-    pub idx: core::ffi::c_uint,
-    pub max_div: core::ffi::c_uint,
+    pub idx: kernel::ffi::c_uint,
+    pub max_div: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -143,17 +143,17 @@ pub struct jh71x0_clk_priv {
     // Protect clk enable and set rate/parent from happening at the same time.
     pub rmw_lock: spinlock_t,
     pub dev: *mut device,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub original_clk: *mut clk,
     pub pll_clk_nb: notifier_block,
     pub pll: [*mut clk_hw; 3],
-    pub num_reg: core::ffi::c_uint,
+    pub num_reg: kernel::ffi::c_uint,
     pub reg: [jh71x0_clk; 0], // flexible array member; allocated with num_reg entries
 }
 
 unsafe extern "C" {
     pub fn starfive_jh71x0_clk_ops(max: u32) -> *const clk_ops;
-    pub fn jh71x0_clk_get(clkspec: *mut of_phandle_args, data: *mut core::ffi::c_void)
+    pub fn jh71x0_clk_get(clkspec: *mut of_phandle_args, data: *mut kernel::ffi::c_void)
         -> *mut clk_hw;
 }
 

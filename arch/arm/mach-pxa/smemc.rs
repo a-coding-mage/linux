@@ -9,30 +9,30 @@
 // linux/soc/pxa/smemc.h
 
 #[cfg(CONFIG_PM)]
-static mut MSC: [core::ffi::c_ulong; 2] = [0; 2];
+static mut MSC: [kernel::ffi::c_ulong; 2] = [0; 2];
 #[cfg(CONFIG_PM)]
-static mut SXCNFG: core::ffi::c_ulong = 0;
+static mut SXCNFG: kernel::ffi::c_ulong = 0;
 #[cfg(CONFIG_PM)]
-static mut MEMCLKCFG_SAVED: core::ffi::c_ulong = 0;
+static mut MEMCLKCFG_SAVED: kernel::ffi::c_ulong = 0;
 #[cfg(CONFIG_PM)]
-static mut CSADRCFG: [core::ffi::c_ulong; 4] = [0; 4];
+static mut CSADRCFG: [kernel::ffi::c_ulong; 4] = [0; 4];
 
 #[cfg(CONFIG_PM)]
-unsafe fn pxa3xx_smemc_suspend(_data: *mut core::ffi::c_void) -> i32 {
-    MSC[0] = __raw_readl(MSC0) as core::ffi::c_ulong;
-    MSC[1] = __raw_readl(MSC1) as core::ffi::c_ulong;
-    SXCNFG = __raw_readl(SXCNFG_REG) as core::ffi::c_ulong;
-    MEMCLKCFG_SAVED = __raw_readl(MEMCLKCFG) as core::ffi::c_ulong;
-    CSADRCFG[0] = __raw_readl(CSADRCFG0) as core::ffi::c_ulong;
-    CSADRCFG[1] = __raw_readl(CSADRCFG1) as core::ffi::c_ulong;
-    CSADRCFG[2] = __raw_readl(CSADRCFG2) as core::ffi::c_ulong;
-    CSADRCFG[3] = __raw_readl(CSADRCFG3) as core::ffi::c_ulong;
+unsafe fn pxa3xx_smemc_suspend(_data: *mut kernel::ffi::c_void) -> i32 {
+    MSC[0] = __raw_readl(MSC0) as kernel::ffi::c_ulong;
+    MSC[1] = __raw_readl(MSC1) as kernel::ffi::c_ulong;
+    SXCNFG = __raw_readl(SXCNFG_REG) as kernel::ffi::c_ulong;
+    MEMCLKCFG_SAVED = __raw_readl(MEMCLKCFG) as kernel::ffi::c_ulong;
+    CSADRCFG[0] = __raw_readl(CSADRCFG0) as kernel::ffi::c_ulong;
+    CSADRCFG[1] = __raw_readl(CSADRCFG1) as kernel::ffi::c_ulong;
+    CSADRCFG[2] = __raw_readl(CSADRCFG2) as kernel::ffi::c_ulong;
+    CSADRCFG[3] = __raw_readl(CSADRCFG3) as kernel::ffi::c_ulong;
 
     0
 }
 
 #[cfg(CONFIG_PM)]
-unsafe fn pxa3xx_smemc_resume(_data: *mut core::ffi::c_void) {
+unsafe fn pxa3xx_smemc_resume(_data: *mut kernel::ffi::c_void) {
     __raw_writel(MSC[0] as u32, MSC0);
     __raw_writel(MSC[1] as u32, MSC1);
     __raw_writel(SXCNFG as u32, SXCNFG_REG);

@@ -18,11 +18,11 @@ extern "C" {
 #[cfg(CONFIG_CPU_J2)]
 unsafe fn scan_cache(
     node: usize,
-    _uname: *const core::ffi::c_char,
+    _uname: *const kernel::ffi::c_char,
     _depth: i32,
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
 ) -> i32 {
-    if !of_flat_dt_is_compatible(node, b"jcore,cache\0".as_ptr() as *const core::ffi::c_char) {
+    if !of_flat_dt_is_compatible(node, b"jcore,cache\0".as_ptr() as *const kernel::ffi::c_char) {
         return 0;
     }
 

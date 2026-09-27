@@ -12,32 +12,32 @@
 // Declarations supplied by the Linux kernel headers are external dependencies.
 
 extern "C" {
-    static mut irq_stack: [*mut core::ffi::c_void; NR_CPUS];
+    static mut irq_stack: [*mut kernel::ffi::c_void; NR_CPUS];
     static mut irq_err_count: atomic_t;
 
-    fn printk(format: *const core::ffi::c_char, ...) -> core::ffi::c_int;
-    fn atomic_read(v: *const atomic_t) -> core::ffi::c_int;
+    fn printk(format: *const kernel::ffi::c_char, ...) -> kernel::ffi::c_int;
+    fn atomic_read(v: *const atomic_t) -> kernel::ffi::c_int;
     fn atomic_inc(v: *mut atomic_t);
-    fn seq_printf(p: *mut seq_file, format: *const core::ffi::c_char, ...);
-    fn get_order(size: usize) -> core::ffi::c_uint;
-    fn irq_set_noprobe(irq: core::ffi::c_uint);
-    fn clear_c0_status(mask: core::ffi::c_ulong);
+    fn seq_printf(p: *mut seq_file, format: *const kernel::ffi::c_char, ...);
+    fn get_order(size: usize) -> kernel::ffi::c_uint;
+    fn irq_set_noprobe(irq: kernel::ffi::c_uint);
+    fn clear_c0_status(mask: kernel::ffi::c_ulong);
     fn arch_init_irq();
-    fn __get_free_pages(gfp_mask: core::ffi::c_ulong, order: core::ffi::c_uint)
-        -> *mut core::ffi::c_void;
-    fn pr_debug(format: *const core::ffi::c_char, ...);
+    fn __get_free_pages(gfp_mask: kernel::ffi::c_ulong, order: kernel::ffi::c_uint)
+        -> *mut kernel::ffi::c_void;
+    fn pr_debug(format: *const kernel::ffi::c_char, ...);
     fn irq_enter();
-    fn generic_handle_irq(irq: core::ffi::c_uint);
+    fn generic_handle_irq(irq: kernel::ffi::c_uint);
     fn irq_exit();
     fn dump_stack();
-    fn generic_handle_domain_irq(domain: *mut irq_domain, hwirq: core::ffi::c_uint);
+    fn generic_handle_domain_irq(domain: *mut irq_domain, hwirq: kernel::ffi::c_uint);
 }
 
-pub unsafe fn ack_bad_irq(irq: core::ffi::c_uint) {
+pub unsafe fn ack_bad_irq(irq: kernel::ffi::c_uint) {
     printk(b"unexpected IRQ # %d\n\0".as_ptr() as *const _, irq);
 }
 
-pub unsafe fn arch_show_interrupts(p: *mut seq_file, prec: core::ffi::c_int) -> core::ffi::c_int {
+pub unsafe fn arch_show_interrupts(p: *mut seq_file, prec: kernel::ffi::c_int) -> kernel::ffi::c_int {
     seq_printf(
         p,
         b"%*s: %10u\n\0".as_ptr() as *const _,
@@ -53,12 +53,12 @@ pub unsafe fn spurious_interrupt() {
 }
 
 pub unsafe fn init_IRQ() {
-    let mut i: core::ffi::c_int;
-    let order: core::ffi::c_uint = get_order(IRQ_STACK_SIZE);
+    let mut i: kernel::ffi::c_int;
+    let order: kernel::ffi::c_uint = get_order(IRQ_STACK_SIZE);
 
     i = 0;
     while i < NR_IRQS {
-        irq_set_noprobe(i as core::ffi::c_uint);
+        irq_set_noprobe(i as kernel::ffi::c_uint);
         i += 1;
     }
 
@@ -71,7 +71,7 @@ pub unsafe fn init_IRQ() {
 
     // for_each_possible_cpu(i)
     for_each_possible_cpu!(i, {
-        let s: *mut core::ffi::c_void = __get_free_pages(GFP_KERNEL, order);
+        let s: *mut kernel::ffi::c_void = __get_free_pages(GFP_KERNEL, order);
 
         irq_stack[i as usize] = s;
         pr_debug(
@@ -105,7 +105,7 @@ pub unsafe fn check_stack_overflow() {
 
 // #else: static inline void check_stack_overflow(void) {}
 
-pub unsafe fn do_IRQ(irq: core::ffi::c_uint) {
+pub unsafe fn do_IRQ(irq: kernel::ffi::c_uint) {
     irq_enter();
     check_stack_overflow();
     generic_handle_irq(irq);
@@ -113,7 +113,7 @@ pub unsafe fn do_IRQ(irq: core::ffi::c_uint) {
 }
 
 // #ifdef CONFIG_IRQ_DOMAIN
-pub unsafe fn do_domain_IRQ(domain: *mut irq_domain, hwirq: core::ffi::c_uint) {
+pub unsafe fn do_domain_IRQ(domain: *mut irq_domain, hwirq: kernel::ffi::c_uint) {
     irq_enter();
     check_stack_overflow();
     generic_handle_domain_irq(domain, hwirq);

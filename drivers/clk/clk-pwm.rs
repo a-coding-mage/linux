@@ -25,19 +25,19 @@ unsafe extern "C" {
     fn pwm_apply_might_sleep(pwm: *mut pwm_device, state: *const pwm_state) -> i32;
     fn pwm_disable(pwm: *mut pwm_device);
     fn pwm_get_state_hw(pwm: *mut pwm_device, state: *mut pwm_state) -> i32;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: gfp_t) -> *mut core::ffi::c_void;
-    fn devm_pwm_get(dev: *mut device, con_id: *const core::ffi::c_char) -> *mut pwm_device;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: gfp_t) -> *mut kernel::ffi::c_void;
+    fn devm_pwm_get(dev: *mut device, con_id: *const kernel::ffi::c_char) -> *mut pwm_device;
     fn pwm_get_args(pwm: *mut pwm_device, args: *mut pwm_args);
-    fn of_property_read_u32(node: *mut device_node, propname: *const core::ffi::c_char, out: *mut u32) -> i32;
+    fn of_property_read_u32(node: *mut device_node, propname: *const kernel::ffi::c_char, out: *mut u32) -> i32;
     fn div64_u64(dividend: u64, divisor: u64) -> u64;
     fn pwm_init_state(pwm: *mut pwm_device, state: *mut pwm_state);
     fn pwm_set_relative_duty_cycle(state: *mut pwm_state, duty_cycle: u32, scale: u32);
     fn pwm_might_sleep(pwm: *mut pwm_device) -> bool;
     fn devm_clk_hw_register(dev: *mut device, hw: *mut clk_hw) -> i32;
-    fn of_clk_add_hw_provider(node: *mut device_node, get: *const core::ffi::c_void, data: *mut clk_hw) -> i32;
+    fn of_clk_add_hw_provider(node: *mut device_node, get: *const kernel::ffi::c_void, data: *mut clk_hw) -> i32;
     fn of_clk_del_provider(node: *mut device_node);
-    fn of_property_read_string(node: *mut device_node, propname: *const core::ffi::c_char, out: *mut *const core::ffi::c_char) -> i32;
-    fn of_clk_hw_simple_get(_: *mut device_node, _: *const core::ffi::c_void) -> *mut clk_hw;
+    fn of_property_read_string(node: *mut device_node, propname: *const kernel::ffi::c_char, out: *mut *const kernel::ffi::c_char) -> i32;
+    fn of_clk_hw_simple_get(_: *mut device_node, _: *const kernel::ffi::c_void) -> *mut clk_hw;
 }
 
 unsafe fn clk_pwm_enable(hw: *mut clk_hw) -> i32 {

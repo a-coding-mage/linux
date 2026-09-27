@@ -84,7 +84,7 @@ extern "C" {
 pub struct ila_net_xlat {
     pub rhash_table: rhashtable,
     pub locks: *mut spinlock_t, /* Bucket locks for entry manipulation */
-    pub locks_mask: libc::c_uint,
+    pub locks_mask: core::ffi::c_uint,
     pub hooks_registered: bool,
 }
 
@@ -94,19 +94,19 @@ pub struct ila_net {
 }
 
 extern "C" {
-    pub fn ila_lwt_init() -> libc::c_int;
+    pub fn ila_lwt_init() -> core::ffi::c_int;
     pub fn ila_lwt_fini();
-    pub fn ila_xlat_init_net(net: *mut net) -> libc::c_int;
+    pub fn ila_xlat_init_net(net: *mut net) -> core::ffi::c_int;
     pub fn ila_xlat_pre_exit_net(net: *mut net);
     pub fn ila_xlat_exit_net(net: *mut net);
-    pub fn ila_xlat_nl_cmd_add_mapping(skb: *mut sk_buff, info: *mut genl_info) -> libc::c_int;
-    pub fn ila_xlat_nl_cmd_del_mapping(skb: *mut sk_buff, info: *mut genl_info) -> libc::c_int;
-    pub fn ila_xlat_nl_cmd_get_mapping(skb: *mut sk_buff, info: *mut genl_info) -> libc::c_int;
-    pub fn ila_xlat_nl_cmd_flush(skb: *mut sk_buff, info: *mut genl_info) -> libc::c_int;
-    pub fn ila_xlat_nl_dump_start(cb: *mut netlink_callback) -> libc::c_int;
-    pub fn ila_xlat_nl_dump_done(cb: *mut netlink_callback) -> libc::c_int;
-    pub fn ila_xlat_nl_dump(skb: *mut sk_buff, cb: *mut netlink_callback) -> libc::c_int;
-    pub static mut ila_net_id: libc::c_uint;
+    pub fn ila_xlat_nl_cmd_add_mapping(skb: *mut sk_buff, info: *mut genl_info) -> core::ffi::c_int;
+    pub fn ila_xlat_nl_cmd_del_mapping(skb: *mut sk_buff, info: *mut genl_info) -> core::ffi::c_int;
+    pub fn ila_xlat_nl_cmd_get_mapping(skb: *mut sk_buff, info: *mut genl_info) -> core::ffi::c_int;
+    pub fn ila_xlat_nl_cmd_flush(skb: *mut sk_buff, info: *mut genl_info) -> core::ffi::c_int;
+    pub fn ila_xlat_nl_dump_start(cb: *mut netlink_callback) -> core::ffi::c_int;
+    pub fn ila_xlat_nl_dump_done(cb: *mut netlink_callback) -> core::ffi::c_int;
+    pub fn ila_xlat_nl_dump(skb: *mut sk_buff, cb: *mut netlink_callback) -> core::ffi::c_int;
+    pub static mut ila_net_id: core::ffi::c_uint;
     pub static mut ila_nl_family: genl_family;
 }
 

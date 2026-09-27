@@ -17,7 +17,7 @@ extern "C" {
     fn need_resched() -> bool;
     fn read_c0_status() -> usize;
     fn raw_local_irq_disable();
-    fn printk(message: *const core::ffi::c_char) -> core::ffi::c_int;
+    fn printk(message: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
     fn current_cpu_type() -> i32;
     fn read_c0_config7() -> usize;
     static mut current_cpu_data: CpuinfoMips;
@@ -72,7 +72,7 @@ unsafe extern "C" fn au1k_wait() {
     raw_local_irq_disable();
 }
 
-pub unsafe extern "C" fn wait_disable(_s: *mut core::ffi::c_char) -> i32 {
+pub unsafe extern "C" fn wait_disable(_s: *mut kernel::ffi::c_char) -> i32 {
     nowait = 1;
     1
 }

@@ -13,14 +13,14 @@
 
 #[repr(C)]
 pub struct usercopy_test_priv {
-    pub kmem: *mut core::ffi::c_char,
-    pub umem: *mut core::ffi::c_char,
+    pub kmem: *mut kernel::ffi::c_char,
+    pub umem: *mut kernel::ffi::c_char,
     pub size: usize,
 }
 
 #[repr(C)]
 pub struct kunit {
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -30,24 +30,24 @@ pub struct kunit_case {
 
 #[repr(C)]
 pub struct kunit_suite {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub init: Option<unsafe extern "C" fn(*mut kunit) -> i32>,
     pub test_cases: *mut kunit_case,
 }
 
 extern "C" {
-    fn memchr_inv(s: *const core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void;
-    fn memset(s: *mut core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void;
-    fn memcpy(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void;
-    fn copy_to_user(to: *mut core::ffi::c_char, from: *const core::ffi::c_char, n: usize) -> usize;
-    fn copy_from_user(to: *mut core::ffi::c_char, from: *const core::ffi::c_char, n: usize) -> usize;
-    fn check_zeroed_user(from: *const core::ffi::c_char, n: usize) -> i32;
-    fn copy_struct_from_user(to: *mut core::ffi::c_char, ksize: usize, from: *const core::ffi::c_char, usize_: usize) -> i32;
-    fn clear_user(to: *mut core::ffi::c_char, n: usize) -> usize;
-    fn kunit_kmalloc(test: *mut kunit, size: usize, flags: u32) -> *mut core::ffi::c_char;
+    fn memchr_inv(s: *const kernel::ffi::c_void, c: i32, n: usize) -> *mut kernel::ffi::c_void;
+    fn memset(s: *mut kernel::ffi::c_void, c: i32, n: usize) -> *mut kernel::ffi::c_void;
+    fn memcpy(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize) -> *mut kernel::ffi::c_void;
+    fn copy_to_user(to: *mut kernel::ffi::c_char, from: *const kernel::ffi::c_char, n: usize) -> usize;
+    fn copy_from_user(to: *mut kernel::ffi::c_char, from: *const kernel::ffi::c_char, n: usize) -> usize;
+    fn check_zeroed_user(from: *const kernel::ffi::c_char, n: usize) -> i32;
+    fn copy_struct_from_user(to: *mut kernel::ffi::c_char, ksize: usize, from: *const kernel::ffi::c_char, usize_: usize) -> i32;
+    fn clear_user(to: *mut kernel::ffi::c_char, n: usize) -> usize;
+    fn kunit_kmalloc(test: *mut kunit, size: usize, flags: u32) -> *mut kernel::ffi::c_char;
     fn kunit_kzalloc(test: *mut kunit, size: usize, flags: u32) -> *mut usercopy_test_priv;
-    fn kunit_vm_mmap(test: *mut kunit, file: *mut core::ffi::c_void, addr: usize, len: usize, prot: u32, flags: u32, pgoff: usize) -> usize;
-    fn kunit_skip(test: *mut kunit, reason: *const core::ffi::c_char);
+    fn kunit_vm_mmap(test: *mut kunit, file: *mut kernel::ffi::c_void, addr: usize, len: usize, prot: u32, flags: u32, pgoff: usize) -> usize;
+    fn kunit_skip(test: *mut kunit, reason: *const kernel::ffi::c_char);
     fn kunit_test_suites(suite: *mut kunit_suite);
 }
 
@@ -61,7 +61,7 @@ const MAP_PRIVATE: u32 = 2;
 const TASK_SIZE: usize = usize::MAX;
 const E2BIG: i32 = 7;
 
-unsafe fn is_zeroed(from: *mut core::ffi::c_void, size: usize) -> bool {
+unsafe fn is_zeroed(from: *mut kernel::ffi::c_void, size: usize) -> bool {
     memchr_inv(from, 0, size).is_null()
 }
 
@@ -173,7 +173,7 @@ unsafe extern "C" fn usercopy_test_init(test: *mut kunit) -> i32 {
         PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, 0);
     assert_ne!(user_addr, 0);
     assert!(user_addr < TASK_SIZE);
-    (*priv_).umem = user_addr as *mut core::ffi::c_char;
+    (*priv_).umem = user_addr as *mut kernel::ffi::c_char;
     0
 }
 
@@ -186,7 +186,7 @@ static mut usercopy_test_cases: [kunit_case; 5] = [
 ];
 
 static mut usercopy_test_suite: kunit_suite = kunit_suite {
-    name: b"usercopy\0".as_ptr() as *const core::ffi::c_char,
+    name: b"usercopy\0".as_ptr() as *const kernel::ffi::c_char,
     init: Some(usercopy_test_init),
     test_cases: unsafe { usercopy_test_cases.as_mut_ptr() },
 };

@@ -3,7 +3,7 @@
 // Dependency: `struct device_node` is supplied by the Linux device-tree API.
 // The C header guard `_PSERIES_OF_HELPERS_H` is omitted as Rust has module scoping.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct device_node {

@@ -21,21 +21,21 @@ pub static mut orangefs_stats: orangefs_stats = orangefs_stats::default();
 
 /* the size of the hash tables for ops in progress */
 #[no_mangle]
-pub static mut hash_table_size: ::core::ffi::c_int = 509;
+pub static mut hash_table_size: ::kernel::ffi::c_int = 509;
 
-static mut module_parm_debug_mask: ::core::ffi::c_ulong = 0;
+static mut module_parm_debug_mask: ::kernel::ffi::c_ulong = 0;
 #[no_mangle]
 pub static mut orangefs_gossip_debug_mask: u64 = 0;
 #[no_mangle]
-pub static mut op_timeout_secs: ::core::ffi::c_int = ORANGEFS_DEFAULT_OP_TIMEOUT_SECS;
+pub static mut op_timeout_secs: ::kernel::ffi::c_int = ORANGEFS_DEFAULT_OP_TIMEOUT_SECS;
 #[no_mangle]
-pub static mut slot_timeout_secs: ::core::ffi::c_int = ORANGEFS_DEFAULT_SLOT_TIMEOUT_SECS;
+pub static mut slot_timeout_secs: ::kernel::ffi::c_int = ORANGEFS_DEFAULT_SLOT_TIMEOUT_SECS;
 #[no_mangle]
-pub static mut orangefs_cache_timeout_msecs: ::core::ffi::c_int = 500;
+pub static mut orangefs_cache_timeout_msecs: ::kernel::ffi::c_int = 500;
 #[no_mangle]
-pub static mut orangefs_dcache_timeout_msecs: ::core::ffi::c_int = 50;
+pub static mut orangefs_dcache_timeout_msecs: ::kernel::ffi::c_int = 50;
 #[no_mangle]
-pub static mut orangefs_getattr_timeout_msecs: ::core::ffi::c_int = 50;
+pub static mut orangefs_getattr_timeout_msecs: ::kernel::ffi::c_int = 50;
 
 // MODULE_LICENSE("GPL");
 // MODULE_AUTHOR("ORANGEFS Development Team");
@@ -75,8 +75,8 @@ static mut orangefs_request_list_lock: spinlock_t = DEFINE_SPINLOCK!();
 /* used for incoming request notification */
 static mut orangefs_request_list_waitq: wait_queue_head = DECLARE_WAIT_QUEUE_HEAD!();
 
-unsafe fn orangefs_init() -> ::core::ffi::c_int {
-    let mut ret: ::core::ffi::c_int;
+unsafe fn orangefs_init() -> ::kernel::ffi::c_int {
+    let mut ret: ::kernel::ffi::c_int;
     let mut i: u32 = 0;
 
     if op_timeout_secs < 0 { op_timeout_secs = 0; }

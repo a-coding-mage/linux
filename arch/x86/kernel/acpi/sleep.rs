@@ -8,10 +8,10 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-pub static mut acpi_realmode_flags: ::core::ffi::c_ulong = 0;
+pub static mut acpi_realmode_flags: ::kernel::ffi::c_ulong = 0;
 
 #[cfg(all(CONFIG_SMP, CONFIG_64BIT))]
-static mut temp_stack: [::core::ffi::c_char; 4096] = [0; 4096];
+static mut temp_stack: [::kernel::ffi::c_char; 4096] = [0; 4096];
 
 /**
  * acpi_get_wakeup_address - provide physical address for S3 wakeup
@@ -19,8 +19,8 @@ static mut temp_stack: [::core::ffi::c_char; 4096] = [0; 4096];
  * Returns the physical address where the kernel should be resumed after the
  * system awakes from S3, e.g. for programming into the firmware waking vector.
  */
-pub unsafe extern "C" fn acpi_get_wakeup_address() -> ::core::ffi::c_ulong {
-	return (real_mode_header.wakeup_start as ::core::ffi::c_ulong);
+pub unsafe extern "C" fn acpi_get_wakeup_address() -> ::kernel::ffi::c_ulong {
+	return (real_mode_header.wakeup_start as ::kernel::ffi::c_ulong);
 }
 
 /**
@@ -41,7 +41,7 @@ pub unsafe extern "C" fn x86_acpi_enter_sleep_state(
  * Create an identity mapped page table and copy the wakeup routine to
  * low memory.
  */
-pub unsafe extern "C" fn x86_acpi_suspend_lowlevel() -> ::core::ffi::c_int {
+pub unsafe extern "C" fn x86_acpi_suspend_lowlevel() -> ::kernel::ffi::c_int {
 	let header = &mut *((__va(real_mode_header.wakeup_header)) as *mut wakeup_header);
 	let mut val: msr = ::core::mem::zeroed();
 
@@ -98,13 +98,13 @@ pub unsafe extern "C" fn x86_acpi_suspend_lowlevel() -> ::core::ffi::c_int {
 	{
 #[cfg(CONFIG_SMP)]
 		{
-			current.thread.sp = temp_stack.as_mut_ptr() as ::core::ffi::c_ulong
-				+ ::core::mem::size_of_val(&temp_stack) as ::core::ffi::c_ulong;
+			current.thread.sp = temp_stack.as_mut_ptr() as ::kernel::ffi::c_ulong
+				+ ::core::mem::size_of_val(&temp_stack) as ::kernel::ffi::c_ulong;
 			if (smpboot_control & STARTUP_PARALLEL_MASK) == 0 {
 				smpboot_control = smp_processor_id();
 			}
 		}
-		initial_code = wakeup_long64 as ::core::ffi::c_ulong;
+		initial_code = wakeup_long64 as ::kernel::ffi::c_ulong;
 		saved_magic = 0x123456789abcdef0u64 as _;
 	}
 
@@ -118,7 +118,7 @@ pub unsafe extern "C" fn x86_acpi_suspend_lowlevel() -> ::core::ffi::c_int {
 	0
 }
 
-unsafe extern "C" fn acpi_sleep_setup(mut str_: *mut ::core::ffi::c_char) -> ::core::ffi::c_int {
+unsafe extern "C" fn acpi_sleep_setup(mut str_: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int {
 	while !str_.is_null() && *str_ != 0 {
 		if strncmp(str_, c"s3_bios".as_ptr(), 7) == 0 { acpi_realmode_flags |= 1; }
 		if strncmp(str_, c"s3_mode".as_ptr(), 7) == 0 { acpi_realmode_flags |= 2; }
@@ -140,7 +140,7 @@ unsafe extern "C" fn acpi_sleep_setup(mut str_: *mut ::core::ffi::c_char) -> ::c
 // __setup("acpi_sleep=", acpi_sleep_setup);
 
 #[cfg(all(CONFIG_HIBERNATION, CONFIG_HYPERVISOR_GUEST))]
-unsafe extern "C" fn init_s4_sigcheck() -> ::core::ffi::c_int {
+unsafe extern "C" fn init_s4_sigcheck() -> ::kernel::ffi::c_int {
 	/*
 	 * If running on a hypervisor, honour the ACPI specification
 	 * by default and trigger a clean reboot when the hardware

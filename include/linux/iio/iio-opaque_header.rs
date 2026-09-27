@@ -40,8 +40,8 @@
 #[repr(C)]
 pub struct iio_dev_opaque {
     pub indio_dev: iio_dev,
-    pub currentmode: core::ffi::c_int,
-    pub id: core::ffi::c_int,
+    pub currentmode: kernel::ffi::c_int,
+    pub id: kernel::ffi::c_int,
     pub driver_module: *mut module,
     pub mlock: mutex,
     pub mlock_key: lock_class_key,
@@ -50,30 +50,30 @@ pub struct iio_dev_opaque {
     pub trig_readonly: bool,
     pub event_interface: *mut iio_event_interface,
     pub attached_buffers: *mut *mut iio_buffer,
-    pub attached_buffers_cnt: core::ffi::c_uint,
+    pub attached_buffers_cnt: kernel::ffi::c_uint,
     pub buffer_ioctl_handler: *mut iio_ioctl_handler,
     pub buffer_list: list_head,
     pub channel_attr_list: list_head,
     pub chan_attr_group: attribute_group,
     pub ioctl_handlers: list_head,
     pub groups: *const *const attribute_group,
-    pub groupcounter: core::ffi::c_int,
+    pub groupcounter: kernel::ffi::c_int,
     pub legacy_scan_el_group: attribute_group,
     pub legacy_buffer_group: attribute_group,
-    pub bounce_buffer: *mut core::ffi::c_void,
+    pub bounce_buffer: *mut kernel::ffi::c_void,
     pub bounce_buffer_size: usize,
-    pub scan_index_timestamp: core::ffi::c_uint,
+    pub scan_index_timestamp: kernel::ffi::c_uint,
     pub clock_id: clockid_t,
     pub chrdev: cdev,
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     #[cfg(CONFIG_DEBUG_FS)]
     pub debugfs_dentry: *mut dentry,
     #[cfg(CONFIG_DEBUG_FS)]
-    pub cached_reg_addr: core::ffi::c_uint,
+    pub cached_reg_addr: kernel::ffi::c_uint,
     #[cfg(CONFIG_DEBUG_FS)]
-    pub read_buf: [core::ffi::c_char; 20],
+    pub read_buf: [kernel::ffi::c_char; 20],
     #[cfg(CONFIG_DEBUG_FS)]
-    pub read_buf_len: core::ffi::c_uint,
+    pub read_buf_len: kernel::ffi::c_uint,
 }
 
 macro_rules! to_iio_dev_opaque {

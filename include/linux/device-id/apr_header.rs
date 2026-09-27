@@ -8,7 +8,7 @@ pub const APR_MODULE_PREFIX: &str = "apr:";
 
 #[repr(C)]
 pub struct apr_device_id {
-    pub name: [core::ffi::c_char; APR_NAME_SIZE],
+    pub name: [kernel::ffi::c_char; APR_NAME_SIZE],
     pub domain_id: u32,
     pub svc_id: u32,
     pub svc_version: u32,

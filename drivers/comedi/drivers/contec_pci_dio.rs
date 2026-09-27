@@ -28,8 +28,8 @@ unsafe fn contec_do_insn_bits(
     dev: *mut comedi_device,
     s: *mut comedi_subdevice,
     insn: *mut comedi_insn,
-    data: *mut ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    data: *mut ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     if comedi_dio_update_state(s, data) != 0 {
         outw((*s).state, (*dev).iobase.wrapping_add(PIO1616L_DO_REG));
     }
@@ -43,8 +43,8 @@ unsafe fn contec_di_insn_bits(
     dev: *mut comedi_device,
     _s: *mut comedi_subdevice,
     insn: *mut comedi_insn,
-    data: *mut ::core::ffi::c_uint,
-) -> ::core::ffi::c_int {
+    data: *mut ::kernel::ffi::c_uint,
+) -> ::kernel::ffi::c_int {
     *data.add(1) = inw((*dev).iobase.wrapping_add(PIO1616L_DI_REG));
 
     (*insn).n
@@ -52,11 +52,11 @@ unsafe fn contec_di_insn_bits(
 
 unsafe fn contec_auto_attach(
     dev: *mut comedi_device,
-    _context_unused: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    _context_unused: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     let pcidev = comedi_to_pci_dev(dev);
     let mut s: *mut comedi_subdevice;
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     ret = comedi_pci_enable(dev);
     if ret != 0 {
@@ -98,7 +98,7 @@ static mut contec_pci_dio_driver: comedi_driver = comedi_driver {
 unsafe fn contec_pci_dio_pci_probe(
     dev: *mut pci_dev,
     id: *const pci_device_id,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     comedi_pci_auto_config(dev, &mut contec_pci_dio_driver, (*id).driver_data)
 }
 

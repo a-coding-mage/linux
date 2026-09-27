@@ -1,14 +1,14 @@
 #[repr(C)]
 pub struct soft_mask_table_entry {
-    pub start: ::core::ffi::c_ulong,
-    pub end: ::core::ffi::c_ulong,
+    pub start: ::kernel::ffi::c_ulong,
+    pub end: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct restart_table_entry {
-    pub start: ::core::ffi::c_ulong,
-    pub end: ::core::ffi::c_ulong,
-    pub fixup: ::core::ffi::c_ulong,
+    pub start: ::kernel::ffi::c_ulong,
+    pub end: ::kernel::ffi::c_ulong,
+    pub fixup: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
@@ -20,7 +20,7 @@ extern "C" {
 }
 
 /* Given an address, look for it in the soft mask table */
-pub unsafe fn search_kernel_soft_mask_table(addr: ::core::ffi::c_ulong) -> bool {
+pub unsafe fn search_kernel_soft_mask_table(addr: ::kernel::ffi::c_ulong) -> bool {
     let mut smte = __start___soft_mask_table.as_mut_ptr();
     let stop = __stop___soft_mask_table.as_mut_ptr();
 
@@ -39,7 +39,7 @@ pub unsafe fn search_kernel_soft_mask_table(addr: ::core::ffi::c_ulong) -> bool 
 // NOKPROBE_SYMBOL(search_kernel_soft_mask_table);
 
 /* Given an address, look for it in the kernel exception table */
-pub unsafe fn search_kernel_restart_table(addr: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub unsafe fn search_kernel_restart_table(addr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     let mut rte = __start___restart_table.as_mut_ptr();
     let stop = __stop___restart_table.as_mut_ptr();
 

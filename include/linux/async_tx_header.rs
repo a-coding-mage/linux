@@ -28,8 +28,8 @@ pub struct async_submit_ctl {
     pub flags: async_tx_flags,
     pub depend_tx: *mut dma_async_tx_descriptor,
     pub cb_fn: dma_async_tx_callback,
-    pub cb_param: *mut core::ffi::c_void,
-    pub scribble: *mut core::ffi::c_void,
+    pub cb_param: *mut kernel::ffi::c_void,
+    pub scribble: *mut kernel::ffi::c_void,
 }
 
 #[cfg(all(CONFIG_DMA_ENGINE, not(CONFIG_ASYNC_TX_CHANNEL_SWITCH)))]
@@ -97,7 +97,7 @@ pub unsafe fn async_tx_sync_epilog(submit: *mut async_submit_ctl) {
 
 #[repr(C)]
 pub union addr_conv_t {
-    pub addr: libc::c_ulong,
+    pub addr: kernel::ffi::c_ulong,
     pub page: *mut page,
     pub dma: dma_addr_t,
 }
@@ -108,7 +108,7 @@ pub unsafe fn init_async_submit(
     flags: async_tx_flags,
     tx: *mut dma_async_tx_descriptor,
     cb_fn: dma_async_tx_callback,
-    cb_param: *mut core::ffi::c_void,
+    cb_param: *mut kernel::ffi::c_void,
     scribble: *mut addr_conv_t,
 ) {
     (*args).flags = flags;

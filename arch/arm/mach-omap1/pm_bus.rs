@@ -26,7 +26,7 @@ pub struct dev_pm_domain {
 #[repr(C)]
 pub struct pm_clk_notifier_block {
     pub pm_domain: *mut dev_pm_domain,
-    pub con_ids: [*const core::ffi::c_char; 3],
+    pub con_ids: [*const kernel::ffi::c_char; 3],
 }
 
 #[repr(C)]
@@ -57,8 +57,8 @@ static mut default_pm_domain: dev_pm_domain = dev_pm_domain {
 static mut platform_bus_notifier: pm_clk_notifier_block = pm_clk_notifier_block {
     pm_domain: core::ptr::addr_of_mut!(default_pm_domain),
     con_ids: [
-        b"ick\0".as_ptr() as *const core::ffi::c_char,
-        b"fck\0".as_ptr() as *const core::ffi::c_char,
+        b"ick\0".as_ptr() as *const kernel::ffi::c_char,
+        b"fck\0".as_ptr() as *const kernel::ffi::c_char,
         core::ptr::null(),
     ],
 };

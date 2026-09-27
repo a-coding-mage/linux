@@ -17,9 +17,9 @@ pub struct xilinx_fpga_core {
     pub dev: *mut device,
     pub write: Option<unsafe extern "C" fn(
         core: *mut xilinx_fpga_core,
-        buf: *const core::ffi::c_char,
+        buf: *const kernel::ffi::c_char,
         count: usize,
-    ) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
     /* private: handled by xilinx-core */
     prog_b: *mut gpio_desc,
     init_b: *mut gpio_desc,
@@ -27,7 +27,7 @@ pub struct xilinx_fpga_core {
 }
 
 unsafe extern "C" {
-    pub fn xilinx_core_probe(core: *mut xilinx_fpga_core) -> core::ffi::c_int;
+    pub fn xilinx_core_probe(core: *mut xilinx_fpga_core) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

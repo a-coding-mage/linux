@@ -50,7 +50,7 @@ pub union coresight_dev_subtype {
 pub struct coresight_platform_data { pub nr_inconns: i32, pub nr_outconns: i32, pub out_conns: *mut *mut coresight_connection, pub in_conns: *mut *mut coresight_connection }
 #[repr(C)]
 pub union csdev_access_data {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub callbacks: csdev_access_callbacks,
 }
 #[repr(C)]
@@ -58,24 +58,24 @@ pub struct csdev_access_callbacks { pub read: Option<unsafe extern "C" fn(u32, b
 #[repr(C)]
 pub struct csdev_access { pub io_mem: bool, pub data: csdev_access_data }
 #[repr(C)]
-pub struct coresight_desc { pub type_: coresight_dev_type, pub subtype: coresight_dev_subtype, pub ops: *const coresight_ops, pub pdata: *mut coresight_platform_data, pub dev: *mut device, pub groups: *const *const attribute_group, pub name: *const core::ffi::c_char, pub access: csdev_access, pub flags: u32, pub cpu: i32 }
+pub struct coresight_desc { pub type_: coresight_dev_type, pub subtype: coresight_dev_subtype, pub ops: *const coresight_ops, pub pdata: *mut coresight_platform_data, pub dev: *mut device, pub groups: *const *const attribute_group, pub name: *const kernel::ffi::c_char, pub access: csdev_access, pub flags: u32, pub cpu: i32 }
 #[repr(C)]
 pub struct coresight_connection { pub src_port: i32, pub dest_port: i32, pub dest_fwnode: *mut fwnode_handle, pub dest_dev: *mut coresight_device, pub link: *mut coresight_sysfs_link, pub src_dev: *mut coresight_device, pub filter_src_fwnode: *mut fwnode_handle, pub filter_src_dev: *mut coresight_device, pub src_refcnt: i32, pub dest_refcnt: i32 }
 #[repr(C)]
-pub struct coresight_sysfs_link { pub orig: *mut coresight_device, pub orig_name: *const core::ffi::c_char, pub target: *mut coresight_device, pub target_name: *const core::ffi::c_char }
+pub struct coresight_sysfs_link { pub orig: *mut coresight_device, pub orig_name: *const kernel::ffi::c_char, pub target: *mut coresight_device, pub target_name: *const kernel::ffi::c_char }
 #[repr(C)]
 pub struct coresight_trace_id_map { pub used_ids: [u8; 16], pub cpu_map: *mut atomic_t, pub perf_cs_etm_session_active: atomic_t, pub lock: raw_spinlock_t }
 #[repr(C)]
-pub struct coresight_device { pub pdata: *mut coresight_platform_data, pub type_: coresight_dev_type, pub subtype: coresight_dev_subtype, pub ops: *const coresight_ops, pub access: csdev_access, pub dev: device, pub path: *mut coresight_path, pub mode: atomic_t, pub refcnt: i32, pub cpu: i32, pub orphan: bool, pub sysfs_sink_activated: bool, pub ea: *mut dev_ext_attribute, pub def_sink: *mut coresight_device, pub perf_sink_id_map: coresight_trace_id_map, pub nr_links: i32, pub has_conns_grp: bool, pub feature_csdev_list: list_head, pub config_csdev_list: list_head, pub cscfg_csdev_lock: raw_spinlock_t, pub active_cscfg_ctxt: *mut core::ffi::c_void }
+pub struct coresight_device { pub pdata: *mut coresight_platform_data, pub type_: coresight_dev_type, pub subtype: coresight_dev_subtype, pub ops: *const coresight_ops, pub access: csdev_access, pub dev: device, pub path: *mut coresight_path, pub mode: atomic_t, pub refcnt: i32, pub cpu: i32, pub orphan: bool, pub sysfs_sink_activated: bool, pub ea: *mut dev_ext_attribute, pub def_sink: *mut coresight_device, pub perf_sink_id_map: coresight_trace_id_map, pub nr_links: i32, pub has_conns_grp: bool, pub feature_csdev_list: list_head, pub config_csdev_list: list_head, pub cscfg_csdev_lock: raw_spinlock_t, pub active_cscfg_ctxt: *mut kernel::ffi::c_void }
 #[repr(C)]
-pub struct coresight_dev_list { pub node: list_head, pub nr_idx: i32, pub pfx: *mut core::ffi::c_char, pub fwnode_list: *mut *mut fwnode_handle }
+pub struct coresight_dev_list { pub node: list_head, pub nr_idx: i32, pub pfx: *mut kernel::ffi::c_char, pub fwnode_list: *mut *mut fwnode_handle }
 #[repr(C)]
 pub struct coresight_path { pub path_list: list_head, pub trace_id: u8, pub handle: *mut perf_output_handle }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub enum cs_mode { CS_MODE_DISABLED = 0, CS_MODE_SYSFS = 1, CS_MODE_PERF = 2 }
 
-#[repr(C)] pub struct coresight_ops_sink { pub enable: Option<unsafe extern "C" fn(*mut coresight_device, cs_mode, *mut coresight_path) -> i32>, pub disable: Option<unsafe extern "C" fn(*mut coresight_device)>, pub alloc_buffer: Option<unsafe extern "C" fn(*mut coresight_device, *mut perf_event, *mut *mut core::ffi::c_void, i32, bool) -> *mut core::ffi::c_void>, pub free_buffer: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>, pub update_buffer: Option<unsafe extern "C" fn(*mut coresight_device, *mut perf_output_handle, *mut core::ffi::c_void) -> usize> }
+#[repr(C)] pub struct coresight_ops_sink { pub enable: Option<unsafe extern "C" fn(*mut coresight_device, cs_mode, *mut coresight_path) -> i32>, pub disable: Option<unsafe extern "C" fn(*mut coresight_device)>, pub alloc_buffer: Option<unsafe extern "C" fn(*mut coresight_device, *mut perf_event, *mut *mut kernel::ffi::c_void, i32, bool) -> *mut kernel::ffi::c_void>, pub free_buffer: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>, pub update_buffer: Option<unsafe extern "C" fn(*mut coresight_device, *mut perf_output_handle, *mut kernel::ffi::c_void) -> usize> }
 #[repr(C)] pub struct coresight_ops_link { pub enable: Option<unsafe extern "C" fn(*mut coresight_device, *mut coresight_connection, *mut coresight_connection) -> i32>, pub disable: Option<unsafe extern "C" fn(*mut coresight_device, *mut coresight_connection, *mut coresight_connection)> }
 #[repr(C)] pub struct coresight_ops_source { pub enable: Option<unsafe extern "C" fn(*mut coresight_device, *mut perf_event, cs_mode, *mut coresight_path) -> i32>, pub disable: Option<unsafe extern "C" fn(*mut coresight_device, *mut perf_event)>, pub resume_perf: Option<unsafe extern "C" fn(*mut coresight_device) -> i32>, pub pause_perf: Option<unsafe extern "C" fn(*mut coresight_device)> }
 #[repr(C)] pub struct coresight_ops_helper { pub enable: Option<unsafe extern "C" fn(*mut coresight_device, cs_mode, *mut coresight_path) -> i32>, pub disable: Option<unsafe extern "C" fn(*mut coresight_device, *mut coresight_path) -> i32> }
@@ -115,7 +115,7 @@ extern "C" {
     pub fn coresight_clear_self_claim_tag_unlocked(csa: *mut csdev_access);
     pub fn coresight_disclaim_device(csdev: *mut coresight_device);
     pub fn coresight_disclaim_device_unlocked(csdev: *mut coresight_device);
-    pub fn coresight_alloc_device_name(prefix: *const core::ffi::c_char, dev: *mut device) -> *mut core::ffi::c_char;
+    pub fn coresight_alloc_device_name(prefix: *const kernel::ffi::c_char, dev: *mut device) -> *mut kernel::ffi::c_char;
     pub fn coresight_loses_context_with_cpu(dev: *mut device) -> bool;
     pub fn coresight_relaxed_read32(csdev: *mut coresight_device, offset: u32) -> u32;
     pub fn coresight_read32(csdev: *mut coresight_device, offset: u32) -> u32;
@@ -132,7 +132,7 @@ extern "C" {
     pub fn coresight_add_in_conn(conn: *mut coresight_connection) -> i32;
     pub fn coresight_find_input_type(pdata: *mut coresight_platform_data, type_: coresight_dev_type, subtype: coresight_dev_subtype) -> *mut coresight_device;
     pub fn coresight_find_output_type(pdata: *mut coresight_platform_data, type_: coresight_dev_type, subtype: coresight_dev_subtype) -> *mut coresight_device;
-    pub fn coresight_init_driver_with_owner(drv: *const core::ffi::c_char, amba_drv: *mut amba_driver, pdev_drv: *mut platform_driver, owner: *mut module, mod_name: *const core::ffi::c_char) -> i32;
+    pub fn coresight_init_driver_with_owner(drv: *const kernel::ffi::c_char, amba_drv: *mut amba_driver, pdev_drv: *mut platform_driver, owner: *mut module, mod_name: *const kernel::ffi::c_char) -> i32;
     pub fn coresight_remove_driver(amba_drv: *mut amba_driver, pdev_drv: *mut platform_driver);
     pub fn coresight_etm_get_trace_id(csdev: *mut coresight_device, mode: cs_mode, sink: *mut coresight_device) -> i32;
     pub fn coresight_get_enable_clocks(dev: *mut device, pclk: *mut *mut clk, atclk: *mut *mut clk) -> i32;

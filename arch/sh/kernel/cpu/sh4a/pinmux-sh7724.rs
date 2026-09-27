@@ -21,16 +21,16 @@ static mut sh7724_pfc_resources: [resource; 1] = [resource {
 
 unsafe extern "C" {
     fn sh_pfc_register(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         resources: *mut resource,
         num_resources: usize,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 #[allow(non_snake_case)]
-unsafe fn plat_pinmux_setup() -> core::ffi::c_int {
+unsafe fn plat_pinmux_setup() -> kernel::ffi::c_int {
     sh_pfc_register(
-        b"pfc-sh7724\0".as_ptr() as *const core::ffi::c_char,
+        b"pfc-sh7724\0".as_ptr() as *const kernel::ffi::c_char,
         sh7724_pfc_resources.as_mut_ptr(),
         sh7724_pfc_resources.len(),
     )

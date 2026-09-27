@@ -10,8 +10,8 @@
 pub struct kvm_vcpu_config {
     pub henvcfg: u64,
     pub hstateen0: u64,
-    pub hedeleg: ::core::ffi::c_ulong,
-    pub hideleg: ::core::ffi::c_ulong,
+    pub hedeleg: ::kernel::ffi::c_ulong,
+    pub hideleg: ::kernel::ffi::c_ulong,
 }
 
 pub struct kvm_vcpu;

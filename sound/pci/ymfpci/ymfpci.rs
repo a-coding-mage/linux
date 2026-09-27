@@ -15,7 +15,7 @@
 #![allow(dead_code)]
 #![allow(improper_ctypes)]
 
-use core::ffi::{c_char, c_int, c_long, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_long, c_uint, c_void};
 
 type bool_ = bool;
 type u16 = u16;
@@ -100,7 +100,7 @@ pub struct pci_driver {
     pub driver: pci_driver_inner,
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 const SNDRV_CARDS: usize = 32;
 const SNDRV_DEFAULT_IDX: [c_int; SNDRV_CARDS] = [0; SNDRV_CARDS];

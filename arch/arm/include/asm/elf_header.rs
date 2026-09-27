@@ -14,8 +14,8 @@ pub struct linux_binprm;
 /*
  * ELF register definitions..
  */
-pub type elf_greg_t = ::core::ffi::c_ulong;
-pub type elf_freg_t = [::core::ffi::c_ulong; 3];
+pub type elf_greg_t = ::kernel::ffi::c_ulong;
+pub type elf_freg_t = [::kernel::ffi::c_ulong; 3];
 
 pub const ELF_NGREG: usize = core::mem::size_of::<pt_regs>() / core::mem::size_of::<elf_greg_t>();
 pub type elf_gregset_t = [elf_greg_t; ELF_NGREG];
@@ -78,8 +78,8 @@ pub const ELF_ARCH: u32 = EM_ARM;
 
 pub const ELF_PLATFORM_SIZE: usize = 8;
 extern "C" {
-    pub static mut elf_platform: [::core::ffi::c_char; ELF_PLATFORM_SIZE];
-    pub fn elf_check_arch(x: *const elf32_hdr) -> ::core::ffi::c_int;
+    pub static mut elf_platform: [::kernel::ffi::c_char; ELF_PLATFORM_SIZE];
+    pub fn elf_check_arch(x: *const elf32_hdr) -> ::kernel::ffi::c_int;
 }
 pub const ELFOSABI_ARM_FDPIC: u8 = 65; // ARM FDPIC platform
 pub const ELF_FDPIC_CORE_EFLAGS: u32 = 0;
@@ -98,14 +98,14 @@ pub unsafe fn elf_check_const_displacement(x: *const elf32_hdr) -> u32 {
 pub const fn vmcore_elf64_check_arch<T>(_: T) -> i32 { 0 }
 
 extern "C" {
-    pub fn arm_elf_read_implies_exec(stk: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn arm_elf_read_implies_exec(stk: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
     pub fn elf_set_personality(ex: *const elf32_hdr);
-    pub fn arch_setup_additional_pages(bprm: *mut linux_binprm, uses_interp: ::core::ffi::c_int)
-        -> ::core::ffi::c_int;
+    pub fn arch_setup_additional_pages(bprm: *mut linux_binprm, uses_interp: ::kernel::ffi::c_int)
+        -> ::kernel::ffi::c_int;
 }
 
 #[inline]
-pub unsafe fn elf_read_implies_exec(_ex: *const core::ffi::c_void, stk: ::core::ffi::c_int) -> ::core::ffi::c_int {
+pub unsafe fn elf_read_implies_exec(_ex: *const kernel::ffi::c_void, stk: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     arm_elf_read_implies_exec(stk)
 }
 
@@ -116,7 +116,7 @@ pub unsafe fn SET_PERSONALITY(ex: *const elf32_hdr) {
 
 pub const CORE_DUMP_USE_REGSET: bool = true;
 pub const ELF_EXEC_PAGESIZE: usize = 4096;
-pub const ELF_ET_DYN_BASE: ::core::ffi::c_ulong = 0x400000;
+pub const ELF_ET_DYN_BASE: ::kernel::ffi::c_ulong = 0x400000;
 
 /* When the program starts, a1 contains a pointer to a function to be
    registered with atexit, as per the SVR4 ABI.  A value of 0 means we

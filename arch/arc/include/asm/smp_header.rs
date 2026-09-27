@@ -23,7 +23,7 @@ extern "C" {
 
     pub fn smp_init_cpus();
     pub fn first_lines_of_secondary();
-    pub fn arc_platform_smp_cpuinfo() -> *const core::ffi::c_char;
+    pub fn arc_platform_smp_cpuinfo() -> *const kernel::ffi::c_char;
     pub fn arc_platform_smp_wait_to_boot(arg: i32);
     pub fn start_kernel_secondary();
 
@@ -33,10 +33,10 @@ extern "C" {
 #[cfg(CONFIG_SMP)]
 #[repr(C)]
 pub struct plat_smp_ops {
-    pub info: *const core::ffi::c_char,
+    pub info: *const kernel::ffi::c_char,
     pub init_early_smp: Option<unsafe extern "C" fn()>,
     pub init_per_cpu: Option<unsafe extern "C" fn(cpu: i32)>,
-    pub cpu_kick: Option<unsafe extern "C" fn(cpu: i32, pc: core::ffi::c_ulong)>,
+    pub cpu_kick: Option<unsafe extern "C" fn(cpu: i32, pc: kernel::ffi::c_ulong)>,
     pub ipi_send: Option<unsafe extern "C" fn(cpu: i32)>,
     pub ipi_clear: Option<unsafe extern "C" fn(irq: i32)>,
 }
@@ -53,8 +53,8 @@ pub fn smp_init_cpus() {}
 
 #[cfg(not(CONFIG_SMP))]
 #[inline]
-pub fn arc_platform_smp_cpuinfo() -> *const core::ffi::c_char {
-    b"\0".as_ptr() as *const core::ffi::c_char
+pub fn arc_platform_smp_cpuinfo() -> *const kernel::ffi::c_char {
+    b"\0".as_ptr() as *const kernel::ffi::c_char
 }
 
 /*

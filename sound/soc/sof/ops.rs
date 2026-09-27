@@ -14,8 +14,8 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
-type u32 = core::ffi::c_uint;
-type u64 = core::ffi::c_ulonglong;
+type u32 = kernel::ffi::c_uint;
+type u64 = kernel::ffi::c_ulonglong;
 
 #[repr(C)]
 pub struct device {
@@ -42,16 +42,16 @@ pub struct snd_sof_dev {
 
 extern "C" {
     fn to_pci_dev(dev: *mut device) -> *mut pci_dev;
-    fn pci_read_config_dword(dev: *mut pci_dev, offset: u32, value: *mut u32) -> core::ffi::c_int;
-    fn pci_write_config_dword(dev: *mut pci_dev, offset: u32, value: u32) -> core::ffi::c_int;
-    fn dev_dbg(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_warn(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn pci_read_config_dword(dev: *mut pci_dev, offset: u32, value: *mut u32) -> kernel::ffi::c_int;
+    fn pci_write_config_dword(dev: *mut pci_dev, offset: u32, value: u32) -> kernel::ffi::c_int;
+    fn dev_dbg(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_warn(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     fn spinlock_irqsave_guard(lock: *mut spinlock_t) -> spinlock_irqsave_guard_t;
     fn snd_sof_dsp_read(sdev: *mut snd_sof_dev, bar: u32, offset: u32) -> u32;
     fn snd_sof_dsp_write(sdev: *mut snd_sof_dev, bar: u32, offset: u32, value: u32);
     fn snd_sof_dsp_read64(sdev: *mut snd_sof_dev, bar: u32, offset: u32) -> u64;
     fn snd_sof_dsp_write64(sdev: *mut snd_sof_dev, bar: u32, offset: u32, value: u64);
-    fn snd_sof_dsp_dbg_dump(sdev: *mut snd_sof_dev, msg: *const core::ffi::c_char, flags: u32);
+    fn snd_sof_dsp_dbg_dump(sdev: *mut snd_sof_dev, msg: *const kernel::ffi::c_char, flags: u32);
     fn sof_set_fw_state(sdev: *mut snd_sof_dev, state: u32);
     fn sof_fw_trace_fw_crashed(sdev: *mut snd_sof_dev);
 }
@@ -72,15 +72,15 @@ unsafe fn snd_sof_pci_update_bits_unlocked(
     value: u32,
 ) -> bool {
     let pci: *mut pci_dev = to_pci_dev((*sdev).dev);
-    let old: core::ffi::c_uint;
-    let new: core::ffi::c_uint;
+    let old: kernel::ffi::c_uint;
+    let new: kernel::ffi::c_uint;
     let mut ret: u32 = 0;
 
     pci_read_config_dword(pci, offset, &mut ret);
     old = ret;
     dev_dbg(
         (*sdev).dev,
-        b"Debug PCIR: %8.8x at  %8.8x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"Debug PCIR: %8.8x at  %8.8x\n\0".as_ptr() as *const kernel::ffi::c_char,
         old & mask,
         offset,
     );
@@ -94,7 +94,7 @@ unsafe fn snd_sof_pci_update_bits_unlocked(
     pci_write_config_dword(pci, offset, new);
     dev_dbg(
         (*sdev).dev,
-        b"Debug PCIW: %8.8x at  %8.8x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"Debug PCIW: %8.8x at  %8.8x\n\0".as_ptr() as *const kernel::ffi::c_char,
         value,
         offset,
     );
@@ -123,8 +123,8 @@ pub unsafe extern "C" fn snd_sof_dsp_update_bits_unlocked(
     mask: u32,
     value: u32,
 ) -> bool {
-    let old: core::ffi::c_uint;
-    let new: core::ffi::c_uint;
+    let old: kernel::ffi::c_uint;
+    let new: kernel::ffi::c_uint;
     let ret: u32;
 
     ret = snd_sof_dsp_read(sdev, bar, offset);
@@ -205,8 +205,8 @@ unsafe fn snd_sof_dsp_update_bits_forced_unlocked(
     mask: u32,
     value: u32,
 ) {
-    let old: core::ffi::c_uint;
-    let new: core::ffi::c_uint;
+    let old: kernel::ffi::c_uint;
+    let new: kernel::ffi::c_uint;
     let ret: u32;
 
     ret = snd_sof_dsp_read(sdev, bar, offset);
@@ -260,8 +260,8 @@ pub unsafe extern "C" fn snd_sof_dsp_panic(
         dev_warn(
             (*sdev).dev,
             b"%s: dsp_oops_offset %zu differs from panic offset %u\n\0".as_ptr()
-                as *const core::ffi::c_char,
-            b"snd_sof_dsp_panic\0".as_ptr() as *const core::ffi::c_char,
+                as *const kernel::ffi::c_char,
+            b"snd_sof_dsp_panic\0".as_ptr() as *const kernel::ffi::c_char,
             (*sdev).dsp_oops_offset,
             offset,
         );
@@ -277,7 +277,7 @@ pub unsafe extern "C" fn snd_sof_dsp_panic(
     if non_recoverable {
         snd_sof_dsp_dbg_dump(
             sdev,
-            b"DSP panic!\0".as_ptr() as *const core::ffi::c_char,
+            b"DSP panic!\0".as_ptr() as *const kernel::ffi::c_char,
             SOF_DBG_DUMP_REGS | SOF_DBG_DUMP_MBOX,
         );
         sof_set_fw_state(sdev, SOF_FW_CRASHED);
@@ -285,7 +285,7 @@ pub unsafe extern "C" fn snd_sof_dsp_panic(
     } else {
         snd_sof_dsp_dbg_dump(
             sdev,
-            b"DSP panic (recovery will be attempted)\0".as_ptr() as *const core::ffi::c_char,
+            b"DSP panic (recovery will be attempted)\0".as_ptr() as *const kernel::ffi::c_char,
             SOF_DBG_DUMP_REGS | SOF_DBG_DUMP_MBOX,
         );
     }

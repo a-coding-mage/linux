@@ -15,8 +15,8 @@ unsafe extern "C" {
     pub fn ap_cp_unique_name(
         dev: *mut device,
         np: *mut device_node,
-        name: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_char;
+        name: *const kernel::ffi::c_char,
+    ) -> *mut kernel::ffi::c_char;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -80,8 +80,8 @@ pub struct amdgpu_ring_mux {
     pub real_ring: *mut amdgpu_ring,
 
     pub ring_entry: *mut amdgpu_mux_entry,
-    pub num_ring_entries: core::ffi::c_uint,
-    pub ring_entry_size: core::ffi::c_uint,
+    pub num_ring_entries: kernel::ffi::c_uint,
+    pub ring_entry_size: kernel::ffi::c_uint,
     // the lock for copy data from different software rings
     pub lock: spinlock_t,
     pub s_resubmit: bool,
@@ -117,13 +117,13 @@ extern "C" {
     pub fn amdgpu_ring_mux_init(
         mux: *mut amdgpu_ring_mux,
         ring: *mut amdgpu_ring,
-        entry_size: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        entry_size: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
     pub fn amdgpu_ring_mux_fini(mux: *mut amdgpu_ring_mux);
     pub fn amdgpu_ring_mux_add_sw_ring(
         mux: *mut amdgpu_ring_mux,
         ring: *mut amdgpu_ring,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn amdgpu_ring_mux_set_wptr(mux: *mut amdgpu_ring_mux, ring: *mut amdgpu_ring, wptr: u64);
     pub fn amdgpu_ring_mux_get_wptr(mux: *mut amdgpu_ring_mux, ring: *mut amdgpu_ring) -> u64;
     pub fn amdgpu_ring_mux_get_rptr(mux: *mut amdgpu_ring_mux, ring: *mut amdgpu_ring) -> u64;
@@ -147,8 +147,8 @@ extern "C" {
         ring: *mut amdgpu_ring,
         type_: amdgpu_ring_mux_offset_type,
     );
-    pub fn amdgpu_sw_ring_name(idx: core::ffi::c_int) -> *const core::ffi::c_char;
-    pub fn amdgpu_sw_ring_priority(idx: core::ffi::c_int) -> core::ffi::c_uint;
+    pub fn amdgpu_sw_ring_name(idx: kernel::ffi::c_int) -> *const kernel::ffi::c_char;
+    pub fn amdgpu_sw_ring_priority(idx: kernel::ffi::c_int) -> kernel::ffi::c_uint;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

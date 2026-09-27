@@ -12,16 +12,16 @@ const CPOPW: &str = "cpopw ";
 const CPOPW: &str = "cpop ";
 
 extern "C" {
-    fn __sw_hweight32(w: core::ffi::c_uint) -> core::ffi::c_uint;
-    fn __sw_hweight64(w: u64) -> core::ffi::c_ulong;
-    fn riscv_has_extension_likely(extension: core::ffi::c_uint) -> bool;
+    fn __sw_hweight32(w: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
+    fn __sw_hweight64(w: u64) -> kernel::ffi::c_ulong;
+    fn riscv_has_extension_likely(extension: kernel::ffi::c_uint) -> bool;
 }
 
 // IS_ENABLED(CONFIG_RISCV_ISA_ZBB), IS_ENABLED(CONFIG_TOOLCHAIN_HAS_ZBB),
 // and RISCV_ISA_EXT_ZBB are supplied by the build configuration and headers.
 
 #[inline(always)]
-pub unsafe fn __arch_hweight32(mut w: core::ffi::c_uint) -> core::ffi::c_uint {
+pub unsafe fn __arch_hweight32(mut w: kernel::ffi::c_uint) -> kernel::ffi::c_uint {
     if !(cfg!(CONFIG_RISCV_ISA_ZBB)
         && cfg!(CONFIG_TOOLCHAIN_HAS_ZBB)
         && riscv_has_extension_likely(RISCV_ISA_EXT_ZBB))
@@ -41,18 +41,18 @@ pub unsafe fn __arch_hweight32(mut w: core::ffi::c_uint) -> core::ffi::c_uint {
 }
 
 #[inline]
-pub unsafe fn __arch_hweight16(w: core::ffi::c_uint) -> core::ffi::c_uint {
+pub unsafe fn __arch_hweight16(w: kernel::ffi::c_uint) -> kernel::ffi::c_uint {
     __arch_hweight32(w & 0xffff)
 }
 
 #[inline]
-pub unsafe fn __arch_hweight8(w: core::ffi::c_uint) -> core::ffi::c_uint {
+pub unsafe fn __arch_hweight8(w: kernel::ffi::c_uint) -> kernel::ffi::c_uint {
     __arch_hweight32(w & 0xff)
 }
 
 #[cfg(target_pointer_width = "64")]
 #[inline(always)]
-pub unsafe fn __arch_hweight64(mut w: u64) -> core::ffi::c_ulong {
+pub unsafe fn __arch_hweight64(mut w: u64) -> kernel::ffi::c_ulong {
     if !(cfg!(CONFIG_RISCV_ISA_ZBB)
         && cfg!(CONFIG_TOOLCHAIN_HAS_ZBB)
         && riscv_has_extension_likely(RISCV_ISA_EXT_ZBB))
@@ -74,9 +74,9 @@ pub unsafe fn __arch_hweight64(mut w: u64) -> core::ffi::c_ulong {
 // BITS_PER_LONG != 64
 #[cfg(not(target_pointer_width = "64"))]
 #[inline]
-pub unsafe fn __arch_hweight64(w: u64) -> core::ffi::c_ulong {
-    (__arch_hweight32(w as u32 as core::ffi::c_uint)
-        + __arch_hweight32((w >> 32) as u32 as core::ffi::c_uint)) as core::ffi::c_ulong
+pub unsafe fn __arch_hweight64(w: u64) -> kernel::ffi::c_ulong {
+    (__arch_hweight32(w as u32 as kernel::ffi::c_uint)
+        + __arch_hweight32((w >> 32) as u32 as kernel::ffi::c_uint)) as kernel::ffi::c_ulong
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -10,7 +10,7 @@ const ARC_PATH_MAX: usize = 256;
 
 unsafe fn print_regs_scratch(regs: *mut pt_regs) {
     pr_cont!("BTA: 0x%08lx\n SP: 0x%08lx  FP: 0x%08lx BLK: %pS\n",
-        (*regs).bta, (*regs).sp, (*regs).fp, (*regs).blink as *mut core::ffi::c_void);
+        (*regs).bta, (*regs).sp, (*regs).fp, (*regs).blink as *mut kernel::ffi::c_void);
     pr_cont!("LPS: 0x%08lx\tLPE: 0x%08lx\tLPC: 0x%08lx\n",
         (*regs).lp_start, (*regs).lp_end, (*regs).lp_count);
 
@@ -36,7 +36,7 @@ unsafe fn print_regs_callee(regs: *mut callee_regs) {
 }
 
 unsafe fn print_task_path_n_nm(tsk: *mut task_struct) {
-    let mut path_nm: *mut core::ffi::c_char = core::ptr::null_mut();
+    let mut path_nm: *mut kernel::ffi::c_char = core::ptr::null_mut();
     let mut buf = [0i8; ARC_PATH_MAX];
     let mm = get_task_mm(tsk);
     if !mm.is_null() {

@@ -43,7 +43,7 @@ enum ni_670x_boardid {
 
 #[repr(C)]
 struct ni_670x_board {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     ao_chans: u16,
 }
 

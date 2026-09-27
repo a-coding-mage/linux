@@ -31,9 +31,9 @@ pub struct vport {
 
 #[repr(C)]
 pub struct vport_parms {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub type_: ovs_vport_type,
-    pub desired_ifindex: core::ffi::c_int,
+    pub desired_ifindex: kernel::ffi::c_int,
     pub dp: *mut datapath,
     pub port_no: u16,
     pub upcall_portids: *mut nlattr,
@@ -44,7 +44,7 @@ pub struct vport_ops {
     pub type_: ovs_vport_type,
     pub create: Option<unsafe extern "C" fn(*const vport_parms) -> *mut vport>,
     pub destroy: Option<unsafe extern "C" fn(*mut vport)>,
-    pub send: Option<unsafe extern "C" fn(*mut sk_buff) -> core::ffi::c_int>,
+    pub send: Option<unsafe extern "C" fn(*mut sk_buff) -> kernel::ffi::c_int>,
     pub list: list_head,
 }
 
@@ -56,20 +56,20 @@ pub struct vport_upcall_stats_percpu {
 }
 
 extern "C" {
-    pub fn ovs_vport_init() -> core::ffi::c_int;
+    pub fn ovs_vport_init() -> kernel::ffi::c_int;
     pub fn ovs_vport_exit();
     pub fn ovs_vport_add(parms: *const vport_parms) -> *mut vport;
     pub fn ovs_vport_del(vport: *mut vport);
-    pub fn ovs_vport_locate(net: *const net, name: *const core::ffi::c_char) -> *mut vport;
+    pub fn ovs_vport_locate(net: *const net, name: *const kernel::ffi::c_char) -> *mut vport;
     pub fn ovs_vport_get_stats(vport: *mut vport, stats: *mut ovs_vport_stats);
-    pub fn ovs_vport_get_upcall_stats(vport: *mut vport, skb: *mut sk_buff) -> core::ffi::c_int;
-    pub fn ovs_vport_set_upcall_portids(vport: *mut vport, pids: *const nlattr) -> core::ffi::c_int;
-    pub fn ovs_vport_get_upcall_portids(vport: *const vport, skb: *mut sk_buff) -> core::ffi::c_int;
+    pub fn ovs_vport_get_upcall_stats(vport: *mut vport, skb: *mut sk_buff) -> kernel::ffi::c_int;
+    pub fn ovs_vport_set_upcall_portids(vport: *mut vport, pids: *const nlattr) -> kernel::ffi::c_int;
+    pub fn ovs_vport_get_upcall_portids(vport: *const vport, skb: *mut sk_buff) -> kernel::ffi::c_int;
     pub fn ovs_vport_find_upcall_portid(vport: *const vport, skb: *mut sk_buff) -> u32;
-    pub fn ovs_vport_alloc(priv_size: core::ffi::c_int, ops: *const vport_ops, parms: *const vport_parms) -> *mut vport;
+    pub fn ovs_vport_alloc(priv_size: kernel::ffi::c_int, ops: *const vport_ops, parms: *const vport_parms) -> *mut vport;
     pub fn ovs_vport_free(vport: *mut vport);
-    pub fn ovs_vport_receive(vport: *mut vport, skb: *mut sk_buff, info: *const ip_tunnel_info) -> core::ffi::c_int;
-    pub fn ovs_vport_ops_register(ops: *mut vport_ops) -> core::ffi::c_int;
+    pub fn ovs_vport_receive(vport: *mut vport, skb: *mut sk_buff, info: *const ip_tunnel_info) -> kernel::ffi::c_int;
+    pub fn ovs_vport_ops_register(ops: *mut vport_ops) -> kernel::ffi::c_int;
     pub fn ovs_vport_ops_unregister(ops: *mut vport_ops);
     pub fn ovs_vport_send(vport: *mut vport, skb: *mut sk_buff, mac_proto: u8);
 }
@@ -83,13 +83,13 @@ pub unsafe fn vport_priv(vport: *const vport) -> *mut u8 {
 }
 
 #[inline]
-pub unsafe fn vport_from_priv(priv_: *mut core::ffi::c_void) -> *mut vport {
+pub unsafe fn vport_from_priv(priv_: *mut kernel::ffi::c_void) -> *mut vport {
     let size = core::mem::size_of::<vport>();
     (priv_ as *mut u8).sub((size + VPORT_ALIGN - 1) & !(VPORT_ALIGN - 1)) as *mut vport
 }
 
 #[inline]
-pub unsafe fn ovs_vport_name(vport: *mut vport) -> *const core::ffi::c_char {
+pub unsafe fn ovs_vport_name(vport: *mut vport) -> *const kernel::ffi::c_char {
     (*vport).dev.as_ref().unwrap().name.as_ptr()
 }
 

@@ -16,8 +16,8 @@ pub const LPSC_LOCAL_RESET: u32 = 1u32 << 3; // acts as reset provider
 
 #[repr(C)]
 pub struct davinci_lpsc_clkdev_info {
-    pub con_id: *const core::ffi::c_char,
-    pub dev_id: *const core::ffi::c_char,
+    pub con_id: *const kernel::ffi::c_char,
+    pub dev_id: *const kernel::ffi::c_char,
 }
 
 #[macro_export]
@@ -83,8 +83,8 @@ macro_rules! LPSC_CLKDEV3 {
  */
 #[repr(C)]
 pub struct davinci_lpsc_clk_info {
-    pub name: *const core::ffi::c_char,
-    pub parent: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent: *const kernel::ffi::c_char,
     pub cdevs: *const davinci_lpsc_clkdev_info,
     pub md: u32,
     pub pd: u32,
@@ -95,8 +95,8 @@ pub struct davinci_lpsc_clk_info {
 macro_rules! LPSC {
     ($m:expr, $d:expr, $n:ident, $p:ident, $c:expr, $f:expr) => {
         $crate::davinci_lpsc_clk_info {
-            name: concat!(stringify!($n), "\0").as_ptr() as *const core::ffi::c_char,
-            parent: concat!(stringify!($p), "\0").as_ptr() as *const core::ffi::c_char,
+            name: concat!(stringify!($n), "\0").as_ptr() as *const kernel::ffi::c_char,
+            parent: concat!(stringify!($p), "\0").as_ptr() as *const kernel::ffi::c_char,
             cdevs: $c,
             md: $m,
             pd: $d,
@@ -110,15 +110,15 @@ extern "C" {
         dev: *mut device,
         info: *const davinci_lpsc_clk_info,
         num_clks: u8,
-        base: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        base: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
 
     pub fn of_davinci_psc_clk_init(
         dev: *mut device,
         info: *const davinci_lpsc_clk_info,
         num_clks: u8,
-        base: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        base: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
 }
 
 /* Device-specific data */
@@ -126,8 +126,8 @@ extern "C" {
 #[repr(C)]
 pub struct davinci_psc_init_data {
     pub parent_clks: *mut clk_bulk_data,
-    pub num_parent_clks: core::ffi::c_int,
-    pub psc_init: Option<unsafe extern "C" fn(*mut device, *mut core::ffi::c_void) -> core::ffi::c_int>,
+    pub num_parent_clks: kernel::ffi::c_int,
+    pub psc_init: Option<unsafe extern "C" fn(*mut device, *mut kernel::ffi::c_void) -> kernel::ffi::c_int>,
 }
 
 extern "C" {

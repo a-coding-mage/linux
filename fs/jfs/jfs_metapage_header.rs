@@ -12,24 +12,24 @@ pub struct metapage {
     pub xflag: u16,
     pub unused: u16,
     pub lid: lid_t,
-    pub lsn: ::core::ffi::c_int,
+    pub lsn: ::kernel::ffi::c_int,
     pub synclist: list_head,
     /* End of logsyncblk prefix */
 
-    pub flag: ::core::ffi::c_ulong, /* See Below */
-    pub count: ::core::ffi::c_ulong, /* Reference count */
-    pub data: *mut ::core::ffi::c_void, /* Data pointer */
+    pub flag: ::kernel::ffi::c_ulong, /* See Below */
+    pub count: ::kernel::ffi::c_ulong, /* Reference count */
+    pub data: *mut ::kernel::ffi::c_void, /* Data pointer */
     pub index: sector_t, /* block address of page */
     pub wait: wait_queue_head_t,
 
     /* implementation */
     pub folio: *mut folio,
     pub sb: *mut super_block,
-    pub logical_size: ::core::ffi::c_uint,
+    pub logical_size: ::kernel::ffi::c_uint,
 
     /* Journal management */
-    pub clsn: ::core::ffi::c_int,
-    pub nohomeok: ::core::ffi::c_int,
+    pub clsn: ::kernel::ffi::c_int,
+    pub nohomeok: ::kernel::ffi::c_int,
     pub log: *mut jfs_log,
 }
 
@@ -48,13 +48,13 @@ pub unsafe fn mark_metapage_dirty(mp: *mut metapage) {
 
 /* function prototypes */
 extern "C" {
-    pub fn metapage_init() -> ::core::ffi::c_int;
+    pub fn metapage_init() -> ::kernel::ffi::c_int;
     pub fn metapage_exit();
     pub fn __get_metapage(
         inode: *mut inode,
-        lblock: ::core::ffi::c_ulong,
-        size: ::core::ffi::c_uint,
-        absolute: ::core::ffi::c_int,
+        lblock: ::kernel::ffi::c_ulong,
+        size: ::kernel::ffi::c_uint,
+        absolute: ::kernel::ffi::c_int,
         new: bool,
     ) -> *mut metapage;
     pub fn release_metapage(mp: *mut metapage);
@@ -65,15 +65,15 @@ extern "C" {
 }
 
 #[inline]
-pub unsafe fn read_metapage(inode: *mut inode, lblock: ::core::ffi::c_ulong,
-                            size: ::core::ffi::c_uint, absolute: ::core::ffi::c_int)
+pub unsafe fn read_metapage(inode: *mut inode, lblock: ::kernel::ffi::c_ulong,
+                            size: ::kernel::ffi::c_uint, absolute: ::kernel::ffi::c_int)
                             -> *mut metapage {
     __get_metapage(inode, lblock, size, absolute, false)
 }
 
 #[inline]
-pub unsafe fn get_metapage(inode: *mut inode, lblock: ::core::ffi::c_ulong,
-                           size: ::core::ffi::c_uint, absolute: ::core::ffi::c_int)
+pub unsafe fn get_metapage(inode: *mut inode, lblock: ::kernel::ffi::c_ulong,
+                           size: ::kernel::ffi::c_uint, absolute: ::kernel::ffi::c_int)
                            -> *mut metapage {
     __get_metapage(inode, lblock, size, absolute, true)
 }
@@ -136,7 +136,7 @@ pub unsafe fn metapage_homeok(mp: *mut metapage) {
 
 extern "C" {
     pub static jfs_metapage_aops: address_space_operations;
-    pub fn __invalidate_metapages(inode: *mut inode, address: s64, length: ::core::ffi::c_int);
+    pub fn __invalidate_metapages(inode: *mut inode, address: s64, length: ::kernel::ffi::c_int);
 }
 
 #[inline]

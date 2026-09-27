@@ -13,20 +13,20 @@ extern "C" {
     pub fn FSE_versionNumber() -> u32;
     pub fn FSE_compressBound(size: usize) -> usize;
     pub fn FSE_isError(code: usize) -> u32;
-    pub fn FSE_getErrorName(code: usize) -> *const core::ffi::c_char;
+    pub fn FSE_getErrorName(code: usize) -> *const kernel::ffi::c_char;
     pub fn FSE_optimalTableLog(maxTableLog: u32, srcSize: usize, maxSymbolValue: u32) -> u32;
     pub fn FSE_normalizeCount(normalizedCounter: *mut i16, tableLog: u32, count: *const u32, srcSize: usize, maxSymbolValue: u32, useLowProbCount: u32) -> usize;
     pub fn FSE_NCountWriteBound(maxSymbolValue: u32, tableLog: u32) -> usize;
-    pub fn FSE_writeNCount(buffer: *mut core::ffi::c_void, bufferSize: usize, normalizedCounter: *const i16, maxSymbolValue: u32, tableLog: u32) -> usize;
+    pub fn FSE_writeNCount(buffer: *mut kernel::ffi::c_void, bufferSize: usize, normalizedCounter: *const i16, maxSymbolValue: u32, tableLog: u32) -> usize;
     pub fn FSE_buildCTable(ct: *mut FSE_CTable, normalizedCounter: *const i16, maxSymbolValue: u32, tableLog: u32) -> usize;
-    pub fn FSE_compress_usingCTable(dst: *mut core::ffi::c_void, dstCapacity: usize, src: *const core::ffi::c_void, srcSize: usize, ct: *const FSE_CTable) -> usize;
-    pub fn FSE_readNCount(normalizedCounter: *mut i16, maxSymbolValuePtr: *mut u32, tableLogPtr: *mut u32, rBuffer: *const core::ffi::c_void, rBuffSize: usize) -> usize;
-    pub fn FSE_readNCount_bmi2(normalizedCounter: *mut i16, maxSymbolValuePtr: *mut u32, tableLogPtr: *mut u32, rBuffer: *const core::ffi::c_void, rBuffSize: usize, bmi2: i32) -> usize;
-    pub fn FSE_buildDTable_wksp(dt: *mut FSE_DTable, normalizedCounter: *const i16, maxSymbolValue: u32, tableLog: u32, workSpace: *mut core::ffi::c_void, wkspSize: usize) -> usize;
-    pub fn FSE_decompress_wksp_bmi2(dst: *mut core::ffi::c_void, dstCapacity: usize, cSrc: *const core::ffi::c_void, cSrcSize: usize, maxLog: u32, workSpace: *mut core::ffi::c_void, wkspSize: usize, bmi2: i32) -> usize;
+    pub fn FSE_compress_usingCTable(dst: *mut kernel::ffi::c_void, dstCapacity: usize, src: *const kernel::ffi::c_void, srcSize: usize, ct: *const FSE_CTable) -> usize;
+    pub fn FSE_readNCount(normalizedCounter: *mut i16, maxSymbolValuePtr: *mut u32, tableLogPtr: *mut u32, rBuffer: *const kernel::ffi::c_void, rBuffSize: usize) -> usize;
+    pub fn FSE_readNCount_bmi2(normalizedCounter: *mut i16, maxSymbolValuePtr: *mut u32, tableLogPtr: *mut u32, rBuffer: *const kernel::ffi::c_void, rBuffSize: usize, bmi2: i32) -> usize;
+    pub fn FSE_buildDTable_wksp(dt: *mut FSE_DTable, normalizedCounter: *const i16, maxSymbolValue: u32, tableLog: u32, workSpace: *mut kernel::ffi::c_void, wkspSize: usize) -> usize;
+    pub fn FSE_decompress_wksp_bmi2(dst: *mut kernel::ffi::c_void, dstCapacity: usize, cSrc: *const kernel::ffi::c_void, cSrcSize: usize, maxLog: u32, workSpace: *mut kernel::ffi::c_void, wkspSize: usize, bmi2: i32) -> usize;
     pub fn FSE_optimalTableLog_internal(maxTableLog: u32, srcSize: usize, maxSymbolValue: u32, minus: u32) -> u32;
     pub fn FSE_buildCTable_rle(ct: *mut FSE_CTable, symbolValue: u8) -> usize;
-    pub fn FSE_buildCTable_wksp(ct: *mut FSE_CTable, normalizedCounter: *const i16, maxSymbolValue: u32, tableLog: u32, workSpace: *mut core::ffi::c_void, wkspSize: usize) -> usize;
+    pub fn FSE_buildCTable_wksp(ct: *mut FSE_CTable, normalizedCounter: *const i16, maxSymbolValue: u32, tableLog: u32, workSpace: *mut kernel::ffi::c_void, wkspSize: usize) -> usize;
 }
 
 pub type FSE_CTable = u32;
@@ -53,9 +53,9 @@ pub const FSE_repeat_valid: i32 = 2;
 pub type FSE_repeat = i32;
 
 #[repr(C)]
-pub struct FSE_CState_t { pub value: isize, pub stateTable: *const core::ffi::c_void, pub symbolTT: *const core::ffi::c_void, pub stateLog: u32 }
+pub struct FSE_CState_t { pub value: isize, pub stateTable: *const kernel::ffi::c_void, pub symbolTT: *const kernel::ffi::c_void, pub stateLog: u32 }
 #[repr(C)]
-pub struct FSE_DState_t { pub state: usize, pub table: *const core::ffi::c_void }
+pub struct FSE_DState_t { pub state: usize, pub table: *const kernel::ffi::c_void }
 #[repr(C)]
 pub struct FSE_symbolCompressionTransform { pub deltaFindState: i32, pub deltaNbBits: u32 }
 
@@ -69,8 +69,8 @@ pub unsafe fn FSE_initCState(statePtr: *mut FSE_CState_t, ct: *const FSE_CTable)
     let ptr = ct as *const u8;
     let tableLog = u16::from_ne_bytes([*ptr, *ptr.add(1)]) as u32;
     (*statePtr).value = 1isize << tableLog;
-    (*statePtr).stateTable = ptr.add(4) as *const core::ffi::c_void;
-    (*statePtr).symbolTT = ct.add(1).add(if tableLog != 0 { 1usize << (tableLog - 1) } else { 1 }) as *const core::ffi::c_void;
+    (*statePtr).stateTable = ptr.add(4) as *const kernel::ffi::c_void;
+    (*statePtr).symbolTT = ct.add(1).add(if tableLog != 0 { 1usize << (tableLog - 1) } else { 1 }) as *const kernel::ffi::c_void;
     (*statePtr).stateLog = tableLog;
 }
 
@@ -91,7 +91,7 @@ pub unsafe fn FSE_encodeSymbol(bitC: *mut BIT_CStream_t, statePtr: *mut FSE_CSta
 
 pub unsafe fn FSE_flushCState(bitC: *mut BIT_CStream_t, statePtr: *const FSE_CState_t) { BIT_addBits(bitC, (*statePtr).value as usize, (*statePtr).stateLog); BIT_flushBits(bitC); }
 
-pub unsafe fn FSE_getMaxNbBits(symbolTTPtr: *const core::ffi::c_void, symbolValue: u32) -> u32 { let t = &*(symbolTTPtr as *const FSE_symbolCompressionTransform).add(symbolValue as usize); (t.deltaNbBits.wrapping_add((1 << 16) - 1)) >> 16 }
+pub unsafe fn FSE_getMaxNbBits(symbolTTPtr: *const kernel::ffi::c_void, symbolValue: u32) -> u32 { let t = &*(symbolTTPtr as *const FSE_symbolCompressionTransform).add(symbolValue as usize); (t.deltaNbBits.wrapping_add((1 << 16) - 1)) >> 16 }
 
 /* Declarations below depend on bitstream.h types and are intentionally external. */
 extern "C" {

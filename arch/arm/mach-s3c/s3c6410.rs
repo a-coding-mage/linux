@@ -15,20 +15,20 @@ extern "C" {
     fn s3c6410_default_sdhci0();
     fn s3c6410_default_sdhci1();
     fn s3c6410_default_sdhci2();
-    fn s3c_i2c0_setname(name: *const core::ffi::c_char);
-    fn s3c_i2c1_setname(name: *const core::ffi::c_char);
+    fn s3c_i2c0_setname(name: *const kernel::ffi::c_char);
+    fn s3c_i2c1_setname(name: *const kernel::ffi::c_char);
     fn s3c64xx_init_irq(vic0_irqs: u32, vic1_irqs: u32);
     fn of_have_populated_dt() -> bool;
     fn soc_is_s3c64xx() -> bool;
-    fn subsys_system_register(subsys: *const bus_type, groups: *const core::ffi::c_void) -> i32;
-    fn printk(format: *const core::ffi::c_char, ...);
+    fn subsys_system_register(subsys: *const bus_type, groups: *const kernel::ffi::c_void) -> i32;
+    fn printk(format: *const kernel::ffi::c_char, ...);
     fn device_register(dev: *mut device) -> i32;
 }
 
 #[repr(C)]
 pub struct bus_type {
-    pub name: *const core::ffi::c_char,
-    pub dev_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub dev_name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -43,8 +43,8 @@ pub unsafe fn s3c6410_map_io() {
     s3c6410_default_sdhci2();
 
     /* the i2c devices are directly compatible with s3c2440 */
-    s3c_i2c0_setname(b"s3c2440-i2c\0".as_ptr() as *const core::ffi::c_char);
-    s3c_i2c1_setname(b"s3c2440-i2c\0".as_ptr() as *const core::ffi::c_char);
+    s3c_i2c0_setname(b"s3c2440-i2c\0".as_ptr() as *const kernel::ffi::c_char);
+    s3c_i2c1_setname(b"s3c2440-i2c\0".as_ptr() as *const kernel::ffi::c_char);
 }
 
 pub unsafe fn s3c6410_init_irq() {
@@ -54,8 +54,8 @@ pub unsafe fn s3c6410_init_irq() {
 
 #[no_mangle]
 pub static s3c6410_subsys: bus_type = bus_type {
-    name: b"s3c6410-core\0".as_ptr() as *const core::ffi::c_char,
-    dev_name: b"s3c6410-core\0".as_ptr() as *const core::ffi::c_char,
+    name: b"s3c6410-core\0".as_ptr() as *const kernel::ffi::c_char,
+    dev_name: b"s3c6410-core\0".as_ptr() as *const kernel::ffi::c_char,
 };
 
 static mut s3c6410_dev: device = device {
@@ -74,7 +74,7 @@ unsafe fn s3c6410_core_init() -> i32 {
 // core_initcall(s3c6410_core_init);
 
 pub unsafe fn s3c6410_init() -> i32 {
-    printk(b"S3C6410: Initialising architecture\n\0".as_ptr() as *const core::ffi::c_char);
+    printk(b"S3C6410: Initialising architecture\n\0".as_ptr() as *const kernel::ffi::c_char);
 
     device_register(&raw mut s3c6410_dev)
 }

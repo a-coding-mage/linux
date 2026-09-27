@@ -7,7 +7,7 @@
  * headers are referenced here as external dependencies.
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 /* External kernel/architecture declarations supplied by the corresponding headers. */
 extern "C" {

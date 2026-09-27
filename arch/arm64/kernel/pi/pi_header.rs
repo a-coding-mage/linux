@@ -7,7 +7,7 @@
 // C section attribute: __section(".init.rodata.prel64")
 
 /// A signed, volatile 64-bit relative pointer offset.
-pub type prel64_t = core::ffi::c_long;
+pub type prel64_t = kernel::ffi::c_long;
 
 /// C equivalent of `PREL64(type, name)`.
 #[macro_export]
@@ -29,12 +29,12 @@ macro_rules! prel64_pointer {
 }
 
 #[inline]
-pub unsafe fn prel64_to_pointer(offset: *const prel64_t) -> *mut core::ffi::c_void {
+pub unsafe fn prel64_to_pointer(offset: *const prel64_t) -> *mut kernel::ffi::c_void {
     let value = core::ptr::read_volatile(offset);
     if value == 0 {
         core::ptr::null_mut()
     } else {
-        (offset as *mut u8).offset(value as isize) as *mut core::ffi::c_void
+        (offset as *mut u8).offset(value as isize) as *mut kernel::ffi::c_void
     }
 }
 
@@ -46,8 +46,8 @@ extern "C" {
     pub static mut init_pg_dir: [pgd_t; 0];
     pub static mut init_pg_end: [pgd_t; 0];
 
-    pub fn init_feature_override(boot_status: u64, fdt: *const core::ffi::c_void, chosen: i32);
-    pub fn kaslr_early_init(fdt: *mut core::ffi::c_void, chosen: i32) -> u64;
+    pub fn init_feature_override(boot_status: u64, fdt: *const kernel::ffi::c_void, chosen: i32);
+    pub fn kaslr_early_init(fdt: *mut kernel::ffi::c_void, chosen: i32) -> u64;
     pub fn relocate_kernel(offset: u64);
     pub fn scs_patch(eh_frame: *const u8, size: i32, skip_dry_run: bool) -> i32;
 

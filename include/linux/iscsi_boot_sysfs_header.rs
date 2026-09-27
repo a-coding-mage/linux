@@ -95,20 +95,20 @@ pub struct iscsi_boot_kobj {
      * Pointer to store driver specific info. If set this will
      * be freed for the LLD when the kobj release function is called.
      */
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
     /* Driver specific show function. */
     pub show: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         type_: i32,
-        buf: *mut core::ffi::c_char,
+        buf: *mut kernel::ffi::c_char,
     ) -> ssize_t>,
     /* Drivers specific visibility function. */
     pub is_visible: Option<unsafe extern "C" fn(
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         type_: i32,
     ) -> umode_t>,
     /* Driver specific release function. */
-    pub release: Option<unsafe extern "C" fn(data: *mut core::ffi::c_void)>,
+    pub release: Option<unsafe extern "C" fn(data: *mut kernel::ffi::c_void)>,
 }
 
 #[repr(C)]
@@ -121,30 +121,30 @@ extern "C" {
     pub fn iscsi_boot_create_initiator(
         boot_kset: *mut iscsi_boot_kset,
         index: i32,
-        data: *mut core::ffi::c_void,
-        show: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32, *mut core::ffi::c_char) -> ssize_t>,
-        is_visible: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32) -> umode_t>,
-        release: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
+        data: *mut kernel::ffi::c_void,
+        show: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, i32, *mut kernel::ffi::c_char) -> ssize_t>,
+        is_visible: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, i32) -> umode_t>,
+        release: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
     ) -> *mut iscsi_boot_kobj;
     pub fn iscsi_boot_create_ethernet(
-        boot_kset: *mut iscsi_boot_kset, index: i32, data: *mut core::ffi::c_void,
-        show: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32, *mut core::ffi::c_char) -> ssize_t>,
-        is_visible: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32) -> umode_t>,
-        release: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
+        boot_kset: *mut iscsi_boot_kset, index: i32, data: *mut kernel::ffi::c_void,
+        show: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, i32, *mut kernel::ffi::c_char) -> ssize_t>,
+        is_visible: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, i32) -> umode_t>,
+        release: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
     ) -> *mut iscsi_boot_kobj;
     pub fn iscsi_boot_create_target(
-        boot_kset: *mut iscsi_boot_kset, index: i32, data: *mut core::ffi::c_void,
-        show: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32, *mut core::ffi::c_char) -> ssize_t>,
-        is_visible: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32) -> umode_t>,
-        release: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
+        boot_kset: *mut iscsi_boot_kset, index: i32, data: *mut kernel::ffi::c_void,
+        show: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, i32, *mut kernel::ffi::c_char) -> ssize_t>,
+        is_visible: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, i32) -> umode_t>,
+        release: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
     ) -> *mut iscsi_boot_kobj;
     pub fn iscsi_boot_create_acpitbl(
-        boot_kset: *mut iscsi_boot_kset, index: i32, data: *mut core::ffi::c_void,
-        show: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32, *mut core::ffi::c_char) -> ssize_t>,
-        is_visible: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32) -> umode_t>,
-        release: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
+        boot_kset: *mut iscsi_boot_kset, index: i32, data: *mut kernel::ffi::c_void,
+        show: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, i32, *mut kernel::ffi::c_char) -> ssize_t>,
+        is_visible: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, i32) -> umode_t>,
+        release: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
     ) -> *mut iscsi_boot_kobj;
-    pub fn iscsi_boot_create_kset(set_name: *const core::ffi::c_char) -> *mut iscsi_boot_kset;
+    pub fn iscsi_boot_create_kset(set_name: *const kernel::ffi::c_char) -> *mut iscsi_boot_kset;
     pub fn iscsi_boot_create_host_kset(hostno: u32) -> *mut iscsi_boot_kset;
     pub fn iscsi_boot_destroy_kset(boot_kset: *mut iscsi_boot_kset);
 }

@@ -19,10 +19,10 @@ const PROCSPEECH: u8 = b'\r'; // start synth processing speech char
 unsafe extern "C" {
     fn spk_ttyio_synth_probe(synth: *mut spk_synth) -> i32;
     fn spk_ttyio_release(synth: *mut spk_synth);
-    fn spk_ttyio_synth_immediate(synth: *mut spk_synth, text: *const core::ffi::c_char);
+    fn spk_ttyio_synth_immediate(synth: *mut spk_synth, text: *const kernel::ffi::c_char);
     fn spk_do_catch_up(synth: *mut spk_synth);
     fn spk_synth_is_alive_restart(synth: *mut spk_synth) -> bool;
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -42,7 +42,7 @@ pub struct spk_ttyio_ops;
 
 extern "C" {
     static spk_ttyio_ops: spk_ttyio_ops;
-    static SYNTH_DEFAULT_DEV: *mut core::ffi::c_char;
+    static SYNTH_DEFAULT_DEV: *mut kernel::ffi::c_char;
     static SYNTH_START: i16;
     static SYNTH_CHECK: i32;
 }
@@ -109,7 +109,7 @@ unsafe fn synth_flush(synth: *mut spk_synth) {
 unsafe fn synth_version(synth: *mut spk_synth) {
     let mut synth_id = [0i8; 33];
 
-    spk_ttyio_synth_immediate(synth, b"\x05[Q]\0".as_ptr() as *const core::ffi::c_char);
+    spk_ttyio_synth_immediate(synth, b"\x05[Q]\0".as_ptr() as *const kernel::ffi::c_char);
     synth_id[0] = (*synth).io_ops.synth_in(synth);
     if synth_id[0] != b'A' as i8 {
         return;
@@ -125,7 +125,7 @@ unsafe fn synth_version(synth: *mut spk_synth) {
         i += 1;
     }
     synth_id[i] = 0;
-    pr_info(b"%s version: %s\0".as_ptr() as *const core::ffi::c_char,
+    pr_info(b"%s version: %s\0".as_ptr() as *const kernel::ffi::c_char,
             (*synth).long_name, synth_id.as_ptr());
 }
 

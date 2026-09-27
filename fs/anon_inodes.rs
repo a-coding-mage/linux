@@ -48,9 +48,9 @@ static anon_inode_operations: inode_operations = inode_operations {
 /* anon_inodefs_dname() is called from d_path(). */
 unsafe extern "C" fn anon_inodefs_dname(
     dentry: *mut dentry,
-    buffer: *mut core::ffi::c_char,
+    buffer: *mut kernel::ffi::c_char,
     buflen: i32,
-) -> *mut core::ffi::c_char {
+) -> *mut kernel::ffi::c_char {
     dynamic_dname(buffer, buflen, c"anon_inode:%s".as_ptr(), (*dentry).d_name.name)
 }
 
@@ -76,7 +76,7 @@ static mut anon_inode_fs_type: file_system_type = file_system_type {
 /// Allocate an anonymous inode with security context.
 pub unsafe extern "C" fn anon_inode_make_secure_inode(
     sb: *mut super_block,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     context_inode: *const inode,
 ) -> *mut inode {
     let inode = alloc_anon_inode(sb);
@@ -96,9 +96,9 @@ pub unsafe extern "C" fn anon_inode_make_secure_inode(
 // EXPORT_SYMBOL_FOR_MODULES(anon_inode_make_secure_inode, "kvm");
 
 unsafe fn __anon_inode_getfile(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     fops: *const file_operations,
-    priv_: *mut core::ffi::c_void,
+    priv_: *mut kernel::ffi::c_void,
     flags: i32,
     context_inode: *const inode,
     make_inode: bool,
@@ -150,9 +150,9 @@ unsafe fn goto_err(fops: *const file_operations, file: *mut file) {
 }
 
 pub unsafe extern "C" fn anon_inode_getfile(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     fops: *const file_operations,
-    priv_: *mut core::ffi::c_void,
+    priv_: *mut kernel::ffi::c_void,
     flags: i32,
 ) -> *mut file {
     __anon_inode_getfile(name, fops, priv_, flags, core::ptr::null(), false)
@@ -161,9 +161,9 @@ pub unsafe extern "C" fn anon_inode_getfile(
 // EXPORT_SYMBOL_GPL(anon_inode_getfile);
 
 pub unsafe extern "C" fn anon_inode_getfile_fmode(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     fops: *const file_operations,
-    priv_: *mut core::ffi::c_void,
+    priv_: *mut kernel::ffi::c_void,
     flags: i32,
     f_mode: fmode_t,
 ) -> *mut file {
@@ -177,9 +177,9 @@ pub unsafe extern "C" fn anon_inode_getfile_fmode(
 // EXPORT_SYMBOL_GPL(anon_inode_getfile_fmode);
 
 pub unsafe extern "C" fn anon_inode_create_getfile(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     fops: *const file_operations,
-    priv_: *mut core::ffi::c_void,
+    priv_: *mut kernel::ffi::c_void,
     flags: i32,
     context_inode: *const inode,
 ) -> *mut file {
@@ -189,9 +189,9 @@ pub unsafe extern "C" fn anon_inode_create_getfile(
 // EXPORT_SYMBOL_GPL(anon_inode_create_getfile);
 
 unsafe fn __anon_inode_getfd(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     fops: *const file_operations,
-    priv_: *mut core::ffi::c_void,
+    priv_: *mut kernel::ffi::c_void,
     flags: i32,
     context_inode: *const inode,
     make_inode: bool,
@@ -203,9 +203,9 @@ unsafe fn __anon_inode_getfd(
 }
 
 pub unsafe extern "C" fn anon_inode_getfd(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     fops: *const file_operations,
-    priv_: *mut core::ffi::c_void,
+    priv_: *mut kernel::ffi::c_void,
     flags: i32,
 ) -> i32 {
     __anon_inode_getfd(name, fops, priv_, flags, core::ptr::null(), false)
@@ -214,9 +214,9 @@ pub unsafe extern "C" fn anon_inode_getfd(
 // EXPORT_SYMBOL_GPL(anon_inode_getfd);
 
 pub unsafe extern "C" fn anon_inode_create_getfd(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     fops: *const file_operations,
-    priv_: *mut core::ffi::c_void,
+    priv_: *mut kernel::ffi::c_void,
     flags: i32,
     context_inode: *const inode,
 ) -> i32 {

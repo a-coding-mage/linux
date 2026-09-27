@@ -50,9 +50,9 @@ pub struct in6_rtmsg {
     pub rtmsg_dst_len: __u16,
     pub rtmsg_src_len: __u16,
     pub rtmsg_metric: __u32,
-    pub rtmsg_info: ::core::ffi::c_ulong,
+    pub rtmsg_info: ::kernel::ffi::c_ulong,
     pub rtmsg_flags: __u32,
-    pub rtmsg_ifindex: ::core::ffi::c_int,
+    pub rtmsg_ifindex: ::kernel::ffi::c_int,
 }
 
 pub const RTMSG_NEWDEVICE: u32 = 0x11;

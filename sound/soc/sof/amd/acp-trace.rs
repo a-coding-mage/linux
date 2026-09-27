@@ -65,7 +65,7 @@ unsafe extern "C" {
     fn acp_dsp_stream_put(sdev: *mut snd_sof_dev, stream: *mut acp_dsp_stream) -> i32;
     fn acp_dsp_stream_get(sdev: *mut snd_sof_dev, stream_tag: i32) -> *mut acp_dsp_stream;
     fn acp_dsp_stream_config(sdev: *mut snd_sof_dev, stream: *mut acp_dsp_stream) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[unsafe(no_mangle)]

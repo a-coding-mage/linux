@@ -46,8 +46,8 @@ unsafe fn div_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request) -> i32
 
 unsafe fn div_set_rate(
     hw: *mut clk_hw,
-    rate: core::ffi::c_ulong,
-    parent_rate: core::ffi::c_ulong,
+    rate: kernel::ffi::c_ulong,
+    parent_rate: kernel::ffi::c_ulong,
 ) -> i32 {
     let divider: *mut clk_regmap_div = to_clk_regmap_div(hw);
     let clkr: *mut clk_regmap = &mut (*divider).clkr;
@@ -69,8 +69,8 @@ unsafe fn div_set_rate(
 
 unsafe fn div_recalc_rate(
     hw: *mut clk_hw,
-    parent_rate: core::ffi::c_ulong,
-) -> core::ffi::c_ulong {
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     let divider: *mut clk_regmap_div = to_clk_regmap_div(hw);
     let clkr: *mut clk_regmap = &mut (*divider).clkr;
     let mut div: u32 = 0;

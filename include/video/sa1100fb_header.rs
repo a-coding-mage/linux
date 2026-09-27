@@ -29,7 +29,7 @@ pub struct sa1100fb_rgb {
 /* This structure describes the machine which we are running on. */
 #[repr(C)]
 pub struct sa1100fb_mach_info {
-    pub pixclock: core::ffi::c_ulong,
+    pub pixclock: kernel::ffi::c_ulong,
 
     pub xres: u16,
     pub yres: u16,

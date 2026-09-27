@@ -91,8 +91,8 @@ extern "C" {
 
 #[cfg(CONFIG_FTRACE_SYSCALLS)]
 #[inline]
-pub unsafe fn arch_syscall_match_sym_name(sym: *const core::ffi::c_char,
-                                          name: *const core::ffi::c_char) -> bool {
+pub unsafe fn arch_syscall_match_sym_name(sym: *const kernel::ffi::c_char,
+                                          name: *const kernel::ffi::c_char) -> bool {
     strcmp(sym, name) == 0
         || (strncmp(sym, b"__se_sys\0".as_ptr() as _, 8) == 0 && strcmp(sym.add(5), name) == 0)
         || (strncmp(sym, b"ppc_\0".as_ptr() as _, 4) == 0 && strcmp(sym.add(4), name.add(4)) == 0)
@@ -169,8 +169,8 @@ pub unsafe fn arch_ftrace_set_direct_caller(fregs: *mut ftrace_regs, addr: usize
 
 /* External types and functions supplied by the surrounding kernel translation. */
 extern "C" {
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
-    fn strncmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char, n: usize) -> i32;
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
+    fn strncmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char, n: usize) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

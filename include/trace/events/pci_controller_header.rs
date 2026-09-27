@@ -4,7 +4,7 @@
 // The C header guard and tracepoint includes are intentionally omitted; their
 // declarations are supplied by the surrounding translation unit.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // RATE is the local symbolic-rate table used by the trace event.
 // The enum constants are supplied by the corresponding PCI headers.

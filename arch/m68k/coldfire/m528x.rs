@@ -27,8 +27,8 @@ struct clk;
 
 #[repr(C)]
 struct clk_lookup {
-    dev_id: *const core::ffi::c_char,
-    con_id: *const core::ffi::c_char,
+    dev_id: *const kernel::ffi::c_char,
+    con_id: *const kernel::ffi::c_char,
     clk: *mut clk,
 }
 
@@ -41,7 +41,7 @@ extern "C" {
     fn hw_timer_init();
     static mut mach_halt: Option<unsafe extern "C" fn()>;
     static mut mach_sched_init: Option<unsafe extern "C" fn()>;
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
 }
 
 // CLKDEV_INIT(NULL, "pll.0", &clk_pll), etc.
@@ -106,7 +106,7 @@ unsafe extern "C" fn wildfiremod_halt() {
 }
 // #endif
 
-pub unsafe extern "C" fn config_BSP(_commandp: *mut core::ffi::c_char, _size: i32) {
+pub unsafe extern "C" fn config_BSP(_commandp: *mut kernel::ffi::c_char, _size: i32) {
     // #ifdef CONFIG_WILDFIRE
     mach_halt = Some(wildfire_halt);
     // #endif

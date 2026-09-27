@@ -29,13 +29,13 @@ pub const END_OF_RESET_WAIT_TIME: u32 = 500; /* us */
 #[no_mangle]
 pub unsafe extern "C" fn snd_vx_check_reg_bit(
     chip: *mut vx_core,
-    reg: core::ffi::c_int,
-    mask: core::ffi::c_int,
-    bit: core::ffi::c_int,
-    time: core::ffi::c_int,
-) -> core::ffi::c_int {
-    let end_time: core::ffi::c_ulong =
-        jiffies.wrapping_add(((time * HZ + 999) / 1000) as core::ffi::c_ulong);
+    reg: kernel::ffi::c_int,
+    mask: kernel::ffi::c_int,
+    bit: kernel::ffi::c_int,
+    time: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
+    let end_time: kernel::ffi::c_ulong =
+        jiffies.wrapping_add(((time * HZ + 999) / 1000) as kernel::ffi::c_ulong);
     static REG_NAMES: [&[u8]; VX_REG_MAX as usize] = [
         b"ICR\0", b"CVR\0", b"ISR\0", b"IVR\0", b"RXH\0", b"RXM\0", b"RXL\0",
         b"DMA\0", b"CDSP\0", b"RFREQ\0", b"RUER/V2\0", b"DATA\0", b"MEMIRQ\0",
@@ -73,9 +73,9 @@ pub unsafe extern "C" fn snd_vx_check_reg_bit(
  */
 unsafe extern "C" fn vx_send_irq_dsp(
     chip: *mut vx_core,
-    num: core::ffi::c_int,
-) -> core::ffi::c_int {
-    let mut nirq: core::ffi::c_int;
+    num: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
+    let mut nirq: kernel::ffi::c_int;
 
     /* wait for Hc = 0 */
     if snd_vx_check_reg_bit(chip, VX_CVR, CVR_HC, 0, 200) < 0 {
@@ -95,7 +95,7 @@ unsafe extern "C" fn vx_send_irq_dsp(
  *
  * returns 0 if successful, or a negative error code.
  */
-unsafe extern "C" fn vx_reset_chk(chip: *mut vx_core) -> core::ffi::c_int {
+unsafe extern "C" fn vx_reset_chk(chip: *mut vx_core) -> kernel::ffi::c_int {
     /* Reset irq CHK */
     if vx_send_irq_dsp(chip, IRQ_RESET_CHK) < 0 {
         return -EIO;
@@ -117,9 +117,9 @@ unsafe extern "C" fn vx_reset_chk(chip: *mut vx_core) -> core::ffi::c_int {
  */
 unsafe extern "C" fn vx_transfer_end(
     chip: *mut vx_core,
-    cmd: core::ffi::c_int,
-) -> core::ffi::c_int {
-    let mut err: core::ffi::c_int;
+    cmd: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
+    let mut err: kernel::ffi::c_int;
 
     err = vx_reset_chk(chip);
     if err < 0 {
@@ -173,11 +173,11 @@ unsafe extern "C" fn vx_transfer_end(
 unsafe extern "C" fn vx_read_status(
     chip: *mut vx_core,
     rmh: *mut vx_rmh,
-) -> core::ffi::c_int {
-    let mut i: core::ffi::c_int;
-    let mut err: core::ffi::c_int;
-    let mut val: core::ffi::c_int;
-    let mut size: core::ffi::c_int;
+) -> kernel::ffi::c_int {
+    let mut i: kernel::ffi::c_int;
+    let mut err: kernel::ffi::c_int;
+    let mut val: kernel::ffi::c_int;
+    let mut size: kernel::ffi::c_int;
 
     /* no read necessary? */
     if (*rmh).DspStat == RMH_SSIZE_FIXED && (*rmh).LgStat == 0 {
@@ -228,7 +228,7 @@ unsafe extern "C" fn vx_read_status(
     if size < 1 {
         return 0;
     }
-    if snd_BUG_ON((size >= SIZE_MAX_STATUS) as core::ffi::c_int) != 0 {
+    if snd_BUG_ON((size >= SIZE_MAX_STATUS) as kernel::ffi::c_int) != 0 {
         return -EINVAL;
     }
 
@@ -266,9 +266,9 @@ unsafe extern "C" fn vx_read_status(
 pub unsafe extern "C" fn vx_send_msg_nolock(
     chip: *mut vx_core,
     rmh: *mut vx_rmh,
-) -> core::ffi::c_int {
-    let mut i: core::ffi::c_int;
-    let mut err: core::ffi::c_int;
+) -> kernel::ffi::c_int {
+    let mut i: kernel::ffi::c_int;
+    let mut err: kernel::ffi::c_int;
 
     if ((*chip).chip_status & VX_STAT_IS_STALE) != 0 {
         return -EBUSY;
@@ -282,9 +282,9 @@ pub unsafe extern "C" fn vx_send_msg_nolock(
 
     /* Check bit M is set according to length of the command */
     if (*rmh).LgCmd > 1 {
-        (*rmh).Cmd[0] |= MASK_MORE_THAN_1_WORD_COMMAND as core::ffi::c_int;
+        (*rmh).Cmd[0] |= MASK_MORE_THAN_1_WORD_COMMAND as kernel::ffi::c_int;
     } else {
-        (*rmh).Cmd[0] &= MASK_1_WORD_COMMAND as core::ffi::c_int;
+        (*rmh).Cmd[0] &= MASK_1_WORD_COMMAND as kernel::ffi::c_int;
     }
 
     /* Wait for TX empty */
@@ -378,7 +378,7 @@ pub unsafe extern "C" fn vx_send_msg_nolock(
 pub unsafe extern "C" fn vx_send_msg(
     chip: *mut vx_core,
     rmh: *mut vx_rmh,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let _guard = guard_mutex(&mut (*chip).lock);
     vx_send_msg_nolock(chip, rmh)
 }
@@ -397,9 +397,9 @@ pub unsafe extern "C" fn vx_send_msg(
 #[no_mangle]
 pub unsafe extern "C" fn vx_send_rih_nolock(
     chip: *mut vx_core,
-    cmd: core::ffi::c_int,
-) -> core::ffi::c_int {
-    let mut err: core::ffi::c_int;
+    cmd: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
+    let mut err: kernel::ffi::c_int;
 
     if ((*chip).chip_status & VX_STAT_IS_STALE) != 0 {
         return -EBUSY;
@@ -442,8 +442,8 @@ pub unsafe extern "C" fn vx_send_rih_nolock(
 #[no_mangle]
 pub unsafe extern "C" fn vx_send_rih(
     chip: *mut vx_core,
-    cmd: core::ffi::c_int,
-) -> core::ffi::c_int {
+    cmd: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let _guard = guard_mutex(&mut (*chip).lock);
     vx_send_rih_nolock(chip, cmd)
 }
@@ -457,9 +457,9 @@ pub unsafe extern "C" fn vx_send_rih(
 pub unsafe extern "C" fn snd_vx_load_boot_image(
     chip: *mut vx_core,
     boot: *const firmware,
-) -> core::ffi::c_int {
-    let mut i: core::ffi::c_uint;
-    let no_fillup: core::ffi::c_int = vx_has_new_dsp(chip);
+) -> kernel::ffi::c_int {
+    let mut i: kernel::ffi::c_uint;
+    let no_fillup: kernel::ffi::c_int = vx_has_new_dsp(chip);
 
     /* check the length of boot image */
     if (*boot).size <= 0 {
@@ -490,14 +490,14 @@ pub unsafe extern "C" fn snd_vx_load_boot_image(
             vx_outb(chip, TXM, 0);
             vx_outb(chip, TXL, 0);
         } else {
-            let image: *const core::ffi::c_uchar = (*boot).data.add(i as usize);
+            let image: *const kernel::ffi::c_uchar = (*boot).data.add(i as usize);
             if vx_wait_isr_bit(chip, ISR_TX_EMPTY) < 0 {
                 dev_err((*(*chip).card).dev, b"dsp boot failed at %d\n\0".as_ptr() as *const _, i);
                 return -EIO;
             }
-            vx_outb(chip, TXH, *image.add(0) as core::ffi::c_int);
-            vx_outb(chip, TXM, *image.add(1) as core::ffi::c_int);
-            vx_outb(chip, TXL, *image.add(2) as core::ffi::c_int);
+            vx_outb(chip, TXH, *image.add(0) as kernel::ffi::c_int);
+            vx_outb(chip, TXM, *image.add(1) as kernel::ffi::c_int);
+            vx_outb(chip, TXL, *image.add(2) as kernel::ffi::c_int);
         }
         i += 3;
     }
@@ -511,9 +511,9 @@ pub unsafe extern "C" fn snd_vx_load_boot_image(
  */
 unsafe extern "C" fn vx_test_irq_src(
     chip: *mut vx_core,
-    ret: *mut core::ffi::c_uint,
-) -> core::ffi::c_int {
-    let err: core::ffi::c_int;
+    ret: *mut kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
+    let err: kernel::ffi::c_int;
 
     vx_init_rmh(&mut (*chip).irq_rmh, CMD_TEST_IT);
     let _guard = guard_mutex(&mut (*chip).lock);
@@ -521,7 +521,7 @@ unsafe extern "C" fn vx_test_irq_src(
     if err < 0 {
         *ret = 0;
     } else {
-        *ret = (*chip).irq_rmh.Stat[0] as core::ffi::c_uint;
+        *ret = (*chip).irq_rmh.Stat[0] as kernel::ffi::c_uint;
     }
     err
 }
@@ -531,11 +531,11 @@ unsafe extern "C" fn vx_test_irq_src(
  */
 #[no_mangle]
 pub unsafe extern "C" fn snd_vx_threaded_irq_handler(
-    _irq: core::ffi::c_int,
-    dev: *mut core::ffi::c_void,
+    _irq: kernel::ffi::c_int,
+    dev: *mut kernel::ffi::c_void,
 ) -> irqreturn_t {
     let chip: *mut vx_core = dev as *mut vx_core;
-    let mut events: core::ffi::c_uint = 0;
+    let mut events: kernel::ffi::c_uint = 0;
 
     if ((*chip).chip_status & VX_STAT_IS_STALE) != 0 {
         return IRQ_HANDLED;
@@ -580,8 +580,8 @@ pub unsafe extern "C" fn snd_vx_threaded_irq_handler(
  */
 #[no_mangle]
 pub unsafe extern "C" fn snd_vx_irq_handler(
-    _irq: core::ffi::c_int,
-    dev: *mut core::ffi::c_void,
+    _irq: kernel::ffi::c_int,
+    dev: *mut kernel::ffi::c_void,
 ) -> irqreturn_t {
     let chip: *mut vx_core = dev as *mut vx_core;
 
@@ -598,7 +598,7 @@ pub unsafe extern "C" fn snd_vx_irq_handler(
 
 /*
  */
-unsafe extern "C" fn vx_reset_board(chip: *mut vx_core, cold_reset: core::ffi::c_int) {
+unsafe extern "C" fn vx_reset_board(chip: *mut vx_core, cold_reset: kernel::ffi::c_int) {
     if snd_BUG_ON((*chip).ops.is_null() || (*(*chip).ops).reset_board.is_none()) != 0 {
         return;
     }
@@ -716,9 +716,9 @@ unsafe extern "C" fn vx_proc_init(chip: *mut vx_core) {
 pub unsafe extern "C" fn snd_vx_dsp_boot(
     chip: *mut vx_core,
     boot: *const firmware,
-) -> core::ffi::c_int {
-    let err: core::ffi::c_int;
-    let cold_reset: core::ffi::c_int = (((*chip).chip_status & VX_STAT_DEVICE_INIT) == 0) as core::ffi::c_int;
+) -> kernel::ffi::c_int {
+    let err: kernel::ffi::c_int;
+    let cold_reset: kernel::ffi::c_int = (((*chip).chip_status & VX_STAT_DEVICE_INIT) == 0) as kernel::ffi::c_int;
 
     vx_reset_board(chip, cold_reset);
     vx_validate_irq(chip, 0);
@@ -741,12 +741,12 @@ pub unsafe extern "C" fn snd_vx_dsp_boot(
 pub unsafe extern "C" fn snd_vx_dsp_load(
     chip: *mut vx_core,
     dsp: *const firmware,
-) -> core::ffi::c_int {
-    let mut i: core::ffi::c_uint;
-    let mut err: core::ffi::c_int;
-    let mut csum: core::ffi::c_uint = 0;
-    let mut image: *const core::ffi::c_uchar;
-    let mut cptr: *const core::ffi::c_uchar;
+) -> kernel::ffi::c_int {
+    let mut i: kernel::ffi::c_uint;
+    let mut err: kernel::ffi::c_int;
+    let mut csum: kernel::ffi::c_uint = 0;
+    let mut image: *const kernel::ffi::c_uchar;
+    let mut cptr: *const kernel::ffi::c_uchar;
 
     if ((*dsp).size % 3) != 0 {
         return -EINVAL;
@@ -765,17 +765,17 @@ pub unsafe extern "C" fn snd_vx_dsp_load(
             return err;
         }
         cptr = image;
-        csum ^= *cptr as core::ffi::c_uint;
+        csum ^= *cptr as kernel::ffi::c_uint;
         csum = (csum >> 24) | (csum << 8);
-        vx_outb(chip, TXH, *cptr as core::ffi::c_int);
+        vx_outb(chip, TXH, *cptr as kernel::ffi::c_int);
         cptr = cptr.add(1);
-        csum ^= *cptr as core::ffi::c_uint;
+        csum ^= *cptr as kernel::ffi::c_uint;
         csum = (csum >> 24) | (csum << 8);
-        vx_outb(chip, TXM, *cptr as core::ffi::c_int);
+        vx_outb(chip, TXM, *cptr as kernel::ffi::c_int);
         cptr = cptr.add(1);
-        csum ^= *cptr as core::ffi::c_uint;
+        csum ^= *cptr as kernel::ffi::c_uint;
         csum = (csum >> 24) | (csum << 8);
-        vx_outb(chip, TXL, *cptr as core::ffi::c_int);
+        vx_outb(chip, TXL, *cptr as kernel::ffi::c_int);
         cptr = cptr.add(1);
 
         i += 3;
@@ -804,7 +804,7 @@ pub unsafe extern "C" fn snd_vx_dsp_load(
  */
 #[cfg(CONFIG_PM)]
 #[no_mangle]
-pub unsafe extern "C" fn snd_vx_suspend(chip: *mut vx_core) -> core::ffi::c_int {
+pub unsafe extern "C" fn snd_vx_suspend(chip: *mut vx_core) -> kernel::ffi::c_int {
     snd_power_change_state((*chip).card, SNDRV_CTL_POWER_D3hot);
     (*chip).chip_status |= VX_STAT_IN_SUSPEND;
 
@@ -816,9 +816,9 @@ pub unsafe extern "C" fn snd_vx_suspend(chip: *mut vx_core) -> core::ffi::c_int 
  */
 #[cfg(CONFIG_PM)]
 #[no_mangle]
-pub unsafe extern "C" fn snd_vx_resume(chip: *mut vx_core) -> core::ffi::c_int {
-    let mut i: core::ffi::c_int;
-    let mut err: core::ffi::c_int;
+pub unsafe extern "C" fn snd_vx_resume(chip: *mut vx_core) -> kernel::ffi::c_int {
+    let mut i: kernel::ffi::c_int;
+    let mut err: kernel::ffi::c_int;
 
     (*chip).chip_status &= !VX_STAT_CHIP_INIT;
 
@@ -843,7 +843,7 @@ pub unsafe extern "C" fn snd_vx_resume(chip: *mut vx_core) -> core::ffi::c_int {
     0
 }
 
-unsafe extern "C" fn snd_vx_release(_dev: *mut device, data: *mut core::ffi::c_void) {
+unsafe extern "C" fn snd_vx_release(_dev: *mut device, data: *mut kernel::ffi::c_void) {
     snd_vx_free_firmware(data);
 }
 
@@ -866,7 +866,7 @@ pub unsafe extern "C" fn snd_vx_create(
     card: *mut snd_card,
     hw: *const snd_vx_hardware,
     ops: *const snd_vx_ops,
-    extra_size: core::ffi::c_int,
+    extra_size: kernel::ffi::c_int,
 ) -> *mut vx_core {
     let chip: *mut vx_core;
 

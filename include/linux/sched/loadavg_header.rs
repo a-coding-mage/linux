@@ -11,11 +11,11 @@
  *    11 bit fractions.
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 extern "C" {
     pub static mut avenrun: [c_ulong; 0]; /* Load averages */
-    pub fn get_avenrun(loads: *mut c_ulong, offset: c_ulong, shift: core::ffi::c_int);
+    pub fn get_avenrun(loads: *mut c_ulong, offset: c_ulong, shift: kernel::ffi::c_int);
 }
 
 pub const FSHIFT: u32 = 11; /* nr of bits of precision */
@@ -48,7 +48,7 @@ extern "C" {
         load: c_ulong,
         exp: c_ulong,
         active: c_ulong,
-        n: core::ffi::c_uint,
+        n: kernel::ffi::c_uint,
     ) -> c_ulong;
     pub fn calc_global_load();
 }

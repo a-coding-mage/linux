@@ -18,8 +18,8 @@ unsafe fn ext4_xattr_hurd_get(
     _handler: *const xattr_handler,
     _unused: *mut dentry,
     inode: *mut inode,
-    name: *const core::ffi::c_char,
-    buffer: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    buffer: *mut kernel::ffi::c_void,
     size: usize,
 ) -> i32 {
     if !test_opt((*inode).i_sb, XATTR_USER) {
@@ -34,8 +34,8 @@ unsafe fn ext4_xattr_hurd_set(
     _idmap: *mut mnt_idmap,
     _unused: *mut dentry,
     inode: *mut inode,
-    name: *const core::ffi::c_char,
-    value: *const core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    value: *const kernel::ffi::c_void,
     size: usize,
     flags: i32,
 ) -> i32 {

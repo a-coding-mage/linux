@@ -9,7 +9,7 @@
 // C dependencies supplied by the surrounding kernel build are intentionally
 // not reimplemented here.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 static mut CPCMD_LOCK: SpinLock = SpinLock::new();
 static mut CPCMD_BUF: [c_char; 241] = [0; 241];

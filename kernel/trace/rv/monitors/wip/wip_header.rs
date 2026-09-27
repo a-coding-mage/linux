@@ -28,8 +28,8 @@ pub enum EventsWip {
 
 #[repr(C)]
 pub struct AutomatonWip {
-    pub state_names: [*const core::ffi::c_char; StatesWip::StateMaxWip as usize],
-    pub event_names: [*const core::ffi::c_char; EventsWip::EventMaxWip as usize],
+    pub state_names: [*const kernel::ffi::c_char; StatesWip::StateMaxWip as usize],
+    pub event_names: [*const kernel::ffi::c_char; EventsWip::EventMaxWip as usize],
     pub function: [[u8; EventsWip::EventMaxWip as usize]; StatesWip::StateMaxWip as usize],
     pub initial_state: u8,
     pub final_states: [bool; StatesWip::StateMaxWip as usize],
@@ -37,13 +37,13 @@ pub struct AutomatonWip {
 
 pub static AUTOMATON_WIP: AutomatonWip = AutomatonWip {
     state_names: [
-        b"preemptive\0".as_ptr() as *const core::ffi::c_char,
-        b"non_preemptive\0".as_ptr() as *const core::ffi::c_char,
+        b"preemptive\0".as_ptr() as *const kernel::ffi::c_char,
+        b"non_preemptive\0".as_ptr() as *const kernel::ffi::c_char,
     ],
     event_names: [
-        b"preempt_disable\0".as_ptr() as *const core::ffi::c_char,
-        b"preempt_enable\0".as_ptr() as *const core::ffi::c_char,
-        b"sched_waking\0".as_ptr() as *const core::ffi::c_char,
+        b"preempt_disable\0".as_ptr() as *const kernel::ffi::c_char,
+        b"preempt_enable\0".as_ptr() as *const kernel::ffi::c_char,
+        b"sched_waking\0".as_ptr() as *const kernel::ffi::c_char,
     ],
     function: [
         [

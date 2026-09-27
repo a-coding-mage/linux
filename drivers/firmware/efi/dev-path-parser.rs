@@ -10,21 +10,21 @@ unsafe fn parse_acpi_path(
     node: *const efi_dev_path,
     _parent: *mut device,
     child: *mut *mut device,
-) -> libc::c_long {
+) -> kernel::ffi::c_long {
     let adev: *mut acpi_device;
     let phys_dev: *mut device;
     let mut hid = [0i8; ACPI_ID_LEN as usize];
 
     if (*node).header.length != 12 {
-        return -EINVAL as libc::c_long;
+        return -EINVAL as kernel::ffi::c_long;
     }
 
     sprintf(
         hid.as_mut_ptr(),
-        b"%c%c%c%04X\0".as_ptr() as *const libc::c_char,
-        b'A' as libc::c_int + (((*node).acpi.hid >> 10) & 0x1f) as libc::c_int - 1,
-        b'A' as libc::c_int + (((*node).acpi.hid >> 5) & 0x1f) as libc::c_int - 1,
-        b'A' as libc::c_int + (((*node).acpi.hid >> 0) & 0x1f) as libc::c_int - 1,
+        b"%c%c%c%04X\0".as_ptr() as *const kernel::ffi::c_char,
+        b'A' as kernel::ffi::c_int + (((*node).acpi.hid >> 10) & 0x1f) as kernel::ffi::c_int - 1,
+        b'A' as kernel::ffi::c_int + (((*node).acpi.hid >> 5) & 0x1f) as kernel::ffi::c_int - 1,
+        b'A' as kernel::ffi::c_int + (((*node).acpi.hid >> 0) & 0x1f) as kernel::ffi::c_int - 1,
         (*node).acpi.hid >> 16,
     );
 
@@ -40,7 +40,7 @@ unsafe fn parse_acpi_path(
         }
     });
     if adev.is_null() {
-        return -ENODEV as libc::c_long;
+        return -ENODEV as kernel::ffi::c_long;
     }
 
     phys_dev = acpi_get_first_physical_node(adev);
@@ -54,29 +54,29 @@ unsafe fn parse_acpi_path(
     0
 }
 
-unsafe fn match_pci_dev(dev: *mut device, data: *const libc::c_void) -> libc::c_int {
-    let devfn = *(data as *const libc::c_uint);
-    (dev_is_pci(dev) && (*to_pci_dev(dev)).devfn == devfn) as libc::c_int
+unsafe fn match_pci_dev(dev: *mut device, data: *const kernel::ffi::c_void) -> kernel::ffi::c_int {
+    let devfn = *(data as *const kernel::ffi::c_uint);
+    (dev_is_pci(dev) && (*to_pci_dev(dev)).devfn == devfn) as kernel::ffi::c_int
 }
 
 unsafe fn parse_pci_path(
     node: *const efi_dev_path,
     parent: *mut device,
     child: *mut *mut device,
-) -> libc::c_long {
-    let devfn: libc::c_uint;
+) -> kernel::ffi::c_long {
+    let devfn: kernel::ffi::c_uint;
 
     if (*node).header.length != 6 {
-        return -EINVAL as libc::c_long;
+        return -EINVAL as kernel::ffi::c_long;
     }
     if parent.is_null() {
-        return -EINVAL as libc::c_long;
+        return -EINVAL as kernel::ffi::c_long;
     }
 
     devfn = PCI_DEVFN((*node).pci.dev, (*node).pci.r#fn);
-    *child = device_find_child(parent, &devfn as *const _ as *const libc::c_void, match_pci_dev);
+    *child = device_find_child(parent, &devfn as *const _ as *const kernel::ffi::c_void, match_pci_dev);
     if (*child).is_null() {
-        return -ENODEV as libc::c_long;
+        return -ENODEV as kernel::ffi::c_long;
     }
     0
 }
@@ -93,20 +93,20 @@ unsafe fn parse_end_path(
     node: *const efi_dev_path,
     parent: *mut device,
     child: *mut *mut device,
-) -> libc::c_long {
+) -> kernel::ffi::c_long {
     if (*node).header.length != 4 {
-        return -EINVAL as libc::c_long;
+        return -EINVAL as kernel::ffi::c_long;
     }
     if (*node).header.sub_type != EFI_DEV_END_INSTANCE
         && (*node).header.sub_type != EFI_DEV_END_ENTIRE
     {
-        return -EINVAL as libc::c_long;
+        return -EINVAL as kernel::ffi::c_long;
     }
     if parent.is_null() {
-        return -ENODEV as libc::c_long;
+        return -ENODEV as kernel::ffi::c_long;
     }
     *child = get_device(parent);
-    (*node).header.sub_type as libc::c_long
+    (*node).header.sub_type as kernel::ffi::c_long
 }
 
 /// efi_get_device_by_path - find device by EFI Device Path
@@ -116,7 +116,7 @@ pub unsafe fn efi_get_device_by_path(
 ) -> *mut device {
     let mut parent: *mut device = core::ptr::null_mut();
     let mut child: *mut device;
-    let mut ret: libc::c_long = 0;
+    let mut ret: kernel::ffi::c_long = 0;
 
     if *len == 0 {
         return core::ptr::null_mut();
@@ -124,7 +124,7 @@ pub unsafe fn efi_get_device_by_path(
 
     while ret == 0 {
         if *len < 4 || *len < (*(*node)).header.length as usize {
-            ret = -EINVAL as libc::c_long;
+            ret = -EINVAL as kernel::ffi::c_long;
         } else if (*(*node)).header.type_ == EFI_DEV_ACPI
             && (*(*node)).header.sub_type == EFI_DEV_BASIC_ACPI
         {
@@ -138,7 +138,7 @@ pub unsafe fn efi_get_device_by_path(
         {
             ret = parse_end_path(*node, parent, &mut child);
         } else {
-            ret = -ENOTSUPP as libc::c_long;
+            ret = -ENOTSUPP as kernel::ffi::c_long;
         }
 
         put_device(parent);
@@ -151,7 +151,7 @@ pub unsafe fn efi_get_device_by_path(
         *len -= (*(*node)).header.length as usize;
     }
 
-    if ret == EFI_DEV_END_ENTIRE as libc::c_long {
+    if ret == EFI_DEV_END_ENTIRE as kernel::ffi::c_long {
         *len = 0;
     }
     child

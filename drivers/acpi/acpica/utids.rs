@@ -2,7 +2,7 @@
 // Support for device IDs: HID, UID, CID, SUB, CLS.
 
 use crate::*;
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 use core::ptr;
 
 pub unsafe fn acpi_ut_execute_HID(

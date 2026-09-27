@@ -3,7 +3,7 @@
 // Declarations corresponding to linux/clocksource.h, linux/spinlock.h, and
 // linux/time.h are supplied by other translation units.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct timekeeper {

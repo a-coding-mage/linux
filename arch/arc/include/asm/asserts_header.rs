@@ -5,7 +5,7 @@
  * Author: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* Helpers to sanitize config options. */
 
@@ -25,7 +25,7 @@ macro_rules! CHK_OPT_STRICT {
     ($opt_name:ident, $hw_exists:expr) => {{
         unsafe {
             chk_opt_strict(
-                stringify!($opt_name).as_ptr() as *mut c_char,
+                concat!(stringify!($opt_name), "\0").as_ptr() as *mut c_char,
                 $hw_exists,
                 IS_ENABLED!($opt_name),
             );
@@ -43,7 +43,7 @@ macro_rules! CHK_OPT_WEAK {
     ($opt_name:ident, $hw_exists:expr) => {{
         unsafe {
             chk_opt_weak(
-                stringify!($opt_name).as_ptr() as *mut c_char,
+                concat!(stringify!($opt_name), "\0").as_ptr() as *mut c_char,
                 $hw_exists,
                 IS_ENABLED!($opt_name),
             );

@@ -21,7 +21,7 @@
  * Authors: AMD
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // External types supplied by the corresponding dependencies.
 #[repr(C)]

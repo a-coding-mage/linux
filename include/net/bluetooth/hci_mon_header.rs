@@ -55,7 +55,7 @@ pub struct hci_mon_new_index {
     pub type_: __u8,
     pub bus: __u8,
     pub bdaddr: bdaddr_t,
-    pub name: [core::ffi::c_char; 8],
+    pub name: [kernel::ffi::c_char; 8],
 }
 
 pub const HCI_MON_NEW_INDEX_SIZE: usize = 16;

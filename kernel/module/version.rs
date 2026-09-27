@@ -9,14 +9,14 @@
 
 pub unsafe fn check_version(
     info: *const load_info,
-    symname: *const ::core::ffi::c_char,
+    symname: *const ::kernel::ffi::c_char,
     mod_: *mut module,
     crc: *const u32,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let sechdrs: *mut Elf_Shdr = (*info).sechdrs;
-    let versindex: ::core::ffi::c_uint = (*info).index.vers;
-    let mut i: ::core::ffi::c_uint;
-    let num_versions: ::core::ffi::c_uint;
+    let versindex: ::kernel::ffi::c_uint = (*info).index.vers;
+    let mut i: ::kernel::ffi::c_uint;
+    let num_versions: ::kernel::ffi::c_uint;
     let versions: *mut modversion_info;
     let mut version_ext: modversion_info_ext = ::core::mem::zeroed();
 
@@ -46,12 +46,12 @@ pub unsafe fn check_version(
 
     /* No versions at all?  modprobe --force does this. */
     if versindex == 0 {
-        return (try_to_force_load(mod_, symname) == 0) as ::core::ffi::c_int;
+        return (try_to_force_load(mod_, symname) == 0) as ::kernel::ffi::c_int;
     }
 
     versions = (*sechdrs.add(versindex as usize)).sh_addr as *mut modversion_info;
     num_versions = ((*sechdrs.add(versindex as usize)).sh_size
-        / ::core::mem::size_of::<modversion_info>()) as ::core::ffi::c_uint;
+        / ::core::mem::size_of::<modversion_info>()) as ::kernel::ffi::c_uint;
 
     i = 0;
     while i < num_versions {
@@ -78,12 +78,12 @@ pub unsafe fn check_version(
 }
 
 unsafe fn goto_bad_version(info: *const load_info,
-                           symname: *const ::core::ffi::c_char) {
+                           symname: *const ::kernel::ffi::c_char) {
     pr_warn(c"%s: disagrees about version of symbol %s\n", (*info).name, symname);
 }
 
 pub unsafe fn check_modstruct_version(info: *const load_info,
-                                      mod_: *mut module) -> ::core::ffi::c_int {
+                                      mod_: *mut module) -> ::kernel::ffi::c_int {
     let mut fsa = find_symbol_arg {
         name: c"module_layout".as_ptr(),
         gplok: true,
@@ -105,21 +105,21 @@ pub unsafe fn check_modstruct_version(info: *const load_info,
 
 /* First part is kernel version, which we ignore if module has crcs. */
 pub unsafe fn same_magic(
-    mut amagic: *const ::core::ffi::c_char,
-    mut bmagic: *const ::core::ffi::c_char,
+    mut amagic: *const ::kernel::ffi::c_char,
+    mut bmagic: *const ::kernel::ffi::c_char,
     has_crcs: bool,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     if has_crcs {
         amagic = amagic.add(strcspn(amagic, c" ".as_ptr()));
         bmagic = bmagic.add(strcspn(bmagic, c" ".as_ptr()));
     }
-    (strcmp(amagic, bmagic) == 0) as ::core::ffi::c_int
+    (strcmp(amagic, bmagic) == 0) as ::kernel::ffi::c_int
 }
 
 pub unsafe fn modversion_ext_start(info: *const load_info,
                                    start: *mut modversion_info_ext) {
-    let crc_idx: ::core::ffi::c_uint = (*info).index.vers_ext_crc;
-    let name_idx: ::core::ffi::c_uint = (*info).index.vers_ext_name;
+    let crc_idx: ::kernel::ffi::c_uint = (*info).index.vers_ext_crc;
+    let name_idx: ::kernel::ffi::c_uint = (*info).index.vers_ext_name;
     let sechdrs: *mut Elf_Shdr = (*info).sechdrs;
 
     /*
@@ -132,7 +132,7 @@ pub unsafe fn modversion_ext_start(info: *const load_info,
     }
 
     (*start).crc = (*sechdrs.add(crc_idx as usize)).sh_addr as *const u32;
-    (*start).name = (*sechdrs.add(name_idx as usize)).sh_addr as *const ::core::ffi::c_char;
+    (*start).name = (*sechdrs.add(name_idx as usize)).sh_addr as *const ::kernel::ffi::c_char;
     (*start).remaining = (*sechdrs.add(crc_idx as usize)).sh_size
         / ::core::mem::size_of::<u32>();
 }

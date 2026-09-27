@@ -152,7 +152,7 @@ extern "C" {
     pub fn gic_send_sgi(cpu_id: u32, irq: u32);
     pub fn gic_get_cpu_id(cpu: u32) -> i32;
     pub fn gic_migrate_target(new_cpu_id: u32);
-    pub fn gic_get_sgir_physaddr() -> core::ffi::c_ulong;
+    pub fn gic_get_sgir_physaddr() -> kernel::ffi::c_ulong;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

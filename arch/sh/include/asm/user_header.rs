@@ -28,28 +28,28 @@
 
 #[repr(C)]
 pub struct user_fpu_struct {
-    pub fp_regs: [core::ffi::c_ulong; 16],
-    pub xfp_regs: [core::ffi::c_ulong; 16],
-    pub fpscr: core::ffi::c_ulong,
-    pub fpul: core::ffi::c_ulong,
+    pub fp_regs: [kernel::ffi::c_ulong; 16],
+    pub xfp_regs: [kernel::ffi::c_ulong; 16],
+    pub fpscr: kernel::ffi::c_ulong,
+    pub fpul: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct user {
     pub regs: pt_regs, // entire machine state
     pub fpu: user_fpu_struct, // Math Co-processor registers
-    pub u_fpvalid: core::ffi::c_int, // True if math co-processor being used
+    pub u_fpvalid: kernel::ffi::c_int, // True if math co-processor being used
     pub u_tsize: usize, // text size (pages)
     pub u_dsize: usize, // data size (pages)
     pub u_ssize: usize, // stack size (pages)
-    pub start_code: core::ffi::c_ulong, // text starting address
-    pub start_data: core::ffi::c_ulong, // data starting address
-    pub start_stack: core::ffi::c_ulong, // stack starting address
-    pub signal: core::ffi::c_long, // signal causing core dump
-    pub u_ar0: core::ffi::c_ulong, // help gdb find registers
+    pub start_code: kernel::ffi::c_ulong, // text starting address
+    pub start_data: kernel::ffi::c_ulong, // data starting address
+    pub start_stack: kernel::ffi::c_ulong, // stack starting address
+    pub signal: kernel::ffi::c_long, // signal causing core dump
+    pub u_ar0: kernel::ffi::c_ulong, // help gdb find registers
     pub u_fpstate: *mut user_fpu_struct, // Math Co-processor pointer
-    pub magic: core::ffi::c_ulong, // identifies a core file
-    pub u_comm: [core::ffi::c_char; 32], // user command name
+    pub magic: kernel::ffi::c_ulong, // identifies a core file
+    pub u_comm: [kernel::ffi::c_char; 32], // user command name
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

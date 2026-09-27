@@ -15,13 +15,13 @@ const CTRL_OFFSET: u32 = 0;
 
 #[repr(C)]
 pub struct xlnx_config_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct xlnx_pr_decoupler_data {
     pub ipconfig: *const xlnx_config_data,
-    pub io_base: *mut core::ffi::c_void,
+    pub io_base: *mut kernel::ffi::c_void,
     pub clk: *mut clk,
 }
 
@@ -32,7 +32,7 @@ pub struct clk {
 
 #[repr(C)]
 pub struct fpga_bridge {
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -48,30 +48,30 @@ pub struct fpga_bridge_ops {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 unsafe extern "C" {
     fn clk_enable(clk: *mut clk) -> i32;
     fn clk_disable(clk: *mut clk);
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
     fn fpga_bridge_register(
-        dev: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
+        dev: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
         ops: *const fpga_bridge_ops,
         priv_: *mut xlnx_pr_decoupler_data,
     ) -> *mut fpga_bridge;
     fn fpga_bridge_unregister(bridge: *mut fpga_bridge);
-    fn device_get_match_data(dev: *mut core::ffi::c_void) -> *const xlnx_config_data;
-    fn devm_kzalloc(dev: *mut core::ffi::c_void, size: usize, flags: u32) -> *mut xlnx_pr_decoupler_data;
-    fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32) -> *mut core::ffi::c_void;
-    fn devm_clk_get_prepared(dev: *mut core::ffi::c_void, name: *const core::ffi::c_char) -> *mut clk;
-    fn dev_err_probe(dev: *mut core::ffi::c_void, err: i32, fmt: *const core::ffi::c_char) -> i32;
+    fn device_get_match_data(dev: *mut kernel::ffi::c_void) -> *const xlnx_config_data;
+    fn devm_kzalloc(dev: *mut kernel::ffi::c_void, size: usize, flags: u32) -> *mut xlnx_pr_decoupler_data;
+    fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32) -> *mut kernel::ffi::c_void;
+    fn devm_clk_get_prepared(dev: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char) -> *mut clk;
+    fn dev_err_probe(dev: *mut kernel::ffi::c_void, err: i32, fmt: *const kernel::ffi::c_char) -> i32;
     fn platform_set_drvdata(pdev: *mut platform_device, data: *mut fpga_bridge);
     fn platform_get_drvdata(pdev: *mut platform_device) -> *mut fpga_bridge;
-    fn dev_err(dev: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[inline]

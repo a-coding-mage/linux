@@ -38,7 +38,7 @@ pub struct platform_device_dev {
 unsafe extern "C" {
     pub static mut cobalt_board_id: i32;
 
-    pub fn platform_device_alloc(name: *const core::ffi::c_char, id: i32)
+    pub fn platform_device_alloc(name: *const kernel::ffi::c_char, id: i32)
         -> *mut platform_device;
     pub fn platform_device_add_resources(
         pdev: *mut platform_device,
@@ -102,7 +102,7 @@ pub unsafe fn cobalt_uart_add() -> i32 {
         return 0;
     }
 
-    pdev = platform_device_alloc(b"serial8250\0".as_ptr() as *const core::ffi::c_char, -1);
+    pdev = platform_device_alloc(b"serial8250\0".as_ptr() as *const kernel::ffi::c_char, -1);
     if pdev.is_null() {
         return -12;
     }

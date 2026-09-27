@@ -38,15 +38,15 @@ pub const __UA_t1: &str = "$13";
 
 #[repr(C)]
 pub struct __large_struct {
-    pub buf: [::core::ffi::c_ulong; 100],
+    pub buf: [::kernel::ffi::c_ulong; 100],
 }
 
 pub const INLINE_COPY_USER: bool = true;
 
 extern "C" {
-    pub fn __raw_copy_from_user(to: *mut ::core::ffi::c_void, from: *const ::core::ffi::c_void, n: usize) -> usize;
-    pub fn __raw_copy_to_user(to: *mut ::core::ffi::c_void, from: *const ::core::ffi::c_void, n: usize) -> usize;
-    pub fn __bzero(addr: *mut ::core::ffi::c_void, size: usize) -> usize;
+    pub fn __raw_copy_from_user(to: *mut ::kernel::ffi::c_void, from: *const ::kernel::ffi::c_void, n: usize) -> usize;
+    pub fn __raw_copy_to_user(to: *mut ::kernel::ffi::c_void, from: *const ::kernel::ffi::c_void, n: usize) -> usize;
+    pub fn __bzero(addr: *mut ::kernel::ffi::c_void, size: usize) -> usize;
     pub fn __strncpy_from_user_asm(to: *mut i8, from: *const i8, len: isize) -> isize;
     pub fn __strnlen_user_asm(s: *const i8, n: isize) -> isize;
 }
@@ -187,17 +187,17 @@ pub const DADDI_SCRATCH: &str = "$3";
 pub const DADDI_SCRATCH: &str = "$0";
 
 #[inline]
-pub unsafe fn raw_copy_from_user(to: *mut ::core::ffi::c_void, from: *const ::core::ffi::c_void, n: usize) -> usize {
+pub unsafe fn raw_copy_from_user(to: *mut ::kernel::ffi::c_void, from: *const ::kernel::ffi::c_void, n: usize) -> usize {
     __raw_copy_from_user(to, from, n)
 }
 
 #[inline]
-pub unsafe fn raw_copy_to_user(to: *mut ::core::ffi::c_void, from: *const ::core::ffi::c_void, n: usize) -> usize {
+pub unsafe fn raw_copy_to_user(to: *mut ::kernel::ffi::c_void, from: *const ::kernel::ffi::c_void, n: usize) -> usize {
     __raw_copy_to_user(to, from, n)
 }
 
 #[inline]
-pub unsafe fn __clear_user(addr: *mut ::core::ffi::c_void, size: usize) -> usize {
+pub unsafe fn __clear_user(addr: *mut ::kernel::ffi::c_void, size: usize) -> usize {
     might_fault();
     __bzero(addr, size)
 }

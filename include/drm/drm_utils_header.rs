@@ -22,13 +22,13 @@ pub struct drm_panel_backlight_quirk {
 }
 
 extern "C" {
-    pub fn drm_get_panel_orientation_quirk(width: core::ffi::c_int, height: core::ffi::c_int) -> core::ffi::c_int;
+    pub fn drm_get_panel_orientation_quirk(width: kernel::ffi::c_int, height: kernel::ffi::c_int) -> kernel::ffi::c_int;
 
     pub fn drm_get_panel_backlight_quirk(
         edid: *const drm_edid,
     ) -> *const drm_panel_backlight_quirk;
 
-    pub fn drm_timeout_abs_to_jiffies(timeout_nsec: i64) -> core::ffi::c_long;
+    pub fn drm_timeout_abs_to_jiffies(timeout_nsec: i64) -> kernel::ffi::c_long;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

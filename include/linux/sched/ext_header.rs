@@ -136,7 +136,7 @@ pub mod sched_ext {
 
     extern "C" {
         pub fn sched_ext_dead(p: *mut TaskStruct);
-        pub fn print_scx_info(log_lvl: *const core::ffi::c_char, p: *mut TaskStruct);
+        pub fn print_scx_info(log_lvl: *const kernel::ffi::c_char, p: *mut TaskStruct);
         pub fn scx_softlockup(dur_s: u32);
         pub fn scx_hardlockup(cpu: i32) -> bool;
         pub fn scx_rcu_cpu_stall(stalled_mask: *const Cpumask) -> bool;
@@ -146,7 +146,7 @@ pub mod sched_ext {
 #[cfg(not(CONFIG_SCHED_CLASS_EXT))]
 pub unsafe fn sched_ext_dead(_p: *mut TaskStruct) {}
 #[cfg(not(CONFIG_SCHED_CLASS_EXT))]
-pub unsafe fn print_scx_info(_log_lvl: *const core::ffi::c_char, _p: *mut TaskStruct) {}
+pub unsafe fn print_scx_info(_log_lvl: *const kernel::ffi::c_char, _p: *mut TaskStruct) {}
 #[cfg(not(CONFIG_SCHED_CLASS_EXT))]
 pub unsafe fn scx_softlockup(_dur_s: u32) {}
 #[cfg(not(CONFIG_SCHED_CLASS_EXT))]

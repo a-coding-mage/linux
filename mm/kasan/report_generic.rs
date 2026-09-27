@@ -11,20 +11,20 @@
 
 // Linux kernel dependencies are supplied by the surrounding translation.
 
-pub unsafe fn kasan_find_first_bad_addr(addr: *const core::ffi::c_void, size: usize) -> *const core::ffi::c_void {
+pub unsafe fn kasan_find_first_bad_addr(addr: *const kernel::ffi::c_void, size: usize) -> *const kernel::ffi::c_void {
     let mut p = addr as *const u8;
-    if !addr_has_metadata(p as *const core::ffi::c_void) {
-        return p as *const core::ffi::c_void;
+    if !addr_has_metadata(p as *const kernel::ffi::c_void) {
+        return p as *const kernel::ffi::c_void;
     }
     while (p as usize) < (addr as usize).wrapping_add(size)
-        && *(kasan_mem_to_shadow(p as *const core::ffi::c_void) as *const u8) == 0
+        && *(kasan_mem_to_shadow(p as *const kernel::ffi::c_void) as *const u8) == 0
     {
         p = p.add(KASAN_GRANULE_SIZE as usize);
     }
-    p as *const core::ffi::c_void
+    p as *const kernel::ffi::c_void
 }
 
-pub unsafe fn kasan_get_alloc_size(object: *mut core::ffi::c_void, cache: *mut kmem_cache) -> usize {
+pub unsafe fn kasan_get_alloc_size(object: *mut kernel::ffi::c_void, cache: *mut kmem_cache) -> usize {
     let mut size = 0usize;
     let mut shadow = kasan_mem_to_shadow(object) as *const u8;
     while size < (*cache).object_size as usize {
@@ -36,8 +36,8 @@ pub unsafe fn kasan_get_alloc_size(object: *mut core::ffi::c_void, cache: *mut k
     (*cache).object_size as usize
 }
 
-unsafe fn get_shadow_bug_type(info: *mut kasan_report_info) -> *const core::ffi::c_char {
-    let mut bug_type = b"unknown-crash\0".as_ptr() as *const core::ffi::c_char;
+unsafe fn get_shadow_bug_type(info: *mut kasan_report_info) -> *const kernel::ffi::c_char {
+    let mut bug_type = b"unknown-crash\0".as_ptr() as *const kernel::ffi::c_char;
     let mut shadow_addr = kasan_mem_to_shadow((*info).first_bad_addr) as *const u8;
     if *shadow_addr > 0 && *shadow_addr <= KASAN_GRANULE_SIZE - 1 { shadow_addr = shadow_addr.add(1); }
     match *shadow_addr {
@@ -54,13 +54,13 @@ unsafe fn get_shadow_bug_type(info: *mut kasan_report_info) -> *const core::ffi:
     bug_type
 }
 
-unsafe fn get_wild_bug_type(info: *mut kasan_report_info) -> *const core::ffi::c_char {
+unsafe fn get_wild_bug_type(info: *mut kasan_report_info) -> *const kernel::ffi::c_char {
     if ((*info).access_addr as usize) <= PAGE_SIZE { b"null-ptr-deref\0".as_ptr() as _ }
     else if ((*info).access_addr as usize) < TASK_SIZE { b"user-memory-access\0".as_ptr() as _ }
     else { b"wild-memory-access\0".as_ptr() as _ }
 }
 
-unsafe fn get_bug_type(info: *mut kasan_report_info) -> *const core::ffi::c_char {
+unsafe fn get_bug_type(info: *mut kasan_report_info) -> *const kernel::ffi::c_char {
     if ((*info).access_addr as usize).wrapping_add((*info).access_size as usize) < (*info).access_addr as usize { return b"out-of-bounds\0".as_ptr() as _; }
     if addr_has_metadata((*info).access_addr) { get_shadow_bug_type(info) } else { get_wild_bug_type(info) }
 }
@@ -76,11 +76,11 @@ pub unsafe fn kasan_complete_mode_report_info(info: *mut kasan_report_info) {
     }
 }
 
-pub unsafe fn kasan_metadata_fetch_row(buffer: *mut i8, row: *mut core::ffi::c_void) {
+pub unsafe fn kasan_metadata_fetch_row(buffer: *mut i8, row: *mut kernel::ffi::c_void) {
     core::ptr::copy_nonoverlapping(kasan_mem_to_shadow(row) as *const i8, buffer, META_BYTES_PER_ROW as usize);
 }
 
-pub unsafe fn kasan_print_aux_stacks(cache: *mut kmem_cache, object: *const core::ffi::c_void) {
+pub unsafe fn kasan_print_aux_stacks(cache: *mut kmem_cache, object: *const kernel::ffi::c_void) {
     let alloc_meta = kasan_get_alloc_meta(cache, object);
     if alloc_meta.is_null() { return; }
     if (*alloc_meta).aux_stack[0] != 0 { pr_err!("Last potentially related work creation:\n"); stack_depot_print((*alloc_meta).aux_stack[0]); pr_err!("\n"); }
@@ -119,7 +119,7 @@ unsafe fn print_decoded_frame_descr(mut frame_descr: *const i8) {
     }
 }
 
-unsafe fn get_address_stack_frame_info(addr: *const core::ffi::c_void, offset: *mut usize, frame_descr: *mut *const i8, frame_pc: *mut *const core::ffi::c_void) -> bool {
+unsafe fn get_address_stack_frame_info(addr: *const kernel::ffi::c_void, offset: *mut usize, frame_descr: *mut *const i8, frame_pc: *mut *const kernel::ffi::c_void) -> bool {
     let aligned_addr = round_down(addr as usize, core::mem::size_of::<usize>());
     let mut mem_ptr = round_down(aligned_addr, KASAN_GRANULE_SIZE as usize);
     let shadow_bottom = kasan_mem_to_shadow(end_of_stack(current)) as *const u8;
@@ -132,7 +132,7 @@ unsafe fn get_address_stack_frame_info(addr: *const core::ffi::c_void, offset: *
     *offset = (addr as usize) - frame as usize; *frame_descr = *frame.add(1) as *const i8; *frame_pc = *frame.add(2) as *const _; true
 }
 
-pub unsafe fn kasan_print_address_stack_frame(addr: *const core::ffi::c_void) {
+pub unsafe fn kasan_print_address_stack_frame(addr: *const kernel::ffi::c_void) {
     if WARN_ON(!object_is_on_stack(addr)) { return; }
     pr_err!("The buggy address belongs to stack of task %s/%d\n", current.comm, task_pid_nr(current));
     let mut offset = 0usize; let mut frame_descr = core::ptr::null(); let mut frame_pc = core::ptr::null();
@@ -141,17 +141,17 @@ pub unsafe fn kasan_print_address_stack_frame(addr: *const core::ffi::c_void) {
     if !frame_descr.is_null() { print_decoded_frame_descr(frame_descr); }
 }
 
-pub unsafe fn __asan_report_load1_noabort(addr: *mut core::ffi::c_void) { kasan_report(addr, 1, false, _RET_IP_); }
-pub unsafe fn __asan_report_load2_noabort(addr: *mut core::ffi::c_void) { kasan_report(addr, 2, false, _RET_IP_); }
-pub unsafe fn __asan_report_load4_noabort(addr: *mut core::ffi::c_void) { kasan_report(addr, 4, false, _RET_IP_); }
-pub unsafe fn __asan_report_load8_noabort(addr: *mut core::ffi::c_void) { kasan_report(addr, 8, false, _RET_IP_); }
-pub unsafe fn __asan_report_load16_noabort(addr: *mut core::ffi::c_void) { kasan_report(addr, 16, false, _RET_IP_); }
-pub unsafe fn __asan_report_store1_noabort(addr: *mut core::ffi::c_void) { kasan_report(addr, 1, true, _RET_IP_); }
-pub unsafe fn __asan_report_store2_noabort(addr: *mut core::ffi::c_void) { kasan_report(addr, 2, true, _RET_IP_); }
-pub unsafe fn __asan_report_store4_noabort(addr: *mut core::ffi::c_void) { kasan_report(addr, 4, true, _RET_IP_); }
-pub unsafe fn __asan_report_store8_noabort(addr: *mut core::ffi::c_void) { kasan_report(addr, 8, true, _RET_IP_); }
-pub unsafe fn __asan_report_store16_noabort(addr: *mut core::ffi::c_void) { kasan_report(addr, 16, true, _RET_IP_); }
-pub unsafe fn __asan_report_load_n_noabort(addr: *mut core::ffi::c_void, size: isize) { kasan_report(addr, size, false, _RET_IP_); }
-pub unsafe fn __asan_report_store_n_noabort(addr: *mut core::ffi::c_void, size: isize) { kasan_report(addr, size, true, _RET_IP_); }
+pub unsafe fn __asan_report_load1_noabort(addr: *mut kernel::ffi::c_void) { kasan_report(addr, 1, false, _RET_IP_); }
+pub unsafe fn __asan_report_load2_noabort(addr: *mut kernel::ffi::c_void) { kasan_report(addr, 2, false, _RET_IP_); }
+pub unsafe fn __asan_report_load4_noabort(addr: *mut kernel::ffi::c_void) { kasan_report(addr, 4, false, _RET_IP_); }
+pub unsafe fn __asan_report_load8_noabort(addr: *mut kernel::ffi::c_void) { kasan_report(addr, 8, false, _RET_IP_); }
+pub unsafe fn __asan_report_load16_noabort(addr: *mut kernel::ffi::c_void) { kasan_report(addr, 16, false, _RET_IP_); }
+pub unsafe fn __asan_report_store1_noabort(addr: *mut kernel::ffi::c_void) { kasan_report(addr, 1, true, _RET_IP_); }
+pub unsafe fn __asan_report_store2_noabort(addr: *mut kernel::ffi::c_void) { kasan_report(addr, 2, true, _RET_IP_); }
+pub unsafe fn __asan_report_store4_noabort(addr: *mut kernel::ffi::c_void) { kasan_report(addr, 4, true, _RET_IP_); }
+pub unsafe fn __asan_report_store8_noabort(addr: *mut kernel::ffi::c_void) { kasan_report(addr, 8, true, _RET_IP_); }
+pub unsafe fn __asan_report_store16_noabort(addr: *mut kernel::ffi::c_void) { kasan_report(addr, 16, true, _RET_IP_); }
+pub unsafe fn __asan_report_load_n_noabort(addr: *mut kernel::ffi::c_void, size: isize) { kasan_report(addr, size, false, _RET_IP_); }
+pub unsafe fn __asan_report_store_n_noabort(addr: *mut kernel::ffi::c_void, size: isize) { kasan_report(addr, size, true, _RET_IP_); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -19,11 +19,11 @@ extern "C" {
         description: *const u8,
         uid: u32,
         gid: u32,
-        cred: *mut core::ffi::c_void,
+        cred: *mut kernel::ffi::c_void,
         perm: u32,
         flags: u32,
-        restriction: *mut core::ffi::c_void,
-        dest: *mut core::ffi::c_void,
+        restriction: *mut kernel::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
     ) -> *mut key;
     fn x509_load_certificate_list(keys: *const u8, keys_len: usize, keyring: *mut key) -> i32;
     fn pkcs7_parse_message(sig: *const u8, sig_len: usize) -> *mut pkcs7_message;
@@ -33,13 +33,13 @@ extern "C" {
     fn pkcs7_free_message(pkcs7: *mut pkcs7_message);
     fn key_put(keyring: *mut key);
 
-    fn current_cred() -> *mut core::ffi::c_void;
+    fn current_cred() -> *mut kernel::ffi::c_void;
     fn fips_signature_selftest_rsa();
     fn fips_signature_selftest_ecdsa();
 }
 
 pub unsafe fn fips_signature_selftest(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     keys: *const u8,
     keys_len: usize,
     data: *const u8,

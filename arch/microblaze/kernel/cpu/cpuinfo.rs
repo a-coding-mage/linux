@@ -8,7 +8,7 @@
  * for more details.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct cpu_ver_key {
@@ -112,7 +112,7 @@ pub static mut cpuinfo: cpuinfo = cpuinfo { mmu_privins: 0, cpu_clock_freq: 0 };
 static mut cpu: *mut device_node = core::ptr::null_mut();
 
 extern "C" {
-    fn of_get_cpu_node(cpu: i32, thread: *const core::ffi::c_void) -> *mut device_node;
+    fn of_get_cpu_node(cpu: i32, thread: *const kernel::ffi::c_void) -> *mut device_node;
     fn pr_err(fmt: *const c_char, ...);
     fn pr_info(fmt: *const c_char, ...);
     fn pr_warn(fmt: *const c_char, ...);

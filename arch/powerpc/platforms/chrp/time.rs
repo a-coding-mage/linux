@@ -10,13 +10,13 @@
 // Linux and architecture headers provide the declarations and constants used
 // below; they are intentionally left as external dependencies of this unit.
 
-const NVRAM_AS0: ::core::ffi::c_int = 0x74;
-const NVRAM_AS1: ::core::ffi::c_int = 0x75;
-const NVRAM_DATA: ::core::ffi::c_int = 0x77;
+const NVRAM_AS0: ::kernel::ffi::c_int = 0x74;
+const NVRAM_AS1: ::kernel::ffi::c_int = 0x75;
+const NVRAM_DATA: ::kernel::ffi::c_int = 0x77;
 
-static mut nvram_as1: ::core::ffi::c_int = NVRAM_AS1;
-static mut nvram_as0: ::core::ffi::c_int = NVRAM_AS0;
-static mut nvram_data: ::core::ffi::c_int = NVRAM_DATA;
+static mut nvram_as1: ::kernel::ffi::c_int = NVRAM_AS1;
+static mut nvram_as0: ::kernel::ffi::c_int = NVRAM_AS0;
+static mut nvram_data: ::kernel::ffi::c_int = NVRAM_DATA;
 
 extern "C" {
     type device_node;
@@ -27,17 +27,17 @@ extern "C" {
 
     fn of_find_compatible_node(
         from: *mut device_node,
-        type_: *const ::core::ffi::c_char,
-        compatible: *const ::core::ffi::c_char,
+        type_: *const ::kernel::ffi::c_char,
+        compatible: *const ::kernel::ffi::c_char,
     ) -> *mut device_node;
     fn of_address_to_resource(
         np: *mut device_node,
-        index: ::core::ffi::c_int,
+        index: ::kernel::ffi::c_int,
         r: *mut resource,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     fn of_node_put(np: *mut device_node);
-    fn outb(value: ::core::ffi::c_int, port: ::core::ffi::c_int);
-    fn inb(port: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    fn outb(value: ::kernel::ffi::c_int, port: ::kernel::ffi::c_int);
+    fn inb(port: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
     fn spin_lock(lock: *const spinlock_t);
     fn spin_unlock(lock: *const spinlock_t);
     fn bin2bcd(value: u32) -> u32;
@@ -50,24 +50,24 @@ struct spinlock_t {
 }
 
 extern "C" {
-    static RTC_CONTROL: ::core::ffi::c_int;
-    static RTC_FREQ_SELECT: ::core::ffi::c_int;
+    static RTC_CONTROL: ::kernel::ffi::c_int;
+    static RTC_FREQ_SELECT: ::kernel::ffi::c_int;
     static RTC_SET: u32;
     static RTC_DIV_RESET2: u32;
     static RTC_DM_BINARY: u32;
     static RTC_ALWAYS_BCD: bool;
-    static RTC_SECONDS: ::core::ffi::c_int;
-    static RTC_MINUTES: ::core::ffi::c_int;
-    static RTC_HOURS: ::core::ffi::c_int;
-    static RTC_MONTH: ::core::ffi::c_int;
-    static RTC_DAY_OF_MONTH: ::core::ffi::c_int;
-    static RTC_YEAR: ::core::ffi::c_int;
+    static RTC_SECONDS: ::kernel::ffi::c_int;
+    static RTC_MINUTES: ::kernel::ffi::c_int;
+    static RTC_HOURS: ::kernel::ffi::c_int;
+    static RTC_MONTH: ::kernel::ffi::c_int;
+    static RTC_DAY_OF_MONTH: ::kernel::ffi::c_int;
+    static RTC_YEAR: ::kernel::ffi::c_int;
 }
 
 pub unsafe extern "C" fn chrp_time_init() -> i64 {
     let mut rtcs: *mut device_node;
     let mut r: resource = ::core::mem::zeroed();
-    let base: ::core::ffi::c_int;
+    let base: ::kernel::ffi::c_int;
 
     rtcs = of_find_compatible_node(::core::ptr::null_mut(), b"rtc\0".as_ptr() as _, b"pnpPNP,b00\0".as_ptr() as _);
     if rtcs.is_null() {
@@ -89,7 +89,7 @@ pub unsafe extern "C" fn chrp_time_init() -> i64 {
     0
 }
 
-unsafe fn chrp_cmos_clock_read(addr: ::core::ffi::c_int) -> ::core::ffi::c_int {
+unsafe fn chrp_cmos_clock_read(addr: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     if nvram_as1 != 0 {
         outb(addr >> 8, nvram_as1);
     }
@@ -97,16 +97,16 @@ unsafe fn chrp_cmos_clock_read(addr: ::core::ffi::c_int) -> ::core::ffi::c_int {
     inb(nvram_data)
 }
 
-unsafe fn chrp_cmos_clock_write(val: u64, addr: ::core::ffi::c_int) {
+unsafe fn chrp_cmos_clock_write(val: u64, addr: ::kernel::ffi::c_int) {
     if nvram_as1 != 0 {
         outb(addr >> 8, nvram_as1);
     }
     outb(addr, nvram_as0);
-    outb(val as ::core::ffi::c_int, nvram_data);
+    outb(val as ::kernel::ffi::c_int, nvram_data);
 }
 
 /* Set the hardware clock. -- Cort */
-pub unsafe extern "C" fn chrp_set_rtc_time(tmarg: *mut rtc_time) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn chrp_set_rtc_time(tmarg: *mut rtc_time) -> ::kernel::ffi::c_int {
     let mut save_control: u8;
     let mut save_freq_select: u8;
     let mut tm: rtc_time = *tmarg;

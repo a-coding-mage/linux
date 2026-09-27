@@ -39,9 +39,9 @@ pub mod si5351_translation {
 struct si5351_driver_data;
 
 struct si5351_parameters {
-	core::ffi::c_ulong	p1;
-	core::ffi::c_ulong	p2;
-	core::ffi::c_ulong	p3;
+	kernel::ffi::c_ulong	p1;
+	kernel::ffi::c_ulong	p2;
+	kernel::ffi::c_ulong	p3;
 	int		valid;
 };
 
@@ -49,7 +49,7 @@ struct si5351_hw_data {
 	struct clk_hw			hw;
 	struct si5351_driver_data	*drvdata;
 	struct si5351_parameters	params;
-	core::ffi::c_uchar			num;
+	kernel::ffi::c_uchar			num;
 };
 
 struct si5351_driver_data {
@@ -181,7 +181,7 @@ static void si5351_write_parameters(si5351_driver_data *drvdata,
 	}
 }
 
-static bool si5351_regmap_is_volatile(device *dev, reg: core::ffi::c_uint)
+static bool si5351_regmap_is_volatile(device *dev, reg: kernel::ffi::c_uint)
 {
 	switch (reg) {
 	case SI5351_DEVICE_STATUS:
@@ -192,7 +192,7 @@ static bool si5351_regmap_is_volatile(device *dev, reg: core::ffi::c_uint)
 	return false;
 }
 
-static bool si5351_regmap_is_writeable(device *dev, reg: core::ffi::c_uint)
+static bool si5351_regmap_is_writeable(device *dev, reg: kernel::ffi::c_uint)
 {
 	/* reserved registers */
 	if (reg >= 4 && reg <= 8)
@@ -268,13 +268,13 @@ static void si5351_clkin_unprepare(clk_hw *hw)
  * The input frequency range of the PLL is 10Mhz to 40MHz.
  * If CLKIN is >40MHz, the input divider must be used.
  */
-static core::ffi::c_ulong si5351_clkin_recalc_rate(clk_hw *hw,
-					      parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong si5351_clkin_recalc_rate(clk_hw *hw,
+					      parent_rate: kernel::ffi::c_ulong)
 {
 	struct si5351_driver_data *drvdata =
 		container_of(hw, si5351_driver_data, clkin);
-	core::ffi::c_ulong rate;
-	core::ffi::c_uchar idiv;
+	kernel::ffi::c_ulong rate;
+	kernel::ffi::c_uchar idiv;
 
 	rate = parent_rate;
 	if (parent_rate > 160000000) {
@@ -323,14 +323,14 @@ static void si5351_vxco_unprepare(clk_hw *hw)
 {
 }
 
-static core::ffi::c_ulong si5351_vxco_recalc_rate(clk_hw *hw,
-					     parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong si5351_vxco_recalc_rate(clk_hw *hw,
+					     parent_rate: kernel::ffi::c_ulong)
 {
 	return 0;
 }
 
-static int si5351_vxco_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
-				parent: core::ffi::c_ulong)
+static int si5351_vxco_set_rate(clk_hw *hw, rate: kernel::ffi::c_ulong,
+				parent: kernel::ffi::c_ulong)
 {
 	return 0;
 }
@@ -388,7 +388,7 @@ static int _si5351_pll_reparent(si5351_driver_data *drvdata,
 	return 0;
 }
 
-static core::ffi::c_uchar si5351_pll_get_parent(clk_hw *hw)
+static kernel::ffi::c_uchar si5351_pll_get_parent(clk_hw *hw)
 {
 	struct si5351_hw_data *hwdata =
 		container_of(hw, si5351_hw_data, hw);
@@ -417,14 +417,14 @@ static int si5351_pll_set_parent(clk_hw *hw, index: u8)
 			     SI5351_PLL_SRC_CLKIN);
 }
 
-static core::ffi::c_ulong si5351_pll_recalc_rate(clk_hw *hw,
-					    parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong si5351_pll_recalc_rate(clk_hw *hw,
+					    parent_rate: kernel::ffi::c_ulong)
 {
 	struct si5351_hw_data *hwdata =
 		container_of(hw, si5351_hw_data, hw);
 	u8 reg = (hwdata->num == 0) ? SI5351_PLLA_PARAMETERS :
 		SI5351_PLLB_PARAMETERS;
-	core::ffi::c_ulonglong rate;
+	kernel::ffi::c_ulonglong rate;
 
 	if (!hwdata->params.valid)
 		si5351_read_parameters(hwdata->drvdata, reg, &hwdata->params);
@@ -443,9 +443,9 @@ static core::ffi::c_ulong si5351_pll_recalc_rate(clk_hw *hw,
 		"%s - %s: p1 = %lu, p2 = %lu, p3 = %lu, parent_rate = %lu, rate = %lu\n",
 		__func__, clk_hw_get_name(hw),
 		hwdata->params.p1, hwdata->params.p2, hwdata->params.p3,
-		parent_rate, (core::ffi::c_ulong)rate);
+		parent_rate, (kernel::ffi::c_ulong)rate);
 
-	return (core::ffi::c_ulong)rate;
+	return (kernel::ffi::c_ulong)rate;
 }
 
 static int si5351_pll_determine_rate(clk_hw *hw,
@@ -453,9 +453,9 @@ static int si5351_pll_determine_rate(clk_hw *hw,
 {
 	struct si5351_hw_data *hwdata =
 		container_of(hw, si5351_hw_data, hw);
-	core::ffi::c_ulong rate = req->rate;
-	rfrac: core::ffi::c_ulong, denom, a, b, c;
-	core::ffi::c_ulonglong lltmp;
+	kernel::ffi::c_ulong rate = req->rate;
+	rfrac: kernel::ffi::c_ulong, denom, a, b, c;
+	kernel::ffi::c_ulonglong lltmp;
 
 	if (rate < SI5351_PLL_VCO_MIN)
 		rate = SI5351_PLL_VCO_MIN;
@@ -475,7 +475,7 @@ static int si5351_pll_determine_rate(clk_hw *hw,
 	lltmp = rate % (req->best_parent_rate);
 	lltmp *= denom;
 	do_div(lltmp, req->best_parent_rate);
-	rfrac = (core::ffi::c_ulong)lltmp;
+	rfrac = (kernel::ffi::c_ulong)lltmp;
 
 	b = 0;
 	c = 1;
@@ -495,7 +495,7 @@ static int si5351_pll_determine_rate(clk_hw *hw,
 	lltmp *= b;
 	do_div(lltmp, c);
 
-	rate  = (core::ffi::c_ulong)lltmp;
+	rate  = (kernel::ffi::c_ulong)lltmp;
 	rate += req->best_parent_rate * a;
 
 	dev_dbg(&hwdata->drvdata->client->dev,
@@ -507,8 +507,8 @@ static int si5351_pll_determine_rate(clk_hw *hw,
 	return 0;
 }
 
-static int si5351_pll_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
-			       parent_rate: core::ffi::c_ulong)
+static int si5351_pll_set_rate(clk_hw *hw, rate: kernel::ffi::c_ulong,
+			       parent_rate: kernel::ffi::c_ulong)
 {
 	struct si5351_hw_data *hwdata =
 		container_of(hw, si5351_hw_data, hw);
@@ -586,7 +586,7 @@ static int _si5351_msynth_reparent(si5351_driver_data *drvdata,
 	return 0;
 }
 
-static core::ffi::c_uchar si5351_msynth_get_parent(clk_hw *hw)
+static kernel::ffi::c_uchar si5351_msynth_get_parent(clk_hw *hw)
 {
 	struct si5351_hw_data *hwdata =
 		container_of(hw, si5351_hw_data, hw);
@@ -607,14 +607,14 @@ static int si5351_msynth_set_parent(clk_hw *hw, index: u8)
 			       SI5351_MULTISYNTH_SRC_VCO1);
 }
 
-static core::ffi::c_ulong si5351_msynth_recalc_rate(clk_hw *hw,
-					       parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong si5351_msynth_recalc_rate(clk_hw *hw,
+					       parent_rate: kernel::ffi::c_ulong)
 {
 	struct si5351_hw_data *hwdata =
 		container_of(hw, si5351_hw_data, hw);
 	u8 reg = si5351_msynth_params_address(hwdata->num);
-	core::ffi::c_ulonglong rate;
-	core::ffi::c_ulong m;
+	kernel::ffi::c_ulonglong rate;
+	kernel::ffi::c_ulong m;
 
 	if (!hwdata->params.valid)
 		si5351_read_parameters(hwdata->drvdata, reg, &hwdata->params);
@@ -646,9 +646,9 @@ static core::ffi::c_ulong si5351_msynth_recalc_rate(clk_hw *hw,
 		"%s - %s: p1 = %lu, p2 = %lu, p3 = %lu, m = %lu, parent_rate = %lu, rate = %lu\n",
 		__func__, clk_hw_get_name(hw),
 		hwdata->params.p1, hwdata->params.p2, hwdata->params.p3,
-		m, parent_rate, (core::ffi::c_ulong)rate);
+		m, parent_rate, (kernel::ffi::c_ulong)rate);
 
-	return (core::ffi::c_ulong)rate;
+	return (kernel::ffi::c_ulong)rate;
 }
 
 static int si5351_msynth_determine_rate(clk_hw *hw,
@@ -656,9 +656,9 @@ static int si5351_msynth_determine_rate(clk_hw *hw,
 {
 	struct si5351_hw_data *hwdata =
 		container_of(hw, si5351_hw_data, hw);
-	core::ffi::c_ulong rate = req->rate;
-	core::ffi::c_ulonglong lltmp;
-	a: core::ffi::c_ulong, b, c;
+	kernel::ffi::c_ulong rate = req->rate;
+	kernel::ffi::c_ulonglong lltmp;
+	a: kernel::ffi::c_ulong, b, c;
 	int divby4;
 
 	/* multisync6-7 can only handle frequencies < 150MHz */
@@ -684,7 +684,7 @@ static int si5351_msynth_determine_rate(clk_hw *hw,
 		if (divby4 == 0) {
 			lltmp = SI5351_PLL_VCO_MAX;
 			do_div(lltmp, rate);
-			a = (core::ffi::c_ulong)lltmp;
+			a = (kernel::ffi::c_ulong)lltmp;
 		} else
 			a = 4;
 
@@ -703,7 +703,7 @@ static int si5351_msynth_determine_rate(clk_hw *hw,
 		b = 0;
 		c = 1;
 	} else {
-		rfrac: core::ffi::c_ulong, denom;
+		rfrac: kernel::ffi::c_ulong, denom;
 
 		/* disable divby4 */
 		if (divby4) {
@@ -723,7 +723,7 @@ static int si5351_msynth_determine_rate(clk_hw *hw,
 		lltmp = req->best_parent_rate % rate;
 		lltmp *= denom;
 		do_div(lltmp, rate);
-		rfrac = (core::ffi::c_ulong)lltmp;
+		rfrac = (kernel::ffi::c_ulong)lltmp;
 
 		b = 0;
 		c = 1;
@@ -737,7 +737,7 @@ static int si5351_msynth_determine_rate(clk_hw *hw,
 	lltmp  = req->best_parent_rate;
 	lltmp *= c;
 	do_div(lltmp, a * c + b);
-	rate  = (core::ffi::c_ulong)lltmp;
+	rate  = (kernel::ffi::c_ulong)lltmp;
 
 	/* calculate parameters */
 	if (divby4) {
@@ -766,8 +766,8 @@ static int si5351_msynth_determine_rate(clk_hw *hw,
 	return 0;
 }
 
-static int si5351_msynth_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
-				  parent_rate: core::ffi::c_ulong)
+static int si5351_msynth_set_rate(clk_hw *hw, rate: kernel::ffi::c_ulong,
+				  parent_rate: kernel::ffi::c_ulong)
 {
 	struct si5351_hw_data *hwdata =
 		container_of(hw, si5351_hw_data, hw);
@@ -918,7 +918,7 @@ static void _si5351_clkout_reset_pll(si5351_driver_data *drvdata, int num)
 	u8 val = si5351_reg_read(drvdata, SI5351_CLK0_CTRL + num);
 	u8 mask = val & SI5351_CLK_PLL_SELECT ? SI5351_PLL_RESET_B :
 						       SI5351_PLL_RESET_A;
-	core::ffi::c_uint v;
+	kernel::ffi::c_uint v;
 	int err;
 
 	switch (val & SI5351_CLK_INPUT_MASK) {
@@ -977,7 +977,7 @@ static u8 si5351_clkout_get_parent(clk_hw *hw)
 	struct si5351_hw_data *hwdata =
 		container_of(hw, si5351_hw_data, hw);
 	int index = 0;
-	core::ffi::c_uchar val;
+	kernel::ffi::c_uchar val;
 
 	val = si5351_reg_read(hwdata->drvdata, SI5351_CLK0_CTRL + hwdata->num);
 	switch (val & SI5351_CLK_INPUT_MASK) {
@@ -1022,13 +1022,13 @@ static int si5351_clkout_set_parent(clk_hw *hw, index: u8)
 	return _si5351_clkout_reparent(hwdata->drvdata, hwdata->num, parent);
 }
 
-static core::ffi::c_ulong si5351_clkout_recalc_rate(clk_hw *hw,
-					       parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong si5351_clkout_recalc_rate(clk_hw *hw,
+					       parent_rate: kernel::ffi::c_ulong)
 {
 	struct si5351_hw_data *hwdata =
 		container_of(hw, si5351_hw_data, hw);
-	core::ffi::c_uchar reg;
-	core::ffi::c_uchar rdiv;
+	kernel::ffi::c_uchar reg;
+	kernel::ffi::c_uchar rdiv;
 
 	if (hwdata->num <= 5)
 		reg = si5351_msynth_params_address(hwdata->num) + 2;
@@ -1051,8 +1051,8 @@ static int si5351_clkout_determine_rate(clk_hw *hw,
 {
 	struct si5351_hw_data *hwdata =
 		container_of(hw, si5351_hw_data, hw);
-	core::ffi::c_ulong rate = req->rate;
-	core::ffi::c_uchar rdiv;
+	kernel::ffi::c_ulong rate = req->rate;
+	kernel::ffi::c_uchar rdiv;
 
 	/* clkout6/7 can only handle output frequencies < 150MHz */
 	if (hwdata->num >= 6 && rate > SI5351_CLKOUT67_MAX_FREQ)
@@ -1075,7 +1075,7 @@ static int si5351_clkout_determine_rate(clk_hw *hw,
 		}
 		req->best_parent_rate = rate;
 	} else {
-		new_rate: core::ffi::c_ulong, new_err, err;
+		new_rate: kernel::ffi::c_ulong, new_err, err;
 
 		/* round to closed rdiv */
 		rdiv = SI5351_OUTPUT_CLK_DIV_1;
@@ -1101,13 +1101,13 @@ static int si5351_clkout_determine_rate(clk_hw *hw,
 	return 0;
 }
 
-static int si5351_clkout_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
-				  parent_rate: core::ffi::c_ulong)
+static int si5351_clkout_set_rate(clk_hw *hw, rate: kernel::ffi::c_ulong,
+				  parent_rate: kernel::ffi::c_ulong)
 {
 	struct si5351_hw_data *hwdata =
 		container_of(hw, si5351_hw_data, hw);
-	new_rate: core::ffi::c_ulong, new_err, err;
-	core::ffi::c_uchar rdiv;
+	new_rate: kernel::ffi::c_ulong, new_err, err;
+	kernel::ffi::c_uchar rdiv;
 
 	/* round to closed rdiv */
 	rdiv = SI5351_OUTPUT_CLK_DIV_1;
@@ -1408,7 +1408,7 @@ static struct clk_hw *
 si53351_of_clk_get(of_phandle_args *clkspec, void *data)
 {
 	struct si5351_driver_data *drvdata = data;
-	core::ffi::c_uint idx = clkspec->args[0];
+	kernel::ffi::c_uint idx = clkspec->args[0];
 
 	if (idx >= drvdata->num_clkout) {
 		pr_err("%s: invalid index %u\n", __func__, idx);

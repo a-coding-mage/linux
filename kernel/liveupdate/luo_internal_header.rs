@@ -8,9 +8,9 @@
 /* Translated from the Linux kernel internal Live Update header. */
 
 pub struct luo_ucmd {
-    pub ubuffer: *mut core::ffi::c_void,
+    pub ubuffer: *mut kernel::ffi::c_void,
     pub user_size: u32,
-    pub cmd: *mut core::ffi::c_void,
+    pub cmd: *mut kernel::ffi::c_void,
 }
 
 pub unsafe fn luo_ucmd_respond(
@@ -73,7 +73,7 @@ pub struct luo_file_set {
  */
 #[repr(C)]
 pub struct luo_session {
-    pub name: [core::ffi::c_char; crate::LIVEUPDATE_SESSION_NAME_LENGTH],
+    pub name: [kernel::ffi::c_char; crate::LIVEUPDATE_SESSION_NAME_LENGTH],
     pub list: crate::list_head,
     pub retrieved: bool,
     pub file_set: luo_file_set,
@@ -83,8 +83,8 @@ pub struct luo_session {
 extern "C" {
     pub static mut luo_register_rwlock: crate::rw_semaphore;
 
-    pub fn luo_session_create(name: *const core::ffi::c_char, filep: *mut *mut crate::file) -> i32;
-    pub fn luo_session_retrieve(name: *const core::ffi::c_char, filep: *mut *mut crate::file) -> i32;
+    pub fn luo_session_create(name: *const kernel::ffi::c_char, filep: *mut *mut crate::file) -> i32;
+    pub fn luo_session_retrieve(name: *const kernel::ffi::c_char, filep: *mut *mut crate::file) -> i32;
     pub fn luo_session_setup_outgoing(sessions_pa: *mut u64);
     pub fn luo_session_setup_incoming(sessions_pa: u64) -> i32;
     pub fn luo_session_serialize() -> i32;

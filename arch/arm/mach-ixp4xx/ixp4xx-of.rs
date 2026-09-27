@@ -3,7 +3,7 @@
  * IXP4xx Device Tree boot support
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /*
  * We handle 4 different SoC families. These compatible strings are enough

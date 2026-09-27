@@ -10,7 +10,7 @@ pub struct firmware {
     pub size: usize,
     pub data: *const u8,
     /* firmware loader private fields */
-    pub priv_: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -30,8 +30,8 @@ pub enum fw_upload_err {
 
 #[repr(C)]
 pub struct fw_upload {
-    pub dd_handle: *mut core::ffi::c_void,
-    pub priv_: *mut core::ffi::c_void,
+    pub dd_handle: *mut kernel::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -59,13 +59,13 @@ pub enum device {}
 /* Built-in firmware functionality is only available if FW_LOADER=y, but not FW_LOADER=m. */
 #[cfg(CONFIG_FW_LOADER)]
 unsafe extern "C" {
-    pub fn firmware_request_builtin(fw: *mut firmware, name: *const core::ffi::c_char) -> bool;
+    pub fn firmware_request_builtin(fw: *mut firmware, name: *const kernel::ffi::c_char) -> bool;
 }
 
 #[cfg(not(CONFIG_FW_LOADER))]
 pub unsafe fn firmware_request_builtin(
     _fw: *mut firmware,
-    _name: *const core::ffi::c_char,
+    _name: *const kernel::ffi::c_char,
 ) -> bool {
     false
 }
@@ -75,58 +75,58 @@ pub unsafe fn firmware_request_builtin(
 unsafe extern "C" {
     pub fn request_firmware(
         fw: *mut *const firmware,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         device: *mut device,
     ) -> i32;
     pub fn firmware_request_nowait_nowarn(
         module: *mut module,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         device: *mut device,
         gfp: usize,
-        context: *mut core::ffi::c_void,
-        cont: Option<unsafe extern "C" fn(*const firmware, *mut core::ffi::c_void)>,
+        context: *mut kernel::ffi::c_void,
+        cont: Option<unsafe extern "C" fn(*const firmware, *mut kernel::ffi::c_void)>,
     ) -> i32;
     pub fn firmware_request_nowarn(
         fw: *mut *const firmware,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         device: *mut device,
     ) -> i32;
     pub fn firmware_request_platform(
         fw: *mut *const firmware,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         device: *mut device,
     ) -> i32;
     pub fn request_firmware_nowait(
         module: *mut module,
         uevent: bool,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         device: *mut device,
         gfp: usize,
-        context: *mut core::ffi::c_void,
-        cont: Option<unsafe extern "C" fn(*const firmware, *mut core::ffi::c_void)>,
+        context: *mut kernel::ffi::c_void,
+        cont: Option<unsafe extern "C" fn(*const firmware, *mut kernel::ffi::c_void)>,
     ) -> i32;
     pub fn request_firmware_nowait_cancel(
         device: *mut device,
-        context: *mut core::ffi::c_void,
-        cont: Option<unsafe extern "C" fn(*const firmware, *mut core::ffi::c_void)>,
+        context: *mut kernel::ffi::c_void,
+        cont: Option<unsafe extern "C" fn(*const firmware, *mut kernel::ffi::c_void)>,
     );
     pub fn request_firmware_direct(
         fw: *mut *const firmware,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         device: *mut device,
     ) -> i32;
     pub fn request_firmware_into_buf(
         firmware_p: *mut *const firmware,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         device: *mut device,
-        buf: *mut core::ffi::c_void,
+        buf: *mut kernel::ffi::c_void,
         size: usize,
     ) -> i32;
     pub fn request_partial_firmware_into_buf(
         firmware_p: *mut *const firmware,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         device: *mut device,
-        buf: *mut core::ffi::c_void,
+        buf: *mut kernel::ffi::c_void,
         size: usize,
         offset: usize,
     ) -> i32;
@@ -134,38 +134,38 @@ unsafe extern "C" {
 }
 
 #[cfg(not(CONFIG_FW_LOADER))]
-pub unsafe fn request_firmware(_fw: *mut *const firmware, _name: *const core::ffi::c_char, _device: *mut device) -> i32 { -22 }
+pub unsafe fn request_firmware(_fw: *mut *const firmware, _name: *const kernel::ffi::c_char, _device: *mut device) -> i32 { -22 }
 #[cfg(not(CONFIG_FW_LOADER))]
-pub unsafe fn firmware_request_nowait_nowarn(_module: *mut module, _name: *const core::ffi::c_char, _device: *mut device, _gfp: usize, _context: *mut core::ffi::c_void, _cont: Option<unsafe extern "C" fn(*const firmware, *mut core::ffi::c_void)>) -> i32 { -22 }
+pub unsafe fn firmware_request_nowait_nowarn(_module: *mut module, _name: *const kernel::ffi::c_char, _device: *mut device, _gfp: usize, _context: *mut kernel::ffi::c_void, _cont: Option<unsafe extern "C" fn(*const firmware, *mut kernel::ffi::c_void)>) -> i32 { -22 }
 #[cfg(not(CONFIG_FW_LOADER))]
-pub unsafe fn firmware_request_nowarn(_fw: *mut *const firmware, _name: *const core::ffi::c_char, _device: *mut device) -> i32 { -22 }
+pub unsafe fn firmware_request_nowarn(_fw: *mut *const firmware, _name: *const kernel::ffi::c_char, _device: *mut device) -> i32 { -22 }
 #[cfg(not(CONFIG_FW_LOADER))]
-pub unsafe fn firmware_request_platform(_fw: *mut *const firmware, _name: *const core::ffi::c_char, _device: *mut device) -> i32 { -22 }
+pub unsafe fn firmware_request_platform(_fw: *mut *const firmware, _name: *const kernel::ffi::c_char, _device: *mut device) -> i32 { -22 }
 #[cfg(not(CONFIG_FW_LOADER))]
-pub unsafe fn request_firmware_nowait(_module: *mut module, _uevent: bool, _name: *const core::ffi::c_char, _device: *mut device, _gfp: usize, _context: *mut core::ffi::c_void, _cont: Option<unsafe extern "C" fn(*const firmware, *mut core::ffi::c_void)>) -> i32 { -22 }
+pub unsafe fn request_firmware_nowait(_module: *mut module, _uevent: bool, _name: *const kernel::ffi::c_char, _device: *mut device, _gfp: usize, _context: *mut kernel::ffi::c_void, _cont: Option<unsafe extern "C" fn(*const firmware, *mut kernel::ffi::c_void)>) -> i32 { -22 }
 #[cfg(not(CONFIG_FW_LOADER))]
-pub unsafe fn request_firmware_nowait_cancel(_device: *mut device, _context: *mut core::ffi::c_void, _cont: Option<unsafe extern "C" fn(*const firmware, *mut core::ffi::c_void)>) {}
+pub unsafe fn request_firmware_nowait_cancel(_device: *mut device, _context: *mut kernel::ffi::c_void, _cont: Option<unsafe extern "C" fn(*const firmware, *mut kernel::ffi::c_void)>) {}
 #[cfg(not(CONFIG_FW_LOADER))]
 pub unsafe fn release_firmware(_fw: *const firmware) {}
 #[cfg(not(CONFIG_FW_LOADER))]
-pub unsafe fn request_firmware_direct(_fw: *mut *const firmware, _name: *const core::ffi::c_char, _device: *mut device) -> i32 { -22 }
+pub unsafe fn request_firmware_direct(_fw: *mut *const firmware, _name: *const kernel::ffi::c_char, _device: *mut device) -> i32 { -22 }
 #[cfg(not(CONFIG_FW_LOADER))]
-pub unsafe fn request_firmware_into_buf(_firmware_p: *mut *const firmware, _name: *const core::ffi::c_char, _device: *mut device, _buf: *mut core::ffi::c_void, _size: usize) -> i32 { -22 }
+pub unsafe fn request_firmware_into_buf(_firmware_p: *mut *const firmware, _name: *const kernel::ffi::c_char, _device: *mut device, _buf: *mut kernel::ffi::c_void, _size: usize) -> i32 { -22 }
 #[cfg(not(CONFIG_FW_LOADER))]
-pub unsafe fn request_partial_firmware_into_buf(_firmware_p: *mut *const firmware, _name: *const core::ffi::c_char, _device: *mut device, _buf: *mut core::ffi::c_void, _size: usize, _offset: usize) -> i32 { -22 }
+pub unsafe fn request_partial_firmware_into_buf(_firmware_p: *mut *const firmware, _name: *const kernel::ffi::c_char, _device: *mut device, _buf: *mut kernel::ffi::c_void, _size: usize, _offset: usize) -> i32 { -22 }
 
 #[cfg(CONFIG_FW_UPLOAD)]
 unsafe extern "C" {
-    pub fn firmware_upload_register(module: *mut module, parent: *mut device, name: *const core::ffi::c_char, ops: *const fw_upload_ops, dd_handle: *mut core::ffi::c_void) -> *mut fw_upload;
+    pub fn firmware_upload_register(module: *mut module, parent: *mut device, name: *const kernel::ffi::c_char, ops: *const fw_upload_ops, dd_handle: *mut kernel::ffi::c_void) -> *mut fw_upload;
     pub fn firmware_upload_unregister(fw_upload: *mut fw_upload);
 }
 
 #[cfg(not(CONFIG_FW_UPLOAD))]
-pub unsafe fn firmware_upload_register(_module: *mut module, _parent: *mut device, _name: *const core::ffi::c_char, _ops: *const fw_upload_ops, _dd_handle: *mut core::ffi::c_void) -> *mut fw_upload { core::ptr::null_mut() }
+pub unsafe fn firmware_upload_register(_module: *mut module, _parent: *mut device, _name: *const kernel::ffi::c_char, _ops: *const fw_upload_ops, _dd_handle: *mut kernel::ffi::c_void) -> *mut fw_upload { core::ptr::null_mut() }
 #[cfg(not(CONFIG_FW_UPLOAD))]
 pub unsafe fn firmware_upload_unregister(_fw_upload: *mut fw_upload) {}
 
-pub unsafe extern "C" fn firmware_request_cache(_device: *mut device, _name: *const core::ffi::c_char) -> i32;
+pub unsafe extern "C" fn firmware_request_cache(_device: *mut device, _name: *const kernel::ffi::c_char) -> i32;
 
 // DEFINE_FREE(firmware, struct firmware *, release_firmware(_T))
 

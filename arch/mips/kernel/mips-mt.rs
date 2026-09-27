@@ -5,7 +5,7 @@
  */
 
 // C dependencies supplied by the surrounding kernel translation unit.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn get_option(input: *mut *mut c_char, integer: *mut i32) -> i32;

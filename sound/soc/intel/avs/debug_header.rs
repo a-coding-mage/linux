@@ -83,10 +83,10 @@ pub unsafe fn avs_apl_log_payload_addr(addr: *mut u8) -> *mut u8 {
 
 #[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" {
-    pub fn avs_register_probe_component(adev: *mut avs_dev, name: *const core::ffi::c_char) -> i32;
+    pub fn avs_register_probe_component(adev: *mut avs_dev, name: *const kernel::ffi::c_char) -> i32;
     pub fn avs_logging_fw(adev: *mut avs_dev) -> bool;
-    pub fn avs_dump_fw_log(adev: *mut avs_dev, src: *const core::ffi::c_void, len: u32);
-    pub fn avs_dump_fw_log_wakeup(adev: *mut avs_dev, src: *const core::ffi::c_void, len: u32);
+    pub fn avs_dump_fw_log(adev: *mut avs_dev, src: *const kernel::ffi::c_void, len: u32);
+    pub fn avs_dump_fw_log_wakeup(adev: *mut avs_dev, src: *const kernel::ffi::c_void, len: u32);
     pub fn avs_debugfs_init(adev: *mut avs_dev);
     pub fn avs_debugfs_exit(adev: *mut avs_dev);
 }
@@ -104,7 +104,7 @@ pub const EOPNOTSUPP: i32 = 95;
 #[inline]
 pub unsafe fn avs_register_probe_component(
     _adev: *mut avs_dev,
-    _name: *const core::ffi::c_char,
+    _name: *const kernel::ffi::c_char,
 ) -> i32 {
     -EOPNOTSUPP
 }
@@ -122,13 +122,13 @@ pub unsafe fn avs_logging_fw(_adev: *mut avs_dev) -> bool {
 
 #[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
-pub unsafe fn avs_dump_fw_log(_adev: *mut avs_dev, _src: *const core::ffi::c_void, _len: u32) {}
+pub unsafe fn avs_dump_fw_log(_adev: *mut avs_dev, _src: *const kernel::ffi::c_void, _len: u32) {}
 
 #[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn avs_dump_fw_log_wakeup(
     _adev: *mut avs_dev,
-    _src: *const core::ffi::c_void,
+    _src: *const kernel::ffi::c_void,
     _len: u32,
 ) {
 }

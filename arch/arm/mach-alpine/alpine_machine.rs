@@ -5,7 +5,7 @@
  * Copyright (C) 2015 Annapurna Labs Ltd.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Corresponds to the C __initconst compatibility table.  The terminating
 // null pointer is part of the table's ABI.
@@ -23,7 +23,7 @@ static al_match: [*const c_char; 2] = [
 // are supplied by asm/mach/arch.h and are therefore retained as the
 // corresponding external kernel declaration here.
 extern "C" {
-    static AL_DT: core::ffi::c_void;
+    static AL_DT: kernel::ffi::c_void;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

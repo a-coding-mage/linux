@@ -20,7 +20,7 @@ extern "C" {
 #[repr(C)]
 pub struct cpg_simple_notifier {
     pub nb: notifier_block,
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub saved: u32,
 }
 
@@ -30,36 +30,36 @@ extern "C" {
         csn: *mut cpg_simple_notifier,
     );
 
-    pub fn cpg_reg_modify(reg: *mut core::ffi::c_void, clear: u32, set: u32);
+    pub fn cpg_reg_modify(reg: *mut kernel::ffi::c_void, clear: u32, set: u32);
 
     // __init
     pub fn cpg_sdh_clk_register(
-        name: *const core::ffi::c_char,
-        sdnckcr: *mut core::ffi::c_void,
-        parent_name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
+        sdnckcr: *mut kernel::ffi::c_void,
+        parent_name: *const kernel::ffi::c_char,
         notifiers: *mut raw_notifier_head,
     ) -> *mut clk;
 
     // __init
     pub fn cpg_sd_clk_register(
-        name: *const core::ffi::c_char,
-        sdnckcr: *mut core::ffi::c_void,
-        parent_name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
+        sdnckcr: *mut kernel::ffi::c_void,
+        parent_name: *const kernel::ffi::c_char,
     ) -> *mut clk;
 
     // __init
     pub fn cpg_rpc_clk_register(
-        name: *const core::ffi::c_char,
-        rpcckcr: *mut core::ffi::c_void,
-        parent_name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
+        rpcckcr: *mut kernel::ffi::c_void,
+        parent_name: *const kernel::ffi::c_char,
         notifiers: *mut raw_notifier_head,
     ) -> *mut clk;
 
     // __init
     pub fn cpg_rpcd2_clk_register(
-        name: *const core::ffi::c_char,
-        rpcckcr: *mut core::ffi::c_void,
-        parent_name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
+        rpcckcr: *mut kernel::ffi::c_void,
+        parent_name: *const kernel::ffi::c_char,
     ) -> *mut clk;
 }
 

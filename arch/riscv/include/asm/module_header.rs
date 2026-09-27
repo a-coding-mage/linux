@@ -4,7 +4,7 @@
 // Translated from the C header. Names supplied by the included headers remain
 // external dependencies.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     pub fn module_emit_got_entry(mod_: *mut module, val: c_ulong) -> c_ulong;

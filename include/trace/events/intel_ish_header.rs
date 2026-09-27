@@ -7,7 +7,7 @@
 //! tracepoint subsystem; this file preserves the event's file-local data
 //! declaration and callback shape without implementing that external system.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /// Data captured by the `ishtp_dump` trace event.
 ///

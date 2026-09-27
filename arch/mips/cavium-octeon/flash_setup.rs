@@ -12,8 +12,8 @@
 
 static mut FLASH_MAP: map_info = unsafe { core::mem::zeroed() };
 static mut MYMTD: *mut mtd_info = core::ptr::null_mut();
-static PART_PROBE_TYPES: [*const core::ffi::c_char; 3] = [
-    b"cmdlinepart\0".as_ptr() as *const core::ffi::c_char,
+static PART_PROBE_TYPES: [*const kernel::ffi::c_char; 3] = [
+    b"cmdlinepart\0".as_ptr() as *const kernel::ffi::c_char,
     // CONFIG_MTD_REDBOOT_PARTS conditionally adds: b"RedBoot\0".
     core::ptr::null(),
 ];
@@ -37,7 +37,7 @@ unsafe fn octeon_flash_map_write(
 
 unsafe fn octeon_flash_map_copy_from(
     map: *mut map_info,
-    to: *mut core::ffi::c_void,
+    to: *mut kernel::ffi::c_void,
     from: c_ulong,
     len: isize,
 ) {
@@ -49,7 +49,7 @@ unsafe fn octeon_flash_map_copy_from(
 unsafe fn octeon_flash_map_copy_to(
     map: *mut map_info,
     to: c_ulong,
-    from: *const core::ffi::c_void,
+    from: *const kernel::ffi::c_void,
     len: isize,
 ) {
     down(&mut octeon_bootbus_sem);

@@ -12,7 +12,7 @@
  * value.
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 /* Supplied by the thread-info dependency. */
 extern "C" {

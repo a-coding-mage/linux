@@ -50,7 +50,7 @@ unsafe fn efi_mokvar_table_init() {
     let mut mokvar_entry: *mut efi_mokvar_table_entry;
     let mut next_entry: *mut efi_mokvar_table_entry;
     let mut md: efi_memory_desc_t = core::mem::zeroed();
-    let mut va: *mut core::ffi::c_void = core::ptr::null_mut();
+    let mut va: *mut kernel::ffi::c_void = core::ptr::null_mut();
     let mut cur_offset: usize = 0;
     let offset_limit: usize;
     let mut map_size_needed: usize = 0;
@@ -148,7 +148,7 @@ unsafe fn efi_mokvar_entry_next(
 }
 
 /* efi_mokvar_entry_find() - Find EFI MOK config entry by name */
-unsafe fn efi_mokvar_entry_find(name: *const core::ffi::c_char) -> *mut efi_mokvar_table_entry {
+unsafe fn efi_mokvar_entry_find(name: *const kernel::ffi::c_char) -> *mut efi_mokvar_table_entry {
     let mut mokvar_entry = core::ptr::null_mut();
     while !efi_mokvar_entry_next(&mut mokvar_entry).is_null() {
         if strncmp(name, (*mokvar_entry).name.as_ptr(), core::mem::size_of_val(&(*mokvar_entry).name)) == 0 {
@@ -161,7 +161,7 @@ unsafe fn efi_mokvar_entry_find(name: *const core::ffi::c_char) -> *mut efi_mokv
 /* efi_mokvar_sysfs_read() - sysfs binary file read routine */
 unsafe fn efi_mokvar_sysfs_read(
     _file: *mut file, _kobj: *mut kobject, bin_attr: *const bin_attribute,
-    buf: *mut core::ffi::c_char, off: loff_t, mut count: usize,
+    buf: *mut kernel::ffi::c_char, off: loff_t, mut count: usize,
 ) -> isize {
     let mokvar_entry = (*bin_attr).private as *mut efi_mokvar_table_entry;
     if !capable(CAP_SYS_ADMIN) || off >= (*mokvar_entry).data_size as loff_t {

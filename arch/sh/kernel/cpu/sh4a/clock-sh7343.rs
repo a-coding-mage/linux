@@ -8,7 +8,7 @@
  */
 
 // Linux and SH clock declarations supplied by the surrounding kernel.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 const FRQCR: u32 = 0xa4150000;
 const VCLKCR: u32 = 0xa4150004;

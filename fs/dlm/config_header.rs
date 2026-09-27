@@ -47,7 +47,7 @@ pub struct dlm_config_info {
     pub ci_mark: u32,
     pub ci_new_rsb_count: u32,
     pub ci_recover_callbacks: u32,
-    pub ci_cluster_name: [core::ffi::c_char; DLM_LOCKSPACE_LEN],
+    pub ci_cluster_name: [kernel::ffi::c_char; DLM_LOCKSPACE_LEN],
 }
 
 extern "C" {
@@ -56,7 +56,7 @@ extern "C" {
     pub fn dlm_config_init() -> i32;
     pub fn dlm_config_exit();
     pub fn dlm_config_nodes(
-        lsname: *mut core::ffi::c_char,
+        lsname: *mut kernel::ffi::c_char,
         nodes_out: *mut *mut dlm_config_node,
         count_out: *mut i32,
     ) -> i32;

@@ -5,7 +5,7 @@
  * Copyright (C) 2012 John Crispin <john@phrozen.org>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Declarations supplied by the platform and kernel dependencies.
 unsafe extern "C" {
@@ -14,7 +14,7 @@ unsafe extern "C" {
     static mut pm_power_off: Option<unsafe extern "C" fn()>;
 
     fn local_irq_disable();
-    fn ltq_w32(value: u32, address: *mut core::ffi::c_void);
+    fn ltq_w32(value: u32, address: *mut kernel::ffi::c_void);
 }
 
 // Dummy implementation. Used to allow platform code to find out what
@@ -39,19 +39,19 @@ unsafe fn machine_restart(_command: *mut c_char) {
     local_irq_disable();
 
     /* reboot magic */
-    ltq_w32(BOOT_PW1, BOOT_PW1_REG as *mut core::ffi::c_void); /* 'LTQ\0' */
-    ltq_w32(BOOT_PW2, BOOT_PW2_REG as *mut core::ffi::c_void); /* '\0QTL' */
-    ltq_w32(0, BOOT_REG_BASE as *mut core::ffi::c_void); /* reset Bootreg RVEC */
+    ltq_w32(BOOT_PW1, BOOT_PW1_REG as *mut kernel::ffi::c_void); /* 'LTQ\0' */
+    ltq_w32(BOOT_PW2, BOOT_PW2_REG as *mut kernel::ffi::c_void); /* '\0QTL' */
+    ltq_w32(0, BOOT_REG_BASE as *mut kernel::ffi::c_void); /* reset Bootreg RVEC */
 
     /* watchdog magic */
-    ltq_w32(WDT_PW1, WDT_REG_BASE as *mut core::ffi::c_void);
+    ltq_w32(WDT_PW1, WDT_REG_BASE as *mut kernel::ffi::c_void);
     ltq_w32(
         WDT_PW2 |
             (0x3 << 26) | /* PWL */
             (0x2 << 24) | /* CLKDIV */
             (0x1 << 31) | /* enable */
             1, /* reload */
-        WDT_REG_BASE as *mut core::ffi::c_void,
+        WDT_REG_BASE as *mut kernel::ffi::c_void,
     );
     unreachable!();
 }

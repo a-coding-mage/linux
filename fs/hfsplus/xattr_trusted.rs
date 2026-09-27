@@ -12,31 +12,31 @@
 extern "C" {
     fn hfsplus_getxattr(
         inode: *mut inode,
-        name: *const core::ffi::c_char,
-        buffer: *mut core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        buffer: *mut kernel::ffi::c_void,
         size: usize,
-        prefix: *const core::ffi::c_char,
+        prefix: *const kernel::ffi::c_char,
         prefix_len: usize,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     fn hfsplus_setxattr(
         inode: *mut inode,
-        name: *const core::ffi::c_char,
-        buffer: *const core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        buffer: *const kernel::ffi::c_void,
         size: usize,
-        flags: core::ffi::c_int,
-        prefix: *const core::ffi::c_char,
+        flags: kernel::ffi::c_int,
+        prefix: *const kernel::ffi::c_char,
         prefix_len: usize,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 unsafe extern "C" fn hfsplus_trusted_getxattr(
     _handler: *const xattr_handler,
     _unused: *mut dentry,
     inode: *mut inode,
-    name: *const core::ffi::c_char,
-    buffer: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    buffer: *mut kernel::ffi::c_void,
     size: usize,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     hfsplus_getxattr(
         inode,
         name,
@@ -52,11 +52,11 @@ unsafe extern "C" fn hfsplus_trusted_setxattr(
     _idmap: *mut mnt_idmap,
     _unused: *mut dentry,
     inode: *mut inode,
-    name: *const core::ffi::c_char,
-    buffer: *const core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    buffer: *const kernel::ffi::c_void,
     size: usize,
-    flags: core::ffi::c_int,
-) -> core::ffi::c_int {
+    flags: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     hfsplus_setxattr(
         inode,
         name,

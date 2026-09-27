@@ -711,8 +711,8 @@ bool ex_handler_bpf(const struct exception_table_entry *ex,
 	int regs_offset = FIELD_GET(BPF_FIXUP_REG_MASK, (*ex).fixup);
 
 	if (regs_offset != REG_DONT_CLEAR_MARKER)
-		*(core::ffi::c_ulong *)((void *)regs + pt_regmap[regs_offset]) = 0;
-	(*regs).epc = (core::ffi::c_ulong)&(*ex).fixup - offset;
+		*(kernel::ffi::c_ulong *)((void *)regs + pt_regmap[regs_offset]) = 0;
+	(*regs).epc = (kernel::ffi::c_ulong)&(*ex).fixup - offset;
 
 	return true;
 }
@@ -722,7 +722,7 @@ unsafe fn add_exception_handler(const struct bpf_insn *insn, int dst_reg,
 				 rv_jit_context *ctx)
 {
 	struct exception_table_entry *ex;
-	core::ffi::c_ulong pc;
+	kernel::ffi::c_ulong pc;
 	off_t ins_offset;
 	off_t fixup_offset;
 
@@ -743,7 +743,7 @@ unsafe fn add_exception_handler(const struct bpf_insn *insn, int dst_reg,
 		return -EINVAL;
 
 	ex = (*(*(*&ctx).prog).aux).extable[(*ctx).nexentries];
-	pc = (core::ffi::c_ulong)&(*ctx).ro_insns[(*ctx).ex_insn_off];
+	pc = (kernel::ffi::c_ulong)&(*ctx).ro_insns[(*ctx).ex_insn_off];
 
 	/*
 	 * This is the relative offset of the instruction that may fault from
@@ -816,8 +816,8 @@ int bpf_arch_text_poke(void *ip, bpf_text_poke_type old_t,
 	bool is_call;
 	int ret;
 
-	if (!is_kernel_text((core::ffi::c_ulong)ip) &&
-	    !is_bpf_text_address((core::ffi::c_ulong)ip))
+	if (!is_kernel_text((kernel::ffi::c_ulong)ip) &&
+	    !is_bpf_text_address((kernel::ffi::c_ulong)ip))
 		return -ENOTSUPP;
 
 	is_call = old_t == BPF_MOD_CALL;
@@ -1299,12 +1299,12 @@ int arch_bpf_trampoline_size(const struct btf_func_model *m, flags: u32,
 	return ret < 0 ? ret : ninsns_rvoff(ctx.ninsns);
 }
 
-void *arch_alloc_bpf_trampoline(size: core::ffi::c_uint)
+void *arch_alloc_bpf_trampoline(size: kernel::ffi::c_uint)
 {
 	return bpf_prog_pack_alloc(size, bpf_fill_ill_insns, false);
 }
 
-void arch_free_bpf_trampoline(void *image, size: core::ffi::c_uint)
+void arch_free_bpf_trampoline(void *image, size: kernel::ffi::c_uint)
 {
 	bpf_prog_pack_free(image, size);
 }

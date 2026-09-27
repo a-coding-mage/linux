@@ -63,7 +63,7 @@ static mut apic: *mut apic = unsafe { &raw mut apic_default };
 // EXPORT_SYMBOL_GPL(apic);
 
 static mut cmdline_apic: i32 = 0;
-unsafe fn parse_apic(arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn parse_apic(arg: *mut kernel::ffi::c_char) -> i32 {
     let mut drv: *mut *mut apic;
 
     if arg.is_null() {

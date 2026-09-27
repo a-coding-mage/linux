@@ -5,20 +5,20 @@
 use crate::{file, pgprot_t};
 
 extern "C" {
-    fn pfn_valid(pfn: ::core::ffi::c_ulong) -> bool;
+    fn pfn_valid(pfn: ::kernel::ffi::c_ulong) -> bool;
     fn pgprot_noncached(vma_prot: pgprot_t) -> pgprot_t;
     fn pgprot_writecombine(vma_prot: pgprot_t) -> pgprot_t;
 }
 
 // O_SYNC is supplied by the Linux kernel headers.
 extern "C" {
-    static O_SYNC: ::core::ffi::c_uint;
+    static O_SYNC: ::kernel::ffi::c_uint;
 }
 
 pub unsafe fn phys_mem_access_prot(
     file: *mut file,
-    pfn: ::core::ffi::c_ulong,
-    size: ::core::ffi::c_ulong,
+    pfn: ::kernel::ffi::c_ulong,
+    size: ::kernel::ffi::c_ulong,
     vma_prot: pgprot_t,
 ) -> pgprot_t {
     let _ = size;

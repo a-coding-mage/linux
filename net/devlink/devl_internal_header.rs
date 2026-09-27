@@ -35,7 +35,7 @@ pub struct devlink {
     pub snapshot_ids: xarray,
     pub stats: devlink_dev_stats,
     pub dev: *mut device,
-    pub dev_name_index: *const core::ffi::c_char,
+    pub dev_name_index: *const kernel::ffi::c_char,
     pub dev_driver: *const device_driver,
     pub _net: possible_net_t,
     pub lock: mutex,
@@ -141,14 +141,14 @@ extern "C" {
     pub fn devlink_nl_dumpit(msg: *mut sk_buff, cb: *mut netlink_callback, dump_one: devlink_nl_dump_one_func_t) -> c_int;
     pub fn devlink_nl_put_nested_handle(msg: *mut sk_buff, net: *mut net, devlink: *mut devlink, attrtype: c_int) -> c_int;
     pub fn devlink_nl_msg_reply_and_new(msg: *mut *mut sk_buff, info: *mut genl_info) -> c_int;
-    pub fn devlink_nl_notify_filter(dsk: *mut sock, skb: *mut sk_buff, data: *mut core::ffi::c_void) -> c_int;
+    pub fn devlink_nl_notify_filter(dsk: *mut sock, skb: *mut sk_buff, data: *mut kernel::ffi::c_void) -> c_int;
 }
 
 #[repr(C)]
 pub struct devlink_obj_desc {
     pub rcu: rcu_head,
-    pub bus_name: *const core::ffi::c_char,
-    pub dev_name: *const core::ffi::c_char,
+    pub bus_name: *const kernel::ffi::c_char,
+    pub dev_name: *const kernel::ffi::c_char,
     pub port_index: c_uint,
     pub port_index_valid: bool,
     pub devlink_index: c_uint,
@@ -198,7 +198,7 @@ pub unsafe fn devlink_nl_notify_need(devlink: *mut devlink) -> bool {
 #[inline]
 pub unsafe fn devlink_nl_notify_send_desc(devlink: *mut devlink, msg: *mut sk_buff, desc: *mut devlink_obj_desc) {
     genlmsg_multicast_netns_filtered(&raw mut devlink_nl_family, devlink_net(devlink), msg, 0,
-        DEVLINK_MCGRP_CONFIG, GFP_KERNEL, Some(devlink_nl_notify_filter), desc as *mut core::ffi::c_void);
+        DEVLINK_MCGRP_CONFIG, GFP_KERNEL, Some(devlink_nl_notify_filter), desc as *mut kernel::ffi::c_void);
 }
 
 // C preprocessor assertions and iteration macros are represented by their intended call sites:
@@ -237,7 +237,7 @@ extern "C" {
     pub fn devlink_linecards_notify_register(devlink: *mut devlink);
     pub fn devlink_linecards_notify_unregister(devlink: *mut devlink);
     pub fn devlink_port_get_by_index(devlink: *mut devlink, port_index: c_uint) -> *mut devlink_port;
-    pub fn devlink_port_netdevice_event(nb: *mut notifier_block, event: c_ulong, ptr: *mut core::ffi::c_void) -> c_int;
+    pub fn devlink_port_netdevice_event(nb: *mut notifier_block, event: c_ulong, ptr: *mut kernel::ffi::c_void) -> c_int;
     pub fn devlink_port_get_from_info(devlink: *mut devlink, info: *mut genl_info) -> *mut devlink_port;
     pub fn devlink_port_get_from_attrs(devlink: *mut devlink, attrs: *mut *mut nlattr) -> *mut devlink_port;
     pub fn devlink_reload_actions_valid(ops: *const devlink_ops) -> bool;

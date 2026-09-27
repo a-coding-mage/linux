@@ -5,7 +5,7 @@
 
 // Dependencies supplied by the surrounding kernel/Rust translation.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub struct ksmbd_work;
 
@@ -14,8 +14,8 @@ pub struct ksmbd_share_config {
     pub name: *mut c_char,
     pub path: *mut c_char,
 
-    pub path_sz: core::ffi::c_uint,
-    pub flags: core::ffi::c_uint,
+    pub path_sz: kernel::ffi::c_uint,
+    pub flags: kernel::ffi::c_uint,
     pub veto_list: list_head,
 
     pub vfs_path: path,
@@ -63,9 +63,9 @@ pub unsafe fn share_config_directory_mode(
 
 pub unsafe fn test_share_config_flag(
     share: *mut ksmbd_share_config,
-    flag: core::ffi::c_int,
-) -> core::ffi::c_int {
-    ((*share).flags as core::ffi::c_int) & flag
+    flag: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
+    ((*share).flags as kernel::ffi::c_int) & flag
 }
 
 #[cfg(CONFIG_PROC_FS)]
@@ -113,7 +113,7 @@ unsafe extern "C" {
         share: *mut ksmbd_share_config,
         filename: *const c_char,
     ) -> bool;
-    pub fn create_proc_shares() -> core::ffi::c_int;
+    pub fn create_proc_shares() -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -30,20 +30,20 @@ pub const PMB_V: u32 = 0x00000100;
 pub const PMB_NO_ENTRY: i32 = -1;
 
 /* Default "unsigned long" context. NR_CPUS is supplied by the target. */
-pub type MmContextIdT = [::core::ffi::c_ulong; NR_CPUS];
+pub type MmContextIdT = [::kernel::ffi::c_ulong; NR_CPUS];
 
 #[repr(C)]
 pub struct MmContextT {
     #[cfg(CONFIG_MMU)]
     pub id: MmContextIdT,
     #[cfg(CONFIG_MMU)]
-    pub vdso: *mut core::ffi::c_void,
+    pub vdso: *mut kernel::ffi::c_void,
     #[cfg(not(CONFIG_MMU))]
-    pub end_brk: ::core::ffi::c_ulong,
+    pub end_brk: ::kernel::ffi::c_ulong,
     #[cfg(CONFIG_BINFMT_ELF_FDPIC)]
-    pub exec_fdpic_loadmap: ::core::ffi::c_ulong,
+    pub exec_fdpic_loadmap: ::kernel::ffi::c_ulong,
     #[cfg(CONFIG_BINFMT_ELF_FDPIC)]
-    pub interp_fdpic_loadmap: ::core::ffi::c_ulong,
+    pub interp_fdpic_loadmap: ::kernel::ffi::c_ulong,
 }
 
 #[cfg(CONFIG_PMB)]
@@ -51,25 +51,25 @@ extern "C" {
     pub fn __in_29bit_mode() -> bool;
     pub fn pmb_init();
     pub fn pmb_bolt_mapping(
-        virt: ::core::ffi::c_ulong,
+        virt: ::kernel::ffi::c_ulong,
         phys: phys_addr_t,
-        size: ::core::ffi::c_ulong,
+        size: ::kernel::ffi::c_ulong,
         prot: pgprot_t,
     ) -> i32;
     pub fn pmb_remap_caller(
         phys: phys_addr_t,
-        size: ::core::ffi::c_ulong,
+        size: ::kernel::ffi::c_ulong,
         prot: pgprot_t,
-        caller: *mut core::ffi::c_void,
-    ) -> *mut core::ffi::c_void;
-    pub fn pmb_unmap(addr: *mut core::ffi::c_void) -> i32;
+        caller: *mut kernel::ffi::c_void,
+    ) -> *mut kernel::ffi::c_void;
+    pub fn pmb_unmap(addr: *mut kernel::ffi::c_void) -> i32;
 }
 
 #[cfg(not(CONFIG_PMB))]
 pub unsafe fn pmb_bolt_mapping(
-    _virt: ::core::ffi::c_ulong,
+    _virt: ::kernel::ffi::c_ulong,
     _phys: phys_addr_t,
-    _size: ::core::ffi::c_ulong,
+    _size: ::kernel::ffi::c_ulong,
     _prot: pgprot_t,
 ) -> i32 {
     -22
@@ -78,15 +78,15 @@ pub unsafe fn pmb_bolt_mapping(
 #[cfg(not(CONFIG_PMB))]
 pub unsafe fn pmb_remap_caller(
     _phys: phys_addr_t,
-    _size: ::core::ffi::c_ulong,
+    _size: ::kernel::ffi::c_ulong,
     _prot: pgprot_t,
-    _caller: *mut core::ffi::c_void,
-) -> *mut core::ffi::c_void {
+    _caller: *mut kernel::ffi::c_void,
+) -> *mut kernel::ffi::c_void {
     core::ptr::null_mut()
 }
 
 #[cfg(not(CONFIG_PMB))]
-pub unsafe fn pmb_unmap(_addr: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn pmb_unmap(_addr: *mut kernel::ffi::c_void) -> i32 {
     -22
 }
 
@@ -101,14 +101,14 @@ pub const fn __in_29bit_mode() -> i32 { 0 }
 
 pub unsafe fn pmb_remap(
     phys: phys_addr_t,
-    size: ::core::ffi::c_ulong,
+    size: ::kernel::ffi::c_ulong,
     prot: pgprot_t,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     pmb_remap_caller(phys, size, prot, __builtin_return_address(0))
 }
 
 extern "C" {
-    fn __builtin_return_address(level: usize) -> *mut core::ffi::c_void;
+    fn __builtin_return_address(level: usize) -> *mut kernel::ffi::c_void;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

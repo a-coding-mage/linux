@@ -18,13 +18,13 @@ pub const VIVALDI_MAX_FUNCTION_ROW_KEYS: usize = 24;
 #[repr(C)]
 pub struct vivaldi_data {
     pub function_row_physmap: [u32; VIVALDI_MAX_FUNCTION_ROW_KEYS],
-    pub num_function_row_keys: core::ffi::c_uint,
+    pub num_function_row_keys: kernel::ffi::c_uint,
 }
 
 unsafe extern "C" {
     pub fn vivaldi_function_row_physmap_show(
         data: *const vivaldi_data,
-        buf: *mut core::ffi::c_char,
+        buf: *mut kernel::ffi::c_char,
     ) -> isize;
 }
 

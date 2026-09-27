@@ -18,9 +18,9 @@ pub struct ib_umem_odp {
      * also protects access to the mmu notifier counters.
      */
     pub umem_mutex: mutex,
-    pub private: *mut core::ffi::c_void, /* for the HW driver to use. */
+    pub private: *mut kernel::ffi::c_void, /* for the HW driver to use. */
 
-    pub npages: core::ffi::c_int,
+    pub npages: kernel::ffi::c_int,
 
     /*
      * An implicit odp umem cannot be DMA mapped, has 0 length, and serves
@@ -29,7 +29,7 @@ pub struct ib_umem_odp {
      * directly.
      */
     pub is_implicit_odp: bool,
-    pub page_shift: core::ffi::c_uint,
+    pub page_shift: kernel::ffi::c_uint,
 }
 
 #[inline]
@@ -40,13 +40,13 @@ pub unsafe fn to_ib_umem_odp(umem: *mut ib_umem) -> *mut ib_umem_odp {
 
 /* Returns the first page of an ODP umem. */
 #[inline]
-pub unsafe fn ib_umem_start(umem_odp: *mut ib_umem_odp) -> core::ffi::c_ulong {
+pub unsafe fn ib_umem_start(umem_odp: *mut ib_umem_odp) -> kernel::ffi::c_ulong {
     (*umem_odp).notifier.interval_tree.start
 }
 
 /* Returns the address of the page after the last one of an ODP umem. */
 #[inline]
-pub unsafe fn ib_umem_end(umem_odp: *mut ib_umem_odp) -> core::ffi::c_ulong {
+pub unsafe fn ib_umem_end(umem_odp: *mut ib_umem_odp) -> kernel::ffi::c_ulong {
     (*umem_odp).notifier.interval_tree.last + 1
 }
 
@@ -59,18 +59,18 @@ pub unsafe fn ib_umem_odp_num_pages(umem_odp: *mut ib_umem_odp) -> usize {
 extern "C" {
     pub fn ib_umem_odp_get(
         device: *mut ib_device,
-        addr: core::ffi::c_ulong,
+        addr: kernel::ffi::c_ulong,
         size: usize,
-        access: core::ffi::c_int,
+        access: kernel::ffi::c_int,
         ops: *const mmu_interval_notifier_ops,
     ) -> *mut ib_umem_odp;
     pub fn ib_umem_odp_alloc_implicit(
         device: *mut ib_device,
-        access: core::ffi::c_int,
+        access: kernel::ffi::c_int,
     ) -> *mut ib_umem_odp;
     pub fn ib_umem_odp_alloc_child(
         root_umem: *mut ib_umem_odp,
-        addr: core::ffi::c_ulong,
+        addr: kernel::ffi::c_ulong,
         size: usize,
         ops: *const mmu_interval_notifier_ops,
     ) -> *mut ib_umem_odp;
@@ -81,7 +81,7 @@ extern "C" {
         bcnt: u64,
         access_mask: u64,
         fault: bool,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn ib_umem_odp_unmap_dma_pages(
         umem_odp: *mut ib_umem_odp,
         start_offset: u64,
@@ -93,9 +93,9 @@ extern "C" {
 #[inline]
 pub unsafe fn ib_umem_odp_get(
     _device: *mut ib_device,
-    _addr: core::ffi::c_ulong,
+    _addr: kernel::ffi::c_ulong,
     _size: usize,
-    _access: core::ffi::c_int,
+    _access: kernel::ffi::c_int,
     _ops: *const mmu_interval_notifier_ops,
 ) -> *mut ib_umem_odp {
     ERR_PTR(-EINVAL)

@@ -39,9 +39,9 @@ unsafe fn ice40_fpga_ops_state(mgr: *mut FpgaManager) -> FpgaMgrStates {
 unsafe fn ice40_fpga_ops_write_init(
     mgr: *mut FpgaManager,
     info: *mut FpgaImageInfo,
-    _buf: *const libc::c_char,
+    _buf: *const kernel::ffi::c_char,
     _count: usize,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let priv_ = (*mgr).priv_ as *mut Ice40FpgaPriv;
     let dev = (*priv_).dev;
     let mut message = SpiMessage::default();
@@ -52,7 +52,7 @@ unsafe fn ice40_fpga_ops_write_init(
     let mut housekeeping_delay_then_release_cs = SpiTransfer::default();
     housekeeping_delay_then_release_cs.delay.value = ICE40_SPI_HOUSEKEEPING_DELAY as u16;
     housekeeping_delay_then_release_cs.delay.unit = SpiDelayUnit::Usecs;
-    let mut ret: libc::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     if ((*info).flags & FpgaMgrFlags::PartialReconfig.bits()) != 0 {
         dev_err((*dev).dev, "Partial reconfiguration is not supported\n");
@@ -89,17 +89,17 @@ unsafe fn ice40_fpga_ops_write_init(
 
 unsafe fn ice40_fpga_ops_write(
     mgr: *mut FpgaManager,
-    buf: *const libc::c_char,
+    buf: *const kernel::ffi::c_char,
     count: usize,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let priv_ = (*mgr).priv_ as *mut Ice40FpgaPriv;
-    spi_write((*priv_).dev, buf as *const libc::c_void, count)
+    spi_write((*priv_).dev, buf as *const kernel::ffi::c_void, count)
 }
 
 unsafe fn ice40_fpga_ops_write_complete(
     mgr: *mut FpgaManager,
     _info: *mut FpgaImageInfo,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let priv_ = (*mgr).priv_ as *mut Ice40FpgaPriv;
     let dev = (*priv_).dev;
     let padding = [0u8; ICE40_SPI_NUM_ACTIVATION_BYTES];
@@ -109,7 +109,7 @@ unsafe fn ice40_fpga_ops_write_complete(
         return -EIO;
     }
     /* Send of zero-padding to activate the firmware */
-    spi_write(dev, padding.as_ptr() as *const libc::c_void, padding.len())
+    spi_write(dev, padding.as_ptr() as *const kernel::ffi::c_void, padding.len())
 }
 
 static ICE40_FPGA_OPS: FpgaManagerOps = FpgaManagerOps {
@@ -119,7 +119,7 @@ static ICE40_FPGA_OPS: FpgaManagerOps = FpgaManagerOps {
     write_complete: Some(ice40_fpga_ops_write_complete),
 };
 
-unsafe fn ice40_fpga_probe(spi: *mut SpiDevice) -> libc::c_int {
+unsafe fn ice40_fpga_probe(spi: *mut SpiDevice) -> kernel::ffi::c_int {
     let dev = (*spi).dev;
     let priv_ = devm_kzalloc(dev, core::mem::size_of::<Ice40FpgaPriv>(), GFP_KERNEL)
         as *mut Ice40FpgaPriv;

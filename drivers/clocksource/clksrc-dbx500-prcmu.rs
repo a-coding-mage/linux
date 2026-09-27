@@ -15,10 +15,10 @@
 
 // Dependencies supplied by other translated files.
 extern "C" {
-    fn readl_relaxed(addr: *mut core::ffi::c_void) -> u32;
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn of_iomap(node: *mut device_node, index: i32) -> *mut core::ffi::c_void;
+    fn readl_relaxed(addr: *mut kernel::ffi::c_void) -> u32;
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn of_iomap(node: *mut device_node, index: i32) -> *mut kernel::ffi::c_void;
     fn clocksource_register_hz(cs: *mut clocksource, hz: u32) -> i32;
 }
 
@@ -29,7 +29,7 @@ pub struct device_node {
 
 #[repr(C)]
 pub struct clocksource {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub rating: i32,
     pub read: Option<unsafe extern "C" fn(*mut clocksource) -> u64>,
     pub mask: u32,
@@ -48,7 +48,7 @@ const PRCMU_TIMER_MODE: usize = 0x8;
 const CLOCK_SOURCE_IS_CONTINUOUS: u32 = 1 << 0;
 const CLOCK_SOURCE_SUSPEND_NONSTOP: u32 = 1 << 1;
 
-static mut clksrc_dbx500_timer_base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut clksrc_dbx500_timer_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 unsafe extern "C" fn clksrc_dbx500_prcmu_read(_cs: *mut clocksource) -> u64 {
     let base = clksrc_dbx500_timer_base;
@@ -67,7 +67,7 @@ unsafe extern "C" fn clksrc_dbx500_prcmu_read(_cs: *mut clocksource) -> u64 {
 }
 
 static mut clocksource_dbx500_prcmu: clocksource = clocksource {
-    name: b"dbx500-prcmu-timer\0".as_ptr() as *const core::ffi::c_char,
+    name: b"dbx500-prcmu-timer\0".as_ptr() as *const kernel::ffi::c_char,
     rating: 100,
     read: Some(clksrc_dbx500_prcmu_read),
     mask: 0xffff_ffff,

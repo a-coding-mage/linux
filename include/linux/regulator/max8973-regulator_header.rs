@@ -49,8 +49,8 @@ pub const MAX8973_CONTROL_INDUCTOR_VALUE_PLUS_60_PER: u32 = 0x00300000;
 #[repr(C)]
 pub struct max8973_regulator_platform_data {
     pub reg_init_data: *mut regulator_init_data,
-    pub control_flags: ::core::ffi::c_ulong,
-    pub junction_temp_warning: ::core::ffi::c_ulong,
+    pub control_flags: ::kernel::ffi::c_ulong,
+    pub junction_temp_warning: ::kernel::ffi::c_ulong,
     pub enable_ext_control: bool,
     /* C unsigned bit-field: dvs_def_state:1; stored in its unsigned-int unit. */
     pub dvs_def_state: u32,

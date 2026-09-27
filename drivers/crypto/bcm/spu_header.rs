@@ -89,8 +89,8 @@ pub const AUTHENC: AeadType = 2;
 pub const AEAD_TYPE_LAST: AeadType = 3;
 
 extern "C" {
-    pub static mut hash_alg_name: [*mut core::ffi::c_char; HASH_ALG_LAST as usize];
-    pub static mut aead_alg_name: [*mut core::ffi::c_char; AEAD_TYPE_LAST as usize];
+    pub static mut hash_alg_name: [*mut kernel::ffi::c_char; HASH_ALG_LAST as usize];
+    pub static mut aead_alg_name: [*mut kernel::ffi::c_char; AEAD_TYPE_LAST as usize];
 }
 
 #[repr(C)]
@@ -171,14 +171,14 @@ pub const unsafe fn spu_real_db_size(
 }
 
 extern "C" {
-    pub fn spum_dump_msg_hdr(buf: *mut u8, buf_len: core::ffi::c_uint);
-    pub fn spum_ns2_ctx_max_payload(cipher_alg: SpuCipherAlg, cipher_mode: SpuCipherMode, blocksize: core::ffi::c_uint) -> u32;
-    pub fn spum_nsp_ctx_max_payload(cipher_alg: SpuCipherAlg, cipher_mode: SpuCipherMode, blocksize: core::ffi::c_uint) -> u32;
+    pub fn spum_dump_msg_hdr(buf: *mut u8, buf_len: kernel::ffi::c_uint);
+    pub fn spum_ns2_ctx_max_payload(cipher_alg: SpuCipherAlg, cipher_mode: SpuCipherMode, blocksize: kernel::ffi::c_uint) -> u32;
+    pub fn spum_nsp_ctx_max_payload(cipher_alg: SpuCipherAlg, cipher_mode: SpuCipherMode, blocksize: kernel::ffi::c_uint) -> u32;
     pub fn spum_payload_length(spu_hdr: *mut u8) -> u32;
     pub fn spum_response_hdr_len(auth_key_len: u16, enc_key_len: u16, is_hash: bool) -> u16;
     pub fn spum_hash_pad_len(hash_alg: HashAlg, hash_mode: HashMode, chunksize: u32, hash_block_size: u16) -> u16;
-    pub fn spum_gcm_ccm_pad_len(cipher_mode: SpuCipherMode, data_size: core::ffi::c_uint) -> u32;
-    pub fn spum_assoc_resp_len(cipher_mode: SpuCipherMode, assoc_len: core::ffi::c_uint, iv_len: core::ffi::c_uint, is_encrypt: bool) -> u32;
+    pub fn spum_gcm_ccm_pad_len(cipher_mode: SpuCipherMode, data_size: kernel::ffi::c_uint) -> u32;
+    pub fn spum_assoc_resp_len(cipher_mode: SpuCipherMode, assoc_len: kernel::ffi::c_uint, iv_len: kernel::ffi::c_uint, is_encrypt: bool) -> u32;
     pub fn spum_aead_ivlen(cipher_mode: SpuCipherMode, iv_len: u16) -> u8;
     pub fn spum_hash_type(src_sent: u32) -> HashType;
     pub fn spum_digest_size(alg_digest_size: u32, alg: HashAlg, htype: HashType) -> u32;

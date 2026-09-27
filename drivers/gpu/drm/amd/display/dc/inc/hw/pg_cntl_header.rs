@@ -24,7 +24,7 @@
 
 // C dependencies: dc.h, dc_types.h, and hw_shared.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct pg_cntl {

@@ -78,17 +78,17 @@ macro_rules! __WARN_FLAGS {
 
 #[repr(C)]
 pub struct arch_va_list {
-    pub __gpr: libc::c_long,
-    pub __fpr: libc::c_long,
-    pub __overflow_arg_area: *mut core::ffi::c_void,
-    pub __reg_save_area: *mut core::ffi::c_void,
+    pub __gpr: kernel::ffi::c_long,
+    pub __fpr: kernel::ffi::c_long,
+    pub __overflow_arg_area: *mut kernel::ffi::c_void,
+    pub __reg_save_area: *mut kernel::ffi::c_void,
 }
 
 pub enum bug_entry {}
 pub enum pt_regs {}
 
 unsafe extern "C" {
-    pub fn __warn_args(args: *mut arch_va_list, regs: *mut pt_regs) -> *mut core::ffi::c_void;
+    pub fn __warn_args(args: *mut arch_va_list, regs: *mut pt_regs) -> *mut kernel::ffi::c_void;
     pub fn __WARN_trap(bug: *mut bug_entry, ...);
 }
 

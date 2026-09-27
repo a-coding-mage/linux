@@ -36,20 +36,20 @@ pub struct edac_pci_counter {
 pub struct edac_pci_ctl_info {
     /* for global list of edac_pci_ctl_info structs */
     pub link: list_head,
-    pub pci_idx: core::ffi::c_int,
+    pub pci_idx: kernel::ffi::c_int,
     /* the internal state of this controller instance */
-    pub op_state: core::ffi::c_int,
+    pub op_state: kernel::ffi::c_int,
     /* work struct for this instance */
     pub work: delayed_work,
     /* pointer to edac polling checking routine */
     pub edac_check: Option<unsafe extern "C" fn(*mut edac_pci_ctl_info)>,
     pub dev: *mut device,
-    pub mod_name: *const core::ffi::c_char,
-    pub ctl_name: *const core::ffi::c_char,
-    pub dev_name: *const core::ffi::c_char,
-    pub pvt_info: *mut core::ffi::c_void,
-    pub start_time: core::ffi::c_ulong,
-    pub name: [core::ffi::c_char; (EDAC_DEVICE_NAME_LEN + 1) as usize],
+    pub mod_name: *const kernel::ffi::c_char,
+    pub ctl_name: *const kernel::ffi::c_char,
+    pub dev_name: *const kernel::ffi::c_char,
+    pub pvt_info: *mut kernel::ffi::c_void,
+    pub start_time: kernel::ffi::c_ulong,
+    pub name: [kernel::ffi::c_char; (EDAC_DEVICE_NAME_LEN + 1) as usize],
     pub counters: edac_pci_counter,
     pub kobj: kobject,
 }
@@ -63,7 +63,7 @@ macro_rules! to_edac_pci_ctl_work {
 /* write all or some bits in a byte-register */
 #[cfg(CONFIG_PCI)]
 #[inline]
-pub unsafe fn pci_write_bits8(pdev: *mut pci_dev, offset: core::ffi::c_int,
+pub unsafe fn pci_write_bits8(pdev: *mut pci_dev, offset: kernel::ffi::c_int,
                               mut value: u8, mask: u8) {
     if mask != 0xff {
         let mut buf: u8 = 0;
@@ -78,7 +78,7 @@ pub unsafe fn pci_write_bits8(pdev: *mut pci_dev, offset: core::ffi::c_int,
 /* write all or some bits in a word-register */
 #[cfg(CONFIG_PCI)]
 #[inline]
-pub unsafe fn pci_write_bits16(pdev: *mut pci_dev, offset: core::ffi::c_int,
+pub unsafe fn pci_write_bits16(pdev: *mut pci_dev, offset: kernel::ffi::c_int,
                                mut value: u16, mask: u16) {
     if mask != 0xffff {
         let mut buf: u16 = 0;
@@ -93,7 +93,7 @@ pub unsafe fn pci_write_bits16(pdev: *mut pci_dev, offset: core::ffi::c_int,
 /* write all or some bits in a dword-register */
 #[cfg(CONFIG_PCI)]
 #[inline]
-pub unsafe fn pci_write_bits32(pdev: *mut pci_dev, offset: core::ffi::c_int,
+pub unsafe fn pci_write_bits32(pdev: *mut pci_dev, offset: kernel::ffi::c_int,
                                mut value: u32, mask: u32) {
     if mask != 0xffff_ffff {
         let mut buf: u32 = 0;
@@ -106,19 +106,19 @@ pub unsafe fn pci_write_bits32(pdev: *mut pci_dev, offset: core::ffi::c_int,
 }
 
 extern "C" {
-    pub fn edac_pci_alloc_ctl_info(sz_pvt: core::ffi::c_uint,
-                                   edac_pci_name: *const core::ffi::c_char)
+    pub fn edac_pci_alloc_ctl_info(sz_pvt: kernel::ffi::c_uint,
+                                   edac_pci_name: *const kernel::ffi::c_char)
         -> *mut edac_pci_ctl_info;
     pub fn edac_pci_free_ctl_info(pci: *mut edac_pci_ctl_info);
-    pub fn edac_pci_alloc_index() -> core::ffi::c_int;
+    pub fn edac_pci_alloc_index() -> kernel::ffi::c_int;
     pub fn edac_pci_add_device(pci: *mut edac_pci_ctl_info,
-                               edac_idx: core::ffi::c_int) -> core::ffi::c_int;
+                               edac_idx: kernel::ffi::c_int) -> kernel::ffi::c_int;
     pub fn edac_pci_del_device(dev: *mut device) -> *mut edac_pci_ctl_info;
     pub fn edac_pci_create_generic_ctl(dev: *mut device,
-                                       mod_name: *const core::ffi::c_char)
+                                       mod_name: *const kernel::ffi::c_char)
         -> *mut edac_pci_ctl_info;
     pub fn edac_pci_release_generic_ctl(pci: *mut edac_pci_ctl_info);
-    pub fn edac_pci_create_sysfs(pci: *mut edac_pci_ctl_info) -> core::ffi::c_int;
+    pub fn edac_pci_create_sysfs(pci: *mut edac_pci_ctl_info) -> kernel::ffi::c_int;
     pub fn edac_pci_remove_sysfs(pci: *mut edac_pci_ctl_info);
 }
 

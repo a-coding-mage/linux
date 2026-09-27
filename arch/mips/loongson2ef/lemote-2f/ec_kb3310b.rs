@@ -8,13 +8,13 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 extern "C" {
-    fn spin_lock_irqsave(lock: *mut core::ffi::c_void, flags: *mut usize);
-    fn spin_unlock_irqrestore(lock: *mut core::ffi::c_void, flags: usize);
+    fn spin_lock_irqsave(lock: *mut kernel::ffi::c_void, flags: *mut usize);
+    fn spin_unlock_irqrestore(lock: *mut kernel::ffi::c_void, flags: usize);
     fn outb(value: u8, port: u16);
     fn inb(port: u16) -> u8;
     fn udelay(usecs: u32);
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 static EC_QUERY_TIMEOUT_MSG: &[u8] = b"%s: deadable error : timeout...\n\0";
@@ -34,8 +34,8 @@ extern "C" {
     static CMD_GET_EVENT_NUM: u8;
 }
 
-static mut index_access_lock: core::ffi::c_void = core::mem::MaybeUninit::uninit().assume_init();
-static mut port_access_lock: core::ffi::c_void = core::mem::MaybeUninit::uninit().assume_init();
+static mut index_access_lock: kernel::ffi::c_void = core::mem::MaybeUninit::uninit().assume_init();
+static mut port_access_lock: kernel::ffi::c_void = core::mem::MaybeUninit::uninit().assume_init();
 
 #[no_mangle]
 pub unsafe extern "C" fn ec_read(addr: u16) -> u8 {
@@ -92,11 +92,11 @@ pub unsafe extern "C" fn ec_query_seq(cmd: u8) -> i32 {
     spin_unlock_irqrestore(&raw mut port_access_lock, flags);
 
     if timeout <= 0 {
-        printk(EC_QUERY_TIMEOUT_MSG.as_ptr() as *const core::ffi::c_char,
+        printk(EC_QUERY_TIMEOUT_MSG.as_ptr() as *const kernel::ffi::c_char,
             b"ec_query_seq\0".as_ptr(),);
         ret = -22; // -EINVAL
     } else {
-        printk(EC_QUERY_STATUS_MSG.as_ptr() as *const core::ffi::c_char,
+        printk(EC_QUERY_STATUS_MSG.as_ptr() as *const kernel::ffi::c_char,
             timeout, EC_CMD_TIMEOUT - timeout, cmd, status);
     }
 
@@ -128,7 +128,7 @@ pub unsafe extern "C" fn ec_get_event_num() -> i32 {
         udelay(EC_REG_DELAY);
     }
     if timeout <= 0 {
-        pr_info(EC_EVENT_TIMEOUT_MSG.as_ptr() as *const core::ffi::c_char,
+        pr_info(EC_EVENT_TIMEOUT_MSG.as_ptr() as *const kernel::ffi::c_char,
             b"ec_get_event_num\0".as_ptr());
         return -22; // -EINVAL
     }

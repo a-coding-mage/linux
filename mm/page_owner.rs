@@ -18,7 +18,7 @@ pub struct page_owner {
     pub free_handle: depot_stack_handle_t,
     pub ts_nsec: u64,
     pub free_ts_nsec: u64,
-    pub comm: [core::ffi::c_char; TASK_COMM_LEN],
+    pub comm: [kernel::ffi::c_char; TASK_COMM_LEN],
     pub pid: pid_t,
     pub tgid: pid_t,
     pub free_pid: pid_t,

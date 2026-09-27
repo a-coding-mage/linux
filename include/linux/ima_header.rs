@@ -11,13 +11,13 @@ pub struct linux_binprm;
 #[cfg(CONFIG_IMA)]
 extern "C" {
     pub fn ima_get_current_hash_algo() -> hash_algo;
-    pub fn ima_file_hash(file: *mut file, buf: *mut core::ffi::c_char, buf_size: usize) -> i32;
-    pub fn ima_inode_hash(inode: *mut inode, buf: *mut core::ffi::c_char, buf_size: usize) -> i32;
-    pub fn ima_kexec_cmdline(kernel_fd: i32, buf: *const core::ffi::c_void, size: i32);
+    pub fn ima_file_hash(file: *mut file, buf: *mut kernel::ffi::c_char, buf_size: usize) -> i32;
+    pub fn ima_inode_hash(inode: *mut inode, buf: *mut kernel::ffi::c_char, buf_size: usize) -> i32;
+    pub fn ima_kexec_cmdline(kernel_fd: i32, buf: *const kernel::ffi::c_void, size: i32);
     pub fn ima_measure_critical_data(
-        event_label: *const core::ffi::c_char,
-        event_name: *const core::ffi::c_char,
-        buf: *const core::ffi::c_void,
+        event_label: *const kernel::ffi::c_char,
+        event_name: *const kernel::ffi::c_char,
+        buf: *const kernel::ffi::c_void,
         buf_len: usize,
         hash: bool,
         digest: *mut u8,
@@ -50,22 +50,22 @@ pub fn ima_get_current_hash_algo() -> hash_algo { HASH_ALGO__LAST }
 
 #[cfg(not(CONFIG_IMA))]
 #[inline]
-pub fn ima_file_hash(_file: *mut file, _buf: *mut core::ffi::c_char, _buf_size: usize) -> i32 { -EOPNOTSUPP }
+pub fn ima_file_hash(_file: *mut file, _buf: *mut kernel::ffi::c_char, _buf_size: usize) -> i32 { -EOPNOTSUPP }
 
 #[cfg(not(CONFIG_IMA))]
 #[inline]
-pub fn ima_inode_hash(_inode: *mut inode, _buf: *mut core::ffi::c_char, _buf_size: usize) -> i32 { -EOPNOTSUPP }
+pub fn ima_inode_hash(_inode: *mut inode, _buf: *mut kernel::ffi::c_char, _buf_size: usize) -> i32 { -EOPNOTSUPP }
 
 #[cfg(not(CONFIG_IMA))]
 #[inline]
-pub fn ima_kexec_cmdline(_kernel_fd: i32, _buf: *const core::ffi::c_void, _size: i32) {}
+pub fn ima_kexec_cmdline(_kernel_fd: i32, _buf: *const kernel::ffi::c_void, _size: i32) {}
 
 #[cfg(not(CONFIG_IMA))]
 #[inline]
 pub fn ima_measure_critical_data(
-    _event_label: *const core::ffi::c_char,
-    _event_name: *const core::ffi::c_char,
-    _buf: *const core::ffi::c_void,
+    _event_label: *const kernel::ffi::c_char,
+    _event_name: *const kernel::ffi::c_char,
+    _buf: *const kernel::ffi::c_void,
     _buf_len: usize,
     _hash: bool,
     _digest: *mut u8,
@@ -75,18 +75,18 @@ pub fn ima_measure_critical_data(
 #[cfg(CONFIG_HAVE_IMA_KEXEC)]
 extern "C" {
     pub fn ima_free_kexec_buffer() -> i32;
-    pub fn ima_get_kexec_buffer(addr: *mut *mut core::ffi::c_void, size: *mut usize) -> i32;
+    pub fn ima_get_kexec_buffer(addr: *mut *mut kernel::ffi::c_void, size: *mut usize) -> i32;
     pub fn ima_validate_range(phys: phys_addr_t, size: usize) -> i32;
 }
 
 #[cfg(CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT)]
 extern "C" {
-    pub fn arch_get_ima_policy() -> *const *const core::ffi::c_char;
+    pub fn arch_get_ima_policy() -> *const *const kernel::ffi::c_char;
 }
 
 #[cfg(not(CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT))]
 #[inline]
-pub fn arch_get_ima_policy() -> *const *const core::ffi::c_char { core::ptr::null() }
+pub fn arch_get_ima_policy() -> *const *const kernel::ffi::c_char { core::ptr::null() }
 
 #[cfg(not(CONFIG_IMA_KEXEC))]
 #[inline]

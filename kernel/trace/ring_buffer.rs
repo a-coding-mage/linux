@@ -64,14 +64,14 @@
  * struct ring_buffer_meta {
  * 	int		magic;
  * 	int		struct_sizes;
- * 	core::ffi::c_ulong	total_size;
- * 	core::ffi::c_ulong	buffers_offset;
+ * 	kernel::ffi::c_ulong	total_size;
+ * 	kernel::ffi::c_ulong	buffers_offset;
  * };
  * 
  * struct ring_buffer_cpu_meta {
- * 	core::ffi::c_ulong	first_buffer;
- * 	core::ffi::c_ulong	head_buffer;
- * 	core::ffi::c_ulong	commit_buffer;
+ * 	kernel::ffi::c_ulong	first_buffer;
+ * 	kernel::ffi::c_ulong	head_buffer;
+ * 	kernel::ffi::c_ulong	commit_buffer;
  * 	__u32		subbuf_size;
  * 	__u32		nr_subbufs;
  * #ifdef CONFIG_RING_BUFFER_PERSISTENT_INJECT
@@ -353,7 +353,7 @@
  * 	local_t		 write;		/* index for next write */
  * 	unsigned	 read;		/* index for next read */
  * 	local_t		 entries;	/* entries on this page */
- * 	core::ffi::c_ulong	 real_end;	/* real end of data */
+ * 	kernel::ffi::c_ulong	 real_end;	/* real end of data */
  * 	unsigned	 order;		/* order of the page */
  * 	u32		 id:30;		/* ID for external mapping */
  * 	u32		 range:1;	/* Mapped via a range */
@@ -391,12 +391,12 @@
  * 	return rb_data_page_commit(dpage) & ~RB_MISSED_MASK;
  * }
  * 
- * static __always_inline core::ffi::c_uint rb_page_commit(buffer_page *bpage)
+ * static __always_inline kernel::ffi::c_uint rb_page_commit(buffer_page *bpage)
  * {
  * 	return rb_data_page_commit((*bpage).page);
  * }
  * 
- * static __always_inline core::ffi::c_uint rb_page_size(buffer_page *bpage)
+ * static __always_inline kernel::ffi::c_uint rb_page_size(buffer_page *bpage)
  * {
  * 	return rb_data_page_size((*bpage).page);
  * }
@@ -407,7 +407,7 @@
  *  *
  *  * Return: The maximum size available for events in the given buffer page.
  *  */
- * static __always_inline core::ffi::c_uint rb_page_capacity(buffer_page *bpage)
+ * static __always_inline kernel::ffi::c_uint rb_page_capacity(buffer_page *bpage)
  * {
  * 	return (PAGE_SIZE << (*bpage).order) - BUF_PAGE_HDR_SIZE;
  * }
@@ -416,7 +416,7 @@
  * {
  * 	/* Range pages are not to be freed */
  * 	if ((*!bpage).range)
- * 		free_pages((*(core::ffi::c_ulong)bpage).page, (*bpage).order);
+ * 		free_pages((*(kernel::ffi::c_ulong)bpage).page, (*bpage).order);
  * 	kfree(bpage);
  * }
  * 
@@ -473,7 +473,7 @@
  * 	u64			delta;
  * 	u64			before;
  * 	u64			after;
- * 	core::ffi::c_ulong		length;
+ * 	kernel::ffi::c_ulong		length;
  * 	struct buffer_page	*tail_page;
  * 	int			add_timestamp;
  * };
@@ -529,18 +529,18 @@
  * 	arch_spinlock_t			lock;
  * 	struct lock_class_key		lock_key;
  * 	struct buffer_data_read_page	free_page;
- * 	core::ffi::c_ulong			nr_pages;
- * 	core::ffi::c_uint			current_context;
+ * 	kernel::ffi::c_ulong			nr_pages;
+ * 	kernel::ffi::c_uint			current_context;
  * 	struct list_head		*pages;
  * 	/* pages generation counter, incremented when the list changes */
- * 	core::ffi::c_ulong			cnt;
+ * 	kernel::ffi::c_ulong			cnt;
  * 	struct buffer_page		*head_page;	/* read from head */
  * 	struct buffer_page		*tail_page;	/* write to tail */
  * 	struct buffer_page		*commit_page;	/* committed pages */
  * 	struct buffer_page		*reader_page;
- * 	core::ffi::c_ulong			lost_events;
- * 	core::ffi::c_ulong			last_overrun;
- * 	core::ffi::c_ulong			nest;
+ * 	kernel::ffi::c_ulong			lost_events;
+ * 	kernel::ffi::c_ulong			last_overrun;
+ * 	kernel::ffi::c_ulong			nest;
  * 	local_t				entries_bytes;
  * 	local_t				entries;
  * 	local_t				overrun;
@@ -553,16 +553,16 @@
  * 	local_t				pages_read;
  * 	long				last_pages_touch;
  * 	size_t				shortest_full;
- * 	core::ffi::c_ulong			read;
- * 	core::ffi::c_ulong			read_bytes;
+ * 	kernel::ffi::c_ulong			read;
+ * 	kernel::ffi::c_ulong			read_bytes;
  * 	rb_time_t			write_stamp;
  * 	rb_time_t			before_stamp;
  * 	u64				event_stamp[MAX_NEST];
  * 	u64				read_stamp;
  * 	/* pages removed since last reset */
- * 	core::ffi::c_ulong			pages_removed;
+ * 	kernel::ffi::c_ulong			pages_removed;
  * 
- * 	core::ffi::c_uint			user_mapped;	/* user space mapping */
+ * 	kernel::ffi::c_uint			user_mapped;	/* user space mapping */
  * 	struct mutex			mapping_lock;
  * 	struct buffer_page		**subbuf_ids;	/* ID to subbuf VA */
  * 	struct trace_buffer_meta	*meta_page;
@@ -599,16 +599,16 @@
  * 	struct rb_irq_work		irq_work;
  * 	bool				time_stamp_abs;
  * 
- * 	core::ffi::c_ulong			range_addr_start;
- * 	core::ffi::c_ulong			range_addr_end;
+ * 	kernel::ffi::c_ulong			range_addr_start;
+ * 	kernel::ffi::c_ulong			range_addr_end;
  * 	struct notifier_block		flush_nb;
  * 
  * 	struct ring_buffer_meta		*meta;
  * 
- * 	core::ffi::c_uint			subbuf_order;
+ * 	kernel::ffi::c_uint			subbuf_order;
  * };
  * 
- * static __always_inline core::ffi::c_uint rb_subbuf_size(trace_buffer *buffer)
+ * static __always_inline kernel::ffi::c_uint rb_subbuf_size(trace_buffer *buffer)
  * {
  * 	return PAGE_SIZE << (*buffer).subbuf_order;
  * }
@@ -622,7 +622,7 @@
  *  *
  *  * Return: The maximum size available for events in a trace buffer subbuffer.
  *  */
- * static __always_inline core::ffi::c_uint rb_subbuf_capacity(trace_buffer *buffer)
+ * static __always_inline kernel::ffi::c_uint rb_subbuf_capacity(trace_buffer *buffer)
  * {
  * 	return rb_subbuf_size(buffer) - BUF_PAGE_HDR_SIZE;
  * }
@@ -633,7 +633,7 @@
  *  *
  *  * Return: The maximum data payload size that can be stored in a single event.
  *  */
- * static __always_inline core::ffi::c_uint rb_subbuf_max_data_size(trace_buffer *buffer)
+ * static __always_inline kernel::ffi::c_uint rb_subbuf_max_data_size(trace_buffer *buffer)
  * {
  * 	struct ring_buffer_event *event;
  * 
@@ -652,9 +652,9 @@
  *  * Return: The start of the subbuffer for where @addr sits
  *  */
  * static __always_inline
- * core::ffi::c_ulong rb_subbuf_start(trace_buffer *buffer, core::ffi::c_ulong addr)
+ * kernel::ffi::c_ulong rb_subbuf_start(trace_buffer *buffer, kernel::ffi::c_ulong addr)
  * {
- * 	return addr & ~((core::ffi::c_ulong)(rb_subbuf_size(buffer) - 1));
+ * 	return addr & ~((kernel::ffi::c_ulong)(rb_subbuf_size(buffer) - 1));
  * }
  * 
  * static bool rb_is_static(ring_buffer_per_cpu *cpu_buffer)
@@ -664,12 +664,12 @@
  * 
  * struct ring_buffer_iter {
  * 	struct ring_buffer_per_cpu	*cpu_buffer;
- * 	core::ffi::c_ulong			head;
- * 	core::ffi::c_ulong			next_event;
+ * 	kernel::ffi::c_ulong			head;
+ * 	kernel::ffi::c_ulong			next_event;
  * 	struct buffer_page		*head_page;
  * 	struct buffer_page		*cache_reader_page;
- * 	core::ffi::c_ulong			cache_read;
- * 	core::ffi::c_ulong			cache_pages_removed;
+ * 	kernel::ffi::c_ulong			cache_read;
+ * 	kernel::ffi::c_ulong			cache_pages_removed;
  * 	u64				read_stamp;
  * 	u64				page_stamp;
  * 	struct ring_buffer_event	*event;
@@ -683,27 +683,27 @@
  * 
  * 	trace_seq_printf(s, "\tfield: u64 timestamp;\t"
  * 			 "offset:0;\tsize:%u;\tsigned:%u;\n",
- * 			 (core::ffi::c_uint)sizeof(field.time_stamp),
- * 			 (core::ffi::c_uint)is_signed_type(u64));
+ * 			 (kernel::ffi::c_uint)sizeof(field.time_stamp),
+ * 			 (kernel::ffi::c_uint)is_signed_type(u64));
  * 
  * 	trace_seq_printf(s, "\tfield: local_t commit;\t"
  * 			 "offset:%u;\tsize:%u;\tsigned:%u;\n",
- * 			 (core::ffi::c_uint)offsetof(typeof(field), commit),
- * 			 (core::ffi::c_uint)sizeof(field.commit),
- * 			 (core::ffi::c_uint)is_signed_type(long));
+ * 			 (kernel::ffi::c_uint)offsetof(typeof(field), commit),
+ * 			 (kernel::ffi::c_uint)sizeof(field.commit),
+ * 			 (kernel::ffi::c_uint)is_signed_type(long));
  * 
  * 	trace_seq_printf(s, "\tfield: char overwrite;\t"
  * 			 "offset:%u;\tsize:%u;\tsigned:%u;\n",
- * 			 (core::ffi::c_uint)offsetof(typeof(field), commit),
+ * 			 (kernel::ffi::c_uint)offsetof(typeof(field), commit),
  * 			 1,
- * 			 (core::ffi::c_uint)is_signed_type(char));
+ * 			 (kernel::ffi::c_uint)is_signed_type(char));
  * 
  * 	trace_seq_printf(s, "\tfield: char data;\t"
  * 			 "offset:%u;\tsize:%u;\tsigned:%u;\n",
- * 			 (core::ffi::c_uint)offsetof(typeof(field), data),
- * 			 (core::ffi::c_uint)(buffer ? rb_subbuf_capacity(buffer) :
+ * 			 (kernel::ffi::c_uint)offsetof(typeof(field), data),
+ * 			 (kernel::ffi::c_uint)(buffer ? rb_subbuf_capacity(buffer) :
  * 						 PAGE_SIZE - BUF_PAGE_HDR_SIZE),
- * 			 (core::ffi::c_uint)is_signed_type(char));
+ * 			 (kernel::ffi::c_uint)is_signed_type(char));
  * 
  * 	return !trace_seq_has_overflowed(s);
  * }
@@ -732,7 +732,7 @@
  * 	struct buffer_page *tail_page = READ_ONCE((*cpu_buffer).tail_page);
  * 	struct list_head *next;
  * 	long commit, write;
- * 	core::ffi::c_ulong addr = (core::ffi::c_ulong)event;
+ * 	kernel::ffi::c_ulong addr = (kernel::ffi::c_ulong)event;
  * 	bool done = false;
  * 	int stop = 0;
  * 
@@ -742,8 +742,8 @@
  * 			done = true;
  * 		commit = rb_page_commit(page);
  * 		write = local_read((*&page).write);
- * 		if (addr >= (core::ffi::c_ulong)&(*(*page).page).data[commit] &&
- * 		    addr < (core::ffi::c_ulong)&(*(*page).page).data[write])
+ * 		if (addr >= (kernel::ffi::c_ulong)&(*(*page).page).data[commit] &&
+ * 		    addr < (kernel::ffi::c_ulong)&(*(*page).page).data[write])
  * 			return;
  * 
  * 		next = rb_list_head((*page).list.next);
@@ -800,7 +800,7 @@
  * 				 struct ring_buffer_event *event)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer = (*buffer).buffers[smp_processor_id()];
- * 	core::ffi::c_uint nest;
+ * 	kernel::ffi::c_uint nest;
  * 	u64 ts;
  * 
  * 	/* If the event includes an absolute time, then just use that */
@@ -962,7 +962,7 @@
  * 	cpu_buffer = (*buffer).buffers[cpu];
  * 
  * 	if (!ring_buffer_empty_cpu(buffer, cpu)) {
- * 		core::ffi::c_ulong flags;
+ * 		kernel::ffi::c_ulong flags;
  * 		bool pagebusy;
  * 
  * 		if (!full)
@@ -1307,7 +1307,7 @@
  *  */
  * static struct list_head *rb_list_head(list_head *list)
  * {
- * 	core::ffi::c_ulong val = (core::ffi::c_ulong)list;
+ * 	kernel::ffi::c_ulong val = (kernel::ffi::c_ulong)list;
  * 
  * 	return (list_head *)(val & ~RB_FLAG_MASK);
  * }
@@ -1323,11 +1323,11 @@
  * static inline int
  * rb_is_head_page(buffer_page *page, list_head *list)
  * {
- * 	core::ffi::c_ulong val;
+ * 	kernel::ffi::c_ulong val;
  * 
- * 	val = (*(core::ffi::c_ulong)list).next;
+ * 	val = (*(kernel::ffi::c_ulong)list).next;
  * 
- * 	if ((val & ~RB_FLAG_MASK) != (core::ffi::c_ulong)&(*page).list)
+ * 	if ((val & ~RB_FLAG_MASK) != (kernel::ffi::c_ulong)&(*page).list)
  * 		return RB_PAGE_MOVED;
  * 
  * 	return val & RB_FLAG_MASK;
@@ -1352,9 +1352,9 @@
  *  */
  * static void rb_set_list_to_head(list_head *list)
  * {
- * 	core::ffi::c_ulong *ptr;
+ * 	kernel::ffi::c_ulong *ptr;
  * 
- * 	ptr = (core::ffi::c_ulong *)&(*list).next;
+ * 	ptr = (kernel::ffi::c_ulong *)&(*list).next;
  * 	*ptr |= RB_PAGE_HEAD;
  * 	*ptr &= ~RB_PAGE_UPDATE;
  * }
@@ -1377,13 +1377,13 @@
  * 
  * 	if ((*cpu_buffer).ring_meta) {
  * 		struct ring_buffer_cpu_meta *meta = (*cpu_buffer).ring_meta;
- * 		(*meta).head_buffer = (*(core::ffi::c_ulong)head).page;
+ * 		(*meta).head_buffer = (*(kernel::ffi::c_ulong)head).page;
  * 	}
  * }
  * 
  * static void rb_list_head_clear(list_head *list)
  * {
- * 	core::ffi::c_ulong *ptr = (core::ffi::c_ulong *)&(*list).next;
+ * 	kernel::ffi::c_ulong *ptr = (kernel::ffi::c_ulong *)&(*list).next;
  * 
  * 	*ptr &= ~RB_FLAG_MASK;
  * }
@@ -1409,14 +1409,14 @@
  * 			    int old_flag, int new_flag)
  * {
  * 	struct list_head *list;
- * 	core::ffi::c_ulong val = (core::ffi::c_ulong)&(*head).list;
- * 	core::ffi::c_ulong ret;
+ * 	kernel::ffi::c_ulong val = (kernel::ffi::c_ulong)&(*head).list;
+ * 	kernel::ffi::c_ulong ret;
  * 
  * 	list = (*&prev).list;
  * 
  * 	val &= ~RB_FLAG_MASK;
  * 
- * 	ret = cmpxchg((core::ffi::c_ulong *)&(*list).next,
+ * 	ret = cmpxchg((kernel::ffi::c_ulong *)&(*list).next,
  * 		      val | old_flag, val | new_flag);
  * 
  * 	/* check if the reader took the page */
@@ -1508,13 +1508,13 @@
  * static bool rb_head_page_replace(buffer_page *old,
  * 				struct buffer_page *new)
  * {
- * 	core::ffi::c_ulong *ptr = (core::ffi::c_ulong *)&(*(*old).list.prev).next;
- * 	core::ffi::c_ulong val;
+ * 	kernel::ffi::c_ulong *ptr = (kernel::ffi::c_ulong *)&(*(*old).list.prev).next;
+ * 	kernel::ffi::c_ulong val;
  * 
  * 	val = *ptr & ~RB_FLAG_MASK;
  * 	val |= RB_PAGE_HEAD;
  * 
- * 	return try_cmpxchg(ptr, &val, (core::ffi::c_ulong)&(*new).list);
+ * 	return try_cmpxchg(ptr, &val, (kernel::ffi::c_ulong)&(*new).list);
  * }
  * 
  * /*
@@ -1524,8 +1524,8 @@
  * 			       struct buffer_page *tail_page,
  * 			       struct buffer_page *next_page)
  * {
- * 	core::ffi::c_ulong old_entries;
- * 	core::ffi::c_ulong old_write;
+ * 	kernel::ffi::c_ulong old_entries;
+ * 	kernel::ffi::c_ulong old_write;
  * 
  * 	/*
  * 	 * The tail page now needs to be moved forward.
@@ -1552,8 +1552,8 @@
  * 	 */
  * 	if (tail_page == READ_ONCE((*cpu_buffer).tail_page)) {
  * 		/* Zero the write counter */
- * 		core::ffi::c_ulong val = old_write & ~RB_WRITE_MASK;
- * 		core::ffi::c_ulong eval = old_entries & ~RB_WRITE_MASK;
+ * 		kernel::ffi::c_ulong val = old_write & ~RB_WRITE_MASK;
+ * 		kernel::ffi::c_ulong eval = old_entries & ~RB_WRITE_MASK;
  * 
  * 		/*
  * 		 * This will only succeed if an interrupt did
@@ -1584,7 +1584,7 @@
  * static void rb_check_bpage(ring_buffer_per_cpu *cpu_buffer,
  * 			  struct buffer_page *bpage)
  * {
- * 	core::ffi::c_ulong val = (core::ffi::c_ulong)bpage;
+ * 	kernel::ffi::c_ulong val = (kernel::ffi::c_ulong)bpage;
  * 
  * 	RB_WARN_ON(cpu_buffer, val & RB_FLAG_MASK);
  * }
@@ -1613,8 +1613,8 @@
  * static void rb_check_pages(ring_buffer_per_cpu *cpu_buffer)
  * {
  * 	struct list_head *head, *tmp;
- * 	core::ffi::c_ulong buffer_cnt;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong buffer_cnt;
+ * 	kernel::ffi::c_ulong flags;
  * 	int nr_loops = 0;
  * 
  * 	/*
@@ -1678,8 +1678,8 @@
  *  *
  *  * This is used to help find the next per cpu subbuffer within a mapped range.
  *  */
- * static core::ffi::c_ulong
- * rb_range_align_subbuf(core::ffi::c_ulong addr, int subbuf_size, int nr_subbufs)
+ * static kernel::ffi::c_ulong
+ * rb_range_align_subbuf(kernel::ffi::c_ulong addr, int subbuf_size, int nr_subbufs)
  * {
  * 	addr += sizeof(ring_buffer_cpu_meta) +
  * 		sizeof(int) * nr_subbufs;
@@ -1694,14 +1694,14 @@
  * 	int subbuf_size = rb_subbuf_size(buffer);
  * 	struct ring_buffer_cpu_meta *meta;
  * 	struct ring_buffer_meta *bmeta;
- * 	core::ffi::c_ulong ptr;
+ * 	kernel::ffi::c_ulong ptr;
  * 	int nr_subbufs;
  * 
  * 	bmeta = (*buffer).meta;
  * 	if (!bmeta)
  * 		return NULL;
  * 
- * 	ptr = (core::ffi::c_ulong)bmeta + (*bmeta).buffers_offset;
+ * 	ptr = (kernel::ffi::c_ulong)bmeta + (*bmeta).buffers_offset;
  * 	meta = (ring_buffer_cpu_meta *)ptr;
  * 
  * 	/* When nr_pages passed in is zero, the first meta has already been initialized */
@@ -1722,8 +1722,8 @@
  * 
  * 		/* We can use multiplication to find chunks greater than 1 */
  * 		if (cpu > 1) {
- * 			core::ffi::c_ulong size;
- * 			core::ffi::c_ulong p;
+ * 			kernel::ffi::c_ulong size;
+ * 			kernel::ffi::c_ulong p;
  * 
  * 			/* Save the beginning of this CPU chunk */
  * 			p = ptr;
@@ -1742,9 +1742,9 @@
  * static void *rb_subbufs_from_meta(ring_buffer_cpu_meta *meta)
  * {
  * 	int subbuf_size = (*meta).subbuf_size;
- * 	core::ffi::c_ulong ptr;
+ * 	kernel::ffi::c_ulong ptr;
  * 
- * 	ptr = (core::ffi::c_ulong)meta;
+ * 	ptr = (kernel::ffi::c_ulong)meta;
  * 	ptr = rb_range_align_subbuf(ptr, subbuf_size, (*meta).nr_subbufs);
  * 
  * 	return (void *)ptr;
@@ -1756,7 +1756,7 @@
  * static void *rb_range_buffer(ring_buffer_per_cpu *cpu_buffer, int idx)
  * {
  * 	struct ring_buffer_cpu_meta *meta;
- * 	core::ffi::c_ulong ptr;
+ * 	kernel::ffi::c_ulong ptr;
  * 	int subbuf_size;
  * 
  * 	meta = rb_range_meta((*cpu_buffer).buffer, 0, (*cpu_buffer).cpu);
@@ -1771,7 +1771,7 @@
  * 	/* Map this buffer to the order that's in meta->buffers[] */
  * 	idx = (*meta).buffers[idx];
  * 
- * 	ptr = (core::ffi::c_ulong)rb_subbufs_from_meta(meta);
+ * 	ptr = (kernel::ffi::c_ulong)rb_subbufs_from_meta(meta);
  * 
  * 	ptr += subbuf_size * idx;
  * 	if (ptr + subbuf_size > (*(*cpu_buffer).buffer).range_addr_end)
@@ -1786,9 +1786,9 @@
  *  */
  * static bool rb_meta_init(trace_buffer *buffer, int scratch_size)
  * {
- * 	core::ffi::c_ulong ptr = (*buffer).range_addr_start;
+ * 	kernel::ffi::c_ulong ptr = (*buffer).range_addr_start;
  * 	struct ring_buffer_meta *bmeta;
- * 	core::ffi::c_ulong total_size;
+ * 	kernel::ffi::c_ulong total_size;
  * 	int struct_sizes;
  * 
  * 	bmeta = (ring_buffer_meta *)ptr;
@@ -1851,11 +1851,11 @@
  *  */
  * static bool rb_cpu_meta_valid(ring_buffer_cpu_meta *meta, int cpu,
  * 			      struct trace_buffer *buffer, int nr_pages,
- * 			      core::ffi::c_ulong *subbuf_mask)
+ * 			      kernel::ffi::c_ulong *subbuf_mask)
  * {
  * 	int subbuf_size = PAGE_SIZE;
- * 	core::ffi::c_ulong buffers_start;
- * 	core::ffi::c_ulong buffers_end;
+ * 	kernel::ffi::c_ulong buffers_start;
+ * 	kernel::ffi::c_ulong buffers_end;
  * 	int i;
  * 
  * 	if (!subbuf_mask)
@@ -1909,7 +1909,7 @@
  * static int rb_meta_subbuf_idx(ring_buffer_cpu_meta *meta, void *subbuf);
  * 
  * static int rb_read_data_buffer(buffer_data_page *dpage, int tail, int cpu,
- * 			       core::ffi::c_ulonglong *timestamp, u64 *delta_ptr)
+ * 			       kernel::ffi::c_ulonglong *timestamp, u64 *delta_ptr)
  * {
  * 	struct ring_buffer_event *event;
  * 	u64 ts, delta;
@@ -1965,8 +1965,8 @@
  * }
  * 
  * struct rb_validation_state {
- * 	core::ffi::c_ulong entries;
- * 	core::ffi::c_ulong entry_bytes;
+ * 	kernel::ffi::c_ulong entries;
+ * 	kernel::ffi::c_ulong entry_bytes;
  * 	int discarded;
  * 	u64 ts;
  * };
@@ -1976,8 +1976,8 @@
  * 				u64 prev_ts, u64 next_ts)
  * {
  * 	struct buffer_data_page *dpage = bpage->page;
- * 	core::ffi::c_ulonglong ts;
- * 	core::ffi::c_ulong tail;
+ * 	kernel::ffi::c_ulonglong ts;
+ * 	kernel::ffi::c_ulong tail;
  * 	u64 delta;
  * 	int ret;
  * 
@@ -2084,7 +2084,7 @@
  * 	cpu_buffer->pages = &head_page->list;
  * 
  * 	cpu_buffer->head_page = head_page;
- * 	meta->head_buffer = (core::ffi::c_ulong)head_page->page;
+ * 	meta->head_buffer = (kernel::ffi::c_ulong)head_page->page;
  * 
  * 	/* Reset all the indexes */
  * 	bpage = cpu_buffer->reader_page;
@@ -2175,7 +2175,7 @@
  * 
  *  skip_rewind:
  * 	/* If the commit_buffer is the reader page, update the commit page */
- * 	if (meta->commit_buffer == (core::ffi::c_ulong)cpu_buffer->reader_page->page) {
+ * 	if (meta->commit_buffer == (kernel::ffi::c_ulong)cpu_buffer->reader_page->page) {
  * 		cpu_buffer->commit_page = cpu_buffer->reader_page;
  * 		/* Nothing more to do, the only page is the reader page */
  * 		goto done;
@@ -2244,8 +2244,8 @@
  * static void rb_range_meta_init(trace_buffer *buffer, int nr_pages, int scratch_size)
  * {
  * 	struct ring_buffer_cpu_meta *meta;
- * 	core::ffi::c_ulong *subbuf_mask;
- * 	core::ffi::c_ulong delta;
+ * 	kernel::ffi::c_ulong *subbuf_mask;
+ * 	kernel::ffi::c_ulong delta;
  * 	void *subbuf;
  * 	bool valid = false;
  * 	int cpu;
@@ -2266,7 +2266,7 @@
  * 		if (valid && rb_cpu_meta_valid(meta, cpu, buffer, nr_pages, subbuf_mask)) {
  * 			/* Make the mappings match the current address */
  * 			subbuf = rb_subbufs_from_meta(meta);
- * 			delta = (core::ffi::c_ulong)subbuf - meta->first_buffer;
+ * 			delta = (kernel::ffi::c_ulong)subbuf - meta->first_buffer;
  * 			meta->first_buffer += delta;
  * 			meta->head_buffer += delta;
  * 			meta->commit_buffer += delta;
@@ -2285,7 +2285,7 @@
  * 
  * 		subbuf = rb_subbufs_from_meta(meta);
  * 
- * 		meta->first_buffer = (core::ffi::c_ulong)subbuf;
+ * 		meta->first_buffer = (kernel::ffi::c_ulong)subbuf;
  * 
  * 		/*
  * 		 * The buffers[] array holds the order of the sub-buffers
@@ -2308,7 +2308,7 @@
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer = m->private;
  * 	struct ring_buffer_cpu_meta *meta = cpu_buffer->ring_meta;
- * 	core::ffi::c_ulong val;
+ * 	kernel::ffi::c_ulong val;
  * 
  * 	if (!meta)
  * 		return NULL;
@@ -2333,7 +2333,7 @@
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer = m->private;
  * 	struct ring_buffer_cpu_meta *meta = cpu_buffer->ring_meta;
- * 	core::ffi::c_ulong val = (core::ffi::c_ulong)v;
+ * 	kernel::ffi::c_ulong val = (kernel::ffi::c_ulong)v;
  * 	struct buffer_data_page *dpage;
  * 
  * 	if (val == 1) {
@@ -2386,10 +2386,10 @@
  * {
  * 	struct ring_buffer_cpu_meta *meta = cpu_buffer->ring_meta;
  * 
- * 	if (meta->head_buffer == (core::ffi::c_ulong)bpage->page)
+ * 	if (meta->head_buffer == (kernel::ffi::c_ulong)bpage->page)
  * 		cpu_buffer->head_page = bpage;
  * 
- * 	if (meta->commit_buffer == (core::ffi::c_ulong)bpage->page) {
+ * 	if (meta->commit_buffer == (kernel::ffi::c_ulong)bpage->page) {
  * 		cpu_buffer->commit_page = bpage;
  * 		cpu_buffer->tail_page = bpage;
  * 	}
@@ -2421,7 +2421,7 @@
  * 	return NULL;
  * }
  * 
- * static void *ring_buffer_desc_page(ring_buffer_desc *desc, core::ffi::c_uint page_id)
+ * static void *ring_buffer_desc_page(ring_buffer_desc *desc, kernel::ffi::c_uint page_id)
  * {
  * 	return page_id >= desc->nr_page_va ? NULL : (void *)desc->page_va[page_id];
  * }
@@ -2530,7 +2530,7 @@
  * }
  * 
  * static int rb_allocate_pages(ring_buffer_per_cpu *cpu_buffer,
- * 			     core::ffi::c_ulong nr_pages)
+ * 			     kernel::ffi::c_ulong nr_pages)
  * {
  * 	LIST_HEAD(pages);
  * 
@@ -2700,7 +2700,7 @@
  * 		free_buffer_page(bpage);
  * 	}
  * 
- * 	free_pages((core::ffi::c_ulong)cpu_buffer->free_page.data, cpu_buffer->free_page.order);
+ * 	free_pages((kernel::ffi::c_ulong)cpu_buffer->free_page.data, cpu_buffer->free_page.order);
  * 
  * 	kfree(cpu_buffer);
  * }
@@ -2711,8 +2711,8 @@
  * 	struct ring_buffer_per_cpu *cpu_buffer;
  * 	struct ring_buffer_cpu_meta *meta;
  * 	struct buffer_data_page *dpage;
- * 	core::ffi::c_ulong entry_bytes = 0;
- * 	core::ffi::c_ulong ptr;
+ * 	kernel::ffi::c_ulong entry_bytes = 0;
+ * 	kernel::ffi::c_ulong ptr;
  * 	int subbuf_size;
  * 	int invalid = 0;
  * 	int cpu;
@@ -2731,11 +2731,11 @@
  * 	if (!meta)
  * 		return;
  * 
- * 	ptr = (core::ffi::c_ulong)rb_subbufs_from_meta(meta);
+ * 	ptr = (kernel::ffi::c_ulong)rb_subbufs_from_meta(meta);
  * 	subbuf_size = meta->subbuf_size;
  * 
  * 	for (i = 0; i < meta->nr_subbufs; i++) {
- * 		core::ffi::c_ulong idx = meta->buffers[i];
+ * 		kernel::ffi::c_ulong idx = meta->buffers[i];
  * 
  * 		dpage = (void *)(ptr + idx * subbuf_size);
  * 		/* Skip unused pages */
@@ -2765,7 +2765,7 @@
  * #endif
  * 
  * /* Stop recording on a persistent buffer and flush cache if needed. */
- * static int rb_flush_buffer_cb(notifier_block *nb, core::ffi::c_ulong event, void *data)
+ * static int rb_flush_buffer_cb(notifier_block *nb, kernel::ffi::c_ulong event, void *data)
  * {
  * 	struct trace_buffer *buffer = container_of(nb, trace_buffer, flush_nb);
  * 
@@ -2775,10 +2775,10 @@
  * 	return NOTIFY_DONE;
  * }
  * 
- * static struct trace_buffer *alloc_buffer(core::ffi::c_ulong size, unsigned flags,
- * 					 int order, core::ffi::c_ulong start,
- * 					 core::ffi::c_ulong end,
- * 					 core::ffi::c_ulong scratch_size,
+ * static struct trace_buffer *alloc_buffer(kernel::ffi::c_ulong size, unsigned flags,
+ * 					 int order, kernel::ffi::c_ulong start,
+ * 					 kernel::ffi::c_ulong end,
+ * 					 kernel::ffi::c_ulong scratch_size,
  * 					 struct lock_class_key *key,
  * 					 struct ring_buffer_remote *remote)
  * {
@@ -2819,8 +2819,8 @@
  * 
  * 	/* If start/end are specified, then that overrides size */
  * 	if (start && end) {
- * 		core::ffi::c_ulong buffers_start;
- * 		core::ffi::c_ulong ptr;
+ * 		kernel::ffi::c_ulong buffers_start;
+ * 		kernel::ffi::c_ulong ptr;
  * 		int n;
  * 
  * 		/* Make sure that start is word aligned */
@@ -2931,7 +2931,7 @@
  *  * when the buffer wraps. If this flag is not set, the buffer will
  *  * drop data when the tail hits the head.
  *  */
- * struct trace_buffer *__ring_buffer_alloc(core::ffi::c_ulong size, unsigned flags,
+ * struct trace_buffer *__ring_buffer_alloc(kernel::ffi::c_ulong size, unsigned flags,
  * 					struct lock_class_key *key)
  * {
  * 	/* Default buffer page size - one system page */
@@ -2955,10 +2955,10 @@
  *  * when the buffer wraps. If this flag is not set, the buffer will
  *  * drop data when the tail hits the head.
  *  */
- * struct trace_buffer *__ring_buffer_alloc_range(core::ffi::c_ulong size, unsigned flags,
- * 					       int order, core::ffi::c_ulong start,
- * 					       core::ffi::c_ulong range_size,
- * 					       core::ffi::c_ulong scratch_size,
+ * struct trace_buffer *__ring_buffer_alloc_range(kernel::ffi::c_ulong size, unsigned flags,
+ * 					       int order, kernel::ffi::c_ulong start,
+ * 					       kernel::ffi::c_ulong range_size,
+ * 					       kernel::ffi::c_ulong scratch_size,
  * 					       struct lock_class_key *key)
  * {
  * 	return alloc_buffer(size, flags, order, start, start + range_size,
@@ -2976,7 +2976,7 @@
  * 	return alloc_buffer(0, 0, 0, 0, 0, 0, key, remote);
  * }
  * 
- * void *ring_buffer_meta_scratch(trace_buffer *buffer, core::ffi::c_uint *size)
+ * void *ring_buffer_meta_scratch(trace_buffer *buffer, kernel::ffi::c_uint *size)
  * {
  * 	struct ring_buffer_meta *meta;
  * 	void *ptr;
@@ -2986,7 +2986,7 @@
  * 
  * 	meta = buffer->meta;
  * 
- * 	ptr = (void *)ALIGN((core::ffi::c_ulong)meta + sizeof(*meta), sizeof(long));
+ * 	ptr = (void *)ALIGN((kernel::ffi::c_ulong)meta + sizeof(*meta), sizeof(long));
  * 
  * 	if (size)
  * 		*size = (void *)meta + meta->buffers_offset - ptr;
@@ -3036,24 +3036,24 @@
  * 	return buffer->time_stamp_abs;
  * }
  * 
- * static inline core::ffi::c_ulong rb_page_entries(buffer_page *bpage)
+ * static inline kernel::ffi::c_ulong rb_page_entries(buffer_page *bpage)
  * {
  * 	return local_read(&bpage->entries) & RB_WRITE_MASK;
  * }
  * 
- * static inline core::ffi::c_ulong rb_page_write(buffer_page *bpage)
+ * static inline kernel::ffi::c_ulong rb_page_write(buffer_page *bpage)
  * {
  * 	return local_read(&bpage->write) & RB_WRITE_MASK;
  * }
  * 
  * static bool
- * rb_remove_pages(ring_buffer_per_cpu *cpu_buffer, core::ffi::c_ulong nr_pages)
+ * rb_remove_pages(ring_buffer_per_cpu *cpu_buffer, kernel::ffi::c_ulong nr_pages)
  * {
  * 	struct list_head *tail_page, *to_remove, *next_page;
  * 	struct buffer_page *to_remove_page, *tmp_iter_page;
  * 	struct buffer_page *last_page, *first_page;
- * 	core::ffi::c_ulong nr_removed;
- * 	core::ffi::c_ulong head_bit;
+ * 	kernel::ffi::c_ulong nr_removed;
+ * 	kernel::ffi::c_ulong head_bit;
  * 	int page_entries;
  * 
  * 	head_bit = 0;
@@ -3085,7 +3085,7 @@
  * 
  * 	for (nr_removed = 0; nr_removed < nr_pages; nr_removed++) {
  * 		to_remove = rb_list_head(to_remove)->next;
- * 		head_bit |= (core::ffi::c_ulong)to_remove & RB_PAGE_HEAD;
+ * 		head_bit |= (kernel::ffi::c_ulong)to_remove & RB_PAGE_HEAD;
  * 	}
  * 	/* Read iterators need to reset themselves when some pages removed */
  * 	cpu_buffer->pages_removed += nr_removed;
@@ -3097,7 +3097,7 @@
  * 	 * Make sure that we have head_bit value preserved for the
  * 	 * next page
  * 	 */
- * 	tail_page->next = (list_head *)((core::ffi::c_ulong)next_page |
+ * 	tail_page->next = (list_head *)((kernel::ffi::c_ulong)next_page |
  * 						head_bit);
  * 	next_page = rb_list_head(next_page);
  * 	next_page->prev = tail_page;
@@ -3160,7 +3160,7 @@
  * rb_insert_pages(ring_buffer_per_cpu *cpu_buffer)
  * {
  * 	struct list_head *pages = &cpu_buffer->new_pages;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 	bool success;
  * 	int retries;
  * 
@@ -3197,7 +3197,7 @@
  * 		last_page  = pages->prev;
  * 
  * 		head_page_with_bit = (list_head *)
- * 				     ((core::ffi::c_ulong)head_page | RB_PAGE_HEAD);
+ * 				     ((kernel::ffi::c_ulong)head_page | RB_PAGE_HEAD);
  * 
  * 		last_page->next = head_page_with_bit;
  * 		first_page->prev = prev_page;
@@ -3270,11 +3270,11 @@
  *  *
  *  * Returns 0 on success and < 0 on failure.
  *  */
- * int ring_buffer_resize(trace_buffer *buffer, core::ffi::c_ulong size,
+ * int ring_buffer_resize(trace_buffer *buffer, kernel::ffi::c_ulong size,
  * 			int cpu_id)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
- * 	core::ffi::c_ulong nr_pages;
+ * 	kernel::ffi::c_ulong nr_pages;
  * 	int cpu, err;
  * 
  * 	/*
@@ -3511,7 +3511,7 @@
  * {
  * 	struct ring_buffer_event *event;
  * 	struct buffer_page *iter_head_page = iter->head_page;
- * 	core::ffi::c_ulong commit;
+ * 	kernel::ffi::c_ulong commit;
  * 	unsigned length;
  * 
  * 	if (iter->head != iter->next_event)
@@ -3574,9 +3574,9 @@
  * static __always_inline unsigned
  * rb_event_index(ring_buffer_per_cpu *cpu_buffer, ring_buffer_event *event)
  * {
- * 	core::ffi::c_ulong addr = (core::ffi::c_ulong)event;
+ * 	kernel::ffi::c_ulong addr = (kernel::ffi::c_ulong)event;
  * 
- * 	addr &= (core::ffi::c_ulong)rb_subbuf_size(cpu_buffer->buffer) - 1;
+ * 	addr &= (kernel::ffi::c_ulong)rb_subbuf_size(cpu_buffer->buffer) - 1;
  * 
  * 	return addr - BUF_PAGE_HDR_SIZE;
  * }
@@ -3610,7 +3610,7 @@
  * 	void *subbuf_array;
  * 
  * 	subbuf_array = (void *)meta + sizeof(int) * meta->nr_subbufs;
- * 	subbuf_array = (void *)ALIGN((core::ffi::c_ulong)subbuf_array, meta->subbuf_size);
+ * 	subbuf_array = (void *)ALIGN((kernel::ffi::c_ulong)subbuf_array, meta->subbuf_size);
  * 	return (subbuf - subbuf_array) / meta->subbuf_size;
  * }
  * 
@@ -3618,11 +3618,11 @@
  * 				struct buffer_page *next_page)
  * {
  * 	struct ring_buffer_cpu_meta *meta = cpu_buffer->ring_meta;
- * 	core::ffi::c_ulong old_head = (core::ffi::c_ulong)next_page->page;
- * 	core::ffi::c_ulong new_head;
+ * 	kernel::ffi::c_ulong old_head = (kernel::ffi::c_ulong)next_page->page;
+ * 	kernel::ffi::c_ulong new_head;
  * 
  * 	rb_inc_page(&next_page);
- * 	new_head = (core::ffi::c_ulong)next_page->page;
+ * 	new_head = (kernel::ffi::c_ulong)next_page->page;
  * 
  * 	/*
  * 	 * Only move it forward once, if something else came in and
@@ -3816,12 +3816,12 @@
  * 
  * static inline void
  * rb_reset_tail(ring_buffer_per_cpu *cpu_buffer,
- * 	      core::ffi::c_ulong tail, rb_event_info *info)
+ * 	      kernel::ffi::c_ulong tail, rb_event_info *info)
  * {
  * 	struct buffer_page *tail_page = info->tail_page;
- * 	core::ffi::c_ulong bsize = rb_page_capacity(tail_page);
+ * 	kernel::ffi::c_ulong bsize = rb_page_capacity(tail_page);
  * 	struct ring_buffer_event *event;
- * 	core::ffi::c_ulong length = info->length;
+ * 	kernel::ffi::c_ulong length = info->length;
  * 
  * 	/*
  * 	 * Only the event that crossed the page boundary
@@ -3899,7 +3899,7 @@
  *  */
  * static noinline struct ring_buffer_event *
  * rb_move_tail(ring_buffer_per_cpu *cpu_buffer,
- * 	     core::ffi::c_ulong tail, rb_event_info *info)
+ * 	     kernel::ffi::c_ulong tail, rb_event_info *info)
  * {
  * 	struct buffer_page *tail_page = info->tail_page;
  * 	struct buffer_page *commit_page = cpu_buffer->commit_page;
@@ -4030,11 +4030,11 @@
  * 	u64 write_stamp;
  * 
  * 	WARN_ONCE(1, "Delta way too big! %llu ts=%llu before=%llu after=%llu write stamp=%llu\n%s",
- * 		  (core::ffi::c_ulonglong)info->delta,
- * 		  (core::ffi::c_ulonglong)info->ts,
- * 		  (core::ffi::c_ulonglong)info->before,
- * 		  (core::ffi::c_ulonglong)info->after,
- * 		  (core::ffi::c_ulonglong)({rb_time_read(&cpu_buffer->write_stamp, &write_stamp); write_stamp;}),
+ * 		  (kernel::ffi::c_ulonglong)info->delta,
+ * 		  (kernel::ffi::c_ulonglong)info->ts,
+ * 		  (kernel::ffi::c_ulonglong)info->before,
+ * 		  (kernel::ffi::c_ulonglong)info->after,
+ * 		  (kernel::ffi::c_ulonglong)({rb_time_read(&cpu_buffer->write_stamp, &write_stamp); write_stamp;}),
  * 		  sched_clock_stable() ? "" :
  * 		  "If you just came from a suspend/resume,\n"
  * 		  "please switch to the trace global clock:\n"
@@ -4046,7 +4046,7 @@
  * 				      struct ring_buffer_event **event,
  * 				      struct rb_event_info *info,
  * 				      u64 *delta,
- * 				      core::ffi::c_uint *length)
+ * 				      kernel::ffi::c_uint *length)
  * {
  * 	bool abs = info->add_timestamp &
  * 		(RB_ADD_STAMP_FORCE | RB_ADD_STAMP_ABSOLUTE);
@@ -4101,7 +4101,7 @@
  * {
  * 	unsigned length = info->length;
  * 	u64 delta = info->delta;
- * 	core::ffi::c_uint nest = local_read(&cpu_buffer->committing) - 1;
+ * 	kernel::ffi::c_uint nest = local_read(&cpu_buffer->committing) - 1;
  * 
  * 	if (!WARN_ON_ONCE(nest >= MAX_NEST))
  * 		cpu_buffer->event_stamp[nest] = info->ts;
@@ -4158,13 +4158,13 @@
  * rb_try_to_discard(ring_buffer_per_cpu *cpu_buffer,
  * 		  struct ring_buffer_event *event)
  * {
- * 	core::ffi::c_ulong new_index, old_index;
+ * 	kernel::ffi::c_ulong new_index, old_index;
  * 	struct buffer_page *bpage;
- * 	core::ffi::c_ulong addr;
+ * 	kernel::ffi::c_ulong addr;
  * 
  * 	new_index = rb_event_index(cpu_buffer, event);
  * 	old_index = new_index + rb_event_ts_length(event);
- * 	addr = rb_subbuf_start(cpu_buffer->buffer, (core::ffi::c_ulong)event);
+ * 	addr = rb_subbuf_start(cpu_buffer->buffer, (kernel::ffi::c_ulong)event);
  * 
  * 	bpage = READ_ONCE(cpu_buffer->tail_page);
  * 
@@ -4173,9 +4173,9 @@
  * 	 * the next write location is the end of this event
  * 	 */
  * 	if (bpage->page == (void *)addr && rb_page_write(bpage) == old_index) {
- * 		core::ffi::c_ulong write_mask =
+ * 		kernel::ffi::c_ulong write_mask =
  * 			local_read(&bpage->write) & ~RB_WRITE_MASK;
- * 		core::ffi::c_ulong event_length = rb_event_length(event);
+ * 		kernel::ffi::c_ulong event_length = rb_event_length(event);
  * 
  * 		/*
  * 		 * For the before_stamp to be different than the write_stamp
@@ -4228,7 +4228,7 @@
  * static __always_inline void
  * rb_set_commit_to_write(ring_buffer_per_cpu *cpu_buffer)
  * {
- * 	core::ffi::c_ulong max_count;
+ * 	kernel::ffi::c_ulong max_count;
  * 
  * 	/*
  * 	 * We only race with interrupts and NMIs on this CPU.
@@ -4256,7 +4256,7 @@
  * 		rb_inc_page(&cpu_buffer->commit_page);
  * 		if (cpu_buffer->ring_meta) {
  * 			struct ring_buffer_cpu_meta *meta = cpu_buffer->ring_meta;
- * 			meta->commit_buffer = (core::ffi::c_ulong)cpu_buffer->commit_page->page;
+ * 			meta->commit_buffer = (kernel::ffi::c_ulong)cpu_buffer->commit_page->page;
  * 		}
  * 		/* add barrier to keep gcc from optimizing too much */
  * 		barrier();
@@ -4287,7 +4287,7 @@
  * 
  * static __always_inline void rb_end_commit(ring_buffer_per_cpu *cpu_buffer)
  * {
- * 	core::ffi::c_ulong commits;
+ * 	kernel::ffi::c_ulong commits;
  * 
  * 	if (RB_WARN_ON(cpu_buffer,
  * 		       !local_read(&cpu_buffer->committing)))
@@ -4460,7 +4460,7 @@
  * static __always_inline bool
  * trace_recursive_lock(ring_buffer_per_cpu *cpu_buffer)
  * {
- * 	core::ffi::c_uint val = cpu_buffer->current_context;
+ * 	kernel::ffi::c_uint val = cpu_buffer->current_context;
  * 	int bit = interrupt_context_level();
  * 
  * 	bit = RB_CTX_NORMAL - bit;
@@ -4626,8 +4626,8 @@
  * 
  * static const char *show_interrupt_level(void)
  * {
- * 	core::ffi::c_ulong pc = preempt_count();
- * 	core::ffi::c_uchar level = 0;
+ * 	kernel::ffi::c_ulong pc = preempt_count();
+ * 	kernel::ffi::c_uchar level = 0;
  * 
  * 	if (pc & SOFTIRQ_OFFSET)
  * 		level |= 1;
@@ -4643,7 +4643,7 @@
  * 
  * static void dump_buffer_page(buffer_data_page *dpage,
  * 			     struct rb_event_info *info,
- * 			     core::ffi::c_ulong tail)
+ * 			     kernel::ffi::c_ulong tail)
  * {
  * 	struct ring_buffer_event *event;
  * 	u64 ts, delta;
@@ -4718,7 +4718,7 @@
  *  */
  * static void check_buffer(ring_buffer_per_cpu *cpu_buffer,
  * 			 struct rb_event_info *info,
- * 			 core::ffi::c_ulong tail)
+ * 			 kernel::ffi::c_ulong tail)
  * {
  * 	struct buffer_data_page *dpage;
  * 	u64 ts, delta;
@@ -4773,7 +4773,7 @@
  * #else
  * static inline void check_buffer(ring_buffer_per_cpu *cpu_buffer,
  * 			 struct rb_event_info *info,
- * 			 core::ffi::c_ulong tail)
+ * 			 kernel::ffi::c_ulong tail)
  * {
  * }
  * #endif /* CONFIG_RING_BUFFER_VALIDATE_TIME_DELTAS */
@@ -4784,7 +4784,7 @@
  * {
  * 	struct ring_buffer_event *event;
  * 	struct buffer_page *tail_page;
- * 	core::ffi::c_ulong tail, write, w;
+ * 	kernel::ffi::c_ulong tail, write, w;
  * 
  * 	/* Don't let the compiler play games with cpu_buffer->tail_page */
  * 	tail_page = info->tail_page = READ_ONCE(cpu_buffer->tail_page);
@@ -4924,7 +4924,7 @@
  * static __always_inline struct ring_buffer_event *
  * rb_reserve_next_event(trace_buffer *buffer,
  * 		      struct ring_buffer_per_cpu *cpu_buffer,
- * 		      core::ffi::c_ulong length)
+ * 		      kernel::ffi::c_ulong length)
  * {
  * 	struct ring_buffer_event *event;
  * 	struct rb_event_info info;
@@ -5018,7 +5018,7 @@
  *  * If NULL is returned, then nothing has been allocated or locked.
  *  */
  * struct ring_buffer_event *
- * ring_buffer_lock_reserve(trace_buffer *buffer, core::ffi::c_ulong length)
+ * ring_buffer_lock_reserve(trace_buffer *buffer, kernel::ffi::c_ulong length)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
  * 	struct ring_buffer_event *event;
@@ -5070,7 +5070,7 @@
  * rb_decrement_entry(ring_buffer_per_cpu *cpu_buffer,
  * 		   struct ring_buffer_event *event)
  * {
- * 	core::ffi::c_ulong addr = (core::ffi::c_ulong)event;
+ * 	kernel::ffi::c_ulong addr = (kernel::ffi::c_ulong)event;
  * 	struct buffer_page *bpage = cpu_buffer->commit_page;
  * 	struct buffer_page *start;
  * 
@@ -5163,7 +5163,7 @@
  *  * and not the length of the event which would hold the header.
  *  */
  * int ring_buffer_write(trace_buffer *buffer,
- * 		      core::ffi::c_ulong length,
+ * 		      kernel::ffi::c_ulong length,
  * 		      void *data)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
@@ -5219,7 +5219,7 @@
  *  * the entries read from the ring buffer and the number of
  *  * entries that were overwritten.
  *  */
- * static inline core::ffi::c_ulong
+ * static inline kernel::ffi::c_ulong
  * rb_num_of_entries(ring_buffer_per_cpu *cpu_buffer)
  * {
  * 	return local_read(&cpu_buffer->entries) -
@@ -5272,8 +5272,8 @@
  *  */
  * void ring_buffer_record_off(trace_buffer *buffer)
  * {
- * 	core::ffi::c_uint rd;
- * 	core::ffi::c_uint new_rd;
+ * 	kernel::ffi::c_uint rd;
+ * 	kernel::ffi::c_uint new_rd;
  * 
  * 	rd = atomic_read(&buffer->record_disabled);
  * 	do {
@@ -5295,8 +5295,8 @@
  *  */
  * void ring_buffer_record_on(trace_buffer *buffer)
  * {
- * 	core::ffi::c_uint rd;
- * 	core::ffi::c_uint new_rd;
+ * 	kernel::ffi::c_uint rd;
+ * 	kernel::ffi::c_uint new_rd;
  * 
  * 	rd = atomic_read(&buffer->record_disabled);
  * 	do {
@@ -5399,7 +5399,7 @@
  *  */
  * u64 ring_buffer_oldest_event_ts(trace_buffer *buffer, int cpu)
  * {
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 	struct ring_buffer_per_cpu *cpu_buffer;
  * 	struct buffer_page *bpage;
  * 	u64 ret = 0;
@@ -5430,10 +5430,10 @@
  *  * @buffer: The ring buffer
  *  * @cpu: The per CPU buffer to read from.
  *  */
- * core::ffi::c_ulong ring_buffer_bytes_cpu(trace_buffer *buffer, int cpu)
+ * kernel::ffi::c_ulong ring_buffer_bytes_cpu(trace_buffer *buffer, int cpu)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
- * 	core::ffi::c_ulong ret;
+ * 	kernel::ffi::c_ulong ret;
  * 
  * 	if (!cpumask_test_cpu(cpu, buffer->cpumask))
  * 		return 0;
@@ -5450,7 +5450,7 @@
  *  * @buffer: The ring buffer
  *  * @cpu: The per CPU buffer to get the entries from.
  *  */
- * core::ffi::c_ulong ring_buffer_entries_cpu(trace_buffer *buffer, int cpu)
+ * kernel::ffi::c_ulong ring_buffer_entries_cpu(trace_buffer *buffer, int cpu)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
  * 
@@ -5469,10 +5469,10 @@
  *  * @buffer: The ring buffer
  *  * @cpu: The per CPU buffer to get the number of overruns from
  *  */
- * core::ffi::c_ulong ring_buffer_overrun_cpu(trace_buffer *buffer, int cpu)
+ * kernel::ffi::c_ulong ring_buffer_overrun_cpu(trace_buffer *buffer, int cpu)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
- * 	core::ffi::c_ulong ret;
+ * 	kernel::ffi::c_ulong ret;
  * 
  * 	if (!cpumask_test_cpu(cpu, buffer->cpumask))
  * 		return 0;
@@ -5491,11 +5491,11 @@
  *  * @buffer: The ring buffer
  *  * @cpu: The per CPU buffer to get the number of overruns from
  *  */
- * core::ffi::c_ulong
+ * kernel::ffi::c_ulong
  * ring_buffer_commit_overrun_cpu(trace_buffer *buffer, int cpu)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
- * 	core::ffi::c_ulong ret;
+ * 	kernel::ffi::c_ulong ret;
  * 
  * 	if (!cpumask_test_cpu(cpu, buffer->cpumask))
  * 		return 0;
@@ -5513,11 +5513,11 @@
  *  * @buffer: The ring buffer
  *  * @cpu: The per CPU buffer to get the number of overruns from
  *  */
- * core::ffi::c_ulong
+ * kernel::ffi::c_ulong
  * ring_buffer_dropped_events_cpu(trace_buffer *buffer, int cpu)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
- * 	core::ffi::c_ulong ret;
+ * 	kernel::ffi::c_ulong ret;
  * 
  * 	if (!cpumask_test_cpu(cpu, buffer->cpumask))
  * 		return 0;
@@ -5534,7 +5534,7 @@
  *  * @buffer: The ring buffer
  *  * @cpu: The per CPU buffer to get the number of events read
  *  */
- * core::ffi::c_ulong
+ * kernel::ffi::c_ulong
  * ring_buffer_read_events_cpu(trace_buffer *buffer, int cpu)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
@@ -5554,10 +5554,10 @@
  *  * Returns the total number of entries in the ring buffer
  *  * (all CPU entries)
  *  */
- * core::ffi::c_ulong ring_buffer_entries(trace_buffer *buffer)
+ * kernel::ffi::c_ulong ring_buffer_entries(trace_buffer *buffer)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
- * 	core::ffi::c_ulong entries = 0;
+ * 	kernel::ffi::c_ulong entries = 0;
  * 	int cpu;
  * 
  * 	/* if you care about this being correct, lock the buffer */
@@ -5577,10 +5577,10 @@
  *  * Returns the total number of overruns in the ring buffer
  *  * (all CPU entries)
  *  */
- * core::ffi::c_ulong ring_buffer_overruns(trace_buffer *buffer)
+ * kernel::ffi::c_ulong ring_buffer_overruns(trace_buffer *buffer)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
- * 	core::ffi::c_ulong overruns = 0;
+ * 	kernel::ffi::c_ulong overruns = 0;
  * 	int cpu;
  * 
  * 	/* if you care about this being correct, lock the buffer */
@@ -5677,7 +5677,7 @@
  * void ring_buffer_iter_reset(ring_buffer_iter *iter)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 
  * 	if (!iter)
  * 		return;
@@ -5862,8 +5862,8 @@
  * {
  * 	int max_loops = cpu_buffer->ring_meta ? cpu_buffer->nr_pages : 3;
  * 	struct buffer_page *reader = NULL;
- * 	core::ffi::c_ulong overwrite;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong overwrite;
+ * 	kernel::ffi::c_ulong flags;
  * 	int missed_events = 0;
  * 	int nr_loops = 0;
  * 	bool ret;
@@ -6105,7 +6105,7 @@
  * 
  * static struct ring_buffer_event *
  * rb_buffer_peek(ring_buffer_per_cpu *cpu_buffer, u64 *ts,
- * 	       core::ffi::c_ulong *lost_events)
+ * 	       kernel::ffi::c_ulong *lost_events)
  * {
  * 	struct ring_buffer_event *event;
  * 	struct buffer_page *reader;
@@ -6313,11 +6313,11 @@
  *  */
  * struct ring_buffer_event *
  * ring_buffer_peek(trace_buffer *buffer, int cpu, u64 *ts,
- * 		 core::ffi::c_ulong *lost_events)
+ * 		 kernel::ffi::c_ulong *lost_events)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer = buffer->buffers[cpu];
  * 	struct ring_buffer_event *event;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 	bool dolock;
  * 
  * 	if (!cpumask_test_cpu(cpu, buffer->cpumask))
@@ -6362,7 +6362,7 @@
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer = iter->cpu_buffer;
  * 	struct ring_buffer_event *event;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 
  *  again:
  * 	raw_spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
@@ -6388,11 +6388,11 @@
  *  */
  * struct ring_buffer_event *
  * ring_buffer_consume(trace_buffer *buffer, int cpu, u64 *ts,
- * 		    core::ffi::c_ulong *lost_events)
+ * 		    kernel::ffi::c_ulong *lost_events)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
  * 	struct ring_buffer_event *event = NULL;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 	bool dolock;
  * 
  *  again:
@@ -6512,7 +6512,7 @@
  * void ring_buffer_iter_advance(ring_buffer_iter *iter)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer = iter->cpu_buffer;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 
  * 	raw_spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
  * 	iter->missed_events = 0;
@@ -6527,7 +6527,7 @@
  *  * @buffer: The ring buffer.
  *  * @cpu: The CPU to get ring buffer size from.
  *  */
- * core::ffi::c_ulong ring_buffer_size(trace_buffer *buffer, int cpu)
+ * kernel::ffi::c_ulong ring_buffer_size(trace_buffer *buffer, int cpu)
  * {
  * 	if (!cpumask_test_cpu(cpu, buffer->cpumask))
  * 		return 0;
@@ -6542,7 +6542,7 @@
  *  *
  *  * Returns the maximum size an event can be.
  *  */
- * core::ffi::c_ulong ring_buffer_max_event_size(trace_buffer *buffer)
+ * kernel::ffi::c_ulong ring_buffer_max_event_size(trace_buffer *buffer)
  * {
  * 	/* If abs timestamp is requested, events have a timestamp too */
  * 	if (ring_buffer_time_stamp_abs(buffer))
@@ -6819,7 +6819,7 @@
  * bool ring_buffer_empty(trace_buffer *buffer)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 	bool dolock;
  * 	bool ret;
  * 	int cpu;
@@ -6849,7 +6849,7 @@
  * bool ring_buffer_empty_cpu(trace_buffer *buffer, int cpu)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 	bool dolock;
  * 	bool ret;
  * 
@@ -7017,7 +7017,7 @@
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
  * 	struct buffer_data_read_page *bpage = NULL;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 
  * 	if (!cpumask_test_cpu(cpu, buffer->cpumask))
  * 		return ERR_PTR(-ENODEV);
@@ -7067,7 +7067,7 @@
  * 	struct ring_buffer_per_cpu *cpu_buffer;
  * 	struct buffer_data_page *dpage = data_page->data;
  * 	struct page *page = virt_to_page(dpage);
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 
  * 	if (!buffer || !buffer->buffers || !buffer->buffers[cpu])
  * 		return;
@@ -7094,7 +7094,7 @@
  * 	local_irq_restore(flags);
  * 
  *  out:
- * 	free_pages((core::ffi::c_ulong)dpage, data_page->order);
+ * 	free_pages((kernel::ffi::c_ulong)dpage, data_page->order);
  * 	kfree(data_page);
  * }
  * EXPORT_SYMBOL_GPL(ring_buffer_free_read_page);
@@ -7142,9 +7142,9 @@
  * 	struct buffer_data_page *dpage;
  * 	struct buffer_page *reader;
  * 	long missed_events;
- * 	core::ffi::c_uint commit;
- * 	core::ffi::c_uint size;
- * 	core::ffi::c_uint read;
+ * 	kernel::ffi::c_uint commit;
+ * 	kernel::ffi::c_uint size;
+ * 	kernel::ffi::c_uint read;
  * 	u64 save_timestamp;
  * 
  * 	if (!cpumask_test_cpu(cpu, buffer->cpumask))
@@ -7195,10 +7195,10 @@
  * 	    cpu_buffer->reader_page == cpu_buffer->commit_page ||
  * 	    rb_is_static(cpu_buffer)) {
  * 		struct buffer_data_page *rpage = cpu_buffer->reader_page->page;
- * 		core::ffi::c_uint rpos = read;
- * 		core::ffi::c_uint pos = 0;
- * 		core::ffi::c_uint event_size;
- * 		core::ffi::c_uint flags = 0;
+ * 		kernel::ffi::c_uint rpos = read;
+ * 		kernel::ffi::c_uint pos = 0;
+ * 		kernel::ffi::c_uint event_size;
+ * 		kernel::ffi::c_uint flags = 0;
  * 
  * 		/*
  * 		 * If a full page is expected, this can still be returned
@@ -7386,7 +7386,7 @@
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
  * 	struct buffer_page *bpage, *tmp;
- * 	core::ffi::c_uint old_capacity;
+ * 	kernel::ffi::c_uint old_capacity;
  * 	int old_order;
  * 	int nr_pages;
  * 	int psize;
@@ -7459,7 +7459,7 @@
  * 	for_each_buffer_cpu(buffer, cpu) {
  * 		struct buffer_data_read_page old_free_data_page;
  * 		struct list_head old_pages;
- * 		core::ffi::c_ulong flags;
+ * 		kernel::ffi::c_ulong flags;
  * 
  * 		if (!cpumask_test_cpu(cpu, buffer->cpumask))
  * 			continue;
@@ -7512,7 +7512,7 @@
  * 			list_del_init(&bpage->list);
  * 			free_buffer_page(bpage);
  * 		}
- * 		free_pages((core::ffi::c_ulong)old_free_data_page.data, old_free_data_page.order);
+ * 		free_pages((kernel::ffi::c_ulong)old_free_data_page.data, old_free_data_page.order);
  * 
  * 		rb_check_pages(cpu_buffer);
  * 	}
@@ -7560,7 +7560,7 @@
  * 
  * static void rb_free_meta_page(ring_buffer_per_cpu *cpu_buffer)
  * {
- * 	core::ffi::c_ulong addr = (core::ffi::c_ulong)cpu_buffer->meta_page;
+ * 	kernel::ffi::c_ulong addr = (kernel::ffi::c_ulong)cpu_buffer->meta_page;
  * 
  * 	free_page(addr);
  * 	cpu_buffer->meta_page = NULL;
@@ -7570,7 +7570,7 @@
  * 				   struct buffer_page **subbuf_ids)
  * {
  * 	struct trace_buffer_meta *meta = cpu_buffer->meta_page;
- * 	core::ffi::c_uint nr_subbufs = cpu_buffer->nr_pages + 1;
+ * 	kernel::ffi::c_uint nr_subbufs = cpu_buffer->nr_pages + 1;
  * 	struct buffer_page *first_subbuf, *subbuf;
  * 	int cnt = 0;
  * 	int id = 0;
@@ -7638,7 +7638,7 @@
  * static int __rb_inc_dec_mapped(ring_buffer_per_cpu *cpu_buffer,
  * 			       bool inc)
  * {
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 
  * 	lockdep_assert_held(&cpu_buffer->mapping_lock);
  * 
@@ -7677,9 +7677,9 @@
  * static int __rb_map_vma(ring_buffer_per_cpu *cpu_buffer,
  * 			struct vm_area_struct *vma)
  * {
- * 	core::ffi::c_ulong nr_subbufs, nr_pages, nr_vma_pages;
+ * 	kernel::ffi::c_ulong nr_subbufs, nr_pages, nr_vma_pages;
  * 	pgoff_t pgoff = vma_start_pgoff(vma);
- * 	core::ffi::c_uint subbuf_pages, subbuf_order;
+ * 	kernel::ffi::c_uint subbuf_pages, subbuf_order;
  * 	struct page **pages __free(kfree) = NULL;
  * 	int p = 0, s = 0;
  * 	int err;
@@ -7722,7 +7722,7 @@
  * 		return -ENOMEM;
  * 
  * 	if (!pgoff) {
- * 		core::ffi::c_ulong meta_page_padding;
+ * 		kernel::ffi::c_ulong meta_page_padding;
  * 
  * 		pages[p++] = virt_to_page(cpu_buffer->meta_page);
  * 
@@ -7732,7 +7732,7 @@
  * 		 */
  * 		meta_page_padding = subbuf_pages - 1;
  * 		while (meta_page_padding-- && p < nr_pages) {
- * 			core::ffi::c_ulong __maybe_unused zero_addr =
+ * 			kernel::ffi::c_ulong __maybe_unused zero_addr =
  * 				vma->vm_start + (PAGE_SIZE * p);
  * 
  * 			pages[p++] = ZERO_PAGE(zero_addr);
@@ -7781,7 +7781,7 @@
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
  * 	struct buffer_page **subbuf_ids;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 	int err;
  * 
  * 	if (!cpumask_test_cpu(cpu, buffer->cpumask) || buffer->remote)
@@ -7863,7 +7863,7 @@
  * int ring_buffer_unmap(trace_buffer *buffer, int cpu)
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong flags;
  * 
  * 	if (!cpumask_test_cpu(cpu, buffer->cpumask))
  * 		return -EINVAL;
@@ -7899,9 +7899,9 @@
  * {
  * 	struct ring_buffer_per_cpu *cpu_buffer;
  * 	struct buffer_page *reader;
- * 	core::ffi::c_ulong missed_events;
- * 	core::ffi::c_ulong reader_size;
- * 	core::ffi::c_ulong flags;
+ * 	kernel::ffi::c_ulong missed_events;
+ * 	kernel::ffi::c_ulong reader_size;
+ * 	kernel::ffi::c_ulong flags;
  * 
  * 	cpu_buffer = rb_get_mapped_buffer(buffer, cpu);
  * 	if (IS_ERR(cpu_buffer))
@@ -7940,7 +7940,7 @@
  * 	if (missed_events) {
  * 		if (cpu_buffer->reader_page != cpu_buffer->commit_page) {
  * 			struct buffer_data_page *dpage = reader->page;
- * 			core::ffi::c_uint commit;
+ * 			kernel::ffi::c_uint commit;
  * 			/*
  * 			 * Use the real_end for the data size,
  * 			 * This gives us a chance to store the lost events
@@ -8006,12 +8006,12 @@
  *  * If we were to free the buffer, then the user would lose any trace that was in
  *  * the buffer.
  *  */
- * int trace_rb_cpu_prepare(core::ffi::c_uint cpu, hlist_node *node)
+ * int trace_rb_cpu_prepare(kernel::ffi::c_uint cpu, hlist_node *node)
  * {
  * 	struct trace_buffer *buffer;
  * 	long nr_pages_same;
  * 	int cpu_i;
- * 	core::ffi::c_ulong nr_pages;
+ * 	kernel::ffi::c_ulong nr_pages;
  * 
  * 	buffer = container_of(node, trace_buffer, node);
  * 	if (cpumask_test_cpu(cpu, buffer->cpumask))
@@ -8075,14 +8075,14 @@
  * 
  * struct rb_test_data {
  * 	struct trace_buffer *buffer;
- * 	core::ffi::c_ulong		events;
- * 	core::ffi::c_ulong		bytes_written;
- * 	core::ffi::c_ulong		bytes_alloc;
- * 	core::ffi::c_ulong		bytes_dropped;
- * 	core::ffi::c_ulong		events_nested;
- * 	core::ffi::c_ulong		bytes_written_nested;
- * 	core::ffi::c_ulong		bytes_alloc_nested;
- * 	core::ffi::c_ulong		bytes_dropped_nested;
+ * 	kernel::ffi::c_ulong		events;
+ * 	kernel::ffi::c_ulong		bytes_written;
+ * 	kernel::ffi::c_ulong		bytes_alloc;
+ * 	kernel::ffi::c_ulong		bytes_dropped;
+ * 	kernel::ffi::c_ulong		events_nested;
+ * 	kernel::ffi::c_ulong		bytes_written_nested;
+ * 	kernel::ffi::c_ulong		bytes_alloc_nested;
+ * 	kernel::ffi::c_ulong		bytes_dropped_nested;
  * 	int			min_size_nested;
  * 	int			max_size_nested;
  * 	int			max_size;
@@ -8291,15 +8291,15 @@
  * 		struct ring_buffer_event *event;
  * 		struct rb_test_data *data = &rb_data[cpu];
  * 		struct rb_item *item;
- * 		core::ffi::c_ulong total_events;
- * 		core::ffi::c_ulong total_dropped;
- * 		core::ffi::c_ulong total_written;
- * 		core::ffi::c_ulong total_alloc;
- * 		core::ffi::c_ulong total_read = 0;
- * 		core::ffi::c_ulong total_size = 0;
- * 		core::ffi::c_ulong total_len = 0;
- * 		core::ffi::c_ulong total_lost = 0;
- * 		core::ffi::c_ulong lost;
+ * 		kernel::ffi::c_ulong total_events;
+ * 		kernel::ffi::c_ulong total_dropped;
+ * 		kernel::ffi::c_ulong total_written;
+ * 		kernel::ffi::c_ulong total_alloc;
+ * 		kernel::ffi::c_ulong total_read = 0;
+ * 		kernel::ffi::c_ulong total_size = 0;
+ * 		kernel::ffi::c_ulong total_len = 0;
+ * 		kernel::ffi::c_ulong total_lost = 0;
+ * 		kernel::ffi::c_ulong lost;
  * 		int big_event_size;
  * 		int small_event_size;
  * 

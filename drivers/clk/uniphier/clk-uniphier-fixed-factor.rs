@@ -9,7 +9,7 @@
 
 pub unsafe fn uniphier_clk_register_fixed_factor(
     dev: *mut device,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     data: *const uniphier_clk_fixed_factor_data,
 ) -> *mut clk_hw {
     let mut fix: *mut clk_fixed_factor;

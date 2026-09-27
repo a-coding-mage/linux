@@ -5,9 +5,9 @@
 #[inline]
 pub unsafe fn pgprot_framebuffer(
     prot: pgprot_t,
-    _vm_start: core::ffi::c_ulong,
-    _vm_end: core::ffi::c_ulong,
-    _offset: core::ffi::c_ulong,
+    _vm_start: kernel::ffi::c_ulong,
+    _vm_end: kernel::ffi::c_ulong,
+    _offset: kernel::ffi::c_ulong,
 ) -> pgprot_t {
     pgprot_noncached(prot)
 }
@@ -19,13 +19,13 @@ pub unsafe fn pgprot_framebuffer(
 // Build-time condition preserved from #ifdef CONFIG_64BIT.
 #[cfg(CONFIG_64BIT)]
 #[inline]
-pub unsafe fn fb_readq(addr: *const core::ffi::c_void) -> u64 {
+pub unsafe fn fb_readq(addr: *const kernel::ffi::c_void) -> u64 {
     __raw_readq(addr)
 }
 
 #[cfg(CONFIG_64BIT)]
 #[inline]
-pub unsafe fn fb_writeq(b: u64, addr: *mut core::ffi::c_void) {
+pub unsafe fn fb_writeq(b: u64, addr: *mut kernel::ffi::c_void) {
     __raw_writeq(b, addr);
 }
 
@@ -34,10 +34,10 @@ extern "C" {
     fn pgprot_noncached(prot: pgprot_t) -> pgprot_t;
 
     #[cfg(CONFIG_64BIT)]
-    fn __raw_readq(addr: *const core::ffi::c_void) -> u64;
+    fn __raw_readq(addr: *const kernel::ffi::c_void) -> u64;
 
     #[cfg(CONFIG_64BIT)]
-    fn __raw_writeq(b: u64, addr: *mut core::ffi::c_void);
+    fn __raw_writeq(b: u64, addr: *mut kernel::ffi::c_void);
 }
 
 // Declarations supplied by <asm/page.h> and <asm-generic/video.h> are not

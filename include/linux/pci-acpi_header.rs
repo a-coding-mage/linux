@@ -28,7 +28,7 @@ extern "C" {
         root: *mut acpi_pci_root,
         cfgres: *mut resource,
         ecam_ops: *mut *const pci_ecam_ops,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn pci_is_root_bus(pbus: *mut pci_bus) -> bool;
     pub fn acpi_handle_from_device(dev: *mut device) -> acpi_handle;
@@ -86,26 +86,26 @@ pub struct acpi_pci_root_info {
     pub bridge: *mut acpi_device,
     pub ops: *mut acpi_pci_root_ops,
     pub resources: list_head,
-    pub name: [core::ffi::c_char; 16],
+    pub name: [kernel::ffi::c_char; 16],
 }
 
 #[repr(C)]
 pub struct acpi_pci_root_ops {
     pub pci_ops: *mut pci_ops,
-    pub init_info: Option<unsafe extern "C" fn(*mut acpi_pci_root_info) -> core::ffi::c_int>,
+    pub init_info: Option<unsafe extern "C" fn(*mut acpi_pci_root_info) -> kernel::ffi::c_int>,
     pub release_info: Option<unsafe extern "C" fn(*mut acpi_pci_root_info)>,
     pub prepare_resources:
-        Option<unsafe extern "C" fn(*mut acpi_pci_root_info) -> core::ffi::c_int>,
+        Option<unsafe extern "C" fn(*mut acpi_pci_root_info) -> kernel::ffi::c_int>,
 }
 
 #[cfg(CONFIG_ACPI)]
 extern "C" {
-    pub fn acpi_pci_probe_root_resources(info: *mut acpi_pci_root_info) -> core::ffi::c_int;
+    pub fn acpi_pci_probe_root_resources(info: *mut acpi_pci_root_info) -> kernel::ffi::c_int;
     pub fn acpi_pci_root_create(
         root: *mut acpi_pci_root,
         ops: *mut acpi_pci_root_ops,
         info: *mut acpi_pci_root_info,
-        sd: *mut core::ffi::c_void,
+        sd: *mut kernel::ffi::c_void,
     ) -> *mut pci_bus;
 
     pub fn acpi_pci_add_bus(bus: *mut pci_bus);
@@ -204,7 +204,7 @@ pub unsafe fn pci_acpi_remove_edr_notifier(_pdev: *mut pci_dev) {}
 extern "C" {
     pub fn pci_acpi_set_companion_lookup_hook(
         func: Option<unsafe extern "C" fn(*mut pci_dev) -> *mut acpi_device>,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn pci_acpi_clear_companion_lookup_hook();
 }
 

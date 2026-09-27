@@ -15,16 +15,16 @@ extern "C" {
     fn ltl_atoms_fetch(task: *mut task_struct, mon: *mut ltl_monitor);
     fn ltl_atoms_init(task: *mut task_struct, mon: *mut ltl_monitor, task_creation: bool);
     fn rv_get_task_monitor_slot() -> i32;
-    fn rv_attach_trace_probe(name: *const core::ffi::c_char, event: *const core::ffi::c_char, handler: unsafe extern "C" fn(*mut core::ffi::c_void, *mut task_struct, u64));
-    fn rv_detach_trace_probe(name: *const core::ffi::c_char, event: *const core::ffi::c_char, handler: unsafe extern "C" fn(*mut core::ffi::c_void, *mut task_struct, u64));
+    fn rv_attach_trace_probe(name: *const kernel::ffi::c_char, event: *const kernel::ffi::c_char, handler: unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut task_struct, u64));
+    fn rv_detach_trace_probe(name: *const kernel::ffi::c_char, event: *const kernel::ffi::c_char, handler: unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut task_struct, u64));
     fn tracepoint_synchronize_unregister();
     fn rv_put_task_monitor_slot(slot: i32);
-    fn rv_react(monitor: *mut rv_monitor, fmt: *const core::ffi::c_char, ...);
+    fn rv_react(monitor: *mut rv_monitor, fmt: *const kernel::ffi::c_char, ...);
     fn rv_ltl_all_atoms_known(mon: *const ltl_monitor) -> bool;
     fn ltl_start(task: *mut task_struct, mon: *mut ltl_monitor);
     fn rv_ltl_valid_state(mon: *const ltl_monitor) -> bool;
-    fn ltl_possible_next_states(mon: *const ltl_monitor, state: u32, next_states: *mut core::ffi::c_ulong);
-    fn ltl_atom_str(atom: i32) -> *const core::ffi::c_char;
+    fn ltl_possible_next_states(mon: *const ltl_monitor, state: u32, next_states: *mut kernel::ffi::c_ulong);
+    fn ltl_atom_str(atom: i32) -> *const kernel::ffi::c_char;
 }
 
 unsafe fn ltl_get_monitor(task: *mut task_struct) -> *mut ltl_monitor {
@@ -41,7 +41,7 @@ unsafe fn ltl_task_init(task: *mut task_struct, task_creation: bool) {
     ltl_atoms_fetch(task, mon);
 }
 
-unsafe extern "C" fn handle_task_newtask(_data: *mut core::ffi::c_void, task: *mut task_struct, _flags: u64) {
+unsafe extern "C" fn handle_task_newtask(_data: *mut kernel::ffi::c_void, task: *mut task_struct, _flags: u64) {
     ltl_task_init(task, true);
 }
 
@@ -79,14 +79,14 @@ unsafe fn ltl_atom_set(mon: *mut ltl_monitor, atom: ltl_atom, value: bool) {
     else { __clear_bit(atom as usize, (*mon).atoms.as_mut_ptr()); }
 }
 
-unsafe fn ltl_trace_event(task: *mut task_struct, mon: *mut ltl_monitor, next_state: *mut core::ffi::c_ulong) {
+unsafe fn ltl_trace_event(task: *mut task_struct, mon: *mut ltl_monitor, next_state: *mut kernel::ffi::c_ulong) {
     // C DECLARE_SEQ_BUF/ snprintf/seq_buf_printf formatting is supplied by the kernel.
     // C generated call: CONCATENATE(trace_event_, MONITOR_NAME)(task, states, atoms.buffer, next)
     let _ = (task, mon, next_state);
 }
 
 unsafe fn ltl_validate(task: *mut task_struct, mon: *mut ltl_monitor) {
-    let mut next_states = [0 as core::ffi::c_ulong; RV_MAX_BA_STATES as usize / (core::mem::size_of::<core::ffi::c_ulong>() * 8)];
+    let mut next_states = [0 as kernel::ffi::c_ulong; RV_MAX_BA_STATES as usize / (core::mem::size_of::<kernel::ffi::c_ulong>() * 8)];
     if !rv_ltl_valid_state(mon) { return; }
     for i in 0..RV_NUM_BA_STATES {
         if test_bit(i, (*mon).states.as_ptr()) { ltl_possible_next_states(mon, i, next_states.as_mut_ptr()); }

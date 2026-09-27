@@ -20,7 +20,7 @@ pub struct papr_indices_io_block_dynamic_param {
     pub state: u32, // get / set state
     // PAPR+ 12.3.2.4 Converged Location Code Rules - Length
     // Restrictions. 79 characters plus null.
-    pub location_code_str: [core::ffi::c_char; LOC_CODE_SIZE], // location code
+    pub location_code_str: [kernel::ffi::c_char; LOC_CODE_SIZE], // location code
 }
 
 #[repr(C)]

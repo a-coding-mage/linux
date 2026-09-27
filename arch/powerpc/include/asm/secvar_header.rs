@@ -6,7 +6,7 @@
  * PowerPC secure variable operations.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Translated from the Linux kernel declarations included by the original header.
 pub type ssize_t = isize;

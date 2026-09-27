@@ -2,7 +2,7 @@
 // Translated from trace/events/mmc.h.  The Linux tracepoint machinery and
 // mmc types are supplied by external dependencies.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct MmcCommand {

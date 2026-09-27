@@ -6,9 +6,9 @@
 
 #[repr(C)]
 pub struct kvm_s390_major_guest_pfault_entry {
-    pub id: ::core::ffi::c_int,
-    pub pswmask: ::core::ffi::c_ulong,
-    pub pswaddr: ::core::ffi::c_ulong,
+    pub id: ::kernel::ffi::c_int,
+    pub pswmask: ::kernel::ffi::c_ulong,
+    pub pswaddr: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
@@ -39,7 +39,7 @@ pub unsafe fn kvm_s390_major_guest_pfault_assign(
 #[inline]
 pub unsafe fn kvm_s390_major_guest_pfault_print(
     entry: *const kvm_s390_major_guest_pfault_entry,
-) -> (::core::ffi::c_ulong, ::core::ffi::c_ulong) {
+) -> (::kernel::ffi::c_ulong, ::kernel::ffi::c_ulong) {
     ((*entry).pswmask, (*entry).pswaddr)
 }
 

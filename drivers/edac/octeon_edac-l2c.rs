@@ -20,26 +20,26 @@ extern "C" {
         l2c: *mut edac_device_ctl_info,
         instance: i32,
         block: i32,
-        msg: *const core::ffi::c_char,
+        msg: *const kernel::ffi::c_char,
     );
     fn edac_device_handle_ue(
         l2c: *mut edac_device_ctl_info,
         instance: i32,
         block: i32,
-        msg: *const core::ffi::c_char,
+        msg: *const kernel::ffi::c_char,
     );
     fn edac_device_alloc_ctl_info(
         sz_pvt: usize,
-        ctl_name: *const core::ffi::c_char,
+        ctl_name: *const kernel::ffi::c_char,
         nr_instances: i32,
-        edac_name: *const core::ffi::c_char,
+        edac_name: *const kernel::ffi::c_char,
         nr_blocks: i32,
         blocks: usize,
         index: i32,
     ) -> *mut edac_device_ctl_info;
     fn edac_device_alloc_index() -> i32;
     fn platform_set_drvdata(pdev: *mut platform_device, data: *mut edac_device_ctl_info);
-    fn dev_name(dev: *mut device) -> *const core::ffi::c_char;
+    fn dev_name(dev: *mut device) -> *const kernel::ffi::c_char;
     fn edac_device_add_device(l2c: *mut edac_device_ctl_info) -> i32;
     fn edac_device_free_ctl_info(l2c: *mut edac_device_ctl_info);
     fn edac_device_del_device(dev: *mut device);
@@ -60,9 +60,9 @@ pub struct platform_device {
 #[repr(C)]
 pub struct edac_device_ctl_info {
     pub dev: *mut device,
-    pub dev_name: *const core::ffi::c_char,
-    pub mod_name: *const core::ffi::c_char,
-    pub ctl_name: *const core::ffi::c_char,
+    pub dev_name: *const kernel::ffi::c_char,
+    pub mod_name: *const kernel::ffi::c_char,
+    pub ctl_name: *const kernel::ffi::c_char,
     pub nr_instances: i32,
     pub edac_check: Option<unsafe extern "C" fn(*mut edac_device_ctl_info)>,
 }
@@ -204,7 +204,7 @@ unsafe extern "C" fn octeon_l2c_remove(_pdev: *mut platform_device) {}
 struct platform_driver {
     probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32>,
     remove: Option<unsafe extern "C" fn(*mut platform_device)>,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 static mut octeon_l2c_driver: platform_driver = platform_driver {

@@ -13,7 +13,7 @@
 #[repr(C)]
 pub struct dsp56k_upload {
     pub len: i32,
-    pub bin: *mut core::ffi::c_char,
+    pub bin: *mut kernel::ffi::c_char,
 }
 
 /* For the DSP host flags */

@@ -7,8 +7,8 @@
 
 #[cfg(not(feature = "assembler"))]
 extern "C" {
-    pub static mut _pcictrl_bonito: ::core::ffi::c_ulong;
-    pub static mut _pcictrl_bonito_pcicfg: ::core::ffi::c_ulong;
+    pub static mut _pcictrl_bonito: ::kernel::ffi::c_ulong;
+    pub static mut _pcictrl_bonito_pcicfg: ::kernel::ffi::c_ulong;
 }
 
 #[inline]

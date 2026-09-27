@@ -281,13 +281,13 @@ pub struct ad_slave_info {
     pub port_priority: u16,
 }
 
-pub unsafe fn bond_3ad_churn_desc(state: churn_state_t) -> *const core::ffi::c_char {
+pub unsafe fn bond_3ad_churn_desc(state: churn_state_t) -> *const kernel::ffi::c_char {
     static CHURN_DESCRIPTION: [&[u8]; 4] = [b"monitoring\0", b"churned\0", b"none\0", b"unknown\0"];
     let mut index = state as usize;
     if index >= CHURN_DESCRIPTION.len() {
         index = CHURN_DESCRIPTION.len() - 1;
     }
-    CHURN_DESCRIPTION[index].as_ptr() as *const core::ffi::c_char
+    CHURN_DESCRIPTION[index].as_ptr() as *const kernel::ffi::c_char
 }
 
 extern "C" {
@@ -297,7 +297,7 @@ extern "C" {
     pub fn bond_3ad_state_machine_handler(work: *mut work_struct);
     pub fn bond_3ad_initiate_agg_selection(bond: *mut bonding, timeout: i32);
     pub fn bond_3ad_adapter_speed_duplex_changed(slave: *mut slave);
-    pub fn bond_3ad_handle_link_change(slave: *mut slave, link: core::ffi::c_char);
+    pub fn bond_3ad_handle_link_change(slave: *mut slave, link: kernel::ffi::c_char);
     pub fn bond_3ad_get_active_agg_info(bond: *const bonding, ad_info: *mut ad_info) -> i32;
     pub fn __bond_3ad_get_active_agg_info(bond: *const bonding, ad_info: *mut ad_info) -> i32;
     pub fn bond_3ad_lacpdu_recv(skb: *const sk_buff, bond: *mut bonding, slave: *mut slave) -> i32;

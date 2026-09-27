@@ -15,7 +15,7 @@ pub struct bcm_hcs {
     pub build_date: u32,
     pub filelen: u32,
     pub ldaddress: u32,
-    pub filename: [core::ffi::c_char; 64],
+    pub filename: [kernel::ffi::c_char; 64],
     pub hcs: u16,
     pub her_znaet_chto: u16,
     pub crc: u32,

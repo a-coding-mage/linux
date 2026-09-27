@@ -6,7 +6,7 @@
  */
 
 // Dependency declarations supplied by trace.h and the surrounding kernel.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct trace_seq {

@@ -71,8 +71,8 @@ pub const IF_LINK_MODE_TESTING: u32 = 2;
 
 #[repr(C)]
 pub struct ifmap {
-    pub mem_start: ::core::ffi::c_ulong,
-    pub mem_end: ::core::ffi::c_ulong,
+    pub mem_start: ::kernel::ffi::c_ulong,
+    pub mem_end: ::kernel::ffi::c_ulong,
     pub base_addr: u16,
     pub irq: u8,
     pub dma: u8,
@@ -100,7 +100,7 @@ pub struct if_settings {
 
 #[repr(C)]
 pub union ifreq_ifrn {
-    pub ifrn_name: [::core::ffi::c_char; IFNAMSIZ],
+    pub ifrn_name: [::kernel::ffi::c_char; IFNAMSIZ],
 }
 
 #[repr(C)]
@@ -114,9 +114,9 @@ pub union ifreq_ifru {
     pub ifru_ivalue: i32,
     pub ifru_mtu: i32,
     pub ifru_map: ifmap,
-    pub ifru_slave: [::core::ffi::c_char; IFNAMSIZ],
-    pub ifru_newname: [::core::ffi::c_char; IFNAMSIZ],
-    pub ifru_data: *mut ::core::ffi::c_void,
+    pub ifru_slave: [::kernel::ffi::c_char; IFNAMSIZ],
+    pub ifru_newname: [::kernel::ffi::c_char; IFNAMSIZ],
+    pub ifru_data: *mut ::kernel::ffi::c_void,
     pub ifru_settings: if_settings,
 }
 
@@ -129,7 +129,7 @@ pub struct ifreq {
 
 #[repr(C)]
 pub union ifconf_ifc_ifcu {
-    pub ifcu_buf: *mut ::core::ffi::c_char,
+    pub ifcu_buf: *mut ::kernel::ffi::c_char,
     pub ifcu_req: *mut ifreq,
 }
 

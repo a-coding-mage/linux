@@ -54,10 +54,10 @@ pub struct mutex {
  */
 #[repr(C)]
 pub struct reset_control_ops {
-    pub reset: Option<unsafe extern "C" fn(rcdev: *mut reset_controller_dev, id: ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
-    pub assert: Option<unsafe extern "C" fn(rcdev: *mut reset_controller_dev, id: ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
-    pub deassert: Option<unsafe extern "C" fn(rcdev: *mut reset_controller_dev, id: ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
-    pub status: Option<unsafe extern "C" fn(rcdev: *mut reset_controller_dev, id: ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
+    pub reset: Option<unsafe extern "C" fn(rcdev: *mut reset_controller_dev, id: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
+    pub assert: Option<unsafe extern "C" fn(rcdev: *mut reset_controller_dev, id: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
+    pub deassert: Option<unsafe extern "C" fn(rcdev: *mut reset_controller_dev, id: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
+    pub status: Option<unsafe extern "C" fn(rcdev: *mut reset_controller_dev, id: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
 }
 
 /**
@@ -88,25 +88,25 @@ pub struct reset_controller_dev {
     pub reset_control_head: list_head,
     pub dev: *mut device,
     pub of_node: *mut device_node,
-    pub of_reset_n_cells: ::core::ffi::c_int,
-    pub of_xlate: Option<unsafe extern "C" fn(rcdev: *mut reset_controller_dev, reset_spec: *const of_phandle_args) -> ::core::ffi::c_int>,
+    pub of_reset_n_cells: ::kernel::ffi::c_int,
+    pub of_xlate: Option<unsafe extern "C" fn(rcdev: *mut reset_controller_dev, reset_spec: *const of_phandle_args) -> ::kernel::ffi::c_int>,
     pub fwnode: *mut fwnode_handle,
-    pub fwnode_reset_n_cells: ::core::ffi::c_int,
-    pub fwnode_xlate: Option<unsafe extern "C" fn(rcdev: *mut reset_controller_dev, reset_spec: *const fwnode_reference_args) -> ::core::ffi::c_int>,
-    pub nr_resets: ::core::ffi::c_uint,
+    pub fwnode_reset_n_cells: ::kernel::ffi::c_int,
+    pub fwnode_xlate: Option<unsafe extern "C" fn(rcdev: *mut reset_controller_dev, reset_spec: *const fwnode_reference_args) -> ::kernel::ffi::c_int>,
+    pub nr_resets: ::kernel::ffi::c_uint,
     pub lock: mutex,
 }
 
 // #if IS_ENABLED(CONFIG_RESET_CONTROLLER)
 #[cfg(CONFIG_RESET_CONTROLLER)]
 unsafe extern "C" {
-    pub fn reset_controller_register(rcdev: *mut reset_controller_dev) -> ::core::ffi::c_int;
+    pub fn reset_controller_register(rcdev: *mut reset_controller_dev) -> ::kernel::ffi::c_int;
     pub fn reset_controller_unregister(rcdev: *mut reset_controller_dev);
-    pub fn devm_reset_controller_register(dev: *mut device, rcdev: *mut reset_controller_dev) -> ::core::ffi::c_int;
+    pub fn devm_reset_controller_register(dev: *mut device, rcdev: *mut reset_controller_dev) -> ::kernel::ffi::c_int;
 }
 // #else
 #[cfg(not(CONFIG_RESET_CONTROLLER))]
-pub unsafe fn reset_controller_register(_rcdev: *mut reset_controller_dev) -> ::core::ffi::c_int {
+pub unsafe fn reset_controller_register(_rcdev: *mut reset_controller_dev) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -117,7 +117,7 @@ pub unsafe fn reset_controller_unregister(_rcdev: *mut reset_controller_dev) {}
 pub unsafe fn devm_reset_controller_register(
     _dev: *mut device,
     _rcdev: *mut reset_controller_dev,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     0
 }
 // #endif

@@ -13,7 +13,7 @@
 // sound/dmaengine_pcm.h, uapi/sound/asound.h, sound/asoundef.h,
 // sound/omap-hdmi-audio.h, and "sdma-pcm.h".
 
-const DRV_NAME: *const ::core::ffi::c_char = b"omap-hdmi-audio\0".as_ptr() as *const ::core::ffi::c_char;
+const DRV_NAME: *const ::kernel::ffi::c_char = b"omap-hdmi-audio\0".as_ptr() as *const ::kernel::ffi::c_char;
 
 #[repr(C)]
 struct hdmi_audio_data {
@@ -44,7 +44,7 @@ unsafe extern "C" fn hdmi_dai_abort(dev: *mut device) {
     {
         dev_err(
             dev,
-            b"HDMI display disabled, aborting playback\n\0".as_ptr() as *const ::core::ffi::c_char,
+            b"HDMI display disabled, aborting playback\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         );
         snd_pcm_stream_lock_irq((*ad).current_stream);
         snd_pcm_stop((*ad).current_stream, SNDRV_PCM_STATE_DISCONNECTED);
@@ -56,9 +56,9 @@ unsafe extern "C" fn hdmi_dai_abort(dev: *mut device) {
 unsafe extern "C" fn hdmi_dai_startup(
     substream: *mut snd_pcm_substream,
     dai: *mut snd_soc_dai,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let ad: *mut hdmi_audio_data = card_drvdata_substream(substream);
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
     /*
      * Make sure that the period bytes are multiple of the DMA packet size.
      * Largest packet size we use is 32 32-bit words = 128 bytes
@@ -72,7 +72,7 @@ unsafe extern "C" fn hdmi_dai_startup(
     if ret < 0 {
         dev_err(
             (*dai).dev,
-            b"Could not apply period constraint: %d\n\0".as_ptr() as *const ::core::ffi::c_char,
+            b"Could not apply period constraint: %d\n\0".as_ptr() as *const ::kernel::ffi::c_char,
             ret,
         );
         return ret;
@@ -86,13 +86,13 @@ unsafe extern "C" fn hdmi_dai_startup(
     if ret < 0 {
         dev_err(
             (*dai).dev,
-            b"Could not apply buffer constraint: %d\n\0".as_ptr() as *const ::core::ffi::c_char,
+            b"Could not apply buffer constraint: %d\n\0".as_ptr() as *const ::kernel::ffi::c_char,
             ret,
         );
         return ret;
     }
 
-    snd_soc_dai_set_dma_data(dai, substream, &mut (*ad).dma_data as *mut _ as *mut ::core::ffi::c_void);
+    snd_soc_dai_set_dma_data(dai, substream, &mut (*ad).dma_data as *mut _ as *mut ::kernel::ffi::c_void);
 
     mutex_lock(&mut (*ad).current_stream_lock);
     (*ad).current_stream = substream;
@@ -113,12 +113,12 @@ unsafe extern "C" fn hdmi_dai_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let ad: *mut hdmi_audio_data = card_drvdata_substream(substream);
     let iec: *mut snd_aes_iec958 = &mut (*ad).iec;
     let cea: *mut snd_cea_861_aud_if = &mut (*ad).cea;
 
-    WARN_ON(((*ad).current_stream != substream) as ::core::ffi::c_int);
+    WARN_ON(((*ad).current_stream != substream) as ::kernel::ffi::c_int);
 
     match params_format(params) {
         SNDRV_PCM_FORMAT_S16_LE => {
@@ -130,7 +130,7 @@ unsafe extern "C" fn hdmi_dai_hw_params(
         _ => {
             dev_err(
                 (*dai).dev,
-                b"format not supported!\n\0".as_ptr() as *const ::core::ffi::c_char,
+                b"format not supported!\n\0".as_ptr() as *const ::kernel::ffi::c_char,
             );
             return -EINVAL;
         }
@@ -143,7 +143,7 @@ unsafe extern "C" fn hdmi_dai_hw_params(
      */
     /* initialize the word bytes */
     memset(
-        (*iec).status.as_mut_ptr() as *mut ::core::ffi::c_void,
+        (*iec).status.as_mut_ptr() as *mut ::kernel::ffi::c_void,
         0,
         ::core::mem::size_of_val(&(*iec).status),
     );
@@ -189,7 +189,7 @@ unsafe extern "C" fn hdmi_dai_hw_params(
         _ => {
             dev_err(
                 (*dai).dev,
-                b"rate not supported!\n\0".as_ptr() as *const ::core::ffi::c_char,
+                b"rate not supported!\n\0".as_ptr() as *const ::kernel::ffi::c_char,
             );
             return -EINVAL;
         }
@@ -215,7 +215,7 @@ unsafe extern "C" fn hdmi_dai_hw_params(
         _ => {
             dev_err(
                 (*dai).dev,
-                b"format not supported!\n\0".as_ptr() as *const ::core::ffi::c_char,
+                b"format not supported!\n\0".as_ptr() as *const ::kernel::ffi::c_char,
             );
             return -EINVAL;
         }
@@ -225,7 +225,7 @@ unsafe extern "C" fn hdmi_dai_hw_params(
      * Fill the CEA-861 audio infoframe (see spec for details)
      */
 
-    (*cea).db1_ct_cc = ((params_channels(params) - 1) & CEA861_AUDIO_INFOFRAME_DB1CC as ::core::ffi::c_uint) as _;
+    (*cea).db1_ct_cc = ((params_channels(params) - 1) & CEA861_AUDIO_INFOFRAME_DB1CC as ::kernel::ffi::c_uint) as _;
     (*cea).db1_ct_cc |= CEA861_AUDIO_INFOFRAME_DB1CT_FROM_STREAM;
 
     (*cea).db2_sf_ss = CEA861_AUDIO_INFOFRAME_DB2SF_FROM_STREAM;
@@ -258,13 +258,13 @@ unsafe extern "C" fn hdmi_dai_hw_params(
 
 unsafe extern "C" fn hdmi_dai_trigger(
     substream: *mut snd_pcm_substream,
-    cmd: ::core::ffi::c_int,
+    cmd: ::kernel::ffi::c_int,
     _dai: *mut snd_soc_dai,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let ad: *mut hdmi_audio_data = card_drvdata_substream(substream);
-    let mut err: ::core::ffi::c_int = 0;
+    let mut err: ::kernel::ffi::c_int = 0;
 
-    WARN_ON(((*ad).current_stream != substream) as ::core::ffi::c_int);
+    WARN_ON(((*ad).current_stream != substream) as ::kernel::ffi::c_int);
 
     match cmd {
         SNDRV_PCM_TRIGGER_START | SNDRV_PCM_TRIGGER_RESUME | SNDRV_PCM_TRIGGER_PAUSE_RELEASE => {
@@ -286,7 +286,7 @@ unsafe extern "C" fn hdmi_dai_shutdown(
 ) {
     let ad: *mut hdmi_audio_data = card_drvdata_substream(substream);
 
-    WARN_ON(((*ad).current_stream != substream) as ::core::ffi::c_int);
+    WARN_ON(((*ad).current_stream != substream) as ::kernel::ffi::c_int);
 
     ((*(*ad).ops).audio_shutdown).expect("non-null function pointer")((*ad).dssdev);
 
@@ -303,12 +303,12 @@ static hdmi_dai_ops: snd_soc_dai_ops = snd_soc_dai_ops {
 };
 
 static omap_hdmi_component: snd_soc_component_driver = snd_soc_component_driver {
-    name: b"omapdss_hdmi\0".as_ptr() as *const ::core::ffi::c_char,
+    name: b"omapdss_hdmi\0".as_ptr() as *const ::kernel::ffi::c_char,
     legacy_dai_naming: 1,
 };
 
 static mut omap5_hdmi_dai: snd_soc_dai_driver = snd_soc_dai_driver {
-    name: b"omap5-hdmi-dai\0".as_ptr() as *const ::core::ffi::c_char,
+    name: b"omap5-hdmi-dai\0".as_ptr() as *const ::kernel::ffi::c_char,
     playback: snd_soc_pcm_stream {
         channels_min: 2,
         channels_max: 8,
@@ -325,7 +325,7 @@ static mut omap5_hdmi_dai: snd_soc_dai_driver = snd_soc_dai_driver {
 };
 
 static mut omap4_hdmi_dai: snd_soc_dai_driver = snd_soc_dai_driver {
-    name: b"omap4-hdmi-dai\0".as_ptr() as *const ::core::ffi::c_char,
+    name: b"omap4-hdmi-dai\0".as_ptr() as *const ::kernel::ffi::c_char,
     playback: snd_soc_pcm_stream {
         channels_min: 2,
         channels_max: 8,
@@ -341,19 +341,19 @@ static mut omap4_hdmi_dai: snd_soc_dai_driver = snd_soc_dai_driver {
     ops: &hdmi_dai_ops,
 };
 
-unsafe extern "C" fn omap_hdmi_audio_probe(pdev: *mut platform_device) -> ::core::ffi::c_int {
+unsafe extern "C" fn omap_hdmi_audio_probe(pdev: *mut platform_device) -> ::kernel::ffi::c_int {
     let ha: *mut omap_hdmi_audio_pdata = (*(*pdev).dev).platform_data as *mut omap_hdmi_audio_pdata;
     let dev: *mut device = &mut *(*pdev).dev;
     let mut ad: *mut hdmi_audio_data;
     let dai_drv: *mut snd_soc_dai_driver;
     let mut card: *mut snd_soc_card;
     let mut compnent: *mut snd_soc_dai_link_component;
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     if ha.is_null() {
         dev_err(
             dev,
-            b"No platform data\n\0".as_ptr() as *const ::core::ffi::c_char,
+            b"No platform data\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         );
         return -EINVAL;
     }
@@ -369,7 +369,7 @@ unsafe extern "C" fn omap_hdmi_audio_probe(pdev: *mut platform_device) -> ::core
     (*ad).dssdev = (*ha).dev;
     (*ad).ops = (*ha).ops;
     (*ad).dma_data.addr = (*ha).audio_dma_addr;
-    (*ad).dma_data.filter_data = b"audio_tx\0".as_ptr() as *mut ::core::ffi::c_void;
+    (*ad).dma_data.filter_data = b"audio_tx\0".as_ptr() as *mut ::kernel::ffi::c_void;
     (*ad).dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
     mutex_init(&mut (*ad).current_stream_lock);
 
@@ -391,7 +391,7 @@ unsafe extern "C" fn omap_hdmi_audio_probe(pdev: *mut platform_device) -> ::core
 
     ret = sdma_pcm_platform_register(
         (*ad).dssdev,
-        b"audio_tx\0".as_ptr() as *const ::core::ffi::c_char,
+        b"audio_tx\0".as_ptr() as *const ::kernel::ffi::c_char,
         ::core::ptr::null_mut(),
     );
     if ret != 0 {
@@ -403,7 +403,7 @@ unsafe extern "C" fn omap_hdmi_audio_probe(pdev: *mut platform_device) -> ::core
         return -ENOMEM;
     }
 
-    (*card).name = b"HDMI\0".as_ptr() as *const ::core::ffi::c_char;
+    (*card).name = b"HDMI\0".as_ptr() as *const ::kernel::ffi::c_char;
     (*card).owner = THIS_MODULE;
     (*card).dai_link = devm_kzalloc(
         dev,
@@ -441,13 +441,13 @@ unsafe extern "C" fn omap_hdmi_audio_probe(pdev: *mut platform_device) -> ::core
         return dev_err_probe(
             dev,
             ret,
-            b"snd_soc_register_card() failed\n\0".as_ptr() as *const ::core::ffi::c_char,
+            b"snd_soc_register_card() failed\n\0".as_ptr() as *const ::kernel::ffi::c_char,
         );
     }
 
-    snd_soc_card_set_drvdata(card, ad as *mut ::core::ffi::c_void);
+    snd_soc_card_set_drvdata(card, ad as *mut ::kernel::ffi::c_void);
 
-    dev_set_drvdata(dev, ad as *mut ::core::ffi::c_void);
+    dev_set_drvdata(dev, ad as *mut ::kernel::ffi::c_void);
 
     0
 }

@@ -5,32 +5,32 @@
 
 #[repr(C)]
 pub struct sh_early_platform_driver {
-    pub class_str: *const core::ffi::c_char,
+    pub class_str: *const kernel::ffi::c_char,
     pub pdrv: *mut platform_driver,
     pub list: list_head,
-    pub requested_id: core::ffi::c_int,
-    pub buffer: *mut core::ffi::c_char,
-    pub bufsize: core::ffi::c_int,
+    pub requested_id: kernel::ffi::c_int,
+    pub buffer: *mut kernel::ffi::c_char,
+    pub bufsize: kernel::ffi::c_int,
 }
 
-pub const EARLY_PLATFORM_ID_UNSET: core::ffi::c_int = -2;
-pub const EARLY_PLATFORM_ID_ERROR: core::ffi::c_int = -3;
+pub const EARLY_PLATFORM_ID_UNSET: kernel::ffi::c_int = -2;
+pub const EARLY_PLATFORM_ID_ERROR: kernel::ffi::c_int = -3;
 
 extern "C" {
     pub fn sh_early_platform_driver_register(
         epdrv: *mut sh_early_platform_driver,
-        buf: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        buf: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
     pub fn sh_early_platform_add_devices(
         devs: *mut *mut platform_device,
-        num: core::ffi::c_int,
+        num: kernel::ffi::c_int,
     );
-    pub fn sh_early_platform_driver_register_all(class_str: *mut core::ffi::c_char);
+    pub fn sh_early_platform_driver_register_all(class_str: *mut kernel::ffi::c_char);
     pub fn sh_early_platform_driver_probe(
-        class_str: *mut core::ffi::c_char,
-        nr_probe: core::ffi::c_int,
-        user_only: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        class_str: *mut kernel::ffi::c_char,
+        nr_probe: kernel::ffi::c_int,
+        user_only: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 }
 
 #[inline]
@@ -45,7 +45,7 @@ pub unsafe fn is_sh_early_platform_device(pdev: *mut platform_device) -> bool {
 // whether MODULE is defined. The build system must provide the corresponding
 // configuration when expanding these declarations.
 
-#[cfg(not(feature = "MODULE"))]
+#[cfg(not(MODULE))]
 #[macro_export]
 macro_rules! sh_early_platform_init_buffer {
     ($class_string:expr, $platdrv:expr, $buf:expr, $bufsiz:expr) => {
@@ -59,8 +59,8 @@ macro_rules! sh_early_platform_init_buffer {
                 list: unsafe { core::mem::zeroed() },
             };
         unsafe fn sh_early_platform_driver_setup_func(
-            buffer: *mut core::ffi::c_char,
-        ) -> core::ffi::c_int {
+            buffer: *mut kernel::ffi::c_char,
+        ) -> kernel::ffi::c_int {
             unsafe {
                 $crate::sh_early_platform_driver_register(&mut early_driver, buffer)
             }
@@ -69,12 +69,12 @@ macro_rules! sh_early_platform_init_buffer {
     };
 }
 
-#[cfg(feature = "MODULE")]
+#[cfg(MODULE)]
 #[macro_export]
 macro_rules! sh_early_platform_init_buffer {
     ($class_string:expr, $platdrv:expr, $buf:expr, $bufsiz:expr) => {
         #[inline]
-        unsafe fn sh_early_platform_driver_setup_func() -> *mut core::ffi::c_char {
+        unsafe fn sh_early_platform_driver_setup_func() -> *mut kernel::ffi::c_char {
             if $bufsiz != 0 { $buf } else { core::ptr::null_mut() }
         }
     };

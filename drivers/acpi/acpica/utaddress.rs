@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2000 - 2026, Intel Corp.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 use core::ptr;
 
 // The declarations below are supplied by the ACPICA headers and other
@@ -17,8 +17,8 @@ extern "C" {
         validate: u8,
     ) -> *mut c_char;
     fn acpi_ut_get_region_name(space_id: acpi_adr_space_type) -> *const c_char;
-    fn acpi_allocate(size: usize) -> *mut core::ffi::c_void;
-    fn acpi_free(pointer: *mut core::ffi::c_void);
+    fn acpi_allocate(size: usize) -> *mut kernel::ffi::c_void;
+    fn acpi_free(pointer: *mut kernel::ffi::c_void);
 }
 
 #[repr(C)]
@@ -104,7 +104,7 @@ pub unsafe fn acpi_ut_remove_address_range(
                 (*range_info).start_address,
                 (*range_info).end_address,
             );
-            acpi_free(range_info as *mut core::ffi::c_void);
+            acpi_free(range_info as *mut kernel::ffi::c_void);
             return;
         }
         prev = range_info;
@@ -142,7 +142,7 @@ pub unsafe fn acpi_ut_check_address_range(
                     (*range_info).end_address,
                     pathname,
                 );
-                acpi_free(pathname as *mut core::ffi::c_void);
+                acpi_free(pathname as *mut kernel::ffi::c_void);
             }
         }
         range_info = (*range_info).next;
@@ -157,7 +157,7 @@ pub unsafe fn acpi_ut_delete_address_lists() {
         while !next.is_null() {
             let range_info = next;
             next = (*range_info).next;
-            acpi_free(range_info as *mut core::ffi::c_void);
+            acpi_free(range_info as *mut kernel::ffi::c_void);
         }
         acpi_gbl_address_range_list[i] = ptr::null_mut();
         i += 1;

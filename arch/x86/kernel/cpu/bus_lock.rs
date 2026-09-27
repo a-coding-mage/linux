@@ -24,7 +24,7 @@ static mut CPU_MODEL_SUPPORTS_SLD: bool = false;
 
 #[repr(C)]
 struct SldOption {
-    option: *const core::ffi::c_char,
+    option: *const kernel::ffi::c_char,
     state: SplitLockDetectState,
 }
 
@@ -94,7 +94,7 @@ unsafe fn sld_state_setup() {
     SLD_STATE = state;
 }
 
-unsafe extern "C" fn setup_split_lock_detect(_arg: *mut core::ffi::c_char) -> i32 { 1 }
+unsafe extern "C" fn setup_split_lock_detect(_arg: *mut kernel::ffi::c_char) -> i32 { 1 }
 
 unsafe fn __split_lock_setup() {
     if !split_lock_verify_msr(false) { pr_info(c"MSR access failed: Disabled\n"); return; }

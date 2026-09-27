@@ -40,7 +40,7 @@ pub unsafe fn trace_print_seq(m: *mut seq_file, s: *mut trace_seq) -> i32 {
     ret
 }
 
-pub unsafe extern "C" fn trace_seq_printf(s: *mut trace_seq, fmt: *const core::ffi::c_char, ...) {
+pub unsafe extern "C" fn trace_seq_printf(s: *mut trace_seq, fmt: *const kernel::ffi::c_char, ...) {
     let save_len = (*s).seq.len;
 
     if (*s).full {
@@ -61,7 +61,7 @@ pub unsafe extern "C" fn trace_seq_printf(s: *mut trace_seq, fmt: *const core::f
 
 pub unsafe fn trace_seq_bitmask(
     s: *mut trace_seq,
-    maskp: *const core::ffi::c_ulong,
+    maskp: *const kernel::ffi::c_ulong,
     nmaskbits: i32,
 ) {
     let save_len = (*s).seq.len;
@@ -71,7 +71,7 @@ pub unsafe fn trace_seq_bitmask(
     }
 
     __trace_seq_init(s);
-    seq_buf_printf(&mut (*s).seq, b"%*pb\0".as_ptr() as *const core::ffi::c_char, nmaskbits, maskp);
+    seq_buf_printf(&mut (*s).seq, b"%*pb\0".as_ptr() as *const kernel::ffi::c_char, nmaskbits, maskp);
 
     if seq_buf_has_overflowed(&(*s).seq) {
         (*s).seq.len = save_len;
@@ -81,7 +81,7 @@ pub unsafe fn trace_seq_bitmask(
 
 pub unsafe fn trace_seq_bitmask_list(
     s: *mut trace_seq,
-    maskp: *const core::ffi::c_ulong,
+    maskp: *const kernel::ffi::c_ulong,
     nmaskbits: i32,
 ) {
     let save_len = (*s).seq.len;
@@ -91,7 +91,7 @@ pub unsafe fn trace_seq_bitmask_list(
     }
 
     __trace_seq_init(s);
-    seq_buf_printf(&mut (*s).seq, b"%*pbl\0".as_ptr() as *const core::ffi::c_char, nmaskbits, maskp);
+    seq_buf_printf(&mut (*s).seq, b"%*pbl\0".as_ptr() as *const kernel::ffi::c_char, nmaskbits, maskp);
 
     if seq_buf_has_overflowed(&(*s).seq) {
         (*s).seq.len = save_len;
@@ -101,7 +101,7 @@ pub unsafe fn trace_seq_bitmask_list(
 
 pub unsafe fn trace_seq_vprintf(
     s: *mut trace_seq,
-    fmt: *const core::ffi::c_char,
+    fmt: *const kernel::ffi::c_char,
     args: va_list,
 ) {
     let save_len = (*s).seq.len;
@@ -121,7 +121,7 @@ pub unsafe fn trace_seq_vprintf(
 
 pub unsafe fn trace_seq_bprintf(
     s: *mut trace_seq,
-    fmt: *const core::ffi::c_char,
+    fmt: *const kernel::ffi::c_char,
     binary: *const u32,
 ) {
     let save_len = (*s).seq.len;
@@ -139,7 +139,7 @@ pub unsafe fn trace_seq_bprintf(
     }
 }
 
-pub unsafe fn trace_seq_puts(s: *mut trace_seq, str_: *const core::ffi::c_char) {
+pub unsafe fn trace_seq_puts(s: *mut trace_seq, str_: *const kernel::ffi::c_char) {
     let len = strlen(str_);
 
     if (*s).full {
@@ -153,7 +153,7 @@ pub unsafe fn trace_seq_puts(s: *mut trace_seq, str_: *const core::ffi::c_char) 
         return;
     }
 
-    seq_buf_putmem(&mut (*s).seq, str_ as *const core::ffi::c_void, len);
+    seq_buf_putmem(&mut (*s).seq, str_ as *const kernel::ffi::c_void, len);
 }
 
 pub unsafe fn trace_seq_putc(s: *mut trace_seq, c: u8) {
@@ -171,7 +171,7 @@ pub unsafe fn trace_seq_putc(s: *mut trace_seq, c: u8) {
     seq_buf_putc(&mut (*s).seq, c);
 }
 
-pub unsafe fn trace_seq_putmem(s: *mut trace_seq, mem: *const core::ffi::c_void, len: u32) {
+pub unsafe fn trace_seq_putmem(s: *mut trace_seq, mem: *const kernel::ffi::c_void, len: u32) {
     if (*s).full {
         return;
     }
@@ -186,7 +186,7 @@ pub unsafe fn trace_seq_putmem(s: *mut trace_seq, mem: *const core::ffi::c_void,
     seq_buf_putmem(&mut (*s).seq, mem, len as usize);
 }
 
-pub unsafe fn trace_seq_putmem_hex(s: *mut trace_seq, mem: *const core::ffi::c_void, len: u32) {
+pub unsafe fn trace_seq_putmem_hex(s: *mut trace_seq, mem: *const kernel::ffi::c_void, len: u32) {
     let save_len = (*s).seq.len;
 
     if (*s).full {
@@ -222,7 +222,7 @@ pub unsafe fn trace_seq_path(s: *mut trace_seq, path: *const path) -> i32 {
         return 0;
     }
 
-    seq_buf_path(&mut (*s).seq, path, b"\n\0".as_ptr() as *const core::ffi::c_char);
+    seq_buf_path(&mut (*s).seq, path, b"\n\0".as_ptr() as *const kernel::ffi::c_char);
 
     if seq_buf_has_overflowed(&(*s).seq) {
         (*s).seq.len = save_len;
@@ -235,7 +235,7 @@ pub unsafe fn trace_seq_path(s: *mut trace_seq, path: *const path) -> i32 {
 
 pub unsafe fn trace_seq_to_user(
     s: *mut trace_seq,
-    ubuf: *mut core::ffi::c_char,
+    ubuf: *mut kernel::ffi::c_char,
     cnt: i32,
 ) -> i32 {
     __trace_seq_init(s);
@@ -248,11 +248,11 @@ pub unsafe fn trace_seq_to_user(
 
 pub unsafe fn trace_seq_hex_dump(
     s: *mut trace_seq,
-    prefix_str: *const core::ffi::c_char,
+    prefix_str: *const kernel::ffi::c_char,
     prefix_type: i32,
     rowsize: i32,
     groupsize: i32,
-    buf: *const core::ffi::c_void,
+    buf: *const kernel::ffi::c_void,
     len: usize,
     ascii: bool,
 ) -> i32 {
@@ -280,7 +280,7 @@ pub unsafe fn trace_seq_hex_dump(
     1
 }
 
-pub unsafe fn trace_seq_acquire(s: *mut trace_seq, len: u32) -> *mut core::ffi::c_char {
+pub unsafe fn trace_seq_acquire(s: *mut trace_seq, len: u32) -> *mut kernel::ffi::c_char {
     let ret = trace_seq_buffer_ptr(s);
 
     if seq_buf_buffer_left(&(*s).seq) >= len as usize {

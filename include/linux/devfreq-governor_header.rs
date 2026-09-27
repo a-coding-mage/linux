@@ -6,7 +6,7 @@
  * supplied by external dependencies.
  */
 
-use core::ffi::{c_int, c_uint, c_ulong, c_void};
+use kernel::ffi::{c_int, c_uint, c_ulong, c_void};
 
 pub const DEVFREQ_NAME_LEN: usize = 16;
 
@@ -51,7 +51,7 @@ pub struct device {
 #[repr(C)]
 pub struct devfreq_governor {
     pub node: list_head,
-    pub name: [core::ffi::c_char; DEVFREQ_NAME_LEN],
+    pub name: [kernel::ffi::c_char; DEVFREQ_NAME_LEN],
     pub attrs: u64,
     pub flags: u64,
     pub get_target_freq: Option<unsafe extern "C" fn(*mut devfreq, *mut c_ulong) -> c_int>,

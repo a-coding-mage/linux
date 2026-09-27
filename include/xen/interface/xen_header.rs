@@ -87,7 +87,7 @@ pub const MMUEXT_MARK_SUPER: u32 = 19; pub const MMUEXT_UNMARK_SUPER: u32 = 20;
 #[repr(C)]
 pub union MmuextArg1 { pub mfn: xen_pfn_t, pub linear_addr: usize }
 #[repr(C)]
-pub union MmuextArg2 { pub nr_ents: u32, pub vcpumask: *mut core::ffi::c_void, pub src_mfn: xen_pfn_t }
+pub union MmuextArg2 { pub nr_ents: u32, pub vcpumask: *mut kernel::ffi::c_void, pub src_mfn: xen_pfn_t }
 #[repr(C)]
 pub struct mmuext_op { pub cmd: u32, pub arg1: MmuextArg1, pub arg2: MmuextArg2 }
 
@@ -135,7 +135,7 @@ pub const MAX_GUEST_CMDLINE: usize = 1024;
 #[repr(C)] pub struct StartConsoleDomU { pub mfn: xen_pfn_t, pub evtchn: u32 }
 #[repr(C)] pub struct StartConsoleDom0 { pub info_off: u32, pub info_size: u32 }
 #[repr(C)] pub struct start_info {
-    pub magic: [core::ffi::c_char; 32], pub nr_pages: usize, pub shared_info: usize,
+    pub magic: [kernel::ffi::c_char; 32], pub nr_pages: usize, pub shared_info: usize,
     pub flags: u32, pub store_mfn: xen_pfn_t, pub store_evtchn: u32, pub console: StartConsole,
     pub pt_base: usize, pub nr_pt_frames: usize, pub mfn_list: usize, pub mod_start: usize,
     pub mod_len: usize, pub cmd_line: [i8; MAX_GUEST_CMDLINE], pub first_p2m_pfn: usize,
@@ -154,7 +154,7 @@ pub const XEN_VGATYPE_TEXT_MODE_3: u8 = 0x03; pub const XEN_VGATYPE_VESA_LFB: u8
 pub type cpumap_t = u64; pub type xen_domain_handle_t = [u8; 16];
 pub const TMEM_SPEC_VERSION: u32 = 1;
 #[repr(C)] pub struct TmemNew { pub uuid: [u64; 2], pub flags: u32 }
-#[repr(C)] pub struct TmemGen { pub oid: [u64; 3], pub index: u32, pub tmem_offset: u32, pub pfn_offset: u32, pub len: u32, pub gmfn: *mut core::ffi::c_void }
+#[repr(C)] pub struct TmemGen { pub oid: [u64; 3], pub index: u32, pub tmem_offset: u32, pub pfn_offset: u32, pub len: u32, pub gmfn: *mut kernel::ffi::c_void }
 #[repr(C)] pub union TmemUnion { pub new: TmemNew, pub gen: TmemGen }
 #[repr(C)] pub struct tmem_op { pub cmd: u32, pub pool_id: i32, pub u: TmemUnion }
 

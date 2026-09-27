@@ -7,8 +7,8 @@ extern "C" {
     pub fn arm_cpuidle_simple_enter(
         dev: *mut cpuidle_device,
         drv: *mut cpuidle_driver,
-        index: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        index: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_CPU_IDLE))]
@@ -16,8 +16,8 @@ extern "C" {
 pub unsafe fn arm_cpuidle_simple_enter(
     _dev: *mut cpuidle_device,
     _drv: *mut cpuidle_driver,
-    _index: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    _index: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     -19 // -ENODEV
 }
 
@@ -55,16 +55,16 @@ pub struct device_node;
 
 #[repr(C)]
 pub struct cpuidle_ops {
-    pub suspend: Option<unsafe extern "C" fn(arg: ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
+    pub suspend: Option<unsafe extern "C" fn(arg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
     pub init: Option<unsafe extern "C" fn(
         node: *mut device_node,
-        cpu: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int>,
+        cpu: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct of_cpuidle_method {
-    pub method: *const ::core::ffi::c_char,
+    pub method: *const ::kernel::ffi::c_char,
     pub ops: *const cpuidle_ops,
 }
 
@@ -84,8 +84,8 @@ macro_rules! CPUIDLE_METHOD_OF_DECLARE {
 }
 
 extern "C" {
-    pub fn arm_cpuidle_suspend(index: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn arm_cpuidle_init(cpu: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn arm_cpuidle_suspend(index: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn arm_cpuidle_init(cpu: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
 }
 
 #[repr(C)]

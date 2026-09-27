@@ -48,9 +48,9 @@ unsafe fn reload_slb(vcpu: *mut kvm_vcpu) {
     }
 }
 
-unsafe fn kvmppc_realmode_mc_power7(vcpu: *mut kvm_vcpu) -> libc::c_long {
+unsafe fn kvmppc_realmode_mc_power7(vcpu: *mut kvm_vcpu) -> kernel::ffi::c_long {
     let srr1 = (*vcpu).arch.shregs.msr;
-    let mut handled: libc::c_long = 1;
+    let mut handled: kernel::ffi::c_long = 1;
 
     if srr1 & SRR1_MC_LDSTERR != 0 {
         let mut dsisr = (*vcpu).arch.shregs.dsisr;
@@ -82,7 +82,7 @@ unsafe fn kvmppc_realmode_mc_power7(vcpu: *mut kvm_vcpu) -> libc::c_long {
 
 pub unsafe fn kvmppc_realmode_machine_check(vcpu: *mut kvm_vcpu) {
     let mut mce_evt: machine_check_event = core::mem::zeroed();
-    let handled: libc::c_long;
+    let handled: kernel::ffi::c_long;
 
     if (*vcpu).kvm.arch.fwnmi_enabled {
         handled = 0;
@@ -100,9 +100,9 @@ pub unsafe fn kvmppc_realmode_machine_check(vcpu: *mut kvm_vcpu) {
     (*vcpu).arch.mce_evt = mce_evt;
 }
 
-pub unsafe fn kvmppc_p9_realmode_hmi_handler(vcpu: *mut kvm_vcpu) -> libc::c_long {
+pub unsafe fn kvmppc_p9_realmode_hmi_handler(vcpu: *mut kvm_vcpu) -> kernel::ffi::c_long {
     let vc = (*vcpu).arch.vcore;
-    let mut ret: libc::c_long = 0;
+    let mut ret: kernel::ffi::c_long = 0;
 
     if (*vc).tb_offset_applied != 0 {
         let mut new_tb = mftb() - (*vc).tb_offset_applied;
@@ -132,7 +132,7 @@ pub unsafe fn kvmppc_p9_realmode_hmi_handler(vcpu: *mut kvm_vcpu) -> libc::c_lon
 }
 
 #[inline]
-unsafe fn kvmppc_cur_subcore_size() -> libc::c_int {
+unsafe fn kvmppc_cur_subcore_size() -> kernel::ffi::c_int {
     if !(*local_paca).kvm_hstate.kvm_split_mode.is_null() {
         (*local_paca).kvm_hstate.kvm_split_mode.subcore_size
     } else {
@@ -162,7 +162,7 @@ unsafe fn kvmppc_tb_resync_done() {
         &mut (*local_paca).sibling_subcore_state.flags);
 }
 
-pub unsafe fn kvmppc_realmode_hmi_handler() -> libc::c_long {
+pub unsafe fn kvmppc_realmode_hmi_handler() -> kernel::ffi::c_long {
     (*local_paca).hmi_irqs += 1;
     if hmi_handle_debugtrig(core::ptr::null_mut()) >= 0 {
         return 1;

@@ -7,14 +7,14 @@
 pub const KCSAN_SEQLOCK_REGION_MAX: usize = 1000;
 
 #[repr(C)]
-pub struct seqcount_t { pub sequence: core::ffi::c_uint, pub dep_map: lockdep_map }
+pub struct seqcount_t { pub sequence: kernel::ffi::c_uint, pub dep_map: lockdep_map }
 #[repr(C)] pub struct seqcount_latch_t { pub seqcount: seqcount_t }
 #[repr(C)] pub struct seqlock_t { pub seqcount: seqcount_spinlock_t, pub lock: spinlock_t }
 #[repr(C)] pub struct seqcount_raw_spinlock_t { pub seqcount: seqcount_t, pub lock: *mut raw_spinlock_t }
 #[repr(C)] pub struct seqcount_spinlock_t { pub seqcount: seqcount_t, pub lock: *mut spinlock_t }
 #[repr(C)] pub struct seqcount_rwlock_t { pub seqcount: seqcount_t, pub lock: *mut rwlock_t }
 #[repr(C)] pub struct seqcount_mutex_t { pub seqcount: seqcount_t, pub lock: *mut mutex }
-#[repr(C)] pub struct lockdep_map { pub name: *const core::ffi::c_char }
+#[repr(C)] pub struct lockdep_map { pub name: *const kernel::ffi::c_char }
 #[repr(C)] pub struct lock_class_key { _private: [u8; 0] }
 #[repr(C)] pub struct raw_spinlock_t { _private: [u8; 0] }
 #[repr(C)] pub struct spinlock_t { _private: [u8; 0] }
@@ -22,9 +22,9 @@ pub struct seqcount_t { pub sequence: core::ffi::c_uint, pub dep_map: lockdep_ma
 #[repr(C)] pub struct mutex { _private: [u8; 0] }
 
 extern "C" {
-    fn lockdep_init_map(m: *mut lockdep_map, name: *const core::ffi::c_char, key: *mut lock_class_key, subclass: u32);
-    fn smp_load_acquire(p: *const core::ffi::c_uint) -> core::ffi::c_uint;
-    fn read_once(p: *const core::ffi::c_uint) -> core::ffi::c_uint;
+    fn lockdep_init_map(m: *mut lockdep_map, name: *const kernel::ffi::c_char, key: *mut lock_class_key, subclass: u32);
+    fn smp_load_acquire(p: *const kernel::ffi::c_uint) -> kernel::ffi::c_uint;
+    fn read_once(p: *const kernel::ffi::c_uint) -> kernel::ffi::c_uint;
     fn smp_rmb(); fn smp_wmb(); fn cpu_relax();
     fn kcsan_atomic_next(n: usize); fn kcsan_nestable_atomic_begin(); fn kcsan_nestable_atomic_end();
     fn preempt_disable(); fn preempt_enable();
@@ -32,7 +32,7 @@ extern "C" {
     fn spin_lock_bh(l: *mut spinlock_t); fn spin_unlock_bh(l: *mut spinlock_t);
     fn spin_lock_irq(l: *mut spinlock_t); fn spin_unlock_irq(l: *mut spinlock_t);
     fn spin_lock_irqsave(l: *mut spinlock_t, flags: *mut usize); fn spin_unlock_irqrestore(l: *mut spinlock_t, flags: usize);
-    fn lockdep_assert_preemption_disabled(); fn lockdep_assert_held(l: *const core::ffi::c_void);
+    fn lockdep_assert_preemption_disabled(); fn lockdep_assert_held(l: *const kernel::ffi::c_void);
     fn seqcount_acquire(m: *mut lockdep_map, subclass: i32, trylock: i32, ip: usize);
     fn seqcount_release(m: *mut lockdep_map, ip: usize);
     fn seqcount_acquire_read(m: *mut lockdep_map, subclass: i32, trylock: i32, ip: usize);
@@ -41,7 +41,7 @@ extern "C" {
     fn __scoped_seqlock_bug();
 }
 
-#[inline] pub unsafe fn __seqcount_init(s: *mut seqcount_t, name: *const core::ffi::c_char, key: *mut lock_class_key) { lockdep_init_map(&mut (*s).dep_map, name, key, 0); (*s).sequence = 0; }
+#[inline] pub unsafe fn __seqcount_init(s: *mut seqcount_t, name: *const kernel::ffi::c_char, key: *mut lock_class_key) { lockdep_init_map(&mut (*s).dep_map, name, key, 0); (*s).sequence = 0; }
 #[inline] pub unsafe fn seqcount_init(s: *mut seqcount_t) { __seqcount_init(s, core::ptr::null(), core::ptr::null_mut()) }
 #[inline] pub unsafe fn seqcount_lockdep_reader_access(s: *const seqcount_t) { let l=s as *mut seqcount_t; seqcount_acquire_read(&mut (*l).dep_map,0,0,0); seqcount_release_read(&mut (*l).dep_map,0); }
 

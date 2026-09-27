@@ -20,10 +20,10 @@ extern "C" {
     fn gnss_serial_allocate(serdev: *mut serdev_device, size: usize) -> *mut gnss_serial;
     fn is_err(ptr: *mut gnss_serial) -> bool;
     fn ptr_err(ptr: *mut gnss_serial) -> i32;
-    fn devm_regulator_get(dev: *mut device, id: *const core::ffi::c_char) -> *mut regulator;
+    fn devm_regulator_get(dev: *mut device, id: *const kernel::ffi::c_char) -> *mut regulator;
     fn devm_regulator_get_optional(
         dev: *mut device,
-        id: *const core::ffi::c_char,
+        id: *const kernel::ffi::c_char,
     ) -> *mut regulator;
     fn gnss_serial_register(gserial: *mut gnss_serial) -> i32;
     fn gnss_serial_free(gserial: *mut gnss_serial);

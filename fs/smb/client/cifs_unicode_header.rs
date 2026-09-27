@@ -52,7 +52,7 @@ pub const SFU_MAP_UNI_RSVD: i32 = 2;
 
 extern "C" {
     pub fn cifs_from_utf16(
-        to: *mut core::ffi::c_char,
+        to: *mut kernel::ffi::c_char,
         from: *const u16,
         tolen: i32,
         fromlen: i32,
@@ -62,25 +62,25 @@ extern "C" {
     pub fn cifs_utf16_bytes(from: *const u16, maxbytes: i32, codepage: *const nls_table) -> i32;
     pub fn cifs_strtoUTF16(
         to: *mut u16,
-        from: *const core::ffi::c_char,
+        from: *const kernel::ffi::c_char,
         len: i32,
         codepage: *const nls_table,
     ) -> i32;
     pub fn cifs_strndup_from_utf16(
-        src: *const core::ffi::c_char,
+        src: *const kernel::ffi::c_char,
         maxlen: i32,
         is_unicode: bool,
         codepage: *const nls_table,
-    ) -> *mut core::ffi::c_char;
+    ) -> *mut kernel::ffi::c_char;
     pub fn cifsConvertToUTF16(
         target: *mut u16,
-        source: *const core::ffi::c_char,
+        source: *const kernel::ffi::c_char,
         srclen: i32,
         cp: *const nls_table,
         map_chars: i32,
     ) -> i32;
     pub fn cifs_strndup_to_utf16(
-        src: *const core::ffi::c_char,
+        src: *const kernel::ffi::c_char,
         maxlen: i32,
         utf16_len: *mut i32,
         cp: *const nls_table,

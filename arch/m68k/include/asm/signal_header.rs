@@ -7,11 +7,11 @@ pub const _NSIG: usize = 64;
 pub const _NSIG_BPW: usize = 32;
 pub const _NSIG_WORDS: usize = _NSIG / _NSIG_BPW;
 
-pub type old_sigset_t = core::ffi::c_ulong;
+pub type old_sigset_t = kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct sigset_t {
-    pub sig: [core::ffi::c_ulong; _NSIG_WORDS],
+    pub sig: [kernel::ffi::c_ulong; _NSIG_WORDS],
 }
 
 pub const __ARCH_HAS_SA_RESTORER: bool = true;
@@ -20,8 +20,8 @@ pub const __ARCH_HAS_SA_RESTORER: bool = true;
 pub const __HAVE_ARCH_SIG_BITOPS: bool = true;
 
 #[inline]
-pub unsafe fn sigaddset(set: *mut sigset_t, _sig: core::ffi::c_int) {
-    let bit: core::ffi::c_int = (_sig - 1) ^ 31;
+pub unsafe fn sigaddset(set: *mut sigset_t, _sig: kernel::ffi::c_int) {
+    let bit: kernel::ffi::c_int = (_sig - 1) ^ 31;
     core::arch::asm!(
         "bfset [{set}]{{{bit}, #1}}",
         set = in(reg) set,
@@ -31,8 +31,8 @@ pub unsafe fn sigaddset(set: *mut sigset_t, _sig: core::ffi::c_int) {
 }
 
 #[inline]
-pub unsafe fn sigdelset(set: *mut sigset_t, _sig: core::ffi::c_int) {
-    let bit: core::ffi::c_int = (_sig - 1) ^ 31;
+pub unsafe fn sigdelset(set: *mut sigset_t, _sig: kernel::ffi::c_int) {
+    let bit: kernel::ffi::c_int = (_sig - 1) ^ 31;
     core::arch::asm!(
         "bfclr [{set}]{{{bit}, #1}}",
         set = in(reg) set,
@@ -42,16 +42,16 @@ pub unsafe fn sigdelset(set: *mut sigset_t, _sig: core::ffi::c_int) {
 }
 
 #[inline]
-pub unsafe fn __const_sigismember(set: *mut sigset_t, _sig: core::ffi::c_int) -> core::ffi::c_int {
-    let sig: core::ffi::c_ulong = (_sig - 1) as core::ffi::c_ulong;
-    1 & ((*set).sig[(sig / _NSIG_BPW as core::ffi::c_ulong) as usize]
-        >> (sig % _NSIG_BPW as core::ffi::c_ulong)) as core::ffi::c_int
+pub unsafe fn __const_sigismember(set: *mut sigset_t, _sig: kernel::ffi::c_int) -> kernel::ffi::c_int {
+    let sig: kernel::ffi::c_ulong = (_sig - 1) as kernel::ffi::c_ulong;
+    1 & ((*set).sig[(sig / _NSIG_BPW as kernel::ffi::c_ulong) as usize]
+        >> (sig % _NSIG_BPW as kernel::ffi::c_ulong)) as kernel::ffi::c_int
 }
 
 #[inline]
-pub unsafe fn __gen_sigismember(set: *mut sigset_t, _sig: core::ffi::c_int) -> core::ffi::c_int {
-    let bit: core::ffi::c_int = (_sig - 1) ^ 31;
-    let mut ret: core::ffi::c_int;
+pub unsafe fn __gen_sigismember(set: *mut sigset_t, _sig: kernel::ffi::c_int) -> kernel::ffi::c_int {
+    let bit: kernel::ffi::c_int = (_sig - 1) ^ 31;
+    let mut ret: kernel::ffi::c_int;
     core::arch::asm!(
         "bfextu [{set}]{{{bit}, #1}}, {ret}",
         set = in(reg) set,

@@ -18,25 +18,25 @@ pub struct agdi_data {
 }
 
 unsafe extern "C" {
-    fn nmi_panic(regs: *mut pt_regs, msg: *const core::ffi::c_char);
-    fn sdei_event_register(event: i32, handler: unsafe extern "C" fn(u32, *mut pt_regs, *mut core::ffi::c_void) -> i32, arg: *mut platform_device) -> i32;
+    fn nmi_panic(regs: *mut pt_regs, msg: *const kernel::ffi::c_char);
+    fn sdei_event_register(event: i32, handler: unsafe extern "C" fn(u32, *mut pt_regs, *mut kernel::ffi::c_void) -> i32, arg: *mut platform_device) -> i32;
     fn sdei_event_enable(event: i32) -> i32;
     fn sdei_event_unregister(event: i32) -> i32;
     fn sdei_event_disable(event: i32) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn acpi_register_gsi(a: *mut core::ffi::c_void, gsiv: u32, trigger: u32, polarity: u32) -> i32;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn acpi_register_gsi(a: *mut kernel::ffi::c_void, gsiv: u32, trigger: u32, polarity: u32) -> i32;
     fn acpi_unregister_gsi(gsiv: u32);
-    fn request_nmi(irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t, flags: usize, name: *const core::ffi::c_char, dev_id: *mut core::ffi::c_void) -> i32;
+    fn request_nmi(irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t, flags: usize, name: *const kernel::ffi::c_char, dev_id: *mut kernel::ffi::c_void) -> i32;
     fn enable_nmi(irq: i32);
-    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t, flags: usize, name: *const core::ffi::c_char, dev_id: *mut core::ffi::c_void) -> i32;
+    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t, flags: usize, name: *const kernel::ffi::c_char, dev_id: *mut kernel::ffi::c_void) -> i32;
     fn enable_irq(irq: i32);
-    fn free_nmi(irq: i32, dev_id: *mut core::ffi::c_void);
-    fn free_irq(irq: i32, dev_id: *mut core::ffi::c_void);
-    fn panic(msg: *const core::ffi::c_char) -> !;
+    fn free_nmi(irq: i32, dev_id: *mut kernel::ffi::c_void);
+    fn free_irq(irq: i32, dev_id: *mut kernel::ffi::c_void);
+    fn panic(msg: *const kernel::ffi::c_char) -> !;
     fn schedule();
-    fn ERR_PTR(err: i32) -> *mut core::ffi::c_void;
+    fn ERR_PTR(err: i32) -> *mut kernel::ffi::c_void;
     fn dev_get_platdata(dev: *mut device) -> *mut agdi_data;
-    fn platform_device_register_data(parent: *mut core::ffi::c_void, name: *const core::ffi::c_char, id: i32, data: *mut agdi_data, size: usize) -> *mut platform_device;
+    fn platform_device_register_data(parent: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char, id: i32, data: *mut agdi_data, size: usize) -> *mut platform_device;
     fn platform_device_unregister(pdev: *mut platform_device);
     fn platform_driver_register(driver: *mut platform_driver) -> i32;
     fn acpi_get_table(sig: u32, instance: u32, table: *mut *mut acpi_table_header) -> acpi_status;
@@ -52,7 +52,7 @@ unsafe extern "C" {
 pub type irqreturn_t = i32;
 pub type acpi_status = i32;
 
-unsafe extern "C" fn agdi_sdei_handler(sdei_event: u32, regs: *mut pt_regs, _arg: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn agdi_sdei_handler(sdei_event: u32, regs: *mut pt_regs, _arg: *mut kernel::ffi::c_void) -> i32 {
     nmi_panic(regs, b"Arm Generic Diagnostic Dump and Reset SDEI event issued\0".as_ptr() as _);
     0
 }
@@ -72,12 +72,12 @@ unsafe fn agdi_sdei_probe(pdev: *mut platform_device, adata: *mut agdi_data) -> 
     0
 }
 
-unsafe extern "C" fn agdi_interrupt_handler_nmi(_irq: i32, _dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn agdi_interrupt_handler_nmi(_irq: i32, _dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     nmi_panic(core::ptr::null_mut(), b"Arm Generic Diagnostic Dump and Reset NMI Interrupt event issued\n\0".as_ptr() as _);
     1
 }
 
-unsafe extern "C" fn agdi_interrupt_handler_irq(_irq: i32, _dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn agdi_interrupt_handler_irq(_irq: i32, _dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     panic(b"Arm Generic Diagnostic Dump and Reset Interrupt event issued\n\0".as_ptr() as _)
 }
 

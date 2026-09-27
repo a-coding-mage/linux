@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* Rust translation of linux/include/linux/clk.h. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)] pub struct device { _private: [u8; 0] }
 #[repr(C)] pub struct clk { _private: [u8; 0] }

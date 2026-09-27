@@ -7,7 +7,7 @@
 unsafe fn enforced_min_show(
     dev: *mut device,
     attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
     let accel_dev: *mut adf_accel_dev;
     let mut svn: u8 = 0;
@@ -22,7 +22,7 @@ unsafe fn enforced_min_show(
         return err as ssize_t;
     }
 
-    sysfs_emit(buf, "%u\n", svn as core::ffi::c_uint)
+    sysfs_emit(buf, "%u\n", svn as kernel::ffi::c_uint)
 }
 
 DEVICE_ATTR_RO!(enforced_min, enforced_min_show);
@@ -30,7 +30,7 @@ DEVICE_ATTR_RO!(enforced_min, enforced_min_show);
 unsafe fn active_show(
     dev: *mut device,
     attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
     let accel_dev: *mut adf_accel_dev;
     let mut svn: u8 = 0;
@@ -45,7 +45,7 @@ unsafe fn active_show(
         return err as ssize_t;
     }
 
-    sysfs_emit(buf, "%u\n", svn as core::ffi::c_uint)
+    sysfs_emit(buf, "%u\n", svn as kernel::ffi::c_uint)
 }
 
 DEVICE_ATTR_RO!(active, active_show);
@@ -53,7 +53,7 @@ DEVICE_ATTR_RO!(active, active_show);
 unsafe fn permanent_min_show(
     dev: *mut device,
     attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> ssize_t {
     let accel_dev: *mut adf_accel_dev;
     let mut svn: u8 = 0;
@@ -68,7 +68,7 @@ unsafe fn permanent_min_show(
         return err as ssize_t;
     }
 
-    sysfs_emit(buf, "%u\n", svn as core::ffi::c_uint)
+    sysfs_emit(buf, "%u\n", svn as kernel::ffi::c_uint)
 }
 
 DEVICE_ATTR_RO!(permanent_min, permanent_min_show);
@@ -76,7 +76,7 @@ DEVICE_ATTR_RO!(permanent_min, permanent_min_show);
 unsafe fn commit_store(
     dev: *mut device,
     attr: *mut device_attribute,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     count: usize,
 ) -> ssize_t {
     let accel_dev: *mut adf_accel_dev;
@@ -116,7 +116,7 @@ static mut qat_svn_attrs: [*mut attribute; 5] = [
 
 static qat_svn_group: attribute_group = attribute_group {
     attrs: unsafe { qat_svn_attrs.as_mut_ptr() },
-    name: "qat_svn\0".as_ptr() as *const core::ffi::c_char,
+    name: "qat_svn\0".as_ptr() as *const kernel::ffi::c_char,
 };
 
 pub unsafe fn adf_sysfs_start_arb(accel_dev: *mut adf_accel_dev) {

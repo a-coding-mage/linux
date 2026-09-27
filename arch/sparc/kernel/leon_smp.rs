@@ -5,12 +5,12 @@
 
 extern "C" {
     static mut srmmu_ctx_table_phys: *mut ctxd_t;
-    static mut cpu_callin_map: [core::ffi::c_ulong; NR_CPUS];
+    static mut cpu_callin_map: [kernel::ffi::c_ulong; NR_CPUS];
     static mut smp_commenced_mask: cpumask_t;
     fn leon_configure_cache_smp();
     fn hard_smp_processor_id() -> i32;
     fn smp_processor_id() -> i32;
-    fn sparc_leon3_get_dcachecfg() -> core::ffi::c_ulong;
+    fn sparc_leon3_get_dcachecfg() -> kernel::ffi::c_ulong;
     fn sparc_leon3_disable_cache();
     fn sparc_leon3_enable_snooping();
     fn leon_smp_nrcpus() -> i32;
@@ -20,22 +20,22 @@ extern "C" {
     fn mmgrab(mm: *mut mm_struct);
     fn cpumask_test_cpu(cpu: i32, mask: *const cpumask_t) -> bool;
     fn mb();
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn prom_printf(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn prom_printf(fmt: *const kernel::ffi::c_char, ...);
     fn cpu_online(cpu: i32) -> bool;
     fn cpu_present(cpu: i32) -> bool;
     fn free_reserved_page(page: *mut page);
-    fn virt_to_page(addr: *const core::ffi::c_void) -> *mut page;
-    fn of_find_node_by_path(path: *const core::ffi::c_char) -> *mut device_node;
-    fn of_find_property(node: *mut device_node, name: *const core::ffi::c_char, len: *mut i32) -> *mut property;
-    fn local_irq_save(flags: *mut core::ffi::c_ulong);
-    fn local_irq_restore(flags: core::ffi::c_ulong);
+    fn virt_to_page(addr: *const kernel::ffi::c_void) -> *mut page;
+    fn of_find_node_by_path(path: *const kernel::ffi::c_char) -> *mut device_node;
+    fn of_find_property(node: *mut device_node, name: *const kernel::ffi::c_char, len: *mut i32) -> *mut property;
+    fn local_irq_save(flags: *mut kernel::ffi::c_ulong);
+    fn local_irq_restore(flags: kernel::ffi::c_ulong);
     fn smp_call_function_single_interrupt();
     fn smp_call_function_interrupt();
     fn smp_resched_interrupt();
-    fn leon_get_irqmask(level: i32) -> core::ffi::c_ulong;
-    fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut core::ffi::c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: core::ffi::c_ulong);
+    fn leon_get_irqmask(level: i32) -> kernel::ffi::c_ulong;
+    fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: kernel::ffi::c_ulong);
     fn cpumask_clear_cpu(cpu: i32, mask: *mut cpumask_t);
     fn cpumask_and(dst: *mut cpumask_t, src1: *const cpumask_t, src2: *const cpumask_t);
     fn barrier();
@@ -60,7 +60,7 @@ extern "C" {
 static mut smp_processors_ready: i32 = 0;
 pub static mut leon_ipi_irq: i32 = LEON3_IRQ_IPI_DEFAULT;
 
-unsafe fn do_swap(ptr: *mut core::ffi::c_ulong, mut val: core::ffi::c_ulong) -> core::ffi::c_ulong {
+unsafe fn do_swap(ptr: *mut kernel::ffi::c_ulong, mut val: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     // swapa [%ptr] ASI_LEON_DCACHE_MISS, val; exact target-specific atomic exchange.
     core::ptr::read_volatile(ptr).swap_bytes();
     let old = core::ptr::read_volatile(ptr);
@@ -70,10 +70,10 @@ unsafe fn do_swap(ptr: *mut core::ffi::c_ulong, mut val: core::ffi::c_ulong) -> 
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn leon_cpu_pre_starting(_arg: *mut core::ffi::c_void) { leon_configure_cache_smp(); }
+pub unsafe extern "C" fn leon_cpu_pre_starting(_arg: *mut kernel::ffi::c_void) { leon_configure_cache_smp(); }
 
 #[no_mangle]
-pub unsafe extern "C" fn leon_cpu_pre_online(_arg: *mut core::ffi::c_void) {
+pub unsafe extern "C" fn leon_cpu_pre_online(_arg: *mut kernel::ffi::c_void) {
     let cpuid = hard_smp_processor_id();
     do_swap(&mut cpu_callin_map[cpuid as usize], 1);
     (*local_ops).cache_all(); (*local_ops).tlb_all();
@@ -145,10 +145,10 @@ unsafe fn leon_ipi_resched(cpu:i32) { leon_ipi_work_per_cpu[cpu as usize].resche
 
 #[no_mangle] pub unsafe extern "C" fn leonsmp_ipi_interrupt() { let w=&mut leon_ipi_work_per_cpu[smp_processor_id() as usize]; if w.single!=0 {w.single=0;smp_call_function_single_interrupt();} if w.msk!=0 {w.msk=0;smp_call_function_interrupt();} if w.resched!=0 {w.resched=0;smp_resched_interrupt();} }
 
-#[repr(C)] struct smp_funcall { func: *mut core::ffi::c_void, arg1: core::ffi::c_ulong, arg2: core::ffi::c_ulong, arg3: core::ffi::c_ulong, arg4: core::ffi::c_ulong, arg5: core::ffi::c_ulong, processors_in:[core::ffi::c_ulong;NR_CPUS], processors_out:[core::ffi::c_ulong;NR_CPUS] }
+#[repr(C)] struct smp_funcall { func: *mut kernel::ffi::c_void, arg1: kernel::ffi::c_ulong, arg2: kernel::ffi::c_ulong, arg3: kernel::ffi::c_ulong, arg4: kernel::ffi::c_ulong, arg5: kernel::ffi::c_ulong, processors_in:[kernel::ffi::c_ulong;NR_CPUS], processors_out:[kernel::ffi::c_ulong;NR_CPUS] }
 static mut ccall_info:smp_funcall=smp_funcall{func:core::ptr::null_mut(),arg1:0,arg2:0,arg3:0,arg4:0,arg5:0,processors_in:[0;NR_CPUS],processors_out:[0;NR_CPUS]};
-unsafe fn leon_cross_call(func:*mut core::ffi::c_void, mut mask:cpumask_t,arg1:core::ffi::c_ulong,arg2:core::ffi::c_ulong,arg3:core::ffi::c_ulong,arg4:core::ffi::c_ulong) { if smp_processors_ready!=0 { let me=smp_processor_id(); spin_lock_irqsave(core::ptr::null_mut(),core::ptr::null_mut()); ccall_info.func=func; ccall_info.arg1=arg1;ccall_info.arg2=arg2;ccall_info.arg3=arg3;ccall_info.arg4=arg4;ccall_info.arg5=0; cpumask_clear_cpu(me,&mut mask); for i in 0..NR_CPUS as i32 { if cpumask_test_cpu(i,&mask) { ccall_info.processors_in[i as usize]=0;ccall_info.processors_out[i as usize]=0;leon_send_ipi(i,LEON3_IRQ_CROSS_CALL); } } for i in 0..NR_CPUS as i32 { if cpumask_test_cpu(i,&mask) { while ccall_info.processors_in[i as usize]==0 {barrier();} while ccall_info.processors_out[i as usize]==0 {barrier();} } } spin_unlock_irqrestore(core::ptr::null_mut(),0); } }
-#[no_mangle] pub unsafe extern "C" fn leon_cross_call_irq() { let i=smp_processor_id() as usize; ccall_info.processors_in[i]=1; let f:extern "C" fn(core::ffi::c_ulong,core::ffi::c_ulong,core::ffi::c_ulong,core::ffi::c_ulong,core::ffi::c_ulong)=core::mem::transmute(ccall_info.func); f(ccall_info.arg1,ccall_info.arg2,ccall_info.arg3,ccall_info.arg4,ccall_info.arg5); ccall_info.processors_out[i]=1; }
+unsafe fn leon_cross_call(func:*mut kernel::ffi::c_void, mut mask:cpumask_t,arg1:kernel::ffi::c_ulong,arg2:kernel::ffi::c_ulong,arg3:kernel::ffi::c_ulong,arg4:kernel::ffi::c_ulong) { if smp_processors_ready!=0 { let me=smp_processor_id(); spin_lock_irqsave(core::ptr::null_mut(),core::ptr::null_mut()); ccall_info.func=func; ccall_info.arg1=arg1;ccall_info.arg2=arg2;ccall_info.arg3=arg3;ccall_info.arg4=arg4;ccall_info.arg5=0; cpumask_clear_cpu(me,&mut mask); for i in 0..NR_CPUS as i32 { if cpumask_test_cpu(i,&mask) { ccall_info.processors_in[i as usize]=0;ccall_info.processors_out[i as usize]=0;leon_send_ipi(i,LEON3_IRQ_CROSS_CALL); } } for i in 0..NR_CPUS as i32 { if cpumask_test_cpu(i,&mask) { while ccall_info.processors_in[i as usize]==0 {barrier();} while ccall_info.processors_out[i as usize]==0 {barrier();} } } spin_unlock_irqrestore(core::ptr::null_mut(),0); } }
+#[no_mangle] pub unsafe extern "C" fn leon_cross_call_irq() { let i=smp_processor_id() as usize; ccall_info.processors_in[i]=1; let f:extern "C" fn(kernel::ffi::c_ulong,kernel::ffi::c_ulong,kernel::ffi::c_ulong,kernel::ffi::c_ulong,kernel::ffi::c_ulong)=core::mem::transmute(ccall_info.func); f(ccall_info.arg1,ccall_info.arg2,ccall_info.arg3,ccall_info.arg4,ccall_info.arg5); ccall_info.processors_out[i]=1; }
 #[no_mangle] pub unsafe extern "C" fn leon_init_smp() { t_nmi[1]=t_nmi[1]+(linux_trap_ipi15_leon-linux_trap_ipi15_sun4m); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

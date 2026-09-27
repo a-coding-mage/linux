@@ -47,7 +47,7 @@ pub unsafe extern "C" fn bpf_lsm_verify_prog(
     prog: *const bpf_prog,
 ) -> i32 {
     let btf_id: u32 = (*(*prog).aux).attach_btf_id;
-    let func_name: *const core::ffi::c_char = (*(*prog).aux).attach_func_name;
+    let func_name: *const kernel::ffi::c_char = (*(*prog).aux).attach_func_name;
 
     if !(*prog).gpl_compatible {
         bpf_log(vlog, c"LSM programs must have a GPL compatible license\n".as_ptr());
@@ -75,7 +75,7 @@ pub unsafe extern "C" fn bpf_bprm_opts_set(bprm: *mut linux_binprm, flags: u64) 
 }
 
 pub unsafe extern "C" fn bpf_ima_inode_hash(
-    inode: *mut inode, dst: *mut core::ffi::c_void, size: u32,
+    inode: *mut inode, dst: *mut kernel::ffi::c_void, size: u32,
 ) -> i64 { ima_inode_hash(inode, dst, size) }
 
 pub unsafe extern "C" fn bpf_ima_inode_hash_allowed(prog: *const bpf_prog) -> bool {
@@ -83,10 +83,10 @@ pub unsafe extern "C" fn bpf_ima_inode_hash_allowed(prog: *const bpf_prog) -> bo
 }
 
 pub unsafe extern "C" fn bpf_ima_file_hash(
-    file: *mut file, dst: *mut core::ffi::c_void, size: u32,
+    file: *mut file, dst: *mut kernel::ffi::c_void, size: u32,
 ) -> i64 { ima_file_hash(file, dst, size) }
 
-pub unsafe extern "C" fn bpf_get_attach_cookie(ctx: *mut core::ffi::c_void) -> u64 {
+pub unsafe extern "C" fn bpf_get_attach_cookie(ctx: *mut kernel::ffi::c_void) -> u64 {
     let run_ctx = container_of((*current).bpf_ctx, bpf_trace_run_ctx, run_ctx);
     (*run_ctx).bpf_cookie
 }

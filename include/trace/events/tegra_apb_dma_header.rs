@@ -5,22 +5,22 @@
 
 #[repr(C)]
 pub struct TegraDmaTxStatusEntry {
-    pub chan: *const core::ffi::c_char,
+    pub chan: *const kernel::ffi::c_char,
     pub cookie: dma_cookie_t,
     pub residue: u32,
 }
 
 #[repr(C)]
 pub struct TegraDmaCompleteCbEntry {
-    pub chan: *const core::ffi::c_char,
-    pub count: core::ffi::c_int,
-    pub ptr: *mut core::ffi::c_void,
+    pub chan: *const kernel::ffi::c_char,
+    pub count: kernel::ffi::c_int,
+    pub ptr: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct TegraDmaIsrEntry {
-    pub chan: *const core::ffi::c_char,
-    pub irq: core::ffi::c_int,
+    pub chan: *const kernel::ffi::c_char,
+    pub irq: kernel::ffi::c_int,
 }
 
 /*

@@ -9,14 +9,14 @@ pub type __s16 = i16;
 pub type __s32 = i32;
 pub type __s64 = i64;
 
-pub const VIDIOC_OMAP3ISP_CCDC_CFG: _ = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 1, omap3isp_ccdc_update_config);
-pub const VIDIOC_OMAP3ISP_PRV_CFG: _ = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 2, omap3isp_prev_update_config);
-pub const VIDIOC_OMAP3ISP_AEWB_CFG: _ = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 3, omap3isp_h3a_aewb_config);
-pub const VIDIOC_OMAP3ISP_HIST_CFG: _ = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 4, omap3isp_hist_config);
-pub const VIDIOC_OMAP3ISP_AF_CFG: _ = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 5, omap3isp_h3a_af_config);
-pub const VIDIOC_OMAP3ISP_STAT_REQ: _ = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 6, omap3isp_stat_data);
-pub const VIDIOC_OMAP3ISP_STAT_REQ_TIME32: _ = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 6, omap3isp_stat_data_time32);
-pub const VIDIOC_OMAP3ISP_STAT_EN: _ = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 7, ::core::ffi::c_ulong);
+pub const VIDIOC_OMAP3ISP_CCDC_CFG: u32 = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 1, omap3isp_ccdc_update_config);
+pub const VIDIOC_OMAP3ISP_PRV_CFG: u32 = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 2, omap3isp_prev_update_config);
+pub const VIDIOC_OMAP3ISP_AEWB_CFG: u32 = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 3, omap3isp_h3a_aewb_config);
+pub const VIDIOC_OMAP3ISP_HIST_CFG: u32 = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 4, omap3isp_hist_config);
+pub const VIDIOC_OMAP3ISP_AF_CFG: u32 = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 5, omap3isp_h3a_af_config);
+pub const VIDIOC_OMAP3ISP_STAT_REQ: u32 = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 6, omap3isp_stat_data);
+pub const VIDIOC_OMAP3ISP_STAT_REQ_TIME32: u32 = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 6, omap3isp_stat_data_time32);
+pub const VIDIOC_OMAP3ISP_STAT_EN: u32 = _IOWR('V' as u8, BASE_VIDIOC_PRIVATE + 7, ::kernel::ffi::c_ulong);
 
 pub const V4L2_EVENT_OMAP3ISP_CLASS: _ = V4L2_EVENT_PRIVATE_START | 0x100;
 pub const V4L2_EVENT_OMAP3ISP_AEWB: _ = V4L2_EVENT_OMAP3ISP_CLASS | 0x1;
@@ -45,7 +45,7 @@ pub const OMAP3ISP_AF_PAXEL_SIZE: u32 = 48; pub const OMAP3ISP_AF_MAX_BUF_SIZE: 
 
 #[repr(C)] pub struct omap3isp_h3a_aewb_config { pub buf_size: __u32, pub config_counter: __u16, pub saturation_limit: __u16, pub win_height: __u16, pub win_width: __u16, pub ver_win_count: __u16, pub hor_win_count: __u16, pub ver_win_start: __u16, pub hor_win_start: __u16, pub blk_ver_win_start: __u16, pub blk_win_height: __u16, pub subsample_ver_inc: __u16, pub subsample_hor_inc: __u16, pub alaw_enable: __u8 }
 #[repr(C)] pub struct timeval { pub tv_sec: __s64, pub tv_usec: __s64 }
-#[repr(C)] pub struct omap3isp_stat_data { pub ts: timeval, pub buf: *mut core::ffi::c_void, pub buf_size: __u32, pub frame_number: __u16, pub cur_frame: __u16, pub config_counter: __u16 }
+#[repr(C)] pub struct omap3isp_stat_data { pub ts: timeval, pub buf: *mut kernel::ffi::c_void, pub buf_size: __u32, pub frame_number: __u16, pub cur_frame: __u16, pub config_counter: __u16 }
 #[repr(C)] pub struct omap3isp_stat_data_time32 { pub ts: timeval32, pub buf: __u32, pub buf_size: __u32, pub frame_number: __u16, pub cur_frame: __u16, pub config_counter: __u16 }
 #[repr(C)] pub struct timeval32 { pub tv_sec: __s32, pub tv_usec: __s32 }
 

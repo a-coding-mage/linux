@@ -201,7 +201,7 @@ int btrfs_alloc_stripe_hash_table(btrfs_fs_info *info)
 	struct btrfs_stripe_hash_table *x;
 	struct btrfs_stripe_hash *cur;
 	struct btrfs_stripe_hash *h;
-	core::ffi::c_uint num_entries = 1U << BTRFS_STRIPE_HASH_TABLE_BITS;
+	kernel::ffi::c_uint num_entries = 1U << BTRFS_STRIPE_HASH_TABLE_BITS;
 
 	if ((*info).stripe_hash_table)
 		return 0;
@@ -222,7 +222,7 @@ int btrfs_alloc_stripe_hash_table(btrfs_fs_info *info)
 
 	h = (*table).table;
 
-	for (core::ffi::c_uint i = 0; i < num_entries; i++) {
+	for (kernel::ffi::c_uint i = 0; i < num_entries; i++) {
 		cur = h + i;
 		INIT_LIST_HEAD((*&cur).hash_list);
 		spin_lock_init((*&cur).lock);
@@ -233,13 +233,13 @@ int btrfs_alloc_stripe_hash_table(btrfs_fs_info *info)
 	return 0;
 }
 
-static void memcpy_from_bio_to_stripe(btrfs_raid_bio *rbio, sector_nr: core::ffi::c_uint)
+static void memcpy_from_bio_to_stripe(btrfs_raid_bio *rbio, sector_nr: kernel::ffi::c_uint)
 {
 	const u32 step = min((*(*(*rbio).bioc).fs_info).sectorsize, PAGE_SIZE);
 
 	ASSERT(sector_nr < (*rbio).nr_sectors);
 	for (int i = 0; i < (*rbio).sector_nsteps; i++) {
-		core::ffi::c_uint index = sector_nr * (*rbio).sector_nsteps + i;
+		kernel::ffi::c_uint index = sector_nr * (*rbio).sector_nsteps + i;
 		phys_addr_t dst = (*rbio).stripe_paddrs[index];
 		phys_addr_t src = (*rbio).bio_paddrs[index];
 
@@ -307,7 +307,7 @@ static int rbio_bucket(btrfs_raid_bio *rbio)
 }
 
 /* Get the sector number of the first sector covered by @page_nr. */
-static u32 page_nr_to_sector_nr(btrfs_raid_bio *rbio, page_nr: core::ffi::c_uint)
+static u32 page_nr_to_sector_nr(btrfs_raid_bio *rbio, page_nr: kernel::ffi::c_uint)
 {
 	u32 sector_nr;
 
@@ -324,7 +324,7 @@ static u32 page_nr_to_sector_nr(btrfs_raid_bio *rbio, page_nr: core::ffi::c_uint
  * For bs > ps cases, the result will always be 1.
  * For bs <= ps cases, the result will be ps / bs.
  */
-static u32 page_nr_to_num_sectors(btrfs_raid_bio *rbio, page_nr: core::ffi::c_uint)
+static u32 page_nr_to_num_sectors(btrfs_raid_bio *rbio, page_nr: kernel::ffi::c_uint)
 {
 	struct btrfs_fs_info *fs_info = (*(*rbio).bioc).fs_info;
 	u32 nr_sectors;
@@ -337,7 +337,7 @@ static u32 page_nr_to_num_sectors(btrfs_raid_bio *rbio, page_nr: core::ffi::c_ui
 }
 
 static __maybe_unused bool full_page_sectors_uptodate(btrfs_raid_bio *rbio,
-						      page_nr: core::ffi::c_uint)
+						      page_nr: kernel::ffi::c_uint)
 {
 	const u32 sector_nr = page_nr_to_sector_nr(rbio, page_nr);
 	const u32 nr_bits = page_nr_to_num_sectors(rbio, page_nr);
@@ -628,7 +628,7 @@ static void cache_rbio(btrfs_raid_bio *rbio)
  */
 static int rbio_is_full(btrfs_raid_bio *rbio)
 {
-	core::ffi::c_ulong size = (*rbio).bio_list_bytes;
+	kernel::ffi::c_ulong size = (*rbio).bio_list_bytes;
 	int ret = 1;
 
 	spin_lock((*&rbio).bio_list_lock);
@@ -692,11 +692,11 @@ static int rbio_can_merge(btrfs_raid_bio *last,
 }
 
 /* Return the sector index for @stripe_nr and @sector_nr. */
-static core::ffi::c_uint rbio_sector_index(const struct btrfs_raid_bio *rbio,
-				      stripe_nr: core::ffi::c_uint,
-				      sector_nr: core::ffi::c_uint)
+static kernel::ffi::c_uint rbio_sector_index(const struct btrfs_raid_bio *rbio,
+				      stripe_nr: kernel::ffi::c_uint,
+				      sector_nr: kernel::ffi::c_uint)
 {
-	core::ffi::c_uint ret;
+	kernel::ffi::c_uint ret;
 
 	ASSERT_RBIO_STRIPE(stripe_nr < (*rbio).real_stripes, rbio, stripe_nr);
 	ASSERT_RBIO_SECTOR(sector_nr < (*rbio).stripe_nsectors, rbio, sector_nr);
@@ -707,12 +707,12 @@ static core::ffi::c_uint rbio_sector_index(const struct btrfs_raid_bio *rbio,
 }
 
 /* Return the paddr array index for @stripe_nr, @sector_nr and @step_nr. */
-static core::ffi::c_uint rbio_paddr_index(const struct btrfs_raid_bio *rbio,
-				     stripe_nr: core::ffi::c_uint,
-				     sector_nr: core::ffi::c_uint,
-				     step_nr: core::ffi::c_uint)
+static kernel::ffi::c_uint rbio_paddr_index(const struct btrfs_raid_bio *rbio,
+				     stripe_nr: kernel::ffi::c_uint,
+				     sector_nr: kernel::ffi::c_uint,
+				     step_nr: kernel::ffi::c_uint)
 {
-	core::ffi::c_uint ret;
+	kernel::ffi::c_uint ret;
 
 	ASSERT_RBIO_SECTOR(step_nr < (*rbio).sector_nsteps, rbio, step_nr);
 
@@ -722,20 +722,20 @@ static core::ffi::c_uint rbio_paddr_index(const struct btrfs_raid_bio *rbio,
 }
 
 static phys_addr_t rbio_stripe_paddr(const struct btrfs_raid_bio *rbio,
-					  stripe_nr: core::ffi::c_uint, sector_nr: core::ffi::c_uint,
-					  step_nr: core::ffi::c_uint)
+					  stripe_nr: kernel::ffi::c_uint, sector_nr: kernel::ffi::c_uint,
+					  step_nr: kernel::ffi::c_uint)
 {
 	return (*rbio).stripe_paddrs[rbio_paddr_index(rbio, stripe_nr, sector_nr, step_nr)];
 }
 
 static phys_addr_t rbio_pstripe_paddr(const struct btrfs_raid_bio *rbio,
-					   sector_nr: core::ffi::c_uint, step_nr: core::ffi::c_uint)
+					   sector_nr: kernel::ffi::c_uint, step_nr: kernel::ffi::c_uint)
 {
 	return rbio_stripe_paddr(rbio, (*rbio).nr_data, sector_nr, step_nr);
 }
 
 static phys_addr_t rbio_qstripe_paddr(const struct btrfs_raid_bio *rbio,
-					   sector_nr: core::ffi::c_uint, step_nr: core::ffi::c_uint)
+					   sector_nr: kernel::ffi::c_uint, step_nr: kernel::ffi::c_uint)
 {
 	if ((*rbio).nr_data + 1 == (*rbio).real_stripes)
 		return INVALID_PADDR;
@@ -744,7 +744,7 @@ static phys_addr_t rbio_qstripe_paddr(const struct btrfs_raid_bio *rbio,
 
 /* Return a paddr pointer into the rbio::stripe_paddrs[] for the specified sector. */
 static phys_addr_t *rbio_stripe_paddrs(const struct btrfs_raid_bio *rbio,
-				       stripe_nr: core::ffi::c_uint, sector_nr: core::ffi::c_uint)
+				       stripe_nr: kernel::ffi::c_uint, sector_nr: kernel::ffi::c_uint)
 {
 	return &rbio->stripe_paddrs[rbio_paddr_index(rbio, stripe_nr, sector_nr, 0)];
 }
@@ -1053,14 +1053,14 @@ static phys_addr_t sector_paddr_in_rbio(btrfs_raid_bio *rbio,
 static struct btrfs_raid_bio *alloc_rbio(btrfs_fs_info *fs_info,
 					 btrfs_io_context *bioc)
 {
-	const core::ffi::c_uint real_stripes = bioc->num_stripes - bioc->replace_nr_stripes;
-	const core::ffi::c_uint stripe_npages = BTRFS_STRIPE_LEN >> PAGE_SHIFT;
-	const core::ffi::c_uint num_pages = stripe_npages * real_stripes;
-	const core::ffi::c_uint stripe_nsectors =
+	const kernel::ffi::c_uint real_stripes = bioc->num_stripes - bioc->replace_nr_stripes;
+	const kernel::ffi::c_uint stripe_npages = BTRFS_STRIPE_LEN >> PAGE_SHIFT;
+	const kernel::ffi::c_uint num_pages = stripe_npages * real_stripes;
+	const kernel::ffi::c_uint stripe_nsectors =
 		BTRFS_STRIPE_LEN >> fs_info->sectorsize_bits;
-	const core::ffi::c_uint num_sectors = stripe_nsectors * real_stripes;
-	const core::ffi::c_uint step = min(fs_info->sectorsize, PAGE_SIZE);
-	const core::ffi::c_uint sector_nsteps = fs_info->sectorsize / step;
+	const kernel::ffi::c_uint num_sectors = stripe_nsectors * real_stripes;
+	const kernel::ffi::c_uint step = min(fs_info->sectorsize, PAGE_SIZE);
+	const kernel::ffi::c_uint sector_nsteps = fs_info->sectorsize / step;
 	struct btrfs_raid_bio *rbio;
 
 	/*
@@ -1197,8 +1197,8 @@ static int get_rbio_vertical_errors(btrfs_raid_bio *rbio, int sector_nr,
 	return found_errors;
 }
 
-static int bio_add_paddrs(bio *bio, phys_addr_t *paddrs, nr_steps: core::ffi::c_uint,
-			  step: core::ffi::c_uint)
+static int bio_add_paddrs(bio *bio, phys_addr_t *paddrs, nr_steps: kernel::ffi::c_uint,
+			  step: kernel::ffi::c_uint)
 {
 	'revert: {
 	int added = 0;
@@ -1229,8 +1229,8 @@ static int bio_add_paddrs(bio *bio, phys_addr_t *paddrs, nr_steps: core::ffi::c_
  * Return <0 for error, and no byte will be added to @rbio.
  */
 static int rbio_add_io_paddrs(btrfs_raid_bio *rbio, bio_list *bio_list,
-			      phys_addr_t *paddrs, stripe_nr: core::ffi::c_uint,
-			      sector_nr: core::ffi::c_uint, req_op op)
+			      phys_addr_t *paddrs, stripe_nr: kernel::ffi::c_uint,
+			      sector_nr: kernel::ffi::c_uint, req_op op)
 {
 	const u32 sectorsize = rbio->bioc->fs_info->sectorsize;
 	const u32 step = min(sectorsize, PAGE_SIZE);
@@ -1310,7 +1310,7 @@ static void index_one_bio(btrfs_raid_bio *rbio, bio *bio)
 		     rbio->bioc->full_stripe_logical;
 
 	btrfs_bio_for_each_block!(paddr, bio, &iter, step, {
-		core::ffi::c_uint index = (offset >> step_bits);
+		kernel::ffi::c_uint index = (offset >> step_bits);
 
 		rbio->bio_paddrs[index] = paddr;
 		offset += step;
@@ -1400,8 +1400,8 @@ void *kmap_local_paddr(phys_addr_t paddr)
 	return kmap_local_page(phys_to_page(paddr)) + offset_in_page(paddr);
 }
 
-static void generate_pq_vertical_step(btrfs_raid_bio *rbio, sector_nr: core::ffi::c_uint,
-				      step_nr: core::ffi::c_uint)
+static void generate_pq_vertical_step(btrfs_raid_bio *rbio, sector_nr: kernel::ffi::c_uint,
+				      step_nr: kernel::ffi::c_uint)
 {
 	void **pointers = rbio->finish_pointers;
 	const u32 step = min(rbio->bioc->fs_info->sectorsize, PAGE_SIZE);
@@ -1930,8 +1930,8 @@ static int verify_one_sector(btrfs_raid_bio *rbio,
 }
 
 static void recover_vertical_step(btrfs_raid_bio *rbio,
-				  sector_nr: core::ffi::c_uint,
-				  step_nr: core::ffi::c_uint,
+				  sector_nr: kernel::ffi::c_uint,
+				  step_nr: kernel::ffi::c_uint,
 				  int faila, int failb,
 				  void **pointers, void **unmap_array)
 {
@@ -2575,7 +2575,7 @@ static void rmw_rbio_work_locked(work_struct *work)
 struct btrfs_raid_bio *raid56_parity_alloc_scrub_rbio(bio *bio,
 				btrfs_io_context *bioc,
 				btrfs_device *scrub_dev,
-				core::ffi::c_ulong *dbitmap, int stripe_nsectors)
+				kernel::ffi::c_ulong *dbitmap, int stripe_nsectors)
 {
 	struct btrfs_fs_info *fs_info = bioc->fs_info;
 	struct btrfs_raid_bio *rbio;
@@ -2616,7 +2616,7 @@ static int alloc_rbio_sector_pages(btrfs_raid_bio *rbio,
 	const u32 base = sector_nr * rbio->sector_nsteps;
 
 	for (int i = base; i < base + rbio->sector_nsteps; i++) {
-		const core::ffi::c_uint page_index = (i * step) >> PAGE_SHIFT;
+		const kernel::ffi::c_uint page_index = (i * step) >> PAGE_SHIFT;
 		struct page *page;
 
 		if (rbio->stripe_pages[page_index])
@@ -2654,10 +2654,10 @@ static int alloc_rbio_essential_pages(btrfs_raid_bio *rbio)
 
 /* Return true if the content of the step matches the caclulated one. */
 static bool verify_one_parity_step(btrfs_raid_bio *rbio,
-				   void *pointers[], sector_nr: core::ffi::c_uint,
-				   step_nr: core::ffi::c_uint)
+				   void *pointers[], sector_nr: kernel::ffi::c_uint,
+				   step_nr: kernel::ffi::c_uint)
 {
-	const core::ffi::c_uint nr_data = rbio->nr_data;
+	const kernel::ffi::c_uint nr_data = rbio->nr_data;
 	const bool has_qstripe = (rbio->real_stripes - rbio->nr_data == 2);
 	const u32 step = min(rbio->bioc->fs_info->sectorsize, PAGE_SIZE);
 	void *parity;
@@ -2698,7 +2698,7 @@ static bool verify_one_parity_step(btrfs_raid_bio *rbio,
  * The @pointers array should have the P/Q parity already mapped.
  */
 static void verify_one_parity_sector(btrfs_raid_bio *rbio,
-				     void *pointers[], sector_nr: core::ffi::c_uint)
+				     void *pointers[], sector_nr: kernel::ffi::c_uint)
 {
 	bool found_error = false;
 
@@ -2719,7 +2719,7 @@ static int finish_parity_scrub(btrfs_raid_bio *rbio)
 	'submit_write: {
 	struct btrfs_io_context *bioc = rbio->bioc;
 	void **pointers = rbio->finish_pointers;
-	core::ffi::c_ulong *pbitmap = &rbio->finish_pbitmap;
+	kernel::ffi::c_ulong *pbitmap = &rbio->finish_pbitmap;
 	int nr_data = rbio->nr_data;
 	int sectornr;
 	bool has_qstripe;
@@ -3054,10 +3054,10 @@ void raid56_parity_cache_data_folios(btrfs_raid_bio *rbio,
 	ASSERT(IS_ALIGNED(offset_in_full_stripe, BTRFS_STRIPE_LEN));
 	ASSERT(offset_in_full_stripe < (rbio->nr_data << BTRFS_STRIPE_LEN_SHIFT));
 
-	for (core::ffi::c_uint cur_off = offset_in_full_stripe;
+	for (kernel::ffi::c_uint cur_off = offset_in_full_stripe;
 	     cur_off < offset_in_full_stripe + BTRFS_STRIPE_LEN;
 	     cur_off += PAGE_SIZE) {
-		const core::ffi::c_uint pindex = cur_off >> PAGE_SHIFT;
+		const kernel::ffi::c_uint pindex = cur_off >> PAGE_SHIFT;
 
 		ASSERT(cur_off - offset_in_full_stripe + PAGE_SIZE <= BTRFS_STRIPE_LEN);
 		memcpy_to_page(rbio->stripe_pages[pindex], 0,

@@ -4,7 +4,7 @@
 #[repr(C)]
 pub struct sigframe {
     pub uc: ucontext,
-    pub retcode: [core::ffi::c_ulong; 4],
+    pub retcode: [kernel::ffi::c_ulong; 4],
 }
 
 #[repr(C)]

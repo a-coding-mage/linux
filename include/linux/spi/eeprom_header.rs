@@ -12,10 +12,10 @@
 #[repr(C)]
 pub struct spi_eeprom {
 	pub byte_len: u32,
-	pub name: [core::ffi::c_char; 10],
+	pub name: [kernel::ffi::c_char; 10],
 	pub page_size: u32, /* for writes */
 	pub flags: u16,
-	pub context: *mut core::ffi::c_void,
+	pub context: *mut kernel::ffi::c_void,
 }
 
 pub const EE_ADDR1: u16 = 0x0001; /*  8 bit addrs */

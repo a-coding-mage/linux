@@ -6,7 +6,7 @@
 //! machinery represented by `TRACE_EVENT`, `TP_STRUCT__entry`, and friends in
 //! the original header.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /// Equivalent to the dynamically sized `msg` field of the trace entry.
 #[repr(C)]

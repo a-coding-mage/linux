@@ -6,7 +6,7 @@
  */
 
 /* Dependency supplied by linux/phy.h. */
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* Opaque declarations corresponding to the C forward declarations. */
 #[repr(C)]

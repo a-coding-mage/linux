@@ -323,8 +323,8 @@ pub enum spinlock_t {}
 #[repr(C)]
 pub struct snd_ca0106_channel {
     pub emu: *mut snd_ca0106,
-    pub number: ::core::ffi::c_int,
-    pub use_: ::core::ffi::c_int,
+    pub number: ::kernel::ffi::c_int,
+    pub use_: ::kernel::ffi::c_int,
     pub interrupt: Option<unsafe extern "C" fn(emu: *mut snd_ca0106, channel: *mut snd_ca0106_channel)>,
     pub epcm: *mut snd_ca0106_pcm,
 }
@@ -333,17 +333,17 @@ pub struct snd_ca0106_channel {
 pub struct snd_ca0106_pcm {
     pub emu: *mut snd_ca0106,
     pub substream: *mut snd_pcm_substream,
-    pub channel_id: ::core::ffi::c_int,
+    pub channel_id: ::kernel::ffi::c_int,
     pub running: u16,
 }
 
 #[repr(C)]
 pub struct snd_ca0106_details {
     pub serial: u32,
-    pub name: *mut ::core::ffi::c_char,
-    pub ac97: ::core::ffi::c_int,
-    pub gpio_type: ::core::ffi::c_int,
-    pub i2c_adc: ::core::ffi::c_int,
+    pub name: *mut ::kernel::ffi::c_char,
+    pub ac97: ::kernel::ffi::c_int,
+    pub gpio_type: ::kernel::ffi::c_int,
+    pub i2c_adc: ::kernel::ffi::c_int,
     pub spi_dac: u16,
 }
 
@@ -352,10 +352,10 @@ pub struct snd_ca0106 {
     pub card: *mut snd_card,
     pub details: *const snd_ca0106_details,
     pub pci: *mut pci_dev,
-    pub port: ::core::ffi::c_ulong,
-    pub irq: ::core::ffi::c_int,
-    pub serial: ::core::ffi::c_uint,
-    pub model: ::core::ffi::c_ushort,
+    pub port: ::kernel::ffi::c_ulong,
+    pub irq: ::kernel::ffi::c_int,
+    pub serial: ::kernel::ffi::c_uint,
+    pub model: ::kernel::ffi::c_ushort,
     pub emu_lock: spinlock_t,
     pub ac97: *mut snd_ac97,
     pub pcm: [*mut snd_pcm; 4],
@@ -363,35 +363,35 @@ pub struct snd_ca0106 {
     pub capture_channels: [snd_ca0106_channel; 4],
     pub spdif_bits: [u32; 4],
     pub spdif_str_bits: [u32; 4],
-    pub spdif_enable: ::core::ffi::c_int,
-    pub capture_source: ::core::ffi::c_int,
-    pub i2c_capture_source: ::core::ffi::c_int,
+    pub spdif_enable: ::kernel::ffi::c_int,
+    pub capture_source: ::kernel::ffi::c_int,
+    pub i2c_capture_source: ::kernel::ffi::c_int,
     pub i2c_capture_volume: [[u8; 2]; 4],
-    pub capture_mic_line_in: ::core::ffi::c_int,
+    pub capture_mic_line_in: ::kernel::ffi::c_int,
     pub buffer: *mut snd_dma_buffer,
     pub midi: snd_ca_midi,
     pub midi2: snd_ca_midi,
     pub spi_dac_reg: [u16; 16],
     /* CONFIG_PM_SLEEP: unsigned int saved_vol[NUM_SAVED_VOLUMES]; */
-    pub saved_vol: [::core::ffi::c_uint; NUM_SAVED_VOLUMES],
+    pub saved_vol: [::kernel::ffi::c_uint; NUM_SAVED_VOLUMES],
 }
 
 unsafe extern "C" {
-    pub fn snd_ca0106_mixer(emu: *mut snd_ca0106) -> ::core::ffi::c_int;
-    pub fn snd_ca0106_proc_init(emu: *mut snd_ca0106) -> ::core::ffi::c_int;
+    pub fn snd_ca0106_mixer(emu: *mut snd_ca0106) -> ::kernel::ffi::c_int;
+    pub fn snd_ca0106_proc_init(emu: *mut snd_ca0106) -> ::kernel::ffi::c_int;
     pub fn snd_ca0106_ptr_read(
         emu: *mut snd_ca0106,
-        reg: ::core::ffi::c_uint,
-        chn: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_uint;
+        reg: ::kernel::ffi::c_uint,
+        chn: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_uint;
     pub fn snd_ca0106_ptr_write(
         emu: *mut snd_ca0106,
-        reg: ::core::ffi::c_uint,
-        chn: ::core::ffi::c_uint,
-        data: ::core::ffi::c_uint,
+        reg: ::kernel::ffi::c_uint,
+        chn: ::kernel::ffi::c_uint,
+        data: ::kernel::ffi::c_uint,
     );
-    pub fn snd_ca0106_i2c_write(emu: *mut snd_ca0106, reg: u32, value: u32) -> ::core::ffi::c_int;
-    pub fn snd_ca0106_spi_write(emu: *mut snd_ca0106, data: ::core::ffi::c_uint) -> ::core::ffi::c_int;
+    pub fn snd_ca0106_i2c_write(emu: *mut snd_ca0106, reg: u32, value: u32) -> ::kernel::ffi::c_int;
+    pub fn snd_ca0106_spi_write(emu: *mut snd_ca0106, data: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
     /* CONFIG_PM_SLEEP declarations. */
     pub fn snd_ca0106_mixer_suspend(chip: *mut snd_ca0106);
     pub fn snd_ca0106_mixer_resume(chip: *mut snd_ca0106);

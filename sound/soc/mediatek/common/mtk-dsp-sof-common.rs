@@ -17,55 +17,55 @@
  */
 
 extern "C" {
-    fn snd_soc_card_get_drvdata(card: *mut snd_soc_card) -> *mut core::ffi::c_void;
+    fn snd_soc_card_get_drvdata(card: *mut snd_soc_card) -> *mut kernel::ffi::c_void;
     fn snd_soc_card_to_dapm(card: *mut snd_soc_card) -> *mut snd_soc_dapm_context;
-    fn snd_soc_dai_stream_active(cpu_dai: *mut snd_soc_dai, stream: core::ffi::c_int) -> core::ffi::c_int;
+    fn snd_soc_dai_stream_active(cpu_dai: *mut snd_soc_dai, stream: kernel::ffi::c_int) -> kernel::ffi::c_int;
     fn snd_soc_rtdcom_lookup(
         rtd: *mut snd_soc_pcm_runtime,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> *mut snd_soc_component;
     fn snd_soc_dai_get_widget(
         dai: *mut snd_soc_dai,
-        stream: core::ffi::c_int,
+        stream: kernel::ffi::c_int,
     ) -> *mut snd_soc_dapm_widget;
     fn snd_soc_dapm_add_routes(
         dapm: *mut snd_soc_dapm_context,
         route: *const snd_soc_dapm_route,
-        num: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        num: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
     fn devm_kzalloc(
         dev: *mut device,
         size: usize,
-        flags: core::ffi::c_uint,
-    ) -> *mut core::ffi::c_void;
+        flags: kernel::ffi::c_uint,
+    ) -> *mut kernel::ffi::c_void;
     fn devm_kcalloc(
         dev: *mut device,
         n: usize,
         size: usize,
-        flags: core::ffi::c_uint,
-    ) -> *mut core::ffi::c_void;
-    fn of_property_count_strings(np: *mut device_node, propname: *const core::ffi::c_char) -> core::ffi::c_int;
+        flags: kernel::ffi::c_uint,
+    ) -> *mut kernel::ffi::c_void;
+    fn of_property_count_strings(np: *mut device_node, propname: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
     fn of_property_read_string_index(
         np: *mut device_node,
-        propname: *const core::ffi::c_char,
-        index: core::ffi::c_int,
-        output: *mut *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
-    fn strcmp(s1: *const core::ffi::c_char, s2: *const core::ffi::c_char) -> core::ffi::c_int;
-    fn memcpy(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void;
-    fn memset(dst: *mut core::ffi::c_void, c: core::ffi::c_int, n: usize) -> *mut core::ffi::c_void;
+        propname: *const kernel::ffi::c_char,
+        index: kernel::ffi::c_int,
+        output: *mut *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
+    fn strcmp(s1: *const kernel::ffi::c_char, s2: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    fn memcpy(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize) -> *mut kernel::ffi::c_void;
+    fn memset(dst: *mut kernel::ffi::c_void, c: kernel::ffi::c_int, n: usize) -> *mut kernel::ffi::c_void;
     fn list_add(new: *mut list_head, head: *mut list_head);
     fn INIT_LIST_HEAD(list: *mut list_head);
-    fn dev_info(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_dbg(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_dbg(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
-const GFP_KERNEL: core::ffi::c_uint = 0;
-const ENOMEM: core::ffi::c_int = 12;
-const EINVAL: core::ffi::c_int = 22;
-const SNDRV_PCM_STREAM_PLAYBACK: core::ffi::c_int = 0;
-const SNDRV_PCM_STREAM_CAPTURE: core::ffi::c_int = 1;
+const GFP_KERNEL: kernel::ffi::c_uint = 0;
+const ENOMEM: kernel::ffi::c_int = 12;
+const EINVAL: kernel::ffi::c_int = 22;
+const SNDRV_PCM_STREAM_PLAYBACK: kernel::ffi::c_int = 0;
+const SNDRV_PCM_STREAM_CAPTURE: kernel::ffi::c_int = 1;
 
 #[repr(C)]
 pub struct device {
@@ -87,14 +87,14 @@ pub type BeHwParamsFixup = Option<
     unsafe extern "C" fn(
         rtd: *mut snd_soc_pcm_runtime,
         params: *mut snd_pcm_hw_params,
-    ) -> core::ffi::c_int,
+    ) -> kernel::ffi::c_int,
 >;
 
 #[repr(C)]
 pub struct snd_soc_card {
     pub dev: *mut device,
     pub dai_link: *mut snd_soc_dai_link,
-    pub num_links: core::ffi::c_int,
+    pub num_links: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -105,8 +105,8 @@ pub struct snd_soc_pcm_runtime {
 
 #[repr(C)]
 pub struct snd_soc_dai_link {
-    pub name: *const core::ffi::c_char,
-    pub stream_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub stream_name: *const kernel::ffi::c_char,
     pub no_pcm: bool,
     pub be_hw_params_fixup: BeHwParamsFixup,
 }
@@ -133,14 +133,14 @@ pub struct snd_soc_dapm_context {
 
 #[repr(C)]
 pub struct snd_soc_dapm_route {
-    pub sink: *const core::ffi::c_char,
-    pub control: *const core::ffi::c_char,
-    pub source: *const core::ffi::c_char,
+    pub sink: *const kernel::ffi::c_char,
+    pub control: *const kernel::ffi::c_char,
+    pub source: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct snd_soc_dapm_widget {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -168,23 +168,23 @@ pub struct mtk_soc_card_data {
 
 #[repr(C)]
 pub struct mtk_sof_priv {
-    pub num_streams: core::ffi::c_int,
+    pub num_streams: kernel::ffi::c_int,
     pub conn_streams: *const sof_conn_stream,
     pub sof_dai_link_fixup: BeHwParamsFixup,
 }
 
 #[repr(C)]
 pub struct sof_conn_stream {
-    pub normal_link: *const core::ffi::c_char,
-    pub sof_link: *const core::ffi::c_char,
-    pub stream_dir: core::ffi::c_int,
-    pub sof_dma: *const core::ffi::c_char,
+    pub normal_link: *const kernel::ffi::c_char,
+    pub sof_link: *const kernel::ffi::c_char,
+    pub stream_dir: kernel::ffi::c_int,
+    pub sof_dma: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct mtk_dai_link {
     pub list: list_head,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub be_hw_params_fixup: BeHwParamsFixup,
 }
 
@@ -197,33 +197,33 @@ where
 
 unsafe fn for_each_card_prelinks<F>(_card: *mut snd_soc_card, _f: F)
 where
-    F: FnMut(core::ffi::c_int, *mut snd_soc_dai_link),
+    F: FnMut(kernel::ffi::c_int, *mut snd_soc_dai_link),
 {
     todo!("external for_each_card_prelinks iteration supplied by ASoC bindings")
 }
 
 unsafe fn for_each_rtd_cpu_dais<F>(_rtd: *mut snd_soc_pcm_runtime, _f: F)
 where
-    F: FnMut(core::ffi::c_int, *mut snd_soc_dai),
+    F: FnMut(kernel::ffi::c_int, *mut snd_soc_dai),
 {
     todo!("external for_each_rtd_cpu_dais iteration supplied by ASoC bindings")
 }
 
 unsafe fn for_each_pcm_streams<F>(_f: F)
 where
-    F: FnMut(core::ffi::c_int),
+    F: FnMut(kernel::ffi::c_int),
 {
     todo!("external for_each_pcm_streams iteration supplied by ASoC bindings")
 }
 
-unsafe fn for_each_dpcm_fe<F>(_rtd: *mut snd_soc_pcm_runtime, _stream: core::ffi::c_int, _f: F)
+unsafe fn for_each_dpcm_fe<F>(_rtd: *mut snd_soc_pcm_runtime, _stream: kernel::ffi::c_int, _f: F)
 where
     F: FnMut(*mut snd_soc_dpcm),
 {
     todo!("external for_each_dpcm_fe iteration supplied by ASoC bindings")
 }
 
-unsafe fn for_each_dpcm_be<F>(_fe: *mut snd_soc_pcm_runtime, _stream: core::ffi::c_int, _f: F)
+unsafe fn for_each_dpcm_be<F>(_fe: *mut snd_soc_pcm_runtime, _stream: kernel::ffi::c_int, _f: F)
 where
     F: FnMut(*mut snd_soc_dpcm),
 {
@@ -256,11 +256,11 @@ where
 pub unsafe extern "C" fn mtk_sof_dai_link_fixup(
     rtd: *mut snd_soc_pcm_runtime,
     params: *mut snd_pcm_hw_params,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let card = (*rtd).card;
     let soc_card_data = snd_soc_card_get_drvdata(card) as *mut mtk_soc_card_data;
     let sof_priv = (*soc_card_data).sof_priv;
-    let mut ret: core::ffi::c_int = 0;
+    let mut ret: kernel::ffi::c_int = 0;
 
     for i in 0..(*sof_priv).num_streams {
         let mut runtime: *mut snd_soc_pcm_runtime = core::ptr::null_mut();
@@ -309,7 +309,7 @@ pub unsafe extern "C" fn mtk_sof_dai_link_fixup(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn mtk_sof_card_probe(card: *mut snd_soc_card) -> core::ffi::c_int {
+pub unsafe extern "C" fn mtk_sof_card_probe(card: *mut snd_soc_card) -> kernel::ffi::c_int {
     let soc_card_data = snd_soc_card_get_drvdata(card) as *mut mtk_soc_card_data;
 
     /* Set stream_name to help sof bind widgets */
@@ -374,12 +374,12 @@ unsafe fn mtk_sof_find_tplg_be(rtd: *mut snd_soc_pcm_runtime) -> *mut snd_soc_pc
 unsafe extern "C" fn mtk_sof_check_tplg_be_dai_link_fixup(
     rtd: *mut snd_soc_pcm_runtime,
     params: *mut snd_pcm_hw_params,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let card = (*rtd).card;
     let soc_card_data = snd_soc_card_get_drvdata(card) as *mut mtk_soc_card_data;
     let sof_priv = (*soc_card_data).sof_priv;
     let sof_be: *mut snd_soc_pcm_runtime;
-    let mut ret: core::ffi::c_int = 0;
+    let mut ret: kernel::ffi::c_int = 0;
 
     sof_be = mtk_sof_find_tplg_be(rtd);
     if !sof_be.is_null() {
@@ -405,7 +405,7 @@ unsafe extern "C" fn mtk_sof_check_tplg_be_dai_link_fixup(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn mtk_sof_card_late_probe(card: *mut snd_soc_card) -> core::ffi::c_int {
+pub unsafe extern "C" fn mtk_sof_card_late_probe(card: *mut snd_soc_card) -> kernel::ffi::c_int {
     let dapm = snd_soc_card_to_dapm(card);
     let mut sof_comp: *mut snd_soc_component = core::ptr::null_mut();
     let soc_card_data = snd_soc_card_get_drvdata(card) as *mut mtk_soc_card_data;
@@ -475,7 +475,7 @@ pub unsafe extern "C" fn mtk_sof_card_late_probe(card: *mut snd_soc_card) -> cor
                 let widget = snd_soc_dai_get_widget(cpu_dai, (*conn).stream_dir);
 
                 memset(
-                    core::ptr::addr_of_mut!(route) as *mut core::ffi::c_void,
+                    core::ptr::addr_of_mut!(route) as *mut kernel::ffi::c_void,
                     0,
                     core::mem::size_of::<snd_soc_dapm_route>(),
                 );
@@ -508,11 +508,11 @@ pub unsafe extern "C" fn mtk_sof_card_late_probe(card: *mut snd_soc_card) -> cor
 pub unsafe extern "C" fn mtk_sof_dailink_parse_of(
     dev: *mut device,
     card: *mut snd_soc_card,
-    propname: *const core::ffi::c_char,
-) -> core::ffi::c_int {
+    propname: *const kernel::ffi::c_char,
+) -> kernel::ffi::c_int {
     let np = (*dev).of_node;
-    let mut dai_name: *const core::ffi::c_char = core::ptr::null();
-    let mut parsed_num_links: core::ffi::c_int = 0;
+    let mut dai_name: *const kernel::ffi::c_char = core::ptr::null();
+    let mut parsed_num_links: kernel::ffi::c_int = 0;
 
     let num_links = of_property_count_strings(np, b"mediatek,dai-link\0".as_ptr() as *const _);
     if num_links < 0 || num_links > (*card).num_links {
@@ -546,8 +546,8 @@ pub unsafe extern "C" fn mtk_sof_dailink_parse_of(
         for_each_card_prelinks(card, |_, dai_link| {
             if strcmp(dai_name, (*dai_link).name) == 0 {
                 memcpy(
-                    parsed_dai_link.add(parsed_num_links as usize) as *mut core::ffi::c_void,
-                    dai_link as *const core::ffi::c_void,
+                    parsed_dai_link.add(parsed_num_links as usize) as *mut kernel::ffi::c_void,
+                    dai_link as *const kernel::ffi::c_void,
                     core::mem::size_of::<snd_soc_dai_link>(),
                 );
                 parsed_num_links += 1;

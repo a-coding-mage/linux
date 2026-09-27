@@ -12,14 +12,14 @@
 const MODULE_LICENSE: &str = "GPL";
 
 unsafe extern "C" {
-    fn sysfs_emit(buf: *mut core::ffi::c_char, fmt: *const core::ffi::c_char, ...) -> isize;
+    fn sysfs_emit(buf: *mut kernel::ffi::c_char, fmt: *const kernel::ffi::c_char, ...) -> isize;
     fn sysfs_emit_at(
-        buf: *mut core::ffi::c_char,
+        buf: *mut kernel::ffi::c_char,
         at: isize,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
         ...,
     ) -> isize;
-    fn acpi_fan_get_fst(handle: *mut core::ffi::c_void, fst: *mut acpi_fan_fst) -> i32;
+    fn acpi_fan_get_fst(handle: *mut kernel::ffi::c_void, fst: *mut acpi_fan_fst) -> i32;
     fn sysfs_attr_init(attr: *mut attribute);
     fn sysfs_create_file(kobj: *mut kobject, attr: *mut attribute) -> i32;
     fn sysfs_remove_file(kobj: *mut kobject, attr: *mut attribute);
@@ -32,17 +32,17 @@ struct device;
 #[repr(C)]
 struct acpi_device {
     dev: device,
-    handle: *mut core::ffi::c_void,
+    handle: *mut kernel::ffi::c_void,
 }
 #[repr(C)]
 struct device_attribute {
     attr: attribute,
-    show: Option<unsafe extern "C" fn(*mut device, *mut device_attribute, *mut core::ffi::c_char) -> isize>,
+    show: Option<unsafe extern "C" fn(*mut device, *mut device_attribute, *mut kernel::ffi::c_char) -> isize>,
     store: Option<unsafe extern "C" fn()>,
 }
 #[repr(C)]
 struct attribute {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     mode: u16,
 }
 #[repr(C)]
@@ -58,7 +58,7 @@ struct acpi_fan_fps {
     speed: u64,
     noise_level: u64,
     power: u64,
-    name: [core::ffi::c_char; ACPI_FPS_NAME_LEN],
+    name: [kernel::ffi::c_char; ACPI_FPS_NAME_LEN],
     dev_attr: device_attribute,
 }
 #[repr(C)]
@@ -80,7 +80,7 @@ const ACPI_FPS_NAME_LEN: usize = 16;
 unsafe extern "C" fn show_state(
     _dev: *mut device,
     attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let fps = (attr as *mut u8).sub(core::mem::offset_of!(acpi_fan_fps, dev_attr)) as *mut acpi_fan_fps;
     let mut count: isize;
@@ -121,7 +121,7 @@ unsafe extern "C" fn show_state(
 unsafe extern "C" fn show_fan_speed(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let acpi_dev = (dev as *mut u8).sub(core::mem::offset_of!(acpi_device, dev)) as *mut acpi_device;
     let mut fst = core::mem::zeroed::<acpi_fan_fst>();
@@ -135,7 +135,7 @@ unsafe extern "C" fn show_fan_speed(
 unsafe extern "C" fn show_fine_grain_control(
     dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let acpi_dev = (dev as *mut u8).sub(core::mem::offset_of!(acpi_device, dev)) as *mut acpi_device;
     let fan = acpi_driver_data(acpi_dev);
@@ -172,7 +172,7 @@ unsafe extern "C" fn acpi_fan_create_attributes(device: *mut acpi_device) -> i32
         fps.name = [0; ACPI_FPS_NAME_LEN];
         let name = format!("state{}", i);
         for (n, byte) in name.bytes().enumerate().take(ACPI_FPS_NAME_LEN - 1) {
-            fps.name[n] = byte as core::ffi::c_char;
+            fps.name[n] = byte as kernel::ffi::c_char;
         }
         sysfs_attr_init(&mut fps.dev_attr.attr);
         fps.dev_attr.show = Some(show_state);

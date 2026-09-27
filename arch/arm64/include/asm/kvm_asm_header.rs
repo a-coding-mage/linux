@@ -86,23 +86,23 @@ pub enum __kvm_host_smccc_func {
 
 #[repr(C)]
 pub struct kvm_nvhe_init_params {
-    pub mair_el2: ::core::ffi::c_ulong,
-    pub tcr_el2: ::core::ffi::c_ulong,
-    pub tpidr_el2: ::core::ffi::c_ulong,
-    pub stack_hyp_va: ::core::ffi::c_ulong,
-    pub stack_pa: ::core::ffi::c_ulong,
+    pub mair_el2: ::kernel::ffi::c_ulong,
+    pub tcr_el2: ::kernel::ffi::c_ulong,
+    pub tpidr_el2: ::kernel::ffi::c_ulong,
+    pub stack_hyp_va: ::kernel::ffi::c_ulong,
+    pub stack_pa: ::kernel::ffi::c_ulong,
     pub pgd_pa: phys_addr_t,
-    pub hcr_el2: ::core::ffi::c_ulong,
-    pub vttbr: ::core::ffi::c_ulong,
-    pub vtcr: ::core::ffi::c_ulong,
+    pub hcr_el2: ::kernel::ffi::c_ulong,
+    pub vttbr: ::kernel::ffi::c_ulong,
+    pub vtcr: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct kvm_nvhe_stacktrace_info {
-    pub stack_base: ::core::ffi::c_ulong,
-    pub overflow_stack_base: ::core::ffi::c_ulong,
-    pub fp: ::core::ffi::c_ulong,
-    pub pc: ::core::ffi::c_ulong,
+    pub stack_base: ::kernel::ffi::c_ulong,
+    pub overflow_stack_base: ::kernel::ffi::c_ulong,
+    pub fp: ::kernel::ffi::c_ulong,
+    pub pc: ::kernel::ffi::c_ulong,
 }
 
 pub struct kvm;
@@ -113,12 +113,12 @@ pub struct alt_instr;
 pub type __le32 = u32;
 
 extern "C" {
-    pub static mut kvm_nvhe_sym_kvm_arm_hyp_percpu_base: [::core::ffi::c_ulong; 0];
+    pub static mut kvm_nvhe_sym_kvm_arm_hyp_percpu_base: [::kernel::ffi::c_ulong; 0];
     pub fn __kvm_flush_vm_context();
     pub fn __kvm_flush_cpu_context(mmu: *mut kvm_s2_mmu);
     pub fn __kvm_tlb_flush_vmid_ipa(mmu: *mut kvm_s2_mmu, ipa: phys_addr_t, level: i32);
     pub fn __kvm_tlb_flush_vmid_ipa_nsh(mmu: *mut kvm_s2_mmu, ipa: phys_addr_t, level: i32);
-    pub fn __kvm_tlb_flush_vmid_range(mmu: *mut kvm_s2_mmu, start: phys_addr_t, pages: ::core::ffi::c_ulong);
+    pub fn __kvm_tlb_flush_vmid_range(mmu: *mut kvm_s2_mmu, start: phys_addr_t, pages: ::kernel::ffi::c_ulong);
     pub fn __kvm_tlb_flush_vmid(mmu: *mut kvm_s2_mmu);
     pub fn __kvm_tlbi_s1e2(mmu: *mut kvm_s2_mmu, va: u64, sys_encoding: u64) -> i32;
     pub fn __kvm_timer_set_cntvoff(cntvoff: u64);
@@ -136,7 +136,7 @@ extern "C" {
     pub fn __kvm_host_psci_cpu_on_entry() -> !;
     pub fn __kvm_host_psci_cpu_resume_entry() -> !;
     pub fn __pkvm_init_finalise() -> !;
-    pub fn kvm_nvhe_prepare_backtrace(fp: ::core::ffi::c_ulong, pc: ::core::ffi::c_ulong);
+    pub fn kvm_nvhe_prepare_backtrace(fp: ::kernel::ffi::c_ulong, pc: ::kernel::ffi::c_ulong);
     pub fn kvm_patch_vector_branch(alt: *mut alt_instr, origptr: *mut __le32, updptr: *mut __le32, nr_inst: i32);
     pub fn kvm_get_kimage_voffset(alt: *mut alt_instr, origptr: *mut __le32, updptr: *mut __le32, nr_inst: i32);
     pub fn kvm_compute_final_ctr_el0(alt: *mut alt_instr, origptr: *mut __le32, updptr: *mut __le32, nr_inst: i32);

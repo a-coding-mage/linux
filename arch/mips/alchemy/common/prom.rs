@@ -6,7 +6,7 @@
  * referenced as external symbols here.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     static mut fw_arg0: usize;

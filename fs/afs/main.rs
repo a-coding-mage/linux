@@ -16,7 +16,7 @@ pub static mut afs_debug: u32 = 0;
 // module_param_named(debug, afs_debug, uint, S_IWUSR | S_IRUGO);
 // MODULE_PARM_DESC(debug, "AFS debugging mask");
 
-static mut rootcell: *mut core::ffi::c_char = core::ptr::null_mut();
+static mut rootcell: *mut kernel::ffi::c_char = core::ptr::null_mut();
 
 // module_param(rootcell, charp, 0);
 // MODULE_PARM_DESC(rootcell, "root AFS cell name and VL server IP addr list");
@@ -78,7 +78,7 @@ unsafe fn afs_net_init(net_ns: *mut net) -> i32 {
     ret = -ENOMEM;
     sysnames = kzalloc_obj();
     if sysnames.is_null() { return ret; }
-    (*sysnames).subs[0] = afs_init_sysname.as_ptr() as *mut core::ffi::c_char;
+    (*sysnames).subs[0] = afs_init_sysname.as_ptr() as *mut kernel::ffi::c_char;
     (*sysnames).nr = 1;
     refcount_set(&mut (*sysnames).usage, 1);
     (*net).sysnames = sysnames;

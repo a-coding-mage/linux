@@ -5,8 +5,8 @@
 
 /// Non-implemented system calls get redirected here.
 #[no_mangle]
-pub unsafe extern "C" fn sys_ni_syscall() -> libc::c_long {
-    -libc::ENOSYS as libc::c_long
+pub unsafe extern "C" fn sys_ni_syscall() -> kernel::ffi::c_long {
+    -ENOSYS as kernel::ffi::c_long
 }
 
 // These registration macros/functions are supplied by the surrounding kernel.

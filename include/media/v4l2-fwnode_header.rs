@@ -18,7 +18,7 @@ pub struct v4l2_fwnode_endpoint {
     pub bus_type: v4l2_mbus_type,
     pub bus: v4l2_fwnode_endpoint_bus,
     pub link_frequencies: *mut u64,
-    pub nr_of_link_frequencies: ::core::ffi::c_uint,
+    pub nr_of_link_frequencies: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -28,7 +28,7 @@ pub struct v4l2_fwnode_endpoint_bus {
     pub mipi_csi2: v4l2_mbus_config_mipi_csi2,
 }
 
-pub const V4L2_FWNODE_PROPERTY_UNSET: ::core::ffi::c_uint = !0u32;
+pub const V4L2_FWNODE_PROPERTY_UNSET: ::kernel::ffi::c_uint = !0u32;
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -41,17 +41,17 @@ pub enum v4l2_fwnode_orientation {
 #[repr(C)]
 pub struct v4l2_fwnode_device_properties {
     pub orientation: v4l2_fwnode_orientation,
-    pub rotation: ::core::ffi::c_uint,
+    pub rotation: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct v4l2_fwnode_link {
     pub local_node: *mut fwnode_handle,
-    pub local_port: ::core::ffi::c_uint,
-    pub local_id: ::core::ffi::c_uint,
+    pub local_port: ::kernel::ffi::c_uint,
+    pub local_id: ::kernel::ffi::c_uint,
     pub remote_node: *mut fwnode_handle,
-    pub remote_port: ::core::ffi::c_uint,
-    pub remote_id: ::core::ffi::c_uint,
+    pub remote_port: ::kernel::ffi::c_uint,
+    pub remote_id: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -80,11 +80,11 @@ pub union v4l2_fwnode_connector_data {
 
 #[repr(C)]
 pub struct v4l2_fwnode_connector {
-    pub name: *const ::core::ffi::c_char,
-    pub label: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
+    pub label: *const ::kernel::ffi::c_char,
     pub type_: v4l2_connector_type,
     pub links: list_head,
-    pub nr_of_links: ::core::ffi::c_uint,
+    pub nr_of_links: ::kernel::ffi::c_uint,
     pub connector: v4l2_fwnode_connector_data,
 }
 
@@ -106,30 +106,30 @@ extern "C" {
     pub fn v4l2_fwnode_endpoint_parse(
         fwnode: *mut fwnode_handle,
         vep: *mut v4l2_fwnode_endpoint,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn v4l2_fwnode_endpoint_free(vep: *mut v4l2_fwnode_endpoint);
     pub fn v4l2_fwnode_endpoint_alloc_parse(
         fwnode: *mut fwnode_handle,
         vep: *mut v4l2_fwnode_endpoint,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn v4l2_fwnode_parse_link(
         fwnode: *mut fwnode_handle,
         link: *mut v4l2_fwnode_link,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn v4l2_fwnode_put_link(link: *mut v4l2_fwnode_link);
     pub fn v4l2_fwnode_connector_free(connector: *mut v4l2_fwnode_connector);
     pub fn v4l2_fwnode_connector_parse(
         fwnode: *mut fwnode_handle,
         connector: *mut v4l2_fwnode_connector,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn v4l2_fwnode_connector_add_link(
         fwnode: *mut fwnode_handle,
         connector: *mut v4l2_fwnode_connector,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn v4l2_fwnode_device_parse(
         dev: *mut device,
         props: *mut v4l2_fwnode_device_properties,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 /* The following helpers correspond to the C list_first_entry_or_null and

@@ -21,14 +21,14 @@ pub struct gpio_chip {
     pub set: Option<unsafe extern "C" fn(*mut gpio_chip, u32, i32)>,
     pub direction_input: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>,
     pub direction_output: Option<unsafe extern "C" fn(*mut gpio_chip, u32, i32) -> i32>,
-    pub label: *const core::ffi::c_char,
+    pub label: *const kernel::ffi::c_char,
     pub base: i32,
     pub ngpio: u32,
 }
 
 extern "C" {
     fn ioremap(baseaddr: usize, size: usize) -> *mut txx9_pio_reg;
-    fn gpiochip_add_data(chip: *mut gpio_chip, data: *mut core::ffi::c_void) -> i32;
+    fn gpiochip_add_data(chip: *mut gpio_chip, data: *mut kernel::ffi::c_void) -> i32;
     fn __raw_readl(addr: *const u32) -> u32;
     fn __raw_writel(value: u32, addr: *mut u32);
     fn mmiowb();
@@ -92,7 +92,7 @@ static mut txx9_gpio_chip: gpio_chip = gpio_chip {
     set: Some(txx9_gpio_set),
     direction_input: Some(txx9_gpio_dir_in),
     direction_output: Some(txx9_gpio_dir_out),
-    label: b"TXx9\0".as_ptr() as *const core::ffi::c_char,
+    label: b"TXx9\0".as_ptr() as *const kernel::ffi::c_char,
     base: 0,
     ngpio: 0,
 };

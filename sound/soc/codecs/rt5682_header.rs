@@ -1264,40 +1264,40 @@ pub struct rt5682_priv {
     pub dai_clks_hw: [clk_hw; RT5682_DAI_NUM_CLKS as usize],
     pub mclk: *mut clk,
 
-    pub sysclk: core::ffi::c_int,
-    pub sysclk_src: core::ffi::c_int,
-    pub lrck: [core::ffi::c_int; RT5682_AIFS],
-    pub bclk: [core::ffi::c_int; RT5682_AIFS],
-    pub master: [core::ffi::c_int; RT5682_AIFS],
+    pub sysclk: kernel::ffi::c_int,
+    pub sysclk_src: kernel::ffi::c_int,
+    pub lrck: [kernel::ffi::c_int; RT5682_AIFS],
+    pub bclk: [kernel::ffi::c_int; RT5682_AIFS],
+    pub master: [kernel::ffi::c_int; RT5682_AIFS],
 
-    pub pll_src: [core::ffi::c_int; RT5682_PLLS],
-    pub pll_in: [core::ffi::c_int; RT5682_PLLS],
-    pub pll_out: [core::ffi::c_int; RT5682_PLLS],
+    pub pll_src: [kernel::ffi::c_int; RT5682_PLLS],
+    pub pll_in: [kernel::ffi::c_int; RT5682_PLLS],
+    pub pll_out: [kernel::ffi::c_int; RT5682_PLLS],
 
-    pub jack_type: core::ffi::c_int,
-    pub irq: core::ffi::c_int,
-    pub irq_work_delay_time: core::ffi::c_int,
+    pub jack_type: kernel::ffi::c_int,
+    pub irq: kernel::ffi::c_int,
+    pub irq_work_delay_time: kernel::ffi::c_int,
 }
 
 unsafe extern "C" {
-    pub static rt5682_supply_names: [*const core::ffi::c_char; RT5682_NUM_SUPPLIES as usize];
+    pub static rt5682_supply_names: [*const kernel::ffi::c_char; RT5682_NUM_SUPPLIES as usize];
 
-    pub fn rt5682_sel_asrc_clk_src(component: *mut snd_soc_component, filter_mask: core::ffi::c_uint, clk_src: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn rt5682_sel_asrc_clk_src(component: *mut snd_soc_component, filter_mask: kernel::ffi::c_uint, clk_src: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 
     pub fn rt5682_apply_patch_list(rt5682: *mut rt5682_priv, dev: *mut device);
 
     pub fn rt5682_jack_detect_handler(work: *mut work_struct);
 
-    pub fn rt5682_volatile_register(dev: *mut device, reg: core::ffi::c_uint) -> bool;
-    pub fn rt5682_readable_register(dev: *mut device, reg: core::ffi::c_uint) -> bool;
+    pub fn rt5682_volatile_register(dev: *mut device, reg: kernel::ffi::c_uint) -> bool;
+    pub fn rt5682_readable_register(dev: *mut device, reg: kernel::ffi::c_uint) -> bool;
 
-    pub fn rt5682_register_component(dev: *mut device) -> core::ffi::c_int;
+    pub fn rt5682_register_component(dev: *mut device) -> kernel::ffi::c_int;
     pub fn rt5682_calibrate(rt5682: *mut rt5682_priv);
     pub fn rt5682_reset(rt5682: *mut rt5682_priv);
-    pub fn rt5682_parse_dt(rt5682: *mut rt5682_priv, dev: *mut device) -> core::ffi::c_int;
-    pub fn rt5682_get_ldo1(rt5682: *mut rt5682_priv, dev: *mut device) -> core::ffi::c_int;
+    pub fn rt5682_parse_dt(rt5682: *mut rt5682_priv, dev: *mut device) -> kernel::ffi::c_int;
+    pub fn rt5682_get_ldo1(rt5682: *mut rt5682_priv, dev: *mut device) -> kernel::ffi::c_int;
 
-    pub fn rt5682_register_dai_clks(rt5682: *mut rt5682_priv) -> core::ffi::c_int;
+    pub fn rt5682_register_dai_clks(rt5682: *mut rt5682_priv) -> kernel::ffi::c_int;
 
     pub static rt5682_reg: [reg_default; RT5682_REG_NUM as usize];
 

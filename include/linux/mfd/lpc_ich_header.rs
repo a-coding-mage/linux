@@ -9,8 +9,8 @@
 // Dependency supplied by the Linux platform-data SPI definitions.
 
 /* GPIO resources */
-pub const ICH_RES_GPIO: ::core::ffi::c_int = 0;
-pub const ICH_RES_GPE0: ::core::ffi::c_int = 1;
+pub const ICH_RES_GPIO: ::kernel::ffi::c_int = 0;
+pub const ICH_RES_GPE0: ::kernel::ffi::c_int = 1;
 
 /* GPIO compatibility */
 #[repr(C)]
@@ -30,8 +30,8 @@ pub struct lpc_ich_gpio_info;
 
 #[repr(C)]
 pub struct lpc_ich_info {
-    pub name: [::core::ffi::c_char; 32],
-    pub iTCO_version: ::core::ffi::c_uint,
+    pub name: [::kernel::ffi::c_char; 32],
+    pub iTCO_version: ::kernel::ffi::c_uint,
     pub gpio_version: lpc_gpio_versions,
     pub spi_type: intel_spi_type,
     pub gpio_info: *const lpc_ich_gpio_info,

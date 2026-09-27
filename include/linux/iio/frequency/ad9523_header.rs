@@ -52,7 +52,7 @@ pub enum ref_sel_mode {
  */
 #[repr(C)]
 pub struct ad9523_channel_spec {
-    pub channel_num: ::core::ffi::c_uint,
+    pub channel_num: ::kernel::ffi::c_uint,
     pub divider_output_invert_en: bool,
     pub sync_ignore_en: bool,
     pub low_power_mode_en: bool,
@@ -60,9 +60,9 @@ pub struct ad9523_channel_spec {
     pub use_alt_clock_src: bool,
     pub output_dis: bool,
     pub driver_mode: outp_drv_mode,
-    pub divider_phase: ::core::ffi::c_uchar,
-    pub channel_divider: ::core::ffi::c_ushort,
-    pub extended_name: [::core::ffi::c_char; 16],
+    pub divider_phase: ::kernel::ffi::c_uchar,
+    pub channel_divider: ::kernel::ffi::c_ushort,
+    pub extended_name: [::kernel::ffi::c_char; 16],
 }
 
 #[repr(C)]
@@ -149,7 +149,7 @@ pub enum cpole1_capacitor {
  */
 #[repr(C)]
 pub struct ad9523_platform_data {
-    pub vcxo_freq: ::core::ffi::c_ulong,
+    pub vcxo_freq: ::kernel::ffi::c_ulong,
 
     /* Differential/ Single-Ended Input Configuration */
     pub refa_diff_rcv_en: bool,
@@ -165,10 +165,10 @@ pub struct ad9523_platform_data {
     pub osc_in_cmos_neg_inp_en: bool,
 
     /* PLL1 Setting */
-    pub refa_r_div: ::core::ffi::c_ushort,
-    pub refb_r_div: ::core::ffi::c_ushort,
-    pub pll1_feedback_div: ::core::ffi::c_ushort,
-    pub pll1_charge_pump_current_nA: ::core::ffi::c_ushort,
+    pub refa_r_div: ::kernel::ffi::c_ushort,
+    pub refb_r_div: ::kernel::ffi::c_ushort,
+    pub pll1_feedback_div: ::kernel::ffi::c_ushort,
+    pub pll1_charge_pump_current_nA: ::kernel::ffi::c_ushort,
     pub zero_delay_mode_internal_en: bool,
     pub osc_in_feedback_en: bool,
     pub pll1_loop_filter_rzero: pll1_rzero_resistor,
@@ -177,13 +177,13 @@ pub struct ad9523_platform_data {
     pub ref_mode: ref_sel_mode,
 
     /* PLL2 Setting */
-    pub pll2_charge_pump_current_nA: ::core::ffi::c_uint,
-    pub pll2_ndiv_a_cnt: ::core::ffi::c_uchar,
-    pub pll2_ndiv_b_cnt: ::core::ffi::c_uchar,
+    pub pll2_charge_pump_current_nA: ::kernel::ffi::c_uint,
+    pub pll2_ndiv_a_cnt: ::kernel::ffi::c_uchar,
+    pub pll2_ndiv_b_cnt: ::kernel::ffi::c_uchar,
     pub pll2_freq_doubler_en: bool,
-    pub pll2_r2_div: ::core::ffi::c_uchar,
-    pub pll2_vco_div_m1: ::core::ffi::c_uchar,
-    pub pll2_vco_div_m2: ::core::ffi::c_uchar,
+    pub pll2_r2_div: ::kernel::ffi::c_uchar,
+    pub pll2_vco_div_m1: ::kernel::ffi::c_uchar,
+    pub pll2_vco_div_m2: ::kernel::ffi::c_uchar,
 
     /* Loop Filter PLL2 */
     pub rpole2: rpole2_resistor,
@@ -192,10 +192,10 @@ pub struct ad9523_platform_data {
     pub rzero_bypass_en: bool,
 
     /* Output Channel Configuration */
-    pub num_channels: ::core::ffi::c_int,
+    pub num_channels: ::kernel::ffi::c_int,
     pub channels: *mut ad9523_channel_spec,
 
-    pub name: [::core::ffi::c_char; SPI_NAME_SIZE],
+    pub name: [::kernel::ffi::c_char; SPI_NAME_SIZE],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

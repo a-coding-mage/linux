@@ -6,7 +6,7 @@
  * supplied by the corresponding Linux type definitions.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const CRYPTO_MSG_BASE: u32 = 0x10;
 pub const CRYPTO_MSG_NEWALG: u32 = 0x10;
@@ -83,15 +83,15 @@ pub struct crypto_stat_larval { pub r#type: [c_char; CRYPTO_MAX_NAME] }
 #[repr(C)]
 pub struct crypto_report_larval { pub r#type: [c_char; CRYPTO_MAX_NAME] }
 #[repr(C)]
-pub struct crypto_report_hash { pub r#type: [c_char; CRYPTO_MAX_NAME], pub blocksize: core::ffi::c_uint, pub digestsize: core::ffi::c_uint }
+pub struct crypto_report_hash { pub r#type: [c_char; CRYPTO_MAX_NAME], pub blocksize: kernel::ffi::c_uint, pub digestsize: kernel::ffi::c_uint }
 #[repr(C)]
-pub struct crypto_report_cipher { pub r#type: [c_char; CRYPTO_MAX_NAME], pub blocksize: core::ffi::c_uint, pub min_keysize: core::ffi::c_uint, pub max_keysize: core::ffi::c_uint }
+pub struct crypto_report_cipher { pub r#type: [c_char; CRYPTO_MAX_NAME], pub blocksize: kernel::ffi::c_uint, pub min_keysize: kernel::ffi::c_uint, pub max_keysize: kernel::ffi::c_uint }
 #[repr(C)]
-pub struct crypto_report_blkcipher { pub r#type: [c_char; CRYPTO_MAX_NAME], pub geniv: [c_char; CRYPTO_MAX_NAME], pub blocksize: core::ffi::c_uint, pub min_keysize: core::ffi::c_uint, pub max_keysize: core::ffi::c_uint, pub ivsize: core::ffi::c_uint }
+pub struct crypto_report_blkcipher { pub r#type: [c_char; CRYPTO_MAX_NAME], pub geniv: [c_char; CRYPTO_MAX_NAME], pub blocksize: kernel::ffi::c_uint, pub min_keysize: kernel::ffi::c_uint, pub max_keysize: kernel::ffi::c_uint, pub ivsize: kernel::ffi::c_uint }
 #[repr(C)]
-pub struct crypto_report_aead { pub r#type: [c_char; CRYPTO_MAX_NAME], pub geniv: [c_char; CRYPTO_MAX_NAME], pub blocksize: core::ffi::c_uint, pub maxauthsize: core::ffi::c_uint, pub ivsize: core::ffi::c_uint }
+pub struct crypto_report_aead { pub r#type: [c_char; CRYPTO_MAX_NAME], pub geniv: [c_char; CRYPTO_MAX_NAME], pub blocksize: kernel::ffi::c_uint, pub maxauthsize: kernel::ffi::c_uint, pub ivsize: kernel::ffi::c_uint }
 #[repr(C)] pub struct crypto_report_comp { pub r#type: [c_char; CRYPTO_MAX_NAME] }
-#[repr(C)] pub struct crypto_report_rng { pub r#type: [c_char; CRYPTO_MAX_NAME], pub seedsize: core::ffi::c_uint }
+#[repr(C)] pub struct crypto_report_rng { pub r#type: [c_char; CRYPTO_MAX_NAME], pub seedsize: kernel::ffi::c_uint }
 #[repr(C)] pub struct crypto_report_akcipher { pub r#type: [c_char; CRYPTO_MAX_NAME] }
 #[repr(C)] pub struct crypto_report_kpp { pub r#type: [c_char; CRYPTO_MAX_NAME] }
 #[repr(C)] pub struct crypto_report_acomp { pub r#type: [c_char; CRYPTO_MAX_NAME] }

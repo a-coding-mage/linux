@@ -5,7 +5,7 @@
  * Names supplied by the included headers remain external dependencies.
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 /* C: register unsigned long __local_per_cpu_offset asm("g5");
  * The register binding is target/toolchain-specific and is preserved by this

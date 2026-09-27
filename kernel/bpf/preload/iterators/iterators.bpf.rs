@@ -3,7 +3,7 @@
 // Dependency includes and the preserve_access_index attribute are supplied by
 // the eBPF build environment.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct seq_file;
@@ -84,7 +84,7 @@ unsafe fn get_name(btf: *mut btf, btf_id: isize, fallback: *const c_char) -> *co
     let str_ = (*btf).strings;
     let types = (*btf).types;
     bpf_probe_read_kernel(
-        &mut t as *mut *mut btf_type as *mut core::ffi::c_void,
+        &mut t as *mut *mut btf_type as *mut kernel::ffi::c_void,
         core::mem::size_of::<*mut btf_type>(),
         types.offset(btf_id),
     );
@@ -149,7 +149,7 @@ pub unsafe extern "C" fn dump_bpf_prog(ctx: *mut bpf_iter__bpf_prog) -> i32 {
 
 // External helper supplied by the eBPF dependency headers.
 extern "C" {
-    fn bpf_probe_read_kernel(dst: *mut core::ffi::c_void, size: usize, src: *const core::ffi::c_void) -> i64;
+    fn bpf_probe_read_kernel(dst: *mut kernel::ffi::c_void, size: usize, src: *const kernel::ffi::c_void) -> i64;
 }
 
 #[no_mangle]

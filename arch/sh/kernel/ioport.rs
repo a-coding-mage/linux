@@ -9,27 +9,27 @@
 // C dependencies: linux/module.h, linux/io.h, asm/io_trapped.h
 
 unsafe extern "C" {
-    fn __ioport_map_trapped(port: ::core::ffi::c_ulong, nr: ::core::ffi::c_uint)
-        -> *mut ::core::ffi::c_void;
+    fn __ioport_map_trapped(port: ::kernel::ffi::c_ulong, nr: ::kernel::ffi::c_uint)
+        -> *mut ::kernel::ffi::c_void;
 }
 
 // __read_mostly
 #[no_mangle]
-pub static mut sh_io_port_base: ::core::ffi::c_ulong = !0;
+pub static mut sh_io_port_base: ::kernel::ffi::c_ulong = !0;
 
 // EXPORT_SYMBOL(sh_io_port_base);
 
 #[no_mangle]
 pub unsafe extern "C" fn ioport_map(
-    port: ::core::ffi::c_ulong,
-    nr: ::core::ffi::c_uint,
-) -> *mut ::core::ffi::c_void {
+    port: ::kernel::ffi::c_ulong,
+    nr: ::kernel::ffi::c_uint,
+) -> *mut ::kernel::ffi::c_void {
     let ret = unsafe { __ioport_map_trapped(port, nr) };
     if !ret.is_null() {
         return ret;
     }
 
-    (port.wrapping_add(unsafe { sh_io_port_base })) as *mut ::core::ffi::c_void
+    (port.wrapping_add(unsafe { sh_io_port_base })) as *mut ::kernel::ffi::c_void
 }
 
 // EXPORT_SYMBOL(ioport_map);

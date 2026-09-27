@@ -19,7 +19,7 @@ extern "C" {
     fn alloc_buf(test: *mut kunit, size: usize) -> *mut u8;
     fn rand_bytes(buf: *mut u8, len: usize);
     fn rand_length(max: usize) -> usize;
-    fn memset(dest: *mut core::ffi::c_void, value: i32, count: usize) -> *mut core::ffi::c_void;
+    fn memset(dest: *mut kernel::ffi::c_void, value: i32, count: usize) -> *mut kernel::ffi::c_void;
     fn sha256_init(ctx: *mut sha256_ctx);
     fn sha256_update(ctx: *mut sha256_ctx, data: *const u8, len: usize);
     fn sha256_final(ctx: *mut sha256_ctx, hash: *mut u8);
@@ -32,11 +32,11 @@ extern "C" {
         hash2: *mut u8,
     );
     fn sha256_finup_2x_is_optimized() -> bool;
-    fn kunit_skip(test: *mut kunit, msg: *const core::ffi::c_char);
+    fn kunit_skip(test: *mut kunit, msg: *const kernel::ffi::c_char);
     fn preempt_disable();
     fn preempt_enable();
     fn ktime_get_ns() -> u64;
-    fn kunit_info(test: *mut kunit, fmt: *const core::ffi::c_char, ...);
+    fn kunit_info(test: *mut kunit, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -167,8 +167,8 @@ unsafe fn benchmark_sha256_finup_2x(test: *mut kunit) {
 // MODULE_LICENSE("GPL");
 
 extern "C" {
-    fn kunit_assert_memeq(test: *mut kunit, left: *const core::ffi::c_void, right: *const core::ffi::c_void, len: usize);
-    fn kunit_assert_memeq_msg(test: *mut kunit, left: *const core::ffi::c_void, right: *const core::ffi::c_void, len: usize, msg: *const core::ffi::c_char, ...);
+    fn kunit_assert_memeq(test: *mut kunit, left: *const kernel::ffi::c_void, right: *const kernel::ffi::c_void, len: usize);
+    fn kunit_assert_memeq_msg(test: *mut kunit, left: *const kernel::ffi::c_void, right: *const kernel::ffi::c_void, len: usize, msg: *const kernel::ffi::c_char, ...);
     fn config_crypto_lib_benchmark() -> bool;
 }
 

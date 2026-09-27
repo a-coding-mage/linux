@@ -13,8 +13,8 @@
 
 /* Wrappers for use with kunit_add_action(). */
 extern "C" {
-    fn device_unregister_wrapper(data: *mut core::ffi::c_void);
-    fn driver_unregister_wrapper(data: *mut core::ffi::c_void);
+    fn device_unregister_wrapper(data: *mut kernel::ffi::c_void);
+    fn driver_unregister_wrapper(data: *mut kernel::ffi::c_void);
 }
 
 /* The root device for the KUnit bus, parent of all kunit_devices. */
@@ -36,7 +36,7 @@ unsafe fn to_kunit_device(d: *mut device) -> *mut kunit_device {
 }
 
 static kunit_bus_type: bus_type = bus_type {
-    name: b"kunit\0".as_ptr() as *const core::ffi::c_char,
+    name: b"kunit\0".as_ptr() as *const kernel::ffi::c_char,
 };
 
 /* Register the 'kunit_bus' used for fake devices. */
@@ -44,7 +44,7 @@ static kunit_bus_type: bus_type = bus_type {
 pub unsafe extern "C" fn kunit_bus_init() -> i32 {
     let mut error: i32;
 
-    kunit_bus_device = root_device_register(b"kunit\0".as_ptr() as *const core::ffi::c_char);
+    kunit_bus_device = root_device_register(b"kunit\0".as_ptr() as *const kernel::ffi::c_char);
     if is_err(kunit_bus_device) {
         return ptr_err(kunit_bus_device);
     }
@@ -79,7 +79,7 @@ unsafe extern "C" fn kunit_device_release(d: *mut device) {
  * Returns an error pointer on failure.
  */
 #[no_mangle]
-pub unsafe extern "C" fn kunit_driver_create(test: *mut kunit, name: *const core::ffi::c_char) -> *mut device_driver {
+pub unsafe extern "C" fn kunit_driver_create(test: *mut kunit, name: *const kernel::ffi::c_char) -> *mut device_driver {
     let mut driver: *mut device_driver;
     let mut err: i32 = -12;
 
@@ -94,16 +94,16 @@ pub unsafe extern "C" fn kunit_driver_create(test: *mut kunit, name: *const core
 
     err = driver_register(driver);
     if err != 0 {
-        kunit_kfree(test, driver as *mut core::ffi::c_void);
+        kunit_kfree(test, driver as *mut kernel::ffi::c_void);
         return err_ptr(err);
     }
 
-    kunit_add_action(test, driver_unregister_wrapper, driver as *mut core::ffi::c_void);
+    kunit_add_action(test, driver_unregister_wrapper, driver as *mut kernel::ffi::c_void);
     driver
 }
 
 /* Helper which creates a kunit_device, attaches it to the kunit_bus. */
-unsafe fn kunit_device_register_internal(test: *mut kunit, name: *const core::ffi::c_char) -> *mut kunit_device {
+unsafe fn kunit_device_register_internal(test: *mut kunit, name: *const kernel::ffi::c_char) -> *mut kunit_device {
     let kunit_dev = kzalloc(core::mem::size_of::<kunit_device>(), 0) as *mut kunit_device;
     let mut err: i32 = -12;
     if kunit_dev.is_null() {
@@ -111,9 +111,9 @@ unsafe fn kunit_device_register_internal(test: *mut kunit, name: *const core::ff
     }
 
     (*kunit_dev).owner = test;
-    err = dev_set_name(&mut (*kunit_dev).dev, b"%s.%s\0".as_ptr() as *const core::ffi::c_char, (*test).name, name);
+    err = dev_set_name(&mut (*kunit_dev).dev, b"%s.%s\0".as_ptr() as *const kernel::ffi::c_char, (*test).name, name);
     if err != 0 {
-        kfree(kunit_dev as *mut core::ffi::c_void);
+        kfree(kunit_dev as *mut kernel::ffi::c_void);
         return err_ptr(err);
     }
 
@@ -129,7 +129,7 @@ unsafe fn kunit_device_register_internal(test: *mut kunit, name: *const core::ff
 
     (*kunit_dev).dev.dma_mask = &mut (*kunit_dev).dev.coherent_dma_mask;
     (*kunit_dev).dev.coherent_dma_mask = dma_bit_mask(32);
-    kunit_add_action(test, device_unregister_wrapper, &mut (*kunit_dev).dev as *mut device as *mut core::ffi::c_void);
+    kunit_add_action(test, device_unregister_wrapper, &mut (*kunit_dev).dev as *mut device as *mut kernel::ffi::c_void);
     kunit_dev
 }
 
@@ -138,7 +138,7 @@ unsafe fn kunit_device_register_internal(test: *mut kunit, name: *const core::ff
  * On failure, returns an error pointer.
  */
 #[no_mangle]
-pub unsafe extern "C" fn kunit_device_register_with_driver(test: *mut kunit, name: *const core::ffi::c_char, _drv: *const device_driver) -> *mut device {
+pub unsafe extern "C" fn kunit_device_register_with_driver(test: *mut kunit, name: *const kernel::ffi::c_char, _drv: *const device_driver) -> *mut device {
     let kunit_dev = kunit_device_register_internal(test, name);
     if is_err_or_null(kunit_dev as *mut device) {
         return kunit_dev as *mut device;
@@ -151,7 +151,7 @@ pub unsafe extern "C" fn kunit_device_register_with_driver(test: *mut kunit, nam
  * On failure, returns an error pointer.
  */
 #[no_mangle]
-pub unsafe extern "C" fn kunit_device_register(test: *mut kunit, name: *const core::ffi::c_char) -> *mut device {
+pub unsafe extern "C" fn kunit_device_register(test: *mut kunit, name: *const kernel::ffi::c_char) -> *mut device {
     let drv = kunit_driver_create(test, name);
     if is_err(drv) {
         return drv as *mut device;
@@ -159,7 +159,7 @@ pub unsafe extern "C" fn kunit_device_register(test: *mut kunit, name: *const co
 
     let dev = kunit_device_register_internal(test, name);
     if is_err(dev as *mut device) {
-        kunit_release_action(test, driver_unregister_wrapper, drv as *mut core::ffi::c_void);
+        kunit_release_action(test, driver_unregister_wrapper, drv as *mut kernel::ffi::c_void);
         return dev as *mut device;
     }
 
@@ -173,10 +173,10 @@ pub unsafe extern "C" fn kunit_device_register(test: *mut kunit, name: *const co
 pub unsafe extern "C" fn kunit_device_unregister(test: *mut kunit, dev: *mut device) {
     let driver = (*to_kunit_device(dev)).driver;
 
-    kunit_release_action(test, device_unregister_wrapper, dev as *mut core::ffi::c_void);
+    kunit_release_action(test, device_unregister_wrapper, dev as *mut kernel::ffi::c_void);
     if !driver.is_null() {
         let driver_name = (*driver).name;
-        kunit_release_action(test, driver_unregister_wrapper, driver as *mut core::ffi::c_void);
+        kunit_release_action(test, driver_unregister_wrapper, driver as *mut kernel::ffi::c_void);
         kunit_kfree_const(test, driver_name);
     }
 }

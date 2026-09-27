@@ -72,7 +72,7 @@ unsafe extern "C" fn snd_gf1_default_interrupt_handler_dma_read(gus: *mut snd_gu
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn snd_gf1_set_default_handlers(gus: *mut snd_gus_card, what: libc::c_uint) {
+pub unsafe extern "C" fn snd_gf1_set_default_handlers(gus: *mut snd_gus_card, what: core::ffi::c_uint) {
     unsafe {
         if what & SNDRV_GF1_HANDLER_MIDI_OUT != 0 {
             (*gus).gf1.interrupt_handler_midi_out =
@@ -134,7 +134,7 @@ unsafe fn snd_gf1_look_regs(gus: *mut snd_gus_card) {
  */
 
 #[no_mangle]
-pub unsafe extern "C" fn snd_gf1_smart_stop_voice(gus: *mut snd_gus_card, voice: libc::c_ushort) {
+pub unsafe extern "C" fn snd_gf1_smart_stop_voice(gus: *mut snd_gus_card, voice: core::ffi::c_ushort) {
     unsafe {
         // guard(spinlock_irqsave)(&gus->reg_lock);
         snd_gf1_select_voice(gus, voice);
@@ -149,7 +149,7 @@ pub unsafe extern "C" fn snd_gf1_smart_stop_voice(gus: *mut snd_gus_card, voice:
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn snd_gf1_stop_voice(gus: *mut snd_gus_card, voice: libc::c_ushort) {
+pub unsafe extern "C" fn snd_gf1_stop_voice(gus: *mut snd_gus_card, voice: core::ffi::c_ushort) {
     unsafe {
         // guard(spinlock_irqsave)(&gus->reg_lock);
         snd_gf1_select_voice(gus, voice);
@@ -168,12 +168,12 @@ pub unsafe extern "C" fn snd_gf1_stop_voice(gus: *mut snd_gus_card, voice: libc:
 
 unsafe fn snd_gf1_clear_voices(
     gus: *mut snd_gus_card,
-    v_min: libc::c_ushort,
-    v_max: libc::c_ushort,
+    v_min: core::ffi::c_ushort,
+    v_max: core::ffi::c_ushort,
 ) {
     unsafe {
-        let daddr: libc::c_uint = (*gus).gf1.default_voice_address << 4;
-        let mut i: libc::c_ushort = v_min;
+        let daddr: core::ffi::c_uint = (*gus).gf1.default_voice_address << 4;
+        let mut i: core::ffi::c_ushort = v_min;
 
         while i <= v_max {
             /*
@@ -191,8 +191,8 @@ unsafe fn snd_gf1_clear_voices(
                     if (*gus).gf1.memory != 0 { 0x02 } else { 0x82 },
                 ); /* Deactivate voice */
             }
-            let w_16: libc::c_ushort =
-                (snd_gf1_read8(gus, SNDRV_GF1_VB_ADDRESS_CONTROL) & 0x04) as libc::c_ushort;
+            let w_16: core::ffi::c_ushort =
+                (snd_gf1_read8(gus, SNDRV_GF1_VB_ADDRESS_CONTROL) & 0x04) as core::ffi::c_ushort;
             snd_gf1_write16(gus, SNDRV_GF1_VW_FREQUENCY, 0x400);
             snd_gf1_write_addr(gus, SNDRV_GF1_VA_START, daddr, w_16);
             snd_gf1_write_addr(gus, SNDRV_GF1_VA_END, daddr, w_16);
@@ -215,18 +215,18 @@ unsafe fn snd_gf1_clear_voices(
 #[no_mangle]
 pub unsafe extern "C" fn snd_gf1_stop_voices(
     gus: *mut snd_gus_card,
-    v_min: libc::c_ushort,
-    v_max: libc::c_ushort,
+    v_min: core::ffi::c_ushort,
+    v_max: core::ffi::c_ushort,
 ) {
     unsafe {
         if in_interrupt() == 0 {
             /* this can't be done in interrupt */
-            let mut i: libc::c_short = v_min as libc::c_short;
-            let mut ramp_ok: libc::c_short = 0;
-            while i <= v_max as libc::c_short {
+            let mut i: core::ffi::c_short = v_min as core::ffi::c_short;
+            let mut ramp_ok: core::ffi::c_short = 0;
+            while i <= v_max as core::ffi::c_short {
                 // guard(spinlock_irqsave)(&gus->reg_lock);
-                snd_gf1_select_voice(gus, i as libc::c_ushort);
-                let ramp_end: libc::c_ushort = (snd_gf1_read16(gus, 9) >> 8) as libc::c_ushort;
+                snd_gf1_select_voice(gus, i as core::ffi::c_ushort);
+                let ramp_end: core::ffi::c_ushort = (snd_gf1_read16(gus, 9) >> 8) as core::ffi::c_ushort;
                 if ramp_end > SNDRV_GF1_MIN_OFFSET {
                     ramp_ok += 1;
                     snd_gf1_write8(gus, SNDRV_GF1_VB_VOLUME_RATE, 20); /* ramp rate */
@@ -249,9 +249,9 @@ pub unsafe extern "C" fn snd_gf1_stop_voices(
 unsafe fn snd_gf1_alloc_voice_use(
     gus: *mut snd_gus_card,
     pvoice: *mut snd_gus_voice,
-    type_: libc::c_int,
-    client: libc::c_int,
-    port: libc::c_int,
+    type_: core::ffi::c_int,
+    client: core::ffi::c_int,
+    port: core::ffi::c_int,
 ) {
     unsafe {
         (*pvoice).use_ = 1;
@@ -278,9 +278,9 @@ unsafe fn snd_gf1_alloc_voice_use(
 #[no_mangle]
 pub unsafe extern "C" fn snd_gf1_alloc_voice(
     gus: *mut snd_gus_card,
-    type_: libc::c_int,
-    client: libc::c_int,
-    port: libc::c_int,
+    type_: core::ffi::c_int,
+    client: core::ffi::c_int,
+    port: core::ffi::c_int,
 ) -> *mut snd_gus_voice {
     unsafe {
         // guard(spinlock_irqsave)(&gus->voice_alloc);
@@ -316,7 +316,7 @@ pub unsafe extern "C" fn snd_gf1_free_voice(gus: *mut snd_gus_card, voice: *mut 
         if voice.is_null() || (*voice).use_ == 0 {
             return;
         }
-        snd_gf1_set_default_handlers(gus, SNDRV_GF1_HANDLER_VOICE | (*voice).number as libc::c_uint);
+        snd_gf1_set_default_handlers(gus, SNDRV_GF1_HANDLER_VOICE | (*voice).number as core::ffi::c_uint);
         snd_gf1_clear_voices(gus, (*voice).number, (*voice).number);
         // scoped_guard(spinlock_irqsave, &gus->voice_alloc) {
         private_free = (*voice).private_free;
@@ -339,8 +339,8 @@ unsafe fn snd_gf1_init_software_state(gus: *mut snd_gus_card) {
     unsafe {
         snd_gf1_set_default_handlers(gus, SNDRV_GF1_HANDLER_ALL);
         for i in 0..32 {
-            (*gus).gf1.voices[i].number = i as libc::c_ushort;
-            snd_gf1_set_default_handlers(gus, SNDRV_GF1_HANDLER_VOICE | i as libc::c_uint);
+            (*gus).gf1.voices[i].number = i as core::ffi::c_ushort;
+            snd_gf1_set_default_handlers(gus, SNDRV_GF1_HANDLER_VOICE | i as core::ffi::c_uint);
         }
     }
 }
@@ -416,7 +416,7 @@ unsafe fn snd_gf1_hw_start(gus: *mut snd_gus_card, initial: bool) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn snd_gf1_start(gus: *mut snd_gus_card) -> libc::c_int {
+pub unsafe extern "C" fn snd_gf1_start(gus: *mut snd_gus_card) -> core::ffi::c_int {
     unsafe {
         /*
          * Probe-time startup initializes both GF1 hardware and the
@@ -449,7 +449,7 @@ pub unsafe extern "C" fn snd_gf1_start(gus: *mut snd_gus_card) -> libc::c_int {
  */
 
 #[no_mangle]
-pub unsafe extern "C" fn snd_gf1_stop(gus: *mut snd_gus_card) -> libc::c_int {
+pub unsafe extern "C" fn snd_gf1_stop(gus: *mut snd_gus_card) -> core::ffi::c_int {
     unsafe {
         snd_gf1_i_write8(gus, SNDRV_GF1_GB_SOUND_BLASTER_CONTROL, 0); /* stop all timers */
         snd_gf1_stop_voices(gus, 0, 31); /* stop all voices */
@@ -462,7 +462,7 @@ pub unsafe extern "C" fn snd_gf1_stop(gus: *mut snd_gus_card) -> libc::c_int {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn snd_gf1_suspend(gus: *mut snd_gus_card) -> libc::c_int {
+pub unsafe extern "C" fn snd_gf1_suspend(gus: *mut snd_gus_card) -> core::ffi::c_int {
     unsafe {
         snd_gf1_dma_suspend(gus);
         snd_gf1_uart_suspend(gus);
@@ -479,7 +479,7 @@ pub unsafe extern "C" fn snd_gf1_suspend(gus: *mut snd_gus_card) -> libc::c_int 
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn snd_gf1_resume(gus: *mut snd_gus_card) -> libc::c_int {
+pub unsafe extern "C" fn snd_gf1_resume(gus: *mut snd_gus_card) -> core::ffi::c_int {
     unsafe {
         snd_gf1_hw_start(gus, false);
         snd_gf1_timers_resume(gus);

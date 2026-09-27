@@ -6,9 +6,9 @@
  * assume GCC is being used.
  */
 
-pub type __kernel_ino_t = ::core::ffi::c_uint;
+pub type __kernel_ino_t = ::kernel::ffi::c_uint;
 
-pub type __kernel_sigset_t = ::core::ffi::c_ulong; /* at least 32 bits */
+pub type __kernel_sigset_t = ::kernel::ffi::c_ulong; /* at least 32 bits */
 
 /* Dependency equivalent of <asm-generic/posix_types.h>. */
 

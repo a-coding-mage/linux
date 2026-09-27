@@ -2,17 +2,17 @@
 // Dependencies corresponding to the Linux kernel includes and "internal.h"
 // are supplied by other translation units.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 // C types and symbols supplied by the included kernel headers.
 // These declarations intentionally refer to those external definitions.
 extern "C" {
-    fn seq_puts(f: *mut seq_file, s: *const core::ffi::c_char);
+    fn seq_puts(f: *mut seq_file, s: *const kernel::ffi::c_char);
     fn chrdev_show(f: *mut seq_file, i: i32);
     #[cfg(CONFIG_BLOCK)]
     fn blkdev_show(f: *mut seq_file, i: i32);
     fn proc_create_seq(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         mode: u16,
         parent: *mut proc_dir_entry,
         ops: *const seq_operations,

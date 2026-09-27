@@ -84,7 +84,7 @@ struct wcd9335_codec {
 }
 
 #[repr(C)]
-struct wcd9335_irq { irq: i32, handler: Option<unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t>, name: *mut core::ffi::c_char }
+struct wcd9335_irq { irq: i32, handler: Option<unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t>, name: *mut kernel::ffi::c_char }
 #[repr(C)]
 struct interp_sample_rate { rate: i32, rate_val: i32 }
 #[repr(C)]

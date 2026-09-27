@@ -42,7 +42,7 @@ pub struct hashlimit_cfg {
 
 #[repr(C)]
 pub struct xt_hashlimit_info {
-    pub name: [::core::ffi::c_char; IFNAMSIZ], /* name */
+    pub name: [::kernel::ffi::c_char; IFNAMSIZ], /* name */
     pub cfg: hashlimit_cfg,
 
     /* Used internally by the kernel */
@@ -52,7 +52,7 @@ pub struct xt_hashlimit_info {
 
 #[repr(C)]
 pub union xt_hashlimit_info__u {
-    pub ptr: *mut ::core::ffi::c_void,
+    pub ptr: *mut ::kernel::ffi::c_void,
     pub master: *mut xt_hashlimit_info,
 }
 
@@ -107,7 +107,7 @@ pub struct hashlimit_cfg3 {
 
 #[repr(C)]
 pub struct xt_hashlimit_mtinfo1 {
-    pub name: [::core::ffi::c_char; IFNAMSIZ],
+    pub name: [::kernel::ffi::c_char; IFNAMSIZ],
     pub cfg: hashlimit_cfg1,
 
     /* Used internally by the kernel */
@@ -116,7 +116,7 @@ pub struct xt_hashlimit_mtinfo1 {
 
 #[repr(C)]
 pub struct xt_hashlimit_mtinfo2 {
-    pub name: [::core::ffi::c_char; NAME_MAX],
+    pub name: [::kernel::ffi::c_char; NAME_MAX],
     pub cfg: hashlimit_cfg2,
 
     /* Used internally by the kernel */
@@ -125,7 +125,7 @@ pub struct xt_hashlimit_mtinfo2 {
 
 #[repr(C)]
 pub struct xt_hashlimit_mtinfo3 {
-    pub name: [::core::ffi::c_char; NAME_MAX],
+    pub name: [::kernel::ffi::c_char; NAME_MAX],
     pub cfg: hashlimit_cfg3,
 
     /* Used internally by the kernel */

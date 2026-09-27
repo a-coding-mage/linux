@@ -259,8 +259,8 @@ struct hpf_work {
 };
 
 struct tx_macro_data {
-	core::ffi::c_uint flags;
-	core::ffi::c_uint ver;
+	kernel::ffi::c_uint flags;
+	kernel::ffi::c_uint ver;
 	const struct snd_soc_dapm_widget *extra_widgets;
 	size_t extra_widgets_num;
 	const struct snd_soc_dapm_route *extra_routes;
@@ -273,8 +273,8 @@ struct tx_macro {
 	struct snd_soc_component *component;
 	struct hpf_work tx_hpf_work[NUM_DECIMATORS];
 	struct tx_mute_work tx_mute_dwork[NUM_DECIMATORS];
-	core::ffi::c_ulong active_ch_mask[TX_MACRO_MAX_DAIS];
-	core::ffi::c_ulong active_ch_cnt[TX_MACRO_MAX_DAIS];
+	kernel::ffi::c_ulong active_ch_mask[TX_MACRO_MAX_DAIS];
+	kernel::ffi::c_ulong active_ch_cnt[TX_MACRO_MAX_DAIS];
 	int active_decimator[TX_MACRO_MAX_DAIS];
 	struct regmap *regmap;
 	struct clk *mclk;
@@ -437,7 +437,7 @@ static struct reg_default tx_defaults[] = {
 	{ CDC_TX7_TX_PATH_SEC6, 0x00},
 };
 
-static bool tx_is_volatile_register(device *dev, reg: core::ffi::c_uint)
+static bool tx_is_volatile_register(device *dev, reg: kernel::ffi::c_uint)
 {
 	/* Update volatile list for tx/tx macros */
 	switch (reg) {
@@ -452,7 +452,7 @@ static bool tx_is_volatile_register(device *dev, reg: core::ffi::c_uint)
 	return false;
 }
 
-static bool tx_is_rw_register(device *dev, reg: core::ffi::c_uint)
+static bool tx_is_rw_register(device *dev, reg: kernel::ffi::c_uint)
 {
 	switch (reg) {
 	case CDC_TX_CLK_RST_CTRL_MCLK_CONTROL:
@@ -759,9 +759,9 @@ static int tx_macro_mclk_event(snd_soc_dapm_widget *w,
 static void tx_macro_update_smic_sel_v9(snd_soc_component *component,
 					snd_soc_dapm_widget *widget,
 					tx_macro *tx, mic_sel_reg: u16,
-					val: core::ffi::c_uint)
+					val: kernel::ffi::c_uint)
 {
-	core::ffi::c_uint dmic;
+	kernel::ffi::c_uint dmic;
 	u16 dmic_clk_reg;
 
 	if (val < 5) {
@@ -781,9 +781,9 @@ static void tx_macro_update_smic_sel_v9(snd_soc_component *component,
 static void tx_macro_update_smic_sel_v9_2(snd_soc_component *component,
 					  snd_soc_dapm_widget *widget,
 					  tx_macro *tx, mic_sel_reg: u16,
-					  val: core::ffi::c_uint)
+					  val: kernel::ffi::c_uint)
 {
-	core::ffi::c_uint dmic;
+	kernel::ffi::c_uint dmic;
 	u16 dmic_clk_reg;
 
 	if (widget->shift) {
@@ -809,7 +809,7 @@ static int tx_macro_put_dec_enum(snd_kcontrol *kcontrol,
 	struct snd_soc_component *component = snd_soc_dapm_to_component(widget->dapm);
 	struct soc_enum *e = (soc_enum *)kcontrol->private_value;
 	struct tx_macro *tx = snd_soc_component_get_drvdata(component);
-	core::ffi::c_uint val;
+	kernel::ffi::c_uint val;
 	u16 mic_sel_reg;
 
 	val = ucontrol->value.enumerated.item[0];
@@ -1172,8 +1172,8 @@ static int tx_macro_hw_params(snd_pcm_substream *substream,
 }
 
 static int tx_macro_get_channel_map(const struct snd_soc_dai *dai,
-				    core::ffi::c_uint *tx_num, core::ffi::c_uint *tx_slot,
-				    core::ffi::c_uint *rx_num, core::ffi::c_uint *rx_slot)
+				    kernel::ffi::c_uint *tx_num, kernel::ffi::c_uint *tx_slot,
+				    kernel::ffi::c_uint *rx_num, kernel::ffi::c_uint *rx_slot)
 {
 	struct snd_soc_component *component = dai->component;
 	struct tx_macro *tx = snd_soc_component_get_drvdata(component);
@@ -2194,8 +2194,8 @@ static int swclk_gate_is_enabled(clk_hw *hw)
 	return ret;
 }
 
-static core::ffi::c_ulong swclk_recalc_rate(clk_hw *hw,
-				       parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong swclk_recalc_rate(clk_hw *hw,
+				       parent_rate: kernel::ffi::c_ulong)
 {
 	return parent_rate / 2;
 }
@@ -2785,8 +2785,8 @@ struct hpf_work {
 };
 
 struct tx_macro_data {
-	core::ffi::c_uint flags;
-	core::ffi::c_uint ver;
+	kernel::ffi::c_uint flags;
+	kernel::ffi::c_uint ver;
 	const struct snd_soc_dapm_widget *extra_widgets;
 	size_t extra_widgets_num;
 	const struct snd_soc_dapm_route *extra_routes;
@@ -2799,8 +2799,8 @@ struct tx_macro {
 	struct snd_soc_component *component;
 	struct hpf_work tx_hpf_work[NUM_DECIMATORS];
 	struct tx_mute_work tx_mute_dwork[NUM_DECIMATORS];
-	core::ffi::c_ulong active_ch_mask[TX_MACRO_MAX_DAIS];
-	core::ffi::c_ulong active_ch_cnt[TX_MACRO_MAX_DAIS];
+	kernel::ffi::c_ulong active_ch_mask[TX_MACRO_MAX_DAIS];
+	kernel::ffi::c_ulong active_ch_cnt[TX_MACRO_MAX_DAIS];
 	int active_decimator[TX_MACRO_MAX_DAIS];
 	struct regmap *regmap;
 	struct clk *mclk;
@@ -2963,7 +2963,7 @@ static struct reg_default tx_defaults[] = {
 	{ CDC_TX7_TX_PATH_SEC6, 0x00},
 };
 
-static bool tx_is_volatile_register(device *dev, reg: core::ffi::c_uint)
+static bool tx_is_volatile_register(device *dev, reg: kernel::ffi::c_uint)
 {
 	/* Update volatile list for tx/tx macros */
 	switch (reg) {
@@ -2978,7 +2978,7 @@ static bool tx_is_volatile_register(device *dev, reg: core::ffi::c_uint)
 	return false;
 }
 
-static bool tx_is_rw_register(device *dev, reg: core::ffi::c_uint)
+static bool tx_is_rw_register(device *dev, reg: kernel::ffi::c_uint)
 {
 	switch (reg) {
 	case CDC_TX_CLK_RST_CTRL_MCLK_CONTROL:
@@ -3287,9 +3287,9 @@ static int tx_macro_mclk_event(snd_soc_dapm_widget *w,
 static void tx_macro_update_smic_sel_v9(snd_soc_component *component,
 					snd_soc_dapm_widget *widget,
 					tx_macro *tx, mic_sel_reg: u16,
-					val: core::ffi::c_uint)
+					val: kernel::ffi::c_uint)
 {
-	core::ffi::c_uint dmic;
+	kernel::ffi::c_uint dmic;
 	u16 dmic_clk_reg;
 
 	if (val < 5) {
@@ -3309,9 +3309,9 @@ static void tx_macro_update_smic_sel_v9(snd_soc_component *component,
 static void tx_macro_update_smic_sel_v9_2(snd_soc_component *component,
 					  snd_soc_dapm_widget *widget,
 					  tx_macro *tx, mic_sel_reg: u16,
-					  val: core::ffi::c_uint)
+					  val: kernel::ffi::c_uint)
 {
-	core::ffi::c_uint dmic;
+	kernel::ffi::c_uint dmic;
 	u16 dmic_clk_reg;
 
 	if ((*widget).shift) {
@@ -3337,7 +3337,7 @@ static int tx_macro_put_dec_enum(snd_kcontrol *kcontrol,
 	struct snd_soc_component *component = snd_soc_dapm_to_component((*widget).dapm);
 	struct soc_enum *e = (*(soc_enum *)kcontrol).private_value;
 	struct tx_macro *tx = snd_soc_component_get_drvdata(component);
-	core::ffi::c_uint val;
+	kernel::ffi::c_uint val;
 	u16 mic_sel_reg;
 
 	val = (*ucontrol).value.enumerated.item[0];
@@ -3700,8 +3700,8 @@ static int tx_macro_hw_params(snd_pcm_substream *substream,
 }
 
 static int tx_macro_get_channel_map(const struct snd_soc_dai *dai,
-				    core::ffi::c_uint *tx_num, core::ffi::c_uint *tx_slot,
-				    core::ffi::c_uint *rx_num, core::ffi::c_uint *rx_slot)
+				    kernel::ffi::c_uint *tx_num, kernel::ffi::c_uint *tx_slot,
+				    kernel::ffi::c_uint *rx_num, kernel::ffi::c_uint *rx_slot)
 {
 	struct snd_soc_component *component = (*dai).component;
 	struct tx_macro *tx = snd_soc_component_get_drvdata(component);
@@ -4722,8 +4722,8 @@ static int swclk_gate_is_enabled(clk_hw *hw)
 	return ret;
 }
 
-static core::ffi::c_ulong swclk_recalc_rate(clk_hw *hw,
-				       parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong swclk_recalc_rate(clk_hw *hw,
+				       parent_rate: kernel::ffi::c_ulong)
 {
 	return parent_rate / 2;
 }

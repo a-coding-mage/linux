@@ -4,14 +4,14 @@
 
 #[cfg(CONFIG_UNCACHED_MAPPING)]
 extern "C" {
-    pub static mut cached_to_uncached: ::core::ffi::c_ulong;
-    pub static mut uncached_size: ::core::ffi::c_ulong;
-    pub static mut uncached_start: ::core::ffi::c_ulong;
-    pub static mut uncached_end: ::core::ffi::c_ulong;
+    pub static mut cached_to_uncached: ::kernel::ffi::c_ulong;
+    pub static mut uncached_size: ::kernel::ffi::c_ulong;
+    pub static mut uncached_start: ::kernel::ffi::c_ulong;
+    pub static mut uncached_end: ::kernel::ffi::c_ulong;
 
-    pub fn virt_addr_uncached(kaddr: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn virt_addr_uncached(kaddr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
     pub fn uncached_init();
-    pub fn uncached_resize(size: ::core::ffi::c_ulong);
+    pub fn uncached_resize(size: ::kernel::ffi::c_ulong);
 }
 
 /*
@@ -22,7 +22,7 @@ extern "C" {
 #[macro_export]
 macro_rules! jump_to_uncached {
     () => {{
-        let mut __dummy: ::core::ffi::c_ulong;
+        let mut __dummy: ::kernel::ffi::c_ulong;
         unsafe {
             ::core::arch::asm!(
                 "mova 1f, {0}",
@@ -45,7 +45,7 @@ macro_rules! jump_to_uncached {
 #[macro_export]
 macro_rules! back_to_cached {
     () => {{
-        let mut __dummy: ::core::ffi::c_ulong;
+        let mut __dummy: ::kernel::ffi::c_ulong;
         unsafe {
             ctrl_barrier();
             ::core::arch::asm!(

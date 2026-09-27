@@ -69,10 +69,10 @@ pub struct tifm_device_id {
 
 #[repr(C)]
 pub struct tifm_dev {
-    pub addr: *mut core::ffi::c_char,
+    pub addr: *mut kernel::ffi::c_char,
     pub lock: spinlock_t,
     pub r#type: u8,
-    pub socket_id: core::ffi::c_uint,
+    pub socket_id: kernel::ffi::c_uint,
     pub card_event: Option<unsafe extern "C" fn(sock: *mut tifm_dev)>,
     pub data_event: Option<unsafe extern "C" fn(sock: *mut tifm_dev)>,
     pub dev: device,
@@ -81,52 +81,52 @@ pub struct tifm_dev {
 #[repr(C)]
 pub struct tifm_driver {
     pub id_table: *const tifm_device_id,
-    pub probe: Option<unsafe extern "C" fn(dev: *mut tifm_dev) -> core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(dev: *mut tifm_dev) -> kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(dev: *mut tifm_dev)>,
-    pub suspend: Option<unsafe extern "C" fn(dev: *mut tifm_dev, state: pm_message_t) -> core::ffi::c_int>,
-    pub resume: Option<unsafe extern "C" fn(dev: *mut tifm_dev) -> core::ffi::c_int>,
+    pub suspend: Option<unsafe extern "C" fn(dev: *mut tifm_dev, state: pm_message_t) -> kernel::ffi::c_int>,
+    pub resume: Option<unsafe extern "C" fn(dev: *mut tifm_dev) -> kernel::ffi::c_int>,
     pub driver: device_driver,
 }
 
 #[repr(C)]
 pub struct tifm_adapter {
-    pub addr: *mut core::ffi::c_char,
+    pub addr: *mut kernel::ffi::c_char,
     pub lock: spinlock_t,
-    pub irq_status: core::ffi::c_uint,
-    pub socket_change_set: core::ffi::c_uint,
-    pub id: core::ffi::c_uint,
-    pub num_sockets: core::ffi::c_uint,
+    pub irq_status: kernel::ffi::c_uint,
+    pub socket_change_set: kernel::ffi::c_uint,
+    pub id: kernel::ffi::c_uint,
+    pub num_sockets: kernel::ffi::c_uint,
     pub finish_me: *mut completion,
     pub media_switcher: work_struct,
     pub dev: device,
     pub eject: Option<unsafe extern "C" fn(fm: *mut tifm_adapter, sock: *mut tifm_dev)>,
-    pub has_ms_pif: Option<unsafe extern "C" fn(fm: *mut tifm_adapter, sock: *mut tifm_dev) -> core::ffi::c_int>,
+    pub has_ms_pif: Option<unsafe extern "C" fn(fm: *mut tifm_adapter, sock: *mut tifm_dev) -> kernel::ffi::c_int>,
     pub sockets: [*mut tifm_dev; 0],
 }
 
 extern "C" {
-    pub fn tifm_alloc_adapter(num_sockets: core::ffi::c_uint, dev: *mut device) -> *mut tifm_adapter;
-    pub fn tifm_add_adapter(fm: *mut tifm_adapter) -> core::ffi::c_int;
+    pub fn tifm_alloc_adapter(num_sockets: kernel::ffi::c_uint, dev: *mut device) -> *mut tifm_adapter;
+    pub fn tifm_add_adapter(fm: *mut tifm_adapter) -> kernel::ffi::c_int;
     pub fn tifm_remove_adapter(fm: *mut tifm_adapter);
     pub fn tifm_free_adapter(fm: *mut tifm_adapter);
     pub fn tifm_free_device(dev: *mut device);
-    pub fn tifm_alloc_device(fm: *mut tifm_adapter, id: core::ffi::c_uint, r#type: u8) -> *mut tifm_dev;
-    pub fn tifm_register_driver(drv: *mut tifm_driver) -> core::ffi::c_int;
+    pub fn tifm_alloc_device(fm: *mut tifm_adapter, id: kernel::ffi::c_uint, r#type: u8) -> *mut tifm_dev;
+    pub fn tifm_register_driver(drv: *mut tifm_driver) -> kernel::ffi::c_int;
     pub fn tifm_unregister_driver(drv: *mut tifm_driver);
     pub fn tifm_eject(sock: *mut tifm_dev);
-    pub fn tifm_has_ms_pif(sock: *mut tifm_dev) -> core::ffi::c_int;
-    pub fn tifm_map_sg(sock: *mut tifm_dev, sg: *mut scatterlist, nents: core::ffi::c_int, direction: core::ffi::c_int) -> core::ffi::c_int;
-    pub fn tifm_unmap_sg(sock: *mut tifm_dev, sg: *mut scatterlist, nents: core::ffi::c_int, direction: core::ffi::c_int);
+    pub fn tifm_has_ms_pif(sock: *mut tifm_dev) -> kernel::ffi::c_int;
+    pub fn tifm_map_sg(sock: *mut tifm_dev, sg: *mut scatterlist, nents: kernel::ffi::c_int, direction: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub fn tifm_unmap_sg(sock: *mut tifm_dev, sg: *mut scatterlist, nents: kernel::ffi::c_int, direction: kernel::ffi::c_int);
     pub fn tifm_queue_work(work: *mut work_struct);
-    pub fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
-    pub fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
+    pub fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
+    pub fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
 }
 
-pub unsafe fn tifm_get_drvdata(dev: *mut tifm_dev) -> *mut core::ffi::c_void {
+pub unsafe fn tifm_get_drvdata(dev: *mut tifm_dev) -> *mut kernel::ffi::c_void {
     dev_get_drvdata(&mut (*dev).dev)
 }
 
-pub unsafe fn tifm_set_drvdata(dev: *mut tifm_dev, data: *mut core::ffi::c_void) {
+pub unsafe fn tifm_set_drvdata(dev: *mut tifm_dev, data: *mut kernel::ffi::c_void) {
     dev_set_drvdata(&mut (*dev).dev, data)
 }
 

@@ -440,7 +440,7 @@ static void pll_clk_stop_ss(tegra_clk_pll *pll)
 static int clk_pll_enable(clk_hw *hw)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
-	core::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong flags = 0;
 	int ret;
 
 	if (clk_pll_is_enabled(hw))
@@ -464,7 +464,7 @@ static int clk_pll_enable(clk_hw *hw)
 static void clk_pll_disable(clk_hw *hw)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
-	core::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong flags = 0;
 
 	if ((*pll).lock)
 		spin_lock_irqsave((*pll).lock, flags);
@@ -517,7 +517,7 @@ static int _hw_to_p_div(clk_hw *hw, p_div_hw: u8)
 
 static int _get_table_rate(clk_hw *hw,
 			   tegra_clk_pll_freq_table *cfg,
-			   rate: core::ffi::c_ulong, parent_rate: core::ffi::c_ulong)
+			   rate: kernel::ffi::c_ulong, parent_rate: kernel::ffi::c_ulong)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
 	struct tegra_clk_pll_freq_table *sel;
@@ -551,10 +551,10 @@ static int _get_table_rate(clk_hw *hw,
 }
 
 static int _calc_rate(clk_hw *hw, tegra_clk_pll_freq_table *cfg,
-		      rate: core::ffi::c_ulong, parent_rate: core::ffi::c_ulong)
+		      rate: kernel::ffi::c_ulong, parent_rate: kernel::ffi::c_ulong)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
-	core::ffi::c_ulong cfreq;
+	kernel::ffi::c_ulong cfreq;
 	u32 p_div = 0;
 	int ret;
 
@@ -727,7 +727,7 @@ static void _get_pll_mnp(tegra_clk_pll *pll,
 
 static void _update_pll_cpcon(tegra_clk_pll *pll,
 			      tegra_clk_pll_freq_table *cfg,
-			      rate: core::ffi::c_ulong)
+			      rate: kernel::ffi::c_ulong)
 {
 	u32 val;
 
@@ -750,7 +750,7 @@ static void _update_pll_cpcon(tegra_clk_pll *pll,
 }
 
 static int _program_pll(clk_hw *hw, tegra_clk_pll_freq_table *cfg,
-			rate: core::ffi::c_ulong)
+			rate: kernel::ffi::c_ulong)
 {
 	'done: {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
@@ -800,12 +800,12 @@ static int _program_pll(clk_hw *hw, tegra_clk_pll_freq_table *cfg,
 	return ret;
 }
 
-static int clk_pll_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
-			parent_rate: core::ffi::c_ulong)
+static int clk_pll_set_rate(clk_hw *hw, rate: kernel::ffi::c_ulong,
+			parent_rate: kernel::ffi::c_ulong)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
 	struct tegra_clk_pll_freq_table cfg, old_cfg;
-	core::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong flags = 0;
 	int ret = 0;
 
 	if (pll->params->flags & TEGRA_PLL_FIXED) {
@@ -867,8 +867,8 @@ static int clk_pll_determine_rate(clk_hw *hw,
 	return 0;
 }
 
-static core::ffi::c_ulong clk_pll_recalc_rate(clk_hw *hw,
-					 parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong clk_pll_recalc_rate(clk_hw *hw,
+					 parent_rate: kernel::ffi::c_ulong)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
 	struct tegra_clk_pll_freq_table cfg;
@@ -921,7 +921,7 @@ static core::ffi::c_ulong clk_pll_recalc_rate(clk_hw *hw,
 static int clk_plle_training(tegra_clk_pll *pll)
 {
 	u32 val;
-	core::ffi::c_ulong timeout;
+	kernel::ffi::c_ulong timeout;
 
 	if (!pll->pmc)
 		return -ENOSYS;
@@ -963,7 +963,7 @@ static int clk_plle_enable(clk_hw *hw)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
 	struct tegra_clk_pll_freq_table sel;
-	core::ffi::c_ulong input_rate;
+	kernel::ffi::c_ulong input_rate;
 	u32 val;
 	int err;
 
@@ -1020,8 +1020,8 @@ static int clk_plle_enable(clk_hw *hw)
 	return 0;
 }
 
-static core::ffi::c_ulong clk_plle_recalc_rate(clk_hw *hw,
-					 parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong clk_plle_recalc_rate(clk_hw *hw,
+					 parent_rate: kernel::ffi::c_ulong)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
 	u32 val = pll_readl_base(pll);
@@ -1042,8 +1042,8 @@ static void tegra_clk_pll_restore_context(clk_hw *hw)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
 	struct clk_hw *parent = clk_hw_get_parent(hw);
-	core::ffi::c_ulong parent_rate = clk_hw_get_rate(parent);
-	core::ffi::c_ulong rate = clk_hw_get_rate(hw);
+	kernel::ffi::c_ulong parent_rate = clk_hw_get_rate(parent);
+	kernel::ffi::c_ulong rate = clk_hw_get_rate(hw);
 
 	if (clk_pll_is_enabled(hw))
 		return;
@@ -1127,8 +1127,8 @@ static int clk_pllu_enable(clk_hw *hw)
 	struct clk_hw *pll_ref = clk_hw_get_parent(hw);
 	struct clk_hw *osc = clk_hw_get_parent(pll_ref);
 	const struct utmi_clk_param *params = NULL;
-	core::ffi::c_ulong flags = 0, input_rate;
-	core::ffi::c_uint i;
+	kernel::ffi::c_ulong flags = 0, input_rate;
+	kernel::ffi::c_uint i;
 	int ret = 0;
 	u32 value;
 
@@ -1208,7 +1208,7 @@ static const struct clk_ops tegra_clk_pllu_ops = {
 };
 
 static int _pll_fixed_mdiv(tegra_clk_pll_params *pll_params,
-			   parent_rate: core::ffi::c_ulong)
+			   parent_rate: kernel::ffi::c_ulong)
 {
 	u16 mdiv = parent_rate / pll_params->cf_min;
 
@@ -1227,10 +1227,10 @@ static int _pll_fixed_mdiv(tegra_clk_pll_params *pll_params,
 
 static int _calc_dynamic_ramp_rate(clk_hw *hw,
 				tegra_clk_pll_freq_table *cfg,
-				rate: core::ffi::c_ulong, parent_rate: core::ffi::c_ulong)
+				rate: kernel::ffi::c_ulong, parent_rate: kernel::ffi::c_ulong)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
-	core::ffi::c_uint p;
+	kernel::ffi::c_uint p;
 	int p_div;
 
 	if (!rate)
@@ -1259,22 +1259,22 @@ static int _calc_dynamic_ramp_rate(clk_hw *hw,
 // 	defined(CONFIG_ARCH_TEGRA_132_SOC) || \
 // 	defined(CONFIG_ARCH_TEGRA_210_SOC)
 
-u16 tegra_pll_get_fixed_mdiv(clk_hw *hw, input_rate: core::ffi::c_ulong)
+u16 tegra_pll_get_fixed_mdiv(clk_hw *hw, input_rate: kernel::ffi::c_ulong)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
 
 	return (u16)_pll_fixed_mdiv(pll->params, input_rate);
 }
 
-static core::ffi::c_ulong _clip_vco_min(vco_min: core::ffi::c_ulong,
-				   parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong _clip_vco_min(vco_min: kernel::ffi::c_ulong,
+				   parent_rate: kernel::ffi::c_ulong)
 {
 	return DIV_ROUND_UP(vco_min, parent_rate) * parent_rate;
 }
 
 static int _setup_dynamic_ramp(tegra_clk_pll_params *pll_params,
 			       void __iomem *clk_base,
-			       parent_rate: core::ffi::c_ulong)
+			       parent_rate: kernel::ffi::c_ulong)
 {
 	u32 val;
 	step_a: u32, step_b;
@@ -1310,7 +1310,7 @@ static int _setup_dynamic_ramp(tegra_clk_pll_params *pll_params,
 
 static int _pll_ramp_calc_pll(clk_hw *hw,
 			      tegra_clk_pll_freq_table *cfg,
-			      rate: core::ffi::c_ulong, parent_rate: core::ffi::c_ulong)
+			      rate: kernel::ffi::c_ulong, parent_rate: kernel::ffi::c_ulong)
 {
 	'out: {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
@@ -1334,12 +1334,12 @@ static int _pll_ramp_calc_pll(clk_hw *hw,
 	return err;
 }
 
-static int clk_pllxc_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
-				parent_rate: core::ffi::c_ulong)
+static int clk_pllxc_set_rate(clk_hw *hw, rate: kernel::ffi::c_ulong,
+				parent_rate: kernel::ffi::c_ulong)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
 	struct tegra_clk_pll_freq_table cfg, old_cfg;
-	core::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong flags = 0;
 	int ret;
 
 	ret = _pll_ramp_calc_pll(hw, &cfg, rate, parent_rate);
@@ -1407,7 +1407,7 @@ static int clk_pllc_enable(clk_hw *hw)
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
 	u32 val;
 	int ret;
-	core::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong flags = 0;
 
 	if (clk_pll_is_enabled(hw))
 		return 0;
@@ -1449,7 +1449,7 @@ static void _clk_pllc_disable(clk_hw *hw)
 static void clk_pllc_disable(clk_hw *hw)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
-	core::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong flags = 0;
 
 	if (pll->lock)
 		spin_lock_irqsave(pll->lock, flags);
@@ -1461,7 +1461,7 @@ static void clk_pllc_disable(clk_hw *hw)
 }
 
 static int _pllcx_update_dynamic_coef(tegra_clk_pll *pll,
-					input_rate: core::ffi::c_ulong, n: u32)
+					input_rate: kernel::ffi::c_ulong, n: u32)
 {
 	val: u32, n_threshold;
 
@@ -1494,13 +1494,13 @@ static int _pllcx_update_dynamic_coef(tegra_clk_pll *pll,
 	return 0;
 }
 
-static int clk_pllc_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
-				parent_rate: core::ffi::c_ulong)
+static int clk_pllc_set_rate(clk_hw *hw, rate: kernel::ffi::c_ulong,
+				parent_rate: kernel::ffi::c_ulong)
 {
 	'out: {
 	struct tegra_clk_pll_freq_table cfg, old_cfg;
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
-	core::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong flags = 0;
 	int state, ret = 0;
 
 	if (pll->lock)
@@ -1542,7 +1542,7 @@ static int clk_pllc_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
 
 static long _pllre_calc_rate(tegra_clk_pll *pll,
 			     tegra_clk_pll_freq_table *cfg,
-			     rate: core::ffi::c_ulong, parent_rate: core::ffi::c_ulong)
+			     rate: kernel::ffi::c_ulong, parent_rate: kernel::ffi::c_ulong)
 {
 	m: u16, n;
 	u64 output_rate = parent_rate;
@@ -1561,12 +1561,12 @@ static long _pllre_calc_rate(tegra_clk_pll *pll,
 	return output_rate;
 }
 
-static int clk_pllre_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
-				parent_rate: core::ffi::c_ulong)
+static int clk_pllre_set_rate(clk_hw *hw, rate: kernel::ffi::c_ulong,
+				parent_rate: kernel::ffi::c_ulong)
 {
 	struct tegra_clk_pll_freq_table cfg, old_cfg;
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
-	core::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong flags = 0;
 	int state, ret = 0;
 
 	if (pll->lock)
@@ -1595,8 +1595,8 @@ static int clk_pllre_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
 	return ret;
 }
 
-static core::ffi::c_ulong clk_pllre_recalc_rate(clk_hw *hw,
-					 parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong clk_pllre_recalc_rate(clk_hw *hw,
+					 parent_rate: kernel::ffi::c_ulong)
 {
 	struct tegra_clk_pll_freq_table cfg;
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
@@ -1628,8 +1628,8 @@ static int clk_plle_tegra114_enable(clk_hw *hw)
 	struct tegra_clk_pll_freq_table sel;
 	u32 val;
 	int ret;
-	core::ffi::c_ulong flags = 0;
-	core::ffi::c_ulong input_rate;
+	kernel::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong input_rate;
 
 	input_rate = clk_hw_get_rate(clk_hw_get_parent(hw));
 
@@ -1736,7 +1736,7 @@ static int clk_plle_tegra114_enable(clk_hw *hw)
 static void clk_plle_tegra114_disable(clk_hw *hw)
 {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
-	core::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong flags = 0;
 	u32 val;
 
 	if (pll->lock)
@@ -1759,8 +1759,8 @@ static int clk_pllu_tegra114_enable(clk_hw *hw)
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
 	const struct utmi_clk_param *params = NULL;
 	struct clk *osc = __clk_lookup("osc");
-	core::ffi::c_ulong flags = 0, input_rate;
-	core::ffi::c_uint i;
+	kernel::ffi::c_ulong flags = 0, input_rate;
+	kernel::ffi::c_uint i;
 	int ret = 0;
 	u32 value;
 
@@ -1906,7 +1906,7 @@ static struct tegra_clk_pll *_tegra_init_pll(void __iomem *clk_base,
 }
 
 static struct clk *_tegra_clk_register_pll(tegra_clk_pll *pll,
-		const char *name, const char *parent_name, flags: core::ffi::c_ulong,
+		const char *name, const char *parent_name, flags: kernel::ffi::c_ulong,
 		const struct clk_ops *ops)
 {
 	struct clk_init_data init;
@@ -1936,7 +1936,7 @@ static struct clk *_tegra_clk_register_pll(tegra_clk_pll *pll,
 
 struct clk *tegra_clk_register_pll(const char *name, const char *parent_name,
 		void __iomem *clk_base, void __iomem *pmc,
-		flags: core::ffi::c_ulong, tegra_clk_pll_params *pll_params,
+		flags: kernel::ffi::c_ulong, tegra_clk_pll_params *pll_params,
 		spinlock_t *lock)
 {
 	struct tegra_clk_pll *pll;
@@ -1967,7 +1967,7 @@ static struct div_nmp pll_e_nmp = {
 
 struct clk *tegra_clk_register_plle(const char *name, const char *parent_name,
 		void __iomem *clk_base, void __iomem *pmc,
-		flags: core::ffi::c_ulong, tegra_clk_pll_params *pll_params,
+		flags: kernel::ffi::c_ulong, tegra_clk_pll_params *pll_params,
 		spinlock_t *lock)
 {
 	struct tegra_clk_pll *pll;
@@ -1991,7 +1991,7 @@ struct clk *tegra_clk_register_plle(const char *name, const char *parent_name,
 }
 
 struct clk *tegra_clk_register_pllu(const char *name, const char *parent_name,
-		void __iomem *clk_base, flags: core::ffi::c_ulong,
+		void __iomem *clk_base, flags: kernel::ffi::c_ulong,
 		tegra_clk_pll_params *pll_params, spinlock_t *lock)
 {
 	struct tegra_clk_pll *pll;
@@ -2058,13 +2058,13 @@ static const struct clk_ops tegra_clk_pllu_tegra114_ops = {
 
 struct clk *tegra_clk_register_pllxc(const char *name, const char *parent_name,
 			  void __iomem *clk_base, void __iomem *pmc,
-			  flags: core::ffi::c_ulong,
+			  flags: kernel::ffi::c_ulong,
 			  tegra_clk_pll_params *pll_params,
 			  spinlock_t *lock)
 {
 	struct tegra_clk_pll *pll;
 	struct clk *clk, *parent;
-	core::ffi::c_ulong parent_rate;
+	kernel::ffi::c_ulong parent_rate;
 	val: u32, val_iddq;
 
 	parent = __clk_lookup(parent_name);
@@ -2122,9 +2122,9 @@ struct clk *tegra_clk_register_pllxc(const char *name, const char *parent_name,
 
 struct clk *tegra_clk_register_pllre(const char *name, const char *parent_name,
 			  void __iomem *clk_base, void __iomem *pmc,
-			  flags: core::ffi::c_ulong,
+			  flags: kernel::ffi::c_ulong,
 			  tegra_clk_pll_params *pll_params,
-			  spinlock_t *lock, parent_rate: core::ffi::c_ulong)
+			  spinlock_t *lock, parent_rate: kernel::ffi::c_ulong)
 {
 	u32 val;
 	struct tegra_clk_pll *pll;
@@ -2171,13 +2171,13 @@ struct clk *tegra_clk_register_pllre(const char *name, const char *parent_name,
 
 struct clk *tegra_clk_register_pllm(const char *name, const char *parent_name,
 			  void __iomem *clk_base, void __iomem *pmc,
-			  flags: core::ffi::c_ulong,
+			  flags: kernel::ffi::c_ulong,
 			  tegra_clk_pll_params *pll_params,
 			  spinlock_t *lock)
 {
 	struct tegra_clk_pll *pll;
 	struct clk *clk, *parent;
-	core::ffi::c_ulong parent_rate;
+	kernel::ffi::c_ulong parent_rate;
 
 	if (!pll_params->pdiv_tohw)
 		return ERR_PTR(-EINVAL);
@@ -2213,7 +2213,7 @@ struct clk *tegra_clk_register_pllm(const char *name, const char *parent_name,
 
 struct clk *tegra_clk_register_pllc(const char *name, const char *parent_name,
 			  void __iomem *clk_base, void __iomem *pmc,
-			  flags: core::ffi::c_ulong,
+			  flags: kernel::ffi::c_ulong,
 			  tegra_clk_pll_params *pll_params,
 			  spinlock_t *lock)
 {
@@ -2221,7 +2221,7 @@ struct clk *tegra_clk_register_pllc(const char *name, const char *parent_name,
 	const struct pdiv_map *p_tohw = pll_params->pdiv_tohw;
 	struct tegra_clk_pll *pll;
 	struct tegra_clk_pll_freq_table cfg;
-	core::ffi::c_ulong parent_rate;
+	kernel::ffi::c_ulong parent_rate;
 
 	if (!p_tohw)
 		return ERR_PTR(-EINVAL);
@@ -2287,7 +2287,7 @@ struct clk *tegra_clk_register_pllc(const char *name, const char *parent_name,
 
 struct clk *tegra_clk_register_plle_tegra114(const char *name,
 				const char *parent_name,
-				void __iomem *clk_base, flags: core::ffi::c_ulong,
+				void __iomem *clk_base, flags: kernel::ffi::c_ulong,
 				tegra_clk_pll_params *pll_params,
 				spinlock_t *lock)
 {
@@ -2310,7 +2310,7 @@ struct clk *tegra_clk_register_plle_tegra114(const char *name,
 
 struct clk *
 tegra_clk_register_pllu_tegra114(const char *name, const char *parent_name,
-				 void __iomem *clk_base, flags: core::ffi::c_ulong,
+				 void __iomem *clk_base, flags: kernel::ffi::c_ulong,
 				 tegra_clk_pll_params *pll_params,
 				 spinlock_t *lock)
 {
@@ -2344,14 +2344,14 @@ static const struct clk_ops tegra_clk_pllss_ops = {
 };
 
 struct clk *tegra_clk_register_pllss(const char *name, const char *parent_name,
-				void __iomem *clk_base, flags: core::ffi::c_ulong,
+				void __iomem *clk_base, flags: kernel::ffi::c_ulong,
 				tegra_clk_pll_params *pll_params,
 				spinlock_t *lock)
 {
 	struct tegra_clk_pll *pll;
 	struct clk *clk, *parent;
 	struct tegra_clk_pll_freq_table cfg;
-	core::ffi::c_ulong parent_rate;
+	kernel::ffi::c_ulong parent_rate;
 	val: u32, val_iddq;
 	int i;
 
@@ -2427,9 +2427,9 @@ struct clk *tegra_clk_register_pllss(const char *name, const char *parent_name,
 // #if defined(CONFIG_ARCH_TEGRA_210_SOC)
 struct clk *tegra_clk_register_pllre_tegra210(const char *name,
 			  const char *parent_name, void __iomem *clk_base,
-			  void __iomem *pmc, flags: core::ffi::c_ulong,
+			  void __iomem *pmc, flags: kernel::ffi::c_ulong,
 			  tegra_clk_pll_params *pll_params,
-			  spinlock_t *lock, parent_rate: core::ffi::c_ulong)
+			  spinlock_t *lock, parent_rate: kernel::ffi::c_ulong)
 {
 	struct tegra_clk_pll *pll;
 	struct clk *clk;
@@ -2469,8 +2469,8 @@ static int clk_plle_tegra210_enable(clk_hw *hw)
 	struct tegra_clk_pll_freq_table sel;
 	u32 val;
 	int ret = 0;
-	core::ffi::c_ulong flags = 0;
-	core::ffi::c_ulong input_rate;
+	kernel::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong input_rate;
 
 	if (clk_plle_tegra210_is_enabled(hw))
 		return 0;
@@ -2546,7 +2546,7 @@ static void clk_plle_tegra210_disable(clk_hw *hw)
 {
 	'out: {
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
-	core::ffi::c_ulong flags = 0;
+	kernel::ffi::c_ulong flags = 0;
 	u32 val;
 
 	if (pll->lock)
@@ -2592,7 +2592,7 @@ static const struct clk_ops tegra_clk_plle_tegra210_ops = {
 
 struct clk *tegra_clk_register_plle_tegra210(const char *name,
 				const char *parent_name,
-				void __iomem *clk_base, flags: core::ffi::c_ulong,
+				void __iomem *clk_base, flags: kernel::ffi::c_ulong,
 				tegra_clk_pll_params *pll_params,
 				spinlock_t *lock)
 {
@@ -2615,14 +2615,14 @@ struct clk *tegra_clk_register_plle_tegra210(const char *name,
 
 struct clk *tegra_clk_register_pllc_tegra210(const char *name,
 			const char *parent_name, void __iomem *clk_base,
-			void __iomem *pmc, flags: core::ffi::c_ulong,
+			void __iomem *pmc, flags: kernel::ffi::c_ulong,
 			tegra_clk_pll_params *pll_params,
 			spinlock_t *lock)
 {
 	struct clk *parent, *clk;
 	const struct pdiv_map *p_tohw = pll_params->pdiv_tohw;
 	struct tegra_clk_pll *pll;
-	core::ffi::c_ulong parent_rate;
+	kernel::ffi::c_ulong parent_rate;
 
 	if (!p_tohw)
 		return ERR_PTR(-EINVAL);
@@ -2657,13 +2657,13 @@ struct clk *tegra_clk_register_pllc_tegra210(const char *name,
 
 struct clk *tegra_clk_register_pllss_tegra210(const char *name,
 				const char *parent_name, void __iomem *clk_base,
-				flags: core::ffi::c_ulong,
+				flags: kernel::ffi::c_ulong,
 				tegra_clk_pll_params *pll_params,
 				spinlock_t *lock)
 {
 	struct tegra_clk_pll *pll;
 	struct clk *clk, *parent;
-	core::ffi::c_ulong parent_rate;
+	kernel::ffi::c_ulong parent_rate;
 	u32 val;
 
 	if (!pll_params->div_nmp)
@@ -2706,13 +2706,13 @@ struct clk *tegra_clk_register_pllss_tegra210(const char *name,
 
 struct clk *tegra_clk_register_pllmb(const char *name, const char *parent_name,
 			  void __iomem *clk_base, void __iomem *pmc,
-			  flags: core::ffi::c_ulong,
+			  flags: kernel::ffi::c_ulong,
 			  tegra_clk_pll_params *pll_params,
 			  spinlock_t *lock)
 {
 	struct tegra_clk_pll *pll;
 	struct clk *clk, *parent;
-	core::ffi::c_ulong parent_rate;
+	kernel::ffi::c_ulong parent_rate;
 
 	if (!pll_params->pdiv_tohw)
 		return ERR_PTR(-EINVAL);

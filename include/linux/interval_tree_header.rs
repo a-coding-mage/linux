@@ -6,9 +6,9 @@ use crate::linux::rbtree::{rb_node, rb_root_cached};
 #[repr(C)]
 pub struct interval_tree_node {
     pub rb: rb_node,
-    pub start: ::core::ffi::c_ulong, // Start of interval
-    pub last: ::core::ffi::c_ulong, // Last location _in_ interval
-    pub __subtree_last: ::core::ffi::c_ulong,
+    pub start: ::kernel::ffi::c_ulong, // Start of interval
+    pub last: ::kernel::ffi::c_ulong, // Last location _in_ interval
+    pub __subtree_last: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
@@ -24,20 +24,20 @@ extern "C" {
 
     pub fn interval_tree_subtree_search(
         node: *mut interval_tree_node,
-        start: ::core::ffi::c_ulong,
-        last: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        last: ::kernel::ffi::c_ulong,
     ) -> *mut interval_tree_node;
 
     pub fn interval_tree_iter_first(
         root: *mut rb_root_cached,
-        start: ::core::ffi::c_ulong,
-        last: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        last: ::kernel::ffi::c_ulong,
     ) -> *mut interval_tree_node;
 
     pub fn interval_tree_iter_next(
         node: *mut interval_tree_node,
-        start: ::core::ffi::c_ulong,
-        last: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        last: ::kernel::ffi::c_ulong,
     ) -> *mut interval_tree_node;
 }
 
@@ -64,38 +64,38 @@ extern "C" {
 pub struct interval_tree_span_iter {
     // private: not for use by the caller
     pub nodes: [*mut interval_tree_node; 2],
-    pub first_index: ::core::ffi::c_ulong,
-    pub last_index: ::core::ffi::c_ulong,
+    pub first_index: ::kernel::ffi::c_ulong,
+    pub last_index: ::kernel::ffi::c_ulong,
 
     // public:
     pub start: interval_tree_span_iter_start,
     pub last: interval_tree_span_iter_last,
-    pub is_hole: ::core::ffi::c_int,
+    pub is_hole: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub union interval_tree_span_iter_start {
-    pub start_hole: ::core::ffi::c_ulong,
-    pub start_used: ::core::ffi::c_ulong,
+    pub start_hole: ::kernel::ffi::c_ulong,
+    pub start_used: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub union interval_tree_span_iter_last {
-    pub last_hole: ::core::ffi::c_ulong,
-    pub last_used: ::core::ffi::c_ulong,
+    pub last_hole: ::kernel::ffi::c_ulong,
+    pub last_used: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
     pub fn interval_tree_span_iter_first(
         state: *mut interval_tree_span_iter,
         itree: *mut rb_root_cached,
-        first_index: ::core::ffi::c_ulong,
-        last_index: ::core::ffi::c_ulong,
+        first_index: ::kernel::ffi::c_ulong,
+        last_index: ::kernel::ffi::c_ulong,
     );
     pub fn interval_tree_span_iter_advance(
         iter: *mut interval_tree_span_iter,
         itree: *mut rb_root_cached,
-        new_index: ::core::ffi::c_ulong,
+        new_index: ::kernel::ffi::c_ulong,
     );
     pub fn interval_tree_span_iter_next(state: *mut interval_tree_span_iter);
 }

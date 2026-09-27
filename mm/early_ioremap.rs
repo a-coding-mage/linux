@@ -8,7 +8,7 @@
 static mut EARLY_IOREMAP_DEBUG: i32 = 0;
 
 #[cfg(CONFIG_MMU)]
-unsafe fn early_ioremap_debug_setup(_str: *mut core::ffi::c_char) -> i32 {
+unsafe fn early_ioremap_debug_setup(_str: *mut kernel::ffi::c_char) -> i32 {
     EARLY_IOREMAP_DEBUG = 1;
     0
 }
@@ -20,7 +20,7 @@ static mut AFTER_PAGING_INIT: i32 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn early_memremap_pgprot_adjust(
     _phys_addr: resource_size_t,
-    _size: libc::c_ulong,
+    _size: kernel::ffi::c_ulong,
     prot: pgprot_t,
 ) -> pgprot_t {
     prot
@@ -44,13 +44,13 @@ unsafe fn __late_clear_fixmap(_idx: enum_fixed_addresses) {
 }
 
 #[cfg(CONFIG_MMU)]
-static mut PREV_MAP: [*mut core::ffi::c_void; FIX_BTMAPS_SLOTS as usize] =
+static mut PREV_MAP: [*mut kernel::ffi::c_void; FIX_BTMAPS_SLOTS as usize] =
     [core::ptr::null_mut(); FIX_BTMAPS_SLOTS as usize];
 #[cfg(CONFIG_MMU)]
-static mut PREV_SIZE: [libc::c_ulong; FIX_BTMAPS_SLOTS as usize] =
+static mut PREV_SIZE: [kernel::ffi::c_ulong; FIX_BTMAPS_SLOTS as usize] =
     [0; FIX_BTMAPS_SLOTS as usize];
 #[cfg(CONFIG_MMU)]
-static mut SLOT_VIRT: [libc::c_ulong; FIX_BTMAPS_SLOTS as usize] =
+static mut SLOT_VIRT: [kernel::ffi::c_ulong; FIX_BTMAPS_SLOTS as usize] =
     [0; FIX_BTMAPS_SLOTS as usize];
 
 #[cfg(CONFIG_MMU)]
@@ -76,12 +76,12 @@ unsafe fn check_early_ioremap_leak() -> i32 {
 }
 
 #[cfg(CONFIG_MMU)]
-unsafe fn __early_ioremap(phys_addr: resource_size_t, size: libc::c_ulong, prot: pgprot_t) -> *mut core::ffi::c_void {
+unsafe fn __early_ioremap(phys_addr: resource_size_t, size: kernel::ffi::c_ulong, prot: pgprot_t) -> *mut kernel::ffi::c_void {
     let mut phys_addr = phys_addr;
     let mut size = size;
-    let offset: libc::c_ulong;
+    let offset: kernel::ffi::c_ulong;
     let last_addr: resource_size_t;
-    let mut nrpages: libc::c_uint;
+    let mut nrpages: kernel::ffi::c_uint;
     let idx: enum_fixed_addresses;
     let mut slot: i32 = -1;
     let mut i = 0;
@@ -98,7 +98,7 @@ unsafe fn __early_ioremap(phys_addr: resource_size_t, size: libc::c_ulong, prot:
     offset = offset_in_page(phys_addr);
     phys_addr &= PAGE_MASK;
     size = PAGE_ALIGN(last_addr + 1) - phys_addr;
-    nrpages = (size >> PAGE_SHIFT) as libc::c_uint;
+    nrpages = (size >> PAGE_SHIFT) as kernel::ffi::c_uint;
     if WARN_ON(nrpages > NR_FIX_BTMAPS) { return core::ptr::null_mut(); }
     idx = FIX_BTMAP_BEGIN - NR_FIX_BTMAPS * slot;
     let mut idx = idx;
@@ -109,26 +109,26 @@ unsafe fn __early_ioremap(phys_addr: resource_size_t, size: libc::c_ulong, prot:
         idx -= 1;
         nrpages -= 1;
     }
-    PREV_MAP[slot as usize] = (offset + SLOT_VIRT[slot as usize]) as *mut core::ffi::c_void;
+    PREV_MAP[slot as usize] = (offset + SLOT_VIRT[slot as usize]) as *mut kernel::ffi::c_void;
     PREV_MAP[slot as usize]
 }
 
 #[cfg(CONFIG_MMU)]
-pub unsafe extern "C" fn early_ioremap(phys_addr: resource_size_t, size: libc::c_ulong) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn early_ioremap(phys_addr: resource_size_t, size: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void {
     __early_ioremap(phys_addr, size, FIXMAP_PAGE_IO)
 }
 
 #[cfg(CONFIG_MMU)]
-pub unsafe extern "C" fn early_iounmap(addr: *mut core::ffi::c_void, size: libc::c_ulong) {
+pub unsafe extern "C" fn early_iounmap(addr: *mut kernel::ffi::c_void, size: kernel::ffi::c_ulong) {
     let mut slot: i32 = -1;
     let mut i = 0;
     while i < FIX_BTMAPS_SLOTS { if PREV_MAP[i as usize] == addr { slot = i; break; } i += 1; }
     if WARN(slot < 0, "%s(%p, %08lx) not found slot\n", __func__, addr, size) { return; }
     if WARN(PREV_SIZE[slot as usize] != size, "%s(%p, %08lx) [%d] size not consistent %08lx\n", __func__, addr, size, slot, PREV_SIZE[slot as usize]) { return; }
-    let virt_addr = addr as libc::c_ulong;
+    let virt_addr = addr as kernel::ffi::c_ulong;
     if WARN_ON(virt_addr < fix_to_virt(FIX_BTMAP_BEGIN)) { return; }
     let offset = offset_in_page(virt_addr);
-    let mut nrpages = (PAGE_ALIGN(offset + size) >> PAGE_SHIFT) as libc::c_uint;
+    let mut nrpages = (PAGE_ALIGN(offset + size) >> PAGE_SHIFT) as kernel::ffi::c_uint;
     let mut idx = FIX_BTMAP_BEGIN - NR_FIX_BTMAPS * slot;
     while nrpages > 0 {
         if AFTER_PAGING_INIT != 0 { __late_clear_fixmap(idx); }
@@ -139,22 +139,22 @@ pub unsafe extern "C" fn early_iounmap(addr: *mut core::ffi::c_void, size: libc:
 }
 
 #[cfg(CONFIG_MMU)]
-pub unsafe extern "C" fn early_memremap(phys_addr: resource_size_t, size: libc::c_ulong) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn early_memremap(phys_addr: resource_size_t, size: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void {
     __early_ioremap(phys_addr, size, early_memremap_pgprot_adjust(phys_addr, size, FIXMAP_PAGE_NORMAL))
 }
 
 #[cfg(CONFIG_MMU)]
-pub unsafe extern "C" fn early_memremap_ro(phys_addr: resource_size_t, size: libc::c_ulong) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn early_memremap_ro(phys_addr: resource_size_t, size: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void {
     __early_ioremap(phys_addr, size, early_memremap_pgprot_adjust(phys_addr, size, FIXMAP_PAGE_RO))
 }
 
 #[cfg(CONFIG_MMU)]
-pub unsafe extern "C" fn early_memremap_prot(phys_addr: resource_size_t, size: libc::c_ulong, prot_val: libc::c_ulong) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn early_memremap_prot(phys_addr: resource_size_t, size: kernel::ffi::c_ulong, prot_val: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void {
     __early_ioremap(phys_addr, size, __pgprot(prot_val))
 }
 
 #[cfg(CONFIG_MMU)]
-pub unsafe extern "C" fn copy_from_early_mem(dest: *mut core::ffi::c_void, src: phys_addr_t, size: libc::c_ulong) -> i32 {
+pub unsafe extern "C" fn copy_from_early_mem(dest: *mut kernel::ffi::c_void, src: phys_addr_t, size: kernel::ffi::c_ulong) -> i32 {
     let mut dest = dest;
     let mut src = src;
     let mut size = size;
@@ -164,9 +164,9 @@ pub unsafe extern "C" fn copy_from_early_mem(dest: *mut core::ffi::c_void, src: 
         if clen > MAX_MAP_CHUNK - slop { clen = MAX_MAP_CHUNK - slop; }
         let p = early_memremap(src & PAGE_MASK, clen + slop);
         if p.is_null() { return -ENOMEM; }
-        memcpy(dest, (p as *mut u8).add(slop as usize) as *mut core::ffi::c_void, clen);
+        memcpy(dest, (p as *mut u8).add(slop as usize) as *mut kernel::ffi::c_void, clen);
         early_memunmap(p, clen + slop);
-        dest = (dest as *mut u8).add(clen as usize) as *mut core::ffi::c_void;
+        dest = (dest as *mut u8).add(clen as usize) as *mut kernel::ffi::c_void;
         src += clen;
         size -= clen;
     }
@@ -174,15 +174,15 @@ pub unsafe extern "C" fn copy_from_early_mem(dest: *mut core::ffi::c_void, src: 
 }
 
 #[cfg(not(CONFIG_MMU))]
-pub unsafe extern "C" fn early_ioremap(phys_addr: resource_size_t, _size: libc::c_ulong) -> *mut core::ffi::c_void { phys_addr as *mut core::ffi::c_void }
+pub unsafe extern "C" fn early_ioremap(phys_addr: resource_size_t, _size: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void { phys_addr as *mut kernel::ffi::c_void }
 #[cfg(not(CONFIG_MMU))]
-pub unsafe extern "C" fn early_memremap(phys_addr: resource_size_t, _size: libc::c_ulong) -> *mut core::ffi::c_void { phys_addr as *mut core::ffi::c_void }
+pub unsafe extern "C" fn early_memremap(phys_addr: resource_size_t, _size: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void { phys_addr as *mut kernel::ffi::c_void }
 #[cfg(not(CONFIG_MMU))]
-pub unsafe extern "C" fn early_memremap_ro(phys_addr: resource_size_t, _size: libc::c_ulong) -> *mut core::ffi::c_void { phys_addr as *mut core::ffi::c_void }
+pub unsafe extern "C" fn early_memremap_ro(phys_addr: resource_size_t, _size: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void { phys_addr as *mut kernel::ffi::c_void }
 #[cfg(not(CONFIG_MMU))]
-pub unsafe extern "C" fn early_iounmap(_addr: *mut core::ffi::c_void, _size: libc::c_ulong) {}
+pub unsafe extern "C" fn early_iounmap(_addr: *mut kernel::ffi::c_void, _size: kernel::ffi::c_ulong) {}
 
-pub unsafe extern "C" fn early_memunmap(addr: *mut core::ffi::c_void, size: libc::c_ulong) {
+pub unsafe extern "C" fn early_memunmap(addr: *mut kernel::ffi::c_void, size: kernel::ffi::c_ulong) {
     early_iounmap(addr, size);
 }
 

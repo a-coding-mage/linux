@@ -52,7 +52,7 @@ pub enum amdgpu_ss {
 
 #[repr(C)]
 pub struct amdgpu_uma_carveout_option {
-    pub name: [core::ffi::c_char; MAX_UMA_OPTION_NAME],
+    pub name: [kernel::ffi::c_char; MAX_UMA_OPTION_NAME],
     pub memory_carved_mb: u32,
     pub flags: u8,
 }

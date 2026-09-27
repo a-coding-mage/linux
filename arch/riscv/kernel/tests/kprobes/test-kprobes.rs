@@ -3,7 +3,7 @@
 // Dependencies supplied by the Linux kernel, KUnit, and test-kprobes.h remain
 // external to this translation unit.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct pt_regs {
@@ -35,8 +35,8 @@ pub struct kunit_suite {
 extern "C" {
     static mut test_kprobes_addresses: *mut *mut c_void;
     static mut test_kprobes_functions:
-        *mut Option<unsafe extern "C" fn() -> libc::c_long>;
-    static KPROBE_TEST_MAGIC: libc::c_long;
+        *mut Option<unsafe extern "C" fn() -> kernel::ffi::c_long>;
+    static KPROBE_TEST_MAGIC: kernel::ffi::c_long;
 
     fn register_kprobe(kp: *mut kprobe) -> i32;
     fn unregister_kprobe(kp: *mut kprobe);
@@ -44,11 +44,11 @@ extern "C" {
     fn kzalloc_objs<T>(count: usize) -> *mut T;
 
     fn kunit_expect_true(test: *mut kunit, condition: bool);
-    fn kunit_expect_eq(test: *mut kunit, expected: libc::c_long, actual: libc::c_long);
+    fn kunit_expect_eq(test: *mut kunit, expected: kernel::ffi::c_long, actual: kernel::ffi::c_long);
     fn kunit_expect_eq_msg(
         test: *mut kunit,
-        expected: libc::c_long,
-        actual: libc::c_long,
+        expected: kernel::ffi::c_long,
+        actual: kernel::ffi::c_long,
         message: *const u8,
         index: i32,
     );
@@ -63,7 +63,7 @@ unsafe extern "C" fn kprobe_dummy_handler(
 
 unsafe fn test_kprobe_riscv(test: *mut kunit) {
     let mut num_kprobe: u32 = 0;
-    let mut func: Option<unsafe extern "C" fn() -> libc::c_long>;
+    let mut func: Option<unsafe extern "C" fn() -> kernel::ffi::c_long>;
     let kp: *mut kprobe;
     let mut i: i32;
 
@@ -84,7 +84,7 @@ unsafe fn test_kprobe_riscv(test: *mut kunit) {
         kunit_expect_eq(
             test,
             0,
-            register_kprobe(kp.add(i as usize)) as libc::c_long,
+            register_kprobe(kp.add(i as usize)) as kernel::ffi::c_long,
         );
         i += 1;
     }
@@ -98,7 +98,7 @@ unsafe fn test_kprobe_riscv(test: *mut kunit) {
         kunit_expect_eq_msg(
             test,
             KPROBE_TEST_MAGIC,
-            func.unwrap()() as libc::c_long,
+            func.unwrap()() as kernel::ffi::c_long,
             b"function %d broken\0".as_ptr(),
             i,
         );

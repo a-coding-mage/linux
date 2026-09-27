@@ -60,7 +60,7 @@ pub const MAX_ECARDS: usize = 9;
 pub struct ecard_id {
     pub manufacturer: u16,
     pub product: u16,
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -72,12 +72,12 @@ pub struct in_ecid {
     pub country: u8,
     pub irqmask: u8,
     pub fiqmask: u8,
-    pub irqoff: core::ffi::c_ulong,
-    pub fiqoff: core::ffi::c_ulong,
+    pub irqoff: kernel::ffi::c_ulong,
+    pub fiqoff: kernel::ffi::c_ulong,
 }
 
 pub type ecard_t = expansion_card;
-pub type loader_t = *mut core::ffi::c_ulong;
+pub type loader_t = *mut kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct expansion_card_ops {
@@ -103,14 +103,14 @@ pub struct expansion_card {
     pub next: *mut expansion_card,
     pub dev: device,
     pub resource: [resource; ECARD_NUM_RESOURCES],
-    pub irqaddr: *mut core::ffi::c_void,
-    pub fiqaddr: *mut core::ffi::c_void,
+    pub irqaddr: *mut kernel::ffi::c_void,
+    pub fiqaddr: *mut kernel::ffi::c_void,
     pub irqmask: u8,
     pub fiqmask: u8,
     pub claimed: u8,
     pub easi: u8,
-    pub irq_data: *mut core::ffi::c_void,
-    pub fiq_data: *mut core::ffi::c_void,
+    pub irq_data: *mut kernel::ffi::c_void,
+    pub fiq_data: *mut kernel::ffi::c_void,
     pub ops: *const expansioncard_ops_t,
     /* CONST fields are const in the C build when ECARD_C is not defined. */
     pub slot_no: u32,
@@ -118,13 +118,13 @@ pub struct expansion_card {
     pub irq: u32,
     pub fiq: u32,
     pub cid: in_ecid,
-    pub card_desc: *const core::ffi::c_char,
+    pub card_desc: *const kernel::ffi::c_char,
     pub loader: loader_t,
     pub dma_mask: u64,
 }
 
 extern "C" {
-    pub fn ecard_setirq(ec: *mut expansion_card, ops: *const expansion_card_ops, irq_data: *mut core::ffi::c_void);
+    pub fn ecard_setirq(ec: *mut expansion_card, ops: *const expansion_card_ops, irq_data: *mut kernel::ffi::c_void);
 }
 
 #[repr(C)]
@@ -142,7 +142,7 @@ extern "C" {
     pub fn ecard_readchunk(cd: *mut in_chunk_dir, ec: *mut expansion_card, id: i32, num: i32) -> i32;
     pub fn ecard_request_resources(ec: *mut expansion_card) -> i32;
     pub fn ecard_release_resources(ec: *mut expansion_card);
-    pub fn ecardm_iomap(ec: *mut expansion_card, res: u32, offset: core::ffi::c_ulong, maxsize: core::ffi::c_ulong) -> *mut core::ffi::c_void;
+    pub fn ecardm_iomap(ec: *mut expansion_card, res: u32, offset: kernel::ffi::c_ulong, maxsize: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void;
     pub static ecard_bus_type: bus_type;
     pub fn ecard_register_driver(driver: *mut ecard_driver) -> i32;
     pub fn ecard_remove_driver(driver: *mut ecard_driver);

@@ -9,9 +9,9 @@
 // symbols are supplied by the surrounding kernel translation.
 
 #[cfg(CONFIG_MMU)]
-pub const _PAGE_USER_TABLE: _ = PMD_TYPE_TABLE | PMD_BIT4 | PMD_DOMAIN(DOMAIN_USER);
+pub const _PAGE_USER_TABLE: pmdval_t = PMD_TYPE_TABLE | PMD_BIT4 | PMD_DOMAIN(DOMAIN_USER);
 #[cfg(CONFIG_MMU)]
-pub const _PAGE_KERNEL_TABLE: _ = PMD_TYPE_TABLE | PMD_BIT4 | PMD_DOMAIN(DOMAIN_KERNEL);
+pub const _PAGE_KERNEL_TABLE: pmdval_t = PMD_TYPE_TABLE | PMD_BIT4 | PMD_DOMAIN(DOMAIN_KERNEL);
 
 #[cfg(all(CONFIG_MMU, CONFIG_ARM_LPAE))]
 pub const PGD_SIZE: usize = PTRS_PER_PGD * core::mem::size_of::<pgd_t>();

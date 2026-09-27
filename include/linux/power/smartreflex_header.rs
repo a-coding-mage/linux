@@ -98,7 +98,7 @@ pub enum clk {}
 
 #[repr(C)]
 pub struct omap_sr {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub node: list_head,
     pub pdev: *mut platform_device,
     pub nvalue_table: *mut omap_sr_nvalue_table,
@@ -119,7 +119,7 @@ pub struct omap_sr {
     pub senp_avgweight: u32,
     pub senp_mod: u32,
     pub senn_mod: u32,
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub enabled: u8,
 }
 
@@ -139,7 +139,7 @@ macro_rules! sr_test_cond_timeout {
 pub struct omap_sr_pmic_data { pub sr_pmic_init: Option<unsafe extern "C" fn()> }
 
 #[repr(C)]
-pub struct omap_smartreflex_dev_attr { pub sensor_voltdm_name: *const core::ffi::c_char }
+pub struct omap_smartreflex_dev_attr { pub sensor_voltdm_name: *const kernel::ffi::c_char }
 
 pub const SR_CLASS1: u32 = 0x1;
 pub const SR_CLASS2: u32 = 0x2;
@@ -165,7 +165,7 @@ pub struct omap_sr_nvalue_table {
 
 #[repr(C)]
 pub struct omap_sr_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ip_type: i32,
     pub senp_mod: u32,
     pub senn_mod: u32,

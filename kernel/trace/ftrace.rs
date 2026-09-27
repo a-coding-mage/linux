@@ -126,7 +126,7 @@ ftrace_func_t ftrace_trace_function __read_mostly = ftrace_stub;
 struct ftrace_ops global_ops;
 
 /* Defined by vmlinux.lds.h see the comment above arch_ftrace_ops_list_func for details */
-void ftrace_ops_list_func(ip: core::ffi::c_ulong, parent_ip: core::ffi::c_ulong,
+void ftrace_ops_list_func(ip: kernel::ffi::c_ulong, parent_ip: kernel::ffi::c_ulong,
 			  ftrace_ops *op, ftrace_regs *fregs);
 
 #ifdef CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS
@@ -138,7 +138,7 @@ const struct ftrace_ops ftrace_list_ops = {
 	flags: FTRACE_OPS_FL_STUB,
 };
 
-static void ftrace_ops_nop_func(ip: core::ffi::c_ulong, parent_ip: core::ffi::c_ulong,
+static void ftrace_ops_nop_func(ip: kernel::ffi::c_ulong, parent_ip: kernel::ffi::c_ulong,
 				ftrace_ops *op,
 				ftrace_regs *fregs)
 {
@@ -169,7 +169,7 @@ void ftrace_ops_init(ftrace_ops *ops)
 }
 
 /* Call this function for when a callback filters on set_ftrace_pid */
-static void ftrace_pid_func(ip: core::ffi::c_ulong, parent_ip: core::ffi::c_ulong,
+static void ftrace_pid_func(ip: kernel::ffi::c_ulong, parent_ip: kernel::ffi::c_ulong,
 			    ftrace_ops *op, ftrace_regs *fregs)
 {
 	struct trace_array *tr = op->private;
@@ -351,7 +351,7 @@ int __register_ftrace_function(ftrace_ops *ops)
 	if (!ftrace_enabled && (ops->flags & FTRACE_OPS_FL_PERMANENT))
 		return -EBUSY;
 
-	if (!is_kernel_core_data((core::ffi::c_ulong)ops))
+	if (!is_kernel_core_data((kernel::ffi::c_ulong)ops))
 		ops->flags |= FTRACE_OPS_FL_DYNAMIC;
 
 	add_ftrace_ops(&ftrace_ops_list, ops);
@@ -414,17 +414,17 @@ static void ftrace_update_pid_func(void)
 #ifdef CONFIG_FUNCTION_PROFILER
 struct ftrace_profile {
 	struct hlist_node		node;
-	core::ffi::c_ulong			ip;
-	core::ffi::c_ulong			counter;
+	kernel::ffi::c_ulong			ip;
+	kernel::ffi::c_ulong			counter;
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
-	core::ffi::c_ulonglong		time;
-	core::ffi::c_ulonglong		time_squared;
+	kernel::ffi::c_ulonglong		time;
+	kernel::ffi::c_ulonglong		time_squared;
 #endif
 };
 
 struct ftrace_profile_page {
 	struct ftrace_profile_page	*next;
-	core::ffi::c_ulong			index;
+	kernel::ffi::c_ulong			index;
 	struct ftrace_profile		records[];
 };
 
@@ -458,7 +458,7 @@ function_stat_next(void *v, int idx)
 	struct ftrace_profile *rec = v;
 	struct ftrace_profile_page *pg;
 
-	pg = (ftrace_profile_page *)((core::ffi::c_ulong)rec & PAGE_MASK);
+	pg = (ftrace_profile_page *)((kernel::ffi::c_ulong)rec & PAGE_MASK);
 
  again:
 	if (idx != 0)
@@ -539,9 +539,9 @@ static int function_stat_show(seq_file *m, void *v)
 	char str[KSYM_SYMBOL_LEN];
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
 	static struct trace_seq s;
-	core::ffi::c_ulonglong avg;
-	core::ffi::c_ulonglong stddev;
-	core::ffi::c_ulonglong stddev_denom;
+	kernel::ffi::c_ulonglong avg;
+	kernel::ffi::c_ulonglong stddev;
+	kernel::ffi::c_ulonglong stddev_denom;
 #endif
 	guard(mutex)(&ftrace_profile_lock);
 
@@ -556,11 +556,11 @@ static int function_stat_show(seq_file *m, void *v)
 #endif
 
 	if (tr->trace_flags & TRACE_ITER(PROF_TEXT_OFFSET)) {
-		core::ffi::c_ulong offset;
+		kernel::ffi::c_ulong offset;
 
 		if (core_kernel_text(rec->ip)) {
 			refsymbol = \"_text\";
-			offset = rec->ip - (core::ffi::c_ulong)_text;
+			offset = rec->ip - (kernel::ffi::c_ulong)_text;
 		} else {
 			struct module *mod;
 
@@ -569,7 +569,7 @@ static int function_stat_show(seq_file *m, void *v)
 			if (mod) {
 				refsymbol = mod->name;
 				/* Calculate offset from module's text entry address. */
-				offset = rec->ip - (core::ffi::c_ulong)mod->mem[MOD_TEXT].base;
+				offset = rec->ip - (kernel::ffi::c_ulong)mod->mem[MOD_TEXT].base;
 			}
 		}
 		if (refsymbol)
@@ -671,7 +671,7 @@ static int ftrace_profile_pages_init(ftrace_profile_stat *stat)
  out_free:
 	pg = stat->start;
 	while (pg) {
-		core::ffi::c_ulong tmp = (core::ffi::c_ulong)pg;
+		kernel::ffi::c_ulong tmp = (kernel::ffi::c_ulong)pg;
 
 		pg = pg->next;
 		free_page(tmp);
@@ -733,11 +733,11 @@ static int ftrace_profile_init(void)
 
 /* interrupts must be disabled */
 static struct ftrace_profile *
-ftrace_find_profiled_func(ftrace_profile_stat *stat, ip: core::ffi::c_ulong)
+ftrace_find_profiled_func(ftrace_profile_stat *stat, ip: kernel::ffi::c_ulong)
 {
 	struct ftrace_profile *rec;
 	struct hlist_head *hhd;
-	core::ffi::c_ulong key;
+	kernel::ffi::c_ulong key;
 
 	key = hash_long(ip, FTRACE_PROFILE_HASH_BITS);
 	hhd = &stat->hash[key];
@@ -756,7 +756,7 @@ ftrace_find_profiled_func(ftrace_profile_stat *stat, ip: core::ffi::c_ulong)
 static void ftrace_add_profile(ftrace_profile_stat *stat,
 			       ftrace_profile *rec)
 {
-	core::ffi::c_ulong key;
+	kernel::ffi::c_ulong key;
 
 	key = hash_long(rec->ip, FTRACE_PROFILE_HASH_BITS);
 	hlist_add_head_rcu(&rec->node, &stat->hash[key]);
@@ -766,7 +766,7 @@ static void ftrace_add_profile(ftrace_profile_stat *stat,
  * The memory is already allocated, this simply finds a new record to use.
  */
 static struct ftrace_profile *
-ftrace_profile_alloc(ftrace_profile_stat *stat, ip: core::ffi::c_ulong)
+ftrace_profile_alloc(ftrace_profile_stat *stat, ip: kernel::ffi::c_ulong)
 {
 	struct ftrace_profile *rec = NULL;
 
@@ -799,7 +799,7 @@ ftrace_profile_alloc(ftrace_profile_stat *stat, ip: core::ffi::c_ulong)
 }
 
 static void
-function_profile_call(ip: core::ffi::c_ulong, parent_ip: core::ffi::c_ulong,
+function_profile_call(ip: kernel::ffi::c_ulong, parent_ip: kernel::ffi::c_ulong,
 		      ftrace_ops *ops, ftrace_regs *fregs)
 {
 	struct ftrace_profile_stat *stat;
@@ -833,9 +833,9 @@ void ftrace_graph_graph_time_control(enable: bool)
 }
 
 struct profile_fgraph_data {
-	core::ffi::c_ulonglong		calltime;
-	core::ffi::c_ulonglong		subtime;
-	core::ffi::c_ulonglong		sleeptime;
+	kernel::ffi::c_ulonglong		calltime;
+	kernel::ffi::c_ulonglong		subtime;
+	kernel::ffi::c_ulonglong		sleeptime;
 };
 
 static int profile_graph_entry(ftrace_graph_ent *trace,
@@ -869,8 +869,8 @@ static void profile_graph_return(ftrace_graph_ret *trace,
 {
 	struct profile_fgraph_data *profile_data;
 	struct ftrace_profile_stat *stat;
-	core::ffi::c_ulonglong calltime;
-	core::ffi::c_ulonglong rettime = trace_clock_local();
+	kernel::ffi::c_ulonglong calltime;
+	kernel::ffi::c_ulonglong rettime = trace_clock_local();
 	struct ftrace_profile *rec;
 	int size;
 
@@ -950,7 +950,7 @@ static ssize_t
 ftrace_profile_write(file *filp, const char __user *ubuf,
 		     size_t cnt, loff_t *ppos)
 {
-	core::ffi::c_ulong val;
+	kernel::ffi::c_ulong val;
 	int ret;
 
 	ret = kstrtoul_from_user(ubuf, cnt, 10, &val);
@@ -1106,7 +1106,7 @@ static DEFINE_MUTEX(parser_lock);
 /*
  * Used by the stack unwinder to know about dynamic ftrace trampolines.
  */
-struct ftrace_ops *ftrace_ops_trampoline(addr: core::ffi::c_ulong)
+struct ftrace_ops *ftrace_ops_trampoline(addr: kernel::ffi::c_ulong)
 {
 	struct ftrace_ops *op = NULL;
 
@@ -1140,7 +1140,7 @@ struct ftrace_ops *ftrace_ops_trampoline(addr: core::ffi::c_ulong)
  * not return true for either core_kernel_text() or
  * is_module_text_address().
  */
-bool is_ftrace_trampoline(addr: core::ffi::c_ulong)
+bool is_ftrace_trampoline(addr: kernel::ffi::c_ulong)
 {
 	return ftrace_ops_trampoline(addr) != NULL;
 }
@@ -1158,8 +1158,8 @@ struct ftrace_page {
 static struct ftrace_page	*ftrace_pages_start;
 static struct ftrace_page	*ftrace_pages;
 
-static __always_inline core::ffi::c_ulong
-ftrace_hash_key(ftrace_hash *hash, ip: core::ffi::c_ulong)
+static __always_inline kernel::ffi::c_ulong
+ftrace_hash_key(ftrace_hash *hash, ip: kernel::ffi::c_ulong)
 {
 	if (hash->size_bits > 0)
 		return hash_long(ip, hash->size_bits);
@@ -1169,9 +1169,9 @@ ftrace_hash_key(ftrace_hash *hash, ip: core::ffi::c_ulong)
 
 /* Only use this function if ftrace_hash_empty() has already been tested */
 static __always_inline struct ftrace_func_entry *
-__ftrace_lookup_ip(ftrace_hash *hash, ip: core::ffi::c_ulong)
+__ftrace_lookup_ip(ftrace_hash *hash, ip: kernel::ffi::c_ulong)
 {
-	core::ffi::c_ulong key;
+	kernel::ffi::c_ulong key;
 	struct ftrace_func_entry *entry;
 	struct hlist_head *hhd;
 
@@ -1196,7 +1196,7 @@ __ftrace_lookup_ip(ftrace_hash *hash, ip: core::ffi::c_ulong)
  * Returns: the entry that holds the @ip if found. NULL otherwise.
  */
 struct ftrace_func_entry *
-ftrace_lookup_ip(ftrace_hash *hash, ip: core::ffi::c_ulong)
+ftrace_lookup_ip(ftrace_hash *hash, ip: kernel::ffi::c_ulong)
 {
 	if (ftrace_hash_empty(hash))
 		return NULL;
@@ -1207,7 +1207,7 @@ ftrace_lookup_ip(ftrace_hash *hash, ip: core::ffi::c_ulong)
 void add_ftrace_hash_entry(ftrace_hash *hash, ftrace_func_entry *entry)
 {
 	struct hlist_head *hhd;
-	core::ffi::c_ulong key;
+	kernel::ffi::c_ulong key;
 
 	key = ftrace_hash_key(hash, entry->ip);
 	hhd = &hash->buckets[key];
@@ -1216,7 +1216,7 @@ void add_ftrace_hash_entry(ftrace_hash *hash, ftrace_func_entry *entry)
 }
 
 struct ftrace_func_entry *
-add_ftrace_hash_entry_direct(ftrace_hash *hash, ip: core::ffi::c_ulong, direct: core::ffi::c_ulong)
+add_ftrace_hash_entry_direct(ftrace_hash *hash, ip: kernel::ffi::c_ulong, direct: kernel::ffi::c_ulong)
 {
 	struct ftrace_func_entry *entry;
 
@@ -1232,7 +1232,7 @@ add_ftrace_hash_entry_direct(ftrace_hash *hash, ip: core::ffi::c_ulong, direct: 
 }
 
 static struct ftrace_func_entry *
-add_hash_entry(ftrace_hash *hash, ip: core::ffi::c_ulong)
+add_hash_entry(ftrace_hash *hash, ip: kernel::ffi::c_ulong)
 {
 	return add_ftrace_hash_entry_direct(hash, ip, 0);
 }
@@ -1561,7 +1561,7 @@ ftrace_hash_move(ftrace_ops *ops, int enable,
 	return 0;
 }
 
-static bool hash_contains_ip(ip: core::ffi::c_ulong,
+static bool hash_contains_ip(ip: kernel::ffi::c_ulong,
 			     ftrace_ops_hash *hash)
 {
 	/*
@@ -1589,7 +1589,7 @@ static bool hash_contains_ip(ip: core::ffi::c_ulong,
  * the hashes are freed with call_rcu().
  */
 int
-ftrace_ops_test(ftrace_ops *ops, ip: core::ffi::c_ulong, void *regs)
+ftrace_ops_test(ftrace_ops *ops, ip: kernel::ffi::c_ulong, void *regs)
 {
 	struct ftrace_ops_hash hash;
 	int ret;
@@ -1642,14 +1642,14 @@ static int ftrace_cmp_recs(const void *a, const void *b)
 	return 0;
 }
 
-static struct dyn_ftrace *lookup_rec(start: core::ffi::c_ulong, end: core::ffi::c_ulong)
+static struct dyn_ftrace *lookup_rec(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong)
 {
 	struct ftrace_page *pg;
 	struct dyn_ftrace *rec = NULL;
 	struct dyn_ftrace key;
 
 	key.ip = start;
-	key.flags = end;	/* overload flags, as it is core::ffi::c_ulong */
+	key.flags = end;	/* overload flags, as it is kernel::ffi::c_ulong */
 
 	for (pg = ftrace_pages_start; pg; pg = pg->next) {
 		if (pg->index == 0 ||
@@ -1677,10 +1677,10 @@ static struct dyn_ftrace *lookup_rec(start: core::ffi::c_ulong, end: core::ffi::
  * that is either a NOP or call to the function tracer. It checks the ftrace
  * internal tables to determine if the address belongs or not.
  */
-core::ffi::c_ulong ftrace_location_range(start: core::ffi::c_ulong, end: core::ffi::c_ulong)
+kernel::ffi::c_ulong ftrace_location_range(start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong)
 {
 	struct dyn_ftrace *rec;
-	core::ffi::c_ulong ip = 0;
+	kernel::ffi::c_ulong ip = 0;
 
 	rcu_read_lock();
 	rec = lookup_rec(start, end);
@@ -1700,11 +1700,11 @@ core::ffi::c_ulong ftrace_location_range(start: core::ffi::c_ulong, end: core::f
  * * If @ip matches sym+0, return sym's ftrace location.
  * * Otherwise, return 0.
  */
-core::ffi::c_ulong ftrace_location(ip: core::ffi::c_ulong)
+kernel::ffi::c_ulong ftrace_location(ip: kernel::ffi::c_ulong)
 {
-	core::ffi::c_ulong loc;
-	core::ffi::c_ulong offset;
-	core::ffi::c_ulong size;
+	kernel::ffi::c_ulong loc;
+	kernel::ffi::c_ulong offset;
+	kernel::ffi::c_ulong size;
 
 	loc = ftrace_location_range(ip, ip);
 	if (!loc) {
@@ -1730,10 +1730,10 @@ core::ffi::c_ulong ftrace_location(ip: core::ffi::c_ulong)
  */
 int ftrace_text_reserved(const void *start, const void *end)
 {
-	core::ffi::c_ulong ret;
+	kernel::ffi::c_ulong ret;
 
-	ret = ftrace_location_range((core::ffi::c_ulong)start,
-				    (core::ffi::c_ulong)end);
+	ret = ftrace_location_range((kernel::ffi::c_ulong)start,
+				    (kernel::ffi::c_ulong)end);
 
 	return (int)!!ret;
 }
@@ -2173,7 +2173,7 @@ static int ftrace_hash_ipmodify_update(ftrace_ops *ops,
 	return __ftrace_hash_update_ipmodify(ops, old_hash, new_hash, false);
 }
 
-static void print_ip_ins(const char *fmt, const core::ffi::c_uchar *p)
+static void print_ip_ins(const char *fmt, const kernel::ffi::c_uchar *p)
 {
 	char ins[MCOUNT_INSN_SIZE];
 
@@ -2223,7 +2223,7 @@ static void print_bug_type(void)
  */
 void ftrace_bug(int failed, dyn_ftrace *rec)
 {
-	core::ffi::c_ulong ip = rec ? rec->ip : 0;
+	kernel::ffi::c_ulong ip = rec ? rec->ip : 0;
 
 	pr_info(\"------------[ ftrace bug ]------------\n\");
 
@@ -2235,7 +2235,7 @@ void ftrace_bug(int failed, dyn_ftrace *rec)
 	case -EINVAL:
 		pr_info(\"ftrace failed to modify \");
 		print_ip_sym(KERN_INFO, ip);
-		print_ip_ins(\" actual:   \", (core::ffi::c_uchar *)ip);
+		print_ip_ins(\" actual:   \", (kernel::ffi::c_uchar *)ip);
 		pr_cont(\"\n\");
 		if (ftrace_expected) {
 			print_ip_ins(\" expected: \", ftrace_expected);
@@ -2280,7 +2280,7 @@ void ftrace_bug(int failed, dyn_ftrace *rec)
 
 static int ftrace_check_record(dyn_ftrace *rec, enable: bool, update: bool)
 {
-	core::ffi::c_ulong flag = 0UL;
+	kernel::ffi::c_ulong flag = 0UL;
 
 	ftrace_bug_type = FTRACE_BUG_UNKNOWN;
 
@@ -2478,7 +2478,7 @@ static struct ftrace_ops *
 ftrace_find_tramp_ops_any(dyn_ftrace *rec)
 {
 	struct ftrace_ops *op;
-	core::ffi::c_ulong ip = rec->ip;
+	kernel::ffi::c_ulong ip = rec->ip;
 
 	do_for_each_ftrace_op!(op, ftrace_ops_list, {
 
@@ -2496,7 +2496,7 @@ static struct ftrace_ops *
 ftrace_find_tramp_ops_any_other(dyn_ftrace *rec, ftrace_ops *op_exclude)
 {
 	struct ftrace_ops *op;
-	core::ffi::c_ulong ip = rec->ip;
+	kernel::ffi::c_ulong ip = rec->ip;
 
 	do_for_each_ftrace_op!(op, ftrace_ops_list, {
 
@@ -2514,7 +2514,7 @@ static struct ftrace_ops *
 ftrace_find_tramp_ops_next(dyn_ftrace *rec,
 			   ftrace_ops *op)
 {
-	core::ffi::c_ulong ip = rec->ip;
+	kernel::ffi::c_ulong ip = rec->ip;
 
 	while_for_each_ftrace_op!(op, {
 
@@ -2532,7 +2532,7 @@ static struct ftrace_ops *
 ftrace_find_tramp_ops_curr(dyn_ftrace *rec)
 {
 	struct ftrace_ops *op;
-	core::ffi::c_ulong ip = rec->ip;
+	kernel::ffi::c_ulong ip = rec->ip;
 
 	/*
 	 * Need to check removed ops first.
@@ -2602,7 +2602,7 @@ static struct ftrace_ops *
 ftrace_find_tramp_ops_new(dyn_ftrace *rec)
 {
 	struct ftrace_ops *op;
-	core::ffi::c_ulong ip = rec->ip;
+	kernel::ffi::c_ulong ip = rec->ip;
 
 	do_for_each_ftrace_op!(op, ftrace_ops_list, {
 		/* pass rec in as regs to have non-NULL val */
@@ -2617,7 +2617,7 @@ struct ftrace_ops *
 ftrace_find_unique_ops(dyn_ftrace *rec)
 {
 	struct ftrace_ops *op, *found = NULL;
-	core::ffi::c_ulong ip = rec->ip;
+	kernel::ffi::c_ulong ip = rec->ip;
 
 	do_for_each_ftrace_op!(op, ftrace_ops_list, {
 
@@ -2641,7 +2641,7 @@ static DEFINE_MUTEX(direct_mutex);
  * Search the direct_functions hash to see if the given instruction pointer
  * has a direct caller attached to it.
  */
-core::ffi::c_ulong ftrace_find_rec_direct(ip: core::ffi::c_ulong)
+kernel::ffi::c_ulong ftrace_find_rec_direct(ip: kernel::ffi::c_ulong)
 {
 	struct ftrace_func_entry *entry;
 
@@ -2653,10 +2653,10 @@ core::ffi::c_ulong ftrace_find_rec_direct(ip: core::ffi::c_ulong)
 	return entry->direct;
 }
 
-static void call_direct_funcs(ip: core::ffi::c_ulong, pip: core::ffi::c_ulong,
+static void call_direct_funcs(ip: kernel::ffi::c_ulong, pip: kernel::ffi::c_ulong,
 			      ftrace_ops *ops, ftrace_regs *fregs)
 {
-	core::ffi::c_ulong addr;
+	kernel::ffi::c_ulong addr;
 
 #ifdef CONFIG_HAVE_SINGLE_FTRACE_DIRECT_OPS
 	addr = ftrace_find_rec_direct(ip);
@@ -2680,10 +2680,10 @@ static void call_direct_funcs(ip: core::ffi::c_ulong, pip: core::ffi::c_ulong,
  *
  * Returns: the address of the trampoline to set to
  */
-core::ffi::c_ulong ftrace_get_addr_new(dyn_ftrace *rec)
+kernel::ffi::c_ulong ftrace_get_addr_new(dyn_ftrace *rec)
 {
 	struct ftrace_ops *ops;
-	core::ffi::c_ulong addr;
+	kernel::ffi::c_ulong addr;
 
 	if ((rec->flags & FTRACE_FL_DIRECT) &&
 	    (ftrace_rec_count(rec) == 1)) {
@@ -2700,15 +2700,15 @@ core::ffi::c_ulong ftrace_get_addr_new(dyn_ftrace *rec)
 			pr_warn(\"Bad trampoline accounting at: %p (%pS) (%lx)\n\",
 				(void *)rec->ip, (void *)rec->ip, rec->flags);
 			/* Ftrace is shutting down, return anything */
-			return (core::ffi::c_ulong)FTRACE_ADDR;
+			return (kernel::ffi::c_ulong)FTRACE_ADDR;
 		}
 		return ops->trampoline;
 	}
 
 	if (rec->flags & FTRACE_FL_REGS)
-		return (core::ffi::c_ulong)FTRACE_REGS_ADDR;
+		return (kernel::ffi::c_ulong)FTRACE_REGS_ADDR;
 	else
-		return (core::ffi::c_ulong)FTRACE_ADDR;
+		return (kernel::ffi::c_ulong)FTRACE_ADDR;
 }
 
 /**
@@ -2721,10 +2721,10 @@ core::ffi::c_ulong ftrace_get_addr_new(dyn_ftrace *rec)
  *
  * Returns: the address of the trampoline that is currently being called
  */
-core::ffi::c_ulong ftrace_get_addr_curr(dyn_ftrace *rec)
+kernel::ffi::c_ulong ftrace_get_addr_curr(dyn_ftrace *rec)
 {
 	struct ftrace_ops *ops;
-	core::ffi::c_ulong addr;
+	kernel::ffi::c_ulong addr;
 
 	/* Direct calls take precedence over trampolines */
 	if (rec->flags & FTRACE_FL_DIRECT_EN) {
@@ -2741,22 +2741,22 @@ core::ffi::c_ulong ftrace_get_addr_curr(dyn_ftrace *rec)
 			pr_warn(\"Bad trampoline accounting at: %p (%pS)\n\",
 				(void *)rec->ip, (void *)rec->ip);
 			/* Ftrace is shutting down, return anything */
-			return (core::ffi::c_ulong)FTRACE_ADDR;
+			return (kernel::ffi::c_ulong)FTRACE_ADDR;
 		}
 		return ops->trampoline;
 	}
 
 	if (rec->flags & FTRACE_FL_REGS_EN)
-		return (core::ffi::c_ulong)FTRACE_REGS_ADDR;
+		return (kernel::ffi::c_ulong)FTRACE_REGS_ADDR;
 	else
-		return (core::ffi::c_ulong)FTRACE_ADDR;
+		return (kernel::ffi::c_ulong)FTRACE_ADDR;
 }
 
 static int
 __ftrace_replace_code(dyn_ftrace *rec, enable: bool)
 {
-	core::ffi::c_ulong ftrace_old_addr;
-	core::ffi::c_ulong ftrace_addr;
+	kernel::ffi::c_ulong ftrace_old_addr;
+	kernel::ffi::c_ulong ftrace_addr;
 	int ret;
 
 	ftrace_addr = ftrace_get_addr_new(rec);
@@ -3797,9 +3797,9 @@ static int ftrace_hash_move_and_update_subops(ftrace_ops *subops,
 
 u64			ftrace_update_time;
 u64			ftrace_total_mod_time;
-core::ffi::c_ulong		ftrace_update_tot_cnt;
-core::ffi::c_ulong		ftrace_number_of_pages;
-core::ffi::c_ulong		ftrace_number_of_groups;
+kernel::ffi::c_ulong		ftrace_update_tot_cnt;
+kernel::ffi::c_ulong		ftrace_number_of_pages;
+kernel::ffi::c_ulong		ftrace_number_of_groups;
 
 int ops_traces_mod(ftrace_ops *ops)
 {
@@ -3817,8 +3817,8 @@ static int ftrace_update_code(module *mod, ftrace_page *new_pgs)
 	struct ftrace_page *pg;
 	struct dyn_ftrace *p;
 	start: u64, stop, update_time;
-	core::ffi::c_ulong update_cnt = 0;
-	core::ffi::c_ulong rec_flags = 0;
+	kernel::ffi::c_ulong update_cnt = 0;
+	kernel::ffi::c_ulong rec_flags = 0;
 	int i;
 
 	start = ftrace_now(raw_smp_processor_id());
@@ -3871,7 +3871,7 @@ static int ftrace_update_code(module *mod, ftrace_page *new_pgs)
 }
 
 static int ftrace_allocate_records(ftrace_page *pg, int count,
-				   core::ffi::c_ulong *num_pages)
+				   kernel::ffi::c_ulong *num_pages)
 {
 	int order;
 	int pages;
@@ -3914,7 +3914,7 @@ static void ftrace_free_pages(ftrace_page *pages)
 
 	while (pg) {
 		if (pg->records) {
-			free_pages((core::ffi::c_ulong)pg->records, pg->order);
+			free_pages((kernel::ffi::c_ulong)pg->records, pg->order);
 			ftrace_number_of_pages -= 1 << pg->order;
 		}
 		pages = pg->next;
@@ -3925,7 +3925,7 @@ static void ftrace_free_pages(ftrace_page *pages)
 }
 
 static struct ftrace_page *
-ftrace_allocate_pages(num_to_init: core::ffi::c_ulong, core::ffi::c_ulong *num_pages)
+ftrace_allocate_pages(num_to_init: kernel::ffi::c_ulong, kernel::ffi::c_ulong *num_pages)
 {
 	struct ftrace_page *start_pg;
 	struct ftrace_page *pg;
@@ -4362,7 +4362,7 @@ static void add_trampoline_func(seq_file *m, ftrace_ops *ops,
  */
 static int test_for_valid_rec!(dyn_ftrace *rec, {
 	char str[KSYM_SYMBOL_LEN];
-	core::ffi::c_ulong offset;
+	kernel::ffi::c_ulong offset;
 	const char *ret;
 
 	ret = kallsyms_lookup(rec->ip, NULL, &offset, NULL, str);
@@ -4414,9 +4414,9 @@ static int __init ftrace_check_sync(void)
 late_initcall_sync(ftrace_check_sync);
 subsys_initcall(ftrace_check_for_weak_functions);
 
-static int print_rec(seq_file *m, ip: core::ffi::c_ulong)
+static int print_rec(seq_file *m, ip: kernel::ffi::c_ulong)
 {
-	core::ffi::c_ulong offset;
+	kernel::ffi::c_ulong offset;
 	char str[KSYM_SYMBOL_LEN];
 	char *modname;
 	const char *ret;
@@ -4439,7 +4439,7 @@ int test_for_valid_rec!(dyn_ftrace *rec, {
 	return 1;
 });
 
-int print_rec(seq_file *m, ip: core::ffi::c_ulong)
+int print_rec(seq_file *m, ip: kernel::ffi::c_ulong)
 {
 	seq_printf(m, \"%ps\", (void *)ip);
 	return 0;
@@ -4553,7 +4553,7 @@ static int t_show(seq_file *m, void *v)
 			}
 		}
 		if (rec->flags & FTRACE_FL_DIRECT) {
-			core::ffi::c_ulong direct;
+			kernel::ffi::c_ulong direct;
 
 			direct = ftrace_find_rec_direct(rec->ip);
 			if (direct) {
@@ -4905,9 +4905,9 @@ add_rec_by_index(ftrace_hash *hash, ftrace_glob *func_g,
 }
 
 #ifdef FTRACE_MCOUNT_MAX_OFFSET
-static int lookup_ip(ip: core::ffi::c_ulong, char **modname, char *str)
+static int lookup_ip(ip: kernel::ffi::c_ulong, char **modname, char *str)
 {
-	core::ffi::c_ulong offset;
+	kernel::ffi::c_ulong offset;
 
 	kallsyms_lookup(ip, NULL, &offset, modname, str);
 	if (offset > FTRACE_MCOUNT_MAX_OFFSET)
@@ -4915,7 +4915,7 @@ static int lookup_ip(ip: core::ffi::c_ulong, char **modname, char *str)
 	return 0;
 }
 #else
-static int lookup_ip(ip: core::ffi::c_ulong, char **modname, char *str)
+static int lookup_ip(ip: kernel::ffi::c_ulong, char **modname, char *str)
 {
 	kallsyms_lookup(ip, NULL, NULL, modname, str);
 	return 0;
@@ -5264,7 +5264,7 @@ static int __init ftrace_mod_cmd_init(void)
 }
 core_initcall(ftrace_mod_cmd_init);
 
-static void function_trace_probe_call(ip: core::ffi::c_ulong, parent_ip: core::ffi::c_ulong,
+static void function_trace_probe_call(ip: kernel::ffi::c_ulong, parent_ip: kernel::ffi::c_ulong,
 				      ftrace_ops *op, ftrace_regs *fregs)
 {
 	struct ftrace_probe_ops *probe_ops;
@@ -5326,7 +5326,7 @@ struct ftrace_func_mapper *allocate_ftrace_func_mapper(void)
  * allocate more memory for the reference.
  */
 void **ftrace_func_mapper_find_ip(ftrace_func_mapper *mapper,
-				  ip: core::ffi::c_ulong)
+				  ip: kernel::ffi::c_ulong)
 {
 	struct ftrace_func_entry *entry;
 	struct ftrace_func_map *map;
@@ -5348,7 +5348,7 @@ void **ftrace_func_mapper_find_ip(ftrace_func_mapper *mapper,
  * Returns: 0 on success otherwise an error.
  */
 int ftrace_func_mapper_add_ip(ftrace_func_mapper *mapper,
-			      ip: core::ffi::c_ulong, void *data)
+			      ip: kernel::ffi::c_ulong, void *data)
 {
 	struct ftrace_func_entry *entry;
 	struct ftrace_func_map *map;
@@ -5380,7 +5380,7 @@ int ftrace_func_mapper_add_ip(ftrace_func_mapper *mapper,
  * if the data pointer was set to zero.
  */
 void *ftrace_func_mapper_remove_ip(ftrace_func_mapper *mapper,
-				   ip: core::ffi::c_ulong)
+				   ip: kernel::ffi::c_ulong)
 {
 	struct ftrace_func_entry *entry;
 	struct ftrace_func_map *map;
@@ -5878,7 +5878,7 @@ ftrace_notrace_write(file *file, const char __user *ubuf,
 }
 
 static int
-__ftrace_match_addr(ftrace_hash *hash, ip: core::ffi::c_ulong, int remove)
+__ftrace_match_addr(ftrace_hash *hash, ip: kernel::ffi::c_ulong, int remove)
 {
 	struct ftrace_func_entry *entry;
 
@@ -5902,10 +5902,10 @@ __ftrace_match_addr(ftrace_hash *hash, ip: core::ffi::c_ulong, int remove)
 }
 
 static int
-ftrace_match_addr(ftrace_hash *hash, core::ffi::c_ulong *ips,
-		  cnt: core::ffi::c_uint, int remove)
+ftrace_match_addr(ftrace_hash *hash, kernel::ffi::c_ulong *ips,
+		  cnt: kernel::ffi::c_uint, int remove)
 {
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 	int err;
 
 	for (i = 0; i < cnt; i++) {
@@ -5922,8 +5922,8 @@ ftrace_match_addr(ftrace_hash *hash, core::ffi::c_ulong *ips,
 }
 
 static int
-ftrace_set_hash(ftrace_ops *ops, core::ffi::c_uchar *buf, int len,
-		core::ffi::c_ulong *ips, cnt: core::ffi::c_uint,
+ftrace_set_hash(ftrace_ops *ops, kernel::ffi::c_uchar *buf, int len,
+		kernel::ffi::c_ulong *ips, cnt: kernel::ffi::c_uint,
 		int remove, int reset, int enable, char *mod)
 {
 	struct ftrace_hash **orig_hash;
@@ -5980,7 +5980,7 @@ ftrace_set_hash(ftrace_ops *ops, core::ffi::c_uchar *buf, int len,
 }
 
 static int
-ftrace_set_addr(ftrace_ops *ops, core::ffi::c_ulong *ips, cnt: core::ffi::c_uint,
+ftrace_set_addr(ftrace_ops *ops, kernel::ffi::c_ulong *ips, cnt: kernel::ffi::c_uint,
 		int remove, int reset, int enable)
 {
 	return ftrace_set_hash(ops, NULL, 0, ips, cnt, remove, reset, enable, NULL);
@@ -6011,7 +6011,7 @@ static int check_direct_multi(ftrace_ops *ops)
 	return 0;
 }
 
-static void remove_direct_functions_hash(ftrace_hash *hash, addr: core::ffi::c_ulong)
+static void remove_direct_functions_hash(ftrace_hash *hash, addr: kernel::ffi::c_ulong)
 {
 	struct ftrace_func_entry *entry, *del;
 	int size, i;
@@ -6036,7 +6036,7 @@ static void register_ftrace_direct_cb(rcu_head *rhp)
 	free_ftrace_hash(fhp);
 }
 
-static void reset_direct(ftrace_ops *ops, addr: core::ffi::c_ulong)
+static void reset_direct(ftrace_ops *ops, addr: kernel::ffi::c_ulong)
 {
 	struct ftrace_hash *hash = ops->func_hash->filter_hash;
 
@@ -6069,7 +6069,7 @@ static void reset_direct(ftrace_ops *ops, addr: core::ffi::c_ulong)
  *  -ENODEV  - @ip does not point to a ftrace nop location (or not supported)
  *  -ENOMEM  - There was an allocation failure.
  */
-int register_ftrace_direct(ftrace_ops *ops, addr: core::ffi::c_ulong)
+int register_ftrace_direct(ftrace_ops *ops, addr: kernel::ffi::c_ulong)
 {
 	struct ftrace_hash *hash, *new_hash = NULL, *free_hash = NULL;
 	struct ftrace_func_entry *entry, *new;
@@ -6173,7 +6173,7 @@ EXPORT_SYMBOL_GPL(register_ftrace_direct);
  *  0 on success
  *  -EINVAL - The @ops object was not properly registered.
  */
-int unregister_ftrace_direct(ftrace_ops *ops, addr: core::ffi::c_ulong,
+int unregister_ftrace_direct(ftrace_ops *ops, addr: kernel::ffi::c_ulong,
 			     free_filters: bool)
 {
 	int err;
@@ -6195,7 +6195,7 @@ int unregister_ftrace_direct(ftrace_ops *ops, addr: core::ffi::c_ulong,
 EXPORT_SYMBOL_GPL(unregister_ftrace_direct);
 
 static int
-__modify_ftrace_direct(ftrace_ops *ops, addr: core::ffi::c_ulong)
+__modify_ftrace_direct(ftrace_ops *ops, addr: kernel::ffi::c_ulong)
 {
 	struct ftrace_hash *hash = ops->func_hash->filter_hash;
 	struct ftrace_func_entry *entry, *iter;
@@ -6271,7 +6271,7 @@ out:
  * Returns: zero on success. Non zero on error, which includes:
  *  -EINVAL - The @ops object was not properly registered.
  */
-int modify_ftrace_direct_nolock(ftrace_ops *ops, addr: core::ffi::c_ulong)
+int modify_ftrace_direct_nolock(ftrace_ops *ops, addr: kernel::ffi::c_ulong)
 {
 	if (check_direct_multi(ops))
 		return -EINVAL;
@@ -6297,7 +6297,7 @@ EXPORT_SYMBOL_GPL(modify_ftrace_direct_nolock);
  * Returns: zero on success. Non zero on error, which includes:
  *  -EINVAL - The @ops object was not properly registered.
  */
-int modify_ftrace_direct(ftrace_ops *ops, addr: core::ffi::c_ulong)
+int modify_ftrace_direct(ftrace_ops *ops, addr: kernel::ffi::c_ulong)
 {
 	int err;
 
@@ -6313,12 +6313,12 @@ int modify_ftrace_direct(ftrace_ops *ops, addr: core::ffi::c_ulong)
 }
 EXPORT_SYMBOL_GPL(modify_ftrace_direct);
 
-core::ffi::c_ulong hash_count(ftrace_hash *hash)
+kernel::ffi::c_ulong hash_count(ftrace_hash *hash)
 {
 	return hash ? hash->count : 0;
 }
 
-core::ffi::c_ulong ftrace_hash_count(ftrace_hash *hash)
+kernel::ffi::c_ulong ftrace_hash_count(ftrace_hash *hash)
 {
 	return hash_count(hash);
 }
@@ -6513,7 +6513,7 @@ int update_ftrace_direct_del(ftrace_ops *ops, ftrace_hash *hash)
 	struct ftrace_hash *direct_hash;
 	struct ftrace_func_entry *entry;
 	struct ftrace_func_entry *del;
-	core::ffi::c_ulong size;
+	kernel::ffi::c_ulong size;
 	int err = -EINVAL;
 
 	if (!hash_count(hash))
@@ -6617,7 +6617,7 @@ int update_ftrace_direct_mod(ftrace_ops *ops, ftrace_hash *hash, do_direct_lock:
 	};
 	struct ftrace_hash *direct_hash;
 	struct ftrace_hash *orig_hash;
-	size: core::ffi::c_ulong, i;
+	size: kernel::ffi::c_ulong, i;
 	int err = -EINVAL;
 
 	if (!hash_count(hash))
@@ -6705,7 +6705,7 @@ unlock:
  * either by removing each filtered addr or by using
  * ftrace_free_filter(@ops).
  */
-int ftrace_set_filter_ip(ftrace_ops *ops, ip: core::ffi::c_ulong,
+int ftrace_set_filter_ip(ftrace_ops *ops, ip: kernel::ffi::c_ulong,
 			 int remove, int reset)
 {
 	ftrace_ops_init(ops);
@@ -6728,8 +6728,8 @@ EXPORT_SYMBOL_GPL(ftrace_set_filter_ip);
  * either by removing each filtered addr or by using
  * ftrace_free_filter(@ops).
 */
-int ftrace_set_filter_ips(ftrace_ops *ops, core::ffi::c_ulong *ips,
-			  cnt: core::ffi::c_uint, int remove, int reset)
+int ftrace_set_filter_ips(ftrace_ops *ops, kernel::ffi::c_ulong *ips,
+			  cnt: kernel::ffi::c_uint, int remove, int reset)
 {
 	ftrace_ops_init(ops);
 	return ftrace_set_addr(ops, ips, cnt, remove, reset, 1);
@@ -6754,7 +6754,7 @@ void ftrace_ops_set_global_filter(ftrace_ops *ops)
 EXPORT_SYMBOL_GPL(ftrace_ops_set_global_filter);
 
 static int
-ftrace_set_regex(ftrace_ops *ops, core::ffi::c_uchar *buf, int len,
+ftrace_set_regex(ftrace_ops *ops, kernel::ffi::c_uchar *buf, int len,
 		 int reset, int enable)
 {
 	char *mod = NULL, *func, *command, *next = buf;
@@ -6805,7 +6805,7 @@ ftrace_set_regex(ftrace_ops *ops, core::ffi::c_uchar *buf, int len,
  * either by removing each filtered addr or by using
  * ftrace_free_filter(@ops).
  */
-int ftrace_set_filter(ftrace_ops *ops, core::ffi::c_uchar *buf,
+int ftrace_set_filter(ftrace_ops *ops, kernel::ffi::c_uchar *buf,
 		       int len, int reset)
 {
 	ftrace_ops_init(ops);
@@ -6828,7 +6828,7 @@ EXPORT_SYMBOL_GPL(ftrace_set_filter);
  * either by removing each filtered addr or by using
  * ftrace_free_filter(@ops).
  */
-int ftrace_set_notrace(ftrace_ops *ops, core::ffi::c_uchar *buf,
+int ftrace_set_notrace(ftrace_ops *ops, kernel::ffi::c_uchar *buf,
 			int len, int reset)
 {
 	ftrace_ops_init(ops);
@@ -6844,7 +6844,7 @@ EXPORT_SYMBOL_GPL(ftrace_set_notrace);
  * Filters denote which functions should be enabled when tracing is enabled.
  * If @buf is NULL and reset is set, all functions will be enabled for tracing.
  */
-void ftrace_set_global_filter(core::ffi::c_uchar *buf, int len, int reset)
+void ftrace_set_global_filter(kernel::ffi::c_uchar *buf, int len, int reset)
 {
 	ftrace_set_regex(&global_ops, buf, len, reset, 1);
 }
@@ -6860,7 +6860,7 @@ EXPORT_SYMBOL_GPL(ftrace_set_global_filter);
  * is enabled. If @buf is NULL and reset is set, all functions will be enabled
  * for tracing.
  */
-void ftrace_set_global_notrace(core::ffi::c_uchar *buf, int len, int reset)
+void ftrace_set_global_notrace(kernel::ffi::c_uchar *buf, int len, int reset)
 {
 	ftrace_set_regex(&global_ops, buf, len, reset, 0);
 }
@@ -7552,8 +7552,8 @@ static __init int ftrace_init_dyn_tracefs(dentry *d_tracer)
 
 static int ftrace_cmp_ips(const void *a, const void *b)
 {
-	const core::ffi::c_ulong *ipa = a;
-	const core::ffi::c_ulong *ipb = b;
+	const kernel::ffi::c_ulong *ipa = a;
+	const kernel::ffi::c_ulong *ipb = b;
 
 	if (*ipa > *ipb)
 		return 1;
@@ -7563,7 +7563,7 @@ static int ftrace_cmp_ips(const void *a, const void *b)
 }
 
 #ifdef CONFIG_FTRACE_SORT_STARTUP_TEST
-static void test_is_sorted(core::ffi::c_ulong *start, count: core::ffi::c_ulong)
+static void test_is_sorted(kernel::ffi::c_ulong *start, count: kernel::ffi::c_ulong)
 {
 	int i;
 
@@ -7578,25 +7578,25 @@ static void test_is_sorted(core::ffi::c_ulong *start, count: core::ffi::c_ulong)
 		pr_info(\"ftrace section at %px sorted properly\n\", start);
 }
 #else
-static void test_is_sorted(core::ffi::c_ulong *start, count: core::ffi::c_ulong)
+static void test_is_sorted(kernel::ffi::c_ulong *start, count: kernel::ffi::c_ulong)
 {
 }
 #endif
 
 static int ftrace_process_locs(module *mod,
-			       core::ffi::c_ulong *start,
-			       core::ffi::c_ulong *end)
+			       kernel::ffi::c_ulong *start,
+			       kernel::ffi::c_ulong *end)
 {
 	struct ftrace_page *pg_unuse = NULL;
 	struct ftrace_page *start_pg;
 	struct ftrace_page *pg;
 	struct dyn_ftrace *rec;
-	core::ffi::c_ulong skipped = 0;
-	core::ffi::c_ulong count;
-	core::ffi::c_ulong *p;
-	core::ffi::c_ulong addr;
-	core::ffi::c_ulong flags = 0; /* Shut up gcc */
-	core::ffi::c_ulong pages;
+	kernel::ffi::c_ulong skipped = 0;
+	kernel::ffi::c_ulong count;
+	kernel::ffi::c_ulong *p;
+	kernel::ffi::c_ulong addr;
+	kernel::ffi::c_ulong flags = 0; /* Shut up gcc */
+	kernel::ffi::c_ulong pages;
 	int ret = -ENOMEM;
 
 	count = end - start;
@@ -7647,7 +7647,7 @@ static int ftrace_process_locs(module *mod,
 	p = start;
 	pg = start_pg;
 	while (p < end) {
-		core::ffi::c_ulong end_offset;
+		kernel::ffi::c_ulong end_offset;
 
 		addr = *p++;
 
@@ -7714,7 +7714,7 @@ static int ftrace_process_locs(module *mod,
 
 	/* We should have used all pages unless we skipped some */
 	if (pg_unuse) {
-		pg_remaining: core::ffi::c_ulong, remaining = 0;
+		pg_remaining: kernel::ffi::c_ulong, remaining = 0;
 		long skip;
 
 		/* Count the number of entries unused and compare it to skipped. */
@@ -7755,22 +7755,22 @@ static int ftrace_process_locs(module *mod,
 struct ftrace_mod_func {
 	struct list_head	list;
 	char			*name;
-	core::ffi::c_ulong		ip;
-	core::ffi::c_uint		size;
+	kernel::ffi::c_ulong		ip;
+	kernel::ffi::c_uint		size;
 };
 
 struct ftrace_mod_map {
 	struct rcu_head		rcu;
 	struct list_head	list;
 	struct module		*mod;
-	core::ffi::c_ulong		start_addr;
-	core::ffi::c_ulong		end_addr;
+	kernel::ffi::c_ulong		start_addr;
+	kernel::ffi::c_ulong		end_addr;
 	struct list_head	funcs;
-	core::ffi::c_uint		num_funcs;
+	kernel::ffi::c_uint		num_funcs;
 };
 
-static int ftrace_get_trampoline_kallsym(symnum: core::ffi::c_uint,
-					 core::ffi::c_ulong *value, char *type,
+static int ftrace_get_trampoline_kallsym(symnum: kernel::ffi::c_uint,
+					 kernel::ffi::c_ulong *value, char *type,
 					 char *name, char *module_name,
 					 int *exported)
 {
@@ -7799,7 +7799,7 @@ static int ftrace_get_trampoline_kallsym(symnum: core::ffi::c_uint,
  * If the ops ignores the function via notrace filter, skip it.
  */
 static bool
-ops_references_ip(ftrace_ops *ops, ip: core::ffi::c_ulong)
+ops_references_ip(ftrace_ops *ops, ip: kernel::ffi::c_ulong)
 {
 	/* If ops isn't enabled, ignore it */
 	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
@@ -7973,7 +7973,7 @@ void ftrace_release_mod(module *mod)
 		clear_mod_from_hashes(pg);
 
 		if (pg->records) {
-			free_pages((core::ffi::c_ulong)pg->records, pg->order);
+			free_pages((kernel::ffi::c_ulong)pg->records, pg->order);
 			ftrace_number_of_pages -= 1 << pg->order;
 		}
 		tmp_page = pg->next;
@@ -8080,8 +8080,8 @@ static void save_ftrace_mod_rec(ftrace_mod_map *mod_map,
 				dyn_ftrace *rec)
 {
 	struct ftrace_mod_func *mod_func;
-	core::ffi::c_ulong symsize;
-	core::ffi::c_ulong offset;
+	kernel::ffi::c_ulong symsize;
+	kernel::ffi::c_ulong offset;
 	char str[KSYM_SYMBOL_LEN];
 	char *modname;
 	const char *ret;
@@ -8110,7 +8110,7 @@ static void save_ftrace_mod_rec(ftrace_mod_map *mod_map,
 
 static struct ftrace_mod_map *
 allocate_ftrace_mod_map(module *mod,
-			start: core::ffi::c_ulong, end: core::ffi::c_ulong)
+			start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong)
 {
 	struct ftrace_mod_map *mod_map;
 
@@ -8135,8 +8135,8 @@ allocate_ftrace_mod_map(module *mod,
 
 static int
 ftrace_func_address_lookup(ftrace_mod_map *mod_map,
-			   addr: core::ffi::c_ulong, core::ffi::c_ulong *size,
-			   core::ffi::c_ulong *off, char *sym)
+			   addr: kernel::ffi::c_ulong, kernel::ffi::c_ulong *size,
+			   kernel::ffi::c_ulong *off, char *sym)
 {
 	struct ftrace_mod_func *found_func =  NULL;
 	struct ftrace_mod_func *mod_func;
@@ -8161,9 +8161,9 @@ ftrace_func_address_lookup(ftrace_mod_map *mod_map,
 }
 
 int
-ftrace_mod_address_lookup(addr: core::ffi::c_ulong, core::ffi::c_ulong *size,
-			  core::ffi::c_ulong *off, char **modname,
-			  const core::ffi::c_uchar **modbuildid, char *sym)
+ftrace_mod_address_lookup(addr: kernel::ffi::c_ulong, kernel::ffi::c_ulong *size,
+			  kernel::ffi::c_ulong *off, char **modname,
+			  const kernel::ffi::c_uchar **modbuildid, char *sym)
 {
 	struct ftrace_mod_map *mod_map;
 	int ret = 0;
@@ -8185,7 +8185,7 @@ ftrace_mod_address_lookup(addr: core::ffi::c_ulong, core::ffi::c_ulong *size,
 	return ret;
 }
 
-int ftrace_mod_get_kallsym(symnum: core::ffi::c_uint, core::ffi::c_ulong *value,
+int ftrace_mod_get_kallsym(symnum: kernel::ffi::c_uint, kernel::ffi::c_ulong *value,
 			   char *type, char *name,
 			   char *module_name, int *exported)
 {
@@ -8229,11 +8229,11 @@ static void save_ftrace_mod_rec(ftrace_mod_map *mod_map,
 				dyn_ftrace *rec) { }
 struct ftrace_mod_map *
 allocate_ftrace_mod_map(module *mod,
-			start: core::ffi::c_ulong, end: core::ffi::c_ulong)
+			start: kernel::ffi::c_ulong, end: kernel::ffi::c_ulong)
 {
 	return NULL;
 }
-int ftrace_mod_get_kallsym(symnum: core::ffi::c_uint, core::ffi::c_ulong *value,
+int ftrace_mod_get_kallsym(symnum: kernel::ffi::c_uint, kernel::ffi::c_ulong *value,
 			   char *type, char *name, char *module_name,
 			   int *exported)
 {
@@ -8249,7 +8249,7 @@ int ftrace_mod_get_kallsym(symnum: core::ffi::c_uint, core::ffi::c_ulong *value,
 
 struct ftrace_init_func {
 	struct list_head list;
-	core::ffi::c_ulong ip;
+	kernel::ffi::c_ulong ip;
 };
 
 /* Clear any init ips from hashes */
@@ -8302,9 +8302,9 @@ static void add_to_clear_hash_list(list_head *clear_list,
 
 void ftrace_free_mem(module *mod, void *start_ptr, void *end_ptr)
 {
-	core::ffi::c_ulong start = (core::ffi::c_ulong)(start_ptr);
+	kernel::ffi::c_ulong start = (kernel::ffi::c_ulong)(start_ptr);
 	/* end is inclusive and end_ptr is exclusive */
-	core::ffi::c_ulong end = (core::ffi::c_ulong)(end_ptr) - 1;
+	kernel::ffi::c_ulong end = (kernel::ffi::c_ulong)(end_ptr) - 1;
 	struct ftrace_page **last_pg = &ftrace_pages_start;
 	struct ftrace_page *tmp_page = NULL;
 	struct ftrace_page *pg;
@@ -8318,7 +8318,7 @@ void ftrace_free_mem(module *mod, void *start_ptr, void *end_ptr)
 		return;
 
 	key.ip = start;
-	key.flags = end;	/* overload flags, as it is core::ffi::c_ulong */
+	key.flags = end;	/* overload flags, as it is kernel::ffi::c_ulong */
 
 	mutex_lock(&ftrace_lock);
 
@@ -8393,9 +8393,9 @@ int __init __weak ftrace_dyn_arch_init(void)
 
 void __init ftrace_init(void)
 {
-	extern core::ffi::c_ulong __start_mcount_loc[];
-	extern core::ffi::c_ulong __stop_mcount_loc[];
-	count: core::ffi::c_ulong, flags;
+	extern kernel::ffi::c_ulong __start_mcount_loc[];
+	extern kernel::ffi::c_ulong __stop_mcount_loc[];
+	count: kernel::ffi::c_ulong, flags;
 	int ret;
 
 	local_irq_save(flags);
@@ -8437,7 +8437,7 @@ void __weak arch_ftrace_update_trampoline(ftrace_ops *ops)
 
 static void ftrace_update_trampoline(ftrace_ops *ops)
 {
-	core::ffi::c_ulong trampoline = ops->trampoline;
+	kernel::ffi::c_ulong trampoline = ops->trampoline;
 
 	arch_ftrace_update_trampoline(ops);
 	if (ops->trampoline && ops->trampoline != trampoline &&
@@ -8519,7 +8519,7 @@ void ftrace_reset_array_ops(trace_array *tr)
 }
 
 static nokprobe_inline void
-__ftrace_ops_list_func(ip: core::ffi::c_ulong, parent_ip: core::ffi::c_ulong,
+__ftrace_ops_list_func(ip: kernel::ffi::c_ulong, parent_ip: kernel::ffi::c_ulong,
 		       ftrace_ops *ignored, ftrace_regs *fregs)
 {
 	struct pt_regs *regs = ftrace_get_regs(fregs);
@@ -8576,14 +8576,14 @@ out:
  * arch_ftrace_ops_list_func.
  */
 #if ARCH_SUPPORTS_FTRACE_OPS
-void arch_ftrace_ops_list_func(ip: core::ffi::c_ulong, parent_ip: core::ffi::c_ulong,
+void arch_ftrace_ops_list_func(ip: kernel::ffi::c_ulong, parent_ip: kernel::ffi::c_ulong,
 			       ftrace_ops *op, ftrace_regs *fregs)
 {
 	kmsan_unpoison_memory(fregs, ftrace_regs_size());
 	__ftrace_ops_list_func(ip, parent_ip, NULL, fregs);
 }
 #else
-void arch_ftrace_ops_list_func(ip: core::ffi::c_ulong, parent_ip: core::ffi::c_ulong)
+void arch_ftrace_ops_list_func(ip: kernel::ffi::c_ulong, parent_ip: kernel::ffi::c_ulong)
 {
 	__ftrace_ops_list_func(ip, parent_ip, NULL, NULL);
 }
@@ -8595,7 +8595,7 @@ NOKPROBE_SYMBOL(arch_ftrace_ops_list_func);
  * recursion, needs RCU protection, then this function will be called
  * by the mcount trampoline.
  */
-static void ftrace_ops_assist_func(ip: core::ffi::c_ulong, parent_ip: core::ffi::c_ulong,
+static void ftrace_ops_assist_func(ip: kernel::ffi::c_ulong, parent_ip: kernel::ffi::c_ulong,
 				   ftrace_ops *op, ftrace_regs *fregs)
 {
 	int bit;
@@ -8639,7 +8639,7 @@ static void
 ftrace_filter_pid_sched_switch_probe(void *data, preempt: bool,
 				     task_struct *prev,
 				     task_struct *next,
-				     prev_state: core::ffi::c_uint)
+				     prev_state: kernel::ffi::c_uint)
 {
 	struct trace_array *tr = data;
 	struct trace_pid_list *pid_list;
@@ -9108,7 +9108,7 @@ static int prepare_direct_functions_for_ipmodify!(ftrace_ops *ops, {
 	size = 1 << hash->size_bits;
 	for (i = 0; i < size; i++) {
 		hlist_for_each_entry!(entry, &hash->buckets[i], hlist, {
-			core::ffi::c_ulong ip = entry->ip;
+			kernel::ffi::c_ulong ip = entry->ip;
 			bool found_op = false;
 
 			mutex_lock(&ftrace_lock);
@@ -9157,7 +9157,7 @@ static void cleanup_direct_functions_after_ipmodify(ftrace_ops *ops)
 	size = 1 << hash->size_bits;
 	for (i = 0; i < size; i++) {
 		hlist_for_each_entry!(entry, &hash->buckets[i], hlist, {
-			core::ffi::c_ulong ip = entry->ip;
+			kernel::ffi::c_ulong ip = entry->ip;
 			bool found_op = false;
 
 			mutex_lock(&ftrace_lock);
@@ -9271,7 +9271,7 @@ static int symbols_cmp(const void *a, const void *b)
 }
 
 struct kallsyms_data {
-	core::ffi::c_ulong *addrs;
+	kernel::ffi::c_ulong *addrs;
 	const char **syms;
 	size_t cnt;
 	size_t found;
@@ -9281,7 +9281,7 @@ struct kallsyms_data {
  * and returns 1 in case we resolved all the requested symbols,
  * 0 otherwise.
  */
-static int kallsyms_callback(void *data, const char *name, addr: core::ffi::c_ulong)
+static int kallsyms_callback(void *data, const char *name, addr: kernel::ffi::c_ulong)
 {
 	struct kallsyms_data *args = data;
 	const char **sym;
@@ -9327,7 +9327,7 @@ static int kallsyms_callback(void *data, const char *name, addr: core::ffi::c_ul
  *
  * Returns: 0 if all provided symbols are found, -ESRCH otherwise.
  */
-int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, core::ffi::c_ulong *addrs)
+int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, kernel::ffi::c_ulong *addrs)
 {
 	struct kallsyms_data args;
 	int found_all;

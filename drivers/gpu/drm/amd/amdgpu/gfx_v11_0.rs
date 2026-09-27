@@ -875,12 +875,12 @@ unsafe fn gfx_v11_0_rlc_fini(amdgpu_device *adev)
 	/* clear state block */
 	amdgpu_bo_free_kernel((*&adev).gfx.rlc.clear_state_obj,
 			(*&adev).gfx.rlc.clear_state_gpu_addr,
-			(*mut core::ffi::c_void*)&(*adev).gfx.rlc.cs_ptr);
+			(*mut kernel::ffi::c_void*)&(*adev).gfx.rlc.cs_ptr);
 
 	/* jump table block */
 	amdgpu_bo_free_kernel((*&adev).gfx.rlc.cp_table_obj,
 			(*&adev).gfx.rlc.cp_table_gpu_addr,
-			(*mut core::ffi::c_void*)&(*adev).gfx.rlc.cp_table_ptr);
+			(*mut kernel::ffi::c_void*)&(*adev).gfx.rlc.cp_table_ptr);
 }
 
 unsafe fn gfx_v11_0_init_rlcg_reg_access_ctrl(amdgpu_device *adev)
@@ -952,7 +952,7 @@ unsafe fn gfx_v11_0_mec_init(amdgpu_device *adev)
 					      AMDGPU_GEM_DOMAIN_GTT,
 					      (*&adev).gfx.mec.hpd_eop_obj,
 					      (*&adev).gfx.mec.hpd_eop_gpu_addr,
-					      (*mut core::ffi::c_void*)&hpd);
+					      (*mut kernel::ffi::c_void*)&hpd);
 		if r {
 			dev_warn((*adev).dev, "(%d) create HDP EOP bo failed\n", r);
 			gfx_v11_0_mec_fini(adev);
@@ -1134,8 +1134,8 @@ unsafe fn gfx_v11_0_gfx_ring_init(amdgpu_device *adev, int ring_id,
 				   int me, int pipe, int queue)
 {
 	struct amdgpu_ring *ring;
-	core::ffi::c_uint irq_type;
-	core::ffi::c_uint hw_prio;
+	kernel::ffi::c_uint irq_type;
+	kernel::ffi::c_uint hw_prio;
 
 	ring = (*&adev).gfx.gfx_ring[ring_id];
 
@@ -1170,7 +1170,7 @@ unsafe fn gfx_v11_0_compute_ring_init(amdgpu_device *adev, int ring_id,
 	int r;
 	unsigned irq_type;
 	struct amdgpu_ring *ring;
-	core::ffi::c_uint hw_prio;
+	kernel::ffi::c_uint hw_prio;
 
 	ring = (*&adev).gfx.compute_ring[ring_id];
 
@@ -1203,11 +1203,11 @@ unsafe fn gfx_v11_0_compute_ring_init(amdgpu_device *adev, int ring_id,
 
 static mut {
 	SOC21_FIRMWARE_ID	id;
-	core::ffi::c_uint		offset;
-	core::ffi::c_uint		size;
+	kernel::ffi::c_uint		offset;
+	kernel::ffi::c_uint		size;
 } rlc_autoload_info[SOC21_FIRMWARE_ID_MAX];
 
-unsafe fn gfx_v11_0_parse_rlc_toc(amdgpu_device *adev, rlc_toc: *mut core::ffi::c_void)
+unsafe fn gfx_v11_0_parse_rlc_toc(amdgpu_device *adev, rlc_toc: *mut kernel::ffi::c_void)
 {
 	RLC_TABLE_OF_CONTENT *ucode = rlc_toc;
 
@@ -1251,7 +1251,7 @@ unsafe fn gfx_v11_0_rlc_autoload_buffer_init(amdgpu_device *adev)
 				      AMDGPU_GEM_DOMAIN_GTT,
 				      (*&adev).gfx.rlc.rlc_autoload_bo,
 				      (*&adev).gfx.rlc.rlc_autoload_gpu_addr,
-				      (*mut core::ffi::c_void*)&(*adev).gfx.rlc.rlc_autoload_ptr);
+				      (*mut kernel::ffi::c_void*)&(*adev).gfx.rlc.rlc_autoload_ptr);
 
 	if r {
 		dev_err((*adev).dev, "(%d) failed to create fw autoload bo\n", r);
@@ -1295,7 +1295,7 @@ unsafe fn gfx_v11_0_rlc_backdoor_autoload_copy_ucode(amdgpu_device *adev,
 unsafe fn gfx_v11_0_rlc_backdoor_autoload_copy_toc_ucode(amdgpu_device *adev,
 							u32 *fw_autoload_mask)
 {
-	*mut core::ffi::c_voiddata;
+	*mut kernel::ffi::c_voiddata;
 	u32 size;
 	u64 *toc_ptr;
 
@@ -1918,29 +1918,29 @@ unsafe fn gfx_v11_0_pfp_fini(amdgpu_device *adev)
 {
 	amdgpu_bo_free_kernel(&adev->gfx.pfp.pfp_fw_obj,
 			      &adev->gfx.pfp.pfp_fw_gpu_addr,
-			      (*mut core::ffi::c_void*)&adev->gfx.pfp.pfp_fw_ptr);
+			      (*mut kernel::ffi::c_void*)&adev->gfx.pfp.pfp_fw_ptr);
 
 	amdgpu_bo_free_kernel(&adev->gfx.pfp.pfp_fw_data_obj,
 			      &adev->gfx.pfp.pfp_fw_data_gpu_addr,
-			      (*mut core::ffi::c_void*)&adev->gfx.pfp.pfp_fw_data_ptr);
+			      (*mut kernel::ffi::c_void*)&adev->gfx.pfp.pfp_fw_data_ptr);
 }
 
 unsafe fn gfx_v11_0_me_fini(amdgpu_device *adev)
 {
 	amdgpu_bo_free_kernel(&adev->gfx.me.me_fw_obj,
 			      &adev->gfx.me.me_fw_gpu_addr,
-			      (*mut core::ffi::c_void*)&adev->gfx.me.me_fw_ptr);
+			      (*mut kernel::ffi::c_void*)&adev->gfx.me.me_fw_ptr);
 
 	amdgpu_bo_free_kernel(&adev->gfx.me.me_fw_data_obj,
 			       &adev->gfx.me.me_fw_data_gpu_addr,
-			       (*mut core::ffi::c_void*)&adev->gfx.me.me_fw_data_ptr);
+			       (*mut kernel::ffi::c_void*)&adev->gfx.me.me_fw_data_ptr);
 }
 
 unsafe fn gfx_v11_0_rlc_autoload_buffer_fini(amdgpu_device *adev)
 {
 	amdgpu_bo_free_kernel(&adev->gfx.rlc.rlc_autoload_bo,
 			&adev->gfx.rlc.rlc_autoload_gpu_addr,
-			(*mut core::ffi::c_void*)&adev->gfx.rlc.rlc_autoload_ptr);
+			(*mut kernel::ffi::c_void*)&adev->gfx.rlc.rlc_autoload_ptr);
 }
 
 unsafe fn gfx_v11_0_sw_fini(amdgpu_ip_block *ip_block)
@@ -3202,7 +3202,7 @@ unsafe fn gfx_v11_0_cp_gfx_load_pfp_microcode(amdgpu_device *adev)
 				      PAGE_SIZE, AMDGPU_GEM_DOMAIN_GTT,
 				      &adev->gfx.pfp.pfp_fw_obj,
 				      &adev->gfx.pfp.pfp_fw_gpu_addr,
-				      (*mut core::ffi::c_void*)&adev->gfx.pfp.pfp_fw_ptr);
+				      (*mut kernel::ffi::c_void*)&adev->gfx.pfp.pfp_fw_ptr);
 	if r {
 		dev_err(adev->dev, "(%d) failed to create pfp fw bo\n", r);
 		gfx_v11_0_pfp_fini(adev);
@@ -3257,7 +3257,7 @@ unsafe fn gfx_v11_0_cp_gfx_load_pfp_microcode_rs64(amdgpu_device *adev)
 				      AMDGPU_GEM_DOMAIN_GTT,
 				      &adev->gfx.pfp.pfp_fw_obj,
 				      &adev->gfx.pfp.pfp_fw_gpu_addr,
-				      (*mut core::ffi::c_void*)&adev->gfx.pfp.pfp_fw_ptr);
+				      (*mut kernel::ffi::c_void*)&adev->gfx.pfp.pfp_fw_ptr);
 	if r {
 		dev_err(adev->dev, "(%d) failed to create pfp ucode fw bo\n", r);
 		gfx_v11_0_pfp_fini(adev);
@@ -3270,7 +3270,7 @@ unsafe fn gfx_v11_0_cp_gfx_load_pfp_microcode_rs64(amdgpu_device *adev)
 				      AMDGPU_GEM_DOMAIN_GTT,
 				      &adev->gfx.pfp.pfp_fw_data_obj,
 				      &adev->gfx.pfp.pfp_fw_data_gpu_addr,
-				      (*mut core::ffi::c_void*)&adev->gfx.pfp.pfp_fw_data_ptr);
+				      (*mut kernel::ffi::c_void*)&adev->gfx.pfp.pfp_fw_data_ptr);
 	if r {
 		dev_err(adev->dev, "(%d) failed to create pfp data fw bo\n", r);
 		gfx_v11_0_pfp_fini(adev);
@@ -3420,7 +3420,7 @@ unsafe fn gfx_v11_0_cp_gfx_load_me_microcode(amdgpu_device *adev)
 				      PAGE_SIZE, AMDGPU_GEM_DOMAIN_GTT,
 				      &adev->gfx.me.me_fw_obj,
 				      &adev->gfx.me.me_fw_gpu_addr,
-				      (*mut core::ffi::c_void*)&adev->gfx.me.me_fw_ptr);
+				      (*mut kernel::ffi::c_void*)&adev->gfx.me.me_fw_ptr);
 	if r {
 		dev_err(adev->dev, "(%d) failed to create me fw bo\n", r);
 		gfx_v11_0_me_fini(adev);
@@ -3475,7 +3475,7 @@ unsafe fn gfx_v11_0_cp_gfx_load_me_microcode_rs64(amdgpu_device *adev)
 				      AMDGPU_GEM_DOMAIN_GTT,
 				      &adev->gfx.me.me_fw_obj,
 				      &adev->gfx.me.me_fw_gpu_addr,
-				      (*mut core::ffi::c_void*)&adev->gfx.me.me_fw_ptr);
+				      (*mut kernel::ffi::c_void*)&adev->gfx.me.me_fw_ptr);
 	if r {
 		dev_err(adev->dev, "(%d) failed to create me ucode bo\n", r);
 		gfx_v11_0_me_fini(adev);
@@ -3488,7 +3488,7 @@ unsafe fn gfx_v11_0_cp_gfx_load_me_microcode_rs64(amdgpu_device *adev)
 				      AMDGPU_GEM_DOMAIN_GTT,
 				      &adev->gfx.me.me_fw_data_obj,
 				      &adev->gfx.me.me_fw_data_gpu_addr,
-				      (*mut core::ffi::c_void*)&adev->gfx.me.me_fw_data_ptr);
+				      (*mut kernel::ffi::c_void*)&adev->gfx.me.me_fw_data_ptr);
 	if r {
 		dev_err(adev->dev, "(%d) failed to create me data bo\n", r);
 		gfx_v11_0_pfp_fini(adev);
@@ -3931,7 +3931,7 @@ unsafe fn gfx_v11_0_cp_compute_load_microcode(amdgpu_device *adev)
 					  PAGE_SIZE, AMDGPU_GEM_DOMAIN_GTT,
 					  &adev->gfx.mec.mec_fw_obj,
 					  &adev->gfx.mec.mec_fw_gpu_addr,
-					  (*mut core::ffi::c_void*)&fw);
+					  (*mut kernel::ffi::c_void*)&fw);
 	if r {
 		dev_err(adev->dev, "(%d) failed to create mec fw bo\n", r);
 		gfx_v11_0_mec_fini(adev);
@@ -3988,7 +3988,7 @@ unsafe fn gfx_v11_0_cp_compute_load_microcode_rs64(amdgpu_device *adev)
 				      AMDGPU_GEM_DOMAIN_GTT,
 				      &adev->gfx.mec.mec_fw_obj,
 				      &adev->gfx.mec.mec_fw_gpu_addr,
-				      (*mut core::ffi::c_void*)&fw_ucode_ptr);
+				      (*mut kernel::ffi::c_void*)&fw_ucode_ptr);
 	if r {
 		dev_err(adev->dev, "(%d) failed to create mec fw ucode bo\n", r);
 		gfx_v11_0_mec_fini(adev);
@@ -4001,7 +4001,7 @@ unsafe fn gfx_v11_0_cp_compute_load_microcode_rs64(amdgpu_device *adev)
 				      AMDGPU_GEM_DOMAIN_GTT,
 				      &adev->gfx.mec.mec_fw_data_obj,
 				      &adev->gfx.mec.mec_fw_data_gpu_addr,
-				      (*mut core::ffi::c_void*)&fw_data_ptr);
+				      (*mut kernel::ffi::c_void*)&fw_data_ptr);
 	if r {
 		dev_err(adev->dev, "(%d) failed to create mec fw ucode bo\n", r);
 		gfx_v11_0_mec_fini(adev);
@@ -4134,7 +4134,7 @@ unsafe fn gfx_v11_0_gfx_mqd_set_priority(amdgpu_device *adev,
 	mqd->cp_gfx_hqd_queue_priority = tmp;
 }
 
-unsafe fn gfx_v11_0_gfx_mqd_init(amdgpu_device *adev, *mut core::ffi::c_voidm,
+unsafe fn gfx_v11_0_gfx_mqd_init(amdgpu_device *adev, *mut kernel::ffi::c_voidm,
 				  amdgpu_mqd_prop *prop)
 {
 	struct v11_gfx_mqd *mqd = m;
@@ -4238,7 +4238,7 @@ unsafe fn gfx_v11_0_kgq_init_queue(amdgpu_ring *ring)
 	int mqd_idx = ring - &adev->gfx.gfx_ring[0];
 
 	if (!amdgpu_in_reset(adev) && !adev->in_suspend) {
-		memset((*mut core::ffi::c_void)mqd, 0, core::mem::size_of::<*mqd>());
+		memset((*mut kernel::ffi::c_void)mqd, 0, core::mem::size_of::<*mqd>());
 		mutex_lock(&adev->srbm_mutex);
 		soc21_grbm_select(adev, ring->me, ring->pipe, ring->queue, 0);
 		amdgpu_ring_init_mqd(ring);
@@ -4307,7 +4307,7 @@ unsafe fn gfx_v11_0_compute_mqd_set_cu_mask(amdgpu_device *adev,
 	mqd->compute_static_thread_mgmt_se3 = se_mask[3];
 }
 
-unsafe fn gfx_v11_0_compute_mqd_init(amdgpu_device *adev, *mut core::ffi::c_voidm,
+unsafe fn gfx_v11_0_compute_mqd_init(amdgpu_device *adev, *mut kernel::ffi::c_voidm,
 				      amdgpu_mqd_prop *prop)
 {
 	struct v11_compute_mqd *mqd = m;
@@ -4584,7 +4584,7 @@ unsafe fn gfx_v11_0_kiq_init_queue(amdgpu_ring *ring)
 		soc21_grbm_select(adev, 0, 0, 0, 0);
 		mutex_unlock(&adev->srbm_mutex);
 	} else {
-		memset((*mut core::ffi::c_void)mqd, 0, core::mem::size_of::<*mqd>());
+		memset((*mut kernel::ffi::c_void)mqd, 0, core::mem::size_of::<*mqd>());
 		if (amdgpu_sriov_vf(adev) && adev->in_suspend)
 			amdgpu_ring_clear_ring(ring);
 		mutex_lock(&adev->srbm_mutex);
@@ -4608,7 +4608,7 @@ unsafe fn gfx_v11_0_kcq_init_queue(amdgpu_ring *ring)
 	int mqd_idx = ring - &adev->gfx.compute_ring[0];
 
 	if (!amdgpu_in_reset(adev) && !adev->in_suspend) {
-		memset((*mut core::ffi::c_void)mqd, 0, core::mem::size_of::<*mqd>());
+		memset((*mut kernel::ffi::c_void)mqd, 0, core::mem::size_of::<*mqd>());
 		mutex_lock(&adev->srbm_mutex);
 		soc21_grbm_select(adev, ring->me, ring->pipe, ring->queue, 0);
 		amdgpu_ring_init_mqd(ring);
@@ -4831,7 +4831,7 @@ unsafe fn gfx_v11_0_set_userq_eop_interrupts(amdgpu_device *adev,
 {
 	'err_gfx: {
 	'err_compute: {
-	core::ffi::c_uint irq_type;
+	kernel::ffi::c_uint irq_type;
 	int m, p, r;
 
 	if adev->userq_funcs[AMDGPU_HW_IP_GFX] {
@@ -6130,7 +6130,7 @@ unsafe fn gfx_v11_0_ring_emit_vm_flush(amdgpu_ring *ring,
 }
 
 unsafe fn gfx_v11_0_ring_emit_fence_kiq(amdgpu_ring *ring, addr: u64,
-					  seq: u64, flags: core::ffi::c_uint)
+					  seq: u64, flags: kernel::ffi::c_uint)
 {
 	struct amdgpu_device *adev = ring->adev;
 
@@ -6196,7 +6196,7 @@ unsafe fn gfx_v11_0_ring_emit_gfx_shadow(amdgpu_ring *ring,
 					   int vmid)
 {
 	struct amdgpu_device *adev = ring->adev;
-	offs: core::ffi::c_uint, end;
+	offs: kernel::ffi::c_uint, end;
 
 	if !adev->gfx.cp_gfx_shadow || !ring->ring_obj
 		return;
@@ -6313,7 +6313,7 @@ unsafe fn gfx_v11_0_ring_emit_de_meta(amdgpu_ring *ring, resume: bool)
 		amdgpu_ring_write_multiple(ring, de_payload_cpu_addr,
 					   core::mem::size_of::<de_payload>() >> 2);
 	else
-		amdgpu_ring_write_multiple(ring, (*mut core::ffi::c_void)&de_payload,
+		amdgpu_ring_write_multiple(ring, (*mut kernel::ffi::c_void)&de_payload,
 					   core::mem::size_of::<de_payload>() >> 2);
 }
 
@@ -6577,7 +6577,7 @@ unsafe fn gfx_v11_0_eop_irq(amdgpu_device *adev,
 
 unsafe fn gfx_v11_0_set_priv_reg_fault_state(amdgpu_device *adev,
 					      amdgpu_irq_src *source,
-					      r#type: core::ffi::c_uint,
+					      r#type: kernel::ffi::c_uint,
 					      amdgpu_interrupt_state state)
 {
 	cp_int_cntl_reg: u32, cp_int_cntl;
@@ -6668,7 +6668,7 @@ unsafe fn gfx_v11_0_set_bad_op_fault_state(amdgpu_device *adev,
 
 unsafe fn gfx_v11_0_set_priv_inst_fault_state(amdgpu_device *adev,
 					       amdgpu_irq_src *source,
-					       r#type: core::ffi::c_uint,
+					       r#type: kernel::ffi::c_uint,
 					       amdgpu_interrupt_state state)
 {
 	cp_int_cntl_reg: u32, cp_int_cntl;
@@ -6707,8 +6707,8 @@ unsafe fn gfx_v11_0_userq_priv_fault_work(work_struct *work)
 {
 	struct amdgpu_device *adev =
 		container_of(work, amdgpu_device, gfx.userq_priv_fault_work);
-	core::ffi::c_ulong slots = xchg(&adev->gfx.userq_priv_fault_slots, 0);
-	core::ffi::c_uint id;
+	kernel::ffi::c_ulong slots = xchg(&adev->gfx.userq_priv_fault_slots, 0);
+	kernel::ffi::c_uint id;
 
 	for_each_set_bit!(id, &slots, BITS_PER_LONG, {
 		u8 pipe = id & 0x3;
@@ -6784,7 +6784,7 @@ unsafe fn gfx_v11_0_rlc_gc_fed_irq(amdgpu_device *adev,
 #if 0
 unsafe fn gfx_v11_0_kiq_set_interrupt_state(amdgpu_device *adev,
 					     amdgpu_irq_src *src,
-					     r#type: core::ffi::c_uint,
+					     r#type: kernel::ffi::c_uint,
 					     amdgpu_interrupt_state state)
 {
 	tmp: u32, target;
@@ -6827,7 +6827,7 @@ unsafe fn gfx_v11_0_kiq_set_interrupt_state(amdgpu_device *adev,
 
 unsafe fn gfx_v11_0_emit_mem_sync(amdgpu_ring *ring)
 {
-	const core::ffi::c_uint gcr_cntl =
+	const kernel::ffi::c_uint gcr_cntl =
 			PACKET3_ACQUIRE_MEM_GCR_CNTL_GL2_INV(1) |
 			PACKET3_ACQUIRE_MEM_GCR_CNTL_GL2_WB(1) |
 			PACKET3_ACQUIRE_MEM_GCR_CNTL_GLM_INV(1) |
@@ -6849,7 +6849,7 @@ unsafe fn gfx_v11_0_emit_mem_sync(amdgpu_ring *ring)
 }
 
 unsafe fn gfx_v11_0_reset_kgq(amdgpu_ring *ring,
-			       vmid: core::ffi::c_uint,
+			       vmid: kernel::ffi::c_uint,
 			       amdgpu_fence *timedout_fence)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -6859,7 +6859,7 @@ unsafe fn gfx_v11_0_reset_kgq(amdgpu_ring *ring,
 }
 
 unsafe fn gfx_v11_0_reset_kcq(amdgpu_ring *ring,
-			       vmid: core::ffi::c_uint,
+			       vmid: kernel::ffi::c_uint,
 			       amdgpu_fence *timedout_fence)
 {
 	struct amdgpu_device *adev = ring->adev;

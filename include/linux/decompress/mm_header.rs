@@ -12,11 +12,11 @@
 /* Code active when included from the pre-boot environment (STATIC). */
 #[cfg(feature = "STATIC")]
 mod static_environment {
-    use core::ffi::c_void;
+    use kernel::ffi::c_void;
 
     extern "C" {
-        static mut free_mem_ptr: core::ffi::c_ulong;
-        static mut free_mem_end_ptr: core::ffi::c_ulong;
+        static mut free_mem_ptr: kernel::ffi::c_ulong;
+        static mut free_mem_end_ptr: kernel::ffi::c_ulong;
     }
 
     /*
@@ -26,14 +26,14 @@ mod static_environment {
      * null. Rust's linkage/storage visibility is supplied by the build.
      */
     #[no_mangle]
-    pub static mut malloc_ptr: core::ffi::c_ulong = 0;
+    pub static mut malloc_ptr: kernel::ffi::c_ulong = 0;
     #[no_mangle]
-    pub static mut malloc_count: core::ffi::c_int = 0;
+    pub static mut malloc_count: kernel::ffi::c_int = 0;
 
     /* A trivial malloc implementation, adapted from malloc by Hannu
      * Savolainen 1993 and Matthias Urlichs 1994. */
     #[no_mangle]
-    pub unsafe extern "C" fn malloc(size: core::ffi::c_int) -> *mut c_void {
+    pub unsafe extern "C" fn malloc(size: kernel::ffi::c_int) -> *mut c_void {
         let p: *mut c_void;
 
         if size < 0 {
@@ -46,7 +46,7 @@ mod static_environment {
         malloc_ptr = (malloc_ptr.wrapping_add(7)) & !7; /* Align */
 
         p = malloc_ptr as *mut c_void;
-        malloc_ptr = malloc_ptr.wrapping_add(size as core::ffi::c_ulong);
+        malloc_ptr = malloc_ptr.wrapping_add(size as kernel::ffi::c_ulong);
 
         if free_mem_end_ptr != 0 && malloc_ptr >= free_mem_end_ptr {
             return core::ptr::null_mut();
@@ -80,14 +80,14 @@ mod static_environment {
 /* Code active when compiled standalone for use when loading ramdisk. */
 #[cfg(not(feature = "STATIC"))]
 extern "C" {
-    fn kmalloc(size: usize, flags: core::ffi::c_uint) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn vmalloc(size: usize) -> *mut core::ffi::c_void;
-    fn vfree(ptr: *mut core::ffi::c_void);
+    fn kmalloc(size: usize, flags: kernel::ffi::c_uint) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn vmalloc(size: usize) -> *mut kernel::ffi::c_void;
+    fn vfree(ptr: *mut kernel::ffi::c_void);
 }
 
 #[cfg(not(feature = "STATIC"))]
-pub const GFP_KERNEL: core::ffi::c_uint = 0; /* supplied by linux/kernel.h */
+pub const GFP_KERNEL: kernel::ffi::c_uint = 0; /* supplied by linux/kernel.h */
 
 #[cfg(not(feature = "STATIC"))]
 #[macro_export]

@@ -8,7 +8,7 @@
 #[cfg(CONFIG_PPC_EMULATED_STATS)]
 #[repr(C)]
 pub struct ppc_emulated_entry {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub val: atomic_t,
 }
 
@@ -53,7 +53,7 @@ pub struct ppc_emulated {
 extern "C" {
     pub static mut ppc_emulated: ppc_emulated;
     pub static mut ppc_warn_emulated: u32;
-    pub fn ppc_warn_emulated_print(type_: *const core::ffi::c_char);
+    pub fn ppc_warn_emulated_print(type_: *const kernel::ffi::c_char);
 }
 
 #[cfg(CONFIG_PPC_EMULATED_STATS)]

@@ -35,7 +35,7 @@ pub struct scpi_sensor_info {
     pub sensor_id: u16,
     pub class: u8,
     pub trigger_type: u8,
-    pub name: [core::ffi::c_char; 20],
+    pub name: [kernel::ffi::c_char; 20],
 }
 
 // C dependency: struct device.
@@ -71,9 +71,9 @@ pub struct device {
 #[repr(C)]
 pub struct scpi_ops {
     pub get_version: Option<unsafe extern "C" fn() -> u32>,
-    pub clk_get_range: Option<unsafe extern "C" fn(u16, *mut core::ffi::c_ulong, *mut core::ffi::c_ulong) -> i32>,
-    pub clk_get_val: Option<unsafe extern "C" fn(u16) -> core::ffi::c_ulong>,
-    pub clk_set_val: Option<unsafe extern "C" fn(u16, core::ffi::c_ulong) -> i32>,
+    pub clk_get_range: Option<unsafe extern "C" fn(u16, *mut kernel::ffi::c_ulong, *mut kernel::ffi::c_ulong) -> i32>,
+    pub clk_get_val: Option<unsafe extern "C" fn(u16) -> kernel::ffi::c_ulong>,
+    pub clk_set_val: Option<unsafe extern "C" fn(u16, kernel::ffi::c_ulong) -> i32>,
     pub dvfs_get_idx: Option<unsafe extern "C" fn(u8) -> i32>,
     pub dvfs_set_idx: Option<unsafe extern "C" fn(u8, u8) -> i32>,
     pub dvfs_get_info: Option<unsafe extern "C" fn(u8) -> *mut scpi_dvfs_info>,

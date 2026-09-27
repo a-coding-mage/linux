@@ -71,7 +71,7 @@ pub const UFS_MOUNT_UFSTYPE_SUNOS: u32 = 0x00002000;
 unsafe extern "C" {
     pub fn ufs_free_fragments(arg1: *mut inode, fragment: u64, count: u32);
     pub fn ufs_free_blocks(arg1: *mut inode, fragment: u64, count: u32);
-    pub fn ufs_new_fragments(arg1: *mut inode, arg2: *mut core::ffi::c_void,
+    pub fn ufs_new_fragments(arg1: *mut inode, arg2: *mut kernel::ffi::c_void,
         fragment: u64, goal: u64, count: u32, err: *mut i32, folio: *mut folio) -> u64;
     pub fn ufs_load_cylinder(sb: *mut super_block, index: u32) -> *mut ufs_cg_private_info;
     pub fn ufs_put_cylinder(sb: *mut super_block, index: u32);
@@ -89,15 +89,15 @@ unsafe extern "C" {
     pub static ufs_aops: address_space_operations;
     pub fn ufs_free_inode(inode: *mut inode);
     pub fn ufs_new_inode(inode: *mut inode, mode: umode_t) -> *mut inode;
-    pub fn ufs_iget(sb: *mut super_block, ino: libc::c_ulong) -> *mut inode;
+    pub fn ufs_iget(sb: *mut super_block, ino: kernel::ffi::c_ulong) -> *mut inode;
     pub fn ufs_write_inode(inode: *mut inode, wbc: *mut writeback_control) -> i32;
     pub fn ufs_sync_inode(inode: *mut inode) -> i32;
     pub fn ufs_evict_inode(inode: *mut inode);
     pub fn ufs_setattr(idmap: *mut mnt_idmap, dentry: *mut dentry, attr: *mut iattr) -> i32;
     pub static ufs_dir_operations: file_operations;
-    pub fn ufs_warning(sb: *mut super_block, fmt: *const core::ffi::c_char, ...);
-    pub fn ufs_error(sb: *mut super_block, fmt: *const core::ffi::c_char, ...);
-    pub fn ufs_panic(sb: *mut super_block, fmt: *const core::ffi::c_char, ...);
+    pub fn ufs_warning(sb: *mut super_block, fmt: *const kernel::ffi::c_char, ...);
+    pub fn ufs_error(sb: *mut super_block, fmt: *const kernel::ffi::c_char, ...);
+    pub fn ufs_panic(sb: *mut super_block, fmt: *const kernel::ffi::c_char, ...);
     pub fn ufs_mark_sb_dirty(sb: *mut super_block);
 }
 

@@ -42,8 +42,8 @@ const D2NET_GPIO_BLUE_LED_OFF: i32 = 23;
 
 #[repr(C)]
 pub struct gpio_led {
-    pub name: *const core::ffi::c_char,
-    pub default_trigger: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub default_trigger: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -59,7 +59,7 @@ pub struct device {
 
 #[repr(C)]
 pub struct platform_device {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: i32,
     pub dev: device,
 }
@@ -96,13 +96,13 @@ static mut D2NET_GPIO_LEDS: platform_device = platform_device {
 static mut D2NET_LEDS_GPIO_TABLE: gpiod_lookup_table = gpiod_lookup_table { _private: [] };
 
 unsafe extern "C" {
-    fn gpio_request(gpio: i32, label: *const core::ffi::c_char) -> i32;
+    fn gpio_request(gpio: i32, label: *const kernel::ffi::c_char) -> i32;
     fn gpio_direction_output(gpio: i32, value: i32) -> i32;
     fn gpio_free(gpio: i32);
     fn gpiod_add_lookup_table(table: *mut gpiod_lookup_table);
     fn platform_device_register(device: *mut platform_device) -> i32;
-    fn pr_err(format: *const core::ffi::c_char, ...);
-    fn pr_notice(format: *const core::ffi::c_char, ...);
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
+    fn pr_notice(format: *const kernel::ffi::c_char, ...);
 }
 
 unsafe fn d2net_gpio_leds_init() {

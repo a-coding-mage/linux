@@ -55,9 +55,9 @@ extern "C" {
     fn pci_write_config_byte(dev: *mut pci_dev, where_: u32, val: u8) -> i32;
     fn pci_enable_resources(dev: *mut pci_dev, mask: i32) -> i32;
     fn pci_align_resource(dev: *mut pci_dev, res: *const resource, empty_res: *const resource, size: resource_size_t, alignment: resource_size_t) -> resource_size_t;
-    fn pci_name(dev: *mut pci_dev) -> *const core::ffi::c_char;
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn pci_name(dev: *mut pci_dev) -> *const kernel::ffi::c_char;
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 pub unsafe fn inb(addr: i32) -> u8 { let b = PCI_PORT_HBA(addr); if EISA_bus && b == 0 { return eisa_inb(addr); } if parisc_pci_hba[b].is_null() { return u8::MAX; } ((*pci_port).inb)(parisc_pci_hba[b], PCI_PORT_ADDR(addr)) }
@@ -73,7 +73,7 @@ pub unsafe extern "C" fn pcibios_fixup_bus(bus: *mut pci_bus) { if let Some(fixu
 pub unsafe extern "C" fn pcibios_set_master(dev: *mut pci_dev) { let mut lat = 0u8; pci_read_config_byte(dev, 0x0d, &mut lat); if lat >= 16 { return; } pci_write_config_word(dev, 0x0c, (0x80u16 << 8) | pci_cache_line_size as u16); }
 pub unsafe extern "C" fn pcibios_init_bridge(dev: *mut pci_dev) { if dev.is_null() || ((*dev).class >> 8) != 0x0604 { return; } pci_write_config_byte(dev, 0x1b, 32); let mut bridge_ctl = 0u16; pci_read_config_word(dev, 0x3e, &mut bridge_ctl); let bridge_ctl_new = bridge_ctl | 1 | 2 | 4; pci_write_config_word(dev, 0x3e, bridge_ctl_new); }
 
-pub unsafe extern "C" fn pcibios_align_resource(data: *mut core::ffi::c_void, res: *const resource, empty_res: *const resource, size: resource_size_t, alignment: resource_size_t) -> resource_size_t { let dev = data as *mut pci_dev; let mut start = (*res).start; let align = if (*res).flags & 0x100 == 0x100 { 0x1000 } else { 0x100000 }; if align > alignment { start = (start + align - 1) & !(align - 1); } else { start = pci_align_resource(dev, res, empty_res, size, alignment); } start }
+pub unsafe extern "C" fn pcibios_align_resource(data: *mut kernel::ffi::c_void, res: *const resource, empty_res: *const resource, size: resource_size_t, alignment: resource_size_t) -> resource_size_t { let dev = data as *mut pci_dev; let mut start = (*res).start; let align = if (*res).flags & 0x100 == 0x100 { 0x1000 } else { 0x100000 }; if align > alignment { start = (start + align - 1) & !(align - 1); } else { start = pci_align_resource(dev, res, empty_res, size, alignment); } start }
 
 pub unsafe extern "C" fn pcibios_enable_device(dev: *mut pci_dev, mask: i32) -> i32 { let err = pci_enable_resources(dev, mask); if err < 0 { return err; } let mut cmd = 0u16; pci_read_config_word(dev, 4, &mut cmd); let old_cmd = cmd; cmd |= 0x400 | 0x40; if cmd != old_cmd { pci_write_config_word(dev, 4, cmd); } 0 }
 pub unsafe extern "C" fn pcibios_register_hba(hba: *mut pci_hba_data) { if pci_hba_count >= PCI_HBA_MAX as i32 { return; } parisc_pci_hba[pci_hba_count as usize] = hba; (*hba).hba_num = pci_hba_count; pci_hba_count += 1; }

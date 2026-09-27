@@ -14,7 +14,7 @@
  * Copyright (C) 2013 Alistair Popple, IBM Corp
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct memcons {

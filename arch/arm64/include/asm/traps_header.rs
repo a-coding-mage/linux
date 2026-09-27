@@ -23,40 +23,40 @@ pub unsafe fn try_emulate_armv8_deprecated(_regs: *mut pt_regs, _insn: u32) -> b
 }
 
 extern "C" {
-    pub fn force_signal_inject(signal: core::ffi::c_int, code: core::ffi::c_int, address: libc::c_ulong, err: libc::c_ulong);
-    pub fn arm64_notify_segfault(addr: libc::c_ulong);
-    pub fn arm64_force_sig_fault(signo: core::ffi::c_int, code: core::ffi::c_int, far: libc::c_ulong, string: *const core::ffi::c_char);
-    pub fn arm64_force_sig_fault_pkey(far: libc::c_ulong, string: *const core::ffi::c_char, pkey: core::ffi::c_int);
-    pub fn arm64_force_sig_mceerr(code: core::ffi::c_int, far: libc::c_ulong, lsb: i16, string: *const core::ffi::c_char);
-    pub fn arm64_force_sig_ptrace_errno_trap(errno: core::ffi::c_int, far: libc::c_ulong, string: *const core::ffi::c_char);
+    pub fn force_signal_inject(signal: kernel::ffi::c_int, code: kernel::ffi::c_int, address: kernel::ffi::c_ulong, err: kernel::ffi::c_ulong);
+    pub fn arm64_notify_segfault(addr: kernel::ffi::c_ulong);
+    pub fn arm64_force_sig_fault(signo: kernel::ffi::c_int, code: kernel::ffi::c_int, far: kernel::ffi::c_ulong, string: *const kernel::ffi::c_char);
+    pub fn arm64_force_sig_fault_pkey(far: kernel::ffi::c_ulong, string: *const kernel::ffi::c_char, pkey: kernel::ffi::c_int);
+    pub fn arm64_force_sig_mceerr(code: kernel::ffi::c_int, far: kernel::ffi::c_ulong, lsb: i16, string: *const kernel::ffi::c_char);
+    pub fn arm64_force_sig_ptrace_errno_trap(errno: kernel::ffi::c_int, far: kernel::ffi::c_ulong, string: *const kernel::ffi::c_char);
 
-    pub fn bug_brk_handler(regs: *mut pt_regs, esr: libc::c_ulong) -> core::ffi::c_int;
-    pub fn cfi_brk_handler(regs: *mut pt_regs, esr: libc::c_ulong) -> core::ffi::c_int;
-    pub fn reserved_fault_brk_handler(regs: *mut pt_regs, esr: libc::c_ulong) -> core::ffi::c_int;
-    pub fn kasan_brk_handler(regs: *mut pt_regs, esr: libc::c_ulong) -> core::ffi::c_int;
-    pub fn ubsan_brk_handler(regs: *mut pt_regs, esr: libc::c_ulong) -> core::ffi::c_int;
+    pub fn bug_brk_handler(regs: *mut pt_regs, esr: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+    pub fn cfi_brk_handler(regs: *mut pt_regs, esr: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+    pub fn reserved_fault_brk_handler(regs: *mut pt_regs, esr: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+    pub fn kasan_brk_handler(regs: *mut pt_regs, esr: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+    pub fn ubsan_brk_handler(regs: *mut pt_regs, esr: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
 
-    pub fn early_brk64(addr: libc::c_ulong, esr: libc::c_ulong, regs: *mut pt_regs) -> core::ffi::c_int;
-    pub fn dump_kernel_instr(kaddr: libc::c_ulong);
-    pub fn arm64_skip_faulting_instruction(regs: *mut pt_regs, size: libc::c_ulong);
-    pub fn arm64_is_fatal_ras_serror(regs: *mut pt_regs, esr: libc::c_ulong) -> bool;
-    pub fn arm64_serror_panic(regs: *mut pt_regs, esr: libc::c_ulong) -> !;
+    pub fn early_brk64(addr: kernel::ffi::c_ulong, esr: kernel::ffi::c_ulong, regs: *mut pt_regs) -> kernel::ffi::c_int;
+    pub fn dump_kernel_instr(kaddr: kernel::ffi::c_ulong);
+    pub fn arm64_skip_faulting_instruction(regs: *mut pt_regs, size: kernel::ffi::c_ulong);
+    pub fn arm64_is_fatal_ras_serror(regs: *mut pt_regs, esr: kernel::ffi::c_ulong) -> bool;
+    pub fn arm64_serror_panic(regs: *mut pt_regs, esr: kernel::ffi::c_ulong) -> !;
 }
 
 #[inline]
-pub unsafe fn __in_irqentry_text(ptr: libc::c_ulong) -> core::ffi::c_int {
-    (ptr >= (&__irqentry_text_start as *const _ as libc::c_ulong)
-        && ptr < (&__irqentry_text_end as *const _ as libc::c_ulong)) as core::ffi::c_int
+pub unsafe fn __in_irqentry_text(ptr: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
+    (ptr >= (&__irqentry_text_start as *const _ as kernel::ffi::c_ulong)
+        && ptr < (&__irqentry_text_end as *const _ as kernel::ffi::c_ulong)) as kernel::ffi::c_int
 }
 
 #[inline]
-pub unsafe fn in_entry_text(ptr: libc::c_ulong) -> core::ffi::c_int {
-    (ptr >= (&__entry_text_start as *const _ as libc::c_ulong)
-        && ptr < (&__entry_text_end as *const _ as libc::c_ulong)) as core::ffi::c_int
+pub unsafe fn in_entry_text(ptr: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
+    (ptr >= (&__entry_text_start as *const _ as kernel::ffi::c_ulong)
+        && ptr < (&__entry_text_end as *const _ as kernel::ffi::c_ulong)) as kernel::ffi::c_int
 }
 
 #[inline]
-pub unsafe fn arm64_is_ras_serror(esr: libc::c_ulong) -> bool {
+pub unsafe fn arm64_is_ras_serror(esr: kernel::ffi::c_ulong) -> bool {
     // CPUs with RAS use the implementation-defined syndrome bit; CPUs
     // without it use the ISS-valid bit in the same position.
     WARN_ON(preemptible());
@@ -71,7 +71,7 @@ pub unsafe fn arm64_is_ras_serror(esr: libc::c_ulong) -> bool {
 }
 
 #[inline]
-pub unsafe fn arm64_ras_serror_get_severity(esr: libc::c_ulong) -> libc::c_ulong {
+pub unsafe fn arm64_ras_serror_get_severity(esr: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     // Uncategorized errors are treated as uncontainable.
     let aet = esr & ESR_ELx_AET;
     if !arm64_is_ras_serror(esr) {
@@ -84,7 +84,7 @@ pub unsafe fn arm64_ras_serror_get_severity(esr: libc::c_ulong) -> libc::c_ulong
 }
 
 #[inline]
-pub unsafe fn arm64_mops_reset_regs(regs: *mut user_pt_regs, esr: libc::c_ulong) {
+pub unsafe fn arm64_mops_reset_regs(regs: *mut user_pt_regs, esr: kernel::ffi::c_ulong) {
     let wrong_option = esr & ESR_ELx_MOPS_ISS_WRONG_OPTION != 0;
     let option_a = esr & ESR_ELx_MOPS_ISS_OPTION_A != 0;
     let dstreg = ESR_ELx_MOPS_ISS_DESTREG(esr) as usize;

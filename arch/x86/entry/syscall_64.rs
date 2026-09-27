@@ -5,7 +5,7 @@
 // linux/linkage.h, linux/sys.h, linux/cache.h, linux/syscalls.h,
 // linux/entry-common.h, linux/nospec.h, asm/syscall.h
 
-use core::ffi::c_long;
+use kernel::ffi::c_long;
 
 #[repr(C)]
 pub struct pt_regs {

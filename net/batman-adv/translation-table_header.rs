@@ -49,7 +49,7 @@ extern "C" {
         bat_priv: *mut batadv_priv,
         addr: *const u8,
         vid: u16,
-        message: *const core::ffi::c_char,
+        message: *const kernel::ffi::c_char,
         roaming: bool,
     ) -> u16;
     pub fn batadv_tt_local_dump(msg: *mut sk_buff, cb: *mut netlink_callback) -> i32;
@@ -58,7 +58,7 @@ extern "C" {
         bat_priv: *mut batadv_priv,
         orig_node: *mut batadv_orig_node,
         match_vid: i32,
-        message: *const core::ffi::c_char,
+        message: *const kernel::ffi::c_char,
     );
     pub fn batadv_tt_global_hash_find(
         bat_priv: *mut batadv_priv,

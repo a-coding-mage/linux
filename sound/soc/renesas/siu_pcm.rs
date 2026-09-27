@@ -10,7 +10,7 @@
 // linux/module.h, linux/platform_device.h, sound/control.h, sound/core.h,
 // sound/pcm.h, sound/pcm_params.h, sound/soc.h, asm/siu.h, "siu.h".
 
-const DRV_NAME: *const core::ffi::c_char = b"siu-i2s\0".as_ptr() as *const core::ffi::c_char;
+const DRV_NAME: *const kernel::ffi::c_char = b"siu-i2s\0".as_ptr() as *const kernel::ffi::c_char;
 
 #[inline]
 const fn GET_MAX_PERIODS(buf_bytes: u32, period_bytes: u32) -> u32 {
@@ -25,12 +25,12 @@ const fn PERIOD_OFFSET(buf_addr: dma_addr_t, period_num: u32, period_bytes: u32)
 const RWF_STM_RD: u32 = 0x01; /* Read in progress */
 const RWF_STM_WT: u32 = 0x02; /* Write in progress */
 
-type c_int = core::ffi::c_int;
-type c_uint = core::ffi::c_uint;
-type c_ulong = core::ffi::c_ulong;
-type c_void = core::ffi::c_void;
+type c_int = kernel::ffi::c_int;
+type c_uint = kernel::ffi::c_uint;
+type c_ulong = kernel::ffi::c_ulong;
+type c_void = kernel::ffi::c_void;
 type bool_t = bool;
-type u32 = core::ffi::c_uint;
+type u32 = kernel::ffi::c_uint;
 type size_t = usize;
 type dma_addr_t = usize;
 type dma_cookie_t = c_int;
@@ -168,7 +168,7 @@ pub struct dma_cap_mask_t {
 
 #[repr(C)]
 pub struct snd_soc_component_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub open: Option<unsafe extern "C" fn(*mut snd_soc_component, *mut snd_pcm_substream) -> c_int>,
     pub close: Option<unsafe extern "C" fn(*mut snd_soc_component, *mut snd_pcm_substream) -> c_int>,
     pub prepare: Option<unsafe extern "C" fn(*mut snd_soc_component, *mut snd_pcm_substream) -> c_int>,
@@ -249,11 +249,11 @@ unsafe extern "C" {
     fn INIT_WORK(work: *mut work_struct, func: unsafe extern "C" fn(*mut work_struct));
     fn cancel_work_sync(work: *mut work_struct) -> bool_t;
     fn siu_free_port(port_info: *mut siu_port);
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
-    fn dev_dbg(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_warn(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
+    fn dev_dbg(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_warn(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 /* transfersize is number of u32 dma transfers per period */
@@ -271,7 +271,7 @@ unsafe extern "C" fn siu_pcm_stmwrite_stop(port_info: *mut siu_port) -> c_int {
     stfifo = siu_read32(base.offset(SIU_STFIFO));
     siu_write32(base.offset(SIU_STFIFO), stfifo & !0x0c180c18);
     pr_debug(
-        b"%s: STFIFO %x -> %x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s: STFIFO %x -> %x\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_pcm_stmwrite_stop\0".as_ptr(),
         stfifo,
         stfifo & !0x0c180c18,
@@ -316,7 +316,7 @@ unsafe extern "C" fn siu_dma_tx_complete(arg: *mut c_void) {
     }
 
     pr_debug(
-        b"%s: done period #%d (%u/%u bytes), cookie %d\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s: done period #%d (%u/%u bytes), cookie %d\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_dma_tx_complete\0".as_ptr(),
         (*siu_stream).cur_period,
         (*siu_stream).cur_period.wrapping_mul((*siu_stream).period_bytes),
@@ -354,7 +354,7 @@ unsafe extern "C" fn siu_pcm_wr_set(port_info: *mut siu_port, buff: dma_addr_t, 
         DMA_PREP_INTERRUPT | DMA_CTRL_ACK,
     );
     if desc.is_null() {
-        dev_err(dev, b"Failed to allocate a dma descriptor\n\0".as_ptr() as *const core::ffi::c_char);
+        dev_err(dev, b"Failed to allocate a dma descriptor\n\0".as_ptr() as *const kernel::ffi::c_char);
         return -ENOMEM;
     }
 
@@ -362,7 +362,7 @@ unsafe extern "C" fn siu_pcm_wr_set(port_info: *mut siu_port, buff: dma_addr_t, 
     (*desc).callback_param = siu_stream as *mut c_void;
     cookie = dmaengine_submit(desc);
     if cookie < 0 {
-        dev_err(dev, b"Failed to submit a dma transfer\n\0".as_ptr() as *const core::ffi::c_char);
+        dev_err(dev, b"Failed to submit a dma transfer\n\0".as_ptr() as *const kernel::ffi::c_char);
         return cookie;
     }
 
@@ -376,7 +376,7 @@ unsafe extern "C" fn siu_pcm_wr_set(port_info: *mut siu_port, buff: dma_addr_t, 
     siu_write32(base.offset(SIU_STFIFO), stfifo | ((*port_info).stfifo & 0x0c180c18));
     dev_dbg(
         dev,
-        b"%s: STFIFO %x -> %x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s: STFIFO %x -> %x\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_pcm_wr_set\0".as_ptr(),
         stfifo,
         stfifo | ((*port_info).stfifo & 0x0c180c18),
@@ -398,7 +398,7 @@ unsafe extern "C" fn siu_pcm_rd_set(port_info: *mut siu_port, buff: dma_addr_t, 
 
     dev_dbg(
         dev,
-        b"%s: %u@%llx\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s: %u@%llx\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_pcm_rd_set\0".as_ptr(),
         size as c_uint,
         buff as u64,
@@ -417,7 +417,7 @@ unsafe extern "C" fn siu_pcm_rd_set(port_info: *mut siu_port, buff: dma_addr_t, 
         DMA_PREP_INTERRUPT | DMA_CTRL_ACK,
     );
     if desc.is_null() {
-        dev_err(dev, b"Failed to allocate dma descriptor\n\0".as_ptr() as *const core::ffi::c_char);
+        dev_err(dev, b"Failed to allocate dma descriptor\n\0".as_ptr() as *const kernel::ffi::c_char);
         return -ENOMEM;
     }
 
@@ -425,7 +425,7 @@ unsafe extern "C" fn siu_pcm_rd_set(port_info: *mut siu_port, buff: dma_addr_t, 
     (*desc).callback_param = siu_stream as *mut c_void;
     cookie = dmaengine_submit(desc);
     if cookie < 0 {
-        dev_err(dev, b"Failed to submit dma descriptor\n\0".as_ptr() as *const core::ffi::c_char);
+        dev_err(dev, b"Failed to submit dma descriptor\n\0".as_ptr() as *const kernel::ffi::c_char);
         return cookie;
     }
 
@@ -439,7 +439,7 @@ unsafe extern "C" fn siu_pcm_rd_set(port_info: *mut siu_port, buff: dma_addr_t, 
     siu_write32(base.offset(SIU_STFIFO), siu_read32(base.offset(SIU_STFIFO)) | ((*port_info).stfifo & 0x13071307));
     dev_dbg(
         dev,
-        b"%s: STFIFO %x -> %x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s: STFIFO %x -> %x\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_pcm_rd_set\0".as_ptr(),
         stfifo,
         stfifo | ((*port_info).stfifo & 0x13071307),
@@ -457,7 +457,7 @@ unsafe extern "C" fn siu_io_work(work: *mut work_struct) {
 
     dev_dbg(
         dev,
-        b"%s: flags %x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s: flags %x\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_io_work\0".as_ptr(),
         (*siu_stream).rw_flg,
     );
@@ -465,7 +465,7 @@ unsafe extern "C" fn siu_io_work(work: *mut work_struct) {
     if (*siu_stream).rw_flg == 0 {
         dev_dbg(
             dev,
-            b"%s: stream inactive\n\0".as_ptr() as *const core::ffi::c_char,
+            b"%s: stream inactive\n\0".as_ptr() as *const kernel::ffi::c_char,
             b"siu_io_work\0".as_ptr(),
         );
         return;
@@ -532,7 +532,7 @@ unsafe extern "C" fn siu_pcm_stmread_stop(port_info: *mut siu_port) -> c_int {
     siu_write32(base.offset(SIU_STFIFO), stfifo & !0x13071307);
     dev_dbg(
         dev,
-        b"%s: STFIFO %x -> %x\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s: STFIFO %x -> %x\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_pcm_stmread_stop\0".as_ptr(),
         stfifo,
         stfifo & !0x13071307,
@@ -548,7 +548,7 @@ unsafe extern "C" fn filter(chan: *mut dma_chan, secondary: *mut c_void) -> bool
     let param: *mut sh_dmae_slave = secondary as *mut sh_dmae_slave;
 
     pr_debug(
-        b"%s: secondary ID %d\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s: secondary ID %d\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"filter\0".as_ptr(),
         (*param).shdma_slave.slave_id,
     );
@@ -573,7 +573,7 @@ unsafe extern "C" fn siu_pcm_open(component: *mut snd_soc_component, ss: *mut sn
 
     dev_dbg(
         dev,
-        b"%s, port=%d@%p\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s, port=%d@%p\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_pcm_open\0".as_ptr(),
         port,
         port_info,
@@ -592,7 +592,7 @@ unsafe extern "C" fn siu_pcm_open(component: *mut snd_soc_component, ss: *mut sn
     /* Get DMA channel */
     (*siu_stream).chan = dma_request_channel(mask, Some(filter), param as *mut c_void);
     if (*siu_stream).chan.is_null() {
-        dev_err(dev, b"DMA channel allocation failed!\n\0".as_ptr() as *const core::ffi::c_char);
+        dev_err(dev, b"DMA channel allocation failed!\n\0".as_ptr() as *const kernel::ffi::c_char);
         return -EBUSY;
     }
 
@@ -609,7 +609,7 @@ unsafe extern "C" fn siu_pcm_close(_component: *mut snd_soc_component, ss: *mut 
 
     dev_dbg(
         dev,
-        b"%s: port=%d\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s: port=%d\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_pcm_close\0".as_ptr(),
         (*info).port_id,
     );
@@ -649,7 +649,7 @@ unsafe extern "C" fn siu_pcm_prepare(_component: *mut snd_soc_component, ss: *mu
 
     dev_dbg(
         dev,
-        b"%s: port=%d, %d channels, period=%u bytes\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s: port=%d, %d channels, period=%u bytes\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_pcm_prepare\0".as_ptr(),
         (*info).port_id,
         (*rt).channels,
@@ -660,7 +660,7 @@ unsafe extern "C" fn siu_pcm_prepare(_component: *mut snd_soc_component, ss: *mu
     if (*siu_stream).buf_bytes % (*siu_stream).period_bytes != 0 {
         dev_err(
             dev,
-            b"%s() - buffer=%d not multiple of period=%d\n\0".as_ptr() as *const core::ffi::c_char,
+            b"%s() - buffer=%d not multiple of period=%d\n\0".as_ptr() as *const kernel::ffi::c_char,
             b"siu_pcm_prepare\0".as_ptr(),
             (*siu_stream).buf_bytes,
             (*siu_stream).period_bytes,
@@ -678,7 +678,7 @@ unsafe extern "C" fn siu_pcm_prepare(_component: *mut snd_soc_component, ss: *mu
 
     dev_dbg(
         dev,
-        b"port=%d buf=%lx buf_bytes=%d period_bytes=%d format=%d channels=%d xfer_cnt=%d\n\0".as_ptr() as *const core::ffi::c_char,
+        b"port=%d buf=%lx buf_bytes=%d period_bytes=%d format=%d channels=%d xfer_cnt=%d\n\0".as_ptr() as *const kernel::ffi::c_char,
         (*info).port_id,
         (*rt).dma_addr as c_ulong,
         (*siu_stream).buf_bytes,
@@ -699,7 +699,7 @@ unsafe extern "C" fn siu_pcm_trigger(_component: *mut snd_soc_component, ss: *mu
 
     dev_dbg(
         dev,
-        b"%s: port=%d@%p, cmd=%d\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s: port=%d@%p, cmd=%d\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_pcm_trigger\0".as_ptr(),
         (*info).port_id,
         port_info,
@@ -717,7 +717,7 @@ unsafe extern "C" fn siu_pcm_trigger(_component: *mut snd_soc_component, ss: *mu
             if ret < 0 {
                 dev_warn(
                     dev,
-                    b"%s: start failed on port=%d\n\0".as_ptr() as *const core::ffi::c_char,
+                    b"%s: start failed on port=%d\n\0".as_ptr() as *const kernel::ffi::c_char,
                     b"siu_pcm_trigger\0".as_ptr(),
                     (*info).port_id,
                 );
@@ -734,7 +734,7 @@ unsafe extern "C" fn siu_pcm_trigger(_component: *mut snd_soc_component, ss: *mu
         _ => {
             dev_err(
                 dev,
-                b"%s() unsupported cmd=%d\n\0".as_ptr() as *const core::ffi::c_char,
+                b"%s() unsupported cmd=%d\n\0".as_ptr() as *const kernel::ffi::c_char,
                 b"siu_pcm_trigger\0".as_ptr(),
                 cmd,
             );
@@ -776,7 +776,7 @@ unsafe extern "C" fn siu_pcm_pointer_dma(
 
     dev_dbg(
         dev,
-        b"%s: port=%d, events %x, FSTS %x, xferred %u/%u, cookie %d\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s: port=%d, events %x, FSTS %x, xferred %u/%u, cookie %d\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_pcm_pointer_dma\0".as_ptr(),
         (*info).port_id,
         siu_read32(base.offset(SIU_EVNTC)),
@@ -840,7 +840,7 @@ unsafe extern "C" fn siu_pcm_new(_component: *mut snd_soc_component, rtd: *mut s
         i += 1;
     }
 
-    dev_info((*card).dev, b"SuperH SIU driver initialized.\n\0".as_ptr() as *const core::ffi::c_char);
+    dev_info((*card).dev, b"SuperH SIU driver initialized.\n\0".as_ptr() as *const kernel::ffi::c_char);
     0
 }
 
@@ -855,7 +855,7 @@ unsafe extern "C" fn siu_pcm_free(_component: *mut snd_soc_component, pcm: *mut 
 
     dev_dbg(
         (*(*pcm).card).dev,
-        b"%s\n\0".as_ptr() as *const core::ffi::c_char,
+        b"%s\n\0".as_ptr() as *const kernel::ffi::c_char,
         b"siu_pcm_free\0".as_ptr(),
     );
 }

@@ -78,7 +78,7 @@ pub struct soc15_allowed_register_entry {
 
 #[repr(C)]
 pub struct soc15_ras_field_entry {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub hwip: u32,
     pub inst: u32,
     pub seg: u32,
@@ -148,7 +148,7 @@ macro_rules! SOC15_RAS_REG_FIELD_VAL {
 
 extern "C" {
     pub fn soc15_grbm_select(adev: *mut amdgpu_device, me: u32, pipe: u32,
-                             queue: u32, vmid: u32, xcc_id: core::ffi::c_int);
+                             queue: u32, vmid: u32, xcc_id: kernel::ffi::c_int);
     pub fn soc15_set_virt_ops(adev: *mut amdgpu_device);
     pub fn soc15_program_register_sequence(
         adev: *mut amdgpu_device,
@@ -156,15 +156,15 @@ extern "C" {
         array_size: u32,
     );
 
-    pub fn vega10_reg_base_init(adev: *mut amdgpu_device) -> core::ffi::c_int;
-    pub fn vega20_reg_base_init(adev: *mut amdgpu_device) -> core::ffi::c_int;
-    pub fn arct_reg_base_init(adev: *mut amdgpu_device) -> core::ffi::c_int;
-    pub fn aldebaran_reg_base_init(adev: *mut amdgpu_device) -> core::ffi::c_int;
-    pub fn aqua_vanjaram_init_soc_config(adev: *mut amdgpu_device) -> core::ffi::c_int;
+    pub fn vega10_reg_base_init(adev: *mut amdgpu_device) -> kernel::ffi::c_int;
+    pub fn vega20_reg_base_init(adev: *mut amdgpu_device) -> kernel::ffi::c_int;
+    pub fn arct_reg_base_init(adev: *mut amdgpu_device) -> kernel::ffi::c_int;
+    pub fn aldebaran_reg_base_init(adev: *mut amdgpu_device) -> kernel::ffi::c_int;
+    pub fn aqua_vanjaram_init_soc_config(adev: *mut amdgpu_device) -> kernel::ffi::c_int;
     pub fn aqua_vanjaram_get_reg_state(
         adev: *mut amdgpu_device,
         reg_state: amdgpu_reg_state,
-        buf: *mut core::ffi::c_void,
+        buf: *mut kernel::ffi::c_void,
         max_size: usize,
     ) -> isize;
 

@@ -128,7 +128,7 @@ unsafe extern "C" {
         tsk: *mut task_struct,
         sp: *mut usize,
         regs: *mut pt_regs,
-        loglvl: *const core::ffi::c_char,
+        loglvl: *const kernel::ffi::c_char,
     );
 }
 
@@ -160,13 +160,13 @@ pub const PREFETCH_STRIDE: usize = L1_CACHE_BYTES;
 
 #[cfg(any(CONFIG_CPU_SH2A, CONFIG_CPU_SH4))]
 #[inline]
-pub unsafe fn prefetch(x: *const core::ffi::c_void) {
+pub unsafe fn prefetch(x: *const kernel::ffi::c_void) {
     core::intrinsics::prefetch_read_data(x, 3);
 }
 
 #[cfg(any(CONFIG_CPU_SH2A, CONFIG_CPU_SH4))]
 #[inline]
-pub unsafe fn prefetchw(x: *const core::ffi::c_void) {
+pub unsafe fn prefetchw(x: *const kernel::ffi::c_void) {
     core::intrinsics::prefetch_write_data(x, 3);
 }
 

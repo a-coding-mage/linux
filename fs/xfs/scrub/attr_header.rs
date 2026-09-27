@@ -10,16 +10,16 @@
 #[repr(C)]
 pub struct xchk_xattr_buf {
 	/* Bitmap of used space in xattr leaf blocks and shortform forks. */
-	pub usedmap: *mut core::ffi::c_ulong,
+	pub usedmap: *mut kernel::ffi::c_ulong,
 
 	/* Bitmap of free space in xattr leaf blocks. */
-	pub freemap: *mut core::ffi::c_ulong,
+	pub freemap: *mut kernel::ffi::c_ulong,
 
 	/* Memory buffer used to hold salvaged xattr names. */
 	pub name: *mut u8,
 
 	/* Memory buffer used to extract xattr values. */
-	pub value: *mut core::ffi::c_void,
+	pub value: *mut kernel::ffi::c_void,
 	pub value_sz: usize,
 }
 
@@ -28,7 +28,7 @@ pub enum xfs_scrub {}
 extern "C" {
 	pub fn xchk_xattr_set_map(
 		sc: *mut xfs_scrub,
-		map: *mut core::ffi::c_ulong,
+		map: *mut kernel::ffi::c_ulong,
 		start: u32,
 		len: u32,
 	) -> bool;

@@ -20,10 +20,10 @@ const MXC_CCM_CGR1: usize = 0x24;
 const MXC_CCM_CGR2: usize = 0x28;
 const MXC_CCM_PMCR0: usize = 0x5c;
 
-static MCU_MAIN_SEL: [*const core::ffi::c_char; 2] = [b"spll\0".as_ptr() as _, b"mpll\0".as_ptr() as _];
-static PER_SEL: [*const core::ffi::c_char; 2] = [b"per_div\0".as_ptr() as _, b"ipg\0".as_ptr() as _];
-static CSI_SEL: [*const core::ffi::c_char; 2] = [b"upll\0".as_ptr() as _, b"spll\0".as_ptr() as _];
-static FIR_SEL: [*const core::ffi::c_char; 3] = [b"mcu_main\0".as_ptr() as _, b"upll\0".as_ptr() as _, b"spll\0".as_ptr() as _];
+static MCU_MAIN_SEL: [*const kernel::ffi::c_char; 2] = [b"spll\0".as_ptr() as _, b"mpll\0".as_ptr() as _];
+static PER_SEL: [*const kernel::ffi::c_char; 2] = [b"per_div\0".as_ptr() as _, b"ipg\0".as_ptr() as _];
+static CSI_SEL: [*const kernel::ffi::c_char; 2] = [b"upll\0".as_ptr() as _, b"spll\0".as_ptr() as _];
+static FIR_SEL: [*const kernel::ffi::c_char; 3] = [b"mcu_main\0".as_ptr() as _, b"upll\0".as_ptr() as _, b"spll\0".as_ptr() as _];
 
 #[repr(usize)]
 enum Mx31Clks {

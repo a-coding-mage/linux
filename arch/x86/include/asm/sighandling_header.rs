@@ -16,14 +16,14 @@ pub const FIX_EFLAGS: u64 = X86_EFLAGS_AC
     | X86_EFLAGS_RF;
 
 extern "C" {
-    pub fn signal_fault(regs: *mut crate::pt_regs, frame: *mut core::ffi::c_void, where_: *mut core::ffi::c_char);
+    pub fn signal_fault(regs: *mut crate::pt_regs, frame: *mut kernel::ffi::c_void, where_: *mut kernel::ffi::c_char);
 
     pub fn get_sigframe(
         ksig: *mut crate::ksignal,
         regs: *mut crate::pt_regs,
         frame_size: usize,
-        fpstate: *mut *mut core::ffi::c_void,
-    ) -> *mut core::ffi::c_void;
+        fpstate: *mut *mut kernel::ffi::c_void,
+    ) -> *mut kernel::ffi::c_void;
 
     pub fn ia32_setup_frame(ksig: *mut crate::ksignal, regs: *mut crate::pt_regs) -> i32;
     pub fn ia32_setup_rt_frame(ksig: *mut crate::ksignal, regs: *mut crate::pt_regs) -> i32;

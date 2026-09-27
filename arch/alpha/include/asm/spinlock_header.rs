@@ -27,7 +27,7 @@ pub unsafe fn arch_spin_unlock(lock: *mut arch_spinlock_t) {
 
 #[inline]
 pub unsafe fn arch_spin_lock(lock: *mut arch_spinlock_t) {
-    let mut tmp: libc::c_long;
+    let mut tmp: kernel::ffi::c_long;
     core::arch::asm!(
         "1: ldl_l {0}, {1}", "bne {0}, 2f", "lda {0}, 1", "stl_c {0}, {1}",
         "beq {0}, 2f", "mb", ".subsection 2", "2: ldl {0}, {1}",
@@ -42,7 +42,7 @@ pub unsafe fn arch_spin_trylock(lock: *mut arch_spinlock_t) -> i32 {
 
 #[inline]
 pub unsafe fn arch_read_lock(lock: *mut arch_rwlock_t) {
-    let mut regx: libc::c_long;
+    let mut regx: kernel::ffi::c_long;
     core::arch::asm!(
         "1: ldl_l {1}, {0}", "blbs {1}, 6f", "subl {1}, 2, {1}",
         "stl_c {1}, {0}", "beq {1}, 6f", "mb", ".subsection 2",
@@ -52,7 +52,7 @@ pub unsafe fn arch_read_lock(lock: *mut arch_rwlock_t) {
 
 #[inline]
 pub unsafe fn arch_write_lock(lock: *mut arch_rwlock_t) {
-    let mut regx: libc::c_long;
+    let mut regx: kernel::ffi::c_long;
     core::arch::asm!(
         "1: ldl_l {1}, {0}", "bne {1}, 6f", "lda {1}, 1", "stl_c {1}, {0}",
         "beq {1}, 6f", "mb", ".subsection 2", "6: ldl {1}, {0}",
@@ -62,8 +62,8 @@ pub unsafe fn arch_write_lock(lock: *mut arch_rwlock_t) {
 
 #[inline]
 pub unsafe fn arch_read_trylock(lock: *mut arch_rwlock_t) -> i32 {
-    let mut regx: libc::c_long;
-    let mut success: libc::c_int;
+    let mut regx: kernel::ffi::c_long;
+    let mut success: kernel::ffi::c_int;
     core::arch::asm!(
         "1: ldl_l {1}, {0}", "lda {2}, 0", "blbs {1}, 2f", "subl {1}, 2, {2}",
         "stl_c {2}, {0}", "beq {2}, 6f", "2: mb", ".subsection 2",
@@ -75,8 +75,8 @@ pub unsafe fn arch_read_trylock(lock: *mut arch_rwlock_t) -> i32 {
 
 #[inline]
 pub unsafe fn arch_write_trylock(lock: *mut arch_rwlock_t) -> i32 {
-    let mut regx: libc::c_long;
-    let mut success: libc::c_int;
+    let mut regx: kernel::ffi::c_long;
+    let mut success: kernel::ffi::c_int;
     core::arch::asm!(
         "1: ldl_l {1}, {0}", "lda {2}, 0", "bne {1}, 2f", "lda {2}, 1",
         "stl_c {2}, {0}", "beq {2}, 6f", "2: mb", ".subsection 2",
@@ -88,7 +88,7 @@ pub unsafe fn arch_write_trylock(lock: *mut arch_rwlock_t) -> i32 {
 
 #[inline]
 pub unsafe fn arch_read_unlock(lock: *mut arch_rwlock_t) {
-    let mut regx: libc::c_long;
+    let mut regx: kernel::ffi::c_long;
     core::arch::asm!(
         "mb", "1: ldl_l {1}, {0}", "addl {1}, 2, {1}", "stl_c {1}, {0}",
         "beq {1}, 6f", ".subsection 2", "6: br 1b", ".previous",

@@ -15,7 +15,7 @@ const ICELAND_MGCG_CGCG_INIT: [u32; 6] = [
 extern "C" {
     fn amdgpu_device_program_register_sequence(adev: *mut amdgpu_device, regs: *const u32, count: usize);
     fn amdgpu_ucode_release(fw: *mut *mut amdgpu_firmware);
-    fn amdgpu_ucode_request(adev: *mut amdgpu_device, fw: *mut *mut amdgpu_firmware, flags: u32, fmt: *const core::ffi::c_char, ...) -> i32;
+    fn amdgpu_ucode_request(adev: *mut amdgpu_device, fw: *mut *mut amdgpu_firmware, flags: u32, fmt: *const kernel::ffi::c_char, ...) -> i32;
     fn amdgpu_ring_write(ring: *mut amdgpu_ring, v: u32);
     fn amdgpu_sdma_get_instance_from_ring(ring: *mut amdgpu_ring) -> *mut amdgpu_sdma_instance;
     fn amdgpu_gmc_emit_flush_gpu_tlb(ring: *mut amdgpu_ring, vmid: u32, pd_addr: u64);
@@ -24,22 +24,22 @@ extern "C" {
     fn amdgpu_wb_free(adev: *mut amdgpu_device, index: u32);
     fn amdgpu_ring_alloc(ring: *mut amdgpu_ring, n: u32) -> i32;
     fn amdgpu_ring_commit(ring: *mut amdgpu_ring);
-    fn amdgpu_ib_get(adev: *mut amdgpu_device, vm: *mut core::ffi::c_void, size: u32, pool: u32, ib: *mut amdgpu_ib) -> i64;
-    fn amdgpu_ib_schedule(ring: *mut amdgpu_ring, n: u32, ib: *mut amdgpu_ib, a: *mut core::ffi::c_void, f: *mut *mut dma_fence) -> i64;
-    fn amdgpu_ib_free(ib: *mut amdgpu_ib, a: *mut core::ffi::c_void);
+    fn amdgpu_ib_get(adev: *mut amdgpu_device, vm: *mut kernel::ffi::c_void, size: u32, pool: u32, ib: *mut amdgpu_ib) -> i64;
+    fn amdgpu_ib_schedule(ring: *mut amdgpu_ring, n: u32, ib: *mut amdgpu_ib, a: *mut kernel::ffi::c_void, f: *mut *mut dma_fence) -> i64;
+    fn amdgpu_ib_free(ib: *mut amdgpu_ib, a: *mut kernel::ffi::c_void);
     fn dma_fence_wait_timeout(f: *mut dma_fence, intr: bool, timeout: i64) -> i64;
     fn dma_fence_put(f: *mut dma_fence);
     fn udelay(usec: u32);
-    fn mutex_lock(m: *mut core::ffi::c_void);
-    fn mutex_unlock(m: *mut core::ffi::c_void);
+    fn mutex_lock(m: *mut kernel::ffi::c_void);
+    fn mutex_unlock(m: *mut kernel::ffi::c_void);
     fn vi_srbm_select(adev: *mut amdgpu_device, me: u32, pipe: u32, queue: u32, vmid: u32);
     fn amdgpu_irq_add_id(adev: *mut amdgpu_device, client: u32, src: u32, irq: *mut amdgpu_irq_src) -> i32;
-    fn amdgpu_ring_init(adev: *mut amdgpu_device, ring: *mut amdgpu_ring, size: u32, irq: *mut amdgpu_irq_src, instance: u32, prio: u32, x: *mut core::ffi::c_void) -> i32;
+    fn amdgpu_ring_init(adev: *mut amdgpu_device, ring: *mut amdgpu_ring, size: u32, irq: *mut amdgpu_irq_src, instance: u32, prio: u32, x: *mut kernel::ffi::c_void) -> i32;
     fn amdgpu_ring_fini(ring: *mut amdgpu_ring);
     fn amdgpu_sdma_set_vm_pte_scheds(adev: *mut amdgpu_device, f: *const amdgpu_vm_pte_funcs);
     fn amdgpu_sdma_set_buffer_funcs_scheds(adev: *mut amdgpu_device, f: *const amdgpu_buffer_funcs);
     fn amdgpu_fence_process(ring: *mut amdgpu_ring);
-    fn drm_sched_fault(sched: *mut core::ffi::c_void);
+    fn drm_sched_fault(sched: *mut kernel::ffi::c_void);
 }
 
 unsafe fn sdma_v2_4_init_golden_registers(adev: *mut amdgpu_device) {
@@ -59,7 +59,7 @@ unsafe fn sdma_v2_4_free_microcode(adev: *mut amdgpu_device) {
 }
 
 unsafe fn sdma_v2_4_init_microcode(adev: *mut amdgpu_device) -> i32 {
-    let chip_name: *const core::ffi::c_char;
+    let chip_name: *const kernel::ffi::c_char;
     let mut err = 0;
     let mut i = 0;
     match (*adev).asic_type { CHIP_TOPAZ => chip_name = b"topaz\0".as_ptr() as _, _ => return -EINVAL }
@@ -150,7 +150,7 @@ unsafe fn sdma_v2_4_set_clockgating_state(_ip:*mut amdgpu_ip_block,_state:u32)->
 unsafe fn sdma_v2_4_set_powergating_state(_ip:*mut amdgpu_ip_block,_state:u32)->i32{0}
 
 #[repr(C)]
-struct sdma_v2_4_ip_block_version { r#type:u32, major:u32, minor:u32, rev:u32, funcs:*const core::ffi::c_void }
+struct sdma_v2_4_ip_block_version { r#type:u32, major:u32, minor:u32, rev:u32, funcs:*const kernel::ffi::c_void }
 #[no_mangle] pub static sdma_v2_4_ip_block: sdma_v2_4_ip_block_version = sdma_v2_4_ip_block_version { r#type:AMDGPU_IP_BLOCK_TYPE_SDMA, major:2, minor:4, rev:0, funcs:core::ptr::null() };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

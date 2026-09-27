@@ -17,7 +17,7 @@ pub const MAX_INSN_SIZE: usize = 2;
 
 #[cfg(CONFIG_KPROBES)]
 #[inline(always)]
-pub unsafe fn flush_insn_slot(_p: *mut core::ffi::c_void) {
+pub unsafe fn flush_insn_slot(_p: *mut kernel::ffi::c_void) {
 }
 
 #[cfg(CONFIG_KPROBES)]
@@ -29,22 +29,22 @@ pub const kretprobe_blacklist_size: usize = 0;
 #[repr(C)]
 pub struct prev_kprobe {
     pub kp: *mut kprobe,
-    pub status: core::ffi::c_uint,
+    pub status: kernel::ffi::c_uint,
 }
 
 /* per-cpu kprobe control block */
 #[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct kprobe_ctlblk {
-    pub kprobe_status: core::ffi::c_uint,
-    pub saved_status: core::ffi::c_ulong,
+    pub kprobe_status: kernel::ffi::c_uint,
+    pub saved_status: kernel::ffi::c_ulong,
     pub prev_kprobe: prev_kprobe,
 }
 
 #[cfg(CONFIG_KPROBES)]
 unsafe extern "C" {
     pub fn arch_remove_kprobe(p: *mut kprobe);
-    pub fn kprobe_fault_handler(regs: *mut pt_regs, trapnr: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn kprobe_fault_handler(regs: *mut pt_regs, trapnr: kernel::ffi::c_uint) -> kernel::ffi::c_int;
     pub fn kprobe_breakpoint_handler(regs: *mut pt_regs) -> bool;
     pub fn kprobe_single_step_handler(regs: *mut pt_regs) -> bool;
 }

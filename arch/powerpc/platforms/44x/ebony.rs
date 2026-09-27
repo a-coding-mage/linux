@@ -19,13 +19,13 @@
 
 extern "C" {
     fn of_platform_bus_probe(
-        bus: *mut core::ffi::c_void,
+        bus: *mut kernel::ffi::c_void,
         matches: *const of_device_id,
-        parent: *mut core::ffi::c_void,
+        parent: *mut kernel::ffi::c_void,
     );
     fn of_instantiate_rtc();
     fn pci_set_flags(flags: u32);
-    fn udbg_progress(message: *const core::ffi::c_char, hex: u32);
+    fn udbg_progress(message: *const kernel::ffi::c_char, hex: u32);
     fn uic_init_tree();
     fn uic_get_irq() -> u32;
     fn ppc4xx_reset_system() -> !;
@@ -33,13 +33,13 @@ extern "C" {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 
 static EBONY_OF_BUS: [of_device_id; 4] = [
-    of_device_id { compatible: b"ibm,plb4\0".as_ptr() as *const core::ffi::c_char },
-    of_device_id { compatible: b"ibm,opb\0".as_ptr() as *const core::ffi::c_char },
-    of_device_id { compatible: b"ibm,ebc\0".as_ptr() as *const core::ffi::c_char },
+    of_device_id { compatible: b"ibm,plb4\0".as_ptr() as *const kernel::ffi::c_char },
+    of_device_id { compatible: b"ibm,opb\0".as_ptr() as *const kernel::ffi::c_char },
+    of_device_id { compatible: b"ibm,ebc\0".as_ptr() as *const kernel::ffi::c_char },
     of_device_id { compatible: core::ptr::null() },
 ];
 
@@ -70,18 +70,18 @@ unsafe fn ebony_probe() -> i32 {
 // define_machine(ebony)
 #[repr(C)]
 pub struct machdep_calls {
-    pub name: *const core::ffi::c_char,
-    pub compatible: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
     pub probe: unsafe fn() -> i32,
-    pub progress: Option<unsafe extern "C" fn(*const core::ffi::c_char, u32)>,
+    pub progress: Option<unsafe extern "C" fn(*const kernel::ffi::c_char, u32)>,
     pub init_IRQ: Option<unsafe extern "C" fn()>,
     pub get_irq: Option<unsafe extern "C" fn() -> u32>,
     pub restart: Option<unsafe extern "C" fn() -> !>,
 }
 
 static EBONY_MACHINE: machdep_calls = machdep_calls {
-    name: b"Ebony\0".as_ptr() as *const core::ffi::c_char,
-    compatible: b"ibm,ebony\0".as_ptr() as *const core::ffi::c_char,
+    name: b"Ebony\0".as_ptr() as *const kernel::ffi::c_char,
+    compatible: b"ibm,ebony\0".as_ptr() as *const kernel::ffi::c_char,
     probe: ebony_probe,
     progress: Some(udbg_progress),
     init_IRQ: Some(uic_init_tree),

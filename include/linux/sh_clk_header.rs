@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 // C dependencies supplied by other translated units are intentionally external.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub type PhysAddr = usize;
 pub type CInt = i32;
@@ -105,7 +105,7 @@ unsafe extern "C" { pub fn sh_clk_div4_register(clks: *mut Clk, nr: CInt, table:
 #[macro_export] macro_rules! SH_CLK_DIV4 { ($p:expr,$r:expr,$s:expr,$bm:expr,$f:expr) => { Clk { parent:$p, enable_reg:$r as *mut c_void, enable_bit:$s, arch_flags:$bm, div_mask:SH_CLK_DIV4_MSK, flags:$f, ..unsafe { core::mem::zeroed() } } }; }
 #[macro_export] macro_rules! SH_CLK_DIV6 { ($p:expr,$r:expr,$f:expr) => { Clk { parent:$p, enable_reg:$r as *mut c_void, div_mask:SH_CLK_DIV6_MSK, flags:$f | CLK_MASK_DIV_ON_DISABLE, ..unsafe { core::mem::zeroed() } } }; }
 #[macro_export] macro_rules! SH_CLK_DIV6_EXT { ($r:expr,$f:expr,$parents:expr,$num:expr,$shift:expr,$width:expr) => { Clk { enable_reg:$r as *mut c_void, parent_table:$parents, parent_num:$num, src_shift:$shift, src_width:$width, div_mask:SH_CLK_DIV6_MSK, flags:$f | CLK_MASK_DIV_ON_DISABLE, ..unsafe { core::mem::zeroed() } } }; }
-#[repr(C)] pub struct ClkLookup { pub con_id: *const core::ffi::c_char, pub dev_id: *const core::ffi::c_char, pub clk: *mut Clk }
+#[repr(C)] pub struct ClkLookup { pub con_id: *const kernel::ffi::c_char, pub dev_id: *const kernel::ffi::c_char, pub clk: *mut Clk }
 #[macro_export] macro_rules! CLKDEV_CON_ID { ($id:expr,$clk:expr) => { ClkLookup { con_id:$id, dev_id:core::ptr::null(), clk:$clk } }; }
 #[macro_export] macro_rules! CLKDEV_DEV_ID { ($id:expr,$clk:expr) => { ClkLookup { con_id:core::ptr::null(), dev_id:$id, clk:$clk } }; }
 #[macro_export] macro_rules! CLKDEV_ICK_ID { ($cid:expr,$did:expr,$clk:expr) => { ClkLookup { con_id:$cid, dev_id:$did, clk:$clk } }; }

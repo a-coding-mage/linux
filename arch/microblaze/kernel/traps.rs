@@ -12,23 +12,23 @@
 
 extern "C" {
     fn __enable_hw_exceptions();
-    fn kstrtoul(s: *mut core::ffi::c_char, base: u32, result: *mut usize) -> i32;
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn kstrtoul(s: *mut kernel::ffi::c_char, base: u32, result: *mut usize) -> i32;
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
     fn print_hex_dump(
-        level: *const core::ffi::c_char,
-        prefix_str: *const core::ffi::c_char,
+        level: *const kernel::ffi::c_char,
+        prefix_str: *const kernel::ffi::c_char,
         prefix_type: i32,
         rowsize: i32,
         groupsize: i32,
-        buf: *const core::ffi::c_void,
+        buf: *const kernel::ffi::c_void,
         len: usize,
         ascii: i32,
         ...
     );
     fn microblaze_unwind(
         task: *mut task_struct,
-        stack: *mut core::ffi::c_void,
-        loglvl: *const core::ffi::c_char,
+        stack: *mut kernel::ffi::c_void,
+        loglvl: *const kernel::ffi::c_char,
     );
     fn debug_show_held_locks(task: *mut task_struct);
     static mut current: *mut task_struct;
@@ -45,7 +45,7 @@ struct thread_info {
 }
 
 const THREAD_SIZE: usize = 0; // Supplied by the target architecture.
-const KERN_INFO: *const core::ffi::c_char = c"".as_ptr();
+const KERN_INFO: *const kernel::ffi::c_char = c"".as_ptr();
 const DUMP_PREFIX_ADDRESS: i32 = 0;
 
 pub unsafe fn trap_init() {
@@ -54,7 +54,7 @@ pub unsafe fn trap_init() {
 
 static mut kstack_depth_to_print: usize = 0; /* 0 == entire stack */
 
-unsafe extern "C" fn kstack_setup(s: *mut core::ffi::c_char) -> i32 {
+unsafe extern "C" fn kstack_setup(s: *mut kernel::ffi::c_char) -> i32 {
     (!kstrtoul(s, 0, &mut kstack_depth_to_print)).into()
 }
 
@@ -63,7 +63,7 @@ unsafe extern "C" fn kstack_setup(s: *mut core::ffi::c_char) -> i32 {
 pub unsafe fn show_stack(
     task: *mut task_struct,
     sp: *mut usize,
-    loglvl: *const core::ffi::c_char,
+    loglvl: *const kernel::ffi::c_char,
 ) {
     let mut words_to_show: usize;
     let mut fp = sp as usize as u32;
@@ -98,7 +98,7 @@ pub unsafe fn show_stack(
                 DUMP_PREFIX_ADDRESS,
                 32,
                 4,
-                fp as usize as *const core::ffi::c_void,
+                fp as usize as *const kernel::ffi::c_void,
                 (line1_words << 2) as usize,
                 0,
             );
@@ -112,7 +112,7 @@ pub unsafe fn show_stack(
         DUMP_PREFIX_ADDRESS,
         32,
         4,
-        fp as usize as *const core::ffi::c_void,
+        fp as usize as *const kernel::ffi::c_void,
         words_to_show << 2,
         0,
     );

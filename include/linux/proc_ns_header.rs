@@ -15,11 +15,11 @@ pub struct user_namespace;
 
 #[repr(C)]
 pub struct proc_ns_operations {
-    pub name: *const ::core::ffi::c_char,
-    pub real_ns_name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
+    pub real_ns_name: *const ::kernel::ffi::c_char,
     pub get: Option<unsafe extern "C" fn(task: *mut task_struct) -> *mut ns_common>,
     pub put: Option<unsafe extern "C" fn(ns: *mut ns_common)>,
-    pub install: Option<unsafe extern "C" fn(nsset: *mut nsset, ns: *mut ns_common) -> ::core::ffi::c_int>,
+    pub install: Option<unsafe extern "C" fn(nsset: *mut nsset, ns: *mut ns_common) -> ::kernel::ffi::c_int>,
     pub owner: Option<unsafe extern "C" fn(ns: *mut ns_common) -> *mut user_namespace>,
     pub get_parent: Option<unsafe extern "C" fn(ns: *mut ns_common) -> *mut ns_common>,
 }
@@ -55,18 +55,18 @@ pub const PROC_MNT_INIT_INO: _ = MNT_NS_INIT_INO;
 // inline fallback definitions below.
 #[cfg(CONFIG_PROC_FS)]
 extern "C" {
-    pub fn proc_alloc_inum(pino: *mut ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn proc_free_inum(inum: ::core::ffi::c_uint);
+    pub fn proc_alloc_inum(pino: *mut ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn proc_free_inum(inum: ::kernel::ffi::c_uint);
 }
 
 #[cfg(not(CONFIG_PROC_FS))]
-pub unsafe fn proc_alloc_inum(inum: *mut ::core::ffi::c_uint) -> ::core::ffi::c_int {
+pub unsafe fn proc_alloc_inum(inum: *mut ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int {
     *inum = 1;
     0
 }
 
 #[cfg(not(CONFIG_PROC_FS))]
-pub unsafe fn proc_free_inum(_inum: ::core::ffi::c_uint) {}
+pub unsafe fn proc_free_inum(_inum: ::kernel::ffi::c_uint) {}
 
 #[macro_export]
 macro_rules! get_proc_ns {

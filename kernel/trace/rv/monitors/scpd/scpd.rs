@@ -7,46 +7,46 @@ pub const MODULE_NAME: &str = "scpd";
 
 #[repr(C)]
 pub struct rv_monitor {
-    pub name: *const core::ffi::c_char,
-    pub description: *const core::ffi::c_char,
-    pub enable: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
+    pub name: *const kernel::ffi::c_char,
+    pub description: *const kernel::ffi::c_char,
+    pub enable: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
     pub disable: Option<unsafe extern "C" fn()>,
     pub reset: Option<unsafe extern "C" fn()>,
-    pub enabled: core::ffi::c_int,
+    pub enabled: kernel::ffi::c_int,
 }
 
 extern "C" {
-    fn da_handle_event(event: core::ffi::c_int);
-    fn da_handle_start_event(event: core::ffi::c_int);
-    fn da_monitor_init() -> core::ffi::c_int;
+    fn da_handle_event(event: kernel::ffi::c_int);
+    fn da_handle_start_event(event: kernel::ffi::c_int);
+    fn da_monitor_init() -> kernel::ffi::c_int;
     fn da_monitor_destroy();
     fn da_monitor_reset_all();
     fn rv_attach_trace_probe(
-        module: *const core::ffi::c_char,
-        probe: *const core::ffi::c_void,
-        handler: *const core::ffi::c_void,
+        module: *const kernel::ffi::c_char,
+        probe: *const kernel::ffi::c_void,
+        handler: *const kernel::ffi::c_void,
     );
     fn rv_detach_trace_probe(
-        module: *const core::ffi::c_char,
-        probe: *const core::ffi::c_void,
-        handler: *const core::ffi::c_void,
+        module: *const kernel::ffi::c_char,
+        probe: *const kernel::ffi::c_void,
+        handler: *const kernel::ffi::c_void,
     );
-    fn rv_register_monitor(monitor: *mut rv_monitor, sched: *mut core::ffi::c_void) -> core::ffi::c_int;
+    fn rv_register_monitor(monitor: *mut rv_monitor, sched: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
     fn rv_unregister_monitor(monitor: *mut rv_monitor);
 
-    static mut rv_sched: core::ffi::c_void;
-    static preempt_disable: core::ffi::c_void;
-    static preempt_enable: core::ffi::c_void;
-    static sched_entry_tp: core::ffi::c_void;
-    static sched_exit_tp: core::ffi::c_void;
-    static preempt_disable_scpd: core::ffi::c_int;
-    static preempt_enable_scpd: core::ffi::c_int;
-    static schedule_entry_scpd: core::ffi::c_int;
-    static schedule_exit_scpd: core::ffi::c_int;
+    static mut rv_sched: kernel::ffi::c_void;
+    static preempt_disable: kernel::ffi::c_void;
+    static preempt_enable: kernel::ffi::c_void;
+    static sched_entry_tp: kernel::ffi::c_void;
+    static sched_exit_tp: kernel::ffi::c_void;
+    static preempt_disable_scpd: kernel::ffi::c_int;
+    static preempt_enable_scpd: kernel::ffi::c_int;
+    static schedule_entry_scpd: kernel::ffi::c_int;
+    static schedule_exit_scpd: kernel::ffi::c_int;
 }
 
 unsafe extern "C" fn handle_preempt_disable(
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
     _ip: c_ulong,
     _parent_ip: c_ulong,
 ) {
@@ -54,24 +54,24 @@ unsafe extern "C" fn handle_preempt_disable(
 }
 
 unsafe extern "C" fn handle_preempt_enable(
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
     _ip: c_ulong,
     _parent_ip: c_ulong,
 ) {
     da_handle_start_event(preempt_enable_scpd);
 }
 
-unsafe extern "C" fn handle_schedule_entry(_data: *mut core::ffi::c_void, _preempt: bool) {
+unsafe extern "C" fn handle_schedule_entry(_data: *mut kernel::ffi::c_void, _preempt: bool) {
     da_handle_event(schedule_entry_scpd);
 }
 
-unsafe extern "C" fn handle_schedule_exit(_data: *mut core::ffi::c_void, _is_switch: bool) {
+unsafe extern "C" fn handle_schedule_exit(_data: *mut kernel::ffi::c_void, _is_switch: bool) {
     da_handle_event(schedule_exit_scpd);
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
-unsafe extern "C" fn enable_scpd() -> core::ffi::c_int {
+unsafe extern "C" fn enable_scpd() -> kernel::ffi::c_int {
     let retval = da_monitor_init();
     if retval != 0 {
         return retval;
@@ -106,7 +106,7 @@ pub static mut rv_this: rv_monitor = rv_monitor {
     enabled: 0,
 };
 
-unsafe extern "C" fn register_scpd() -> core::ffi::c_int {
+unsafe extern "C" fn register_scpd() -> kernel::ffi::c_int {
     rv_register_monitor(&mut rv_this, &mut rv_sched)
 }
 

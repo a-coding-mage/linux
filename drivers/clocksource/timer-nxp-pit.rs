@@ -17,8 +17,8 @@ const PITTFLG_TIF: u32 = 1 << 0;
 
 #[repr(C)]
 struct pit_timer {
-    clksrc_base: *mut core::ffi::c_void,
-    clkevt_base: *mut core::ffi::c_void,
+    clksrc_base: *mut kernel::ffi::c_void,
+    clkevt_base: *mut kernel::ffi::c_void,
     ced: clock_event_device,
     cs: clocksource,
     rate: i32,
@@ -32,7 +32,7 @@ struct pit_timer_data {
 static mut pit_timers: PerCpu<*mut pit_timer> = PerCpu::new();
 static mut pit_instances: i32 = 0;
 static mut max_pit_instances: i32 = 1;
-static mut sched_clock_base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut sched_clock_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 #[inline]
 unsafe fn ced_to_pit(ced: *mut clock_event_device) -> *mut pit_timer {
@@ -45,22 +45,22 @@ unsafe fn cs_to_pit(cs: *mut clocksource) -> *mut pit_timer {
 }
 
 #[inline]
-unsafe fn pit_module_enable(base: *mut core::ffi::c_void) { writel(0, base); }
+unsafe fn pit_module_enable(base: *mut kernel::ffi::c_void) { writel(0, base); }
 
 #[inline]
-unsafe fn pit_module_disable(base: *mut core::ffi::c_void) { writel(PITMCR_MDIS, base); }
+unsafe fn pit_module_disable(base: *mut kernel::ffi::c_void) { writel(PITMCR_MDIS, base); }
 
 #[inline]
-unsafe fn pit_timer_enable(base: *mut core::ffi::c_void, tie: bool) {
+unsafe fn pit_timer_enable(base: *mut kernel::ffi::c_void, tie: bool) {
     let val = PITTCTRL_TEN | if tie { PITTCTRL_TIE } else { 0 };
     writel(val, base.add(0x08));
 }
 
 #[inline]
-unsafe fn pit_timer_disable(base: *mut core::ffi::c_void) { writel(0, base.add(0x08)); }
+unsafe fn pit_timer_disable(base: *mut kernel::ffi::c_void) { writel(0, base.add(0x08)); }
 
 #[inline]
-unsafe fn pit_timer_set_counter(base: *mut core::ffi::c_void, cnt: u32) { writel(cnt, base); }
+unsafe fn pit_timer_set_counter(base: *mut kernel::ffi::c_void, cnt: u32) { writel(cnt, base); }
 
 #[inline]
 unsafe fn pit_timer_irqack(pit: *mut pit_timer) { writel(PITTFLG_TIF, (*pit).clkevt_base.add(0x0c)); }
@@ -72,8 +72,8 @@ unsafe fn pit_timer_clocksource_read(cs: *mut clocksource) -> u64 {
     (!readl((*pit).clksrc_base.add(PITCVAL_OFFSET))) as u64
 }
 
-unsafe fn pit_clocksource_init(pit: *mut pit_timer, name: *const core::ffi::c_char,
-                               base: *mut core::ffi::c_void, rate: usize) -> i32 {
+unsafe fn pit_clocksource_init(pit: *mut pit_timer, name: *const kernel::ffi::c_char,
+                               base: *mut kernel::ffi::c_void, rate: usize) -> i32 {
     (*pit).clksrc_base = base.add(PIT_CH(2));
     (*pit).cs.name = name;
     (*pit).cs.rating = 300;
@@ -105,7 +105,7 @@ unsafe fn pit_set_periodic(ced: *mut clock_event_device) -> i32 {
     pit_set_next_event(((*pit).rate as usize) / HZ, ced); 0
 }
 
-unsafe fn pit_timer_interrupt(_irq: i32, dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe fn pit_timer_interrupt(_irq: i32, dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     let ced = dev_id as *mut clock_event_device;
     let pit = ced_to_pit(ced);
     pit_timer_irqack(pit);
@@ -114,14 +114,14 @@ unsafe fn pit_timer_interrupt(_irq: i32, dev_id: *mut core::ffi::c_void) -> irqr
     IRQ_HANDLED
 }
 
-unsafe fn pit_clockevent_per_cpu_init(pit: *mut pit_timer, name: *const core::ffi::c_char,
-    base: *mut core::ffi::c_void, rate: usize, irq: i32, cpu: u32) -> i32 {
+unsafe fn pit_clockevent_per_cpu_init(pit: *mut pit_timer, name: *const kernel::ffi::c_char,
+    base: *mut kernel::ffi::c_void, rate: usize, irq: i32, cpu: u32) -> i32 {
     (*pit).clkevt_base = base.add(PIT_CH(3));
     (*pit).rate = rate as i32;
     pit_timer_disable((*pit).clkevt_base);
     pit_timer_irqack(pit);
     let ret = request_irq(irq, Some(pit_timer_interrupt), IRQF_TIMER | IRQF_NOBALANCING,
-                          name, &mut (*pit).ced as *mut _ as *mut core::ffi::c_void);
+                          name, &mut (*pit).ced as *mut _ as *mut kernel::ffi::c_void);
     if ret != 0 { return ret; }
     (*pit).ced.cpumask = cpumask_of(cpu);
     (*pit).ced.irq = irq;
@@ -137,7 +137,7 @@ unsafe fn pit_clockevent_per_cpu_init(pit: *mut pit_timer, name: *const core::ff
 
 unsafe fn pit_clockevent_per_cpu_exit(pit: *mut pit_timer, cpu: u32) {
     pit_timer_disable((*pit).clkevt_base);
-    free_irq((*pit).ced.irq, &mut (*pit).ced as *mut _ as *mut core::ffi::c_void);
+    free_irq((*pit).ced.irq, &mut (*pit).ced as *mut _ as *mut kernel::ffi::c_void);
     per_cpu!(pit_timers, cpu, core::ptr::null_mut());
 }
 
@@ -156,7 +156,7 @@ unsafe fn pit_timer_probe(pdev: *mut platform_device) -> i32 { todo!("direct tra
 
 static mut s32g2_data: pit_timer_data = pit_timer_data { max_pit_instances: 2 };
 static mut pit_timer_of_match: [of_device_id; 2] = [
-    of_device_id { compatible: "nxp,s32g2-pit", data: &mut s32g2_data as *mut _ as *const core::ffi::c_void },
+    of_device_id { compatible: "nxp,s32g2-pit", data: &mut s32g2_data as *mut _ as *const kernel::ffi::c_void },
     of_device_id::empty(),
 ];
 

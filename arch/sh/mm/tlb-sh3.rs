@@ -25,48 +25,48 @@ pub struct task_struct {
 
 #[repr(C)]
 pub struct cpuinfo_sh {
-    pub flags: libc::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct pte_t {
-    pub pte: libc::c_ulong,
+    pub pte: kernel::ffi::c_ulong,
 }
 
 unsafe extern "C" {
     pub static mut current: *mut task_struct;
     pub static mut current_cpu_data: cpuinfo_sh;
 
-    pub fn get_asid() -> libc::c_ulong;
-    pub fn pte_val(pte: pte_t) -> libc::c_ulong;
-    pub fn local_irq_save(flags: *mut libc::c_ulong);
-    pub fn local_irq_restore(flags: libc::c_ulong);
+    pub fn get_asid() -> kernel::ffi::c_ulong;
+    pub fn pte_val(pte: pte_t) -> kernel::ffi::c_ulong;
+    pub fn local_irq_save(flags: *mut kernel::ffi::c_ulong);
+    pub fn local_irq_restore(flags: kernel::ffi::c_ulong);
     pub fn ctrl_barrier();
-    pub fn __raw_readl(addr: libc::c_ulong) -> libc::c_ulong;
-    pub fn __raw_writel(value: libc::c_ulong, addr: libc::c_ulong);
+    pub fn __raw_readl(addr: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
+    pub fn __raw_writel(value: kernel::ffi::c_ulong, addr: kernel::ffi::c_ulong);
 }
 
 // Constants supplied by the MMU and SH architecture headers.
 extern "C" {
-    pub static MMU_VPN_MASK: libc::c_ulong;
-    pub static MMU_PTEH: libc::c_ulong;
-    pub static MMU_PTEL: libc::c_ulong;
-    pub static _PAGE_FLAGS_HARDWARE_MASK: libc::c_ulong;
-    pub static MMU_NTLB_WAYS: libc::c_int;
-    pub static MMU_TLB_ADDRESS_ARRAY: libc::c_ulong;
-    pub static MMU_PAGE_ASSOC_BIT: libc::c_ulong;
-    pub static MMUCR: libc::c_ulong;
-    pub static CPU_HAS_MMU_PAGE_ASSOC: libc::c_ulong;
+    pub static MMU_VPN_MASK: kernel::ffi::c_ulong;
+    pub static MMU_PTEH: kernel::ffi::c_ulong;
+    pub static MMU_PTEL: kernel::ffi::c_ulong;
+    pub static _PAGE_FLAGS_HARDWARE_MASK: kernel::ffi::c_ulong;
+    pub static MMU_NTLB_WAYS: kernel::ffi::c_int;
+    pub static MMU_TLB_ADDRESS_ARRAY: kernel::ffi::c_ulong;
+    pub static MMU_PAGE_ASSOC_BIT: kernel::ffi::c_ulong;
+    pub static MMUCR: kernel::ffi::c_ulong;
+    pub static CPU_HAS_MMU_PAGE_ASSOC: kernel::ffi::c_ulong;
 }
 
 pub unsafe fn __update_tlb(
     vma: *mut vm_area_struct,
-    address: libc::c_ulong,
+    address: kernel::ffi::c_ulong,
     pte: pte_t,
 ) {
-    let mut flags: libc::c_ulong = 0;
-    let mut pteval: libc::c_ulong;
-    let mut vpn: libc::c_ulong;
+    let mut flags: kernel::ffi::c_ulong = 0;
+    let mut pteval: kernel::ffi::c_ulong;
+    let mut vpn: kernel::ffi::c_ulong;
 
     /*
      * Handle debugger faulting in for debugee.
@@ -93,10 +93,10 @@ pub unsafe fn __update_tlb(
     local_irq_restore(flags);
 }
 
-pub unsafe fn local_flush_tlb_one(asid: libc::c_ulong, page: libc::c_ulong) {
-    let mut addr: libc::c_ulong;
-    let data: libc::c_ulong;
-    let mut ways: libc::c_int = MMU_NTLB_WAYS;
+pub unsafe fn local_flush_tlb_one(asid: kernel::ffi::c_ulong, page: kernel::ffi::c_ulong) {
+    let mut addr: kernel::ffi::c_ulong;
+    let data: kernel::ffi::c_ulong;
+    let mut ways: kernel::ffi::c_int = MMU_NTLB_WAYS;
 
     /*
      * NOTE: PTEH.ASID should be set to this MM
@@ -112,16 +112,16 @@ pub unsafe fn local_flush_tlb_one(asid: libc::c_ulong, page: libc::c_ulong) {
         ways = 1; /* we already know the way .. */
     }
 
-    let mut i: libc::c_int = 0;
+    let mut i: kernel::ffi::c_int = 0;
     while i < ways {
-        __raw_writel(data, addr + ((i as libc::c_ulong) << 8));
+        __raw_writel(data, addr + ((i as kernel::ffi::c_ulong) << 8));
         i += 1;
     }
 }
 
 pub unsafe fn local_flush_tlb_all() {
-    let mut flags: libc::c_ulong = 0;
-    let mut status: libc::c_ulong;
+    let mut flags: kernel::ffi::c_ulong = 0;
+    let mut status: kernel::ffi::c_ulong;
 
     /*
      * Flush all the TLB.

@@ -6,7 +6,7 @@
 unsafe fn alc295_fixup_hp_top_speakers(
     codec: *mut hda_codec,
     fix: *const hda_fixup,
-    action: libc::c_int,
+    action: core::ffi::c_int,
 ) {
     static PINCFGS: [hda_pintbl; 2] = [
         hda_pintbl {

@@ -18,35 +18,35 @@
 
 #[repr(C)]
 pub struct affs_dir_data {
-    pub ino: libc::c_ulong,
+    pub ino: kernel::ffi::c_ulong,
     pub cookie: u64,
 }
 
 extern "C" {
-    fn generic_llseek_cookie(file: *mut file, offset: loff_t, whence: libc::c_int,
+    fn generic_llseek_cookie(file: *mut file, offset: loff_t, whence: kernel::ffi::c_int,
                              cookie: *mut u64) -> loff_t;
     fn kzalloc_obj<T>() -> *mut T;
-    fn kfree(ptr: *mut libc::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn file_inode(file: *mut file) -> *mut inode;
-    fn generic_read_dir(file: *mut file, ctx: *mut dir_context) -> libc::c_int;
-    fn affs_file_fsync(file: *mut file, start: loff_t, end: loff_t, datasync: bool) -> libc::c_int;
-    fn generic_setlease(file: *mut file, arg: libc::c_int, fl: *mut file_lock, priv_: *mut libc::c_void) -> libc::c_int;
-    fn affs_create(dir: *mut inode, dentry: *mut dentry, mode: umode_t, excl: bool) -> libc::c_int;
-    fn affs_lookup(dir: *mut inode, dentry: *mut dentry, flags: libc::c_uint) -> *mut dentry;
-    fn affs_link(old: *mut dentry, dir: *mut inode, new: *mut dentry) -> libc::c_int;
-    fn affs_unlink(dir: *mut inode, dentry: *mut dentry) -> libc::c_int;
-    fn affs_symlink(dir: *mut inode, dentry: *mut dentry, symname: *const libc::c_char) -> libc::c_int;
-    fn affs_mkdir(dir: *mut inode, dentry: *mut dentry, mode: umode_t) -> libc::c_int;
-    fn affs_rmdir(dir: *mut inode, dentry: *mut dentry) -> libc::c_int;
+    fn generic_read_dir(file: *mut file, ctx: *mut dir_context) -> kernel::ffi::c_int;
+    fn affs_file_fsync(file: *mut file, start: loff_t, end: loff_t, datasync: bool) -> kernel::ffi::c_int;
+    fn generic_setlease(file: *mut file, arg: kernel::ffi::c_int, fl: *mut file_lock, priv_: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    fn affs_create(dir: *mut inode, dentry: *mut dentry, mode: umode_t, excl: bool) -> kernel::ffi::c_int;
+    fn affs_lookup(dir: *mut inode, dentry: *mut dentry, flags: kernel::ffi::c_uint) -> *mut dentry;
+    fn affs_link(old: *mut dentry, dir: *mut inode, new: *mut dentry) -> kernel::ffi::c_int;
+    fn affs_unlink(dir: *mut inode, dentry: *mut dentry) -> kernel::ffi::c_int;
+    fn affs_symlink(dir: *mut inode, dentry: *mut dentry, symname: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    fn affs_mkdir(dir: *mut inode, dentry: *mut dentry, mode: umode_t) -> kernel::ffi::c_int;
+    fn affs_rmdir(dir: *mut inode, dentry: *mut dentry) -> kernel::ffi::c_int;
     fn affs_rename2(old_dir: *mut inode, old_dentry: *mut dentry, new_dir: *mut inode,
-                    new_dentry: *mut dentry, flags: libc::c_uint) -> libc::c_int;
-    fn affs_setattr(id: *mut dentry, ia: *mut iattr) -> libc::c_int;
+                    new_dentry: *mut dentry, flags: kernel::ffi::c_uint) -> kernel::ffi::c_int;
+    fn affs_setattr(id: *mut dentry, ia: *mut iattr) -> kernel::ffi::c_int;
     fn affs_lock_dir(inode: *mut inode);
     fn affs_unlock_dir(inode: *mut inode);
     fn affs_bread(sb: *mut super_block, block: u32) -> *mut buffer_head;
     fn affs_brelse(bh: *mut buffer_head);
-    fn affs_warning(sb: *mut super_block, where_: *const libc::c_char, msg: *const libc::c_char);
-    fn affs_error(sb: *mut super_block, where_: *const libc::c_char, msg: *const libc::c_char, arg: u32);
+    fn affs_warning(sb: *mut super_block, where_: *const kernel::ffi::c_char, msg: *const kernel::ffi::c_char);
+    fn affs_error(sb: *mut super_block, where_: *const kernel::ffi::c_char, msg: *const kernel::ffi::c_char, arg: u32);
     fn inode_eq_iversion(inode: *mut inode, version: u64) -> bool;
     fn inode_query_iversion(inode: *mut inode) -> u64;
     fn dir_emit_dots(file: *mut file, ctx: *mut dir_context) -> bool;
@@ -58,7 +58,7 @@ extern "C" {
     fn affs_name_len(sb: *mut super_block, bh: *mut buffer_head) -> u8;
 }
 
-#[repr(C)] pub struct file { pub private_data: *mut libc::c_void }
+#[repr(C)] pub struct file { pub private_data: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct inode { pub i_ino: u64, pub i_sb: *mut super_block }
 #[repr(C)] pub struct super_block;
 #[repr(C)] pub struct buffer_head;
@@ -76,24 +76,24 @@ extern "C" {
 #[repr(C)] pub struct file_operations;
 #[repr(C)] pub struct inode_operations;
 
-pub unsafe fn affs_dir_llseek(file: *mut file, offset: loff_t, whence: libc::c_int) -> loff_t {
+pub unsafe fn affs_dir_llseek(file: *mut file, offset: loff_t, whence: kernel::ffi::c_int) -> loff_t {
     let data = (*file).private_data as *mut affs_dir_data;
     generic_llseek_cookie(file, offset, whence, &mut (*data).cookie)
 }
 
-pub unsafe fn affs_dir_open(_inode: *mut inode, file: *mut file) -> libc::c_int {
+pub unsafe fn affs_dir_open(_inode: *mut inode, file: *mut file) -> kernel::ffi::c_int {
     let data = kzalloc_obj::<affs_dir_data>();
     if data.is_null() { return -12; }
-    (*file).private_data = data as *mut libc::c_void;
+    (*file).private_data = data as *mut kernel::ffi::c_void;
     0
 }
 
-pub unsafe fn affs_dir_release(_inode: *mut inode, file: *mut file) -> libc::c_int {
+pub unsafe fn affs_dir_release(_inode: *mut inode, file: *mut file) -> kernel::ffi::c_int {
     kfree((*file).private_data);
     0
 }
 
-pub unsafe fn affs_readdir(file: *mut file, ctx: *mut dir_context) -> libc::c_int {
+pub unsafe fn affs_readdir(file: *mut file, ctx: *mut dir_context) -> kernel::ffi::c_int {
     let inode = file_inode(file);
     let data = (*file).private_data as *mut affs_dir_data;
     let sb = (*inode).i_sb;
@@ -141,7 +141,7 @@ pub unsafe fn affs_readdir(file: *mut file, ctx: *mut dir_context) -> libc::c_in
         affs_brelse(fh_bh); fh_bh = core::ptr::null_mut();
     }
     (*data).cookie = inode_query_iversion(inode);
-    (*data).ino = ino as libc::c_ulong;
+    (*data).ino = ino as kernel::ffi::c_ulong;
     affs_brelse(fh_bh); affs_brelse(dir_bh); affs_unlock_dir(inode);
     error
 }

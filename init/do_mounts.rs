@@ -77,7 +77,7 @@ unsafe fn do_mount_root(name: *const i8, fs: *const i8, flags: i32, data: *const
         init_chdir(c"/root".as_ptr());
         let s = (*(*current).fs).pwd.dentry.dereference().d_sb;
         ROOT_DEV = (*s).s_dev;
-        printk(KERN_INFO c"VFS: Mounted root (%s filesystem)%s on device %u:%u.\n",
+        printk(c"\x016VFS: Mounted root (%s filesystem)%s on device %u:%u.\n",
             (*(*s).s_type).name, if sb_rdonly(s) { c" readonly".as_ptr() } else { c"".as_ptr() },
             MAJOR(ROOT_DEV), MINOR(ROOT_DEV));
     }
@@ -177,7 +177,7 @@ unsafe fn parse_root_device(root_device_name: *mut i8) -> dev_t {
 }
 
 pub unsafe fn prepare_namespace() {
-    if root_delay != 0 { printk(KERN_INFO c"Waiting %d sec before mounting root device...\n", root_delay); ssleep(root_delay); }
+    if root_delay != 0 { printk(c"\x016Waiting %d sec before mounting root device...\n", root_delay); ssleep(root_delay); }
     wait_for_device_probe(); md_run_setup();
     if saved_root_name[0] != 0 { ROOT_DEV = parse_root_device(saved_root_name.as_mut_ptr()); }
     initrd_load(); if root_wait != 0 { wait_for_root(saved_root_name.as_mut_ptr()); } mount_root(saved_root_name.as_mut_ptr()); devtmpfs_mount();

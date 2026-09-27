@@ -19,7 +19,7 @@
 #[repr(C)]
 pub struct s3c_camif_sensor_info {
     pub i2c_board_info: i2c_board_info,
-    pub clock_frequency: core::ffi::c_ulong,
+    pub clock_frequency: kernel::ffi::c_ulong,
     pub mbus_type: v4l2_mbus_type,
     pub i2c_bus_num: u16,
     pub flags: u16,

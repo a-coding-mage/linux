@@ -13,7 +13,7 @@
  * boot memory size of 768MB to ensure f/w loading kernel and initrd doesn't
  * mess with crash'ed kernel's memory during MPIPL.
  */
-pub const OPAL_FADUMP_MIN_BOOT_MEM: ::core::ffi::c_ulong = 0x30000000;
+pub const OPAL_FADUMP_MIN_BOOT_MEM: ::kernel::ffi::c_ulong = 0x30000000;
 
 /* OPAL FADump metadata structure format version */
 pub const OPAL_FADUMP_VERSION: u8 = 0x1;
@@ -95,9 +95,9 @@ pub unsafe fn opal_fadump_set_regval_regnum(
 }
 
 pub unsafe fn opal_fadump_read_regs(
-    mut bufp: *mut ::core::ffi::c_char,
-    regs_cnt: ::core::ffi::c_uint,
-    reg_entry_size: ::core::ffi::c_uint,
+    mut bufp: *mut ::kernel::ffi::c_char,
+    regs_cnt: ::kernel::ffi::c_uint,
+    reg_entry_size: ::kernel::ffi::c_uint,
     cpu_endian: bool,
     regs: *mut pt_regs,
 ) {

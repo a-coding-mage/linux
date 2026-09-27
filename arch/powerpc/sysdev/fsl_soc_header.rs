@@ -4,7 +4,7 @@
 
 // Dependency supplied externally: phys_addr_t, u32, and the kernel ABI types.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub enum spi_device {}
 

@@ -10,11 +10,11 @@ unsafe extern "C" {
     fn irq_set_chip_and_handler(virq: i32, chip: *mut irq_chip, handler: unsafe extern "C" fn());
     fn irq_to_desc(virq: i32) -> *mut irq_desc;
     fn irq_settings_clr_norequest(desc: *mut irq_desc);
-    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t,
-                   flags: u32, name: *const core::ffi::c_char, data: *mut core::ffi::c_void) -> i32;
+    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t,
+                   flags: u32, name: *const kernel::ffi::c_char, data: *mut kernel::ffi::c_void) -> i32;
     fn disable_irq(virq: i32);
     fn enable_irq(virq: i32);
-    fn free_irq(virq: i32, data: *mut core::ffi::c_void);
+    fn free_irq(virq: i32, data: *mut kernel::ffi::c_void);
     fn irq_desc_get_irq_data(desc: *mut irq_desc) -> *mut irq_data;
     fn irqd_is_activated(data: *const irq_data) -> bool;
     fn irqd_is_started(data: *const irq_data) -> bool;
@@ -22,7 +22,7 @@ unsafe extern "C" {
     fn irq_shutdown_and_deactivate(desc: *mut irq_desc);
     fn irq_activate(desc: *mut irq_desc) -> i32;
     fn irq_startup_managed(desc: *mut irq_desc);
-    fn get_cpu_device(cpu: u32) -> *mut core::ffi::c_void;
+    fn get_cpu_device(cpu: u32) -> *mut kernel::ffi::c_void;
     fn cpu_is_hotpluggable(cpu: u32) -> bool;
     fn cpu_online(cpu: u32) -> bool;
     fn cpumask_copy(dst: *mut cpumask, src: *const cpumask);
@@ -41,7 +41,7 @@ pub struct cpumask;
 pub struct irq_affinity_desc { pub is_managed: u8, pub mask: cpumask }
 #[repr(C)]
 pub struct irq_chip {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub irq_startup: Option<unsafe extern "C" fn(*mut irq_data) -> u32>,
     pub irq_shutdown: Option<unsafe extern "C" fn(*mut irq_data)>,
     pub irq_enable: Option<unsafe extern "C" fn(*mut irq_data)>,
@@ -55,14 +55,14 @@ pub struct irq_chip {
 #[repr(C)]
 pub struct raw_spinlock_t;
 pub type irqreturn_t = i32;
-pub type kunit = core::ffi::c_void;
+pub type kunit = kernel::ffi::c_void;
 
 const IRQ_HANDLED: irqreturn_t = 1;
 const IRQCHIP_SKIP_SET_WAKE: u32 = 1;
 const NUMA_NO_NODE: i32 = -1;
 const CPU_MASK_ALL: cpumask = unsafe { core::mem::zeroed() };
 
-unsafe extern "C" fn noop_handler(_irq: i32, _data: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn noop_handler(_irq: i32, _data: *mut kernel::ffi::c_void) -> irqreturn_t {
     IRQ_HANDLED
 }
 
@@ -75,7 +75,7 @@ unsafe extern "C" fn noop_affinity(data: *mut irq_data, dest: *const cpumask, _f
 }
 
 static mut FAKE_IRQ_CHIP: irq_chip = irq_chip {
-    name: b"fake\0".as_ptr() as *const core::ffi::c_char,
+    name: b"fake\0".as_ptr() as *const kernel::ffi::c_char,
     irq_startup: Some(noop_ret), irq_shutdown: Some(noop), irq_enable: Some(noop),
     irq_disable: Some(noop), irq_ack: Some(noop), irq_mask: Some(noop), irq_unmask: Some(noop),
     irq_set_affinity: Some(noop_affinity), flags: IRQCHIP_SKIP_SET_WAKE,

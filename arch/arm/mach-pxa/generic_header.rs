@@ -16,7 +16,7 @@ pub struct irq_data {
 #[allow(improper_ctypes)]
 extern "C" {
     pub fn pxa_dt_irq_init(
-        f: Option<unsafe extern "C" fn(*mut irq_data, ::core::ffi::c_uint) -> ::core::ffi::c_int>,
+        f: Option<unsafe extern "C" fn(*mut irq_data, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>,
     );
     pub fn pxa_map_io();
     pub fn pxa_timer_init();
@@ -70,12 +70,12 @@ extern "C" {
     pub static mut pxa2xx_mfp_syscore: syscore;
     pub static mut pxa3xx_mfp_syscore: syscore;
 
-    pub fn pxa_set_ffuart_info(info: *mut ::core::ffi::c_void);
-    pub fn pxa_set_btuart_info(info: *mut ::core::ffi::c_void);
-    pub fn pxa_set_stuart_info(info: *mut ::core::ffi::c_void);
-    pub fn pxa_set_hwuart_info(info: *mut ::core::ffi::c_void);
+    pub fn pxa_set_ffuart_info(info: *mut ::kernel::ffi::c_void);
+    pub fn pxa_set_btuart_info(info: *mut ::kernel::ffi::c_void);
+    pub fn pxa_set_stuart_info(info: *mut ::kernel::ffi::c_void);
+    pub fn pxa_set_hwuart_info(info: *mut ::kernel::ffi::c_void);
 
-    pub fn pxa_restart(mode: reboot_mode, cmd: *const ::core::ffi::c_char);
+    pub fn pxa_restart(mode: reboot_mode, cmd: *const ::kernel::ffi::c_char);
 }
 
 // External types supplied by the kernel dependencies.
@@ -88,12 +88,12 @@ pub enum syscore {}
 // When CONFIG_PXA25x or CONFIG_PXA27x is enabled, this is supplied externally.
 #[cfg(any(CONFIG_PXA25x, CONFIG_PXA27x))]
 extern "C" {
-    pub fn pxa2xx_clear_reset_status(mask: ::core::ffi::c_uint);
+    pub fn pxa2xx_clear_reset_status(mask: ::kernel::ffi::c_uint);
 }
 
 // Otherwise the C header provides an empty static inline function.
 #[cfg(not(any(CONFIG_PXA25x, CONFIG_PXA27x)))]
 #[inline]
-pub unsafe fn pxa2xx_clear_reset_status(_mask: ::core::ffi::c_uint) {}
+pub unsafe fn pxa2xx_clear_reset_status(_mask: ::kernel::ffi::c_uint) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

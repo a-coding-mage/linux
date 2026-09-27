@@ -19,7 +19,7 @@ unsafe fn ieee802154_nl_fill_phy(
     flags: i32,
     phy: *mut wpan_phy,
 ) -> i32 {
-    let mut hdr: *mut core::ffi::c_void;
+    let mut hdr: *mut kernel::ffi::c_void;
     let mut pages: i32 = 0;
     let buf = kcalloc(
         (IEEE802154_MAX_PAGE + 1) as usize,
@@ -35,7 +35,7 @@ unsafe fn ieee802154_nl_fill_phy(
 
     hdr = genlmsg_put(msg, 0, seq, &nl802154_family, flags, IEEE802154_LIST_PHY);
     if hdr.is_null() {
-        kfree(buf as *mut core::ffi::c_void);
+        kfree(buf as *mut kernel::ffi::c_void);
         return -EMSGSIZE;
     }
 
@@ -46,7 +46,7 @@ unsafe fn ieee802154_nl_fill_phy(
     {
         rtnl_unlock();
         genlmsg_cancel(msg, hdr);
-        kfree(buf as *mut core::ffi::c_void);
+        kfree(buf as *mut kernel::ffi::c_void);
         return -EMSGSIZE;
     }
     for i in 0..=(IEEE802154_MAX_PAGE as usize) {
@@ -60,16 +60,16 @@ unsafe fn ieee802154_nl_fill_phy(
             msg,
             IEEE802154_ATTR_CHANNEL_PAGE_LIST,
             pages as usize * core::mem::size_of::<u32>(),
-            buf as *const core::ffi::c_void,
+            buf as *const kernel::ffi::c_void,
         ) != 0
     {
         rtnl_unlock();
         genlmsg_cancel(msg, hdr);
-        kfree(buf as *mut core::ffi::c_void);
+        kfree(buf as *mut kernel::ffi::c_void);
         return -EMSGSIZE;
     }
     rtnl_unlock();
-    kfree(buf as *mut core::ffi::c_void);
+    kfree(buf as *mut kernel::ffi::c_void);
     genlmsg_end(msg, hdr);
     0
 }
@@ -77,14 +77,14 @@ unsafe fn ieee802154_nl_fill_phy(
 pub unsafe fn ieee802154_list_phy(_skb: *mut sk_buff, info: *mut genl_info) -> i32 {
     let mut msg: *mut sk_buff;
     let phy: *mut wpan_phy;
-    let name: *const core::ffi::c_char;
+    let name: *const kernel::ffi::c_char;
     let mut rc: i32 = -ENOBUFS;
 
     pr_debug!("%s\n", "ieee802154_list_phy");
     if (*info).attrs[IEEE802154_ATTR_PHY_NAME].is_null() {
         return -EINVAL;
     }
-    name = nla_data((*info).attrs[IEEE802154_ATTR_PHY_NAME]) as *const core::ffi::c_char;
+    name = nla_data((*info).attrs[IEEE802154_ATTR_PHY_NAME]) as *const kernel::ffi::c_char;
     if *name.add(nla_len((*info).attrs[IEEE802154_ATTR_PHY_NAME]) - 1) as u8 != 0 {
         return -EINVAL;
     }
@@ -115,7 +115,7 @@ pub struct dump_phy_data {
     pub s_idx: i32,
 }
 
-unsafe fn ieee802154_dump_phy_iter(phy: *mut wpan_phy, data: *mut core::ffi::c_void) -> i32 {
+unsafe fn ieee802154_dump_phy_iter(phy: *mut wpan_phy, data: *mut kernel::ffi::c_void) -> i32 {
     let data = data as *mut dump_phy_data;
     pr_debug!("%s\n", "ieee802154_dump_phy_iter");
     (*data).idx += 1;
@@ -139,7 +139,7 @@ unsafe fn ieee802154_dump_phy_iter(phy: *mut wpan_phy, data: *mut core::ffi::c_v
 pub unsafe fn ieee802154_dump_phy(skb: *mut sk_buff, cb: *mut netlink_callback) -> i32 {
     let mut data = dump_phy_data { cb, skb, s_idx: (*cb).args[0], idx: 0 };
     pr_debug!("%s\n", "ieee802154_dump_phy");
-    wpan_phy_for_each(ieee802154_dump_phy_iter, &mut data as *mut _ as *mut core::ffi::c_void);
+    wpan_phy_for_each(ieee802154_dump_phy_iter, &mut data as *mut _ as *mut kernel::ffi::c_void);
     (*cb).args[0] = data.idx;
     (*skb).len as i32
 }
@@ -168,7 +168,7 @@ pub unsafe fn ieee802154_add_iface(skb: *mut sk_buff, info: *mut genl_info) -> i
     dev_hold(dev);
     if !(*info).attrs[IEEE802154_ATTR_HW_ADDR].is_null() {
         let mut addr: sockaddr_storage = core::mem::zeroed(); addr.ss_family = ARPHRD_IEEE802154;
-        nla_memcpy(addr.__data.as_mut_ptr() as *mut core::ffi::c_void, (*info).attrs[IEEE802154_ATTR_HW_ADDR], IEEE802154_ADDR_LEN);
+        nla_memcpy(addr.__data.as_mut_ptr() as *mut kernel::ffi::c_void, (*info).attrs[IEEE802154_ATTR_HW_ADDR], IEEE802154_ADDR_LEN);
         rtnl_lock(); rc = dev_set_mac_address(dev, &mut addr, core::ptr::null_mut()); rtnl_unlock();
         if rc != 0 { rtnl_lock(); rdev_del_virtual_intf_deprecated(wpan_phy_to_rdev(phy), dev); dev_put(dev); rtnl_unlock(); nlmsg_free(msg); wpan_phy_put(phy); return rc; }
     }

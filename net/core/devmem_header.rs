@@ -20,7 +20,7 @@ pub struct net_devmem_dmabuf_binding {
     /* Opaque cookie identifying the virtual device (e.g. netkit) the user
      * called bind-tx on. Used only for pointer comparison. Never dereferenced.
      */
-    pub vdev: *mut core::ffi::c_void,
+    pub vdev: *mut kernel::ffi::c_void,
     pub chunk_pool: *mut gen_pool,
     /* Protect dev */
     pub lock: mutex,
@@ -52,7 +52,7 @@ pub struct net_devmem_dmabuf_binding {
     pub direction: dma_data_direction,
     /* Array of net_iov pointers for this binding, sorted by virtual address. */
     pub tx_vec: *mut *mut net_iov,
-    pub niov_shift: core::ffi::c_uint,
+    pub niov_shift: kernel::ffi::c_uint,
     pub unbind_w: work_struct,
 }
 
@@ -69,9 +69,9 @@ pub struct dmabuf_genpool_chunk_owner {
 unsafe extern "C" {
     pub fn __net_devmem_dmabuf_binding_free(wq: *mut work_struct);
     pub fn net_devmem_bind_dmabuf(
-        dev: *mut net_device, vdev: *mut core::ffi::c_void,
+        dev: *mut net_device, vdev: *mut kernel::ffi::c_void,
         dma_dev: *mut device, direction: dma_data_direction,
-        dmabuf_fd: core::ffi::c_uint, niov_shift: core::ffi::c_uint,
+        dmabuf_fd: kernel::ffi::c_uint, niov_shift: kernel::ffi::c_uint,
         priv_: *mut netdev_nl_sock, extack: *mut netlink_ext_ack,
     ) -> *mut net_devmem_dmabuf_binding;
     pub fn net_devmem_lookup_dmabuf(id: u32) -> *mut net_devmem_dmabuf_binding;
@@ -80,12 +80,12 @@ unsafe extern "C" {
         dev: *mut net_device, rxq_idx: u32,
         binding: *mut net_devmem_dmabuf_binding,
         extack: *mut netlink_ext_ack,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn net_devmem_get_net_iov(niov: *mut net_iov);
     pub fn net_devmem_put_net_iov(niov: *mut net_iov);
     pub fn net_devmem_alloc_dmabuf(binding: *mut net_devmem_dmabuf_binding) -> *mut net_iov;
     pub fn net_devmem_free_dmabuf(ppiov: *mut net_iov);
-    pub fn net_devmem_get_binding(sk: *mut sock, dmabuf_id: core::ffi::c_uint) -> *mut net_devmem_dmabuf_binding;
+    pub fn net_devmem_get_binding(sk: *mut sock, dmabuf_id: kernel::ffi::c_uint) -> *mut net_devmem_dmabuf_binding;
     pub fn net_devmem_get_niov_at(
         binding: *mut net_devmem_dmabuf_binding, addr: usize,
         off: *mut usize, size: *mut usize,
@@ -117,14 +117,14 @@ pub unsafe fn net_devmem_iov_binding_id(niov: *const net_iov) -> u32 {
 
 #[cfg(CONFIG_NET_DEVMEM)]
 #[inline]
-pub unsafe fn net_iov_virtual_addr(niov: *const net_iov) -> core::ffi::c_ulong {
+pub unsafe fn net_iov_virtual_addr(niov: *const net_iov) -> kernel::ffi::c_ulong {
     let co = &*net_devmem_iov_to_chunk_owner(niov);
     (*net_iov_owner(niov)).base_virtual
-        .wrapping_add((net_iov_idx(niov) as core::ffi::c_ulong) << (*co.binding).niov_shift)
+        .wrapping_add((net_iov_idx(niov) as kernel::ffi::c_ulong) << (*co.binding).niov_shift)
 }
 
 #[cfg(not(CONFIG_NET_DEVMEM))]
-#[inline] pub unsafe fn net_iov_virtual_addr(_: *const net_iov) -> core::ffi::c_ulong { 0 }
+#[inline] pub unsafe fn net_iov_virtual_addr(_: *const net_iov) -> kernel::ffi::c_ulong { 0 }
 #[cfg(not(CONFIG_NET_DEVMEM))]
 #[inline] pub unsafe fn net_devmem_iov_binding_id(_: *const net_iov) -> u32 { 0 }
 
@@ -145,19 +145,19 @@ pub unsafe fn net_devmem_dmabuf_binding_put(binding: *mut net_devmem_dmabuf_bind
 #[cfg(not(CONFIG_NET_DEVMEM))]
 #[inline] pub unsafe fn net_devmem_put_net_iov(_: *mut net_iov) {}
 #[cfg(not(CONFIG_NET_DEVMEM))]
-#[inline] pub unsafe fn net_devmem_bind_dmabuf(_: *mut net_device, _: *mut core::ffi::c_void, _: *mut device, _: dma_data_direction, _: core::ffi::c_uint, _: core::ffi::c_uint, _: *mut netdev_nl_sock, _: *mut netlink_ext_ack) -> *mut net_devmem_dmabuf_binding { ERR_PTR(-EOPNOTSUPP) }
+#[inline] pub unsafe fn net_devmem_bind_dmabuf(_: *mut net_device, _: *mut kernel::ffi::c_void, _: *mut device, _: dma_data_direction, _: kernel::ffi::c_uint, _: kernel::ffi::c_uint, _: *mut netdev_nl_sock, _: *mut netlink_ext_ack) -> *mut net_devmem_dmabuf_binding { ERR_PTR(-EOPNOTSUPP) }
 #[cfg(not(CONFIG_NET_DEVMEM))]
 #[inline] pub unsafe fn net_devmem_lookup_dmabuf(_: u32) -> *mut net_devmem_dmabuf_binding { core::ptr::null_mut() }
 #[cfg(not(CONFIG_NET_DEVMEM))]
 #[inline] pub unsafe fn net_devmem_unbind_dmabuf(_: *mut net_devmem_dmabuf_binding) {}
 #[cfg(not(CONFIG_NET_DEVMEM))]
-#[inline] pub unsafe fn net_devmem_bind_dmabuf_to_queue(_: *mut net_device, _: u32, _: *mut net_devmem_dmabuf_binding, _: *mut netlink_ext_ack) -> core::ffi::c_int { -EOPNOTSUPP }
+#[inline] pub unsafe fn net_devmem_bind_dmabuf_to_queue(_: *mut net_device, _: u32, _: *mut net_devmem_dmabuf_binding, _: *mut netlink_ext_ack) -> kernel::ffi::c_int { -EOPNOTSUPP }
 #[cfg(not(CONFIG_NET_DEVMEM))]
 #[inline] pub unsafe fn net_devmem_alloc_dmabuf(_: *mut net_devmem_dmabuf_binding) -> *mut net_iov { core::ptr::null_mut() }
 #[cfg(not(CONFIG_NET_DEVMEM))]
 #[inline] pub unsafe fn net_devmem_free_dmabuf(_: *mut net_iov) {}
 #[cfg(not(CONFIG_NET_DEVMEM))]
-#[inline] pub unsafe fn net_devmem_get_binding(_: *mut sock, _: core::ffi::c_uint) -> *mut net_devmem_dmabuf_binding { ERR_PTR(-EOPNOTSUPP) }
+#[inline] pub unsafe fn net_devmem_get_binding(_: *mut sock, _: kernel::ffi::c_uint) -> *mut net_devmem_dmabuf_binding { ERR_PTR(-EOPNOTSUPP) }
 #[cfg(not(CONFIG_NET_DEVMEM))]
 #[inline] pub unsafe fn net_devmem_get_niov_at(_: *mut net_devmem_dmabuf_binding, _: usize, _: *mut usize, _: *mut usize) -> *mut net_iov { core::ptr::null_mut() }
 

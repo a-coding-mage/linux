@@ -16,11 +16,11 @@
 #![allow(dead_code)]
 #![allow(improper_ctypes)]
 
-use core::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
 
-type u8 = ::core::ffi::c_uchar;
-type u16 = ::core::ffi::c_ushort;
-type u32 = ::core::ffi::c_uint;
+type u8 = ::kernel::ffi::c_uchar;
+type u16 = ::kernel::ffi::c_ushort;
+type u32 = ::kernel::ffi::c_uint;
 type bool_ = bool;
 
 #[repr(C)] pub struct regmap { _private: [u8; 0] }
@@ -32,7 +32,7 @@ type bool_ = bool;
 #[repr(C)] pub struct snd_ctl_elem_value { pub value: snd_ctl_elem_value_value }
 #[repr(C)] pub struct snd_ctl_elem_value_value { pub integer: snd_ctl_elem_value_integer }
 #[repr(C)] pub struct snd_ctl_elem_value_integer { pub value: [c_long; 128] }
-type c_long = ::core::ffi::c_long;
+type c_long = ::kernel::ffi::c_long;
 #[repr(C)] pub struct snd_pcm_substream { _private: [u8; 0] }
 #[repr(C)] pub struct snd_pcm_hw_params { _private: [u8; 0] }
 #[repr(C)] pub struct snd_soc_dapm_context { _private: [u8; 0] }

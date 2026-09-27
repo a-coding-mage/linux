@@ -47,7 +47,7 @@ pub struct omap_hsmmc_platform_data {
 
     /* set if your board has components or wiring that limits the
      * maximum frequency on the MMC bus */
-    pub max_freq: ::core::ffi::c_uint,
+    pub max_freq: ::kernel::ffi::c_uint,
 
     /* Integrating attributes from the omap_hwmod layer */
     pub controller_flags: u8,
@@ -69,12 +69,12 @@ pub struct omap_hsmmc_platform_data {
     pub no_regulator_off_init: u32,
 
     /* we can put the features above into this variable */
-    pub features: ::core::ffi::c_uint,
+    pub features: ::kernel::ffi::c_uint,
 
     /* string specifying a particular variant of hardware */
-    pub version: *mut ::core::ffi::c_char,
+    pub version: *mut ::kernel::ffi::c_char,
 
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub ocr_mask: u32,
 }
 

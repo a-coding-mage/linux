@@ -34,8 +34,8 @@ pub enum regulator_type {}
  */
 #[repr(C)]
 pub struct gpio_regulator_state {
-    pub value: core::ffi::c_int,
-    pub gpios: core::ffi::c_int,
+    pub value: kernel::ffi::c_int,
+    pub gpios: kernel::ffi::c_int,
 }
 
 /**
@@ -62,19 +62,19 @@ pub struct gpio_regulator_state {
  */
 #[repr(C)]
 pub struct gpio_regulator_config {
-    pub supply_name: *const core::ffi::c_char,
-    pub input_supply: *const core::ffi::c_char,
+    pub supply_name: *const kernel::ffi::c_char,
+    pub input_supply: *const kernel::ffi::c_char,
 
     // C bit-field: unsigned enabled_at_boot:1
     pub enabled_at_boot: u32,
     pub startup_delay: u32,
 
     // enum gpiod_flags *gflags;
-    pub gflags: *mut core::ffi::c_int,
-    pub ngpios: core::ffi::c_int,
+    pub gflags: *mut kernel::ffi::c_int,
+    pub ngpios: kernel::ffi::c_int,
 
     pub states: *mut gpio_regulator_state,
-    pub nr_states: core::ffi::c_int,
+    pub nr_states: kernel::ffi::c_int,
 
     pub type_: regulator_type,
     pub init_data: *mut regulator_init_data,

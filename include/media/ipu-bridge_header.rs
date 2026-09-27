@@ -102,28 +102,28 @@ pub struct ipu_sensor_ssdb {
 
 #[repr(C)]
 pub struct ipu_property_names {
-    pub clock_frequency: [::core::ffi::c_char; 16],
-    pub rotation: [::core::ffi::c_char; 9],
-    pub orientation: [::core::ffi::c_char; 12],
-    pub bus_type: [::core::ffi::c_char; 9],
-    pub data_lanes: [::core::ffi::c_char; 11],
-    pub remote_endpoint: [::core::ffi::c_char; 16],
-    pub link_frequencies: [::core::ffi::c_char; 17],
+    pub clock_frequency: [::kernel::ffi::c_char; 16],
+    pub rotation: [::kernel::ffi::c_char; 9],
+    pub orientation: [::kernel::ffi::c_char; 12],
+    pub bus_type: [::kernel::ffi::c_char; 9],
+    pub data_lanes: [::kernel::ffi::c_char; 11],
+    pub remote_endpoint: [::kernel::ffi::c_char; 16],
+    pub link_frequencies: [::kernel::ffi::c_char; 17],
 }
 
 #[repr(C)]
 pub struct ipu_node_names {
-    pub port: [::core::ffi::c_char; 7],
-    pub ivsc_sensor_port: [::core::ffi::c_char; 7],
-    pub ivsc_ipu_port: [::core::ffi::c_char; 7],
-    pub endpoint: [::core::ffi::c_char; 11],
-    pub remote_port: [::core::ffi::c_char; 9],
-    pub vcm: [::core::ffi::c_char; 16],
+    pub port: [::kernel::ffi::c_char; 7],
+    pub ivsc_sensor_port: [::kernel::ffi::c_char; 7],
+    pub ivsc_ipu_port: [::kernel::ffi::c_char; 7],
+    pub endpoint: [::kernel::ffi::c_char; 11],
+    pub remote_port: [::kernel::ffi::c_char; 9],
+    pub vcm: [::kernel::ffi::c_char; 16],
 }
 
 #[repr(C)]
 pub struct ipu_sensor_config {
-    pub hid: *const ::core::ffi::c_char,
+    pub hid: *const ::kernel::ffi::c_char,
     pub nr_link_freqs: u8,
     pub link_freqs: [u64; MAX_NUM_LINK_FREQS],
 }
@@ -131,11 +131,11 @@ pub struct ipu_sensor_config {
 #[repr(C)]
 pub struct ipu_sensor {
     /* append ssdb.link(u8) in "-%u" format as suffix of HID */
-    pub name: [::core::ffi::c_char; ACPI_ID_LEN + 4],
+    pub name: [::kernel::ffi::c_char; ACPI_ID_LEN + 4],
     pub adev: *mut acpi_device,
     pub csi_dev: *mut device,
     pub ivsc_adev: *mut acpi_device,
-    pub ivsc_name: [::core::ffi::c_char; ACPI_ID_LEN + 4],
+    pub ivsc_name: [::kernel::ffi::c_char; ACPI_ID_LEN + 4],
     /* SWNODE_COUNT + 1 for terminating NULL */
     pub group: [*const software_node; SWNODE_COUNT as usize + 1],
     pub swnodes: [software_node; SWNODE_COUNT as usize],
@@ -145,7 +145,7 @@ pub struct ipu_sensor {
     pub mclkspeed: u32,
     pub rotation: u32,
     pub orientation: v4l2_fwnode_orientation,
-    pub vcm_type: *const ::core::ffi::c_char,
+    pub vcm_type: *const ::kernel::ffi::c_char,
     pub prop_names: ipu_property_names,
     pub ep_properties: [property_entry; 5],
     pub dev_properties: [property_entry; 5],
@@ -160,16 +160,16 @@ pub struct ipu_sensor {
     pub ivsc_ipu_ref: [software_node_ref_args; 1],
 }
 
-pub type ipu_parse_sensor_fwnode_t = unsafe extern "C" fn(*mut acpi_device, *mut ipu_sensor) -> ::core::ffi::c_int;
+pub type ipu_parse_sensor_fwnode_t = unsafe extern "C" fn(*mut acpi_device, *mut ipu_sensor) -> ::kernel::ffi::c_int;
 
 #[repr(C)]
 pub struct ipu_bridge {
     pub dev: *mut device,
     pub parse_sensor_fwnode: Option<ipu_parse_sensor_fwnode_t>,
-    pub ipu_node_name: [::core::ffi::c_char; ACPI_ID_LEN],
+    pub ipu_node_name: [::kernel::ffi::c_char; ACPI_ID_LEN],
     pub ipu_hid_node: software_node,
     pub data_lanes: [u32; 4],
-    pub n_sensors: ::core::ffi::c_uint,
+    pub n_sensors: ::kernel::ffi::c_uint,
     pub sensors: [ipu_sensor; IPU_MAX_PORTS],
 }
 
@@ -177,9 +177,9 @@ pub struct ipu_bridge {
 
 #[cfg(CONFIG_IPU_BRIDGE)]
 unsafe extern "C" {
-    pub fn ipu_bridge_init(dev: *mut device, parse_sensor_fwnode: ipu_parse_sensor_fwnode_t) -> ::core::ffi::c_int;
-    pub fn ipu_bridge_parse_ssdb(adev: *mut acpi_device, sensor: *mut ipu_sensor) -> ::core::ffi::c_int;
-    pub fn ipu_bridge_instantiate_vcm(sensor: *mut device) -> ::core::ffi::c_int;
+    pub fn ipu_bridge_init(dev: *mut device, parse_sensor_fwnode: ipu_parse_sensor_fwnode_t) -> ::kernel::ffi::c_int;
+    pub fn ipu_bridge_parse_ssdb(adev: *mut acpi_device, sensor: *mut ipu_sensor) -> ::kernel::ffi::c_int;
+    pub fn ipu_bridge_instantiate_vcm(sensor: *mut device) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_IPU_BRIDGE))]
@@ -190,6 +190,6 @@ macro_rules! ipu_bridge_init {
 
 #[cfg(not(CONFIG_IPU_BRIDGE))]
 #[inline]
-pub unsafe fn ipu_bridge_instantiate_vcm(_s: *mut device) -> ::core::ffi::c_int { 0 }
+pub unsafe fn ipu_bridge_instantiate_vcm(_s: *mut device) -> ::kernel::ffi::c_int { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

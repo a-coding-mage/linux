@@ -14,23 +14,23 @@ extern "C" {
 }
 
 #[allow(non_camel_case_types)]
-type kunit = core::ffi::c_void;
+type kunit = kernel::ffi::c_void;
 #[allow(non_camel_case_types)]
-type drm_device = core::ffi::c_void;
+type drm_device = kernel::ffi::c_void;
 #[allow(non_camel_case_types)]
-type drm_plane = core::ffi::c_void;
+type drm_plane = kernel::ffi::c_void;
 #[allow(non_camel_case_types)]
-type device = core::ffi::c_void;
+type device = kernel::ffi::c_void;
 #[allow(non_camel_case_types)]
-type dc = core::ffi::c_void;
+type dc = kernel::ffi::c_void;
 #[allow(non_camel_case_types)]
-type amdgpu_device = core::ffi::c_void;
+type amdgpu_device = kernel::ffi::c_void;
 
 #[repr(C)]
 #[derive(Copy, Clone)]
 struct drm_prop_enum_list {
     type_: i32,
-    name: *mut core::ffi::c_char,
+    name: *mut kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -38,7 +38,7 @@ struct drm_prop_enum_list {
 struct drm_colorop {
     base_id: u32,
     type_: i32,
-    bypass_property: *mut core::ffi::c_void,
+    bypass_property: *mut kernel::ffi::c_void,
     next: *mut drm_colorop,
 }
 
@@ -48,13 +48,13 @@ extern "C" {
     fn __drm_kunit_helper_alloc_drm_device(test: *mut kunit, dev: *mut device,
                                            size: usize, a: u32, b: u32) -> *mut drm_device;
     fn drm_kunit_helper_create_primary_plane(test: *mut kunit, drm: *mut drm_device,
-                                             a: *mut core::ffi::c_void,
-                                             b: *mut core::ffi::c_void,
-                                             c: *mut core::ffi::c_void, d: u32,
-                                             e: *mut core::ffi::c_void) -> *mut drm_plane;
-    fn kunit_add_action(test: *mut kunit, action: unsafe extern "C" fn(*mut core::ffi::c_void),
-                        data: *mut core::ffi::c_void);
-    fn kfree(ptr: *mut core::ffi::c_void);
+                                             a: *mut kernel::ffi::c_void,
+                                             b: *mut kernel::ffi::c_void,
+                                             c: *mut kernel::ffi::c_void, d: u32,
+                                             e: *mut kernel::ffi::c_void) -> *mut drm_plane;
+    fn kunit_add_action(test: *mut kunit, action: unsafe extern "C" fn(*mut kernel::ffi::c_void),
+                        data: *mut kernel::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn dm_kunit_alloc_adev(test: *mut kunit) -> *mut amdgpu_device;
     fn kunit_kzalloc(test: *mut kunit, size: usize, flags: u32) -> *mut dc;
     fn amdgpu_dm_build_default_pipeline(drm: *mut drm_device, plane: *mut drm_plane,
@@ -80,7 +80,7 @@ const DRM_COLOROP_1D_CURVE_GAMMA22_INV: u32 = 7;
 #[inline]
 const fn bit(v: u32) -> u64 { 1u64 << v }
 
-unsafe extern "C" fn kunit_colorop_pipeline_destroy(drm: *mut core::ffi::c_void) {
+unsafe extern "C" fn kunit_colorop_pipeline_destroy(drm: *mut kernel::ffi::c_void) {
     drm_colorop_pipeline_destroy(drm as *mut drm_device);
 }
 
@@ -119,10 +119,10 @@ unsafe fn dm_test_initialize_default_pipeline_caps(test: *mut kunit, dpp_hw_3d_l
                                                        core::ptr::null_mut(),
                                                        core::ptr::null_mut(), 0,
                                                        core::ptr::null_mut());
-    kunit_add_action(test, kunit_colorop_pipeline_destroy, drm as *mut core::ffi::c_void);
+    kunit_add_action(test, kunit_colorop_pipeline_destroy, drm as *mut kernel::ffi::c_void);
     let ret = amdgpu_dm_initialize_default_pipeline(plane, &mut list);
     let _ = (dpp_hw_3d_lut, mpc_preblend, dc_ptr, ret);
-    kfree(list.name as *mut core::ffi::c_void);
+    kfree(list.name as *mut kernel::ffi::c_void);
     dm_expect_colorop_pipeline(test, drm, &list, expected, expected_count);
 }
 
@@ -151,10 +151,10 @@ unsafe fn dm_test_initialize_default_pipeline(test: *mut kunit) {
     let drm = __drm_kunit_helper_alloc_drm_device(test, dev, core::mem::size_of::<drm_device>(), 0, 0);
     let plane = drm_kunit_helper_create_primary_plane(test, drm, core::ptr::null_mut(), core::ptr::null_mut(), core::ptr::null_mut(), 0, core::ptr::null_mut());
     let mut list = drm_prop_enum_list { type_: 0, name: core::ptr::null_mut() };
-    kunit_add_action(test, kunit_colorop_pipeline_destroy, drm as *mut core::ffi::c_void);
+    kunit_add_action(test, kunit_colorop_pipeline_destroy, drm as *mut kernel::ffi::c_void);
     let ret = amdgpu_dm_build_default_pipeline(drm, plane, true, &mut list);
     let _ = ret;
-    kfree(list.name as *mut core::ffi::c_void);
+    kfree(list.name as *mut kernel::ffi::c_void);
     dm_expect_colorop_pipeline(test, drm, &list, expected.as_ptr(), expected.len() as i32);
 }
 

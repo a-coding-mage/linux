@@ -2,20 +2,20 @@
 
 // C dependencies supplied by the surrounding kernel translation unit.
 extern "C" {
-    static mut stack_protector_debug: core::ffi::c_int;
+    static mut stack_protector_debug: kernel::ffi::c_int;
     static mut __stack_chk_guard: usize;
     static mut vmlinux: Vmlinux;
     fn machine_has_relocated_lowcore() -> bool;
     fn s390_kernel_write(dst: *mut InsnRil, src: *const InsnRil, size: usize);
-    fn hex_byte_pack(dst: *mut core::ffi::c_char, byte: u8);
+    fn hex_byte_pack(dst: *mut kernel::ffi::c_char, byte: u8);
     fn __kernel_pa(address: usize) -> usize;
     fn __kernel_va(address: *const InsnRil) -> usize;
-    fn boot_debug(fmt: *const core::ffi::c_char, ...);
-    fn boot_emerg(fmt: *const core::ffi::c_char, ...);
-    fn boot_panic(fmt: *const core::ffi::c_char, ...) -> !;
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
-    fn pr_emerg(fmt: *const core::ffi::c_char, ...);
-    fn panic(fmt: *const core::ffi::c_char, ...) -> !;
+    fn boot_debug(fmt: *const kernel::ffi::c_char, ...);
+    fn boot_emerg(fmt: *const kernel::ffi::c_char, ...);
+    fn boot_panic(fmt: *const kernel::ffi::c_char, ...) -> !;
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_emerg(fmt: *const kernel::ffi::c_char, ...);
+    fn panic(fmt: *const kernel::ffi::c_char, ...) -> !;
 }
 
 #[repr(C)]
@@ -57,7 +57,7 @@ unsafe fn insn_to_vaddress(insn: *mut InsnRil) -> usize {
     { insn as usize }
 }
 
-unsafe fn insn_ril_to_string(str_: *mut core::ffi::c_char, insn: *mut InsnRil) {
+unsafe fn insn_ril_to_string(str_: *mut kernel::ffi::c_char, insn: *mut InsnRil) {
     let ptr = insn as *mut u8;
     let mut i = 0usize;
     while i < core::mem::size_of::<InsnRil>() {

@@ -30,18 +30,18 @@ pub struct parport_pc_private {
     /* Bitmask of writable CTR bits. */
     pub ctr_writable: u8,
     /* Whether or not there's an ECR. */
-    pub ecr: libc::c_int,
+    pub ecr: kernel::ffi::c_int,
     /* Bitmask of writable ECR bits. */
     pub ecr_writable: u8,
     /* Number of PWords that FIFO will hold. */
-    pub fifo_depth: libc::c_int,
+    pub fifo_depth: kernel::ffi::c_int,
     /* Number of bytes per portword. */
-    pub pword: libc::c_int,
+    pub pword: kernel::ffi::c_int,
     /* Not used yet. */
-    pub readIntrThreshold: libc::c_int,
-    pub writeIntrThreshold: libc::c_int,
+    pub readIntrThreshold: kernel::ffi::c_int,
+    pub writeIntrThreshold: kernel::ffi::c_int,
     /* buffer suitable for DMA, if DMA enabled */
-    pub dma_buf: *mut libc::c_char,
+    pub dma_buf: *mut kernel::ffi::c_char,
     pub dma_handle: dma_addr_t,
     pub list: list_head,
     pub port: *mut parport,
@@ -81,7 +81,7 @@ pub unsafe fn parport_pc_read_data(p: *mut parport) -> u8 {
 
 /* DEBUG_PARPORT controls whether this diagnostic helper is present. */
 #[cfg(feature = "DEBUG_PARPORT")]
-pub unsafe fn dump_parport_state(str_: *mut libc::c_char, p: *mut parport) {
+pub unsafe fn dump_parport_state(str_: *mut kernel::ffi::c_char, p: *mut parport) {
     /* here's hoping that reading these ports won't side-effect anything underneath */
     let ecr = inb(econtrol(p));
     let mut dcr = inb(control(p));
@@ -163,8 +163,8 @@ pub unsafe fn parport_pc_enable_irq(p: *mut parport) { __parport_pc_frob_control
 
 extern "C" {
     pub fn parport_pc_release_resources(p: *mut parport);
-    pub fn parport_pc_claim_resources(p: *mut parport) -> libc::c_int;
-    pub fn parport_pc_probe_port(base: libc::c_ulong, base_hi: libc::c_ulong, irq: libc::c_int, dma: libc::c_int, dev: *mut device, irqflags: libc::c_int) -> *mut parport;
+    pub fn parport_pc_claim_resources(p: *mut parport) -> kernel::ffi::c_int;
+    pub fn parport_pc_probe_port(base: kernel::ffi::c_ulong, base_hi: kernel::ffi::c_ulong, irq: kernel::ffi::c_int, dma: kernel::ffi::c_int, dev: *mut device, irqflags: kernel::ffi::c_int) -> *mut parport;
     pub fn parport_pc_unregister_port(p: *mut parport);
 }
 

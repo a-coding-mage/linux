@@ -14,7 +14,7 @@ pub unsafe fn ivpu_dev_coredump(vdev: *mut ivpu_device) {
     let mut pi: drm_print_iterator = core::mem::zeroed();
     let mut p: drm_printer;
     let coredump_size: usize;
-    let coredump: *mut core::ffi::c_char;
+    let coredump: *mut kernel::ffi::c_char;
 
     coredump_size = CRASH_DUMP_HEADERS_SIZE
         + FW_VERSION_HEADER_SIZE

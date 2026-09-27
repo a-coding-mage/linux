@@ -17,7 +17,7 @@ pub unsafe fn imx_unregister_hw_clocks(hws: *mut *mut clk_hw, count: u32) {
     }
 }
 
-pub unsafe fn imx_mmdc_mask_handshake(ccm_base: *mut core::ffi::c_void, chn: u32) {
+pub unsafe fn imx_mmdc_mask_handshake(ccm_base: *mut kernel::ffi::c_void, chn: u32) {
     let reg = readl_relaxed((ccm_base as *mut u8).add(CCM_CCDR) as *const u32);
     let reg = reg | if chn == 0 { CCDR_MMDC_CH0_MASK } else { CCDR_MMDC_CH1_MASK };
     writel_relaxed(reg, (ccm_base as *mut u8).add(CCM_CCDR) as *mut u32);
@@ -43,7 +43,7 @@ pub unsafe fn imx_check_clk_hws(clks: *mut *mut clk_hw, count: u32) {
     }
 }
 
-unsafe fn imx_obtain_fixed_clock_from_dt(name: *const core::ffi::c_char) -> *mut clk {
+unsafe fn imx_obtain_fixed_clock_from_dt(name: *const kernel::ffi::c_char) -> *mut clk {
     let mut phandle: of_phandle_args = core::mem::zeroed();
     let mut clk: *mut clk = err_ptr(-ENODEV);
     let path = kasprintf(GFP_KERNEL, c"/clocks/%s".as_ptr(), name);
@@ -61,7 +61,7 @@ unsafe fn imx_obtain_fixed_clock_from_dt(name: *const core::ffi::c_char) -> *mut
     clk
 }
 
-pub unsafe fn imx_obtain_fixed_clock(name: *const core::ffi::c_char, rate: u64) -> *mut clk {
+pub unsafe fn imx_obtain_fixed_clock(name: *const kernel::ffi::c_char, rate: u64) -> *mut clk {
     let mut clk = imx_obtain_fixed_clock_from_dt(name);
     if is_err(clk) {
         clk = imx_clk_fixed(name, rate);
@@ -69,7 +69,7 @@ pub unsafe fn imx_obtain_fixed_clock(name: *const core::ffi::c_char, rate: u64) 
     clk
 }
 
-pub unsafe fn imx_obtain_fixed_clock_hw(name: *const core::ffi::c_char, rate: u64) -> *mut clk_hw {
+pub unsafe fn imx_obtain_fixed_clock_hw(name: *const kernel::ffi::c_char, rate: u64) -> *mut clk_hw {
     let mut clk = imx_obtain_fixed_clock_from_dt(name);
     if is_err(clk) {
         clk = imx_clk_fixed(name, rate);
@@ -77,7 +77,7 @@ pub unsafe fn imx_obtain_fixed_clock_hw(name: *const core::ffi::c_char, rate: u6
     __clk_get_hw(clk)
 }
 
-pub unsafe fn imx_obtain_fixed_of_clock(np: *mut device_node, name: *const core::ffi::c_char, rate: u64) -> *mut clk_hw {
+pub unsafe fn imx_obtain_fixed_of_clock(np: *mut device_node, name: *const kernel::ffi::c_char, rate: u64) -> *mut clk_hw {
     let clk = of_clk_get_by_name(np, name);
     if is_err(clk) {
         imx_obtain_fixed_clock_hw(name, rate)
@@ -86,7 +86,7 @@ pub unsafe fn imx_obtain_fixed_of_clock(np: *mut device_node, name: *const core:
     }
 }
 
-pub unsafe fn imx_get_clk_hw_by_name(np: *mut device_node, name: *const core::ffi::c_char) -> *mut clk_hw {
+pub unsafe fn imx_get_clk_hw_by_name(np: *mut device_node, name: *const kernel::ffi::c_char) -> *mut clk_hw {
     let clk = of_clk_get_by_name(np, name);
     if is_err(clk) {
         return err_ptr(-ENOENT);
@@ -108,7 +108,7 @@ static mut imx_keep_uart_clocks: bool = false;
 static mut imx_enabled_uart_clocks: i32 = 0;
 static mut imx_uart_clocks: *mut *mut clk = core::ptr::null_mut();
 
-unsafe fn imx_keep_uart_clocks_param(_str: *mut core::ffi::c_char) -> i32 {
+unsafe fn imx_keep_uart_clocks_param(_str: *mut kernel::ffi::c_char) -> i32 {
     imx_keep_uart_clocks = true;
     0
 }
@@ -156,7 +156,7 @@ unsafe fn imx_clk_disable_uart() -> i32 {
             i += 1;
         }
     }
-    kfree(imx_uart_clocks as *mut core::ffi::c_void);
+    kfree(imx_uart_clocks as *mut kernel::ffi::c_void);
     0
 }
 

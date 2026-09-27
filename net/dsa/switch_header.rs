@@ -4,7 +4,7 @@
 
 #[repr(C)]
 pub struct DsaNotifierAgeingTimeInfo {
-    pub ageing_time: ::core::ffi::c_uint,
+    pub ageing_time: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -18,7 +18,7 @@ pub struct DsaNotifierBridgeInfo {
 #[repr(C)]
 pub struct DsaNotifierFdbInfo {
     pub dp: *const DsaPort,
-    pub addr: *const ::core::ffi::c_uchar,
+    pub addr: *const ::kernel::ffi::c_uchar,
     pub vid: u16,
     pub db: DsaDb,
 }
@@ -26,7 +26,7 @@ pub struct DsaNotifierFdbInfo {
 #[repr(C)]
 pub struct DsaNotifierLagFdbInfo {
     pub lag: *mut DsaLag,
-    pub addr: *const ::core::ffi::c_uchar,
+    pub addr: *const ::kernel::ffi::c_uchar,
     pub vid: u16,
     pub db: DsaDb,
 }
@@ -56,7 +56,7 @@ pub struct DsaNotifierVlanInfo {
 #[repr(C)]
 pub struct DsaNotifierMtuInfo {
     pub dp: *const DsaPort,
-    pub mtu: ::core::ffi::c_int,
+    pub mtu: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -76,33 +76,33 @@ pub struct DsaNotifierConduitStateInfo {
     pub operational: bool,
 }
 
-pub const DSA_NOTIFIER_AGEING_TIME: ::core::ffi::c_uint = 0;
-pub const DSA_NOTIFIER_BRIDGE_JOIN: ::core::ffi::c_uint = 1;
-pub const DSA_NOTIFIER_BRIDGE_LEAVE: ::core::ffi::c_uint = 2;
-pub const DSA_NOTIFIER_FDB_ADD: ::core::ffi::c_uint = 3;
-pub const DSA_NOTIFIER_FDB_DEL: ::core::ffi::c_uint = 4;
-pub const DSA_NOTIFIER_HOST_FDB_ADD: ::core::ffi::c_uint = 5;
-pub const DSA_NOTIFIER_HOST_FDB_DEL: ::core::ffi::c_uint = 6;
-pub const DSA_NOTIFIER_LAG_FDB_ADD: ::core::ffi::c_uint = 7;
-pub const DSA_NOTIFIER_LAG_FDB_DEL: ::core::ffi::c_uint = 8;
-pub const DSA_NOTIFIER_LAG_CHANGE: ::core::ffi::c_uint = 9;
-pub const DSA_NOTIFIER_LAG_JOIN: ::core::ffi::c_uint = 10;
-pub const DSA_NOTIFIER_LAG_LEAVE: ::core::ffi::c_uint = 11;
-pub const DSA_NOTIFIER_MDB_ADD: ::core::ffi::c_uint = 12;
-pub const DSA_NOTIFIER_MDB_DEL: ::core::ffi::c_uint = 13;
-pub const DSA_NOTIFIER_HOST_MDB_ADD: ::core::ffi::c_uint = 14;
-pub const DSA_NOTIFIER_HOST_MDB_DEL: ::core::ffi::c_uint = 15;
-pub const DSA_NOTIFIER_VLAN_ADD: ::core::ffi::c_uint = 16;
-pub const DSA_NOTIFIER_VLAN_DEL: ::core::ffi::c_uint = 17;
-pub const DSA_NOTIFIER_HOST_VLAN_ADD: ::core::ffi::c_uint = 18;
-pub const DSA_NOTIFIER_HOST_VLAN_DEL: ::core::ffi::c_uint = 19;
-pub const DSA_NOTIFIER_MTU: ::core::ffi::c_uint = 20;
-pub const DSA_NOTIFIER_TAG_PROTO: ::core::ffi::c_uint = 21;
-pub const DSA_NOTIFIER_TAG_PROTO_CONNECT: ::core::ffi::c_uint = 22;
-pub const DSA_NOTIFIER_TAG_PROTO_DISCONNECT: ::core::ffi::c_uint = 23;
-pub const DSA_NOTIFIER_TAG_8021Q_VLAN_ADD: ::core::ffi::c_uint = 24;
-pub const DSA_NOTIFIER_TAG_8021Q_VLAN_DEL: ::core::ffi::c_uint = 25;
-pub const DSA_NOTIFIER_CONDUIT_STATE_CHANGE: ::core::ffi::c_uint = 26;
+pub const DSA_NOTIFIER_AGEING_TIME: ::kernel::ffi::c_uint = 0;
+pub const DSA_NOTIFIER_BRIDGE_JOIN: ::kernel::ffi::c_uint = 1;
+pub const DSA_NOTIFIER_BRIDGE_LEAVE: ::kernel::ffi::c_uint = 2;
+pub const DSA_NOTIFIER_FDB_ADD: ::kernel::ffi::c_uint = 3;
+pub const DSA_NOTIFIER_FDB_DEL: ::kernel::ffi::c_uint = 4;
+pub const DSA_NOTIFIER_HOST_FDB_ADD: ::kernel::ffi::c_uint = 5;
+pub const DSA_NOTIFIER_HOST_FDB_DEL: ::kernel::ffi::c_uint = 6;
+pub const DSA_NOTIFIER_LAG_FDB_ADD: ::kernel::ffi::c_uint = 7;
+pub const DSA_NOTIFIER_LAG_FDB_DEL: ::kernel::ffi::c_uint = 8;
+pub const DSA_NOTIFIER_LAG_CHANGE: ::kernel::ffi::c_uint = 9;
+pub const DSA_NOTIFIER_LAG_JOIN: ::kernel::ffi::c_uint = 10;
+pub const DSA_NOTIFIER_LAG_LEAVE: ::kernel::ffi::c_uint = 11;
+pub const DSA_NOTIFIER_MDB_ADD: ::kernel::ffi::c_uint = 12;
+pub const DSA_NOTIFIER_MDB_DEL: ::kernel::ffi::c_uint = 13;
+pub const DSA_NOTIFIER_HOST_MDB_ADD: ::kernel::ffi::c_uint = 14;
+pub const DSA_NOTIFIER_HOST_MDB_DEL: ::kernel::ffi::c_uint = 15;
+pub const DSA_NOTIFIER_VLAN_ADD: ::kernel::ffi::c_uint = 16;
+pub const DSA_NOTIFIER_VLAN_DEL: ::kernel::ffi::c_uint = 17;
+pub const DSA_NOTIFIER_HOST_VLAN_ADD: ::kernel::ffi::c_uint = 18;
+pub const DSA_NOTIFIER_HOST_VLAN_DEL: ::kernel::ffi::c_uint = 19;
+pub const DSA_NOTIFIER_MTU: ::kernel::ffi::c_uint = 20;
+pub const DSA_NOTIFIER_TAG_PROTO: ::kernel::ffi::c_uint = 21;
+pub const DSA_NOTIFIER_TAG_PROTO_CONNECT: ::kernel::ffi::c_uint = 22;
+pub const DSA_NOTIFIER_TAG_PROTO_DISCONNECT: ::kernel::ffi::c_uint = 23;
+pub const DSA_NOTIFIER_TAG_8021Q_VLAN_ADD: ::kernel::ffi::c_uint = 24;
+pub const DSA_NOTIFIER_TAG_8021Q_VLAN_DEL: ::kernel::ffi::c_uint = 25;
+pub const DSA_NOTIFIER_CONDUIT_STATE_CHANGE: ::kernel::ffi::c_uint = 26;
 
 extern "C" {
     pub fn dsa_vlan_find(
@@ -110,10 +110,10 @@ extern "C" {
         vlan: *const SwitchdevObjPortVlan,
     ) -> *mut DsaVlan;
 
-    pub fn dsa_tree_notify(dst: *mut DsaSwitchTree, e: ::core::ffi::c_ulong, v: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-    pub fn dsa_broadcast(e: ::core::ffi::c_ulong, v: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
+    pub fn dsa_tree_notify(dst: *mut DsaSwitchTree, e: ::kernel::ffi::c_ulong, v: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
+    pub fn dsa_broadcast(e: ::kernel::ffi::c_ulong, v: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
 
-    pub fn dsa_switch_register_notifier(ds: *mut DsaSwitch) -> ::core::ffi::c_int;
+    pub fn dsa_switch_register_notifier(ds: *mut DsaSwitch) -> ::kernel::ffi::c_int;
     pub fn dsa_switch_unregister_notifier(ds: *mut DsaSwitch);
 }
 

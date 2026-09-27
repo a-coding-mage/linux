@@ -9,8 +9,8 @@
 static mut stopping_cpu: atomic_t = ATOMIC_INIT(-1);
 static mut smp_no_nmi_ipi: bool = false;
 
-unsafe extern "C" fn smp_stop_nmi_callback(val: ::core::ffi::c_uint,
-                                            regs: *mut pt_regs) -> ::core::ffi::c_int {
+unsafe extern "C" fn smp_stop_nmi_callback(val: ::kernel::ffi::c_uint,
+                                            regs: *mut pt_regs) -> ::kernel::ffi::c_int {
     // We are registered on stopping cpu too, avoid spurious NMI
     if raw_smp_processor_id() == atomic_read(&stopping_cpu) {
         return NMI_HANDLED;
@@ -29,22 +29,22 @@ unsafe extern "C" fn sysvec_reboot() {
     stop_this_cpu(::core::ptr::null_mut());
 }
 
-unsafe fn register_stop_handler() -> ::core::ffi::c_int {
+unsafe fn register_stop_handler() -> ::kernel::ffi::c_int {
     register_nmi_handler(NMI_LOCAL, Some(smp_stop_nmi_callback), NMI_FLAG_FIRST, c"smp_stop".as_ptr())
 }
 
-unsafe fn native_stop_other_cpus(wait: ::core::ffi::c_int) {
-    let mut old_cpu: ::core::ffi::c_uint;
-    let this_cpu: ::core::ffi::c_uint;
-    let mut flags: ::core::ffi::c_ulong;
-    let mut timeout: ::core::ffi::c_ulong;
+unsafe fn native_stop_other_cpus(wait: ::kernel::ffi::c_int) {
+    let mut old_cpu: ::kernel::ffi::c_uint;
+    let this_cpu: ::kernel::ffi::c_uint;
+    let mut flags: ::kernel::ffi::c_ulong;
+    let mut timeout: ::kernel::ffi::c_ulong;
 
     if reboot_force {
         return;
     }
 
     // Only proceed if this is the first CPU to reach this code
-    old_cpu = (-1i32) as ::core::ffi::c_uint;
+    old_cpu = (-1i32) as ::kernel::ffi::c_uint;
     this_cpu = smp_processor_id();
     if !atomic_try_cmpxchg(&mut stopping_cpu, &mut old_cpu, this_cpu) {
         return;
@@ -72,7 +72,7 @@ unsafe fn native_stop_other_cpus(wait: ::core::ffi::c_int) {
     // If the REBOOT_VECTOR didn't work, try with the NMI.
     if !cpumask_empty(&cpus_stop_mask) {
         if !smp_no_nmi_ipi && register_stop_handler() == 0 {
-            let mut cpu: ::core::ffi::c_uint;
+            let mut cpu: ::kernel::ffi::c_uint;
 
             pr_emerg!(c"Shutting down cpus with NMI");
 
@@ -124,7 +124,7 @@ unsafe extern "C" fn sysvec_call_function_single() {
     trace_call_function_single_exit(CALL_FUNCTION_SINGLE_VECTOR);
 }
 
-unsafe extern "C" fn nonmi_ipi_setup(_str: *mut ::core::ffi::c_char) -> ::core::ffi::c_int {
+unsafe extern "C" fn nonmi_ipi_setup(_str: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int {
     smp_no_nmi_ipi = true;
     1
 }
@@ -145,9 +145,9 @@ static mut smp_ops: struct_smp_ops = struct_smp_ops {
     send_call_func_single_ipi: Some(native_send_call_func_single_ipi),
 };
 
-pub unsafe extern "C" fn arch_cpu_rescan_dead_smt_siblings() -> ::core::ffi::c_int {
+pub unsafe extern "C" fn arch_cpu_rescan_dead_smt_siblings() -> ::kernel::ffi::c_int {
     let old: cpuhp_smt_control = cpu_smt_control;
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     /*
      * If SMT has been disabled and SMT siblings are in HLT, bring them back

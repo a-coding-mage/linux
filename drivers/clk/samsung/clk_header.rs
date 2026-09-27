@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* Common Clock Framework support for all Samsung platforms. */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 // Dependencies supplied by the surrounding kernel translation.
 
@@ -23,8 +23,8 @@ pub struct samsung_clk_provider {
 #[repr(C)]
 pub struct samsung_clock_alias {
     pub id: u32,
-    pub dev_name: *const core::ffi::c_char,
-    pub alias: *const core::ffi::c_char,
+    pub dev_name: *const kernel::ffi::c_char,
+    pub alias: *const kernel::ffi::c_char,
 }
 
 #[macro_export]
@@ -39,8 +39,8 @@ pub const MHZ: u32 = 1000 * 1000;
 #[repr(C)]
 pub struct samsung_fixed_rate_clock {
     pub id: u32,
-    pub name: *mut core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char,
     pub flags: usize,
     pub fixed_rate: usize,
 }
@@ -55,8 +55,8 @@ macro_rules! FRATE {
 #[repr(C)]
 pub struct samsung_fixed_factor_clock {
     pub id: u32,
-    pub name: *mut core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char,
     pub mult: usize,
     pub div: usize,
     pub flags: usize,
@@ -72,8 +72,8 @@ macro_rules! FFACTOR {
 #[repr(C)]
 pub struct samsung_mux_clock {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: u8,
     pub flags: usize,
     pub offset: usize,
@@ -99,7 +99,7 @@ macro_rules! nMUX_F { ($id:expr,$c:expr,$p:expr,$o:expr,$s:expr,$w:expr,$f:expr,
 
 #[repr(C)]
 pub struct samsung_div_clock {
-    pub id: u32, pub name: *const core::ffi::c_char, pub parent_name: *const core::ffi::c_char,
+    pub id: u32, pub name: *const kernel::ffi::c_char, pub parent_name: *const kernel::ffi::c_char,
     pub flags: usize, pub offset: usize, pub shift: u8, pub width: u8, pub div_flags: u8,
     pub table: *mut clk_div_table,
 }
@@ -110,24 +110,24 @@ macro_rules! __DIV { ($id:expr,$c:expr,$p:expr,$o:expr,$s:expr,$w:expr,$f:expr,$
 #[macro_export] macro_rules! DIV_T { ($id:expr,$c:expr,$p:expr,$o:expr,$s:expr,$w:expr,$t:expr) => { __DIV!($id,$c,$p,$o,$s,$w,0,0,$t) }; }
 
 #[repr(C)]
-pub struct samsung_gate_clock { pub id:u32, pub name:*const core::ffi::c_char, pub parent_name:*const core::ffi::c_char, pub flags:usize, pub offset:usize, pub bit_idx:u8, pub gate_flags:u8 }
+pub struct samsung_gate_clock { pub id:u32, pub name:*const kernel::ffi::c_char, pub parent_name:*const kernel::ffi::c_char, pub flags:usize, pub offset:usize, pub bit_idx:u8, pub gate_flags:u8 }
 #[macro_export] macro_rules! __GATE { ($id:expr,$c:expr,$p:expr,$o:expr,$b:expr,$f:expr,$gf:expr) => { samsung_gate_clock{id:$id,name:$c,parent_name:$p,flags:$f,offset:$o,bit_idx:$b,gate_flags:$gf} }; }
 #[macro_export] macro_rules! GATE { ($($x:tt)*) => { __GATE!($($x)*) }; }
 // PNAME(x) declares a static const parent-name array in C.
 
 #[repr(C)] pub struct samsung_clk_reg_dump { pub offset:u32, pub value:u32 }
-#[repr(C)] pub struct samsung_pll_clock { pub id:u32, pub name:*const core::ffi::c_char, pub parent_name:*const core::ffi::c_char, pub flags:usize, pub con_offset:i32, pub lock_offset:i32, pub type_:samsung_pll_type, pub rate_table:*const samsung_pll_rate_table }
+#[repr(C)] pub struct samsung_pll_clock { pub id:u32, pub name:*const kernel::ffi::c_char, pub parent_name:*const kernel::ffi::c_char, pub flags:usize, pub con_offset:i32, pub lock_offset:i32, pub type_:samsung_pll_type, pub rate_table:*const samsung_pll_rate_table }
 #[macro_export] macro_rules! __PLL { ($t:expr,$id:expr,$n:expr,$p:expr,$f:expr,$l:expr,$c:expr,$r:expr) => { samsung_pll_clock{id:$id,type_:$t,name:$n,parent_name:$p,flags:$f,con_offset:$c,lock_offset:$l,rate_table:$r} }; }
 #[macro_export] macro_rules! PLL { ($t:expr,$id:expr,$n:expr,$p:expr,$l:expr,$c:expr,$r:expr) => { __PLL!($t,$id,$n,$p,CLK_GET_RATE_NOCACHE,$l,$c,$r) }; }
 
-#[repr(C)] pub struct samsung_cpu_clock { pub id:u32,pub name:*const core::ffi::c_char,pub parent_id:u32,pub alt_parent_id:u32,pub flags:usize,pub offset:i32,pub reg_layout:exynos_cpuclk_layout,pub cfg:*const exynos_cpuclk_cfg_data }
+#[repr(C)] pub struct samsung_cpu_clock { pub id:u32,pub name:*const kernel::ffi::c_char,pub parent_id:u32,pub alt_parent_id:u32,pub flags:usize,pub offset:i32,pub reg_layout:exynos_cpuclk_layout,pub cfg:*const exynos_cpuclk_cfg_data }
 #[macro_export] macro_rules! CPU_CLK { ($id:expr,$n:expr,$p:expr,$a:expr,$f:expr,$o:expr,$l:expr,$c:expr) => { samsung_cpu_clock{id:$id,name:$n,parent_id:$p,alt_parent_id:$a,flags:$f,offset:$o,reg_layout:$l,cfg:$c} }; }
 
 #[repr(C)] pub struct samsung_clock_reg_cache { pub node:list_head,pub reg_base:*mut c_void,pub sysreg:*mut regmap,pub rsuspend:*const samsung_clk_reg_dump,pub rsuspend_num:u32,pub rd_num:u32,pub rdump:[samsung_clk_reg_dump;0] }
 
 #[repr(C)] pub struct samsung_cmu_info {
     pub pll_clks:*const samsung_pll_clock,pub nr_pll_clks:u32,pub mux_clks:*const samsung_mux_clock,pub nr_mux_clks:u32,pub div_clks:*const samsung_div_clock,pub nr_div_clks:u32,pub gate_clks:*const samsung_gate_clock,pub nr_gate_clks:u32,pub fixed_clks:*const samsung_fixed_rate_clock,pub nr_fixed_clks:u32,pub fixed_factor_clks:*const samsung_fixed_factor_clock,pub nr_fixed_factor_clks:u32,pub nr_clk_ids:u32,pub cpu_clks:*const samsung_cpu_clock,pub nr_cpu_clks:u32,
-    pub clk_regs:*const usize,pub nr_clk_regs:u32,pub suspend_regs:*const samsung_clk_reg_dump,pub nr_suspend_regs:u32,pub clk_name:*const core::ffi::c_char,pub sysreg_clk_regs:*const usize,pub nr_sysreg_clk_regs:u32,
+    pub clk_regs:*const usize,pub nr_clk_regs:u32,pub suspend_regs:*const samsung_clk_reg_dump,pub nr_suspend_regs:u32,pub clk_name:*const kernel::ffi::c_char,pub sysreg_clk_regs:*const usize,pub nr_sysreg_clk_regs:u32,
     pub manual_plls:bool,pub auto_clock_gate:bool,pub gate_dbg_offset:u32,pub option_offset:u32,pub drcg_offset:u32,pub memclk_offset:u32,
 }
 

@@ -8,7 +8,7 @@
  *****************************************************************************/
 
 // Dependencies supplied by the ACPI headers and other translation units.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // #define _COMPONENT ACPI_COMPILER
 // ACPI_MODULE_NAME("uthex")

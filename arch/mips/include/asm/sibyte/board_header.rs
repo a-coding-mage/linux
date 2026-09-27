@@ -22,7 +22,7 @@ unsafe extern "C" {
 
 #[cfg(feature = "LEDS_PHYS")]
 unsafe extern "C" {
-    pub fn setleds(str_: *mut core::ffi::c_char);
+    pub fn setleds(str_: *mut kernel::ffi::c_char);
 }
 
 #[cfg(not(feature = "LEDS_PHYS"))]

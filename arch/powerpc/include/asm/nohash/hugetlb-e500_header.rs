@@ -3,11 +3,11 @@
 // C header guard omitted from executable Rust.
 
 unsafe extern "C" {
-    pub fn flush_hugetlb_page(vma: *mut vm_area_struct, vmaddr: ::core::ffi::c_ulong);
+    pub fn flush_hugetlb_page(vma: *mut vm_area_struct, vmaddr: ::kernel::ffi::c_ulong);
 }
 
 #[inline]
-pub unsafe fn check_and_get_huge_psize(shift: ::core::ffi::c_int) -> ::core::ffi::c_int {
+pub unsafe fn check_and_get_huge_psize(shift: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     if (shift & 1) != 0 {
         // Not a power of 4
         return -EINVAL;
@@ -19,10 +19,10 @@ pub unsafe fn check_and_get_huge_psize(shift: ::core::ffi::c_int) -> ::core::ffi
 #[inline]
 pub unsafe fn arch_make_huge_pte(
     entry: pte_t,
-    shift: ::core::ffi::c_uint,
+    shift: ::kernel::ffi::c_uint,
     _flags: vm_flags_t,
 ) -> pte_t {
-    let tsize: ::core::ffi::c_uint = shift - _PAGE_PSIZE_SHIFT_OFFSET;
+    let tsize: ::kernel::ffi::c_uint = shift - _PAGE_PSIZE_SHIFT_OFFSET;
     let val: pte_basic_t = (tsize << _PAGE_PSIZE_SHIFT) & _PAGE_PSIZE_MSK;
 
     __pte((pte_val(entry) & !(_PAGE_PSIZE_MSK as pte_basic_t)) | val)

@@ -8,7 +8,7 @@
 // C includes omitted; referenced symbols are supplied by other headers.
 
 /* These are used to set parameters in the core dumps. */
-pub const ELF_ARCH: _ = EM_RISCV;
+pub const ELF_ARCH: u16 = EM_RISCV;
 
 // CONFIG_64BIT selects ELFCLASS64; otherwise ELFCLASS32.
 #[cfg(CONFIG_64BIT)]
@@ -29,8 +29,8 @@ extern "C" {
 }
 
 pub const CORE_DUMP_USE_REGSET: bool = true;
-pub const ELF_FDPIC_CORE_EFLAGS: _ = 0;
-pub const ELF_EXEC_PAGESIZE: _ = PAGE_SIZE;
+pub const ELF_FDPIC_CORE_EFLAGS: u32 = 0;
+pub const ELF_EXEC_PAGESIZE: usize = PAGE_SIZE;
 
 /* This is the location that an ET_DYN program is loaded if exec'ed. */
 pub const ELF_ET_DYN_BASE: _ = ((DEFAULT_MAP_WINDOW / 3) * 2);
@@ -53,7 +53,7 @@ pub fn STACK_RND_MASK() -> _ {
  */
 pub const ELF_HWCAP: _ = riscv_get_elf_hwcap();
 extern "C" {
-    pub static mut elf_hwcap: ::core::ffi::c_ulong;
+    pub static mut elf_hwcap: ::kernel::ffi::c_ulong;
 }
 
 #[macro_export]
@@ -65,8 +65,8 @@ macro_rules! ELF_FDPIC_PLAT_INIT {
     }};
 }
 
-pub const ELF_PLATFORM: *const core::ffi::c_void = core::ptr::null();
-pub const COMPAT_ELF_PLATFORM: *const core::ffi::c_void = core::ptr::null();
+pub const ELF_PLATFORM: *const kernel::ffi::c_void = core::ptr::null();
+pub const COMPAT_ELF_PLATFORM: *const kernel::ffi::c_void = core::ptr::null();
 
 #[macro_export]
 macro_rules! ARCH_DLINFO {
@@ -119,7 +119,7 @@ macro_rules! SET_PERSONALITY {
 }
 
 #[cfg(CONFIG_COMPAT)]
-pub const COMPAT_ELF_ET_DYN_BASE: _ = ((TASK_SIZE_32 / 3) * 2);
+pub const COMPAT_ELF_ET_DYN_BASE: usize = ((TASK_SIZE_32 / 3) * 2);
 
 /* rv32 registers */
 #[cfg(CONFIG_COMPAT)]

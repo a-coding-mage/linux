@@ -19,7 +19,7 @@ pub unsafe fn btrfs_insert_orphan_item(
     key.offset = offset;
 
     if path.is_null() {
-        return -libc::ENOMEM;
+        return -ENOMEM;
     }
 
     btrfs_insert_empty_item(trans, root, path, &key, 0)
@@ -40,7 +40,7 @@ pub unsafe fn btrfs_del_orphan_item(
     key.offset = offset;
 
     if path.is_null() {
-        return -libc::ENOMEM;
+        return -ENOMEM;
     }
 
     ret = btrfs_search_slot(trans, root, &key, path, -1, 1);
@@ -48,7 +48,7 @@ pub unsafe fn btrfs_del_orphan_item(
         return ret;
     }
     if ret != 0 {
-        return -libc::ENOENT;
+        return -ENOENT;
     }
 
     btrfs_del_item(trans, root, path)

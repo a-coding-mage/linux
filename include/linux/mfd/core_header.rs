@@ -93,22 +93,22 @@ pub struct software_node {
 // Matches ACPI PNP id, either _HID or _CID, or ACPI _ADR
 #[repr(C)]
 pub struct mfd_cell_acpi_match {
-    pub pnpid: *const core::ffi::c_char,
+    pub pnpid: *const kernel::ffi::c_char,
     pub adr: u64,
 }
 
 #[repr(C)]
 pub struct mfd_cell {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: i32,
     pub level: i32,
     pub suspend: Option<unsafe extern "C" fn(dev: *mut platform_device) -> i32>,
     pub resume: Option<unsafe extern "C" fn(dev: *mut platform_device) -> i32>,
-    pub platform_data: *const core::ffi::c_void,
+    pub platform_data: *const kernel::ffi::c_void,
     pub pdata_size: usize,
     pub acpi_match: *const mfd_cell_acpi_match,
     pub swnode: *const software_node,
-    pub of_compatible: *const core::ffi::c_char,
+    pub of_compatible: *const kernel::ffi::c_char,
     pub of_reg: u64,
     pub use_of_reg: bool,
     pub num_resources: i32,
@@ -116,7 +116,7 @@ pub struct mfd_cell {
     pub ignore_resource_conflicts: bool,
     pub pm_runtime_no_callbacks: bool,
     pub num_parent_supplies: i32,
-    pub parent_supplies: *const *const core::ffi::c_char,
+    pub parent_supplies: *const *const kernel::ffi::c_char,
 }
 
 // C dependency types supplied by other files.

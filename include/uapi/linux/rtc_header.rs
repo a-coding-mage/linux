@@ -6,15 +6,15 @@
 
 #[repr(C)]
 pub struct rtc_time {
-    pub tm_sec: ::core::ffi::c_int,
-    pub tm_min: ::core::ffi::c_int,
-    pub tm_hour: ::core::ffi::c_int,
-    pub tm_mday: ::core::ffi::c_int,
-    pub tm_mon: ::core::ffi::c_int,
-    pub tm_year: ::core::ffi::c_int,
-    pub tm_wday: ::core::ffi::c_int,
-    pub tm_yday: ::core::ffi::c_int,
-    pub tm_isdst: ::core::ffi::c_int,
+    pub tm_sec: ::kernel::ffi::c_int,
+    pub tm_min: ::kernel::ffi::c_int,
+    pub tm_hour: ::kernel::ffi::c_int,
+    pub tm_mday: ::kernel::ffi::c_int,
+    pub tm_mon: ::kernel::ffi::c_int,
+    pub tm_year: ::kernel::ffi::c_int,
+    pub tm_wday: ::kernel::ffi::c_int,
+    pub tm_yday: ::kernel::ffi::c_int,
+    pub tm_isdst: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -26,13 +26,13 @@ pub struct rtc_wkalrm {
 
 #[repr(C)]
 pub struct rtc_pll_info {
-    pub pll_ctrl: ::core::ffi::c_int,
-    pub pll_value: ::core::ffi::c_int,
-    pub pll_max: ::core::ffi::c_int,
-    pub pll_min: ::core::ffi::c_int,
-    pub pll_posmult: ::core::ffi::c_int,
-    pub pll_negmult: ::core::ffi::c_int,
-    pub pll_clock: ::core::ffi::c_long,
+    pub pll_ctrl: ::kernel::ffi::c_int,
+    pub pll_value: ::kernel::ffi::c_int,
+    pub pll_max: ::kernel::ffi::c_int,
+    pub pll_min: ::kernel::ffi::c_int,
+    pub pll_posmult: ::kernel::ffi::c_int,
+    pub pll_negmult: ::kernel::ffi::c_int,
+    pub pll_clock: ::kernel::ffi::c_long,
 }
 
 #[repr(C)]
@@ -50,37 +50,37 @@ pub struct rtc_param {
     pub __pad: u32,
 }
 
-pub const RTC_AIE_ON: _ = _IO(b'p' as _, 0x01);
-pub const RTC_AIE_OFF: _ = _IO(b'p' as _, 0x02);
-pub const RTC_UIE_ON: _ = _IO(b'p' as _, 0x03);
-pub const RTC_UIE_OFF: _ = _IO(b'p' as _, 0x04);
-pub const RTC_PIE_ON: _ = _IO(b'p' as _, 0x05);
-pub const RTC_PIE_OFF: _ = _IO(b'p' as _, 0x06);
-pub const RTC_WIE_ON: _ = _IO(b'p' as _, 0x0f);
-pub const RTC_WIE_OFF: _ = _IO(b'p' as _, 0x10);
+pub const RTC_AIE_ON: u32 = _IO(b'p' as _, 0x01);
+pub const RTC_AIE_OFF: u32 = _IO(b'p' as _, 0x02);
+pub const RTC_UIE_ON: u32 = _IO(b'p' as _, 0x03);
+pub const RTC_UIE_OFF: u32 = _IO(b'p' as _, 0x04);
+pub const RTC_PIE_ON: u32 = _IO(b'p' as _, 0x05);
+pub const RTC_PIE_OFF: u32 = _IO(b'p' as _, 0x06);
+pub const RTC_WIE_ON: u32 = _IO(b'p' as _, 0x0f);
+pub const RTC_WIE_OFF: u32 = _IO(b'p' as _, 0x10);
 
-pub const RTC_ALM_SET: _ = _IOW(b'p' as _, 0x07, rtc_time);
-pub const RTC_ALM_READ: _ = _IOR(b'p' as _, 0x08, rtc_time);
-pub const RTC_RD_TIME: _ = _IOR(b'p' as _, 0x09, rtc_time);
-pub const RTC_SET_TIME: _ = _IOW(b'p' as _, 0x0a, rtc_time);
-pub const RTC_IRQP_READ: _ = _IOR(b'p' as _, 0x0b, ::core::ffi::c_ulong);
-pub const RTC_IRQP_SET: _ = _IOW(b'p' as _, 0x0c, ::core::ffi::c_ulong);
-pub const RTC_EPOCH_READ: _ = _IOR(b'p' as _, 0x0d, ::core::ffi::c_ulong);
-pub const RTC_EPOCH_SET: _ = _IOW(b'p' as _, 0x0e, ::core::ffi::c_ulong);
-pub const RTC_WKALM_SET: _ = _IOW(b'p' as _, 0x0f, rtc_wkalrm);
-pub const RTC_WKALM_RD: _ = _IOR(b'p' as _, 0x10, rtc_wkalrm);
-pub const RTC_PLL_GET: _ = _IOR(b'p' as _, 0x11, rtc_pll_info);
-pub const RTC_PLL_SET: _ = _IOW(b'p' as _, 0x12, rtc_pll_info);
-pub const RTC_PARAM_GET: _ = _IOW(b'p' as _, 0x13, rtc_param);
-pub const RTC_PARAM_SET: _ = _IOW(b'p' as _, 0x14, rtc_param);
+pub const RTC_ALM_SET: u32 = _IOW(b'p' as _, 0x07, rtc_time);
+pub const RTC_ALM_READ: u32 = _IOR(b'p' as _, 0x08, rtc_time);
+pub const RTC_RD_TIME: u32 = _IOR(b'p' as _, 0x09, rtc_time);
+pub const RTC_SET_TIME: u32 = _IOW(b'p' as _, 0x0a, rtc_time);
+pub const RTC_IRQP_READ: u32 = _IOR(b'p' as _, 0x0b, ::kernel::ffi::c_ulong);
+pub const RTC_IRQP_SET: u32 = _IOW(b'p' as _, 0x0c, ::kernel::ffi::c_ulong);
+pub const RTC_EPOCH_READ: u32 = _IOR(b'p' as _, 0x0d, ::kernel::ffi::c_ulong);
+pub const RTC_EPOCH_SET: u32 = _IOW(b'p' as _, 0x0e, ::kernel::ffi::c_ulong);
+pub const RTC_WKALM_SET: u32 = _IOW(b'p' as _, 0x0f, rtc_wkalrm);
+pub const RTC_WKALM_RD: u32 = _IOR(b'p' as _, 0x10, rtc_wkalrm);
+pub const RTC_PLL_GET: u32 = _IOR(b'p' as _, 0x11, rtc_pll_info);
+pub const RTC_PLL_SET: u32 = _IOW(b'p' as _, 0x12, rtc_pll_info);
+pub const RTC_PARAM_GET: u32 = _IOW(b'p' as _, 0x13, rtc_param);
+pub const RTC_PARAM_SET: u32 = _IOW(b'p' as _, 0x14, rtc_param);
 
 pub const RTC_VL_DATA_INVALID: _ = _BITUL(0);
 pub const RTC_VL_BACKUP_LOW: _ = _BITUL(1);
 pub const RTC_VL_BACKUP_EMPTY: _ = _BITUL(2);
 pub const RTC_VL_ACCURACY_LOW: _ = _BITUL(3);
 pub const RTC_VL_BACKUP_SWITCH: _ = _BITUL(4);
-pub const RTC_VL_READ: _ = _IOR(b'p' as _, 0x13, ::core::ffi::c_uint);
-pub const RTC_VL_CLR: _ = _IO(b'p' as _, 0x14);
+pub const RTC_VL_READ: u32 = _IOR(b'p' as _, 0x13, ::kernel::ffi::c_uint);
+pub const RTC_VL_CLR: u32 = _IO(b'p' as _, 0x14);
 
 pub const RTC_IRQF: u8 = 0x80;
 pub const RTC_PF: u8 = 0x40;

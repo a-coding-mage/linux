@@ -39,7 +39,7 @@ unsafe extern "C" {
         type_: aic32x4_type,
     ) -> i32;
     pub fn aic32x4_remove(dev: *mut device);
-    pub fn aic32x4_register_clocks(dev: *mut device, mclk_name: *const core::ffi::c_char) -> i32;
+    pub fn aic32x4_register_clocks(dev: *mut device, mclk_name: *const kernel::ffi::c_char) -> i32;
 }
 
 /* tlv320aic32x4 register space (in decimal to match datasheet) */

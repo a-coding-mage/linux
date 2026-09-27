@@ -16,7 +16,7 @@ struct TestPriv {
 
 #[repr(C)]
 struct Kunit {
-    priv_: *mut core::ffi::c_void,
+    priv_: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -25,14 +25,14 @@ struct Device;
 struct WaitQueueHead;
 
 extern "C" {
-    fn kunit_kzalloc(test: *mut Kunit, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn kunit_kzalloc(test: *mut Kunit, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn init_waitqueue_head(wq: *mut WaitQueueHead);
-    fn root_device_register(name: *const core::ffi::c_char) -> *mut Device;
+    fn root_device_register(name: *const kernel::ffi::c_char) -> *mut Device;
     fn root_device_unregister(dev: *mut Device);
     fn devm_add_action_or_reset(
         dev: *mut Device,
-        action: unsafe extern "C" fn(*mut core::ffi::c_void),
-        data: *mut core::ffi::c_void,
+        action: unsafe extern "C" fn(*mut kernel::ffi::c_void),
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
     fn wake_up_interruptible(wq: *mut WaitQueueHead);
     fn wait_event_interruptible_timeout(
@@ -56,12 +56,12 @@ unsafe fn root_device_devm_init(test: *mut Kunit) -> i32 {
     }
     init_waitqueue_head(core::ptr::addr_of_mut!((*priv_).release_wq));
 
-    (*test).priv_ = priv_ as *mut core::ffi::c_void;
+    (*test).priv_ = priv_ as *mut kernel::ffi::c_void;
 
     0
 }
 
-unsafe extern "C" fn devm_device_action(ptr: *mut core::ffi::c_void) {
+unsafe extern "C" fn devm_device_action(ptr: *mut kernel::ffi::c_void) {
     let priv_ = ptr as *mut TestPriv;
 
     (*priv_).release_done = true;
@@ -76,13 +76,13 @@ unsafe fn root_device_devm_register_unregister_test(test: *mut Kunit) {
     let priv_ = (*test).priv_ as *mut TestPriv;
     let ret: i32;
 
-    (*priv_).dev = root_device_register(DEVICE_NAME.as_ptr() as *const core::ffi::c_char);
+    (*priv_).dev = root_device_register(DEVICE_NAME.as_ptr() as *const kernel::ffi::c_char);
     // KUNIT_ASSERT_NOT_ERR_OR_NULL(test, priv_->dev);
 
     ret = devm_add_action_or_reset(
         (*priv_).dev,
         devm_device_action,
-        priv_ as *mut core::ffi::c_void,
+        priv_ as *mut kernel::ffi::c_void,
     );
     // KUNIT_ASSERT_EQ(test, ret, 0);
 
@@ -97,7 +97,7 @@ unsafe fn root_device_devm_register_unregister_test(test: *mut Kunit) {
     let _ = (ret, wait_ret);
 }
 
-unsafe extern "C" fn devm_put_device_action(ptr: *mut core::ffi::c_void) {
+unsafe extern "C" fn devm_put_device_action(ptr: *mut kernel::ffi::c_void) {
     let priv_ = ptr as *mut TestPriv;
 
     put_device((*priv_).dev);
@@ -114,7 +114,7 @@ unsafe fn root_device_devm_register_get_unregister_with_devm_test(test: *mut Kun
     let priv_ = (*test).priv_ as *mut TestPriv;
     let ret: i32;
 
-    (*priv_).dev = root_device_register(DEVICE_NAME.as_ptr() as *const core::ffi::c_char);
+    (*priv_).dev = root_device_register(DEVICE_NAME.as_ptr() as *const kernel::ffi::c_char);
     // KUNIT_ASSERT_NOT_ERR_OR_NULL(test, priv_->dev);
 
     get_device((*priv_).dev);
@@ -122,7 +122,7 @@ unsafe fn root_device_devm_register_get_unregister_with_devm_test(test: *mut Kun
     ret = devm_add_action_or_reset(
         (*priv_).dev,
         devm_put_device_action,
-        priv_ as *mut core::ffi::c_void,
+        priv_ as *mut kernel::ffi::c_void,
     );
     // KUNIT_ASSERT_EQ(test, ret, 0);
 

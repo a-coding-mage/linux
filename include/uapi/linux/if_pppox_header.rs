@@ -14,7 +14,7 @@ pub type sid_t = __be16;
 pub struct pppoe_addr {
     pub sid: sid_t,
     pub remote: [u8; ETH_ALEN],
-    pub dev: [::core::ffi::c_char; IFNAMSIZ],
+    pub dev: [::kernel::ffi::c_char; IFNAMSIZ],
 }
 
 #[repr(C)]
@@ -37,35 +37,35 @@ pub union sockaddr_pppox_sa_addr {
 #[repr(C, packed)]
 pub struct sockaddr_pppox {
     pub sa_family: __kernel_sa_family_t,
-    pub sa_protocol: ::core::ffi::c_uint,
+    pub sa_protocol: ::kernel::ffi::c_uint,
     pub sa_addr: sockaddr_pppox_sa_addr,
 }
 
 #[repr(C, packed)]
 pub struct sockaddr_pppol2tp {
     pub sa_family: __kernel_sa_family_t,
-    pub sa_protocol: ::core::ffi::c_uint,
+    pub sa_protocol: ::kernel::ffi::c_uint,
     pub pppol2tp: pppol2tp_addr,
 }
 
 #[repr(C, packed)]
 pub struct sockaddr_pppol2tpin6 {
     pub sa_family: __kernel_sa_family_t,
-    pub sa_protocol: ::core::ffi::c_uint,
+    pub sa_protocol: ::kernel::ffi::c_uint,
     pub pppol2tp: pppol2tpin6_addr,
 }
 
 #[repr(C, packed)]
 pub struct sockaddr_pppol2tpv3 {
     pub sa_family: __kernel_sa_family_t,
-    pub sa_protocol: ::core::ffi::c_uint,
+    pub sa_protocol: ::kernel::ffi::c_uint,
     pub pppol2tp: pppol2tpv3_addr,
 }
 
 #[repr(C, packed)]
 pub struct sockaddr_pppol2tpv3in6 {
     pub sa_family: __kernel_sa_family_t,
-    pub sa_protocol: ::core::ffi::c_uint,
+    pub sa_protocol: ::kernel::ffi::c_uint,
     pub pppol2tp: pppol2tpv3in6_addr,
 }
 
@@ -80,7 +80,7 @@ pub struct pppoe_tag {
     pub tag_type: __be16,
     pub tag_len: __be16,
     #[cfg(not(feature = "kernel"))]
-    pub tag_data: [::core::ffi::c_char; 0],
+    pub tag_data: [::kernel::ffi::c_char; 0],
 }
 
 pub const PTT_EOL: __be16 = 0x0000u16.to_be();

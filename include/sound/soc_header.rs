@@ -11,7 +11,7 @@
 
 #[repr(C)]
 pub struct snd_soc_pcm_stream {
-    pub stream_name: *const core::ffi::c_char,
+    pub stream_name: *const kernel::ffi::c_char,
     pub formats: u64,
     pub subformats: u32,
     pub rates: u32,
@@ -41,9 +41,9 @@ pub struct snd_soc_compr_ops {
 
 #[repr(C)]
 pub struct snd_soc_dai_link_component {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_node: *mut device_node,
-    pub dai_name: *const core::ffi::c_char,
+    pub dai_name: *const kernel::ffi::c_char,
     pub dai_args: *const of_phandle_args,
     pub ext_fmt: u32,
 }
@@ -61,12 +61,12 @@ pub struct soc_mixer_control {
 #[repr(C)] pub struct soc_mreg_control { pub min: i64, pub max: i64, pub regbase: u32, pub regcount: u32, pub nbits: u32, pub invert: u32 }
 #[repr(C)] pub struct soc_enum {
     pub reg: i32, pub shift_l: u8, pub shift_r: u8, pub items: u32, pub mask: u32,
-    pub texts: *const *const core::ffi::c_char, pub values: *const u32, pub autodisable: u32,
+    pub texts: *const *const kernel::ffi::c_char, pub values: *const u32, pub autodisable: u32,
 }
 
 #[repr(C)]
 pub struct snd_soc_dai_link {
-    pub name: *const core::ffi::c_char, pub stream_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char, pub stream_name: *const kernel::ffi::c_char,
     pub cpus: *mut snd_soc_dai_link_component, pub num_cpus: u32,
     pub codecs: *mut snd_soc_dai_link_component, pub num_codecs: u32,
     pub ch_maps: *mut snd_soc_dai_link_ch_map,
@@ -84,13 +84,13 @@ pub struct snd_soc_dai_link {
     pub dpcm_merged_rate: u32, pub ignore_pmdown_time: u32, pub ignore: u32,
 }
 
-#[repr(C)] pub struct snd_soc_codec_conf { pub dlc: snd_soc_dai_link_component, pub name_prefix: *const core::ffi::c_char }
+#[repr(C)] pub struct snd_soc_codec_conf { pub dlc: snd_soc_dai_link_component, pub name_prefix: *const kernel::ffi::c_char }
 #[repr(C)] pub struct snd_soc_aux_dev { pub dlc: snd_soc_dai_link_component, pub init: Option<unsafe extern "C" fn(*mut snd_soc_component) -> i32> }
 
 #[repr(C)] pub struct snd_soc_card {
-    pub name: *const core::ffi::c_char, pub long_name: *const core::ffi::c_char,
-    pub driver_name: *const core::ffi::c_char, pub components: *const core::ffi::c_char,
-    pub topology_shortname: *mut core::ffi::c_char, pub dev: *mut device,
+    pub name: *const kernel::ffi::c_char, pub long_name: *const kernel::ffi::c_char,
+    pub driver_name: *const kernel::ffi::c_char, pub components: *const kernel::ffi::c_char,
+    pub topology_shortname: *mut kernel::ffi::c_char, pub dev: *mut device,
     pub snd_card: *mut snd_card, pub owner: *mut module,
     pub mutex: mutex, pub dapm_mutex: mutex, pub pcm_mutex: mutex,
     pub probe: Option<unsafe extern "C" fn(*mut snd_soc_card) -> i32>,
@@ -103,7 +103,7 @@ pub struct snd_soc_dai_link {
     pub controls: *const snd_kcontrol_new, pub num_controls: i32,
     pub dapm: *mut snd_soc_dapm_context, pub instantiated: u32,
     pub fully_routed: u32, pub probed: u32, pub component_chaining: u32,
-    pub devres_dev: *mut device, pub drvdata: *mut core::ffi::c_void,
+    pub devres_dev: *mut device, pub drvdata: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)] pub struct snd_pcm_substream { pub runtime: *mut snd_pcm_runtime }
@@ -145,7 +145,7 @@ extern "C" {
     pub fn snd_soc_calc_bclk(fs: i32, sample_size: i32, channels: i32, tdm_slots: i32) -> i32;
     pub fn snd_soc_util_init() -> i32;
     pub fn snd_soc_util_exit();
-    pub fn snd_soc_fixup_dai_links_platform_name(card: *mut snd_soc_card, platform_name: *const core::ffi::c_char) -> i32;
+    pub fn snd_soc_fixup_dai_links_platform_name(card: *mut snd_soc_card, platform_name: *const kernel::ffi::c_char) -> i32;
 }
 
 // The source header also defines the SOC_* kcontrol builders, DAI-link

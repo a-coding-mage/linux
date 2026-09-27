@@ -21,12 +21,12 @@ opaque!(amdgpu_device, amdgpu_crtc, drm_device, dc, amdgpu_bo, dmub_srv, dc_plan
 #[repr(C)] pub union dp_downstream_port_present { pub raw: u32 }
 #[repr(C)] pub union dwnstream_portxcaps { pub raw: [u8; 32] }
 #[repr(C)] pub struct atomic64_t { pub value: i64 }
-#[repr(C)] pub struct fused_io_sync { pub replied: completion, pub reply_data: [core::ffi::c_char; 0x40] }
+#[repr(C)] pub struct fused_io_sync { pub replied: completion, pub reply_data: [kernel::ffi::c_char; 0x40] }
 #[repr(C)] pub struct list_head { pub next: *mut list_head, pub prev: *mut list_head }
 
 #[repr(C)] pub struct common_irq_params { pub adev: *mut amdgpu_device, pub irq_src: i32, pub previous_timestamp: atomic64_t }
-#[repr(C)] pub struct dm_compressor_info { pub cpu_addr: *mut core::ffi::c_void, pub bo_ptr: *mut amdgpu_bo, pub gpu_addr: u64 }
-#[repr(C)] pub struct dm_boot_time_crc_info { pub cpu_addr: *mut core::ffi::c_void, pub bo_ptr: *mut amdgpu_bo, pub gpu_addr: u64, pub size: u32 }
+#[repr(C)] pub struct dm_compressor_info { pub cpu_addr: *mut kernel::ffi::c_void, pub bo_ptr: *mut amdgpu_bo, pub gpu_addr: u64 }
+#[repr(C)] pub struct dm_boot_time_crc_info { pub cpu_addr: *mut kernel::ffi::c_void, pub bo_ptr: *mut amdgpu_bo, pub gpu_addr: u64, pub size: u32 }
 pub type dmub_notify_interrupt_callback_t = Option<unsafe extern "C" fn(*mut amdgpu_device, *mut dmub_notification)>;
 #[repr(C)] pub struct dmub_hpd_work { pub handle_hpd_work: work_struct, pub dmub_notify: *mut dmub_notification, pub adev: *mut amdgpu_device }
 #[repr(C)] pub struct vblank_control_work { pub work: work_struct, pub dm: *mut amdgpu_display_manager, pub acrtc: *mut amdgpu_crtc, pub stream: *mut dc_stream_state, pub enable: bool }
@@ -34,7 +34,7 @@ pub type dmub_notify_interrupt_callback_t = Option<unsafe extern "C" fn(*mut amd
 #[repr(C)] pub struct vupdate_offload_work { pub work: work_struct, pub adev: *mut amdgpu_device, pub stream: *mut dc_stream_state, pub adjust: *mut dc_crtc_timing_adjust }
 #[repr(C, packed)] pub struct amdgpu_dm_luminance_data { pub luminance: u8, pub input_signal: u8 }
 #[repr(C)] pub struct amdgpu_dm_backlight_caps { pub ext_caps: *mut dpcd_sink_ext_caps, pub aux_min_input_signal: u32, pub aux_max_input_signal: u32, pub min_input_signal: i32, pub max_input_signal: i32, pub caps_valid: bool, pub aux_support: bool, pub brightness_mask: u32, pub ac_level: u8, pub dc_level: u8, pub data_points: u8, pub luminance_data: [amdgpu_dm_luminance_data; MAX_LUMINANCE_DATA_POINTS] }
-#[repr(C)] pub struct dal_allocation { pub list: list_head, pub bo: *mut amdgpu_bo, pub cpu_ptr: *mut core::ffi::c_void, pub gpu_addr: u64 }
+#[repr(C)] pub struct dal_allocation { pub list: list_head, pub bo: *mut amdgpu_bo, pub cpu_ptr: *mut kernel::ffi::c_void, pub gpu_addr: u64 }
 #[repr(C)] pub struct hpd_rx_irq_offload_work_queue { pub wq: *mut workqueue_struct, pub offload_lock: spinlock_t, pub is_handling_link_loss: bool, pub is_handling_mst_msg_rdy_event: bool, pub aconnector: *mut amdgpu_dm_connector }
 #[repr(C)] pub struct hpd_rx_irq_offload_work { pub work: work_struct, pub data: hpd_irq_data, pub offload_wq: *mut hpd_rx_irq_offload_work_queue, pub adev: *mut amdgpu_device }
 
@@ -43,7 +43,7 @@ pub type dmub_notify_interrupt_callback_t = Option<unsafe extern "C" fn(*mut amd
     pub dmub_callback: [dmub_notify_interrupt_callback_t; AMDGPU_DMUB_NOTIFICATION_MAX],
     pub dmub_thread_offload: [bool; AMDGPU_DMUB_NOTIFICATION_MAX], pub dmub_fb_info: *mut dmub_srv_fb_info,
     pub dmub_fw: *const firmware, pub dmub_bo: *mut amdgpu_bo, pub dmub_bo_gpu_addr: u64,
-    pub dmub_bo_cpu_addr: *mut core::ffi::c_void, pub dmcub_fw_version: u32, pub fw_inst_size: u32,
+    pub dmub_bo_cpu_addr: *mut kernel::ffi::c_void, pub dmcub_fw_version: u32, pub fw_inst_size: u32,
     pub cgs_device: *mut cgs_device, pub adev: *mut amdgpu_device, pub ddev: *mut drm_device,
     pub display_indexes_num: u16, pub atomic_obj: drm_private_obj, pub dc_lock: mutex, pub dmub_lock: spinlock_t,
     pub audio_lock: mutex, pub audio_component: *mut drm_audio_component, pub audio_registered: bool,
@@ -63,7 +63,7 @@ pub type dmub_notify_interrupt_callback_t = Option<unsafe extern "C" fn(*mut amd
     pub dmcub_trace_event_en: bool, pub da_list: list_head, pub dmub_aux_transfer_done: completion,
     pub delayed_hpd_wq: *mut workqueue_struct, pub brightness: [u32; AMDGPU_DM_MAX_NUM_EDP],
     pub actual_brightness: [u32; AMDGPU_DM_MAX_NUM_EDP], pub aux_hpd_discon_quirk: bool, pub edp0_on_dp1_quirk: bool,
-    pub dpia_aux_lock: mutex, pub bb_from_dmub: *mut core::ffi::c_void, pub i2c_devres_group: *mut core::ffi::c_void,
+    pub dpia_aux_lock: mutex, pub bb_from_dmub: *mut kernel::ffi::c_void, pub i2c_devres_group: *mut kernel::ffi::c_void,
     pub oem_i2c: *mut amdgpu_i2c_adapter, pub fused_io: [fused_io_sync; 8], pub hdmi_frl_status_polling_wq: *mut workqueue_struct,
     pub hdmi_frl_status_polling_work: delayed_work, pub hdmi_frl_status_polling_delay_ms: u32,
     pub boot_time_crc_info: dm_boot_time_crc_info,
@@ -98,8 +98,8 @@ unsafe extern "C" {
     pub fn amdgpu_dm_process_dmub_set_config_sync(ctx: *mut dc_context, link_index: u32, payload: *mut set_config_cmd_payload, operation_result: *mut i32) -> i32;
     pub fn dm_atomic_get_state(state: *mut drm_atomic_commit, dm_state: *mut *mut dm_atomic_state) -> i32;
     pub fn idle_create_workqueue(adev: *mut amdgpu_device) -> *mut idle_workqueue;
-    pub fn dm_allocate_gpu_mem(adev: *mut amdgpu_device, ty: i32, size: usize, addr: *mut i64) -> *mut core::ffi::c_void;
-    pub fn dm_free_gpu_mem(adev: *mut amdgpu_device, ty: i32, addr: *mut core::ffi::c_void);
+    pub fn dm_allocate_gpu_mem(adev: *mut amdgpu_device, ty: i32, size: usize, addr: *mut i64) -> *mut kernel::ffi::c_void;
+    pub fn dm_free_gpu_mem(adev: *mut amdgpu_device, ty: i32, addr: *mut kernel::ffi::c_void);
     pub fn retrieve_dmi_info(dm: *mut amdgpu_display_manager);
     pub fn dm_should_disable_stutter(pdev: *mut pci_dev) -> bool;
     pub fn amdgpu_dm_emulated_link_detect(link: *mut dc_link);

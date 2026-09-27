@@ -29,7 +29,7 @@ pub unsafe fn stm32_firewall_get_firewall(
                                    "#access-controller-cells", 0) {
         let mut provider_args: of_phandle_args = core::mem::zeroed();
         let provider = it.node;
-        let mut fw_entry: *const core::ffi::c_char = core::ptr::null();
+        let mut fw_entry: *const kernel::ffi::c_char = core::ptr::null();
         let mut matched = false;
 
         if err != 0 {
@@ -154,9 +154,9 @@ pub unsafe fn stm32_firewall_populate_bus(firewall_controller: *mut stm32_firewa
         let firewalls = kzalloc_objs!(stm32_firewall, len as usize);
         if firewalls.is_null() { return -ENOMEM; }
         let err = stm32_firewall_get_firewall(child, firewalls, len as u32);
-        if err != 0 { kfree(firewalls as *mut core::ffi::c_void); return err; }
+        if err != 0 { kfree(firewalls as *mut kernel::ffi::c_void); return err; }
         for i in 0..len as usize { if ((*firewall_controller).grant_access)((*firewalls.add(i)).firewall_ctrl, (*firewalls.add(i)).firewall_id) != 0 { of_detach_node(child); dev_err!(parent, "%s: Device driver will not be probed\\n", (*child).full_name); } }
-        kfree(firewalls as *mut core::ffi::c_void);
+        kfree(firewalls as *mut kernel::ffi::c_void);
     });
     0
 }

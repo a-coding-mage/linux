@@ -13,16 +13,16 @@
 // C dependencies: linux/sched/task_stack.h, linux/kernel.h, asm/unwinder.h
 
 extern "C" {
-    fn kstack_end(addr: *mut ::core::ffi::c_ulong) -> bool;
-    fn __kernel_text_address(addr: ::core::ffi::c_ulong) -> bool;
+    fn kstack_end(addr: *mut ::kernel::ffi::c_ulong) -> bool;
+    fn __kernel_text_address(addr: ::kernel::ffi::c_ulong) -> bool;
 }
 
 #[cfg(CONFIG_FRAME_POINTER)]
 #[repr(C)]
 struct or1k_frameinfo {
-    fp: *mut ::core::ffi::c_ulong,
-    ra: ::core::ffi::c_ulong,
-    top: ::core::ffi::c_ulong,
+    fp: *mut ::kernel::ffi::c_ulong,
+    ra: ::kernel::ffi::c_ulong,
+    top: ::kernel::ffi::c_ulong,
 }
 
 #[cfg(CONFIG_FRAME_POINTER)]
@@ -37,15 +37,15 @@ unsafe fn or1k_frameinfo_valid(frameinfo: *mut or1k_frameinfo) -> i32 {
 
 #[cfg(CONFIG_FRAME_POINTER)]
 pub unsafe fn unwind_stack(
-    data: *mut ::core::ffi::c_void,
-    mut stack: *mut ::core::ffi::c_ulong,
+    data: *mut ::kernel::ffi::c_void,
+    mut stack: *mut ::kernel::ffi::c_ulong,
     trace: Option<unsafe extern "C" fn(
-        data: *mut ::core::ffi::c_void,
-        addr: ::core::ffi::c_ulong,
+        data: *mut ::kernel::ffi::c_void,
+        addr: ::kernel::ffi::c_ulong,
         reliable: i32,
     )>,
 ) {
-    let mut next_fp: *mut ::core::ffi::c_ulong = core::ptr::null_mut();
+    let mut next_fp: *mut ::kernel::ffi::c_ulong = core::ptr::null_mut();
     let mut frameinfo: *mut or1k_frameinfo;
     let mut reliable: i32 = 0;
 
@@ -75,15 +75,15 @@ pub unsafe fn unwind_stack(
 
 #[cfg(not(CONFIG_FRAME_POINTER))]
 pub unsafe fn unwind_stack(
-    data: *mut ::core::ffi::c_void,
-    mut stack: *mut ::core::ffi::c_ulong,
+    data: *mut ::kernel::ffi::c_void,
+    mut stack: *mut ::kernel::ffi::c_ulong,
     trace: Option<unsafe extern "C" fn(
-        data: *mut ::core::ffi::c_void,
-        addr: ::core::ffi::c_ulong,
+        data: *mut ::kernel::ffi::c_void,
+        addr: ::kernel::ffi::c_ulong,
         reliable: i32,
     )>,
 ) {
-    let mut addr: ::core::ffi::c_ulong;
+    let mut addr: ::kernel::ffi::c_ulong;
 
     while !kstack_end(stack) {
         addr = *stack;

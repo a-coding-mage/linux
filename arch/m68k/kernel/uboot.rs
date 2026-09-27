@@ -9,18 +9,18 @@
 /* Linux and architecture header dependencies are supplied by other files. */
 
 extern "C" {
-    static mut _init_sp: ::core::ffi::c_ulong;
+    static mut _init_sp: ::kernel::ffi::c_ulong;
     #[cfg(CONFIG_BLK_DEV_INITRD)]
-    static mut initrd_start: ::core::ffi::c_ulong;
+    static mut initrd_start: ::kernel::ffi::c_ulong;
     #[cfg(CONFIG_BLK_DEV_INITRD)]
-    static mut initrd_end: ::core::ffi::c_ulong;
+    static mut initrd_end: ::kernel::ffi::c_ulong;
     #[cfg(CONFIG_BLK_DEV_INITRD)]
-    static mut ROOT_DEV: ::core::ffi::c_ulong;
+    static mut ROOT_DEV: ::kernel::ffi::c_ulong;
 
-    fn strscpy(dst: *mut ::core::ffi::c_char, src: *const ::core::ffi::c_char, count: usize) -> isize;
-    fn strnlen(s: *const ::core::ffi::c_char, maxlen: usize) -> usize;
+    fn strscpy(dst: *mut ::kernel::ffi::c_char, src: *const ::kernel::ffi::c_char, count: usize) -> isize;
+    fn strnlen(s: *const ::kernel::ffi::c_char, maxlen: usize) -> usize;
     #[cfg(CONFIG_BLK_DEV_INITRD)]
-    fn pr_info(fmt: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn pr_info(fmt: *const ::kernel::ffi::c_char, ...) -> ::kernel::ffi::c_int;
 }
 
 /*
@@ -54,13 +54,13 @@ extern "C" {
  *
  * Returns:
  */
-unsafe fn parse_uboot_commandline(commandp: *mut ::core::ffi::c_char, size: ::core::ffi::c_int) {
-    let sp = _init_sp as *mut ::core::ffi::c_ulong;
+unsafe fn parse_uboot_commandline(commandp: *mut ::kernel::ffi::c_char, size: ::kernel::ffi::c_int) {
+    let sp = _init_sp as *mut ::kernel::ffi::c_ulong;
     let uboot_cmd_start = *sp.add(4);
     let uboot_cmd_end = *sp.add(5);
 
     if uboot_cmd_start != 0 && uboot_cmd_end != 0 {
-        strscpy(commandp, uboot_cmd_start as *const ::core::ffi::c_char, size as usize);
+        strscpy(commandp, uboot_cmd_start as *const ::kernel::ffi::c_char, size as usize);
     }
 
     #[cfg(CONFIG_BLK_DEV_INITRD)]
@@ -76,7 +76,7 @@ unsafe fn parse_uboot_commandline(commandp: *mut ::core::ffi::c_char, size: ::co
             initrd_end = uboot_initrd_end;
             ROOT_DEV = Root_RAM0;
             pr_info(
-                b"initrd at 0x%lx:0x%lx\0".as_ptr() as *const ::core::ffi::c_char,
+                b"initrd at 0x%lx:0x%lx\0".as_ptr() as *const ::kernel::ffi::c_char,
                 initrd_start,
                 initrd_end,
             );
@@ -86,15 +86,15 @@ unsafe fn parse_uboot_commandline(commandp: *mut ::core::ffi::c_char, size: ::co
 
 /* __init */
 pub unsafe extern "C" fn process_uboot_commandline(
-    mut commandp: *mut ::core::ffi::c_char,
-    size: ::core::ffi::c_int,
+    mut commandp: *mut ::kernel::ffi::c_char,
+    size: ::kernel::ffi::c_int,
 ) {
     let n = strnlen(commandp, size as usize);
     commandp = commandp.add(n);
-    let mut len = size - n as ::core::ffi::c_int;
+    let mut len = size - n as ::kernel::ffi::c_int;
     if len != 0 {
         /* Add the whitespace separator */
-        *commandp = b' ' as ::core::ffi::c_char;
+        *commandp = b' ' as ::kernel::ffi::c_char;
         commandp = commandp.add(1);
         len -= 1;
     }

@@ -33,7 +33,7 @@ pub struct xchk_nlink_ctrs {
 
     /* Directory entry name, plus the trailing null. */
     pub xname: xfs_name,
-    pub namebuf: [core::ffi::c_char; MAXNAMELEN],
+    pub namebuf: [kernel::ffi::c_char; MAXNAMELEN],
 }
 
 /*

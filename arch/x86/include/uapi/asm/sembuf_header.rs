@@ -18,13 +18,13 @@ pub struct semid64_ds {
     pub sem_perm: ipc64_perm, /* permissions .. see ipc.h */
 
     #[cfg(target_arch = "x86")]
-    pub sem_otime: ::core::ffi::c_ulong, /* last semop time */
+    pub sem_otime: ::kernel::ffi::c_ulong, /* last semop time */
     #[cfg(target_arch = "x86")]
-    pub sem_otime_high: ::core::ffi::c_ulong,
+    pub sem_otime_high: ::kernel::ffi::c_ulong,
     #[cfg(target_arch = "x86")]
-    pub sem_ctime: ::core::ffi::c_ulong, /* last change time */
+    pub sem_ctime: ::kernel::ffi::c_ulong, /* last change time */
     #[cfg(target_arch = "x86")]
-    pub sem_ctime_high: ::core::ffi::c_ulong,
+    pub sem_ctime_high: ::kernel::ffi::c_ulong,
 
     #[cfg(not(target_arch = "x86"))]
     pub sem_otime: __kernel_long_t, /* last semop time */

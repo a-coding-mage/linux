@@ -15,20 +15,20 @@ pub struct senary_spec {
     pub gen: hda_gen_spec,
 
     /* extra EAPD pins */
-    pub num_eapds: ::core::ffi::c_uint,
+    pub num_eapds: ::kernel::ffi::c_uint,
     pub eapds: [hda_nid_t; 4],
     pub dynamic_eapd: bool,
     pub mute_led_eapd: hda_nid_t,
 
-    pub parse_flags: ::core::ffi::c_uint, /* flag for snd_hda_parse_pin_defcfg() */
+    pub parse_flags: ::kernel::ffi::c_uint, /* flag for snd_hda_parse_pin_defcfg() */
 
-    pub mute_led_polarity: ::core::ffi::c_int,
-    pub gpio_led: ::core::ffi::c_uint,
-    pub gpio_mute_led_mask: ::core::ffi::c_uint,
-    pub gpio_mic_led_mask: ::core::ffi::c_uint,
+    pub mute_led_polarity: ::kernel::ffi::c_int,
+    pub gpio_led: ::kernel::ffi::c_uint,
+    pub gpio_mute_led_mask: ::kernel::ffi::c_uint,
+    pub gpio_mic_led_mask: ::kernel::ffi::c_uint,
 }
 
-pub const SENARY_FIXUP_PINCFG_DEFAULT: ::core::ffi::c_int = 0;
+pub const SENARY_FIXUP_PINCFG_DEFAULT: ::kernel::ffi::c_int = 0;
 
 pub static senary_pincfg_default: [hda_pintbl; 7] = [
     hda_pintbl {
@@ -72,7 +72,7 @@ pub static senary_fixups: [hda_fixup; 1] = [hda_fixup {
 pub static sn6186_fixups: [hda_quirk; 1] = [hda_quirk {
     codec: 0,
     subvendor: 0,
-    name: 0 as *const ::core::ffi::c_char,
+    name: 0 as *const ::kernel::ffi::c_char,
     value: 0,
 }];
 
@@ -100,17 +100,17 @@ pub static senary_beep_mixer: [snd_kcontrol_new; 2] = [
 pub unsafe fn set_beep_amp(
     spec: *mut senary_spec,
     nid: hda_nid_t,
-    idx: ::core::ffi::c_int,
-    dir: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    idx: ::kernel::ffi::c_int,
+    dir: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let mut knew: *mut snd_kcontrol_new;
-    let beep_amp: ::core::ffi::c_uint = HDA_COMPOSE_AMP_VAL(nid, 1, idx, dir);
-    let mut i: ::core::ffi::c_int = 0;
+    let beep_amp: ::kernel::ffi::c_uint = HDA_COMPOSE_AMP_VAL(nid, 1, idx, dir);
+    let mut i: ::kernel::ffi::c_int = 0;
 
-    while i < senary_beep_mixer.len() as ::core::ffi::c_int {
+    while i < senary_beep_mixer.len() as ::kernel::ffi::c_int {
         knew = snd_hda_gen_add_kctl(
             &mut (*spec).gen,
-            0 as *const ::core::ffi::c_char,
+            0 as *const ::kernel::ffi::c_char,
             &senary_beep_mixer[i as usize],
         );
         if knew.is_null() {
@@ -125,7 +125,7 @@ pub unsafe fn set_beep_amp(
 }
 
 #[cfg(CONFIG_SND_HDA_INPUT_BEEP)]
-pub unsafe fn senary_auto_parse_beep(codec: *mut hda_codec) -> ::core::ffi::c_int {
+pub unsafe fn senary_auto_parse_beep(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     let spec: *mut senary_spec = (*codec).spec as *mut senary_spec;
     let mut nid: hda_nid_t = 0;
 
@@ -141,7 +141,7 @@ pub unsafe fn senary_auto_parse_beep(codec: *mut hda_codec) -> ::core::ffi::c_in
 }
 
 #[cfg(not(CONFIG_SND_HDA_INPUT_BEEP))]
-pub unsafe fn senary_auto_parse_beep(_codec: *mut hda_codec) -> ::core::ffi::c_int {
+pub unsafe fn senary_auto_parse_beep(_codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -182,11 +182,11 @@ pub unsafe fn senary_init_verb(codec: *mut hda_codec) {
 
 pub unsafe fn senary_auto_turn_eapd(
     codec: *mut hda_codec,
-    num_pins: ::core::ffi::c_int,
+    num_pins: ::kernel::ffi::c_int,
     pins: *const hda_nid_t,
     on: bool,
 ) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: ::kernel::ffi::c_int = 0;
 
     while i < num_pins {
         snd_hda_codec_write(
@@ -202,15 +202,15 @@ pub unsafe fn senary_auto_turn_eapd(
 
 /* turn on/off EAPD according to Master switch */
 pub unsafe extern "C" fn senary_auto_vmaster_hook(
-    private_data: *mut ::core::ffi::c_void,
-    enabled: ::core::ffi::c_int,
+    private_data: *mut ::kernel::ffi::c_void,
+    enabled: ::kernel::ffi::c_int,
 ) {
     let codec: *mut hda_codec = private_data as *mut hda_codec;
     let spec: *mut senary_spec = (*codec).spec as *mut senary_spec;
 
     senary_auto_turn_eapd(
         codec,
-        (*spec).num_eapds as ::core::ffi::c_int,
+        (*spec).num_eapds as ::kernel::ffi::c_int,
         (*spec).eapds.as_ptr(),
         enabled != 0,
     );
@@ -218,14 +218,14 @@ pub unsafe extern "C" fn senary_auto_vmaster_hook(
 
 pub unsafe fn senary_init_gpio_led(codec: *mut hda_codec) {
     let spec: *mut senary_spec = (*codec).spec as *mut senary_spec;
-    let mask: ::core::ffi::c_uint = (*spec).gpio_mute_led_mask | (*spec).gpio_mic_led_mask;
+    let mask: ::kernel::ffi::c_uint = (*spec).gpio_mute_led_mask | (*spec).gpio_mic_led_mask;
 
     if mask != 0 {
         snd_hda_codec_set_gpio(codec, mask, mask, (*spec).gpio_led, 0);
     }
 }
 
-pub unsafe extern "C" fn senary_init(codec: *mut hda_codec) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn senary_init(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     let spec: *mut senary_spec = (*codec).spec as *mut senary_spec;
 
     snd_hda_gen_init(codec);
@@ -234,7 +234,7 @@ pub unsafe extern "C" fn senary_init(codec: *mut hda_codec) -> ::core::ffi::c_in
     if !(*spec).dynamic_eapd {
         senary_auto_turn_eapd(
             codec,
-            (*spec).num_eapds as ::core::ffi::c_int,
+            (*spec).num_eapds as ::kernel::ffi::c_int,
             (*spec).eapds.as_ptr(),
             true,
         );
@@ -252,7 +252,7 @@ pub unsafe fn senary_shutdown(codec: *mut hda_codec) {
      */
     senary_auto_turn_eapd(
         codec,
-        (*spec).num_eapds as ::core::ffi::c_int,
+        (*spec).num_eapds as ::kernel::ffi::c_int,
         (*spec).eapds.as_ptr(),
         false,
     );
@@ -263,7 +263,7 @@ pub unsafe extern "C" fn senary_remove(codec: *mut hda_codec) {
     snd_hda_gen_remove(codec);
 }
 
-pub unsafe extern "C" fn senary_suspend(codec: *mut hda_codec) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn senary_suspend(codec: *mut hda_codec) -> ::kernel::ffi::c_int {
     senary_shutdown(codec);
     0
 }
@@ -271,9 +271,9 @@ pub unsafe extern "C" fn senary_suspend(codec: *mut hda_codec) -> ::core::ffi::c
 pub unsafe extern "C" fn senary_probe(
     codec: *mut hda_codec,
     _id: *const hda_device_id,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let spec: *mut senary_spec;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     codec_info!(
         codec,
@@ -286,7 +286,7 @@ pub unsafe extern "C" fn senary_probe(
         return -ENOMEM;
     }
     snd_hda_gen_spec_init(&mut (*spec).gen);
-    (*codec).spec = spec as *mut ::core::ffi::c_void;
+    (*codec).spec = spec as *mut ::kernel::ffi::c_void;
 
     senary_auto_parse_eapd(codec);
     (*spec).gen.own_eapd_ctl = 1;
@@ -385,7 +385,7 @@ pub static snd_hda_id_senary: [hda_device_id; 2] = [
     hda_device_id {
         vendor_id: 0,
         rev_id: 0,
-        name: 0 as *const ::core::ffi::c_char,
+        name: 0 as *const ::kernel::ffi::c_char,
         driver_data: 0,
     }, /* terminator */
 ];

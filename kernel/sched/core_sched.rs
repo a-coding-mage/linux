@@ -11,7 +11,7 @@ struct sched_core_cookie {
     refcnt: refcount_t,
 }
 
-unsafe fn sched_core_alloc_cookie() -> ::core::ffi::c_ulong {
+unsafe fn sched_core_alloc_cookie() -> ::kernel::ffi::c_ulong {
     let ck: *mut sched_core_cookie = kmalloc_obj::<sched_core_cookie>();
     if ck.is_null() {
         return 0;
@@ -20,10 +20,10 @@ unsafe fn sched_core_alloc_cookie() -> ::core::ffi::c_ulong {
     refcount_set(&mut (*ck).refcnt, 1);
     sched_core_get();
 
-    ck as ::core::ffi::c_ulong
+    ck as ::kernel::ffi::c_ulong
 }
 
-unsafe fn sched_core_put_cookie(cookie: ::core::ffi::c_ulong) {
+unsafe fn sched_core_put_cookie(cookie: ::kernel::ffi::c_ulong) {
     let ptr = cookie as *mut sched_core_cookie;
 
     if !ptr.is_null() && refcount_dec_and_test(&mut (*ptr).refcnt) {
@@ -32,7 +32,7 @@ unsafe fn sched_core_put_cookie(cookie: ::core::ffi::c_ulong) {
     }
 }
 
-unsafe fn sched_core_get_cookie(cookie: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+unsafe fn sched_core_get_cookie(cookie: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     let ptr = cookie as *mut sched_core_cookie;
 
     if !ptr.is_null() {
@@ -54,9 +54,9 @@ unsafe fn sched_core_get_cookie(cookie: ::core::ffi::c_ulong) -> ::core::ffi::c_
  */
 unsafe fn sched_core_update_cookie(
     p: *mut task_struct,
-    cookie: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_ulong {
-    let old_cookie: ::core::ffi::c_ulong;
+    cookie: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_ulong {
+    let old_cookie: ::kernel::ffi::c_ulong;
     let mut rf: rq_flags;
     let rq: *mut rq;
 
@@ -102,9 +102,9 @@ unsafe fn sched_core_update_cookie(
     old_cookie
 }
 
-unsafe fn sched_core_clone_cookie(p: *mut task_struct) -> ::core::ffi::c_ulong {
-    let cookie: ::core::ffi::c_ulong;
-    let mut flags: ::core::ffi::c_ulong = 0;
+unsafe fn sched_core_clone_cookie(p: *mut task_struct) -> ::kernel::ffi::c_ulong {
+    let cookie: ::kernel::ffi::c_ulong;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
 
     raw_spin_lock_irqsave(&mut (*p).pi_lock, &mut flags);
     cookie = sched_core_get_cookie((*p).core_cookie);
@@ -122,7 +122,7 @@ pub unsafe fn sched_core_free(p: *mut task_struct) {
     sched_core_put_cookie((*p).core_cookie);
 }
 
-unsafe fn __sched_core_set(p: *mut task_struct, mut cookie: ::core::ffi::c_ulong) {
+unsafe fn __sched_core_set(p: *mut task_struct, mut cookie: ::kernel::ffi::c_ulong) {
     cookie = sched_core_get_cookie(cookie);
     cookie = sched_core_update_cookie(p, cookie);
     sched_core_put_cookie(cookie);
@@ -130,17 +130,17 @@ unsafe fn __sched_core_set(p: *mut task_struct, mut cookie: ::core::ffi::c_ulong
 
 /* Called from prctl interface: PR_SCHED_CORE */
 pub unsafe fn sched_core_share_pid(
-    cmd: ::core::ffi::c_uint,
+    cmd: ::kernel::ffi::c_uint,
     pid: pid_t,
     ty: pid_type,
-    uaddr: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
-    let mut cookie: ::core::ffi::c_ulong = 0;
-    let mut id: ::core::ffi::c_ulong = 0;
+    uaddr: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
+    let mut cookie: ::kernel::ffi::c_ulong = 0;
+    let mut id: ::kernel::ffi::c_ulong = 0;
     let mut task: *mut task_struct;
     let mut p: *mut task_struct;
     let mut grp: *mut pid;
-    let mut err: ::core::ffi::c_int = 0;
+    let mut err: ::kernel::ffi::c_int = 0;
     'out: {
     'out_tasklist: {
 
@@ -185,7 +185,7 @@ pub unsafe fn sched_core_share_pid(
             }
             cookie = sched_core_clone_cookie(task);
             if cookie != 0 {
-                ptr_to_hashval(cookie as *mut ::core::ffi::c_void, &mut id);
+                ptr_to_hashval(cookie as *mut ::kernel::ffi::c_void, &mut id);
             }
             err = put_user(id, uaddr as *mut u64);
             break 'out;
@@ -249,7 +249,7 @@ unsafe fn __sched_core_account_forceidle(rq: *mut rq) {
     let now: u64 = rq_clock((*rq).core);
     let mut rq_i: *mut rq;
     let mut p: *mut task_struct;
-    let mut i: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
 
     lockdep_assert_rq_held(rq);
     WARN_ON_ONCE((*(*rq).core).core_forceidle_count == 0);

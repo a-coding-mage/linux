@@ -23,8 +23,8 @@
  */
 #[repr(C)]
 pub struct tsm_measurement_register {
-    pub mr_name: *const core::ffi::c_char,
-    pub mr_value: *mut core::ffi::c_void,
+    pub mr_name: *const kernel::ffi::c_char,
+    pub mr_value: *mut kernel::ffi::c_void,
     pub mr_size: u32,
     pub mr_flags: u32,
     pub mr_hash: hash_algo,
@@ -41,7 +41,7 @@ pub const TSM_MR_F_RTMR: u32 = TSM_MR_F_LIVE | TSM_MR_F_WRITABLE;
 #[macro_export]
 macro_rules! TSM_MR_ {
     ($mr:ident, $hash:tt) => {
-        .mr_name = concat!(stringify!($mr), "\0").as_ptr() as *const core::ffi::c_char,
+        .mr_name = concat!(stringify!($mr), "\0").as_ptr() as *const kernel::ffi::c_char,
         .mr_size = ::kernel::macros::paste!([<$hash _DIGEST_SIZE>]),
         .mr_hash = ::kernel::macros::paste!([<HASH_ALGO_ $hash>]),
         .mr_flags = TSM_MR_F_READABLE,

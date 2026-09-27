@@ -12,7 +12,7 @@ const ACPI_FADT_GPE_REGISTER: u8 = 4;
 
 #[repr(C)]
 pub struct AcpiFadtInfo {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub address64: u16,
     pub address32: u16,
     pub length: u16,
@@ -45,7 +45,7 @@ extern "C" {
     fn acpi_tb_get_table(desc: *mut AcpiTableDesc, table: *mut *mut AcpiTableHeader) -> AcpiStatus;
     fn acpi_ut_verify_checksum(table: *mut AcpiTableHeader, length: u32) -> AcpiStatus;
     fn acpi_tb_put_table(desc: *mut AcpiTableDesc);
-    fn acpi_tb_install_standard_table(address: AcpiPhysicalAddress, origin: u32, arg: *mut core::ffi::c_void, a: u8, b: u8, index: *mut u32);
+    fn acpi_tb_install_standard_table(address: AcpiPhysicalAddress, origin: u32, arg: *mut kernel::ffi::c_void, a: u8, b: u8, index: *mut u32);
 }
 
 // The following ACPICA types and constants are supplied by included headers.
@@ -69,7 +69,7 @@ static mut FADT_PM_INFO_TABLE: [AcpiFadtPmInfo; 4] = [
     AcpiFadtPmInfo { target: unsafe { &raw mut acpi_gbl_xpm1b_enable }, source: ACPI_FADT_OFFSET!(xpm1b_event_block), register_num: 1 },
 ];
 
-unsafe fn acpi_tb_init_generic_address(g: *mut AcpiGenericAddress, space_id: u8, byte_width: u8, address: u64, register_name: *const core::ffi::c_char, flags: u8) {
+unsafe fn acpi_tb_init_generic_address(g: *mut AcpiGenericAddress, space_id: u8, byte_width: u8, address: u64, register_name: *const kernel::ffi::c_char, flags: u8) {
     let mut bit_width = byte_width.wrapping_mul(8);
     if byte_width > 31 {
         if flags & ACPI_FADT_GPE_REGISTER == 0 { ACPI_ERROR!(AE_INFO, "%s - 32-bit FADT register is too long", register_name, byte_width, byte_width as u32 * 8); }
@@ -82,7 +82,7 @@ unsafe fn acpi_tb_init_generic_address(g: *mut AcpiGenericAddress, space_id: u8,
     (*g).access_width = 0;
 }
 
-unsafe fn acpi_tb_select_address(register_name: *mut core::ffi::c_char, address32: u32, address64: u64) -> u64 {
+unsafe fn acpi_tb_select_address(register_name: *mut kernel::ffi::c_char, address32: u32, address64: u64) -> u64 {
     if address64 == 0 { return address32 as u64; }
     if address32 != 0 && address64 != address32 as u64 {
         ACPI_BIOS_WARNING!(AE_INFO, "32/64X %s address mismatch in FADT", register_name, address32, address64, if acpi_gbl_use32_bit_fadt_addresses != 0 { 32 } else { 64 });

@@ -20,12 +20,12 @@ pub union arpt_mangle_u_t {
 
 #[repr(C)]
 pub struct arpt_mangle {
-    pub src_devaddr: [core::ffi::c_char; crate::ARPT_DEV_ADDR_LEN_MAX],
-    pub tgt_devaddr: [core::ffi::c_char; crate::ARPT_DEV_ADDR_LEN_MAX],
+    pub src_devaddr: [kernel::ffi::c_char; crate::ARPT_DEV_ADDR_LEN_MAX],
+    pub tgt_devaddr: [kernel::ffi::c_char; crate::ARPT_DEV_ADDR_LEN_MAX],
     pub u_s: arpt_mangle_u_s,
     pub u_t: arpt_mangle_u_t,
     pub flags: u8,
-    pub target: core::ffi::c_int,
+    pub target: kernel::ffi::c_int,
 }
 
 pub const ARPT_MANGLE_SDEV: u8 = 0x01;

@@ -11,7 +11,7 @@ extern "C" {
 
 #[repr(C)]
 pub struct of_cpuidle_method {
-    pub method: *const core::ffi::c_char,
+    pub method: *const kernel::ffi::c_char,
     pub ops: *const cpuidle_ops,
 }
 
@@ -39,12 +39,12 @@ pub struct device_node {
 extern "C" {
     fn cpu_do_idle();
     fn smp_processor_id() -> i32;
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
     fn of_get_property(
         node: *mut device_node,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         length: *mut i32,
-    ) -> *const core::ffi::c_char;
+    ) -> *const kernel::ffi::c_char;
     fn of_cpu_device_node_get(cpu: i32) -> *mut device_node;
     fn of_node_put(node: *mut device_node);
 }
@@ -95,7 +95,7 @@ pub unsafe extern "C" fn arm_cpuidle_suspend(index: i32) -> i32 {
 /// method name.
 ///
 /// Returns a struct cpuidle_ops pointer, NULL if not found.
-unsafe fn arm_cpuidle_get_ops(method: *const core::ffi::c_char) -> *const cpuidle_ops {
+unsafe fn arm_cpuidle_get_ops(method: *const kernel::ffi::c_char) -> *const cpuidle_ops {
     let mut m = __cpuidle_method_of_table.as_mut_ptr();
     while !(*m).method.is_null() {
         if strcmp((*m).method, method) == 0 {

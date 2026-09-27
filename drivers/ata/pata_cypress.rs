@@ -45,7 +45,7 @@ static mut enable_dma: bool = true;
 unsafe fn cy82c693_set_piomode(ap: *mut ata_port, adev: *mut ata_device) {
     let pdev = to_pci_dev((*(*ap).host).dev);
     let mut t = ata_timing::default();
-    const T: libc::c_ulong = 1000000 / 33;
+    const T: kernel::ffi::c_ulong = 1000000 / 33;
     let mut time_16: i16;
     let mut time_8: i16;
     let mut addr: u32 = 0;

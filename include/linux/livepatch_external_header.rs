@@ -21,7 +21,7 @@ pub const KLP_POST_UNPATCH_PREFIX: &str = "__klp_post_unpatch_callback_";
 #[repr(C)]
 pub struct klp_object;
 
-pub type klp_pre_patch_t = Option<unsafe extern "C" fn(obj: *mut klp_object) -> core::ffi::c_int>;
+pub type klp_pre_patch_t = Option<unsafe extern "C" fn(obj: *mut klp_object) -> kernel::ffi::c_int>;
 pub type klp_post_patch_t = Option<unsafe extern "C" fn(obj: *mut klp_object)>;
 pub type klp_pre_unpatch_t = Option<unsafe extern "C" fn(obj: *mut klp_object)>;
 pub type klp_post_unpatch_t = Option<unsafe extern "C" fn(obj: *mut klp_object)>;
@@ -61,17 +61,17 @@ pub struct klp_callbacks {
  */
 #[repr(C)]
 pub struct klp_func_ext {
-    pub old_name: *const core::ffi::c_char,
-    pub new_func: *mut core::ffi::c_void,
-    pub sympos: core::ffi::c_ulong,
+    pub old_name: *const kernel::ffi::c_char,
+    pub new_func: *mut kernel::ffi::c_void,
+    pub sympos: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct klp_object_ext {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub funcs: *mut klp_func_ext,
     pub callbacks: klp_callbacks,
-    pub nr_funcs: core::ffi::c_uint,
+    pub nr_funcs: kernel::ffi::c_uint,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

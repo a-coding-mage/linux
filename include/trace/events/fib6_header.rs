@@ -21,7 +21,7 @@ pub struct Fib6TableLookupEntry {
     pub dport: u16,
     pub proto: u8,
     pub rt_type: u8,
-    pub name: [core::ffi::c_char; IFNAMSIZ],
+    pub name: [kernel::ffi::c_char; IFNAMSIZ],
     pub gw: [u8; 16],
 }
 
@@ -100,8 +100,8 @@ extern "C" {
     pub fn ip6_tclass(flowlabel: u32) -> u8;
     pub fn ntohl(value: u32) -> u32;
     pub fn ntohs(value: u16) -> u16;
-    pub fn strscpy(dst: *mut core::ffi::c_char, src: *const core::ffi::c_char, count: usize);
-    pub fn strcpy(dst: *mut core::ffi::c_char, src: *const core::ffi::c_char);
+    pub fn strscpy(dst: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char, count: usize);
+    pub fn strcpy(dst: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

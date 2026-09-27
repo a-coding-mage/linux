@@ -6,9 +6,9 @@
 
 pub type xfbno_t = u64;
 
-pub const XFBNO_BLOCKSIZE: _ = XMBUF_BLOCKSIZE;
-pub const XFBNO_BBSHIFT: _ = XMBUF_BLOCKSHIFT - BBSHIFT;
-pub const XFBNO_BBSIZE: _ = XFBNO_BLOCKSIZE >> BBSHIFT;
+pub const XFBNO_BLOCKSIZE: usize = XMBUF_BLOCKSIZE;
+pub const XFBNO_BBSHIFT: usize = XMBUF_BLOCKSHIFT - BBSHIFT;
+pub const XFBNO_BBSIZE: usize = XFBNO_BLOCKSIZE >> BBSHIFT;
 
 #[inline]
 pub unsafe fn xfbno_to_daddr(blkno: xfbno_t) -> xfs_daddr_t {

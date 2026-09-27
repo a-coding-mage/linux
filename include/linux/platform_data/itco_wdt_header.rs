@@ -17,7 +17,7 @@ pub const ICH_RES_MEM_GCS_PMC: i32 = 0;
  */
 #[repr(C)]
 pub struct itco_wdt_platform_data {
-    pub name: [::core::ffi::c_char; 32],
+    pub name: [::kernel::ffi::c_char; 32],
     pub version: u32,
     pub no_reboot_use_pmc: bool,
 }

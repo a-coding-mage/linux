@@ -53,13 +53,13 @@ pub struct blk_zone_range {
     pub nr_sectors: u64,
 }
 
-pub const BLKREPORTZONE: _ = _IOWR(0x12, 130, core::mem::size_of::<blk_zone_report>());
-pub const BLKRESETZONE: _ = _IOW(0x12, 131, core::mem::size_of::<blk_zone_range>());
-pub const BLKGETZONESZ: _ = _IOR(0x12, 132, core::mem::size_of::<u32>());
-pub const BLKGETNRZONES: _ = _IOR(0x12, 133, core::mem::size_of::<u32>());
-pub const BLKOPENZONE: _ = _IOW(0x12, 134, core::mem::size_of::<blk_zone_range>());
-pub const BLKCLOSEZONE: _ = _IOW(0x12, 135, core::mem::size_of::<blk_zone_range>());
-pub const BLKFINISHZONE: _ = _IOW(0x12, 136, core::mem::size_of::<blk_zone_range>());
-pub const BLKREPORTZONEV2: _ = _IOWR(0x12, 142, core::mem::size_of::<blk_zone_report>());
+pub const BLKREPORTZONE: u32 = _IOWR(0x12, 130, core::mem::size_of::<blk_zone_report>());
+pub const BLKRESETZONE: u32 = _IOW(0x12, 131, core::mem::size_of::<blk_zone_range>());
+pub const BLKGETZONESZ: u32 = _IOR(0x12, 132, core::mem::size_of::<u32>());
+pub const BLKGETNRZONES: u32 = _IOR(0x12, 133, core::mem::size_of::<u32>());
+pub const BLKOPENZONE: u32 = _IOW(0x12, 134, core::mem::size_of::<blk_zone_range>());
+pub const BLKCLOSEZONE: u32 = _IOW(0x12, 135, core::mem::size_of::<blk_zone_range>());
+pub const BLKFINISHZONE: u32 = _IOW(0x12, 136, core::mem::size_of::<blk_zone_range>());
+pub const BLKREPORTZONEV2: u32 = _IOWR(0x12, 142, core::mem::size_of::<blk_zone_report>());
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -12,7 +12,7 @@
  * FUNCTION: Convert little-endian unicode string to character string
  */
 pub unsafe fn jfs_strfromUCS_le(
-    to: *mut core::ffi::c_char,
+    to: *mut kernel::ffi::c_char,
     from: *const u16,
     len: i32,
     codepage: *mut nls_table,
@@ -33,7 +33,7 @@ pub unsafe fn jfs_strfromUCS_le(
             if charlen > 0 {
                 outlen += charlen;
             } else {
-                *to.add(outlen as usize) = b'?' as core::ffi::c_char;
+                *to.add(outlen as usize) = b'?' as kernel::ffi::c_char;
                 outlen += 1;
             }
             i += 1;
@@ -43,7 +43,7 @@ pub unsafe fn jfs_strfromUCS_le(
         while i < len && *from.add(i as usize) != 0 {
             let value = u16::from_le(*from.add(i as usize));
             if value & 0xff00 != 0 {
-                *to.add(i as usize) = b'?' as core::ffi::c_char;
+                *to.add(i as usize) = b'?' as kernel::ffi::c_char;
                 if warn != 0 {
                     warn -= 1;
                     WARN_AGAIN -= 1;
@@ -51,7 +51,7 @@ pub unsafe fn jfs_strfromUCS_le(
                     printk(KERN_ERR, "mount with iocharset=utf8 to access\n");
                 }
             } else {
-                *to.add(i as usize) = value as u8 as core::ffi::c_char;
+                *to.add(i as usize) = value as u8 as kernel::ffi::c_char;
             }
             i += 1;
         }
@@ -125,7 +125,7 @@ pub unsafe fn get_UCSname(uniName: *mut component_name, dentry: *mut dentry) -> 
         nls_tab,
     );
     if (*uniName).namlen < 0 {
-        kfree((*uniName).name as *mut core::ffi::c_void);
+        kfree((*uniName).name as *mut kernel::ffi::c_void);
         return (*uniName).namlen;
     }
 

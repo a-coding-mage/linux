@@ -24,15 +24,15 @@ extern "C" {
     fn ptdump_walk_pgd(m: *mut seq_file, info: *mut ptdump_info);
 
     fn debugfs_create_file(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         mode: u16,
-        parent: *mut core::ffi::c_void,
-        data: *mut core::ffi::c_void,
+        parent: *mut kernel::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         fops: *const file_operations,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
-unsafe fn ptdump_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
+unsafe fn ptdump_show(m: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
     // struct ptdump_info *info = m->private;
     let info = *(m as *mut *mut ptdump_info);
 
@@ -46,13 +46,13 @@ unsafe fn ptdump_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
 #[no_mangle]
 pub unsafe extern "C" fn ptdump_debugfs_register(
     info: *mut ptdump_info,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) {
     debugfs_create_file(
         name,
         0o400,
         core::ptr::null_mut(),
-        info as *mut core::ffi::c_void,
+        info as *mut kernel::ffi::c_void,
         &ptdump_fops,
     );
 }

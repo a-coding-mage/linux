@@ -1011,7 +1011,7 @@ static void dbg_bad_map(mptcp_subflow_context *subflow, ssn: u32)
 static bool skb_is_fully_mapped(sock *ssk, sk_buff *skb)
 {
 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
-	core::ffi::c_uint skb_consumed;
+	kernel::ffi::c_uint skb_consumed;
 
 	skb_consumed = tcp_sk(ssk)->copied_seq - TCP_SKB_CB(skb)->seq;
 	if (unlikely(skb_consumed >= skb->len)) {
@@ -1335,7 +1335,7 @@ static void subflow_sched_work_if_closed(mptcp_sock *msk, sock *ssk)
 static bool mptcp_subflow_fail(mptcp_sock *msk, sock *ssk)
 {
 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
-	core::ffi::c_ulong fail_tout;
+	kernel::ffi::c_ulong fail_tout;
 
 	/* we are really failing, prevent any later subflow join */
 	spin_lock_bh(&msk->fallback_lock);
@@ -1605,7 +1605,7 @@ void mptcpv6_handle_mapped(sock *sk, mapped: bool)
 
 void mptcp_info2sockaddr(const struct mptcp_addr_info *info,
 			 sockaddr_storage *addr,
-			 family: core::ffi::c_ushort)
+			 family: kernel::ffi::c_ushort)
 {
 	memset(addr, 0, sizeof(*addr));
 	addr->ss_family = family;
@@ -1800,7 +1800,7 @@ static void mptcp_subflow_ops_undo_override(sock *ssk)
 		ssk->sk_prot = &tcp_prot;
 }
 
-int mptcp_subflow_create_socket(sock *sk, family: core::ffi::c_ushort,
+int mptcp_subflow_create_socket(sock *sk, family: kernel::ffi::c_ushort,
 				socket **new_sock)
 {
 	'err_free: {

@@ -103,17 +103,17 @@ pub struct export_operations {
     pub commit_metadata: Option<unsafe extern "C" fn(*mut inode) -> i32>,
     pub permission: Option<unsafe extern "C" fn(*mut handle_to_path_ctx, u32) -> i32>,
     pub open: Option<unsafe extern "C" fn(*const path, u32) -> *mut file>,
-    pub flags: libc::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub block_ops: *const exportfs_block_ops,
 }
 
-pub const EXPORT_OP_NOWCC: libc::c_ulong = 0x1;
-pub const EXPORT_OP_NOSUBTREECHK: libc::c_ulong = 0x2;
-pub const EXPORT_OP_CLOSE_BEFORE_UNLINK: libc::c_ulong = 0x4;
-pub const EXPORT_OP_REMOTE_FS: libc::c_ulong = 0x8;
-pub const EXPORT_OP_NOATOMIC_ATTR: libc::c_ulong = 0x10;
-pub const EXPORT_OP_FLUSH_ON_CLOSE: libc::c_ulong = 0x20;
-pub const EXPORT_OP_NOLOCKS: libc::c_ulong = 0x40;
+pub const EXPORT_OP_NOWCC: kernel::ffi::c_ulong = 0x1;
+pub const EXPORT_OP_NOSUBTREECHK: kernel::ffi::c_ulong = 0x2;
+pub const EXPORT_OP_CLOSE_BEFORE_UNLINK: kernel::ffi::c_ulong = 0x4;
+pub const EXPORT_OP_REMOTE_FS: kernel::ffi::c_ulong = 0x8;
+pub const EXPORT_OP_NOATOMIC_ATTR: kernel::ffi::c_ulong = 0x10;
+pub const EXPORT_OP_FLUSH_ON_CLOSE: kernel::ffi::c_ulong = 0x20;
+pub const EXPORT_OP_NOLOCKS: kernel::ffi::c_ulong = 0x40;
 
 #[inline]
 pub unsafe fn exportfs_cannot_lock(export_ops: *const export_operations) -> bool {
@@ -127,12 +127,12 @@ extern "C" {
                               flags: i32) -> i32;
     pub fn exportfs_decode_fh_raw(mnt: *mut vfsmount, fid: *mut fid, fh_len: i32,
                                   fileid_type: i32, flags: u32,
-                                  acceptable: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut dentry) -> i32>,
-                                  context: *mut core::ffi::c_void) -> *mut dentry;
+                                  acceptable: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut dentry) -> i32>,
+                                  context: *mut kernel::ffi::c_void) -> *mut dentry;
     pub fn exportfs_decode_fh(mnt: *mut vfsmount, fid: *mut fid, fh_len: i32,
                               fileid_type: i32,
-                              acceptable: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut dentry) -> i32>,
-                              context: *mut core::ffi::c_void) -> *mut dentry;
+                              acceptable: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut dentry) -> i32>,
+                              context: *mut kernel::ffi::c_void) -> *mut dentry;
     pub fn generic_encode_ino32_fh(inode: *mut inode, fh: *mut u32, max_len: *mut i32,
                                    parent: *mut inode) -> i32;
     pub fn generic_fh_to_dentry(sb: *mut super_block, fid: *mut fid, fh_len: i32,

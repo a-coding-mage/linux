@@ -26,13 +26,13 @@ macro_rules! DFS_DOM {
  * Return zero if dfs referral was parsed correctly, otherwise non-zero.
  */
 pub unsafe fn dfs_parse_target_referral(
-    full_path: *const core::ffi::c_char,
+    full_path: *const kernel::ffi::c_char,
     ref_: *const dfs_info3_param,
     ctx: *mut smb3_fs_context,
 ) -> i32 {
     let mut rc: i32;
-    let mut prepath: *const core::ffi::c_char = core::ptr::null();
-    let path: *mut core::ffi::c_char;
+    let mut prepath: *const kernel::ffi::c_char = core::ptr::null();
+    let path: *mut kernel::ffi::c_char;
 
     if full_path.is_null() || *full_path == 0 || ref_.is_null() || ctx.is_null() {
         return -EINVAL;
@@ -56,18 +56,18 @@ pub unsafe fn dfs_parse_target_referral(
 
     rc = smb3_parse_devname(path, ctx);
     if rc != 0 {
-        kfree(path as *mut core::ffi::c_void);
+        kfree(path as *mut kernel::ffi::c_void);
         return rc;
     }
 
     rc = dns_resolve_unc(DFS_DOM!((*ctx)), path, &mut (*ctx).dstaddr as *mut _ as *mut sockaddr);
-    kfree(path as *mut core::ffi::c_void);
+    kfree(path as *mut kernel::ffi::c_void);
     rc
 }
 
-unsafe fn get_session(mnt_ctx: *mut cifs_mount_ctx, full_path: *const core::ffi::c_char) -> i32 {
+unsafe fn get_session(mnt_ctx: *mut cifs_mount_ctx, full_path: *const kernel::ffi::c_char) -> i32 {
     let ctx = (*mnt_ctx).fs_ctx;
-    (*ctx).leaf_fullpath = full_path as *mut core::ffi::c_char;
+    (*ctx).leaf_fullpath = full_path as *mut kernel::ffi::c_char;
     (*ctx).dns_dom = DFS_DOM!((*ctx));
     let rc = cifs_mount_get_session(mnt_ctx);
     (*ctx).leaf_fullpath = core::ptr::null_mut();
@@ -107,7 +107,7 @@ unsafe fn setup_dfs_ref(tgt: *mut dfs_info3_param, rw: *mut dfs_ref_walk) -> i32
     } else { dfs_get_path(cifs_sb, full_path) };
     if IS_ERR(ref_path) {
         let rc = PTR_ERR(ref_path);
-        kfree(full_path as *mut core::ffi::c_void);
+        kfree(full_path as *mut kernel::ffi::c_void);
         return rc;
     }
     ref_walk_path(rw) = ref_path;
@@ -217,9 +217,9 @@ pub unsafe fn dfs_mount_share(mnt_ctx: *mut cifs_mount_ctx) -> i32 {
     rc
 }
 
-unsafe fn target_share_matches_server(server: *mut TCP_Server_Info, share: *mut core::ffi::c_char, target_match: *mut bool) -> i32 {
+unsafe fn target_share_matches_server(server: *mut TCP_Server_Info, share: *mut kernel::ffi::c_char, target_match: *mut bool) -> i32 {
     let mut rc = 0;
-    let mut dfs_host: *const core::ffi::c_char = core::ptr::null();
+    let mut dfs_host: *const kernel::ffi::c_char = core::ptr::null();
     let mut dfs_host_len = 0usize;
     *target_match = true;
     extract_unc_hostname(share, &mut dfs_host, &mut dfs_host_len);
@@ -231,7 +231,7 @@ unsafe fn target_share_matches_server(server: *mut TCP_Server_Info, share: *mut 
     rc
 }
 
-unsafe fn tree_connect_dfs_target(xid: u32, tcon: *mut cifs_tcon, cifs_sb: *mut cifs_sb_info, tree: *mut core::ffi::c_char, islink: bool, tl: *mut dfs_cache_tgt_list) -> i32 {
+unsafe fn tree_connect_dfs_target(xid: u32, tcon: *mut cifs_tcon, cifs_sb: *mut cifs_sb_info, tree: *mut kernel::ffi::c_char, islink: bool, tl: *mut dfs_cache_tgt_list) -> i32 {
     let ops = (*(*tcon).ses).server;
     let server = (*(*tcon).ses).server;
     let mut tit = dfs_cache_get_tgt_iterator(tl);
@@ -239,7 +239,7 @@ unsafe fn tree_connect_dfs_target(xid: u32, tcon: *mut cifs_tcon, cifs_sb: *mut 
     let mut prefix = core::ptr::null_mut();
     let mut rc = -ENOENT;
     while !tit.is_null() {
-        kfree(share as *mut core::ffi::c_void); kfree(prefix as *mut core::ffi::c_void);
+        kfree(share as *mut kernel::ffi::c_void); kfree(prefix as *mut kernel::ffi::c_void);
         share = core::ptr::null_mut(); prefix = core::ptr::null_mut();
         rc = dfs_cache_get_tgt_share((*server).leaf_fullpath.add(1), tit, &mut share, &mut prefix);
         if rc != 0 { break; }
@@ -253,7 +253,7 @@ unsafe fn tree_connect_dfs_target(xid: u32, tcon: *mut cifs_tcon, cifs_sb: *mut 
         if islink && rc == 0 && !cifs_sb.is_null() { rc = cifs_update_super_prepath(cifs_sb, prefix); }
         break;
     }
-    kfree(share as *mut core::ffi::c_void); kfree(prefix as *mut core::ffi::c_void);
+    kfree(share as *mut kernel::ffi::c_void); kfree(prefix as *mut kernel::ffi::c_void);
     dfs_cache_free_tgts(tl);
     rc
 }

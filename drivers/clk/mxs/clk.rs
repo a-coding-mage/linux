@@ -4,13 +4,13 @@
  */
 
 // Dependencies supplied by the surrounding kernel translation.
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 extern "C" {
-    static mut jiffies: libc::c_ulong;
-    fn msecs_to_jiffies(msecs: libc::c_ulong) -> libc::c_ulong;
+    static mut jiffies: kernel::ffi::c_ulong;
+    fn msecs_to_jiffies(msecs: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
     fn readl_relaxed(reg: *const c_void) -> u32;
-    fn time_after(a: libc::c_ulong, b: libc::c_ulong) -> bool;
+    fn time_after(a: kernel::ffi::c_ulong, b: kernel::ffi::c_ulong) -> bool;
 }
 
 // The concrete spinlock representation is supplied by the translated headers.
@@ -23,11 +23,11 @@ pub struct spinlock_t {
 pub static mut mxs_lock: spinlock_t = spinlock_t { _private: [] };
 
 extern "C" {
-    static ETIMEDOUT: libc::c_int;
+    static ETIMEDOUT: kernel::ffi::c_int;
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn mxs_clk_wait(reg: *mut c_void, shift: u8) -> libc::c_int {
+pub unsafe extern "C" fn mxs_clk_wait(reg: *mut c_void, shift: u8) -> kernel::ffi::c_int {
     let timeout = jiffies.wrapping_add(msecs_to_jiffies(10));
 
     while readl_relaxed(reg as *const c_void) & (1u32 << shift) != 0 {

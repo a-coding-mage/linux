@@ -33,22 +33,22 @@ pub const MAX_IOSTAT_PERIOD_MS: usize = 8640000;
 #[repr(C)]
 pub struct iostat_lat_info {
     /* sum of io latencies */
-    pub sum_lat: [[::core::ffi::c_ulong; NR_PAGE_TYPE]; MAX_IO_TYPE as usize],
+    pub sum_lat: [[::kernel::ffi::c_ulong; NR_PAGE_TYPE]; MAX_IO_TYPE as usize],
     /* peak io latency */
-    pub peak_lat: [[::core::ffi::c_ulong; NR_PAGE_TYPE]; MAX_IO_TYPE as usize],
+    pub peak_lat: [[::kernel::ffi::c_ulong; NR_PAGE_TYPE]; MAX_IO_TYPE as usize],
     /* bio count */
-    pub bio_cnt: [[::core::ffi::c_uint; NR_PAGE_TYPE]; MAX_IO_TYPE as usize],
+    pub bio_cnt: [[::kernel::ffi::c_uint; NR_PAGE_TYPE]; MAX_IO_TYPE as usize],
 }
 
 #[cfg(CONFIG_F2FS_IOSTAT)]
 extern "C" {
-    pub fn iostat_info_seq_show(seq: *mut seq_file, offset: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
+    pub fn iostat_info_seq_show(seq: *mut seq_file, offset: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
     pub fn f2fs_reset_iostat(sbi: *mut f2fs_sb_info);
     pub fn f2fs_update_iostat(
         sbi: *mut f2fs_sb_info,
         inode: *mut inode,
         type_: iostat_type,
-        io_bytes: ::core::ffi::c_ulonglong,
+        io_bytes: ::kernel::ffi::c_ulonglong,
     );
     pub fn f2fs_update_read_folio_count(sbi: *mut f2fs_sb_info, folio: *mut folio);
 }
@@ -57,7 +57,7 @@ extern "C" {
 #[repr(C)]
 pub struct bio_iostat_ctx {
     pub sbi: *mut f2fs_sb_info,
-    pub submit_ts: ::core::ffi::c_ulong,
+    pub submit_ts: ::kernel::ffi::c_ulong,
     pub type_: page_type,
     pub post_read_ctx: *mut bio_post_read_ctx,
 }
@@ -85,9 +85,9 @@ extern "C" {
         bio: *mut bio,
         ctx: *mut bio_post_read_ctx,
     );
-    pub fn f2fs_init_iostat_processing() -> ::core::ffi::c_int;
+    pub fn f2fs_init_iostat_processing() -> ::kernel::ffi::c_int;
     pub fn f2fs_destroy_iostat_processing();
-    pub fn f2fs_init_iostat(sbi: *mut f2fs_sb_info) -> ::core::ffi::c_int;
+    pub fn f2fs_init_iostat(sbi: *mut f2fs_sb_info) -> ::kernel::ffi::c_int;
     pub fn f2fs_destroy_iostat(sbi: *mut f2fs_sb_info);
 }
 
@@ -97,7 +97,7 @@ pub unsafe fn f2fs_update_iostat(
     _sbi: *mut f2fs_sb_info,
     _inode: *mut inode,
     _type: iostat_type,
-    _io_bytes: ::core::ffi::c_ulonglong,
+    _io_bytes: ::kernel::ffi::c_ulonglong,
 ) {
 }
 
@@ -130,7 +130,7 @@ pub unsafe fn get_post_read_ctx(bio: *mut bio) -> *mut bio_post_read_ctx {
 
 #[cfg(not(CONFIG_F2FS_IOSTAT))]
 #[inline]
-pub unsafe fn f2fs_init_iostat_processing() -> ::core::ffi::c_int {
+pub unsafe fn f2fs_init_iostat_processing() -> ::kernel::ffi::c_int {
     0
 }
 
@@ -140,7 +140,7 @@ pub unsafe fn f2fs_destroy_iostat_processing() {}
 
 #[cfg(not(CONFIG_F2FS_IOSTAT))]
 #[inline]
-pub unsafe fn f2fs_init_iostat(_sbi: *mut f2fs_sb_info) -> ::core::ffi::c_int {
+pub unsafe fn f2fs_init_iostat(_sbi: *mut f2fs_sb_info) -> ::kernel::ffi::c_int {
     0
 }
 

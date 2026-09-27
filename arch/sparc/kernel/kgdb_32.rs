@@ -6,9 +6,9 @@
 
 // Linux and SPARC dependencies are supplied by the surrounding translation unit.
 
-pub unsafe fn pt_regs_to_gdb_regs(gdb_regs: *mut ::core::ffi::c_ulong, regs: *mut pt_regs) {
+pub unsafe fn pt_regs_to_gdb_regs(gdb_regs: *mut ::kernel::ffi::c_ulong, regs: *mut pt_regs) {
     let win: *mut reg_window32;
-    let mut i: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
 
     *gdb_regs.add(GDB_G0 as usize) = 0;
     i = 0;
@@ -38,21 +38,21 @@ pub unsafe fn pt_regs_to_gdb_regs(gdb_regs: *mut ::core::ffi::c_ulong, regs: *mu
     *gdb_regs.add(GDB_Y as usize) = (*regs).y;
     *gdb_regs.add(GDB_PSR as usize) = (*regs).psr;
     *gdb_regs.add(GDB_WIM as usize) = 0;
-    *gdb_regs.add(GDB_TBR as usize) = trapbase as *const _ as ::core::ffi::c_ulong;
+    *gdb_regs.add(GDB_TBR as usize) = trapbase as *const _ as ::kernel::ffi::c_ulong;
     *gdb_regs.add(GDB_PC as usize) = (*regs).pc;
     *gdb_regs.add(GDB_NPC as usize) = (*regs).npc;
     *gdb_regs.add(GDB_FSR as usize) = 0;
     *gdb_regs.add(GDB_CSR as usize) = 0;
 }
 
-pub unsafe fn sleeping_thread_to_gdb_regs(gdb_regs: *mut ::core::ffi::c_ulong, p: *mut task_struct) {
+pub unsafe fn sleeping_thread_to_gdb_regs(gdb_regs: *mut ::kernel::ffi::c_ulong, p: *mut task_struct) {
     let t: *mut thread_info = task_thread_info(p);
     let win: *mut reg_window32;
-    let mut i: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
 
     i = GDB_G0;
     while i < GDB_G6 { *gdb_regs.add(i as usize) = 0; i += 1; }
-    *gdb_regs.add(GDB_G6 as usize) = t as ::core::ffi::c_ulong;
+    *gdb_regs.add(GDB_G6 as usize) = t as ::kernel::ffi::c_ulong;
     *gdb_regs.add(GDB_G7 as usize) = 0;
     i = GDB_O0;
     while i < GDB_SP { *gdb_regs.add(i as usize) = 0; i += 1; }
@@ -69,15 +69,15 @@ pub unsafe fn sleeping_thread_to_gdb_regs(gdb_regs: *mut ::core::ffi::c_ulong, p
     *gdb_regs.add(GDB_Y as usize) = 0;
     *gdb_regs.add(GDB_PSR as usize) = (*t).kpsr;
     *gdb_regs.add(GDB_WIM as usize) = (*t).kwim;
-    *gdb_regs.add(GDB_TBR as usize) = trapbase as *const _ as ::core::ffi::c_ulong;
+    *gdb_regs.add(GDB_TBR as usize) = trapbase as *const _ as ::kernel::ffi::c_ulong;
     *gdb_regs.add(GDB_PC as usize) = (*t).kpc;
     *gdb_regs.add(GDB_NPC as usize) = (*t).kpc.wrapping_add(4);
     *gdb_regs.add(GDB_FSR as usize) = 0;
     *gdb_regs.add(GDB_CSR as usize) = 0;
 }
 
-pub unsafe fn gdb_regs_to_pt_regs(gdb_regs: *mut ::core::ffi::c_ulong, regs: *mut pt_regs) {
-    let mut i: ::core::ffi::c_int = 0;
+pub unsafe fn gdb_regs_to_pt_regs(gdb_regs: *mut ::kernel::ffi::c_ulong, regs: *mut pt_regs) {
+    let mut i: ::kernel::ffi::c_int = 0;
     while i < 15 { (*regs).u_regs[(UREG_G1 + i) as usize] = *gdb_regs.add((GDB_G1 + i) as usize); i += 1; }
     /* If the PSR register is changing, preserve the CWP field. */
     if (*regs).psr != *gdb_regs.add(GDB_PSR as usize) {
@@ -94,23 +94,23 @@ pub unsafe fn gdb_regs_to_pt_regs(gdb_regs: *mut ::core::ffi::c_ulong, regs: *mu
     while i < 8 { (*win).ins[i as usize] = *gdb_regs.add((GDB_I0 + i) as usize); i += 1; }
 }
 
-pub unsafe fn kgdb_arch_handle_exception(e_vector: ::core::ffi::c_int, signo: ::core::ffi::c_int, err_code: ::core::ffi::c_int, remcom_in_buffer: *mut ::core::ffi::c_char, remcom_out_buffer: *mut ::core::ffi::c_char, linux_regs: *mut pt_regs) -> ::core::ffi::c_int {
-    let mut addr: ::core::ffi::c_ulong = 0;
-    let mut ptr: *mut ::core::ffi::c_char;
+pub unsafe fn kgdb_arch_handle_exception(e_vector: ::kernel::ffi::c_int, signo: ::kernel::ffi::c_int, err_code: ::kernel::ffi::c_int, remcom_in_buffer: *mut ::kernel::ffi::c_char, remcom_out_buffer: *mut ::kernel::ffi::c_char, linux_regs: *mut pt_regs) -> ::kernel::ffi::c_int {
+    let mut addr: ::kernel::ffi::c_ulong = 0;
+    let mut ptr: *mut ::kernel::ffi::c_char;
     match *remcom_in_buffer {
-        case if case == b'c' as ::core::ffi::c_char => {
+        case if case == b'c' as ::kernel::ffi::c_char => {
             ptr = remcom_in_buffer.add(1);
             if kgdb_hex2long(&mut ptr, &mut addr) { (*linux_regs).pc = addr; (*linux_regs).npc = addr.wrapping_add(4); }
         }
-        case if case == b'D' as ::core::ffi::c_char || case == b'k' as ::core::ffi::c_char => {}
+        case if case == b'D' as ::kernel::ffi::c_char || case == b'k' as ::kernel::ffi::c_char => {}
         _ => return -1,
     }
-    if (*linux_regs).pc == arch_kgdb_breakpoint as usize as ::core::ffi::c_ulong { (*linux_regs).pc = (*linux_regs).npc; (*linux_regs).npc = (*linux_regs).npc.wrapping_add(4); }
+    if (*linux_regs).pc == arch_kgdb_breakpoint as usize as ::kernel::ffi::c_ulong { (*linux_regs).pc = (*linux_regs).npc; (*linux_regs).npc = (*linux_regs).npc.wrapping_add(4); }
     0
 }
 
-pub unsafe fn kgdb_trap(trap_level: ::core::ffi::c_ulong, regs: *mut pt_regs) {
-    let mut flags: ::core::ffi::c_ulong = 0;
+pub unsafe fn kgdb_trap(trap_level: ::kernel::ffi::c_ulong, regs: *mut pt_regs) {
+    let mut flags: ::kernel::ffi::c_ulong = 0;
     if user_mode(regs) { do_hw_interrupt(regs, trap_level); return; }
     flushw_all();
     local_irq_save(&mut flags);
@@ -118,10 +118,10 @@ pub unsafe fn kgdb_trap(trap_level: ::core::ffi::c_ulong, regs: *mut pt_regs) {
     local_irq_restore(flags);
 }
 
-pub fn kgdb_arch_init() -> ::core::ffi::c_int { 0 }
+pub fn kgdb_arch_init() -> ::kernel::ffi::c_int { 0 }
 pub fn kgdb_arch_exit() {}
 
-pub unsafe fn kgdb_arch_set_pc(regs: *mut pt_regs, ip: ::core::ffi::c_ulong) {
+pub unsafe fn kgdb_arch_set_pc(regs: *mut pt_regs, ip: ::kernel::ffi::c_ulong) {
     (*regs).pc = ip;
     (*regs).npc = (*regs).pc.wrapping_add(4);
 }

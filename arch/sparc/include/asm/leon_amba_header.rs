@@ -5,8 +5,8 @@
 
 #[repr(C)]
 pub struct amba_prom_registers {
-    pub phys_addr: ::core::ffi::c_uint, /* The physical address of this register */
-    pub reg_size: ::core::ffi::c_uint,  /* How many bytes does this register take up? */
+    pub phys_addr: ::kernel::ffi::c_uint, /* The physical address of this register */
+    pub reg_size: ::kernel::ffi::c_uint,  /* How many bytes does this register take up? */
 }
 
 pub const LEON_REG_UART_STATUS_DR: u32 = 0x00000001; /* Data Ready */
@@ -96,18 +96,18 @@ pub const AMBA_MAXAPB_DEVS_PERBUS: usize = 16;
 
 #[repr(C)]
 pub struct amba_device_table {
-    pub devnr: ::core::ffi::c_int,
-    pub addr: [*mut ::core::ffi::c_uint; 16],
-    pub allocbits: [::core::ffi::c_uint; 1],
+    pub devnr: ::kernel::ffi::c_int,
+    pub addr: [*mut ::kernel::ffi::c_uint; 16],
+    pub allocbits: [::kernel::ffi::c_uint; 1],
 }
 
 #[repr(C)]
 pub struct amba_apbslv_device_table {
-    pub devnr: ::core::ffi::c_int,
-    pub addr: [*mut ::core::ffi::c_uint; AMBA_MAXAPB_DEVS],
-    pub apbmst: [::core::ffi::c_uint; AMBA_MAXAPB_DEVS],
-    pub apbmstidx: [::core::ffi::c_uint; AMBA_MAXAPB_DEVS],
-    pub allocbits: [::core::ffi::c_uint; 4],
+    pub devnr: ::kernel::ffi::c_int,
+    pub addr: [*mut ::kernel::ffi::c_uint; AMBA_MAXAPB_DEVS],
+    pub apbmst: [::kernel::ffi::c_uint; AMBA_MAXAPB_DEVS],
+    pub apbmstidx: [::kernel::ffi::c_uint; AMBA_MAXAPB_DEVS],
+    pub allocbits: [::kernel::ffi::c_uint; 4],
 }
 
 #[repr(C)]
@@ -116,32 +116,32 @@ pub struct amba_confarea_type {
     pub ahbmst: amba_device_table,
     pub ahbslv: amba_device_table,
     pub apbslv: amba_apbslv_device_table,
-    pub apbmst: ::core::ffi::c_uint,
+    pub apbmst: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct amba_apb_device {
-    pub start: ::core::ffi::c_uint, pub irq: ::core::ffi::c_uint, pub bus_id: ::core::ffi::c_uint,
+    pub start: ::kernel::ffi::c_uint, pub irq: ::kernel::ffi::c_uint, pub bus_id: ::kernel::ffi::c_uint,
     pub bus: *mut amba_confarea_type,
 }
 
 #[repr(C)]
 pub struct amba_ahb_device {
-    pub start: [::core::ffi::c_uint; 4], pub irq: ::core::ffi::c_uint, pub bus_id: ::core::ffi::c_uint,
+    pub start: [::kernel::ffi::c_uint; 4], pub irq: ::kernel::ffi::c_uint, pub bus_id: ::kernel::ffi::c_uint,
     pub bus: *mut amba_confarea_type,
 }
 
 pub struct device_node;
 unsafe extern "C" { pub fn _amba_init(dp: *mut device_node, nextp: *mut *mut *mut device_node); }
 unsafe extern "C" {
-    pub static mut amba_system_id: ::core::ffi::c_ulong;
+    pub static mut amba_system_id: ::kernel::ffi::c_ulong;
     pub static mut leon3_irqctrl_regs: *mut leon3_irqctrl_regs_map;
     pub static mut leon3_gptimer_regs: *mut leon3_gptimer_regs_map;
     pub static mut leon_percpu_timer_dev: [amba_apb_device; 16];
-    pub static mut leondebug_irq_disable: ::core::ffi::c_int;
-    pub static mut leon_debug_irqout: ::core::ffi::c_int;
-    pub static mut leon3_gptimer_irq: ::core::ffi::c_ulong;
-    pub static mut sparc_leon_eirq: ::core::ffi::c_uint;
+    pub static mut leondebug_irq_disable: ::kernel::ffi::c_int;
+    pub static mut leon_debug_irqout: ::kernel::ffi::c_int;
+    pub static mut leon3_gptimer_irq: ::kernel::ffi::c_ulong;
+    pub static mut sparc_leon_eirq: ::kernel::ffi::c_uint;
 }
 
 pub const LEON3_IO_AREA: u32 = 0xfff00000;

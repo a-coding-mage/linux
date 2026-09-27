@@ -23,18 +23,18 @@ extern "C" {
     pub fn nf_conntrack_in(
         skb: *mut sk_buff,
         state: *const nf_hook_state,
-    ) -> ::core::ffi::c_uint;
+    ) -> ::kernel::ffi::c_uint;
 
-    pub fn nf_conntrack_init_net(net: *mut net) -> ::core::ffi::c_int;
+    pub fn nf_conntrack_init_net(net: *mut net) -> ::kernel::ffi::c_int;
     pub fn nf_conntrack_cleanup_net(net: *mut net);
     pub fn nf_conntrack_cleanup_net_list(net_exit_list: *mut list_head);
 
     pub fn nf_conntrack_proto_pernet_init(net: *mut net);
 
-    pub fn nf_conntrack_proto_init() -> ::core::ffi::c_int;
+    pub fn nf_conntrack_proto_init() -> ::kernel::ffi::c_int;
     pub fn nf_conntrack_proto_fini();
 
-    pub fn nf_conntrack_init_start() -> ::core::ffi::c_int;
+    pub fn nf_conntrack_init_start() -> ::kernel::ffi::c_int;
     pub fn nf_conntrack_cleanup_start();
 
     pub fn nf_conntrack_init_end();
@@ -52,13 +52,13 @@ extern "C" {
         tuple: *const nf_conntrack_tuple,
     ) -> *mut nf_conntrack_tuple_hash;
 
-    pub fn __nf_conntrack_confirm(skb: *mut sk_buff) -> ::core::ffi::c_int;
+    pub fn __nf_conntrack_confirm(skb: *mut sk_buff) -> ::kernel::ffi::c_int;
 
     pub fn nf_confirm(
-        priv_: *mut ::core::ffi::c_void,
+        priv_: *mut ::kernel::ffi::c_void,
         skb: *mut sk_buff,
         state: *const nf_hook_state,
-    ) -> ::core::ffi::c_uint;
+    ) -> ::kernel::ffi::c_uint;
 
     pub fn print_tuple(
         s: *mut seq_file,
@@ -76,25 +76,25 @@ extern "C" {
     pub fn __nf_ct_change_timeout(
         ct: *mut nf_conn,
         cta_timeout: u64,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn __nf_ct_change_status(
         ct: *mut nf_conn,
-        on: ::core::ffi::c_ulong,
-        off: ::core::ffi::c_ulong,
+        on: ::kernel::ffi::c_ulong,
+        off: ::kernel::ffi::c_ulong,
     );
     pub fn nf_ct_change_status_common(
         ct: *mut nf_conn,
-        status: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        status: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 }
 
 pub const CONNTRACK_LOCKS: usize = 1024;
 
 /* Confirm a connection: returns NF_DROP if packet must be dropped. */
 #[inline]
-pub unsafe fn nf_conntrack_confirm(skb: *mut sk_buff) -> ::core::ffi::c_int {
+pub unsafe fn nf_conntrack_confirm(skb: *mut sk_buff) -> ::kernel::ffi::c_int {
     let mut ct: *mut nf_conn = skb_nfct(skb) as *mut nf_conn;
-    let mut ret: ::core::ffi::c_int = NF_ACCEPT;
+    let mut ret: ::kernel::ffi::c_int = NF_ACCEPT;
 
     if !ct.is_null() {
         if !nf_ct_is_confirmed(ct) {

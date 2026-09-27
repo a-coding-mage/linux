@@ -6,9 +6,9 @@
 #[inline]
 pub unsafe fn pgprot_framebuffer(
     mut prot: pgprot_t,
-    _vm_start: core::ffi::c_ulong,
-    _vm_end: core::ffi::c_ulong,
-    _offset: core::ffi::c_ulong,
+    _vm_start: kernel::ffi::c_ulong,
+    _vm_end: kernel::ffi::c_ulong,
+    _offset: kernel::ffi::c_ulong,
 ) -> pgprot_t {
     #[cfg(CONFIG_MMU)]
     {

@@ -18,26 +18,26 @@ const PCI_DEVICE_ID_INTEL_MFLD_HSU_DMA: u16 = 0x081e;
 const PCI_DEVICE_ID_INTEL_MRFLD_HSU_DMA: u16 = 0x1192;
 
 extern "C" {
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
     fn hsu_dma_get_status(chip: *mut hsu_dma_chip, channel: u16, status: *mut u32) -> i32;
     fn hsu_dma_do_irq(chip: *mut hsu_dma_chip, channel: u16, status: u32) -> i32;
-    fn hsu_dma_remove(chip: *mut core::ffi::c_void);
+    fn hsu_dma_remove(chip: *mut kernel::ffi::c_void);
     fn pcim_enable_device(pdev: *mut pci_dev) -> i32;
-    fn pcim_iomap_regions(pdev: *mut pci_dev, mask: u32, name: *const core::ffi::c_char) -> i32;
-    fn pci_name(pdev: *mut pci_dev) -> *const core::ffi::c_char;
+    fn pcim_iomap_regions(pdev: *mut pci_dev, mask: u32, name: *const kernel::ffi::c_char) -> i32;
+    fn pci_name(pdev: *mut pci_dev) -> *const kernel::ffi::c_char;
     fn pci_set_master(pdev: *mut pci_dev);
     fn pci_try_set_mwi(pdev: *mut pci_dev);
     fn dma_set_mask_and_coherent(dev: *mut device, mask: u64) -> i32;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn pci_alloc_irq_vectors(pdev: *mut pci_dev, min: i32, max: i32, flags: u32) -> i32;
-    fn pcim_iomap_table(pdev: *mut pci_dev) -> *mut *mut core::ffi::c_void;
+    fn pcim_iomap_table(pdev: *mut pci_dev) -> *mut *mut kernel::ffi::c_void;
     fn pci_resource_len(pdev: *mut pci_dev, bar: u32) -> usize;
     fn pci_irq_vector(pdev: *mut pci_dev, nr: u32) -> i32;
     fn hsu_dma_probe(chip: *mut hsu_dma_chip) -> i32;
-    fn devm_add_action_or_reset(dev: *mut device, action: unsafe extern "C" fn(*mut core::ffi::c_void), data: *mut core::ffi::c_void) -> i32;
-    fn devm_request_irq(dev: *mut device, irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t, flags: u32, name: *const core::ffi::c_char, data: *mut core::ffi::c_void) -> i32;
+    fn devm_add_action_or_reset(dev: *mut device, action: unsafe extern "C" fn(*mut kernel::ffi::c_void), data: *mut kernel::ffi::c_void) -> i32;
+    fn devm_request_irq(dev: *mut device, irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t, flags: u32, name: *const kernel::ffi::c_char, data: *mut kernel::ffi::c_void) -> i32;
     fn disable_irq_nosync(irq: i32);
-    fn pci_set_drvdata(pdev: *mut pci_dev, data: *mut core::ffi::c_void);
+    fn pci_set_drvdata(pdev: *mut pci_dev, data: *mut kernel::ffi::c_void);
 }
 
 #[repr(C)]
@@ -51,7 +51,7 @@ struct hsu_dma { nr_channels: u16 }
 #[repr(C)]
 struct hsu_dma_chip {
     dev: *mut device,
-    regs: *mut core::ffi::c_void,
+    regs: *mut kernel::ffi::c_void,
     length: usize,
     offset: usize,
     irq: i32,
@@ -59,7 +59,7 @@ struct hsu_dma_chip {
 }
 type irqreturn_t = i32;
 
-unsafe extern "C" fn hsu_pci_irq(_irq: i32, dev: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn hsu_pci_irq(_irq: i32, dev: *mut kernel::ffi::c_void) -> irqreturn_t {
     let chip = dev as *mut hsu_dma_chip;
     let dmaisr = readl((*chip).regs.add(HSU_PCI_DMAISR));
     let mut ret = 0i32;
@@ -77,7 +77,7 @@ unsafe extern "C" fn hsu_pci_irq(_irq: i32, dev: *mut core::ffi::c_void) -> irqr
     ret
 }
 
-unsafe extern "C" fn hsu_pci_dma_remove(chip: *mut core::ffi::c_void) {
+unsafe extern "C" fn hsu_pci_dma_remove(chip: *mut kernel::ffi::c_void) {
     hsu_dma_remove(chip);
 }
 
@@ -102,7 +102,7 @@ unsafe extern "C" fn hsu_pci_probe(pdev: *mut pci_dev, _id: *const pci_device_id
     (*chip).irq = pci_irq_vector(pdev, 0);
     let ret = hsu_dma_probe(chip);
     if ret != 0 { return ret; }
-    let ret = devm_add_action_or_reset(dev, hsu_pci_dma_remove, chip as *mut core::ffi::c_void);
+    let ret = devm_add_action_or_reset(dev, hsu_pci_dma_remove, chip as *mut kernel::ffi::c_void);
     if ret != 0 { return ret; }
     let ret = devm_request_irq(dev, (*chip).irq, hsu_pci_irq, 0, b"hsu_dma_pci\0".as_ptr() as *const _, chip as *mut _);
     if ret != 0 { return ret; }
@@ -123,7 +123,7 @@ static HSU_PCI_ID_TABLE: [pci_device_id_entry; 3] = [
 
 #[repr(C)]
 struct pci_driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     id_table: *const pci_device_id_entry,
     probe: unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> i32,
 }

@@ -68,29 +68,29 @@ pub struct tpm_tis_synquacer_info {
 #[repr(C)]
 pub struct tpm_tis_synquacer_phy {
     pub priv_: tpm_tis_data,
-    pub iobase: *mut core::ffi::c_void,
+    pub iobase: *mut kernel::ffi::c_void,
 }
 
 extern "C" {
-    fn ioread8(addr: *mut core::ffi::c_void) -> u8;
-    fn iowrite8(value: u8, addr: *mut core::ffi::c_void);
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn devm_ioremap_resource(dev: *mut device, res: *mut resource) -> *mut core::ffi::c_void;
+    fn ioread8(addr: *mut kernel::ffi::c_void) -> u8;
+    fn iowrite8(value: u8, addr: *mut kernel::ffi::c_void);
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn devm_ioremap_resource(dev: *mut device, res: *mut resource) -> *mut kernel::ffi::c_void;
     fn tpm_tis_core_init(
         dev: *mut device,
         priv_: *mut tpm_tis_data,
         irq: i32,
         phy_ops: *const tpm_tis_phy_ops,
-        acpi_handle: *mut core::ffi::c_void,
+        acpi_handle: *mut kernel::ffi::c_void,
     ) -> i32;
     fn tpm_pm_suspend(dev: *mut device) -> i32;
     fn tpm_tis_resume(dev: *mut device) -> i32;
     fn platform_get_resource(pdev: *mut platform_device, resource_type: u32, index: u32) -> *mut resource;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char);
     fn dev_get_drvdata(dev: *mut device) -> *mut tpm_chip;
     fn tpm_chip_unregister(chip: *mut tpm_chip);
     fn tpm_tis_remove(chip: *mut tpm_chip);
-    fn acpi_handle(dev: *mut device) -> *mut core::ffi::c_void;
+    fn acpi_handle(dev: *mut device) -> *mut kernel::ffi::c_void;
 }
 
 const GFP_KERNEL: u32 = 0;

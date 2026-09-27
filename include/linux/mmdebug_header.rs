@@ -25,10 +25,10 @@ pub struct vma_merge_struct {
 }
 
 extern "C" {
-    pub fn dump_page(page: *const page, reason: *const core::ffi::c_char);
+    pub fn dump_page(page: *const page, reason: *const kernel::ffi::c_char);
     pub fn dump_vma(vma: *const vm_area_struct);
     pub fn dump_mm(mm: *const mm_struct);
-    pub fn dump_vmg(vmg: *const vma_merge_struct, reason: *const core::ffi::c_char);
+    pub fn dump_vmg(vmg: *const vma_merge_struct, reason: *const kernel::ffi::c_char);
     pub fn vma_iter_dump_tree(vmi: *const vma_iterator);
 }
 

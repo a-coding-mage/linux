@@ -89,7 +89,7 @@ pub enum adc5_cal_method { ADC5_NO_CAL = 0, ADC5_RATIOMETRIC_CAL, ADC5_ABSOLUTE_
 pub enum adc5_time_select { MEAS_INT_DISABLE = 0, MEAS_INT_IMMEDIATE, MEAS_INT_50MS, MEAS_INT_100MS, MEAS_INT_1S, MEAS_INT_NONE }
 
 #[repr(C)]
-pub struct adc5_sdam_data { pub base_addr: u16, pub irq_name: *const core::ffi::c_char, pub irq: i32 }
+pub struct adc5_sdam_data { pub base_addr: u16, pub irq_name: *const kernel::ffi::c_char, pub irq: i32 }
 
 #[repr(C)]
 pub struct adc5_device_data { pub regmap: *mut regmap, pub base: *mut adc5_sdam_data, pub num_sdams: i32 }
@@ -100,7 +100,7 @@ pub struct adc5_channel_common_prop {
     pub cal_method: adc5_cal_method,
     pub decimation: u32,
     pub sid: u32,
-    pub label: *const core::ffi::c_char,
+    pub label: *const kernel::ffi::c_char,
     pub prescale: u32,
     pub hw_settle_time_us: u32,
     pub avg_samples: u32,

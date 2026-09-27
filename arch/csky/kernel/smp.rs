@@ -15,8 +15,8 @@ enum IpiMessageType {
 
 #[repr(C)]
 struct IpiDataStruct {
-    bits: ::core::ffi::c_ulong,
-    stats: [::core::ffi::c_ulong; IpiMessageType::IpiMax as usize],
+    bits: ::kernel::ffi::c_ulong,
+    stats: [::kernel::ffi::c_ulong; IpiMessageType::IpiMax as usize],
 }
 
 // DEFINE_PER_CPU(struct ipi_data_struct, ipi_data);
@@ -24,11 +24,11 @@ extern "C" {
     static mut ipi_data: IpiDataStruct;
 }
 
-unsafe fn handle_ipi(_irq: ::core::ffi::c_int, _dev: *mut ::core::ffi::c_void) -> ::core::ffi::c_int {
+unsafe fn handle_ipi(_irq: ::kernel::ffi::c_int, _dev: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int {
     let stats = (*this_cpu_ptr(&raw mut ipi_data)).stats.as_mut_ptr();
 
     loop {
-        let ops: ::core::ffi::c_ulong = xchg(&mut (*this_cpu_ptr(&raw mut ipi_data)).bits, 0);
+        let ops: ::kernel::ffi::c_ulong = xchg(&mut (*this_cpu_ptr(&raw mut ipi_data)).bits, 0);
         if ops == 0 {
             return IRQ_HANDLED;
         }
@@ -53,9 +53,9 @@ unsafe fn handle_ipi(_irq: ::core::ffi::c_int, _dev: *mut ::core::ffi::c_void) -
 }
 
 static mut send_arch_ipi: Option<unsafe extern "C" fn(*const Cpumask)> = None;
-static mut ipi_irq: ::core::ffi::c_int = 0;
+static mut ipi_irq: ::kernel::ffi::c_int = 0;
 
-unsafe extern "C" fn set_send_ipi(func: unsafe extern "C" fn(*const Cpumask), irq: ::core::ffi::c_int) {
+unsafe extern "C" fn set_send_ipi(func: unsafe extern "C" fn(*const Cpumask), irq: ::kernel::ffi::c_int) {
     if send_arch_ipi.is_some() {
         return;
     }
@@ -64,7 +64,7 @@ unsafe extern "C" fn set_send_ipi(func: unsafe extern "C" fn(*const Cpumask), ir
 }
 
 unsafe fn send_ipi_message(to_whom: *const Cpumask, operation: IpiMessageType) {
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: ::kernel::ffi::c_int = 0;
     for_each_cpu(&mut i, to_whom);
     while i >= 0 {
         set_bit(operation as usize, &mut (*per_cpu_ptr(&raw mut ipi_data, i as usize)).bits);
@@ -84,7 +84,7 @@ static ipi_names: [&'static [u8]; IpiMessageType::IpiMax as usize] = [
     b"Irq work interrupts\0",
 ];
 
-unsafe extern "C" fn arch_show_interrupts(p: *mut SeqFile, prec: ::core::ffi::c_int) -> ::core::ffi::c_int {
+unsafe extern "C" fn arch_show_interrupts(p: *mut SeqFile, prec: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     let mut i = 0;
     while i < IpiMessageType::IpiMax as usize {
         seq_printf(p, prec - 1, b"IPI\0".as_ptr(), i, if prec >= 4 { b" \0".as_ptr() } else { b"\0".as_ptr() });
@@ -104,11 +104,11 @@ unsafe extern "C" fn arch_send_call_function_ipi_mask(mask: *mut Cpumask) {
     send_ipi_message(mask, IpiMessageType::IpiCallFunc);
 }
 
-unsafe extern "C" fn arch_send_call_function_single_ipi(cpu: ::core::ffi::c_int) {
+unsafe extern "C" fn arch_send_call_function_single_ipi(cpu: ::kernel::ffi::c_int) {
     send_ipi_message(cpumask_of(cpu), IpiMessageType::IpiCallFunc);
 }
 
-unsafe extern "C" fn ipi_stop(_unused: *mut ::core::ffi::c_void) {
+unsafe extern "C" fn ipi_stop(_unused: *mut ::kernel::ffi::c_void) {
     loop {}
 }
 
@@ -116,7 +116,7 @@ unsafe extern "C" fn smp_send_stop() {
     on_each_cpu(ipi_stop, core::ptr::null_mut(), 1);
 }
 
-unsafe extern "C" fn arch_smp_send_reschedule(cpu: ::core::ffi::c_int) {
+unsafe extern "C" fn arch_smp_send_reschedule(cpu: ::kernel::ffi::c_int) {
     send_ipi_message(cpumask_of(cpu), IpiMessageType::IpiReschedule);
 }
 
@@ -125,9 +125,9 @@ unsafe extern "C" fn arch_irq_work_raise() {
     send_ipi_message(cpumask_of(smp_processor_id()), IpiMessageType::IpiIrqWork);
 }
 
-unsafe extern "C" fn smp_prepare_cpus(_max_cpus: ::core::ffi::c_uint) {}
+unsafe extern "C" fn smp_prepare_cpus(_max_cpus: ::kernel::ffi::c_uint) {}
 
-static mut ipi_dummy_dev: ::core::ffi::c_int = 0;
+static mut ipi_dummy_dev: ::kernel::ffi::c_int = 0;
 
 unsafe extern "C" fn setup_smp_ipi() {
     if ipi_irq == 0 {
@@ -142,7 +142,7 @@ unsafe extern "C" fn setup_smp_ipi() {
 
 unsafe extern "C" fn setup_smp() {
     let mut node: *mut DeviceNode = core::ptr::null_mut();
-    let mut cpu: ::core::ffi::c_uint;
+    let mut cpu: ::kernel::ffi::c_uint;
     for_each_of_cpu_node(&mut node);
     while !node.is_null() {
         if !of_device_is_available(node) {
@@ -160,17 +160,17 @@ unsafe extern "C" fn setup_smp() {
 
 extern "C" {
     fn _start_smp_secondary();
-    static mut secondary_hint: ::core::ffi::c_uint;
-    static mut secondary_hint2: ::core::ffi::c_uint;
-    static mut secondary_ccr: ::core::ffi::c_uint;
-    static mut secondary_stack: ::core::ffi::c_uint;
-    static mut secondary_msa1: ::core::ffi::c_uint;
-    static mut secondary_pgd: ::core::ffi::c_uint;
+    static mut secondary_hint: ::kernel::ffi::c_uint;
+    static mut secondary_hint2: ::kernel::ffi::c_uint;
+    static mut secondary_ccr: ::kernel::ffi::c_uint;
+    static mut secondary_stack: ::kernel::ffi::c_uint;
+    static mut secondary_msa1: ::kernel::ffi::c_uint;
+    static mut secondary_pgd: ::kernel::ffi::c_uint;
 }
 
-unsafe extern "C" fn __cpu_up(cpu: ::core::ffi::c_uint, tidle: *mut TaskStruct) -> ::core::ffi::c_int {
-    let mut mask: ::core::ffi::c_ulong = 1 << cpu;
-    secondary_stack = task_stack_page(tidle) as ::core::ffi::c_uint + THREAD_SIZE - 8;
+unsafe extern "C" fn __cpu_up(cpu: ::kernel::ffi::c_uint, tidle: *mut TaskStruct) -> ::kernel::ffi::c_int {
+    let mut mask: ::kernel::ffi::c_ulong = 1 << cpu;
+    secondary_stack = task_stack_page(tidle) as ::kernel::ffi::c_uint + THREAD_SIZE - 8;
     secondary_hint = mfcr(b"cr31\0".as_ptr());
     secondary_hint2 = mfcr(b"cr<21, 1>\0".as_ptr());
     secondary_ccr = mfcr(b"cr18\0".as_ptr());
@@ -179,7 +179,7 @@ unsafe extern "C" fn __cpu_up(cpu: ::core::ffi::c_uint, tidle: *mut TaskStruct) 
     // Flush data from cache because the other CPUs are in reset status.
     mtcr(b"cr17\0".as_ptr(), 0x22);
     if mask & mfcr(b"cr<29, 0>\0".as_ptr()) != 0 {
-        if let Some(func) = send_arch_ipi { func(cpumask_of(cpu as ::core::ffi::c_int)); }
+        if let Some(func) = send_arch_ipi { func(cpumask_of(cpu as ::kernel::ffi::c_int)); }
     } else {
         mask |= mfcr(b"cr<29, 0>\0".as_ptr());
         mtcr(b"cr<29, 0>\0".as_ptr(), mask);
@@ -189,6 +189,6 @@ unsafe extern "C" fn __cpu_up(cpu: ::core::ffi::c_uint, tidle: *mut TaskStruct) 
     0
 }
 
-unsafe extern "C" fn smp_cpus_done(_max_cpus: ::core::ffi::c_uint) {}
+unsafe extern "C" fn smp_cpus_done(_max_cpus: ::kernel::ffi::c_uint) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

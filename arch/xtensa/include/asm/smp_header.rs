@@ -26,7 +26,7 @@ macro_rules! cpu_logical_map {
 #[cfg(CONFIG_SMP)]
 #[repr(C)]
 pub struct start_info {
-    pub stack: core::ffi::c_ulong,
+    pub stack: kernel::ffi::c_ulong,
 }
 
 #[cfg(CONFIG_SMP)]
@@ -34,13 +34,13 @@ extern "C" {
     pub static mut start_info: start_info;
 
     pub fn arch_send_call_function_ipi_mask(mask: *const cpumask);
-    pub fn arch_send_call_function_single_ipi(cpu: core::ffi::c_int);
+    pub fn arch_send_call_function_single_ipi(cpu: kernel::ffi::c_int);
 
     pub fn secondary_start_kernel();
     pub fn smp_init_cpus();
     pub fn secondary_init_irq();
     pub fn ipi_init();
-    pub fn show_ipi_list(p: *mut seq_file, prec: core::ffi::c_int);
+    pub fn show_ipi_list(p: *mut seq_file, prec: kernel::ffi::c_int);
 }
 
 #[cfg(CONFIG_SMP)]
@@ -51,8 +51,8 @@ pub enum seq_file {}
 
 #[cfg(all(CONFIG_SMP, CONFIG_HOTPLUG_CPU))]
 extern "C" {
-    pub fn __cpu_die(cpu: core::ffi::c_uint);
-    pub fn __cpu_disable() -> core::ffi::c_int;
+    pub fn __cpu_die(cpu: kernel::ffi::c_uint);
+    pub fn __cpu_disable() -> kernel::ffi::c_int;
     pub fn cpu_die() -> !;
     pub fn cpu_restart();
 }

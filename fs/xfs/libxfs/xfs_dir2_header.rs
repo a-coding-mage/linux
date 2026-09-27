@@ -38,7 +38,7 @@ extern "C" {
 pub unsafe fn xfs_dir2_samename(n1: *const xfs_name, n2: *const xfs_name) -> bool {
     if n1 == n2 { return true; }
     if (*n1).len != (*n2).len { return false; }
-    libc::memcmp((*n1).name as *const _, (*n2).name as *const _, (*n1).len as usize) == 0
+    memcmp((*n1).name as *const _, (*n2).name as *const _, (*n1).len as usize) == 0
 }
 
 #[repr(C)]

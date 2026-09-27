@@ -8,7 +8,7 @@
 // C dependencies supplied by the surrounding translation unit:
 // linux/dmaengine.h, linux/list.h, linux/shdma-base.h, linux/types.h
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct device;
@@ -25,7 +25,7 @@ pub struct sh_dmae_slave {
  */
 #[repr(C)]
 pub struct sh_dmae_slave_config {
-    pub slave_id: core::ffi::c_int,
+    pub slave_id: kernel::ffi::c_int,
     pub addr: dma_addr_t,
     pub chcr: u32,
     pub mid_rid: c_char,
@@ -43,15 +43,15 @@ pub struct sh_dmae_channel {
 #[repr(C)]
 pub struct sh_dmae_pdata {
     pub slave: *const sh_dmae_slave_config,
-    pub slave_num: core::ffi::c_int,
+    pub slave_num: kernel::ffi::c_int,
     pub channel: *const sh_dmae_channel,
-    pub channel_num: core::ffi::c_int,
+    pub channel_num: kernel::ffi::c_int,
     pub ts_low_shift: u32,
     pub ts_low_mask: u32,
     pub ts_high_shift: u32,
     pub ts_high_mask: u32,
     pub ts_shift: *const u32,
-    pub ts_shift_num: core::ffi::c_int,
+    pub ts_shift_num: kernel::ffi::c_int,
     pub dmaor_init: u16,
     pub chcr_offset: u32,
     pub chcr_ie_bit: u32,

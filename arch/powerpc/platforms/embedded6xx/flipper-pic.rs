@@ -22,7 +22,7 @@ pub struct irq_data {
 
 #[repr(C)]
 pub struct irq_domain {
-    pub host_data: *mut core::ffi::c_void,
+    pub host_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -38,7 +38,7 @@ pub struct resource {
 
 #[repr(C)]
 pub struct irq_chip {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub irq_ack: Option<unsafe extern "C" fn(*mut irq_data)>,
     pub irq_mask_ack: Option<unsafe extern "C" fn(*mut irq_data)>,
     pub irq_mask: Option<unsafe extern "C" fn(*mut irq_data)>,
@@ -52,33 +52,33 @@ pub struct irq_domain_ops {
 
 extern "C" {
     fn irqd_to_hwirq(d: *mut irq_data) -> usize;
-    fn irq_data_get_irq_chip_data(d: *mut irq_data) -> *mut core::ffi::c_void;
+    fn irq_data_get_irq_chip_data(d: *mut irq_data) -> *mut kernel::ffi::c_void;
     fn clrbits32(addr: *mut u8, mask: u32);
     fn setbits32(addr: *mut u8, mask: u32);
     fn out_be32(addr: *mut u8, value: u32);
     fn out_8(addr: *mut u8, value: u8);
     fn in_be32(addr: *mut u8) -> u32;
-    fn irq_set_chip_data(virq: u32, data: *mut core::ffi::c_void);
+    fn irq_set_chip_data(virq: u32, data: *mut kernel::ffi::c_void);
     fn irq_set_status_flags(virq: u32, flags: u32);
     fn irq_set_chip_and_handler(virq: u32, chip: *mut irq_chip, handler: unsafe extern "C" fn());
     fn handle_level_irq();
     fn of_get_parent(np: *mut device_node) -> *mut device_node;
-    fn of_device_is_compatible(np: *mut device_node, compatible: *const core::ffi::c_char) -> bool;
+    fn of_device_is_compatible(np: *mut device_node, compatible: *const kernel::ffi::c_char) -> bool;
     fn of_address_to_resource(np: *mut device_node, index: u32, res: *mut resource) -> i32;
     fn resource_size(res: *const resource) -> usize;
     fn ioremap(start: usize, size: usize) -> *mut u8;
-    fn of_fwnode_handle(np: *mut device_node) -> *mut core::ffi::c_void;
-    fn irq_domain_create_linear(fwnode: *mut core::ffi::c_void, size: u32,
-        ops: *const irq_domain_ops, host_data: *mut core::ffi::c_void) -> *mut irq_domain;
+    fn of_fwnode_handle(np: *mut device_node) -> *mut kernel::ffi::c_void;
+    fn irq_domain_create_linear(fwnode: *mut kernel::ffi::c_void, size: u32,
+        ops: *const irq_domain_ops, host_data: *mut kernel::ffi::c_void) -> *mut irq_domain;
     fn __ffs(value: u32) -> i32;
     fn irq_find_mapping(domain: *mut irq_domain, hwirq: u32) -> u32;
     fn irq_set_default_domain(domain: *mut irq_domain);
-    fn of_find_compatible_node(from: *mut device_node, type_: *const core::ffi::c_char,
-        compatible: *const core::ffi::c_char) -> *mut device_node;
+    fn of_find_compatible_node(from: *mut device_node, type_: *const kernel::ffi::c_char,
+        compatible: *const kernel::ffi::c_char) -> *mut device_node;
     fn of_node_put(np: *mut device_node);
     fn BUG_ON(condition: bool);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 const IRQ_LEVEL: u32 = 1;
@@ -112,7 +112,7 @@ unsafe extern "C" fn flipper_pic_unmask(d: *mut irq_data) {
 }
 
 static mut flipper_pic: irq_chip = irq_chip {
-    name: b"flipper-pic\0".as_ptr() as *const core::ffi::c_char,
+    name: b"flipper-pic\0".as_ptr() as *const kernel::ffi::c_char,
     irq_ack: Some(flipper_pic_ack), irq_mask_ack: Some(flipper_pic_mask_and_ack),
     irq_mask: Some(flipper_pic_mask), irq_unmask: Some(flipper_pic_unmask),
 };

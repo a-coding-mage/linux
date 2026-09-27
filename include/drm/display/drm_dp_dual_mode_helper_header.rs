@@ -86,13 +86,13 @@ extern "C" {
     pub fn drm_dp_dual_mode_read(
         adapter: *mut i2c_adapter,
         offset: u8,
-        buffer: *mut core::ffi::c_void,
+        buffer: *mut kernel::ffi::c_void,
         size: usize,
     ) -> isize;
     pub fn drm_dp_dual_mode_write(
         adapter: *mut i2c_adapter,
         offset: u8,
-        buffer: *const core::ffi::c_void,
+        buffer: *const kernel::ffi::c_void,
         size: usize,
     ) -> isize;
     pub fn drm_dp_dual_mode_detect(
@@ -116,7 +116,7 @@ extern "C" {
         adapter: *mut i2c_adapter,
         enable: bool,
     ) -> i32;
-    pub fn drm_dp_get_dual_mode_type_name(type_: drm_dp_dual_mode_type) -> *const core::ffi::c_char;
+    pub fn drm_dp_get_dual_mode_type_name(type_: drm_dp_dual_mode_type) -> *const kernel::ffi::c_char;
     pub fn drm_lspcon_get_mode(
         dev: *const drm_device,
         adapter: *mut i2c_adapter,

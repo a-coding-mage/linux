@@ -17,7 +17,7 @@ pub struct ebt_limit_info {
     pub burst: u32,  /* Period multiplier for upper limit. */
 
     /* Used internally by the kernel */
-    pub prev: core::ffi::c_ulong,
+    pub prev: kernel::ffi::c_ulong,
     pub credit: u32,
     pub credit_cap: u32,
     pub cost: u32,

@@ -11,7 +11,7 @@
 
 #[repr(C)]
 struct S3c64xxPmDomain {
-    name: *mut core::ffi::c_char,
+    name: *mut kernel::ffi::c_char,
     ena: u32,
     pwr_stat: u32,
     pd: GenericPmDomain,

@@ -12,13 +12,13 @@ extern "C" {
     static mut prom_root_node: phandle;
 
     fn prom_getchild(node: phandle) -> phandle;
-    fn prom_searchsiblings(node: phandle, name: *const core::ffi::c_char) -> phandle;
-    fn prom_printf(fmt: *const core::ffi::c_char, ...);
+    fn prom_searchsiblings(node: phandle, name: *const kernel::ffi::c_char) -> phandle;
+    fn prom_printf(fmt: *const kernel::ffi::c_char, ...);
     fn prom_halt() -> !;
     fn prom_getproperty(
         node: phandle,
-        name: *const core::ffi::c_char,
-        value: *mut core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
+        value: *mut kernel::ffi::c_char,
         size: usize,
     ) -> i32;
     fn prom_apply_obio_ranges(regs: *mut linux_prom_registers, count: i32);
@@ -26,12 +26,12 @@ extern "C" {
         resource: *const resource,
         offset: usize,
         size: usize,
-        name: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_void;
-    fn sbus_readb(address: *mut core::ffi::c_void) -> u8;
-    fn sbus_writeb(value: u8, address: *mut core::ffi::c_void);
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn panic(fmt: *const core::ffi::c_char) -> !;
+        name: *const kernel::ffi::c_char,
+    ) -> *mut kernel::ffi::c_void;
+    fn sbus_readb(address: *mut kernel::ffi::c_void) -> u8;
+    fn sbus_writeb(value: u8, address: *mut kernel::ffi::c_void);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn panic(fmt: *const kernel::ffi::c_char) -> !;
     fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut usize);
     fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: usize);
 }
@@ -68,7 +68,7 @@ const AUXIO_ORMEIN4M: u8 = 0;
 const KERN_INFO: &[u8] = b"\x01";
 
 #[no_mangle]
-pub static mut auxio_register: *mut core::ffi::c_void = core::ptr::null_mut();
+pub static mut auxio_register: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut auxio_lock: spinlock_t = spinlock_t { _private: [] };
 
 pub unsafe extern "C" fn auxio_probe() {

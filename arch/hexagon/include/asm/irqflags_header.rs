@@ -9,7 +9,7 @@
 // <asm/hexagon_vm.h>
 // <linux/types.h>
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 extern "C" {
     fn __vmgetie() -> c_ulong;

@@ -9,7 +9,7 @@
 // C header dependencies: <asm/cpu_entry_area.h>, <asm/processor.h>,
 // <linux/mmzone.h>. This translation applies only when !MODULE.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     pub static mut cpu_entry_area_shadow: [c_char; CPU_ENTRY_AREA_SIZE];
@@ -27,9 +27,9 @@ extern "C" {
  */
 #[inline]
 pub unsafe fn arch_kmsan_get_meta_or_null(
-    addr: *mut core::ffi::c_void,
+    addr: *mut kernel::ffi::c_void,
     is_origin: bool,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     let addr64 = addr as usize;
     let metadata_array: *mut c_char;
     let off: usize;
@@ -50,7 +50,7 @@ pub unsafe fn arch_kmsan_get_meta_or_null(
     } else {
         cpu_entry_area_shadow.as_mut_ptr()
     };
-    per_cpu(metadata_array.add(off), cpu) as *mut core::ffi::c_void
+    per_cpu(metadata_array.add(off), cpu) as *mut kernel::ffi::c_void
 }
 
 /*
@@ -69,7 +69,7 @@ pub unsafe fn kmsan_phys_addr_valid(addr: usize) -> bool {
  * Taken from arch/x86/mm/physaddr.c to avoid using an instrumented version.
  */
 #[inline]
-pub unsafe fn kmsan_virt_addr_valid(addr: *mut core::ffi::c_void) -> bool {
+pub unsafe fn kmsan_virt_addr_valid(addr: *mut kernel::ffi::c_void) -> bool {
     let mut x = addr as usize;
     let mut y = x.wrapping_sub(__START_KERNEL_map);
     let ret: bool;

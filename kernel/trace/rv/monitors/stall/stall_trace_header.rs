@@ -10,10 +10,10 @@ DEFINE_EVENT!(
     event_da_monitor_id,
     event_stall,
     TP_PROTO!(
-        id: ::core::ffi::c_int,
-        state: *mut ::core::ffi::c_char,
-        event: *mut ::core::ffi::c_char,
-        next_state: *mut ::core::ffi::c_char,
+        id: ::kernel::ffi::c_int,
+        state: *mut ::kernel::ffi::c_char,
+        event: *mut ::kernel::ffi::c_char,
+        next_state: *mut ::kernel::ffi::c_char,
         final_state: bool
     ),
     TP_ARGS!(id, state, event, next_state, final_state)
@@ -24,9 +24,9 @@ DEFINE_EVENT!(
     error_da_monitor_id,
     error_stall,
     TP_PROTO!(
-        id: ::core::ffi::c_int,
-        state: *mut ::core::ffi::c_char,
-        event: *mut ::core::ffi::c_char
+        id: ::kernel::ffi::c_int,
+        state: *mut ::kernel::ffi::c_char,
+        event: *mut ::kernel::ffi::c_char
     ),
     TP_ARGS!(id, state, event)
 );
@@ -36,10 +36,10 @@ DEFINE_EVENT!(
     error_env_da_monitor_id,
     error_env_stall,
     TP_PROTO!(
-        id: ::core::ffi::c_int,
-        state: *mut ::core::ffi::c_char,
-        event: *mut ::core::ffi::c_char,
-        env: *mut ::core::ffi::c_char
+        id: ::kernel::ffi::c_int,
+        state: *mut ::kernel::ffi::c_char,
+        event: *mut ::kernel::ffi::c_char,
+        env: *mut ::kernel::ffi::c_char
     ),
     TP_ARGS!(id, state, event, env)
 );

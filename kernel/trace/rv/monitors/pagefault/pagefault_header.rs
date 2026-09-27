@@ -23,9 +23,9 @@ pub enum ltl_atom {
 // static_assert(LTL_NUM_ATOM <= RV_MAX_LTL_ATOM);
 
 #[allow(non_snake_case)]
-unsafe fn ltl_atom_str(atom: ltl_atom) -> *const core::ffi::c_char {
+unsafe fn ltl_atom_str(atom: ltl_atom) -> *const kernel::ffi::c_char {
     static NAMES: [&[u8]; 2] = [b"pa\0", b"rt\0"];
-    NAMES[atom as usize].as_ptr() as *const core::ffi::c_char
+    NAMES[atom as usize].as_ptr() as *const kernel::ffi::c_char
 }
 
 #[repr(C)]

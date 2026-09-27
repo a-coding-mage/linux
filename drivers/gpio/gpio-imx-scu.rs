@@ -13,7 +13,7 @@ pub struct gpio_chip {
     pub base: i32,
     pub parent: *mut device,
     pub ngpio: usize,
-    pub label: *const core::ffi::c_char,
+    pub label: *const kernel::ffi::c_char,
     pub get: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>,
     pub set: Option<unsafe extern "C" fn(*mut gpio_chip, u32, i32)>,
     pub get_direction: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>,
@@ -41,12 +41,12 @@ pub struct platform_device {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct platform_driver_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
@@ -57,20 +57,20 @@ pub struct platform_driver {
 }
 
 extern "C" {
-    fn gpiochip_get_data(chip: *mut gpio_chip) -> *mut core::ffi::c_void;
+    fn gpiochip_get_data(chip: *mut gpio_chip) -> *mut kernel::ffi::c_void;
     fn imx_sc_misc_get_control(handle: *mut imx_sc_ipc, resource: u32,
                                 control: u32, level: *mut i32) -> i32;
     fn imx_sc_misc_set_control(handle: *mut imx_sc_ipc, resource: u32,
                                 control: u32, value: i32) -> i32;
     fn imx_scu_get_handle(handle: *mut *mut imx_sc_ipc) -> i32;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_mutex_init(dev: *mut device, lock: *mut mutex) -> i32;
-    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut core::ffi::c_void);
+    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut kernel::ffi::c_void);
     fn devm_gpiochip_add_data(dev: *mut device, chip: *mut gpio_chip,
-                              data: *mut core::ffi::c_void) -> i32;
+                              data: *mut kernel::ffi::c_void) -> i32;
     fn platform_driver_register(driver: *mut platform_driver) -> i32;
-    fn dev_name(dev: *mut device) -> *const core::ffi::c_char;
-    fn dev_err(dev: *mut device, format: *const core::ffi::c_char, ...);
+    fn dev_name(dev: *mut device) -> *const kernel::ffi::c_char;
+    fn dev_err(dev: *mut device, format: *const kernel::ffi::c_char, ...);
 }
 
 const GPIO_LINE_DIRECTION_OUT: i32 = 0;
@@ -151,8 +151,8 @@ unsafe extern "C" fn imx_scu_gpio_probe(pdev: *mut platform_device) -> i32 {
     gc.get = Some(imx_scu_gpio_get);
     gc.set = Some(imx_scu_gpio_set);
     gc.get_direction = Some(imx_scu_gpio_get_direction);
-    platform_set_drvdata(pdev, priv_ as *mut core::ffi::c_void);
-    devm_gpiochip_add_data(dev, gc, priv_ as *mut core::ffi::c_void)
+    platform_set_drvdata(pdev, priv_ as *mut kernel::ffi::c_void);
+    devm_gpiochip_add_data(dev, gc, priv_ as *mut kernel::ffi::c_void)
 }
 
 static mut imx_scu_gpio_dt_ids: [of_device_id; 2] = [

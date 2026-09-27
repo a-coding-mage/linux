@@ -49,7 +49,7 @@ const MRFIELD_GPIO_RANGES: [TngGpioPinrange; 26] = [
     TngGpioPinrange { pin_base: 190, npins: 2, gpio_base: 178 },
 ];
 
-unsafe fn mrfld_gpio_get_pinctrl_dev_name(priv_: *mut TngGpio) -> *const core::ffi::c_char {
+unsafe fn mrfld_gpio_get_pinctrl_dev_name(priv_: *mut TngGpio) -> *const kernel::ffi::c_char {
     let dev = (*priv_).dev;
     let adev = acpi_dev_get_first_match_dev(b"INTC1002\0".as_ptr() as *const _, core::ptr::null(), -1);
     let name;
@@ -67,7 +67,7 @@ unsafe fn mrfld_gpio_probe(pdev: *mut PciDev, _id: *const PciDeviceId) -> i32 {
     let mut priv_: *mut TngGpio;
     let mut gpio_base: u32;
     let mut irq_base: u32;
-    let base: *mut core::ffi::c_void;
+    let base: *mut kernel::ffi::c_void;
     let mut retval: i32;
 
     retval = pcim_enable_device(pdev);

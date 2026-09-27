@@ -7,7 +7,7 @@
 // The C header guard is omitted; Rust modules provide equivalent inclusion
 // protection.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Types and constants supplied by the surrounding kernel environment.
 #[repr(C)]
@@ -40,10 +40,10 @@ extern "C" {
     ) -> i32;
     pub fn xfile_destroy(xf: *mut xfile);
 
-    pub fn xfile_load(xf: *mut xfile, buf: *mut core::ffi::c_void, count: usize, pos: loff_t) -> i32;
+    pub fn xfile_load(xf: *mut xfile, buf: *mut kernel::ffi::c_void, count: usize, pos: loff_t) -> i32;
     pub fn xfile_store(
         xf: *mut xfile,
-        buf: *const core::ffi::c_void,
+        buf: *const kernel::ffi::c_void,
         count: usize,
         pos: loff_t,
     ) -> i32;

@@ -14,7 +14,7 @@ const HISI_RESET_OFFSET_MASK: u32 = 0xffff00;
 #[repr(C)]
 pub struct HisiResetController {
     pub lock: spinlock_t,
-    pub membase: *mut core::ffi::c_void,
+    pub membase: *mut kernel::ffi::c_void,
     pub rcdev: reset_controller_dev,
 }
 
@@ -39,10 +39,10 @@ unsafe extern "C" fn hisi_reset_of_xlate(
 
 unsafe extern "C" fn hisi_reset_assert(
     rcdev: *mut reset_controller_dev,
-    id: core::ffi::c_ulong,
+    id: kernel::ffi::c_ulong,
 ) -> i32 {
     let rstc = to_hisi_reset_controller(rcdev);
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let offset: u32 = ((id as u32 & HISI_RESET_OFFSET_MASK) >> HISI_RESET_OFFSET_SHIFT) as u32;
     let bit: u8 = (id as u32 & HISI_RESET_BIT_MASK) as u8;
 
@@ -58,10 +58,10 @@ unsafe extern "C" fn hisi_reset_assert(
 
 unsafe extern "C" fn hisi_reset_deassert(
     rcdev: *mut reset_controller_dev,
-    id: core::ffi::c_ulong,
+    id: kernel::ffi::c_ulong,
 ) -> i32 {
     let rstc = to_hisi_reset_controller(rcdev);
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let offset: u32 = ((id as u32 & HISI_RESET_OFFSET_MASK) >> HISI_RESET_OFFSET_SHIFT) as u32;
     let bit: u8 = (id as u32 & HISI_RESET_BIT_MASK) as u8;
 

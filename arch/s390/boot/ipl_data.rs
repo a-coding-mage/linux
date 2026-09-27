@@ -9,7 +9,7 @@ macro_rules! CCW0 {
     };
 }
 
-const PSW_MASK_DISABLED: _ = PSW_MASK_WAIT | PSW_MASK_EA | PSW_MASK_BA;
+const PSW_MASK_DISABLED: u64 = PSW_MASK_WAIT | PSW_MASK_EA | PSW_MASK_BA;
 
 #[repr(C)]
 struct ipl_lowcore {

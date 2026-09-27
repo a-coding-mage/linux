@@ -34,13 +34,13 @@ pub struct rpc_iostats {
 
     /* These counters give an idea about how many request transmissions are
      * required, on average, to complete that particular procedure. */
-    pub om_ops: core::ffi::c_ulong,
-    pub om_ntrans: core::ffi::c_ulong,
-    pub om_timeouts: core::ffi::c_ulong,
+    pub om_ops: kernel::ffi::c_ulong,
+    pub om_ntrans: kernel::ffi::c_ulong,
+    pub om_timeouts: kernel::ffi::c_ulong,
 
     /* Count of bytes sent and received for a given RPC procedure type. */
-    pub om_bytes_sent: core::ffi::c_ulonglong,
-    pub om_bytes_recv: core::ffi::c_ulonglong,
+    pub om_bytes_sent: kernel::ffi::c_ulonglong,
+    pub om_bytes_recv: kernel::ffi::c_ulonglong,
 
     /* Queued for transmission, RPC RTT, and RPC execution time. */
     pub om_queue: ktime_t,
@@ -48,7 +48,7 @@ pub struct rpc_iostats {
     pub om_execute: ktime_t,
 
     /* Count of operations that complete with tk_status < 0. */
-    pub om_error_status: core::ffi::c_ulong,
+    pub om_error_status: kernel::ffi::c_ulong,
 }
 // ____cacheline_aligned is a C build/layout attribute; alignment is supplied
 // by the surrounding target ABI when this declaration is integrated.

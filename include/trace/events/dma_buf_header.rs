@@ -3,12 +3,12 @@
 // The C tracepoint infrastructure and the types supplied by the included
 // kernel headers remain external dependencies.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /// Entry data shared by the `dma_buf` event class.
 #[repr(C)]
 pub struct DmaBufEntry {
-    pub exp_name: *const core::ffi::c_char,
+    pub exp_name: *const kernel::ffi::c_char,
     pub size: usize,
     pub ino: usize,
 }
@@ -16,8 +16,8 @@ pub struct DmaBufEntry {
 /// Entry data shared by the `dma_buf_attach_dev` event class.
 #[repr(C)]
 pub struct DmaBufAttachDevEntry {
-    pub dev_name: *const core::ffi::c_char,
-    pub exp_name: *const core::ffi::c_char,
+    pub dev_name: *const kernel::ffi::c_char,
+    pub exp_name: *const kernel::ffi::c_char,
     pub size: usize,
     pub ino: usize,
     pub attach: *mut c_void,
@@ -27,7 +27,7 @@ pub struct DmaBufAttachDevEntry {
 /// Entry data shared by the `dma_buf_fd` event class.
 #[repr(C)]
 pub struct DmaBufFdEntry {
-    pub exp_name: *const core::ffi::c_char,
+    pub exp_name: *const kernel::ffi::c_char,
     pub size: usize,
     pub ino: usize,
     pub fd: i32,

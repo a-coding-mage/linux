@@ -22,8 +22,8 @@ pub struct msqid_ds {
     pub msg_stime: __kernel_old_time_t, /* last msgsnd time */
     pub msg_rtime: __kernel_old_time_t, /* last msgrcv time */
     pub msg_ctime: __kernel_old_time_t, /* last change time */
-    pub msg_lcbytes: ::core::ffi::c_ulong, /* Reuse junk fields for 32 bit */
-    pub msg_lqbytes: ::core::ffi::c_ulong, /* ditto */
+    pub msg_lcbytes: ::kernel::ffi::c_ulong, /* Reuse junk fields for 32 bit */
+    pub msg_lqbytes: ::kernel::ffi::c_ulong, /* ditto */
     pub msg_cbytes: u16, /* current number of bytes on queue */
     pub msg_qnum: u16, /* number of messages in queue */
     pub msg_qbytes: u16, /* max number of bytes on queue */
@@ -37,7 +37,7 @@ pub struct msqid_ds {
 #[repr(C)]
 pub struct msgbuf {
     pub mtype: __kernel_long_t, /* type of message */
-    pub mtext: [::core::ffi::c_char; 1], /* message text */
+    pub mtext: [::kernel::ffi::c_char; 1], /* message text */
 }
 
 /* buffer for msgctl calls IPC_INFO, MSG_INFO */

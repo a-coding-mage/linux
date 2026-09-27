@@ -9,7 +9,7 @@ pub struct papr_location_code {
      * PAPR+ v2.13 12.3.2.4 Converged Location Code Rules - Length
      * Restrictions. 79 characters plus nul.
      */
-    pub str_: [core::ffi::c_char; 80],
+    pub str_: [kernel::ffi::c_char; 80],
 }
 
 /*

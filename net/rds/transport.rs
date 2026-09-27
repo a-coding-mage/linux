@@ -32,7 +32,7 @@
 
 // Linux kernel and local header dependencies are supplied by other translation units.
 
-static mut rds_trans_modules: [*const ::core::ffi::c_char; RDS_TRANS_COUNT] = [
+static mut rds_trans_modules: [*const ::kernel::ffi::c_char; RDS_TRANS_COUNT] = [
     /* RDS_TRANS_IB */ c"rds_rdma".as_ptr(),
     /* RDS_TRANS_GAP */ core::ptr::null(),
     /* RDS_TRANS_TCP */ c"rds_tcp".as_ptr(),

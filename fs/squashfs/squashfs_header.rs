@@ -21,60 +21,60 @@ extern "C" {
 pub fn squashfs_read_data(
     sb: *mut super_block,
     start: u64,
-    length: core::ffi::c_int,
+    length: kernel::ffi::c_int,
     next: *mut u64,
     actor: *mut squashfs_page_actor,
-) -> core::ffi::c_int;
+) -> kernel::ffi::c_int;
 
 /* cache.c */
 pub fn squashfs_cache_init(
-    name: *mut core::ffi::c_char,
-    entries: core::ffi::c_int,
-    block_size: core::ffi::c_int,
+    name: *mut kernel::ffi::c_char,
+    entries: kernel::ffi::c_int,
+    block_size: kernel::ffi::c_int,
 ) -> *mut squashfs_cache;
 pub fn squashfs_cache_delete(cache: *mut squashfs_cache);
 pub fn squashfs_cache_get(
     sb: *mut super_block,
     cache: *mut squashfs_cache,
     block: u64,
-    length: core::ffi::c_int,
+    length: kernel::ffi::c_int,
 ) -> *mut squashfs_cache_entry;
 pub fn squashfs_cache_put(entry: *mut squashfs_cache_entry);
 pub fn squashfs_copy_data(
-    buffer: *mut core::ffi::c_void,
+    buffer: *mut kernel::ffi::c_void,
     entry: *mut squashfs_cache_entry,
-    offset: core::ffi::c_int,
-    length: core::ffi::c_int,
-) -> core::ffi::c_int;
+    offset: kernel::ffi::c_int,
+    length: kernel::ffi::c_int,
+) -> kernel::ffi::c_int;
 pub fn squashfs_read_metadata(
     sb: *mut super_block,
-    buffer: *mut core::ffi::c_void,
+    buffer: *mut kernel::ffi::c_void,
     start: *mut u64,
-    length: *mut core::ffi::c_int,
-    block_size: core::ffi::c_int,
-) -> core::ffi::c_int;
+    length: *mut kernel::ffi::c_int,
+    block_size: kernel::ffi::c_int,
+) -> kernel::ffi::c_int;
 pub fn squashfs_get_fragment(
     sb: *mut super_block,
     block: u64,
-    length: core::ffi::c_int,
+    length: kernel::ffi::c_int,
 ) -> *mut squashfs_cache_entry;
 pub fn squashfs_get_datablock(
     sb: *mut super_block,
     block: u64,
-    length: core::ffi::c_int,
+    length: kernel::ffi::c_int,
 ) -> *mut squashfs_cache_entry;
 pub fn squashfs_read_table(
     sb: *mut super_block,
     start: u64,
-    length: core::ffi::c_int,
-) -> *mut core::ffi::c_void;
+    length: kernel::ffi::c_int,
+) -> *mut kernel::ffi::c_void;
 
 /* decompressor.c */
-pub fn squashfs_lookup_decompressor(index: core::ffi::c_int) -> *const squashfs_decompressor;
+pub fn squashfs_lookup_decompressor(index: kernel::ffi::c_int) -> *const squashfs_decompressor;
 pub fn squashfs_decompressor_setup(
     sb: *mut super_block,
     block_size: u16,
-) -> *mut core::ffi::c_void;
+) -> *mut kernel::ffi::c_void;
 
 /* decompressor_xxx.c */
 
@@ -84,20 +84,20 @@ pub fn squashfs_read_inode_lookup_table(
     sb: *mut super_block,
     start: u64,
     length: u64,
-    indexes: core::ffi::c_uint,
+    indexes: kernel::ffi::c_uint,
 ) -> *mut u64;
 
 /* fragment.c */
 pub fn squashfs_frag_lookup(
     sb: *mut super_block,
-    fragment: core::ffi::c_uint,
+    fragment: kernel::ffi::c_uint,
     block: *mut u64,
-) -> core::ffi::c_int;
+) -> kernel::ffi::c_int;
 pub fn squashfs_read_fragment_index_table(
     sb: *mut super_block,
     start: u64,
     length: u64,
-    indexes: core::ffi::c_uint,
+    indexes: kernel::ffi::c_uint,
 ) -> *mut u64;
 
 /* file.c */
@@ -112,16 +112,16 @@ pub fn squashfs_copy_cache(
 pub fn squashfs_readpage_block(
     folio: *mut folio,
     block: u64,
-    bsize: core::ffi::c_int,
-    expected: core::ffi::c_int,
-) -> core::ffi::c_int;
+    bsize: kernel::ffi::c_int,
+    expected: kernel::ffi::c_int,
+) -> kernel::ffi::c_int;
 
 /* id.c */
 pub fn squashfs_get_id(
     sb: *mut super_block,
-    index: core::ffi::c_uint,
-    id: *mut core::ffi::c_uint,
-) -> core::ffi::c_int;
+    index: kernel::ffi::c_uint,
+    id: *mut kernel::ffi::c_uint,
+) -> kernel::ffi::c_int;
 pub fn squashfs_read_id_index_table(
     sb: *mut super_block,
     start: u64,
@@ -133,14 +133,14 @@ pub fn squashfs_read_id_index_table(
 pub fn squashfs_iget(
     sb: *mut super_block,
     inode_number: i64,
-    inode_type: core::ffi::c_uint,
+    inode_type: kernel::ffi::c_uint,
 ) -> *mut inode;
-pub fn squashfs_read_inode(inode: *mut inode, inode_number: i64) -> core::ffi::c_int;
+pub fn squashfs_read_inode(inode: *mut inode, inode_number: i64) -> kernel::ffi::c_int;
 
 /* xattr.c */
 pub fn squashfs_listxattr(
     dentry: *mut dentry,
-    buffer: *mut core::ffi::c_char,
+    buffer: *mut kernel::ffi::c_char,
     size: usize,
 ) -> isize;
 
@@ -168,17 +168,17 @@ pub static squashfs_xattr_handlers: [*const xattr_handler; 0];
 pub struct squashfs_decompressor_thread_ops {
     pub create: Option<unsafe extern "C" fn(
         msblk: *mut squashfs_sb_info,
-        comp_opts: *mut core::ffi::c_void,
-    ) -> *mut core::ffi::c_void>,
+        comp_opts: *mut kernel::ffi::c_void,
+    ) -> *mut kernel::ffi::c_void>,
     pub destroy: Option<unsafe extern "C" fn(msblk: *mut squashfs_sb_info)>,
     pub decompress: Option<unsafe extern "C" fn(
         msblk: *mut squashfs_sb_info,
         bio: *mut bio,
-        offset: core::ffi::c_int,
-        length: core::ffi::c_int,
+        offset: kernel::ffi::c_int,
+        length: kernel::ffi::c_int,
         output: *mut squashfs_page_actor,
-    ) -> core::ffi::c_int>,
-    pub max_decompressors: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
+    pub max_decompressors: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
 }
 pub enum super_block {}
 pub enum squashfs_page_actor {}

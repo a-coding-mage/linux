@@ -14,7 +14,7 @@ const W1_CMD_WRITE_DATA: u8 = 0x6C;
  * 1-Wire slaves registers with addess 8 bit and data 8 bit
  */
 
-unsafe fn w1_reg_a8_v8_read(context: *mut core::ffi::c_void, reg: u32, val: *mut u32) -> i32 {
+unsafe fn w1_reg_a8_v8_read(context: *mut kernel::ffi::c_void, reg: u32, val: *mut u32) -> i32 {
     let dev = context as *mut device;
     let sl = container_of!(dev, w1_slave, dev);
     let mut ret: i32 = 0;
@@ -36,7 +36,7 @@ unsafe fn w1_reg_a8_v8_read(context: *mut core::ffi::c_void, reg: u32, val: *mut
     ret
 }
 
-unsafe fn w1_reg_a8_v8_write(context: *mut core::ffi::c_void, reg: u32, val: u32) -> i32 {
+unsafe fn w1_reg_a8_v8_write(context: *mut kernel::ffi::c_void, reg: u32, val: u32) -> i32 {
     let dev = context as *mut device;
     let sl = container_of!(dev, w1_slave, dev);
     let mut ret: i32 = 0;
@@ -62,7 +62,7 @@ unsafe fn w1_reg_a8_v8_write(context: *mut core::ffi::c_void, reg: u32, val: u32
  * 1-Wire slaves registers with addess 8 bit and data 16 bit
  */
 
-unsafe fn w1_reg_a8_v16_read(context: *mut core::ffi::c_void, reg: u32, val: *mut u32) -> i32 {
+unsafe fn w1_reg_a8_v16_read(context: *mut kernel::ffi::c_void, reg: u32, val: *mut u32) -> i32 {
     let dev = context as *mut device;
     let sl = container_of!(dev, w1_slave, dev);
     let mut ret: i32 = 0;
@@ -85,7 +85,7 @@ unsafe fn w1_reg_a8_v16_read(context: *mut core::ffi::c_void, reg: u32, val: *mu
     ret
 }
 
-unsafe fn w1_reg_a8_v16_write(context: *mut core::ffi::c_void, reg: u32, val: u32) -> i32 {
+unsafe fn w1_reg_a8_v16_write(context: *mut kernel::ffi::c_void, reg: u32, val: u32) -> i32 {
     let dev = context as *mut device;
     let sl = container_of!(dev, w1_slave, dev);
     let mut ret: i32 = 0;
@@ -112,7 +112,7 @@ unsafe fn w1_reg_a8_v16_write(context: *mut core::ffi::c_void, reg: u32, val: u3
  * 1-Wire slaves registers with addess 16 bit and data 16 bit
  */
 
-unsafe fn w1_reg_a16_v16_read(context: *mut core::ffi::c_void, reg: u32, val: *mut u32) -> i32 {
+unsafe fn w1_reg_a16_v16_read(context: *mut kernel::ffi::c_void, reg: u32, val: *mut u32) -> i32 {
     let dev = context as *mut device;
     let sl = container_of!(dev, w1_slave, dev);
     let mut ret: i32 = 0;
@@ -136,7 +136,7 @@ unsafe fn w1_reg_a16_v16_read(context: *mut core::ffi::c_void, reg: u32, val: *m
     ret
 }
 
-unsafe fn w1_reg_a16_v16_write(context: *mut core::ffi::c_void, reg: u32, val: u32) -> i32 {
+unsafe fn w1_reg_a16_v16_write(context: *mut kernel::ffi::c_void, reg: u32, val: u32) -> i32 {
     let dev = context as *mut device;
     let sl = container_of!(dev, w1_slave, dev);
     let mut ret: i32 = 0;
@@ -195,26 +195,26 @@ unsafe fn __regmap_init_w1(
     w1_dev: *mut device,
     config: *const regmap_config,
     lock_key: *mut lock_class_key,
-    lock_name: *const core::ffi::c_char,
+    lock_name: *const kernel::ffi::c_char,
 ) -> *mut regmap {
     let bus = regmap_get_w1_bus(w1_dev, config);
     if IS_ERR(bus) {
         return ERR_CAST(bus);
     }
-    __regmap_init(w1_dev, bus, w1_dev as *mut core::ffi::c_void, config, lock_key, lock_name)
+    __regmap_init(w1_dev, bus, w1_dev as *mut kernel::ffi::c_void, config, lock_key, lock_name)
 }
 
 unsafe fn __devm_regmap_init_w1(
     w1_dev: *mut device,
     config: *const regmap_config,
     lock_key: *mut lock_class_key,
-    lock_name: *const core::ffi::c_char,
+    lock_name: *const kernel::ffi::c_char,
 ) -> *mut regmap {
     let bus = regmap_get_w1_bus(w1_dev, config);
     if IS_ERR(bus) {
         return ERR_CAST(bus);
     }
-    __devm_regmap_init(w1_dev, bus, w1_dev as *mut core::ffi::c_void, config, lock_key, lock_name)
+    __devm_regmap_init(w1_dev, bus, w1_dev as *mut kernel::ffi::c_void, config, lock_key, lock_name)
 }
 
 // EXPORT_SYMBOL_GPL(__regmap_init_w1);

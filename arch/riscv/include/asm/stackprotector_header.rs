@@ -3,8 +3,8 @@
 // C header guard: _ASM_RISCV_STACKPROTECTOR_H
 
 extern "C" {
-    pub static mut __stack_chk_guard: ::core::ffi::c_ulong;
-    pub fn get_random_canary() -> ::core::ffi::c_ulong;
+    pub static mut __stack_chk_guard: ::kernel::ffi::c_ulong;
+    pub fn get_random_canary() -> ::kernel::ffi::c_ulong;
 }
 
 /*
@@ -18,7 +18,7 @@ extern "C" {
  */
 #[inline(always)]
 pub unsafe fn boot_init_stack_canary() {
-    let canary: ::core::ffi::c_ulong = get_random_canary();
+    let canary: ::kernel::ffi::c_ulong = get_random_canary();
 
     // TODO: translate the external `current` task pointer and its
     // `stack_canary` field when that dependency is available.

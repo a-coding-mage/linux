@@ -15,7 +15,7 @@ const REF2USB_EN_MASK: u32 = REF2USB_TX_EN | REF2USB_TX_LPF_EN | REF2USB_TX_OUT_
 #[repr(C)]
 struct mtk_ref2usb_tx {
     hw: clk_hw,
-    base_addr: *mut core::ffi::c_void,
+    base_addr: *mut kernel::ffi::c_void,
 }
 
 #[inline]
@@ -69,9 +69,9 @@ static mtk_ref2usb_tx_ops: clk_ops = clk_ops {
 };
 
 unsafe fn mtk_clk_register_ref2usb_tx(
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
-    reg: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
+    reg: *mut kernel::ffi::c_void,
 ) -> *mut clk_hw {
     let tx = kzalloc_obj::<mtk_ref2usb_tx>();
     if tx.is_null() {
@@ -90,7 +90,7 @@ unsafe fn mtk_clk_register_ref2usb_tx(
     let ret = clk_hw_register(core::ptr::null_mut(), &mut (*tx).hw);
 
     if ret != 0 {
-        kfree(tx as *mut core::ffi::c_void);
+        kfree(tx as *mut kernel::ffi::c_void);
         return err_ptr(ret);
     }
 
@@ -101,7 +101,7 @@ unsafe fn mtk_clk_unregister_ref2usb_tx(hw: *mut clk_hw) {
     let tx = to_mtk_ref2usb_tx(hw);
 
     clk_hw_unregister(hw);
-    kfree(tx as *mut core::ffi::c_void);
+    kfree(tx as *mut kernel::ffi::c_void);
 }
 
 // EXPORT_SYMBOL_GPL(mtk_clk_register_ref2usb_tx);

@@ -12,7 +12,7 @@ pub type uprobe_opcode_t = u32;
 
 #[repr(C)]
 pub struct arch_uprobe_task {
-    pub saved_trap_no: core::ffi::c_ulong,
+    pub saved_trap_no: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -25,13 +25,13 @@ pub union arch_uprobe__bindgen_ty_1 {
 pub struct arch_uprobe {
     pub __bindgen_anon_1: arch_uprobe__bindgen_ty_1,
     pub api: arch_probe_insn,
-    pub insn_size: core::ffi::c_ulong,
+    pub insn_size: kernel::ffi::c_ulong,
     pub simulate: bool,
 }
 
 extern "C" {
-    pub fn uprobe_breakpoint_handler(regs: *mut pt_regs) -> core::ffi::c_int;
-    pub fn uprobe_single_step_handler(regs: *mut pt_regs) -> core::ffi::c_int;
+    pub fn uprobe_breakpoint_handler(regs: *mut pt_regs) -> kernel::ffi::c_int;
+    pub fn uprobe_single_step_handler(regs: *mut pt_regs) -> kernel::ffi::c_int;
 }
 
 

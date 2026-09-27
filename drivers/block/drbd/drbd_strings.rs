@@ -9,7 +9,7 @@
   Copyright (C) 2003-2008, Lars Ellenberg <lars.ellenberg@linbit.com>.
 */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // The enum constants below are supplied by the translated DRBD headers.
 static DRBD_CONN_S_NAMES: &[(isize, &[u8])] = &[

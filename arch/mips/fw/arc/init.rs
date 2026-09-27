@@ -67,7 +67,7 @@ extern "C" {
     static mut fw_arg0: c_ulong;
     static mut fw_arg1: c_ulong;
 
-    fn printk(level: *const core::ffi::c_char, fmt: *const core::ffi::c_char, ...);
+    fn printk(level: *const kernel::ffi::c_char, fmt: *const kernel::ffi::c_char, ...);
     fn prom_init_cmdline(arg0: c_ulong, arg1: *mut LONG);
     fn prom_identify_arch();
     fn prom_meminit();

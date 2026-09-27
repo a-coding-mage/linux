@@ -13,24 +13,24 @@
 // The C header guard is omitted; Rust modules provide equivalent item scoping.
 
 unsafe extern "C" {
-    pub fn __ndelay(nsecs: core::ffi::c_ulong);
-    pub fn __udelay(usecs: core::ffi::c_ulong);
-    pub fn __delay(loops: core::ffi::c_ulong);
+    pub fn __ndelay(nsecs: kernel::ffi::c_ulong);
+    pub fn __udelay(usecs: kernel::ffi::c_ulong);
+    pub fn __delay(loops: kernel::ffi::c_ulong);
 }
 
 #[inline(always)]
-pub unsafe fn ndelay(n: core::ffi::c_ulong) {
+pub unsafe fn ndelay(n: kernel::ffi::c_ulong) {
     unsafe { __ndelay(n) };
 }
 
 #[inline(always)]
-pub unsafe fn udelay(n: core::ffi::c_ulong) {
+pub unsafe fn udelay(n: kernel::ffi::c_ulong) {
     unsafe { __udelay(n) };
 }
 
 #[inline(always)]
-pub unsafe fn mdelay(n: core::ffi::c_ulong) {
-    unsafe { __udelay(n.wrapping_mul(1000 as core::ffi::c_ulong)) };
+pub unsafe fn mdelay(n: kernel::ffi::c_ulong) {
+    unsafe { __udelay(n.wrapping_mul(1000 as kernel::ffi::c_ulong)) };
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

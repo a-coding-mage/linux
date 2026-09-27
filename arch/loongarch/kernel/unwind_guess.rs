@@ -6,7 +6,7 @@
 // Declarations supplied by <asm/unwind.h> and related kernel headers.
 #[repr(C)]
 pub struct unwind_state {
-    pub pc: ::core::ffi::c_ulong,
+    pub pc: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -20,18 +20,18 @@ pub struct pt_regs {
 }
 
 unsafe extern "C" {
-    fn __unwind_get_return_address(state: *mut unwind_state) -> ::core::ffi::c_ulong;
+    fn __unwind_get_return_address(state: *mut unwind_state) -> ::kernel::ffi::c_ulong;
     fn __unwind_start(
         state: *mut unwind_state,
         task: *mut task_struct,
         regs: *mut pt_regs,
     );
     fn unwind_done(state: *mut unwind_state) -> bool;
-    fn __kernel_text_address(addr: ::core::ffi::c_ulong) -> bool;
+    fn __kernel_text_address(addr: ::kernel::ffi::c_ulong) -> bool;
     fn default_next_frame(state: *mut unwind_state) -> bool;
 }
 
-pub unsafe fn unwind_get_return_address(state: *mut unwind_state) -> ::core::ffi::c_ulong {
+pub unsafe fn unwind_get_return_address(state: *mut unwind_state) -> ::kernel::ffi::c_ulong {
     unsafe { __unwind_get_return_address(state) }
 }
 

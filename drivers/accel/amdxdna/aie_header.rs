@@ -106,16 +106,16 @@ pub struct aie_bar_off_pair {
 
 #[repr(C)]
 pub struct smu_config {
-    pub smu_regs: [*mut core::ffi::c_void; SMU_MAX_REGS as usize],
+    pub smu_regs: [*mut kernel::ffi::c_void; SMU_MAX_REGS as usize],
 }
 
 #[repr(C)]
 pub struct psp_config {
-    pub fw_buf: *const core::ffi::c_void,
+    pub fw_buf: *const kernel::ffi::c_void,
     pub fw_size: u32,
-    pub certfw_buf: *const core::ffi::c_void,
+    pub certfw_buf: *const kernel::ffi::c_void,
     pub certfw_size: u32,
-    pub psp_regs: [*mut core::ffi::c_void; PSP_MAX_REGS as usize],
+    pub psp_regs: [*mut kernel::ffi::c_void; PSP_MAX_REGS as usize],
     pub arg2_mask: u32,
     pub notify_val: u32,
 }
@@ -124,7 +124,7 @@ pub struct psp_config {
 #[repr(C)]
 pub struct amdxdna_rev_vbnv {
     pub revision: u32,
-    pub vbnv: *const core::ffi::c_char,
+    pub vbnv: *const kernel::ffi::c_char,
 }
 
 unsafe extern "C" {
@@ -143,11 +143,11 @@ unsafe extern "C" {
         xdna: *mut amdxdna_dev,
         size: *mut u32,
         dma_addr: *mut dma_addr_t,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn amdxdna_free_msg_buffer(
         xdna: *mut amdxdna_dev,
         size: usize,
-        cpu_addr: *mut core::ffi::c_void,
+        cpu_addr: *mut kernel::ffi::c_void,
         dma_addr: dma_addr_t,
     );
 

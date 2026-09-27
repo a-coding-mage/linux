@@ -545,7 +545,7 @@ pub extern "C" fn path_name(
 
     unsafe {
         if (*path).dentry == aa_null.dentry {
-            return -libc::EACCES;
+            return -EACCES;
         }
 
         error = aa_path_name(
@@ -655,7 +655,7 @@ pub extern "C" fn __aa_path_perm(
 
         aa_str_perms((*rules).file, 0, name, cond, perms); // TODO: start[AA_CLASS_FILE]
         if request & !(*perms).allow != 0 {
-            e = -libc::EACCES;
+            e = -EACCES;
         }
         aa_audit_file(
             subj_cred,
@@ -737,7 +737,7 @@ pub extern "C" fn aa_path_perm(
         let flags = flags | PATH_DELEGATE_DELETED | if s_isdir((*cond).mode) { PATH_IS_DIR } else { 0 };
         buffer = aa_get_buffer(false);
         if buffer.is_null() {
-            return -libc::ENOMEM;
+            return -ENOMEM;
         }
         error = fn_for_each_confined(label, |profile| {
             profile_path_perm(op, subj_cred, profile, path, buffer, request, cond, flags, &mut perms)
@@ -817,7 +817,7 @@ pub extern "C" fn profile_path_link(
             goto_audit!(error, 412);
         }
 
-        error = -libc::EACCES;
+        error = -EACCES;
         state = aa_str_perms((*rules).file, 0, lname, cond, &mut lperms); // TODO: start[AA_CLASS_FILE]
 
         if (lperms.allow & AA_MAY_LINK) == 0 {
@@ -930,7 +930,7 @@ pub extern "C" fn aa_path_link(
 
         buffer = aa_get_buffer(false);
         buffer2 = aa_get_buffer(false);
-        error = -libc::ENOMEM;
+        error = -ENOMEM;
         if buffer.is_null() || buffer2.is_null() {
             goto_label!(out);
         }
@@ -1007,7 +1007,7 @@ pub extern "C" fn __file_path_perm(
         flags = PATH_DELEGATE_DELETED | if s_isdir(cond.mode) { PATH_IS_DIR } else { 0 };
         buffer = aa_get_buffer(in_atomic);
         if buffer.is_null() {
-            return -libc::ENOMEM;
+            return -ENOMEM;
         }
 
         error = fn_for_each_not_in_set(flabel, label, |profile| {
@@ -1159,7 +1159,7 @@ pub extern "C" fn aa_file_perm(
         aa_bug(file.is_null());
 
         if (*file).f_path.dentry == aa_null.dentry {
-            return -libc::EACCES;
+            return -EACCES;
         }
 
         fctx = file_ctx(file);

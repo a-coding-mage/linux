@@ -20,7 +20,7 @@ static mut AOE_ERRLIST: [&'static [u8]; 6] = [
 
 const IFLISTSZ: usize = 1024;
 
-static mut aoe_iflist: [libc::c_char; IFLISTSZ] = [0; IFLISTSZ];
+static mut aoe_iflist: [kernel::ffi::c_char; IFLISTSZ] = [0; IFLISTSZ];
 // module_param_string(aoe_iflist, aoe_iflist, IFLISTSZ, 0600);
 // MODULE_PARM_DESC(aoe_iflist, "aoe_iflist=dev1[,dev2...]");
 
@@ -28,7 +28,7 @@ static mut txwq: wait_queue_head_t = unsafe { core::mem::zeroed() };
 static mut kts: ktstate = unsafe { core::mem::zeroed() };
 
 // #ifndef MODULE
-unsafe extern "C" fn aoe_iflist_setup(str_: *mut libc::c_char) -> libc::c_int {
+unsafe extern "C" fn aoe_iflist_setup(str_: *mut kernel::ffi::c_char) -> kernel::ffi::c_int {
     strscpy(aoe_iflist.as_mut_ptr(), str_, IFLISTSZ);
     1
 }
@@ -39,7 +39,7 @@ static mut txlock: spinlock_t = unsafe { core::mem::zeroed() };
 static mut skbtxq: sk_buff_head = unsafe { core::mem::zeroed() };
 
 /* enters with txlock held */
-unsafe fn tx(_id: libc::c_int) -> libc::c_int {
+unsafe fn tx(_id: kernel::ffi::c_int) -> kernel::ffi::c_int {
     let mut skb: *mut sk_buff;
     let mut ifp: *mut net_device;
 
@@ -51,9 +51,9 @@ unsafe fn tx(_id: libc::c_int) -> libc::c_int {
         ifp = (*skb).dev;
         if dev_queue_xmit(skb) == NET_XMIT_DROP && net_ratelimit() != 0 {
             pr_warn(
-                b"aoe: packet could not be sent on %s.  %s\n\0".as_ptr() as *const libc::c_char,
-                if !ifp.is_null() { (*ifp).name.as_ptr() } else { b"netif\0".as_ptr() as *const libc::c_char },
-                b"consider increasing tx_queue_len\0".as_ptr() as *const libc::c_char,
+                b"aoe: packet could not be sent on %s.  %s\n\0".as_ptr() as *const kernel::ffi::c_char,
+                if !ifp.is_null() { (*ifp).name.as_ptr() } else { b"netif\0".as_ptr() as *const kernel::ffi::c_char },
+                b"consider increasing tx_queue_len\0".as_ptr() as *const kernel::ffi::c_char,
             );
         }
         dev_put(ifp);
@@ -62,7 +62,7 @@ unsafe fn tx(_id: libc::c_int) -> libc::c_int {
     0
 }
 
-unsafe fn is_aoe_netif(ifp: *mut net_device) -> libc::c_int {
+unsafe fn is_aoe_netif(ifp: *mut net_device) -> kernel::ffi::c_int {
     if aoe_iflist[0] == 0 {
         return 1;
     }
@@ -82,12 +82,12 @@ unsafe fn is_aoe_netif(ifp: *mut net_device) -> libc::c_int {
     0
 }
 
-unsafe fn set_aoe_iflist(user_str: *const libc::c_char, size: usize) -> libc::c_int {
+unsafe fn set_aoe_iflist(user_str: *const kernel::ffi::c_char, size: usize) -> kernel::ffi::c_int {
     if size >= IFLISTSZ {
         return -EINVAL;
     }
     if copy_from_user(aoe_iflist.as_mut_ptr(), user_str, size) != 0 {
-        printk(KERN_INFO, b"aoe: copy from user failed\n\0".as_ptr() as *const libc::c_char);
+        printk(c"\x016aoe: copy from user failed\n".as_ptr() as *const kernel::ffi::c_char);
         return -EFAULT;
     }
     aoe_iflist[size] = 0;
@@ -116,7 +116,7 @@ unsafe fn aoenet_rcv(
     ifp: *mut net_device,
     _pt: *mut packet_type,
     _orig_dev: *mut net_device,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let h: *mut aoe_hdr;
     let ah: *mut aoe_atahdr;
     let mut n: u32;
@@ -149,7 +149,7 @@ unsafe fn aoenet_rcv(
         n = (*h).err as u32;
         if n > NECODES as u32 { n = 0; }
         if net_ratelimit() != 0 {
-            printk(KERN_ERR, b"%s%d.%d@%s; ecode=%d '%s'\n\0".as_ptr() as *const libc::c_char,
+            printk(c"\x013%s%d.%d@%s; ecode=%d '%s'\n".as_ptr() as *const kernel::ffi::c_char,
                 b"aoe: error packet from \0".as_ptr(), get_unaligned_be16(&(*h).major),
                 (*h).minor, (*(*skb).dev).name.as_ptr(), (*h).err,
                 AOE_ERRLIST[n as usize].as_ptr());
@@ -160,7 +160,7 @@ unsafe fn aoenet_rcv(
         AOECMD_ATA => { skb = aoecmd_ata_rsp(skb); }
         AOECMD_CFG => { aoecmd_cfg_rsp(skb); }
         cmd if cmd >= AOECMD_VEND_MIN => {}
-        cmd => { pr_info(b"aoe: unknown AoE command type 0x%02x\n\0".as_ptr() as *const libc::c_char, cmd); }
+        cmd => { pr_info(b"aoe: unknown AoE command type 0x%02x\n\0".as_ptr() as *const kernel::ffi::c_char, cmd); }
     }
     if skb.is_null() { return 0; }
 exit:
@@ -173,7 +173,7 @@ static mut aoe_pt: packet_type = packet_type {
     func: Some(aoenet_rcv),
 };
 
-unsafe fn aoenet_init() -> libc::c_int {
+unsafe fn aoenet_init() -> kernel::ffi::c_int {
     skb_queue_head_init(&mut skbtxq);
     init_waitqueue_head(&mut txwq);
     spin_lock_init(&mut txlock);
@@ -181,7 +181,7 @@ unsafe fn aoenet_init() -> libc::c_int {
     kts.fn_ = Some(tx);
     kts.waitq = &mut txwq;
     kts.id = 0;
-    snprintf(kts.name.as_mut_ptr(), core::mem::size_of_val(&kts.name), b"aoe_tx%d\0".as_ptr() as *const libc::c_char, kts.id);
+    snprintf(kts.name.as_mut_ptr(), core::mem::size_of_val(&kts.name), b"aoe_tx%d\0".as_ptr() as *const kernel::ffi::c_char, kts.id);
     if aoe_ktstart(&mut kts) != 0 { return -EAGAIN; }
     dev_add_pack(&mut aoe_pt);
     0

@@ -37,12 +37,12 @@ pub const INFO: u32 = 1;
 static mut smbd_logging_class: u32 = 0;
 static mut smbd_logging_level: u32 = ERR;
 
-unsafe fn smbd_logging_needed(_sc: *mut smbdirect_socket, _private_ptr: *mut core::ffi::c_void, lvl: u32, cls: u32) -> bool {
+unsafe fn smbd_logging_needed(_sc: *mut smbdirect_socket, _private_ptr: *mut kernel::ffi::c_void, lvl: u32, cls: u32) -> bool {
     lvl <= smbd_logging_level || (cls & smbd_logging_class) != 0
 }
 
-unsafe fn smbd_logging_vaprintf(_sc: *mut smbdirect_socket, _func: *const core::ffi::c_char,
-                                _line: u32, _private_ptr: *mut core::ffi::c_void,
+unsafe fn smbd_logging_vaprintf(_sc: *mut smbdirect_socket, _func: *const kernel::ffi::c_char,
+                                _line: u32, _private_ptr: *mut kernel::ffi::c_void,
                                 _lvl: u32, _cls: u32, _vaf: *mut va_format) {}
 
 unsafe fn smbd_post_send_full_iter(sc: *mut smbdirect_socket, batch: *mut smbdirect_send_batch,
@@ -61,7 +61,7 @@ pub unsafe fn smbd_destroy(server: *mut TCP_Server_Info) {
     let info = (*server).smbd_conn;
     if info.is_null() { return; }
     smbdirect_socket_release((*info).socket);
-    kfree(info as *mut core::ffi::c_void);
+    kfree(info as *mut kernel::ffi::c_void);
     (*server).smbd_conn = core::ptr::null_mut();
 }
 

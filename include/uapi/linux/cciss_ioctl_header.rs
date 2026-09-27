@@ -19,7 +19,7 @@ pub struct cciss_coalint_struct {
     pub count: u32,
 }
 
-pub type NodeName_type = [core::ffi::c_char; 16];
+pub type NodeName_type = [kernel::ffi::c_char; 16];
 pub type Heartbeat_type = u32;
 
 pub const CISS_PARSCSIU2: u32 = 0x0001;
@@ -28,7 +28,7 @@ pub const CISS_FIBRE1G: u32 = 0x0100;
 pub const CISS_FIBRE2G: u32 = 0x0200;
 pub type BusTypes_type = u32;
 
-pub type FirmwareVer_type = [core::ffi::c_char; 4];
+pub type FirmwareVer_type = [kernel::ffi::c_char; 4];
 pub type DriverVer_type = u32;
 
 pub const MAX_KMALLOC_SIZE: usize = 128000;
@@ -55,8 +55,8 @@ pub struct BIG_IOCTL_Command_struct {
 #[repr(C)]
 pub struct LogvolInfo_struct {
     pub LunID: u32,
-    pub num_opens: core::ffi::c_int,
-    pub num_parts: core::ffi::c_int,
+    pub num_opens: kernel::ffi::c_int,
+    pub num_parts: kernel::ffi::c_int,
 }
 
 // no longer used... use REGNEWD instead
@@ -73,7 +73,7 @@ pub const CCISS_GETDRIVVER: u32 = _IOR(CCISS_IOC_MAGIC, 9, DriverVer_type);
 pub const CCISS_REVALIDVOLS: u32 = _IO(CCISS_IOC_MAGIC, 10);
 pub const CCISS_PASSTHRU: u32 = _IOWR(CCISS_IOC_MAGIC, 11, IOCTL_Command_struct);
 pub const CCISS_DEREGDISK: u32 = _IO(CCISS_IOC_MAGIC, 12);
-pub const CCISS_REGNEWDISK: u32 = _IOW(CCISS_IOC_MAGIC, 13, core::ffi::c_int);
+pub const CCISS_REGNEWDISK: u32 = _IOW(CCISS_IOC_MAGIC, 13, kernel::ffi::c_int);
 pub const CCISS_REGNEWD: u32 = _IO(CCISS_IOC_MAGIC, 14);
 pub const CCISS_RESCANDISK: u32 = _IO(CCISS_IOC_MAGIC, 16);
 pub const CCISS_GETLUNINFO: u32 = _IOR(CCISS_IOC_MAGIC, 17, LogvolInfo_struct);

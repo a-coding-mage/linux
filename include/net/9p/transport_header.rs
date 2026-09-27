@@ -22,7 +22,7 @@ pub const P9_RDMA_TIMEOUT: i32 = 30000; // 30 seconds
 #[repr(C)]
 pub struct p9_trans_module {
 	pub list: list_head,
-	pub name: *mut core::ffi::c_char, // name of transport
+	pub name: *mut kernel::ffi::c_char, // name of transport
 	pub maxsize: i32, // max message size of transport
 	pub pooled_rbuffers: bool,
 	pub def: bool, // this transport should be default
@@ -48,7 +48,7 @@ pub struct p9_trans_module {
 unsafe extern "C" {
 	pub fn v9fs_register_trans(m: *mut p9_trans_module);
 	pub fn v9fs_unregister_trans(m: *mut p9_trans_module);
-	pub fn v9fs_get_trans_by_name(s: *const core::ffi::c_char) -> *mut p9_trans_module;
+	pub fn v9fs_get_trans_by_name(s: *const kernel::ffi::c_char) -> *mut p9_trans_module;
 	pub fn v9fs_get_default_trans() -> *mut p9_trans_module;
 	pub fn v9fs_put_trans(m: *mut p9_trans_module);
 }

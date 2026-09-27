@@ -76,7 +76,7 @@ pub union otx2_cpt_encr_ctrl {
 
 #[repr(C)]
 pub struct otx2_cpt_cipher {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub value: u8,
 }
 

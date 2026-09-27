@@ -75,17 +75,17 @@ pub const CGRP_ATTACH_LOCK_PER_THREADGROUP: u32 = 2;
 
 #[cfg(CONFIG_CGROUPS)]
 #[repr(C)]
-pub struct cgroup_file { pub kn: *mut kernfs_node, pub notified_at: ::core::ffi::c_ulong, pub notify_timer: timer_list, pub lock: spinlock_t }
+pub struct cgroup_file { pub kn: *mut kernfs_node, pub notified_at: ::kernel::ffi::c_ulong, pub notify_timer: timer_list, pub lock: spinlock_t }
 
 #[cfg(CONFIG_CGROUPS)]
 #[repr(C)]
 pub struct cgroup_subsys_state {
     pub cgroup: *mut cgroup, pub ss: *mut cgroup_subsys, pub refcnt: percpu_ref,
     pub rstat_cpu: *mut css_rstat_cpu, pub sibling: list_head, pub children: list_head,
-    pub id: ::core::ffi::c_int, pub flags: u32, pub serial_nr: u64, pub online_cnt: atomic_t,
+    pub id: ::kernel::ffi::c_int, pub flags: u32, pub serial_nr: u64, pub online_cnt: atomic_t,
     pub destroy_work: work_struct, pub destroy_rwork: rcu_work, pub parent: *mut cgroup_subsys_state,
-    pub nr_descendants: ::core::ffi::c_int, pub nr_populated_csets: ::core::ffi::c_int,
-    pub nr_populated_children: ::core::ffi::c_int, pub kill_finish_work: work_struct,
+    pub nr_descendants: ::kernel::ffi::c_int, pub nr_populated_csets: ::kernel::ffi::c_int,
+    pub nr_populated_children: ::kernel::ffi::c_int, pub kill_finish_work: work_struct,
     pub rstat_flush_next: *mut cgroup_subsys_state,
 }
 
@@ -93,7 +93,7 @@ pub struct cgroup_subsys_state {
 #[repr(C)]
 pub struct css_set {
     pub subsys: [*mut cgroup_subsys_state; CGROUP_SUBSYS_COUNT], pub refcount: refcount_t,
-    pub dom_cset: *mut css_set, pub dfl_cgrp: *mut cgroup, pub nr_tasks: ::core::ffi::c_int,
+    pub dom_cset: *mut css_set, pub dfl_cgrp: *mut cgroup, pub nr_tasks: ::kernel::ffi::c_int,
     pub tasks: list_head, pub mg_tasks: list_head, pub dying_tasks: list_head, pub task_iters: list_head,
     pub e_cset_node: [list_head; CGROUP_SUBSYS_COUNT], pub threaded_csets: list_head,
     pub threaded_csets_node: list_head, pub hlist: hlist_node, pub cgrp_links: list_head,
@@ -120,22 +120,22 @@ pub struct cgroup_rstat_base_cpu {
 #[cfg(CONFIG_CGROUPS)]
 #[repr(C)]
 pub struct cgroup_freezer_state {
-    pub freeze: bool, pub e_freeze: bool, pub nr_frozen_descendants: ::core::ffi::c_int,
-    pub nr_frozen_tasks: ::core::ffi::c_int, pub freeze_seq: seqcount_spinlock_t,
+    pub freeze: bool, pub e_freeze: bool, pub nr_frozen_descendants: ::kernel::ffi::c_int,
+    pub nr_frozen_tasks: ::kernel::ffi::c_int, pub freeze_seq: seqcount_spinlock_t,
     pub freeze_start_nsec: u64, pub frozen_nsec: u64,
 }
 
 #[cfg(CONFIG_CGROUPS)]
 #[repr(C)]
 pub struct cgroup {
-    pub self_: cgroup_subsys_state, pub flags: ::core::ffi::c_ulong, pub level: ::core::ffi::c_int,
-    pub max_depth: ::core::ffi::c_int, pub nr_descendants: ::core::ffi::c_int,
-    pub nr_dying_descendants: ::core::ffi::c_int, pub max_descendants: ::core::ffi::c_int,
-    pub nr_populated_domain_children: ::core::ffi::c_int, pub nr_populated_threaded_children: ::core::ffi::c_int,
-    pub nr_threaded_children: ::core::ffi::c_int, pub kill_seq: u32, pub kn: *mut kernfs_node,
+    pub self_: cgroup_subsys_state, pub flags: ::kernel::ffi::c_ulong, pub level: ::kernel::ffi::c_int,
+    pub max_depth: ::kernel::ffi::c_int, pub nr_descendants: ::kernel::ffi::c_int,
+    pub nr_dying_descendants: ::kernel::ffi::c_int, pub max_descendants: ::kernel::ffi::c_int,
+    pub nr_populated_domain_children: ::kernel::ffi::c_int, pub nr_populated_threaded_children: ::kernel::ffi::c_int,
+    pub nr_threaded_children: ::kernel::ffi::c_int, pub kill_seq: u32, pub kn: *mut kernfs_node,
     pub procs_file: cgroup_file, pub events_file: cgroup_file, pub psi_files: [cgroup_file; NR_PSI_RESOURCES],
     pub subtree_control: u32, pub subtree_ss_mask: u32, pub old_subtree_control: u32, pub old_subtree_ss_mask: u32,
-    pub subsys: [*mut cgroup_subsys_state; CGROUP_SUBSYS_COUNT], pub nr_dying_subsys: [::core::ffi::c_int; CGROUP_SUBSYS_COUNT],
+    pub subsys: [*mut cgroup_subsys_state; CGROUP_SUBSYS_COUNT], pub nr_dying_subsys: [::kernel::ffi::c_int; CGROUP_SUBSYS_COUNT],
     pub root: *mut cgroup_root, pub cset_links: list_head, pub e_csets: [list_head; CGROUP_SUBSYS_COUNT],
     pub dom_cgrp: *mut cgroup, pub old_dom_cgrp: *mut cgroup, pub rstat_base_cpu: *mut cgroup_rstat_base_cpu,
     pub last_bstat: cgroup_base_stat, pub bstat: cgroup_base_stat, pub prev_cputime: prev_cputime,
@@ -148,28 +148,28 @@ pub struct cgroup {
 
 #[cfg(CONFIG_CGROUPS)]
 #[repr(C)]
-pub struct cgroup_root { pub kf_root: *mut kernfs_root, pub subsys_mask: u32, pub hierarchy_id: ::core::ffi::c_int, pub root_list: list_head, pub rcu: rcu_head, pub nr_cgrps: atomic_t, pub flags: u32, pub release_agent_path: [::core::ffi::c_char; PATH_MAX], pub name: [::core::ffi::c_char; MAX_CGROUP_ROOT_NAMELEN], pub cgrp: cgroup }
+pub struct cgroup_root { pub kf_root: *mut kernfs_root, pub subsys_mask: u32, pub hierarchy_id: ::kernel::ffi::c_int, pub root_list: list_head, pub rcu: rcu_head, pub nr_cgrps: atomic_t, pub flags: u32, pub release_agent_path: [::kernel::ffi::c_char; PATH_MAX], pub name: [::kernel::ffi::c_char; MAX_CGROUP_ROOT_NAMELEN], pub cgrp: cgroup }
 
 #[cfg(CONFIG_CGROUPS)]
 #[repr(C)]
 pub struct cftype {
-    pub name: [::core::ffi::c_char; MAX_CFTYPE_NAME], pub private: ::core::ffi::c_ulong, pub max_write_len: usize, pub flags: u32, pub file_offset: u32,
+    pub name: [::kernel::ffi::c_char; MAX_CFTYPE_NAME], pub private: ::kernel::ffi::c_ulong, pub max_write_len: usize, pub flags: u32, pub file_offset: u32,
     pub ss: *mut cgroup_subsys, pub node: list_head, pub kf_ops: *mut kernfs_ops,
-    pub open: Option<unsafe extern "C" fn(*mut kernfs_open_file) -> ::core::ffi::c_int>, pub release: Option<unsafe extern "C" fn(*mut kernfs_open_file)>,
+    pub open: Option<unsafe extern "C" fn(*mut kernfs_open_file) -> ::kernel::ffi::c_int>, pub release: Option<unsafe extern "C" fn(*mut kernfs_open_file)>,
     pub read_u64: Option<unsafe extern "C" fn(*mut cgroup_subsys_state, *mut cftype) -> u64>, pub read_s64: Option<unsafe extern "C" fn(*mut cgroup_subsys_state, *mut cftype) -> i64>,
-    pub seq_show: Option<unsafe extern "C" fn(*mut seq_file, *mut ::core::ffi::c_void) -> ::core::ffi::c_int>,
-    pub seq_start: Option<unsafe extern "C" fn(*mut seq_file, *mut loff_t) -> *mut ::core::ffi::c_void>, pub seq_next: Option<unsafe extern "C" fn(*mut seq_file, *mut ::core::ffi::c_void, *mut loff_t) -> *mut ::core::ffi::c_void>, pub seq_stop: Option<unsafe extern "C" fn(*mut seq_file, *mut ::core::ffi::c_void)>,
-    pub write_u64: Option<unsafe extern "C" fn(*mut cgroup_subsys_state, *mut cftype, u64) -> ::core::ffi::c_int>, pub write_s64: Option<unsafe extern "C" fn(*mut cgroup_subsys_state, *mut cftype, i64) -> ::core::ffi::c_int>,
-    pub write: Option<unsafe extern "C" fn(*mut kernfs_open_file, *mut ::core::ffi::c_char, usize, loff_t) -> isize>, pub poll: Option<unsafe extern "C" fn(*mut kernfs_open_file, *mut poll_table_struct) -> __poll_t>, pub lockdep_key: lock_class_key,
+    pub seq_show: Option<unsafe extern "C" fn(*mut seq_file, *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int>,
+    pub seq_start: Option<unsafe extern "C" fn(*mut seq_file, *mut loff_t) -> *mut ::kernel::ffi::c_void>, pub seq_next: Option<unsafe extern "C" fn(*mut seq_file, *mut ::kernel::ffi::c_void, *mut loff_t) -> *mut ::kernel::ffi::c_void>, pub seq_stop: Option<unsafe extern "C" fn(*mut seq_file, *mut ::kernel::ffi::c_void)>,
+    pub write_u64: Option<unsafe extern "C" fn(*mut cgroup_subsys_state, *mut cftype, u64) -> ::kernel::ffi::c_int>, pub write_s64: Option<unsafe extern "C" fn(*mut cgroup_subsys_state, *mut cftype, i64) -> ::kernel::ffi::c_int>,
+    pub write: Option<unsafe extern "C" fn(*mut kernfs_open_file, *mut ::kernel::ffi::c_char, usize, loff_t) -> isize>, pub poll: Option<unsafe extern "C" fn(*mut kernfs_open_file, *mut poll_table_struct) -> __poll_t>, pub lockdep_key: lock_class_key,
 }
 
 #[cfg(CONFIG_CGROUPS)]
 #[repr(C)]
 pub struct cgroup_subsys {
-    pub css_alloc: Option<unsafe extern "C" fn(*mut cgroup_subsys_state) -> *mut cgroup_subsys_state>, pub css_online: Option<unsafe extern "C" fn(*mut cgroup_subsys_state) -> ::core::ffi::c_int>, pub css_offline: Option<unsafe extern "C" fn(*mut cgroup_subsys_state)>, pub css_released: Option<unsafe extern "C" fn(*mut cgroup_subsys_state)>, pub css_free: Option<unsafe extern "C" fn(*mut cgroup_subsys_state)>, pub css_reset: Option<unsafe extern "C" fn(*mut cgroup_subsys_state)>, pub css_killed: Option<unsafe extern "C" fn(*mut cgroup_subsys_state)>, pub css_rstat_flush: Option<unsafe extern "C" fn(*mut cgroup_subsys_state, ::core::ffi::c_int)>,
-    pub css_extra_stat_show: Option<unsafe extern "C" fn(*mut seq_file, *mut cgroup_subsys_state) -> ::core::ffi::c_int>, pub css_local_stat_show: Option<unsafe extern "C" fn(*mut seq_file, *mut cgroup_subsys_state) -> ::core::ffi::c_int>,
-    pub can_attach: Option<unsafe extern "C" fn(*mut cgroup_taskset) -> ::core::ffi::c_int>, pub cancel_attach: Option<unsafe extern "C" fn(*mut cgroup_taskset)>, pub attach: Option<unsafe extern "C" fn(*mut cgroup_taskset)>, pub can_fork: Option<unsafe extern "C" fn(*mut task_struct, *mut css_set) -> ::core::ffi::c_int>, pub cancel_fork: Option<unsafe extern "C" fn(*mut task_struct, *mut css_set)>, pub fork: Option<unsafe extern "C" fn(*mut task_struct)>, pub exit: Option<unsafe extern "C" fn(*mut task_struct)>, pub release: Option<unsafe extern "C" fn(*mut task_struct)>, pub bind: Option<unsafe extern "C" fn(*mut cgroup_subsys_state)>,
-    pub early_init: bool, pub implicit_on_dfl: bool, pub threaded: bool, pub id: ::core::ffi::c_int, pub name: *const ::core::ffi::c_char, pub legacy_name: *const ::core::ffi::c_char, pub root: *mut cgroup_root, pub css_idr: idr, pub cfts: list_head, pub dfl_cftypes: *mut cftype, pub legacy_cftypes: *mut cftype, pub depends_on: u32, pub rstat_ss_lock: spinlock_t, pub lhead: *mut llist_head,
+    pub css_alloc: Option<unsafe extern "C" fn(*mut cgroup_subsys_state) -> *mut cgroup_subsys_state>, pub css_online: Option<unsafe extern "C" fn(*mut cgroup_subsys_state) -> ::kernel::ffi::c_int>, pub css_offline: Option<unsafe extern "C" fn(*mut cgroup_subsys_state)>, pub css_released: Option<unsafe extern "C" fn(*mut cgroup_subsys_state)>, pub css_free: Option<unsafe extern "C" fn(*mut cgroup_subsys_state)>, pub css_reset: Option<unsafe extern "C" fn(*mut cgroup_subsys_state)>, pub css_killed: Option<unsafe extern "C" fn(*mut cgroup_subsys_state)>, pub css_rstat_flush: Option<unsafe extern "C" fn(*mut cgroup_subsys_state, ::kernel::ffi::c_int)>,
+    pub css_extra_stat_show: Option<unsafe extern "C" fn(*mut seq_file, *mut cgroup_subsys_state) -> ::kernel::ffi::c_int>, pub css_local_stat_show: Option<unsafe extern "C" fn(*mut seq_file, *mut cgroup_subsys_state) -> ::kernel::ffi::c_int>,
+    pub can_attach: Option<unsafe extern "C" fn(*mut cgroup_taskset) -> ::kernel::ffi::c_int>, pub cancel_attach: Option<unsafe extern "C" fn(*mut cgroup_taskset)>, pub attach: Option<unsafe extern "C" fn(*mut cgroup_taskset)>, pub can_fork: Option<unsafe extern "C" fn(*mut task_struct, *mut css_set) -> ::kernel::ffi::c_int>, pub cancel_fork: Option<unsafe extern "C" fn(*mut task_struct, *mut css_set)>, pub fork: Option<unsafe extern "C" fn(*mut task_struct)>, pub exit: Option<unsafe extern "C" fn(*mut task_struct)>, pub release: Option<unsafe extern "C" fn(*mut task_struct)>, pub bind: Option<unsafe extern "C" fn(*mut cgroup_subsys_state)>,
+    pub early_init: bool, pub implicit_on_dfl: bool, pub threaded: bool, pub id: ::kernel::ffi::c_int, pub name: *const ::kernel::ffi::c_char, pub legacy_name: *const ::kernel::ffi::c_char, pub root: *mut cgroup_root, pub css_idr: idr, pub cfts: list_head, pub dfl_cftypes: *mut cftype, pub legacy_cftypes: *mut cftype, pub depends_on: u32, pub rstat_ss_lock: spinlock_t, pub lhead: *mut llist_head,
 }
 
 #[cfg(CONFIG_CGROUPS)]
@@ -177,7 +177,7 @@ extern "C" { pub static mut cgroup_threadgroup_rwsem: percpu_rw_semaphore; pub s
 
 #[cfg(CONFIG_CGROUPS)]
 #[repr(C)]
-pub struct cgroup_of_peak { pub value: ::core::ffi::c_ulong, pub list: list_head }
+pub struct cgroup_of_peak { pub value: ::kernel::ffi::c_ulong, pub list: list_head }
 
 #[cfg(CONFIG_CGROUPS)]
 pub unsafe fn cgroup_threadgroup_change_begin(tsk: *mut task_struct) {

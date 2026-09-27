@@ -15,22 +15,22 @@
 // Dependencies supplied by the surrounding kernel build.
 
 extern "C" {
-    fn free_init_pages(name: *const core::ffi::c_char, begin: usize, end: usize);
+    fn free_init_pages(name: *const kernel::ffi::c_char, begin: usize, end: usize);
     fn __pa_symbol(address: *mut usize) -> usize;
 
     static mut free_init_pages_eva:
-        Option<unsafe extern "C" fn(begin: *mut core::ffi::c_void, end: *mut core::ffi::c_void)>;
+        Option<unsafe extern "C" fn(begin: *mut kernel::ffi::c_void, end: *mut kernel::ffi::c_void)>;
 }
 
 /* determined physical memory size, not overridden by command line args */
 pub static mut physical_memsize: usize = 0;
 
 unsafe extern "C" fn free_init_pages_eva_malta(
-    begin: *mut core::ffi::c_void,
-    end: *mut core::ffi::c_void,
+    begin: *mut kernel::ffi::c_void,
+    end: *mut kernel::ffi::c_void,
 ) {
     free_init_pages(
-        b"unused kernel\0".as_ptr() as *const core::ffi::c_char,
+        b"unused kernel\0".as_ptr() as *const kernel::ffi::c_char,
         __pa_symbol(begin as *mut usize),
         __pa_symbol(end as *mut usize),
     );

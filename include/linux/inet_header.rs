@@ -17,29 +17,29 @@ pub const INET_ADDRSTRLEN: usize = 16;
 pub const INET6_ADDRSTRLEN: usize = 48;
 
 extern "C" {
-    pub fn in_aton(str_: *const ::core::ffi::c_char) -> __be32;
+    pub fn in_aton(str_: *const ::kernel::ffi::c_char) -> __be32;
     pub fn in4_pton(
-        src: *const ::core::ffi::c_char,
-        srclen: ::core::ffi::c_int,
+        src: *const ::kernel::ffi::c_char,
+        srclen: ::kernel::ffi::c_int,
         dst: *mut u8,
-        delim: ::core::ffi::c_int,
-        end: *mut *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        delim: ::kernel::ffi::c_int,
+        end: *mut *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
     pub fn in6_pton(
-        src: *const ::core::ffi::c_char,
-        srclen: ::core::ffi::c_int,
+        src: *const ::kernel::ffi::c_char,
+        srclen: ::kernel::ffi::c_int,
         dst: *mut u8,
-        delim: ::core::ffi::c_int,
-        end: *mut *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        delim: ::kernel::ffi::c_int,
+        end: *mut *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn inet_pton_with_scope(
         net: *mut net,
         af: u16,
-        src: *const ::core::ffi::c_char,
-        port: *const ::core::ffi::c_char,
+        src: *const ::kernel::ffi::c_char,
+        port: *const ::kernel::ffi::c_char,
         addr: *mut sockaddr_storage,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn inet_addr_is_any(addr: *mut sockaddr_storage) -> bool;
 }
 

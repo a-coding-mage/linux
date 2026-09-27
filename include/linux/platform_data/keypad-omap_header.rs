@@ -21,11 +21,11 @@ pub unsafe fn omap_writew<T>(_val: T, _reg: T) {
 
 #[repr(C)]
 pub struct omap_kp_platform_data {
-    pub rows: core::ffi::c_int,
-    pub cols: core::ffi::c_int,
+    pub rows: kernel::ffi::c_int,
+    pub cols: kernel::ffi::c_int,
     pub keymap_data: *const matrix_keymap_data,
     pub rep: bool,
-    pub delay: core::ffi::c_ulong,
+    pub delay: kernel::ffi::c_ulong,
     pub dbounce: bool,
 }
 

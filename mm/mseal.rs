@@ -9,7 +9,7 @@
 
 // Kernel dependencies supplied by the surrounding translation unit.
 
-unsafe fn range_contains_unmapped(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong) -> bool {
+unsafe fn range_contains_unmapped(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong) -> bool {
     let mut vmi = VmaIterator::new(current().mm, start);
     let mut prev_end = start;
     let mut vma: *mut VmAreaStruct;
@@ -26,7 +26,7 @@ unsafe fn range_contains_unmapped(start: ::core::ffi::c_ulong, end: ::core::ffi:
     prev_end < end
 }
 
-unsafe fn __mseal_range(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong) -> i32 {
+unsafe fn __mseal_range(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong) -> i32 {
     let mut vmi = VmaIterator::new(current().mm, start);
     let mut vma: *mut VmAreaStruct;
     let mut prev: *mut VmAreaStruct;
@@ -69,7 +69,7 @@ unsafe fn __mseal_range(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong) 
     0
 }
 
-unsafe fn mseal_range(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong) -> i32 {
+unsafe fn mseal_range(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong) -> i32 {
     let mut err = mmap_write_lock_killable(current().mm);
     if err != 0 {
         return err;
@@ -121,12 +121,12 @@ pub unsafe fn mseal_mmap_page_zero() {
  * The flags parameter is currently reserved.
  */
 pub unsafe fn mseal(
-    mut start: ::core::ffi::c_ulong,
+    mut start: ::kernel::ffi::c_ulong,
     len: usize,
-    flags: ::core::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
 ) -> i64 {
     let len_aligned: usize;
-    let end: ::core::ffi::c_ulong;
+    let end: ::kernel::ffi::c_ulong;
 
     // Verify flags not set.
     if flags != 0 {
@@ -144,7 +144,7 @@ pub unsafe fn mseal(
         return -EINVAL as i64;
     }
 
-    end = start.wrapping_add(len_aligned as ::core::ffi::c_ulong);
+    end = start.wrapping_add(len_aligned as ::kernel::ffi::c_ulong);
     if end < start {
         return -EINVAL as i64;
     }

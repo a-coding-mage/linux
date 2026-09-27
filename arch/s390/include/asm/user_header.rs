@@ -50,19 +50,19 @@ pub struct user {
        from the ptrace(3,...) function.  */
     pub regs: user_regs_struct, /* Where the registers are actually stored */
     /* The rest of this junk is to help gdb figure out what goes where */
-    pub u_tsize: ::core::ffi::c_ulong, /* Text segment size (pages). */
-    pub u_dsize: ::core::ffi::c_ulong, /* Data segment size (pages). */
-    pub u_ssize: ::core::ffi::c_ulong, /* Stack segment size (pages). */
-    pub start_code: ::core::ffi::c_ulong, /* Starting virtual address of text. */
-    pub start_stack: ::core::ffi::c_ulong, /* Starting virtual address of stack area.
+    pub u_tsize: ::kernel::ffi::c_ulong, /* Text segment size (pages). */
+    pub u_dsize: ::kernel::ffi::c_ulong, /* Data segment size (pages). */
+    pub u_ssize: ::kernel::ffi::c_ulong, /* Stack segment size (pages). */
+    pub start_code: ::kernel::ffi::c_ulong, /* Starting virtual address of text. */
+    pub start_stack: ::kernel::ffi::c_ulong, /* Starting virtual address of stack area.
                                               This is actually the bottom of the stack,
                                               the top of the stack is always found in the
                                               esp register. */
-    pub signal: ::core::ffi::c_long, /* Signal that caused the core dump. */
-    pub u_ar0: ::core::ffi::c_ulong, /* Used by gdb to help find the values for
+    pub signal: ::kernel::ffi::c_long, /* Signal that caused the core dump. */
+    pub u_ar0: ::kernel::ffi::c_ulong, /* Used by gdb to help find the values for
                                         the registers. */
-    pub magic: ::core::ffi::c_ulong, /* To uniquely identify a core file */
-    pub u_comm: [::core::ffi::c_char; 32], /* User command that was responsible */
+    pub magic: ::kernel::ffi::c_ulong, /* To uniquely identify a core file */
+    pub u_comm: [::kernel::ffi::c_char; 32], /* User command that was responsible */
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

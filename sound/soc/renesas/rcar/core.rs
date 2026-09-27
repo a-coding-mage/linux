@@ -576,7 +576,7 @@ macro_rules! rsnd_dai_call {
                 if let Some(f) = (*(*mod_).ops).$fn_name { tmp = f(mod_, $io $(, $arg)*); }
             }
             if func_call < 0 || (tmp != 0 && tmp != -EPROBE_DEFER) {
-                dev_err(dev, b"%s : %s error (%d, %d)\n\0".as_ptr() as *const c_char, rsnd_mod_name(mod_), stringify!($fn_name).as_ptr(), tmp, func_call);
+                dev_err(dev, b"%s : %s error (%d, %d)\n\0".as_ptr() as *const c_char, rsnd_mod_name(mod_), concat!(stringify!($fn_name), "\0").as_ptr(), tmp, func_call);
             }
             ret |= tmp;
         }

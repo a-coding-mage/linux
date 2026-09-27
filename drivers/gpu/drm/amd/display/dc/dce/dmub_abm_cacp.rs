@@ -8,7 +8,7 @@ const CACP_LEVEL_NUM: usize = 4;
 
 pub unsafe fn dmub_cacp_init(
     abm: *mut abm,
-    src: *const core::ffi::c_char,
+    src: *const kernel::ffi::c_char,
     bytes: u32,
     panel_inst: u32,
 ) {

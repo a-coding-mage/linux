@@ -37,7 +37,7 @@ extern "C" {
         new_sg: *mut scatterlist,
         flags: u16,
         flags_shift: u8,
-        dd_flags: *mut core::ffi::c_ulong,
+        dd_flags: *mut kernel::ffi::c_ulong,
     ) -> i32;
 
     pub fn omap_crypto_cleanup(
@@ -46,7 +46,7 @@ extern "C" {
         offset: i32,
         len: i32,
         flags_shift: u8,
-        flags: core::ffi::c_ulong,
+        flags: kernel::ffi::c_ulong,
     );
 }
 

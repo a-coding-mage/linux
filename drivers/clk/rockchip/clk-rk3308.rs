@@ -924,7 +924,7 @@ static const char *const rk3308_critical_clocks[] __initconst = {
 static void __init rk3308_clk_init(device_node *np)
 {
 	struct rockchip_clk_provider *ctx;
-	core::ffi::c_ulong clk_nr_clks;
+	kernel::ffi::c_ulong clk_nr_clks;
 	void __iomem *reg_base;
 
 	reg_base = of_iomap(np, 0);

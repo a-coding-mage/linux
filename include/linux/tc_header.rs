@@ -48,11 +48,11 @@ pub struct tc_bus {
     pub devices: list_head,
     pub resource: [resource; 2],
     pub dev: device,
-    pub name: [core::ffi::c_char; 13],
+    pub name: [kernel::ffi::c_char; 13],
     pub slot_base: resource_size_t,
     pub ext_slot_base: resource_size_t,
     pub ext_slot_size: resource_size_t,
-    pub num_tcslots: core::ffi::c_int,
+    pub num_tcslots: kernel::ffi::c_int,
     pub info: tcinfo,
 }
 
@@ -64,11 +64,11 @@ pub struct tc_dev {
     pub dev: device,
     pub resource: resource,
     pub dma_mask: u64,
-    pub vendor: [core::ffi::c_char; 9],
-    pub name: [core::ffi::c_char; 9],
-    pub firmware: [core::ffi::c_char; 9],
-    pub interrupt: core::ffi::c_int,
-    pub slot: core::ffi::c_int,
+    pub vendor: [kernel::ffi::c_char; 9],
+    pub name: [kernel::ffi::c_char; 9],
+    pub firmware: [kernel::ffi::c_char; 9],
+    pub interrupt: kernel::ffi::c_int,
+    pub slot: kernel::ffi::c_int,
 }
 
 #[macro_export]
@@ -80,8 +80,8 @@ macro_rules! to_tc_dev {
 
 #[repr(C)]
 pub struct tc_device_id {
-    pub vendor: [core::ffi::c_char; 9],
-    pub name: [core::ffi::c_char; 9],
+    pub vendor: [kernel::ffi::c_char; 9],
+    pub name: [kernel::ffi::c_char; 9],
 }
 
 #[repr(C)]
@@ -99,24 +99,24 @@ macro_rules! to_tc_driver {
 }
 
 #[inline]
-pub unsafe fn tc_get_speed(tbus: *mut tc_bus) -> core::ffi::c_ulong {
+pub unsafe fn tc_get_speed(tbus: *mut tc_bus) -> kernel::ffi::c_ulong {
     100000u64
         .wrapping_mul(10000u64 / (*tbus).info.clk_period as u64)
-        as core::ffi::c_ulong
+        as kernel::ffi::c_ulong
 }
 
 // Under CONFIG_TC these are provided by the TURBOchannel bus implementation.
 #[cfg(CONFIG_TC)]
 extern "C" {
     pub static tc_bus_type: bus_type;
-    pub fn tc_register_driver(tdrv: *mut tc_driver) -> core::ffi::c_int;
+    pub fn tc_register_driver(tdrv: *mut tc_driver) -> kernel::ffi::c_int;
     pub fn tc_unregister_driver(tdrv: *mut tc_driver);
 }
 
 // !CONFIG_TC: registration is a no-op.
 #[cfg(not(CONFIG_TC))]
 #[inline]
-pub unsafe fn tc_register_driver(_tdrv: *mut tc_driver) -> core::ffi::c_int {
+pub unsafe fn tc_register_driver(_tdrv: *mut tc_driver) -> kernel::ffi::c_int {
     0
 }
 
@@ -125,8 +125,8 @@ pub unsafe fn tc_register_driver(_tdrv: *mut tc_driver) -> core::ffi::c_int {
 pub unsafe fn tc_unregister_driver(_tdrv: *mut tc_driver) {}
 
 extern "C" {
-    pub fn tc_preadb(valp: *mut u8, addr: *mut core::ffi::c_void) -> core::ffi::c_int;
-    pub fn tc_bus_get_info(tbus: *mut tc_bus) -> core::ffi::c_int;
+    pub fn tc_preadb(valp: *mut u8, addr: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    pub fn tc_bus_get_info(tbus: *mut tc_bus) -> kernel::ffi::c_int;
     pub fn tc_device_get_irq(tdev: *mut tc_dev);
 }
 

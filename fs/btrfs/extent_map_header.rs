@@ -4,7 +4,7 @@
 // linux/compiler_types.h, linux/spinlock_types.h, linux/rbtree.h,
 // linux/list.h, linux/refcount.h, and fs.h.
 
-use core::ffi::c_long;
+use kernel::ffi::c_long;
 
 pub const EXTENT_MAP_LAST_BYTE: u64 = u64::MAX - 3;
 pub const EXTENT_MAP_HOLE: u64 = u64::MAX - 2;

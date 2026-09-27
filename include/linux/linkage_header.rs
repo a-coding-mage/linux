@@ -40,9 +40,9 @@ macro_rules! __bss_pgtbl { ($item:item) => { $item }; }
 
 /* Assembly directives. */
 #[allow(unused_macros)]
-macro_rules! __PAGE_ALIGNED_DATA { () => { ".section \\".data..page_aligned\\", \\"aw\\"" }; }
+macro_rules! __PAGE_ALIGNED_DATA { () => { ".section \".data..page_aligned\", \"aw\"" }; }
 #[allow(unused_macros)]
-macro_rules! __PAGE_ALIGNED_BSS { () => { ".section \\".bss..page_aligned\\", \\"aw\\"" }; }
+macro_rules! __PAGE_ALIGNED_BSS { () => { ".section \".bss..page_aligned\", \"aw\"" }; }
 
 #[allow(unused_macros)]
 macro_rules! asmlinkage_protect { ($n:expr, $ret:expr $(, $args:expr)*) => {{ let _ = ($n, $ret); }}; }

@@ -42,7 +42,7 @@ pub struct clk {
  */
 #[repr(C)]
 pub struct st_slim_mem {
-    pub cpu_addr: *mut core::ffi::c_void,
+    pub cpu_addr: *mut kernel::ffi::c_void,
     pub bus_addr: usize,
     pub size: usize,
 }
@@ -59,8 +59,8 @@ pub struct st_slim_mem {
 pub struct st_slim_rproc {
     pub rproc: *mut rproc,
     pub mem: [st_slim_mem; ST_SLIM_MEM_MAX],
-    pub slimcore: *mut core::ffi::c_void,
-    pub peri: *mut core::ffi::c_void,
+    pub slimcore: *mut kernel::ffi::c_void,
+    pub peri: *mut kernel::ffi::c_void,
 
     /* st_slim_rproc private */
     pub clks: [*mut clk; ST_SLIM_MAX_CLK],
@@ -69,7 +69,7 @@ pub struct st_slim_rproc {
 unsafe extern "C" {
     pub fn st_slim_rproc_alloc(
         pdev: *mut platform_device,
-        fw_name: *mut core::ffi::c_char,
+        fw_name: *mut kernel::ffi::c_char,
     ) -> *mut st_slim_rproc;
     pub fn st_slim_rproc_put(slim_rproc: *mut st_slim_rproc);
 }

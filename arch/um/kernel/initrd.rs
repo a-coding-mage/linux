@@ -6,22 +6,22 @@
 // Kernel and UML dependencies supplied by other translation units.
 
 extern "C" {
-    static mut initrd_start: libc::c_ulong;
-    static mut initrd_end: libc::c_ulong;
+    static mut initrd_start: kernel::ffi::c_ulong;
+    static mut initrd_end: kernel::ffi::c_ulong;
 
     fn uml_load_file(
-        path: *mut libc::c_char,
-        size: *mut libc::c_ulonglong,
-    ) -> *mut libc::c_void;
+        path: *mut kernel::ffi::c_char,
+        size: *mut kernel::ffi::c_ulonglong,
+    ) -> *mut kernel::ffi::c_void;
 }
 
 /* Changed by uml_initrd_setup, which is a setup */
-static mut initrd: *mut libc::c_char = core::ptr::null_mut();
+static mut initrd: *mut kernel::ffi::c_char = core::ptr::null_mut();
 
-pub unsafe extern "C" fn read_initrd() -> libc::c_int
+pub unsafe extern "C" fn read_initrd() -> kernel::ffi::c_int
 {
-    let mut size = core::mem::MaybeUninit::<libc::c_ulonglong>::uninit();
-    let area: *mut libc::c_void;
+    let mut size = core::mem::MaybeUninit::<kernel::ffi::c_ulonglong>::uninit();
+    let area: *mut kernel::ffi::c_void;
 
     if initrd.is_null() {
         return 0;
@@ -32,15 +32,15 @@ pub unsafe extern "C" fn read_initrd() -> libc::c_int
         return 0;
     }
 
-    initrd_start = area as libc::c_ulong;
-    initrd_end = initrd_start.wrapping_add(size.assume_init() as libc::c_ulong);
+    initrd_start = area as kernel::ffi::c_ulong;
+    initrd_end = initrd_start.wrapping_add(size.assume_init() as kernel::ffi::c_ulong);
     0
 }
 
 unsafe extern "C" fn uml_initrd_setup(
-    line: *mut libc::c_char,
-    add: *mut libc::c_int,
-) -> libc::c_int
+    line: *mut kernel::ffi::c_char,
+    add: *mut kernel::ffi::c_int,
+) -> kernel::ffi::c_int
 {
     *add = 0;
     initrd = line;

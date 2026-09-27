@@ -2,7 +2,7 @@
 
 /* Dependencies supplied by <uapi/linux/ethtool.h> and "netlink.h". */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct ethnl_sock_priv {

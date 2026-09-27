@@ -15,7 +15,7 @@ pub struct geode_led {
 unsafe extern "C" {
     pub fn geode_create_restart_key(pin: u32) -> i32;
     pub fn geode_create_leds(
-        label: *const core::ffi::c_char,
+        label: *const kernel::ffi::c_char,
         leds: *const geode_led,
         n_leds: u32,
     ) -> i32;

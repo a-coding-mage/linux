@@ -88,10 +88,10 @@ static FREQ_DESC_LGM: freq_desc = freq_desc {
 
 /* X86_MATCH_VFM entries are supplied by the architecture CPU-ID definitions. */
 extern "C" {
-    fn x86_match_cpu(ids: *const core::ffi::c_void) -> *const core::ffi::c_void;
+    fn x86_match_cpu(ids: *const kernel::ffi::c_void) -> *const kernel::ffi::c_void;
     fn rdmsrq(msr: u32, value: *mut u64);
     fn setup_force_cpu_cap(cap: u32);
-    fn pr_err(format: *const core::ffi::c_char, ...);
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
     static mut lapic_timer_period: u32;
 }
 

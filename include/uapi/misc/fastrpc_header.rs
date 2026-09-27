@@ -72,18 +72,18 @@ pub struct fastrpc_ioctl_set_option { pub request_id: __u32, pub value: __u32, p
 pub struct fastrpc_ioctl_capability { pub unused: __u32, pub attribute_id: __u32, pub capability: __u32, pub reserved: [__u32; 4] }
 
 /* _IO/_IOWR values are supplied by the target Linux ioctl ABI. */
-pub const FASTRPC_IOCTL_INIT_ATTACH: libc::c_ulong = 0;
-pub const FASTRPC_IOCTL_INIT_ATTACH_SNS: libc::c_ulong = 0;
-pub const FASTRPC_IOCTL_ALLOC_DMA_BUFF: libc::c_ulong = 0;
-pub const FASTRPC_IOCTL_FREE_DMA_BUFF: libc::c_ulong = 0;
-pub const FASTRPC_IOCTL_INVOKE: libc::c_ulong = 0;
-pub const FASTRPC_IOCTL_INIT_CREATE: libc::c_ulong = 0;
-pub const FASTRPC_IOCTL_MMAP: libc::c_ulong = 0;
-pub const FASTRPC_IOCTL_MUNMAP: libc::c_ulong = 0;
-pub const FASTRPC_IOCTL_INIT_CREATE_STATIC: libc::c_ulong = 0;
-pub const FASTRPC_IOCTL_MEM_MAP: libc::c_ulong = 0;
-pub const FASTRPC_IOCTL_MEM_UNMAP: libc::c_ulong = 0;
-pub const FASTRPC_IOCTL_SET_OPTION: libc::c_ulong = 0;
-pub const FASTRPC_IOCTL_GET_DSP_INFO: libc::c_ulong = 0;
+pub const FASTRPC_IOCTL_INIT_ATTACH: kernel::ffi::c_ulong = 0;
+pub const FASTRPC_IOCTL_INIT_ATTACH_SNS: kernel::ffi::c_ulong = 0;
+pub const FASTRPC_IOCTL_ALLOC_DMA_BUFF: kernel::ffi::c_ulong = 0;
+pub const FASTRPC_IOCTL_FREE_DMA_BUFF: kernel::ffi::c_ulong = 0;
+pub const FASTRPC_IOCTL_INVOKE: kernel::ffi::c_ulong = 0;
+pub const FASTRPC_IOCTL_INIT_CREATE: kernel::ffi::c_ulong = 0;
+pub const FASTRPC_IOCTL_MMAP: kernel::ffi::c_ulong = 0;
+pub const FASTRPC_IOCTL_MUNMAP: kernel::ffi::c_ulong = 0;
+pub const FASTRPC_IOCTL_INIT_CREATE_STATIC: kernel::ffi::c_ulong = 0;
+pub const FASTRPC_IOCTL_MEM_MAP: kernel::ffi::c_ulong = 0;
+pub const FASTRPC_IOCTL_MEM_UNMAP: kernel::ffi::c_ulong = 0;
+pub const FASTRPC_IOCTL_SET_OPTION: kernel::ffi::c_ulong = 0;
+pub const FASTRPC_IOCTL_GET_DSP_INFO: kernel::ffi::c_ulong = 0;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

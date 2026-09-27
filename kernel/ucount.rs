@@ -45,9 +45,9 @@ static mut set_root: ctl_table_root = ctl_table_root {
 };
 
 #[cfg(CONFIG_SYSCTL)]
-static mut ue_zero: libc::c_long = 0;
+static mut ue_zero: kernel::ffi::c_long = 0;
 #[cfg(CONFIG_SYSCTL)]
-static mut ue_int_max: libc::c_long = INT_MAX as libc::c_long;
+static mut ue_int_max: kernel::ffi::c_long = INT_MAX as kernel::ffi::c_long;
 
 #[cfg(CONFIG_SYSCTL)]
 static user_table: &[ctl_table] = &[
@@ -148,7 +148,7 @@ pub unsafe fn put_ucounts(ucount: *mut ucounts) {
     }
 }
 
-unsafe fn atomic_long_inc_below(v: *mut atomic_long_t, u: libc::c_long) -> bool {
+unsafe fn atomic_long_inc_below(v: *mut atomic_long_t, u: kernel::ffi::c_long) -> bool {
     let mut c = atomic_long_read(v);
     loop {
         if c >= u { return false; }

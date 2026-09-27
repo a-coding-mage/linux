@@ -18,13 +18,13 @@ pub const BFS_MAX_LASTI: usize = 513;
  */
 #[repr(C)]
 pub struct bfs_sb_info {
-    pub si_blocks: ::core::ffi::c_ulong,
-    pub si_freeb: ::core::ffi::c_ulong,
-    pub si_freei: ::core::ffi::c_ulong,
-    pub si_lf_eblk: ::core::ffi::c_ulong,
-    pub si_lasti: ::core::ffi::c_ulong,
+    pub si_blocks: ::kernel::ffi::c_ulong,
+    pub si_freeb: ::kernel::ffi::c_ulong,
+    pub si_freei: ::kernel::ffi::c_ulong,
+    pub si_lf_eblk: ::kernel::ffi::c_ulong,
+    pub si_lasti: ::kernel::ffi::c_ulong,
     // C DECLARE_BITMAP(si_imap, BFS_MAX_LASTI+1); (bitmap word size is platform-defined)
-    pub si_imap: [::core::ffi::c_ulong; (BFS_MAX_LASTI + 1 + (::core::mem::size_of::<::core::ffi::c_ulong>() * 8 - 1)) / (::core::mem::size_of::<::core::ffi::c_ulong>() * 8)],
+    pub si_imap: [::kernel::ffi::c_ulong; (BFS_MAX_LASTI + 1 + (::core::mem::size_of::<::kernel::ffi::c_ulong>() * 8 - 1)) / (::core::mem::size_of::<::kernel::ffi::c_ulong>() * 8)],
     pub bfs_lock: crate::mutex,
 }
 
@@ -33,9 +33,9 @@ pub struct bfs_sb_info {
  */
 #[repr(C)]
 pub struct bfs_inode_info {
-    pub i_dsk_ino: ::core::ffi::c_ulong, /* inode number from the disk, can be 0 */
-    pub i_sblock: ::core::ffi::c_ulong,
-    pub i_eblock: ::core::ffi::c_ulong,
+    pub i_dsk_ino: ::kernel::ffi::c_ulong, /* inode number from the disk, can be 0 */
+    pub i_sblock: ::kernel::ffi::c_ulong,
+    pub i_eblock: ::kernel::ffi::c_ulong,
     pub i_metadata_bhs: crate::mapping_metadata_bhs,
     pub vfs_inode: crate::inode,
 }
@@ -54,8 +54,8 @@ pub unsafe fn BFS_I(inode: *mut crate::inode) -> *mut bfs_inode_info {
 
 /* inode.c */
 extern "C" {
-    pub fn bfs_iget(sb: *mut crate::super_block, ino: ::core::ffi::c_ulong) -> *mut crate::inode;
-    pub fn bfs_dump_imap(name: *const ::core::ffi::c_char, sb: *mut crate::super_block);
+    pub fn bfs_iget(sb: *mut crate::super_block, ino: ::kernel::ffi::c_ulong) -> *mut crate::inode;
+    pub fn bfs_dump_imap(name: *const ::kernel::ffi::c_char, sb: *mut crate::super_block);
 }
 
 /* file.c */

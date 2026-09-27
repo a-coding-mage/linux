@@ -41,36 +41,36 @@ pub const SNDRV_SEQ_MAX_EVENT_LEN: i32 = 0x3fffffff;
 #[repr(C)]
 pub struct snd_seq_port_callback {
     pub owner: *mut module,
-    pub private_data: *mut core::ffi::c_void,
-    pub subscribe: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut snd_seq_port_subscribe) -> i32>,
-    pub unsubscribe: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut snd_seq_port_subscribe) -> i32>,
-    pub use_: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut snd_seq_port_subscribe) -> i32>,
-    pub unuse: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut snd_seq_port_subscribe) -> i32>,
-    pub event_input: Option<unsafe extern "C" fn(*mut snd_seq_event, i32, *mut core::ffi::c_void, i32, i32) -> i32>,
-    pub private_free: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
+    pub private_data: *mut kernel::ffi::c_void,
+    pub subscribe: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut snd_seq_port_subscribe) -> i32>,
+    pub unsubscribe: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut snd_seq_port_subscribe) -> i32>,
+    pub use_: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut snd_seq_port_subscribe) -> i32>,
+    pub unuse: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut snd_seq_port_subscribe) -> i32>,
+    pub event_input: Option<unsafe extern "C" fn(*mut snd_seq_event, i32, *mut kernel::ffi::c_void, i32, i32) -> i32>,
+    pub private_free: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
     /*...*/
 }
 
 /* interface for kernel client */
 // C attribute: __printf(3, 4)
 unsafe extern "C" {
-    pub fn snd_seq_create_kernel_client(card: *mut snd_card, client_index: i32, name_fmt: *const core::ffi::c_char, ...) -> i32;
+    pub fn snd_seq_create_kernel_client(card: *mut snd_card, client_index: i32, name_fmt: *const kernel::ffi::c_char, ...) -> i32;
     pub fn snd_seq_delete_kernel_client(client: i32) -> i32;
     pub fn snd_seq_kernel_client_enqueue(client: i32, ev: *mut snd_seq_event, file: *mut file, blocking: bool) -> i32;
     pub fn snd_seq_kernel_client_dispatch(client: i32, ev: *mut snd_seq_event, atomic: i32, hop: i32) -> i32;
-    pub fn snd_seq_kernel_client_ctl(client: i32, cmd: u32, arg: *mut core::ffi::c_void) -> i32;
+    pub fn snd_seq_kernel_client_ctl(client: i32, cmd: u32, arg: *mut kernel::ffi::c_void) -> i32;
 }
 
 pub const SNDRV_SEQ_EXT_MASK: u32 = 0xc0000000;
 pub const SNDRV_SEQ_EXT_USRPTR: u32 = 0x80000000;
 pub const SNDRV_SEQ_EXT_CHAINED: u32 = 0x40000000;
 
-pub type snd_seq_dump_func_t = unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void, i32) -> i32;
+pub type snd_seq_dump_func_t = unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut kernel::ffi::c_void, i32) -> i32;
 
 unsafe extern "C" {
-    pub fn snd_seq_expand_var_event(event: *const snd_seq_event, count: i32, buf: *mut core::ffi::c_char, in_kernel: i32, size_aligned: i32) -> i32;
-    pub fn snd_seq_expand_var_event_at(event: *const snd_seq_event, count: i32, buf: *mut core::ffi::c_char, offset: i32) -> i32;
-    pub fn snd_seq_dump_var_event(event: *const snd_seq_event, func: snd_seq_dump_func_t, private_data: *mut core::ffi::c_void) -> i32;
+    pub fn snd_seq_expand_var_event(event: *const snd_seq_event, count: i32, buf: *mut kernel::ffi::c_char, in_kernel: i32, size_aligned: i32) -> i32;
+    pub fn snd_seq_expand_var_event_at(event: *const snd_seq_event, count: i32, buf: *mut kernel::ffi::c_char, offset: i32) -> i32;
+    pub fn snd_seq_dump_var_event(event: *const snd_seq_event, func: snd_seq_dump_func_t, private_data: *mut kernel::ffi::c_void) -> i32;
 }
 
 /* size of the event packet; it can be greater than snd_seq_event size */
@@ -88,7 +88,7 @@ unsafe extern "C" {
     pub fn snd_seq_set_queue_tempo(client: i32, tempo: *mut snd_seq_queue_tempo) -> i32;
 
     /* port attach/detach */
-    pub fn snd_seq_event_port_attach(client: i32, pcbp: *mut snd_seq_port_callback, cap: i32, type_: i32, midi_channels: i32, midi_voices: i32, portname: *mut core::ffi::c_char) -> i32;
+    pub fn snd_seq_event_port_attach(client: i32, pcbp: *mut snd_seq_port_callback, cap: i32, type_: i32, midi_channels: i32, midi_voices: i32, portname: *mut kernel::ffi::c_char) -> i32;
     pub fn snd_seq_event_port_detach(client: i32, port: i32) -> i32;
 }
 

@@ -19,7 +19,7 @@ pub struct k3_udma_glue_tx_channel_cfg {
 pub enum k3_udma_glue_tx_channel {}
 
 extern "C" {
-    pub fn k3_udma_glue_request_tx_chn(dev: *mut device, name: *const core::ffi::c_char, cfg: *mut k3_udma_glue_tx_channel_cfg) -> *mut k3_udma_glue_tx_channel;
+    pub fn k3_udma_glue_request_tx_chn(dev: *mut device, name: *const kernel::ffi::c_char, cfg: *mut k3_udma_glue_tx_channel_cfg) -> *mut k3_udma_glue_tx_channel;
     pub fn k3_udma_glue_request_tx_chn_for_thread_id(dev: *mut device, cfg: *mut k3_udma_glue_tx_channel_cfg, udmax_np: *mut device_node, thread_id: u32) -> *mut k3_udma_glue_tx_channel;
     pub fn k3_udma_glue_release_tx_chn(tx_chn: *mut k3_udma_glue_tx_channel);
     pub fn k3_udma_glue_push_tx_chn(tx_chn: *mut k3_udma_glue_tx_channel, desc_tx: *mut cppi5_host_desc_t, desc_dma: dma_addr_t) -> i32;
@@ -27,7 +27,7 @@ extern "C" {
     pub fn k3_udma_glue_enable_tx_chn(tx_chn: *mut k3_udma_glue_tx_channel) -> i32;
     pub fn k3_udma_glue_disable_tx_chn(tx_chn: *mut k3_udma_glue_tx_channel);
     pub fn k3_udma_glue_tdown_tx_chn(tx_chn: *mut k3_udma_glue_tx_channel, sync: bool);
-    pub fn k3_udma_glue_reset_tx_chn(tx_chn: *mut k3_udma_glue_tx_channel, data: *mut core::ffi::c_void, cleanup: Option<unsafe extern "C" fn(*mut core::ffi::c_void, dma_addr_t)>);
+    pub fn k3_udma_glue_reset_tx_chn(tx_chn: *mut k3_udma_glue_tx_channel, data: *mut kernel::ffi::c_void, cleanup: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, dma_addr_t)>);
     pub fn k3_udma_glue_tx_get_hdesc_size(tx_chn: *mut k3_udma_glue_tx_channel) -> u32;
     pub fn k3_udma_glue_tx_get_txcq_id(tx_chn: *mut k3_udma_glue_tx_channel) -> u32;
     pub fn k3_udma_glue_tx_get_irq(tx_chn: *mut k3_udma_glue_tx_channel) -> i32;
@@ -64,7 +64,7 @@ pub struct k3_udma_glue_rx_channel_cfg {
 pub enum k3_udma_glue_rx_channel {}
 
 extern "C" {
-    pub fn k3_udma_glue_request_rx_chn(dev: *mut device, name: *const core::ffi::c_char, cfg: *mut k3_udma_glue_rx_channel_cfg) -> *mut k3_udma_glue_rx_channel;
+    pub fn k3_udma_glue_request_rx_chn(dev: *mut device, name: *const kernel::ffi::c_char, cfg: *mut k3_udma_glue_rx_channel_cfg) -> *mut k3_udma_glue_rx_channel;
     pub fn k3_udma_glue_request_remote_rx_chn_for_thread_id(dev: *mut device, cfg: *mut k3_udma_glue_rx_channel_cfg, udmax_np: *mut device_node, thread_id: u32) -> *mut k3_udma_glue_rx_channel;
     pub fn k3_udma_glue_release_rx_chn(rx_chn: *mut k3_udma_glue_rx_channel);
     pub fn k3_udma_glue_enable_rx_chn(rx_chn: *mut k3_udma_glue_rx_channel) -> i32;
@@ -76,7 +76,7 @@ extern "C" {
     pub fn k3_udma_glue_rx_flow_get_fdq_id(rx_chn: *mut k3_udma_glue_rx_channel, flow_idx: u32) -> u32;
     pub fn k3_udma_glue_rx_get_flow_id_base(rx_chn: *mut k3_udma_glue_rx_channel) -> u32;
     pub fn k3_udma_glue_rx_get_irq(rx_chn: *mut k3_udma_glue_rx_channel, flow_num: u32) -> i32;
-    pub fn k3_udma_glue_reset_rx_chn(rx_chn: *mut k3_udma_glue_rx_channel, flow_num: u32, data: *mut core::ffi::c_void, cleanup: Option<unsafe extern "C" fn(*mut core::ffi::c_void, dma_addr_t)>);
+    pub fn k3_udma_glue_reset_rx_chn(rx_chn: *mut k3_udma_glue_rx_channel, flow_num: u32, data: *mut kernel::ffi::c_void, cleanup: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, dma_addr_t)>);
     pub fn k3_udma_glue_rx_flow_enable(rx_chn: *mut k3_udma_glue_rx_channel, flow_idx: u32) -> i32;
     pub fn k3_udma_glue_rx_flow_disable(rx_chn: *mut k3_udma_glue_rx_channel, flow_idx: u32) -> i32;
     pub fn k3_udma_glue_rx_get_dma_device(rx_chn: *mut k3_udma_glue_rx_channel) -> *mut device;

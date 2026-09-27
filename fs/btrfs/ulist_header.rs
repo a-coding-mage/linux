@@ -35,7 +35,7 @@ pub struct ulist_node {
 #[repr(C)]
 pub struct ulist {
     /* number of elements stored in list */
-    pub nnodes: core::ffi::c_ulong,
+    pub nnodes: kernel::ffi::c_ulong,
 
     pub nodes: list_head,
     pub root: rb_root,
@@ -49,15 +49,15 @@ extern "C" {
     pub fn ulist_alloc(gfp_mask: gfp_t) -> *mut ulist;
     pub fn ulist_prealloc(ulist: *mut ulist, mask: gfp_t);
     pub fn ulist_free(ulist: *mut ulist);
-    pub fn ulist_add(ulist: *mut ulist, val: u64, aux: u64, gfp_mask: gfp_t) -> core::ffi::c_int;
+    pub fn ulist_add(ulist: *mut ulist, val: u64, aux: u64, gfp_mask: gfp_t) -> kernel::ffi::c_int;
     pub fn ulist_add_merge(
         ulist: *mut ulist,
         val: u64,
         aux: u64,
         old_aux: *mut u64,
         gfp_mask: gfp_t,
-    ) -> core::ffi::c_int;
-    pub fn ulist_del(ulist: *mut ulist, val: u64, aux: u64) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
+    pub fn ulist_del(ulist: *mut ulist, val: u64, aux: u64) -> kernel::ffi::c_int;
 }
 
 /* just like ulist_add_merge() but take a pointer for the aux data */
@@ -65,15 +65,15 @@ extern "C" {
 pub unsafe fn ulist_add_merge_ptr(
     ulist: *mut ulist,
     val: u64,
-    aux: *mut core::ffi::c_void,
-    old_aux: *mut *mut core::ffi::c_void,
+    aux: *mut kernel::ffi::c_void,
+    old_aux: *mut *mut kernel::ffi::c_void,
     gfp_mask: gfp_t,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     #[cfg(target_pointer_width = "32")]
     {
         let mut old64: u64 = (*old_aux as usize) as u64;
         let ret = ulist_add_merge(ulist, val, aux as usize as u64, &mut old64, gfp_mask);
-        *old_aux = old64 as usize as *mut core::ffi::c_void;
+        *old_aux = old64 as usize as *mut kernel::ffi::c_void;
         ret
     }
     #[cfg(not(target_pointer_width = "32"))]

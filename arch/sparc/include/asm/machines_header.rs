@@ -8,7 +8,7 @@
 
 #[repr(C)]
 pub struct Sun_Machine_Models {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub id_machtype: u8,
 }
 

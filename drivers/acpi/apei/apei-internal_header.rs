@@ -6,7 +6,7 @@
 
 // C dependency: <linux/acpi.h>
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct apei_exec_context {

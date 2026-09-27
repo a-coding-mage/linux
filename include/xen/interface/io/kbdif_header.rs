@@ -82,7 +82,7 @@ pub union xenkbd_in_event {
     pub key: xenkbd_key,
     pub pos: xenkbd_position,
     pub mtouch: xenkbd_mtouch,
-    pub pad: [core::ffi::c_char; XENKBD_IN_EVENT_SIZE],
+    pub pad: [kernel::ffi::c_char; XENKBD_IN_EVENT_SIZE],
 }
 
 pub const XENKBD_OUT_EVENT_SIZE: usize = 40;
@@ -90,7 +90,7 @@ pub const XENKBD_OUT_EVENT_SIZE: usize = 40;
 #[repr(C)]
 pub union xenkbd_out_event {
     pub type_: u8,
-    pub pad: [core::ffi::c_char; XENKBD_OUT_EVENT_SIZE],
+    pub pad: [kernel::ffi::c_char; XENKBD_OUT_EVENT_SIZE],
 }
 
 pub const XENKBD_IN_RING_SIZE: usize = 2048;
@@ -98,11 +98,11 @@ pub const XENKBD_IN_RING_LEN: usize = XENKBD_IN_RING_SIZE / XENKBD_IN_EVENT_SIZE
 pub const XENKBD_IN_RING_OFFS: usize = 1024;
 
 #[inline]
-pub unsafe fn XENKBD_IN_RING(page: *mut core::ffi::c_char) -> *mut xenkbd_in_event {
+pub unsafe fn XENKBD_IN_RING(page: *mut kernel::ffi::c_char) -> *mut xenkbd_in_event {
     (page as *mut u8).add(XENKBD_IN_RING_OFFS) as *mut xenkbd_in_event
 }
 #[inline]
-pub unsafe fn XENKBD_IN_RING_REF(page: *mut core::ffi::c_char, idx: usize) -> *mut xenkbd_in_event {
+pub unsafe fn XENKBD_IN_RING_REF(page: *mut kernel::ffi::c_char, idx: usize) -> *mut xenkbd_in_event {
     XENKBD_IN_RING(page).add(idx % XENKBD_IN_RING_LEN)
 }
 
@@ -111,11 +111,11 @@ pub const XENKBD_OUT_RING_LEN: usize = XENKBD_OUT_RING_SIZE / XENKBD_OUT_EVENT_S
 pub const XENKBD_OUT_RING_OFFS: usize = XENKBD_IN_RING_OFFS + XENKBD_IN_RING_SIZE;
 
 #[inline]
-pub unsafe fn XENKBD_OUT_RING(page: *mut core::ffi::c_char) -> *mut xenkbd_out_event {
+pub unsafe fn XENKBD_OUT_RING(page: *mut kernel::ffi::c_char) -> *mut xenkbd_out_event {
     (page as *mut u8).add(XENKBD_OUT_RING_OFFS) as *mut xenkbd_out_event
 }
 #[inline]
-pub unsafe fn XENKBD_OUT_RING_REF(page: *mut core::ffi::c_char, idx: usize) -> *mut xenkbd_out_event {
+pub unsafe fn XENKBD_OUT_RING_REF(page: *mut kernel::ffi::c_char, idx: usize) -> *mut xenkbd_out_event {
     XENKBD_OUT_RING(page).add(idx % XENKBD_OUT_RING_LEN)
 }
 

@@ -61,41 +61,41 @@ pub enum lockdep_subclass_key {}
 
 extern "C" {
     pub static mut lock_chains: [lock_chain; 0];
-    pub fn get_usage_chars(class: *mut lock_class, usage: *mut core::ffi::c_char);
-    pub fn __get_key_name(key: *const lockdep_subclass_key, string: *mut core::ffi::c_char) -> *const core::ffi::c_char;
-    pub fn lock_chain_get_class(chain: *mut lock_chain, i: core::ffi::c_int) -> *mut lock_class;
-    pub static mut nr_lock_classes: core::ffi::c_ulong;
-    pub static mut nr_zapped_classes: core::ffi::c_ulong;
-    pub static mut nr_zapped_lock_chains: core::ffi::c_ulong;
-    pub static mut nr_list_entries: core::ffi::c_ulong;
-    pub static mut nr_dynamic_keys: core::ffi::c_ulong;
-    pub fn lockdep_next_lockchain(i: core::ffi::c_long) -> core::ffi::c_long;
-    pub fn lock_chain_count() -> core::ffi::c_ulong;
-    pub static mut nr_stack_trace_entries: core::ffi::c_ulong;
-    pub static mut nr_hardirq_chains: core::ffi::c_uint;
-    pub static mut nr_softirq_chains: core::ffi::c_uint;
-    pub static mut nr_process_chains: core::ffi::c_uint;
-    pub static mut nr_free_chain_hlocks: core::ffi::c_uint;
-    pub static mut nr_lost_chain_hlocks: core::ffi::c_uint;
-    pub static mut nr_large_chain_blocks: core::ffi::c_uint;
-    pub static mut max_lockdep_depth: core::ffi::c_uint;
-    pub static mut max_bfs_queue_depth: core::ffi::c_uint;
-    pub static mut max_lock_class_idx: core::ffi::c_ulong;
+    pub fn get_usage_chars(class: *mut lock_class, usage: *mut kernel::ffi::c_char);
+    pub fn __get_key_name(key: *const lockdep_subclass_key, string: *mut kernel::ffi::c_char) -> *const kernel::ffi::c_char;
+    pub fn lock_chain_get_class(chain: *mut lock_chain, i: kernel::ffi::c_int) -> *mut lock_class;
+    pub static mut nr_lock_classes: kernel::ffi::c_ulong;
+    pub static mut nr_zapped_classes: kernel::ffi::c_ulong;
+    pub static mut nr_zapped_lock_chains: kernel::ffi::c_ulong;
+    pub static mut nr_list_entries: kernel::ffi::c_ulong;
+    pub static mut nr_dynamic_keys: kernel::ffi::c_ulong;
+    pub fn lockdep_next_lockchain(i: kernel::ffi::c_long) -> kernel::ffi::c_long;
+    pub fn lock_chain_count() -> kernel::ffi::c_ulong;
+    pub static mut nr_stack_trace_entries: kernel::ffi::c_ulong;
+    pub static mut nr_hardirq_chains: kernel::ffi::c_uint;
+    pub static mut nr_softirq_chains: kernel::ffi::c_uint;
+    pub static mut nr_process_chains: kernel::ffi::c_uint;
+    pub static mut nr_free_chain_hlocks: kernel::ffi::c_uint;
+    pub static mut nr_lost_chain_hlocks: kernel::ffi::c_uint;
+    pub static mut nr_large_chain_blocks: kernel::ffi::c_uint;
+    pub static mut max_lockdep_depth: kernel::ffi::c_uint;
+    pub static mut max_bfs_queue_depth: kernel::ffi::c_uint;
+    pub static mut max_lock_class_idx: kernel::ffi::c_ulong;
     pub static mut lock_classes: [lock_class; 0];
-    pub static mut lock_classes_in_use: [core::ffi::c_ulong; 0];
+    pub static mut lock_classes_in_use: [kernel::ffi::c_ulong; 0];
 }
 
 #[cfg(not(CONFIG_PROVE_LOCKING))]
 #[inline]
-pub unsafe fn lockdep_count_forward_deps(_class: *mut lock_class) -> core::ffi::c_ulong { 0 }
+pub unsafe fn lockdep_count_forward_deps(_class: *mut lock_class) -> kernel::ffi::c_ulong { 0 }
 #[cfg(not(CONFIG_PROVE_LOCKING))]
 #[inline]
-pub unsafe fn lockdep_count_backward_deps(_class: *mut lock_class) -> core::ffi::c_ulong { 0 }
+pub unsafe fn lockdep_count_backward_deps(_class: *mut lock_class) -> kernel::ffi::c_ulong { 0 }
 
 #[cfg(CONFIG_PROVE_LOCKING)]
 extern "C" {
-    pub fn lockdep_count_forward_deps(class: *mut lock_class) -> core::ffi::c_ulong;
-    pub fn lockdep_count_backward_deps(class: *mut lock_class) -> core::ffi::c_ulong;
+    pub fn lockdep_count_forward_deps(class: *mut lock_class) -> kernel::ffi::c_ulong;
+    pub fn lockdep_count_backward_deps(class: *mut lock_class) -> kernel::ffi::c_ulong;
 }
 
 #[cfg(all(CONFIG_PROVE_LOCKING, CONFIG_TRACE_IRQFLAGS))]
@@ -107,23 +107,23 @@ extern "C" {
 #[cfg(CONFIG_DEBUG_LOCKDEP)]
 #[repr(C)]
 pub struct lockdep_stats {
-    pub chain_lookup_hits: core::ffi::c_ulong,
-    pub chain_lookup_misses: core::ffi::c_uint,
-    pub hardirqs_on_events: core::ffi::c_ulong,
-    pub hardirqs_off_events: core::ffi::c_ulong,
-    pub redundant_hardirqs_on: core::ffi::c_ulong,
-    pub redundant_hardirqs_off: core::ffi::c_ulong,
-    pub softirqs_on_events: core::ffi::c_ulong,
-    pub softirqs_off_events: core::ffi::c_ulong,
-    pub redundant_softirqs_on: core::ffi::c_ulong,
-    pub redundant_softirqs_off: core::ffi::c_ulong,
-    pub nr_unused_locks: core::ffi::c_int,
-    pub nr_redundant_checks: core::ffi::c_uint,
-    pub nr_redundant: core::ffi::c_uint,
-    pub nr_cyclic_checks: core::ffi::c_uint,
-    pub nr_find_usage_forwards_checks: core::ffi::c_uint,
-    pub nr_find_usage_backwards_checks: core::ffi::c_uint,
-    pub lock_class_ops: [core::ffi::c_ulong; 0],
+    pub chain_lookup_hits: kernel::ffi::c_ulong,
+    pub chain_lookup_misses: kernel::ffi::c_uint,
+    pub hardirqs_on_events: kernel::ffi::c_ulong,
+    pub hardirqs_off_events: kernel::ffi::c_ulong,
+    pub redundant_hardirqs_on: kernel::ffi::c_ulong,
+    pub redundant_hardirqs_off: kernel::ffi::c_ulong,
+    pub softirqs_on_events: kernel::ffi::c_ulong,
+    pub softirqs_off_events: kernel::ffi::c_ulong,
+    pub redundant_softirqs_on: kernel::ffi::c_ulong,
+    pub redundant_softirqs_off: kernel::ffi::c_ulong,
+    pub nr_unused_locks: kernel::ffi::c_int,
+    pub nr_redundant_checks: kernel::ffi::c_uint,
+    pub nr_redundant: kernel::ffi::c_uint,
+    pub nr_cyclic_checks: kernel::ffi::c_uint,
+    pub nr_find_usage_forwards_checks: kernel::ffi::c_uint,
+    pub nr_find_usage_backwards_checks: kernel::ffi::c_uint,
+    pub lock_class_ops: [kernel::ffi::c_ulong; 0],
 }
 
 #[cfg(CONFIG_DEBUG_LOCKDEP)]
@@ -141,7 +141,7 @@ pub unsafe fn debug_class_ops_inc(class: *mut lock_class) {
 
 #[cfg(CONFIG_DEBUG_LOCKDEP)]
 #[inline]
-pub unsafe fn debug_class_ops_read(class: *mut lock_class) -> core::ffi::c_ulong {
+pub unsafe fn debug_class_ops_read(class: *mut lock_class) -> kernel::ffi::c_ulong {
     let idx = class.offset_from(lock_classes.as_mut_ptr()) as usize;
     let _ = idx;
     /* Per-CPU summation is supplied by the external kernel infrastructure. */

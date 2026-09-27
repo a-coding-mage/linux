@@ -21,10 +21,10 @@
  * than 1900, and so it's easy to adjust.
  */
 
-static mut rtc_epoch: ::core::ffi::c_ulong = 0;
+static mut rtc_epoch: ::kernel::ffi::c_ulong = 0;
 
 #[allow(non_snake_case)]
-unsafe extern "C" fn specifiy_epoch(str_: *mut ::core::ffi::c_char) -> ::core::ffi::c_int {
+unsafe extern "C" fn specifiy_epoch(str_: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int {
     let epoch = simple_strtoul(str_, core::ptr::null_mut(), 0);
     if epoch < 1900 {
         printk(b"Ignoring invalid user specified epoch %lu\n\0".as_ptr() as *const _, epoch);
@@ -37,9 +37,9 @@ unsafe extern "C" fn specifiy_epoch(str_: *mut ::core::ffi::c_char) -> ::core::f
 // __setup("epoch=", specifiy_epoch);
 
 unsafe extern "C" fn init_rtc_epoch() {
-    let mut epoch: ::core::ffi::c_int;
-    let mut year: ::core::ffi::c_int;
-    let ctrl: ::core::ffi::c_int;
+    let mut epoch: ::kernel::ffi::c_int;
+    let mut year: ::kernel::ffi::c_int;
+    let ctrl: ::kernel::ffi::c_int;
 
     if rtc_epoch != 0 {
         /* The epoch was specified on the command-line.  */
@@ -64,12 +64,12 @@ unsafe extern "C" fn init_rtc_epoch() {
         /* Digital UNIX epoch */
         epoch = 1952;
     }
-    rtc_epoch = epoch as ::core::ffi::c_ulong;
+    rtc_epoch = epoch as ::kernel::ffi::c_ulong;
 
     printk(KERN_INFO, b"Using epoch %d for rtc year %d\n\0".as_ptr() as *const _, epoch, year);
 }
 
-unsafe extern "C" fn alpha_rtc_read_time(dev: *mut device, tm: *mut rtc_time) -> ::core::ffi::c_int {
+unsafe extern "C" fn alpha_rtc_read_time(dev: *mut device, tm: *mut rtc_time) -> ::kernel::ffi::c_int {
     let ret = mc146818_get_time(tm, 10);
 
     if ret < 0 {
@@ -84,7 +84,7 @@ unsafe extern "C" fn alpha_rtc_read_time(dev: *mut device, tm: *mut rtc_time) ->
         if year >= 100 {
             year -= 100;
         }
-        year += rtc_epoch as ::core::ffi::c_int - 1900;
+        year += rtc_epoch as ::kernel::ffi::c_int - 1900;
         /* Redo the century adjustment with the epoch in place.  */
         if year <= 69 {
             year += 100;
@@ -95,12 +95,12 @@ unsafe extern "C" fn alpha_rtc_read_time(dev: *mut device, tm: *mut rtc_time) ->
     0
 }
 
-unsafe extern "C" fn alpha_rtc_set_time(dev: *mut device, tm: *mut rtc_time) -> ::core::ffi::c_int {
+unsafe extern "C" fn alpha_rtc_set_time(dev: *mut device, tm: *mut rtc_time) -> ::kernel::ffi::c_int {
     let mut xtm: rtc_time;
 
     if rtc_epoch != 1900 {
         xtm = *tm;
-        xtm.tm_year -= rtc_epoch as ::core::ffi::c_int - 1900;
+        xtm.tm_year -= rtc_epoch as ::kernel::ffi::c_int - 1900;
         tm = &mut xtm;
     }
 
@@ -109,11 +109,11 @@ unsafe extern "C" fn alpha_rtc_set_time(dev: *mut device, tm: *mut rtc_time) -> 
 
 unsafe extern "C" fn alpha_rtc_ioctl(
     dev: *mut device,
-    cmd: ::core::ffi::c_uint,
-    arg: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    cmd: ::kernel::ffi::c_uint,
+    arg: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     match cmd {
-        RTC_EPOCH_READ => put_user(rtc_epoch, arg as *mut ::core::ffi::c_ulong),
+        RTC_EPOCH_READ => put_user(rtc_epoch, arg as *mut ::kernel::ffi::c_ulong),
         RTC_EPOCH_SET => {
             if arg < 1900 {
                 return -EINVAL;
@@ -140,22 +140,22 @@ static alpha_rtc_ops: rtc_class_ops = rtc_class_ops {
 // Conditional C build configuration: HAVE_REMOTE_RTC is enabled for SMP
 // Alpha generic or Marvel configurations.
 
-unsafe extern "C" fn do_remote_read(data: *mut ::core::ffi::c_void) -> ::core::ffi::c_long {
-    alpha_rtc_read_time(core::ptr::null_mut(), data as *mut rtc_time) as ::core::ffi::c_long
+unsafe extern "C" fn do_remote_read(data: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_long {
+    alpha_rtc_read_time(core::ptr::null_mut(), data as *mut rtc_time) as ::kernel::ffi::c_long
 }
 
-unsafe extern "C" fn remote_read_time(dev: *mut device, tm: *mut rtc_time) -> ::core::ffi::c_int {
+unsafe extern "C" fn remote_read_time(dev: *mut device, tm: *mut rtc_time) -> ::kernel::ffi::c_int {
     if smp_processor_id() != boot_cpuid {
         return work_on_cpu(boot_cpuid, Some(do_remote_read), tm as *mut _);
     }
     alpha_rtc_read_time(core::ptr::null_mut(), tm)
 }
 
-unsafe extern "C" fn do_remote_set(data: *mut ::core::ffi::c_void) -> ::core::ffi::c_long {
-    alpha_rtc_set_time(core::ptr::null_mut(), data as *mut rtc_time) as ::core::ffi::c_long
+unsafe extern "C" fn do_remote_set(data: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_long {
+    alpha_rtc_set_time(core::ptr::null_mut(), data as *mut rtc_time) as ::kernel::ffi::c_long
 }
 
-unsafe extern "C" fn remote_set_time(dev: *mut device, tm: *mut rtc_time) -> ::core::ffi::c_int {
+unsafe extern "C" fn remote_set_time(dev: *mut device, tm: *mut rtc_time) -> ::kernel::ffi::c_int {
     if smp_processor_id() != boot_cpuid {
         return work_on_cpu(boot_cpuid, Some(do_remote_set), tm as *mut _);
     }
@@ -168,7 +168,7 @@ static remote_rtc_ops: rtc_class_ops = rtc_class_ops {
     ioctl: Some(alpha_rtc_ioctl),
 };
 
-unsafe extern "C" fn alpha_rtc_init() -> ::core::ffi::c_int {
+unsafe extern "C" fn alpha_rtc_init() -> ::kernel::ffi::c_int {
     let pdev: *mut platform_device;
     let mut rtc: *mut rtc_device;
 

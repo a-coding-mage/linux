@@ -22,16 +22,16 @@ pub struct boot_param_header;
 
 #[cfg(CONFIG_USE_OF)]
 extern "C" {
-    pub fn __dt_setup_arch(bph: *mut core::ffi::c_void);
+    pub fn __dt_setup_arch(bph: *mut kernel::ffi::c_void);
     pub fn __dt_register_buses(
-        bus0: *const core::ffi::c_char,
-        bus1: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        bus0: *const kernel::ffi::c_char,
+        bus1: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 }
 
 extern "C" {
-    pub fn mips_get_machine_name() -> *mut core::ffi::c_char;
-    pub fn mips_set_machine_name(name: *const core::ffi::c_char);
+    pub fn mips_get_machine_name() -> *mut kernel::ffi::c_char;
+    pub fn mips_set_machine_name(name: *const kernel::ffi::c_char);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

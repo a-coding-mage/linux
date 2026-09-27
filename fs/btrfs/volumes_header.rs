@@ -38,7 +38,7 @@ pub enum btrfs_raid_types {
 pub struct btrfs_device {
     pub dev_list: list_head, pub dev_alloc_list: list_head, pub post_commit_list: list_head,
     pub fs_devices: *mut btrfs_fs_devices, pub fs_info: *mut btrfs_fs_info,
-    pub name: *const core::ffi::c_char, pub generation: u64,
+    pub name: *const kernel::ffi::c_char, pub generation: u64,
     pub bdev_file: *mut file, pub bdev: *mut block_device,
     pub zone_info: *mut btrfs_zoned_device_info, pub dev_state: c_ulong,
     pub devid: u64, pub total_bytes: u64, pub disk_total_bytes: u64, pub bytes_used: u64,
@@ -54,7 +54,7 @@ pub struct btrfs_device {
 
 #[repr(C)]
 pub struct btrfs_swapfile_pin {
-    pub node: rb_node, pub ptr: *mut core::ffi::c_void, pub inode: *mut inode,
+    pub node: rb_node, pub ptr: *mut kernel::ffi::c_void, pub inode: *mut inode,
     pub is_block_group: bool, pub bg_extent_count: i32,
 }
 
@@ -121,9 +121,9 @@ extern "C" {
     pub fn btrfs_chunk_writeable(fs_info:*mut btrfs_fs_info,chunk_offset:u64)->bool;
     pub fn btrfs_update_per_profile_avail(fs_info:*mut btrfs_fs_info);
     pub fn btrfs_repair_one_zone(fs_info:*mut btrfs_fs_info,logical:u64)->bool;
-    pub fn btrfs_pinned_by_swapfile(fs_info:*mut btrfs_fs_info,ptr:*mut core::ffi::c_void)->bool;
+    pub fn btrfs_pinned_by_swapfile(fs_info:*mut btrfs_fs_info,ptr:*mut kernel::ffi::c_void)->bool;
     pub fn btrfs_create_chunk(trans:*mut btrfs_trans_handle,space_info:*mut btrfs_space_info,r#type:u64)->*mut btrfs_block_group;
-    pub fn btrfs_open_devices(fs_devices:*mut btrfs_fs_devices,flags:blk_mode_t,holder:*mut core::ffi::c_void)->i32;
+    pub fn btrfs_open_devices(fs_devices:*mut btrfs_fs_devices,flags:blk_mode_t,holder:*mut kernel::ffi::c_void)->i32;
     pub fn btrfs_scan_one_device(path:*const c_char,mount_arg_dev:bool)->*mut btrfs_device;
     pub fn btrfs_forget_devices(devt:dev_t)->i32; pub fn btrfs_release_device_allow_freeze(bdev_file:*mut file);
     pub fn btrfs_free_extra_devids(fs_devices:*mut btrfs_fs_devices);

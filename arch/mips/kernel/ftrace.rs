@@ -32,7 +32,7 @@ mod dynamic_ftrace {
         fn ftrace_graph_caller();
         fn flush_icache_range(start: usize, end: usize);
         fn core_kernel_text(address: usize) -> bool;
-        fn pr_warn(fmt: *const core::ffi::c_char, ...);
+        fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
         fn safe_store_code(code: u32, address: usize, faulted: *mut i32);
     }
 

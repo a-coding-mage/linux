@@ -8,7 +8,7 @@
 /* C header guard: _TRACE_IOMMU_H, with TRACE_HEADER_MULTI_READ support. */
 /* The Linux tracepoint framework supplies the event registration machinery. */
 
-use core::ffi::c_int;
+use kernel::ffi::c_int;
 
 /// Opaque Linux device object supplied by the surrounding kernel bindings.
 #[repr(C)]
@@ -20,13 +20,13 @@ pub struct device {
 #[repr(C)]
 pub struct IommuGroupEvent {
     pub gid: c_int,
-    pub device: *const core::ffi::c_char,
+    pub device: *const kernel::ffi::c_char,
 }
 
 /// Opaque event-class descriptor corresponding to `iommu_device_event`.
 #[repr(C)]
 pub struct IommuDeviceEvent {
-    pub device: *const core::ffi::c_char,
+    pub device: *const kernel::ffi::c_char,
 }
 
 /// Entry data for the `map` trace event.
@@ -48,8 +48,8 @@ pub struct UnmapEvent {
 /// Entry data for the `iommu_error` event class.
 #[repr(C)]
 pub struct IommuError {
-    pub device: *const core::ffi::c_char,
-    pub driver: *const core::ffi::c_char,
+    pub device: *const kernel::ffi::c_char,
+    pub driver: *const kernel::ffi::c_char,
     pub iova: u64,
     pub flags: c_int,
 }
@@ -60,15 +60,15 @@ pub struct IommuError {
  * provided by the external Linux tracepoint framework.
  */
 extern "C" {
-    pub static iommu_group_event: core::ffi::c_void;
-    pub static add_device_to_group: core::ffi::c_void;
-    pub static remove_device_from_group: core::ffi::c_void;
-    pub static iommu_device_event: core::ffi::c_void;
-    pub static attach_device_to_domain: core::ffi::c_void;
-    pub static map: core::ffi::c_void;
-    pub static unmap: core::ffi::c_void;
-    pub static iommu_error: core::ffi::c_void;
-    pub static io_page_fault: core::ffi::c_void;
+    pub static iommu_group_event: kernel::ffi::c_void;
+    pub static add_device_to_group: kernel::ffi::c_void;
+    pub static remove_device_from_group: kernel::ffi::c_void;
+    pub static iommu_device_event: kernel::ffi::c_void;
+    pub static attach_device_to_domain: kernel::ffi::c_void;
+    pub static map: kernel::ffi::c_void;
+    pub static unmap: kernel::ffi::c_void;
+    pub static iommu_error: kernel::ffi::c_void;
+    pub static io_page_fault: kernel::ffi::c_void;
 }
 
 /* iommu_group_event: (int group_id, struct device *dev) */

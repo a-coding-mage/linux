@@ -74,11 +74,11 @@ pub enum dc_status {
 }
 
 extern "C" {
-    pub fn dc_status_to_str(status: dc_status) -> *mut ::core::ffi::c_char;
+    pub fn dc_status_to_str(status: dc_status) -> *mut ::kernel::ffi::c_char;
     pub fn dc_pixel_encoding_to_str(
         pixel_encoding: dc_pixel_encoding,
-    ) -> *mut ::core::ffi::c_char;
-    pub fn dc_color_depth_to_str(color_depth: dc_color_depth) -> *mut ::core::ffi::c_char;
+    ) -> *mut ::kernel::ffi::c_char;
+    pub fn dc_color_depth_to_str(color_depth: dc_color_depth) -> *mut ::kernel::ffi::c_char;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

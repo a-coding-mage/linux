@@ -8,21 +8,21 @@
 unsafe extern "C" {
     fn xics_init();
     fn of_platform_default_populate(
-        node: *const core::ffi::c_void,
-        parent: *const core::ffi::c_void,
-        data: *const core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        node: *const kernel::ffi::c_void,
+        parent: *const kernel::ffi::c_void,
+        data: *const kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
     fn microwatt_init_smp();
     fn microwatt_rng_init();
-    fn prep_irq_for_idle_irqsoff() -> core::ffi::c_int;
-    fn udbg_progress(message: *const core::ffi::c_char, hex: core::ffi::c_ulong);
+    fn prep_irq_for_idle_irqsoff() -> kernel::ffi::c_int;
+    fn udbg_progress(message: *const kernel::ffi::c_char, hex: kernel::ffi::c_ulong);
 }
 
 unsafe fn microwatt_init_irq() {
     unsafe { xics_init() };
 }
 
-unsafe fn microwatt_populate() -> core::ffi::c_int {
+unsafe fn microwatt_populate() -> kernel::ffi::c_int {
     unsafe {
         of_platform_default_populate(
             core::ptr::null(),
@@ -34,7 +34,7 @@ unsafe fn microwatt_populate() -> core::ffi::c_int {
 
 // Corresponds to machine_arch_initcall(microwatt, microwatt_populate).
 
-unsafe fn microwatt_probe() -> core::ffi::c_int {
+unsafe fn microwatt_probe() -> kernel::ffi::c_int {
     // Main reason for having this is to start the other CPU(s)
     // IS_ENABLED(CONFIG_SMP) is a build-time configuration condition.
     #[cfg(CONFIG_SMP)]
@@ -61,19 +61,19 @@ unsafe fn microwatt_idle() {
 // Corresponds to define_machine(microwatt).
 #[repr(C)]
 pub struct MachineDesc {
-    pub name: *const core::ffi::c_char,
-    pub compatible: *const core::ffi::c_char,
-    pub probe: unsafe fn() -> core::ffi::c_int,
+    pub name: *const kernel::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
+    pub probe: unsafe fn() -> kernel::ffi::c_int,
     pub init_irq: unsafe fn(),
     pub setup_arch: unsafe fn(),
-    pub progress: unsafe extern "C" fn(*const core::ffi::c_char, core::ffi::c_ulong),
+    pub progress: unsafe extern "C" fn(*const kernel::ffi::c_char, kernel::ffi::c_ulong),
     pub power_save: unsafe fn(),
 }
 
 #[no_mangle]
 pub static mut microwatt: MachineDesc = MachineDesc {
-    name: b"microwatt\0".as_ptr() as *const core::ffi::c_char,
-    compatible: b"microwatt-soc\0".as_ptr() as *const core::ffi::c_char,
+    name: b"microwatt\0".as_ptr() as *const kernel::ffi::c_char,
+    compatible: b"microwatt-soc\0".as_ptr() as *const kernel::ffi::c_char,
     probe: microwatt_probe,
     init_irq: microwatt_init_irq,
     setup_arch: microwatt_setup_arch,

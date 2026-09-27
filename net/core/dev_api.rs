@@ -2,7 +2,7 @@
 
 // C dependencies supplied by the surrounding kernel translation unit.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct net_device {
@@ -27,9 +27,9 @@ extern "C" {
     fn netif_change_flags(dev: *mut net_device, flags: u32, extack: *mut netlink_ext_ack) -> i32;
     fn netif_rx_mode_sync(dev: *mut net_device);
     fn netif_set_group(dev: *mut net_device, new_group: i32);
-    fn down_write(sem: *mut core::ffi::c_void);
-    fn up_write(sem: *mut core::ffi::c_void);
-    static mut dev_addr_sem: core::ffi::c_void;
+    fn down_write(sem: *mut kernel::ffi::c_void);
+    fn up_write(sem: *mut kernel::ffi::c_void);
+    static mut dev_addr_sem: kernel::ffi::c_void;
     fn netif_set_mac_address(dev: *mut net_device, ss: *mut sockaddr_storage,
                              extack: *mut netlink_ext_ack) -> i32;
     fn __dev_change_net_namespace(dev: *mut net_device, net: *mut net,

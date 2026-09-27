@@ -9,12 +9,12 @@
 // linux/dmi.h, linux/init.h, linux/syscore_ops.h, asm/dma.h, asm/x86_init.h
 
 extern "C" {
-    fn claim_dma_lock() -> ::core::ffi::c_ulong;
+    fn claim_dma_lock() -> ::kernel::ffi::c_ulong;
     fn dma_outb(value: u8, port: u32);
     fn set_dma_addr(channel: i32, address: u32);
     fn set_dma_count(channel: i32, count: u32);
     fn enable_dma(channel: i32);
-    fn release_dma_lock(flags: ::core::ffi::c_ulong);
+    fn release_dma_lock(flags: ::kernel::ffi::c_ulong);
     fn dma_inb(port: u32) -> u8;
     fn x86_pnpbios_disabled() -> bool;
     fn dmi_get_bios_year() -> i32;
@@ -29,7 +29,7 @@ extern "C" {
 
 #[repr(C)]
 struct syscore_ops {
-    resume: Option<unsafe extern "C" fn(data: *mut ::core::ffi::c_void)>,
+    resume: Option<unsafe extern "C" fn(data: *mut ::kernel::ffi::c_void)>,
 }
 
 #[repr(C)]
@@ -39,8 +39,8 @@ struct syscore {
 
 const ENODEV: i32 = 19;
 
-unsafe extern "C" fn i8237A_resume(_data: *mut ::core::ffi::c_void) {
-    let flags: ::core::ffi::c_ulong;
+unsafe extern "C" fn i8237A_resume(_data: *mut ::kernel::ffi::c_void) {
+    let flags: ::kernel::ffi::c_ulong;
     let mut i: i32;
 
     flags = claim_dma_lock();

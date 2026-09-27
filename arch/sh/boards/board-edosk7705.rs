@@ -41,13 +41,13 @@ pub struct resource {
 #[allow(non_camel_case_types)]
 #[repr(C)]
 pub struct device {
-    pub platform_data: *mut core::ffi::c_void,
+    pub platform_data: *mut kernel::ffi::c_void,
 }
 
 #[allow(non_camel_case_types)]
 #[repr(C)]
 pub struct platform_device {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: i32,
     pub num_resources: usize,
     pub resource: *mut resource,
@@ -57,7 +57,7 @@ pub struct platform_device {
 #[allow(non_camel_case_types)]
 #[repr(C)]
 pub struct sh_machine_vector {
-    pub mv_name: *const core::ffi::c_char,
+    pub mv_name: *const kernel::ffi::c_char,
     pub mv_init_irq: Option<unsafe extern "C" fn()>,
 }
 
@@ -91,12 +91,12 @@ static mut smc91x_res: [resource; 2] = [
 ];
 
 static mut smc91x_dev: platform_device = platform_device {
-    name: b"smc91x\0".as_ptr() as *const core::ffi::c_char,
+    name: b"smc91x\0".as_ptr() as *const kernel::ffi::c_char,
     id: -1,
     num_resources: 2,
     resource: core::ptr::addr_of_mut!(smc91x_res) as *mut resource,
     dev: device {
-        platform_data: core::ptr::addr_of_mut!(smc91x_info) as *mut core::ffi::c_void,
+        platform_data: core::ptr::addr_of_mut!(smc91x_info) as *mut kernel::ffi::c_void,
     },
 };
 
@@ -115,7 +115,7 @@ unsafe extern "C" fn init_edosk7705_devices() -> i32 {
  * The Machine Vector
  */
 static mut mv_edosk7705: sh_machine_vector = sh_machine_vector {
-    mv_name: b"EDOSK7705\0".as_ptr() as *const core::ffi::c_char,
+    mv_name: b"EDOSK7705\0".as_ptr() as *const kernel::ffi::c_char,
     mv_init_irq: Some(sh_edosk7705_init_irq),
 };
 

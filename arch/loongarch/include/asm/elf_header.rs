@@ -80,10 +80,10 @@ extern "C" {
     pub fn loongarch_dump_regs32(uregs: *mut u32, regs: *const crate::pt_regs);
     pub fn loongarch_dump_regs64(uregs: *mut u64, regs: *const crate::pt_regs);
     pub static mut elf_hwcap: u32;
-    pub static __elf_platform: *const core::ffi::c_char;
+    pub static __elf_platform: *const kernel::ffi::c_char;
     pub fn arch_setup_additional_pages(bprm: *mut crate::linux_binprm, uses_interp: i32) -> i32;
-    pub fn arch_elf_pt_proc(ehdr: *mut core::ffi::c_void, phdr: *mut core::ffi::c_void, elf: *mut crate::file, is_interp: bool, state: *mut arch_elf_state) -> i32;
-    pub fn arch_check_elf(ehdr: *mut core::ffi::c_void, has_interpreter: bool, interp_ehdr: *mut core::ffi::c_void, state: *mut arch_elf_state) -> i32;
+    pub fn arch_elf_pt_proc(ehdr: *mut kernel::ffi::c_void, phdr: *mut kernel::ffi::c_void, elf: *mut crate::file, is_interp: bool, state: *mut arch_elf_state) -> i32;
+    pub fn arch_check_elf(ehdr: *mut kernel::ffi::c_void, has_interpreter: bool, interp_ehdr: *mut kernel::ffi::c_void, state: *mut arch_elf_state) -> i32;
 }
 
 #[repr(C)]

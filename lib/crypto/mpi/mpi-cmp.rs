@@ -21,7 +21,7 @@
 // <linux/export.h>
 // "mpi-internal.h"
 
-pub unsafe fn mpi_cmp_ui(u: MPI, v: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+pub unsafe fn mpi_cmp_ui(u: MPI, v: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     let limb: mpi_limb_t = v as mpi_limb_t;
 
     mpi_normalize(u);
@@ -49,10 +49,10 @@ pub unsafe fn mpi_cmp_ui(u: MPI, v: ::core::ffi::c_ulong) -> ::core::ffi::c_int 
 }
 // EXPORT_SYMBOL_GPL(mpi_cmp_ui);
 
-pub unsafe fn mpi_cmp(u: MPI, v: MPI) -> ::core::ffi::c_int {
+pub unsafe fn mpi_cmp(u: MPI, v: MPI) -> ::kernel::ffi::c_int {
     let usize: mpi_size_t;
     let vsize: mpi_size_t;
-    let cmp: ::core::ffi::c_int;
+    let cmp: ::kernel::ffi::c_int;
 
     mpi_normalize(u);
     mpi_normalize(v);
@@ -65,10 +65,10 @@ pub unsafe fn mpi_cmp(u: MPI, v: MPI) -> ::core::ffi::c_int {
         return -1;
     }
     if usize != vsize && !(*u).sign && !(*v).sign {
-        return (usize - vsize) as ::core::ffi::c_int;
+        return (usize - vsize) as ::kernel::ffi::c_int;
     }
     if usize != vsize && (*u).sign && (*v).sign {
-        return (vsize - usize) as ::core::ffi::c_int;
+        return (vsize - usize) as ::kernel::ffi::c_int;
     }
     if usize == 0 {
         return 0;

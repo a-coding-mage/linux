@@ -3,32 +3,32 @@
 // Dependencies supplied by the surrounding kernel translation.
 
 extern "C" {
-    pub fn compat_arm_syscall(regs: *mut pt_regs, scno: ::core::ffi::c_int) -> ::core::ffi::c_long;
-    pub fn sys_ni_syscall() -> ::core::ffi::c_long;
+    pub fn compat_arm_syscall(regs: *mut pt_regs, scno: ::kernel::ffi::c_int) -> ::kernel::ffi::c_long;
+    pub fn sys_ni_syscall() -> ::kernel::ffi::c_long;
 }
 
-type syscall_fn_t = unsafe extern "C" fn(*mut pt_regs) -> ::core::ffi::c_long;
+type syscall_fn_t = unsafe extern "C" fn(*mut pt_regs) -> ::kernel::ffi::c_long;
 
 #[repr(C)]
 pub struct pt_regs {
     pub regs: [u64; 31],
     pub orig_x0: u64,
-    pub syscallno: ::core::ffi::c_int,
+    pub syscallno: ::kernel::ffi::c_int,
     pub pstate: u64,
 }
 
 extern "C" {
     fn is_compat_task() -> bool;
     fn add_random_kstack_offset();
-    fn current() -> *mut ::core::ffi::c_void;
+    fn current() -> *mut ::kernel::ffi::c_void;
     fn syscall_set_return_value(
-        task: *mut ::core::ffi::c_void,
+        task: *mut ::kernel::ffi::c_void,
         regs: *mut pt_regs,
-        error: ::core::ffi::c_long,
-        val: ::core::ffi::c_long,
+        error: ::kernel::ffi::c_long,
+        val: ::kernel::ffi::c_long,
     );
-    fn read_thread_flags() -> ::core::ffi::c_ulong;
-    fn syscall_trace_enter(regs: *mut pt_regs) -> ::core::ffi::c_int;
+    fn read_thread_flags() -> ::kernel::ffi::c_ulong;
+    fn syscall_trace_enter(regs: *mut pt_regs) -> ::kernel::ffi::c_int;
     fn syscall_trace_exit(regs: *mut pt_regs);
 }
 
@@ -39,19 +39,19 @@ extern "C" {
     static compat_sys_call_table: [syscall_fn_t; __NR_compat32_syscalls as usize];
 }
 
-const ENOSYS: ::core::ffi::c_long = 38;
-const ERESTARTNOINTR: ::core::ffi::c_long = 513;
+const ENOSYS: ::kernel::ffi::c_long = 38;
+const ERESTARTNOINTR: ::kernel::ffi::c_long = 513;
 
 // These values are supplied by the kernel headers in the original source.
 extern "C" {
-    static __NR_syscalls: ::core::ffi::c_uint;
+    static __NR_syscalls: ::kernel::ffi::c_uint;
     #[cfg(CONFIG_COMPAT)]
-    static __NR_compat32_syscalls: ::core::ffi::c_uint;
+    static __NR_compat32_syscalls: ::kernel::ffi::c_uint;
 }
 
-const NO_SYSCALL: ::core::ffi::c_int = -1;
+const NO_SYSCALL: ::kernel::ffi::c_int = -1;
 
-unsafe fn do_ni_syscall(regs: *mut pt_regs, scno: ::core::ffi::c_int) -> ::core::ffi::c_long {
+unsafe fn do_ni_syscall(regs: *mut pt_regs, scno: ::kernel::ffi::c_int) -> ::kernel::ffi::c_long {
     if is_compat_task() {
         let ret = compat_arm_syscall(regs, scno);
         if ret != -ENOSYS {
@@ -62,17 +62,17 @@ unsafe fn do_ni_syscall(regs: *mut pt_regs, scno: ::core::ffi::c_int) -> ::core:
     sys_ni_syscall()
 }
 
-unsafe fn __invoke_syscall(regs: *mut pt_regs, syscall_fn: syscall_fn_t) -> ::core::ffi::c_long {
+unsafe fn __invoke_syscall(regs: *mut pt_regs, syscall_fn: syscall_fn_t) -> ::kernel::ffi::c_long {
     syscall_fn(regs)
 }
 
 unsafe fn invoke_syscall(
     regs: *mut pt_regs,
-    scno: ::core::ffi::c_uint,
-    sc_nr: ::core::ffi::c_uint,
+    scno: ::kernel::ffi::c_uint,
+    sc_nr: ::kernel::ffi::c_uint,
     syscall_table: *const syscall_fn_t,
 ) {
-    let ret: ::core::ffi::c_long;
+    let ret: ::kernel::ffi::c_long;
 
     add_random_kstack_offset();
 
@@ -80,21 +80,21 @@ unsafe fn invoke_syscall(
         let syscall_fn = *syscall_table.add(scno as usize);
         ret = __invoke_syscall(regs, syscall_fn);
     } else {
-        ret = do_ni_syscall(regs, scno as ::core::ffi::c_int);
+        ret = do_ni_syscall(regs, scno as ::kernel::ffi::c_int);
     }
 
     syscall_set_return_value(current(), regs, 0, ret);
 }
 
 #[inline]
-unsafe fn has_syscall_work(flags: ::core::ffi::c_ulong) -> bool {
+unsafe fn has_syscall_work(flags: ::kernel::ffi::c_ulong) -> bool {
     (flags & _TIF_SYSCALL_WORK) != 0
 }
 
 unsafe fn el0_svc_common(
     regs: *mut pt_regs,
-    mut scno: ::core::ffi::c_int,
-    sc_nr: ::core::ffi::c_int,
+    mut scno: ::kernel::ffi::c_int,
+    sc_nr: ::kernel::ffi::c_int,
     syscall_table: *const syscall_fn_t,
 ) {
     let mut flags = read_thread_flags();
@@ -118,7 +118,7 @@ unsafe fn el0_svc_common(
         }
     }
 
-    invoke_syscall(regs, scno as ::core::ffi::c_uint, sc_nr as ::core::ffi::c_uint, syscall_table);
+    invoke_syscall(regs, scno as ::kernel::ffi::c_uint, sc_nr as ::kernel::ffi::c_uint, syscall_table);
 
     if !has_syscall_work(flags) && !cfg!(CONFIG_DEBUG_RSEQ) {
         flags = read_thread_flags();
@@ -132,12 +132,12 @@ unsafe fn el0_svc_common(
 }
 
 pub unsafe fn do_el0_svc(regs: *mut pt_regs) {
-    el0_svc_common(regs, (*regs).regs[8] as ::core::ffi::c_int, __NR_syscalls as ::core::ffi::c_int, sys_call_table.as_ptr());
+    el0_svc_common(regs, (*regs).regs[8] as ::kernel::ffi::c_int, __NR_syscalls as ::kernel::ffi::c_int, sys_call_table.as_ptr());
 }
 
 #[cfg(CONFIG_COMPAT)]
 pub unsafe fn do_el0_svc_compat(regs: *mut pt_regs) {
-    el0_svc_common(regs, (*regs).regs[7] as ::core::ffi::c_int, __NR_compat32_syscalls as ::core::ffi::c_int, compat_sys_call_table.as_ptr());
+    el0_svc_common(regs, (*regs).regs[7] as ::kernel::ffi::c_int, __NR_compat32_syscalls as ::kernel::ffi::c_int, compat_sys_call_table.as_ptr());
 }
 
 

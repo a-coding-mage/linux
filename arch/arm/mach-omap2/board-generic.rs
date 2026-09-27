@@ -12,7 +12,7 @@
 // C includes and symbols supplied by other files remain external dependencies.
 
 #[repr(C)]
-pub struct OfDeviceId { pub compatible: *const core::ffi::c_char }
+pub struct OfDeviceId { pub compatible: *const kernel::ffi::c_char }
 
 #[repr(C)]
 pub struct Cpumask { _private: [u8; 0] }
@@ -59,7 +59,7 @@ unsafe fn omap_init_time_of() { omap_clk_init(); timer_probe(); }
 pub unsafe extern "C" fn tick_broadcast(_mask: *const Cpumask) {}
 
 macro_rules! compat_table { ($name:ident, [$($s:literal),* $(,)?]) => {
-    static $name: &[*const core::ffi::c_char] = &[$(c$s.as_ptr()),*, core::ptr::null()];
+    static $name: &[*const kernel::ffi::c_char] = &[$(c$s.as_ptr()),*, core::ptr::null()];
 }; }
 
 compat_table!(OMAP242X_BOARDS_COMPAT, ["ti,omap2420"]);
@@ -99,13 +99,13 @@ unsafe fn rx51_reserve() {
 
 #[repr(C)]
 pub struct MachineDesc {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub reserve: unsafe extern "C" fn(),
     pub map_io: unsafe extern "C" fn(),
     pub init_early: unsafe extern "C" fn(),
     pub init_machine: unsafe fn(),
     pub init_time: unsafe fn(),
-    pub dt_compat: &'static [*const core::ffi::c_char],
+    pub dt_compat: &'static [*const kernel::ffi::c_char],
     pub restart: unsafe extern "C" fn(),
 }
 

@@ -22,17 +22,17 @@ pub struct page {
 type PhysAddr = usize;
 
 extern "C" {
-    static high_memory: *mut core::ffi::c_void;
+    static high_memory: *mut kernel::ffi::c_void;
 
-    fn virt_to_phys(address: *const core::ffi::c_void) -> PhysAddr;
-    fn __va(address: PhysAddr) -> *mut core::ffi::c_char;
-    fn virt_to_page(address: *const core::ffi::c_char) -> *mut page;
+    fn virt_to_phys(address: *const kernel::ffi::c_void) -> PhysAddr;
+    fn __va(address: PhysAddr) -> *mut kernel::ffi::c_char;
+    fn virt_to_page(address: *const kernel::ffi::c_char) -> *mut page;
     fn PageReserved(page: *const page) -> bool;
     fn generic_ioremap_prot(
         phys_addr: PhysAddr,
         size: usize,
         prot: pgprot_t,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 extern "C" {
@@ -43,7 +43,7 @@ pub unsafe fn ioremap_prot(
     mut phys_addr: PhysAddr,
     size: usize,
     prot: pgprot_t,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     #[cfg(CONFIG_EISA)]
     {
         let end = phys_addr.wrapping_add(size).wrapping_sub(1);
@@ -58,7 +58,7 @@ pub unsafe fn ioremap_prot(
     /*
      * Don't allow anybody to remap normal RAM that we're using..
      */
-    if phys_addr < virt_to_phys(high_memory as *const core::ffi::c_void) {
+    if phys_addr < virt_to_phys(high_memory as *const kernel::ffi::c_void) {
         let t_addr = __va(phys_addr);
         let t_end = t_addr.add(size.wrapping_sub(1));
 

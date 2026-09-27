@@ -70,7 +70,7 @@ pub unsafe fn psp_prep_securedisplay_cmd_buf(
 #[cfg(CONFIG_DEBUG_FS)]
 unsafe fn amdgpu_securedisplay_debugfs_write(
     f: *mut file,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     size: usize,
     pos: *mut loff_t,
 ) -> isize {

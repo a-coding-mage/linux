@@ -5,7 +5,7 @@
 
 // C dependencies: linux/device.h and linux/device-id/vchiq.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Supplied by the Linux/Rust compatibility layer.
 use crate::{

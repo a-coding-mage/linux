@@ -17,7 +17,7 @@ const RTD_GPIO_DEBOUNCE_30MS: u8 = 6;
 
 #[repr(C)]
 struct RtdGpioInfo {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     gpio_base: u32,
     num_gpios: u32,
     dir_offset: *const u8,
@@ -36,8 +36,8 @@ struct RtdGpioInfo {
 struct RtdGpio {
     gpio_chip: GpioChip,
     info: *const RtdGpioInfo,
-    base: *mut core::ffi::c_void,
-    irq_base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
+    irq_base: *mut kernel::ffi::c_void,
     irqs: [u32; 2],
     lock: RawSpinlock,
 }
@@ -54,8 +54,8 @@ extern "C" {
     type OfDeviceId;
     type PlatformDriver;
     fn gpiochip_get_data(chip: *mut GpioChip) -> *mut RtdGpio;
-    fn readl_relaxed(addr: *mut core::ffi::c_void) -> u32;
-    fn writel_relaxed(value: u32, addr: *mut core::ffi::c_void);
+    fn readl_relaxed(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel_relaxed(value: u32, addr: *mut kernel::ffi::c_void);
     fn pinconf_to_config_param(config: u64) -> u32;
     fn pinconf_to_config_argument(config: u64) -> i32;
     fn gpiochip_generic_config(chip: *mut GpioChip, offset: u32, config: u64) -> i32;
@@ -64,7 +64,7 @@ extern "C" {
     fn gpiochip_disable_irq(chip: *mut GpioChip, hwirq: u64);
     fn irq_data_get_irq_chip_data(d: *mut IrqData) -> *mut GpioChip;
     fn irqd_to_hwirq(d: *mut IrqData) -> u64;
-    fn irq_set_handler_locked(d: *mut IrqData, handler: *const core::ffi::c_void);
+    fn irq_set_handler_locked(d: *mut IrqData, handler: *const kernel::ffi::c_void);
     fn irq_desc_get_handler_data(desc: *mut IrqDesc) -> *mut RtdGpio;
     fn irq_desc_get_chip(desc: *mut IrqDesc) -> *mut IrqChip;
     fn irq_desc_get_irq(desc: *mut IrqDesc) -> u32;
@@ -75,8 +75,8 @@ extern "C" {
     fn chained_irq_exit(chip: *mut IrqChip, desc: *mut IrqDesc);
     fn platform_get_irq(pdev: *mut PlatformDevice, index: u32) -> i32;
     fn device_get_match_data(dev: *mut Device) -> *const RtdGpioInfo;
-    fn devm_platform_ioremap_resource(pdev: *mut PlatformDevice, index: u32) -> *mut core::ffi::c_void;
-    fn dev_name(dev: *mut Device) -> *const core::ffi::c_char;
+    fn devm_platform_ioremap_resource(pdev: *mut PlatformDevice, index: u32) -> *mut kernel::ffi::c_void;
+    fn dev_name(dev: *mut Device) -> *const kernel::ffi::c_char;
     fn devm_gpiochip_add_data(dev: *mut Device, chip: *mut GpioChip, data: *mut RtdGpio) -> i32;
 }
 

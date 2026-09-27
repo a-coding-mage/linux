@@ -27,11 +27,11 @@ macro_rules! __put_user { ($x:expr, $ptr:expr) => { __put_user_nocheck!($x, $ptr
 macro_rules! __get_user { ($x:expr, $ptr:expr) => { __get_user_nocheck!($x, $ptr, core::mem::size_of_val(unsafe { &*$ptr })) }; }
 
 unsafe extern "C" {
-    pub fn __put_user_bad() -> core::ffi::c_long;
-    pub fn __get_user_bad() -> core::ffi::c_long;
-    pub fn __xtensa_copy_user(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, n: u32) -> u32;
-    pub fn __strnlen_user(str_: *const core::ffi::c_char, len: core::ffi::c_long) -> core::ffi::c_long;
-    pub fn __strncpy_user(dst: *mut core::ffi::c_char, src: *const core::ffi::c_char, count: core::ffi::c_long) -> core::ffi::c_long;
+    pub fn __put_user_bad() -> kernel::ffi::c_long;
+    pub fn __get_user_bad() -> kernel::ffi::c_long;
+    pub fn __xtensa_copy_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, n: u32) -> u32;
+    pub fn __strnlen_user(str_: *const kernel::ffi::c_char, len: kernel::ffi::c_long) -> kernel::ffi::c_long;
+    pub fn __strncpy_user(dst: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char, count: kernel::ffi::c_long) -> kernel::ffi::c_long;
 }
 
 // The following macros preserve the original C expression interfaces and
@@ -40,7 +40,7 @@ unsafe extern "C" {
 #[macro_export]
 macro_rules! __put_user_nocheck {
     ($x:expr, $ptr:expr, $size:expr) => {{
-        let mut __pu_err: core::ffi::c_long = 0;
+        let mut __pu_err: kernel::ffi::c_long = 0;
         __put_user_size!($x, $ptr, $size, __pu_err);
         __pu_err
     }};
@@ -48,7 +48,7 @@ macro_rules! __put_user_nocheck {
 #[macro_export]
 macro_rules! __put_user_check {
     ($x:expr, $ptr:expr, $size:expr) => {{
-        let mut __pu_err: core::ffi::c_long = -EFAULT as core::ffi::c_long;
+        let mut __pu_err: kernel::ffi::c_long = -EFAULT as kernel::ffi::c_long;
         let __pu_addr = $ptr;
         if access_ok(__pu_addr, $size) { __put_user_size!($x, __pu_addr, $size, __pu_err); }
         __pu_err
@@ -83,11 +83,11 @@ macro_rules! __get_user_size { ($x:expr, $ptr:expr, $size:expr, $retval:ident) =
 #[macro_export]
 macro_rules! __get_user_asm { ($x:expr, $addr:expr, $err:expr, $align:expr, $insn:expr) => {{ let mut __x: u32 = 0; let _ = (&mut __x, &$x, &$addr, &$err, $align, $insn); $x = __x as _; }}; }
 
-pub unsafe fn raw_copy_from_user(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, n: usize) -> usize {
+pub unsafe fn raw_copy_from_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, n: usize) -> usize {
     prefetchw(to);
     __xtensa_copy_user(to, from, n as u32) as usize
 }
-pub unsafe fn raw_copy_to_user(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, n: usize) -> usize {
+pub unsafe fn raw_copy_to_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, n: usize) -> usize {
     prefetch(from);
     __xtensa_copy_user(to, from, n as u32) as usize
 }
@@ -96,18 +96,18 @@ pub unsafe fn raw_copy_to_user(to: *mut core::ffi::c_void, from: *const core::ff
 // #define __clear_user __xtensa_clear_user
 pub use __xtensa_clear_user as __clear_user;
 
-pub unsafe fn __xtensa_clear_user(addr: *mut core::ffi::c_void, size: usize) -> usize {
+pub unsafe fn __xtensa_clear_user(addr: *mut kernel::ffi::c_void, size: usize) -> usize {
     if __memset(addr, 0, size) == 0 { size } else { 0 }
 }
-pub unsafe fn clear_user(addr: *mut core::ffi::c_void, size: usize) -> usize {
+pub unsafe fn clear_user(addr: *mut kernel::ffi::c_void, size: usize) -> usize {
     if access_ok(addr, size) { __xtensa_clear_user(addr, size) } else if size != 0 { -EFAULT as usize } else { 0 }
 }
 
-pub unsafe fn strncpy_from_user(dst: *mut core::ffi::c_char, src: *const core::ffi::c_char, count: core::ffi::c_long) -> core::ffi::c_long {
-    if access_ok(src, 1) { __strncpy_user(dst, src, count) } else { -EFAULT as core::ffi::c_long }
+pub unsafe fn strncpy_from_user(dst: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char, count: kernel::ffi::c_long) -> kernel::ffi::c_long {
+    if access_ok(src, 1) { __strncpy_user(dst, src, count) } else { -EFAULT as kernel::ffi::c_long }
 }
 
-pub unsafe fn strnlen_user(str_: *const core::ffi::c_char, len: core::ffi::c_long) -> core::ffi::c_long {
+pub unsafe fn strnlen_user(str_: *const kernel::ffi::c_char, len: kernel::ffi::c_long) -> kernel::ffi::c_long {
     if !access_ok(str_, 1) { return 0; }
     __strnlen_user(str_, len)
 }

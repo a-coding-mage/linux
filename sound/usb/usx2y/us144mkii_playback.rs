@@ -181,10 +181,10 @@ pub unsafe extern "C" fn playback_urb_complete(urb: *mut Urb) {
     'out: {
 
     if (*urb).status != 0 {
-        if (*urb).status != -libc::ENOENT
-            && (*urb).status != -libc::ECONNRESET
-            && (*urb).status != -libc::ESHUTDOWN
-            && (*urb).status != -libc::ENODEV
+        if (*urb).status != -ENOENT
+            && (*urb).status != -ECONNRESET
+            && (*urb).status != -ESHUTDOWN
+            && (*urb).status != -ENODEV
         {
             dev_err_ratelimited(
                 (*(*tascam).card).dev,
@@ -303,10 +303,10 @@ pub unsafe extern "C" fn feedback_urb_complete(urb: *mut Urb) {
     'out: {
 
     if (*urb).status != 0 {
-        if (*urb).status != -libc::ENOENT
-            && (*urb).status != -libc::ECONNRESET
-            && (*urb).status != -libc::ESHUTDOWN
-            && (*urb).status != -libc::ENODEV
+        if (*urb).status != -ENOENT
+            && (*urb).status != -ECONNRESET
+            && (*urb).status != -ESHUTDOWN
+            && (*urb).status != -ENODEV
         {
             dev_err_ratelimited(
                 (*(*tascam).card).dev,
@@ -545,17 +545,17 @@ impl Drop for SpinlockIrqsaveGuard {
     }
 }
 
-unsafe fn dev_err_ratelimited(dev: *const libc::c_void, fmt: *const i8, status: i32) {
+unsafe fn dev_err_ratelimited(dev: *const core::ffi::c_void, fmt: *const i8, status: i32) {
     // Placeholder for dev_err_ratelimited kernel function
     // In actual use, this would call the kernel logging function
 }
 
-unsafe fn dev_err(dev: *const libc::c_void, fmt: *const i8) {
+unsafe fn dev_err(dev: *const core::ffi::c_void, fmt: *const i8) {
     // Placeholder for dev_err kernel function
     // In actual use, this would call the kernel logging function
 }
 
-unsafe fn dev_dbg(dev: *const libc::c_void, fmt: *const i8, new_in_idx: u32, out_idx: u32) {
+unsafe fn dev_dbg(dev: *const core::ffi::c_void, fmt: *const i8, new_in_idx: u32, out_idx: u32) {
     // Placeholder for dev_dbg kernel function
     // In actual use, this would call the kernel logging function
 }

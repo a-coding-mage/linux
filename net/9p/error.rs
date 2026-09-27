@@ -14,9 +14,9 @@
 
 #[repr(C)]
 pub struct errormap {
-    pub name: *mut ::core::ffi::c_char,
-    pub val: ::core::ffi::c_int,
-    pub namelen: ::core::ffi::c_int,
+    pub name: *mut ::kernel::ffi::c_char,
+    pub val: ::kernel::ffi::c_int,
+    pub namelen: ::kernel::ffi::c_int,
     pub list: hlist_node,
 }
 
@@ -47,19 +47,19 @@ static mut errmap: [errormap; 124] = [
 ];
 
 extern "C" {
-    static EPERM: ::core::ffi::c_int;
-    static ENOENT: ::core::ffi::c_int;
-    static ESERVERFAULT: ::core::ffi::c_int;
-    fn strlen(s: *const ::core::ffi::c_char) -> usize;
-    fn jhash(key: *const ::core::ffi::c_void, length: usize, initval: u32) -> u32;
-    fn memcmp(a: *const ::core::ffi::c_void, b: *const ::core::ffi::c_void, n: usize) -> ::core::ffi::c_int;
+    static EPERM: ::kernel::ffi::c_int;
+    static ENOENT: ::kernel::ffi::c_int;
+    static ESERVERFAULT: ::kernel::ffi::c_int;
+    fn strlen(s: *const ::kernel::ffi::c_char) -> usize;
+    fn jhash(key: *const ::kernel::ffi::c_void, length: usize, initval: u32) -> u32;
+    fn memcmp(a: *const ::kernel::ffi::c_void, b: *const ::kernel::ffi::c_void, n: usize) -> ::kernel::ffi::c_int;
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn p9_error_init() -> ::core::ffi::c_int {
+pub unsafe extern "C" fn p9_error_init() -> ::kernel::ffi::c_int {
     let mut c = errmap.as_mut_ptr();
     while !(*c).name.is_null() {
-        (*c).namelen = strlen((*c).name) as ::core::ffi::c_int;
+        (*c).namelen = strlen((*c).name) as ::kernel::ffi::c_int;
         let hash = jhash((*c).name as *const _, (*c).namelen as usize, 0);
         (*c).list.next = core::ptr::null_mut();
         (*c).list.pprev = core::ptr::null_mut();
@@ -74,9 +74,9 @@ pub unsafe extern "C" fn p9_error_init() -> ::core::ffi::c_int {
 
 #[no_mangle]
 pub unsafe extern "C" fn p9_errstr2errno(
-    errstr: *mut ::core::ffi::c_char,
-    len: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    errstr: *mut ::kernel::ffi::c_char,
+    len: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let mut errno = 0;
     let hash = jhash(errstr as *const _, len as usize, 0);
     let mut node = hash_errmap[(hash as usize) & ((1 << ERRHASH_BITS) - 1)].first;

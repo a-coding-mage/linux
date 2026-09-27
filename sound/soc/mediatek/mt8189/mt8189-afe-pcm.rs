@@ -397,10 +397,10 @@ const MTK_PCM_FORMATS: c_uint =
 macro_rules! MT8189_FE_DAI_PLAYBACK {
     ($name:ident, $id:expr, $max_ch:expr) => {
         snd_soc_dai_driver {
-            name: stringify!($name).as_ptr() as *const i8,
+            name: concat!(stringify!($name), "\0").as_ptr() as *const i8,
             id: $id,
             playback: snd_soc_pcm_stream {
-                stream_name: stringify!($name).as_ptr() as *const i8,
+                stream_name: concat!(stringify!($name), "\0").as_ptr() as *const i8,
                 channels_min: 1,
                 channels_max: $max_ch,
                 rates: MTK_PCM_RATES,
@@ -416,10 +416,10 @@ macro_rules! MT8189_FE_DAI_PLAYBACK {
 macro_rules! MT8189_FE_DAI_CAPTURE {
     ($name:ident, $id:expr, $max_ch:expr) => {
         snd_soc_dai_driver {
-            name: stringify!($name).as_ptr() as *const i8,
+            name: concat!(stringify!($name), "\0").as_ptr() as *const i8,
             id: $id,
             capture: snd_soc_pcm_stream {
-                stream_name: stringify!($name).as_ptr() as *const i8,
+                stream_name: concat!(stringify!($name), "\0").as_ptr() as *const i8,
                 channels_min: 1,
                 channels_max: $max_ch,
                 rates: MTK_PCM_RATES,
@@ -561,7 +561,7 @@ include_dapm_declarations_from_c_translation!();
 macro_rules! MT8189_DL_MEMIF {
     ($id:ident) => {
         mtk_base_memif_data {
-            name: stringify!($id).as_ptr() as *const i8,
+            name: concat!(stringify!($id), "\0").as_ptr() as *const i8,
             id: concat_idents!(MT8189_MEMIF_, $id),
             reg_ofs_base: concat_idents!(AFE_, $id, _BASE),
             reg_ofs_cur: concat_idents!(AFE_, $id, _CUR),
@@ -598,7 +598,7 @@ macro_rules! MT8189_DL_MEMIF {
 macro_rules! MT8189_MULTI_DL_MEMIF {
     ($id:ident) => {
         mtk_base_memif_data {
-            name: stringify!($id).as_ptr() as *const i8,
+            name: concat!(stringify!($id), "\0").as_ptr() as *const i8,
             id: concat_idents!(MT8189_MEMIF_, $id),
             reg_ofs_base: concat_idents!(AFE_, $id, _BASE),
             reg_ofs_cur: concat_idents!(AFE_, $id, _CUR),
@@ -638,7 +638,7 @@ macro_rules! MT8189_MULTI_DL_MEMIF {
 macro_rules! MT8189_UL_MEMIF {
     ($id:ident, $fs_shift:expr, $fs_maskbit:expr, $mono_shift:expr) => {
         mtk_base_memif_data {
-            name: stringify!($id).as_ptr() as *const i8,
+            name: concat!(stringify!($id), "\0").as_ptr() as *const i8,
             id: concat_idents!(MT8189_MEMIF_, $id),
             reg_ofs_base: concat_idents!(AFE_, $id, _BASE),
             reg_ofs_cur: concat_idents!(AFE_, $id, _CUR),

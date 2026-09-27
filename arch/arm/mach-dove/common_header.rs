@@ -15,7 +15,7 @@ pub struct mv_sata_platform_data;
 
 // Dependency supplied externally: enum reboot_mode.
 #[allow(non_camel_case_types)]
-pub type reboot_mode = ::core::ffi::c_int;
+pub type reboot_mode = ::kernel::ffi::c_int;
 
 unsafe extern "C" {
     pub fn dove_timer_init();
@@ -33,7 +33,7 @@ unsafe extern "C" {
 
     // CONFIG_PCI
     #[cfg(CONFIG_PCI)]
-    pub fn dove_pcie_init(init_port0: ::core::ffi::c_int, init_port1: ::core::ffi::c_int);
+    pub fn dove_pcie_init(init_port0: ::kernel::ffi::c_int, init_port1: ::kernel::ffi::c_int);
 
     pub fn dove_ehci0_init();
     pub fn dove_ehci1_init();
@@ -46,12 +46,12 @@ unsafe extern "C" {
     pub fn dove_i2c_init();
     pub fn dove_sdio0_init();
     pub fn dove_sdio1_init();
-    pub fn dove_restart(mode: reboot_mode, command: *const ::core::ffi::c_char);
+    pub fn dove_restart(mode: reboot_mode, command: *const ::kernel::ffi::c_char);
 }
 
 // When CONFIG_PCI is not enabled, the C header provides an empty inline function.
 #[cfg(not(CONFIG_PCI))]
 #[inline]
-pub fn dove_pcie_init(_init_port0: ::core::ffi::c_int, _init_port1: ::core::ffi::c_int) {}
+pub fn dove_pcie_init(_init_port0: ::kernel::ffi::c_int, _init_port1: ::kernel::ffi::c_int) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -33,25 +33,25 @@ pub unsafe fn __kasan_check_write(_p: *const core::ffi::c_void, _size: u32) -> b
  * kasan_check_*: Only available when the particular compilation unit has KASAN
  * instrumentation enabled. May be used in header files.
  */
-#[cfg(feature = "__SANITIZE_ADDRESS__")]
+#[cfg(__SANITIZE_ADDRESS__)]
 #[inline]
 pub unsafe fn kasan_check_read(p: *const core::ffi::c_void, size: u32) -> bool {
     __kasan_check_read(p, size)
 }
 
-#[cfg(feature = "__SANITIZE_ADDRESS__")]
+#[cfg(__SANITIZE_ADDRESS__)]
 #[inline]
 pub unsafe fn kasan_check_write(p: *const core::ffi::c_void, size: u32) -> bool {
     __kasan_check_write(p, size)
 }
 
-#[cfg(not(feature = "__SANITIZE_ADDRESS__"))]
+#[cfg(not(__SANITIZE_ADDRESS__))]
 #[inline]
 pub unsafe fn kasan_check_read(_p: *const core::ffi::c_void, _size: u32) -> bool {
     true
 }
 
-#[cfg(not(feature = "__SANITIZE_ADDRESS__"))]
+#[cfg(not(__SANITIZE_ADDRESS__))]
 #[inline]
 pub unsafe fn kasan_check_write(_p: *const core::ffi::c_void, _size: u32) -> bool {
     true

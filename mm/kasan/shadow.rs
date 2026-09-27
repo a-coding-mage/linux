@@ -2,75 +2,75 @@
 /* Rust translation of kasan/shadow.c. Kernel dependencies are external. */
 
 #[allow(non_camel_case_types, non_snake_case, dead_code)]
-pub type u8 = core::ffi::c_uchar;
-pub type gfp_t = core::ffi::c_uint;
+pub type u8 = kernel::ffi::c_uchar;
+pub type gfp_t = kernel::ffi::c_uint;
 pub type ssize_t = isize;
-pub type kasan_vmalloc_flags_t = core::ffi::c_ulong;
+pub type kasan_vmalloc_flags_t = kernel::ffi::c_ulong;
 
 extern "C" {
-    fn kasan_check_range(addr: *mut core::ffi::c_void, size: usize, write: bool, ip: usize) -> bool;
-    fn __memset(addr: *mut core::ffi::c_void, c: i32, len: usize) -> *mut core::ffi::c_void;
-    fn __memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, len: usize) -> *mut core::ffi::c_void;
-    fn __memmove(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, len: usize) -> *mut core::ffi::c_void;
+    fn kasan_check_range(addr: *mut kernel::ffi::c_void, size: usize, write: bool, ip: usize) -> bool;
+    fn __memset(addr: *mut kernel::ffi::c_void, c: i32, len: usize) -> *mut kernel::ffi::c_void;
+    fn __memcpy(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, len: usize) -> *mut kernel::ffi::c_void;
+    fn __memmove(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, len: usize) -> *mut kernel::ffi::c_void;
     fn kasan_enabled() -> bool;
-    fn kasan_reset_tag(addr: *const core::ffi::c_void) -> *const core::ffi::c_void;
-    fn kasan_mem_to_shadow(addr: *const core::ffi::c_void) -> *mut u8;
-    fn get_tag(addr: *const core::ffi::c_void) -> u8;
+    fn kasan_reset_tag(addr: *const kernel::ffi::c_void) -> *const kernel::ffi::c_void;
+    fn kasan_mem_to_shadow(addr: *const kernel::ffi::c_void) -> *mut u8;
+    fn get_tag(addr: *const kernel::ffi::c_void) -> u8;
     fn round_up(x: usize, y: usize) -> usize;
-    fn kasan_poison_last_granule(addr: *const core::ffi::c_void, size: usize);
+    fn kasan_poison_last_granule(addr: *const kernel::ffi::c_void, size: usize);
     fn kasan_random_tag() -> u8;
-    fn set_tag(addr: *const core::ffi::c_void, tag: u8) -> *const core::ffi::c_void;
-    fn is_vmalloc_or_module_addr(addr: *const core::ffi::c_void) -> bool;
+    fn set_tag(addr: *const kernel::ffi::c_void, tag: u8) -> *const kernel::ffi::c_void;
+    fn is_vmalloc_or_module_addr(addr: *const kernel::ffi::c_void) -> bool;
 }
 
 const KASAN_GRANULE_MASK: usize = 7;
 const KASAN_GRANULE_SIZE: usize = 8;
 
 #[no_mangle]
-pub unsafe extern "C" fn __kasan_check_read(p: *const core::ffi::c_void, size: u32) -> bool {
+pub unsafe extern "C" fn __kasan_check_read(p: *const kernel::ffi::c_void, size: u32) -> bool {
     kasan_check_range(p as *mut _, size as usize, false, 0)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn __kasan_check_write(p: *const core::ffi::c_void, size: u32) -> bool {
+pub unsafe extern "C" fn __kasan_check_write(p: *const kernel::ffi::c_void, size: u32) -> bool {
     kasan_check_range(p as *mut _, size as usize, true, 0)
 }
 
 #[cfg(not(any(CONFIG_CC_HAS_KASAN_MEMINTRINSIC_PREFIX, CONFIG_GENERIC_ENTRY)))]
 #[no_mangle]
-pub unsafe extern "C" fn memset(addr: *mut core::ffi::c_void, c: i32, len: usize) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn memset(addr: *mut kernel::ffi::c_void, c: i32, len: usize) -> *mut kernel::ffi::c_void {
     if !kasan_check_range(addr, len, true, 0) { return core::ptr::null_mut(); }
     __memset(addr, c, len)
 }
 
 #[cfg(not(any(CONFIG_CC_HAS_KASAN_MEMINTRINSIC_PREFIX, CONFIG_GENERIC_ENTRY)))]
 #[no_mangle]
-pub unsafe extern "C" fn memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, len: usize) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn memcpy(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, len: usize) -> *mut kernel::ffi::c_void {
     if !kasan_check_range(src as *mut _, len, false, 0) || !kasan_check_range(dest, len, true, 0) { return core::ptr::null_mut(); }
     __memcpy(dest, src, len)
 }
 
 #[cfg(not(any(CONFIG_CC_HAS_KASAN_MEMINTRINSIC_PREFIX, CONFIG_GENERIC_ENTRY)))]
 #[no_mangle]
-pub unsafe extern "C" fn memmove(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, len: usize) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn memmove(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, len: usize) -> *mut kernel::ffi::c_void {
     if !kasan_check_range(src as *mut _, len, false, 0) || !kasan_check_range(dest, len, true, 0) { return core::ptr::null_mut(); }
     __memmove(dest, src, len)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn __asan_memmove(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, len: ssize_t) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn __asan_memmove(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, len: ssize_t) -> *mut kernel::ffi::c_void {
     if !kasan_check_range(src as *mut _, len as usize, false, 0) || !kasan_check_range(dest, len as usize, true, 0) { return core::ptr::null_mut(); }
     __memmove(dest, src, len as usize)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn __asan_memset(addr: *mut core::ffi::c_void, c: i32, len: ssize_t) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn __asan_memset(addr: *mut kernel::ffi::c_void, c: i32, len: ssize_t) -> *mut kernel::ffi::c_void {
     if !kasan_check_range(addr, len as usize, true, 0) { return core::ptr::null_mut(); }
     __memset(addr, c, len as usize)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn __asan_memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, len: ssize_t) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn __asan_memcpy(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, len: ssize_t) -> *mut kernel::ffi::c_void {
     if !kasan_check_range(src as *mut _, len as usize, false, 0) || !kasan_check_range(dest, len as usize, true, 0) { return core::ptr::null_mut(); }
     __memcpy(dest, src, len as usize)
 }
@@ -81,7 +81,7 @@ pub use __asan_memset as __hwasan_memset;
 pub use __asan_memcpy as __hwasan_memcpy;
 
 #[no_mangle]
-pub unsafe extern "C" fn kasan_poison(addr0: *const core::ffi::c_void, size: usize, value: u8, _init: bool) {
+pub unsafe extern "C" fn kasan_poison(addr0: *const kernel::ffi::c_void, size: usize, value: u8, _init: bool) {
     if !kasan_enabled() { return; }
     let addr = kasan_reset_tag(addr0);
     if (addr as usize & KASAN_GRANULE_MASK) != 0 || (size & KASAN_GRANULE_MASK) != 0 { return; }
@@ -91,13 +91,13 @@ pub unsafe extern "C" fn kasan_poison(addr0: *const core::ffi::c_void, size: usi
 }
 
 #[cfg(CONFIG_KASAN_GENERIC)]
-pub unsafe extern "C" fn kasan_poison_last_granule_local(addr: *const core::ffi::c_void, size: usize) {
+pub unsafe extern "C" fn kasan_poison_last_granule_local(addr: *const kernel::ffi::c_void, size: usize) {
     if !kasan_enabled() { return; }
     if size & KASAN_GRANULE_MASK != 0 { *(kasan_mem_to_shadow(addr.add(size))) = (size & KASAN_GRANULE_MASK) as u8; }
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn kasan_unpoison(addr0: *const core::ffi::c_void, size: usize, _init: bool) {
+pub unsafe extern "C" fn kasan_unpoison(addr0: *const kernel::ffi::c_void, size: usize, _init: bool) {
     let tag = get_tag(addr0);
     let addr = kasan_reset_tag(addr0);
     if addr as usize & KASAN_GRANULE_MASK != 0 { return; }
@@ -107,7 +107,7 @@ pub unsafe extern "C" fn kasan_unpoison(addr0: *const core::ffi::c_void, size: u
 }
 
 #[cfg(CONFIG_KASAN_VMALLOC)]
-pub unsafe extern "C" fn __kasan_unpoison_vmalloc(start: *const core::ffi::c_void, size: usize, flags: kasan_vmalloc_flags_t) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn __kasan_unpoison_vmalloc(start: *const kernel::ffi::c_void, size: usize, flags: kasan_vmalloc_flags_t) -> *mut kernel::ffi::c_void {
     if !is_vmalloc_or_module_addr(start) { return start as *mut _; }
     const KASAN_VMALLOC_PROT_NORMAL: usize = 1 << 0;
     const KASAN_VMALLOC_KEEP_TAG: usize = 1 << 1;
@@ -118,15 +118,15 @@ pub unsafe extern "C" fn __kasan_unpoison_vmalloc(start: *const core::ffi::c_voi
 }
 
 #[cfg(CONFIG_KASAN_VMALLOC)]
-pub unsafe extern "C" fn __kasan_poison_vmalloc(start: *const core::ffi::c_void, size: usize) {
+pub unsafe extern "C" fn __kasan_poison_vmalloc(start: *const kernel::ffi::c_void, size: usize) {
     if is_vmalloc_or_module_addr(start) { kasan_poison(start, round_up(size, KASAN_GRANULE_SIZE), 0xFE, false); }
 }
 
 #[cfg(not(CONFIG_KASAN_VMALLOC))]
-pub unsafe extern "C" fn kasan_alloc_module_shadow(_addr: *mut core::ffi::c_void, _size: usize, _gfp_mask: gfp_t) -> i32 { -12 }
+pub unsafe extern "C" fn kasan_alloc_module_shadow(_addr: *mut kernel::ffi::c_void, _size: usize, _gfp_mask: gfp_t) -> i32 { -12 }
 
 #[cfg(not(CONFIG_KASAN_VMALLOC))]
-pub unsafe extern "C" fn kasan_free_module_shadow(_vm: *const core::ffi::c_void) {
+pub unsafe extern "C" fn kasan_free_module_shadow(_vm: *const kernel::ffi::c_void) {
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

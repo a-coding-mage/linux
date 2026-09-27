@@ -20,7 +20,7 @@ pub struct pmt_event {
 
 #[repr(C)]
 pub struct event_group {
-    pub pfname: *const core::ffi::c_char,
+    pub pfname: *const kernel::ffi::c_char,
     pub pfg: *mut pmt_feature_group,
     pub force_off: bool,
     pub force_on: bool,
@@ -60,7 +60,7 @@ static mut KNOWN_EVENT_GROUPS: [*mut event_group; 2] = [
     unsafe { &mut ENERGY_0X26696143 }, unsafe { &mut PERF_0X26557651 },
 ];
 
-pub unsafe fn intel_handle_aet_option(force_off: bool, mut tok: *mut core::ffi::c_char) -> bool {
+pub unsafe fn intel_handle_aet_option(force_off: bool, mut tok: *mut kernel::ffi::c_char) -> bool {
     if tok.is_null() { return false; }
     let name = strsep(&mut tok, b":".as_ptr() as *const _);
     let mut guid = 0u32;
@@ -125,11 +125,11 @@ pub unsafe fn intel_aet_get_events() -> bool {
     ret
 }
 
-unsafe fn lookup_pfid(pfname: *const core::ffi::c_char) -> pmt_feature_id { if strcmp(pfname, b"energy\0".as_ptr() as *const _) == 0 { FEATURE_PER_RMID_ENERGY_TELEM } else if strcmp(pfname, b"perf\0".as_ptr() as *const _) == 0 { FEATURE_PER_RMID_PERF_TELEM } else { pr_warn!("Unknown PMT feature name\n"); FEATURE_INVALID } }
+unsafe fn lookup_pfid(pfname: *const kernel::ffi::c_char) -> pmt_feature_id { if strcmp(pfname, b"energy\0".as_ptr() as *const _) == 0 { FEATURE_PER_RMID_ENERGY_TELEM } else if strcmp(pfname, b"perf\0".as_ptr() as *const _) == 0 { FEATURE_PER_RMID_PERF_TELEM } else { pr_warn!("Unknown PMT feature name\n"); FEATURE_INVALID } }
 
 pub unsafe fn intel_aet_exit() { for peg in KNOWN_EVENT_GROUPS.iter() { let e = &mut **peg; if !e.pfg.is_null() { intel_pmt_put_feature_group(e.pfg); e.pfg = core::ptr::null_mut(); } } }
 
-pub unsafe fn intel_aet_read_event(domid: i32, rmid: u32, arch_priv: *mut core::ffi::c_void, val: *mut u64) -> i32 {
+pub unsafe fn intel_aet_read_event(domid: i32, rmid: u32, arch_priv: *mut kernel::ffi::c_void, val: *mut u64) -> i32 {
     let pevt = arch_priv as *mut pmt_event;
     let e = container_of_event_group(pevt);
     let idx = rmid.wrapping_mul((*e).num_events).wrapping_add((*pevt).idx);
@@ -157,7 +157,7 @@ pub unsafe fn intel_aet_mon_domain_setup(cpu: i32, id: i32, r: *mut rdt_resource
     (*d).hdr.id = id; (*d).hdr.type_ = RESCTRL_MON_DOMAIN; (*d).hdr.rid = RDT_RESOURCE_PERF_PKG;
     cpumask_set_cpu(cpu, &mut (*d).hdr.cpu_mask);
     let err = resctrl_online_mon_domain(r, &mut (*d).hdr);
-    if err != 0 { kfree(d as *mut core::ffi::c_void); return; }
+    if err != 0 { kfree(d as *mut kernel::ffi::c_void); return; }
     list_add_tail_rcu(&mut (*d).hdr.list, add_pos);
 }
 

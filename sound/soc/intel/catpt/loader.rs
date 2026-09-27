@@ -16,7 +16,7 @@ pub const FW_SIGNATURE_SIZE: usize = 4;
 
 #[repr(C, packed)]
 pub struct catpt_fw_hdr {
-    pub signature: [::core::ffi::c_char; FW_SIGNATURE_SIZE],
+    pub signature: [::kernel::ffi::c_char; FW_SIGNATURE_SIZE],
     pub file_size: u32,
     pub modules: u32,
     pub file_format: u32,
@@ -25,7 +25,7 @@ pub struct catpt_fw_hdr {
 
 #[repr(C, packed)]
 pub struct catpt_fw_module_hdr {
-    pub signature: [::core::ffi::c_char; FW_SIGNATURE_SIZE],
+    pub signature: [::kernel::ffi::c_char; FW_SIGNATURE_SIZE],
     pub mod_size: u32,
     pub blocks: u32,
     pub slot: u16,
@@ -60,12 +60,12 @@ extern "C" {
     static GFP_KERNEL: gfp_t;
 
     fn release_resource(res: *mut resource) -> i32;
-    fn kfree(ptr: *const ::core::ffi::c_void);
+    fn kfree(ptr: *const ::kernel::ffi::c_void);
     fn __request_region(
         parent: *mut resource,
         start: resource_size_t,
         n: resource_size_t,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         flags: i32,
     ) -> *mut resource;
     fn __release_region(parent: *mut resource, start: resource_size_t, n: resource_size_t);
@@ -102,25 +102,25 @@ extern "C" {
     fn catpt_ipc_get_mixer_stream_info(cdev: *mut catpt_dev, mixer: *mut catpt_mixer) -> i32;
     fn catpt_arm_stream_templates(cdev: *mut catpt_dev) -> i32;
 
-    fn dev_dbg(dev: *mut device, fmt: *const ::core::ffi::c_char, ...);
-    fn dev_err(dev: *mut device, fmt: *const ::core::ffi::c_char, ...);
+    fn dev_dbg(dev: *mut device, fmt: *const ::kernel::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const ::kernel::ffi::c_char, ...);
     fn print_hex_dump_debug(
-        level: *const ::core::ffi::c_char,
+        level: *const ::kernel::ffi::c_char,
         prefix_type: i32,
         rowsize: i32,
         groupsize: i32,
-        buf: *const ::core::ffi::c_void,
+        buf: *const ::kernel::ffi::c_void,
         len: usize,
         ascii: bool,
     );
     fn strncmp(
-        cs: *const ::core::ffi::c_char,
-        ct: *const ::core::ffi::c_char,
+        cs: *const ::kernel::ffi::c_char,
+        ct: *const ::kernel::ffi::c_char,
         count: usize,
     ) -> i32;
     fn request_firmware(
         firmware_p: *mut *const firmware,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         device: *mut device,
     ) -> i32;
     fn release_firmware(fw: *const firmware);
@@ -129,23 +129,23 @@ extern "C" {
         size: usize,
         dma_handle: *mut dma_addr_t,
         flag: gfp_t,
-    ) -> *mut ::core::ffi::c_void;
+    ) -> *mut ::kernel::ffi::c_void;
     fn dma_free_coherent(
         dev: *mut device,
         size: usize,
-        cpu_addr: *mut ::core::ffi::c_void,
+        cpu_addr: *mut ::kernel::ffi::c_void,
         dma_handle: dma_addr_t,
     );
     fn memcpy(
-        dest: *mut ::core::ffi::c_void,
-        src: *const ::core::ffi::c_void,
+        dest: *mut ::kernel::ffi::c_void,
+        src: *const ::kernel::ffi::c_void,
         n: usize,
-    ) -> *mut ::core::ffi::c_void;
+    ) -> *mut ::kernel::ffi::c_void;
     fn reinit_completion(x: *mut completion);
     fn wait_for_completion_timeout(x: *mut completion, timeout: u64) -> u64;
     fn msecs_to_jiffies(m: u32) -> u64;
-    fn IS_ERR(ptr: *const ::core::ffi::c_void) -> bool;
-    fn PTR_ERR(ptr: *const ::core::ffi::c_void) -> i32;
+    fn IS_ERR(ptr: *const ::kernel::ffi::c_void) -> bool;
+    fn PTR_ERR(ptr: *const ::kernel::ffi::c_void) -> i32;
     fn CATPT_IPC_RET(ret: i32) -> i32;
 }
 
@@ -225,7 +225,7 @@ pub struct catpt_dx_context {
 
 #[repr(C)]
 pub struct catpt_spec {
-    pub fw_name: *const ::core::ffi::c_char,
+    pub fw_name: *const ::kernel::ffi::c_char,
     pub dram_mask: u32,
     pub iram_mask: u32,
 }
@@ -280,7 +280,7 @@ pub unsafe extern "C" fn catpt_sram_free(sram: *mut resource) {
     while !res.is_null() {
         save = (*res).sibling;
         release_resource(res);
-        kfree(res as *const ::core::ffi::c_void);
+        kfree(res as *const ::kernel::ffi::c_void);
         res = save;
     }
 }
@@ -437,8 +437,8 @@ pub unsafe extern "C" fn catpt_store_firmware_context(cdev: *mut catpt_dev) -> i
     let mut ret: i32;
 
     chan = catpt_dma_request_config_chan(cdev);
-    if IS_ERR(chan as *const ::core::ffi::c_void) {
-        return PTR_ERR(chan as *const ::core::ffi::c_void);
+    if IS_ERR(chan as *const ::kernel::ffi::c_void) {
+        return PTR_ERR(chan as *const ::kernel::ffi::c_void);
     }
 
     ret = catpt_dsp_stall(cdev, true);
@@ -568,7 +568,7 @@ unsafe fn catpt_restore_dram_rodata(
         DUMP_PREFIX_OFFSET,
         8,
         4,
-        blk as *const ::core::ffi::c_void,
+        blk as *const ::kernel::ffi::c_void,
         ::core::mem::size_of_val(&*blk),
         false,
     );
@@ -645,7 +645,7 @@ unsafe fn catpt_load_block(
         DUMP_PREFIX_OFFSET,
         8,
         4,
-        blk as *const ::core::ffi::c_void,
+        blk as *const ::kernel::ffi::c_void,
         ::core::mem::size_of_val(&*blk),
         false,
     );
@@ -694,7 +694,7 @@ unsafe fn catpt_restore_basefw(
         DUMP_PREFIX_OFFSET,
         8,
         4,
-        basefw as *const ::core::ffi::c_void,
+        basefw as *const ::kernel::ffi::c_void,
         ::core::mem::size_of_val(&*basefw),
         false,
     );
@@ -749,7 +749,7 @@ unsafe fn catpt_restore_module(
         DUMP_PREFIX_OFFSET,
         8,
         4,
-        mod_ as *const ::core::ffi::c_void,
+        mod_ as *const ::kernel::ffi::c_void,
         ::core::mem::size_of_val(&*mod_),
         false,
     );
@@ -806,7 +806,7 @@ unsafe fn catpt_load_module(
         DUMP_PREFIX_OFFSET,
         8,
         4,
-        mod_ as *const ::core::ffi::c_void,
+        mod_ as *const ::kernel::ffi::c_void,
         ::core::mem::size_of_val(&*mod_),
         false,
     );
@@ -865,7 +865,7 @@ unsafe fn catpt_restore_firmware(
         DUMP_PREFIX_OFFSET,
         8,
         4,
-        fw as *const ::core::ffi::c_void,
+        fw as *const ::kernel::ffi::c_void,
         ::core::mem::size_of_val(&*fw),
         false,
     );
@@ -927,7 +927,7 @@ unsafe fn catpt_load_firmware(
         DUMP_PREFIX_OFFSET,
         8,
         4,
-        fw as *const ::core::ffi::c_void,
+        fw as *const ::kernel::ffi::c_void,
         ::core::mem::size_of_val(&*fw),
         false,
     );
@@ -970,12 +970,12 @@ unsafe fn catpt_load_firmware(
 unsafe fn catpt_request_load_firmware(
     cdev: *mut catpt_dev,
     chan: *mut dma_chan,
-    name: *const ::core::ffi::c_char,
+    name: *const ::kernel::ffi::c_char,
     restore: bool,
 ) -> i32 {
     let mut fw: *mut catpt_fw_hdr;
     let mut paddr: dma_addr_t = 0;
-    let vaddr: *mut ::core::ffi::c_void;
+    let vaddr: *mut ::kernel::ffi::c_void;
     let mut ret: i32;
 
     let mut img: *const firmware = ::core::ptr::null();
@@ -987,7 +987,7 @@ unsafe fn catpt_request_load_firmware(
     fw = (*img).data as *mut catpt_fw_hdr;
     if strncmp(
         (*fw).signature.as_ptr(),
-        FW_SIGNATURE.as_ptr() as *const ::core::ffi::c_char,
+        FW_SIGNATURE.as_ptr() as *const ::kernel::ffi::c_char,
         FW_SIGNATURE_SIZE,
     ) != 0
     {
@@ -1002,7 +1002,7 @@ unsafe fn catpt_request_load_firmware(
         return -ENOMEM;
     }
 
-    memcpy(vaddr, (*img).data as *const ::core::ffi::c_void, (*img).size);
+    memcpy(vaddr, (*img).data as *const ::kernel::ffi::c_void, (*img).size);
     fw = vaddr as *mut catpt_fw_hdr;
     if restore {
         ret = catpt_restore_firmware(cdev, chan, paddr, fw);
@@ -1020,8 +1020,8 @@ unsafe fn catpt_request_dma_load_firmware(cdev: *mut catpt_dev, restore: bool) -
     let mut ret: i32;
 
     chan = catpt_dma_request_config_chan(cdev);
-    if IS_ERR(chan as *const ::core::ffi::c_void) {
-        return PTR_ERR(chan as *const ::core::ffi::c_void);
+    if IS_ERR(chan as *const ::kernel::ffi::c_void) {
+        return PTR_ERR(chan as *const ::kernel::ffi::c_void);
     }
 
     ret = catpt_request_load_firmware(cdev, chan, (*(*cdev).spec).fw_name, restore);

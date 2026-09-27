@@ -24,15 +24,15 @@
 /* Framebuffer external API */
 #[repr(C)]
 pub struct ivtvfb_dma_frame {
-    pub source: *mut core::ffi::c_void,
-    pub dest_offset: libc::c_ulong,
-    pub count: libc::c_int,
+    pub source: *mut kernel::ffi::c_void,
+    pub dest_offset: kernel::ffi::c_ulong,
+    pub count: kernel::ffi::c_int,
 }
 
 // Original definition:
 // #define IVTVFB_IOC_DMA_FRAME _IOW('V', BASE_VIDIOC_PRIVATE+0, struct ivtvfb_dma_frame)
 // `_IOW` and `BASE_VIDIOC_PRIVATE` are supplied by the Linux ioctl headers.
-pub const IVTVFB_IOC_DMA_FRAME: libc::c_ulong =
-    _IOW(b'V' as libc::c_ulong, BASE_VIDIOC_PRIVATE + 0, ivtvfb_dma_frame);
+pub const IVTVFB_IOC_DMA_FRAME: kernel::ffi::c_ulong =
+    _IOW(b'V' as kernel::ffi::c_ulong, BASE_VIDIOC_PRIVATE + 0, ivtvfb_dma_frame);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

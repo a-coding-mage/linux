@@ -4,15 +4,15 @@
 
 #[repr(C)]
 pub struct cpu_signature {
-    pub sig: core::ffi::c_uint,
-    pub pf: core::ffi::c_uint,
-    pub rev: core::ffi::c_uint,
+    pub sig: kernel::ffi::c_uint,
+    pub pf: kernel::ffi::c_uint,
+    pub rev: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct ucode_cpu_info {
     pub cpu_sig: cpu_signature,
-    pub mc: *mut core::ffi::c_void,
+    pub mc: *mut kernel::ffi::c_void,
 }
 
 // CONFIG_MICROCODE selects the external implementations in the C header.
@@ -41,58 +41,58 @@ pub fn microcode_bsp_resume() {}
 pub fn microcode_loader_disabled() -> bool { false }
 
 extern "C" {
-    pub static mut initrd_start_early: core::ffi::c_ulong;
+    pub static mut initrd_start_early: kernel::ffi::c_ulong;
 }
 
 // CONFIG_CPU_SUP_INTEL: Intel-specific microcode definitions, public for IFS.
 #[cfg(feature = "config_cpu_sup_intel")]
 #[repr(C)]
 pub struct microcode_header_intel {
-    pub hdrver: core::ffi::c_uint,
-    pub rev: core::ffi::c_uint,
-    pub date: core::ffi::c_uint,
-    pub sig: core::ffi::c_uint,
-    pub cksum: core::ffi::c_uint,
-    pub ldrver: core::ffi::c_uint,
-    pub pf: core::ffi::c_uint,
-    pub datasize: core::ffi::c_uint,
-    pub totalsize: core::ffi::c_uint,
-    pub metasize: core::ffi::c_uint,
-    pub min_req_ver: core::ffi::c_uint,
-    pub reserved: core::ffi::c_uint,
+    pub hdrver: kernel::ffi::c_uint,
+    pub rev: kernel::ffi::c_uint,
+    pub date: kernel::ffi::c_uint,
+    pub sig: kernel::ffi::c_uint,
+    pub cksum: kernel::ffi::c_uint,
+    pub ldrver: kernel::ffi::c_uint,
+    pub pf: kernel::ffi::c_uint,
+    pub datasize: kernel::ffi::c_uint,
+    pub totalsize: kernel::ffi::c_uint,
+    pub metasize: kernel::ffi::c_uint,
+    pub min_req_ver: kernel::ffi::c_uint,
+    pub reserved: kernel::ffi::c_uint,
 }
 
 #[cfg(feature = "config_cpu_sup_intel")]
 #[repr(C)]
 pub struct microcode_intel {
     pub hdr: microcode_header_intel,
-    pub bits: [core::ffi::c_uint; 0],
+    pub bits: [kernel::ffi::c_uint; 0],
 }
 
 #[cfg(feature = "config_cpu_sup_intel")]
-pub const DEFAULT_UCODE_DATASIZE: core::ffi::c_uint = 2000;
+pub const DEFAULT_UCODE_DATASIZE: kernel::ffi::c_uint = 2000;
 #[cfg(feature = "config_cpu_sup_intel")]
 pub const MC_HEADER_SIZE: usize = core::mem::size_of::<microcode_header_intel>();
 #[cfg(feature = "config_cpu_sup_intel")]
-pub const MC_HEADER_TYPE_MICROCODE: core::ffi::c_uint = 1;
+pub const MC_HEADER_TYPE_MICROCODE: kernel::ffi::c_uint = 1;
 #[cfg(feature = "config_cpu_sup_intel")]
-pub const MC_HEADER_TYPE_IFS: core::ffi::c_uint = 2;
+pub const MC_HEADER_TYPE_IFS: kernel::ffi::c_uint = 2;
 
 #[cfg(feature = "config_cpu_sup_intel")]
 #[inline]
-pub unsafe fn intel_microcode_get_datasize(hdr: *mut microcode_header_intel) -> core::ffi::c_int {
+pub unsafe fn intel_microcode_get_datasize(hdr: *mut microcode_header_intel) -> kernel::ffi::c_int {
     if (*hdr).datasize != 0 {
-        (*hdr).datasize as core::ffi::c_int
+        (*hdr).datasize as kernel::ffi::c_int
     } else {
-        DEFAULT_UCODE_DATASIZE as core::ffi::c_int
+        DEFAULT_UCODE_DATASIZE as kernel::ffi::c_int
     }
 }
 
 #[cfg(feature = "config_cpu_sup_intel")]
 extern "C" {
-    pub fn native_wrmsrq(msr: core::ffi::c_uint, value: u64);
-    pub fn native_cpuid_eax(eax: core::ffi::c_uint) -> u32;
-    pub fn native_rdmsr(msr: core::ffi::c_uint, low: *mut u32, high: *mut u32);
+    pub fn native_wrmsrq(msr: kernel::ffi::c_uint, value: u64);
+    pub fn native_cpuid_eax(eax: kernel::ffi::c_uint) -> u32;
+    pub fn native_rdmsr(msr: kernel::ffi::c_uint, low: *mut u32, high: *mut u32);
 }
 
 #[cfg(feature = "config_cpu_sup_intel")]
@@ -142,6 +142,6 @@ pub struct StaticKeyFalse {
 }
 
 #[cfg(feature = "config_cpu_sup_intel")]
-const MSR_IA32_UCODE_REV: core::ffi::c_uint = 0x8b;
+const MSR_IA32_UCODE_REV: kernel::ffi::c_uint = 0x8b;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

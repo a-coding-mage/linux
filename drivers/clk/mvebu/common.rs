@@ -27,7 +27,7 @@ static mut clk_data: clk_onecell_data = clk_onecell_data { clk_num: 0, clks: cor
 
 pub unsafe fn kirkwood_fix_sscg_deviation(mut system_clk: u32) -> u32 {
     let sscg_np: *mut device_node = of_find_node_by_name(core::ptr::null_mut(), b"sscg\0".as_ptr() as *const _);
-    let sscg_map: *mut core::ffi::c_void;
+    let sscg_map: *mut kernel::ffi::c_void;
     let sscg_reg: u32;
     let mut low_bound: i32;
     let mut high_bound: i32;
@@ -83,8 +83,8 @@ pub unsafe fn kirkwood_fix_sscg_deviation(mut system_clk: u32) -> u32 {
 }
 
 pub unsafe fn mvebu_coreclk_setup(np: *mut device_node, desc: *const coreclk_soc_desc) {
-    let mut tclk_name: *const core::ffi::c_char = b"tclk\0".as_ptr() as *const _;
-    let mut cpuclk_name: *const core::ffi::c_char = b"cpuclk\0".as_ptr() as *const _;
+    let mut tclk_name: *const kernel::ffi::c_char = b"tclk\0".as_ptr() as *const _;
+    let mut cpuclk_name: *const kernel::ffi::c_char = b"cpuclk\0".as_ptr() as *const _;
     let base = of_iomap(np, 0);
     if warn_on!(base.is_null()) { return; }
 
@@ -126,22 +126,22 @@ pub unsafe fn mvebu_coreclk_setup(np: *mut device_node, desc: *const coreclk_soc
 extern "C" { static mut ctrl_gating_lock: spinlock_t; }
 
 #[repr(C)]
-struct clk_gating_ctrl { lock: *mut spinlock_t, num_gates: i32, base: *mut core::ffi::c_void, saved_reg: u32, gates: [*mut clk; 0] }
+struct clk_gating_ctrl { lock: *mut spinlock_t, num_gates: i32, base: *mut kernel::ffi::c_void, saved_reg: u32, gates: [*mut clk; 0] }
 static mut ctrl: *mut clk_gating_ctrl = core::ptr::null_mut();
 
-unsafe extern "C" fn clk_gating_get_src(clkspec: *mut of_phandle_args, _data: *mut core::ffi::c_void) -> *mut clk {
+unsafe extern "C" fn clk_gating_get_src(clkspec: *mut of_phandle_args, _data: *mut kernel::ffi::c_void) -> *mut clk {
     if (*clkspec).args_count < 1 { return err_ptr(-22); }
     for n in 0..(*ctrl).num_gates { let gate = to_clk_gate(__clk_get_hw((*ctrl).gates[n as usize])); if (*clkspec).args[0] == (*gate).bit_idx { return (*ctrl).gates[n as usize]; } }
     err_ptr(-19)
 }
-unsafe extern "C" fn mvebu_clk_gating_suspend(_data: *mut core::ffi::c_void) -> i32 { (*ctrl).saved_reg = readl((*ctrl).base); 0 }
-unsafe extern "C" fn mvebu_clk_gating_resume(_data: *mut core::ffi::c_void) { writel((*ctrl).saved_reg, (*ctrl).base); }
+unsafe extern "C" fn mvebu_clk_gating_suspend(_data: *mut kernel::ffi::c_void) -> i32 { (*ctrl).saved_reg = readl((*ctrl).base); 0 }
+unsafe extern "C" fn mvebu_clk_gating_resume(_data: *mut kernel::ffi::c_void) { writel((*ctrl).saved_reg, (*ctrl).base); }
 
 static mut clk_gate_syscore_ops: syscore_ops = syscore_ops { suspend: Some(mvebu_clk_gating_suspend), resume: Some(mvebu_clk_gating_resume) };
 static mut clk_gate_syscore: syscore = syscore { ops: &mut clk_gate_syscore_ops };
 
 pub unsafe fn mvebu_clk_gating_setup(np: *mut device_node, desc: *const clk_gating_soc_desc) {
-    let base = of_iomap(np, 0); let mut default_parent: *const core::ffi::c_char = core::ptr::null();
+    let base = of_iomap(np, 0); let mut default_parent: *const kernel::ffi::c_char = core::ptr::null();
     if !ctrl.is_null() { pr_err!("mvebu-clk-gating: cannot instantiate more than one gateable clock device\n"); return; }
     if warn_on!(base.is_null()) { return; }
     let clk = of_clk_get(np, 0); if !is_err(clk) { default_parent = __clk_get_name(clk); clk_put(clk); }

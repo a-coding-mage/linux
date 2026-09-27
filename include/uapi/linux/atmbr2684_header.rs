@@ -36,9 +36,9 @@ pub const BR2684_PAYLOAD_BRIDGED: i32 = 1;
 #[repr(C)]
 pub struct atm_newif_br2684 {
     pub backend_num: atm_backend_t, /* ATM_BACKEND_BR2684 */
-    pub media: ::core::ffi::c_int, /* BR2684_MEDIA_*, flags in upper bits */
-    pub ifname: [::core::ffi::c_char; IFNAMSIZ],
-    pub mtu: ::core::ffi::c_int,
+    pub media: ::kernel::ffi::c_int, /* BR2684_MEDIA_*, flags in upper bits */
+    pub ifname: [::kernel::ffi::c_char; IFNAMSIZ],
+    pub mtu: ::kernel::ffi::c_int,
 }
 
 /* Interface selection method. */
@@ -48,13 +48,13 @@ pub const BR2684_FIND_BYIFNAME: i32 = 2;
 
 #[repr(C)]
 pub union br2684_if_spec_spec {
-    pub ifname: [::core::ffi::c_char; IFNAMSIZ],
-    pub devnum: ::core::ffi::c_int,
+    pub ifname: [::kernel::ffi::c_char; IFNAMSIZ],
+    pub devnum: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct br2684_if_spec {
-    pub method: ::core::ffi::c_int, /* BR2684_FIND_* */
+    pub method: ::kernel::ffi::c_int, /* BR2684_FIND_* */
     pub spec: br2684_if_spec_spec,
 }
 
@@ -62,14 +62,14 @@ pub struct br2684_if_spec {
 pub struct atm_backend_br2684 {
     pub backend_num: atm_backend_t, /* ATM_BACKEND_BR2684 */
     pub ifspec: br2684_if_spec,
-    pub fcs_in: ::core::ffi::c_int, /* BR2684_FCSIN_* */
-    pub fcs_out: ::core::ffi::c_int, /* BR2684_FCSOUT_* */
-    pub fcs_auto: ::core::ffi::c_int, /* 1: fcs_{in,out} disabled if no FCS rx'ed */
-    pub encaps: ::core::ffi::c_int, /* BR2684_ENCAPS_* */
-    pub has_vpiid: ::core::ffi::c_int, /* 1: use vpn_id - Unsupported */
+    pub fcs_in: ::kernel::ffi::c_int, /* BR2684_FCSIN_* */
+    pub fcs_out: ::kernel::ffi::c_int, /* BR2684_FCSOUT_* */
+    pub fcs_auto: ::kernel::ffi::c_int, /* 1: fcs_{in,out} disabled if no FCS rx'ed */
+    pub encaps: ::kernel::ffi::c_int, /* BR2684_ENCAPS_* */
+    pub has_vpiid: ::kernel::ffi::c_int, /* 1: use vpn_id - Unsupported */
     pub vpn_id: [__u8; 7],
-    pub send_padding: ::core::ffi::c_int, /* unsupported */
-    pub min_size: ::core::ffi::c_int, /* we will pad smaller packets than this */
+    pub send_padding: ::kernel::ffi::c_int, /* unsupported */
+    pub min_size: ::kernel::ffi::c_int, /* we will pad smaller packets than this */
 }
 
 #[repr(C)]

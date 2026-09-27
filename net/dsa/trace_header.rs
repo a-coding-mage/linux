@@ -10,8 +10,8 @@
 pub const DSA_DB_BUFSIZ: usize = IFNAMSIZ + 16;
 
 extern "C" {
-    pub fn dsa_db_print(db: *const dsa_db, buf: *mut core::ffi::c_char);
-    pub fn dsa_port_kind(dp: *const dsa_port) -> *const core::ffi::c_char;
+    pub fn dsa_db_print(db: *const dsa_db, buf: *mut kernel::ffi::c_char);
+    pub fn dsa_port_kind(dp: *const dsa_port) -> *const kernel::ffi::c_char;
 }
 
 // External Linux kernel types supplied by the translated dependencies.

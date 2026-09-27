@@ -152,13 +152,13 @@ pub const fn P10_SIER2_DISPATCH_CYC(v: u64) -> u64 { (v >> 50) & 0x7ff }
 pub const REM: u64 = P(REMOTE, REMOTE);
 
 extern "C" {
-    pub fn isa207_get_constraint(event: u64, maskp: *mut libc::c_ulong, valp: *mut libc::c_ulong, event_config1: u64) -> libc::c_int;
-    pub fn isa207_compute_mmcr(event: *const u64, n_ev: libc::c_int, hwc: *const libc::c_uint, mmcr: *mut mmcr_regs, pevents: *mut *mut perf_event, flags: u32) -> libc::c_int;
-    pub fn isa207_disable_pmc(pmc: libc::c_uint, mmcr: *mut mmcr_regs);
-    pub fn isa207_get_alternatives(event: u64, alt: *mut u64, size: libc::c_int, flags: libc::c_uint, ev_alt: *const [libc::c_uint; MAX_ALT]) -> libc::c_int;
+    pub fn isa207_get_constraint(event: u64, maskp: *mut kernel::ffi::c_ulong, valp: *mut kernel::ffi::c_ulong, event_config1: u64) -> kernel::ffi::c_int;
+    pub fn isa207_compute_mmcr(event: *const u64, n_ev: kernel::ffi::c_int, hwc: *const kernel::ffi::c_uint, mmcr: *mut mmcr_regs, pevents: *mut *mut perf_event, flags: u32) -> kernel::ffi::c_int;
+    pub fn isa207_disable_pmc(pmc: kernel::ffi::c_uint, mmcr: *mut mmcr_regs);
+    pub fn isa207_get_alternatives(event: u64, alt: *mut u64, size: kernel::ffi::c_int, flags: kernel::ffi::c_uint, ev_alt: *const [kernel::ffi::c_uint; MAX_ALT]) -> kernel::ffi::c_int;
     pub fn isa207_get_mem_data_src(dsrc: *mut perf_mem_data_src, flags: u32, regs: *mut pt_regs);
     pub fn isa207_get_mem_weight(weight: *mut u64, type_: u64);
-    pub fn isa3XX_check_attr_config(ev: *mut perf_event) -> libc::c_int;
+    pub fn isa3XX_check_attr_config(ev: *mut perf_event) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -10,8 +10,8 @@
 
 #[repr(C)]
 pub struct P1275Buf {
-    pub prom_callback: libc::c_long, // 0x00
-    pub prom_cif_handler: Option<unsafe extern "C" fn(*mut libc::c_long)>, // 0x08
+    pub prom_callback: kernel::ffi::c_long, // 0x00
+    pub prom_cif_handler: Option<unsafe extern "C" fn(*mut kernel::ffi::c_long)>, // 0x08
 }
 
 #[no_mangle]
@@ -21,14 +21,14 @@ pub static mut p1275buf: P1275Buf = P1275Buf {
 };
 
 extern "C" {
-    fn prom_world(arg: libc::c_int);
-    fn prom_cif_direct(args: *mut libc::c_ulong);
+    fn prom_world(arg: kernel::ffi::c_int);
+    fn prom_cif_direct(args: *mut kernel::ffi::c_ulong);
     fn prom_cif_callback();
 
     static mut prom_entry_lock: RawSpinlock;
 
-    fn local_save_flags(flags: *mut libc::c_ulong);
-    fn local_irq_restore(flags: libc::c_ulong);
+    fn local_save_flags(flags: *mut kernel::ffi::c_ulong);
+    fn local_irq_restore(flags: kernel::ffi::c_ulong);
     fn raw_spin_lock(lock: *mut RawSpinlock);
     fn raw_spin_unlock(lock: *mut RawSpinlock);
 }
@@ -38,11 +38,11 @@ pub struct RawSpinlock {
     _private: [u8; 0],
 }
 
-pub unsafe fn p1275_cmd_direct(args: *mut libc::c_ulong) {
-    let mut flags: libc::c_ulong = 0;
+pub unsafe fn p1275_cmd_direct(args: *mut kernel::ffi::c_ulong) {
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     local_save_flags(&mut flags);
-    local_irq_restore(0x15 as libc::c_ulong); // PIL_NMI
+    local_irq_restore(0x15 as kernel::ffi::c_ulong); // PIL_NMI
     raw_spin_lock(&mut prom_entry_lock);
 
     prom_world(1);
@@ -53,10 +53,10 @@ pub unsafe fn p1275_cmd_direct(args: *mut libc::c_ulong) {
     local_irq_restore(flags);
 }
 
-pub unsafe fn prom_cif_init(cif_handler: *mut libc::c_void) {
+pub unsafe fn prom_cif_init(cif_handler: *mut kernel::ffi::c_void) {
     p1275buf.prom_cif_handler = Some(core::mem::transmute::<
-        *mut libc::c_void,
-        unsafe extern "C" fn(*mut libc::c_long),
+        *mut kernel::ffi::c_void,
+        unsafe extern "C" fn(*mut kernel::ffi::c_long),
     >(cif_handler));
 }
 

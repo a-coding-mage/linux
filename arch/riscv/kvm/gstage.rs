@@ -7,9 +7,9 @@
 // Linux and RISC-V dependencies are supplied by the surrounding kernel crate.
 
 #[cfg(target_pointer_width = "64")]
-pub static mut kvm_riscv_gstage_max_pgd_levels: ::core::ffi::c_ulong = 3;
+pub static mut kvm_riscv_gstage_max_pgd_levels: ::kernel::ffi::c_ulong = 3;
 #[cfg(target_pointer_width = "32")]
-pub static mut kvm_riscv_gstage_max_pgd_levels: ::core::ffi::c_ulong = 2;
+pub static mut kvm_riscv_gstage_max_pgd_levels: ::kernel::ffi::c_ulong = 2;
 
 #[inline]
 unsafe fn gstage_pte_leaf(__ptep: *const pte_t) -> bool {

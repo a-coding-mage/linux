@@ -11,9 +11,9 @@
 pub const MAX_DMA_ADDRESS: usize = PAGE_OFFSET;
 
 unsafe extern "C" {
-    pub fn request_dma(dmanr: ::core::ffi::c_uint, device_id: *const ::core::ffi::c_char)
-        -> ::core::ffi::c_int;
-    pub fn free_dma(dmanr: ::core::ffi::c_uint);
+    pub fn request_dma(dmanr: ::kernel::ffi::c_uint, device_id: *const ::kernel::ffi::c_char)
+        -> ::kernel::ffi::c_int;
+    pub fn free_dma(dmanr: ::kernel::ffi::c_uint);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

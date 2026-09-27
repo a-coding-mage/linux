@@ -37,28 +37,28 @@ const EP93XX_TIMER4_RATE: u32 = 983040;
 
 #[repr(C)]
 pub struct ep93xx_tcu {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
 }
 
 static mut ep93xx_tcu: *mut ep93xx_tcu = core::ptr::null_mut();
 
 extern "C" {
-    fn lo_hi_readq(addr: *mut core::ffi::c_void) -> u64;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
+    fn lo_hi_readq(addr: *mut kernel::ffi::c_void) -> u64;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
     fn kzalloc_obj<T>() -> *mut T;
-    fn of_iomap(np: *mut device_node, index: u32) -> *mut core::ffi::c_void;
+    fn of_iomap(np: *mut device_node, index: u32) -> *mut kernel::ffi::c_void;
     fn irq_of_parse_and_map(np: *mut device_node, index: u32) -> i32;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn request_irq(
         irq: i32,
-        handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t,
+        handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t,
         flags: usize,
-        name: *const core::ffi::c_char,
-        dev_id: *mut core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        dev_id: *mut kernel::ffi::c_void,
     ) -> i32;
     fn clocksource_mmio_init(
-        addr: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
+        addr: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
         rating: u32,
         frequency: u32,
         bits: u32,
@@ -76,7 +76,7 @@ extern "C" {
 #[repr(C)] pub struct device_node;
 #[repr(C)] pub struct clocksource;
 #[repr(C)] pub struct clock_event_device {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub features: u32,
     pub set_state_shutdown: Option<unsafe extern "C" fn(*mut clock_event_device) -> i32>,
     pub set_state_oneshot: Option<unsafe extern "C" fn(*mut clock_event_device) -> i32>,
@@ -126,7 +126,7 @@ unsafe extern "C" fn ep93xx_clkevt_shutdown(_evt: *mut clock_event_device) -> i3
 }
 
 static mut ep93xx_clockevent: clock_event_device = clock_event_device {
-    name: b"timer1\0".as_ptr() as *const core::ffi::c_char,
+    name: b"timer1\0".as_ptr() as *const kernel::ffi::c_char,
     features: CLOCK_EVT_FEAT_ONESHOT,
     set_state_shutdown: Some(ep93xx_clkevt_shutdown),
     set_state_oneshot: Some(ep93xx_clkevt_shutdown),
@@ -138,7 +138,7 @@ static mut ep93xx_clockevent: clock_event_device = clock_event_device {
 
 unsafe extern "C" fn ep93xx_timer_interrupt(
     _irq: i32,
-    dev_id: *mut core::ffi::c_void,
+    dev_id: *mut kernel::ffi::c_void,
 ) -> irqreturn_t {
     let tcu = ep93xx_tcu;
     let evt = dev_id as *mut clock_event_device;
@@ -156,13 +156,13 @@ unsafe extern "C" fn ep93xx_timer_of_init(np: *mut device_node) -> i32 {
     if tcu.is_null() { return -ENOMEM; }
     (*tcu).base = of_iomap(np, 0);
     if (*tcu).base.is_null() {
-        kfree(tcu as *mut core::ffi::c_void);
+        kfree(tcu as *mut kernel::ffi::c_void);
         return -ENXIO;
     }
     ep93xx_tcu = tcu;
     irq = irq_of_parse_and_map(np, 0);
     if irq == 0 {
-        kfree(tcu as *mut core::ffi::c_void);
+        kfree(tcu as *mut kernel::ffi::c_void);
         return -EINVAL;
     }
     writel(EP93XX_TIMER4_VALUE_HIGH_ENABLE, (*tcu).base.add(EP93XX_TIMER4_VALUE_HIGH));

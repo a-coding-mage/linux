@@ -30,25 +30,25 @@ pub struct pt_regs {
 }
 
 extern "C" {
-    pub fn simulate_auipc(opcode: u32, addr: ::core::ffi::c_ulong,
+    pub fn simulate_auipc(opcode: u32, addr: ::kernel::ffi::c_ulong,
                           regs: *mut pt_regs) -> bool;
-    pub fn simulate_branch(opcode: u32, addr: ::core::ffi::c_ulong,
+    pub fn simulate_branch(opcode: u32, addr: ::kernel::ffi::c_ulong,
                            regs: *mut pt_regs) -> bool;
-    pub fn simulate_jal(opcode: u32, addr: ::core::ffi::c_ulong,
+    pub fn simulate_jal(opcode: u32, addr: ::kernel::ffi::c_ulong,
                         regs: *mut pt_regs) -> bool;
-    pub fn simulate_jalr(opcode: u32, addr: ::core::ffi::c_ulong,
+    pub fn simulate_jalr(opcode: u32, addr: ::kernel::ffi::c_ulong,
                          regs: *mut pt_regs) -> bool;
-    pub fn simulate_c_j(opcode: u32, addr: ::core::ffi::c_ulong,
+    pub fn simulate_c_j(opcode: u32, addr: ::kernel::ffi::c_ulong,
                         regs: *mut pt_regs) -> bool;
-    pub fn simulate_c_jal(opcode: u32, addr: ::core::ffi::c_ulong,
+    pub fn simulate_c_jal(opcode: u32, addr: ::kernel::ffi::c_ulong,
                           regs: *mut pt_regs) -> bool;
-    pub fn simulate_c_jr(opcode: u32, addr: ::core::ffi::c_ulong,
+    pub fn simulate_c_jr(opcode: u32, addr: ::kernel::ffi::c_ulong,
                          regs: *mut pt_regs) -> bool;
-    pub fn simulate_c_jalr(opcode: u32, addr: ::core::ffi::c_ulong,
+    pub fn simulate_c_jalr(opcode: u32, addr: ::kernel::ffi::c_ulong,
                            regs: *mut pt_regs) -> bool;
-    pub fn simulate_c_bnez(opcode: u32, addr: ::core::ffi::c_ulong,
+    pub fn simulate_c_bnez(opcode: u32, addr: ::kernel::ffi::c_ulong,
                            regs: *mut pt_regs) -> bool;
-    pub fn simulate_c_beqz(opcode: u32, addr: ::core::ffi::c_ulong,
+    pub fn simulate_c_beqz(opcode: u32, addr: ::kernel::ffi::c_ulong,
                            regs: *mut pt_regs) -> bool;
 }
 

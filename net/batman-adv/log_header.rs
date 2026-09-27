@@ -9,13 +9,13 @@
 
 #[cfg(CONFIG_BATMAN_ADV_DEBUG)]
 extern "C" {
-    pub fn batadv_debug_log_setup(bat_priv: *mut batadv_priv) -> ::core::ffi::c_int;
+    pub fn batadv_debug_log_setup(bat_priv: *mut batadv_priv) -> ::kernel::ffi::c_int;
     pub fn batadv_debug_log_cleanup(bat_priv: *mut batadv_priv);
 }
 
 #[cfg(not(CONFIG_BATMAN_ADV_DEBUG))]
 #[inline]
-pub unsafe fn batadv_debug_log_setup(_bat_priv: *mut batadv_priv) -> ::core::ffi::c_int {
+pub unsafe fn batadv_debug_log_setup(_bat_priv: *mut batadv_priv) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -51,9 +51,9 @@ pub enum batadv_dbg_level {
 extern "C" {
     pub fn batadv_debug_log(
         bat_priv: *mut batadv_priv,
-        fmt: *const ::core::ffi::c_char,
+        fmt: *const ::kernel::ffi::c_char,
         ...,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_BATMAN_ADV_DEBUG)]
@@ -74,10 +74,10 @@ macro_rules! _batadv_dbg {
 #[cfg(not(CONFIG_BATMAN_ADV_DEBUG))]
 #[inline]
 pub unsafe fn _batadv_dbg(
-    _type: ::core::ffi::c_int,
+    _type: ::kernel::ffi::c_int,
     _bat_priv: *mut batadv_priv,
-    _ratelimited: ::core::ffi::c_int,
-    _fmt: *const ::core::ffi::c_char,
+    _ratelimited: ::kernel::ffi::c_int,
+    _fmt: *const ::kernel::ffi::c_char,
     ...,
 ) {
 }

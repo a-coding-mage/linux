@@ -7,7 +7,7 @@
  * Copyright (C) 2007 Novell Inc.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Supplied by the Linux kobject and errno dependencies.
 #[repr(C)]

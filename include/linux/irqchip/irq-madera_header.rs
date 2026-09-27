@@ -94,9 +94,9 @@ pub unsafe fn madera_get_irq_mapping(madera: *mut madera, irq: i32) -> i32 {
 pub unsafe fn madera_request_irq(
     madera: *mut madera,
     mut irq: i32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     handler: irq_handler_t,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) -> i32 {
     irq = madera_get_irq_mapping(madera, irq);
     if irq < 0 {
@@ -105,7 +105,7 @@ pub unsafe fn madera_request_irq(
     request_threaded_irq(irq, core::ptr::null_mut(), handler, IRQF_ONESHOT, name, data)
 }
 
-pub unsafe fn madera_free_irq(madera: *mut madera, mut irq: i32, data: *mut core::ffi::c_void) {
+pub unsafe fn madera_free_irq(madera: *mut madera, mut irq: i32, data: *mut kernel::ffi::c_void) {
     irq = madera_get_irq_mapping(madera, irq);
     if irq < 0 {
         return;

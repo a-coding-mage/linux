@@ -12,12 +12,12 @@ pub struct tas2780_priv {
     pub reset_gpio: *mut gpio_desc,
     pub regmap: *mut regmap,
     pub dev: *mut device,
-    pub v_sense_slot: core::ffi::c_int,
-    pub i_sense_slot: core::ffi::c_int,
+    pub v_sense_slot: kernel::ffi::c_int,
+    pub i_sense_slot: kernel::ffi::c_int,
 }
 
 unsafe fn tas2780_reset(tas2780: *mut tas2780_priv) {
-    let mut ret: core::ffi::c_int = 0;
+    let mut ret: kernel::ffi::c_int = 0;
 
     if !(*tas2780).reset_gpio.is_null() {
         gpiod_set_value_cansleep((*tas2780).reset_gpio, 0);
@@ -38,9 +38,9 @@ unsafe fn tas2780_reset(tas2780: *mut tas2780_priv) {
 }
 
 // Original C conditional: #ifdef CONFIG_PM
-unsafe fn tas2780_codec_suspend(component: *mut snd_soc_component) -> core::ffi::c_int {
+unsafe fn tas2780_codec_suspend(component: *mut snd_soc_component) -> kernel::ffi::c_int {
     let tas2780: *mut tas2780_priv = snd_soc_component_get_drvdata(component) as *mut tas2780_priv;
-    let mut ret: core::ffi::c_int = 0;
+    let mut ret: kernel::ffi::c_int = 0;
 
     ret = snd_soc_component_update_bits(
         component,
@@ -63,9 +63,9 @@ unsafe fn tas2780_codec_suspend(component: *mut snd_soc_component) -> core::ffi:
     ret
 }
 
-unsafe fn tas2780_codec_resume(component: *mut snd_soc_component) -> core::ffi::c_int {
+unsafe fn tas2780_codec_resume(component: *mut snd_soc_component) -> kernel::ffi::c_int {
     let tas2780: *mut tas2780_priv = snd_soc_component_get_drvdata(component) as *mut tas2780_priv;
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     ret = snd_soc_component_update_bits(
         component,
@@ -88,7 +88,7 @@ unsafe fn tas2780_codec_resume(component: *mut snd_soc_component) -> core::ffi::
     ret
 }
 
-static tas2780_ASI1_src: [*const core::ffi::c_char; 4] = [
+static tas2780_ASI1_src: [*const kernel::ffi::c_char; 4] = [
     c"I2C offset".as_ptr(),
     c"Left".as_ptr(),
     c"Right".as_ptr(),
@@ -138,12 +138,12 @@ static tas2780_audio_map: [snd_soc_dapm_route; 7] = [
 
 unsafe fn tas2780_mute(
     dai: *mut snd_soc_dai,
-    mute: core::ffi::c_int,
-    _direction: core::ffi::c_int,
-) -> core::ffi::c_int {
+    mute: kernel::ffi::c_int,
+    _direction: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
     let tas2780: *mut tas2780_priv = snd_soc_component_get_drvdata(component) as *mut tas2780_priv;
-    let mut ret: core::ffi::c_int = 0;
+    let mut ret: kernel::ffi::c_int = 0;
 
     ret = snd_soc_component_update_bits(
         component,
@@ -165,13 +165,13 @@ unsafe fn tas2780_mute(
 
 unsafe fn tas2780_set_bitwidth(
     tas2780: *mut tas2780_priv,
-    bitwidth: core::ffi::c_int,
-) -> core::ffi::c_int {
+    bitwidth: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*tas2780).component;
-    let mut sense_en: core::ffi::c_int;
-    let mut val: core::ffi::c_int;
-    let mut ret: core::ffi::c_int;
-    let slot_size: core::ffi::c_int;
+    let mut sense_en: kernel::ffi::c_int;
+    let mut val: kernel::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
+    let slot_size: kernel::ffi::c_int;
 
     match bitwidth {
         SNDRV_PCM_FORMAT_S16_LE => {
@@ -294,11 +294,11 @@ unsafe fn tas2780_set_bitwidth(
 
 unsafe fn tas2780_set_samplerate(
     tas2780: *mut tas2780_priv,
-    samplerate: core::ffi::c_int,
-) -> core::ffi::c_int {
+    samplerate: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*tas2780).component;
-    let ramp_rate_val: core::ffi::c_int;
-    let mut ret: core::ffi::c_int;
+    let ramp_rate_val: kernel::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     match samplerate {
         48000 => {
@@ -338,10 +338,10 @@ unsafe fn tas2780_hw_params(
     _substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
     let tas2780: *mut tas2780_priv = snd_soc_component_get_drvdata(component) as *mut tas2780_priv;
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     ret = tas2780_set_bitwidth(tas2780, params_format(params));
     if ret < 0 {
@@ -351,13 +351,13 @@ unsafe fn tas2780_hw_params(
     tas2780_set_samplerate(tas2780, params_rate(params))
 }
 
-unsafe fn tas2780_set_fmt(dai: *mut snd_soc_dai, fmt: core::ffi::c_uint) -> core::ffi::c_int {
+unsafe fn tas2780_set_fmt(dai: *mut snd_soc_dai, fmt: kernel::ffi::c_uint) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
     let tas2780: *mut tas2780_priv = snd_soc_component_get_drvdata(component) as *mut tas2780_priv;
     let mut tdm_rx_start_slot: u8 = 0;
     let mut asi_cfg_1: u8 = 0;
-    let iface: core::ffi::c_int;
-    let mut ret: core::ffi::c_int = 0;
+    let iface: kernel::ffi::c_int;
+    let mut ret: kernel::ffi::c_int = 0;
 
     match fmt & SND_SOC_DAIFMT_INV_MASK {
         SND_SOC_DAIFMT_NB_NF => {
@@ -376,7 +376,7 @@ unsafe fn tas2780_set_fmt(dai: *mut snd_soc_dai, fmt: core::ffi::c_uint) -> core
         component,
         TAS2780_TDM_CFG1,
         TAS2780_TDM_CFG1_RX_MASK,
-        asi_cfg_1 as core::ffi::c_int,
+        asi_cfg_1 as kernel::ffi::c_int,
     );
     if ret < 0 {
         dev_err(
@@ -412,7 +412,7 @@ unsafe fn tas2780_set_fmt(dai: *mut snd_soc_dai, fmt: core::ffi::c_uint) -> core
         component,
         TAS2780_TDM_CFG1,
         TAS2780_TDM_CFG1_MASK,
-        (tdm_rx_start_slot as core::ffi::c_int) << TAS2780_TDM_CFG1_51_SHIFT,
+        (tdm_rx_start_slot as kernel::ffi::c_int) << TAS2780_TDM_CFG1_51_SHIFT,
     );
     if ret < 0 {
         dev_err(
@@ -445,29 +445,29 @@ unsafe fn tas2780_set_fmt(dai: *mut snd_soc_dai, fmt: core::ffi::c_uint) -> core
 
 unsafe fn tas2780_set_dai_tdm_slot(
     dai: *mut snd_soc_dai,
-    mut tx_mask: core::ffi::c_uint,
-    rx_mask: core::ffi::c_uint,
-    slots: core::ffi::c_int,
-    slot_width: core::ffi::c_int,
-) -> core::ffi::c_int {
+    mut tx_mask: kernel::ffi::c_uint,
+    rx_mask: kernel::ffi::c_uint,
+    slots: kernel::ffi::c_int,
+    slot_width: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
     let tas2780: *mut tas2780_priv = snd_soc_component_get_drvdata(component) as *mut tas2780_priv;
-    let left_slot: core::ffi::c_int;
-    let right_slot: core::ffi::c_int;
-    let slots_cfg: core::ffi::c_int;
-    let slot_size: core::ffi::c_int;
-    let mut ret: core::ffi::c_int = 0;
+    let left_slot: kernel::ffi::c_int;
+    let right_slot: kernel::ffi::c_int;
+    let slots_cfg: kernel::ffi::c_int;
+    let slot_size: kernel::ffi::c_int;
+    let mut ret: kernel::ffi::c_int = 0;
 
     if tx_mask == 0 || rx_mask != 0 {
         return -EINVAL;
     }
 
-    left_slot = __ffs(tx_mask as core::ffi::c_ulong) as core::ffi::c_int;
+    left_slot = __ffs(tx_mask as kernel::ffi::c_ulong) as kernel::ffi::c_int;
     tx_mask &= !(1 << left_slot);
     if tx_mask == 0 {
         right_slot = left_slot;
     } else {
-        right_slot = __ffs(tx_mask as core::ffi::c_ulong) as core::ffi::c_int;
+        right_slot = __ffs(tx_mask as kernel::ffi::c_ulong) as kernel::ffi::c_int;
         tx_mask &= !(1 << right_slot);
     }
 
@@ -562,10 +562,10 @@ static tas2780_dai_ops: snd_soc_dai_ops = snd_soc_dai_ops {
     no_capture_mute: 1,
 };
 
-const TAS2780_FORMATS: core::ffi::c_uint =
+const TAS2780_FORMATS: kernel::ffi::c_uint =
     SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE | SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE;
 
-const TAS2780_RATES: core::ffi::c_uint =
+const TAS2780_RATES: kernel::ffi::c_uint =
     SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000 | SNDRV_PCM_RATE_96000 | SNDRV_PCM_RATE_88200;
 
 static mut tas2780_dai_driver: [snd_soc_dai_driver; 1] = [snd_soc_dai_driver {
@@ -589,9 +589,9 @@ static mut tas2780_dai_driver: [snd_soc_dai_driver; 1] = [snd_soc_dai_driver {
     symmetric_rate: 1,
 }];
 
-unsafe fn tas2780_codec_probe(component: *mut snd_soc_component) -> core::ffi::c_int {
+unsafe fn tas2780_codec_probe(component: *mut snd_soc_component) -> kernel::ffi::c_int {
     let tas2780: *mut tas2780_priv = snd_soc_component_get_drvdata(component) as *mut tas2780_priv;
-    let mut ret: core::ffi::c_int = 0;
+    let mut ret: kernel::ffi::c_int = 0;
 
     (*tas2780).component = component;
 
@@ -614,9 +614,9 @@ unsafe fn tas2780_codec_probe(component: *mut snd_soc_component) -> core::ffi::c
     ret
 }
 
-static tas2780_digital_tlv: [core::ffi::c_uint; TLV_DB_SCALE_ITEM_COUNT] =
+static tas2780_digital_tlv: [kernel::ffi::c_uint; TLV_DB_SCALE_ITEM_COUNT] =
     DECLARE_TLV_DB_SCALE!(1100, 50, 0);
-static tas2780_playback_volume: [core::ffi::c_uint; TLV_DB_SCALE_ITEM_COUNT] =
+static tas2780_playback_volume: [kernel::ffi::c_uint; TLV_DB_SCALE_ITEM_COUNT] =
     DECLARE_TLV_DB_SCALE!(-10000, 50, 0);
 
 static tas2780_snd_controls: [snd_kcontrol_new; 2] = [
@@ -690,12 +690,12 @@ static tas2780_i2c_regmap: regmap_config = regmap_config {
 unsafe fn tas2780_parse_dt(
     dev: *mut device,
     tas2780: *mut tas2780_priv,
-) -> core::ffi::c_int {
-    let mut ret: core::ffi::c_int = 0;
+) -> kernel::ffi::c_int {
+    let mut ret: kernel::ffi::c_int = 0;
 
     (*tas2780).reset_gpio = devm_gpiod_get_optional((*tas2780).dev, c"reset".as_ptr(), GPIOD_OUT_HIGH);
-    if IS_ERR((*tas2780).reset_gpio as *const core::ffi::c_void) {
-        if PTR_ERR((*tas2780).reset_gpio as *const core::ffi::c_void) == -EPROBE_DEFER {
+    if IS_ERR((*tas2780).reset_gpio as *const kernel::ffi::c_void) {
+        if PTR_ERR((*tas2780).reset_gpio as *const kernel::ffi::c_void) == -EPROBE_DEFER {
             (*tas2780).reset_gpio = core::ptr::null_mut();
             return -EPROBE_DEFER;
         }
@@ -704,7 +704,7 @@ unsafe fn tas2780_parse_dt(
     ret = fwnode_property_read_u32(
         (*dev).fwnode,
         c"ti,imon-slot-no".as_ptr(),
-        &mut (*tas2780).i_sense_slot as *mut core::ffi::c_int as *mut u32,
+        &mut (*tas2780).i_sense_slot as *mut kernel::ffi::c_int as *mut u32,
     );
     if ret != 0 {
         (*tas2780).i_sense_slot = 0;
@@ -713,7 +713,7 @@ unsafe fn tas2780_parse_dt(
     ret = fwnode_property_read_u32(
         (*dev).fwnode,
         c"ti,vmon-slot-no".as_ptr(),
-        &mut (*tas2780).v_sense_slot as *mut core::ffi::c_int as *mut u32,
+        &mut (*tas2780).v_sense_slot as *mut kernel::ffi::c_int as *mut u32,
     );
     if ret != 0 {
         (*tas2780).v_sense_slot = 2;
@@ -722,9 +722,9 @@ unsafe fn tas2780_parse_dt(
     0
 }
 
-unsafe fn tas2780_i2c_probe(client: *mut i2c_client) -> core::ffi::c_int {
+unsafe fn tas2780_i2c_probe(client: *mut i2c_client) -> kernel::ffi::c_int {
     let tas2780: *mut tas2780_priv;
-    let mut result: core::ffi::c_int;
+    let mut result: kernel::ffi::c_int;
 
     tas2780 = devm_kzalloc(
         &mut (*client).dev,
@@ -735,12 +735,12 @@ unsafe fn tas2780_i2c_probe(client: *mut i2c_client) -> core::ffi::c_int {
         return -ENOMEM;
     }
     (*tas2780).dev = &mut (*client).dev;
-    i2c_set_clientdata(client, tas2780 as *mut core::ffi::c_void);
-    dev_set_drvdata(&mut (*client).dev, tas2780 as *mut core::ffi::c_void);
+    i2c_set_clientdata(client, tas2780 as *mut kernel::ffi::c_void);
+    dev_set_drvdata(&mut (*client).dev, tas2780 as *mut kernel::ffi::c_void);
 
     (*tas2780).regmap = devm_regmap_init_i2c(client, &tas2780_i2c_regmap);
-    if IS_ERR((*tas2780).regmap as *const core::ffi::c_void) {
-        result = PTR_ERR((*tas2780).regmap as *const core::ffi::c_void) as core::ffi::c_int;
+    if IS_ERR((*tas2780).regmap as *const kernel::ffi::c_void) {
+        result = PTR_ERR((*tas2780).regmap as *const kernel::ffi::c_void) as kernel::ffi::c_int;
         dev_err(
             &mut (*client).dev,
             c"Failed to allocate register map: %d\n".as_ptr(),

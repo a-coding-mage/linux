@@ -8,18 +8,18 @@
 // types, constants, per-CPU helpers, and external functions.
 
 extern "C" {
-    static mut mips_cpc_base: *mut core::ffi::c_void;
+    static mut mips_cpc_base: *mut kernel::ffi::c_void;
     fn mips_cm_present() -> bool;
     fn read_gcr_cpc_status() -> usize;
     fn read_gcr_cpc_base() -> usize;
     fn write_gcr_cpc_base(value: usize);
     fn mips_cm_revision() -> u32;
     fn write_cpc_cl_other(value: usize);
-    fn ioremap(addr: usize, size: usize) -> *mut core::ffi::c_void;
+    fn ioremap(addr: usize, size: usize) -> *mut kernel::ffi::c_void;
     fn of_find_compatible_node(
         root: *mut device_node,
         from: *mut device_node,
-        compatible: *const core::ffi::c_char,
+        compatible: *const kernel::ffi::c_char,
     ) -> *mut device_node;
     fn of_address_to_resource(node: *mut device_node, index: u32, res: *mut resource) -> i32;
     fn of_node_put(node: *mut device_node);

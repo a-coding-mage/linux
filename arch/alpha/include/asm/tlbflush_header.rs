@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /* Dependencies supplied by the surrounding kernel translation. */
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 extern "C" {
     fn __load_new_mm_context(mm: *mut mm_struct);

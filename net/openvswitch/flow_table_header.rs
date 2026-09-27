@@ -43,7 +43,7 @@ pub struct mask_array {
 #[repr(C)]
 pub struct table_instance {
     pub buckets: *mut hlist_head,
-    pub n_buckets: core::ffi::c_uint,
+    pub n_buckets: kernel::ffi::c_uint,
     pub rcu: rcu_head,
     pub node_ver: i32,
     pub hash_seed: u32,
@@ -55,9 +55,9 @@ pub struct flow_table {
     pub ufid_ti: *mut table_instance,
     pub mask_cache: *mut mask_cache,
     pub mask_array: *mut mask_array,
-    pub last_rehash: core::ffi::c_ulong,
-    pub count: core::ffi::c_uint,
-    pub ufid_count: core::ffi::c_uint,
+    pub last_rehash: kernel::ffi::c_ulong,
+    pub count: kernel::ffi::c_uint,
+    pub ufid_count: kernel::ffi::c_uint,
 }
 
 extern "C" {

@@ -28,7 +28,7 @@ pub unsafe fn tlb_flush<T>(tlb: T) {
 pub unsafe fn __pte_free_tlb(
     tlb: *mut mmu_gather,
     pte: pgtable_t,
-    mut addr: libc::c_ulong,
+    mut addr: kernel::ffi::c_ulong,
 ) {
     let ptdesc: *mut ptdesc = page_ptdesc(pte);
 
@@ -48,7 +48,7 @@ pub unsafe fn __pte_free_tlb(
 pub unsafe fn __pmd_free_tlb(
     tlb: *mut mmu_gather,
     pmdp: *mut pmd_t,
-    _addr: libc::c_ulong,
+    _addr: kernel::ffi::c_ulong,
 ) {
     #[cfg(feature = "arm_lpae")]
     {

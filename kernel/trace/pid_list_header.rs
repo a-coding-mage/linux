@@ -65,7 +65,7 @@ pub const CHUNK_REALLOC: i32 = 2;
 #[repr(C)]
 pub union lower_chunk {
     pub next: *mut lower_chunk,
-    pub data: [::core::ffi::c_ulong; LOWER_SIZE], // 2K in size
+    pub data: [::kernel::ffi::c_ulong; LOWER_SIZE], // 2K in size
 }
 
 #[repr(C)]

@@ -10,10 +10,10 @@
 // This is for V8 compliant Sparc CPUS
 #[repr(C)]
 pub struct tt_entry {
-    pub inst_one: core::ffi::c_ulong,
-    pub inst_two: core::ffi::c_ulong,
-    pub inst_three: core::ffi::c_ulong,
-    pub inst_four: core::ffi::c_ulong,
+    pub inst_one: kernel::ffi::c_ulong,
+    pub inst_two: kernel::ffi::c_ulong,
+    pub inst_three: kernel::ffi::c_ulong,
+    pub inst_four: kernel::ffi::c_ulong,
 }
 
 // We set this to _start in system setup.

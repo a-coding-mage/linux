@@ -10,16 +10,16 @@
  */
 
 /* Dependency supplied by linux/sockios.h in the original header. */
-pub const SIOCDEVPLIP: ::core::ffi::c_ulong = SIOCDEVPRIVATE;
+pub const SIOCDEVPLIP: ::kernel::ffi::c_ulong = SIOCDEVPRIVATE;
 
 #[repr(C)]
 pub struct plipconf {
     pub pcmd: u16,
-    pub nibble: ::core::ffi::c_ulong,
-    pub trigger: ::core::ffi::c_ulong,
+    pub nibble: ::kernel::ffi::c_ulong,
+    pub trigger: ::kernel::ffi::c_ulong,
 }
 
-pub const PLIP_GET_TIMEOUT: ::core::ffi::c_ulong = 0x1;
-pub const PLIP_SET_TIMEOUT: ::core::ffi::c_ulong = 0x2;
+pub const PLIP_GET_TIMEOUT: ::kernel::ffi::c_ulong = 0x1;
+pub const PLIP_SET_TIMEOUT: ::kernel::ffi::c_ulong = 0x2;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

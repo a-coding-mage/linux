@@ -66,13 +66,13 @@ pub struct amdgpu_reset_context {
     pub job: *mut amdgpu_job,
     pub hive: *mut amdgpu_hive_info,
     pub reset_device_list: *mut list_head,
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub src: AMDGPU_RESET_SRCS,
 }
 
 #[repr(C)]
 pub struct amdgpu_reset_control {
-    pub handle: *mut core::ffi::c_void,
+    pub handle: *mut kernel::ffi::c_void,
     pub reset_work: work_struct,
     pub reset_lock: mutex,
     pub reset_handlers: *mut [*mut amdgpu_reset_handler; AMDGPU_RESET_MAX_HANDLERS],
@@ -116,11 +116,11 @@ extern "C" {
     pub fn amdgpu_reset_perform_reset(adev: *mut amdgpu_device, reset_context: *mut amdgpu_reset_context) -> i32;
     pub fn amdgpu_reset_prepare_env(adev: *mut amdgpu_device, reset_context: *mut amdgpu_reset_context) -> i32;
     pub fn amdgpu_reset_restore_env(adev: *mut amdgpu_device, reset_context: *mut amdgpu_reset_context) -> i32;
-    pub fn amdgpu_reset_create_reset_domain(type_: amdgpu_reset_domain_type, wq_name: *mut core::ffi::c_char) -> *mut amdgpu_reset_domain;
+    pub fn amdgpu_reset_create_reset_domain(type_: amdgpu_reset_domain_type, wq_name: *mut kernel::ffi::c_char) -> *mut amdgpu_reset_domain;
     pub fn amdgpu_reset_destroy_reset_domain(ref_: *mut kref);
     pub fn amdgpu_device_lock_reset_domain(reset_domain: *mut amdgpu_reset_domain);
     pub fn amdgpu_device_unlock_reset_domain(reset_domain: *mut amdgpu_reset_domain);
-    pub fn amdgpu_reset_get_desc(rst_ctxt: *mut amdgpu_reset_context, buf: *mut core::ffi::c_char, len: usize);
+    pub fn amdgpu_reset_get_desc(rst_ctxt: *mut amdgpu_reset_context, buf: *mut kernel::ffi::c_char, len: usize);
     pub static mut xgmi_reset_on_init_handler: amdgpu_reset_handler;
     pub fn amdgpu_reset_do_xgmi_reset_on_init(reset_context: *mut amdgpu_reset_context) -> i32;
     pub fn amdgpu_reset_in_recovery(adev: *mut amdgpu_device) -> bool;

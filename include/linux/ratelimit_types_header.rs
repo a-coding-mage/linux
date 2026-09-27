@@ -3,12 +3,12 @@
 // Dependencies supplied by other translated headers:
 // linux/bits.h, linux/param.h, linux/spinlock_types_raw.h
 
-pub const DEFAULT_RATELIMIT_INTERVAL: _ = 5 * HZ;
+pub const DEFAULT_RATELIMIT_INTERVAL: i32 = 5 * HZ;
 pub const DEFAULT_RATELIMIT_BURST: i32 = 10;
 
 /* issue num suppressed message on exit */
-pub const RATELIMIT_MSG_ON_RELEASE: _ = BIT(0);
-pub const RATELIMIT_INITIALIZED: _ = BIT(1);
+pub const RATELIMIT_MSG_ON_RELEASE: kernel::ffi::c_ulong = BIT(0);
+pub const RATELIMIT_INITIALIZED: kernel::ffi::c_ulong = BIT(1);
 
 #[repr(C)]
 pub struct ratelimit_state {
@@ -19,7 +19,7 @@ pub struct ratelimit_state {
     pub rs_n_left: atomic_t,
     pub missed: atomic_t,
     pub flags: u32,
-    pub begin: ::core::ffi::c_ulong,
+    pub begin: ::kernel::ffi::c_ulong,
 }
 
 #[macro_export]
@@ -58,13 +58,13 @@ macro_rules! DEFINE_RATELIMIT_STATE {
 }
 
 unsafe extern "C" {
-    pub fn ___ratelimit(rs: *mut ratelimit_state, func: *const ::core::ffi::c_char) -> i32;
+    pub fn ___ratelimit(rs: *mut ratelimit_state, func: *const ::kernel::ffi::c_char) -> i32;
 }
 
 #[macro_export]
 macro_rules! __ratelimit {
     ($state:expr) => {
-        ___ratelimit($state, concat!(module_path!(), "\0").as_ptr() as *const ::core::ffi::c_char)
+        ___ratelimit($state, concat!(module_path!(), "\0").as_ptr() as *const ::kernel::ffi::c_char)
     };
 }
 

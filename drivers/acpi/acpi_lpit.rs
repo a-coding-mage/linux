@@ -13,7 +13,7 @@
 struct lpit_residency_info {
     gaddr: acpi_generic_address,
     frequency: u64,
-    iomem_addr: *mut core::ffi::c_void,
+    iomem_addr: *mut kernel::ffi::c_void,
 }
 
 /* Storage for an memory mapped and FFH based entries */
@@ -71,7 +71,7 @@ unsafe fn lpit_read_residency_counter_us(counter: *mut u64, io_mem: bool) -> i32
 unsafe fn low_power_idle_system_residency_us_show(
     _dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let mut counter: u64 = 0;
     let ret = lpit_read_residency_counter_us(&mut counter, true);
@@ -87,7 +87,7 @@ static DEVICE_ATTR_RO(low_power_idle_system_residency_us);
 unsafe fn low_power_idle_cpu_residency_us_show(
     _dev: *mut device,
     _attr: *mut device_attribute,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
 ) -> isize {
     let mut counter: u64 = 0;
     let ret = lpit_read_residency_counter_us(&mut counter, false);

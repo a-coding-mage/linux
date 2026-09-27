@@ -4,7 +4,7 @@
  *  Original Copyright (C) 1995  Linus Torvalds
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 type PhysResetT = unsafe extern "C" fn(usize, bool);
 
@@ -26,7 +26,7 @@ extern "C" {
     fn setup_mm_for_reboot();
     fn flush_cache_all();
     fn cpu_proc_fin();
-    fn virt_to_idmap(addr: unsafe extern "C" fn(usize, bool)) -> *mut core::ffi::c_void;
+    fn virt_to_idmap(addr: unsafe extern "C" fn(usize, bool)) -> *mut kernel::ffi::c_void;
     fn cpu_reset(addr: usize, hyp_mode: bool);
     fn is_hyp_mode_available() -> bool;
     fn BUG() -> !;
@@ -34,9 +34,9 @@ extern "C" {
     fn local_fiq_disable();
     fn outer_disable();
     fn call_with_stack(
-        func: unsafe extern "C" fn(*mut core::ffi::c_void),
-        arg: *mut core::ffi::c_void,
-        stack: *mut core::ffi::c_void,
+        func: unsafe extern "C" fn(*mut kernel::ffi::c_void),
+        arg: *mut kernel::ffi::c_void,
+        stack: *mut kernel::ffi::c_void,
     );
     fn num_online_cpus() -> i32;
     fn smp_shutdown_nonboot_cpus(cpu: i32);
@@ -49,7 +49,7 @@ extern "C" {
     static mut reboot_cpu: i32;
 }
 
-unsafe extern "C" fn __soft_restart(addr: *mut core::ffi::c_void) {
+unsafe extern "C" fn __soft_restart(addr: *mut kernel::ffi::c_void) {
     let phys_reset: PhysResetT;
 
     /* Take out a flat memory mapping. */
@@ -88,7 +88,7 @@ pub unsafe extern "C" fn _soft_restart(addr: usize, disable_l2: bool) {
     }
 
     /* Change to the new stack and continue with the reset. */
-    call_with_stack(__soft_restart, addr as *mut core::ffi::c_void, stack as *mut core::ffi::c_void);
+    call_with_stack(__soft_restart, addr as *mut kernel::ffi::c_void, stack as *mut kernel::ffi::c_void);
 
     /* Should never get here. */
     BUG();

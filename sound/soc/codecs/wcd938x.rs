@@ -138,7 +138,7 @@ c_source_level_translation! {
     	struct irq_domain *virq;
     	struct regmap_irq_chip_data *irq_chip;
     	struct snd_soc_jack *jack;
-    	core::ffi::c_ulong status_mask;
+    	kernel::ffi::c_ulong status_mask;
     	s32 micb_ref[WCD938X_MAX_MICBIAS];
     	s32 pullup_ref[WCD938X_MAX_MICBIAS];
     	u32 hph_mode;
@@ -148,7 +148,7 @@ c_source_level_translation! {
     	struct gpio_desc *reset_gpio;
     	struct gpio_desc *us_euro_gpio;
     	struct mux_control *us_euro_mux;
-    	core::ffi::c_uint mux_state;
+    	kernel::ffi::c_uint mux_state;
     	int hphr_pdm_wd_int;
     	int hphl_pdm_wd_int;
     	int aux_pdm_wd_int;
@@ -2966,7 +2966,7 @@ c_source_level_translation! {
     	name: "WCD938x",
     };
     
-    static int wcd_irq_chip_map(irq_domain *irqd, virq: core::ffi::c_uint,
+    static int wcd_irq_chip_map(irq_domain *irqd, virq: kernel::ffi::c_uint,
     			irq_hw_number_t hw)
     {
     	irq_set_chip_and_handler(virq, &wcd_irq_chip, handle_simple_irq);
@@ -3003,7 +3003,7 @@ c_source_level_translation! {
     	'err_free_aux_pdm_wd_int: {
     	struct wcd938x_priv *wcd938x = snd_soc_component_get_drvdata(component);
     	struct device *dev = component->dev;
-    	core::ffi::c_uint variant;
+    	kernel::ffi::c_uint variant;
     	int ret, i;
     
     	ret = sdw_slave_wait_for_init(wcd938x->tx_sdw_dev, 2000);

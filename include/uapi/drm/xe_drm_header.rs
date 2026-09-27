@@ -1,6 +1,6 @@
 /* Faithful Rust translation of uapi/drm/xe_drm.h. */
 #![allow(non_camel_case_types, non_upper_case_globals, dead_code)]
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* C header dependencies (not reproduced here). */
 /* SPDX-License-Identifier: MIT */
@@ -93,41 +93,41 @@ use core::ffi::c_char;
  * [0x40, 0xa0) (a0 is excluded). The numbers below are defined as offset
  * against DRM_COMMAND_BASE and should be between [0x0, 0x60).
  */
-pub const DRM_XE_DEVICE_QUERY: _ = 0x00;
-pub const DRM_XE_GEM_CREATE: _ = 0x01;
-pub const DRM_XE_GEM_MMAP_OFFSET: _ = 0x02;
-pub const DRM_XE_VM_CREATE: _ = 0x03;
-pub const DRM_XE_VM_DESTROY: _ = 0x04;
-pub const DRM_XE_VM_BIND: _ = 0x05;
-pub const DRM_XE_EXEC_QUEUE_CREATE: _ = 0x06;
-pub const DRM_XE_EXEC_QUEUE_DESTROY: _ = 0x07;
-pub const DRM_XE_EXEC_QUEUE_GET_PROPERTY: _ = 0x08;
-pub const DRM_XE_EXEC: _ = 0x09;
-pub const DRM_XE_WAIT_USER_FENCE: _ = 0x0a;
-pub const DRM_XE_OBSERVATION: _ = 0x0b;
-pub const DRM_XE_MADVISE: _ = 0x0c;
-pub const DRM_XE_VM_QUERY_MEM_RANGE_ATTRS: _ = 0x0d;
-pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY: _ = 0x0e;
-pub const DRM_XE_VM_GET_PROPERTY: _ = 0x0f;
+pub const DRM_XE_DEVICE_QUERY: u32 = 0x00;
+pub const DRM_XE_GEM_CREATE: u32 = 0x01;
+pub const DRM_XE_GEM_MMAP_OFFSET: u32 = 0x02;
+pub const DRM_XE_VM_CREATE: u32 = 0x03;
+pub const DRM_XE_VM_DESTROY: u32 = 0x04;
+pub const DRM_XE_VM_BIND: u32 = 0x05;
+pub const DRM_XE_EXEC_QUEUE_CREATE: u32 = 0x06;
+pub const DRM_XE_EXEC_QUEUE_DESTROY: u32 = 0x07;
+pub const DRM_XE_EXEC_QUEUE_GET_PROPERTY: u32 = 0x08;
+pub const DRM_XE_EXEC: u32 = 0x09;
+pub const DRM_XE_WAIT_USER_FENCE: u32 = 0x0a;
+pub const DRM_XE_OBSERVATION: u32 = 0x0b;
+pub const DRM_XE_MADVISE: u32 = 0x0c;
+pub const DRM_XE_VM_QUERY_MEM_RANGE_ATTRS: u32 = 0x0d;
+pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY: u32 = 0x0e;
+pub const DRM_XE_VM_GET_PROPERTY: u32 = 0x0f;
 
 /* Must be kept compact -- no holes */
 
-pub const DRM_IOCTL_XE_DEVICE_QUERY: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_DEVICE_QUERY, drm_xe_device_query);
-pub const DRM_IOCTL_XE_GEM_CREATE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_GEM_CREATE, drm_xe_gem_create);
-pub const DRM_IOCTL_XE_GEM_MMAP_OFFSET: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_GEM_MMAP_OFFSET, drm_xe_gem_mmap_offset);
-pub const DRM_IOCTL_XE_VM_CREATE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_CREATE, drm_xe_vm_create);
-pub const DRM_IOCTL_XE_VM_DESTROY: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_VM_DESTROY, drm_xe_vm_destroy);
-pub const DRM_IOCTL_XE_VM_BIND: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_VM_BIND, drm_xe_vm_bind);
-pub const DRM_IOCTL_XE_EXEC_QUEUE_CREATE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_CREATE, drm_xe_exec_queue_create);
-pub const DRM_IOCTL_XE_EXEC_QUEUE_DESTROY: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_DESTROY, drm_xe_exec_queue_destroy);
-pub const DRM_IOCTL_XE_EXEC_QUEUE_GET_PROPERTY: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_GET_PROPERTY, drm_xe_exec_queue_get_property);
-pub const DRM_IOCTL_XE_EXEC: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC, drm_xe_exec);
-pub const DRM_IOCTL_XE_WAIT_USER_FENCE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_WAIT_USER_FENCE, drm_xe_wait_user_fence);
-pub const DRM_IOCTL_XE_OBSERVATION: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_OBSERVATION, drm_xe_observation_param);
-pub const DRM_IOCTL_XE_MADVISE: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_MADVISE, drm_xe_madvise);
-pub const DRM_IOCTL_XE_VM_QUERY_MEM_RANGE_ATTRS: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_QUERY_MEM_RANGE_ATTRS, drm_xe_vm_query_mem_range_attr);
-pub const DRM_IOCTL_XE_EXEC_QUEUE_SET_PROPERTY: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_SET_PROPERTY, drm_xe_exec_queue_set_property);
-pub const DRM_IOCTL_XE_VM_GET_PROPERTY: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_GET_PROPERTY, drm_xe_vm_get_property);
+pub const DRM_IOCTL_XE_DEVICE_QUERY: u32 = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_DEVICE_QUERY, drm_xe_device_query);
+pub const DRM_IOCTL_XE_GEM_CREATE: u32 = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_GEM_CREATE, drm_xe_gem_create);
+pub const DRM_IOCTL_XE_GEM_MMAP_OFFSET: u32 = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_GEM_MMAP_OFFSET, drm_xe_gem_mmap_offset);
+pub const DRM_IOCTL_XE_VM_CREATE: u32 = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_CREATE, drm_xe_vm_create);
+pub const DRM_IOCTL_XE_VM_DESTROY: u32 = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_VM_DESTROY, drm_xe_vm_destroy);
+pub const DRM_IOCTL_XE_VM_BIND: u32 = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_VM_BIND, drm_xe_vm_bind);
+pub const DRM_IOCTL_XE_EXEC_QUEUE_CREATE: u32 = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_CREATE, drm_xe_exec_queue_create);
+pub const DRM_IOCTL_XE_EXEC_QUEUE_DESTROY: u32 = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_DESTROY, drm_xe_exec_queue_destroy);
+pub const DRM_IOCTL_XE_EXEC_QUEUE_GET_PROPERTY: u32 = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_GET_PROPERTY, drm_xe_exec_queue_get_property);
+pub const DRM_IOCTL_XE_EXEC: u32 = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC, drm_xe_exec);
+pub const DRM_IOCTL_XE_WAIT_USER_FENCE: u32 = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_WAIT_USER_FENCE, drm_xe_wait_user_fence);
+pub const DRM_IOCTL_XE_OBSERVATION: u32 = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_OBSERVATION, drm_xe_observation_param);
+pub const DRM_IOCTL_XE_MADVISE: u32 = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_MADVISE, drm_xe_madvise);
+pub const DRM_IOCTL_XE_VM_QUERY_MEM_RANGE_ATTRS: u32 = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_QUERY_MEM_RANGE_ATTRS, drm_xe_vm_query_mem_range_attr);
+pub const DRM_IOCTL_XE_EXEC_QUEUE_SET_PROPERTY: u32 = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_SET_PROPERTY, drm_xe_exec_queue_set_property);
+pub const DRM_IOCTL_XE_VM_GET_PROPERTY: u32 = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_GET_PROPERTY, drm_xe_vm_get_property);
 
 /**
  * DOC: Xe IOCTL Extensions
@@ -246,12 +246,12 @@ ptr: u64,
  */
 #[repr(C)]
 pub struct drm_xe_engine_class_instance {
-pub const DRM_XE_ENGINE_CLASS_RENDER: _ = 0;
-pub const DRM_XE_ENGINE_CLASS_COPY: _ = 1;
-pub const DRM_XE_ENGINE_CLASS_VIDEO_DECODE: _ = 2;
-pub const DRM_XE_ENGINE_CLASS_VIDEO_ENHANCE: _ = 3;
-pub const DRM_XE_ENGINE_CLASS_COMPUTE: _ = 4;
-pub const DRM_XE_ENGINE_CLASS_VM_BIND: _ = 5;
+pub const DRM_XE_ENGINE_CLASS_RENDER: u32 = 0;
+pub const DRM_XE_ENGINE_CLASS_COPY: u32 = 1;
+pub const DRM_XE_ENGINE_CLASS_VIDEO_DECODE: u32 = 2;
+pub const DRM_XE_ENGINE_CLASS_VIDEO_ENHANCE: u32 = 3;
+pub const DRM_XE_ENGINE_CLASS_COMPUTE: u32 = 4;
+pub const DRM_XE_ENGINE_CLASS_VM_BIND: u32 = 5;
 	/** @engine_class: engine class id */
 engine_class: u16,
 	/** @engine_instance: engine instance id */
@@ -433,17 +433,17 @@ num_params: u32,
 	/** @pad: MBZ */
 pad: u32,
 
-pub const DRM_XE_QUERY_CONFIG_REV_AND_DEVICE_ID: _ = 0;
-pub const DRM_XE_QUERY_CONFIG_FLAGS: _ = 1;
-pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_VRAM: _ = (1u32 << 0);
-pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_LOW_LATENCY: _ = (1u32 << 1);
-pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_CPU_ADDR_MIRROR: _ = (1u32 << 2);
-pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_NO_COMPRESSION_HINT: _ = (1u32 << 3);
-pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_DISABLE_STATE_CACHE_PERF_FIX: _ = (1u32 << 4);
-pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_PURGING_SUPPORT: _ = (1u32 << 5);
-pub const DRM_XE_QUERY_CONFIG_MIN_ALIGNMENT: _ = 2;
-pub const DRM_XE_QUERY_CONFIG_VA_BITS: _ = 3;
-pub const DRM_XE_QUERY_CONFIG_MAX_EXEC_QUEUE_PRIORITY: _ = 4;
+pub const DRM_XE_QUERY_CONFIG_REV_AND_DEVICE_ID: u32 = 0;
+pub const DRM_XE_QUERY_CONFIG_FLAGS: u32 = 1;
+pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_VRAM: u32 = (1u32 << 0);
+pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_LOW_LATENCY: u32 = (1u32 << 1);
+pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_CPU_ADDR_MIRROR: u32 = (1u32 << 2);
+pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_NO_COMPRESSION_HINT: u32 = (1u32 << 3);
+pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_DISABLE_STATE_CACHE_PERF_FIX: u32 = (1u32 << 4);
+pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_PURGING_SUPPORT: u32 = (1u32 << 5);
+pub const DRM_XE_QUERY_CONFIG_MIN_ALIGNMENT: u32 = 2;
+pub const DRM_XE_QUERY_CONFIG_VA_BITS: u32 = 3;
+pub const DRM_XE_QUERY_CONFIG_MAX_EXEC_QUEUE_PRIORITY: u32 = 4;
 	/** @info: array of elements containing the config info */
 	u64 info: [u8; 0],
 }
@@ -462,8 +462,8 @@ pub const DRM_XE_QUERY_CONFIG_MAX_EXEC_QUEUE_PRIORITY: _ = 4;
  */
 #[repr(C)]
 pub struct drm_xe_gt {
-pub const DRM_XE_QUERY_GT_TYPE_MAIN: _ = 0;
-pub const DRM_XE_QUERY_GT_TYPE_MEDIA: _ = 1;
+pub const DRM_XE_QUERY_GT_TYPE_MAIN: u32 = 0;
+pub const DRM_XE_QUERY_GT_TYPE_MEDIA: u32 = 1;
 	/** @type: GT type: Main or Media */
 type: u16,
 	/** @tile_id: Tile ID where this GT lives (Information only) */
@@ -567,11 +567,11 @@ pub struct drm_xe_query_topology_mask {
 	/** @gt_id: GT ID the mask is associated with */
 gt_id: u16,
 
-pub const DRM_XE_TOPO_DSS_GEOMETRY: _ = 1;
-pub const DRM_XE_TOPO_DSS_COMPUTE: _ = 2;
-pub const DRM_XE_TOPO_L3_BANK: _ = 3;
-pub const DRM_XE_TOPO_EU_PER_DSS: _ = 4;
-pub const DRM_XE_TOPO_SIMD16_EU_PER_DSS: _ = 5;
+pub const DRM_XE_TOPO_DSS_GEOMETRY: u32 = 1;
+pub const DRM_XE_TOPO_DSS_COMPUTE: u32 = 2;
+pub const DRM_XE_TOPO_L3_BANK: u32 = 3;
+pub const DRM_XE_TOPO_EU_PER_DSS: u32 = 4;
+pub const DRM_XE_TOPO_SIMD16_EU_PER_DSS: u32 = 5;
 	/** @type: type of mask */
 type: u16,
 
@@ -643,8 +643,8 @@ cpu_delta: u64,
 #[repr(C)]
 pub struct drm_xe_query_uc_fw_version {
 	/** @uc_type: The micro-controller type to query firmware version */
-pub const XE_QUERY_UC_TYPE_GUC_SUBMISSION: _ = 0;
-pub const XE_QUERY_UC_TYPE_HUC: _ = 1;
+pub const XE_QUERY_UC_TYPE_GUC_SUBMISSION: u32 = 0;
+pub const XE_QUERY_UC_TYPE_HUC: u32 = 1;
 uc_type: u16,
 
 	/** @pad: MBZ */
@@ -767,17 +767,17 @@ pub struct drm_xe_device_query {
 	/** @extensions: Pointer to the first extension struct, if any */
 extensions: u64,
 
-pub const DRM_XE_DEVICE_QUERY_ENGINES: _ = 0;
-pub const DRM_XE_DEVICE_QUERY_MEM_REGIONS: _ = 1;
-pub const DRM_XE_DEVICE_QUERY_CONFIG: _ = 2;
-pub const DRM_XE_DEVICE_QUERY_GT_LIST: _ = 3;
-pub const DRM_XE_DEVICE_QUERY_HWCONFIG: _ = 4;
-pub const DRM_XE_DEVICE_QUERY_GT_TOPOLOGY: _ = 5;
-pub const DRM_XE_DEVICE_QUERY_ENGINE_CYCLES: _ = 6;
-pub const DRM_XE_DEVICE_QUERY_UC_FW_VERSION: _ = 7;
-pub const DRM_XE_DEVICE_QUERY_OA_UNITS: _ = 8;
-pub const DRM_XE_DEVICE_QUERY_PXP_STATUS: _ = 9;
-pub const DRM_XE_DEVICE_QUERY_EU_STALL: _ = 10;
+pub const DRM_XE_DEVICE_QUERY_ENGINES: u32 = 0;
+pub const DRM_XE_DEVICE_QUERY_MEM_REGIONS: u32 = 1;
+pub const DRM_XE_DEVICE_QUERY_CONFIG: u32 = 2;
+pub const DRM_XE_DEVICE_QUERY_GT_LIST: u32 = 3;
+pub const DRM_XE_DEVICE_QUERY_HWCONFIG: u32 = 4;
+pub const DRM_XE_DEVICE_QUERY_GT_TOPOLOGY: u32 = 5;
+pub const DRM_XE_DEVICE_QUERY_ENGINE_CYCLES: u32 = 6;
+pub const DRM_XE_DEVICE_QUERY_UC_FW_VERSION: u32 = 7;
+pub const DRM_XE_DEVICE_QUERY_OA_UNITS: u32 = 8;
+pub const DRM_XE_DEVICE_QUERY_PXP_STATUS: u32 = 9;
+pub const DRM_XE_DEVICE_QUERY_EU_STALL: u32 = 10;
 	/** @query: The type of data to query */
 query: u32,
 
@@ -856,8 +856,8 @@ data: u64,
  */
 #[repr(C)]
 pub struct drm_xe_gem_create {
-pub const DRM_XE_GEM_CREATE_EXTENSION_SET_PROPERTY: _ = 0;
-pub const DRM_XE_GEM_CREATE_SET_PROPERTY_PXP_TYPE: _ = 0;
+pub const DRM_XE_GEM_CREATE_EXTENSION_SET_PROPERTY: u32 = 0;
+pub const DRM_XE_GEM_CREATE_SET_PROPERTY_PXP_TYPE: u32 = 0;
 	/** @extensions: Pointer to the first extension struct, if any */
 extensions: u64,
 
@@ -876,10 +876,10 @@ size: u64,
 	 */
 placement: u32,
 
-pub const DRM_XE_GEM_CREATE_FLAG_DEFER_BACKING: _ = (1u32 << 0);
-pub const DRM_XE_GEM_CREATE_FLAG_SCANOUT: _ = (1u32 << 1);
-pub const DRM_XE_GEM_CREATE_FLAG_NEEDS_VISIBLE_VRAM: _ = (1u32 << 2);
-pub const DRM_XE_GEM_CREATE_FLAG_NO_COMPRESSION: _ = (1u32 << 3);
+pub const DRM_XE_GEM_CREATE_FLAG_DEFER_BACKING: u32 = (1u32 << 0);
+pub const DRM_XE_GEM_CREATE_FLAG_SCANOUT: u32 = (1u32 << 1);
+pub const DRM_XE_GEM_CREATE_FLAG_NEEDS_VISIBLE_VRAM: u32 = (1u32 << 2);
+pub const DRM_XE_GEM_CREATE_FLAG_NO_COMPRESSION: u32 = (1u32 << 3);
 	/**
 	 * @flags: Flags for the GEM object, see DRM_XE_GEM_CREATE_FLAG_*
 	 */
@@ -902,8 +902,8 @@ vm_id: u32,
 	 */
 handle: u32,
 
-pub const DRM_XE_GEM_CPU_CACHING_WB: _ = 1;
-pub const DRM_XE_GEM_CPU_CACHING_WC: _ = 2;
+pub const DRM_XE_GEM_CPU_CACHING_WB: u32 = 1;
+pub const DRM_XE_GEM_CPU_CACHING_WC: u32 = 2;
 	/**
 	 * @cpu_caching: The CPU caching mode to select for this object. If
 	 * mmapping the object the mode selected here will also be used. The
@@ -959,7 +959,7 @@ extensions: u64,
 	/** @handle: Handle for the object being mapped. */
 handle: u32,
 
-pub const DRM_XE_MMAP_OFFSET_FLAG_PCI_BARRIER: _ = (1u32 << 0);
+pub const DRM_XE_MMAP_OFFSET_FLAG_PCI_BARRIER: u32 = (1u32 << 0);
 	/** @flags: Flags */
 flags: u32,
 
@@ -1007,10 +1007,10 @@ pub struct drm_xe_vm_create {
 	/** @extensions: Pointer to the first extension struct, if any */
 extensions: u64,
 
-pub const DRM_XE_VM_CREATE_FLAG_SCRATCH_PAGE: _ = (1u32 << 0);
-pub const DRM_XE_VM_CREATE_FLAG_LR_MODE: _ = (1u32 << 1);
-pub const DRM_XE_VM_CREATE_FLAG_FAULT_MODE: _ = (1u32 << 2);
-pub const DRM_XE_VM_CREATE_FLAG_NO_VM_OVERCOMMIT: _ = (1u32 << 3);
+pub const DRM_XE_VM_CREATE_FLAG_SCRATCH_PAGE: u32 = (1u32 << 0);
+pub const DRM_XE_VM_CREATE_FLAG_LR_MODE: u32 = (1u32 << 1);
+pub const DRM_XE_VM_CREATE_FLAG_FAULT_MODE: u32 = (1u32 << 2);
+pub const DRM_XE_VM_CREATE_FLAG_NO_VM_OVERCOMMIT: u32 = (1u32 << 3);
 	/** @flags: Flags */
 flags: u32,
 
@@ -1184,24 +1184,24 @@ cpu_addr_mirror_offset: i64,
 
 	/** @addr: Address to operate on, MBZ for UNMAP_ALL */
 
-pub const DRM_XE_VM_BIND_OP_MAP: _ = 0x0;
-pub const DRM_XE_VM_BIND_OP_UNMAP: _ = 0x1;
-pub const DRM_XE_VM_BIND_OP_MAP_USERPTR: _ = 0x2;
-pub const DRM_XE_VM_BIND_OP_UNMAP_ALL: _ = 0x3;
-pub const DRM_XE_VM_BIND_OP_PREFETCH: _ = 0x4;
+pub const DRM_XE_VM_BIND_OP_MAP: u32 = 0x0;
+pub const DRM_XE_VM_BIND_OP_UNMAP: u32 = 0x1;
+pub const DRM_XE_VM_BIND_OP_MAP_USERPTR: u32 = 0x2;
+pub const DRM_XE_VM_BIND_OP_UNMAP_ALL: u32 = 0x3;
+pub const DRM_XE_VM_BIND_OP_PREFETCH: u32 = 0x4;
 	/** @op: Bind operation to perform */
 
-pub const DRM_XE_VM_BIND_FLAG_READONLY: _ = (1u32 << 0);
-pub const DRM_XE_VM_BIND_FLAG_IMMEDIATE: _ = (1u32 << 1);
-pub const DRM_XE_VM_BIND_FLAG_NULL: _ = (1u32 << 2);
-pub const DRM_XE_VM_BIND_FLAG_DUMPABLE: _ = (1u32 << 3);
-pub const DRM_XE_VM_BIND_FLAG_CHECK_PXP: _ = (1u32 << 4);
-pub const DRM_XE_VM_BIND_FLAG_CPU_ADDR_MIRROR: _ = (1u32 << 5);
-pub const DRM_XE_VM_BIND_FLAG_MADVISE_AUTORESET: _ = (1u32 << 6);
-pub const DRM_XE_VM_BIND_FLAG_DECOMPRESS: _ = (1u32 << 7);
+pub const DRM_XE_VM_BIND_FLAG_READONLY: u32 = (1u32 << 0);
+pub const DRM_XE_VM_BIND_FLAG_IMMEDIATE: u32 = (1u32 << 1);
+pub const DRM_XE_VM_BIND_FLAG_NULL: u32 = (1u32 << 2);
+pub const DRM_XE_VM_BIND_FLAG_DUMPABLE: u32 = (1u32 << 3);
+pub const DRM_XE_VM_BIND_FLAG_CHECK_PXP: u32 = (1u32 << 4);
+pub const DRM_XE_VM_BIND_FLAG_CPU_ADDR_MIRROR: u32 = (1u32 << 5);
+pub const DRM_XE_VM_BIND_FLAG_MADVISE_AUTORESET: u32 = (1u32 << 6);
+pub const DRM_XE_VM_BIND_FLAG_DECOMPRESS: u32 = (1u32 << 7);
 	/** @flags: Bind flags */
 
-pub const DRM_XE_CONSULT_MEM_ADVISE_PREF_LOC: _ = -1;
+pub const DRM_XE_CONSULT_MEM_ADVISE_PREF_LOC: u32 = -1;
 	/**
 	 * @prefetch_mem_region_instance: Memory region to prefetch VMA to.
 	 * It is a region instance, not a mask.
@@ -1288,21 +1288,21 @@ address: u64,
 	/** @address_precision: Precision of faulted address */
 address_precision: u32,
 	/** @access_type: Type of address access that resulted in fault */
-pub const FAULT_ACCESS_TYPE_READ: _ = 0;
-pub const FAULT_ACCESS_TYPE_WRITE: _ = 1;
-pub const FAULT_ACCESS_TYPE_ATOMIC: _ = 2;
+pub const FAULT_ACCESS_TYPE_READ: u32 = 0;
+pub const FAULT_ACCESS_TYPE_WRITE: u32 = 1;
+pub const FAULT_ACCESS_TYPE_ATOMIC: u32 = 2;
 access_type: u8,
 	/** @fault_type: Type of fault reported */
-pub const FAULT_TYPE_NOT_PRESENT: _ = 0;
-pub const FAULT_TYPE_WRITE_ACCESS: _ = 1;
-pub const FAULT_TYPE_ATOMIC_ACCESS: _ = 2;
+pub const FAULT_TYPE_NOT_PRESENT: u32 = 0;
+pub const FAULT_TYPE_WRITE_ACCESS: u32 = 1;
+pub const FAULT_TYPE_ATOMIC_ACCESS: u32 = 2;
 fault_type: u8,
 	/** @fault_level: fault level of the fault */
-pub const FAULT_LEVEL_PTE: _ = 0;
-pub const FAULT_LEVEL_PDE: _ = 1;
-pub const FAULT_LEVEL_PDP: _ = 2;
-pub const FAULT_LEVEL_PML4: _ = 3;
-pub const FAULT_LEVEL_PML5: _ = 4;
+pub const FAULT_LEVEL_PTE: u32 = 0;
+pub const FAULT_LEVEL_PDE: u32 = 1;
+pub const FAULT_LEVEL_PDP: u32 = 2;
+pub const FAULT_LEVEL_PML4: u32 = 3;
+pub const FAULT_LEVEL_PML5: u32 = 4;
 fault_level: u8,
 	/** @pad: MBZ */
 pad: u8,
@@ -1344,7 +1344,7 @@ extensions: u64,
 	/** @vm_id: The ID of the VM to query the properties of */
 vm_id: u32,
 
-pub const DRM_XE_VM_GET_PROPERTY_FAULTS: _ = 0;
+pub const DRM_XE_VM_GET_PROPERTY_FAULTS: u32 = 0;
 	/** @property: property to get */
 property: u32,
 
@@ -1442,15 +1442,15 @@ value: u64,
  */
 #[repr(C)]
 pub struct drm_xe_exec_queue_create {
-pub const DRM_XE_EXEC_QUEUE_EXTENSION_SET_PROPERTY: _ = 0;
-pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_PRIORITY: _ = 0;
-pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_TIMESLICE: _ = 1;
-pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_PXP_TYPE: _ = 2;
-pub const DRM_XE_EXEC_QUEUE_SET_HANG_REPLAY_STATE: _ = 3;
-pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_MULTI_GROUP: _ = 4;
-pub const DRM_XE_MULTI_GROUP_CREATE: _ = (1u64 << 63);
-pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_MULTI_QUEUE_PRIORITY: _ = 5;
-pub const DRM_XE_EXEC_QUEUE_SET_DISABLE_STATE_CACHE_PERF_FIX: _ = 6;
+pub const DRM_XE_EXEC_QUEUE_EXTENSION_SET_PROPERTY: u32 = 0;
+pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_PRIORITY: u32 = 0;
+pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_TIMESLICE: u32 = 1;
+pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_PXP_TYPE: u32 = 2;
+pub const DRM_XE_EXEC_QUEUE_SET_HANG_REPLAY_STATE: u32 = 3;
+pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_MULTI_GROUP: u32 = 4;
+pub const DRM_XE_MULTI_GROUP_CREATE: u32 = (1u64 << 63);
+pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_MULTI_QUEUE_PRIORITY: u32 = 5;
+pub const DRM_XE_EXEC_QUEUE_SET_DISABLE_STATE_CACHE_PERF_FIX: u32 = 6;
 	/** @extensions: Pointer to the first extension struct, if any */
 extensions: u64,
 
@@ -1463,7 +1463,7 @@ num_placements: u16,
 	/** @vm_id: VM to use for this exec queue */
 vm_id: u32,
 
-pub const DRM_XE_EXEC_QUEUE_LOW_LATENCY_HINT: _ = (1u32 << 0);
+pub const DRM_XE_EXEC_QUEUE_LOW_LATENCY_HINT: u32 = (1u32 << 0);
 	/** @flags: flags to use for this exec queue */
 flags: u32,
 
@@ -1512,7 +1512,7 @@ extensions: u64,
 	/** @exec_queue_id: Exec queue ID */
 exec_queue_id: u32,
 
-pub const DRM_XE_EXEC_QUEUE_GET_PROPERTY_BAN: _ = 0;
+pub const DRM_XE_EXEC_QUEUE_GET_PROPERTY_BAN: u32 = 0;
 	/** @property: property to get */
 property: u32,
 
@@ -1563,13 +1563,13 @@ pub struct drm_xe_sync {
 	/** @extensions: Pointer to the first extension struct, if any */
 extensions: u64,
 
-pub const DRM_XE_SYNC_TYPE_SYNCOBJ: _ = 0x0;
-pub const DRM_XE_SYNC_TYPE_TIMELINE_SYNCOBJ: _ = 0x1;
-pub const DRM_XE_SYNC_TYPE_USER_FENCE: _ = 0x2;
+pub const DRM_XE_SYNC_TYPE_SYNCOBJ: u32 = 0x0;
+pub const DRM_XE_SYNC_TYPE_TIMELINE_SYNCOBJ: u32 = 0x1;
+pub const DRM_XE_SYNC_TYPE_USER_FENCE: u32 = 0x2;
 	/** @type: Type of this sync object */
 type: u32,
 
-pub const DRM_XE_SYNC_FLAG_SIGNAL: _ = (1u32 << 0);
+pub const DRM_XE_SYNC_FLAG_SIGNAL: u32 = (1u32 << 0);
 	/** @flags: Sync Flags */
 flags: u32,
 
@@ -1624,7 +1624,7 @@ extensions: u64,
 	/** @exec_queue_id: Exec queue ID for the batch buffer */
 exec_queue_id: u32,
 
-pub const DRM_XE_MAX_SYNCS: _ = 1024;
+pub const DRM_XE_MAX_SYNCS: u32 = 1024;
 	/** @num_syncs: Amount of drm_xe_sync in array. */
 num_syncs: u32,
 
@@ -1687,16 +1687,16 @@ extensions: u64,
 	 */
 addr: u64,
 
-pub const DRM_XE_UFENCE_WAIT_OP_EQ: _ = 0x0;
-pub const DRM_XE_UFENCE_WAIT_OP_NEQ: _ = 0x1;
-pub const DRM_XE_UFENCE_WAIT_OP_GT: _ = 0x2;
-pub const DRM_XE_UFENCE_WAIT_OP_GTE: _ = 0x3;
-pub const DRM_XE_UFENCE_WAIT_OP_LT: _ = 0x4;
-pub const DRM_XE_UFENCE_WAIT_OP_LTE: _ = 0x5;
+pub const DRM_XE_UFENCE_WAIT_OP_EQ: u32 = 0x0;
+pub const DRM_XE_UFENCE_WAIT_OP_NEQ: u32 = 0x1;
+pub const DRM_XE_UFENCE_WAIT_OP_GT: u32 = 0x2;
+pub const DRM_XE_UFENCE_WAIT_OP_GTE: u32 = 0x3;
+pub const DRM_XE_UFENCE_WAIT_OP_LT: u32 = 0x4;
+pub const DRM_XE_UFENCE_WAIT_OP_LTE: u32 = 0x5;
 	/** @op: wait operation (type of comparison) */
 op: u16,
 
-pub const DRM_XE_UFENCE_WAIT_FLAG_ABSTIME: _ = (1u32 << 0);
+pub const DRM_XE_UFENCE_WAIT_FLAG_ABSTIME: u32 = (1u32 << 0);
 	/** @flags: wait flags */
 flags: u16,
 
@@ -1842,12 +1842,12 @@ oa_unit_type: u32,
 
 	/** @capabilities: OA capabilities bit-mask */
 capabilities: u64,
-pub const DRM_XE_OA_CAPS_BASE: _ = (1u32 << 0);
-pub const DRM_XE_OA_CAPS_SYNCS: _ = (1u32 << 1);
-pub const DRM_XE_OA_CAPS_OA_BUFFER_SIZE: _ = (1u32 << 2);
-pub const DRM_XE_OA_CAPS_WAIT_NUM_REPORTS: _ = (1u32 << 3);
-pub const DRM_XE_OA_CAPS_OAM: _ = (1u32 << 4);
-pub const DRM_XE_OA_CAPS_OA_UNIT_GT_ID: _ = (1u32 << 5);
+pub const DRM_XE_OA_CAPS_BASE: u32 = (1u32 << 0);
+pub const DRM_XE_OA_CAPS_SYNCS: u32 = (1u32 << 1);
+pub const DRM_XE_OA_CAPS_OA_BUFFER_SIZE: u32 = (1u32 << 2);
+pub const DRM_XE_OA_CAPS_WAIT_NUM_REPORTS: u32 = (1u32 << 3);
+pub const DRM_XE_OA_CAPS_OAM: u32 = (1u32 << 4);
+pub const DRM_XE_OA_CAPS_OA_UNIT_GT_ID: u32 = (1u32 << 5);
 
 	/** @oa_timestamp_freq: OA timestamp freq */
 oa_timestamp_freq: u64,
@@ -1943,7 +1943,7 @@ pub enum drm_xe_oa_format_type {
  */
 #[repr(C)]
 pub enum drm_xe_oa_property_id {
-pub const DRM_XE_OA_EXTENSION_SET_PROPERTY: _ = 0;
+pub const DRM_XE_OA_EXTENSION_SET_PROPERTY: u32 = 0;
 	/**
 	 * @DRM_XE_OA_PROPERTY_OA_UNIT_ID: ID of the OA unit on which to open
 	 * the OA stream, see oa_unit_id in &drm_xe_oa_unit.
@@ -1972,10 +1972,10 @@ pub const DRM_XE_OA_EXTENSION_SET_PROPERTY: _ = 0;
 	 * b. Counter select c. Counter size and d. BC report. Also refer to the
 	 * oa_formats array in drivers/gpu/drm/xe/xe_oa.c.
 	 */
-pub const DRM_XE_OA_FORMAT_MASK_FMT_TYPE: _ = (0xffu << 0);
-pub const DRM_XE_OA_FORMAT_MASK_COUNTER_SEL: _ = (0xffu << 8);
-pub const DRM_XE_OA_FORMAT_MASK_COUNTER_SIZE: _ = (0xffu << 16);
-pub const DRM_XE_OA_FORMAT_MASK_BC_REPORT: _ = (0xffu << 24);
+pub const DRM_XE_OA_FORMAT_MASK_FMT_TYPE: u32 = (0xffu << 0);
+pub const DRM_XE_OA_FORMAT_MASK_COUNTER_SEL: u32 = (0xffu << 8);
+pub const DRM_XE_OA_FORMAT_MASK_COUNTER_SIZE: u32 = (0xffu << 16);
+pub const DRM_XE_OA_FORMAT_MASK_BC_REPORT: u32 = (0xffu << 24);
 
 	/**
 	 * @DRM_XE_OA_PROPERTY_OA_PERIOD_EXPONENT: Requests periodic OA unit
@@ -2076,10 +2076,10 @@ extensions: u64,
 
 	/** @oa_status: OA stream status (see Bspec 46717/61226) */
 oa_status: u64,
-pub const DRM_XE_OASTATUS_MMIO_TRG_Q_FULL: _ = (1u32 << 3);
-pub const DRM_XE_OASTATUS_COUNTER_OVERFLOW: _ = (1u32 << 2);
-pub const DRM_XE_OASTATUS_BUFFER_OVERFLOW: _ = (1u32 << 1);
-pub const DRM_XE_OASTATUS_REPORT_LOST: _ = (1u32 << 0);
+pub const DRM_XE_OASTATUS_MMIO_TRG_Q_FULL: u32 = (1u32 << 3);
+pub const DRM_XE_OASTATUS_COUNTER_OVERFLOW: u32 = (1u32 << 2);
+pub const DRM_XE_OASTATUS_BUFFER_OVERFLOW: u32 = (1u32 << 1);
+pub const DRM_XE_OASTATUS_REPORT_LOST: u32 = (1u32 << 0);
 
 	/** @reserved: reserved for future use */
 	u64 reserved: [reserved; 3],
@@ -2120,7 +2120,7 @@ pub enum drm_xe_pxp_session_type {
 }
 
 /* ID of the protected content session managed by Xe when PXP is active */
-pub const DRM_XE_PXP_HWDRM_DEFAULT_SESSION: _ = 0xf;
+pub const DRM_XE_PXP_HWDRM_DEFAULT_SESSION: u32 = 0xf;
 
 /**
  * enum drm_xe_eu_stall_property_id - EU stall sampling input property ids.
@@ -2138,7 +2138,7 @@ pub const DRM_XE_PXP_HWDRM_DEFAULT_SESSION: _ = 0xf;
  */
 #[repr(C)]
 pub enum drm_xe_eu_stall_property_id {
-pub const DRM_XE_EU_STALL_EXTENSION_SET_PROPERTY: _ = 0;
+pub const DRM_XE_EU_STALL_EXTENSION_SET_PROPERTY: u32 = 0;
 	/**
 	 * @DRM_XE_EU_STALL_PROP_GT_ID: gt_id of the GT on which
 	 * EU stall data will be captured.
@@ -2173,7 +2173,7 @@ extensions: u64,
 
 	/** @capabilities: EU stall capabilities bit-mask */
 capabilities: u64,
-pub const DRM_XE_EU_STALL_CAPS_BASE: _ = (1u32 << 0);
+pub const DRM_XE_EU_STALL_CAPS_BASE: u32 = (1u32 << 0);
 
 	/** @record_size: size of each EU stall data record */
 record_size: u64,
@@ -2237,10 +2237,10 @@ range: u64,
 	/** @vm_id: vm_id of the virtual range */
 vm_id: u32,
 
-pub const DRM_XE_MEM_RANGE_ATTR_PREFERRED_LOC: _ = 0;
-pub const DRM_XE_MEM_RANGE_ATTR_ATOMIC: _ = 1;
-pub const DRM_XE_MEM_RANGE_ATTR_PAT: _ = 2;
-pub const DRM_XE_VMA_ATTR_PURGEABLE_STATE: _ = 3;
+pub const DRM_XE_MEM_RANGE_ATTR_PREFERRED_LOC: u32 = 0;
+pub const DRM_XE_MEM_RANGE_ATTR_ATOMIC: u32 = 1;
+pub const DRM_XE_MEM_RANGE_ATTR_PAT: u32 = 2;
+pub const DRM_XE_VMA_ATTR_PURGEABLE_STATE: u32 = 3;
 	/** @type: type of attribute */
 type: u32,
 
@@ -2260,8 +2260,8 @@ pub union __anonymous_union {
 		 *  - DRM_XE_MIGRATE_ONLY_SYSTEM_PAGES
 		 */
 		struct {
-pub const DRM_XE_PREFERRED_LOC_DEFAULT_DEVICE: _ = 0;
-pub const DRM_XE_PREFERRED_LOC_DEFAULT_SYSTEM: _ = -1;
+pub const DRM_XE_PREFERRED_LOC_DEFAULT_DEVICE: u32 = 0;
+pub const DRM_XE_PREFERRED_LOC_DEFAULT_SYSTEM: u32 = -1;
 			/**
 			 * @preferred_mem_loc.devmem_fd:
 			 * Device file-descriptor of the device where the
@@ -2271,8 +2271,8 @@ pub const DRM_XE_PREFERRED_LOC_DEFAULT_SYSTEM: _ = -1;
 			 */
 devmem_fd: u32,
 
-pub const DRM_XE_MIGRATE_ALL_PAGES: _ = 0;
-pub const DRM_XE_MIGRATE_ONLY_SYSTEM_PAGES: _ = 1;
+pub const DRM_XE_MIGRATE_ALL_PAGES: u32 = 0;
+pub const DRM_XE_MIGRATE_ONLY_SYSTEM_PAGES: u32 = 1;
 			/** @preferred_mem_loc.migration_policy: Page migration policy */
 migration_policy: u16,
 
@@ -2302,10 +2302,10 @@ reserved: u64,
 		 *  - DRM_XE_ATOMIC_GLOBAL: Support both GPU and CPU atomic operations.
 		 *  - DRM_XE_ATOMIC_CPU: Support CPU atomic only, no GPU atomics supported.
 		 */
-pub const DRM_XE_ATOMIC_UNDEFINED: _ = 0;
-pub const DRM_XE_ATOMIC_DEVICE: _ = 1;
-pub const DRM_XE_ATOMIC_GLOBAL: _ = 2;
-pub const DRM_XE_ATOMIC_CPU: _ = 3;
+pub const DRM_XE_ATOMIC_UNDEFINED: u32 = 0;
+pub const DRM_XE_ATOMIC_DEVICE: u32 = 1;
+pub const DRM_XE_ATOMIC_GLOBAL: u32 = 2;
+pub const DRM_XE_ATOMIC_CPU: u32 = 3;
 			/** @atomic.val: value of atomic operation */
 
 			/** @atomic.pad: MBZ */
@@ -2362,8 +2362,8 @@ pub const DRM_XE_ATOMIC_CPU: _ = 3;
 		 *    - CPU page faults (existing mmap): Fail with SIGBUS
 		 *    - GPU page faults (fault-mode VMs): Fail with -EACCES
 		 */
-pub const DRM_XE_VMA_PURGEABLE_STATE_WILLNEED: _ = 0;
-pub const DRM_XE_VMA_PURGEABLE_STATE_DONTNEED: _ = 1;
+pub const DRM_XE_VMA_PURGEABLE_STATE_WILLNEED: u32 = 0;
+pub const DRM_XE_VMA_PURGEABLE_STATE_DONTNEED: u32 = 1;
 			/** @purge_state_val.val: value for DRM_XE_VMA_ATTR_PURGEABLE_STATE */
 
 			/** @purge_state_val.pad: MBZ */
@@ -2610,12 +2610,12 @@ pub enum drm_xe_ras_error_component {
 /*
  * Error severity to name mapping.
  */
-pub const DRM_XE_RAS_ERROR_SEVERITY_NAMES: _ = {				\;
+pub const DRM_XE_RAS_ERROR_SEVERITY_NAMES: u32 = {				\;
 
 /*
  * Error component to name mapping.
  */
-pub const DRM_XE_RAS_ERROR_COMPONENT_NAMES: _ = {				\;
+pub const DRM_XE_RAS_ERROR_COMPONENT_NAMES: u32 = {				\;
 
 
 

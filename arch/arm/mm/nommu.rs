@@ -7,13 +7,13 @@
 
 // Declarations supplied by the Linux kernel and ARM architecture headers.
 
-pub static mut vectors_base: ::core::ffi::c_ulong = 0;
+pub static mut vectors_base: ::kernel::ffi::c_ulong = 0;
 
 #[cfg(CONFIG_ARM_MPU)]
 pub static mut mpu_rgn_info: mpu_rgn_info = unsafe { core::mem::zeroed() };
 
 #[cfg(all(CONFIG_CPU_CP15, CONFIG_CPU_HIGH_VECTOR))]
-pub unsafe fn setup_vectors_base() -> ::core::ffi::c_ulong {
+pub unsafe fn setup_vectors_base() -> ::kernel::ffi::c_ulong {
     let reg = get_cr();
     set_cr(reg | CR_V);
     0xffff0000
@@ -21,7 +21,7 @@ pub unsafe fn setup_vectors_base() -> ::core::ffi::c_ulong {
 
 #[cfg(all(CONFIG_CPU_CP15, not(CONFIG_CPU_HIGH_VECTOR)))]
 #[inline]
-unsafe fn set_vbar(val: ::core::ffi::c_ulong) {
+unsafe fn set_vbar(val: ::kernel::ffi::c_ulong) {
     // Write exception base address to VBAR.
     core::arch::asm!("mcr p15, 0, {0}, c12, c0, 0", in(reg) val, options(nostack));
 }
@@ -38,8 +38,8 @@ unsafe fn security_extensions_enabled() -> bool {
 }
 
 #[cfg(all(CONFIG_CPU_CP15, not(CONFIG_CPU_HIGH_VECTOR)))]
-pub unsafe fn setup_vectors_base() -> ::core::ffi::c_ulong {
-    let mut base: ::core::ffi::c_ulong = 0;
+pub unsafe fn setup_vectors_base() -> ::kernel::ffi::c_ulong {
+    let mut base: ::kernel::ffi::c_ulong = 0;
     let reg = get_cr();
     set_cr(reg & !CR_V);
     if security_extensions_enabled() {
@@ -105,7 +105,7 @@ pub unsafe fn adjust_lowmem_bounds() {
 // paging_init() sets up the page tables, initialises the zone memory maps,
 // and sets up the zero page, bad page and bad page tables.
 pub unsafe fn paging_init(_mdesc: *const machine_desc) {
-    early_trap_init(vectors_base as *mut core::ffi::c_void);
+    early_trap_init(vectors_base as *mut kernel::ffi::c_void);
     mpu_setup();
     bootmem_init();
 }
@@ -124,9 +124,9 @@ pub unsafe fn flush_dcache_page(page: *mut page) {
 pub unsafe fn copy_to_user_page(
     vma: *mut vm_area_struct,
     _page: *mut page,
-    uaddr: ::core::ffi::c_ulong,
-    dst: *mut core::ffi::c_void,
-    src: *const core::ffi::c_void,
+    uaddr: ::kernel::ffi::c_ulong,
+    dst: *mut kernel::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     len: usize,
 ) {
     core::ptr::copy_nonoverlapping(src as *const u8, dst as *mut u8, len);
@@ -136,51 +136,51 @@ pub unsafe fn copy_to_user_page(
 }
 
 pub unsafe fn __arm_ioremap_pfn(
-    pfn: ::core::ffi::c_ulong,
-    offset: ::core::ffi::c_ulong,
+    pfn: ::kernel::ffi::c_ulong,
+    offset: ::kernel::ffi::c_ulong,
     _size: usize,
     _mtype: u32,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     if pfn >= (0x100000000u64 >> PAGE_SHIFT) as _ {
         return core::ptr::null_mut();
     }
-    (offset + (pfn << PAGE_SHIFT)) as *mut core::ffi::c_void
+    (offset + (pfn << PAGE_SHIFT)) as *mut kernel::ffi::c_void
 }
 
 pub unsafe fn __arm_ioremap_caller(
     phys_addr: phys_addr_t,
     _size: usize,
     _mtype: u32,
-    _caller: *mut core::ffi::c_void,
-) -> *mut core::ffi::c_void {
-    phys_addr as *mut core::ffi::c_void
+    _caller: *mut kernel::ffi::c_void,
+) -> *mut kernel::ffi::c_void {
+    phys_addr as *mut kernel::ffi::c_void
 }
 
-pub static mut arch_ioremap_caller: Option<unsafe fn(phys_addr_t, usize, u32, *mut core::ffi::c_void) -> *mut core::ffi::c_void> = None;
+pub static mut arch_ioremap_caller: Option<unsafe fn(phys_addr_t, usize, u32, *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void> = None;
 
-pub unsafe fn ioremap(res_cookie: resource_size_t, size: usize) -> *mut core::ffi::c_void {
+pub unsafe fn ioremap(res_cookie: resource_size_t, size: usize) -> *mut kernel::ffi::c_void {
     __arm_ioremap_caller(res_cookie, size, MT_DEVICE, core::ptr::null_mut())
 }
 
-pub unsafe fn ioremap_cache(res_cookie: resource_size_t, size: usize) -> *mut core::ffi::c_void {
+pub unsafe fn ioremap_cache(res_cookie: resource_size_t, size: usize) -> *mut kernel::ffi::c_void {
     __arm_ioremap_caller(res_cookie, size, MT_DEVICE_CACHED, core::ptr::null_mut())
 }
 
-pub unsafe fn ioremap_wc(res_cookie: resource_size_t, size: usize) -> *mut core::ffi::c_void {
+pub unsafe fn ioremap_wc(res_cookie: resource_size_t, size: usize) -> *mut kernel::ffi::c_void {
     __arm_ioremap_caller(res_cookie, size, MT_DEVICE_WC, core::ptr::null_mut())
 }
 
 #[cfg(CONFIG_PCI)]
-pub unsafe fn pci_remap_cfgspace(res_cookie: resource_size_t, size: usize) -> *mut core::ffi::c_void {
+pub unsafe fn pci_remap_cfgspace(res_cookie: resource_size_t, size: usize) -> *mut kernel::ffi::c_void {
     (arch_ioremap_caller.unwrap())(res_cookie, size, MT_UNCACHED, core::ptr::null_mut())
 }
 
 pub unsafe fn arch_memremap_wb(
     phys_addr: phys_addr_t,
     _size: usize,
-    _flags: ::core::ffi::c_ulong,
-) -> *mut core::ffi::c_void {
-    phys_addr as *mut core::ffi::c_void
+    _flags: ::kernel::ffi::c_ulong,
+) -> *mut kernel::ffi::c_void {
+    phys_addr as *mut kernel::ffi::c_void
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

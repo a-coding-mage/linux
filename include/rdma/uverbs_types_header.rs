@@ -6,7 +6,7 @@
 // Dependencies supplied by the surrounding translation unit:
 // <linux/kernel.h>, <rdma/ib_verbs.h>
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct uverbs_api_object { _private: [u8; 0] }

@@ -12,7 +12,7 @@
 
 // Dependencies supplied by the Linux kernel and the QNX6 implementation.
 
-unsafe fn qnx6_lfile_checksum(mut name: *mut ::core::ffi::c_char, size: u32) -> u32 {
+unsafe fn qnx6_lfile_checksum(mut name: *mut ::kernel::ffi::c_char, size: u32) -> u32 {
     let mut crc: u32 = 0;
     let end = name.wrapping_add(size as usize);
     while name < end {
@@ -25,24 +25,24 @@ unsafe fn qnx6_lfile_checksum(mut name: *mut ::core::ffi::c_char, size: u32) -> 
 
 unsafe fn qnx6_get_folio(
     dir: *mut inode,
-    n: ::core::ffi::c_ulong,
+    n: ::kernel::ffi::c_ulong,
     foliop: *mut *mut folio,
-) -> *mut ::core::ffi::c_void {
+) -> *mut ::kernel::ffi::c_void {
     let folio = read_mapping_folio((*dir).i_mapping, n, core::ptr::null_mut());
-    if is_err(folio as *mut ::core::ffi::c_void) {
-        return folio as *mut ::core::ffi::c_void;
+    if is_err(folio as *mut ::kernel::ffi::c_void) {
+        return folio as *mut ::kernel::ffi::c_void;
     }
     *foliop = folio;
     kmap_local_folio(folio, 0)
 }
 
-unsafe fn last_entry(inode: *mut inode, page_nr: ::core::ffi::c_ulong) -> u32 {
-    let mut last_byte = (*inode).i_size as ::core::ffi::c_ulong;
+unsafe fn last_entry(inode: *mut inode, page_nr: ::kernel::ffi::c_ulong) -> u32 {
+    let mut last_byte = (*inode).i_size as ::kernel::ffi::c_ulong;
     last_byte = last_byte.wrapping_sub(page_nr << PAGE_SHIFT);
     if last_byte > PAGE_SIZE {
         last_byte = PAGE_SIZE;
     }
-    (last_byte / QNX6_DIR_ENTRY_SIZE as ::core::ffi::c_ulong) as u32
+    (last_byte / QNX6_DIR_ENTRY_SIZE as ::kernel::ffi::c_ulong) as u32
 }
 
 unsafe fn qnx6_longname(
@@ -54,8 +54,8 @@ unsafe fn qnx6_longname(
     let s = fs32_to_cpu(sbi, (*de).de_long_inode);
     let n = s >> (PAGE_SHIFT - (*sb).s_blocksize_bits);
     let mapping = (*sbi).longfile.as_ref().unwrap().i_mapping;
-    let folio = read_mapping_folio(mapping, n as ::core::ffi::c_ulong, core::ptr::null_mut());
-    if is_err(folio as *mut ::core::ffi::c_void) {
+    let folio = read_mapping_folio(mapping, n as ::kernel::ffi::c_ulong, core::ptr::null_mut());
+    if is_err(folio as *mut ::kernel::ffi::c_void) {
         return folio as *mut qnx6_long_filename;
     }
     let offs = offset_in_folio(folio, s << (*sb).s_blocksize_bits);
@@ -77,7 +77,7 @@ unsafe fn qnx6_dir_longfilename(
         return 0;
     }
     let lf = qnx6_longname(s, de, &mut folio);
-    if is_err(lf as *mut ::core::ffi::c_void) {
+    if is_err(lf as *mut ::kernel::ffi::c_void) {
         pr_err!("Error reading longname\n");
         return 0;
     }
@@ -85,7 +85,7 @@ unsafe fn qnx6_dir_longfilename(
     if lf_size > QNX6_LONG_NAME_MAX {
         pr_debug!("file {}\n", (*lf).lf_fname);
         pr_err!("Filename too long ({})\n", lf_size);
-        folio_release_kmap(folio, lf as *mut ::core::ffi::c_void);
+        folio_release_kmap(folio, lf as *mut ::kernel::ffi::c_void);
         return 0;
     }
     if !test_opt(s, MMI_FS) && fs32_to_cpu(sbi, (*de).de_checksum)
@@ -95,10 +95,10 @@ unsafe fn qnx6_dir_longfilename(
     }
     pr_debug!("qnx6_readdir:{} inode:{}\n", (*lf).lf_fname, de_inode);
     if !dir_emit(ctx, (*lf).lf_fname, lf_size, de_inode, DT_UNKNOWN) {
-        folio_release_kmap(folio, lf as *mut ::core::ffi::c_void);
+        folio_release_kmap(folio, lf as *mut ::kernel::ffi::c_void);
         return 0;
     }
-    folio_release_kmap(folio, lf as *mut ::core::ffi::c_void);
+    folio_release_kmap(folio, lf as *mut ::kernel::ffi::c_void);
     1
 }
 
@@ -108,7 +108,7 @@ unsafe fn qnx6_readdir(file: *mut file, ctx: *mut dir_context) -> i32 {
     let sbi = QNX6_SB(s);
     let pos = (*ctx).pos & !(QNX6_DIR_ENTRY_SIZE as i64 - 1);
     let npages = dir_pages(inode);
-    let mut n = (pos >> PAGE_SHIFT) as ::core::ffi::c_ulong;
+    let mut n = (pos >> PAGE_SHIFT) as ::kernel::ffi::c_ulong;
     let mut offset = ((pos & !(PAGE_MASK as i64)) as u32 / QNX6_DIR_ENTRY_SIZE) as usize;
     let mut done = false;
     (*ctx).pos = pos;
@@ -141,12 +141,12 @@ unsafe fn qnx6_readdir(file: *mut file, ctx: *mut dir_context) -> i32 {
     0
 }
 
-unsafe fn qnx6_long_match(len: i32, name: *const ::core::ffi::c_char, de: *mut qnx6_long_dir_entry, dir: *mut inode) -> u32 {
+unsafe fn qnx6_long_match(len: i32, name: *const ::kernel::ffi::c_char, de: *mut qnx6_long_dir_entry, dir: *mut inode) -> u32 {
     let s = (*dir).i_sb;
     let sbi = QNX6_SB(s);
     let mut folio: *mut folio = core::ptr::null_mut();
     let lf = qnx6_longname(s, de, &mut folio);
-    if is_err(lf as *mut ::core::ffi::c_void) { return 0; }
+    if is_err(lf as *mut ::kernel::ffi::c_void) { return 0; }
     let thislen = fs16_to_cpu(sbi, (*lf).lf_size);
     if len != thislen as i32 { folio_release_kmap(folio, lf as *mut _); return 0; }
     let result = if memcmp(name as *const _, (*lf).lf_fname as *const _, len as usize) == 0 { fs32_to_cpu(sbi, (*de).de_inode) } else { 0 };
@@ -154,12 +154,12 @@ unsafe fn qnx6_long_match(len: i32, name: *const ::core::ffi::c_char, de: *mut q
     result
 }
 
-unsafe fn qnx6_match(s: *mut super_block, len: i32, name: *const ::core::ffi::c_char, de: *mut qnx6_dir_entry) -> u32 {
+unsafe fn qnx6_match(s: *mut super_block, len: i32, name: *const ::kernel::ffi::c_char, de: *mut qnx6_dir_entry) -> u32 {
     let sbi = QNX6_SB(s);
     if memcmp(name as *const _, (*de).de_fname as *const _, len as usize) == 0 { fs32_to_cpu(sbi, (*de).de_inode) } else { 0 }
 }
 
-pub unsafe fn qnx6_find_ino(len: i32, dir: *mut inode, name: *const ::core::ffi::c_char) -> u32 {
+pub unsafe fn qnx6_find_ino(len: i32, dir: *mut inode, name: *const ::kernel::ffi::c_char) -> u32 {
     let s = (*dir).i_sb;
     let ei = QNX6_I(dir);
     let npages = dir_pages(dir);

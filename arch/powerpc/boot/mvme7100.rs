@@ -18,7 +18,7 @@ static mut bd: bd_t = unsafe { core::mem::zeroed() };
 
 unsafe fn mvme7100_fixups() {
     let mut devp: *mut core::ffi::c_void;
-    let busfreq: libc::c_ulong = bd.bi_busfreq * 1000000;
+    let busfreq: core::ffi::c_ulong = bd.bi_busfreq * 1000000;
 
     dt_fixup_cpu_clocks(bd.bi_intfreq * 1000000, busfreq / 4, busfreq);
 
@@ -51,11 +51,11 @@ unsafe fn mvme7100_fixups() {
 }
 
 pub unsafe extern "C" fn platform_init(
-    _r3: libc::c_ulong,
-    _r4: libc::c_ulong,
-    _r5: libc::c_ulong,
-    _r6: libc::c_ulong,
-    _r7: libc::c_ulong,
+    _r3: core::ffi::c_ulong,
+    _r4: core::ffi::c_ulong,
+    _r5: core::ffi::c_ulong,
+    _r6: core::ffi::c_ulong,
+    _r7: core::ffi::c_ulong,
 ) {
     // CUBOOT_INIT();
     fdt_init(_dtb_start);

@@ -12,7 +12,7 @@
 // linux/pm_runtime.h, linux/soundwire/sdw_registers.h,
 // "rt722-sdca.h", "rt722-sdca-sdw.h".
 
-unsafe fn rt722_sdca_mbq_size(dev: *mut device, reg: ::core::ffi::c_uint) -> ::core::ffi::c_int {
+unsafe fn rt722_sdca_mbq_size(dev: *mut device, reg: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int {
     let _ = dev;
 
     match reg {
@@ -125,11 +125,11 @@ static rt722_mbq_config: regmap_sdw_mbq_cfg = regmap_sdw_mbq_cfg {
     mbq_size: Some(rt722_sdca_mbq_size),
 };
 
-unsafe fn rt722_sdca_readable_register(dev: *mut device, reg: ::core::ffi::c_uint) -> bool {
+unsafe fn rt722_sdca_readable_register(dev: *mut device, reg: ::kernel::ffi::c_uint) -> bool {
     rt722_sdca_mbq_size(dev, reg) > 0
 }
 
-unsafe fn rt722_sdca_volatile_register(dev: *mut device, reg: ::core::ffi::c_uint) -> bool {
+unsafe fn rt722_sdca_volatile_register(dev: *mut device, reg: ::kernel::ffi::c_uint) -> bool {
     let _ = dev;
 
     match reg {
@@ -197,7 +197,7 @@ static rt722_sdca_regmap: regmap_config = regmap_config {
 unsafe fn rt722_sdca_update_status(
     slave: *mut sdw_slave,
     status: sdw_slave_status,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let rt722 = dev_get_drvdata(&mut (*slave).dev) as *mut rt722_sdca_priv;
 
     if status == SDW_SLAVE_UNATTACHED {
@@ -229,13 +229,13 @@ unsafe fn rt722_sdca_update_status(
     rt722_sdca_io_init(&mut (*slave).dev, slave)
 }
 
-unsafe fn rt722_sdca_read_prop(slave: *mut sdw_slave) -> ::core::ffi::c_int {
+unsafe fn rt722_sdca_read_prop(slave: *mut sdw_slave) -> ::kernel::ffi::c_int {
     let prop: *mut sdw_slave_prop = &mut (*slave).prop;
-    let mut nval: ::core::ffi::c_int;
-    let mut i: ::core::ffi::c_int;
-    let mut j: ::core::ffi::c_int;
+    let mut nval: ::kernel::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
+    let mut j: ::kernel::ffi::c_int;
     let mut bit: u32;
-    let mut addr: ::core::ffi::c_ulong;
+    let mut addr: ::kernel::ffi::c_ulong;
     let mut dpn: *mut sdw_dpn_prop;
 
     sdw_slave_read_lane_mapping(slave);
@@ -267,7 +267,7 @@ unsafe fn rt722_sdca_read_prop(slave: *mut sdw_slave) -> ::core::ffi::c_int {
 
     i = 0;
     dpn = (*prop).src_dpn_prop;
-    addr = (*prop).source_ports as ::core::ffi::c_ulong;
+    addr = (*prop).source_ports as ::kernel::ffi::c_ulong;
     bit = 0;
     while bit < 32 {
         if (addr & (1usize << bit)) != 0 {
@@ -294,7 +294,7 @@ unsafe fn rt722_sdca_read_prop(slave: *mut sdw_slave) -> ::core::ffi::c_int {
 
     j = 0;
     dpn = (*prop).sink_dpn_prop;
-    addr = (*prop).sink_ports as ::core::ffi::c_ulong;
+    addr = (*prop).sink_ports as ::kernel::ffi::c_ulong;
     bit = 0;
     while bit < 32 {
         if (addr & (1usize << bit)) != 0 {
@@ -322,15 +322,15 @@ unsafe fn rt722_sdca_read_prop(slave: *mut sdw_slave) -> ::core::ffi::c_int {
 unsafe fn rt722_sdca_interrupt_callback(
     slave: *mut sdw_slave,
     status: *mut sdw_slave_intr_status,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let rt722 = dev_get_drvdata(&mut (*slave).dev) as *mut rt722_sdca_priv;
-    let mut ret: ::core::ffi::c_int;
-    let mut stat: ::core::ffi::c_int;
-    let mut count: ::core::ffi::c_int = 0;
-    let retry: ::core::ffi::c_int = 3;
-    let mut sdca_cascade: ::core::ffi::c_uint;
-    let mut scp_sdca_stat1: ::core::ffi::c_uint;
-    let mut scp_sdca_stat2: ::core::ffi::c_uint = 0;
+    let mut ret: ::kernel::ffi::c_int;
+    let mut stat: ::kernel::ffi::c_int;
+    let mut count: ::kernel::ffi::c_int = 0;
+    let retry: ::kernel::ffi::c_int = 3;
+    let mut sdca_cascade: ::kernel::ffi::c_uint;
+    let mut scp_sdca_stat1: ::kernel::ffi::c_uint;
+    let mut scp_sdca_stat2: ::kernel::ffi::c_uint = 0;
 
     if cancel_delayed_work_sync(&mut (*rt722).jack_detect_work) {
         dev_warn(&mut (*slave).dev, c"%s the pending delayed_work was cancelled".as_ptr(), __func__);
@@ -354,13 +354,13 @@ unsafe fn rt722_sdca_interrupt_callback(
         goto_io_error(rt722, ret);
         return ret;
     }
-    (*rt722).scp_sdca_stat1 = ret as ::core::ffi::c_uint;
+    (*rt722).scp_sdca_stat1 = ret as ::kernel::ffi::c_uint;
     ret = sdw_read_no_pm((*rt722).slave, SDW_SCP_SDCA_INT2);
     if ret < 0 {
         goto_io_error(rt722, ret);
         return ret;
     }
-    (*rt722).scp_sdca_stat2 = ret as ::core::ffi::c_uint;
+    (*rt722).scp_sdca_stat2 = ret as ::kernel::ffi::c_uint;
     if scp_sdca_stat2 != 0 {
         (*rt722).scp_sdca_stat2 |= scp_sdca_stat2;
     }
@@ -372,7 +372,7 @@ unsafe fn rt722_sdca_interrupt_callback(
             goto_io_error(rt722, ret);
             return ret;
         }
-        if (ret as ::core::ffi::c_uint & SDW_SCP_SDCA_INTMASK_SDCA_0) != 0 {
+        if (ret as ::kernel::ffi::c_uint & SDW_SCP_SDCA_INTMASK_SDCA_0) != 0 {
             ret = sdw_update_no_pm(
                 (*rt722).slave,
                 SDW_SCP_SDCA_INT1,
@@ -390,7 +390,7 @@ unsafe fn rt722_sdca_interrupt_callback(
             goto_io_error(rt722, ret);
             return ret;
         }
-        if (ret as ::core::ffi::c_uint & SDW_SCP_SDCA_INTMASK_SDCA_8) != 0 {
+        if (ret as ::kernel::ffi::c_uint & SDW_SCP_SDCA_INTMASK_SDCA_8) != 0 {
             ret = sdw_write_no_pm((*rt722).slave, SDW_SCP_SDCA_INT2, SDW_SCP_SDCA_INTMASK_SDCA_8);
             if ret < 0 {
                 goto_io_error(rt722, ret);
@@ -404,23 +404,23 @@ unsafe fn rt722_sdca_interrupt_callback(
             goto_io_error(rt722, ret);
             return ret;
         }
-        sdca_cascade = ret as ::core::ffi::c_uint & SDW_DP0_SDCA_CASCADE;
+        sdca_cascade = ret as ::kernel::ffi::c_uint & SDW_DP0_SDCA_CASCADE;
 
         ret = sdw_read_no_pm((*rt722).slave, SDW_SCP_SDCA_INT1);
         if ret < 0 {
             goto_io_error(rt722, ret);
             return ret;
         }
-        scp_sdca_stat1 = ret as ::core::ffi::c_uint & SDW_SCP_SDCA_INTMASK_SDCA_0;
+        scp_sdca_stat1 = ret as ::kernel::ffi::c_uint & SDW_SCP_SDCA_INTMASK_SDCA_0;
 
         ret = sdw_read_no_pm((*rt722).slave, SDW_SCP_SDCA_INT2);
         if ret < 0 {
             goto_io_error(rt722, ret);
             return ret;
         }
-        scp_sdca_stat2 = ret as ::core::ffi::c_uint & SDW_SCP_SDCA_INTMASK_SDCA_8;
+        scp_sdca_stat2 = ret as ::kernel::ffi::c_uint & SDW_SCP_SDCA_INTMASK_SDCA_8;
 
-        stat = (scp_sdca_stat1 != 0 || scp_sdca_stat2 != 0 || sdca_cascade != 0) as ::core::ffi::c_int;
+        stat = (scp_sdca_stat1 != 0 || scp_sdca_stat2 != 0 || sdca_cascade != 0) as ::kernel::ffi::c_int;
 
         count += 1;
         if !(stat != 0 && count < retry) {
@@ -451,7 +451,7 @@ unsafe fn rt722_sdca_interrupt_callback(
     0
 }
 
-unsafe fn goto_io_error(rt722: *mut rt722_sdca_priv, ret: ::core::ffi::c_int) {
+unsafe fn goto_io_error(rt722: *mut rt722_sdca_priv, ret: ::kernel::ffi::c_int) {
     mutex_unlock(&mut (*rt722).disable_irq_lock);
     pr_err_ratelimited(c"IO error in %s, ret %d\n".as_ptr(), __func__, ret);
 }
@@ -465,7 +465,7 @@ static rt722_sdca_slave_ops: sdw_slave_ops = sdw_slave_ops {
 unsafe fn rt722_sdca_sdw_probe(
     slave: *mut sdw_slave,
     id: *const sdw_device_id,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let _ = id;
     let regmap: *mut regmap;
 
@@ -505,7 +505,7 @@ static rt722_sdca_id: [sdw_device_id; 2] = [
 ];
 // MODULE_DEVICE_TABLE(sdw, rt722_sdca_id);
 
-unsafe fn rt722_sdca_dev_suspend(dev: *mut device) -> ::core::ffi::c_int {
+unsafe fn rt722_sdca_dev_suspend(dev: *mut device) -> ::kernel::ffi::c_int {
     let rt722 = dev_get_drvdata(dev) as *mut rt722_sdca_priv;
 
     if !(*rt722).hw_init {
@@ -520,11 +520,11 @@ unsafe fn rt722_sdca_dev_suspend(dev: *mut device) -> ::core::ffi::c_int {
     0
 }
 
-unsafe fn rt722_sdca_dev_system_suspend(dev: *mut device) -> ::core::ffi::c_int {
+unsafe fn rt722_sdca_dev_system_suspend(dev: *mut device) -> ::kernel::ffi::c_int {
     let rt722_sdca = dev_get_drvdata(dev) as *mut rt722_sdca_priv;
     let slave = dev_to_sdw_dev(dev);
-    let ret1: ::core::ffi::c_int;
-    let ret2: ::core::ffi::c_int;
+    let ret1: ::kernel::ffi::c_int;
+    let ret2: ::kernel::ffi::c_int;
 
     if !(*rt722_sdca).hw_init {
         return 0;
@@ -549,12 +549,12 @@ unsafe fn rt722_sdca_dev_system_suspend(dev: *mut device) -> ::core::ffi::c_int 
     rt722_sdca_dev_suspend(dev)
 }
 
-const RT722_PROBE_TIMEOUT: ::core::ffi::c_int = 5000;
+const RT722_PROBE_TIMEOUT: ::kernel::ffi::c_int = 5000;
 
-unsafe fn rt722_sdca_dev_resume(dev: *mut device) -> ::core::ffi::c_int {
+unsafe fn rt722_sdca_dev_resume(dev: *mut device) -> ::kernel::ffi::c_int {
     let slave = dev_to_sdw_dev(dev);
     let rt722 = dev_get_drvdata(dev) as *mut rt722_sdca_priv;
-    let mut ret: ::core::ffi::c_int;
+    let mut ret: ::kernel::ffi::c_int;
 
     if !(*rt722).first_hw_init {
         return 0;

@@ -19,14 +19,14 @@ static mut SCAN_AREAS: [ScanArea; MAX_SCAN_AREAS] = [ScanArea { addr: 0, size: 0
 static mut NUM_SCAN_AREAS: i32 = 0;
 
 unsafe extern "C" {
-    fn kstrtoul(arg: *const core::ffi::c_char, base: u32, val: *mut usize) -> isize;
-    fn memparse(arg: *const core::ffi::c_char, end: *mut *mut core::ffi::c_char) -> u32;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
-    fn __va(addr: u64) -> *mut core::ffi::c_void;
-    fn __pa(addr: *const core::ffi::c_void) -> u64;
+    fn kstrtoul(arg: *const kernel::ffi::c_char, base: u32, val: *mut usize) -> isize;
+    fn memparse(arg: *const kernel::ffi::c_char, end: *mut *mut kernel::ffi::c_char) -> u32;
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
+    fn __va(addr: u64) -> *mut kernel::ffi::c_void;
+    fn __pa(addr: *const kernel::ffi::c_void) -> u64;
     fn memblock_reserve(addr: u64, size: u64);
-    fn memset(dst: *mut core::ffi::c_void, value: i32, size: u64) -> *mut core::ffi::c_void;
+    fn memset(dst: *mut kernel::ffi::c_void, value: i32, size: u64) -> *mut kernel::ffi::c_void;
     fn round_up(value: u64, alignment: u64) -> u64;
     fn round_down(value: u64, alignment: u64) -> u64;
     fn clamp_t(value: u64, min: u64, max: u64) -> u64;
@@ -36,11 +36,11 @@ unsafe extern "C" {
         flags: u32,
         start: *mut u64,
         end: *mut u64,
-        type_: *mut core::ffi::c_void,
+        type_: *mut kernel::ffi::c_void,
     );
     fn schedule_delayed_work(work: *mut WorkStruct, delay: u64) -> i32;
     fn round_jiffies_relative(jiffies: u64) -> u64;
-    fn warn_once(condition: bool, fmt: *const core::ffi::c_char, ...);
+    fn warn_once(condition: bool, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -50,7 +50,7 @@ struct WorkStruct {
 
 static mut BIOS_CHECK_WORK: WorkStruct = WorkStruct { _private: [] };
 
-unsafe fn set_corruption_check(arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn set_corruption_check(arg: *mut kernel::ffi::c_char) -> i32 {
     if arg.is_null() {
         pr_err(c"memory_corruption_check config string not provided\n".as_ptr());
         return -22;
@@ -64,7 +64,7 @@ unsafe fn set_corruption_check(arg: *mut core::ffi::c_char) -> i32 {
     0
 }
 
-unsafe fn set_corruption_check_period(arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn set_corruption_check_period(arg: *mut kernel::ffi::c_char) -> i32 {
     if arg.is_null() {
         pr_err(c"memory_corruption_check_period config string not provided\n".as_ptr());
         return -22;
@@ -78,7 +78,7 @@ unsafe fn set_corruption_check_period(arg: *mut core::ffi::c_char) -> i32 {
     0
 }
 
-unsafe fn set_corruption_check_size(arg: *mut core::ffi::c_char) -> i32 {
+unsafe fn set_corruption_check_size(arg: *mut kernel::ffi::c_char) -> i32 {
     if arg.is_null() {
         pr_err(c"memory_corruption_check_size config string not provided\n".as_ptr());
         return -22;

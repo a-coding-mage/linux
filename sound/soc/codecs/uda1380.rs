@@ -21,7 +21,7 @@ pub const UDA1380_DAC_CLK_WSPLL: u32 = 1;
 #[repr(C)]
 pub struct uda1380_priv {
     pub component: *mut snd_soc_component,
-    pub dac_clk: libc::c_uint,
+    pub dac_clk: kernel::ffi::c_uint,
     pub work: work_struct,
     pub i2c: *mut i2c_client,
     pub power: *mut gpio_desc,
@@ -44,15 +44,15 @@ static uda1380_reg: [u16; UDA1380_CACHEREGNUM as usize] = [
     0x0000, 0x8000, 0x0002, 0x0000,
 ];
 
-static mut uda1380_cache_dirty: libc::c_ulong = 0;
+static mut uda1380_cache_dirty: kernel::ffi::c_ulong = 0;
 
 /*
  * read uda1380 register cache
  */
 unsafe fn uda1380_read_reg_cache(
     component: *mut snd_soc_component,
-    reg: libc::c_uint,
-) -> libc::c_uint {
+    reg: kernel::ffi::c_uint,
+) -> kernel::ffi::c_uint {
     let uda1380 = snd_soc_component_get_drvdata(component) as *mut uda1380_priv;
     let cache = (*uda1380).reg_cache.as_mut_ptr();
 
@@ -60,9 +60,9 @@ unsafe fn uda1380_read_reg_cache(
         return 0;
     }
     if reg >= UDA1380_CACHEREGNUM {
-        return -1i32 as libc::c_uint;
+        return -1i32 as kernel::ffi::c_uint;
     }
-    *cache.add(reg as usize) as libc::c_uint
+    *cache.add(reg as usize) as kernel::ffi::c_uint
 }
 
 /*
@@ -71,16 +71,16 @@ unsafe fn uda1380_read_reg_cache(
 unsafe fn uda1380_write_reg_cache(
     component: *mut snd_soc_component,
     reg: u16,
-    value: libc::c_uint,
+    value: kernel::ffi::c_uint,
 ) {
     let uda1380 = snd_soc_component_get_drvdata(component) as *mut uda1380_priv;
     let cache = (*uda1380).reg_cache.as_mut_ptr();
 
-    if (reg as libc::c_uint) >= UDA1380_CACHEREGNUM {
+    if (reg as kernel::ffi::c_uint) >= UDA1380_CACHEREGNUM {
         return;
     }
-    if reg >= 0x10 && (*cache.add(reg as usize) as libc::c_uint) != value {
-        set_bit((reg - 0x10) as libc::c_int, &raw mut uda1380_cache_dirty);
+    if reg >= 0x10 && (*cache.add(reg as usize) as kernel::ffi::c_uint) != value {
+        set_bit((reg - 0x10) as kernel::ffi::c_int, &raw mut uda1380_cache_dirty);
     }
     *cache.add(reg as usize) = value as u16;
 }
@@ -90,13 +90,13 @@ unsafe fn uda1380_write_reg_cache(
  */
 unsafe fn uda1380_write(
     component: *mut snd_soc_component,
-    reg: libc::c_uint,
-    value: libc::c_uint,
-) -> libc::c_int {
+    reg: kernel::ffi::c_uint,
+    value: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let uda1380 = snd_soc_component_get_drvdata(component) as *mut uda1380_priv;
     let mut data: [u8; 3] = [0; 3];
-    let val: libc::c_uint;
-    let mut ret: libc::c_int;
+    let val: kernel::ffi::c_uint;
+    let mut ret: kernel::ffi::c_int;
 
     /* data is
      *   data[0] is register offset
@@ -138,7 +138,7 @@ unsafe fn uda1380_write(
         return err;
     }
 
-    val = ((data[0] as libc::c_uint) << 8) | data[1] as libc::c_uint;
+    val = ((data[0] as kernel::ffi::c_uint) << 8) | data[1] as kernel::ffi::c_uint;
     if val != value {
         dev_err!(
             (*component).dev,
@@ -150,7 +150,7 @@ unsafe fn uda1380_write(
     }
 
     if reg >= 0x10 {
-        clear_bit((reg - 0x10) as libc::c_int, &raw mut uda1380_cache_dirty);
+        clear_bit((reg - 0x10) as kernel::ffi::c_int, &raw mut uda1380_cache_dirty);
     }
 
     0
@@ -158,13 +158,13 @@ unsafe fn uda1380_write(
 
 unsafe fn uda1380_sync_cache(component: *mut snd_soc_component) {
     let uda1380 = snd_soc_component_get_drvdata(component) as *mut uda1380_priv;
-    let mut reg: libc::c_int;
+    let mut reg: kernel::ffi::c_int;
     let mut data: [u8; 3] = [0; 3];
     let cache = (*uda1380).reg_cache.as_mut_ptr();
 
     /* Sync reg_cache with the hardware */
     reg = 0;
-    while reg < UDA1380_MVOL as libc::c_int {
+    while reg < UDA1380_MVOL as kernel::ffi::c_int {
         data[0] = reg as u8;
         data[1] = ((*cache.add(reg as usize) & 0xff00) >> 8) as u8;
         data[2] = (*cache.add(reg as usize) & 0x00ff) as u8;
@@ -180,7 +180,7 @@ unsafe fn uda1380_sync_cache(component: *mut snd_soc_component) {
     }
 }
 
-unsafe fn uda1380_reset(component: *mut snd_soc_component) -> libc::c_int {
+unsafe fn uda1380_reset(component: *mut snd_soc_component) -> kernel::ffi::c_int {
     let uda1380 = snd_soc_component_get_drvdata(component) as *mut uda1380_priv;
 
     if !(*uda1380).reset.is_null() {
@@ -206,21 +206,21 @@ unsafe fn uda1380_reset(component: *mut snd_soc_component) -> libc::c_int {
 unsafe fn uda1380_flush_work(work: *mut work_struct) {
     let uda1380 = container_of!(work, uda1380_priv, work);
     let uda1380_component = (*uda1380).component;
-    let mut bit: libc::c_int = 0;
-    let mut reg: libc::c_int;
+    let mut bit: kernel::ffi::c_int = 0;
+    let mut reg: kernel::ffi::c_int;
 
-    while bit < (UDA1380_CACHEREGNUM - 0x10) as libc::c_int {
+    while bit < (UDA1380_CACHEREGNUM - 0x10) as kernel::ffi::c_int {
         if test_bit(bit, &raw const uda1380_cache_dirty) != 0 {
             reg = 0x10 + bit;
             pr_debug!(
                 "uda1380: flush reg %x val %x:\n",
                 reg,
-                uda1380_read_reg_cache(uda1380_component, reg as libc::c_uint)
+                uda1380_read_reg_cache(uda1380_component, reg as kernel::ffi::c_uint)
             );
             uda1380_write(
                 uda1380_component,
-                reg as libc::c_uint,
-                uda1380_read_reg_cache(uda1380_component, reg as libc::c_uint),
+                reg as kernel::ffi::c_uint,
+                uda1380_read_reg_cache(uda1380_component, reg as kernel::ffi::c_uint),
             );
             clear_bit(bit, &raw mut uda1380_cache_dirty);
         }
@@ -439,13 +439,13 @@ static uda1380_dapm_routes: [snd_soc_dapm_route; 24] = [
 
 unsafe fn uda1380_set_dai_fmt_both(
     codec_dai: *mut snd_soc_dai,
-    fmt: libc::c_uint,
-) -> libc::c_int {
+    fmt: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let component = (*codec_dai).component;
-    let mut iface: libc::c_int;
+    let mut iface: kernel::ffi::c_int;
 
     /* set up DAI based upon fmt */
-    iface = uda1380_read_reg_cache(component, UDA1380_IFACE) as libc::c_int;
+    iface = uda1380_read_reg_cache(component, UDA1380_IFACE) as kernel::ffi::c_int;
     iface &= !(R01_SFORI_MASK | R01_SIM | R01_SFORO_MASK);
 
     match fmt & SND_SOC_DAIFMT_FORMAT_MASK {
@@ -460,20 +460,20 @@ unsafe fn uda1380_set_dai_fmt_both(
         return -EINVAL;
     }
 
-    uda1380_write_reg_cache(component, UDA1380_IFACE as u16, iface as libc::c_uint);
+    uda1380_write_reg_cache(component, UDA1380_IFACE as u16, iface as kernel::ffi::c_uint);
 
     0
 }
 
 unsafe fn uda1380_set_dai_fmt_playback(
     codec_dai: *mut snd_soc_dai,
-    fmt: libc::c_uint,
-) -> libc::c_int {
+    fmt: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let component = (*codec_dai).component;
-    let mut iface: libc::c_int;
+    let mut iface: kernel::ffi::c_int;
 
     /* set up DAI based upon fmt */
-    iface = uda1380_read_reg_cache(component, UDA1380_IFACE) as libc::c_int;
+    iface = uda1380_read_reg_cache(component, UDA1380_IFACE) as kernel::ffi::c_int;
     iface &= !R01_SFORI_MASK;
 
     match fmt & SND_SOC_DAIFMT_FORMAT_MASK {
@@ -488,20 +488,20 @@ unsafe fn uda1380_set_dai_fmt_playback(
         return -EINVAL;
     }
 
-    uda1380_write(component, UDA1380_IFACE, iface as libc::c_uint);
+    uda1380_write(component, UDA1380_IFACE, iface as kernel::ffi::c_uint);
 
     0
 }
 
 unsafe fn uda1380_set_dai_fmt_capture(
     codec_dai: *mut snd_soc_dai,
-    fmt: libc::c_uint,
-) -> libc::c_int {
+    fmt: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let component = (*codec_dai).component;
-    let mut iface: libc::c_int;
+    let mut iface: kernel::ffi::c_int;
 
     /* set up DAI based upon fmt */
-    iface = uda1380_read_reg_cache(component, UDA1380_IFACE) as libc::c_int;
+    iface = uda1380_read_reg_cache(component, UDA1380_IFACE) as kernel::ffi::c_int;
     iface &= !(R01_SIM | R01_SFORO_MASK);
 
     match fmt & SND_SOC_DAIFMT_FORMAT_MASK {
@@ -515,26 +515,26 @@ unsafe fn uda1380_set_dai_fmt_capture(
         iface |= R01_SIM;
     }
 
-    uda1380_write(component, UDA1380_IFACE, iface as libc::c_uint);
+    uda1380_write(component, UDA1380_IFACE, iface as kernel::ffi::c_uint);
 
     0
 }
 
 unsafe fn uda1380_trigger(
     _substream: *mut snd_pcm_substream,
-    cmd: libc::c_int,
+    cmd: kernel::ffi::c_int,
     dai: *mut snd_soc_dai,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let component = (*dai).component;
     let uda1380 = snd_soc_component_get_drvdata(component) as *mut uda1380_priv;
-    let mixer = uda1380_read_reg_cache(component, UDA1380_MIXER) as libc::c_int;
+    let mixer = uda1380_read_reg_cache(component, UDA1380_MIXER) as kernel::ffi::c_int;
 
     match cmd {
         SNDRV_PCM_TRIGGER_START | SNDRV_PCM_TRIGGER_PAUSE_RELEASE => {
             uda1380_write_reg_cache(
                 component,
                 UDA1380_MIXER as u16,
-                (mixer & !R14_SILENCE) as libc::c_uint,
+                (mixer & !R14_SILENCE) as kernel::ffi::c_uint,
             );
             schedule_work(&raw mut (*uda1380).work);
         }
@@ -542,7 +542,7 @@ unsafe fn uda1380_trigger(
             uda1380_write_reg_cache(
                 component,
                 UDA1380_MIXER as u16,
-                (mixer | R14_SILENCE) as libc::c_uint,
+                (mixer | R14_SILENCE) as kernel::ffi::c_uint,
             );
             schedule_work(&raw mut (*uda1380).work);
         }
@@ -555,7 +555,7 @@ unsafe fn uda1380_pcm_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let component = (*dai).component;
     let mut clk = uda1380_read_reg_cache(component, UDA1380_CLK) as u16;
 
@@ -571,7 +571,7 @@ unsafe fn uda1380_pcm_hw_params(
             50001..=100000 => clk |= 0x3,
             _ => {}
         }
-        uda1380_write(component, UDA1380_PM, (R02_PON_PLL as u16 | pm) as libc::c_uint);
+        uda1380_write(component, UDA1380_PM, (R02_PON_PLL as u16 | pm) as kernel::ffi::c_uint);
     }
 
     if (*substream).stream == SNDRV_PCM_STREAM_PLAYBACK {
@@ -580,7 +580,7 @@ unsafe fn uda1380_pcm_hw_params(
         clk |= (R00_EN_ADC | R00_EN_DEC) as u16;
     }
 
-    uda1380_write(component, UDA1380_CLK, clk as libc::c_uint);
+    uda1380_write(component, UDA1380_CLK, clk as kernel::ffi::c_uint);
     0
 }
 
@@ -594,7 +594,7 @@ unsafe fn uda1380_pcm_shutdown(
     /* shut down WSPLL power if running from this clock */
     if (clk & R00_DAC_CLK as u16) != 0 {
         let pm = uda1380_read_reg_cache(component, UDA1380_PM) as u16;
-        uda1380_write(component, UDA1380_PM, ((!R02_PON_PLL as u16) & pm) as libc::c_uint);
+        uda1380_write(component, UDA1380_PM, ((!R02_PON_PLL as u16) & pm) as kernel::ffi::c_uint);
     }
 
     if (*substream).stream == SNDRV_PCM_STREAM_PLAYBACK {
@@ -603,22 +603,22 @@ unsafe fn uda1380_pcm_shutdown(
         clk &= !((R00_EN_ADC | R00_EN_DEC) as u16);
     }
 
-    uda1380_write(component, UDA1380_CLK, clk as libc::c_uint);
+    uda1380_write(component, UDA1380_CLK, clk as kernel::ffi::c_uint);
 }
 
 unsafe fn uda1380_set_bias_level(
     component: *mut snd_soc_component,
     level: snd_soc_bias_level,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let dapm = snd_soc_component_to_dapm(component);
     let uda1380 = snd_soc_component_get_drvdata(component) as *mut uda1380_priv;
-    let pm = uda1380_read_reg_cache(component, UDA1380_PM) as libc::c_int;
-    let mut reg: libc::c_int;
+    let pm = uda1380_read_reg_cache(component, UDA1380_PM) as kernel::ffi::c_int;
+    let mut reg: kernel::ffi::c_int;
 
     match level {
         SND_SOC_BIAS_ON | SND_SOC_BIAS_PREPARE => {
             /* ADC, DAC on */
-            uda1380_write(component, UDA1380_PM, (R02_PON_BIAS | pm) as libc::c_uint);
+            uda1380_write(component, UDA1380_PM, (R02_PON_BIAS | pm) as kernel::ffi::c_uint);
         }
         SND_SOC_BIAS_STANDBY => {
             if snd_soc_dapm_get_bias_level(dapm) == SND_SOC_BIAS_OFF {
@@ -642,8 +642,8 @@ unsafe fn uda1380_set_bias_level(
             /* Mark mixer regs cache dirty to sync them with
              * codec regs on power on.
              */
-            reg = UDA1380_MVOL as libc::c_int;
-            while reg < UDA1380_CACHEREGNUM as libc::c_int {
+            reg = UDA1380_MVOL as kernel::ffi::c_int;
+            while reg < UDA1380_CACHEREGNUM as kernel::ffi::c_int {
                 set_bit(reg - 0x10, &raw mut uda1380_cache_dirty);
                 reg += 1;
             }
@@ -653,7 +653,7 @@ unsafe fn uda1380_set_bias_level(
     0
 }
 
-pub const UDA1380_RATES: libc::c_uint = SNDRV_PCM_RATE_8000
+pub const UDA1380_RATES: kernel::ffi::c_uint = SNDRV_PCM_RATE_8000
     | SNDRV_PCM_RATE_11025
     | SNDRV_PCM_RATE_16000
     | SNDRV_PCM_RATE_22050
@@ -726,9 +726,9 @@ static mut uda1380_dai: [snd_soc_dai_driver; 3] = [
     },
 ];
 
-unsafe fn uda1380_probe(component: *mut snd_soc_component) -> libc::c_int {
+unsafe fn uda1380_probe(component: *mut snd_soc_component) -> kernel::ffi::c_int {
     let uda1380 = snd_soc_component_get_drvdata(component) as *mut uda1380_priv;
-    let ret: libc::c_int;
+    let ret: kernel::ffi::c_int;
 
     (*uda1380).component = component;
 
@@ -747,7 +747,7 @@ unsafe fn uda1380_probe(component: *mut snd_soc_component) -> libc::c_int {
             uda1380_write_reg_cache(component, UDA1380_CLK as u16, 0);
         }
         UDA1380_DAC_CLK_WSPLL => {
-            uda1380_write_reg_cache(component, UDA1380_CLK as u16, R00_DAC_CLK as libc::c_uint);
+            uda1380_write_reg_cache(component, UDA1380_CLK as u16, R00_DAC_CLK as kernel::ffi::c_uint);
         }
         _ => {}
     }
@@ -772,10 +772,10 @@ static soc_component_dev_uda1380: snd_soc_component_driver = snd_soc_component_d
     endianness: 1,
 };
 
-unsafe fn uda1380_i2c_probe(i2c: *mut i2c_client) -> libc::c_int {
+unsafe fn uda1380_i2c_probe(i2c: *mut i2c_client) -> kernel::ffi::c_int {
     let dev = &raw mut (*i2c).dev;
     let uda1380: *mut uda1380_priv;
-    let ret: libc::c_int;
+    let ret: kernel::ffi::c_int;
 
     uda1380 = devm_kzalloc(
         &raw mut (*i2c).dev,
@@ -787,26 +787,26 @@ unsafe fn uda1380_i2c_probe(i2c: *mut i2c_client) -> libc::c_int {
     }
 
     memcpy(
-        (*uda1380).reg_cache.as_mut_ptr() as *mut libc::c_void,
-        uda1380_reg.as_ptr() as *const libc::c_void,
+        (*uda1380).reg_cache.as_mut_ptr() as *mut kernel::ffi::c_void,
+        uda1380_reg.as_ptr() as *const kernel::ffi::c_void,
         ARRAY_SIZE!(uda1380_reg) * core::mem::size_of::<u16>(),
     );
 
     (*uda1380).reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
-    if IS_ERR((*uda1380).reset as *const libc::c_void) {
+    if IS_ERR((*uda1380).reset as *const kernel::ffi::c_void) {
         return dev_err_probe(
             dev,
-            PTR_ERR((*uda1380).reset as *const libc::c_void),
+            PTR_ERR((*uda1380).reset as *const kernel::ffi::c_void),
             "error obtaining reset GPIO\n",
         );
     }
     gpiod_set_consumer_name((*uda1380).reset, "uda1380 reset");
 
     (*uda1380).power = devm_gpiod_get_optional(dev, "power", GPIOD_OUT_LOW);
-    if IS_ERR((*uda1380).power as *const libc::c_void) {
+    if IS_ERR((*uda1380).power as *const kernel::ffi::c_void) {
         return dev_err_probe(
             dev,
-            PTR_ERR((*uda1380).power as *const libc::c_void),
+            PTR_ERR((*uda1380).power as *const kernel::ffi::c_void),
             "error obtaining power GPIO\n",
         );
     }
@@ -818,7 +818,7 @@ unsafe fn uda1380_i2c_probe(i2c: *mut i2c_client) -> libc::c_int {
         (*uda1380).dac_clk = UDA1380_DAC_CLK_WSPLL;
     }
 
-    i2c_set_clientdata(i2c, uda1380 as *mut libc::c_void);
+    i2c_set_clientdata(i2c, uda1380 as *mut kernel::ffi::c_void);
     (*uda1380).i2c = i2c;
 
     ret = devm_snd_soc_register_component(

@@ -20,7 +20,7 @@ enum max77686_chip_name {
 
 #[repr(C)]
 struct max77686_hw_clk_info {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     clk_reg: u32,
     clk_enable_mask: u32,
     flags: u32,
@@ -44,19 +44,19 @@ struct max77686_clk_driver_data {
 
 static max77686_hw_clks_info: [max77686_hw_clk_info; MAX77686_CLKS_NUM as usize] = [
     max77686_hw_clk_info {
-        name: b"32khz_ap\0".as_ptr() as *const core::ffi::c_char,
+        name: b"32khz_ap\0".as_ptr() as *const kernel::ffi::c_char,
         clk_reg: MAX77686_REG_32KHZ,
         clk_enable_mask: BIT(MAX77686_CLK_AP),
         flags: 0,
     },
     max77686_hw_clk_info {
-        name: b"32khz_cp\0".as_ptr() as *const core::ffi::c_char,
+        name: b"32khz_cp\0".as_ptr() as *const kernel::ffi::c_char,
         clk_reg: MAX77686_REG_32KHZ,
         clk_enable_mask: BIT(MAX77686_CLK_CP),
         flags: 0,
     },
     max77686_hw_clk_info {
-        name: b"32khz_pmic\0".as_ptr() as *const core::ffi::c_char,
+        name: b"32khz_pmic\0".as_ptr() as *const kernel::ffi::c_char,
         clk_reg: MAX77686_REG_32KHZ,
         clk_enable_mask: BIT(MAX77686_CLK_PMIC),
         flags: 0,
@@ -65,13 +65,13 @@ static max77686_hw_clks_info: [max77686_hw_clk_info; MAX77686_CLKS_NUM as usize]
 
 static max77802_hw_clks_info: [max77686_hw_clk_info; MAX77802_CLKS_NUM as usize] = [
     max77686_hw_clk_info {
-        name: b"32khz_ap\0".as_ptr() as *const core::ffi::c_char,
+        name: b"32khz_ap\0".as_ptr() as *const kernel::ffi::c_char,
         clk_reg: MAX77802_REG_32KHZ,
         clk_enable_mask: BIT(MAX77802_CLK_32K_AP),
         flags: 0,
     },
     max77686_hw_clk_info {
-        name: b"32khz_cp\0".as_ptr() as *const core::ffi::c_char,
+        name: b"32khz_cp\0".as_ptr() as *const kernel::ffi::c_char,
         clk_reg: MAX77802_REG_32KHZ,
         clk_enable_mask: BIT(MAX77802_CLK_32K_CP),
         flags: 0,
@@ -80,7 +80,7 @@ static max77802_hw_clks_info: [max77686_hw_clk_info; MAX77802_CLKS_NUM as usize]
 
 static max77620_hw_clks_info: [max77686_hw_clk_info; MAX77620_CLKS_NUM as usize] = [
     max77686_hw_clk_info {
-        name: b"32khz_out0\0".as_ptr() as *const core::ffi::c_char,
+        name: b"32khz_out0\0".as_ptr() as *const kernel::ffi::c_char,
         clk_reg: MAX77620_REG_CNFG1_32K,
         clk_enable_mask: MAX77620_CNFG1_32K_OUT0_EN,
         flags: 0,
@@ -132,7 +132,7 @@ static max77686_clk_ops: clk_ops = clk_ops {
 
 unsafe extern "C" fn of_clk_max77686_get(
     clkspec: *mut of_phandle_args,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
 ) -> *mut clk_hw {
     let drv_data = &mut *(data as *mut max77686_clk_driver_data);
     let idx = (*clkspec).args[0] as usize;

@@ -54,7 +54,7 @@ pub union utp_upiu_rsp_fields { pub sr: utp_cmd_rsp, pub qr: struct_utp_upiu_que
 pub struct utp_upiu_rsp { pub header: struct_utp_upiu_header, pub fields: utp_upiu_rsp_fields }
 
 #[repr(C)]
-pub struct ufs_vreg { pub reg: *mut regulator, pub name: *const core::ffi::c_char, pub always_on: bool, pub enabled: bool, pub max_uA: i32 }
+pub struct ufs_vreg { pub reg: *mut regulator, pub name: *const kernel::ffi::c_char, pub always_on: bool, pub enabled: bool, pub max_uA: i32 }
 #[repr(C)]
 pub struct ufs_vreg_info { pub vcc: *mut ufs_vreg, pub vccq: *mut ufs_vreg, pub vccq2: *mut ufs_vreg, pub vdd_hba: *mut ufs_vreg }
 
@@ -65,7 +65,7 @@ pub struct ufs_dev_info {
  pub wb_enabled: bool, pub wb_buf_flush_enabled: bool, pub wb_dedicated_lu: u8, pub wb_buffer_type: u8, pub ext_wb_sup: u16,
  pub b_rpm_dev_flush_capable: bool, pub b_presrv_uspc_en: u8, pub b_advanced_rpmb_en: bool,
  pub rtc_type: ufs_rtc_time, pub rtc_time_baseline: time64_t, pub rtc_update_period: u32, pub rtt_cap: u8, pub hid_sup: bool,
- pub device_id: *mut core::ffi::c_char, pub rpmb_io_size: u8, pub rpmb_region_size: [u8; 4]
+ pub device_id: *mut kernel::ffi::c_char, pub rpmb_io_size: u8, pub rpmb_region_size: [u8; 4]
 }
 
 #[repr(i32)] pub enum ufs_rtc_time { UFS_RTC_RELATIVE, UFS_RTC_ABSOLUTE }

@@ -38,28 +38,28 @@ pub struct rave_sp {
 }
 
 #[inline]
-pub fn rave_sp_action_pack(event: u8, value: u8) -> core::ffi::c_ulong {
-    ((value as core::ffi::c_ulong) << 8) | event as core::ffi::c_ulong
+pub fn rave_sp_action_pack(event: u8, value: u8) -> kernel::ffi::c_ulong {
+    ((value as kernel::ffi::c_ulong) << 8) | event as kernel::ffi::c_ulong
 }
 
 #[inline]
-pub fn rave_sp_action_unpack_event(action: core::ffi::c_ulong) -> u8 {
+pub fn rave_sp_action_unpack_event(action: kernel::ffi::c_ulong) -> u8 {
     action as u8
 }
 
 #[inline]
-pub fn rave_sp_action_unpack_value(action: core::ffi::c_ulong) -> u8 {
+pub fn rave_sp_action_unpack_value(action: kernel::ffi::c_ulong) -> u8 {
     (action >> 8) as u8
 }
 
 extern "C" {
     pub fn rave_sp_exec(
         sp: *mut rave_sp,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
         data_size: usize,
-        reply_data: *mut core::ffi::c_void,
+        reply_data: *mut kernel::ffi::c_void,
         reply_data_size: usize,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -76,7 +76,7 @@ extern "C" {
     pub fn devm_rave_sp_register_event_notifier(
         dev: *mut device,
         nb: *mut notifier_block,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -15,11 +15,11 @@ pub struct max9867_priv {
     pub mclk: *mut clk,
     pub regmap: *mut regmap,
     pub constraints: *const snd_pcm_hw_constraint_list,
-    pub sysclk: libc::c_uint,
-    pub pclk: libc::c_uint,
+    pub sysclk: kernel::ffi::c_uint,
+    pub pclk: kernel::ffi::c_uint,
     pub provider: bool,
     pub dsp_a: bool,
-    pub adc_dac_active: libc::c_uint,
+    pub adc_dac_active: kernel::ffi::c_uint,
 }
 
 static max9867_spmode: [&'static str; 8] = [
@@ -54,8 +54,8 @@ pub enum max9867_adc_dac {
 pub unsafe extern "C" fn max9867_adc_dac_event(
     w: *mut snd_soc_dapm_widget,
     _kcontrol: *mut snd_kcontrol,
-    event: libc::c_int,
-) -> libc::c_int {
+    event: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = snd_soc_dapm_to_component((*w).dapm);
     let max9867: *mut max9867_priv = snd_soc_component_get_drvdata(component) as *mut max9867_priv;
     let adc_dac: max9867_adc_dac;
@@ -73,9 +73,9 @@ pub unsafe extern "C" fn max9867_adc_dac_event(
     }
 
     if SND_SOC_DAPM_EVENT_ON(event) != 0 {
-        (*max9867).adc_dac_active |= BIT(adc_dac as libc::c_uint);
+        (*max9867).adc_dac_active |= BIT(adc_dac as kernel::ffi::c_uint);
     } else if SND_SOC_DAPM_EVENT_OFF(event) != 0 {
-        (*max9867).adc_dac_active &= !BIT(adc_dac as libc::c_uint);
+        (*max9867).adc_dac_active &= !BIT(adc_dac as kernel::ffi::c_uint);
     }
 
     0
@@ -84,11 +84,11 @@ pub unsafe extern "C" fn max9867_adc_dac_event(
 pub unsafe extern "C" fn max9867_filter_get(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = snd_kcontrol_chip(kcontrol);
     let max9867: *mut max9867_priv = snd_soc_component_get_drvdata(component) as *mut max9867_priv;
-    let mut reg: libc::c_uint = 0;
-    let ret: libc::c_int;
+    let mut reg: kernel::ffi::c_uint = 0;
+    let ret: kernel::ffi::c_int;
 
     ret = regmap_read((*max9867).regmap, MAX9867_CODECFLTR, &mut reg);
     if ret != 0 {
@@ -107,12 +107,12 @@ pub unsafe extern "C" fn max9867_filter_get(
 pub unsafe extern "C" fn max9867_filter_set(
     kcontrol: *mut snd_kcontrol,
     ucontrol: *mut snd_ctl_elem_value,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = snd_kcontrol_chip(kcontrol);
     let max9867: *mut max9867_priv = snd_soc_component_get_drvdata(component) as *mut max9867_priv;
-    let mut reg: libc::c_uint = 0;
-    let mut mode: libc::c_uint = (*ucontrol).value.enumerated.item[0];
-    let ret: libc::c_int;
+    let mut reg: kernel::ffi::c_uint = 0;
+    let mut mode: kernel::ffi::c_uint = (*ucontrol).value.enumerated.item[0];
+    let ret: kernel::ffi::c_int;
 
     if mode > 1 {
         return -EINVAL;
@@ -166,7 +166,7 @@ static max9867_dac_filter: soc_enum =
 static max9867_adc_filter: soc_enum =
     SOC_ENUM_SINGLE_DECL!(MAX9867_CODECFLTR, 4, max9867_adc_dac_filter_text);
 static max9867_spkmode: soc_enum = SOC_ENUM_SINGLE_DECL!(MAX9867_MODECONFIG, 0, max9867_spmode);
-static max9867_master_tlv: [libc::c_uint; 0] = SNDRV_CTL_TLVD_DECLARE_DB_RANGE!(
+static max9867_master_tlv: [kernel::ffi::c_uint; 0] = SNDRV_CTL_TLVD_DECLARE_DB_RANGE!(
     0,
     2,
     TLV_DB_SCALE_ITEM!(-8600, 200, 1),
@@ -183,12 +183,12 @@ static max9867_master_tlv: [libc::c_uint; 0] = SNDRV_CTL_TLVD_DECLARE_DB_RANGE!(
     40,
     TLV_DB_SCALE_ITEM!(350, 50, 0),
 );
-static max9867_mic_tlv: [libc::c_uint; 0] = DECLARE_TLV_DB_SCALE!(0, 100, 0);
-static max9867_line_tlv: [libc::c_uint; 0] = DECLARE_TLV_DB_SCALE!(-600, 200, 0);
-static max9867_adc_tlv: [libc::c_uint; 0] = DECLARE_TLV_DB_SCALE!(-1200, 100, 0);
-static max9867_dac_tlv: [libc::c_uint; 0] = DECLARE_TLV_DB_SCALE!(-1500, 100, 0);
-static max9867_dacboost_tlv: [libc::c_uint; 0] = DECLARE_TLV_DB_SCALE!(0, 600, 0);
-static max9867_micboost_tlv: [libc::c_uint; 0] = SNDRV_CTL_TLVD_DECLARE_DB_RANGE!(
+static max9867_mic_tlv: [kernel::ffi::c_uint; 0] = DECLARE_TLV_DB_SCALE!(0, 100, 0);
+static max9867_line_tlv: [kernel::ffi::c_uint; 0] = DECLARE_TLV_DB_SCALE!(-600, 200, 0);
+static max9867_adc_tlv: [kernel::ffi::c_uint; 0] = DECLARE_TLV_DB_SCALE!(-1200, 100, 0);
+static max9867_dac_tlv: [kernel::ffi::c_uint; 0] = DECLARE_TLV_DB_SCALE!(-1500, 100, 0);
+static max9867_dacboost_tlv: [kernel::ffi::c_uint; 0] = DECLARE_TLV_DB_SCALE!(0, 600, 0);
+static max9867_micboost_tlv: [kernel::ffi::c_uint; 0] = SNDRV_CTL_TLVD_DECLARE_DB_RANGE!(
     0,
     2,
     TLV_DB_SCALE_ITEM!(-2000, 2000, 1),
@@ -295,14 +295,14 @@ static max9867_audio_map: [snd_soc_dapm_route; 23] = [
     snd_soc_dapm_route { sink: c"ROUT".as_ptr(), control: NULL, source: c"Master Playback".as_ptr() },
 ];
 
-static max9867_rates_44k1: [libc::c_uint; 3] = [11025, 22050, 44100];
+static max9867_rates_44k1: [kernel::ffi::c_uint; 3] = [11025, 22050, 44100];
 
 static max9867_constraints_44k1: snd_pcm_hw_constraint_list = snd_pcm_hw_constraint_list {
     list: max9867_rates_44k1.as_ptr(),
     count: ARRAY_SIZE!(max9867_rates_44k1),
 };
 
-static max9867_rates_48k: [libc::c_uint; 4] = [8000, 16000, 32000, 48000];
+static max9867_rates_48k: [kernel::ffi::c_uint; 4] = [8000, 16000, 32000, 48000];
 
 static max9867_constraints_48k: snd_pcm_hw_constraint_list = snd_pcm_hw_constraint_list {
     list: max9867_rates_48k.as_ptr(),
@@ -312,7 +312,7 @@ static max9867_constraints_48k: snd_pcm_hw_constraint_list = snd_pcm_hw_constrai
 pub unsafe extern "C" fn max9867_startup(
     substream: *mut snd_pcm_substream,
     dai: *mut snd_soc_dai,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let max9867: *mut max9867_priv =
         snd_soc_component_get_drvdata((*dai).component) as *mut max9867_priv;
 
@@ -332,17 +332,17 @@ pub unsafe extern "C" fn max9867_dai_hw_params(
     _substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> libc::c_int {
-    let mut value: libc::c_int;
-    let mut freq: libc::c_int = 0;
-    let rate: libc::c_ulong;
-    let ratio: libc::c_ulong;
+) -> kernel::ffi::c_int {
+    let mut value: kernel::ffi::c_int;
+    let mut freq: kernel::ffi::c_int = 0;
+    let rate: kernel::ffi::c_ulong;
+    let ratio: kernel::ffi::c_ulong;
     let component: *mut snd_soc_component = (*dai).component;
     let max9867: *mut max9867_priv = snd_soc_component_get_drvdata(component) as *mut max9867_priv;
-    let ni: libc::c_uint = DIV_ROUND_CLOSEST_ULL(
+    let ni: kernel::ffi::c_uint = DIV_ROUND_CLOSEST_ULL(
         96u64 * 0x10000u64 * params_rate(params) as u64,
         (*max9867).pclk as u64,
-    ) as libc::c_uint;
+    ) as kernel::ffi::c_uint;
 
     /* set up the ni value */
     regmap_update_bits(
@@ -359,22 +359,22 @@ pub unsafe extern "C" fn max9867_dai_hw_params(
     );
     if (*max9867).provider {
         if (*max9867).dsp_a {
-            value = MAX9867_IFC1B_48X as libc::c_int;
+            value = MAX9867_IFC1B_48X as kernel::ffi::c_int;
         } else {
-            rate = (params_rate(params) * 2 * params_width(params)) as libc::c_ulong;
-            ratio = ((*max9867).pclk as libc::c_ulong) / rate;
+            rate = (params_rate(params) * 2 * params_width(params)) as kernel::ffi::c_ulong;
+            ratio = ((*max9867).pclk as kernel::ffi::c_ulong) / rate;
             match params_width(params) {
                 8 | 16 => {
                     match ratio {
-                        2 => value = MAX9867_IFC1B_PCLK_2 as libc::c_int,
-                        4 => value = MAX9867_IFC1B_PCLK_4 as libc::c_int,
-                        8 => value = MAX9867_IFC1B_PCLK_8 as libc::c_int,
-                        16 => value = MAX9867_IFC1B_PCLK_16 as libc::c_int,
+                        2 => value = MAX9867_IFC1B_PCLK_2 as kernel::ffi::c_int,
+                        4 => value = MAX9867_IFC1B_PCLK_4 as kernel::ffi::c_int,
+                        8 => value = MAX9867_IFC1B_PCLK_8 as kernel::ffi::c_int,
+                        16 => value = MAX9867_IFC1B_PCLK_16 as kernel::ffi::c_int,
                         _ => return -EINVAL,
                     }
                 }
-                24 => value = MAX9867_IFC1B_48X as libc::c_int,
-                32 => value = MAX9867_IFC1B_64X as libc::c_int,
+                24 => value = MAX9867_IFC1B_48X as kernel::ffi::c_int,
+                32 => value = MAX9867_IFC1B_64X as kernel::ffi::c_int,
                 _ => return -EINVAL,
             }
         }
@@ -382,7 +382,7 @@ pub unsafe extern "C" fn max9867_dai_hw_params(
             (*max9867).regmap,
             MAX9867_IFC1B,
             MAX9867_IFC1B_BCLK_MASK,
-            value as libc::c_uint,
+            value as kernel::ffi::c_uint,
         );
 
         /* Exact integer mode available for 8kHz and 16kHz sample rates
@@ -408,7 +408,7 @@ pub unsafe extern "C" fn max9867_dai_hw_params(
             (*max9867).regmap,
             MAX9867_SYSCLK,
             MAX9867_FREQ_MASK,
-            freq as libc::c_uint,
+            freq as kernel::ffi::c_uint,
         );
     } else {
         /*
@@ -433,9 +433,9 @@ pub unsafe extern "C" fn max9867_dai_hw_params(
 
 pub unsafe extern "C" fn max9867_mute(
     dai: *mut snd_soc_dai,
-    mute: libc::c_int,
-    _direction: libc::c_int,
-) -> libc::c_int {
+    mute: kernel::ffi::c_int,
+    _direction: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*dai).component;
     let max9867: *mut max9867_priv = snd_soc_component_get_drvdata(component) as *mut max9867_priv;
 
@@ -443,29 +443,29 @@ pub unsafe extern "C" fn max9867_mute(
         (*max9867).regmap,
         MAX9867_DACLEVEL,
         1 << 6,
-        ((mute != 0) as libc::c_uint) << 6,
+        ((mute != 0) as kernel::ffi::c_uint) << 6,
     )
 }
 
 pub unsafe extern "C" fn max9867_set_dai_sysclk(
     codec_dai: *mut snd_soc_dai,
-    _clk_id: libc::c_int,
-    freq: libc::c_uint,
-    _dir: libc::c_int,
-) -> libc::c_int {
+    _clk_id: kernel::ffi::c_int,
+    freq: kernel::ffi::c_uint,
+    _dir: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*codec_dai).component;
     let max9867: *mut max9867_priv = snd_soc_component_get_drvdata(component) as *mut max9867_priv;
-    let mut value: libc::c_int = 0;
+    let mut value: kernel::ffi::c_int = 0;
 
     /* Set the prescaler based on the master clock frequency*/
     if freq >= 10000000 && freq <= 20000000 {
-        value |= MAX9867_PSCLK_10_20 as libc::c_int;
+        value |= MAX9867_PSCLK_10_20 as kernel::ffi::c_int;
         (*max9867).pclk = freq;
     } else if freq >= 20000000 && freq <= 40000000 {
-        value |= MAX9867_PSCLK_20_40 as libc::c_int;
+        value |= MAX9867_PSCLK_20_40 as kernel::ffi::c_int;
         (*max9867).pclk = freq / 2;
     } else if freq >= 40000000 && freq <= 60000000 {
-        value |= MAX9867_PSCLK_40_60 as libc::c_int;
+        value |= MAX9867_PSCLK_40_60 as kernel::ffi::c_int;
         (*max9867).pclk = freq / 4;
     } else {
         dev_err(
@@ -492,15 +492,15 @@ pub unsafe extern "C" fn max9867_set_dai_sysclk(
         (*max9867).regmap,
         MAX9867_SYSCLK,
         MAX9867_PSCLK_MASK,
-        value as libc::c_uint,
+        value as kernel::ffi::c_uint,
     );
     0
 }
 
 pub unsafe extern "C" fn max9867_dai_set_fmt(
     codec_dai: *mut snd_soc_dai,
-    fmt: libc::c_uint,
-) -> libc::c_int {
+    fmt: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let component: *mut snd_soc_component = (*codec_dai).component;
     let max9867: *mut max9867_priv = snd_soc_component_get_drvdata(component) as *mut max9867_priv;
     let mut iface1A: u8;
@@ -547,12 +547,12 @@ pub unsafe extern "C" fn max9867_dai_set_fmt(
         _ => return -EINVAL,
     }
 
-    regmap_write((*max9867).regmap, MAX9867_IFC1A, iface1A as libc::c_uint);
+    regmap_write((*max9867).regmap, MAX9867_IFC1A, iface1A as kernel::ffi::c_uint);
     regmap_update_bits(
         (*max9867).regmap,
         MAX9867_IFC1B,
         MAX9867_IFC1B_BCLK_MASK,
-        iface1B as libc::c_uint,
+        iface1B as kernel::ffi::c_uint,
     );
 
     0
@@ -589,7 +589,7 @@ static mut max9867_dai: [snd_soc_dai_driver; 1] = [snd_soc_dai_driver {
 
 // Original C conditional: #ifdef CONFIG_PM.
 #[cfg(CONFIG_PM)]
-pub unsafe extern "C" fn max9867_suspend(component: *mut snd_soc_component) -> libc::c_int {
+pub unsafe extern "C" fn max9867_suspend(component: *mut snd_soc_component) -> kernel::ffi::c_int {
     let dapm: *mut snd_soc_dapm_context = snd_soc_component_to_dapm(component);
 
     snd_soc_dapm_force_bias_level(dapm, SND_SOC_BIAS_OFF);
@@ -598,7 +598,7 @@ pub unsafe extern "C" fn max9867_suspend(component: *mut snd_soc_component) -> l
 }
 
 #[cfg(CONFIG_PM)]
-pub unsafe extern "C" fn max9867_resume(component: *mut snd_soc_component) -> libc::c_int {
+pub unsafe extern "C" fn max9867_resume(component: *mut snd_soc_component) -> kernel::ffi::c_int {
     let dapm: *mut snd_soc_dapm_context = snd_soc_component_to_dapm(component);
 
     snd_soc_dapm_force_bias_level(dapm, SND_SOC_BIAS_STANDBY);
@@ -608,15 +608,15 @@ pub unsafe extern "C" fn max9867_resume(component: *mut snd_soc_component) -> li
 
 // Original C #else maps max9867_suspend and max9867_resume to NULL.
 #[cfg(not(CONFIG_PM))]
-static max9867_suspend: *const libc::c_void = NULL;
+static max9867_suspend: *const kernel::ffi::c_void = NULL;
 #[cfg(not(CONFIG_PM))]
-static max9867_resume: *const libc::c_void = NULL;
+static max9867_resume: *const kernel::ffi::c_void = NULL;
 
 pub unsafe extern "C" fn max9867_set_bias_level(
     component: *mut snd_soc_component,
     level: snd_soc_bias_level,
-) -> libc::c_int {
-    let mut err: libc::c_int;
+) -> kernel::ffi::c_int {
+    let mut err: kernel::ffi::c_int;
     let max9867: *mut max9867_priv = snd_soc_component_get_drvdata(component) as *mut max9867_priv;
     let dapm: *mut snd_soc_dapm_context = snd_soc_component_to_dapm(component);
 
@@ -672,7 +672,7 @@ static max9867_component: snd_soc_component_driver = snd_soc_component_driver {
 
 pub unsafe extern "C" fn max9867_volatile_register(
     _dev: *mut device,
-    reg: libc::c_uint,
+    reg: kernel::ffi::c_uint,
 ) -> bool {
     match reg {
         MAX9867_STATUS | MAX9867_JACKSTATUS | MAX9867_AUXHIGH | MAX9867_AUXLOW => true,
@@ -688,10 +688,10 @@ static max9867_regmap: regmap_config = regmap_config {
     cache_type: REGCACHE_RBTREE,
 };
 
-pub unsafe extern "C" fn max9867_i2c_probe(i2c: *mut i2c_client) -> libc::c_int {
+pub unsafe extern "C" fn max9867_i2c_probe(i2c: *mut i2c_client) -> kernel::ffi::c_int {
     let mut max9867: *mut max9867_priv;
-    let mut ret: libc::c_int;
-    let mut reg: libc::c_int = 0;
+    let mut ret: kernel::ffi::c_int;
+    let mut reg: kernel::ffi::c_int = 0;
 
     max9867 = devm_kzalloc(
         &mut (*i2c).dev,
@@ -702,10 +702,10 @@ pub unsafe extern "C" fn max9867_i2c_probe(i2c: *mut i2c_client) -> libc::c_int 
         return -ENOMEM;
     }
 
-    i2c_set_clientdata(i2c, max9867 as *mut libc::c_void);
+    i2c_set_clientdata(i2c, max9867 as *mut kernel::ffi::c_void);
     (*max9867).regmap = devm_regmap_init_i2c(i2c, &max9867_regmap);
-    if IS_ERR((*max9867).regmap as *const libc::c_void) != 0 {
-        ret = PTR_ERR((*max9867).regmap as *const libc::c_void);
+    if IS_ERR((*max9867).regmap as *const kernel::ffi::c_void) != 0 {
+        ret = PTR_ERR((*max9867).regmap as *const kernel::ffi::c_void);
         dev_err(
             &mut (*i2c).dev,
             c"Failed to allocate regmap: %d\n".as_ptr(),
@@ -713,7 +713,7 @@ pub unsafe extern "C" fn max9867_i2c_probe(i2c: *mut i2c_client) -> libc::c_int 
         );
         return ret;
     }
-    ret = regmap_read((*max9867).regmap, MAX9867_REVISION, &mut reg as *mut _ as *mut libc::c_uint);
+    ret = regmap_read((*max9867).regmap, MAX9867_REVISION, &mut reg as *mut _ as *mut kernel::ffi::c_uint);
     if ret < 0 {
         dev_err(&mut (*i2c).dev, c"Failed to read: %d\n".as_ptr(), ret);
         return ret;
@@ -735,8 +735,8 @@ pub unsafe extern "C" fn max9867_i2c_probe(i2c: *mut i2c_client) -> libc::c_int 
     }
 
     (*max9867).mclk = devm_clk_get(&mut (*i2c).dev, NULL);
-    if IS_ERR((*max9867).mclk as *const libc::c_void) != 0 {
-        return PTR_ERR((*max9867).mclk as *const libc::c_void);
+    if IS_ERR((*max9867).mclk as *const kernel::ffi::c_void) != 0 {
+        return PTR_ERR((*max9867).mclk as *const kernel::ffi::c_void);
     }
 
     0

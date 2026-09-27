@@ -8,12 +8,12 @@ pub struct mm_context_t {
     pub lock: spinlock_t,
     pub cpu_attach_mask: cpumask_t,
     pub flush_count: atomic_t,
-    pub flush_mm: core::ffi::c_uint,
+    pub flush_mm: kernel::ffi::c_uint,
     pub gmap_list: list_head,
-    pub gmap_asce: core::ffi::c_ulong,
-    pub asce: core::ffi::c_ulong,
-    pub asce_limit: core::ffi::c_ulong,
-    pub vdso_base: core::ffi::c_ulong,
+    pub gmap_asce: kernel::ffi::c_ulong,
+    pub asce: kernel::ffi::c_ulong,
+    pub asce_limit: kernel::ffi::c_ulong,
+    pub vdso_base: kernel::ffi::c_ulong,
     /* The mmu context belongs to a secure guest. */
     pub protected_count: atomic_t,
     /*

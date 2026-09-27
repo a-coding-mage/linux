@@ -69,7 +69,7 @@ pub unsafe fn aa_ns_name(curr: *mut aa_ns, view: *mut aa_ns, subns: bool) -> *co
          * Add + 2 to skip over // separating curr hname prefix
          * from the visible tail of the views hname
          */
-        let offset = libc::strlen((*curr).base.hname) + 2;
+        let offset = strlen((*curr).base.hname) + 2;
         return (*view).base.hname.add(offset) as *const u8;
     }
 
@@ -103,7 +103,7 @@ unsafe fn alloc_ns(prefix: *const i8, name: *const i8) -> *mut aa_ns {
         return std::ptr::null_mut();
     }
     if !aa_policy_init(&mut (*ns).base, prefix, name, GFP_KERNEL) {
-        kfree_sensitive(ns as *mut libc::c_void);
+        kfree_sensitive(ns as *mut core::ffi::c_void);
         return std::ptr::null_mut();
     }
 
@@ -116,7 +116,7 @@ unsafe fn alloc_ns(prefix: *const i8, name: *const i8) -> *mut aa_ns {
     (*ns).unconfined = alloc_unconfined(b"unconfined\0".as_ptr() as *const i8);
     if (*ns).unconfined.is_null() {
         aa_policy_destroy(&mut (*ns).base);
-        kfree_sensitive(ns as *mut libc::c_void);
+        kfree_sensitive(ns as *mut core::ffi::c_void);
         return std::ptr::null_mut();
     }
     /* ns and ns->unconfined share ns->unconfined refcount */
@@ -147,7 +147,7 @@ pub unsafe fn aa_free_ns(ns: *mut aa_ns) {
 
     (*(*ns).unconfined).ns = std::ptr::null_mut();
     aa_free_profile((*ns).unconfined);
-    kfree_sensitive(ns as *mut libc::c_void);
+    kfree_sensitive(ns as *mut core::ffi::c_void);
 }
 
 /**
@@ -305,7 +305,7 @@ unsafe fn destroy_ns(ns: *mut aa_ns) {
     __ns_list_release(&mut (*ns).sub_ns);
 
     if !(*ns).parent.is_null() {
-        let mut flags: libc::c_ulong = 0;
+        let mut flags: core::ffi::c_ulong = 0;
 
         write_lock_irqsave(&mut (*ns).labels.lock, &mut flags);
         __aa_proxy_redirect(ns_unconfined(ns),

@@ -8,7 +8,7 @@
  *	Copyright (c) 2012 Ondrej Zary <linux@rainbow-software.org>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* External dependency types from the surrounding driver/kernel bindings. */
 use crate::{snd_card, snd_ctl_elem_type_t};
@@ -183,7 +183,7 @@ pub struct snd_wm8776_ctl {
     pub name: *const c_char,
     pub type_: snd_ctl_elem_type_t,
     pub enum_names: [*const c_char; WM8776_ENUM_MAX],
-    pub tlv: *const ::core::ffi::c_uint,
+    pub tlv: *const ::kernel::ffi::c_uint,
     pub reg1: u16,
     pub reg2: u16,
     pub mask1: u16,
@@ -219,7 +219,7 @@ unsafe extern "C" {
     pub fn snd_wm8776_resume(wm: *mut snd_wm8776);
     pub fn snd_wm8776_set_power(wm: *mut snd_wm8776, power: u16);
     pub fn snd_wm8776_volume_restore(wm: *mut snd_wm8776);
-    pub fn snd_wm8776_build_controls(wm: *mut snd_wm8776) -> ::core::ffi::c_int;
+    pub fn snd_wm8776_build_controls(wm: *mut snd_wm8776) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

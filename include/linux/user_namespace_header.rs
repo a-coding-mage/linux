@@ -30,8 +30,8 @@ pub struct uid_gid_map_extended {
     pub reverse: *mut uid_gid_extent,
 }
 
-pub const USERNS_SETGROUPS_ALLOWED: libc::c_ulong = 1;
-pub const USERNS_INIT_FLAGS: libc::c_ulong = USERNS_SETGROUPS_ALLOWED;
+pub const USERNS_SETGROUPS_ALLOWED: kernel::ffi::c_ulong = 1;
+pub const USERNS_INIT_FLAGS: kernel::ffi::c_ulong = USERNS_SETGROUPS_ALLOWED;
 
 pub enum ucounts {}
 
@@ -74,11 +74,11 @@ pub struct user_namespace {
     pub gid_map: uid_gid_map,
     pub projid_map: uid_gid_map,
     pub parent: *mut user_namespace,
-    pub level: libc::c_int,
+    pub level: kernel::ffi::c_int,
     pub owner: kuid_t,
     pub group: kgid_t,
     pub ns: ns_common,
-    pub flags: libc::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub parent_could_setfcap: bool,
     // CONFIG_KEYS
     pub keyring_name_list: list_head,
@@ -91,8 +91,8 @@ pub struct user_namespace {
     pub set: ctl_table_set,
     pub sysctls: *mut ctl_table_header,
     pub ucounts: *mut ucounts,
-    pub ucount_max: [libc::c_long; ucount_type::UCOUNT_COUNTS as usize],
-    pub rlimit_max: [libc::c_long; rlimit_type::UCOUNT_RLIMIT_COUNTS as usize],
+    pub ucount_max: [kernel::ffi::c_long; ucount_type::UCOUNT_COUNTS as usize],
+    pub rlimit_max: [kernel::ffi::c_long; rlimit_type::UCOUNT_RLIMIT_COUNTS as usize],
     // IS_ENABLED(CONFIG_BINFMT_MISC)
     pub binfmt_misc: *mut binfmt_misc,
 }
@@ -119,11 +119,11 @@ extern "C" {
     pub fn alloc_ucounts(ns: *mut user_namespace, uid: kuid_t) -> *mut ucounts;
     pub fn put_ucounts(ucounts: *mut ucounts);
 
-    pub fn inc_rlimit_ucounts(ucounts: *mut ucounts, type_: rlimit_type, v: libc::c_long) -> libc::c_long;
-    pub fn dec_rlimit_ucounts(ucounts: *mut ucounts, type_: rlimit_type, v: libc::c_long) -> bool;
-    pub fn inc_rlimit_get_ucounts(ucounts: *mut ucounts, type_: rlimit_type, override_rlimit: bool) -> libc::c_long;
+    pub fn inc_rlimit_ucounts(ucounts: *mut ucounts, type_: rlimit_type, v: kernel::ffi::c_long) -> kernel::ffi::c_long;
+    pub fn dec_rlimit_ucounts(ucounts: *mut ucounts, type_: rlimit_type, v: kernel::ffi::c_long) -> bool;
+    pub fn inc_rlimit_get_ucounts(ucounts: *mut ucounts, type_: rlimit_type, override_rlimit: bool) -> kernel::ffi::c_long;
     pub fn dec_rlimit_put_ucounts(ucounts: *mut ucounts, type_: rlimit_type);
-    pub fn is_rlimit_overlimit(ucounts: *mut ucounts, type_: rlimit_type, max: libc::c_ulong) -> bool;
+    pub fn is_rlimit_overlimit(ucounts: *mut ucounts, type_: rlimit_type, max: kernel::ffi::c_ulong) -> bool;
 }
 
 // The following inline functions retain their C semantics and depend on symbols from included headers.
@@ -131,16 +131,16 @@ pub unsafe fn get_ucounts(ucounts: *mut ucounts) -> *mut ucounts {
     if rcuref_get(&mut (*(ucounts as *mut ucounts_struct)).count) != 0 { ucounts } else { core::ptr::null_mut() }
 }
 
-pub unsafe fn get_rlimit_value(ucounts: *mut ucounts, type_: rlimit_type) -> libc::c_long {
+pub unsafe fn get_rlimit_value(ucounts: *mut ucounts, type_: rlimit_type) -> kernel::ffi::c_long {
     atomic_long_read(&(*(ucounts as *mut ucounts_struct)).rlimit[type_ as usize])
 }
 
-pub unsafe fn get_userns_rlimit_max(ns: *mut user_namespace, type_: rlimit_type) -> libc::c_long {
+pub unsafe fn get_userns_rlimit_max(ns: *mut user_namespace, type_: rlimit_type) -> kernel::ffi::c_long {
     core::ptr::read_volatile((*(ns)).rlimit_max.as_ptr().add(type_ as usize))
 }
 
-pub unsafe fn set_userns_rlimit_max(ns: *mut user_namespace, type_: rlimit_type, max: libc::c_ulong) {
-    (*(ns)).rlimit_max[type_ as usize] = if max <= libc::LONG_MAX as libc::c_ulong { max as libc::c_long } else { libc::LONG_MAX };
+pub unsafe fn set_userns_rlimit_max(ns: *mut user_namespace, type_: rlimit_type, max: kernel::ffi::c_ulong) {
+    (*(ns)).rlimit_max[type_ as usize] = if max <= kernel::ffi::c_long::MAX as kernel::ffi::c_ulong { max as kernel::ffi::c_long } else { kernel::ffi::c_long::MAX };
 }
 
 pub unsafe fn to_user_ns(ns: *mut ns_common) -> *mut user_namespace {
@@ -152,11 +152,11 @@ extern "C" {
     pub static proc_uid_seq_operations: seq_operations;
     pub static proc_gid_seq_operations: seq_operations;
     pub static proc_projid_seq_operations: seq_operations;
-    pub fn proc_uid_map_write(file: *mut file, buf: *const libc::c_char, count: usize, pos: *mut loff_t) -> ssize_t;
-    pub fn proc_gid_map_write(file: *mut file, buf: *const libc::c_char, count: usize, pos: *mut loff_t) -> ssize_t;
-    pub fn proc_projid_map_write(file: *mut file, buf: *const libc::c_char, count: usize, pos: *mut loff_t) -> ssize_t;
-    pub fn proc_setgroups_write(file: *mut file, buf: *const libc::c_char, count: usize, pos: *mut loff_t) -> ssize_t;
-    pub fn proc_setgroups_show(m: *mut seq_file, v: *mut libc::c_void) -> libc::c_int;
+    pub fn proc_uid_map_write(file: *mut file, buf: *const kernel::ffi::c_char, count: usize, pos: *mut loff_t) -> ssize_t;
+    pub fn proc_gid_map_write(file: *mut file, buf: *const kernel::ffi::c_char, count: usize, pos: *mut loff_t) -> ssize_t;
+    pub fn proc_projid_map_write(file: *mut file, buf: *const kernel::ffi::c_char, count: usize, pos: *mut loff_t) -> ssize_t;
+    pub fn proc_setgroups_write(file: *mut file, buf: *const kernel::ffi::c_char, count: usize, pos: *mut loff_t) -> ssize_t;
+    pub fn proc_setgroups_show(m: *mut seq_file, v: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
     pub fn userns_may_setgroups(ns: *const user_namespace) -> bool;
     pub fn in_userns(ancestor: *const user_namespace, child: *const user_namespace) -> bool;
     pub fn current_in_userns(target_ns: *const user_namespace) -> bool;
@@ -164,8 +164,8 @@ extern "C" {
 }
 
 extern "C" {
-    pub fn create_user_ns(new: *mut cred) -> libc::c_int;
-    pub fn unshare_userns(unshare_flags: libc::c_ulong, new_cred: *mut *mut cred) -> libc::c_int;
+    pub fn create_user_ns(new: *mut cred) -> kernel::ffi::c_int;
+    pub fn unshare_userns(unshare_flags: kernel::ffi::c_ulong, new_cred: *mut *mut cred) -> kernel::ffi::c_int;
     pub fn __put_user_ns(ns: *mut user_namespace);
 }
 
@@ -180,8 +180,8 @@ pub unsafe fn put_user_ns(ns: *mut user_namespace) {
 
 // When CONFIG_USER_NS is disabled, the C header provides these inline fallbacks.
 pub unsafe fn get_user_ns_disabled(_ns: *mut user_namespace) -> *mut user_namespace { &mut init_user_ns }
-pub unsafe fn create_user_ns_disabled(_new: *mut cred) -> libc::c_int { -EINVAL }
-pub unsafe fn unshare_userns_disabled(unshare_flags: libc::c_ulong, _new_cred: *mut *mut cred) -> libc::c_int {
+pub unsafe fn create_user_ns_disabled(_new: *mut cred) -> kernel::ffi::c_int { -EINVAL }
+pub unsafe fn unshare_userns_disabled(unshare_flags: kernel::ffi::c_ulong, _new_cred: *mut *mut cred) -> kernel::ffi::c_int {
     if unshare_flags & CLONE_NEWUSER != 0 { -EINVAL } else { 0 }
 }
 pub unsafe fn put_user_ns_disabled(_ns: *mut user_namespace) {}

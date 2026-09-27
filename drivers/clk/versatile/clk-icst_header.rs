@@ -54,15 +54,15 @@ extern "C" {
     pub fn icst_clk_register(
         dev: *mut device,
         desc: *const clk_icst_desc,
-        name: *const core::ffi::c_char,
-        parent_name: *const core::ffi::c_char,
-        base: *mut core::ffi::c_void) -> *mut clk;
+        name: *const kernel::ffi::c_char,
+        parent_name: *const kernel::ffi::c_char,
+        base: *mut kernel::ffi::c_void) -> *mut clk;
 
     pub fn icst_clk_setup(
         dev: *mut device,
         desc: *const clk_icst_desc,
-        name: *const core::ffi::c_char,
-        parent_name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
+        parent_name: *const kernel::ffi::c_char,
         map: *mut regmap,
         ctype: icst_control_type) -> *mut clk;
 }

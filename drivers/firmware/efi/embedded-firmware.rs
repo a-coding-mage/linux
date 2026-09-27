@@ -49,8 +49,8 @@ unsafe fn efi_check_md_for_embedded_firmware(
     i = 0;
     while i.wrapping_add((*desc).length) <= size {
         if memcmp(
-            map.add(i as usize) as *const core::ffi::c_void,
-            (*desc).prefix as *const core::ffi::c_void,
+            map.add(i as usize) as *const kernel::ffi::c_void,
+            (*desc).prefix as *const kernel::ffi::c_void,
             EFI_EMBEDDED_FW_PREFIX_LEN,
         ) != 0 {
             i = i.wrapping_add(8);
@@ -59,8 +59,8 @@ unsafe fn efi_check_md_for_embedded_firmware(
 
         sha256(map.add(i as usize), (*desc).length as usize, hash.as_mut_ptr());
         if memcmp(
-            hash.as_ptr() as *const core::ffi::c_void,
-            (*desc).sha256 as *const core::ffi::c_void,
+            hash.as_ptr() as *const kernel::ffi::c_void,
+            (*desc).sha256 as *const kernel::ffi::c_void,
             32,
         ) == 0 {
             break;
@@ -138,7 +138,7 @@ pub unsafe fn efi_check_for_embedded_firmwares() {
 }
 
 pub unsafe fn efi_get_embedded_fw(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     data: *mut *const u8,
     size: *mut usize,
 ) -> i32 {

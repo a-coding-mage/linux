@@ -87,7 +87,7 @@ pub struct dcn30_afmt_mask {
 
 #[repr(C)] pub struct afmt_funcs {
     pub setup_hdmi_audio: Option<unsafe extern "C" fn(*mut afmt)>,
-    pub se_audio_setup: Option<unsafe extern "C" fn(*mut afmt, libc::c_uint, *mut audio_info)>,
+    pub se_audio_setup: Option<unsafe extern "C" fn(*mut afmt, core::ffi::c_uint, *mut audio_info)>,
     pub audio_mute_control: Option<unsafe extern "C" fn(*mut afmt, bool)>,
     pub audio_info_immediate_update: Option<unsafe extern "C" fn(*mut afmt)>,
     pub setup_dp_audio: Option<unsafe extern "C" fn(*mut afmt)>,
@@ -105,7 +105,7 @@ pub struct dcn30_afmt_mask {
 
 extern "C" {
     pub fn afmt3_setup_hdmi_audio(afmt: *mut afmt);
-    pub fn afmt3_se_audio_setup(afmt: *mut afmt, az_inst: libc::c_uint, audio_info: *mut audio_info);
+    pub fn afmt3_se_audio_setup(afmt: *mut afmt, az_inst: core::ffi::c_uint, audio_info: *mut audio_info);
     pub fn afmt3_audio_mute_control(afmt: *mut afmt, mute: bool);
     pub fn afmt3_audio_info_immediate_update(afmt: *mut afmt);
     pub fn afmt3_setup_dp_audio(afmt: *mut afmt);

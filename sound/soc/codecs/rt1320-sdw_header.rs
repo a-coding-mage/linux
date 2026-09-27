@@ -216,7 +216,7 @@ pub struct rt1320_sdw_priv {
     pub r0_r_calib: u32,
     pub temp_l_calib: u32,
     pub temp_r_calib: u32,
-    pub dspfw_name: *const core::ffi::c_char,
+    pub dspfw_name: *const kernel::ffi::c_char,
     pub cali_done: bool,
     pub fw_load_done: bool,
     pub rae_update_done: bool,

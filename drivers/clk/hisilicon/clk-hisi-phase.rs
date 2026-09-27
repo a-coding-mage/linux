@@ -9,7 +9,7 @@
 // linux/err.h, linux/io.h, linux/module.h, linux/platform_device.h,
 // linux/slab.h, and "clk.h".
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 struct clk_hisi_phase {
@@ -27,10 +27,10 @@ struct clk_hisi_phase {
 // External kernel types and functions are provided by the translated dependencies.
 #[repr(C)] struct clk_hw { init: *mut clk_init_data }
 #[repr(C)] struct clk_init_data {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     ops: *const clk_ops,
     flags: u32,
-    parent_names: *const *const core::ffi::c_char,
+    parent_names: *const *const kernel::ffi::c_char,
     num_parents: u8,
 }
 #[repr(C)] struct clk_ops {
@@ -40,9 +40,9 @@ struct clk_hisi_phase {
 #[repr(C)] struct device { _private: [u8; 0] }
 #[repr(C)] struct spinlock_t { _private: [u8; 0] }
 #[repr(C)] struct hisi_phase_clock {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     flags: u32,
-    parent_names: *const core::ffi::c_char,
+    parent_names: *const kernel::ffi::c_char,
     offset: usize,
     shift: u8,
     width: u8,

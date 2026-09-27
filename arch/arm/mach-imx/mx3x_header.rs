@@ -30,11 +30,11 @@
 
 /* L2CC */
 pub const MX3x_L2CC_BASE_ADDR: u32 = 0x30000000;
-pub const MX3x_L2CC_SIZE: _ = SZ_1M;
+pub const MX3x_L2CC_SIZE: u64 = SZ_1M;
 
 /* AIPS 1 */
 pub const MX3x_AIPS1_BASE_ADDR: u32 = 0x43f00000;
-pub const MX3x_AIPS1_SIZE: _ = SZ_1M;
+pub const MX3x_AIPS1_SIZE: u64 = SZ_1M;
 pub const MX3x_MAX_BASE_ADDR: u32 = MX3x_AIPS1_BASE_ADDR + 0x04000;
 pub const MX3x_EVTMON_BASE_ADDR: u32 = MX3x_AIPS1_BASE_ADDR + 0x08000;
 pub const MX3x_CLKCTL_BASE_ADDR: u32 = MX3x_AIPS1_BASE_ADDR + 0x0c000;
@@ -56,7 +56,7 @@ pub const MX3x_ECT_IP2_BASE_ADDR: u32 = MX3x_AIPS1_BASE_ADDR + 0xbc000;
 
 /* SPBA global module enabled #0 */
 pub const MX3x_SPBA0_BASE_ADDR: u32 = 0x50000000;
-pub const MX3x_SPBA0_SIZE: _ = SZ_1M;
+pub const MX3x_SPBA0_SIZE: u64 = SZ_1M;
 pub const MX3x_UART3_BASE_ADDR: u32 = MX3x_SPBA0_BASE_ADDR + 0x0c000;
 pub const MX3x_CSPI2_BASE_ADDR: u32 = MX3x_SPBA0_BASE_ADDR + 0x10000;
 pub const MX3x_SSI2_BASE_ADDR: u32 = MX3x_SPBA0_BASE_ADDR + 0x14000;
@@ -66,7 +66,7 @@ pub const MX3x_SPBA_CTRL_BASE_ADDR: u32 = MX3x_SPBA0_BASE_ADDR + 0x3c000;
 
 /* AIPS 2 */
 pub const MX3x_AIPS2_BASE_ADDR: u32 = 0x53f00000;
-pub const MX3x_AIPS2_SIZE: _ = SZ_1M;
+pub const MX3x_AIPS2_SIZE: u64 = SZ_1M;
 pub const MX3x_CCM_BASE_ADDR: u32 = MX3x_AIPS2_BASE_ADDR + 0x80000;
 pub const MX3x_GPT1_BASE_ADDR: u32 = MX3x_AIPS2_BASE_ADDR + 0x90000;
 pub const MX3x_EPIT1_BASE_ADDR: u32 = MX3x_AIPS2_BASE_ADDR + 0x94000;
@@ -86,9 +86,9 @@ pub const MX3x_RTIC_BASE_ADDR: u32 = MX3x_AIPS2_BASE_ADDR + 0xec000;
 
 /* ROMP and AVIC */
 pub const MX3x_ROMP_BASE_ADDR: u32 = 0x60000000;
-pub const MX3x_ROMP_SIZE: _ = SZ_1M;
+pub const MX3x_ROMP_SIZE: u64 = SZ_1M;
 pub const MX3x_AVIC_BASE_ADDR: u32 = 0x68000000;
-pub const MX3x_AVIC_SIZE: _ = SZ_1M;
+pub const MX3x_AVIC_SIZE: u64 = SZ_1M;
 
 /* Memory regions and CS */
 pub const MX3x_IPU_MEM_BASE_ADDR: u32 = 0x70000000;
@@ -100,14 +100,14 @@ pub const MX3x_CS2_BASE_ADDR: u32 = 0xb0000000;
 pub const MX3x_CS3_BASE_ADDR: u32 = 0xb2000000;
 pub const MX3x_CS4_BASE_ADDR: u32 = 0xb4000000;
 pub const MX3x_CS4_BASE_ADDR_VIRT: u32 = 0xf6000000;
-pub const MX3x_CS4_SIZE: _ = SZ_32M;
+pub const MX3x_CS4_SIZE: u64 = SZ_32M;
 pub const MX3x_CS5_BASE_ADDR: u32 = 0xb6000000;
 pub const MX3x_CS5_BASE_ADDR_VIRT: u32 = 0xf8000000;
-pub const MX3x_CS5_SIZE: _ = SZ_32M;
+pub const MX3x_CS5_SIZE: u64 = SZ_32M;
 
 /* NAND, SDRAM, WEIM, M3IF, EMI controllers */
 pub const MX3x_X_MEMC_BASE_ADDR: u32 = 0xb8000000;
-pub const MX3x_X_MEMC_SIZE: _ = SZ_64K;
+pub const MX3x_X_MEMC_SIZE: u64 = SZ_64K;
 pub const MX3x_ESDCTL_BASE_ADDR: u32 = MX3x_X_MEMC_BASE_ADDR + 0x1000;
 pub const MX3x_WEIM_BASE_ADDR: u32 = MX3x_X_MEMC_BASE_ADDR + 0x2000;
 pub const MX3x_M3IF_BASE_ADDR: u32 = MX3x_X_MEMC_BASE_ADDR + 0x3000;

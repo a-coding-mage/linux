@@ -19,12 +19,12 @@ pub unsafe fn __tlb_flush_local() {
  * Flush TLB entries for a specific ASCE on all CPUs
  */
 #[inline]
-pub unsafe fn __tlb_flush_idte(asce: ::core::ffi::c_ulong) {
-    let mut opt: ::core::ffi::c_ulong;
+pub unsafe fn __tlb_flush_idte(asce: ::kernel::ffi::c_ulong) {
+    let mut opt: ::kernel::ffi::c_ulong;
 
-    opt = IDTE_PTOA as ::core::ffi::c_ulong;
+    opt = IDTE_PTOA as ::kernel::ffi::c_ulong;
     if machine_has_tlb_guest() {
-        opt |= IDTE_GUEST_ASCE as ::core::ffi::c_ulong;
+        opt |= IDTE_GUEST_ASCE as ::kernel::ffi::c_ulong;
     }
     /* Global TLB flush for the mm */
     // C: asm volatile("idte 0,%1,%0" : : "a" (opt), "a" (asce) : "cc");
@@ -41,7 +41,7 @@ pub unsafe fn __tlb_flush_idte(asce: ::core::ffi::c_ulong) {
  */
 #[inline]
 pub unsafe fn __tlb_flush_global() {
-    let mut dummy: ::core::ffi::c_ulong = 0;
+    let mut dummy: ::kernel::ffi::c_ulong = 0;
 
     cspg(&mut dummy, 0, 0);
 }
@@ -52,7 +52,7 @@ pub unsafe fn __tlb_flush_global() {
  */
 #[inline]
 pub unsafe fn __tlb_flush_mm(mm: *mut mm_struct) {
-    let mut gmap_asce: ::core::ffi::c_ulong;
+    let mut gmap_asce: ::kernel::ffi::c_ulong;
 
     preempt_disable();
     atomic_inc(&mut (*mm).context.flush_count);
@@ -60,7 +60,7 @@ pub unsafe fn __tlb_flush_mm(mm: *mut mm_struct) {
     cpumask_copy(mm_cpumask(mm), &(*mm).context.cpu_attach_mask);
     barrier();
     gmap_asce = core::ptr::read_volatile(&(*mm).context.gmap_asce);
-    if gmap_asce != !0 as ::core::ffi::c_ulong {
+    if gmap_asce != !0 as ::kernel::ffi::c_ulong {
         if gmap_asce != 0 {
             __tlb_flush_idte(gmap_asce);
         }
@@ -109,7 +109,7 @@ pub unsafe fn __tlb_flush_mm_lazy(mm: *mut mm_struct) {
 pub fn flush_tlb_all() {}
 
 #[inline]
-pub fn flush_tlb_page<T>(_vma: *mut T, _addr: ::core::ffi::c_ulong) {}
+pub fn flush_tlb_page<T>(_vma: *mut T, _addr: ::kernel::ffi::c_ulong) {}
 
 #[inline]
 pub unsafe fn flush_tlb_mm(mm: *mut mm_struct) {
@@ -119,16 +119,16 @@ pub unsafe fn flush_tlb_mm(mm: *mut mm_struct) {
 #[inline]
 pub unsafe fn flush_tlb_range(
     vma: *mut vm_area_struct,
-    _start: ::core::ffi::c_ulong,
-    _end: ::core::ffi::c_ulong,
+    _start: ::kernel::ffi::c_ulong,
+    _end: ::kernel::ffi::c_ulong,
 ) {
     __tlb_flush_mm_lazy((*vma).vm_mm);
 }
 
 #[inline]
 pub unsafe fn flush_tlb_kernel_range(
-    _start: ::core::ffi::c_ulong,
-    _end: ::core::ffi::c_ulong,
+    _start: ::kernel::ffi::c_ulong,
+    _end: ::kernel::ffi::c_ulong,
 ) {
     __tlb_flush_kernel();
 }

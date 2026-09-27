@@ -28,7 +28,7 @@ struct LlStruct {
     rx_skb: *mut sk_buff,
     txq: sk_buff_head,
     hcill_lock: spinlock_t,
-    hcill_state: libc::c_ulong,
+    hcill_state: kernel::ffi::c_ulong,
     tx_wait_q: sk_buff_head,
 }
 
@@ -48,7 +48,7 @@ unsafe fn ll_open(hu: *mut hci_uart) -> i32 {
     skb_queue_head_init(&mut (*ll).txq);
     skb_queue_head_init(&mut (*ll).tx_wait_q);
     spin_lock_init(&mut (*ll).hcill_lock);
-    (*ll).hcill_state = HCILL_AWAKE as libc::c_ulong;
+    (*ll).hcill_state = HCILL_AWAKE as kernel::ffi::c_ulong;
     (*hu).priv_ = ll as *mut _;
     if !(*hu).serdev.is_null() {
         let lldev = serdev_device_get_drvdata((*hu).serdev) as *mut LlDevice;
@@ -75,7 +75,7 @@ unsafe fn ll_close(hu: *mut hci_uart) -> i32 {
 
 unsafe fn __ll_do_awake(ll: *mut LlStruct) {
     while let Some(skb) = skb_dequeue(&mut (*ll).tx_wait_q) { skb_queue_tail(&mut (*ll).txq, skb); }
-    (*ll).hcill_state = HCILL_AWAKE as libc::c_ulong;
+    (*ll).hcill_state = HCILL_AWAKE as kernel::ffi::c_ulong;
 }
 
 unsafe fn ll_device_want_to_wakeup(hu: *mut hci_uart) {
@@ -93,7 +93,7 @@ unsafe fn ll_device_want_to_sleep(hu: *mut hci_uart) {
     spin_lock_irqsave(&mut (*ll).hcill_lock, &mut flags);
     if (*ll).hcill_state as i32 != HCILL_AWAKE { BT_ERR!("ERR: HCILL_GO_TO_SLEEP_IND in state %ld", (*ll).hcill_state); }
     if send_hcill_cmd(HCILL_GO_TO_SLEEP_ACK, hu) < 0 { BT_ERR!("cannot acknowledge device sleep"); spin_unlock_irqrestore(&mut (*ll).hcill_lock, flags); return; }
-    (*ll).hcill_state = HCILL_ASLEEP as libc::c_ulong; spin_unlock_irqrestore(&mut (*ll).hcill_lock, flags); hci_uart_tx_wakeup(hu);
+    (*ll).hcill_state = HCILL_ASLEEP as kernel::ffi::c_ulong; spin_unlock_irqrestore(&mut (*ll).hcill_lock, flags); hci_uart_tx_wakeup(hu);
 }
 
 unsafe fn ll_device_woke_up(hu: *mut hci_uart) {
@@ -109,7 +109,7 @@ unsafe fn ll_enqueue(hu: *mut hci_uart, skb: *mut sk_buff) -> i32 {
     spin_lock_irqsave(&mut (*ll).hcill_lock, &mut flags);
     match (*ll).hcill_state as i32 {
         HCILL_AWAKE => skb_queue_tail(&mut (*ll).txq, skb),
-        HCILL_ASLEEP => { skb_queue_tail(&mut (*ll).tx_wait_q, skb); if send_hcill_cmd(HCILL_WAKE_UP_IND, hu) >= 0 { (*ll).hcill_state = HCILL_ASLEEP_TO_AWAKE as libc::c_ulong; } else { BT_ERR!("cannot wake up device"); } },
+        HCILL_ASLEEP => { skb_queue_tail(&mut (*ll).tx_wait_q, skb); if send_hcill_cmd(HCILL_WAKE_UP_IND, hu) >= 0 { (*ll).hcill_state = HCILL_ASLEEP_TO_AWAKE as kernel::ffi::c_ulong; } else { BT_ERR!("cannot wake up device"); } },
         HCILL_ASLEEP_TO_AWAKE => skb_queue_tail(&mut (*ll).tx_wait_q, skb),
         _ => { BT_ERR!("illegal hcill state: %ld (losing packet)", (*ll).hcill_state); dev_kfree_skb_irq(skb); }
     }
@@ -126,7 +126,7 @@ unsafe fn ll_recv_frame(hdev: *mut hci_dev, skb: *mut sk_buff) -> i32 {
     }; kfree_skb(skb); 0
 }
 
-unsafe fn ll_recv(hu: *mut hci_uart, data: *const core::ffi::c_void, count: i32) -> i32 {
+unsafe fn ll_recv(hu: *mut hci_uart, data: *const kernel::ffi::c_void, count: i32) -> i32 {
     let ll = (*hu).priv_ as *mut LlStruct;
     if !test_bit(HCI_UART_REGISTERED, &(*hu).flags) { return -EUNATCH; }
     (*ll).rx_skb = h4_recv_buf(hu, (*ll).rx_skb, data, count, ll_recv_pkts.as_ptr(), ll_recv_pkts.len());

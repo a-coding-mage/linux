@@ -16,13 +16,13 @@ const OCTEON_MAX_MC: usize = 4;
 
 #[repr(C)]
 struct octeon_lmc_pvt {
-    inject: libc::c_ulong,
-    error_type: libc::c_ulong,
-    dimm: libc::c_ulong,
-    rank: libc::c_ulong,
-    bank: libc::c_ulong,
-    row: libc::c_ulong,
-    col: libc::c_ulong,
+    inject: kernel::ffi::c_ulong,
+    error_type: kernel::ffi::c_ulong,
+    dimm: kernel::ffi::c_ulong,
+    rank: kernel::ffi::c_ulong,
+    bank: kernel::ffi::c_ulong,
+    row: kernel::ffi::c_ulong,
+    col: kernel::ffi::c_ulong,
 }
 
 unsafe fn octeon_lmc_edac_poll(mci: *mut mem_ctl_info) {
@@ -89,7 +89,7 @@ unsafe fn octeon_lmc_edac_poll_o2(mci: *mut mem_ctl_info) {
 
 // The following sysfs callbacks and driver declarations preserve the C interfaces.
 // Kernel structures, unions, constants, and registration macros are supplied externally.
-unsafe fn octeon_lmc_edac_probe(pdev: *mut platform_device) -> libc::c_int {
+unsafe fn octeon_lmc_edac_probe(pdev: *mut platform_device) -> kernel::ffi::c_int {
     let mut mci: *mut mem_ctl_info;
     let mut layers = [edac_mc_layer { type_: EDAC_MC_LAYER_CHANNEL, size: 1, is_virt_csrow: false }];
     let mc = (*pdev).id;

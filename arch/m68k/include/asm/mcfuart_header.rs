@@ -4,10 +4,10 @@
 
 #[repr(C)]
 pub struct mcf_platform_uart {
-    pub mapbase: ::core::ffi::c_ulong,
-    pub membase: *mut ::core::ffi::c_void,
-    pub irq: ::core::ffi::c_uint,
-    pub uartclk: ::core::ffi::c_uint,
+    pub mapbase: ::kernel::ffi::c_ulong,
+    pub membase: *mut ::kernel::ffi::c_void,
+    pub irq: ::kernel::ffi::c_uint,
+    pub uartclk: ::kernel::ffi::c_uint,
 }
 
 pub const MCFUART_UMR: u32 = 0x00;

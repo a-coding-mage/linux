@@ -13,29 +13,29 @@
 #[repr(C)]
 pub struct stat {
     pub st_dev: u32,
-    pub st_pad1: [::core::ffi::c_long; 3], /* Reserved for network id */
+    pub st_pad1: [::kernel::ffi::c_long; 3], /* Reserved for network id */
     pub st_ino: __kernel_ino_t,
     pub st_mode: __kernel_mode_t,
     pub st_nlink: u32,
     pub st_uid: __kernel_uid32_t,
     pub st_gid: __kernel_gid32_t,
     pub st_rdev: u32,
-    pub st_pad2: [::core::ffi::c_long; 2],
-    pub st_size: ::core::ffi::c_long,
-    pub st_pad3: ::core::ffi::c_long,
+    pub st_pad2: [::kernel::ffi::c_long; 2],
+    pub st_size: ::kernel::ffi::c_long,
+    pub st_pad3: ::kernel::ffi::c_long,
     /*
      * Actually this should be timestruc_t st_atime, st_mtime and st_ctime
      * but we don't have it under Linux.
      */
-    pub st_atime: ::core::ffi::c_long,
-    pub st_atime_nsec: ::core::ffi::c_long,
-    pub st_mtime: ::core::ffi::c_long,
-    pub st_mtime_nsec: ::core::ffi::c_long,
-    pub st_ctime: ::core::ffi::c_long,
-    pub st_ctime_nsec: ::core::ffi::c_long,
-    pub st_blksize: ::core::ffi::c_long,
-    pub st_blocks: ::core::ffi::c_long,
-    pub st_pad4: [::core::ffi::c_long; 14],
+    pub st_atime: ::kernel::ffi::c_long,
+    pub st_atime_nsec: ::kernel::ffi::c_long,
+    pub st_mtime: ::kernel::ffi::c_long,
+    pub st_mtime_nsec: ::kernel::ffi::c_long,
+    pub st_ctime: ::kernel::ffi::c_long,
+    pub st_ctime_nsec: ::kernel::ffi::c_long,
+    pub st_blksize: ::kernel::ffi::c_long,
+    pub st_blocks: ::kernel::ffi::c_long,
+    pub st_pad4: [::kernel::ffi::c_long; 14],
 }
 
 /*
@@ -46,28 +46,28 @@ pub struct stat {
 #[cfg(any(mips_sim_abi32, mips_sim_nabi32))]
 #[repr(C)]
 pub struct stat64 {
-    pub st_dev: ::core::ffi::c_ulong,
-    pub st_pad0: [::core::ffi::c_ulong; 3], /* Reserved for st_dev expansion  */
+    pub st_dev: ::kernel::ffi::c_ulong,
+    pub st_pad0: [::kernel::ffi::c_ulong; 3], /* Reserved for st_dev expansion  */
     pub st_ino: u64,
     pub st_mode: __kernel_mode_t,
     pub st_nlink: u32,
     pub st_uid: __kernel_uid32_t,
     pub st_gid: __kernel_gid32_t,
-    pub st_rdev: ::core::ffi::c_ulong,
-    pub st_pad1: [::core::ffi::c_ulong; 3], /* Reserved for st_rdev expansion  */
+    pub st_rdev: ::kernel::ffi::c_ulong,
+    pub st_pad1: [::kernel::ffi::c_ulong; 3], /* Reserved for st_rdev expansion  */
     pub st_size: i64,
     /*
      * Actually this should be timestruc_t st_atime, st_mtime and st_ctime
      * but we don't have it under Linux.
      */
-    pub st_atime: ::core::ffi::c_long,
-    pub st_atime_nsec: ::core::ffi::c_ulong, /* Reserved for st_atime expansion  */
-    pub st_mtime: ::core::ffi::c_long,
-    pub st_mtime_nsec: ::core::ffi::c_ulong, /* Reserved for st_mtime expansion  */
-    pub st_ctime: ::core::ffi::c_long,
-    pub st_ctime_nsec: ::core::ffi::c_ulong, /* Reserved for st_ctime expansion  */
-    pub st_blksize: ::core::ffi::c_ulong,
-    pub st_pad2: ::core::ffi::c_ulong,
+    pub st_atime: ::kernel::ffi::c_long,
+    pub st_atime_nsec: ::kernel::ffi::c_ulong, /* Reserved for st_atime expansion  */
+    pub st_mtime: ::kernel::ffi::c_long,
+    pub st_mtime_nsec: ::kernel::ffi::c_ulong, /* Reserved for st_mtime expansion  */
+    pub st_ctime: ::kernel::ffi::c_long,
+    pub st_ctime_nsec: ::kernel::ffi::c_ulong, /* Reserved for st_ctime expansion  */
+    pub st_blksize: ::kernel::ffi::c_ulong,
+    pub st_pad2: ::kernel::ffi::c_ulong,
     pub st_blocks: i64,
 }
 
@@ -77,14 +77,14 @@ pub struct stat64 {
 pub struct stat {
     pub st_dev: u32,
     pub st_pad0: [u32; 3], /* Reserved for st_dev expansion */
-    pub st_ino: ::core::ffi::c_ulong,
+    pub st_ino: ::kernel::ffi::c_ulong,
     pub st_mode: __kernel_mode_t,
     pub st_nlink: u32,
     pub st_uid: __kernel_uid32_t,
     pub st_gid: __kernel_gid32_t,
     pub st_rdev: u32,
     pub st_pad1: [u32; 3], /* Reserved for st_rdev expansion */
-    pub st_size: ::core::ffi::c_long,
+    pub st_size: ::kernel::ffi::c_long,
     /*
      * Actually this should be timestruc_t st_atime, st_mtime and st_ctime
      * but we don't have it under Linux.
@@ -97,7 +97,7 @@ pub struct stat {
     pub st_ctime_nsec: u32,
     pub st_blksize: u32,
     pub st_pad2: u32,
-    pub st_blocks: ::core::ffi::c_ulong,
+    pub st_blocks: ::kernel::ffi::c_ulong,
 }
 
 pub const STAT_HAVE_NSEC: i32 = 1;

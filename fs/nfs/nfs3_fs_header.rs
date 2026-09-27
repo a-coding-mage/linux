@@ -22,7 +22,7 @@ extern "C" {
         acl: *mut posix_acl,
         dfacl: *mut posix_acl,
     ) -> i32;
-    pub fn nfs3_listxattr(dentry: *mut dentry, buffer: *mut core::ffi::c_char, size: usize) -> isize;
+    pub fn nfs3_listxattr(dentry: *mut dentry, buffer: *mut kernel::ffi::c_char, size: usize) -> isize;
 }
 
 #[cfg(not(CONFIG_NFS_V3_ACL))]
@@ -36,7 +36,7 @@ pub unsafe fn nfs3_proc_setacls(
 
 #[cfg(not(CONFIG_NFS_V3_ACL))]
 pub const nfs3_listxattr: Option<
-    unsafe extern "C" fn(*mut dentry, *mut core::ffi::c_char, usize) -> isize,
+    unsafe extern "C" fn(*mut dentry, *mut kernel::ffi::c_char, usize) -> isize,
 > = None;
 
 /* nfs3client.c */

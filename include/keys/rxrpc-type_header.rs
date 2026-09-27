@@ -10,7 +10,7 @@
 /* key type for AF_RXRPC keys */
 extern "C" {
     pub static mut key_type_rxrpc: key_type;
-    pub fn rxrpc_get_null_key(description: *const core::ffi::c_char) -> *mut key;
+    pub fn rxrpc_get_null_key(description: *const kernel::ffi::c_char) -> *mut key;
 }
 
 /* RxRPC key for Kerberos IV (type-2 security) */
@@ -33,7 +33,7 @@ pub struct rxgk_key {
     pub endtime: i64,           /* Time at which the ticket ends */
     pub lifetime: u64,          /* Maximum lifespan of a connection (seconds) */
     pub bytelife: u64,          /* Maximum number of bytes on a connection */
-    pub enctype: core::ffi::c_uint, /* Encoding type */
+    pub enctype: kernel::ffi::c_uint, /* Encoding type */
     pub level: i8,              /* Negotiated security RXRPC_SECURITY_PLAIN/AUTH/ENCRYPT */
     pub key: krb5_buffer,       /* Master key, K0 */
     pub ticket: krb5_buffer,    /* Ticket to be passed to server */

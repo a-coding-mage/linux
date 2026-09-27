@@ -97,11 +97,11 @@ pub struct evmcs_field {
 
 extern "C" {
     pub static vmcs_field_to_evmcs_1: *const evmcs_field;
-    pub static nr_evmcs_1_fields: core::ffi::c_uint;
+    pub static nr_evmcs_1_fields: kernel::ffi::c_uint;
 }
 
 #[inline]
-pub unsafe fn evmcs_field_offset(field: core::ffi::c_ulong, clean_field: *mut u16) -> i32 {
+pub unsafe fn evmcs_field_offset(field: kernel::ffi::c_ulong, clean_field: *mut u16) -> i32 {
     let index: usize = ENC_TO_VMCS12_IDX(field) as usize;
 
     if index >= nr_evmcs_1_fields as usize {
@@ -129,7 +129,7 @@ pub unsafe fn evmcs_field_offset(field: core::ffi::c_ulong, clean_field: *mut u1
 #[inline]
 pub unsafe fn evmcs_read_any(
     evmcs: *mut hv_enlightened_vmcs,
-    field: core::ffi::c_ulong,
+    field: kernel::ffi::c_ulong,
     offset: u16,
 ) -> u64 {
     /*
@@ -138,7 +138,7 @@ pub unsafe fn evmcs_read_any(
      * the exact offset of the required field, use it for convenience
      * here.
      */
-    vmcs12_read_any(evmcs as *mut core::ffi::c_void, field, offset)
+    vmcs12_read_any(evmcs as *mut kernel::ffi::c_void, field, offset)
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

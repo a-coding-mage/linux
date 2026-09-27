@@ -12,14 +12,14 @@
 
 #[repr(C)]
 pub struct public_key {
-    pub key: *mut core::ffi::c_void,
+    pub key: *mut kernel::ffi::c_void,
     pub keylen: u32,
     pub algo: OID,
-    pub params: *mut core::ffi::c_void,
+    pub params: *mut kernel::ffi::c_void,
     pub paramlen: u32,
     pub key_is_private: bool,
-    pub id_type: *const core::ffi::c_char,
-    pub pkey_algo: *const core::ffi::c_char,
+    pub id_type: *const kernel::ffi::c_char,
+    pub pkey_algo: *const kernel::ffi::c_char,
     pub key_eflags: usize,
 }
 
@@ -40,9 +40,9 @@ pub struct public_key_signature {
     pub m_size: u32,
     pub m_free: bool,
     pub algo_takes_data: bool,
-    pub pkey_algo: *const core::ffi::c_char,
-    pub hash_algo: *const core::ffi::c_char,
-    pub encoding: *const core::ffi::c_char,
+    pub pkey_algo: *const kernel::ffi::c_char,
+    pub hash_algo: *const kernel::ffi::c_char,
+    pub encoding: *const kernel::ffi::c_char,
 }
 
 extern "C" {

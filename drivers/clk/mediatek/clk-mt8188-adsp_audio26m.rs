@@ -22,8 +22,8 @@ pub struct mtk_gate_regs {
 #[repr(C)]
 pub struct mtk_gate {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char,
     pub regs: *const mtk_gate_regs,
     pub shift: u32,
     pub ops: *const mtk_clk_gate_ops,
@@ -37,13 +37,13 @@ pub struct mtk_clk_desc {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct platform_driver_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
@@ -69,8 +69,8 @@ const adsp_audio26m_cg_regs: mtk_gate_regs = mtk_gate_regs {
 // GATE_ADSP_FLAGS(_id, _name, _parent, _shift)
 const fn gate_adsp_flags(
     id: u32,
-    name: *const core::ffi::c_char,
-    parent: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    parent: *const kernel::ffi::c_char,
     shift: u32,
 ) -> mtk_gate {
     mtk_gate {
@@ -89,8 +89,8 @@ unsafe extern "C" {
 
 static adsp_audio26m_clks: [mtk_gate; 1] = [gate_adsp_flags(
     unsafe { CLK_AUDIODSP_AUDIO26M },
-    b"audiodsp_audio26m\0".as_ptr() as *const core::ffi::c_char,
-    b"clk26m\0".as_ptr() as *const core::ffi::c_char,
+    b"audiodsp_audio26m\0".as_ptr() as *const kernel::ffi::c_char,
+    b"clk26m\0".as_ptr() as *const kernel::ffi::c_char,
     3,
 )];
 
@@ -101,8 +101,8 @@ static adsp_audio26m_desc: mtk_clk_desc = mtk_clk_desc {
 
 static of_match_clk_mt8188_adsp_audio26m: [of_device_id; 2] = [
     of_device_id {
-        compatible: b"mediatek,mt8188-adsp-audio26m\0".as_ptr() as *const core::ffi::c_char,
-        data: &adsp_audio26m_desc as *const _ as *const core::ffi::c_void,
+        compatible: b"mediatek,mt8188-adsp-audio26m\0".as_ptr() as *const kernel::ffi::c_char,
+        data: &adsp_audio26m_desc as *const _ as *const kernel::ffi::c_void,
     },
     of_device_id {
         compatible: core::ptr::null(),
@@ -114,7 +114,7 @@ static mut clk_mt8188_adsp_audio26m_drv: platform_driver = platform_driver {
     probe: Some(mtk_clk_simple_probe),
     remove: Some(mtk_clk_simple_remove),
     driver: platform_driver_driver {
-        name: b"clk-mt8188-adsp_audio26m\0".as_ptr() as *const core::ffi::c_char,
+        name: b"clk-mt8188-adsp_audio26m\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: of_match_clk_mt8188_adsp_audio26m.as_ptr(),
     },
 };

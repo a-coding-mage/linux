@@ -13,69 +13,69 @@ use core::ptr;
 unsafe extern "C" {
     fn hw_param_interval(
         params: *mut snd_pcm_hw_params,
-        var: ::core::ffi::c_uint,
+        var: ::kernel::ffi::c_uint,
     ) -> *mut snd_interval;
     fn hw_param_interval_c(
         params: *mut snd_pcm_hw_params,
-        var: ::core::ffi::c_uint,
+        var: ::kernel::ffi::c_uint,
     ) -> *const snd_interval;
     fn snd_oxfw_stream_parse_format(
         format: *mut u8,
         formation: *mut snd_oxfw_stream_formation,
-    ) -> ::core::ffi::c_int;
-    fn snd_interval_test(i: *const snd_interval, val: ::core::ffi::c_uint) -> bool;
+    ) -> ::kernel::ffi::c_int;
+    fn snd_interval_test(i: *const snd_interval, val: ::kernel::ffi::c_uint) -> bool;
     fn snd_interval_refine(
         i: *mut snd_interval,
         v: *const snd_interval,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     fn snd_interval_list(
         i: *mut snd_interval,
-        count: ::core::ffi::c_uint,
-        list: *mut ::core::ffi::c_uint,
-        mask: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
-    fn snd_pcm_rate_to_rate_bit(rate: ::core::ffi::c_uint) -> ::core::ffi::c_uint;
+        count: ::kernel::ffi::c_uint,
+        list: *mut ::kernel::ffi::c_uint,
+        mask: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
+    fn snd_pcm_rate_to_rate_bit(rate: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint;
     fn snd_pcm_hw_rule_add(
         runtime: *mut snd_pcm_runtime,
-        cond: ::core::ffi::c_uint,
-        var: ::core::ffi::c_int,
-        func: unsafe extern "C" fn(*mut snd_pcm_hw_params, *mut snd_pcm_hw_rule) -> ::core::ffi::c_int,
+        cond: ::kernel::ffi::c_uint,
+        var: ::kernel::ffi::c_int,
+        func: unsafe extern "C" fn(*mut snd_pcm_hw_params, *mut snd_pcm_hw_rule) -> ::kernel::ffi::c_int,
         private: *mut *mut u8,
-        dep: ::core::ffi::c_int,
-        last: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        dep: ::kernel::ffi::c_int,
+        last: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     fn amdtp_am824_add_pcm_hw_constraints(
         stream: *mut amdtp_stream,
         runtime: *mut snd_pcm_runtime,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     fn snd_oxfw_stream_get_current_formation(
         oxfw: *mut snd_oxfw,
         dir: avc_general_plug_dir,
         formation: *mut snd_oxfw_stream_formation,
-    ) -> ::core::ffi::c_int;
-    fn snd_oxfw_stream_lock_try(oxfw: *mut snd_oxfw) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    fn snd_oxfw_stream_lock_try(oxfw: *mut snd_oxfw) -> ::kernel::ffi::c_int;
     fn snd_oxfw_stream_lock_release(oxfw: *mut snd_oxfw);
     fn snd_pcm_hw_constraint_minmax(
         runtime: *mut snd_pcm_runtime,
-        var: ::core::ffi::c_uint,
-        min: ::core::ffi::c_uint,
-        max: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        var: ::kernel::ffi::c_uint,
+        min: ::kernel::ffi::c_uint,
+        max: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
     fn snd_pcm_set_sync(substream: *mut snd_pcm_substream);
-    fn params_rate(params: *mut snd_pcm_hw_params) -> ::core::ffi::c_uint;
-    fn params_channels(params: *mut snd_pcm_hw_params) -> ::core::ffi::c_uint;
-    fn params_period_size(params: *mut snd_pcm_hw_params) -> ::core::ffi::c_uint;
-    fn params_buffer_size(params: *mut snd_pcm_hw_params) -> ::core::ffi::c_uint;
+    fn params_rate(params: *mut snd_pcm_hw_params) -> ::kernel::ffi::c_uint;
+    fn params_channels(params: *mut snd_pcm_hw_params) -> ::kernel::ffi::c_uint;
+    fn params_period_size(params: *mut snd_pcm_hw_params) -> ::kernel::ffi::c_uint;
+    fn params_buffer_size(params: *mut snd_pcm_hw_params) -> ::kernel::ffi::c_uint;
     fn snd_oxfw_stream_reserve_duplex(
         oxfw: *mut snd_oxfw,
         stream: *mut amdtp_stream,
-        rate: ::core::ffi::c_uint,
-        channels: ::core::ffi::c_uint,
-        frames_per_period: ::core::ffi::c_uint,
-        frames_per_buffer: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        rate: ::kernel::ffi::c_uint,
+        channels: ::kernel::ffi::c_uint,
+        frames_per_period: ::kernel::ffi::c_uint,
+        frames_per_buffer: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
     fn snd_oxfw_stream_stop_duplex(oxfw: *mut snd_oxfw);
-    fn snd_oxfw_stream_start_duplex(oxfw: *mut snd_oxfw) -> ::core::ffi::c_int;
+    fn snd_oxfw_stream_start_duplex(oxfw: *mut snd_oxfw) -> ::kernel::ffi::c_int;
     fn amdtp_stream_pcm_prepare(stream: *mut amdtp_stream);
     fn amdtp_stream_pcm_trigger(stream: *mut amdtp_stream, pcm: *mut snd_pcm_substream);
     fn amdtp_domain_stream_pcm_pointer(
@@ -85,25 +85,25 @@ unsafe extern "C" {
     fn amdtp_domain_stream_pcm_ack(
         d: *mut amdtp_domain,
         s: *mut amdtp_stream,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     fn snd_pcm_new(
         card: *mut snd_card,
-        id: *const ::core::ffi::c_char,
-        device: ::core::ffi::c_int,
-        playback_count: ::core::ffi::c_int,
-        capture_count: ::core::ffi::c_int,
+        id: *const ::kernel::ffi::c_char,
+        device: ::kernel::ffi::c_int,
+        playback_count: ::kernel::ffi::c_int,
+        capture_count: ::kernel::ffi::c_int,
         rpcm: *mut *mut snd_pcm,
-    ) -> ::core::ffi::c_int;
-    fn strscpy(dst: *mut ::core::ffi::c_char, src: *const ::core::ffi::c_char) -> isize;
+    ) -> ::kernel::ffi::c_int;
+    fn strscpy(dst: *mut ::kernel::ffi::c_char, src: *const ::kernel::ffi::c_char) -> isize;
     fn snd_pcm_set_ops(
         pcm: *mut snd_pcm,
-        direction: ::core::ffi::c_int,
+        direction: ::kernel::ffi::c_int,
         ops: *const snd_pcm_ops,
     );
     fn snd_pcm_set_managed_buffer_all(
         pcm: *mut snd_pcm,
-        ty: ::core::ffi::c_int,
-        data: *mut ::core::ffi::c_void,
+        ty: ::kernel::ffi::c_int,
+        data: *mut ::kernel::ffi::c_void,
         min: usize,
         max: usize,
     );
@@ -112,12 +112,12 @@ unsafe extern "C" {
 unsafe extern "C" fn hw_rule_rate(
     params: *mut snd_pcm_hw_params,
     rule: *mut snd_pcm_hw_rule,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let formats = (*rule).private as *mut *mut u8;
     let r = hw_param_interval(params, SNDRV_PCM_HW_PARAM_RATE);
     let c = hw_param_interval_c(params, SNDRV_PCM_HW_PARAM_CHANNELS);
     let mut t = snd_interval {
-        min: ::core::ffi::c_uint::MAX,
+        min: ::kernel::ffi::c_uint::MAX,
         max: 0,
         integer: 1,
         ..core::mem::zeroed()
@@ -153,14 +153,14 @@ unsafe extern "C" fn hw_rule_rate(
 unsafe extern "C" fn hw_rule_channels(
     params: *mut snd_pcm_hw_params,
     rule: *mut snd_pcm_hw_rule,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let formats = (*rule).private as *mut *mut u8;
     let c = hw_param_interval(params, SNDRV_PCM_HW_PARAM_CHANNELS);
     let r = hw_param_interval_c(params, SNDRV_PCM_HW_PARAM_RATE);
     let mut formation: snd_oxfw_stream_formation = core::mem::zeroed();
-    let mut list = [0 as ::core::ffi::c_uint; SND_OXFW_STREAM_FORMAT_ENTRIES as usize];
+    let mut list = [0 as ::kernel::ffi::c_uint; SND_OXFW_STREAM_FORMAT_ENTRIES as usize];
 
-    let mut count: ::core::ffi::c_uint = 0;
+    let mut count: ::kernel::ffi::c_uint = 0;
     let mut i = 0;
     while i < SND_OXFW_STREAM_FORMAT_ENTRIES {
         if (*formats.add(i as usize)).is_null() {
@@ -205,10 +205,10 @@ unsafe extern "C" fn hw_rule_channels(
 unsafe fn limit_channels_and_rates(hw: *mut snd_pcm_hardware, formats: *mut *mut u8) {
     let mut formation: snd_oxfw_stream_formation = core::mem::zeroed();
 
-    (*hw).channels_min = ::core::ffi::c_uint::MAX;
+    (*hw).channels_min = ::kernel::ffi::c_uint::MAX;
     (*hw).channels_max = 0;
 
-    (*hw).rate_min = ::core::ffi::c_uint::MAX;
+    (*hw).rate_min = ::kernel::ffi::c_uint::MAX;
     (*hw).rate_max = 0;
     (*hw).rates = 0;
 
@@ -238,7 +238,7 @@ unsafe fn limit_channels_and_rates(hw: *mut snd_pcm_hardware, formats: *mut *mut
 unsafe fn init_hw_params(
     oxfw: *mut snd_oxfw,
     substream: *mut snd_pcm_substream,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let runtime = (*substream).runtime;
     let formats: *mut *mut u8;
     let stream: *mut amdtp_stream;
@@ -284,7 +284,7 @@ unsafe fn init_hw_params(
     amdtp_am824_add_pcm_hw_constraints(stream, runtime)
 }
 
-unsafe fn limit_to_current_params(substream: *mut snd_pcm_substream) -> ::core::ffi::c_int {
+unsafe fn limit_to_current_params(substream: *mut snd_pcm_substream) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
     let mut formation: snd_oxfw_stream_formation = core::mem::zeroed();
     let dir: avc_general_plug_dir;
@@ -307,10 +307,10 @@ unsafe fn limit_to_current_params(substream: *mut snd_pcm_substream) -> ::core::
     err
 }
 
-unsafe extern "C" fn pcm_open(substream: *mut snd_pcm_substream) -> ::core::ffi::c_int {
+unsafe extern "C" fn pcm_open(substream: *mut snd_pcm_substream) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
     let d = &mut (*oxfw).domain as *mut amdtp_domain;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     err = snd_oxfw_stream_lock_try(oxfw);
     if err < 0 {
@@ -369,7 +369,7 @@ unsafe extern "C" fn pcm_open(substream: *mut snd_pcm_substream) -> ::core::ffi:
     0
 }
 
-unsafe extern "C" fn pcm_close(substream: *mut snd_pcm_substream) -> ::core::ffi::c_int {
+unsafe extern "C" fn pcm_close(substream: *mut snd_pcm_substream) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
 
     snd_oxfw_stream_lock_release(oxfw);
@@ -379,7 +379,7 @@ unsafe extern "C" fn pcm_close(substream: *mut snd_pcm_substream) -> ::core::ffi
 unsafe extern "C" fn pcm_capture_hw_params(
     substream: *mut snd_pcm_substream,
     hw_params: *mut snd_pcm_hw_params,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
     let mut err = 0;
 
@@ -409,7 +409,7 @@ unsafe extern "C" fn pcm_capture_hw_params(
 unsafe extern "C" fn pcm_playback_hw_params(
     substream: *mut snd_pcm_substream,
     hw_params: *mut snd_pcm_hw_params,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
     let mut err = 0;
 
@@ -438,7 +438,7 @@ unsafe extern "C" fn pcm_playback_hw_params(
 
 unsafe extern "C" fn pcm_capture_hw_free(
     substream: *mut snd_pcm_substream,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
 
     let _guard = mutex_lock(&mut (*oxfw).mutex);
@@ -454,7 +454,7 @@ unsafe extern "C" fn pcm_capture_hw_free(
 
 unsafe extern "C" fn pcm_playback_hw_free(
     substream: *mut snd_pcm_substream,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
 
     let _guard = mutex_lock(&mut (*oxfw).mutex);
@@ -470,9 +470,9 @@ unsafe extern "C" fn pcm_playback_hw_free(
 
 unsafe extern "C" fn pcm_capture_prepare(
     substream: *mut snd_pcm_substream,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
-    let err: ::core::ffi::c_int;
+    let err: ::kernel::ffi::c_int;
 
     {
         let _guard = mutex_lock(&mut (*oxfw).mutex);
@@ -488,9 +488,9 @@ unsafe extern "C" fn pcm_capture_prepare(
 
 unsafe extern "C" fn pcm_playback_prepare(
     substream: *mut snd_pcm_substream,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
-    let err: ::core::ffi::c_int;
+    let err: ::kernel::ffi::c_int;
 
     {
         let _guard = mutex_lock(&mut (*oxfw).mutex);
@@ -506,8 +506,8 @@ unsafe extern "C" fn pcm_playback_prepare(
 
 unsafe extern "C" fn pcm_capture_trigger(
     substream: *mut snd_pcm_substream,
-    cmd: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    cmd: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
     let pcm: *mut snd_pcm_substream;
 
@@ -528,8 +528,8 @@ unsafe extern "C" fn pcm_capture_trigger(
 
 unsafe extern "C" fn pcm_playback_trigger(
     substream: *mut snd_pcm_substream,
-    cmd: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    cmd: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
     let pcm: *mut snd_pcm_substream;
 
@@ -560,20 +560,20 @@ unsafe extern "C" fn pcm_playback_pointer(substream: *mut snd_pcm_substream) -> 
     amdtp_domain_stream_pcm_pointer(&mut (*oxfw).domain, &mut (*oxfw).rx_stream)
 }
 
-unsafe extern "C" fn pcm_capture_ack(substream: *mut snd_pcm_substream) -> ::core::ffi::c_int {
+unsafe extern "C" fn pcm_capture_ack(substream: *mut snd_pcm_substream) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
 
     amdtp_domain_stream_pcm_ack(&mut (*oxfw).domain, &mut (*oxfw).tx_stream)
 }
 
-unsafe extern "C" fn pcm_playback_ack(substream: *mut snd_pcm_substream) -> ::core::ffi::c_int {
+unsafe extern "C" fn pcm_playback_ack(substream: *mut snd_pcm_substream) -> ::kernel::ffi::c_int {
     let oxfw = (*substream).private_data as *mut snd_oxfw;
 
     amdtp_domain_stream_pcm_ack(&mut (*oxfw).domain, &mut (*oxfw).rx_stream)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn snd_oxfw_create_pcm(oxfw: *mut snd_oxfw) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn snd_oxfw_create_pcm(oxfw: *mut snd_oxfw) -> ::kernel::ffi::c_int {
     static CAPTURE_OPS: snd_pcm_ops = snd_pcm_ops {
         open: Some(pcm_open),
         close: Some(pcm_close),
@@ -597,7 +597,7 @@ pub unsafe extern "C" fn snd_oxfw_create_pcm(oxfw: *mut snd_oxfw) -> ::core::ffi
         ..snd_pcm_ops::ZERO
     };
     let mut pcm: *mut snd_pcm = ptr::null_mut();
-    let mut cap: ::core::ffi::c_uint = 0;
+    let mut cap: ::kernel::ffi::c_uint = 0;
 
     if (*oxfw).has_output {
         cap = 1;
@@ -608,14 +608,14 @@ pub unsafe extern "C" fn snd_oxfw_create_pcm(oxfw: *mut snd_oxfw) -> ::core::ffi
         (*(*oxfw).card).driver.as_ptr(),
         0,
         1,
-        cap as ::core::ffi::c_int,
+        cap as ::kernel::ffi::c_int,
         &mut pcm,
     );
     if err < 0 {
         return err;
     }
 
-    (*pcm).private_data = oxfw as *mut ::core::ffi::c_void;
+    (*pcm).private_data = oxfw as *mut ::kernel::ffi::c_void;
     (*pcm).nonatomic = true;
     strscpy((*pcm).name.as_mut_ptr(), (*(*oxfw).card).shortname.as_ptr());
     snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &PLAYBACK_OPS);

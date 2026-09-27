@@ -31,18 +31,18 @@ extern "C" {
     pub static mut sev_status: u64;
 
     pub fn sme_encrypt_execute(
-        encrypted_kernel_vaddr: ::core::ffi::c_ulong,
-        decrypted_kernel_vaddr: ::core::ffi::c_ulong,
-        kernel_len: ::core::ffi::c_ulong,
-        encryption_wa: ::core::ffi::c_ulong,
-        encryption_pgd: ::core::ffi::c_ulong,
+        encrypted_kernel_vaddr: ::kernel::ffi::c_ulong,
+        decrypted_kernel_vaddr: ::kernel::ffi::c_ulong,
+        kernel_len: ::kernel::ffi::c_ulong,
+        encryption_wa: ::kernel::ffi::c_ulong,
+        encryption_pgd: ::kernel::ffi::c_ulong,
     );
 
-    pub fn sme_early_encrypt(paddr: resource_size_t, size: ::core::ffi::c_ulong);
-    pub fn sme_early_decrypt(paddr: resource_size_t, size: ::core::ffi::c_ulong);
+    pub fn sme_early_encrypt(paddr: resource_size_t, size: ::kernel::ffi::c_ulong);
+    pub fn sme_early_decrypt(paddr: resource_size_t, size: ::kernel::ffi::c_ulong);
 
-    pub fn sme_map_bootdata(real_mode_data: *mut ::core::ffi::c_char);
-    pub fn sme_unmap_bootdata(real_mode_data: *mut ::core::ffi::c_char);
+    pub fn sme_map_bootdata(real_mode_data: *mut ::kernel::ffi::c_char);
+    pub fn sme_unmap_bootdata(real_mode_data: *mut ::kernel::ffi::c_char);
 
     pub fn sme_early_init();
 
@@ -50,16 +50,16 @@ extern "C" {
     pub fn sme_enable(bp: *mut boot_params);
 
     pub fn early_set_memory_decrypted(
-        vaddr: ::core::ffi::c_ulong,
-        size: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        vaddr: ::kernel::ffi::c_ulong,
+        size: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
     pub fn early_set_memory_encrypted(
-        vaddr: ::core::ffi::c_ulong,
-        size: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        vaddr: ::kernel::ffi::c_ulong,
+        size: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
     pub fn early_set_mem_enc_dec_hypercall(
-        vaddr: ::core::ffi::c_ulong,
-        size: ::core::ffi::c_ulong,
+        vaddr: ::kernel::ffi::c_ulong,
+        size: ::kernel::ffi::c_ulong,
         enc: bool,
     );
 
@@ -87,19 +87,19 @@ pub const sev_status: u64 = 0;
 
 #[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[inline]
-pub unsafe fn sme_early_encrypt(_paddr: resource_size_t, _size: ::core::ffi::c_ulong) {}
+pub unsafe fn sme_early_encrypt(_paddr: resource_size_t, _size: ::kernel::ffi::c_ulong) {}
 
 #[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[inline]
-pub unsafe fn sme_early_decrypt(_paddr: resource_size_t, _size: ::core::ffi::c_ulong) {}
+pub unsafe fn sme_early_decrypt(_paddr: resource_size_t, _size: ::kernel::ffi::c_ulong) {}
 
 #[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[inline]
-pub unsafe fn sme_map_bootdata(_real_mode_data: *mut ::core::ffi::c_char) {}
+pub unsafe fn sme_map_bootdata(_real_mode_data: *mut ::kernel::ffi::c_char) {}
 
 #[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[inline]
-pub unsafe fn sme_unmap_bootdata(_real_mode_data: *mut ::core::ffi::c_char) {}
+pub unsafe fn sme_unmap_bootdata(_real_mode_data: *mut ::kernel::ffi::c_char) {}
 
 #[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[inline]
@@ -120,22 +120,22 @@ pub unsafe fn sev_es_init_vc_handling() {}
 #[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[inline]
 pub unsafe fn early_set_memory_decrypted(
-    _vaddr: ::core::ffi::c_ulong,
-    _size: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int { 0 }
+    _vaddr: ::kernel::ffi::c_ulong,
+    _size: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int { 0 }
 
 #[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[inline]
 pub unsafe fn early_set_memory_encrypted(
-    _vaddr: ::core::ffi::c_ulong,
-    _size: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int { 0 }
+    _vaddr: ::kernel::ffi::c_ulong,
+    _size: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int { 0 }
 
 #[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[inline]
 pub unsafe fn early_set_mem_enc_dec_hypercall(
-    _vaddr: ::core::ffi::c_ulong,
-    _size: ::core::ffi::c_ulong,
+    _vaddr: ::kernel::ffi::c_ulong,
+    _size: ::kernel::ffi::c_ulong,
     _enc: bool,
 ) {}
 
@@ -150,9 +150,9 @@ pub unsafe fn sme_get_me_mask() -> u64 { 0 }
 extern "C" {
     pub fn add_encrypt_protection_map();
 
-    pub static mut __start_bss_decrypted: [::core::ffi::c_char; 0];
-    pub static mut __end_bss_decrypted: [::core::ffi::c_char; 0];
-    pub static mut __start_bss_decrypted_unused: [::core::ffi::c_char; 0];
+    pub static mut __start_bss_decrypted: [::kernel::ffi::c_char; 0];
+    pub static mut __end_bss_decrypted: [::kernel::ffi::c_char; 0];
+    pub static mut __start_bss_decrypted_unused: [::kernel::ffi::c_char; 0];
 }
 
 // The C macros use external __pa/__pa_nodebug dependencies and preserve the

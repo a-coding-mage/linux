@@ -46,8 +46,8 @@ unsafe fn imx27_init_early() {
     mxc_set_cpu_type(MXC_CPU_MX27);
 }
 
-static imx27_dt_board_compat: [*const core::ffi::c_char; 2] = [
-    b"fsl,imx27\0".as_ptr() as *const core::ffi::c_char,
+static imx27_dt_board_compat: [*const kernel::ffi::c_char; 2] = [
+    b"fsl,imx27\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -64,7 +64,7 @@ static IMX27_DT: machine_desc = machine_desc {
     init_late: Some(imx27_pm_init),
     dt_compat: imx27_dt_board_compat.as_ptr(),
     name: b"Freescale i.MX27 (Device Tree Support)\0".as_ptr()
-        as *const core::ffi::c_char,
+        as *const kernel::ffi::c_char,
 };
 
 

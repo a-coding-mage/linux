@@ -32,36 +32,36 @@ pub struct ebt_counter {
 
 #[repr(C)]
 pub struct ebt_replace {
-    pub name: [::core::ffi::c_char; EBT_TABLE_MAXNAMELEN],
-    pub valid_hooks: ::core::ffi::c_uint,
-    pub nentries: ::core::ffi::c_uint,
-    pub entries_size: ::core::ffi::c_uint,
+    pub name: [::kernel::ffi::c_char; EBT_TABLE_MAXNAMELEN],
+    pub valid_hooks: ::kernel::ffi::c_uint,
+    pub nentries: ::kernel::ffi::c_uint,
+    pub entries_size: ::kernel::ffi::c_uint,
     pub hook_entry: [*mut ebt_entries; NF_BR_NUMHOOKS],
-    pub num_counters: ::core::ffi::c_uint,
+    pub num_counters: ::kernel::ffi::c_uint,
     pub counters: *mut ebt_counter,
-    pub entries: *mut ::core::ffi::c_char,
+    pub entries: *mut ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct ebt_replace_kernel {
-    pub name: [::core::ffi::c_char; EBT_TABLE_MAXNAMELEN],
-    pub valid_hooks: ::core::ffi::c_uint,
-    pub nentries: ::core::ffi::c_uint,
-    pub entries_size: ::core::ffi::c_uint,
+    pub name: [::kernel::ffi::c_char; EBT_TABLE_MAXNAMELEN],
+    pub valid_hooks: ::kernel::ffi::c_uint,
+    pub nentries: ::kernel::ffi::c_uint,
+    pub entries_size: ::kernel::ffi::c_uint,
     pub hook_entry: [*mut ebt_entries; NF_BR_NUMHOOKS],
-    pub num_counters: ::core::ffi::c_uint,
+    pub num_counters: ::kernel::ffi::c_uint,
     pub counters: *mut ebt_counter,
-    pub entries: *mut ::core::ffi::c_char,
+    pub entries: *mut ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct ebt_entries {
-    pub distinguisher: ::core::ffi::c_uint,
-    pub name: [::core::ffi::c_char; EBT_CHAIN_MAXNAMELEN],
-    pub counter_offset: ::core::ffi::c_uint,
-    pub policy: ::core::ffi::c_int,
-    pub nentries: ::core::ffi::c_uint,
-    pub data: [::core::ffi::c_char; 0],
+    pub distinguisher: ::kernel::ffi::c_uint,
+    pub name: [::kernel::ffi::c_char; EBT_CHAIN_MAXNAMELEN],
+    pub counter_offset: ::kernel::ffi::c_uint,
+    pub policy: ::kernel::ffi::c_int,
+    pub nentries: ::kernel::ffi::c_uint,
+    pub data: [::kernel::ffi::c_char; 0],
 }
 
 pub const EBT_ENTRY_OR_ENTRIES: u32 = 0x01;
@@ -97,26 +97,26 @@ pub union ebt_entry_target_u {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ebt_name_revision {
-    pub name: [::core::ffi::c_char; EBT_EXTENSION_MAXNAMELEN],
+    pub name: [::kernel::ffi::c_char; EBT_EXTENSION_MAXNAMELEN],
     pub revision: u8,
 }
 
 #[repr(C)]
 pub struct ebt_entry_match {
     pub u: ebt_entry_match_u,
-    pub match_size: ::core::ffi::c_uint,
+    pub match_size: ::kernel::ffi::c_uint,
     pub data: [u8; 0],
 }
 #[repr(C)]
 pub struct ebt_entry_watcher {
     pub u: ebt_entry_watcher_u,
-    pub watcher_size: ::core::ffi::c_uint,
+    pub watcher_size: ::kernel::ffi::c_uint,
     pub data: [u8; 0],
 }
 #[repr(C)]
 pub struct ebt_entry_target {
     pub u: ebt_entry_target_u,
-    pub target_size: ::core::ffi::c_uint,
+    pub target_size: ::kernel::ffi::c_uint,
     pub data: [u8; 0],
 }
 
@@ -124,25 +124,25 @@ pub const EBT_STANDARD_TARGET: &[u8] = b"standard\0";
 #[repr(C)]
 pub struct ebt_standard_target {
     pub target: ebt_entry_target,
-    pub verdict: ::core::ffi::c_int,
+    pub verdict: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct ebt_entry {
-    pub bitmask: ::core::ffi::c_uint,
-    pub invflags: ::core::ffi::c_uint,
+    pub bitmask: ::kernel::ffi::c_uint,
+    pub invflags: ::kernel::ffi::c_uint,
     pub ethproto: u16,
-    pub in_: [::core::ffi::c_char; IFNAMSIZ],
-    pub logical_in: [::core::ffi::c_char; IFNAMSIZ],
-    pub out: [::core::ffi::c_char; IFNAMSIZ],
-    pub logical_out: [::core::ffi::c_char; IFNAMSIZ],
+    pub in_: [::kernel::ffi::c_char; IFNAMSIZ],
+    pub logical_in: [::kernel::ffi::c_char; IFNAMSIZ],
+    pub out: [::kernel::ffi::c_char; IFNAMSIZ],
+    pub logical_out: [::kernel::ffi::c_char; IFNAMSIZ],
     pub sourcemac: [u8; ETH_ALEN],
     pub sourcemsk: [u8; ETH_ALEN],
     pub destmac: [u8; ETH_ALEN],
     pub destmsk: [u8; ETH_ALEN],
-    pub watchers_offset: ::core::ffi::c_uint,
-    pub target_offset: ::core::ffi::c_uint,
-    pub next_offset: ::core::ffi::c_uint,
+    pub watchers_offset: ::kernel::ffi::c_uint,
+    pub target_offset: ::kernel::ffi::c_uint,
+    pub next_offset: ::kernel::ffi::c_uint,
     pub elems: [u8; 0],
 }
 

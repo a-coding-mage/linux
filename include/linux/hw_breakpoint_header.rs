@@ -14,7 +14,7 @@ pub enum bp_type_idx {
 
 #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
 extern "C" {
-    pub fn init_hw_breakpoint() -> ::core::ffi::c_int;
+    pub fn init_hw_breakpoint() -> ::kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
@@ -35,17 +35,17 @@ pub unsafe fn ptrace_breakpoint_init(attr: *mut perf_event_attr) {
 }
 
 #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
-pub unsafe fn hw_breakpoint_addr(bp: *mut perf_event) -> ::core::ffi::c_ulong {
+pub unsafe fn hw_breakpoint_addr(bp: *mut perf_event) -> ::kernel::ffi::c_ulong {
     (*bp).attr.bp_addr
 }
 
 #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
-pub unsafe fn hw_breakpoint_type(bp: *mut perf_event) -> ::core::ffi::c_int {
+pub unsafe fn hw_breakpoint_type(bp: *mut perf_event) -> ::kernel::ffi::c_int {
     (*bp).attr.bp_type
 }
 
 #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
-pub unsafe fn hw_breakpoint_len(bp: *mut perf_event) -> ::core::ffi::c_ulong {
+pub unsafe fn hw_breakpoint_len(bp: *mut perf_event) -> ::kernel::ffi::c_ulong {
     (*bp).attr.bp_len
 }
 
@@ -54,35 +54,35 @@ extern "C" {
     pub fn register_user_hw_breakpoint(
         attr: *mut perf_event_attr,
         triggered: perf_overflow_handler_t,
-        context: *mut ::core::ffi::c_void,
+        context: *mut ::kernel::ffi::c_void,
         tsk: *mut task_struct,
     ) -> *mut perf_event;
     // FIXME: only change from the attr, and don't unregister
-    pub fn modify_user_hw_breakpoint(bp: *mut perf_event, attr: *mut perf_event_attr) -> ::core::ffi::c_int;
+    pub fn modify_user_hw_breakpoint(bp: *mut perf_event, attr: *mut perf_event_attr) -> ::kernel::ffi::c_int;
     pub fn modify_user_hw_breakpoint_check(
         bp: *mut perf_event,
         attr: *mut perf_event_attr,
         check: bool,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     // Kernel breakpoints are not associated with any particular thread.
     pub fn register_wide_hw_breakpoint_cpu(
         attr: *mut perf_event_attr,
         triggered: perf_overflow_handler_t,
-        context: *mut ::core::ffi::c_void,
-        cpu: ::core::ffi::c_int,
+        context: *mut ::kernel::ffi::c_void,
+        cpu: ::kernel::ffi::c_int,
     ) -> *mut perf_event;
     pub fn register_wide_hw_breakpoint(
         attr: *mut perf_event_attr,
         triggered: perf_overflow_handler_t,
-        context: *mut ::core::ffi::c_void,
+        context: *mut ::kernel::ffi::c_void,
     ) -> *mut perf_event;
-    pub fn register_perf_hw_breakpoint(bp: *mut perf_event) -> ::core::ffi::c_int;
+    pub fn register_perf_hw_breakpoint(bp: *mut perf_event) -> ::kernel::ffi::c_int;
     pub fn unregister_hw_breakpoint(bp: *mut perf_event);
     pub fn unregister_wide_hw_breakpoint(cpu_events: *mut *mut perf_event);
     pub fn hw_breakpoint_is_used() -> bool;
-    pub fn dbg_reserve_bp_slot(bp: *mut perf_event) -> ::core::ffi::c_int;
-    pub fn dbg_release_bp_slot(bp: *mut perf_event) -> ::core::ffi::c_int;
-    pub fn reserve_bp_slot(bp: *mut perf_event) -> ::core::ffi::c_int;
+    pub fn dbg_reserve_bp_slot(bp: *mut perf_event) -> ::kernel::ffi::c_int;
+    pub fn dbg_release_bp_slot(bp: *mut perf_event) -> ::kernel::ffi::c_int;
+    pub fn reserve_bp_slot(bp: *mut perf_event) -> ::kernel::ffi::c_int;
     pub fn release_bp_slot(bp: *mut perf_event);
     pub fn flush_ptrace_hw_breakpoint(tsk: *mut task_struct);
 }
@@ -93,19 +93,19 @@ pub unsafe fn counter_arch_bp(bp: *mut perf_event) -> *mut arch_hw_breakpoint {
 }
 
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
-pub unsafe fn init_hw_breakpoint() -> ::core::ffi::c_int { 0 }
+pub unsafe fn init_hw_breakpoint() -> ::kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
-pub unsafe fn register_user_hw_breakpoint(_: *mut perf_event_attr, _: perf_overflow_handler_t, _: *mut ::core::ffi::c_void, _: *mut task_struct) -> *mut perf_event { ::core::ptr::null_mut() }
+pub unsafe fn register_user_hw_breakpoint(_: *mut perf_event_attr, _: perf_overflow_handler_t, _: *mut ::kernel::ffi::c_void, _: *mut task_struct) -> *mut perf_event { ::core::ptr::null_mut() }
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
-pub unsafe fn modify_user_hw_breakpoint(_: *mut perf_event, _: *mut perf_event_attr) -> ::core::ffi::c_int { -ENOSYS }
+pub unsafe fn modify_user_hw_breakpoint(_: *mut perf_event, _: *mut perf_event_attr) -> ::kernel::ffi::c_int { -ENOSYS }
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
-pub unsafe fn modify_user_hw_breakpoint_check(_: *mut perf_event, _: *mut perf_event_attr, _: bool) -> ::core::ffi::c_int { -ENOSYS }
+pub unsafe fn modify_user_hw_breakpoint_check(_: *mut perf_event, _: *mut perf_event_attr, _: bool) -> ::kernel::ffi::c_int { -ENOSYS }
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
-pub unsafe fn register_wide_hw_breakpoint_cpu(_: *mut perf_event_attr, _: perf_overflow_handler_t, _: *mut ::core::ffi::c_void, _: ::core::ffi::c_int) -> *mut perf_event { ::core::ptr::null_mut() }
+pub unsafe fn register_wide_hw_breakpoint_cpu(_: *mut perf_event_attr, _: perf_overflow_handler_t, _: *mut ::kernel::ffi::c_void, _: ::kernel::ffi::c_int) -> *mut perf_event { ::core::ptr::null_mut() }
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
-pub unsafe fn register_wide_hw_breakpoint(_: *mut perf_event_attr, _: perf_overflow_handler_t, _: *mut ::core::ffi::c_void) -> *mut perf_event { ::core::ptr::null_mut() }
+pub unsafe fn register_wide_hw_breakpoint(_: *mut perf_event_attr, _: perf_overflow_handler_t, _: *mut ::kernel::ffi::c_void) -> *mut perf_event { ::core::ptr::null_mut() }
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
-pub unsafe fn register_perf_hw_breakpoint(_: *mut perf_event) -> ::core::ffi::c_int { -ENOSYS }
+pub unsafe fn register_perf_hw_breakpoint(_: *mut perf_event) -> ::kernel::ffi::c_int { -ENOSYS }
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
 pub unsafe fn unregister_hw_breakpoint(_: *mut perf_event) {}
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
@@ -113,7 +113,7 @@ pub unsafe fn unregister_wide_hw_breakpoint(_: *mut *mut perf_event) {}
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
 pub unsafe fn hw_breakpoint_is_used() -> bool { false }
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
-pub unsafe fn reserve_bp_slot(_: *mut perf_event) -> ::core::ffi::c_int { -ENOSYS }
+pub unsafe fn reserve_bp_slot(_: *mut perf_event) -> ::kernel::ffi::c_int { -ENOSYS }
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
 pub unsafe fn release_bp_slot(_: *mut perf_event) {}
 #[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]

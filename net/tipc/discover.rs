@@ -8,10 +8,10 @@
 
 /* Dependencies are supplied by the surrounding TIPC translation. */
 
-const TIPC_DISC_INIT: ::core::ffi::c_ulong = msecs_to_jiffies(125);
-const TIPC_DISC_FAST: ::core::ffi::c_ulong = msecs_to_jiffies(1000);
-const TIPC_DISC_SLOW: ::core::ffi::c_ulong = msecs_to_jiffies(60000);
-const TIPC_DISC_INACTIVE: ::core::ffi::c_ulong = 0xffff_ffff;
+const TIPC_DISC_INIT: ::kernel::ffi::c_ulong = msecs_to_jiffies(125);
+const TIPC_DISC_FAST: ::kernel::ffi::c_ulong = msecs_to_jiffies(1000);
+const TIPC_DISC_SLOW: ::kernel::ffi::c_ulong = msecs_to_jiffies(60000);
+const TIPC_DISC_INACTIVE: ::kernel::ffi::c_ulong = 0xffff_ffff;
 
 #[repr(C)]
 pub struct tipc_discoverer {
@@ -19,11 +19,11 @@ pub struct tipc_discoverer {
     pub dest: tipc_media_addr,
     pub net: *mut net,
     pub domain: u32,
-    pub num_nodes: ::core::ffi::c_int,
+    pub num_nodes: ::kernel::ffi::c_int,
     pub lock: spinlock_t,
     pub skb: *mut sk_buff,
     pub timer: timer_list,
-    pub timer_intv: ::core::ffi::c_ulong,
+    pub timer_intv: ::kernel::ffi::c_ulong,
     pub rcu: rcu_head,
 }
 
@@ -96,7 +96,7 @@ unsafe fn tipc_disc_addr_trial_msg(
     src: u32,
     mut sugg_addr: u32,
     peer_id: *mut u8,
-    mtyp: ::core::ffi::c_int,
+    mtyp: ::kernel::ffi::c_int,
 ) -> bool {
     let net = (*d).net;
     let tn = tipc_net(net);
@@ -219,12 +219,12 @@ pub unsafe fn tipc_disc_create(
     b: *mut tipc_bearer,
     dest: *mut tipc_media_addr,
     skb: *mut *mut sk_buff,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let tn = tipc_net(net);
     let d = kmalloc_obj::<tipc_discoverer>(GFP_ATOMIC);
     if d.is_null() { return -ENOMEM; }
     (*d).skb = tipc_buf_acquire(MAX_H_SIZE + NODE_ID_LEN, GFP_ATOMIC);
-    if (*d).skb.is_null() { kfree(d as *mut ::core::ffi::c_void); return -ENOMEM; }
+    if (*d).skb.is_null() { kfree(d as *mut ::kernel::ffi::c_void); return -ENOMEM; }
     tipc_disc_init_msg(net, (*d).skb, DSC_REQ_MSG, b);
     if tipc_own_addr(net) == 0 {
         (*tn).addr_trial_end = jiffies + msecs_to_jiffies(1000);
@@ -247,7 +247,7 @@ pub unsafe fn tipc_disc_create(
 unsafe fn tipc_disc_free_rcu(rp: *mut rcu_head) {
     let d = container_of::<tipc_discoverer>(rp, "rcu");
     kfree_skb((*d).skb);
-    kfree(d as *mut ::core::ffi::c_void);
+    kfree(d as *mut ::kernel::ffi::c_void);
 }
 
 pub unsafe fn tipc_disc_delete(d: *mut tipc_discoverer) {

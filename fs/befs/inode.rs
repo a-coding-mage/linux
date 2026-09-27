@@ -25,7 +25,7 @@ pub unsafe fn befs_check_inode(
         befs_error(
             sb,
             "Inode has a bad magic header - inode = %lu",
-            inode as libc::c_ulong,
+            inode as kernel::ffi::c_ulong,
         );
         return BEFS_BAD_INODE;
     }
@@ -37,8 +37,8 @@ pub unsafe fn befs_check_inode(
         befs_error(
             sb,
             "inode blocknr field disagrees with vfs VFS: %lu, Inode %lu",
-            inode as libc::c_ulong,
-            iaddr2blockno(sb, &ino_num) as libc::c_ulong,
+            inode as kernel::ffi::c_ulong,
+            iaddr2blockno(sb, &ino_num) as kernel::ffi::c_ulong,
         );
         return BEFS_BAD_INODE;
     }
@@ -50,7 +50,7 @@ pub unsafe fn befs_check_inode(
         befs_error(
             sb,
             "inode is not used - inode = %lu",
-            inode as libc::c_ulong,
+            inode as kernel::ffi::c_ulong,
         );
         return BEFS_BAD_INODE;
     }

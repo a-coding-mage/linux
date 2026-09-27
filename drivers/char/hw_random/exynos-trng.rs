@@ -45,7 +45,7 @@ const HWRNG_MAX_TRIES: i32 = 100;
 #[repr(C)]
 pub struct exynos_trng_dev {
     pub dev: *mut device,
-    pub mem: *mut core::ffi::c_void,
+    pub mem: *mut kernel::ffi::c_void,
     pub clk: *mut clk,
     pub pclk: *mut clk,
     pub rng: hwrng,
@@ -58,9 +58,9 @@ pub struct device { _private: [u8; 0] }
 pub struct clk { _private: [u8; 0] }
 #[repr(C)]
 pub struct hwrng {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub init: Option<unsafe extern "C" fn(*mut hwrng) -> i32>,
-    pub read: Option<unsafe extern "C" fn(*mut hwrng, *mut core::ffi::c_void, usize, bool) -> i32>,
+    pub read: Option<unsafe extern "C" fn(*mut hwrng, *mut kernel::ffi::c_void, usize, bool) -> i32>,
     pub priv_: usize,
 }
 #[repr(C)] pub struct platform_device { pub dev: device }
@@ -70,26 +70,26 @@ extern "C" {
     fn readl_poll_timeout(addr: *mut u32, val: *mut u32, condition: bool, delay: u32, timeout: u32) -> i32;
     fn writel_relaxed(value: u32, addr: *mut u32);
     fn readl(addr: *mut u32) -> u32;
-    fn memcpy_fromio(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, len: usize);
+    fn memcpy_fromio(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, len: usize);
     fn arm_smccc_smc(a0: u64, a1: u64, a2: u64, a3: u64, a4: u64, a5: u64, a6: u64, a7: u64, res: *mut arm_smccc_res);
     fn clk_get_rate(clk: *mut clk) -> u64;
     fn cond_resched();
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
-unsafe extern "C" fn exynos_trng_do_read_reg(rng: *mut hwrng, data: *mut core::ffi::c_void, mut max: usize, _wait: bool) -> i32 {
+unsafe extern "C" fn exynos_trng_do_read_reg(rng: *mut hwrng, data: *mut kernel::ffi::c_void, mut max: usize, _wait: bool) -> i32 {
     let trng = &mut *((*rng).priv_ as *mut exynos_trng_dev);
     max = core::cmp::min(max, EXYNOS_TRNG_FIFO_LEN * 4);
     writel_relaxed((max * 8) as u32, (trng.mem as *mut u8).add(EXYNOS_TRNG_FIFO_CTRL) as *mut u32);
     let mut val = 0u32;
     let ret = readl_poll_timeout((trng.mem as *mut u8).add(EXYNOS_TRNG_FIFO_CTRL) as *mut u32, &mut val, val == 0, 200, 1000000);
     if ret < 0 { return ret; }
-    memcpy_fromio(data, (trng.mem as *mut u8).add(EXYNOS_TRNG_FIFO_0) as *const core::ffi::c_void, max);
+    memcpy_fromio(data, (trng.mem as *mut u8).add(EXYNOS_TRNG_FIFO_0) as *const kernel::ffi::c_void, max);
     max as i32
 }
 
-unsafe extern "C" fn exynos_trng_do_read_smc(rng: *mut hwrng, data: *mut core::ffi::c_void, max: usize, wait: bool) -> i32 {
+unsafe extern "C" fn exynos_trng_do_read_smc(rng: *mut hwrng, data: *mut kernel::ffi::c_void, max: usize, wait: bool) -> i32 {
     let mut res = arm_smccc_res { a0: 0, a1: 0, a2: 0, a3: 0, a4: 0, a5: 0, a6: 0, a7: 0 };
     let mut copied = 0usize;
     let mut buf = data as *mut u32;

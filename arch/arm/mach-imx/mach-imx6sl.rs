@@ -6,18 +6,18 @@
 // Dependencies supplied by the surrounding kernel translation.
 
 unsafe extern "C" {
-    fn syscon_regmap_lookup_by_compatible(compatible: *const core::ffi::c_char) -> *mut regmap;
+    fn syscon_regmap_lookup_by_compatible(compatible: *const kernel::ffi::c_char) -> *mut regmap;
     fn regmap_update_bits(map: *mut regmap, reg: u32, mask: u32, val: u32) -> i32;
     fn platform_device_register_simple(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         id: i32,
-        data: *const core::ffi::c_void,
+        data: *const kernel::ffi::c_void,
         size: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     fn of_platform_default_populate(
-        root: *const core::ffi::c_void,
-        matches: *const core::ffi::c_void,
-        parent: *const core::ffi::c_void,
+        root: *const kernel::ffi::c_void,
+        matches: *const kernel::ffi::c_void,
+        parent: *const kernel::ffi::c_void,
     ) -> i32;
     fn imx6sl_cpuidle_init();
     fn imx6sx_cpuidle_init();
@@ -28,9 +28,9 @@ unsafe extern "C" {
     fn imx_init_l2cache();
     fn imx_src_init();
     fn irqchip_init();
-    fn imx6_pm_ccm_init(compatible: *const core::ffi::c_char);
+    fn imx6_pm_ccm_init(compatible: *const kernel::ffi::c_char);
     fn cpu_is_imx6sl() -> bool;
-    fn pr_err(format: *const core::ffi::c_char);
+    fn pr_err(format: *const kernel::ffi::c_char);
 }
 
 #[repr(C)]

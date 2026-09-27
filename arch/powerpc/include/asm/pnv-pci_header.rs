@@ -18,19 +18,19 @@ pub const fn PCI_PHB_SLOT_ID(phb_id: u64) -> u64 {
 }
 
 extern "C" {
-    pub fn pnv_pci_get_slot_id(np: *mut device_node, id: *mut u64) -> ::core::ffi::c_int;
+    pub fn pnv_pci_get_slot_id(np: *mut device_node, id: *mut u64) -> ::kernel::ffi::c_int;
     pub fn pnv_pci_get_device_tree(
         phandle: u32,
-        buf: *mut ::core::ffi::c_void,
+        buf: *mut ::kernel::ffi::c_void,
         len: u64,
-    ) -> ::core::ffi::c_int;
-    pub fn pnv_pci_get_presence_state(id: u64, state: *mut u8) -> ::core::ffi::c_int;
-    pub fn pnv_pci_get_power_state(id: u64, state: *mut u8) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn pnv_pci_get_presence_state(id: u64, state: *mut u8) -> ::kernel::ffi::c_int;
+    pub fn pnv_pci_get_power_state(id: u64, state: *mut u8) -> ::kernel::ffi::c_int;
     pub fn pnv_pci_set_power_state(
         id: u64,
         state: u8,
         msg: *mut opal_msg,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn pnv_opal_pci_msi_eoi(d: *mut irq_data) -> i64;
     pub fn is_pnv_opal_msi(chip: *mut irq_chip) -> bool;
@@ -46,20 +46,20 @@ pub const PNV_PHP_STATE_OFFLINE: i32 = 3;
 pub struct pnv_php_slot {
     pub slot: hotplug_slot,
     pub id: u64,
-    pub name: *mut ::core::ffi::c_char,
-    pub slot_no: ::core::ffi::c_int,
+    pub name: *mut ::kernel::ffi::c_char,
+    pub slot_no: ::kernel::ffi::c_int,
     pub flags: u32,
     pub kref: kref,
-    pub state: ::core::ffi::c_int,
-    pub irq: ::core::ffi::c_int,
+    pub state: ::kernel::ffi::c_int,
+    pub irq: ::kernel::ffi::c_int,
     pub wq: *mut workqueue_struct,
     pub dn: *mut device_node,
     pub pdev: *mut pci_dev,
     pub bus: *mut pci_bus,
     pub power_state_check: bool,
     pub attention_state: u8,
-    pub fdt: *mut ::core::ffi::c_void,
-    pub dt: *mut ::core::ffi::c_void,
+    pub fdt: *mut ::kernel::ffi::c_void,
+    pub dt: *mut ::kernel::ffi::c_void,
     pub ocs: of_changeset,
     pub parent: *mut pnv_php_slot,
     pub children: list_head,
@@ -71,7 +71,7 @@ extern "C" {
     pub fn pnv_php_set_slot_power_state(
         slot: *mut hotplug_slot,
         state: u8,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 // Opaque declarations for types supplied by included headers.

@@ -18,8 +18,8 @@ pub enum ErrorInjectionType {
 #[cfg(all(feature = "kernel", not(feature = "assembly")))]
 #[repr(C)]
 pub struct error_injection_entry {
-    pub addr: libc::c_ulong,
-    pub etype: libc::c_int,
+    pub addr: kernel::ffi::c_ulong,
+    pub etype: kernel::ffi::c_int,
 }
 
 #[cfg(all(feature = "kernel", not(feature = "assembly")))]
@@ -45,8 +45,8 @@ macro_rules! ALLOW_ERROR_INJECTION {
         #[used]
         #[link_section = "_error_injection_whitelist"]
         static $entry: $crate::error_injection_entry = $crate::error_injection_entry {
-            addr: $fname as usize as libc::c_ulong,
-            etype: $crate::ErrorInjectionType::$etype as libc::c_int,
+            addr: $fname as usize as kernel::ffi::c_ulong,
+            etype: $crate::ErrorInjectionType::$etype as kernel::ffi::c_int,
         };
     };
 }

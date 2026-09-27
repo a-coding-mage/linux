@@ -13,12 +13,12 @@
  * How to access the FDC's registers.
  */
 #[inline]
-pub unsafe fn fd_inb(base: ::core::ffi::c_uint, reg: ::core::ffi::c_uint) -> u8 {
+pub unsafe fn fd_inb(base: ::kernel::ffi::c_uint, reg: ::kernel::ffi::c_uint) -> u8 {
     inb_p(base.wrapping_add(reg))
 }
 
 #[inline]
-pub unsafe fn fd_outb(value: u8, base: ::core::ffi::c_uint, reg: ::core::ffi::c_uint) {
+pub unsafe fn fd_outb(value: u8, base: ::kernel::ffi::c_uint, reg: ::kernel::ffi::c_uint) {
     outb_p(value, base.wrapping_add(reg));
 }
 
@@ -36,8 +36,8 @@ pub unsafe fn fd_disable_dma() {
 }
 
 #[inline]
-pub unsafe fn fd_request_dma() -> ::core::ffi::c_int {
-    request_dma(FLOPPY_DMA, b"floppy\0".as_ptr() as *const ::core::ffi::c_char)
+pub unsafe fn fd_request_dma() -> ::kernel::ffi::c_int {
+    request_dma(FLOPPY_DMA, b"floppy\0".as_ptr() as *const ::kernel::ffi::c_char)
 }
 
 #[inline]
@@ -57,16 +57,16 @@ pub unsafe fn fd_set_dma_mode(mode: i8) {
 
 #[inline]
 pub unsafe fn fd_set_dma_addr(addr: *mut i8) {
-    set_dma_addr(FLOPPY_DMA, addr as ::core::ffi::c_ulong);
+    set_dma_addr(FLOPPY_DMA, addr as ::kernel::ffi::c_ulong);
 }
 
 #[inline]
-pub unsafe fn fd_set_dma_count(count: ::core::ffi::c_uint) {
+pub unsafe fn fd_set_dma_count(count: ::kernel::ffi::c_uint) {
     set_dma_count(FLOPPY_DMA, count);
 }
 
 #[inline]
-pub unsafe fn fd_get_dma_residue() -> ::core::ffi::c_int {
+pub unsafe fn fd_get_dma_residue() -> ::kernel::ffi::c_int {
     get_dma_residue(FLOPPY_DMA)
 }
 
@@ -81,12 +81,12 @@ pub unsafe fn fd_disable_irq() {
 }
 
 #[inline]
-pub unsafe fn fd_request_irq() -> ::core::ffi::c_int {
+pub unsafe fn fd_request_irq() -> ::kernel::ffi::c_int {
     request_irq(
         FLOPPY_IRQ,
         floppy_interrupt,
         0,
-        b"floppy\0".as_ptr() as *const ::core::ffi::c_char,
+        b"floppy\0".as_ptr() as *const ::kernel::ffi::c_char,
         ::core::ptr::null_mut(),
     )
 }
@@ -99,22 +99,22 @@ pub unsafe fn fd_free_irq() {
 // The source also defines the function-like macro: #define fd_free_irq() free_irq(FLOPPY_IRQ, NULL);
 
 #[inline]
-pub unsafe fn fd_getfdaddr1() -> ::core::ffi::c_ulong {
+pub unsafe fn fd_getfdaddr1() -> ::kernel::ffi::c_ulong {
     0x3f0
 }
 
 #[inline]
-pub unsafe fn fd_dma_mem_alloc(size: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub unsafe fn fd_dma_mem_alloc(size: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     __get_dma_pages(GFP_KERNEL, get_order(size))
 }
 
 #[inline]
-pub unsafe fn fd_dma_mem_free(addr: ::core::ffi::c_ulong, size: ::core::ffi::c_ulong) {
+pub unsafe fn fd_dma_mem_free(addr: ::kernel::ffi::c_ulong, size: ::kernel::ffi::c_ulong) {
     free_pages(addr, get_order(size));
 }
 
 #[inline]
-pub unsafe fn fd_drive_type(n: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub unsafe fn fd_drive_type(n: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     if n == 0 {
         4 /* 3,5\", 1.44mb */
     } else {

@@ -5,28 +5,28 @@
 // calling-convention details remain supplied by the target build.
 extern "C" {
     pub fn old_mmap(
-        addr: core::ffi::c_ulong,
-        len: core::ffi::c_ulong,
-        prot: core::ffi::c_ulong,
-        flags: core::ffi::c_ulong,
-        fd: core::ffi::c_int,
-        off: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        addr: kernel::ffi::c_ulong,
+        len: kernel::ffi::c_ulong,
+        prot: kernel::ffi::c_ulong,
+        flags: kernel::ffi::c_ulong,
+        fd: kernel::ffi::c_int,
+        off: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
 
     pub fn sys_mmap2(
-        addr: core::ffi::c_ulong,
-        len: core::ffi::c_ulong,
-        prot: core::ffi::c_ulong,
-        flags: core::ffi::c_ulong,
-        fd: core::ffi::c_ulong,
-        pgoff: core::ffi::c_ulong,
-    ) -> core::ffi::c_long;
+        addr: kernel::ffi::c_ulong,
+        len: kernel::ffi::c_ulong,
+        prot: kernel::ffi::c_ulong,
+        flags: kernel::ffi::c_ulong,
+        fd: kernel::ffi::c_ulong,
+        pgoff: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_long;
 
     pub fn sys_cacheflush(
-        addr: core::ffi::c_ulong,
-        len: core::ffi::c_ulong,
-        op: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        addr: kernel::ffi::c_ulong,
+        len: kernel::ffi::c_ulong,
+        op: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 }
 
 // C dependency: <asm/syscalls_32.h>

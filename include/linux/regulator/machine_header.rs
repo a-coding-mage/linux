@@ -52,7 +52,7 @@ pub struct notification_limit {
 
 #[repr(C)]
 pub struct regulation_constraints {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub min_uV: i32,
     pub max_uV: i32,
     pub uV_offset: i32,
@@ -99,8 +99,8 @@ pub struct regulation_constraints {
 
 #[repr(C)]
 pub struct regulator_consumer_supply {
-    pub dev_name: *const core::ffi::c_char,
-    pub supply: *const core::ffi::c_char,
+    pub dev_name: *const kernel::ffi::c_char,
+    pub supply: *const kernel::ffi::c_char,
 }
 
 #[macro_export]
@@ -112,11 +112,11 @@ macro_rules! REGULATOR_SUPPLY {
 
 #[repr(C)]
 pub struct regulator_init_data {
-    pub supply_regulator: *const core::ffi::c_char,
+    pub supply_regulator: *const kernel::ffi::c_char,
     pub constraints: regulation_constraints,
     pub num_consumer_supplies: i32,
     pub consumer_supplies: *mut regulator_consumer_supply,
-    pub driver_data: *mut core::ffi::c_void,
+    pub driver_data: *mut kernel::ffi::c_void,
 }
 
 #[cfg(CONFIG_REGULATOR)]

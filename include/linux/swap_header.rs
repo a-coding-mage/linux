@@ -52,12 +52,12 @@ pub union swap_header {
 }
 #[repr(C)]
 pub struct swap_header_magic {
-    pub reserved: [::core::ffi::c_char; PAGE_SIZE - 10],
-    pub magic: [::core::ffi::c_char; 10],
+    pub reserved: [::kernel::ffi::c_char; PAGE_SIZE - 10],
+    pub magic: [::kernel::ffi::c_char; 10],
 }
 #[repr(C)]
 pub struct swap_header_info {
-    pub bootbits: [::core::ffi::c_char; 1024],
+    pub bootbits: [::kernel::ffi::c_char; 1024],
     pub version: u32,
     pub last_page: u32,
     pub nr_badpages: u32,

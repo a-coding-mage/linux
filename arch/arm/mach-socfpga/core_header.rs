@@ -26,17 +26,17 @@ extern "C" {
     pub fn socfpga_init_arria10_l2_ecc();
     pub fn socfpga_init_arria10_ocram_ecc();
 
-    pub static mut sys_manager_base_addr: *mut core::ffi::c_void;
-    pub static mut rst_manager_base_addr: *mut core::ffi::c_void;
-    pub static mut sdr_ctl_base_addr: *mut core::ffi::c_void;
+    pub static mut sys_manager_base_addr: *mut kernel::ffi::c_void;
+    pub static mut rst_manager_base_addr: *mut kernel::ffi::c_void;
+    pub static mut sdr_ctl_base_addr: *mut kernel::ffi::c_void;
 
     pub fn socfpga_sdram_self_refresh(sdr_base: u32) -> u32;
-    pub static mut socfpga_sdram_self_refresh_sz: core::ffi::c_uint;
+    pub static mut socfpga_sdram_self_refresh_sz: kernel::ffi::c_uint;
 
-    pub static mut secondary_trampoline: [core::ffi::c_char; 0];
-    pub static mut secondary_trampoline_end: [core::ffi::c_char; 0];
+    pub static mut secondary_trampoline: [kernel::ffi::c_char; 0];
+    pub static mut secondary_trampoline_end: [kernel::ffi::c_char; 0];
 
-    pub static mut socfpga_cpu1start_addr: core::ffi::c_ulong;
+    pub static mut socfpga_cpu1start_addr: kernel::ffi::c_ulong;
 }
 
 pub const SOCFPGA_SCU_VIRT_BASE: u32 = 0xfee00000;

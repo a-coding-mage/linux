@@ -132,7 +132,7 @@
 // - "usX2Yhwdep.h"
 
 use core::ptr;
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // TODO: External dependencies from linux kernel headers
 extern {
@@ -187,9 +187,9 @@ extern "C" {
 
 // External function declarations from kernel
 extern "C" {
-    fn dev_dbg(dev: *mut core::ffi::c_void, fmt: *const c_char, ...);
-    fn dev_err(dev: *mut core::ffi::c_void, fmt: *const c_char, ...);
-    fn memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void;
+    fn dev_dbg(dev: *mut kernel::ffi::c_void, fmt: *const c_char, ...);
+    fn dev_err(dev: *mut kernel::ffi::c_void, fmt: *const c_char, ...);
+    fn memcpy(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize) -> *mut kernel::ffi::c_void;
     fn usb_submit_urb(urb: *mut urb, mem_flags: u32) -> i32;
     fn usb_alloc_urb(iso_packets: i32, mem_flags: u32) -> *mut urb;
     fn usb_free_urb(urb: *mut urb);
@@ -198,10 +198,10 @@ extern "C" {
         urb: *mut urb,
         dev: *mut usb_device,
         pipe: u32,
-        transfer_buffer: *mut core::ffi::c_void,
+        transfer_buffer: *mut kernel::ffi::c_void,
         transfer_buffer_length: i32,
         complete: extern "C" fn(*mut urb),
-        context: *mut core::ffi::c_void,
+        context: *mut kernel::ffi::c_void,
     );
     fn usb_sndbulkpipe(dev: *mut usb_device, endpoint: u8) -> u32;
     fn usb_rcvintpipe(dev: *mut usb_device, endpoint: u8) -> u32;
@@ -209,23 +209,23 @@ extern "C" {
         urb: *mut urb,
         dev: *mut usb_device,
         pipe: u32,
-        transfer_buffer: *mut core::ffi::c_void,
+        transfer_buffer: *mut kernel::ffi::c_void,
         transfer_buffer_length: i32,
         complete: extern "C" fn(*mut urb),
         context: *mut usb_device,
         interval: i32,
     );
     fn usb_urb_ep_type_check(urb: *mut urb) -> i32;
-    fn kmalloc_array(n: usize, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn kmalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn init_waitqueue_head(wq: *mut core::ffi::c_void);
-    fn wake_up(wq: *mut core::ffi::c_void);
+    fn kmalloc_array(n: usize, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn kmalloc(size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn init_waitqueue_head(wq: *mut kernel::ffi::c_void);
+    fn wake_up(wq: *mut kernel::ffi::c_void);
     fn snd_card_new(
-        parent: *mut core::ffi::c_void,
+        parent: *mut kernel::ffi::c_void,
         idx: i32,
         xid: *const c_char,
-        module: *mut core::ffi::c_void,
+        module: *mut kernel::ffi::c_void,
         extra_size: usize,
         card_ret: *mut *mut snd_card,
     ) -> i32;
@@ -233,18 +233,18 @@ extern "C" {
     fn snd_card_disconnect(card: *mut snd_card);
     fn snd_card_free(card: *mut snd_card);
     fn snd_card_free_when_closed(card: *mut snd_card);
-    fn snd_usbmidi_disconnect(p: *mut core::ffi::c_void);
-    fn snd_card_free_pages_exact(ptr: *mut core::ffi::c_void, bytes: usize);
+    fn snd_usbmidi_disconnect(p: *mut kernel::ffi::c_void);
+    fn snd_card_free_pages_exact(ptr: *mut kernel::ffi::c_void, bytes: usize);
     fn strscpy(dest: *mut c_char, src: *const c_char, n: usize) -> usize;
     fn sprintf(s: *mut c_char, format: *const c_char, ...) -> i32;
     fn le16_to_cpu(x: u16) -> u16;
-    fn usb_get_intfdata(intf: *mut usb_interface) -> *mut core::ffi::c_void;
-    fn dev_set_drvdata(dev: *mut core::ffi::c_void, data: *mut core::ffi::c_void);
+    fn usb_get_intfdata(intf: *mut usb_interface) -> *mut kernel::ffi::c_void;
+    fn dev_set_drvdata(dev: *mut kernel::ffi::c_void, data: *mut kernel::ffi::c_void);
     fn interface_to_usbdev(intf: *mut usb_interface) -> *mut usb_device;
     fn usx2y_hwdep_new(card: *mut snd_card, device: *mut usb_device) -> i32;
     fn usx2y(card: *mut snd_card) -> *mut usx2ydev;
-    fn mutex_init(lock: *mut core::ffi::c_void);
-    fn INIT_LIST_HEAD(list: *mut core::ffi::c_void);
+    fn mutex_init(lock: *mut kernel::ffi::c_void);
+    fn INIT_LIST_HEAD(list: *mut kernel::ffi::c_void);
 }
 
 const URBS_ASYNC_SEQ: usize = 10;
@@ -289,7 +289,7 @@ unsafe extern "C" fn i_usx2y_out04_int(urb: *mut urb) {
             i += 1;
         }
         dev_dbg(
-            &mut (*(*urb).dev).dev as *mut _ as *mut core::ffi::c_void,
+            &mut (*(*urb).dev).dev as *mut _ as *mut kernel::ffi::c_void,
             b"%s urb %i status=%i\n".as_ptr() as *const c_char,
         );
     }
@@ -314,7 +314,7 @@ unsafe extern "C" fn i_usx2y_in04_int(urb: *mut urb) {
 
     if (*urb).status != 0 {
         dev_dbg(
-            &mut (*(*urb).dev).dev as *mut _ as *mut core::ffi::c_void,
+            &mut (*(*urb).dev).dev as *mut _ as *mut kernel::ffi::c_void,
             b"Interrupt Pipe 4 came back with status=%i\n".as_ptr() as *const c_char,
         );
         return;
@@ -325,8 +325,8 @@ unsafe extern "C" fn i_usx2y_in04_int(urb: *mut urb) {
         if (*us428ctls).ctl_snapshot_last == -2 {
             diff = 0;
             memcpy(
-                (*usx2y).in04_last.as_mut_ptr() as *mut core::ffi::c_void,
-                (*usx2y).in04_buf as *const core::ffi::c_void,
+                (*usx2y).in04_last.as_mut_ptr() as *mut kernel::ffi::c_void,
+                (*usx2y).in04_buf as *const kernel::ffi::c_void,
                 core::mem::size_of_val(&(*usx2y).in04_last),
             );
             (*us428ctls).ctl_snapshot_last = -1;
@@ -351,13 +351,13 @@ unsafe extern "C" fn i_usx2y_in04_int(urb: *mut urb) {
             }
             memcpy(
                 ((*us428ctls).ctl_snapshot as *mut u8).add(n as usize * core::mem::size_of::<[u8; 21]>())
-                    as *mut core::ffi::c_void,
-                (*usx2y).in04_buf as *const core::ffi::c_void,
+                    as *mut kernel::ffi::c_void,
+                (*usx2y).in04_buf as *const kernel::ffi::c_void,
                 core::mem::size_of_val(&(*us428ctls).ctl_snapshot[0]),
             );
             (*us428ctls).ctl_snapshot_differs_at[n as usize] = diff;
             (*us428ctls).ctl_snapshot_last = n;
-            wake_up(&(*usx2y).us428ctls_wait_queue_head as *const _ as *mut core::ffi::c_void);
+            wake_up(&(*usx2y).us428ctls_wait_queue_head as *const _ as *mut kernel::ffi::c_void);
         }
     }
 
@@ -396,7 +396,7 @@ unsafe extern "C" fn i_usx2y_in04_int(urb: *mut urb) {
                     };
                     memcpy(
                         (*(*usx2y).as04.urb[j as usize]).transfer_buffer,
-                        &(*p4out).val.vol as *const _ as *const core::ffi::c_void,
+                        &(*p4out).val.vol as *const _ as *const kernel::ffi::c_void,
                         len as usize,
                     );
                     (*(*usx2y).as04.urb[j as usize]).transfer_buffer_length = len;
@@ -417,7 +417,7 @@ unsafe extern "C" fn i_usx2y_in04_int(urb: *mut urb) {
 
     if err != 0 {
         dev_err(
-            &mut (*(*urb).dev).dev as *mut _ as *mut core::ffi::c_void,
+            &mut (*(*urb).dev).dev as *mut _ as *mut kernel::ffi::c_void,
             b"in04_int() usb_submit_urb err=%i\n".as_ptr() as *const c_char,
         );
     }
@@ -453,10 +453,10 @@ pub unsafe extern "C" fn usx2y_async_seq04_init(usx2y: *mut usx2ydev) -> i32 {
                 (*usx2y).dev,
                 usb_sndbulkpipe((*usx2y).dev, 0x04),
                 ((*usx2y).as04.buffer as *mut u8).add((URB_DATA_LEN_ASYNC_SEQ * i as usize) as usize)
-                    as *mut core::ffi::c_void,
+                    as *mut kernel::ffi::c_void,
                 0,
                 i_usx2y_out04_int,
-                usx2y as *mut core::ffi::c_void,
+                usx2y as *mut kernel::ffi::c_void,
             );
             err = usb_urb_ep_type_check((*usx2y).as04.urb[i as usize]);
             if err < 0 {
@@ -488,7 +488,7 @@ pub unsafe extern "C" fn usx2y_in04_init(usx2y: *mut usx2ydev) -> i32 {
             err = -12; // -ENOMEM
             // goto error
         } else {
-            init_waitqueue_head(&mut (*usx2y).in04_wait_queue as *mut _ as *mut core::ffi::c_void);
+            init_waitqueue_head(&mut (*usx2y).in04_wait_queue as *mut _ as *mut kernel::ffi::c_void);
             usb_fill_int_urb(
                 (*usx2y).in04_urb,
                 (*usx2y).dev,
@@ -635,7 +635,7 @@ unsafe extern "C" fn usx2y_create_card(
     }
 
     err = snd_card_new(
-        &(*intf).dev as *const _ as *mut core::ffi::c_void,
+        &(*intf).dev as *const _ as *mut kernel::ffi::c_void,
         INDEX[dev as usize],
         ID[dev as usize],
         ptr::null_mut(),
@@ -651,12 +651,12 @@ unsafe extern "C" fn usx2y_create_card(
     SND_USX2Y_CARD_USED[card_idx as usize] = 1;
     (*card).private_free = Some(snd_usx2y_card_private_free);
     (*usx2y_dev).dev = device;
-    init_waitqueue_head(&mut (*usx2y_dev).prepare_wait_queue as *mut _ as *mut core::ffi::c_void);
+    init_waitqueue_head(&mut (*usx2y_dev).prepare_wait_queue as *mut _ as *mut kernel::ffi::c_void);
     init_waitqueue_head(
-        &mut (*usx2y_dev).us428ctls_wait_queue_head as *mut _ as *mut core::ffi::c_void,
+        &mut (*usx2y_dev).us428ctls_wait_queue_head as *mut _ as *mut kernel::ffi::c_void,
     );
-    mutex_init(&mut (*usx2y_dev).pcm_mutex as *mut _ as *mut core::ffi::c_void);
-    INIT_LIST_HEAD(&mut (*usx2y_dev).midi_list as *mut _ as *mut core::ffi::c_void);
+    mutex_init(&mut (*usx2y_dev).pcm_mutex as *mut _ as *mut kernel::ffi::c_void);
+    INIT_LIST_HEAD(&mut (*usx2y_dev).midi_list as *mut _ as *mut kernel::ffi::c_void);
 
     strscpy(
         (*card).driver.as_mut_ptr(),
@@ -692,7 +692,7 @@ unsafe extern "C" fn snd_usx2y_card_private_free_impl(card: *mut snd_card) {
 unsafe extern "C" fn snd_usx2y_disconnect(intf: *mut usb_interface) {
     let mut card: *mut snd_card;
     let mut usx2y: *mut usx2ydev;
-    let mut p: *mut core::ffi::c_void;
+    let mut p: *mut kernel::ffi::c_void;
 
     card = usb_get_intfdata(intf) as *mut snd_card;
     if card.is_null() {
@@ -709,7 +709,7 @@ unsafe extern "C" fn snd_usx2y_disconnect(intf: *mut usb_interface) {
     //     snd_usbmidi_disconnect(p);
     // }
     if !(*usx2y).us428ctls_sharedmem.is_null() {
-        wake_up(&(*usx2y).us428ctls_wait_queue_head as *const _ as *mut core::ffi::c_void);
+        wake_up(&(*usx2y).us428ctls_wait_queue_head as *const _ as *mut kernel::ffi::c_void);
     }
     snd_card_free_when_closed(card);
 }
@@ -749,7 +749,7 @@ unsafe extern "C" fn snd_usx2y_probe(intf: *mut usb_interface, id: *const usb_de
         return err;
     }
 
-    dev_set_drvdata(&(*intf).dev as *const _ as *mut core::ffi::c_void, card as *mut core::ffi::c_void);
+    dev_set_drvdata(&(*intf).dev as *const _ as *mut kernel::ffi::c_void, card as *mut kernel::ffi::c_void);
     0
 }
 

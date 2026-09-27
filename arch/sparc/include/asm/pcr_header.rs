@@ -2,13 +2,13 @@
 
 #[repr(C)]
 pub struct pcr_ops {
-    pub read_pcr: Option<unsafe extern "C" fn(unsigned_long: ::core::ffi::c_ulong) -> u64>,
+    pub read_pcr: Option<unsafe extern "C" fn(unsigned_long: ::kernel::ffi::c_ulong) -> u64>,
     pub write_pcr:
-        Option<unsafe extern "C" fn(unsigned_long: ::core::ffi::c_ulong, value: u64)>,
-    pub read_pic: Option<unsafe extern "C" fn(unsigned_long: ::core::ffi::c_ulong) -> u64>,
+        Option<unsafe extern "C" fn(unsigned_long: ::kernel::ffi::c_ulong, value: u64)>,
+    pub read_pic: Option<unsafe extern "C" fn(unsigned_long: ::kernel::ffi::c_ulong) -> u64>,
     pub write_pic:
-        Option<unsafe extern "C" fn(unsigned_long: ::core::ffi::c_ulong, value: u64)>,
-    pub nmi_picl_value: Option<unsafe extern "C" fn(nmi_hz: ::core::ffi::c_uint) -> u64>,
+        Option<unsafe extern "C" fn(unsigned_long: ::kernel::ffi::c_ulong, value: u64)>,
+    pub nmi_picl_value: Option<unsafe extern "C" fn(nmi_hz: ::kernel::ffi::c_uint) -> u64>,
     pub pcr_nmi_enable: u64,
     pub pcr_nmi_disable: u64,
 }
@@ -17,10 +17,10 @@ pub struct pcr_ops {
 extern "C" {
     pub static pcr_ops: *const pcr_ops;
 
-    pub fn deferred_pcr_work_irq(irq: ::core::ffi::c_int, regs: *mut pt_regs);
+    pub fn deferred_pcr_work_irq(irq: ::kernel::ffi::c_int, regs: *mut pt_regs);
     pub fn schedule_deferred_pcr_work();
 
-    pub fn pcr_arch_init() -> ::core::ffi::c_int;
+    pub fn pcr_arch_init() -> ::kernel::ffi::c_int;
 }
 
 // External dependency supplied by the surrounding translation unit.

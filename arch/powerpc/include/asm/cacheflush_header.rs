@@ -12,7 +12,7 @@ pub const PG_DCache_CLEAN: usize = PG_arch_1;
 // CONFIG_PPC_BOOK3S_64
 /// Book3s has no ptesync after setting a pte.
 #[inline]
-pub unsafe fn flush_cache_vmap(_start: ::core::ffi::c_ulong, _end: ::core::ffi::c_ulong) {
+pub unsafe fn flush_cache_vmap(_start: ::kernel::ffi::c_ulong, _end: ::kernel::ffi::c_ulong) {
     // asm volatile("ptesync" ::: "memory");
     ::core::arch::asm!("ptesync", options(nostack));
 }
@@ -38,11 +38,11 @@ pub unsafe fn flush_dcache_page(page: *mut page) {
 }
 
 unsafe extern "C" {
-    pub fn flush_icache_range(start: ::core::ffi::c_ulong, stop: ::core::ffi::c_ulong);
+    pub fn flush_icache_range(start: ::kernel::ffi::c_ulong, stop: ::kernel::ffi::c_ulong);
     pub fn flush_icache_user_page(
         vma: *mut vm_area_struct,
         page: *mut page,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         len: i32,
     );
     pub fn flush_dcache_icache_folio(folio: *mut folio);
@@ -57,12 +57,12 @@ unsafe extern "C" {
  * @stop: the stop address (exclusive)
  */
 #[inline]
-pub unsafe fn flush_dcache_range(start: ::core::ffi::c_ulong, stop: ::core::ffi::c_ulong) {
+pub unsafe fn flush_dcache_range(start: ::kernel::ffi::c_ulong, stop: ::kernel::ffi::c_ulong) {
     let shift = l1_dcache_shift();
     let bytes = l1_dcache_bytes();
-    let mut addr = (start & !(bytes - 1)) as *mut ::core::ffi::c_void;
-    let size = stop - addr as ::core::ffi::c_ulong + (bytes - 1);
-    let mut i: ::core::ffi::c_ulong = 0;
+    let mut addr = (start & !(bytes - 1)) as *mut ::kernel::ffi::c_void;
+    let size = stop - addr as ::kernel::ffi::c_ulong + (bytes - 1);
+    let mut i: ::kernel::ffi::c_ulong = 0;
 
     // IS_ENABLED(CONFIG_PPC64)
     if IS_ENABLED_CONFIG_PPC64 {
@@ -71,7 +71,7 @@ pub unsafe fn flush_dcache_range(start: ::core::ffi::c_ulong, stop: ::core::ffi:
 
     while i < (size >> shift) {
         dcbf(addr);
-        addr = (addr as *mut u8).add(bytes as usize) as *mut ::core::ffi::c_void;
+        addr = (addr as *mut u8).add(bytes as usize) as *mut ::kernel::ffi::c_void;
         i += 1;
     }
     mb(); // sync
@@ -79,16 +79,16 @@ pub unsafe fn flush_dcache_range(start: ::core::ffi::c_ulong, stop: ::core::ffi:
 
 /// Write modified data cache blocks out to memory without invalidating them.
 #[inline]
-pub unsafe fn clean_dcache_range(start: ::core::ffi::c_ulong, stop: ::core::ffi::c_ulong) {
+pub unsafe fn clean_dcache_range(start: ::kernel::ffi::c_ulong, stop: ::kernel::ffi::c_ulong) {
     let shift = l1_dcache_shift();
     let bytes = l1_dcache_bytes();
-    let mut addr = (start & !(bytes - 1)) as *mut ::core::ffi::c_void;
-    let size = stop - addr as ::core::ffi::c_ulong + (bytes - 1);
-    let mut i: ::core::ffi::c_ulong = 0;
+    let mut addr = (start & !(bytes - 1)) as *mut ::kernel::ffi::c_void;
+    let size = stop - addr as ::kernel::ffi::c_ulong + (bytes - 1);
+    let mut i: ::kernel::ffi::c_ulong = 0;
 
     while i < (size >> shift) {
         dcbst(addr);
-        addr = (addr as *mut u8).add(bytes as usize) as *mut ::core::ffi::c_void;
+        addr = (addr as *mut u8).add(bytes as usize) as *mut ::kernel::ffi::c_void;
         i += 1;
     }
     mb(); // sync
@@ -97,18 +97,18 @@ pub unsafe fn clean_dcache_range(start: ::core::ffi::c_ulong, stop: ::core::ffi:
 /// Invalidate the D-cache, used by the 8xx to avoid stale data from the CPM.
 #[inline]
 pub unsafe fn invalidate_dcache_range(
-    start: ::core::ffi::c_ulong,
-    stop: ::core::ffi::c_ulong,
+    start: ::kernel::ffi::c_ulong,
+    stop: ::kernel::ffi::c_ulong,
 ) {
     let shift = l1_dcache_shift();
     let bytes = l1_dcache_bytes();
-    let mut addr = (start & !(bytes - 1)) as *mut ::core::ffi::c_void;
-    let size = stop - addr as ::core::ffi::c_ulong + (bytes - 1);
-    let mut i: ::core::ffi::c_ulong = 0;
+    let mut addr = (start & !(bytes - 1)) as *mut ::kernel::ffi::c_void;
+    let size = stop - addr as ::kernel::ffi::c_ulong + (bytes - 1);
+    let mut i: ::kernel::ffi::c_ulong = 0;
 
     while i < (size >> shift) {
         dcbi(addr);
-        addr = (addr as *mut u8).add(bytes as usize) as *mut ::core::ffi::c_void;
+        addr = (addr as *mut u8).add(bytes as usize) as *mut ::kernel::ffi::c_void;
         i += 1;
     }
     mb(); // sync
@@ -117,7 +117,7 @@ pub unsafe fn invalidate_dcache_range(
 // CONFIG_44x
 #[inline]
 pub unsafe fn flush_instruction_cache() {
-    iccci(KERNELBASE as *mut ::core::ffi::c_void);
+    iccci(KERNELBASE as *mut ::kernel::ffi::c_void);
     isync();
 }
 

@@ -28,7 +28,7 @@ static mut initial_table: ebt_replace_kernel = ebt_replace_kernel {
         value[NF_BR_BROUTING] = core::ptr::addr_of_mut!(initial_chain);
         value
     },
-    entries: core::ptr::addr_of_mut!(initial_chain) as *mut core::ffi::c_char,
+    entries: core::ptr::addr_of_mut!(initial_chain) as *mut kernel::ffi::c_char,
 };
 
 static broute_table: ebt_table = ebt_table {
@@ -39,7 +39,7 @@ static broute_table: ebt_table = ebt_table {
 };
 
 unsafe fn ebt_broute(
-    priv_: *mut core::ffi::c_void,
+    priv_: *mut kernel::ffi::c_void,
     skb: *mut sk_buff,
     s: *const nf_hook_state,
 ) -> u32 {
@@ -103,11 +103,11 @@ unsafe fn broute_table_init(net: *mut net) -> i32 {
 }
 
 unsafe fn broute_net_pre_exit(net: *mut net) {
-    ebt_unregister_table_pre_exit(net, b"broute\0".as_ptr() as *const core::ffi::c_char);
+    ebt_unregister_table_pre_exit(net, b"broute\0".as_ptr() as *const kernel::ffi::c_char);
 }
 
 unsafe fn broute_net_exit(net: *mut net) {
-    ebt_unregister_table(net, b"broute\0".as_ptr() as *const core::ffi::c_char);
+    ebt_unregister_table(net, b"broute\0".as_ptr() as *const kernel::ffi::c_char);
 }
 
 static mut broute_net_ops: pernet_operations = pernet_operations {

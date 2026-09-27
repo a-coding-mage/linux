@@ -7,7 +7,7 @@
 #[inline]
 pub unsafe fn arch_exit_to_user_mode_prepare(
     regs: *mut pt_regs,
-    ti_work: ::core::ffi::c_ulong,
+    ti_work: ::kernel::ffi::c_ulong,
 ) {
     if ti_work & _TIF_RISCV_V_DEFER_RESTORE != 0 {
         clear_thread_flag(TIF_RISCV_V_DEFER_RESTORE);
@@ -28,19 +28,19 @@ extern "C" {
 
 #[cfg(CONFIG_RISCV_MISALIGNED)]
 extern "C" {
-    pub fn handle_misaligned_load(regs: *mut pt_regs) -> ::core::ffi::c_int;
-    pub fn handle_misaligned_store(regs: *mut pt_regs) -> ::core::ffi::c_int;
+    pub fn handle_misaligned_load(regs: *mut pt_regs) -> ::kernel::ffi::c_int;
+    pub fn handle_misaligned_store(regs: *mut pt_regs) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_RISCV_MISALIGNED))]
 #[inline]
-pub unsafe fn handle_misaligned_load(_regs: *mut pt_regs) -> ::core::ffi::c_int {
+pub unsafe fn handle_misaligned_load(_regs: *mut pt_regs) -> ::kernel::ffi::c_int {
     -1
 }
 
 #[cfg(not(CONFIG_RISCV_MISALIGNED))]
 #[inline]
-pub unsafe fn handle_misaligned_store(_regs: *mut pt_regs) -> ::core::ffi::c_int {
+pub unsafe fn handle_misaligned_store(_regs: *mut pt_regs) -> ::kernel::ffi::c_int {
     -1
 }
 

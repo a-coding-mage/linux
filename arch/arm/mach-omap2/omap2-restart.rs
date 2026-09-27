@@ -7,7 +7,7 @@
  */
 
 // Dependencies supplied by the surrounding kernel translation.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct clk {
@@ -17,7 +17,7 @@ pub struct clk {
 pub type reboot_mode = i32;
 
 extern "C" {
-    fn clk_get(dev: *mut core::ffi::c_void, id: *const c_char) -> *mut clk;
+    fn clk_get(dev: *mut kernel::ffi::c_void, id: *const c_char) -> *mut clk;
     fn clk_get_rate(clk: *mut clk) -> u32;
     fn clk_set_rate(clk: *mut clk, rate: u32) -> i32;
     fn omap_prm_reset_system();

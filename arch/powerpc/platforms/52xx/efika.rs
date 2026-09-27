@@ -78,7 +78,7 @@ unsafe fn efika_pcisetup() {
     let mut hose: *mut pci_controller;
     let root = of_find_node_by_path(b"/\0".as_ptr() as *const i8);
     if root.is_null() {
-        printk(KERN_WARNING, b"Efika: Unable to find the root node\n\0".as_ptr());
+        printk(c"\x014Efika: Unable to find the root node\n".as_ptr());
         return;
     }
 
@@ -89,25 +89,25 @@ unsafe fn efika_pcisetup() {
     of_node_put(root);
 
     if pcictrl.is_null() {
-        printk(KERN_WARNING, b"Efika: Unable to find the PCI bridge node\n\0".as_ptr());
+        printk(c"\x014Efika: Unable to find the PCI bridge node\n".as_ptr());
         return;
     }
     bus_range = of_get_property(pcictrl, b"bus-range\0".as_ptr() as *const i8, &mut len);
     if bus_range.is_null() || len < 2 * core::mem::size_of::<i32>() as i32 {
-        printk(KERN_WARNING, b"Efika: Can't get bus-range for %pOF\n\0".as_ptr(), pcictrl);
+        printk(c"\x014Efika: Can't get bus-range for %pOF\n".as_ptr(), pcictrl);
         of_node_put(pcictrl);
         return;
     }
     if *bus_range.add(1) == *bus_range {
-        printk(KERN_INFO, b"Efika: PCI bus %d\0".as_ptr(), *bus_range);
+        printk(c"\x016Efika: PCI bus %d".as_ptr(), *bus_range);
     } else {
-        printk(KERN_INFO, b"Efika: PCI buses %d..%d\0".as_ptr(), *bus_range, *bus_range.add(1));
+        printk(c"\x016Efika: PCI buses %d..%d".as_ptr(), *bus_range, *bus_range.add(1));
     }
     printk(b" controlled by %pOF\n\0".as_ptr(), pcictrl);
     printk(b"\n\0".as_ptr());
     hose = pcibios_alloc_controller(pcictrl);
     if hose.is_null() {
-        printk(KERN_WARNING, b"Efika: Can't allocate PCI controller structure for %pOF\n\0".as_ptr(), pcictrl);
+        printk(c"\x014Efika: Can't allocate PCI controller structure for %pOF\n".as_ptr(), pcictrl);
         of_node_put(pcictrl);
         return;
     }

@@ -23,7 +23,7 @@ unsafe extern "C" {
     pub fn iscsi_dbg_trace(
         trace: Option<unsafe extern "C" fn(*mut device, *const va_format, ... )>,
         dev: *mut device,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
         ...,
     );
 }

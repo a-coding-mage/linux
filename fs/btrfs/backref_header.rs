@@ -13,7 +13,7 @@ pub type IterateExtentInodesT = unsafe extern "C" fn(
     offset: u64,
     num_bytes: u64,
     root: u64,
-    ctx: *mut core::ffi::c_void,
+    ctx: *mut kernel::ffi::c_void,
 ) -> i32;
 
 #[repr(C)]
@@ -29,29 +29,29 @@ pub struct BtrfsBackrefWalkCtx {
     pub roots: *mut Ulist,
     pub cache_lookup: Option<unsafe extern "C" fn(
         leaf_bytenr: u64,
-        user_ctx: *mut core::ffi::c_void,
+        user_ctx: *mut kernel::ffi::c_void,
         root_ids_ret: *mut *const u64,
         root_count_ret: *mut i32,
     ) -> bool>,
     pub cache_store: Option<unsafe extern "C" fn(
         leaf_bytenr: u64,
         root_ids: *const Ulist,
-        user_ctx: *mut core::ffi::c_void,
+        user_ctx: *mut kernel::ffi::c_void,
     )>,
     pub indirect_ref_iterator: Option<IterateExtentInodesT>,
     pub check_extent_item: Option<unsafe extern "C" fn(
         bytenr: u64,
         ei: *const BtrfsExtentItem,
         leaf: *const ExtentBuffer,
-        user_ctx: *mut core::ffi::c_void,
+        user_ctx: *mut kernel::ffi::c_void,
     ) -> i32>,
     pub skip_data_ref: Option<unsafe extern "C" fn(
         root: u64,
         ino: u64,
         offset: u64,
-        user_ctx: *mut core::ffi::c_void,
+        user_ctx: *mut kernel::ffi::c_void,
     ) -> bool>,
-    pub user_ctx: *mut core::ffi::c_void,
+    pub user_ctx: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -124,13 +124,13 @@ extern "C" {
         ctx: *mut BtrfsBackrefWalkCtx,
         search_commit_root: bool,
         iterate: Option<IterateExtentInodesT>,
-        user_ctx: *mut core::ffi::c_void,
+        user_ctx: *mut kernel::ffi::c_void,
     ) -> i32;
 
     pub fn iterate_inodes_from_logical(
         logical: u64,
         fs_info: *mut BtrfsFsInfo,
-        ctx: *mut core::ffi::c_void,
+        ctx: *mut kernel::ffi::c_void,
         ignore_offset: bool,
     ) -> i32;
 
@@ -144,9 +144,9 @@ extern "C" {
         name_off: usize,
         eb_in: *mut ExtentBuffer,
         parent: u64,
-        dest: *mut core::ffi::c_char,
+        dest: *mut kernel::ffi::c_char,
         size: u32,
-    ) -> *mut core::ffi::c_char;
+    ) -> *mut kernel::ffi::c_char;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

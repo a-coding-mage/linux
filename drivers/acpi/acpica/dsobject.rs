@@ -176,7 +176,7 @@ pub unsafe fn acpi_ds_init_object_from_op(
         },
         ACPI_TYPE_STRING => {
             (*obj_desc).string.pointer = (*op).common.value.string;
-            (*obj_desc).string.length = libc::strlen((*op).common.value.string) as u32;
+            (*obj_desc).string.length = strlen((*op).common.value.string) as u32;
             (*obj_desc).common.flags |= AOPOBJ_STATIC_POINTER;
         }
         ACPI_TYPE_METHOD => {}

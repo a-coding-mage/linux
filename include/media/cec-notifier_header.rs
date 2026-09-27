@@ -27,7 +27,7 @@ pub struct cec_connector_info;
 extern "C" {
     pub fn cec_notifier_conn_register(
         hdmi_dev: *mut device,
-        port_name: *const core::ffi::c_char,
+        port_name: *const kernel::ffi::c_char,
         conn_info: *const cec_connector_info,
     ) -> *mut cec_notifier;
 
@@ -35,7 +35,7 @@ extern "C" {
 
     pub fn cec_notifier_cec_adap_register(
         hdmi_dev: *mut device,
-        port_name: *const core::ffi::c_char,
+        port_name: *const kernel::ffi::c_char,
         adap: *mut cec_adapter,
     ) -> *mut cec_notifier;
 
@@ -59,7 +59,7 @@ extern "C" {
 #[cfg(not(all(feature = "cec_core_reachable", feature = "cec_notifier")))]
 pub unsafe fn cec_notifier_conn_register_disabled(
     _hdmi_dev: *mut device,
-    _port_name: *const core::ffi::c_char,
+    _port_name: *const kernel::ffi::c_char,
     _conn_info: *const cec_connector_info,
 ) -> *mut cec_notifier {
     // A non-NULL pointer is expected on success.
@@ -72,7 +72,7 @@ pub unsafe fn cec_notifier_conn_unregister_disabled(_n: *mut cec_notifier) {}
 #[cfg(not(all(feature = "cec_core_reachable", feature = "cec_notifier")))]
 pub unsafe fn cec_notifier_cec_adap_register_disabled(
     _hdmi_dev: *mut device,
-    _port_name: *const core::ffi::c_char,
+    _port_name: *const kernel::ffi::c_char,
     _adap: *mut cec_adapter,
 ) -> *mut cec_notifier {
     // A non-NULL pointer is expected on success.

@@ -14,7 +14,7 @@ extern "C" {
     fn alpine_cpu_pm_init();
     fn cpu_logical_map(cpu: u32) -> u32;
     fn alpine_cpu_wakeup(cpu: u32, addr: u32) -> i32;
-    fn pr_err(fmt: *const core::ffi::c_char, ...) -> i32;
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...) -> i32;
 }
 
 type phys_addr_t = usize;
@@ -40,7 +40,7 @@ unsafe extern "C" fn alpine_boot_secondary(cpu: u32, _idle: *mut task_struct) ->
 
     if addr > (u32::MAX as phys_addr_t) {
         // The original kernel format is "%pa" and receives &addr.
-        pr_err(b"FAIL: resume address over 32bit (%pa)\0".as_ptr() as *const core::ffi::c_char, &addr);
+        pr_err(b"FAIL: resume address over 32bit (%pa)\0".as_ptr() as *const kernel::ffi::c_char, &addr);
         return -EINVAL;
     }
 

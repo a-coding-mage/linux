@@ -8,13 +8,13 @@
 // Kernel headers and build-time definitions are supplied by the surrounding
 // Rust kernel environment.
 
-pub unsafe fn module_emit_got_entry(mod_: *mut module, val: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub unsafe fn module_emit_got_entry(mod_: *mut module, val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     let got_sec: *mut mod_section = &mut (*mod_).arch.got;
     let i = (*got_sec).num_entries as usize;
     let mut got: *mut got_entry = get_got_entry(val, got_sec);
 
     if !got.is_null() {
-        return got as ::core::ffi::c_ulong;
+        return got as ::kernel::ffi::c_ulong;
     }
 
     /* There is no duplicate entry, create a new one */
@@ -24,10 +24,10 @@ pub unsafe fn module_emit_got_entry(mod_: *mut module, val: ::core::ffi::c_ulong
     (*got_sec).num_entries += 1;
     BUG_ON((*got_sec).num_entries > (*got_sec).max_entries);
 
-    got.add(i) as ::core::ffi::c_ulong
+    got.add(i) as ::kernel::ffi::c_ulong
 }
 
-pub unsafe fn module_emit_plt_entry(mod_: *mut module, val: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+pub unsafe fn module_emit_plt_entry(mod_: *mut module, val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     let got_plt_sec: *mut mod_section = &mut (*mod_).arch.got_plt;
     let mut got_plt: *mut got_entry;
     let plt_sec: *mut mod_section = &mut (*mod_).arch.plt;
@@ -35,7 +35,7 @@ pub unsafe fn module_emit_plt_entry(mod_: *mut module, val: ::core::ffi::c_ulong
     let i = (*plt_sec).num_entries as usize;
 
     if !plt.is_null() {
-        return plt as ::core::ffi::c_ulong;
+        return plt as ::kernel::ffi::c_ulong;
     }
 
     /* There is no duplicate entry, create a new one */
@@ -44,18 +44,18 @@ pub unsafe fn module_emit_plt_entry(mod_: *mut module, val: ::core::ffi::c_ulong
     plt = (*(*plt_sec).shdr).sh_addr as *mut plt_entry;
     *plt.add(i) = emit_plt_entry(
         val,
-        plt.add(i) as ::core::ffi::c_ulong,
-        got_plt.add(i) as ::core::ffi::c_ulong,
+        plt.add(i) as ::kernel::ffi::c_ulong,
+        got_plt.add(i) as ::kernel::ffi::c_ulong,
     );
 
     (*plt_sec).num_entries += 1;
     (*got_plt_sec).num_entries += 1;
     BUG_ON((*plt_sec).num_entries > (*plt_sec).max_entries);
 
-    plt.add(i) as ::core::ffi::c_ulong
+    plt.add(i) as ::kernel::ffi::c_ulong
 }
 
-unsafe extern "C" fn cmp_rela(a: *const ::core::ffi::c_void, b: *const ::core::ffi::c_void) -> i32 {
+unsafe extern "C" fn cmp_rela(a: *const ::kernel::ffi::c_void, b: *const ::kernel::ffi::c_void) -> i32 {
     let x = a as *const Elf_Rela;
     let y = b as *const Elf_Rela;
 
@@ -73,8 +73,8 @@ unsafe fn duplicate_rela(rela: *const Elf_Rela, idx: i32) -> bool {
      * that, if a duplicate entry exists, it must be in the preceding slot.
      */
     idx > 0 && cmp_rela(
-        rela.add(idx as usize) as *const ::core::ffi::c_void,
-        rela.add((idx - 1) as usize) as *const ::core::ffi::c_void,
+        rela.add(idx as usize) as *const ::kernel::ffi::c_void,
+        rela.add((idx - 1) as usize) as *const ::kernel::ffi::c_void,
     ) == 0
 }
 
@@ -107,7 +107,7 @@ unsafe fn rela_needs_plt_got_entry(rela: *const Elf_Rela) -> bool {
 pub unsafe fn module_frob_arch_sections(
     ehdr: *mut Elf_Ehdr,
     sechdrs: *mut Elf_Shdr,
-    secstrings: *mut ::core::ffi::c_char,
+    secstrings: *mut ::kernel::ffi::c_char,
     mod_: *mut module,
 ) -> i32 {
     let mut num_scratch_relas: usize = 0;
@@ -119,11 +119,11 @@ pub unsafe fn module_frob_arch_sections(
     /* Find the empty .got and .plt sections. */
     for i in 0..(*ehdr).e_shnum as usize {
         let name = secstrings.add((*sechdrs.add(i)).sh_name as usize);
-        if strcmp(name, b".plt\0".as_ptr() as *const ::core::ffi::c_char) == 0 {
+        if strcmp(name, b".plt\0".as_ptr() as *const ::kernel::ffi::c_char) == 0 {
             (*mod_).arch.plt.shdr = sechdrs.add(i);
-        } else if strcmp(name, b".got\0".as_ptr() as *const ::core::ffi::c_char) == 0 {
+        } else if strcmp(name, b".got\0".as_ptr() as *const ::kernel::ffi::c_char) == 0 {
             (*mod_).arch.got.shdr = sechdrs.add(i);
-        } else if strcmp(name, b".got.plt\0".as_ptr() as *const ::core::ffi::c_char) == 0 {
+        } else if strcmp(name, b".got.plt\0".as_ptr() as *const ::kernel::ffi::c_char) == 0 {
             (*mod_).arch.got_plt.shdr = sechdrs.add(i);
         }
     }
@@ -156,7 +156,7 @@ pub unsafe fn module_frob_arch_sections(
             scratch_size = scratch_size_needed;
             let new_scratch = kvrealloc(scratch, scratch_size, GFP_KERNEL);
             if new_scratch.is_null() {
-                kvfree(scratch as *mut ::core::ffi::c_void);
+                kvfree(scratch as *mut ::kernel::ffi::c_void);
                 return -ENOMEM;
             }
             scratch = new_scratch;
@@ -171,9 +171,9 @@ pub unsafe fn module_frob_arch_sections(
     }
 
     if !scratch.is_null() {
-        sort(scratch as *mut ::core::ffi::c_void, num_scratch_relas, core::mem::size_of::<Elf_Rela>(), Some(cmp_rela), core::ptr::null_mut());
+        sort(scratch as *mut ::kernel::ffi::c_void, num_scratch_relas, core::mem::size_of::<Elf_Rela>(), Some(cmp_rela), core::ptr::null_mut());
         count_max_entries(scratch, num_scratch_relas, &mut num_plts, &mut num_gots);
-        kvfree(scratch as *mut ::core::ffi::c_void);
+        kvfree(scratch as *mut ::kernel::ffi::c_void);
     }
 
     (*(*mod_).arch.plt.shdr).sh_type = SHT_NOBITS;

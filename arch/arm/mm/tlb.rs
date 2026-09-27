@@ -3,7 +3,7 @@
 // Author: Ard Biesheuvel <ardb@google.com>
 
 // C dependencies supplied by the surrounding kernel translation unit.
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 #[repr(C)]
 pub struct vm_area_struct {

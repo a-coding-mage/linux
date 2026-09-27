@@ -5,18 +5,18 @@
  */
 /* Dependencies supplied by the corresponding Linux networking headers. */
 
-pub const LLC_EVENT: ::core::ffi::c_int = 1;
-pub const LLC_PACKET: ::core::ffi::c_int = 2;
+pub const LLC_EVENT: ::kernel::ffi::c_int = 1;
+pub const LLC_PACKET: ::kernel::ffi::c_int = 2;
 
-pub const LLC2_P_TIME: ::core::ffi::c_int = 2;
-pub const LLC2_ACK_TIME: ::core::ffi::c_int = 1;
-pub const LLC2_REJ_TIME: ::core::ffi::c_int = 3;
-pub const LLC2_BUSY_TIME: ::core::ffi::c_int = 3;
+pub const LLC2_P_TIME: ::kernel::ffi::c_int = 2;
+pub const LLC2_ACK_TIME: ::kernel::ffi::c_int = 1;
+pub const LLC2_REJ_TIME: ::kernel::ffi::c_int = 3;
+pub const LLC2_BUSY_TIME: ::kernel::ffi::c_int = 3;
 
 #[repr(C)]
 pub struct llc_timer {
     pub timer: timer_list,
-    pub expire: ::core::ffi::c_ulong, /* timer expire time */
+    pub expire: ::kernel::ffi::c_ulong, /* timer expire time */
 }
 
 #[repr(C)]
@@ -82,19 +82,19 @@ pub unsafe fn llc_backlog_type(skb: *mut sk_buff) -> i8 {
 }
 
 extern "C" {
-    pub fn llc_sk_alloc(net: *mut net, family: ::core::ffi::c_int, priority: gfp_t,
-                        prot: *mut proto, kern: ::core::ffi::c_int) -> *mut sock;
+    pub fn llc_sk_alloc(net: *mut net, family: ::kernel::ffi::c_int, priority: gfp_t,
+                        prot: *mut proto, kern: ::kernel::ffi::c_int) -> *mut sock;
     pub fn llc_sk_stop_all_timers(sk: *mut sock, sync: bool);
     pub fn llc_sk_free(sk: *mut sock);
     pub fn llc_sk_reset(sk: *mut sock);
 
     /* Access to a connection */
-    pub fn llc_conn_state_process(sk: *mut sock, skb: *mut sk_buff) -> ::core::ffi::c_int;
+    pub fn llc_conn_state_process(sk: *mut sock, skb: *mut sk_buff) -> ::kernel::ffi::c_int;
     pub fn llc_conn_send_pdu(sk: *mut sock, skb: *mut sk_buff);
     pub fn llc_conn_rtn_pdu(sk: *mut sock, skb: *mut sk_buff);
     pub fn llc_conn_resend_i_pdu_as_cmd(sk: *mut sock, nr: u8, first_p_bit: u8);
     pub fn llc_conn_resend_i_pdu_as_rsp(sk: *mut sock, nr: u8, first_f_bit: u8);
-    pub fn llc_conn_remove_acked_pdus(sk: *mut sock, nr: u8, how_many_unacked: *mut u16) -> ::core::ffi::c_int;
+    pub fn llc_conn_remove_acked_pdus(sk: *mut sock, nr: u8, how_many_unacked: *mut u16) -> ::kernel::ffi::c_int;
     pub fn llc_lookup_established(sap: *mut llc_sap, daddr: *mut llc_addr,
                                   laddr: *mut llc_addr, net: *const net) -> *mut sock;
     pub fn llc_sap_add_socket(sap: *mut llc_sap, sk: *mut sock);

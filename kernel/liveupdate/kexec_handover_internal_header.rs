@@ -17,37 +17,37 @@ pub struct kho_debugfs {}
 
 extern "C" {
     pub static mut kho_scratch: *mut kho_scratch;
-    pub static mut kho_scratch_cnt: core::ffi::c_uint;
+    pub static mut kho_scratch_cnt: kernel::ffi::c_uint;
 }
 
 #[cfg(CONFIG_KEXEC_HANDOVER_DEBUGFS)]
 extern "C" {
-    pub fn kho_debugfs_init() -> core::ffi::c_int;
-    pub fn kho_in_debugfs_init(dbg: *mut kho_debugfs, fdt: *const core::ffi::c_void);
-    pub fn kho_out_debugfs_init(dbg: *mut kho_debugfs) -> core::ffi::c_int;
+    pub fn kho_debugfs_init() -> kernel::ffi::c_int;
+    pub fn kho_in_debugfs_init(dbg: *mut kho_debugfs, fdt: *const kernel::ffi::c_void);
+    pub fn kho_out_debugfs_init(dbg: *mut kho_debugfs) -> kernel::ffi::c_int;
     pub fn kho_debugfs_blob_add(
         dbg: *mut kho_debugfs,
-        name: *const core::ffi::c_char,
-        blob: *const core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        blob: *const kernel::ffi::c_void,
         size: usize,
         root: bool,
-    ) -> core::ffi::c_int;
-    pub fn kho_debugfs_blob_remove(dbg: *mut kho_debugfs, blob: *mut core::ffi::c_void);
+    ) -> kernel::ffi::c_int;
+    pub fn kho_debugfs_blob_remove(dbg: *mut kho_debugfs, blob: *mut kernel::ffi::c_void);
 }
 
 #[cfg(not(CONFIG_KEXEC_HANDOVER_DEBUGFS))]
 #[inline]
-pub fn kho_debugfs_init() -> core::ffi::c_int {
+pub fn kho_debugfs_init() -> kernel::ffi::c_int {
     0
 }
 
 #[cfg(not(CONFIG_KEXEC_HANDOVER_DEBUGFS))]
 #[inline]
-pub fn kho_in_debugfs_init(_dbg: *mut kho_debugfs, _fdt: *const core::ffi::c_void) {}
+pub fn kho_in_debugfs_init(_dbg: *mut kho_debugfs, _fdt: *const kernel::ffi::c_void) {}
 
 #[cfg(not(CONFIG_KEXEC_HANDOVER_DEBUGFS))]
 #[inline]
-pub fn kho_out_debugfs_init(_dbg: *mut kho_debugfs) -> core::ffi::c_int {
+pub fn kho_out_debugfs_init(_dbg: *mut kho_debugfs) -> kernel::ffi::c_int {
     0
 }
 
@@ -55,16 +55,16 @@ pub fn kho_out_debugfs_init(_dbg: *mut kho_debugfs) -> core::ffi::c_int {
 #[inline]
 pub fn kho_debugfs_blob_add(
     _dbg: *mut kho_debugfs,
-    _name: *const core::ffi::c_char,
-    _blob: *const core::ffi::c_void,
+    _name: *const kernel::ffi::c_char,
+    _blob: *const kernel::ffi::c_void,
     _size: usize,
     _root: bool,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     0
 }
 
 #[cfg(not(CONFIG_KEXEC_HANDOVER_DEBUGFS))]
 #[inline]
-pub fn kho_debugfs_blob_remove(_dbg: *mut kho_debugfs, _blob: *mut core::ffi::c_void) {}
+pub fn kho_debugfs_blob_remove(_dbg: *mut kho_debugfs, _blob: *mut kernel::ffi::c_void) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

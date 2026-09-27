@@ -9,14 +9,14 @@
 /// Payload captured by the `vm_unmapped_area` trace event.
 #[repr(C)]
 pub struct VmUnmappedAreaEntry {
-    pub addr: ::core::ffi::c_ulong,
-    pub total_vm: ::core::ffi::c_ulong,
-    pub flags: ::core::ffi::c_ulong,
-    pub length: ::core::ffi::c_ulong,
-    pub low_limit: ::core::ffi::c_ulong,
-    pub high_limit: ::core::ffi::c_ulong,
-    pub align_mask: ::core::ffi::c_ulong,
-    pub align_offset: ::core::ffi::c_ulong,
+    pub addr: ::kernel::ffi::c_ulong,
+    pub total_vm: ::kernel::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
+    pub length: ::kernel::ffi::c_ulong,
+    pub low_limit: ::kernel::ffi::c_ulong,
+    pub high_limit: ::kernel::ffi::c_ulong,
+    pub align_mask: ::kernel::ffi::c_ulong,
+    pub align_offset: ::kernel::ffi::c_ulong,
 }
 
 /// Payload captured by the `exit_mmap` trace event.
@@ -33,7 +33,7 @@ pub struct ExitMmapEntry {
 #[inline]
 pub unsafe fn vm_unmapped_area_fast_assign(
     entry: *mut VmUnmappedAreaEntry,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     info: *const crate::vm_unmapped_area_info,
     current_mm: *const crate::mm_struct,
 ) {
@@ -52,22 +52,22 @@ pub unsafe fn vm_unmapped_area_fast_assign(
 pub unsafe fn vm_unmapped_area_print_values(
     entry: *const VmUnmappedAreaEntry,
 ) -> (
-    ::core::ffi::c_ulong,
-    ::core::ffi::c_long,
-    ::core::ffi::c_ulong,
-    ::core::ffi::c_ulong,
-    ::core::ffi::c_ulong,
-    ::core::ffi::c_ulong,
-    ::core::ffi::c_ulong,
-    ::core::ffi::c_ulong,
-    ::core::ffi::c_ulong,
+    ::kernel::ffi::c_ulong,
+    ::kernel::ffi::c_long,
+    ::kernel::ffi::c_ulong,
+    ::kernel::ffi::c_ulong,
+    ::kernel::ffi::c_ulong,
+    ::kernel::ffi::c_ulong,
+    ::kernel::ffi::c_ulong,
+    ::kernel::ffi::c_ulong,
+    ::kernel::ffi::c_ulong,
 ) {
     let addr = (*entry).addr;
     // IS_ERR_VALUE(addr) is the kernel's unsigned-long error-pointer test.
-    let is_err = addr >= (-(crate::MAX_ERRNO as isize) as ::core::ffi::c_ulong);
+    let is_err = addr >= (-(crate::MAX_ERRNO as isize) as ::kernel::ffi::c_ulong);
     (
         if is_err { 0 } else { addr },
-        if is_err { addr as ::core::ffi::c_long } else { 0 },
+        if is_err { addr as ::kernel::ffi::c_long } else { 0 },
         (*entry).total_vm,
         (*entry).flags,
         (*entry).length,

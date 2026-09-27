@@ -9,7 +9,7 @@
 
 const MAX_BUF_SZ: usize = PAGE_SIZE;
 
-unsafe fn read_mcd_tag(addr: ::core::ffi::c_ulong) -> i32 {
+unsafe fn read_mcd_tag(addr: ::kernel::ffi::c_ulong) -> i32 {
     let mut err: isize;
     let mut ver: i32;
 
@@ -59,7 +59,7 @@ unsafe fn adi_read(
     offset = (*offp) * adi_blksize();
 
     while bytes_read < count {
-        ret = read_mcd_tag(offset as ::core::ffi::c_ulong) as isize;
+        ret = read_mcd_tag(offset as ::kernel::ffi::c_ulong) as isize;
         if ret < 0 {
             kfree(ver_buf);
             return ret;
@@ -88,7 +88,7 @@ unsafe fn adi_read(
     ret
 }
 
-unsafe fn set_mcd_tag(addr: ::core::ffi::c_ulong, ver: u8) -> i32 {
+unsafe fn set_mcd_tag(addr: ::kernel::ffi::c_ulong, ver: u8) -> i32 {
     let mut err: isize;
 
     core::arch::asm!(
@@ -139,7 +139,7 @@ unsafe fn adi_write(
         }
 
         for i in 0..ver_buf_sz {
-            ret = set_mcd_tag(offset as ::core::ffi::c_ulong, *ver_buf.add(i)) as isize;
+            ret = set_mcd_tag(offset as ::kernel::ffi::c_ulong, *ver_buf.add(i)) as isize;
             if ret < 0 { break; }
             offset += adi_blksize();
         }

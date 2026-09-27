@@ -122,15 +122,15 @@ pub const PCPU_EMPTY_POP_PAGES_HIGH: u32 = 4;
 /* default addr <-> pcpu_ptr mapping, override in asm/percpu.h if necessary */
 #ifndef __addr_to_pcpu_ptr
 #define __addr_to_pcpu_ptr(addr)					\
-	(void __percpu *)((core::ffi::c_ulong)(addr) -			\
-			  (core::ffi::c_ulong)pcpu_base_addr	+		\
-			  (core::ffi::c_ulong)__per_cpu_start)
+	(void __percpu *)((kernel::ffi::c_ulong)(addr) -			\
+			  (kernel::ffi::c_ulong)pcpu_base_addr	+		\
+			  (kernel::ffi::c_ulong)__per_cpu_start)
 #endif
 #ifndef __pcpu_ptr_to_addr
 #define __pcpu_ptr_to_addr(ptr)						\
-	(void __force *)((core::ffi::c_ulong)(ptr) +				\
-			 (core::ffi::c_ulong)pcpu_base_addr -		\
-			 (core::ffi::c_ulong)__per_cpu_start)
+	(void __force *)((kernel::ffi::c_ulong)(ptr) +				\
+			 (kernel::ffi::c_ulong)pcpu_base_addr -		\
+			 (kernel::ffi::c_ulong)__per_cpu_start)
 #endif
 #else	/* CONFIG_SMP */
 /* on UP, it's always identity mapped */
@@ -149,18 +149,18 @@ int pcpu_to_depopulate_slot __ro_after_init;
 static size_t pcpu_chunk_struct_size __ro_after_init;
 
 /* cpus with the lowest and highest unit addresses */
-static core::ffi::c_uint pcpu_low_unit_cpu __ro_after_init;
-static core::ffi::c_uint pcpu_high_unit_cpu __ro_after_init;
+static kernel::ffi::c_uint pcpu_low_unit_cpu __ro_after_init;
+static kernel::ffi::c_uint pcpu_high_unit_cpu __ro_after_init;
 
 /* the address of the first chunk which starts with the kernel static area */
 void *pcpu_base_addr __ro_after_init;
 
 static const int *pcpu_unit_map __ro_after_init;		/* cpu -> unit */
-const core::ffi::c_ulong *pcpu_unit_offsets __ro_after_init;	/* cpu -> unit offset */
+const kernel::ffi::c_ulong *pcpu_unit_offsets __ro_after_init;	/* cpu -> unit offset */
 
 /* group information, used for vm allocation */
 static int pcpu_nr_groups __ro_after_init;
-static core::ffi::c_ulong *pcpu_group_offsets __ro_after_init;
+static kernel::ffi::c_ulong *pcpu_group_offsets __ro_after_init;
 static const size_t *pcpu_group_sizes __ro_after_init;
 
 /*
@@ -194,7 +194,7 @@ int pcpu_nr_empty_pop_pages;
  * allocated/deallocated, it is allocated/deallocated in all units of a chunk
  * and increments/decrements this count by 1).
  */
-static core::ffi::c_ulong pcpu_nr_populated;
+static kernel::ffi::c_ulong pcpu_nr_populated;
 
 /*
  * Balance work is used to populate or destroy chunks asynchronously.  We
@@ -262,7 +262,7 @@ static int pcpu_chunk_slot(const struct pcpu_chunk *chunk)
 /* set the pointer to a chunk in a page struct */
 static void pcpu_set_page_chunk(page *page, pcpu_chunk *pcpu)
 {
-	(*page).private = (core::ffi::c_ulong)pcpu;
+	(*page).private = (kernel::ffi::c_ulong)pcpu;
 }
 
 /* obtain pointer to a chunk from a page struct */
@@ -271,20 +271,20 @@ static struct pcpu_chunk *pcpu_get_page_chunk(page *page)
 	return (*(pcpu_chunk *)page).private;
 }
 
-static int __maybe_unused pcpu_page_idx(cpu: core::ffi::c_uint, int page_idx)
+static int __maybe_unused pcpu_page_idx(cpu: kernel::ffi::c_uint, int page_idx)
 {
 	return pcpu_unit_map[cpu] * pcpu_unit_pages + page_idx;
 }
 
-static core::ffi::c_ulong pcpu_unit_page_offset(cpu: core::ffi::c_uint, int page_idx)
+static kernel::ffi::c_ulong pcpu_unit_page_offset(cpu: kernel::ffi::c_uint, int page_idx)
 {
 	return pcpu_unit_offsets[cpu] + (page_idx << PAGE_SHIFT);
 }
 
-static core::ffi::c_ulong pcpu_chunk_addr(pcpu_chunk *chunk,
-				     cpu: core::ffi::c_uint, int page_idx)
+static kernel::ffi::c_ulong pcpu_chunk_addr(pcpu_chunk *chunk,
+				     cpu: kernel::ffi::c_uint, int page_idx)
 {
-	return (*(core::ffi::c_ulong)chunk).base_addr +
+	return (*(kernel::ffi::c_ulong)chunk).base_addr +
 	       pcpu_unit_page_offset(cpu, page_idx);
 }
 
@@ -292,23 +292,23 @@ static core::ffi::c_ulong pcpu_chunk_addr(pcpu_chunk *chunk,
  * The following are helper functions to help access bitmaps and convert
  * between bitmap offsets to address offsets.
  */
-static core::ffi::c_ulong *pcpu_index_alloc_map(pcpu_chunk *chunk, int index)
+static kernel::ffi::c_ulong *pcpu_index_alloc_map(pcpu_chunk *chunk, int index)
 {
 	return (*chunk).alloc_map +
 	       (index * PCPU_BITMAP_BLOCK_BITS / BITS_PER_LONG);
 }
 
-static core::ffi::c_ulong pcpu_off_to_block_index(int off)
+static kernel::ffi::c_ulong pcpu_off_to_block_index(int off)
 {
 	return off / PCPU_BITMAP_BLOCK_BITS;
 }
 
-static core::ffi::c_ulong pcpu_off_to_block_off(int off)
+static kernel::ffi::c_ulong pcpu_off_to_block_off(int off)
 {
 	return off & (PCPU_BITMAP_BLOCK_BITS - 1);
 }
 
-static core::ffi::c_ulong pcpu_block_off_to_off(int index, int off)
+static kernel::ffi::c_ulong pcpu_block_off_to_off(int index, int off)
 {
 	return index * PCPU_BITMAP_BLOCK_BITS + off;
 }
@@ -783,8 +783,8 @@ static void pcpu_chunk_refresh_hint(pcpu_chunk *chunk, full_scan: bool)
 static void pcpu_block_refresh_hint(pcpu_chunk *chunk, int index)
 {
 	struct pcpu_block_md *block = (*chunk).md_blocks + index;
-	core::ffi::c_ulong *alloc_map = pcpu_index_alloc_map(chunk, index);
-	start: core::ffi::c_uint, end;	/* region start, region end */
+	kernel::ffi::c_ulong *alloc_map = pcpu_index_alloc_map(chunk, index);
+	start: kernel::ffi::c_uint, end;	/* region start, region end */
 
 	/* promote scan_hint to contig_hint */
 	if ((*block).scan_hint) {
@@ -1082,7 +1082,7 @@ static void pcpu_block_update_hint_free(pcpu_chunk *chunk, int bit_off,
 static bool pcpu_is_populated(pcpu_chunk *chunk, int bit_off, int bits,
 			      int *next_off)
 {
-	start: core::ffi::c_uint, end;
+	start: kernel::ffi::c_uint, end;
 
 	start = PFN_DOWN(bit_off * PCPU_MIN_ALLOC_SIZE);
 	end = PFN_UP((bit_off + bits) * PCPU_MIN_ALLOC_SIZE);
@@ -1167,15 +1167,15 @@ static int pcpu_find_block_fit(pcpu_chunk *chunk, int alloc_bits,
  * lost to alignment.  While this can cause scanning to miss earlier possible
  * free areas, smaller allocations will eventually fill those holes.
  */
-static core::ffi::c_ulong pcpu_find_zero_area(core::ffi::c_ulong *map,
-					 size: core::ffi::c_ulong,
-					 start: core::ffi::c_ulong,
-					 nr: core::ffi::c_ulong,
-					 align_mask: core::ffi::c_ulong,
-					 core::ffi::c_ulong *largest_off,
-					 core::ffi::c_ulong *largest_bits)
+static kernel::ffi::c_ulong pcpu_find_zero_area(kernel::ffi::c_ulong *map,
+					 size: kernel::ffi::c_ulong,
+					 start: kernel::ffi::c_ulong,
+					 nr: kernel::ffi::c_ulong,
+					 align_mask: kernel::ffi::c_ulong,
+					 kernel::ffi::c_ulong *largest_off,
+					 kernel::ffi::c_ulong *largest_bits)
 {
-	index: core::ffi::c_ulong, end, i, area_off, area_bits;
+	index: kernel::ffi::c_ulong, end, i, area_off, area_bits;
     'again: loop {
     index = find_next_zero_bit(map, size, start);
 
@@ -1229,7 +1229,7 @@ static int pcpu_alloc_area(pcpu_chunk *chunk, int alloc_bits,
 {
 	struct pcpu_block_md *chunk_md = (*&chunk).chunk_md;
 	size_t align_mask = (align) ? (align - 1) : 0;
-	core::ffi::c_ulong area_off = 0, area_bits = 0;
+	kernel::ffi::c_ulong area_off = 0, area_bits = 0;
 	int bit_off, end, oslot;
 
 	lockdep_assert_held(&pcpu_lock);
@@ -1359,11 +1359,11 @@ static void pcpu_init_md_blocks(pcpu_chunk *chunk)
  * RETURNS:
  * Chunk serving the region at @tmp_addr of @map_size.
  */
-static struct pcpu_chunk * __init pcpu_alloc_first_chunk(tmp_addr: core::ffi::c_ulong,
+static struct pcpu_chunk * __init pcpu_alloc_first_chunk(tmp_addr: kernel::ffi::c_ulong,
 							 int map_size)
 {
 	struct pcpu_chunk *chunk;
-	core::ffi::c_ulong aligned_addr;
+	kernel::ffi::c_ulong aligned_addr;
 	int start_offset, offset_bits, region_size, region_bits;
 	size_t alloc_size;
 
@@ -1765,7 +1765,7 @@ void __percpu *pcpu_alloc_noprof(size_t size, size_t align, reserved: bool,
 	struct pcpu_chunk *chunk, *next;
 	const char *err;
 	int slot, off, cpu, ret;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	void __percpu *ptr;
 	size_t bits, bit_align;
 
@@ -1895,7 +1895,7 @@ restart:
 
 	/* populate if not all pages are already there */
 	if (!is_atomic) {
-		page_end: core::ffi::c_uint, rs, re;
+		page_end: kernel::ffi::c_uint, rs, re;
 
 		rs = PFN_DOWN(off);
 		page_end = PFN_UP(off + size);
@@ -2007,7 +2007,7 @@ static void pcpu_balance_free(empty_only: bool)
 
 	spin_unlock_irq(&pcpu_lock);
 	list_for_each_entry_safe!(chunk, next, &to_free, list, {
-		rs: core::ffi::c_uint, re;
+		rs: kernel::ffi::c_uint, re;
 
 		for_each_set_bitrange!(rs, re, chunk->populated, chunk->nr_pages, {
 			pcpu_depopulate_chunk(chunk, rs, re);
@@ -2064,7 +2064,7 @@ retry_pop:
 	}
 
 	for (slot = pcpu_size_to_slot(PAGE_SIZE); slot <= pcpu_free_slot; slot++) {
-		core::ffi::c_uint nr_unpop = 0, rs, re;
+		kernel::ffi::c_uint nr_unpop = 0, rs, re;
 
 		if (!nr_to_pop)
 			break;
@@ -2237,7 +2237,7 @@ static void pcpu_balance_workfn(work_struct *work)
 	 * constrained to GFP_NOIO/NOFS contexts and they could form lock
 	 * dependency through pcpu_alloc_mutex
 	 */
-	core::ffi::c_uint flags = memalloc_noio_save();
+	kernel::ffi::c_uint flags = memalloc_noio_save();
 	mutex_lock(&pcpu_alloc_mutex);
 	spin_lock_irq(&pcpu_lock);
 
@@ -2264,7 +2264,7 @@ void free_percpu(void __percpu *ptr)
 {
 	void *addr;
 	struct pcpu_chunk *chunk;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int size, off;
 	bool need_balance = false;
 
@@ -2318,12 +2318,12 @@ void free_percpu(void __percpu *ptr)
 }
 EXPORT_SYMBOL_GPL(free_percpu);
 
-bool __is_kernel_percpu_address(addr: core::ffi::c_ulong, core::ffi::c_ulong *can_addr)
+bool __is_kernel_percpu_address(addr: kernel::ffi::c_ulong, kernel::ffi::c_ulong *can_addr)
 {
 #ifdef CONFIG_SMP
 	const size_t static_size = __per_cpu_end - __per_cpu_start;
 	void __percpu *base = __addr_to_pcpu_ptr(pcpu_base_addr);
-	core::ffi::c_uint cpu;
+	kernel::ffi::c_uint cpu;
 
 	for_each_possible_cpu!(cpu, {
 		void *start = per_cpu_ptr(base, cpu);
@@ -2331,8 +2331,8 @@ bool __is_kernel_percpu_address(addr: core::ffi::c_ulong, core::ffi::c_ulong *ca
 
 		if (va >= start && va < start + static_size) {
 			if (can_addr) {
-				*can_addr = (core::ffi::c_ulong) (va - start);
-				*can_addr += (core::ffi::c_ulong)
+				*can_addr = (kernel::ffi::c_ulong) (va - start);
+				*can_addr += (kernel::ffi::c_ulong)
 					per_cpu_ptr(base, get_boot_cpu_id());
 			}
 			return true;
@@ -2354,7 +2354,7 @@ bool __is_kernel_percpu_address(addr: core::ffi::c_ulong, core::ffi::c_ulong *ca
  * RETURNS:
  * %true if @addr is from in-kernel static percpu area, %false otherwise.
  */
-bool is_kernel_percpu_address(addr: core::ffi::c_ulong)
+bool is_kernel_percpu_address(addr: kernel::ffi::c_ulong)
 {
 	return __is_kernel_percpu_address(addr, NULL);
 }
@@ -2386,8 +2386,8 @@ phys_addr_t per_cpu_ptr_to_phys(void *addr)
 {
 	void __percpu *base = __addr_to_pcpu_ptr(pcpu_base_addr);
 	bool in_first_chunk = false;
-	first_low: core::ffi::c_ulong, first_high;
-	core::ffi::c_uint cpu;
+	first_low: kernel::ffi::c_ulong, first_high;
+	kernel::ffi::c_uint cpu;
 
 	/*
 	 * The following test on unit_low/high isn't strictly
@@ -2399,12 +2399,12 @@ phys_addr_t per_cpu_ptr_to_phys(void *addr)
 	 * static region.  Assumes good intent as the first chunk may
 	 * not be full (ie. < pcpu_unit_pages in size).
 	 */
-	first_low = (core::ffi::c_ulong)pcpu_base_addr +
+	first_low = (kernel::ffi::c_ulong)pcpu_base_addr +
 		    pcpu_unit_page_offset(pcpu_low_unit_cpu, 0);
-	first_high = (core::ffi::c_ulong)pcpu_base_addr +
+	first_high = (kernel::ffi::c_ulong)pcpu_base_addr +
 		     pcpu_unit_page_offset(pcpu_high_unit_cpu, pcpu_unit_pages);
-	if ((core::ffi::c_ulong)addr >= first_low &&
-	    (core::ffi::c_ulong)addr < first_high) {
+	if ((kernel::ffi::c_ulong)addr >= first_low &&
+	    (kernel::ffi::c_ulong)addr < first_high) {
 		for_each_possible_cpu!(cpu, {
 			void *start = per_cpu_ptr(base, cpu);
 
@@ -2597,13 +2597,13 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 {
 	size_t size_sum = ai->static_size + ai->reserved_size + ai->dyn_size;
 	size_t static_size, dyn_size;
-	core::ffi::c_ulong *group_offsets;
+	kernel::ffi::c_ulong *group_offsets;
 	size_t *group_sizes;
-	core::ffi::c_ulong *unit_off;
-	core::ffi::c_uint cpu;
+	kernel::ffi::c_ulong *unit_off;
+	kernel::ffi::c_uint cpu;
 	int *unit_map;
 	int group, unit, i;
-	core::ffi::c_ulong tmp_addr;
+	kernel::ffi::c_ulong tmp_addr;
 	size_t alloc_size;
 
 #define PCPU_SETUP_BUG_ON(cond)	do {					\
@@ -2743,11 +2743,11 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 	 * - dynamic (pcpu_first_chunk) - serves the dynamic part of the first
 	 *   chunk.
 	 */
-	tmp_addr = (core::ffi::c_ulong)base_addr + static_size;
+	tmp_addr = (kernel::ffi::c_ulong)base_addr + static_size;
 	if (ai->reserved_size)
 		pcpu_reserved_chunk = pcpu_alloc_first_chunk(tmp_addr,
 						ai->reserved_size);
-	tmp_addr = (core::ffi::c_ulong)base_addr + static_size + ai->reserved_size;
+	tmp_addr = (kernel::ffi::c_ulong)base_addr + static_size + ai->reserved_size;
 	pcpu_first_chunk = pcpu_alloc_first_chunk(tmp_addr, dyn_size);
 
 	pcpu_nr_empty_pop_pages = pcpu_first_chunk->nr_empty_pop_pages;
@@ -2846,9 +2846,9 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 	size_t size_sum, min_unit_size, alloc_size;
 	int upa, max_upa, best_upa;	/* units_per_alloc */
 	int last_allocs, group, unit;
-	cpu: core::ffi::c_uint, tcpu;
+	cpu: kernel::ffi::c_uint, tcpu;
 	struct pcpu_alloc_info *ai;
-	core::ffi::c_uint *cpu_map;
+	kernel::ffi::c_uint *cpu_map;
 
 	/* this function may be called multiple times */
 	memset(group_map, 0, sizeof(group_map));
@@ -2975,10 +2975,10 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 	return ai;
 }
 
-static void * __init pcpu_fc_alloc(cpu: core::ffi::c_uint, size_t size, size_t align,
+static void * __init pcpu_fc_alloc(cpu: kernel::ffi::c_uint, size_t size, size_t align,
 				   pcpu_fc_cpu_to_node_fn_t cpu_to_nd_fn)
 {
-	const core::ffi::c_ulong goal = __pa(MAX_DMA_ADDRESS);
+	const kernel::ffi::c_ulong goal = __pa(MAX_DMA_ADDRESS);
 #ifdef CONFIG_NUMA
 	int node = NUMA_NO_NODE;
 	void *ptr;
@@ -3055,7 +3055,7 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 	void **areas = NULL;
 	struct pcpu_alloc_info *ai;
 	size_t size_sum, areas_size;
-	core::ffi::c_ulong max_distance;
+	kernel::ffi::c_ulong max_distance;
 	int group, i, highest_group, rc = 0;
 
 	ai = pcpu_build_alloc_info(reserved_size, dyn_size, atom_size,
@@ -3076,7 +3076,7 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 	highest_group = 0;
 	for (group = 0; group < ai->nr_groups; group++) {
 		struct pcpu_group_info *gi = &ai->groups[group];
-		core::ffi::c_uint cpu = NR_CPUS;
+		kernel::ffi::c_uint cpu = NR_CPUS;
 		void *ptr;
 
 		for (i = 0; i < gi->nr_units && cpu == NR_CPUS; i++)
@@ -3176,7 +3176,7 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 #ifndef PTE_TABLE_SIZE
 #define PTE_TABLE_SIZE PAGE_SIZE
 #endif
-void __init __weak pcpu_populate_pte(addr: core::ffi::c_ulong)
+void __init __weak pcpu_populate_pte(addr: kernel::ffi::c_ulong)
 {
 	pgd_t *pgd = pgd_offset_k(addr);
 	p4d_t *p4d;
@@ -3262,7 +3262,7 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t 
 	/* allocate pages */
 	j = 0;
 	for (unit = 0; unit < num_possible_cpus(); unit++) {
-		core::ffi::c_uint cpu = ai->groups[0].cpu_map[unit];
+		kernel::ffi::c_uint cpu = ai->groups[0].cpu_map[unit];
 		for (i = 0; i < unit_pages; i++) {
 			void *ptr;
 
@@ -3284,8 +3284,8 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t 
 	vm_area_register_early(&vm, PAGE_SIZE);
 
 	for (unit = 0; unit < num_possible_cpus(); unit++) {
-		core::ffi::c_ulong unit_addr =
-			(core::ffi::c_ulong)vm.addr + unit * ai->unit_size;
+		kernel::ffi::c_ulong unit_addr =
+			(kernel::ffi::c_ulong)vm.addr + unit * ai->unit_size;
 
 		for (i = 0; i < unit_pages; i++)
 			pcpu_populate_pte(unit_addr + (i << PAGE_SHIFT));
@@ -3335,13 +3335,13 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t 
  * on the physical linear memory mapping which uses large page
  * mappings on applicable archs.
  */
-core::ffi::c_ulong __per_cpu_offset[NR_CPUS] __read_mostly;
+kernel::ffi::c_ulong __per_cpu_offset[NR_CPUS] __read_mostly;
 EXPORT_SYMBOL(__per_cpu_offset);
 
 void __init setup_per_cpu_areas(void)
 {
-	core::ffi::c_ulong delta;
-	core::ffi::c_uint cpu;
+	kernel::ffi::c_ulong delta;
+	kernel::ffi::c_uint cpu;
 	int rc;
 
 	/*
@@ -3353,7 +3353,7 @@ void __init setup_per_cpu_areas(void)
 	if (rc < 0)
 		panic("Failed to initialize percpu areas.");
 
-	delta = (core::ffi::c_ulong)pcpu_base_addr - (core::ffi::c_ulong)__per_cpu_start;
+	delta = (kernel::ffi::c_ulong)pcpu_base_addr - (kernel::ffi::c_ulong)__per_cpu_start;
 	for_each_possible_cpu(cpu)
 		__per_cpu_offset[cpu] = delta + pcpu_unit_offsets[cpu];
 }
@@ -3407,7 +3407,7 @@ void __init setup_per_cpu_areas(void)
  * RETURNS:
  * Total number of populated backing pages in use by the allocator.
  */
-core::ffi::c_ulong pcpu_nr_pages(void)
+kernel::ffi::c_ulong pcpu_nr_pages(void)
 {
 	return data_race(READ_ONCE(pcpu_nr_populated)) * pcpu_nr_units;
 }

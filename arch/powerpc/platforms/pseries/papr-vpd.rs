@@ -117,7 +117,7 @@ unsafe fn vpd_sequence_end(seq: *mut papr_rtas_sequence) {
 unsafe fn vpd_sequence_fill_work_area(
     seq: *mut papr_rtas_sequence,
     len: *mut usize,
-) -> *const core::ffi::c_char {
+) -> *const kernel::ffi::c_char {
     let p = (*seq).params as *mut rtas_ibm_get_vpd_params;
     let init_state = (*p).written == 0;
 
@@ -144,8 +144,8 @@ unsafe fn papr_vpd_create_handle(ulc: *mut papr_location_code) -> isize {
     let mut klc: papr_location_code = core::mem::zeroed();
 
     if copy_from_user(
-        &mut klc as *mut _ as *mut core::ffi::c_void,
-        ulc as *const core::ffi::c_void,
+        &mut klc as *mut _ as *mut kernel::ffi::c_void,
+        ulc as *const kernel::ffi::c_void,
         core::mem::size_of::<papr_location_code>(),
     ) != 0 {
         return -EFAULT as isize;
@@ -158,7 +158,7 @@ unsafe fn papr_vpd_create_handle(ulc: *mut papr_location_code) -> isize {
     seq.end = Some(vpd_sequence_end);
     seq.work = Some(vpd_sequence_fill_work_area);
     vpd_params.loc_code = &klc;
-    seq.params = &mut vpd_params as *mut _ as *mut core::ffi::c_void;
+    seq.params = &mut vpd_params as *mut _ as *mut kernel::ffi::c_void;
     papr_rtas_setup_file_interface(&mut seq, &papr_vpd_handle_ops, "[papr-vpd]")
 }
 

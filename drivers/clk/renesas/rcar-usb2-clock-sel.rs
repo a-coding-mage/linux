@@ -18,7 +18,7 @@ const CLKSET0_EXTAL_ONLY: u16 = CLKSET0_INTCLK_EN | CLKSET0_PRIVATE;
 
 #[repr(C)]
 pub struct ClkBulkData {
-    pub id: *const core::ffi::c_char,
+    pub id: *const kernel::ffi::c_char,
 }
 
 static RCAR_USB2_CLOCKS: [ClkBulkData; 2] = [
@@ -60,12 +60,12 @@ pub struct ClkOps {
 }
 #[repr(C)]
 pub struct ClkInitData {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const ClkOps,
 }
 #[repr(C)]
 pub struct OfDeviceId {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 #[repr(C)]
 pub struct DevPmOps {
@@ -74,7 +74,7 @@ pub struct DevPmOps {
 }
 #[repr(C)]
 pub struct Driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const OfDeviceId,
     pub pm: *const DevPmOps,
 }
@@ -95,11 +95,11 @@ extern "C" {
     fn dev_get_drvdata(dev: *mut Device) -> *mut Usb2ClockSelPriv;
     fn pm_runtime_put(dev: *mut Device) -> i32;
     fn pm_runtime_get_sync(dev: *mut Device) -> i32;
-    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_platform_ioremap_resource(pdev: *mut PlatformDevice, index: u32) -> *mut u8;
     fn devm_clk_bulk_get(dev: *mut Device, n: usize, clks: *mut ClkBulkData) -> i32;
     fn devm_reset_control_array_get_shared(dev: *mut Device) -> *mut ResetControl;
-    fn devm_clk_get(dev: *mut Device, id: *const core::ffi::c_char) -> *mut Clk;
+    fn devm_clk_get(dev: *mut Device, id: *const kernel::ffi::c_char) -> *mut Clk;
     fn clk_prepare_enable(clk: *mut Clk) -> i32;
     fn clk_get_rate(clk: *mut Clk) -> u64;
     fn clk_disable_unprepare(clk: *mut Clk);
@@ -108,7 +108,7 @@ extern "C" {
     fn platform_set_drvdata(pdev: *mut PlatformDevice, data: *mut Usb2ClockSelPriv);
     fn dev_set_drvdata(dev: *mut Device, data: *mut Usb2ClockSelPriv);
     fn devm_clk_hw_register(dev: *mut Device, hw: *mut ClkHw) -> i32;
-    fn of_clk_add_hw_provider(np: *mut DeviceNode, get: *const core::ffi::c_void, data: *mut ClkHw) -> i32;
+    fn of_clk_add_hw_provider(np: *mut DeviceNode, get: *const kernel::ffi::c_void, data: *mut ClkHw) -> i32;
     fn of_clk_del_provider(np: *mut DeviceNode);
     fn device_node(dev: *mut Device) -> *mut DeviceNode;
 }

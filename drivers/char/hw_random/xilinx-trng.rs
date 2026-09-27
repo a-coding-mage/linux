@@ -40,7 +40,7 @@ const TRNG_DATA_READ_DELAY: u32 = 8000;
 
 #[repr(C)]
 pub struct xilinx_rng {
-    pub rng_base: *mut core::ffi::c_void,
+    pub rng_base: *mut kernel::ffi::c_void,
     pub dev: *mut device,
     pub trng: hwrng,
 }
@@ -50,35 +50,35 @@ unsafe extern "C" {
     type hwrng;
     type platform_device;
 
-    fn ioread32(addr: *mut core::ffi::c_void) -> u32;
-    fn iowrite32(value: u32, addr: *mut core::ffi::c_void);
+    fn ioread32(addr: *mut kernel::ffi::c_void) -> u32;
+    fn iowrite32(value: u32, addr: *mut kernel::ffi::c_void);
     fn udelay(usecs: u32);
-    fn readl_poll_timeout(addr: *mut core::ffi::c_void, val: *mut u32, condition: bool,
+    fn readl_poll_timeout(addr: *mut kernel::ffi::c_void, val: *mut u32, condition: bool,
                            delay_us: u32, timeout_us: u32) -> i32;
     fn hmac_sha512_usingrawkey(key: *const u8, key_len: usize, data: *const u8,
                                data_len: usize, out: *mut u8);
     fn memzero_explicit(ptr: *mut u8, len: usize);
     fn hwrng_register(rng: *mut hwrng) -> i32;
     fn hwrng_unregister(rng: *mut hwrng);
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32)
-        -> *mut core::ffi::c_void;
-    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut core::ffi::c_void);
-    fn platform_get_drvdata(pdev: *mut platform_device) -> *mut core::ffi::c_void;
+        -> *mut kernel::ffi::c_void;
+    fn platform_set_drvdata(pdev: *mut platform_device, data: *mut kernel::ffi::c_void);
+    fn platform_get_drvdata(pdev: *mut platform_device) -> *mut kernel::ffi::c_void;
 }
 
-unsafe fn xtrng_readwrite32(addr: *mut core::ffi::c_void, mask: u32, value: u8) {
+unsafe fn xtrng_readwrite32(addr: *mut kernel::ffi::c_void, mask: u32, value: u8) {
     let val = ioread32(addr);
     iowrite32((val & !mask) | (mask & value as u32), addr);
 }
 
-unsafe fn xtrng_trng_reset(addr: *mut core::ffi::c_void) {
+unsafe fn xtrng_trng_reset(addr: *mut kernel::ffi::c_void) {
     xtrng_readwrite32(addr.add(TRNG_RESET_OFFSET), TRNG_RESET_VAL_MASK, TRNG_RESET_VAL_MASK as u8);
     udelay(TRNG_RESET_DELAY);
     xtrng_readwrite32(addr.add(TRNG_RESET_OFFSET), TRNG_RESET_VAL_MASK, 0);
 }
 
-unsafe fn xtrng_hold_reset(addr: *mut core::ffi::c_void) {
+unsafe fn xtrng_hold_reset(addr: *mut kernel::ffi::c_void) {
     xtrng_readwrite32(addr.add(TRNG_CTRL_OFFSET), TRNG_CTRL_PRNGSRST_MASK,
                       TRNG_CTRL_PRNGSRST_MASK as u8);
     iowrite32(TRNG_RESET_VAL_MASK, addr.add(TRNG_RESET_OFFSET));
@@ -92,7 +92,7 @@ unsafe fn xtrng_softreset(rng: *mut xilinx_rng) {
     xtrng_readwrite32((*rng).rng_base.add(TRNG_CTRL_OFFSET), TRNG_CTRL_PRNGSRST_MASK, 0);
 }
 
-unsafe fn xtrng_readblock32(rng_base: *mut core::ffi::c_void, buf: *mut u32,
+unsafe fn xtrng_readblock32(rng_base: *mut kernel::ffi::c_void, buf: *mut u32,
                             blocks32: i32, wait: bool) -> i32 {
     let mut read = 0i32;
     let mut timeout = 1u32;
@@ -146,7 +146,7 @@ unsafe fn xtrng_collect_stop(rng: *mut xilinx_rng, count: i32) -> i32 {
     count
 }
 
-unsafe fn xtrng_write_multiple_registers(base_addr: *mut core::ffi::c_void,
+unsafe fn xtrng_write_multiple_registers(base_addr: *mut kernel::ffi::c_void,
                                          values: *const u32, n: usize) {
     for i in 0..n {
         iowrite32((*values.add(i)).to_be(), base_addr.add((n - 1 - i) * TRNG_BYTES_PER_REG));
@@ -241,7 +241,7 @@ unsafe fn xtrng_probe(pdev: *mut platform_device) -> i32 {
     if ret != 0 { return ret; }
     let ret = xtrng_hwrng_register(&mut (*rng).trng);
     if ret != 0 { return ret; }
-    platform_set_drvdata(pdev, rng as *mut core::ffi::c_void);
+    platform_set_drvdata(pdev, rng as *mut kernel::ffi::c_void);
     0
 }
 
@@ -258,7 +258,7 @@ unsafe fn xtrng_remove(pdev: *mut platform_device) {
 
 #[repr(C)]
 struct of_device_id {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -270,7 +270,7 @@ struct platform_driver {
 
 #[repr(C)]
 struct driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     of_match_table: *const of_device_id,
 }
 

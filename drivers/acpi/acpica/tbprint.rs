@@ -38,7 +38,7 @@ unsafe fn acpi_tb_fix_string(string: *mut c_char, mut length: acpi_size) {
     let mut string = string;
 
     while length != 0 && *string != 0 {
-        if libc::isprint((*string as u8) as c_int) == 0 {
+        if isprint((*string as u8) as c_int) == 0 {
             *string = b'?' as c_char;
         }
 

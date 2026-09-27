@@ -9,7 +9,7 @@
  */
 
 /* Dependencies supplied by the surrounding translation unit. */
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* Common oscillator base values in nanoseconds */
 pub const I8254_OSC_BASE_10MHZ: u32 = 100;
@@ -58,7 +58,7 @@ pub struct comedi_subdevice;
 
 pub type comedi_8254_iocb_fn = unsafe extern "C" fn(
     i8254: *mut comedi_8254,
-    dir: core::ffi::c_int,
+    dir: kernel::ffi::c_int,
     reg: u32,
     val: u32,
 ) -> u32;
@@ -66,7 +66,7 @@ pub type comedi_8254_iocb_fn = unsafe extern "C" fn(
 #[repr(C)]
 pub struct comedi_8254 {
     pub iocb: Option<comedi_8254_iocb_fn>,
-    pub context: core::ffi::c_ulong,
+    pub context: kernel::ffi::c_ulong,
     pub iosize: u32,
     pub regshift: u32,
     pub osc_base: u32,
@@ -84,15 +84,15 @@ pub struct comedi_8254 {
         s: *mut comedi_subdevice,
         insn: *mut comedi_insn,
         data: *mut u32,
-    ) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
 }
 
 extern "C" {
     pub fn comedi_8254_status(i8254: *mut comedi_8254, counter: u32) -> u32;
     pub fn comedi_8254_read(i8254: *mut comedi_8254, counter: u32) -> u32;
     pub fn comedi_8254_write(i8254: *mut comedi_8254, counter: u32, val: u32);
-    pub fn comedi_8254_set_mode(i8254: *mut comedi_8254, counter: u32, mode: u32) -> core::ffi::c_int;
-    pub fn comedi_8254_load(i8254: *mut comedi_8254, counter: u32, val: u32, mode: u32) -> core::ffi::c_int;
+    pub fn comedi_8254_set_mode(i8254: *mut comedi_8254, counter: u32, mode: u32) -> kernel::ffi::c_int;
+    pub fn comedi_8254_load(i8254: *mut comedi_8254, counter: u32, val: u32, mode: u32) -> kernel::ffi::c_int;
     pub fn comedi_8254_pacer_enable(i8254: *mut comedi_8254, counter1: u32, counter2: u32, enable: bool);
     pub fn comedi_8254_update_divisors(i8254: *mut comedi_8254);
     pub fn comedi_8254_cascade_ns_to_timer(i8254: *mut comedi_8254, nanosec: *mut u32, flags: u32);
@@ -105,13 +105,13 @@ extern "C" {
 /* CONFIG_HAS_IOPORT selects the real declaration; otherwise the C inline returns ERR_PTR(-ENXIO). */
 #[cfg(has_ioport)]
 extern "C" {
-    pub fn comedi_8254_io_alloc(iobase: core::ffi::c_ulong, osc_base: u32, iosize: u32, regshift: u32) -> *mut comedi_8254;
+    pub fn comedi_8254_io_alloc(iobase: kernel::ffi::c_ulong, osc_base: u32, iosize: u32, regshift: u32) -> *mut comedi_8254;
 }
 
 #[cfg(not(has_ioport))]
 #[inline]
 pub unsafe fn comedi_8254_io_alloc(
-    _iobase: core::ffi::c_ulong,
+    _iobase: kernel::ffi::c_ulong,
     _osc_base: u32,
     _iosize: u32,
     _regshift: u32,

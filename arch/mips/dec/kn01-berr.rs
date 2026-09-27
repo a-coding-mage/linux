@@ -39,15 +39,15 @@ extern "C" {
     fn read_c0_entrylo0() -> usize;
     fn __get_user(value: *mut u32, address: *const u32) -> i32;
     fn pr_alert_ratelimited(
-        format: *const core::ffi::c_char,
-        kind: *const core::ffi::c_char,
-        agent: *const core::ffi::c_char,
-        cycle: *const core::ffi::c_char,
-        event: *const core::ffi::c_char,
+        format: *const kernel::ffi::c_char,
+        kind: *const kernel::ffi::c_char,
+        agent: *const kernel::ffi::c_char,
+        cycle: *const kernel::ffi::c_char,
+        event: *const kernel::ffi::c_char,
         address: usize,
     );
-    fn printk(format: *const core::ffi::c_char, epc: usize, ra: usize);
-    fn die(message: *const core::ffi::c_char, regs: *mut PtRegs) -> !;
+    fn printk(format: *const kernel::ffi::c_char, epc: usize, ra: usize);
+    fn die(message: *const kernel::ffi::c_char, regs: *mut PtRegs) -> !;
 }
 
 #[repr(C)]
@@ -156,7 +156,7 @@ pub unsafe fn dec_kn01_be_handler(regs: *mut PtRegs, is_fixup: i32) -> i32 {
     dec_kn01_be_backend(regs, is_fixup, 0)
 }
 
-pub unsafe fn dec_kn01_be_interrupt(_irq: i32, _dev_id: *mut core::ffi::c_void) -> IrqReturn {
+pub unsafe fn dec_kn01_be_interrupt(_irq: i32, _dev_id: *mut kernel::ffi::c_void) -> IrqReturn {
     let csr = (CKSEG1ADDR(KN01_SLOT_BASE + KN01_CSR)) as *const u16;
     let regs = get_irq_regs();
     if (*csr & KN01_CSR_MEMERR) == 0 { return IRQ_NONE; }

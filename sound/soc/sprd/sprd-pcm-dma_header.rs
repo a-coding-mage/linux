@@ -14,14 +14,14 @@ pub struct sprd_pcm_dma_params {
     pub dev_phys: [dma_addr_t; SPRD_PCM_CHANNEL_MAX],
     pub datawidth: [u32; SPRD_PCM_CHANNEL_MAX],
     pub fragment_len: [u32; SPRD_PCM_CHANNEL_MAX],
-    pub chan_name: [*const ::core::ffi::c_char; SPRD_PCM_CHANNEL_MAX],
+    pub chan_name: [*const ::kernel::ffi::c_char; SPRD_PCM_CHANNEL_MAX],
 }
 
 #[repr(C)]
 pub struct sprd_compr_playinfo {
-    pub total_time: ::core::ffi::c_int,
-    pub current_time: ::core::ffi::c_int,
-    pub total_data_length: ::core::ffi::c_int,
+    pub total_time: ::kernel::ffi::c_int,
+    pub current_time: ::kernel::ffi::c_int,
+    pub total_data_length: ::kernel::ffi::c_int,
     pub current_data_offset: u64,
 }
 
@@ -40,30 +40,30 @@ pub struct sprd_compr_params {
 
 #[repr(C)]
 pub struct sprd_compr_callback {
-    pub drain_notify: Option<unsafe extern "C" fn(data: *mut ::core::ffi::c_void)>,
-    pub drain_data: *mut ::core::ffi::c_void,
+    pub drain_notify: Option<unsafe extern "C" fn(data: *mut ::kernel::ffi::c_void)>,
+    pub drain_data: *mut ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct sprd_compr_ops {
     pub open: Option<
         unsafe extern "C" fn(
-            str_id: ::core::ffi::c_int,
+            str_id: ::kernel::ffi::c_int,
             cb: *mut sprd_compr_callback,
-        ) -> ::core::ffi::c_int,
+        ) -> ::kernel::ffi::c_int,
     >,
-    pub close: Option<unsafe extern "C" fn(str_id: ::core::ffi::c_int) -> ::core::ffi::c_int>,
-    pub start: Option<unsafe extern "C" fn(str_id: ::core::ffi::c_int) -> ::core::ffi::c_int>,
-    pub stop: Option<unsafe extern "C" fn(str_id: ::core::ffi::c_int) -> ::core::ffi::c_int>,
-    pub pause: Option<unsafe extern "C" fn(str_id: ::core::ffi::c_int) -> ::core::ffi::c_int>,
+    pub close: Option<unsafe extern "C" fn(str_id: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
+    pub start: Option<unsafe extern "C" fn(str_id: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
+    pub stop: Option<unsafe extern "C" fn(str_id: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
+    pub pause: Option<unsafe extern "C" fn(str_id: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
     pub pause_release:
-        Option<unsafe extern "C" fn(str_id: ::core::ffi::c_int) -> ::core::ffi::c_int>,
-    pub drain: Option<unsafe extern "C" fn(received_total: u64) -> ::core::ffi::c_int>,
+        Option<unsafe extern "C" fn(str_id: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
+    pub drain: Option<unsafe extern "C" fn(received_total: u64) -> ::kernel::ffi::c_int>,
     pub set_params: Option<
         unsafe extern "C" fn(
-            str_id: ::core::ffi::c_int,
+            str_id: ::kernel::ffi::c_int,
             params: *mut sprd_compr_params,
-        ) -> ::core::ffi::c_int,
+        ) -> ::kernel::ffi::c_int,
     >,
 }
 

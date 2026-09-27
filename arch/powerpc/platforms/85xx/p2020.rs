@@ -20,16 +20,16 @@ pub struct DeviceNode {
 }
 
 extern "C" {
-    static MPIC_BIG_ENDIAN: ::core::ffi::c_int;
-    static MPIC_SINGLE_DEST_CPU: ::core::ffi::c_int;
+    static MPIC_BIG_ENDIAN: ::kernel::ffi::c_int;
+    static MPIC_SINGLE_DEST_CPU: ::kernel::ffi::c_int;
 
     fn mpic_alloc(
-        node: *mut ::core::ffi::c_void,
-        isu_size: ::core::ffi::c_int,
-        flags: ::core::ffi::c_int,
-        offset: ::core::ffi::c_int,
-        irq_count: ::core::ffi::c_int,
-        name: *const ::core::ffi::c_char,
+        node: *mut ::kernel::ffi::c_void,
+        isu_size: ::kernel::ffi::c_int,
+        flags: ::kernel::ffi::c_int,
+        offset: ::kernel::ffi::c_int,
+        irq_count: ::kernel::ffi::c_int,
+        name: *const ::kernel::ffi::c_char,
     ) -> *mut Mpic;
     fn mpic_init(mpic: *mut Mpic);
     fn mpc85xx_8259_init();
@@ -38,18 +38,18 @@ extern "C" {
     fn uli_init();
     fn mpc85xx_smp_init();
     fn mpc85xx_qe_par_io_init();
-    fn of_find_node_by_path(path: *const ::core::ffi::c_char) -> *mut DeviceNode;
+    fn of_find_node_by_path(path: *const ::kernel::ffi::c_char) -> *mut DeviceNode;
     fn of_node_put(node: *mut DeviceNode);
-    fn fsl_pcibios_fixup_bus(bus: *mut ::core::ffi::c_void);
-    fn fsl_pcibios_fixup_phb(phb: *mut ::core::ffi::c_void);
-    fn mpic_get_irq(regs: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-    fn udbg_progress(message: *const ::core::ffi::c_char, hex: ::core::ffi::c_uint);
+    fn fsl_pcibios_fixup_bus(bus: *mut ::kernel::ffi::c_void);
+    fn fsl_pcibios_fixup_phb(phb: *mut ::kernel::ffi::c_void);
+    fn mpic_get_irq(regs: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
+    fn udbg_progress(message: *const ::kernel::ffi::c_char, hex: ::kernel::ffi::c_uint);
     fn mpc85xx_common_publish_devices();
 }
 
 unsafe extern "C" fn p2020_pic_init() {
     let mut mpic: *mut Mpic;
-    let flags: ::core::ffi::c_int =
+    let flags: ::kernel::ffi::c_int =
         MPIC_BIG_ENDIAN | MPIC_SINGLE_DEST_CPU;
 
     mpic = mpic_alloc(
@@ -58,7 +58,7 @@ unsafe extern "C" fn p2020_pic_init() {
         flags,
         0,
         256,
-        b" OpenPIC  \0".as_ptr() as *const ::core::ffi::c_char,
+        b" OpenPIC  \0".as_ptr() as *const ::kernel::ffi::c_char,
     );
 
     // Equivalent to WARN_ON(!mpic): warning machinery is supplied externally.
@@ -84,7 +84,7 @@ unsafe extern "C" fn p2020_setup_arch() {
 /*
  * Called very early, device-tree isn't unflattened
  */
-unsafe extern "C" fn p2020_probe() -> ::core::ffi::c_int {
+unsafe extern "C" fn p2020_probe() -> ::kernel::ffi::c_int {
     let p2020_cpu: *mut DeviceNode;
 
     /*
@@ -92,7 +92,7 @@ unsafe extern "C" fn p2020_probe() -> ::core::ffi::c_int {
      * The only common thing is "PowerPC,P2020@0" cpu node.
      * So check for P2020 board via this cpu node.
      */
-    p2020_cpu = of_find_node_by_path(b"/cpus/PowerPC,P2020@0\0".as_ptr() as *const ::core::ffi::c_char);
+    p2020_cpu = of_find_node_by_path(b"/cpus/PowerPC,P2020@0\0".as_ptr() as *const ::kernel::ffi::c_char);
     of_node_put(p2020_cpu);
 
     if !p2020_cpu.is_null() { 1 } else { 0 }

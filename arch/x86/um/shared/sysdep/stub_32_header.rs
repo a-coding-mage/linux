@@ -7,7 +7,7 @@
 // `UM_KERN_PAGE_SHIFT`, `UM_KERN_PAGE_SIZE`, `__NR_set_thread_area`, and
 // `STUB_SIZE`.
 
-pub const STUB_MMAP_NR: _ = __NR_mmap2;
+pub const STUB_MMAP_NR: u32 = __NR_mmap2;
 
 #[inline(always)]
 pub const fn MMAP_OFFSET(o: usize) -> usize {

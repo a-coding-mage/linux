@@ -10,7 +10,7 @@ pub const MAX_HWEVENTS: u32 = 2;
 
 #[repr(C)]
 pub struct sh_pmu {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub num_events: u32,
     pub disable_all: Option<unsafe extern "C" fn()>,
     pub enable_all: Option<unsafe extern "C" fn()>,
@@ -19,7 +19,7 @@ pub struct sh_pmu {
     pub read: Option<unsafe extern "C" fn(i32) -> u64>,
     pub event_map: Option<unsafe extern "C" fn(i32) -> i32>,
     pub max_events: u32,
-    pub raw_event_mask: ::core::ffi::c_ulong,
+    pub raw_event_mask: ::kernel::ffi::c_ulong,
     pub cache_events: *const [[[i32; PERF_COUNT_HW_CACHE_RESULT_MAX]; PERF_COUNT_HW_CACHE_OP_MAX]; PERF_COUNT_HW_CACHE_MAX],
 }
 

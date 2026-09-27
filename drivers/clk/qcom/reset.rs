@@ -10,14 +10,14 @@
 unsafe fn qcom_reset(rcdev: *mut reset_controller_dev, id: usize) -> i32 {
     let rst: *mut qcom_reset_controller = to_qcom_reset_controller(rcdev);
 
-    ((*(*rcdev).ops).assert)(rcdev, id as ::core::ffi::c_ulong);
+    ((*(*rcdev).ops).assert)(rcdev, id as ::kernel::ffi::c_ulong);
     fsleep(if (*rst).reset_map[id].udelay != 0 {
         (*rst).reset_map[id].udelay
     } else {
         1
     }); /* use 1 us as default */
 
-    ((*(*rcdev).ops).deassert)(rcdev, id as ::core::ffi::c_ulong);
+    ((*(*rcdev).ops).deassert)(rcdev, id as ::kernel::ffi::c_ulong);
     0
 }
 

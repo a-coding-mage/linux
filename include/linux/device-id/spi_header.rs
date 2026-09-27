@@ -2,7 +2,7 @@
 
 // The C definition is enabled under __KERNEL__.  This Rust alias preserves
 // the unsigned-long representation used by the header.
-pub type kernel_ulong_t = core::ffi::c_ulong;
+pub type kernel_ulong_t = kernel::ffi::c_ulong;
 
 /* spi */
 
@@ -11,7 +11,7 @@ pub const SPI_MODULE_PREFIX: &str = "spi:";
 
 #[repr(C)]
 pub struct spi_device_id {
-    pub name: [core::ffi::c_char; SPI_NAME_SIZE],
+    pub name: [kernel::ffi::c_char; SPI_NAME_SIZE],
     pub driver_data: kernel_ulong_t, /* Data private to the driver */
 }
 

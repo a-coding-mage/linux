@@ -15,24 +15,24 @@ pub struct Regmap {
 }
 
 extern "C" {
-    fn syscon_regmap_lookup_by_compatible(compatible: *const core::ffi::c_char) -> *mut Regmap;
+    fn syscon_regmap_lookup_by_compatible(compatible: *const kernel::ffi::c_char) -> *mut Regmap;
     fn IS_ERR(ptr: *mut Regmap) -> bool;
-    fn pr_warn(message: *const core::ffi::c_char, ...);
+    fn pr_warn(message: *const kernel::ffi::c_char, ...);
     fn regmap_read(map: *mut Regmap, register: u32, value: *mut u32) -> i32;
     fn imx_set_soc_revision(revision: u32);
     fn imx7ulp_pm_init();
     fn mxc_set_cpu_type(cpu_type: u32);
     fn of_platform_default_populate(
-        root: *mut core::ffi::c_void,
-        matches: *mut core::ffi::c_void,
-        parent: *mut core::ffi::c_void,
+        root: *mut kernel::ffi::c_void,
+        matches: *mut kernel::ffi::c_void,
+        parent: *mut kernel::ffi::c_void,
     ) -> i32;
     fn platform_device_register_simple(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         id: i32,
-        resources: *mut core::ffi::c_void,
+        resources: *mut kernel::ffi::c_void,
         num_resources: u32,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     fn imx7ulp_cpuidle_init();
 }
 
@@ -79,7 +79,7 @@ unsafe fn imx7ulp_init_machine() {
     of_platform_default_populate(core::ptr::null_mut(), core::ptr::null_mut(), core::ptr::null_mut());
 }
 
-static IMX7ULP_DT_COMPAT: [*const core::ffi::c_char; 2] = [
+static IMX7ULP_DT_COMPAT: [*const kernel::ffi::c_char; 2] = [
     b"fsl,imx7ulp\0".as_ptr() as *const _,
     core::ptr::null(),
 ];
@@ -105,7 +105,7 @@ unsafe fn imx7ulp_init_late() {
 #[repr(C)]
 pub struct MachineDesc {
     pub init_machine: unsafe fn(),
-    pub dt_compat: *const *const core::ffi::c_char,
+    pub dt_compat: *const *const kernel::ffi::c_char,
     pub init_late: unsafe fn(),
 }
 

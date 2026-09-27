@@ -83,8 +83,8 @@ pub struct btmrvl_sdio_card_reg {
 pub struct btmrvl_sdio_card {
     pub func: *mut sdio_func,
     pub ioport: u32,
-    pub helper: *const core::ffi::c_char,
-    pub firmware: *const core::ffi::c_char,
+    pub helper: *const kernel::ffi::c_char,
+    pub firmware: *const kernel::ffi::c_char,
     pub reg: *const btmrvl_sdio_card_reg,
     pub support_pscan_win_report: bool,
     pub supports_fw_dump: bool,
@@ -97,8 +97,8 @@ pub struct btmrvl_sdio_card {
 
 #[repr(C)]
 pub struct btmrvl_sdio_device {
-    pub helper: *const core::ffi::c_char,
-    pub firmware: *const core::ffi::c_char,
+    pub helper: *const kernel::ffi::c_char,
+    pub firmware: *const kernel::ffi::c_char,
     pub reg: *const btmrvl_sdio_card_reg,
     pub support_pscan_win_report: bool,
     pub sd_blksz_fw_dl: u16,

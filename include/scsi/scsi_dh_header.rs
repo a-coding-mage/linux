@@ -37,7 +37,7 @@ pub const SCSI_DH_NOMEM: i32 = SCSI_DH_DEV_OFFLINED + 1;
 pub const SCSI_DH_NOSYS: i32 = SCSI_DH_NOMEM + 1;
 pub const SCSI_DH_DRIVER_MAX: i32 = SCSI_DH_NOSYS + 1;
 
-pub type ActivateComplete = unsafe extern "C" fn(*mut core::ffi::c_void, i32);
+pub type ActivateComplete = unsafe extern "C" fn(*mut kernel::ffi::c_void, i32);
 
 #[repr(C)]
 pub struct scsi_device_handler {
@@ -46,42 +46,42 @@ pub struct scsi_device_handler {
 
     /* Filled by the hardware handler */
     pub module: *mut module,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub check_sense: Option<unsafe extern "C" fn(*mut scsi_device, *mut scsi_sense_hdr) -> scsi_disposition>,
     pub attach: Option<unsafe extern "C" fn(*mut scsi_device) -> i32>,
     pub detach: Option<unsafe extern "C" fn(*mut scsi_device)>,
-    pub activate: Option<unsafe extern "C" fn(*mut scsi_device, ActivateComplete, *mut core::ffi::c_void) -> i32>,
+    pub activate: Option<unsafe extern "C" fn(*mut scsi_device, ActivateComplete, *mut kernel::ffi::c_void) -> i32>,
     pub prep_fn: Option<unsafe extern "C" fn(*mut scsi_device, *mut request) -> blk_status_t>,
-    pub set_params: Option<unsafe extern "C" fn(*mut scsi_device, *const core::ffi::c_char) -> i32>,
+    pub set_params: Option<unsafe extern "C" fn(*mut scsi_device, *const kernel::ffi::c_char) -> i32>,
     pub rescan: Option<unsafe extern "C" fn(*mut scsi_device)>,
 }
 
 #[cfg(CONFIG_SCSI_DH)]
 extern "C" {
-    pub fn scsi_dh_activate(queue: *mut request_queue, complete: ActivateComplete, data: *mut core::ffi::c_void) -> i32;
-    pub fn scsi_dh_attach(queue: *mut request_queue, name: *const core::ffi::c_char) -> i32;
-    pub fn scsi_dh_attached_handler_name(queue: *mut request_queue, gfp: gfp_t) -> *const core::ffi::c_char;
-    pub fn scsi_dh_set_params(queue: *mut request_queue, params: *const core::ffi::c_char) -> i32;
+    pub fn scsi_dh_activate(queue: *mut request_queue, complete: ActivateComplete, data: *mut kernel::ffi::c_void) -> i32;
+    pub fn scsi_dh_attach(queue: *mut request_queue, name: *const kernel::ffi::c_char) -> i32;
+    pub fn scsi_dh_attached_handler_name(queue: *mut request_queue, gfp: gfp_t) -> *const kernel::ffi::c_char;
+    pub fn scsi_dh_set_params(queue: *mut request_queue, params: *const kernel::ffi::c_char) -> i32;
 }
 
 #[cfg(not(CONFIG_SCSI_DH))]
-pub unsafe fn scsi_dh_activate(_req: *mut request_queue, func: ActivateComplete, data: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn scsi_dh_activate(_req: *mut request_queue, func: ActivateComplete, data: *mut kernel::ffi::c_void) -> i32 {
     func(data, 0);
     0
 }
 
 #[cfg(not(CONFIG_SCSI_DH))]
-pub unsafe fn scsi_dh_attach(_req: *mut request_queue, _name: *const core::ffi::c_char) -> i32 {
+pub unsafe fn scsi_dh_attach(_req: *mut request_queue, _name: *const kernel::ffi::c_char) -> i32 {
     SCSI_DH_NOSYS
 }
 
 #[cfg(not(CONFIG_SCSI_DH))]
-pub unsafe fn scsi_dh_attached_handler_name(_q: *mut request_queue, _gfp: gfp_t) -> *const core::ffi::c_char {
+pub unsafe fn scsi_dh_attached_handler_name(_q: *mut request_queue, _gfp: gfp_t) -> *const kernel::ffi::c_char {
     core::ptr::null()
 }
 
 #[cfg(not(CONFIG_SCSI_DH))]
-pub unsafe fn scsi_dh_set_params(_req: *mut request_queue, _params: *const core::ffi::c_char) -> i32 {
+pub unsafe fn scsi_dh_set_params(_req: *mut request_queue, _params: *const kernel::ffi::c_char) -> i32 {
     -SCSI_DH_NOSYS
 }
 

@@ -564,7 +564,7 @@ static alt_switch: snd_kcontrol_new = snd_kcontrol_new {
 };
 
 unsafe fn rolloff_info(_ctl: *mut snd_kcontrol, info: *mut snd_ctl_elem_info) -> i32 {
-    static NAMES: [*const core::ffi::c_char; 2] = [c"Sharp Roll-off".as_ptr(), c"Slow Roll-off".as_ptr()];
+    static NAMES: [*const kernel::ffi::c_char; 2] = [c"Sharp Roll-off".as_ptr(), c"Slow Roll-off".as_ptr()];
     unsafe { snd_ctl_enum_info(info, 1, 2, NAMES.as_ptr()) }
 }
 
@@ -666,7 +666,7 @@ static hdav_hdmi_control: snd_kcontrol_new = snd_kcontrol_new {
 };
 
 unsafe fn st_output_switch_info(_ctl: *mut snd_kcontrol, info: *mut snd_ctl_elem_info) -> i32 {
-    static NAMES: [*const core::ffi::c_char; 3] = [c"Speakers".as_ptr(), c"Headphones".as_ptr(), c"FP Headphones".as_ptr()];
+    static NAMES: [*const kernel::ffi::c_char; 3] = [c"Speakers".as_ptr(), c"Headphones".as_ptr(), c"FP Headphones".as_ptr()];
     unsafe { snd_ctl_enum_info(info, 1, 3, NAMES.as_ptr()) }
 }
 
@@ -708,7 +708,7 @@ unsafe fn st_output_switch_put(ctl: *mut snd_kcontrol, value: *mut snd_ctl_elem_
 }
 
 unsafe fn st_hp_volume_offset_info(_ctl: *mut snd_kcontrol, info: *mut snd_ctl_elem_info) -> i32 {
-    static NAMES: [*const core::ffi::c_char; 4] = [
+    static NAMES: [*const kernel::ffi::c_char; 4] = [
         c"< 32 ohms".as_ptr(),
         c"32-64 ohms".as_ptr(),
         c"64-300 ohms".as_ptr(),

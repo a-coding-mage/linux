@@ -15,15 +15,15 @@ const SECWDOG_COUNT_SHIFT: u32 = 0;
 extern "C" {
     fn of_find_compatible_node(
         from: *mut device_node,
-        ty: *mut core::ffi::c_void,
-        compatible: *const core::ffi::c_char,
+        ty: *mut kernel::ffi::c_void,
+        compatible: *const kernel::ffi::c_char,
     ) -> *mut device_node;
     fn of_iomap(np: *mut device_node, index: i32) -> *mut u8;
     fn of_node_put(np: *mut device_node);
     fn readl(addr: *const u8) -> u32;
     fn writel(value: u32, addr: *mut u8);
     fn kona_l2_cache_init();
-    fn pr_emerg(fmt: *const core::ffi::c_char, ...);
+    fn pr_emerg(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -37,7 +37,7 @@ pub enum reboot_mode {
     _Invalid = -1,
 }
 
-unsafe fn bcm281xx_restart(_mode: reboot_mode, _cmd: *const core::ffi::c_char) {
+unsafe fn bcm281xx_restart(_mode: reboot_mode, _cmd: *const kernel::ffi::c_char) {
     let mut val: u32;
     let mut base: *mut u8;
     let np_wdog: *mut device_node;
@@ -45,16 +45,16 @@ unsafe fn bcm281xx_restart(_mode: reboot_mode, _cmd: *const core::ffi::c_char) {
     np_wdog = of_find_compatible_node(
         core::ptr::null_mut(),
         core::ptr::null_mut(),
-        b"brcm,kona-wdt\0".as_ptr() as *const core::ffi::c_char,
+        b"brcm,kona-wdt\0".as_ptr() as *const kernel::ffi::c_char,
     );
     if np_wdog.is_null() {
-        pr_emerg(b"Couldn't find brcm,kona-wdt\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_emerg(b"Couldn't find brcm,kona-wdt\n\0".as_ptr() as *const kernel::ffi::c_char);
         return;
     }
     base = of_iomap(np_wdog, 0);
     of_node_put(np_wdog);
     if base.is_null() {
-        pr_emerg(b"Couldn't map brcm,kona-wdt\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_emerg(b"Couldn't map brcm,kona-wdt\n\0".as_ptr() as *const kernel::ffi::c_char);
         return;
     }
 
@@ -87,7 +87,7 @@ static BCM281XX_DT_COMPAT: [Option<&'static core::ffi::CStr>; 2] = [
 pub struct MachineDesc {
     pub name: &'static str,
     pub init_machine: unsafe fn(),
-    pub restart: unsafe fn(reboot_mode, *const core::ffi::c_char),
+    pub restart: unsafe fn(reboot_mode, *const kernel::ffi::c_char),
     pub dt_compat: &'static [Option<&'static core::ffi::CStr>; 2],
 }
 

@@ -269,7 +269,7 @@ pub const AUDIT_UID_UNSET: u32 = u32::MAX; pub const AUDIT_SID_UNSET: u32 = u32:
     pub flags: u32, pub action: u32, pub field_count: u32,
     pub mask: [u32; AUDIT_BITMASK_SIZE], pub fields: [u32; AUDIT_MAX_FIELDS],
     pub values: [u32; AUDIT_MAX_FIELDS], pub fieldflags: [u32; AUDIT_MAX_FIELDS],
-    pub buflen: u32, pub buf: [core::ffi::c_char; 0],
+    pub buflen: u32, pub buf: [kernel::ffi::c_char; 0],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

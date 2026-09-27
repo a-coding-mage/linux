@@ -16,7 +16,7 @@
  * callback set, by matching the DT compatible name.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[cfg(CONFIG_ISA_ARCOMPACT)]
 static simulation_compat: [*const c_char; 3] = [

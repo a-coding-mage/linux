@@ -15,15 +15,15 @@ pub type vq_callback_t = unsafe extern "C" fn(*mut virtqueue);
 
 #[repr(C)]
 pub struct virtqueue_info {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub callback: Option<vq_callback_t>,
     pub ctx: bool,
 }
 
 #[repr(C)]
 pub struct virtio_config_ops {
-    pub get: Option<unsafe extern "C" fn(*mut virtio_device, u32, *mut core::ffi::c_void, u32)>,
-    pub set: Option<unsafe extern "C" fn(*mut virtio_device, u32, *const core::ffi::c_void, u32)>,
+    pub get: Option<unsafe extern "C" fn(*mut virtio_device, u32, *mut kernel::ffi::c_void, u32)>,
+    pub set: Option<unsafe extern "C" fn(*mut virtio_device, u32, *const kernel::ffi::c_void, u32)>,
     pub generation: Option<unsafe extern "C" fn(*mut virtio_device) -> u32>,
     pub get_status: Option<unsafe extern "C" fn(*mut virtio_device) -> u8>,
     pub set_status: Option<unsafe extern "C" fn(*mut virtio_device, u8)>,
@@ -34,7 +34,7 @@ pub struct virtio_config_ops {
     pub get_features: Option<unsafe extern "C" fn(*mut virtio_device) -> u64>,
     pub get_extended_features: Option<unsafe extern "C" fn(*mut virtio_device, *mut u64)>,
     pub finalize_features: Option<unsafe extern "C" fn(*mut virtio_device) -> i32>,
-    pub bus_name: Option<unsafe extern "C" fn(*mut virtio_device) -> *const core::ffi::c_char>,
+    pub bus_name: Option<unsafe extern "C" fn(*mut virtio_device) -> *const kernel::ffi::c_char>,
     pub set_vq_affinity: Option<unsafe extern "C" fn(*mut virtqueue, *const cpumask) -> i32>,
     pub get_vq_affinity: Option<unsafe extern "C" fn(*mut virtio_device, i32) -> *const cpumask>,
     pub get_shm_region: Option<unsafe extern "C" fn(*mut virtio_device, *mut virtio_shm_region, u8) -> bool>,
@@ -48,8 +48,8 @@ pub struct virtio_map_ops {
     pub unmap_page: Option<unsafe extern "C" fn(virtio_map, dma_addr_t, usize, dma_data_direction, usize)>,
     pub sync_single_for_cpu: Option<unsafe extern "C" fn(virtio_map, dma_addr_t, usize, dma_data_direction)>,
     pub sync_single_for_device: Option<unsafe extern "C" fn(virtio_map, dma_addr_t, usize, dma_data_direction)>,
-    pub alloc: Option<unsafe extern "C" fn(virtio_map, usize, *mut dma_addr_t, gfp_t) -> *mut core::ffi::c_void>,
-    pub free: Option<unsafe extern "C" fn(virtio_map, usize, *mut core::ffi::c_void, dma_addr_t, usize)>,
+    pub alloc: Option<unsafe extern "C" fn(virtio_map, usize, *mut dma_addr_t, gfp_t) -> *mut kernel::ffi::c_void>,
+    pub free: Option<unsafe extern "C" fn(virtio_map, usize, *mut kernel::ffi::c_void, dma_addr_t, usize)>,
     pub need_sync: Option<unsafe extern "C" fn(virtio_map, dma_addr_t) -> bool>,
     pub mapping_error: Option<unsafe extern "C" fn(virtio_map, dma_addr_t) -> i32>,
     pub max_mapping_size: Option<unsafe extern "C" fn(virtio_map) -> usize>,
@@ -87,7 +87,7 @@ pub unsafe fn virtio_find_vqs(vdev: *mut virtio_device, nvqs: u32, vqs: *mut *mu
     ((*(*vdev).config).find_vqs.unwrap())(vdev, nvqs, vqs, info, desc)
 }
 
-pub unsafe fn virtio_find_single_vq(vdev: *mut virtio_device, c: Option<vq_callback_t>, n: *const core::ffi::c_char) -> *mut virtqueue {
+pub unsafe fn virtio_find_single_vq(vdev: *mut virtio_device, c: Option<vq_callback_t>, n: *const kernel::ffi::c_char) -> *mut virtqueue {
     let mut info = virtqueue_info { name: n, callback: c, ctx: false };
     let mut vq: *mut virtqueue = core::ptr::null_mut();
     let err = virtio_find_vqs(vdev, 1, &mut vq, &mut info, core::ptr::null_mut());
@@ -105,7 +105,7 @@ pub unsafe fn virtio_device_ready(dev: *mut virtio_device) {
     ((*(*dev).config).set_status.unwrap())(dev, status | VIRTIO_CONFIG_S_DRIVER_OK);
 }
 
-pub unsafe fn virtio_bus_name(vdev: *mut virtio_device) -> *const core::ffi::c_char {
+pub unsafe fn virtio_bus_name(vdev: *mut virtio_device) -> *const kernel::ffi::c_char {
     if (*(*vdev).config).bus_name.is_none() { return b"virtio\0".as_ptr() as *const _; }
     ((*(*vdev).config).bus_name.unwrap())(vdev)
 }

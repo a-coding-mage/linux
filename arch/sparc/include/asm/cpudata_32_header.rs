@@ -11,16 +11,16 @@
 
 #[repr(C)]
 pub struct CpuinfoSparc {
-    pub udelay_val: ::core::ffi::c_ulong,
-    pub clock_tick: ::core::ffi::c_ulong,
-    pub counter: ::core::ffi::c_uint,
+    pub udelay_val: ::kernel::ffi::c_ulong,
+    pub clock_tick: ::kernel::ffi::c_ulong,
+    pub counter: ::kernel::ffi::c_uint,
     #[cfg(CONFIG_SMP)]
-    pub irq_resched_count: ::core::ffi::c_uint,
+    pub irq_resched_count: ::kernel::ffi::c_uint,
     #[cfg(CONFIG_SMP)]
-    pub irq_call_count: ::core::ffi::c_uint,
-    pub prom_node: ::core::ffi::c_int,
-    pub mid: ::core::ffi::c_int,
-    pub next: ::core::ffi::c_int,
+    pub irq_call_count: ::kernel::ffi::c_uint,
+    pub prom_node: ::kernel::ffi::c_int,
+    pub mid: ::kernel::ffi::c_int,
+    pub next: ::kernel::ffi::c_int,
 }
 
 pub type cpuinfo_sparc = CpuinfoSparc;

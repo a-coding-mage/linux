@@ -43,7 +43,7 @@ pub const BFS_DIRS_PER_BLOCK: usize = 32;
 #[repr(C)]
 pub struct bfs_dirent {
     pub ino: __le16,
-    pub name: [core::ffi::c_char; BFS_NAMELEN],
+    pub name: [kernel::ffi::c_char; BFS_NAMELEN],
 }
 
 /* BFS superblock layout on disk */
@@ -56,8 +56,8 @@ pub struct bfs_super_block {
     pub s_to: __le32,
     pub s_bfrom: __s32,
     pub s_bto: __s32,
-    pub s_fsname: [core::ffi::c_char; 6],
-    pub s_volume: [core::ffi::c_char; 6],
+    pub s_fsname: [kernel::ffi::c_char; 6],
+    pub s_volume: [kernel::ffi::c_char; 6],
     pub s_padding: [__u32; 118],
 }
 

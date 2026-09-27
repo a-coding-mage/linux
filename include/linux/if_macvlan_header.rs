@@ -18,16 +18,16 @@ pub struct macvlan_dev {
     pub port: *mut macvlan_port,
     pub lowerdev: *mut net_device,
     pub dev_tracker: netdevice_tracker,
-    pub accel_priv: *mut core::ffi::c_void,
+    pub accel_priv: *mut kernel::ffi::c_void,
     pub pcpu_stats: *mut vlan_pcpu_stats,
 
     // DECLARE_BITMAP(mc_filter, MACVLAN_MC_FILTER_SZ)
-    pub mc_filter: [core::ffi::c_ulong; 4],
+    pub mc_filter: [kernel::ffi::c_ulong; 4],
 
     pub set_features: netdev_features_t,
     pub mode: macvlan_mode,
     pub flags: u16,
-    pub macaddr_count: core::ffi::c_uint,
+    pub macaddr_count: kernel::ffi::c_uint,
     pub bc_queue_len_req: u32,
     #[cfg(CONFIG_NET_POLL_CONTROLLER)]
     pub netpoll: *mut netpoll,
@@ -35,7 +35,7 @@ pub struct macvlan_dev {
 
 pub unsafe fn macvlan_count_rx(
     vlan: *const macvlan_dev,
-    len: core::ffi::c_uint,
+    len: kernel::ffi::c_uint,
     success: bool,
     multicast: bool,
 ) {
@@ -60,9 +60,9 @@ unsafe extern "C" {
         dev: *mut net_device,
         params: *mut rtnl_newlink_params,
         extack: *mut netlink_ext_ack,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn macvlan_dellink(dev: *mut net_device, head: *mut list_head);
-    pub fn macvlan_link_register(ops: *mut rtnl_link_ops) -> core::ffi::c_int;
+    pub fn macvlan_link_register(ops: *mut rtnl_link_ops) -> kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_MACVLAN)]
@@ -77,7 +77,7 @@ pub unsafe fn macvlan_dev_real_dev(_dev: *const net_device) -> *mut net_device {
     core::ptr::null_mut()
 }
 
-pub unsafe fn macvlan_accel_priv(dev: *mut net_device) -> *mut core::ffi::c_void {
+pub unsafe fn macvlan_accel_priv(dev: *mut net_device) -> *mut kernel::ffi::c_void {
     let macvlan: *mut macvlan_dev = netdev_priv(dev);
     (*macvlan).accel_priv
 }
@@ -89,7 +89,7 @@ pub unsafe fn macvlan_supports_dest_filter(dev: *mut net_device) -> bool {
         || (*macvlan).mode == MACVLAN_MODE_BRIDGE
 }
 
-pub unsafe fn macvlan_release_l2fw_offload(dev: *mut net_device) -> core::ffi::c_int {
+pub unsafe fn macvlan_release_l2fw_offload(dev: *mut net_device) -> kernel::ffi::c_int {
     let macvlan: *mut macvlan_dev = netdev_priv(dev);
     (*macvlan).accel_priv = core::ptr::null_mut();
     dev_uc_add((*macvlan).lowerdev, (*dev).dev_addr)

@@ -29,17 +29,17 @@ pub struct Resource {
 }
 #[repr(C)]
 pub struct RalinkSocInfo {
-    pub compatible: *const core::ffi::c_char,
-    pub sys_type: [core::ffi::c_char; RAMIPS_SYS_TYPE_LEN],
+    pub compatible: *const kernel::ffi::c_char,
+    pub sys_type: [kernel::ffi::c_char; RAMIPS_SYS_TYPE_LEN],
     pub mem_detect: Option<unsafe extern "C" fn()>,
 }
 #[repr(C)]
 pub struct SocDevice;
 #[repr(C)]
 pub struct SocDeviceAttribute {
-    pub soc_id: *const core::ffi::c_char,
-    pub family: *const core::ffi::c_char,
-    pub revision: *const core::ffi::c_char,
+    pub soc_id: *const kernel::ffi::c_char,
+    pub family: *const kernel::ffi::c_char,
+    pub revision: *const kernel::ffi::c_char,
     pub data: *mut RalinkSocInfo,
 }
 
@@ -51,7 +51,7 @@ extern "C" {
     fn write_gcr_reg1_mask(value: ResourceSize);
     fn read_gcr_reg1_base() -> ResourceSize;
     fn read_gcr_reg1_mask() -> ResourceSize;
-    fn panic(message: *const core::ffi::c_char) -> !;
+    fn panic(message: *const kernel::ffi::c_char) -> !;
     fn memblock_add(base: PhysAddr, size: PhysAddr);
     fn soc_device_register(attr: *mut SocDeviceAttribute) -> *mut SocDevice;
     fn kfree(ptr: *mut SocDeviceAttribute);
@@ -86,7 +86,7 @@ pub unsafe extern "C" fn pcibios_root_bridge_prepare(bridge: *mut PciHostBridge)
 }
 
 pub unsafe extern "C" fn mips_cpc_default_phys_base() -> PhysAddr {
-    panic(b"Cannot detect cpc address\0".as_ptr() as *const core::ffi::c_char)
+    panic(b"Cannot detect cpc address\0".as_ptr() as *const kernel::ffi::c_char)
 }
 
 unsafe fn mt7621_addr_wraparound_test(size: PhysAddr) -> bool {

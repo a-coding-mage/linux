@@ -61,16 +61,16 @@ pub const SRMMU_FAULT_ADDR: u32 = 0x00000400;
 
 #[cfg(not(feature = "assembler"))]
 extern "C" {
-    pub static mut last_valid_pfn: core::ffi::c_ulong;
-    pub static mut srmmu_nocache_pool: *mut core::ffi::c_void;
+    pub static mut last_valid_pfn: kernel::ffi::c_ulong;
+    pub static mut srmmu_nocache_pool: *mut kernel::ffi::c_void;
 
-    pub fn srmmu_get_mmureg() -> core::ffi::c_uint;
-    pub fn srmmu_set_mmureg(regval: core::ffi::c_ulong);
-    pub fn srmmu_set_ctable_ptr(paddr: core::ffi::c_ulong);
-    pub fn srmmu_set_context(context: core::ffi::c_int);
-    pub fn srmmu_get_context() -> core::ffi::c_int;
-    pub fn srmmu_get_fstatus() -> core::ffi::c_uint;
-    pub fn srmmu_get_faddr() -> core::ffi::c_uint;
+    pub fn srmmu_get_mmureg() -> kernel::ffi::c_uint;
+    pub fn srmmu_set_mmureg(regval: kernel::ffi::c_ulong);
+    pub fn srmmu_set_ctable_ptr(paddr: kernel::ffi::c_ulong);
+    pub fn srmmu_set_context(context: kernel::ffi::c_int);
+    pub fn srmmu_get_context() -> kernel::ffi::c_int;
+    pub fn srmmu_get_fstatus() -> kernel::ffi::c_uint;
+    pub fn srmmu_get_faddr() -> kernel::ffi::c_uint;
 }
 
 // __nocache_pa, __nocache_va, and __nocache_fix retain the C macros' intent;
@@ -84,10 +84,10 @@ pub unsafe fn srmmu_flush_whole_tlb() {
 }
 
 #[cfg(not(feature = "assembler"))]
-pub unsafe fn srmmu_get_pte(addr: core::ffi::c_ulong) -> core::ffi::c_ulong {
+pub unsafe fn srmmu_get_pte(addr: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     // Original inline assembly performs lda[((addr & 0xfffff000) | 0x400)]
     // using ASI_M_FLUSH_PROBE and returns the loaded entry.
-    let mut entry: core::ffi::c_ulong;
+    let mut entry: kernel::ffi::c_ulong;
     core::arch::asm!("lda [%1] %2, %0", out(reg) entry, in(reg) (addr & 0xfffff000) | 0x400, const ASI_M_FLUSH_PROBE);
     entry
 }

@@ -71,10 +71,10 @@ pub const EXTAL_FREQ_IN_MEGA_HZ: u32 = 24;
 
 #[repr(C)]
 pub struct cpg_core_clk {
-    pub name: *const core::ffi::c_char, pub id: u32, pub parent: u32, pub div: u32, pub mult: u32,
+    pub name: *const kernel::ffi::c_char, pub id: u32, pub parent: u32, pub div: u32, pub mult: u32,
     pub type_: u32, pub conf: u32, pub sconf: u32, pub dtable: *const clk_div_table,
     pub mtable: *const u32, pub invalid_rate: usize, pub max_or_default_rate: usize,
-    pub parent_names: *const *const core::ffi::c_char, pub notifier: notifier_fn_t,
+    pub parent_names: *const *const kernel::ffi::c_char, pub notifier: notifier_fn_t,
     pub flag: u32, pub mux_flags: u32, pub num_parents: i32,
 }
 
@@ -82,7 +82,7 @@ pub struct cpg_core_clk {
 pub enum clk_types { CLK_TYPE_IN, CLK_TYPE_FF, CLK_TYPE_SAM_PLL, CLK_TYPE_G3L_PLL, CLK_TYPE_G3S_PLL, CLK_TYPE_DIV, CLK_TYPE_G3S_DIV, CLK_TYPE_MUX, CLK_TYPE_SD_MUX, CLK_TYPE_SIPLL5, CLK_TYPE_PLL5_4_MUX, CLK_TYPE_DSI_DIV }
 
 #[repr(C)]
-pub struct rzg2l_mod_clk { pub name: *const core::ffi::c_char, pub id: u32, pub parent: u32, pub mstop_conf: u32, pub off: u16, pub bit: u8, pub is_coupled: bool }
+pub struct rzg2l_mod_clk { pub name: *const kernel::ffi::c_char, pub id: u32, pub parent: u32, pub mstop_conf: u32, pub off: u16, pub bit: u8, pub is_coupled: bool }
 
 #[repr(C)]
 pub struct rzg2l_reset { pub off: u16, pub bit: u8, pub monbit: i8 }
@@ -103,8 +103,8 @@ extern "C" {
     pub static r9a08g045_cpg_info: rzg2l_cpg_info;
     pub static r9a08g046_cpg_info: rzg2l_cpg_info;
     pub static r9a09g011_cpg_info: rzg2l_cpg_info;
-    pub fn rzg2l_cpg_sd_clk_mux_notifier(nb: *mut notifier_block, event: usize, data: *mut core::ffi::c_void) -> i32;
-    pub fn rzg3s_cpg_div_clk_notifier(nb: *mut notifier_block, event: usize, data: *mut core::ffi::c_void) -> i32;
+    pub fn rzg2l_cpg_sd_clk_mux_notifier(nb: *mut notifier_block, event: usize, data: *mut kernel::ffi::c_void) -> i32;
+    pub fn rzg3s_cpg_div_clk_notifier(nb: *mut notifier_block, event: usize, data: *mut kernel::ffi::c_void) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

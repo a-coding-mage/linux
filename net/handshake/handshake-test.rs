@@ -22,7 +22,7 @@ unsafe extern "C" fn test_done_func(
 
 #[repr(C)]
 struct handshake_req_alloc_test_param {
-    desc: *const core::ffi::c_char,
+    desc: *const kernel::ffi::c_char,
     proto: *mut handshake_proto,
     gfp: gfp_t,
     expect_success: bool,
@@ -69,7 +69,7 @@ static handshake_req_alloc_params: [handshake_req_alloc_test_param; 7] = [
     handshake_req_alloc_test_param { desc: c"handshake_req_alloc all good".as_ptr(), proto: unsafe { &raw mut handshake_req_alloc_proto_good }, gfp: GFP_KERNEL, expect_success: true },
 ];
 
-unsafe extern "C" fn handshake_req_alloc_get_desc(param: *const handshake_req_alloc_test_param, desc: *mut core::ffi::c_char) {
+unsafe extern "C" fn handshake_req_alloc_get_desc(param: *const handshake_req_alloc_test_param, desc: *mut kernel::ffi::c_char) {
     strscpy(desc, (*param).desc, KUNIT_PARAM_DESC_SIZE);
 }
 

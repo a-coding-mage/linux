@@ -26,13 +26,13 @@ pub struct mb_cache_entry {
 	pub e_refcnt: atomic_t,
 	/* Key in hash - stable during lifetime of the entry */
 	pub e_key: u32,
-	pub e_flags: ::core::ffi::c_ulong,
+	pub e_flags: ::kernel::ffi::c_ulong,
 	/* User provided value - stable during lifetime of the entry */
 	pub e_value: u64,
 }
 
 unsafe extern "C" {
-	pub fn mb_cache_create(bucket_bits: ::core::ffi::c_int) -> *mut mb_cache;
+	pub fn mb_cache_create(bucket_bits: ::kernel::ffi::c_int) -> *mut mb_cache;
 	pub fn mb_cache_destroy(cache: *mut mb_cache);
 
 	pub fn mb_cache_entry_create(
@@ -41,17 +41,17 @@ unsafe extern "C" {
 		key: u32,
 		value: u64,
 		reusable: bool,
-	) -> ::core::ffi::c_int;
+	) -> ::kernel::ffi::c_int;
 	pub fn __mb_cache_entry_free(cache: *mut mb_cache, entry: *mut mb_cache_entry);
 	pub fn mb_cache_entry_wait_unused(entry: *mut mb_cache_entry);
 
-	pub fn atomic_dec_return(v: *mut atomic_t) -> ::core::ffi::c_uint;
+	pub fn atomic_dec_return(v: *mut atomic_t) -> ::kernel::ffi::c_uint;
 	pub fn wake_up_var(var: *mut atomic_t);
 }
 
 #[inline]
 pub unsafe fn mb_cache_entry_put(cache: *mut mb_cache, entry: *mut mb_cache_entry) {
-	let cnt: ::core::ffi::c_uint = atomic_dec_return(&mut (*entry).e_refcnt);
+	let cnt: ::kernel::ffi::c_uint = atomic_dec_return(&mut (*entry).e_refcnt);
 
 	if cnt > 0 {
 		if cnt <= 2 {

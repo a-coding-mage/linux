@@ -30,13 +30,13 @@ pub struct fanotify_info {
 #[inline] pub unsafe fn fanotify_info_dir_fh(i: *mut fanotify_info) -> *mut fanotify_fh { (*i).buf.as_mut_ptr() as *mut fanotify_fh }
 #[inline] pub unsafe fn fanotify_info_dir2_fh(i: *mut fanotify_info) -> *mut fanotify_fh { (*i).buf.as_mut_ptr().add((*i).dir_fh_totlen as usize) as *mut fanotify_fh }
 #[inline] pub unsafe fn fanotify_info_file_fh(i: *mut fanotify_info) -> *mut fanotify_fh { (*i).buf.as_mut_ptr().add((*i).dir_fh_totlen as usize + (*i).dir2_fh_totlen as usize) as *mut fanotify_fh }
-#[inline] pub unsafe fn fanotify_info_name(i: *mut fanotify_info) -> *mut core::ffi::c_char { if (*i).name_len == 0 { core::ptr::null_mut() } else { (*i).buf.as_mut_ptr().add((*i).dir_fh_totlen as usize + (*i).dir2_fh_totlen as usize + (*i).file_fh_totlen as usize) as *mut _ } }
-#[inline] pub unsafe fn fanotify_info_name2(i: *mut fanotify_info) -> *mut core::ffi::c_char { if (*i).name2_len == 0 { core::ptr::null_mut() } else { fanotify_info_name(i).add((*i).name_len as usize + 1) } }
+#[inline] pub unsafe fn fanotify_info_name(i: *mut fanotify_info) -> *mut kernel::ffi::c_char { if (*i).name_len == 0 { core::ptr::null_mut() } else { (*i).buf.as_mut_ptr().add((*i).dir_fh_totlen as usize + (*i).dir2_fh_totlen as usize + (*i).file_fh_totlen as usize) as *mut _ } }
+#[inline] pub unsafe fn fanotify_info_name2(i: *mut fanotify_info) -> *mut kernel::ffi::c_char { if (*i).name2_len == 0 { core::ptr::null_mut() } else { fanotify_info_name(i).add((*i).name_len as usize + 1) } }
 #[inline] pub unsafe fn fanotify_info_init(i: *mut fanotify_info) { (*i).dir_fh_totlen=0; (*i).dir2_fh_totlen=0; (*i).file_fh_totlen=0; (*i).name_len=0; (*i).name2_len=0; }
 
 #[inline] pub unsafe fn fanotify_fh_has_ext_buf(fh: *mut fanotify_fh) -> bool { (*fh).flags & FANOTIFY_FH_FLAG_EXT_BUF != 0 }
-#[inline] pub unsafe fn fanotify_fh_ext_buf_ptr(fh: *mut fanotify_fh) -> *mut *mut core::ffi::c_char { (fh.add(1) as *mut *mut core::ffi::c_char) }
-#[inline] pub unsafe fn fanotify_fh_ext_buf(fh: *mut fanotify_fh) -> *mut core::ffi::c_void { *fanotify_fh_ext_buf_ptr(fh) as *mut _ }
+#[inline] pub unsafe fn fanotify_fh_ext_buf_ptr(fh: *mut fanotify_fh) -> *mut *mut kernel::ffi::c_char { (fh.add(1) as *mut *mut kernel::ffi::c_char) }
+#[inline] pub unsafe fn fanotify_fh_ext_buf(fh: *mut fanotify_fh) -> *mut kernel::ffi::c_void { *fanotify_fh_ext_buf_ptr(fh) as *mut _ }
 #[inline] pub unsafe fn fanotify_fh_buf(fh: *mut fanotify_fh) -> *mut u8 { if fanotify_fh_has_ext_buf(fh) { fanotify_fh_ext_buf(fh) as *mut u8 } else { fh.add(1) as *mut u8 } }
 
 #[repr(C)] pub struct fanotify_event { pub fse: fsnotify_event, pub merge_list: hlist_node, pub mask: u32, pub type_: u32, pub hash: u32, pub pid: *mut pid }

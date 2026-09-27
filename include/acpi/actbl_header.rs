@@ -25,14 +25,14 @@ pub const ACPI_OEM_NAME: &str = "OEM";
 /* All table and structure layouts are byte-packed to match ACPI tables. */
 #[repr(C, packed)]
 pub struct acpi_table_header {
-    pub signature: [core::ffi::c_char; ACPI_NAMESEG_SIZE],
+    pub signature: [kernel::ffi::c_char; ACPI_NAMESEG_SIZE],
     pub length: u32,
     pub revision: u8,
     pub checksum: u8,
-    pub oem_id: [core::ffi::c_char; ACPI_OEM_ID_SIZE],
-    pub oem_table_id: [core::ffi::c_char; ACPI_OEM_TABLE_ID_SIZE],
+    pub oem_id: [kernel::ffi::c_char; ACPI_OEM_ID_SIZE],
+    pub oem_table_id: [kernel::ffi::c_char; ACPI_OEM_TABLE_ID_SIZE],
     pub oem_revision: u32,
-    pub asl_compiler_id: [core::ffi::c_char; ACPI_NAMESEG_SIZE],
+    pub asl_compiler_id: [kernel::ffi::c_char; ACPI_NAMESEG_SIZE],
     pub asl_compiler_revision: u32,
 }
 
@@ -47,16 +47,16 @@ pub struct acpi_generic_address {
 
 #[repr(C, packed)]
 pub struct acpi_table_rsdp {
-    pub signature: [core::ffi::c_char; 8], pub checksum: u8,
-    pub oem_id: [core::ffi::c_char; ACPI_OEM_ID_SIZE], pub revision: u8,
+    pub signature: [kernel::ffi::c_char; 8], pub checksum: u8,
+    pub oem_id: [kernel::ffi::c_char; ACPI_OEM_ID_SIZE], pub revision: u8,
     pub rsdt_physical_address: u32, pub length: u32,
     pub xsdt_physical_address: u64, pub extended_checksum: u8, pub reserved: [u8; 3],
 }
 
 #[repr(C, packed)]
 pub struct acpi_rsdp_common {
-    pub signature: [core::ffi::c_char; 8], pub checksum: u8,
-    pub oem_id: [core::ffi::c_char; ACPI_OEM_ID_SIZE], pub revision: u8,
+    pub signature: [kernel::ffi::c_char; 8], pub checksum: u8,
+    pub oem_id: [kernel::ffi::c_char; ACPI_OEM_ID_SIZE], pub revision: u8,
     pub rsdt_physical_address: u32,
 }
 
@@ -74,7 +74,7 @@ pub const ACPI_XSDT_ENTRY_SIZE: usize = core::mem::size_of::<u64>();
 
 #[repr(C, packed)]
 pub struct acpi_table_facs {
-    pub signature: [core::ffi::c_char; 4], pub length: u32, pub hardware_signature: u32,
+    pub signature: [kernel::ffi::c_char; 4], pub length: u32, pub hardware_signature: u32,
     pub firmware_waking_vector: u32, pub global_lock: u32, pub flags: u32,
     pub xfirmware_waking_vector: u64, pub version: u8, pub reserved: [u8; 3],
     pub ospm_flags: u32, pub reserved1: [u8; 24],
@@ -132,7 +132,7 @@ pub const ACPI_X_SLEEP_TYPE_POSITION: u32 = 0x02;
 pub const ACPI_X_SLEEP_ENABLE: u32 = 0x20;
 
 #[repr(C)]
-pub union acpi_name_union { pub integer: u32, pub ascii: [core::ffi::c_char; 4] }
+pub union acpi_name_union { pub integer: u32, pub ascii: [kernel::ffi::c_char; 4] }
 
 #[repr(C)]
 pub struct acpi_table_desc {

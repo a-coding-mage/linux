@@ -5,8 +5,8 @@
 // kernel translation unit.
 
 extern "C" {
-    static mut in_suspend: core::ffi::c_int;
-    static mut __hyp_stub_vectors: [core::ffi::c_char; 0];
+    static mut in_suspend: kernel::ffi::c_int;
+    static mut __hyp_stub_vectors: [kernel::ffi::c_char; 0];
 }
 
 const EINVAL: i32 = 22;
@@ -17,7 +17,7 @@ const EBUSY: i32 = 16;
 
 #[repr(C)]
 pub struct ArchHibernateHdrInvariants {
-    pub uts_version: [core::ffi::c_char; __NEW_UTS_LEN + 1],
+    pub uts_version: [kernel::ffi::c_char; __NEW_UTS_LEN + 1],
 }
 
 #[repr(C)]
@@ -51,7 +51,7 @@ pub unsafe extern "C" fn save_processor_state() {}
 pub unsafe extern "C" fn restore_processor_state() {}
 
 #[no_mangle]
-pub unsafe extern "C" fn arch_hibernation_header_save(addr: *mut core::ffi::c_void, max_size: c_uint) -> c_int {
+pub unsafe extern "C" fn arch_hibernation_header_save(addr: *mut kernel::ffi::c_void, max_size: c_uint) -> c_int {
     let hdr = addr.cast::<ArchHibernateHdr>();
     if (max_size as usize) < core::mem::size_of::<ArchHibernateHdr>() { return -EOVERFLOW; }
     arch_hdr_invariants(&mut (*hdr).invariants);
@@ -65,7 +65,7 @@ pub unsafe extern "C" fn arch_hibernation_header_save(addr: *mut core::ffi::c_vo
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn arch_hibernation_header_restore(addr: *mut core::ffi::c_void) -> c_int {
+pub unsafe extern "C" fn arch_hibernation_header_restore(addr: *mut kernel::ffi::c_void) -> c_int {
     let mut invariants: ArchHibernateHdrInvariants = core::mem::zeroed();
     let hdr = addr.cast::<ArchHibernateHdr>();
     arch_hdr_invariants(&mut invariants);
@@ -81,13 +81,13 @@ pub unsafe extern "C" fn arch_hibernation_header_restore(addr: *mut core::ffi::c
     0
 }
 
-unsafe extern "C" fn hibernate_page_alloc(arg: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
+unsafe extern "C" fn hibernate_page_alloc(arg: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void {
     get_safe_page(arg as usize as gfp_t) as *mut _
 }
 
-unsafe fn create_safe_exec_page(src_start: *mut core::ffi::c_void, length: usize, phys_dst_addr: *mut phys_addr_t) -> c_int {
+unsafe fn create_safe_exec_page(src_start: *mut kernel::ffi::c_void, length: usize, phys_dst_addr: *mut phys_addr_t) -> c_int {
     let mut trans_info = trans_pgd_info { trans_alloc_page: Some(hibernate_page_alloc), trans_alloc_arg: GFP_ATOMIC as usize as *mut _ };
-    let page = get_safe_page(GFP_ATOMIC) as *mut core::ffi::c_void;
+    let page = get_safe_page(GFP_ATOMIC) as *mut kernel::ffi::c_void;
     if page.is_null() { return -ENOMEM; }
     memcpy(page, src_start, length);
     caches_clean_inval_pou(page as usize, page as usize + length);
@@ -142,7 +142,7 @@ pub unsafe extern "C" fn swsusp_arch_resume() -> c_int {
     let mut hibernate_exit = core::ptr::null_mut(); let rc = create_safe_exec_page(__hibernate_exit_text_start as *mut _, exit_size, &mut hibernate_exit as *mut _ as *mut _); if rc != 0 { pr_err!("Failed to create safe executable page for hibernate_exit code.\n"); return rc; }
     if el2_reset_needed() { __hyp_set_vectors(el2_vectors); }
     local_daif_save();
-    core::mem::transmute::<*mut _, unsafe extern "C" fn(phys_addr_t, phys_addr_t, Option<unsafe extern "C" fn()>, *mut core::ffi::c_void, phys_addr_t, phys_addr_t) -> !>(hibernate_exit)(virt_to_phys(tmp_pg_dir), resume_hdr.ttbr1_el1, resume_hdr.reenter_kernel, restore_pblist, resume_hdr.__hyp_stub_vectors, virt_to_phys(zero_page));
+    core::mem::transmute::<*mut _, unsafe extern "C" fn(phys_addr_t, phys_addr_t, Option<unsafe extern "C" fn()>, *mut kernel::ffi::c_void, phys_addr_t, phys_addr_t) -> !>(hibernate_exit)(virt_to_phys(tmp_pg_dir), resume_hdr.ttbr1_el1, resume_hdr.reenter_kernel, restore_pblist, resume_hdr.__hyp_stub_vectors, virt_to_phys(zero_page));
 }
 
 pub unsafe extern "C" fn hibernate_resume_nonboot_cpu_disable() -> c_int { if sleep_cpu < 0 { pr_err!("Failing to resume from hibernate on an unknown CPU.\n"); return -ENODEV; } freeze_secondary_cpus(sleep_cpu) }

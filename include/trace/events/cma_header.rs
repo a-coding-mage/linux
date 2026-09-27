@@ -4,14 +4,14 @@
 // The C header uses the Linux tracepoint TRACE_EVENT infrastructure.  The
 // declarations below preserve the event entry layouts and printk formats.
 
-use core::ffi::{c_char, c_void};
+use kernel::ffi::{c_char, c_void};
 
 #[repr(C)]
 pub struct CmaReleaseEntry {
     pub name: *const c_char,
-    pub pfn: libc::c_ulong,
+    pub pfn: kernel::ffi::c_ulong,
     pub page: *const c_void,
-    pub count: libc::c_ulong,
+    pub count: kernel::ffi::c_ulong,
 }
 
 pub const CMA_RELEASE_PRINTK: &str =
@@ -20,10 +20,10 @@ pub const CMA_RELEASE_PRINTK: &str =
 #[repr(C)]
 pub struct CmaAllocStartEntry {
     pub name: *const c_char,
-    pub request_count: libc::c_ulong,
-    pub available_count: libc::c_ulong,
-    pub total_count: libc::c_ulong,
-    pub align: libc::c_uint,
+    pub request_count: kernel::ffi::c_ulong,
+    pub available_count: kernel::ffi::c_ulong,
+    pub total_count: kernel::ffi::c_ulong,
+    pub align: kernel::ffi::c_uint,
 }
 
 pub const CMA_ALLOC_START_PRINTK: &str =
@@ -32,11 +32,11 @@ pub const CMA_ALLOC_START_PRINTK: &str =
 #[repr(C)]
 pub struct CmaAllocFinishEntry {
     pub name: *const c_char,
-    pub pfn: libc::c_ulong,
+    pub pfn: kernel::ffi::c_ulong,
     pub page: *const c_void,
-    pub count: libc::c_ulong,
-    pub align: libc::c_uint,
-    pub errorno: libc::c_int,
+    pub count: kernel::ffi::c_ulong,
+    pub align: kernel::ffi::c_uint,
+    pub errorno: kernel::ffi::c_int,
 }
 
 pub const CMA_ALLOC_FINISH_PRINTK: &str =
@@ -45,10 +45,10 @@ pub const CMA_ALLOC_FINISH_PRINTK: &str =
 #[repr(C)]
 pub struct CmaAllocBusyRetryEntry {
     pub name: *const c_char,
-    pub pfn: libc::c_ulong,
+    pub pfn: kernel::ffi::c_ulong,
     pub page: *const c_void,
-    pub count: libc::c_ulong,
-    pub align: libc::c_uint,
+    pub count: kernel::ffi::c_ulong,
+    pub align: kernel::ffi::c_uint,
 }
 
 pub const CMA_ALLOC_BUSY_RETRY_PRINTK: &str =

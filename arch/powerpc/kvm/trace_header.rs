@@ -8,16 +8,16 @@
 /// Tracepoint for guest mode entry.
 #[repr(C)]
 pub struct KvmPpcInstrEntry {
-    pub inst: ::core::ffi::c_uint,
-    pub pc: ::core::ffi::c_ulong,
-    pub emulate: ::core::ffi::c_uint,
+    pub inst: ::kernel::ffi::c_uint,
+    pub pc: ::kernel::ffi::c_ulong,
+    pub emulate: ::kernel::ffi::c_uint,
 }
 
 #[inline]
 pub fn kvm_ppc_instr(
-    inst: ::core::ffi::c_uint,
-    _pc: ::core::ffi::c_ulong,
-    emulate: ::core::ffi::c_uint,
+    inst: ::kernel::ffi::c_uint,
+    _pc: ::kernel::ffi::c_ulong,
+    emulate: ::kernel::ffi::c_uint,
 ) -> KvmPpcInstrEntry {
     KvmPpcInstrEntry { inst, pc: _pc, emulate }
 }
@@ -26,11 +26,11 @@ pub const KVM_PPC_INSTR_PRINTK: &str = "inst %u pc 0x%lx emulate %u\n";
 
 #[repr(C)]
 pub struct KvmStlbInvalEntry {
-    pub stlb_index: ::core::ffi::c_uint,
+    pub stlb_index: ::kernel::ffi::c_uint,
 }
 
 #[inline]
-pub fn kvm_stlb_inval(stlb_index: ::core::ffi::c_uint) -> KvmStlbInvalEntry {
+pub fn kvm_stlb_inval(stlb_index: ::kernel::ffi::c_uint) -> KvmStlbInvalEntry {
     KvmStlbInvalEntry { stlb_index }
 }
 
@@ -38,20 +38,20 @@ pub const KVM_STLB_INVAL_PRINTK: &str = "stlb_index %u";
 
 #[repr(C)]
 pub struct KvmStlbWriteEntry {
-    pub victim: ::core::ffi::c_uint,
-    pub tid: ::core::ffi::c_uint,
-    pub word0: ::core::ffi::c_uint,
-    pub word1: ::core::ffi::c_uint,
-    pub word2: ::core::ffi::c_uint,
+    pub victim: ::kernel::ffi::c_uint,
+    pub tid: ::kernel::ffi::c_uint,
+    pub word0: ::kernel::ffi::c_uint,
+    pub word1: ::kernel::ffi::c_uint,
+    pub word2: ::kernel::ffi::c_uint,
 }
 
 #[inline]
 pub fn kvm_stlb_write(
-    victim: ::core::ffi::c_uint,
-    tid: ::core::ffi::c_uint,
-    word0: ::core::ffi::c_uint,
-    word1: ::core::ffi::c_uint,
-    word2: ::core::ffi::c_uint,
+    victim: ::kernel::ffi::c_uint,
+    tid: ::kernel::ffi::c_uint,
+    word0: ::kernel::ffi::c_uint,
+    word1: ::kernel::ffi::c_uint,
+    word2: ::kernel::ffi::c_uint,
 ) -> KvmStlbWriteEntry {
     KvmStlbWriteEntry { victim, tid, word0, word1, word2 }
 }
@@ -60,20 +60,20 @@ pub const KVM_STLB_WRITE_PRINTK: &str = "victim %u tid %u w0 %u w1 %u w2 %u";
 
 #[repr(C)]
 pub struct KvmGtlbWriteEntry {
-    pub gtlb_index: ::core::ffi::c_uint,
-    pub tid: ::core::ffi::c_uint,
-    pub word0: ::core::ffi::c_uint,
-    pub word1: ::core::ffi::c_uint,
-    pub word2: ::core::ffi::c_uint,
+    pub gtlb_index: ::kernel::ffi::c_uint,
+    pub tid: ::kernel::ffi::c_uint,
+    pub word0: ::kernel::ffi::c_uint,
+    pub word1: ::kernel::ffi::c_uint,
+    pub word2: ::kernel::ffi::c_uint,
 }
 
 #[inline]
 pub fn kvm_gtlb_write(
-    gtlb_index: ::core::ffi::c_uint,
-    tid: ::core::ffi::c_uint,
-    word0: ::core::ffi::c_uint,
-    word1: ::core::ffi::c_uint,
-    word2: ::core::ffi::c_uint,
+    gtlb_index: ::kernel::ffi::c_uint,
+    tid: ::kernel::ffi::c_uint,
+    word0: ::kernel::ffi::c_uint,
+    word1: ::kernel::ffi::c_uint,
+    word2: ::kernel::ffi::c_uint,
 ) -> KvmGtlbWriteEntry {
     KvmGtlbWriteEntry { gtlb_index, tid, word0, word1, word2 }
 }

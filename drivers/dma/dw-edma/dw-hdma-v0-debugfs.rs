@@ -16,11 +16,11 @@ const REGISTERS_STR: &[u8] = b"registers\0";
 
 #[repr(C)]
 struct dw_hdma_debugfs_entry {
-    name: *const core::ffi::c_char,
-    reg: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    reg: *mut kernel::ffi::c_void,
 }
 
-unsafe fn dw_hdma_debugfs_u32_get(data: *mut core::ffi::c_void, val: *mut u64) -> i32 {
+unsafe fn dw_hdma_debugfs_u32_get(data: *mut kernel::ffi::c_void, val: *mut u64) -> i32 {
     let entry = data as *mut dw_hdma_debugfs_entry;
     let reg = (*entry).reg;
     *val = readl(reg) as u64;
@@ -29,7 +29,7 @@ unsafe fn dw_hdma_debugfs_u32_get(data: *mut core::ffi::c_void, val: *mut u64) -
 
 // DEFINE_DEBUGFS_ATTRIBUTE(fops_x32, dw_hdma_debugfs_u32_get, NULL, "0x%08llx\n");
 extern "C" {
-    static fops_x32: core::ffi::c_void;
+    static fops_x32: kernel::ffi::c_void;
 }
 
 unsafe fn dw_hdma_debugfs_create_x32(
@@ -54,7 +54,7 @@ unsafe fn dw_hdma_debugfs_create_x32(
             (*entries.add(i as usize)).name,
             0o444,
             dent,
-            entries.add(i as usize) as *mut core::ffi::c_void,
+            entries.add(i as usize) as *mut kernel::ffi::c_void,
             &fops_x32,
         );
     }

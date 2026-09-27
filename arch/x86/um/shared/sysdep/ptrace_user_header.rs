@@ -6,7 +6,7 @@
 /// Equivalent of `PT_OFFSET(r) ((r) * sizeof(long))`.
 #[inline]
 pub const fn pt_offset(r: usize) -> usize {
-    r * core::mem::size_of::<core::ffi::c_long>()
+    r * core::mem::size_of::<kernel::ffi::c_long>()
 }
 
 /// Equivalent of `PT_SYSCALL_NR(regs) ((regs)[HOST_ORIG_AX])`.

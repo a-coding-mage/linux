@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0
 
-unsafe fn xfer_to_guest_mode_work(ti_work: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+unsafe fn xfer_to_guest_mode_work(ti_work: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     let mut ti_work = ti_work;
     loop {
-        let ret: ::core::ffi::c_int;
+        let ret: ::kernel::ffi::c_int;
 
         if ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL) != 0 {
             return -EINTR;
@@ -30,8 +30,8 @@ unsafe fn xfer_to_guest_mode_work(ti_work: ::core::ffi::c_ulong) -> ::core::ffi:
     0
 }
 
-pub unsafe fn xfer_to_guest_mode_handle_work() -> ::core::ffi::c_int {
-    let ti_work: ::core::ffi::c_ulong;
+pub unsafe fn xfer_to_guest_mode_handle_work() -> ::kernel::ffi::c_int {
+    let ti_work: ::kernel::ffi::c_ulong;
 
     /*
      * This is invoked from the outer guest loop with interrupts and

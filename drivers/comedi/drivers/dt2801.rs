@@ -5,7 +5,7 @@
  */
 
 // Linux/Comedi dependencies supplied by the surrounding translation unit.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     fn inb_p(port: u16) -> u8;
@@ -54,9 +54,9 @@ pub struct ComediLrange { pub length: u32, pub range: [u8; 1] }
 #[repr(C)]
 pub struct ComediDevice {
     pub iobase: u16,
-    pub class_dev: *mut core::ffi::c_void,
+    pub class_dev: *mut kernel::ffi::c_void,
     pub subdevices: *mut ComediSubdevice,
-    pub board_ptr: *const core::ffi::c_void,
+    pub board_ptr: *const kernel::ffi::c_void,
     pub board_name: *const c_char,
 }
 #[repr(C)]
@@ -83,9 +83,9 @@ extern "C" {
     fn comedi_dio_insn_config(dev: *mut ComediDevice, s: *mut ComediSubdevice, insn: *mut ComediInsn, data: *mut u32, mask: u32) -> i32;
     fn comedi_check_request_region(dev: *mut ComediDevice, base: i32, len: i32, min: i32, max: i32, io_size: i32) -> i32;
     fn comedi_alloc_subdevices(dev: *mut ComediDevice, n: i32) -> i32;
-    fn comedi_alloc_devpriv(dev: *mut ComediDevice, size: usize) -> *mut core::ffi::c_void;
+    fn comedi_alloc_devpriv(dev: *mut ComediDevice, size: usize) -> *mut kernel::ffi::c_void;
     fn comedi_alloc_subdev_readback(s: *mut ComediSubdevice) -> i32;
-    fn dev_dbg(dev: *mut core::ffi::c_void, fmt: *const c_char, ...);
+    fn dev_dbg(dev: *mut kernel::ffi::c_void, fmt: *const c_char, ...);
 }
 
 static RANGE_DT2801_AI_PGL_BIPOLAR: ComediLrange = ComediLrange { length: 4, range: [0; 1] };

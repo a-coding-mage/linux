@@ -10,7 +10,7 @@ DEFINE_PER_CPU_PAGE_ALIGNED!(exception_stacks, exception_stacks);
 DEFINE_PER_CPU!(cea_exception_stacks *, cea_exception_stacks);
 
 #[cfg(target_arch = "x86_64")]
-DEFINE_PER_CPU_READ_MOSTLY!(core::ffi::c_ulong, _cea_offset);
+DEFINE_PER_CPU_READ_MOSTLY!(kernel::ffi::c_ulong, _cea_offset);
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]

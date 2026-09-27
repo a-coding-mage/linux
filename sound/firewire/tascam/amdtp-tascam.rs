@@ -9,7 +9,7 @@
 //   #include <sound/pcm.h>
 //   #include "tascam.h"
 
-use core::ffi::{c_int, c_uint, c_void};
+use kernel::ffi::{c_int, c_uint, c_void};
 use core::mem::size_of;
 use core::ptr;
 
@@ -159,7 +159,7 @@ extern "C" {
     fn wake_up(wait: *mut wait_queue_head_t);
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 unsafe fn READ_ONCE_bool(p: *const bool_) -> bool_ {
     ptr::read_volatile(p)

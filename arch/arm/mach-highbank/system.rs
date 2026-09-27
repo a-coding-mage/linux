@@ -6,7 +6,7 @@
 // Dependencies supplied by the corresponding kernel headers and source files:
 // linux/io.h, asm/proc-fns.h, linux/reboot.h, core.h, and sysregs.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // C enum reboot_mode; its concrete definition is supplied by the kernel
 // headers.  REBOOT_HARD is the third enumerator in Linux's reboot_mode enum.

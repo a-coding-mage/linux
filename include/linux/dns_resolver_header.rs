@@ -34,14 +34,14 @@ pub type time64_t = i64;
 extern "C" {
     pub fn dns_query(
         net: *mut net,
-        type_: *const core::ffi::c_char,
-        name: *const core::ffi::c_char,
+        type_: *const kernel::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         namelen: size_t,
-        options: *const core::ffi::c_char,
-        _result: *mut *mut core::ffi::c_char,
+        options: *const kernel::ffi::c_char,
+        _result: *mut *mut kernel::ffi::c_char,
         _expiry: *mut time64_t,
         invalidate: bool,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

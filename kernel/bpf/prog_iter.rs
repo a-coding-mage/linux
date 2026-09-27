@@ -7,7 +7,7 @@ pub struct bpf_iter_seq_prog_info {
     pub prog_id: u32,
 }
 
-unsafe fn bpf_prog_seq_start(seq: *mut seq_file, pos: *mut loff_t) -> *mut core::ffi::c_void {
+unsafe fn bpf_prog_seq_start(seq: *mut seq_file, pos: *mut loff_t) -> *mut kernel::ffi::c_void {
     let info = (*seq).private as *mut bpf_iter_seq_prog_info;
     let prog: *mut bpf_prog;
 
@@ -19,20 +19,20 @@ unsafe fn bpf_prog_seq_start(seq: *mut seq_file, pos: *mut loff_t) -> *mut core:
     if *pos == 0 {
         *pos += 1;
     }
-    prog as *mut core::ffi::c_void
+    prog as *mut kernel::ffi::c_void
 }
 
 unsafe fn bpf_prog_seq_next(
     seq: *mut seq_file,
-    v: *mut core::ffi::c_void,
+    v: *mut kernel::ffi::c_void,
     pos: *mut loff_t,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     let info = (*seq).private as *mut bpf_iter_seq_prog_info;
 
     *pos += 1;
     (*info).prog_id += 1;
     bpf_prog_put(v as *mut bpf_prog);
-    bpf_prog_get_curr_or_next(&mut (*info).prog_id) as *mut core::ffi::c_void
+    bpf_prog_get_curr_or_next(&mut (*info).prog_id) as *mut kernel::ffi::c_void
 }
 
 #[repr(C)]
@@ -45,7 +45,7 @@ pub struct bpf_iter__bpf_prog {
 
 unsafe fn __bpf_prog_seq_show(
     seq: *mut seq_file,
-    v: *mut core::ffi::c_void,
+    v: *mut kernel::ffi::c_void,
     in_stop: bool,
 ) -> i32 {
     let mut ctx: bpf_iter__bpf_prog;
@@ -64,11 +64,11 @@ unsafe fn __bpf_prog_seq_show(
     ret
 }
 
-unsafe fn bpf_prog_seq_show(seq: *mut seq_file, v: *mut core::ffi::c_void) -> i32 {
+unsafe fn bpf_prog_seq_show(seq: *mut seq_file, v: *mut kernel::ffi::c_void) -> i32 {
     __bpf_prog_seq_show(seq, v, false)
 }
 
-unsafe fn bpf_prog_seq_stop(seq: *mut seq_file, v: *mut core::ffi::c_void) {
+unsafe fn bpf_prog_seq_stop(seq: *mut seq_file, v: *mut kernel::ffi::c_void) {
     if v.is_null() {
         let _ = __bpf_prog_seq_show(seq, v, true);
     } else {
@@ -94,7 +94,7 @@ static bpf_prog_seq_info: bpf_iter_seq_info = bpf_iter_seq_info {
 };
 
 static mut bpf_prog_reg_info: bpf_iter_reg = bpf_iter_reg {
-    target: b"bpf_prog\0".as_ptr() as *const core::ffi::c_char,
+    target: b"bpf_prog\0".as_ptr() as *const kernel::ffi::c_char,
     ctx_arg_info_size: 1,
     ctx_arg_info: [bpf_ctx_arg_info {
         offset: core::mem::offset_of!(bpf_iter__bpf_prog, prog),

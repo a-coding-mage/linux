@@ -7,7 +7,7 @@
 // Translated from the corresponding C implementation. Kernel declarations
 // supplied by the surrounding build are intentionally left external.
 
-pub unsafe fn pt_regs_to_gdb_regs(gdb_regs: *mut ::core::ffi::c_ulong,
+pub unsafe fn pt_regs_to_gdb_regs(gdb_regs: *mut ::kernel::ffi::c_ulong,
                                   regs: *mut pt_regs) {
     let win: *mut reg_window;
     let mut i: i32;
@@ -47,7 +47,7 @@ pub unsafe fn pt_regs_to_gdb_regs(gdb_regs: *mut ::core::ffi::c_ulong,
     *gdb_regs.add(GDB_Y as usize) = (*regs).y;
 }
 
-pub unsafe fn sleeping_thread_to_gdb_regs(gdb_regs: *mut ::core::ffi::c_ulong,
+pub unsafe fn sleeping_thread_to_gdb_regs(gdb_regs: *mut ::kernel::ffi::c_ulong,
                                           p: *mut task_struct) {
     let t = task_thread_info(p);
     extern "C" {
@@ -55,8 +55,8 @@ pub unsafe fn sleeping_thread_to_gdb_regs(gdb_regs: *mut ::core::ffi::c_ulong,
         static mut ret_from_fork: u32;
     }
     let win: *mut reg_window;
-    let pc: ::core::ffi::c_ulong;
-    let cwp: ::core::ffi::c_ulong;
+    let pc: ::kernel::ffi::c_ulong;
+    let cwp: ::kernel::ffi::c_ulong;
     let mut i: i32;
 
     i = GDB_G0 as i32;
@@ -64,8 +64,8 @@ pub unsafe fn sleeping_thread_to_gdb_regs(gdb_regs: *mut ::core::ffi::c_ulong,
         *gdb_regs.add(i as usize) = 0;
         i += 1;
     }
-    *gdb_regs.add(GDB_G6 as usize) = t as ::core::ffi::c_ulong;
-    *gdb_regs.add(GDB_G7 as usize) = p as ::core::ffi::c_ulong;
+    *gdb_regs.add(GDB_G6 as usize) = t as ::kernel::ffi::c_ulong;
+    *gdb_regs.add(GDB_G7 as usize) = p as ::kernel::ffi::c_ulong;
     i = GDB_O0 as i32;
     while i < GDB_SP as i32 {
         *gdb_regs.add(i as usize) = 0;
@@ -93,21 +93,21 @@ pub unsafe fn sleeping_thread_to_gdb_regs(gdb_regs: *mut ::core::ffi::c_ulong,
     }
 
     pc = if (*t).new_child {
-        (&ret_from_fork as *const _ as ::core::ffi::c_ulong)
+        (&ret_from_fork as *const _ as ::kernel::ffi::c_ulong)
     } else {
-        (&switch_to_pc as *const _ as ::core::ffi::c_ulong)
+        (&switch_to_pc as *const _ as ::kernel::ffi::c_ulong)
     };
     *gdb_regs.add(GDB_PC as usize) = pc;
     *gdb_regs.add(GDB_NPC as usize) = pc.wrapping_add(4);
 
-    cwp = __thread_flag_byte_ptr(t)[TI_FLAG_BYTE_CWP as usize] as ::core::ffi::c_ulong;
+    cwp = __thread_flag_byte_ptr(t)[TI_FLAG_BYTE_CWP as usize] as ::kernel::ffi::c_ulong;
     *gdb_regs.add(GDB_STATE as usize) = TSTATE_PRIV | TSTATE_IE | cwp;
     *gdb_regs.add(GDB_FSR as usize) = 0;
     *gdb_regs.add(GDB_FPRS as usize) = 0;
     *gdb_regs.add(GDB_Y as usize) = 0;
 }
 
-pub unsafe fn gdb_regs_to_pt_regs(gdb_regs: *mut ::core::ffi::c_ulong,
+pub unsafe fn gdb_regs_to_pt_regs(gdb_regs: *mut ::kernel::ffi::c_ulong,
                                   regs: *mut pt_regs) {
     let win: *mut reg_window;
     let mut i: i32;
@@ -147,7 +147,7 @@ pub unsafe fn gdb_regs_to_pt_regs(gdb_regs: *mut ::core::ffi::c_ulong,
 
 #[cfg(CONFIG_SMP)]
 pub unsafe extern "C" fn smp_kgdb_capture_client(irq: i32, regs: *mut pt_regs) {
-    let mut flags: ::core::ffi::c_ulong;
+    let mut flags: ::kernel::ffi::c_ulong;
 
     core::arch::asm!("rdpr %pstate, {0}\n\twrpr {0}, {1}, %pstate",
                      out(reg) flags, const PSTATE_IE);
@@ -163,7 +163,7 @@ pub unsafe fn kgdb_arch_handle_exception(
     remcomInBuffer: *mut i8, remcomOutBuffer: *mut i8,
     linux_regs: *mut pt_regs,
 ) -> i32 {
-    let mut addr: ::core::ffi::c_ulong = 0;
+    let mut addr: ::kernel::ffi::c_ulong = 0;
     let mut ptr: *mut i8;
 
     match *remcomInBuffer {
@@ -177,17 +177,17 @@ pub unsafe fn kgdb_arch_handle_exception(
         case if case == b'D' as i8 || case == b'k' as i8 => {}
         _ => return -1,
     }
-    if (*linux_regs).tpc == arch_kgdb_breakpoint as ::core::ffi::c_ulong {
+    if (*linux_regs).tpc == arch_kgdb_breakpoint as ::kernel::ffi::c_ulong {
         (*linux_regs).tpc = (*linux_regs).tnpc;
         (*linux_regs).tnpc = (*linux_regs).tnpc.wrapping_add(4);
     }
     0
 }
 
-pub unsafe extern "C" fn kgdb_trap(trap_level: ::core::ffi::c_ulong,
+pub unsafe extern "C" fn kgdb_trap(trap_level: ::kernel::ffi::c_ulong,
                                     regs: *mut pt_regs) {
     let prev_state = exception_enter();
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
 
     if user_mode(regs) {
         bad_trap(regs, trap_level);
@@ -205,7 +205,7 @@ pub fn kgdb_arch_init() -> i32 { 0 }
 
 pub fn kgdb_arch_exit() {}
 
-pub unsafe fn kgdb_arch_set_pc(regs: *mut pt_regs, ip: ::core::ffi::c_ulong) {
+pub unsafe fn kgdb_arch_set_pc(regs: *mut pt_regs, ip: ::kernel::ffi::c_ulong) {
     (*regs).tpc = ip;
     (*regs).tnpc = (*regs).tpc.wrapping_add(4);
 }

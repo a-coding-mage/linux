@@ -29,7 +29,7 @@ pub struct clk_mgr_internal {
 }
 #[repr(C)]
 pub struct clk_mgr_base {
-    pub ctx: *mut core::ffi::c_void,
+    pub ctx: *mut kernel::ffi::c_void,
 }
 
 extern "C" {
@@ -37,10 +37,10 @@ extern "C" {
     fn REG_WRITE(reg: u32, value: u32);
     fn msleep(value: u32);
     fn udelay(value: u32);
-    fn TRACE_SMU_MSG_DELAY(a: u32, b: u32, delay: u32, ctx: *mut core::ffi::c_void);
-    fn TRACE_SMU_MSG(msg: u32, param: u32, ctx: *mut core::ffi::c_void);
-    fn dm_helpers_smu_timeout(ctx: *mut core::ffi::c_void, msg: u32, param: u32, timeout: u32);
-    fn DC_LOG_SMU(format: *const core::ffi::c_char, ...);
+    fn TRACE_SMU_MSG_DELAY(a: u32, b: u32, delay: u32, ctx: *mut kernel::ffi::c_void);
+    fn TRACE_SMU_MSG(msg: u32, param: u32, ctx: *mut kernel::ffi::c_void);
+    fn dm_helpers_smu_timeout(ctx: *mut kernel::ffi::c_void, msg: u32, param: u32, timeout: u32);
+    fn DC_LOG_SMU(format: *const kernel::ffi::c_char, ...);
 }
 
 extern "C" {

@@ -45,7 +45,7 @@ extern "C" {
     pub fn omap1_init_irq();
     pub fn omap1_handle_irq(regs: *mut pt_regs);
     pub fn omap1_init_late();
-    pub fn omap1_restart(mode: reboot_mode, cmd: *const core::ffi::c_char);
+    pub fn omap1_restart(mode: reboot_mode, cmd: *const kernel::ffi::c_char);
 
     pub fn omap_check_revision();
 

@@ -23,14 +23,14 @@ struct vas_caps_entry {
 #[repr(C)]
 struct vas_sysfs_entry {
     attr: attribute,
-    show: Option<unsafe extern "C" fn(*mut vas_cop_feat_caps, *mut core::ffi::c_char) -> isize>,
-    store: Option<unsafe extern "C" fn(*mut vas_cop_feat_caps, *const core::ffi::c_char, usize) -> isize>,
+    show: Option<unsafe extern "C" fn(*mut vas_cop_feat_caps, *mut kernel::ffi::c_char) -> isize>,
+    store: Option<unsafe extern "C" fn(*mut vas_cop_feat_caps, *const kernel::ffi::c_char, usize) -> isize>,
 }
 
 #[cfg(CONFIG_SYSFS)]
 unsafe fn update_total_credits_store(
     caps: *mut vas_cop_feat_caps,
-    buf: *const core::ffi::c_char,
+    buf: *const kernel::ffi::c_char,
     count: usize,
 ) -> isize {
     let mut creds: u16 = 0;
@@ -54,12 +54,12 @@ unsafe fn update_total_credits_store(
 }
 
 #[cfg(CONFIG_SYSFS)]
-unsafe extern "C" fn nr_total_credits_show(caps: *mut vas_cop_feat_caps, buf: *mut core::ffi::c_char) -> isize {
+unsafe extern "C" fn nr_total_credits_show(caps: *mut vas_cop_feat_caps, buf: *mut kernel::ffi::c_char) -> isize {
     sysfs_emit(buf, "%d\n", atomic_read(&(*caps).nr_total_credits))
 }
 
 #[cfg(CONFIG_SYSFS)]
-unsafe extern "C" fn nr_used_credits_show(caps: *mut vas_cop_feat_caps, buf: *mut core::ffi::c_char) -> isize {
+unsafe extern "C" fn nr_used_credits_show(caps: *mut vas_cop_feat_caps, buf: *mut kernel::ffi::c_char) -> isize {
     sysfs_emit(buf, "%d\n", atomic_read(&(*caps).nr_used_credits))
 }
 
@@ -100,7 +100,7 @@ static mut VAS_QOS_CAPAB_ATTRS: [*mut attribute; 4] = [
 ];
 
 #[cfg(CONFIG_SYSFS)]
-unsafe extern "C" fn vas_type_show(kobj: *mut kobject, attr: *mut attribute, buf: *mut core::ffi::c_char) -> isize {
+unsafe extern "C" fn vas_type_show(kobj: *mut kobject, attr: *mut attribute, buf: *mut kernel::ffi::c_char) -> isize {
     let centry = container_of!(kobj, vas_caps_entry, kobj);
     let entry = container_of!(attr, vas_sysfs_entry, attr);
     match (*entry).show {
@@ -110,7 +110,7 @@ unsafe extern "C" fn vas_type_show(kobj: *mut kobject, attr: *mut attribute, buf
 }
 
 #[cfg(CONFIG_SYSFS)]
-unsafe extern "C" fn vas_type_store(kobj: *mut kobject, attr: *mut attribute, buf: *const core::ffi::c_char, count: usize) -> isize {
+unsafe extern "C" fn vas_type_store(kobj: *mut kobject, attr: *mut attribute, buf: *const kernel::ffi::c_char, count: usize) -> isize {
     let centry = container_of!(kobj, vas_caps_entry, kobj);
     let entry = container_of!(attr, vas_sysfs_entry, attr);
     match (*entry).store {
@@ -122,7 +122,7 @@ unsafe extern "C" fn vas_type_store(kobj: *mut kobject, attr: *mut attribute, bu
 #[cfg(CONFIG_SYSFS)]
 unsafe extern "C" fn vas_type_release(kobj: *mut kobject) {
     let centry = container_of!(kobj, vas_caps_entry, kobj);
-    kfree(centry as *mut core::ffi::c_void);
+    kfree(centry as *mut kernel::ffi::c_void);
 }
 
 #[cfg(CONFIG_SYSFS)]
@@ -135,7 +135,7 @@ static VAS_DEF_ATTR_TYPE: kobj_type = kobj_type { release: Some(vas_type_release
 static VAS_QOS_ATTR_TYPE: kobj_type = kobj_type { release: Some(vas_type_release), sysfs_ops: &VAS_SYSFS_OPS, default_groups: vas_qos_capab_groups };
 
 #[cfg(CONFIG_SYSFS)]
-unsafe fn vas_caps_kobj_name(centry: *mut vas_caps_entry, kobj: *mut *mut kobject) -> *const core::ffi::c_char {
+unsafe fn vas_caps_kobj_name(centry: *mut vas_caps_entry, kobj: *mut *mut kobject) -> *const kernel::ffi::c_char {
     let caps = (*centry).caps;
     if (*caps).descriptor == VAS_GZIP_QOS_CAPABILITIES {
         kobject_init(&mut (*centry).kobj, &VAS_QOS_ATTR_TYPE);

@@ -20,22 +20,22 @@ pub struct gw_pld {
 
 extern "C" {
     pub static THIS_MODULE: *mut module;
-    fn gpiochip_get_data(gc: *mut gpio_chip) -> *mut core::ffi::c_void;
+    fn gpiochip_get_data(gc: *mut gpio_chip) -> *mut kernel::ffi::c_void;
     fn i2c_smbus_write_byte(client: *mut i2c_client, value: u8) -> i32;
     fn i2c_smbus_read_byte(client: *mut i2c_client) -> i32;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn dev_name(dev: *mut device) -> *const core::ffi::c_char;
-    fn i2c_set_clientdata(client: *mut i2c_client, data: *mut core::ffi::c_void);
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn dev_name(dev: *mut device) -> *const kernel::ffi::c_char;
+    fn i2c_set_clientdata(client: *mut i2c_client, data: *mut kernel::ffi::c_void);
     fn devm_gpiochip_add_data(
         dev: *mut device,
         chip: *mut gpio_chip,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
-    fn dev_info(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 // External kernel types and constants supplied by the surrounding translation.
-#[repr(C)] pub struct gpio_chip { pub base: i32, pub can_sleep: bool, pub parent: *mut device, pub owner: *mut module, pub label: *const core::ffi::c_char, pub ngpio: u32, pub direction_input: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>, pub get: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>, pub direction_output: Option<unsafe extern "C" fn(*mut gpio_chip, u32, i32) -> i32>, pub set: Option<unsafe extern "C" fn(*mut gpio_chip, u32, i32)> }
+#[repr(C)] pub struct gpio_chip { pub base: i32, pub can_sleep: bool, pub parent: *mut device, pub owner: *mut module, pub label: *const kernel::ffi::c_char, pub ngpio: u32, pub direction_input: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>, pub get: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>, pub direction_output: Option<unsafe extern "C" fn(*mut gpio_chip, u32, i32) -> i32>, pub set: Option<unsafe extern "C" fn(*mut gpio_chip, u32, i32)> }
 #[repr(C)] pub struct i2c_client { pub dev: device, pub flags: u16 }
 #[repr(C)] pub struct device;
 #[repr(C)] pub struct module;
@@ -88,10 +88,10 @@ unsafe extern "C" fn gw_pld_probe(client: *mut i2c_client) -> i32 {
 
     (*client).flags |= I2C_M_IGNORE_NAK;
     (*gw).out = 0xFF;
-    i2c_set_clientdata(client, gw as *mut core::ffi::c_void);
-    let ret = devm_gpiochip_add_data(dev, &mut (*gw).chip, gw as *mut core::ffi::c_void);
+    i2c_set_clientdata(client, gw as *mut kernel::ffi::c_void);
+    let ret = devm_gpiochip_add_data(dev, &mut (*gw).chip, gw as *mut kernel::ffi::c_void);
     if ret != 0 { return ret; }
-    dev_info(dev, b"registered Gateworks PLD GPIO device\0".as_ptr() as *const core::ffi::c_char);
+    dev_info(dev, b"registered Gateworks PLD GPIO device\0".as_ptr() as *const kernel::ffi::c_char);
     0
 }
 

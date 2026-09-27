@@ -28,8 +28,8 @@ extern "C" {
     pub fn iucv_alloc_device(
         attrs: *const *const attribute_group,
         driver: *mut device_driver,
-        priv_: *mut core::ffi::c_void,
-        fmt: *const core::ffi::c_char,
+        priv_: *mut kernel::ffi::c_void,
+        fmt: *const kernel::ffi::c_char,
         ...,
     ) -> *mut device;
 }
@@ -39,7 +39,7 @@ pub struct iucv_path {
     pub pathid: u16,
     pub msglim: u16,
     pub flags: u8,
-    pub private: *mut core::ffi::c_void,
+    pub private: *mut kernel::ffi::c_void,
     pub handler: *mut iucv_handler,
     pub list: list_head,
 }
@@ -94,42 +94,42 @@ pub unsafe fn iucv_path_free(path: *mut iucv_path) {
 
 extern "C" {
     pub fn iucv_path_accept(path: *mut iucv_path, handler: *mut iucv_handler,
-        userdata: *mut u8, private: *mut core::ffi::c_void) -> i32;
+        userdata: *mut u8, private: *mut kernel::ffi::c_void) -> i32;
     pub fn iucv_path_connect(path: *mut iucv_path, handler: *mut iucv_handler,
         userid: *mut u8, system: *mut u8, userdata: *mut u8,
-        private: *mut core::ffi::c_void) -> i32;
+        private: *mut kernel::ffi::c_void) -> i32;
     pub fn iucv_path_quiesce(path: *mut iucv_path, userdata: *mut u8) -> i32;
     pub fn iucv_path_resume(path: *mut iucv_path, userdata: *mut u8) -> i32;
     pub fn iucv_path_sever(path: *mut iucv_path, userdata: *mut u8) -> i32;
     pub fn iucv_message_purge(path: *mut iucv_path, msg: *mut iucv_message, srccls: u32) -> i32;
     pub fn iucv_message_receive(path: *mut iucv_path, msg: *mut iucv_message, flags: u8,
-        buffer: *mut core::ffi::c_void, size: usize, residual: *mut usize) -> i32;
+        buffer: *mut kernel::ffi::c_void, size: usize, residual: *mut usize) -> i32;
     pub fn __iucv_message_receive(path: *mut iucv_path, msg: *mut iucv_message, flags: u8,
-        buffer: *mut core::ffi::c_void, size: usize, residual: *mut usize) -> i32;
+        buffer: *mut kernel::ffi::c_void, size: usize, residual: *mut usize) -> i32;
     pub fn iucv_message_reject(path: *mut iucv_path, msg: *mut iucv_message) -> i32;
     pub fn iucv_message_reply(path: *mut iucv_path, msg: *mut iucv_message, flags: u8,
-        reply: *mut core::ffi::c_void, size: usize) -> i32;
+        reply: *mut kernel::ffi::c_void, size: usize) -> i32;
     pub fn iucv_message_send(path: *mut iucv_path, msg: *mut iucv_message, flags: u8,
-        srccls: u32, buffer: *mut core::ffi::c_void, size: usize) -> i32;
+        srccls: u32, buffer: *mut kernel::ffi::c_void, size: usize) -> i32;
     pub fn __iucv_message_send(path: *mut iucv_path, msg: *mut iucv_message, flags: u8,
-        srccls: u32, buffer: *mut core::ffi::c_void, size: usize) -> i32;
+        srccls: u32, buffer: *mut kernel::ffi::c_void, size: usize) -> i32;
     pub fn iucv_message_send2way(path: *mut iucv_path, msg: *mut iucv_message, flags: u8,
-        srccls: u32, buffer: *mut core::ffi::c_void, size: usize,
-        answer: *mut core::ffi::c_void, asize: usize, residual: *mut usize) -> i32;
+        srccls: u32, buffer: *mut kernel::ffi::c_void, size: usize,
+        answer: *mut kernel::ffi::c_void, asize: usize, residual: *mut usize) -> i32;
 }
 
 #[repr(C)]
 pub struct iucv_interface {
-    pub message_receive: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u8, *mut core::ffi::c_void, usize, *mut usize) -> i32>,
-    pub __message_receive: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u8, *mut core::ffi::c_void, usize, *mut usize) -> i32>,
-    pub message_reply: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u8, *mut core::ffi::c_void, usize) -> i32>,
+    pub message_receive: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u8, *mut kernel::ffi::c_void, usize, *mut usize) -> i32>,
+    pub __message_receive: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u8, *mut kernel::ffi::c_void, usize, *mut usize) -> i32>,
+    pub message_reply: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u8, *mut kernel::ffi::c_void, usize) -> i32>,
     pub message_reject: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message) -> i32>,
-    pub message_send: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u8, u32, *mut core::ffi::c_void, usize) -> i32>,
-    pub __message_send: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u8, u32, *mut core::ffi::c_void, usize) -> i32>,
-    pub message_send2way: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u8, u32, *mut core::ffi::c_void, usize, *mut core::ffi::c_void, usize, *mut usize) -> i32>,
+    pub message_send: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u8, u32, *mut kernel::ffi::c_void, usize) -> i32>,
+    pub __message_send: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u8, u32, *mut kernel::ffi::c_void, usize) -> i32>,
+    pub message_send2way: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u8, u32, *mut kernel::ffi::c_void, usize, *mut kernel::ffi::c_void, usize, *mut usize) -> i32>,
     pub message_purge: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_message, u32) -> i32>,
-    pub path_accept: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_handler, *mut u8, *mut core::ffi::c_void) -> i32>,
-    pub path_connect: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_handler, *mut u8, *mut u8, *mut u8, *mut core::ffi::c_void) -> i32>,
+    pub path_accept: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_handler, *mut u8, *mut kernel::ffi::c_void) -> i32>,
+    pub path_connect: Option<unsafe extern "C" fn(*mut iucv_path, *mut iucv_handler, *mut u8, *mut u8, *mut u8, *mut kernel::ffi::c_void) -> i32>,
     pub path_quiesce: Option<unsafe extern "C" fn(*mut iucv_path, *mut u8) -> i32>,
     pub path_resume: Option<unsafe extern "C" fn(*mut iucv_path, *mut u8) -> i32>,
     pub path_sever: Option<unsafe extern "C" fn(*mut iucv_path, *mut u8) -> i32>,

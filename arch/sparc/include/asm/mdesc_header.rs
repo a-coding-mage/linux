@@ -25,7 +25,7 @@ extern "C" {
     pub fn mdesc_node_by_name(
         handle: *mut mdesc_handle,
         from_node: u64,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> u64;
 }
 
@@ -58,13 +58,13 @@ extern "C" {
     pub fn mdesc_get_property(
         handle: *mut mdesc_handle,
         node: u64,
-        name: *const core::ffi::c_char,
-        lenp: *mut core::ffi::c_int,
-    ) -> *const core::ffi::c_void;
+        name: *const kernel::ffi::c_char,
+        lenp: *mut kernel::ffi::c_int,
+    ) -> *const kernel::ffi::c_void;
     pub fn mdesc_node_name(
         hp: *mut mdesc_handle,
         node: u64,
-    ) -> *const core::ffi::c_char;
+    ) -> *const kernel::ffi::c_char;
 }
 
 /* MD arc iteration, the standard sequence is:
@@ -83,7 +83,7 @@ extern "C" {
     pub fn mdesc_next_arc(
         handle: *mut mdesc_handle,
         from: u64,
-        arc_type: *const core::ffi::c_char,
+        arc_type: *const kernel::ffi::c_char,
     ) -> u64;
 }
 
@@ -110,14 +110,14 @@ pub struct mdesc_notifier_client {
     pub add: Option<unsafe extern "C" fn(
         handle: *mut mdesc_handle,
         node: u64,
-        node_name: *const core::ffi::c_char,
+        node_name: *const kernel::ffi::c_char,
     )>,
     pub remove: Option<unsafe extern "C" fn(
         handle: *mut mdesc_handle,
         node: u64,
-        node_name: *const core::ffi::c_char,
+        node_name: *const kernel::ffi::c_char,
     )>,
-    pub node_name: *const core::ffi::c_char,
+    pub node_name: *const kernel::ffi::c_char,
     pub next: *mut mdesc_notifier_client,
 }
 
@@ -130,7 +130,7 @@ extern "C" {
 pub struct vdev_port {
     pub id: u64,
     pub parent_cfg_hdl: u64,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -149,15 +149,15 @@ pub union md_node_info {
 extern "C" {
     pub fn mdesc_get_node(
         hp: *mut mdesc_handle,
-        node_name: *const core::ffi::c_char,
+        node_name: *const kernel::ffi::c_char,
         node_info: *mut md_node_info,
     ) -> u64;
     pub fn mdesc_get_node_info(
         hp: *mut mdesc_handle,
         node: u64,
-        node_name: *const core::ffi::c_char,
+        node_name: *const kernel::ffi::c_char,
         node_info: *mut md_node_info,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn mdesc_fill_in_cpu_data(mask: *mut cpumask_t);
     pub fn mdesc_populate_present_mask(mask: *mut cpumask_t);
     pub fn mdesc_get_page_sizes(mask: *mut cpumask_t, pgsz_mask: *mut usize);

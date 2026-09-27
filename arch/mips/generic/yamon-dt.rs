@@ -9,15 +9,15 @@
 const MAX_MEM_ARRAY_ENTRIES: usize = 2;
 
 extern "C" {
-    fn fdt_path_offset(fdt: *mut core::ffi::c_void, path: *const core::ffi::c_char) -> i32;
-    fn fdt_add_subnode(fdt: *mut core::ffi::c_void, parentoffset: i32, name: *const core::ffi::c_char) -> i32;
-    fn fdt_setprop_string(fdt: *mut core::ffi::c_void, nodeoffset: i32, name: *const core::ffi::c_char, value: *const core::ffi::c_char) -> i32;
-    fn fdt_setprop(fdt: *mut core::ffi::c_void, nodeoffset: i32, name: *const core::ffi::c_char, val: *const core::ffi::c_void, len: i32) -> i32;
-    fn fw_getcmdline() -> *mut core::ffi::c_char;
-    fn fw_getenv(name: *const core::ffi::c_char) -> *mut core::ffi::c_char;
-    fn kstrtoul(s: *const core::ffi::c_char, base: u32, res: *mut usize) -> i32;
-    fn memparse(ptr: *const core::ffi::c_char, retptr: *mut *mut core::ffi::c_char) -> usize;
-    static mut arcs_cmdline: *mut core::ffi::c_char;
+    fn fdt_path_offset(fdt: *mut kernel::ffi::c_void, path: *const kernel::ffi::c_char) -> i32;
+    fn fdt_add_subnode(fdt: *mut kernel::ffi::c_void, parentoffset: i32, name: *const kernel::ffi::c_char) -> i32;
+    fn fdt_setprop_string(fdt: *mut kernel::ffi::c_void, nodeoffset: i32, name: *const kernel::ffi::c_char, value: *const kernel::ffi::c_char) -> i32;
+    fn fdt_setprop(fdt: *mut kernel::ffi::c_void, nodeoffset: i32, name: *const kernel::ffi::c_char, val: *const kernel::ffi::c_void, len: i32) -> i32;
+    fn fw_getcmdline() -> *mut kernel::ffi::c_char;
+    fn fw_getenv(name: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
+    fn kstrtoul(s: *const kernel::ffi::c_char, base: u32, res: *mut usize) -> i32;
+    fn memparse(ptr: *const kernel::ffi::c_char, retptr: *mut *mut kernel::ffi::c_char) -> usize;
+    static mut arcs_cmdline: *mut kernel::ffi::c_char;
 }
 
 #[repr(C)]
@@ -50,7 +50,7 @@ unsafe fn gen_fdt_mem_array(
     entries
 }
 
-pub unsafe fn yamon_dt_append_cmdline(fdt: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn yamon_dt_append_cmdline(fdt: *mut kernel::ffi::c_void) -> i32 {
     let mut chosen_off = fdt_path_offset(fdt, b"/chosen\0".as_ptr() as _);
     if chosen_off == -FDT_ERR_NOTFOUND { chosen_off = fdt_add_subnode(fdt, 0, b"chosen\0".as_ptr() as _); }
     if chosen_off < 0 { return chosen_off; }
@@ -59,7 +59,7 @@ pub unsafe fn yamon_dt_append_cmdline(fdt: *mut core::ffi::c_void) -> i32 {
     0
 }
 
-pub unsafe fn yamon_dt_append_memory(fdt: *mut core::ffi::c_void, regions: *const yamon_mem_region) -> i32 {
+pub unsafe fn yamon_dt_append_memory(fdt: *mut kernel::ffi::c_void, regions: *const yamon_mem_region) -> i32 {
     let mut phys_memsize = 0usize;
     let mut memsize;
     let mut mem_array = [0u32; 2 * MAX_MEM_ARRAY_ENTRIES];
@@ -83,7 +83,7 @@ pub unsafe fn yamon_dt_append_memory(fdt: *mut core::ffi::c_void, regions: *cons
     err
 }
 
-pub unsafe fn yamon_dt_serial_config(fdt: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn yamon_dt_serial_config(fdt: *mut kernel::ffi::c_void) -> i32 {
     let tty = fw_getenv(b"yamontty\0".as_ptr() as _);
     let uart = if tty.is_null() || core::ffi::CStr::from_ptr(tty).to_bytes() == b"tty0" { 0 } else { 1 };
     let mut baud = 38400u32; let parity = b'n'; let stop_bits = 8u8;

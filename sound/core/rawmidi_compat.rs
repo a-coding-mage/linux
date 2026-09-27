@@ -13,17 +13,17 @@ pub struct snd_rawmidi_params32 {
     pub stream: i32,
     pub buffer_size: u32,
     pub avail_min: u32,
-    pub no_active_sensing: ::core::ffi::c_uint, /* avoid bit-field */
-    pub mode: ::core::ffi::c_uint,
-    pub reserved: [::core::ffi::c_uchar; 12],
+    pub no_active_sensing: ::kernel::ffi::c_uint, /* avoid bit-field */
+    pub mode: ::kernel::ffi::c_uint,
+    pub reserved: [::kernel::ffi::c_uchar; 12],
 }
 
 unsafe fn snd_rawmidi_ioctl_params_compat(
     rfile: *mut snd_rawmidi_file,
     src: *mut snd_rawmidi_params32,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let mut params: snd_rawmidi_params = unsafe { ::core::mem::zeroed() };
-    let mut val: ::core::ffi::c_uint = 0;
+    let mut val: ::kernel::ffi::c_uint = 0;
 
     if unsafe {
         get_user(
@@ -80,14 +80,14 @@ pub struct compat_snd_rawmidi_status64 {
     pub tstamp_nsec: i64,
     pub avail: u32,
     pub xruns: u32,
-    pub reserved: [::core::ffi::c_uchar; 16],
+    pub reserved: [::kernel::ffi::c_uchar; 16],
 }
 
 unsafe fn snd_rawmidi_ioctl_status_compat64(
     rfile: *mut snd_rawmidi_file,
     src: *mut compat_snd_rawmidi_status64,
-) -> ::core::ffi::c_int {
-    let mut err: ::core::ffi::c_int;
+) -> ::kernel::ffi::c_int {
+    let mut err: ::kernel::ffi::c_int;
     let mut status: snd_rawmidi_status64 = unsafe { ::core::mem::zeroed() };
     let mut compat_status: compat_snd_rawmidi_status64 = unsafe { ::core::mem::zeroed() };
 
@@ -133,8 +133,8 @@ unsafe fn snd_rawmidi_ioctl_status_compat64(
 
     if unsafe {
         copy_to_user(
-            src as *mut ::core::ffi::c_void,
-            ::core::ptr::addr_of!(compat_status) as *const ::core::ffi::c_void,
+            src as *mut ::kernel::ffi::c_void,
+            ::core::ptr::addr_of!(compat_status) as *const ::kernel::ffi::c_void,
             ::core::mem::size_of_val(unsafe { &*src }),
         ) != 0
     } {
@@ -144,20 +144,20 @@ unsafe fn snd_rawmidi_ioctl_status_compat64(
     0
 }
 
-pub const SNDRV_RAWMIDI_IOCTL_PARAMS32: ::core::ffi::c_uint =
-    _IOWR::<snd_rawmidi_params32>(b'W' as ::core::ffi::c_uint, 0x10);
-pub const SNDRV_RAWMIDI_IOCTL_STATUS_COMPAT32: ::core::ffi::c_uint =
-    _IOWR::<snd_rawmidi_status32>(b'W' as ::core::ffi::c_uint, 0x20);
-pub const SNDRV_RAWMIDI_IOCTL_STATUS_COMPAT64: ::core::ffi::c_uint =
-    _IOWR::<compat_snd_rawmidi_status64>(b'W' as ::core::ffi::c_uint, 0x20);
+pub const SNDRV_RAWMIDI_IOCTL_PARAMS32: ::kernel::ffi::c_uint =
+    _IOWR::<snd_rawmidi_params32>(b'W' as ::kernel::ffi::c_uint, 0x10);
+pub const SNDRV_RAWMIDI_IOCTL_STATUS_COMPAT32: ::kernel::ffi::c_uint =
+    _IOWR::<snd_rawmidi_status32>(b'W' as ::kernel::ffi::c_uint, 0x20);
+pub const SNDRV_RAWMIDI_IOCTL_STATUS_COMPAT64: ::kernel::ffi::c_uint =
+    _IOWR::<compat_snd_rawmidi_status64>(b'W' as ::kernel::ffi::c_uint, 0x20);
 
 unsafe fn snd_rawmidi_ioctl_compat(
     file: *mut file,
-    cmd: ::core::ffi::c_uint,
-    arg: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_long {
+    cmd: ::kernel::ffi::c_uint,
+    arg: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_long {
     let rfile: *mut snd_rawmidi_file;
-    let argp: *mut ::core::ffi::c_void = unsafe { compat_ptr(arg) };
+    let argp: *mut ::kernel::ffi::c_void = unsafe { compat_ptr(arg) };
 
     rfile = unsafe { (*file).private_data as *mut snd_rawmidi_file };
     match cmd {
@@ -165,7 +165,7 @@ unsafe fn snd_rawmidi_ioctl_compat(
         | SNDRV_RAWMIDI_IOCTL_INFO
         | SNDRV_RAWMIDI_IOCTL_DROP
         | SNDRV_RAWMIDI_IOCTL_DRAIN => {
-            return unsafe { snd_rawmidi_ioctl(file, cmd, argp as ::core::ffi::c_ulong) };
+            return unsafe { snd_rawmidi_ioctl(file, cmd, argp as ::kernel::ffi::c_ulong) };
         }
         /*
          * C conditional:
@@ -175,14 +175,14 @@ unsafe fn snd_rawmidi_ioctl_compat(
          * #endif
          */
         SNDRV_UMP_IOCTL_ENDPOINT_INFO | SNDRV_UMP_IOCTL_BLOCK_INFO => {
-            return unsafe { snd_rawmidi_ioctl(file, cmd, argp as ::core::ffi::c_ulong) };
+            return unsafe { snd_rawmidi_ioctl(file, cmd, argp as ::kernel::ffi::c_ulong) };
         }
         SNDRV_RAWMIDI_IOCTL_PARAMS32 => {
             return unsafe { snd_rawmidi_ioctl_params_compat(rfile, argp as *mut snd_rawmidi_params32) }
-                as ::core::ffi::c_long;
+                as ::kernel::ffi::c_long;
         }
         SNDRV_RAWMIDI_IOCTL_STATUS_COMPAT32 => {
-            return unsafe { snd_rawmidi_ioctl_status32(rfile, argp) } as ::core::ffi::c_long;
+            return unsafe { snd_rawmidi_ioctl_status32(rfile, argp) } as ::kernel::ffi::c_long;
         }
         SNDRV_RAWMIDI_IOCTL_STATUS_COMPAT64 => {
             return unsafe {
@@ -190,11 +190,11 @@ unsafe fn snd_rawmidi_ioctl_compat(
                     rfile,
                     argp as *mut compat_snd_rawmidi_status64,
                 )
-            } as ::core::ffi::c_long;
+            } as ::kernel::ffi::c_long;
         }
         _ => {}
     }
-    -ENOIOCTLCMD as ::core::ffi::c_long
+    -ENOIOCTLCMD as ::kernel::ffi::c_long
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

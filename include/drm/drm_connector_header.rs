@@ -38,10 +38,10 @@ pub struct drm_connector_helper_funcs;
 #[repr(C)] pub struct notifier_block;
 #[repr(C)] pub struct hdr_sink_metadata;
 
-pub type u8 = core::ffi::c_uchar;
-pub type u16 = core::ffi::c_ushort;
-pub type u32 = core::ffi::c_uint;
-pub type u64 = core::ffi::c_ulonglong;
+pub type u8 = kernel::ffi::c_uchar;
+pub type u16 = kernel::ffi::c_ushort;
+pub type u32 = kernel::ffi::c_uint;
+pub type u64 = kernel::ffi::c_ulonglong;
 pub type uint8_t = u8;
 pub type uint32_t = u32;
 pub type uint64_t = u64;
@@ -102,12 +102,12 @@ pub const DRM_CONNECTOR_HDMI_VENDOR_LEN: usize = 8;
 pub const DRM_CONNECTOR_HDMI_PRODUCT_LEN: usize = 16;
 #[repr(C)] pub struct drm_connector_hdmi { pub vendor: [u8;8], pub product: [u8;16], pub supported_formats: usize, pub funcs: *const drm_connector_hdmi_funcs, pub infoframes: drm_connector_hdmi_current_infoframes }
 #[repr(C)] pub struct drm_connector_hdmi_current_infoframes { pub lock: mutex, pub audio: drm_connector_hdmi_infoframe }
-#[repr(C)] pub struct drm_connector_cec { pub mutex: mutex, pub funcs: *const drm_connector_cec_funcs, pub data: *mut core::ffi::c_void }
+#[repr(C)] pub struct drm_connector_cec { pub mutex: mutex, pub funcs: *const drm_connector_cec_funcs, pub data: *mut kernel::ffi::c_void }
 #[repr(C)] pub struct drm_connector_hdmi_audio { pub funcs: *const drm_connector_hdmi_audio_funcs, pub codec_pdev: *mut platform_device, pub lock: mutex, pub plugged_cb: Option<unsafe extern "C" fn(*mut device,bool)>, pub plugged_cb_dev: *mut device, pub last_state: bool, pub dai_port: i32 }
 
-#[repr(C)] pub struct drm_cmdline_mode { pub name: [core::ffi::c_char; 32], pub specified: bool, pub refresh_specified: bool, pub bpp_specified: bool, pub pixel_clock: u32, pub xres: i32, pub yres: i32, pub bpp: i32, pub refresh: i32, pub rb: bool, pub interlace: bool, pub cvt: bool, pub margins: bool, pub force: drm_connector_force, pub rotation_reflection: u32, pub panel_orientation: drm_panel_orientation, pub tv_margins: drm_connector_tv_margins, pub tv_mode: drm_connector_tv_mode, pub tv_mode_specified: bool }
+#[repr(C)] pub struct drm_cmdline_mode { pub name: [kernel::ffi::c_char; 32], pub specified: bool, pub refresh_specified: bool, pub bpp_specified: bool, pub pixel_clock: u32, pub xres: i32, pub yres: i32, pub bpp: i32, pub refresh: i32, pub rb: bool, pub interlace: bool, pub cvt: bool, pub margins: bool, pub force: drm_connector_force, pub rotation_reflection: u32, pub panel_orientation: drm_panel_orientation, pub tv_margins: drm_connector_tv_margins, pub tv_mode: drm_connector_tv_mode, pub tv_mode_specified: bool }
 
-#[repr(C)] pub struct drm_connector { pub dev:*mut drm_device, pub kdev:*mut device, pub attr:*mut device_attribute, pub fwnode:*mut fwnode_handle, pub head:list_head, pub global_connector_list_entry:list_head, pub base:drm_mode_object, pub name:*mut core::ffi::c_char, pub mutex:mutex, pub index:u32, pub connector_type:i32, pub connector_type_id:i32, pub interlace_allowed:bool, pub doublescan_allowed:bool, pub stereo_allowed:bool, pub ycbcr_420_allowed:bool, pub registration_state:drm_connector_registration_state, pub modes:list_head, pub status:drm_connector_status, pub probed_modes:list_head, pub display_info:drm_display_info, pub funcs:*const drm_connector_funcs, pub edid_blob_ptr:*mut drm_property_blob, pub properties:drm_object_properties, pub scaling_mode_property:*mut drm_property, pub vrr_capable_property:*mut drm_property, pub colorspace_property:*mut drm_property, pub color_format_property:*mut drm_property, pub path_blob_ptr:*mut drm_property_blob, pub max_bpc:u32, pub max_bpc_property:*mut drm_property, pub privacy_screen:*mut drm_privacy_screen, pub privacy_screen_notifier:notifier_block, pub privacy_screen_sw_state_property:*mut drm_property, pub privacy_screen_hw_state_property:*mut drm_property, pub broadcast_rgb_property:*mut drm_property, pub polled:u8, pub dpms:i32, pub helper_private:*const drm_connector_helper_funcs, pub cmdline_mode:drm_cmdline_mode, pub force:drm_connector_force, pub edid_override:*const drm_edid, pub edid_override_mutex:mutex, pub epoch_counter:u64, pub possible_encoders:u32, pub encoder:*mut drm_encoder, pub eld:[u8;128], pub eld_mutex:mutex, pub latency_present:[bool;2], pub video_latency:[i32;2], pub audio_latency:[i32;2], pub ddc:*mut i2c_adapter, pub null_edid_counter:i32, pub bad_edid_counter:u32, pub edid_corrupt:bool, pub real_edid_checksum:u8, pub debugfs_entry:*mut dentry, pub state:*mut drm_connector_state, pub tile_blob_ptr:*mut drm_property_blob, pub has_tile:bool, pub tile_group:*mut drm_tile_group, pub tile_is_single_monitor:bool, pub num_h_tile:u8, pub num_v_tile:u8, pub tile_h_loc:u8, pub tile_v_loc:u8, pub tile_h_size:u16, pub tile_v_size:u16, pub free_node:llist_node, pub hdmi:drm_connector_hdmi, pub hdmi_audio:drm_connector_hdmi_audio, pub cec:drm_connector_cec }
+#[repr(C)] pub struct drm_connector { pub dev:*mut drm_device, pub kdev:*mut device, pub attr:*mut device_attribute, pub fwnode:*mut fwnode_handle, pub head:list_head, pub global_connector_list_entry:list_head, pub base:drm_mode_object, pub name:*mut kernel::ffi::c_char, pub mutex:mutex, pub index:u32, pub connector_type:i32, pub connector_type_id:i32, pub interlace_allowed:bool, pub doublescan_allowed:bool, pub stereo_allowed:bool, pub ycbcr_420_allowed:bool, pub registration_state:drm_connector_registration_state, pub modes:list_head, pub status:drm_connector_status, pub probed_modes:list_head, pub display_info:drm_display_info, pub funcs:*const drm_connector_funcs, pub edid_blob_ptr:*mut drm_property_blob, pub properties:drm_object_properties, pub scaling_mode_property:*mut drm_property, pub vrr_capable_property:*mut drm_property, pub colorspace_property:*mut drm_property, pub color_format_property:*mut drm_property, pub path_blob_ptr:*mut drm_property_blob, pub max_bpc:u32, pub max_bpc_property:*mut drm_property, pub privacy_screen:*mut drm_privacy_screen, pub privacy_screen_notifier:notifier_block, pub privacy_screen_sw_state_property:*mut drm_property, pub privacy_screen_hw_state_property:*mut drm_property, pub broadcast_rgb_property:*mut drm_property, pub polled:u8, pub dpms:i32, pub helper_private:*const drm_connector_helper_funcs, pub cmdline_mode:drm_cmdline_mode, pub force:drm_connector_force, pub edid_override:*const drm_edid, pub edid_override_mutex:mutex, pub epoch_counter:u64, pub possible_encoders:u32, pub encoder:*mut drm_encoder, pub eld:[u8;128], pub eld_mutex:mutex, pub latency_present:[bool;2], pub video_latency:[i32;2], pub audio_latency:[i32;2], pub ddc:*mut i2c_adapter, pub null_edid_counter:i32, pub bad_edid_counter:u32, pub edid_corrupt:bool, pub real_edid_checksum:u8, pub debugfs_entry:*mut dentry, pub state:*mut drm_connector_state, pub tile_blob_ptr:*mut drm_property_blob, pub has_tile:bool, pub tile_group:*mut drm_tile_group, pub tile_is_single_monitor:bool, pub num_h_tile:u8, pub num_v_tile:u8, pub tile_h_loc:u8, pub tile_v_loc:u8, pub tile_h_size:u16, pub tile_v_size:u16, pub free_node:llist_node, pub hdmi:drm_connector_hdmi, pub hdmi_audio:drm_connector_hdmi_audio, pub cec:drm_connector_cec }
 
 #[repr(C)] pub struct drm_tile_group { pub refcount:kref, pub dev:*mut drm_device, pub id:i32, pub group_data:[u8;9] }
 #[repr(C)] pub struct drm_connector_list_iter { pub dev:*mut drm_device, pub conn:*mut drm_connector }
@@ -126,9 +126,9 @@ extern "C" {
     pub fn drm_connector_list_iter_next(iter:*mut drm_connector_list_iter)->*mut drm_connector;
     pub fn drm_connector_list_iter_end(iter:*mut drm_connector_list_iter);
     pub fn drm_connector_oob_hotplug_event(fwnode:*mut fwnode_handle, status:drm_connector_status);
-    pub fn drm_get_connector_type_name(t:u32)->*const core::ffi::c_char;
-    pub fn drm_get_connector_status_name(s:drm_connector_status)->*const core::ffi::c_char;
-    pub fn drm_get_colorspace_name(c:drm_colorspace)->*const core::ffi::c_char;
+    pub fn drm_get_connector_type_name(t:u32)->*const kernel::ffi::c_char;
+    pub fn drm_get_connector_status_name(s:drm_connector_status)->*const kernel::ffi::c_char;
+    pub fn drm_get_colorspace_name(c:drm_colorspace)->*const kernel::ffi::c_char;
 }
 
 #[inline] pub unsafe fn drm_connector_index(c:*const drm_connector)->u32 { (*c).index }

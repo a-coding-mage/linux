@@ -6,7 +6,7 @@
  * be used to access this memory.
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 // Symbols supplied by the kernel headers and other translation units.
 extern "C" {
@@ -14,7 +14,7 @@ extern "C" {
     fn iounmap(addr: *mut c_void);
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 #[no_mangle]
 pub static mut vga_base: c_ulong = 0;

@@ -4,9 +4,9 @@
 
 #[repr(C)]
 pub struct notifier_err_inject_action {
-    pub val: ::core::ffi::c_ulong,
-    pub error: ::core::ffi::c_int,
-    pub name: *const ::core::ffi::c_char,
+    pub val: ::kernel::ffi::c_ulong,
+    pub error: ::kernel::ffi::c_int,
+    pub name: *const ::kernel::ffi::c_char,
 }
 
 // Equivalent of: .name = #action, .val = (action),
@@ -29,10 +29,10 @@ extern "C" {
     pub static mut notifier_err_inject_dir: *mut dentry;
 
     pub fn notifier_err_inject_init(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         parent: *mut dentry,
         err_inject: *mut notifier_err_inject,
-        priority: ::core::ffi::c_int,
+        priority: ::kernel::ffi::c_int,
     ) -> *mut dentry;
 }
 

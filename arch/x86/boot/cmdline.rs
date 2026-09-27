@@ -32,15 +32,15 @@ unsafe fn myisspace(c: u8) -> bool {
  * truncated to fit in the buffer), or -1 on not found.
  */
 pub unsafe fn __cmdline_find_option(
-    cmdline_ptr: libc::c_ulong,
-    option: *const libc::c_char,
-    buffer: *mut libc::c_char,
-    bufsize: libc::c_int,
-) -> libc::c_int {
+    cmdline_ptr: core::ffi::c_ulong,
+    option: *const core::ffi::c_char,
+    buffer: *mut core::ffi::c_char,
+    bufsize: core::ffi::c_int,
+) -> core::ffi::c_int {
     let mut cptr: addr_t;
-    let mut len: libc::c_int = -1;
-    let mut opptr: *const libc::c_char = core::ptr::null();
-    let mut bufptr: *mut libc::c_char = buffer;
+    let mut len: core::ffi::c_int = -1;
+    let mut opptr: *const core::ffi::c_char = core::ptr::null();
+    let mut bufptr: *mut core::ffi::c_char = buffer;
     const ST_WORDSTART: u8 = 0;
     const ST_WORDCMP: u8 = 1;
     const ST_WORDSKIP: u8 = 2;
@@ -106,7 +106,7 @@ pub unsafe fn __cmdline_find_option(
                     state = ST_WORDSTART;
                 } else {
                     if len < bufsize - 1 {
-                        *bufptr = c as libc::c_char;
+                        *bufptr = c as core::ffi::c_char;
                         bufptr = bufptr.add(1);
                     }
                     len += 1;
@@ -130,13 +130,13 @@ pub unsafe fn __cmdline_find_option(
  * or 0 on not found
  */
 pub unsafe fn __cmdline_find_option_bool(
-    cmdline_ptr: libc::c_ulong,
-    option: *const libc::c_char,
-) -> libc::c_int {
+    cmdline_ptr: core::ffi::c_ulong,
+    option: *const core::ffi::c_char,
+) -> core::ffi::c_int {
     let mut cptr: addr_t;
-    let mut pos: libc::c_int = 0;
-    let mut wstart: libc::c_int = 0;
-    let mut opptr: *const libc::c_char = core::ptr::null();
+    let mut pos: core::ffi::c_int = 0;
+    let mut wstart: core::ffi::c_int = 0;
+    let mut opptr: *const core::ffi::c_char = core::ptr::null();
     const ST_WORDSTART: u8 = 0;
     const ST_WORDCMP: u8 = 1;
     const ST_WORDSKIP: u8 = 2;

@@ -6,7 +6,7 @@
 pub struct irq_common_data {
     pub state_use_accessors: u32,
     pub node: u32,
-    pub handler_data: *mut core::ffi::c_void,
+    pub handler_data: *mut kernel::ffi::c_void,
     pub msi_desc: *mut msi_desc,
     pub affinity: cpumask_var_t,
     pub effective_affinity: cpumask_var_t,
@@ -22,12 +22,12 @@ pub struct irq_data {
     pub chip: *mut irq_chip,
     pub domain: *mut irq_domain,
     pub parent_data: *mut irq_data,
-    pub chip_data: *mut core::ffi::c_void,
+    pub chip_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct irq_chip {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub irq_startup: Option<unsafe extern "C" fn(*mut irq_data) -> u32>,
     pub irq_shutdown: Option<unsafe extern "C" fn(*mut irq_data)>,
     pub irq_enable: Option<unsafe extern "C" fn(*mut irq_data)>,
@@ -57,7 +57,7 @@ pub struct irq_chip {
     pub irq_write_msi_msg: Option<unsafe extern "C" fn(*mut irq_data, *mut msi_msg)>,
     pub irq_get_irqchip_state: Option<unsafe extern "C" fn(*mut irq_data, irqchip_irq_state, bool) -> i32>,
     pub irq_set_irqchip_state: Option<unsafe extern "C" fn(*mut irq_data, irqchip_irq_state, bool) -> i32>,
-    pub irq_set_vcpu_affinity: Option<unsafe extern "C" fn(*mut irq_data, *mut core::ffi::c_void) -> i32>,
+    pub irq_set_vcpu_affinity: Option<unsafe extern "C" fn(*mut irq_data, *mut kernel::ffi::c_void) -> i32>,
     pub ipi_send_single: Option<unsafe extern "C" fn(*mut irq_data, u32)>,
     pub ipi_send_mask: Option<unsafe extern "C" fn(*mut irq_data, *const cpumask)>,
     pub irq_nmi_setup: Option<unsafe extern "C" fn(*mut irq_data) -> i32>,
@@ -152,9 +152,9 @@ pub const IRQD_RESEND_WHEN_IN_PROGRESS: u32 = 1 << 30;
 
 #[repr(C)] pub struct irq_chip_regs { pub enable: usize, pub disable: usize, pub mask: usize, pub ack: usize, pub eoi: usize, pub type_: usize }
 #[repr(C)] pub struct irq_chip_type { pub chip: irq_chip, pub regs: irq_chip_regs, pub handler: irq_flow_handler_t, pub type_: u32, pub mask_cache_priv: u32, pub mask_cache: *mut u32 }
-#[repr(C)] pub struct irq_chip_generic { pub lock: raw_spinlock_t, pub reg_base: *mut core::ffi::c_void, pub reg_readl: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> u32>, pub reg_writel: Option<unsafe extern "C" fn(u32, *mut core::ffi::c_void)>, pub suspend: Option<unsafe extern "C" fn(*mut irq_chip_generic)>, pub resume: Option<unsafe extern "C" fn(*mut irq_chip_generic)>, pub irq_base: u32, pub irq_cnt: u32, pub mask_cache: u32, pub wake_enabled: u32, pub wake_active: u32, pub num_ct: u32, pub private: *mut core::ffi::c_void, pub installed: usize, pub unused: usize, pub domain: *mut irq_domain, pub list: list_head }
+#[repr(C)] pub struct irq_chip_generic { pub lock: raw_spinlock_t, pub reg_base: *mut kernel::ffi::c_void, pub reg_readl: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> u32>, pub reg_writel: Option<unsafe extern "C" fn(u32, *mut kernel::ffi::c_void)>, pub suspend: Option<unsafe extern "C" fn(*mut irq_chip_generic)>, pub resume: Option<unsafe extern "C" fn(*mut irq_chip_generic)>, pub irq_base: u32, pub irq_cnt: u32, pub mask_cache: u32, pub wake_enabled: u32, pub wake_active: u32, pub num_ct: u32, pub private: *mut kernel::ffi::c_void, pub installed: usize, pub unused: usize, pub domain: *mut irq_domain, pub list: list_head }
 #[repr(C)] pub struct irq_domain_chip_generic { pub irqs_per_chip: u32, pub num_chips: u32, pub irq_flags_to_clear: u32, pub irq_flags_to_set: u32, pub gc_flags: irq_gc_flags, pub exit: Option<unsafe extern "C" fn(*mut irq_chip_generic)>, pub gc: *mut *mut irq_chip_generic }
-#[repr(C)] pub struct irq_domain_chip_generic_info { pub name: *const core::ffi::c_char, pub handler: irq_flow_handler_t, pub irqs_per_chip: u32, pub num_ct: u32, pub irq_flags_to_clear: u32, pub irq_flags_to_set: u32, pub gc_flags: irq_gc_flags, pub init: Option<unsafe extern "C" fn(*mut irq_chip_generic) -> i32>, pub exit: Option<unsafe extern "C" fn(*mut irq_chip_generic)> }
+#[repr(C)] pub struct irq_domain_chip_generic_info { pub name: *const kernel::ffi::c_char, pub handler: irq_flow_handler_t, pub irqs_per_chip: u32, pub num_ct: u32, pub irq_flags_to_clear: u32, pub irq_flags_to_set: u32, pub gc_flags: irq_gc_flags, pub init: Option<unsafe extern "C" fn(*mut irq_chip_generic) -> i32>, pub exit: Option<unsafe extern "C" fn(*mut irq_chip_generic)> }
 #[repr(u32)] pub enum irq_gc_flags { IRQ_GC_INIT_MASK_CACHE = 1, IRQ_GC_INIT_NESTED_LOCK = 2, IRQ_GC_MASK_CACHE_PER_TYPE = 4, IRQ_GC_NO_MASK = 8, IRQ_GC_BE_IO = 16 }
 
 pub const INVALID_HWIRQ: usize = usize::MAX;
@@ -175,12 +175,12 @@ pub const IRQCHIP_MOVE_DEFERRED: usize = 1 << 12;
 /* External declarations from the included kernel headers and this header. */
 extern "C" {
     pub fn irq_get_irq_data(irq: u32) -> *mut irq_data;
-    pub fn irq_set_chip_and_handler_name(irq: u32, chip: *const irq_chip, handle: irq_flow_handler_t, name: *const core::ffi::c_char);
-    pub fn __irq_set_handler(irq: u32, handle: irq_flow_handler_t, is_chained: i32, name: *const core::ffi::c_char);
+    pub fn irq_set_chip_and_handler_name(irq: u32, chip: *const irq_chip, handle: irq_flow_handler_t, name: *const kernel::ffi::c_char);
+    pub fn __irq_set_handler(irq: u32, handle: irq_flow_handler_t, is_chained: i32, name: *const kernel::ffi::c_char);
     pub fn irq_modify_status(irq: u32, clr: usize, set: usize);
     pub fn irq_set_chip(irq: u32, chip: *const irq_chip) -> i32;
-    pub fn irq_set_handler_data(irq: u32, data: *mut core::ffi::c_void) -> i32;
-    pub fn irq_set_chip_data(irq: u32, data: *mut core::ffi::c_void) -> i32;
+    pub fn irq_set_handler_data(irq: u32, data: *mut kernel::ffi::c_void) -> i32;
+    pub fn irq_set_chip_data(irq: u32, data: *mut kernel::ffi::c_void) -> i32;
     pub fn irq_set_irq_type(irq: u32, ty: u32) -> i32;
     pub fn irq_set_msi_desc(irq: u32, entry: *mut msi_desc) -> i32;
     pub fn irq_free_descs(irq: u32, cnt: u32);

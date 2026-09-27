@@ -4,7 +4,7 @@
  */
 
 // Linux/kernel dependencies supplied by the surrounding translation unit.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 use core::ptr;
 
 const MX35_CCM_BASE_ADDR: usize = 0x53f80000;

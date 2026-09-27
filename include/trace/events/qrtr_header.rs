@@ -7,19 +7,19 @@
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default)]
 pub struct QrtrNsServiceEntry {
-    pub service: ::core::ffi::c_uint,
-    pub instance: ::core::ffi::c_uint,
-    pub node: ::core::ffi::c_uint,
-    pub port: ::core::ffi::c_uint,
+    pub service: ::kernel::ffi::c_uint,
+    pub instance: ::kernel::ffi::c_uint,
+    pub node: ::kernel::ffi::c_uint,
+    pub port: ::kernel::ffi::c_uint,
 }
 
 impl QrtrNsServiceEntry {
     #[inline]
     pub const unsafe fn assign(
-        service: ::core::ffi::c_uint,
-        instance: ::core::ffi::c_uint,
-        node: ::core::ffi::c_uint,
-        port: ::core::ffi::c_uint,
+        service: ::kernel::ffi::c_uint,
+        instance: ::kernel::ffi::c_uint,
+        node: ::kernel::ffi::c_uint,
+        port: ::kernel::ffi::c_uint,
     ) -> Self {
         Self {
             service,
@@ -63,7 +63,7 @@ pub fn qrtr_ns_server_add_print(entry: &QrtrNsServiceEntry) -> String {
 #[repr(C)]
 #[derive(Debug)]
 pub struct QrtrNsMessageEntry {
-    pub ctrl_pkt_str: *mut ::core::ffi::c_char,
+    pub ctrl_pkt_str: *mut ::kernel::ffi::c_char,
     pub sq_node: u32,
     pub sq_port: u32,
 }
@@ -71,7 +71,7 @@ pub struct QrtrNsMessageEntry {
 impl QrtrNsMessageEntry {
     #[inline]
     pub const unsafe fn assign(
-        ctrl_pkt_str: *mut ::core::ffi::c_char,
+        ctrl_pkt_str: *mut ::kernel::ffi::c_char,
         sq_node: u32,
         sq_port: u32,
     ) -> Self {

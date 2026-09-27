@@ -5,8 +5,8 @@
 extern "C" {
     fn adf_devmgr_pci_to_accel_dev(pdev: *mut pci_dev) -> *mut adf_accel_dev;
     fn kmalloc_obj<T>() -> *mut T;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn ERR_PTR(error: core::ffi::c_long) -> *mut qat_mig_dev;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn ERR_PTR(error: kernel::ffi::c_long) -> *mut qat_mig_dev;
 }
 
 #[repr(C)]
@@ -21,22 +21,22 @@ pub struct adf_accel_dev {
 
 #[repr(C)]
 pub struct qat_migdev_ops {
-    pub init: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> core::ffi::c_int>,
+    pub init: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> kernel::ffi::c_int>,
     pub cleanup: Option<unsafe extern "C" fn(*mut qat_mig_dev)>,
     pub reset: Option<unsafe extern "C" fn(*mut qat_mig_dev)>,
-    pub open: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> core::ffi::c_int>,
+    pub open: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> kernel::ffi::c_int>,
     pub close: Option<unsafe extern "C" fn(*mut qat_mig_dev)>,
-    pub suspend: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> core::ffi::c_int>,
-    pub resume: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> core::ffi::c_int>,
-    pub save_state: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> core::ffi::c_int>,
-    pub load_state: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> core::ffi::c_int>,
-    pub save_setup: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> core::ffi::c_int>,
-    pub load_setup: Option<unsafe extern "C" fn(*mut qat_mig_dev, core::ffi::c_int) -> core::ffi::c_int>,
+    pub suspend: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> kernel::ffi::c_int>,
+    pub resume: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> kernel::ffi::c_int>,
+    pub save_state: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> kernel::ffi::c_int>,
+    pub load_state: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> kernel::ffi::c_int>,
+    pub save_setup: Option<unsafe extern "C" fn(*mut qat_mig_dev) -> kernel::ffi::c_int>,
+    pub load_setup: Option<unsafe extern "C" fn(*mut qat_mig_dev, kernel::ffi::c_int) -> kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct qat_mig_dev {
-    pub vf_id: core::ffi::c_int,
+    pub vf_id: kernel::ffi::c_int,
     pub parent_accel_dev: *mut adf_accel_dev,
 }
 
@@ -48,7 +48,7 @@ extern "C" {
 #[no_mangle]
 pub unsafe extern "C" fn qat_vfmig_create(
     pdev: *mut pci_dev,
-    vf_id: core::ffi::c_int,
+    vf_id: kernel::ffi::c_int,
 ) -> *mut qat_mig_dev {
     let accel_dev = adf_devmgr_pci_to_accel_dev(pdev);
     if accel_dev.is_null() {
@@ -84,7 +84,7 @@ pub unsafe extern "C" fn qat_vfmig_create(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn qat_vfmig_init(mdev: *mut qat_mig_dev) -> core::ffi::c_int {
+pub unsafe extern "C" fn qat_vfmig_init(mdev: *mut qat_mig_dev) -> kernel::ffi::c_int {
     let accel_dev = (*mdev).parent_accel_dev;
     ((*GET_VFMIG_OPS(accel_dev)).init.unwrap())(mdev)
 }
@@ -102,7 +102,7 @@ pub unsafe extern "C" fn qat_vfmig_reset(mdev: *mut qat_mig_dev) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn qat_vfmig_open(mdev: *mut qat_mig_dev) -> core::ffi::c_int {
+pub unsafe extern "C" fn qat_vfmig_open(mdev: *mut qat_mig_dev) -> kernel::ffi::c_int {
     let accel_dev = (*mdev).parent_accel_dev;
     ((*GET_VFMIG_OPS(accel_dev)).open.unwrap())(mdev)
 }
@@ -114,31 +114,31 @@ pub unsafe extern "C" fn qat_vfmig_close(mdev: *mut qat_mig_dev) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn qat_vfmig_suspend(mdev: *mut qat_mig_dev) -> core::ffi::c_int {
+pub unsafe extern "C" fn qat_vfmig_suspend(mdev: *mut qat_mig_dev) -> kernel::ffi::c_int {
     let accel_dev = (*mdev).parent_accel_dev;
     ((*GET_VFMIG_OPS(accel_dev)).suspend.unwrap())(mdev)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn qat_vfmig_resume(mdev: *mut qat_mig_dev) -> core::ffi::c_int {
+pub unsafe extern "C" fn qat_vfmig_resume(mdev: *mut qat_mig_dev) -> kernel::ffi::c_int {
     let accel_dev = (*mdev).parent_accel_dev;
     ((*GET_VFMIG_OPS(accel_dev)).resume.unwrap())(mdev)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn qat_vfmig_save_state(mdev: *mut qat_mig_dev) -> core::ffi::c_int {
+pub unsafe extern "C" fn qat_vfmig_save_state(mdev: *mut qat_mig_dev) -> kernel::ffi::c_int {
     let accel_dev = (*mdev).parent_accel_dev;
     ((*GET_VFMIG_OPS(accel_dev)).save_state.unwrap())(mdev)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn qat_vfmig_save_setup(mdev: *mut qat_mig_dev) -> core::ffi::c_int {
+pub unsafe extern "C" fn qat_vfmig_save_setup(mdev: *mut qat_mig_dev) -> kernel::ffi::c_int {
     let accel_dev = (*mdev).parent_accel_dev;
     ((*GET_VFMIG_OPS(accel_dev)).save_setup.unwrap())(mdev)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn qat_vfmig_load_state(mdev: *mut qat_mig_dev) -> core::ffi::c_int {
+pub unsafe extern "C" fn qat_vfmig_load_state(mdev: *mut qat_mig_dev) -> kernel::ffi::c_int {
     let accel_dev = (*mdev).parent_accel_dev;
     ((*GET_VFMIG_OPS(accel_dev)).load_state.unwrap())(mdev)
 }
@@ -146,8 +146,8 @@ pub unsafe extern "C" fn qat_vfmig_load_state(mdev: *mut qat_mig_dev) -> core::f
 #[no_mangle]
 pub unsafe extern "C" fn qat_vfmig_load_setup(
     mdev: *mut qat_mig_dev,
-    size: core::ffi::c_int,
-) -> core::ffi::c_int {
+    size: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let accel_dev = (*mdev).parent_accel_dev;
     ((*GET_VFMIG_OPS(accel_dev)).load_setup.unwrap())(mdev, size)
 }

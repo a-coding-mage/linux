@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /* NAT protocol helper routines. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* Dependencies supplied by the surrounding translation unit. */
 

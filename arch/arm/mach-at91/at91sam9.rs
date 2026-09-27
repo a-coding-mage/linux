@@ -9,7 +9,7 @@
 // Dependencies supplied by the surrounding architecture code:
 // asm/mach/arch.h, asm/system_misc.h, and "generic.h".
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 unsafe extern "C" {
     fn at91sam9_pm_init();

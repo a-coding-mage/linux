@@ -5,7 +5,7 @@
 // asm/io_apic.h, asm/xen/hypercall.h, xen/xen.h,
 // xen/interface/physdev.h, and xen-ops.h.
 
-unsafe fn xen_io_apic_read(apic: ::core::ffi::c_uint, reg: ::core::ffi::c_uint) -> ::core::ffi::c_uint {
+unsafe fn xen_io_apic_read(apic: ::kernel::ffi::c_uint, reg: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_uint {
     let mut apic_op: physdev_apic = ::core::mem::zeroed();
     apic_op.apic_physbase = mpc_ioapic_addr(apic);
     apic_op.reg = reg;
@@ -80,18 +80,18 @@ unsafe fn xen_apic_icr_write(_low: u32, _id: u32) {
     WARN_ON(1);
 }
 
-unsafe fn xen_apic_probe_pv() -> ::core::ffi::c_int {
+unsafe fn xen_apic_probe_pv() -> ::kernel::ffi::c_int {
     if xen_pv_domain() {
         return 1;
     }
     0
 }
 
-unsafe fn xen_madt_oem_check(_oem_id: *mut ::core::ffi::c_char, _oem_table_id: *mut ::core::ffi::c_char) -> ::core::ffi::c_int {
-    xen_pv_domain() as ::core::ffi::c_int
+unsafe fn xen_madt_oem_check(_oem_id: *mut ::kernel::ffi::c_char, _oem_table_id: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int {
+    xen_pv_domain() as ::kernel::ffi::c_int
 }
 
-unsafe fn xen_cpu_present_to_apicid(cpu: ::core::ffi::c_int) -> u32 {
+unsafe fn xen_cpu_present_to_apicid(cpu: ::kernel::ffi::c_int) -> u32 {
     if cpu_present(cpu) {
         cpu_data(cpu).topo.apicid
     } else {
@@ -100,7 +100,7 @@ unsafe fn xen_cpu_present_to_apicid(cpu: ::core::ffi::c_int) -> u32 {
 }
 
 static mut xen_pv_apic: apic = apic {
-    name: "Xen PV\0".as_ptr() as *const ::core::ffi::c_char,
+    name: "Xen PV\0".as_ptr() as *const ::kernel::ffi::c_char,
     probe: Some(xen_apic_probe_pv),
     acpi_madt_oem_check: Some(xen_madt_oem_check),
 

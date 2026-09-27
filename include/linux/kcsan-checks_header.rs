@@ -58,8 +58,9 @@ pub unsafe fn __kcsan_check_access(_ptr: *const core::ffi::c_void, _size: usize,
 #[inline] pub unsafe fn kcsan_set_access_mask(_mask: usize) {}
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub union kcsan_scoped_access_union {
-    pub list: crate::list_head,
+    pub list: list_head,
     pub stack_depth: i32,
 }
 
@@ -98,68 +99,99 @@ pub const __KCSAN_BARRIER_TO_SIGNAL_FENCE_RELEASE: i32 = 3; // __ATOMIC_RELEASE
 
 const fn acq_rel_order() -> i32 { 4 } // __ATOMIC_ACQ_REL
 
-#[cfg(feature = "__SANITIZE_THREAD__")]
+#[cfg(__SANITIZE_THREAD__)]
 #[inline]
 pub unsafe fn kcsan_check_access(ptr: *const core::ffi::c_void, size: usize, ty: i32) {
     __kcsan_check_access(ptr, size, ty)
 }
-#[cfg(not(feature = "__SANITIZE_THREAD__"))]
+#[cfg(not(__SANITIZE_THREAD__))]
 #[inline] pub unsafe fn kcsan_check_access(_ptr: *const core::ffi::c_void, _size: usize, _ty: i32) {}
 
 #[macro_export]
-macro_rules! __kcsan_check_read { ($ptr:expr, $size:expr) => { unsafe { $crate::__kcsan_check_access(($ptr) as *const _, $size, 0) } }; }
+macro_rules! __kcsan_check_read { ($ptr:expr, $size:expr) => { unsafe { __kcsan_check_access(($ptr) as *const _, $size, 0) } }; }
 #[macro_export]
-macro_rules! __kcsan_check_write { ($ptr:expr, $size:expr) => { unsafe { $crate::__kcsan_check_access(($ptr) as *const _, $size, $crate::KCSAN_ACCESS_WRITE) } }; }
+macro_rules! __kcsan_check_write { ($ptr:expr, $size:expr) => { unsafe { __kcsan_check_access(($ptr) as *const _, $size, KCSAN_ACCESS_WRITE) } }; }
 #[macro_export]
-macro_rules! __kcsan_check_read_write { ($ptr:expr, $size:expr) => { unsafe { $crate::__kcsan_check_access(($ptr) as *const _, $size, $crate::KCSAN_ACCESS_COMPOUND | $crate::KCSAN_ACCESS_WRITE) } }; }
+macro_rules! __kcsan_check_read_write { ($ptr:expr, $size:expr) => { unsafe { __kcsan_check_access(($ptr) as *const _, $size, KCSAN_ACCESS_COMPOUND | KCSAN_ACCESS_WRITE) } }; }
 #[macro_export]
-macro_rules! kcsan_check_read { ($ptr:expr, $size:expr) => { unsafe { $crate::kcsan_check_access(($ptr) as *const _, $size, 0) } }; }
+macro_rules! kcsan_check_read { ($ptr:expr, $size:expr) => { unsafe { kcsan_check_access(($ptr) as *const _, $size, 0) } }; }
 #[macro_export]
-macro_rules! kcsan_check_write { ($ptr:expr, $size:expr) => { unsafe { $crate::kcsan_check_access(($ptr) as *const _, $size, $crate::KCSAN_ACCESS_WRITE) } }; }
+macro_rules! kcsan_check_write { ($ptr:expr, $size:expr) => { unsafe { kcsan_check_access(($ptr) as *const _, $size, KCSAN_ACCESS_WRITE) } }; }
 #[macro_export]
-macro_rules! kcsan_check_read_write { ($ptr:expr, $size:expr) => { unsafe { $crate::kcsan_check_access(($ptr) as *const _, $size, $crate::KCSAN_ACCESS_COMPOUND | $crate::KCSAN_ACCESS_WRITE) } }; }
+macro_rules! kcsan_check_read_write { ($ptr:expr, $size:expr) => { unsafe { kcsan_check_access(($ptr) as *const _, $size, KCSAN_ACCESS_COMPOUND | KCSAN_ACCESS_WRITE) } }; }
 
 #[cfg(not(CONFIG_KCSAN_IGNORE_ATOMICS))]
-#[macro_export] macro_rules! kcsan_check_atomic_read { ($ptr:expr, $size:expr) => { unsafe { $crate::kcsan_check_access(($ptr) as *const _, $size, $crate::KCSAN_ACCESS_ATOMIC) } }; }
+#[macro_export] macro_rules! kcsan_check_atomic_read { ($ptr:expr, $size:expr) => { unsafe { kcsan_check_access(($ptr) as *const _, $size, KCSAN_ACCESS_ATOMIC) } }; }
 #[cfg(CONFIG_KCSAN_IGNORE_ATOMICS)]
 #[macro_export] macro_rules! kcsan_check_atomic_read { ($($args:tt)*) => {}; }
 #[cfg(not(CONFIG_KCSAN_IGNORE_ATOMICS))]
-#[macro_export] macro_rules! kcsan_check_atomic_write { ($ptr:expr, $size:expr) => { unsafe { $crate::__kcsan_check_access(($ptr) as *const _, $size, $crate::KCSAN_ACCESS_ATOMIC | $crate::KCSAN_ACCESS_WRITE) } }; }
+#[macro_export] macro_rules! kcsan_check_atomic_write { ($ptr:expr, $size:expr) => { unsafe { __kcsan_check_access(($ptr) as *const _, $size, KCSAN_ACCESS_ATOMIC | KCSAN_ACCESS_WRITE) } }; }
 #[cfg(CONFIG_KCSAN_IGNORE_ATOMICS)]
 #[macro_export] macro_rules! kcsan_check_atomic_write { ($($args:tt)*) => {}; }
 
 #[macro_export]
-macro_rules! ASSERT_EXCLUSIVE_WRITER { ($var:expr) => { unsafe { $crate::__kcsan_check_access(&($var) as *const _ as *const _, core::mem::size_of_val(&($var)), $crate::KCSAN_ACCESS_ASSERT) } }; }
+macro_rules! ASSERT_EXCLUSIVE_WRITER { ($var:expr) => { unsafe { __kcsan_check_access(&($var) as *const _ as *const _, core::mem::size_of_val(&($var)), KCSAN_ACCESS_ASSERT) } }; }
 #[macro_export]
-macro_rules! ASSERT_EXCLUSIVE_ACCESS { ($var:expr) => { unsafe { $crate::__kcsan_check_access(&($var) as *const _ as *const _, core::mem::size_of_val(&($var)), $crate::KCSAN_ACCESS_WRITE | $crate::KCSAN_ACCESS_ASSERT) } }; }
+macro_rules! ASSERT_EXCLUSIVE_ACCESS { ($var:expr) => { unsafe { __kcsan_check_access(&($var) as *const _ as *const _, core::mem::size_of_val(&($var)), KCSAN_ACCESS_WRITE | KCSAN_ACCESS_ASSERT) } }; }
 #[macro_export]
-macro_rules! ASSERT_EXCLUSIVE_BITS { ($var:expr, $mask:expr) => {{ unsafe { $crate::kcsan_set_access_mask($mask); $crate::__kcsan_check_access(&($var) as *const _ as *const _, core::mem::size_of_val(&($var)), $crate::KCSAN_ACCESS_ASSERT); $crate::kcsan_set_access_mask(0); $crate::kcsan_atomic_next(1); } }}; }
+macro_rules! ASSERT_EXCLUSIVE_BITS { ($var:expr, $mask:expr) => {{ unsafe { kcsan_set_access_mask($mask); __kcsan_check_access(&($var) as *const _ as *const _, core::mem::size_of_val(&($var)), KCSAN_ACCESS_ASSERT); kcsan_set_access_mask(0); kcsan_atomic_next(1); } }}; }
 
 /* Scoped assertion helpers retain the source's scope/lifetime intent. */
 #[macro_export]
-macro_rules! ASSERT_EXCLUSIVE_WRITER_SCOPED { ($var:expr) => { $crate::ASSERT_EXCLUSIVE_WRITER!($var) }; }
+macro_rules! ASSERT_EXCLUSIVE_WRITER_SCOPED { ($var:expr) => { ASSERT_EXCLUSIVE_WRITER!($var) }; }
 #[macro_export]
-macro_rules! ASSERT_EXCLUSIVE_ACCESS_SCOPED { ($var:expr) => { $crate::ASSERT_EXCLUSIVE_ACCESS!($var) }; }
+macro_rules! ASSERT_EXCLUSIVE_ACCESS_SCOPED { ($var:expr) => { ASSERT_EXCLUSIVE_ACCESS!($var) }; }
 
+#[cfg(__SANITIZE_THREAD__)]
 #[inline]
-pub unsafe fn __kcsan_disable_current() { kcsan_disable_current(); }
+pub unsafe fn __kcsan_disable_current() { unsafe { kcsan_disable_current() } }
+#[cfg(__SANITIZE_THREAD__)]
 #[inline]
-pub unsafe fn __kcsan_enable_current() { kcsan_enable_current_nowarn(); }
+pub unsafe fn __kcsan_enable_current() { unsafe { kcsan_enable_current_nowarn() } }
+#[cfg(not(__SANITIZE_THREAD__))]
+#[inline]
+pub unsafe fn __kcsan_disable_current() {}
+#[cfg(not(__SANITIZE_THREAD__))]
+#[inline]
+pub unsafe fn __kcsan_enable_current() {}
 
 #[cfg(not(CONFIG_KCSAN_IGNORE_ATOMICS))]
 #[macro_export]
-macro_rules! kcsan_check_atomic_read_write { ($ptr:expr, $size:expr) => { unsafe { $crate::kcsan_check_access(($ptr) as *const _, $size, $crate::KCSAN_ACCESS_ATOMIC | $crate::KCSAN_ACCESS_WRITE | $crate::KCSAN_ACCESS_COMPOUND) } }; }
+macro_rules! kcsan_check_atomic_read_write { ($ptr:expr, $size:expr) => { unsafe { kcsan_check_access(($ptr) as *const _, $size, KCSAN_ACCESS_ATOMIC | KCSAN_ACCESS_WRITE | KCSAN_ACCESS_COMPOUND) } }; }
 #[cfg(CONFIG_KCSAN_IGNORE_ATOMICS)]
 #[macro_export]
 macro_rules! kcsan_check_atomic_read_write { ($($args:tt)*) => {}; }
 
+/*
+ * Barrier instrumentation.  Rust objects are never built with
+ * __SANITIZE_THREAD__, so the __KCSAN_BARRIER_TO_SIGNAL_FENCE() variant does
+ * not apply; a unit that defines __KCSAN_INSTRUMENT_BARRIERS__ gets the
+ * out-of-line hooks, everything else compiles them away.
+ */
+#[cfg(all(CONFIG_KCSAN_WEAK_MEMORY, __KCSAN_INSTRUMENT_BARRIERS__))]
 #[macro_export]
-macro_rules! kcsan_mb { () => { unsafe { $crate::__kcsan_mb() } }; }
+macro_rules! kcsan_mb { () => { unsafe { __kcsan_mb() } }; }
+#[cfg(all(CONFIG_KCSAN_WEAK_MEMORY, __KCSAN_INSTRUMENT_BARRIERS__))]
 #[macro_export]
-macro_rules! kcsan_wmb { () => { unsafe { $crate::__kcsan_wmb() } }; }
+macro_rules! kcsan_wmb { () => { unsafe { __kcsan_wmb() } }; }
+#[cfg(all(CONFIG_KCSAN_WEAK_MEMORY, __KCSAN_INSTRUMENT_BARRIERS__))]
 #[macro_export]
-macro_rules! kcsan_rmb { () => { unsafe { $crate::__kcsan_rmb() } }; }
+macro_rules! kcsan_rmb { () => { unsafe { __kcsan_rmb() } }; }
+#[cfg(all(CONFIG_KCSAN_WEAK_MEMORY, __KCSAN_INSTRUMENT_BARRIERS__))]
 #[macro_export]
-macro_rules! kcsan_release { () => { unsafe { $crate::__kcsan_release() } }; }
+macro_rules! kcsan_release { () => { unsafe { __kcsan_release() } }; }
+
+#[cfg(not(all(CONFIG_KCSAN_WEAK_MEMORY, __KCSAN_INSTRUMENT_BARRIERS__)))]
+#[macro_export]
+macro_rules! kcsan_mb { () => {}; }
+#[cfg(not(all(CONFIG_KCSAN_WEAK_MEMORY, __KCSAN_INSTRUMENT_BARRIERS__)))]
+#[macro_export]
+macro_rules! kcsan_wmb { () => {}; }
+#[cfg(not(all(CONFIG_KCSAN_WEAK_MEMORY, __KCSAN_INSTRUMENT_BARRIERS__)))]
+#[macro_export]
+macro_rules! kcsan_rmb { () => {}; }
+#[cfg(not(all(CONFIG_KCSAN_WEAK_MEMORY, __KCSAN_INSTRUMENT_BARRIERS__)))]
+#[macro_export]
+macro_rules! kcsan_release { () => {}; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

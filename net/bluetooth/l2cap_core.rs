@@ -1181,7 +1181,7 @@ unsafe fn void __pack_control(l2cap_chan *chan,
 }
 
 #[inline]
-unsafe fn core::ffi::c_uint __ertm_hdr_size(l2cap_chan *chan)
+unsafe fn kernel::ffi::c_uint __ertm_hdr_size(l2cap_chan *chan)
 {
 	if (test_bit(FLAG_EXT_CTRL, &chan.flags))
 		return L2CAP_EXT_HDR_SIZE;
@@ -2278,7 +2278,7 @@ unsafe fn int l2cap_skbuff_fromiovec(l2cap_chan *chan,
 	while len {
 		sk_buff *tmp;
 
-		count = min_t(core::ffi::c_uint, conn.mtu, len);
+		count = min_t(kernel::ffi::c_uint, conn.mtu, len);
 
 		tmp = chan.ops.alloc_skb(chan, 0, count,
 					   msg.msg_flags & MSG_DONTWAIT);
@@ -2314,7 +2314,7 @@ static sk_buff *l2cap_create_connless_pdu(l2cap_chan *chan,
 	BT_DBG("chan %p psm 0x%2.2x len %zu", chan,
 	       __le16_to_cpu(chan.psm), len);
 
-	count = min_t(core::ffi::c_uint, (conn.mtu - hlen), len);
+	count = min_t(kernel::ffi::c_uint, (conn.mtu - hlen), len);
 
 	skb = chan.ops.alloc_skb(chan, hlen, count,
 				   msg.msg_flags & MSG_DONTWAIT);
@@ -2345,7 +2345,7 @@ static sk_buff *l2cap_create_basic_pdu(l2cap_chan *chan,
 
 	BT_DBG("chan %p len %zu", chan, len);
 
-	count = min_t(core::ffi::c_uint, (conn.mtu - L2CAP_HDR_SIZE), len);
+	count = min_t(kernel::ffi::c_uint, (conn.mtu - L2CAP_HDR_SIZE), len);
 
 	skb = chan.ops.alloc_skb(chan, L2CAP_HDR_SIZE, count,
 				   msg.msg_flags & MSG_DONTWAIT);
@@ -2387,7 +2387,7 @@ static sk_buff *l2cap_create_iframe_pdu(l2cap_chan *chan,
 	if chan.fcs == L2CAP_FCS_CRC16
 		hlen += L2CAP_FCS_SIZE;
 
-	count = min_t(core::ffi::c_uint, (conn.mtu - hlen), len);
+	count = min_t(kernel::ffi::c_uint, (conn.mtu - hlen), len);
 
 	skb = chan.ops.alloc_skb(chan, hlen, count,
 				   msg.msg_flags & MSG_DONTWAIT);
@@ -2507,7 +2507,7 @@ static sk_buff *l2cap_create_le_flowctl_pdu(l2cap_chan *chan,
 	if sdulen
 		hlen += L2CAP_SDULEN_SIZE;
 
-	count = min_t(core::ffi::c_uint, (conn.mtu - hlen), len);
+	count = min_t(kernel::ffi::c_uint, (conn.mtu - hlen), len);
 
 	skb = chan.ops.alloc_skb(chan, hlen, count,
 				   msg.msg_flags & MSG_DONTWAIT);
@@ -3052,7 +3052,7 @@ static sk_buff *l2cap_build_cmd(l2cap_conn *conn, code: u8,
 		return core::ptr::null_mut();
 
 	len = L2CAP_HDR_SIZE + L2CAP_CMD_HDR_SIZE + dlen;
-	count = min_t(core::ffi::c_uint, conn.mtu, len);
+	count = min_t(kernel::ffi::c_uint, conn.mtu, len);
 
 	skb = bt_skb_alloc(count, GFP_KERNEL);
 	if !skb
@@ -3082,7 +3082,7 @@ static sk_buff *l2cap_build_cmd(l2cap_conn *conn, code: u8,
 	/* Continuation fragments (no L2CAP header) */
 	frag = &skb_shinfo(skb).frag_list;
 	while len {
-		count = min_t(core::ffi::c_uint, conn.mtu, len);
+		count = min_t(kernel::ffi::c_uint, conn.mtu, len);
 
 		*frag = bt_skb_alloc(count, GFP_KERNEL);
 		if !*frag
@@ -3105,7 +3105,7 @@ static sk_buff *l2cap_build_cmd(l2cap_conn *conn, code: u8,
 
 #[inline]
 unsafe fn int l2cap_get_conf_opt(void **ptr, void *end, int *type,
-				     int *olen, core::ffi::c_ulong *val)
+				     int *olen, kernel::ffi::c_ulong *val)
 {
 	l2cap_conf_opt *opt = *ptr;
 	int len;
@@ -3141,7 +3141,7 @@ unsafe fn int l2cap_get_conf_opt(void **ptr, void *end, int *type,
 		break;
 
 	default:
-		*val = (core::ffi::c_ulong) opt.val;
+		*val = (kernel::ffi::c_ulong) opt.val;
 		break;
 	}
 
@@ -3149,7 +3149,7 @@ unsafe fn int l2cap_get_conf_opt(void **ptr, void *end, int *type,
 	return len;
 }
 
-static void l2cap_add_conf_opt(void **ptr, r#type: u8, len: u8, val: core::ffi::c_ulong, size_t size)
+static void l2cap_add_conf_opt(void **ptr, r#type: u8, len: u8, val: kernel::ffi::c_ulong, size_t size)
 {
 	l2cap_conf_opt *opt = *ptr;
 
@@ -3210,7 +3210,7 @@ static void l2cap_add_opt_efs(void **ptr, l2cap_chan *chan, size_t size)
 	}
 
 	l2cap_add_conf_opt(ptr, L2CAP_CONF_EFS, core::mem::size_of::<_efs),
-			   (core::ffi::c_ulong) &efs, size);
+			   (kernel::ffi::c_ulong) &efs, size);
 }
 
 static void l2cap_ack_timeout(work_struct *work)
@@ -3419,7 +3419,7 @@ done:
 		rfc.max_pdu_size    = 0;
 
 		l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC, core::mem::size_of::<_rfc),
-				   (core::ffi::c_ulong) &rfc, endptr - ptr);
+				   (kernel::ffi::c_ulong) &rfc, endptr - ptr);
 		break;
 
 	case L2CAP_MODE_ERTM:
@@ -3439,7 +3439,7 @@ done:
 				       L2CAP_DEFAULT_TX_WINDOW);
 
 		l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC, core::mem::size_of::<_rfc),
-				   (core::ffi::c_ulong) &rfc, endptr - ptr);
+				   (kernel::ffi::c_ulong) &rfc, endptr - ptr);
 
 		if (test_bit(FLAG_EFS_ENABLE, &chan.flags))
 			l2cap_add_opt_efs(&ptr, chan, endptr - ptr);
@@ -3471,7 +3471,7 @@ done:
 		rfc.max_pdu_size = cpu_to_le16(size);
 
 		l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC, core::mem::size_of::<_rfc),
-				   (core::ffi::c_ulong) &rfc, endptr - ptr);
+				   (kernel::ffi::c_ulong) &rfc, endptr - ptr);
 
 		if (test_bit(FLAG_EFS_ENABLE, &chan.flags))
 			l2cap_add_opt_efs(&ptr, chan, endptr - ptr);
@@ -3501,7 +3501,7 @@ static int l2cap_parse_conf_req(l2cap_chan *chan, void *data, size_t data_size)
 	void *req_end = req + chan.conf_len;
 	int len = chan.conf_len;
 	int type, hint, olen;
-	core::ffi::c_ulong val;
+	kernel::ffi::c_ulong val;
 	l2cap_conf_rfc rfc = { .mode = L2CAP_MODE_BASIC };
 	l2cap_conf_efs efs;
 	u8 remote_efs = 0;
@@ -3605,7 +3605,7 @@ done:
 			return -ECONNREFUSED;
 
 		l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC, core::mem::size_of::<_rfc),
-				   (core::ffi::c_ulong) &rfc, endptr - ptr);
+				   (kernel::ffi::c_ulong) &rfc, endptr - ptr);
 	}
 
 	if result == L2CAP_CONF_SUCCESS {
@@ -3655,7 +3655,7 @@ done:
 
 				l2cap_add_conf_opt(&ptr, L2CAP_CONF_EFS,
 						   core::mem::size_of::<_efs),
-						   (core::ffi::c_ulong) &efs, endptr - ptr);
+						   (kernel::ffi::c_ulong) &efs, endptr - ptr);
 			} else {
 				/* Send PENDING Conf Rsp */
 				result = L2CAP_CONF_PENDING;
@@ -3688,7 +3688,7 @@ done:
 			set_bit(CONF_MODE_DONE, &chan.conf_state);
 
 			l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC,
-					   core::mem::size_of::<_rfc), (core::ffi::c_ulong) &rfc, endptr - ptr);
+					   core::mem::size_of::<_rfc), (kernel::ffi::c_ulong) &rfc, endptr - ptr);
 
 			if (remote_efs &&
 			    test_bit(FLAG_EFS_ENABLE, &chan.flags)) {
@@ -3703,7 +3703,7 @@ done:
 					le32_to_cpu(efs.sdu_itime);
 				l2cap_add_conf_opt(&ptr, L2CAP_CONF_EFS,
 						   core::mem::size_of::<_efs),
-						   (core::ffi::c_ulong) &efs, endptr - ptr);
+						   (kernel::ffi::c_ulong) &efs, endptr - ptr);
 			}
 			break;
 
@@ -3717,7 +3717,7 @@ done:
 			set_bit(CONF_MODE_DONE, &chan.conf_state);
 
 			l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC, core::mem::size_of::<_rfc),
-					   (core::ffi::c_ulong) &rfc, endptr - ptr);
+					   (kernel::ffi::c_ulong) &rfc, endptr - ptr);
 
 			break;
 
@@ -3746,7 +3746,7 @@ static int l2cap_parse_conf_rsp(l2cap_chan *chan, void *rsp, int len,
 	void *endptr = data + size;
 	void *rsp_end = rsp + len;
 	int type, olen;
-	core::ffi::c_ulong val;
+	kernel::ffi::c_ulong val;
 	l2cap_conf_rfc rfc = { .mode = L2CAP_MODE_BASIC };
 	l2cap_conf_efs efs;
 
@@ -3789,7 +3789,7 @@ static int l2cap_parse_conf_rsp(l2cap_chan *chan, void *rsp, int len,
 				return -ECONNREFUSED;
 			chan.fcs = 0;
 			l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC, core::mem::size_of::<_rfc),
-					   (core::ffi::c_ulong) &rfc, endptr - ptr);
+					   (kernel::ffi::c_ulong) &rfc, endptr - ptr);
 			break;
 
 		case L2CAP_CONF_EWS:
@@ -3809,7 +3809,7 @@ static int l2cap_parse_conf_rsp(l2cap_chan *chan, void *rsp, int len,
 			    efs.stype != chan.local_stype)
 				return -ECONNREFUSED;
 			l2cap_add_conf_opt(&ptr, L2CAP_CONF_EFS, core::mem::size_of::<_efs),
-					   (core::ffi::c_ulong) &efs, endptr - ptr);
+					   (kernel::ffi::c_ulong) &efs, endptr - ptr);
 			break;
 
 		case L2CAP_CONF_FCS:
@@ -4007,7 +4007,7 @@ void __l2cap_connect_rsp_defer(l2cap_chan *chan)
 static void l2cap_conf_rfc_get(l2cap_chan *chan, void *rsp, int len)
 {
 	int type, olen;
-	core::ffi::c_ulong val;
+	kernel::ffi::c_ulong val;
 	void *rsp_end = rsp + len;
 	/* Use sane default values in case a misbehaving remote device
 	 * did not send an RFC or extended window size option.

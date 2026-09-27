@@ -5,12 +5,12 @@
 
 #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, dead_code, unused_variables, improper_ctypes)]
 
-use core::ffi::{c_char, c_int, c_long, c_uint, c_ulong, c_void};
+use kernel::ffi::{c_char, c_int, c_long, c_uint, c_ulong, c_void};
 
-type u8 = core::ffi::c_uchar;
-type u16 = core::ffi::c_ushort;
-type u32 = core::ffi::c_uint;
-type u64 = core::ffi::c_ulonglong;
+type u8 = kernel::ffi::c_uchar;
+type u16 = kernel::ffi::c_ushort;
+type u32 = kernel::ffi::c_uint;
+type u64 = kernel::ffi::c_ulonglong;
 type size_t = usize;
 type ssize_t = isize;
 type bool_t = bool;
@@ -146,7 +146,7 @@ unsafe fn selinux_enforcing_boot __initdata;
 
 unsafe fn __init enforcing_setup(char *str)
 {
-	core::ffi::c_ulong enforcing;
+	kernel::ffi::c_ulong enforcing;
 	if (!kstrtoul(str, 0, &enforcing))
 		selinux_enforcing_boot = enforcing ? 1 : 0;
 	return 1;
@@ -160,7 +160,7 @@ int selinux_enabled_boot __initdata = 1;
 // cfg: CONFIG_SECURITY_SELINUX_BOOTPARAM
 unsafe fn __init selinux_enabled_setup(char *str)
 {
-	core::ffi::c_ulong enabled;
+	kernel::ffi::c_ulong enabled;
 	if (!kstrtoul(str, 0, &enabled))
 		selinux_enabled_boot = enabled ? 1 : 0;
 	return 1;
@@ -170,7 +170,7 @@ __setup("selinux=", selinux_enabled_setup);
 
 unsafe fn __init checkreqprot_setup(char *str)
 {
-	core::ffi::c_ulong checkreqprot;
+	kernel::ffi::c_ulong checkreqprot;
 
 	if (!kstrtoul(str, 0, &checkreqprot)) {
 		if (checkreqprot)
@@ -441,7 +441,7 @@ static const struct {
 
 unsafe fn match_opt_prefix(char *s, int l, char **arg)
 {
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	for (i = 0; i < ARRAY_SIZE(tokens); i++) {
 		size_t len = tokens[i].len;
@@ -664,8 +664,8 @@ unsafe fn bad_option(superblock_security_struct *sbsec, char flag,
  */
 unsafe fn selinux_set_mnt_opts(super_block *sb,
 				void *mnt_opts,
-				kern_flags: core::ffi::c_ulong,
-				core::ffi::c_ulong *set_kern_flags)
+				kern_flags: kernel::ffi::c_ulong,
+				kernel::ffi::c_ulong *set_kern_flags)
 {
 	'out_double_mount: {
 	const struct cred *cred = current_cred();
@@ -952,8 +952,8 @@ unsafe fn selinux_cmp_sb_context(const struct super_block *oldsb,
 
 unsafe fn selinux_sb_clone_mnt_opts(const struct super_block *oldsb,
 					super_block *newsb,
-					kern_flags: core::ffi::c_ulong,
-					core::ffi::c_ulong *set_kern_flags)
+					kern_flags: kernel::ffi::c_ulong,
+					kernel::ffi::c_ulong *set_kern_flags)
 {
 	'out: {
 	int rc = 0;
@@ -1403,7 +1403,7 @@ unsafe fn inode_doinit_use_xattr(inode *inode, dentry *dentry,
 {
 // macro: INITCONTEXTLEN 255
 	char *context;
-	core::ffi::c_uint len;
+	kernel::ffi::c_uint len;
 	int rc;
 
 	len = INITCONTEXTLEN;
@@ -1675,7 +1675,7 @@ unsafe fn u32 signal_to_av(int sig)
 
 /* Check whether a task is allowed to use a capability. */
 unsafe fn cred_has_capability(const struct cred *cred,
-			       int cap, opts: core::ffi::c_uint, initns: bool)
+			       int cap, opts: kernel::ffi::c_uint, initns: bool)
 {
 	struct common_audit_data ad;
 	struct av_decision avd;
@@ -2174,7 +2174,7 @@ unsafe fn selinux_binder_transfer_file(const struct cred *from,
 }
 
 unsafe fn selinux_ptrace_access_check(task_struct *child,
-				       mode: core::ffi::c_uint)
+				       mode: kernel::ffi::c_uint)
 {
 	u32 sid = current_sid();
 	u32 csid = task_sid_obj(child);
@@ -2220,7 +2220,7 @@ unsafe fn selinux_capset(cred *new, const struct cred *old,
  */
 
 unsafe fn selinux_capable(const struct cred *cred, user_namespace *ns,
-			   int cap, opts: core::ffi::c_uint)
+			   int cap, opts: kernel::ffi::c_uint)
 {
 	return cred_has_capability(cred, cap, opts, ns == &init_user_ns);
 }
@@ -2842,7 +2842,7 @@ unsafe fn selinux_sb_statfs(dentry *dentry)
 unsafe fn selinux_mount(const char *dev_name,
 			 const struct path *path,
 			 const char *type,
-			 flags: core::ffi::c_ulong,
+			 flags: kernel::ffi::c_ulong,
 			 void *data)
 {
 	const struct cred *cred = current_cred();
@@ -3337,7 +3337,7 @@ unsafe fn selinux_inode_setattr(mnt_idmap *idmap, dentry *dentry,
 {
 	const struct cred *cred = current_cred();
 	struct inode *inode = d_backing_inode(dentry);
-	core::ffi::c_uint ia_valid = iattr->ia_valid;
+	kernel::ffi::c_uint ia_valid = iattr->ia_valid;
 	u32 av = FILE__WRITE;
 
 	/* ATTR_FORCE is just used for ATTR_KILL_S[UG]ID. */
@@ -3376,7 +3376,7 @@ unsafe fn selinux_inode_getattr(const struct path *path)
 unsafe fn has_cap_mac_admin(audit: bool)
 {
 	const struct cred *cred = current_cred();
-	core::ffi::c_uint opts = audit ? CAP_OPT_NONE : CAP_OPT_NOAUDIT;
+	kernel::ffi::c_uint opts = audit ? CAP_OPT_NONE : CAP_OPT_NOAUDIT;
 
 	if (cap_capable(cred, &init_user_ns, CAP_MAC_ADMIN, opts))
 		return false;
@@ -3589,7 +3589,7 @@ unsafe fn selinux_inode_file_getattr(dentry *dentry,
 }
 
 unsafe fn selinux_path_notify(const struct path *path, mask: u64,
-						obj_type: core::ffi::c_uint)
+						obj_type: kernel::ffi::c_uint)
 {
 	int ret;
 	u32 perm;
@@ -3934,8 +3934,8 @@ unsafe fn ioctl_has_perm(const struct cred *cred, file *file,
 	return rc;
 }
 
-unsafe fn selinux_file_ioctl(file *file, cmd: core::ffi::c_uint,
-			      arg: core::ffi::c_ulong)
+unsafe fn selinux_file_ioctl(file *file, cmd: kernel::ffi::c_uint,
+			      arg: kernel::ffi::c_ulong)
 {
 	const struct cred *cred = current_cred();
 	int error = 0;
@@ -3981,8 +3981,8 @@ unsafe fn selinux_file_ioctl(file *file, cmd: core::ffi::c_uint,
 	return error;
 }
 
-unsafe fn selinux_file_ioctl_compat(file *file, cmd: core::ffi::c_uint,
-			      arg: core::ffi::c_ulong)
+unsafe fn selinux_file_ioctl_compat(file *file, cmd: kernel::ffi::c_uint,
+			      arg: kernel::ffi::c_ulong)
 {
 	/*
 	 * If we are in a 64-bit kernel running 32-bit userspace, we need to
@@ -4010,7 +4010,7 @@ unsafe fn selinux_file_ioctl_compat(file *file, cmd: core::ffi::c_uint,
 
 unsafe fn default_noexec __ro_after_init;
 
-unsafe fn __file_map_prot_check(const struct file *file, prot: core::ffi::c_ulong,
+unsafe fn __file_map_prot_check(const struct file *file, prot: kernel::ffi::c_ulong,
 				 shared: bool, mounter_check: bool,
 				 bf_user_file: bool)
 {
@@ -4057,13 +4057,13 @@ unsafe fn __file_map_prot_check(const struct file *file, prot: core::ffi::c_ulon
 }
 
 unsafe fn int file_map_prot_check(const struct file *file,
-				      prot: core::ffi::c_ulong, shared: bool,
+				      prot: kernel::ffi::c_ulong, shared: bool,
 				      mounter_check: bool)
 {
 	return __file_map_prot_check(file, prot, shared, mounter_check, false);
 }
 
-unsafe fn selinux_mmap_addr(addr: core::ffi::c_ulong)
+unsafe fn selinux_mmap_addr(addr: kernel::ffi::c_ulong)
 {
 	int rc = 0;
 
@@ -4076,7 +4076,7 @@ unsafe fn selinux_mmap_addr(addr: core::ffi::c_ulong)
 	return rc;
 }
 
-unsafe fn selinux_mmap_file_common(file *file, prot: core::ffi::c_ulong,
+unsafe fn selinux_mmap_file_common(file *file, prot: kernel::ffi::c_ulong,
 				    shared: bool, mounter_check: bool)
 {
 	if (file) {
@@ -4096,8 +4096,8 @@ unsafe fn selinux_mmap_file_common(file *file, prot: core::ffi::c_ulong,
 }
 
 unsafe fn selinux_mmap_file(file *file,
-			     core::ffi::c_ulong reqprot __always_unused,
-			     prot: core::ffi::c_ulong, flags: core::ffi::c_ulong)
+			     kernel::ffi::c_ulong reqprot __always_unused,
+			     prot: kernel::ffi::c_ulong, flags: kernel::ffi::c_ulong)
 {
 	return selinux_mmap_file_common(file, prot,
 					(flags & MAP_TYPE) == MAP_SHARED,
@@ -4123,7 +4123,7 @@ unsafe fn selinux_mmap_backing_file(vm_area_struct *vma,
 				     file *backing_file,
 				     file *user_file __always_unused)
 {
-	core::ffi::c_ulong prot = 0;
+	kernel::ffi::c_ulong prot = 0;
 
 	/* translate vma->vm_flags perms into PROT perms */
 	if (vma->vm_flags & VM_READ)
@@ -4139,8 +4139,8 @@ unsafe fn selinux_mmap_backing_file(vm_area_struct *vma,
 }
 
 unsafe fn selinux_file_mprotect(vm_area_struct *vma,
-				 core::ffi::c_ulong reqprot __always_unused,
-				 prot: core::ffi::c_ulong)
+				 kernel::ffi::c_ulong reqprot __always_unused,
+				 prot: kernel::ffi::c_ulong)
 {
 	int rc;
 	const struct cred *cred = current_cred();
@@ -4208,15 +4208,15 @@ unsafe fn selinux_file_mprotect(vm_area_struct *vma,
 	return 0;
 }
 
-unsafe fn selinux_file_lock(file *file, cmd: core::ffi::c_uint)
+unsafe fn selinux_file_lock(file *file, cmd: kernel::ffi::c_uint)
 {
 	const struct cred *cred = current_cred();
 
 	return file_has_perm(cred, file, FILE__LOCK);
 }
 
-unsafe fn selinux_file_fcntl(file *file, cmd: core::ffi::c_uint,
-			      arg: core::ffi::c_ulong)
+unsafe fn selinux_file_fcntl(file *file, cmd: kernel::ffi::c_uint,
+			      arg: kernel::ffi::c_ulong)
 {
 	const struct cred *cred = current_cred();
 	int err = 0;
@@ -4570,7 +4570,7 @@ unsafe fn selinux_task_getioprio(task_struct *p)
 }
 
 unsafe fn selinux_task_prlimit(const struct cred *cred, const struct cred *tcred,
-				flags: core::ffi::c_uint)
+				flags: kernel::ffi::c_uint)
 {
 	u32 av = 0;
 
@@ -4584,7 +4584,7 @@ unsafe fn selinux_task_prlimit(const struct cred *cred, const struct cred *tcred
 			    SECCLASS_PROCESS, av, NULL);
 }
 
-unsafe fn selinux_task_setrlimit(task_struct *p, resource: core::ffi::c_uint,
+unsafe fn selinux_task_setrlimit(task_struct *p, resource: kernel::ffi::c_uint,
 		rlimit *new_rlim)
 {
 	struct rlimit *old_rlim = p->signal->rlim + resource;
@@ -5068,7 +5068,7 @@ unsafe fn __selinux_socket_bind(sock *sk, sockaddr *address, int addrlen)
 		struct sockaddr_in *addr4 = NULL;
 		struct sockaddr_in6 *addr6 = NULL;
 		u16 family_sa;
-		core::ffi::c_ushort snum;
+		kernel::ffi::c_ushort snum;
 		sid: u32, node_perm;
 
 		/*
@@ -5218,7 +5218,7 @@ unsafe fn selinux_socket_connect_helper(sock *sk,
 		struct lsm_network_audit net = {0,};
 		struct sockaddr_in *addr4 = NULL;
 		struct sockaddr_in6 *addr6 = NULL;
-		core::ffi::c_ushort snum;
+		kernel::ffi::c_ushort snum;
 		sid: u32, perm;
 
 		/* sctp_connectx(3) calls via selinux_sctp_bind_connect()
@@ -5545,7 +5545,7 @@ unsafe fn selinux_socket_sock_rcv_skb(sock *sk, sk_buff *skb)
 
 unsafe fn selinux_socket_getpeersec_stream(socket *sock,
 					    sockptr_t optval, sockptr_t optlen,
-					    len: core::ffi::c_uint)
+					    len: kernel::ffi::c_uint)
 {
 	'out_len: {
 	int err = 0;
@@ -6317,9 +6317,9 @@ unsafe fn nlmsg_sock_has_extended_perms(sock *sk, perms: u32, nlmsg_type: u16)
 unsafe fn selinux_netlink_send(sock *sk, sk_buff *skb)
 {
 	int rc = 0;
-	core::ffi::c_uint msg_len;
-	core::ffi::c_uint data_len = skb->len;
-	core::ffi::c_uchar *data = skb->data;
+	kernel::ffi::c_uint msg_len;
+	kernel::ffi::c_uint data_len = skb->len;
+	kernel::ffi::c_uchar *data = skb->data;
 	struct nlmsghdr *nlh;
 	struct sk_security_struct *sksec = selinux_sock(sk);
 	u16 sclass = sksec->sclass;
@@ -6736,7 +6736,7 @@ unsafe fn selinux_d_instantiate(dentry *dentry, inode *inode)
 		inode_doinit_with_dentry(inode, dentry);
 }
 
-unsafe fn selinux_lsm_getattr(attr: core::ffi::c_uint, task_struct *p,
+unsafe fn selinux_lsm_getattr(attr: kernel::ffi::c_uint, task_struct *p,
 			       char **value)
 {
 	'err_unlock: {
@@ -6951,7 +6951,7 @@ unsafe fn selinux_lsm_setattr(attr: u64, void *value, size_t size)
  * Returns the number of attributes on success, an error code otherwise.
  * There will only ever be one attribute.
  */
-unsafe fn selinux_getselfattr(attr: core::ffi::c_uint, lsm_ctx __user *ctx,
+unsafe fn selinux_getselfattr(attr: kernel::ffi::c_uint, lsm_ctx __user *ctx,
 			       u32 *size, flags: u32)
 {
 	int rc;
@@ -6966,7 +6966,7 @@ unsafe fn selinux_getselfattr(attr: core::ffi::c_uint, lsm_ctx __user *ctx,
 	return (!rc ? 1 : rc);
 }
 
-unsafe fn selinux_setselfattr(attr: core::ffi::c_uint, lsm_ctx *ctx,
+unsafe fn selinux_setselfattr(attr: kernel::ffi::c_uint, lsm_ctx *ctx,
 			       size: u32, flags: u32)
 {
 	int rc;
@@ -6980,7 +6980,7 @@ unsafe fn selinux_setselfattr(attr: core::ffi::c_uint, lsm_ctx *ctx,
 unsafe fn selinux_getprocattr(task_struct *p,
 			       const char *name, char **value)
 {
-	core::ffi::c_uint attr = lsm_name_to_attr(name);
+	kernel::ffi::c_uint attr = lsm_name_to_attr(name);
 	int rc;
 
 	if (attr) {
@@ -7089,7 +7089,7 @@ unsafe fn selinux_inode_getsecctx(inode *inode, lsm_context *cp)
 // cfg: CONFIG_KEYS
 
 unsafe fn selinux_key_alloc(key *k, const struct cred *cred,
-			     flags: core::ffi::c_ulong)
+			     flags: kernel::ffi::c_ulong)
 {
 	const struct cred_security_struct *crsec;
 	struct key_security_struct *ksec = selinux_key(k);
@@ -7231,7 +7231,7 @@ unsafe fn selinux_ib_alloc_security(void *ib_sec)
 
 // cfg: CONFIG_BPF_SYSCALL
 unsafe fn selinux_bpf(int cmd, bpf_attr *attr,
-		       size: core::ffi::c_uint, kernel: bool)
+		       size: kernel::ffi::c_uint, kernel: bool)
 {
 	u32 sid = current_sid();
 	int ret;

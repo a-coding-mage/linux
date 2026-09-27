@@ -9,10 +9,10 @@
 // Linux and architecture dependencies are supplied by the surrounding kernel.
 
 #[repr(C)]
-struct Sun4dHandlerData { cpuid: core::ffi::c_uint, real_irq: core::ffi::c_uint }
+struct Sun4dHandlerData { cpuid: kernel::ffi::c_uint, real_irq: kernel::ffi::c_uint }
 
-unsafe fn sun4d_encode_irq(board: core::ffi::c_int, lvl: core::ffi::c_int, slot: core::ffi::c_int) -> core::ffi::c_uint {
-    (((board + 1) << 5) | (lvl << 2) | slot) as core::ffi::c_uint
+unsafe fn sun4d_encode_irq(board: kernel::ffi::c_int, lvl: kernel::ffi::c_int, slot: kernel::ffi::c_int) -> kernel::ffi::c_uint {
+    (((board + 1) << 5) | (lvl << 2) | slot) as kernel::ffi::c_uint
 }
 
 #[repr(C)]
@@ -25,14 +25,14 @@ struct Sun4dTimerRegs {
 }
 
 static mut SUN4D_TIMERS: *mut Sun4dTimerRegs = core::ptr::null_mut();
-const SUN4D_TIMER_IRQ: core::ffi::c_uint = 10;
+const SUN4D_TIMER_IRQ: kernel::ffi::c_uint = 10;
 static mut BOARD_TO_CPU: [u8; 32] = [0; 32];
-static PIL_TO_SBUS: [core::ffi::c_int; 16] = [0, 0, 1, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 0];
+static PIL_TO_SBUS: [kernel::ffi::c_int; 16] = [0, 0, 1, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 0];
 
 // Exported for sun4d_smp.c.
-static mut SUN4D_IMSK_LOCK: core::ffi::c_ulong = 0;
+static mut SUN4D_IMSK_LOCK: kernel::ffi::c_ulong = 0;
 
-unsafe fn sun4d_sbus_handler_irq(sbusl: core::ffi::c_int) {
+unsafe fn sun4d_sbus_handler_irq(sbusl: kernel::ffi::c_int) {
     let mut bus_mask = bw_get_intr_mask(sbusl) & 0x3ffff;
     bw_clear_intr_mask(sbusl, bus_mask);
     let sbil = sbusl << 2;
@@ -64,7 +64,7 @@ unsafe fn sun4d_sbus_handler_irq(sbusl: core::ffi::c_int) {
     }
 }
 
-unsafe fn sun4d_handler_irq(pil: core::ffi::c_uint, regs: *mut PtRegs) {
+unsafe fn sun4d_handler_irq(pil: kernel::ffi::c_uint, regs: *mut PtRegs) {
     let sbusl = PIL_TO_SBUS[pil as usize];
     cc_get_ipen();
     cc_set_iclr(1 << pil);
@@ -96,7 +96,7 @@ unsafe fn sun4d_unmask_irq(data: *mut IrqData) {
     cc_set_imsk(cc_get_imsk() & !(1 << real_irq));
 }
 
-unsafe fn sun4d_startup_irq(data: *mut IrqData) -> core::ffi::c_uint {
+unsafe fn sun4d_startup_irq(data: *mut IrqData) -> kernel::ffi::c_uint {
     irq_link((*data).irq); sun4d_unmask_irq(data); 0
 }
 unsafe fn sun4d_shutdown_irq(data: *mut IrqData) { sun4d_mask_irq(data); irq_unlink((*data).irq); }
@@ -107,7 +107,7 @@ static mut SUN4D_IRQ: IrqChip = IrqChip {
 };
 
 unsafe fn sun4d_clear_clock_irq() { sbus_readl(&(*SUN4D_TIMERS).l10_timer_limit); }
-unsafe fn sun4d_load_profile_irq(cpu: core::ffi::c_int, limit: core::ffi::c_uint) {
+unsafe fn sun4d_load_profile_irq(cpu: kernel::ffi::c_int, limit: kernel::ffi::c_uint) {
     bw_set_prof_limit(cpu, if limit != 0 { timer_value(limit) } else { 0 });
 }
 unsafe fn sun4d_load_profile_irqs() {
@@ -115,7 +115,7 @@ unsafe fn sun4d_load_profile_irqs() {
     while !cpu_find_by_instance(cpu, core::ptr::null_mut(), &mut mid) { sun4d_load_profile_irq(mid >> 3, 0); cpu += 1; }
 }
 
-unsafe fn _sun4d_build_device_irq(real_irq: core::ffi::c_uint, pil: core::ffi::c_uint, board: core::ffi::c_uint) -> core::ffi::c_uint {
+unsafe fn _sun4d_build_device_irq(real_irq: kernel::ffi::c_uint, pil: kernel::ffi::c_uint, board: kernel::ffi::c_uint) -> kernel::ffi::c_uint {
     let irq = irq_alloc(real_irq, pil);
     if irq == 0 { prom_printf("IRQ: allocate for %d %d %d failed\n", real_irq, pil, board); return irq; }
     let mut handler_data = irq_get_handler_data(irq);
@@ -129,12 +129,12 @@ unsafe fn _sun4d_build_device_irq(real_irq: core::ffi::c_uint, pil: core::ffi::c
     irq
 }
 
-unsafe fn sun4d_build_timer_irq(board: core::ffi::c_uint, real_irq: core::ffi::c_uint) -> core::ffi::c_uint { _sun4d_build_device_irq(real_irq, real_irq, board) }
+unsafe fn sun4d_build_timer_irq(board: kernel::ffi::c_uint, real_irq: kernel::ffi::c_uint) -> kernel::ffi::c_uint { _sun4d_build_device_irq(real_irq, real_irq, board) }
 
-unsafe fn sun4d_build_device_irq(op: *mut PlatformDevice, real_irq: core::ffi::c_uint) -> core::ffi::c_uint {
+unsafe fn sun4d_build_device_irq(op: *mut PlatformDevice, real_irq: kernel::ffi::c_uint) -> kernel::ffi::c_uint {
     let dp = (*(*op).dev.of_node).parent;
     let mut bus = dp;
-    let mut bus_connection: *const core::ffi::c_char = core::ptr::null();
+    let mut bus_connection: *const kernel::ffi::c_char = core::ptr::null();
     while !bus.is_null() {
         if of_node_name_eq(bus, "sbi") { bus_connection = "io-unit\0".as_ptr() as _; break; }
         if of_node_name_eq(bus, "bootbus") { bus_connection = "cpu-unit\0".as_ptr() as _; break; }

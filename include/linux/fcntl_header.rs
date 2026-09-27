@@ -4,14 +4,14 @@
 // name here; their declarations are intentionally not reproduced.
 
 /* List of all valid flags for the open/openat flags argument: */
-pub const VALID_OPEN_FLAGS: _ =
+pub const VALID_OPEN_FLAGS: u32 =
     O_RDONLY | O_WRONLY | O_RDWR | O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC |
     O_APPEND | O_NDELAY | O_NONBLOCK | __O_SYNC | O_DSYNC |
     FASYNC | O_DIRECT | O_LARGEFILE | O_DIRECTORY | O_NOFOLLOW |
     O_NOATIME | O_CLOEXEC | O_PATH | __O_TMPFILE | O_EMPTYPATH;
 
 /* List of all valid flags for openat2(2)'s how->flags argument. */
-pub const VALID_OPENAT2_FLAGS: _ = VALID_OPEN_FLAGS | OPENAT2_REGULAR;
+pub const VALID_OPENAT2_FLAGS: u32 = VALID_OPEN_FLAGS | OPENAT2_REGULAR;
 
 /*
  * Kernel-internal carrier for OPENAT2_REGULAR. The UAPI bit lives in the
@@ -28,7 +28,7 @@ pub const VALID_OPENAT2_FLAGS: _ = VALID_OPEN_FLAGS | OPENAT2_REGULAR;
 pub const __O_REGULAR: i32 = 1 << 30;
 
 /* List of all valid flags for the how->resolve argument: */
-pub const VALID_RESOLVE_FLAGS: _ =
+pub const VALID_RESOLVE_FLAGS: u32 =
     RESOLVE_NO_XDEV | RESOLVE_NO_MAGICLINKS | RESOLVE_NO_SYMLINKS |
     RESOLVE_BENEATH | RESOLVE_IN_ROOT | RESOLVE_CACHED;
 

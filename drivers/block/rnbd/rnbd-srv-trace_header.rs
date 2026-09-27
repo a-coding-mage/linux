@@ -10,7 +10,7 @@
 // below as Rust declarations and payload layouts.  The referenced kernel types
 // and conversion helpers are supplied by other translation units.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct RnbdSrvSession {

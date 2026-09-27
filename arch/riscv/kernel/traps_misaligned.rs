@@ -8,73 +8,73 @@
 
 #[cfg(CONFIG_FPU)]
 extern "C" {
-    fn put_f32_reg(fp_reg: libc::c_ulong, value: libc::c_ulong);
-    fn put_f64_reg(fp_reg: libc::c_ulong, value: libc::c_ulong);
-    fn get_f32_reg(fp_reg: libc::c_ulong) -> libc::c_ulong;
+    fn put_f32_reg(fp_reg: kernel::ffi::c_ulong, value: kernel::ffi::c_ulong);
+    fn put_f64_reg(fp_reg: kernel::ffi::c_ulong, value: kernel::ffi::c_ulong);
+    fn get_f32_reg(fp_reg: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
     #[cfg(target_pointer_width = "64")]
-    fn get_f64_reg(fp_reg: libc::c_ulong) -> libc::c_ulong;
+    fn get_f64_reg(fp_reg: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
     #[cfg(target_pointer_width = "32")]
-    fn get_f64_reg(fp_reg: libc::c_ulong, value: *mut u64);
+    fn get_f64_reg(fp_reg: kernel::ffi::c_ulong, value: *mut u64);
 }
 
 #[cfg(CONFIG_FPU)]
-unsafe fn set_f32_rd(insn: libc::c_ulong, regs: *mut pt_regs, val: libc::c_ulong) -> i32 {
+unsafe fn set_f32_rd(insn: kernel::ffi::c_ulong, regs: *mut pt_regs, val: kernel::ffi::c_ulong) -> i32 {
     put_f32_reg((insn >> 7) & 0x1f, val);
     (*regs).status |= SR_FS_DIRTY;
     0
 }
 
 #[cfg(CONFIG_FPU)]
-unsafe fn set_f64_rd(insn: libc::c_ulong, regs: *mut pt_regs, val: u64) -> i32 {
-    put_f64_reg((insn >> 7) & 0x1f, val as libc::c_ulong);
+unsafe fn set_f64_rd(insn: kernel::ffi::c_ulong, regs: *mut pt_regs, val: u64) -> i32 {
+    put_f64_reg((insn >> 7) & 0x1f, val as kernel::ffi::c_ulong);
     (*regs).status |= SR_FS_DIRTY;
     0
 }
 
 #[cfg(CONFIG_FPU)]
-unsafe fn get_f64_rs(insn: libc::c_ulong, off: u8, regs: *mut pt_regs) -> libc::c_ulong {
+unsafe fn get_f64_rs(insn: kernel::ffi::c_ulong, off: u8, regs: *mut pt_regs) -> kernel::ffi::c_ulong {
     let fp_reg = (insn >> off) & 0x1f;
     #[cfg(target_pointer_width = "64")]
     let val = get_f64_reg(fp_reg);
     #[cfg(target_pointer_width = "32")]
-    let val = { let mut v = 0u64; get_f64_reg(fp_reg, &mut v); v as libc::c_ulong };
+    let val = { let mut v = 0u64; get_f64_reg(fp_reg, &mut v); v as kernel::ffi::c_ulong };
     (*regs).status |= SR_FS_DIRTY;
     val
 }
 
 #[cfg(CONFIG_FPU)]
-unsafe fn get_f32_rs(insn: libc::c_ulong, off: u8, regs: *mut pt_regs) -> libc::c_ulong {
+unsafe fn get_f32_rs(insn: kernel::ffi::c_ulong, off: u8, regs: *mut pt_regs) -> kernel::ffi::c_ulong {
     let val = get_f32_reg((insn >> off) & 0x1f);
     (*regs).status |= SR_FS_DIRTY;
     val
 }
 
 #[cfg(not(CONFIG_FPU))]
-unsafe fn set_f32_rd(_: libc::c_ulong, _: *mut pt_regs, _: libc::c_ulong) -> i32 { 0 }
+unsafe fn set_f32_rd(_: kernel::ffi::c_ulong, _: *mut pt_regs, _: kernel::ffi::c_ulong) -> i32 { 0 }
 #[cfg(not(CONFIG_FPU))]
-unsafe fn set_f64_rd(_: libc::c_ulong, _: *mut pt_regs, _: u64) -> i32 { 0 }
+unsafe fn set_f64_rd(_: kernel::ffi::c_ulong, _: *mut pt_regs, _: u64) -> i32 { 0 }
 #[cfg(not(CONFIG_FPU))]
-unsafe fn get_f64_rs(_: libc::c_ulong, _: u8, _: *mut pt_regs) -> libc::c_ulong { 0 }
+unsafe fn get_f64_rs(_: kernel::ffi::c_ulong, _: u8, _: *mut pt_regs) -> kernel::ffi::c_ulong { 0 }
 #[cfg(not(CONFIG_FPU))]
-unsafe fn get_f32_rs(_: libc::c_ulong, _: u8, _: *mut pt_regs) -> libc::c_ulong { 0 }
+unsafe fn get_f32_rs(_: kernel::ffi::c_ulong, _: u8, _: *mut pt_regs) -> kernel::ffi::c_ulong { 0 }
 
 #[repr(C)]
-union reg_data { data_bytes: [u8; 8], data_ulong: libc::c_ulong, data_u64: u64 }
+union reg_data { data_bytes: [u8; 8], data_ulong: kernel::ffi::c_ulong, data_u64: u64 }
 
 // sysctl hooks
 #[no_mangle]
 pub static mut unaligned_enabled: i32 = 1; /* Enabled by default */
 
-unsafe fn get_insn(regs: *mut pt_regs, mut epc: libc::c_ulong, r_insn: *mut libc::c_ulong) -> i32 {
+unsafe fn get_insn(regs: *mut pt_regs, mut epc: kernel::ffi::c_ulong, r_insn: *mut kernel::ffi::c_ulong) -> i32 {
     let mut insn = 0;
     if epc & 2 != 0 {
         let mut tmp = 0u16;
         if __read_insn(regs, &mut tmp, epc as *const u8) != 0 { return -EFAULT; }
-        insn = (tmp as libc::c_ulong) & GENMASK(15, 0);
+        insn = (tmp as kernel::ffi::c_ulong) & GENMASK(15, 0);
         if (insn & __INSN_LENGTH_MASK) != __INSN_LENGTH_32 { *r_insn = insn; return 0; }
         epc += 2;
         if __read_insn(regs, &mut tmp, epc as *const u8) != 0 { return -EFAULT; }
-        *r_insn = ((tmp as libc::c_ulong) << 16) | insn;
+        *r_insn = ((tmp as kernel::ffi::c_ulong) << 16) | insn;
     } else {
         if __read_insn(regs, &mut insn, epc as *const u8) != 0 { return -EFAULT; }
         if (insn & __INSN_LENGTH_MASK) != __INSN_LENGTH_32 { insn &= GENMASK(15, 0); }

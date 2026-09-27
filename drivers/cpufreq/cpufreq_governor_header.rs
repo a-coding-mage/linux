@@ -26,12 +26,12 @@ pub enum OdSampleType {
 pub struct dbs_data {
     pub attr_set: gov_attr_set,
     pub gov: *mut dbs_governor,
-    pub tuners: *mut core::ffi::c_void,
-    pub ignore_nice_load: core::ffi::c_uint,
-    pub sampling_rate: core::ffi::c_uint,
-    pub sampling_down_factor: core::ffi::c_uint,
-    pub up_threshold: core::ffi::c_uint,
-    pub io_is_busy: core::ffi::c_uint,
+    pub tuners: *mut kernel::ffi::c_void,
+    pub ignore_nice_load: kernel::ffi::c_uint,
+    pub sampling_rate: kernel::ffi::c_uint,
+    pub sampling_down_factor: kernel::ffi::c_uint,
+    pub up_threshold: kernel::ffi::c_uint,
+    pub io_is_busy: kernel::ffi::c_uint,
 }
 
 #[inline]
@@ -44,7 +44,7 @@ pub unsafe fn to_dbs_data(attr_set: *mut gov_attr_set) -> *mut dbs_data {
 #[macro_export]
 macro_rules! gov_show_one_common {
     ($file_name:tt) => {
-        unsafe fn ::kernel::macros::paste!([<$file_name _show>])(attr_set: *mut gov_attr_set, buf: *mut core::ffi::c_char) -> isize {
+        unsafe fn ::kernel::macros::paste!([<$file_name _show>])(attr_set: *mut gov_attr_set, buf: *mut kernel::ffi::c_char) -> isize {
             let dbs_data = unsafe { to_dbs_data(attr_set) };
             unsafe { sysfs_emit!(buf, "%u\n", (*dbs_data).$file_name) }
         }
@@ -91,15 +91,15 @@ pub struct policy_dbs_info {
     pub dbs_data: *mut dbs_data,
     pub list: list_head,
     /* Multiplier for increasing sample delay temporarily. */
-    pub rate_mult: core::ffi::c_uint,
-    pub idle_periods: core::ffi::c_uint, /* For conservative */
+    pub rate_mult: kernel::ffi::c_uint,
+    pub idle_periods: kernel::ffi::c_uint, /* For conservative */
     /* Status indicators */
     pub is_shared: bool,          /* This object is used by multiple CPUs */
     pub work_in_progress: bool,   /* Work is being queued up or in progress */
 }
 
 #[inline]
-pub unsafe fn gov_update_sample_delay(policy_dbs: *mut policy_dbs_info, delay_us: core::ffi::c_uint) {
+pub unsafe fn gov_update_sample_delay(policy_dbs: *mut policy_dbs_info, delay_us: kernel::ffi::c_uint) {
     (*policy_dbs).sample_delay_ns = (delay_us as u64).wrapping_mul(NSEC_PER_USEC as u64) as i64;
 }
 
@@ -113,7 +113,7 @@ pub struct cpu_dbs_info {
      * explicitly set to zero, it is used as a flag to ensure that we copy the
      * previous load to the current interval only once, upon the first wake-up
      * from idle. */
-    pub prev_load: core::ffi::c_uint,
+    pub prev_load: kernel::ffi::c_uint,
     pub update_util: update_util_data,
     pub policy_dbs: *mut policy_dbs_info,
 }
@@ -125,10 +125,10 @@ pub struct dbs_governor {
     pub kobj_type: kobj_type,
     /* Common data for platforms that don't set CPUFREQ_HAVE_GOVERNOR_PER_POLICY */
     pub gdbs_data: *mut dbs_data,
-    pub gov_dbs_update: Option<unsafe extern "C" fn(*mut cpufreq_policy) -> core::ffi::c_uint>,
+    pub gov_dbs_update: Option<unsafe extern "C" fn(*mut cpufreq_policy) -> kernel::ffi::c_uint>,
     pub alloc: Option<unsafe extern "C" fn() -> *mut policy_dbs_info>,
     pub free: Option<unsafe extern "C" fn(*mut policy_dbs_info)>,
-    pub init: Option<unsafe extern "C" fn(*mut dbs_data) -> core::ffi::c_int>,
+    pub init: Option<unsafe extern "C" fn(*mut dbs_data) -> kernel::ffi::c_int>,
     pub exit: Option<unsafe extern "C" fn(*mut dbs_data)>,
     pub start: Option<unsafe extern "C" fn(*mut cpufreq_policy)>,
     pub limits: Option<unsafe extern "C" fn(*mut cpufreq_policy)>,
@@ -141,9 +141,9 @@ pub unsafe fn dbs_governor_of(policy: *mut cpufreq_policy) -> *mut dbs_governor 
 
 /* Governor callback routines */
 unsafe extern "C" {
-    pub fn cpufreq_dbs_governor_init(policy: *mut cpufreq_policy) -> core::ffi::c_int;
+    pub fn cpufreq_dbs_governor_init(policy: *mut cpufreq_policy) -> kernel::ffi::c_int;
     pub fn cpufreq_dbs_governor_exit(policy: *mut cpufreq_policy);
-    pub fn cpufreq_dbs_governor_start(policy: *mut cpufreq_policy) -> core::ffi::c_int;
+    pub fn cpufreq_dbs_governor_start(policy: *mut cpufreq_policy) -> kernel::ffi::c_int;
     pub fn cpufreq_dbs_governor_stop(policy: *mut cpufreq_policy);
     pub fn cpufreq_dbs_governor_limits(policy: *mut cpufreq_policy);
 }
@@ -167,17 +167,17 @@ macro_rules! CPUFREQ_DBS_GOVERNOR_INITIALIZER {
 /* Governor specific operations */
 #[repr(C)]
 pub struct od_ops {
-    pub powersave_bias_target: Option<unsafe extern "C" fn(*mut cpufreq_policy, core::ffi::c_uint, core::ffi::c_uint) -> core::ffi::c_uint>,
+    pub powersave_bias_target: Option<unsafe extern "C" fn(*mut cpufreq_policy, kernel::ffi::c_uint, kernel::ffi::c_uint) -> kernel::ffi::c_uint>,
 }
 
 unsafe extern "C" {
-    pub fn dbs_update(policy: *mut cpufreq_policy) -> core::ffi::c_uint;
+    pub fn dbs_update(policy: *mut cpufreq_policy) -> kernel::ffi::c_uint;
     pub fn od_register_powersave_bias_handler(
-        f: Option<unsafe extern "C" fn(*mut cpufreq_policy, core::ffi::c_uint, core::ffi::c_uint)>,
-        powersave_bias: core::ffi::c_uint,
+        f: Option<unsafe extern "C" fn(*mut cpufreq_policy, kernel::ffi::c_uint, kernel::ffi::c_uint)>,
+        powersave_bias: kernel::ffi::c_uint,
     );
     pub fn od_unregister_powersave_bias_handler();
-    pub fn sampling_rate_store(attr_set: *mut gov_attr_set, buf: *const core::ffi::c_char, count: usize) -> isize;
+    pub fn sampling_rate_store(attr_set: *mut gov_attr_set, buf: *const kernel::ffi::c_char, count: usize) -> isize;
     pub fn gov_update_cpu_data(dbs_data: *mut dbs_data);
 }
 

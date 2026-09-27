@@ -21,12 +21,12 @@ struct devlink_nl_sock_priv {
     flt_lock: spinlock_t,
 }
 
-unsafe fn devlink_nl_sock_priv_init(priv_: *mut core::ffi::c_void) {
+unsafe fn devlink_nl_sock_priv_init(priv_: *mut kernel::ffi::c_void) {
     let sk_priv = priv_ as *mut devlink_nl_sock_priv;
     spin_lock_init(&mut (*sk_priv).flt_lock);
 }
 
-unsafe fn devlink_nl_sock_priv_destroy(priv_: *mut core::ffi::c_void) {
+unsafe fn devlink_nl_sock_priv_destroy(priv_: *mut kernel::ffi::c_void) {
     let sk_priv = priv_ as *mut devlink_nl_sock_priv;
     let flt = rcu_dereference_protected((*sk_priv).flt, true);
     kfree_rcu(flt, rcu);
@@ -41,7 +41,7 @@ unsafe fn devlink_nl_notify_filter_set_doit(
     let mut flt: *mut devlink_obj_desc;
     let mut data_offset: usize = 0;
     let mut data_size: usize = 0;
-    let mut pos: *mut core::ffi::c_char;
+    let mut pos: *mut kernel::ffi::c_char;
 
     if !(*attrs.add(DEVLINK_ATTR_BUS_NAME as usize)).is_null() {
         data_size = size_add(data_size, nla_len(*attrs.add(DEVLINK_ATTR_BUS_NAME as usize)) + 1);
@@ -56,7 +56,7 @@ unsafe fn devlink_nl_notify_filter_set_doit(
         return -ENOMEM;
     }
 
-    pos = (*flt).data.as_mut_ptr() as *mut core::ffi::c_char;
+    pos = (*flt).data.as_mut_ptr() as *mut kernel::ffi::c_char;
     if !(*attrs.add(DEVLINK_ATTR_BUS_NAME as usize)).is_null() {
         data_offset += nla_strscpy(pos, *attrs.add(DEVLINK_ATTR_BUS_NAME as usize), data_size) + 1;
         (*flt).bus_name = pos;
@@ -79,13 +79,13 @@ unsafe fn devlink_nl_notify_filter_set_doit(
     if (*flt).bus_name.is_null() && (*flt).dev_name.is_null()
         && !(*flt).devlink_index_valid && !(*flt).port_index_valid
     {
-        kfree(flt as *mut core::ffi::c_void);
+        kfree(flt as *mut kernel::ffi::c_void);
         flt = core::ptr::null_mut();
     }
 
     sk_priv = genl_sk_priv_get(&devlink_nl_family, NETLINK_CB(skb).sk);
     if IS_ERR(sk_priv) {
-        kfree(flt as *mut core::ffi::c_void);
+        kfree(flt as *mut kernel::ffi::c_void);
         return PTR_ERR(sk_priv);
     }
     spin_lock(&mut (*sk_priv).flt_lock);
@@ -107,7 +107,7 @@ unsafe fn devlink_obj_desc_match(desc: *const devlink_obj_desc, flt: *const devl
     true
 }
 
-unsafe fn devlink_nl_notify_filter(dsk: *mut sock, _skb: *mut sk_buff, data: *mut core::ffi::c_void) -> i32 {
+unsafe fn devlink_nl_notify_filter(dsk: *mut sock, _skb: *mut sk_buff, data: *mut kernel::ffi::c_void) -> i32 {
     let desc = data as *const devlink_obj_desc;
     let mut ret = 0;
     rcu_read_lock();
@@ -146,11 +146,11 @@ unsafe fn devlink_nl_msg_reply_and_new(msg: *mut *mut sk_buff, info: *mut genl_i
 }
 
 unsafe fn devlink_get_from_attrs_lock(net: *mut net, attrs: *mut *mut nlattr, dev_lock: bool) -> *mut devlink {
-    let mut index: libc::c_ulong;
+    let mut index: kernel::ffi::c_ulong;
     let devlink;
     if !(*attrs.add(DEVLINK_ATTR_INDEX as usize)).is_null() {
         if !(*attrs.add(DEVLINK_ATTR_BUS_NAME as usize)).is_null() || !(*attrs.add(DEVLINK_ATTR_DEV_NAME as usize)).is_null() { return ERR_PTR(-EINVAL); }
-        index = nla_get_u32(*attrs.add(DEVLINK_ATTR_INDEX as usize)) as libc::c_ulong;
+        index = nla_get_u32(*attrs.add(DEVLINK_ATTR_INDEX as usize)) as kernel::ffi::c_ulong;
         devlink = devlinks_xa_lookup_get(net, index);
         if devlink.is_null() { return ERR_PTR(-ENODEV); }
     } else {
@@ -184,9 +184,9 @@ unsafe fn devlink_get_parent_from_attrs_lock(net: *mut net, attrs: *mut *mut nla
     let tb = kcalloc(maxtype + 1, core::mem::size_of::<*mut nlattr>(), GFP_KERNEL) as *mut *mut nlattr;
     if tb.is_null() { return ERR_PTR(-ENOMEM); }
     let err = nla_parse_nested(tb, maxtype, *attrs.add(DEVLINK_ATTR_PARENT_DEV as usize), devlink_dl_parent_dev_nl_policy, core::ptr::null_mut());
-    if err != 0 { kfree(tb as *mut core::ffi::c_void); return ERR_PTR(err); }
+    if err != 0 { kfree(tb as *mut kernel::ffi::c_void); return ERR_PTR(err); }
     let devlink = devlink_get_from_attrs_lock(net, tb, false);
-    kfree(tb as *mut core::ffi::c_void);
+    kfree(tb as *mut kernel::ffi::c_void);
     devlink
 }
 

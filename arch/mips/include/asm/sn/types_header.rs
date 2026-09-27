@@ -10,7 +10,7 @@
 // Dependency supplied by the translated Linux types definitions.
 
 #[cfg(not(asm))]
-pub type cpuid_t = ::core::ffi::c_ulong;
+pub type cpuid_t = ::kernel::ffi::c_ulong;
 
 #[cfg(not(asm))]
 pub type nasid_t = i16; // node id in numa-as-id space

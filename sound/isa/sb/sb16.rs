@@ -28,8 +28,8 @@
  */
 
 extern "C" {
-    static mut index: [::core::ffi::c_int; SNDRV_CARDS];
-    static mut id: [*mut ::core::ffi::c_char; SNDRV_CARDS];
+    static mut index: [::kernel::ffi::c_int; SNDRV_CARDS];
+    static mut id: [*mut ::kernel::ffi::c_char; SNDRV_CARDS];
     static mut enable: [bool; SNDRV_CARDS];
 }
 
@@ -41,36 +41,36 @@ extern "C" {
 /* MODULE_PARM_DESC(enable, "Enable SoundBlaster 16 soundcard."); */
 
 static mut isapnp: [bool; SNDRV_CARDS] = [true; SNDRV_CARDS];
-static mut port: [::core::ffi::c_long; SNDRV_CARDS] = [SNDRV_DEFAULT_PORT; SNDRV_CARDS];
-static mut mpu_port: [::core::ffi::c_long; SNDRV_CARDS] = [SNDRV_DEFAULT_PORT; SNDRV_CARDS];
-static mut fm_port: [::core::ffi::c_long; SNDRV_CARDS] = [SNDRV_DEFAULT_PORT; SNDRV_CARDS];
+static mut port: [::kernel::ffi::c_long; SNDRV_CARDS] = [SNDRV_DEFAULT_PORT; SNDRV_CARDS];
+static mut mpu_port: [::kernel::ffi::c_long; SNDRV_CARDS] = [SNDRV_DEFAULT_PORT; SNDRV_CARDS];
+static mut fm_port: [::kernel::ffi::c_long; SNDRV_CARDS] = [SNDRV_DEFAULT_PORT; SNDRV_CARDS];
 /* Under SNDRV_SBAWE_EMU8000:
  * static long awe_port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;
  */
-static mut awe_port: [::core::ffi::c_long; SNDRV_CARDS] = [SNDRV_DEFAULT_PORT; SNDRV_CARDS];
-static mut irq: [::core::ffi::c_int; SNDRV_CARDS] = [SNDRV_DEFAULT_IRQ; SNDRV_CARDS];
-static mut dma8: [::core::ffi::c_int; SNDRV_CARDS] = [SNDRV_DEFAULT_DMA; SNDRV_CARDS];
-static mut dma16: [::core::ffi::c_int; SNDRV_CARDS] = [SNDRV_DEFAULT_DMA; SNDRV_CARDS];
-static mut mic_agc: [::core::ffi::c_int; SNDRV_CARDS] = [1; SNDRV_CARDS];
+static mut awe_port: [::kernel::ffi::c_long; SNDRV_CARDS] = [SNDRV_DEFAULT_PORT; SNDRV_CARDS];
+static mut irq: [::kernel::ffi::c_int; SNDRV_CARDS] = [SNDRV_DEFAULT_IRQ; SNDRV_CARDS];
+static mut dma8: [::kernel::ffi::c_int; SNDRV_CARDS] = [SNDRV_DEFAULT_DMA; SNDRV_CARDS];
+static mut dma16: [::kernel::ffi::c_int; SNDRV_CARDS] = [SNDRV_DEFAULT_DMA; SNDRV_CARDS];
+static mut mic_agc: [::kernel::ffi::c_int; SNDRV_CARDS] = [1; SNDRV_CARDS];
 /* Under CONFIG_SND_SB16_CSP: */
-static mut csp: [::core::ffi::c_int; SNDRV_CARDS] = [0; SNDRV_CARDS];
+static mut csp: [::kernel::ffi::c_int; SNDRV_CARDS] = [0; SNDRV_CARDS];
 /* Under SNDRV_SBAWE_EMU8000: */
-static mut seq_ports: [::core::ffi::c_int; SNDRV_CARDS] = [4; SNDRV_CARDS];
+static mut seq_ports: [::kernel::ffi::c_int; SNDRV_CARDS] = [4; SNDRV_CARDS];
 
 /* module_param_hw_array/module_param_array declarations and MODULE_PARM_DESC
  * entries are preserved as external module metadata intent.
  */
 
 /* Under CONFIG_PNP: */
-static mut isa_registered: ::core::ffi::c_int = 0;
-static mut pnp_registered: ::core::ffi::c_int = 0;
+static mut isa_registered: ::kernel::ffi::c_int = 0;
+static mut pnp_registered: ::kernel::ffi::c_int = 0;
 
 #[repr(C)]
 pub struct snd_card_sb16 {
     pub fm_res: *mut resource, /* used to block FM i/o region for legacy cards */
     pub chip: *mut snd_sb,
     /* Under CONFIG_PNP: */
-    pub dev_no: ::core::ffi::c_int,
+    pub dev_no: ::kernel::ffi::c_int,
     pub dev: *mut pnp_dev,
     /* Under SNDRV_SBAWE_EMU8000: */
     pub devwt: *mut pnp_dev,
@@ -88,16 +88,16 @@ pub struct snd_card_sb16 {
  * otherwise:
  * #define DRIVER_NAME "snd-card-sb16"
  */
-const DRIVER_NAME: *const ::core::ffi::c_char = b"snd-card-sb16\0".as_ptr().cast();
+const DRIVER_NAME: *const ::kernel::ffi::c_char = b"snd-card-sb16\0".as_ptr().cast();
 
 unsafe extern "C" fn snd_card_sb16_pnp(
-    dev: ::core::ffi::c_int,
+    dev: ::kernel::ffi::c_int,
     acard: *mut snd_card_sb16,
     card: *mut pnp_card_link,
     id: *const pnp_card_device_id,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let mut pdev: *mut pnp_dev;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     (*acard).dev = pnp_request_card_device(card, (*(*id).devs.as_ptr()).id, ::core::ptr::null_mut());
     if (*acard).dev.is_null() {
@@ -117,9 +117,9 @@ unsafe extern "C" fn snd_card_sb16_pnp(
         dev_err(&mut (*pdev).dev, b"AUDIO pnp configure failure\n\0".as_ptr().cast());
         return err;
     }
-    port[dev as usize] = pnp_port_start(pdev, 0) as ::core::ffi::c_long;
-    mpu_port[dev as usize] = pnp_port_start(pdev, 1) as ::core::ffi::c_long;
-    fm_port[dev as usize] = pnp_port_start(pdev, 2) as ::core::ffi::c_long;
+    port[dev as usize] = pnp_port_start(pdev, 0) as ::kernel::ffi::c_long;
+    mpu_port[dev as usize] = pnp_port_start(pdev, 1) as ::kernel::ffi::c_long;
+    fm_port[dev as usize] = pnp_port_start(pdev, 2) as ::kernel::ffi::c_long;
     dma8[dev as usize] = pnp_dma(pdev, 0);
     dma16[dev as usize] = pnp_dma(pdev, 1);
     irq[dev as usize] = pnp_irq(pdev, 0);
@@ -150,11 +150,11 @@ unsafe extern "C" fn snd_card_sb16_pnp(
             (*acard).devwt = ::core::ptr::null_mut();
             awe_port[dev as usize] = -1;
         } else {
-            awe_port[dev as usize] = pnp_port_start(pdev, 0) as ::core::ffi::c_long;
+            awe_port[dev as usize] = pnp_port_start(pdev, 0) as ::kernel::ffi::c_long;
             dev_dbg(
                 &mut (*pdev).dev,
                 b"pnp SB16: wavetable port=0x%llx\n\0".as_ptr().cast(),
-                pnp_port_start(pdev, 0) as ::core::ffi::c_ulonglong,
+                pnp_port_start(pdev, 0) as ::kernel::ffi::c_ulonglong,
             );
         }
     } else {
@@ -166,17 +166,17 @@ unsafe extern "C" fn snd_card_sb16_pnp(
 }
 
 #[inline]
-unsafe fn is_isapnp_selected(dev: ::core::ffi::c_int) -> ::core::ffi::c_int {
-    isapnp[dev as usize] as ::core::ffi::c_int
+unsafe fn is_isapnp_selected(dev: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
+    isapnp[dev as usize] as ::kernel::ffi::c_int
 }
 
 unsafe extern "C" fn snd_sb16_card_new(
     devptr: *mut device,
-    dev: ::core::ffi::c_int,
+    dev: ::kernel::ffi::c_int,
     cardp: *mut *mut snd_card,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let mut card: *mut snd_card = ::core::ptr::null_mut();
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     err = snd_devm_card_new(
         devptr,
@@ -193,16 +193,16 @@ unsafe extern "C" fn snd_sb16_card_new(
     0
 }
 
-unsafe extern "C" fn snd_sb16_probe(card: *mut snd_card, dev: ::core::ffi::c_int) -> ::core::ffi::c_int {
-    let mut xirq: ::core::ffi::c_int;
-    let mut xdma8: ::core::ffi::c_int;
-    let mut xdma16: ::core::ffi::c_int;
+unsafe extern "C" fn snd_sb16_probe(card: *mut snd_card, dev: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
+    let mut xirq: ::kernel::ffi::c_int;
+    let mut xdma8: ::kernel::ffi::c_int;
+    let mut xdma16: ::kernel::ffi::c_int;
     let mut chip: *mut snd_sb = ::core::ptr::null_mut();
     let acard: *mut snd_card_sb16 = (*card).private_data.cast();
     let mut opl3: *mut snd_opl3 = ::core::ptr::null_mut();
     let mut synth: *mut snd_hwdep = ::core::ptr::null_mut();
     let mut xcsp: *mut snd_hwdep = ::core::ptr::null_mut();
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     xirq = irq[dev as usize];
     xdma8 = dma8[dev as usize];
@@ -271,7 +271,7 @@ unsafe extern "C" fn snd_sb16_probe(card: *mut snd_card, dev: ::core::ffi::c_int
         sprintf(
             (*card).longname.as_mut_ptr().add(strlen((*card).longname.as_ptr()) as usize),
             b"%s%d\0".as_ptr().cast(),
-            if xdma8 >= 0 { b"&\0".as_ptr().cast::<::core::ffi::c_char>() } else { b"\0".as_ptr().cast() },
+            if xdma8 >= 0 { b"&\0".as_ptr().cast::<::kernel::ffi::c_char>() } else { b"\0".as_ptr().cast() },
             xdma16,
         );
     }
@@ -302,7 +302,7 @@ unsafe extern "C" fn snd_sb16_probe(card: *mut snd_card, dev: ::core::ffi::c_int
             fm_port[dev as usize],
             fm_port[dev as usize] + 2,
             OPL3_HW_OPL3,
-            (!(*acard).fm_res.is_null() || fm_port[dev as usize] == port[dev as usize]) as ::core::ffi::c_int,
+            (!(*acard).fm_res.is_null() || fm_port[dev as usize] == port[dev as usize]) as ::kernel::ffi::c_int,
             &mut opl3,
         ) < 0
         {
@@ -313,7 +313,7 @@ unsafe extern "C" fn snd_sb16_probe(card: *mut snd_card, dev: ::core::ffi::c_int
                 fm_port[dev as usize] + 2,
             );
         } else {
-            let seqdev: ::core::ffi::c_int = if awe_port[dev as usize] > 0 { 2 } else { 1 };
+            let seqdev: ::kernel::ffi::c_int = if awe_port[dev as usize] > 0 { 2 } else { 1 };
             err = snd_opl3_hwdep_new(opl3, 0, seqdev, &mut synth);
             if err < 0 {
                 return err;
@@ -374,7 +374,7 @@ unsafe extern "C" fn snd_sb16_probe(card: *mut snd_card, dev: ::core::ffi::c_int
     0
 }
 
-unsafe extern "C" fn snd_sb16_suspend(card: *mut snd_card, state: pm_message_t) -> ::core::ffi::c_int {
+unsafe extern "C" fn snd_sb16_suspend(card: *mut snd_card, state: pm_message_t) -> ::kernel::ffi::c_int {
     let acard: *mut snd_card_sb16 = (*card).private_data.cast();
     let chip: *mut snd_sb = (*acard).chip;
 
@@ -383,7 +383,7 @@ unsafe extern "C" fn snd_sb16_suspend(card: *mut snd_card, state: pm_message_t) 
     0
 }
 
-unsafe extern "C" fn snd_sb16_resume(card: *mut snd_card) -> ::core::ffi::c_int {
+unsafe extern "C" fn snd_sb16_resume(card: *mut snd_card) -> ::kernel::ffi::c_int {
     let acard: *mut snd_card_sb16 = (*card).private_data.cast();
     let chip: *mut snd_sb = (*acard).chip;
 
@@ -393,10 +393,10 @@ unsafe extern "C" fn snd_sb16_resume(card: *mut snd_card) -> ::core::ffi::c_int 
     0
 }
 
-unsafe extern "C" fn snd_sb16_isa_probe1(dev: ::core::ffi::c_int, pdev: *mut device) -> ::core::ffi::c_int {
+unsafe extern "C" fn snd_sb16_isa_probe1(dev: ::kernel::ffi::c_int, pdev: *mut device) -> ::kernel::ffi::c_int {
     let mut acard: *mut snd_card_sb16;
     let mut card: *mut snd_card = ::core::ptr::null_mut();
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     err = snd_sb16_card_new(pdev, dev, &mut card);
     if err < 0 {
@@ -421,16 +421,16 @@ unsafe extern "C" fn snd_sb16_isa_probe1(dev: ::core::ffi::c_int, pdev: *mut dev
     0
 }
 
-unsafe extern "C" fn snd_sb16_isa_match(pdev: *mut device, dev: ::core::ffi::c_uint) -> ::core::ffi::c_int {
+unsafe extern "C" fn snd_sb16_isa_match(pdev: *mut device, dev: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int {
     let _ = pdev;
-    (enable[dev as usize] && is_isapnp_selected(dev as ::core::ffi::c_int) == 0) as ::core::ffi::c_int
+    (enable[dev as usize] && is_isapnp_selected(dev as ::kernel::ffi::c_int) == 0) as ::kernel::ffi::c_int
 }
 
-unsafe extern "C" fn snd_sb16_isa_probe(pdev: *mut device, dev: ::core::ffi::c_uint) -> ::core::ffi::c_int {
-    let mut err: ::core::ffi::c_int = 0;
-    static possible_irqs: [::core::ffi::c_int; 5] = [5, 9, 10, 7, -1];
-    static possible_dmas8: [::core::ffi::c_int; 4] = [1, 3, 0, -1];
-    static possible_dmas16: [::core::ffi::c_int; 4] = [5, 6, 7, -1];
+unsafe extern "C" fn snd_sb16_isa_probe(pdev: *mut device, dev: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int {
+    let mut err: ::kernel::ffi::c_int = 0;
+    static possible_irqs: [::kernel::ffi::c_int; 5] = [5, 9, 10, 7, -1];
+    static possible_dmas8: [::kernel::ffi::c_int; 4] = [1, 3, 0, -1];
+    static possible_dmas16: [::kernel::ffi::c_int; 4] = [5, 6, 7, -1];
 
     if irq[dev as usize] == SNDRV_AUTO_IRQ {
         irq[dev as usize] = snd_legacy_find_free_irq(possible_irqs.as_ptr());
@@ -455,13 +455,13 @@ unsafe extern "C" fn snd_sb16_isa_probe(pdev: *mut device, dev: ::core::ffi::c_u
     }
 
     if port[dev as usize] != SNDRV_AUTO_PORT {
-        snd_sb16_isa_probe1(dev as ::core::ffi::c_int, pdev)
+        snd_sb16_isa_probe1(dev as ::kernel::ffi::c_int, pdev)
     } else {
-        static possible_ports: [::core::ffi::c_int; 4] = [0x220, 0x240, 0x260, 0x280];
+        static possible_ports: [::kernel::ffi::c_int; 4] = [0x220, 0x240, 0x260, 0x280];
         let mut i: usize = 0;
         while i < possible_ports.len() {
-            port[dev as usize] = possible_ports[i] as ::core::ffi::c_long;
-            err = snd_sb16_isa_probe1(dev as ::core::ffi::c_int, pdev);
+            port[dev as usize] = possible_ports[i] as ::kernel::ffi::c_long;
+            err = snd_sb16_isa_probe1(dev as ::kernel::ffi::c_int, pdev);
             if err == 0 {
                 return 0;
             }
@@ -473,14 +473,14 @@ unsafe extern "C" fn snd_sb16_isa_probe(pdev: *mut device, dev: ::core::ffi::c_u
 
 unsafe extern "C" fn snd_sb16_isa_suspend(
     dev: *mut device,
-    n: ::core::ffi::c_uint,
+    n: ::kernel::ffi::c_uint,
     state: pm_message_t,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let _ = n;
     snd_sb16_suspend(dev_get_drvdata(dev).cast(), state)
 }
 
-unsafe extern "C" fn snd_sb16_isa_resume(dev: *mut device, n: ::core::ffi::c_uint) -> ::core::ffi::c_int {
+unsafe extern "C" fn snd_sb16_isa_resume(dev: *mut device, n: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int {
     let _ = n;
     snd_sb16_resume(dev_get_drvdata(dev).cast())
 }
@@ -490,7 +490,7 @@ unsafe extern "C" fn snd_sb16_isa_resume(dev: *mut device, n: ::core::ffi::c_uin
  * otherwise:
  * #define DEV_NAME "sb16"
  */
-const DEV_NAME: *const ::core::ffi::c_char = b"sb16\0".as_ptr().cast();
+const DEV_NAME: *const ::kernel::ffi::c_char = b"sb16\0".as_ptr().cast();
 
 static mut snd_sb16_isa_driver: isa_driver = isa_driver {
     match_: Some(snd_sb16_isa_match),
@@ -503,12 +503,12 @@ static mut snd_sb16_isa_driver: isa_driver = isa_driver {
 unsafe extern "C" fn snd_sb16_pnp_detect(
     pcard: *mut pnp_card_link,
     pid: *const pnp_card_device_id,
-) -> ::core::ffi::c_int {
-    static mut dev: ::core::ffi::c_int = 0;
+) -> ::kernel::ffi::c_int {
+    static mut dev: ::kernel::ffi::c_int = 0;
     let mut card: *mut snd_card = ::core::ptr::null_mut();
-    let mut res: ::core::ffi::c_int;
+    let mut res: ::kernel::ffi::c_int;
 
-    while dev < SNDRV_CARDS as ::core::ffi::c_int {
+    while dev < SNDRV_CARDS as ::kernel::ffi::c_int {
         if !enable[dev as usize] || !isapnp[dev as usize] {
             dev += 1;
             continue;
@@ -533,11 +533,11 @@ unsafe extern "C" fn snd_sb16_pnp_detect(
     -ENODEV
 }
 
-unsafe extern "C" fn snd_sb16_pnp_suspend(pcard: *mut pnp_card_link, state: pm_message_t) -> ::core::ffi::c_int {
+unsafe extern "C" fn snd_sb16_pnp_suspend(pcard: *mut pnp_card_link, state: pm_message_t) -> ::kernel::ffi::c_int {
     snd_sb16_suspend(pnp_get_card_drvdata(pcard).cast(), state)
 }
 
-unsafe extern "C" fn snd_sb16_pnp_resume(pcard: *mut pnp_card_link) -> ::core::ffi::c_int {
+unsafe extern "C" fn snd_sb16_pnp_resume(pcard: *mut pnp_card_link) -> ::kernel::ffi::c_int {
     snd_sb16_resume(pnp_get_card_drvdata(pcard).cast())
 }
 
@@ -550,10 +550,10 @@ static mut sb16_pnpc_driver: pnp_card_driver = pnp_card_driver {
     resume: Some(snd_sb16_pnp_resume),
 };
 
-unsafe extern "C" fn alsa_card_sb16_init() -> ::core::ffi::c_int {
-    let mut err: ::core::ffi::c_int;
+unsafe extern "C" fn alsa_card_sb16_init() -> ::kernel::ffi::c_int {
+    let mut err: ::kernel::ffi::c_int;
 
-    err = isa_register_driver(&mut snd_sb16_isa_driver, SNDRV_CARDS as ::core::ffi::c_uint);
+    err = isa_register_driver(&mut snd_sb16_isa_driver, SNDRV_CARDS as ::kernel::ffi::c_uint);
     if err == 0 {
         isa_registered = 1;
     }

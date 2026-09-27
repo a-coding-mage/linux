@@ -118,7 +118,7 @@ pub struct st_sensor_data_ready_irq {
 #[repr(C)]
 pub struct st_sensor_settings {
     pub wai: u8, pub wai_addr: u8,
-    pub sensors_supported: [[core::ffi::c_char; ST_SENSORS_MAX_NAME]; ST_SENSORS_MAX_4WAI],
+    pub sensors_supported: [[kernel::ffi::c_char; ST_SENSORS_MAX_NAME]; ST_SENSORS_MAX_4WAI],
     pub ch: *mut iio_chan_spec, pub num_ch: i32,
     pub odr: st_sensor_odr, pub pw: st_sensor_power, pub enable_axis: st_sensor_axis,
     pub fs: st_sensor_fullscale, pub bdu: st_sensor_bdu, pub das: st_sensor_das,
@@ -138,11 +138,11 @@ pub struct st_sensor_data {
     pub drdy_int_pin: u8, pub int_pin_open_drain: bool, pub irq: i32,
     pub edge_irq: bool, pub hw_irq_trigger: bool, pub hw_timestamp: i64,
     pub odr_lock: mutex,
-    pub buffer_data: [core::ffi::c_char; ST_SENSORS_MAX_BUFFER_SIZE],
+    pub buffer_data: [kernel::ffi::c_char; ST_SENSORS_MAX_BUFFER_SIZE],
 }
 
 #[cfg(CONFIG_IIO_BUFFER)]
-extern "C" { pub fn st_sensors_trigger_handler(irq: i32, p: *mut core::ffi::c_void) -> irqreturn_t; }
+extern "C" { pub fn st_sensors_trigger_handler(irq: i32, p: *mut kernel::ffi::c_void) -> irqreturn_t; }
 
 #[cfg(CONFIG_IIO_TRIGGER)]
 extern "C" {
@@ -164,18 +164,18 @@ extern "C" {
     pub fn st_sensors_set_dataready_irq(indio_dev: *mut iio_dev, enable: bool) -> i32;
     pub fn st_sensors_set_fullscale_by_gain(indio_dev: *mut iio_dev, scale: i32) -> i32;
     pub fn st_sensors_read_info_raw(indio_dev: *mut iio_dev, ch: *const iio_chan_spec, val: *mut i32) -> i32;
-    pub fn st_sensors_get_settings_index(name: *const core::ffi::c_char, list: *const st_sensor_settings, list_length: i32) -> i32;
+    pub fn st_sensors_get_settings_index(name: *const kernel::ffi::c_char, list: *const st_sensor_settings, list_length: i32) -> i32;
     pub fn st_sensors_verify_id(indio_dev: *mut iio_dev) -> i32;
-    pub fn st_sensors_sysfs_sampling_frequency_avail(dev: *mut device, attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> isize;
-    pub fn st_sensors_sysfs_scale_avail(dev: *mut device, attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> isize;
-    pub fn st_sensors_dev_name_probe(dev: *mut device, name: *mut core::ffi::c_char, len: i32);
-    pub fn st_accel_get_settings(name: *const core::ffi::c_char) -> *const st_sensor_settings;
+    pub fn st_sensors_sysfs_sampling_frequency_avail(dev: *mut device, attr: *mut device_attribute, buf: *mut kernel::ffi::c_char) -> isize;
+    pub fn st_sensors_sysfs_scale_avail(dev: *mut device, attr: *mut device_attribute, buf: *mut kernel::ffi::c_char) -> isize;
+    pub fn st_sensors_dev_name_probe(dev: *mut device, name: *mut kernel::ffi::c_char, len: i32);
+    pub fn st_accel_get_settings(name: *const kernel::ffi::c_char) -> *const st_sensor_settings;
     pub fn st_accel_common_probe(indio_dev: *mut iio_dev) -> i32;
-    pub fn st_gyro_get_settings(name: *const core::ffi::c_char) -> *const st_sensor_settings;
+    pub fn st_gyro_get_settings(name: *const kernel::ffi::c_char) -> *const st_sensor_settings;
     pub fn st_gyro_common_probe(indio_dev: *mut iio_dev) -> i32;
-    pub fn st_magn_get_settings(name: *const core::ffi::c_char) -> *const st_sensor_settings;
+    pub fn st_magn_get_settings(name: *const kernel::ffi::c_char) -> *const st_sensor_settings;
     pub fn st_magn_common_probe(indio_dev: *mut iio_dev) -> i32;
-    pub fn st_press_get_settings(name: *const core::ffi::c_char) -> *const st_sensor_settings;
+    pub fn st_press_get_settings(name: *const kernel::ffi::c_char) -> *const st_sensor_settings;
     pub fn st_press_common_probe(indio_dev: *mut iio_dev) -> i32;
 }
 

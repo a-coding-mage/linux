@@ -89,7 +89,7 @@ static mut BPF_IO_VERIFIER_OPS: bpf_verifier_ops = bpf_verifier_ops {
     btf_struct_access: Some(bpf_io_btf_struct_access),
 };
 
-unsafe fn io_lookup_struct_type(btf: *mut btf, name: *const core::ffi::c_char) -> *const btf_type {
+unsafe fn io_lookup_struct_type(btf: *mut btf, name: *const kernel::ffi::c_char) -> *const btf_type {
     let type_id: i32 = btf_find_by_name_kind(btf, name, BTF_KIND_STRUCT);
     if type_id < 0 { return core::ptr::null(); }
     btf_type_by_id(btf, type_id)
@@ -112,8 +112,8 @@ unsafe fn bpf_io_init(btf: *mut btf) -> i32 {
 unsafe fn bpf_io_check_member(_t: *const btf_type, _member: *const btf_member, _prog: *const bpf_prog) -> i32 { 0 }
 
 unsafe fn bpf_io_init_member(
-    t: *const btf_type, member: *const btf_member, kdata: *mut core::ffi::c_void,
-    udata: *const core::ffi::c_void,
+    t: *const btf_type, member: *const btf_member, kdata: *mut kernel::ffi::c_void,
+    udata: *const kernel::ffi::c_void,
 ) -> i32 {
     let moff = __btf_member_bit_offset(t, member) / 8;
     let uops = udata as *const io_uring_bpf_ops;
@@ -135,7 +135,7 @@ unsafe fn io_install_bpf(ctx: *mut io_ring_ctx, ops: *mut io_uring_bpf_ops) -> i
     0
 }
 
-unsafe fn bpf_io_reg(kdata: *mut core::ffi::c_void, _link: *mut bpf_link) -> i32 {
+unsafe fn bpf_io_reg(kdata: *mut kernel::ffi::c_void, _link: *mut bpf_link) -> i32 {
     let ops = kdata as *mut io_uring_bpf_ops;
     let file = io_uring_ctx_get_file((*ops).ring_fd, false);
     if IS_ERR(file) { return PTR_ERR(file); }
@@ -154,7 +154,7 @@ unsafe fn io_eject_bpf(ctx: *mut io_ring_ctx) {
     (*ctx).loop_step = None;
 }
 
-unsafe fn bpf_io_unreg(kdata: *mut core::ffi::c_void, _link: *mut bpf_link) {
+unsafe fn bpf_io_unreg(kdata: *mut kernel::ffi::c_void, _link: *mut bpf_link) {
     let ops = kdata as *mut io_uring_bpf_ops;
     let ctx = (*ops).priv_ as *mut io_ring_ctx;
     if !ctx.is_null() && (*ctx).bpf_ops == ops { io_eject_bpf(ctx); }

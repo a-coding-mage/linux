@@ -31,7 +31,7 @@ pub struct ecc_point {
  */
 #[repr(C)]
 pub struct ecc_curve {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub nbits: u32,
     pub g: ecc_point,
     pub p: *mut u64,
@@ -48,7 +48,7 @@ pub struct ecc_curve {
  * Returns curve if get curve succssful, NULL otherwise
  */
 unsafe extern "C" {
-    pub fn ecc_get_curve(curve_id: core::ffi::c_uint) -> *const ecc_curve;
+    pub fn ecc_get_curve(curve_id: kernel::ffi::c_uint) -> *const ecc_curve;
 }
 
 /**

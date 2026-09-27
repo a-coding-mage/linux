@@ -36,23 +36,23 @@ pub struct pt_regs {
 
 extern "C" {
     pub fn __warn(
-        file: *const core::ffi::c_char,
+        file: *const kernel::ffi::c_char,
         line: i32,
-        caller: *mut core::ffi::c_void,
+        caller: *mut kernel::ffi::c_void,
         taint: u32,
         regs: *mut pt_regs,
         args: *mut warn_args,
     );
 
     pub fn warn_slowpath_fmt(
-        file: *const core::ffi::c_char,
+        file: *const kernel::ffi::c_char,
         line: i32,
         taint: u32,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
         ...
     );
 
-    pub fn __warn_printk(fmt: *const core::ffi::c_char, ...);
+    pub fn __warn_printk(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[cfg(CONFIG_GENERIC_BUG)]
@@ -64,13 +64,13 @@ pub struct bug_entry {
     pub bug_addr_disp: i32,
     #[cfg(HAVE_ARCH_BUG_FORMAT)]
     #[cfg(not(CONFIG_GENERIC_BUG_RELATIVE_POINTERS))]
-    pub format: *const core::ffi::c_char,
+    pub format: *const kernel::ffi::c_char,
     #[cfg(HAVE_ARCH_BUG_FORMAT)]
     #[cfg(CONFIG_GENERIC_BUG_RELATIVE_POINTERS)]
     pub format_disp: i32,
     #[cfg(CONFIG_DEBUG_BUGVERBOSE)]
     #[cfg(not(CONFIG_GENERIC_BUG_RELATIVE_POINTERS))]
-    pub file: *const core::ffi::c_char,
+    pub file: *const kernel::ffi::c_char,
     #[cfg(CONFIG_DEBUG_BUGVERBOSE)]
     #[cfg(CONFIG_GENERIC_BUG_RELATIVE_POINTERS)]
     pub file_disp: i32,

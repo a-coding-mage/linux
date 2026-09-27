@@ -51,12 +51,12 @@ pub const MIGRATE_REASON: &[(migrate_reason, &str)] = &[
 
 #[repr(C)]
 pub struct MmMigratePages {
-    pub succeeded: ::core::ffi::c_ulong,
-    pub failed: ::core::ffi::c_ulong,
-    pub thp_succeeded: ::core::ffi::c_ulong,
-    pub thp_failed: ::core::ffi::c_ulong,
-    pub thp_split: ::core::ffi::c_ulong,
-    pub large_folio_split: ::core::ffi::c_ulong,
+    pub succeeded: ::kernel::ffi::c_ulong,
+    pub failed: ::kernel::ffi::c_ulong,
+    pub thp_succeeded: ::kernel::ffi::c_ulong,
+    pub thp_failed: ::kernel::ffi::c_ulong,
+    pub thp_split: ::kernel::ffi::c_ulong,
+    pub large_folio_split: ::kernel::ffi::c_ulong,
     pub mode: migrate_mode,
     pub reason: migrate_reason,
 }
@@ -69,9 +69,9 @@ pub struct MmMigratePagesStart {
 
 #[repr(C)]
 pub struct MigrationPte {
-    pub addr: ::core::ffi::c_ulong,
-    pub pte: ::core::ffi::c_ulong,
-    pub order: ::core::ffi::c_int,
+    pub addr: ::kernel::ffi::c_ulong,
+    pub pte: ::kernel::ffi::c_ulong,
+    pub order: ::kernel::ffi::c_int,
 }
 
 // TRACE_EVENT(mm_migrate_pages):

@@ -9,8 +9,8 @@
 /* Dependencies supplied by the corresponding architecture headers. */
 #[repr(C)]
 pub struct pt_regs {
-    pub cp0_cause: ::core::ffi::c_ulong,
-    pub cp0_epc: ::core::ffi::c_ulong,
+    pub cp0_cause: ::kernel::ffi::c_ulong,
+    pub cp0_epc: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -31,28 +31,28 @@ pub union mips16e_instruction {
 
 #[repr(C)]
 pub struct mips16e_instruction_ri {
-    pub opcode: ::core::ffi::c_uint,
+    pub opcode: ::kernel::ffi::c_uint,
 }
 
 extern "C" {
-    pub fn __isa_exception_epc(regs: *mut pt_regs) -> ::core::ffi::c_int;
-    pub fn __compute_return_epc(regs: *mut pt_regs) -> ::core::ffi::c_int;
+    pub fn __isa_exception_epc(regs: *mut pt_regs) -> ::kernel::ffi::c_int;
+    pub fn __compute_return_epc(regs: *mut pt_regs) -> ::kernel::ffi::c_int;
     pub fn __compute_return_epc_for_insn(
         regs: *mut pt_regs,
         insn: mips_instruction,
-    ) -> ::core::ffi::c_int;
-    pub fn __microMIPS_compute_return_epc(regs: *mut pt_regs) -> ::core::ffi::c_int;
-    pub fn __MIPS16e_compute_return_epc(regs: *mut pt_regs) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn __microMIPS_compute_return_epc(regs: *mut pt_regs) -> ::kernel::ffi::c_int;
+    pub fn __MIPS16e_compute_return_epc(regs: *mut pt_regs) -> ::kernel::ffi::c_int;
     pub fn __mm_isBranchInstr(
         regs: *mut pt_regs,
         dec_insn: mm_decoded_insn,
-        contpc: *mut ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        contpc: *mut ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 }
 
 extern "C" {
-    pub static cpu_has_mmips: ::core::ffi::c_int;
-    pub static cpu_has_mips16: ::core::ffi::c_int;
+    pub static cpu_has_mmips: ::kernel::ffi::c_int;
+    pub static cpu_has_mips16: ::kernel::ffi::c_int;
 }
 
 pub const MM_POOL32A_MINOR_MASK: u32 = 0x3f;
@@ -61,24 +61,24 @@ pub const MM_MIPS32_COND_FC: u32 = 0x30;
 
 pub const BRANCH_LIKELY_TAKEN: u32 = 0x0001;
 
-pub const CAUSEF_BD: ::core::ffi::c_ulong = 0x80000000;
-pub const MIPS16e_extend_op: ::core::ffi::c_uint = 0;
+pub const CAUSEF_BD: ::kernel::ffi::c_ulong = 0x80000000;
+pub const MIPS16e_extend_op: ::kernel::ffi::c_uint = 0;
 
 extern "C" {
     pub fn isBranchInstr(
         regs: *mut pt_regs,
         dec_insn: mm_decoded_insn,
-        contpc: *mut ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
-    pub fn get_isa16_mode(epc: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+        contpc: *mut ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
+    pub fn get_isa16_mode(epc: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
 }
 
 #[inline]
 pub unsafe fn mm_isBranchInstr(
     regs: *mut pt_regs,
     dec_insn: mm_decoded_insn,
-    contpc: *mut ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    contpc: *mut ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     if cpu_has_mmips == 0 {
         return 0;
     }
@@ -87,8 +87,8 @@ pub unsafe fn mm_isBranchInstr(
 }
 
 #[inline]
-pub unsafe fn delay_slot(regs: *mut pt_regs) -> ::core::ffi::c_int {
-    ((*regs).cp0_cause & CAUSEF_BD) as ::core::ffi::c_int
+pub unsafe fn delay_slot(regs: *mut pt_regs) -> ::kernel::ffi::c_int {
+    ((*regs).cp0_cause & CAUSEF_BD) as ::kernel::ffi::c_int
 }
 
 #[inline]
@@ -102,20 +102,20 @@ pub unsafe fn set_delay_slot(regs: *mut pt_regs) {
 }
 
 #[inline]
-pub unsafe fn exception_epc(regs: *mut pt_regs) -> ::core::ffi::c_ulong {
+pub unsafe fn exception_epc(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong {
     if delay_slot(regs) == 0 {
         return (*regs).cp0_epc;
     }
 
     if get_isa16_mode((*regs).cp0_epc) != 0 {
-        return __isa_exception_epc(regs) as ::core::ffi::c_ulong;
+        return __isa_exception_epc(regs) as ::kernel::ffi::c_ulong;
     }
 
     (*regs).cp0_epc.wrapping_add(4)
 }
 
 #[inline]
-pub unsafe fn compute_return_epc(regs: *mut pt_regs) -> ::core::ffi::c_int {
+pub unsafe fn compute_return_epc(regs: *mut pt_regs) -> ::kernel::ffi::c_int {
     if get_isa16_mode((*regs).cp0_epc) != 0 {
         if cpu_has_mmips != 0 {
             return __microMIPS_compute_return_epc(regs);
@@ -135,7 +135,7 @@ pub unsafe fn compute_return_epc(regs: *mut pt_regs) -> ::core::ffi::c_int {
 pub unsafe fn MIPS16e_compute_return_epc(
     regs: *mut pt_regs,
     inst: *mut mips16e_instruction,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     if delay_slot(regs) == 0 {
         if (*inst).ri.opcode == MIPS16e_extend_op {
             (*regs).cp0_epc = (*regs).cp0_epc.wrapping_add(4);

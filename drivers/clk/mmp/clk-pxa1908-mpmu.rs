@@ -8,7 +8,7 @@ const MPMU_NR_CLKS: usize = 39;
 #[repr(C)]
 struct Pxa1908ClkUnit {
     unit: MmpClkUnit,
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
 }
 
 // External types and functions supplied by the included kernel headers.
@@ -20,8 +20,8 @@ struct MmpClkUnit {
 #[repr(C)]
 struct MmpParamFixedRateClk {
     id: u32,
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
     flags: u32,
     rate: u32,
 }
@@ -29,8 +29,8 @@ struct MmpParamFixedRateClk {
 #[repr(C)]
 struct MmpParamFixedFactorClk {
     id: u32,
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
     mult: u32,
     div: u32,
     flags: u32,
@@ -63,7 +63,7 @@ struct Device {
 
 #[repr(C)]
 struct OfDeviceId {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -74,17 +74,17 @@ struct PlatformDriver {
 
 #[repr(C)]
 struct Driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     of_match_table: *const OfDeviceId,
 }
 
 extern "C" {
-    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_platform_ioremap_resource(
         pdev: *mut PlatformDevice,
         index: u32,
-    ) -> *mut core::ffi::c_void;
-    fn mmp_clk_init(node: *mut core::ffi::c_void, unit: *mut MmpClkUnit, nr_clks: usize);
+    ) -> *mut kernel::ffi::c_void;
+    fn mmp_clk_init(node: *mut kernel::ffi::c_void, unit: *mut MmpClkUnit, nr_clks: usize);
     fn mmp_register_fixed_rate_clks(
         unit: *mut MmpClkUnit,
         clks: *mut MmpParamFixedRateClk,
@@ -96,14 +96,14 @@ extern "C" {
         count: usize,
     );
     fn mmp_clk_register_factor(
-        name: *const core::ffi::c_char,
-        parent_name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
+        parent_name: *const kernel::ffi::c_char,
         flags: u32,
-        base: *mut core::ffi::c_void,
+        base: *mut kernel::ffi::c_void,
         masks: *const MmpClkFactorMasks,
         table: *mut U32Fract,
         count: usize,
-        lock: *mut core::ffi::c_void,
+        lock: *mut kernel::ffi::c_void,
     );
 }
 

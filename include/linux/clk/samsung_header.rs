@@ -3,7 +3,7 @@
  * Copyright (c) 2020 Krzysztof Kozlowski <krzk@kernel.org>
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct device_node {
@@ -14,8 +14,8 @@ pub struct device_node {
 unsafe extern "C" {
     pub fn s3c64xx_clk_init(
         np: *mut device_node,
-        xtal_f: core::ffi::c_ulong,
-        xusbxti_f: core::ffi::c_ulong,
+        xtal_f: kernel::ffi::c_ulong,
+        xusbxti_f: kernel::ffi::c_ulong,
         s3c6400: bool,
         base: *mut c_void,
     );
@@ -25,8 +25,8 @@ unsafe extern "C" {
 #[inline]
 pub unsafe fn s3c64xx_clk_init(
     _np: *mut device_node,
-    _xtal_f: core::ffi::c_ulong,
-    _xusbxti_f: core::ffi::c_ulong,
+    _xtal_f: kernel::ffi::c_ulong,
+    _xusbxti_f: kernel::ffi::c_ulong,
     _s3c6400: bool,
     _base: *mut c_void,
 ) {

@@ -35,7 +35,7 @@ struct wake_irq {
     dev: *mut device,
     status: u32,
     irq: i32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 unsafe extern "C" {
@@ -133,7 +133,7 @@ struct bpf_ws_lock {}
 unsafe extern "C" {
     fn bpf_wakeup_sources_read_lock() -> *mut bpf_ws_lock;
     fn bpf_wakeup_sources_read_unlock(lock: *mut bpf_ws_lock);
-    fn bpf_wakeup_sources_get_head() -> *mut core::ffi::c_void;
+    fn bpf_wakeup_sources_get_head() -> *mut kernel::ffi::c_void;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

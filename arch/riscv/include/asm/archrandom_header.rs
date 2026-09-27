@@ -11,11 +11,11 @@
 
 pub const SEED_RETRY_LOOPS: u32 = 100;
 
-pub unsafe fn csr_seed_long(v: *mut ::core::ffi::c_ulong) -> bool {
+pub unsafe fn csr_seed_long(v: *mut ::kernel::ffi::c_ulong) -> bool {
     let mut retry: u32 = SEED_RETRY_LOOPS;
     let mut valid_seeds: u32 = 0;
     let needed_seeds: isize =
-        ::core::mem::size_of::<::core::ffi::c_long>() as isize
+        ::core::mem::size_of::<::kernel::ffi::c_long>() as isize
             / ::core::mem::size_of::<u16>() as isize;
     let entropy = v as *mut u16;
 
@@ -23,7 +23,7 @@ pub unsafe fn csr_seed_long(v: *mut ::core::ffi::c_ulong) -> bool {
         /*
          * The SEED CSR must be accessed with a read-write instruction.
          */
-        let csr_seed: ::core::ffi::c_ulong = csr_swap(CSR_SEED, 0);
+        let csr_seed: ::kernel::ffi::c_ulong = csr_swap(CSR_SEED, 0);
         let opst = csr_seed & SEED_OPST_MASK;
 
         match opst {
@@ -62,14 +62,14 @@ pub unsafe fn csr_seed_long(v: *mut ::core::ffi::c_ulong) -> bool {
 }
 
 pub unsafe fn arch_get_random_longs(
-    _v: *mut ::core::ffi::c_ulong,
+    _v: *mut ::kernel::ffi::c_ulong,
     _max_longs: usize,
 ) -> usize {
     0
 }
 
 pub unsafe fn arch_get_random_seed_longs(
-    v: *mut ::core::ffi::c_ulong,
+    v: *mut ::kernel::ffi::c_ulong,
     max_longs: usize,
 ) -> usize {
     if max_longs == 0 {

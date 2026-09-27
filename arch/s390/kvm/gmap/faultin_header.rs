@@ -13,13 +13,13 @@ extern "C" {
         vcpu: *mut crate::kvm_vcpu,
         kvm: *mut crate::kvm,
         f: *mut crate::guest_fault,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn kvm_s390_get_guest_page(
         kvm: *mut crate::kvm,
         f: *mut crate::guest_fault,
         gfn: crate::gfn_t,
         w: bool,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[inline]
@@ -28,7 +28,7 @@ pub unsafe fn kvm_s390_faultin_gfn_simple(
     kvm: *mut crate::kvm,
     gfn: crate::gfn_t,
     wr: bool,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let mut f = crate::guest_fault {
         gfn,
         write_attempt: wr,
@@ -42,15 +42,15 @@ pub unsafe fn kvm_s390_get_guest_page_and_read_gpa(
     kvm: *mut crate::kvm,
     f: *mut crate::guest_fault,
     gaddr: crate::gpa_t,
-    val: *mut ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    val: *mut ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     let rc = kvm_s390_get_guest_page(kvm, f, crate::gpa_to_gfn(gaddr), false);
     if rc != 0 {
         return rc;
     }
     *val = *(crate::phys_to_virt(
         crate::pfn_to_phys((*f).pfn) | crate::offset_in_page(gaddr),
-    ) as *const ::core::ffi::c_ulong);
+    ) as *const ::kernel::ffi::c_ulong);
     0
 }
 
@@ -58,7 +58,7 @@ pub unsafe fn kvm_s390_get_guest_page_and_read_gpa(
 pub unsafe fn kvm_s390_release_multiple(
     kvm: *mut crate::kvm,
     guest_faults: *mut crate::guest_fault,
-    n: ::core::ffi::c_int,
+    n: ::kernel::ffi::c_int,
     ignore: bool,
 ) {
     let mut i = 0;
@@ -73,9 +73,9 @@ pub unsafe fn kvm_s390_release_multiple(
 #[inline]
 pub unsafe fn kvm_s390_multiple_faults_need_retry(
     kvm: *mut crate::kvm,
-    seq: ::core::ffi::c_ulong,
+    seq: ::kernel::ffi::c_ulong,
     guest_faults: *mut crate::guest_fault,
-    n: ::core::ffi::c_int,
+    n: ::kernel::ffi::c_int,
     unsafe_: bool,
 ) -> bool {
     let mut i = 0;
@@ -101,9 +101,9 @@ pub unsafe fn kvm_s390_get_guest_pages(
     kvm: *mut crate::kvm,
     guest_faults: *mut crate::guest_fault,
     start: crate::gfn_t,
-    n_pages: ::core::ffi::c_int,
+    n_pages: ::kernel::ffi::c_int,
     write_attempt: bool,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let mut i = 0;
     let mut rc = 0;
     while i < n_pages {

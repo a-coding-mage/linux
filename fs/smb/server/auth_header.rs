@@ -5,7 +5,7 @@
 
 // Dependency declarations from ntlmssp.h are supplied by other translation units.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[cfg(CONFIG_SMB_SERVER_KERBEROS5)]
 pub const AUTH_GSS_LENGTH: u32 = 96;
@@ -76,7 +76,7 @@ extern "C" {
     pub fn ksmbd_crypt_rdma(
         conn: *mut ksmbd_conn,
         key: *const u8,
-        buf: *mut core::ffi::c_void,
+        buf: *mut kernel::ffi::c_void,
         buflen: u32,
         nonce: *const u8,
         nonce_len: u32,
@@ -84,7 +84,7 @@ extern "C" {
         tag_len: u32,
         enc: bool,
     ) -> i32;
-    pub fn ksmbd_copy_gss_neg_header(buf: *mut core::ffi::c_void);
+    pub fn ksmbd_copy_gss_neg_header(buf: *mut kernel::ffi::c_void);
     pub fn ksmbd_auth_ntlmv2(
         conn: *mut ksmbd_conn,
         sess: *mut ksmbd_session,

@@ -9,10 +9,10 @@
 // The following symbols are supplied by the corresponding kernel/platform
 // dependencies.
 
-const DARN_ERR: core::ffi::c_ulong = 0xFFFF_FFFF_FFFF_FFFF;
+const DARN_ERR: kernel::ffi::c_ulong = 0xFFFF_FFFF_FFFF_FFFF;
 
-unsafe fn microwatt_get_random_darn(v: *mut core::ffi::c_ulong) -> i32 {
-    let val: core::ffi::c_ulong;
+unsafe fn microwatt_get_random_darn(v: *mut kernel::ffi::c_ulong) -> i32 {
+    let val: kernel::ffi::c_ulong;
 
     /* Using DARN with L=1 - 64-bit conditioned random number */
     // This instruction is available on the target PowerPC platform.
@@ -32,7 +32,7 @@ unsafe fn microwatt_get_random_darn(v: *mut core::ffi::c_ulong) -> i32 {
 }
 
 pub unsafe fn microwatt_rng_init() {
-    let mut val: core::ffi::c_ulong = 0;
+    let mut val: kernel::ffi::c_ulong = 0;
     let mut i: i32 = 0;
 
     while i < 10 {

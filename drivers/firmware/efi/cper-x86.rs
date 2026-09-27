@@ -59,11 +59,11 @@ enum ErrTypes { ErrTypeCache = 0, ErrTypeTlb, ErrTypeBus, ErrTypeMs, NErrTypes }
 
 extern "C" {
     fn guid_equal(a: *const guid_t, b: *const guid_t) -> bool;
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn snprintf(buf: *mut core::ffi::c_char, size: usize, fmt: *const core::ffi::c_char, ... ) -> i32;
-    fn print_hex_dump(prefix: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn snprintf(buf: *mut kernel::ffi::c_char, size: usize, fmt: *const kernel::ffi::c_char, ... ) -> i32;
+    fn print_hex_dump(prefix: *const kernel::ffi::c_char, ...);
     fn arch_apei_report_x86_error(ctx: *const cper_ia_proc_ctx, lapic_id: u64) -> bool;
-    static cper_proc_error_type_strs: [*const core::ffi::c_char; 4];
+    static cper_proc_error_type_strs: [*const kernel::ffi::c_char; 4];
 }
 
 unsafe fn cper_get_err_type(err_type: *const guid_t) -> ErrTypes {
@@ -81,13 +81,13 @@ static IA_CHECK_BUS_ADDR_SPACE_STRS: [&[u8]; 4] = [b"Memory Access\0", b"Reserve
 static IA_CHECK_MS_ERROR_TYPE_STRS: [&[u8]; 6] = [b"No Error\0", b"Unclassified\0", b"Microcode ROM Parity Error\0", b"External Error\0", b"FRC Error\0", b"Internal Unclassified\0"];
 static IA_REG_CTX_STRS: [&[u8]; 8] = [b"Unclassified Data\0", b"MSR Registers (Machine Check and other MSRs)\0", b"32-bit Mode Execution Context\0", b"64-bit Mode Execution Context\0", b"FXSAVE Context\0", b"32-bit Mode Debug Registers (DR0-DR7)\0", b"64-bit Mode Debug Registers (DR0-DR7)\0", b"Memory Mapped Registers\0"];
 
-unsafe fn print_bool(str_: *const core::ffi::c_char, pfx: *const core::ffi::c_char, check: u64, bit: u64) {
+unsafe fn print_bool(str_: *const kernel::ffi::c_char, pfx: *const kernel::ffi::c_char, check: u64, bit: u64) {
     printk(b"%s%s: %s\n\0".as_ptr() as _, pfx, str_, if check & bit != 0 { b"true\0".as_ptr() } else { b"false\0".as_ptr() });
 }
 
 // The remaining decoding routines retain the C field-level behavior through
 // the supplied kernel structs and helpers.
-unsafe fn print_err_info_ms(pfx: *const core::ffi::c_char, validation_bits: u16, check: u64) {
+unsafe fn print_err_info_ms(pfx: *const kernel::ffi::c_char, validation_bits: u16, check: u64) {
     if validation_bits & CHECK_VALID_MS_ERR_TYPE != 0 { let err_type = check_ms_err_type(check); printk(b"%sError Type: %u\n\0".as_ptr() as _, pfx, err_type); }
     if validation_bits & CHECK_VALID_MS_PCC != 0 { print_bool(b"Processor Context Corrupt\0".as_ptr() as _, pfx, check, CHECK_MS_PCC); }
     if validation_bits & CHECK_VALID_MS_UNCORRECTED != 0 { print_bool(b"Uncorrected\0".as_ptr() as _, pfx, check, CHECK_MS_UNCORRECTED); }
@@ -96,7 +96,7 @@ unsafe fn print_err_info_ms(pfx: *const core::ffi::c_char, validation_bits: u16,
     if validation_bits & CHECK_VALID_MS_OVERFLOW != 0 { print_bool(b"Overflow\0".as_ptr() as _, pfx, check, CHECK_MS_OVERFLOW); }
 }
 
-unsafe fn print_err_info(pfx: *const core::ffi::c_char, err_type: ErrTypes, check: u64) {
+unsafe fn print_err_info(pfx: *const kernel::ffi::c_char, err_type: ErrTypes, check: u64) {
     let validation_bits = check_valid_bits(check);
     if matches!(err_type, ErrTypes::ErrTypeMs) { return print_err_info_ms(pfx, validation_bits, check); }
     if validation_bits & CHECK_VALID_TRANS_TYPE != 0 { printk(b"%sTransaction Type: %u\n\0".as_ptr() as _, pfx, check_trans_type(check)); }
@@ -121,7 +121,7 @@ unsafe extern "C" {
     static INFO_ERR_STRUCT_TYPE_MS: guid_t;
 }
 
-pub unsafe fn cper_print_proc_ia(pfx: *const core::ffi::c_char, proc: *const cper_sec_proc_ia) {
+pub unsafe fn cper_print_proc_ia(pfx: *const kernel::ffi::c_char, proc: *const cper_sec_proc_ia) {
     let mut newpfx = [0i8; 64];
     let mut infopfx = [0i8; 64];
     if (*proc).validation_bits & VALID_LAPIC_ID != 0 { printk(b"%sLocal APIC_ID: 0x%llx\n\0".as_ptr() as _, pfx, (*proc).lapic_id); }

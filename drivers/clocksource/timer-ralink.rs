@@ -20,7 +20,7 @@ const CFG_CNT_EN: u32 = 0x1;
 
 #[repr(C)]
 struct ClockEventDevice {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     irq: i32,
     rating: i32,
     features: u32,
@@ -47,23 +47,23 @@ struct SystickDevice {
 unsafe extern "C" {
     fn ioread32(addr: *mut u8) -> u32;
     fn iowrite32(value: u32, addr: *mut u8);
-    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> i32,
-                   flags: u32, name: *const core::ffi::c_char, dev_id: *mut core::ffi::c_void) -> i32;
-    fn free_irq(irq: i32, dev_id: *mut core::ffi::c_void);
+    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> i32,
+                   flags: u32, name: *const kernel::ffi::c_char, dev_id: *mut kernel::ffi::c_void) -> i32;
+    fn free_irq(irq: i32, dev_id: *mut kernel::ffi::c_void);
     fn of_iomap(np: *mut DeviceNode, index: i32) -> *mut u8;
     fn iounmap(addr: *mut u8);
     fn irq_of_parse_and_map(np: *mut DeviceNode, index: i32) -> i32;
     fn irq_dispose_mapping(irq: i32);
     fn clockevents_calc_mult_shift(dev: *mut ClockEventDevice, freq: u32, maxsec: u32);
     fn clockevent_delta2ns(delta: u32, dev: *const ClockEventDevice) -> u64;
-    fn clocksource_mmio_init(base: *mut u8, name: *const core::ffi::c_char,
-                             freq: u32, rating: u32, bits: u32, read: *const core::ffi::c_void) -> i32;
+    fn clocksource_mmio_init(base: *mut u8, name: *const kernel::ffi::c_char,
+                             freq: u32, rating: u32, bits: u32, read: *const kernel::ffi::c_void) -> i32;
     fn clockevents_register_device(dev: *mut ClockEventDevice);
 }
 
 #[repr(C)]
 struct DeviceNode {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 const IRQ_HANDLED: i32 = 1;
@@ -82,7 +82,7 @@ unsafe extern "C" fn systick_event_handler(_dev: *mut ClockEventDevice) {
     /* noting to do here */
 }
 
-unsafe extern "C" fn systick_interrupt(_irq: i32, dev_id: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn systick_interrupt(_irq: i32, dev_id: *mut kernel::ffi::c_void) -> i32 {
     let dev = dev_id as *mut ClockEventDevice;
     if let Some(handler) = (*dev).event_handler {
         handler(dev);
@@ -108,7 +108,7 @@ static mut SYSTICK: SystickDevice = SystickDevice {
 unsafe extern "C" fn systick_shutdown(evt: *mut ClockEventDevice) -> i32 {
     let sdev = (evt as *mut u8).sub(core::mem::offset_of!(SystickDevice, dev)) as *mut SystickDevice;
     if (*sdev).irq_requested != 0 {
-        free_irq(SYSTICK.dev.irq, &raw mut SYSTICK.dev as *mut _ as *mut core::ffi::c_void);
+        free_irq(SYSTICK.dev.irq, &raw mut SYSTICK.dev as *mut _ as *mut kernel::ffi::c_void);
     }
     (*sdev).irq_requested = 0;
     iowrite32(0, SYSTICK.membase.add(SYSTICK_CONFIG));
@@ -121,7 +121,7 @@ unsafe extern "C" fn systick_set_oneshot(evt: *mut ClockEventDevice) -> i32 {
     let irq = SYSTICK.dev.irq;
     if (*sdev).irq_requested == 0 {
         if request_irq(irq, systick_interrupt, IRQF_PERCPU | IRQF_TIMER, name,
-                       &raw mut SYSTICK.dev as *mut _ as *mut core::ffi::c_void) != 0 {
+                       &raw mut SYSTICK.dev as *mut _ as *mut kernel::ffi::c_void) != 0 {
             // pr_err("Failed to request irq %d (%s)\n", irq, name);
         }
     }

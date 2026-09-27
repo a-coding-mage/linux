@@ -9,7 +9,7 @@
 const M10V_MAX_CPU: u32 = 4;
 const KERNEL_UNBOOT_FLAG: u32 = 0x12345678;
 
-static mut M10V_SMP_BASE: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut M10V_SMP_BASE: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 extern "C" {
     static mut louis: u32;
@@ -18,16 +18,16 @@ extern "C" {
     fn cpu_logical_map(cpu: u32) -> u32;
     fn secondary_startup();
     fn __pa_symbol(value: unsafe extern "C" fn());
-    fn writel(value: u32, address: *mut core::ffi::c_void);
-    fn arch_send_wakeup_ipi_mask(mask: *const core::ffi::c_void);
-    fn cpumask_of(cpu: u32) -> *const core::ffi::c_void;
+    fn writel(value: u32, address: *mut kernel::ffi::c_void);
+    fn arch_send_wakeup_ipi_mask(mask: *const kernel::ffi::c_void);
+    fn cpumask_of(cpu: u32) -> *const kernel::ffi::c_void;
     fn read_cpuid_mpidr() -> u32;
     fn of_find_compatible_node(
         from: *mut device_node,
-        type_: *const core::ffi::c_char,
-        compatible: *const core::ffi::c_char,
+        type_: *const kernel::ffi::c_char,
+        compatible: *const kernel::ffi::c_char,
     ) -> *mut device_node;
-    fn of_iomap(node: *mut device_node, index: i32) -> *mut core::ffi::c_void;
+    fn of_iomap(node: *mut device_node, index: i32) -> *mut kernel::ffi::c_void;
     fn gic_cpu_if_down(cpu: u32);
     fn v7_exit_coherency_flush(level: u32);
     fn wfi();
@@ -39,8 +39,8 @@ extern "C" {
     fn cpu_suspend(arg: u32, fn_: unsafe extern "C" fn(u32) -> i32) -> i32;
     fn cpu_pm_exit();
     fn suspend_set_ops(ops: *const platform_suspend_ops);
-    fn of_machine_is_compatible(compatible: *const core::ffi::c_char) -> bool;
-    fn pr_info(format: *const core::ffi::c_char, ...);
+    fn of_machine_is_compatible(compatible: *const kernel::ffi::c_char) -> bool;
+    fn pr_info(format: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -200,7 +200,7 @@ static M10V_PM_OPS: platform_suspend_ops = platform_suspend_ops {
 };
 
 extern "C" {
-    pub fn m10v_clclk_register(cpu_dev: *mut core::ffi::c_void) -> *mut clk;
+    pub fn m10v_clclk_register(cpu_dev: *mut kernel::ffi::c_void) -> *mut clk;
 }
 
 unsafe extern "C" fn m10v_pm_init() -> i32 {

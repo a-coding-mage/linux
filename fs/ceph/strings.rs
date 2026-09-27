@@ -4,7 +4,7 @@
  */
 // linux/module.h and linux/ceph/types.h dependencies are supplied externally.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const fn ceph_mds_state_name(s: i32) -> *const c_char {
     match s {

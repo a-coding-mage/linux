@@ -6,7 +6,7 @@
 
 #[cfg(feature = "DEBUG")]
 unsafe extern "C" {
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
     fn dump_double(value: *mut u32);
 }
 
@@ -23,13 +23,13 @@ pub unsafe fn fabs(frD: *mut u32, frB: *mut u32) -> i32 {
         static NEWLINE: &[u8] = b"\n\0";
 
         printk(
-            FORMAT.as_ptr() as *const core::ffi::c_char,
-            FUNC.as_ptr() as *const core::ffi::c_char,
+            FORMAT.as_ptr() as *const kernel::ffi::c_char,
+            FUNC.as_ptr() as *const kernel::ffi::c_char,
             frD,
             frB,
         );
         dump_double(frD);
-        printk(NEWLINE.as_ptr() as *const core::ffi::c_char);
+        printk(NEWLINE.as_ptr() as *const kernel::ffi::c_char);
     }
 
     0

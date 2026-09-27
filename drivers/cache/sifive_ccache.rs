@@ -31,7 +31,7 @@ const SIFIVE_CCACHE_ECCINJECTERR: usize = 0x40;
 const SIFIVE_CCACHE_MAX_ECCINTR: usize = 4;
 const SIFIVE_CCACHE_LINE_SIZE: usize = 64;
 
-static mut CCACHE_BASE: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut CCACHE_BASE: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut G_IRQ: [i32; SIFIVE_CCACHE_MAX_ECCINTR] = [0; SIFIVE_CCACHE_MAX_ECCINTR];
 static mut LEVEL: i32 = 0;
 
@@ -43,24 +43,24 @@ const QUIRK_NONSTANDARD_CACHE_OPS: usize = 1 << 0;
 const QUIRK_BROKEN_DATA_UNCORR: usize = 1 << 1;
 
 extern "C" {
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
     fn mb();
-    fn panic(fmt: *const core::ffi::c_char, ... ) -> !;
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn atomic_notifier_call_chain(chain: *mut core::ffi::c_void, value: u32, data: *const core::ffi::c_char);
-    fn atomic_notifier_chain_register(chain: *mut core::ffi::c_void, nb: *mut core::ffi::c_void) -> i32;
-    fn atomic_notifier_chain_unregister(chain: *mut core::ffi::c_void, nb: *mut core::ffi::c_void) -> i32;
+    fn panic(fmt: *const kernel::ffi::c_char, ... ) -> !;
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn atomic_notifier_call_chain(chain: *mut kernel::ffi::c_void, value: u32, data: *const kernel::ffi::c_char);
+    fn atomic_notifier_chain_register(chain: *mut kernel::ffi::c_void, nb: *mut kernel::ffi::c_void) -> i32;
+    fn atomic_notifier_chain_unregister(chain: *mut kernel::ffi::c_void, nb: *mut kernel::ffi::c_void) -> i32;
 }
 
-static mut CCACHE_ERR_CHAIN: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut CCACHE_ERR_CHAIN: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
-pub unsafe fn register_sifive_ccache_error_notifier(nb: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn register_sifive_ccache_error_notifier(nb: *mut kernel::ffi::c_void) -> i32 {
     atomic_notifier_chain_register(CCACHE_ERR_CHAIN, nb)
 }
 
-pub unsafe fn unregister_sifive_ccache_error_notifier(nb: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn unregister_sifive_ccache_error_notifier(nb: *mut kernel::ffi::c_void) -> i32 {
     atomic_notifier_chain_unregister(CCACHE_ERR_CHAIN, nb)
 }
 
@@ -72,7 +72,7 @@ unsafe fn ccache_flush_range(start: usize, len: usize) {
     let mut line = start & !(SIFIVE_CCACHE_LINE_SIZE - 1);
     while line < end {
         #[cfg(CONFIG_32BIT)]
-        writel((line >> 4) as u32, (CCACHE_BASE as *mut u8).add(SIFIVE_CCACHE_FLUSH32) as *mut core::ffi::c_void);
+        writel((line >> 4) as u32, (CCACHE_BASE as *mut u8).add(SIFIVE_CCACHE_FLUSH32) as *mut kernel::ffi::c_void);
         #[cfg(not(CONFIG_32BIT))]
         core::ptr::write_volatile((CCACHE_BASE as *mut u8).add(SIFIVE_CCACHE_FLUSH64) as *mut u64, line as u64);
         line = line.wrapping_add(SIFIVE_CCACHE_LINE_SIZE);
@@ -81,15 +81,15 @@ unsafe fn ccache_flush_range(start: usize, len: usize) {
 }
 
 unsafe fn ccache_largest_wayenabled() -> i32 {
-    readl((CCACHE_BASE as *mut u8).add(SIFIVE_CCACHE_WAYENABLE) as *mut core::ffi::c_void) as i32 & 0xff
+    readl((CCACHE_BASE as *mut u8).add(SIFIVE_CCACHE_WAYENABLE) as *mut kernel::ffi::c_void) as i32 & 0xff
 }
 
 #[allow(unused_variables)]
 unsafe fn ccache_config_read() {
-    let cfg = readl((CCACHE_BASE as *mut u8).add(SIFIVE_CCACHE_CONFIG) as *mut core::ffi::c_void) as u64;
+    let cfg = readl((CCACHE_BASE as *mut u8).add(SIFIVE_CCACHE_CONFIG) as *mut kernel::ffi::c_void) as u64;
     pr_info(b"%llu banks, %llu ways, sets/bank=%llu, bytes/block=%llu\0".as_ptr() as _,
         cfg & 0xff, (cfg & 0xff00) >> 8, 1u64 << ((cfg & 0xff0000) >> 16), 1u64 << ((cfg & 0xff000000) >> 24));
-    let cfg = readl((CCACHE_BASE as *mut u8).add(SIFIVE_CCACHE_WAYENABLE) as *mut core::ffi::c_void);
+    let cfg = readl((CCACHE_BASE as *mut u8).add(SIFIVE_CCACHE_WAYENABLE) as *mut kernel::ffi::c_void);
     pr_info(b"Index of the largest way enabled: %u\n\0".as_ptr() as _, cfg);
 }
 

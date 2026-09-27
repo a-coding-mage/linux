@@ -12,9 +12,9 @@ const UNITNAMELEN: usize = 16;
 #[repr(C)]
 struct XillyUnit {
     list_entry: list_head,
-    private_data: *mut core::ffi::c_void,
+    private_data: *mut kernel::ffi::c_void,
     cdev: *mut cdev,
-    name: [core::ffi::c_char; UNITNAMELEN],
+    name: [kernel::ffi::c_char; UNITNAMELEN],
     major: i32,
     lowest_minor: i32,
     num_nodes: i32,
@@ -29,17 +29,17 @@ pub unsafe extern "C" fn xillybus_init_chrdev(
     dev: *mut device,
     fops: *const file_operations,
     owner: *mut module,
-    private_data: *mut core::ffi::c_void,
+    private_data: *mut kernel::ffi::c_void,
     mut idt: *mut u8,
     mut len: u32,
     num_nodes: i32,
-    prefix: *const core::ffi::c_char,
+    prefix: *const kernel::ffi::c_char,
     mut enumerate: bool,
 ) -> i32 {
     let mut rc: i32;
     let mut mdev: dev_t = 0;
     let mut i: i32;
-    let mut devname = [0 as core::ffi::c_char; 48];
+    let mut devname = [0 as kernel::ffi::c_char; 48];
     let mut device: *mut device;
     let mut namelen: usize;
     let unit = kzalloc_obj::<XillyUnit>();
@@ -130,13 +130,13 @@ pub unsafe extern "C" fn xillybus_init_chrdev(
     }
     goto_fail_obtain! {
         mutex_unlock(&raw mut unit_mutex);
-        kfree(unit as *mut core::ffi::c_void);
+        kfree(unit as *mut kernel::ffi::c_void);
         return rc;
     }
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn xillybus_cleanup_chrdev(private_data: *mut core::ffi::c_void, dev: *mut device) {
+pub unsafe extern "C" fn xillybus_cleanup_chrdev(private_data: *mut kernel::ffi::c_void, dev: *mut device) {
     let mut minor: i32;
     let mut unit: *mut XillyUnit = core::ptr::null_mut();
     let mut iter: *mut XillyUnit;
@@ -154,12 +154,12 @@ pub unsafe extern "C" fn xillybus_cleanup_chrdev(private_data: *mut core::ffi::c
     unregister_chrdev_region(MKDEV((*unit).major, (*unit).lowest_minor), (*unit).num_nodes as u32);
     dev_info(dev, c"Removed %d device files.\n", (*unit).num_nodes);
     list_del(&mut (*unit).list_entry);
-    kfree(unit as *mut core::ffi::c_void);
+    kfree(unit as *mut kernel::ffi::c_void);
     mutex_unlock(&raw mut unit_mutex);
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn xillybus_find_inode(inode: *mut inode, private_data: *mut *mut core::ffi::c_void, index: *mut i32) -> i32 {
+pub unsafe extern "C" fn xillybus_find_inode(inode: *mut inode, private_data: *mut *mut kernel::ffi::c_void, index: *mut i32) -> i32 {
     let minor = iminor(inode);
     let major = imajor(inode);
     let mut unit: *mut XillyUnit = core::ptr::null_mut();

@@ -23,12 +23,12 @@ pub struct pci_channel {
 
 extern "C" {
     fn mach_is_lboxre2() -> bool;
-    fn __raw_readl(addr: usize) -> libc::c_ulong;
-    fn pci_write_reg(chan: *mut pci_channel, value: libc::c_ulong, reg: usize);
+    fn __raw_readl(addr: usize) -> kernel::ffi::c_ulong;
+    fn pci_write_reg(chan: *mut pci_channel, value: kernel::ffi::c_ulong, reg: usize);
 }
 
-const PCIMCR_MRSET_OFF: libc::c_ulong = 0xBFFFFFFF;
-const PCIMCR_RFSH_OFF: libc::c_ulong = 0xFFFFFFFB;
+const PCIMCR_MRSET_OFF: kernel::ffi::c_ulong = 0xBFFFFFFF;
+const PCIMCR_RFSH_OFF: kernel::ffi::c_ulong = 0xFFFFFFFB;
 
 static mut rts7751r2d_irq_tab: [u8; 4] = [
     IRQ_PCI_INTA,
@@ -57,8 +57,8 @@ pub unsafe fn pcibios_map_platform_irq(
 }
 
 pub unsafe fn pci_fixup_pcic(chan: *mut pci_channel) -> i32 {
-    let mut bcr1: libc::c_ulong;
-    let mut mcr: libc::c_ulong;
+    let mut bcr1: kernel::ffi::c_ulong;
+    let mut mcr: kernel::ffi::c_ulong;
 
     bcr1 = __raw_readl(SH7751_BCR1);
     bcr1 |= 0x40080000; // Enable Bit 19 BREQEN, set PCIC to slave

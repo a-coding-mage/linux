@@ -16,7 +16,7 @@ pub struct sys_reg_params {
 
 #[repr(C)]
 pub struct sys_reg_desc {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub aarch32_map: Aarch32Map,
     pub Op0: u8, pub Op1: u8, pub CRn: u8, pub CRm: u8, pub Op2: u8,
     pub access: Option<unsafe extern "C" fn(*mut kvm_vcpu, *mut sys_reg_params, *const sys_reg_desc) -> bool>,
@@ -44,8 +44,8 @@ extern "C" {
     pub fn __vcpu_assign_sys_reg(vcpu: *mut kvm_vcpu, reg: i32, val: u64);
     pub fn __vcpu_sys_reg(vcpu: *mut kvm_vcpu, reg: i32) -> u64;
     pub fn MPIDR_LEVEL_SHIFT(level: u32) -> u32;
-    pub fn __inline_bsearch(key: *const core::ffi::c_void, base: *const sys_reg_desc, num: usize, size: usize,
-                            cmp: unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32) -> *const sys_reg_desc;
+    pub fn __inline_bsearch(key: *const kernel::ffi::c_void, base: *const sys_reg_desc, num: usize, size: usize,
+                            cmp: unsafe extern "C" fn(*const kernel::ffi::c_void, *const kernel::ffi::c_void) -> i32) -> *const sys_reg_desc;
 }
 
 pub const AA32_DIRECT: Aarch32Map = Aarch32Map::AA32_DIRECT;
@@ -117,16 +117,16 @@ extern "C" {
         .then((*i1).CRn as i32 - (*i2).CRn as i32).then((*i1).CRm as i32 - (*i2).CRm as i32)
         .then((*i1).Op2 as i32 - (*i2).Op2 as i32)
 }
-#[inline] pub unsafe fn match_sys_reg(key: *const core::ffi::c_void, elt: *const core::ffi::c_void) -> i32 {
+#[inline] pub unsafe fn match_sys_reg(key: *const kernel::ffi::c_void, elt: *const kernel::ffi::c_void) -> i32 {
     (key as usize as u64).wrapping_sub(reg_to_encoding(elt as *const sys_reg_desc) as u64) as i32
 }
 #[macro_export] macro_rules! SYS_DESC { ($reg:expr) => {
-    name: concat!(stringify!($reg), "\0").as_ptr() as *const core::ffi::c_char,
+    name: concat!(stringify!($reg), "\0").as_ptr() as *const kernel::ffi::c_char,
     Op0: unsafe { sys_reg_Op0($reg) as u8 }, Op1: unsafe { sys_reg_Op1($reg) as u8 },
     CRn: unsafe { sys_reg_CRn($reg) as u8 }, CRm: unsafe { sys_reg_CRm($reg) as u8 }, Op2: unsafe { sys_reg_Op2($reg) as u8 }
 } }
 #[macro_export] macro_rules! CP15_SYS_DESC { ($reg:expr) => {
-    name: concat!(stringify!($reg), "\0").as_ptr() as *const core::ffi::c_char,
+    name: concat!(stringify!($reg), "\0").as_ptr() as *const kernel::ffi::c_char,
     aarch32_map: Aarch32Map::AA32_DIRECT, Op0: 0, Op1: unsafe { sys_reg_Op1($reg) as u8 },
     CRn: unsafe { sys_reg_CRn($reg) as u8 }, CRm: unsafe { sys_reg_CRm($reg) as u8 }, Op2: unsafe { sys_reg_Op2($reg) as u8 }
 } }

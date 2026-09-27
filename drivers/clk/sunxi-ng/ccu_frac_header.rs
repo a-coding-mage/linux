@@ -10,7 +10,7 @@ pub struct ccu_frac_internal {
     pub enable: u32,
     pub select: u32,
 
-    pub rates: [::core::ffi::c_ulong; 2],
+    pub rates: [::kernel::ffi::c_ulong; 2],
 }
 
 #[macro_export]
@@ -41,18 +41,18 @@ extern "C" {
     pub fn ccu_frac_helper_has_rate(
         common: *mut ccu_common,
         cf: *mut ccu_frac_internal,
-        rate: ::core::ffi::c_ulong,
+        rate: ::kernel::ffi::c_ulong,
     ) -> bool;
 
     pub fn ccu_frac_helper_read_rate(
         common: *mut ccu_common,
         cf: *mut ccu_frac_internal,
-    ) -> ::core::ffi::c_ulong;
+    ) -> ::kernel::ffi::c_ulong;
 
     pub fn ccu_frac_helper_set_rate(
         common: *mut ccu_common,
         cf: *mut ccu_frac_internal,
-        rate: ::core::ffi::c_ulong,
+        rate: ::kernel::ffi::c_ulong,
         lock: u32,
     ) -> i32;
 }

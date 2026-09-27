@@ -11,7 +11,7 @@
 // Dependency intent from <linux/types.h> and <asm/bootparam.h> is preserved
 // through the externally supplied `bp_tag_t` type below.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /*
  * platform_init is called before the mmu is initialized to give the

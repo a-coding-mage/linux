@@ -18,10 +18,10 @@ pub static mut sgi_ioc_reset: u8 = 0;
 pub static mut sgi_ioc_write: u8 = 0;
 
 extern "C" {
-    static mut system_type: *mut core::ffi::c_char;
+    static mut system_type: *mut kernel::ffi::c_char;
     static mut sgint: *mut sgint_regs;
 
-    fn ioremap(offset: usize, size: usize) -> *mut core::ffi::c_void;
+    fn ioremap(offset: usize, size: usize) -> *mut kernel::ffi::c_void;
     fn ip22_is_fullhouse() -> bool;
 }
 
@@ -39,11 +39,11 @@ pub unsafe fn sgihpc_init() {
         /* Full House comes with INT2 which lives in PBUS PIO
          * channel 4 */
         sgint = (*hpc3c0).pbus_extregs[4] as *mut sgint_regs;
-        system_type = b"SGI Indigo2\0".as_ptr() as *mut core::ffi::c_char;
+        system_type = b"SGI Indigo2\0".as_ptr() as *mut kernel::ffi::c_char;
     } else {
         /* Guiness comes with INT3 which is part of IOC */
         sgint = core::ptr::addr_of_mut!((*sgioc).int3);
-        system_type = b"SGI Indy\0".as_ptr() as *mut core::ffi::c_char;
+        system_type = b"SGI Indy\0".as_ptr() as *mut kernel::ffi::c_char;
     }
 
     sgi_ioc_reset = SGIOC_RESET_PPORT

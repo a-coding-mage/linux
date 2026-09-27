@@ -93,7 +93,7 @@ pub const DBG_REG_BADADDR_OFF: usize = 34;
 pub const DBG_REG_CAUSE_OFF: usize = 35;
 /* NOTE: increase DBG_MAX_REG_NUM if you add more values here. */
 
-pub static riscv_gdb_stub_feature: [core::ffi::c_char; 64];
+pub static riscv_gdb_stub_feature: [kernel::ffi::c_char; 64];
 
 pub use riscv_gdb_stub_feature as kgdb_arch_gdb_stub_feature;
 

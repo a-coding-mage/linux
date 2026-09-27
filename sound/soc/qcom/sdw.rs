@@ -17,9 +17,9 @@
 use core::ptr;
 
 pub type bool_ = bool;
-pub type u32 = core::ffi::c_uint;
-pub type c_int = core::ffi::c_int;
-pub type c_char = core::ffi::c_char;
+pub type u32 = kernel::ffi::c_uint;
+pub type c_int = kernel::ffi::c_int;
+pub type c_char = kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct device {

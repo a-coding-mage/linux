@@ -19,20 +19,20 @@ pub type XtensaExceptionHandler = unsafe extern "C" fn(regs: *mut pt_regs);
 #[repr(C)]
 pub struct exc_table {
     /* Kernel Stack */
-    pub kstk: *mut core::ffi::c_void,
+    pub kstk: *mut kernel::ffi::c_void,
     /* Double exception save area for a0 */
-    pub double_save: core::ffi::c_ulong,
+    pub double_save: kernel::ffi::c_ulong,
     /* Fixup handler */
-    pub fixup: *mut core::ffi::c_void,
+    pub fixup: *mut kernel::ffi::c_void,
     /* For passing a parameter to fixup */
-    pub fixup_param: *mut core::ffi::c_void,
+    pub fixup_param: *mut kernel::ffi::c_void,
     #[cfg(XTENSA_HAVE_COPROCESSORS)]
     /* Pointers to owner struct thread_info */
     pub coprocessor_owner: [*mut thread_info; XCHAL_CP_MAX],
     /* Fast user exception handlers */
-    pub fast_user_handler: [*mut core::ffi::c_void; EXCCAUSE_N],
+    pub fast_user_handler: [*mut kernel::ffi::c_void; EXCCAUSE_N],
     /* Fast kernel exception handlers */
-    pub fast_kernel_handler: [*mut core::ffi::c_void; EXCCAUSE_N],
+    pub fast_kernel_handler: [*mut kernel::ffi::c_void; EXCCAUSE_N],
     /* Default C-Handlers */
     pub default_handler: [Option<XtensaExceptionHandler>; EXCCAUSE_N],
 }
@@ -42,7 +42,7 @@ unsafe extern "C" {
     pub static mut exc_table: exc_table;
 
     pub fn trap_set_handler(
-        cause: core::ffi::c_int,
+        cause: kernel::ffi::c_int,
         handler: XtensaExceptionHandler,
     ) -> XtensaExceptionHandler;
 
@@ -59,7 +59,7 @@ unsafe extern "C" {
     pub fn user_exception();
     pub fn system_call(regs: *mut pt_regs);
 
-    pub fn do_IRQ(hwirq: core::ffi::c_int, regs: *mut pt_regs);
+    pub fn do_IRQ(hwirq: kernel::ffi::c_int, regs: *mut pt_regs);
     pub fn do_page_fault(regs: *mut pt_regs);
     pub fn do_unhandled(regs: *mut pt_regs);
 }
@@ -114,16 +114,16 @@ pub struct debug_table {
     /* Pointer to debug exception handler */
     pub debug_exception: Option<unsafe extern "C" fn()>,
     /* Temporary register save area */
-    pub debug_save: [core::ffi::c_ulong; 1],
+    pub debug_save: [kernel::ffi::c_ulong; 1],
     #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
     /* Save area for DBREAKC registers */
-    pub dbreakc_save: [core::ffi::c_ulong; XCHAL_NUM_DBREAK],
+    pub dbreakc_save: [kernel::ffi::c_ulong; XCHAL_NUM_DBREAK],
     #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
     /* Saved ICOUNT register */
-    pub icount_save: core::ffi::c_ulong,
+    pub icount_save: kernel::ffi::c_ulong,
     #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
     /* Saved ICOUNTLEVEL register */
-    pub icount_level_save: core::ffi::c_ulong,
+    pub icount_level_save: kernel::ffi::c_ulong,
 }
 
 unsafe extern "C" {

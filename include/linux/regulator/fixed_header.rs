@@ -30,13 +30,13 @@ pub struct regulator_init_data;
  */
 #[repr(C)]
 pub struct fixed_voltage_config {
-    pub supply_name: *const core::ffi::c_char,
-    pub input_supply: *const core::ffi::c_char,
-    pub microvolts: core::ffi::c_int,
-    pub startup_delay: core::ffi::c_uint,
-    pub off_on_delay: core::ffi::c_uint,
+    pub supply_name: *const kernel::ffi::c_char,
+    pub input_supply: *const kernel::ffi::c_char,
+    pub microvolts: kernel::ffi::c_int,
+    pub startup_delay: kernel::ffi::c_uint,
+    pub off_on_delay: kernel::ffi::c_uint,
     // C declaration: unsigned enabled_at_boot:1;
-    pub enabled_at_boot: core::ffi::c_uchar,
+    pub enabled_at_boot: kernel::ffi::c_uchar,
     pub init_data: *mut regulator_init_data,
 }
 
@@ -51,31 +51,31 @@ pub struct platform_device;
 #[cfg(CONFIG_REGULATOR)]
 unsafe extern "C" {
     pub fn regulator_register_always_on(
-        id: core::ffi::c_int,
-        name: *const core::ffi::c_char,
+        id: kernel::ffi::c_int,
+        name: *const kernel::ffi::c_char,
         supplies: *mut regulator_consumer_supply,
-        num_supplies: core::ffi::c_int,
-        uv: core::ffi::c_int,
+        num_supplies: kernel::ffi::c_int,
+        uv: kernel::ffi::c_int,
     ) -> *mut platform_device;
 }
 
 #[cfg(not(CONFIG_REGULATOR))]
 #[inline]
 pub unsafe fn regulator_register_always_on(
-    _id: core::ffi::c_int,
-    _name: *const core::ffi::c_char,
+    _id: kernel::ffi::c_int,
+    _name: *const kernel::ffi::c_char,
     _supplies: *mut regulator_consumer_supply,
-    _num_supplies: core::ffi::c_int,
-    _uv: core::ffi::c_int,
+    _num_supplies: kernel::ffi::c_int,
+    _uv: kernel::ffi::c_int,
 ) -> *mut platform_device {
     core::ptr::null_mut()
 }
 
 #[inline]
 pub unsafe fn regulator_register_fixed(
-    id: core::ffi::c_int,
+    id: kernel::ffi::c_int,
     s: *mut regulator_consumer_supply,
-    ns: core::ffi::c_int,
+    ns: kernel::ffi::c_int,
 ) -> *mut platform_device {
     regulator_register_always_on(
         id,

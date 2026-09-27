@@ -18,8 +18,8 @@ pub const EF_ARC_OSABI_V4: u32 = 0x00000400; /* v4 (64bit data any reg align) */
 /* __GNUC__ < 6 selects V3; otherwise the current ABI is V4. */
 pub const EF_ARC_OSABI_CURRENT: u32 = EF_ARC_OSABI_V4;
 
-pub type elf_greg_t = ::core::ffi::c_ulong;
-pub type elf_fpregset_t = ::core::ffi::c_ulong;
+pub type elf_greg_t = ::kernel::ffi::c_ulong;
+pub type elf_fpregset_t = ::kernel::ffi::c_ulong;
 
 pub const ELF_NGREG: usize =
     ::core::mem::size_of::<user_regs_struct>() / ::core::mem::size_of::<elf_greg_t>();

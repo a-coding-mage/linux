@@ -43,13 +43,13 @@ pub struct agp_kern_info {
     pub version: agp_version,
     pub device: *mut pci_dev,
     pub chipset: chipset_type,
-    pub mode: libc::c_ulong,
-    pub aper_base: libc::c_ulong,
+    pub mode: kernel::ffi::c_ulong,
+    pub aper_base: kernel::ffi::c_ulong,
     pub aper_size: usize,
-    pub max_memory: libc::c_int, // In pages
-    pub current_memory: libc::c_int,
+    pub max_memory: kernel::ffi::c_int, // In pages
+    pub current_memory: kernel::ffi::c_int,
     pub cant_use_aperture: bool,
-    pub page_mask: libc::c_ulong,
+    pub page_mask: kernel::ffi::c_ulong,
     pub vm_ops: *const vm_operations_struct,
 }
 
@@ -71,9 +71,9 @@ pub struct agp_memory {
     pub bridge: *mut agp_bridge_data,
     pub pages: *mut *mut page,
     pub page_count: usize,
-    pub key: libc::c_int,
-    pub num_scratch_pages: libc::c_int,
-    pub pg_start: libc::off_t,
+    pub key: kernel::ffi::c_int,
+    pub num_scratch_pages: kernel::ffi::c_int,
+    pub pg_start: off_t,
     pub type_: u32,
     pub physical: u32,
     pub is_bound: bool,
@@ -82,7 +82,7 @@ pub struct agp_memory {
     pub mapped_list: list_head,
     /* DMA-mapped addresses */
     pub sg_list: *mut scatterlist,
-    pub num_sg: libc::c_int,
+    pub num_sg: kernel::ffi::c_int,
 }
 
 pub const AGP_NORMAL_MEMORY: u32 = 0;
@@ -98,9 +98,9 @@ extern "C" {
 
     pub fn agp_free_memory(arg1: *mut agp_memory);
     pub fn agp_allocate_memory(arg1: *mut agp_bridge_data, arg2: usize, arg3: u32) -> *mut agp_memory;
-    pub fn agp_copy_info(arg1: *mut agp_bridge_data, arg2: *mut agp_kern_info) -> libc::c_int;
-    pub fn agp_bind_memory(arg1: *mut agp_memory, arg2: libc::off_t) -> libc::c_int;
-    pub fn agp_unbind_memory(arg1: *mut agp_memory) -> libc::c_int;
+    pub fn agp_copy_info(arg1: *mut agp_bridge_data, arg2: *mut agp_kern_info) -> kernel::ffi::c_int;
+    pub fn agp_bind_memory(arg1: *mut agp_memory, arg2: off_t) -> kernel::ffi::c_int;
+    pub fn agp_unbind_memory(arg1: *mut agp_memory) -> kernel::ffi::c_int;
     pub fn agp_enable(arg1: *mut agp_bridge_data, arg2: u32);
     pub fn agp_backend_acquire(arg1: *mut pci_dev) -> *mut agp_bridge_data;
     pub fn agp_backend_release(arg1: *mut agp_bridge_data);

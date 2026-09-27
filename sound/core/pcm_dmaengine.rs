@@ -15,19 +15,19 @@
 #![allow(non_upper_case_globals)]
 #![allow(improper_ctypes)]
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub type dma_cookie_t = i32;
-pub type snd_pcm_uframes_t = libc::c_ulong;
+pub type snd_pcm_uframes_t = kernel::ffi::c_ulong;
 pub type snd_pcm_format_t = i32;
 pub type dma_filter_fn = Option<unsafe extern "C" fn(*mut dma_chan, *mut c_void) -> bool>;
-pub type dma_cap_mask_t = [libc::c_ulong; 1];
+pub type dma_cap_mask_t = [kernel::ffi::c_ulong; 1];
 
 #[repr(C)]
 pub struct dmaengine_pcm_runtime_data {
     pub dma_chan: *mut dma_chan,
     pub cookie: dma_cookie_t,
-    pub pos: libc::c_uint,
+    pub pos: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -38,7 +38,7 @@ pub struct dma_chan {
 #[repr(C)]
 pub struct snd_pcm_substream {
     pub runtime: *mut snd_pcm_runtime,
-    pub stream: libc::c_int,
+    pub stream: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -47,11 +47,11 @@ pub struct snd_pcm_runtime {
     pub no_period_wakeup: bool,
     pub dma_addr: dma_addr_t,
     pub delay: snd_pcm_sframes_t,
-    pub info: libc::c_uint,
+    pub info: kernel::ffi::c_uint,
 }
 
-pub type dma_addr_t = libc::c_ulong;
-pub type snd_pcm_sframes_t = libc::c_long;
+pub type dma_addr_t = kernel::ffi::c_ulong;
+pub type snd_pcm_sframes_t = kernel::ffi::c_long;
 
 #[repr(C)]
 pub struct snd_pcm_hw_params {
@@ -65,13 +65,13 @@ pub struct dma_slave_config {
     pub dst_addr: dma_addr_t,
     pub src_addr_width: dma_slave_buswidth,
     pub dst_addr_width: dma_slave_buswidth,
-    pub src_maxburst: libc::c_uint,
-    pub dst_maxburst: libc::c_uint,
-    pub src_port_window_size: libc::c_uint,
-    pub dst_port_window_size: libc::c_uint,
+    pub src_maxburst: kernel::ffi::c_uint,
+    pub dst_maxburst: kernel::ffi::c_uint,
+    pub src_port_window_size: kernel::ffi::c_uint,
+    pub dst_port_window_size: kernel::ffi::c_uint,
     pub device_fc: bool,
     pub peripheral_config: *mut c_void,
-    pub peripheral_size: libc::size_t,
+    pub peripheral_size: usize,
 }
 
 #[repr(C)]
@@ -103,11 +103,11 @@ pub use dma_transfer_direction::{DMA_DEV_TO_MEM, DMA_MEM_TO_DEV};
 pub struct snd_dmaengine_dai_dma_data {
     pub addr: dma_addr_t,
     pub addr_width: dma_slave_buswidth,
-    pub maxburst: libc::c_uint,
-    pub port_window_size: libc::c_uint,
-    pub flags: libc::c_uint,
+    pub maxburst: kernel::ffi::c_uint,
+    pub port_window_size: kernel::ffi::c_uint,
+    pub flags: kernel::ffi::c_uint,
     pub peripheral_config: *mut c_void,
-    pub peripheral_size: libc::size_t,
+    pub peripheral_size: usize,
 }
 
 #[repr(C)]
@@ -118,8 +118,8 @@ pub struct dma_async_tx_descriptor {
 
 #[repr(C)]
 pub struct dma_tx_state {
-    pub residue: libc::c_uint,
-    pub in_flight_bytes: libc::c_uint,
+    pub residue: kernel::ffi::c_uint,
+    pub in_flight_bytes: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -152,35 +152,35 @@ pub use dma_residue_granularity::DMA_RESIDUE_GRANULARITY_SEGMENT;
 
 #[repr(C)]
 pub struct snd_pcm_hardware {
-    pub info: libc::c_uint,
+    pub info: kernel::ffi::c_uint,
     pub formats: u64,
 }
 
-pub const EINVAL: libc::c_int = 22;
-pub const ENOMEM: libc::c_int = 12;
-pub const ENXIO: libc::c_int = 6;
+pub const EINVAL: kernel::ffi::c_int = 22;
+pub const ENOMEM: kernel::ffi::c_int = 12;
+pub const ENXIO: kernel::ffi::c_int = 6;
 
-pub const SNDRV_PCM_STREAM_PLAYBACK: libc::c_int = 0;
-pub const SNDRV_PCM_TRIGGER_START: libc::c_int = 0;
-pub const SNDRV_PCM_TRIGGER_STOP: libc::c_int = 1;
-pub const SNDRV_PCM_TRIGGER_PAUSE_PUSH: libc::c_int = 3;
-pub const SNDRV_PCM_TRIGGER_PAUSE_RELEASE: libc::c_int = 4;
-pub const SNDRV_PCM_TRIGGER_SUSPEND: libc::c_int = 5;
-pub const SNDRV_PCM_TRIGGER_RESUME: libc::c_int = 6;
-pub const SNDRV_PCM_INFO_PAUSE: libc::c_uint = 1 << 11;
-pub const SNDRV_PCM_INFO_RESUME: libc::c_uint = 1 << 12;
-pub const SNDRV_PCM_INFO_BATCH: libc::c_uint = 1 << 16;
-pub const SNDRV_PCM_HW_PARAM_PERIODS: libc::c_int = 11;
-pub const SND_DMAENGINE_PCM_DAI_FLAG_PACK: libc::c_uint = 1 << 0;
-pub const DMA_CTRL_ACK: libc::c_ulong = 1 << 0;
-pub const DMA_PREP_INTERRUPT: libc::c_ulong = 1 << 1;
-pub const DMA_SLAVE: libc::c_int = 0;
-pub const DMA_CYCLIC: libc::c_int = 1;
+pub const SNDRV_PCM_STREAM_PLAYBACK: kernel::ffi::c_int = 0;
+pub const SNDRV_PCM_TRIGGER_START: kernel::ffi::c_int = 0;
+pub const SNDRV_PCM_TRIGGER_STOP: kernel::ffi::c_int = 1;
+pub const SNDRV_PCM_TRIGGER_PAUSE_PUSH: kernel::ffi::c_int = 3;
+pub const SNDRV_PCM_TRIGGER_PAUSE_RELEASE: kernel::ffi::c_int = 4;
+pub const SNDRV_PCM_TRIGGER_SUSPEND: kernel::ffi::c_int = 5;
+pub const SNDRV_PCM_TRIGGER_RESUME: kernel::ffi::c_int = 6;
+pub const SNDRV_PCM_INFO_PAUSE: kernel::ffi::c_uint = 1 << 11;
+pub const SNDRV_PCM_INFO_RESUME: kernel::ffi::c_uint = 1 << 12;
+pub const SNDRV_PCM_INFO_BATCH: kernel::ffi::c_uint = 1 << 16;
+pub const SNDRV_PCM_HW_PARAM_PERIODS: kernel::ffi::c_int = 11;
+pub const SND_DMAENGINE_PCM_DAI_FLAG_PACK: kernel::ffi::c_uint = 1 << 0;
+pub const DMA_CTRL_ACK: kernel::ffi::c_ulong = 1 << 0;
+pub const DMA_PREP_INTERRUPT: kernel::ffi::c_ulong = 1 << 1;
+pub const DMA_SLAVE: kernel::ffi::c_int = 0;
+pub const DMA_CYCLIC: kernel::ffi::c_int = 1;
 
 unsafe extern "C" {
-    fn params_physical_width(params: *const snd_pcm_hw_params) -> libc::c_int;
-    fn snd_pcm_lib_period_bytes(substream: *mut snd_pcm_substream) -> libc::c_uint;
-    fn snd_pcm_lib_buffer_bytes(substream: *mut snd_pcm_substream) -> libc::c_uint;
+    fn params_physical_width(params: *const snd_pcm_hw_params) -> kernel::ffi::c_int;
+    fn snd_pcm_lib_period_bytes(substream: *mut snd_pcm_substream) -> kernel::ffi::c_uint;
+    fn snd_pcm_lib_buffer_bytes(substream: *mut snd_pcm_substream) -> kernel::ffi::c_uint;
     fn snd_pcm_period_elapsed(substream: *mut snd_pcm_substream);
     fn snd_pcm_substream_to_dma_direction(
         substream: *mut snd_pcm_substream,
@@ -188,24 +188,24 @@ unsafe extern "C" {
     fn dmaengine_prep_dma_cyclic(
         chan: *mut dma_chan,
         buf_addr: dma_addr_t,
-        buf_len: libc::c_uint,
-        period_len: libc::c_uint,
+        buf_len: kernel::ffi::c_uint,
+        period_len: kernel::ffi::c_uint,
         dir: dma_transfer_direction,
-        flags: libc::c_ulong,
+        flags: kernel::ffi::c_ulong,
     ) -> *mut dma_async_tx_descriptor;
     fn dmaengine_submit(desc: *mut dma_async_tx_descriptor) -> dma_cookie_t;
     fn dma_async_issue_pending(chan: *mut dma_chan);
-    fn dmaengine_resume(chan: *mut dma_chan) -> libc::c_int;
-    fn dmaengine_pause(chan: *mut dma_chan) -> libc::c_int;
-    fn dmaengine_terminate_async(chan: *mut dma_chan) -> libc::c_int;
-    fn bytes_to_frames(runtime: *mut snd_pcm_runtime, size: libc::c_uint) -> snd_pcm_uframes_t;
+    fn dmaengine_resume(chan: *mut dma_chan) -> kernel::ffi::c_int;
+    fn dmaengine_pause(chan: *mut dma_chan) -> kernel::ffi::c_int;
+    fn dmaengine_terminate_async(chan: *mut dma_chan) -> kernel::ffi::c_int;
+    fn bytes_to_frames(runtime: *mut snd_pcm_runtime, size: kernel::ffi::c_uint) -> snd_pcm_uframes_t;
     fn dmaengine_tx_status(
         chan: *mut dma_chan,
         cookie: dma_cookie_t,
         state: *mut dma_tx_state,
     ) -> dma_status;
     fn dma_cap_zero(mask: *mut dma_cap_mask_t);
-    fn dma_cap_set(tx_type: libc::c_int, mask: *mut dma_cap_mask_t);
+    fn dma_cap_set(tx_type: kernel::ffi::c_int, mask: *mut dma_cap_mask_t);
     fn dma_request_channel(
         mask: dma_cap_mask_t,
         fn_: dma_filter_fn,
@@ -213,19 +213,19 @@ unsafe extern "C" {
     ) -> *mut dma_chan;
     fn snd_pcm_hw_constraint_integer(
         runtime: *mut snd_pcm_runtime,
-        var: libc::c_int,
-    ) -> libc::c_int;
-    fn kzalloc(size: libc::size_t, flags: libc::c_uint) -> *mut c_void;
+        var: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
+    fn kzalloc(size: usize, flags: kernel::ffi::c_uint) -> *mut c_void;
     fn kfree(ptr: *mut c_void);
     fn dmaengine_synchronize(chan: *mut dma_chan);
     fn dma_release_channel(chan: *mut dma_chan);
-    fn dma_get_slave_caps(chan: *mut dma_chan, caps: *mut dma_slave_caps) -> libc::c_int;
-    fn snd_pcm_format_physical_width(format: snd_pcm_format_t) -> libc::c_int;
+    fn dma_get_slave_caps(chan: *mut dma_chan, caps: *mut dma_slave_caps) -> kernel::ffi::c_int;
+    fn snd_pcm_format_physical_width(format: snd_pcm_format_t) -> kernel::ffi::c_int;
     fn pcm_format_to_bits(format: snd_pcm_format_t) -> u64;
 }
 
 #[inline]
-const fn BIT(nr: libc::c_int) -> u32 {
+const fn BIT(nr: kernel::ffi::c_int) -> u32 {
     1u32 << nr
 }
 
@@ -261,9 +261,9 @@ pub unsafe extern "C" fn snd_hwparams_to_dma_slave_config(
     substream: *const snd_pcm_substream,
     params: *const snd_pcm_hw_params,
     slave_config: *mut dma_slave_config,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let buswidth: dma_slave_buswidth;
-    let bits: libc::c_int;
+    let bits: kernel::ffi::c_int;
 
     bits = unsafe { params_physical_width(params) };
     if bits < 8 || bits > 64 {
@@ -363,7 +363,7 @@ pub unsafe extern "C" fn snd_dmaengine_pcm_set_config_from_dai_data(
 }
 
 unsafe extern "C" fn dmaengine_pcm_dma_complete(arg: *mut c_void) {
-    let new_pos: libc::c_uint;
+    let new_pos: kernel::ffi::c_uint;
     let substream = arg as *mut snd_pcm_substream;
     let prtd = unsafe { substream_to_prtd(substream) };
 
@@ -381,12 +381,12 @@ unsafe extern "C" fn dmaengine_pcm_dma_complete(arg: *mut c_void) {
 
 unsafe fn dmaengine_pcm_prepare_and_submit(
     substream: *mut snd_pcm_substream,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let prtd = unsafe { substream_to_prtd(substream) };
     let chan = unsafe { (*prtd).dma_chan };
     let desc: *mut dma_async_tx_descriptor;
     let direction: dma_transfer_direction;
-    let mut flags: libc::c_ulong = DMA_CTRL_ACK;
+    let mut flags: kernel::ffi::c_ulong = DMA_CTRL_ACK;
 
     direction = unsafe { snd_pcm_substream_to_dma_direction(substream) };
 
@@ -434,11 +434,11 @@ unsafe fn dmaengine_pcm_prepare_and_submit(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn snd_dmaengine_pcm_trigger(
     substream: *mut snd_pcm_substream,
-    cmd: libc::c_int,
-) -> libc::c_int {
+    cmd: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let prtd = unsafe { substream_to_prtd(substream) };
     let runtime = unsafe { (*substream).runtime };
-    let ret: libc::c_int;
+    let ret: kernel::ffi::c_int;
 
     match cmd {
         SNDRV_PCM_TRIGGER_START => {
@@ -513,8 +513,8 @@ pub unsafe extern "C" fn snd_dmaengine_pcm_pointer(
         in_flight_bytes: 0,
     };
     let status: dma_status;
-    let buf_size: libc::c_uint;
-    let mut pos: libc::c_uint = 0;
+    let buf_size: kernel::ffi::c_uint;
+    let mut pos: kernel::ffi::c_uint = 0;
 
     status = unsafe { dmaengine_tx_status((*prtd).dma_chan, (*prtd).cookie, &mut state) };
     if status == DMA_IN_PROGRESS || status == DMA_PAUSED {
@@ -571,9 +571,9 @@ pub unsafe extern "C" fn snd_dmaengine_pcm_request_channel(
 pub unsafe extern "C" fn snd_dmaengine_pcm_open(
     substream: *mut snd_pcm_substream,
     chan: *mut dma_chan,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let prtd: *mut dmaengine_pcm_runtime_data;
-    let ret: libc::c_int;
+    let ret: kernel::ffi::c_int;
 
     if chan.is_null() {
         return -ENXIO;
@@ -606,7 +606,7 @@ pub unsafe extern "C" fn snd_dmaengine_pcm_open(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn snd_dmaengine_pcm_sync_stop(
     substream: *mut snd_pcm_substream,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let prtd = unsafe { substream_to_prtd(substream) };
     let mut state = dma_tx_state {
         residue: 0,
@@ -664,7 +664,7 @@ unsafe fn __snd_dmaengine_pcm_close(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn snd_dmaengine_pcm_close(
     substream: *mut snd_pcm_substream,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     unsafe {
         __snd_dmaengine_pcm_close(substream, false);
     }
@@ -683,7 +683,7 @@ pub unsafe extern "C" fn snd_dmaengine_pcm_close(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn snd_dmaengine_pcm_close_release_chan(
     substream: *mut snd_pcm_substream,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     unsafe {
         __snd_dmaengine_pcm_close(substream, true);
     }
@@ -708,7 +708,7 @@ pub unsafe extern "C" fn snd_dmaengine_pcm_refine_runtime_hwparams(
     dma_data: *mut snd_dmaengine_dai_dma_data,
     hw: *mut snd_pcm_hardware,
     chan: *mut dma_chan,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let mut dma_caps = dma_slave_caps {
         cmd_pause: false,
         cmd_resume: false,
@@ -716,11 +716,11 @@ pub unsafe extern "C" fn snd_dmaengine_pcm_refine_runtime_hwparams(
         src_addr_widths: 0,
         dst_addr_widths: 0,
     };
-    let mut addr_widths: u32 = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE as libc::c_int)
-        | BIT(DMA_SLAVE_BUSWIDTH_2_BYTES as libc::c_int)
-        | BIT(DMA_SLAVE_BUSWIDTH_4_BYTES as libc::c_int);
+    let mut addr_widths: u32 = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE as kernel::ffi::c_int)
+        | BIT(DMA_SLAVE_BUSWIDTH_2_BYTES as kernel::ffi::c_int)
+        | BIT(DMA_SLAVE_BUSWIDTH_4_BYTES as kernel::ffi::c_int);
     let mut i: snd_pcm_format_t;
-    let ret: libc::c_int;
+    let ret: kernel::ffi::c_int;
 
     if hw.is_null() || chan.is_null() || dma_data.is_null() {
         return -EINVAL;

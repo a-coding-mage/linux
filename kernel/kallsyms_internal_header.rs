@@ -8,7 +8,7 @@ unsafe extern "C" {
 
     pub static kallsyms_num_syms: u32;
 
-    pub static kallsyms_token_table: [core::ffi::c_char; 0];
+    pub static kallsyms_token_table: [kernel::ffi::c_char; 0];
     pub static kallsyms_token_index: [u16; 0];
 
     pub static kallsyms_markers: [u32; 0];

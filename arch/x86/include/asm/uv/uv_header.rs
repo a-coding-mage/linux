@@ -26,11 +26,11 @@ pub fn uv(uvtype: i32) -> i32 {
 
 #[cfg(CONFIG_X86_UV)]
 extern "C" {
-    pub static mut uv_systab_phys: ::core::ffi::c_ulong;
+    pub static mut uv_systab_phys: ::kernel::ffi::c_ulong;
 
     pub fn get_uv_system_type() -> uv_system_type;
-    pub fn is_uv_system() -> ::core::ffi::c_int;
-    pub fn is_uv_hubbed(uvtype: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn is_uv_system() -> ::kernel::ffi::c_int;
+    pub fn is_uv_hubbed(uvtype: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
     pub fn uv_cpu_init();
     pub fn uv_nmi_init();
     pub fn uv_system_init();

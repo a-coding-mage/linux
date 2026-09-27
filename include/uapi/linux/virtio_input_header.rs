@@ -59,7 +59,7 @@ pub struct virtio_input_devids {
 
 #[repr(C)]
 pub union virtio_input_config_u {
-    pub string: [::core::ffi::c_char; 128],
+    pub string: [::kernel::ffi::c_char; 128],
     pub bitmap: [__u8; 128],
     pub abs: virtio_input_absinfo,
     pub ids: virtio_input_devids,

@@ -2,6 +2,21 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
+#[cfg(CONFIG_SMP)]
+#[macro_export]
+macro_rules! LOCK_PREFIX {
+    () => {
+        "lock "
+    };
+}
+#[cfg(not(CONFIG_SMP))]
+#[macro_export]
+macro_rules! LOCK_PREFIX {
+    () => {
+        ""
+    };
+}
+
 pub const ALT_FLAGS_SHIFT: u32 = 16;
 pub const ALT_FLAG_NOT: u32 = 1 << 0;
 pub const ALT_FLAG_DIRECT_CALL: u32 = 1 << 1;
@@ -17,7 +32,7 @@ pub const fn ALT_DIRECT_CALL(feature: u32) -> u32 {
 }
 
 // X86_FEATURE_ALWAYS is supplied by the architecture feature definitions.
-pub const ALT_CALL_ALWAYS: u32 = ALT_DIRECT_CALL(X86_FEATURE_ALWAYS);
+pub const ALT_CALL_ALWAYS: u32 = ALT_DIRECT_CALL(X86_FEATURE_ALWAYS as u32);
 
 #[repr(C)]
 #[derive(Clone, Copy)]

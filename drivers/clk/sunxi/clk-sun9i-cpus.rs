@@ -46,7 +46,7 @@ fn sun9i_cpus_pll4_div_set(reg: u32, div: u8) -> u32 {
 #[repr(C)]
 struct sun9i_a80_cpus_clk {
     hw: clk_hw,
-    reg: *mut core::ffi::c_void,
+    reg: *mut kernel::ffi::c_void,
 }
 
 unsafe fn to_sun9i_a80_cpus_clk(hw: *mut clk_hw) -> *mut sun9i_a80_cpus_clk {
@@ -123,7 +123,7 @@ unsafe fn sun9i_a80_cpus_clk_set_rate(hw: *mut clk_hw, rate: usize, parent_rate:
 // their Linux framework types and functions are external dependencies.
 unsafe fn sun9i_a80_cpus_setup(node: *mut device_node) {
     let mut clk_name = (*node).name;
-    let mut parents: [*const core::ffi::c_char; SUN9I_CPUS_MAX_PARENTS] = [core::ptr::null(); SUN9I_CPUS_MAX_PARENTS];
+    let mut parents: [*const kernel::ffi::c_char; SUN9I_CPUS_MAX_PARENTS] = [core::ptr::null(); SUN9I_CPUS_MAX_PARENTS];
     let mut res = core::mem::MaybeUninit::<resource>::uninit();
     let cpus = kzalloc_obj::<sun9i_a80_cpus_clk>();
     if cpus.is_null() { return; }

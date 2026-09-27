@@ -70,34 +70,34 @@ pub struct urb;
 #[allow(non_camel_case_types)]
 #[repr(C)]
 pub struct usb_anchor {
-    list: core::ffi::c_void,
-    wait: core::ffi::c_void,
+    list: kernel::ffi::c_void,
+    wait: kernel::ffi::c_void,
     ref_count: core::sync::atomic::AtomicI32,
 }
 
 static mut INDEX: [i32; SNDRV_CARDS] = [0; SNDRV_CARDS]; // SNDRV_DEFAULT_IDX equivalent
-static mut ID: [*mut core::ffi::c_char; SNDRV_CARDS] = [core::ptr::null_mut(); SNDRV_CARDS]; // SNDRV_DEFAULT_STR equivalent
+static mut ID: [*mut kernel::ffi::c_char; SNDRV_CARDS] = [core::ptr::null_mut(); SNDRV_CARDS]; // SNDRV_DEFAULT_STR equivalent
 
 static DEVICES_MUTEX: core::sync::atomic::AtomicI32 = core::sync::atomic::AtomicI32::new(0);
 static mut DEVICES_USED: [u32; (SNDRV_CARDS + 31) / 32] = [0; (SNDRV_CARDS + 31) / 32];
 static mut BCD2000_DRIVER: usb_driver = usb_driver {
-    name: b"snd-bcd2000\0" as *const u8 as *const core::ffi::c_char,
+    name: b"snd-bcd2000\0" as *const u8 as *const kernel::ffi::c_char,
     probe: Some(bcd2000_probe),
     disconnect: Some(bcd2000_disconnect),
     id_table: ID_TABLE.as_ptr(),
 };
 
 #[cfg(CONFIG_SND_DEBUG)]
-unsafe fn bcd2000_dump_buffer(prefix: *const core::ffi::c_char, buf: *const core::ffi::c_char, len: i32) {
+unsafe fn bcd2000_dump_buffer(prefix: *const kernel::ffi::c_char, buf: *const kernel::ffi::c_char, len: i32) {
     // print_hex_dump(KERN_DEBUG, prefix, DUMP_PREFIX_NONE, 16, 1, buf, len, false);
     extern "C" {
         fn print_hex_dump(
             level: i32,
-            prefix: *const core::ffi::c_char,
+            prefix: *const kernel::ffi::c_char,
             prefix_type: i32,
             rowsize: i32,
             groupsize: i32,
-            buf: *const core::ffi::c_char,
+            buf: *const kernel::ffi::c_char,
             len: i32,
             ascii: i32,
         );
@@ -115,7 +115,7 @@ unsafe fn bcd2000_dump_buffer(prefix: *const core::ffi::c_char, buf: *const core
 }
 
 #[cfg(not(CONFIG_SND_DEBUG))]
-unsafe fn bcd2000_dump_buffer(_prefix: *const core::ffi::c_char, _buf: *const core::ffi::c_char, _len: i32) {}
+unsafe fn bcd2000_dump_buffer(_prefix: *const kernel::ffi::c_char, _buf: *const kernel::ffi::c_char, _len: i32) {}
 
 extern "C" {
     fn snd_rawmidi_receive(
@@ -123,11 +123,11 @@ extern "C" {
         buf: *const u8,
         count: i32,
     ) -> i32;
-    fn READ_ONCE(x: *const core::ffi::c_void) -> *const core::ffi::c_void;
-    fn dev_err(dev: *const core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
-    fn dev_warn(dev: *const core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *const core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
-    fn memcpy(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void;
+    fn READ_ONCE(x: *const kernel::ffi::c_void) -> *const kernel::ffi::c_void;
+    fn dev_err(dev: *const kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_warn(dev: *const kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *const kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
+    fn memcpy(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize) -> *mut kernel::ffi::c_void;
     fn min(a: u32, b: u32) -> u32;
     fn usb_submit_urb(urb: *mut urb, mem_flags: i32) -> i32;
     fn snd_rawmidi_transmit(substream: *mut snd_rawmidi_substream, buf: *mut u8, count: i32) -> i32;
@@ -137,11 +137,11 @@ extern "C" {
     fn usb_wait_anchor_empty_timeout(anchor: *mut usb_anchor, timeout: u32) -> i32;
     fn usb_poison_urb(urb: *mut urb);
     fn usb_free_urb(urb: *mut urb);
-    fn usb_set_intfdata(intf: *mut usb_interface, data: *mut core::ffi::c_void);
-    fn usb_get_intfdata(intf: *mut usb_interface) -> *mut core::ffi::c_void;
+    fn usb_set_intfdata(intf: *mut usb_interface, data: *mut kernel::ffi::c_void);
+    fn usb_get_intfdata(intf: *mut usb_interface) -> *mut kernel::ffi::c_void;
     fn snd_rawmidi_new(
         card: *mut snd_card,
-        id: *const core::ffi::c_char,
+        id: *const kernel::ffi::c_char,
         device: i32,
         output_count: i32,
         input_count: i32,
@@ -163,22 +163,22 @@ extern "C" {
         transfer_buffer: *mut u8,
         buffer_length: i32,
         complete_fn: unsafe extern "C" fn(*mut urb),
-        context: *mut core::ffi::c_void,
+        context: *mut kernel::ffi::c_void,
         interval: i32,
     );
     fn usb_urb_ep_type_check(urb: *mut urb) -> i32;
     fn snd_card_new(
-        parent: *mut core::ffi::c_void,
+        parent: *mut kernel::ffi::c_void,
         idx: i32,
-        xid: *const core::ffi::c_char,
-        module: *mut core::ffi::c_void,
+        xid: *const kernel::ffi::c_char,
+        module: *mut kernel::ffi::c_void,
         extra_size: usize,
         card_ret: *mut *mut snd_card,
     ) -> i32;
     fn interface_to_usbdev(intf: *mut usb_interface) -> *mut usb_device;
-    fn snd_card_set_dev(card: *mut snd_card, dev: *const core::ffi::c_void);
+    fn snd_card_set_dev(card: *mut snd_card, dev: *const kernel::ffi::c_void);
     fn usb_make_path(dev: *mut usb_device, buf: *mut u8, size: usize) -> i32;
-    fn snprintf(buf: *mut u8, size: usize, fmt: *const core::ffi::c_char, ...) -> i32;
+    fn snprintf(buf: *mut u8, size: usize, fmt: *const kernel::ffi::c_char, ...) -> i32;
     fn snd_card_register(card: *mut snd_card) -> i32;
     fn snd_card_disconnect(card: *mut snd_card);
     fn snd_card_free(card: *mut snd_card);
@@ -200,8 +200,8 @@ pub struct snd_rawmidi_ops {
 #[allow(non_camel_case_types)]
 #[repr(C)]
 pub struct usb_driver {
-    name: *const core::ffi::c_char,
-    probe: Option<unsafe extern "C" fn(*mut usb_interface, *const core::ffi::c_void) -> i32>,
+    name: *const kernel::ffi::c_char,
+    probe: Option<unsafe extern "C" fn(*mut usb_interface, *const kernel::ffi::c_void) -> i32>,
     disconnect: Option<unsafe extern "C" fn(*mut usb_interface)>,
     id_table: *const (u16, u16),
 }
@@ -228,12 +228,12 @@ unsafe fn bcd2000_midi_handle_input(
     let mut tocopy: u32;
     let mut midi_receive_substream: *mut snd_rawmidi_substream;
 
-    midi_receive_substream = READ_ONCE(&(*bcd2k).midi_receive_substream as *const _ as *const core::ffi::c_void) as *mut snd_rawmidi_substream;
+    midi_receive_substream = READ_ONCE(&(*bcd2k).midi_receive_substream as *const _ as *const kernel::ffi::c_void) as *mut snd_rawmidi_substream;
     if midi_receive_substream.is_null() {
         return;
     }
 
-    bcd2000_dump_buffer(PREFIX.as_ptr() as *const core::ffi::c_char, buf as *const core::ffi::c_char, buf_len as i32);
+    bcd2000_dump_buffer(PREFIX.as_ptr() as *const kernel::ffi::c_char, buf as *const kernel::ffi::c_char, buf_len as i32);
 
     if buf_len < 2 {
         return;
@@ -248,8 +248,8 @@ unsafe fn bcd2000_midi_handle_input(
     tocopy = min(payload_length, buf_len.wrapping_sub(1));
 
     bcd2000_dump_buffer(
-        "snd-bcd2000: sending to userspace: \0".as_ptr() as *const core::ffi::c_char,
-        buf.add(1) as *const core::ffi::c_char,
+        "snd-bcd2000: sending to userspace: \0".as_ptr() as *const kernel::ffi::c_char,
+        buf.add(1) as *const kernel::ffi::c_char,
         tocopy as i32,
     );
 
@@ -265,7 +265,7 @@ unsafe fn bcd2000_midi_send(bcd2k: *mut bcd2000) {
         core::arch::asm!("ud2");
     }
 
-    midi_out_substream = READ_ONCE(&(*bcd2k).midi_out_substream as *const _ as *const core::ffi::c_void) as *mut snd_rawmidi_substream;
+    midi_out_substream = READ_ONCE(&(*bcd2k).midi_out_substream as *const _ as *const kernel::ffi::c_void) as *mut snd_rawmidi_substream;
     if midi_out_substream.is_null() {
         return;
     }
@@ -275,8 +275,8 @@ unsafe fn bcd2000_midi_send(bcd2k: *mut bcd2000) {
     }
 
     memcpy(
-        (*bcd2k).midi_out_buf.as_mut_ptr() as *mut core::ffi::c_void,
-        DEVICE_CMD_PREFIX.as_ptr() as *const core::ffi::c_void,
+        (*bcd2k).midi_out_buf.as_mut_ptr() as *mut kernel::ffi::c_void,
+        DEVICE_CMD_PREFIX.as_ptr() as *const kernel::ffi::c_void,
         DEVICE_CMD_PREFIX.len(),
     );
 
@@ -288,9 +288,9 @@ unsafe fn bcd2000_midi_send(bcd2k: *mut bcd2000) {
 
     if len < 0 {
         dev_err(
-            &(*(*bcd2k).dev).dev as *const _ as *const core::ffi::c_void,
-            b"%s: snd_rawmidi_transmit error %d\n\0".as_ptr() as *const core::ffi::c_char,
-            b"bcd2000_midi_send\0".as_ptr() as *const core::ffi::c_char,
+            &(*(*bcd2k).dev).dev as *const _ as *const kernel::ffi::c_void,
+            b"%s: snd_rawmidi_transmit error %d\n\0".as_ptr() as *const kernel::ffi::c_char,
+            b"bcd2000_midi_send\0".as_ptr() as *const kernel::ffi::c_char,
             len,
         );
     }
@@ -303,18 +303,18 @@ unsafe fn bcd2000_midi_send(bcd2k: *mut bcd2000) {
     (*(*bcd2k).midi_out_urb).transfer_buffer_length = BUFSIZE as u32;
 
     bcd2000_dump_buffer(
-        "snd-bcd2000: sending to device: \0".as_ptr() as *const core::ffi::c_char,
-        (*bcd2k).midi_out_buf.as_ptr() as *const core::ffi::c_char,
+        "snd-bcd2000: sending to device: \0".as_ptr() as *const kernel::ffi::c_char,
+        (*bcd2k).midi_out_buf.as_ptr() as *const kernel::ffi::c_char,
         len + 3,
     );
 
     ret = usb_submit_urb((*bcd2k).midi_out_urb, 0x20); // GFP_ATOMIC
     if ret < 0 {
         dev_err(
-            &(*(*bcd2k).dev).dev as *const _ as *const core::ffi::c_void,
-            b"snd-bcd2000: %s (%p): usb_submit_urb() failed, ret=%d, len=%d\n\0".as_ptr() as *const core::ffi::c_char,
-            b"bcd2000_midi_send\0".as_ptr() as *const core::ffi::c_char,
-            midi_out_substream as *const core::ffi::c_void,
+            &(*(*bcd2k).dev).dev as *const _ as *const kernel::ffi::c_void,
+            b"snd-bcd2000: %s (%p): usb_submit_urb() failed, ret=%d, len=%d\n\0".as_ptr() as *const kernel::ffi::c_char,
+            b"bcd2000_midi_send\0".as_ptr() as *const kernel::ffi::c_char,
+            midi_out_substream as *const kernel::ffi::c_void,
             ret,
             len,
         );
@@ -358,8 +358,8 @@ unsafe extern "C" fn bcd2000_output_complete(urb: *mut urb) {
 
     if (*urb).status != 0 {
         dev_warn(
-            &(*(*urb).dev).dev as *const _ as *const core::ffi::c_void,
-            b"snd-bcd2000: output urb->status: %d\n\0".as_ptr() as *const core::ffi::c_char,
+            &(*(*urb).dev).dev as *const _ as *const kernel::ffi::c_void,
+            b"snd-bcd2000: output urb->status: %d\n\0".as_ptr() as *const kernel::ffi::c_char,
             (*urb).status,
         );
     }
@@ -377,8 +377,8 @@ unsafe extern "C" fn bcd2000_input_complete(urb: *mut urb) {
 
     if (*urb).status != 0 {
         dev_warn(
-            &(*(*urb).dev).dev as *const _ as *const core::ffi::c_void,
-            b"snd-bcd2000: input urb->status: %i\n\0".as_ptr() as *const core::ffi::c_char,
+            &(*(*urb).dev).dev as *const _ as *const kernel::ffi::c_void,
+            b"snd-bcd2000: input urb->status: %i\n\0".as_ptr() as *const kernel::ffi::c_char,
             (*urb).status,
         );
     }
@@ -398,9 +398,9 @@ unsafe extern "C" fn bcd2000_input_complete(urb: *mut urb) {
     ret = usb_submit_urb((*bcd2k).midi_in_urb, 0x20); // GFP_ATOMIC
     if ret < 0 {
         dev_err(
-            &(*(*bcd2k).dev).dev as *const _ as *const core::ffi::c_void,
-            b"snd-bcd2000: %s: usb_submit_urb() failed, ret=%d\n\0".as_ptr() as *const core::ffi::c_char,
-            b"bcd2000_input_complete\0".as_ptr() as *const core::ffi::c_char,
+            &(*(*bcd2k).dev).dev as *const _ as *const kernel::ffi::c_void,
+            b"snd-bcd2000: %s: usb_submit_urb() failed, ret=%d\n\0".as_ptr() as *const kernel::ffi::c_char,
+            b"bcd2000_input_complete\0".as_ptr() as *const kernel::ffi::c_char,
             ret,
         );
     }
@@ -428,8 +428,8 @@ unsafe fn bcd2000_init_device(bcd2k: *mut bcd2000) {
     usb_anchor_urb((*bcd2k).midi_in_urb, &mut (*bcd2k).anchor);
 
     memcpy(
-        (*bcd2k).midi_out_buf.as_mut_ptr() as *mut core::ffi::c_void,
-        BCD2000_INIT_SEQUENCE.as_ptr() as *const core::ffi::c_void,
+        (*bcd2k).midi_out_buf.as_mut_ptr() as *mut kernel::ffi::c_void,
+        BCD2000_INIT_SEQUENCE.as_ptr() as *const kernel::ffi::c_void,
         52,
     );
     (*(*bcd2k).midi_out_urb).transfer_buffer_length = 52;
@@ -437,9 +437,9 @@ unsafe fn bcd2000_init_device(bcd2k: *mut bcd2000) {
     ret = usb_submit_urb((*bcd2k).midi_out_urb, 0xd0); // GFP_KERNEL
     if ret < 0 {
         dev_err(
-            &(*(*bcd2k).dev).dev as *const _ as *const core::ffi::c_void,
-            b"snd-bcd2000: %s: usb_submit_urb() out failed, ret=%d: \0".as_ptr() as *const core::ffi::c_char,
-            b"bcd2000_init_device\0".as_ptr() as *const core::ffi::c_char,
+            &(*(*bcd2k).dev).dev as *const _ as *const kernel::ffi::c_void,
+            b"snd-bcd2000: %s: usb_submit_urb() out failed, ret=%d: \0".as_ptr() as *const kernel::ffi::c_char,
+            b"bcd2000_init_device\0".as_ptr() as *const kernel::ffi::c_char,
             ret,
         );
     } else {
@@ -449,9 +449,9 @@ unsafe fn bcd2000_init_device(bcd2k: *mut bcd2000) {
     ret = usb_submit_urb((*bcd2k).midi_in_urb, 0xd0); // GFP_KERNEL
     if ret < 0 {
         dev_err(
-            &(*(*bcd2k).dev).dev as *const _ as *const core::ffi::c_void,
-            b"snd-bcd2000: %s: usb_submit_urb() in failed, ret=%d: \0".as_ptr() as *const core::ffi::c_char,
-            b"bcd2000_init_device\0".as_ptr() as *const core::ffi::c_char,
+            &(*(*bcd2k).dev).dev as *const _ as *const kernel::ffi::c_void,
+            b"snd-bcd2000: %s: usb_submit_urb() in failed, ret=%d: \0".as_ptr() as *const kernel::ffi::c_char,
+            b"bcd2000_init_device\0".as_ptr() as *const kernel::ffi::c_char,
             ret,
         );
     }
@@ -465,7 +465,7 @@ unsafe fn bcd2000_init_midi(bcd2k: *mut bcd2000) -> i32 {
 
     ret = snd_rawmidi_new(
         (*bcd2k).card,
-        (*(*bcd2k).card).shortname.as_ptr() as *const core::ffi::c_char,
+        (*(*bcd2k).card).shortname.as_ptr() as *const kernel::ffi::c_char,
         0,
         1,
         1,
@@ -483,7 +483,7 @@ unsafe fn bcd2000_init_midi(bcd2k: *mut bcd2000) -> i32 {
     );
 
     (*rmidi).info_flags = 0x00000040; // SNDRV_RAWMIDI_INFO_DUPLEX
-    (*rmidi).private_data = bcd2k as *mut core::ffi::c_void;
+    (*rmidi).private_data = bcd2k as *mut kernel::ffi::c_void;
 
     (*rmidi).info_flags |= 0x00000004; // SNDRV_RAWMIDI_INFO_OUTPUT
     snd_rawmidi_set_ops(rmidi, 0, &BCD2000_MIDI_OUTPUT); // SNDRV_RAWMIDI_STREAM_OUTPUT
@@ -498,8 +498,8 @@ unsafe fn bcd2000_init_midi(bcd2k: *mut bcd2000) -> i32 {
 
     if (*bcd2k).midi_in_urb.is_null() || (*bcd2k).midi_out_urb.is_null() {
         dev_err(
-            &(*(*bcd2k).dev).dev as *const _ as *const core::ffi::c_void,
-            b"snd-bcd2000: usb_alloc_urb failed\n\0".as_ptr() as *const core::ffi::c_char,
+            &(*(*bcd2k).dev).dev as *const _ as *const kernel::ffi::c_void,
+            b"snd-bcd2000: usb_alloc_urb failed\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
         return -12; // -ENOMEM
     }
@@ -511,7 +511,7 @@ unsafe fn bcd2000_init_midi(bcd2k: *mut bcd2000) -> i32 {
         (*bcd2k).midi_in_buf.as_mut_ptr(),
         BUFSIZE as i32,
         bcd2000_input_complete,
-        bcd2k as *mut core::ffi::c_void,
+        bcd2k as *mut kernel::ffi::c_void,
         1,
     );
 
@@ -522,7 +522,7 @@ unsafe fn bcd2000_init_midi(bcd2k: *mut bcd2000) -> i32 {
         (*bcd2k).midi_out_buf.as_mut_ptr(),
         BUFSIZE as i32,
         bcd2000_output_complete,
-        bcd2k as *mut core::ffi::c_void,
+        bcd2k as *mut kernel::ffi::c_void,
         1,
     );
 
@@ -530,8 +530,8 @@ unsafe fn bcd2000_init_midi(bcd2k: *mut bcd2000) -> i32 {
         || usb_urb_ep_type_check((*bcd2k).midi_out_urb) != 0
     {
         dev_err(
-            &(*(*bcd2k).dev).dev as *const _ as *const core::ffi::c_void,
-            b"invalid MIDI EP\n\0".as_ptr() as *const core::ffi::c_char,
+            &(*(*bcd2k).dev).dev as *const _ as *const kernel::ffi::c_void,
+            b"invalid MIDI EP\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
         return -22; // -EINVAL
     }
@@ -561,7 +561,7 @@ unsafe fn bcd2000_free_usb_related_resources(
 
 unsafe extern "C" fn bcd2000_probe(
     interface: *mut usb_interface,
-    _usb_id: *const core::ffi::c_void,
+    _usb_id: *const kernel::ffi::c_void,
 ) -> i32 {
     let mut card: *mut snd_card = core::ptr::null_mut();
     let mut bcd2k: *mut bcd2000;
@@ -585,7 +585,7 @@ unsafe extern "C" fn bcd2000_probe(
     }
 
     err = snd_card_new(
-        interface as *mut core::ffi::c_void,
+        interface as *mut kernel::ffi::c_void,
         INDEX[card_index as usize],
         ID[card_index as usize],
         core::ptr::null_mut(),
@@ -602,7 +602,7 @@ unsafe extern "C" fn bcd2000_probe(
     (*bcd2k).card_index = card_index as i32;
     (*bcd2k).intf = interface;
 
-    snd_card_set_dev(card, interface as *const core::ffi::c_void);
+    snd_card_set_dev(card, interface as *const kernel::ffi::c_void);
 
     strscpy(
         (*card).driver.as_mut_ptr() as *mut u8,
@@ -618,15 +618,15 @@ unsafe extern "C" fn bcd2000_probe(
     snprintf(
         (*(*bcd2k).card).longname.as_mut_ptr() as *mut u8,
         core::mem::size_of_val(&(*(*bcd2k).card).longname),
-        b"Behringer BCD2000 at %s\0".as_ptr() as *const core::ffi::c_char,
-        usb_path.as_ptr() as *const core::ffi::c_char,
+        b"Behringer BCD2000 at %s\0".as_ptr() as *const kernel::ffi::c_char,
+        usb_path.as_ptr() as *const kernel::ffi::c_char,
     );
 
     err = bcd2000_init_midi(bcd2k);
     if err < 0 {
         dev_info(
-            &(*(*bcd2k).dev).dev as *const _ as *const core::ffi::c_void,
-            b"snd-bcd2000: error during probing\0".as_ptr() as *const core::ffi::c_char,
+            &(*(*bcd2k).dev).dev as *const _ as *const kernel::ffi::c_void,
+            b"snd-bcd2000: error during probing\0".as_ptr() as *const kernel::ffi::c_char,
         );
         bcd2000_free_usb_related_resources(bcd2k, interface);
         snd_card_free(card);
@@ -636,15 +636,15 @@ unsafe extern "C" fn bcd2000_probe(
     err = snd_card_register(card);
     if err < 0 {
         dev_info(
-            &(*(*bcd2k).dev).dev as *const _ as *const core::ffi::c_void,
-            b"snd-bcd2000: error during probing\0".as_ptr() as *const core::ffi::c_char,
+            &(*(*bcd2k).dev).dev as *const _ as *const kernel::ffi::c_void,
+            b"snd-bcd2000: error during probing\0".as_ptr() as *const kernel::ffi::c_char,
         );
         bcd2000_free_usb_related_resources(bcd2k, interface);
         snd_card_free(card);
         return err;
     }
 
-    usb_set_intfdata(interface, bcd2k as *mut core::ffi::c_void);
+    usb_set_intfdata(interface, bcd2k as *mut kernel::ffi::c_void);
     set_bit(card_index as i32, DEVICES_USED.as_mut_ptr());
 
     0

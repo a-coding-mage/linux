@@ -160,7 +160,7 @@ pub const _PFN_MASK: u64 = !((1u64 << PFN_PTE_SHIFT) - 1);
  * entrylo0/1 value.
  */
 #[inline]
-pub unsafe fn pte_to_entrylo(pte_val: libc::c_ulong) -> u64 {
+pub unsafe fn pte_to_entrylo(pte_val: kernel::ffi::c_ulong) -> u64 {
     #[cfg(CONFIG_CPU_HAS_RIXI)]
     if cpu_has_rixi {
         #[cfg(CONFIG_32BIT)]

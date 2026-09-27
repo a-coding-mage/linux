@@ -7,7 +7,7 @@
  * The Linux type `u8` is supplied by the translated dependency context.
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 pub struct gpio_desc;
 

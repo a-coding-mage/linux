@@ -5,23 +5,23 @@
 
 static mut ASID_BITS: u32 = 0;
 static mut ASID_GENERATION: i64 = 0;
-static mut ASID_MAP: *mut libc::c_ulong = core::ptr::null_mut();
+static mut ASID_MAP: *mut kernel::ffi::c_ulong = core::ptr::null_mut();
 static mut TLB_FLUSH_PENDING: cpumask_t = cpumask_t { bits: 0 };
-static mut MAX_PINNED_ASIDS: libc::c_ulong = 0;
-static mut NR_PINNED_ASIDS: libc::c_ulong = 0;
-static mut PINNED_ASID_MAP: *mut libc::c_ulong = core::ptr::null_mut();
+static mut MAX_PINNED_ASIDS: kernel::ffi::c_ulong = 0;
+static mut NR_PINNED_ASIDS: kernel::ffi::c_ulong = 0;
+static mut PINNED_ASID_MAP: *mut kernel::ffi::c_ulong = core::ptr::null_mut();
 
 // DEFINE_PER_CPU objects and the raw spinlock are represented by their kernel types.
 static mut CPU_ASID_LOCK: raw_spinlock_t = raw_spinlock_t { _private: 0 };
 static mut ACTIVE_ASIDS: [i64; NR_CPUS] = [0; NR_CPUS];
 static mut RESERVED_ASIDS: [u64; NR_CPUS] = [0; NR_CPUS];
 
-const ASID_FIRST_VERSION: libc::c_ulong = 1 << 16;
+const ASID_FIRST_VERSION: kernel::ffi::c_ulong = 1 << 16;
 
 #[inline]
 unsafe fn asid_mask() -> u64 { !( (1u64 << ASID_BITS) - 1) }
 #[inline]
-unsafe fn num_user_asids() -> libc::c_ulong { 1 << ASID_BITS }
+unsafe fn num_user_asids() -> kernel::ffi::c_ulong { 1 << ASID_BITS }
 #[inline]
 unsafe fn ctxid2asid(asid: u64) -> u64 { asid & !asid_mask() }
 #[inline]
@@ -44,8 +44,8 @@ pub unsafe fn verify_cpu_asid_bits() {
     }
 }
 
-unsafe fn set_kpti_asid_bits(map: *mut libc::c_ulong) {
-    let len = bits_to_longs(num_user_asids()) * core::mem::size_of::<libc::c_ulong>();
+unsafe fn set_kpti_asid_bits(map: *mut kernel::ffi::c_ulong) {
+    let len = bits_to_longs(num_user_asids()) * core::mem::size_of::<kernel::ffi::c_ulong>();
     core::ptr::write_bytes(map as *mut u8, 0xaa, len);
 }
 
@@ -84,7 +84,7 @@ unsafe fn new_context(mm: *mut mm_struct) -> u64 {
         if refcount_read(&(*mm).context.pinned) != 0 { return newasid; }
         if !test_and_set_bit(ctxid2asid(asid), ASID_MAP) { return newasid; }
     }
-    asid = find_next_zero_bit(ASID_MAP, num_user_asids(), CUR_IDX as libc::c_ulong);
+    asid = find_next_zero_bit(ASID_MAP, num_user_asids(), CUR_IDX as kernel::ffi::c_ulong);
     if asid == num_user_asids() {
         generation = atomic64_add_return_relaxed(ASID_FIRST_VERSION as i64, &mut ASID_GENERATION) as u64;
         flush_context();
@@ -115,7 +115,7 @@ pub unsafe fn check_and_switch_context(mm: *mut mm_struct) {
 }
 
 // The remaining exported helpers retain the original kernel operations and ABI.
-pub unsafe fn arm64_mm_context_get(mm: *mut mm_struct) -> libc::c_ulong {
+pub unsafe fn arm64_mm_context_get(mm: *mut mm_struct) -> kernel::ffi::c_ulong {
     if PINNED_ASID_MAP.is_null() { return 0; }
     let mut flags = 0u64;
     raw_spin_lock_irqsave(&mut CPU_ASID_LOCK, &mut flags);
@@ -131,7 +131,7 @@ pub unsafe fn arm64_mm_context_get(mm: *mut mm_struct) -> libc::c_ulong {
     raw_spin_unlock_irqrestore(&mut CPU_ASID_LOCK, flags);
     asid = ctxid2asid(asid);
     if asid != 0 && arm64_kernel_unmapped_at_el0() { asid |= 1; }
-    asid as libc::c_ulong
+    asid as kernel::ffi::c_ulong
 }
 
 pub unsafe fn arm64_mm_context_put(mm: *mut mm_struct) {
@@ -163,9 +163,9 @@ pub unsafe fn cpu_do_switch_mm(pgd_phys: phys_addr_t, mm: *mut mm_struct) {
 unsafe fn asids_update_limit() -> i32 {
     let mut num_available_asids = num_user_asids();
     if arm64_kernel_unmapped_at_el0() { num_available_asids /= 2; if !PINNED_ASID_MAP.is_null() { set_kpti_asid_bits(PINNED_ASID_MAP); } }
-    warn_on(num_available_asids - 1 <= num_possible_cpus() as libc::c_ulong);
+    warn_on(num_available_asids - 1 <= num_possible_cpus() as kernel::ffi::c_ulong);
     pr_info!("ASID allocator initialised with {} entries\n", num_available_asids);
-    MAX_PINNED_ASIDS = num_available_asids - num_possible_cpus() as libc::c_ulong - 2; 0
+    MAX_PINNED_ASIDS = num_available_asids - num_possible_cpus() as kernel::ffi::c_ulong - 2; 0
 }
 
 unsafe fn asids_init() -> i32 {

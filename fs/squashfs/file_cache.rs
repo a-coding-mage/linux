@@ -29,32 +29,32 @@ pub struct super_block {
 
 #[repr(C)]
 pub struct squashfs_cache_entry {
-    pub error: ::core::ffi::c_int,
+    pub error: ::kernel::ffi::c_int,
 }
 
 unsafe extern "C" {
     pub fn squashfs_get_datablock(
         sb: *mut super_block,
         block: u64,
-        bsize: ::core::ffi::c_int,
+        bsize: ::kernel::ffi::c_int,
     ) -> *mut squashfs_cache_entry;
     pub fn squashfs_copy_cache(
         folio: *mut folio,
         buffer: *mut squashfs_cache_entry,
-        expected: ::core::ffi::c_int,
-        offset: ::core::ffi::c_int,
+        expected: ::kernel::ffi::c_int,
+        offset: ::kernel::ffi::c_int,
     );
     pub fn squashfs_cache_put(buffer: *mut squashfs_cache_entry);
-    pub fn ERROR(format: *const ::core::ffi::c_char, ...);
+    pub fn ERROR(format: *const ::kernel::ffi::c_char, ...);
 }
 
 /* Read separately compressed datablock and memcopy into page cache */
 pub unsafe fn squashfs_readpage_block(
     folio: *mut folio,
     block: u64,
-    bsize: ::core::ffi::c_int,
-    expected: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    bsize: ::kernel::ffi::c_int,
+    expected: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let i = (*(*folio).mapping).host;
     let buffer = squashfs_get_datablock((*i).i_sb, block, bsize);
     let res = (*buffer).error;
@@ -62,7 +62,7 @@ pub unsafe fn squashfs_readpage_block(
     if res != 0 {
         ERROR(
             b"Unable to read page, block %llx, size %x\n\0".as_ptr()
-                as *const ::core::ffi::c_char,
+                as *const ::kernel::ffi::c_char,
             block,
             bsize,
         );

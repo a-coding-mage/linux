@@ -49,8 +49,8 @@ extern "C" {
 
 #[repr(C)]
 pub struct debug_store_buffers {
-    pub bts_buffer: [core::ffi::c_char; BTS_BUFFER_SIZE],
-    pub pebs_buffer: [core::ffi::c_char; PEBS_BUFFER_SIZE],
+    pub bts_buffer: [kernel::ffi::c_char; BTS_BUFFER_SIZE],
+    pub pebs_buffer: [kernel::ffi::c_char; PEBS_BUFFER_SIZE],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -39,7 +39,7 @@ pub struct cma3000_platform_data {
     pub mdthr: u8,
     pub mdfftmr: u8,
     pub ffthr: u8,
-    pub irqflags: core::ffi::c_ulong,
+    pub irqflags: kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

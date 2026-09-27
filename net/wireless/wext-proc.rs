@@ -63,7 +63,7 @@ unsafe fn wireless_seq_printf_stats(seq: *mut seq_file, dev: *mut net_device) {
 
 /* ---------------------------------------------------------------- */
 /* Print info for /proc/net/wireless (print all entries) */
-unsafe fn wireless_dev_seq_show(seq: *mut seq_file, v: *mut core::ffi::c_void) -> i32 {
+unsafe fn wireless_dev_seq_show(seq: *mut seq_file, v: *mut kernel::ffi::c_void) -> i32 {
     might_sleep();
 
     if v == SEQ_START_TOKEN {
@@ -78,7 +78,7 @@ unsafe fn wireless_dev_seq_show(seq: *mut seq_file, v: *mut core::ffi::c_void) -
     0
 }
 
-unsafe fn wireless_dev_seq_start(seq: *mut seq_file, pos: *mut loff_t) -> *mut core::ffi::c_void {
+unsafe fn wireless_dev_seq_start(seq: *mut seq_file, pos: *mut loff_t) -> *mut kernel::ffi::c_void {
     let net: *mut net = seq_file_net(seq);
     let mut off: loff_t;
     let mut dev: *mut net_device;
@@ -94,7 +94,7 @@ unsafe fn wireless_dev_seq_start(seq: *mut seq_file, pos: *mut loff_t) -> *mut c
             off += 1;
             off - 1
         } == *pos {
-            return dev as *mut core::ffi::c_void;
+            return dev as *mut kernel::ffi::c_void;
         }
     });
     core::ptr::null_mut()
@@ -102,21 +102,21 @@ unsafe fn wireless_dev_seq_start(seq: *mut seq_file, pos: *mut loff_t) -> *mut c
 
 unsafe fn wireless_dev_seq_next(
     seq: *mut seq_file,
-    v: *mut core::ffi::c_void,
+    v: *mut kernel::ffi::c_void,
     pos: *mut loff_t,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     let net: *mut net = seq_file_net(seq);
 
     *pos += 1;
 
     if v == SEQ_START_TOKEN {
-        first_net_device(net) as *mut core::ffi::c_void
+        first_net_device(net) as *mut kernel::ffi::c_void
     } else {
-        next_net_device(v as *mut net_device) as *mut core::ffi::c_void
+        next_net_device(v as *mut net_device) as *mut kernel::ffi::c_void
     }
 }
 
-unsafe fn wireless_dev_seq_stop(_seq: *mut seq_file, _v: *mut core::ffi::c_void) {
+unsafe fn wireless_dev_seq_stop(_seq: *mut seq_file, _v: *mut kernel::ffi::c_void) {
     rtnl_unlock();
 }
 
@@ -130,7 +130,7 @@ static wireless_seq_ops: seq_operations = seq_operations {
 unsafe fn wext_proc_init(net: *mut net) -> i32 {
     // Create /proc/net/wireless entry
     if proc_create_net(
-        b"wireless\0".as_ptr() as *const core::ffi::c_char,
+        b"wireless\0".as_ptr() as *const kernel::ffi::c_char,
         0o444,
         (*net).proc_net,
         &wireless_seq_ops,
@@ -146,7 +146,7 @@ unsafe fn wext_proc_init(net: *mut net) -> i32 {
 
 unsafe fn wext_proc_exit(net: *mut net) {
     remove_proc_entry(
-        b"wireless\0".as_ptr() as *const core::ffi::c_char,
+        b"wireless\0".as_ptr() as *const kernel::ffi::c_char,
         (*net).proc_net,
     );
 }

@@ -12,12 +12,12 @@ const CTX_FLUSH_TIMER_CNT: u64 = 0x2FAF0;
 pub struct fw_info_t { pub ucodes: list_head }
 
 extern "C" {
-    fn bitmap_or(dst: *mut ::core::ffi::c_ulong, a: *const ::core::ffi::c_ulong, b: *const ::core::ffi::c_ulong, n: i32);
-    fn bitmap_zero(a: *mut ::core::ffi::c_ulong, n: i32);
-    fn bitmap_copy(dst: *mut ::core::ffi::c_ulong, src: *const ::core::ffi::c_ulong, n: i32);
-    fn bitmap_set(a: *mut ::core::ffi::c_ulong, bit: i32, n: i32);
-    fn bitmap_clear(a: *mut ::core::ffi::c_ulong, bit: i32, n: i32);
-    fn find_first_bit(a: *const ::core::ffi::c_ulong, n: i32) -> i32;
+    fn bitmap_or(dst: *mut ::kernel::ffi::c_ulong, a: *const ::kernel::ffi::c_ulong, b: *const ::kernel::ffi::c_ulong, n: i32);
+    fn bitmap_zero(a: *mut ::kernel::ffi::c_ulong, n: i32);
+    fn bitmap_copy(dst: *mut ::kernel::ffi::c_ulong, src: *const ::kernel::ffi::c_ulong, n: i32);
+    fn bitmap_set(a: *mut ::kernel::ffi::c_ulong, bit: i32, n: i32);
+    fn bitmap_clear(a: *mut ::kernel::ffi::c_ulong, bit: i32, n: i32);
+    fn find_first_bit(a: *const ::kernel::ffi::c_ulong, n: i32) -> i32;
 }
 
 /* External C declarations are intentionally opaque: these names are provided by the driver headers. */
@@ -71,11 +71,11 @@ unsafe fn cptx_set_ucode_base(g: *mut otx2_cpt_eng_grp_info, cptpf: *mut otx2_cp
     for i in 0..OTX2_CPT_MAX_ETYPES_PER_GRP { let e = &mut (*g).engs[i]; if e.type_ == 0 { continue; } for bit in 0..(*(*g).g).engs_num { if ((*e).bmap.add((bit as usize)/(usize::BITS as usize)) & (1 << ((bit as usize)%(usize::BITS as usize))) as *mut c_ulong) != core::ptr::null_mut() && (*(*g).g).eng_ref_cnt[bit] == 0 { ret = __write_ucode_base(cptpf, bit, (*e).ucode.dma, blkaddr); if ret != 0 { return ret; } } } }
     0
 }
-unsafe fn cpt_set_ucode_base(g: *mut otx2_cpt_eng_grp_info, obj: *mut core::ffi::c_void) -> i32 { let p = obj as *mut otx2_cptpf_dev; if (*p).has_cpt1 { let r = cptx_set_ucode_base(g,p,BLKADDR_CPT1); if r != 0{return r;} } cptx_set_ucode_base(g,p,BLKADDR_CPT0) }
+unsafe fn cpt_set_ucode_base(g: *mut otx2_cpt_eng_grp_info, obj: *mut kernel::ffi::c_void) -> i32 { let p = obj as *mut otx2_cptpf_dev; if (*p).has_cpt1 { let r = cptx_set_ucode_base(g,p,BLKADDR_CPT1); if r != 0{return r;} } cptx_set_ucode_base(g,p,BLKADDR_CPT0) }
 
 /* File-local operations below retain the C implementation's ordering and error paths. */
 unsafe fn cptx_detach_and_disable_cores(g:*mut otx2_cpt_eng_grp_info,p:*mut otx2_cptpf_dev,b:otx2_cpt_bitmap,blk:i32)->i32 { let mut reg=0u64; let mut timeout=10; loop { for i in 0..b.size { let _=i; /* bitmap iteration supplied by kernel */ } usleep_range(10000,20000); timeout-=1; if timeout<0{return -EBUSY;} break; } let _=(g,p,reg,blk); 0 }
-unsafe fn cpt_detach_and_disable_cores(g:*mut otx2_cpt_eng_grp_info,obj:*mut core::ffi::c_void)->i32 { let p=obj as *mut otx2_cptpf_dev; let b=get_cores_bmap(core::ptr::null_mut(),g); if b.size==0{return -EINVAL;} if (*p).has_cpt1 {let r=cptx_detach_and_disable_cores(g,p,b,BLKADDR_CPT1);if r!=0{return r;}} cptx_detach_and_disable_cores(g,p,b,BLKADDR_CPT0) }
+unsafe fn cpt_detach_and_disable_cores(g:*mut otx2_cpt_eng_grp_info,obj:*mut kernel::ffi::c_void)->i32 { let p=obj as *mut otx2_cptpf_dev; let b=get_cores_bmap(core::ptr::null_mut(),g); if b.size==0{return -EINVAL;} if (*p).has_cpt1 {let r=cptx_detach_and_disable_cores(g,p,b,BLKADDR_CPT1);if r!=0{return r;}} cptx_detach_and_disable_cores(g,p,b,BLKADDR_CPT0) }
 
 unsafe fn update_engines_avail_count(dev:*mut device,a:*mut otx2_cpt_engs_available,e:*mut otx2_cpt_engs_rsvd,v:i32)->i32 { match (*e).type_ { OTX2_CPT_SE_TYPES=>(*a).se_cnt+=v, OTX2_CPT_IE_TYPES=>(*a).ie_cnt+=v, OTX2_CPT_AE_TYPES=>(*a).ae_cnt+=v, _=>{dev_err(dev,"Invalid engine type %d\n",(*e).type_);return -EINVAL;} } 0 }
 unsafe fn update_engines_offset(dev:*mut device,a:*mut otx2_cpt_engs_available,e:*mut otx2_cpt_engs_rsvd)->i32 { match (*e).type_ { OTX2_CPT_SE_TYPES=>(*e).offset=0, OTX2_CPT_IE_TYPES=>(*e).offset=(*a).max_se_cnt, OTX2_CPT_AE_TYPES=>(*e).offset=(*a).max_se_cnt+(*a).max_ie_cnt, _=>{dev_err(dev,"Invalid engine type %d\n",(*e).type_);return -EINVAL;} } 0 }

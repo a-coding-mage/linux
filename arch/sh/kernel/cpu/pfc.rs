@@ -5,10 +5,10 @@
  * Copyright (C) 2012  Renesas Solutions Corp.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Declarations supplied by the corresponding platform and CPU headers.
-pub type u32 = core::ffi::c_uint;
+pub type u32 = kernel::ffi::c_uint;
 
 #[repr(C)]
 pub struct resource {

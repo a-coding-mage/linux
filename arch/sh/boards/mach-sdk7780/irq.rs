@@ -9,7 +9,7 @@
 
 // Dependencies supplied by the Linux SH platform and SDK7780 headers.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct IntcVect {
@@ -29,10 +29,10 @@ pub struct IntcMaskReg {
 pub struct IntcDesc {
     pub name: *const c_char,
     pub vectors: *mut IntcVect,
-    pub priorities: *mut core::ffi::c_void,
+    pub priorities: *mut kernel::ffi::c_void,
     pub mask_registers: *mut IntcMaskReg,
-    pub sense_registers: *mut core::ffi::c_void,
-    pub ack_registers: *mut core::ffi::c_void,
+    pub sense_registers: *mut kernel::ffi::c_void,
+    pub ack_registers: *mut kernel::ffi::c_void,
 }
 
 extern "C" {

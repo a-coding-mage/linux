@@ -25,22 +25,22 @@ const OMAP2_32KSYNCNT_CR_OFF_HIGH: usize = 0x30;
 extern "C" {
     static HZ: u64;
     fn omap_writew(val: i32, reg: usize);
-    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t,
-                   flags: u32, name: *const core::ffi::c_char,
-                   dev_id: *mut core::ffi::c_void) -> i32;
-    fn cpumask_of(cpu: u32) -> *const core::ffi::c_void;
+    fn request_irq(irq: i32, handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t,
+                   flags: u32, name: *const kernel::ffi::c_char,
+                   dev_id: *mut kernel::ffi::c_void) -> i32;
+    fn cpumask_of(cpu: u32) -> *const kernel::ffi::c_void;
     fn clockevents_config_and_register(dev: *mut clock_event_device, freq: u32,
                                        min_delta: u32, max_delta: u32);
     fn readl_relaxed(addr: *const u8) -> u32;
     fn clocksource_cyc2ns(cycles: u64, mult: u32, shift: u32) -> u64;
     fn timespec64_add_ns(ts: *mut timespec64, ns: u64);
     fn clocks_calc_mult_shift(mult: *mut u32, shift: *mut u32, from: u32, to: u32, maxsec: u32);
-    fn clocksource_mmio_init(reg: *const u8, name: *const core::ffi::c_char, hz: u32,
-                             rating: u32, mask: u32, read: *const core::ffi::c_void) -> i32;
+    fn clocksource_mmio_init(reg: *const u8, name: *const kernel::ffi::c_char, hz: u32,
+                             rating: u32, mask: u32, read: *const kernel::ffi::c_void) -> i32;
     fn sched_clock_register(read: unsafe extern "C" fn() -> u64, bits: u32, rate: u32);
     fn register_persistent_clock(read: unsafe extern "C" fn(*mut timespec64));
     fn ioremap(addr: usize, size: usize) -> *mut u8;
-    fn clk_get(dev: *mut core::ffi::c_void, name: *const core::ffi::c_char) -> *mut clk;
+    fn clk_get(dev: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char) -> *mut clk;
     fn IS_ERR(clk: *mut clk) -> bool;
     fn clk_prepare_enable(clk: *mut clk) -> i32;
     fn cpu_is_omap16xx() -> bool;
@@ -49,14 +49,14 @@ extern "C" {
 #[repr(C)] pub struct clk { _private: [u8; 0] }
 #[repr(C)] pub struct timespec64 { _private: [u8; 0] }
 #[repr(C)] pub struct clock_event_device {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub features: u32,
     pub set_next_event: Option<unsafe extern "C" fn(u64, *mut clock_event_device) -> i32>,
     pub set_state_shutdown: Option<unsafe extern "C" fn(*mut clock_event_device) -> i32>,
     pub set_state_periodic: Option<unsafe extern "C" fn(*mut clock_event_device) -> i32>,
     pub set_state_oneshot: Option<unsafe extern "C" fn(*mut clock_event_device) -> i32>,
     pub tick_resume: Option<unsafe extern "C" fn(*mut clock_event_device) -> i32>,
-    pub cpumask: *const core::ffi::c_void,
+    pub cpumask: *const kernel::ffi::c_void,
     pub event_handler: Option<unsafe extern "C" fn(*mut clock_event_device)>,
 }
 pub type irqreturn_t = i32;
@@ -77,7 +77,7 @@ unsafe fn omap_32k_timer_start(mut load_val: u64) {
     omap_32k_timer_write(0x0f, OMAP1_32K_TIMER_CR);
 }
 unsafe fn omap_32k_timer_stop() { omap_32k_timer_write(0, OMAP1_32K_TIMER_CR); }
-unsafe extern "C" fn omap_32k_timer_interrupt(_irq: i32, _dev_id: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn omap_32k_timer_interrupt(_irq: i32, _dev_id: *mut kernel::ffi::c_void) -> irqreturn_t {
     if let Some(handler) = (*(&raw mut CLOCKEVENT_32K_TIMER)).event_handler {
         handler(&raw mut CLOCKEVENT_32K_TIMER);
     }

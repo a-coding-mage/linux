@@ -212,18 +212,18 @@ pub enum Mutex {}
 pub type DmaAddrT = usize;
 
 unsafe extern "C" {
-    pub fn readl(addr: *const core::ffi::c_void) -> u32;
-    pub fn readw(addr: *const core::ffi::c_void) -> u16;
-    pub fn readb(addr: *const core::ffi::c_void) -> u8;
-    pub fn writel(val: u32, addr: *mut core::ffi::c_void);
-    pub fn writew(val: u16, addr: *mut core::ffi::c_void);
-    pub fn writeb(val: u8, addr: *mut core::ffi::c_void);
+    pub fn readl(addr: *const kernel::ffi::c_void) -> u32;
+    pub fn readw(addr: *const kernel::ffi::c_void) -> u16;
+    pub fn readb(addr: *const kernel::ffi::c_void) -> u8;
+    pub fn writel(val: u32, addr: *mut kernel::ffi::c_void);
+    pub fn writew(val: u16, addr: *mut kernel::ffi::c_void);
+    pub fn writeb(val: u8, addr: *mut kernel::ffi::c_void);
 }
 
 #[repr(C)]
 pub struct lola_bar {
-    pub addr: core::ffi::c_ulong,
-    pub remap_addr: *mut core::ffi::c_void,
+    pub addr: kernel::ffi::c_ulong,
+    pub remap_addr: *mut kernel::ffi::c_void,
 }
 
 /* CORB/RIRB */
@@ -231,50 +231,50 @@ pub struct lola_bar {
 pub struct lola_rb {
     pub buf: *mut u32,      /* CORB/RIRB buffer, 8 byte per each entry */
     pub addr: DmaAddrT,     /* physical address of CORB/RIRB buffer */
-    pub rp: core::ffi::c_ushort,
-    pub wp: core::ffi::c_ushort, /* read/write pointers */
-    pub cmds: core::ffi::c_int, /* number of pending requests */
+    pub rp: kernel::ffi::c_ushort,
+    pub wp: kernel::ffi::c_ushort, /* read/write pointers */
+    pub cmds: kernel::ffi::c_int, /* number of pending requests */
 }
 
 /* Pin widget setup */
 #[repr(C)]
 pub struct lola_pin {
-    pub nid: core::ffi::c_uint,
+    pub nid: kernel::ffi::c_uint,
     pub is_analog: bool,
-    pub amp_mute: core::ffi::c_uint,
-    pub amp_step_size: core::ffi::c_uint,
-    pub amp_num_steps: core::ffi::c_uint,
-    pub amp_offset: core::ffi::c_uint,
-    pub max_level: core::ffi::c_uint,
-    pub config_default_reg: core::ffi::c_uint,
-    pub fixed_gain_list_len: core::ffi::c_uint,
-    pub cur_gain_step: core::ffi::c_uint,
+    pub amp_mute: kernel::ffi::c_uint,
+    pub amp_step_size: kernel::ffi::c_uint,
+    pub amp_num_steps: kernel::ffi::c_uint,
+    pub amp_offset: kernel::ffi::c_uint,
+    pub max_level: kernel::ffi::c_uint,
+    pub config_default_reg: kernel::ffi::c_uint,
+    pub fixed_gain_list_len: kernel::ffi::c_uint,
+    pub cur_gain_step: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct lola_pin_array {
-    pub num_pins: core::ffi::c_uint,
-    pub num_analog_pins: core::ffi::c_uint,
+    pub num_pins: kernel::ffi::c_uint,
+    pub num_analog_pins: kernel::ffi::c_uint,
     pub pins: [lola_pin; MAX_PINS],
 }
 
 /* Clock widget setup */
 #[repr(C)]
 pub struct lola_sample_clock {
-    pub type_: core::ffi::c_uint,
-    pub format: core::ffi::c_uint,
-    pub freq: core::ffi::c_uint,
+    pub type_: kernel::ffi::c_uint,
+    pub format: kernel::ffi::c_uint,
+    pub freq: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct lola_clock_widget {
-    pub nid: core::ffi::c_uint,
-    pub items: core::ffi::c_uint,
-    pub cur_index: core::ffi::c_uint,
-    pub cur_freq: core::ffi::c_uint,
+    pub nid: kernel::ffi::c_uint,
+    pub items: kernel::ffi::c_uint,
+    pub cur_index: kernel::ffi::c_uint,
+    pub cur_freq: kernel::ffi::c_uint,
     pub cur_valid: bool,
     pub sample_clock: [lola_sample_clock; MAX_SAMPLE_CLOCK_COUNT],
-    pub idx_lookup: [core::ffi::c_uint; MAX_SAMPLE_CLOCK_COUNT],
+    pub idx_lookup: [kernel::ffi::c_uint; MAX_SAMPLE_CLOCK_COUNT],
 }
 
 pub const LOLA_MIXER_DIM: usize = 32;
@@ -290,43 +290,43 @@ pub struct lola_mixer_array {
 /* Mixer widget setup */
 #[repr(C)]
 pub struct lola_mixer_widget {
-    pub nid: core::ffi::c_uint,
-    pub caps: core::ffi::c_uint,
+    pub nid: kernel::ffi::c_uint,
+    pub caps: kernel::ffi::c_uint,
     pub array: *mut lola_mixer_array,
     pub array_saved: *mut lola_mixer_array,
-    pub src_stream_outs: core::ffi::c_uint,
-    pub src_phys_ins: core::ffi::c_uint,
-    pub dest_stream_ins: core::ffi::c_uint,
-    pub dest_phys_outs: core::ffi::c_uint,
-    pub src_stream_out_ofs: core::ffi::c_uint,
-    pub dest_phys_out_ofs: core::ffi::c_uint,
-    pub src_mask: core::ffi::c_uint,
-    pub dest_mask: core::ffi::c_uint,
+    pub src_stream_outs: kernel::ffi::c_uint,
+    pub src_phys_ins: kernel::ffi::c_uint,
+    pub dest_stream_ins: kernel::ffi::c_uint,
+    pub dest_phys_outs: kernel::ffi::c_uint,
+    pub src_stream_out_ofs: kernel::ffi::c_uint,
+    pub dest_phys_out_ofs: kernel::ffi::c_uint,
+    pub src_mask: kernel::ffi::c_uint,
+    pub dest_mask: kernel::ffi::c_uint,
 }
 
 /* Audio stream */
 #[repr(C)]
 pub struct lola_stream {
-    pub nid: core::ffi::c_uint,   /* audio widget NID */
-    pub index: core::ffi::c_uint, /* array index */
-    pub dsd: core::ffi::c_uint,   /* DSD index */
+    pub nid: kernel::ffi::c_uint,   /* audio widget NID */
+    pub index: kernel::ffi::c_uint, /* array index */
+    pub dsd: kernel::ffi::c_uint,   /* DSD index */
     pub can_float: bool,
     pub substream: *mut SndPcmSubstream, /* assigned PCM substream */
     pub master: *mut lola_stream,        /* master stream (for multi-channel) */
 
     /* buffer setup */
-    pub bufsize: core::ffi::c_uint,
-    pub period_bytes: core::ffi::c_uint,
-    pub frags: core::ffi::c_uint,
+    pub bufsize: kernel::ffi::c_uint,
+    pub period_bytes: kernel::ffi::c_uint,
+    pub frags: kernel::ffi::c_uint,
 
     /* format + channel setup */
-    pub format_verb: core::ffi::c_uint,
+    pub format_verb: kernel::ffi::c_uint,
 
     /* flags: C source stores these as unsigned int bitfields */
-    pub opened: core::ffi::c_uint,
-    pub prepared: core::ffi::c_uint,
-    pub paused: core::ffi::c_uint,
-    pub running: core::ffi::c_uint,
+    pub opened: kernel::ffi::c_uint,
+    pub prepared: kernel::ffi::c_uint,
+    pub paused: kernel::ffi::c_uint,
+    pub running: kernel::ffi::c_uint,
 }
 
 pub const PLAY: u32 = SNDRV_PCM_STREAM_PLAYBACK;
@@ -339,7 +339,7 @@ unsafe extern "C" {
 
 #[repr(C)]
 pub struct lola_pcm {
-    pub num_streams: core::ffi::c_uint,
+    pub num_streams: kernel::ffi::c_uint,
     pub bdl: *mut SndDmaBuffer, /* BDL buffer */
     pub streams: [lola_stream; MAX_STREAM_COUNT],
 }
@@ -352,7 +352,7 @@ pub struct lola {
 
     /* pci resources */
     pub bar: [lola_bar; 2],
-    pub irq: core::ffi::c_int,
+    pub irq: kernel::ffi::c_int,
 
     /* locks */
     pub reg_lock: SpinlockT,
@@ -361,55 +361,55 @@ pub struct lola {
     /* CORB/RIRB */
     pub corb: lola_rb,
     pub rirb: lola_rb,
-    pub res: core::ffi::c_uint,
-    pub res_ex: core::ffi::c_uint, /* last read values */
+    pub res: kernel::ffi::c_uint,
+    pub res_ex: kernel::ffi::c_uint, /* last read values */
     /* last command (for debugging) */
-    pub last_cmd_nid: core::ffi::c_uint,
-    pub last_verb: core::ffi::c_uint,
-    pub last_data: core::ffi::c_uint,
-    pub last_extdata: core::ffi::c_uint,
+    pub last_cmd_nid: kernel::ffi::c_uint,
+    pub last_verb: kernel::ffi::c_uint,
+    pub last_data: kernel::ffi::c_uint,
+    pub last_extdata: kernel::ffi::c_uint,
 
     /* CORB/RIRB buffers */
     pub rb: *mut SndDmaBuffer,
 
     /* unsolicited events */
-    pub last_unsol_res: core::ffi::c_uint,
+    pub last_unsol_res: kernel::ffi::c_uint,
 
     /* streams */
     pub pcm: [lola_pcm; 2],
 
     /* input src */
-    pub input_src_caps_mask: core::ffi::c_uint,
-    pub input_src_mask: core::ffi::c_uint,
+    pub input_src_caps_mask: kernel::ffi::c_uint,
+    pub input_src_mask: kernel::ffi::c_uint,
 
     /* pins */
     pub pin: [lola_pin_array; 2],
 
     /* clock */
     pub clock: lola_clock_widget,
-    pub ref_count_rate: core::ffi::c_int,
-    pub sample_rate: core::ffi::c_uint,
+    pub ref_count_rate: kernel::ffi::c_int,
+    pub sample_rate: kernel::ffi::c_uint,
 
     /* mixer */
     pub mixer: lola_mixer_widget,
 
     /* hw info */
-    pub version: core::ffi::c_uint,
-    pub lola_caps: core::ffi::c_uint,
+    pub version: kernel::ffi::c_uint,
+    pub lola_caps: kernel::ffi::c_uint,
 
     /* parameters */
-    pub granularity: core::ffi::c_uint,
-    pub sample_rate_min: core::ffi::c_uint,
-    pub sample_rate_max: core::ffi::c_uint,
+    pub granularity: kernel::ffi::c_uint,
+    pub sample_rate_min: kernel::ffi::c_uint,
+    pub sample_rate_max: kernel::ffi::c_uint,
 
     /* flags: C source stores these as unsigned int bitfields */
-    pub initialized: core::ffi::c_uint,
-    pub cold_reset: core::ffi::c_uint,
-    pub polling_mode: core::ffi::c_uint,
+    pub initialized: kernel::ffi::c_uint,
+    pub cold_reset: kernel::ffi::c_uint,
+    pub polling_mode: kernel::ffi::c_uint,
 
     /* for debugging */
-    pub debug_res: core::ffi::c_uint,
-    pub debug_res_ex: core::ffi::c_uint,
+    pub debug_res: kernel::ffi::c_uint,
+    pub debug_res_ex: kernel::ffi::c_uint,
 }
 
 pub const BAR0: usize = 0;
@@ -417,15 +417,15 @@ pub const BAR1: usize = 1;
 
 /* Helper macros */
 pub unsafe fn lola_readl(chip: *mut lola, idx: usize, offset: u32) -> u32 {
-    unsafe { readl((*chip).bar[idx].remap_addr.add(offset as usize) as *const core::ffi::c_void) }
+    unsafe { readl((*chip).bar[idx].remap_addr.add(offset as usize) as *const kernel::ffi::c_void) }
 }
 
 pub unsafe fn lola_readw(chip: *mut lola, idx: usize, offset: u32) -> u16 {
-    unsafe { readw((*chip).bar[idx].remap_addr.add(offset as usize) as *const core::ffi::c_void) }
+    unsafe { readw((*chip).bar[idx].remap_addr.add(offset as usize) as *const kernel::ffi::c_void) }
 }
 
 pub unsafe fn lola_readb(chip: *mut lola, idx: usize, offset: u32) -> u8 {
-    unsafe { readb((*chip).bar[idx].remap_addr.add(offset as usize) as *const core::ffi::c_void) }
+    unsafe { readb((*chip).bar[idx].remap_addr.add(offset as usize) as *const kernel::ffi::c_void) }
 }
 
 pub unsafe fn lola_writel(chip: *mut lola, idx: usize, offset: u32, val: u32) {
@@ -446,7 +446,7 @@ pub unsafe fn lola_dsd_read(chip: *mut lola, dsd: u32, offset: u32) -> u32 {
             (*chip).bar[BAR1]
                 .remap_addr
                 .add((LOLA_BAR1_DSD0_OFFSET + LOLA_BAR1_DSD_SIZE * dsd + offset) as usize)
-                as *const core::ffi::c_void,
+                as *const kernel::ffi::c_void,
         )
     }
 }
@@ -560,29 +560,29 @@ pub const fn LOLA_MIXER_DEST_REC_OUTPUT_SEPARATION(res: u32) -> u32 {
 unsafe extern "C" {
     pub fn lola_codec_write(
         chip: *mut lola,
-        nid: core::ffi::c_uint,
-        verb: core::ffi::c_uint,
-        data: core::ffi::c_uint,
-        extdata: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        nid: kernel::ffi::c_uint,
+        verb: kernel::ffi::c_uint,
+        data: kernel::ffi::c_uint,
+        extdata: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
     pub fn lola_codec_read(
         chip: *mut lola,
-        nid: core::ffi::c_uint,
-        verb: core::ffi::c_uint,
-        data: core::ffi::c_uint,
-        extdata: core::ffi::c_uint,
-        val: *mut core::ffi::c_uint,
-        extval: *mut core::ffi::c_uint,
-    ) -> core::ffi::c_int;
-    pub fn lola_codec_flush(chip: *mut lola) -> core::ffi::c_int;
+        nid: kernel::ffi::c_uint,
+        verb: kernel::ffi::c_uint,
+        data: kernel::ffi::c_uint,
+        extdata: kernel::ffi::c_uint,
+        val: *mut kernel::ffi::c_uint,
+        extval: *mut kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
+    pub fn lola_codec_flush(chip: *mut lola) -> kernel::ffi::c_int;
 }
 
 pub unsafe fn lola_read_param(
     chip: *mut lola,
-    nid: core::ffi::c_uint,
-    param: core::ffi::c_uint,
-    val: *mut core::ffi::c_uint,
-) -> core::ffi::c_int {
+    nid: kernel::ffi::c_uint,
+    param: kernel::ffi::c_uint,
+    val: *mut kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     unsafe {
         lola_codec_read(
             chip,
@@ -598,47 +598,47 @@ pub unsafe fn lola_read_param(
 
 unsafe extern "C" {
     /* PCM */
-    pub fn lola_create_pcm(chip: *mut lola) -> core::ffi::c_int;
+    pub fn lola_create_pcm(chip: *mut lola) -> kernel::ffi::c_int;
     pub fn lola_init_pcm(
         chip: *mut lola,
-        dir: core::ffi::c_int,
-        nidp: *mut core::ffi::c_int,
-    ) -> core::ffi::c_int;
-    pub fn lola_pcm_update(chip: *mut lola, pcm: *mut lola_pcm, bits: core::ffi::c_uint);
+        dir: kernel::ffi::c_int,
+        nidp: *mut kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
+    pub fn lola_pcm_update(chip: *mut lola, pcm: *mut lola_pcm, bits: kernel::ffi::c_uint);
 
     /* clock */
-    pub fn lola_init_clock_widget(chip: *mut lola, nid: core::ffi::c_int) -> core::ffi::c_int;
+    pub fn lola_init_clock_widget(chip: *mut lola, nid: kernel::ffi::c_int) -> kernel::ffi::c_int;
     pub fn lola_set_granularity(
         chip: *mut lola,
-        val: core::ffi::c_uint,
+        val: kernel::ffi::c_uint,
         force: bool,
-    ) -> core::ffi::c_int;
-    pub fn lola_enable_clock_events(chip: *mut lola) -> core::ffi::c_int;
-    pub fn lola_set_clock_index(chip: *mut lola, idx: core::ffi::c_uint) -> core::ffi::c_int;
-    pub fn lola_set_clock(chip: *mut lola, idx: core::ffi::c_int) -> core::ffi::c_int;
-    pub fn lola_set_sample_rate(chip: *mut lola, rate: core::ffi::c_int) -> core::ffi::c_int;
-    pub fn lola_update_ext_clock_freq(chip: *mut lola, val: core::ffi::c_uint) -> bool;
-    pub fn lola_sample_rate_convert(coded: core::ffi::c_uint) -> core::ffi::c_uint;
+    ) -> kernel::ffi::c_int;
+    pub fn lola_enable_clock_events(chip: *mut lola) -> kernel::ffi::c_int;
+    pub fn lola_set_clock_index(chip: *mut lola, idx: kernel::ffi::c_uint) -> kernel::ffi::c_int;
+    pub fn lola_set_clock(chip: *mut lola, idx: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub fn lola_set_sample_rate(chip: *mut lola, rate: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub fn lola_update_ext_clock_freq(chip: *mut lola, val: kernel::ffi::c_uint) -> bool;
+    pub fn lola_sample_rate_convert(coded: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
 
     /* mixer */
     pub fn lola_init_pins(
         chip: *mut lola,
-        dir: core::ffi::c_int,
-        nidp: *mut core::ffi::c_int,
-    ) -> core::ffi::c_int;
-    pub fn lola_init_mixer_widget(chip: *mut lola, nid: core::ffi::c_int) -> core::ffi::c_int;
+        dir: kernel::ffi::c_int,
+        nidp: *mut kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
+    pub fn lola_init_mixer_widget(chip: *mut lola, nid: kernel::ffi::c_int) -> kernel::ffi::c_int;
     pub fn lola_free_mixer(chip: *mut lola);
-    pub fn lola_create_mixer(chip: *mut lola) -> core::ffi::c_int;
+    pub fn lola_create_mixer(chip: *mut lola) -> kernel::ffi::c_int;
     pub fn lola_setup_all_analog_gains(
         chip: *mut lola,
-        dir: core::ffi::c_int,
+        dir: kernel::ffi::c_int,
         mute: bool,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn lola_set_src_config(
         chip: *mut lola,
-        src_mask: core::ffi::c_uint,
+        src_mask: kernel::ffi::c_uint,
         update: bool,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 /* proc */

@@ -7,7 +7,7 @@
 //! registration and formatting machinery is supplied by the tracepoint
 //! implementation rather than by this header.
 
-use core::ffi::{c_int, c_ulong};
+use kernel::ffi::{c_int, c_ulong};
 
 /// Forward declaration corresponding to `struct device`.
 #[repr(C)]
@@ -16,7 +16,7 @@ pub enum device {}
 /// The fields captured by the `rpm_internal` event class.
 #[repr(C)]
 pub struct RpmInternalEntry {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub flags: c_int,
     pub usage_count: c_int,
     pub disable_depth: c_int,
@@ -29,7 +29,7 @@ pub struct RpmInternalEntry {
 /// The fields captured by the `rpm_return_int` event.
 #[repr(C)]
 pub struct RpmReturnIntEntry {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ip: c_ulong,
     pub ret: c_int,
 }

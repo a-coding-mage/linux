@@ -7,10 +7,10 @@
 // #define pr_fmt(fmt) "PCI: " fmt
 // Linux and machine-specific dependencies are supplied by other files.
 
-static mut SLOT4EN: ::core::ffi::c_uint = 0;
+static mut SLOT4EN: ::kernel::ffi::c_uint = 0;
 
-pub unsafe extern "C" fn pcibios_setup(str_: *mut ::core::ffi::c_char) -> *mut ::core::ffi::c_char {
-    if libc::strcmp(str_, b"slot4en\0".as_ptr() as *const ::core::ffi::c_char) == 0 {
+pub unsafe extern "C" fn pcibios_setup(str_: *mut ::kernel::ffi::c_char) -> *mut ::kernel::ffi::c_char {
+    if strcmp(str_, b"slot4en\0".as_ptr() as *const ::kernel::ffi::c_char) == 0 {
         SLOT4EN = 1;
         return core::ptr::null_mut();
     }
@@ -18,7 +18,7 @@ pub unsafe extern "C" fn pcibios_setup(str_: *mut ::core::ffi::c_char) -> *mut :
     str_
 }
 
-unsafe extern "C" fn sdk7786_pci_init() -> ::core::ffi::c_int {
+unsafe extern "C" fn sdk7786_pci_init() -> ::kernel::ffi::c_int {
     let mut data: u16 = fpga_read_reg(PCIECR);
 
     /*
@@ -30,7 +30,7 @@ unsafe extern "C" fn sdk7786_pci_init() -> ::core::ffi::c_int {
      * Card presence is logically inverted.
      */
     if SLOT4EN == 0 {
-        SLOT4EN = ((data & PCIECR_PRST4) == 0 && (data & PCIECR_PRST3) != 0) as ::core::ffi::c_uint;
+        SLOT4EN = ((data & PCIECR_PRST4) == 0 && (data & PCIECR_PRST3) != 0) as ::kernel::ffi::c_uint;
     }
     if SLOT4EN != 0 {
         pr_info!("Activating PCIe slot#4 (disabling slot#3)\n");

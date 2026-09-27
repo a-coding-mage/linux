@@ -79,7 +79,7 @@ pub struct usb_otg_caps {
 }
 
 unsafe extern "C" {
-    pub fn usb_otg_state_string(state: usb_otg_state) -> *const core::ffi::c_char;
+    pub fn usb_otg_state_string(state: usb_otg_state) -> *const kernel::ffi::c_char;
 }
 
 /* Context: can sleep */

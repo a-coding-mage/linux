@@ -3,7 +3,7 @@
  */
 
 // External kernel declarations supplied by the surrounding translation unit.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct xt_tgchk_param {
@@ -38,7 +38,7 @@ pub struct xt_target {
     pub target: Option<XtTargetFn>,
     pub checkentry: Option<XtCheckEntry>,
     pub destroy: Option<XtDestroy>,
-    pub me: *mut core::ffi::c_void,
+    pub me: *mut kernel::ffi::c_void,
 }
 
 unsafe extern "C" {

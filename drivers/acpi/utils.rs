@@ -77,7 +77,7 @@ pub unsafe fn acpi_get_subsystem_id(handle: acpi_handle) -> *const i8 {
     let mut buffer=acpi_buffer{length:ACPI_ALLOCATE_BUFFER,pointer:core::ptr::null_mut()};
     let status=acpi_evaluate_object(handle,METHOD_NAME__SUB,core::ptr::null_mut(),&mut buffer); if ACPI_FAILURE(status){return ERR_PTR(-ENODATA);}
     let obj=buffer.pointer as *mut acpi_object; let mut sub=ERR_PTR(-ENODATA);
-    if (*obj).type_==ACPI_TYPE_STRING { let len=libc::strlen((*obj).string.pointer); if len<ACPI_MAX_SUB_BUF_SIZE && len>0 { sub=kstrdup((*obj).string.pointer,GFP_KERNEL); if sub.is_null(){sub=ERR_PTR(-ENOMEM);} } }
+    if (*obj).type_==ACPI_TYPE_STRING { let len=strlen((*obj).string.pointer); if len<ACPI_MAX_SUB_BUF_SIZE && len>0 { sub=kstrdup((*obj).string.pointer,GFP_KERNEL); if sub.is_null(){sub=ERR_PTR(-ENOMEM);} } }
     acpi_os_free(buffer.pointer); sub
 }
 
@@ -89,7 +89,7 @@ pub unsafe fn acpi_evaluate_reference(handle: acpi_handle, pathname: acpi_string
     kfree(buffer.pointer); true
 }
 
-pub unsafe fn acpi_handle_list_equal(a:*mut acpi_handle_list,b:*mut acpi_handle_list)->bool { (*a).count==(*b).count && libc::memcmp((*a).handles as *const _,(*b).handles as *const _,(*a).count as usize*core::mem::size_of::<acpi_handle>())==0 }
+pub unsafe fn acpi_handle_list_equal(a:*mut acpi_handle_list,b:*mut acpi_handle_list)->bool { (*a).count==(*b).count && memcmp((*a).handles as *const _,(*b).handles as *const _,(*a).count as usize*core::mem::size_of::<acpi_handle>())==0 }
 pub unsafe fn acpi_handle_list_replace(dst:*mut acpi_handle_list,src:*mut acpi_handle_list){if (*dst).count!=0{kfree((*dst).handles as *mut _);}(*dst).count=(*src).count;(*dst).handles=(*src).handles;(*src).handles=core::ptr::null_mut();(*src).count=0;}
 pub unsafe fn acpi_handle_list_free(list:*mut acpi_handle_list){if (*list).count!=0{kfree((*list).handles as *mut _);(*list).count=0;}}
 
@@ -111,7 +111,7 @@ pub unsafe fn acpi_dev_get_first_match_dev(hid:*const i8,uid:*const i8,hrv:i64)-
 pub unsafe fn acpi_reduced_hardware()->bool{acpi_gbl_reduced_hardware}
 pub static mut acpi_video_backlight_string:[i8;16]=[0;16];
 pub unsafe fn acpi_dev_is_video_device(a:*mut acpi_device)->bool{!a.is_null()&&!acpi_match_device_ids(a,core::ptr::null())}
-pub unsafe fn acpi_match_platform_list(plat:*const acpi_platform_list)->i32{if acpi_disabled{return -ENODEV;}let mut i=0;let mut p=plat;while !(*p).oem_id[0].eq(&0){let mut h=core::mem::zeroed::<acpi_table_header>();if ACPI_SUCCESS(acpi_get_table_header((*p).table,0,&mut h))&&libc::strncmp((*p).oem_id.as_ptr(),h.oem_id.as_ptr(),ACPI_OEM_ID_SIZE)==0&&libc::strncmp((*p).oem_table_id.as_ptr(),h.oem_table_id.as_ptr(),ACPI_OEM_TABLE_ID_SIZE)==0{return i;}i+=1;p=p.add(1);}-ENODEV}
+pub unsafe fn acpi_match_platform_list(plat:*const acpi_platform_list)->i32{if acpi_disabled{return -ENODEV;}let mut i=0;let mut p=plat;while !(*p).oem_id[0].eq(&0){let mut h=core::mem::zeroed::<acpi_table_header>();if ACPI_SUCCESS(acpi_get_table_header((*p).table,0,&mut h))&&strncmp((*p).oem_id.as_ptr(),h.oem_id.as_ptr(),ACPI_OEM_ID_SIZE)==0&&strncmp((*p).oem_table_id.as_ptr(),h.oem_table_id.as_ptr(),ACPI_OEM_TABLE_ID_SIZE)==0{return i;}i+=1;p=p.add(1);}-ENODEV}
 pub unsafe fn acpi_evaluate_dsm(h:acpi_handle,g:*const guid_t,rev:u64,func:u64,a4:*mut acpi_object)->*mut acpi_object{let mut p:[acpi_object;4]=[core::mem::zeroed(),core::mem::zeroed(),core::mem::zeroed(),core::mem::zeroed()];p[0].type_=ACPI_TYPE_BUFFER;p[0].buffer.length=16;p[0].buffer.pointer=g as *mut u8;p[1].type_=ACPI_TYPE_INTEGER;p[1].integer.value=rev;p[2].type_=ACPI_TYPE_INTEGER;p[2].integer.value=func;if !a4.is_null(){p[3]=*a4;}else{p[3].type_=ACPI_TYPE_PACKAGE;}let l=acpi_object_list{count:4,pointer:p.as_mut_ptr()};let mut b=acpi_buffer{length:ACPI_ALLOCATE_BUFFER,pointer:core::ptr::null_mut()};if ACPI_SUCCESS(acpi_evaluate_object(h,"_DSM" as *const _,&l,&mut b)){b.pointer as *mut acpi_object}else{core::ptr::null_mut()}}
 pub unsafe fn acpi_dev_uid_to_integer(a:*mut acpi_device,out:*mut u64)->i32{if a.is_null(){return -ENODEV;}let u=acpi_device_uid(a);if u.is_null(){return -ENODATA;}kstrtou64(u,0,out)}
 pub unsafe fn acpi_dev_present(hid:*const i8,uid:*const i8,hrv:i64)->bool{!acpi_dev_get_first_match_dev(hid,uid,hrv).is_null()}

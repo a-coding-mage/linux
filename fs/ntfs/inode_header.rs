@@ -15,7 +15,7 @@ pub enum ntfs_inode_mutex_lock_class {
 #[repr(C)]
 pub struct ntfs_inode {
     pub size_lock: rwlock_t,
-    pub state: ::core::ffi::c_ulong,
+    pub state: ::kernel::ffi::c_ulong,
     pub flags: __le32,
     pub mft_no: u64,
     pub seq_no: u16,
@@ -29,22 +29,22 @@ pub struct ntfs_inode {
     pub initialized_size: i64,
     pub allocated_size: i64,
     pub i_crtime: timespec64,
-    pub mrec: *mut ::core::ffi::c_void,
+    pub mrec: *mut ::kernel::ffi::c_void,
     pub mrec_lock: mutex,
     pub folio: *mut folio,
     pub folio_ofs: i32,
     pub mft_lcn: [i64; 2],
-    pub mft_lcn_count: ::core::ffi::c_uint,
+    pub mft_lcn_count: ::kernel::ffi::c_uint,
     pub attr_list_size: u32,
     pub attr_list: *mut u8,
     pub itype: ntfs_inode_itype,
     pub extent_lock: mutex,
     pub nr_extents: i32,
     pub ext: ntfs_inode_ext,
-    pub i_dealloc_clusters: ::core::ffi::c_uint,
+    pub i_dealloc_clusters: ::kernel::ffi::c_uint,
     pub reparse_tag: __le32,
     pub reparse_flags: __le32,
-    pub target: *mut ::core::ffi::c_char,
+    pub target: *mut ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -100,19 +100,19 @@ pub enum ntfs_inode_state {
 }
 
 #[inline]
-pub unsafe fn NInoDirty(ni: *mut ntfs_inode) -> i32 { test_bit(NI_Dirty as ::core::ffi::c_ulong, &(*ni).state) }
+pub unsafe fn NInoDirty(ni: *mut ntfs_inode) -> i32 { test_bit(NI_Dirty as ::kernel::ffi::c_ulong, &(*ni).state) }
 #[inline]
-pub unsafe fn NInoSetDirty(ni: *mut ntfs_inode) { set_bit(NI_Dirty as ::core::ffi::c_ulong, &mut (*ni).state); }
+pub unsafe fn NInoSetDirty(ni: *mut ntfs_inode) { set_bit(NI_Dirty as ::kernel::ffi::c_ulong, &mut (*ni).state); }
 #[inline]
-pub unsafe fn NInoClearDirty(ni: *mut ntfs_inode) { clear_bit(NI_Dirty as ::core::ffi::c_ulong, &mut (*ni).state); }
+pub unsafe fn NInoClearDirty(ni: *mut ntfs_inode) { clear_bit(NI_Dirty as ::kernel::ffi::c_ulong, &mut (*ni).state); }
 #[inline]
-pub unsafe fn NInoTestSetDirty(ni: *mut ntfs_inode) -> i32 { test_and_set_bit(NI_Dirty as ::core::ffi::c_ulong, &mut (*ni).state) }
+pub unsafe fn NInoTestSetDirty(ni: *mut ntfs_inode) -> i32 { test_and_set_bit(NI_Dirty as ::kernel::ffi::c_ulong, &mut (*ni).state) }
 #[inline]
-pub unsafe fn NInoTestClearDirty(ni: *mut ntfs_inode) -> i32 { test_and_clear_bit(NI_Dirty as ::core::ffi::c_ulong, &mut (*ni).state) }
+pub unsafe fn NInoTestClearDirty(ni: *mut ntfs_inode) -> i32 { test_and_clear_bit(NI_Dirty as ::kernel::ffi::c_ulong, &mut (*ni).state) }
 
 macro_rules! nino_fns {
     ($get:ident, $set:ident, $clear:ident, $bit:ident) => {
-        #[inline] pub unsafe fn $get(ni: *mut ntfs_inode) -> i32 { test_bit(ntfs_inode_state::$bit as ::core::ffi::c_ulong, &(*ni).state) }
+        #[inline] pub unsafe fn $get(ni: *mut ntfs_inode) -> i32 { test_bit(ntfs_inode_state::$bit as ::kernel::ffi::c_ulong, &(*ni).state) }
         #[inline] pub unsafe fn $set(ni: *mut ntfs_inode) { set_bit(ntfs_inode_state::$bit as _, &mut (*ni).state); }
         #[inline] pub unsafe fn $clear(ni: *mut ntfs_inode) { clear_bit(ntfs_inode_state::$bit as _, &mut (*ni).state); }
     };
@@ -170,11 +170,11 @@ pub struct ntfs_attr {
     pub name: *mut __le16,
     pub name_len: u32,
     pub r#type: __le32,
-    pub state: ::core::ffi::c_ulong,
+    pub state: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
-    pub fn ntfs_test_inode(vi: *mut inode, data: *mut ::core::ffi::c_void) -> i32;
+    pub fn ntfs_test_inode(vi: *mut inode, data: *mut ::kernel::ffi::c_void) -> i32;
     pub fn ntfs_iget(sb: *mut super_block, mft_no: u64) -> *mut inode;
     pub fn ntfs_attr_iget(base_vi: *mut inode, r#type: __le32, name: *mut __le16, name_len: u32) -> *mut inode;
     pub fn ntfs_index_iget(base_vi: *mut inode, name: *mut __le16, name_len: u32) -> *mut inode;
@@ -189,7 +189,7 @@ extern "C" {
     pub fn ntfs_show_options(sf: *mut seq_file, root: *mut dentry) -> i32;
     pub fn ntfs_truncate_vfs(vi: *mut inode, new_size: loff_t, i_size: loff_t) -> i32;
     pub fn ntfs_setattr(idmap: *mut mnt_idmap, dentry: *mut dentry, attr: *mut iattr) -> i32;
-    pub fn ntfs_getattr(idmap: *mut mnt_idmap, path: *const path, stat: *mut kstat, request_mask: ::core::ffi::c_uint, query_flags: ::core::ffi::c_uint) -> i32;
+    pub fn ntfs_getattr(idmap: *mut mnt_idmap, path: *const path, stat: *mut kstat, request_mask: ::kernel::ffi::c_uint, query_flags: ::kernel::ffi::c_uint) -> i32;
     pub fn ntfs_get_block_mft_record(mft_ni: *mut ntfs_inode, ni: *mut ntfs_inode) -> i32;
     pub fn __ntfs_write_inode(vi: *mut inode, sync: i32) -> i32;
     pub fn ntfs_inode_attach_all_extents(ni: *mut ntfs_inode) -> i32;

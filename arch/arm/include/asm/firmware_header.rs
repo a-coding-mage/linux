@@ -17,21 +17,21 @@
 #[repr(C)]
 pub struct firmware_ops {
     /* Inform the firmware we intend to enter CPU idle mode */
-    pub prepare_idle: Option<unsafe extern "C" fn(mode: ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
+    pub prepare_idle: Option<unsafe extern "C" fn(mode: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
     /* Enters CPU idle mode */
-    pub do_idle: Option<unsafe extern "C" fn(mode: ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
+    pub do_idle: Option<unsafe extern "C" fn(mode: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
     /* Sets boot address of specified physical CPU */
-    pub set_cpu_boot_addr: Option<unsafe extern "C" fn(cpu: ::core::ffi::c_int, boot_addr: ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
+    pub set_cpu_boot_addr: Option<unsafe extern "C" fn(cpu: ::kernel::ffi::c_int, boot_addr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
     /* Gets boot address of specified physical CPU */
-    pub get_cpu_boot_addr: Option<unsafe extern "C" fn(cpu: ::core::ffi::c_int, boot_addr: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
+    pub get_cpu_boot_addr: Option<unsafe extern "C" fn(cpu: ::kernel::ffi::c_int, boot_addr: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
     /* Boots specified physical CPU */
-    pub cpu_boot: Option<unsafe extern "C" fn(cpu: ::core::ffi::c_int) -> ::core::ffi::c_int>,
+    pub cpu_boot: Option<unsafe extern "C" fn(cpu: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int>,
     /* Initializes L2 cache */
-    pub l2x0_init: Option<unsafe extern "C" fn() -> ::core::ffi::c_int>,
+    pub l2x0_init: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_int>,
     /* Enter system-wide suspend. */
-    pub suspend: Option<unsafe extern "C" fn() -> ::core::ffi::c_int>,
+    pub suspend: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_int>,
     /* Restore state of privileged hardware after system-wide suspend. */
-    pub resume: Option<unsafe extern "C" fn() -> ::core::ffi::c_int>,
+    pub resume: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_int>,
 }
 
 /* Global pointer for current firmware_ops structure, can't be NULL. */

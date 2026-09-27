@@ -36,7 +36,7 @@ pub static mut tgl: [thread_groups_list; NR_CPUS] = [const { thread_groups_list 
 } }; NR_CPUS];
 
 pub static mut smp_ops: *mut smp_ops_t = core::ptr::null_mut();
-pub static mut cpu_callin_map: [core::ffi::c_uint; NR_CPUS] = [0; NR_CPUS];
+pub static mut cpu_callin_map: [kernel::ffi::c_uint; NR_CPUS] = [0; NR_CPUS];
 pub static mut smt_enabled_at_boot: i32 = 1;
 
 pub unsafe fn smp_generic_cpu_bootable(nr: u32) -> i32 {
@@ -60,12 +60,12 @@ pub unsafe fn smp_generic_kick_cpu(nr: i32) -> i32 {
     0
 }
 
-unsafe fn call_function_action(_irq: i32, _data: *mut core::ffi::c_void) -> irqreturn_t { generic_smp_call_function_interrupt(); IRQ_HANDLED }
-unsafe fn reschedule_action(_irq: i32, _data: *mut core::ffi::c_void) -> irqreturn_t { scheduler_ipi(); IRQ_HANDLED }
+unsafe fn call_function_action(_irq: i32, _data: *mut kernel::ffi::c_void) -> irqreturn_t { generic_smp_call_function_interrupt(); IRQ_HANDLED }
+unsafe fn reschedule_action(_irq: i32, _data: *mut kernel::ffi::c_void) -> irqreturn_t { scheduler_ipi(); IRQ_HANDLED }
 #[cfg(CONFIG_GENERIC_CLOCKEVENTS_BROADCAST)]
-unsafe fn tick_broadcast_ipi_action(_irq: i32, _data: *mut core::ffi::c_void) -> irqreturn_t { timer_broadcast_interrupt(); IRQ_HANDLED }
+unsafe fn tick_broadcast_ipi_action(_irq: i32, _data: *mut kernel::ffi::c_void) -> irqreturn_t { timer_broadcast_interrupt(); IRQ_HANDLED }
 #[cfg(CONFIG_NMI_IPI)]
-unsafe fn nmi_ipi_action(_irq: i32, _data: *mut core::ffi::c_void) -> irqreturn_t { smp_handle_nmi_ipi(get_irq_regs()); IRQ_HANDLED }
+unsafe fn nmi_ipi_action(_irq: i32, _data: *mut kernel::ffi::c_void) -> irqreturn_t { smp_handle_nmi_ipi(get_irq_regs()); IRQ_HANDLED }
 
 pub unsafe fn smp_request_message_ipi(virq: i32, msg: i32) -> i32 {
     if msg < 0 || msg > PPC_MSG_NMI_IPI { return -EINVAL; }
@@ -77,7 +77,7 @@ pub unsafe fn smp_request_message_ipi(virq: i32, msg: i32) -> i32 {
 }
 
 #[cfg(CONFIG_PPC_SMP_MUXED_IPI)]
-#[repr(C)] pub struct cpu_messages { pub messages: core::ffi::c_long }
+#[repr(C)] pub struct cpu_messages { pub messages: kernel::ffi::c_long }
 
 unsafe fn do_message_pass(cpu: i32, msg: i32) {
     if !smp_ops.is_null() && (*smp_ops).message_pass.is_some() { ((*smp_ops).message_pass.unwrap())(cpu, msg); }
@@ -115,7 +115,7 @@ pub unsafe fn arch_asym_cpu_priority(cpu: i32) -> i32 {
 // declarations are supplied by the surrounding PowerPC translation unit.
 extern "C" {
     fn __cpu_up(cpu: u32, tidle: *mut task_struct) -> i32;
-    fn start_secondary(unused: *mut core::ffi::c_void) -> !;
+    fn start_secondary(unused: *mut kernel::ffi::c_void) -> !;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

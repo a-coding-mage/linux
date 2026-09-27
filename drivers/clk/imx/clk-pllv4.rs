@@ -30,7 +30,7 @@ const DEFAULT_MFD: u32 = 1000000;
 #[repr(C)]
 struct clk_pllv4 {
     hw: clk_hw,
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     cfg_offset: u32,
     num_offset: u32,
     denom_offset: u32,
@@ -50,19 +50,19 @@ unsafe extern "C" {
     static clk_pllv4_ops: clk_ops;
 
     fn readl_poll_timeout(
-        addr: *mut core::ffi::c_void,
+        addr: *mut kernel::ffi::c_void,
         val: *mut u32,
         cond: u32,
         delay_us: u32,
         timeout_us: u32,
     ) -> i32;
-    fn readl_relaxed(addr: *mut core::ffi::c_void) -> u32;
-    fn writel_relaxed(value: u32, addr: *mut core::ffi::c_void);
-    fn clk_hw_get_name(hw: *mut clk_hw) -> *const core::ffi::c_char;
-    fn clk_hw_register(dev: *mut core::ffi::c_void, hw: *mut clk_hw) -> i32;
+    fn readl_relaxed(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel_relaxed(value: u32, addr: *mut kernel::ffi::c_void);
+    fn clk_hw_get_name(hw: *mut clk_hw) -> *const kernel::ffi::c_char;
+    fn clk_hw_register(dev: *mut kernel::ffi::c_void, hw: *mut clk_hw) -> i32;
     fn kzalloc_obj<T>() -> *mut T;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
 }
 
 const USEC_PER_MSEC: u32 = 1000;
@@ -120,9 +120,9 @@ unsafe extern "C" fn clk_pllv4_unprepare(_hw: *mut clk_hw) {}
 #[no_mangle]
 pub unsafe extern "C" fn imx_clk_hw_pllv4(
     _type_: imx_pllv4_type,
-    _name: *const core::ffi::c_char,
-    _parent_name: *const core::ffi::c_char,
-    _base: *mut core::ffi::c_void,
+    _name: *const kernel::ffi::c_char,
+    _parent_name: *const kernel::ffi::c_char,
+    _base: *mut kernel::ffi::c_void,
 ) -> *mut clk_hw {
     // The remaining kernel clock framework types and helpers are supplied externally.
     core::ptr::null_mut()

@@ -3,7 +3,7 @@
 // The Linux tracepoint and device definitions are supplied by external
 // dependencies; this file preserves the generated event interfaces.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct Device {

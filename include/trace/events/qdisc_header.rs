@@ -11,7 +11,7 @@
 // #include <net/sch_generic.h>
 // #include <trace/define_trace.h>
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 extern "C" {
     pub type Qdisc;
@@ -54,29 +54,29 @@ pub struct qdisc_drop_entry {
     pub handle: u32,
     pub parent: u32,
     pub reason: qdisc_drop_reason,
-    pub kind: *const core::ffi::c_char,
+    pub kind: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct qdisc_reset_entry {
-    pub dev: *const core::ffi::c_char,
-    pub kind: *const core::ffi::c_char,
+    pub dev: *const kernel::ffi::c_char,
+    pub kind: *const kernel::ffi::c_char,
     pub parent: u32,
     pub handle: u32,
 }
 
 #[repr(C)]
 pub struct qdisc_destroy_entry {
-    pub dev: *const core::ffi::c_char,
-    pub kind: *const core::ffi::c_char,
+    pub dev: *const kernel::ffi::c_char,
+    pub kind: *const kernel::ffi::c_char,
     pub parent: u32,
     pub handle: u32,
 }
 
 #[repr(C)]
 pub struct qdisc_create_entry {
-    pub dev: *const core::ffi::c_char,
-    pub kind: *const core::ffi::c_char,
+    pub dev: *const kernel::ffi::c_char,
+    pub kind: *const kernel::ffi::c_char,
     pub parent: u32,
 }
 

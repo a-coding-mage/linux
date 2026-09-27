@@ -10,14 +10,14 @@ use crate::asm::dec::prom::prom_printf;
 use crate::linux::console::{register_console, console, CON_BOOT, CON_PRINTBUFFER};
 
 extern "C" {
-    fn memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize)
-        -> *mut core::ffi::c_void;
+    fn memcpy(dest: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize)
+        -> *mut kernel::ffi::c_void;
     fn bug_on(condition: bool);
 }
 
 unsafe extern "C" fn prom_console_write(
     _con: *mut console,
-    mut s: *const core::ffi::c_char,
+    mut s: *const kernel::ffi::c_char,
     mut c: u32,
 ) {
     static mut BUF: [u8; 81] = [0; 81];
@@ -30,19 +30,19 @@ unsafe extern "C" fn prom_console_write(
             chunk = c;
         }
         memcpy(
-            BUF.as_mut_ptr() as *mut core::ffi::c_void,
-            s as *const core::ffi::c_void,
+            BUF.as_mut_ptr() as *mut kernel::ffi::c_void,
+            s as *const kernel::ffi::c_void,
             chunk as usize,
         );
         BUF[chunk as usize] = b'\0';
-        prom_printf(b"%s\0".as_ptr() as *const core::ffi::c_char, BUF.as_ptr());
+        prom_printf(b"%s\0".as_ptr() as *const kernel::ffi::c_char, BUF.as_ptr());
         s = s.add(chunk as usize);
         c -= chunk;
     }
 }
 
 static mut PROMCONS: console = console {
-    name: b"prom\0".as_ptr() as *const core::ffi::c_char,
+    name: b"prom\0".as_ptr() as *const kernel::ffi::c_char,
     write: Some(prom_console_write),
     flags: CON_BOOT | CON_PRINTBUFFER,
     index: -1,

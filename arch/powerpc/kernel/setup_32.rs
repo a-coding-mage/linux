@@ -8,17 +8,17 @@
 // #define DBG(fmt...)
 
 extern "C" {
-    fn bootx_init(r4: libc::c_ulong, phys: libc::c_ulong);
+    fn bootx_init(r4: kernel::ffi::c_ulong, phys: kernel::ffi::c_ulong);
 }
 
-pub static mut boot_cpuid_phys: libc::c_int = 0;
+pub static mut boot_cpuid_phys: kernel::ffi::c_int = 0;
 // EXPORT_SYMBOL_GPL(boot_cpuid_phys);
 
-pub static mut smp_hw_index: [libc::c_int; NR_CPUS] = [0; NR_CPUS];
+pub static mut smp_hw_index: [kernel::ffi::c_int; NR_CPUS] = [0; NR_CPUS];
 // EXPORT_SYMBOL(smp_hw_index);
 
-pub static mut DMA_MODE_READ: libc::c_uint = 0;
-pub static mut DMA_MODE_WRITE: libc::c_uint = 0;
+pub static mut DMA_MODE_READ: kernel::ffi::c_uint = 0;
+pub static mut DMA_MODE_WRITE: kernel::ffi::c_uint = 0;
 
 // EXPORT_SYMBOL(DMA_MODE_READ);
 // EXPORT_SYMBOL(DMA_MODE_WRITE);
@@ -57,7 +57,7 @@ pub unsafe fn machine_init(dt_ptr: u64) {
 }
 
 /* Checks "l2cr=xxxx" command-line option */
-unsafe fn ppc_setup_l2cr(str_: *mut libc::c_char) -> libc::c_int {
+unsafe fn ppc_setup_l2cr(str_: *mut kernel::ffi::c_char) -> kernel::ffi::c_int {
     if cpu_has_feature(CPU_FTR_L2CR) {
         let val = simple_strtoul(str_, core::ptr::null_mut(), 0);
         printk(KERN_INFO, b"l2cr set to %lx\n\0".as_ptr(), val);
@@ -69,7 +69,7 @@ unsafe fn ppc_setup_l2cr(str_: *mut libc::c_char) -> libc::c_int {
 // __setup("l2cr=", ppc_setup_l2cr);
 
 /* Checks "l3cr=xxxx" command-line option */
-unsafe fn ppc_setup_l3cr(str_: *mut libc::c_char) -> libc::c_int {
+unsafe fn ppc_setup_l3cr(str_: *mut kernel::ffi::c_char) -> kernel::ffi::c_int {
     if cpu_has_feature(CPU_FTR_L3CR) {
         let val = simple_strtoul(str_, core::ptr::null_mut(), 0);
         printk(KERN_INFO, b"l3cr set to %lx\n\0".as_ptr(), val);
@@ -79,7 +79,7 @@ unsafe fn ppc_setup_l3cr(str_: *mut libc::c_char) -> libc::c_int {
 }
 // __setup("l3cr=", ppc_setup_l3cr);
 
-unsafe fn ppc_init() -> libc::c_int {
+unsafe fn ppc_init() -> kernel::ffi::c_int {
     /* clear the progress line */
     if let Some(progress) = ppc_md.progress {
         progress(b"             \0".as_ptr(), 0xffff);
@@ -93,7 +93,7 @@ unsafe fn ppc_init() -> libc::c_int {
 }
 // arch_initcall(ppc_init);
 
-unsafe fn alloc_stack() -> *mut libc::c_void {
+unsafe fn alloc_stack() -> *mut kernel::ffi::c_void {
     memblock_alloc_or_panic(THREAD_SIZE, THREAD_ALIGN)
 }
 
@@ -104,29 +104,29 @@ pub unsafe fn irqstack_early_init() {
 
     /* interrupt stacks must be in lowmem, we get that for free on ppc32
      * as the memblock is limited to lowmem by default */
-    for_each_possible_cpu(|i: libc::c_uint| {
+    for_each_possible_cpu(|i: kernel::ffi::c_uint| {
         softirq_ctx[i as usize] = alloc_stack();
         hardirq_ctx[i as usize] = alloc_stack();
     });
 }
 
 #[cfg(CONFIG_VMAP_STACK)]
-pub static mut emergency_ctx: [*mut libc::c_void; NR_CPUS] = {
+pub static mut emergency_ctx: [*mut kernel::ffi::c_void; NR_CPUS] = {
     let mut value = [core::ptr::null_mut(); NR_CPUS];
-    value[0] = &raw mut init_stack as *mut _ as *mut libc::c_void;
+    value[0] = &raw mut init_stack as *mut _ as *mut kernel::ffi::c_void;
     value
 };
 
 #[cfg(CONFIG_VMAP_STACK)]
 pub unsafe fn emergency_stack_init() {
-    for_each_possible_cpu(|i: libc::c_uint| {
+    for_each_possible_cpu(|i: kernel::ffi::c_uint| {
         emergency_ctx[i as usize] = alloc_stack();
     });
 }
 
 #[cfg(CONFIG_BOOKE)]
 pub unsafe fn exc_lvl_early_init() {
-    for_each_possible_cpu(|i: libc::c_uint| {
+    for_each_possible_cpu(|i: kernel::ffi::c_uint| {
         #[cfg(CONFIG_SMP)]
         let hw_cpu = get_hard_smp_processor_id(i);
         #[cfg(not(CONFIG_SMP))]

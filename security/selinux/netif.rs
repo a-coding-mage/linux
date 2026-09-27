@@ -157,7 +157,7 @@ unsafe fn sel_netif_sid_slow(ns: *mut net, ifindex: i32, sid: *mut u32) -> i32 {
                 (*new).nsec.ifindex = ifindex;
                 (*new).nsec.sid = *sid;
                 if sel_netif_insert(new) != 0 {
-                    kfree(new as *const core::ffi::c_void);
+                    kfree(new as *const kernel::ffi::c_void);
                 }
             }
         }
@@ -253,8 +253,8 @@ pub unsafe extern "C" fn sel_netif_flush() {
 
 unsafe extern "C" fn sel_netif_netdev_notifier_handler(
     this: *mut notifier_block,
-    event: core::ffi::c_ulong,
-    ptr: *mut core::ffi::c_void,
+    event: kernel::ffi::c_ulong,
+    ptr: *mut kernel::ffi::c_void,
 ) -> i32 {
     let dev: *mut net_device = netdev_notifier_info_to_dev(ptr);
 

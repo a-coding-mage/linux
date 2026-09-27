@@ -35,7 +35,7 @@ unsafe fn bench_work_fn(work: *mut work_struct) {
     complete(&mut (*ctx).work_done);
 }
 
-unsafe fn bench_kthread_fn(data: *mut core::ffi::c_void) -> i32 {
+unsafe fn bench_kthread_fn(data: *mut kernel::ffi::c_void) -> i32 {
     let ctx = data as *mut thread_ctx;
     let mut t_start: ktime_t;
     let mut t_end: ktime_t;
@@ -72,15 +72,15 @@ unsafe fn bench_kthread_fn(data: *mut core::ffi::c_void) -> i32 {
     0
 }
 
-unsafe fn cmp_u64(a: *const core::ffi::c_void, b: *const core::ffi::c_void) -> i32 {
+unsafe fn cmp_u64(a: *const kernel::ffi::c_void, b: *const kernel::ffi::c_void) -> i32 {
     let va = *(a as *const u64);
     let vb = *(b as *const u64);
     if va < vb { -1 } else if va > vb { 1 } else { 0 }
 }
 
-unsafe fn set_affn_scope(scope: *const core::ffi::c_char) -> i32 {
+unsafe fn set_affn_scope(scope: *const kernel::ffi::c_char) -> i32 {
     let mut pos: loff_t = 0;
-    let f = filp_open(SCOPE_PATH.as_ptr() as *const core::ffi::c_char, O_WRONLY, 0);
+    let f = filp_open(SCOPE_PATH.as_ptr() as *const kernel::ffi::c_char, O_WRONLY, 0);
     if IS_ERR!(f) {
         pr_err!("test_workqueue: open %s failed: %ld\n", SCOPE_PATH, PTR_ERR!(f));
         return PTR_ERR!(f);
@@ -94,25 +94,25 @@ unsafe fn set_affn_scope(scope: *const core::ffi::c_char) -> i32 {
     0
 }
 
-unsafe fn run_bench(n_threads: i32, scope: *const core::ffi::c_char, label: *const core::ffi::c_char) -> i32 {
+unsafe fn run_bench(n_threads: i32, scope: *const kernel::ffi::c_char, label: *const kernel::ffi::c_char) -> i32 {
     let mut ret = set_affn_scope(scope);
     if ret != 0 { return ret; }
 
     let ctxs = kcalloc(n_threads as usize, core::mem::size_of::<thread_ctx>(), GFP_KERNEL) as *mut thread_ctx;
     if ctxs.is_null() { return -ENOMEM; }
     let tasks = kcalloc(n_threads as usize, core::mem::size_of::<*mut task_struct>(), GFP_KERNEL) as *mut *mut task_struct;
-    if tasks.is_null() { kfree(ctxs as *mut core::ffi::c_void); return -ENOMEM; }
+    if tasks.is_null() { kfree(ctxs as *mut kernel::ffi::c_void); return -ENOMEM; }
 
     let total_items = (n_threads as usize).wrapping_mul(wq_items as usize);
     let all_latencies = kvmalloc_array(total_items, core::mem::size_of::<u64>(), GFP_KERNEL) as *mut u64;
-    if all_latencies.is_null() { kfree(tasks as *mut core::ffi::c_void); kfree(ctxs as *mut core::ffi::c_void); return -ENOMEM; }
+    if all_latencies.is_null() { kfree(tasks as *mut kernel::ffi::c_void); kfree(ctxs as *mut kernel::ffi::c_void); return -ENOMEM; }
 
     for i in 0..n_threads {
         (*ctxs.add(i as usize)).latencies = kvmalloc_array(wq_items as usize, core::mem::size_of::<u64>(), GFP_KERNEL) as *mut u64;
         if (*ctxs.add(i as usize)).latencies.is_null() {
             let mut j = i - 1;
-            while j >= 0 { kvfree((*ctxs.add(j as usize)).latencies as *mut core::ffi::c_void); j -= 1; }
-            kvfree(all_latencies as *mut core::ffi::c_void); kfree(tasks as *mut core::ffi::c_void); kfree(ctxs as *mut core::ffi::c_void); return -ENOMEM;
+            while j >= 0 { kvfree((*ctxs.add(j as usize)).latencies as *mut kernel::ffi::c_void); j -= 1; }
+            kvfree(all_latencies as *mut kernel::ffi::c_void); kfree(tasks as *mut kernel::ffi::c_void); kfree(ctxs as *mut kernel::ffi::c_void); return -ENOMEM;
         }
     }
 
@@ -124,7 +124,7 @@ unsafe fn run_bench(n_threads: i32, scope: *const core::ffi::c_char, label: *con
         if i >= n_threads { break; }
         (*ctxs.add(i as usize)).cpu = cpu; (*ctxs.add(i as usize)).items = wq_items;
         init_completion(&mut (*ctxs.add(i as usize)).work_done);
-        *tasks.add(i as usize) = kthread_create(bench_kthread_fn, ctxs.add(i as usize) as *mut core::ffi::c_void, "wq_bench/%d", cpu);
+        *tasks.add(i as usize) = kthread_create(bench_kthread_fn, ctxs.add(i as usize) as *mut kernel::ffi::c_void, "wq_bench/%d", cpu);
         if IS_ERR!(*tasks.add(i as usize)) {
             ret = PTR_ERR!(*tasks.add(i as usize)); complete_all(&mut start_comp);
             let mut j = i - 1; while j >= 0 { kthread_stop(*tasks.add(j as usize)); j -= 1; }
@@ -139,11 +139,11 @@ unsafe fn run_bench(n_threads: i32, scope: *const core::ffi::c_char, label: *con
     let end = ktime_get();
     let elapsed_us = ktime_us_delta(end, start);
     let mut j = 0;
-    for i in 0..n_threads { memcpy(all_latencies.add(j), (*ctxs.add(i as usize)).latencies as *const core::ffi::c_void, wq_items as usize * core::mem::size_of::<u64>()); j += wq_items as usize; }
-    sort(all_latencies as *mut core::ffi::c_void, total_items, core::mem::size_of::<u64>(), cmp_u64, core::ptr::null_mut());
+    for i in 0..n_threads { memcpy(all_latencies.add(j), (*ctxs.add(i as usize)).latencies as *const kernel::ffi::c_void, wq_items as usize * core::mem::size_of::<u64>()); j += wq_items as usize; }
+    sort(all_latencies as *mut kernel::ffi::c_void, total_items, core::mem::size_of::<u64>(), cmp_u64, core::ptr::null_mut());
     pr_info!("test_workqueue: %s %llu items/sec p50=%llu p90=%llu p95=%llu ns\n", label, if elapsed_us != 0 { (total_items as u64 * 1000000) / elapsed_us as u64 } else { 0 }, *all_latencies.add(total_items * 50 / 100), *all_latencies.add(total_items * 90 / 100), *all_latencies.add(total_items * 95 / 100));
-    for i in 0..n_threads { kvfree((*ctxs.add(i as usize)).latencies as *mut core::ffi::c_void); }
-    kvfree(all_latencies as *mut core::ffi::c_void); kfree(tasks as *mut core::ffi::c_void); kfree(ctxs as *mut core::ffi::c_void); ret
+    for i in 0..n_threads { kvfree((*ctxs.add(i as usize)).latencies as *mut kernel::ffi::c_void); }
+    kvfree(all_latencies as *mut kernel::ffi::c_void); kfree(tasks as *mut kernel::ffi::c_void); kfree(ctxs as *mut kernel::ffi::c_void); ret
 }
 
 static bench_scopes: [&[u8]; 6] = [b"cpu\0", b"smt\0", b"cache_shard\0", b"cache\0", b"numa\0", b"system\0"];

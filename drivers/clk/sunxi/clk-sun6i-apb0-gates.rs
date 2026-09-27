@@ -23,18 +23,18 @@ static SUN8I_A23_APB0_GATES: gates_data = gates_data { mask: [0x5D] };
 
 #[repr(C)]
 struct of_device_id {
-    compatible: *const core::ffi::c_char,
-    data: *const core::ffi::c_void,
+    compatible: *const kernel::ffi::c_char,
+    data: *const kernel::ffi::c_void,
 }
 
 static SUN6I_A31_APB0_GATES_CLK_DT_IDS: [of_device_id; 3] = [
     of_device_id {
-        compatible: b"allwinner,sun6i-a31-apb0-gates-clk\0".as_ptr() as *const core::ffi::c_char,
-        data: &SUN6I_A31_APB0_GATES as *const gates_data as *const core::ffi::c_void,
+        compatible: b"allwinner,sun6i-a31-apb0-gates-clk\0".as_ptr() as *const kernel::ffi::c_char,
+        data: &SUN6I_A31_APB0_GATES as *const gates_data as *const kernel::ffi::c_void,
     },
     of_device_id {
-        compatible: b"allwinner,sun8i-a23-apb0-gates-clk\0".as_ptr() as *const core::ffi::c_char,
-        data: &SUN8I_A23_APB0_GATES as *const gates_data as *const core::ffi::c_void,
+        compatible: b"allwinner,sun8i-a23-apb0-gates-clk\0".as_ptr() as *const kernel::ffi::c_char,
+        data: &SUN8I_A23_APB0_GATES as *const gates_data as *const kernel::ffi::c_void,
     },
     of_device_id {
         compatible: core::ptr::null(),
@@ -46,9 +46,9 @@ unsafe fn sun6i_a31_apb0_gates_clk_probe(pdev: *mut platform_device) -> i32 {
     let np = (*pdev).dev.of_node;
     let mut clk_data: *mut clk_onecell_data;
     let data: *const gates_data;
-    let clk_parent: *const core::ffi::c_char;
-    let mut clk_name: *const core::ffi::c_char;
-    let reg: *mut core::ffi::c_void;
+    let clk_parent: *const kernel::ffi::c_char;
+    let mut clk_name: *const kernel::ffi::c_char;
+    let reg: *mut kernel::ffi::c_void;
     let ngates: i32;
     let mut i: i32;
     let mut j: i32 = 0;
@@ -96,7 +96,7 @@ unsafe fn sun6i_a31_apb0_gates_clk_probe(pdev: *mut platform_device) -> i32 {
     i = 0;
     while i < SUN6I_APB0_GATES_MAX_SIZE as i32 {
         if ((*data).mask[(i as usize) / 32] & (1u32 << ((i as usize) % 32))) != 0 {
-            of_property_read_string_index(np, b"clock-output-names\0".as_ptr() as *const core::ffi::c_char, j, &mut clk_name);
+            of_property_read_string_index(np, b"clock-output-names\0".as_ptr() as *const kernel::ffi::c_char, j, &mut clk_name);
 
             *(*clk_data).clks.add(i as usize) = clk_register_gate(
                 &mut (*pdev).dev,
@@ -122,7 +122,7 @@ unsafe fn sun6i_a31_apb0_gates_clk_probe(pdev: *mut platform_device) -> i32 {
 
 static mut SUN6I_A31_APB0_GATES_CLK_DRIVER: platform_driver = platform_driver {
     driver: driver {
-        name: b"sun6i-a31-apb0-gates-clk\0".as_ptr() as *const core::ffi::c_char,
+        name: b"sun6i-a31-apb0-gates-clk\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: SUN6I_A31_APB0_GATES_CLK_DT_IDS.as_ptr(),
     },
     probe: Some(sun6i_a31_apb0_gates_clk_probe),

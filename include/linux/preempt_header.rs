@@ -103,7 +103,7 @@ extern "C" {
     pub fn preempt_model_voluntary() -> bool;
     pub fn preempt_model_full() -> bool;
     pub fn preempt_model_lazy() -> bool;
-    pub fn preempt_model_str() -> *const core::ffi::c_char;
+    pub fn preempt_model_str() -> *const kernel::ffi::c_char;
 }
 
 #[inline] pub unsafe fn preempt_model_rt() -> bool { cfg!(CONFIG_PREEMPT_RT) }

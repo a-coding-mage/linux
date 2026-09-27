@@ -4,14 +4,14 @@
 
 #[repr(C)]
 pub struct pcpu_block_md {
-    pub scan_hint: ::core::ffi::c_int,
-    pub scan_hint_start: ::core::ffi::c_int,
-    pub contig_hint: ::core::ffi::c_int,
-    pub contig_hint_start: ::core::ffi::c_int,
-    pub left_free: ::core::ffi::c_int,
-    pub right_free: ::core::ffi::c_int,
-    pub first_free: ::core::ffi::c_int,
-    pub nr_bits: ::core::ffi::c_int,
+    pub scan_hint: ::kernel::ffi::c_int,
+    pub scan_hint_start: ::kernel::ffi::c_int,
+    pub contig_hint: ::kernel::ffi::c_int,
+    pub contig_hint_start: ::kernel::ffi::c_int,
+    pub left_free: ::kernel::ffi::c_int,
+    pub right_free: ::kernel::ffi::c_int,
+    pub first_free: ::kernel::ffi::c_int,
+    pub nr_bits: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -27,27 +27,27 @@ pub struct pcpuobj_ext {
 #[repr(C)]
 pub struct pcpu_chunk {
     #[cfg(CONFIG_PERCPU_STATS)]
-    pub nr_alloc: ::core::ffi::c_int,
+    pub nr_alloc: ::kernel::ffi::c_int,
     #[cfg(CONFIG_PERCPU_STATS)]
     pub max_alloc_size: usize,
     pub list: list_head,
-    pub free_bytes: ::core::ffi::c_int,
+    pub free_bytes: ::kernel::ffi::c_int,
     pub chunk_md: pcpu_block_md,
-    pub bound_map: *mut ::core::ffi::c_ulong,
-    pub base_addr: *mut ::core::ffi::c_void,
-    pub alloc_map: *mut ::core::ffi::c_ulong,
+    pub bound_map: *mut ::kernel::ffi::c_ulong,
+    pub base_addr: *mut ::kernel::ffi::c_void,
+    pub alloc_map: *mut ::kernel::ffi::c_ulong,
     pub md_blocks: *mut pcpu_block_md,
-    pub data: *mut ::core::ffi::c_void,
+    pub data: *mut ::kernel::ffi::c_void,
     pub immutable: bool,
     pub isolated: bool,
-    pub start_offset: ::core::ffi::c_int,
-    pub end_offset: ::core::ffi::c_int,
-    pub nr_pages: ::core::ffi::c_int,
-    pub nr_populated: ::core::ffi::c_int,
-    pub nr_empty_pop_pages: ::core::ffi::c_int,
+    pub start_offset: ::kernel::ffi::c_int,
+    pub end_offset: ::kernel::ffi::c_int,
+    pub nr_pages: ::kernel::ffi::c_int,
+    pub nr_populated: ::kernel::ffi::c_int,
+    pub nr_empty_pop_pages: ::kernel::ffi::c_int,
     #[cfg(any(CONFIG_MEMCG, CONFIG_MEM_ALLOC_PROFILING))]
     pub obj_exts: *mut pcpuobj_ext,
-    pub populated: [::core::ffi::c_ulong; 0],
+    pub populated: [::kernel::ffi::c_ulong; 0],
 }
 
 #[inline]
@@ -64,26 +64,26 @@ pub unsafe fn need_pcpuobj_ext() -> bool {
 extern "C" {
     pub static mut pcpu_lock: spinlock_t;
     pub static mut pcpu_chunk_lists: *mut list_head;
-    pub static mut pcpu_nr_slots: ::core::ffi::c_int;
-    pub static mut pcpu_sidelined_slot: ::core::ffi::c_int;
-    pub static mut pcpu_to_depopulate_slot: ::core::ffi::c_int;
-    pub static mut pcpu_nr_empty_pop_pages: ::core::ffi::c_int;
+    pub static mut pcpu_nr_slots: ::kernel::ffi::c_int;
+    pub static mut pcpu_sidelined_slot: ::kernel::ffi::c_int;
+    pub static mut pcpu_to_depopulate_slot: ::kernel::ffi::c_int;
+    pub static mut pcpu_nr_empty_pop_pages: ::kernel::ffi::c_int;
     pub static mut pcpu_first_chunk: *mut pcpu_chunk;
     pub static mut pcpu_reserved_chunk: *mut pcpu_chunk;
 }
 
 #[inline]
-pub unsafe fn pcpu_chunk_nr_blocks(chunk: *mut pcpu_chunk) -> ::core::ffi::c_int {
+pub unsafe fn pcpu_chunk_nr_blocks(chunk: *mut pcpu_chunk) -> ::kernel::ffi::c_int {
     (*chunk).nr_pages * PAGE_SIZE / PCPU_BITMAP_BLOCK_SIZE
 }
 
 #[inline]
-pub fn pcpu_nr_pages_to_map_bits(pages: ::core::ffi::c_int) -> ::core::ffi::c_int {
+pub fn pcpu_nr_pages_to_map_bits(pages: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     pages * PAGE_SIZE / PCPU_MIN_ALLOC_SIZE
 }
 
 #[inline]
-pub unsafe fn pcpu_chunk_map_bits(chunk: *mut pcpu_chunk) -> ::core::ffi::c_int {
+pub unsafe fn pcpu_chunk_map_bits(chunk: *mut pcpu_chunk) -> ::kernel::ffi::c_int {
     pcpu_nr_pages_to_map_bits((*chunk).nr_pages)
 }
 
@@ -148,7 +148,7 @@ pub unsafe fn pcpu_stats_area_dealloc(chunk: *mut pcpu_chunk) {
 #[cfg(CONFIG_PERCPU_STATS)]
 #[inline]
 pub unsafe fn pcpu_stats_chunk_alloc() {
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
     spin_lock_irqsave(&mut pcpu_lock, &mut flags);
     pcpu_stats.nr_chunks += 1;
     pcpu_stats.nr_max_chunks = pcpu_stats.nr_max_chunks.max(pcpu_stats.nr_chunks);
@@ -158,7 +158,7 @@ pub unsafe fn pcpu_stats_chunk_alloc() {
 #[cfg(CONFIG_PERCPU_STATS)]
 #[inline]
 pub unsafe fn pcpu_stats_chunk_dealloc() {
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
     spin_lock_irqsave(&mut pcpu_lock, &mut flags);
     pcpu_stats.nr_chunks -= 1;
     spin_unlock_irqrestore(&mut pcpu_lock, flags);

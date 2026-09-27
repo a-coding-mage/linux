@@ -80,7 +80,7 @@ unsafe fn report_errors(edac_ctl: *mut edac_device_ctl_info, cpu: i32, mesr: *mu
     }
 }
 
-unsafe fn read_errors(data: *mut core::ffi::c_void) {
+unsafe fn read_errors(data: *mut kernel::ffi::c_void) {
     let mesr = data as *mut mem_err_synd_reg;
     (*mesr).cpu_mesr = read_sysreg_s(SYS_CPUMERRSR_EL1);
     if (*mesr).cpu_mesr & CPUMERRSR_EL1_VALID != 0 {
@@ -98,7 +98,7 @@ unsafe fn a72_edac_check(edac_ctl: *mut edac_device_ctl_info) {
     let mut mesr = mem_err_synd_reg { cpu_mesr: 0, l2_mesr: 0 };
     cpus_read_lock();
     for_each_cpu_and(|cpu| {
-        smp_call_function_single(cpu, read_errors, &mut mesr as *mut _ as *mut core::ffi::c_void, true);
+        smp_call_function_single(cpu, read_errors, &mut mesr as *mut _ as *mut kernel::ffi::c_void, true);
         report_errors(edac_ctl, cpu, &mut mesr);
     }, cpu_online_mask, &compat_mask);
     cpus_read_unlock();
@@ -132,7 +132,7 @@ unsafe fn a72_edac_remove(pdev: *mut platform_device) {
 
 #[repr(C)]
 struct of_device_id {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 static cortex_arm64_edac_of_match: [of_device_id; 2] = [

@@ -14,10 +14,10 @@ pub const CEPH_MAX_CON_SECRET_LEN: usize = 64;
  */
 #[repr(C)]
 pub struct ceph_crypto_key {
-    pub type_: ::core::ffi::c_int,
+    pub type_: ::kernel::ffi::c_int,
     pub created: ceph_timespec,
-    pub len: ::core::ffi::c_int,
-    pub key: *mut ::core::ffi::c_void,
+    pub len: ::kernel::ffi::c_int,
+    pub key: *mut ::kernel::ffi::c_void,
     pub crypto: ceph_crypto_key_crypto,
 }
 
@@ -38,58 +38,58 @@ extern "C" {
     pub fn ceph_crypto_key_prepare(
         key: *mut ceph_crypto_key,
         key_usages: *const u32,
-        key_usage_cnt: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        key_usage_cnt: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn ceph_crypto_key_clone(
         dst: *mut ceph_crypto_key,
         src: *const ceph_crypto_key,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn ceph_crypto_key_decode(
         key: *mut ceph_crypto_key,
-        p: *mut *mut ::core::ffi::c_void,
-        end: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        p: *mut *mut ::kernel::ffi::c_void,
+        end: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
     pub fn ceph_crypto_key_unarmor(
         key: *mut ceph_crypto_key,
-        input: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        input: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
     pub fn ceph_crypto_key_destroy(key: *mut ceph_crypto_key);
 
     /* crypto.c */
     pub fn ceph_crypt(
         key: *const ceph_crypto_key,
-        usage_slot: ::core::ffi::c_int,
+        usage_slot: ::kernel::ffi::c_int,
         encrypt: bool,
-        buf: *mut ::core::ffi::c_void,
-        buf_len: ::core::ffi::c_int,
-        in_len: ::core::ffi::c_int,
-        pout_len: *mut ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    pub fn ceph_crypt_data_offset(key: *const ceph_crypto_key) -> ::core::ffi::c_int;
+        buf: *mut ::kernel::ffi::c_void,
+        buf_len: ::kernel::ffi::c_int,
+        in_len: ::kernel::ffi::c_int,
+        pout_len: *mut ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
+    pub fn ceph_crypt_data_offset(key: *const ceph_crypto_key) -> ::kernel::ffi::c_int;
     pub fn ceph_crypt_buflen(
         key: *const ceph_crypto_key,
-        data_len: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        data_len: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn ceph_hmac_sha256(
         key: *const ceph_crypto_key,
-        buf: *const ::core::ffi::c_void,
-        buf_len: ::core::ffi::c_int,
+        buf: *const ::kernel::ffi::c_void,
+        buf_len: ::kernel::ffi::c_int,
         hmac: *mut u8,
     );
-    pub fn ceph_crypto_init() -> ::core::ffi::c_int;
+    pub fn ceph_crypto_init() -> ::kernel::ffi::c_int;
     pub fn ceph_crypto_shutdown();
 
     /* armor.c */
     pub fn ceph_armor(
-        dst: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        end: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        dst: *mut ::kernel::ffi::c_char,
+        src: *const ::kernel::ffi::c_char,
+        end: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
     pub fn ceph_unarmor(
-        dst: *mut ::core::ffi::c_char,
-        src: *const ::core::ffi::c_char,
-        end: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        dst: *mut ::kernel::ffi::c_char,
+        src: *const ::kernel::ffi::c_char,
+        end: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

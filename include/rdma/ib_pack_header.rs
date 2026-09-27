@@ -24,13 +24,13 @@ pub struct ib_field {
     pub offset_words: i32,
     pub offset_bits: i32,
     pub size_bits: i32,
-    pub field_name: *mut core::ffi::c_char,
+    pub field_name: *mut kernel::ffi::c_char,
 }
 
 // RESERVED initializes the field_name member to "reserved" in C.
 #[macro_export]
 macro_rules! RESERVED {
-    () => { .field_name = b"reserved\0".as_ptr() as *mut core::ffi::c_char };
+    () => { .field_name = b"reserved\0".as_ptr() as *mut kernel::ffi::c_char };
 }
 
 pub const IB_OPCODE_RC: u8 = 0x00;
@@ -149,11 +149,11 @@ pub const IB_LNH_IBA_GLOBAL: i32 = 3;
 #[repr(C)] pub struct ib_ud_header { pub lrh_present: i32, pub lrh: ib_unpacked_lrh, pub eth_present: i32, pub eth: ib_unpacked_eth, pub vlan_present: i32, pub vlan: ib_unpacked_vlan, pub grh_present: i32, pub grh: ib_unpacked_grh, pub ipv4_present: i32, pub ip4: ib_unpacked_ip4, pub udp_present: i32, pub udp: ib_unpacked_udp, pub bth: ib_unpacked_bth, pub deth: ib_unpacked_deth, pub immediate_present: i32, pub immediate_data: u32 }
 
 extern "C" {
-    pub fn ib_pack(desc: *const ib_field, desc_len: i32, structure: *mut core::ffi::c_void, buf: *mut core::ffi::c_void);
-    pub fn ib_unpack(desc: *const ib_field, desc_len: i32, buf: *mut core::ffi::c_void, structure: *mut core::ffi::c_void);
+    pub fn ib_pack(desc: *const ib_field, desc_len: i32, structure: *mut kernel::ffi::c_void, buf: *mut kernel::ffi::c_void);
+    pub fn ib_unpack(desc: *const ib_field, desc_len: i32, buf: *mut kernel::ffi::c_void, structure: *mut kernel::ffi::c_void);
     pub fn ib_ud_ip4_csum(header: *mut ib_ud_header) -> u16;
     pub fn ib_ud_header_init(payload_bytes: i32, lrh_present: i32, eth_present: i32, vlan_present: i32, grh_present: i32, ip_version: i32, udp_present: i32, immediate_present: i32, header: *mut ib_ud_header) -> i32;
-    pub fn ib_ud_header_pack(header: *mut ib_ud_header, buf: *mut core::ffi::c_void) -> i32;
+    pub fn ib_ud_header_pack(header: *mut ib_ud_header, buf: *mut kernel::ffi::c_void) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

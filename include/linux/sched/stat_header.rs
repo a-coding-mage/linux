@@ -11,7 +11,7 @@
  *   so they can only be relied on in narrow circumstances. )
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 pub const CONFIG_SCHED_INFO: bool = cfg!(CONFIG_SCHED_INFO);
 

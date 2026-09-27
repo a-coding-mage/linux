@@ -57,23 +57,23 @@ pub struct meson_desc {
 pub struct meson_flow {
     pub engine: *mut crypto_engine,
     pub complete: completion,
-    pub status: ::core::ffi::c_int,
+    pub status: ::kernel::ffi::c_int,
     pub keylen: u32,
     pub t_phy: dma_addr_t,
     pub tl: *mut meson_desc,
     #[cfg(CONFIG_CRYPTO_DEV_AMLOGIC_GXL_DEBUG)]
-    pub stat_req: ::core::ffi::c_ulong,
+    pub stat_req: ::kernel::ffi::c_ulong,
 }
 
 /* struct meson_dev - main container for all this driver information */
 #[repr(C)]
 pub struct meson_dev {
-    pub base: *mut ::core::ffi::c_void,
+    pub base: *mut ::kernel::ffi::c_void,
     pub busclk: *mut clk,
     pub dev: *mut device,
     pub chanlist: *mut meson_flow,
     pub flow: atomic_t,
-    pub irqs: [::core::ffi::c_int; MAXFLOW],
+    pub irqs: [::kernel::ffi::c_int; MAXFLOW],
     #[cfg(CONFIG_CRYPTO_DEV_AMLOGIC_GXL_DEBUG)]
     pub dbgfs_dir: *mut dentry,
 }
@@ -82,7 +82,7 @@ pub struct meson_dev {
 #[repr(C)]
 pub struct meson_cipher_req_ctx {
     pub op_dir: u32,
-    pub flow: ::core::ffi::c_int,
+    pub flow: ::kernel::ffi::c_int,
     pub fallback_req: skcipher_request, // keep at the end
 }
 
@@ -109,9 +109,9 @@ pub struct meson_alg_template {
     pub alg: meson_alg_template_alg,
     pub mc: *mut meson_dev,
     #[cfg(CONFIG_CRYPTO_DEV_AMLOGIC_GXL_DEBUG)]
-    pub stat_req: ::core::ffi::c_ulong,
+    pub stat_req: ::kernel::ffi::c_ulong,
     #[cfg(CONFIG_CRYPTO_DEV_AMLOGIC_GXL_DEBUG)]
-    pub stat_fb: ::core::ffi::c_ulong,
+    pub stat_fb: ::kernel::ffi::c_ulong,
 }
 
 extern "C" {
@@ -119,15 +119,15 @@ extern "C" {
         tfm: *mut crypto_skcipher,
         key: *const u8,
         keylen: u32,
-    ) -> ::core::ffi::c_int;
-    pub fn meson_cipher_init(tfm: *mut crypto_tfm) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn meson_cipher_init(tfm: *mut crypto_tfm) -> ::kernel::ffi::c_int;
     pub fn meson_cipher_exit(tfm: *mut crypto_tfm);
-    pub fn meson_skdecrypt(areq: *mut skcipher_request) -> ::core::ffi::c_int;
-    pub fn meson_skencrypt(areq: *mut skcipher_request) -> ::core::ffi::c_int;
+    pub fn meson_skdecrypt(areq: *mut skcipher_request) -> ::kernel::ffi::c_int;
+    pub fn meson_skencrypt(areq: *mut skcipher_request) -> ::kernel::ffi::c_int;
     pub fn meson_handle_cipher_request(
         engine: *mut crypto_engine,
-        areq: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        areq: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

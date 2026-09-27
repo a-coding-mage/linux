@@ -162,6 +162,6 @@ pub enum libie_aq_err { LIBIE_AQ_RC_OK = 0, LIBIE_AQ_RC_EPERM = 1, LIBIE_AQ_RC_E
 
 pub unsafe fn libie_aq_raw(desc: *mut libie_aq_desc) -> *mut u8 { (*desc).params.raw.as_mut_ptr() }
 
-unsafe extern "C" { pub fn libie_aq_str(err: libie_aq_err) -> *const core::ffi::c_char; }
+unsafe extern "C" { pub fn libie_aq_str(err: libie_aq_err) -> *const kernel::ffi::c_char; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

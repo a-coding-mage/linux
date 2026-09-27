@@ -134,7 +134,7 @@ pub struct rio_rdev_info {
     pub hopcount: u8,
     pub pad0: u8,
     pub comptag: u32,
-    pub name: [core::ffi::c_char; RIO_MAX_DEVNAME_SZ + 1],
+    pub name: [kernel::ffi::c_char; RIO_MAX_DEVNAME_SZ + 1],
 }
 
 pub const RIO_MPORT_DRV_MAGIC: u8 = b'm';

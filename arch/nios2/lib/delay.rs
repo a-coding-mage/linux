@@ -3,7 +3,7 @@
  */
 
 // The declarations below are supplied by the kernel architecture code.
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 unsafe extern "C" {
     fn get_cycles() -> u64;

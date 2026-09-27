@@ -88,7 +88,7 @@ pub const MSM_SUBMITQUEUE_ALLOW_PREEMPT:u32=1; pub const MSM_SUBMITQUEUE_VM_BIND
 pub const MSM_SUBMITQUEUE_PARAM_FAULTS:u32=0;
 #[repr(C)] pub struct drm_msm_submitqueue_query { pub data:u64,pub id:u32,pub param:u32,pub len:u32,pub pad:u32 }
 pub const MSM_PERFCNTR_STREAM:u32=1; pub const MSM_PERFCNTR_UPDATE:u32=2; pub const MSM_PERFCNTR_FLAGS:u32=MSM_PERFCNTR_STREAM|MSM_PERFCNTR_UPDATE;
-#[repr(C)] pub struct drm_msm_perfcntr_group { pub group_name:[core::ffi::c_char;16],pub nr_countables:u32,pub pad:u32,pub countables:u64 }
+#[repr(C)] pub struct drm_msm_perfcntr_group { pub group_name:[kernel::ffi::c_char;16],pub nr_countables:u32,pub pad:u32,pub countables:u64 }
 #[repr(C)] pub struct drm_msm_perfcntr_config { pub flags:u32,pub nr_groups:u32,pub groups:u64,pub period:u64,pub bufsz_shift:u32,pub group_stride:u32 }
 
 pub const DRM_MSM_GET_PARAM:u32=0x00; pub const DRM_MSM_SET_PARAM:u32=0x01; pub const DRM_MSM_GEM_NEW:u32=0x02; pub const DRM_MSM_GEM_INFO:u32=0x03; pub const DRM_MSM_GEM_CPU_PREP:u32=0x04; pub const DRM_MSM_GEM_CPU_FINI:u32=0x05; pub const DRM_MSM_GEM_SUBMIT:u32=0x06; pub const DRM_MSM_WAIT_FENCE:u32=0x07; pub const DRM_MSM_GEM_MADVISE:u32=0x08; pub const DRM_MSM_SUBMITQUEUE_NEW:u32=0x0A; pub const DRM_MSM_SUBMITQUEUE_CLOSE:u32=0x0B; pub const DRM_MSM_SUBMITQUEUE_QUERY:u32=0x0C; pub const DRM_MSM_VM_BIND:u32=0x0D; pub const DRM_MSM_PERFCNTR_CONFIG:u32=0x0E;

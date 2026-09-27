@@ -17,14 +17,14 @@ pub unsafe fn arch_spin_val_check(lock_val: i32) {
 }
 
 pub unsafe fn arch_spin_is_locked(x: *mut arch_spinlock_t) -> i32 {
-    let a: *mut core::ffi::c_uint = __ldcw_align(x);
+    let a: *mut kernel::ffi::c_uint = __ldcw_align(x);
     let lock_val: i32 = core::ptr::read_volatile(a) as i32;
     arch_spin_val_check(lock_val);
     (lock_val == 0) as i32
 }
 
 pub unsafe fn arch_spin_lock(x: *mut arch_spinlock_t) {
-    let a: *mut core::ffi::c_uint = __ldcw_align(x);
+    let a: *mut kernel::ffi::c_uint = __ldcw_align(x);
     loop {
         let lock_val_old: i32 = __ldcw(a) as i32;
         arch_spin_val_check(lock_val_old);
@@ -40,15 +40,15 @@ pub unsafe fn arch_spin_lock(x: *mut arch_spinlock_t) {
 }
 
 pub unsafe fn arch_spin_unlock(x: *mut arch_spinlock_t) {
-    let a: *mut core::ffi::c_uint = __ldcw_align(x);
+    let a: *mut kernel::ffi::c_uint = __ldcw_align(x);
     // Release with ordered store. The original PA-RISC instruction is:
     //   stw,ma __ARCH_SPIN_LOCK_UNLOCKED_VAL,0(a)
     // TODO: preserve the architecture-specific ordered-store instruction.
-    core::ptr::write_volatile(a, __ARCH_SPIN_LOCK_UNLOCKED_VAL as core::ffi::c_uint);
+    core::ptr::write_volatile(a, __ARCH_SPIN_LOCK_UNLOCKED_VAL as kernel::ffi::c_uint);
 }
 
 pub unsafe fn arch_spin_trylock(x: *mut arch_spinlock_t) -> i32 {
-    let a: *mut core::ffi::c_uint = __ldcw_align(x);
+    let a: *mut kernel::ffi::c_uint = __ldcw_align(x);
     let lock_val: i32 = __ldcw(a) as i32;
     arch_spin_val_check(lock_val);
     (lock_val != 0) as i32
@@ -65,7 +65,7 @@ pub unsafe fn arch_spin_trylock(x: *mut arch_spinlock_t) -> i32 {
 /* 1 - lock taken successfully */
 pub unsafe fn arch_read_trylock(rw: *mut arch_rwlock_t) -> i32 {
     let mut ret = 0;
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     local_irq_save(&mut flags);
     arch_spin_lock(core::ptr::addr_of_mut!((*rw).lock_mutex));
@@ -85,7 +85,7 @@ pub unsafe fn arch_read_trylock(rw: *mut arch_rwlock_t) -> i32 {
 /* 1 - lock taken successfully */
 pub unsafe fn arch_write_trylock(rw: *mut arch_rwlock_t) -> i32 {
     let mut ret = 0;
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     local_irq_save(&mut flags);
     arch_spin_lock(core::ptr::addr_of_mut!((*rw).lock_mutex));
@@ -116,7 +116,7 @@ pub unsafe fn arch_write_lock(rw: *mut arch_rwlock_t) {
 }
 
 pub unsafe fn arch_read_unlock(rw: *mut arch_rwlock_t) {
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     local_irq_save(&mut flags);
     arch_spin_lock(core::ptr::addr_of_mut!((*rw).lock_mutex));
     (*rw).counter += 1;
@@ -125,7 +125,7 @@ pub unsafe fn arch_read_unlock(rw: *mut arch_rwlock_t) {
 }
 
 pub unsafe fn arch_write_unlock(rw: *mut arch_rwlock_t) {
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     local_irq_save(&mut flags);
     arch_spin_lock(core::ptr::addr_of_mut!((*rw).lock_mutex));
     (*rw).counter = __ARCH_RW_LOCK_UNLOCKED__;

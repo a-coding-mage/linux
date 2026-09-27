@@ -104,7 +104,7 @@ pub struct apg_funcs {
     pub setup_hdmi_audio: Option<unsafe extern "C" fn(apg: *mut apg)>,
     pub se_audio_setup: Option<unsafe extern "C" fn(
         apg: *mut apg,
-        az_inst: libc::c_uint,
+        az_inst: core::ffi::c_uint,
         audio_info: *mut audio_info,
     )>,
     pub enable_apg: Option<unsafe extern "C" fn(apg: *mut apg)>,

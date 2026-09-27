@@ -31,7 +31,7 @@ unsafe extern "C" {
 }
 
 #[inline]
-pub unsafe fn scsi_varlen_cdb_length(hdr: *const core::ffi::c_void) -> u32 {
+pub unsafe fn scsi_varlen_cdb_length(hdr: *const kernel::ffi::c_void) -> u32 {
     (*(hdr as *const scsi_varlen_cdb_hdr)).additional_cdb_length as u32 + 8
 }
 
@@ -49,7 +49,7 @@ macro_rules! COMMAND_SIZE {
 #[inline]
 pub unsafe fn scsi_command_size(cmnd: *const u8) -> u32 {
     if *cmnd == VARIABLE_LENGTH_CMD {
-        scsi_varlen_cdb_length(cmnd as *const core::ffi::c_void)
+        scsi_varlen_cdb_length(cmnd as *const kernel::ffi::c_void)
     } else {
         COMMAND_SIZE!(*cmnd) as u32
     }
@@ -66,7 +66,7 @@ pub unsafe fn scsi_command_control(cmnd: *const u8) -> u8 {
 
 /* Returns a human-readable name for the device */
 unsafe extern "C" {
-    pub fn scsi_device_type(type_: u32) -> *const core::ffi::c_char;
+    pub fn scsi_device_type(type_: u32) -> *const kernel::ffi::c_char;
     pub fn int_to_scsilun(value: u64, lun: *mut scsi_lun);
     pub fn scsilun_to_int(lun: *mut scsi_lun) -> u64;
 }

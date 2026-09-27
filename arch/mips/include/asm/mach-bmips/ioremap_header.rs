@@ -14,18 +14,18 @@ pub unsafe fn is_bmips_internal_registers(offset: phys_addr_t) -> i32 {
 #[inline]
 pub unsafe fn plat_ioremap(
     offset: phys_addr_t,
-    _size: core::ffi::c_ulong,
-    _flags: core::ffi::c_ulong,
-) -> *mut core::ffi::c_void {
+    _size: kernel::ffi::c_ulong,
+    _flags: kernel::ffi::c_ulong,
+) -> *mut kernel::ffi::c_void {
     if is_bmips_internal_registers(offset) != 0 {
-        return offset as usize as *mut core::ffi::c_void;
+        return offset as usize as *mut kernel::ffi::c_void;
     }
 
     core::ptr::null_mut()
 }
 
 #[inline]
-pub unsafe fn plat_iounmap(addr: *const core::ffi::c_void) -> i32 {
+pub unsafe fn plat_iounmap(addr: *const kernel::ffi::c_void) -> i32 {
     is_bmips_internal_registers(addr as usize as phys_addr_t)
 }
 

@@ -29,7 +29,7 @@ pub struct ext2_acl_header {
 }
 
 #[inline]
-pub fn ext2_acl_size(count: libc::c_int) -> usize {
+pub fn ext2_acl_size(count: core::ffi::c_int) -> usize {
     if count <= 4 {
         core::mem::size_of::<ext2_acl_header>()
             + (count as usize) * core::mem::size_of::<ext2_acl_entry_short>()
@@ -41,7 +41,7 @@ pub fn ext2_acl_size(count: libc::c_int) -> usize {
 }
 
 #[inline]
-pub fn ext2_acl_count(mut size: usize) -> libc::c_int {
+pub fn ext2_acl_count(mut size: usize) -> core::ffi::c_int {
     let s: isize;
     size -= core::mem::size_of::<ext2_acl_header>();
     s = size as isize - 4 * core::mem::size_of::<ext2_acl_entry_short>() as isize;
@@ -49,25 +49,25 @@ pub fn ext2_acl_count(mut size: usize) -> libc::c_int {
         if size % core::mem::size_of::<ext2_acl_entry_short>() != 0 {
             return -1;
         }
-        (size / core::mem::size_of::<ext2_acl_entry_short>()) as libc::c_int
+        (size / core::mem::size_of::<ext2_acl_entry_short>()) as core::ffi::c_int
     } else {
         if (s as usize) % core::mem::size_of::<ext2_acl_entry>() != 0 {
             return -1;
         }
-        (s as usize / core::mem::size_of::<ext2_acl_entry>() + 4) as libc::c_int
+        (s as usize / core::mem::size_of::<ext2_acl_entry>() + 4) as core::ffi::c_int
     }
 }
 
 #[cfg(CONFIG_EXT2_FS_POSIX_ACL)]
 extern "C" {
-    pub fn ext2_get_acl(inode: *mut inode, type_: libc::c_int, rcu: bool) -> *mut posix_acl;
+    pub fn ext2_get_acl(inode: *mut inode, type_: core::ffi::c_int, rcu: bool) -> *mut posix_acl;
     pub fn ext2_set_acl(
         idmap: *mut mnt_idmap,
         dentry: *mut dentry,
         acl: *mut posix_acl,
-        type_: libc::c_int,
-    ) -> libc::c_int;
-    pub fn ext2_init_acl(inode: *mut inode, dir: *mut inode) -> libc::c_int;
+        type_: core::ffi::c_int,
+    ) -> core::ffi::c_int;
+    pub fn ext2_init_acl(inode: *mut inode, dir: *mut inode) -> core::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_EXT2_FS_POSIX_ACL))]
@@ -79,7 +79,7 @@ pub const ext2_set_acl: *const () = core::ptr::null();
 
 #[cfg(not(CONFIG_EXT2_FS_POSIX_ACL))]
 #[inline]
-pub fn ext2_init_acl(_inode: *mut inode, _dir: *mut inode) -> libc::c_int {
+pub fn ext2_init_acl(_inode: *mut inode, _dir: *mut inode) -> core::ffi::c_int {
     0
 }
 

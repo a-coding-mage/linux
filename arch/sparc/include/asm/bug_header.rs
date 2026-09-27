@@ -6,7 +6,7 @@
 #[cfg(CONFIG_BUG)]
 extern "C" {
     #[cfg(CONFIG_DEBUG_BUGVERBOSE)]
-    pub fn do_BUG(file: *const core::ffi::c_char, line: core::ffi::c_int);
+    pub fn do_BUG(file: *const kernel::ffi::c_char, line: kernel::ffi::c_int);
 
     pub fn barrier_before_unreachable();
     pub fn __builtin_trap() -> !;
@@ -36,7 +36,7 @@ pub struct pt_regs {
 
 extern "C" {
     pub fn die_if_kernel(
-        str_: *mut core::ffi::c_char,
+        str_: *mut kernel::ffi::c_char,
         regs: *mut pt_regs,
     ) -> !;
 }

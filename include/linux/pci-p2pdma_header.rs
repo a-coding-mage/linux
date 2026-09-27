@@ -10,7 +10,7 @@
 
 // Dependency supplied by Linux PCI definitions: <linux/pci.h>
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub struct block_device;
 pub struct scatterlist;
@@ -50,9 +50,9 @@ extern "C" {
     pub fn pci_p2pdma_add_resource(pdev: *mut pci_dev, bar: i32, size: size_t, offset: u64) -> i32;
     pub fn pci_p2pdma_distance_many(provider: *mut pci_dev, clients: *mut *mut device, num_clients: i32, verbose: bool) -> i32;
     pub fn pci_p2pmem_find_many(clients: *mut *mut device, num_clients: i32) -> *mut pci_dev;
-    pub fn pci_alloc_p2pmem(pdev: *mut pci_dev, size: size_t) -> *mut core::ffi::c_void;
-    pub fn pci_free_p2pmem(pdev: *mut pci_dev, addr: *mut core::ffi::c_void, size: size_t);
-    pub fn pci_p2pmem_virt_to_bus(pdev: *mut pci_dev, addr: *mut core::ffi::c_void) -> pci_bus_addr_t;
+    pub fn pci_alloc_p2pmem(pdev: *mut pci_dev, size: size_t) -> *mut kernel::ffi::c_void;
+    pub fn pci_free_p2pmem(pdev: *mut pci_dev, addr: *mut kernel::ffi::c_void, size: size_t);
+    pub fn pci_p2pmem_virt_to_bus(pdev: *mut pci_dev, addr: *mut kernel::ffi::c_void) -> pci_bus_addr_t;
     pub fn pci_p2pmem_alloc_sgl(pdev: *mut pci_dev, nents: *mut u32, length: u32) -> *mut scatterlist;
     pub fn pci_p2pmem_free_sgl(pdev: *mut pci_dev, sgl: *mut scatterlist);
     pub fn pci_p2pmem_publish(pdev: *mut pci_dev, publish: bool);
@@ -72,11 +72,11 @@ pub unsafe fn pci_p2pdma_distance_many(_: *mut pci_dev, _: *mut *mut device, _: 
 #[cfg(not(CONFIG_PCI_P2PDMA))]
 pub unsafe fn pci_p2pmem_find_many(_: *mut *mut device, _: i32) -> *mut pci_dev { core::ptr::null_mut() }
 #[cfg(not(CONFIG_PCI_P2PDMA))]
-pub unsafe fn pci_alloc_p2pmem(_: *mut pci_dev, _: size_t) -> *mut core::ffi::c_void { core::ptr::null_mut() }
+pub unsafe fn pci_alloc_p2pmem(_: *mut pci_dev, _: size_t) -> *mut kernel::ffi::c_void { core::ptr::null_mut() }
 #[cfg(not(CONFIG_PCI_P2PDMA))]
-pub unsafe fn pci_free_p2pmem(_: *mut pci_dev, _: *mut core::ffi::c_void, _: size_t) {}
+pub unsafe fn pci_free_p2pmem(_: *mut pci_dev, _: *mut kernel::ffi::c_void, _: size_t) {}
 #[cfg(not(CONFIG_PCI_P2PDMA))]
-pub unsafe fn pci_p2pmem_virt_to_bus(_: *mut pci_dev, _: *mut core::ffi::c_void) -> pci_bus_addr_t { 0 }
+pub unsafe fn pci_p2pmem_virt_to_bus(_: *mut pci_dev, _: *mut kernel::ffi::c_void) -> pci_bus_addr_t { 0 }
 #[cfg(not(CONFIG_PCI_P2PDMA))]
 pub unsafe fn pci_p2pmem_alloc_sgl(_: *mut pci_dev, _: *mut u32, _: u32) -> *mut scatterlist { core::ptr::null_mut() }
 #[cfg(not(CONFIG_PCI_P2PDMA))]

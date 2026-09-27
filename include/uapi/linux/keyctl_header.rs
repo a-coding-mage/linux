@@ -10,7 +10,7 @@
  * 2 of the License, or (at your option) any later version.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* special process keyring shortcut IDs */
 pub const KEY_SPEC_THREAD_KEYRING: i32 = -1; /* - key ID for thread-specific keyring */

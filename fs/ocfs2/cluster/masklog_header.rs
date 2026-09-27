@@ -43,7 +43,7 @@ pub const MLOG_MAX_BITS: usize = 64;
 
 #[repr(C)]
 pub struct MlogBits {
-    pub words: [core::ffi::c_ulong; MLOG_MAX_BITS / (core::mem::size_of::<core::ffi::c_ulong>() * 8)],
+    pub words: [kernel::ffi::c_ulong; MLOG_MAX_BITS / (core::mem::size_of::<kernel::ffi::c_ulong>() * 8)],
 }
 
 unsafe extern "C" {
@@ -52,9 +52,9 @@ unsafe extern "C" {
 
     pub fn __mlog_printk(
         m: *const u64,
-        func: *const core::ffi::c_char,
-        line: core::ffi::c_int,
-        fmt: *const core::ffi::c_char,
+        func: *const kernel::ffi::c_char,
+        line: kernel::ffi::c_int,
+        fmt: *const kernel::ffi::c_char,
         ...,
     );
 }
@@ -62,44 +62,44 @@ unsafe extern "C" {
 #[cfg(target_pointer_width = "32")]
 #[inline]
 pub unsafe fn __mlog_test_u64(mask: u64, bits: &MlogBits) -> bool {
-    ((mask as u32 as core::ffi::c_ulong) & bits.words[0]) != 0
-        || (((mask >> 32) as u64 as core::ffi::c_ulong) & bits.words[1]) != 0
+    ((mask as u32 as kernel::ffi::c_ulong) & bits.words[0]) != 0
+        || (((mask >> 32) as u64 as kernel::ffi::c_ulong) & bits.words[1]) != 0
 }
 
 #[cfg(not(target_pointer_width = "32"))]
 #[inline]
 pub unsafe fn __mlog_test_u64(mask: u64, bits: &MlogBits) -> bool {
-    (mask as core::ffi::c_ulong & bits.words[0]) != 0
+    (mask as kernel::ffi::c_ulong & bits.words[0]) != 0
 }
 
 #[cfg(target_pointer_width = "32")]
 #[macro_export]
 macro_rules! __mlog_set_u64 { ($mask:expr, $bits:expr) => {{
-    $bits.words[0] |= ($mask as u32 as core::ffi::c_ulong);
-    $bits.words[1] |= (($mask as u64) >> 32) as core::ffi::c_ulong;
+    $bits.words[0] |= ($mask as u32 as kernel::ffi::c_ulong);
+    $bits.words[1] |= (($mask as u64) >> 32) as kernel::ffi::c_ulong;
 }} }
 
 #[cfg(not(target_pointer_width = "32"))]
 #[macro_export]
-macro_rules! __mlog_set_u64 { ($mask:expr, $bits:expr) => {{ $bits.words[0] |= $mask as core::ffi::c_ulong; }} }
+macro_rules! __mlog_set_u64 { ($mask:expr, $bits:expr) => {{ $bits.words[0] |= $mask as kernel::ffi::c_ulong; }} }
 
 #[cfg(target_pointer_width = "32")]
 #[macro_export]
 macro_rules! __mlog_clear_u64 { ($mask:expr, $bits:expr) => {{
-    $bits.words[0] &= !(($mask as u32) as core::ffi::c_ulong);
-    $bits.words[1] &= !((($mask as u64) >> 32) as core::ffi::c_ulong);
+    $bits.words[0] &= !(($mask as u32) as kernel::ffi::c_ulong);
+    $bits.words[1] &= !((($mask as u64) >> 32) as kernel::ffi::c_ulong);
 }} }
 
 #[cfg(not(target_pointer_width = "32"))]
 #[macro_export]
-macro_rules! __mlog_clear_u64 { ($mask:expr, $bits:expr) => {{ $bits.words[0] &= !($mask as core::ffi::c_ulong); }} }
+macro_rules! __mlog_clear_u64 { ($mask:expr, $bits:expr) => {{ $bits.words[0] &= !($mask as kernel::ffi::c_ulong); }} }
 
 #[macro_export]
 macro_rules! mlog {
     ($mask:expr, $fmt:expr $(, $arg:expr)* $(,)?) => {{
         let _m: u64 = MLOG_MASK_PREFIX | ($mask as u64);
         if (_m & ML_ALLOWED_BITS) != 0 {
-            $crate::__mlog_printk(&_m, concat!(module_path!(), "\0").as_ptr() as *const core::ffi::c_char, line!() as core::ffi::c_int, concat!($fmt, "\0").as_ptr() as *const core::ffi::c_char $(, $arg)*);
+            $crate::__mlog_printk(&_m, concat!(module_path!(), "\0").as_ptr() as *const kernel::ffi::c_char, line!() as kernel::ffi::c_int, concat!($fmt, "\0").as_ptr() as *const kernel::ffi::c_char $(, $arg)*);
         }
     }};
 }
@@ -112,7 +112,7 @@ macro_rules! mlog {
 pub struct Kset { _private: [u8; 0] }
 
 unsafe extern "C" {
-    pub fn mlog_sys_init(o2cb_subsys: *mut Kset) -> core::ffi::c_int;
+    pub fn mlog_sys_init(o2cb_subsys: *mut Kset) -> kernel::ffi::c_int;
     pub fn mlog_sys_shutdown();
 }
 

@@ -3,14 +3,14 @@
 #[repr(C)]
 pub struct plat_smp_ops {
     pub smp_setup: Option<unsafe extern "C" fn()>,
-    pub smp_processor_id: Option<unsafe extern "C" fn() -> core::ffi::c_uint>,
-    pub prepare_cpus: Option<unsafe extern "C" fn(max_cpus: core::ffi::c_uint)>,
+    pub smp_processor_id: Option<unsafe extern "C" fn() -> kernel::ffi::c_uint>,
+    pub prepare_cpus: Option<unsafe extern "C" fn(max_cpus: kernel::ffi::c_uint)>,
     pub start_cpu:
-        Option<unsafe extern "C" fn(cpu: core::ffi::c_uint, entry_point: core::ffi::c_ulong)>,
+        Option<unsafe extern "C" fn(cpu: kernel::ffi::c_uint, entry_point: kernel::ffi::c_ulong)>,
     pub send_ipi:
-        Option<unsafe extern "C" fn(cpu: core::ffi::c_uint, message: core::ffi::c_uint)>,
-    pub cpu_disable: Option<unsafe extern "C" fn(cpu: core::ffi::c_uint) -> core::ffi::c_int>,
-    pub cpu_die: Option<unsafe extern "C" fn(cpu: core::ffi::c_uint)>,
+        Option<unsafe extern "C" fn(cpu: kernel::ffi::c_uint, message: kernel::ffi::c_uint)>,
+    pub cpu_disable: Option<unsafe extern "C" fn(cpu: kernel::ffi::c_uint) -> kernel::ffi::c_int>,
+    pub cpu_die: Option<unsafe extern "C" fn(cpu: kernel::ffi::c_uint)>,
     pub play_dead: Option<unsafe extern "C" fn()>,
 }
 

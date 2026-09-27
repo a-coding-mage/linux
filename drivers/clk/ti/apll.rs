@@ -18,7 +18,7 @@ unsafe fn dra7_apll_enable(hw: *mut clk_hw) -> i32 {
     let mut r: i32 = 0;
     let mut i: i32 = 0;
     let ad = (*clk).dpll_data;
-    let clk_name: *const core::ffi::c_char;
+    let clk_name: *const kernel::ffi::c_char;
     let mut state: u8 = 1;
     let mut v: u32;
 
@@ -78,7 +78,7 @@ static apll_ck_ops: clk_ops = clk_ops {
     get_parent: Some(dra7_init_apll_parent),
 };
 
-unsafe fn omap_clk_register_apll(user: *mut core::ffi::c_void, node: *mut device_node) {
+unsafe fn omap_clk_register_apll(user: *mut kernel::ffi::c_void, node: *mut device_node) {
     let hw = user as *mut clk_hw;
     let clk_hw = to_clk_hw_omap(hw);
     let ad = (*clk_hw).dpll_data;
@@ -117,7 +117,7 @@ unsafe fn of_dra7_apll_setup(node: *mut device_node) {
     (*init).name = ti_dt_clk_name(node); (*init).ops = &apll_ck_ops;
     (*init).num_parents = of_clk_get_parent_count(node);
     if (*init).num_parents < 1 { pr_err!("dra7 apll %pOFn must have parent(s)\n", node); goto_cleanup!(); }
-    let parent_names = kcalloc((*init).num_parents, core::mem::size_of::<*const core::ffi::c_char>(), GFP_KERNEL);
+    let parent_names = kcalloc((*init).num_parents, core::mem::size_of::<*const kernel::ffi::c_char>(), GFP_KERNEL);
     if parent_names.is_null() { goto_cleanup!(); }
     of_clk_parent_fill(node, parent_names, (*init).num_parents); (*init).parent_names = parent_names;
     let mut ret = ti_clk_get_reg_addr(node, 0, &mut (*ad).control_reg);

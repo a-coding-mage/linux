@@ -45,7 +45,7 @@ pub const UV_AFFINITY_CPU: i32 = 2;
 
 unsafe extern "C" {
     pub fn uv_setup_irq(
-        name: *mut core::ffi::c_char,
+        name: *mut kernel::ffi::c_char,
         irq: i32,
         pin: i32,
         map: usize,

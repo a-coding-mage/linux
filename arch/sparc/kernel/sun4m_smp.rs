@@ -14,7 +14,7 @@ const IRQ_IPI_MASK: i32 = 13;
 const IRQ_IPI_RESCHED: i32 = 14;
 const IRQ_CROSS_CALL: i32 = 15;
 
-unsafe fn swap_ulong(ptr: *mut core::ffi::c_ulong, mut val: core::ffi::c_ulong) -> core::ffi::c_ulong {
+unsafe fn swap_ulong(ptr: *mut kernel::ffi::c_ulong, mut val: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     core::arch::asm!(
         "swap [{ptr}], {val}",
         ptr = inout(reg) ptr,
@@ -23,9 +23,9 @@ unsafe fn swap_ulong(ptr: *mut core::ffi::c_ulong, mut val: core::ffi::c_ulong) 
     val
 }
 
-pub unsafe fn sun4m_cpu_pre_starting(_arg: *mut core::ffi::c_void) {}
+pub unsafe fn sun4m_cpu_pre_starting(_arg: *mut kernel::ffi::c_void) {}
 
-pub unsafe fn sun4m_cpu_pre_online(_arg: *mut core::ffi::c_void) {
+pub unsafe fn sun4m_cpu_pre_online(_arg: *mut kernel::ffi::c_void) {
     let cpuid: i32 = hard_smp_processor_id();
 
     /* Allow master to continue. The master will then give us the
@@ -60,7 +60,7 @@ pub unsafe fn smp4m_boot_cpus() {
 }
 
 pub unsafe fn smp4m_boot_one_cpu(i: i32, idle: *mut task_struct) -> i32 {
-    let mut entry: *mut core::ffi::c_ulong = &mut sun4m_cpu_startup;
+    let mut entry: *mut kernel::ffi::c_ulong = &mut sun4m_cpu_startup;
     let mut timeout: i32;
     let mut cpu_node: i32 = 0;
 
@@ -130,14 +130,14 @@ unsafe fn sun4m_ipi_mask_one(cpu: i32) { sun4m_send_ipi(cpu, IRQ_IPI_MASK); }
 
 #[repr(C)]
 struct smp_funcall {
-    func: *mut core::ffi::c_void,
-    arg1: core::ffi::c_ulong,
-    arg2: core::ffi::c_ulong,
-    arg3: core::ffi::c_ulong,
-    arg4: core::ffi::c_ulong,
-    arg5: core::ffi::c_ulong,
-    processors_in: [core::ffi::c_ulong; SUN4M_NCPUS as usize],
-    processors_out: [core::ffi::c_ulong; SUN4M_NCPUS as usize],
+    func: *mut kernel::ffi::c_void,
+    arg1: kernel::ffi::c_ulong,
+    arg2: kernel::ffi::c_ulong,
+    arg3: kernel::ffi::c_ulong,
+    arg4: kernel::ffi::c_ulong,
+    arg5: kernel::ffi::c_ulong,
+    processors_in: [kernel::ffi::c_ulong; SUN4M_NCPUS as usize],
+    processors_out: [kernel::ffi::c_ulong; SUN4M_NCPUS as usize],
 }
 
 static mut ccall_info: smp_funcall = smp_funcall {
@@ -149,11 +149,11 @@ static mut ccall_info: smp_funcall = smp_funcall {
 static mut cross_call_lock: spinlock_t = spinlock_t::new();
 
 /* Cross calls must be serialized, at least currently. */
-unsafe fn sun4m_cross_call(func: *mut core::ffi::c_void, mut mask: cpumask_t,
-                            arg1: core::ffi::c_ulong, arg2: core::ffi::c_ulong,
-                            arg3: core::ffi::c_ulong, arg4: core::ffi::c_ulong) {
+unsafe fn sun4m_cross_call(func: *mut kernel::ffi::c_void, mut mask: cpumask_t,
+                            arg1: kernel::ffi::c_ulong, arg2: kernel::ffi::c_ulong,
+                            arg3: kernel::ffi::c_ulong, arg4: kernel::ffi::c_ulong) {
     let ncpus: i32 = SUN4M_NCPUS;
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
 
     spin_lock_irqsave(&mut cross_call_lock, &mut flags);
 
@@ -200,9 +200,9 @@ unsafe fn sun4m_cross_call(func: *mut core::ffi::c_void, mut mask: cpumask_t,
 
 /* Running cross calls. */
 pub unsafe fn smp4m_cross_call_irq() {
-    let func: unsafe extern "C" fn(core::ffi::c_ulong, core::ffi::c_ulong,
-                                    core::ffi::c_ulong, core::ffi::c_ulong,
-                                    core::ffi::c_ulong) = core::mem::transmute(ccall_info.func);
+    let func: unsafe extern "C" fn(kernel::ffi::c_ulong, kernel::ffi::c_ulong,
+                                    kernel::ffi::c_ulong, kernel::ffi::c_ulong,
+                                    kernel::ffi::c_ulong) = core::mem::transmute(ccall_info.func);
     let i: i32 = smp_processor_id();
 
     ccall_info.processors_in[i as usize] = 1;
@@ -233,8 +233,8 @@ pub unsafe fn smp4m_percpu_timer_interrupt(regs: *mut pt_regs) {
 
 #[repr(C)]
 struct sparc32_ipi_ops {
-    cross_call: unsafe fn(*mut core::ffi::c_void, cpumask_t, core::ffi::c_ulong,
-                          core::ffi::c_ulong, core::ffi::c_ulong, core::ffi::c_ulong),
+    cross_call: unsafe fn(*mut kernel::ffi::c_void, cpumask_t, kernel::ffi::c_ulong,
+                          kernel::ffi::c_ulong, kernel::ffi::c_ulong, kernel::ffi::c_ulong),
     resched: unsafe fn(i32),
     single: unsafe fn(i32),
     mask_one: unsafe fn(i32),

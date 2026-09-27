@@ -14,10 +14,10 @@
 extern "C" {
     fn __raw_writeb(value: u8, address: usize);
     fn __raw_readb(address: usize) -> u8;
-    fn virt_to_phys(address: *mut core::ffi::c_void) -> usize;
+    fn virt_to_phys(address: *mut kernel::ffi::c_void) -> usize;
     fn PAGE_KERNEL_PCC(arg: i32, flags: i32) -> pgprot_t;
-    fn ioremap_prot(address: usize, size: usize, prot: pgprot_t) -> *mut core::ffi::c_void;
-    fn printk(format: *const core::ffi::c_char, ...);
+    fn ioremap_prot(address: usize, size: usize, prot: pgprot_t) -> *mut kernel::ffi::c_void;
+    fn printk(format: *const kernel::ffi::c_char, ...);
     fn platform_add_devices(devices: *mut *mut platform_device, count: usize) -> i32;
     fn __set_io_port_base(base: usize);
     fn init_landisk_IRQ();
@@ -39,12 +39,12 @@ pub struct pata_platform_info {
 
 #[repr(C)]
 pub struct device {
-    pub platform_data: *mut core::ffi::c_void,
+    pub platform_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct platform_device {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id: i32,
     pub num_resources: usize,
     pub resource: *mut resource,
@@ -53,8 +53,8 @@ pub struct platform_device {
 
 #[repr(C)]
 pub struct sh_machine_vector {
-    pub mv_name: *const core::ffi::c_char,
-    pub mv_setup: Option<unsafe extern "C" fn(*mut *mut core::ffi::c_char)>,
+    pub mv_name: *const kernel::ffi::c_char,
+    pub mv_setup: Option<unsafe extern "C" fn(*mut *mut kernel::ffi::c_char)>,
     pub mv_init_irq: Option<unsafe extern "C" fn()>,
 }
 
@@ -88,17 +88,17 @@ static mut pata_info: pata_platform_info = pata_platform_info {
 };
 
 static mut cf_ide_device: platform_device = platform_device {
-    name: b"pata_platform\0".as_ptr() as *const core::ffi::c_char,
+    name: b"pata_platform\0".as_ptr() as *const kernel::ffi::c_char,
     id: -1,
     num_resources: 3,
     resource: core::ptr::addr_of_mut!(cf_ide_resources) as *mut resource,
     dev: device {
-        platform_data: core::ptr::addr_of_mut!(pata_info) as *mut core::ffi::c_void,
+        platform_data: core::ptr::addr_of_mut!(pata_info) as *mut kernel::ffi::c_void,
     },
 };
 
 static mut rtc_device: platform_device = platform_device {
-    name: b"rs5c313\0".as_ptr() as *const core::ffi::c_char,
+    name: b"rs5c313\0".as_ptr() as *const kernel::ffi::c_char,
     id: -1,
     num_resources: 0,
     resource: core::ptr::null_mut(),
@@ -113,14 +113,14 @@ static mut landisk_devices: [*mut platform_device; 2] = [
 unsafe extern "C" fn landisk_devices_setup() -> i32 {
     let prot: pgprot_t;
     let paddrbase: usize;
-    let cf_ide_base: *mut core::ffi::c_void;
+    let cf_ide_base: *mut kernel::ffi::c_void;
 
     /* open I/O area window */
-    paddrbase = virt_to_phys(PA_AREA5_IO as *mut core::ffi::c_void);
+    paddrbase = virt_to_phys(PA_AREA5_IO as *mut kernel::ffi::c_void);
     prot = PAGE_KERNEL_PCC(1, _PAGE_PCC_IO16);
     cf_ide_base = ioremap_prot(paddrbase, PAGE_SIZE, prot);
     if cf_ide_base.is_null() {
-        printk(b"allocate_cf_area : can't open CF I/O window!\n\0".as_ptr() as *const core::ffi::c_char);
+        printk(b"allocate_cf_area : can't open CF I/O window!\n\0".as_ptr() as *const kernel::ffi::c_char);
         return -ENOMEM;
     }
 
@@ -139,14 +139,14 @@ unsafe extern "C" fn landisk_devices_setup() -> i32 {
 
 // device_initcall(landisk_devices_setup);
 
-unsafe extern "C" fn landisk_setup(_cmdline_p: *mut *mut core::ffi::c_char) {
+unsafe extern "C" fn landisk_setup(_cmdline_p: *mut *mut kernel::ffi::c_char) {
     /* I/O port identity mapping */
     __set_io_port_base(0);
 
     /* LED ON */
     __raw_writeb(__raw_readb(PA_LED) | 0x03, PA_LED);
 
-    printk(b"I-O DATA DEVICE, INC. \"LANDISK Series\" support.\n\0".as_ptr() as *const core::ffi::c_char);
+    printk(b"I-O DATA DEVICE, INC. \"LANDISK Series\" support.\n\0".as_ptr() as *const kernel::ffi::c_char);
     pm_power_off = Some(landisk_power_off);
 }
 
@@ -154,7 +154,7 @@ unsafe extern "C" fn landisk_setup(_cmdline_p: *mut *mut core::ffi::c_char) {
  * The Machine Vector
  */
 static mut mv_landisk: sh_machine_vector = sh_machine_vector {
-    mv_name: b"LANDISK\0".as_ptr() as *const core::ffi::c_char,
+    mv_name: b"LANDISK\0".as_ptr() as *const kernel::ffi::c_char,
     mv_setup: Some(landisk_setup),
     mv_init_irq: Some(init_landisk_IRQ),
 };

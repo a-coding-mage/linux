@@ -9,7 +9,7 @@
  * "__stack_chk_guard".
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 /// External stack-canary guard supplied by the surrounding kernel.
 unsafe extern "C" {

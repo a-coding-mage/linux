@@ -5,9 +5,9 @@
 
 #[repr(C)]
 pub struct machdep_calls {
-    pub name: *const core::ffi::c_char,
-    pub compatible: *const core::ffi::c_char,
-    pub compatibles: *const *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
+    pub compatibles: *const *const kernel::ffi::c_char,
     #[cfg(all(CONFIG_PPC64, CONFIG_PM))] pub iommu_restore: Option<unsafe extern "C" fn()>,
     #[cfg(all(CONFIG_PPC64, CONFIG_MEMORY_HOTPLUG))] pub memory_block_size: Option<unsafe extern "C" fn() -> usize>,
     pub dma_set_mask: Option<unsafe extern "C" fn(*mut device, u64)>,
@@ -22,20 +22,20 @@ pub struct machdep_calls {
     pub pcibios_root_bridge_prepare: Option<unsafe extern "C" fn(*mut pci_host_bridge) -> i32>,
     pub discover_phbs: Option<unsafe extern "C" fn()>,
     pub pci_setup_phb: Option<unsafe extern "C" fn(*mut pci_controller) -> i32>,
-    pub restart: Option<unsafe extern "C" fn(*mut core::ffi::c_char) -> !>,
+    pub restart: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char) -> !>,
     pub halt: Option<unsafe extern "C" fn() -> !>,
-    pub panic: Option<unsafe extern "C" fn(*mut core::ffi::c_char)>,
+    pub panic: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char)>,
     pub time_init: Option<unsafe extern "C" fn() -> i64>,
     pub set_rtc_time: Option<unsafe extern "C" fn(*mut rtc_time) -> i32>,
     pub get_rtc_time: Option<unsafe extern "C" fn(*mut rtc_time)>,
     pub get_boot_time: Option<unsafe extern "C" fn() -> time64_t>,
     pub calibrate_decr: Option<unsafe extern "C" fn()>,
-    pub progress: Option<unsafe extern "C" fn(*mut core::ffi::c_char, u16)>,
-    pub log_error: Option<unsafe extern "C" fn(*mut core::ffi::c_char, u32, i32)>,
+    pub progress: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char, u16)>,
+    pub log_error: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char, u32, i32)>,
     pub nvram_read_val: Option<unsafe extern "C" fn(i32) -> u8>,
     pub nvram_write_val: Option<unsafe extern "C" fn(i32, u8)>,
-    pub nvram_write: Option<unsafe extern "C" fn(*mut core::ffi::c_char, usize, *mut loff_t) -> isize>,
-    pub nvram_read: Option<unsafe extern "C" fn(*mut core::ffi::c_char, usize, *mut loff_t) -> isize>,
+    pub nvram_write: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char, usize, *mut loff_t) -> isize>,
+    pub nvram_read: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char, usize, *mut loff_t) -> isize>,
     pub nvram_size: Option<unsafe extern "C" fn() -> isize>,
     pub nvram_sync: Option<unsafe extern "C" fn()>,
     pub system_reset_exception: Option<unsafe extern "C" fn(*mut pt_regs) -> i32>,
@@ -69,8 +69,8 @@ pub struct machdep_calls {
     #[cfg(CONFIG_KEXEC_CORE)] pub machine_kexec: Option<unsafe extern "C" fn(*mut kimage)>,
     #[cfg(CONFIG_SUSPEND)] pub suspend_disable_irqs: Option<unsafe extern "C" fn()>,
     #[cfg(CONFIG_SUSPEND)] pub suspend_enable_irqs: Option<unsafe extern "C" fn()>,
-    #[cfg(CONFIG_ARCH_CPU_PROBE_RELEASE)] pub cpu_probe: Option<unsafe extern "C" fn(*const core::ffi::c_char, usize) -> isize>,
-    #[cfg(CONFIG_ARCH_CPU_PROBE_RELEASE)] pub cpu_release: Option<unsafe extern "C" fn(*const core::ffi::c_char, usize) -> isize>,
+    #[cfg(CONFIG_ARCH_CPU_PROBE_RELEASE)] pub cpu_probe: Option<unsafe extern "C" fn(*const kernel::ffi::c_char, usize) -> isize>,
+    #[cfg(CONFIG_ARCH_CPU_PROBE_RELEASE)] pub cpu_release: Option<unsafe extern "C" fn(*const kernel::ffi::c_char, usize) -> isize>,
     pub get_random_seed: Option<unsafe extern "C" fn(*mut usize) -> i32>,
 }
 
@@ -85,7 +85,7 @@ extern "C" { pub fn __machine_is(md: *const machdep_calls) -> bool; }
 
 #[macro_export] macro_rules! machine_is { ($name:ident) => {{ unsafe { $crate::__machine_is(core::ptr::addr_of!($crate::mach_$name)) } }}; }
 
-#[inline] pub unsafe fn log_error(buf: *mut core::ffi::c_char, err_type: u32, fatal: i32) {
+#[inline] pub unsafe fn log_error(buf: *mut kernel::ffi::c_char, err_type: u32, fatal: i32) {
     if let Some(f) = ppc_md.log_error { f(buf, err_type, fatal); }
 }
 

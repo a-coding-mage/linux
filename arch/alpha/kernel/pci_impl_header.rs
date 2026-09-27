@@ -26,7 +26,7 @@ pub const DEFAULT_AGP_APER_SIZE: usize = 64 * 1024 * 1024;
 macro_rules! common_table_lookup {
     ($slot:expr, $min_idsel:expr, $max_idsel:expr, $pin:expr,
      $irqs_per_slot:expr, $irq_tab:expr) => {{
-        let mut _ctl_: libc::c_long = -1;
+        let mut _ctl_: kernel::ffi::c_long = -1;
         if $slot >= $min_idsel && $slot <= $max_idsel && $pin < $irqs_per_slot {
             _ctl_ = $irq_tab[$slot - $min_idsel][$pin];
         }
@@ -39,15 +39,15 @@ macro_rules! common_table_lookup {
 pub struct pci_iommu_arena {
     pub lock: spinlock_t,
     pub hose: *mut pci_controller,
-    pub ptes: *mut libc::c_ulong,
+    pub ptes: *mut kernel::ffi::c_ulong,
     pub dma_base: dma_addr_t,
-    pub size: libc::c_uint,
-    pub next_entry: libc::c_uint,
-    pub align_entry: libc::c_uint,
+    pub size: kernel::ffi::c_uint,
+    pub next_entry: kernel::ffi::c_uint,
+    pub align_entry: kernel::ffi::c_uint,
 }
 
-pub const IOMMU_INVALID_PTE: libc::c_ulong = 0x2; // 32:63 bits MBZ
-pub const IOMMU_RESERVED_PTE: libc::c_ulong = 0xface;
+pub const IOMMU_INVALID_PTE: kernel::ffi::c_ulong = 0x2; // 32:63 bits MBZ
+pub const IOMMU_RESERVED_PTE: kernel::ffi::c_ulong = 0xface;
 
 /* Build-time CONFIG_ALPHA_SRM/CONFIG_ALPHA_CIA and CONFIG_ALPHA_GENERIC
  * conditions determine whether SRM setup restoration is required. */
@@ -65,7 +65,7 @@ pub static mut hose_head: *mut pci_controller;
 pub static mut hose_tail: *mut *mut pci_controller;
 pub static mut pci_isa_hose: *mut pci_controller;
 
-pub static mut alpha_agpgart_size: libc::c_ulong;
+pub static mut alpha_agpgart_size: kernel::ffi::c_ulong;
 
 extern "C" {
     pub fn common_init_pci();
@@ -74,29 +74,29 @@ extern "C" {
     pub fn alloc_resource() -> *mut resource;
 
     pub fn iommu_arena_new_node(
-        node: libc::c_int,
+        node: kernel::ffi::c_int,
         hose: *mut pci_controller,
         dma_base: dma_addr_t,
-        size: libc::c_ulong,
-        align: libc::c_ulong,
+        size: kernel::ffi::c_ulong,
+        align: kernel::ffi::c_ulong,
     ) -> *mut pci_iommu_arena;
     pub fn iommu_arena_new(
         hose: *mut pci_controller,
         dma_base: dma_addr_t,
-        size: libc::c_ulong,
-        align: libc::c_ulong,
+        size: kernel::ffi::c_ulong,
+        align: kernel::ffi::c_ulong,
     ) -> *mut pci_iommu_arena;
 
-    pub static pci_io_names: *const *const libc::c_char;
-    pub static pci_mem_names: *const *const libc::c_char;
-    pub static pci_hae0_name: *const libc::c_char;
+    pub static pci_io_names: *const *const kernel::ffi::c_char;
+    pub static pci_mem_names: *const *const kernel::ffi::c_char;
+    pub static pci_hae0_name: *const kernel::ffi::c_char;
 
-    pub fn size_for_memory(max: libc::c_ulong) -> libc::c_ulong;
+    pub fn size_for_memory(max: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
 
-    pub fn iommu_reserve(arena: *mut pci_iommu_arena, start: libc::c_long, n: libc::c_long) -> libc::c_int;
-    pub fn iommu_release(arena: *mut pci_iommu_arena, start: libc::c_long, n: libc::c_long) -> libc::c_int;
-    pub fn iommu_bind(arena: *mut pci_iommu_arena, start: libc::c_long, n: libc::c_long, pages: *mut *mut page) -> libc::c_int;
-    pub fn iommu_unbind(arena: *mut pci_iommu_arena, start: libc::c_long, n: libc::c_long) -> libc::c_int;
+    pub fn iommu_reserve(arena: *mut pci_iommu_arena, start: kernel::ffi::c_long, n: kernel::ffi::c_long) -> kernel::ffi::c_int;
+    pub fn iommu_release(arena: *mut pci_iommu_arena, start: kernel::ffi::c_long, n: kernel::ffi::c_long) -> kernel::ffi::c_int;
+    pub fn iommu_bind(arena: *mut pci_iommu_arena, start: kernel::ffi::c_long, n: kernel::ffi::c_long, pages: *mut *mut page) -> kernel::ffi::c_int;
+    pub fn iommu_unbind(arena: *mut pci_iommu_arena, start: kernel::ffi::c_long, n: kernel::ffi::c_long) -> kernel::ffi::c_int;
 }
 
 pub use pci_common_swizzle as common_swizzle;

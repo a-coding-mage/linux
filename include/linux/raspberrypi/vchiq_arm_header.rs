@@ -26,7 +26,7 @@ pub enum USE_TYPE_E {
 
 #[repr(C)]
 pub struct vchiq_platform_info {
-    pub cache_line_size: ::core::ffi::c_uint,
+    pub cache_line_size: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -35,7 +35,7 @@ pub struct vchiq_drv_mgmt {
     pub info: *const vchiq_platform_info,
 
     pub connected: bool,
-    pub num_deferred_callbacks: ::core::ffi::c_int,
+    pub num_deferred_callbacks: ::kernel::ffi::c_int,
     /* Protects connected and num_deferred_callbacks */
     pub connected_mutex: mutex,
 
@@ -43,11 +43,11 @@ pub struct vchiq_drv_mgmt {
 
     pub free_fragments_sema: semaphore,
     pub free_fragments_mutex: semaphore,
-    pub fragments_base: *mut ::core::ffi::c_char,
-    pub free_fragments: *mut ::core::ffi::c_char,
-    pub fragments_size: ::core::ffi::c_uint,
+    pub fragments_base: *mut ::kernel::ffi::c_char,
+    pub free_fragments: *mut ::kernel::ffi::c_char,
+    pub fragments_size: ::kernel::ffi::c_uint,
 
-    pub regs: *mut ::core::ffi::c_void,
+    pub regs: *mut ::kernel::ffi::c_void,
 
     pub state: vchiq_state,
 }
@@ -55,14 +55,14 @@ pub struct vchiq_drv_mgmt {
 #[repr(C)]
 pub struct user_service {
     pub service: *mut vchiq_service,
-    pub userdata: *mut ::core::ffi::c_void,
+    pub userdata: *mut ::kernel::ffi::c_void,
     pub instance: *mut vchiq_instance,
-    pub is_vchi: ::core::ffi::c_char,
-    pub dequeue_pending: ::core::ffi::c_char,
-    pub close_pending: ::core::ffi::c_char,
-    pub message_available_pos: ::core::ffi::c_int,
-    pub msg_insert: ::core::ffi::c_int,
-    pub msg_remove: ::core::ffi::c_int,
+    pub is_vchi: ::kernel::ffi::c_char,
+    pub dequeue_pending: ::kernel::ffi::c_char,
+    pub close_pending: ::kernel::ffi::c_char,
+    pub message_available_pos: ::kernel::ffi::c_int,
+    pub msg_insert: ::kernel::ffi::c_int,
+    pub msg_remove: ::kernel::ffi::c_int,
     pub insert_event: completion,
     pub remove_event: completion,
     pub close_event: completion,
@@ -72,7 +72,7 @@ pub struct user_service {
 #[repr(C)]
 pub struct bulk_waiter_node {
     pub bulk_waiter: bulk_waiter,
-    pub pid: ::core::ffi::c_int,
+    pub pid: ::kernel::ffi::c_int,
     pub list: list_head,
 }
 
@@ -80,18 +80,18 @@ pub struct bulk_waiter_node {
 pub struct vchiq_instance {
     pub state: *mut vchiq_state,
     pub completions: [vchiq_completion_data_kernel; MAX_COMPLETIONS],
-    pub completion_insert: ::core::ffi::c_int,
-    pub completion_remove: ::core::ffi::c_int,
+    pub completion_insert: ::kernel::ffi::c_int,
+    pub completion_remove: ::kernel::ffi::c_int,
     pub insert_event: completion,
     pub remove_event: completion,
     pub completion_mutex: mutex,
 
-    pub connected: ::core::ffi::c_int,
-    pub closing: ::core::ffi::c_int,
-    pub pid: ::core::ffi::c_int,
-    pub mark: ::core::ffi::c_int,
-    pub use_close_delivered: ::core::ffi::c_int,
-    pub trace: ::core::ffi::c_int,
+    pub connected: ::kernel::ffi::c_int,
+    pub closing: ::kernel::ffi::c_int,
+    pub pid: ::kernel::ffi::c_int,
+    pub mark: ::kernel::ffi::c_int,
+    pub use_close_delivered: ::kernel::ffi::c_int,
+    pub trace: ::kernel::ffi::c_int,
 
     pub bulk_waiter_list: list_head,
     pub bulk_waiter_list_mutex: mutex,
@@ -100,35 +100,35 @@ pub struct vchiq_instance {
 }
 
 extern "C" {
-    pub fn vchiq_use_service(instance: *mut vchiq_instance, handle: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn vchiq_release_service(instance: *mut vchiq_instance, handle: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn vchiq_check_service(service: *mut vchiq_service) -> ::core::ffi::c_int;
+    pub fn vchiq_use_service(instance: *mut vchiq_instance, handle: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn vchiq_release_service(instance: *mut vchiq_instance, handle: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn vchiq_check_service(service: *mut vchiq_service) -> ::kernel::ffi::c_int;
     pub fn vchiq_dump_service_use_state(state: *mut vchiq_state);
     pub fn vchiq_use_internal(
         state: *mut vchiq_state,
         service: *mut vchiq_service,
         use_type: USE_TYPE_E,
-    ) -> ::core::ffi::c_int;
-    pub fn vchiq_release_internal(state: *mut vchiq_state, service: *mut vchiq_service) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn vchiq_release_internal(state: *mut vchiq_state, service: *mut vchiq_service) -> ::kernel::ffi::c_int;
     pub fn vchiq_instance_get_debugfs_node(instance: *mut vchiq_instance) -> *mut vchiq_debugfs_node;
-    pub fn vchiq_instance_get_use_count(instance: *mut vchiq_instance) -> ::core::ffi::c_int;
-    pub fn vchiq_instance_get_pid(instance: *mut vchiq_instance) -> ::core::ffi::c_int;
-    pub fn vchiq_instance_get_trace(instance: *mut vchiq_instance) -> ::core::ffi::c_int;
-    pub fn vchiq_instance_set_trace(instance: *mut vchiq_instance, trace: ::core::ffi::c_int);
+    pub fn vchiq_instance_get_use_count(instance: *mut vchiq_instance) -> ::kernel::ffi::c_int;
+    pub fn vchiq_instance_get_pid(instance: *mut vchiq_instance) -> ::kernel::ffi::c_int;
+    pub fn vchiq_instance_get_trace(instance: *mut vchiq_instance) -> ::kernel::ffi::c_int;
+    pub fn vchiq_instance_set_trace(instance: *mut vchiq_instance, trace: ::kernel::ffi::c_int);
     pub fn vchiq_add_connected_callback(device: *mut vchiq_device, callback: Option<unsafe extern "C" fn()>);
 
     /* CONFIG_VCHIQ_CDEV: declarations are available when this build condition is enabled. */
     pub fn vchiq_deregister_chrdev();
-    pub fn vchiq_register_chrdev(parent: *mut device) -> ::core::ffi::c_int;
+    pub fn vchiq_register_chrdev(parent: *mut device) -> ::kernel::ffi::c_int;
 
     pub fn service_callback(
         vchiq_instance: *mut vchiq_instance,
         reason: vchiq_reason,
         header: *mut vchiq_header,
-        handle: ::core::ffi::c_uint,
-        cb_data: *mut ::core::ffi::c_void,
-        cb_userdata: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        handle: ::kernel::ffi::c_uint,
+        cb_data: *mut ::kernel::ffi::c_void,
+        cb_userdata: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
     pub fn free_bulk_waiter(instance: *mut vchiq_instance);
 }
 

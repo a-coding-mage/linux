@@ -26,7 +26,7 @@ pub const G2D_BUF_USERPTR: u32 = 1 << 31;
 pub const G2D_EVENT_NOT: u32 = 0;
 pub const G2D_EVENT_NONSTOP: u32 = 1;
 pub const G2D_EVENT_STOP: u32 = 2; // not yet
-#[repr(C)] pub struct drm_exynos_g2d_userptr { pub userptr: ::core::ffi::c_ulong, pub size: ::core::ffi::c_ulong }
+#[repr(C)] pub struct drm_exynos_g2d_userptr { pub userptr: ::kernel::ffi::c_ulong, pub size: ::kernel::ffi::c_ulong }
 #[repr(C)] pub struct drm_exynos_g2d_set_cmdlist { pub cmd: u64, pub cmd_buf: u64, pub cmd_nr: u32, pub cmd_buf_nr: u32, pub event_type: u64, pub user_data: u64 }
 #[repr(C)] pub struct drm_exynos_g2d_exec { pub async_: u64 }
 

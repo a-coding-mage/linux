@@ -7,22 +7,22 @@
 
 // The original header guard is omitted in Rust; module inclusion provides the guard.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 extern "C" {
-    pub fn memset(s: *mut core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void;
+    pub fn memset(s: *mut kernel::ffi::c_void, c: i32, n: usize) -> *mut kernel::ffi::c_void;
     pub fn memcpy(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: usize,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 macro_rules! clear_page {
     ($page:expr) => {{
         unsafe {
             memset(
-                ($page) as *mut core::ffi::c_void,
+                ($page) as *mut kernel::ffi::c_void,
                 0,
                 PAGE_SIZE,
             )
@@ -34,8 +34,8 @@ macro_rules! copy_page {
     ($to:expr, $from:expr) => {{
         unsafe {
             memcpy(
-                ($to) as *mut core::ffi::c_void,
-                ($from) as *const core::ffi::c_void,
+                ($to) as *mut kernel::ffi::c_void,
+                ($from) as *const kernel::ffi::c_void,
                 PAGE_SIZE,
             )
         }

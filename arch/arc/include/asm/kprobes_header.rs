@@ -23,7 +23,7 @@ pub const MAX_STACK_SIZE: usize = 64;
 #[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct arch_specific_insn {
-    pub is_short: ::core::ffi::c_int,
+    pub is_short: ::kernel::ffi::c_int,
     pub t1_addr: *mut kprobe_opcode_t,
     pub t2_addr: *mut kprobe_opcode_t,
     pub t1_opcode: kprobe_opcode_t,
@@ -51,13 +51,13 @@ unsafe extern "C" {
 #[repr(C)]
 pub struct prev_kprobe {
     pub kp: *mut kprobe,
-    pub status: ::core::ffi::c_ulong,
+    pub status: ::kernel::ffi::c_ulong,
 }
 
 #[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct kprobe_ctlblk {
-    pub kprobe_status: ::core::ffi::c_uint,
+    pub kprobe_status: ::kernel::ffi::c_uint,
     pub prev_kprobe: prev_kprobe,
 }
 
@@ -66,10 +66,10 @@ pub struct kprobe_ctlblk {
 unsafe extern "C" {
     pub fn kprobe_fault_handler(
         regs: *mut pt_regs,
-        cause: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        cause: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
     pub fn __kretprobe_trampoline();
-    pub fn trap_is_kprobe(address: ::core::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn trap_is_kprobe(address: ::kernel::ffi::c_ulong, regs: *mut pt_regs);
 }
 
 #[cfg(not(CONFIG_KPROBES))]

@@ -35,7 +35,7 @@ unsafe fn to_zynqmp_clk_gate(hw: *mut clk_hw) -> *mut zynqmp_clk_gate {
  */
 unsafe extern "C" fn zynqmp_clk_gate_enable(hw: *mut clk_hw) -> i32 {
     let gate = &*to_zynqmp_clk_gate(hw);
-    let clk_name: *const core::ffi::c_char = clk_hw_get_name(hw);
+    let clk_name: *const kernel::ffi::c_char = clk_hw_get_name(hw);
     let clk_id: u32 = gate.clk_id;
     let ret: i32 = zynqmp_pm_clock_enable(clk_id);
 
@@ -58,7 +58,7 @@ unsafe extern "C" fn zynqmp_clk_gate_enable(hw: *mut clk_hw) -> i32 {
  */
 unsafe extern "C" fn zynqmp_clk_gate_disable(hw: *mut clk_hw) {
     let gate = &*to_zynqmp_clk_gate(hw);
-    let clk_name: *const core::ffi::c_char = clk_hw_get_name(hw);
+    let clk_name: *const kernel::ffi::c_char = clk_hw_get_name(hw);
     let clk_id: u32 = gate.clk_id;
     let ret: i32 = zynqmp_pm_clock_disable(clk_id);
 
@@ -81,7 +81,7 @@ unsafe extern "C" fn zynqmp_clk_gate_disable(hw: *mut clk_hw) {
  */
 unsafe extern "C" fn zynqmp_clk_gate_is_enabled(hw: *mut clk_hw) -> i32 {
     let gate = &*to_zynqmp_clk_gate(hw);
-    let clk_name: *const core::ffi::c_char = clk_hw_get_name(hw);
+    let clk_name: *const kernel::ffi::c_char = clk_hw_get_name(hw);
     let clk_id: u32 = gate.clk_id;
     let mut state: i32 = 0;
     let ret: i32 = zynqmp_pm_clock_getstate(clk_id, &mut state);
@@ -116,9 +116,9 @@ static zynqmp_clk_gate_ops: clk_ops = clk_ops {
  * Return: clock hardware of the registered clock gate
  */
 unsafe extern "C" fn zynqmp_clk_register_gate(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     clk_id: u32,
-    parents: *const *const core::ffi::c_char,
+    parents: *const *const kernel::ffi::c_char,
     num_parents: u8,
     nodes: *const clock_topology,
 ) -> *mut clk_hw {
@@ -141,7 +141,7 @@ unsafe extern "C" fn zynqmp_clk_register_gate(
     let mut hw: *mut clk_hw = &mut (*gate).hw;
     let ret: i32 = clk_hw_register(core::ptr::null_mut(), hw);
     if ret != 0 {
-        kfree(gate as *mut core::ffi::c_void);
+        kfree(gate as *mut kernel::ffi::c_void);
         hw = ERR_PTR(ret);
     }
 

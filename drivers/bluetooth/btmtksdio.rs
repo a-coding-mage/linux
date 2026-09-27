@@ -9,7 +9,7 @@ const MTKBTSDIO_AUTOSUSPEND_DELAY: u32 = 1000;
 static mut ENABLE_AUTOSUSPEND: bool = true;
 
 #[repr(C)]
-pub struct btmtksdio_data { pub fwname: *const core::ffi::c_char, pub chipid: u16, pub lp_mbox_supported: bool, pub pm_runtime_supported: bool }
+pub struct btmtksdio_data { pub fwname: *const kernel::ffi::c_char, pub chipid: u16, pub lp_mbox_supported: bool, pub pm_runtime_supported: bool }
 #[repr(C, packed)] pub struct mtkbtsdio_hdr { pub len: u16, pub reserved: u16, pub bt_type: u8 }
 #[repr(C)] pub struct btmtksdio_dev { pub hdev: *mut hci_dev, pub func: *mut sdio_func, pub dev: *mut device, pub txrx_work: work_struct, pub tx_state: usize, pub txq: sk_buff_head, pub evt_skb: *mut sk_buff, pub data: *const btmtksdio_data, pub reset: *mut gpio_desc }
 
@@ -39,8 +39,8 @@ unsafe fn btmtksdio_open(h:*mut hci_dev)->i32 { let _=h; 0 }
 unsafe fn btmtksdio_close(h:*mut hci_dev)->i32 { let _=h; 0 }
 unsafe fn btmtksdio_flush(h:*mut hci_dev)->i32 { let _=h; 0 }
 unsafe fn btmtksdio_func_query(h:*mut hci_dev)->i32 { let _=h; 0 }
-unsafe fn mt76xx_setup(h:*mut hci_dev, f:*const core::ffi::c_char)->i32 { let _=(h,f); 0 }
-unsafe fn mt79xx_setup(h:*mut hci_dev, f:*const core::ffi::c_char)->i32 { let _=(h,f); 0 }
+unsafe fn mt76xx_setup(h:*mut hci_dev, f:*const kernel::ffi::c_char)->i32 { let _=(h,f); 0 }
+unsafe fn mt79xx_setup(h:*mut hci_dev, f:*const kernel::ffi::c_char)->i32 { let _=(h,f); 0 }
 unsafe fn btmtksdio_mtk_reg_read(h:*mut hci_dev,r:u32,v:*mut u32)->i32 { let _=(h,r,v); 0 }
 unsafe fn btmtksdio_mtk_reg_write(h:*mut hci_dev,r:u32,v:u32,m:u32)->i32 { let _=(h,r,v,m); 0 }
 unsafe fn btmtksdio_get_data_path_id(_: *mut hci_dev, p:*mut u8)->i32 { *p=1; 0 }

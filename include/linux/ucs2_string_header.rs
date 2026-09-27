@@ -6,12 +6,12 @@
 pub type ucs2_char_t = u16;
 
 unsafe extern "C" {
-    pub fn ucs2_strnlen(s: *const ucs2_char_t, maxlength: usize) -> core::ffi::c_ulong;
-    pub fn ucs2_strlen(s: *const ucs2_char_t) -> core::ffi::c_ulong;
+    pub fn ucs2_strnlen(s: *const ucs2_char_t, maxlength: usize) -> kernel::ffi::c_ulong;
+    pub fn ucs2_strlen(s: *const ucs2_char_t) -> kernel::ffi::c_ulong;
     pub fn ucs2_strsize(
         data: *const ucs2_char_t,
-        maxlength: core::ffi::c_ulong,
-    ) -> core::ffi::c_ulong;
+        maxlength: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_ulong;
     pub fn ucs2_strscpy(
         dst: *mut ucs2_char_t,
         src: *const ucs2_char_t,
@@ -21,14 +21,14 @@ unsafe extern "C" {
         a: *const ucs2_char_t,
         b: *const ucs2_char_t,
         len: usize,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
-    pub fn ucs2_utf8size(src: *const ucs2_char_t) -> core::ffi::c_ulong;
+    pub fn ucs2_utf8size(src: *const ucs2_char_t) -> kernel::ffi::c_ulong;
     pub fn ucs2_as_utf8(
         dest: *mut u8,
         src: *const ucs2_char_t,
-        maxlength: core::ffi::c_ulong,
-    ) -> core::ffi::c_ulong;
+        maxlength: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_ulong;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

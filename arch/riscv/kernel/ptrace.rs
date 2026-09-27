@@ -22,7 +22,7 @@ unsafe fn riscv_gpr_get(target: *mut task_struct, _regset: *const user_regset, m
     membuf_write(&mut to, task_pt_regs(target), core::mem::size_of::<user_regs_struct>())
 }
 
-unsafe fn riscv_gpr_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const core::ffi::c_void, mut ubuf: *const core::ffi::c_void) -> i32 {
+unsafe fn riscv_gpr_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const kernel::ffi::c_void, mut ubuf: *const kernel::ffi::c_void) -> i32 {
     let regs = task_pt_regs(target);
     user_regset_copyin(&mut pos, &mut count, &mut kbuf, &mut ubuf, regs as *mut _, 0, -1)
 }
@@ -37,7 +37,7 @@ unsafe fn riscv_fpr_get(target: *mut task_struct, _regset: *const user_regset, m
 }
 
 #[cfg(CONFIG_FPU)]
-unsafe fn riscv_fpr_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const core::ffi::c_void, mut ubuf: *const core::ffi::c_void) -> i32 {
+unsafe fn riscv_fpr_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const kernel::ffi::c_void, mut ubuf: *const kernel::ffi::c_void) -> i32 {
     let fstate = &mut (*target).thread.fstate;
     let mut ret = user_regset_copyin(&mut pos, &mut count, &mut kbuf, &mut ubuf, fstate as *mut _, 0, core::mem::offset_of!(__riscv_d_ext_state, fcsr));
     if ret == 0 { ret = user_regset_copyin(&mut pos, &mut count, &mut kbuf, &mut ubuf, fstate as *mut _, 0, core::mem::offset_of!(__riscv_d_ext_state, fcsr) + core::mem::size_of_val(&fstate.fcsr)); }
@@ -88,7 +88,7 @@ unsafe fn invalid_ptrace_v_csr(vstate: *mut __riscv_v_ext_state, ptrace: *mut __
 }
 
 #[cfg(CONFIG_RISCV_ISA_V)]
-unsafe fn riscv_vr_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const core::ffi::c_void, mut ubuf: *const core::ffi::c_void) -> i32 {
+unsafe fn riscv_vr_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const kernel::ffi::c_void, mut ubuf: *const kernel::ffi::c_void) -> i32 {
     let vstate = &mut (*target).thread.vstate;
     let mut p: __riscv_v_regset_state = core::mem::zeroed();
     if !(has_vector() || has_xtheadvector()) { return -EINVAL; }
@@ -111,16 +111,16 @@ unsafe fn riscv_vr_active(target: *mut task_struct, regset: *const user_regset) 
 unsafe fn tagged_addr_ctrl_get(target: *mut task_struct, _regset: *const user_regset, mut to: membuf) -> i32 { let ctrl = get_tagged_addr_ctrl(target); if IS_ERR_VALUE(ctrl) { return ctrl as i32; } membuf_write(&mut to, &ctrl, core::mem::size_of::<c_long>()) }
 
 #[cfg(CONFIG_RISCV_ISA_SUPM)]
-unsafe fn tagged_addr_ctrl_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const core::ffi::c_void, mut ubuf: *const core::ffi::c_void) -> i32 { let mut ctrl: c_long = 0; let ret = user_regset_copyin(&mut pos, &mut count, &mut kbuf, &mut ubuf, &mut ctrl, 0, -1); if ret != 0 { return ret; } set_tagged_addr_ctrl(target, ctrl) }
+unsafe fn tagged_addr_ctrl_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const kernel::ffi::c_void, mut ubuf: *const kernel::ffi::c_void) -> i32 { let mut ctrl: c_long = 0; let ret = user_regset_copyin(&mut pos, &mut count, &mut kbuf, &mut ubuf, &mut ctrl, 0, -1); if ret != 0 { return ret; } set_tagged_addr_ctrl(target, ctrl) }
 
 // CONFIG_RISCV_USER_CFI support is translated with the same field-level operations below.
 #[cfg(CONFIG_RISCV_USER_CFI)]
 unsafe fn riscv_cfi_get(target: *mut task_struct, _regset: *const user_regset, mut to: membuf) -> i32 { let mut user_cfi: user_cfi_state = core::mem::zeroed(); let regs = task_pt_regs(target); if is_indir_lp_enabled(target) { user_cfi.cfi_status.cfi_state |= PTRACE_CFI_BRANCH_LANDING_PAD_EN_STATE; if is_indir_lp_locked(target) { user_cfi.cfi_status.cfi_state |= PTRACE_CFI_BRANCH_LANDING_PAD_LOCK_STATE; } if (*regs).status & SR_ELP != 0 { user_cfi.cfi_status.cfi_state |= PTRACE_CFI_BRANCH_EXPECTED_LANDING_PAD_STATE; } } if is_shstk_enabled(target) { user_cfi.cfi_status.cfi_state |= PTRACE_CFI_SHADOW_STACK_EN_STATE | PTRACE_CFI_SHADOW_STACK_PTR_STATE; if is_shstk_locked(target) { user_cfi.cfi_status.cfi_state |= PTRACE_CFI_SHADOW_STACK_LOCK_STATE; } user_cfi.shstk_ptr = get_active_shstk(target); } membuf_write(&mut to, &user_cfi, core::mem::size_of::<user_cfi_state>()) }
 
 #[cfg(CONFIG_RISCV_USER_CFI)]
-unsafe fn riscv_cfi_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const core::ffi::c_void, mut ubuf: *const core::ffi::c_void) -> i32 { let regs = task_pt_regs(target); let mut cfi: user_cfi_state = core::mem::zeroed(); let ret = user_regset_copyin(&mut pos, &mut count, &mut kbuf, &mut ubuf, &mut cfi, 0, -1); if ret != 0 { return ret; } if cfi.cfi_status.cfi_state & (PTRACE_CFI_BRANCH_LANDING_PAD_EN_STATE | PTRACE_CFI_BRANCH_LANDING_PAD_LOCK_STATE | PTRACE_CFI_SHADOW_STACK_EN_STATE | PTRACE_CFI_SHADOW_STACK_LOCK_STATE | PTRACE_CFI_STATE_INVALID_MASK) != 0 { return -EINVAL; } if is_indir_lp_enabled(target) { if cfi.cfi_status.cfi_state & PTRACE_CFI_BRANCH_EXPECTED_LANDING_PAD_STATE != 0 { (*regs).status |= SR_ELP; } else { (*regs).status &= !SR_ELP; } } if is_shstk_enabled(target) && cfi.cfi_status.cfi_state & PTRACE_CFI_SHADOW_STACK_PTR_STATE != 0 { set_active_shstk(target, cfi.shstk_ptr); } 0 }
+unsafe fn riscv_cfi_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const kernel::ffi::c_void, mut ubuf: *const kernel::ffi::c_void) -> i32 { let regs = task_pt_regs(target); let mut cfi: user_cfi_state = core::mem::zeroed(); let ret = user_regset_copyin(&mut pos, &mut count, &mut kbuf, &mut ubuf, &mut cfi, 0, -1); if ret != 0 { return ret; } if cfi.cfi_status.cfi_state & (PTRACE_CFI_BRANCH_LANDING_PAD_EN_STATE | PTRACE_CFI_BRANCH_LANDING_PAD_LOCK_STATE | PTRACE_CFI_SHADOW_STACK_EN_STATE | PTRACE_CFI_SHADOW_STACK_LOCK_STATE | PTRACE_CFI_STATE_INVALID_MASK) != 0 { return -EINVAL; } if is_indir_lp_enabled(target) { if cfi.cfi_status.cfi_state & PTRACE_CFI_BRANCH_EXPECTED_LANDING_PAD_STATE != 0 { (*regs).status |= SR_ELP; } else { (*regs).status &= !SR_ELP; } } if is_shstk_enabled(target) && cfi.cfi_status.cfi_state & PTRACE_CFI_SHADOW_STACK_PTR_STATE != 0 { set_active_shstk(target, cfi.shstk_ptr); } 0 }
 
-#[repr(C)] pub struct pt_regs_offset { pub name: *const core::ffi::c_char, pub offset: i32 }
+#[repr(C)] pub struct pt_regs_offset { pub name: *const kernel::ffi::c_char, pub offset: i32 }
 
 static mut regoffset_table: [pt_regs_offset; 39] = [
     pt_regs_offset { name: b"epc\0".as_ptr() as _, offset: core::mem::offset_of!(pt_regs, epc) as i32 },
@@ -162,7 +162,7 @@ static mut regoffset_table: [pt_regs_offset; 39] = [
     pt_regs_offset { name: core::ptr::null(), offset: 0 },
 ];
 
-pub unsafe fn regs_query_register_offset(name: *const core::ffi::c_char) -> i32 { let mut i = 0; while !regoffset_table[i].name.is_null() { if strcmp(regoffset_table[i].name, name) == 0 { return regoffset_table[i].offset; } i += 1; } -EINVAL }
+pub unsafe fn regs_query_register_offset(name: *const kernel::ffi::c_char) -> i32 { let mut i = 0; while !regoffset_table[i].name.is_null() { if strcmp(regoffset_table[i].name, name) == 0 { return regoffset_table[i].offset; } i += 1; } -EINVAL }
 unsafe fn regs_within_kernel_stack(regs: *mut pt_regs, addr: c_ulong) -> bool { (addr & !(THREAD_SIZE - 1)) == (kernel_stack_pointer(regs) & !(THREAD_SIZE - 1)) }
 pub unsafe fn regs_get_kernel_stack_nth(regs: *mut pt_regs, n: u32) -> c_ulong { let addr = (kernel_stack_pointer(regs) as *mut c_ulong).add(n as usize); if regs_within_kernel_stack(regs, addr as c_ulong) { *addr } else { 0 } }
 pub unsafe fn ptrace_disable(_child: *mut task_struct) {}
@@ -177,7 +177,7 @@ pub unsafe fn update_regset_vector_info(size: c_ulong) { riscv_user_regset[REGSE
 unsafe fn compat_riscv_gpr_get(target: *mut task_struct, _regset: *const user_regset, mut to: membuf) -> i32 { let mut cregs: compat_user_regs_struct = core::mem::zeroed(); regs_to_cregs(&mut cregs, task_pt_regs(target)); membuf_write(&mut to, &cregs, core::mem::size_of::<compat_user_regs_struct>()) }
 
 #[cfg(CONFIG_COMPAT)]
-unsafe fn compat_riscv_gpr_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const core::ffi::c_void, mut ubuf: *const core::ffi::c_void) -> i32 { let mut cregs: compat_user_regs_struct = core::mem::zeroed(); let ret = user_regset_copyin(&mut pos, &mut count, &mut kbuf, &mut ubuf, &mut cregs, 0, -1); if ret == 0 { cregs_to_regs(&mut cregs, task_pt_regs(target)); } ret }
+unsafe fn compat_riscv_gpr_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const kernel::ffi::c_void, mut ubuf: *const kernel::ffi::c_void) -> i32 { let mut cregs: compat_user_regs_struct = core::mem::zeroed(); let ret = user_regset_copyin(&mut pos, &mut count, &mut kbuf, &mut ubuf, &mut cregs, 0, -1); if ret == 0 { cregs_to_regs(&mut cregs, task_pt_regs(target)); } ret }
 
 // Equivalent to the C designated-initializer tables. The surrounding kernel
 // supplies `user_regset`/`user_regset_view` layout and note-type constants.

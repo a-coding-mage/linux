@@ -22,13 +22,13 @@ pub struct c2port_device {
 	pub flash_access: u32,
 
 	pub id: i32,
-	pub name: [core::ffi::c_char; C2PORT_NAME_LEN],
+	pub name: [kernel::ffi::c_char; C2PORT_NAME_LEN],
 	pub ops: *mut c2port_ops,
 	pub mutex: mutex, /* prevent races during read/write */
 
 	pub dev: *mut device,
 
-	pub private_data: *mut core::ffi::c_void,
+	pub private_data: *mut kernel::ffi::c_void,
 }
 
 /* Basic operations */
@@ -55,9 +55,9 @@ pub struct c2port_ops {
 /* Exported functions */
 unsafe extern "C" {
 	pub fn c2port_device_register(
-		name: *mut core::ffi::c_char,
+		name: *mut kernel::ffi::c_char,
 		ops: *mut c2port_ops,
-		devdata: *mut core::ffi::c_void,
+		devdata: *mut kernel::ffi::c_void,
 	) -> *mut c2port_device;
 	pub fn c2port_device_unregister(dev: *mut c2port_device);
 }

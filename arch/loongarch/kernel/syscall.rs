@@ -10,47 +10,47 @@
 
 extern "C" {
     fn ksys_mmap_pgoff(
-        addr: libc::c_ulong,
-        len: libc::c_ulong,
-        prot: libc::c_ulong,
-        flags: libc::c_ulong,
-        fd: libc::c_ulong,
-        pgoff: libc::c_ulong,
-    ) -> libc::c_long;
-    fn sys_ni_syscall() -> libc::c_long;
+        addr: kernel::ffi::c_ulong,
+        len: kernel::ffi::c_ulong,
+        prot: kernel::ffi::c_ulong,
+        flags: kernel::ffi::c_ulong,
+        fd: kernel::ffi::c_ulong,
+        pgoff: kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_long;
+    fn sys_ni_syscall() -> kernel::ffi::c_long;
     fn syscall_enter_from_user_mode_randomize_stack(
         regs: *mut pt_regs,
-        nr: *mut libc::c_ulong,
+        nr: *mut kernel::ffi::c_ulong,
     ) -> bool;
     fn syscall_exit_to_user_mode(regs: *mut pt_regs);
 }
 
 #[repr(C)]
 pub struct pt_regs {
-    pub regs: [libc::c_ulong; 32],
-    pub csr_era: libc::c_ulong,
-    pub orig_a0: libc::c_ulong,
+    pub regs: [kernel::ffi::c_ulong; 32],
+    pub csr_era: kernel::ffi::c_ulong,
+    pub orig_a0: kernel::ffi::c_ulong,
 }
 
-pub const EINVAL: libc::c_long = 22;
-pub const ENOSYS: libc::c_long = 38;
+pub const EINVAL: kernel::ffi::c_long = 22;
+pub const ENOSYS: kernel::ffi::c_long = 38;
 
 // PAGE_MASK, PAGE_SHIFT, NR_syscalls, and __NR_syscalls are supplied by the target.
 extern "C" {
-    static mut PAGE_MASK: libc::c_ulong;
-    static PAGE_SHIFT: libc::c_uint;
-    static NR_syscalls: libc::c_ulong;
-    static __NR_syscalls: libc::c_ulong;
+    static mut PAGE_MASK: kernel::ffi::c_ulong;
+    static PAGE_SHIFT: kernel::ffi::c_uint;
+    static NR_syscalls: kernel::ffi::c_ulong;
+    static __NR_syscalls: kernel::ffi::c_ulong;
 }
 
 pub unsafe fn sys_mmap(
-    addr: libc::c_ulong,
-    len: libc::c_ulong,
-    prot: libc::c_ulong,
-    flags: libc::c_ulong,
-    fd: libc::c_ulong,
-    offset: libc::c_ulong,
-) -> libc::c_long {
+    addr: kernel::ffi::c_ulong,
+    len: kernel::ffi::c_ulong,
+    prot: kernel::ffi::c_ulong,
+    flags: kernel::ffi::c_ulong,
+    fd: kernel::ffi::c_ulong,
+    offset: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_long {
     if offset & !PAGE_MASK != 0 {
         return -EINVAL;
     }
@@ -59,13 +59,13 @@ pub unsafe fn sys_mmap(
 }
 
 pub unsafe fn sys_mmap2(
-    addr: libc::c_ulong,
-    len: libc::c_ulong,
-    prot: libc::c_ulong,
-    flags: libc::c_ulong,
-    fd: libc::c_ulong,
-    offset: libc::c_ulong,
-) -> libc::c_long {
+    addr: kernel::ffi::c_ulong,
+    len: kernel::ffi::c_ulong,
+    prot: kernel::ffi::c_ulong,
+    flags: kernel::ffi::c_ulong,
+    fd: kernel::ffi::c_ulong,
+    offset: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_long {
     if offset & (!PAGE_MASK >> 12) != 0 {
         return -EINVAL;
     }
@@ -74,13 +74,13 @@ pub unsafe fn sys_mmap2(
 }
 
 pub type sys_call_fn = unsafe extern "C" fn(
-    libc::c_ulong,
-    libc::c_ulong,
-    libc::c_ulong,
-    libc::c_ulong,
-    libc::c_ulong,
-    libc::c_ulong,
-) -> libc::c_long;
+    kernel::ffi::c_ulong,
+    kernel::ffi::c_ulong,
+    kernel::ffi::c_ulong,
+    kernel::ffi::c_ulong,
+    kernel::ffi::c_ulong,
+    kernel::ffi::c_ulong,
+) -> kernel::ffi::c_long;
 
 // The architecture-specific syscall table entries are supplied by the target.
 #[no_mangle]
@@ -88,7 +88,7 @@ pub static mut sys_call_table: *mut sys_call_fn = core::ptr::null_mut();
 
 pub unsafe fn do_syscall(regs: *mut pt_regs) {
     let mut syscall_fn: sys_call_fn;
-    let mut nr: libc::c_ulong;
+    let mut nr: kernel::ffi::c_ulong;
 
     nr = (*regs).regs[11];
     /* Set for syscall restarting */
@@ -98,7 +98,7 @@ pub unsafe fn do_syscall(regs: *mut pt_regs) {
 
     (*regs).csr_era += 4;
     (*regs).orig_a0 = (*regs).regs[4];
-    (*regs).regs[4] = (-ENOSYS) as libc::c_ulong;
+    (*regs).regs[4] = (-ENOSYS) as kernel::ffi::c_ulong;
 
     if syscall_enter_from_user_mode_randomize_stack(regs, &mut nr) {
         if nr < NR_syscalls {
@@ -110,7 +110,7 @@ pub unsafe fn do_syscall(regs: *mut pt_regs) {
                 (*regs).regs[7],
                 (*regs).regs[8],
                 (*regs).regs[9],
-            ) as libc::c_ulong;
+            ) as kernel::ffi::c_ulong;
         }
     }
 

@@ -5,7 +5,7 @@
  * Copyright (C) 2018 David Lechner <david@lechnology.com>
  */
 
-use core::ffi::{c_char, c_void};
+use kernel::ffi::{c_char, c_void};
 
 /* Linux bitops equivalent: BIT(n) == 1U << n. */
 pub const PLL_HAS_CLKMODE: u32 = 1u32 << 0; /* PLL has PLLCTL[CLKMODE] */
@@ -49,8 +49,8 @@ pub struct davinci_pll_sysclk_info {
 macro_rules! SYSCLK {
     ($i:expr, $n:ident, $p:ident, $w:expr, $f:expr) => {
         static $n: $crate::davinci_pll_sysclk_info = $crate::davinci_pll_sysclk_info {
-            name: concat!(stringify!($n), "\0").as_ptr() as *const core::ffi::c_char,
-            parent_name: concat!(stringify!($p), "\0").as_ptr() as *const core::ffi::c_char,
+            name: concat!(stringify!($n), "\0").as_ptr() as *const kernel::ffi::c_char,
+            parent_name: concat!(stringify!($p), "\0").as_ptr() as *const kernel::ffi::c_char,
             id: $i,
             ratio_width: $w,
             flags: $f,

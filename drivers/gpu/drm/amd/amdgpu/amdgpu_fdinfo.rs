@@ -25,7 +25,7 @@
 
 // Dependencies supplied by the surrounding kernel/amdgpu translation unit.
 
-static AMDGPU_IP_NAME: [&'static core::ffi::c_char; AMDGPU_HW_IP_NUM] = [
+static AMDGPU_IP_NAME: [&'static kernel::ffi::c_char; AMDGPU_HW_IP_NUM] = [
     c"gfx".as_ptr(),
     c"compute".as_ptr(),
     c"dma".as_ptr(),
@@ -44,7 +44,7 @@ pub unsafe fn amdgpu_show_fdinfo(p: *mut drm_printer, file: *mut drm_file) {
 
     let mut stats: [amdgpu_mem_stats; __AMDGPU_PL_NUM] = core::mem::zeroed();
     let mut usage: [ktime_t; AMDGPU_HW_IP_NUM] = core::mem::zeroed();
-    let pl_name: [*const core::ffi::c_char; 8] = [
+    let pl_name: [*const kernel::ffi::c_char; 8] = [
         c"vram".as_ptr(),
         c"gtt".as_ptr(),
         c"cpu".as_ptr(),
@@ -54,8 +54,8 @@ pub unsafe fn amdgpu_show_fdinfo(p: *mut drm_printer, file: *mut drm_file) {
         c"doorbell".as_ptr(),
         c"mmioremap".as_ptr(),
     ];
-    let mut hw_ip: core::ffi::c_uint;
-    let mut i: core::ffi::c_uint;
+    let mut hw_ip: kernel::ffi::c_uint;
+    let mut i: kernel::ffi::c_uint;
 
     amdgpu_vm_get_memory(vm, stats.as_mut_ptr());
     amdgpu_ctx_mgr_usage(&mut (*fpriv).ctx_mgr, usage.as_mut_ptr());
@@ -69,7 +69,7 @@ pub unsafe fn amdgpu_show_fdinfo(p: *mut drm_printer, file: *mut drm_file) {
     drm_printf(p, c"pasid:\t%u\n".as_ptr(), (*fpriv).vm.pasid);
 
     i = 0;
-    while i < pl_name.len() as core::ffi::c_uint {
+    while i < pl_name.len() as kernel::ffi::c_uint {
         if pl_name[i as usize].is_null() {
             i += 1;
             continue;
@@ -95,7 +95,7 @@ pub unsafe fn amdgpu_show_fdinfo(p: *mut drm_printer, file: *mut drm_file) {
     drm_printf(p, c"amd-requested-gtt:\t%llu KiB\n".as_ptr(), (stats[TTM_PL_TT].drm.shared + stats[TTM_PL_TT].drm.private) / 1024u64);
 
     hw_ip = 0;
-    while hw_ip < AMDGPU_HW_IP_NUM as core::ffi::c_uint {
+    while hw_ip < AMDGPU_HW_IP_NUM as kernel::ffi::c_uint {
         if usage[hw_ip as usize] == 0 {
             hw_ip += 1;
             continue;

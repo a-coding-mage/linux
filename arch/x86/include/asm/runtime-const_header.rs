@@ -28,7 +28,7 @@ macro_rules! runtime_const_ptr {
                 ".popsection",
                 ret = out(reg) __ret,
                 value = const 0x0123456789abcdefu64,
-                size = const core::mem::size_of::<core::ffi::c_long>(),
+                size = const core::mem::size_of::<kernel::ffi::c_long>(),
                 options(att_syntax, pure, nomem, nostack, preserves_flags),
             );
         }
@@ -87,7 +87,7 @@ macro_rules! runtime_const_init {
             }
             runtime_const_fixup(
                 [<__runtime_fixup_ $type>],
-                $sym as core::ffi::c_ulong,
+                $sym as kernel::ffi::c_ulong,
                 [<__start_runtime_ $type _ $sym>].as_ptr().cast_mut(),
                 [<__stop_runtime_ $type _ $sym>].as_ptr().cast_mut(),
             );
@@ -101,24 +101,24 @@ macro_rules! runtime_const_init {
  * has ever been executed.
  */
 #[inline]
-pub unsafe fn __runtime_fixup_ptr(where_: *mut core::ffi::c_void, val: core::ffi::c_ulong) {
-    where_.cast::<core::ffi::c_ulong>().write_unaligned(val);
+pub unsafe fn __runtime_fixup_ptr(where_: *mut kernel::ffi::c_void, val: kernel::ffi::c_ulong) {
+    where_.cast::<kernel::ffi::c_ulong>().write_unaligned(val);
 }
 
 #[inline]
-pub unsafe fn __runtime_fixup_shift(where_: *mut core::ffi::c_void, val: core::ffi::c_ulong) {
+pub unsafe fn __runtime_fixup_shift(where_: *mut kernel::ffi::c_void, val: kernel::ffi::c_ulong) {
     where_.cast::<u8>().write_unaligned(val as u8);
 }
 
 #[inline]
-pub unsafe fn __runtime_fixup_mask(where_: *mut core::ffi::c_void, val: core::ffi::c_ulong) {
+pub unsafe fn __runtime_fixup_mask(where_: *mut kernel::ffi::c_void, val: kernel::ffi::c_ulong) {
     where_.cast::<u32>().write_unaligned(val as u32);
 }
 
 #[inline]
 pub unsafe fn runtime_const_fixup(
-    fn_: unsafe fn(*mut core::ffi::c_void, core::ffi::c_ulong),
-    val: core::ffi::c_ulong,
+    fn_: unsafe fn(*mut kernel::ffi::c_void, kernel::ffi::c_ulong),
+    val: kernel::ffi::c_ulong,
     mut start: *mut i32,
     end: *mut i32,
 ) {

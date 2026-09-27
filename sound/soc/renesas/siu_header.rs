@@ -73,7 +73,7 @@ pub const SIU_CLKB_EXT: usize = 3;
 #[repr(C)]
 pub struct siu_info {
     pub dev: *mut device,
-    pub port_id: ::core::ffi::c_int,
+    pub port_id: ::kernel::ffi::c_int,
     pub pram: *mut u32,
     pub xram: *mut u32,
     pub yram: *mut u32,
@@ -88,7 +88,7 @@ pub struct siu_stream {
     pub format: snd_pcm_format_t,
     pub buf_bytes: usize,
     pub period_bytes: usize,
-    pub cur_period: ::core::ffi::c_int, /* Period currently in dma */
+    pub cur_period: ::kernel::ffi::c_int, /* Period currently in dma */
     pub volume: u32,
     pub xfer_cnt: snd_pcm_sframes_t, /* Number of frames */
     pub rw_flg: u8,                  /* transfer status */
@@ -101,7 +101,7 @@ pub struct siu_stream {
 
 #[repr(C)]
 pub struct siu_port {
-    pub play_cap: ::core::ffi::c_ulong, /* Used to track full duplex */
+    pub play_cap: ::kernel::ffi::c_ulong, /* Used to track full duplex */
     pub pcm: *mut snd_pcm,
     pub playback: siu_stream,
     pub capture: siu_stream,
@@ -164,10 +164,10 @@ unsafe extern "C" {
     pub static mut siu_i2s_data: *mut siu_info;
 
     pub fn siu_init_port(
-        port: ::core::ffi::c_int,
+        port: ::kernel::ffi::c_int,
         port_info: *mut *mut siu_port,
         card: *mut snd_card,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn siu_free_port(port_info: *mut siu_port);
 
     pub fn to_platform_device(dev: *mut device) -> *mut platform_device;

@@ -30,14 +30,14 @@ pub const ENCODE_FRAME_POINTER: &str =
  */
 #[cfg(all(CONFIG_FRAME_POINTER, target_arch = "x86_64"))]
 #[inline]
-pub unsafe fn encode_frame_pointer(regs: *mut pt_regs) -> ::core::ffi::c_ulong {
-    regs as ::core::ffi::c_ulong + 1
+pub unsafe fn encode_frame_pointer(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong {
+    regs as ::kernel::ffi::c_ulong + 1
 }
 
 #[cfg(all(CONFIG_FRAME_POINTER, target_arch = "x86"))]
 #[inline]
-pub unsafe fn encode_frame_pointer(regs: *mut pt_regs) -> ::core::ffi::c_ulong {
-    (regs as ::core::ffi::c_ulong) & 0x7fffffff
+pub unsafe fn encode_frame_pointer(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong {
+    (regs as ::kernel::ffi::c_ulong) & 0x7fffffff
 }
 
 /* __ASM_SEL(4, 8): the selected frame offset follows the target word size. */
@@ -61,7 +61,7 @@ pub const FRAME_OFFSET: usize = 0;
 
 #[cfg(not(CONFIG_FRAME_POINTER))]
 #[inline]
-pub unsafe fn encode_frame_pointer(_regs: *mut pt_regs) -> ::core::ffi::c_ulong {
+pub unsafe fn encode_frame_pointer(_regs: *mut pt_regs) -> ::kernel::ffi::c_ulong {
     0
 }
 

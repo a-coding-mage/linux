@@ -6,7 +6,7 @@
 
 unsafe fn l3_handle_target(
     l3: *mut omap_l3,
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     flag_mux: *mut l3_flagmux_data,
     err_src: i32,
 ) -> i32 {
@@ -16,17 +16,17 @@ unsafe fn l3_handle_target(
     let mut masterid: u32;
     let op_code: u8;
     let m_req_info: u8;
-    let l3_targ_base: *mut core::ffi::c_void;
-    let l3_targ_stderr: *mut core::ffi::c_void;
-    let l3_targ_slvofslsb: *mut core::ffi::c_void;
-    let l3_targ_mstaddr: *mut core::ffi::c_void;
-    let l3_targ_hdr: *mut core::ffi::c_void;
-    let l3_targ_info: *mut core::ffi::c_void;
+    let l3_targ_base: *mut kernel::ffi::c_void;
+    let l3_targ_stderr: *mut kernel::ffi::c_void;
+    let l3_targ_slvofslsb: *mut kernel::ffi::c_void;
+    let l3_targ_mstaddr: *mut kernel::ffi::c_void;
+    let l3_targ_hdr: *mut kernel::ffi::c_void;
+    let l3_targ_info: *mut kernel::ffi::c_void;
     let l3_targ_inst: *mut l3_target_data;
     let mut master: *mut l3_masters_data;
-    let target_name: *const core::ffi::c_char;
-    let mut master_name: *const core::ffi::c_char = c"UN IDENTIFIED".as_ptr();
-    let err_description: *const core::ffi::c_char;
+    let target_name: *const kernel::ffi::c_char;
+    let mut master_name: *const kernel::ffi::c_char = c"UN IDENTIFIED".as_ptr();
+    let err_description: *const kernel::ffi::c_char;
     let mut err_string = [0i8; 30];
     let mut info_string = [0i8; 60];
 
@@ -84,7 +84,7 @@ unsafe fn l3_handle_target(
     0
 }
 
-unsafe extern "C" fn l3_interrupt_handler(irq: i32, _l3: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn l3_interrupt_handler(irq: i32, _l3: *mut kernel::ffi::c_void) -> irqreturn_t {
     let l3 = _l3 as *mut omap_l3;
     let inttype = if irq == (*l3).app_irq { L3_APPLICATION_ERROR } else { L3_DEBUG_ERROR };
     for i in 0..(*l3).num_modules {

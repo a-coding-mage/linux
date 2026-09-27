@@ -20,9 +20,9 @@ pub static mut brcmstb_uart_config: [u32; 3] = [
 	0,
 ];
 
-static brcmstb_match: [&'static core::ffi::c_char; 3] = [
-	b"brcm,bcm7445\0".as_ptr() as *const core::ffi::c_char,
-	b"brcm,brcmstb\0".as_ptr() as *const core::ffi::c_char,
+static brcmstb_match: [&'static kernel::ffi::c_char; 3] = [
+	b"brcm,bcm7445\0".as_ptr() as *const kernel::ffi::c_char,
+	b"brcm,brcmstb\0".as_ptr() as *const kernel::ffi::c_char,
 	core::ptr::null(),
 ];
 
@@ -32,7 +32,7 @@ static brcmstb_match: [&'static core::ffi::c_char; 3] = [
 // The macro-defined machine descriptor is represented by the following
 // external interface; its concrete definition is supplied by the kernel.
 extern "C" {
-	static BRCMSTB: core::ffi::c_void;
+	static BRCMSTB: kernel::ffi::c_void;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -11,7 +11,7 @@
 pub static mut cpuinfo: cpuinfo = unsafe { core::mem::zeroed() };
 
 #[inline]
-unsafe fn fcpu(cpu: *mut device_node, n: *const core::ffi::c_char) -> u32 {
+unsafe fn fcpu(cpu: *mut device_node, n: *const kernel::ffi::c_char) -> u32 {
     let mut val: u32 = 0;
     of_property_read_u32(cpu, n, &mut val);
     val
@@ -19,8 +19,8 @@ unsafe fn fcpu(cpu: *mut device_node, n: *const core::ffi::c_char) -> u32 {
 
 pub unsafe fn setup_cpuinfo() {
     let cpu: *mut device_node;
-    let str_: *const core::ffi::c_char;
-    let mut len: core::ffi::c_int;
+    let str_: *const kernel::ffi::c_char;
+    let mut len: kernel::ffi::c_int;
 
     cpu = of_get_cpu_node(0, core::ptr::null());
     if cpu.is_null() {
@@ -72,7 +72,7 @@ pub unsafe fn setup_cpuinfo() {
 
 // CONFIG_PROC_FS declarations and definitions are retained below when enabled.
 #[cfg(CONFIG_PROC_FS)]
-pub unsafe fn show_cpuinfo(m: *mut seq_file, _v: *mut core::ffi::c_void) -> core::ffi::c_int {
+pub unsafe fn show_cpuinfo(m: *mut seq_file, _v: *mut kernel::ffi::c_void) -> kernel::ffi::c_int {
     seq_printf(m, c"CPU:\t\tNios II/%s\nREV:\t\t%i\nMMU:\t\t%s\nFPU:\t\tnone\nClocking:\t%u.%02u MHz\nBogoMips:\t%lu.%02lu\nCalibration:\t%lu loops\n".as_ptr(), cpuinfo.cpu_impl.as_ptr(), CONFIG_NIOS2_ARCH_REVISION, if cpuinfo.mmu { c"present".as_ptr() } else { c"none".as_ptr() }, cpuinfo.cpu_clock_freq / 1_000_000, (cpuinfo.cpu_clock_freq / 100_000) % 10, (loops_per_jiffy * HZ) / 500_000, ((loops_per_jiffy * HZ) / 5_000) % 100, loops_per_jiffy * HZ);
     seq_printf(m, c"HW:\n MUL:\t\t%s\n MULX:\t\t%s\n DIV:\t\t%s\n BMX:\t\t%s\n CDX:\t\t%s\n".as_ptr(), str_yes_no(cpuinfo.has_mul), str_yes_no(cpuinfo.has_mulx), str_yes_no(cpuinfo.has_div), str_yes_no(cpuinfo.has_bmx), str_yes_no(cpuinfo.has_cdx));
     seq_printf(m, c"Icache:\t\t%ukB, line length: %u\n".as_ptr(), cpuinfo.icache_size >> 10, cpuinfo.icache_line_size);
@@ -82,19 +82,19 @@ pub unsafe fn show_cpuinfo(m: *mut seq_file, _v: *mut core::ffi::c_void) -> core
 }
 
 #[cfg(CONFIG_PROC_FS)]
-pub unsafe fn cpuinfo_start(_m: *mut seq_file, pos: *mut loff_t) -> *mut core::ffi::c_void {
+pub unsafe fn cpuinfo_start(_m: *mut seq_file, pos: *mut loff_t) -> *mut kernel::ffi::c_void {
     let i = *pos as usize;
-    if i < num_possible_cpus() { (i + 1) as *mut core::ffi::c_void } else { core::ptr::null_mut() }
+    if i < num_possible_cpus() { (i + 1) as *mut kernel::ffi::c_void } else { core::ptr::null_mut() }
 }
 
 #[cfg(CONFIG_PROC_FS)]
-pub unsafe fn cpuinfo_next(m: *mut seq_file, _v: *mut core::ffi::c_void, pos: *mut loff_t) -> *mut core::ffi::c_void {
+pub unsafe fn cpuinfo_next(m: *mut seq_file, _v: *mut kernel::ffi::c_void, pos: *mut loff_t) -> *mut kernel::ffi::c_void {
     *pos += 1;
     cpuinfo_start(m, pos)
 }
 
 #[cfg(CONFIG_PROC_FS)]
-pub unsafe fn cpuinfo_stop(_m: *mut seq_file, _v: *mut core::ffi::c_void) {}
+pub unsafe fn cpuinfo_stop(_m: *mut seq_file, _v: *mut kernel::ffi::c_void) {}
 
 #[cfg(CONFIG_PROC_FS)]
 pub static cpuinfo_op: seq_operations = seq_operations { start: Some(cpuinfo_start), next: Some(cpuinfo_next), stop: Some(cpuinfo_stop), show: Some(show_cpuinfo) };

@@ -34,7 +34,7 @@ pub struct stp_policy_id {
     /* padding */
     pub __reserved_0: u16,
     pub __reserved_1: u32,
-    pub id: [core::ffi::c_char; 0],
+    pub id: [kernel::ffi::c_char; 0],
 }
 
 /* The _IOWR/_IOR/_IOW ioctl encodings are supplied by the target Linux ABI. */

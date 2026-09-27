@@ -16,7 +16,7 @@ pub type __kernel_sa_family_t = u16;
 pub struct __kernel_sockaddr_storage_data {
     pub ss_family: __kernel_sa_family_t, /* address family */
     /* Following field(s) are implementation specific */
-    pub __data: [core::ffi::c_char; _K_SS_MAXSIZE - core::mem::size_of::<u16>()],
+    pub __data: [kernel::ffi::c_char; _K_SS_MAXSIZE - core::mem::size_of::<u16>()],
     /* space to achieve desired size, */
     /* _SS_MAXSIZE value minus size of ss_family */
 }
@@ -24,7 +24,7 @@ pub struct __kernel_sockaddr_storage_data {
 #[repr(C)]
 pub union __kernel_sockaddr_storage_union {
     pub data: __kernel_sockaddr_storage_data,
-    pub __align: *mut core::ffi::c_void, /* implementation specific desired alignment */
+    pub __align: *mut kernel::ffi::c_void, /* implementation specific desired alignment */
 }
 
 #[repr(C)]

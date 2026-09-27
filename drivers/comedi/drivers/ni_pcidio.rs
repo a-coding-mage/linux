@@ -107,7 +107,7 @@ pub const FW_PCI_6534_SCARAB_DO: &str = "niscrb02.bin";
 #[inline] pub const fn rtsi_clocking(x: u16) -> u16 { (x & 3) << 4 }
 
 #[repr(C)]
-pub struct nidio_board { pub name: *const core::ffi::c_char, pub uses_firmware: u32, pub dio_speed: u32 }
+pub struct nidio_board { pub name: *const kernel::ffi::c_char, pub uses_firmware: u32, pub dio_speed: u32 }
 #[repr(C)]
 pub struct nidio96_private {
     pub mite: *mut mite, pub boardtype: i32, pub dio: i32, pub OP_MODEBits: u16,
@@ -131,7 +131,7 @@ extern "C" {
     fn ni_pcidio_release_di_mite_channel(dev: *mut comedi_device);
     fn setup_mite_dma(dev: *mut comedi_device, s: *mut comedi_subdevice) -> i32;
     fn ni_pcidio_poll(dev: *mut comedi_device, s: *mut comedi_subdevice) -> i32;
-    fn nidio_interrupt(irq: i32, d: *mut core::ffi::c_void) -> i32;
+    fn nidio_interrupt(irq: i32, d: *mut kernel::ffi::c_void) -> i32;
     fn ni_pcidio_insn_config(dev:*mut comedi_device,s:*mut comedi_subdevice,insn:*mut comedi_insn,data:*mut u32)->i32;
     fn ni_pcidio_insn_bits(dev:*mut comedi_device,s:*mut comedi_subdevice,insn:*mut comedi_insn,data:*mut u32)->i32;
     fn ni_pcidio_ns_to_timer(nanosec:*mut i32, flags:u32)->i32;

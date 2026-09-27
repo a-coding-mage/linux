@@ -7,7 +7,7 @@ pub const __HAVE_ARCH_HUGE_PTEP_CLEAR_FLUSH: bool = true;
 
 pub unsafe fn huge_ptep_clear_flush(
     _vma: *mut vm_area_struct,
-    _addr: ::core::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
 ) -> pte_t {
     // C: return *ptep;

@@ -35,11 +35,11 @@ pub const SYSLOG_FROM_PROC: i32 = 1;
 
 unsafe extern "C" {
     pub fn do_syslog(
-        type_: ::core::ffi::c_int,
-        buf: *mut ::core::ffi::c_char,
-        count: ::core::ffi::c_int,
-        source: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        type_: ::kernel::ffi::c_int,
+        buf: *mut ::kernel::ffi::c_char,
+        count: ::kernel::ffi::c_int,
+        source: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 
     pub static mut log_wait: wait_queue_head_t;
 }

@@ -20,7 +20,7 @@
 struct TscAdjust {
     bootval: i64,
     adjusted: i64,
-    nextcheck: libc::c_ulong,
+    nextcheck: kernel::ffi::c_ulong,
     warned: bool,
 }
 
@@ -29,7 +29,7 @@ static mut TSC_SYNC_CHECK_TIMER: TimerList = TimerList { _private: [] };
 
 static mut TSC_ASYNC_RESETS: bool = false;
 
-pub unsafe fn mark_tsc_async_resets(reason: *mut libc::c_char) {
+pub unsafe fn mark_tsc_async_resets(reason: *mut kernel::ffi::c_char) {
     if TSC_ASYNC_RESETS { return; }
     TSC_ASYNC_RESETS = true;
     pr_info!("tsc: Marking TSC async resets true due to %s\n", reason);
@@ -50,7 +50,7 @@ pub unsafe fn tsc_verify_tsc_adjust(resume: bool) {
     }
 }
 
-const SYNC_CHECK_INTERVAL: libc::c_ulong = HZ * 600;
+const SYNC_CHECK_INTERVAL: kernel::ffi::c_ulong = HZ * 600;
 
 unsafe fn tsc_sync_check_timer_fn(_unused: *mut TimerList) {
     tsc_verify_tsc_adjust(false);
@@ -60,7 +60,7 @@ unsafe fn tsc_sync_check_timer_fn(_unused: *mut TimerList) {
     add_timer_on(&raw mut TSC_SYNC_CHECK_TIMER, next_cpu);
 }
 
-unsafe fn start_sync_check_timer() -> libc::c_int {
+unsafe fn start_sync_check_timer() -> kernel::ffi::c_int {
     if !cpu_feature_enabled(X86_FEATURE_TSC_ADJUST) || tsc_clocksource_reliable { return 0; }
     timer_setup(&raw mut TSC_SYNC_CHECK_TIMER, tsc_sync_check_timer_fn, 0);
     TSC_SYNC_CHECK_TIMER.expires = jiffies + SYNC_CHECK_INTERVAL;
@@ -68,7 +68,7 @@ unsafe fn start_sync_check_timer() -> libc::c_int {
     0
 }
 
-unsafe fn tsc_sanitize_first_cpu(cur: *mut TscAdjust, mut bootval: i64, cpu: libc::c_uint, bootcpu: bool) {
+unsafe fn tsc_sanitize_first_cpu(cur: *mut TscAdjust, mut bootval: i64, cpu: kernel::ffi::c_uint, bootcpu: bool) {
     if bootcpu && bootval != 0 {
         if likely(!TSC_ASYNC_RESETS) {
             pr_warn!(FW_BUG "TSC ADJUST: CPU%u: %lld force to 0\n", cpu, bootval);
@@ -110,16 +110,16 @@ static mut TEST_RUNS: AtomicT = AtomicT::new(0);
 static mut SYNC_LOCK: ArchSpinlockT = ARCH_SPIN_LOCK_UNLOCKED;
 static mut LAST_TSC: CyclesT = 0;
 static mut MAX_WARP: CyclesT = 0;
-static mut NR_WARPS: libc::c_int = 0;
-static mut RANDOM_WARPS: libc::c_int = 0;
+static mut NR_WARPS: kernel::ffi::c_int = 0;
+static mut RANDOM_WARPS: kernel::ffi::c_int = 0;
 
-unsafe fn check_tsc_warp(timeout: libc::c_uint) -> CyclesT {
+unsafe fn check_tsc_warp(timeout: kernel::ffi::c_uint) -> CyclesT {
     let start = rdtsc_ordered();
     let end = start + (tsc_khz * timeout as CyclesT);
     let mut now = start;
     let mut cur_max_warp: CyclesT = 0;
     let mut cur_warps = 0;
-    let mut i: libc::c_int = 0;
+    let mut i: kernel::ffi::c_int = 0;
     loop {
         arch_spin_lock(&raw mut SYNC_LOCK);
         let prev = LAST_TSC; now = rdtsc_ordered(); LAST_TSC = now;
@@ -142,18 +142,18 @@ unsafe fn check_tsc_warp(timeout: libc::c_uint) -> CyclesT {
 }
 
 #[inline]
-unsafe fn loop_timeout(cpu: libc::c_int) -> libc::c_uint { if cpumask_weight(topology_core_cpumask(cpu)) > 1 { 2 } else { 20 } }
+unsafe fn loop_timeout(cpu: kernel::ffi::c_int) -> kernel::ffi::c_uint { if cpumask_weight(topology_core_cpumask(cpu)) > 1 { 2 } else { 20 } }
 
 unsafe fn tsc_sync_mark_tsc_unstable(_work: *mut WorkStruct) { mark_tsc_unstable("check_tsc_sync_source failed"); }
 static mut TSC_SYNC_WORK: WorkStruct = WorkStruct { _private: [] };
 
-unsafe fn check_tsc_sync_source(__cpu: *mut libc::c_void) {
-    let cpu = __cpu as libc::c_ulong as libc::c_uint;
+unsafe fn check_tsc_sync_source(__cpu: *mut kernel::ffi::c_void) {
+    let cpu = __cpu as kernel::ffi::c_ulong as kernel::ffi::c_uint;
     let cpus = 2;
     atomic_set(&raw mut TEST_RUNS, if boot_cpu_has(X86_FEATURE_TSC_ADJUST) { 3 } else { 1 });
     'retry: loop {
         while atomic_read(&raw mut START_COUNT) != cpus - 1 { cpu_relax(); }
-        atomic_inc(&raw mut START_COUNT); check_tsc_warp(loop_timeout(cpu as libc::c_int));
+        atomic_inc(&raw mut START_COUNT); check_tsc_warp(loop_timeout(cpu as kernel::ffi::c_int));
         while atomic_read(&raw mut STOP_COUNT) != cpus - 1 { cpu_relax(); }
         if NR_WARPS == 0 { atomic_set(&raw mut TEST_RUNS, 0); pr_debug!("TSC synchronization [CPU#%d -> CPU#%u]: passed\n", smp_processor_id(), cpu); }
         else if atomic_dec_and_test(&raw mut TEST_RUNS) || RANDOM_WARPS != 0 {
@@ -167,7 +167,7 @@ unsafe fn check_tsc_sync_source(__cpu: *mut libc::c_void) {
 pub unsafe fn check_tsc_sync_target() {
     let cur = this_cpu_ptr(&raw mut TSC_ADJUST); let cpu = smp_processor_id(); let cpus = 2;
     if unsynchronized_tsc() || tsc_store_and_check_tsc_adjust(false) || tsc_clocksource_reliable { return; }
-    smp_call_function_single(cpumask_first(cpu_online_mask), check_tsc_sync_source, cpu as libc::c_ulong as *mut libc::c_void, 0);
+    smp_call_function_single(cpumask_first(cpu_online_mask), check_tsc_sync_source, cpu as kernel::ffi::c_ulong as *mut kernel::ffi::c_void, 0);
     loop {
         atomic_inc(&raw mut START_COUNT); while atomic_read(&raw mut START_COUNT) != cpus { cpu_relax(); }
         let mut cur_max_warp = check_tsc_warp(loop_timeout(cpu)); let gbl_max_warp = MAX_WARP;

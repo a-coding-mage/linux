@@ -21,11 +21,11 @@ pub struct snd_emux_operators {
     pub terminate: Option<unsafe extern "C" fn(*mut snd_emux_voice)>,
     pub free_voice: Option<unsafe extern "C" fn(*mut snd_emux_voice)>,
     pub reset: Option<unsafe extern "C" fn(*mut snd_emux, i32)>,
-    pub sample_new: Option<unsafe extern "C" fn(*mut snd_emux, *mut snd_sf_sample, *mut snd_util_memhdr, *const core::ffi::c_void, libc::c_long) -> i32>,
+    pub sample_new: Option<unsafe extern "C" fn(*mut snd_emux, *mut snd_sf_sample, *mut snd_util_memhdr, *const kernel::ffi::c_void, kernel::ffi::c_long) -> i32>,
     pub sample_free: Option<unsafe extern "C" fn(*mut snd_emux, *mut snd_sf_sample, *mut snd_util_memhdr) -> i32>,
     pub sample_reset: Option<unsafe extern "C" fn(*mut snd_emux)>,
-    pub load_fx: Option<unsafe extern "C" fn(*mut snd_emux, i32, i32, *const core::ffi::c_void, libc::c_long) -> i32>,
-    pub sysex: Option<unsafe extern "C" fn(*mut snd_emux, *mut core::ffi::c_char, i32, i32, *mut snd_midi_channel_set)>,
+    pub load_fx: Option<unsafe extern "C" fn(*mut snd_emux, i32, i32, *const kernel::ffi::c_void, kernel::ffi::c_long) -> i32>,
+    pub sysex: Option<unsafe extern "C" fn(*mut snd_emux, *mut kernel::ffi::c_char, i32, i32, *mut snd_midi_channel_set)>,
     #[cfg(CONFIG_SND_SEQUENCER_OSS)]
     pub oss_ioctl: Option<unsafe extern "C" fn(*mut snd_emux, i32, i32, i32) -> i32>,
     pub get_pitch_shift: Option<unsafe extern "C" fn(*mut snd_emux) -> i32>,
@@ -34,7 +34,7 @@ pub struct snd_emux_operators {
 pub const SNDRV_EMUX_MAX_PORTS: usize = 32;
 pub const SNDRV_EMUX_MAX_VOICES: usize = 64;
 pub const SNDRV_EMUX_MAX_MULTI_VOICES: usize = 16;
-pub const SNDRV_EMUX_ACCEPT_ROM: libc::c_ulong = 1 << 0;
+pub const SNDRV_EMUX_ACCEPT_ROM: kernel::ffi::c_ulong = 1 << 0;
 
 #[repr(C)]
 pub struct snd_emux {
@@ -43,8 +43,8 @@ pub struct snd_emux {
     pub mem_size: i32,
     pub num_ports: i32,
     pub ops: snd_emux_operators,
-    pub hw: *mut core::ffi::c_void,
-    pub flags: libc::c_ulong,
+    pub hw: *mut kernel::ffi::c_void,
+    pub flags: kernel::ffi::c_ulong,
     pub midi_ports: i32,
     pub midi_devidx: i32,
     /* C bit-field linear_panning: 1; represented by its containing unsigned int. */
@@ -61,7 +61,7 @@ pub struct snd_emux {
     pub ports: [i32; SNDRV_EMUX_MAX_PORTS],
     pub portptrs: [*mut snd_emux_port; SNDRV_EMUX_MAX_PORTS],
     pub used: i32,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub vmidi: *mut *mut snd_rawmidi,
     pub tlist: timer_list,
     pub timer_active: i32,
@@ -75,9 +75,9 @@ pub struct snd_emux {
 #[repr(C)]
 pub struct snd_emux_port {
     pub emu: *mut snd_emux,
-    pub port_mode: core::ffi::c_char,
+    pub port_mode: kernel::ffi::c_char,
     pub volume_atten: i32,
-    pub drum_flags: libc::c_ulong,
+    pub drum_flags: kernel::ffi::c_ulong,
     pub ctrls: [i32; EMUX_MD_END as usize],
     pub effect: *mut snd_emux_effect_table,
     #[cfg(CONFIG_SND_SEQUENCER_OSS)]
@@ -106,12 +106,12 @@ pub struct snd_emux_voice {
     pub key: u8,
     pub velocity: u8,
     pub zone: *mut snd_sf_zone,
-    pub block: *mut core::ffi::c_void,
+    pub block: *mut kernel::ffi::c_void,
     pub chan: *mut snd_midi_channel,
     pub port: *mut snd_emux_port,
     pub emu: *mut snd_emux,
-    pub hw: *mut core::ffi::c_void,
-    pub ontime: libc::c_ulong,
+    pub hw: *mut kernel::ffi::c_void,
+    pub ontime: kernel::ffi::c_ulong,
     pub reg: soundfont_voice_info,
     pub avol: i32,
     pub acutoff: i32,
@@ -139,7 +139,7 @@ pub struct snd_emux_effect_table {
 
 extern "C" {
     pub fn snd_emux_new(remu: *mut *mut snd_emux) -> i32;
-    pub fn snd_emux_register(emu: *mut snd_emux, card: *mut snd_card, index: i32, name: *mut core::ffi::c_char) -> i32;
+    pub fn snd_emux_register(emu: *mut snd_emux, card: *mut snd_card, index: i32, name: *mut kernel::ffi::c_char) -> i32;
     pub fn snd_emux_free(emu: *mut snd_emux) -> i32;
     pub fn snd_emux_terminate_all(emu: *mut snd_emux);
     pub fn snd_emux_lock_voice(emu: *mut snd_emux, voice: i32);

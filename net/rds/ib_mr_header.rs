@@ -98,9 +98,9 @@ pub struct rds_ib_mr_pool {
     pub flush_wait: wait_queue_head_t,
     pub clean_lock: spinlock_t,  /* "clean_list" concurrency */
     pub free_pinned: atomic_t,   /* memory pinned by free MRs */
-    pub max_items: ::core::ffi::c_ulong,
-    pub max_items_soft: ::core::ffi::c_ulong,
-    pub max_free_pinned: ::core::ffi::c_ulong,
+    pub max_items: ::kernel::ffi::c_ulong,
+    pub max_items_soft: ::kernel::ffi::c_ulong,
+    pub max_free_pinned: ::kernel::ffi::c_ulong,
     pub max_pages: u32,
 }
 
@@ -111,24 +111,24 @@ extern "C" {
     pub fn rds_ib_get_mr_info(rds_ibdev: *mut rds_ib_device, iinfo: *mut rds_info_rdma_connection);
     pub fn rds6_ib_get_mr_info(rds_ibdev: *mut rds_ib_device, iinfo6: *mut rds6_info_rdma_connection);
     pub fn rds_ib_destroy_mr_pool(pool: *mut rds_ib_mr_pool);
-    pub fn rds_ib_get_mr(sg: *mut scatterlist, nents: ::core::ffi::c_ulong, rs: *mut rds_sock,
+    pub fn rds_ib_get_mr(sg: *mut scatterlist, nents: ::kernel::ffi::c_ulong, rs: *mut rds_sock,
                          key_ret: *mut u32, conn: *mut rds_connection, start: u64, length: u64,
-                         need_odp: i32) -> *mut ::core::ffi::c_void;
-    pub fn rds_ib_sync_mr(trans_private: *mut ::core::ffi::c_void, dir: i32);
-    pub fn rds_ib_free_mr(trans_private: *mut ::core::ffi::c_void, invalidate: i32);
+                         need_odp: i32) -> *mut ::kernel::ffi::c_void;
+    pub fn rds_ib_sync_mr(trans_private: *mut ::kernel::ffi::c_void, dir: i32);
+    pub fn rds_ib_free_mr(trans_private: *mut ::kernel::ffi::c_void, invalidate: i32);
     pub fn rds_ib_flush_mrs();
     pub fn rds_ib_mr_init() -> i32;
     pub fn rds_ib_mr_exit();
-    pub fn rds_ib_get_lkey(trans_private: *mut ::core::ffi::c_void) -> u32;
+    pub fn rds_ib_get_lkey(trans_private: *mut ::kernel::ffi::c_void) -> u32;
     pub fn __rds_ib_teardown_mr(mr: *mut rds_ib_mr);
     pub fn rds_ib_teardown_mr(mr: *mut rds_ib_mr);
     pub fn rds_ib_reuse_mr(pool: *mut rds_ib_mr_pool) -> *mut rds_ib_mr;
     pub fn rds_ib_flush_mr_pool(pool: *mut rds_ib_mr_pool, arg: i32, mr: *mut *mut rds_ib_mr) -> i32;
     pub fn rds_ib_try_reuse_ibmr(pool: *mut rds_ib_mr_pool) -> *mut rds_ib_mr;
     pub fn rds_ib_reg_frmr(rds_ibdev: *mut rds_ib_device, ic: *mut rds_ib_connection,
-                           sg: *mut scatterlist, nents: ::core::ffi::c_ulong, key: *mut u32) -> *mut rds_ib_mr;
+                           sg: *mut scatterlist, nents: ::kernel::ffi::c_ulong, key: *mut u32) -> *mut rds_ib_mr;
     pub fn rds_ib_unreg_frmr(list: *mut list_head, nfreed: *mut u32,
-                             unpinned: *mut ::core::ffi::c_ulong, goal: u32);
+                             unpinned: *mut ::kernel::ffi::c_ulong, goal: u32);
     pub fn rds_ib_free_frmr_list(mr: *mut rds_ib_mr);
 }
 

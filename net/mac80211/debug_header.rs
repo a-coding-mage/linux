@@ -19,10 +19,10 @@ pub const MAC80211_MLME_DEBUG: bool = cfg!(CONFIG_MAC80211_MLME_DEBUG);
 
 #[cfg(CONFIG_MAC80211_MESSAGE_TRACING)]
 extern "C" {
-    pub fn __sdata_info(fmt: *const core::ffi::c_char, ...);
-    pub fn __sdata_dbg(print: bool, fmt: *const core::ffi::c_char, ...);
-    pub fn __sdata_err(fmt: *const core::ffi::c_char, ...);
-    pub fn __wiphy_dbg(wiphy: *mut wiphy, print: bool, fmt: *const core::ffi::c_char, ...);
+    pub fn __sdata_info(fmt: *const kernel::ffi::c_char, ...);
+    pub fn __sdata_dbg(print: bool, fmt: *const kernel::ffi::c_char, ...);
+    pub fn __sdata_err(fmt: *const kernel::ffi::c_char, ...);
+    pub fn __wiphy_dbg(wiphy: *mut wiphy, print: bool, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[cfg(CONFIG_MAC80211_MESSAGE_TRACING)]

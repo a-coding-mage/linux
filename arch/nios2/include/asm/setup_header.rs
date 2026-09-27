@@ -9,9 +9,9 @@
 // in the original header.
 #[cfg(feature = "kernel")]
 extern "C" {
-    pub static mut exception_handler_hook: [core::ffi::c_char; 0];
-    pub static mut fast_handler: [core::ffi::c_char; 0];
-    pub static mut fast_handler_end: [core::ffi::c_char; 0];
+    pub static mut exception_handler_hook: [kernel::ffi::c_char; 0];
+    pub static mut fast_handler: [kernel::ffi::c_char; 0];
+    pub static mut fast_handler_end: [kernel::ffi::c_char; 0];
 
     pub fn pagetable_init();
 }

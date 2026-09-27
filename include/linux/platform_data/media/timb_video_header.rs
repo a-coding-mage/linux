@@ -9,15 +9,15 @@
 
 #[repr(C)]
 pub struct timb_video_platform_data_encoder {
-    pub module_name: *const core::ffi::c_char,
+    pub module_name: *const kernel::ffi::c_char,
     pub info: *mut i2c_board_info,
 }
 
 #[repr(C)]
 pub struct timb_video_platform_data {
-    pub dma_channel: core::ffi::c_int,
+    pub dma_channel: kernel::ffi::c_int,
     /* The I2C adapter where the encoder is attached */
-    pub i2c_adapter: core::ffi::c_int,
+    pub i2c_adapter: kernel::ffi::c_int,
     pub encoder: timb_video_platform_data_encoder,
 }
 

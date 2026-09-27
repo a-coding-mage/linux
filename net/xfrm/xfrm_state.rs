@@ -52,7 +52,7 @@ static void xfrm_state_gc_task(work_struct *work);
       destination/tunnel endpoint. (output)
  */
 
-static core::ffi::c_uint xfrm_state_hashmax __read_mostly = 1 * 1024 * 1024;
+static kernel::ffi::c_uint xfrm_state_hashmax __read_mostly = 1 * 1024 * 1024;
 static struct kmem_cache *xfrm_state_cache __ro_after_init;
 
 static DECLARE_WORK(xfrm_state_gc_work, xfrm_state_gc_task);
@@ -64,37 +64,37 @@ bool xfrm_state_hold_rcu(xfrm_state *x)
 	return refcount_inc_not_zero(&x->refcnt);
 }
 
-core::ffi::c_uint xfrm_dst_hash(net *net,
+kernel::ffi::c_uint xfrm_dst_hash(net *net,
 					 const xfrm_address_t *daddr,
 					 const xfrm_address_t *saddr,
 					 reqid: u32,
-					 family: core::ffi::c_ushort)
+					 family: kernel::ffi::c_ushort)
 {
 	lockdep_assert_held(&net->xfrm.xfrm_state_lock);
 
 	return __xfrm_dst_hash(daddr, saddr, reqid, family, net->xfrm.state_hmask);
 }
 
-core::ffi::c_uint xfrm_src_hash(net *net,
+kernel::ffi::c_uint xfrm_src_hash(net *net,
 					 const xfrm_address_t *daddr,
 					 const xfrm_address_t *saddr,
-					 family: core::ffi::c_ushort)
+					 family: kernel::ffi::c_ushort)
 {
 	lockdep_assert_held(&net->xfrm.xfrm_state_lock);
 
 	return __xfrm_src_hash(daddr, saddr, family, net->xfrm.state_hmask);
 }
 
-core::ffi::c_uint
+kernel::ffi::c_uint
 xfrm_spi_hash(net *net, const xfrm_address_t *daddr,
-	      __be32 spi, proto: u8, family: core::ffi::c_ushort)
+	      __be32 spi, proto: u8, family: kernel::ffi::c_ushort)
 {
 	lockdep_assert_held(&net->xfrm.xfrm_state_lock);
 
 	return __xfrm_spi_hash(daddr, spi, proto, family, net->xfrm.state_hmask);
 }
 
-static core::ffi::c_uint xfrm_seq_hash(net *net, seq: u32)
+static kernel::ffi::c_uint xfrm_seq_hash(net *net, seq: u32)
 {
 	lockdep_assert_held(&net->xfrm.xfrm_state_lock);
 
@@ -125,13 +125,13 @@ static void xfrm_hash_transfer(hlist_head *list,
 			       hlist_head *nsrctable,
 			       hlist_head *nspitable,
 			       hlist_head *nseqtable,
-			       nhashmask: core::ffi::c_uint)
+			       nhashmask: kernel::ffi::c_uint)
 {
 	struct hlist_node *tmp;
 	struct xfrm_state *x;
 
 	hlist_for_each_entry_safe!(x, tmp, list, bydst, {
-		core::ffi::c_uint h;
+		kernel::ffi::c_uint h;
 
 		h = __xfrm_dst_hash(&x->id.daddr, &x->props.saddr,
 				    x->props.reqid, x->props.family,
@@ -159,7 +159,7 @@ static void xfrm_hash_transfer(hlist_head *list,
 	});
 }
 
-static core::ffi::c_ulong xfrm_hash_new_size(state_hmask: core::ffi::c_uint)
+static kernel::ffi::c_ulong xfrm_hash_new_size(state_hmask: kernel::ffi::c_uint)
 {
 	return ((state_hmask + 1) << 1) * sizeof(hlist_head);
 }
@@ -168,8 +168,8 @@ static void xfrm_hash_resize(work_struct *work)
 {
 	struct net *net = container_of(work, net, xfrm.state_hash_work);
 	struct hlist_head *ndst, *nsrc, *nspi, *nseq, *odst, *osrc, *ospi, *oseq;
-	nsize: core::ffi::c_ulong, osize;
-	nhashmask: core::ffi::c_uint, ohashmask;
+	nsize: kernel::ffi::c_ulong, osize;
+	nhashmask: kernel::ffi::c_uint, ohashmask;
 	int i;
 
 	nsize = xfrm_hash_new_size(net->xfrm.state_hmask);
@@ -239,7 +239,7 @@ int km_query(xfrm_state *x, xfrm_tmpl *t, xfrm_policy *pol);
 static bool km_is_alive(const struct km_event *c);
 void km_state_expired(xfrm_state *x, int hard, portid: u32);
 
-int xfrm_register_type(const struct xfrm_type *type, family: core::ffi::c_ushort)
+int xfrm_register_type(const struct xfrm_type *type, family: kernel::ffi::c_ushort)
 {
 	struct xfrm_state_afinfo *afinfo = xfrm_state_get_afinfo(family);
 	int err = 0;
@@ -285,7 +285,7 @@ int xfrm_register_type(const struct xfrm_type *type, family: core::ffi::c_ushort
 }
 EXPORT_SYMBOL(xfrm_register_type);
 
-void xfrm_unregister_type(const struct xfrm_type *type, family: core::ffi::c_ushort)
+void xfrm_unregister_type(const struct xfrm_type *type, family: kernel::ffi::c_ushort)
 {
 	struct xfrm_state_afinfo *afinfo = xfrm_state_get_afinfo(family);
 
@@ -328,7 +328,7 @@ void xfrm_unregister_type(const struct xfrm_type *type, family: core::ffi::c_ush
 }
 EXPORT_SYMBOL(xfrm_unregister_type);
 
-static const struct xfrm_type *xfrm_get_type(proto: u8, family: core::ffi::c_ushort)
+static const struct xfrm_type *xfrm_get_type(proto: u8, family: kernel::ffi::c_ushort)
 {
 	const struct xfrm_type *type = NULL;
 	struct xfrm_state_afinfo *afinfo;
@@ -385,7 +385,7 @@ static void xfrm_put_type(const struct xfrm_type *type)
 }
 
 int xfrm_register_type_offload(const struct xfrm_type_offload *type,
-			       family: core::ffi::c_ushort)
+			       family: kernel::ffi::c_ushort)
 {
 	struct xfrm_state_afinfo *afinfo = xfrm_state_get_afinfo(family);
 	int err = 0;
@@ -410,7 +410,7 @@ int xfrm_register_type_offload(const struct xfrm_type_offload *type,
 EXPORT_SYMBOL(xfrm_register_type_offload);
 
 void xfrm_unregister_type_offload(const struct xfrm_type_offload *type,
-				  family: core::ffi::c_ushort)
+				  family: kernel::ffi::c_ushort)
 {
 	struct xfrm_state_afinfo *afinfo = xfrm_state_get_afinfo(family);
 
@@ -513,7 +513,7 @@ static const struct xfrm_mode xfrm6_mode_map[XFRM_MODE_MAX] = {
 	},
 };
 
-static const struct xfrm_mode *xfrm_get_mode(encap: core::ffi::c_uint, int family)
+static const struct xfrm_mode *xfrm_get_mode(encap: kernel::ffi::c_uint, int family)
 {
 	const struct xfrm_mode *mode;
 
@@ -1078,7 +1078,7 @@ static void
 xfrm_init_tempstate(xfrm_state *x, const struct flowi *fl,
 		    const struct xfrm_tmpl *tmpl,
 		    const xfrm_address_t *daddr, const xfrm_address_t *saddr,
-		    family: core::ffi::c_ushort)
+		    family: kernel::ffi::c_ushort)
 {
 	switch (family) {
 	case AF_INET:
@@ -1117,12 +1117,12 @@ struct xfrm_hash_state_ptrs {
 	const struct hlist_head *bydst;
 	const struct hlist_head *bysrc;
 	const struct hlist_head *byspi;
-	core::ffi::c_uint hmask;
+	kernel::ffi::c_uint hmask;
 };
 
 static void xfrm_hash_ptrs_get(const struct net *net, xfrm_hash_state_ptrs *ptrs)
 {
-	core::ffi::c_uint sequence;
+	kernel::ffi::c_uint sequence;
 
 	do {
 		sequence = read_seqcount_begin(&net->xfrm.xfrm_state_hash_generation);
@@ -1138,10 +1138,10 @@ static struct xfrm_state *__xfrm_state_lookup_all(const struct xfrm_hash_state_p
 						  mark: u32,
 						  const xfrm_address_t *daddr,
 						  __be32 spi, proto: u8,
-						  family: core::ffi::c_ushort,
+						  family: kernel::ffi::c_ushort,
 						  xfrm_dev_offload *xdo)
 {
-	core::ffi::c_uint h = __xfrm_spi_hash(daddr, spi, proto, family, state_ptrs->hmask);
+	kernel::ffi::c_uint h = __xfrm_spi_hash(daddr, spi, proto, family, state_ptrs->hmask);
 	struct xfrm_state *x;
 
 	hlist_for_each_entry_rcu!(x, state_ptrs->byspi + h, byspi, {
@@ -1182,9 +1182,9 @@ static struct xfrm_state *__xfrm_state_lookup(const struct xfrm_hash_state_ptrs 
 					      mark: u32,
 					      const xfrm_address_t *daddr,
 					      __be32 spi, proto: u8,
-					      family: core::ffi::c_ushort)
+					      family: kernel::ffi::c_ushort)
 {
-	core::ffi::c_uint h = __xfrm_spi_hash(daddr, spi, proto, family, state_ptrs->hmask);
+	kernel::ffi::c_uint h = __xfrm_spi_hash(daddr, spi, proto, family, state_ptrs->hmask);
 	struct xfrm_state *x;
 
 	hlist_for_each_entry_rcu!(x, state_ptrs->byspi + h, byspi, {
@@ -1207,7 +1207,7 @@ static struct xfrm_state *__xfrm_state_lookup(const struct xfrm_hash_state_ptrs 
 struct xfrm_state *xfrm_input_state_lookup(net *net, mark: u32,
 					   const xfrm_address_t *daddr,
 					   __be32 spi, proto: u8,
-					   family: core::ffi::c_ushort)
+					   family: kernel::ffi::c_ushort)
 {
 	struct xfrm_hash_state_ptrs state_ptrs;
 	struct hlist_head *state_cache_input;
@@ -1262,9 +1262,9 @@ static struct xfrm_state *__xfrm_state_lookup_byaddr(const struct xfrm_hash_stat
 						     mark: u32,
 						     const xfrm_address_t *daddr,
 						     const xfrm_address_t *saddr,
-						     proto: u8, family: core::ffi::c_ushort)
+						     proto: u8, family: kernel::ffi::c_ushort)
 {
-	core::ffi::c_uint h = __xfrm_src_hash(daddr, saddr, family, state_ptrs->hmask);
+	kernel::ffi::c_uint h = __xfrm_src_hash(daddr, saddr, family, state_ptrs->hmask);
 	struct xfrm_state *x;
 
 	hlist_for_each_entry_rcu!(x, state_ptrs->bysrc + h, bysrc, {
@@ -1312,9 +1312,9 @@ static void xfrm_hash_grow_check(net *net, int have_hash_collision)
 }
 
 static void xfrm_state_look_at(xfrm_policy *pol, xfrm_state *x,
-			       const struct flowi *fl, family: core::ffi::c_ushort,
+			       const struct flowi *fl, family: kernel::ffi::c_ushort,
 			       xfrm_state **best, int *acq_in_progress,
-			       int *error, pcpu_id: core::ffi::c_uint)
+			       int *error, pcpu_id: kernel::ffi::c_uint)
 {
 	/* Resolution logic:
 	 * 1. There is a valid state with matching selector. Done.
@@ -1362,21 +1362,21 @@ struct xfrm_state *
 xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
 		const struct flowi *fl, xfrm_tmpl *tmpl,
 		xfrm_policy *pol, int *err,
-		family: core::ffi::c_ushort, if_id: u32)
+		family: kernel::ffi::c_ushort, if_id: u32)
 {
 	static xfrm_address_t saddr_wildcard = { };
 	struct xfrm_hash_state_ptrs state_ptrs;
 	struct net *net = xp_net(pol);
-	h: core::ffi::c_uint, h_wildcard;
+	h: kernel::ffi::c_uint, h_wildcard;
 	struct xfrm_state *x, *x0, *to_put;
 	int acquire_in_progress = 0;
 	int error = 0;
 	struct xfrm_state *best = NULL;
 	u32 mark = pol->mark.v & pol->mark.m;
-	core::ffi::c_ushort encap_family = tmpl->encap_family;
-	core::ffi::c_uint sequence;
+	kernel::ffi::c_ushort encap_family = tmpl->encap_family;
+	kernel::ffi::c_uint sequence;
 	struct km_event c;
-	core::ffi::c_uint pcpu_id;
+	kernel::ffi::c_uint pcpu_id;
 	bool cached = false;
 
 	/* We need the cpu id just as a lookup key,
@@ -1659,9 +1659,9 @@ out:
 struct xfrm_state *
 xfrm_stateonly_find(net *net, mark: u32, if_id: u32,
 		    xfrm_address_t *daddr, xfrm_address_t *saddr,
-		    family: core::ffi::c_ushort, mode: u8, proto: u8, reqid: u32)
+		    family: kernel::ffi::c_ushort, mode: u8, proto: u8, reqid: u32)
 {
-	core::ffi::c_uint h;
+	kernel::ffi::c_uint h;
 	struct xfrm_state *rx = NULL, *x = NULL;
 
 	spin_lock_bh(&net->xfrm.xfrm_state_lock);
@@ -1691,7 +1691,7 @@ xfrm_stateonly_find(net *net, mark: u32, if_id: u32,
 EXPORT_SYMBOL(xfrm_stateonly_find);
 
 struct xfrm_state *xfrm_state_lookup_byspi(net *net, __be32 spi,
-					      family: core::ffi::c_ushort)
+					      family: kernel::ffi::c_ushort)
 {
 	struct xfrm_state *x;
 	struct xfrm_state_walk *w;
@@ -1715,7 +1715,7 @@ EXPORT_SYMBOL(xfrm_state_lookup_byspi);
 static struct xfrm_state *xfrm_state_lookup_spi_proto(net *net, __be32 spi, proto: u8)
 {
 	struct xfrm_state *x;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	for (i = 0; i <= net->xfrm.state_hmask; i++) {
 		hlist_for_each_entry!(x, xfrm_state_deref_prot(net->xfrm.state_byspi, net) + i, byspi, {
@@ -1729,7 +1729,7 @@ static struct xfrm_state *xfrm_state_lookup_spi_proto(net *net, __be32 spi, prot
 static void __xfrm_state_insert(xfrm_state *x)
 {
 	struct net *net = xs_net(x);
-	core::ffi::c_uint h;
+	kernel::ffi::c_uint h;
 
 	list_add(&x->km.all, &net->xfrm.state_all);
 
@@ -1778,10 +1778,10 @@ static void __xfrm_state_insert(xfrm_state *x)
 static void __xfrm_state_bump_genids(xfrm_state *xnew)
 {
 	struct net *net = xs_net(xnew);
-	core::ffi::c_ushort family = xnew->props.family;
+	kernel::ffi::c_ushort family = xnew->props.family;
 	u32 reqid = xnew->props.reqid;
 	struct xfrm_state *x;
-	core::ffi::c_uint h;
+	kernel::ffi::c_uint h;
 	u32 mark = xnew->mark.v & xnew->mark.m;
 	u32 if_id = xnew->if_id;
 	u32 cpu_id = xnew->pcpu_num;
@@ -1813,13 +1813,13 @@ EXPORT_SYMBOL(xfrm_state_insert);
 /* net->xfrm.xfrm_state_lock is held */
 static struct xfrm_state *__find_acq_core(net *net,
 					  const struct xfrm_mark *m,
-					  family: core::ffi::c_ushort, mode: u8,
+					  family: kernel::ffi::c_ushort, mode: u8,
 					  reqid: u32, if_id: u32, pcpu_num: u32, proto: u8,
 					  const xfrm_address_t *daddr,
 					  const xfrm_address_t *saddr,
 					  int create)
 {
-	core::ffi::c_uint h = xfrm_dst_hash(net, daddr, saddr, reqid, family);
+	kernel::ffi::c_uint h = xfrm_dst_hash(net, daddr, saddr, reqid, family);
 	struct xfrm_state *x;
 	u32 mark = m->v & m->m;
 
@@ -2102,7 +2102,7 @@ out:
 struct xfrm_state *xfrm_migrate_state_find(xfrm_migrate *m, net *net,
 						if_id: u32)
 {
-	core::ffi::c_uint h;
+	kernel::ffi::c_uint h;
 	struct xfrm_state *x = NULL;
 
 	spin_lock_bh(&net->xfrm.xfrm_state_lock);
@@ -2376,7 +2376,7 @@ void xfrm_state_update_stats(net *net)
 
 struct xfrm_state *
 xfrm_state_lookup(net *net, mark: u32, const xfrm_address_t *daddr, __be32 spi,
-		  proto: u8, family: core::ffi::c_ushort)
+		  proto: u8, family: kernel::ffi::c_ushort)
 {
 	struct xfrm_hash_state_ptrs state_ptrs;
 	struct xfrm_state *x;
@@ -2393,7 +2393,7 @@ EXPORT_SYMBOL(xfrm_state_lookup);
 struct xfrm_state *
 xfrm_state_lookup_byaddr(net *net, mark: u32,
 			 const xfrm_address_t *daddr, const xfrm_address_t *saddr,
-			 proto: u8, family: core::ffi::c_ushort)
+			 proto: u8, family: kernel::ffi::c_ushort)
 {
 	struct xfrm_hash_state_ptrs state_ptrs;
 	struct xfrm_state *x;
@@ -2411,7 +2411,7 @@ EXPORT_SYMBOL(xfrm_state_lookup_byaddr);
 struct xfrm_state *
 xfrm_find_acq(net *net, const struct xfrm_mark *mark, mode: u8, reqid: u32,
 	      if_id: u32, pcpu_num: u32, proto: u8, const xfrm_address_t *daddr,
-	      const xfrm_address_t *saddr, int create, family: core::ffi::c_ushort)
+	      const xfrm_address_t *saddr, int create, family: kernel::ffi::c_ushort)
 {
 	struct xfrm_state *x;
 
@@ -2525,7 +2525,7 @@ __xfrm6_sort(void **dst, void **src, int n,
 
 void
 xfrm_tmpl_sort(xfrm_tmpl **dst, xfrm_tmpl **src, int n,
-	       family: core::ffi::c_ushort)
+	       family: kernel::ffi::c_ushort)
 {
 	int i;
 
@@ -2539,7 +2539,7 @@ xfrm_tmpl_sort(xfrm_tmpl **dst, xfrm_tmpl **src, int n,
 
 void
 xfrm_state_sort(xfrm_state **dst, xfrm_state **src, int n,
-		family: core::ffi::c_ushort)
+		family: kernel::ffi::c_ushort)
 {
 	int i;
 
@@ -2556,7 +2556,7 @@ xfrm_state_sort(xfrm_state **dst, xfrm_state **src, int n,
 
 static struct xfrm_state *__xfrm_find_acq_byseq(net *net, mark: u32, seq: u32, pcpu_num: u32)
 {
-	core::ffi::c_uint h = xfrm_seq_hash(net, seq);
+	kernel::ffi::c_uint h = xfrm_seq_hash(net, seq);
 	struct xfrm_state *x;
 
 	hlist_for_each_entry!(x, xfrm_state_deref_prot(net->xfrm.state_byseq, net) + h, byseq, {
@@ -2629,7 +2629,7 @@ int xfrm_alloc_spi(xfrm_state *x, low: u32, high: u32,
 		   netlink_ext_ack *extack)
 {
 	struct net *net = xs_net(x);
-	core::ffi::c_uint h;
+	kernel::ffi::c_uint h;
 	struct xfrm_state *x0;
 	int err = -ENOENT;
 	u32 range = high - low + 1;
@@ -3122,7 +3122,7 @@ int xfrm_state_unregister_afinfo(xfrm_state_afinfo *afinfo)
 }
 EXPORT_SYMBOL(xfrm_state_unregister_afinfo);
 
-struct xfrm_state_afinfo *xfrm_state_afinfo_get_rcu(family: core::ffi::c_uint)
+struct xfrm_state_afinfo *xfrm_state_afinfo_get_rcu(family: kernel::ffi::c_uint)
 {
 	if (unlikely(family >= NPROTO))
 		return NULL;
@@ -3131,7 +3131,7 @@ struct xfrm_state_afinfo *xfrm_state_afinfo_get_rcu(family: core::ffi::c_uint)
 }
 EXPORT_SYMBOL_GPL(xfrm_state_afinfo_get_rcu);
 
-struct xfrm_state_afinfo *xfrm_state_get_afinfo(family: core::ffi::c_uint)
+struct xfrm_state_afinfo *xfrm_state_get_afinfo(family: kernel::ffi::c_uint)
 {
 	struct xfrm_state_afinfo *afinfo;
 	if (unlikely(family >= NPROTO))
@@ -3328,7 +3328,7 @@ EXPORT_SYMBOL(xfrm_init_state);
 int __net_init xfrm_state_init(net *net)
 {
 	struct hlist_head *ndst, *nsrc, *nspi, *nseq;
-	core::ffi::c_uint sz;
+	kernel::ffi::c_uint sz;
 
 	if (net_eq(net, &init_net))
 		xfrm_state_cache = KMEM_CACHE(xfrm_state,
@@ -3387,7 +3387,7 @@ out_bydst:
 	rcu_dereference_protected((table), true /* netns is going away */)
 void xfrm_state_fini(net *net)
 {
-	core::ffi::c_uint sz;
+	kernel::ffi::c_uint sz;
 	int i;
 
 	flush_work(&net->xfrm.state_hash_work);

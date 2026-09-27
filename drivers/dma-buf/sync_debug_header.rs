@@ -15,11 +15,11 @@
 #[repr(C)]
 pub struct sync_timeline {
     pub kref: kref,
-    pub name: [core::ffi::c_char; 32],
+    pub name: [kernel::ffi::c_char; 32],
 
     /* protected by lock */
     pub context: u64,
-    pub value: core::ffi::c_int,
+    pub value: kernel::ffi::c_int,
 
     pub pt_tree: rb_root,
     pub pt_list: list_head,

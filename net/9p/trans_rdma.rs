@@ -24,7 +24,7 @@ pub struct p9_trans_rdma {
     pub pd: *mut ib_pd,
     pub qp: *mut ib_qp,
     pub cq: *mut ib_cq,
-    pub timeout: libc::c_long,
+    pub timeout: kernel::ffi::c_long,
     pub privport: bool,
     pub port: u16,
     pub sq_depth: i32,
@@ -59,14 +59,14 @@ pub struct p9_rdma_context {
 }
 
 extern "C" {
-    fn p9_parse_header(rc: *mut p9_fcall, a: *mut core::ffi::c_void, b: *mut core::ffi::c_void, tag: *mut i16, n: i32) -> i32;
+    fn p9_parse_header(rc: *mut p9_fcall, a: *mut kernel::ffi::c_void, b: *mut kernel::ffi::c_void, tag: *mut i16, n: i32) -> i32;
     fn p9_tag_lookup(client: *mut p9_client, tag: i16) -> *mut p9_req_t;
     fn p9_client_cb(client: *mut p9_client, req: *mut p9_req_t, status: i32);
     fn p9_req_put(client: *mut p9_client, req: *mut p9_req_t);
     fn p9_fcall_fini(rc: *mut p9_fcall);
     fn rdma_disconnect(id: *mut rdma_cm_id) -> i32;
     fn ib_dma_unmap_single(device: *mut ib_device, addr: dma_addr_t, size: usize, dir: i32);
-    fn ib_dma_map_single(device: *mut ib_device, ptr: *mut core::ffi::c_void, size: usize, dir: i32) -> dma_addr_t;
+    fn ib_dma_map_single(device: *mut ib_device, ptr: *mut kernel::ffi::c_void, size: usize, dir: i32) -> dma_addr_t;
     fn ib_dma_mapping_error(device: *mut ib_device, addr: dma_addr_t) -> bool;
     fn ib_post_recv(qp: *mut ib_qp, wr: *mut ib_recv_wr, bad: *mut *mut ib_recv_wr) -> i32;
     fn ib_post_send(qp: *mut ib_qp, wr: *mut ib_send_wr, bad: *mut *mut ib_send_wr) -> i32;
@@ -122,7 +122,7 @@ unsafe extern "C" fn recv_done(cq: *mut ib_cq, wc: *mut ib_wc) {
         if err == 0 { (*req).rc.size = (*c).data.rc.size; (*req).rc.sdata = (*c).data.rc.sdata; p9_client_cb(client, req, REQ_STATUS_RCVD); }
     }
     if err != 0 { (*rdma).state = P9_RDMA_FLUSHING; (*client).status = Disconnected; }
-    up(&mut (*rdma).rq_sem); kfree(c as *mut core::ffi::c_void);
+    up(&mut (*rdma).rq_sem); kfree(c as *mut kernel::ffi::c_void);
 }
 
 unsafe extern "C" fn send_done(cq: *mut ib_cq, wc: *mut ib_wc) {
@@ -131,10 +131,10 @@ unsafe extern "C" fn send_done(cq: *mut ib_cq, wc: *mut ib_wc) {
     let c = container_of((*wc).wr_cqe, p9_rdma_context, cqe);
     let req = (*c).data.req;
     ib_dma_unmap_single((*(*rdma).cm_id).device, (*c).busa, (*req).tc.size, DMA_TO_DEVICE);
-    up(&mut (*rdma).sq_sem); p9_req_put(client, req); kfree(c as *mut core::ffi::c_void);
+    up(&mut (*rdma).sq_sem); p9_req_put(client, req); kfree(c as *mut kernel::ffi::c_void);
 }
 
-unsafe extern "C" fn qp_event_handler(event: *mut ib_event, context: *mut core::ffi::c_void) { p9_debug!(P9_DEBUG_ERROR, "QP event %d context %p\n", (*event).event, context); }
+unsafe extern "C" fn qp_event_handler(event: *mut ib_event, context: *mut kernel::ffi::c_void) { p9_debug!(P9_DEBUG_ERROR, "QP event %d context %p\n", (*event).event, context); }
 
 unsafe fn rdma_destroy_trans(rdma: *mut p9_trans_rdma) {
     if rdma.is_null() { return; }
@@ -142,7 +142,7 @@ unsafe fn rdma_destroy_trans(rdma: *mut p9_trans_rdma) {
     if !(*rdma).pd.is_null() { ib_dealloc_pd((*rdma).pd); }
     if !(*rdma).cq.is_null() { ib_free_cq((*rdma).cq); }
     if !(*rdma).cm_id.is_null() { rdma_destroy_id((*rdma).cm_id); }
-    kfree(rdma as *mut core::ffi::c_void);
+    kfree(rdma as *mut kernel::ffi::c_void);
 }
 
 unsafe extern "C" fn rdma_close(client: *mut p9_client) { if client.is_null() { return; } let rdma = (*client).trans as *mut p9_trans_rdma; if rdma.is_null() { return; } (*client).status = Disconnected; rdma_disconnect((*rdma).cm_id); rdma_destroy_trans(rdma); }

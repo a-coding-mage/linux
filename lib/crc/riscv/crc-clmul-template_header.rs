@@ -29,7 +29,7 @@ unsafe fn clmulr(a: usize, b: usize) -> usize {
     res
 }
 
-/* crc_load_long() loads one aligned core::ffi::c_ulong in the CRC bit order. */
+/* crc_load_long() loads one aligned kernel::ffi::c_ulong in the CRC bit order. */
 #[inline]
 unsafe fn crc_load_long(x: *const u8) -> usize {
     /* CONFIG_64BIT and LSB_CRC select the corresponding endian load. */
@@ -94,7 +94,7 @@ unsafe fn crc_clmul_update_partial(crc: crc_t, p: *const u8, len: usize, consts:
 
 #[inline]
 unsafe fn crc_clmul(mut crc: crc_t, mut p: *const u8, mut len: usize, consts: *const crc_clmul_consts) -> crc_t {
-    /* This implementation assumes that the CRC fits in an core::ffi::c_ulong. */
+    /* This implementation assumes that the CRC fits in an kernel::ffi::c_ulong. */
     let mut align = (p as usize) % core::mem::size_of::<usize>();
     if align != 0 && len != 0 {
         align = core::cmp::min(core::mem::size_of::<usize>() - align, len);

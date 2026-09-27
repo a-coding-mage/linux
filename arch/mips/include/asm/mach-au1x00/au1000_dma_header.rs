@@ -65,28 +65,28 @@ pub enum DmaDeviceIdBank2 {
 #[repr(C)]
 pub struct dma_chan {
     pub dev_id: i32,
-    pub io: *mut core::ffi::c_void,
-    pub dev_str: *const core::ffi::c_char,
+    pub io: *mut kernel::ffi::c_void,
+    pub dev_str: *const kernel::ffi::c_char,
     pub irq: i32,
-    pub irq_dev: *mut core::ffi::c_void,
+    pub irq_dev: *mut kernel::ffi::c_void,
     pub fifo_addr: u32,
     pub mode: u32,
 }
 
 extern "C" {
     pub static mut au1000_dma_table: [dma_chan; NUM_AU1000_DMA_CHANNELS];
-    pub fn request_au1000_dma(dev_id: i32, dev_str: *const core::ffi::c_char,
-        irqhandler: irq_handler_t, irqflags: core::ffi::c_ulong,
-        irq_dev_id: *mut core::ffi::c_void) -> i32;
+    pub fn request_au1000_dma(dev_id: i32, dev_str: *const kernel::ffi::c_char,
+        irqhandler: irq_handler_t, irqflags: kernel::ffi::c_ulong,
+        irq_dev_id: *mut kernel::ffi::c_void) -> i32;
     pub fn free_au1000_dma(dmanr: u32);
-    pub fn au1000_dma_read_proc(buf: *mut core::ffi::c_char,
-        start: *mut *mut core::ffi::c_char, fpos: off_t, length: i32,
-        eof: *mut i32, data: *mut core::ffi::c_void) -> i32;
+    pub fn au1000_dma_read_proc(buf: *mut kernel::ffi::c_char,
+        start: *mut *mut kernel::ffi::c_char, fpos: off_t, length: i32,
+        eof: *mut i32, data: *mut kernel::ffi::c_void) -> i32;
     pub static mut au1000_dma_spin_lock: spinlock_t;
-    pub fn __raw_writel(value: u32, addr: *mut core::ffi::c_void);
-    pub fn __raw_readl(addr: *mut core::ffi::c_void) -> u32;
+    pub fn __raw_writel(value: u32, addr: *mut kernel::ffi::c_void);
+    pub fn __raw_readl(addr: *mut kernel::ffi::c_void) -> u32;
     pub fn CPHYSADDR(addr: u32) -> u32;
-    pub fn printk(fmt: *const core::ffi::c_char, ...);
+    pub fn printk(fmt: *const kernel::ffi::c_char, ...);
 }
 
 pub type irq_handler_t = unsafe extern "C" fn();
@@ -99,13 +99,13 @@ pub unsafe fn get_dma_chan(dmanr: u32) -> *mut dma_chan {
     } else { &mut au1000_dma_table[dmanr as usize] }
 }
 
-pub unsafe fn claim_dma_lock() -> core::ffi::c_ulong { 0 /* spin_lock_irqsave(&au1000_dma_spin_lock, flags) */ }
-pub unsafe fn release_dma_lock(_flags: core::ffi::c_ulong) { /* spin_unlock_irqrestore */ }
+pub unsafe fn claim_dma_lock() -> kernel::ffi::c_ulong { 0 /* spin_lock_irqsave(&au1000_dma_spin_lock, flags) */ }
+pub unsafe fn release_dma_lock(_flags: kernel::ffi::c_ulong) { /* spin_unlock_irqrestore */ }
 
 pub const DMA_HALT_POLL: i32 = 0x5000;
 
-unsafe fn dma_reg(chan: *mut dma_chan, offset: usize) -> *mut core::ffi::c_void {
-    ((*chan).io as *mut u8).add(offset) as *mut core::ffi::c_void
+unsafe fn dma_reg(chan: *mut dma_chan, offset: usize) -> *mut kernel::ffi::c_void {
+    ((*chan).io as *mut u8).add(offset) as *mut kernel::ffi::c_void
 }
 
 pub unsafe fn enable_dma_buffer0(dmanr: u32) { let c=get_dma_chan(dmanr); if !c.is_null(){__raw_writel(DMA_BE0,dma_reg(c,DMA_MODE_SET));} }

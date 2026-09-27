@@ -130,13 +130,13 @@ pub struct COMPONENT {
     pub AffinityMask: ULONG,
     pub ConfigurationDataSize: ULONG,
     pub IdentifierLength: ULONG,
-    pub Identifier: *mut core::ffi::c_char,
+    pub Identifier: *mut kernel::ffi::c_char,
 }
 
 /* internal structure that holds pathname parsing data */
 #[repr(C)]
 pub struct cfgdata {
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub minlen: i32,
     pub r#type: CONFIGTYPE,
 }

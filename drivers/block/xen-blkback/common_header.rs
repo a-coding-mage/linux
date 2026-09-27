@@ -23,7 +23,7 @@ pub const fn indirect_pages(segs: usize) -> usize {
 
 #[repr(C)]
 pub struct blkif_common_request {
-    pub dummy: core::ffi::c_char,
+    pub dummy: kernel::ffi::c_char,
 }
 
 #[repr(C, packed)]
@@ -187,7 +187,7 @@ pub struct persistent_gnt {
 pub struct xen_blkif_ring {
     pub irq: u32,
     pub blk_rings: blkif_back_rings,
-    pub blk_ring: *mut core::ffi::c_void,
+    pub blk_ring: *mut kernel::ffi::c_void,
     pub blk_ring_lock: spinlock_t,
     pub wq: wait_queue_head_t,
     pub inflight: atomic_t,
@@ -294,8 +294,8 @@ extern "C" {
     pub fn xen_blkif_interface_fini();
     pub fn xen_blkif_xenbus_init() -> i32;
     pub fn xen_blkif_xenbus_fini();
-    pub fn xen_blkif_be_int(irq: i32, dev_id: *mut core::ffi::c_void) -> irqreturn_t;
-    pub fn xen_blkif_schedule(arg: *mut core::ffi::c_void) -> i32;
+    pub fn xen_blkif_be_int(irq: i32, dev_id: *mut kernel::ffi::c_void) -> irqreturn_t;
+    pub fn xen_blkif_schedule(arg: *mut kernel::ffi::c_void) -> i32;
     pub fn xen_blkbk_free_caches(ring: *mut xen_blkif_ring);
     pub fn xen_blkbk_flush_diskcache(xbt: xenbus_transaction, be: *mut backend_info, state: i32) -> i32;
     pub fn xen_blkbk_barrier(xbt: xenbus_transaction, be: *mut backend_info, state: i32) -> i32;

@@ -18,53 +18,53 @@ unsafe extern "C" {
 
     fn snd_soc_rtd_to_codec(
         rtd: *mut snd_soc_pcm_runtime,
-        num: ::core::ffi::c_int,
+        num: ::kernel::ffi::c_int,
     ) -> *mut snd_soc_dai;
     fn snd_soc_dai_set_sysclk(
         dai: *mut snd_soc_dai,
-        clk_id: ::core::ffi::c_int,
-        freq: ::core::ffi::c_uint,
-        dir: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn dev_err(dev: *mut device, fmt: *const ::core::ffi::c_char, ...);
+        clk_id: ::kernel::ffi::c_int,
+        freq: ::kernel::ffi::c_uint,
+        dir: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
+    fn dev_err(dev: *mut device, fmt: *const ::kernel::ffi::c_char, ...);
     fn dev_err_probe(
         dev: *mut device,
-        err: ::core::ffi::c_int,
-        fmt: *const ::core::ffi::c_char,
+        err: ::kernel::ffi::c_int,
+        fmt: *const ::kernel::ffi::c_char,
         ...
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     fn snd_soc_of_parse_card_name(
         card: *mut snd_soc_card,
-        propname: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        propname: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
     fn devm_kzalloc(
         dev: *mut device,
         size: usize,
         flags: gfp_t,
-    ) -> *mut ::core::ffi::c_void;
+    ) -> *mut ::kernel::ffi::c_void;
     fn of_parse_phandle(
         np: *mut device_node,
-        phandle_name: *const ::core::ffi::c_char,
-        index: ::core::ffi::c_int,
+        phandle_name: *const ::kernel::ffi::c_char,
+        index: ::kernel::ffi::c_int,
     ) -> *mut device_node;
     fn snd_soc_daifmt_parse_format(
         np: *mut device_node,
-        prefix: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_uint;
+        prefix: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_uint;
     fn snd_soc_daifmt_parse_clock_provider_as_phandle(
         np: *mut device_node,
-        prefix: *const ::core::ffi::c_char,
+        prefix: *const ::kernel::ffi::c_char,
         bitclkmaster: *mut *mut device_node,
         framemaster: *mut *mut device_node,
     );
     fn snd_soc_daifmt_parse_clock_provider_as_flag(
         np: *mut device_node,
-        prefix: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_uint;
+        prefix: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_uint;
     fn devm_snd_soc_register_card(
         dev: *mut device,
         card: *mut snd_soc_card,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     fn of_node_put(node: *mut device_node);
 }
 
@@ -100,94 +100,94 @@ pub struct snd_soc_dai {
 
 #[repr(C)]
 pub struct snd_soc_dapm_widget {
-    pub name: *const ::core::ffi::c_char,
-    pub id: ::core::ffi::c_int,
-    pub reg: ::core::ffi::c_int,
-    pub shift: ::core::ffi::c_uchar,
-    pub mask: ::core::ffi::c_uint,
-    pub on_val: ::core::ffi::c_uint,
-    pub off_val: ::core::ffi::c_uint,
+    pub name: *const ::kernel::ffi::c_char,
+    pub id: ::kernel::ffi::c_int,
+    pub reg: ::kernel::ffi::c_int,
+    pub shift: ::kernel::ffi::c_uchar,
+    pub mask: ::kernel::ffi::c_uint,
+    pub on_val: ::kernel::ffi::c_uint,
+    pub off_val: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct snd_soc_dapm_route {
-    pub sink: *const ::core::ffi::c_char,
-    pub control: *const ::core::ffi::c_char,
-    pub source: *const ::core::ffi::c_char,
+    pub sink: *const ::kernel::ffi::c_char,
+    pub control: *const ::kernel::ffi::c_char,
+    pub source: *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct snd_soc_dai_link_component {
-    pub name: *const ::core::ffi::c_char,
-    pub dai_name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
+    pub dai_name: *const ::kernel::ffi::c_char,
     pub of_node: *mut device_node,
 }
 
 #[repr(C)]
 pub struct snd_soc_dai_link {
-    pub name: *const ::core::ffi::c_char,
-    pub stream_name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
+    pub stream_name: *const ::kernel::ffi::c_char,
     pub cpus: *mut snd_soc_dai_link_component,
-    pub num_cpus: ::core::ffi::c_uint,
+    pub num_cpus: ::kernel::ffi::c_uint,
     pub codecs: *mut snd_soc_dai_link_component,
-    pub num_codecs: ::core::ffi::c_uint,
+    pub num_codecs: ::kernel::ffi::c_uint,
     pub platforms: *mut snd_soc_dai_link_component,
-    pub num_platforms: ::core::ffi::c_uint,
-    pub init: Option<unsafe extern "C" fn(*mut snd_soc_pcm_runtime) -> ::core::ffi::c_int>,
-    pub dai_fmt: ::core::ffi::c_uint,
+    pub num_platforms: ::kernel::ffi::c_uint,
+    pub init: Option<unsafe extern "C" fn(*mut snd_soc_pcm_runtime) -> ::kernel::ffi::c_int>,
+    pub dai_fmt: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct snd_soc_card {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub owner: *mut module,
     pub dev: *mut device,
     pub dapm_widgets: *const snd_soc_dapm_widget,
-    pub num_dapm_widgets: ::core::ffi::c_int,
+    pub num_dapm_widgets: ::kernel::ffi::c_int,
     pub dapm_routes: *const snd_soc_dapm_route,
-    pub num_dapm_routes: ::core::ffi::c_int,
+    pub num_dapm_routes: ::kernel::ffi::c_int,
     pub dai_link: *mut snd_soc_dai_link,
-    pub num_links: ::core::ffi::c_int,
+    pub num_links: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const ::core::ffi::c_char,
+    pub compatible: *const ::kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
 #[repr(C)]
 pub struct platform_driver {
     pub driver: driver,
-    pub probe: Option<unsafe extern "C" fn(*mut platform_device) -> ::core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(*mut platform_device) -> ::kernel::ffi::c_int>,
 }
 
-type gfp_t = ::core::ffi::c_uint;
+type gfp_t = ::kernel::ffi::c_uint;
 
-const WM8731_SYSCLK_XTAL: ::core::ffi::c_int = 0;
-const SND_SOC_CLOCK_IN: ::core::ffi::c_int = 0;
-const SND_SOC_DAIFMT_CBP_CFP: ::core::ffi::c_uint = 0;
-const SND_SOC_DAIFMT_CBC_CFC: ::core::ffi::c_uint = 0;
+const WM8731_SYSCLK_XTAL: ::kernel::ffi::c_int = 0;
+const SND_SOC_CLOCK_IN: ::kernel::ffi::c_int = 0;
+const SND_SOC_DAIFMT_CBP_CFP: ::kernel::ffi::c_uint = 0;
+const SND_SOC_DAIFMT_CBC_CFC: ::kernel::ffi::c_uint = 0;
 const GFP_KERNEL: gfp_t = 0;
-const EINVAL: ::core::ffi::c_int = 22;
-const ENOMEM: ::core::ffi::c_int = 12;
+const EINVAL: ::kernel::ffi::c_int = 22;
+const ENOMEM: ::kernel::ffi::c_int = 12;
 
-const SND_SOC_DAPM_MIC_ID: ::core::ffi::c_int = 0;
-const SND_SOC_DAPM_HP_ID: ::core::ffi::c_int = 0;
+const SND_SOC_DAPM_MIC_ID: ::kernel::ffi::c_int = 0;
+const SND_SOC_DAPM_HP_ID: ::kernel::ffi::c_int = 0;
 
 unsafe extern "C" fn snd_proto_init(
     rtd: *mut snd_soc_pcm_runtime,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let card: *mut snd_soc_card = unsafe { (*rtd).card };
     let codec_dai: *mut snd_soc_dai = unsafe { snd_soc_rtd_to_codec(rtd, 0) };
 
     /* Set proto sysclk */
-    let ret: ::core::ffi::c_int = unsafe {
+    let ret: ::kernel::ffi::c_int = unsafe {
         snd_soc_dai_set_sysclk(
             codec_dai,
             WM8731_SYSCLK_XTAL,
@@ -261,16 +261,16 @@ static mut snd_proto: snd_soc_card = snd_soc_card {
     owner: unsafe { THIS_MODULE },
     dev: ::core::ptr::null_mut(),
     dapm_widgets: snd_proto_widget.as_ptr(),
-    num_dapm_widgets: snd_proto_widget.len() as ::core::ffi::c_int,
+    num_dapm_widgets: snd_proto_widget.len() as ::kernel::ffi::c_int,
     dapm_routes: snd_proto_route.as_ptr(),
-    num_dapm_routes: snd_proto_route.len() as ::core::ffi::c_int,
+    num_dapm_routes: snd_proto_route.len() as ::kernel::ffi::c_int,
     dai_link: ::core::ptr::null_mut(),
     num_links: 0,
 };
 
 unsafe extern "C" fn snd_proto_probe(
     pdev: *mut platform_device,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let dai: *mut snd_soc_dai_link;
     let comp: *mut snd_soc_dai_link_component;
     let np: *mut device_node = unsafe { (*pdev).dev.of_node };
@@ -278,8 +278,8 @@ unsafe extern "C" fn snd_proto_probe(
     let cpu_np: *mut device_node;
     let mut bitclkmaster: *mut device_node = ::core::ptr::null_mut();
     let mut framemaster: *mut device_node = ::core::ptr::null_mut();
-    let mut dai_fmt: ::core::ffi::c_uint;
-    let mut ret: ::core::ffi::c_int = 0;
+    let mut dai_fmt: ::kernel::ffi::c_uint;
+    let mut ret: ::kernel::ffi::c_int = 0;
 
     if np.is_null() {
         unsafe {

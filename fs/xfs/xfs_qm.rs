@@ -437,14 +437,14 @@ xfs_qm_dquot_isolate(
 	return ret;
 }
 
-static core::ffi::c_ulong
+static kernel::ffi::c_ulong
 xfs_qm_shrink_scan(
 	struct *mut shrinker shrink,
 	struct *mut shrink_control sc)
 {
 	struct *mut xfs_quotainfo qi = (*shrink).private_data;
 	struct xfs_qm_isolate	isol;
-	core::ffi::c_ulong		freed;
+	kernel::ffi::c_ulong		freed;
 	int			error;
 
 	if (((*sc).gfp_mask & (__GFP_FS|__GFP_DIRECT_RECLAIM)) != (__GFP_FS|__GFP_DIRECT_RECLAIM))
@@ -470,7 +470,7 @@ xfs_qm_shrink_scan(
 	return freed;
 }
 
-static core::ffi::c_ulong
+static kernel::ffi::c_ulong
 xfs_qm_shrink_count(
 	struct *mut shrinker shrink,
 	struct *mut shrink_control sc)
@@ -829,7 +829,7 @@ xfs_qm_destroy_quotainfo(
 
 enum xfs_metafile_type
 xfs_qm_metafile_type(
-	flags: core::ffi::c_uint)
+	flags: kernel::ffi::c_uint)
 {
 	if (flags & XFS_QMOPT_UQUOTA)
 		return XFS_METAFILE_USRQUOTA;
@@ -845,7 +845,7 @@ static int
 xfs_qm_qino_alloc(
 	struct *mut xfs_mount mp,
 	*mut xfs_inode*ipp,
-	flags: core::ffi::c_uint)
+	flags: kernel::ffi::c_uint)
 {
 	struct *mut xfs_trans tp;
 	enum xfs_metafile_type	metafile_type = xfs_qm_metafile_type(flags);
@@ -1237,7 +1237,7 @@ xfs_qm_dqusage_adjust(
 	'error0: {
 	struct *mut xfs_inode ip;
 	xfs_filblks_t		nblks, rtblks;
-	core::ffi::c_uint		lock_mode;
+	kernel::ffi::c_uint		lock_mode;
 	int			error;
 
 	ASSERT(XFS_IS_QUOTA_ON(mp));

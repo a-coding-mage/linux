@@ -23,11 +23,11 @@ enum I82875pChips { I82875P = 0 }
 #[repr(C)]
 pub struct I82875pPvt {
     pub ovrfl_pdev: *mut pci_dev,
-    pub ovrfl_window: *mut core::ffi::c_void,
+    pub ovrfl_window: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
-struct I82875pDevInfo { ctl_name: *const core::ffi::c_char }
+struct I82875pDevInfo { ctl_name: *const kernel::ffi::c_char }
 
 #[repr(C)]
 struct I82875pErrorInfo {
@@ -85,7 +85,7 @@ extern "C" {
     fn to_pci_dev(dev: *mut device) -> *mut pci_dev;
     fn pci_read_config_word(_: *mut pci_dev, _: u16, _: *mut u16); fn pci_read_config_dword(_: *mut pci_dev, _: u16, _: *mut u32); fn pci_read_config_byte(_: *mut pci_dev, _: u16, _: *mut u8);
     fn pci_write_bits16(_: *mut pci_dev, _: u16, _: u16, _: u16);
-    fn edac_mc_handle_error(_: i32, _: *mut mem_ctl_info, _: u32, _: u32, _: u32, _: u32, _: i32, _: i32, _: i32, _: *const core::ffi::c_char, _: *const core::ffi::c_char);
+    fn edac_mc_handle_error(_: i32, _: *mut mem_ctl_info, _: u32, _: u32, _: u32, _: u32, _: i32, _: i32, _: i32, _: *const kernel::ffi::c_char, _: *const kernel::ffi::c_char);
     fn edac_mc_find_csrow_by_page(_: *mut mem_ctl_info, _: u32) -> i32;
 }
 
@@ -101,17 +101,17 @@ extern "C" {
     fn pci_dev_put(_: *mut pci_dev);
     fn pci_enable_device(_: *mut pci_dev) -> i32;
     fn pci_disable_device(_: *mut pci_dev);
-    fn pci_release_regions(_: *mut pci_dev); fn pci_request_regions(_: *mut pci_dev, _: *const core::ffi::c_char) -> i32;
-    fn pci_ioremap_bar(_: *mut pci_dev, _: i32) -> *mut core::ffi::c_void; fn iounmap(_: *mut core::ffi::c_void);
-    fn pci_name(_: *mut pci_dev) -> *const core::ffi::c_char;
+    fn pci_release_regions(_: *mut pci_dev); fn pci_request_regions(_: *mut pci_dev, _: *const kernel::ffi::c_char) -> i32;
+    fn pci_ioremap_bar(_: *mut pci_dev, _: i32) -> *mut kernel::ffi::c_void; fn iounmap(_: *mut kernel::ffi::c_void);
+    fn pci_name(_: *mut pci_dev) -> *const kernel::ffi::c_char;
     fn pci_register_driver(_: *mut pci_driver) -> i32; fn pci_unregister_driver(_: *mut pci_driver);
     fn pci_scan_single_device(_: *mut pci_bus, _: u8) -> *mut pci_dev; fn pci_bus_assign_resources(_: *mut pci_bus); fn pci_bus_add_device(_: *mut pci_dev);
-    fn edac_pci_create_generic_ctl(_: *mut device, _: *const core::ffi::c_char) -> *mut edac_pci_ctl_info;
+    fn edac_pci_create_generic_ctl(_: *mut device, _: *const kernel::ffi::c_char) -> *mut edac_pci_ctl_info;
     fn edac_pci_release_generic_ctl(_: *mut edac_pci_ctl_info);
     fn edac_mc_del_mc(_: *mut device) -> *mut mem_ctl_info; fn edac_mc_free(_: *mut mem_ctl_info);
 }
 #[allow(non_camel_case_types)] pub enum pci_bus {}
-#[repr(C)] pub struct pci_driver { pub name: *const core::ffi::c_char, pub probe: Option<unsafe extern "C" fn(*mut pci_dev,*const pci_device_id)->i32>, pub remove: Option<unsafe extern "C" fn(*mut pci_dev)>, pub id_table: *const pci_device_id }
+#[repr(C)] pub struct pci_driver { pub name: *const kernel::ffi::c_char, pub probe: Option<unsafe extern "C" fn(*mut pci_dev,*const pci_device_id)->i32>, pub remove: Option<unsafe extern "C" fn(*mut pci_dev)>, pub id_table: *const pci_device_id }
 #[repr(C)] pub struct pci_device_id { pub driver_data: usize }
 
 static mut I82875P_DRIVER: pci_driver = pci_driver { name: b"i82875p_edac\0".as_ptr() as _, probe: Some(i82875p_init_one), remove: Some(i82875p_remove_one), id_table: core::ptr::null() };

@@ -13,7 +13,7 @@ static mut THE_CPU_SPEC: cpu_spec = unsafe { core::mem::zeroed() };
 pub static mut cur_cpu_spec: *mut cpu_spec = core::ptr::null_mut();
 
 /* The platform string corresponding to the real PVR */
-pub static mut powerpc_base_platform: *const core::ffi::c_char = core::ptr::null();
+pub static mut powerpc_base_platform: *const kernel::ffi::c_char = core::ptr::null();
 
 extern "C" {
     static mut cpu_specs: *mut cpu_spec;

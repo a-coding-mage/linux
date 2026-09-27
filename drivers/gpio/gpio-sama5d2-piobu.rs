@@ -37,7 +37,7 @@ const PIOBU_LOW: u32 = 0;
 
 #[repr(C)]
 pub struct gpio_chip {
-    pub label: *const core::ffi::c_char,
+    pub label: *const kernel::ffi::c_char,
     pub parent: *mut device,
     pub owner: *mut module,
     pub get_direction: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>,
@@ -62,16 +62,16 @@ pub struct sama5d2_piobu {
 #[repr(C)] pub struct device_node { _private: [u8; 0] }
 #[repr(C)] pub struct platform_device {
     pub dev: device,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 extern "C" {
     fn regmap_update_bits(map: *mut regmap, reg: u32, mask: u32, val: u32) -> i32;
     fn regmap_read(map: *mut regmap, reg: u32, val: *mut u32) -> i32;
     fn syscon_node_to_regmap(node: *mut device_node) -> *mut regmap;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn devm_gpiochip_add_data(dev: *mut device, chip: *mut gpio_chip, data: *mut core::ffi::c_void) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn devm_gpiochip_add_data(dev: *mut device, chip: *mut gpio_chip, data: *mut kernel::ffi::c_void) -> i32;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 const GFP_KERNEL: u32 = 0;
@@ -151,7 +151,7 @@ unsafe extern "C" fn sama5d2_piobu_probe(pdev: *mut platform_device) -> i32 {
     (*piobu).chip.can_sleep = 0;
     (*piobu).regmap = syscon_node_to_regmap(core::ptr::null_mut());
     if (*piobu).regmap.is_null() { return -19; }
-    let ret = devm_gpiochip_add_data(&mut (*pdev).dev, &mut (*piobu).chip, piobu as *mut core::ffi::c_void);
+    let ret = devm_gpiochip_add_data(&mut (*pdev).dev, &mut (*piobu).chip, piobu as *mut kernel::ffi::c_void);
     if ret != 0 { return ret; }
     let mut i = 0u32;
     while i < PIOBU_NUM {

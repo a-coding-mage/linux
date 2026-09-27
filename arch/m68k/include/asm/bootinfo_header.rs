@@ -25,15 +25,15 @@ pub unsafe fn save_bootinfo(_bi: *const bi_record) {}
 // CONFIG_UBOOT
 #[cfg(CONFIG_UBOOT)]
 extern "C" {
-    pub fn process_uboot_commandline(commandp: *mut core::ffi::c_char, size: core::ffi::c_int);
+    pub fn process_uboot_commandline(commandp: *mut kernel::ffi::c_char, size: kernel::ffi::c_int);
 }
 
 // CONFIG_UBOOT is not enabled.
 #[cfg(not(CONFIG_UBOOT))]
 #[inline]
 pub unsafe fn process_uboot_commandline(
-    _commandp: *mut core::ffi::c_char,
-    _size: core::ffi::c_int,
+    _commandp: *mut kernel::ffi::c_char,
+    _size: kernel::ffi::c_int,
 ) {
 }
 

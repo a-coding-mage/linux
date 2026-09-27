@@ -14,13 +14,13 @@ unsafe fn perf_output_wakeup(handle: *mut perf_output_handle) {
 unsafe fn perf_output_get_handle(handle: *mut perf_output_handle) {
     let rb = (*handle).rb;
     preempt_disable();
-    (*(core::ptr::addr_of_mut!((*rb).nest) as *mut core::ffi::c_uint)).wrapping_add(1);
+    (*(core::ptr::addr_of_mut!((*rb).nest) as *mut kernel::ffi::c_uint)).wrapping_add(1);
     (*handle).wakeup = local_read(&(*rb).wakeup);
 }
 
 unsafe fn perf_output_put_handle(handle: *mut perf_output_handle) {
     let rb = (*handle).rb;
-    let mut head: core::ffi::c_ulong;
+    let mut head: kernel::ffi::c_ulong;
     let nest = READ_ONCE((*rb).nest);
     if nest > 1 { WRITE_ONCE((*rb).nest, nest - 1); preempt_enable(); return; }
     loop {
@@ -38,18 +38,18 @@ unsafe fn perf_output_put_handle(handle: *mut perf_output_handle) {
     preempt_enable();
 }
 
-unsafe fn ring_buffer_has_space(head: core::ffi::c_ulong, tail: core::ffi::c_ulong,
-                                data_size: core::ffi::c_ulong, size: core::ffi::c_uint,
+unsafe fn ring_buffer_has_space(head: kernel::ffi::c_ulong, tail: kernel::ffi::c_ulong,
+                                data_size: kernel::ffi::c_ulong, size: kernel::ffi::c_uint,
                                 backward: bool) -> bool {
     if !backward { CIRC_SPACE(head, tail, data_size) >= size } else { CIRC_SPACE(tail, head, data_size) >= size }
 }
 
 unsafe fn __perf_output_begin(handle: *mut perf_output_handle, data: *mut perf_sample_data,
-                              mut event: *mut perf_event, mut size: core::ffi::c_uint,
-                              backward: bool) -> core::ffi::c_int {
+                              mut event: *mut perf_event, mut size: kernel::ffi::c_uint,
+                              backward: bool) -> kernel::ffi::c_int {
     let mut rb: *mut perf_buffer;
     let (mut tail, mut offset, mut head): (u64, u64, u64);
-    let have_lost: core::ffi::c_int;
+    let have_lost: kernel::ffi::c_int;
     #[repr(C)]
     struct LostEvent { header: perf_event_header, id: u64, lost: u64 }
     let mut lost_event: LostEvent = core::mem::zeroed();
@@ -92,7 +92,7 @@ unsafe fn __perf_output_begin(handle: *mut perf_output_handle, data: *mut perf_s
 pub unsafe fn perf_output_begin_forward(h: *mut perf_output_handle, d: *mut perf_sample_data, e: *mut perf_event, s: u32) -> i32 { __perf_output_begin(h,d,e,s,false) }
 pub unsafe fn perf_output_begin_backward(h: *mut perf_output_handle, d: *mut perf_sample_data, e: *mut perf_event, s: u32) -> i32 { __perf_output_begin(h,d,e,s,true) }
 pub unsafe fn perf_output_begin(h: *mut perf_output_handle, d: *mut perf_sample_data, e: *mut perf_event, s: u32) -> i32 { __perf_output_begin(h,d,e,s,unlikely(is_write_backward(e))) }
-pub unsafe fn perf_output_copy(h: *mut perf_output_handle, b: *const core::ffi::c_void, l: u32) -> u32 { __output_copy(h,b,l) }
+pub unsafe fn perf_output_copy(h: *mut perf_output_handle, b: *const kernel::ffi::c_void, l: u32) -> u32 { __output_copy(h,b,l) }
 pub unsafe fn perf_output_skip(h: *mut perf_output_handle, l: u32) -> u32 { __output_skip(h,core::ptr::null(),l) }
 pub unsafe fn perf_output_end(h: *mut perf_output_handle) { perf_output_put_handle(h); rcu_read_unlock(); }
 
@@ -100,10 +100,10 @@ pub unsafe fn perf_output_end(h: *mut perf_output_handle) { perf_output_put_hand
 // dependencies and are translated as direct Rust declarations below.
 extern "C" {
     pub fn perf_aux_output_flag(handle: *mut perf_output_handle, flags: u64);
-    pub fn perf_aux_output_begin(handle: *mut perf_output_handle, event: *mut perf_event) -> *mut core::ffi::c_void;
+    pub fn perf_aux_output_begin(handle: *mut perf_output_handle, event: *mut perf_event) -> *mut kernel::ffi::c_void;
     pub fn perf_aux_output_end(handle: *mut perf_output_handle, size: usize);
     pub fn perf_aux_output_skip(handle: *mut perf_output_handle, size: usize) -> i32;
-    pub fn perf_get_aux(handle: *mut perf_output_handle) -> *mut core::ffi::c_void;
+    pub fn perf_get_aux(handle: *mut perf_output_handle) -> *mut kernel::ffi::c_void;
     pub fn perf_output_copy_aux(aux_handle: *mut perf_output_handle, handle: *mut perf_output_handle, from: usize, to: usize) -> isize;
     pub fn rb_alloc_aux(rb: *mut perf_buffer, event: *mut perf_event, pgoff: usize, nr_pages: i32, watermark: isize, flags: i32) -> i32;
     pub fn rb_free_aux(rb: *mut perf_buffer);

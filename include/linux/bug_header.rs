@@ -20,7 +20,7 @@ pub struct pt_regs {
 extern "C" {
     pub fn bug_get_file_line(
         bug: *mut bug_entry,
-        file: *mut *const core::ffi::c_char,
+        file: *mut *const kernel::ffi::c_char,
         line: *mut u32,
     );
     pub fn find_bug(bugaddr: u64) -> *mut bug_entry;
@@ -44,7 +44,7 @@ pub unsafe fn is_warning_bug(_bug: *const bug_entry) -> i32 {
 }
 
 #[cfg(not(CONFIG_GENERIC_BUG))]
-pub unsafe fn find_bug(_bugaddr: u64) -> *mut core::ffi::c_void {
+pub unsafe fn find_bug(_bugaddr: u64) -> *mut kernel::ffi::c_void {
     core::ptr::null_mut()
 }
 
@@ -66,7 +66,7 @@ pub unsafe fn report_bug_entry(_bug: *mut bug_entry, _regs: *mut pt_regs) -> bug
 #[cfg(not(CONFIG_GENERIC_BUG))]
 pub unsafe fn bug_get_file_line(
     _bug: *mut bug_entry,
-    file: *mut *const core::ffi::c_char,
+    file: *mut *const kernel::ffi::c_char,
     line: *mut u32,
 ) {
     *file = core::ptr::null();
@@ -78,11 +78,11 @@ pub unsafe fn generic_bug_clear_once() {}
 
 #[cfg(CONFIG_PRINTK)]
 extern "C" {
-    pub fn mem_dump_obj(object: *mut core::ffi::c_void);
+    pub fn mem_dump_obj(object: *mut kernel::ffi::c_void);
 }
 
 #[cfg(not(CONFIG_PRINTK))]
-pub unsafe fn mem_dump_obj(_object: *mut core::ffi::c_void) {}
+pub unsafe fn mem_dump_obj(_object: *mut kernel::ffi::c_void) {}
 
 /*
  * Since detected data corruption should stop operation on the affected

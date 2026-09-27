@@ -10,16 +10,16 @@
 /* Dependency supplied by the surrounding kernel translation. */
 
 #[inline]
-pub unsafe fn rcu_cblist_n_cbs(rclp: *mut rcu_cblist) -> core::ffi::c_long {
+pub unsafe fn rcu_cblist_n_cbs(rclp: *mut rcu_cblist) -> kernel::ffi::c_long {
     core::ptr::read_volatile(&(*rclp).len)
 }
 
 extern "C" {
     pub fn rcu_segcblist_get_seglen(
         rsclp: *mut rcu_segcblist,
-        seg: core::ffi::c_int,
-    ) -> core::ffi::c_long;
-    pub fn rcu_segcblist_n_segment_cbs(rsclp: *mut rcu_segcblist) -> core::ffi::c_long;
+        seg: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_long;
+    pub fn rcu_segcblist_n_segment_cbs(rsclp: *mut rcu_segcblist) -> kernel::ffi::c_long;
 
     pub fn rcu_cblist_init(rclp: *mut rcu_cblist);
     pub fn rcu_cblist_enqueue(rclp: *mut rcu_cblist, rhp: *mut rcu_head);
@@ -37,19 +37,19 @@ pub unsafe fn rcu_segcblist_empty(rsclp: *mut rcu_segcblist) -> bool {
 }
 
 #[inline]
-pub unsafe fn rcu_segcblist_n_cbs(rsclp: *mut rcu_segcblist) -> core::ffi::c_long {
+pub unsafe fn rcu_segcblist_n_cbs(rsclp: *mut rcu_segcblist) -> kernel::ffi::c_long {
     /* CONFIG_RCU_NOCB_CPU selects an atomic read in the C implementation. */
     core::ptr::read_volatile(&(*rsclp).len)
 }
 
 #[inline]
-pub unsafe fn rcu_segcblist_set_flags(rsclp: *mut rcu_segcblist, flags: core::ffi::c_int) {
+pub unsafe fn rcu_segcblist_set_flags(rsclp: *mut rcu_segcblist, flags: kernel::ffi::c_int) {
     let old = core::ptr::read_volatile(&(*rsclp).flags);
     core::ptr::write_volatile(&mut (*rsclp).flags, old | flags);
 }
 
 #[inline]
-pub unsafe fn rcu_segcblist_clear_flags(rsclp: *mut rcu_segcblist, flags: core::ffi::c_int) {
+pub unsafe fn rcu_segcblist_clear_flags(rsclp: *mut rcu_segcblist, flags: kernel::ffi::c_int) {
     let old = core::ptr::read_volatile(&(*rsclp).flags);
     core::ptr::write_volatile(&mut (*rsclp).flags, old & !flags);
 }
@@ -57,7 +57,7 @@ pub unsafe fn rcu_segcblist_clear_flags(rsclp: *mut rcu_segcblist, flags: core::
 #[inline]
 pub unsafe fn rcu_segcblist_test_flags(
     rsclp: *mut rcu_segcblist,
-    flags: core::ffi::c_int,
+    flags: kernel::ffi::c_int,
 ) -> bool {
     (core::ptr::read_volatile(&(*rsclp).flags) & flags) != 0
 }
@@ -74,13 +74,13 @@ pub unsafe fn rcu_segcblist_is_offloaded(rsclp: *mut rcu_segcblist) -> bool {
 }
 
 #[inline]
-pub unsafe fn rcu_segcblist_restempty(rsclp: *mut rcu_segcblist, seg: core::ffi::c_int) -> bool {
+pub unsafe fn rcu_segcblist_restempty(rsclp: *mut rcu_segcblist, seg: kernel::ffi::c_int) -> bool {
     let tail = core::ptr::read_volatile(&(*rsclp).tails[seg as usize]);
     core::ptr::read_volatile(tail).is_null()
 }
 
 #[inline]
-pub unsafe fn rcu_segcblist_segempty(rsclp: *mut rcu_segcblist, seg: core::ffi::c_int) -> bool {
+pub unsafe fn rcu_segcblist_segempty(rsclp: *mut rcu_segcblist, seg: kernel::ffi::c_int) -> bool {
     if seg == RCU_DONE_TAIL {
         return (&(*rsclp).head as *const _) == (*rsclp).tails[RCU_DONE_TAIL as usize];
     }
@@ -89,7 +89,7 @@ pub unsafe fn rcu_segcblist_segempty(rsclp: *mut rcu_segcblist, seg: core::ffi::
 
 extern "C" {
     pub fn rcu_segcblist_inc_len(rsclp: *mut rcu_segcblist);
-    pub fn rcu_segcblist_add_len(rsclp: *mut rcu_segcblist, v: core::ffi::c_long);
+    pub fn rcu_segcblist_add_len(rsclp: *mut rcu_segcblist, v: kernel::ffi::c_long);
     pub fn rcu_segcblist_init(rsclp: *mut rcu_segcblist);
     pub fn rcu_segcblist_disable(rsclp: *mut rcu_segcblist);
     pub fn rcu_segcblist_ready_cbs(rsclp: *mut rcu_segcblist) -> bool;
@@ -107,8 +107,8 @@ extern "C" {
     pub fn rcu_segcblist_advance(rsclp: *mut rcu_segcblist);
     pub fn rcu_segcblist_accelerate(rsclp: *mut rcu_segcblist, gsp: *mut rcu_gp_seq) -> bool;
     pub fn rcu_segcblist_merge(dst_rsclp: *mut rcu_segcblist, src_rsclp: *mut rcu_segcblist);
-    pub fn srcu_segcblist_advance(rsclp: *mut rcu_segcblist, seq: core::ffi::c_ulong);
-    pub fn srcu_segcblist_accelerate(rsclp: *mut rcu_segcblist, seq: core::ffi::c_ulong) -> bool;
+    pub fn srcu_segcblist_advance(rsclp: *mut rcu_segcblist, seq: kernel::ffi::c_ulong);
+    pub fn srcu_segcblist_accelerate(rsclp: *mut rcu_segcblist, seq: kernel::ffi::c_ulong) -> bool;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

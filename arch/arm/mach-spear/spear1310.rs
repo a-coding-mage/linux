@@ -12,14 +12,14 @@
 // External Linux kernel declarations and constants are supplied by the
 // corresponding kernel headers and machine sources.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 const SPEAR1310_RAS_GRP1_BASE: usize = 0xD800_0000;
 const VA_SPEAR1310_RAS_GRP1_BASE: usize = 0xFA00_0000;
 
 extern "C" {
     fn platform_device_register_simple(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         id: i32,
         res: *const c_void,
         num: usize,
@@ -29,7 +29,7 @@ extern "C" {
     fn spear13xx_map_io();
     fn spear13xx_smp_ops();
     fn spear13xx_timer_init();
-    fn spear_restart(mode: i32, cmd: *const core::ffi::c_char);
+    fn spear_restart(mode: i32, cmd: *const kernel::ffi::c_char);
 }
 
 #[repr(C)]
@@ -45,12 +45,12 @@ const MT_DEVICE: u32 = 0;
 
 unsafe fn spear1310_dt_init() {
     let name = b"spear-cpufreq\0";
-    platform_device_register_simple(name.as_ptr() as *const core::ffi::c_char, -1, core::ptr::null(), 0);
+    platform_device_register_simple(name.as_ptr() as *const kernel::ffi::c_char, -1, core::ptr::null(), 0);
 }
 
-static SPEAR1310_DT_BOARD_COMPAT: [*const core::ffi::c_char; 3] = [
-    b"st,spear1310\0".as_ptr() as *const core::ffi::c_char,
-    b"st,spear1310-evb\0".as_ptr() as *const core::ffi::c_char,
+static SPEAR1310_DT_BOARD_COMPAT: [*const kernel::ffi::c_char; 3] = [
+    b"st,spear1310\0".as_ptr() as *const kernel::ffi::c_char,
+    b"st,spear1310-evb\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 
@@ -80,8 +80,8 @@ pub struct MachineDesc {
     pub map_io: unsafe fn(),
     pub init_time: unsafe extern "C" fn(),
     pub init_machine: unsafe fn(),
-    pub restart: unsafe extern "C" fn(i32, *const core::ffi::c_char),
-    pub dt_compat: *const *const core::ffi::c_char,
+    pub restart: unsafe extern "C" fn(i32, *const kernel::ffi::c_char),
+    pub dt_compat: *const *const kernel::ffi::c_char,
 }
 
 #[no_mangle]

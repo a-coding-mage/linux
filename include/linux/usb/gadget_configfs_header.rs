@@ -11,7 +11,7 @@ macro_rules! GS_STRINGS_W {
     ($struct_ty:ty, $name:ident, $store_fn:ident, $to_struct:expr) => {
         unsafe fn $store_fn(
             item: *mut config_item,
-            page: *const core::ffi::c_char,
+            page: *const kernel::ffi::c_char,
             len: usize,
         ) -> isize {
             let gs: *mut $struct_ty = $to_struct(item);
@@ -28,7 +28,7 @@ macro_rules! GS_STRINGS_R {
     ($struct_ty:ty, $name:ident, $show_fn:ident, $to_struct:expr) => {
         unsafe fn $show_fn(
             item: *mut config_item,
-            page: *mut core::ffi::c_char,
+            page: *mut kernel::ffi::c_char,
         ) -> isize {
             let gs: *mut $struct_ty = $to_struct(item);
             // Equivalent to sprintf(page, "%s\n", gs->$name ?: "").
@@ -64,7 +64,7 @@ macro_rules! USB_CONFIG_STRINGS_LANG {
      $ops:ident, $type_name:ident, $langid_type:expr) => {
         unsafe fn $make_fn(
             group: *mut config_group,
-            name: *const core::ffi::c_char,
+            name: *const kernel::ffi::c_char,
         ) -> *mut config_group {
             let mut langs: i32 = 0;
             let new: *mut $struct_in = kzalloc(
@@ -77,7 +77,7 @@ macro_rules! USB_CONFIG_STRINGS_LANG {
 
             let ret = check_user_usb_string(name, unsafe { &mut (*new).stringtab_dev });
             if ret != 0 {
-                unsafe { kfree(new as *mut core::ffi::c_void) };
+                unsafe { kfree(new as *mut kernel::ffi::c_void) };
                 return ERR_PTR(ret);
             }
             unsafe {
@@ -90,7 +90,7 @@ macro_rules! USB_CONFIG_STRINGS_LANG {
             while gs != unsafe { &(*gi).string_list as *const _ as *mut _ } {
                 let entry: *mut $struct_in = container_of(gs, list);
                 if unsafe { (*entry).stringtab_dev.language == (*new).stringtab_dev.language } {
-                    unsafe { kfree(new as *mut core::ffi::c_void) };
+                    unsafe { kfree(new as *mut kernel::ffi::c_void) };
                     return ERR_PTR(ret);
                 }
                 langs += 1;
@@ -98,7 +98,7 @@ macro_rules! USB_CONFIG_STRINGS_LANG {
             }
             ret = -EOVERFLOW;
             if langs >= MAX_USB_STRING_LANGS {
-                unsafe { kfree(new as *mut core::ffi::c_void) };
+                unsafe { kfree(new as *mut kernel::ffi::c_void) };
                 return ERR_PTR(ret);
             }
 

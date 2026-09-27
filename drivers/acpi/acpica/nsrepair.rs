@@ -26,7 +26,7 @@ extern "C" {
     fn acpi_ut_create_buffer_object(length: u32) -> *mut acpi_operand_object;
     fn acpi_ut_create_package_object(count: u32) -> *mut acpi_operand_object;
     fn acpi_ut_remove_reference(obj: *mut acpi_operand_object);
-    fn acpi_ut_get_object_type_name(obj: *mut acpi_operand_object) -> *const core::ffi::c_char;
+    fn acpi_ut_get_object_type_name(obj: *mut acpi_operand_object) -> *const kernel::ffi::c_char;
 }
 
 // Types, constants, and diagnostic macros are supplied by ACPICA headers.
@@ -36,7 +36,7 @@ pub struct acpi_namespace_node { pub name: acpi_name_union }
 #[repr(C)] pub union acpi_name_union { pub ascii: [u8; 4], pub integer: u32 }
 #[repr(C)] pub struct acpi_evaluate_info {
     pub node: *mut acpi_namespace_node, pub return_btype: u32,
-    pub full_pathname: *const core::ffi::c_char, pub return_flags: u32,
+    pub full_pathname: *const kernel::ffi::c_char, pub return_flags: u32,
     pub parent_package: *mut acpi_operand_object,
 }
 #[repr(C)] pub struct acpi_operand_common { pub reference_count: u32 }

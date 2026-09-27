@@ -13,8 +13,8 @@ pub struct otx2_cptvf_info {
     pub cptpf: *mut otx2_cptpf_dev,
     pub vfpf_mbox_work: work_struct,
     pub vf_dev: *mut pci_dev,
-    pub vf_id: ::core::ffi::c_int,
-    pub intr_idx: ::core::ffi::c_int,
+    pub vf_id: ::kernel::ffi::c_int,
+    pub intr_idx: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -26,11 +26,11 @@ pub struct cptpf_flr_work {
 #[repr(C)]
 pub struct otx2_cptpf_dev {
     /* CPT PF registers start address */
-    pub reg_base: *mut ::core::ffi::c_void,
+    pub reg_base: *mut ::kernel::ffi::c_void,
     /* PF-AF mbox start address */
-    pub afpf_mbox_base: *mut ::core::ffi::c_void,
+    pub afpf_mbox_base: *mut ::kernel::ffi::c_void,
     /* VF-PF mbox start address */
-    pub vfpf_mbox_base: *mut ::core::ffi::c_void,
+    pub vfpf_mbox_base: *mut ::kernel::ffi::c_void,
     /* PCI device handle */
     pub pdev: *mut pci_dev,
     pub vf: [otx2_cptvf_info; OTX2_CPT_MAX_VFS_NUM as usize],
@@ -61,7 +61,7 @@ pub struct otx2_cptpf_dev {
     /* serialize mailbox access */
     pub lock: mutex,
 
-    pub cap_flag: ::core::ffi::c_ulong,
+    pub cap_flag: ::kernel::ffi::c_ulong,
     /* RVU PF number */
     pub pf_id: u8,
     /* Maximum number of VFs supported by CPT */
@@ -80,14 +80,14 @@ pub struct otx2_cptpf_dev {
 }
 
 pub extern "C" fn otx2_cptpf_afpf_mbox_intr(
-    irq: ::core::ffi::c_int,
-    arg: *mut ::core::ffi::c_void,
+    irq: ::kernel::ffi::c_int,
+    arg: *mut ::kernel::ffi::c_void,
 ) -> irqreturn_t;
 pub extern "C" fn otx2_cptpf_afpf_mbox_handler(work: *mut work_struct);
 pub extern "C" fn otx2_cptpf_afpf_mbox_up_handler(work: *mut work_struct);
 pub extern "C" fn otx2_cptpf_vfpf_mbox_intr(
-    irq: ::core::ffi::c_int,
-    arg: *mut ::core::ffi::c_void,
+    irq: ::kernel::ffi::c_int,
+    arg: *mut ::kernel::ffi::c_void,
 ) -> irqreturn_t;
 pub extern "C" fn otx2_cptpf_vfpf_mbox_handler(work: *mut work_struct);
 
@@ -95,8 +95,8 @@ pub extern "C" fn otx2_inline_cptlf_setup(
     cptpf: *mut otx2_cptpf_dev,
     lfs: *mut otx2_cptlfs_info,
     egrp: u8,
-    num_lfs: ::core::ffi::c_int,
-) -> ::core::ffi::c_int;
+    num_lfs: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int;
 pub extern "C" fn otx2_inline_cptlf_cleanup(lfs: *mut otx2_cptlfs_info);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

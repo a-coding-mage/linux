@@ -24,7 +24,7 @@ pub struct irq_cpustat_t {
 // DECLARE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat)
 unsafe extern "C" {
     pub static mut irq_stat: irq_cpustat_t;
-    pub fn printk(fmt: *const core::ffi::c_char, ...) -> core::ffi::c_int;
+    pub fn printk(fmt: *const kernel::ffi::c_char, ...) -> kernel::ffi::c_int;
     pub fn arch_irq_stat_cpu(cpu: u32) -> u64;
 }
 
@@ -35,7 +35,7 @@ pub const __ARCH_IRQ_EXIT_IRQS_DISABLED: bool = true;
 pub unsafe fn ack_bad_irq(irq: u32) {
     // KERN_CRIT is the Linux logging-prefix macro.
     let message = b"\x012unexpected IRQ trap at vector %02x\n\0";
-    printk(message.as_ptr() as *const core::ffi::c_char, irq);
+    printk(message.as_ptr() as *const kernel::ffi::c_char, irq);
 }
 
 // #define arch_irq_stat_cpu arch_irq_stat_cpu

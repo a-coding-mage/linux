@@ -126,12 +126,12 @@ extern "C" {
         new_map: u32,
         phys_eumb_base: u32,
     ) -> i32;
-    pub fn mpc10x_get_mem_size(mem_map: u32) -> libc::c_ulong;
+    pub fn mpc10x_get_mem_size(mem_map: u32) -> kernel::ffi::c_ulong;
     pub fn mpc10x_enable_store_gathering(hose: *mut pci_controller) -> i32;
     pub fn mpc10x_disable_store_gathering(hose: *mut pci_controller) -> i32;
     pub fn mpc10x_set_openpic();
     pub fn avr_uart_configure();
-    pub fn avr_uart_send(c: libc::c_char);
+    pub fn avr_uart_send(c: kernel::ffi::c_char);
 }
 
 // `pci_controller`, `PCI_DEVICE_ID_MOTOROLA_MPC106`, and

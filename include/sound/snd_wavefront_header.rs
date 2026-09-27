@@ -21,12 +21,12 @@ pub enum snd_wavefront_mpu_id {
 
 #[repr(C)]
 pub struct _snd_wavefront_midi {
-    pub base: ::core::ffi::c_ulong, /* I/O port address */
-    pub isvirtual: ::core::ffi::c_char, /* doing virtual MIDI stuff ? */
-    pub istimer: ::core::ffi::c_char, /* timer is used */
+    pub base: ::kernel::ffi::c_ulong, /* I/O port address */
+    pub isvirtual: ::kernel::ffi::c_char, /* doing virtual MIDI stuff ? */
+    pub istimer: ::kernel::ffi::c_char, /* timer is used */
     pub output_mpu: snd_wavefront_mpu_id, /* most-recently-used */
     pub input_mpu: snd_wavefront_mpu_id, /* most-recently-used */
-    pub mode: [::core::ffi::c_uint; 2], /* MPU401_MODE_XXX */
+    pub mode: [::kernel::ffi::c_uint; 2], /* MPU401_MODE_XXX */
     pub substream_output: [*mut snd_rawmidi_substream; 2],
     pub substream_input: [*mut snd_rawmidi_substream; 2],
     pub timer: timer_list,
@@ -47,33 +47,33 @@ extern "C" {
     pub fn snd_wavefront_midi_enable_virtual(card: *mut snd_wavefront_card_t);
     pub fn snd_wavefront_midi_disable_virtual(card: *mut snd_wavefront_card_t);
     pub fn snd_wavefront_midi_interrupt(card: *mut snd_wavefront_card_t);
-    pub fn snd_wavefront_midi_start(card: *mut snd_wavefront_card_t) -> ::core::ffi::c_int;
+    pub fn snd_wavefront_midi_start(card: *mut snd_wavefront_card_t) -> ::kernel::ffi::c_int;
     pub fn snd_wavefront_midi_suspend(card: *mut snd_wavefront_card_t);
     pub fn snd_wavefront_midi_resume(card: *mut snd_wavefront_card_t);
 }
 
 #[repr(C)]
 pub struct _snd_wavefront {
-    pub irq: ::core::ffi::c_ulong, /* "you were one, one of the few ..." */
-    pub base: ::core::ffi::c_ulong, /* low i/o port address */
+    pub irq: ::kernel::ffi::c_ulong, /* "you were one, one of the few ..." */
+    pub base: ::kernel::ffi::c_ulong, /* low i/o port address */
     pub res_base: *mut resource, /* i/o port resource allocation */
 
-    pub irq_ok: ::core::ffi::c_int, /* set by interrupt handler */
-    pub irq_cnt: ::core::ffi::c_int, /* ditto */
-    pub debug: ::core::ffi::c_char, /* debugging flags */
-    pub freemem: ::core::ffi::c_int, /* installed RAM, in bytes */
-    pub fw_version: [::core::ffi::c_char; 2], /* major = [0], minor = [1] */
-    pub hw_version: [::core::ffi::c_char; 2], /* major = [0], minor = [1] */
-    pub israw: ::core::ffi::c_char, /* needs Motorola microcode */
-    pub has_fx: ::core::ffi::c_char, /* has FX processor (Tropez+) */
-    pub fx_initialized: ::core::ffi::c_char, /* FX's register pages initialized */
-    pub prog_status: [::core::ffi::c_char; WF_MAX_PROGRAM], /* WF_SLOT_* */
-    pub patch_status: [::core::ffi::c_char; WF_MAX_PATCH], /* WF_SLOT_* */
-    pub sample_status: [::core::ffi::c_char; WF_MAX_SAMPLE], /* WF_ST_* | WF_SLOT_* */
-    pub samples_used: ::core::ffi::c_int, /* how many */
-    pub interrupts_are_midi: ::core::ffi::c_char, /* h/w MPU interrupts enabled ? */
-    pub rom_samples_rdonly: ::core::ffi::c_char, /* can we write on ROM samples */
-    pub midi_in_to_synth: ::core::ffi::c_char, /* route external MIDI to synth */
+    pub irq_ok: ::kernel::ffi::c_int, /* set by interrupt handler */
+    pub irq_cnt: ::kernel::ffi::c_int, /* ditto */
+    pub debug: ::kernel::ffi::c_char, /* debugging flags */
+    pub freemem: ::kernel::ffi::c_int, /* installed RAM, in bytes */
+    pub fw_version: [::kernel::ffi::c_char; 2], /* major = [0], minor = [1] */
+    pub hw_version: [::kernel::ffi::c_char; 2], /* major = [0], minor = [1] */
+    pub israw: ::kernel::ffi::c_char, /* needs Motorola microcode */
+    pub has_fx: ::kernel::ffi::c_char, /* has FX processor (Tropez+) */
+    pub fx_initialized: ::kernel::ffi::c_char, /* FX's register pages initialized */
+    pub prog_status: [::kernel::ffi::c_char; WF_MAX_PROGRAM], /* WF_SLOT_* */
+    pub patch_status: [::kernel::ffi::c_char; WF_MAX_PATCH], /* WF_SLOT_* */
+    pub sample_status: [::kernel::ffi::c_char; WF_MAX_SAMPLE], /* WF_ST_* | WF_SLOT_* */
+    pub samples_used: ::kernel::ffi::c_int, /* how many */
+    pub interrupts_are_midi: ::kernel::ffi::c_char, /* h/w MPU interrupts enabled ? */
+    pub rom_samples_rdonly: ::kernel::ffi::c_char, /* can we write on ROM samples */
+    pub midi_in_to_synth: ::kernel::ffi::c_char, /* route external MIDI to synth */
     pub irq_lock: spinlock_t,
     pub interrupt_sleeper: wait_queue_head_t,
     pub midi: snd_wavefront_midi_t, /* ICS2115 MIDI interface */
@@ -116,36 +116,36 @@ pub struct _snd_wavefront_card {
 extern "C" {
     pub fn snd_wavefront_internal_interrupt(card: *mut snd_wavefront_card_t);
     pub fn snd_wavefront_cache_firmware(dev: *mut snd_wavefront_t);
-    pub fn snd_wavefront_start(dev: *mut snd_wavefront_t) -> ::core::ffi::c_int;
-    pub fn snd_wavefront_detect(card: *mut snd_wavefront_card_t) -> ::core::ffi::c_int;
-    pub fn snd_wavefront_resume_synth(card: *mut snd_wavefront_card_t) -> ::core::ffi::c_int;
+    pub fn snd_wavefront_start(dev: *mut snd_wavefront_t) -> ::kernel::ffi::c_int;
+    pub fn snd_wavefront_detect(card: *mut snd_wavefront_card_t) -> ::kernel::ffi::c_int;
+    pub fn snd_wavefront_resume_synth(card: *mut snd_wavefront_card_t) -> ::kernel::ffi::c_int;
     pub fn snd_wavefront_cmd(
         dev: *mut snd_wavefront_t,
-        command: ::core::ffi::c_int,
+        command: ::kernel::ffi::c_int,
         cmd: *mut u8,
         response: *mut u8,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn snd_wavefront_synth_ioctl(
         hw: *mut snd_hwdep,
         file: *mut file,
-        cmd: ::core::ffi::c_uint,
-        arg: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
-    pub fn snd_wavefront_synth_open(hw: *mut snd_hwdep, file: *mut file) -> ::core::ffi::c_int;
-    pub fn snd_wavefront_synth_release(hw: *mut snd_hwdep, file: *mut file) -> ::core::ffi::c_int;
+        cmd: ::kernel::ffi::c_uint,
+        arg: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
+    pub fn snd_wavefront_synth_open(hw: *mut snd_hwdep, file: *mut file) -> ::kernel::ffi::c_int;
+    pub fn snd_wavefront_synth_release(hw: *mut snd_hwdep, file: *mut file) -> ::kernel::ffi::c_int;
 
     /* FX processor - see also yss225.[ch] */
-    pub fn snd_wavefront_fx_start(dev: *mut snd_wavefront_t) -> ::core::ffi::c_int;
-    pub fn snd_wavefront_fx_detect(dev: *mut snd_wavefront_t) -> ::core::ffi::c_int;
+    pub fn snd_wavefront_fx_start(dev: *mut snd_wavefront_t) -> ::kernel::ffi::c_int;
+    pub fn snd_wavefront_fx_detect(dev: *mut snd_wavefront_t) -> ::kernel::ffi::c_int;
     pub fn snd_wavefront_fx_ioctl(
         hw: *mut snd_hwdep,
         file: *mut file,
-        cmd: ::core::ffi::c_uint,
-        arg: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
-    pub fn snd_wavefront_fx_open(hw: *mut snd_hwdep, file: *mut file) -> ::core::ffi::c_int;
-    pub fn snd_wavefront_fx_release(hw: *mut snd_hwdep, file: *mut file) -> ::core::ffi::c_int;
+        cmd: ::kernel::ffi::c_uint,
+        arg: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
+    pub fn snd_wavefront_fx_open(hw: *mut snd_hwdep, file: *mut file) -> ::kernel::ffi::c_int;
+    pub fn snd_wavefront_fx_release(hw: *mut snd_hwdep, file: *mut file) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

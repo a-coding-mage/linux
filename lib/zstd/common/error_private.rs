@@ -11,7 +11,7 @@
 
 /* The purpose of this file is to have a single list of error strings embedded in binary */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // The error type and PREFIX! macro are supplied by the translated dependencies.
 pub unsafe extern "C" fn ERR_getErrorString(code: ERR_enum) -> *const c_char {

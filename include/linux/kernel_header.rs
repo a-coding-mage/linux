@@ -13,24 +13,24 @@ pub struct user {
 }
 
 extern "C" {
-    pub fn __cond_resched() -> ::core::ffi::c_int;
-    pub fn dynamic_might_resched() -> ::core::ffi::c_int;
+    pub fn __cond_resched() -> ::kernel::ffi::c_int;
+    pub fn dynamic_might_resched() -> ::kernel::ffi::c_int;
 
-    pub fn __might_resched(file: *const ::core::ffi::c_char, line: ::core::ffi::c_int,
-                           offsets: ::core::ffi::c_uint);
-    pub fn __might_sleep(file: *const ::core::ffi::c_char, line: ::core::ffi::c_int);
-    pub fn __cant_sleep(file: *const ::core::ffi::c_char, line: ::core::ffi::c_int);
-    pub fn __cant_migrate(file: *const ::core::ffi::c_char, line: ::core::ffi::c_int);
-    pub fn __might_fault(file: *const ::core::ffi::c_char, line: ::core::ffi::c_int);
+    pub fn __might_resched(file: *const ::kernel::ffi::c_char, line: ::kernel::ffi::c_int,
+                           offsets: ::kernel::ffi::c_uint);
+    pub fn __might_sleep(file: *const ::kernel::ffi::c_char, line: ::kernel::ffi::c_int);
+    pub fn __cant_sleep(file: *const ::kernel::ffi::c_char, line: ::kernel::ffi::c_int);
+    pub fn __cant_migrate(file: *const ::kernel::ffi::c_char, line: ::kernel::ffi::c_int);
+    pub fn __might_fault(file: *const ::kernel::ffi::c_char, line: ::kernel::ffi::c_int);
 
-    pub fn do_exit(error_code: ::core::ffi::c_long) -> !;
-    pub fn core_kernel_text(addr: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn __kernel_text_address(addr: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn kernel_text_address(addr: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn func_ptr_is_kernel_text(ptr: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-    pub fn bust_spinlocks(yes: ::core::ffi::c_int);
+    pub fn do_exit(error_code: ::kernel::ffi::c_long) -> !;
+    pub fn core_kernel_text(addr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn __kernel_text_address(addr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn kernel_text_address(addr: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn func_ptr_is_kernel_text(ptr: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
+    pub fn bust_spinlocks(yes: ::kernel::ffi::c_int);
 
-    pub static mut root_mountflags: ::core::ffi::c_int;
+    pub static mut root_mountflags: ::kernel::ffi::c_int;
     pub static mut early_boot_irqs_disabled: bool;
     pub static mut system_state: system_states;
 }

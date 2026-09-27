@@ -19,8 +19,8 @@ enum BitopsFun {
 
 #[repr(C)]
 struct BitopsTestCase {
-    str_: *const core::ffi::c_char,
-    nr: core::ffi::c_long,
+    str_: *const kernel::ffi::c_char,
+    nr: kernel::ffi::c_long,
 }
 
 static mut BITOPS_CASES: [BitopsTestCase; 5] = [
@@ -90,7 +90,7 @@ unsafe fn test_test_and_change_bit(test: *mut Kunit) {
 }
 
 #[repr(C)]
-struct OrderTestCase { str_: *const core::ffi::c_char, count: u32, expected: i32 }
+struct OrderTestCase { str_: *const kernel::ffi::c_char, count: u32, expected: i32 }
 
 static mut ORDER_TEST_CASES: [OrderTestCase; 7] = [
     OrderTestCase { str_: b"0x00000003\0".as_ptr() as *const _, count: 0x00000003, expected: 2 },
@@ -112,7 +112,7 @@ unsafe fn test_get_count_order(test: *mut Kunit) {
 
 #[cfg(target_pointer_width = "64")]
 #[repr(C)]
-struct OrderLongTestCase { str_: *const core::ffi::c_char, count: u64, expected: i32 }
+struct OrderLongTestCase { str_: *const kernel::ffi::c_char, count: u64, expected: i32 }
 
 #[cfg(target_pointer_width = "64")]
 static mut ORDER_LONG_TEST_CASES: [OrderLongTestCase; 7] = [
@@ -135,17 +135,17 @@ unsafe fn test_get_count_order_long(test: *mut Kunit) {
 // MODULE_AUTHOR, MODULE_LICENSE, and MODULE_DESCRIPTION metadata are likewise supplied externally.
 
 #[repr(C)]
-struct Kunit { param_value: *mut core::ffi::c_void }
+struct Kunit { param_value: *mut kernel::ffi::c_void }
 
 extern "C" {
     fn bitmap_zero(bitmap: *mut usize, nbits: usize);
-    fn set_bit(nr: core::ffi::c_long, addr: *mut usize);
-    fn clear_bit(nr: core::ffi::c_long, addr: *mut usize);
-    fn change_bit(nr: core::ffi::c_long, addr: *mut usize);
-    fn test_bit(nr: core::ffi::c_long, addr: *const usize) -> bool;
-    fn test_and_set_bit(nr: core::ffi::c_long, addr: *mut usize) -> bool;
-    fn test_and_clear_bit(nr: core::ffi::c_long, addr: *mut usize) -> bool;
-    fn test_and_change_bit(nr: core::ffi::c_long, addr: *mut usize) -> bool;
+    fn set_bit(nr: kernel::ffi::c_long, addr: *mut usize);
+    fn clear_bit(nr: kernel::ffi::c_long, addr: *mut usize);
+    fn change_bit(nr: kernel::ffi::c_long, addr: *mut usize);
+    fn test_bit(nr: kernel::ffi::c_long, addr: *const usize) -> bool;
+    fn test_and_set_bit(nr: kernel::ffi::c_long, addr: *mut usize) -> bool;
+    fn test_and_clear_bit(nr: kernel::ffi::c_long, addr: *mut usize) -> bool;
+    fn test_and_change_bit(nr: kernel::ffi::c_long, addr: *mut usize) -> bool;
     fn find_first_bit(addr: *const usize, size: usize) -> usize;
     fn get_count_order(count: u32) -> i32;
     fn get_count_order_long(count: u32) -> i32;

@@ -10,7 +10,7 @@
  */
 #[repr(C)]
 pub struct wm8993_retune_mobile_setting {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub rate: u32,
     pub config: [u16; 24],
 }

@@ -63,14 +63,14 @@ pub struct nfsd_net {
     pub nametoid_cache: *mut cache_detail,
 
     pub nfsd4_manager: lock_manager,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub boot_time: time64_t,
     pub boot_time_bt: time64_t,
 
     pub nfsd_client_dir: *mut dentry,
 
     pub reclaim_str_hashtbl: *mut list_head,
-    pub reclaim_str_hashtbl_size: ::core::ffi::c_int,
+    pub reclaim_str_hashtbl_size: ::kernel::ffi::c_int,
     pub reclaim_str_hashtbl_lock: rw_semaphore,
     pub conf_id_hashtbl: *mut list_head,
     pub conf_name_tree: rb_root,
@@ -95,7 +95,7 @@ pub struct nfsd_net {
     pub nr_reclaim_complete: atomic_t,
     pub writeverf_lock: seqlock_t,
     pub writeverf: [u8; 8],
-    pub min_threads: ::core::ffi::c_uint,
+    pub min_threads: ::kernel::ffi::c_uint,
     pub clientid_base: u32,
     pub clientid_counter: u32,
     pub clverifier_counter: u32,
@@ -113,25 +113,25 @@ pub struct nfsd_net {
     pub nfsd_versions: [bool; NFSD_MAXVERS as usize + 1],
     pub nfsd4_minorversions: [bool; NFSD_SUPPORTED_MINOR_VERSION as usize + 1],
     pub drc_hashtbl: *mut nfsd_drc_bucket,
-    pub max_drc_entries: ::core::ffi::c_uint,
-    pub maskbits: ::core::ffi::c_uint,
-    pub drc_hashsize: ::core::ffi::c_uint,
+    pub max_drc_entries: ::kernel::ffi::c_uint,
+    pub maskbits: ::kernel::ffi::c_uint,
+    pub drc_hashsize: ::kernel::ffi::c_uint,
     pub num_drc_entries: atomic_t,
     pub counter: [percpu_counter; NFSD_STATS_COUNTERS_NUM as usize],
     // CONFIG_NFSD_V4: pub cb_counter: [percpu_counter; NFSD_STATS_CB_OPS_NUM];
     pub nfsd_svcstats: svc_stat,
-    pub longest_chain: ::core::ffi::c_uint,
-    pub longest_chain_cachesize: ::core::ffi::c_uint,
+    pub longest_chain: ::kernel::ffi::c_uint,
+    pub longest_chain_cachesize: ::kernel::ffi::c_uint,
     pub nfsd_reply_cache_shrinker: *mut shrinker,
     pub nfsd_ssc_lock: spinlock_t,
     pub nfsd_ssc_mount_list: list_head,
     pub nfsd_ssc_waitq: wait_queue_head_t,
-    pub nfsd_name: [::core::ffi::c_char; UNX_MAXNODENAME as usize + 1],
+    pub nfsd_name: [::kernel::ffi::c_char; UNX_MAXNODENAME as usize + 1],
     pub fcache_dispose_lock: spinlock_t,
     pub fcache_dispose_list: list_head,
     pub siphash_key: siphash_key_t,
     pub nfs4_client_count: atomic_t,
-    pub nfs4_max_clients: ::core::ffi::c_int,
+    pub nfs4_max_clients: ::kernel::ffi::c_int,
     pub nfsd_courtesy_clients: atomic_t,
     pub nfsd_client_shrinker: *mut shrinker,
     pub nfsd_shrinker_work: work_struct,
@@ -149,8 +149,8 @@ pub unsafe fn nfsd_netns_ready(nn: *const nfsd_net) -> bool {
 }
 
 extern "C" {
-    pub fn nfsd_support_version(vers: ::core::ffi::c_int) -> bool;
-    pub static mut nfsd_net_id: ::core::ffi::c_uint;
+    pub fn nfsd_support_version(vers: ::kernel::ffi::c_int) -> bool;
+    pub static mut nfsd_net_id: ::kernel::ffi::c_uint;
     pub fn nfsd_net_try_get(net: *mut net) -> bool;
     pub fn nfsd_net_put(net: *mut net);
     pub fn nfsd_copy_write_verifier(verf: *mut __be32, nn: *mut nfsd_net);

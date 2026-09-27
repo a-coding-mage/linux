@@ -31,11 +31,11 @@ extern "C" {
     pub fn __put_user_bad() -> i32;
     pub fn __get_user_bad() -> i32;
 
-    pub fn raw_copy_from_user(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, size: usize) -> usize;
-    pub fn raw_copy_to_user(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, size: usize) -> usize;
-    pub fn raw_copy_in_user(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, size: usize) -> usize;
-    pub fn __clear_user(to: *mut core::ffi::c_void, size: usize) -> usize;
-    pub fn strnlen_user(str_: *const core::ffi::c_char, n: isize) -> isize;
+    pub fn raw_copy_from_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, size: usize) -> usize;
+    pub fn raw_copy_to_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, size: usize) -> usize;
+    pub fn raw_copy_in_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, size: usize) -> usize;
+    pub fn __clear_user(to: *mut kernel::ffi::c_void, size: usize) -> usize;
+    pub fn strnlen_user(str_: *const kernel::ffi::c_char, n: isize) -> isize;
     pub fn compute_effective_address(regs: *mut pt_regs, insn: u32, rd: u32) -> usize;
 }
 
@@ -116,7 +116,7 @@ pub type __user_ptr<T> = *mut T;
 pub struct pt_regs;
 
 #[inline]
-pub unsafe fn clear_user(to: *mut core::ffi::c_void, size: usize) -> usize {
+pub unsafe fn clear_user(to: *mut kernel::ffi::c_void, size: usize) -> usize {
     __clear_user(to, size)
 }
 

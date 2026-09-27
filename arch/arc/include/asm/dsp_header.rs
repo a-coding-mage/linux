@@ -11,33 +11,33 @@
 // automatic offset calculation in DSP_AUX_SAVE_RESTORE macros.
 #[repr(C)]
 pub struct dsp_callee_regs {
-    pub ACC0_GLO: core::ffi::c_ulong,
-    pub ACC0_GHI: core::ffi::c_ulong,
-    pub DSP_BFLY0: core::ffi::c_ulong,
-    pub DSP_FFT_CTRL: core::ffi::c_ulong,
+    pub ACC0_GLO: kernel::ffi::c_ulong,
+    pub ACC0_GHI: kernel::ffi::c_ulong,
+    pub DSP_BFLY0: kernel::ffi::c_ulong,
+    pub DSP_FFT_CTRL: kernel::ffi::c_ulong,
 
     // Preserved from CONFIG_ARC_DSP_AGU_USERSPACE. Enable the corresponding
     // Rust feature to include these fields.
     #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
-    pub AGU_AP0: core::ffi::c_ulong,
+    pub AGU_AP0: kernel::ffi::c_ulong,
     #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
-    pub AGU_AP1: core::ffi::c_ulong,
+    pub AGU_AP1: kernel::ffi::c_ulong,
     #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
-    pub AGU_AP2: core::ffi::c_ulong,
+    pub AGU_AP2: kernel::ffi::c_ulong,
     #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
-    pub AGU_AP3: core::ffi::c_ulong,
+    pub AGU_AP3: kernel::ffi::c_ulong,
     #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
-    pub AGU_OS0: core::ffi::c_ulong,
+    pub AGU_OS0: kernel::ffi::c_ulong,
     #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
-    pub AGU_OS1: core::ffi::c_ulong,
+    pub AGU_OS1: kernel::ffi::c_ulong,
     #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
-    pub AGU_MOD0: core::ffi::c_ulong,
+    pub AGU_MOD0: kernel::ffi::c_ulong,
     #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
-    pub AGU_MOD1: core::ffi::c_ulong,
+    pub AGU_MOD1: kernel::ffi::c_ulong,
     #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
-    pub AGU_MOD2: core::ffi::c_ulong,
+    pub AGU_MOD2: kernel::ffi::c_ulong,
     #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
-    pub AGU_MOD3: core::ffi::c_ulong,
+    pub AGU_MOD3: kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

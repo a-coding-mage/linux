@@ -19,17 +19,17 @@ pub struct vm_struct {
 pub type pgprot_t = usize;
 
 unsafe extern "C" {
-    fn find_vm_area(addr: *mut core::ffi::c_void) -> *mut vm_struct;
+    fn find_vm_area(addr: *mut kernel::ffi::c_void) -> *mut vm_struct;
     fn vmap(
         pages: *mut *mut page,
         count: usize,
         flags: usize,
         prot: pgprot_t,
-    ) -> *mut core::ffi::c_void;
-    fn vunmap(addr: *mut core::ffi::c_void);
-    fn kvfree(ptr: *mut core::ffi::c_void);
+    ) -> *mut kernel::ffi::c_void;
+    fn vunmap(addr: *mut kernel::ffi::c_void);
+    fn kvfree(ptr: *mut kernel::ffi::c_void);
     fn kvmalloc_objs(size: usize) -> *mut *mut page;
-    fn warn(condition: i32, fmt: *const core::ffi::c_char, ...);
+    fn warn(condition: i32, fmt: *const kernel::ffi::c_char, ...);
 }
 
 // These values and helpers are provided by the Linux DMA/vmalloc environment.
@@ -44,7 +44,7 @@ unsafe fn page_align(size: usize) -> usize {
     (size + page_size - 1) & !(page_size - 1)
 }
 
-pub unsafe fn dma_common_find_pages(cpu_addr: *mut core::ffi::c_void) -> *mut *mut page {
+pub unsafe fn dma_common_find_pages(cpu_addr: *mut kernel::ffi::c_void) -> *mut *mut page {
     let area = find_vm_area(cpu_addr);
 
     if area.is_null() || ((*area).flags & VM_DMA_COHERENT) == 0 {
@@ -66,8 +66,8 @@ pub unsafe fn dma_common_pages_remap(
     pages: *mut *mut page,
     size: usize,
     prot: pgprot_t,
-    _caller: *const core::ffi::c_void,
-) -> *mut core::ffi::c_void {
+    _caller: *const kernel::ffi::c_void,
+) -> *mut kernel::ffi::c_void {
     let vaddr = vmap(pages, page_align(size) >> PAGE_SHIFT, VM_DMA_COHERENT, prot);
     if !vaddr.is_null() {
         (*find_vm_area(vaddr)).pages = pages;
@@ -83,8 +83,8 @@ pub unsafe fn dma_common_contiguous_remap(
     mut page: *mut page,
     size: usize,
     prot: pgprot_t,
-    _caller: *const core::ffi::c_void,
-) -> *mut core::ffi::c_void {
+    _caller: *const kernel::ffi::c_void,
+) -> *mut kernel::ffi::c_void {
     let count = page_align(size) >> PAGE_SHIFT;
     let pages = kvmalloc_objs(count);
     if pages.is_null() {
@@ -103,7 +103,7 @@ pub unsafe fn dma_common_contiguous_remap(
 /*
  * Unmaps a range previously mapped by dma_common_*_remap
  */
-pub unsafe fn dma_common_free_remap(cpu_addr: *mut core::ffi::c_void, _size: usize) {
+pub unsafe fn dma_common_free_remap(cpu_addr: *mut kernel::ffi::c_void, _size: usize) {
     let area = find_vm_area(cpu_addr);
 
     if area.is_null() || ((*area).flags & VM_DMA_COHERENT) == 0 {

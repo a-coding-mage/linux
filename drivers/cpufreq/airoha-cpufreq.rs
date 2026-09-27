@@ -14,7 +14,7 @@ extern "C" {
     static mut cpufreq_pdev: *mut PlatformDevice;
 
     fn get_cpu_device(cpu: i32) -> *mut Device;
-    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn dev_pm_opp_set_config(cpu_dev: *mut Device, config: *const DevPmOppConfig) -> i32;
     fn dev_pm_domain_attach_list(
         cpu_dev: *mut Device,
@@ -22,13 +22,13 @@ extern "C" {
         pd_list: *mut *mut DevPmDomainList,
     ) -> i32;
     fn platform_device_register_simple(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         id: i32,
-        data: *const core::ffi::c_void,
+        data: *const kernel::ffi::c_void,
         size: usize,
     ) -> *mut PlatformDevice;
-    fn platform_set_drvdata(pdev: *mut PlatformDevice, data: *mut core::ffi::c_void);
-    fn platform_get_drvdata(pdev: *mut PlatformDevice) -> *mut core::ffi::c_void;
+    fn platform_set_drvdata(pdev: *mut PlatformDevice, data: *mut kernel::ffi::c_void);
+    fn platform_get_drvdata(pdev: *mut PlatformDevice) -> *mut kernel::ffi::c_void;
     fn platform_device_unregister(pdev: *mut PlatformDevice);
     fn dev_pm_domain_detach_list(pd_list: *mut DevPmDomainList);
     fn dev_pm_opp_clear_config(token: i32);
@@ -36,9 +36,9 @@ extern "C" {
     fn platform_driver_unregister(driver: *mut PlatformDriver);
     fn platform_device_register_data(
         parent: *mut Device,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         id: i32,
-        data: *const core::ffi::c_void,
+        data: *const kernel::ffi::c_void,
         size: usize,
     ) -> *mut PlatformDevice;
     fn of_machine_get_match(match_list: *const OfDeviceId) -> *const OfDeviceId;
@@ -56,25 +56,25 @@ struct OppTable;
 struct DevPmOpp;
 
 type ConfigClks = unsafe extern "C" fn(
-    *mut Device, *mut OppTable, *mut DevPmOpp, *mut core::ffi::c_void, bool,
+    *mut Device, *mut OppTable, *mut DevPmOpp, *mut kernel::ffi::c_void, bool,
 ) -> i32;
 
 #[repr(C)]
 struct DevPmDomainAttachData {
-    pd_names: *const *const core::ffi::c_char,
+    pd_names: *const *const kernel::ffi::c_char,
     num_pd_names: usize,
     pd_flags: u32,
 }
 
 #[repr(C)]
 struct DevPmOppConfig {
-    clk_names: *const *const core::ffi::c_char,
+    clk_names: *const *const kernel::ffi::c_char,
     config_clks: Option<ConfigClks>,
 }
 
 #[repr(C)]
 struct Driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -86,7 +86,7 @@ struct PlatformDriver {
 
 #[repr(C)]
 struct OfDeviceId {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 const ENODEV: i32 = 19;
@@ -99,17 +99,17 @@ unsafe extern "C" fn airoha_cpufreq_config_clks_nop(
     _dev: *mut Device,
     _opp_table: *mut OppTable,
     _opp: *mut DevPmOpp,
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
     _scaling_down: bool,
 ) -> i32 {
     0
 }
 
-static AIROHA_CPUFREQ_CLK_NAMES: [*const core::ffi::c_char; 2] = [
+static AIROHA_CPUFREQ_CLK_NAMES: [*const kernel::ffi::c_char; 2] = [
     b"cpu\0".as_ptr() as *const _,
     core::ptr::null(),
 ];
-static AIROHA_CPUFREQ_PD_NAMES: [*const core::ffi::c_char; 1] = [b"perf\0".as_ptr() as *const _];
+static AIROHA_CPUFREQ_PD_NAMES: [*const kernel::ffi::c_char; 1] = [b"perf\0".as_ptr() as *const _];
 
 unsafe extern "C" fn airoha_cpufreq_probe(pdev: *mut PlatformDevice) -> i32 {
     let attach_data = DevPmDomainAttachData {
@@ -138,7 +138,7 @@ unsafe extern "C" fn airoha_cpufreq_probe(pdev: *mut PlatformDevice) -> i32 {
         return ret;
     }
 
-    let name = b"cpufreq-dt\0".as_ptr() as *const core::ffi::c_char;
+    let name = b"cpufreq-dt\0".as_ptr() as *const kernel::ffi::c_char;
     let cpufreq_dt = platform_device_register_simple(name, -1, core::ptr::null(), 0);
     if (cpufreq_dt as isize) < 0 {
         dev_pm_domain_detach_list((*priv_ptr).pd_list);
@@ -146,7 +146,7 @@ unsafe extern "C" fn airoha_cpufreq_probe(pdev: *mut PlatformDevice) -> i32 {
         return cpufreq_dt as isize as i32;
     }
     (*priv_ptr).cpufreq_dt = cpufreq_dt;
-    platform_set_drvdata(pdev, priv_ptr as *mut core::ffi::c_void);
+    platform_set_drvdata(pdev, priv_ptr as *mut kernel::ffi::c_void);
     0
 }
 
@@ -176,7 +176,7 @@ unsafe extern "C" fn airoha_cpufreq_init() -> i32 {
     if ret < 0 { return ret; }
     cpufreq_pdev = platform_device_register_data(
         core::ptr::null_mut(), b"airoha-cpufreq\0".as_ptr() as *const _, -1,
-        match_ptr as *const core::ffi::c_void, core::mem::size_of::<OfDeviceId>(),
+        match_ptr as *const kernel::ffi::c_void, core::mem::size_of::<OfDeviceId>(),
     );
     if (cpufreq_pdev as isize) < 0 {
         ret = cpufreq_pdev as isize as i32;

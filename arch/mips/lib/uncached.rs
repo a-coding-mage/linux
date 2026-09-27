@@ -34,39 +34,39 @@ extern "C" {
  * values, so we can avoid sharing the same stack area between a cached
  * and the uncached mode.
  */
-pub unsafe fn run_uncached(func: *mut core::ffi::c_void) -> libc::c_ulong {
-    let mut ret: libc::c_long;
-    let lfunc = func as libc::c_long;
-    let ufunc: libc::c_long;
-    let usp: libc::c_long;
-    let sp: libc::c_long;
+pub unsafe fn run_uncached(func: *mut kernel::ffi::c_void) -> kernel::ffi::c_ulong {
+    let mut ret: kernel::ffi::c_long;
+    let lfunc = func as kernel::ffi::c_long;
+    let ufunc: kernel::ffi::c_long;
+    let usp: kernel::ffi::c_long;
+    let sp: kernel::ffi::c_long;
 
     core::arch::asm!("move {0}, $sp", out(reg) sp);
 
-    if sp >= CKSEG0 as libc::c_long && sp < CKSEG2 as libc::c_long {
-        usp = CKSEG1ADDR(sp) as libc::c_long;
+    if sp >= CKSEG0 as kernel::ffi::c_long && sp < CKSEG2 as kernel::ffi::c_long {
+        usp = CKSEG1ADDR(sp) as kernel::ffi::c_long;
     }
-    else if cfg!(CONFIG_64BIT) && ((sp as libc::c_longlong) >= PHYS_TO_XKPHYS(0, 0) as libc::c_longlong
-        && (sp as libc::c_longlong) < PHYS_TO_XKPHYS(8, 0) as libc::c_longlong) {
+    else if cfg!(CONFIG_64BIT) && ((sp as kernel::ffi::c_longlong) >= PHYS_TO_XKPHYS(0, 0) as kernel::ffi::c_longlong
+        && (sp as kernel::ffi::c_longlong) < PHYS_TO_XKPHYS(8, 0) as kernel::ffi::c_longlong) {
         usp = PHYS_TO_XKPHYS(
             K_CALG_UNCACHED,
-            XKPHYS_TO_PHYS(sp as libc::c_longlong),
-        ) as libc::c_long;
+            XKPHYS_TO_PHYS(sp as kernel::ffi::c_longlong),
+        ) as kernel::ffi::c_long;
     }
     else {
         BUG();
         usp = sp;
     }
 
-    if lfunc >= CKSEG0 as libc::c_long && lfunc < CKSEG2 as libc::c_long {
-        ufunc = CKSEG1ADDR(lfunc) as libc::c_long;
+    if lfunc >= CKSEG0 as kernel::ffi::c_long && lfunc < CKSEG2 as kernel::ffi::c_long {
+        ufunc = CKSEG1ADDR(lfunc) as kernel::ffi::c_long;
     }
-    else if cfg!(CONFIG_64BIT) && ((lfunc as libc::c_longlong) >= PHYS_TO_XKPHYS(0, 0) as libc::c_longlong
-        && (lfunc as libc::c_longlong) < PHYS_TO_XKPHYS(8, 0) as libc::c_longlong) {
+    else if cfg!(CONFIG_64BIT) && ((lfunc as kernel::ffi::c_longlong) >= PHYS_TO_XKPHYS(0, 0) as kernel::ffi::c_longlong
+        && (lfunc as kernel::ffi::c_longlong) < PHYS_TO_XKPHYS(8, 0) as kernel::ffi::c_longlong) {
         ufunc = PHYS_TO_XKPHYS(
             K_CALG_UNCACHED,
-            XKPHYS_TO_PHYS(lfunc as libc::c_longlong),
-        ) as libc::c_long;
+            XKPHYS_TO_PHYS(lfunc as kernel::ffi::c_longlong),
+        ) as kernel::ffi::c_long;
     }
     else {
         BUG();
@@ -84,7 +84,7 @@ pub unsafe fn run_uncached(func: *mut core::ffi::c_void) -> libc::c_ulong {
         clobber_abi("C"),
     );
 
-    ret as libc::c_ulong
+    ret as kernel::ffi::c_ulong
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

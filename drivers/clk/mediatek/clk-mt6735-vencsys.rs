@@ -31,8 +31,8 @@ static vencsys_clks: mtk_clk_desc = mtk_clk_desc {
 
 static of_match_mt6735_vencsys: [of_device_id; 2] = [
     of_device_id {
-        compatible: "mediatek,mt6735-vencsys\0".as_ptr() as *const core::ffi::c_char,
-        data: &vencsys_clks as *const _ as *const core::ffi::c_void,
+        compatible: "mediatek,mt6735-vencsys\0".as_ptr() as *const kernel::ffi::c_char,
+        data: &vencsys_clks as *const _ as *const kernel::ffi::c_void,
     },
     of_device_id {
         compatible: core::ptr::null(),
@@ -44,7 +44,7 @@ static mut clk_mt6735_vencsys: platform_driver = platform_driver {
     probe: Some(mtk_clk_simple_probe),
     remove: Some(mtk_clk_simple_remove),
     driver: device_driver {
-        name: "clk-mt6735-vencsys\0".as_ptr() as *const core::ffi::c_char,
+        name: "clk-mt6735-vencsys\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: of_match_mt6735_vencsys.as_ptr(),
     },
 };

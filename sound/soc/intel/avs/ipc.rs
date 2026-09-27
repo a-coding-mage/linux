@@ -219,7 +219,7 @@ unsafe fn avs_dsp_process_notification(adev: *mut avs_dev, header: u64) {
     let mut mod_data: avs_notify_mod_data = core::mem::zeroed();
     let msg: avs_notify_msg = AVS_MSG(header);
     let mut data_size: usize = 0;
-    let mut data: *mut core::ffi::c_void = core::ptr::null_mut();
+    let mut data: *mut kernel::ffi::c_void = core::ptr::null_mut();
     let sts: u32;
     let lec: u32;
 
@@ -254,7 +254,7 @@ unsafe fn avs_dsp_process_notification(adev: *mut avs_dev, header: u64) {
         AVS_NOTIFY_MODULE_EVENT => {
             /* To know the total payload size, header needs to be read first. */
             memcpy_fromio(
-                &mut mod_data as *mut _ as *mut core::ffi::c_void,
+                &mut mod_data as *mut _ as *mut kernel::ffi::c_void,
                 avs_uplink_addr(adev),
                 core::mem::size_of_val(&mod_data),
             );
@@ -413,7 +413,7 @@ unsafe fn avs_dsp_do_send_msg(
     request: *mut avs_ipc_msg,
     reply: *mut avs_ipc_msg,
     timeout: i32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> i32 {
     let ipc: *mut avs_ipc = (*adev).ipc;
     let mut ret: i32;
@@ -487,7 +487,7 @@ unsafe fn avs_dsp_send_msg_sequence(
     timeout: i32,
     wake_d0i0: bool,
     schedule_d0ix: bool,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> i32 {
     let mut ret: i32;
 
@@ -517,7 +517,7 @@ pub unsafe fn avs_dsp_send_msg_timeout(
     request: *mut avs_ipc_msg,
     reply: *mut avs_ipc_msg,
     timeout: i32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> i32 {
     let wake_d0i0: bool = avs_dsp_op!(adev, d0ix_toggle, request, true);
     let schedule_d0ix: bool = avs_dsp_op!(adev, d0ix_toggle, request, false);
@@ -537,7 +537,7 @@ pub unsafe fn avs_dsp_send_msg(
     adev: *mut avs_dev,
     request: *mut avs_ipc_msg,
     reply: *mut avs_ipc_msg,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> i32 {
     avs_dsp_send_msg_timeout(adev, request, reply, (*(*adev).ipc).default_timeout_ms, name)
 }
@@ -548,7 +548,7 @@ pub unsafe fn avs_dsp_send_pm_msg_timeout(
     reply: *mut avs_ipc_msg,
     timeout: i32,
     wake_d0i0: bool,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> i32 {
     avs_dsp_send_msg_sequence(adev, request, reply, timeout, wake_d0i0, false, name)
 }
@@ -558,7 +558,7 @@ pub unsafe fn avs_dsp_send_pm_msg(
     request: *mut avs_ipc_msg,
     reply: *mut avs_ipc_msg,
     wake_d0i0: bool,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> i32 {
     avs_dsp_send_pm_msg_timeout(
         adev,
@@ -574,7 +574,7 @@ unsafe fn avs_dsp_do_send_rom_msg(
     adev: *mut avs_dev,
     request: *mut avs_ipc_msg,
     timeout: i32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> i32 {
     let ipc: *mut avs_ipc = (*adev).ipc;
     let mut ret: i32;
@@ -618,7 +618,7 @@ pub unsafe fn avs_dsp_send_rom_msg_timeout(
     adev: *mut avs_dev,
     request: *mut avs_ipc_msg,
     timeout: i32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> i32 {
     avs_dsp_do_send_rom_msg(adev, request, timeout, name)
 }
@@ -626,7 +626,7 @@ pub unsafe fn avs_dsp_send_rom_msg_timeout(
 pub unsafe fn avs_dsp_send_rom_msg(
     adev: *mut avs_dev,
     request: *mut avs_ipc_msg,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> i32 {
     avs_dsp_send_rom_msg_timeout(adev, request, (*(*adev).ipc).default_timeout_ms, name)
 }

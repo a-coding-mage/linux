@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 // Translation of BCM63XX_BOARD_H_ declarations.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     pub fn board_get_name() -> *const c_char;

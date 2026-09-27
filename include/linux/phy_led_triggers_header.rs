@@ -24,20 +24,20 @@ pub const PHY_LINK_LED_TRIGGER_NAME_SIZE: usize =
 #[repr(C)]
 pub struct phy_led_trigger {
     pub trigger: led_trigger,
-    pub name: [::core::ffi::c_char; PHY_LINK_LED_TRIGGER_NAME_SIZE],
-    pub speed: ::core::ffi::c_uint,
+    pub name: [::kernel::ffi::c_char; PHY_LINK_LED_TRIGGER_NAME_SIZE],
+    pub speed: ::kernel::ffi::c_uint,
 }
 
 #[cfg(CONFIG_LED_TRIGGER_PHY)]
 unsafe extern "C" {
-    pub fn phy_led_triggers_register(phy: *mut phy_device) -> ::core::ffi::c_int;
+    pub fn phy_led_triggers_register(phy: *mut phy_device) -> ::kernel::ffi::c_int;
     pub fn phy_led_triggers_unregister(phy: *mut phy_device);
     pub fn phy_led_trigger_change_speed(phy: *mut phy_device);
 }
 
 #[cfg(not(CONFIG_LED_TRIGGER_PHY))]
 #[inline]
-pub unsafe fn phy_led_triggers_register(_phy: *mut phy_device) -> ::core::ffi::c_int {
+pub unsafe fn phy_led_triggers_register(_phy: *mut phy_device) -> ::kernel::ffi::c_int {
     0
 }
 

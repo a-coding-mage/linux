@@ -154,7 +154,7 @@ extern "C" {
     pub fn btrfs_ioctl_send(
         send_root: *mut btrfs_root,
         arg: *const btrfs_ioctl_send_args,
-    ) -> libc::c_long;
+    ) -> kernel::ffi::c_long;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

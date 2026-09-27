@@ -14,38 +14,38 @@ unsafe fn to_mtk_clk_rst_data(
 
 unsafe fn mtk_reset_update(
     rcdev: *mut reset_controller_dev,
-    id: libc::c_ulong,
+    id: kernel::ffi::c_ulong,
     deassert: bool,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let data = to_mtk_clk_rst_data(rcdev);
-    let val: libc::c_uint = if deassert { 0 } else { !0 };
+    let val: kernel::ffi::c_uint = if deassert { 0 } else { !0 };
 
     regmap_update_bits(
         (*data).regmap,
-        (*(*data).desc).rst_bank_ofs[(id / RST_NR_PER_BANK as libc::c_ulong) as usize],
-        1u32 << (id % RST_NR_PER_BANK as libc::c_ulong),
+        (*(*data).desc).rst_bank_ofs[(id / RST_NR_PER_BANK as kernel::ffi::c_ulong) as usize],
+        1u32 << (id % RST_NR_PER_BANK as kernel::ffi::c_ulong),
         val,
     )
 }
 
 unsafe fn mtk_reset_assert(
     rcdev: *mut reset_controller_dev,
-    id: libc::c_ulong,
-) -> libc::c_int {
+    id: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     mtk_reset_update(rcdev, id, false)
 }
 
 unsafe fn mtk_reset_deassert(
     rcdev: *mut reset_controller_dev,
-    id: libc::c_ulong,
-) -> libc::c_int {
+    id: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     mtk_reset_update(rcdev, id, true)
 }
 
 unsafe fn mtk_reset(
     rcdev: *mut reset_controller_dev,
-    id: libc::c_ulong,
-) -> libc::c_int {
+    id: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let ret = mtk_reset_assert(rcdev, id);
     if ret != 0 {
         return ret;
@@ -56,38 +56,38 @@ unsafe fn mtk_reset(
 
 unsafe fn mtk_reset_update_set_clr(
     rcdev: *mut reset_controller_dev,
-    id: libc::c_ulong,
+    id: kernel::ffi::c_ulong,
     deassert: bool,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let data = to_mtk_clk_rst_data(rcdev);
-    let deassert_ofs: libc::c_uint = if deassert { 0x4 } else { 0 };
+    let deassert_ofs: kernel::ffi::c_uint = if deassert { 0x4 } else { 0 };
 
     regmap_write(
         (*data).regmap,
-        (*(*data).desc).rst_bank_ofs[(id / RST_NR_PER_BANK as libc::c_ulong) as usize]
+        (*(*data).desc).rst_bank_ofs[(id / RST_NR_PER_BANK as kernel::ffi::c_ulong) as usize]
             .wrapping_add(deassert_ofs),
-        1u32 << (id % RST_NR_PER_BANK as libc::c_ulong),
+        1u32 << (id % RST_NR_PER_BANK as kernel::ffi::c_ulong),
     )
 }
 
 unsafe fn mtk_reset_assert_set_clr(
     rcdev: *mut reset_controller_dev,
-    id: libc::c_ulong,
-) -> libc::c_int {
+    id: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     mtk_reset_update_set_clr(rcdev, id, false)
 }
 
 unsafe fn mtk_reset_deassert_set_clr(
     rcdev: *mut reset_controller_dev,
-    id: libc::c_ulong,
-) -> libc::c_int {
+    id: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     mtk_reset_update_set_clr(rcdev, id, true)
 }
 
 unsafe fn mtk_reset_set_clr(
     rcdev: *mut reset_controller_dev,
-    id: libc::c_ulong,
-) -> libc::c_int {
+    id: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     let ret = mtk_reset_assert_set_clr(rcdev, id);
     if ret != 0 {
         return ret;
@@ -110,7 +110,7 @@ static MTK_RESET_OPS_SET_CLR: reset_control_ops = reset_control_ops {
 unsafe fn reset_xlate(
     rcdev: *mut reset_controller_dev,
     reset_spec: *const of_phandle_args,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let data = to_mtk_clk_rst_data(rcdev);
     let arg = (*reset_spec).args[0];
 
@@ -124,12 +124,12 @@ unsafe fn reset_xlate(
 pub unsafe fn mtk_register_reset_controller_with_dev(
     dev: *mut device,
     desc: *const mtk_clk_rst_desc,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let np = (*dev).of_node;
     let mut regmap: *mut regmap = core::ptr::null_mut();
     let mut rcops: *const reset_control_ops = core::ptr::null();
     let data: *mut mtk_clk_rst_data;
-    let ret: libc::c_int;
+    let ret: kernel::ffi::c_int;
 
     if desc.is_null() {
         dev_err!(dev, "mtk clock reset desc is NULL\\n");

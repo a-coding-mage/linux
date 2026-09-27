@@ -41,24 +41,24 @@ pub struct AcpiTcpaServerHdr {
 }
 
 extern "C" {
-    fn memcmp(s1: *const core::ffi::c_void, s2: *const core::ffi::c_void, n: usize) -> i32;
-    fn kvfree(address: *mut core::ffi::c_void);
+    fn memcmp(s1: *const kernel::ffi::c_void, s2: *const kernel::ffi::c_void, n: usize) -> i32;
+    fn kvfree(address: *mut kernel::ffi::c_void);
     fn acpi_get_table(
-        signature: *const core::ffi::c_char,
+        signature: *const kernel::ffi::c_char,
         instance: u32,
         table: *mut *mut acpi_table_header,
     ) -> acpi_status;
     fn acpi_put_table(table: *mut acpi_table_header);
-    fn acpi_os_map_iomem(phys: u64, size: usize) -> *mut core::ffi::c_void;
-    fn acpi_os_unmap_iomem(virt: *mut core::ffi::c_void, size: usize);
-    fn memcpy_fromio(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, count: usize);
-    fn dev_warn(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn acpi_os_map_iomem(phys: u64, size: usize) -> *mut kernel::ffi::c_void;
+    fn acpi_os_unmap_iomem(virt: *mut kernel::ffi::c_void, size: usize);
+    fn memcpy_fromio(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, count: usize);
+    fn dev_warn(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     fn devm_add_action(
         dev: *mut device,
-        action: unsafe extern "C" fn(*mut core::ffi::c_void),
-        data: *mut core::ffi::c_void,
+        action: unsafe extern "C" fn(*mut kernel::ffi::c_void),
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
-    fn kvmalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn kvmalloc(size: usize, flags: u32) -> *mut kernel::ffi::c_void;
 }
 
 // Types and constants below are supplied by the surrounding kernel headers.
@@ -114,7 +114,7 @@ pub struct tpm_chip {
     pub dev: device,
     pub log: tpm_bios_log,
     pub flags: u32,
-    pub acpi_dev_handle: *mut core::ffi::c_void,
+    pub acpi_dev_handle: *mut kernel::ffi::c_void,
 }
 
 const ENODEV: i32 = 19;
@@ -127,7 +127,7 @@ const EFI_TCG2_EVENT_LOG_FORMAT_TCG_2: i32 = 2;
 const EFI_TCG2_EVENT_LOG_FORMAT_TCG_1_2: i32 = 1;
 const GFP_KERNEL: u32 = 0x400cc0;
 
-unsafe fn tpm_is_tpm2_log(bios_event_log: *mut core::ffi::c_void, mut len: u64) -> bool {
+unsafe fn tpm_is_tpm2_log(bios_event_log: *mut kernel::ffi::c_void, mut len: u64) -> bool {
     let event_header: *mut tcg_pcr_event;
     let efispecid: *mut tcg_efi_specid_event_head;
     let n: i32;
@@ -144,21 +144,21 @@ unsafe fn tpm_is_tpm2_log(bios_event_log: *mut core::ffi::c_void, mut len: u64) 
     efispecid = (*event_header).event.as_mut_ptr() as *mut tcg_efi_specid_event_head;
 
     n = memcmp(
-        (*efispecid).signature.as_ptr() as *const core::ffi::c_void,
-        TCG_SPECID_SIG.as_ptr() as *const core::ffi::c_void,
+        (*efispecid).signature.as_ptr() as *const kernel::ffi::c_void,
+        TCG_SPECID_SIG.as_ptr() as *const kernel::ffi::c_void,
         core::mem::size_of_val(&TCG_SPECID_SIG),
     );
     n == 0
 }
 
-unsafe extern "C" fn tpm_bios_log_free(data: *mut core::ffi::c_void) {
+unsafe extern "C" fn tpm_bios_log_free(data: *mut kernel::ffi::c_void) {
     kvfree(data);
 }
 
 pub unsafe fn tpm_read_log_acpi(chip: *mut tpm_chip) -> i32 {
     let mut buff: *mut AcpiTcpa;
     let mut status: acpi_status;
-    let mut virt: *mut core::ffi::c_void;
+    let mut virt: *mut kernel::ffi::c_void;
     let mut len: u64;
     let mut start: u64;
     let log: *mut tpm_bios_log;
@@ -228,15 +228,15 @@ pub unsafe fn tpm_read_log_acpi(chip: *mut tpm_chip) -> i32 {
         ret = -ENODEV;
         goto_err!(log, ret);
     }
-    memcpy_fromio((*log).bios_event_log as *mut core::ffi::c_void, virt, len as usize);
+    memcpy_fromio((*log).bios_event_log as *mut kernel::ffi::c_void, virt, len as usize);
     acpi_os_unmap_iomem(virt, len as usize);
 
-    if (*chip).flags & TPM_CHIP_FLAG_TPM2 != 0 && !tpm_is_tpm2_log((*log).bios_event_log as *mut core::ffi::c_void, len) {
+    if (*chip).flags & TPM_CHIP_FLAG_TPM2 != 0 && !tpm_is_tpm2_log((*log).bios_event_log as *mut kernel::ffi::c_void, len) {
         ret = -ENODEV;
         goto_err!(log, ret);
     }
 
-    ret = devm_add_action(&mut (*chip).dev, tpm_bios_log_free, (*log).bios_event_log as *mut core::ffi::c_void);
+    ret = devm_add_action(&mut (*chip).dev, tpm_bios_log_free, (*log).bios_event_log as *mut kernel::ffi::c_void);
     if ret != 0 {
         (*log).bios_event_log = core::ptr::null_mut();
         goto_err!(log, ret);
@@ -246,7 +246,7 @@ pub unsafe fn tpm_read_log_acpi(chip: *mut tpm_chip) -> i32 {
 
 macro_rules! goto_err {
     ($log:expr, $ret:expr) => {{
-        tpm_bios_log_free((*$log).bios_event_log as *mut core::ffi::c_void);
+        tpm_bios_log_free((*$log).bios_event_log as *mut kernel::ffi::c_void);
         (*$log).bios_event_log = core::ptr::null_mut();
         return $ret;
     }};

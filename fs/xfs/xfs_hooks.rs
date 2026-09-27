@@ -13,7 +13,7 @@ pub unsafe fn xfs_hooks_init(chain: *mut xfs_hooks) {
 }
 
 /* Make it so a function gets called whenever we hit a certain hook point. */
-pub unsafe fn xfs_hooks_add(chain: *mut xfs_hooks, hook: *mut xfs_hook) -> ::core::ffi::c_int {
+pub unsafe fn xfs_hooks_add(chain: *mut xfs_hooks, hook: *mut xfs_hook) -> ::kernel::ffi::c_int {
     ASSERT(unsafe { (*hook).nb.notifier_call } != None);
     BUILD_BUG_ON(::core::mem::offset_of!(xfs_hook, nb) != 0);
 
@@ -34,9 +34,9 @@ pub unsafe fn xfs_hooks_del(chain: *mut xfs_hooks, hook: *mut xfs_hook) {
 /* Call a hook.  Returns the NOTIFY_* value returned by the last hook. */
 pub unsafe fn xfs_hooks_call(
     chain: *mut xfs_hooks,
-    val: ::core::ffi::c_ulong,
-    priv_: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int {
+    val: ::kernel::ffi::c_ulong,
+    priv_: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int {
     blocking_notifier_call_chain(unsafe { &mut (*chain).head }, val, priv_)
 }
 

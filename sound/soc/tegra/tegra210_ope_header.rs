@@ -57,7 +57,7 @@ pub struct tegra210_ope {
     pub mbdrc_regmap: *mut regmap,
     pub peq_biquad_gains: [u32; TEGRA210_PEQ_GAIN_PARAM_SIZE_PER_CH],
     pub peq_biquad_shifts: [u32; TEGRA210_PEQ_SHIFT_PARAM_SIZE_PER_CH],
-    pub data_dir: ::core::ffi::c_uint,
+    pub data_dir: ::kernel::ffi::c_uint,
 }
 
 /* Extension of soc_bytes structure defined in sound/soc.h */
@@ -92,7 +92,7 @@ macro_rules! TEGRA_SOC_BYTES_EXT {
                     mask: $xmask,
                 },
                 shift: $xshift,
-            } as *const tegra_soc_bytes) as ::core::ffi::c_ulong,
+            } as *const tegra_soc_bytes) as ::kernel::ffi::c_ulong,
         }
     };
 }

@@ -27,7 +27,7 @@ pub enum Dio200PciModel {
 /* CONFIG_HAS_IOPORT controls the two legacy PCI models, as in the source. */
 #[repr(C)]
 pub struct Dio200Board {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub mainbar: u32,
     pub n_subdevs: u32,
     pub sdtype: [u32; 8],
@@ -69,16 +69,16 @@ static DIO200_PCI_BOARDS: [Dio200Board; 5] = [
 #[repr(C)]
 pub struct ComediDevice {
     pub board_ptr: *const Dio200Board,
-    pub board_name: *const core::ffi::c_char,
-    pub mmio: *mut core::ffi::c_void,
+    pub board_name: *const kernel::ffi::c_char,
+    pub mmio: *mut kernel::ffi::c_void,
     pub iobase: usize,
-    pub class_dev: *mut core::ffi::c_void,
+    pub class_dev: *mut kernel::ffi::c_void,
     pub driver: *mut ComediDriver,
 }
 
 #[repr(C)]
 pub struct ComediDriver {
-    pub driver_name: *const core::ffi::c_char,
+    pub driver_name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -94,9 +94,9 @@ pub struct PciDeviceId {
 extern "C" {
     fn comedi_to_pci_dev(dev: *mut ComediDevice) -> *mut PciDev;
     fn pci_resource_len(dev: *mut PciDev, bar: u32) -> usize;
-    fn pci_ioremap_bar(dev: *mut PciDev, bar: u32) -> *mut core::ffi::c_void;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn iounmap(addr: *mut core::ffi::c_void);
+    fn pci_ioremap_bar(dev: *mut PciDev, bar: u32) -> *mut kernel::ffi::c_void;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn iounmap(addr: *mut kernel::ffi::c_void);
     fn amplc_dio200_set_enhance(dev: *mut ComediDevice, enable: i32);
     fn comedi_pci_enable(dev: *mut ComediDevice) -> i32;
     fn pci_resource_flags(dev: *mut PciDev, bar: u32) -> u64;
@@ -105,7 +105,7 @@ extern "C" {
     fn comedi_pci_detach(dev: *mut ComediDevice) -> i32;
     fn comedi_pci_auto_config(dev: *mut PciDev, driver: *mut ComediDriver, data: usize) -> i32;
     fn comedi_pci_auto_unconfig(dev: *mut PciDev);
-    fn pci_name(dev: *mut PciDev) -> *const core::ffi::c_char;
+    fn pci_name(dev: *mut PciDev) -> *const kernel::ffi::c_char;
 }
 
 const EINVAL: i32 = 22;
@@ -116,7 +116,7 @@ const IORESOURCE_MEM: u64 = 0x00000200;
 
 unsafe fn dio200_pcie_board_setup_impl(dev: *mut ComediDevice) -> i32 {
     let pcidev = comedi_to_pci_dev(dev);
-    let brbase: *mut core::ffi::c_void;
+    let brbase: *mut kernel::ffi::c_void;
 
     if pci_resource_len(pcidev, 0) < 0x4000 {
         return -EINVAL;
@@ -125,7 +125,7 @@ unsafe fn dio200_pcie_board_setup_impl(dev: *mut ComediDevice) -> i32 {
     if brbase.is_null() {
         return -ENOMEM;
     }
-    writel(0x80, (brbase as *mut u8).add(0x50) as *mut core::ffi::c_void);
+    writel(0x80, (brbase as *mut u8).add(0x50) as *mut kernel::ffi::c_void);
     iounmap(brbase);
     amplc_dio200_set_enhance(dev, 1);
     0
@@ -175,7 +175,7 @@ unsafe fn dio200_pci_auto_attach(dev: *mut ComediDevice, context_model: usize) -
 
 #[repr(C)]
 pub struct PciDriver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id_table: *const PciDeviceId,
     pub probe: unsafe fn(*mut PciDev, *const PciDeviceId) -> i32,
     pub remove: Option<unsafe fn(*mut PciDev)>,
@@ -188,12 +188,12 @@ pub unsafe extern "C" fn dio200_pci_probe(dev: *mut PciDev, id: *const PciDevice
 
 #[no_mangle]
 pub static mut dio200_pci_comedi_driver: ComediDriver = ComediDriver {
-    driver_name: b"amplc_dio200_pci\0".as_ptr() as *const core::ffi::c_char,
+    driver_name: b"amplc_dio200_pci\0".as_ptr() as *const kernel::ffi::c_char,
 };
 
 #[no_mangle]
 pub static mut dio200_pci_pci_driver: PciDriver = PciDriver {
-    name: b"amplc_dio200_pci\0".as_ptr() as *const core::ffi::c_char,
+    name: b"amplc_dio200_pci\0".as_ptr() as *const kernel::ffi::c_char,
     id_table: core::ptr::null(),
     probe: dio200_pci_probe,
     remove: None,

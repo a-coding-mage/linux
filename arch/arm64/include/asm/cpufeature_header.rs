@@ -25,7 +25,7 @@ pub struct arm64_ftr_bits {
 #[repr(C)] pub struct arm64_ftr_override { pub val: u64, pub mask: u64 }
 #[repr(C)]
 pub struct arm64_ftr_reg {
-    pub name: *const core::ffi::c_char, pub strict_mask: u64, pub user_mask: u64,
+    pub name: *const kernel::ffi::c_char, pub strict_mask: u64, pub user_mask: u64,
     pub sys_val: u64, pub user_val: u64, pub override_: *mut arm64_ftr_override,
     pub ftr_bits: *const arm64_ftr_bits,
 }
@@ -33,7 +33,7 @@ extern "C" { pub static mut arm64_ftr_reg_ctrel0: arm64_ftr_reg; }
 
 #[repr(C)]
 pub struct arm64_cpu_capabilities {
-    pub desc: *const core::ffi::c_char, pub capability: u16, pub type_: u16,
+    pub desc: *const kernel::ffi::c_char, pub capability: u16, pub type_: u16,
     pub matches: Option<unsafe extern "C" fn(*const arm64_cpu_capabilities, i32) -> bool>,
     pub cpu_enable: Option<unsafe extern "C" fn(*const arm64_cpu_capabilities)>,
     pub data: arm64_cpu_capability_data,

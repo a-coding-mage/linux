@@ -22,7 +22,7 @@ static mut sh7757_pfc_resources: [resource; 1] = [resource {
 
 unsafe extern "C" fn plat_pinmux_setup() -> i32 {
     sh_pfc_register(
-        b"pfc-sh7757\0".as_ptr() as *const core::ffi::c_char,
+        b"pfc-sh7757\0".as_ptr() as *const kernel::ffi::c_char,
         sh7757_pfc_resources.as_mut_ptr(),
         sh7757_pfc_resources.len(),
     )

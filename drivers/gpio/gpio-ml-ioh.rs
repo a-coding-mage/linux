@@ -19,7 +19,7 @@ struct ioh_regs { regs: [ioh_reg_comn; 8], reserve1: [u32; 16], ioh_sel_reg: [u3
 struct ioh_gpio_reg_data { ien_reg: u32, imask_reg: u32, po_reg: u32, pm_reg: u32, im0_reg: u32, im1_reg: u32, use_sel_reg: u32 }
 
 #[repr(C)]
-struct ioh_gpio { base: *mut core::ffi::c_void, reg: *mut ioh_regs, dev: *mut device, gpio: gpio_chip, ioh_gpio_reg: ioh_gpio_reg_data, gpio_use_sel: u32, ch: i32, irq_base: i32, spinlock: *mut raw_spinlock_t }
+struct ioh_gpio { base: *mut kernel::ffi::c_void, reg: *mut ioh_regs, dev: *mut device, gpio: gpio_chip, ioh_gpio_reg: ioh_gpio_reg_data, gpio_use_sel: u32, ch: i32, irq_base: i32, spinlock: *mut raw_spinlock_t }
 
 #[repr(C)]
 struct ioh_gpio_device { spinlock: raw_spinlock_t, chip: [ioh_gpio; 8] }
@@ -55,20 +55,20 @@ unsafe fn ioh_gpio_setup(chip:*mut ioh_gpio,num_port:i32) { let g=&mut (*chip).g
 
 // Remaining kernel callback wiring is preserved as declarations: these symbols and kernel types are supplied by the surrounding Linux bindings.
 extern "C" {
-    static mut THIS_MODULE: *mut core::ffi::c_void;
-    fn gpiochip_get_data(gpio:*mut gpio_chip)->*mut ioh_gpio; fn dev_name(dev:*mut device)->*const core::ffi::c_char;
+    static mut THIS_MODULE: *mut kernel::ffi::c_void;
+    fn gpiochip_get_data(gpio:*mut gpio_chip)->*mut ioh_gpio; fn dev_name(dev:*mut device)->*const kernel::ffi::c_char;
     fn ioread32(p:*const u32)->u32; fn iowrite32(v:u32,p:*mut u32); fn raw_spin_lock_irqsave(l:*mut raw_spinlock_t,f:*mut usize); fn raw_spin_unlock_irqrestore(l:*mut raw_spinlock_t,f:usize);
 }
 #[repr(C)] struct device;
 #[repr(C)] struct raw_spinlock_t;
-#[repr(C)] struct gpio_chip { label:*const core::ffi::c_char, owner:*mut core::ffi::c_void, direction_input:Option<unsafe fn(*mut gpio_chip,u32)->i32>, get:Option<unsafe fn(*mut gpio_chip,u32)->i32>, direction_output:Option<unsafe fn(*mut gpio_chip,u32,i32)->i32>, set:Option<unsafe fn(*mut gpio_chip,u32,i32)->i32>, dbg_show:Option<*mut core::ffi::c_void>, base:i32, ngpio:u32, can_sleep:bool, to_irq:Option<unsafe fn(*mut gpio_chip,u32)->i32> }
+#[repr(C)] struct gpio_chip { label:*const kernel::ffi::c_char, owner:*mut kernel::ffi::c_void, direction_input:Option<unsafe fn(*mut gpio_chip,u32)->i32>, get:Option<unsafe fn(*mut gpio_chip,u32)->i32>, direction_output:Option<unsafe fn(*mut gpio_chip,u32,i32)->i32>, set:Option<unsafe fn(*mut gpio_chip,u32,i32)->i32>, dbg_show:Option<*mut kernel::ffi::c_void>, base:i32, ngpio:u32, can_sleep:bool, to_irq:Option<unsafe fn(*mut gpio_chip,u32)->i32> }
 
 // Interrupt callbacks, PCI probe/suspend/resume callbacks, driver registration, and module metadata.
 unsafe fn ioh_irq_unmask(_d:*mut irq_data) { let c=(*(*_d).gc).private; iowrite32(1u32.wrapping_shl(((*_d).irq-(*c).irq_base) as u32),&mut (*(*c).reg).regs[(*c).ch as usize].imaskclr); }
 unsafe fn ioh_irq_mask(_d:*mut irq_data) { let c=(*(*_d).gc).private; iowrite32(1u32.wrapping_shl(((*_d).irq-(*c).irq_base) as u32),&mut (*(*c).reg).regs[(*c).ch as usize].imask); }
 unsafe fn ioh_irq_disable(d:*mut irq_data) { let c=(*(*d).gc).private; let mut f=0usize; raw_spin_lock_irqsave((*c).spinlock,&mut f); let p=&mut (*c).reg.as_mut().unwrap().regs[(*c).ch as usize].ien; iowrite32(ioread32(p)&!(1u32.wrapping_shl(((*d).irq-(*c).irq_base) as u32)),p); raw_spin_unlock_irqrestore((*c).spinlock,f); }
 unsafe fn ioh_irq_enable(d:*mut irq_data) { let c=(*(*d).gc).private; let mut f=0usize; raw_spin_lock_irqsave((*c).spinlock,&mut f); let p=&mut (*c).reg.as_mut().unwrap().regs[(*c).ch as usize].ien; iowrite32(ioread32(p)|(1u32.wrapping_shl(((*d).irq-(*c).irq_base) as u32)),p); raw_spin_unlock_irqrestore((*c).spinlock,f); }
-unsafe fn ioh_gpio_handler(irq:i32,dev_id:*mut core::ffi::c_void)->i32 { let mut c=dev_id as *mut ioh_gpio; let mut ret=0; for i in 0..8 { let status=ioread32(&(*(*c).reg).regs[i].istatus); for j in 0..num_ports[i] { if status & 1u32.wrapping_shl(j as u32)!=0 { iowrite32(1u32.wrapping_shl(j as u32),&mut (*(*c).reg).regs[(*c).ch as usize].iclr); generic_handle_irq((*c).irq_base+j); ret=1; } } c=c.add(1); } let _=irq; ret }
+unsafe fn ioh_gpio_handler(irq:i32,dev_id:*mut kernel::ffi::c_void)->i32 { let mut c=dev_id as *mut ioh_gpio; let mut ret=0; for i in 0..8 { let status=ioread32(&(*(*c).reg).regs[i].istatus); for j in 0..num_ports[i] { if status & 1u32.wrapping_shl(j as u32)!=0 { iowrite32(1u32.wrapping_shl(j as u32),&mut (*(*c).reg).regs[(*c).ch as usize].iclr); generic_handle_irq((*c).irq_base+j); ret=1; } } c=c.add(1); } let _=irq; ret }
 #[repr(C)] struct irq_data { irq:i32, gc:*mut irq_chip_generic }
 #[repr(C)] struct irq_chip_generic { private:*mut ioh_gpio }
 extern "C" { fn generic_handle_irq(i:i32); }

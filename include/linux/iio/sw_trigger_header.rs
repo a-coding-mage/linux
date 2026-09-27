@@ -43,7 +43,7 @@ pub struct iio_sw_trigger_ops;
 
 #[repr(C)]
 pub struct iio_sw_trigger_type {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub owner: *mut module,
     pub ops: *const iio_sw_trigger_ops,
     pub list: list_head,
@@ -58,11 +58,11 @@ pub struct iio_sw_trigger {
 }
 
 pub type IioSwTriggerProbe = unsafe extern "C" fn(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 ) -> *mut iio_sw_trigger;
 pub type IioSwTriggerRemove = unsafe extern "C" fn(
     trigger: *mut iio_sw_trigger,
-) -> core::ffi::c_int;
+) -> kernel::ffi::c_int;
 
 #[repr(C)]
 pub struct iio_sw_trigger_ops {
@@ -77,12 +77,12 @@ pub struct iio_sw_trigger_ops {
 
 unsafe extern "C" {
     pub fn iio_register_sw_trigger_type(tt: *mut iio_sw_trigger_type)
-        -> core::ffi::c_int;
+        -> kernel::ffi::c_int;
     pub fn iio_unregister_sw_trigger_type(tt: *mut iio_sw_trigger_type);
 
     pub fn iio_sw_trigger_create(
-        name: *const core::ffi::c_char,
-        parent: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
+        parent: *const kernel::ffi::c_char,
     ) -> *mut iio_sw_trigger;
     pub fn iio_sw_trigger_destroy(trigger: *mut iio_sw_trigger);
 }
@@ -102,7 +102,7 @@ unsafe extern "C" {
 #[inline]
 pub unsafe fn iio_swt_group_init_type_name(
     t: *mut iio_sw_trigger,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     type_: *const config_item_type,
 ) {
     /* Preserved conditional intent: CONFIG_CONFIGFS_FS controls this call. */
@@ -115,7 +115,7 @@ pub unsafe fn iio_swt_group_init_type_name(
 unsafe extern "C" {
     pub fn config_group_init_type_name(
         group: *mut config_group,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         type_: *const config_item_type,
     );
 }

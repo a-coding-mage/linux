@@ -25,8 +25,8 @@ pub enum xt_rateest_match_mode {
 
 #[repr(C, align(8))]
 pub struct xt_rateest_match_info {
-    pub name1: [core::ffi::c_char; IFNAMSIZ],
-    pub name2: [core::ffi::c_char; IFNAMSIZ],
+    pub name1: [kernel::ffi::c_char; IFNAMSIZ],
+    pub name2: [kernel::ffi::c_char; IFNAMSIZ],
     pub flags: u16,
     pub mode: u16,
     pub bps1: u32,

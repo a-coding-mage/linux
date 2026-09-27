@@ -64,7 +64,7 @@ pub struct rdma_restrack_entry {
     /** @task: owner of resource tracking entity */
     pub task: *mut task_struct,
     /** @kern_name: name of owner for the kernel created entities. */
-    pub kern_name: *const core::ffi::c_char,
+    pub kern_name: *const kernel::ffi::c_char,
     /** @type: various objects in restrack database */
     pub type_: rdma_restrack_type,
     /** @user: user resource */
@@ -90,12 +90,12 @@ pub unsafe fn rdma_is_kernel_res(res: *const rdma_restrack_entry) -> bool {
 extern "C" {
     pub fn rdma_restrack_get(res: *mut rdma_restrack_entry) -> i32;
     pub fn rdma_restrack_put(res: *mut rdma_restrack_entry) -> i32;
-    pub fn rdma_nl_put_driver_u32(msg: *mut sk_buff, name: *const core::ffi::c_char, value: u32) -> i32;
-    pub fn rdma_nl_put_driver_u32_hex(msg: *mut sk_buff, name: *const core::ffi::c_char, value: u32) -> i32;
-    pub fn rdma_nl_put_driver_u64(msg: *mut sk_buff, name: *const core::ffi::c_char, value: u64) -> i32;
-    pub fn rdma_nl_put_driver_u64_hex(msg: *mut sk_buff, name: *const core::ffi::c_char, value: u64) -> i32;
-    pub fn rdma_nl_put_driver_string(msg: *mut sk_buff, name: *const core::ffi::c_char, str_: *const core::ffi::c_char) -> i32;
-    pub fn rdma_nl_stat_hwcounter_entry(msg: *mut sk_buff, name: *const core::ffi::c_char, value: u64) -> i32;
+    pub fn rdma_nl_put_driver_u32(msg: *mut sk_buff, name: *const kernel::ffi::c_char, value: u32) -> i32;
+    pub fn rdma_nl_put_driver_u32_hex(msg: *mut sk_buff, name: *const kernel::ffi::c_char, value: u32) -> i32;
+    pub fn rdma_nl_put_driver_u64(msg: *mut sk_buff, name: *const kernel::ffi::c_char, value: u64) -> i32;
+    pub fn rdma_nl_put_driver_u64_hex(msg: *mut sk_buff, name: *const kernel::ffi::c_char, value: u64) -> i32;
+    pub fn rdma_nl_put_driver_string(msg: *mut sk_buff, name: *const kernel::ffi::c_char, str_: *const kernel::ffi::c_char) -> i32;
+    pub fn rdma_nl_stat_hwcounter_entry(msg: *mut sk_buff, name: *const kernel::ffi::c_char, value: u64) -> i32;
     pub fn rdma_restrack_get_byid(dev: *mut ib_device, type_: rdma_restrack_type, id: u32) -> *mut rdma_restrack_entry;
 }
 

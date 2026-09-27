@@ -9,20 +9,20 @@
 const PG_DCACHE_CLEAN: usize = PG_arch_1;
 
 extern "C" {
-    fn is_zero_pfn(pfn: ::core::ffi::c_ulong) -> bool;
-    fn folio_pfn(folio: *mut folio) -> ::core::ffi::c_ulong;
+    fn is_zero_pfn(pfn: ::kernel::ffi::c_ulong) -> bool;
+    fn folio_pfn(folio: *mut folio) -> ::kernel::ffi::c_ulong;
     fn folio_flush_mapping(folio: *mut folio) -> *mut address_space;
     fn folio_mapped(folio: *mut folio) -> bool;
-    fn clear_bit(nr: usize, addr: *mut ::core::ffi::c_ulong);
+    fn clear_bit(nr: usize, addr: *mut ::kernel::ffi::c_ulong);
     fn dcache_wbinv_all();
     fn icache_inv_all();
-    fn set_bit(nr: usize, addr: *mut ::core::ffi::c_ulong);
+    fn set_bit(nr: usize, addr: *mut ::kernel::ffi::c_ulong);
     fn page_folio(page: *mut page) -> *mut folio;
-    fn pte_pfn(pte: pte_t) -> ::core::ffi::c_ulong;
-    fn flush_tlb_page(vma: *mut vm_area_struct, addr: ::core::ffi::c_ulong);
-    fn pfn_valid(pfn: ::core::ffi::c_ulong) -> bool;
-    fn pfn_to_page(pfn: ::core::ffi::c_ulong) -> *mut page;
-    fn test_and_set_bit(nr: usize, addr: *mut ::core::ffi::c_ulong) -> bool;
+    fn pte_pfn(pte: pte_t) -> ::kernel::ffi::c_ulong;
+    fn flush_tlb_page(vma: *mut vm_area_struct, addr: ::kernel::ffi::c_ulong);
+    fn pfn_valid(pfn: ::kernel::ffi::c_ulong) -> bool;
+    fn pfn_to_page(pfn: ::kernel::ffi::c_ulong) -> *mut page;
+    fn test_and_set_bit(nr: usize, addr: *mut ::kernel::ffi::c_ulong) -> bool;
 }
 
 // Types and constants are supplied by the corresponding kernel dependencies.
@@ -40,7 +40,7 @@ unsafe extern "C" {
 }
 
 // The `flags.f` member and `vm_flags` field are supplied by the kernel types.
-const VM_EXEC: ::core::ffi::c_ulong = 0x4;
+const VM_EXEC: ::kernel::ffi::c_ulong = 0x4;
 
 pub unsafe fn flush_dcache_folio(folio: *mut folio) {
     let mapping: *mut address_space;
@@ -73,11 +73,11 @@ pub unsafe fn flush_dcache_page(page: *mut page) {
 pub unsafe fn update_mmu_cache_range(
     _vmf: *mut vm_fault,
     vma: *mut vm_area_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
     _nr: u32,
 ) {
-    let pfn: ::core::ffi::c_ulong = pte_pfn(*ptep);
+    let pfn: ::kernel::ffi::c_ulong = pte_pfn(*ptep);
     let folio: *mut folio;
 
     flush_tlb_page(vma, addr);
@@ -104,8 +104,8 @@ pub unsafe fn update_mmu_cache_range(
 
 pub unsafe fn flush_cache_range(
     vma: *mut vm_area_struct,
-    _start: ::core::ffi::c_ulong,
-    _end: ::core::ffi::c_ulong,
+    _start: ::kernel::ffi::c_ulong,
+    _end: ::kernel::ffi::c_ulong,
 ) {
     dcache_wbinv_all();
 

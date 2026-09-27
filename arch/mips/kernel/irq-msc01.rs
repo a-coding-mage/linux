@@ -9,10 +9,10 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-static mut _ICCTRL_MSC: ::core::ffi::c_ulong = 0;
+static mut _ICCTRL_MSC: ::kernel::ffi::c_ulong = 0;
 const MSC01_IC_REG_BASE: usize = unsafe { _ICCTRL_MSC as usize };
 
-static mut IRQ_BASE: ::core::ffi::c_uint = 0;
+static mut IRQ_BASE: ::kernel::ffi::c_uint = 0;
 
 #[inline]
 unsafe fn mscic_write(reg: usize, data: u32) {
@@ -90,7 +90,7 @@ pub unsafe fn ll_msc_irq() {
     }
 }
 
-unsafe fn msc_bind_eic_interrupt(irq: ::core::ffi::c_int, set: ::core::ffi::c_int) {
+unsafe fn msc_bind_eic_interrupt(irq: ::kernel::ffi::c_int, set: ::kernel::ffi::c_int) {
     mscic_write(
         MSC01_IC_RAMW,
         ((irq as u32) << MSC01_IC_RAMW_ADDR_SHF) | ((set as u32) << MSC01_IC_RAMW_DATA_SHF),
@@ -116,12 +116,12 @@ static mut MSC_EDGEIRQ_TYPE: irq_chip = irq_chip {
 };
 
 pub unsafe fn init_msc_irqs(
-    icubase: ::core::ffi::c_ulong,
-    irqbase: ::core::ffi::c_uint,
+    icubase: ::kernel::ffi::c_ulong,
+    irqbase: ::kernel::ffi::c_uint,
     mut imp: *mut msc_irqmap_t,
-    mut nirq: ::core::ffi::c_int,
+    mut nirq: ::kernel::ffi::c_int,
 ) {
-    _ICCTRL_MSC = ioremap(icubase, 0x40000) as ::core::ffi::c_ulong;
+    _ICCTRL_MSC = ioremap(icubase, 0x40000) as ::kernel::ffi::c_ulong;
 
     /* Reset interrupt controller - initialises all registers to 0 */
     mscic_write(MSC01_IC_RST, MSC01_IC_RST_RST_BIT);

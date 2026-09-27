@@ -3,7 +3,7 @@
 
 #[repr(C)]
 struct nitrox_cipher {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     value: flexi_cipher,
 }
 
@@ -20,10 +20,10 @@ static flexi_cipher_table: [nitrox_cipher; 9] = [
     nitrox_cipher { name: c"cts(cbc(aes))".as_ptr(), value: CIPHER_AES_CBC_CTS },
 ];
 
-unsafe fn flexi_cipher_type(name: *const core::ffi::c_char) -> flexi_cipher {
+unsafe fn flexi_cipher_type(name: *const kernel::ffi::c_char) -> flexi_cipher {
     let mut cipher = flexi_cipher_table.as_ptr();
     while !(*cipher).name.is_null() {
-        if libc::strcmp((*cipher).name, name) == 0 { break; }
+        if strcmp((*cipher).name, name) == 0 { break; }
         cipher = cipher.add(1);
     }
     if cipher == flexi_cipher_table.as_ptr().add(flexi_cipher_table.len()) {
@@ -33,15 +33,15 @@ unsafe fn flexi_cipher_type(name: *const core::ffi::c_char) -> flexi_cipher {
 
 unsafe fn free_src_sglist(skreq: *mut skcipher_request) {
     let nkreq = skcipher_request_ctx(skreq);
-    kfree((*nkreq).src as *mut core::ffi::c_void);
+    kfree((*nkreq).src as *mut kernel::ffi::c_void);
 }
 
 unsafe fn free_dst_sglist(skreq: *mut skcipher_request) {
     let nkreq = skcipher_request_ctx(skreq);
-    kfree((*nkreq).dst as *mut core::ffi::c_void);
+    kfree((*nkreq).dst as *mut kernel::ffi::c_void);
 }
 
-unsafe extern "C" fn nitrox_skcipher_callback(arg: *mut core::ffi::c_void, mut err: i32) {
+unsafe extern "C" fn nitrox_skcipher_callback(arg: *mut kernel::ffi::c_void, mut err: i32) {
     let skreq = arg as *mut skcipher_request;
     free_src_sglist(skreq);
     free_dst_sglist(skreq);
@@ -49,7 +49,7 @@ unsafe extern "C" fn nitrox_skcipher_callback(arg: *mut core::ffi::c_void, mut e
     skcipher_request_complete(skreq, err);
 }
 
-unsafe extern "C" fn nitrox_cbc_cipher_callback(arg: *mut core::ffi::c_void, err: i32) {
+unsafe extern "C" fn nitrox_cbc_cipher_callback(arg: *mut kernel::ffi::c_void, err: i32) {
     let skreq = arg as *mut skcipher_request;
     let nkreq = skcipher_request_ctx(skreq);
     let cipher = crypto_skcipher_reqtfm(skreq);
@@ -62,7 +62,7 @@ unsafe extern "C" fn nitrox_cbc_cipher_callback(arg: *mut core::ffi::c_void, err
         scatterwalk_map_and_copy((*skreq).iv, (*skreq).src, start, ivsize, 0);
     } else {
         memcpy((*skreq).iv, (*nkreq).iv_out, ivsize);
-        kfree((*nkreq).iv_out as *mut core::ffi::c_void);
+        kfree((*nkreq).iv_out as *mut kernel::ffi::c_void);
     }
     nitrox_skcipher_callback(arg, err);
 }
@@ -89,9 +89,9 @@ unsafe fn nitrox_skcipher_exit(tfm: *mut crypto_skcipher) {
     let nctx = crypto_skcipher_ctx(tfm);
     if (*nctx).u.ctx_handle != 0 {
         let fctx = (*nctx).u.fctx;
-        memzero_explicit(&mut (*fctx).crypto as *mut _ as *mut core::ffi::c_void, core::mem::size_of::<crypto_keys>());
-        memzero_explicit(&mut (*fctx).auth as *mut _ as *mut core::ffi::c_void, core::mem::size_of::<auth_keys>());
-        crypto_free_context((*nctx).chdr as *mut core::ffi::c_void);
+        memzero_explicit(&mut (*fctx).crypto as *mut _ as *mut kernel::ffi::c_void, core::mem::size_of::<crypto_keys>());
+        memzero_explicit(&mut (*fctx).auth as *mut _ as *mut kernel::ffi::c_void, core::mem::size_of::<auth_keys>());
+        crypto_free_context((*nctx).chdr as *mut kernel::ffi::c_void);
     }
     nitrox_put_device((*nctx).ndev); (*nctx).u.ctx_handle = 0; (*nctx).ndev = core::ptr::null_mut();
 }

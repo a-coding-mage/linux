@@ -27,7 +27,7 @@ pub enum die_val {
 }
 
 extern "C" {
-    pub fn die(regs: *mut pt_regs, str: *const core::ffi::c_char) -> !;
+    pub fn die(regs: *mut pt_regs, str: *const kernel::ffi::c_char) -> !;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

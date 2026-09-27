@@ -12,7 +12,7 @@ pub enum cpu_idle_type {
 }
 
 extern "C" {
-    pub fn wake_up_if_idle(cpu: ::core::ffi::c_int);
+    pub fn wake_up_if_idle(cpu: ::kernel::ffi::c_int);
 }
 
 /*
@@ -30,14 +30,14 @@ pub unsafe fn __current_set_polling() {
     {
         arch_set_bit(
             TIF_POLLING_NRFLAG,
-            (&mut current_thread_info().flags as *mut _).cast::<::core::ffi::c_ulong>(),
+            (&mut current_thread_info().flags as *mut _).cast::<::kernel::ffi::c_ulong>(),
         );
     }
     #[cfg(not(feature = "_ASM_GENERIC_BITOPS_INSTRUMENTED_ATOMIC_H"))]
     {
         set_bit(
             TIF_POLLING_NRFLAG,
-            (&mut current_thread_info().flags as *mut _).cast::<::core::ffi::c_ulong>(),
+            (&mut current_thread_info().flags as *mut _).cast::<::kernel::ffi::c_ulong>(),
         );
     }
 }
@@ -49,14 +49,14 @@ pub unsafe fn __current_clr_polling() {
     {
         arch_clear_bit(
             TIF_POLLING_NRFLAG,
-            (&mut current_thread_info().flags as *mut _).cast::<::core::ffi::c_ulong>(),
+            (&mut current_thread_info().flags as *mut _).cast::<::kernel::ffi::c_ulong>(),
         );
     }
     #[cfg(not(feature = "_ASM_GENERIC_BITOPS_INSTRUMENTED_ATOMIC_H"))]
     {
         clear_bit(
             TIF_POLLING_NRFLAG,
-            (&mut current_thread_info().flags as *mut _).cast::<::core::ffi::c_ulong>(),
+            (&mut current_thread_info().flags as *mut _).cast::<::kernel::ffi::c_ulong>(),
         );
     }
 }

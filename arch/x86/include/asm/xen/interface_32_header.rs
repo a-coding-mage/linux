@@ -74,19 +74,19 @@ pub type tsc_timestamp_t = u64; /* RDTSC timestamp */
 
 #[repr(C)]
 pub struct arch_vcpu_info {
-    pub cr2: ::core::ffi::c_ulong,
-    pub pad: [::core::ffi::c_ulong; 5], /* sizeof(struct vcpu_info) == 64 */
+    pub cr2: ::kernel::ffi::c_ulong,
+    pub pad: [::kernel::ffi::c_ulong; 5], /* sizeof(struct vcpu_info) == 64 */
 }
 
 #[repr(C)]
 pub struct xen_callback {
-    pub cs: ::core::ffi::c_ulong,
-    pub eip: ::core::ffi::c_ulong,
+    pub cs: ::kernel::ffi::c_ulong,
+    pub eip: ::kernel::ffi::c_ulong,
 }
 pub type xen_callback_t = xen_callback;
 
 #[inline]
-pub const fn XEN_CALLBACK(__cs: ::core::ffi::c_ulong, __eip: ::core::ffi::c_ulong) -> xen_callback {
+pub const fn XEN_CALLBACK(__cs: ::kernel::ffi::c_ulong, __eip: ::kernel::ffi::c_ulong) -> xen_callback {
     xen_callback { cs: __cs, eip: __eip }
 }
 

@@ -32,7 +32,7 @@ pub struct s3c2410_platform_i2c {
     pub bus_num: i32,
     pub flags: u32,
     pub slave_addr: u32,
-    pub frequency: core::ffi::c_ulong,
+    pub frequency: kernel::ffi::c_ulong,
     pub sda_delay: u32,
     pub cfg_gpio: Option<unsafe extern "C" fn(dev: *mut platform_device)>,
 }

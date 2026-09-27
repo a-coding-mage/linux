@@ -42,18 +42,18 @@ pub struct can_priv {
     pub bittiming: can_bittiming,
     pub fd: data_bittiming_params,
     pub xl: data_bittiming_params,
-    pub bitrate_const_cnt: libc::c_uint,
+    pub bitrate_const_cnt: kernel::ffi::c_uint,
     pub bitrate_const: *const u32,
     pub bitrate_max: u32,
     pub clock: can_clock,
 
-    pub termination_const_cnt: libc::c_uint,
+    pub termination_const_cnt: kernel::ffi::c_uint,
     pub termination_const: *const u16,
     pub termination: u16,
     pub termination_gpio: *mut gpio_desc,
     pub termination_gpio_ohms: [u16; CAN_TERMINATION_GPIO_MAX as usize],
 
-    pub echo_skb_max: libc::c_uint,
+    pub echo_skb_max: kernel::ffi::c_uint,
     pub echo_skb: *mut *mut sk_buff,
 
     pub state: can_state,
@@ -62,14 +62,14 @@ pub struct can_priv {
     pub ctrlmode: u32, /* current options setting */
     pub ctrlmode_supported: u32, /* options that can be modified by netlink */
 
-    pub restart_ms: libc::c_int,
+    pub restart_ms: kernel::ffi::c_int,
     pub restart_work: delayed_work,
 
-    pub do_set_bittiming: Option<unsafe extern "C" fn(dev: *mut net_device) -> libc::c_int>,
-    pub do_set_mode: Option<unsafe extern "C" fn(dev: *mut net_device, mode: can_mode) -> libc::c_int>,
-    pub do_set_termination: Option<unsafe extern "C" fn(dev: *mut net_device, term: u16) -> libc::c_int>,
-    pub do_get_state: Option<unsafe extern "C" fn(dev: *const net_device, state: *mut can_state) -> libc::c_int>,
-    pub do_get_berr_counter: Option<unsafe extern "C" fn(dev: *const net_device, bec: *mut can_berr_counter) -> libc::c_int>,
+    pub do_set_bittiming: Option<unsafe extern "C" fn(dev: *mut net_device) -> kernel::ffi::c_int>,
+    pub do_set_mode: Option<unsafe extern "C" fn(dev: *mut net_device, mode: can_mode) -> kernel::ffi::c_int>,
+    pub do_set_termination: Option<unsafe extern "C" fn(dev: *mut net_device, term: u16) -> kernel::ffi::c_int>,
+    pub do_get_state: Option<unsafe extern "C" fn(dev: *const net_device, state: *mut can_state) -> kernel::ffi::c_int>,
+    pub do_get_berr_counter: Option<unsafe extern "C" fn(dev: *const net_device, bec: *mut can_berr_counter) -> kernel::ffi::c_int>,
 }
 
 #[inline]
@@ -88,41 +88,41 @@ pub unsafe fn can_get_static_ctrlmode(priv_: *mut can_priv) -> u32 {
 }
 
 #[inline]
-pub fn can_is_canxl_dev_mtu(mtu: libc::c_uint) -> bool {
+pub fn can_is_canxl_dev_mtu(mtu: kernel::ffi::c_uint) -> bool {
     mtu >= CANXL_MIN_MTU && mtu <= CANXL_MAX_MTU
 }
 
 extern "C" {
     pub fn can_setup(dev: *mut net_device);
-    pub fn alloc_candev_mqs(sizeof_priv: libc::c_int, echo_skb_max: libc::c_uint,
-                            txqs: libc::c_uint, rxqs: libc::c_uint) -> *mut net_device;
+    pub fn alloc_candev_mqs(sizeof_priv: kernel::ffi::c_int, echo_skb_max: kernel::ffi::c_uint,
+                            txqs: kernel::ffi::c_uint, rxqs: kernel::ffi::c_uint) -> *mut net_device;
     pub fn free_candev(dev: *mut net_device);
     pub fn safe_candev_priv(dev: *mut net_device) -> *mut can_priv;
-    pub fn open_candev(dev: *mut net_device) -> libc::c_int;
+    pub fn open_candev(dev: *mut net_device) -> kernel::ffi::c_int;
     pub fn close_candev(dev: *mut net_device);
     pub fn can_set_default_mtu(dev: *mut net_device);
     pub fn can_set_cap_info(dev: *mut net_device);
-    pub fn can_set_static_ctrlmode(dev: *mut net_device, static_mode: u32) -> libc::c_int;
-    pub fn can_hwtstamp_get(netdev: *mut net_device, cfg: *mut kernel_hwtstamp_config) -> libc::c_int;
+    pub fn can_set_static_ctrlmode(dev: *mut net_device, static_mode: u32) -> kernel::ffi::c_int;
+    pub fn can_hwtstamp_get(netdev: *mut net_device, cfg: *mut kernel_hwtstamp_config) -> kernel::ffi::c_int;
     pub fn can_hwtstamp_set(netdev: *mut net_device, cfg: *mut kernel_hwtstamp_config,
-                            extack: *mut netlink_ext_ack) -> libc::c_int;
-    pub fn can_ethtool_op_get_ts_info_hwts(dev: *mut net_device, info: *mut kernel_ethtool_ts_info) -> libc::c_int;
-    pub fn register_candev(dev: *mut net_device) -> libc::c_int;
+                            extack: *mut netlink_ext_ack) -> kernel::ffi::c_int;
+    pub fn can_ethtool_op_get_ts_info_hwts(dev: *mut net_device, info: *mut kernel_ethtool_ts_info) -> kernel::ffi::c_int;
+    pub fn register_candev(dev: *mut net_device) -> kernel::ffi::c_int;
     pub fn unregister_candev(dev: *mut net_device);
-    pub fn can_restart_now(dev: *mut net_device) -> libc::c_int;
+    pub fn can_restart_now(dev: *mut net_device) -> kernel::ffi::c_int;
     pub fn can_bus_off(dev: *mut net_device);
-    pub fn can_get_state_str(state: can_state) -> *const libc::c_char;
-    pub fn can_get_ctrlmode_str(ctrlmode: u32) -> *const libc::c_char;
+    pub fn can_get_state_str(state: can_state) -> *const kernel::ffi::c_char;
+    pub fn can_get_ctrlmode_str(ctrlmode: u32) -> *const kernel::ffi::c_char;
 }
 
 #[inline]
-pub unsafe fn alloc_candev(sizeof_priv: libc::c_int, echo_skb_max: libc::c_uint) -> *mut net_device {
+pub unsafe fn alloc_candev(sizeof_priv: kernel::ffi::c_int, echo_skb_max: kernel::ffi::c_uint) -> *mut net_device {
     alloc_candev_mqs(sizeof_priv, echo_skb_max, 1, 1)
 }
 
 #[inline]
-pub unsafe fn alloc_candev_mq(sizeof_priv: libc::c_int, echo_skb_max: libc::c_uint,
-                              count: libc::c_uint) -> *mut net_device {
+pub unsafe fn alloc_candev_mq(sizeof_priv: kernel::ffi::c_int, echo_skb_max: kernel::ffi::c_uint,
+                              count: kernel::ffi::c_uint) -> *mut net_device {
     alloc_candev_mqs(sizeof_priv, echo_skb_max, count, count)
 }
 
@@ -165,7 +165,7 @@ extern "C" {
     pub fn can_change_state(dev: *mut net_device, cf: *mut can_frame,
                             tx_state: can_state, rx_state: can_state);
     pub static mut can_link_ops: rtnl_link_ops;
-    pub fn can_netlink_register() -> libc::c_int;
+    pub fn can_netlink_register() -> kernel::ffi::c_int;
     pub fn can_netlink_unregister();
 }
 

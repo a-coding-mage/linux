@@ -23,8 +23,8 @@ pub enum wm8996_inmode {
  */
 #[repr(C)]
 pub struct wm8996_retune_mobile_config {
-    pub name: *const ::core::ffi::c_char,
-    pub rate: ::core::ffi::c_int,
+    pub name: *const ::kernel::ffi::c_char,
+    pub rate: ::kernel::ffi::c_int,
     pub regs: [u16; 20],
 }
 
@@ -32,9 +32,9 @@ pub const WM8996_SET_DEFAULT: u32 = 0x10000;
 
 #[repr(C)]
 pub struct wm8996_pdata {
-    pub irq_flags: ::core::ffi::c_int,  /** Set IRQ trigger flags; default active low */
+    pub irq_flags: ::kernel::ffi::c_int,  /** Set IRQ trigger flags; default active low */
 
-    pub micdet_def: ::core::ffi::c_int,  /** Default MICDET_SRC/HP1FB_SRC/MICD_BIAS */
+    pub micdet_def: ::kernel::ffi::c_int,  /** Default MICDET_SRC/HP1FB_SRC/MICD_BIAS */
 
     pub inl_mode: wm8996_inmode,
     pub inr_mode: wm8996_inmode,
@@ -43,7 +43,7 @@ pub struct wm8996_pdata {
 
     pub gpio_default: [u32; 5],
 
-    pub num_retune_mobile_cfgs: ::core::ffi::c_int,
+    pub num_retune_mobile_cfgs: ::kernel::ffi::c_int,
     pub retune_mobile_cfgs: *mut wm8996_retune_mobile_config,
 }
 

@@ -12,7 +12,7 @@ pub unsafe extern "C" fn kasan_init() {
      * kasan_map_memory will map all of the required address space and
      * the host machine will allocate physical memory as necessary.
      */
-    kasan_map_memory(KASAN_SHADOW_START as *mut core::ffi::c_void, KASAN_SHADOW_SIZE);
+    kasan_map_memory(KASAN_SHADOW_START as *mut kernel::ffi::c_void, KASAN_SHADOW_SIZE);
     init_task.kasan_depth = 0;
     /*
      * Since kasan_init() is called before main(),
@@ -35,10 +35,10 @@ pub static mut swapper_pg_dir: [pgd_t; PTRS_PER_PGD] = [unsafe { core::mem::zero
 
 /* Initialized at boot time, and readonly after that */
 #[no_mangle]
-pub static mut kmalloc_ok: core::ffi::c_int = 0;
+pub static mut kmalloc_ok: kernel::ffi::c_int = 0;
 
 /* Used during early boot */
-static mut brk_end: core::ffi::c_ulong = 0;
+static mut brk_end: kernel::ffi::c_ulong = 0;
 
 pub unsafe extern "C" fn arch_mm_preinit() {
     /* Safe to call after jump_label_init(). Enables KASAN. */
@@ -47,7 +47,7 @@ pub unsafe extern "C" fn arch_mm_preinit() {
     /* Map in the area just after the brk now that kmalloc is about
      * to be turned on.
      */
-    brk_end = PAGE_ALIGN(sbrk(0) as core::ffi::c_ulong);
+    brk_end = PAGE_ALIGN(sbrk(0) as kernel::ffi::c_ulong);
     map_memory(
         brk_end,
         __pa(brk_end),
@@ -56,7 +56,7 @@ pub unsafe extern "C" fn arch_mm_preinit() {
         1,
         0,
     );
-    memblock_free(brk_end as *mut core::ffi::c_void, uml_reserved - brk_end);
+    memblock_free(brk_end as *mut kernel::ffi::c_void, uml_reserved - brk_end);
     uml_reserved = brk_end;
     min_low_pfn = PFN_UP(__pa(uml_reserved));
     max_pfn = max_low_pfn;
@@ -66,7 +66,7 @@ pub unsafe extern "C" fn mem_init() {
     kmalloc_ok = 1;
 }
 
-pub unsafe extern "C" fn arch_zone_limits_init(max_zone_pfns: *mut core::ffi::c_ulong) {
+pub unsafe extern "C" fn arch_zone_limits_init(max_zone_pfns: *mut kernel::ffi::c_ulong) {
     *max_zone_pfns.add(ZONE_NORMAL as usize) = high_physmem >> PAGE_SHIFT;
 }
 
@@ -94,9 +94,9 @@ pub unsafe extern "C" fn pgd_alloc(mm: *mut mm_struct) -> *mut pgd_t {
 }
 
 pub unsafe extern "C" fn uml_kmalloc(
-    size: core::ffi::c_int,
-    flags: core::ffi::c_int,
-) -> *mut core::ffi::c_void {
+    size: kernel::ffi::c_int,
+    flags: kernel::ffi::c_int,
+) -> *mut kernel::ffi::c_void {
     kmalloc(size, flags)
 }
 
@@ -126,7 +126,7 @@ pub unsafe extern "C" fn mark_rodata_ro() {
     let rodata_end = PFN_ALIGN(__end_rodata);
 
     os_protect_memory(
-        rodata_start as *mut core::ffi::c_void,
+        rodata_start as *mut kernel::ffi::c_void,
         rodata_end - rodata_start,
         1,
         0,

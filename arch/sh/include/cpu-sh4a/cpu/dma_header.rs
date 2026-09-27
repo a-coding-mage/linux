@@ -11,7 +11,7 @@ pub const DMTE0_IRQ: _ = evt2irq(0x800);
 #[cfg(any(CONFIG_CPU_SUBTYPE_SH7343, CONFIG_CPU_SUBTYPE_SH7730))]
 pub const DMTE4_IRQ: _ = evt2irq(0xb80);
 #[cfg(any(CONFIG_CPU_SUBTYPE_SH7343, CONFIG_CPU_SUBTYPE_SH7730))]
-pub const DMAE0_IRQ: _ = evt2irq(0xbc0); /* DMA Error IRQ */
+pub const DMAE0_IRQ: u32 = evt2irq(0xbc0); /* DMA Error IRQ */
 #[cfg(any(CONFIG_CPU_SUBTYPE_SH7343, CONFIG_CPU_SUBTYPE_SH7730))]
 pub const SH_DMAC_BASE0: usize = 0xFE008020;
 
@@ -20,7 +20,7 @@ pub const DMTE0_IRQ: _ = evt2irq(0x800);
 #[cfg(CONFIG_CPU_SUBTYPE_SH7722)]
 pub const DMTE4_IRQ: _ = evt2irq(0xb80);
 #[cfg(CONFIG_CPU_SUBTYPE_SH7722)]
-pub const DMAE0_IRQ: _ = evt2irq(0xbc0); /* DMA Error IRQ */
+pub const DMAE0_IRQ: u32 = evt2irq(0xbc0); /* DMA Error IRQ */
 #[cfg(CONFIG_CPU_SUBTYPE_SH7722)]
 pub const SH_DMAC_BASE0: usize = 0xFE008020;
 
@@ -48,9 +48,9 @@ pub const DMTE10_IRQ: _ = evt2irq(0xb00); /* DMAC1B */
 #[cfg(any(CONFIG_CPU_SUBTYPE_SH7723, CONFIG_CPU_SUBTYPE_SH7724))]
 pub const DMTE11_IRQ: _ = evt2irq(0xb20);
 #[cfg(any(CONFIG_CPU_SUBTYPE_SH7723, CONFIG_CPU_SUBTYPE_SH7724))]
-pub const DMAE0_IRQ: _ = evt2irq(0xbc0); /* DMA Error IRQ */
+pub const DMAE0_IRQ: u32 = evt2irq(0xbc0); /* DMA Error IRQ */
 #[cfg(any(CONFIG_CPU_SUBTYPE_SH7723, CONFIG_CPU_SUBTYPE_SH7724))]
-pub const DMAE1_IRQ: _ = evt2irq(0xb40); /* DMA Error IRQ */
+pub const DMAE1_IRQ: u32 = evt2irq(0xb40); /* DMA Error IRQ */
 #[cfg(any(CONFIG_CPU_SUBTYPE_SH7723, CONFIG_CPU_SUBTYPE_SH7724))]
 pub const SH_DMAC_BASE0: usize = 0xFE008020;
 #[cfg(any(CONFIG_CPU_SUBTYPE_SH7723, CONFIG_CPU_SUBTYPE_SH7724))]
@@ -71,7 +71,7 @@ pub const DMTE10_IRQ: _ = evt2irq(0xdc0);
 #[cfg(CONFIG_CPU_SUBTYPE_SH7780)]
 pub const DMTE11_IRQ: _ = evt2irq(0xde0);
 #[cfg(CONFIG_CPU_SUBTYPE_SH7780)]
-pub const DMAE0_IRQ: _ = evt2irq(0x6c0); /* DMA Error IRQ */
+pub const DMAE0_IRQ: u32 = evt2irq(0x6c0); /* DMA Error IRQ */
 #[cfg(CONFIG_CPU_SUBTYPE_SH7780)]
 pub const SH_DMAC_BASE0: usize = 0xFC808020;
 #[cfg(CONFIG_CPU_SUBTYPE_SH7780)]
@@ -136,14 +136,14 @@ pub const DMTE11_IRQ: _ = evt2irq(0x920);
     CONFIG_CPU_SUBTYPE_SH7723, CONFIG_CPU_SUBTYPE_SH7724,
     CONFIG_CPU_SUBTYPE_SH7780,
 )))]
-pub const DMAE0_IRQ: _ = evt2irq(0x6e0); /* DMA Error IRQ0 */
+pub const DMAE0_IRQ: i32 = evt2irq(0x6e0); /* DMA Error IRQ0 */
 #[cfg(not(any(
     CONFIG_CPU_SUBTYPE_SH7343, CONFIG_CPU_SUBTYPE_SH7730,
     CONFIG_CPU_SUBTYPE_SH7722, CONFIG_CPU_SUBTYPE_SH7763,
     CONFIG_CPU_SUBTYPE_SH7723, CONFIG_CPU_SUBTYPE_SH7724,
     CONFIG_CPU_SUBTYPE_SH7780,
 )))]
-pub const DMAE1_IRQ: _ = evt2irq(0x940); /* DMA Error IRQ1 */
+pub const DMAE1_IRQ: i32 = evt2irq(0x940); /* DMA Error IRQ1 */
 #[cfg(not(any(
     CONFIG_CPU_SUBTYPE_SH7343, CONFIG_CPU_SUBTYPE_SH7730,
     CONFIG_CPU_SUBTYPE_SH7722, CONFIG_CPU_SUBTYPE_SH7763,

@@ -8,7 +8,7 @@
 /* Declarations from the __KERNEL__ / non-assembler configuration. */
 
 /* Default "unsigned long" context */
-pub type MmContextT = ::core::ffi::c_ulong;
+pub type MmContextT = ::kernel::ffi::c_ulong;
 
 /* Hardware Page Table Entry. The bit-field storage is represented explicitly
  * as the native 32-bit hardware word; field masks follow the C declaration. */
@@ -39,7 +39,7 @@ pub struct SEGREG {
 }
 
 extern "C" {
-    pub fn _tlbie(va: ::core::ffi::c_ulong); /* invalidate a TLB entry */
+    pub fn _tlbie(va: ::kernel::ffi::c_ulong); /* invalidate a TLB entry */
     pub fn _tlbia(); /* invalidate all TLB entries */
     pub static mut tlb_skip: u32;
 }

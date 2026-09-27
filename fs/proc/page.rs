@@ -42,7 +42,7 @@ unsafe fn get_kpage_count(page: *const page) -> u64 {
 
 unsafe fn kpage_read(
     file: *mut file,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     count_in: usize,
     ppos: *mut loff_t,
     op: KpageOperation,
@@ -95,9 +95,9 @@ unsafe fn kpage_read(
         cond_resched();
     }
 
-    *ppos += (out as *mut core::ffi::c_char).offset_from(buf) as loff_t;
+    *ppos += (out as *mut kernel::ffi::c_char).offset_from(buf) as loff_t;
     if ret == 0 {
-        ret = (out as *mut core::ffi::c_char).offset_from(buf) as isize;
+        ret = (out as *mut kernel::ffi::c_char).offset_from(buf) as isize;
     }
     ret
 }
@@ -109,7 +109,7 @@ unsafe fn kpage_read(
  */
 unsafe fn kpagecount_read(
     file: *mut file,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     count: usize,
     ppos: *mut loff_t,
 ) -> isize {
@@ -245,7 +245,7 @@ unsafe fn stable_page_flags(page: *const page) -> u64 {
  */
 unsafe fn kpageflags_read(
     file: *mut file,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     count: usize,
     ppos: *mut loff_t,
 ) -> isize {
@@ -261,7 +261,7 @@ static KPAGEFLAGS_PROC_OPS: proc_ops = proc_ops {
 #[cfg(CONFIG_MEMCG)]
 unsafe fn kpagecgroup_read(
     file: *mut file,
-    buf: *mut core::ffi::c_char,
+    buf: *mut kernel::ffi::c_char,
     count: usize,
     ppos: *mut loff_t,
 ) -> isize {

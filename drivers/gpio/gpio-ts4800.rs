@@ -25,9 +25,9 @@ pub struct platform_device {
 pub struct gpio_generic_chip_config {
     pub dev: *mut device,
     pub sz: usize,
-    pub dat: *mut core::ffi::c_void,
-    pub set: *mut core::ffi::c_void,
-    pub dirout: *mut core::ffi::c_void,
+    pub dat: *mut kernel::ffi::c_void,
+    pub set: *mut kernel::ffi::c_void,
+    pub dirout: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -42,12 +42,12 @@ pub struct gpio_generic_chip {
 
 #[repr(C)]
 pub struct of_device_id {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
@@ -58,13 +58,13 @@ pub struct platform_driver {
 }
 
 extern "C" {
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn devm_platform_ioremap_resource(
         pdev: *mut platform_device,
         index: u32,
-    ) -> *mut core::ffi::c_void;
-    fn is_err(ptr: *const core::ffi::c_void) -> bool;
-    fn ptr_err(ptr: *const core::ffi::c_void) -> i32;
+    ) -> *mut kernel::ffi::c_void;
+    fn is_err(ptr: *const kernel::ffi::c_void) -> bool;
+    fn ptr_err(ptr: *const kernel::ffi::c_void) -> i32;
     fn gpio_generic_chip_init(
         chip: *mut gpio_generic_chip,
         config: *mut gpio_generic_chip_config,
@@ -72,12 +72,12 @@ extern "C" {
     fn dev_err_probe(
         dev: *mut device,
         err: i32,
-        fmt: *const core::ffi::c_char,
+        fmt: *const kernel::ffi::c_char,
     ) -> i32;
     fn devm_gpiochip_add_data(
         dev: *mut device,
         gc: *mut gpio_chip,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     ) -> i32;
 }
 
@@ -88,7 +88,7 @@ unsafe extern "C" fn ts4800_gpio_probe(pdev: *mut platform_device) -> i32 {
     let mut config: gpio_generic_chip_config;
     let dev: *mut device = &mut (*pdev).dev;
     let chip: *mut gpio_generic_chip;
-    let base_addr: *mut core::ffi::c_void;
+    let base_addr: *mut kernel::ffi::c_void;
     let retval: i32;
 
     chip = devm_kzalloc(dev, core::mem::size_of::<gpio_generic_chip>(), GFP_KERNEL)
@@ -115,7 +115,7 @@ unsafe extern "C" fn ts4800_gpio_probe(pdev: *mut platform_device) -> i32 {
         return dev_err_probe(
             dev,
             retval,
-            b"failed to initialize the generic GPIO chip\0".as_ptr() as *const core::ffi::c_char,
+            b"failed to initialize the generic GPIO chip\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
@@ -124,14 +124,14 @@ unsafe extern "C" fn ts4800_gpio_probe(pdev: *mut platform_device) -> i32 {
 
 static TS4800_GPIO_OF_MATCH: [of_device_id; 2] = [
     of_device_id {
-        compatible: b"technologic,ts4800-gpio\0".as_ptr() as *const core::ffi::c_char,
+        compatible: b"technologic,ts4800-gpio\0".as_ptr() as *const kernel::ffi::c_char,
     },
     of_device_id { compatible: core::ptr::null() },
 ];
 
 static mut TS4800_GPIO_DRIVER: platform_driver = platform_driver {
     driver: device_driver {
-        name: b"ts4800-gpio\0".as_ptr() as *const core::ffi::c_char,
+        name: b"ts4800-gpio\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: TS4800_GPIO_OF_MATCH.as_ptr(),
     },
     probe: Some(ts4800_gpio_probe),

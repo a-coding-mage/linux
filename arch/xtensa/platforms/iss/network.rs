@@ -11,7 +11,7 @@ const TRANSPORT_TUNTAP_MTU: i32 = ETH_MAX_PACKET;
 
 #[repr(C)]
 pub struct TuntapInfo {
-    pub dev_name: [core::ffi::c_char; IFNAMSIZ],
+    pub dev_name: [kernel::ffi::c_char; IFNAMSIZ],
     pub fd: i32,
 }
 

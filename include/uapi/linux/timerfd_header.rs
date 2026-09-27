@@ -22,8 +22,8 @@
  */
 pub const TFD_TIMER_ABSTIME: u32 = 1u32 << 0;
 pub const TFD_TIMER_CANCEL_ON_SET: u32 = 1u32 << 1;
-pub const TFD_CLOEXEC: _ = O_CLOEXEC;
-pub const TFD_NONBLOCK: _ = O_NONBLOCK;
+pub const TFD_CLOEXEC: u32 = O_CLOEXEC;
+pub const TFD_NONBLOCK: u32 = O_NONBLOCK;
 
 pub const TFD_IOC_SET_TICKS: u64 = _IOW!(b'T', 0, u64);
 

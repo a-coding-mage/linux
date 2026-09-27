@@ -49,48 +49,48 @@ pub struct kho_radix_tree {
  */
 #[repr(C)]
 pub struct kho_radix_walk_cb {
-    pub leaf: Option<unsafe extern "C" fn(key: libc::c_ulong, data: *mut libc::c_void) -> libc::c_int>,
-    pub node: Option<unsafe extern "C" fn(phys: phys_addr_t, data: *mut libc::c_void) -> libc::c_int>,
+    pub leaf: Option<unsafe extern "C" fn(key: kernel::ffi::c_ulong, data: *mut kernel::ffi::c_void) -> kernel::ffi::c_int>,
+    pub node: Option<unsafe extern "C" fn(phys: phys_addr_t, data: *mut kernel::ffi::c_void) -> kernel::ffi::c_int>,
 }
 
 #[cfg(CONFIG_KEXEC_HANDOVER)]
 extern "C" {
-    pub fn kho_radix_add_key(tree: *mut kho_radix_tree, key: libc::c_ulong) -> libc::c_int;
-    pub fn kho_radix_del_key(tree: *mut kho_radix_tree, key: libc::c_ulong);
+    pub fn kho_radix_add_key(tree: *mut kho_radix_tree, key: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+    pub fn kho_radix_del_key(tree: *mut kho_radix_tree, key: kernel::ffi::c_ulong);
     pub fn kho_radix_walk_tree(
         tree: *mut kho_radix_tree,
         cb: *const kho_radix_walk_cb,
-        data: *mut libc::c_void,
-    ) -> libc::c_int;
+        data: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
     pub fn kho_radix_init_tree(
         tree: *mut kho_radix_tree,
         root: *mut kho_radix_node,
-    ) -> libc::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn kho_radix_destroy_tree(tree: *mut kho_radix_tree);
 }
 
 #[cfg(not(CONFIG_KEXEC_HANDOVER))]
-pub unsafe fn kho_radix_add_key(_tree: *mut kho_radix_tree, _key: libc::c_ulong) -> libc::c_int {
-    -libc::EOPNOTSUPP
+pub unsafe fn kho_radix_add_key(_tree: *mut kho_radix_tree, _key: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
+    -EOPNOTSUPP
 }
 
 #[cfg(not(CONFIG_KEXEC_HANDOVER))]
-pub unsafe fn kho_radix_del_key(_tree: *mut kho_radix_tree, _key: libc::c_ulong) {}
+pub unsafe fn kho_radix_del_key(_tree: *mut kho_radix_tree, _key: kernel::ffi::c_ulong) {}
 
 #[cfg(not(CONFIG_KEXEC_HANDOVER))]
 pub unsafe fn kho_radix_walk_tree(
     _tree: *mut kho_radix_tree,
     _cb: *const kho_radix_walk_cb,
-    _data: *mut libc::c_void,
-) -> libc::c_int {
-    -libc::EOPNOTSUPP
+    _data: *mut kernel::ffi::c_void,
+) -> kernel::ffi::c_int {
+    -EOPNOTSUPP
 }
 
 #[cfg(not(CONFIG_KEXEC_HANDOVER))]
 pub unsafe fn kho_radix_init_tree(
     _tree: *mut kho_radix_tree,
     _root: *mut kho_radix_node,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     0
 }
 

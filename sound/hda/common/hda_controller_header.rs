@@ -84,11 +84,11 @@ macro_rules! stream_to_azx_dev {
 #[repr(C)]
 pub struct hda_controller_ops {
     /* Disable msi if supported, PCI only */
-    pub disable_msi_reset_irq: Option<unsafe extern "C" fn(*mut azx) -> ::core::ffi::c_int>,
+    pub disable_msi_reset_irq: Option<unsafe extern "C" fn(*mut azx) -> ::kernel::ffi::c_int>,
     /* Check if current position is acceptable */
-    pub position_check: Option<unsafe extern "C" fn(*mut azx, *mut azx_dev) -> ::core::ffi::c_int>,
+    pub position_check: Option<unsafe extern "C" fn(*mut azx, *mut azx_dev) -> ::kernel::ffi::c_int>,
     /* enable/disable the link power */
-    pub link_power: Option<unsafe extern "C" fn(*mut azx, bool) -> ::core::ffi::c_int>,
+    pub link_power: Option<unsafe extern "C" fn(*mut azx, bool) -> ::kernel::ffi::c_int>,
     /* additional hook for PCM */
     pub pcm_close: Option<unsafe extern "C" fn(*mut azx, *mut azx_dev)>,
 }
@@ -102,9 +102,9 @@ pub struct azx_pcm {
     pub list: list_head,
 }
 
-pub type azx_get_pos_callback_t = Option<unsafe extern "C" fn(*mut azx, *mut azx_dev) -> ::core::ffi::c_uint>;
+pub type azx_get_pos_callback_t = Option<unsafe extern "C" fn(*mut azx, *mut azx_dev) -> ::kernel::ffi::c_uint>;
 pub type azx_get_delay_callback_t =
-    Option<unsafe extern "C" fn(*mut azx, *mut azx_dev, ::core::ffi::c_uint) -> ::core::ffi::c_int>;
+    Option<unsafe extern "C" fn(*mut azx, *mut azx_dev, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>;
 
 #[repr(C)]
 pub struct azx {
@@ -112,17 +112,17 @@ pub struct azx {
 
     pub card: *mut snd_card,
     pub pci: *mut pci_dev,
-    pub dev_index: ::core::ffi::c_int,
+    pub dev_index: ::kernel::ffi::c_int,
 
     /* chip type specific */
-    pub driver_type: ::core::ffi::c_int,
-    pub driver_caps: ::core::ffi::c_uint,
-    pub playback_streams: ::core::ffi::c_int,
-    pub playback_index_offset: ::core::ffi::c_int,
-    pub capture_streams: ::core::ffi::c_int,
-    pub capture_index_offset: ::core::ffi::c_int,
-    pub num_streams: ::core::ffi::c_int,
-    pub jackpoll_interval: ::core::ffi::c_int, /* jack poll interval in jiffies */
+    pub driver_type: ::kernel::ffi::c_int,
+    pub driver_caps: ::kernel::ffi::c_uint,
+    pub playback_streams: ::kernel::ffi::c_int,
+    pub playback_index_offset: ::kernel::ffi::c_int,
+    pub capture_streams: ::kernel::ffi::c_int,
+    pub capture_index_offset: ::kernel::ffi::c_int,
+    pub num_streams: ::kernel::ffi::c_int,
+    pub jackpoll_interval: ::kernel::ffi::c_int, /* jack poll interval in jiffies */
 
     /* Register interaction. */
     pub ops: *const hda_controller_ops,
@@ -138,18 +138,18 @@ pub struct azx {
     pub pcm_list: list_head, /* azx_pcm list */
 
     /* HD codec */
-    pub codec_probe_mask: ::core::ffi::c_int, /* copied from probe_mask option */
-    pub beep_mode: ::core::ffi::c_uint,
+    pub codec_probe_mask: ::kernel::ffi::c_int, /* copied from probe_mask option */
+    pub beep_mode: ::kernel::ffi::c_uint,
     pub ctl_dev_id: bool,
 
     /* flags */
-    pub bdl_pos_adj: ::core::ffi::c_int,
+    pub bdl_pos_adj: ::kernel::ffi::c_int,
     /* C bitfields packed in one unsigned int:
      * running:1, fallback_to_single_cmd:1, single_cmd:1, msi:1, probing:1,
      * snoop:1, uc_buffer:1, align_buffer_size:1, disabled:1, pm_prepared:1,
      * gts_present:1
      */
-    pub flags: ::core::ffi::c_uint,
+    pub flags: ::kernel::ffi::c_uint,
 
     #[cfg(CONFIG_SND_HDA_DSP_LOADER)]
     pub saved_azx_dev: azx_dev,
@@ -246,9 +246,9 @@ pub unsafe fn get_azx_dev(substream: *mut snd_pcm_substream) -> *mut azx_dev {
 }
 
 unsafe extern "C" {
-    pub fn azx_get_position(chip: *mut azx, azx_dev: *mut azx_dev) -> ::core::ffi::c_uint;
-    pub fn azx_get_pos_lpib(chip: *mut azx, azx_dev: *mut azx_dev) -> ::core::ffi::c_uint;
-    pub fn azx_get_pos_posbuf(chip: *mut azx, azx_dev: *mut azx_dev) -> ::core::ffi::c_uint;
+    pub fn azx_get_position(chip: *mut azx, azx_dev: *mut azx_dev) -> ::kernel::ffi::c_uint;
+    pub fn azx_get_pos_lpib(chip: *mut azx, azx_dev: *mut azx_dev) -> ::kernel::ffi::c_uint;
+    pub fn azx_get_pos_posbuf(chip: *mut azx, azx_dev: *mut azx_dev) -> ::kernel::ffi::c_uint;
 
     /* Stream control. */
     pub fn azx_stop_all_streams(chip: *mut azx);
@@ -256,14 +256,14 @@ unsafe extern "C" {
     /* Low level azx interface */
     pub fn azx_init_chip(chip: *mut azx, full_reset: bool);
     pub fn azx_stop_chip(chip: *mut azx);
-    pub fn azx_interrupt(irq: ::core::ffi::c_int, dev_id: *mut ::core::ffi::c_void) -> irqreturn_t;
+    pub fn azx_interrupt(irq: ::kernel::ffi::c_int, dev_id: *mut ::kernel::ffi::c_void) -> irqreturn_t;
 
     /* Codec interface */
-    pub fn azx_bus_init(chip: *mut azx, model: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
-    pub fn azx_probe_codecs(chip: *mut azx, max_slots: ::core::ffi::c_uint) -> ::core::ffi::c_int;
-    pub fn azx_codec_configure(chip: *mut azx) -> ::core::ffi::c_int;
-    pub fn azx_init_streams(chip: *mut azx) -> ::core::ffi::c_int;
-    pub fn azx_add_stream(chip: *mut azx, s: *mut azx_dev, idx: ::core::ffi::c_int, tag: ::core::ffi::c_int);
+    pub fn azx_bus_init(chip: *mut azx, model: *const ::kernel::ffi::c_char) -> ::kernel::ffi::c_int;
+    pub fn azx_probe_codecs(chip: *mut azx, max_slots: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int;
+    pub fn azx_codec_configure(chip: *mut azx) -> ::kernel::ffi::c_int;
+    pub fn azx_init_streams(chip: *mut azx) -> ::kernel::ffi::c_int;
+    pub fn azx_add_stream(chip: *mut azx, s: *mut azx_dev, idx: ::kernel::ffi::c_int, tag: ::kernel::ffi::c_int);
     pub fn azx_free_streams(chip: *mut azx);
 }
 
@@ -289,9 +289,9 @@ macro_rules! azx_enter_link_reset {
 }
 
 #[inline]
-pub unsafe fn azx_stream_direction(chip: *mut azx, index: ::core::ffi::c_uchar) -> ::core::ffi::c_int {
-    if (index as ::core::ffi::c_int) >= (*chip).capture_index_offset
-        && (index as ::core::ffi::c_int) < (*chip).capture_index_offset + (*chip).capture_streams
+pub unsafe fn azx_stream_direction(chip: *mut azx, index: ::kernel::ffi::c_uchar) -> ::kernel::ffi::c_int {
+    if (index as ::kernel::ffi::c_int) >= (*chip).capture_index_offset
+        && (index as ::kernel::ffi::c_int) < (*chip).capture_index_offset + (*chip).capture_streams
     {
         return SNDRV_PCM_STREAM_CAPTURE;
     }

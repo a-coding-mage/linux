@@ -20,8 +20,8 @@ const ITLB_LOAD_MISS: u64 = PERF_COUNT_HW_CACHE_ITLB
     | (PERF_COUNT_HW_CACHE_RESULT_MISS << 16);
 
 extern "C" {
-    static mut itlb_miss_counter: ::core::ffi::c_ulong;
-    static mut dtlb_miss_counter: ::core::ffi::c_ulong;
+    static mut itlb_miss_counter: ::kernel::ffi::c_ulong;
+    static mut dtlb_miss_counter: ::kernel::ffi::c_ulong;
     static mut instruction_counter: atomic_t;
     static mut patch__itlbmiss_perf: u8;
     static mut patch__itlbmiss_exit_1: u8;
@@ -31,11 +31,11 @@ extern "C" {
     fn atomic_read(v: *const atomic_t) -> i32;
     fn atomic_inc_return(v: *mut atomic_t) -> i32;
     fn atomic_dec_return(v: *mut atomic_t) -> i32;
-    fn mfspr(spr: i32) -> ::core::ffi::c_ulong;
-    fn mtspr(spr: i32, value: ::core::ffi::c_ulong);
+    fn mfspr(spr: i32) -> ::kernel::ffi::c_ulong;
+    fn mtspr(spr: i32, value: ::kernel::ffi::c_ulong);
     fn get_tb() -> i64;
-    fn patch_site_addr(site: *mut u8) -> ::core::ffi::c_ulong;
-    fn patch_branch_site(site: *mut u8, target: ::core::ffi::c_ulong, ctx: i32);
+    fn patch_site_addr(site: *mut u8) -> ::kernel::ffi::c_ulong;
+    fn patch_branch_site(site: *mut u8, target: ::kernel::ffi::c_ulong, ctx: i32);
     fn patch_instruction_site(site: *mut u8, insn: ppc_inst_t);
     fn ppc_inst(raw: u32) -> ppc_inst_t;
     fn PPC_RAW_MFSPR(rt: i32, spr: i32) -> u32;
@@ -52,7 +52,7 @@ static mut dtlb_miss_ref: atomic_t = atomic_t { counter: 0 };
 
 unsafe fn get_insn_ctr() -> i64 {
     let mut ctr: i32;
-    let mut counta: ::core::ffi::c_ulong;
+    let mut counta: ::kernel::ffi::c_ulong;
     loop {
         ctr = atomic_read(&instruction_counter);
         counta = mfspr(SPRN_COUNTA);

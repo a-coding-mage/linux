@@ -5,14 +5,14 @@
 
 #[repr(C)]
 pub struct switch_stack {
-    pub r8: core::ffi::c_ulong,
-    pub r9: core::ffi::c_ulong,
-    pub r10: core::ffi::c_ulong,
-    pub r11: core::ffi::c_ulong,
-    pub r12: core::ffi::c_ulong,
-    pub r13: core::ffi::c_ulong,
-    pub r14: core::ffi::c_ulong,
-    pub r15: core::ffi::c_ulong,
+    pub r8: kernel::ffi::c_ulong,
+    pub r9: kernel::ffi::c_ulong,
+    pub r10: kernel::ffi::c_ulong,
+    pub r11: kernel::ffi::c_ulong,
+    pub r12: kernel::ffi::c_ulong,
+    pub r13: kernel::ffi::c_ulong,
+    pub r14: kernel::ffi::c_ulong,
+    pub r15: kernel::ffi::c_ulong,
 }
 
 // #endif /* __ABI_CSKY_PTRACE_H */

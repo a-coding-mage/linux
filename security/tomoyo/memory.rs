@@ -7,33 +7,33 @@
 
 // Linux kernel headers and "common.h" are supplied by the surrounding crate.
 
-pub unsafe fn tomoyo_warn_oom(function: *const libc::c_char) {
+pub unsafe fn tomoyo_warn_oom(function: *const kernel::ffi::c_char) {
     /* Reduce error messages. */
     static mut TOMOYO_LAST_PID: libc::pid_t = 0;
     let pid = (*current).pid;
 
     if TOMOYO_LAST_PID != pid {
-        pr_warn(b"ERROR: Out of memory at %s.\n\0".as_ptr() as *const libc::c_char, function);
+        pr_warn(b"ERROR: Out of memory at %s.\n\0".as_ptr() as *const kernel::ffi::c_char, function);
         TOMOYO_LAST_PID = pid;
     }
     if !tomoyo_policy_loaded {
-        panic_kernel(b"MAC Initialization failed.\n\0".as_ptr() as *const libc::c_char);
+        panic_kernel(b"MAC Initialization failed.\n\0".as_ptr() as *const kernel::ffi::c_char);
     }
 }
 
 /* Memoy currently used by policy/audit log/query. */
-pub static mut TOMOYO_MEMORY_USED: [libc::c_uint; TOMOYO_MAX_MEMORY_STAT] =
+pub static mut TOMOYO_MEMORY_USED: [kernel::ffi::c_uint; TOMOYO_MAX_MEMORY_STAT] =
     [0; TOMOYO_MAX_MEMORY_STAT];
 /* Memory quota for "policy"/"audit log"/"query". */
-pub static mut TOMOYO_MEMORY_QUOTA: [libc::c_uint; TOMOYO_MAX_MEMORY_STAT] =
+pub static mut TOMOYO_MEMORY_QUOTA: [kernel::ffi::c_uint; TOMOYO_MAX_MEMORY_STAT] =
     [0; TOMOYO_MAX_MEMORY_STAT];
 
-pub unsafe fn tomoyo_memory_ok(ptr: *mut libc::c_void) -> bool {
+pub unsafe fn tomoyo_memory_ok(ptr: *mut kernel::ffi::c_void) -> bool {
     if !ptr.is_null() {
         let s = ksize(ptr) as usize;
 
         TOMOYO_MEMORY_USED[TOMOYO_MEMORY_POLICY] =
-            TOMOYO_MEMORY_USED[TOMOYO_MEMORY_POLICY].wrapping_add(s as libc::c_uint);
+            TOMOYO_MEMORY_USED[TOMOYO_MEMORY_POLICY].wrapping_add(s as kernel::ffi::c_uint);
         if TOMOYO_MEMORY_QUOTA[TOMOYO_MEMORY_POLICY] == 0
             || TOMOYO_MEMORY_USED[TOMOYO_MEMORY_POLICY]
                 <= TOMOYO_MEMORY_QUOTA[TOMOYO_MEMORY_POLICY]
@@ -41,16 +41,16 @@ pub unsafe fn tomoyo_memory_ok(ptr: *mut libc::c_void) -> bool {
             return true;
         }
         TOMOYO_MEMORY_USED[TOMOYO_MEMORY_POLICY] =
-            TOMOYO_MEMORY_USED[TOMOYO_MEMORY_POLICY].wrapping_sub(s as libc::c_uint);
+            TOMOYO_MEMORY_USED[TOMOYO_MEMORY_POLICY].wrapping_sub(s as kernel::ffi::c_uint);
     }
-    tomoyo_warn_oom(b"tomoyo_memory_ok\0".as_ptr() as *const libc::c_char);
+    tomoyo_warn_oom(b"tomoyo_memory_ok\0".as_ptr() as *const kernel::ffi::c_char);
     false
 }
 
 pub unsafe fn tomoyo_commit_ok(
-    data: *mut libc::c_void,
-    size: libc::c_uint,
-) -> *mut libc::c_void {
+    data: *mut kernel::ffi::c_void,
+    size: kernel::ffi::c_uint,
+) -> *mut kernel::ffi::c_void {
     let ptr = kzalloc(size as usize, GFP_NOFS | __GFP_NOWARN);
 
     if tomoyo_memory_ok(ptr) {
@@ -98,8 +98,8 @@ pub unsafe fn tomoyo_get_group(
         pos = (*pos).next;
     }
     if !found {
-        let entry = tomoyo_commit_ok(&mut e as *mut _ as *mut libc::c_void,
-                                     core::mem::size_of::<tomoyo_group>() as libc::c_uint)
+        let entry = tomoyo_commit_ok(&mut e as *mut _ as *mut kernel::ffi::c_void,
+                                     core::mem::size_of::<tomoyo_group>() as kernel::ffi::c_uint)
             as *mut tomoyo_group;
         if !entry.is_null() {
             INIT_LIST_HEAD(&mut (*entry).member_list);
@@ -118,10 +118,10 @@ pub unsafe fn tomoyo_get_group(
 pub static mut tomoyo_name_list: [list_head; TOMOYO_MAX_HASH] =
     [unsafe { core::mem::zeroed() }; TOMOYO_MAX_HASH];
 
-pub unsafe fn tomoyo_get_name(name: *const libc::c_char) -> *const tomoyo_path_info {
+pub unsafe fn tomoyo_get_name(name: *const kernel::ffi::c_char) -> *const tomoyo_path_info {
     let mut ptr: *mut tomoyo_name;
-    let len: libc::c_int;
-    let hash: libc::c_uint;
+    let len: kernel::ffi::c_int;
+    let hash: kernel::ffi::c_uint;
     let head: *mut list_head;
 
     if name.is_null() { return core::ptr::null(); }
@@ -144,14 +144,14 @@ pub unsafe fn tomoyo_get_name(name: *const libc::c_char) -> *const tomoyo_path_i
     }
     ptr = kzalloc(core::mem::size_of::<tomoyo_name>() + len as usize,
                   GFP_NOFS | __GFP_NOWARN) as *mut tomoyo_name;
-    if tomoyo_memory_ok(ptr as *mut libc::c_void) {
-        (*ptr).entry.name = (ptr as *mut u8).add(core::mem::size_of::<tomoyo_name>()) as *mut libc::c_char;
-        memmove((*ptr).entry.name as *mut libc::c_void, name as *const libc::c_void, len as usize);
+    if tomoyo_memory_ok(ptr as *mut kernel::ffi::c_void) {
+        (*ptr).entry.name = (ptr as *mut u8).add(core::mem::size_of::<tomoyo_name>()) as *mut kernel::ffi::c_char;
+        memmove((*ptr).entry.name as *mut kernel::ffi::c_void, name as *const kernel::ffi::c_void, len as usize);
         atomic_set(&mut (*ptr).head.users, 1);
         tomoyo_fill_path_info(&mut (*ptr).entry);
         list_add_tail(&mut (*ptr).head.list, head);
     } else {
-        kfree(ptr as *mut libc::c_void);
+        kfree(ptr as *mut kernel::ffi::c_void);
         ptr = core::ptr::null_mut();
     }
     mutex_unlock(&mut tomoyo_policy_lock);
@@ -162,16 +162,16 @@ pub unsafe fn tomoyo_get_name(name: *const libc::c_char) -> *const tomoyo_path_i
 pub static mut tomoyo_kernel_namespace: tomoyo_policy_namespace = unsafe { core::mem::zeroed() };
 
 pub unsafe fn tomoyo_mm_init() {
-    let mut idx: libc::c_int = 0;
-    while idx < TOMOYO_MAX_HASH as libc::c_int {
+    let mut idx: kernel::ffi::c_int = 0;
+    while idx < TOMOYO_MAX_HASH as kernel::ffi::c_int {
         INIT_LIST_HEAD(&mut tomoyo_name_list[idx as usize]);
         idx += 1;
     }
-    tomoyo_kernel_namespace.name = b"<kernel>\0".as_ptr() as *const libc::c_char;
+    tomoyo_kernel_namespace.name = b"<kernel>\0".as_ptr() as *const kernel::ffi::c_char;
     tomoyo_init_policy_namespace(&mut tomoyo_kernel_namespace);
     tomoyo_kernel_domain.ns = &mut tomoyo_kernel_namespace;
     INIT_LIST_HEAD(&mut tomoyo_kernel_domain.acl_info_list);
-    tomoyo_kernel_domain.domainname = tomoyo_get_name(b"<kernel>\0".as_ptr() as *const libc::c_char);
+    tomoyo_kernel_domain.domainname = tomoyo_get_name(b"<kernel>\0".as_ptr() as *const kernel::ffi::c_char);
     list_add_tail_rcu(&mut tomoyo_kernel_domain.list, &mut tomoyo_domain_list);
 }
 

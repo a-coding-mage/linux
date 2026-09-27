@@ -6,14 +6,14 @@
 
 /* public interface */
 extern "C" {
-    pub fn atari_stram_alloc(size: libc::c_ulong, owner: *const libc::c_char) -> *mut libc::c_void;
-    pub fn atari_stram_free(ptr: *mut libc::c_void);
-    pub fn atari_stram_to_virt(phys: libc::c_ulong) -> *mut libc::c_void;
-    pub fn atari_stram_to_phys(ptr: *mut libc::c_void) -> libc::c_ulong;
+    pub fn atari_stram_alloc(size: kernel::ffi::c_ulong, owner: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
+    pub fn atari_stram_free(ptr: *mut kernel::ffi::c_void);
+    pub fn atari_stram_to_virt(phys: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void;
+    pub fn atari_stram_to_phys(ptr: *mut kernel::ffi::c_void) -> kernel::ffi::c_ulong;
 
     /* functions called internally by other parts of the kernel */
     pub fn atari_stram_init();
-    pub fn atari_stram_reserve_pages(start_mem: *mut libc::c_void);
+    pub fn atari_stram_reserve_pages(start_mem: *mut kernel::ffi::c_void);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -68,7 +68,7 @@ pub struct snd_device {
     pub card: *mut snd_card,
     pub state: snd_device_state,
     pub type_: snd_device_type,
-    pub device_data: *mut core::ffi::c_void,
+    pub device_data: *mut kernel::ffi::c_void,
     pub ops: *const snd_device_ops,
 }
 
@@ -95,16 +95,16 @@ pub unsafe fn snd_refcount_get(reference: *mut snd_refcount) {
 #[repr(C)]
 pub struct snd_card {
     pub number: i32,
-    pub id: [core::ffi::c_char; 16],
-    pub driver: [core::ffi::c_char; 16],
-    pub shortname: [core::ffi::c_char; 32],
-    pub longname: [core::ffi::c_char; 80],
-    pub irq_descr: [core::ffi::c_char; 32],
-    pub mixername: [core::ffi::c_char; 80],
-    pub components: *mut core::ffi::c_char,
+    pub id: [kernel::ffi::c_char; 16],
+    pub driver: [kernel::ffi::c_char; 16],
+    pub shortname: [kernel::ffi::c_char; 32],
+    pub longname: [kernel::ffi::c_char; 80],
+    pub irq_descr: [kernel::ffi::c_char; 32],
+    pub mixername: [kernel::ffi::c_char; 80],
+    pub components: *mut kernel::ffi::c_char,
     pub components_alloc_size: u32,
     pub module: *mut module,
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
     pub private_free: Option<unsafe extern "C" fn(*mut snd_card)>,
     pub devices: list_head,
     pub ctl_dev: *mut device,
@@ -141,7 +141,7 @@ pub struct snd_minor {
     pub card: i32,
     pub device: i32,
     pub f_ops: *const file_operations,
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
     pub dev: *mut device,
     pub card_ptr: *mut snd_card,
 }
@@ -152,25 +152,25 @@ extern "C" {
     pub fn snd_request_card(card: i32);
     pub fn snd_device_alloc(dev_p: *mut *mut device, card: *mut snd_card) -> i32;
     pub fn snd_unregister_device(dev: *mut device) -> i32;
-    pub fn snd_lookup_minor_data(minor: u32, type_: i32) -> *mut core::ffi::c_void;
+    pub fn snd_lookup_minor_data(minor: u32, type_: i32) -> *mut kernel::ffi::c_void;
     pub fn snd_minor_info_init() -> i32;
-    pub fn copy_to_user_fromio(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, count: usize) -> i32;
-    pub fn copy_from_user_toio(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, count: usize) -> i32;
+    pub fn copy_to_user_fromio(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, count: usize) -> i32;
+    pub fn copy_from_user_toio(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, count: usize) -> i32;
     pub fn snd_card_locked(card: i32) -> i32;
-    pub fn snd_card_new(parent: *mut device, idx: i32, xid: *const core::ffi::c_char,
+    pub fn snd_card_new(parent: *mut device, idx: i32, xid: *const kernel::ffi::c_char,
         module: *mut module, extra_size: i32, card_ret: *mut *mut snd_card) -> i32;
     pub fn snd_card_register(card: *mut snd_card) -> i32;
     pub fn snd_card_disconnect(card: *mut snd_card);
     pub fn snd_card_disconnect_sync(card: *mut snd_card);
     pub fn snd_card_free(card: *mut snd_card);
-    pub fn snd_card_set_id(card: *mut snd_card, id: *const core::ffi::c_char);
+    pub fn snd_card_set_id(card: *mut snd_card, id: *const kernel::ffi::c_char);
     pub fn snd_card_ref(card: i32) -> *mut snd_card;
-    pub fn snd_device_new(card: *mut snd_card, type_: snd_device_type, device_data: *mut core::ffi::c_void, ops: *const snd_device_ops) -> i32;
-    pub fn snd_device_register(card: *mut snd_card, device_data: *mut core::ffi::c_void) -> i32;
+    pub fn snd_device_new(card: *mut snd_card, type_: snd_device_type, device_data: *mut kernel::ffi::c_void, ops: *const snd_device_ops) -> i32;
+    pub fn snd_device_register(card: *mut snd_card, device_data: *mut kernel::ffi::c_void) -> i32;
     pub fn snd_device_register_all(card: *mut snd_card) -> i32;
-    pub fn snd_device_disconnect(card: *mut snd_card, device_data: *mut core::ffi::c_void);
+    pub fn snd_device_disconnect(card: *mut snd_card, device_data: *mut kernel::ffi::c_void);
     pub fn snd_device_disconnect_all(card: *mut snd_card);
-    pub fn snd_device_free(card: *mut snd_card, device_data: *mut core::ffi::c_void);
+    pub fn snd_device_free(card: *mut snd_card, device_data: *mut kernel::ffi::c_void);
     pub fn snd_device_free_all(card: *mut snd_card);
     pub fn release_and_free_resource(res: *mut resource);
 }

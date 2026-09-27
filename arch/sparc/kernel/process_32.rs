@@ -14,7 +14,7 @@ pub static mut pm_power_off: Option<unsafe extern "C" fn()> = Some(machine_power
 pub static mut scons_pwroff: i32 = 1;
 
 extern "C" {
-    fn fpsave(a: *mut libc::c_ulong, b: *mut libc::c_ulong, c: *mut libc::c_void, d: *mut libc::c_ulong);
+    fn fpsave(a: *mut kernel::ffi::c_ulong, b: *mut kernel::ffi::c_ulong, c: *mut kernel::ffi::c_void, d: *mut kernel::ffi::c_ulong);
     static mut last_task_used_math: *mut task_struct;
     static mut current_set: [*mut thread_info; NR_CPUS];
     fn ret_from_fork();
@@ -36,22 +36,22 @@ pub unsafe extern "C" fn machine_halt() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn machine_restart(cmd: *mut libc::c_char) {
+pub unsafe extern "C" fn machine_restart(cmd: *mut kernel::ffi::c_char) {
     local_irq_enable();
     mdelay(8);
     local_irq_disable();
-    let p = strchr(reboot_command, b'\n' as libc::c_int);
+    let p = strchr(reboot_command, b'\n' as kernel::ffi::c_int);
     if !p.is_null() { *p = 0; }
     if !cmd.is_null() { prom_reboot(cmd); }
     if *reboot_command != 0 { prom_reboot(reboot_command); }
-    prom_feval(b"reset\0".as_ptr() as *const libc::c_char);
+    prom_feval(b"reset\0".as_ptr() as *const kernel::ffi::c_char);
     panic!("Reboot failed!");
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn machine_power_off() {
     if !auxio_power_register.is_null() &&
-       (!of_node_is_type(of_console_device, b"serial\0".as_ptr() as *const libc::c_char) || scons_pwroff != 0) {
+       (!of_node_is_type(of_console_device, b"serial\0".as_ptr() as *const kernel::ffi::c_char) || scons_pwroff != 0) {
         let mut power_register = sbus_readb(auxio_power_register);
         power_register |= AUXIO_POWER_OFF;
         sbus_writeb(power_register, auxio_power_register);
@@ -64,15 +64,15 @@ pub unsafe extern "C" fn show_regs(r: *mut pt_regs) {
     let rw = (*r).u_regs[14] as *mut reg_window32;
     show_regs_print_info(KERN_DEFAULT);
     printk(b"PSR: %08lx PC: %08lx NPC: %08lx Y: %08lx    %s\n\0".as_ptr() as _, (*r).psr, (*r).pc, (*r).npc, (*r).y, print_tainted());
-    printk(b"PC: <%pS>\n\0".as_ptr() as _, (*r).pc as *const libc::c_void);
+    printk(b"PC: <%pS>\n\0".as_ptr() as _, (*r).pc as *const kernel::ffi::c_void);
     printk(b"%G: %08lx %08lx  %08lx %08lx  %08lx %08lx  %08lx %08lx\n\0".as_ptr() as _, (*r).u_regs[0], (*r).u_regs[1], (*r).u_regs[2], (*r).u_regs[3], (*r).u_regs[4], (*r).u_regs[5], (*r).u_regs[6], (*r).u_regs[7]);
     printk(b"%O: %08lx %08lx  %08lx %08lx  %08lx %08lx  %08lx %08lx\n\0".as_ptr() as _, (*r).u_regs[8], (*r).u_regs[9], (*r).u_regs[10], (*r).u_regs[11], (*r).u_regs[12], (*r).u_regs[13], (*r).u_regs[14], (*r).u_regs[15]);
-    printk(b"RPC: <%pS>\n\0".as_ptr() as _, (*r).u_regs[15] as *const libc::c_void);
+    printk(b"RPC: <%pS>\n\0".as_ptr() as _, (*r).u_regs[15] as *const kernel::ffi::c_void);
     printk(b"%L: %08lx %08lx  %08lx %08lx  %08lx %08lx  %08lx %08lx\n\0".as_ptr() as _, (*rw).locals[0], (*rw).locals[1], (*rw).locals[2], (*rw).locals[3], (*rw).locals[4], (*rw).locals[5], (*rw).locals[6], (*rw).locals[7]);
     printk(b"%I: %08lx %08lx  %08lx %08lx  %08lx %08lx  %08lx %08lx\n\0".as_ptr() as _, (*rw).ins[0], (*rw).ins[1], (*rw).ins[2], (*rw).ins[3], (*rw).ins[4], (*rw).ins[5], (*rw).ins[6], (*rw).ins[7]);
 }
 
-pub unsafe extern "C" fn show_stack(mut tsk: *mut task_struct, ksp: *mut libc::c_ulong, loglvl: *const libc::c_char) {
+pub unsafe extern "C" fn show_stack(mut tsk: *mut task_struct, ksp: *mut kernel::ffi::c_ulong, loglvl: *const kernel::ffi::c_char) {
     let mut _ksp = ksp;
     if tsk.is_null() { tsk = current; }
     if tsk == current && _ksp.is_null() { core::arch::asm!("mov {}, fp", out(reg) _ksp); }
@@ -84,7 +84,7 @@ pub unsafe extern "C" fn show_stack(mut tsk: *mut task_struct, ksp: *mut libc::c
         let rw = fp as *mut reg_window32;
         let pc = (*rw).ins[7];
         printk(b"%s[%08lx : \0".as_ptr() as _, loglvl, pc);
-        printk(b"%s%pS ] \0".as_ptr() as _, loglvl, pc as *const libc::c_void);
+        printk(b"%s%pS ] \0".as_ptr() as _, loglvl, pc as *const kernel::ffi::c_void);
         fp = (*rw).ins[6] as usize;
         count += 1;
         if count >= 16 { break; }
@@ -126,7 +126,7 @@ pub unsafe extern "C" fn copy_thread(p: *mut task_struct, args: *const kernel_cl
     let ti = task_thread_info(p);
     let regs = current_pt_regs();
     let sp = if (*args).stack != 0 { (*args).stack } else { (*regs).u_regs[UREG_FP] };
-    let new_stack = (task_stack_page(p) as usize + THREAD_SIZE - STACKFRAME_SZ - TRACEREG_SZ) as *mut libc::c_char;
+    let new_stack = (task_stack_page(p) as usize + THREAD_SIZE - STACKFRAME_SZ - TRACEREG_SZ) as *mut kernel::ffi::c_char;
     let childregs = (new_stack as usize + STACKFRAME_SZ) as *mut pt_regs;
     (*ti).ksp = new_stack as usize;
     (*p).thread.kregs = childregs;

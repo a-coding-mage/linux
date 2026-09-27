@@ -36,7 +36,7 @@ extern "C" {
     fn is_enabled_config_war_r10000_llsc() -> bool;
     fn mips_futex_atomic_asm(
         ret: *mut i32, oldval: *mut i32, uaddr: *mut u32, oparg: i32,
-        insn: *const core::ffi::c_char,
+        insn: *const kernel::ffi::c_char,
     );
     fn futex_atomic_op_inuser_local(op: i32, oparg: i32, oval: *mut i32, uaddr: *mut u32) -> i32;
     fn futex_atomic_cmpxchg_inatomic_local(

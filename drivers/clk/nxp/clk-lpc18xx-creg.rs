@@ -21,7 +21,7 @@ pub const CREG_CLK_MAX: i32 = CREG_CLK_32KHZ + 1;
 #[repr(C)]
 struct clk_creg_data {
     hw: clk_hw,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     reg: *mut regmap,
     en_mask: u32,
     ops: *const clk_ops,
@@ -109,7 +109,7 @@ static mut CLK_CREG_CLOCKS: [clk_creg_data; 2] = [
     clk_creg_data { hw: clk_hw::default(), name: b"32khz_clk\0".as_ptr() as _, reg: core::ptr::null_mut(), en_mask: LPC18XX_CREG_CREG0_EN32KHZ, ops: &CLK_CREG_32K },
 ];
 
-unsafe fn clk_register_creg_clk(dev: *mut device, creg_clk: *mut clk_creg_data, parent_name: *const *const core::ffi::c_char, syscon: *mut regmap) -> *mut clk {
+unsafe fn clk_register_creg_clk(dev: *mut device, creg_clk: *mut clk_creg_data, parent_name: *const *const kernel::ffi::c_char, syscon: *mut regmap) -> *mut clk {
     let mut init = clk_init_data::default();
     init.ops = (*creg_clk).ops;
     init.name = (*creg_clk).name;

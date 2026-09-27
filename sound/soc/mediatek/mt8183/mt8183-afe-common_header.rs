@@ -81,46 +81,46 @@ pub struct mtk_base_afe {
 pub struct mt8183_afe_private {
     pub clk: *mut *mut clk,
 
-    pub pm_runtime_bypass_reg_ctl: ::core::ffi::c_int,
+    pub pm_runtime_bypass_reg_ctl: ::kernel::ffi::c_int,
 
     /* dai */
-    pub dai_priv: [*mut ::core::ffi::c_void; MT8183_DAI_NUM as usize],
+    pub dai_priv: [*mut ::kernel::ffi::c_void; MT8183_DAI_NUM as usize],
 
     /* adda */
-    pub mtkaif_protocol: ::core::ffi::c_int,
-    pub mtkaif_calibration_ok: ::core::ffi::c_int,
-    pub mtkaif_chosen_phase: [::core::ffi::c_int; 4],
-    pub mtkaif_phase_cycle: [::core::ffi::c_int; 4],
-    pub mtkaif_calibration_num_phase: ::core::ffi::c_int,
-    pub mtkaif_dmic: ::core::ffi::c_int,
+    pub mtkaif_protocol: ::kernel::ffi::c_int,
+    pub mtkaif_calibration_ok: ::kernel::ffi::c_int,
+    pub mtkaif_chosen_phase: [::kernel::ffi::c_int; 4],
+    pub mtkaif_phase_cycle: [::kernel::ffi::c_int; 4],
+    pub mtkaif_calibration_num_phase: ::kernel::ffi::c_int,
+    pub mtkaif_dmic: ::kernel::ffi::c_int,
 
     /* mck */
-    pub mck_rate: [::core::ffi::c_int; MT8183_MCK_NUM as usize],
+    pub mck_rate: [::kernel::ffi::c_int; MT8183_MCK_NUM as usize],
 }
 
 unsafe extern "C" {
     pub fn mt8183_general_rate_transform(
         dev: *mut device,
-        rate: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_uint;
+        rate: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_uint;
     pub fn mt8183_rate_transform(
         dev: *mut device,
-        rate: ::core::ffi::c_uint,
-        aud_blk: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_uint;
+        rate: ::kernel::ffi::c_uint,
+        aud_blk: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_uint;
 
     pub fn mt8183_dai_i2s_set_share(
         afe: *mut mtk_base_afe,
-        main_i2s_name: *const ::core::ffi::c_char,
-        secondary_i2s_name: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        main_i2s_name: *const ::kernel::ffi::c_char,
+        secondary_i2s_name: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
 
     /* dai register */
-    pub fn mt8183_dai_adda_register(afe: *mut mtk_base_afe) -> ::core::ffi::c_int;
-    pub fn mt8183_dai_pcm_register(afe: *mut mtk_base_afe) -> ::core::ffi::c_int;
-    pub fn mt8183_dai_i2s_register(afe: *mut mtk_base_afe) -> ::core::ffi::c_int;
-    pub fn mt8183_dai_tdm_register(afe: *mut mtk_base_afe) -> ::core::ffi::c_int;
-    pub fn mt8183_dai_hostless_register(afe: *mut mtk_base_afe) -> ::core::ffi::c_int;
+    pub fn mt8183_dai_adda_register(afe: *mut mtk_base_afe) -> ::kernel::ffi::c_int;
+    pub fn mt8183_dai_pcm_register(afe: *mut mtk_base_afe) -> ::kernel::ffi::c_int;
+    pub fn mt8183_dai_i2s_register(afe: *mut mtk_base_afe) -> ::kernel::ffi::c_int;
+    pub fn mt8183_dai_tdm_register(afe: *mut mtk_base_afe) -> ::kernel::ffi::c_int;
+    pub fn mt8183_dai_hostless_register(afe: *mut mtk_base_afe) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

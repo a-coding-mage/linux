@@ -9,7 +9,7 @@
 // The Linux tracepoint, HDAudio, SOF audio, and trace-definition headers are
 // external dependencies of this translated header.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Opaque types supplied by the corresponding external headers.
 #[repr(C)]

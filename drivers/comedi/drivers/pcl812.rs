@@ -34,7 +34,7 @@ pub enum Pcl812Boardtype { Pcl812pg=0, Pcl813b=1, Pcl812=2, Pcl813=3, Iso813=5, 
 
 #[repr(C)]
 pub struct Pcl812Board {
-    pub name: *const core::ffi::c_char, pub board_type: Pcl812Boardtype,
+    pub name: *const kernel::ffi::c_char, pub board_type: Pcl812Boardtype,
     pub min_io_start: u16, pub n_aichan: i32, pub n_aochan: i32,
     pub ai_ns_min: u32, pub rangelist_ai: *const comedi_lrange,
     pub irq_bits: u32, pub has_dma: u32, pub has_16bit_ai: u32,
@@ -55,7 +55,7 @@ extern "C" {
     pub fn comedi_dio_update_state(s:*mut comedi_subdevice,d:*const u32)->bool;
     pub fn comedi_legacy_detach(d:*mut comedi_device); pub fn comedi_isadma_free(d:*mut comedi_isadma);
 }
-#[repr(C)] pub struct comedi_device { pub iobase:u32, pub private:*mut Pcl812Private, pub board_ptr:*const Pcl812Board, pub pacer:*mut core::ffi::c_void, pub irq:u32, pub attached:bool, pub read_subdev:*mut comedi_subdevice, pub subdevices:*mut comedi_subdevice }
+#[repr(C)] pub struct comedi_device { pub iobase:u32, pub private:*mut Pcl812Private, pub board_ptr:*const Pcl812Board, pub pacer:*mut kernel::ffi::c_void, pub irq:u32, pub attached:bool, pub read_subdev:*mut comedi_subdevice, pub subdevices:*mut comedi_subdevice }
 #[repr(C)] pub struct comedi_subdevice { pub maxdata:u32, pub state:u32, pub readback:*mut u32, pub async_:*mut comedi_async }
 #[repr(C)] pub struct comedi_async { pub cmd:comedi_cmd, pub scans_done:u32, pub cur_chan:u32, pub events:u32 }
 #[repr(C)] pub struct comedi_cmd { pub chanlist:*mut u32, pub chanlist_len:u32, pub convert_src:u32, pub convert_arg:u32, pub flags:u32, pub stop_src:u32, pub stop_arg:u32 }
@@ -74,6 +74,6 @@ pub unsafe fn pcl812_reset(dev:*mut comedi_device){ let p=&mut *(*dev).private; 
 // Remaining callbacks retain the original externally supplied comedi ABI.
 // Their bodies are intentionally represented as declarations until those ABI
 // definitions are available in the translated kernel support layer.
-extern "C" { pub fn pcl812_attach(dev:*mut comedi_device,it:*mut core::ffi::c_void)->i32; pub fn pcl812_detach(dev:*mut comedi_device); }
+extern "C" { pub fn pcl812_attach(dev:*mut comedi_device,it:*mut kernel::ffi::c_void)->i32; pub fn pcl812_detach(dev:*mut comedi_device); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

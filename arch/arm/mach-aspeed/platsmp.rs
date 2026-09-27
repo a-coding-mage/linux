@@ -15,23 +15,23 @@ unsafe extern "C" {
     type task_struct;
     type smp_operations;
 
-    fn of_iomap(node: *mut device_node, index: i32) -> *mut core::ffi::c_void;
+    fn of_iomap(node: *mut device_node, index: i32) -> *mut kernel::ffi::c_void;
     fn of_find_compatible_node(
         from: *mut device_node,
-        type_: *const core::ffi::c_char,
-        compatible: *const core::ffi::c_char,
+        type_: *const kernel::ffi::c_char,
+        compatible: *const kernel::ffi::c_char,
     ) -> *mut device_node;
-    fn pr_err(format: *const core::ffi::c_char, ...);
-    fn writel_relaxed(value: u32, address: *mut core::ffi::c_void);
-    fn __raw_writel(value: u32, address: *mut core::ffi::c_void);
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
+    fn writel_relaxed(value: u32, address: *mut kernel::ffi::c_void);
+    fn __raw_writel(value: u32, address: *mut kernel::ffi::c_void);
     fn __pa_symbol(symbol: unsafe extern "C" fn()) -> usize;
     fn secondary_startup_arm();
     fn dsb_sev();
-    fn iounmap(address: *mut core::ffi::c_void);
+    fn iounmap(address: *mut kernel::ffi::c_void);
 }
 
 unsafe fn aspeed_g6_boot_secondary(cpu: u32, _idle: *mut task_struct) -> i32 {
-    let base: *mut core::ffi::c_void;
+    let base: *mut kernel::ffi::c_void;
 
     base = of_iomap(secboot_node, 0);
     if base.is_null() {
@@ -54,7 +54,7 @@ unsafe fn aspeed_g6_boot_secondary(cpu: u32, _idle: *mut task_struct) -> i32 {
 }
 
 unsafe fn aspeed_g6_smp_prepare_cpus(_max_cpus: u32) {
-    let base: *mut core::ffi::c_void;
+    let base: *mut kernel::ffi::c_void;
 
     secboot_node = of_find_compatible_node(
         core::ptr::null_mut(),

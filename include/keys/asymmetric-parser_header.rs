@@ -17,7 +17,7 @@ pub enum key_preparsed_payload {}
 pub struct asymmetric_key_parser {
     pub link: list_head,
     pub owner: *mut module,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
 
     /* Attempt to parse a key from the data blob passed to add_key() or
      * keyctl_instantiate().  Should also generate a proposed description
@@ -25,7 +25,7 @@ pub struct asymmetric_key_parser {
      *
      * Return EBADMSG if not recognised.
      */
-    pub parse: Option<unsafe extern "C" fn(prep: *mut key_preparsed_payload) -> ::core::ffi::c_int>,
+    pub parse: Option<unsafe extern "C" fn(prep: *mut key_preparsed_payload) -> ::kernel::ffi::c_int>,
 }
 
 // External types supplied by other translation units.
@@ -35,7 +35,7 @@ pub enum list_head {}
 pub enum module {}
 
 unsafe extern "C" {
-    pub fn register_asymmetric_key_parser(parser: *mut asymmetric_key_parser) -> ::core::ffi::c_int;
+    pub fn register_asymmetric_key_parser(parser: *mut asymmetric_key_parser) -> ::kernel::ffi::c_int;
     pub fn unregister_asymmetric_key_parser(parser: *mut asymmetric_key_parser);
 }
 

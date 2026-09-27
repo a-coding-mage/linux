@@ -13,7 +13,7 @@
  * "Hello, boils and ghouls!"
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 // Declarations supplied by the corresponding kernel headers.
 #[repr(C)]

@@ -8,7 +8,7 @@ extern "C" {
     pub static mut acpi_gbl_root_table_list: crate::acpi_table_list;
     pub static mut acpi_gbl_DSDT: *mut crate::acpi_table_header;
     pub static mut acpi_gbl_original_dsdt_header: crate::acpi_table_header;
-    pub static mut acpi_gbl_CDAT: *mut ::core::ffi::c_char;
+    pub static mut acpi_gbl_CDAT: *mut ::kernel::ffi::c_char;
     pub static mut acpi_gbl_dsdt_index: u32;
     pub static mut acpi_gbl_facs_index: u32;
     pub static mut acpi_gbl_xfacs_index: u32;
@@ -46,7 +46,7 @@ extern "C" {
     pub static mut acpi_gbl_exception_handler: crate::acpi_exception_handler;
     pub static mut acpi_gbl_init_handler: crate::acpi_init_handler;
     pub static mut acpi_gbl_table_handler: crate::acpi_table_handler;
-    pub static mut acpi_gbl_table_handler_context: *mut ::core::ffi::c_void;
+    pub static mut acpi_gbl_table_handler_context: *mut ::kernel::ffi::c_void;
     pub static mut acpi_gbl_interface_handler: crate::acpi_interface_handler;
     pub static mut acpi_gbl_sci_handler_list: *mut crate::acpi_sci_handler_info;
     pub static mut acpi_gbl_ged_handler_list: *mut crate::acpi_ged_handler_info;
@@ -88,7 +88,7 @@ extern "C" {
     pub static mut acpi_gbl_gpe_xrupt_list_head: *mut crate::acpi_gpe_xrupt_info;
     pub static mut acpi_gbl_gpe_fadt_blocks: [*mut crate::acpi_gpe_block_info; crate::ACPI_MAX_GPE_BLOCKS];
     pub static mut acpi_gbl_global_event_handler: crate::acpi_gbl_event_handler;
-    pub static mut acpi_gbl_global_event_handler_context: *mut ::core::ffi::c_void;
+    pub static mut acpi_gbl_global_event_handler_context: *mut ::kernel::ffi::c_void;
     pub static mut acpi_gbl_fixed_event_handlers: [crate::acpi_fixed_event_handler; crate::ACPI_NUM_FIXED_EVENTS];
     pub static mut acpi_gbl_no_resource_disassembly: u8;
     pub static mut acpi_gbl_ignore_noop_operator: u8;
@@ -109,18 +109,18 @@ extern "C" {
     pub static mut acpi_gbl_db_opt_no_ini_methods: u8;
     pub static mut acpi_gbl_db_opt_no_region_support: u8;
     pub static mut acpi_gbl_db_output_to_file: u8;
-    pub static mut acpi_gbl_db_buffer: *mut ::core::ffi::c_char;
-    pub static mut acpi_gbl_db_filename: *mut ::core::ffi::c_char;
+    pub static mut acpi_gbl_db_buffer: *mut ::kernel::ffi::c_char;
+    pub static mut acpi_gbl_db_filename: *mut ::kernel::ffi::c_char;
     pub static mut acpi_gbl_db_debug_level: u32;
     pub static mut acpi_gbl_db_console_debug_level: u32;
     pub static mut acpi_gbl_db_scope_node: *mut crate::acpi_namespace_node;
     pub static mut acpi_gbl_db_terminate_loop: u8;
     pub static mut acpi_gbl_db_threads_terminated: u8;
-    pub static mut acpi_gbl_db_args: [*mut ::core::ffi::c_char; crate::ACPI_DEBUGGER_MAX_ARGS];
+    pub static mut acpi_gbl_db_args: [*mut ::kernel::ffi::c_char; crate::ACPI_DEBUGGER_MAX_ARGS];
     pub static mut acpi_gbl_db_arg_types: [crate::acpi_object_type; crate::ACPI_DEBUGGER_MAX_ARGS];
-    pub static mut acpi_gbl_db_parsed_buf: [::core::ffi::c_char; crate::ACPI_DB_LINE_BUFFER_SIZE];
-    pub static mut acpi_gbl_db_scope_buf: [::core::ffi::c_char; crate::ACPI_DB_LINE_BUFFER_SIZE];
-    pub static mut acpi_gbl_db_debug_filename: [::core::ffi::c_char; crate::ACPI_DB_LINE_BUFFER_SIZE];
+    pub static mut acpi_gbl_db_parsed_buf: [::kernel::ffi::c_char; crate::ACPI_DB_LINE_BUFFER_SIZE];
+    pub static mut acpi_gbl_db_scope_buf: [::kernel::ffi::c_char; crate::ACPI_DB_LINE_BUFFER_SIZE];
+    pub static mut acpi_gbl_db_debug_filename: [::kernel::ffi::c_char; crate::ACPI_DB_LINE_BUFFER_SIZE];
     pub static mut acpi_gbl_obj_type_count: [u16; crate::ACPI_TOTAL_TYPES];
     pub static mut acpi_gbl_node_type_count: [u16; crate::ACPI_TOTAL_TYPES];
     pub static mut acpi_gbl_obj_type_count_misc: u16;
@@ -128,31 +128,31 @@ extern "C" {
     pub static mut acpi_gbl_num_nodes: u32;
     pub static mut acpi_gbl_num_objects: u32;
     pub static mut acpi_gbl_disasm_flag: u8;
-    pub static mut acpi_gbl_current_inline_comment: *mut ::core::ffi::c_char;
-    pub static mut acpi_gbl_current_end_node_comment: *mut ::core::ffi::c_char;
-    pub static mut acpi_gbl_current_open_brace_comment: *mut ::core::ffi::c_char;
-    pub static mut acpi_gbl_current_close_brace_comment: *mut ::core::ffi::c_char;
-    pub static mut acpi_gbl_root_filename: *mut ::core::ffi::c_char;
-    pub static mut acpi_gbl_current_filename: *mut ::core::ffi::c_char;
-    pub static mut acpi_gbl_current_parent_filename: *mut ::core::ffi::c_char;
-    pub static mut acpi_gbl_current_include_filename: *mut ::core::ffi::c_char;
+    pub static mut acpi_gbl_current_inline_comment: *mut ::kernel::ffi::c_char;
+    pub static mut acpi_gbl_current_end_node_comment: *mut ::kernel::ffi::c_char;
+    pub static mut acpi_gbl_current_open_brace_comment: *mut ::kernel::ffi::c_char;
+    pub static mut acpi_gbl_current_close_brace_comment: *mut ::kernel::ffi::c_char;
+    pub static mut acpi_gbl_root_filename: *mut ::kernel::ffi::c_char;
+    pub static mut acpi_gbl_current_filename: *mut ::kernel::ffi::c_char;
+    pub static mut acpi_gbl_current_parent_filename: *mut ::kernel::ffi::c_char;
+    pub static mut acpi_gbl_current_include_filename: *mut ::kernel::ffi::c_char;
     pub static mut acpi_gbl_debug_asl_conversion: u8;
-    pub static mut acpi_gbl_table_sig: [::core::ffi::c_char; 4];
+    pub static mut acpi_gbl_table_sig: [::kernel::ffi::c_char; 4];
     pub static mut acpi_gbl_debug_timeout: u8;
     pub static mut acpi_gbl_print_lock: crate::acpi_spinlock;
-    pub static mut acpi_gbl_print_buffer: [::core::ffi::c_char; 1024];
+    pub static mut acpi_gbl_print_buffer: [::kernel::ffi::c_char; 1024];
 }
 
 pub const NUM_PREDEFINED_NAMES: usize = 10;
 
 /* Declaration-only globals initialized in utglobal. */
 extern "C" {
-    pub static acpi_gbl_sleep_state_names: *const *const ::core::ffi::c_char;
-    pub static acpi_gbl_lowest_dstate_names: *const *const ::core::ffi::c_char;
-    pub static acpi_gbl_highest_dstate_names: *const *const ::core::ffi::c_char;
-    pub static acpi_gbl_region_types: *const *const ::core::ffi::c_char;
-    pub static acpi_gbl_lower_hex_digits: *const ::core::ffi::c_char;
-    pub static acpi_gbl_upper_hex_digits: *const ::core::ffi::c_char;
+    pub static acpi_gbl_sleep_state_names: *const *const ::kernel::ffi::c_char;
+    pub static acpi_gbl_lowest_dstate_names: *const *const ::kernel::ffi::c_char;
+    pub static acpi_gbl_highest_dstate_names: *const *const ::kernel::ffi::c_char;
+    pub static acpi_gbl_region_types: *const *const ::kernel::ffi::c_char;
+    pub static acpi_gbl_lower_hex_digits: *const ::kernel::ffi::c_char;
+    pub static acpi_gbl_upper_hex_digits: *const ::kernel::ffi::c_char;
     pub static acpi_gbl_ns_properties: *const u8;
     pub static acpi_gbl_pre_defined_names: *const crate::acpi_predefined_names;
 }

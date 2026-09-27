@@ -19,8 +19,8 @@ pub struct clk_factors_config {
 
 #[repr(C)]
 pub struct factors_request {
-    pub rate: libc::c_ulong,
-    pub parent_rate: libc::c_ulong,
+    pub rate: kernel::ffi::c_ulong,
+    pub parent_rate: kernel::ffi::c_ulong,
     pub parent_index: u8,
     pub n: u8,
     pub k: u8,
@@ -30,19 +30,19 @@ pub struct factors_request {
 
 #[repr(C)]
 pub struct factors_data {
-    pub enable: libc::c_int,
-    pub mux: libc::c_int,
-    pub muxmask: libc::c_int,
+    pub enable: kernel::ffi::c_int,
+    pub mux: kernel::ffi::c_int,
+    pub muxmask: kernel::ffi::c_int,
     pub table: *const clk_factors_config,
     pub getter: Option<unsafe extern "C" fn(req: *mut factors_request)>,
     pub recalc: Option<unsafe extern "C" fn(req: *mut factors_request)>,
-    pub name: *const libc::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct clk_factors {
     pub hw: clk_hw,
-    pub reg: *mut libc::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub config: *const clk_factors_config,
     pub get_factors: Option<unsafe extern "C" fn(req: *mut factors_request)>,
     pub recalc: Option<unsafe extern "C" fn(req: *mut factors_request)>,
@@ -57,14 +57,14 @@ unsafe extern "C" {
         node: *mut device_node,
         data: *const factors_data,
         lock: *mut spinlock_t,
-        reg: *mut libc::c_void,
+        reg: *mut kernel::ffi::c_void,
     ) -> *mut clk;
 
     pub fn sunxi_factors_register_critical(
         node: *mut device_node,
         data: *const factors_data,
         lock: *mut spinlock_t,
-        reg: *mut libc::c_void,
+        reg: *mut kernel::ffi::c_void,
     ) -> *mut clk;
 
     pub fn sunxi_factors_unregister(node: *mut device_node, clk: *mut clk);

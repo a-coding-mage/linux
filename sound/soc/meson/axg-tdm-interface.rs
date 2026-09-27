@@ -13,9 +13,9 @@ const MAX_SCLK: u32 = 100000000; /* Hz */
 const TDM_IFACE_PAD: usize = 0;
 const TDM_IFACE_LOOPBACK: usize = 1;
 
-unsafe fn axg_tdm_slots_total(mask: *mut u32) -> libc::c_uint {
-    let mut slots: libc::c_uint = 0;
-    let mut i: libc::c_int;
+unsafe fn axg_tdm_slots_total(mask: *mut u32) -> kernel::ffi::c_uint {
+    let mut slots: kernel::ffi::c_uint = 0;
+    let mut i: kernel::ffi::c_int;
 
     if mask.is_null() {
         return 0;
@@ -23,7 +23,7 @@ unsafe fn axg_tdm_slots_total(mask: *mut u32) -> libc::c_uint {
 
     /* Count the total number of slots provided by all 4 lanes */
     i = 0;
-    while i < AXG_TDM_NUM_LANES as libc::c_int {
+    while i < AXG_TDM_NUM_LANES as kernel::ffi::c_int {
         slots = slots.wrapping_add(hweight32(*mask.offset(i as isize)));
         i += 1;
     }
@@ -35,17 +35,17 @@ pub unsafe extern "C" fn axg_tdm_set_tdm_slots(
     dai: *mut snd_soc_dai,
     tx_mask: *mut u32,
     rx_mask: *mut u32,
-    slots: libc::c_uint,
-    mut slot_width: libc::c_uint,
-) -> libc::c_int {
+    slots: kernel::ffi::c_uint,
+    mut slot_width: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let iface: *mut axg_tdm_iface = snd_soc_dai_get_drvdata(dai) as *mut axg_tdm_iface;
     let tx: *mut axg_tdm_stream =
         snd_soc_dai_dma_data_get_playback(dai) as *mut axg_tdm_stream;
     let rx: *mut axg_tdm_stream =
         snd_soc_dai_dma_data_get_capture(dai) as *mut axg_tdm_stream;
-    let tx_slots: libc::c_uint;
-    let rx_slots: libc::c_uint;
-    let mut fmt: libc::c_uint = 0;
+    let tx_slots: kernel::ffi::c_uint;
+    let rx_slots: kernel::ffi::c_uint;
+    let mut fmt: kernel::ffi::c_uint = 0;
 
     tx_slots = axg_tdm_slots_total(tx_mask);
     rx_slots = axg_tdm_slots_total(rx_mask);
@@ -118,20 +118,20 @@ pub unsafe extern "C" fn axg_tdm_set_tdm_slots(
 
 unsafe extern "C" fn axg_tdm_iface_set_sysclk(
     dai: *mut snd_soc_dai,
-    clk_id: libc::c_int,
-    freq: libc::c_uint,
-    dir: libc::c_int,
-) -> libc::c_int {
+    clk_id: kernel::ffi::c_int,
+    freq: kernel::ffi::c_uint,
+    dir: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let iface: *mut axg_tdm_iface = snd_soc_dai_get_drvdata(dai) as *mut axg_tdm_iface;
-    let mut ret: libc::c_int = -ENOTSUPP;
+    let mut ret: kernel::ffi::c_int = -ENOTSUPP;
 
     if dir == SND_SOC_CLOCK_OUT && clk_id == 0 {
         if (*iface).mclk.is_null() {
             dev_warn((*dai).dev, c"master clock not provided\n".as_ptr());
         } else {
-            ret = clk_set_rate((*iface).mclk, freq as libc::c_ulong);
+            ret = clk_set_rate((*iface).mclk, freq as kernel::ffi::c_ulong);
             if ret == 0 {
-                (*iface).mclk_rate = freq as libc::c_ulong;
+                (*iface).mclk_rate = freq as kernel::ffi::c_ulong;
             }
         }
     }
@@ -141,8 +141,8 @@ unsafe extern "C" fn axg_tdm_iface_set_sysclk(
 
 unsafe extern "C" fn axg_tdm_iface_set_fmt(
     dai: *mut snd_soc_dai,
-    fmt: libc::c_uint,
-) -> libc::c_int {
+    fmt: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let iface: *mut axg_tdm_iface = snd_soc_dai_get_drvdata(dai) as *mut axg_tdm_iface;
 
     match fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK {
@@ -170,11 +170,11 @@ unsafe extern "C" fn axg_tdm_iface_set_fmt(
 unsafe extern "C" fn axg_tdm_iface_startup(
     substream: *mut snd_pcm_substream,
     dai: *mut snd_soc_dai,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let iface: *mut axg_tdm_iface = snd_soc_dai_get_drvdata(dai) as *mut axg_tdm_iface;
     let ts: *mut axg_tdm_stream =
         snd_soc_dai_get_dma_data(dai, substream) as *mut axg_tdm_stream;
-    let mut ret: libc::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     if axg_tdm_slots_total((*ts).mask) == 0 {
         dev_err((*dai).dev, c"interface has not slots\n".as_ptr());
@@ -190,7 +190,7 @@ unsafe extern "C" fn axg_tdm_iface_startup(
         );
     } else {
         /* Limit rate according to the slot number and width */
-        let max_rate: libc::c_uint =
+        let max_rate: kernel::ffi::c_uint =
             MAX_SCLK / ((*iface).slots.wrapping_mul((*iface).slot_width));
         ret = snd_pcm_hw_constraint_minmax(
             (*substream).runtime,
@@ -213,12 +213,12 @@ unsafe extern "C" fn axg_tdm_iface_set_stream(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let iface: *mut axg_tdm_iface = snd_soc_dai_get_drvdata(dai) as *mut axg_tdm_iface;
     let ts: *mut axg_tdm_stream =
         snd_soc_dai_get_dma_data(dai, substream) as *mut axg_tdm_stream;
-    let channels: libc::c_uint = params_channels(params);
-    let width: libc::c_uint = params_width(params);
+    let channels: kernel::ffi::c_uint = params_channels(params);
+    let width: kernel::ffi::c_uint = params_width(params);
 
     /* Save rate and sample_bits for component symmetry */
     (*iface).rate = params_rate(params);
@@ -248,12 +248,12 @@ unsafe extern "C" fn axg_tdm_iface_set_stream(
 unsafe extern "C" fn axg_tdm_iface_set_lrclk(
     dai: *mut snd_soc_dai,
     params: *mut snd_pcm_hw_params,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let iface: *mut axg_tdm_iface = snd_soc_dai_get_drvdata(dai) as *mut axg_tdm_iface;
-    let ratio_num: libc::c_uint;
-    let mut ret: libc::c_int;
+    let ratio_num: kernel::ffi::c_uint;
+    let mut ret: kernel::ffi::c_int;
 
-    ret = clk_set_rate((*iface).lrclk, params_rate(params) as libc::c_ulong);
+    ret = clk_set_rate((*iface).lrclk, params_rate(params) as kernel::ffi::c_ulong);
     if ret != 0 {
         dev_err(
             (*dai).dev,
@@ -310,18 +310,18 @@ unsafe extern "C" fn axg_tdm_iface_set_lrclk(
 unsafe extern "C" fn axg_tdm_iface_set_sclk(
     dai: *mut snd_soc_dai,
     params: *mut snd_pcm_hw_params,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let iface: *mut axg_tdm_iface = snd_soc_dai_get_drvdata(dai) as *mut axg_tdm_iface;
-    let srate: libc::c_ulong;
-    let mut ret: libc::c_int;
+    let srate: kernel::ffi::c_ulong;
+    let mut ret: kernel::ffi::c_int;
 
-    srate = ((*iface).slots as libc::c_ulong)
-        .wrapping_mul((*iface).slot_width as libc::c_ulong)
-        .wrapping_mul(params_rate(params) as libc::c_ulong);
+    srate = ((*iface).slots as kernel::ffi::c_ulong)
+        .wrapping_mul((*iface).slot_width as kernel::ffi::c_ulong)
+        .wrapping_mul(params_rate(params) as kernel::ffi::c_ulong);
 
     if (*iface).mclk_rate == 0 {
         /* If no specific mclk is requested, default to bit clock * 2 */
-        clk_set_rate((*iface).mclk, 2u64.wrapping_mul(srate as u64) as libc::c_ulong);
+        clk_set_rate((*iface).mclk, 2u64.wrapping_mul(srate as u64) as kernel::ffi::c_ulong);
     } else {
         /* Check if we can actually get the bit clock from mclk */
         if (*iface).mclk_rate % srate != 0 {
@@ -362,11 +362,11 @@ unsafe extern "C" fn axg_tdm_iface_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let iface: *mut axg_tdm_iface = snd_soc_dai_get_drvdata(dai) as *mut axg_tdm_iface;
     let ts: *mut axg_tdm_stream =
         snd_soc_dai_get_dma_data(dai, substream) as *mut axg_tdm_stream;
-    let mut ret: libc::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     match (*iface).fmt & SND_SOC_DAIFMT_FORMAT_MASK {
         SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_LEFT_J | SND_SOC_DAIFMT_RIGHT_J => {
@@ -417,7 +417,7 @@ unsafe extern "C" fn axg_tdm_iface_hw_params(
 unsafe extern "C" fn axg_tdm_iface_hw_free(
     substream: *mut snd_pcm_substream,
     dai: *mut snd_soc_dai,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let ts: *mut axg_tdm_stream =
         snd_soc_dai_get_dma_data(dai, substream) as *mut axg_tdm_stream;
 
@@ -426,9 +426,9 @@ unsafe extern "C" fn axg_tdm_iface_hw_free(
 
 unsafe extern "C" fn axg_tdm_iface_trigger(
     substream: *mut snd_pcm_substream,
-    cmd: libc::c_int,
+    cmd: kernel::ffi::c_int,
     dai: *mut snd_soc_dai,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let ts: *mut axg_tdm_stream =
         snd_soc_dai_get_dma_data(dai, substream) as *mut axg_tdm_stream;
 
@@ -445,8 +445,8 @@ unsafe extern "C" fn axg_tdm_iface_trigger(
     0
 }
 
-unsafe extern "C" fn axg_tdm_iface_remove_dai(dai: *mut snd_soc_dai) -> libc::c_int {
-    let mut stream: libc::c_int;
+unsafe extern "C" fn axg_tdm_iface_remove_dai(dai: *mut snd_soc_dai) -> kernel::ffi::c_int {
+    let mut stream: kernel::ffi::c_int;
 
     // for_each_pcm_streams(stream)
     stream = 0;
@@ -463,9 +463,9 @@ unsafe extern "C" fn axg_tdm_iface_remove_dai(dai: *mut snd_soc_dai) -> libc::c_
     0
 }
 
-unsafe extern "C" fn axg_tdm_iface_probe_dai(dai: *mut snd_soc_dai) -> libc::c_int {
+unsafe extern "C" fn axg_tdm_iface_probe_dai(dai: *mut snd_soc_dai) -> kernel::ffi::c_int {
     let iface: *mut axg_tdm_iface = snd_soc_dai_get_drvdata(dai) as *mut axg_tdm_iface;
-    let mut stream: libc::c_int;
+    let mut stream: kernel::ffi::c_int;
 
     // for_each_pcm_streams(stream)
     stream = 0;
@@ -482,7 +482,7 @@ unsafe extern "C" fn axg_tdm_iface_probe_dai(dai: *mut snd_soc_dai) -> libc::c_i
             axg_tdm_iface_remove_dai(dai);
             return -ENOMEM;
         }
-        snd_soc_dai_dma_data_set(dai, stream, ts as *mut libc::c_void);
+        snd_soc_dai_dma_data_set(dai, stream, ts as *mut kernel::ffi::c_void);
         stream += 1;
     }
 
@@ -522,7 +522,7 @@ static axg_tdm_iface_dai_drv: [snd_soc_dai_driver; 2] = [
             rate_max: 768000,
             formats: AXG_TDM_FORMATS,
         },
-        id: TDM_IFACE_PAD as libc::c_int,
+        id: TDM_IFACE_PAD as kernel::ffi::c_int,
         ops: &axg_tdm_iface_ops,
     },
     snd_soc_dai_driver {
@@ -536,7 +536,7 @@ static axg_tdm_iface_dai_drv: [snd_soc_dai_driver; 2] = [
             rate_max: 768000,
             formats: AXG_TDM_FORMATS,
         },
-        id: TDM_IFACE_LOOPBACK as libc::c_int,
+        id: TDM_IFACE_LOOPBACK as kernel::ffi::c_int,
         ops: &axg_tdm_iface_ops,
         ..unsafe { core::mem::zeroed() }
     },
@@ -545,12 +545,12 @@ static axg_tdm_iface_dai_drv: [snd_soc_dai_driver; 2] = [
 unsafe extern "C" fn axg_tdm_iface_set_bias_level(
     component: *mut snd_soc_component,
     level: snd_soc_bias_level,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let iface: *mut axg_tdm_iface =
         snd_soc_component_get_drvdata(component) as *mut axg_tdm_iface;
     let dapm: *mut snd_soc_dapm_context = snd_soc_component_to_dapm(component);
     let now: snd_soc_bias_level = snd_soc_dapm_get_bias_level(dapm);
-    let mut ret: libc::c_int = 0;
+    let mut ret: kernel::ffi::c_int = 0;
 
     match level {
         SND_SOC_BIAS_PREPARE => {
@@ -585,9 +585,9 @@ static axg_tdm_iface_dapm_routes: [snd_soc_dapm_route; 1] = [snd_soc_dapm_route 
 
 static axg_tdm_iface_component_drv: snd_soc_component_driver = snd_soc_component_driver {
     dapm_widgets: axg_tdm_iface_dapm_widgets.as_ptr(),
-    num_dapm_widgets: axg_tdm_iface_dapm_widgets.len() as libc::c_uint,
+    num_dapm_widgets: axg_tdm_iface_dapm_widgets.len() as kernel::ffi::c_uint,
     dapm_routes: axg_tdm_iface_dapm_routes.as_ptr(),
-    num_dapm_routes: axg_tdm_iface_dapm_routes.len() as libc::c_uint,
+    num_dapm_routes: axg_tdm_iface_dapm_routes.len() as kernel::ffi::c_uint,
     set_bias_level: Some(axg_tdm_iface_set_bias_level),
 };
 
@@ -600,7 +600,7 @@ static axg_tdm_iface_of_match: [of_device_id; 2] = [
 ];
 // MODULE_DEVICE_TABLE(of, axg_tdm_iface_of_match);
 
-unsafe extern "C" fn axg_tdm_iface_probe(pdev: *mut platform_device) -> libc::c_int {
+unsafe extern "C" fn axg_tdm_iface_probe(pdev: *mut platform_device) -> kernel::ffi::c_int {
     let dev: *mut device = &mut (*pdev).dev;
     let dai_drv: *mut snd_soc_dai_driver;
     let iface: *mut axg_tdm_iface;
@@ -613,7 +613,7 @@ unsafe extern "C" fn axg_tdm_iface_probe(pdev: *mut platform_device) -> libc::c_
     if iface.is_null() {
         return -ENOMEM;
     }
-    platform_set_drvdata(pdev, iface as *mut libc::c_void);
+    platform_set_drvdata(pdev, iface as *mut kernel::ffi::c_void);
 
     /*
      * Duplicate dai driver: depending on the slot masks configuration
@@ -622,7 +622,7 @@ unsafe extern "C" fn axg_tdm_iface_probe(pdev: *mut platform_device) -> libc::c_
      */
     dai_drv = devm_kmemdup_array(
         dev,
-        axg_tdm_iface_dai_drv.as_ptr() as *const libc::c_void,
+        axg_tdm_iface_dai_drv.as_ptr() as *const kernel::ffi::c_void,
         axg_tdm_iface_dai_drv.len(),
         core::mem::size_of::<snd_soc_dai_driver>(),
         GFP_KERNEL,
@@ -633,20 +633,20 @@ unsafe extern "C" fn axg_tdm_iface_probe(pdev: *mut platform_device) -> libc::c_
 
     /* Bit clock provided on the pad */
     (*iface).sclk = devm_clk_get(dev, c"sclk".as_ptr());
-    if IS_ERR((*iface).sclk as *const libc::c_void) {
+    if IS_ERR((*iface).sclk as *const kernel::ffi::c_void) {
         return dev_err_probe(
             dev,
-            PTR_ERR((*iface).sclk as *const libc::c_void),
+            PTR_ERR((*iface).sclk as *const kernel::ffi::c_void),
             c"failed to get sclk\n".as_ptr(),
         );
     }
 
     /* Sample clock provided on the pad */
     (*iface).lrclk = devm_clk_get(dev, c"lrclk".as_ptr());
-    if IS_ERR((*iface).lrclk as *const libc::c_void) {
+    if IS_ERR((*iface).lrclk as *const kernel::ffi::c_void) {
         return dev_err_probe(
             dev,
-            PTR_ERR((*iface).lrclk as *const libc::c_void),
+            PTR_ERR((*iface).lrclk as *const kernel::ffi::c_void),
             c"failed to get lrclk\n".as_ptr(),
         );
     }
@@ -658,10 +658,10 @@ unsafe extern "C" fn axg_tdm_iface_probe(pdev: *mut platform_device) -> libc::c_
      * throw an error if the cpu dai is master and mclk is missing
      */
     (*iface).mclk = devm_clk_get_optional(dev, c"mclk".as_ptr());
-    if IS_ERR((*iface).mclk as *const libc::c_void) {
+    if IS_ERR((*iface).mclk as *const kernel::ffi::c_void) {
         return dev_err_probe(
             dev,
-            PTR_ERR((*iface).mclk as *const libc::c_void),
+            PTR_ERR((*iface).mclk as *const kernel::ffi::c_void),
             c"failed to get mclk\n".as_ptr(),
         );
     }
@@ -670,7 +670,7 @@ unsafe extern "C" fn axg_tdm_iface_probe(pdev: *mut platform_device) -> libc::c_
         dev,
         &axg_tdm_iface_component_drv,
         dai_drv,
-        axg_tdm_iface_dai_drv.len() as libc::c_int,
+        axg_tdm_iface_dai_drv.len() as kernel::ffi::c_int,
     )
 }
 

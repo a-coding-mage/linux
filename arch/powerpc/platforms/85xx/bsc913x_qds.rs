@@ -10,7 +10,7 @@
  */
 
 // Dependencies supplied by the surrounding kernel translation.
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 extern "C" {
     static mut ppc_md: PpcMd;
@@ -20,7 +20,7 @@ extern "C" {
         flags2: i32,
         first_irq: i32,
         nr_irqs: i32,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> *mut Mpic;
     fn mpic_init(mpic: *mut Mpic);
     fn mpc85xx_smp_init();
@@ -28,9 +28,9 @@ extern "C" {
     fn mpc85xx_common_publish_devices();
     fn fsl_pcibios_fixup_bus(bus: *mut c_void);
     fn mpic_get_irq(regs: *mut c_void) -> i32;
-    fn udbg_progress(s: *const core::ffi::c_char, hex: u32);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn udbg_progress(s: *const kernel::ffi::c_char, hex: u32);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -40,7 +40,7 @@ pub struct Mpic {
 
 #[repr(C)]
 pub struct PpcMd {
-    pub progress: Option<unsafe extern "C" fn(*const core::ffi::c_char, u32)>,
+    pub progress: Option<unsafe extern "C" fn(*const kernel::ffi::c_char, u32)>,
 }
 
 pub const MPIC_BIG_ENDIAN: i32 = 1 << 0;
@@ -53,11 +53,11 @@ unsafe fn bsc913x_qds_pic_init() {
         MPIC_BIG_ENDIAN | MPIC_SINGLE_DEST_CPU,
         0,
         256,
-        b" OpenPIC  \0".as_ptr() as *const core::ffi::c_char,
+        b" OpenPIC  \0".as_ptr() as *const kernel::ffi::c_char,
     );
 
     if mpic.is_null() {
-        pr_err(b"bsc913x: Failed to allocate MPIC structure\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_err(b"bsc913x: Failed to allocate MPIC structure\n\0".as_ptr() as *const kernel::ffi::c_char);
     } else {
         mpic_init(mpic);
     }
@@ -69,7 +69,7 @@ unsafe fn bsc913x_qds_pic_init() {
 unsafe fn bsc913x_qds_setup_arch() {
     if let Some(progress) = ppc_md.progress {
         progress(
-            b"bsc913x_qds_setup_arch()\0".as_ptr() as *const core::ffi::c_char,
+            b"bsc913x_qds_setup_arch()\0".as_ptr() as *const kernel::ffi::c_char,
             0,
         );
     }
@@ -82,7 +82,7 @@ unsafe fn bsc913x_qds_setup_arch() {
 
     pr_info(
         b"bsc913x board from Freescale Semiconductor\n\0".as_ptr()
-            as *const core::ffi::c_char,
+            as *const kernel::ffi::c_char,
     );
 }
 

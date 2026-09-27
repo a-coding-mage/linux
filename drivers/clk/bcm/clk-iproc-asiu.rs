@@ -9,7 +9,7 @@ pub struct iproc_asiu;
 #[repr(C)]
 pub struct iproc_asiu_clk {
     pub hw: clk_hw,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub asiu: *mut iproc_asiu,
     pub rate: usize,
     pub div: iproc_asiu_div,
@@ -18,32 +18,32 @@ pub struct iproc_asiu_clk {
 
 #[repr(C)]
 pub struct iproc_asiu {
-    pub div_base: *mut core::ffi::c_void,
-    pub gate_base: *mut core::ffi::c_void,
+    pub div_base: *mut kernel::ffi::c_void,
+    pub gate_base: *mut kernel::ffi::c_void,
     pub clks: [iproc_asiu_clk; 0],
 }
 
 extern "C" {
-    pub fn readl(addr: *mut core::ffi::c_void) -> u32;
-    pub fn writel(value: u32, addr: *mut core::ffi::c_void);
-    pub fn pr_debug(fmt: *const core::ffi::c_char, ...);
-    pub fn of_iomap(node: *mut device_node, index: i32) -> *mut core::ffi::c_void;
+    pub fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    pub fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    pub fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
+    pub fn of_iomap(node: *mut device_node, index: i32) -> *mut kernel::ffi::c_void;
     pub fn of_property_read_string_index(
         node: *mut device_node,
-        property: *const core::ffi::c_char,
+        property: *const kernel::ffi::c_char,
         index: u32,
-        output: *mut *const core::ffi::c_char,
+        output: *mut *const kernel::ffi::c_char,
     ) -> i32;
-    pub fn of_clk_get_parent_name(node: *mut device_node, index: i32) -> *const core::ffi::c_char;
-    pub fn clk_hw_register(dev: *mut core::ffi::c_void, hw: *mut clk_hw) -> i32;
+    pub fn of_clk_get_parent_name(node: *mut device_node, index: i32) -> *const kernel::ffi::c_char;
+    pub fn clk_hw_register(dev: *mut kernel::ffi::c_void, hw: *mut clk_hw) -> i32;
     pub fn clk_hw_unregister(hw: *mut clk_hw);
     pub fn of_clk_add_hw_provider(
         node: *mut device_node,
         get: unsafe extern "C" fn(*mut device_node, *const clk_hw_onecell_data) -> *mut clk_hw,
         data: *mut clk_hw_onecell_data,
     ) -> i32;
-    pub fn iounmap(addr: *mut core::ffi::c_void);
-    pub fn kfree(ptr: *mut core::ffi::c_void);
+    pub fn iounmap(addr: *mut kernel::ffi::c_void);
+    pub fn kfree(ptr: *mut kernel::ffi::c_void);
     pub fn kzalloc_flex<T>(count: usize) -> *mut T;
 }
 
@@ -53,10 +53,10 @@ pub struct clk_hw {
 }
 #[repr(C)]
 pub struct clk_init_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const clk_ops,
     pub flags: u32,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: u8,
 }
 #[repr(C)]
@@ -85,20 +85,20 @@ unsafe fn bit_mask(width: u32) -> u32 { if width == 32 { u32::MAX } else { (1u32
 pub unsafe extern "C" fn iproc_asiu_clk_enable(hw: *mut clk_hw) -> i32 {
     let clk = &mut *to_asiu_clk(hw); let asiu = &mut *clk.asiu;
     if clk.gate.offset == IPROC_CLK_INVALID_OFFSET { return 0; }
-    let addr = (asiu.gate_base as *mut u8).add(clk.gate.offset) as *mut core::ffi::c_void;
+    let addr = (asiu.gate_base as *mut u8).add(clk.gate.offset) as *mut kernel::ffi::c_void;
     let val = readl(addr) | (1u32 << clk.gate.en_shift); writel(val, addr); 0
 }
 pub unsafe extern "C" fn iproc_asiu_clk_disable(hw: *mut clk_hw) {
     let clk = &mut *to_asiu_clk(hw); let asiu = &mut *clk.asiu;
     if clk.gate.offset == IPROC_CLK_INVALID_OFFSET { return; }
-    let addr = (asiu.gate_base as *mut u8).add(clk.gate.offset) as *mut core::ffi::c_void;
+    let addr = (asiu.gate_base as *mut u8).add(clk.gate.offset) as *mut kernel::ffi::c_void;
     writel(readl(addr) & !(1u32 << clk.gate.en_shift), addr);
 }
 
 pub unsafe extern "C" fn iproc_asiu_clk_recalc_rate(hw: *mut clk_hw, parent_rate: usize) -> usize {
     let clk = &mut *to_asiu_clk(hw); let asiu = &mut *clk.asiu;
     if parent_rate == 0 { clk.rate = 0; return 0; }
-    let addr = (asiu.div_base as *mut u8).add(clk.div.offset) as *mut core::ffi::c_void;
+    let addr = (asiu.div_base as *mut u8).add(clk.div.offset) as *mut kernel::ffi::c_void;
     let val = readl(addr);
     if val & (1u32 << clk.div.en_shift) == 0 { clk.rate = parent_rate; return parent_rate; }
     let div_h = ((val >> clk.div.high_shift) & bit_mask(clk.div.high_width)) + 1;
@@ -116,7 +116,7 @@ pub unsafe extern "C" fn iproc_asiu_clk_determine_rate(_: *mut clk_hw, req: *mut
 pub unsafe extern "C" fn iproc_asiu_clk_set_rate(hw: *mut clk_hw, rate: usize, parent_rate: usize) -> i32 {
     let clk = &mut *to_asiu_clk(hw); let asiu = &mut *clk.asiu;
     if rate == 0 || parent_rate == 0 { return -22; }
-    let addr = (asiu.div_base as *mut u8).add(clk.div.offset) as *mut core::ffi::c_void;
+    let addr = (asiu.div_base as *mut u8).add(clk.div.offset) as *mut kernel::ffi::c_void;
     let mut val = readl(addr);
     if rate == parent_rate { writel(val & !(1u32 << clk.div.en_shift), addr); return 0; }
     let div = (parent_rate + rate / 2) / rate; if div < 2 { return -22; }
@@ -140,7 +140,7 @@ pub unsafe extern "C" fn iproc_asiu_setup(node: *mut device_node, div: *const ip
     (*asiu).gate_base = of_iomap(node, 1); if (*asiu).gate_base.is_null() { iounmap((*asiu).div_base); kfree(clk_data as *mut _); kfree(asiu as *mut _); return; }
     let mut i = 0u32;
     while i < num_clks {
-        let mut clk_name: *const core::ffi::c_char = core::ptr::null();
+        let mut clk_name: *const kernel::ffi::c_char = core::ptr::null();
         if of_property_read_string_index(node, b"clock-output-names\0".as_ptr() as _, i, &mut clk_name) != 0 { break; }
         let clk = &mut *(((*asiu).clks.as_mut_ptr()).add(i as usize));
         clk.name = clk_name; clk.asiu = asiu; clk.div = core::ptr::read(div.add(i as usize)); clk.gate = core::ptr::read(gate.add(i as usize));

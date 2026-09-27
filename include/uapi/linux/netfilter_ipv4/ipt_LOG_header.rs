@@ -13,7 +13,7 @@ pub const IPT_LOG_MASK: u32 = 0x2f;
 pub struct ipt_log_info {
     pub level: u8,
     pub logflags: u8,
-    pub prefix: [::core::ffi::c_char; 30],
+    pub prefix: [::kernel::ffi::c_char; 30],
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

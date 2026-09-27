@@ -89,13 +89,13 @@ pub struct knav_dma_rx_cfg {
     pub err_mode: knav_dma_rx_err_mode,
     pub desc_type: knav_dma_desc_type,
     pub psinfo_at_sop: bool,
-    pub sop_offset: core::ffi::c_uint,
-    pub dst_q: core::ffi::c_uint,
+    pub sop_offset: kernel::ffi::c_uint,
+    pub dst_q: kernel::ffi::c_uint,
     pub thresh: knav_dma_rx_thresholds,
-    pub fdq: [core::ffi::c_uint; KNAV_DMA_FDQ_PER_CHAN],
-    pub sz_thresh0: core::ffi::c_uint,
-    pub sz_thresh1: core::ffi::c_uint,
-    pub sz_thresh2: core::ffi::c_uint,
+    pub fdq: [kernel::ffi::c_uint; KNAV_DMA_FDQ_PER_CHAN],
+    pub sz_thresh0: kernel::ffi::c_uint,
+    pub sz_thresh1: kernel::ffi::c_uint,
+    pub sz_thresh2: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -128,27 +128,27 @@ pub struct knav_dma_desc {
 /* CONFIG_KEYSTONE_NAVIGATOR_DMA controls whether these are external APIs or stubs. */
 #[cfg(CONFIG_KEYSTONE_NAVIGATOR_DMA)]
 extern "C" {
-    pub fn knav_dma_open_channel(dev: *mut device, name: *const core::ffi::c_char,
-                                 config: *mut knav_dma_cfg) -> *mut core::ffi::c_void;
-    pub fn knav_dma_close_channel(channel: *mut core::ffi::c_void);
-    pub fn knav_dma_get_flow(channel: *mut core::ffi::c_void) -> core::ffi::c_int;
+    pub fn knav_dma_open_channel(dev: *mut device, name: *const kernel::ffi::c_char,
+                                 config: *mut knav_dma_cfg) -> *mut kernel::ffi::c_void;
+    pub fn knav_dma_close_channel(channel: *mut kernel::ffi::c_void);
+    pub fn knav_dma_get_flow(channel: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
     pub fn knav_dma_device_ready() -> bool;
 }
 
 #[cfg(not(CONFIG_KEYSTONE_NAVIGATOR_DMA))]
 #[inline]
-pub unsafe fn knav_dma_open_channel(_dev: *mut device, _name: *const core::ffi::c_char,
-                                    _config: *mut knav_dma_cfg) -> *mut core::ffi::c_void {
+pub unsafe fn knav_dma_open_channel(_dev: *mut device, _name: *const kernel::ffi::c_char,
+                                    _config: *mut knav_dma_cfg) -> *mut kernel::ffi::c_void {
     core::ptr::null_mut()
 }
 
 #[cfg(not(CONFIG_KEYSTONE_NAVIGATOR_DMA))]
 #[inline]
-pub unsafe fn knav_dma_close_channel(_channel: *mut core::ffi::c_void) {}
+pub unsafe fn knav_dma_close_channel(_channel: *mut kernel::ffi::c_void) {}
 
 #[cfg(not(CONFIG_KEYSTONE_NAVIGATOR_DMA))]
 #[inline]
-pub unsafe fn knav_dma_get_flow(_channel: *mut core::ffi::c_void) -> core::ffi::c_int {
+pub unsafe fn knav_dma_get_flow(_channel: *mut kernel::ffi::c_void) -> kernel::ffi::c_int {
     -22
 }
 

@@ -29,8 +29,8 @@ pub const CPG_DSI1PHYCR: u32 = 0x70;
 
 #[repr(C)]
 pub struct Div4Clk {
-    pub name: *const core::ffi::c_char,
-    pub parent: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent: *const kernel::ffi::c_char,
     pub reg: u32,
     pub shift: u32,
 }
@@ -74,13 +74,13 @@ static Z_DIV_TABLE: &[ClkDivTable] = &[
 ];
 
 pub unsafe fn sh73a0_cpg_register_clock(
-    np: *mut DeviceNode, cpg: *mut Sh73a0Cpg, base: *mut u8, name: *const core::ffi::c_char,
+    np: *mut DeviceNode, cpg: *mut Sh73a0Cpg, base: *mut u8, name: *const kernel::ffi::c_char,
 ) -> *mut Clk {
     let mut table: *const ClkDivTable = core::ptr::null();
     let mut shift: u32 = 0;
     let mut reg: u32 = 0;
     let mut width: u32 = 0;
-    let mut parent_name: *const core::ffi::c_char = core::ptr::null();
+    let mut parent_name: *const kernel::ffi::c_char = core::ptr::null();
     let mut mult: u32 = 1;
     let mut div: u32 = 1;
 

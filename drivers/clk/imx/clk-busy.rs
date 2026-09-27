@@ -6,7 +6,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 type U8 = u8;
 type CInt = i32;
@@ -21,19 +21,19 @@ pub struct ClkHw {
 #[repr(C)]
 pub struct ClkDivider {
     pub hw: ClkHw,
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub shift: U8,
     pub width: U8,
-    pub lock: *mut core::ffi::c_void,
+    pub lock: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct ClkMux {
     pub hw: ClkHw,
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub shift: U8,
     pub mask: CUInt,
-    pub lock: *mut core::ffi::c_void,
+    pub lock: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -67,16 +67,16 @@ pub struct ClkInitData {
 
 extern "C" {
     static mut jiffies: CULong;
-    static mut imx_ccm_lock: core::ffi::c_void;
+    static mut imx_ccm_lock: kernel::ffi::c_void;
     static clk_divider_ops: ClkOps;
     static clk_mux_ops: ClkOps;
     fn clk_hw_determine_rate_no_reparent(hw: *mut ClkHw, req: *mut ClkRateRequest) -> CInt;
 
     fn msecs_to_jiffies(msecs: CUInt) -> CULong;
-    fn readl_relaxed(reg: *mut core::ffi::c_void) -> CUInt;
+    fn readl_relaxed(reg: *mut kernel::ffi::c_void) -> CUInt;
     fn time_after(a: CULong, b: CULong) -> bool;
-    fn clk_hw_register(dev: *mut core::ffi::c_void, hw: *mut ClkHw) -> CInt;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn clk_hw_register(dev: *mut kernel::ffi::c_void, hw: *mut ClkHw) -> CInt;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
 }
 
 #[no_mangle]
@@ -102,7 +102,7 @@ const ETIMEDOUT: CInt = 110;
 const CLK_SET_RATE_PARENT: CUInt = 1 << 2;
 const CLK_IS_CRITICAL: CUInt = 1 << 11;
 
-unsafe fn clk_busy_wait(reg: *mut core::ffi::c_void, shift: U8) -> CInt {
+unsafe fn clk_busy_wait(reg: *mut kernel::ffi::c_void, shift: U8) -> CInt {
     let timeout = jiffies.wrapping_add(msecs_to_jiffies(10));
 
     while readl_relaxed(reg) & (1u32 << shift) != 0 {
@@ -118,7 +118,7 @@ unsafe fn clk_busy_wait(reg: *mut core::ffi::c_void, shift: U8) -> CInt {
 pub struct ClkBusyDivider {
     pub div: ClkDivider,
     pub div_ops: *const ClkOps,
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub shift: U8,
 }
 
@@ -149,7 +149,7 @@ unsafe extern "C" fn clk_busy_divider_set_rate(hw: *mut ClkHw, rate: CULong, par
 pub struct ClkBusyMux {
     pub mux: ClkMux,
     pub mux_ops: *const ClkOps,
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub shift: U8,
 }
 
@@ -175,10 +175,10 @@ unsafe extern "C" fn clk_busy_mux_set_parent(hw: *mut ClkHw, index: U8) -> CInt 
 pub unsafe extern "C" fn imx_clk_hw_busy_divider(
     name: *const c_char,
     parent_name: *const c_char,
-    reg: *mut core::ffi::c_void,
+    reg: *mut kernel::ffi::c_void,
     shift: U8,
     width: U8,
-    busy_reg: *mut core::ffi::c_void,
+    busy_reg: *mut kernel::ffi::c_void,
     busy_shift: U8,
 ) -> *mut ClkHw {
     let busy = Box::new(ClkBusyDivider {
@@ -216,7 +216,7 @@ pub unsafe extern "C" fn imx_clk_hw_busy_divider(
     let hw = &mut (*busy).div.hw as *mut ClkHw;
     let ret = clk_hw_register(core::ptr::null_mut(), hw);
     if ret != 0 {
-        kfree(busy as *mut core::ffi::c_void);
+        kfree(busy as *mut kernel::ffi::c_void);
         return (ret as isize) as *mut ClkHw;
     }
     hw
@@ -225,10 +225,10 @@ pub unsafe extern "C" fn imx_clk_hw_busy_divider(
 #[no_mangle]
 pub unsafe extern "C" fn imx_clk_hw_busy_mux(
     name: *const c_char,
-    reg: *mut core::ffi::c_void,
+    reg: *mut kernel::ffi::c_void,
     shift: U8,
     width: U8,
-    busy_reg: *mut core::ffi::c_void,
+    busy_reg: *mut kernel::ffi::c_void,
     busy_shift: U8,
     parent_names: *const *const c_char,
     num_parents: CInt,
@@ -266,7 +266,7 @@ pub unsafe extern "C" fn imx_clk_hw_busy_mux(
     let hw = &mut (*busy).mux.hw as *mut ClkHw;
     let ret = clk_hw_register(core::ptr::null_mut(), hw);
     if ret != 0 {
-        kfree(busy as *mut core::ffi::c_void);
+        kfree(busy as *mut kernel::ffi::c_void);
         return (ret as isize) as *mut ClkHw;
     }
     hw

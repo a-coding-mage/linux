@@ -38,14 +38,14 @@ pub struct telemetry_evtconfig {
 
 #[repr(C)]
 pub struct telemetry_evtmap {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub evt_id: u32,
 }
 
 #[repr(C)]
 pub struct telemetry_unit_config {
     pub telem_evts: *mut telemetry_evtmap,
-    pub regmap: *mut core::ffi::c_void,
+    pub regmap: *mut kernel::ffi::c_void,
     pub ssram_evts_used: u8,
     pub curr_period: u8,
     pub max_period: u8,
@@ -95,7 +95,7 @@ extern "C" {
 
     pub fn telemetry_get_evtname(
         telem_unit: telemetry_unit,
-        name: *mut *const core::ffi::c_char,
+        name: *mut *const kernel::ffi::c_char,
         len: i32,
     ) -> i32;
 

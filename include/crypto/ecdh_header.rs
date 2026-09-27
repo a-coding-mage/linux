@@ -34,7 +34,7 @@ pub const ECC_CURVE_NIST_P521: u32 = 0x0004;
  */
 #[repr(C)]
 pub struct ecdh {
-    pub key: *mut core::ffi::c_char,
+    pub key: *mut kernel::ffi::c_char,
     pub key_size: u16,
 }
 
@@ -65,7 +65,7 @@ extern "C" {
      * Return:      -EINVAL if buffer has insufficient size, 0 on success
      */
     pub fn crypto_ecdh_encode_key(
-        buf: *mut core::ffi::c_char,
+        buf: *mut kernel::ffi::c_char,
         len: u32,
         p: *const ecdh,
     ) -> i32;
@@ -83,7 +83,7 @@ extern "C" {
      * Return:      -EINVAL if buffer has insufficient size, 0 on success
      */
     pub fn crypto_ecdh_decode_key(
-        buf: *const core::ffi::c_char,
+        buf: *const kernel::ffi::c_char,
         len: u32,
         p: *mut ecdh,
     ) -> i32;

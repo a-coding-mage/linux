@@ -145,7 +145,7 @@ pub const BCM47XX_BOARD_MAX_NAME: usize = 30;
 extern "C" {
 	pub fn bcm47xx_board_detect();
 	pub fn bcm47xx_board_get() -> bcm47xx_board;
-	pub fn bcm47xx_board_get_name() -> *const core::ffi::c_char;
+	pub fn bcm47xx_board_get_name() -> *const kernel::ffi::c_char;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

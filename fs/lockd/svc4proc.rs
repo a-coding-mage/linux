@@ -119,13 +119,13 @@ extern "C" {
 #[repr(C)]
 pub struct svc_procedure {
     pub pc_func: unsafe extern "C" fn(*mut svc_rqst) -> __be32,
-    pub pc_decode: *const core::ffi::c_void,
-    pub pc_encode: *const core::ffi::c_void,
+    pub pc_decode: *const kernel::ffi::c_void,
+    pub pc_encode: *const kernel::ffi::c_void,
     pub pc_argsize: usize,
     pub pc_argzero: usize,
     pub pc_ressize: usize,
     pub pc_xdrressize: usize,
-    pub pc_name: *const core::ffi::c_char,
+    pub pc_name: *const kernel::ffi::c_char,
 }
 
 // Procedure numbers 0..23 correspond exactly to NLMPROC4_* in nlm4xdr_gen.h.
@@ -139,7 +139,7 @@ pub struct svc_version {
     pub vs_vers: u32,
     pub vs_nproc: usize,
     pub vs_proc: *const svc_procedure,
-    pub vs_dispatch: *const core::ffi::c_void,
+    pub vs_dispatch: *const kernel::ffi::c_void,
     pub vs_xdrsize: usize,
 }
 

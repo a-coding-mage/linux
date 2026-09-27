@@ -46,26 +46,26 @@ pub struct device {
 }
 
 unsafe extern "C" {
-    pub fn usb_ep_type_string(ep_type: core::ffi::c_int) -> *const core::ffi::c_char;
-    pub fn usb_speed_string(speed: crate::usb_device_speed) -> *const core::ffi::c_char;
+    pub fn usb_ep_type_string(ep_type: kernel::ffi::c_int) -> *const kernel::ffi::c_char;
+    pub fn usb_speed_string(speed: crate::usb_device_speed) -> *const kernel::ffi::c_char;
     pub fn usb_get_maximum_speed(dev: *mut device) -> crate::usb_device_speed;
     pub fn usb_get_maximum_ssp_rate(dev: *mut device) -> usb_ssp_rate;
-    pub fn usb_state_string(state: crate::usb_device_state) -> *const core::ffi::c_char;
+    pub fn usb_state_string(state: crate::usb_device_state) -> *const kernel::ffi::c_char;
     pub fn usb_decode_interval(
         epd: *const crate::usb_endpoint_descriptor,
         speed: crate::usb_device_speed,
-    ) -> core::ffi::c_uint;
+    ) -> kernel::ffi::c_uint;
 
     /* CONFIG_TRACING */
     pub fn usb_decode_ctrl(
-        str_: *mut core::ffi::c_char,
+        str_: *mut kernel::ffi::c_char,
         size: usize,
         bRequestType: u8,
         bRequest: u8,
         wValue: u16,
         wIndex: u16,
         wLength: u16,
-    ) -> *const core::ffi::c_char;
+    ) -> *const kernel::ffi::c_char;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -5,7 +5,7 @@
  * Copyright (C) 2012  Intel Corporation. All rights reserved.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* Types and structures supplied by the NFC and kernel dependencies. */
 #[repr(C)]
@@ -26,15 +26,15 @@ pub struct list_head {
 
 #[repr(C)]
 pub struct nfc_llc {
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
     pub ops: *const nfc_llc_ops,
     pub rx_headroom: i32,
     pub rx_tailroom: i32,
 }
 
-pub type xmit_to_drv_t = Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>;
-pub type rcv_to_hci_t = Option<unsafe extern "C" fn(*mut core::ffi::c_void)>;
-pub type llc_failure_t = Option<unsafe extern "C" fn(*mut core::ffi::c_void)>;
+pub type xmit_to_drv_t = Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>;
+pub type rcv_to_hci_t = Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>;
+pub type llc_failure_t = Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>;
 
 #[repr(C)]
 pub struct nfc_llc_ops {
@@ -48,7 +48,7 @@ pub struct nfc_llc_ops {
             rx_headroom: *mut i32,
             rx_tailroom: *mut i32,
             llc_failure: llc_failure_t,
-        ) -> *mut core::ffi::c_void,
+        ) -> *mut kernel::ffi::c_void,
     >,
     pub deinit: Option<unsafe extern "C" fn(llc: *mut nfc_llc)>,
     pub start: Option<unsafe extern "C" fn(llc: *mut nfc_llc) -> i32>,
@@ -67,7 +67,7 @@ pub struct nfc_llc_engine {
 }
 
 unsafe extern "C" {
-    pub fn nfc_llc_get_data(llc: *mut nfc_llc) -> *mut core::ffi::c_void;
+    pub fn nfc_llc_get_data(llc: *mut nfc_llc) -> *mut kernel::ffi::c_void;
 
     pub fn nfc_llc_register(name: *const c_char, ops: *const nfc_llc_ops) -> i32;
 

@@ -18,12 +18,12 @@ pub struct pmd_t {
 }
 
 extern "C" {
-    static mut __tcm_start: core::ffi::c_char;
-    static mut __tcm_end: core::ffi::c_char;
-    static mut __dtcm_start: core::ffi::c_char;
+    static mut __tcm_start: kernel::ffi::c_char;
+    static mut __tcm_end: kernel::ffi::c_char;
+    static mut __dtcm_start: kernel::ffi::c_char;
 
     fn pfn_valid(pfn: usize) -> bool;
-    fn pgd_offset_k(vaddr: usize) -> *mut core::ffi::c_void;
+    fn pgd_offset_k(vaddr: usize) -> *mut kernel::ffi::c_void;
     fn pte_offset_kernel(pmd: *mut pmd_t, vaddr: usize) -> *mut pte_t;
     fn set_pte(pte: *mut pte_t, entry: usize);
     fn pfn_pte(pfn: usize, prot: usize) -> usize;
@@ -34,10 +34,10 @@ extern "C" {
     fn gen_pool_add(pool: *mut gen_pool, start: u32, size: u32, nid: i32) -> i32;
     fn gen_pool_alloc(pool: *mut gen_pool, size: usize) -> usize;
     fn gen_pool_free(pool: *mut gen_pool, addr: usize, size: usize);
-    fn panic(message: *const core::ffi::c_char) -> !;
-    fn memcpy(dst: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize);
-    fn pr_info(format: *const core::ffi::c_char, ...);
-    fn pr_err(format: *const core::ffi::c_char, ...);
+    fn panic(message: *const kernel::ffi::c_char) -> !;
+    fn memcpy(dst: *mut kernel::ffi::c_void, src: *const kernel::ffi::c_void, n: usize);
+    fn pr_info(format: *const kernel::ffi::c_char, ...);
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
 }
 
 static mut tcm_pool: *mut gen_pool = core::ptr::null_mut();
@@ -105,15 +105,15 @@ unsafe fn tcm_mapping_init() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn tcm_alloc(len: usize) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn tcm_alloc(len: usize) -> *mut kernel::ffi::c_void {
     if tcm_pool.is_null() { return core::ptr::null_mut(); }
     let vaddr = gen_pool_alloc(tcm_pool, len);
     if vaddr == 0 { return core::ptr::null_mut(); }
-    vaddr as *mut core::ffi::c_void
+    vaddr as *mut kernel::ffi::c_void
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn tcm_free(addr: *mut core::ffi::c_void, len: usize) {
+pub unsafe extern "C" fn tcm_free(addr: *mut kernel::ffi::c_void, len: usize) {
     gen_pool_free(tcm_pool, addr as usize, len);
 }
 

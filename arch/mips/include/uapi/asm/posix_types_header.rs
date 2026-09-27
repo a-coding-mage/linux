@@ -18,7 +18,7 @@
  * assume GCC is being used.
  */
 
-pub type __kernel_daddr_t = ::core::ffi::c_long;
+pub type __kernel_daddr_t = ::kernel::ffi::c_long;
 
 // Dependency: <asm-generic/posix_types.h>
 

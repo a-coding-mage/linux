@@ -101,7 +101,7 @@ pub unsafe fn acpi_tb_override_table(old_table_desc: *mut acpi_table_desc) {
     let mut table: *mut acpi_table_header = core::ptr::null_mut();
     let mut address: acpi_physical_address = 0;
     let mut length: u32 = 0;
-    let mut override_type: *const core::ffi::c_char = core::ptr::null();
+    let mut override_type: *const kernel::ffi::c_char = core::ptr::null();
 
     status = acpi_os_table_override((*old_table_desc).pointer, &mut table);
     if ACPI_SUCCESS(status) && !table.is_null() {

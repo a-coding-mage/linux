@@ -9,7 +9,7 @@
 
 /* Dependencies supplied by the surrounding kernel translation. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const PE_NONE: u32 = 0x0;
 pub const PE_PATH_GONE: u32 = 0x1;
@@ -90,7 +90,7 @@ pub struct ccw_device {
     pub drv: *mut ccw_driver,
     pub dev: device,
     pub online: i32,
-    pub handler: Option<unsafe extern "C" fn(*mut ccw_device, libc::c_ulong, *mut irb)>,
+    pub handler: Option<unsafe extern "C" fn(*mut ccw_device, kernel::ffi::c_ulong, *mut irb)>,
 }
 
 #[repr(C)]
@@ -105,22 +105,22 @@ extern "C" {
     pub fn get_ccwdev_by_busid(cdrv: *mut ccw_driver, bus_id: *const c_char) -> *mut ccw_device;
     pub fn ccw_driver_register(driver: *mut ccw_driver) -> i32;
     pub fn ccw_driver_unregister(driver: *mut ccw_driver);
-    pub fn ccw_device_set_options_mask(cdev: *mut ccw_device, flags: libc::c_ulong) -> i32;
-    pub fn ccw_device_set_options(cdev: *mut ccw_device, flags: libc::c_ulong) -> i32;
-    pub fn ccw_device_clear_options(cdev: *mut ccw_device, flags: libc::c_ulong);
+    pub fn ccw_device_set_options_mask(cdev: *mut ccw_device, flags: kernel::ffi::c_ulong) -> i32;
+    pub fn ccw_device_set_options(cdev: *mut ccw_device, flags: kernel::ffi::c_ulong) -> i32;
+    pub fn ccw_device_clear_options(cdev: *mut ccw_device, flags: kernel::ffi::c_ulong);
     pub fn ccw_device_is_pathgroup(cdev: *mut ccw_device) -> i32;
     pub fn ccw_device_is_multipath(cdev: *mut ccw_device) -> i32;
-    pub fn ccw_device_start(cdev: *mut ccw_device, ccp: *mut ccw1, intparm: libc::c_ulong, lpm: u8, flags: libc::c_ulong) -> i32;
-    pub fn ccw_device_start_timeout(cdev: *mut ccw_device, ccp: *mut ccw1, intparm: libc::c_ulong, lpm: u8, flags: libc::c_ulong, timeout: i32) -> i32;
-    pub fn ccw_device_start_key(cdev: *mut ccw_device, ccp: *mut ccw1, intparm: libc::c_ulong, lpm: u8, key: u8, flags: libc::c_ulong) -> i32;
-    pub fn ccw_device_start_timeout_key(cdev: *mut ccw_device, ccp: *mut ccw1, intparm: libc::c_ulong, lpm: u8, key: u8, flags: libc::c_ulong, timeout: i32) -> i32;
+    pub fn ccw_device_start(cdev: *mut ccw_device, ccp: *mut ccw1, intparm: kernel::ffi::c_ulong, lpm: u8, flags: kernel::ffi::c_ulong) -> i32;
+    pub fn ccw_device_start_timeout(cdev: *mut ccw_device, ccp: *mut ccw1, intparm: kernel::ffi::c_ulong, lpm: u8, flags: kernel::ffi::c_ulong, timeout: i32) -> i32;
+    pub fn ccw_device_start_key(cdev: *mut ccw_device, ccp: *mut ccw1, intparm: kernel::ffi::c_ulong, lpm: u8, key: u8, flags: kernel::ffi::c_ulong) -> i32;
+    pub fn ccw_device_start_timeout_key(cdev: *mut ccw_device, ccp: *mut ccw1, intparm: kernel::ffi::c_ulong, lpm: u8, key: u8, flags: kernel::ffi::c_ulong, timeout: i32) -> i32;
     pub fn ccw_device_resume(cdev: *mut ccw_device) -> i32;
-    pub fn ccw_device_halt(cdev: *mut ccw_device, flags: libc::c_ulong) -> i32;
-    pub fn ccw_device_clear(cdev: *mut ccw_device, flags: libc::c_ulong) -> i32;
-    pub fn ccw_device_tm_start_key(cdev: *mut ccw_device, tcw: *mut tcw, intparm: libc::c_ulong, lpm: u8, key: u8) -> i32;
-    pub fn ccw_device_tm_start_timeout_key(cdev: *mut ccw_device, tcw: *mut tcw, intparm: libc::c_ulong, lpm: u8, key: u8, timeout: i32) -> i32;
-    pub fn ccw_device_tm_start(cdev: *mut ccw_device, tcw: *mut tcw, intparm: libc::c_ulong, lpm: u8) -> i32;
-    pub fn ccw_device_tm_start_timeout(cdev: *mut ccw_device, tcw: *mut tcw, intparm: libc::c_ulong, lpm: u8, timeout: i32) -> i32;
+    pub fn ccw_device_halt(cdev: *mut ccw_device, flags: kernel::ffi::c_ulong) -> i32;
+    pub fn ccw_device_clear(cdev: *mut ccw_device, flags: kernel::ffi::c_ulong) -> i32;
+    pub fn ccw_device_tm_start_key(cdev: *mut ccw_device, tcw: *mut tcw, intparm: kernel::ffi::c_ulong, lpm: u8, key: u8) -> i32;
+    pub fn ccw_device_tm_start_timeout_key(cdev: *mut ccw_device, tcw: *mut tcw, intparm: kernel::ffi::c_ulong, lpm: u8, key: u8, timeout: i32) -> i32;
+    pub fn ccw_device_tm_start(cdev: *mut ccw_device, tcw: *mut tcw, intparm: kernel::ffi::c_ulong, lpm: u8) -> i32;
+    pub fn ccw_device_tm_start_timeout(cdev: *mut ccw_device, tcw: *mut tcw, intparm: kernel::ffi::c_ulong, lpm: u8, timeout: i32) -> i32;
     pub fn ccw_device_tm_intrg(cdev: *mut ccw_device) -> i32;
     pub fn ccw_device_get_mdc(cdev: *mut ccw_device, mask: u8) -> i32;
     pub fn ccw_device_set_online(cdev: *mut ccw_device) -> i32;
@@ -129,8 +129,8 @@ extern "C" {
     pub fn ccw_device_destroy_console(cdev: *mut ccw_device);
     pub fn ccw_device_enable_console(cdev: *mut ccw_device) -> i32;
     pub fn ccw_device_wait_idle(cdev: *mut ccw_device);
-    pub fn ccw_device_dma_zalloc(cdev: *mut ccw_device, size: usize, dma_handle: *mut dma32_t) -> *mut core::ffi::c_void;
-    pub fn ccw_device_dma_free(cdev: *mut ccw_device, cpu_addr: *mut core::ffi::c_void, size: usize);
+    pub fn ccw_device_dma_zalloc(cdev: *mut ccw_device, size: usize, dma_handle: *mut dma32_t) -> *mut kernel::ffi::c_void;
+    pub fn ccw_device_dma_free(cdev: *mut ccw_device, cpu_addr: *mut kernel::ffi::c_void, size: usize);
     pub fn ccw_device_siosl(cdev: *mut ccw_device) -> i32;
 }
 

@@ -31,17 +31,17 @@ pub struct vm_area_struct {
 extern "C" {
     pub fn tlb_flush_all();
     pub fn flush_tlb_mm(mm: *mut mm_struct);
-    pub fn flush_tlb_page(vma: *mut vm_area_struct, addr: ::core::ffi::c_ulong);
+    pub fn flush_tlb_page(vma: *mut vm_area_struct, addr: ::kernel::ffi::c_ulong);
     pub fn flush_tlb_range(
         vma: *mut vm_area_struct,
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
     );
     pub fn flush_tlb_kernel_range(
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
     );
-    pub fn flush_tlb_one(addr: ::core::ffi::c_ulong);
+    pub fn flush_tlb_one(addr: ::kernel::ffi::c_ulong);
 }
 
 /*

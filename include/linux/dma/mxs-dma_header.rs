@@ -15,9 +15,9 @@ pub const MXS_DMA_CTRL_WAIT4RDY: u32 = 1u32 << 30;
 pub unsafe fn mxs_dmaengine_prep_pio(
     chan: *mut dma_chan,
     pio: *mut u32,
-    npio: core::ffi::c_uint,
+    npio: kernel::ffi::c_uint,
     dir: dma_transfer_direction,
-    flags: core::ffi::c_ulong,
+    flags: kernel::ffi::c_ulong,
 ) -> *mut dma_async_tx_descriptor {
     dmaengine_prep_slave_sg(chan, pio as *mut scatterlist, npio, dir, flags)
 }
@@ -32,9 +32,9 @@ extern "C" {
     pub fn dmaengine_prep_slave_sg(
         chan: *mut dma_chan,
         sg: *mut scatterlist,
-        sg_len: core::ffi::c_uint,
+        sg_len: kernel::ffi::c_uint,
         dir: dma_transfer_direction,
-        flags: core::ffi::c_ulong,
+        flags: kernel::ffi::c_ulong,
     ) -> *mut dma_async_tx_descriptor;
 }
 

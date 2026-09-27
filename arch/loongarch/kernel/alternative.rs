@@ -10,7 +10,7 @@ static mut debug_alternative: i32 = 0;
 unsafe extern "C" {
     static _dummy: i32;
     fn sign_extend64(value: u64, bits: u32) -> i64;
-    fn in_alt_jump(jump: usize, start: *mut core::ffi::c_void, end: *mut core::ffi::c_void) -> bool;
+    fn in_alt_jump(jump: usize, start: *mut kernel::ffi::c_void, end: *mut kernel::ffi::c_void) -> bool;
     fn local_irq_save(flags: *mut usize);
     fn local_irq_restore(flags: usize);
     fn wbflush();
@@ -18,8 +18,8 @@ unsafe extern "C" {
     fn cpu_has(feature: i32) -> bool;
     fn is_pc_ins(insn: *const loongarch_instruction) -> bool;
     fn is_branch_ins(insn: *const loongarch_instruction) -> bool;
-    fn printk(fmt: *const core::ffi::c_char, ...);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
     fn bug_on(condition: bool);
 }
 
@@ -61,8 +61,8 @@ unsafe fn add_nops(mut insn: *mut loongarch_instruction, mut count: i32) {
 }
 
 unsafe fn recompute_jump(buf: *mut loongarch_instruction, dest: *mut loongarch_instruction,
-                         src: *mut loongarch_instruction, start: *mut core::ffi::c_void,
-                         end: *mut core::ffi::c_void) {
+                         src: *mut loongarch_instruction, start: *mut kernel::ffi::c_void,
+                         end: *mut kernel::ffi::c_void) {
     let cur_pc = src as usize;
     let pc = dest as usize;
     let mut si_l = (*src).reg0i26_format.immediate_l;

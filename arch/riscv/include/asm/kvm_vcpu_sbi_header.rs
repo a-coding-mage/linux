@@ -22,53 +22,53 @@ pub enum kvm_riscv_sbi_ext_status {
 
 #[repr(C)]
 pub struct kvm_vcpu_sbi_context {
-    pub return_handled: core::ffi::c_int,
+    pub return_handled: kernel::ffi::c_int,
     pub ext_status: [kvm_riscv_sbi_ext_status; KVM_RISCV_SBI_EXT_MAX],
 }
 
 #[repr(C)]
 pub struct kvm_vcpu_sbi_return {
-    pub out_val: core::ffi::c_ulong,
-    pub err_val: core::ffi::c_ulong,
+    pub out_val: kernel::ffi::c_ulong,
+    pub err_val: kernel::ffi::c_ulong,
     pub utrap: *mut kvm_cpu_trap,
     pub uexit: bool,
 }
 
 #[repr(C)]
 pub struct kvm_vcpu_sbi_extension {
-    pub extid_start: core::ffi::c_ulong,
-    pub extid_end: core::ffi::c_ulong,
+    pub extid_start: kernel::ffi::c_ulong,
+    pub extid_end: kernel::ffi::c_ulong,
     pub default_disabled: bool,
     pub handler: Option<unsafe extern "C" fn(
         vcpu: *mut kvm_vcpu,
         run: *mut kvm_run,
         retdata: *mut kvm_vcpu_sbi_return,
-    ) -> core::ffi::c_int>,
-    pub probe: Option<unsafe extern "C" fn(vcpu: *mut kvm_vcpu) -> core::ffi::c_ulong>,
-    pub init: Option<unsafe extern "C" fn(vcpu: *mut kvm_vcpu) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(vcpu: *mut kvm_vcpu) -> kernel::ffi::c_ulong>,
+    pub init: Option<unsafe extern "C" fn(vcpu: *mut kvm_vcpu) -> kernel::ffi::c_int>,
     pub deinit: Option<unsafe extern "C" fn(vcpu: *mut kvm_vcpu)>,
     pub reset: Option<unsafe extern "C" fn(vcpu: *mut kvm_vcpu)>,
     pub validate: Option<unsafe extern "C" fn(vcpu: *mut kvm_vcpu)>,
-    pub state_reg_subtype: core::ffi::c_ulong,
+    pub state_reg_subtype: kernel::ffi::c_ulong,
     pub get_state_reg_count:
-        Option<unsafe extern "C" fn(vcpu: *mut kvm_vcpu) -> core::ffi::c_ulong>,
+        Option<unsafe extern "C" fn(vcpu: *mut kvm_vcpu) -> kernel::ffi::c_ulong>,
     pub get_state_reg_id: Option<unsafe extern "C" fn(
         vcpu: *mut kvm_vcpu,
-        index: core::ffi::c_int,
+        index: kernel::ffi::c_int,
         reg_id: *mut u64,
-    ) -> core::ffi::c_int>,
+    ) -> kernel::ffi::c_int>,
     pub get_state_reg: Option<unsafe extern "C" fn(
         vcpu: *mut kvm_vcpu,
-        reg_num: core::ffi::c_ulong,
-        reg_size: core::ffi::c_ulong,
-        reg_val: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int>,
+        reg_num: kernel::ffi::c_ulong,
+        reg_size: kernel::ffi::c_ulong,
+        reg_val: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int>,
     pub set_state_reg: Option<unsafe extern "C" fn(
         vcpu: *mut kvm_vcpu,
-        reg_num: core::ffi::c_ulong,
-        reg_size: core::ffi::c_ulong,
-        reg_val: *const core::ffi::c_void,
-    ) -> core::ffi::c_int>,
+        reg_num: kernel::ffi::c_ulong,
+        reg_size: kernel::ffi::c_ulong,
+        reg_val: *const kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int>,
 }
 
 extern "C" {
@@ -76,7 +76,7 @@ extern "C" {
         vcpu: *mut kvm_vcpu,
         run: *mut kvm_run,
         retdata: *mut kvm_vcpu_sbi_return,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn kvm_riscv_vcpu_sbi_system_reset(
         vcpu: *mut kvm_vcpu,
         run: *mut kvm_run,
@@ -85,40 +85,40 @@ extern "C" {
     );
     pub fn kvm_riscv_vcpu_sbi_request_reset(
         vcpu: *mut kvm_vcpu,
-        pc: core::ffi::c_ulong,
-        a1: core::ffi::c_ulong,
+        pc: kernel::ffi::c_ulong,
+        a1: kernel::ffi::c_ulong,
     );
     pub fn kvm_riscv_vcpu_sbi_load_reset_state(vcpu: *mut kvm_vcpu);
-    pub fn kvm_riscv_vcpu_sbi_return(vcpu: *mut kvm_vcpu, run: *mut kvm_run) -> core::ffi::c_int;
+    pub fn kvm_riscv_vcpu_sbi_return(vcpu: *mut kvm_vcpu, run: *mut kvm_run) -> kernel::ffi::c_int;
     pub fn kvm_riscv_vcpu_reg_indices_sbi_ext(
         vcpu: *mut kvm_vcpu,
         uindices: *mut u64,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn kvm_riscv_vcpu_set_reg_sbi_ext(
         vcpu: *mut kvm_vcpu,
         reg: *const kvm_one_reg,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn kvm_riscv_vcpu_get_reg_sbi_ext(
         vcpu: *mut kvm_vcpu,
         reg: *const kvm_one_reg,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn kvm_riscv_vcpu_reg_indices_sbi(
         vcpu: *mut kvm_vcpu,
         uindices: *mut u64,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn kvm_riscv_vcpu_set_reg_sbi(
         vcpu: *mut kvm_vcpu,
         reg: *const kvm_one_reg,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn kvm_riscv_vcpu_get_reg_sbi(
         vcpu: *mut kvm_vcpu,
         reg: *const kvm_one_reg,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn kvm_vcpu_sbi_find_ext(
         vcpu: *mut kvm_vcpu,
-        extid: core::ffi::c_ulong,
+        extid: kernel::ffi::c_ulong,
     ) -> *const kvm_vcpu_sbi_extension;
-    pub fn kvm_riscv_vcpu_sbi_ecall(vcpu: *mut kvm_vcpu, run: *mut kvm_run) -> core::ffi::c_int;
+    pub fn kvm_riscv_vcpu_sbi_ecall(vcpu: *mut kvm_vcpu, run: *mut kvm_run) -> kernel::ffi::c_int;
     pub fn kvm_riscv_vcpu_sbi_init(vcpu: *mut kvm_vcpu);
     pub fn kvm_riscv_vcpu_sbi_deinit(vcpu: *mut kvm_vcpu);
     pub fn kvm_riscv_vcpu_sbi_reset(vcpu: *mut kvm_vcpu);

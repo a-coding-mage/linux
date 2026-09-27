@@ -39,17 +39,17 @@ pub struct device_node;
 pub struct gpio_device {
     pub dev: device,
     pub chrdev: cdev,
-    pub id: core::ffi::c_int,
+    pub id: kernel::ffi::c_int,
     pub owner: *mut module,
     pub chip: *mut gpio_chip,
     pub descs: *mut gpio_desc,
-    pub valid_mask: *mut libc::c_ulong,
+    pub valid_mask: *mut kernel::ffi::c_ulong,
     pub desc_srcu: srcu_struct,
-    pub base: libc::c_uint,
+    pub base: kernel::ffi::c_uint,
     pub ngpio: u16,
     pub can_sleep: bool,
-    pub label: *const core::ffi::c_char,
-    pub data: *mut core::ffi::c_void,
+    pub label: *const kernel::ffi::c_char,
+    pub data: *mut kernel::ffi::c_void,
     pub list: list_head,
     pub line_state_notifier: raw_notifier_head,
     pub line_state_lock: rwlock_t,
@@ -68,7 +68,7 @@ pub unsafe fn to_gpio_device(dev: *mut device) -> *mut gpio_device {
 }
 
 // GPIO suffixes used for ACPI and device-tree lookup.
-pub static mut gpio_suffixes: *const *const core::ffi::c_char = core::ptr::null();
+pub static mut gpio_suffixes: *const *const kernel::ffi::c_char = core::ptr::null();
 
 // C macro for_each_gpio_property_name(propname, con_id): iterate gpio_suffixes,
 // formatting each suffix as either "<con_id>-<suffix>" or the suffix itself.
@@ -76,11 +76,11 @@ pub static mut gpio_suffixes: *const *const core::ffi::c_char = core::ptr::null(
 #[repr(C)]
 pub struct gpio_array {
     pub desc: *mut *mut gpio_desc,
-    pub size: libc::c_uint,
+    pub size: kernel::ffi::c_uint,
     pub gdev: *mut gpio_device,
-    pub get_mask: *mut libc::c_ulong,
-    pub set_mask: *mut libc::c_ulong,
-    pub invert_mask: [libc::c_ulong; 0],
+    pub get_mask: *mut kernel::ffi::c_ulong,
+    pub set_mask: *mut kernel::ffi::c_ulong,
+    pub invert_mask: [kernel::ffi::c_ulong; 0],
 }
 
 // C macros for_each_gpio_desc and for_each_gpio_desc_with_flag retain their
@@ -88,37 +88,37 @@ pub struct gpio_array {
 
 extern "C" {
     pub fn gpiod_get_array_value_complex(
-        raw: bool, can_sleep: bool, array_size: libc::c_uint,
+        raw: bool, can_sleep: bool, array_size: kernel::ffi::c_uint,
         desc_array: *mut *mut gpio_desc, array_info: *mut gpio_array,
-        value_bitmap: *mut libc::c_ulong,
-    ) -> core::ffi::c_int;
+        value_bitmap: *mut kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
     pub fn gpiod_set_array_value_complex(
-        raw: bool, can_sleep: bool, array_size: libc::c_uint,
+        raw: bool, can_sleep: bool, array_size: kernel::ffi::c_uint,
         desc_array: *mut *mut gpio_desc, array_info: *mut gpio_array,
-        value_bitmap: *mut libc::c_ulong,
-    ) -> core::ffi::c_int;
-    pub fn gpiod_set_transitory(desc: *mut gpio_desc, transitory: bool) -> core::ffi::c_int;
-    pub fn gpiod_line_state_notify(desc: *mut gpio_desc, action: libc::c_ulong);
-    pub fn gpiod_direction_output_nonotify(desc: *mut gpio_desc, value: core::ffi::c_int) -> core::ffi::c_int;
-    pub fn gpiod_direction_input_nonotify(desc: *mut gpio_desc) -> core::ffi::c_int;
+        value_bitmap: *mut kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
+    pub fn gpiod_set_transitory(desc: *mut gpio_desc, transitory: bool) -> kernel::ffi::c_int;
+    pub fn gpiod_line_state_notify(desc: *mut gpio_desc, action: kernel::ffi::c_ulong);
+    pub fn gpiod_direction_output_nonotify(desc: *mut gpio_desc, value: kernel::ffi::c_int) -> kernel::ffi::c_int;
+    pub fn gpiod_direction_input_nonotify(desc: *mut gpio_desc) -> kernel::ffi::c_int;
 }
 
 #[repr(C)]
 pub struct gpio_desc_label {
     pub rh: rcu_head,
-    pub str_: [core::ffi::c_char; 0],
+    pub str_: [kernel::ffi::c_char; 0],
 }
 
 #[repr(C)]
 pub struct gpio_desc {
     pub gdev: *mut gpio_device,
-    pub flags: libc::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub label: *mut gpio_desc_label,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     #[cfg(CONFIG_OF_DYNAMIC)]
     pub hog: *mut device_node,
     #[cfg(CONFIG_GPIO_CDEV)]
-    pub debounce_period_us: libc::c_uint,
+    pub debounce_period_us: kernel::ffi::c_uint,
 }
 
 pub const GPIOD_FLAG_REQUESTED: u32 = 0;
@@ -148,7 +148,7 @@ pub const GPIOD_FLAG_SHARED_PROXY: u32 = 21;
 pub struct gpio_chip_guard {
     pub gdev: *mut gpio_device,
     pub gc: *mut gpio_chip,
-    pub idx: core::ffi::c_int,
+    pub idx: kernel::ffi::c_int,
 }
 
 // DEFINE_CLASS(gpio_chip_guard, ...): scoped SRCU read locking of gdev->chip;
@@ -156,14 +156,14 @@ pub struct gpio_chip_guard {
 // srcu_dereference. The source declaration takes const struct gpio_desc *desc.
 
 extern "C" {
-    pub fn gpiod_request(desc: *mut gpio_desc, label: *const core::ffi::c_char) -> core::ffi::c_int;
-    pub fn gpiod_request_commit(desc: *mut gpio_desc, label: *const core::ffi::c_char) -> core::ffi::c_int;
+    pub fn gpiod_request(desc: *mut gpio_desc, label: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    pub fn gpiod_request_commit(desc: *mut gpio_desc, label: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
     pub fn gpiod_free(desc: *mut gpio_desc);
     pub fn gpiod_free_commit(desc: *mut gpio_desc);
 }
 
 #[inline]
-pub unsafe fn gpiod_request_user(desc: *mut gpio_desc, label: *const core::ffi::c_char) -> core::ffi::c_int {
+pub unsafe fn gpiod_request_user(desc: *mut gpio_desc, label: *const kernel::ffi::c_char) -> kernel::ffi::c_int {
     let mut ret = gpiod_request(desc, label);
     // -EPROBE_DEFER is converted to -ENODEV.
     if ret == -517 { ret = -19; }
@@ -175,18 +175,18 @@ pub enum gpiod_flags {}
 
 extern "C" {
     pub fn gpiod_find_and_request(consumer: *mut device, fwnode: *mut fwnode_handle,
-        con_id: *const core::ffi::c_char, idx: libc::c_uint, flags: gpiod_flags,
-        label: *const core::ffi::c_char, platform_lookup_allowed: bool) -> *mut gpio_desc;
-    pub fn gpio_do_set_config(desc: *mut gpio_desc, config: libc::c_ulong) -> core::ffi::c_int;
-    pub fn gpiod_configure_flags(desc: *mut gpio_desc, con_id: *const core::ffi::c_char,
-        lflags: libc::c_ulong, dflags: gpiod_flags) -> core::ffi::c_int;
-    pub fn gpio_set_debounce_timeout(desc: *mut gpio_desc, debounce: libc::c_uint) -> core::ffi::c_int;
-    pub fn gpiod_hog(desc: *mut gpio_desc, name: *const core::ffi::c_char,
-        lflags: libc::c_ulong, dflags: gpiod_flags) -> core::ffi::c_int;
-    pub fn gpiochip_add_hog(gc: *mut gpio_chip, fwnode: *mut fwnode_handle) -> core::ffi::c_int;
-    pub fn gpiochip_get_ngpios(gc: *mut gpio_chip, dev: *mut device) -> core::ffi::c_int;
-    pub fn gpiochip_get_desc(gc: *mut gpio_chip, hwnum: libc::c_uint) -> *mut gpio_desc;
-    pub fn gpiod_get_label(desc: *mut gpio_desc) -> *const core::ffi::c_char;
+        con_id: *const kernel::ffi::c_char, idx: kernel::ffi::c_uint, flags: gpiod_flags,
+        label: *const kernel::ffi::c_char, platform_lookup_allowed: bool) -> *mut gpio_desc;
+    pub fn gpio_do_set_config(desc: *mut gpio_desc, config: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
+    pub fn gpiod_configure_flags(desc: *mut gpio_desc, con_id: *const kernel::ffi::c_char,
+        lflags: kernel::ffi::c_ulong, dflags: gpiod_flags) -> kernel::ffi::c_int;
+    pub fn gpio_set_debounce_timeout(desc: *mut gpio_desc, debounce: kernel::ffi::c_uint) -> kernel::ffi::c_int;
+    pub fn gpiod_hog(desc: *mut gpio_desc, name: *const kernel::ffi::c_char,
+        lflags: kernel::ffi::c_ulong, dflags: gpiod_flags) -> kernel::ffi::c_int;
+    pub fn gpiochip_add_hog(gc: *mut gpio_chip, fwnode: *mut fwnode_handle) -> kernel::ffi::c_int;
+    pub fn gpiochip_get_ngpios(gc: *mut gpio_chip, dev: *mut device) -> kernel::ffi::c_int;
+    pub fn gpiochip_get_desc(gc: *mut gpio_chip, hwnum: kernel::ffi::c_uint) -> *mut gpio_desc;
+    pub fn gpiod_get_label(desc: *mut gpio_desc) -> *const kernel::ffi::c_char;
 }
 
 // Descriptor/chip-prefixed logging macros (__gpiod_pr, gpiod_{err,warn,dbg},

@@ -33,7 +33,7 @@ pub const XTENSA_TOOL_CHAIN_XCC: u32 = 2;
 #[repr(C, packed)]
 pub struct sof_ipc4_coredump_hdr {
     /* 'Z', 'E' as identifier of file */
-    pub id: [::core::ffi::c_char; 2],
+    pub id: [::kernel::ffi::c_char; 2],
 
     /* Identify the version of the header */
     pub hdr_version: u16,
@@ -54,7 +54,7 @@ pub struct sof_ipc4_coredump_hdr {
 #[repr(C, packed)]
 pub struct sof_ipc4_coredump_arch_hdr {
     /* COREDUMP_ARCH_HDR_ID to indicate this is a architecture-specific block */
-    pub id: ::core::ffi::c_char,
+    pub id: ::kernel::ffi::c_char,
 
     /* Identify the version of this block */
     pub hdr_version: u16,

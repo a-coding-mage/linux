@@ -73,19 +73,19 @@ pub const MISC_DYNAMIC_MINOR: i32 = 255;
 
 #[repr(C)]
 pub struct miscdevice {
-    pub minor: ::core::ffi::c_int,
-    pub name: *const ::core::ffi::c_char,
+    pub minor: ::kernel::ffi::c_int,
+    pub name: *const ::kernel::ffi::c_char,
     pub fops: *const file_operations,
     pub list: list_head,
     pub parent: *mut device,
     pub this_device: *mut device,
     pub groups: *const *const attribute_group,
-    pub nodename: *const ::core::ffi::c_char,
+    pub nodename: *const ::kernel::ffi::c_char,
     pub mode: umode_t,
 }
 
 unsafe extern "C" {
-    pub fn misc_register(misc: *mut miscdevice) -> ::core::ffi::c_int;
+    pub fn misc_register(misc: *mut miscdevice) -> ::kernel::ffi::c_int;
     pub fn misc_deregister(misc: *mut miscdevice);
 }
 

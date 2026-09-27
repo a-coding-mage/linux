@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 // pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Declarations supplied by the kernel headers and the other translation units.
 #[repr(C)]

@@ -9,7 +9,7 @@
 // Dependencies from Linux, sound/soc, loongson_i2s.h, and loongson_dma.h are
 // intentionally referenced as external items supplied by the surrounding tree.
 
-const DRIVER_NAME: *const core::ffi::c_char = b"loongson-i2s-pci\0".as_ptr() as *const core::ffi::c_char;
+const DRIVER_NAME: *const kernel::ffi::c_char = b"loongson-i2s-pci\0".as_ptr() as *const kernel::ffi::c_char;
 
 extern "C" {
     static loongson_i2s_regmap_config: regmap_config;
@@ -17,68 +17,68 @@ extern "C" {
     static loongson_i2s_dai: snd_soc_dai_driver;
     static loongson_i2s_pm: dev_pm_ops;
 
-    fn pcim_enable_device(pdev: *mut pci_dev) -> core::ffi::c_int;
+    fn pcim_enable_device(pdev: *mut pci_dev) -> kernel::ffi::c_int;
     fn devm_kzalloc(
         dev: *mut device,
         size: usize,
         flags: gfp_t,
-    ) -> *mut core::ffi::c_void;
-    fn pci_set_drvdata(pdev: *mut pci_dev, data: *mut core::ffi::c_void);
+    ) -> *mut kernel::ffi::c_void;
+    fn pci_set_drvdata(pdev: *mut pci_dev, data: *mut kernel::ffi::c_void);
     fn pcim_iomap_region(
         pdev: *mut pci_dev,
-        bar: core::ffi::c_int,
-        name: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_void;
+        bar: kernel::ffi::c_int,
+        name: *const kernel::ffi::c_char,
+    ) -> *mut kernel::ffi::c_void;
     fn devm_regmap_init_mmio(
         dev: *mut device,
-        regs: *mut core::ffi::c_void,
+        regs: *mut kernel::ffi::c_void,
         config: *const regmap_config,
     ) -> *mut regmap;
-    fn pci_resource_start(pdev: *mut pci_dev, bar: core::ffi::c_int) -> resource_size_t;
+    fn pci_resource_start(pdev: *mut pci_dev, bar: kernel::ffi::c_int) -> resource_size_t;
     fn fwnode_irq_get_byname(
         fwnode: *const fwnode_handle,
-        name: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        name: *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
     fn device_property_read_u32(
         dev: *mut device,
-        propname: *const core::ffi::c_char,
+        propname: *const kernel::ffi::c_char,
         val: *mut u32,
-    ) -> core::ffi::c_int;
-    fn dma_set_mask_and_coherent(dev: *mut device, mask: u64) -> core::ffi::c_int;
-    fn regmap_write(map: *mut regmap, reg: core::ffi::c_uint, val: core::ffi::c_uint) -> core::ffi::c_int;
-    fn udelay(usecs: core::ffi::c_ulong);
+    ) -> kernel::ffi::c_int;
+    fn dma_set_mask_and_coherent(dev: *mut device, mask: u64) -> kernel::ffi::c_int;
+    fn regmap_write(map: *mut regmap, reg: kernel::ffi::c_uint, val: kernel::ffi::c_uint) -> kernel::ffi::c_int;
+    fn udelay(usecs: kernel::ffi::c_ulong);
     fn devm_snd_soc_register_component(
         dev: *mut device,
         cmpnt_drv: *const snd_soc_component_driver,
         dai_drv: *const snd_soc_dai_driver,
-        num_dai: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        num_dai: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
     fn pm_sleep_ptr(ptr: *const dev_pm_ops) -> *const dev_pm_ops;
     fn __module_pci_driver(driver: *mut pci_driver);
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     fn dev_err_probe(
         dev: *mut device,
-        err: core::ffi::c_int,
-        fmt: *const core::ffi::c_char,
+        err: kernel::ffi::c_int,
+        fmt: *const kernel::ffi::c_char,
         ...
-    ) -> core::ffi::c_int;
-    fn IS_ERR(ptr: *const core::ffi::c_void) -> bool;
-    fn PTR_ERR(ptr: *const core::ffi::c_void) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
+    fn IS_ERR(ptr: *const kernel::ffi::c_void) -> bool;
+    fn PTR_ERR(ptr: *const kernel::ffi::c_void) -> kernel::ffi::c_int;
 }
 
-type gfp_t = core::ffi::c_uint;
+type gfp_t = kernel::ffi::c_uint;
 type resource_size_t = u64;
 
 const GFP_KERNEL: gfp_t = 0;
-const ENODEV: core::ffi::c_int = 19;
-const ENOMEM: core::ffi::c_int = 12;
+const ENODEV: kernel::ffi::c_int = 19;
+const ENOMEM: kernel::ffi::c_int = 12;
 const PCI_VENDOR_ID_LOONGSON: u32 = 0x0014;
 const LS_I2S_TX_DATA: resource_size_t = 0;
 const LS_I2S_TX_ORDER: usize = 0;
 const LS_I2S_RX_DATA: resource_size_t = 0;
 const LS_I2S_RX_ORDER: usize = 0;
-const LS_I2S_CTRL: core::ffi::c_uint = 0;
-const I2S_CTRL_RESET: core::ffi::c_uint = 0;
+const LS_I2S_CTRL: kernel::ffi::c_uint = 0;
+const I2S_CTRL_RESET: kernel::ffi::c_uint = 0;
 
 const fn DMA_BIT_MASK(nr: u32) -> u64 {
     if nr == 64 {
@@ -142,13 +142,13 @@ struct pci_driver_inner {
 
 #[repr(C)]
 struct pci_driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     id_table: *const pci_device_id,
     probe: Option<
         unsafe extern "C" fn(
             pdev: *mut pci_dev,
             pid: *const pci_device_id,
-        ) -> core::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
     driver: pci_driver_inner,
 }
@@ -156,15 +156,15 @@ struct pci_driver {
 #[repr(C)]
 struct loongson_idma_data {
     dev_addr: resource_size_t,
-    order_addr: *mut core::ffi::c_void,
-    irq: core::ffi::c_int,
+    order_addr: *mut kernel::ffi::c_void,
+    irq: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 struct loongson_i2s {
     rev_id: u8,
     dev: *mut device,
-    reg_base: *mut core::ffi::c_void,
+    reg_base: *mut kernel::ffi::c_void,
     regmap: *mut regmap,
     tx_dma_data: loongson_idma_data,
     rx_dma_data: loongson_idma_data,
@@ -174,16 +174,16 @@ struct loongson_i2s {
 unsafe extern "C" fn loongson_i2s_pci_probe(
     pdev: *mut pci_dev,
     _pid: *const pci_device_id,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let fwnode: *const fwnode_handle = (*pdev).dev.fwnode;
     let mut tx_data: *mut loongson_idma_data;
     let mut rx_data: *mut loongson_idma_data;
     let dev: *mut device = &mut (*pdev).dev;
     let i2s: *mut loongson_i2s;
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     if pcim_enable_device(pdev) != 0 {
-        dev_err(dev, b"pci_enable_device failed\n\0".as_ptr() as *const core::ffi::c_char);
+        dev_err(dev, b"pci_enable_device failed\n\0".as_ptr() as *const kernel::ffi::c_char);
         return -ENODEV;
     }
 
@@ -194,20 +194,20 @@ unsafe extern "C" fn loongson_i2s_pci_probe(
 
     (*i2s).rev_id = (*pdev).revision;
     (*i2s).dev = dev;
-    pci_set_drvdata(pdev, i2s as *mut core::ffi::c_void);
+    pci_set_drvdata(pdev, i2s as *mut kernel::ffi::c_void);
 
     (*i2s).reg_base = pcim_iomap_region(pdev, 0, DRIVER_NAME);
-    if IS_ERR((*i2s).reg_base as *const core::ffi::c_void) {
-        dev_err(dev, b"iomap_region failed\n\0".as_ptr() as *const core::ffi::c_char);
-        return PTR_ERR((*i2s).reg_base as *const core::ffi::c_void);
+    if IS_ERR((*i2s).reg_base as *const kernel::ffi::c_void) {
+        dev_err(dev, b"iomap_region failed\n\0".as_ptr() as *const kernel::ffi::c_char);
+        return PTR_ERR((*i2s).reg_base as *const kernel::ffi::c_void);
     }
 
     (*i2s).regmap = devm_regmap_init_mmio(dev, (*i2s).reg_base, &loongson_i2s_regmap_config);
-    if IS_ERR((*i2s).regmap as *const core::ffi::c_void) {
+    if IS_ERR((*i2s).regmap as *const kernel::ffi::c_void) {
         return dev_err_probe(
             dev,
-            PTR_ERR((*i2s).regmap as *const core::ffi::c_void),
-            b"regmap_init_mmio failed\n\0".as_ptr() as *const core::ffi::c_char,
+            PTR_ERR((*i2s).regmap as *const kernel::ffi::c_void),
+            b"regmap_init_mmio failed\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
@@ -215,39 +215,39 @@ unsafe extern "C" fn loongson_i2s_pci_probe(
     rx_data = &mut (*i2s).rx_dma_data;
 
     (*tx_data).dev_addr = pci_resource_start(pdev, 0).wrapping_add(LS_I2S_TX_DATA);
-    (*tx_data).order_addr = ((*i2s).reg_base as *mut u8).wrapping_add(LS_I2S_TX_ORDER) as *mut core::ffi::c_void;
+    (*tx_data).order_addr = ((*i2s).reg_base as *mut u8).wrapping_add(LS_I2S_TX_ORDER) as *mut kernel::ffi::c_void;
 
     (*rx_data).dev_addr = pci_resource_start(pdev, 0).wrapping_add(LS_I2S_RX_DATA);
-    (*rx_data).order_addr = ((*i2s).reg_base as *mut u8).wrapping_add(LS_I2S_RX_ORDER) as *mut core::ffi::c_void;
+    (*rx_data).order_addr = ((*i2s).reg_base as *mut u8).wrapping_add(LS_I2S_RX_ORDER) as *mut kernel::ffi::c_void;
 
-    (*tx_data).irq = fwnode_irq_get_byname(fwnode, b"tx\0".as_ptr() as *const core::ffi::c_char);
+    (*tx_data).irq = fwnode_irq_get_byname(fwnode, b"tx\0".as_ptr() as *const kernel::ffi::c_char);
     if (*tx_data).irq < 0 {
         return dev_err_probe(
             dev,
             (*tx_data).irq,
-            b"dma tx irq invalid\n\0".as_ptr() as *const core::ffi::c_char,
+            b"dma tx irq invalid\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
-    (*rx_data).irq = fwnode_irq_get_byname(fwnode, b"rx\0".as_ptr() as *const core::ffi::c_char);
+    (*rx_data).irq = fwnode_irq_get_byname(fwnode, b"rx\0".as_ptr() as *const kernel::ffi::c_char);
     if (*rx_data).irq < 0 {
         return dev_err_probe(
             dev,
             (*rx_data).irq,
-            b"dma rx irq invalid\n\0".as_ptr() as *const core::ffi::c_char,
+            b"dma rx irq invalid\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
     ret = device_property_read_u32(
         dev,
-        b"clock-frequency\0".as_ptr() as *const core::ffi::c_char,
+        b"clock-frequency\0".as_ptr() as *const kernel::ffi::c_char,
         &mut (*i2s).clk_rate,
     );
     if ret != 0 {
         return dev_err_probe(
             dev,
             ret,
-            b"clock-frequency property invalid\n\0".as_ptr() as *const core::ffi::c_char,
+            b"clock-frequency property invalid\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
@@ -268,7 +268,7 @@ unsafe extern "C" fn loongson_i2s_pci_probe(
         return dev_err_probe(
             dev,
             ret,
-            b"register DAI failed\n\0".as_ptr() as *const core::ffi::c_char,
+            b"register DAI failed\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
     }
 
@@ -299,7 +299,7 @@ static mut loongson_i2s_driver: pci_driver = pci_driver {
 // module_pci_driver(loongson_i2s_driver);
 
 #[no_mangle]
-unsafe extern "C" fn init_module() -> core::ffi::c_int {
+unsafe extern "C" fn init_module() -> kernel::ffi::c_int {
     __module_pci_driver(&mut loongson_i2s_driver);
     0
 }

@@ -82,35 +82,35 @@ pub fn of_excl(mut flags: openflags) -> openflags { flags.bits |= openflags::E; 
 pub fn of_cloexec(mut flags: openflags) -> openflags { flags.bits |= openflags::CL; flags }
 
 extern "C" {
-    pub fn os_stat_file(file_name: *const core::ffi::c_char, buf: *mut uml_stat) -> i32;
+    pub fn os_stat_file(file_name: *const kernel::ffi::c_char, buf: *mut uml_stat) -> i32;
     pub fn os_stat_fd(fd: i32, buf: *mut uml_stat) -> i32;
-    pub fn os_access(file: *const core::ffi::c_char, mode: i32) -> i32;
+    pub fn os_access(file: *const kernel::ffi::c_char, mode: i32) -> i32;
     pub fn os_set_exec_close(fd: i32) -> i32;
     pub fn os_ioctl_generic(fd: i32, cmd: u32, arg: usize) -> i32;
-    pub fn os_get_ifname(fd: i32, namebuf: *mut core::ffi::c_char) -> i32;
+    pub fn os_get_ifname(fd: i32, namebuf: *mut kernel::ffi::c_char) -> i32;
     pub fn os_mode_fd(fd: i32, mode: i32) -> i32;
     pub fn os_seek_file(fd: i32, offset: u64) -> i32;
-    pub fn os_open_file(file: *const core::ffi::c_char, flags: openflags, mode: i32) -> i32;
-    pub fn os_read_file(fd: i32, buf: *mut core::ffi::c_void, len: i32) -> i32;
-    pub fn os_write_file(fd: i32, buf: *const core::ffi::c_void, count: i32) -> i32;
+    pub fn os_open_file(file: *const kernel::ffi::c_char, flags: openflags, mode: i32) -> i32;
+    pub fn os_read_file(fd: i32, buf: *mut kernel::ffi::c_void, len: i32) -> i32;
+    pub fn os_write_file(fd: i32, buf: *const kernel::ffi::c_void, count: i32) -> i32;
     pub fn os_sync_file(fd: i32) -> i32;
-    pub fn os_file_size(file: *const core::ffi::c_char, size_out: *mut u64) -> i32;
-    pub fn os_pread_file(fd: i32, buf: *mut core::ffi::c_void, len: i32, offset: u64) -> i32;
-    pub fn os_pwrite_file(fd: i32, buf: *const core::ffi::c_void, count: i32, offset: u64) -> i32;
-    pub fn os_file_modtime(file: *const core::ffi::c_char, modtime: *mut i64) -> i32;
+    pub fn os_file_size(file: *const kernel::ffi::c_char, size_out: *mut u64) -> i32;
+    pub fn os_pread_file(fd: i32, buf: *mut kernel::ffi::c_void, len: i32, offset: u64) -> i32;
+    pub fn os_pwrite_file(fd: i32, buf: *const kernel::ffi::c_void, count: i32, offset: u64) -> i32;
+    pub fn os_file_modtime(file: *const kernel::ffi::c_char, modtime: *mut i64) -> i32;
     pub fn os_pipe(fd: *mut i32, stream: i32, close_on_exec: i32) -> i32;
     pub fn os_set_fd_async(fd: i32) -> i32;
     pub fn os_clear_fd_async(fd: i32) -> i32;
     pub fn os_set_fd_block(fd: i32, blocking: i32) -> i32;
     pub fn os_accept_connection(fd: i32) -> i32;
-    pub fn os_create_unix_socket(file: *const core::ffi::c_char, len: i32, close_on_exec: i32) -> i32;
+    pub fn os_create_unix_socket(file: *const kernel::ffi::c_char, len: i32, close_on_exec: i32) -> i32;
     pub fn os_shutdown_socket(fd: i32, r: i32, w: i32) -> i32;
     pub fn os_dup_file(fd: i32) -> i32;
     pub fn os_close_file(fd: i32);
-    pub fn os_rcv_fd_msg(fd: i32, fds: *mut i32, n_fds: u32, data: *mut core::ffi::c_void, data_len: usize) -> isize;
-    pub fn os_connect_socket(name: *const core::ffi::c_char) -> i32;
-    pub fn os_file_type(file: *mut core::ffi::c_char) -> i32;
-    pub fn os_file_mode(file: *const core::ffi::c_char, mode_out: *mut openflags) -> i32;
+    pub fn os_rcv_fd_msg(fd: i32, fds: *mut i32, n_fds: u32, data: *mut kernel::ffi::c_void, data_len: usize) -> isize;
+    pub fn os_connect_socket(name: *const kernel::ffi::c_char) -> i32;
+    pub fn os_file_type(file: *mut kernel::ffi::c_char) -> i32;
+    pub fn os_file_mode(file: *const kernel::ffi::c_char, mode_out: *mut openflags) -> i32;
     pub fn os_lock_file(fd: i32, excl: i32) -> i32;
     pub fn os_flush_stdout();
     pub fn os_major(dev: u64) -> u32;
@@ -119,10 +119,10 @@ extern "C" {
     pub fn os_falloc_punch(fd: i32, offset: u64, count: i32) -> i32;
     pub fn os_falloc_zeroes(fd: i32, offset: u64, count: i32) -> i32;
     pub fn os_eventfd(initval: u32, flags: i32) -> i32;
-    pub fn os_sendmsg_fds(fd: i32, buf: *const core::ffi::c_void, len: u32, fds: *const i32, fds_num: u32) -> i32;
+    pub fn os_sendmsg_fds(fd: i32, buf: *const kernel::ffi::c_void, len: u32, fds: *const i32, fds_num: u32) -> i32;
     pub fn os_poll(n: u32, fds: *const i32) -> i32;
-    pub fn os_mmap_rw_shared(fd: i32, size: usize) -> *mut core::ffi::c_void;
-    pub fn os_mremap_rw_shared(old_addr: *mut core::ffi::c_void, old_size: usize, new_size: usize) -> *mut core::ffi::c_void;
+    pub fn os_mmap_rw_shared(fd: i32, size: usize) -> *mut kernel::ffi::c_void;
+    pub fn os_mremap_rw_shared(old_addr: *mut kernel::ffi::c_void, old_size: usize, new_size: usize) -> *mut kernel::ffi::c_void;
     pub fn os_early_checks();
     pub fn os_check_bugs();
     pub fn check_host_supports_tls(supports_tls: *mut i32, tls_min: *mut i32);
@@ -134,29 +134,29 @@ extern "C" {
     pub fn os_kill_ptraced_process(pid: i32, reap_child: i32);
     pub fn os_getpid() -> i32;
     pub fn init_new_thread_signals();
-    pub fn os_map_memory(virt: *mut core::ffi::c_void, fd: i32, off: u64, len: usize, r: i32, w: i32, x: i32) -> i32;
-    pub fn os_protect_memory(addr: *mut core::ffi::c_void, len: usize, r: i32, w: i32, x: i32) -> i32;
-    pub fn os_unmap_memory(addr: *mut core::ffi::c_void, len: i32) -> i32;
-    pub fn os_drop_memory(addr: *mut core::ffi::c_void, length: i32) -> i32;
+    pub fn os_map_memory(virt: *mut kernel::ffi::c_void, fd: i32, off: u64, len: usize, r: i32, w: i32, x: i32) -> i32;
+    pub fn os_protect_memory(addr: *mut kernel::ffi::c_void, len: usize, r: i32, w: i32, x: i32) -> i32;
+    pub fn os_unmap_memory(addr: *mut kernel::ffi::c_void, len: i32) -> i32;
+    pub fn os_drop_memory(addr: *mut kernel::ffi::c_void, length: i32) -> i32;
     pub fn can_drop_memory() -> i32;
     pub fn os_set_pdeathsig();
-    pub fn os_futex_wait(uaddr: *mut core::ffi::c_void, val: u32) -> i32;
-    pub fn os_futex_wake(uaddr: *mut core::ffi::c_void) -> i32;
-    pub fn execvp_noalloc(buf: *mut core::ffi::c_char, file: *const core::ffi::c_char, argv: *mut *mut core::ffi::c_char) -> i32;
+    pub fn os_futex_wait(uaddr: *mut kernel::ffi::c_void, val: u32) -> i32;
+    pub fn os_futex_wake(uaddr: *mut kernel::ffi::c_void) -> i32;
+    pub fn execvp_noalloc(buf: *mut kernel::ffi::c_char, file: *const kernel::ffi::c_char, argv: *mut *mut kernel::ffi::c_char) -> i32;
     pub fn helper_wait(pid: i32) -> i32;
     pub fn os_fix_helper_thread_signals();
-    pub fn umid_file_name(name: *mut core::ffi::c_char, buf: *mut core::ffi::c_char, len: i32) -> i32;
-    pub fn set_umid(name: *mut core::ffi::c_char) -> i32;
-    pub fn get_umid() -> *mut core::ffi::c_char;
+    pub fn umid_file_name(name: *mut kernel::ffi::c_char, buf: *mut kernel::ffi::c_char, len: i32) -> i32;
+    pub fn set_umid(name: *mut kernel::ffi::c_char) -> i32;
+    pub fn get_umid() -> *mut kernel::ffi::c_char;
 }
 
 #[repr(C)] pub struct os_helper_thread { _private: [u8; 0] }
 
 extern "C" {
-    pub fn get_host_cpu_features(flags_helper_func: Option<unsafe extern "C" fn(*mut core::ffi::c_char), cache_helper_func: Option<unsafe extern "C" fn(*mut core::ffi::c_char)>);
-    pub fn run_helper(pre_exec: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>, pre_data: *mut core::ffi::c_void, argv: *mut *mut core::ffi::c_char) -> i32;
-    pub fn run_helper_thread(proc: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>, arg: *mut core::ffi::c_void, flags: u32, stack_out: *mut usize) -> i32;
-    pub fn os_run_helper_thread(td_out: *mut *mut os_helper_thread, routine: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void>, arg: *mut core::ffi::c_void) -> i32;
+    pub fn get_host_cpu_features(flags_helper_func: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char), cache_helper_func: Option<unsafe extern "C" fn(*mut kernel::ffi::c_char)>);
+    pub fn run_helper(pre_exec: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>, pre_data: *mut kernel::ffi::c_void, argv: *mut *mut kernel::ffi::c_char) -> i32;
+    pub fn run_helper_thread(proc: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>, arg: *mut kernel::ffi::c_void, flags: u32, stack_out: *mut usize) -> i32;
+    pub fn os_run_helper_thread(td_out: *mut *mut os_helper_thread, routine: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void>, arg: *mut kernel::ffi::c_void) -> i32;
     pub fn os_kill_helper_thread(td: *mut os_helper_thread);
 }
 

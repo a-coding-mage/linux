@@ -26,7 +26,7 @@ pub union aead_instance_union {
 
 #[repr(C)]
 pub struct aead_instance_s {
-    pub head: [core::ffi::c_char; core::mem::offset_of!(aead_alg, base)],
+    pub head: [kernel::ffi::c_char; core::mem::offset_of!(aead_alg, base)],
     pub base: crypto_instance,
 }
 
@@ -41,12 +41,12 @@ pub struct aead_queue {
 }
 
 #[inline]
-pub unsafe fn crypto_aead_ctx(tfm: *mut crypto_aead) -> *mut core::ffi::c_void {
+pub unsafe fn crypto_aead_ctx(tfm: *mut crypto_aead) -> *mut kernel::ffi::c_void {
     crypto_tfm_ctx(&mut (*tfm).base)
 }
 
 #[inline]
-pub unsafe fn crypto_aead_ctx_dma(tfm: *mut crypto_aead) -> *mut core::ffi::c_void {
+pub unsafe fn crypto_aead_ctx_dma(tfm: *mut crypto_aead) -> *mut kernel::ffi::c_void {
     crypto_tfm_ctx_dma(&mut (*tfm).base)
 }
 
@@ -66,17 +66,17 @@ pub unsafe fn aead_alg_instance(aead: *mut crypto_aead) -> *mut aead_instance {
 }
 
 #[inline]
-pub unsafe fn aead_instance_ctx(inst: *mut aead_instance) -> *mut core::ffi::c_void {
+pub unsafe fn aead_instance_ctx(inst: *mut aead_instance) -> *mut kernel::ffi::c_void {
     crypto_instance_ctx(aead_crypto_instance(inst))
 }
 
 #[inline]
-pub unsafe fn aead_request_ctx(req: *mut aead_request) -> *mut core::ffi::c_void {
+pub unsafe fn aead_request_ctx(req: *mut aead_request) -> *mut kernel::ffi::c_void {
     (*req).__ctx
 }
 
 #[inline]
-pub unsafe fn aead_request_ctx_dma(req: *mut aead_request) -> *mut core::ffi::c_void {
+pub unsafe fn aead_request_ctx_dma(req: *mut aead_request) -> *mut kernel::ffi::c_void {
     let mut align: u32 = crypto_dma_align();
     if align <= crypto_tfm_ctx_alignment() {
         align = 1;
@@ -102,7 +102,7 @@ pub unsafe fn aead_request_cast(req: *mut crypto_async_request) -> *mut aead_req
 pub unsafe extern "C" fn crypto_grab_aead(
     spawn: *mut crypto_aead_spawn,
     inst: *mut crypto_instance,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     type_: u32,
     mask: u32,
 ) -> i32;

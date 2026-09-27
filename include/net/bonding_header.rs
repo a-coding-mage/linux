@@ -46,9 +46,9 @@ pub struct bond_params {
 #[repr(C)]
 pub struct slave {
     pub dev: *mut net_device, pub bond: *mut bonding, pub delay: i32,
-    pub last_link_up: ::core::ffi::c_ulong, pub last_tx: ::core::ffi::c_ulong,
-    pub last_rx: ::core::ffi::c_ulong,
-    pub target_last_arp_rx: [::core::ffi::c_ulong; BOND_MAX_ARP_TARGETS],
+    pub last_link_up: ::kernel::ffi::c_ulong, pub last_tx: ::kernel::ffi::c_ulong,
+    pub last_rx: ::kernel::ffi::c_ulong,
+    pub target_last_arp_rx: [::kernel::ffi::c_ulong; BOND_MAX_ARP_TARGETS],
     pub link: i8, pub link_new_state: i8,
     pub backup: u8, pub inactive: u8, pub rx_disabled: u8,
     pub should_notify: u8, pub should_notify_link: u8, pub duplex: u8,
@@ -96,7 +96,7 @@ extern "C" {
     pub fn bond_lower_state_changed(slave: *mut slave);
     pub fn bond_rcv_validate(skb: *const sk_buff, bond: *mut bonding, slave: *mut slave) -> i32;
     pub fn bond_dev_queue_xmit(bond: *mut bonding, skb: *mut sk_buff, slave_dev: *mut net_device) -> netdev_tx_t;
-    pub fn bond_create(net: *mut net, name: *const ::core::ffi::c_char) -> i32;
+    pub fn bond_create(net: *mut net, name: *const ::kernel::ffi::c_char) -> i32;
     pub fn bond_destroy_sysfs(net: *mut bond_net);
     pub fn bond_enslave(bond_dev: *mut net_device, slave_dev: *mut net_device, extack: *mut netlink_ext_ack) -> i32;
     pub fn bond_release(bond_dev: *mut net_device, slave_dev: *mut net_device) -> i32;
@@ -116,10 +116,10 @@ extern "C" {
     pub fn slave_do_arp_validate(bond: *mut bonding, slave: *mut slave) -> i32;
     pub fn slave_do_arp_validate_only(bond: *mut bonding) -> i32;
     pub fn bond_is_ip_target_ok(addr: __be32) -> i32;
-    pub fn slave_oldest_target_arp_rx(bond: *mut bonding, slave: *mut slave) -> ::core::ffi::c_ulong;
-    pub fn slave_last_rx(bond: *mut bonding, slave: *mut slave) -> ::core::ffi::c_ulong;
+    pub fn slave_oldest_target_arp_rx(bond: *mut bonding, slave: *mut slave) -> ::kernel::ffi::c_ulong;
+    pub fn slave_last_rx(bond: *mut bonding, slave: *mut slave) -> ::kernel::ffi::c_ulong;
     pub fn slave_update_last_tx(slave: *mut slave);
-    pub fn slave_last_tx(slave: *mut slave) -> ::core::ffi::c_ulong;
+    pub fn slave_last_tx(slave: *mut slave) -> ::kernel::ffi::c_ulong;
     pub fn bond_confirm_addr(dev: *mut net_device, dst: __be32, local: __be32) -> __be32;
     pub fn bond_get_targets_ip(targets: *mut __be32, ip: __be32) -> i32;
     pub fn bond_tx_drop(dev: *mut net_device, skb: *mut sk_buff) -> netdev_tx_t;
@@ -137,7 +137,7 @@ extern "C" {
     pub fn bond_debug_register(bond: *mut bonding);
     pub fn bond_debug_unregister(bond: *mut bonding);
     pub fn bond_debug_reregister(bond: *mut bonding);
-    pub fn bond_mode_name(mode: i32) -> *const ::core::ffi::c_char;
+    pub fn bond_mode_name(mode: i32) -> *const ::kernel::ffi::c_char;
     pub fn __bond_xdp_check(mode: i32, xmit_policy: i32) -> bool;
     pub fn bond_xdp_check(bond: *mut bonding, mode: i32) -> bool;
     pub fn bond_setup(bond_dev: *mut net_device);
@@ -145,11 +145,11 @@ extern "C" {
     pub fn bond_netlink_init() -> i32;
     pub fn bond_netlink_fini();
     pub fn bond_option_active_slave_get_rcu(bond: *const bonding) -> *mut net_device;
-    pub fn bond_slave_link_status(link: i8) -> *const ::core::ffi::c_char;
+    pub fn bond_slave_link_status(link: i8) -> *const ::kernel::ffi::c_char;
     pub fn bond_verify_device_path(start_dev: *mut net_device, end_dev: *mut net_device, level: i32) -> *mut bond_vlan_tag;
     pub fn bond_update_slave_arr(bond: *mut bonding, skipslave: *mut slave) -> i32;
-    pub fn bond_slave_arr_work_rearm(bond: *mut bonding, delay: ::core::ffi::c_ulong);
-    pub fn bond_peer_notify_work_rearm(bond: *mut bonding, delay: ::core::ffi::c_ulong);
+    pub fn bond_slave_arr_work_rearm(bond: *mut bonding, delay: ::kernel::ffi::c_ulong);
+    pub fn bond_peer_notify_work_rearm(bond: *mut bonding, delay: ::kernel::ffi::c_ulong);
     pub fn bond_work_init_all(bond: *mut bonding);
     pub fn bond_work_cancel_all(bond: *mut bonding);
     pub fn bond_slave_has_mac(bond: *mut bonding, mac: *const u8) -> *mut slave;

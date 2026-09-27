@@ -8,7 +8,7 @@ pub struct dentry {
 }
 
 extern "C" {
-    pub fn debugfs_create_dir(name: *const core::ffi::c_char, parent: *mut dentry) -> *mut dentry;
+    pub fn debugfs_create_dir(name: *const kernel::ffi::c_char, parent: *mut dentry) -> *mut dentry;
 }
 
 #[no_mangle]
@@ -18,7 +18,7 @@ pub static mut arch_debugfs_dir: *mut dentry = core::ptr::null_mut();
 
 #[no_mangle]
 pub unsafe extern "C" fn arch_kdebugfs_init() -> i32 {
-    arch_debugfs_dir = debugfs_create_dir(b"sh\0".as_ptr() as *const core::ffi::c_char, core::ptr::null_mut());
+    arch_debugfs_dir = debugfs_create_dir(b"sh\0".as_ptr() as *const kernel::ffi::c_char, core::ptr::null_mut());
     0
 }
 

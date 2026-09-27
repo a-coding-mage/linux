@@ -8,9 +8,9 @@
 //  Routines for control of EMU10K1 chips
 
 // External dependencies from linux kernel headers
-use core::ffi::c_int;
-use core::ffi::c_uint;
-use core::ffi::c_ulong;
+use kernel::ffi::c_int;
+use kernel::ffi::c_uint;
+use kernel::ffi::c_ulong;
 use core::ptr::null_mut;
 use core::ptr::null;
 
@@ -82,9 +82,9 @@ extern "C" {
     fn snd_emu1010_fpga_read(emu: *mut SndEmu10k1, reg: u32, val: *mut u32);
     fn snd_emu1010_update_clock(emu: *mut SndEmu10k1);
     fn snd_emu1010_fpga_write_lock(emu: *mut SndEmu10k1, reg: u32, value: u32);
-    fn snd_util_memhdr_free(hdr: *mut core::ffi::c_void);
-    fn snd_util_memhdr_new(size: c_ulong) -> *mut core::ffi::c_void;
-    fn snd_ctl_build_ioff(id: *mut SndCtlElemId, kctl: *mut core::ffi::c_void, offset: c_uint);
+    fn snd_util_memhdr_free(hdr: *mut kernel::ffi::c_void);
+    fn snd_util_memhdr_new(size: c_ulong) -> *mut kernel::ffi::c_void;
+    fn snd_ctl_build_ioff(id: *mut SndCtlElemId, kctl: *mut kernel::ffi::c_void, offset: c_uint);
     fn snd_ctl_notify(card: *mut SndCard, mask: c_uint, id: *mut SndCtlElemId);
     fn snd_emu10k1_init_efx(emu: *mut SndEmu10k1) -> c_int;
     fn snd_emu10k1_proc_init(emu: *mut SndEmu10k1);
@@ -92,33 +92,33 @@ extern "C" {
     fn snd_emu10k1_efx_free_pm_buffer(emu: *mut SndEmu10k1);
     fn snd_p16v_alloc_pm_buffer(emu: *mut SndEmu10k1) -> c_int;
     fn snd_p16v_free_pm_buffer(emu: *mut SndEmu10k1);
-    fn snd_emu10k1_alloc_pages_maybe_wider(emu: *mut SndEmu10k1, size: c_ulong, dma: *mut core::ffi::c_void) -> c_int;
-    fn snd_dma_free_pages(dma: *mut core::ffi::c_void);
-    fn dev_info(dev: *mut core::ffi::c_void, fmt: *const c_int, ...);
-    fn dev_dbg(dev: *mut core::ffi::c_void, fmt: *const c_int, ...);
-    fn dev_err(dev: *mut core::ffi::c_void, fmt: *const c_int, ...);
-    fn dev_notice(dev: *mut core::ffi::c_void, fmt: *const c_int, ...);
+    fn snd_emu10k1_alloc_pages_maybe_wider(emu: *mut SndEmu10k1, size: c_ulong, dma: *mut kernel::ffi::c_void) -> c_int;
+    fn snd_dma_free_pages(dma: *mut kernel::ffi::c_void);
+    fn dev_info(dev: *mut kernel::ffi::c_void, fmt: *const c_int, ...);
+    fn dev_dbg(dev: *mut kernel::ffi::c_void, fmt: *const c_int, ...);
+    fn dev_err(dev: *mut kernel::ffi::c_void, fmt: *const c_int, ...);
+    fn dev_notice(dev: *mut kernel::ffi::c_void, fmt: *const c_int, ...);
     fn outl(value: u32, port: c_ulong);
     fn outw(value: u16, port: c_ulong);
     fn inl(port: c_ulong) -> u32;
     fn inw(port: c_ulong) -> u16;
     fn udelay(usecs: c_uint);
     fn msleep(msecs: c_uint);
-    fn request_firmware(fw: *mut *const Firmware, name: *const u8, device: *mut core::ffi::c_void) -> c_int;
+    fn request_firmware(fw: *mut *const Firmware, name: *const u8, device: *mut kernel::ffi::c_void) -> c_int;
     fn release_firmware(fw: *const Firmware);
-    fn vfree(ptr: *mut core::ffi::c_void);
-    fn vmalloc(size: c_ulong) -> *mut core::ffi::c_void;
+    fn vfree(ptr: *mut kernel::ffi::c_void);
+    fn vmalloc(size: c_ulong) -> *mut kernel::ffi::c_void;
     fn pcim_enable_device(pci: *mut PciDev) -> c_int;
     fn pcim_request_all_regions(pci: *mut PciDev, name: *const u8) -> c_int;
     fn pci_resource_start(pci: *mut PciDev, bar: c_int) -> c_ulong;
     fn pci_set_master(pci: *mut PciDev);
     fn pci_read_config_dword(pci: *mut PciDev, where_: u32, val: *mut u32);
     fn pci_read_config_word(pci: *mut PciDev, where_: u32, val: *mut u16);
-    fn dma_set_mask_and_coherent(dev: *mut core::ffi::c_void, mask: c_ulong) -> c_int;
-    fn devm_request_irq(dev: *mut core::ffi::c_void, irq: c_uint, handler: unsafe extern "C" fn(*mut core::ffi::c_void) -> c_int, irqflags: c_ulong, devname: *const u8, dev_id: *mut core::ffi::c_void) -> c_int;
+    fn dma_set_mask_and_coherent(dev: *mut kernel::ffi::c_void, mask: c_ulong) -> c_int;
+    fn devm_request_irq(dev: *mut kernel::ffi::c_void, irq: c_uint, handler: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> c_int, irqflags: c_ulong, devname: *const u8, dev_id: *mut kernel::ffi::c_void) -> c_int;
     fn schedule_work(work: *mut WorkStruct) -> bool;
     fn cancel_work_sync(work: *mut WorkStruct) -> bool;
-    fn iommu_get_domain_for_dev(dev: *mut core::ffi::c_void) -> *mut core::ffi::c_void;
+    fn iommu_get_domain_for_dev(dev: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
     fn strscpy(dest: *mut u8, src: *const u8, count: c_ulong) -> c_int;
     fn array_size(a: c_ulong, b: c_ulong) -> c_ulong;
     fn array3_size(a: c_ulong, b: c_ulong, c: c_ulong) -> c_ulong;
@@ -482,7 +482,7 @@ pub unsafe fn snd_emu10k1_init(emu: *mut SndEmu10k1, enable_ir: c_int) -> c_int 
         outl(0x0201, (*emu).port + HCFG2 as c_ulong);
         snd_emu10k1_ptr20_write(emu, CAPTURE_P16V_SOURCE, 0, 0x78e4);
     } else if (*(*emu).card_capabilities).ca0108_chip != 0 {
-        dev_info((*(*emu).card).dev as *mut core::ffi::c_void, b"Audigy2 value: Special config.\n" as *const u8 as *const c_int);
+        dev_info((*(*emu).card).dev as *mut kernel::ffi::c_void, b"Audigy2 value: Special config.\n" as *const u8 as *const c_int);
         snd_emu10k1_ptr_write(emu, A_I2S_CAPTURE_RATE, 0, A_I2S_CAPTURE_96000);
         snd_emu10k1_ptr20_write(emu, P17V_SRCSel, 0, 0x14);
         snd_emu10k1_ptr20_write(emu, P17V_MIXER_I2S_ENABLE, 0, 0xFF000000);
@@ -831,7 +831,7 @@ pub unsafe fn snd_emu1010_load_firmware(
             if filename as *const u8 == b"" as *const u8 {
                 return 0;
             }
-            err = request_firmware(fw, filename, (*(*emu).pci).dev as *mut core::ffi::c_void);
+            err = request_firmware(fw, filename, (*(*emu).pci).dev as *mut kernel::ffi::c_void);
             if err != 0 {
                 return err;
             }
@@ -849,7 +849,7 @@ pub unsafe fn snd_emu1010_load_dock_firmware(emu: *mut SndEmu10k1) {
 
     msleep(200);
 
-    dev_info((*(*emu).card).dev as *mut core::ffi::c_void, b"emu1010: Loading Audio Dock Firmware\n" as *const u8 as *const c_int);
+    dev_info((*(*emu).card).dev as *mut kernel::ffi::c_void, b"emu1010: Loading Audio Dock Firmware\n" as *const u8 as *const c_int);
     err = snd_emu1010_load_firmware(emu, 1, &mut (*emu).dock_fw);
     if err < 0 {
         return;
@@ -857,20 +857,20 @@ pub unsafe fn snd_emu1010_load_dock_firmware(emu: *mut SndEmu10k1) {
     snd_emu1010_fpga_write(emu, EMU_HANA_FPGA_CONFIG, 0);
 
     snd_emu1010_fpga_read(emu, EMU_HANA_ID, &mut tmp);
-    dev_dbg((*(*emu).card).dev as *mut core::ffi::c_void, b"emu1010: EMU_HANA+DOCK_ID = 0x%x\n" as *const u8 as *const c_int, tmp);
+    dev_dbg((*(*emu).card).dev as *mut kernel::ffi::c_void, b"emu1010: EMU_HANA+DOCK_ID = 0x%x\n" as *const u8 as *const c_int, tmp);
     if (tmp & 0x1f) != 0x15 {
         dev_err(
-            (*(*emu).card).dev as *mut core::ffi::c_void,
+            (*(*emu).card).dev as *mut kernel::ffi::c_void,
             b"emu1010: Loading Audio Dock Firmware failed, reg = 0x%x\n" as *const u8 as *const c_int,
             tmp,
         );
         return;
     }
-    dev_info((*(*emu).card).dev as *mut core::ffi::c_void, b"emu1010: Audio Dock Firmware loaded\n" as *const u8 as *const c_int);
+    dev_info((*(*emu).card).dev as *mut kernel::ffi::c_void, b"emu1010: Audio Dock Firmware loaded\n" as *const u8 as *const c_int);
 
     snd_emu1010_fpga_read(emu, EMU_HANA_DOCK_MAJOR_REV, &mut tmp);
     snd_emu1010_fpga_read(emu, EMU_HANA_DOCK_MINOR_REV, &mut tmp2);
-    dev_info((*(*emu).card).dev as *mut core::ffi::c_void, b"Audio Dock ver: %u.%u\n" as *const u8 as *const c_int, tmp, tmp2);
+    dev_info((*(*emu).card).dev as *mut kernel::ffi::c_void, b"Audio Dock ver: %u.%u\n" as *const u8 as *const c_int, tmp, tmp2);
 
     msleep(10);
 }
@@ -883,7 +883,7 @@ unsafe fn emu1010_dock_event(emu: *mut SndEmu10k1) {
         snd_emu1010_load_dock_firmware(emu);
         snd_emu1010_fpga_write(emu, EMU_HANA_UNMUTE, EMU_UNMUTE);
     } else if reg & EMU_HANA_OPTION_DOCK_ONLINE == 0 {
-        dev_info((*(*emu).card).dev as *mut core::ffi::c_void, b"emu1010: Audio Dock detached\n" as *const u8 as *const c_int);
+        dev_info((*(*emu).card).dev as *mut kernel::ffi::c_void, b"emu1010: Audio Dock detached\n" as *const u8 as *const c_int);
         snd_emu1010_fpga_write(emu, EMU_HANA_UNMUTE, EMU_UNMUTE);
     }
 }
@@ -951,7 +951,7 @@ pub unsafe fn snd_emu10k1_emu1010_init(emu: *mut SndEmu10k1) -> c_int {
     let mut reg: u32 = 0;
     let err: c_int;
 
-    dev_info((*(*emu).card).dev as *mut core::ffi::c_void, b"emu1010: Special config.\n" as *const u8 as *const c_int);
+    dev_info((*(*emu).card).dev as *mut kernel::ffi::c_void, b"emu1010: Special config.\n" as *const u8 as *const c_int);
 
     outl(
         HCFG_LOCKSOUNDCACHE | HCFG_LOCKTANKCACHE_MASK,
@@ -961,31 +961,31 @@ pub unsafe fn snd_emu10k1_emu1010_init(emu: *mut SndEmu10k1) -> c_int {
     {
         // guard(snd_emu1010_fpga_lock)(emu);
 
-        dev_info((*(*emu).card).dev as *mut core::ffi::c_void, b"emu1010: Loading Hana Firmware\n" as *const u8 as *const c_int);
+        dev_info((*(*emu).card).dev as *mut kernel::ffi::c_void, b"emu1010: Loading Hana Firmware\n" as *const u8 as *const c_int);
         err = snd_emu1010_load_firmware(emu, 0, &mut (*emu).firmware);
         if err < 0 {
-            dev_info((*(*emu).card).dev as *mut core::ffi::c_void, b"emu1010: Loading Firmware failed\n" as *const u8 as *const c_int);
+            dev_info((*(*emu).card).dev as *mut kernel::ffi::c_void, b"emu1010: Loading Firmware failed\n" as *const u8 as *const c_int);
             return err;
         }
 
         snd_emu1010_fpga_read(emu, EMU_HANA_ID, &mut reg);
         if (reg & 0x3f) != 0x15 {
             dev_info(
-                (*(*emu).card).dev as *mut core::ffi::c_void,
+                (*(*emu).card).dev as *mut kernel::ffi::c_void,
                 b"emu1010: Loading Hana Firmware file failed, reg = 0x%x\n" as *const u8 as *const c_int,
                 reg,
             );
             return -19; // -ENODEV
         }
 
-        dev_info((*(*emu).card).dev as *mut core::ffi::c_void, b"emu1010: Hana Firmware loaded\n" as *const u8 as *const c_int);
+        dev_info((*(*emu).card).dev as *mut kernel::ffi::c_void, b"emu1010: Hana Firmware loaded\n" as *const u8 as *const c_int);
         snd_emu1010_fpga_read(emu, EMU_HANA_MAJOR_REV, &mut tmp);
         snd_emu1010_fpga_read(emu, EMU_HANA_MINOR_REV, &mut tmp2);
-        dev_info((*(*emu).card).dev as *mut core::ffi::c_void, b"emu1010: Hana version: %u.%u\n" as *const u8 as *const c_int, tmp, tmp2);
+        dev_info((*(*emu).card).dev as *mut kernel::ffi::c_void, b"emu1010: Hana version: %u.%u\n" as *const u8 as *const c_int, tmp, tmp2);
         snd_emu1010_fpga_write(emu, EMU_HANA_DOCK_PWR, EMU_HANA_DOCK_PWR_ON);
 
         snd_emu1010_fpga_read(emu, EMU_HANA_OPTION_CARDS, &mut reg);
-        dev_info((*(*emu).card).dev as *mut core::ffi::c_void, b"emu1010: Card options = 0x%x\n" as *const u8 as *const c_int, reg);
+        dev_info((*(*emu).card).dev as *mut kernel::ffi::c_void, b"emu1010: Card options = 0x%x\n" as *const u8 as *const c_int, reg);
         if reg & EMU_HANA_OPTION_DOCK_OFFLINE != 0 {
             snd_emu1010_load_dock_firmware(emu);
         }
@@ -1069,8 +1069,8 @@ pub unsafe fn snd_emu10k1_free(card: *mut SndCard) {
     if !((*emu).ptb_pages.area).is_null() {
         snd_dma_free_pages(&mut (*emu).ptb_pages);
     }
-    vfree((*emu).page_ptr_table as *mut core::ffi::c_void);
-    vfree((*emu).page_addr_table as *mut core::ffi::c_void);
+    vfree((*emu).page_ptr_table as *mut kernel::ffi::c_void);
+    vfree((*emu).page_addr_table as *mut kernel::ffi::c_void);
 }
 
 #[repr(C)]
@@ -1132,17 +1132,17 @@ static EMU_CHIP_DETAILS: &[SndEmuChipDetails] = &[
 ];
 
 pub unsafe fn snd_emu10k1_detect_iommu(emu: *mut SndEmu10k1) {
-    let domain: *mut core::ffi::c_void;
+    let domain: *mut kernel::ffi::c_void;
 
     (*emu).iommu_workaround = false as u8;
 
-    domain = iommu_get_domain_for_dev((*(*emu).card).dev as *mut core::ffi::c_void);
+    domain = iommu_get_domain_for_dev((*(*emu).card).dev as *mut kernel::ffi::c_void);
     if domain.is_null() {
         return;
     }
 
     dev_notice(
-        (*(*emu).card).dev as *mut core::ffi::c_void,
+        (*(*emu).card).dev as *mut kernel::ffi::c_void,
         b"non-passthrough IOMMU detected, widening DMA allocations" as *const u8 as *const c_int,
     );
     (*emu).iommu_workaround = true as u8;
@@ -1186,7 +1186,7 @@ pub unsafe fn snd_emu10k1_create(
     pci_read_config_dword(pci, 0x2c, &mut (*emu).serial);
     pci_read_config_word(pci, 0x2e, &mut (*emu).model as *mut u16);
     dev_dbg(
-        (*card).dev as *mut core::ffi::c_void,
+        (*card).dev as *mut kernel::ffi::c_void,
         b"vendor = 0x%x, device = 0x%x, subsystem_vendor_id = 0x%x, subsystem_id = 0x%x\n"
             as *const u8 as *const c_int,
         (*pci).vendor,
@@ -1220,15 +1220,15 @@ pub unsafe fn snd_emu10k1_create(
         c = c.add(1);
     }
     if (*c).vendor == 0 {
-        dev_err((*card).dev as *mut core::ffi::c_void, b"emu10k1: Card not recognised\n" as *const u8 as *const c_int);
+        dev_err((*card).dev as *mut kernel::ffi::c_void, b"emu10k1: Card not recognised\n" as *const u8 as *const c_int);
         return -2; // -ENOENT
     }
     (*emu).card_capabilities = c;
     if (*c).subsystem != 0 && subsystem == 0 {
-        dev_dbg((*card).dev as *mut core::ffi::c_void, b"Sound card name = %s\n" as *const u8 as *const c_int, (*c).name);
+        dev_dbg((*card).dev as *mut kernel::ffi::c_void, b"Sound card name = %s\n" as *const u8 as *const c_int, (*c).name);
     } else if subsystem != 0 {
         dev_dbg(
-            (*card).dev as *mut core::ffi::c_void,
+            (*card).dev as *mut kernel::ffi::c_void,
             b"Sound card name = %s, vendor = 0x%x, device = 0x%x, subsystem = 0x%x. Forced to subsystem = 0x%x\n"
                 as *const u8 as *const c_int,
             (*c).name,
@@ -1239,7 +1239,7 @@ pub unsafe fn snd_emu10k1_create(
         );
     } else {
         dev_dbg(
-            (*card).dev as *mut core::ffi::c_void,
+            (*card).dev as *mut kernel::ffi::c_void,
             b"Sound card name = %s, vendor = 0x%x, device = 0x%x, subsystem = 0x%x.\n"
                 as *const u8 as *const c_int,
             (*c).name,
@@ -1268,9 +1268,9 @@ pub unsafe fn snd_emu10k1_create(
     } else {
         AUDIGY_DMA_MASK
     };
-    if dma_set_mask_and_coherent(&mut (*pci).dev as *mut core::ffi::c_void, (*emu).dma_mask) < 0 {
+    if dma_set_mask_and_coherent(&mut (*pci).dev as *mut kernel::ffi::c_void, (*emu).dma_mask) < 0 {
         dev_err(
-            (*card).dev as *mut core::ffi::c_void,
+            (*card).dev as *mut kernel::ffi::c_void,
             b"architecture does not support PCI busmaster DMA with mask 0x%lx\n"
                 as *const u8 as *const c_int,
             (*emu).dma_mask,
@@ -1296,20 +1296,20 @@ pub unsafe fn snd_emu10k1_create(
     } else {
         MAXPAGES0 as c_ulong
     });
-    if snd_emu10k1_alloc_pages_maybe_wider(emu, page_table_size, &mut (*emu).ptb_pages as *mut core::ffi::c_void)
+    if snd_emu10k1_alloc_pages_maybe_wider(emu, page_table_size, &mut (*emu).ptb_pages as *mut kernel::ffi::c_void)
         < 0
     {
         return -12; // -ENOMEM
     }
     dev_dbg(
-        (*card).dev as *mut core::ffi::c_void,
+        (*card).dev as *mut kernel::ffi::c_void,
         b"page table address range is %.8lx:%.8lx\n" as *const u8 as *const c_int,
         (*emu).ptb_pages.addr,
         (*emu).ptb_pages.addr + (*emu).ptb_pages.bytes,
     );
 
     (*emu).page_ptr_table = vmalloc(array_size(
-        core::mem::size_of::<*mut core::ffi::c_void>() as c_ulong,
+        core::mem::size_of::<*mut kernel::ffi::c_void>() as c_ulong,
         (*emu).max_cache_pages as c_ulong,
     ));
     (*emu).page_addr_table = vmalloc(array_size(
@@ -1320,13 +1320,13 @@ pub unsafe fn snd_emu10k1_create(
         return -12; // -ENOMEM
     }
 
-    if snd_emu10k1_alloc_pages_maybe_wider(emu, EMUPAGESIZE, &mut (*emu).silent_page as *mut core::ffi::c_void)
+    if snd_emu10k1_alloc_pages_maybe_wider(emu, EMUPAGESIZE, &mut (*emu).silent_page as *mut kernel::ffi::c_void)
         < 0
     {
         return -12; // -ENOMEM
     }
     dev_dbg(
-        (*card).dev as *mut core::ffi::c_void,
+        (*card).dev as *mut kernel::ffi::c_void,
         b"silent page range is %.8lx:%.8lx\n" as *const u8 as *const c_int,
         (*emu).silent_page.addr,
         (*emu).silent_page.addr + (*emu).silent_page.bytes,
@@ -1374,12 +1374,12 @@ pub unsafe fn snd_emu10k1_create(
     (*emu).fx8010.itram_size = (16 * 1024) / 2;
 
     if devm_request_irq(
-        &mut (*pci).dev as *mut core::ffi::c_void,
+        &mut (*pci).dev as *mut kernel::ffi::c_void,
         (*pci).irq,
         snd_emu10k1_interrupt,
         0x00000002,
         b"emu10k1\0" as *const u8,
-        emu as *mut core::ffi::c_void,
+        emu as *mut kernel::ffi::c_void,
     ) != 0
     {
         return -16; // -EBUSY
@@ -1435,7 +1435,7 @@ pub unsafe fn snd_emu10k1_create(
 }
 
 // External interrupt handler
-extern "C" fn snd_emu10k1_interrupt(_dev: *mut core::ffi::c_void) -> c_int {
+extern "C" fn snd_emu10k1_interrupt(_dev: *mut kernel::ffi::c_void) -> c_int {
     0
 }
 
@@ -1561,7 +1561,7 @@ pub unsafe fn alloc_pm_buffer(emu: *mut SndEmu10k1) -> c_int {
 
 #[cfg(CONFIG_PM_SLEEP)]
 pub unsafe fn free_pm_buffer(emu: *mut SndEmu10k1) {
-    vfree((*emu).saved_ptr as *mut core::ffi::c_void);
+    vfree((*emu).saved_ptr as *mut kernel::ffi::c_void);
     snd_emu10k1_efx_free_pm_buffer(emu);
     if (*(*emu).card_capabilities).ca0151_chip != 0 {
         snd_p16v_free_pm_buffer(emu);

@@ -2,7 +2,7 @@
 /* Rust translation of linux/configfs.h. */
 
 // Dependencies supplied by the surrounding kernel translation.
-use core::ffi::{c_char, c_void};
+use kernel::ffi::{c_char, c_void};
 
 pub const CONFIGFS_ITEM_NAME_LEN: usize = 20;
 
@@ -177,7 +177,7 @@ pub unsafe fn configfs_undepend_item_unlocked(target: *mut config_item) { config
 macro_rules! CONFIGFS_ATTR_PERM {
     ($attribute:ident, $show:ident, $store:ident, $name:ident, $perm:expr, $owner:expr) => {
         static mut $attribute: $crate::configfs_attribute = $crate::configfs_attribute {
-            ca_name: concat!(stringify!($name), "\0").as_ptr() as *const core::ffi::c_char,
+            ca_name: concat!(stringify!($name), "\0").as_ptr() as *const kernel::ffi::c_char,
             ca_owner: $owner, ca_mode: $perm, show: Some($show), store: Some($store),
         };
     };

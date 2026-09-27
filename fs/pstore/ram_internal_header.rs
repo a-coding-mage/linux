@@ -61,8 +61,8 @@ pub const PRZ_FLAG_ZAP_OLD: u32 = 1u32 << 1;
 pub struct persistent_ram_zone {
     pub paddr: phys_addr_t,
     pub size: size_t,
-    pub vaddr: *mut core::ffi::c_void,
-    pub label: *mut core::ffi::c_char,
+    pub vaddr: *mut kernel::ffi::c_void,
+    pub label: *mut kernel::ffi::c_char,
     pub type_: pstore_type_id,
     pub flags: u32,
 
@@ -70,14 +70,14 @@ pub struct persistent_ram_zone {
     pub buffer: *mut persistent_ram_buffer,
     pub buffer_size: size_t,
 
-    pub par_buffer: *mut core::ffi::c_char,
-    pub par_header: *mut core::ffi::c_char,
+    pub par_buffer: *mut kernel::ffi::c_char,
+    pub par_header: *mut kernel::ffi::c_char,
     pub rs_decoder: *mut rs_control,
     pub corrected_bytes: i32,
     pub bad_blocks: i32,
     pub ecc_info: persistent_ram_ecc_info,
 
-    pub old_log: *mut core::ffi::c_char,
+    pub old_log: *mut kernel::ffi::c_char,
     pub old_log_size: size_t,
 }
 
@@ -87,31 +87,31 @@ unsafe extern "C" {
         size: size_t,
         sig: u32,
         ecc_info: *mut persistent_ram_ecc_info,
-        memtype: core::ffi::c_uint,
+        memtype: kernel::ffi::c_uint,
         flags: u32,
-        label: *mut core::ffi::c_char,
+        label: *mut kernel::ffi::c_char,
     ) -> *mut persistent_ram_zone;
     pub fn persistent_ram_free(_prz: *mut *mut persistent_ram_zone);
     pub fn persistent_ram_zap(prz: *mut persistent_ram_zone);
 
     pub fn persistent_ram_write(
         prz: *mut persistent_ram_zone,
-        s: *const core::ffi::c_void,
-        count: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        s: *const kernel::ffi::c_void,
+        count: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
     pub fn persistent_ram_write_user(
         prz: *mut persistent_ram_zone,
-        s: *const core::ffi::c_void,
-        count: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        s: *const kernel::ffi::c_void,
+        count: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
 
     pub fn persistent_ram_save_old(prz: *mut persistent_ram_zone);
     pub fn persistent_ram_old_size(prz: *mut persistent_ram_zone) -> size_t;
-    pub fn persistent_ram_old(prz: *mut persistent_ram_zone) -> *mut core::ffi::c_void;
+    pub fn persistent_ram_old(prz: *mut persistent_ram_zone) -> *mut kernel::ffi::c_void;
     pub fn persistent_ram_free_old(prz: *mut persistent_ram_zone);
     pub fn persistent_ram_ecc_string(
         prz: *mut persistent_ram_zone,
-        str_: *mut core::ffi::c_char,
+        str_: *mut kernel::ffi::c_char,
         len: size_t,
     ) -> ssize_t;
 }

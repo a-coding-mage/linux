@@ -15,8 +15,8 @@
 static mut DMA_FENCE_STUB: dma_fence = unsafe { core::mem::zeroed() };
 static mut DMA_FENCE_CONTEXT_COUNTER: atomic64_t = ATOMIC64_INIT(1);
 
-unsafe extern "C" fn dma_fence_stub_get_name(_fence: *mut dma_fence) -> *const core::ffi::c_char {
-    b"stub\0".as_ptr() as *const core::ffi::c_char
+unsafe extern "C" fn dma_fence_stub_get_name(_fence: *mut dma_fence) -> *const kernel::ffi::c_char {
+    b"stub\0".as_ptr() as *const kernel::ffi::c_char
 }
 
 static DMA_FENCE_STUB_OPS: dma_fence_ops = dma_fence_ops {

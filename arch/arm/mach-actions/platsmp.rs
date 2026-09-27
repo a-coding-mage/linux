@@ -43,7 +43,7 @@ pub struct smp_operations {
 
 extern "C" {
     fn owl_sps_set_pg(
-        base: *mut core::ffi::c_void,
+        base: *mut kernel::ffi::c_void,
         power: u32,
         ack: u32,
         enable: bool,
@@ -51,26 +51,26 @@ extern "C" {
     fn udelay(usecs: u32);
     fn __pa_symbol(symbol: unsafe extern "C" fn());
     fn secondary_startup();
-    fn writel(value: u32, address: *mut core::ffi::c_void);
+    fn writel(value: u32, address: *mut kernel::ffi::c_void);
     fn dsb_sev();
     fn mb();
     fn smp_send_reschedule(cpu: u32);
     fn of_find_compatible_node(
         from: *mut device_node,
-        ty: *const core::ffi::c_char,
-        compatible: *const core::ffi::c_char,
+        ty: *const kernel::ffi::c_char,
+        compatible: *const kernel::ffi::c_char,
     ) -> *mut device_node;
-    fn pr_err(format: *const core::ffi::c_char, ...);
-    fn of_iomap(node: *mut device_node, index: CInt) -> *mut core::ffi::c_void;
+    fn pr_err(format: *const kernel::ffi::c_char, ...);
+    fn of_iomap(node: *mut device_node, index: CInt) -> *mut kernel::ffi::c_void;
     fn read_cpuid_part() -> u32;
-    fn scu_get_core_count(base: *mut core::ffi::c_void) -> CInt;
-    fn pr_debug(format: *const core::ffi::c_char, ...);
-    fn scu_enable(base: *mut core::ffi::c_void);
+    fn scu_get_core_count(base: *mut kernel::ffi::c_void) -> CInt;
+    fn pr_debug(format: *const kernel::ffi::c_char, ...);
+    fn scu_enable(base: *mut kernel::ffi::c_void);
 }
 
-static mut scu_base_addr: *mut core::ffi::c_void = core::ptr::null_mut();
-static mut sps_base_addr: *mut core::ffi::c_void = core::ptr::null_mut();
-static mut timer_base_addr: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut scu_base_addr: *mut kernel::ffi::c_void = core::ptr::null_mut();
+static mut sps_base_addr: *mut kernel::ffi::c_void = core::ptr::null_mut();
+static mut timer_base_addr: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut ncores: CInt = 0;
 
 unsafe extern "C" fn s500_wakeup_secondary(cpu: u32) -> CInt {
@@ -150,32 +150,32 @@ unsafe extern "C" fn s500_smp_prepare_cpus(_max_cpus: u32) {
     node = of_find_compatible_node(
         core::ptr::null_mut(),
         core::ptr::null(),
-        b"actions,s500-timer\0".as_ptr() as *const core::ffi::c_char,
+        b"actions,s500-timer\0".as_ptr() as *const kernel::ffi::c_char,
     );
     if node.is_null() {
-        pr_err(b"%s: missing timer\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_err(b"%s: missing timer\n\0".as_ptr() as *const kernel::ffi::c_char);
         return;
     }
 
     timer_base_addr = of_iomap(node, 0);
     if timer_base_addr.is_null() {
-        pr_err(b"%s: could not map timer registers\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_err(b"%s: could not map timer registers\n\0".as_ptr() as *const kernel::ffi::c_char);
         return;
     }
 
     node = of_find_compatible_node(
         core::ptr::null_mut(),
         core::ptr::null(),
-        b"actions,s500-sps\0".as_ptr() as *const core::ffi::c_char,
+        b"actions,s500-sps\0".as_ptr() as *const kernel::ffi::c_char,
     );
     if node.is_null() {
-        pr_err(b"%s: missing sps\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_err(b"%s: missing sps\n\0".as_ptr() as *const kernel::ffi::c_char);
         return;
     }
 
     sps_base_addr = of_iomap(node, 0);
     if sps_base_addr.is_null() {
-        pr_err(b"%s: could not map sps registers\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_err(b"%s: could not map sps registers\n\0".as_ptr() as *const kernel::ffi::c_char);
         return;
     }
 
@@ -183,16 +183,16 @@ unsafe extern "C" fn s500_smp_prepare_cpus(_max_cpus: u32) {
         node = of_find_compatible_node(
             core::ptr::null_mut(),
             core::ptr::null(),
-            b"arm,cortex-a9-scu\0".as_ptr() as *const core::ffi::c_char,
+            b"arm,cortex-a9-scu\0".as_ptr() as *const kernel::ffi::c_char,
         );
         if node.is_null() {
-            pr_err(b"%s: missing scu\n\0".as_ptr() as *const core::ffi::c_char);
+            pr_err(b"%s: missing scu\n\0".as_ptr() as *const kernel::ffi::c_char);
             return;
         }
 
         scu_base_addr = of_iomap(node, 0);
         if scu_base_addr.is_null() {
-            pr_err(b"%s: could not map scu registers\n\0".as_ptr() as *const core::ffi::c_char);
+            pr_err(b"%s: could not map scu registers\n\0".as_ptr() as *const kernel::ffi::c_char);
             return;
         }
 
@@ -202,7 +202,7 @@ unsafe extern "C" fn s500_smp_prepare_cpus(_max_cpus: u32) {
          * booting the cores.
          */
         ncores = scu_get_core_count(scu_base_addr);
-        pr_debug(b"%s: ncores %d\n\0".as_ptr() as *const core::ffi::c_char);
+        pr_debug(b"%s: ncores %d\n\0".as_ptr() as *const kernel::ffi::c_char);
 
         scu_enable(scu_base_addr);
     }

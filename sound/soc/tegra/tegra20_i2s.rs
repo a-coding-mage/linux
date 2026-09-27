@@ -17,15 +17,15 @@
 // Dependencies correspond to the original Linux kernel and local
 // "tegra20_i2s.h" includes.
 
-const DRV_NAME: *const core::ffi::c_char = b"tegra20-i2s\0".as_ptr() as *const core::ffi::c_char;
+const DRV_NAME: *const kernel::ffi::c_char = b"tegra20-i2s\0".as_ptr() as *const kernel::ffi::c_char;
 
 extern "C" {
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
-    fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
-    fn dev_name(dev: *const device) -> *const core::ffi::c_char;
-    fn dev_err(dev: *const device, fmt: *const core::ffi::c_char, ...);
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
+    fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
+    fn dev_name(dev: *const device) -> *const kernel::ffi::c_char;
+    fn dev_err(dev: *const device, fmt: *const kernel::ffi::c_char, ...);
 
-    fn snd_soc_dai_get_drvdata(dai: *mut snd_soc_dai) -> *mut core::ffi::c_void;
+    fn snd_soc_dai_get_drvdata(dai: *mut snd_soc_dai) -> *mut kernel::ffi::c_void;
     fn snd_soc_dai_init_dma_data(
         dai: *mut snd_soc_dai,
         playback: *mut snd_dmaengine_dai_dma_data,
@@ -34,76 +34,76 @@ extern "C" {
         dev: *mut device,
         component_driver: *const snd_soc_component_driver,
         dai_drv: *mut snd_soc_dai_driver,
-        num_dai: core::ffi::c_int) -> core::ffi::c_int;
+        num_dai: kernel::ffi::c_int) -> kernel::ffi::c_int;
     fn snd_soc_unregister_component(dev: *mut device);
 
-    fn params_format(params: *mut snd_pcm_hw_params) -> core::ffi::c_int;
-    fn params_rate(params: *mut snd_pcm_hw_params) -> core::ffi::c_int;
-    fn params_channels(params: *mut snd_pcm_hw_params) -> core::ffi::c_int;
-    fn hw_param_interval(params: *mut snd_pcm_hw_params, var: core::ffi::c_int) -> *mut snd_interval;
+    fn params_format(params: *mut snd_pcm_hw_params) -> kernel::ffi::c_int;
+    fn params_rate(params: *mut snd_pcm_hw_params) -> kernel::ffi::c_int;
+    fn params_channels(params: *mut snd_pcm_hw_params) -> kernel::ffi::c_int;
+    fn hw_param_interval(params: *mut snd_pcm_hw_params, var: kernel::ffi::c_int) -> *mut snd_interval;
     fn snd_interval_list(
         i: *mut snd_interval,
-        count: core::ffi::c_uint,
-        list: *const core::ffi::c_uint,
-        mask: core::ffi::c_ulong) -> core::ffi::c_int;
+        count: kernel::ffi::c_uint,
+        list: *const kernel::ffi::c_uint,
+        mask: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
     fn snd_pcm_hw_rule_add(
         runtime: *mut snd_pcm_runtime,
-        cond: core::ffi::c_uint,
-        var: core::ffi::c_int,
+        cond: kernel::ffi::c_uint,
+        var: kernel::ffi::c_int,
         func: Option<
-            unsafe extern "C" fn(*mut snd_pcm_hw_params, *mut snd_pcm_hw_rule) -> core::ffi::c_int,
+            unsafe extern "C" fn(*mut snd_pcm_hw_params, *mut snd_pcm_hw_rule) -> kernel::ffi::c_int,
         _: >,
-        private: *mut core::ffi::c_void,
-        dep: core::ffi::c_int,
-        ...) -> core::ffi::c_int;
+        private: *mut kernel::ffi::c_void,
+        dep: kernel::ffi::c_int,
+        ...) -> kernel::ffi::c_int;
 
     fn regcache_cache_only(map: *mut regmap, enable: bool);
     fn regcache_mark_dirty(map: *mut regmap);
-    fn regcache_sync(map: *mut regmap) -> core::ffi::c_int;
+    fn regcache_sync(map: *mut regmap) -> kernel::ffi::c_int;
     fn regmap_update_bits(
         map: *mut regmap,
-        reg: core::ffi::c_uint,
-        mask: core::ffi::c_uint,
-        val: core::ffi::c_uint) -> core::ffi::c_int;
-    fn regmap_write(map: *mut regmap, reg: core::ffi::c_uint, val: core::ffi::c_uint) -> core::ffi::c_int;
+        reg: kernel::ffi::c_uint,
+        mask: kernel::ffi::c_uint,
+        val: kernel::ffi::c_uint) -> kernel::ffi::c_int;
+    fn regmap_write(map: *mut regmap, reg: kernel::ffi::c_uint, val: kernel::ffi::c_uint) -> kernel::ffi::c_int;
 
     fn clk_disable_unprepare(clk: *mut clk);
-    fn clk_prepare_enable(clk: *mut clk) -> core::ffi::c_int;
-    fn clk_set_rate(clk: *mut clk, rate: core::ffi::c_ulong) -> core::ffi::c_int;
+    fn clk_prepare_enable(clk: *mut clk) -> kernel::ffi::c_int;
+    fn clk_set_rate(clk: *mut clk, rate: kernel::ffi::c_ulong) -> kernel::ffi::c_int;
     fn clk_get_parent(clk: *mut clk) -> *mut clk;
-    fn clk_get_rate(clk: *mut clk) -> core::ffi::c_ulong;
-    fn devm_clk_get(dev: *mut device, id: *const core::ffi::c_char) -> *mut clk;
+    fn clk_get_rate(clk: *mut clk) -> kernel::ffi::c_ulong;
+    fn devm_clk_get(dev: *mut device, id: *const kernel::ffi::c_char) -> *mut clk;
 
-    fn reset_control_assert(rstc: *mut reset_control) -> core::ffi::c_int;
-    fn reset_control_deassert(rstc: *mut reset_control) -> core::ffi::c_int;
+    fn reset_control_assert(rstc: *mut reset_control) -> kernel::ffi::c_int;
+    fn reset_control_deassert(rstc: *mut reset_control) -> kernel::ffi::c_int;
     fn devm_reset_control_get_exclusive(
         dev: *mut device,
-        id: *const core::ffi::c_char) -> *mut reset_control;
+        id: *const kernel::ffi::c_char) -> *mut reset_control;
 
-    fn usleep_range(min: core::ffi::c_ulong, max: core::ffi::c_ulong);
-    fn device_property_read_bool(dev: *mut device, propname: *const core::ffi::c_char) -> bool;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: gfp_t) -> *mut core::ffi::c_void;
+    fn usleep_range(min: kernel::ffi::c_ulong, max: kernel::ffi::c_ulong);
+    fn device_property_read_bool(dev: *mut device, propname: *const kernel::ffi::c_char) -> bool;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: gfp_t) -> *mut kernel::ffi::c_void;
     fn devm_platform_get_and_ioremap_resource(
         pdev: *mut platform_device,
-        index: core::ffi::c_uint,
-        res: *mut *mut resource) -> *mut core::ffi::c_void;
+        index: kernel::ffi::c_uint,
+        res: *mut *mut resource) -> *mut kernel::ffi::c_void;
     fn devm_regmap_init_mmio(
         dev: *mut device,
-        regs: *mut core::ffi::c_void,
+        regs: *mut kernel::ffi::c_void,
         config: *const regmap_config) -> *mut regmap;
     fn pm_runtime_enable(dev: *mut device);
     fn pm_runtime_disable(dev: *mut device);
-    fn pm_runtime_force_suspend(dev: *mut device) -> core::ffi::c_int;
-    fn pm_runtime_force_resume(dev: *mut device) -> core::ffi::c_int;
-    fn tegra_pcm_platform_register(dev: *mut device) -> core::ffi::c_int;
+    fn pm_runtime_force_suspend(dev: *mut device) -> kernel::ffi::c_int;
+    fn pm_runtime_force_resume(dev: *mut device) -> kernel::ffi::c_int;
+    fn tegra_pcm_platform_register(dev: *mut device) -> kernel::ffi::c_int;
     fn tegra_pcm_platform_unregister(dev: *mut device);
 
-    fn IS_ERR(ptr: *const core::ffi::c_void) -> bool;
-    fn PTR_ERR(ptr: *const core::ffi::c_void) -> core::ffi::c_int;
+    fn IS_ERR(ptr: *const kernel::ffi::c_void) -> bool;
+    fn PTR_ERR(ptr: *const kernel::ffi::c_void) -> kernel::ffi::c_int;
     fn pm_ptr(ptr: *const dev_pm_ops) -> *const dev_pm_ops;
 }
 
-type gfp_t = core::ffi::c_uint;
+type gfp_t = kernel::ffi::c_uint;
 
 #[repr(C)]
 pub struct device {
@@ -142,18 +142,18 @@ pub struct snd_interval {
 
 #[repr(C)]
 pub struct resource {
-    start: core::ffi::c_ulong,
+    start: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct snd_pcm_substream {
-    stream: core::ffi::c_int,
+    stream: kernel::ffi::c_int,
     runtime: *mut snd_pcm_runtime,
 }
 
 #[repr(C)]
 pub struct snd_pcm_hw_rule {
-    var: core::ffi::c_int,
+    var: kernel::ffi::c_int,
     private: *mut snd_soc_dai,
 }
 
@@ -170,19 +170,19 @@ pub struct platform_device {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct snd_dmaengine_dai_dma_data {
-    addr: core::ffi::c_ulong,
-    addr_width: core::ffi::c_int,
-    maxburst: core::ffi::c_uint,
+    addr: kernel::ffi::c_ulong,
+    addr_width: kernel::ffi::c_int,
+    maxburst: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct snd_soc_pcm_stream {
-    stream_name: *const core::ffi::c_char,
-    channels_min: core::ffi::c_uint,
-    channels_max: core::ffi::c_uint,
-    rates: core::ffi::c_uint,
-    formats: core::ffi::c_ulonglong,
+    stream_name: *const kernel::ffi::c_char,
+    channels_min: kernel::ffi::c_uint,
+    channels_max: kernel::ffi::c_uint,
+    rates: kernel::ffi::c_uint,
+    formats: kernel::ffi::c_ulonglong,
 }
 
 #[repr(C)]
@@ -191,48 +191,48 @@ pub struct snd_soc_dai_driver {
     playback: snd_soc_pcm_stream,
     capture: snd_soc_pcm_stream,
     ops: *const snd_soc_dai_ops,
-    symmetric_rate: core::ffi::c_uint,
-    name: *const core::ffi::c_char,
+    symmetric_rate: kernel::ffi::c_uint,
+    name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct snd_soc_dai_ops {
-    probe: Option<unsafe extern "C" fn(*mut snd_soc_dai) -> core::ffi::c_int>,
-    set_fmt: Option<unsafe extern "C" fn(*mut snd_soc_dai, core::ffi::c_uint) -> core::ffi::c_int>,
+    probe: Option<unsafe extern "C" fn(*mut snd_soc_dai) -> kernel::ffi::c_int>,
+    set_fmt: Option<unsafe extern "C" fn(*mut snd_soc_dai, kernel::ffi::c_uint) -> kernel::ffi::c_int>,
     hw_params: Option<
         unsafe extern "C" fn(
             *mut snd_pcm_substream,
             *mut snd_pcm_hw_params,
             *mut snd_soc_dai,
-        ) -> core::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
     trigger:
-        Option<unsafe extern "C" fn(*mut snd_pcm_substream, core::ffi::c_int, *mut snd_soc_dai) -> core::ffi::c_int>,
-    startup: Option<unsafe extern "C" fn(*mut snd_pcm_substream, *mut snd_soc_dai) -> core::ffi::c_int>,
+        Option<unsafe extern "C" fn(*mut snd_pcm_substream, kernel::ffi::c_int, *mut snd_soc_dai) -> kernel::ffi::c_int>,
+    startup: Option<unsafe extern "C" fn(*mut snd_pcm_substream, *mut snd_soc_dai) -> kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct snd_soc_component_driver {
-    name: *const core::ffi::c_char,
-    legacy_dai_naming: core::ffi::c_uint,
+    name: *const kernel::ffi::c_char,
+    legacy_dai_naming: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct regmap_config {
-    reg_bits: core::ffi::c_int,
-    reg_stride: core::ffi::c_int,
-    val_bits: core::ffi::c_int,
-    max_register: core::ffi::c_uint,
-    writeable_reg: Option<unsafe extern "C" fn(*mut device, core::ffi::c_uint) -> bool>,
-    readable_reg: Option<unsafe extern "C" fn(*mut device, core::ffi::c_uint) -> bool>,
-    volatile_reg: Option<unsafe extern "C" fn(*mut device, core::ffi::c_uint) -> bool>,
-    precious_reg: Option<unsafe extern "C" fn(*mut device, core::ffi::c_uint) -> bool>,
-    cache_type: core::ffi::c_int,
+    reg_bits: kernel::ffi::c_int,
+    reg_stride: kernel::ffi::c_int,
+    val_bits: kernel::ffi::c_int,
+    max_register: kernel::ffi::c_uint,
+    writeable_reg: Option<unsafe extern "C" fn(*mut device, kernel::ffi::c_uint) -> bool>,
+    readable_reg: Option<unsafe extern "C" fn(*mut device, kernel::ffi::c_uint) -> bool>,
+    volatile_reg: Option<unsafe extern "C" fn(*mut device, kernel::ffi::c_uint) -> bool>,
+    precious_reg: Option<unsafe extern "C" fn(*mut device, kernel::ffi::c_uint) -> bool>,
+    cache_type: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct of_device_id {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -242,7 +242,7 @@ pub struct dev_pm_ops {
 
 #[repr(C)]
 pub struct driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     of_match_table: *const of_device_id,
     pm: *const dev_pm_ops,
 }
@@ -250,7 +250,7 @@ pub struct driver {
 #[repr(C)]
 pub struct platform_driver {
     driver: driver,
-    probe: Option<unsafe extern "C" fn(*mut platform_device) -> core::ffi::c_int>,
+    probe: Option<unsafe extern "C" fn(*mut platform_device) -> kernel::ffi::c_int>,
     remove: Option<unsafe extern "C" fn(*mut platform_device)>,
 }
 
@@ -265,75 +265,75 @@ pub struct tegra20_i2s {
 }
 
 extern "C" {
-    static TEGRA20_I2S_CTRL_MASTER_ENABLE: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_BIT_FORMAT_MASK: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_LRCK_MASK: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_BIT_FORMAT_DSP: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_LRCK_L_LOW: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_LRCK_R_LOW: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_BIT_FORMAT_I2S: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_BIT_FORMAT_RJM: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_BIT_FORMAT_LJM: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_BIT_SIZE_MASK: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_BIT_SIZE_16: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_BIT_SIZE_24: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_BIT_SIZE_32: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_FIFO_FORMAT_MASK: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_FIFO_FORMAT_PACKED: core::ffi::c_uint;
-    static TEGRA20_I2S_TIMING_CHANNEL_BIT_COUNT_MASK_US: core::ffi::c_int;
-    static TEGRA20_I2S_TIMING_CHANNEL_BIT_COUNT_SHIFT: core::ffi::c_int;
-    static TEGRA20_I2S_TIMING_NON_SYM_ENABLE: core::ffi::c_uint;
-    static TEGRA20_I2S_FIFO_SCR_FIFO2_ATN_LVL_FOUR_SLOTS: core::ffi::c_uint;
-    static TEGRA20_I2S_FIFO_SCR_FIFO1_ATN_LVL_FOUR_SLOTS: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_FIFO1_ENABLE: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL_FIFO2_ENABLE: core::ffi::c_uint;
-    static TEGRA20_I2S_CTRL: core::ffi::c_uint;
-    static TEGRA20_I2S_STATUS: core::ffi::c_uint;
-    static TEGRA20_I2S_TIMING: core::ffi::c_uint;
-    static TEGRA20_I2S_FIFO_SCR: core::ffi::c_uint;
-    static TEGRA20_I2S_PCM_CTRL: core::ffi::c_uint;
-    static TEGRA20_I2S_NW_CTRL: core::ffi::c_uint;
-    static TEGRA20_I2S_TDM_CTRL: core::ffi::c_uint;
-    static TEGRA20_I2S_TDM_TX_RX_CTRL: core::ffi::c_uint;
-    static TEGRA20_I2S_FIFO1: core::ffi::c_uint;
-    static TEGRA20_I2S_FIFO2: core::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_MASTER_ENABLE: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_BIT_FORMAT_MASK: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_LRCK_MASK: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_BIT_FORMAT_DSP: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_LRCK_L_LOW: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_LRCK_R_LOW: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_BIT_FORMAT_I2S: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_BIT_FORMAT_RJM: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_BIT_FORMAT_LJM: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_BIT_SIZE_MASK: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_BIT_SIZE_16: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_BIT_SIZE_24: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_BIT_SIZE_32: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_FIFO_FORMAT_MASK: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_FIFO_FORMAT_PACKED: kernel::ffi::c_uint;
+    static TEGRA20_I2S_TIMING_CHANNEL_BIT_COUNT_MASK_US: kernel::ffi::c_int;
+    static TEGRA20_I2S_TIMING_CHANNEL_BIT_COUNT_SHIFT: kernel::ffi::c_int;
+    static TEGRA20_I2S_TIMING_NON_SYM_ENABLE: kernel::ffi::c_uint;
+    static TEGRA20_I2S_FIFO_SCR_FIFO2_ATN_LVL_FOUR_SLOTS: kernel::ffi::c_uint;
+    static TEGRA20_I2S_FIFO_SCR_FIFO1_ATN_LVL_FOUR_SLOTS: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_FIFO1_ENABLE: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL_FIFO2_ENABLE: kernel::ffi::c_uint;
+    static TEGRA20_I2S_CTRL: kernel::ffi::c_uint;
+    static TEGRA20_I2S_STATUS: kernel::ffi::c_uint;
+    static TEGRA20_I2S_TIMING: kernel::ffi::c_uint;
+    static TEGRA20_I2S_FIFO_SCR: kernel::ffi::c_uint;
+    static TEGRA20_I2S_PCM_CTRL: kernel::ffi::c_uint;
+    static TEGRA20_I2S_NW_CTRL: kernel::ffi::c_uint;
+    static TEGRA20_I2S_TDM_CTRL: kernel::ffi::c_uint;
+    static TEGRA20_I2S_TDM_TX_RX_CTRL: kernel::ffi::c_uint;
+    static TEGRA20_I2S_FIFO1: kernel::ffi::c_uint;
+    static TEGRA20_I2S_FIFO2: kernel::ffi::c_uint;
 }
 
-const EINVAL: core::ffi::c_int = 22;
-const ENOMEM: core::ffi::c_int = 12;
+const EINVAL: kernel::ffi::c_int = 22;
+const ENOMEM: kernel::ffi::c_int = 12;
 const GFP_KERNEL: gfp_t = 0;
-const SNDRV_PCM_FORMAT_S16_LE: core::ffi::c_int = 2;
-const SNDRV_PCM_FORMAT_S24_LE: core::ffi::c_int = 6;
-const SNDRV_PCM_FORMAT_S32_LE: core::ffi::c_int = 10;
-const SNDRV_PCM_TRIGGER_START: core::ffi::c_int = 0;
-const SNDRV_PCM_TRIGGER_STOP: core::ffi::c_int = 1;
-const SNDRV_PCM_TRIGGER_PAUSE_PUSH: core::ffi::c_int = 3;
-const SNDRV_PCM_TRIGGER_PAUSE_RELEASE: core::ffi::c_int = 4;
-const SNDRV_PCM_TRIGGER_SUSPEND: core::ffi::c_int = 5;
-const SNDRV_PCM_TRIGGER_RESUME: core::ffi::c_int = 6;
-const SNDRV_PCM_STREAM_PLAYBACK: core::ffi::c_int = 0;
-const SNDRV_PCM_HW_PARAM_RATE: core::ffi::c_int = 10;
-const SND_SOC_DAIFMT_INV_MASK: core::ffi::c_uint = 0x0f00;
-const SND_SOC_DAIFMT_NB_NF: core::ffi::c_uint = 0x0000;
-const SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK: core::ffi::c_uint = 0xf000;
-const SND_SOC_DAIFMT_BP_FP: core::ffi::c_uint = 0x1000;
-const SND_SOC_DAIFMT_BC_FC: core::ffi::c_uint = 0x0000;
-const SND_SOC_DAIFMT_FORMAT_MASK: core::ffi::c_uint = 0x000f;
-const SND_SOC_DAIFMT_DSP_A: core::ffi::c_uint = 0x0004;
-const SND_SOC_DAIFMT_DSP_B: core::ffi::c_uint = 0x0005;
-const SND_SOC_DAIFMT_I2S: core::ffi::c_uint = 0x0001;
-const SND_SOC_DAIFMT_RIGHT_J: core::ffi::c_uint = 0x0003;
-const SND_SOC_DAIFMT_LEFT_J: core::ffi::c_uint = 0x0002;
-const SNDRV_PCM_RATE_8000_96000: core::ffi::c_uint = 0;
-const SNDRV_PCM_FMTBIT_S16_LE: core::ffi::c_ulonglong = 1 << SNDRV_PCM_FORMAT_S16_LE;
-const DMA_SLAVE_BUSWIDTH_4_BYTES: core::ffi::c_int = 4;
-const REGCACHE_FLAT: core::ffi::c_int = 1;
+const SNDRV_PCM_FORMAT_S16_LE: kernel::ffi::c_int = 2;
+const SNDRV_PCM_FORMAT_S24_LE: kernel::ffi::c_int = 6;
+const SNDRV_PCM_FORMAT_S32_LE: kernel::ffi::c_int = 10;
+const SNDRV_PCM_TRIGGER_START: kernel::ffi::c_int = 0;
+const SNDRV_PCM_TRIGGER_STOP: kernel::ffi::c_int = 1;
+const SNDRV_PCM_TRIGGER_PAUSE_PUSH: kernel::ffi::c_int = 3;
+const SNDRV_PCM_TRIGGER_PAUSE_RELEASE: kernel::ffi::c_int = 4;
+const SNDRV_PCM_TRIGGER_SUSPEND: kernel::ffi::c_int = 5;
+const SNDRV_PCM_TRIGGER_RESUME: kernel::ffi::c_int = 6;
+const SNDRV_PCM_STREAM_PLAYBACK: kernel::ffi::c_int = 0;
+const SNDRV_PCM_HW_PARAM_RATE: kernel::ffi::c_int = 10;
+const SND_SOC_DAIFMT_INV_MASK: kernel::ffi::c_uint = 0x0f00;
+const SND_SOC_DAIFMT_NB_NF: kernel::ffi::c_uint = 0x0000;
+const SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK: kernel::ffi::c_uint = 0xf000;
+const SND_SOC_DAIFMT_BP_FP: kernel::ffi::c_uint = 0x1000;
+const SND_SOC_DAIFMT_BC_FC: kernel::ffi::c_uint = 0x0000;
+const SND_SOC_DAIFMT_FORMAT_MASK: kernel::ffi::c_uint = 0x000f;
+const SND_SOC_DAIFMT_DSP_A: kernel::ffi::c_uint = 0x0004;
+const SND_SOC_DAIFMT_DSP_B: kernel::ffi::c_uint = 0x0005;
+const SND_SOC_DAIFMT_I2S: kernel::ffi::c_uint = 0x0001;
+const SND_SOC_DAIFMT_RIGHT_J: kernel::ffi::c_uint = 0x0003;
+const SND_SOC_DAIFMT_LEFT_J: kernel::ffi::c_uint = 0x0002;
+const SNDRV_PCM_RATE_8000_96000: kernel::ffi::c_uint = 0;
+const SNDRV_PCM_FMTBIT_S16_LE: kernel::ffi::c_ulonglong = 1 << SNDRV_PCM_FORMAT_S16_LE;
+const DMA_SLAVE_BUSWIDTH_4_BYTES: kernel::ffi::c_int = 4;
+const REGCACHE_FLAT: kernel::ffi::c_int = 1;
 
-const fn BIT(nr: usize) -> core::ffi::c_ulong {
+const fn BIT(nr: usize) -> kernel::ffi::c_ulong {
     1core::ffi::c_ulong << nr
 }
 
-unsafe extern "C" fn tegra20_i2s_runtime_suspend(dev: *mut device) -> core::ffi::c_int {
+unsafe extern "C" fn tegra20_i2s_runtime_suspend(dev: *mut device) -> kernel::ffi::c_int {
     let i2s = dev_get_drvdata(dev) as *mut tegra20_i2s;
 
     regcache_cache_only((*i2s).regmap, true);
@@ -343,9 +343,9 @@ unsafe extern "C" fn tegra20_i2s_runtime_suspend(dev: *mut device) -> core::ffi:
     0
 }
 
-unsafe extern "C" fn tegra20_i2s_runtime_resume(dev: *mut device) -> core::ffi::c_int {
+unsafe extern "C" fn tegra20_i2s_runtime_resume(dev: *mut device) -> kernel::ffi::c_int {
     let i2s = dev_get_drvdata(dev) as *mut tegra20_i2s;
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     ret = reset_control_assert((*i2s).reset);
     if ret != 0 {
@@ -354,7 +354,7 @@ unsafe extern "C" fn tegra20_i2s_runtime_resume(dev: *mut device) -> core::ffi::
 
     ret = clk_prepare_enable((*i2s).clk_i2s);
     if ret != 0 {
-        dev_err(dev, b"clk_enable failed: %d\n\0".as_ptr() as *const core::ffi::c_char, ret);
+        dev_err(dev, b"clk_enable failed: %d\n\0".as_ptr() as *const kernel::ffi::c_char, ret);
         return ret;
     }
 
@@ -380,11 +380,11 @@ unsafe extern "C" fn tegra20_i2s_runtime_resume(dev: *mut device) -> core::ffi::
 
 unsafe extern "C" fn tegra20_i2s_set_fmt(
     dai: *mut snd_soc_dai,
-    fmt: core::ffi::c_uint,
-) -> core::ffi::c_int {
+    fmt: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let i2s = snd_soc_dai_get_drvdata(dai) as *mut tegra20_i2s;
-    let mut mask: core::ffi::c_uint = 0;
-    let mut val: core::ffi::c_uint = 0;
+    let mut mask: kernel::ffi::c_uint = 0;
+    let mut val: kernel::ffi::c_uint = 0;
 
     match fmt & SND_SOC_DAIFMT_INV_MASK {
         SND_SOC_DAIFMT_NB_NF => {}
@@ -432,16 +432,16 @@ unsafe extern "C" fn tegra20_i2s_hw_params(
     _substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let dev = (*dai).dev;
     let i2s = snd_soc_dai_get_drvdata(dai) as *mut tegra20_i2s;
-    let mut mask: core::ffi::c_uint;
-    let mut val: core::ffi::c_uint;
-    let mut ret: core::ffi::c_int;
-    let sample_size: core::ffi::c_int;
-    let srate: core::ffi::c_int;
-    let i2sclock: core::ffi::c_int;
-    let bitcnt: core::ffi::c_int;
+    let mut mask: kernel::ffi::c_uint;
+    let mut val: kernel::ffi::c_uint;
+    let mut ret: kernel::ffi::c_int;
+    let sample_size: kernel::ffi::c_int;
+    let srate: kernel::ffi::c_int;
+    let i2sclock: kernel::ffi::c_int;
+    let bitcnt: kernel::ffi::c_int;
 
     mask = TEGRA20_I2S_CTRL_BIT_SIZE_MASK;
     match params_format(params) {
@@ -470,11 +470,11 @@ unsafe extern "C" fn tegra20_i2s_hw_params(
     /* Final "* 2" required by Tegra hardware */
     i2sclock = srate * params_channels(params) * sample_size * 2;
 
-    ret = clk_set_rate((*i2s).clk_i2s, i2sclock as core::ffi::c_ulong);
+    ret = clk_set_rate((*i2s).clk_i2s, i2sclock as kernel::ffi::c_ulong);
     if ret != 0 {
         dev_err(
             dev,
-            b"Can't set I2S clock rate: %d\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Can't set I2S clock rate: %d\n\0".as_ptr() as *const kernel::ffi::c_char,
             ret,
         );
         return ret;
@@ -484,7 +484,7 @@ unsafe extern "C" fn tegra20_i2s_hw_params(
     if bitcnt < 0 || bitcnt > TEGRA20_I2S_TIMING_CHANNEL_BIT_COUNT_MASK_US {
         return -EINVAL;
     }
-    val = (bitcnt << TEGRA20_I2S_TIMING_CHANNEL_BIT_COUNT_SHIFT) as core::ffi::c_uint;
+    val = (bitcnt << TEGRA20_I2S_TIMING_CHANNEL_BIT_COUNT_SHIFT) as kernel::ffi::c_uint;
 
     if i2sclock % (2 * srate) != 0 {
         val |= TEGRA20_I2S_TIMING_NON_SYM_ENABLE;
@@ -540,9 +540,9 @@ unsafe extern "C" fn tegra20_i2s_stop_capture(i2s: *mut tegra20_i2s) {
 
 unsafe extern "C" fn tegra20_i2s_trigger(
     substream: *mut snd_pcm_substream,
-    cmd: core::ffi::c_int,
+    cmd: kernel::ffi::c_int,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let i2s = snd_soc_dai_get_drvdata(dai) as *mut tegra20_i2s;
 
     match cmd {
@@ -566,7 +566,7 @@ unsafe extern "C" fn tegra20_i2s_trigger(
     0
 }
 
-unsafe extern "C" fn tegra20_i2s_probe(dai: *mut snd_soc_dai) -> core::ffi::c_int {
+unsafe extern "C" fn tegra20_i2s_probe(dai: *mut snd_soc_dai) -> kernel::ffi::c_int {
     let i2s = snd_soc_dai_get_drvdata(dai) as *mut tegra20_i2s;
 
     snd_soc_dai_init_dma_data(dai, &mut (*i2s).playback_dma_data, &mut (*i2s).capture_dma_data);
@@ -574,33 +574,33 @@ unsafe extern "C" fn tegra20_i2s_probe(dai: *mut snd_soc_dai) -> core::ffi::c_in
     0
 }
 
-static tegra20_i2s_rates: [core::ffi::c_uint; 10] =
+static tegra20_i2s_rates: [kernel::ffi::c_uint; 10] =
     [8000, 11025, 16000, 22050, 32000, 44100, 48000, 64000, 88200, 96000];
 
 unsafe extern "C" fn tegra20_i2s_filter_rates(
     params: *mut snd_pcm_hw_params,
     rule: *mut snd_pcm_hw_rule,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let r = hw_param_interval(params, (*rule).var);
     let dai = (*rule).private;
     let i2s = dev_get_drvdata((*dai).dev) as *mut tegra20_i2s;
     let parent = clk_get_parent((*i2s).clk_i2s);
-    let mut i: core::ffi::c_ulong;
-    let parent_rate: core::ffi::c_ulong;
-    let mut valid_rates: core::ffi::c_ulong = 0;
+    let mut i: kernel::ffi::c_ulong;
+    let parent_rate: kernel::ffi::c_ulong;
+    let mut valid_rates: kernel::ffi::c_ulong = 0;
 
     parent_rate = clk_get_rate(parent);
     if parent_rate == 0 {
         dev_err(
             (*dai).dev,
-            b"Can't get parent clock rate\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Can't get parent clock rate\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
         return -EINVAL;
     }
 
     i = 0;
-    while i < tegra20_i2s_rates.len() as core::ffi::c_ulong {
-        if parent_rate % ((tegra20_i2s_rates[i as usize] * 128) as core::ffi::c_ulong) == 0 {
+    while i < tegra20_i2s_rates.len() as kernel::ffi::c_ulong {
+        if parent_rate % ((tegra20_i2s_rates[i as usize] * 128) as kernel::ffi::c_ulong) == 0 {
             valid_rates |= BIT(i as usize);
         }
         i += 1;
@@ -616,7 +616,7 @@ unsafe extern "C" fn tegra20_i2s_filter_rates(
 
     snd_interval_list(
         r,
-        tegra20_i2s_rates.len() as core::ffi::c_uint,
+        tegra20_i2s_rates.len() as kernel::ffi::c_uint,
         tegra20_i2s_rates.as_ptr(),
         valid_rates,
     )
@@ -625,10 +625,10 @@ unsafe extern "C" fn tegra20_i2s_filter_rates(
 unsafe extern "C" fn tegra20_i2s_startup(
     substream: *mut snd_pcm_substream,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     if !device_property_read_bool(
         (*dai).dev,
-        b"nvidia,fixed-parent-rate\0".as_ptr() as *const core::ffi::c_char,
+        b"nvidia,fixed-parent-rate\0".as_ptr() as *const kernel::ffi::c_char,
     ) {
         return 0;
     }
@@ -638,7 +638,7 @@ unsafe extern "C" fn tegra20_i2s_startup(
         0,
         SNDRV_PCM_HW_PARAM_RATE,
         Some(tegra20_i2s_filter_rates),
-        dai as *mut core::ffi::c_void,
+        dai as *mut kernel::ffi::c_void,
         SNDRV_PCM_HW_PARAM_RATE,
         -1,
     )
@@ -654,14 +654,14 @@ static tegra20_i2s_dai_ops: snd_soc_dai_ops = snd_soc_dai_ops {
 
 static tegra20_i2s_dai_template: snd_soc_dai_driver = snd_soc_dai_driver {
     playback: snd_soc_pcm_stream {
-        stream_name: b"Playback\0".as_ptr() as *const core::ffi::c_char,
+        stream_name: b"Playback\0".as_ptr() as *const kernel::ffi::c_char,
         channels_min: 2,
         channels_max: 2,
         rates: SNDRV_PCM_RATE_8000_96000,
         formats: SNDRV_PCM_FMTBIT_S16_LE,
     },
     capture: snd_soc_pcm_stream {
-        stream_name: b"Capture\0".as_ptr() as *const core::ffi::c_char,
+        stream_name: b"Capture\0".as_ptr() as *const kernel::ffi::c_char,
         channels_min: 2,
         channels_max: 2,
         rates: SNDRV_PCM_RATE_8000_96000,
@@ -679,7 +679,7 @@ static tegra20_i2s_component: snd_soc_component_driver = snd_soc_component_drive
 
 unsafe extern "C" fn tegra20_i2s_wr_rd_reg(
     _dev: *mut device,
-    reg: core::ffi::c_uint,
+    reg: kernel::ffi::c_uint,
 ) -> bool {
     if reg == TEGRA20_I2S_CTRL
         || reg == TEGRA20_I2S_STATUS
@@ -700,7 +700,7 @@ unsafe extern "C" fn tegra20_i2s_wr_rd_reg(
 
 unsafe extern "C" fn tegra20_i2s_volatile_reg(
     _dev: *mut device,
-    reg: core::ffi::c_uint,
+    reg: kernel::ffi::c_uint,
 ) -> bool {
     if reg == TEGRA20_I2S_STATUS
         || reg == TEGRA20_I2S_FIFO_SCR
@@ -715,7 +715,7 @@ unsafe extern "C" fn tegra20_i2s_volatile_reg(
 
 unsafe extern "C" fn tegra20_i2s_precious_reg(
     _dev: *mut device,
-    reg: core::ffi::c_uint,
+    reg: kernel::ffi::c_uint,
 ) -> bool {
     if reg == TEGRA20_I2S_FIFO1 || reg == TEGRA20_I2S_FIFO2 {
         true
@@ -736,11 +736,11 @@ static tegra20_i2s_regmap_config: regmap_config = regmap_config {
     cache_type: REGCACHE_FLAT,
 };
 
-unsafe extern "C" fn tegra20_i2s_platform_probe(pdev: *mut platform_device) -> core::ffi::c_int {
+unsafe extern "C" fn tegra20_i2s_platform_probe(pdev: *mut platform_device) -> kernel::ffi::c_int {
     let mut i2s: *mut tegra20_i2s;
     let mut mem: *mut resource = core::ptr::null_mut();
-    let regs: *mut core::ffi::c_void;
-    let mut ret: core::ffi::c_int;
+    let regs: *mut kernel::ffi::c_void;
+    let mut ret: kernel::ffi::c_int;
 
     i2s = devm_kzalloc(
         &mut (*pdev).dev,
@@ -751,54 +751,54 @@ unsafe extern "C" fn tegra20_i2s_platform_probe(pdev: *mut platform_device) -> c
         ret = -ENOMEM;
         return ret;
     }
-    dev_set_drvdata(&mut (*pdev).dev, i2s as *mut core::ffi::c_void);
+    dev_set_drvdata(&mut (*pdev).dev, i2s as *mut kernel::ffi::c_void);
 
     (*i2s).dai = tegra20_i2s_dai_template;
     (*i2s).dai.name = dev_name(&(*pdev).dev);
 
     (*i2s).reset = devm_reset_control_get_exclusive(
         &mut (*pdev).dev,
-        b"i2s\0".as_ptr() as *const core::ffi::c_char,
+        b"i2s\0".as_ptr() as *const kernel::ffi::c_char,
     );
-    if IS_ERR((*i2s).reset as *const core::ffi::c_void) {
+    if IS_ERR((*i2s).reset as *const kernel::ffi::c_void) {
         dev_err(
             &(*pdev).dev,
-            b"Can't retrieve i2s reset\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Can't retrieve i2s reset\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
-        return PTR_ERR((*i2s).reset as *const core::ffi::c_void);
+        return PTR_ERR((*i2s).reset as *const kernel::ffi::c_void);
     }
 
     (*i2s).clk_i2s = devm_clk_get(&mut (*pdev).dev, core::ptr::null());
-    if IS_ERR((*i2s).clk_i2s as *const core::ffi::c_void) {
+    if IS_ERR((*i2s).clk_i2s as *const kernel::ffi::c_void) {
         dev_err(
             &(*pdev).dev,
-            b"Can't retrieve i2s clock\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Can't retrieve i2s clock\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
-        ret = PTR_ERR((*i2s).clk_i2s as *const core::ffi::c_void);
+        ret = PTR_ERR((*i2s).clk_i2s as *const kernel::ffi::c_void);
         return ret;
     }
 
     regs = devm_platform_get_and_ioremap_resource(pdev, 0, &mut mem);
-    if IS_ERR(regs as *const core::ffi::c_void) {
-        ret = PTR_ERR(regs as *const core::ffi::c_void);
+    if IS_ERR(regs as *const kernel::ffi::c_void) {
+        ret = PTR_ERR(regs as *const kernel::ffi::c_void);
         return ret;
     }
 
     (*i2s).regmap = devm_regmap_init_mmio(&mut (*pdev).dev, regs, &tegra20_i2s_regmap_config);
-    if IS_ERR((*i2s).regmap as *const core::ffi::c_void) {
+    if IS_ERR((*i2s).regmap as *const kernel::ffi::c_void) {
         dev_err(
             &(*pdev).dev,
-            b"regmap init failed\n\0".as_ptr() as *const core::ffi::c_char,
+            b"regmap init failed\n\0".as_ptr() as *const kernel::ffi::c_char,
         );
-        ret = PTR_ERR((*i2s).regmap as *const core::ffi::c_void);
+        ret = PTR_ERR((*i2s).regmap as *const kernel::ffi::c_void);
         return ret;
     }
 
-    (*i2s).capture_dma_data.addr = (*mem).start + TEGRA20_I2S_FIFO2 as core::ffi::c_ulong;
+    (*i2s).capture_dma_data.addr = (*mem).start + TEGRA20_I2S_FIFO2 as kernel::ffi::c_ulong;
     (*i2s).capture_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
     (*i2s).capture_dma_data.maxburst = 4;
 
-    (*i2s).playback_dma_data.addr = (*mem).start + TEGRA20_I2S_FIFO1 as core::ffi::c_ulong;
+    (*i2s).playback_dma_data.addr = (*mem).start + TEGRA20_I2S_FIFO1 as kernel::ffi::c_ulong;
     (*i2s).playback_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
     (*i2s).playback_dma_data.maxburst = 4;
 
@@ -813,7 +813,7 @@ unsafe extern "C" fn tegra20_i2s_platform_probe(pdev: *mut platform_device) -> c
     if ret != 0 {
         dev_err(
             &(*pdev).dev,
-            b"Could not register DAI: %d\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Could not register DAI: %d\n\0".as_ptr() as *const kernel::ffi::c_char,
             ret,
         );
         ret = -ENOMEM;
@@ -825,7 +825,7 @@ unsafe extern "C" fn tegra20_i2s_platform_probe(pdev: *mut platform_device) -> c
     if ret != 0 {
         dev_err(
             &(*pdev).dev,
-            b"Could not register PCM: %d\n\0".as_ptr() as *const core::ffi::c_char,
+            b"Could not register PCM: %d\n\0".as_ptr() as *const kernel::ffi::c_char,
             ret,
         );
         snd_soc_unregister_component(&mut (*pdev).dev);
@@ -844,7 +844,7 @@ unsafe extern "C" fn tegra20_i2s_platform_remove(pdev: *mut platform_device) {
 
 static tegra20_i2s_of_match: [of_device_id; 2] = [
     of_device_id {
-        compatible: b"nvidia,tegra20-i2s\0".as_ptr() as *const core::ffi::c_char,
+        compatible: b"nvidia,tegra20-i2s\0".as_ptr() as *const kernel::ffi::c_char,
     },
     of_device_id {
         compatible: core::ptr::null(),

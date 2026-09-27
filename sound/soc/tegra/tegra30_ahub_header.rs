@@ -513,67 +513,67 @@ pub enum tegra30_ahub_rxcif {
 unsafe extern "C" {
     pub fn tegra30_ahub_allocate_rx_fifo(
         rxcif: *mut tegra30_ahub_rxcif,
-        dmachan: *mut core::ffi::c_char,
-        dmachan_len: core::ffi::c_int,
+        dmachan: *mut kernel::ffi::c_char,
+        dmachan_len: kernel::ffi::c_int,
         fiforeg: *mut dma_addr_t,
-    ) -> core::ffi::c_int;
-    pub fn tegra30_ahub_enable_rx_fifo(rxcif: tegra30_ahub_rxcif) -> core::ffi::c_int;
-    pub fn tegra30_ahub_disable_rx_fifo(rxcif: tegra30_ahub_rxcif) -> core::ffi::c_int;
-    pub fn tegra30_ahub_free_rx_fifo(rxcif: tegra30_ahub_rxcif) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
+    pub fn tegra30_ahub_enable_rx_fifo(rxcif: tegra30_ahub_rxcif) -> kernel::ffi::c_int;
+    pub fn tegra30_ahub_disable_rx_fifo(rxcif: tegra30_ahub_rxcif) -> kernel::ffi::c_int;
+    pub fn tegra30_ahub_free_rx_fifo(rxcif: tegra30_ahub_rxcif) -> kernel::ffi::c_int;
 
     pub fn tegra30_ahub_allocate_tx_fifo(
         txcif: *mut tegra30_ahub_txcif,
-        dmachan: *mut core::ffi::c_char,
-        dmachan_len: core::ffi::c_int,
+        dmachan: *mut kernel::ffi::c_char,
+        dmachan_len: kernel::ffi::c_int,
         fiforeg: *mut dma_addr_t,
-    ) -> core::ffi::c_int;
-    pub fn tegra30_ahub_enable_tx_fifo(txcif: tegra30_ahub_txcif) -> core::ffi::c_int;
-    pub fn tegra30_ahub_disable_tx_fifo(txcif: tegra30_ahub_txcif) -> core::ffi::c_int;
-    pub fn tegra30_ahub_free_tx_fifo(txcif: tegra30_ahub_txcif) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
+    pub fn tegra30_ahub_enable_tx_fifo(txcif: tegra30_ahub_txcif) -> kernel::ffi::c_int;
+    pub fn tegra30_ahub_disable_tx_fifo(txcif: tegra30_ahub_txcif) -> kernel::ffi::c_int;
+    pub fn tegra30_ahub_free_tx_fifo(txcif: tegra30_ahub_txcif) -> kernel::ffi::c_int;
 
     pub fn tegra30_ahub_set_rx_cif_source(
         rxcif: tegra30_ahub_rxcif,
         txcif: tegra30_ahub_txcif,
-    ) -> core::ffi::c_int;
-    pub fn tegra30_ahub_unset_rx_cif_source(rxcif: tegra30_ahub_rxcif) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
+    pub fn tegra30_ahub_unset_rx_cif_source(rxcif: tegra30_ahub_rxcif) -> kernel::ffi::c_int;
 }
 
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct tegra30_ahub_cif_conf {
-    pub threshold: core::ffi::c_uint,
-    pub audio_channels: core::ffi::c_uint,
-    pub client_channels: core::ffi::c_uint,
-    pub audio_bits: core::ffi::c_uint,
-    pub client_bits: core::ffi::c_uint,
-    pub expand: core::ffi::c_uint,
-    pub stereo_conv: core::ffi::c_uint,
-    pub replicate: core::ffi::c_uint,
-    pub direction: core::ffi::c_uint,
-    pub truncate: core::ffi::c_uint,
-    pub mono_conv: core::ffi::c_uint,
+    pub threshold: kernel::ffi::c_uint,
+    pub audio_channels: kernel::ffi::c_uint,
+    pub client_channels: kernel::ffi::c_uint,
+    pub audio_bits: kernel::ffi::c_uint,
+    pub client_bits: kernel::ffi::c_uint,
+    pub expand: kernel::ffi::c_uint,
+    pub stereo_conv: kernel::ffi::c_uint,
+    pub replicate: kernel::ffi::c_uint,
+    pub direction: kernel::ffi::c_uint,
+    pub truncate: kernel::ffi::c_uint,
+    pub mono_conv: kernel::ffi::c_uint,
 }
 
 unsafe extern "C" {
     pub fn tegra30_ahub_set_cif(
         regmap: *mut regmap,
-        reg: core::ffi::c_uint,
+        reg: kernel::ffi::c_uint,
         conf: *mut tegra30_ahub_cif_conf,
     );
     pub fn tegra124_ahub_set_cif(
         regmap: *mut regmap,
-        reg: core::ffi::c_uint,
+        reg: kernel::ffi::c_uint,
         conf: *mut tegra30_ahub_cif_conf,
     );
 }
 
 #[repr(C)]
 pub struct tegra30_ahub_soc_data {
-    pub num_resets: core::ffi::c_uint,
+    pub num_resets: kernel::ffi::c_uint,
     pub set_audio_cif: Option<
         unsafe extern "C" fn(
             regmap: *mut regmap,
-            reg: core::ffi::c_uint,
+            reg: kernel::ffi::c_uint,
             conf: *mut tegra30_ahub_cif_conf,
         ),
     >,
@@ -595,14 +595,14 @@ pub struct tegra30_ahub {
     pub soc_data: *const tegra30_ahub_soc_data,
     pub dev: *mut device,
     pub resets: [reset_control_bulk_data; 21],
-    pub nresets: core::ffi::c_uint,
+    pub nresets: kernel::ffi::c_uint,
     pub clocks: [clk_bulk_data; 2],
-    pub nclocks: core::ffi::c_uint,
+    pub nclocks: kernel::ffi::c_uint,
     pub apbif_addr: resource_size_t,
     pub regmap_apbif: *mut regmap,
     pub regmap_ahub: *mut regmap,
-    pub rx_usage: [core::ffi::c_ulong; 1],
-    pub tx_usage: [core::ffi::c_ulong; 1],
+    pub rx_usage: [kernel::ffi::c_ulong; 1],
+    pub tx_usage: [kernel::ffi::c_ulong; 1],
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -33,7 +33,7 @@ pub struct sfs_user_get_fw_versions {
  */
 #[repr(C, packed)]
 pub struct sfs_user_update_package {
-    pub payload_name: [core::ffi::c_char; PAYLOAD_NAME_SIZE],
+    pub payload_name: [kernel::ffi::c_char; PAYLOAD_NAME_SIZE],
     pub sfs_status: u32,
     pub sfs_extended_status: u32,
 }

@@ -106,12 +106,12 @@ macro_rules! __raw_static_call {
     ($name:ident) => {{ unsafe { &__SCT__$name } }};
 }
 
-#[cfg(feature = "MODULE")]
+#[cfg(MODULE)]
 macro_rules! __STATIC_CALL_MOD_ADDRESSABLE {
     ($name:ident) => {{}};
 }
 
-#[cfg(not(feature = "MODULE"))]
+#[cfg(not(MODULE))]
 macro_rules! __STATIC_CALL_MOD_ADDRESSABLE {
     ($name:ident) => { __STATIC_CALL_ADDRESSABLE!($name) };
 }

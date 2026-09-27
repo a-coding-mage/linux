@@ -11,17 +11,17 @@
 #![allow(dead_code)]
 #![allow(improper_ctypes)]
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 use core::mem::size_of;
 use core::ptr;
 
-type u32 = core::ffi::c_uint;
-type u64 = core::ffi::c_ulonglong;
+type u32 = kernel::ffi::c_uint;
+type u64 = kernel::ffi::c_ulonglong;
 
-const GFP_KERNEL: core::ffi::c_uint = 0;
-const __GFP_NOWARN: core::ffi::c_uint = 0;
-const SLAB_PANIC: core::ffi::c_uint = 0;
-const ENOMEM: core::ffi::c_int = 12;
+const GFP_KERNEL: kernel::ffi::c_uint = 0;
+const __GFP_NOWARN: kernel::ffi::c_uint = 0;
+const SLAB_PANIC: kernel::ffi::c_uint = 0;
+const ENOMEM: kernel::ffi::c_int = 12;
 
 #[repr(C)]
 pub struct kmem_cache {
@@ -51,22 +51,22 @@ pub struct hashtab_info {
 
 unsafe extern "C" {
     fn roundup_pow_of_two(n: u32) -> u32;
-    fn kzalloc(size: usize, flags: core::ffi::c_uint) -> *mut c_void;
+    fn kzalloc(size: usize, flags: kernel::ffi::c_uint) -> *mut c_void;
     fn kfree(ptr: *mut c_void);
-    fn kmem_cache_zalloc(cachep: *mut kmem_cache, flags: core::ffi::c_uint) -> *mut c_void;
+    fn kmem_cache_zalloc(cachep: *mut kmem_cache, flags: kernel::ffi::c_uint) -> *mut c_void;
     fn kmem_cache_free(cachep: *mut kmem_cache, objp: *mut c_void);
     fn kmem_cache_create(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         size: usize,
         align: usize,
-        flags: core::ffi::c_uint,
+        flags: kernel::ffi::c_uint,
         ctor: Option<unsafe extern "C" fn(*mut c_void)>,
     ) -> *mut kmem_cache;
 }
 
 static mut hashtab_node_cachep: *mut kmem_cache = ptr::null_mut();
 
-unsafe fn kzalloc_objs_hashtab_node_ptr(n: u32, flags: core::ffi::c_uint) -> *mut *mut hashtab_node {
+unsafe fn kzalloc_objs_hashtab_node_ptr(n: u32, flags: kernel::ffi::c_uint) -> *mut *mut hashtab_node {
     unsafe { kzalloc((n as usize).wrapping_mul(size_of::<*mut hashtab_node>()), flags) as *mut *mut hashtab_node }
 }
 
@@ -91,7 +91,7 @@ unsafe fn hashtab_compute_size(nel: u32) -> u32 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn hashtab_init(h: *mut hashtab, nel_hint: u32) -> core::ffi::c_int {
+pub unsafe extern "C" fn hashtab_init(h: *mut hashtab, nel_hint: u32) -> kernel::ffi::c_int {
     let size: u32 = unsafe { hashtab_compute_size(nel_hint) };
 
     /* should already be zeroed, but better be safe */
@@ -117,7 +117,7 @@ pub unsafe extern "C" fn __hashtab_insert(
     dst: *mut *mut hashtab_node,
     key: *mut c_void,
     datum: *mut c_void,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let newnode: *mut hashtab_node;
 
     unsafe {
@@ -162,11 +162,11 @@ pub unsafe extern "C" fn hashtab_destroy(h: *mut hashtab) {
 #[no_mangle]
 pub unsafe extern "C" fn hashtab_map(
     h: *mut hashtab,
-    apply: Option<unsafe extern "C" fn(k: *mut c_void, d: *mut c_void, args: *mut c_void) -> core::ffi::c_int>,
+    apply: Option<unsafe extern "C" fn(k: *mut c_void, d: *mut c_void, args: *mut c_void) -> kernel::ffi::c_int>,
     args: *mut c_void,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let mut i: u32;
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
     let mut cur: *mut hashtab_node;
 
     unsafe {
@@ -240,17 +240,17 @@ pub unsafe extern "C" fn hashtab_duplicate(
             new: *mut hashtab_node,
             orig: *const hashtab_node,
             args: *mut c_void,
-        ) -> core::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
-    destroy: Option<unsafe extern "C" fn(k: *mut c_void, d: *mut c_void, args: *mut c_void) -> core::ffi::c_int>,
+    destroy: Option<unsafe extern "C" fn(k: *mut c_void, d: *mut c_void, args: *mut c_void) -> kernel::ffi::c_int>,
     args: *mut c_void,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let mut orig_cur: *const hashtab_node;
     let mut cur: *mut hashtab_node;
     let mut tmp: *mut hashtab_node;
     let mut tail: *mut hashtab_node;
     let mut i: u32;
-    let rc: core::ffi::c_int;
+    let rc: kernel::ffi::c_int;
 
     unsafe {
         ptr::write_bytes(new, 0, 1);
@@ -295,9 +295,9 @@ pub unsafe extern "C" fn hashtab_duplicate(
 
 unsafe fn hashtab_duplicate_error(
     new: *mut hashtab,
-    destroy: Option<unsafe extern "C" fn(k: *mut c_void, d: *mut c_void, args: *mut c_void) -> core::ffi::c_int>,
+    destroy: Option<unsafe extern "C" fn(k: *mut c_void, d: *mut c_void, args: *mut c_void) -> kernel::ffi::c_int>,
     args: *mut c_void,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let mut i: u32;
     let mut cur: *mut hashtab_node;
     let mut tmp: *mut hashtab_node;

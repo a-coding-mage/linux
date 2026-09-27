@@ -18,10 +18,10 @@ pub const PHYS_CPUID_INVALID: phys_cpuid_t = INVALID_HARTID;
 
 #[cfg(CONFIG_ACPI)]
 extern "C" {
-    pub fn acpi_os_ioremap(phys: acpi_physical_address, size: acpi_size) -> *mut core::ffi::c_void;
-    pub static mut acpi_disabled: core::ffi::c_int;
-    pub static mut acpi_noirq: core::ffi::c_int;
-    pub static mut acpi_pci_disabled: core::ffi::c_int;
+    pub fn acpi_os_ioremap(phys: acpi_physical_address, size: acpi_size) -> *mut kernel::ffi::c_void;
+    pub static mut acpi_disabled: kernel::ffi::c_int;
+    pub static mut acpi_noirq: kernel::ffi::c_int;
+    pub static mut acpi_pci_disabled: kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_ACPI)]
@@ -50,7 +50,7 @@ pub unsafe fn enable_acpi() {
  */
 #[cfg(CONFIG_ACPI)]
 #[inline]
-pub unsafe fn cpu_physical_id(cpu: core::ffi::c_int) -> _ {
+pub unsafe fn cpu_physical_id(cpu: kernel::ffi::c_int) -> _ {
     cpuid_to_hartid_map(cpu)
 }
 
@@ -66,17 +66,17 @@ pub const fn acpi_has_cpu_in_madt() -> bool {
 
 #[cfg(CONFIG_ACPI)]
 #[inline]
-pub const fn arch_fix_phys_package_id(_num: core::ffi::c_int, _slot: u32) {}
+pub const fn arch_fix_phys_package_id(_num: kernel::ffi::c_int, _slot: u32) {}
 
 #[cfg(CONFIG_ACPI)]
 extern "C" {
     pub fn acpi_init_rintc_map();
-    pub fn acpi_cpu_get_madt_rintc(cpu: core::ffi::c_int) -> *mut acpi_madt_rintc;
+    pub fn acpi_cpu_get_madt_rintc(cpu: kernel::ffi::c_int) -> *mut acpi_madt_rintc;
     pub fn acpi_get_riscv_isa(
         table: *mut acpi_table_header,
         cpu: u32,
-        isa: *mut *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        isa: *mut *const kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
     pub fn acpi_get_cbo_block_size(
         table: *mut acpi_table_header,
         cbom_size: *mut u32,
@@ -110,7 +110,7 @@ pub const fn acpi_init_rintc_map() {}
 
 #[cfg(not(CONFIG_ACPI))]
 #[inline]
-pub const fn acpi_cpu_get_madt_rintc(_cpu: core::ffi::c_int) -> *mut acpi_madt_rintc {
+pub const fn acpi_cpu_get_madt_rintc(_cpu: kernel::ffi::c_int) -> *mut acpi_madt_rintc {
     core::ptr::null_mut()
 }
 
@@ -119,8 +119,8 @@ pub const fn acpi_cpu_get_madt_rintc(_cpu: core::ffi::c_int) -> *mut acpi_madt_r
 pub const fn acpi_get_riscv_isa(
     _table: *mut acpi_table_header,
     _cpu: u32,
-    _isa: *mut *const core::ffi::c_char,
-) -> core::ffi::c_int {
+    _isa: *mut *const kernel::ffi::c_char,
+) -> kernel::ffi::c_int {
     -EINVAL
 }
 
@@ -142,6 +142,6 @@ extern "C" {
 #[inline]
 pub const fn acpi_map_cpus_to_nodes() {}
 
-pub const ACPI_TABLE_UPGRADE_MAX_PHYS: _ = MEMBLOCK_ALLOC_ACCESSIBLE;
+pub const ACPI_TABLE_UPGRADE_MAX_PHYS: phys_addr_t = MEMBLOCK_ALLOC_ACCESSIBLE;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

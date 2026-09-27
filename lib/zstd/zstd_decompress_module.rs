@@ -13,7 +13,7 @@
 
 /* Common symbols. zstd_compress must depend on zstd_decompress. */
 
-pub unsafe fn zstd_is_error(code: usize) -> ::core::ffi::c_uint {
+pub unsafe fn zstd_is_error(code: usize) -> ::kernel::ffi::c_uint {
 	ZSTD_isError(code)
 }
 
@@ -21,7 +21,7 @@ pub unsafe fn zstd_get_error_code(code: usize) -> zstd_error_code {
 	ZSTD_getErrorCode(code)
 }
 
-pub unsafe fn zstd_get_error_name(code: usize) -> *const ::core::ffi::c_char {
+pub unsafe fn zstd_get_error_name(code: usize) -> *const ::kernel::ffi::c_char {
 	ZSTD_getErrorName(code)
 }
 
@@ -40,7 +40,7 @@ pub unsafe fn zstd_free_dctx(dctx: *mut zstd_dctx) -> usize {
 }
 
 pub unsafe fn zstd_create_ddict_byreference(
-	dict: *const ::core::ffi::c_void,
+	dict: *const ::kernel::ffi::c_void,
 	dict_size: usize,
 	custom_mem: zstd_custom_mem,
 ) -> *mut zstd_ddict {
@@ -52,7 +52,7 @@ pub unsafe fn zstd_free_ddict(ddict: *mut zstd_ddict) -> usize {
 }
 
 pub unsafe fn zstd_init_dctx(
-	workspace: *mut ::core::ffi::c_void,
+	workspace: *mut ::kernel::ffi::c_void,
 	workspace_size: usize,
 ) -> *mut zstd_dctx {
 	if workspace.is_null() {
@@ -63,9 +63,9 @@ pub unsafe fn zstd_init_dctx(
 
 pub unsafe fn zstd_decompress_dctx(
 	dctx: *mut zstd_dctx,
-	dst: *mut ::core::ffi::c_void,
+	dst: *mut ::kernel::ffi::c_void,
 	dst_capacity: usize,
-	src: *const ::core::ffi::c_void,
+	src: *const ::kernel::ffi::c_void,
 	src_size: usize,
 ) -> usize {
 	ZSTD_decompressDCtx(dctx, dst, dst_capacity, src, src_size)
@@ -73,9 +73,9 @@ pub unsafe fn zstd_decompress_dctx(
 
 pub unsafe fn zstd_decompress_using_ddict(
 	dctx: *mut zstd_dctx,
-	dst: *mut ::core::ffi::c_void,
+	dst: *mut ::kernel::ffi::c_void,
 	dst_capacity: usize,
-	src: *const ::core::ffi::c_void,
+	src: *const ::kernel::ffi::c_void,
 	src_size: usize,
 	ddict: *const zstd_ddict,
 ) -> usize {
@@ -88,7 +88,7 @@ pub unsafe fn zstd_dstream_workspace_bound(max_window_size: usize) -> usize {
 
 pub unsafe fn zstd_init_dstream(
 	max_window_size: usize,
-	workspace: *mut ::core::ffi::c_void,
+	workspace: *mut ::kernel::ffi::c_void,
 	workspace_size: usize,
 ) -> *mut zstd_dstream {
 	if workspace.is_null() {
@@ -111,7 +111,7 @@ pub unsafe fn zstd_decompress_stream(
 }
 
 pub unsafe fn zstd_find_frame_compressed_size(
-	src: *const ::core::ffi::c_void,
+	src: *const ::kernel::ffi::c_void,
 	src_size: usize,
 ) -> usize {
 	ZSTD_findFrameCompressedSize(src, src_size)
@@ -119,7 +119,7 @@ pub unsafe fn zstd_find_frame_compressed_size(
 
 pub unsafe fn zstd_get_frame_header(
 	header: *mut zstd_frame_header,
-	src: *const ::core::ffi::c_void,
+	src: *const ::kernel::ffi::c_void,
 	src_size: usize,
 ) -> usize {
 	ZSTD_getFrameHeader(header, src, src_size)

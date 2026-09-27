@@ -10,7 +10,7 @@
  * 	Changes:
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct dst_entry {
@@ -52,6 +52,6 @@ unsafe extern "C" {
     pub fn call_netevent_notifiers(val: c_ulong, v: *mut c_void) -> i32;
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

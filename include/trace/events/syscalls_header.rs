@@ -7,7 +7,7 @@
 // this Rust source file's module/include semantics.
 
 // External kernel dependencies supplied by other translation units.
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct PtRegs {
@@ -20,9 +20,9 @@ extern "C" {
     pub fn syscall_get_arguments(
         task: *mut c_void,
         regs: *mut PtRegs,
-        args: *mut ::core::ffi::c_ulong,
+        args: *mut ::kernel::ffi::c_ulong,
     );
-    pub fn syscall_get_nr(task: *mut c_void, regs: *mut PtRegs) -> ::core::ffi::c_long;
+    pub fn syscall_get_nr(task: *mut c_void, regs: *mut PtRegs) -> ::kernel::ffi::c_long;
 
     pub fn syscall_regfunc();
     pub fn syscall_unregfunc();
@@ -30,14 +30,14 @@ extern "C" {
 
 #[repr(C)]
 pub struct SysEnterEntry {
-    pub id: ::core::ffi::c_long,
-    pub args: [::core::ffi::c_ulong; 6],
+    pub id: ::kernel::ffi::c_long,
+    pub args: [::kernel::ffi::c_ulong; 6],
 }
 
 #[repr(C)]
 pub struct SysExitEntry {
-    pub id: ::core::ffi::c_long,
-    pub ret: ::core::ffi::c_long,
+    pub id: ::kernel::ffi::c_long,
+    pub ret: ::kernel::ffi::c_long,
 }
 
 /// Equivalent to the `sys_enter` TRACE_EVENT_SYSCALL declaration.
@@ -45,7 +45,7 @@ pub struct SysExitEntry {
 pub unsafe fn sys_enter_fast_assign(
     entry: *mut SysEnterEntry,
     regs: *mut PtRegs,
-    id: ::core::ffi::c_long,
+    id: ::kernel::ffi::c_long,
 ) {
     (*entry).id = id;
     syscall_get_arguments(current, regs, (*entry).args.as_mut_ptr());
@@ -56,7 +56,7 @@ pub unsafe fn sys_enter_fast_assign(
 pub unsafe fn sys_exit_fast_assign(
     entry: *mut SysExitEntry,
     regs: *mut PtRegs,
-    ret: ::core::ffi::c_long,
+    ret: ::kernel::ffi::c_long,
 ) {
     (*entry).id = syscall_get_nr(current, regs);
     (*entry).ret = ret;

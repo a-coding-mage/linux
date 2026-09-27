@@ -53,7 +53,7 @@ macro_rules! IMX_SOF_DEV_DESC {
             },
             default_fw_filename: {
                 let mut a = Default::default();
-                a[SOF_IPC_TYPE_3 as usize] = concat!("sof-", stringify!($mach_name), ".ri\0").as_ptr() as *const ::core::ffi::c_char;
+                a[SOF_IPC_TYPE_3 as usize] = concat!("sof-", stringify!($mach_name), ".ri\0").as_ptr() as *const ::kernel::ffi::c_char;
                 a
             },
             ops: $mach_ops,
@@ -107,26 +107,26 @@ pub struct imx_ipc_info {
     // true if core is able to write a panic code to the debug box
     pub has_panic_code: bool,
     // offset to mailbox in which firmware initially writes FW_READY
-    pub boot_mbox_offset: ::core::ffi::c_int,
+    pub boot_mbox_offset: ::kernel::ffi::c_int,
     // offset to region at which the mailboxes start
-    pub window_offset: ::core::ffi::c_int,
+    pub window_offset: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct imx_chip_ops {
     // called after clocks and PDs are enabled
-    pub probe: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int>,
     // used directly by the SOF core
-    pub core_kick: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int>,
+    pub core_kick: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int>,
     // called during suspend()/remove() before clocks are disabled
-    pub core_shutdown: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int>,
+    pub core_shutdown: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int>,
     // used directly by the SOF core
-    pub core_reset: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int>,
+    pub core_reset: Option<unsafe extern "C" fn(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct imx_memory_info {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub reserved: bool,
 }
 
@@ -137,7 +137,7 @@ pub struct imx_chip_info {
     pub has_dma_reserved: bool,
     pub memory: *mut imx_memory_info,
     pub drv: *mut snd_soc_dai_driver,
-    pub num_drv: ::core::ffi::c_int,
+    pub num_drv: ::kernel::ffi::c_int,
     // optional
     pub ops: *const imx_chip_ops,
 }
@@ -148,14 +148,14 @@ pub struct imx_common_data {
     pub ipc_handle: *mut imx_dsp_ipc,
     // core may have no clocks
     pub clks: *mut clk_bulk_data,
-    pub clk_num: ::core::ffi::c_int,
+    pub clk_num: ::kernel::ffi::c_int,
     // core may have no PDs
     pub pd_list: *mut dev_pm_domain_list,
-    pub chip_pdata: *mut ::core::ffi::c_void,
+    pub chip_pdata: *mut ::kernel::ffi::c_void,
 }
 
 #[inline]
-pub unsafe fn imx_chip_core_kick(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int {
+pub unsafe fn imx_chip_core_kick(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int {
     let ops: *const imx_chip_ops = (*get_chip_info!(sdev)).ops;
 
     if !ops.is_null() {
@@ -168,7 +168,7 @@ pub unsafe fn imx_chip_core_kick(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int {
 }
 
 #[inline]
-pub unsafe fn imx_chip_core_shutdown(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int {
+pub unsafe fn imx_chip_core_shutdown(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int {
     let ops: *const imx_chip_ops = (*get_chip_info!(sdev)).ops;
 
     if !ops.is_null() {
@@ -181,7 +181,7 @@ pub unsafe fn imx_chip_core_shutdown(sdev: *mut snd_sof_dev) -> ::core::ffi::c_i
 }
 
 #[inline]
-pub unsafe fn imx_chip_core_reset(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int {
+pub unsafe fn imx_chip_core_reset(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int {
     let ops: *const imx_chip_ops = (*get_chip_info!(sdev)).ops;
 
     if !ops.is_null() {
@@ -194,7 +194,7 @@ pub unsafe fn imx_chip_core_reset(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int 
 }
 
 #[inline]
-pub unsafe fn imx_chip_probe(sdev: *mut snd_sof_dev) -> ::core::ffi::c_int {
+pub unsafe fn imx_chip_probe(sdev: *mut snd_sof_dev) -> ::kernel::ffi::c_int {
     let ops: *const imx_chip_ops = (*get_chip_info!(sdev)).ops;
 
     if !ops.is_null() {

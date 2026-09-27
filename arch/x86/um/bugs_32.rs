@@ -13,12 +13,12 @@ static mut cmov_test_return: jmp_buf = unsafe { core::mem::zeroed() };
 
 unsafe extern "C" {
     fn longjmp(env: *mut jmp_buf, value: i32) -> !;
-    fn printk(fmt: *const core::ffi::c_char, ...);
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
     fn sigemptyset(set: *mut sigset_t) -> i32;
     fn sigaction(signum: i32, act: *const sigaction, oldact: *mut sigaction) -> i32;
     fn setjmp(env: *mut jmp_buf) -> i32;
     fn get_current_pid() -> i32;
-    fn copy_from_user_proc(to: *mut u8, from: *const core::ffi::c_void, n: usize) -> i32;
+    fn copy_from_user_proc(to: *mut u8, from: *const kernel::ffi::c_void, n: usize) -> i32;
     fn UPT_IP(regs: *mut uml_pt_regs) -> usize;
 }
 

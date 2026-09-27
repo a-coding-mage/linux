@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Provided by the surrounding Linux memory-management and architecture code.
 #[allow(improper_ctypes)]

@@ -56,13 +56,13 @@ pub const FIXMAP_PAGE_NOCACHE: pgprot_t = FIXMAP_PAGE_IO;
 // #define __early_set_fixmap __set_fixmap
 pub use __set_fixmap as __early_set_fixmap;
 
-#[cfg(feature = "MMU")]
+#[cfg(CONFIG_MMU)]
 extern "C" {
     pub fn __set_fixmap(idx: fixed_addresses, phys: phys_addr_t, prot: pgprot_t);
     pub fn early_fixmap_init();
 }
 
-#[cfg(not(feature = "MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub fn early_fixmap_init() {}
 

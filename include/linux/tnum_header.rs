@@ -92,9 +92,9 @@ extern "C" {
      * sufficient space been available.  (Thus tnum_sbin always returns 64.)
      */
     /* Format a tnum as a pair of hex numbers (value; mask) */
-    pub fn tnum_strn(str_: *mut core::ffi::c_char, size: usize, a: tnum) -> i32;
+    pub fn tnum_strn(str_: *mut kernel::ffi::c_char, size: usize, a: tnum) -> i32;
     /* Format a tnum as tristate binary expansion */
-    pub fn tnum_sbin(str_: *mut core::ffi::c_char, size: usize, a: tnum) -> i32;
+    pub fn tnum_sbin(str_: *mut kernel::ffi::c_char, size: usize, a: tnum) -> i32;
     /* Returns the 32-bit subreg */
     pub fn tnum_subreg(a: tnum) -> tnum;
     /* Returns the tnum with the lower 32-bit subreg cleared */

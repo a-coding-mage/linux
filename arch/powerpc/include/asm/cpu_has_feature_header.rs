@@ -3,7 +3,7 @@
 // The C header guard and assembler-only condition have no executable Rust
 // equivalent.  This file corresponds to the non-assembler section.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 // Supplied by the corresponding architecture and kernel dependencies.
 extern "C" {

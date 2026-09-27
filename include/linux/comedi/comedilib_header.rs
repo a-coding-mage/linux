@@ -14,7 +14,7 @@ pub struct comedi_device {
 }
 
 unsafe extern "C" {
-    pub fn comedi_open_from(path: *const ::core::ffi::c_char, from: ::core::ffi::c_int)
+    pub fn comedi_open_from(path: *const ::kernel::ffi::c_char, from: ::kernel::ffi::c_int)
         -> *mut comedi_device;
 }
 
@@ -29,46 +29,46 @@ unsafe extern "C" {
  * Return %NULL on failure.
  */
 #[inline]
-pub unsafe fn comedi_open(path: *const ::core::ffi::c_char) -> *mut comedi_device {
+pub unsafe fn comedi_open(path: *const ::kernel::ffi::c_char) -> *mut comedi_device {
     comedi_open_from(path, -1)
 }
 
 unsafe extern "C" {
-    pub fn comedi_close_from(dev: *mut comedi_device, from: ::core::ffi::c_int)
-        -> ::core::ffi::c_int;
+    pub fn comedi_close_from(dev: *mut comedi_device, from: ::kernel::ffi::c_int)
+        -> ::kernel::ffi::c_int;
 
     pub fn comedi_dio_get_config(
         dev: *mut comedi_device,
-        subdev: ::core::ffi::c_uint,
-        chan: ::core::ffi::c_uint,
-        io: *mut ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        subdev: ::kernel::ffi::c_uint,
+        chan: ::kernel::ffi::c_uint,
+        io: *mut ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn comedi_dio_config(
         dev: *mut comedi_device,
-        subdev: ::core::ffi::c_uint,
-        chan: ::core::ffi::c_uint,
-        io: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        subdev: ::kernel::ffi::c_uint,
+        chan: ::kernel::ffi::c_uint,
+        io: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn comedi_dio_bitfield2(
         dev: *mut comedi_device,
-        subdev: ::core::ffi::c_uint,
-        mask: ::core::ffi::c_uint,
-        bits: *mut ::core::ffi::c_uint,
-        base_channel: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        subdev: ::kernel::ffi::c_uint,
+        mask: ::kernel::ffi::c_uint,
+        bits: *mut ::kernel::ffi::c_uint,
+        base_channel: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn comedi_find_subdevice_by_type(
         dev: *mut comedi_device,
-        type_: ::core::ffi::c_int,
-        subd: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        type_: ::kernel::ffi::c_int,
+        subd: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn comedi_get_n_channels(
         dev: *mut comedi_device,
-        subdevice: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        subdevice: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 }
 
 /**
@@ -80,7 +80,7 @@ unsafe extern "C" {
  * Returns: 0
  */
 #[inline]
-pub unsafe fn comedi_close(dev: *mut comedi_device) -> ::core::ffi::c_int {
+pub unsafe fn comedi_close(dev: *mut comedi_device) -> ::kernel::ffi::c_int {
     comedi_close_from(dev, -1)
 }
 

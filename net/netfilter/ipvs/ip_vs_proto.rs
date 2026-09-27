@@ -135,7 +135,7 @@ pub unsafe fn ip_vs_create_timeout_table(table: *mut i32, size: usize) -> *mut i
     kmemdup(table, size, GFP_KERNEL)
 }
 
-pub unsafe fn ip_vs_state_name(cp: *const ip_vs_conn) -> *const core::ffi::c_char {
+pub unsafe fn ip_vs_state_name(cp: *const ip_vs_conn) -> *const kernel::ffi::c_char {
     let state = (*cp).state as usize;
     if ((*cp).flags & IP_VS_CONN_F_TEMPLATE) != 0 {
         if state >= IP_VS_CTPL_S_LAST as usize {
@@ -154,7 +154,7 @@ unsafe fn ip_vs_tcpudp_debug_packet_v4(
     pp: *mut ip_vs_protocol,
     skb: *const sk_buff,
     offset: i32,
-    msg: *const core::ffi::c_char,
+    msg: *const kernel::ffi::c_char,
 ) {
     let mut _iph = iphdr::default();
     let ih = skb_header_pointer(skb, offset, core::mem::size_of::<ip_hdr>(), &mut _iph as *mut _ as *mut _);
@@ -180,7 +180,7 @@ pub unsafe fn ip_vs_tcpudp_debug_packet(
     pp: *mut ip_vs_protocol,
     skb: *const sk_buff,
     offset: i32,
-    msg: *const core::ffi::c_char,
+    msg: *const kernel::ffi::c_char,
 ) {
     // CONFIG_IP_VS_IPV6 selects the IPv6 implementation in the kernel build.
     if af == AF_INET6 {

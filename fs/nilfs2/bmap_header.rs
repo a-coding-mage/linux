@@ -153,9 +153,9 @@ pub unsafe fn nilfs_bmap_set_dirty(bmap: *mut nilfs_bmap) { (*bmap).b_state |= N
 pub unsafe fn nilfs_bmap_clear_dirty(bmap: *mut nilfs_bmap) { (*bmap).b_state &= !NILFS_BMAP_DIRTY; }
 
 pub const NILFS_BMAP_LARGE: i32 = 0x1;
-pub const NILFS_BMAP_SMALL_LOW: _ = NILFS_DIRECT_KEY_MIN;
-pub const NILFS_BMAP_SMALL_HIGH: _ = NILFS_DIRECT_KEY_MAX;
-pub const NILFS_BMAP_LARGE_LOW: _ = NILFS_BTREE_ROOT_NCHILDREN_MAX;
-pub const NILFS_BMAP_LARGE_HIGH: _ = NILFS_BTREE_KEY_MAX;
+pub const NILFS_BMAP_SMALL_LOW: usize = NILFS_DIRECT_KEY_MIN;
+pub const NILFS_BMAP_SMALL_HIGH: usize = NILFS_DIRECT_KEY_MAX;
+pub const NILFS_BMAP_LARGE_LOW: usize = NILFS_BTREE_ROOT_NCHILDREN_MAX;
+pub const NILFS_BMAP_LARGE_HIGH: __u64 = NILFS_BTREE_KEY_MAX;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

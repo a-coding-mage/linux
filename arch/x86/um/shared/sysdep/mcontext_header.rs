@@ -14,19 +14,19 @@ extern "C" {
     pub fn get_mc_from_regs(
         regs: *mut crate::uml_pt_regs,
         mc: *mut crate::mcontext_t,
-        single_stepping: ::core::ffi::c_int,
+        single_stepping: ::kernel::ffi::c_int,
     );
 
     pub fn get_stub_state(
         regs: *mut crate::uml_pt_regs,
         data: *mut crate::stub_data,
-        fp_size_out: *mut ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        fp_size_out: *mut ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
     pub fn set_stub_state(
         regs: *mut crate::uml_pt_regs,
         data: *mut crate::stub_data,
-        single_stepping: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        single_stepping: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // On i386, mcontext_t exposes cr2 directly.  On other x86 targets, cr2 is

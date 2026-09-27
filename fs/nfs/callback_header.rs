@@ -31,23 +31,23 @@ pub struct cb_process_state {
     pub net: *mut net,
     pub minorversion: u32,
     pub drc_status: u32,
-    pub referring_calls: libc::c_uint,
+    pub referring_calls: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct cb_compound_hdr_arg {
-    pub taglen: libc::c_uint,
-    pub tag: *const libc::c_char,
-    pub minorversion: libc::c_uint,
-    pub cb_ident: libc::c_uint,
-    pub nops: libc::c_uint,
+    pub taglen: kernel::ffi::c_uint,
+    pub tag: *const kernel::ffi::c_char,
+    pub minorversion: kernel::ffi::c_uint,
+    pub cb_ident: kernel::ffi::c_uint,
+    pub nops: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct cb_compound_hdr_res {
     pub status: *mut u32,
-    pub taglen: libc::c_uint,
-    pub tag: *const libc::c_char,
+    pub taglen: kernel::ffi::c_uint,
+    pub tag: *const kernel::ffi::c_char,
     pub nops: *mut u32,
 }
 
@@ -112,8 +112,8 @@ pub struct cb_sequenceres {
 
 extern "C" {
     pub fn nfs4_callback_sequence(
-        argp: *mut libc::c_void,
-        resp: *mut libc::c_void,
+        argp: *mut kernel::ffi::c_void,
+        resp: *mut kernel::ffi::c_void,
         cps: *mut cb_process_state,
     ) -> u32;
 }
@@ -195,16 +195,16 @@ pub struct cb_offloadargs {
 }
 
 extern "C" {
-    pub fn check_gss_callback_principal(clp: *mut nfs_client, rqst: *mut svc_rqst) -> libc::c_int;
-    pub fn nfs4_callback_getattr(argp: *mut libc::c_void, resp: *mut libc::c_void, cps: *mut cb_process_state) -> u32;
-    pub fn nfs4_callback_recall(argp: *mut libc::c_void, resp: *mut libc::c_void, cps: *mut cb_process_state) -> u32;
+    pub fn check_gss_callback_principal(clp: *mut nfs_client, rqst: *mut svc_rqst) -> kernel::ffi::c_int;
+    pub fn nfs4_callback_getattr(argp: *mut kernel::ffi::c_void, resp: *mut kernel::ffi::c_void, cps: *mut cb_process_state) -> u32;
+    pub fn nfs4_callback_recall(argp: *mut kernel::ffi::c_void, resp: *mut kernel::ffi::c_void, cps: *mut cb_process_state) -> u32;
 }
 
 // Preserves the source condition: IS_ENABLED(CONFIG_NFS_V4).
 #[cfg(CONFIG_NFS_V4)]
 extern "C" {
-    pub fn nfs_callback_up(minorversion: u32, xprt: *mut rpc_xprt) -> libc::c_int;
-    pub fn nfs_callback_down(minorversion: libc::c_int, net: *mut net, xprt: *mut rpc_xprt);
+    pub fn nfs_callback_up(minorversion: u32, xprt: *mut rpc_xprt) -> kernel::ffi::c_int;
+    pub fn nfs_callback_down(minorversion: kernel::ffi::c_int, net: *mut net, xprt: *mut rpc_xprt);
 }
 
 pub const NFS41_BC_MIN_CALLBACKS: u32 = 1;
@@ -212,8 +212,8 @@ pub const NFS41_BC_MAX_CALLBACKS: u32 = 1;
 pub const NFS4_MIN_NR_CALLBACK_THREADS: u32 = 1;
 
 extern "C" {
-    pub static mut nfs_callback_set_tcpport: libc::c_uint;
-    pub static mut nfs_callback_nr_threads: libc::c_ushort;
+    pub static mut nfs_callback_set_tcpport: kernel::ffi::c_uint;
+    pub static mut nfs_callback_nr_threads: kernel::ffi::c_ushort;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

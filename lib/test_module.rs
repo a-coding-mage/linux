@@ -12,7 +12,7 @@
 // The Linux kernel headers and module registration macros are supplied by
 // the surrounding build environment.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 unsafe extern "C" {
     fn pr_warn(fmt: *const c_char, ...);

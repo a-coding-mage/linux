@@ -47,7 +47,7 @@ static I2S_PLL_CFG_28M: [i2s_pll_cfg; 9] = [
 
 #[repr(C)]
 pub struct i2s_pll_clk {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub hw: clk_hw,
     pub dev: *mut device,
 }
@@ -57,12 +57,12 @@ pub struct clk_hw { pub init: *const clk_init_data }
 #[repr(C)] pub struct device;
 #[repr(C)] pub struct platform_device { pub dev: device }
 #[repr(C)] pub struct clk;
-#[repr(C)] pub struct device_node { pub name: *const core::ffi::c_char }
+#[repr(C)] pub struct device_node { pub name: *const kernel::ffi::c_char }
 #[repr(C)] pub struct clk_rate_request { pub rate: c_ulong, pub best_parent_rate: c_ulong }
 #[repr(C)] pub struct clk_init_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const clk_ops,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: u8,
 }
 #[repr(C)] pub struct clk_ops {

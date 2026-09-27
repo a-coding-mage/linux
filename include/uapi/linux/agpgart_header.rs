@@ -27,17 +27,17 @@ pub const AGPIOC_BASE: u8 = b'A';
 
 // `_IOR`, `_IO`, `_IOW`, and `_IOWR` are supplied by the target ioctl
 // environment; these declarations preserve the source macro invocations.
-pub const AGPIOC_INFO: _ = _IOR!(AGPIOC_BASE, 0, *mut agp_info);
-pub const AGPIOC_ACQUIRE: _ = _IO!(AGPIOC_BASE, 1);
-pub const AGPIOC_RELEASE: _ = _IO!(AGPIOC_BASE, 2);
-pub const AGPIOC_SETUP: _ = _IOW!(AGPIOC_BASE, 3, *mut agp_setup);
-pub const AGPIOC_RESERVE: _ = _IOW!(AGPIOC_BASE, 4, *mut agp_region);
-pub const AGPIOC_PROTECT: _ = _IOW!(AGPIOC_BASE, 5, *mut agp_region);
-pub const AGPIOC_ALLOCATE: _ = _IOWR!(AGPIOC_BASE, 6, *mut agp_allocate);
-pub const AGPIOC_DEALLOCATE: _ = _IOW!(AGPIOC_BASE, 7, i32);
-pub const AGPIOC_BIND: _ = _IOW!(AGPIOC_BASE, 8, *mut agp_bind);
-pub const AGPIOC_UNBIND: _ = _IOW!(AGPIOC_BASE, 9, *mut agp_unbind);
-pub const AGPIOC_CHIPSET_FLUSH: _ = _IO!(AGPIOC_BASE, 10);
+pub const AGPIOC_INFO: u32 = _IOR!(AGPIOC_BASE, 0, *mut agp_info);
+pub const AGPIOC_ACQUIRE: u32 = _IO!(AGPIOC_BASE, 1);
+pub const AGPIOC_RELEASE: u32 = _IO!(AGPIOC_BASE, 2);
+pub const AGPIOC_SETUP: u32 = _IOW!(AGPIOC_BASE, 3, *mut agp_setup);
+pub const AGPIOC_RESERVE: u32 = _IOW!(AGPIOC_BASE, 4, *mut agp_region);
+pub const AGPIOC_PROTECT: u32 = _IOW!(AGPIOC_BASE, 5, *mut agp_region);
+pub const AGPIOC_ALLOCATE: u32 = _IOWR!(AGPIOC_BASE, 6, *mut agp_allocate);
+pub const AGPIOC_DEALLOCATE: u32 = _IOW!(AGPIOC_BASE, 7, i32);
+pub const AGPIOC_BIND: u32 = _IOW!(AGPIOC_BASE, 8, *mut agp_bind);
+pub const AGPIOC_UNBIND: u32 = _IOW!(AGPIOC_BASE, 9, *mut agp_unbind);
+pub const AGPIOC_CHIPSET_FLUSH: u32 = _IO!(AGPIOC_BASE, 10);
 
 pub const AGP_DEVICE: &str = "/dev/agpgart";
 

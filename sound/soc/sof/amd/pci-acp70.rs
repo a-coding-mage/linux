@@ -21,14 +21,14 @@ pub const ACP70_REG_START: u32 = 0x1240000;
 pub const ACP70_REG_END: u32 = 0x125C000;
 
 extern "C" {
-    static snd_soc_acpi_amd_acp70_sof_machines: *const core::ffi::c_void;
-    static snd_soc_acpi_amd_acp70_sof_sdw_machines: *const core::ffi::c_void;
-    static sof_acp70_ops: core::ffi::c_void;
-    static sof_pci_pm: core::ffi::c_void;
+    static snd_soc_acpi_amd_acp70_sof_machines: *const kernel::ffi::c_void;
+    static snd_soc_acpi_amd_acp70_sof_sdw_machines: *const kernel::ffi::c_void;
+    static sof_acp70_ops: kernel::ffi::c_void;
+    static sof_pci_pm: kernel::ffi::c_void;
 
-    fn sof_acp70_ops_init(sdev: *mut core::ffi::c_void) -> core::ffi::c_int;
-    fn snd_amd_acp_find_config(pci: *mut pci_dev) -> core::ffi::c_uint;
-    fn sof_pci_probe(pci: *mut pci_dev, pci_id: *const pci_device_id) -> core::ffi::c_int;
+    fn sof_acp70_ops_init(sdev: *mut kernel::ffi::c_void) -> kernel::ffi::c_int;
+    fn snd_amd_acp_find_config(pci: *mut pci_dev) -> kernel::ffi::c_uint;
+    fn sof_pci_probe(pci: *mut pci_dev, pci_id: *const pci_device_id) -> kernel::ffi::c_int;
     fn sof_pci_remove(pci: *mut pci_dev);
 }
 
@@ -50,14 +50,14 @@ pub struct pci_device_id {
 
 #[repr(C)]
 pub struct device_driver {
-    pub pm: *const core::ffi::c_void,
+    pub pm: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct pci_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id_table: *const pci_device_id,
-    pub probe: Option<unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(*mut pci_dev)>,
     pub driver: device_driver,
 }
@@ -84,21 +84,21 @@ pub struct sof_amd_acp_desc {
 
 #[repr(C)]
 pub struct sof_dev_desc {
-    pub machines: *const core::ffi::c_void,
-    pub alt_machines: *const core::ffi::c_void,
-    pub resindex_lpe_base: core::ffi::c_int,
-    pub resindex_pcicfg_base: core::ffi::c_int,
-    pub resindex_imr_base: core::ffi::c_int,
-    pub irqindex_host_ipc: core::ffi::c_int,
+    pub machines: *const kernel::ffi::c_void,
+    pub alt_machines: *const kernel::ffi::c_void,
+    pub resindex_lpe_base: kernel::ffi::c_int,
+    pub resindex_pcicfg_base: kernel::ffi::c_int,
+    pub resindex_imr_base: kernel::ffi::c_int,
+    pub irqindex_host_ipc: kernel::ffi::c_int,
     pub chip_info: *const sof_amd_acp_desc,
     pub ipc_supported_mask: u32,
     pub ipc_default: u32,
-    pub default_fw_path: [*const core::ffi::c_char; SOF_IPC_TYPE_COUNT],
-    pub default_tplg_path: [*const core::ffi::c_char; SOF_IPC_TYPE_COUNT],
-    pub default_fw_filename: [*const core::ffi::c_char; SOF_IPC_TYPE_COUNT],
-    pub nocodec_tplg_filename: *const core::ffi::c_char,
-    pub ops: *const core::ffi::c_void,
-    pub ops_init: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> core::ffi::c_int>,
+    pub default_fw_path: [*const kernel::ffi::c_char; SOF_IPC_TYPE_COUNT],
+    pub default_tplg_path: [*const kernel::ffi::c_char; SOF_IPC_TYPE_COUNT],
+    pub default_fw_filename: [*const kernel::ffi::c_char; SOF_IPC_TYPE_COUNT],
+    pub nocodec_tplg_filename: *const kernel::ffi::c_char,
+    pub ops: *const kernel::ffi::c_void,
+    pub ops_init: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> kernel::ffi::c_int>,
 }
 
 const fn BIT(nr: u32) -> u32 {
@@ -106,7 +106,7 @@ const fn BIT(nr: u32) -> u32 {
 }
 
 extern "C" {
-    static KBUILD_MODNAME: core::ffi::c_char;
+    static KBUILD_MODNAME: kernel::ffi::c_char;
 }
 
 extern "Rust" {
@@ -128,9 +128,9 @@ extern "Rust" {
     static ACP70_PCI_ID: u8;
     static ACP71_PCI_ID: u8;
     static ACP72_PCI_ID: u8;
-    static ENODEV: core::ffi::c_int;
-    static FLAG_AMD_SOF: core::ffi::c_uint;
-    static FLAG_AMD_SOF_ONLY_DMIC: core::ffi::c_uint;
+    static ENODEV: kernel::ffi::c_int;
+    static FLAG_AMD_SOF: kernel::ffi::c_uint;
+    static FLAG_AMD_SOF_ONLY_DMIC: kernel::ffi::c_uint;
     static PCI_VENDOR_ID_AMD: u32;
     static ACP_PCI_DEV_ID: u32;
 }
@@ -161,10 +161,10 @@ static acp70_desc: sof_dev_desc = unsafe {
     let mut default_tplg_path = [core::ptr::null(); SOF_IPC_TYPE_COUNT];
     let mut default_fw_filename = [core::ptr::null(); SOF_IPC_TYPE_COUNT];
 
-    default_fw_path[SOF_IPC_TYPE_3 as usize] = b"amd/sof\0".as_ptr() as *const core::ffi::c_char;
-    default_tplg_path[SOF_IPC_TYPE_3 as usize] = b"amd/sof-tplg\0".as_ptr() as *const core::ffi::c_char;
+    default_fw_path[SOF_IPC_TYPE_3 as usize] = b"amd/sof\0".as_ptr() as *const kernel::ffi::c_char;
+    default_tplg_path[SOF_IPC_TYPE_3 as usize] = b"amd/sof-tplg\0".as_ptr() as *const kernel::ffi::c_char;
     default_fw_filename[SOF_IPC_TYPE_3 as usize] =
-        b"sof-acp_7_0.ri\0".as_ptr() as *const core::ffi::c_char;
+        b"sof-acp_7_0.ri\0".as_ptr() as *const kernel::ffi::c_char;
 
     sof_dev_desc {
         machines: snd_soc_acpi_amd_acp70_sof_machines,
@@ -179,7 +179,7 @@ static acp70_desc: sof_dev_desc = unsafe {
         default_fw_path,
         default_tplg_path,
         default_fw_filename,
-        nocodec_tplg_filename: b"sof-acp.tplg\0".as_ptr() as *const core::ffi::c_char,
+        nocodec_tplg_filename: b"sof-acp.tplg\0".as_ptr() as *const kernel::ffi::c_char,
         ops: &sof_acp70_ops,
         ops_init: Some(sof_acp70_ops_init),
     }
@@ -188,8 +188,8 @@ static acp70_desc: sof_dev_desc = unsafe {
 unsafe extern "C" fn acp70_pci_probe(
     pci: *mut pci_dev,
     pci_id: *const pci_device_id,
-) -> core::ffi::c_int {
-    let flag: core::ffi::c_uint;
+) -> kernel::ffi::c_int {
+    let flag: kernel::ffi::c_uint;
 
     match (*pci).revision {
         ACP70_PCI_ID | ACP71_PCI_ID | ACP72_PCI_ID => {}
@@ -236,12 +236,12 @@ static acp70_pci_ids: [pci_device_id; 2] = unsafe {
 /* pci_driver definition */
 static mut snd_sof_pci_amd_acp70_driver: pci_driver = unsafe {
     pci_driver {
-        name: &KBUILD_MODNAME as *const core::ffi::c_char,
+        name: &KBUILD_MODNAME as *const kernel::ffi::c_char,
         id_table: acp70_pci_ids.as_ptr(),
         probe: Some(acp70_pci_probe),
         remove: Some(acp70_pci_remove),
         driver: device_driver {
-            pm: &sof_pci_pm as *const core::ffi::c_void,
+            pm: &sof_pci_pm as *const kernel::ffi::c_void,
         },
     }
 };

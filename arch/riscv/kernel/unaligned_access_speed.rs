@@ -16,9 +16,9 @@ static mut UNALIGNED_SCALAR_SPEED_PARAM: isize = RISCV_HWPROBE_MISALIGNED_SCALAR
 static mut UNALIGNED_VECTOR_SPEED_PARAM: isize = RISCV_HWPROBE_MISALIGNED_VECTOR_UNKNOWN as isize;
 
 unsafe fn measure_cycles(
-    func: unsafe extern "C" fn(*mut core::ffi::c_void, *const core::ffi::c_void, usize),
-    dst: *mut core::ffi::c_void,
-    src: *mut core::ffi::c_void,
+    func: unsafe extern "C" fn(*mut kernel::ffi::c_void, *const kernel::ffi::c_void, usize),
+    dst: *mut kernel::ffi::c_void,
+    src: *mut kernel::ffi::c_void,
     len: usize,
 ) -> u64 {
     let mut start_cycles: u64;
@@ -60,15 +60,15 @@ unsafe fn measure_cycles(
  *    -1 if check cannot be done
  */
 unsafe fn compare_unaligned_access(
-    word_copy: unsafe extern "C" fn(*mut core::ffi::c_void, *const core::ffi::c_void, usize),
-    byte_copy: unsafe extern "C" fn(*mut core::ffi::c_void, *const core::ffi::c_void, usize),
-    buf: *mut core::ffi::c_void,
-    kind: *const core::ffi::c_char,
+    word_copy: unsafe extern "C" fn(*mut kernel::ffi::c_void, *const kernel::ffi::c_void, usize),
+    byte_copy: unsafe extern "C" fn(*mut kernel::ffi::c_void, *const kernel::ffi::c_void, usize),
+    buf: *mut kernel::ffi::c_void,
+    kind: *const kernel::ffi::c_char,
 ) -> i32 {
     let cpu = smp_processor_id();
-    let dst = (buf as usize | 0x1) as *mut core::ffi::c_void;
+    let dst = (buf as usize | 0x1) as *mut kernel::ffi::c_void;
     // Unalign src as well, but differently (off by 1 + 2 = 3).
-    let src = (dst as usize + MISALIGNED_BUFFER_SIZE / 2 + 2) as *mut core::ffi::c_void;
+    let src = (dst as usize + MISALIGNED_BUFFER_SIZE / 2 + 2) as *mut kernel::ffi::c_void;
 
     let word_cycles = measure_cycles(word_copy, dst, src, MISALIGNED_COPY_SIZE);
     let byte_cycles = measure_cycles(byte_copy, dst, src, MISALIGNED_COPY_SIZE);
@@ -168,7 +168,7 @@ unsafe fn riscv_online_cpu_vec(cpu: u32) -> i32 {
 
 static SPEED_STR: [Option<&str>; 5] = [None, None, Some("slow"), Some("fast"), Some("unsupported")];
 
-unsafe fn set_unaligned_scalar_speed_param(str_: *const core::ffi::c_char) -> i32 {
+unsafe fn set_unaligned_scalar_speed_param(str_: *const kernel::ffi::c_char) -> i32 {
     if strcmp(str_, SPEED_STR[RISCV_HWPROBE_MISALIGNED_SCALAR_SLOW as usize]) == 0 { UNALIGNED_SCALAR_SPEED_PARAM = RISCV_HWPROBE_MISALIGNED_SCALAR_SLOW; }
     else if strcmp(str_, SPEED_STR[RISCV_HWPROBE_MISALIGNED_SCALAR_FAST as usize]) == 0 { UNALIGNED_SCALAR_SPEED_PARAM = RISCV_HWPROBE_MISALIGNED_SCALAR_FAST; }
     else if strcmp(str_, SPEED_STR[RISCV_HWPROBE_MISALIGNED_SCALAR_UNSUPPORTED as usize]) == 0 { UNALIGNED_SCALAR_SPEED_PARAM = RISCV_HWPROBE_MISALIGNED_SCALAR_UNSUPPORTED; }
@@ -176,7 +176,7 @@ unsafe fn set_unaligned_scalar_speed_param(str_: *const core::ffi::c_char) -> i3
     1
 }
 
-unsafe fn set_unaligned_vector_speed_param(str_: *const core::ffi::c_char) -> i32 {
+unsafe fn set_unaligned_vector_speed_param(str_: *const kernel::ffi::c_char) -> i32 {
     if strcmp(str_, SPEED_STR[RISCV_HWPROBE_MISALIGNED_VECTOR_SLOW as usize]) == 0 { UNALIGNED_VECTOR_SPEED_PARAM = RISCV_HWPROBE_MISALIGNED_VECTOR_SLOW; }
     else if strcmp(str_, SPEED_STR[RISCV_HWPROBE_MISALIGNED_VECTOR_FAST as usize]) == 0 { UNALIGNED_VECTOR_SPEED_PARAM = RISCV_HWPROBE_MISALIGNED_VECTOR_FAST; }
     else if strcmp(str_, SPEED_STR[RISCV_HWPROBE_MISALIGNED_VECTOR_UNSUPPORTED as usize]) == 0 { UNALIGNED_VECTOR_SPEED_PARAM = RISCV_HWPROBE_MISALIGNED_VECTOR_UNSUPPORTED; }

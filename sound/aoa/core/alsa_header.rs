@@ -9,10 +9,10 @@
 
 unsafe extern "C" {
     pub fn aoa_alsa_init(
-        name: *mut core::ffi::c_char,
+        name: *mut kernel::ffi::c_char,
         mod_: *mut module,
         dev: *mut device,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn aoa_alsa_cleanup();
 }
 

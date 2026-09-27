@@ -45,7 +45,7 @@ pub unsafe fn set_dawr(nr: i32, brk: *mut arch_hw_breakpoint) -> i32 {
     0
 }
 
-unsafe fn disable_dawrs_cb(_info: *mut core::ffi::c_void) {
+unsafe fn disable_dawrs_cb(_info: *mut kernel::ffi::c_void) {
     let mut null_brk: arch_hw_breakpoint = core::mem::zeroed();
     let mut i = 0;
 
@@ -57,7 +57,7 @@ unsafe fn disable_dawrs_cb(_info: *mut core::ffi::c_void) {
 
 unsafe fn dawr_write_file_bool(
     file: *mut file,
-    user_buf: *const core::ffi::c_char,
+    user_buf: *const kernel::ffi::c_char,
     count: usize,
     ppos: *mut loff_t,
 ) -> isize {
@@ -102,10 +102,10 @@ unsafe fn dawr_force_setup() -> i32 {
     if PVR_VER(mfspr(SPRN_PVR)) == PVR_POWER9 {
         /* Turn DAWR off by default, but allow admin to turn it on */
         debugfs_create_file_unsafe(
-            b"dawr_enable_dangerous\\0".as_ptr() as *const core::ffi::c_char,
+            b"dawr_enable_dangerous\\0".as_ptr() as *const kernel::ffi::c_char,
             0o600,
             arch_debugfs_dir,
-            &mut dawr_force_enable as *mut _ as *mut core::ffi::c_void,
+            &mut dawr_force_enable as *mut _ as *mut kernel::ffi::c_void,
             &dawr_enable_fops,
         );
     }

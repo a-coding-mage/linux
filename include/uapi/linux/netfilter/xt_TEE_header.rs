@@ -17,7 +17,7 @@ pub struct xt_tee_priv {
 #[repr(C, align(8))]
 pub struct xt_tee_tginfo {
     pub gw: nf_inet_addr,
-    pub oif: [core::ffi::c_char; 16],
+    pub oif: [kernel::ffi::c_char; 16],
 
     /* used internally by the kernel */
     pub priv_: *mut xt_tee_priv,

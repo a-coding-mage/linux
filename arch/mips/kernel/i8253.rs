@@ -11,10 +11,10 @@ extern "C" {
     fn clockevent_i8253_init(force: bool);
     fn request_irq(
         irq: u32,
-        handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t,
+        handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t,
         flags: usize,
-        name: *const core::ffi::c_char,
-        dev_id: *mut core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        dev_id: *mut kernel::ffi::c_void,
     ) -> i32;
     fn num_possible_cpus() -> i32;
     fn clockevent_state_periodic(dev: *const clock_event_device) -> bool;
@@ -23,7 +23,7 @@ extern "C" {
 
 unsafe extern "C" fn timer_interrupt(
     _irq: i32,
-    _dev_id: *mut core::ffi::c_void,
+    _dev_id: *mut kernel::ffi::c_void,
 ) -> irqreturn_t {
     unsafe {
         ((*(&raw mut i8253_clockevent)).event_handler)(&raw mut i8253_clockevent);

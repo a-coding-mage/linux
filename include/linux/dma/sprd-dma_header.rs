@@ -110,7 +110,7 @@ pub enum sprd_dma_int_type {
  */
 #[repr(C)]
 pub struct sprd_dma_linklist {
-    pub virt_addr: ::core::ffi::c_ulong,
+    pub virt_addr: ::kernel::ffi::c_ulong,
     pub phy_addr: phys_addr_t,
     pub wrap_addr: phys_addr_t,
 }

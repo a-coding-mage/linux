@@ -2,7 +2,7 @@
 
 // Translated from drbd_nl_gen.h. Kernel and UAPI types/constants are supplied
 // by the corresponding external dependencies.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 extern "C" {
     pub static drbd_connection_info_nl_policy: [nla_policy; DRBD_A_CONNECTION_INFO_CONN_ROLE as usize + 1];

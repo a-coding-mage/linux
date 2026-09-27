@@ -30,7 +30,7 @@ extern "C" {
 #[repr(C)]
 pub struct mac_model {
     pub ident: i16,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub adb_type: i8,
     pub via_type: i8,
     pub scsi_type: i8,

@@ -3,7 +3,7 @@
  * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* cache_desc->flags */
 pub const CACHE_PRESENT: u32 = 1 << 0;

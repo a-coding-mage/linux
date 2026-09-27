@@ -9,30 +9,30 @@ pub struct net_device {
 }
 
 extern "C" {
-    pub fn netdev_printk(level: *const ::core::ffi::c_char,
+    pub fn netdev_printk(level: *const ::kernel::ffi::c_char,
                          dev: *const net_device,
-                         format: *const ::core::ffi::c_char,
+                         format: *const ::kernel::ffi::c_char,
                          ...);
     pub fn netdev_emerg(dev: *const net_device,
-                        format: *const ::core::ffi::c_char,
+                        format: *const ::kernel::ffi::c_char,
                         ...);
     pub fn netdev_alert(dev: *const net_device,
-                        format: *const ::core::ffi::c_char,
+                        format: *const ::kernel::ffi::c_char,
                         ...);
     pub fn netdev_crit(dev: *const net_device,
-                       format: *const ::core::ffi::c_char,
+                       format: *const ::kernel::ffi::c_char,
                        ...);
     pub fn netdev_err(dev: *const net_device,
-                      format: *const ::core::ffi::c_char,
+                      format: *const ::kernel::ffi::c_char,
                       ...);
     pub fn netdev_warn(dev: *const net_device,
-                       format: *const ::core::ffi::c_char,
+                       format: *const ::kernel::ffi::c_char,
                        ...);
     pub fn netdev_notice(dev: *const net_device,
-                         format: *const ::core::ffi::c_char,
+                         format: *const ::kernel::ffi::c_char,
                          ...);
     pub fn netdev_info(dev: *const net_device,
-                       format: *const ::core::ffi::c_char,
+                       format: *const ::kernel::ffi::c_char,
                        ...);
 }
 

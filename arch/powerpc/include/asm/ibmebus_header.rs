@@ -58,11 +58,11 @@ unsafe extern "C" {
     pub fn ibmebus_request_irq(
         ist: u32,
         handler: irq_handler_t,
-        irq_flags: core::ffi::c_ulong,
-        devname: *const core::ffi::c_char,
-        dev_id: *mut core::ffi::c_void,
+        irq_flags: kernel::ffi::c_ulong,
+        devname: *const kernel::ffi::c_char,
+        dev_id: *mut kernel::ffi::c_void,
     ) -> i32;
-    pub fn ibmebus_free_irq(ist: u32, dev_id: *mut core::ffi::c_void);
+    pub fn ibmebus_free_irq(ist: u32, dev_id: *mut kernel::ffi::c_void);
 }
 
 

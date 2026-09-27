@@ -11,7 +11,7 @@
 
 // Linux and local header dependencies are supplied by other translation units.
 
-static mut scu_base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut scu_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 
 /*
  * Enables the SCU when available. Obviously, this is only useful on
@@ -27,7 +27,7 @@ unsafe fn mvebu_scu_enable() {
     }
 }
 
-pub unsafe fn mvebu_get_scu_base() -> *mut core::ffi::c_void {
+pub unsafe fn mvebu_get_scu_base() -> *mut kernel::ffi::c_void {
     scu_base
 }
 
@@ -44,8 +44,8 @@ pub unsafe fn mvebu_get_scu_base() -> *mut core::ffi::c_void {
 const MVEBU_DDR_TRAINING_AREA_SZ: usize = 10 * SZ_1K;
 
 #[cfg(CONFIG_SUSPEND)]
-unsafe fn mvebu_scan_mem(node: usize, _uname: *const core::ffi::c_char,
-                         _depth: i32, _data: *mut core::ffi::c_void) -> i32 {
+unsafe fn mvebu_scan_mem(node: usize, _uname: *const kernel::ffi::c_char,
+                         _depth: i32, _data: *mut kernel::ffi::c_void) -> i32 {
     let type_ = of_get_flat_dt_prop(node, c"device_type".as_ptr(), core::ptr::null_mut());
     if type_.is_null() || strcmp(type_, c"memory".as_ptr()) != 0 { return 0; }
 
@@ -103,19 +103,19 @@ unsafe fn armada_370_xp_dt_fixup() {
     smp_set_ops(smp_ops(armada_xp_smp_ops));
 }
 
-static armada_370_xp_dt_compat: [*const core::ffi::c_char; 2] = [
+static armada_370_xp_dt_compat: [*const kernel::ffi::c_char; 2] = [
     c"marvell,armada-370-xp".as_ptr(), core::ptr::null(),
 ];
 
-static armada_375_dt_compat: [*const core::ffi::c_char; 2] = [
+static armada_375_dt_compat: [*const kernel::ffi::c_char; 2] = [
     c"marvell,armada375".as_ptr(), core::ptr::null(),
 ];
 
-static armada_38x_dt_compat: [*const core::ffi::c_char; 3] = [
+static armada_38x_dt_compat: [*const kernel::ffi::c_char; 3] = [
     c"marvell,armada380".as_ptr(), c"marvell,armada385".as_ptr(), core::ptr::null(),
 ];
 
-static armada_39x_dt_compat: [*const core::ffi::c_char; 3] = [
+static armada_39x_dt_compat: [*const kernel::ffi::c_char; 3] = [
     c"marvell,armada390".as_ptr(), c"marvell,armada398".as_ptr(), core::ptr::null(),
 ];
 

@@ -38,7 +38,7 @@ pub struct affs_inode_info {
     pub mmu_private: loff_t,
     pub i_protect: u32,
     pub i_lastalloc: u32,
-    pub i_pa_cnt: core::ffi::c_int,
+    pub i_pa_cnt: kernel::ffi::c_int,
     pub vfs_inode: inode,
 }
 
@@ -52,11 +52,11 @@ pub struct affs_bm_info { pub bm_key: u32, pub bm_free: u32 }
 
 #[repr(C)]
 pub struct affs_sb_info {
-    pub s_partition_size: core::ffi::c_int,
-    pub s_reserved: core::ffi::c_int,
+    pub s_partition_size: kernel::ffi::c_int,
+    pub s_reserved: kernel::ffi::c_int,
     pub s_data_blksize: u32,
     pub s_root_block: u32,
-    pub s_hashsize: core::ffi::c_int,
+    pub s_hashsize: kernel::ffi::c_int,
     pub s_flags: usize,
     pub s_uid: kuid_t,
     pub s_gid: kgid_t,
@@ -68,11 +68,11 @@ pub struct affs_sb_info {
     pub s_bmap_bits: u32,
     pub s_last_bmap: u32,
     pub s_bmap_bh: *mut buffer_head,
-    pub s_prefix: *mut core::ffi::c_char,
-    pub s_volume: [core::ffi::c_char; 32],
+    pub s_prefix: *mut kernel::ffi::c_char,
+    pub s_volume: [kernel::ffi::c_char; 32],
     pub symlink_lock: spinlock_t,
     pub sb: *mut super_block,
-    pub work_queued: core::ffi::c_int,
+    pub work_queued: kernel::ffi::c_int,
     pub sb_work: delayed_work,
     pub work_lock: spinlock_t,
     pub rcu: rcu_head,
@@ -102,25 +102,25 @@ unsafe extern "C" { pub fn affs_mark_sb_dirty(sb: *mut super_block); }
 
 // External declarations from amigaffs.c, bitmap.c, namei.c, inode.c, file.c, and dir.c.
 unsafe extern "C" {
-    pub fn affs_insert_hash(inode: *mut inode, bh: *mut buffer_head) -> core::ffi::c_int;
-    pub fn affs_remove_hash(dir: *mut inode, rem_bh: *mut buffer_head) -> core::ffi::c_int;
-    pub fn affs_remove_header(dentry: *mut dentry) -> core::ffi::c_int;
+    pub fn affs_insert_hash(inode: *mut inode, bh: *mut buffer_head) -> kernel::ffi::c_int;
+    pub fn affs_remove_hash(dir: *mut inode, rem_bh: *mut buffer_head) -> kernel::ffi::c_int;
+    pub fn affs_remove_header(dentry: *mut dentry) -> kernel::ffi::c_int;
     pub fn affs_checksum_block(sb: *mut super_block, bh: *mut buffer_head) -> u32;
     pub fn affs_fix_checksum(sb: *mut super_block, bh: *mut buffer_head);
     pub fn affs_secs_to_datestamp(secs: time64_t, ds: *mut affs_date);
     pub fn affs_prot_to_mode(prot: u32) -> umode_t;
     pub fn affs_mode_to_prot(inode: *mut inode);
     pub fn affs_nofilenametruncate(dentry: *const dentry) -> bool;
-    pub fn affs_check_name(name: *const u8, len: core::ffi::c_int, notruncate: bool) -> core::ffi::c_int;
-    pub fn affs_copy_name(bstr: *mut u8, dentry: *mut dentry) -> core::ffi::c_int;
+    pub fn affs_check_name(name: *const u8, len: kernel::ffi::c_int, notruncate: bool) -> kernel::ffi::c_int;
+    pub fn affs_copy_name(bstr: *mut u8, dentry: *mut dentry) -> kernel::ffi::c_int;
     pub fn affs_count_free_blocks(s: *mut super_block) -> u32;
     pub fn affs_free_block(sb: *mut super_block, block: u32);
     pub fn affs_alloc_block(inode: *mut inode, goal: u32) -> u32;
-    pub fn affs_init_bitmap(sb: *mut super_block, flags: *mut core::ffi::c_int) -> core::ffi::c_int;
+    pub fn affs_init_bitmap(sb: *mut super_block, flags: *mut kernel::ffi::c_int) -> kernel::ffi::c_int;
     pub fn affs_free_bitmap(sb: *mut super_block);
-    pub fn affs_hash_name(sb: *mut super_block, name: *const u8, len: u32) -> core::ffi::c_int;
+    pub fn affs_hash_name(sb: *mut super_block, name: *const u8, len: u32) -> kernel::ffi::c_int;
     pub fn affs_lookup(dir: *mut inode, dentry: *mut dentry, flags: u32) -> *mut dentry;
-    pub fn affs_unlink(dir: *mut inode, dentry: *mut dentry) -> core::ffi::c_int;
+    pub fn affs_unlink(dir: *mut inode, dentry: *mut dentry) -> kernel::ffi::c_int;
     pub fn affs_new_inode(dir: *mut inode) -> *mut inode;
     pub fn affs_evict_inode(inode: *mut inode);
     pub fn affs_iget(sb: *mut super_block, ino: usize) -> *mut inode;
@@ -129,15 +129,15 @@ unsafe extern "C" {
     pub fn affs_dir_truncate(inode: *mut inode);
 }
 
-#[inline] pub unsafe fn affs_validblock(sb: *mut super_block, block: core::ffi::c_int) -> bool { block >= (*AFFS_SB(sb)).s_reserved && block < (*AFFS_SB(sb)).s_partition_size }
-#[inline] pub unsafe fn affs_bread(sb: *mut super_block, block: core::ffi::c_int) -> *mut buffer_head { if affs_validblock(sb, block) { sb_bread(sb, block) } else { core::ptr::null_mut() } }
-#[inline] pub unsafe fn affs_getblk(sb: *mut super_block, block: core::ffi::c_int) -> *mut buffer_head { if affs_validblock(sb, block) { sb_getblk(sb, block) } else { core::ptr::null_mut() } }
+#[inline] pub unsafe fn affs_validblock(sb: *mut super_block, block: kernel::ffi::c_int) -> bool { block >= (*AFFS_SB(sb)).s_reserved && block < (*AFFS_SB(sb)).s_partition_size }
+#[inline] pub unsafe fn affs_bread(sb: *mut super_block, block: kernel::ffi::c_int) -> *mut buffer_head { if affs_validblock(sb, block) { sb_bread(sb, block) } else { core::ptr::null_mut() } }
+#[inline] pub unsafe fn affs_getblk(sb: *mut super_block, block: kernel::ffi::c_int) -> *mut buffer_head { if affs_validblock(sb, block) { sb_getblk(sb, block) } else { core::ptr::null_mut() } }
 #[inline] pub unsafe fn affs_brelse(bh: *mut buffer_head) { brelse(bh); }
 
-#[inline] pub unsafe fn affs_getzeroblk(sb: *mut super_block, block: core::ffi::c_int) -> *mut buffer_head {
+#[inline] pub unsafe fn affs_getzeroblk(sb: *mut super_block, block: kernel::ffi::c_int) -> *mut buffer_head {
     if affs_validblock(sb, block) { let bh = sb_getblk(sb, block); lock_buffer(bh); core::ptr::write_bytes((*bh).b_data, 0, (*sb).s_blocksize as usize); set_buffer_uptodate(bh); unlock_buffer(bh); bh } else { core::ptr::null_mut() }
 }
-#[inline] pub unsafe fn affs_getemptyblk(sb: *mut super_block, block: core::ffi::c_int) -> *mut buffer_head {
+#[inline] pub unsafe fn affs_getemptyblk(sb: *mut super_block, block: kernel::ffi::c_int) -> *mut buffer_head {
     if affs_validblock(sb, block) { let bh = sb_getblk(sb, block); wait_on_buffer(bh); set_buffer_uptodate(bh); bh } else { core::ptr::null_mut() }
 }
 

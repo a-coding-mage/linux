@@ -6,7 +6,7 @@
 // Dependencies supplied by the corresponding architecture and kernel modules
 // are intentionally left external, as in the original C translation unit.
 
-unsafe fn is_io_mapping_possible(base: resource_size_t, size: libc::c_ulong) -> libc::c_int {
+unsafe fn is_io_mapping_possible(base: resource_size_t, size: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     // There is no way to map greater than 1 << 32 address without PAE.
     // This preserves the source conditional for builds with 64-bit physical
     // addresses and without x86 PAE.
@@ -21,11 +21,11 @@ unsafe fn is_io_mapping_possible(base: resource_size_t, size: libc::c_ulong) -> 
 
 pub unsafe fn iomap_create_wc(
     base: resource_size_t,
-    size: libc::c_ulong,
+    size: kernel::ffi::c_ulong,
     prot: *mut pgprot_t,
-) -> libc::c_int {
+) -> kernel::ffi::c_int {
     let mut pcm: page_cache_mode = _PAGE_CACHE_MODE_WC;
-    let ret: libc::c_int;
+    let ret: kernel::ffi::c_int;
 
     if is_io_mapping_possible(base, size) == 0 {
         return -EINVAL;
@@ -49,13 +49,13 @@ pub unsafe fn iomap_create_wc(
 
 // EXPORT_SYMBOL_GPL(iomap_create_wc);
 
-pub unsafe fn iomap_free(base: resource_size_t, size: libc::c_ulong) {
+pub unsafe fn iomap_free(base: resource_size_t, size: kernel::ffi::c_ulong) {
     memtype_free_io(base, base.wrapping_add(size as resource_size_t));
 }
 
 // EXPORT_SYMBOL_GPL(iomap_free);
 
-pub unsafe fn __iomap_local_pfn_prot(pfn: libc::c_ulong, mut prot: pgprot_t) -> *mut core::ffi::c_void {
+pub unsafe fn __iomap_local_pfn_prot(pfn: kernel::ffi::c_ulong, mut prot: pgprot_t) -> *mut kernel::ffi::c_void {
     /*
      * For non-PAT systems, translate non-WB request to UC- just in
      * case the caller set the PWT bit to prot directly without using
@@ -70,7 +70,7 @@ pub unsafe fn __iomap_local_pfn_prot(pfn: libc::c_ulong, mut prot: pgprot_t) -> 
     // Filter out unsupported __PAGE_KERNEL* bits:
     prot = pgprot_t(pgprot_val(prot) & __default_kernel_pte_mask);
 
-    __kmap_local_pfn_prot(pfn, prot) as *mut core::ffi::c_void
+    __kmap_local_pfn_prot(pfn, prot) as *mut kernel::ffi::c_void
 }
 
 // EXPORT_SYMBOL_GPL(__iomap_local_pfn_prot);

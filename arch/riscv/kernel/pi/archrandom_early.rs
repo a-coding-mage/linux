@@ -10,8 +10,8 @@
 
 extern "C" {
     fn fdt_early_match_extension_isa(
-        dtb: *const core::ffi::c_void,
-        extension: *const core::ffi::c_char,
+        dtb: *const kernel::ffi::c_void,
+        extension: *const kernel::ffi::c_char,
     ) -> bool;
     fn csr_seed_long(seed: *mut usize) -> bool;
 }
@@ -21,8 +21,8 @@ pub unsafe extern "C" fn get_kaslr_seed_zkr(dtb_pa: usize) -> u64 {
     let mut seed: usize = 0;
 
     if !fdt_early_match_extension_isa(
-        dtb_pa as *const core::ffi::c_void,
-        b"zkr\0".as_ptr() as *const core::ffi::c_char,
+        dtb_pa as *const kernel::ffi::c_void,
+        b"zkr\0".as_ptr() as *const kernel::ffi::c_char,
     ) {
         return 0;
     }

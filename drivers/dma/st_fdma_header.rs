@@ -50,7 +50,7 @@ pub const NAME_SZ: usize = 10;
 #[repr(C)]
 pub struct st_fdma_driverdata {
     pub id: u32,
-    pub name: [core::ffi::c_char; NAME_SZ],
+    pub name: [kernel::ffi::c_char; NAME_SZ],
 }
 
 #[repr(C)]
@@ -58,7 +58,7 @@ pub struct st_fdma_desc {
     pub vdesc: virt_dma_desc,
     pub fchan: *mut st_fdma_chan,
     pub iscyclic: bool,
-    pub n_nodes: core::ffi::c_uint,
+    pub n_nodes: kernel::ffi::c_uint,
     pub node: [st_fdma_sw_node; 0], // __counted_by(n_nodes)
 }
 
@@ -101,7 +101,7 @@ pub struct st_fdma_dev {
     pub dreq_lock: spinlock_t,
     pub dreq_mask: c_ulong,
     pub nr_channels: u32,
-    pub fw_name: [core::ffi::c_char; FW_NAME_SIZE],
+    pub fw_name: [kernel::ffi::c_char; FW_NAME_SIZE],
 }
 
 pub const FDMA_CMD_STA_OFST: u32 = 0xfc0;

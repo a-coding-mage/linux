@@ -10,7 +10,7 @@
 // Dependencies supplied by the kernel headers:
 // linux/kmsg_dump.h, asm/opal.h, and asm/opal-api.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct kmsg_dumper {

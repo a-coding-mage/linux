@@ -18,27 +18,27 @@ static mut UDELAY_TEST_ITERATIONS: i32 = DEFAULT_ITERATIONS;
 
 // External kernel facilities supplied by the surrounding kernel environment.
 extern "C" {
-    static mut udelay_test_lock: core::ffi::c_void;
+    static mut udelay_test_lock: kernel::ffi::c_void;
     fn ktime_get_ns() -> i64;
     fn udelay(usecs: u32);
     fn warn_on(condition: bool) -> bool;
-    fn seq_printf(s: *mut core::ffi::c_void, fmt: *const core::ffi::c_char, ...);
-    fn seq_puts(s: *mut core::ffi::c_void, text: *const core::ffi::c_char);
-    fn mutex_lock(lock: *mut core::ffi::c_void);
-    fn mutex_unlock(lock: *mut core::ffi::c_void);
-    fn single_open(file: *mut core::ffi::c_void, show: *const core::ffi::c_void,
-                   data: *mut core::ffi::c_void) -> i32;
+    fn seq_printf(s: *mut kernel::ffi::c_void, fmt: *const kernel::ffi::c_char, ...);
+    fn seq_puts(s: *mut kernel::ffi::c_void, text: *const kernel::ffi::c_char);
+    fn mutex_lock(lock: *mut kernel::ffi::c_void);
+    fn mutex_unlock(lock: *mut kernel::ffi::c_void);
+    fn single_open(file: *mut kernel::ffi::c_void, show: *const kernel::ffi::c_void,
+                   data: *mut kernel::ffi::c_void) -> i32;
     fn seq_read() -> isize;
     fn seq_lseek() -> i64;
     fn single_release() -> i32;
     fn copy_from_user(to: *mut u8, from: *const u8, count: usize) -> usize;
-    fn sscanf(buf: *const core::ffi::c_char, fmt: *const core::ffi::c_char, ...) -> i32;
-    fn debugfs_create_file(name: *const core::ffi::c_char, mode: u32,
-                            parent: *mut core::ffi::c_void,
-                            data: *mut core::ffi::c_void,
-                            ops: *const core::ffi::c_void) -> *mut core::ffi::c_void;
-    fn debugfs_lookup_and_remove(name: *const core::ffi::c_char,
-                                 parent: *mut core::ffi::c_void);
+    fn sscanf(buf: *const kernel::ffi::c_char, fmt: *const kernel::ffi::c_char, ...) -> i32;
+    fn debugfs_create_file(name: *const kernel::ffi::c_char, mode: u32,
+                            parent: *mut kernel::ffi::c_void,
+                            data: *mut kernel::ffi::c_void,
+                            ops: *const kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+    fn debugfs_lookup_and_remove(name: *const kernel::ffi::c_char,
+                                 parent: *mut kernel::ffi::c_void);
     static loops_per_jiffy: isize;
 }
 
@@ -52,7 +52,7 @@ extern "C" {
     fn ktime_get_ts64(ts: *mut Timespec64);
 }
 
-unsafe fn udelay_test_single(s: *mut core::ffi::c_void, usecs: i32, iters: u32) -> i32 {
+unsafe fn udelay_test_single(s: *mut kernel::ffi::c_void, usecs: i32, iters: u32) -> i32 {
     let mut min = 0i32;
     let mut max = 0i32;
     let mut fail_count = 0i32;
@@ -80,7 +80,7 @@ unsafe fn udelay_test_single(s: *mut core::ffi::c_void, usecs: i32, iters: u32) 
     0
 }
 
-unsafe fn udelay_test_show(s: *mut core::ffi::c_void, _v: *mut core::ffi::c_void) -> i32 {
+unsafe fn udelay_test_show(s: *mut kernel::ffi::c_void, _v: *mut kernel::ffi::c_void) -> i32 {
     mutex_lock(&raw mut udelay_test_lock);
     let usecs = UDELAY_TEST_USECS;
     let iters = UDELAY_TEST_ITERATIONS;
@@ -100,11 +100,11 @@ unsafe fn udelay_test_show(s: *mut core::ffi::c_void, _v: *mut core::ffi::c_void
     0
 }
 
-unsafe fn udelay_test_open(inode: *mut core::ffi::c_void, file: *mut core::ffi::c_void) -> i32 {
-    single_open(file, udelay_test_show as *const core::ffi::c_void, inode)
+unsafe fn udelay_test_open(inode: *mut kernel::ffi::c_void, file: *mut kernel::ffi::c_void) -> i32 {
+    single_open(file, udelay_test_show as *const kernel::ffi::c_void, inode)
 }
 
-unsafe fn udelay_test_write(_file: *mut core::ffi::c_void, buf: *const u8,
+unsafe fn udelay_test_write(_file: *mut kernel::ffi::c_void, buf: *const u8,
                             count: usize, _pos: *mut i64) -> isize {
     let mut lbuf = [0u8; 32];
     if count >= lbuf.len() { return -22; }
@@ -113,7 +113,7 @@ unsafe fn udelay_test_write(_file: *mut core::ffi::c_void, buf: *const u8,
 
     let mut usecs = 0i32;
     let mut iters = 0i32;
-    let ret = sscanf(lbuf.as_ptr() as *const core::ffi::c_char, c"%d %d".as_ptr(),
+    let ret = sscanf(lbuf.as_ptr() as *const kernel::ffi::c_char, c"%d %d".as_ptr(),
                      &mut usecs, &mut iters);
     if ret < 1 { return -22; }
     if ret < 2 { iters = DEFAULT_ITERATIONS; }

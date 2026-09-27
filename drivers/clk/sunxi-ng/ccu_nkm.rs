@@ -9,22 +9,22 @@
 
 #[repr(C)]
 struct _ccu_nkm {
-    n: libc::c_ulong,
-    min_n: libc::c_ulong,
-    max_n: libc::c_ulong,
-    k: libc::c_ulong,
-    min_k: libc::c_ulong,
-    max_k: libc::c_ulong,
-    m: libc::c_ulong,
-    min_m: libc::c_ulong,
-    max_m: libc::c_ulong,
+    n: kernel::ffi::c_ulong,
+    min_n: kernel::ffi::c_ulong,
+    max_n: kernel::ffi::c_ulong,
+    k: kernel::ffi::c_ulong,
+    min_k: kernel::ffi::c_ulong,
+    max_k: kernel::ffi::c_ulong,
+    m: kernel::ffi::c_ulong,
+    min_m: kernel::ffi::c_ulong,
+    max_m: kernel::ffi::c_ulong,
 }
 
 unsafe fn ccu_nkm_is_valid_rate(
     common: *mut ccu_common,
-    parent: libc::c_ulong,
-    n: libc::c_ulong,
-    m: libc::c_ulong,
+    parent: kernel::ffi::c_ulong,
+    n: kernel::ffi::c_ulong,
+    m: kernel::ffi::c_ulong,
 ) -> bool {
     let nkm = container_of!(common, ccu_nkm, common);
 
@@ -40,10 +40,10 @@ unsafe fn ccu_nkm_is_valid_rate(
 unsafe fn ccu_nkm_find_best_with_parent_adj(
     common: *mut ccu_common,
     parent_hw: *mut clk_hw,
-    parent: *mut libc::c_ulong,
-    rate: libc::c_ulong,
+    parent: *mut kernel::ffi::c_ulong,
+    rate: kernel::ffi::c_ulong,
     nkm: *mut _ccu_nkm,
-) -> libc::c_ulong {
+) -> kernel::ffi::c_ulong {
     let mut best_rate = 0;
     let mut best_parent_rate = *parent;
     let mut best_n = 0;
@@ -85,11 +85,11 @@ unsafe fn ccu_nkm_find_best_with_parent_adj(
 }
 
 unsafe fn ccu_nkm_find_best(
-    parent: libc::c_ulong,
-    rate: libc::c_ulong,
+    parent: kernel::ffi::c_ulong,
+    rate: kernel::ffi::c_ulong,
     nkm: *mut _ccu_nkm,
     common: *mut ccu_common,
-) -> libc::c_ulong {
+) -> kernel::ffi::c_ulong {
     let mut best_rate = 0;
     let mut best_n = 0;
     let mut best_k = 0;
@@ -126,17 +126,17 @@ unsafe extern "C" fn ccu_nkm_disable(hw: *mut clk_hw) {
     ccu_gate_helper_disable(&mut (*nkm).common, (*nkm).enable);
 }
 
-unsafe extern "C" fn ccu_nkm_enable(hw: *mut clk_hw) -> libc::c_int {
+unsafe extern "C" fn ccu_nkm_enable(hw: *mut clk_hw) -> kernel::ffi::c_int {
     let nkm = hw_to_ccu_nkm(hw);
     ccu_gate_helper_enable(&mut (*nkm).common, (*nkm).enable)
 }
 
-unsafe extern "C" fn ccu_nkm_is_enabled(hw: *mut clk_hw) -> libc::c_int {
+unsafe extern "C" fn ccu_nkm_is_enabled(hw: *mut clk_hw) -> kernel::ffi::c_int {
     let nkm = hw_to_ccu_nkm(hw);
     ccu_gate_helper_is_enabled(&mut (*nkm).common, (*nkm).enable)
 }
 
-unsafe extern "C" fn ccu_nkm_recalc_rate(hw: *mut clk_hw, parent_rate: libc::c_ulong) -> libc::c_ulong {
+unsafe extern "C" fn ccu_nkm_recalc_rate(hw: *mut clk_hw, parent_rate: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     let nkm = hw_to_ccu_nkm(hw);
     let reg = readl((*nkm).common.base.add((*nkm).common.reg as usize));
     let mut n = (reg >> (*nkm).n.shift) & ((1u32 << (*nkm).n.width) - 1);
@@ -148,37 +148,37 @@ unsafe extern "C" fn ccu_nkm_recalc_rate(hw: *mut clk_hw, parent_rate: libc::c_u
     let mut m = (reg >> (*nkm).m.shift) & ((1u32 << (*nkm).m.width) - 1);
     m += (*nkm).m.offset;
     if m == 0 { m = 1; }
-    let mut result = parent_rate * n as libc::c_ulong * k as libc::c_ulong / m as libc::c_ulong;
-    if (*nkm).common.features & CCU_FEATURE_FIXED_POSTDIV != 0 { result /= (*nkm).fixed_post_div as libc::c_ulong; }
+    let mut result = parent_rate * n as kernel::ffi::c_ulong * k as kernel::ffi::c_ulong / m as kernel::ffi::c_ulong;
+    if (*nkm).common.features & CCU_FEATURE_FIXED_POSTDIV != 0 { result /= (*nkm).fixed_post_div as kernel::ffi::c_ulong; }
     result
 }
 
 // The remaining callbacks preserve the C implementation's framework-facing interface.
-unsafe extern "C" fn ccu_nkm_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request) -> libc::c_int {
+unsafe extern "C" fn ccu_nkm_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request) -> kernel::ffi::c_int {
     let nkm = hw_to_ccu_nkm(hw);
     ccu_mux_helper_determine_rate(&mut (*nkm).common, &mut (*nkm).mux, req, ccu_nkm_determine_rate_helper, nkm)
 }
 
-unsafe extern "C" fn ccu_nkm_determine_rate_helper(_mux: *mut ccu_mux_internal, req: *mut clk_rate_request, data: *mut libc::c_void) -> libc::c_int {
+unsafe extern "C" fn ccu_nkm_determine_rate_helper(_mux: *mut ccu_mux_internal, req: *mut clk_rate_request, data: *mut kernel::ffi::c_void) -> kernel::ffi::c_int {
     let nkm = data as *mut ccu_nkm;
     let mut search = _ccu_nkm {
         n: 0, min_n: if (*nkm).n.min != 0 { (*nkm).n.min } else { 1 }, max_n: if (*nkm).n.max != 0 { (*nkm).n.max } else { 1 << (*nkm).n.width },
         k: 0, min_k: if (*nkm).k.min != 0 { (*nkm).k.min } else { 1 }, max_k: if (*nkm).k.max != 0 { (*nkm).k.max } else { 1 << (*nkm).k.width },
         m: 0, min_m: 1, max_m: if (*nkm).m.max != 0 { (*nkm).m.max } else { 1 << (*nkm).m.width },
     };
-    if (*nkm).common.features & CCU_FEATURE_FIXED_POSTDIV != 0 { (*req).rate *= (*nkm).fixed_post_div as libc::c_ulong; }
+    if (*nkm).common.features & CCU_FEATURE_FIXED_POSTDIV != 0 { (*req).rate *= (*nkm).fixed_post_div as kernel::ffi::c_ulong; }
     if !clk_hw_can_set_rate_parent(&mut (*nkm).common.hw) {
         (*req).rate = ccu_nkm_find_best((*req).best_parent_rate, (*req).rate, &mut search, &mut (*nkm).common);
     } else {
         (*req).rate = ccu_nkm_find_best_with_parent_adj(&mut (*nkm).common, (*req).best_parent_hw, &mut (*req).best_parent_rate, (*req).rate, &mut search);
     }
-    if (*nkm).common.features & CCU_FEATURE_FIXED_POSTDIV != 0 { (*req).rate /= (*nkm).fixed_post_div as libc::c_ulong; }
+    if (*nkm).common.features & CCU_FEATURE_FIXED_POSTDIV != 0 { (*req).rate /= (*nkm).fixed_post_div as kernel::ffi::c_ulong; }
     0
 }
 
-unsafe extern "C" fn ccu_nkm_set_rate(hw: *mut clk_hw, mut rate: libc::c_ulong, parent_rate: libc::c_ulong) -> libc::c_int {
+unsafe extern "C" fn ccu_nkm_set_rate(hw: *mut clk_hw, mut rate: kernel::ffi::c_ulong, parent_rate: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     let nkm = hw_to_ccu_nkm(hw);
-    if (*nkm).common.features & CCU_FEATURE_FIXED_POSTDIV != 0 { rate *= (*nkm).fixed_post_div as libc::c_ulong; }
+    if (*nkm).common.features & CCU_FEATURE_FIXED_POSTDIV != 0 { rate *= (*nkm).fixed_post_div as kernel::ffi::c_ulong; }
     let mut search = _ccu_nkm { n: 0, min_n: if (*nkm).n.min != 0 { (*nkm).n.min } else { 1 }, max_n: if (*nkm).n.max != 0 { (*nkm).n.max } else { 1 << (*nkm).n.width }, k: 0, min_k: if (*nkm).k.min != 0 { (*nkm).k.min } else { 1 }, max_k: if (*nkm).k.max != 0 { (*nkm).k.max } else { 1 << (*nkm).k.width }, m: 0, min_m: 1, max_m: if (*nkm).m.max != 0 { (*nkm).m.max } else { 1 << (*nkm).m.width } };
     ccu_nkm_find_best(parent_rate, rate, &mut search, &mut (*nkm).common);
     let mut flags = 0;
@@ -196,7 +196,7 @@ unsafe extern "C" fn ccu_nkm_set_rate(hw: *mut clk_hw, mut rate: libc::c_ulong, 
     0
 }
 unsafe extern "C" fn ccu_nkm_get_parent(hw: *mut clk_hw) -> u8 { let nkm = hw_to_ccu_nkm(hw); ccu_mux_helper_get_parent(&mut (*nkm).common, &mut (*nkm).mux) }
-unsafe extern "C" fn ccu_nkm_set_parent(hw: *mut clk_hw, index: u8) -> libc::c_int { let nkm = hw_to_ccu_nkm(hw); ccu_mux_helper_set_parent(&mut (*nkm).common, &mut (*nkm).mux, index) }
+unsafe extern "C" fn ccu_nkm_set_parent(hw: *mut clk_hw, index: u8) -> kernel::ffi::c_int { let nkm = hw_to_ccu_nkm(hw); ccu_mux_helper_set_parent(&mut (*nkm).common, &mut (*nkm).mux, index) }
 
 pub static ccu_nkm_ops: clk_ops = clk_ops {
     disable: Some(ccu_nkm_disable), enable: Some(ccu_nkm_enable), is_enabled: Some(ccu_nkm_is_enabled),

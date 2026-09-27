@@ -26,7 +26,7 @@ pub struct snd_soc_acpi_adr_device {
     pub adr: u64,
     pub num_endpoints: usize,
     pub endpoints: *const snd_soc_acpi_endpoint,
-    pub name_prefix: *const core::ffi::c_char,
+    pub name_prefix: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -40,8 +40,8 @@ pub struct snd_soc_acpi_link_adr {
 pub struct snd_soc_acpi_mach {
     pub link_mask: u32,
     pub links: *const snd_soc_acpi_link_adr,
-    pub drv_name: *const core::ffi::c_char,
-    pub sof_tplg_filename: *const core::ffi::c_char,
+    pub drv_name: *const kernel::ffi::c_char,
+    pub sof_tplg_filename: *const kernel::ffi::c_char,
     pub machine_check: Option<unsafe extern "C" fn() -> bool>,
     pub get_function_tplg_files: Option<unsafe extern "C" fn()>,
 }
@@ -269,7 +269,7 @@ static cs42l43_amp_spkagg_endpoints: [snd_soc_acpi_endpoint; 4] = [
 
 macro_rules! cstr {
     ($s:literal) => {
-        concat!($s, "\0").as_ptr() as *const core::ffi::c_char
+        concat!($s, "\0").as_ptr() as *const kernel::ffi::c_char
     };
 }
 

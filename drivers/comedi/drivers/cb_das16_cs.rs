@@ -34,7 +34,7 @@ const DAS16CS_MISC2_CTR1: u16 = 1 << 1;
 #[inline] fn das16cs_ai_mux_single_chan(x: u16) -> u16 { ((x & 0xf) << 4) | (x & 0xf) }
 
 #[repr(C)]
-struct das16cs_board { name: *const core::ffi::c_char, device_id: i32, has_ao: u32, has_4dio: u32 }
+struct das16cs_board { name: *const kernel::ffi::c_char, device_id: i32, has_ao: u32, has_4dio: u32 }
 
 static das16cs_boards: [das16cs_board; 3] = [
     das16cs_board { name: b"PC-CARD DAS16/16-AO\0".as_ptr() as _, device_id: 0x0039, has_ao: 1, has_4dio: 1 },

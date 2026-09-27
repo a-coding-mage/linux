@@ -36,28 +36,28 @@ pub struct regmap_config {
 
 #[repr(C)]
 pub struct i2c_device_id {
-    pub name: [::core::ffi::c_char; 20],
+    pub name: [::kernel::ffi::c_char; 20],
     pub driver_data: usize,
 }
 
 #[repr(C)]
 pub struct of_device_id {
-    pub name: [::core::ffi::c_char; 32],
-    pub type_: [::core::ffi::c_char; 32],
-    pub compatible: [::core::ffi::c_char; 128],
-    pub data: *const ::core::ffi::c_void,
+    pub name: [::kernel::ffi::c_char; 32],
+    pub type_: [::kernel::ffi::c_char; 32],
+    pub compatible: [::kernel::ffi::c_char; 128],
+    pub data: *const ::kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
 #[repr(C)]
 pub struct i2c_driver {
     pub driver: device_driver,
-    pub probe: Option<unsafe extern "C" fn(*mut i2c_client) -> ::core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(*mut i2c_client) -> ::kernel::ffi::c_int>,
     pub id_table: *const i2c_device_id,
 }
 
@@ -69,18 +69,18 @@ unsafe extern "C" {
         config: *const regmap_config,
     ) -> *mut regmap;
 
-    fn es8328_probe(dev: *mut device, regmap: *mut regmap) -> ::core::ffi::c_int;
+    fn es8328_probe(dev: *mut device, regmap: *mut regmap) -> ::kernel::ffi::c_int;
 }
 
 static es8328_id: [i2c_device_id; 3] = [
     i2c_device_id {
         name: [
-            b'e' as ::core::ffi::c_char,
-            b's' as ::core::ffi::c_char,
-            b'8' as ::core::ffi::c_char,
-            b'3' as ::core::ffi::c_char,
-            b'2' as ::core::ffi::c_char,
-            b'8' as ::core::ffi::c_char,
+            b'e' as ::kernel::ffi::c_char,
+            b's' as ::kernel::ffi::c_char,
+            b'8' as ::kernel::ffi::c_char,
+            b'3' as ::kernel::ffi::c_char,
+            b'2' as ::kernel::ffi::c_char,
+            b'8' as ::kernel::ffi::c_char,
             0,
             0,
             0,
@@ -100,12 +100,12 @@ static es8328_id: [i2c_device_id; 3] = [
     },
     i2c_device_id {
         name: [
-            b'e' as ::core::ffi::c_char,
-            b's' as ::core::ffi::c_char,
-            b'8' as ::core::ffi::c_char,
-            b'3' as ::core::ffi::c_char,
-            b'8' as ::core::ffi::c_char,
-            b'8' as ::core::ffi::c_char,
+            b'e' as ::kernel::ffi::c_char,
+            b's' as ::kernel::ffi::c_char,
+            b'8' as ::kernel::ffi::c_char,
+            b'3' as ::kernel::ffi::c_char,
+            b'8' as ::kernel::ffi::c_char,
+            b'8' as ::kernel::ffi::c_char,
             0,
             0,
             0,
@@ -137,20 +137,20 @@ static es8328_of_match: [of_device_id; 3] = [
         type_: [0; 32],
         compatible: {
             let mut compatible = [0; 128];
-            compatible[0] = b'e' as ::core::ffi::c_char;
-            compatible[1] = b'v' as ::core::ffi::c_char;
-            compatible[2] = b'e' as ::core::ffi::c_char;
-            compatible[3] = b'r' as ::core::ffi::c_char;
-            compatible[4] = b'e' as ::core::ffi::c_char;
-            compatible[5] = b's' as ::core::ffi::c_char;
-            compatible[6] = b't' as ::core::ffi::c_char;
-            compatible[7] = b',' as ::core::ffi::c_char;
-            compatible[8] = b'e' as ::core::ffi::c_char;
-            compatible[9] = b's' as ::core::ffi::c_char;
-            compatible[10] = b'8' as ::core::ffi::c_char;
-            compatible[11] = b'3' as ::core::ffi::c_char;
-            compatible[12] = b'2' as ::core::ffi::c_char;
-            compatible[13] = b'8' as ::core::ffi::c_char;
+            compatible[0] = b'e' as ::kernel::ffi::c_char;
+            compatible[1] = b'v' as ::kernel::ffi::c_char;
+            compatible[2] = b'e' as ::kernel::ffi::c_char;
+            compatible[3] = b'r' as ::kernel::ffi::c_char;
+            compatible[4] = b'e' as ::kernel::ffi::c_char;
+            compatible[5] = b's' as ::kernel::ffi::c_char;
+            compatible[6] = b't' as ::kernel::ffi::c_char;
+            compatible[7] = b',' as ::kernel::ffi::c_char;
+            compatible[8] = b'e' as ::kernel::ffi::c_char;
+            compatible[9] = b's' as ::kernel::ffi::c_char;
+            compatible[10] = b'8' as ::kernel::ffi::c_char;
+            compatible[11] = b'3' as ::kernel::ffi::c_char;
+            compatible[12] = b'2' as ::kernel::ffi::c_char;
+            compatible[13] = b'8' as ::kernel::ffi::c_char;
             compatible
         },
         data: ::core::ptr::null(),
@@ -160,20 +160,20 @@ static es8328_of_match: [of_device_id; 3] = [
         type_: [0; 32],
         compatible: {
             let mut compatible = [0; 128];
-            compatible[0] = b'e' as ::core::ffi::c_char;
-            compatible[1] = b'v' as ::core::ffi::c_char;
-            compatible[2] = b'e' as ::core::ffi::c_char;
-            compatible[3] = b'r' as ::core::ffi::c_char;
-            compatible[4] = b'e' as ::core::ffi::c_char;
-            compatible[5] = b's' as ::core::ffi::c_char;
-            compatible[6] = b't' as ::core::ffi::c_char;
-            compatible[7] = b',' as ::core::ffi::c_char;
-            compatible[8] = b'e' as ::core::ffi::c_char;
-            compatible[9] = b's' as ::core::ffi::c_char;
-            compatible[10] = b'8' as ::core::ffi::c_char;
-            compatible[11] = b'3' as ::core::ffi::c_char;
-            compatible[12] = b'8' as ::core::ffi::c_char;
-            compatible[13] = b'8' as ::core::ffi::c_char;
+            compatible[0] = b'e' as ::kernel::ffi::c_char;
+            compatible[1] = b'v' as ::kernel::ffi::c_char;
+            compatible[2] = b'e' as ::kernel::ffi::c_char;
+            compatible[3] = b'r' as ::kernel::ffi::c_char;
+            compatible[4] = b'e' as ::kernel::ffi::c_char;
+            compatible[5] = b's' as ::kernel::ffi::c_char;
+            compatible[6] = b't' as ::kernel::ffi::c_char;
+            compatible[7] = b',' as ::kernel::ffi::c_char;
+            compatible[8] = b'e' as ::kernel::ffi::c_char;
+            compatible[9] = b's' as ::kernel::ffi::c_char;
+            compatible[10] = b'8' as ::kernel::ffi::c_char;
+            compatible[11] = b'3' as ::kernel::ffi::c_char;
+            compatible[12] = b'8' as ::kernel::ffi::c_char;
+            compatible[13] = b'8' as ::kernel::ffi::c_char;
             compatible
         },
         data: ::core::ptr::null(),
@@ -188,7 +188,7 @@ static es8328_of_match: [of_device_id; 3] = [
 
 // MODULE_DEVICE_TABLE(of, es8328_of_match);
 
-unsafe extern "C" fn es8328_i2c_probe(i2c: *mut i2c_client) -> ::core::ffi::c_int {
+unsafe extern "C" fn es8328_i2c_probe(i2c: *mut i2c_client) -> ::kernel::ffi::c_int {
     unsafe {
         es8328_probe(
             &mut (*i2c).dev,

@@ -5,7 +5,7 @@
  * Author: Vladimir Murzin <vladimir.murzin@arm.com>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Equivalent to the C __initconst-qualified static compatibility table.
 static MPS2_COMPAT: [*const c_char; 2] = [

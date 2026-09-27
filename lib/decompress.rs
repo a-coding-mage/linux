@@ -25,13 +25,13 @@ extern "C" {
     );
     pub fn unzstd(
     );
-    pub fn memcmp(s1: *const core::ffi::c_void, s2: *const core::ffi::c_void, n: usize) -> i32;
+    pub fn memcmp(s1: *const kernel::ffi::c_void, s2: *const kernel::ffi::c_void, n: usize) -> i32;
 }
 
 #[repr(C)]
 pub struct compress_format {
     pub magic: [u8; 2],
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub decompressor: decompress_fn,
 }
 
@@ -50,7 +50,7 @@ static COMPRESSED_FORMATS: [compress_format; 9] = [
 pub unsafe fn decompress_method(
     inbuf: *const u8,
     len: i64,
-    name: *mut *const core::ffi::c_char,
+    name: *mut *const kernel::ffi::c_char,
 ) -> decompress_fn {
     if len < 2 {
         if !name.is_null() {
@@ -64,8 +64,8 @@ pub unsafe fn decompress_method(
     let mut cf = &COMPRESSED_FORMATS[0];
     while !cf.name.is_null() {
         if memcmp(
-            inbuf as *const core::ffi::c_void,
-            cf.magic.as_ptr() as *const core::ffi::c_void,
+            inbuf as *const kernel::ffi::c_void,
+            cf.magic.as_ptr() as *const kernel::ffi::c_void,
             2,
         ) == 0 {
             break;

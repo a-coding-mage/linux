@@ -144,26 +144,26 @@ pub const VIDEO_CAP_NAVI: u32 = 32;
 pub const VIDEO_CAP_CSS: u32 = 64;
 
 /* ioctl constants use the platform-provided _IO, _IOR, _IOW, and _IOWR macros. */
-pub const VIDEO_STOP: _ = _IO(b'o', 21);
-pub const VIDEO_PLAY: _ = _IO(b'o', 22);
-pub const VIDEO_FREEZE: _ = _IO(b'o', 23);
-pub const VIDEO_CONTINUE: _ = _IO(b'o', 24);
-pub const VIDEO_SELECT_SOURCE: _ = _IO(b'o', 25);
-pub const VIDEO_SET_BLANK: _ = _IO(b'o', 26);
-pub const VIDEO_GET_STATUS: _ = _IOR(b'o', 27, video_status);
-pub const VIDEO_GET_EVENT: _ = _IOR(b'o', 28, video_event);
-pub const VIDEO_SET_DISPLAY_FORMAT: _ = _IO(b'o', 29);
-pub const VIDEO_STILLPICTURE: _ = _IOW(b'o', 30, video_still_picture);
-pub const VIDEO_FAST_FORWARD: _ = _IO(b'o', 31);
-pub const VIDEO_SLOWMOTION: _ = _IO(b'o', 32);
-pub const VIDEO_GET_CAPABILITIES: _ = _IOR(b'o', 33, u32);
-pub const VIDEO_CLEAR_BUFFER: _ = _IO(b'o', 34);
-pub const VIDEO_SET_STREAMTYPE: _ = _IO(b'o', 36);
-pub const VIDEO_SET_FORMAT: _ = _IO(b'o', 37);
-pub const VIDEO_GET_SIZE: _ = _IOR(b'o', 55, video_size_t);
-pub const VIDEO_GET_PTS: _ = _IOR(b'o', 57, u64);
-pub const VIDEO_GET_FRAME_COUNT: _ = _IOR(b'o', 58, u64);
-pub const VIDEO_COMMAND: _ = _IOWR(b'o', 59, video_command);
-pub const VIDEO_TRY_COMMAND: _ = _IOWR(b'o', 60, video_command);
+pub const VIDEO_STOP: u32 = _IO(b'o', 21);
+pub const VIDEO_PLAY: u32 = _IO(b'o', 22);
+pub const VIDEO_FREEZE: u32 = _IO(b'o', 23);
+pub const VIDEO_CONTINUE: u32 = _IO(b'o', 24);
+pub const VIDEO_SELECT_SOURCE: u32 = _IO(b'o', 25);
+pub const VIDEO_SET_BLANK: u32 = _IO(b'o', 26);
+pub const VIDEO_GET_STATUS: u32 = _IOR(b'o', 27, video_status);
+pub const VIDEO_GET_EVENT: u32 = _IOR(b'o', 28, video_event);
+pub const VIDEO_SET_DISPLAY_FORMAT: u32 = _IO(b'o', 29);
+pub const VIDEO_STILLPICTURE: u32 = _IOW(b'o', 30, video_still_picture);
+pub const VIDEO_FAST_FORWARD: u32 = _IO(b'o', 31);
+pub const VIDEO_SLOWMOTION: u32 = _IO(b'o', 32);
+pub const VIDEO_GET_CAPABILITIES: u32 = _IOR(b'o', 33, u32);
+pub const VIDEO_CLEAR_BUFFER: u32 = _IO(b'o', 34);
+pub const VIDEO_SET_STREAMTYPE: u32 = _IO(b'o', 36);
+pub const VIDEO_SET_FORMAT: u32 = _IO(b'o', 37);
+pub const VIDEO_GET_SIZE: u32 = _IOR(b'o', 55, video_size_t);
+pub const VIDEO_GET_PTS: u32 = _IOR(b'o', 57, u64);
+pub const VIDEO_GET_FRAME_COUNT: u32 = _IOR(b'o', 58, u64);
+pub const VIDEO_COMMAND: u32 = _IOWR(b'o', 59, video_command);
+pub const VIDEO_TRY_COMMAND: u32 = _IOWR(b'o', 60, video_command);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

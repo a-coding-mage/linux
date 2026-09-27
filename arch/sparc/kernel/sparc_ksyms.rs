@@ -9,7 +9,7 @@
 
 /* This is needed only for drivers/sbus/char/openprom.c */
 extern "C" {
-    pub static mut saved_command_line: *mut core::ffi::c_char;
+    pub static mut saved_command_line: *mut kernel::ffi::c_char;
 }
 
 // Equivalent of EXPORT_SYMBOL(saved_command_line): export the external

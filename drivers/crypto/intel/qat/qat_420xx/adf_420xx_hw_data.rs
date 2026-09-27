@@ -11,7 +11,7 @@ const ENA_THD_MASK_ASYM: u32 = GENMASK(1, 0);
 const ENA_THD_MASK_SYM: u32 = GENMASK(3, 0);
 const ENA_THD_MASK_DC: u32 = GENMASK(1, 0);
 
-static mut adf_420xx_fw_objs: [*const core::ffi::c_char; 4] = [
+static mut adf_420xx_fw_objs: [*const kernel::ffi::c_char; 4] = [
     ADF_420XX_SYM_OBJ, ADF_420XX_ASYM_OBJ, ADF_420XX_DC_OBJ, ADF_420XX_ADMIN_OBJ,
 ];
 static adf_fw_cy_config: [adf_fw_config; 5] = [
@@ -89,8 +89,8 @@ unsafe fn adf_get_arbiter_mapping(a: *mut adf_accel_dev) -> *const u32 { if adf_
 unsafe fn adf_init_rl_data(r: *mut adf_rl_hw_data) { (*r).pciout_tb_offset=ADF_GEN4_RL_TOKEN_PCIEOUT_BUCKET_OFFSET; (*r).pciin_tb_offset=ADF_GEN4_RL_TOKEN_PCIEIN_BUCKET_OFFSET; (*r).r2l_offset=ADF_GEN4_RL_R2L_OFFSET; (*r).l2c_offset=ADF_GEN4_RL_L2C_OFFSET; (*r).c2s_offset=ADF_GEN4_RL_C2S_OFFSET; (*r).pcie_scale_div=ADF_420XX_RL_PCIE_SCALE_FACTOR_DIV; (*r).pcie_scale_mul=ADF_420XX_RL_PCIE_SCALE_FACTOR_MUL; (*r).dcpr_correction=ADF_420XX_RL_DCPR_CORRECTION; (*r).max_tp[SVC_ASYM as usize]=ADF_420XX_RL_MAX_TP_ASYM; (*r).max_tp[SVC_SYM as usize]=ADF_420XX_RL_MAX_TP_SYM; (*r).max_tp[SVC_DC as usize]=ADF_420XX_RL_MAX_TP_DC; (*r).scan_interval=ADF_420XX_RL_SCANS_PER_SEC; (*r).scale_ref=ADF_420XX_RL_SLICE_REF; adf_gen4_init_num_svc_aes(r); }
 unsafe fn get_rp_group(a: *mut adf_accel_dev, m: u32) -> i32 { match m { ADF_AE_GROUP_0=>RP_GROUP_0, ADF_AE_GROUP_1|ADF_AE_GROUP_3=>RP_GROUP_1, ADF_AE_GROUP_2=>if get_fw_config(a)==adf_fw_cy_config.as_ptr(){RP_GROUP_0}else{RP_GROUP_1}, _=>{-1} } }
 unsafe fn get_ena_thd_mask(a: *mut adf_accel_dev, n: u32) -> u32 { if n>=uof_get_num_objs(a){return ADF_GEN4_ENA_THD_MASK_ERROR} let f=get_fw_config(a); if f.is_null(){return ADF_GEN4_ENA_THD_MASK_ERROR} match (*f.add(n as usize)).obj { ADF_FW_ASYM_OBJ=>ENA_THD_MASK_ASYM, ADF_FW_SYM_OBJ=>ENA_THD_MASK_SYM, ADF_FW_DC_OBJ=>ENA_THD_MASK_DC, _=>ADF_GEN4_ENA_THD_MASK_ERROR } }
-unsafe fn uof_get_name(a: *mut adf_accel_dev,n:u32,objs:*const *const core::ffi::c_char,num:i32)->*const core::ffi::c_char { let f=get_fw_config(a); if f.is_null(){return core::ptr::null()} let id=(*f.add(n as usize)).obj as i32; if id<0||id>=num {core::ptr::null()} else {*objs.add(id as usize)} }
-unsafe fn uof_get_name_420xx(a:*mut adf_accel_dev,n:u32)->*const core::ffi::c_char {uof_get_name(a,n,adf_420xx_fw_objs.as_ptr(),4)}
+unsafe fn uof_get_name(a: *mut adf_accel_dev,n:u32,objs:*const *const kernel::ffi::c_char,num:i32)->*const kernel::ffi::c_char { let f=get_fw_config(a); if f.is_null(){return core::ptr::null()} let id=(*f.add(n as usize)).obj as i32; if id<0||id>=num {core::ptr::null()} else {*objs.add(id as usize)} }
+unsafe fn uof_get_name_420xx(a:*mut adf_accel_dev,n:u32)->*const kernel::ffi::c_char {uof_get_name(a,n,adf_420xx_fw_objs.as_ptr(),4)}
 unsafe fn uof_get_obj_type(a:*mut adf_accel_dev,n:u32)->i32 {if n>=uof_get_num_objs(a){return -1} let f=get_fw_config(a);if f.is_null(){-1}else{(*f.add(n as usize)).obj}}
 unsafe fn uof_get_ae_mask(a:*mut adf_accel_dev,n:u32)->u32 {let f=get_fw_config(a);if f.is_null(){0}else{(*f.add(n as usize)).ae_mask}}
 unsafe fn adf_gen4_set_err_mask(m:*mut adf_dev_err_mask){(*m).cppagentcmdpar_mask=ADF_420XX_HICPPAGENTCMDPARERRLOG_MASK;(*m).parerr_ath_cph_mask=ADF_420XX_PARITYERRORMASK_ATH_CPH_MASK;(*m).parerr_cpr_xlt_mask=ADF_420XX_PARITYERRORMASK_CPR_XLT_MASK;(*m).parerr_dcpr_ucs_mask=ADF_420XX_PARITYERRORMASK_DCPR_UCS_MASK;(*m).parerr_pke_mask=ADF_420XX_PARITYERRORMASK_PKE_MASK;(*m).parerr_wat_wcp_mask=ADF_420XX_PARITYERRORMASK_WAT_WCP_MASK;(*m).ssmfeatren_mask=ADF_420XX_SSMFEATREN_MASK;}

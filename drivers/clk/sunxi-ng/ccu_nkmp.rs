@@ -8,38 +8,38 @@
 
 #[repr(C)]
 struct _ccu_nkmp {
-    n: ::core::ffi::c_ulong,
-    min_n: ::core::ffi::c_ulong,
-    max_n: ::core::ffi::c_ulong,
-    k: ::core::ffi::c_ulong,
-    min_k: ::core::ffi::c_ulong,
-    max_k: ::core::ffi::c_ulong,
-    m: ::core::ffi::c_ulong,
-    min_m: ::core::ffi::c_ulong,
-    max_m: ::core::ffi::c_ulong,
-    p: ::core::ffi::c_ulong,
-    min_p: ::core::ffi::c_ulong,
-    max_p: ::core::ffi::c_ulong,
+    n: ::kernel::ffi::c_ulong,
+    min_n: ::kernel::ffi::c_ulong,
+    max_n: ::kernel::ffi::c_ulong,
+    k: ::kernel::ffi::c_ulong,
+    min_k: ::kernel::ffi::c_ulong,
+    max_k: ::kernel::ffi::c_ulong,
+    m: ::kernel::ffi::c_ulong,
+    min_m: ::kernel::ffi::c_ulong,
+    max_m: ::kernel::ffi::c_ulong,
+    p: ::kernel::ffi::c_ulong,
+    min_p: ::kernel::ffi::c_ulong,
+    max_p: ::kernel::ffi::c_ulong,
 }
 
 unsafe fn ccu_nkmp_calc_rate(
-    parent: ::core::ffi::c_ulong,
-    n: ::core::ffi::c_ulong,
-    k: ::core::ffi::c_ulong,
-    m: ::core::ffi::c_ulong,
-    p: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_ulong {
+    parent: ::kernel::ffi::c_ulong,
+    n: ::kernel::ffi::c_ulong,
+    k: ::kernel::ffi::c_ulong,
+    m: ::kernel::ffi::c_ulong,
+    p: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_ulong {
     let mut rate = parent as u64;
     rate = rate.wrapping_mul(n.wrapping_mul(k) as u64);
     rate /= m.wrapping_mul(p) as u64;
-    rate as ::core::ffi::c_ulong
+    rate as ::kernel::ffi::c_ulong
 }
 
 unsafe fn ccu_nkmp_find_best(
-    parent: ::core::ffi::c_ulong,
-    rate: ::core::ffi::c_ulong,
+    parent: ::kernel::ffi::c_ulong,
+    rate: ::kernel::ffi::c_ulong,
     nkmp: *mut _ccu_nkmp,
-) -> ::core::ffi::c_ulong {
+) -> ::kernel::ffi::c_ulong {
     let mut best_rate = 0;
     let mut best_n = 0;
     let mut best_k = 0;
@@ -91,7 +91,7 @@ unsafe fn ccu_nkmp_is_enabled(hw: *mut clk_hw) -> i32 {
     ccu_gate_helper_is_enabled(&mut (*nkmp).common, (*nkmp).enable)
 }
 
-unsafe fn ccu_nkmp_recalc_rate(hw: *mut clk_hw, parent_rate: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong {
+unsafe fn ccu_nkmp_recalc_rate(hw: *mut clk_hw, parent_rate: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong {
     let nkmp = hw_to_ccu_nkmp(hw);
     let reg = readl((*nkmp).common.base.add((*nkmp).common.reg as usize));
     let mut n = (reg >> (*nkmp).n.shift) & ((1 << (*nkmp).n.width) - 1);
@@ -123,7 +123,7 @@ unsafe fn ccu_nkmp_determine_rate(hw: *mut clk_hw, req: *mut clk_rate_request) -
     if (*nkmp).common.features & CCU_FEATURE_FIXED_POSTDIV != 0 { (*req).rate /= (*nkmp).fixed_post_div; } 0
 }
 
-unsafe fn ccu_nkmp_set_rate(hw: *mut clk_hw, mut rate: ::core::ffi::c_ulong, parent_rate: ::core::ffi::c_ulong) -> i32 {
+unsafe fn ccu_nkmp_set_rate(hw: *mut clk_hw, mut rate: ::kernel::ffi::c_ulong, parent_rate: ::kernel::ffi::c_ulong) -> i32 {
     let nkmp = hw_to_ccu_nkmp(hw);
     let mut v = _ccu_nkmp { n: 0, min_n: (*nkmp).n.min, max_n: (*nkmp).n.max, k: 0, min_k: (*nkmp).k.min, max_k: (*nkmp).k.max, m: 0, min_m: 1, max_m: (*nkmp).m.max, p: 0, min_p: 1, max_p: (*nkmp).p.max };
     if (*nkmp).common.features & CCU_FEATURE_FIXED_POSTDIV != 0 { rate *= (*nkmp).fixed_post_div; }

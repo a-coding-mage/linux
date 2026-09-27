@@ -15,13 +15,13 @@
 #[cfg(not(feature = "module"))]
 extern "C" {
     // DECLARE_PER_CPU(unsigned long, local_interrupt_disable_state);
-    pub static mut local_interrupt_disable_state: ::core::ffi::c_ulong;
+    pub static mut local_interrupt_disable_state: ::kernel::ffi::c_ulong;
 }
 
 #[cfg(not(feature = "module"))]
 #[inline(always)]
 pub unsafe fn __local_interrupt_disable() {
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
 
     // local_irq_save(flags);
     local_irq_save(&mut flags);
@@ -32,7 +32,7 @@ pub unsafe fn __local_interrupt_disable() {
 #[cfg(not(feature = "module"))]
 #[inline(always)]
 pub unsafe fn __local_interrupt_enable() {
-    let flags: ::core::ffi::c_ulong =
+    let flags: ::kernel::ffi::c_ulong =
         // raw_cpu_read(local_interrupt_disable_state)
         raw_cpu_read(&local_interrupt_disable_state);
 
@@ -60,7 +60,7 @@ extern "C" {
 
 #[inline]
 pub unsafe fn local_interrupt_disable() {
-    let mut new_count: ::core::ffi::c_int;
+    let mut new_count: ::kernel::ffi::c_int;
 
     // WARN_ON_ONCE(in_nmi());
     WARN_ON_ONCE(in_nmi());
@@ -76,7 +76,7 @@ pub unsafe fn local_interrupt_disable() {
 
 #[inline]
 pub unsafe fn local_interrupt_enable() {
-    let new_count: ::core::ffi::c_int;
+    let new_count: ::kernel::ffi::c_int;
 
     new_count = hardirq_disable_exit();
 

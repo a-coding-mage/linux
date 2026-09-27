@@ -37,8 +37,8 @@ extern "C" {
     fn register_cpu(cpu: *mut cpu, cpu_id: u32) -> i32;
     fn update_siblings_masks(cpu_id: u32);
     fn reset_cpu_topology();
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 
     fn first_online_cpu() -> u64;
     fn next_online_cpu(cpu: u64) -> u64;
@@ -66,7 +66,7 @@ pub unsafe extern "C" fn store_cpu_topology(cpuid: u32) {
     (*core::ptr::addr_of_mut!(cpu_devices)).hotpluggable = 1;
     // #endif
     if register_cpu(core::ptr::addr_of_mut!(cpu_devices), cpuid) != 0 {
-        pr_warn(b"Failed to register CPU%d device\0".as_ptr() as *const core::ffi::c_char, cpuid);
+        pr_warn(b"Failed to register CPU%d device\0".as_ptr() as *const kernel::ffi::c_char, cpuid);
     }
 
     /* create cpu topology mapping */
@@ -107,7 +107,7 @@ pub unsafe extern "C" fn store_cpu_topology(cpuid: u32) {
     update_siblings_masks(cpuid);
 
     pr_info(
-        b"CPU%u: cpu core %d of socket %d\n\0".as_ptr() as *const core::ffi::c_char,
+        b"CPU%u: cpu core %d of socket %d\n\0".as_ptr() as *const kernel::ffi::c_char,
         cpuid,
         (*cpu_topology.add(cpuid as usize)).core_id,
         (*cpu_topology.add(cpuid as usize)).package_id,

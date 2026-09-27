@@ -17,18 +17,18 @@ pub struct dtpm {
     pub sibling: list_head,
     pub children: list_head,
     pub ops: *mut dtpm_ops,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub power_limit: u64,
     pub power_max: u64,
     pub power_min: u64,
-    pub weight: ::core::ffi::c_int,
+    pub weight: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct dtpm_ops {
     pub set_power_uw: Option<unsafe extern "C" fn(*mut dtpm, u64) -> u64>,
     pub get_power_uw: Option<unsafe extern "C" fn(*mut dtpm) -> u64>,
-    pub update_power_uw: Option<unsafe extern "C" fn(*mut dtpm) -> ::core::ffi::c_int>,
+    pub update_power_uw: Option<unsafe extern "C" fn(*mut dtpm) -> ::kernel::ffi::c_int>,
     pub release: Option<unsafe extern "C" fn(*mut dtpm)>,
 }
 
@@ -39,10 +39,10 @@ pub struct device_node {
 
 #[repr(C)]
 pub struct dtpm_subsys_ops {
-    pub name: *const ::core::ffi::c_char,
-    pub init: Option<unsafe extern "C" fn() -> ::core::ffi::c_int>,
+    pub name: *const ::kernel::ffi::c_char,
+    pub init: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_int>,
     pub exit: Option<unsafe extern "C" fn()>,
-    pub setup: Option<unsafe extern "C" fn(*mut dtpm, *mut device_node) -> ::core::ffi::c_int>,
+    pub setup: Option<unsafe extern "C" fn(*mut dtpm, *mut device_node) -> ::kernel::ffi::c_int>,
 }
 
 #[repr(C)]
@@ -55,7 +55,7 @@ pub enum DTPM_NODE_TYPE {
 #[repr(C)]
 pub struct dtpm_node {
     pub type_: DTPM_NODE_TYPE,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub parent: *mut dtpm_node,
 }
 
@@ -66,16 +66,16 @@ pub unsafe fn to_dtpm(zone: *mut powercap_zone) -> *mut dtpm {
 }
 
 unsafe extern "C" {
-    pub fn dtpm_update_power(dtpm: *mut dtpm) -> ::core::ffi::c_int;
-    pub fn dtpm_release_zone(pcz: *mut powercap_zone) -> ::core::ffi::c_int;
+    pub fn dtpm_update_power(dtpm: *mut dtpm) -> ::kernel::ffi::c_int;
+    pub fn dtpm_release_zone(pcz: *mut powercap_zone) -> ::kernel::ffi::c_int;
     pub fn dtpm_init(dtpm: *mut dtpm, ops: *mut dtpm_ops);
     pub fn dtpm_unregister(dtpm: *mut dtpm);
     pub fn dtpm_register(
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         dtpm: *mut dtpm,
         parent: *mut dtpm,
-    ) -> ::core::ffi::c_int;
-    pub fn dtpm_create_hierarchy(dtpm_match_table: *mut of_device_id) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn dtpm_create_hierarchy(dtpm_match_table: *mut of_device_id) -> ::kernel::ffi::c_int;
     pub fn dtpm_destroy_hierarchy();
 }
 

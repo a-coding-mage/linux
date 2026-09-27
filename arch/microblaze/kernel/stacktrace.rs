@@ -10,7 +10,7 @@
  */
 
 // Dependencies supplied by the Linux kernel and Microblaze unwind code.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct stack_trace {

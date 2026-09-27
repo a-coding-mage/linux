@@ -4,7 +4,7 @@
 // Copyright 2019 Google LLC.
 
 // Kernel dependencies supplied by the surrounding translation unit.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 use core::ptr;
 
 type U8 = u8;

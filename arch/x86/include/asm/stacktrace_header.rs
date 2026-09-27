@@ -21,37 +21,37 @@ pub enum stack_type {
 #[repr(C)]
 pub struct stack_info {
     pub type_: stack_type,
-    pub begin: *mut core::ffi::c_ulong,
-    pub end: *mut core::ffi::c_ulong,
-    pub next_sp: *mut core::ffi::c_ulong,
+    pub begin: *mut kernel::ffi::c_ulong,
+    pub end: *mut kernel::ffi::c_ulong,
+    pub next_sp: *mut kernel::ffi::c_ulong,
 }
 
 extern "C" {
     pub fn in_task_stack(
-        stack: *mut core::ffi::c_ulong,
+        stack: *mut kernel::ffi::c_ulong,
         task: *mut task_struct,
         info: *mut stack_info,
     ) -> bool;
-    pub fn in_entry_stack(stack: *mut core::ffi::c_ulong, info: *mut stack_info) -> bool;
+    pub fn in_entry_stack(stack: *mut kernel::ffi::c_ulong, info: *mut stack_info) -> bool;
     pub fn get_stack_info(
-        stack: *mut core::ffi::c_ulong,
+        stack: *mut kernel::ffi::c_ulong,
         task: *mut task_struct,
         info: *mut stack_info,
-        visit_mask: *mut core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        visit_mask: *mut kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_int;
     pub fn get_stack_info_noinstr(
-        stack: *mut core::ffi::c_ulong,
+        stack: *mut kernel::ffi::c_ulong,
         task: *mut task_struct,
         info: *mut stack_info,
     ) -> bool;
-    pub fn stack_type_name(type_: stack_type) -> *const core::ffi::c_char;
-    pub fn show_opcodes(regs: *mut pt_regs, loglvl: *const core::ffi::c_char);
-    pub fn show_ip(regs: *mut pt_regs, loglvl: *const core::ffi::c_char);
+    pub fn stack_type_name(type_: stack_type) -> *const kernel::ffi::c_char;
+    pub fn show_opcodes(regs: *mut pt_regs, loglvl: *const kernel::ffi::c_char);
+    pub fn show_ip(regs: *mut pt_regs, loglvl: *const kernel::ffi::c_char);
 }
 
 #[inline(always)]
 pub unsafe fn get_stack_guard_info(
-    stack: *mut core::ffi::c_ulong,
+    stack: *mut kernel::ffi::c_ulong,
     info: *mut stack_info,
 ) -> bool {
     /* make sure it's not in the stack proper */
@@ -59,13 +59,13 @@ pub unsafe fn get_stack_guard_info(
         return false;
     }
     /* but if it is in the page below it, we hit a guard */
-    get_stack_info_noinstr((stack as *mut u8).add(PAGE_SIZE) as *mut core::ffi::c_ulong, current, info)
+    get_stack_info_noinstr((stack as *mut u8).add(PAGE_SIZE) as *mut kernel::ffi::c_ulong, current, info)
 }
 
 #[inline]
-pub unsafe fn on_stack(info: *mut stack_info, addr: *mut core::ffi::c_void, len: usize) -> bool {
-    let begin = (*info).begin as *mut core::ffi::c_void;
-    let end = (*info).end as *mut core::ffi::c_void;
+pub unsafe fn on_stack(info: *mut stack_info, addr: *mut kernel::ffi::c_void, len: usize) -> bool {
+    let begin = (*info).begin as *mut kernel::ffi::c_void;
+    let end = (*info).end as *mut kernel::ffi::c_void;
 
     ((*info).type_ != stack_type::STACK_TYPE_UNKNOWN
         && (addr as usize) >= begin as usize
@@ -81,38 +81,38 @@ pub const STACKSLOTS_PER_LINE: usize = 4;
 
 #[cfg(CONFIG_FRAME_POINTER)]
 #[inline]
-pub unsafe fn get_frame_pointer(task: *mut task_struct, regs: *mut pt_regs) -> *mut core::ffi::c_ulong {
+pub unsafe fn get_frame_pointer(task: *mut task_struct, regs: *mut pt_regs) -> *mut kernel::ffi::c_ulong {
     if !regs.is_null() {
-        return (*regs).bp as *mut core::ffi::c_ulong;
+        return (*regs).bp as *mut kernel::ffi::c_ulong;
     }
     if task == current {
-        return __builtin_frame_address(0) as *mut core::ffi::c_ulong;
+        return __builtin_frame_address(0) as *mut kernel::ffi::c_ulong;
     }
     &mut (*( (*task).thread.sp as *mut inactive_task_frame)).bp
 }
 
 #[cfg(not(CONFIG_FRAME_POINTER))]
 #[inline]
-pub unsafe fn get_frame_pointer(_task: *mut task_struct, _regs: *mut pt_regs) -> *mut core::ffi::c_ulong {
+pub unsafe fn get_frame_pointer(_task: *mut task_struct, _regs: *mut pt_regs) -> *mut kernel::ffi::c_ulong {
     core::ptr::null_mut()
 }
 
 #[inline]
-pub unsafe fn get_stack_pointer(task: *mut task_struct, regs: *mut pt_regs) -> *mut core::ffi::c_ulong {
+pub unsafe fn get_stack_pointer(task: *mut task_struct, regs: *mut pt_regs) -> *mut kernel::ffi::c_ulong {
     if !regs.is_null() {
-        return (*regs).sp as *mut core::ffi::c_ulong;
+        return (*regs).sp as *mut kernel::ffi::c_ulong;
     }
     if task == current {
-        return __builtin_frame_address(0) as *mut core::ffi::c_ulong;
+        return __builtin_frame_address(0) as *mut kernel::ffi::c_ulong;
     }
-    (*task).thread.sp as *mut core::ffi::c_ulong
+    (*task).thread.sp as *mut kernel::ffi::c_ulong
 }
 
 /* The form of the top of the frame on the stack */
 #[repr(C)]
 pub struct stack_frame {
     pub next_frame: *mut stack_frame,
-    pub return_address: core::ffi::c_ulong,
+    pub return_address: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]

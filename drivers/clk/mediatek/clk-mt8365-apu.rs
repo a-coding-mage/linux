@@ -20,11 +20,11 @@ pub struct MtkGateRegs {
 #[repr(C)]
 pub struct MtkGate {
     pub id: u32,
-    pub name: *const core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char,
     pub regs: *const MtkGateRegs,
     pub shift: u8,
-    pub ops: *const core::ffi::c_void,
+    pub ops: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -35,14 +35,14 @@ pub struct MtkClkDesc {
 
 #[repr(C)]
 pub struct OfDeviceId {
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 extern "C" {
-    pub static mtk_clk_gate_ops_setclr: core::ffi::c_void;
-    pub fn mtk_clk_simple_probe() -> core::ffi::c_int;
-    pub fn mtk_clk_simple_remove() -> core::ffi::c_int;
+    pub static mtk_clk_gate_ops_setclr: kernel::ffi::c_void;
+    pub fn mtk_clk_simple_probe() -> kernel::ffi::c_int;
+    pub fn mtk_clk_simple_remove() -> kernel::ffi::c_int;
 }
 
 static APU_CG_REGS: MtkGateRegs = MtkGateRegs {
@@ -61,8 +61,8 @@ const fn gate_apu(
 ) -> MtkGate {
     MtkGate {
         id,
-        name: name.as_ptr() as *const core::ffi::c_char,
-        parent_name: parent.as_ptr() as *const core::ffi::c_char,
+        name: name.as_ptr() as *const kernel::ffi::c_char,
+        parent_name: parent.as_ptr() as *const kernel::ffi::c_char,
         regs: &APU_CG_REGS,
         shift,
         ops: core::ptr::addr_of!(mtk_clk_gate_ops_setclr),
@@ -94,8 +94,8 @@ static APU_DESC: MtkClkDesc = MtkClkDesc {
 
 static mut OF_MATCH_CLK_MT8365_APU: [OfDeviceId; 2] = [
     OfDeviceId {
-        compatible: b"mediatek,mt8365-apu\0".as_ptr() as *const core::ffi::c_char,
-        data: &APU_DESC as *const MtkClkDesc as *const core::ffi::c_void,
+        compatible: b"mediatek,mt8365-apu\0".as_ptr() as *const kernel::ffi::c_char,
+        data: &APU_DESC as *const MtkClkDesc as *const kernel::ffi::c_void,
     },
     OfDeviceId {
         // sentinel
@@ -108,16 +108,16 @@ static mut OF_MATCH_CLK_MT8365_APU: [OfDeviceId; 2] = [
 
 #[repr(C)]
 struct PlatformDriver {
-    pub probe: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
-    pub remove: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
-    pub name: *const core::ffi::c_char,
+    pub probe: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
+    pub remove: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const OfDeviceId,
 }
 
 static mut CLK_MT8365_APU_DRV: PlatformDriver = PlatformDriver {
     probe: Some(mtk_clk_simple_probe),
     remove: Some(mtk_clk_simple_remove),
-    name: b"clk-mt8365-apu\0".as_ptr() as *const core::ffi::c_char,
+    name: b"clk-mt8365-apu\0".as_ptr() as *const kernel::ffi::c_char,
     of_match_table: unsafe { OF_MATCH_CLK_MT8365_APU.as_ptr() },
 };
 

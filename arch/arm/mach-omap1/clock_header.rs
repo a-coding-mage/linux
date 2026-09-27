@@ -10,8 +10,8 @@
 // Dependencies supplied by the surrounding kernel translation.
 pub struct module;
 pub struct clk_lookup {
-    pub dev_id: *const core::ffi::c_char,
-    pub con_id: *const core::ffi::c_char,
+    pub dev_id: *const kernel::ffi::c_char,
+    pub con_id: *const kernel::ffi::c_char,
     pub clk_hw: *mut clk_hw,
 }
 pub struct clk_hw;
@@ -52,7 +52,7 @@ pub struct omap1_clk {
     pub hw: clk_hw,
     pub ops: *const clkops,
     pub rate: usize,
-    pub enable_reg: *mut core::ffi::c_void,
+    pub enable_reg: *mut kernel::ffi::c_void,
     pub recalc: Option<unsafe extern "C" fn(*mut omap1_clk, usize) -> usize>,
     pub set_rate: Option<unsafe extern "C" fn(*mut omap1_clk, usize, usize) -> i32>,
     pub round_rate: Option<unsafe extern "C" fn(*mut omap1_clk, usize, *mut usize) -> isize>,

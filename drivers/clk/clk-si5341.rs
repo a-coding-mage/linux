@@ -366,7 +366,7 @@ static const struct si5341_reg_default si5341_reg_defaults[] = {
 };
 
 /* Read and interpret a 44-bit followed by a 32-bit value in the regmap */
-static int si5341_decode_44_32(regmap *regmap, reg: core::ffi::c_uint,
+static int si5341_decode_44_32(regmap *regmap, reg: kernel::ffi::c_uint,
 	u64 *val1, u32 *val2)
 {
 	int err;
@@ -383,7 +383,7 @@ static int si5341_decode_44_32(regmap *regmap, reg: core::ffi::c_uint,
 	return 0;
 }
 
-static int si5341_encode_44_32(regmap *regmap, reg: core::ffi::c_uint,
+static int si5341_encode_44_32(regmap *regmap, reg: kernel::ffi::c_uint,
 	n_num: u64, n_den: u32)
 {
 	u8 r[10];
@@ -406,15 +406,15 @@ static int si5341_encode_44_32(regmap *regmap, reg: core::ffi::c_uint,
 }
 
 /* VCO, we assume it runs at a constant frequency */
-static core::ffi::c_ulong si5341_clk_recalc_rate(clk_hw *hw,
-		parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong si5341_clk_recalc_rate(clk_hw *hw,
+		parent_rate: kernel::ffi::c_ulong)
 {
 	struct clk_si5341 *data = to_clk_si5341(hw);
 	int err;
 	u64 res;
 	u64 m_num;
 	u32 m_den;
-	core::ffi::c_uint shift;
+	kernel::ffi::c_uint shift;
 
 	/* Assume that PDIV is not being used, just read the PLL setting */
 	err = si5341_decode_44_32((*data).regmap, SI5341_PLL_M_NUM,
@@ -446,7 +446,7 @@ static core::ffi::c_ulong si5341_clk_recalc_rate(clk_hw *hw,
 	/* Report kHz since the value is out of range */
 	do_div(res, 1000);
 
-	return (core::ffi::c_ulong)res;
+	return (kernel::ffi::c_ulong)res;
 }
 
 static int si5341_clk_get_selected_input(clk_si5341 *data)
@@ -636,8 +636,8 @@ static int si5341_synth_clk_prepare(clk_hw *hw)
 }
 
 /* Synth clock frequency: Fvco * n_den / n_den, with Fvco in 13500-14256 MHz */
-static core::ffi::c_ulong si5341_synth_clk_recalc_rate(clk_hw *hw,
-		parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong si5341_synth_clk_recalc_rate(clk_hw *hw,
+		parent_rate: kernel::ffi::c_ulong)
 {
 	struct clk_si5341_synth *synth = to_clk_si5341_synth(hw);
 	u64 f;
@@ -712,8 +712,8 @@ static int si5341_synth_program(clk_si5341_synth *synth,
 }
 
 
-static int si5341_synth_clk_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
-		parent_rate: core::ffi::c_ulong)
+static int si5341_synth_clk_set_rate(clk_hw *hw, rate: kernel::ffi::c_ulong,
+		parent_rate: kernel::ffi::c_ulong)
 {
 	struct clk_si5341_synth *synth = to_clk_si5341_synth(hw);
 	u64 n_num;
@@ -800,8 +800,8 @@ static int si5341_output_clk_prepare(clk_hw *hw)
 			SI5341_OUT_CFG_OE, SI5341_OUT_CFG_OE);
 }
 
-static core::ffi::c_ulong si5341_output_clk_recalc_rate(clk_hw *hw,
-		parent_rate: core::ffi::c_ulong)
+static kernel::ffi::c_ulong si5341_output_clk_recalc_rate(clk_hw *hw,
+		parent_rate: kernel::ffi::c_ulong)
 {
 	struct clk_si5341_output *output = to_clk_si5341_output(hw);
 	int err;
@@ -841,8 +841,8 @@ static core::ffi::c_ulong si5341_output_clk_recalc_rate(clk_hw *hw,
 static int si5341_output_clk_determine_rate(clk_hw *hw,
 					    clk_rate_request *req)
 {
-	core::ffi::c_ulong rate = (*req).rate;
-	core::ffi::c_ulong r;
+	kernel::ffi::c_ulong rate = (*req).rate;
+	kernel::ffi::c_ulong r;
 
 	if (!rate)
 		return 0;
@@ -872,8 +872,8 @@ static int si5341_output_clk_determine_rate(clk_hw *hw,
 	return 0;
 }
 
-static int si5341_output_clk_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
-		parent_rate: core::ffi::c_ulong)
+static int si5341_output_clk_set_rate(clk_hw *hw, rate: kernel::ffi::c_ulong,
+		parent_rate: kernel::ffi::c_ulong)
 {
 	struct clk_si5341_output *output = to_clk_si5341_output(hw);
 	u32 r_div;
@@ -970,8 +970,8 @@ static struct clk_hw *
 of_clk_si5341_get(of_phandle_args *clkspec, void *_data)
 {
 	struct clk_si5341 *data = _data;
-	core::ffi::c_uint idx = (*clkspec).args[1];
-	core::ffi::c_uint group = (*clkspec).args[0];
+	kernel::ffi::c_uint idx = (*clkspec).args[1];
+	kernel::ffi::c_uint group = (*clkspec).args[0];
 
 	switch (group) {
 	case 0:
@@ -1105,9 +1105,9 @@ static int si5341_read_settings(clk_si5341 *data)
 }
 
 static int si5341_write_multiple(clk_si5341 *data,
-	const struct si5341_reg_default *values, num_values: core::ffi::c_uint)
+	const struct si5341_reg_default *values, num_values: kernel::ffi::c_uint)
 {
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 	int res;
 
 	for (i = 0; i < num_values; ++i) {
@@ -1569,7 +1569,7 @@ static int si5341_probe(i2c_client *client)
 	const char *root_clock_name;
 	const char *synth_clock_names[SI5341_NUM_SYNTH] = { NULL };
 	int err;
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 	struct clk_si5341_output_config config[SI5341_MAX_NUM_OUTPUTS];
 	bool initialization_required;
 	u32 status;

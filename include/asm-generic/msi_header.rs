@@ -23,8 +23,8 @@ pub struct msi_desc {
 #[cfg(CONFIG_GENERIC_MSI_IRQ)]
 #[repr(C)]
 pub union msi_alloc_info_scratchpad {
-    pub ul: ::core::ffi::c_ulong,
-    pub ptr: *mut ::core::ffi::c_void,
+    pub ul: ::kernel::ffi::c_ulong,
+    pub ptr: *mut ::kernel::ffi::c_void,
 }
 
 #[cfg(CONFIG_GENERIC_MSI_IRQ)]
@@ -32,7 +32,7 @@ pub union msi_alloc_info_scratchpad {
 pub struct msi_alloc_info {
     pub desc: *mut msi_desc,
     pub hwirq: irq_hw_number_t,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub scratchpad: [msi_alloc_info_scratchpad; NUM_MSI_ALLOC_SCRATCHPAD_REGS],
 }
 
@@ -41,10 +41,10 @@ pub type msi_alloc_info_t = msi_alloc_info;
 
 /* Device generating MSIs is proxying for another device */
 #[cfg(CONFIG_GENERIC_MSI_IRQ)]
-pub const MSI_ALLOC_FLAGS_PROXY_DEVICE: ::core::ffi::c_ulong = 1UL << 0;
+pub const MSI_ALLOC_FLAGS_PROXY_DEVICE: ::kernel::ffi::c_ulong = 1UL << 0;
 
 #[cfg(CONFIG_GENERIC_MSI_IRQ)]
-pub const MSI_ALLOC_FLAGS_FIXED_MSG_DATA: ::core::ffi::c_ulong = 1UL << 1;
+pub const MSI_ALLOC_FLAGS_FIXED_MSG_DATA: ::kernel::ffi::c_ulong = 1UL << 1;
 
 #[cfg(CONFIG_GENERIC_MSI_IRQ)]
 pub const GENERIC_MSI_DOMAIN_OPS: i32 = 1;

@@ -14,8 +14,8 @@ pub const fn dfs_interlink(v: u32) -> bool {
 
 #[repr(C)]
 pub struct dfs_ref {
-    pub path: *mut core::ffi::c_char,
-    pub full_path: *mut core::ffi::c_char,
+    pub path: *mut kernel::ffi::c_char,
+    pub full_path: *mut kernel::ffi::c_char,
     pub ses: *mut cifs_ses,
     pub tl: dfs_cache_tgt_list,
     pub tit: *mut dfs_cache_tgt_iterator,
@@ -44,9 +44,9 @@ pub unsafe fn ref_walk_descend(w: *mut dfs_ref_walk) -> bool {
 #[inline]
 pub unsafe fn ref_walk_tit(w: *mut dfs_ref_walk) -> *mut dfs_cache_tgt_iterator { (*ref_walk_cur(w)).tit }
 #[inline]
-pub unsafe fn ref_walk_path(w: *mut dfs_ref_walk) -> *mut core::ffi::c_char { (*ref_walk_cur(w)).path }
+pub unsafe fn ref_walk_path(w: *mut dfs_ref_walk) -> *mut kernel::ffi::c_char { (*ref_walk_cur(w)).path }
 #[inline]
-pub unsafe fn ref_walk_fpath(w: *mut dfs_ref_walk) -> *mut core::ffi::c_char { (*ref_walk_cur(w)).full_path }
+pub unsafe fn ref_walk_fpath(w: *mut dfs_ref_walk) -> *mut kernel::ffi::c_char { (*ref_walk_cur(w)).full_path }
 #[inline]
 pub unsafe fn ref_walk_tl(w: *mut dfs_ref_walk) -> *mut dfs_cache_tgt_list { &mut (*ref_walk_cur(w)).tl }
 #[inline]
@@ -127,15 +127,15 @@ pub unsafe fn ref_walk_mark_end(rw: *mut dfs_ref_walk) {
 }
 
 extern "C" {
-    pub fn dfs_parse_target_referral(full_path: *const core::ffi::c_char, r: *const dfs_info3_param, ctx: *mut smb3_fs_context) -> i32;
+    pub fn dfs_parse_target_referral(full_path: *const kernel::ffi::c_char, r: *const dfs_info3_param, ctx: *mut smb3_fs_context) -> i32;
     pub fn dfs_mount_share(mnt_ctx: *mut cifs_mount_ctx) -> i32;
 }
 
 #[inline]
-pub unsafe fn dfs_get_path(sb: *mut cifs_sb_info, path: *const core::ffi::c_char) -> *mut core::ffi::c_char { dfs_cache_canonical_path(path, (*sb).local_nls, cifs_remap(sb)) }
+pub unsafe fn dfs_get_path(sb: *mut cifs_sb_info, path: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_char { dfs_cache_canonical_path(path, (*sb).local_nls, cifs_remap(sb)) }
 
 #[inline]
-pub unsafe fn dfs_get_referral(mnt_ctx: *mut cifs_mount_ctx, path: *const core::ffi::c_char, tl: *mut dfs_cache_tgt_list) -> i32 {
+pub unsafe fn dfs_get_referral(mnt_ctx: *mut cifs_mount_ctx, path: *const kernel::ffi::c_char, tl: *mut dfs_cache_tgt_list) -> i32 {
     let ctx = (*mnt_ctx).fs_ctx;
     let sb = (*mnt_ctx).cifs_sb;
     let rses = if !(*ctx).dfs_root_ses.is_null() { (*ctx).dfs_root_ses } else { (*mnt_ctx).ses };
@@ -152,7 +152,7 @@ pub unsafe fn dfs_put_root_smb_sessions(head: *mut list_head) {
 }
 
 #[inline]
-pub unsafe fn dfs_ses_refpath(ses: *mut cifs_ses) -> *const core::ffi::c_char {
+pub unsafe fn dfs_ses_refpath(ses: *mut cifs_ses) -> *const kernel::ffi::c_char {
     let path = (*(*ses).server).leaf_fullpath;
     if !path.is_null() { path.add(1) } else { ERR_PTR(-ENOENT) }
 }

@@ -103,7 +103,7 @@ pub unsafe extern "C" fn cptvf_send_vf_priority_msg(cptvf: *mut cpt_vf) -> i32 {
     if cptvf_send_msg_to_pf_timeout(cptvf, &mut mbx) != 0 { dev_err(&(*pdev).dev, "PF didn't respond to vf_type msg\n"); return -EBUSY; } 0
 }
 
-unsafe fn cptvf_send_simple(cptvf: *mut cpt_vf, msg: u64, text: *const core::ffi::c_char) -> i32 {
+unsafe fn cptvf_send_simple(cptvf: *mut cpt_vf, msg: u64, text: *const kernel::ffi::c_char) -> i32 {
     let pdev = (*cptvf).pdev; let mut mbx: cpt_mbox = core::mem::zeroed(); mbx.msg = msg;
     if cptvf_send_msg_to_pf_timeout(cptvf, &mut mbx) != 0 { dev_err(&(*pdev).dev, text); return -EBUSY; } 0
 }

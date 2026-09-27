@@ -18,7 +18,7 @@
 
 #[repr(C)]
 struct sdram_params {
-    name: [core::ffi::c_char; 20],
+    name: [kernel::ffi::c_char; 20],
     rows: u8,
     cas_latency: u8,
     tck: u8,
@@ -104,14 +104,14 @@ unsafe fn sa1110_target(_policy: *mut cpufreq_policy, ppcr: u32) -> i32 {
 
 unsafe fn sa1110_cpu_init(policy: *mut cpufreq_policy) -> i32 { cpufreq_generic_init(policy, sa11x0_freq_table.as_ptr(), 0); 0 }
 
-unsafe fn sa1110_find_sdram(name: *const core::ffi::c_char) -> *mut sdram_params {
+unsafe fn sa1110_find_sdram(name: *const kernel::ffi::c_char) -> *mut sdram_params {
     for sdram in SDRAM_TBL.iter_mut() {
         if strcmp(name, sdram.name.as_ptr()) == 0 { return sdram; }
     }
     core::ptr::null_mut()
 }
 
-static mut sdram_name: [core::ffi::c_char; 16] = [0; 16];
+static mut sdram_name: [kernel::ffi::c_char; 16] = [0; 16];
 
 unsafe fn sa1110_clk_init() -> i32 {
     if !cpu_is_sa1110() { return -ENODEV; }

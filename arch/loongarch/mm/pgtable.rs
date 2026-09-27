@@ -4,11 +4,11 @@
  */
 // Dependencies supplied by the corresponding Linux architecture headers.
 
-pub unsafe fn dmw_virt_to_page(kaddr: ::core::ffi::c_ulong) -> *mut page {
+pub unsafe fn dmw_virt_to_page(kaddr: ::kernel::ffi::c_ulong) -> *mut page {
     phys_to_page(__pa(kaddr))
 }
 
-pub unsafe fn tlb_virt_to_page(kaddr: ::core::ffi::c_ulong) -> *mut page {
+pub unsafe fn tlb_virt_to_page(kaddr: ::kernel::ffi::c_ulong) -> *mut page {
     phys_to_page(pfn_to_phys(pte_pfn((*virt_to_kpte(kaddr)).read())))
 }
 
@@ -16,8 +16,8 @@ pub unsafe fn pgd_alloc(mm: *mut mm_struct) -> *mut pgd_t {
     let mut init: *mut pgd_t;
     let ret = __pgd_alloc(mm, 0);
     if !ret.is_null() {
-        init = pgd_offset(&raw mut init_mm, 0 as ::core::ffi::c_ulong);
-        pgd_init(ret as *mut ::core::ffi::c_void);
+        init = pgd_offset(&raw mut init_mm, 0 as ::kernel::ffi::c_ulong);
+        pgd_init(ret as *mut ::kernel::ffi::c_void);
         core::ptr::copy_nonoverlapping(
             init.add(USER_PTRS_PER_PGD),
             ret.add(USER_PTRS_PER_PGD),
@@ -27,17 +27,17 @@ pub unsafe fn pgd_alloc(mm: *mut mm_struct) -> *mut pgd_t {
     ret
 }
 
-pub unsafe fn pgd_init(addr: *mut ::core::ffi::c_void) {
-    let entry: ::core::ffi::c_ulong = {
+pub unsafe fn pgd_init(addr: *mut ::kernel::ffi::c_void) {
+    let entry: ::kernel::ffi::c_ulong = {
         // Build-time page-table folding conditions are preserved from C.
         #[cfg(not(__PAGETABLE_PUD_FOLDED))]
-        { invalid_pud_table as ::core::ffi::c_ulong }
+        { invalid_pud_table as ::kernel::ffi::c_ulong }
         #[cfg(all(__PAGETABLE_PUD_FOLDED, not(__PAGETABLE_PMD_FOLDED)))]
-        { invalid_pmd_table as ::core::ffi::c_ulong }
+        { invalid_pmd_table as ::kernel::ffi::c_ulong }
         #[cfg(all(__PAGETABLE_PUD_FOLDED, __PAGETABLE_PMD_FOLDED))]
-        { invalid_pte_table as ::core::ffi::c_ulong }
+        { invalid_pte_table as ::kernel::ffi::c_ulong }
     };
-    let mut p = addr as *mut ::core::ffi::c_ulong;
+    let mut p = addr as *mut ::kernel::ffi::c_ulong;
     let end = p.add(PTRS_PER_PGD);
     loop {
         *p.add(0) = entry;
@@ -55,9 +55,9 @@ pub unsafe fn pgd_init(addr: *mut ::core::ffi::c_void) {
 
 // C condition: #ifndef __PAGETABLE_PMD_FOLDED
 #[cfg(not(__PAGETABLE_PMD_FOLDED))]
-pub unsafe fn pmd_init(addr: *mut ::core::ffi::c_void) {
-    let pagetable = invalid_pte_table as ::core::ffi::c_ulong;
-    let mut p = addr as *mut ::core::ffi::c_ulong;
+pub unsafe fn pmd_init(addr: *mut ::kernel::ffi::c_void) {
+    let pagetable = invalid_pte_table as ::kernel::ffi::c_ulong;
+    let mut p = addr as *mut ::kernel::ffi::c_ulong;
     let end = p.add(PTRS_PER_PMD);
     loop {
         *p.add(0) = pagetable;
@@ -75,9 +75,9 @@ pub unsafe fn pmd_init(addr: *mut ::core::ffi::c_void) {
 
 // C condition: #ifndef __PAGETABLE_PUD_FOLDED
 #[cfg(not(__PAGETABLE_PUD_FOLDED))]
-pub unsafe fn pud_init(addr: *mut ::core::ffi::c_void) {
-    let pagetable = invalid_pmd_table as ::core::ffi::c_ulong;
-    let mut p = addr as *mut ::core::ffi::c_ulong;
+pub unsafe fn pud_init(addr: *mut ::kernel::ffi::c_void) {
+    let pagetable = invalid_pmd_table as ::kernel::ffi::c_ulong;
+    let mut p = addr as *mut ::kernel::ffi::c_ulong;
     let end = p.add(PTRS_PER_PUD);
     loop {
         *p.add(0) = pagetable;
@@ -93,8 +93,8 @@ pub unsafe fn pud_init(addr: *mut ::core::ffi::c_void) {
     }
 }
 
-pub unsafe fn kernel_pte_init(addr: *mut ::core::ffi::c_void) {
-    let mut p = addr as *mut ::core::ffi::c_ulong;
+pub unsafe fn kernel_pte_init(addr: *mut ::kernel::ffi::c_void) {
+    let mut p = addr as *mut ::kernel::ffi::c_ulong;
     let end = p.add(PTRS_PER_PTE);
     loop {
         *p.add(0) = _PAGE_GLOBAL;
@@ -112,7 +112,7 @@ pub unsafe fn kernel_pte_init(addr: *mut ::core::ffi::c_void) {
 
 pub unsafe fn set_pmd_at(
     mm: *mut mm_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     pmdp: *mut pmd_t,
     pmd: pmd_t,
 ) {
@@ -123,16 +123,16 @@ pub unsafe fn set_pmd_at(
 
 // __init; CONFIG_HIGHMEM declarations and body are preserved conditionally.
 pub unsafe fn pagetable_init() {
-    pgd_init(swapper_pg_dir as *mut ::core::ffi::c_void);
-    pgd_init(invalid_pg_dir as *mut ::core::ffi::c_void);
+    pgd_init(swapper_pg_dir as *mut ::kernel::ffi::c_void);
+    pgd_init(invalid_pg_dir as *mut ::kernel::ffi::c_void);
     #[cfg(not(__PAGETABLE_PUD_FOLDED))]
-    pud_init(invalid_pud_table as *mut ::core::ffi::c_void);
+    pud_init(invalid_pud_table as *mut ::kernel::ffi::c_void);
     #[cfg(not(__PAGETABLE_PMD_FOLDED))]
-    pmd_init(invalid_pmd_table as *mut ::core::ffi::c_void);
+    pmd_init(invalid_pmd_table as *mut ::kernel::ffi::c_void);
 
     #[cfg(CONFIG_HIGHMEM)]
     {
-        let mut vaddr: ::core::ffi::c_ulong = PKMAP_BASE;
+        let mut vaddr: ::kernel::ffi::c_ulong = PKMAP_BASE;
         fixrange_init(vaddr & PMD_MASK, vaddr + PAGE_SIZE * LAST_PKMAP, swapper_pg_dir);
         let pgd = swapper_pg_dir.add(pgd_index(vaddr));
         let p4d = p4d_offset(pgd, vaddr);

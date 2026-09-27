@@ -97,7 +97,7 @@ pub const R_OR32_JUMPTARG: u32 = R_OR1K_INSN_REL_26;
 pub const R_OR32_VTENTRY: u32 = R_OR1K_GNU_VTENTRY;
 pub const R_OR32_VTINHERIT: u32 = R_OR1K_GNU_VTINHERIT;
 
-pub type elf_greg_t = ::core::ffi::c_ulong;
+pub type elf_greg_t = ::kernel::ffi::c_ulong;
 
 /*
  * Note that NGREG is defined to ELF_NGREG in include/linux/elfcore.h, and is

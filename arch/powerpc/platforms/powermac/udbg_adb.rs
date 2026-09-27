@@ -11,9 +11,9 @@
  * initialized last
  */
 
-static mut udbg_adb_old_putc: Option<unsafe extern "C" fn(c: core::ffi::c_char)> = None;
-static mut udbg_adb_old_getc: Option<unsafe extern "C" fn() -> core::ffi::c_int> = None;
-static mut udbg_adb_old_getc_poll: Option<unsafe extern "C" fn() -> core::ffi::c_int> = None;
+static mut udbg_adb_old_putc: Option<unsafe extern "C" fn(c: kernel::ffi::c_char)> = None;
+static mut udbg_adb_old_getc: Option<unsafe extern "C" fn() -> kernel::ffi::c_int> = None;
+static mut udbg_adb_old_getc_poll: Option<unsafe extern "C" fn() -> kernel::ffi::c_int> = None;
 
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Eq)]
@@ -25,8 +25,8 @@ enum InputAdb {
 
 static mut input_type: InputAdb = InputAdb::InputAdbNone;
 
-static mut xmon_wants_key: core::ffi::c_int = 0;
-static mut xmon_adb_keycode: core::ffi::c_int = 0;
+static mut xmon_wants_key: kernel::ffi::c_int = 0;
+static mut xmon_adb_keycode: kernel::ffi::c_int = 0;
 
 #[inline]
 unsafe fn udbg_adb_poll() {
@@ -44,9 +44,9 @@ unsafe fn udbg_adb_poll() {
 
 // The following declarations and definitions are present when CONFIG_BOOTX_TEXT is enabled.
 #[cfg(CONFIG_BOOTX_TEXT)]
-static mut udbg_adb_use_btext: core::ffi::c_int = 0;
+static mut udbg_adb_use_btext: kernel::ffi::c_int = 0;
 #[cfg(CONFIG_BOOTX_TEXT)]
-static mut xmon_adb_shiftstate: core::ffi::c_int = 0;
+static mut xmon_adb_shiftstate: kernel::ffi::c_int = 0;
 
 #[cfg(CONFIG_BOOTX_TEXT)]
 static xmon_keytab: [u8; 128] = *b"asdfhgzxcv\0bqwerty123465=97-80]o u[ip\rlj'k;\\,/nm.\t `\x7f\0\x1b\0\0\0\0\0\0\0\0\0\0\0.\0*\0+\0\0\0\0\0/\r\0-\0\0\0123456789\0\0\0";
@@ -54,8 +54,8 @@ static xmon_keytab: [u8; 128] = *b"asdfhgzxcv\0bqwerty123465=97-80]o u[ip\rlj'k;
 static xmon_shift_keytab: [u8; 128] = *b"ASDFHGZXCV\0BQWERYT!@#$^%+(&_*)}OU{IP\rLJ\"K:|<?NM>\t ~\x7f\0\x1b\0\0\0\0\0\0\0\0\0\0\0.\0*\0+\0\0\0\0\0/\r\0-\0\0\0123456789\0\0\0";
 
 #[cfg(CONFIG_BOOTX_TEXT)]
-unsafe fn udbg_adb_local_getc() -> core::ffi::c_int {
-    let (mut k, mut t, mut on): (core::ffi::c_int, core::ffi::c_int, core::ffi::c_int);
+unsafe fn udbg_adb_local_getc() -> kernel::ffi::c_int {
+    let (mut k, mut t, mut on): (kernel::ffi::c_int, kernel::ffi::c_int, kernel::ffi::c_int);
     xmon_wants_key = 1;
     loop {
         xmon_adb_keycode = -1;
@@ -67,14 +67,14 @@ unsafe fn udbg_adb_local_getc() -> core::ffi::c_int {
             if t < 0 {
                 on = 1 - on;
                 btext_drawchar(if on != 0 { 0xdb } else { 0x20 });
-                btext_drawchar(b'\b' as core::ffi::c_int);
+                btext_drawchar(b'\x08' as kernel::ffi::c_int);
                 t = 200000;
             }
             udbg_adb_poll();
             if let Some(f) = udbg_adb_old_getc_poll { k = f(); }
             if !(k == -1 && xmon_adb_keycode == -1) { break; }
         }
-        if on != 0 { btext_drawstring(b" \0\x08\0".as_ptr() as *const core::ffi::c_char); }
+        if on != 0 { btext_drawstring(b" \0\x08\0".as_ptr() as *const kernel::ffi::c_char); }
         if k != -1 { return k; }
         k = xmon_adb_keycode;
         if (k & 0x7f) == 0x38 || (k & 0x7f) == 0x7b {
@@ -82,29 +82,29 @@ unsafe fn udbg_adb_local_getc() -> core::ffi::c_int {
             continue;
         }
         if k >= 0x80 { continue; }
-        k = if xmon_adb_shiftstate != 0 { xmon_shift_keytab[k as usize] } else { xmon_keytab[k as usize] } as core::ffi::c_int;
+        k = if xmon_adb_shiftstate != 0 { xmon_shift_keytab[k as usize] } else { xmon_keytab[k as usize] } as kernel::ffi::c_int;
         if k != 0 { break; }
     }
     xmon_wants_key = 0;
     k
 }
 
-unsafe fn udbg_adb_getc() -> core::ffi::c_int {
+unsafe fn udbg_adb_getc() -> kernel::ffi::c_int {
     #[cfg(CONFIG_BOOTX_TEXT)]
     if udbg_adb_use_btext != 0 && input_type != InputAdb::InputAdbNone { return udbg_adb_local_getc(); }
     if let Some(f) = udbg_adb_old_getc { return f(); }
     -1
 }
 
-unsafe fn udbg_adb_getc_poll() -> core::ffi::c_int {
+unsafe fn udbg_adb_getc_poll() -> kernel::ffi::c_int {
     udbg_adb_poll();
     if let Some(f) = udbg_adb_old_getc_poll { return f(); }
     -1
 }
 
-unsafe fn udbg_adb_putc(c: core::ffi::c_char) {
+unsafe fn udbg_adb_putc(c: kernel::ffi::c_char) {
     #[cfg(CONFIG_BOOTX_TEXT)]
-    if udbg_adb_use_btext != 0 { btext_drawchar(c as core::ffi::c_int); }
+    if udbg_adb_use_btext != 0 { btext_drawchar(c as kernel::ffi::c_int); }
     if let Some(f) = udbg_adb_old_putc { f(c); }
 }
 
@@ -116,7 +116,7 @@ pub unsafe extern "C" fn udbg_adb_init_early() {
     }
 }
 
-pub unsafe extern "C" fn udbg_adb_init(force_btext: core::ffi::c_int) -> core::ffi::c_int {
+pub unsafe extern "C" fn udbg_adb_init(force_btext: kernel::ffi::c_int) -> kernel::ffi::c_int {
     let mut np: *mut device_node;
     udbg_adb_old_putc = udbg_putc;
     udbg_adb_old_getc = udbg_getc;

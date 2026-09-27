@@ -10,11 +10,11 @@
 pub const NR_syscalls: usize = __NR_syscalls;
 
 extern "C" {
-    pub static sys_call_table: [::core::ffi::c_ulong; 0];
+    pub static sys_call_table: [::kernel::ffi::c_ulong; 0];
 }
 
 #[inline]
-pub unsafe fn syscall_get_nr(task: *mut task_struct, _regs: *mut pt_regs) -> ::core::ffi::c_int {
+pub unsafe fn syscall_get_nr(task: *mut task_struct, _regs: *mut pt_regs) -> ::kernel::ffi::c_int {
     if IS_ENABLED!(CONFIG_AEABI) && !IS_ENABLED!(CONFIG_OABI_COMPAT) {
         return (*task_thread_info(task)).abi_syscall;
     }
@@ -46,16 +46,16 @@ pub unsafe fn syscall_rollback(_task: *mut task_struct, regs: *mut pt_regs) {
 pub unsafe fn syscall_get_error(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-) -> ::core::ffi::c_long {
-    let error: ::core::ffi::c_ulong = (*regs).ARM_r0;
-    if IS_ERR_VALUE(error) { error as ::core::ffi::c_long } else { 0 }
+) -> ::kernel::ffi::c_long {
+    let error: ::kernel::ffi::c_ulong = (*regs).ARM_r0;
+    if IS_ERR_VALUE(error) { error as ::kernel::ffi::c_long } else { 0 }
 }
 
 #[inline]
 pub unsafe fn syscall_get_return_value(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-) -> ::core::ffi::c_long {
+) -> ::kernel::ffi::c_long {
     (*regs).ARM_r0
 }
 
@@ -63,17 +63,17 @@ pub unsafe fn syscall_get_return_value(
 pub unsafe fn syscall_set_return_value(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    error: ::core::ffi::c_int,
-    val: ::core::ffi::c_long,
+    error: ::kernel::ffi::c_int,
+    val: ::kernel::ffi::c_long,
 ) {
-    (*regs).ARM_r0 = if error != 0 { error as ::core::ffi::c_long } else { val };
+    (*regs).ARM_r0 = if error != 0 { error as ::kernel::ffi::c_long } else { val };
 }
 
 #[inline]
 pub unsafe fn syscall_set_nr(
     task: *mut task_struct,
     regs: *mut pt_regs,
-    nr: ::core::ffi::c_int,
+    nr: ::kernel::ffi::c_int,
 ) {
     if nr == -1 {
         (*task_thread_info(task)).abi_syscall = -1;
@@ -98,7 +98,7 @@ pub unsafe fn syscall_set_nr(
 pub unsafe fn syscall_get_arguments(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    args: *mut ::core::ffi::c_ulong,
+    args: *mut ::kernel::ffi::c_ulong,
 ) {
     *args = (*regs).ARM_ORIG_r0;
     core::ptr::copy_nonoverlapping(
@@ -112,7 +112,7 @@ pub unsafe fn syscall_get_arguments(
 pub unsafe fn syscall_set_arguments(
     _task: *mut task_struct,
     regs: *mut pt_regs,
-    args: *const ::core::ffi::c_ulong,
+    args: *const ::kernel::ffi::c_ulong,
 ) {
     core::ptr::copy_nonoverlapping(args, &mut (*regs).ARM_r0, 6);
     /*
@@ -124,7 +124,7 @@ pub unsafe fn syscall_set_arguments(
 }
 
 #[inline]
-pub unsafe fn syscall_get_arch(_task: *mut task_struct) -> ::core::ffi::c_int {
+pub unsafe fn syscall_get_arch(_task: *mut task_struct) -> ::kernel::ffi::c_int {
     /* ARM tasks don't change audit architectures on the fly. */
     AUDIT_ARCH_ARM
 }

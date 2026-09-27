@@ -16,9 +16,9 @@
 
 /* Dependencies from Linux, ASoC, and local Tegra headers are expected externally. */
 
-const DRV_NAME: *const core::ffi::c_char = c"tegra30-i2s".as_ptr();
+const DRV_NAME: *const kernel::ffi::c_char = c"tegra30-i2s".as_ptr();
 
-unsafe extern "C" fn tegra30_i2s_runtime_suspend(dev: *mut device) -> core::ffi::c_int {
+unsafe extern "C" fn tegra30_i2s_runtime_suspend(dev: *mut device) -> kernel::ffi::c_int {
     let i2s: *mut tegra30_i2s = dev_get_drvdata(dev) as *mut tegra30_i2s;
 
     regcache_cache_only((*i2s).regmap, true);
@@ -28,9 +28,9 @@ unsafe extern "C" fn tegra30_i2s_runtime_suspend(dev: *mut device) -> core::ffi:
     0
 }
 
-unsafe extern "C" fn tegra30_i2s_runtime_resume(dev: *mut device) -> core::ffi::c_int {
+unsafe extern "C" fn tegra30_i2s_runtime_resume(dev: *mut device) -> kernel::ffi::c_int {
     let i2s: *mut tegra30_i2s = dev_get_drvdata(dev) as *mut tegra30_i2s;
-    let mut ret: core::ffi::c_int;
+    let mut ret: kernel::ffi::c_int;
 
     ret = clk_prepare_enable((*i2s).clk_i2s);
     if ret != 0 {
@@ -52,11 +52,11 @@ unsafe extern "C" fn tegra30_i2s_runtime_resume(dev: *mut device) -> core::ffi::
 
 unsafe extern "C" fn tegra30_i2s_set_fmt(
     dai: *mut snd_soc_dai,
-    fmt: core::ffi::c_uint,
-) -> core::ffi::c_int {
+    fmt: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     let i2s: *mut tegra30_i2s = snd_soc_dai_get_drvdata(dai) as *mut tegra30_i2s;
-    let mut mask: core::ffi::c_uint = 0;
-    let mut val: core::ffi::c_uint = 0;
+    let mut mask: kernel::ffi::c_uint = 0;
+    let mut val: kernel::ffi::c_uint = 0;
 
     match fmt & SND_SOC_DAIFMT_INV_MASK {
         SND_SOC_DAIFMT_NB_NF => {}
@@ -108,17 +108,17 @@ unsafe extern "C" fn tegra30_i2s_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let dev: *mut device = (*dai).dev;
     let i2s: *mut tegra30_i2s = snd_soc_dai_get_drvdata(dai) as *mut tegra30_i2s;
-    let mut mask: core::ffi::c_uint;
-    let mut val: core::ffi::c_uint;
-    let reg: core::ffi::c_uint;
-    let mut ret: core::ffi::c_int;
-    let sample_size: core::ffi::c_int;
-    let srate: core::ffi::c_int;
-    let i2sclock: core::ffi::c_int;
-    let bitcnt: core::ffi::c_int;
+    let mut mask: kernel::ffi::c_uint;
+    let mut val: kernel::ffi::c_uint;
+    let reg: kernel::ffi::c_uint;
+    let mut ret: kernel::ffi::c_int;
+    let sample_size: kernel::ffi::c_int;
+    let srate: kernel::ffi::c_int;
+    let i2sclock: kernel::ffi::c_int;
+    let bitcnt: kernel::ffi::c_int;
     let mut cif_conf: tegra30_ahub_cif_conf = core::mem::zeroed();
 
     if params_channels(params) != 2 {
@@ -152,7 +152,7 @@ unsafe extern "C" fn tegra30_i2s_hw_params(
         return ret;
     }
 
-    val = (bitcnt as core::ffi::c_uint) << TEGRA30_I2S_TIMING_CHANNEL_BIT_COUNT_SHIFT;
+    val = (bitcnt as kernel::ffi::c_uint) << TEGRA30_I2S_TIMING_CHANNEL_BIT_COUNT_SHIFT;
 
     if i2sclock % (2 * srate) != 0 {
         val |= TEGRA30_I2S_TIMING_NON_SYM_ENABLE;
@@ -230,9 +230,9 @@ unsafe extern "C" fn tegra30_i2s_stop_capture(i2s: *mut tegra30_i2s) {
 
 unsafe extern "C" fn tegra30_i2s_trigger(
     substream: *mut snd_pcm_substream,
-    cmd: core::ffi::c_int,
+    cmd: kernel::ffi::c_int,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let i2s: *mut tegra30_i2s = snd_soc_dai_get_drvdata(dai) as *mut tegra30_i2s;
 
     match cmd {
@@ -258,14 +258,14 @@ unsafe extern "C" fn tegra30_i2s_trigger(
 
 unsafe extern "C" fn tegra30_i2s_set_tdm(
     dai: *mut snd_soc_dai,
-    tx_mask: core::ffi::c_uint,
-    rx_mask: core::ffi::c_uint,
-    slots: core::ffi::c_int,
-    slot_width: core::ffi::c_int,
-) -> core::ffi::c_int {
+    tx_mask: kernel::ffi::c_uint,
+    rx_mask: kernel::ffi::c_uint,
+    slots: kernel::ffi::c_int,
+    slot_width: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let i2s: *mut tegra30_i2s = snd_soc_dai_get_drvdata(dai) as *mut tegra30_i2s;
-    let mask: core::ffi::c_uint;
-    let val: core::ffi::c_uint;
+    let mask: kernel::ffi::c_uint;
+    let val: kernel::ffi::c_uint;
 
     dev_dbg(
         (*dai).dev,
@@ -283,7 +283,7 @@ unsafe extern "C" fn tegra30_i2s_set_tdm(
 
     val = (tx_mask << TEGRA30_I2S_SLOT_CTRL_TX_SLOT_ENABLES_SHIFT)
         | (rx_mask << TEGRA30_I2S_SLOT_CTRL_RX_SLOT_ENABLES_SHIFT)
-        | (((slots - 1) as core::ffi::c_uint) << TEGRA30_I2S_SLOT_CTRL_TOTAL_SLOTS_SHIFT);
+        | (((slots - 1) as kernel::ffi::c_uint) << TEGRA30_I2S_SLOT_CTRL_TOTAL_SLOTS_SHIFT);
 
     pm_runtime_get_sync((*dai).dev);
     regmap_update_bits((*i2s).regmap, TEGRA30_I2S_SLOT_CTRL, mask, val);
@@ -299,7 +299,7 @@ unsafe extern "C" fn tegra30_i2s_set_tdm(
     0
 }
 
-unsafe extern "C" fn tegra30_i2s_probe(dai: *mut snd_soc_dai) -> core::ffi::c_int {
+unsafe extern "C" fn tegra30_i2s_probe(dai: *mut snd_soc_dai) -> kernel::ffi::c_int {
     let i2s: *mut tegra30_i2s = snd_soc_dai_get_drvdata(dai) as *mut tegra30_i2s;
 
     snd_soc_dai_init_dma_data(dai, &mut (*i2s).playback_dma_data, &mut (*i2s).capture_dma_data);
@@ -345,7 +345,7 @@ static tegra30_i2s_component: snd_soc_component_driver = snd_soc_component_drive
 
 unsafe extern "C" fn tegra30_i2s_wr_rd_reg(
     _dev: *mut device,
-    reg: core::ffi::c_uint,
+    reg: kernel::ffi::c_uint,
 ) -> bool {
     match reg {
         TEGRA30_I2S_CTRL
@@ -376,7 +376,7 @@ unsafe extern "C" fn tegra30_i2s_wr_rd_reg(
 
 unsafe extern "C" fn tegra30_i2s_volatile_reg(
     _dev: *mut device,
-    reg: core::ffi::c_uint,
+    reg: kernel::ffi::c_uint,
 ) -> bool {
     match reg {
         TEGRA30_I2S_FLOW_STATUS
@@ -410,12 +410,12 @@ static tegra124_i2s_config: tegra30_i2s_soc_data = tegra30_i2s_soc_data {
 static tegra30_i2s_of_match: [of_device_id; 3] = [
     of_device_id {
         compatible: c"nvidia,tegra124-i2s".as_ptr(),
-        data: &tegra124_i2s_config as *const _ as *const core::ffi::c_void,
+        data: &tegra124_i2s_config as *const _ as *const kernel::ffi::c_void,
         ..unsafe { core::mem::zeroed() }
     },
     of_device_id {
         compatible: c"nvidia,tegra30-i2s".as_ptr(),
-        data: &tegra30_i2s_config as *const _ as *const core::ffi::c_void,
+        data: &tegra30_i2s_config as *const _ as *const kernel::ffi::c_void,
         ..unsafe { core::mem::zeroed() }
     },
     unsafe { core::mem::zeroed() },
@@ -424,12 +424,12 @@ static tegra30_i2s_of_match: [of_device_id; 3] = [
 
 unsafe extern "C" fn tegra30_i2s_platform_probe(
     pdev: *mut platform_device,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let mut i2s: *mut tegra30_i2s;
     let mut soc_data: *const tegra30_i2s_soc_data;
     let mut cif_ids: [u32; 2] = [0; 2];
-    let mut regs: *mut core::ffi::c_void;
-    let mut ret: core::ffi::c_int;
+    let mut regs: *mut kernel::ffi::c_void;
+    let mut ret: kernel::ffi::c_int;
 
     i2s = devm_kzalloc(
         &mut (*pdev).dev,
@@ -440,7 +440,7 @@ unsafe extern "C" fn tegra30_i2s_platform_probe(
         ret = -ENOMEM;
         return ret;
     }
-    dev_set_drvdata(&mut (*pdev).dev, i2s as *mut core::ffi::c_void);
+    dev_set_drvdata(&mut (*pdev).dev, i2s as *mut kernel::ffi::c_void);
 
     soc_data = of_device_get_match_data(&mut (*pdev).dev) as *const tegra30_i2s_soc_data;
     if soc_data.is_null() {
@@ -467,22 +467,22 @@ unsafe extern "C" fn tegra30_i2s_platform_probe(
     (*i2s).capture_i2s_cif = cif_ids[1];
 
     (*i2s).clk_i2s = devm_clk_get(&mut (*pdev).dev, core::ptr::null());
-    if IS_ERR((*i2s).clk_i2s as *const core::ffi::c_void) {
+    if IS_ERR((*i2s).clk_i2s as *const kernel::ffi::c_void) {
         dev_err(&mut (*pdev).dev, c"Can't retrieve i2s clock\n".as_ptr());
-        ret = PTR_ERR((*i2s).clk_i2s as *const core::ffi::c_void);
+        ret = PTR_ERR((*i2s).clk_i2s as *const kernel::ffi::c_void);
         return ret;
     }
 
     regs = devm_platform_ioremap_resource(pdev, 0);
-    if IS_ERR(regs as *const core::ffi::c_void) {
-        ret = PTR_ERR(regs as *const core::ffi::c_void);
+    if IS_ERR(regs as *const kernel::ffi::c_void) {
+        ret = PTR_ERR(regs as *const kernel::ffi::c_void);
         return ret;
     }
 
     (*i2s).regmap = devm_regmap_init_mmio(&mut (*pdev).dev, regs, &tegra30_i2s_regmap_config);
-    if IS_ERR((*i2s).regmap as *const core::ffi::c_void) {
+    if IS_ERR((*i2s).regmap as *const kernel::ffi::c_void) {
         dev_err(&mut (*pdev).dev, c"regmap init failed\n".as_ptr());
-        ret = PTR_ERR((*i2s).regmap as *const core::ffi::c_void);
+        ret = PTR_ERR((*i2s).regmap as *const kernel::ffi::c_void);
         return ret;
     }
     regcache_cache_only((*i2s).regmap, true);

@@ -9,7 +9,7 @@ pub struct pt_regs {
 }
 
 extern "C" {
-    pub fn die(str_: *const core::ffi::c_char, regs: *mut pt_regs, err: core::ffi::c_long) -> !;
+    pub fn die(str_: *const kernel::ffi::c_char, regs: *mut pt_regs, err: kernel::ffi::c_long) -> !;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

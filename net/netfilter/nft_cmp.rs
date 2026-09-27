@@ -21,9 +21,9 @@ pub unsafe extern "C" fn nft_cmp_eval(
     _pkt: *const nft_pktinfo,
 ) {
     let priv_ = nft_expr_priv(expr) as *const nft_cmp_expr;
-    let d: i32 = libc::memcmp(
-        (&(*regs).data[(*priv_).sreg as usize]) as *const _ as *const libc::c_void,
-        (&(*priv_).data) as *const _ as *const libc::c_void,
+    let d: i32 = memcmp(
+        (&(*regs).data[(*priv_).sreg as usize]) as *const _ as *const core::ffi::c_void,
+        (&(*priv_).data) as *const _ as *const core::ffi::c_void,
         (*priv_).len as usize,
     ) as i32;
 
@@ -119,8 +119,8 @@ unsafe fn __nft_cmp_offload(ctx: *mut nft_offload_ctx, flow: *mut nft_flow_rule,
         data = &(*priv_).data as *const _ as *mut u8;
         datamask = &reg.mask as *const _ as *mut u8;
     }
-    libc::memcpy(((&mut (*flow).match_.key as *mut _) as *mut u8).add(reg.offset as usize), data as *const _, reg.len as usize);
-    libc::memcpy(((&mut (*flow).match_.mask as *mut _) as *mut u8).add(reg.offset as usize), datamask as *const _, reg.len as usize);
+    memcpy(((&mut (*flow).match_.key as *mut _) as *mut u8).add(reg.offset as usize), data as *const _, reg.len as usize);
+    memcpy(((&mut (*flow).match_.mask as *mut _) as *mut u8).add(reg.offset as usize), datamask as *const _, reg.len as usize);
     (*flow).match_.dissector.used_keys |= 1u64 << reg.key;
     (*flow).match_.dissector.offset[reg.key as usize] = reg.base_offset;
     if reg.key == FLOW_DISSECTOR_KEY_META && reg.offset == core::mem::offset_of!(nft_flow_key, meta.ingress_iftype) && nft_reg_load16((*priv_).data.data.as_ptr()) != ARPHRD_ETHER { return -EOPNOTSUPP; }

@@ -24,7 +24,7 @@ pub struct xb_key {
 
 /* Initialize a blob storage object. */
 pub unsafe fn xfblob_create(
-    description: *const core::ffi::c_char,
+    description: *const kernel::ffi::c_char,
     blobp: *mut *mut xfblob,
 ) -> i32 {
     let mut xfile: *mut xfile = core::ptr::null_mut();
@@ -59,13 +59,13 @@ pub unsafe fn xfblob_destroy(blob: *mut xfblob) {
 pub unsafe fn xfblob_load(
     blob: *mut xfblob,
     cookie: xfblob_cookie,
-    ptr: *mut core::ffi::c_void,
+    ptr: *mut kernel::ffi::c_void,
     size: u32,
 ) -> i32 {
     let mut key = core::mem::MaybeUninit::<xb_key>::uninit();
     let error = xfile_load(
         (*blob).xfile,
-        key.as_mut_ptr() as *mut core::ffi::c_void,
+        key.as_mut_ptr() as *mut kernel::ffi::c_void,
         core::mem::size_of::<xb_key>(),
         cookie,
     );
@@ -95,7 +95,7 @@ pub unsafe fn xfblob_load(
 pub unsafe fn xfblob_store(
     blob: *mut xfblob,
     cookie: *mut xfblob_cookie,
-    ptr: *const core::ffi::c_void,
+    ptr: *const kernel::ffi::c_void,
     size: u32,
 ) -> i32 {
     let key = xb_key {
@@ -106,7 +106,7 @@ pub unsafe fn xfblob_store(
     let mut pos = (*blob).last_offset;
     let mut error = xfile_store(
         (*blob).xfile,
-        &key as *const xb_key as *const core::ffi::c_void,
+        &key as *const xb_key as *const kernel::ffi::c_void,
         core::mem::size_of::<xb_key>(),
         pos,
     );
@@ -135,7 +135,7 @@ pub unsafe fn xfblob_free(blob: *mut xfblob, cookie: xfblob_cookie) -> i32 {
     let mut key = core::mem::MaybeUninit::<xb_key>::uninit();
     let error = xfile_load(
         (*blob).xfile,
-        key.as_mut_ptr() as *mut core::ffi::c_void,
+        key.as_mut_ptr() as *mut kernel::ffi::c_void,
         core::mem::size_of::<xb_key>(),
         cookie,
     );

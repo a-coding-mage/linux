@@ -26,11 +26,11 @@ extern "C" {
 
 #[repr(C)]
 pub struct MmuPsizeDef {
-    pub ap: ::core::ffi::c_int,
+    pub ap: ::kernel::ffi::c_int,
 }
 
 #[inline]
-pub unsafe fn psize_to_rpti_pgsize(psize: ::core::ffi::c_ulong) -> u64 {
+pub unsafe fn psize_to_rpti_pgsize(psize: ::kernel::ffi::c_ulong) -> u64 {
     if psize == MMU_PAGE_4K {
         return H_RPTI_PAGE_4K;
     }
@@ -47,7 +47,7 @@ pub unsafe fn psize_to_rpti_pgsize(psize: ::core::ffi::c_ulong) -> u64 {
 }
 
 #[inline]
-pub unsafe fn mmu_get_ap(psize: ::core::ffi::c_int) -> ::core::ffi::c_int {
+pub unsafe fn mmu_get_ap(psize: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     (*mmu_psize_defs.as_ptr().add(psize as usize)).ap
 }
 
@@ -56,7 +56,7 @@ pub unsafe fn mmu_get_ap(psize: ::core::ffi::c_int) -> ::core::ffi::c_int {
 #[cfg(CONFIG_PPC_RADIX_MMU)]
 extern "C" {
     pub fn radix__tlbiel_all(action: u32);
-    pub fn radix__flush_tlb_lpid_page(lpid: u32, addr: ::core::ffi::c_ulong, page_size: ::core::ffi::c_ulong);
+    pub fn radix__flush_tlb_lpid_page(lpid: u32, addr: ::kernel::ffi::c_ulong, page_size: ::kernel::ffi::c_ulong);
     pub fn radix__flush_pwc_lpid(lpid: u32);
     pub fn radix__flush_all_lpid(lpid: u32);
     pub fn radix__flush_all_lpid_guest(lpid: u32);
@@ -68,7 +68,7 @@ pub unsafe fn radix__tlbiel_all(_action: u32) { WARN_ON(1); }
 
 #[cfg(not(CONFIG_PPC_RADIX_MMU))]
 #[inline]
-pub unsafe fn radix__flush_tlb_lpid_page(_lpid: u32, _addr: ::core::ffi::c_ulong, _page_size: ::core::ffi::c_ulong) { WARN_ON(1); }
+pub unsafe fn radix__flush_tlb_lpid_page(_lpid: u32, _addr: ::kernel::ffi::c_ulong, _page_size: ::kernel::ffi::c_ulong) { WARN_ON(1); }
 
 #[cfg(not(CONFIG_PPC_RADIX_MMU))]
 #[inline]
@@ -83,17 +83,17 @@ pub unsafe fn radix__flush_all_lpid(_lpid: u32) { WARN_ON(1); }
 pub unsafe fn radix__flush_all_lpid_guest(_lpid: u32) { WARN_ON(1); }
 
 extern "C" {
-    pub fn radix__flush_hugetlb_tlb_range(vma: *mut vm_area_struct, start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn radix__flush_tlb_range_psize(mm: *mut mm_struct, start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong, psize: ::core::ffi::c_int);
-    pub fn radix__flush_tlb_pwc_range_psize(mm: *mut mm_struct, start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong, psize: ::core::ffi::c_int);
-    pub fn radix__flush_pmd_tlb_range(vma: *mut vm_area_struct, start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn radix__flush_pud_tlb_range(vma: *mut vm_area_struct, start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn radix__flush_tlb_range(vma: *mut vm_area_struct, start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
-    pub fn radix__flush_tlb_kernel_range(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong);
+    pub fn radix__flush_hugetlb_tlb_range(vma: *mut vm_area_struct, start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn radix__flush_tlb_range_psize(mm: *mut mm_struct, start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong, psize: ::kernel::ffi::c_int);
+    pub fn radix__flush_tlb_pwc_range_psize(mm: *mut mm_struct, start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong, psize: ::kernel::ffi::c_int);
+    pub fn radix__flush_pmd_tlb_range(vma: *mut vm_area_struct, start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn radix__flush_pud_tlb_range(vma: *mut vm_area_struct, start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn radix__flush_tlb_range(vma: *mut vm_area_struct, start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
+    pub fn radix__flush_tlb_kernel_range(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong);
     pub fn radix__local_flush_tlb_mm(mm: *mut mm_struct);
     pub fn radix__local_flush_all_mm(mm: *mut mm_struct);
-    pub fn radix__local_flush_tlb_page(vma: *mut vm_area_struct, vmaddr: ::core::ffi::c_ulong);
-    pub fn radix__local_flush_tlb_page_psize(mm: *mut mm_struct, vmaddr: ::core::ffi::c_ulong, psize: ::core::ffi::c_int);
+    pub fn radix__local_flush_tlb_page(vma: *mut vm_area_struct, vmaddr: ::kernel::ffi::c_ulong);
+    pub fn radix__local_flush_tlb_page_psize(mm: *mut mm_struct, vmaddr: ::kernel::ffi::c_ulong, psize: ::kernel::ffi::c_int);
     pub fn radix__tlb_flush(tlb: *mut mmu_gather);
 }
 
@@ -101,8 +101,8 @@ extern "C" {
 extern "C" {
     pub fn radix__flush_tlb_mm(mm: *mut mm_struct);
     pub fn radix__flush_all_mm(mm: *mut mm_struct);
-    pub fn radix__flush_tlb_page(vma: *mut vm_area_struct, vmaddr: ::core::ffi::c_ulong);
-    pub fn radix__flush_tlb_page_psize(mm: *mut mm_struct, vmaddr: ::core::ffi::c_ulong, psize: ::core::ffi::c_int);
+    pub fn radix__flush_tlb_page(vma: *mut vm_area_struct, vmaddr: ::kernel::ffi::c_ulong);
+    pub fn radix__flush_tlb_page_psize(mm: *mut mm_struct, vmaddr: ::kernel::ffi::c_ulong, psize: ::kernel::ffi::c_int);
 }
 
 #[cfg(not(CONFIG_SMP))]
@@ -113,13 +113,13 @@ pub unsafe fn radix__flush_tlb_mm(mm: *mut mm_struct) { radix__local_flush_tlb_m
 pub unsafe fn radix__flush_all_mm(mm: *mut mm_struct) { radix__local_flush_all_mm(mm); }
 #[cfg(not(CONFIG_SMP))]
 #[inline]
-pub unsafe fn radix__flush_tlb_page(vma: *mut vm_area_struct, addr: ::core::ffi::c_ulong) { radix__local_flush_tlb_page(vma, addr); }
+pub unsafe fn radix__flush_tlb_page(vma: *mut vm_area_struct, addr: ::kernel::ffi::c_ulong) { radix__local_flush_tlb_page(vma, addr); }
 #[cfg(not(CONFIG_SMP))]
 #[inline]
-pub unsafe fn radix__flush_tlb_page_psize(mm: *mut mm_struct, addr: ::core::ffi::c_ulong, p: ::core::ffi::c_int) { radix__local_flush_tlb_page_psize(mm, addr, p); }
+pub unsafe fn radix__flush_tlb_page_psize(mm: *mut mm_struct, addr: ::kernel::ffi::c_ulong, p: ::kernel::ffi::c_int) { radix__local_flush_tlb_page_psize(mm, addr, p); }
 
 extern "C" {
-    pub fn radix__flush_tlb_collapsed_pmd(mm: *mut mm_struct, addr: ::core::ffi::c_ulong);
+    pub fn radix__flush_tlb_collapsed_pmd(mm: *mut mm_struct, addr: ::kernel::ffi::c_ulong);
     pub fn radix__flush_tlb_all();
 }
 

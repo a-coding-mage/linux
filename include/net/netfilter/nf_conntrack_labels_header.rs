@@ -8,7 +8,7 @@ pub const NF_CT_LABELS_MAX_SIZE: usize =
 
 #[repr(C)]
 pub struct nf_conn_labels {
-    pub bits: [core::ffi::c_ulong; NF_CT_LABELS_MAX_SIZE / core::mem::size_of::<core::ffi::c_ulong>()],
+    pub bits: [kernel::ffi::c_ulong; NF_CT_LABELS_MAX_SIZE / core::mem::size_of::<kernel::ffi::c_ulong>()],
 }
 
 /* Can't use nf_ct_ext_find(), flow dissector cannot use symbols
@@ -63,14 +63,14 @@ extern "C" {
         ct: *mut crate::nf_conn,
         data: *const u32,
         mask: *const u32,
-        words: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        words: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_NF_CONNTRACK_LABELS)]
 extern "C" {
-    pub fn nf_connlabels_get(net: *mut crate::net, bit: core::ffi::c_uint)
-        -> core::ffi::c_int;
+    pub fn nf_connlabels_get(net: *mut crate::net, bit: kernel::ffi::c_uint)
+        -> kernel::ffi::c_int;
     pub fn nf_connlabels_put(net: *mut crate::net);
 }
 
@@ -78,8 +78,8 @@ extern "C" {
 #[inline]
 pub unsafe fn nf_connlabels_get(
     _net: *mut crate::net,
-    _bit: core::ffi::c_uint,
-) -> core::ffi::c_int {
+    _bit: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     0
 }
 

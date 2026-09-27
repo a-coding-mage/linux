@@ -85,7 +85,7 @@ static mut faux_driver: device_driver = device_driver {
 
 unsafe fn faux_device_release(dev: *mut device) {
     let faux_obj = to_faux_object(dev);
-    kfree(faux_obj as *mut core::ffi::c_void);
+    kfree(faux_obj as *mut kernel::ffi::c_void);
 }
 
 /**
@@ -95,7 +95,7 @@ unsafe fn faux_device_release(dev: *mut device) {
  */
 #[no_mangle]
 pub unsafe extern "C" fn faux_device_create_with_groups(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     parent: *mut device,
     faux_ops: *const faux_device_ops,
     groups: *const *const attribute_group,
@@ -147,7 +147,7 @@ pub unsafe extern "C" fn faux_device_create_with_groups(
 
 #[no_mangle]
 pub unsafe extern "C" fn faux_device_create(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     parent: *mut device,
     faux_ops: *const faux_device_ops,
 ) -> *mut faux_device {

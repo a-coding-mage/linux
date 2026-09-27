@@ -13,7 +13,7 @@ const IVPU_FOCUS_PRESENT_TIMER_MS: u32 = 1000;
 #[inline]
 fn addr_to_l2_cache_cfg(addr: u64) -> u64 { addr >> 31 }
 
-static mut ivpu_firmware: *mut core::ffi::c_char = core::ptr::null_mut();
+static mut ivpu_firmware: *mut kernel::ffi::c_char = core::ptr::null_mut();
 
 #[repr(C)]
 struct FwName { r#gen: i32, name: &'static str }
@@ -44,7 +44,7 @@ unsafe fn ivpu_fw_request(vdev: *mut ivpu_device) -> i32 {
 }
 
 unsafe fn ivpu_fw_check_api(vdev: *mut ivpu_device, fw_hdr: *const vpu_firmware_header,
-    str_: *const core::ffi::c_char, index: i32, expected_major: u16, expected_minor: u16, min_major: u16) -> i32 {
+    str_: *const kernel::ffi::c_char, index: i32, expected_major: u16, expected_minor: u16, min_major: u16) -> i32 {
     let major = ((*fw_hdr).api_version[index as usize] >> 16) as u16;
     let minor = (*fw_hdr).api_version[index as usize] as u16;
     if major < min_major { ivpu_err(vdev, "Incompatible FW API version\n"); return -EINVAL; }
@@ -54,7 +54,7 @@ unsafe fn ivpu_fw_check_api(vdev: *mut ivpu_device, fw_hdr: *const vpu_firmware_
 }
 
 unsafe fn ivpu_fw_check_api_ver_lt(_: *mut ivpu_device, fw_hdr: *const vpu_firmware_header,
-    _: *const core::ffi::c_char, index: i32, major: u16, minor: u16) -> bool {
+    _: *const kernel::ffi::c_char, index: i32, major: u16, minor: u16) -> bool {
     let fw_major = ((*fw_hdr).api_version[index as usize] >> 16) as u16;
     let fw_minor = (*fw_hdr).api_version[index as usize] as u16;
     fw_major < major || (fw_major == major && fw_minor < minor)

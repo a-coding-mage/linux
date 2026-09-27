@@ -47,12 +47,12 @@ pub struct LaunchT {
     pub call_addr: Option<LaunchProcT>,
     pub call_addr_c: u64,
     pub call_parm: u64,
-    pub stack_addr: *mut core::ffi::c_void,
-    pub gp_addr: *mut core::ffi::c_void,
-    pub bevutlb: *mut core::ffi::c_char,
-    pub bevnormal: *mut core::ffi::c_char,
-    pub bevecc: *mut core::ffi::c_char,
-    pub pad: [core::ffi::c_char; 160],
+    pub stack_addr: *mut kernel::ffi::c_void,
+    pub gp_addr: *mut kernel::ffi::c_void,
+    pub bevutlb: *mut kernel::ffi::c_char,
+    pub bevnormal: *mut kernel::ffi::c_char,
+    pub bevecc: *mut kernel::ffi::c_char,
+    pub pad: [kernel::ffi::c_char; 160],
 }
 
 /*
@@ -69,10 +69,10 @@ pub unsafe fn launch_slave(
     cpu: i32,
     call_addr: LaunchProcT,
     call_parm: u64,
-    stack_addr: *mut core::ffi::c_void,
-    gp_addr: *mut core::ffi::c_void,
+    stack_addr: *mut kernel::ffi::c_void,
+    gp_addr: *mut kernel::ffi::c_void,
 ) {
-    let f: unsafe extern "C" fn(i32, i32, LaunchProcT, u64, *mut core::ffi::c_void, *mut core::ffi::c_void) =
+    let f: unsafe extern "C" fn(i32, i32, LaunchProcT, u64, *mut kernel::ffi::c_void, *mut kernel::ffi::c_void) =
         core::mem::transmute(IP27PROM_LAUNCHSLAVE);
     f(nasid, cpu, call_addr, call_parm, stack_addr, gp_addr);
 }

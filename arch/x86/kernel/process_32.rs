@@ -12,7 +12,7 @@
 pub unsafe fn __show_regs(
     regs: *mut pt_regs,
     mode: show_regs_mode,
-    log_lvl: *const core::ffi::c_char,
+    log_lvl: *const kernel::ffi::c_char,
 ) {
     let mut cr0: c_ulong = 0;
     let mut cr2: c_ulong = 0;

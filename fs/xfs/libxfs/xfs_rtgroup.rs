@@ -41,7 +41,7 @@ unsafe fn xfs_rtgroup_alloc(mp: *mut xfs_mount, rgno: xfs_rgnumber_t,
     if rtg.is_null() { return -ENOMEM; }
     xfs_rtgroup_calc_geometry(mp, rtg, rgno, rgcount, rextents);
     let error = xfs_group_insert(mp, rtg_group(rtg), rgno, XG_TYPE_RTG);
-    if error != 0 { kfree(rtg as *mut core::ffi::c_void); }
+    if error != 0 { kfree(rtg as *mut kernel::ffi::c_void); }
     error
 }
 
@@ -112,7 +112,7 @@ unsafe fn xfs_rtgroup_get_geometry(rtg: *mut xfs_rtgroup, rgeo: *mut xfs_rtgroup
 }
 
 #[repr(C)]
-struct xfs_rtginode_ops { name: *const core::ffi::c_char, metafile_type: xfs_metafile_type, sick: u32, fmt_mask: u32,
+struct xfs_rtginode_ops { name: *const kernel::ffi::c_char, metafile_type: xfs_metafile_type, sick: u32, fmt_mask: u32,
     enabled: Option<unsafe extern "C" fn(*const xfs_mount) -> bool>, create: Option<unsafe extern "C" fn(*mut xfs_rtgroup, *mut xfs_inode, *mut xfs_trans, bool) -> i32> }
 
 /* Lockdep-only setup is supplied by the CONFIG_PROVE_LOCKING build configuration. */
@@ -121,7 +121,7 @@ unsafe fn xfs_rtginode_lockdep_setup(_ip: *mut xfs_inode, _rgno: xfs_rgnumber_t,
 /* The operation table mirrors xfs_rtginode_ops; function pointers and constants are external dependencies. */
 static mut xfs_rtginode_ops_table: [xfs_rtginode_ops; XFS_RTGI_MAX as usize] = [xfs_rtginode_ops { name: core::ptr::null(), metafile_type: 0, sick: 0, fmt_mask: 0, enabled: None, create: None }; XFS_RTGI_MAX as usize];
 
-unsafe fn xfs_rtginode_name(typ: xfs_rtg_inodes) -> *const core::ffi::c_char { xfs_rtginode_ops_table[typ as usize].name }
+unsafe fn xfs_rtginode_name(typ: xfs_rtg_inodes) -> *const kernel::ffi::c_char { xfs_rtginode_ops_table[typ as usize].name }
 unsafe fn xfs_rtginode_metafile_type(typ: xfs_rtg_inodes) -> xfs_metafile_type { xfs_rtginode_ops_table[typ as usize].metafile_type }
 unsafe fn xfs_rtginode_enabled(rtg: *mut xfs_rtgroup, typ: xfs_rtg_inodes) -> bool {
     match xfs_rtginode_ops_table[typ as usize].enabled { None => true, Some(f) => f(rtg_mount(rtg)) }
@@ -137,7 +137,7 @@ unsafe fn xfs_rtginode_load(rtg: *mut xfs_rtgroup, typ: xfs_rtg_inodes, tp: *mut
     } else {
         if (*mp).m_rtdirip.is_null() { xfs_fs_mark_sick(mp, XFS_SICK_FS_METADIR); return -EFSCORRUPTED; }
         let path = xfs_rtginode_path(rtg_rgno(rtg), typ); if path.is_null() { return -ENOMEM; }
-        error = xfs_metadir_load(tp, (*mp).m_rtdirip, path, xfs_rtginode_metafile_type(typ), &mut ip); kfree(path as *mut core::ffi::c_void);
+        error = xfs_metadir_load(tp, (*mp).m_rtdirip, path, xfs_rtginode_metafile_type(typ), &mut ip); kfree(path as *mut kernel::ffi::c_void);
     }
     if error != 0 { if xfs_metadata_is_sick(error) { xfs_rtginode_mark_sick(rtg, typ); } return error; }
     if XFS_IS_CORRUPT(mp, !((1u32 << (*ip).i_df.if_format) & xfs_rtginode_ops_table[typ as usize].fmt_mask) != 0) || XFS_IS_CORRUPT(mp, (*ip).i_projid != rtg_rgno(rtg)) { xfs_irele(ip); xfs_rtginode_mark_sick(rtg, typ); return -EFSCORRUPTED; }
@@ -147,14 +147,14 @@ unsafe fn xfs_rtginode_load(rtg: *mut xfs_rtgroup, typ: xfs_rtg_inodes, tp: *mut
 unsafe fn xfs_rtginode_irele(ipp: *mut *mut xfs_inode) { if !(*ipp).is_null() { xfs_irele(*ipp); } *ipp = core::ptr::null_mut(); }
 
 #[repr(C)] struct xfs_rtginode_create { rtg: *mut xfs_rtgroup, typ: xfs_rtg_inodes, init: bool }
-unsafe fn xfs_rtginode_init(upd: *mut xfs_metadir_update, priv_: *mut core::ffi::c_void) -> i32 { let rc = priv_ as *mut xfs_rtginode_create; let ops = &xfs_rtginode_ops_table[(*rc).typ as usize]; xfs_rtginode_lockdep_setup((*upd).ip, rtg_rgno((*rc).rtg), (*rc).typ); (*(*upd).ip).i_projid = rtg_rgno((*rc).rtg); ops.create.unwrap()((*rc).rtg, (*upd).ip, (*upd).tp, (*rc).init) }
+unsafe fn xfs_rtginode_init(upd: *mut xfs_metadir_update, priv_: *mut kernel::ffi::c_void) -> i32 { let rc = priv_ as *mut xfs_rtginode_create; let ops = &xfs_rtginode_ops_table[(*rc).typ as usize]; xfs_rtginode_lockdep_setup((*upd).ip, rtg_rgno((*rc).rtg), (*rc).typ); (*(*upd).ip).i_projid = rtg_rgno((*rc).rtg); ops.create.unwrap()((*rc).rtg, (*upd).ip, (*upd).tp, (*rc).init) }
 
 unsafe fn xfs_rtginode_create(rtg: *mut xfs_rtgroup, typ: xfs_rtg_inodes, init: bool) -> i32 {
     let mp = rtg_mount(rtg); if !xfs_rtginode_enabled(rtg, typ) { return 0; }
     if (*mp).m_rtdirip.is_null() { xfs_fs_mark_sick(mp, XFS_SICK_FS_METADIR); return -EFSCORRUPTED; }
     let path = xfs_rtginode_path(rtg_rgno(rtg), typ); if path.is_null() { return -ENOMEM; }
     let mut rc = xfs_rtginode_create { rtg, typ, init }; let mut upd = xfs_metadir_update { dp: (*mp).m_rtdirip, metafile_type: xfs_rtginode_metafile_type(typ), path, ..core::mem::zeroed() };
-    let error = xfs_metadir_create_file(&mut upd, S_IFREG, xfs_rtginode_init, &mut rc as *mut _ as *mut _, &mut (*rtg).rtg_inodes[typ as usize]); kfree(path as *mut core::ffi::c_void); error
+    let error = xfs_metadir_create_file(&mut upd, S_IFREG, xfs_rtginode_init, &mut rc as *mut _ as *mut _, &mut (*rtg).rtg_inodes[typ as usize]); kfree(path as *mut kernel::ffi::c_void); error
 }
 
 unsafe fn xfs_rtginode_mkdir_parent(mp: *mut xfs_mount) -> i32 { if (*mp).m_metadirip.is_null() { xfs_fs_mark_sick(mp, XFS_SICK_FS_METADIR); return -EFSCORRUPTED; } xfs_metadir_mkdir((*mp).m_metadirip, b"rtgroups\0".as_ptr() as _, &mut (*mp).m_rtdirip) }

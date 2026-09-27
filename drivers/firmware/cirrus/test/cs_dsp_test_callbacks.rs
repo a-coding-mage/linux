@@ -28,7 +28,7 @@ pub struct cs_dsp_test_local {
 #[repr(C)]
 pub struct cs_dsp_callbacks_test_param {
     pub ops: *const cs_dsp_client_ops,
-    pub case_name: *const core::ffi::c_char,
+    pub case_name: *const kernel::ffi::c_char,
 }
 
 extern "C" {
@@ -46,26 +46,26 @@ extern "C" {
     type kunit_case;
     type kunit_suite;
 
-    static cs_dsp_mock_halo_dsp1_regions: *mut core::ffi::c_void;
-    static cs_dsp_mock_halo_dsp1_region_sizes: *mut core::ffi::c_void;
+    static cs_dsp_mock_halo_dsp1_regions: *mut kernel::ffi::c_void;
+    static cs_dsp_mock_halo_dsp1_region_sizes: *mut kernel::ffi::c_void;
     static cs_dsp_mock_halo_core_base: u32;
     static cs_dsp_mock_halo_sysinfo_base: u32;
-    static cs_dsp_mock_adsp2_32bit_dsp1_regions: *mut core::ffi::c_void;
-    static cs_dsp_mock_adsp2_32bit_dsp1_region_sizes: *mut core::ffi::c_void;
+    static cs_dsp_mock_adsp2_32bit_dsp1_regions: *mut kernel::ffi::c_void;
+    static cs_dsp_mock_adsp2_32bit_dsp1_region_sizes: *mut kernel::ffi::c_void;
     static cs_dsp_mock_adsp2_32bit_sysbase: u32;
-    static cs_dsp_mock_adsp2_16bit_dsp1_regions: *mut core::ffi::c_void;
-    static cs_dsp_mock_adsp2_16bit_dsp1_region_sizes: *mut core::ffi::c_void;
+    static cs_dsp_mock_adsp2_16bit_dsp1_regions: *mut kernel::ffi::c_void;
+    static cs_dsp_mock_adsp2_16bit_dsp1_region_sizes: *mut kernel::ffi::c_void;
     static cs_dsp_mock_adsp2_16bit_sysbase: u32;
 
     fn kunit_get_current_test() -> *mut kunit;
     fn cs_dsp_mock_wmfw_get_firmware(b: *mut cs_dsp_mock_wmfw_builder) -> *mut firmware;
-    fn cs_dsp_power_up(dsp: *mut cs_dsp, fw: *mut firmware, a: *const i8, b: *mut core::ffi::c_void, c: *mut core::ffi::c_void, d: *const i8) -> i32;
+    fn cs_dsp_power_up(dsp: *mut cs_dsp, fw: *mut firmware, a: *const i8, b: *mut kernel::ffi::c_void, c: *mut kernel::ffi::c_void, d: *const i8) -> i32;
     fn cs_dsp_run(dsp: *mut cs_dsp) -> i32;
     fn cs_dsp_stop(dsp: *mut cs_dsp);
     fn cs_dsp_remove(dsp: *mut cs_dsp);
     fn cs_dsp_adsp2_bus_error(dsp: *mut cs_dsp);
     fn cs_dsp_halo_wdt_expire(dsp: *mut cs_dsp);
-    fn cs_dsp_mock_wmfw_start_alg_info_block(b: *mut cs_dsp_mock_wmfw_builder, id: u32, name: *const i8, p: *mut core::ffi::c_void);
+    fn cs_dsp_mock_wmfw_start_alg_info_block(b: *mut cs_dsp_mock_wmfw_builder, id: u32, name: *const i8, p: *mut kernel::ffi::c_void);
     fn cs_dsp_mock_wmfw_add_coeff_desc(b: *mut cs_dsp_mock_wmfw_builder, d: *mut cs_dsp_mock_coeff_def);
     fn cs_dsp_mock_wmfw_end_alg_info_block(b: *mut cs_dsp_mock_wmfw_builder);
     fn cs_dsp_mock_wmfw_init(t: *mut cs_dsp_test, version: i32) -> *mut cs_dsp_mock_wmfw_builder;
@@ -73,7 +73,7 @@ extern "C" {
     fn cs_dsp_create_mock_xm_header(t: *mut cs_dsp_test, a: *const cs_dsp_mock_alg_def, n: usize) -> *mut cs_dsp_mock_xm_header;
     fn cs_dsp_mock_xm_header_write_to_regmap(h: *mut cs_dsp_mock_xm_header);
     fn cs_dsp_mock_regmap_init(t: *mut cs_dsp_test) -> i32;
-    fn cs_dsp_mock_count_regions(p: *mut core::ffi::c_void) -> u32;
+    fn cs_dsp_mock_count_regions(p: *mut kernel::ffi::c_void) -> u32;
     fn cs_dsp_adsp2_init(dsp: *mut cs_dsp) -> i32;
     fn cs_dsp_halo_init(dsp: *mut cs_dsp) -> i32;
 }

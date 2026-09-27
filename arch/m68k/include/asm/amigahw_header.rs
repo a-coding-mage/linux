@@ -16,27 +16,27 @@
 // C dependencies: linux/ioport.h and asm/bootinfo-amiga.h.
 
 extern "C" {
-    pub static mut amiga_chipset: libc::c_ulong;
-    pub static mut amiga_eclock: libc::c_ulong;
-    pub static mut amiga_colorclock: libc::c_ulong;
-    pub static mut amiga_chip_size: libc::c_ulong;
-    pub static mut amiga_vblank: libc::c_uchar;
+    pub static mut amiga_chipset: kernel::ffi::c_ulong;
+    pub static mut amiga_eclock: kernel::ffi::c_ulong;
+    pub static mut amiga_colorclock: kernel::ffi::c_ulong;
+    pub static mut amiga_chip_size: kernel::ffi::c_ulong;
+    pub static mut amiga_vblank: kernel::ffi::c_uchar;
 }
 
 #[repr(C)]
 pub struct amiga_hw_present {
-    pub AMI_VIDEO: libc::c_uint, pub AMI_BLITTER: libc::c_uint, pub AMBER_FF: libc::c_uint,
-    pub AMI_AUDIO: libc::c_uint,
-    pub AMI_FLOPPY: libc::c_uint, pub A3000_SCSI: libc::c_uint, pub A4000_SCSI: libc::c_uint,
-    pub A1200_IDE: libc::c_uint, pub A4000_IDE: libc::c_uint, pub CD_ROM: libc::c_uint,
-    pub AMI_KEYBOARD: libc::c_uint, pub AMI_MOUSE: libc::c_uint, pub AMI_SERIAL: libc::c_uint,
-    pub AMI_PARALLEL: libc::c_uint,
-    pub A2000_CLK: libc::c_uint, pub A3000_CLK: libc::c_uint,
-    pub CHIP_RAM: libc::c_uint, pub PAULA: libc::c_uint, pub DENISE: libc::c_uint,
-    pub DENISE_HR: libc::c_uint, pub LISA: libc::c_uint, pub AGNUS_PAL: libc::c_uint,
-    pub AGNUS_NTSC: libc::c_uint, pub AGNUS_HR_PAL: libc::c_uint, pub AGNUS_HR_NTSC: libc::c_uint,
-    pub ALICE_PAL: libc::c_uint, pub ALICE_NTSC: libc::c_uint, pub MAGIC_REKICK: libc::c_uint,
-    pub PCMCIA: libc::c_uint, pub ZORRO: libc::c_uint, pub ZORRO3: libc::c_uint,
+    pub AMI_VIDEO: kernel::ffi::c_uint, pub AMI_BLITTER: kernel::ffi::c_uint, pub AMBER_FF: kernel::ffi::c_uint,
+    pub AMI_AUDIO: kernel::ffi::c_uint,
+    pub AMI_FLOPPY: kernel::ffi::c_uint, pub A3000_SCSI: kernel::ffi::c_uint, pub A4000_SCSI: kernel::ffi::c_uint,
+    pub A1200_IDE: kernel::ffi::c_uint, pub A4000_IDE: kernel::ffi::c_uint, pub CD_ROM: kernel::ffi::c_uint,
+    pub AMI_KEYBOARD: kernel::ffi::c_uint, pub AMI_MOUSE: kernel::ffi::c_uint, pub AMI_SERIAL: kernel::ffi::c_uint,
+    pub AMI_PARALLEL: kernel::ffi::c_uint,
+    pub A2000_CLK: kernel::ffi::c_uint, pub A3000_CLK: kernel::ffi::c_uint,
+    pub CHIP_RAM: kernel::ffi::c_uint, pub PAULA: kernel::ffi::c_uint, pub DENISE: kernel::ffi::c_uint,
+    pub DENISE_HR: kernel::ffi::c_uint, pub LISA: kernel::ffi::c_uint, pub AGNUS_PAL: kernel::ffi::c_uint,
+    pub AGNUS_NTSC: kernel::ffi::c_uint, pub AGNUS_HR_PAL: kernel::ffi::c_uint, pub AGNUS_HR_NTSC: kernel::ffi::c_uint,
+    pub ALICE_PAL: kernel::ffi::c_uint, pub ALICE_NTSC: kernel::ffi::c_uint, pub MAGIC_REKICK: kernel::ffi::c_uint,
+    pub PCMCIA: kernel::ffi::c_uint, pub ZORRO: kernel::ffi::c_uint, pub ZORRO3: kernel::ffi::c_uint,
 }
 extern "C" { pub static mut amiga_hw_present: amiga_hw_present; }
 
@@ -60,11 +60,11 @@ pub const DMAF_BLTNZERO: u16 = 0x2000; pub const DMAF_BLTDONE: u16 = 0x4000;
 pub const DMAF_ALL: u16 = 0x01ff;
 
 #[repr(C)]
-pub struct CIA { pub data: [libc::c_uchar; 0], }
+pub struct CIA { pub data: [kernel::ffi::c_uchar; 0], }
 
 pub const zTwoBase: usize = 0x80000000;
 #[inline] pub fn ZTWO_PADDR(x: usize) -> usize { x.wrapping_sub(zTwoBase) }
-#[inline] pub fn ZTWO_VADDR(x: usize) -> *mut libc::c_void { x.wrapping_add(zTwoBase) as *mut libc::c_void }
+#[inline] pub fn ZTWO_VADDR(x: usize) -> *mut kernel::ffi::c_void { x.wrapping_add(zTwoBase) as *mut kernel::ffi::c_void }
 pub const CUSTOM_PHYSADDR: usize = 0xdff000;
 pub const CIAA_PHYSADDR: usize = 0xbfe001;
 pub const CIAB_PHYSADDR: usize = 0xbfd000;
@@ -72,11 +72,11 @@ pub const CHIP_PHYSADDR: usize = 0;
 
 extern "C" {
     pub fn amiga_chip_init();
-    pub fn amiga_chip_alloc(size: libc::c_ulong, name: *const libc::c_char) -> *mut libc::c_void;
-    pub fn amiga_chip_alloc_res(size: libc::c_ulong, res: *mut libc::c_void) -> *mut libc::c_void;
-    pub fn amiga_chip_free(ptr: *mut libc::c_void);
-    pub fn amiga_chip_avail() -> libc::c_ulong;
-    pub static mut amiga_audio_min_period: libc::c_ushort;
+    pub fn amiga_chip_alloc(size: kernel::ffi::c_ulong, name: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
+    pub fn amiga_chip_alloc_res(size: kernel::ffi::c_ulong, res: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
+    pub fn amiga_chip_free(ptr: *mut kernel::ffi::c_void);
+    pub fn amiga_chip_avail() -> kernel::ffi::c_ulong;
+    pub static mut amiga_audio_min_period: kernel::ffi::c_ushort;
 }
 
 // `CS_ECS` and `CS_AGA` are supplied by asm/bootinfo-amiga.h.

@@ -7,13 +7,13 @@
 
 // Dependencies supplied by the surrounding kernel translation unit.
 
-const CR_AHB_RSTCR: *mut core::ffi::c_void = CKSEG1ADDR(0x1fb00040);
+const CR_AHB_RSTCR: *mut kernel::ffi::c_void = CKSEG1ADDR(0x1fb00040);
 const RESET: u32 = BIT(31);
 
 const UART_BASE: usize = CKSEG1ADDR(0x1fbf0003);
 const UART_REG_SHIFT: u32 = 2;
 
-unsafe fn hw_reset(_command: *mut core::ffi::c_char) {
+unsafe fn hw_reset(_command: *mut kernel::ffi::c_char) {
     iowrite32(RESET, CR_AHB_RSTCR);
 }
 
@@ -63,7 +63,7 @@ unsafe fn prom_init() {
 
 /* 2. Parse the DT and find memory */
 unsafe fn plat_mem_setup() {
-    let mut dtb: *mut core::ffi::c_void;
+    let mut dtb: *mut kernel::ffi::c_void;
 
     set_io_port_base(KSEG1);
 
@@ -90,8 +90,8 @@ unsafe fn device_tree_init() {
     register_up_smp_ops();
 }
 
-unsafe fn get_system_type() -> *const core::ffi::c_char {
-    b"EcoNet-EN75xx\0".as_ptr() as *const core::ffi::c_char
+unsafe fn get_system_type() -> *const kernel::ffi::c_char {
+    b"EcoNet-EN75xx\0".as_ptr() as *const kernel::ffi::c_char
 }
 
 /* 4. Initialize the IRQ subsystem */

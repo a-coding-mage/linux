@@ -7,7 +7,7 @@
 
 /* Dependencies are supplied by the surrounding kernel translation. */
 
-pub static mut sbi_spec_version: ::core::ffi::c_ulong = SBI_SPEC_VERSION_DEFAULT;
+pub static mut sbi_spec_version: ::kernel::ffi::c_ulong = SBI_SPEC_VERSION_DEFAULT;
 
 static mut __sbi_set_timer: Option<unsafe extern "C" fn(u64)> = None;
 static mut __sbi_send_ipi: Option<unsafe extern "C" fn(u32)> = None;
@@ -124,7 +124,7 @@ static mut sbi_fwft_supported: bool = false;
 #[repr(C)]
 struct fwft_set_req { feature: u32, value: usize, flags: usize, error: atomic_t }
 
-unsafe fn cpu_sbi_fwft_set(arg: *mut core::ffi::c_void) { let req = &mut *(arg as *mut fwft_set_req); let ret = sbi_fwft_set(req.feature, req.value, req.flags); if ret != 0 { atomic_set(&mut req.error, ret); } }
+unsafe fn cpu_sbi_fwft_set(arg: *mut kernel::ffi::c_void) { let req = &mut *(arg as *mut fwft_set_req); let ret = sbi_fwft_set(req.feature, req.value, req.flags); if ret != 0 { atomic_set(&mut req.error, ret); } }
 
 pub unsafe fn sbi_fwft_set(feature: u32, value: usize, flags: usize) -> i32 {
     if !sbi_fwft_supported { return -EOPNOTSUPP; }
@@ -149,7 +149,7 @@ pub unsafe fn sbi_remote_hfence_vvma(cpu_mask: *const cpumask, start: usize, siz
 pub unsafe fn sbi_remote_hfence_vvma_asid(cpu_mask: *const cpumask, start: usize, size: usize, asid: usize) -> i32 { (__sbi_rfence.unwrap())(SBI_EXT_RFENCE_REMOTE_HFENCE_VVMA_ASID, cpu_mask, start, size, asid, 0) }
 
 unsafe fn sbi_srst_reset(ty: usize, reason: usize) { sbi_ecall(SBI_EXT_SRST, SBI_EXT_SRST_RESET, ty, reason, 0, 0, 0, 0); pr_warn!("%s: type=0x%lx reason=0x%lx failed\n", "sbi_srst_reset", ty, reason); }
-unsafe fn sbi_srst_reboot(_this: *mut notifier_block, mode: usize, _cmd: *mut core::ffi::c_void) -> i32 { sbi_srst_reset(if mode == REBOOT_WARM || mode == REBOOT_SOFT { SBI_SRST_RESET_TYPE_WARM_REBOOT } else { SBI_SRST_RESET_TYPE_COLD_REBOOT }, SBI_SRST_RESET_REASON_NONE); NOTIFY_DONE }
+unsafe fn sbi_srst_reboot(_this: *mut notifier_block, mode: usize, _cmd: *mut kernel::ffi::c_void) -> i32 { sbi_srst_reset(if mode == REBOOT_WARM || mode == REBOOT_SOFT { SBI_SRST_RESET_TYPE_WARM_REBOOT } else { SBI_SRST_RESET_TYPE_COLD_REBOOT }, SBI_SRST_RESET_REASON_NONE); NOTIFY_DONE }
 static mut sbi_srst_reboot_nb: notifier_block = notifier_block::default();
 unsafe fn sbi_srst_power_off() { sbi_srst_reset(SBI_SRST_RESET_TYPE_SHUTDOWN, SBI_SRST_RESET_REASON_NONE); }
 

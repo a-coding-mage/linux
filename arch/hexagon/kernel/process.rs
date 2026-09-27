@@ -16,7 +16,7 @@
  * so that gets automatically done here.  If we ever stop doing that here,
  * we'll probably want to define the ELF_PLAT_INIT macro.
  */
-pub unsafe fn start_thread(regs: *mut pt_regs, pc: ::core::ffi::c_ulong, sp: ::core::ffi::c_ulong) {
+pub unsafe fn start_thread(regs: *mut pt_regs, pc: ::kernel::ffi::c_ulong, sp: ::kernel::ffi::c_ulong) {
     /* We want to zero all data-containing registers. Is this overkill? */
     memset(regs.cast(), 0, core::mem::size_of::<pt_regs>());
     /* We might want to also zero all Processor registers here */
@@ -39,10 +39,10 @@ pub unsafe fn arch_cpu_idle() {
 pub unsafe fn copy_thread(
     p: *mut task_struct,
     args: *const kernel_clone_args,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let clone_flags: u64 = (*args).flags;
-    let usp: ::core::ffi::c_ulong = (*args).stack;
-    let tls: ::core::ffi::c_ulong = (*args).tls;
+    let usp: ::kernel::ffi::c_ulong = (*args).stack;
+    let tls: ::kernel::ffi::c_ulong = (*args).tls;
     let ti: *mut thread_info = task_thread_info(p);
     let ss: *mut hexagon_switch_stack;
     let childregs: *mut pt_regs;
@@ -50,8 +50,8 @@ pub unsafe fn copy_thread(
         fn ret_from_fork();
     }
 
-    childregs = (((ti as ::core::ffi::c_ulong) + THREAD_SIZE)
-        - core::mem::size_of::<pt_regs>() as ::core::ffi::c_ulong) as *mut pt_regs;
+    childregs = (((ti as ::kernel::ffi::c_ulong) + THREAD_SIZE)
+        - core::mem::size_of::<pt_regs>() as ::kernel::ffi::c_ulong) as *mut pt_regs;
 
     (*ti).regs = childregs;
 
@@ -61,15 +61,15 @@ pub unsafe fn copy_thread(
      * parent's callee-saved here; those are in pt_regs and whatever
      * we leave here will be overridden on return to userland.
      */
-    ss = ((childregs as ::core::ffi::c_ulong)
-        - core::mem::size_of::<hexagon_switch_stack>() as ::core::ffi::c_ulong)
+    ss = ((childregs as ::kernel::ffi::c_ulong)
+        - core::mem::size_of::<hexagon_switch_stack>() as ::kernel::ffi::c_ulong)
         as *mut hexagon_switch_stack;
-    (*ss).lr = ret_from_fork as usize as ::core::ffi::c_ulong;
+    (*ss).lr = ret_from_fork as usize as ::kernel::ffi::c_ulong;
     (*p).thread.switch_sp = ss;
     if unlikely((*args).fn_.is_some()) {
         memset(childregs.cast(), 0, core::mem::size_of::<pt_regs>());
         /* r24 <- fn, r25 <- arg */
-        (*ss).r24 = (*args).fn_.map_or(0, |f| f as usize as ::core::ffi::c_ulong);
+        (*ss).r24 = (*args).fn_.map_or(0, |f| f as usize as ::kernel::ffi::c_ulong);
         (*ss).r25 = (*args).fn_arg;
         pt_set_kmode(childregs);
         return 0;
@@ -101,25 +101,25 @@ pub unsafe fn flush_thread() {}
  * is an identification of the point at which the scheduler
  * was invoked by a blocked thread.
  */
-pub unsafe fn __get_wchan(p: *mut task_struct) -> ::core::ffi::c_ulong {
-    let mut fp: ::core::ffi::c_ulong;
-    let mut pc: ::core::ffi::c_ulong;
-    let stack_page: ::core::ffi::c_ulong;
+pub unsafe fn __get_wchan(p: *mut task_struct) -> ::kernel::ffi::c_ulong {
+    let mut fp: ::kernel::ffi::c_ulong;
+    let mut pc: ::kernel::ffi::c_ulong;
+    let stack_page: ::kernel::ffi::c_ulong;
     let mut count = 0;
 
-    stack_page = task_stack_page(p) as ::core::ffi::c_ulong;
+    stack_page = task_stack_page(p) as ::kernel::ffi::c_ulong;
     fp = (*( (*p).thread.switch_sp as *mut hexagon_switch_stack)).fp;
     loop {
-        if fp < stack_page + core::mem::size_of::<thread_info>() as ::core::ffi::c_ulong
+        if fp < stack_page + core::mem::size_of::<thread_info>() as ::kernel::ffi::c_ulong
             || fp >= THREAD_SIZE - 8 + stack_page
         {
             return 0;
         }
-        pc = *((fp as *mut ::core::ffi::c_ulong).add(1));
+        pc = *((fp as *mut ::kernel::ffi::c_ulong).add(1));
         if !in_sched_functions(pc) {
             return pc;
         }
-        fp = *(fp as *mut ::core::ffi::c_ulong);
+        fp = *(fp as *mut ::kernel::ffi::c_ulong);
         count += 1;
         if count >= 16 {
             break;
@@ -129,7 +129,7 @@ pub unsafe fn __get_wchan(p: *mut task_struct) -> ::core::ffi::c_ulong {
 }
 
 /* Called on the exit path of event entry; see vm_entry.S. Interrupts are disabled. */
-pub unsafe fn do_work_pending(regs: *mut pt_regs, thread_info_flags: u32) -> ::core::ffi::c_int {
+pub unsafe fn do_work_pending(regs: *mut pt_regs, thread_info_flags: u32) -> ::kernel::ffi::c_int {
     if thread_info_flags & _TIF_WORK_MASK == 0 {
         return 0;
     } /* shortcut -- no work to be done */

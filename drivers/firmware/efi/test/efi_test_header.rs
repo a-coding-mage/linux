@@ -13,8 +13,8 @@ pub struct efi_getvariable {
     pub variable_name: *mut efi_char16_t,
     pub vendor_guid: *mut efi_guid_t,
     pub attributes: *mut u32,
-    pub data_size: *mut ::core::ffi::c_ulong,
-    pub data: *mut ::core::ffi::c_void,
+    pub data_size: *mut ::kernel::ffi::c_ulong,
+    pub data: *mut ::kernel::ffi::c_void,
     pub status: *mut efi_status_t,
 }
 
@@ -23,14 +23,14 @@ pub struct efi_setvariable {
     pub variable_name: *mut efi_char16_t,
     pub vendor_guid: *mut efi_guid_t,
     pub attributes: u32,
-    pub data_size: ::core::ffi::c_ulong,
-    pub data: *mut ::core::ffi::c_void,
+    pub data_size: ::kernel::ffi::c_ulong,
+    pub data: *mut ::kernel::ffi::c_void,
     pub status: *mut efi_status_t,
 }
 
 #[repr(C, packed)]
 pub struct efi_getnextvariablename {
-    pub variable_name_size: *mut ::core::ffi::c_ulong,
+    pub variable_name_size: *mut ::kernel::ffi::c_ulong,
     pub variable_name: *mut efi_char16_t,
     pub vendor_guid: *mut efi_guid_t,
     pub status: *mut efi_status_t,
@@ -82,17 +82,17 @@ pub struct efi_getnexthighmonotoniccount {
 #[repr(C, packed)]
 pub struct efi_querycapsulecapabilities {
     pub capsule_header_array: *mut *mut efi_capsule_header_t,
-    pub capsule_count: ::core::ffi::c_ulong,
+    pub capsule_count: ::kernel::ffi::c_ulong,
     pub maximum_capsule_size: *mut u64,
-    pub reset_type: *mut ::core::ffi::c_int,
+    pub reset_type: *mut ::kernel::ffi::c_int,
     pub status: *mut efi_status_t,
 }
 
 #[repr(C, packed)]
 pub struct efi_resetsystem {
-    pub reset_type: ::core::ffi::c_int,
+    pub reset_type: ::kernel::ffi::c_int,
     pub status: efi_status_t,
-    pub data_size: ::core::ffi::c_ulong,
+    pub data_size: ::kernel::ffi::c_ulong,
     pub data: *mut efi_char16_t,
 }
 
@@ -108,6 +108,6 @@ macro_rules! EFI_RUNTIME_QUERY_VARIABLEINFO { () => { _IOR!('p', 0x08, efi_query
 macro_rules! EFI_RUNTIME_GET_NEXTHIGHMONOTONICCOUNT { () => { _IOR!('p', 0x09, efi_getnexthighmonotoniccount) }; }
 macro_rules! EFI_RUNTIME_QUERY_CAPSULECAPABILITIES { () => { _IOR!('p', 0x0A, efi_querycapsulecapabilities) }; }
 macro_rules! EFI_RUNTIME_RESET_SYSTEM { () => { _IOW!('p', 0x0B, efi_resetsystem) }; }
-macro_rules! EFI_RUNTIME_GET_SUPPORTED_MASK { () => { _IOR!('p', 0x0C, ::core::ffi::c_uint) }; }
+macro_rules! EFI_RUNTIME_GET_SUPPORTED_MASK { () => { _IOR!('p', 0x0C, ::kernel::ffi::c_uint) }; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -9,8 +9,8 @@ pub const PACKET_FANOUT_MAX: u32 = 1 << 16;
 #[repr(C)]
 pub struct packet_mclist {
     pub next: *mut packet_mclist,
-    pub ifindex: libc::c_int,
-    pub count: libc::c_int,
+    pub ifindex: kernel::ffi::c_int,
+    pub count: kernel::ffi::c_int,
     pub type_: u16,
     pub alen: u16,
     pub addr: [u8; MAX_ADDR_LEN],
@@ -20,20 +20,20 @@ pub struct packet_mclist {
 #[repr(C)]
 pub struct tpacket_kbdq_core {
     pub pkbdq: *mut pgv,
-    pub feature_req_word: libc::c_uint,
-    pub hdrlen: libc::c_uint,
+    pub feature_req_word: kernel::ffi::c_uint,
+    pub hdrlen: kernel::ffi::c_uint,
     pub reset_pending_on_curr_blk: u8,
     pub kactive_blk_num: u16,
     pub blk_sizeof_priv: u16,
     pub version: u16,
-    pub pkblk_start: *mut libc::c_char,
-    pub pkblk_end: *mut libc::c_char,
-    pub kblk_size: libc::c_int,
-    pub max_frame_len: libc::c_uint,
-    pub knum_blocks: libc::c_uint,
+    pub pkblk_start: *mut kernel::ffi::c_char,
+    pub pkblk_end: *mut kernel::ffi::c_char,
+    pub kblk_size: kernel::ffi::c_int,
+    pub max_frame_len: kernel::ffi::c_uint,
+    pub knum_blocks: kernel::ffi::c_uint,
     pub knxt_seq_num: u64,
-    pub prev: *mut libc::c_char,
-    pub nxt_offset: *mut libc::c_char,
+    pub prev: *mut kernel::ffi::c_char,
+    pub nxt_offset: *mut kernel::ffi::c_char,
     pub skb: *mut sk_buff,
     pub blk_fill_in_prog_lock: rwlock_t,
     pub interval_ktime: ktime_t,
@@ -42,26 +42,26 @@ pub struct tpacket_kbdq_core {
 
 #[repr(C)]
 pub struct pgv {
-    pub buffer: *mut libc::c_char,
+    pub buffer: *mut kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub union packet_ring_buffer__bindgen_ty_1 {
-    pub rx_owner_map: *mut libc::c_ulong,
+    pub rx_owner_map: *mut kernel::ffi::c_ulong,
     pub prb_bdqc: tpacket_kbdq_core,
 }
 
 #[repr(C)]
 pub struct packet_ring_buffer {
     pub pg_vec: *mut pgv,
-    pub head: libc::c_uint,
-    pub frames_per_block: libc::c_uint,
-    pub frame_size: libc::c_uint,
-    pub frame_max: libc::c_uint,
-    pub pg_vec_order: libc::c_uint,
-    pub pg_vec_pages: libc::c_uint,
-    pub pg_vec_len: libc::c_uint,
-    pub pending_refcnt: *mut libc::c_uint,
+    pub head: kernel::ffi::c_uint,
+    pub frames_per_block: kernel::ffi::c_uint,
+    pub frame_size: kernel::ffi::c_uint,
+    pub frame_max: kernel::ffi::c_uint,
+    pub pg_vec_order: kernel::ffi::c_uint,
+    pub pg_vec_pages: kernel::ffi::c_uint,
+    pub pg_vec_len: kernel::ffi::c_uint,
+    pub pending_refcnt: *mut kernel::ffi::c_uint,
     pub bindgen_union: packet_ring_buffer__bindgen_ty_1,
 }
 
@@ -78,7 +78,7 @@ pub union packet_fanout__bindgen_ty_1 {
 #[repr(C)]
 pub struct packet_fanout {
     pub net: possible_net_t,
-    pub num_members: libc::c_uint,
+    pub num_members: kernel::ffi::c_uint,
     pub max_num_members: u32,
     pub id: u16,
     pub type_: u8,
@@ -93,7 +93,7 @@ pub struct packet_fanout {
 
 #[repr(C)]
 pub struct packet_rollover {
-    pub sock: libc::c_int,
+    pub sock: kernel::ffi::c_int,
     pub num: atomic_long_t,
     pub num_huge: atomic_long_t,
     pub num_failed: atomic_long_t,
@@ -109,20 +109,20 @@ pub struct packet_sock {
     pub stats: tpacket_stats_u,
     pub rx_ring: packet_ring_buffer,
     pub tx_ring: packet_ring_buffer,
-    pub copy_thresh: libc::c_int,
+    pub copy_thresh: kernel::ffi::c_int,
     pub bind_lock: spinlock_t,
     pub pg_vec_lock: mutex,
-    pub flags: libc::c_ulong,
-    pub ifindex: libc::c_int,
+    pub flags: kernel::ffi::c_ulong,
+    pub ifindex: kernel::ffi::c_int,
     pub vnet_hdr_sz: u8,
     pub num: __be16,
     pub rollover: *mut packet_rollover,
     pub mclist: *mut packet_mclist,
     pub mapped: atomic_long_t,
     pub tp_version: tpacket_versions,
-    pub tp_hdrlen: libc::c_uint,
-    pub tp_reserve: libc::c_uint,
-    pub tp_tstamp: libc::c_uint,
+    pub tp_hdrlen: kernel::ffi::c_uint,
+    pub tp_reserve: kernel::ffi::c_uint,
+    pub tp_tstamp: kernel::ffi::c_uint,
     pub skb_completion: completion,
     pub cached_dev: *mut net_device,
     pub prot_hook: packet_type,

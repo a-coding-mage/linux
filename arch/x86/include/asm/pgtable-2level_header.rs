@@ -51,7 +51,7 @@ pub unsafe fn native_pmd_clear(pmdp: *mut pmd_t) {
 pub unsafe fn native_pud_clear(_pudp: *mut pud_t) {}
 
 #[inline]
-pub unsafe fn native_pte_clear(_mm: *mut mm_struct, _addr: ::core::ffi::c_ulong, xp: *mut pte_t) {
+pub unsafe fn native_pte_clear(_mm: *mut mm_struct, _addr: ::kernel::ffi::c_ulong, xp: *mut pte_t) {
     *xp = native_make_pte(0);
 }
 
@@ -90,8 +90,8 @@ macro_rules! native_pudp_get_and_clear {
 
 /* Bit manipulation helper on pte/pgoff entry */
 #[inline]
-pub fn pte_bitop(value: ::core::ffi::c_ulong, rightshift: ::core::ffi::c_uint,
-                 mask: ::core::ffi::c_ulong, leftshift: ::core::ffi::c_uint) -> ::core::ffi::c_ulong {
+pub fn pte_bitop(value: ::kernel::ffi::c_ulong, rightshift: ::kernel::ffi::c_uint,
+                 mask: ::kernel::ffi::c_ulong, leftshift: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong {
     ((value >> rightshift) & mask) << leftshift
 }
 

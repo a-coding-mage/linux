@@ -8,15 +8,15 @@
  */
 
 type RelocateNewKernelT = unsafe extern "C" fn(
-    indirection_page: libc::c_ulong,
-    reboot_code_buffer: libc::c_ulong,
-    start_address: libc::c_ulong,
+    indirection_page: kernel::ffi::c_ulong,
+    reboot_code_buffer: kernel::ffi::c_ulong,
+    start_address: kernel::ffi::c_ulong,
 );
 
 extern "C" {
-    static relocate_new_kernel: libc::c_uchar;
-    static relocate_new_kernel_size: libc::c_uint;
-    static mut vbr_base: *mut libc::c_void;
+    static relocate_new_kernel: kernel::ffi::c_uchar;
+    static relocate_new_kernel_size: kernel::ffi::c_uint;
+    static mut vbr_base: *mut kernel::ffi::c_void;
 }
 
 pub unsafe extern "C" fn native_machine_crash_shutdown(_regs: *mut pt_regs) {
@@ -28,31 +28,31 @@ pub unsafe extern "C" fn native_machine_crash_shutdown(_regs: *mut pt_regs) {
  * reboot code buffer to allow us to avoid allocations
  * later.
  */
-pub unsafe extern "C" fn machine_kexec_prepare(_image: *mut kimage) -> libc::c_int {
+pub unsafe extern "C" fn machine_kexec_prepare(_image: *mut kimage) -> kernel::ffi::c_int {
     0
 }
 
 pub unsafe extern "C" fn machine_kexec_cleanup(_image: *mut kimage) {}
 
 unsafe fn kexec_info(image: *mut kimage) {
-    let mut i: libc::c_int;
-    printk(b"kexec information\0".as_ptr() as *const libc::c_char);
+    let mut i: kernel::ffi::c_int;
+    printk(b"kexec information\0".as_ptr() as *const kernel::ffi::c_char);
     i = 0;
     while i < (*image).nr_segments {
         printk(
             b"  segment[%d]: 0x%08x - 0x%08x (0x%08x)\n\0".as_ptr()
-                as *const libc::c_char,
+                as *const kernel::ffi::c_char,
             i,
-            (*image).segment[i as usize].mem as libc::c_uint,
+            (*image).segment[i as usize].mem as kernel::ffi::c_uint,
             ((*image).segment[i as usize].mem
-                + (*image).segment[i as usize].memsz) as libc::c_uint,
-            (*image).segment[i as usize].memsz as libc::c_uint,
+                + (*image).segment[i as usize].memsz) as kernel::ffi::c_uint,
+            (*image).segment[i as usize].memsz as kernel::ffi::c_uint,
         );
         i += 1;
     }
     printk(
-        b"  start     : 0x%08x\n\n\0".as_ptr() as *const libc::c_char,
-        (*image).start as libc::c_uint,
+        b"  start     : 0x%08x\n\n\0".as_ptr() as *const kernel::ffi::c_char,
+        (*image).start as kernel::ffi::c_uint,
     );
 }
 
@@ -61,12 +61,12 @@ unsafe fn kexec_info(image: *mut kimage) {
  * We are past the point of no return, committed to rebooting now.
  */
 pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
-    let page_list: libc::c_ulong;
-    let reboot_code_buffer: libc::c_ulong;
+    let page_list: kernel::ffi::c_ulong;
+    let reboot_code_buffer: kernel::ffi::c_ulong;
     let rnk: RelocateNewKernelT;
-    let mut entry: libc::c_ulong;
-    let mut ptr: *mut libc::c_ulong;
-    let save_ftrace_enabled: libc::c_int;
+    let mut entry: kernel::ffi::c_ulong;
+    let mut ptr: *mut kernel::ffi::c_ulong;
+    let save_ftrace_enabled: kernel::ffi::c_int;
 
     /*
      * Nicked from the mips version of machine_kexec():
@@ -77,11 +77,11 @@ pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
     entry = *ptr;
     while entry != 0 && (entry & IND_DONE) == 0 {
         if (*ptr & IND_SOURCE) != 0 || (*ptr & IND_INDIRECTION) != 0 || (*ptr & IND_DESTINATION) != 0 {
-            *ptr = phys_to_virt(*ptr) as libc::c_ulong;
+            *ptr = phys_to_virt(*ptr) as kernel::ffi::c_ulong;
         }
         entry = *ptr;
         ptr = if (entry & IND_INDIRECTION) != 0 {
-            phys_to_virt(entry & PAGE_MASK) as *mut libc::c_ulong
+            phys_to_virt(entry & PAGE_MASK) as *mut kernel::ffi::c_ulong
         } else {
             ptr.add(1)
         };
@@ -96,10 +96,10 @@ pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
     save_ftrace_enabled = __ftrace_enabled_save();
     local_irq_disable();
     page_list = (*image).head;
-    reboot_code_buffer = page_address((*image).control_code_page) as libc::c_ulong;
+    reboot_code_buffer = page_address((*image).control_code_page) as kernel::ffi::c_ulong;
     memcpy(
-        reboot_code_buffer as *mut libc::c_void,
-        &relocate_new_kernel as *const _ as *const libc::c_void,
+        reboot_code_buffer as *mut kernel::ffi::c_void,
+        &relocate_new_kernel as *const _ as *const kernel::ffi::c_void,
         relocate_new_kernel_size as usize,
     );
 
@@ -107,7 +107,7 @@ pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
     flush_cache_all();
     sh_bios_vbr_reload();
     rnk = core::mem::transmute(reboot_code_buffer);
-    rnk(page_list, reboot_code_buffer, phys_to_virt((*image).start) as libc::c_ulong);
+    rnk(page_list, reboot_code_buffer, phys_to_virt((*image).start) as kernel::ffi::c_ulong);
 
     #[cfg(CONFIG_KEXEC_JUMP)]
     {
@@ -119,11 +119,11 @@ pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
         entry = *ptr;
         while entry != 0 && (entry & IND_DONE) == 0 {
             if (*ptr & IND_SOURCE) != 0 || (*ptr & IND_INDIRECTION) != 0 || (*ptr & IND_DESTINATION) != 0 {
-                *ptr = virt_to_phys(*ptr as *mut libc::c_void) as libc::c_ulong;
+                *ptr = virt_to_phys(*ptr as *mut kernel::ffi::c_void) as kernel::ffi::c_ulong;
             }
             entry = *ptr;
             ptr = if (*ptr & IND_INDIRECTION) != 0 {
-                phys_to_virt(*ptr & PAGE_MASK) as *mut libc::c_ulong
+                phys_to_virt(*ptr & PAGE_MASK) as *mut kernel::ffi::c_ulong
             } else {
                 ptr.add(1)
             };
@@ -133,9 +133,9 @@ pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
 }
 
 pub unsafe extern "C" fn reserve_crashkernel() {
-    let mut crash_size: libc::c_ulonglong;
-    let mut crash_base: libc::c_ulonglong;
-    let mut ret: libc::c_int;
+    let mut crash_size: kernel::ffi::c_ulonglong;
+    let mut crash_base: kernel::ffi::c_ulonglong;
+    let mut ret: kernel::ffi::c_int;
 
     if !IS_ENABLED(CONFIG_CRASH_RESERVE) { return; }
     ret = parse_crashkernel(boot_command_line, memblock_phys_mem_size(), &mut crash_size, &mut crash_base, core::ptr::null_mut(), core::ptr::null_mut(), core::ptr::null_mut());
@@ -145,14 +145,14 @@ pub unsafe extern "C" fn reserve_crashkernel() {
     if crashk_res.start == 0 {
         let max = memblock_end_of_DRAM() - memory_limit;
         crashk_res.start = memblock_phys_alloc_range(crash_size, PAGE_SIZE, 0, max);
-        if crashk_res.start == 0 { pr_err(b"crashkernel allocation failed\n\0".as_ptr() as *const libc::c_char); crashk_res.start = 0; crashk_res.end = 0; return; }
+        if crashk_res.start == 0 { pr_err(b"crashkernel allocation failed\n\0".as_ptr() as *const kernel::ffi::c_char); crashk_res.start = 0; crashk_res.end = 0; return; }
     } else {
         ret = memblock_reserve(crashk_res.start, crash_size);
-        if ret < 0 { pr_err(b"crashkernel reservation failed - memory is in use\n\0".as_ptr() as *const libc::c_char); crashk_res.start = 0; crashk_res.end = 0; return; }
+        if ret < 0 { pr_err(b"crashkernel reservation failed - memory is in use\n\0".as_ptr() as *const kernel::ffi::c_char); crashk_res.start = 0; crashk_res.end = 0; return; }
     }
     crashk_res.end = crashk_res.start + crash_size - 1;
-    if memblock_end_of_DRAM() - memory_limit <= crashk_res.end { memory_limit = 0; pr_info(b"Disabled memory limit for crashkernel\n\0".as_ptr() as *const libc::c_char); }
-    pr_info(b"Reserving %ldMB of memory at 0x%08lx for crashkernel (System RAM: %ldMB)\n\0".as_ptr() as *const libc::c_char, (crash_size >> 20) as libc::c_ulong, crashk_res.start as libc::c_ulong, (memblock_phys_mem_size() >> 20) as libc::c_ulong);
+    if memblock_end_of_DRAM() - memory_limit <= crashk_res.end { memory_limit = 0; pr_info(b"Disabled memory limit for crashkernel\n\0".as_ptr() as *const kernel::ffi::c_char); }
+    pr_info(b"Reserving %ldMB of memory at 0x%08lx for crashkernel (System RAM: %ldMB)\n\0".as_ptr() as *const kernel::ffi::c_char, (crash_size >> 20) as kernel::ffi::c_ulong, crashk_res.start as kernel::ffi::c_ulong, (memblock_phys_mem_size() >> 20) as kernel::ffi::c_ulong);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -16,7 +16,7 @@
 // <linux/signal.h>, <linux/slab.h>, <linux/uidgid.h>, <linux/workqueue.h>,
 // "access.h", "common.h", "domain.h", "id.h", "limits.h", "ruleset.h".
 
-use core::ffi::{c_char, c_void};
+use kernel::ffi::{c_char, c_void};
 use core::mem::size_of;
 use core::ptr;
 
@@ -662,10 +662,10 @@ pub unsafe fn landlock_init_hierarchy_log(hierarchy: *mut landlock_hierarchy) ->
 
 unsafe fn get_layer_deny_mask(
     all_existing_optional_access: access_mask_t,
-    access_bit: core::ffi::c_ulong,
+    access_bit: kernel::ffi::c_ulong,
     layer: size_t,
 ) -> deny_masks_t {
-    let access_weight: core::ffi::c_ulong;
+    let access_weight: kernel::ffi::c_ulong;
 
     /* This may require change with new object types. */
     WARN_ON_ONCE(all_existing_optional_access != _LANDLOCK_ACCESS_FS_OPTIONAL);
@@ -700,7 +700,7 @@ pub unsafe fn landlock_get_quiet_optional_accesses(
     deny_masks: deny_masks_t,
     masks: *const layer_masks,
 ) -> optional_access_t {
-    let access_opt: core::ffi::c_ulong = all_existing_optional_access;
+    let access_opt: kernel::ffi::c_ulong = all_existing_optional_access;
     let mut access_index: size_t = 0;
     let mut quiet_optional_accesses: optional_access_t = 0;
 
@@ -714,7 +714,7 @@ pub unsafe fn landlock_get_quiet_optional_accesses(
             & (LANDLOCK_MAX_NUM_LAYERS - 1) as deny_masks_t) as u8;
 
         if (*masks).layers[layer as usize].quiet {
-            quiet_optional_accesses |= BIT(access_index as core::ffi::c_ulong) as optional_access_t;
+            quiet_optional_accesses |= BIT(access_index as kernel::ffi::c_ulong) as optional_access_t;
         }
         access_index += 1;
         access_bit = find_next_bit(&access_opt, BITS_PER_TYPE_access_mask_t(), access_bit + 1);
@@ -725,8 +725,8 @@ pub unsafe fn landlock_get_quiet_optional_accesses(
 // #ifdef CONFIG_SECURITY_LANDLOCK_KUNIT_TEST
 
 unsafe fn test_get_layer_deny_mask(test: *mut kunit) {
-    let truncate: core::ffi::c_ulong = BIT_INDEX(LANDLOCK_ACCESS_FS_TRUNCATE);
-    let ioctl_dev: core::ffi::c_ulong = BIT_INDEX(LANDLOCK_ACCESS_FS_IOCTL_DEV);
+    let truncate: kernel::ffi::c_ulong = BIT_INDEX(LANDLOCK_ACCESS_FS_TRUNCATE);
+    let ioctl_dev: kernel::ffi::c_ulong = BIT_INDEX(LANDLOCK_ACCESS_FS_IOCTL_DEV);
 
     KUNIT_EXPECT_EQ(
         test,
@@ -758,7 +758,7 @@ pub unsafe fn landlock_get_deny_masks(
     optional_access: access_mask_t,
     masks: *const layer_masks,
 ) -> deny_masks_t {
-    let access_opt: core::ffi::c_ulong = optional_access;
+    let access_opt: kernel::ffi::c_ulong = optional_access;
     let mut deny_masks: deny_masks_t = 0;
     let mut all_denied: access_mask_t = 0;
 
@@ -776,7 +776,7 @@ pub unsafe fn landlock_get_deny_masks(
     let mut i: ssize_t = ARRAY_SIZE_layer_masks_layers() as ssize_t - 1;
     while i >= 0 {
         let denied: access_mask_t = (*masks).layers[i as usize].access & optional_access;
-        let newly_denied: core::ffi::c_ulong = denied & !all_denied;
+        let newly_denied: kernel::ffi::c_ulong = denied & !all_denied;
 
         if newly_denied != 0 {
             let mut access_bit =
@@ -784,7 +784,7 @@ pub unsafe fn landlock_get_deny_masks(
             while access_bit < 8 * size_of::<access_mask_t>() {
                 deny_masks |= get_layer_deny_mask(
                     all_existing_optional_access,
-                    access_bit as core::ffi::c_ulong,
+                    access_bit as kernel::ffi::c_ulong,
                     i as size_t,
                 );
                 access_bit =

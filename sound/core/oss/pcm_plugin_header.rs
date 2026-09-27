@@ -12,7 +12,7 @@
 
 // Original C condition: #ifdef CONFIG_SND_PCM_OSS_PLUGINS
 #[cfg(CONFIG_SND_PCM_OSS_PLUGINS)]
-pub unsafe fn snd_pcm_plug_stream(plug: *mut snd_pcm_plugin) -> ::core::ffi::c_int {
+pub unsafe fn snd_pcm_plug_stream(plug: *mut snd_pcm_plugin) -> ::kernel::ffi::c_int {
     unsafe { (*plug).stream }
 }
 
@@ -27,46 +27,46 @@ pub enum snd_pcm_plugin_action {
 #[cfg(CONFIG_SND_PCM_OSS_PLUGINS)]
 #[repr(C)]
 pub struct snd_pcm_channel_area {
-    pub addr: *mut ::core::ffi::c_void, /* base address of channel samples */
-    pub first: ::core::ffi::c_uint,     /* offset to first sample in bits */
-    pub step: ::core::ffi::c_uint,      /* samples distance in bits */
+    pub addr: *mut ::kernel::ffi::c_void, /* base address of channel samples */
+    pub first: ::kernel::ffi::c_uint,     /* offset to first sample in bits */
+    pub step: ::kernel::ffi::c_uint,      /* samples distance in bits */
 }
 
 #[cfg(CONFIG_SND_PCM_OSS_PLUGINS)]
 #[repr(C)]
 pub struct snd_pcm_plugin_channel {
-    pub aptr: *mut ::core::ffi::c_void, /* pointer to the allocated area */
+    pub aptr: *mut ::kernel::ffi::c_void, /* pointer to the allocated area */
     pub area: snd_pcm_channel_area,
     pub frames: snd_pcm_uframes_t,      /* allocated frames */
     // C bitfields:
     // unsigned int enabled:1;          /* channel need to be processed */
     // unsigned int wanted:1;           /* channel is wanted */
-    pub enabled_wanted: ::core::ffi::c_uint,
+    pub enabled_wanted: ::kernel::ffi::c_uint,
 }
 
 #[cfg(CONFIG_SND_PCM_OSS_PLUGINS)]
 impl snd_pcm_plugin_channel {
-    pub const ENABLED_MASK: ::core::ffi::c_uint = 1 << 0;
-    pub const WANTED_MASK: ::core::ffi::c_uint = 1 << 1;
+    pub const ENABLED_MASK: ::kernel::ffi::c_uint = 1 << 0;
+    pub const WANTED_MASK: ::kernel::ffi::c_uint = 1 << 1;
 }
 
 #[cfg(CONFIG_SND_PCM_OSS_PLUGINS)]
 #[repr(C)]
 pub struct snd_pcm_plugin_format {
     pub format: snd_pcm_format_t,
-    pub rate: ::core::ffi::c_uint,
-    pub channels: ::core::ffi::c_uint,
+    pub rate: ::kernel::ffi::c_uint,
+    pub channels: ::kernel::ffi::c_uint,
 }
 
 #[cfg(CONFIG_SND_PCM_OSS_PLUGINS)]
 #[repr(C)]
 pub struct snd_pcm_plugin {
-    pub name: *const ::core::ffi::c_char, /* plug-in name */
-    pub stream: ::core::ffi::c_int,
+    pub name: *const ::kernel::ffi::c_char, /* plug-in name */
+    pub stream: ::kernel::ffi::c_int,
     pub src_format: snd_pcm_plugin_format, /* source format */
     pub dst_format: snd_pcm_plugin_format, /* destination format */
-    pub src_width: ::core::ffi::c_int,      /* sample width in bits */
-    pub dst_width: ::core::ffi::c_int,      /* sample width in bits */
+    pub src_width: ::kernel::ffi::c_int,      /* sample width in bits */
+    pub dst_width: ::kernel::ffi::c_int,      /* sample width in bits */
     pub access: snd_pcm_access_t,
     pub src_frames: Option<
         unsafe extern "C" fn(
@@ -99,35 +99,35 @@ pub struct snd_pcm_plugin {
         unsafe extern "C" fn(
             plugin: *mut snd_pcm_plugin,
             action: snd_pcm_plugin_action,
-            data: ::core::ffi::c_ulong,
-        ) -> ::core::ffi::c_int,
+            data: ::kernel::ffi::c_ulong,
+        ) -> ::kernel::ffi::c_int,
     >,
     pub prev: *mut snd_pcm_plugin,
     pub next: *mut snd_pcm_plugin,
     pub plug: *mut snd_pcm_substream,
-    pub private_data: *mut ::core::ffi::c_void,
+    pub private_data: *mut ::kernel::ffi::c_void,
     pub private_free: Option<unsafe extern "C" fn(plugin: *mut snd_pcm_plugin)>,
-    pub buf: *mut ::core::ffi::c_char,
+    pub buf: *mut ::kernel::ffi::c_char,
     pub buf_frames: snd_pcm_uframes_t,
     pub buf_channels: *mut snd_pcm_plugin_channel,
-    pub extra_data: [::core::ffi::c_char; 0],
+    pub extra_data: [::kernel::ffi::c_char; 0],
 }
 
 #[cfg(CONFIG_SND_PCM_OSS_PLUGINS)]
 unsafe extern "C" {
     pub fn snd_pcm_plugin_build(
         handle: *mut snd_pcm_substream,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         src_format: *mut snd_pcm_plugin_format,
         dst_format: *mut snd_pcm_plugin_format,
         extra: size_t,
         ret: *mut *mut snd_pcm_plugin,
-    ) -> ::core::ffi::c_int;
-    pub fn snd_pcm_plugin_free(plugin: *mut snd_pcm_plugin) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn snd_pcm_plugin_free(plugin: *mut snd_pcm_plugin) -> ::kernel::ffi::c_int;
     pub fn snd_pcm_plug_alloc(
         plug: *mut snd_pcm_substream,
         frames: snd_pcm_uframes_t,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_pcm_plug_client_size(
         handle: *mut snd_pcm_substream,
         drv_size: snd_pcm_uframes_t,
@@ -149,47 +149,47 @@ unsafe extern "C" {
         handle: *mut snd_pcm_substream,
         params: *mut snd_pcm_hw_params,
         r_plugin: *mut *mut snd_pcm_plugin,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_pcm_plugin_build_linear(
         handle: *mut snd_pcm_substream,
         src_format: *mut snd_pcm_plugin_format,
         dst_format: *mut snd_pcm_plugin_format,
         r_plugin: *mut *mut snd_pcm_plugin,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_pcm_plugin_build_mulaw(
         handle: *mut snd_pcm_substream,
         src_format: *mut snd_pcm_plugin_format,
         dst_format: *mut snd_pcm_plugin_format,
         r_plugin: *mut *mut snd_pcm_plugin,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_pcm_plugin_build_rate(
         handle: *mut snd_pcm_substream,
         src_format: *mut snd_pcm_plugin_format,
         dst_format: *mut snd_pcm_plugin_format,
         r_plugin: *mut *mut snd_pcm_plugin,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_pcm_plugin_build_route(
         handle: *mut snd_pcm_substream,
         src_format: *mut snd_pcm_plugin_format,
         dst_format: *mut snd_pcm_plugin_format,
         r_plugin: *mut *mut snd_pcm_plugin,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_pcm_plugin_build_copy(
         handle: *mut snd_pcm_substream,
         src_format: *mut snd_pcm_plugin_format,
         dst_format: *mut snd_pcm_plugin_format,
         r_plugin: *mut *mut snd_pcm_plugin,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_pcm_plug_format_plugins(
         substream: *mut snd_pcm_substream,
         params: *mut snd_pcm_hw_params,
         slave_params: *mut snd_pcm_hw_params,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_pcm_plug_slave_format(
         format: snd_pcm_format_t,
         format_mask: *const snd_mask,
     ) -> snd_pcm_format_t;
-    pub fn snd_pcm_plugin_append(plugin: *mut snd_pcm_plugin) -> ::core::ffi::c_int;
+    pub fn snd_pcm_plugin_append(plugin: *mut snd_pcm_plugin) -> ::kernel::ffi::c_int;
     pub fn snd_pcm_plug_write_transfer(
         handle: *mut snd_pcm_substream,
         src_channels: *mut snd_pcm_plugin_channel,
@@ -202,7 +202,7 @@ unsafe extern "C" {
     ) -> snd_pcm_sframes_t;
     pub fn snd_pcm_plug_client_channels_buf(
         handle: *mut snd_pcm_substream,
-        buf: *mut ::core::ffi::c_char,
+        buf: *mut ::kernel::ffi::c_char,
         count: snd_pcm_uframes_t,
         channels: *mut *mut snd_pcm_plugin_channel,
     ) -> snd_pcm_sframes_t;
@@ -216,7 +216,7 @@ unsafe extern "C" {
         dst_offset: size_t,
         samples: size_t,
         format: snd_pcm_format_t,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn snd_pcm_area_copy(
         src_channel: *const snd_pcm_channel_area,
         src_offset: size_t,
@@ -224,7 +224,7 @@ unsafe extern "C" {
         dst_offset: size_t,
         samples: size_t,
         format: snd_pcm_format_t,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 // Original C condition: #else of #ifdef CONFIG_SND_PCM_OSS_PLUGINS
@@ -246,33 +246,33 @@ pub unsafe fn snd_pcm_plug_slave_size(
 
 #[cfg(not(CONFIG_SND_PCM_OSS_PLUGINS))]
 pub unsafe fn snd_pcm_plug_slave_format(
-    format: ::core::ffi::c_int,
+    format: ::kernel::ffi::c_int,
     _format_mask: *const snd_mask,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     format
 }
 
 unsafe extern "C" {
     pub fn snd_pcm_oss_write3(
         substream: *mut snd_pcm_substream,
-        ptr: *const ::core::ffi::c_char,
+        ptr: *const ::kernel::ffi::c_char,
         size: snd_pcm_uframes_t,
-        in_kernel: ::core::ffi::c_int,
+        in_kernel: ::kernel::ffi::c_int,
     ) -> snd_pcm_sframes_t;
     pub fn snd_pcm_oss_read3(
         substream: *mut snd_pcm_substream,
-        ptr: *mut ::core::ffi::c_char,
+        ptr: *mut ::kernel::ffi::c_char,
         size: snd_pcm_uframes_t,
-        in_kernel: ::core::ffi::c_int,
+        in_kernel: ::kernel::ffi::c_int,
     ) -> snd_pcm_sframes_t;
     pub fn snd_pcm_oss_writev3(
         substream: *mut snd_pcm_substream,
-        bufs: *mut *mut ::core::ffi::c_void,
+        bufs: *mut *mut ::kernel::ffi::c_void,
         frames: snd_pcm_uframes_t,
     ) -> snd_pcm_sframes_t;
     pub fn snd_pcm_oss_readv3(
         substream: *mut snd_pcm_substream,
-        bufs: *mut *mut ::core::ffi::c_void,
+        bufs: *mut *mut ::kernel::ffi::c_void,
         frames: snd_pcm_uframes_t,
     ) -> snd_pcm_sframes_t;
 }

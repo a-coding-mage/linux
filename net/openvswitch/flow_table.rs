@@ -17,10 +17,10 @@ static mut flow_cache: *mut kmem_cache = core::ptr::null_mut();
 pub unsafe fn ovs_flow_mask_key(dst: *mut sw_flow_key, src: *const sw_flow_key, full: bool, mask: *const sw_flow_mask) {
     let start = if full { 0 } else { (*mask).range.start as usize };
     let len = if full { core::mem::size_of::<sw_flow_key>() } else { range_n_bytes(&(*mask).range) as usize };
-    let mut d = (dst as *mut u8).add(start) as *mut libc::c_long;
-    let mut s = (src as *const u8).add(start) as *const libc::c_long;
-    let mut m = (&(*mask).key as *const _ as *const u8).add(start) as *const libc::c_long;
-    for _ in (0..len).step_by(core::mem::size_of::<libc::c_long>()) { *d = *s & *m; d = d.add(1); s = s.add(1); m = m.add(1); }
+    let mut d = (dst as *mut u8).add(start) as *mut kernel::ffi::c_long;
+    let mut s = (src as *const u8).add(start) as *const kernel::ffi::c_long;
+    let mut m = (&(*mask).key as *const _ as *const u8).add(start) as *const kernel::ffi::c_long;
+    for _ in (0..len).step_by(core::mem::size_of::<kernel::ffi::c_long>()) { *d = *s & *m; d = d.add(1); s = s.add(1); m = m.add(1); }
 }
 
 pub unsafe fn ovs_flow_alloc() -> *mut sw_flow {

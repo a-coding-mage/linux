@@ -8,28 +8,28 @@ pub const UBI_DEV_NUM_AUTO: i32 = -1;
 pub const UBI_MAX_VOLUME_NAME: usize = 127;
 
 pub const UBI_IOC_MAGIC: u8 = b'o';
-pub const UBI_IOCMKVOL: _ = _IOW(UBI_IOC_MAGIC, 0, ubi_mkvol_req);
-pub const UBI_IOCRMVOL: _ = _IOW(UBI_IOC_MAGIC, 1, __s32);
-pub const UBI_IOCRSVOL: _ = _IOW(UBI_IOC_MAGIC, 2, ubi_rsvol_req);
-pub const UBI_IOCRNVOL: _ = _IOW(UBI_IOC_MAGIC, 3, ubi_rnvol_req);
-pub const UBI_IOCRPEB: _ = _IOW(UBI_IOC_MAGIC, 4, __s32);
-pub const UBI_IOCSPEB: _ = _IOW(UBI_IOC_MAGIC, 5, __s32);
-pub const UBI_IOCECNFO: _ = _IOWR(UBI_IOC_MAGIC, 6, ubi_ecinfo_req);
+pub const UBI_IOCMKVOL: u32 = _IOW(UBI_IOC_MAGIC, 0, ubi_mkvol_req);
+pub const UBI_IOCRMVOL: u32 = _IOW(UBI_IOC_MAGIC, 1, __s32);
+pub const UBI_IOCRSVOL: u32 = _IOW(UBI_IOC_MAGIC, 2, ubi_rsvol_req);
+pub const UBI_IOCRNVOL: u32 = _IOW(UBI_IOC_MAGIC, 3, ubi_rnvol_req);
+pub const UBI_IOCRPEB: u32 = _IOW(UBI_IOC_MAGIC, 4, __s32);
+pub const UBI_IOCSPEB: u32 = _IOW(UBI_IOC_MAGIC, 5, __s32);
+pub const UBI_IOCECNFO: u32 = _IOWR(UBI_IOC_MAGIC, 6, ubi_ecinfo_req);
 
 pub const UBI_CTRL_IOC_MAGIC: u8 = b'o';
-pub const UBI_IOCATT: _ = _IOW(UBI_CTRL_IOC_MAGIC, 64, ubi_attach_req);
-pub const UBI_IOCDET: _ = _IOW(UBI_CTRL_IOC_MAGIC, 65, __s32);
+pub const UBI_IOCATT: u32 = _IOW(UBI_CTRL_IOC_MAGIC, 64, ubi_attach_req);
+pub const UBI_IOCDET: u32 = _IOW(UBI_CTRL_IOC_MAGIC, 65, __s32);
 
 pub const UBI_VOL_IOC_MAGIC: u8 = b'O';
-pub const UBI_IOCVOLUP: _ = _IOW(UBI_VOL_IOC_MAGIC, 0, __s64);
-pub const UBI_IOCEBER: _ = _IOW(UBI_VOL_IOC_MAGIC, 1, __s32);
-pub const UBI_IOCEBCH: _ = _IOW(UBI_VOL_IOC_MAGIC, 2, __s32);
-pub const UBI_IOCEBMAP: _ = _IOW(UBI_VOL_IOC_MAGIC, 3, ubi_map_req);
-pub const UBI_IOCEBUNMAP: _ = _IOW(UBI_VOL_IOC_MAGIC, 4, __s32);
-pub const UBI_IOCEBISMAP: _ = _IOR(UBI_VOL_IOC_MAGIC, 5, __s32);
-pub const UBI_IOCSETVOLPROP: _ = _IOW(UBI_VOL_IOC_MAGIC, 6, ubi_set_vol_prop_req);
-pub const UBI_IOCVOLCRBLK: _ = _IOW(UBI_VOL_IOC_MAGIC, 7, ubi_blkcreate_req);
-pub const UBI_IOCVOLRMBLK: _ = _IO(UBI_VOL_IOC_MAGIC, 8);
+pub const UBI_IOCVOLUP: u32 = _IOW(UBI_VOL_IOC_MAGIC, 0, __s64);
+pub const UBI_IOCEBER: u32 = _IOW(UBI_VOL_IOC_MAGIC, 1, __s32);
+pub const UBI_IOCEBCH: u32 = _IOW(UBI_VOL_IOC_MAGIC, 2, __s32);
+pub const UBI_IOCEBMAP: u32 = _IOW(UBI_VOL_IOC_MAGIC, 3, ubi_map_req);
+pub const UBI_IOCEBUNMAP: u32 = _IOW(UBI_VOL_IOC_MAGIC, 4, __s32);
+pub const UBI_IOCEBISMAP: u32 = _IOR(UBI_VOL_IOC_MAGIC, 5, __s32);
+pub const UBI_IOCSETVOLPROP: u32 = _IOW(UBI_VOL_IOC_MAGIC, 6, ubi_set_vol_prop_req);
+pub const UBI_IOCVOLCRBLK: u32 = _IOW(UBI_VOL_IOC_MAGIC, 7, ubi_blkcreate_req);
+pub const UBI_IOCVOLRMBLK: u32 = _IO(UBI_VOL_IOC_MAGIC, 8);
 
 pub const MAX_UBI_MTD_NAME_LEN: usize = 127;
 pub const UBI_MAX_RNVOL: usize = 32;
@@ -60,7 +60,7 @@ pub struct ubi_mkvol_req {
     pub flags: __u8,
     pub name_len: __s16,
     pub padding2: [__s8; 4],
-    pub name: [core::ffi::c_char; UBI_MAX_VOLUME_NAME + 1],
+    pub name: [kernel::ffi::c_char; UBI_MAX_VOLUME_NAME + 1],
 }
 
 #[repr(C, packed)]
@@ -81,7 +81,7 @@ pub struct ubi_rnvol_ent {
     pub vol_id: __s32,
     pub name_len: __s16,
     pub padding2: [__s8; 2],
-    pub name: [core::ffi::c_char; UBI_MAX_VOLUME_NAME + 1],
+    pub name: [kernel::ffi::c_char; UBI_MAX_VOLUME_NAME + 1],
 }
 
 #[repr(C, packed)]

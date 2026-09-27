@@ -2,10 +2,10 @@
 /* Useful PROM locations */
 
 extern "C" {
-    pub static mut sun3x_putchar: Option<unsafe extern "C" fn(ch: core::ffi::c_int)>;
-    pub static mut sun3x_getchar: Option<unsafe extern "C" fn() -> core::ffi::c_int>;
-    pub static mut sun3x_mayget: Option<unsafe extern "C" fn() -> core::ffi::c_int>;
-    pub static mut sun3x_mayput: Option<unsafe extern "C" fn(ch: core::ffi::c_int)>;
+    pub static mut sun3x_putchar: Option<unsafe extern "C" fn(ch: kernel::ffi::c_int)>;
+    pub static mut sun3x_getchar: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>;
+    pub static mut sun3x_mayget: Option<unsafe extern "C" fn() -> kernel::ffi::c_int>;
+    pub static mut sun3x_mayput: Option<unsafe extern "C" fn(ch: kernel::ffi::c_int)>;
 
     pub fn sun3x_reboot();
     pub fn sun3x_abort();
@@ -14,7 +14,7 @@ extern "C" {
 }
 
 /* The C header relies on the platform's definition of unsigned long. */
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 /* interesting hardware locations */
 pub const SUN3X_IOMMU: u32 = 0x60000000;

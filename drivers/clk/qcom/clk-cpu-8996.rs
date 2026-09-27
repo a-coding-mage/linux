@@ -47,8 +47,8 @@ extern "C" {
     fn kryo_l2_get_indirect_reg(_: u64) -> u32;
     fn kryo_l2_set_indirect_reg(_: u64, _: u32);
     fn read_cpuid_mpidr() -> u64;
-    fn spin_lock_irqsave(_: *mut spinlock_t, _: *mut core::ffi::c_ulong);
-    fn spin_unlock_irqrestore(_: *mut spinlock_t, _: core::ffi::c_ulong);
+    fn spin_lock_irqsave(_: *mut spinlock_t, _: *mut kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(_: *mut spinlock_t, _: kernel::ffi::c_ulong);
     fn clk_cpu_8996_pmux_set_parent(_: *mut clk_hw, _: u8) -> i32;
 }
 
@@ -84,7 +84,7 @@ unsafe fn qcom_cpu_clk_msm8996_acd_init_local(regmap: *mut regmap) {
     spin_unlock_irqrestore(&mut qcom_clk_acd_lock, flags);
 }
 
-unsafe fn cpu_clk_notifier_cb(_nb: *mut notifier_block, event: u64, data: *mut core::ffi::c_void) -> i32 {
+unsafe fn cpu_clk_notifier_cb(_nb: *mut notifier_block, event: u64, data: *mut kernel::ffi::c_void) -> i32 {
     let cnd = data as *mut clk_notifier_data;
     match event { PRE_RATE_CHANGE => { qcom_cpu_clk_msm8996_acd_init_local((*(_nb as *mut clk_cpu_8996_pmux)).clkr.regmap); if (*cnd).new_rate < DIV_2_THRESHOLD && (*cnd).old_rate > DIV_2_THRESHOLD { clk_cpu_8996_pmux_set_parent_local(_nb as *mut clk_hw, SMUX_INDEX as u8); } }, ABORT_RATE_CHANGE => { if (*cnd).new_rate < DIV_2_THRESHOLD && (*cnd).old_rate > DIV_2_THRESHOLD { clk_cpu_8996_pmux_set_parent_local(_nb as *mut clk_hw, ACD_INDEX as u8); } }, _ => {} }
     NOTIFY_OK

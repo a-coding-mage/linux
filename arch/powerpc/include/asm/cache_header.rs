@@ -98,53 +98,53 @@ pub const fn l1_icache_bytes() -> u32 { L1_CACHE_BYTES }
 
 #[cfg(CONFIG_PPC_BOOK3S_32)]
 extern "C" {
-    pub fn _get_L2CR() -> ::core::ffi::c_long;
-    pub fn _get_L3CR() -> ::core::ffi::c_long;
-    pub fn _set_L2CR(val: ::core::ffi::c_ulong);
-    pub fn _set_L3CR(val: ::core::ffi::c_ulong);
+    pub fn _get_L2CR() -> ::kernel::ffi::c_long;
+    pub fn _get_L3CR() -> ::kernel::ffi::c_long;
+    pub fn _set_L2CR(val: ::kernel::ffi::c_ulong);
+    pub fn _set_L3CR(val: ::kernel::ffi::c_ulong);
 }
 
 #[cfg(not(CONFIG_PPC_BOOK3S_32))]
 #[inline]
-pub const fn _get_L2CR() -> ::core::ffi::c_long { 0 }
+pub const fn _get_L2CR() -> ::kernel::ffi::c_long { 0 }
 #[cfg(not(CONFIG_PPC_BOOK3S_32))]
 #[inline]
-pub const fn _get_L3CR() -> ::core::ffi::c_long { 0 }
+pub const fn _get_L3CR() -> ::kernel::ffi::c_long { 0 }
 #[cfg(not(CONFIG_PPC_BOOK3S_32))]
 #[inline]
-pub fn _set_L2CR(_val: ::core::ffi::c_ulong) {}
+pub fn _set_L2CR(_val: ::kernel::ffi::c_ulong) {}
 #[cfg(not(CONFIG_PPC_BOOK3S_32))]
 #[inline]
-pub fn _set_L3CR(_val: ::core::ffi::c_ulong) {}
+pub fn _set_L3CR(_val: ::kernel::ffi::c_ulong) {}
 
 // PowerPC inline assembly operations from the source header.
 #[inline]
-pub unsafe fn dcbz(addr: *mut ::core::ffi::c_void) {
+pub unsafe fn dcbz(addr: *mut ::kernel::ffi::c_void) {
     core::arch::asm!("dcbz 0, {0}", in(reg) addr, options(nostack, preserves_flags));
 }
 
 #[inline]
-pub unsafe fn dcbi(addr: *mut ::core::ffi::c_void) {
+pub unsafe fn dcbi(addr: *mut ::kernel::ffi::c_void) {
     core::arch::asm!("dcbi 0, {0}", in(reg) addr, options(nostack, preserves_flags));
 }
 
 #[inline]
-pub unsafe fn dcbf(addr: *mut ::core::ffi::c_void) {
+pub unsafe fn dcbf(addr: *mut ::kernel::ffi::c_void) {
     core::arch::asm!("dcbf 0, {0}", in(reg) addr, options(nostack, preserves_flags));
 }
 
 #[inline]
-pub unsafe fn dcbst(addr: *mut ::core::ffi::c_void) {
+pub unsafe fn dcbst(addr: *mut ::kernel::ffi::c_void) {
     core::arch::asm!("dcbst 0, {0}", in(reg) addr, options(nostack, preserves_flags));
 }
 
 #[inline]
-pub unsafe fn icbi(addr: *mut ::core::ffi::c_void) {
+pub unsafe fn icbi(addr: *mut ::kernel::ffi::c_void) {
     core::arch::asm!("icbi 0, {0}", in(reg) addr, options(nostack, preserves_flags));
 }
 
 #[inline]
-pub unsafe fn iccci(addr: *mut ::core::ffi::c_void) {
+pub unsafe fn iccci(addr: *mut ::kernel::ffi::c_void) {
     core::arch::asm!("iccci 0, {0}", in(reg) addr, options(nostack, preserves_flags));
 }
 

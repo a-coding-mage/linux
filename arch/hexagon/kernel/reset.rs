@@ -3,7 +3,7 @@
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 unsafe extern "C" {
     fn smp_send_stop();

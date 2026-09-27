@@ -6,45 +6,45 @@
 
 unsafe extern "C" {
     pub fn bitmap_parse_user(
-        ubuf: *const core::ffi::c_char,
+        ubuf: *const kernel::ffi::c_char,
         ulen: u32,
-        dst: *mut core::ffi::c_ulong,
+        dst: *mut kernel::ffi::c_ulong,
         nbits: i32,
     ) -> i32;
 
     pub fn bitmap_print_bitmask_to_buf(
-        buf: *mut core::ffi::c_char,
-        maskp: *const core::ffi::c_ulong,
+        buf: *mut kernel::ffi::c_char,
+        maskp: *const kernel::ffi::c_ulong,
         nmaskbits: i32,
         off: i64,
         count: usize,
     ) -> i32;
 
     pub fn bitmap_print_list_to_buf(
-        buf: *mut core::ffi::c_char,
-        maskp: *const core::ffi::c_ulong,
+        buf: *mut kernel::ffi::c_char,
+        maskp: *const kernel::ffi::c_ulong,
         nmaskbits: i32,
         off: i64,
         count: usize,
     ) -> i32;
 
     pub fn bitmap_parse(
-        buf: *const core::ffi::c_char,
+        buf: *const kernel::ffi::c_char,
         buflen: u32,
-        dst: *mut core::ffi::c_ulong,
+        dst: *mut kernel::ffi::c_ulong,
         nbits: i32,
     ) -> i32;
 
     pub fn bitmap_parselist(
-        buf: *const core::ffi::c_char,
-        maskp: *mut core::ffi::c_ulong,
+        buf: *const kernel::ffi::c_char,
+        maskp: *mut kernel::ffi::c_ulong,
         nmaskbits: i32,
     ) -> i32;
 
     pub fn bitmap_parselist_user(
-        ubuf: *const core::ffi::c_char,
+        ubuf: *const kernel::ffi::c_char,
         ulen: u32,
-        dst: *mut core::ffi::c_ulong,
+        dst: *mut kernel::ffi::c_ulong,
         nbits: i32,
     ) -> i32;
 }

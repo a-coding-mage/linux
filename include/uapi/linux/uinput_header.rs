@@ -21,13 +21,13 @@ pub struct uinput_ff_erase {
 }
 
 pub const UINPUT_IOCTL_BASE: u8 = b'U';
-pub const UI_DEV_CREATE: _ = _IO!(UINPUT_IOCTL_BASE, 1);
-pub const UI_DEV_DESTROY: _ = _IO!(UINPUT_IOCTL_BASE, 2);
+pub const UI_DEV_CREATE: u32 = _IO!(UINPUT_IOCTL_BASE, 1);
+pub const UI_DEV_DESTROY: u32 = _IO!(UINPUT_IOCTL_BASE, 2);
 
 #[repr(C)]
 pub struct uinput_setup {
     pub id: input_id,
-    pub name: [core::ffi::c_char; UINPUT_MAX_NAME_SIZE],
+    pub name: [kernel::ffi::c_char; UINPUT_MAX_NAME_SIZE],
     pub ff_effects_max: u32,
 }
 
@@ -37,7 +37,7 @@ pub struct uinput_setup {
  * This ioctl sets parameters for the input device to be created. It supersedes
  * the old "struct uinput_user_dev" method, which wrote this data via write().
  */
-pub const UI_DEV_SETUP: _ = _IOW!(UINPUT_IOCTL_BASE, 3, uinput_setup);
+pub const UI_DEV_SETUP: u32 = _IOW!(UINPUT_IOCTL_BASE, 3, uinput_setup);
 
 #[repr(C)]
 pub struct uinput_abs_setup {
@@ -46,24 +46,24 @@ pub struct uinput_abs_setup {
 }
 
 /** UI_ABS_SETUP - Set absolute axis information for the device to setup. */
-pub const UI_ABS_SETUP: _ = _IOW!(UINPUT_IOCTL_BASE, 4, uinput_abs_setup);
+pub const UI_ABS_SETUP: u32 = _IOW!(UINPUT_IOCTL_BASE, 4, uinput_abs_setup);
 
-pub const UI_SET_EVBIT: _ = _IOW!(UINPUT_IOCTL_BASE, 100, core::ffi::c_int);
-pub const UI_SET_KEYBIT: _ = _IOW!(UINPUT_IOCTL_BASE, 101, core::ffi::c_int);
-pub const UI_SET_RELBIT: _ = _IOW!(UINPUT_IOCTL_BASE, 102, core::ffi::c_int);
-pub const UI_SET_ABSBIT: _ = _IOW!(UINPUT_IOCTL_BASE, 103, core::ffi::c_int);
-pub const UI_SET_MSCBIT: _ = _IOW!(UINPUT_IOCTL_BASE, 104, core::ffi::c_int);
-pub const UI_SET_LEDBIT: _ = _IOW!(UINPUT_IOCTL_BASE, 105, core::ffi::c_int);
-pub const UI_SET_SNDBIT: _ = _IOW!(UINPUT_IOCTL_BASE, 106, core::ffi::c_int);
-pub const UI_SET_FFBIT: _ = _IOW!(UINPUT_IOCTL_BASE, 107, core::ffi::c_int);
-pub const UI_SET_PHYS: _ = _IOW!(UINPUT_IOCTL_BASE, 108, *mut core::ffi::c_char);
-pub const UI_SET_SWBIT: _ = _IOW!(UINPUT_IOCTL_BASE, 109, core::ffi::c_int);
-pub const UI_SET_PROPBIT: _ = _IOW!(UINPUT_IOCTL_BASE, 110, core::ffi::c_int);
+pub const UI_SET_EVBIT: u32 = _IOW!(UINPUT_IOCTL_BASE, 100, kernel::ffi::c_int);
+pub const UI_SET_KEYBIT: u32 = _IOW!(UINPUT_IOCTL_BASE, 101, kernel::ffi::c_int);
+pub const UI_SET_RELBIT: u32 = _IOW!(UINPUT_IOCTL_BASE, 102, kernel::ffi::c_int);
+pub const UI_SET_ABSBIT: u32 = _IOW!(UINPUT_IOCTL_BASE, 103, kernel::ffi::c_int);
+pub const UI_SET_MSCBIT: u32 = _IOW!(UINPUT_IOCTL_BASE, 104, kernel::ffi::c_int);
+pub const UI_SET_LEDBIT: u32 = _IOW!(UINPUT_IOCTL_BASE, 105, kernel::ffi::c_int);
+pub const UI_SET_SNDBIT: u32 = _IOW!(UINPUT_IOCTL_BASE, 106, kernel::ffi::c_int);
+pub const UI_SET_FFBIT: u32 = _IOW!(UINPUT_IOCTL_BASE, 107, kernel::ffi::c_int);
+pub const UI_SET_PHYS: u32 = _IOW!(UINPUT_IOCTL_BASE, 108, *mut kernel::ffi::c_char);
+pub const UI_SET_SWBIT: u32 = _IOW!(UINPUT_IOCTL_BASE, 109, kernel::ffi::c_int);
+pub const UI_SET_PROPBIT: u32 = _IOW!(UINPUT_IOCTL_BASE, 110, kernel::ffi::c_int);
 
-pub const UI_BEGIN_FF_UPLOAD: _ = _IOWR!(UINPUT_IOCTL_BASE, 200, uinput_ff_upload);
-pub const UI_END_FF_UPLOAD: _ = _IOW!(UINPUT_IOCTL_BASE, 201, uinput_ff_upload);
-pub const UI_BEGIN_FF_ERASE: _ = _IOWR!(UINPUT_IOCTL_BASE, 202, uinput_ff_erase);
-pub const UI_END_FF_ERASE: _ = _IOW!(UINPUT_IOCTL_BASE, 203, uinput_ff_erase);
+pub const UI_BEGIN_FF_UPLOAD: u32 = _IOWR!(UINPUT_IOCTL_BASE, 200, uinput_ff_upload);
+pub const UI_END_FF_UPLOAD: u32 = _IOW!(UINPUT_IOCTL_BASE, 201, uinput_ff_upload);
+pub const UI_BEGIN_FF_ERASE: u32 = _IOWR!(UINPUT_IOCTL_BASE, 202, uinput_ff_erase);
+pub const UI_END_FF_ERASE: u32 = _IOW!(UINPUT_IOCTL_BASE, 203, uinput_ff_erase);
 
 /** UI_GET_SYSNAME - get the sysfs name of the created uinput device. */
 pub const fn ui_get_sysname(len: u32) -> u32 {
@@ -71,7 +71,7 @@ pub const fn ui_get_sysname(len: u32) -> u32 {
 }
 
 /** UI_GET_VERSION - Return version of uinput protocol. */
-pub const UI_GET_VERSION: _ = _IOR!(UINPUT_IOCTL_BASE, 45, u32);
+pub const UI_GET_VERSION: u32 = _IOR!(UINPUT_IOCTL_BASE, 45, u32);
 
 pub const EV_UINPUT: u32 = 0x0101;
 pub const UI_FF_UPLOAD: u32 = 1;
@@ -79,7 +79,7 @@ pub const UI_FF_ERASE: u32 = 2;
 
 #[repr(C)]
 pub struct uinput_user_dev {
-    pub name: [core::ffi::c_char; UINPUT_MAX_NAME_SIZE],
+    pub name: [kernel::ffi::c_char; UINPUT_MAX_NAME_SIZE],
     pub id: input_id,
     pub ff_effects_max: u32,
     pub absmax: [i32; ABS_CNT],

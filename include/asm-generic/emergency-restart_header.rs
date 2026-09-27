@@ -4,7 +4,7 @@
 
 // Supplied by another translation unit/header.
 unsafe extern "C" {
-    fn machine_restart(cmd: *const core::ffi::c_char);
+    fn machine_restart(cmd: *const kernel::ffi::c_char);
 }
 
 #[inline]

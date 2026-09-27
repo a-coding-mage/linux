@@ -5,7 +5,7 @@
  * Copyright 2016 Michael Ellerman, IBM Corporation.
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 unsafe extern "C" {
     pub fn initialize_cache_info();

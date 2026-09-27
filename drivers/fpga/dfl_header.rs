@@ -128,7 +128,7 @@ pub struct dfl_feature_dev_data;
 
 #[repr(C)]
 pub struct dfl_fpga_port_ops {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub owner: *mut module,
     pub node: list_head,
     pub get_id: Option<unsafe extern "C" fn(*mut dfl_feature_dev_data) -> i32>,
@@ -140,29 +140,29 @@ extern "C" {
     pub fn dfl_fpga_port_ops_del(ops: *mut dfl_fpga_port_ops);
     pub fn dfl_fpga_port_ops_get(fdata: *mut dfl_feature_dev_data) -> *mut dfl_fpga_port_ops;
     pub fn dfl_fpga_port_ops_put(ops: *mut dfl_fpga_port_ops);
-    pub fn dfl_fpga_check_port_id(fdata: *mut dfl_feature_dev_data, pport_id: *mut core::ffi::c_void) -> i32;
+    pub fn dfl_fpga_check_port_id(fdata: *mut dfl_feature_dev_data, pport_id: *mut kernel::ffi::c_void) -> i32;
 }
 
 #[repr(C)] pub struct dfl_feature_id { pub id: u16 }
 #[repr(C)] pub struct dfl_feature_driver { pub id_table: *const dfl_feature_id, pub ops: *const dfl_feature_ops }
-#[repr(C)] pub struct dfl_feature_irq_ctx { pub irq: i32, pub trigger: *mut eventfd_ctx, pub name: *mut core::ffi::c_char }
+#[repr(C)] pub struct dfl_feature_irq_ctx { pub irq: i32, pub trigger: *mut eventfd_ctx, pub name: *mut kernel::ffi::c_char }
 
 #[repr(C)]
 pub struct dfl_feature {
     pub dev: *mut platform_device, pub id: u16, pub revision: u8, pub resource_index: i32,
-    pub ioaddr: *mut core::ffi::c_void, pub irq_ctx: *mut dfl_feature_irq_ctx,
+    pub ioaddr: *mut kernel::ffi::c_void, pub irq_ctx: *mut dfl_feature_irq_ctx,
     pub nr_irqs: u32, pub ops: *const dfl_feature_ops, pub ddev: *mut dfl_device,
-    pub priv_: *mut core::ffi::c_void, pub dfh_version: u8, pub param_size: u32,
-    pub params: *mut core::ffi::c_void,
+    pub priv_: *mut kernel::ffi::c_void, pub dfh_version: u8, pub param_size: u32,
+    pub params: *mut kernel::ffi::c_void,
 }
 pub const FEATURE_DEV_ID_UNUSED: i32 = -1;
 
 #[repr(C)]
 pub struct dfl_feature_dev_data {
     pub node: list_head, pub lock: mutex, pub dev: *mut platform_device, pub r#type: dfl_id_type,
-    pub pdev_id: i32, pub pdev_name: *const core::ffi::c_char, pub dfl_cdev: *mut dfl_fpga_cdev,
+    pub pdev_id: i32, pub pdev_name: *const kernel::ffi::c_char, pub dfl_cdev: *mut dfl_fpga_cdev,
     pub id: i32, pub disable_count: u32, pub excl_open: bool, pub open_count: i32,
-    pub private: *mut core::ffi::c_void, pub num: i32, pub features: *mut dfl_feature,
+    pub private: *mut kernel::ffi::c_void, pub num: i32, pub features: *mut dfl_feature,
     pub resource_num: i32, pub resources: *mut resource,
 }
 
@@ -179,8 +179,8 @@ pub unsafe fn dfl_feature_dev_use_end(fdata: *mut dfl_feature_dev_data) {
     (*fdata).open_count -= 1;
 }
 pub unsafe fn dfl_feature_dev_use_count(fdata: *mut dfl_feature_dev_data) -> i32 { (*fdata).open_count }
-pub unsafe fn dfl_fpga_fdata_set_private(fdata: *mut dfl_feature_dev_data, private: *mut core::ffi::c_void) { (*fdata).private = private; }
-pub unsafe fn dfl_fpga_fdata_get_private(fdata: *mut dfl_feature_dev_data) -> *mut core::ffi::c_void { (*fdata).private }
+pub unsafe fn dfl_fpga_fdata_set_private(fdata: *mut dfl_feature_dev_data, private: *mut kernel::ffi::c_void) { (*fdata).private = private; }
+pub unsafe fn dfl_fpga_fdata_get_private(fdata: *mut dfl_feature_dev_data) -> *mut kernel::ffi::c_void { (*fdata).private }
 
 #[repr(C)]
 pub struct dfl_feature_ops {
@@ -207,7 +207,7 @@ pub unsafe fn dfl_get_feature_by_id(fdata: *mut dfl_feature_dev_data, id: u16) -
     for _ in 0..(*fdata).num { if (*feature).id == id { return feature; } feature = feature.add(1); }
     core::ptr::null_mut()
 }
-pub unsafe fn dfl_get_feature_ioaddr_by_id(fdata: *mut dfl_feature_dev_data, id: u16) -> *mut core::ffi::c_void {
+pub unsafe fn dfl_get_feature_ioaddr_by_id(fdata: *mut dfl_feature_dev_data, id: u16) -> *mut kernel::ffi::c_void {
     let feature = dfl_get_feature_by_id(fdata, id);
     if !feature.is_null() && !(*feature).ioaddr.is_null() { return (*feature).ioaddr; }
     WARN_ON(true); core::ptr::null_mut()
@@ -218,13 +218,13 @@ pub unsafe fn to_dfl_feature_dev_data(dev: *mut device) -> *mut dfl_feature_dev_
 pub unsafe fn dfl_fpga_fdata_to_parent(fdata: *mut dfl_feature_dev_data) -> *mut device {
     (*(*(*fdata).dev).dev).parent.unwrap().parent.unwrap()
 }
-pub unsafe fn dfl_feature_is_fme(base: *mut core::ffi::c_void) -> bool {
+pub unsafe fn dfl_feature_is_fme(base: *mut kernel::ffi::c_void) -> bool {
     let v = readq(base.add(DFH as usize)); ((v & DFH_TYPE) >> 60) == DFH_TYPE_FIU && (v & DFH_ID) == DFH_ID_FIU_FME
 }
-pub unsafe fn dfl_feature_is_port(base: *mut core::ffi::c_void) -> bool {
+pub unsafe fn dfl_feature_is_port(base: *mut kernel::ffi::c_void) -> bool {
     let v = readq(base.add(DFH as usize)); ((v & DFH_TYPE) >> 60) == DFH_TYPE_FIU && (v & DFH_ID) == DFH_ID_FIU_PORT
 }
-pub unsafe fn dfl_feature_revision(base: *mut core::ffi::c_void) -> u8 { ((readq(base.add(DFH as usize)) & DFH_REVISION) >> 12) as u8 }
+pub unsafe fn dfl_feature_revision(base: *mut kernel::ffi::c_void) -> u8 { ((readq(base.add(DFH as usize)) & DFH_REVISION) >> 12) as u8 }
 
 #[repr(C)] pub struct dfl_fpga_enum_info { pub dev: *mut device, pub dfls: list_head, pub nr_irqs: u32, pub irq_table: *mut i32 }
 #[repr(C)] pub struct dfl_fpga_enum_dfl { pub start: resource_size_t, pub len: resource_size_t, pub node: list_head }
@@ -238,7 +238,7 @@ extern "C" {
 extern "C" {
     pub fn dfl_fpga_feature_devs_enumerate(info: *mut dfl_fpga_enum_info) -> *mut dfl_fpga_cdev;
     pub fn dfl_fpga_feature_devs_remove(cdev: *mut dfl_fpga_cdev);
-    pub fn __dfl_fpga_cdev_find_port_data(cdev: *mut dfl_fpga_cdev, data: *mut core::ffi::c_void, r#match: Option<unsafe extern "C" fn(*mut dfl_feature_dev_data, *mut core::ffi::c_void) -> i32>) -> *mut dfl_feature_dev_data;
+    pub fn __dfl_fpga_cdev_find_port_data(cdev: *mut dfl_fpga_cdev, data: *mut kernel::ffi::c_void, r#match: Option<unsafe extern "C" fn(*mut dfl_feature_dev_data, *mut kernel::ffi::c_void) -> i32>) -> *mut dfl_feature_dev_data;
     pub fn dfl_fpga_cdev_release_port(cdev: *mut dfl_fpga_cdev, port_id: i32) -> i32;
     pub fn dfl_fpga_cdev_assign_port(cdev: *mut dfl_fpga_cdev, port_id: i32) -> i32;
     pub fn dfl_fpga_cdev_config_ports_pf(cdev: *mut dfl_fpga_cdev);

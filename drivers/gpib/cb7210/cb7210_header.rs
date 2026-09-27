@@ -27,9 +27,9 @@ pub struct cb7210_priv {
     pub nec7210_priv: nec7210_priv,
     pub pci_device: *mut pci_dev,
     // base address of amccs5933 pci chip
-    pub amcc_iobase: libc::c_ulong,
-    pub fifo_iobase: libc::c_ulong,
-    pub irq: libc::c_uint,
+    pub amcc_iobase: kernel::ffi::c_ulong,
+    pub fifo_iobase: kernel::ffi::c_ulong,
+    pub irq: kernel::ffi::c_uint,
     pub pci_chip: pci_chip,
     pub hs_mode_bits: u8,
     pub out_fifo_half_empty: u32,
@@ -37,12 +37,12 @@ pub struct cb7210_priv {
 }
 
 // pci-gpib register offset
-pub const cb7210_reg_offset: libc::c_int = 1;
+pub const cb7210_reg_offset: kernel::ffi::c_int = 1;
 // uses 10 ioports
-pub const cb7210_iosize: libc::c_int = 10;
+pub const cb7210_iosize: kernel::ffi::c_int = 10;
 // fifo size in bytes
-pub const cb7210_fifo_size: libc::c_int = 2048;
-pub const cb7210_fifo_width: libc::c_int = 2;
+pub const cb7210_fifo_size: kernel::ffi::c_int = 2048;
+pub const cb7210_fifo_width: kernel::ffi::c_int = 2;
 
 #[repr(u32)]
 pub enum cb7210_regs { BUS_STATUS = 0x7 }
@@ -61,16 +61,16 @@ pub unsafe fn nec7210_iobase(cb_priv: *const cb7210_priv) -> u32 {
 }
 
 #[inline]
-pub fn cb7210_page_in_bits(page: libc::c_uint) -> libc::c_int {
-    0x50 | (page & 0xf) as libc::c_int
+pub fn cb7210_page_in_bits(page: kernel::ffi::c_uint) -> kernel::ffi::c_int {
+    0x50 | (page & 0xf) as kernel::ffi::c_int
 }
 
 #[inline]
 pub unsafe fn cb7210_paged_read_byte(
-    cb_priv: *mut cb7210_priv, register_num: libc::c_uint, page: libc::c_uint,
+    cb_priv: *mut cb7210_priv, register_num: kernel::ffi::c_uint, page: kernel::ffi::c_uint,
 ) -> u8 {
     let nec_priv: *mut nec7210_priv = &mut (*cb_priv).nec7210_priv;
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     spin_lock_irqsave(&mut (*nec_priv).register_page_lock, &mut flags);
     outb(cb7210_page_in_bits(page) as u8,
          nec7210_iobase(cb_priv) + AUXMR * (*nec_priv).offset);
@@ -89,10 +89,10 @@ pub unsafe fn cb7210_read_byte(cb_priv: *const cb7210_priv, register_num: hs_reg
 
 #[inline]
 pub unsafe fn cb7210_paged_write_byte(
-    cb_priv: *mut cb7210_priv, data: u8, register_num: libc::c_uint, page: libc::c_uint,
+    cb_priv: *mut cb7210_priv, data: u8, register_num: kernel::ffi::c_uint, page: kernel::ffi::c_uint,
 ) {
     let nec_priv: *mut nec7210_priv = &mut (*cb_priv).nec7210_priv;
-    let mut flags: libc::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     spin_lock_irqsave(&mut (*nec_priv).register_page_lock, &mut flags);
     outb(cb7210_page_in_bits(page) as u8,
          nec7210_iobase(cb_priv) + AUXMR * (*nec_priv).offset);
@@ -135,7 +135,7 @@ pub enum hs_status_bits {
 pub enum hs_int_level_bits { HS_RESET7210 = 1 << 7 }
 
 #[inline]
-pub fn irq_bits(irq: libc::c_uint) -> libc::c_uint {
+pub fn irq_bits(irq: kernel::ffi::c_uint) -> kernel::ffi::c_uint {
     match irq { 2 | 3 | 4 | 5 => irq - 1, 7 => 0x5, 10 => 0x6, 11 => 0x7, _ => 0 }
 }
 

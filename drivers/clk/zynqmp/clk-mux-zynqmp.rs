@@ -23,10 +23,10 @@ pub struct clk_hw {
 
 #[repr(C)]
 pub struct clk_init_data {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *const clk_ops,
     pub flags: c_ulong,
-    pub parent_names: *const *const core::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub num_parents: u8,
 }
 
@@ -49,11 +49,11 @@ type c_ulong = usize;
 extern "C" {
     fn zynqmp_pm_clock_getparent(clk_id: u32, val: *mut u32) -> c_int;
     fn zynqmp_pm_clock_setparent(clk_id: u32, index: u8) -> c_int;
-    fn clk_hw_get_name(hw: *mut clk_hw) -> *const core::ffi::c_char;
+    fn clk_hw_get_name(hw: *mut clk_hw) -> *const kernel::ffi::c_char;
     fn clk_hw_get_num_parents(hw: *mut clk_hw) -> u8;
-    fn clk_hw_register(dev: *mut core::ffi::c_void, hw: *mut clk_hw) -> c_int;
-    fn kzalloc(size: usize, flags: usize) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn clk_hw_register(dev: *mut kernel::ffi::c_void, hw: *mut clk_hw) -> c_int;
+    fn kzalloc(size: usize, flags: usize) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn __clk_mux_determine_rate_closest() -> c_int;
     fn zynqmp_clk_map_common_ccf_flags(flag: u32) -> c_ulong;
 }
@@ -137,9 +137,9 @@ unsafe fn zynqmp_clk_map_mux_ccf_flags(zynqmp_type_flag: u32) -> c_ulong {
 }
 
 pub unsafe fn zynqmp_clk_register_mux(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     clk_id: u32,
-    parents: *const *const core::ffi::c_char,
+    parents: *const *const kernel::ffi::c_char,
     num_parents: u8,
     nodes: *const clock_topology,
 ) -> *mut clk_hw {
@@ -167,7 +167,7 @@ pub unsafe fn zynqmp_clk_register_mux(
     let hw = &mut (*mux).hw as *mut clk_hw;
     let ret = clk_hw_register(core::ptr::null_mut(), hw);
     if ret != 0 {
-        kfree(mux as *mut core::ffi::c_void);
+        kfree(mux as *mut kernel::ffi::c_void);
         return (ret as isize) as *mut clk_hw;
     }
     hw

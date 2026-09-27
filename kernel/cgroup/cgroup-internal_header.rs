@@ -7,7 +7,7 @@
 pub const TRACE_CGROUP_PATH_LEN: usize = 1024;
 extern "C" {
     pub static mut trace_cgroup_path_lock: spinlock_t;
-    pub static mut trace_cgroup_path: [::core::ffi::c_char; TRACE_CGROUP_PATH_LEN];
+    pub static mut trace_cgroup_path: [::kernel::ffi::c_char; TRACE_CGROUP_PATH_LEN];
     pub fn enable_debug_cgroup();
 }
 
@@ -29,13 +29,13 @@ pub struct cgroup_fs_context {
     pub kfc: kernfs_fs_context,
     pub root: *mut cgroup_root,
     pub ns: *mut cgroup_namespace,
-    pub flags: ::core::ffi::c_uint,
+    pub flags: ::kernel::ffi::c_uint,
     pub cpuset_clone_children: bool,
     pub none: bool,
     pub all_ss: bool,
     pub subsys_mask: u32,
-    pub name: *mut ::core::ffi::c_char,
-    pub release_agent: *mut ::core::ffi::c_char,
+    pub name: *mut ::kernel::ffi::c_char,
+    pub release_agent: *mut ::kernel::ffi::c_char,
 }
 
 #[inline]
@@ -54,7 +54,7 @@ pub struct cgroup_file_ctx {
     pub procs1: cgroup_file_ctx_procs1,
     pub peak: cgroup_of_peak,
 }
-#[repr(C)] pub struct cgroup_file_ctx_psi { pub trigger: *mut ::core::ffi::c_void }
+#[repr(C)] pub struct cgroup_file_ctx_psi { pub trigger: *mut ::kernel::ffi::c_void }
 #[repr(C)] pub struct cgroup_file_ctx_procs { pub started: bool, pub iter: css_task_iter }
 #[repr(C)] pub struct cgroup_file_ctx_procs1 { pub pidlist: *mut cgroup_pidlist }
 
@@ -79,8 +79,8 @@ pub struct cgrp_cset_link {
 pub struct cgroup_taskset {
     pub src_csets: list_head,
     pub dst_csets: list_head,
-    pub nr_tasks: ::core::ffi::c_int,
-    pub ssid: ::core::ffi::c_int,
+    pub nr_tasks: ::kernel::ffi::c_int,
+    pub ssid: ::kernel::ffi::c_int,
     pub csets: *mut list_head,
     pub cur_cset: *mut css_set,
     pub cur_task: *mut task_struct,
@@ -124,7 +124,7 @@ extern "C" {
 }
 #[inline]
 pub unsafe fn put_css_set(cset: *mut css_set) {
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
     if refcount_dec_not_one!(&mut (*cset).refcount) { return; }
     spin_lock_irqsave!(&mut css_set_lock, flags);
     put_css_set_locked(cset);
@@ -134,50 +134,50 @@ pub unsafe fn put_css_set(cset: *mut css_set) {
 pub unsafe fn get_css_set(cset: *mut css_set) { refcount_inc!(&mut (*cset).refcount); }
 
 extern "C" {
-    pub fn cgroup_ssid_enabled(ssid: ::core::ffi::c_int) -> bool;
+    pub fn cgroup_ssid_enabled(ssid: ::kernel::ffi::c_int) -> bool;
     pub fn cgroup_root_from_kf(kf_root: *mut kernfs_root) -> *mut cgroup_root;
     pub fn task_cgroup_from_root(task: *mut task_struct, root: *mut cgroup_root) -> *mut cgroup;
     pub fn cgroup_kn_lock_live(kn: *mut kernfs_node, drain_offline: bool) -> *mut cgroup;
     pub fn cgroup_kn_unlock(kn: *mut kernfs_node);
-    pub fn cgroup_path_ns_locked(cgrp: *mut cgroup, buf: *mut ::core::ffi::c_char, buflen: usize, ns: *mut cgroup_namespace) -> ::core::ffi::c_int;
+    pub fn cgroup_path_ns_locked(cgrp: *mut cgroup, buf: *mut ::kernel::ffi::c_char, buflen: usize, ns: *mut cgroup_namespace) -> ::kernel::ffi::c_int;
     pub fn cgroup_favor_dynmods(root: *mut cgroup_root, favor: bool);
     pub fn cgroup_free_root(root: *mut cgroup_root);
     pub fn init_cgroup_root(ctx: *mut cgroup_fs_context);
-    pub fn cgroup_setup_root(root: *mut cgroup_root, ss_mask: u32) -> ::core::ffi::c_int;
-    pub fn rebind_subsystems(dst_root: *mut cgroup_root, ss_mask: u32) -> ::core::ffi::c_int;
-    pub fn cgroup_do_get_tree(fc: *mut fs_context) -> ::core::ffi::c_int;
-    pub fn cgroup_migrate_vet_dst(dst_cgrp: *mut cgroup) -> ::core::ffi::c_int;
+    pub fn cgroup_setup_root(root: *mut cgroup_root, ss_mask: u32) -> ::kernel::ffi::c_int;
+    pub fn rebind_subsystems(dst_root: *mut cgroup_root, ss_mask: u32) -> ::kernel::ffi::c_int;
+    pub fn cgroup_do_get_tree(fc: *mut fs_context) -> ::kernel::ffi::c_int;
+    pub fn cgroup_migrate_vet_dst(dst_cgrp: *mut cgroup) -> ::kernel::ffi::c_int;
     pub fn cgroup_migrate_finish(mgctx: *mut cgroup_mgctx);
     pub fn cgroup_migrate_add_src(src_cset: *mut css_set, dst_cgrp: *mut cgroup, mgctx: *mut cgroup_mgctx);
-    pub fn cgroup_migrate_prepare_dst(mgctx: *mut cgroup_mgctx) -> ::core::ffi::c_int;
-    pub fn cgroup_migrate(leader: *mut task_struct, threadgroup: bool, mgctx: *mut cgroup_mgctx) -> ::core::ffi::c_int;
-    pub fn cgroup_attach_task(dst_cgrp: *mut cgroup, leader: *mut task_struct, threadgroup: bool) -> ::core::ffi::c_int;
+    pub fn cgroup_migrate_prepare_dst(mgctx: *mut cgroup_mgctx) -> ::kernel::ffi::c_int;
+    pub fn cgroup_migrate(leader: *mut task_struct, threadgroup: bool, mgctx: *mut cgroup_mgctx) -> ::kernel::ffi::c_int;
+    pub fn cgroup_attach_task(dst_cgrp: *mut cgroup, leader: *mut task_struct, threadgroup: bool) -> ::kernel::ffi::c_int;
     pub fn cgroup_attach_lock(lock_mode: cgroup_attach_lock_mode, tsk: *mut task_struct);
     pub fn cgroup_attach_unlock(lock_mode: cgroup_attach_lock_mode, tsk: *mut task_struct);
-    pub fn cgroup_procs_write_start(buf: *mut ::core::ffi::c_char, threadgroup: bool, lock_mode: *mut cgroup_attach_lock_mode) -> *mut task_struct;
+    pub fn cgroup_procs_write_start(buf: *mut ::kernel::ffi::c_char, threadgroup: bool, lock_mode: *mut cgroup_attach_lock_mode) -> *mut task_struct;
     pub fn cgroup_procs_write_finish(task: *mut task_struct, lock_mode: cgroup_attach_lock_mode);
     pub fn cgroup_lock_and_drain_offline(cgrp: *mut cgroup);
-    pub fn cgroup_mkdir(parent_kn: *mut kernfs_node, name: *const ::core::ffi::c_char, mode: umode_t) -> ::core::ffi::c_int;
-    pub fn cgroup_rmdir(kn: *mut kernfs_node) -> ::core::ffi::c_int;
-    pub fn cgroup_show_path(sf: *mut seq_file, kf_node: *mut kernfs_node, kf_root: *mut kernfs_root) -> ::core::ffi::c_int;
-    pub fn __cgroup_task_count(cgrp: *const cgroup) -> ::core::ffi::c_int;
-    pub fn cgroup_task_count(cgrp: *const cgroup) -> ::core::ffi::c_int;
-    pub fn css_rstat_init(css: *mut cgroup_subsys_state) -> ::core::ffi::c_int;
+    pub fn cgroup_mkdir(parent_kn: *mut kernfs_node, name: *const ::kernel::ffi::c_char, mode: umode_t) -> ::kernel::ffi::c_int;
+    pub fn cgroup_rmdir(kn: *mut kernfs_node) -> ::kernel::ffi::c_int;
+    pub fn cgroup_show_path(sf: *mut seq_file, kf_node: *mut kernfs_node, kf_root: *mut kernfs_root) -> ::kernel::ffi::c_int;
+    pub fn __cgroup_task_count(cgrp: *const cgroup) -> ::kernel::ffi::c_int;
+    pub fn cgroup_task_count(cgrp: *const cgroup) -> ::kernel::ffi::c_int;
+    pub fn css_rstat_init(css: *mut cgroup_subsys_state) -> ::kernel::ffi::c_int;
     pub fn css_rstat_exit(css: *mut cgroup_subsys_state);
-    pub fn ss_rstat_init(ss: *mut cgroup_subsys) -> ::core::ffi::c_int;
+    pub fn ss_rstat_init(ss: *mut cgroup_subsys) -> ::kernel::ffi::c_int;
     pub fn cgroup_base_stat_cputime_show(seq: *mut seq_file);
     pub static cgroupns_operations: proc_ns_operations;
     pub static mut cgroup1_base_files: cftype;
     pub static mut cgroup1_kf_syscall_ops: kernfs_syscall_ops;
     pub static cgroup1_fs_parameters: fs_parameter_spec;
-    pub fn proc_cgroupstats_show(m: *mut seq_file, v: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-    pub fn cgroup1_ssid_disabled(ssid: ::core::ffi::c_int) -> bool;
+    pub fn proc_cgroupstats_show(m: *mut seq_file, v: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
+    pub fn cgroup1_ssid_disabled(ssid: ::kernel::ffi::c_int) -> bool;
     pub fn cgroup1_pidlist_destroy_all(cgrp: *mut cgroup);
     pub fn cgroup1_release_agent(work: *mut work_struct);
     pub fn cgroup1_check_for_release(cgrp: *mut cgroup);
-    pub fn cgroup1_parse_param(fc: *mut fs_context, param: *mut fs_parameter) -> ::core::ffi::c_int;
-    pub fn cgroup1_get_tree(fc: *mut fs_context) -> ::core::ffi::c_int;
-    pub fn cgroup1_reconfigure(ctx: *mut fs_context) -> ::core::ffi::c_int;
+    pub fn cgroup1_parse_param(fc: *mut fs_context, param: *mut fs_parameter) -> ::kernel::ffi::c_int;
+    pub fn cgroup1_get_tree(fc: *mut fs_context) -> ::kernel::ffi::c_int;
+    pub fn cgroup1_reconfigure(ctx: *mut fs_context) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -137,9 +137,9 @@ pub enum OID {
 }
 
 unsafe extern "C" {
-    pub fn look_up_OID(data: *const core::ffi::c_void, datasize: usize) -> OID;
-    pub fn parse_OID(data: *const core::ffi::c_void, datasize: usize, oid: *mut OID) -> core::ffi::c_int;
-    pub fn sprint_oid(data: *const core::ffi::c_void, datasize: usize, buffer: *mut core::ffi::c_char, buffersize: usize) -> core::ffi::c_int;
+    pub fn look_up_OID(data: *const kernel::ffi::c_void, datasize: usize) -> OID;
+    pub fn parse_OID(data: *const kernel::ffi::c_void, datasize: usize, oid: *mut OID) -> kernel::ffi::c_int;
+    pub fn sprint_oid(data: *const kernel::ffi::c_void, datasize: usize, buffer: *mut kernel::ffi::c_char, buffersize: usize) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

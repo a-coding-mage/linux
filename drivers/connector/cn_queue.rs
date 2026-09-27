@@ -10,7 +10,7 @@
 
 unsafe fn cn_queue_alloc_callback_entry(
     dev: *mut cn_queue_dev,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     id: *const cb_id,
     callback: Option<unsafe extern "C" fn(*mut cn_msg, *mut netlink_skb_parms)>,
 ) -> *mut cn_callback_entry {
@@ -50,7 +50,7 @@ pub unsafe extern "C" fn cn_cb_equal(i1: *const cb_id, i2: *const cb_id) -> i32 
 
 pub unsafe extern "C" fn cn_queue_add_callback(
     dev: *mut cn_queue_dev,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     id: *const cb_id,
     callback: Option<unsafe extern "C" fn(*mut cn_msg, *mut netlink_skb_parms)>,
 ) -> i32 {
@@ -104,7 +104,7 @@ pub unsafe extern "C" fn cn_queue_del_callback(dev: *mut cn_queue_dev, id: *cons
 }
 
 pub unsafe extern "C" fn cn_queue_alloc_dev(
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     nls: *mut sock,
 ) -> *mut cn_queue_dev {
     let dev = kzalloc_obj::<cn_queue_dev>();

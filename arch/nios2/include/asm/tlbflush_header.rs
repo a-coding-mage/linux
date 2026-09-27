@@ -28,16 +28,16 @@ unsafe extern "C" {
     // C dependency: struct vm_area_struct;
     pub fn flush_tlb_range(
         vma: *mut vm_area_struct,
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
     );
     pub fn flush_tlb_kernel_range(
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
     );
     pub fn reload_tlb_page(
         vma: *mut vm_area_struct,
-        addr: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
         pte: pte_t,
     );
 }
@@ -49,20 +49,20 @@ pub struct vm_area_struct {
 }
 
 // C dependency: pte_t.
-pub type pte_t = ::core::ffi::c_ulong;
+pub type pte_t = ::kernel::ffi::c_ulong;
 
 // C dependency: PAGE_SIZE.
 unsafe extern "C" {
-    static PAGE_SIZE: ::core::ffi::c_ulong;
+    static PAGE_SIZE: ::kernel::ffi::c_ulong;
 }
 
 #[inline]
-pub unsafe fn flush_tlb_page(vma: *mut vm_area_struct, address: ::core::ffi::c_ulong) {
+pub unsafe fn flush_tlb_page(vma: *mut vm_area_struct, address: ::kernel::ffi::c_ulong) {
     flush_tlb_range(vma, address, address.wrapping_add(PAGE_SIZE));
 }
 
 #[inline]
-pub unsafe fn flush_tlb_kernel_page(address: ::core::ffi::c_ulong) {
+pub unsafe fn flush_tlb_kernel_page(address: ::kernel::ffi::c_ulong) {
     flush_tlb_kernel_range(address, address.wrapping_add(PAGE_SIZE));
 }
 

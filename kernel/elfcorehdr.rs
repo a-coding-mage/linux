@@ -3,7 +3,7 @@
 // Dependencies supplied by the surrounding kernel translation unit:
 // `ELFCORE_ADDR_MAX`, `memparse`, and the `early_param` registration mechanism.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /// Stores the physical address of the ELF header of the crash image.
 ///

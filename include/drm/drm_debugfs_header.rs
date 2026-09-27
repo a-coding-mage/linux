@@ -43,13 +43,13 @@ macro_rules! DRM_DEBUGFS_GPUVA_INFO {
 #[repr(C)]
 pub struct drm_info_list {
     /// File name.
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     /// Show callback.
-    pub show: Option<unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void) -> i32>,
+    pub show: Option<unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void) -> i32>,
     /// Required driver features for this entry.
     pub driver_features: u32,
     /// Driver-private data, should not be device-specific.
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
 }
 
 /// Per-minor debugfs node structure.
@@ -68,13 +68,13 @@ pub struct drm_info_node {
 #[repr(C)]
 pub struct drm_debugfs_info {
     /// File name.
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     /// Show callback.
-    pub show: Option<unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void) -> i32>,
+    pub show: Option<unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void) -> i32>,
     /// Required driver features for this entry.
     pub driver_features: u32,
     /// Driver-private data, should not be device-specific.
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
 }
 
 /// Per-device debugfs node structure.
@@ -92,7 +92,7 @@ pub struct drm_debugfs_entry {
 extern "C" {
     pub fn drm_debugfs_create_files(files: *const drm_info_list, count: i32, root: *mut dentry, minor: *mut drm_minor);
     pub fn drm_debugfs_remove_files(files: *const drm_info_list, count: i32, root: *mut dentry, minor: *mut drm_minor) -> i32;
-    pub fn drm_debugfs_add_file(dev: *mut drm_device, name: *const core::ffi::c_char, show: Option<unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void) -> i32>, data: *mut core::ffi::c_void);
+    pub fn drm_debugfs_add_file(dev: *mut drm_device, name: *const kernel::ffi::c_char, show: Option<unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void) -> i32>, data: *mut kernel::ffi::c_void);
     pub fn drm_debugfs_add_files(dev: *mut drm_device, files: *const drm_debugfs_info, count: i32);
     pub fn drm_debugfs_gpuva_info(m: *mut seq_file, gpuvm: *mut drm_gpuvm) -> i32;
     pub fn drm_debugfs_clients_add(file: *mut drm_file);
@@ -106,7 +106,7 @@ pub unsafe fn drm_debugfs_create_files(_files: *const drm_info_list, _count: i32
 pub unsafe fn drm_debugfs_remove_files(_files: *const drm_info_list, _count: i32, _root: *mut dentry, _minor: *mut drm_minor) -> i32 { 0 }
 
 #[cfg(not(CONFIG_DEBUG_FS))]
-pub unsafe fn drm_debugfs_add_file(_dev: *mut drm_device, _name: *const core::ffi::c_char, _show: Option<unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void) -> i32>, _data: *mut core::ffi::c_void) {}
+pub unsafe fn drm_debugfs_add_file(_dev: *mut drm_device, _name: *const kernel::ffi::c_char, _show: Option<unsafe extern "C" fn(*mut seq_file, *mut kernel::ffi::c_void) -> i32>, _data: *mut kernel::ffi::c_void) {}
 
 #[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn drm_debugfs_add_files(_dev: *mut drm_device, _files: *const drm_debugfs_info, _count: i32) {}

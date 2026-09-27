@@ -3,14 +3,14 @@
 
 #[cfg(DEBUG)]
 unsafe extern "C" {
-    fn printk(fmt: *const core::ffi::c_char, ...) -> core::ffi::c_int;
+    fn printk(fmt: *const kernel::ffi::c_char, ...) -> kernel::ffi::c_int;
 }
 
-pub fn frsqrtes(frD: *mut core::ffi::c_void, frB: *mut core::ffi::c_void) -> core::ffi::c_int {
+pub fn frsqrtes(frD: *mut kernel::ffi::c_void, frB: *mut kernel::ffi::c_void) -> kernel::ffi::c_int {
     #[cfg(DEBUG)]
     unsafe {
         static FORMAT: &[u8] = b"frsqrtes: %p %p\n\0";
-        let _ = printk(FORMAT.as_ptr() as *const core::ffi::c_char, frD, frB);
+        let _ = printk(FORMAT.as_ptr() as *const kernel::ffi::c_char, frD, frB);
     }
 
     0

@@ -190,7 +190,7 @@ inline int synic_get_sint_vector(sint_value: u64)
  struct kvm_vcpu *get_vcpu_by_vpidx(kvm *kvm, vpidx: u32)
 {
 	struct kvm_vcpu *vcpu = NULL;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 
 	if (vpidx >= KVM_MAX_VCPUS)
 		return NULL;
@@ -1445,7 +1445,7 @@ void kvm_hv_xsaves_xsavec_maybe_warn(kvm_vcpu *vcpu)
 		i += 3;
 
 		/* ret */
-		((core::ffi::c_uchar *)instructions)[i++] = 0xc3;
+		((kernel::ffi::c_uchar *)instructions)[i++] = 0xc3;
 
 		addr = data & HV_X64_MSR_HYPERCALL_PAGE_ADDRESS_MASK;
 		if (kvm_vcpu_write_guest(vcpu, addr, instructions, i))
@@ -1573,7 +1573,7 @@ void kvm_hv_xsaves_xsavec_maybe_warn(kvm_vcpu *vcpu)
 	}
 	case HV_X64_MSR_VP_ASSIST_PAGE: {
 		u64 gfn;
-		core::ffi::c_ulong addr;
+		kernel::ffi::c_ulong addr;
 
 		if (!(data & HV_X64_MSR_VP_ASSIST_PAGE_ENABLE)) {
 			hv_vcpu->hv_vapic = data;
@@ -1815,14 +1815,14 @@ int kvm_hv_get_msr_common(kvm_vcpu *vcpu, msr: u32, u64 *pdata, host: bool)
 }
 
  void sparse_set_to_vcpu_mask(kvm *kvm, u64 *sparse_banks,
-				    valid_bank_mask: u64, core::ffi::c_ulong *vcpu_mask)
+				    valid_bank_mask: u64, kernel::ffi::c_ulong *vcpu_mask)
 {
 	struct kvm_hv *hv = to_kvm_hv(kvm);
 	bool has_mismatch = atomic_read(&hv->num_mismatched_vp_indexes);
 	u64 vp_bitmap[KVM_HV_MAX_SPARSE_VCPU_SET_BITS];
 	struct kvm_vcpu *vcpu;
 	int bank, sbank = 0;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 	u64 *bitmap;
 
 	BUILD_BUG_ON(sizeof(vp_bitmap) >
@@ -1843,7 +1843,7 @@ int kvm_hv_get_msr_common(kvm_vcpu *vcpu, msr: u32, u64 *pdata, host: bool)
 	 * be in ascending order, i.e. bank0..bankN.
 	 */
 	memset(bitmap, 0, sizeof(vp_bitmap));
-	for_each_set_bit(bank, (core::ffi::c_ulong *)&valid_bank_mask,
+	for_each_set_bit(bank, (kernel::ffi::c_ulong *)&valid_bank_mask,
 			 KVM_HV_MAX_SPARSE_VCPU_SET_BITS)
 		bitmap[bank] = sparse_banks[sbank++];
 
@@ -1852,7 +1852,7 @@ int kvm_hv_get_msr_common(kvm_vcpu *vcpu, msr: u32, u64 *pdata, host: bool)
 
 	bitmap_zero(vcpu_mask, KVM_MAX_VCPUS);
 	kvm_for_each_vcpu!(i, vcpu, kvm, {
-		if (test_bit(kvm_hv_get_vpindex(vcpu), (core::ffi::c_ulong *)vp_bitmap))
+		if (test_bit(kvm_hv_get_vpindex(vcpu), (kernel::ffi::c_ulong *)vp_bitmap))
 			__set_bit(i, vcpu_mask);
 	});
 }
@@ -1860,14 +1860,14 @@ int kvm_hv_get_msr_common(kvm_vcpu *vcpu, msr: u32, u64 *pdata, host: bool)
  bool hv_is_vp_in_sparse_set(vp_id: u32, valid_bank_mask: u64, u64 sparse_banks[])
 {
 	int valid_bit_nr = vp_id / HV_VCPUS_PER_SPARSE_BANK;
-	core::ffi::c_ulong sbank;
+	kernel::ffi::c_ulong sbank;
 
 	BUILD_BUG_ON(BITS_PER_TYPE(valid_bank_mask) != HV_MAX_SPARSE_VCPU_BANKS);
 
 	if (valid_bit_nr >= HV_MAX_SPARSE_VCPU_BANKS)
 		return false;
 
-	if (!test_bit(valid_bit_nr, (core::ffi::c_ulong *)&valid_bank_mask))
+	if (!test_bit(valid_bit_nr, (kernel::ffi::c_ulong *)&valid_bank_mask))
 		return false;
 
 	/*
@@ -1881,7 +1881,7 @@ int kvm_hv_get_msr_common(kvm_vcpu *vcpu, msr: u32, u64 *pdata, host: bool)
 		sbank = 0;
 
 	return test_bit(vp_id % HV_VCPUS_PER_SPARSE_BANK,
-			(core::ffi::c_ulong *)&sparse_banks[sbank]);
+			(kernel::ffi::c_ulong *)&sparse_banks[sbank]);
 }
 
 struct kvm_hv_hcall {
@@ -2040,7 +2040,7 @@ int kvm_hv_vcpu_flush_tlb(kvm_vcpu *vcpu)
 {
 	'ret_success: {
 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-	core::ffi::c_ulong *vcpu_mask = hv_vcpu->vcpu_mask;
+	kernel::ffi::c_ulong *vcpu_mask = hv_vcpu->vcpu_mask;
 	u64 *sparse_banks = hv_vcpu->sparse_banks;
 	struct kvm *kvm = vcpu->kvm;
 	struct hv_tlb_flush_ex flush_ex;
@@ -2055,7 +2055,7 @@ int kvm_hv_vcpu_flush_tlb(kvm_vcpu *vcpu)
 	u64 *tlb_flush_entries;
 	u64 valid_bank_mask;
 	struct kvm_vcpu *v;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 	bool all_cpus;
 
 	/*
@@ -2233,7 +2233,7 @@ int kvm_hv_vcpu_flush_tlb(kvm_vcpu *vcpu)
 		vector: vector
 	};
 	struct kvm_vcpu *vcpu;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 
 	kvm_for_each_vcpu!(i, vcpu, kvm, {
 		if (sparse_banks &&

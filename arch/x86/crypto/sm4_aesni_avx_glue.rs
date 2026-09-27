@@ -163,8 +163,8 @@ extern "C" {
     fn crypto_register_skciphers(algs: *mut skcipher_alg, count: usize) -> i32;
     fn crypto_unregister_skciphers(algs: *mut skcipher_alg, count: usize);
     fn boot_cpu_has(feature: u32) -> bool;
-    fn cpu_has_xfeatures(mask: u64, feature_name: *mut *const core::ffi::c_char) -> bool;
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn cpu_has_xfeatures(mask: u64, feature_name: *mut *const kernel::ffi::c_char) -> bool;
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 unsafe fn sm4_init() -> i32 {

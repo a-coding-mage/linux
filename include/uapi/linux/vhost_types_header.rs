@@ -11,21 +11,21 @@
 
 #[repr(C)]
 pub struct vhost_vring_state {
-    pub index: ::core::ffi::c_uint,
-    pub num: ::core::ffi::c_uint,
+    pub index: ::kernel::ffi::c_uint,
+    pub num: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct vhost_vring_file {
-    pub index: ::core::ffi::c_uint,
-    pub fd: ::core::ffi::c_int, /* Pass -1 to unbind from file. */
+    pub index: ::kernel::ffi::c_uint,
+    pub fd: ::kernel::ffi::c_int, /* Pass -1 to unbind from file. */
 }
 
 #[repr(C)]
 pub struct vhost_vring_addr {
-    pub index: ::core::ffi::c_uint,
+    pub index: ::kernel::ffi::c_uint,
     /* Option flags. */
-    pub flags: ::core::ffi::c_uint,
+    pub flags: ::kernel::ffi::c_uint,
     /* Flag values: */
     /* Whether log address is valid. If set enables logging. */
     /* Start of array of descriptors (virtually contiguous) */
@@ -40,7 +40,7 @@ pub struct vhost_vring_addr {
     pub log_guest_addr: __u64,
 }
 
-pub const VHOST_VRING_F_LOG: ::core::ffi::c_uint = 0;
+pub const VHOST_VRING_F_LOG: ::kernel::ffi::c_uint = 0;
 
 #[repr(C)]
 pub struct vhost_worker_state {
@@ -49,15 +49,15 @@ pub struct vhost_worker_state {
      * For VHOST_FREE_WORKER this must be set to the id of the vhost_worker
      * to free.
      */
-    pub worker_id: ::core::ffi::c_uint,
+    pub worker_id: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct vhost_vring_worker {
     /* vring index */
-    pub index: ::core::ffi::c_uint,
+    pub index: ::kernel::ffi::c_uint,
     /* The id of the vhost_worker returned from VHOST_NEW_WORKER */
-    pub worker_id: ::core::ffi::c_uint,
+    pub worker_id: ::kernel::ffi::c_uint,
 }
 
 /* no alignment requirement */
@@ -70,13 +70,13 @@ pub struct vhost_iotlb_msg {
     pub type_: __u8,
 }
 
-pub const VHOST_ACCESS_RO: ::core::ffi::c_uint = 0x1;
-pub const VHOST_ACCESS_WO: ::core::ffi::c_uint = 0x2;
-pub const VHOST_ACCESS_RW: ::core::ffi::c_uint = 0x3;
-pub const VHOST_IOTLB_MISS: ::core::ffi::c_uint = 1;
-pub const VHOST_IOTLB_UPDATE: ::core::ffi::c_uint = 2;
-pub const VHOST_IOTLB_INVALIDATE: ::core::ffi::c_uint = 3;
-pub const VHOST_IOTLB_ACCESS_FAIL: ::core::ffi::c_uint = 4;
+pub const VHOST_ACCESS_RO: ::kernel::ffi::c_uint = 0x1;
+pub const VHOST_ACCESS_WO: ::kernel::ffi::c_uint = 0x2;
+pub const VHOST_ACCESS_RW: ::kernel::ffi::c_uint = 0x3;
+pub const VHOST_IOTLB_MISS: ::kernel::ffi::c_uint = 1;
+pub const VHOST_IOTLB_UPDATE: ::kernel::ffi::c_uint = 2;
+pub const VHOST_IOTLB_INVALIDATE: ::kernel::ffi::c_uint = 3;
+pub const VHOST_IOTLB_ACCESS_FAIL: ::kernel::ffi::c_uint = 4;
 /*
  * VHOST_IOTLB_BATCH_BEGIN and VHOST_IOTLB_BATCH_END allow modifying
  * multiple mappings in one go: beginning with VHOST_IOTLB_BATCH_BEGIN,
@@ -85,10 +85,10 @@ pub const VHOST_IOTLB_ACCESS_FAIL: ::core::ffi::c_uint = 4;
  * message type, the rest of the fields in the message are ignored. There's
  * no guarantee that these changes take place automatically in the device.
  */
-pub const VHOST_IOTLB_BATCH_BEGIN: ::core::ffi::c_uint = 5;
-pub const VHOST_IOTLB_BATCH_END: ::core::ffi::c_uint = 6;
-pub const VHOST_IOTLB_MSG: ::core::ffi::c_uint = 0x1;
-pub const VHOST_IOTLB_MSG_V2: ::core::ffi::c_uint = 0x2;
+pub const VHOST_IOTLB_BATCH_BEGIN: ::kernel::ffi::c_uint = 5;
+pub const VHOST_IOTLB_BATCH_END: ::kernel::ffi::c_uint = 6;
+pub const VHOST_IOTLB_MSG: ::kernel::ffi::c_uint = 0x1;
+pub const VHOST_IOTLB_MSG_V2: ::kernel::ffi::c_uint = 0x2;
 
 #[repr(C)]
 pub union vhost_msg__bindgen_ty_1 {
@@ -98,7 +98,7 @@ pub union vhost_msg__bindgen_ty_1 {
 
 #[repr(C)]
 pub struct vhost_msg {
-    pub type_: ::core::ffi::c_int,
+    pub type_: ::kernel::ffi::c_int,
     pub __bindgen_anon_1: vhost_msg__bindgen_ty_1,
 }
 
@@ -131,7 +131,7 @@ pub struct vhost_memory_region {
 }
 
 /* All region addresses and sizes must be 4K aligned. */
-pub const VHOST_PAGE_SIZE: ::core::ffi::c_uint = 0x1000;
+pub const VHOST_PAGE_SIZE: ::kernel::ffi::c_uint = 0x1000;
 
 #[repr(C)]
 pub struct vhost_memory {
@@ -149,14 +149,14 @@ pub struct vhost_memory {
  * ABI Rev 1: January 2013. Ignore vhost_tpgt field in struct vhost_scsi_target.
  *            All the targets under vhost_wwpn can be seen and used by guset.
  */
-pub const VHOST_SCSI_ABI_VERSION: ::core::ffi::c_int = 1;
+pub const VHOST_SCSI_ABI_VERSION: ::kernel::ffi::c_int = 1;
 
 #[repr(C)]
 pub struct vhost_scsi_target {
-    pub abi_version: ::core::ffi::c_int,
-    pub vhost_wwpn: [::core::ffi::c_char; 224], /* TRANSPORT_IQN_LEN */
-    pub vhost_tpgt: ::core::ffi::c_ushort,
-    pub reserved: ::core::ffi::c_ushort,
+    pub abi_version: ::kernel::ffi::c_int,
+    pub vhost_wwpn: [::kernel::ffi::c_char; 224], /* TRANSPORT_IQN_LEN */
+    pub vhost_tpgt: ::kernel::ffi::c_ushort,
+    pub reserved: ::kernel::ffi::c_ushort,
 }
 
 /* VHOST_VDPA specific definitions */
@@ -179,27 +179,27 @@ pub struct vhost_vdpa_iova_range {
 
 /* Feature bits */
 /* Log all write descriptors. Can be changed while device is active. */
-pub const VHOST_F_LOG_ALL: ::core::ffi::c_uint = 26;
+pub const VHOST_F_LOG_ALL: ::kernel::ffi::c_uint = 26;
 /* vhost-net should add virtio_net_hdr for RX, and strip for TX packets. */
-pub const VHOST_NET_F_VIRTIO_NET_HDR: ::core::ffi::c_uint = 27;
+pub const VHOST_NET_F_VIRTIO_NET_HDR: ::kernel::ffi::c_uint = 27;
 /* Use message type V2 */
-pub const VHOST_BACKEND_F_IOTLB_MSG_V2: ::core::ffi::c_uint = 0x1;
+pub const VHOST_BACKEND_F_IOTLB_MSG_V2: ::kernel::ffi::c_uint = 0x1;
 /* IOTLB can accept batching hints */
-pub const VHOST_BACKEND_F_IOTLB_BATCH: ::core::ffi::c_uint = 0x2;
+pub const VHOST_BACKEND_F_IOTLB_BATCH: ::kernel::ffi::c_uint = 0x2;
 /* IOTLB can accept address space identifier through V2 type of IOTLB message */
-pub const VHOST_BACKEND_F_IOTLB_ASID: ::core::ffi::c_uint = 0x3;
+pub const VHOST_BACKEND_F_IOTLB_ASID: ::kernel::ffi::c_uint = 0x3;
 /* Device can be suspended */
-pub const VHOST_BACKEND_F_SUSPEND: ::core::ffi::c_uint = 0x4;
+pub const VHOST_BACKEND_F_SUSPEND: ::kernel::ffi::c_uint = 0x4;
 /* Device can be resumed */
-pub const VHOST_BACKEND_F_RESUME: ::core::ffi::c_uint = 0x5;
+pub const VHOST_BACKEND_F_RESUME: ::kernel::ffi::c_uint = 0x5;
 /* Device supports the driver enabling virtqueues both before and after DRIVER_OK */
-pub const VHOST_BACKEND_F_ENABLE_AFTER_DRIVER_OK: ::core::ffi::c_uint = 0x6;
+pub const VHOST_BACKEND_F_ENABLE_AFTER_DRIVER_OK: ::kernel::ffi::c_uint = 0x6;
 /* Device may expose the virtqueue's descriptor area, driver area and device area
  * to a different group for ASID binding than where its buffers may reside.
  * Requires VHOST_BACKEND_F_IOTLB_ASID.
  */
-pub const VHOST_BACKEND_F_DESC_ASID: ::core::ffi::c_uint = 0x7;
+pub const VHOST_BACKEND_F_DESC_ASID: ::kernel::ffi::c_uint = 0x7;
 /* IOTLB don't flush memory mapping across device reset */
-pub const VHOST_BACKEND_F_IOTLB_PERSIST: ::core::ffi::c_uint = 0x8;
+pub const VHOST_BACKEND_F_IOTLB_PERSIST: ::kernel::ffi::c_uint = 0x8;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

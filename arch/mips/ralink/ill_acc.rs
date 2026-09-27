@@ -26,14 +26,14 @@ static ILL_ACC_IDS: [&str; 8] = [
 unsafe extern "C" {
     fn rt_memc_r32(reg: u32) -> u32;
     fn rt_memc_w32(value: u32, reg: u32);
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn of_machine_is_compatible(compat: *const core::ffi::c_char) -> bool;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn of_machine_is_compatible(compat: *const kernel::ffi::c_char) -> bool;
     fn of_find_compatible_node(
         from: *mut device_node,
-        ty: *const core::ffi::c_char,
-        compat: *const core::ffi::c_char,
+        ty: *const kernel::ffi::c_char,
+        compat: *const kernel::ffi::c_char,
     ) -> *mut device_node;
     fn of_find_device_by_node(np: *mut device_node) -> *mut platform_device;
     fn irq_of_parse_and_map(np: *mut device_node, index: u32) -> i32;
@@ -41,10 +41,10 @@ unsafe extern "C" {
     fn put_device(dev: *mut device);
     fn request_irq(
         irq: i32,
-        handler: unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> irqreturn_t,
+        handler: unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> irqreturn_t,
         flags: u32,
-        name: *const core::ffi::c_char,
-        dev: *mut core::ffi::c_void,
+        name: *const kernel::ffi::c_char,
+        dev: *mut kernel::ffi::c_void,
     ) -> i32;
 }
 
@@ -66,7 +66,7 @@ struct platform_device {
 type irqreturn_t = i32;
 const IRQ_HANDLED: irqreturn_t = 1;
 
-unsafe extern "C" fn ill_acc_irq_handler(_irq: i32, priv_: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe extern "C" fn ill_acc_irq_handler(_irq: i32, priv_: *mut kernel::ffi::c_void) -> irqreturn_t {
     let dev = priv_ as *mut device;
     let addr = rt_memc_r32(REG_ILL_ACC_ADDR);
     let type_ = rt_memc_r32(REG_ILL_ACC_TYPE);
@@ -114,7 +114,7 @@ unsafe extern "C" fn ill_acc_of_setup() -> i32 {
         return -22;
     }
 
-    if request_irq(irq, ill_acc_irq_handler, 0, c"ill_acc".as_ptr(), &mut (*pdev).dev as *mut device as *mut core::ffi::c_void) != 0 {
+    if request_irq(irq, ill_acc_irq_handler, 0, c"ill_acc".as_ptr(), &mut (*pdev).dev as *mut device as *mut kernel::ffi::c_void) != 0 {
         // dev_err(&pdev->dev, "failed to request irq\n");
         put_device(&mut (*pdev).dev);
         return -22;

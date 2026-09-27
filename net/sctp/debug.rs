@@ -11,7 +11,7 @@
  * terms such as chunk type, parameter time, event type, etc.
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* The declarations supplied by <net/sctp/sctp.h> are external dependencies. */
 

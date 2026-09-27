@@ -513,7 +513,7 @@ static void print_sh_insn(memaddr: u32, insn: u16)
 
 void show_code(pt_regs *regs)
 {
-	core::ffi::c_ushort *pc = (*(core::ffi::c_ushort *)regs).pc;
+	kernel::ffi::c_ushort *pc = (*(kernel::ffi::c_ushort *)regs).pc;
 	long i;
 
 	if ((*regs).pc & 0x1)
@@ -522,7 +522,7 @@ void show_code(pt_regs *regs)
 	pr_info("Code:\n");
 
 	for (i = -3 ; i < 6 ; i++) {
-		core::ffi::c_ushort insn;
+		kernel::ffi::c_ushort insn;
 
 		if (__get_user(insn, pc + i)) {
 			pr_err(" (Bad address in pc)\n");
@@ -530,8 +530,8 @@ void show_code(pt_regs *regs)
 		}
 
 		pr_info("%s%08lx:  ", (i ? "  " : "->"),
-			(core::ffi::c_ulong)(pc + i));
-		print_sh_insn((core::ffi::c_ulong)(pc + i), insn);
+			(kernel::ffi::c_ulong)(pc + i));
+		print_sh_insn((kernel::ffi::c_ulong)(pc + i), insn);
 		pr_cont("\n");
 	}
 

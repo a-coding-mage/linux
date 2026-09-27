@@ -12,22 +12,22 @@
 #[repr(C)]
 pub struct mips_abi {
     pub setup_frame: unsafe extern "C" fn(
-        sig_return: *mut core::ffi::c_void,
+        sig_return: *mut kernel::ffi::c_void,
         ksig: *mut crate::ksignal,
         regs: *mut crate::pt_regs,
         set: *mut crate::sigset_t,
-    ) -> core::ffi::c_int,
+    ) -> kernel::ffi::c_int,
     pub setup_rt_frame: unsafe extern "C" fn(
-        sig_return: *mut core::ffi::c_void,
+        sig_return: *mut kernel::ffi::c_void,
         ksig: *mut crate::ksignal,
         regs: *mut crate::pt_regs,
         set: *mut crate::sigset_t,
-    ) -> core::ffi::c_int,
-    pub restart: core::ffi::c_ulong,
+    ) -> kernel::ffi::c_int,
+    pub restart: kernel::ffi::c_ulong,
 
-    pub off_sc_fpregs: core::ffi::c_uint,
-    pub off_sc_fpc_csr: core::ffi::c_uint,
-    pub off_sc_used_math: core::ffi::c_uint,
+    pub off_sc_fpregs: kernel::ffi::c_uint,
+    pub off_sc_fpc_csr: kernel::ffi::c_uint,
+    pub off_sc_used_math: kernel::ffi::c_uint,
 
     pub vdso: *mut crate::mips_vdso_image,
 }

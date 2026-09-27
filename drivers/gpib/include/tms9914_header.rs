@@ -15,34 +15,34 @@ pub struct tms9914_priv {
     /* CONFIG_HAS_IOPORT controls whether this field is present in C. */
     #[cfg(CONFIG_HAS_IOPORT)]
     pub iobase: u32,
-    pub mmiobase: *mut core::ffi::c_void,
-    pub offset: core::ffi::c_uint,
-    pub dma_channel: core::ffi::c_uint,
+    pub mmiobase: *mut kernel::ffi::c_void,
+    pub offset: kernel::ffi::c_uint,
+    pub dma_channel: kernel::ffi::c_uint,
     pub imr0_bits: u8,
     pub imr1_bits: u8,
     pub admr_bits: u8,
     pub auxa_bits: u8,
-    pub state: core::ffi::c_ulong,
+    pub state: kernel::ffi::c_ulong,
     pub eos: u8,
     pub eos_flags: i16,
     pub spoll_status: u8,
     pub holdoff_mode: tms9914_holdoff_mode,
-    pub ppoll_line: core::ffi::c_uint,
+    pub ppoll_line: kernel::ffi::c_uint,
     pub talker_state: crate::talker_function_state,
     pub listener_state: crate::listener_function_state,
     /* C bitfields: ppoll_sense through holdoff_active, one-bit each. */
     pub flags: u32,
-    pub read_byte: Option<unsafe extern "C" fn(*mut tms9914_priv, core::ffi::c_uint) -> u8>,
-    pub write_byte: Option<unsafe extern "C" fn(*mut tms9914_priv, u8, core::ffi::c_uint)>,
+    pub read_byte: Option<unsafe extern "C" fn(*mut tms9914_priv, kernel::ffi::c_uint) -> u8>,
+    pub write_byte: Option<unsafe extern "C" fn(*mut tms9914_priv, u8, kernel::ffi::c_uint)>,
 }
 
 #[inline]
-pub unsafe fn read_byte(priv_: *mut tms9914_priv, register_number: core::ffi::c_uint) -> u8 {
+pub unsafe fn read_byte(priv_: *mut tms9914_priv, register_number: kernel::ffi::c_uint) -> u8 {
     ((*priv_).read_byte.unwrap())(priv_, register_number)
 }
 
 #[inline]
-pub unsafe fn write_byte(priv_: *mut tms9914_priv, byte: u8, register_number: core::ffi::c_uint) {
+pub unsafe fn write_byte(priv_: *mut tms9914_priv, byte: u8, register_number: kernel::ffi::c_uint) {
     ((*priv_).write_byte.unwrap())(priv_, byte, register_number);
 }
 
@@ -68,25 +68,25 @@ extern "C" {
     pub fn tms9914_remote_enable(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, enable: i32);
     pub fn tms9914_enable_eos(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, eos_bytes: u8, compare_8_bits: i32) -> i32;
     pub fn tms9914_disable_eos(board: *mut crate::gpib_board, priv_: *mut tms9914_priv);
-    pub fn tms9914_update_status(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, clear_mask: core::ffi::c_uint) -> core::ffi::c_uint;
-    pub fn tms9914_primary_address(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, address: core::ffi::c_uint) -> i32;
-    pub fn tms9914_secondary_address(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, address: core::ffi::c_uint, enable: i32) -> i32;
+    pub fn tms9914_update_status(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, clear_mask: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
+    pub fn tms9914_primary_address(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, address: kernel::ffi::c_uint) -> i32;
+    pub fn tms9914_secondary_address(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, address: kernel::ffi::c_uint, enable: i32) -> i32;
     pub fn tms9914_parallel_poll(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, result: *mut u8) -> i32;
     pub fn tms9914_parallel_poll_configure(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, config: u8);
     pub fn tms9914_parallel_poll_response(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, ist: i32);
     pub fn tms9914_serial_poll_response(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, status: u8);
     pub fn tms9914_serial_poll_status(board: *mut crate::gpib_board, priv_: *mut tms9914_priv) -> u8;
     pub fn tms9914_line_status(board: *const crate::gpib_board, priv_: *mut tms9914_priv) -> i32;
-    pub fn tms9914_t1_delay(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, nano_sec: core::ffi::c_uint) -> core::ffi::c_uint;
+    pub fn tms9914_t1_delay(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, nano_sec: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
     pub fn tms9914_return_to_local(board: *const crate::gpib_board, priv_: *mut tms9914_priv);
     pub fn tms9914_board_reset(priv_: *mut tms9914_priv);
     pub fn tms9914_online(board: *mut crate::gpib_board, priv_: *mut tms9914_priv);
     pub fn tms9914_release_holdoff(priv_: *mut tms9914_priv);
     pub fn tms9914_set_holdoff_mode(priv_: *mut tms9914_priv, mode: tms9914_holdoff_mode);
-    pub fn tms9914_ioport_read_byte(priv_: *mut tms9914_priv, register_num: core::ffi::c_uint) -> u8;
-    pub fn tms9914_ioport_write_byte(priv_: *mut tms9914_priv, data: u8, register_num: core::ffi::c_uint);
-    pub fn tms9914_iomem_read_byte(priv_: *mut tms9914_priv, register_num: core::ffi::c_uint) -> u8;
-    pub fn tms9914_iomem_write_byte(priv_: *mut tms9914_priv, data: u8, register_num: core::ffi::c_uint);
+    pub fn tms9914_ioport_read_byte(priv_: *mut tms9914_priv, register_num: kernel::ffi::c_uint) -> u8;
+    pub fn tms9914_ioport_write_byte(priv_: *mut tms9914_priv, data: u8, register_num: kernel::ffi::c_uint);
+    pub fn tms9914_iomem_read_byte(priv_: *mut tms9914_priv, register_num: kernel::ffi::c_uint) -> u8;
+    pub fn tms9914_iomem_write_byte(priv_: *mut tms9914_priv, data: u8, register_num: kernel::ffi::c_uint);
     pub fn tms9914_interrupt(board: *mut crate::gpib_board, priv_: *mut tms9914_priv) -> crate::irqreturn_t;
     pub fn tms9914_interrupt_have_status(board: *mut crate::gpib_board, priv_: *mut tms9914_priv, status1: i32, status2: i32) -> crate::irqreturn_t;
 }

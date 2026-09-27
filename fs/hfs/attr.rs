@@ -19,7 +19,7 @@ enum hfs_xattr_type {
 unsafe fn __hfs_setxattr(
     inode: *mut inode,
     type_: hfs_xattr_type,
-    value: *const core::ffi::c_void,
+    value: *const kernel::ffi::c_void,
     size: usize,
     flags: i32,
 ) -> i32 {
@@ -53,14 +53,14 @@ unsafe fn __hfs_setxattr(
     match type_ {
         hfs_xattr_type::HFS_TYPE => {
             if size == 4 {
-                core::ptr::copy_nonoverlapping(value, &mut (*file).UsrWds.fdType as *mut _ as *mut core::ffi::c_void, 4);
+                core::ptr::copy_nonoverlapping(value, &mut (*file).UsrWds.fdType as *mut _ as *mut kernel::ffi::c_void, 4);
             } else {
                 res = -ERANGE;
             }
         }
         hfs_xattr_type::HFS_CREATOR => {
             if size == 4 {
-                core::ptr::copy_nonoverlapping(value, &mut (*file).UsrWds.fdCreator as *mut _ as *mut core::ffi::c_void, 4);
+                core::ptr::copy_nonoverlapping(value, &mut (*file).UsrWds.fdCreator as *mut _ as *mut kernel::ffi::c_void, 4);
             } else {
                 res = -ERANGE;
             }
@@ -82,7 +82,7 @@ unsafe fn __hfs_setxattr(
 unsafe fn __hfs_getxattr(
     inode: *mut inode,
     type_: hfs_xattr_type,
-    value: *mut core::ffi::c_void,
+    value: *mut kernel::ffi::c_void,
     size: usize,
 ) -> isize {
     let mut fd: hfs_find_data = core::mem::zeroed();
@@ -112,7 +112,7 @@ unsafe fn __hfs_getxattr(
     match type_ {
         hfs_xattr_type::HFS_TYPE => {
             if size >= 4 {
-                core::ptr::copy_nonoverlapping(&(*file).UsrWds.fdType as *const _ as *const core::ffi::c_void, value, 4);
+                core::ptr::copy_nonoverlapping(&(*file).UsrWds.fdType as *const _ as *const kernel::ffi::c_void, value, 4);
                 res = 4;
             } else {
                 res = if size != 0 { -ERANGE as isize } else { 4 };
@@ -120,7 +120,7 @@ unsafe fn __hfs_getxattr(
         }
         hfs_xattr_type::HFS_CREATOR => {
             if size >= 4 {
-                core::ptr::copy_nonoverlapping(&(*file).UsrWds.fdCreator as *const _ as *const core::ffi::c_void, value, 4);
+                core::ptr::copy_nonoverlapping(&(*file).UsrWds.fdCreator as *const _ as *const kernel::ffi::c_void, value, 4);
                 res = 4;
             } else {
                 res = if size != 0 { -ERANGE as isize } else { 4 };
@@ -138,8 +138,8 @@ unsafe extern "C" fn hfs_xattr_get(
     handler: *const xattr_handler,
     _unused: *mut dentry,
     inode: *mut inode,
-    _name: *const core::ffi::c_char,
-    value: *mut core::ffi::c_void,
+    _name: *const kernel::ffi::c_char,
+    value: *mut kernel::ffi::c_void,
     size: usize,
 ) -> i32 {
     __hfs_getxattr(inode, (*handler).flags, value, size) as i32
@@ -150,8 +150,8 @@ unsafe extern "C" fn hfs_xattr_set(
     _idmap: *mut mnt_idmap,
     _unused: *mut dentry,
     inode: *mut inode,
-    _name: *const core::ffi::c_char,
-    value: *const core::ffi::c_void,
+    _name: *const kernel::ffi::c_char,
+    value: *const kernel::ffi::c_void,
     size: usize,
     flags: i32,
 ) -> i32 {
@@ -162,14 +162,14 @@ unsafe extern "C" fn hfs_xattr_set(
 }
 
 static hfs_creator_handler: xattr_handler = xattr_handler {
-    name: b"hfs.creator\0" as *const u8 as *const core::ffi::c_char,
+    name: b"hfs.creator\0" as *const u8 as *const kernel::ffi::c_char,
     flags: hfs_xattr_type::HFS_CREATOR,
     get: Some(hfs_xattr_get),
     set: Some(hfs_xattr_set),
 };
 
 static hfs_type_handler: xattr_handler = xattr_handler {
-    name: b"hfs.type\0" as *const u8 as *const core::ffi::c_char,
+    name: b"hfs.type\0" as *const u8 as *const kernel::ffi::c_char,
     flags: hfs_xattr_type::HFS_TYPE,
     get: Some(hfs_xattr_get),
     set: Some(hfs_xattr_set),

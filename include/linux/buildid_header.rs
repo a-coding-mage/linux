@@ -39,7 +39,7 @@ extern "C" {
         size: *mut u32,
     ) -> i32;
     pub fn build_id_parse_buf(
-        buf: *const core::ffi::c_void,
+        buf: *const kernel::ffi::c_void,
         build_id: *mut u8,
         buf_size: u32,
     ) -> i32;
@@ -63,14 +63,14 @@ pub unsafe fn init_vmlinux_build_id() {}
 pub struct freader_file {
     pub file: *mut file,
     pub folio: *mut folio,
-    pub addr: *mut core::ffi::c_void,
+    pub addr: *mut kernel::ffi::c_void,
     pub folio_off: loff_t,
     pub may_fault: bool,
 }
 
 #[repr(C)]
 pub struct freader_mem {
-    pub data: *const core::ffi::c_char,
+    pub data: *const kernel::ffi::c_char,
     pub data_sz: u64,
 }
 
@@ -82,7 +82,7 @@ pub union freader_source {
 
 #[repr(C)]
 pub struct freader {
-    pub buf: *mut core::ffi::c_void,
+    pub buf: *mut kernel::ffi::c_void,
     pub buf_sz: u32,
     pub err: i32,
     pub source: freader_source,
@@ -91,21 +91,21 @@ pub struct freader {
 extern "C" {
     pub fn freader_init_from_file(
         r: *mut freader,
-        buf: *mut core::ffi::c_void,
+        buf: *mut kernel::ffi::c_void,
         buf_sz: u32,
         file: *mut file,
         may_fault: bool,
     );
     pub fn freader_init_from_mem(
         r: *mut freader,
-        data: *const core::ffi::c_char,
+        data: *const kernel::ffi::c_char,
         data_sz: u64,
     );
     pub fn freader_fetch(
         r: *mut freader,
         file_off: loff_t,
         sz: usize,
-    ) -> *const core::ffi::c_void;
+    ) -> *const kernel::ffi::c_void;
     pub fn freader_cleanup(r: *mut freader);
 }
 

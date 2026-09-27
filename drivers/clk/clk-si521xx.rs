@@ -61,7 +61,7 @@ extern "C" {
     type clk_hw; type i2c_client; type regmap; type device; type device_node;
     type of_phandle_args; type clk_rate_request; type i2c_msg;
     fn i2c_master_send(client: *mut i2c_client, data: *const u8, count: usize) -> i32;
-    fn i2c_transfer(adapter: *mut core::ffi::c_void, msgs: *mut i2c_msg, n: i32) -> i32;
+    fn i2c_transfer(adapter: *mut kernel::ffi::c_void, msgs: *mut i2c_msg, n: i32) -> i32;
     fn regmap_set_bits(map: *mut regmap, reg: u32, bits: u8) -> i32;
     fn regmap_clear_bits(map: *mut regmap, reg: u32, bits: u8) -> i32;
     fn regmap_update_bits(map: *mut regmap, reg: u32, mask: u32, val: u8) -> i32;
@@ -111,20 +111,20 @@ unsafe fn si521xx_update_config(si: *mut Si521xx) {
     }
 }
 
-unsafe fn si521xx_regmap_i2c_write(context: *mut core::ffi::c_void, reg: u32, val: u32) -> i32 {
+unsafe fn si521xx_regmap_i2c_write(context: *mut kernel::ffi::c_void, reg: u32, val: u32) -> i32 {
     let i2c = context as *mut i2c_client;
     let data = [reg as u8, val as u8];
     let ret = i2c_master_send(i2c, data.as_ptr(), data.len());
     if ret == data.len() as i32 { 0 } else if ret < 0 { ret } else { -5 }
 }
 
-unsafe fn si521xx_regmap_i2c_read(_context: *mut core::ffi::c_void, _reg: u32, _val: *mut u32) -> i32 {
+unsafe fn si521xx_regmap_i2c_read(_context: *mut kernel::ffi::c_void, _reg: u32, _val: *mut u32) -> i32 {
     // The transfer uses two I2C messages; byte 0 is the transfer length and byte 1 is returned data.
     // Concrete adapter/message layout is supplied by the kernel bindings.
     -38
 }
 
-unsafe fn si521xx_of_clk_get(_clkspec: *mut of_phandle_args, _data: *mut core::ffi::c_void) -> *mut clk_hw {
+unsafe fn si521xx_of_clk_get(_clkspec: *mut of_phandle_args, _data: *mut kernel::ffi::c_void) -> *mut clk_hw {
     core::ptr::null_mut()
 }
 
@@ -138,7 +138,7 @@ unsafe fn si521xx_suspend(_dev: *mut device) -> i32 { 0 }
 unsafe fn si521xx_resume(_dev: *mut device) -> i32 { 0 }
 
 #[repr(C)]
-struct Si521xxI2cId { name: *const core::ffi::c_char, driver_data: usize }
+struct Si521xxI2cId { name: *const kernel::ffi::c_char, driver_data: usize }
 
 #[no_mangle]
 static SI521XX_ID: [Si521xxI2cId; 4] = [

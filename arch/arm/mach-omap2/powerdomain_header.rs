@@ -53,13 +53,13 @@ pub struct voltagedomain {
 
 #[repr(C)]
 pub union powerdomain_voltdm {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub ptr: *mut voltagedomain,
 }
 
 #[repr(C)]
 pub struct powerdomain {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub voltdm: powerdomain_voltdm,
     pub prcm_offs: i16,
     pub pwrsts: u8,
@@ -72,12 +72,12 @@ pub struct powerdomain {
     pub pwrdm_clkdms: [*mut clockdomain; PWRDM_MAX_CLKDMS],
     pub node: list_head,
     pub voltdm_node: list_head,
-    pub state: ::core::ffi::c_int,
+    pub state: ::kernel::ffi::c_int,
     pub state_counter: [u32; PWRDM_MAX_PWRSTS],
     pub ret_logic_off_counter: u32,
     pub ret_mem_off_counter: [u32; PWRDM_MAX_MEM_BANKS],
     pub _lock: spinlock_t,
-    pub _lock_flags: ::core::ffi::c_ulong,
+    pub _lock_flags: ::kernel::ffi::c_ulong,
     pub pwrstctrl_offs: u8,
     pub pwrstst_offs: u8,
     pub logicretstate_mask: u32,
@@ -95,60 +95,60 @@ pub struct powerdomain {
 
 #[repr(C)]
 pub struct pwrdm_ops {
-    pub pwrdm_set_next_pwrst: Option<unsafe extern "C" fn(*mut powerdomain, u8) -> ::core::ffi::c_int>,
-    pub pwrdm_read_next_pwrst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::core::ffi::c_int>,
-    pub pwrdm_read_pwrst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::core::ffi::c_int>,
-    pub pwrdm_read_prev_pwrst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::core::ffi::c_int>,
-    pub pwrdm_set_logic_retst: Option<unsafe extern "C" fn(*mut powerdomain, u8) -> ::core::ffi::c_int>,
-    pub pwrdm_set_mem_onst: Option<unsafe extern "C" fn(*mut powerdomain, u8, u8) -> ::core::ffi::c_int>,
-    pub pwrdm_set_mem_retst: Option<unsafe extern "C" fn(*mut powerdomain, u8, u8) -> ::core::ffi::c_int>,
-    pub pwrdm_read_logic_pwrst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::core::ffi::c_int>,
-    pub pwrdm_read_prev_logic_pwrst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::core::ffi::c_int>,
-    pub pwrdm_read_logic_retst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::core::ffi::c_int>,
-    pub pwrdm_read_mem_pwrst: Option<unsafe extern "C" fn(*mut powerdomain, u8) -> ::core::ffi::c_int>,
-    pub pwrdm_read_prev_mem_pwrst: Option<unsafe extern "C" fn(*mut powerdomain, u8) -> ::core::ffi::c_int>,
-    pub pwrdm_read_mem_retst: Option<unsafe extern "C" fn(*mut powerdomain, u8) -> ::core::ffi::c_int>,
-    pub pwrdm_clear_all_prev_pwrst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::core::ffi::c_int>,
-    pub pwrdm_enable_hdwr_sar: Option<unsafe extern "C" fn(*mut powerdomain) -> ::core::ffi::c_int>,
-    pub pwrdm_disable_hdwr_sar: Option<unsafe extern "C" fn(*mut powerdomain) -> ::core::ffi::c_int>,
-    pub pwrdm_set_lowpwrstchange: Option<unsafe extern "C" fn(*mut powerdomain) -> ::core::ffi::c_int>,
-    pub pwrdm_wait_transition: Option<unsafe extern "C" fn(*mut powerdomain) -> ::core::ffi::c_int>,
-    pub pwrdm_has_voltdm: Option<unsafe extern "C" fn() -> ::core::ffi::c_int>,
+    pub pwrdm_set_next_pwrst: Option<unsafe extern "C" fn(*mut powerdomain, u8) -> ::kernel::ffi::c_int>,
+    pub pwrdm_read_next_pwrst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::kernel::ffi::c_int>,
+    pub pwrdm_read_pwrst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::kernel::ffi::c_int>,
+    pub pwrdm_read_prev_pwrst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::kernel::ffi::c_int>,
+    pub pwrdm_set_logic_retst: Option<unsafe extern "C" fn(*mut powerdomain, u8) -> ::kernel::ffi::c_int>,
+    pub pwrdm_set_mem_onst: Option<unsafe extern "C" fn(*mut powerdomain, u8, u8) -> ::kernel::ffi::c_int>,
+    pub pwrdm_set_mem_retst: Option<unsafe extern "C" fn(*mut powerdomain, u8, u8) -> ::kernel::ffi::c_int>,
+    pub pwrdm_read_logic_pwrst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::kernel::ffi::c_int>,
+    pub pwrdm_read_prev_logic_pwrst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::kernel::ffi::c_int>,
+    pub pwrdm_read_logic_retst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::kernel::ffi::c_int>,
+    pub pwrdm_read_mem_pwrst: Option<unsafe extern "C" fn(*mut powerdomain, u8) -> ::kernel::ffi::c_int>,
+    pub pwrdm_read_prev_mem_pwrst: Option<unsafe extern "C" fn(*mut powerdomain, u8) -> ::kernel::ffi::c_int>,
+    pub pwrdm_read_mem_retst: Option<unsafe extern "C" fn(*mut powerdomain, u8) -> ::kernel::ffi::c_int>,
+    pub pwrdm_clear_all_prev_pwrst: Option<unsafe extern "C" fn(*mut powerdomain) -> ::kernel::ffi::c_int>,
+    pub pwrdm_enable_hdwr_sar: Option<unsafe extern "C" fn(*mut powerdomain) -> ::kernel::ffi::c_int>,
+    pub pwrdm_disable_hdwr_sar: Option<unsafe extern "C" fn(*mut powerdomain) -> ::kernel::ffi::c_int>,
+    pub pwrdm_set_lowpwrstchange: Option<unsafe extern "C" fn(*mut powerdomain) -> ::kernel::ffi::c_int>,
+    pub pwrdm_wait_transition: Option<unsafe extern "C" fn(*mut powerdomain) -> ::kernel::ffi::c_int>,
+    pub pwrdm_has_voltdm: Option<unsafe extern "C" fn() -> ::kernel::ffi::c_int>,
     pub pwrdm_save_context: Option<unsafe extern "C" fn(*mut powerdomain)>,
     pub pwrdm_restore_context: Option<unsafe extern "C" fn(*mut powerdomain)>,
 }
 
 extern "C" {
-    pub fn pwrdm_register_platform_funcs(custom_funcs: *mut pwrdm_ops) -> ::core::ffi::c_int;
-    pub fn pwrdm_register_pwrdms(pwrdm_list: *mut *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_complete_init() -> ::core::ffi::c_int;
-    pub fn pwrdm_lookup(name: *const ::core::ffi::c_char) -> *mut powerdomain;
-    pub fn pwrdm_for_each(fn_: Option<unsafe extern "C" fn(*mut powerdomain, *mut ::core::ffi::c_void) -> ::core::ffi::c_int>, user: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-    pub fn pwrdm_add_clkdm(pwrdm: *mut powerdomain, clkdm: *mut clockdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_get_mem_bank_count(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
+    pub fn pwrdm_register_platform_funcs(custom_funcs: *mut pwrdm_ops) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_register_pwrdms(pwrdm_list: *mut *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_complete_init() -> ::kernel::ffi::c_int;
+    pub fn pwrdm_lookup(name: *const ::kernel::ffi::c_char) -> *mut powerdomain;
+    pub fn pwrdm_for_each(fn_: Option<unsafe extern "C" fn(*mut powerdomain, *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int>, user: *mut ::kernel::ffi::c_void) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_add_clkdm(pwrdm: *mut powerdomain, clkdm: *mut clockdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_get_mem_bank_count(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
     pub fn pwrdm_get_valid_lp_state(pwrdm: *mut powerdomain, is_logic_state: bool, req_state: u8) -> u8;
-    pub fn pwrdm_set_next_pwrst(pwrdm: *mut powerdomain, pwrst: u8) -> ::core::ffi::c_int;
-    pub fn pwrdm_read_next_pwrst(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_read_pwrst(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_read_prev_pwrst(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_clear_all_prev_pwrst(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_set_logic_retst(pwrdm: *mut powerdomain, pwrst: u8) -> ::core::ffi::c_int;
-    pub fn pwrdm_set_mem_onst(pwrdm: *mut powerdomain, bank: u8, pwrst: u8) -> ::core::ffi::c_int;
-    pub fn pwrdm_set_mem_retst(pwrdm: *mut powerdomain, bank: u8, pwrst: u8) -> ::core::ffi::c_int;
-    pub fn pwrdm_read_logic_pwrst(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_read_prev_logic_pwrst(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_read_logic_retst(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_read_mem_pwrst(pwrdm: *mut powerdomain, bank: u8) -> ::core::ffi::c_int;
-    pub fn pwrdm_read_prev_mem_pwrst(pwrdm: *mut powerdomain, bank: u8) -> ::core::ffi::c_int;
-    pub fn pwrdm_read_mem_retst(pwrdm: *mut powerdomain, bank: u8) -> ::core::ffi::c_int;
-    pub fn pwrdm_enable_hdwr_sar(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_disable_hdwr_sar(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
+    pub fn pwrdm_set_next_pwrst(pwrdm: *mut powerdomain, pwrst: u8) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_read_next_pwrst(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_read_pwrst(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_read_prev_pwrst(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_clear_all_prev_pwrst(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_set_logic_retst(pwrdm: *mut powerdomain, pwrst: u8) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_set_mem_onst(pwrdm: *mut powerdomain, bank: u8, pwrst: u8) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_set_mem_retst(pwrdm: *mut powerdomain, bank: u8, pwrst: u8) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_read_logic_pwrst(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_read_prev_logic_pwrst(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_read_logic_retst(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_read_mem_pwrst(pwrdm: *mut powerdomain, bank: u8) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_read_prev_mem_pwrst(pwrdm: *mut powerdomain, bank: u8) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_read_mem_retst(pwrdm: *mut powerdomain, bank: u8) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_enable_hdwr_sar(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_disable_hdwr_sar(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
     pub fn pwrdm_has_hdwr_sar(pwrdm: *mut powerdomain) -> bool;
-    pub fn pwrdm_state_switch_nolock(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_state_switch(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_pre_transition(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn pwrdm_post_transition(pwrdm: *mut powerdomain) -> ::core::ffi::c_int;
-    pub fn omap_set_pwrdm_state(pwrdm: *mut powerdomain, state: u8) -> ::core::ffi::c_int;
+    pub fn pwrdm_state_switch_nolock(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_state_switch(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_pre_transition(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn pwrdm_post_transition(pwrdm: *mut powerdomain) -> ::kernel::ffi::c_int;
+    pub fn omap_set_pwrdm_state(pwrdm: *mut powerdomain, state: u8) -> ::kernel::ffi::c_int;
     pub fn omap242x_powerdomains_init();
     pub fn omap243x_powerdomains_init();
     pub fn omap3xxx_powerdomains_init();

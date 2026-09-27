@@ -89,7 +89,7 @@ pub const INVALID_CU_IDX: u32 = u32::MAX;
 pub struct amdxdna_hwctx {
     pub client: *mut amdxdna_client,
     pub priv_: *mut amdxdna_hwctx_priv,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
     pub id: u32,
     pub max_opc: u32,
     pub num_tiles: u32,
@@ -184,20 +184,20 @@ pub unsafe fn amdxdna_cmd_get_state(abo: *mut amdxdna_gem_obj) -> ert_cmd_state 
 }
 
 extern "C" {
-    pub fn amdxdna_cmd_get_payload(abo: *mut amdxdna_gem_obj, size: *mut u32) -> *mut core::ffi::c_void;
+    pub fn amdxdna_cmd_get_payload(abo: *mut amdxdna_gem_obj, size: *mut u32) -> *mut kernel::ffi::c_void;
     pub fn amdxdna_cmd_get_cu_idx(abo: *mut amdxdna_gem_obj) -> u32;
-    pub fn amdxdna_cmd_set_error(abo: *mut amdxdna_gem_obj, job: *mut amdxdna_sched_job, cmd_idx: u32, error_state: ert_cmd_state, err_data: *mut core::ffi::c_void, size: usize) -> i32;
+    pub fn amdxdna_cmd_set_error(abo: *mut amdxdna_gem_obj, job: *mut amdxdna_sched_job, cmd_idx: u32, error_state: ert_cmd_state, err_data: *mut kernel::ffi::c_void, size: usize) -> i32;
     pub fn amdxdna_sched_job_cleanup(job: *mut amdxdna_sched_job);
     pub fn amdxdna_hwctx_remove_all(client: *mut amdxdna_client);
-    pub fn amdxdna_hwctx_walk(client: *mut amdxdna_client, arg: *mut core::ffi::c_void, walk: Option<unsafe extern "C" fn(*mut amdxdna_hwctx, *mut core::ffi::c_void) -> i32>) -> i32;
+    pub fn amdxdna_hwctx_walk(client: *mut amdxdna_client, arg: *mut kernel::ffi::c_void, walk: Option<unsafe extern "C" fn(*mut amdxdna_hwctx, *mut kernel::ffi::c_void) -> i32>) -> i32;
     pub fn amdxdna_hwctx_sync_debug_bo(client: *mut amdxdna_client, debug_bo_hdl: u32) -> i32;
     pub fn amdxdna_update_heap(client: *mut amdxdna_client, hwctx: *mut amdxdna_hwctx) -> i32;
     pub fn amdxdna_cmd_submit(client: *mut amdxdna_client, drv_cmd: *mut amdxdna_drv_cmd, cmd_bo_hdls: u32, arg_bo_hdls: *mut u32, arg_bo_cnt: u32, hwctx_hdl: u32, seq: *mut u64) -> i32;
-    pub fn amdxdna_drm_create_hwctx_ioctl(dev: *mut drm_device, data: *mut core::ffi::c_void, filp: *mut drm_file) -> i32;
-    pub fn amdxdna_drm_config_hwctx_ioctl(dev: *mut drm_device, data: *mut core::ffi::c_void, filp: *mut drm_file) -> i32;
-    pub fn amdxdna_drm_destroy_hwctx_ioctl(dev: *mut drm_device, data: *mut core::ffi::c_void, filp: *mut drm_file) -> i32;
-    pub fn amdxdna_drm_submit_cmd_ioctl(dev: *mut drm_device, data: *mut core::ffi::c_void, filp: *mut drm_file) -> i32;
-    pub fn amdxdna_drm_wait_cmd_ioctl(dev: *mut drm_device, data: *mut core::ffi::c_void, filp: *mut drm_file) -> i32;
+    pub fn amdxdna_drm_create_hwctx_ioctl(dev: *mut drm_device, data: *mut kernel::ffi::c_void, filp: *mut drm_file) -> i32;
+    pub fn amdxdna_drm_config_hwctx_ioctl(dev: *mut drm_device, data: *mut kernel::ffi::c_void, filp: *mut drm_file) -> i32;
+    pub fn amdxdna_drm_destroy_hwctx_ioctl(dev: *mut drm_device, data: *mut kernel::ffi::c_void, filp: *mut drm_file) -> i32;
+    pub fn amdxdna_drm_submit_cmd_ioctl(dev: *mut drm_device, data: *mut kernel::ffi::c_void, filp: *mut drm_file) -> i32;
+    pub fn amdxdna_drm_wait_cmd_ioctl(dev: *mut drm_device, data: *mut kernel::ffi::c_void, filp: *mut drm_file) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

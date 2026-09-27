@@ -26,7 +26,7 @@ pub const fn get_loc_len(dl: u32) -> u32 { dl >> 16 }
 pub const fn get_loc_offs(dl: u32) -> u32 { dl & 0xffff }
 
 #[inline]
-pub unsafe fn get_loc_data(dl: *mut u32, ent: *mut core::ffi::c_void) -> *mut u8 {
+pub unsafe fn get_loc_data(dl: *mut u32, ent: *mut kernel::ffi::c_void) -> *mut u8 {
     (ent as *mut u8).add(get_loc_offs(*dl) as usize)
 }
 #[inline]
@@ -34,7 +34,7 @@ pub const fn update_data_loc(loc: u32, consumed: u32) -> u32 {
     make_data_loc(get_loc_len(loc) - consumed, get_loc_offs(loc) + consumed)
 }
 
-pub type PrintTypeFunc = unsafe extern "C" fn(*mut trace_seq, *mut core::ffi::c_void, *mut core::ffi::c_void) -> i32;
+pub type PrintTypeFunc = unsafe extern "C" fn(*mut trace_seq, *mut kernel::ffi::c_void, *mut kernel::ffi::c_void) -> i32;
 
 #[repr(C)]
 pub enum fetch_op {
@@ -53,7 +53,7 @@ pub union fetch_insn_data {
     pub size_offset: fetch_insn_size_offset,
     pub bitfield: fetch_insn_bitfield,
     pub immediate: usize,
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
 }
 #[repr(C)] pub struct fetch_insn_size_offset { pub size: u32, pub offset: i32 }
 #[repr(C)] pub struct fetch_insn_bitfield { pub basesize: u8, pub lshift: u8, pub rshift: u8 }
@@ -64,32 +64,32 @@ pub const FETCH_TOKEN_COMM: i32 = -ECOMM;
 
 #[repr(C)]
 pub struct fetch_type {
-    pub name: *const core::ffi::c_char, pub size: usize, pub is_signed: bool,
+    pub name: *const kernel::ffi::c_char, pub size: usize, pub is_signed: bool,
     pub is_string: bool, pub print: Option<PrintTypeFunc>,
-    pub fmt: *const core::ffi::c_char, pub fmttype: *const core::ffi::c_char,
+    pub fmt: *const kernel::ffi::c_char, pub fmttype: *const kernel::ffi::c_char,
 }
 pub type string = u32;
 pub type string_size = u32;
 
 extern "C" {
-    pub fn print_type_u8(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_u16(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_u32(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_u64(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_s8(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_s16(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_s32(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_s64(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_x8(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_x16(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_x32(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_x64(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_char(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_string(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
-    pub fn print_type_symbol(s: *mut trace_seq, data: *mut core::ffi::c_void, ent: *mut core::ffi::c_void) -> i32;
+    pub fn print_type_u8(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_u16(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_u32(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_u64(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_s8(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_s16(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_s32(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_s64(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_x8(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_x16(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_x32(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_x64(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_char(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_string(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
+    pub fn print_type_symbol(s: *mut trace_seq, data: *mut kernel::ffi::c_void, ent: *mut kernel::ffi::c_void) -> i32;
 }
 
-#[repr(C)] pub struct probe_arg { pub code: *mut fetch_insn, pub dynamic: bool, pub offset: u32, pub count: u32, pub name: *const core::ffi::c_char, pub comm: *const core::ffi::c_char, pub fmt: *mut core::ffi::c_char, pub type_: *const fetch_type }
+#[repr(C)] pub struct probe_arg { pub code: *mut fetch_insn, pub dynamic: bool, pub offset: u32, pub count: u32, pub name: *const kernel::ffi::c_char, pub comm: *const kernel::ffi::c_char, pub fmt: *mut kernel::ffi::c_char, pub type_: *const fetch_type }
 #[repr(C)] pub struct probe_entry_arg { pub size: u32, pub code: [fetch_insn; 0] }
 #[repr(C)] pub struct trace_uprobe_filter { pub rwlock: rwlock_t, pub nr_systemwide: i32, pub perf_events: list_head }
 #[repr(C)] pub struct trace_probe_event { pub flags: u32, pub class: trace_event_class, pub call: trace_event_call, pub files: list_head, pub probes: list_head, pub filter: [trace_uprobe_filter; 0] }
@@ -117,12 +117,12 @@ pub const TRACEPROBE_MAX_NESTED_LEVEL: usize = 8;
 #[repr(C)] pub enum parse_state_type { STATE_DEREF, STATE_TYPECAST }
 #[repr(C)] pub struct parse_state { pub type_: i32, pub data: parse_state_data }
 #[repr(C)] pub union parse_state_data { pub deref: parse_state_deref, pub typecast: parse_state_typecast }
-#[repr(C)] pub struct parse_state_deref { pub deref: i32, pub offset: isize, pub cur_offs: i32, pub inner_arg: *mut core::ffi::c_char, pub is_cpu_read: bool }
-#[repr(C)] pub struct parse_state_typecast { pub casttype: *mut core::ffi::c_char, pub fieldname: *mut core::ffi::c_char, pub orig_offset: i32, pub field_offset_diff: i32, pub inner_arg: *mut core::ffi::c_char }
-#[repr(C)] pub struct traceprobe_parse_context { pub event: *mut trace_event_call, pub funcname: *const core::ffi::c_char, pub proto: *const btf_type, pub params: *const btf_param, pub nr_params: i32, pub btf: *mut btf, pub struct_btf: *mut btf, pub last_type: *const btf_type, pub last_struct: *const btf_type, pub last_bitoffs: u32, pub last_bitsize: u32, pub tp: *mut trace_probe, pub flags: u32, pub offset: i32, pub prefix_byteoffs: i32, pub stack: [parse_state; TRACEPROBE_MAX_NESTED_LEVEL + 1], pub depth: i32 }
+#[repr(C)] pub struct parse_state_deref { pub deref: i32, pub offset: isize, pub cur_offs: i32, pub inner_arg: *mut kernel::ffi::c_char, pub is_cpu_read: bool }
+#[repr(C)] pub struct parse_state_typecast { pub casttype: *mut kernel::ffi::c_char, pub fieldname: *mut kernel::ffi::c_char, pub orig_offset: i32, pub field_offset_diff: i32, pub inner_arg: *mut kernel::ffi::c_char }
+#[repr(C)] pub struct traceprobe_parse_context { pub event: *mut trace_event_call, pub funcname: *const kernel::ffi::c_char, pub proto: *const btf_type, pub params: *const btf_param, pub nr_params: i32, pub btf: *mut btf, pub struct_btf: *mut btf, pub last_type: *const btf_type, pub last_struct: *const btf_type, pub last_bitoffs: u32, pub last_bitsize: u32, pub tp: *mut trace_probe, pub flags: u32, pub offset: i32, pub prefix_byteoffs: i32, pub stack: [parse_state; TRACEPROBE_MAX_NESTED_LEVEL + 1], pub depth: i32 }
 
 #[repr(C)] pub enum probe_print_type { PROBE_PRINT_NORMAL, PROBE_PRINT_RETURN, PROBE_PRINT_EVENT }
-#[repr(C)] pub struct trace_probe_log { pub subsystem: *const core::ffi::c_char, pub argv: *const *const core::ffi::c_char, pub argc: i32, pub index: i32 }
+#[repr(C)] pub struct trace_probe_log { pub subsystem: *const kernel::ffi::c_char, pub argv: *const *const kernel::ffi::c_char, pub argc: i32, pub index: i32 }
 #[repr(C)] pub struct uprobe_dispatch_data { pub tu: *mut trace_uprobe, pub bp_addr: usize }
 
 // The ERRORS X-macro expands to the following stable error-number namespace.
@@ -138,7 +138,7 @@ extern "C" {
     pub fn trace_probe_compare_arg_type(a: *mut trace_probe, b: *mut trace_probe) -> i32;
     pub fn trace_probe_match_command_args(tp: *mut trace_probe, argc: i32, argv: *const *const i8) -> bool;
     pub fn trace_probe_create(raw_command: *const i8, createfn: Option<unsafe extern "C" fn(i32, *const *const i8) -> i32>) -> i32;
-    pub fn trace_probe_print_args(s: *mut trace_seq, args: *mut probe_arg, nr_args: i32, data: *mut u8, field: *mut core::ffi::c_void) -> i32;
+    pub fn trace_probe_print_args(s: *mut trace_seq, args: *mut probe_arg, nr_args: i32, data: *mut u8, field: *mut kernel::ffi::c_void) -> i32;
     pub fn traceprobe_parse_probe_arg(tp: *mut trace_probe, i: i32, argv: *const i8, ctx: *mut traceprobe_parse_context) -> i32;
     pub fn traceprobe_finish_parse(ctx: *mut traceprobe_parse_context); pub fn trace_probe_log_init(subsystem: *const i8, argc: i32, argv: *const *const i8) -> *const i8;
     pub fn trace_probe_log_set_index(index: i32); pub fn trace_probe_log_clear(); pub fn __trace_probe_log_err(offset: i32, err: i32);

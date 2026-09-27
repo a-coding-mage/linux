@@ -50,7 +50,7 @@ static GPIOMM_REGMAP_CONFIG: struct_regmap_config = struct_regmap_config {
 };
 
 const GPIOMM_NGPIO: usize = 48;
-static GPIOMM_NAMES: [&'static core::ffi::c_char; GPIOMM_NGPIO] = [
+static GPIOMM_NAMES: [&'static kernel::ffi::c_char; GPIOMM_NGPIO] = [
     c"Port 1A0", c"Port 1A1", c"Port 1A2", c"Port 1A3", c"Port 1A4", c"Port 1A5",
     c"Port 1A6", c"Port 1A7", c"Port 1B0", c"Port 1B1", c"Port 1B2", c"Port 1B3",
     c"Port 1B4", c"Port 1B5", c"Port 1B6", c"Port 1B7", c"Port 1C0", c"Port 1C1",
@@ -62,9 +62,9 @@ static GPIOMM_NAMES: [&'static core::ffi::c_char; GPIOMM_NGPIO] = [
 ];
 
 unsafe fn gpiomm_probe(dev: *mut struct_device, id: u32) -> i32 {
-    let name: *const core::ffi::c_char = dev_name(dev);
+    let name: *const kernel::ffi::c_char = dev_name(dev);
     let mut config: struct_i8255_regmap_config = core::mem::zeroed();
-    let mut regs: *mut core::ffi::c_void;
+    let mut regs: *mut kernel::ffi::c_void;
 
     if devm_request_region(dev, BASE[id as usize], GPIOMM_EXTENT, name).is_null() {
         dev_err(dev, "Unable to lock port addresses (0x%X-0x%X)\n", BASE[id as usize], BASE[id as usize] + GPIOMM_EXTENT as u32);

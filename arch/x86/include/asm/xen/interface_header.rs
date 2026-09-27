@@ -8,11 +8,11 @@
 // otherwise it is a raw pointer alias. The declarations below use wrappers
 // for the guest-handle ABI and preserve the pointed-to C types.
 
-pub type xen_pfn_t = ::core::ffi::c_ulong;
+pub type xen_pfn_t = ::kernel::ffi::c_ulong;
 pub const PRI_xen_pfn: &str = "lx";
-pub type xen_ulong_t = ::core::ffi::c_ulong;
+pub type xen_ulong_t = ::kernel::ffi::c_ulong;
 pub const PRI_xen_ulong: &str = "lx";
-pub type xen_long_t = ::core::ffi::c_long;
+pub type xen_long_t = ::kernel::ffi::c_long;
 pub const PRI_xen_long: &str = "lx";
 
 #[repr(transparent)]
@@ -20,16 +20,16 @@ pub const PRI_xen_long: &str = "lx";
 pub struct __guest_handle_uchar { pub p: *mut u8 }
 #[repr(transparent)]
 #[derive(Copy, Clone)]
-pub struct __guest_handle_uint { pub p: *mut ::core::ffi::c_uint }
+pub struct __guest_handle_uint { pub p: *mut ::kernel::ffi::c_uint }
 #[repr(transparent)]
 #[derive(Copy, Clone)]
-pub struct __guest_handle_char { pub p: *mut ::core::ffi::c_char }
+pub struct __guest_handle_char { pub p: *mut ::kernel::ffi::c_char }
 #[repr(transparent)]
 #[derive(Copy, Clone)]
-pub struct __guest_handle_int { pub p: *mut ::core::ffi::c_int }
+pub struct __guest_handle_int { pub p: *mut ::kernel::ffi::c_int }
 #[repr(transparent)]
 #[derive(Copy, Clone)]
-pub struct __guest_handle_void { pub p: *mut ::core::ffi::c_void }
+pub struct __guest_handle_void { pub p: *mut ::kernel::ffi::c_void }
 #[repr(transparent)]
 #[derive(Copy, Clone)]
 pub struct __guest_handle_uint64_t { pub p: *mut u64 }
@@ -71,18 +71,18 @@ pub struct trap_info {
     pub vector: u8,
     pub flags: u8,
     pub cs: u16,
-    pub address: ::core::ffi::c_ulong,
+    pub address: ::kernel::ffi::c_ulong,
 }
 pub type __guest_handle_trap_info = *mut trap_info;
 
 #[repr(C)]
 pub struct arch_shared_info {
-    pub max_pfn: ::core::ffi::c_ulong,
+    pub max_pfn: ::kernel::ffi::c_ulong,
     pub pfn_to_mfn_frame_list_list: xen_pfn_t,
-    pub nmi_reason: ::core::ffi::c_ulong,
-    pub p2m_cr3: ::core::ffi::c_ulong,
-    pub p2m_vaddr: ::core::ffi::c_ulong,
-    pub p2m_generation: ::core::ffi::c_ulong,
+    pub nmi_reason: ::kernel::ffi::c_ulong,
+    pub p2m_cr3: ::kernel::ffi::c_ulong,
+    pub p2m_vaddr: ::kernel::ffi::c_ulong,
+    pub p2m_generation: ::kernel::ffi::c_ulong,
     // Present only when CONFIG_X86_32 is defined.
     #[cfg(any())]
     pub wc_sec_hi: u32,
@@ -91,27 +91,27 @@ pub struct arch_shared_info {
 #[repr(C)]
 pub struct vcpu_guest_context {
     pub fpu_ctxt: [u8; 512],
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
     pub user_regs: cpu_user_regs,
     pub trap_ctxt: [trap_info; 256],
-    pub ldt_base: ::core::ffi::c_ulong,
-    pub ldt_ents: ::core::ffi::c_ulong,
-    pub gdt_frames: [::core::ffi::c_ulong; 16],
-    pub gdt_ents: ::core::ffi::c_ulong,
-    pub kernel_ss: ::core::ffi::c_ulong,
-    pub kernel_sp: ::core::ffi::c_ulong,
-    pub ctrlreg: [::core::ffi::c_ulong; 8],
-    pub debugreg: [::core::ffi::c_ulong; 8],
+    pub ldt_base: ::kernel::ffi::c_ulong,
+    pub ldt_ents: ::kernel::ffi::c_ulong,
+    pub gdt_frames: [::kernel::ffi::c_ulong; 16],
+    pub gdt_ents: ::kernel::ffi::c_ulong,
+    pub kernel_ss: ::kernel::ffi::c_ulong,
+    pub kernel_sp: ::kernel::ffi::c_ulong,
+    pub ctrlreg: [::kernel::ffi::c_ulong; 8],
+    pub debugreg: [::kernel::ffi::c_ulong; 8],
     // __i386__ and __x86_64__ layouts are selected by the external build.
-    pub event_callback_eip: ::core::ffi::c_ulong,
-    pub failsafe_callback_eip: ::core::ffi::c_ulong,
+    pub event_callback_eip: ::kernel::ffi::c_ulong,
+    pub failsafe_callback_eip: ::kernel::ffi::c_ulong,
     #[cfg(any())]
-    pub event_callback_cs: ::core::ffi::c_ulong,
+    pub event_callback_cs: ::kernel::ffi::c_ulong,
     #[cfg(any())]
-    pub failsafe_callback_cs: ::core::ffi::c_ulong,
+    pub failsafe_callback_cs: ::kernel::ffi::c_ulong,
     #[cfg(any())]
-    pub syscall_callback_eip: ::core::ffi::c_ulong,
-    pub vm_assist: ::core::ffi::c_ulong,
+    pub syscall_callback_eip: ::kernel::ffi::c_ulong,
+    pub vm_assist: ::kernel::ffi::c_ulong,
     #[cfg(any())]
     pub fs_base: u64,
     #[cfg(any())]

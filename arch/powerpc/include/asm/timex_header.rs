@@ -6,7 +6,7 @@
 
 /* Dependencies supplied by the surrounding kernel translation. */
 
-pub type cycles_t = ::core::ffi::c_ulong;
+pub type cycles_t = ::kernel::ffi::c_ulong;
 
 unsafe extern "C" {
     pub fn mftb() -> cycles_t;

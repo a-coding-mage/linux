@@ -12,7 +12,7 @@
 /// `BITS_PER_LONG`, `PAGE_SHIFT`, `ilog2`, `fls`, and `fls64` are supplied by
 /// the corresponding kernel dependencies.
 #[inline(always)]
-pub unsafe fn get_order(mut size: core::ffi::c_ulong) -> i32 {
+pub unsafe fn get_order(mut size: kernel::ffi::c_ulong) -> i32 {
     // C's __builtin_constant_p(size) selects the following branch only when
     // the argument is known at compile time.  Rust has no stable direct
     // equivalent, so the function body preserves the runtime branch below;

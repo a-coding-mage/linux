@@ -5,7 +5,7 @@
  */
 
 /* Dependency declarations are supplied by smb_common.h in the source tree. */
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const OPLOCK_WAIT_TIME: usize = 35 * HZ;
 
@@ -118,7 +118,7 @@ extern "C" {
 
     /* Lease related functions */
     pub fn create_lease_buf(rbuf: *mut u8, lease: *mut lease);
-    pub fn parse_lease_state(open_req: *mut core::ffi::c_void) -> *mut lease_ctx_info;
+    pub fn parse_lease_state(open_req: *mut kernel::ffi::c_void) -> *mut lease_ctx_info;
     pub fn smb2_map_lease_to_oplock(lease_state: __le32) -> u8;
     pub fn lease_update_oplock_levels(lease: *mut lease);
     pub fn lease_read_to_write(opinfo: *mut oplock_info) -> i32;
@@ -130,7 +130,7 @@ extern "C" {
     pub fn create_disk_id_rsp_buf(cc: *mut c_char, file_id: u64, vol_id: u64);
     pub fn create_posix_rsp_buf(cc: *mut c_char, fp: *mut ksmbd_file);
     pub fn create_aapl_rsp_buf(cc: *mut c_char, vol_caps: u64, req_bitmap: u64, readdir_attr_v2: bool);
-    pub fn smb2_find_context_vals(open_req: *mut core::ffi::c_void, tag: *const c_char, tag_len: i32) -> *mut create_context;
+    pub fn smb2_find_context_vals(open_req: *mut kernel::ffi::c_void, tag: *const c_char, tag_len: i32) -> *mut create_context;
     pub fn lookup_lease_in_table(conn: *mut ksmbd_conn, lease_key: *mut c_char) -> *mut oplock_info;
     pub fn find_same_lease_key(conn: *mut ksmbd_conn, ci: *mut ksmbd_inode, lctx: *mut lease_ctx_info) -> i32;
     pub fn destroy_lease_table(conn: *mut ksmbd_conn);

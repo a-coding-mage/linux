@@ -4,8 +4,8 @@
 
 #[repr(C)]
 pub struct nft_last {
-    pub jiffies: ::core::ffi::c_ulong,
-    pub set: ::core::ffi::c_uint,
+    pub jiffies: ::kernel::ffi::c_ulong,
+    pub set: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -25,11 +25,11 @@ unsafe fn nft_last_init(
     ctx: *const nft_ctx,
     expr: *const nft_expr,
     tb: *const *const nlattr,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let priv_: *mut nft_last_priv = nft_expr_priv(expr);
     let mut last: *mut nft_last;
     let mut last_jiffies: u64 = 0;
-    let mut err: ::core::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
 
     last = kzalloc_obj::<nft_last>(GFP_KERNEL_ACCOUNT);
     if last.is_null() {
@@ -47,7 +47,7 @@ unsafe fn nft_last_init(
             return err;
         }
 
-        (*last).jiffies = jiffies - last_jiffies as ::core::ffi::c_ulong;
+        (*last).jiffies = jiffies - last_jiffies as ::kernel::ffi::c_ulong;
     }
     (*priv_).last = last;
 
@@ -74,10 +74,10 @@ unsafe fn nft_last_dump(
     skb: *mut sk_buff,
     expr: *const nft_expr,
     reset: bool,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let priv_: *mut nft_last_priv = nft_expr_priv(expr);
     let last: *mut nft_last = (*priv_).last;
-    let last_jiffies: ::core::ffi::c_ulong = READ_ONCE(&(*last).jiffies);
+    let last_jiffies: ::kernel::ffi::c_ulong = READ_ONCE(&(*last).jiffies);
     let mut last_set: u32 = READ_ONCE(&(*last).set);
     let mut msecs: __be64;
 
@@ -110,7 +110,7 @@ unsafe fn nft_last_clone(
     dst: *mut nft_expr,
     src: *const nft_expr,
     gfp: gfp_t,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let priv_dst: *mut nft_last_priv = nft_expr_priv(dst);
     let priv_src: *mut nft_last_priv = nft_expr_priv(src);
 

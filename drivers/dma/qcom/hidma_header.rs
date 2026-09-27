@@ -30,9 +30,9 @@ pub struct hidma_tre {
     pub status: u16, /* status */
     pub idx: u32, /* index of the tre */
     pub dma_sig: u32, /* signature of the tre */
-    pub dev_name: *const core::ffi::c_char, /* name of the device */
-    pub callback: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>, /* requester callback */
-    pub data: *mut core::ffi::c_void, /* Data associated with this channel */
+    pub dev_name: *const kernel::ffi::c_char, /* name of the device */
+    pub callback: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>, /* requester callback */
+    pub data: *mut kernel::ffi::c_void, /* Data associated with this channel */
     pub lldev: *mut hidma_lldev, /* lldma device pointer */
     pub tre_local: [u32; HIDMA_TRE_SIZE / core::mem::size_of::<u32>() + 1], /* TRE local copy */
     pub tre_index: u32, /* the offset where this was written */
@@ -52,15 +52,15 @@ pub struct hidma_lldev {
     pub lock: spinlock_t,
     pub trepool: *mut hidma_tre,
     pub dev: *mut device,
-    pub trca: *mut core::ffi::c_void,
-    pub evca: *mut core::ffi::c_void,
+    pub trca: *mut kernel::ffi::c_void,
+    pub evca: *mut kernel::ffi::c_void,
     pub pending_tre_list: *mut *mut hidma_tre,
     pub pending_tre_count: atomic_t,
-    pub tre_ring: *mut core::ffi::c_void,
+    pub tre_ring: *mut kernel::ffi::c_void,
     pub tre_dma: dma_addr_t,
     pub tre_ring_size: u32,
     pub tre_processed_off: u32,
-    pub evre_ring: *mut core::ffi::c_void,
+    pub evre_ring: *mut kernel::ffi::c_void,
     pub evre_dma: dma_addr_t,
     pub evre_ring_size: u32,
     pub evre_processed_off: u32,
@@ -82,7 +82,7 @@ pub struct hidma_desc {
 pub struct hidma_chan {
     pub paused: bool,
     pub allocated: bool,
-    pub dbg_name: [core::ffi::c_char; 16],
+    pub dbg_name: [kernel::ffi::c_char; 16],
     pub dma_sig: u32,
     pub last_success: dma_cookie_t,
     /*
@@ -104,14 +104,14 @@ pub struct hidma_chan {
 
 #[repr(C)]
 pub struct hidma_dev {
-    pub irq: core::ffi::c_int,
-    pub chidx: core::ffi::c_int,
+    pub irq: kernel::ffi::c_int,
+    pub chidx: kernel::ffi::c_int,
     pub nr_descriptors: u32,
-    pub msi_virqbase: core::ffi::c_int,
+    pub msi_virqbase: kernel::ffi::c_int,
     pub lldev: *mut hidma_lldev,
-    pub dev_trca: *mut core::ffi::c_void,
+    pub dev_trca: *mut kernel::ffi::c_void,
     pub trca_resource: *mut resource,
-    pub dev_evca: *mut core::ffi::c_void,
+    pub dev_evca: *mut kernel::ffi::c_void,
     pub evca_resource: *mut resource,
     /* used to protect the pending channel list */
     pub lock: spinlock_t,
@@ -125,24 +125,24 @@ pub struct hidma_dev {
 
 extern "C" {
     pub fn hidma_ll_request(
-        llhndl: *mut hidma_lldev, dev_id: u32, dev_name: *const core::ffi::c_char,
-        callback: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
-        data: *mut core::ffi::c_void, tre_ch: *mut u32,
-    ) -> core::ffi::c_int;
+        llhndl: *mut hidma_lldev, dev_id: u32, dev_name: *const kernel::ffi::c_char,
+        callback: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
+        data: *mut kernel::ffi::c_void, tre_ch: *mut u32,
+    ) -> kernel::ffi::c_int;
     pub fn hidma_ll_free(llhndl: *mut hidma_lldev, tre_ch: u32);
     pub fn hidma_ll_status(llhndl: *mut hidma_lldev, tre_ch: u32) -> dma_status;
     pub fn hidma_ll_isenabled(llhndl: *mut hidma_lldev) -> bool;
     pub fn hidma_ll_queue_request(llhndl: *mut hidma_lldev, tre_ch: u32);
     pub fn hidma_ll_start(llhndl: *mut hidma_lldev);
-    pub fn hidma_ll_disable(lldev: *mut hidma_lldev) -> core::ffi::c_int;
-    pub fn hidma_ll_enable(llhndl: *mut hidma_lldev) -> core::ffi::c_int;
+    pub fn hidma_ll_disable(lldev: *mut hidma_lldev) -> kernel::ffi::c_int;
+    pub fn hidma_ll_enable(llhndl: *mut hidma_lldev) -> kernel::ffi::c_int;
     pub fn hidma_ll_set_transfer_params(llhndl: *mut hidma_lldev, tre_ch: u32, src: dma_addr_t, dest: dma_addr_t, len: u32, flags: u32, txntype: u32);
     pub fn hidma_ll_setup_irq(lldev: *mut hidma_lldev, msi: bool);
-    pub fn hidma_ll_setup(lldev: *mut hidma_lldev) -> core::ffi::c_int;
-    pub fn hidma_ll_init(dev: *mut device, max_channels: u32, trca: *mut core::ffi::c_void, evca: *mut core::ffi::c_void, chidx: u8) -> *mut hidma_lldev;
-    pub fn hidma_ll_uninit(llhndl: *mut hidma_lldev) -> core::ffi::c_int;
-    pub fn hidma_ll_inthandler(irq: core::ffi::c_int, arg: *mut core::ffi::c_void) -> irqreturn_t;
-    pub fn hidma_ll_inthandler_msi(irq: core::ffi::c_int, arg: *mut core::ffi::c_void, cause: core::ffi::c_int) -> irqreturn_t;
+    pub fn hidma_ll_setup(lldev: *mut hidma_lldev) -> kernel::ffi::c_int;
+    pub fn hidma_ll_init(dev: *mut device, max_channels: u32, trca: *mut kernel::ffi::c_void, evca: *mut kernel::ffi::c_void, chidx: u8) -> *mut hidma_lldev;
+    pub fn hidma_ll_uninit(llhndl: *mut hidma_lldev) -> kernel::ffi::c_int;
+    pub fn hidma_ll_inthandler(irq: kernel::ffi::c_int, arg: *mut kernel::ffi::c_void) -> irqreturn_t;
+    pub fn hidma_ll_inthandler_msi(irq: kernel::ffi::c_int, arg: *mut kernel::ffi::c_void, cause: kernel::ffi::c_int) -> irqreturn_t;
     pub fn hidma_cleanup_pending_tre(llhndl: *mut hidma_lldev, err_info: u8, err_code: u8);
     pub fn hidma_debug_init(dmadev: *mut hidma_dev);
     pub fn hidma_debug_uninit(dmadev: *mut hidma_dev);

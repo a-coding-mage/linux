@@ -4,7 +4,7 @@
 // Declarations supplied by linux/ns_common.h, linux/cred.h, and
 // linux/pid_namespace.h are intentionally left as external dependencies.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub enum path {}
 pub enum task_struct {}
@@ -27,13 +27,13 @@ unsafe extern "C" {
         path: *mut path,
         task: *mut task_struct,
         ns_ops: *const proc_ns_operations,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn ns_get_path_cb(
         path: *mut path,
         ns_get_cb: ns_get_path_helper_t,
         private_data: *mut c_void,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn ns_match(
         ns: *const ns_common,
@@ -42,11 +42,11 @@ unsafe extern "C" {
     ) -> bool;
 
     pub fn ns_get_name(
-        buf: *mut core::ffi::c_char,
+        buf: *mut kernel::ffi::c_char,
         size: usize,
         task: *mut task_struct,
         ns_ops: *const proc_ns_operations,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn nsfs_init();
 

@@ -13,41 +13,41 @@ pub struct device_node {
 pub struct resource {
     pub start: resource_size_t,
     pub end: resource_size_t,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub flags: c_ulong,
 }
 
 pub type resource_size_t = u64;
 pub type c_ulong = usize;
 pub type c_int = i32;
-pub type iomem = core::ffi::c_void;
+pub type iomem = kernel::ffi::c_void;
 
 extern "C" {
     fn iounmap(addr: *mut iomem);
     fn devres_alloc_node(
-        release: unsafe extern "C" fn(*mut device, *mut core::ffi::c_void),
+        release: unsafe extern "C" fn(*mut device, *mut kernel::ffi::c_void),
         size: usize,
         gfp: c_ulong,
         node: c_int,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     fn dev_to_node(dev: *mut device) -> c_int;
     fn ioremap(offset: resource_size_t, size: resource_size_t) -> *mut iomem;
     fn ioremap_uc(offset: resource_size_t, size: resource_size_t) -> *mut iomem;
     fn ioremap_wc(offset: resource_size_t, size: resource_size_t) -> *mut iomem;
     fn ioremap_np(offset: resource_size_t, size: resource_size_t) -> *mut iomem;
-    fn devres_add(dev: *mut device, res: *mut core::ffi::c_void);
-    fn devres_free(res: *mut core::ffi::c_void);
+    fn devres_add(dev: *mut device, res: *mut kernel::ffi::c_void);
+    fn devres_free(res: *mut kernel::ffi::c_void);
     fn devres_release(
         dev: *mut device,
-        release: unsafe extern "C" fn(*mut device, *mut core::ffi::c_void),
-        match_fn: unsafe extern "C" fn(*mut device, *mut core::ffi::c_void, *mut core::ffi::c_void) -> c_int,
-        match_data: *mut core::ffi::c_void,
+        release: unsafe extern "C" fn(*mut device, *mut kernel::ffi::c_void),
+        match_fn: unsafe extern "C" fn(*mut device, *mut kernel::ffi::c_void, *mut kernel::ffi::c_void) -> c_int,
+        match_data: *mut kernel::ffi::c_void,
     ) -> c_int;
-    fn dev_name(dev: *mut device) -> *const core::ffi::c_char;
-    fn dev_err_probe(dev: *mut device, err: c_int, fmt: *const core::ffi::c_char, ...) -> c_int;
-    fn devm_kasprintf(dev: *mut device, gfp: c_ulong, fmt: *const core::ffi::c_char, ...) -> *mut core::ffi::c_char;
-    fn devm_kstrdup(dev: *mut device, s: *const core::ffi::c_char, gfp: c_ulong) -> *mut core::ffi::c_char;
-    fn devm_request_mem_region(dev: *mut device, start: resource_size_t, size: resource_size_t, name: *const core::ffi::c_char) -> *mut resource;
+    fn dev_name(dev: *mut device) -> *const kernel::ffi::c_char;
+    fn dev_err_probe(dev: *mut device, err: c_int, fmt: *const kernel::ffi::c_char, ...) -> c_int;
+    fn devm_kasprintf(dev: *mut device, gfp: c_ulong, fmt: *const kernel::ffi::c_char, ...) -> *mut kernel::ffi::c_char;
+    fn devm_kstrdup(dev: *mut device, s: *const kernel::ffi::c_char, gfp: c_ulong) -> *mut kernel::ffi::c_char;
+    fn devm_request_mem_region(dev: *mut device, start: resource_size_t, size: resource_size_t, name: *const kernel::ffi::c_char) -> *mut resource;
     fn devm_release_mem_region(dev: *mut device, start: resource_size_t, size: resource_size_t);
     fn arch_phys_wc_del(mtrr: c_int);
     fn arch_phys_wc_add(base: c_ulong, size: c_ulong) -> c_int;
@@ -74,12 +74,12 @@ enum devm_ioremap_type {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn devm_ioremap_release(_dev: *mut device, res: *mut core::ffi::c_void) {
+pub unsafe extern "C" fn devm_ioremap_release(_dev: *mut device, res: *mut kernel::ffi::c_void) {
     iounmap(*(res as *mut *mut iomem));
 }
 
-unsafe extern "C" fn devm_ioremap_match(_dev: *mut device, res: *mut core::ffi::c_void, match_data: *mut core::ffi::c_void) -> c_int {
-    (*(res as *mut *mut core::ffi::c_void) == match_data) as c_int
+unsafe extern "C" fn devm_ioremap_match(_dev: *mut device, res: *mut kernel::ffi::c_void, match_data: *mut kernel::ffi::c_void) -> c_int {
+    (*(res as *mut *mut kernel::ffi::c_void) == match_data) as c_int
 }
 
 unsafe fn __devm_ioremap(dev: *mut device, offset: resource_size_t, size: resource_size_t, kind: devm_ioremap_type) -> *mut iomem {
@@ -130,8 +130,8 @@ pub unsafe extern "C" fn devm_of_iomap(dev: *mut device, node: *mut device_node,
     devm_ioremap_resource(dev, &res)
 }
 
-unsafe extern "C" fn devm_ioport_map_release(_dev: *mut device, res: *mut core::ffi::c_void) { ioport_unmap(*(res as *mut *mut iomem)); }
-unsafe extern "C" fn devm_ioport_map_match(_dev: *mut device, res: *mut core::ffi::c_void, data: *mut core::ffi::c_void) -> c_int { (*(res as *mut *mut core::ffi::c_void) == data) as c_int }
+unsafe extern "C" fn devm_ioport_map_release(_dev: *mut device, res: *mut kernel::ffi::c_void) { ioport_unmap(*(res as *mut *mut iomem)); }
+unsafe extern "C" fn devm_ioport_map_match(_dev: *mut device, res: *mut kernel::ffi::c_void, data: *mut kernel::ffi::c_void) -> c_int { (*(res as *mut *mut kernel::ffi::c_void) == data) as c_int }
 
 #[no_mangle]
 pub unsafe extern "C" fn devm_ioport_map(dev: *mut device, port: c_ulong, nr: u32) -> *mut iomem {
@@ -148,7 +148,7 @@ pub unsafe extern "C" fn devm_ioport_unmap(dev: *mut device, addr: *mut iomem) {
 #[repr(C)]
 pub struct arch_io_reserve_memtype_wc_devres { pub start: resource_size_t, pub size: resource_size_t }
 
-unsafe extern "C" fn devm_arch_io_free_memtype_wc_release(_dev: *mut device, res: *mut core::ffi::c_void) {
+unsafe extern "C" fn devm_arch_io_free_memtype_wc_release(_dev: *mut device, res: *mut kernel::ffi::c_void) {
     let this = &*(res as *const arch_io_reserve_memtype_wc_devres);
     arch_io_free_memtype_wc(this.start, this.size);
 }
@@ -162,7 +162,7 @@ pub unsafe extern "C" fn devm_arch_phys_wc_add(dev: *mut device, base: c_ulong, 
     *mtrr = ret; devres_add(dev, mtrr as *mut _); ret
 }
 
-unsafe extern "C" fn devm_arch_phys_ac_add_release(_dev: *mut device, res: *mut core::ffi::c_void) { arch_phys_wc_del(*(res as *mut c_int)); }
+unsafe extern "C" fn devm_arch_phys_ac_add_release(_dev: *mut device, res: *mut kernel::ffi::c_void) { arch_phys_wc_del(*(res as *mut c_int)); }
 
 #[no_mangle]
 pub unsafe extern "C" fn devm_arch_io_reserve_memtype_wc(dev: *mut device, start: resource_size_t, size: resource_size_t) -> c_int {

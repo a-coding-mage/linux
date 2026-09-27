@@ -35,15 +35,15 @@ pub struct dc_log_buffer_ctx {
 }
 
 unsafe extern "C" {
-    pub fn dcn10_clear_status_bits(dc: *mut dc, mask: ::core::ffi::c_uint);
+    pub fn dcn10_clear_status_bits(dc: *mut dc, mask: ::kernel::ffi::c_uint);
 
     pub fn dcn10_log_hw_state(dc: *mut dc, log_ctx: *mut dc_log_buffer_ctx);
 
     pub fn dcn10_get_hw_state(
         dc: *mut dc,
-        pBuf: *mut ::core::ffi::c_char,
-        bufSize: ::core::ffi::c_uint,
-        mask: ::core::ffi::c_uint,
+        pBuf: *mut ::kernel::ffi::c_char,
+        bufSize: ::kernel::ffi::c_uint,
+        mask: ::kernel::ffi::c_uint,
     );
 }
 

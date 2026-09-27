@@ -35,7 +35,7 @@ unsafe fn max7360_get_available_gpos(dev: *mut device, available_gpios: *mut u32
 
 unsafe fn max7360_gpo_init_valid_mask(
     gc: *mut gpio_chip,
-    valid_mask: *mut core::ffi::c_ulong,
+    valid_mask: *mut kernel::ffi::c_ulong,
     _ngpios: u32,
 ) -> i32 {
     let mut available_gpios = 0;
@@ -82,7 +82,7 @@ static max7360_regmap_irqs: [regmap_irq; MAX7360_MAX_GPIO as usize] = [
 ];
 
 unsafe fn max7360_handle_mask_sync(
-    _index: i32, _mask_buf_def: u32, mask_buf: u32, irq_drv_data: *mut core::ffi::c_void,
+    _index: i32, _mask_buf_def: u32, mask_buf: u32, irq_drv_data: *mut kernel::ffi::c_void,
 ) -> i32 {
     let regmap = gpio_regmap_get_drvdata(irq_drv_data);
     for i in 0..MAX7360_MAX_GPIO {

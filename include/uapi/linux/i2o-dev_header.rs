@@ -29,15 +29,15 @@ pub const I2O_SOFTWARE_MODULE_IRTOS:u32=0x11; pub const I2O_SOFTWARE_MODULE_IOP_
 #[repr(C)]
 pub struct i2o_cmd_passthru32 { pub iop: u32, pub msg: __u32 }
 #[repr(C)]
-pub struct i2o_cmd_passthru { pub iop: u32, pub msg: *mut core::ffi::c_void }
+pub struct i2o_cmd_passthru { pub iop: u32, pub msg: *mut kernel::ffi::c_void }
 #[repr(C)]
-pub struct i2o_cmd_hrtlct { pub iop: u32, pub resbuf: *mut core::ffi::c_void, pub reslen: *mut u32 }
+pub struct i2o_cmd_hrtlct { pub iop: u32, pub resbuf: *mut kernel::ffi::c_void, pub reslen: *mut u32 }
 #[repr(C)]
-pub struct i2o_cmd_psetget { pub iop: u32, pub tid: u32, pub opbuf: *mut core::ffi::c_void, pub oplen: u32, pub resbuf: *mut core::ffi::c_void, pub reslen: *mut u32 }
+pub struct i2o_cmd_psetget { pub iop: u32, pub tid: u32, pub opbuf: *mut kernel::ffi::c_void, pub oplen: u32, pub resbuf: *mut kernel::ffi::c_void, pub reslen: *mut u32 }
 #[repr(C)]
-pub struct i2o_sw_xfer { pub iop: u32, pub flags: u8, pub sw_type: u8, pub sw_id: u32, pub buf: *mut core::ffi::c_void, pub swlen: *mut u32, pub maxfrag: *mut u32, pub curfrag: *mut u32 }
+pub struct i2o_sw_xfer { pub iop: u32, pub flags: u8, pub sw_type: u8, pub sw_id: u32, pub buf: *mut kernel::ffi::c_void, pub swlen: *mut u32, pub maxfrag: *mut u32, pub curfrag: *mut u32 }
 #[repr(C)]
-pub struct i2o_html { pub iop: u32, pub tid: u32, pub page: u32, pub resbuf: *mut core::ffi::c_void, pub reslen: *mut u32, pub qbuf: *mut core::ffi::c_void, pub qlen: u32 }
+pub struct i2o_html { pub iop: u32, pub tid: u32, pub page: u32, pub resbuf: *mut kernel::ffi::c_void, pub reslen: *mut u32, pub qbuf: *mut kernel::ffi::c_void, pub qlen: u32 }
 #[repr(C)]
 pub struct i2o_evt_id { pub iop: u32, pub tid: u32, pub evt_mask: u32 }
 #[repr(C)]
@@ -63,6 +63,6 @@ pub const I2O_BUS_CARDBUS: u32 = 7; pub const I2O_BUS_UNKNOWN: u32 = 0x80;
 #[repr(C)] pub struct i2o_hrt { pub num_entries:u16,pub entry_len:u8,pub hrt_version:u8,pub change_ind:u32,pub hrt_entry:[i2o_hrt_entry;1] }
 #[repr(C)] pub struct i2o_lct_entry { pub entry_size_tid_reserved:u32,pub change_ind:u32,pub device_flags:u32,pub class_version_vendor:u32,pub sub_class:u32,pub user_tid_parent_tid_bios_info:u32,pub identity_tag:[u8;8],pub event_capabilities:u32 }
 #[repr(C)] pub struct i2o_lct { pub table_size_boot_tid_ver:u32,pub iop_flags:u32,pub change_ind:u32,pub lct_entry:[i2o_lct_entry;1] }
-#[repr(C)] pub struct i2o_status_block { pub org_id:u16,pub reserved:u16,pub iop_id_reserved1:u16,pub host_unit_id:u16,pub segment_number_version:u16,pub iop_state:u8,pub msg_type:u8,pub inbound_frame_size:u16,pub init_code:u8,pub reserved2:u8,pub max_inbound_frames:u32,pub cur_inbound_frames:u32,pub max_outbound_frames:u32,pub product_id:[core::ffi::c_char;24],pub expected_lct_size:u32,pub iop_capabilities:u32,pub desired_mem_size:u32,pub current_mem_size:u32,pub current_mem_base:u32,pub desired_io_size:u32,pub current_io_size:u32,pub current_io_base:u32,pub reserved3_cmd_status:u32 }
+#[repr(C)] pub struct i2o_status_block { pub org_id:u16,pub reserved:u16,pub iop_id_reserved1:u16,pub host_unit_id:u16,pub segment_number_version:u16,pub iop_state:u8,pub msg_type:u8,pub inbound_frame_size:u16,pub init_code:u8,pub reserved2:u8,pub max_inbound_frames:u32,pub cur_inbound_frames:u32,pub max_outbound_frames:u32,pub product_id:[kernel::ffi::c_char;24],pub expected_lct_size:u32,pub iop_capabilities:u32,pub desired_mem_size:u32,pub current_mem_size:u32,pub current_mem_base:u32,pub desired_io_size:u32,pub current_io_size:u32,pub current_io_base:u32,pub reserved3_cmd_status:u32 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

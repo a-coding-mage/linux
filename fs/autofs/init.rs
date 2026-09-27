@@ -7,30 +7,30 @@
 // left as external Rust items.
 
 extern "C" {
-    static THIS_MODULE: *mut core::ffi::c_void;
-    static autofs_param_specs: *const core::ffi::c_void;
+    static THIS_MODULE: *mut kernel::ffi::c_void;
+    static autofs_param_specs: *const kernel::ffi::c_void;
 
     fn autofs_init_fs_context();
     fn autofs_kill_sb();
     fn autofs_dev_ioctl_init();
     fn autofs_dev_ioctl_exit();
-    fn register_filesystem(fs: *mut file_system_type) -> core::ffi::c_int;
+    fn register_filesystem(fs: *mut file_system_type) -> kernel::ffi::c_int;
     fn unregister_filesystem(fs: *mut file_system_type);
 }
 
 #[repr(C)]
 pub struct file_system_type {
-    pub owner: *mut core::ffi::c_void,
-    pub name: *const core::ffi::c_char,
+    pub owner: *mut kernel::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
     pub init_fs_context: Option<unsafe extern "C" fn()>,
-    pub parameters: *const core::ffi::c_void,
+    pub parameters: *const kernel::ffi::c_void,
     pub kill_sb: Option<unsafe extern "C" fn()>,
 }
 
 #[no_mangle]
 pub static mut autofs_fs_type: file_system_type = file_system_type {
     owner: unsafe { THIS_MODULE },
-    name: b"autofs\0".as_ptr() as *const core::ffi::c_char,
+    name: b"autofs\0".as_ptr() as *const kernel::ffi::c_char,
     init_fs_context: Some(autofs_init_fs_context),
     parameters: unsafe { autofs_param_specs },
     kill_sb: Some(autofs_kill_sb),
@@ -40,8 +40,8 @@ pub static mut autofs_fs_type: file_system_type = file_system_type {
 // MODULE_ALIAS("autofs");
 
 #[allow(non_snake_case)]
-unsafe fn init_autofs_fs() -> core::ffi::c_int {
-    let mut err: core::ffi::c_int;
+unsafe fn init_autofs_fs() -> kernel::ffi::c_int {
+    let mut err: kernel::ffi::c_int;
 
     autofs_dev_ioctl_init();
 

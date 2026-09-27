@@ -41,31 +41,31 @@ pub struct pt_regs;
  */
 #[repr(C)]
 pub struct thread_struct {
-    pub ra: ::core::ffi::c_ulong,
-    pub sp: ::core::ffi::c_ulong,
-    pub s: [::core::ffi::c_ulong; 12],
+    pub ra: ::kernel::ffi::c_ulong,
+    pub sp: ::kernel::ffi::c_ulong,
+    pub s: [::kernel::ffi::c_ulong; 12],
     pub fstate: __riscv_d_ext_state,
-    pub bad_cause: ::core::ffi::c_ulong,
-    pub envcfg: ::core::ffi::c_ulong,
-    pub sum: ::core::ffi::c_ulong,
+    pub bad_cause: ::kernel::ffi::c_ulong,
+    pub envcfg: ::kernel::ffi::c_ulong,
+    pub sum: ::kernel::ffi::c_ulong,
     pub riscv_v_flags: u32,
     pub vstate_ctrl: u32,
     pub vstate: __riscv_v_ext_state,
-    pub align_ctl: ::core::ffi::c_ulong,
+    pub align_ctl: ::kernel::ffi::c_ulong,
     pub kernel_vstate: __riscv_v_ext_state,
     // CONFIG_SMP
     pub force_icache_flush: bool,
-    pub prev_cpu: ::core::ffi::c_uint,
+    pub prev_cpu: ::kernel::ffi::c_uint,
     // CONFIG_RISCV_ISA_SSQOSID
     pub srmcfg: u32,
 }
 
 #[inline]
-pub unsafe fn arch_thread_struct_whitelist(offset: *mut ::core::ffi::c_ulong,
-                                            size: *mut ::core::ffi::c_ulong) {
+pub unsafe fn arch_thread_struct_whitelist(offset: *mut ::kernel::ffi::c_ulong,
+                                            size: *mut ::kernel::ffi::c_ulong) {
     // offsetof(struct thread_struct, fstate) and sizeof_field(..., fstate).
-    *offset = core::mem::offset_of!(thread_struct, fstate) as ::core::ffi::c_ulong;
-    *size = core::mem::size_of::<__riscv_d_ext_state>() as ::core::ffi::c_ulong;
+    *offset = core::mem::offset_of!(thread_struct, fstate) as ::kernel::ffi::c_ulong;
+    *size = core::mem::size_of::<__riscv_d_ext_state>() as ::kernel::ffi::c_ulong;
 }
 
 // INIT_THREAD: .sp = sizeof(init_stack) + (long)&init_stack,
@@ -82,28 +82,28 @@ pub const ARCH_HAS_PREFETCH: bool = true;
 pub const ARCH_HAS_PREFETCHW: bool = true;
 
 // C inline assembly prefetch operations, retained as external low-level hooks.
-pub unsafe fn prefetch(_x: *const ::core::ffi::c_void) {}
-pub unsafe fn prefetchw(_x: *const ::core::ffi::c_void) {}
+pub unsafe fn prefetch(_x: *const ::kernel::ffi::c_void) {}
+pub unsafe fn prefetchw(_x: *const ::kernel::ffi::c_void) {}
 
 extern "C" {
-    pub fn start_thread(regs: *mut pt_regs, pc: ::core::ffi::c_ulong,
-                        sp: ::core::ffi::c_ulong);
-    pub fn __get_wchan(p: *mut task_struct) -> ::core::ffi::c_ulong;
+    pub fn start_thread(regs: *mut pt_regs, pc: ::kernel::ffi::c_ulong,
+                        sp: ::kernel::ffi::c_ulong);
+    pub fn __get_wchan(p: *mut task_struct) -> ::kernel::ffi::c_ulong;
     pub fn wait_for_interrupt();
     pub static mut dma32_phys_limit: phys_addr_t;
     pub fn riscv_of_processor_hartid(node: *mut device_node,
-                                     hartid: *mut ::core::ffi::c_ulong) -> i32;
+                                     hartid: *mut ::kernel::ffi::c_ulong) -> i32;
     pub fn riscv_early_of_processor_hartid(node: *mut device_node,
-                                           hartid: *mut ::core::ffi::c_ulong) -> i32;
+                                           hartid: *mut ::kernel::ffi::c_ulong) -> i32;
     pub fn riscv_of_parent_hartid(node: *mut device_node,
-                                  hartid: *mut ::core::ffi::c_ulong) -> i32;
+                                  hartid: *mut ::kernel::ffi::c_ulong) -> i32;
     pub fn riscv_fill_hwcap();
     pub fn arch_dup_task_struct(dst: *mut task_struct, src: *mut task_struct) -> i32;
-    pub static mut signal_minsigstksz: ::core::ffi::c_ulong;
-    pub fn get_unalign_ctl(tsk: *mut task_struct, addr: ::core::ffi::c_ulong) -> i32;
-    pub fn set_unalign_ctl(tsk: *mut task_struct, val: ::core::ffi::c_uint) -> i32;
-    pub fn riscv_set_icache_flush_ctx(ctx: ::core::ffi::c_ulong,
-                                      per_thread: ::core::ffi::c_ulong) -> i32;
+    pub static mut signal_minsigstksz: ::kernel::ffi::c_ulong;
+    pub fn get_unalign_ctl(tsk: *mut task_struct, addr: ::kernel::ffi::c_ulong) -> i32;
+    pub fn set_unalign_ctl(tsk: *mut task_struct, val: ::kernel::ffi::c_uint) -> i32;
+    pub fn riscv_set_icache_flush_ctx(ctx: ::kernel::ffi::c_ulong,
+                                      per_thread: ::kernel::ffi::c_ulong) -> i32;
 }
 
 #[repr(C)]
@@ -113,7 +113,7 @@ pub struct device_node;
 // RISCV_V_GET_CONTROL() calls the getter.
 #[cfg(CONFIG_RISCV_ISA_V)]
 extern "C" {
-    pub fn riscv_v_vstate_ctrl_set_current(arg: ::core::ffi::c_ulong) -> isize;
+    pub fn riscv_v_vstate_ctrl_set_current(arg: ::kernel::ffi::c_ulong) -> isize;
     pub fn riscv_v_vstate_ctrl_get_current() -> isize;
 }
 
@@ -124,7 +124,7 @@ extern "C" {
 // and GET_TAGGED_ADDR_CTRL() calls get_tagged_addr_ctrl(current).
 #[cfg(CONFIG_RISCV_ISA_SUPM)]
 extern "C" {
-    pub fn set_tagged_addr_ctrl(task: *mut task_struct, arg: ::core::ffi::c_ulong) -> isize;
+    pub fn set_tagged_addr_ctrl(task: *mut task_struct, arg: ::kernel::ffi::c_ulong) -> isize;
     pub fn get_tagged_addr_ctrl(task: *mut task_struct) -> isize;
 }
 

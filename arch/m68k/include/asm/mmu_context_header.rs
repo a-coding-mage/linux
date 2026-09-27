@@ -13,7 +13,7 @@ pub const FIRST_CONTEXT: u32 = 1;
 
 #[cfg(all(CONFIG_MMU, CONFIG_COLDFIRE))]
 extern "C" {
-    pub static mut context_map: [core::ffi::c_ulong; 0];
+    pub static mut context_map: [kernel::ffi::c_ulong; 0];
     pub static mut next_mmu_context: mm_context_t;
     pub static mut nr_free_contexts: atomic_t;
     pub static mut context_mm: [*mut mm_struct; (LAST_CONTEXT + 1) as usize];
@@ -77,7 +77,7 @@ pub unsafe fn prepare_arch_switch(next: *mut task_struct) { load_ksp_mmu(next); 
 
 #[cfg(all(CONFIG_MMU, CONFIG_COLDFIRE))]
 pub unsafe fn load_ksp_mmu(task: *mut task_struct) {
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let mut mm: *mut mm_struct;
     let mut asid: i32;
     let mut pte: *mut pte_t = core::ptr::null_mut();
@@ -98,7 +98,7 @@ pub unsafe fn load_ksp_mmu(task: *mut task_struct) {
     set_pte(pte, pte_mkyoung(*pte));
     asid = ((*mm).context & 0xff) as i32;
     if !pte_dirty(*pte) && mmuar <= PAGE_OFFSET { set_pte(pte, pte_wrprotect(*pte)); }
-    mmu_write(MMUTR, (mmuar & PAGE_MASK) | ((asid as core::ffi::c_ulong) << MMUTR_IDN) | ((((*pte).pte as i32) & CF_PAGE_MMUTR_MASK) >> CF_PAGE_MMUTR_SHIFT) as core::ffi::c_ulong | MMUTR_V);
+    mmu_write(MMUTR, (mmuar & PAGE_MASK) | ((asid as kernel::ffi::c_ulong) << MMUTR_IDN) | ((((*pte).pte as i32) & CF_PAGE_MMUTR_MASK) >> CF_PAGE_MMUTR_SHIFT) as kernel::ffi::c_ulong | MMUTR_V);
     mmu_write(MMUDR, (pte_val(*pte) & PAGE_MASK) | ((*pte).pte & CF_PAGE_MMUDR_MASK) | MMUDR_SZ_8KB | MMUDR_X);
     mmu_write(MMUOR, MMUOR_ACC | MMUOR_UAA);
     if mmuar < PAGE_OFFSET { pte_unmap(pte); }
@@ -106,7 +106,7 @@ pub unsafe fn load_ksp_mmu(task: *mut task_struct) {
 }
 
 #[cfg(all(CONFIG_MMU, CONFIG_SUN3))]
-extern "C" { pub fn get_free_context(mm: *mut mm_struct) -> core::ffi::c_ulong; pub fn clear_context(context: core::ffi::c_ulong); }
+extern "C" { pub fn get_free_context(mm: *mut mm_struct) -> kernel::ffi::c_ulong; pub fn clear_context(context: kernel::ffi::c_ulong); }
 #[cfg(all(CONFIG_MMU, CONFIG_SUN3))]
 pub unsafe fn init_new_context(_tsk: *mut task_struct, mm: *mut mm_struct) -> i32 { (*mm).context = SUN3_INVALID_CONTEXT; 0 }
 #[cfg(all(CONFIG_MMU, CONFIG_SUN3))]

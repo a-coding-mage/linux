@@ -13,10 +13,10 @@
 // registration is retained as dependency-provided build-time intent.
 
 #[allow(non_upper_case_globals)]
-pub static axxia_dt_match: [*const core::ffi::c_char; 4] = [
-    b"lsi,axm5516\0".as_ptr() as *const core::ffi::c_char,
-    b"lsi,axm5516-sim\0".as_ptr() as *const core::ffi::c_char,
-    b"lsi,axm5516-emu\0".as_ptr() as *const core::ffi::c_char,
+pub static axxia_dt_match: [*const kernel::ffi::c_char; 4] = [
+    b"lsi,axm5516\0".as_ptr() as *const kernel::ffi::c_char,
+    b"lsi,axm5516-sim\0".as_ptr() as *const kernel::ffi::c_char,
+    b"lsi,axm5516-emu\0".as_ptr() as *const kernel::ffi::c_char,
     core::ptr::null(),
 ];
 

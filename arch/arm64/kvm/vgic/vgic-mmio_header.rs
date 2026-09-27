@@ -5,41 +5,41 @@
 
 #[repr(C)]
 pub struct vgic_register_region {
-    pub reg_offset: ::core::ffi::c_uint,
-    pub len: ::core::ffi::c_uint,
-    pub bits_per_irq: ::core::ffi::c_uint,
-    pub access_flags: ::core::ffi::c_uint,
+    pub reg_offset: ::kernel::ffi::c_uint,
+    pub len: ::kernel::ffi::c_uint,
+    pub bits_per_irq: ::kernel::ffi::c_uint,
+    pub access_flags: ::kernel::ffi::c_uint,
     pub read: vgic_register_region_read,
     pub write: vgic_register_region_write,
-    pub uaccess_read: Option<unsafe extern "C" fn(*mut kvm_vcpu, gpa_t, ::core::ffi::c_uint) -> ::core::ffi::c_ulong>,
+    pub uaccess_read: Option<unsafe extern "C" fn(*mut kvm_vcpu, gpa_t, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong>,
     pub uaccess_write: vgic_register_region_uaccess_write,
 }
 
 #[repr(C)]
 pub union vgic_register_region_read {
-    pub read: Option<unsafe extern "C" fn(*mut kvm_vcpu, gpa_t, ::core::ffi::c_uint) -> ::core::ffi::c_ulong>,
-    pub its_read: Option<unsafe extern "C" fn(*mut kvm, *mut vgic_its, gpa_t, ::core::ffi::c_uint) -> ::core::ffi::c_ulong>,
+    pub read: Option<unsafe extern "C" fn(*mut kvm_vcpu, gpa_t, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong>,
+    pub its_read: Option<unsafe extern "C" fn(*mut kvm, *mut vgic_its, gpa_t, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong>,
 }
 
 #[repr(C)]
 pub union vgic_register_region_write {
-    pub write: Option<unsafe extern "C" fn(*mut kvm_vcpu, gpa_t, ::core::ffi::c_uint, ::core::ffi::c_ulong)>,
-    pub its_write: Option<unsafe extern "C" fn(*mut kvm, *mut vgic_its, gpa_t, ::core::ffi::c_uint, ::core::ffi::c_ulong)>,
+    pub write: Option<unsafe extern "C" fn(*mut kvm_vcpu, gpa_t, ::kernel::ffi::c_uint, ::kernel::ffi::c_ulong)>,
+    pub its_write: Option<unsafe extern "C" fn(*mut kvm, *mut vgic_its, gpa_t, ::kernel::ffi::c_uint, ::kernel::ffi::c_ulong)>,
 }
 
 #[repr(C)]
 pub union vgic_register_region_uaccess_write {
-    pub uaccess_write: Option<unsafe extern "C" fn(*mut kvm_vcpu, gpa_t, ::core::ffi::c_uint, ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
-    pub uaccess_its_write: Option<unsafe extern "C" fn(*mut kvm, *mut vgic_its, gpa_t, ::core::ffi::c_uint, ::core::ffi::c_ulong) -> ::core::ffi::c_int>,
+    pub uaccess_write: Option<unsafe extern "C" fn(*mut kvm_vcpu, gpa_t, ::kernel::ffi::c_uint, ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
+    pub uaccess_its_write: Option<unsafe extern "C" fn(*mut kvm, *mut vgic_its, gpa_t, ::kernel::ffi::c_uint, ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int>,
 }
 
 extern "C" {
     pub static kvm_io_gic_ops: kvm_io_device_ops;
 }
 
-pub const VGIC_ACCESS_8bit: ::core::ffi::c_uint = 1;
-pub const VGIC_ACCESS_32bit: ::core::ffi::c_uint = 2;
-pub const VGIC_ACCESS_64bit: ::core::ffi::c_uint = 4;
+pub const VGIC_ACCESS_8bit: ::kernel::ffi::c_uint = 1;
+pub const VGIC_ACCESS_32bit: ::kernel::ffi::c_uint = 2;
+pub const VGIC_ACCESS_64bit: ::kernel::ffi::c_uint = 4;
 
 /* Generate a mask that covers the number of bytes required to address
  * up to 1024 interrupts, each represented by <bits> bits. This assumes
@@ -83,52 +83,52 @@ macro_rules! REGISTER_DESC_WITH_LENGTH_UACCESS {
 }
 
 extern "C" {
-    pub fn vgic_data_mmio_bus_to_host(val: *const ::core::ffi::c_void, len: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn vgic_data_host_to_mmio_bus(buf: *mut ::core::ffi::c_void, len: ::core::ffi::c_uint, data: ::core::ffi::c_ulong);
-    pub fn extract_bytes(data: u64, offset: ::core::ffi::c_uint, num: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn update_64bit_reg(reg: u64, offset: ::core::ffi::c_uint, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong) -> u64;
-    pub fn vgic_mmio_read_raz(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn vgic_mmio_read_rao(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn vgic_mmio_write_wi(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong);
-    pub fn vgic_mmio_uaccess_write_wi(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn vgic_mmio_read_group(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn vgic_mmio_write_group(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong);
-    pub fn vgic_mmio_read_enable(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn vgic_mmio_write_senable(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong);
-    pub fn vgic_mmio_write_cenable(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong);
-    pub fn vgic_uaccess_write_senable(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn vgic_uaccess_write_cenable(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn vgic_mmio_read_pending(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn vgic_uaccess_read_pending(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn vgic_mmio_write_spending(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong);
-    pub fn vgic_mmio_write_cpending(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong);
-    pub fn vgic_uaccess_write_spending(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn vgic_uaccess_write_cpending(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn vgic_mmio_read_active(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn vgic_uaccess_read_active(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn vgic_mmio_write_cactive(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong);
-    pub fn vgic_mmio_write_sactive(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong);
-    pub fn vgic_mmio_uaccess_write_cactive(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn vgic_mmio_uaccess_write_sactive(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
-    pub fn vgic_mmio_read_priority(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn vgic_mmio_write_priority(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong);
-    pub fn vgic_mmio_read_config(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn vgic_mmio_write_config(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::core::ffi::c_uint, val: ::core::ffi::c_ulong);
-    pub fn vgic_uaccess(vcpu: *mut kvm_vcpu, dev: *mut vgic_io_device, is_write: bool, offset: ::core::ffi::c_int, val: *mut u32) -> ::core::ffi::c_int;
+    pub fn vgic_data_mmio_bus_to_host(val: *const ::kernel::ffi::c_void, len: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn vgic_data_host_to_mmio_bus(buf: *mut ::kernel::ffi::c_void, len: ::kernel::ffi::c_uint, data: ::kernel::ffi::c_ulong);
+    pub fn extract_bytes(data: u64, offset: ::kernel::ffi::c_uint, num: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn update_64bit_reg(reg: u64, offset: ::kernel::ffi::c_uint, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong) -> u64;
+    pub fn vgic_mmio_read_raz(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn vgic_mmio_read_rao(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn vgic_mmio_write_wi(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong);
+    pub fn vgic_mmio_uaccess_write_wi(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn vgic_mmio_read_group(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn vgic_mmio_write_group(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong);
+    pub fn vgic_mmio_read_enable(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn vgic_mmio_write_senable(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong);
+    pub fn vgic_mmio_write_cenable(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong);
+    pub fn vgic_uaccess_write_senable(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn vgic_uaccess_write_cenable(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn vgic_mmio_read_pending(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn vgic_uaccess_read_pending(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn vgic_mmio_write_spending(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong);
+    pub fn vgic_mmio_write_cpending(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong);
+    pub fn vgic_uaccess_write_spending(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn vgic_uaccess_write_cpending(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn vgic_mmio_read_active(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn vgic_uaccess_read_active(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn vgic_mmio_write_cactive(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong);
+    pub fn vgic_mmio_write_sactive(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong);
+    pub fn vgic_mmio_uaccess_write_cactive(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn vgic_mmio_uaccess_write_sactive(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
+    pub fn vgic_mmio_read_priority(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn vgic_mmio_write_priority(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong);
+    pub fn vgic_mmio_read_config(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn vgic_mmio_write_config(vcpu: *mut kvm_vcpu, addr: gpa_t, len: ::kernel::ffi::c_uint, val: ::kernel::ffi::c_ulong);
+    pub fn vgic_uaccess(vcpu: *mut kvm_vcpu, dev: *mut vgic_io_device, is_write: bool, offset: ::kernel::ffi::c_int, val: *mut u32) -> ::kernel::ffi::c_int;
     pub fn vgic_read_irq_line_level_info(vcpu: *mut kvm_vcpu, intid: u32) -> u32;
     pub fn vgic_write_irq_line_level_info(vcpu: *mut kvm_vcpu, intid: u32, val: u32);
-    pub fn vgic_v2_init_dist_iodev(dev: *mut vgic_io_device) -> ::core::ffi::c_uint;
-    pub fn vgic_v2_init_cpuif_iodev(dev: *mut vgic_io_device) -> ::core::ffi::c_uint;
-    pub fn vgic_v3_init_dist_iodev(dev: *mut vgic_io_device) -> ::core::ffi::c_uint;
+    pub fn vgic_v2_init_dist_iodev(dev: *mut vgic_io_device) -> ::kernel::ffi::c_uint;
+    pub fn vgic_v2_init_cpuif_iodev(dev: *mut vgic_io_device) -> ::kernel::ffi::c_uint;
+    pub fn vgic_v3_init_dist_iodev(dev: *mut vgic_io_device) -> ::kernel::ffi::c_uint;
     pub fn vgic_sanitise_outer_cacheability(reg: u64) -> u64;
     pub fn vgic_sanitise_inner_cacheability(reg: u64) -> u64;
     pub fn vgic_sanitise_shareability(reg: u64) -> u64;
-    pub fn vgic_sanitise_field(reg: u64, field_mask: u64, field_shift: ::core::ffi::c_int, sanitise_fn: Option<unsafe extern "C" fn(u64) -> u64>) -> u64;
+    pub fn vgic_sanitise_field(reg: u64, field_mask: u64, field_shift: ::kernel::ffi::c_int, sanitise_fn: Option<unsafe extern "C" fn(u64) -> u64>) -> u64;
 }
 
 /* Find the proper register handler entry given a certain address offset */
 extern "C" {
-    pub fn vgic_find_mmio_region(regions: *const vgic_register_region, nr_regions: ::core::ffi::c_int, offset: ::core::ffi::c_uint) -> *const vgic_register_region;
+    pub fn vgic_find_mmio_region(regions: *const vgic_register_region, nr_regions: ::kernel::ffi::c_int, offset: ::kernel::ffi::c_uint) -> *const vgic_register_region;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -10,72 +10,72 @@
 
 pub const __HAVE_ARCH_STRRCHR: bool = true;
 unsafe extern "C" {
-    pub fn strrchr(s: *const core::ffi::c_char, c: i32) -> *mut core::ffi::c_char;
+    pub fn strrchr(s: *const kernel::ffi::c_char, c: i32) -> *mut kernel::ffi::c_char;
 }
 
 pub const __HAVE_ARCH_STRCHR: bool = true;
 unsafe extern "C" {
-    pub fn strchr(s: *const core::ffi::c_char, c: i32) -> *mut core::ffi::c_char;
+    pub fn strchr(s: *const kernel::ffi::c_char, c: i32) -> *mut kernel::ffi::c_char;
 }
 
 pub const __HAVE_ARCH_MEMCPY: bool = true;
 unsafe extern "C" {
     pub fn memcpy(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: __kernel_size_t,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn __memcpy(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: __kernel_size_t,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 pub const __HAVE_ARCH_MEMMOVE: bool = true;
 unsafe extern "C" {
     pub fn memmove(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: __kernel_size_t,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn __memmove(
-        dest: *mut core::ffi::c_void,
-        src: *const core::ffi::c_void,
+        dest: *mut kernel::ffi::c_void,
+        src: *const kernel::ffi::c_void,
         n: __kernel_size_t,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 pub const __HAVE_ARCH_MEMCHR: bool = true;
 unsafe extern "C" {
     pub fn memchr(
-        s: *const core::ffi::c_void,
+        s: *const kernel::ffi::c_void,
         c: i32,
         n: __kernel_size_t,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 pub const __HAVE_ARCH_MEMSET: bool = true;
 unsafe extern "C" {
     pub fn memset(
-        s: *mut core::ffi::c_void,
+        s: *mut kernel::ffi::c_void,
         c: i32,
         n: __kernel_size_t,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn __memset(
-        s: *mut core::ffi::c_void,
+        s: *mut kernel::ffi::c_void,
         c: i32,
         n: __kernel_size_t,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 pub const __HAVE_ARCH_MEMSET32: bool = true;
 unsafe extern "C" {
-    pub fn __memset32(p: *mut u32, v: u32, n: __kernel_size_t) -> *mut core::ffi::c_void;
+    pub fn __memset32(p: *mut u32, v: u32, n: __kernel_size_t) -> *mut kernel::ffi::c_void;
 }
 
 #[inline]
-pub unsafe fn memset32(p: *mut u32, v: u32, n: __kernel_size_t) -> *mut core::ffi::c_void {
+pub unsafe fn memset32(p: *mut u32, v: u32, n: __kernel_size_t) -> *mut kernel::ffi::c_void {
     unsafe { __memset32(p, v, n.wrapping_mul(4)) }
 }
 
@@ -86,7 +86,7 @@ unsafe extern "C" {
         first: u32,
         n: __kernel_size_t,
         second: u32,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
 }
 
 #[repr(C)]
@@ -102,7 +102,7 @@ pub union memset64_word {
 }
 
 #[inline]
-pub unsafe fn memset64(p: *mut u64, v: u64, n: __kernel_size_t) -> *mut core::ffi::c_void {
+pub unsafe fn memset64(p: *mut u64, v: u64, n: __kernel_size_t) -> *mut kernel::ffi::c_void {
     let word = memset64_word { val: v };
     let parts = unsafe { word.parts };
     unsafe { __memset64(p, parts.first, n.wrapping_mul(8), parts.second) }

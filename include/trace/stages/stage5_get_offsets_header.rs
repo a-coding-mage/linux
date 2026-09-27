@@ -6,7 +6,7 @@
 /* C preprocessor state: __entry is defined as entry. */
 
 #[inline]
-pub unsafe fn __string_src(str_: *const ::core::ffi::c_char) -> *const ::core::ffi::c_char {
+pub unsafe fn __string_src(str_: *const ::kernel::ffi::c_char) -> *const ::kernel::ffi::c_char {
     if str_.is_null() {
         EVENT_NULL_STR
     } else {
@@ -16,7 +16,7 @@ pub unsafe fn __string_src(str_: *const ::core::ffi::c_char) -> *const ::core::f
 
 /* EVENT_NULL_STR is supplied by the surrounding trace-event definitions. */
 extern "C" {
-    static EVENT_NULL_STR: *const ::core::ffi::c_char;
+    static EVENT_NULL_STR: *const ::kernel::ffi::c_char;
 }
 
 /*
@@ -79,7 +79,7 @@ macro_rules! __dynamic_array {
 #[macro_export]
 macro_rules! __string {
     ($item:tt, $src:expr) => {{
-        $crate::__dynamic_array!(::core::ffi::c_char, $item,
+        $crate::__dynamic_array!(::kernel::ffi::c_char, $item,
             unsafe { ::core::ffi::CStr::from_ptr($crate::__string_src($src)).to_bytes().len() + 1 });
         __data_offsets.::kernel::macros::paste!([<$item _ptr_>]) = $src;
     }};
@@ -88,7 +88,7 @@ macro_rules! __string {
 #[macro_export]
 macro_rules! __string_len {
     ($item:tt, $src:expr, $len:expr) => {{
-        $crate::__dynamic_array!(::core::ffi::c_char, $item, ($len) + 1);
+        $crate::__dynamic_array!(::kernel::ffi::c_char, $item, ($len) + 1);
         __data_offsets.::kernel::macros::paste!([<$item _ptr_>]) = $src;
     }};
 }
@@ -96,7 +96,7 @@ macro_rules! __string_len {
 #[macro_export]
 macro_rules! __vstring {
     ($item:ident, $fmt:expr, $ap:expr) => {{
-        $crate::__dynamic_array!(::core::ffi::c_char, $item,
+        $crate::__dynamic_array!(::kernel::ffi::c_char, $item,
             unsafe { __trace_event_vstr_len($fmt, $ap) });
     }};
 }
@@ -117,7 +117,7 @@ macro_rules! __rel_dynamic_array {
 #[macro_export]
 macro_rules! __rel_string {
     ($item:tt, $src:expr) => {{
-        $crate::__rel_dynamic_array!(::core::ffi::c_char, $item,
+        $crate::__rel_dynamic_array!(::kernel::ffi::c_char, $item,
             unsafe { ::core::ffi::CStr::from_ptr($crate::__string_src($src)).to_bytes().len() + 1 });
         __data_offsets.::kernel::macros::paste!([<$item _ptr_>]) = $src;
     }};
@@ -126,7 +126,7 @@ macro_rules! __rel_string {
 #[macro_export]
 macro_rules! __rel_string_len {
     ($item:tt, $src:expr, $len:expr) => {{
-        $crate::__rel_dynamic_array!(::core::ffi::c_char, $item, ($len) + 1);
+        $crate::__rel_dynamic_array!(::kernel::ffi::c_char, $item, ($len) + 1);
         __data_offsets.::kernel::macros::paste!([<$item _ptr_>]) = $src;
     }};
 }

@@ -432,15 +432,15 @@ pub struct max77686_dev {
 	pub dev: *mut device,
 	pub i2c: *mut i2c_client,  /* 0xcc / PMIC, Battery Control, and FLASH */
 
-	pub type_: ::core::ffi::c_ulong,
+	pub type_: ::kernel::ffi::c_ulong,
 
 	pub regmap: *mut regmap, 		/* regmap for mfd */
 	pub irq_data: *mut regmap_irq_chip_data,
 
-	pub irq: ::core::ffi::c_int,
+	pub irq: ::kernel::ffi::c_int,
 	pub irqlock: mutex,
-	pub irq_masks_cur: [::core::ffi::c_int; MAX77686_IRQ_GROUP_NR as usize],
-	pub irq_masks_cache: [::core::ffi::c_int; MAX77686_IRQ_GROUP_NR as usize],
+	pub irq_masks_cur: [::kernel::ffi::c_int; MAX77686_IRQ_GROUP_NR as usize],
+	pub irq_masks_cache: [::kernel::ffi::c_int; MAX77686_IRQ_GROUP_NR as usize],
 };
 
 #[repr(i32)]

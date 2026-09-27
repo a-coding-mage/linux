@@ -17,7 +17,7 @@
  */
 #[repr(C, packed)]
 pub struct rpmsg_ns_msg {
-    pub name: [core::ffi::c_char; RPMSG_NAME_SIZE],
+    pub name: [kernel::ffi::c_char; RPMSG_NAME_SIZE],
     pub addr: __rpmsg32,
     pub flags: __rpmsg32,
 }
@@ -38,7 +38,7 @@ pub enum rpmsg_ns_flags {
 pub const RPMSG_NS_ADDR: u32 = 53;
 
 unsafe extern "C" {
-    pub fn rpmsg_ns_register_device(rpdev: *mut rpmsg_device) -> core::ffi::c_int;
+    pub fn rpmsg_ns_register_device(rpdev: *mut rpmsg_device) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

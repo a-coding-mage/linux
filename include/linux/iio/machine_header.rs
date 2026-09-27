@@ -16,10 +16,10 @@
 /// `consumer_data` is data about the channel for use by the consumer driver.
 #[repr(C)]
 pub struct iio_map {
-    pub adc_channel_label: *const ::core::ffi::c_char,
-    pub consumer_dev_name: *const ::core::ffi::c_char,
-    pub consumer_channel: *const ::core::ffi::c_char,
-    pub consumer_data: *mut ::core::ffi::c_void,
+    pub adc_channel_label: *const ::kernel::ffi::c_char,
+    pub consumer_dev_name: *const ::kernel::ffi::c_char,
+    pub consumer_channel: *const ::kernel::ffi::c_char,
+    pub consumer_data: *mut ::kernel::ffi::c_void,
 }
 
 #[macro_export]

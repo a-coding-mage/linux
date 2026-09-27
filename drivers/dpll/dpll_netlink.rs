@@ -23,7 +23,7 @@
 // 	     entry; entry = xa_find_after(xa, &index, ULONG_MAX, filter))
 
 struct dpll_dump_ctx {
-	core::ffi::c_ulong idx;
+	kernel::ffi::c_ulong idx;
 };
 
 static struct dpll_dump_ctx *dpll_dump_context(netlink_callback *cb)
@@ -52,7 +52,7 @@ dpll_msg_add_dev_parent_handle(sk_buff *msg, id: u32)
 static bool dpll_pin_available(dpll_pin *pin)
 {
 	struct dpll_pin_ref *par_ref;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 
 	if (!xa_get_mark(&dpll_pin_xa, (*pin).id, DPLL_REGISTERED))
 		return false;
@@ -75,7 +75,7 @@ static bool dpll_device_registered(dpll_device *dpll)
 static struct dpll_pin_ref *dpll_pin_first_registered_ref(dpll_pin *pin)
 {
 	struct dpll_pin_ref *ref;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 
 	xa_for_each((*&pin).dpll_refs, i, ref)
 		if (dpll_device_registered((*ref).dpll))
@@ -578,7 +578,7 @@ dpll_msg_add_pin_ref_sync(sk_buff *msg, dpll_pin *pin,
 	struct dpll_pin *ref_sync_pin;
 	enum dpll_pin_state state;
 	struct nlattr *nest;
-	core::ffi::c_ulong index;
+	kernel::ffi::c_ulong index;
 	int ret;
 
 	pin_priv = dpll_pin_on_dpll_priv(dpll, pin);
@@ -632,7 +632,7 @@ dpll_msg_add_pin_parents(sk_buff *msg, dpll_pin *pin,
 	struct dpll_pin_ref *ref;
 	struct dpll_pin *ppin;
 	struct nlattr *nest;
-	core::ffi::c_ulong index;
+	kernel::ffi::c_ulong index;
 	int ret;
 
 	xa_for_each!((*&pin).parent_refs, index, ref, {
@@ -673,7 +673,7 @@ dpll_msg_add_pin_dplls(sk_buff *msg, dpll_pin *pin,
 	'nest_cancel: {
 	struct dpll_pin_ref *ref;
 	struct nlattr *attr;
-	core::ffi::c_ulong index;
+	kernel::ffi::c_ulong index;
 	int ret;
 
 	xa_for_each!((*&pin).dpll_refs, index, ref, {
@@ -1209,7 +1209,7 @@ dpll_pin_esync_set(dpll_pin *pin, nlattr *a,
 
 static int
 dpll_pin_ref_sync_state_set(dpll_pin *pin,
-			    ref_sync_pin_idx: core::ffi::c_ulong,
+			    ref_sync_pin_idx: kernel::ffi::c_ulong,
 			    const enum dpll_pin_state state,
 			    netlink_ext_ack *extack)
 {
@@ -1302,7 +1302,7 @@ dpll_pin_on_pin_state_set(dpll_pin *pin, parent_idx: u32,
 	struct dpll_pin_ref *dpll_ref;
 	void *pin_priv, *parent_priv;
 	struct dpll_pin *parent;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 	int ret;
 
 	/* fwnode pins may not set the capability bit upfront; let the ops
@@ -1611,7 +1611,7 @@ dpll_pin_find(clock_id: u64, nlattr *mod_name_attr,
 	struct dpll_pin *pin_match = core::ptr::null_mut(), *pin;
 	const struct dpll_pin_properties *prop;
 	cid_match: bool, mod_match, type_match;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 
 	xa_for_each_marked!(&dpll_pin_xa, i, pin, DPLL_REGISTERED, {
 		prop = (*&pin).prop;
@@ -1773,7 +1773,7 @@ int dpll_nl_pin_get_dumpit(sk_buff *skb, netlink_callback *cb)
 	struct dpll_dump_ctx *ctx = dpll_dump_context(cb);
 	struct dpll_pin *pin;
 	struct nlattr *hdr;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 	int ret = 0;
 
 	mutex_lock(&dpll_lock);
@@ -1822,7 +1822,7 @@ dpll_device_find(clock_id: u64, nlattr *mod_name_attr,
 {
 	struct dpll_device *dpll_match = core::ptr::null_mut(), *dpll;
 	cid_match: bool, mod_match, type_match;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 
 	xa_for_each_marked!(&dpll_device_xa, i, dpll, DPLL_REGISTERED, {
 		cid_match = clock_id ? dpll->clock_id == clock_id : true;
@@ -1997,7 +1997,7 @@ int dpll_nl_device_get_dumpit(sk_buff *skb, netlink_callback *cb)
 	struct dpll_dump_ctx *ctx = dpll_dump_context(cb);
 	struct dpll_device *dpll;
 	struct nlattr *hdr;
-	core::ffi::c_ulong i;
+	kernel::ffi::c_ulong i;
 	int ret = 0;
 
 	mutex_lock(&dpll_lock);

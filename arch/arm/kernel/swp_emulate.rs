@@ -17,9 +17,9 @@ const RT_OFFSET: u32 = 12;
 const RT2_OFFSET: u32 = 0;
 const TYPE_SWPB: u32 = 1 << 22;
 
-static mut swpcounter: libc::c_ulong = 0;
-static mut swpbcounter: libc::c_ulong = 0;
-static mut abtcounter: libc::c_ulong = 0;
+static mut swpcounter: kernel::ffi::c_ulong = 0;
+static mut swpbcounter: kernel::ffi::c_ulong = 0;
+static mut abtcounter: kernel::ffi::c_ulong = 0;
 static mut previous_pid: pid_t = 0;
 
 #[inline]
@@ -28,7 +28,7 @@ const fn extract_reg_num(instruction: u32, offset: u32) -> usize {
 }
 
 /* Error-checking SWP macros implemented using ldrex{b}/strex{b}. */
-unsafe fn user_swp_asm(data: &mut u32, addr: u32, res: &mut u32, temp: &mut libc::c_ulong) {
+unsafe fn user_swp_asm(data: &mut u32, addr: u32, res: &mut u32, temp: &mut kernel::ffi::c_ulong) {
     core::arch::asm!(
         ".arch armv7-a\n\
          0: ldrex {tmp}, [{address}]\n\
@@ -55,7 +55,7 @@ unsafe fn user_swp_asm(data: &mut u32, addr: u32, res: &mut u32, temp: &mut libc
     );
 }
 
-unsafe fn user_swpb_asm(data: &mut u32, addr: u32, res: &mut u32, temp: &mut libc::c_ulong) {
+unsafe fn user_swpb_asm(data: &mut u32, addr: u32, res: &mut u32, temp: &mut kernel::ffi::c_ulong) {
     core::arch::asm!(
         ".arch armv7-a\n\
          0: ldrexb {tmp}, [{address}]\n\
@@ -83,7 +83,7 @@ unsafe fn user_swpb_asm(data: &mut u32, addr: u32, res: &mut u32, temp: &mut lib
 }
 
 #[cfg(CONFIG_PROC_FS)]
-unsafe fn proc_status_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
+unsafe fn proc_status_show(m: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
     seq_printf(m, "Emulated SWP:\t\t%lu\n", swpcounter);
     seq_printf(m, "Emulated SWPB:\t\t%lu\n", swpbcounter);
     seq_printf(m, "Aborted SWP{B}:\t\t%lu\n", abtcounter);
@@ -93,7 +93,7 @@ unsafe fn proc_status_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 
     0
 }
 
-unsafe fn set_segfault(regs: *mut pt_regs, addr: libc::c_ulong) {
+unsafe fn set_segfault(regs: *mut pt_regs, addr: kernel::ffi::c_ulong) {
     let si_code: i32;
     mmap_read_lock((*current).mm);
     if find_vma((*current).mm, addr).is_null() {
@@ -109,7 +109,7 @@ unsafe fn set_segfault(regs: *mut pt_regs, addr: libc::c_ulong) {
         regs,
         SIGSEGV,
         si_code,
-        instruction_pointer(regs) as *mut core::ffi::c_void,
+        instruction_pointer(regs) as *mut kernel::ffi::c_void,
         0,
         0,
     );
@@ -124,7 +124,7 @@ unsafe fn emulate_swp_x(address: u32, data: *mut u32, kind: u32) -> i32 {
     }
 
     loop {
-        let mut temp: libc::c_ulong = 0;
+        let mut temp: kernel::ffi::c_ulong = 0;
         let ua_flags = uaccess_save_and_enable();
         if kind == TYPE_SWPB {
             user_swpb_asm(&mut *data, address, &mut res, &mut temp);
@@ -155,7 +155,7 @@ unsafe fn swp_handler(regs: *mut pt_regs, instr: u32) -> i32 {
     }
 
     if (*current).pid != previous_pid {
-        pr_debug!("\"%s\" (%ld) uses deprecated SWP{{B}} instruction\n", (*current).comm, (*current).pid as libc::c_ulong);
+        pr_debug!("\"%s\" (%ld) uses deprecated SWP{{B}} instruction\n", (*current).comm, (*current).pid as kernel::ffi::c_ulong);
         previous_pid = (*current).pid;
     }
     let address = (*regs).uregs[extract_reg_num(instr, RN_OFFSET)];
@@ -164,9 +164,9 @@ unsafe fn swp_handler(regs: *mut pt_regs, instr: u32) -> i32 {
     let kind = instr & TYPE_SWPB;
 
     pr_debug!("addr in r%d->0x%08x, dest is r%d, source in r%d->0x%08x)\n", extract_reg_num(instr, RN_OFFSET), address, destreg, extract_reg_num(instr, RT2_OFFSET), data);
-    let mut res = if !access_ok((address & !3) as *mut core::ffi::c_void, 4) { -14 } else { emulate_swp_x(address, &mut data, kind) };
+    let mut res = if !access_ok((address & !3) as *mut kernel::ffi::c_void, 4) { -14 } else { emulate_swp_x(address, &mut data, kind) };
     if res == 0 { (*regs).ARM_pc += 4; (*regs).uregs[destreg] = data; }
-    else if res == -14 { set_segfault(regs, address as libc::c_ulong); }
+    else if res == -14 { set_segfault(regs, address as kernel::ffi::c_ulong); }
     0
 }
 

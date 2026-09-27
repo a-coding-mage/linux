@@ -78,16 +78,16 @@ pub enum ingenic_machine_type {
 }
 
 extern "C" {
-    pub static mut system_type: *mut core::ffi::c_char;
-    pub fn get_system_type() -> *const core::ffi::c_char;
+    pub static mut system_type: *mut kernel::ffi::c_char;
+    pub fn get_system_type() -> *const kernel::ffi::c_char;
     pub static mut mips_machtype: u64;
     pub fn detect_memory_region(start: phys_addr_t, sz_min: phys_addr_t, sz_max: phys_addr_t);
     pub fn prom_init();
     pub fn prom_free_prom_memory();
     pub fn prom_cleanup();
-    pub fn free_init_pages(what: *const core::ffi::c_char, begin: u64, end: u64);
-    pub static mut free_init_pages_eva: Option<unsafe extern "C" fn(begin: *mut core::ffi::c_void, end: *mut core::ffi::c_void)>;
-    pub static mut arcs_cmdline: [core::ffi::c_char; COMMAND_LINE_SIZE];
+    pub fn free_init_pages(what: *const kernel::ffi::c_char, begin: u64, end: u64);
+    pub static mut free_init_pages_eva: Option<unsafe extern "C" fn(begin: *mut kernel::ffi::c_void, end: *mut kernel::ffi::c_void)>;
+    pub static mut arcs_cmdline: [kernel::ffi::c_char; COMMAND_LINE_SIZE];
     pub static mut fw_arg0: u64;
     pub static mut fw_arg1: u64;
     pub static mut fw_arg2: u64;
@@ -108,25 +108,25 @@ extern "C" {
     pub static mut __appended_dtb: [u8; 0];
     pub static __dtb_start: u8;
     pub static __dtb_end: u8;
-    pub fn fdt_magic(fdt: *const core::ffi::c_void) -> u32;
+    pub fn fdt_magic(fdt: *const kernel::ffi::c_void) -> u32;
 }
 
 #[cfg(CONFIG_USE_OF)]
-pub unsafe fn get_fdt() -> *mut core::ffi::c_void {
+pub unsafe fn get_fdt() -> *mut kernel::ffi::c_void {
     if (cfg!(CONFIG_MIPS_RAW_APPENDED_DTB)
         || cfg!(CONFIG_MIPS_ELF_APPENDED_DTB))
-        && fdt_magic(core::ptr::addr_of!(__appended_dtb) as *const core::ffi::c_void)
+        && fdt_magic(core::ptr::addr_of!(__appended_dtb) as *const kernel::ffi::c_void)
             == FDT_MAGIC
     {
-        return core::ptr::addr_of_mut!(__appended_dtb) as *mut core::ffi::c_void;
+        return core::ptr::addr_of_mut!(__appended_dtb) as *mut kernel::ffi::c_void;
     }
 
     if fw_arg0 == (-2i64 as u64) {
-        return fw_arg1 as *mut core::ffi::c_void;
+        return fw_arg1 as *mut kernel::ffi::c_void;
     }
 
     if cfg!(CONFIG_BUILTIN_DTB) && core::ptr::addr_of!(__dtb_start) != core::ptr::addr_of!(__dtb_end) {
-        return core::ptr::addr_of!(__dtb_start) as *mut core::ffi::c_void;
+        return core::ptr::addr_of!(__dtb_start) as *mut kernel::ffi::c_void;
     }
 
     core::ptr::null_mut()
@@ -142,12 +142,12 @@ pub unsafe extern "C" fn plat_swiotlb_setup() {}
 
 #[cfg(CONFIG_USE_OF)]
 extern "C" {
-    pub fn plat_get_fdt() -> *mut core::ffi::c_void;
+    pub fn plat_get_fdt() -> *mut kernel::ffi::c_void;
 }
 
 #[cfg(all(CONFIG_USE_OF, CONFIG_RELOCATABLE))]
 extern "C" {
-    pub fn plat_fdt_relocated(new_location: *mut core::ffi::c_void);
+    pub fn plat_fdt_relocated(new_location: *mut kernel::ffi::c_void);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -20,11 +20,11 @@ pub enum gsc_hwmon_mode {
  */
 #[repr(C)]
 pub struct gsc_hwmon_channel {
-    pub reg: core::ffi::c_uint,
-    pub mode: core::ffi::c_uint,
-    pub name: *const core::ffi::c_char,
-    pub mvoffset: core::ffi::c_uint,
-    pub vdiv: [core::ffi::c_uint; 2],
+    pub reg: kernel::ffi::c_uint,
+    pub mode: kernel::ffi::c_uint,
+    pub name: *const kernel::ffi::c_char,
+    pub mvoffset: kernel::ffi::c_uint,
+    pub vdiv: [kernel::ffi::c_uint; 2],
 }
 
 /**
@@ -37,10 +37,10 @@ pub struct gsc_hwmon_channel {
  */
 #[repr(C)]
 pub struct gsc_hwmon_platform_data {
-    pub nchannels: core::ffi::c_int,
-    pub resolution: core::ffi::c_uint,
-    pub vreference: core::ffi::c_uint,
-    pub fan_base: core::ffi::c_uint,
+    pub nchannels: kernel::ffi::c_int,
+    pub resolution: kernel::ffi::c_uint,
+    pub vreference: kernel::ffi::c_uint,
+    pub fan_base: kernel::ffi::c_uint,
     pub channels: [gsc_hwmon_channel; 0], // __counted_by(nchannels)
 }
 

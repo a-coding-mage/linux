@@ -19,7 +19,7 @@ pub unsafe fn cachefiles_acquire_volume(vcookie: *mut fscache_volume) {
     let mut vdentry: *mut dentry;
     let mut fan: *mut dentry;
     let len: usize;
-    let name: *mut core::ffi::c_char;
+    let name: *mut kernel::ffi::c_char;
     let mut is_new = false;
     let mut ret: i32;
     let mut n_accesses: i32;
@@ -38,12 +38,12 @@ pub unsafe fn cachefiles_acquire_volume(vcookie: *mut fscache_volume) {
     cachefiles_begin_secure(cache, &mut saved_cred);
 
     len = (*vcookie).key[0] as usize;
-    name = kmalloc(len + 3, GFP_NOFS) as *mut core::ffi::c_char;
+    name = kmalloc(len + 3, GFP_NOFS) as *mut kernel::ffi::c_char;
     if name.is_null() {
         goto_error_vol(cache, saved_cred, volume);
         return;
     }
-    *name = b'I' as core::ffi::c_char;
+    *name = b'I' as kernel::ffi::c_char;
     core::ptr::copy_nonoverlapping(
         (*vcookie).key.add(1),
         name.add(1) as *mut u8,
@@ -89,7 +89,7 @@ pub unsafe fn cachefiles_acquire_volume(vcookie: *mut fscache_volume) {
 
         i = 0;
         while i < 256 {
-            sprintf(name, b"@%02x\0".as_ptr() as *const core::ffi::c_char, i);
+            sprintf(name, b"@%02x\0".as_ptr() as *const kernel::ffi::c_char, i);
             fan = cachefiles_get_directory(cache, vdentry, name, core::ptr::null_mut());
             if IS_ERR(fan) {
                 for j in 0..256 {
@@ -119,7 +119,7 @@ pub unsafe fn cachefiles_acquire_volume(vcookie: *mut fscache_volume) {
         list_add(&mut (*volume).cache_link, &mut (*volume).cache.volumes);
         spin_unlock(&mut (*cache).object_list_lock);
 
-        kfree(name as *mut core::ffi::c_void);
+        kfree(name as *mut kernel::ffi::c_void);
         return;
     }
 }
@@ -134,7 +134,7 @@ unsafe fn __cachefiles_free_volume(volume: *mut cachefiles_volume) {
         cachefiles_put_directory((*volume).fanout[i]);
     }
     cachefiles_put_directory((*volume).dentry);
-    kfree(volume as *mut core::ffi::c_void);
+    kfree(volume as *mut kernel::ffi::c_void);
 }
 
 pub unsafe fn cachefiles_free_volume(vcookie: *mut fscache_volume) {
@@ -155,16 +155,16 @@ pub unsafe fn cachefiles_withdraw_volume(volume: *mut cachefiles_volume) {
 
 // The following cleanup helper calls correspond to the C goto cleanup paths.
 unsafe fn goto_error_vol(cache: *mut cachefiles_cache, saved_cred: *const cred, volume: *mut cachefiles_volume) {
-    kfree(volume as *mut core::ffi::c_void);
+    kfree(volume as *mut kernel::ffi::c_void);
     cachefiles_end_secure(cache, saved_cred);
 }
 
-unsafe fn goto_error_name(cache: *mut cachefiles_cache, saved_cred: *const cred, volume: *mut cachefiles_volume, name: *mut core::ffi::c_char) {
-    kfree(name as *mut core::ffi::c_void);
+unsafe fn goto_error_name(cache: *mut cachefiles_cache, saved_cred: *const cred, volume: *mut cachefiles_volume, name: *mut kernel::ffi::c_char) {
+    kfree(name as *mut kernel::ffi::c_void);
     goto_error_vol(cache, saved_cred, volume);
 }
 
-unsafe fn goto_error_dir(cache: *mut cachefiles_cache, saved_cred: *const cred, volume: *mut cachefiles_volume, name: *mut core::ffi::c_char) {
+unsafe fn goto_error_dir(cache: *mut cachefiles_cache, saved_cred: *const cred, volume: *mut cachefiles_volume, name: *mut kernel::ffi::c_char) {
     cachefiles_put_directory((*volume).dentry);
     goto_error_name(cache, saved_cred, volume, name);
 }

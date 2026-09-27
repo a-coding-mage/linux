@@ -10,7 +10,7 @@
 
 /* C dependency: linux/errno.h */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* C dependency: struct resource */
 #[repr(C)]

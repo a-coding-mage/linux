@@ -92,7 +92,7 @@ struct link_dead_args {
 
 struct nbd_config {
 	u32 flags;
-	core::ffi::c_ulong runtime_flags;
+	kernel::ffi::c_ulong runtime_flags;
 	u64 dead_conn_timeout;
 
 	struct nbd_sock **socks;
@@ -102,14 +102,14 @@ struct nbd_config {
 
 	atomic_t recv_threads;
 	wait_queue_head_t recv_wq;
-	core::ffi::c_uint blksize_bits;
+	kernel::ffi::c_uint blksize_bits;
 	loff_t bytesize;
 // conditional preserved: IS_ENABLED(CONFIG_DEBUG_FS)
 	struct dentry *dbg_dir;
 // end conditional
 };
 
-core::ffi::c_uint nbd_blksize(nbd_config *config)
+kernel::ffi::c_uint nbd_blksize(nbd_config *config)
 {
 	return 1u << (*config).blksize_bits;
 }
@@ -129,7 +129,7 @@ struct nbd_device {
 	struct list_head list;
 	struct task_struct *task_setup;
 
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	pid_t pid; /* pid of nbd-client, if attached */
 
 	char *backend;
@@ -153,7 +153,7 @@ struct nbd_cmd {
 	int cookie;
 	int retries;
 	blk_status_t status;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	u32 cmd_cookie;
 };
 
@@ -165,7 +165,7 @@ static struct dentry *nbd_dbg_dir;
 
 // C macro preserved: NBD_DEF_BLKSIZE_BITS 10
 
-static core::ffi::c_uint nbds_max = 16;
+static kernel::ffi::c_uint nbds_max = 16;
 static int max_part = 16;
 static int pre_defined_connections = 1;
 static int part_shift;
@@ -530,7 +530,7 @@ static enum blk_eh_timer_return nbd_xmit_timeout(request *req)
 		(*cmd).retries++;
 		dev_info(nbd_to_dev(nbd), "Possible stuck request %p: control (%s@%llu,%uB). Runtime %u seconds\n",
 			req, nbdcmd_to_ascii(req_to_nbd_cmd_type(req)),
-			(core::ffi::c_ulonglong)blk_rq_pos(req) << 9,
+			(kernel::ffi::c_ulonglong)blk_rq_pos(req) << 9,
 			blk_rq_bytes(req), ((*req).timeout / HZ) * (*cmd).retries);
 
 		mutex_lock((*&nsock).tx_lock);
@@ -565,7 +565,7 @@ static int __sock_xmit(nbd_device *nbd, socket *sock, int send,
 {
 	int result;
 	struct msghdr msg = {} ;
-	core::ffi::c_uint noreclaim_flag;
+	kernel::ffi::c_uint noreclaim_flag;
 
 	if (unlikely(!sock)) {
 		dev_err_ratelimited(disk_to_dev((*nbd).disk),
@@ -726,7 +726,7 @@ static blk_status_t nbd_send_cmd(nbd_device *nbd, nbd_cmd *cmd,
 
 	dev_dbg(nbd_to_dev(nbd), "request %p: sending control (%s@%llu,%uB)\n",
 		req, nbdcmd_to_ascii(type),
-		(core::ffi::c_ulonglong)blk_rq_pos(req) << 9, blk_rq_bytes(req));
+		(kernel::ffi::c_ulonglong)blk_rq_pos(req) << 9, blk_rq_bytes(req));
 	result = sock_xmit(nbd, index, 1, &from,
 			(type == NBD_CMD_WRITE) ? MSG_MORE : 0, &sent);
 	trace_nbd_header_sent(req, handle);
@@ -829,8 +829,8 @@ static void nbd_pending_cmd_work(work_struct *work)
 	struct request *req = (*nsock).pending;
 	struct nbd_cmd *cmd = blk_mq_rq_to_pdu(req);
 	struct nbd_device *nbd = (*cmd).nbd;
-	core::ffi::c_ulong deadline = READ_ONCE((*req).deadline);
-	core::ffi::c_uint wait_ms = 2;
+	kernel::ffi::c_ulong deadline = READ_ONCE((*req).deadline);
+	kernel::ffi::c_uint wait_ms = 2;
 
 	mutex_lock((*&cmd).lock);
 
@@ -880,7 +880,7 @@ static int nbd_read_reply(nbd_device *nbd, socket *sock,
 
 	if (ntohl((*reply).magic) != NBD_REPLY_MAGIC) {
 		dev_err(disk_to_dev((*nbd).disk), "Wrong magic (0x%lx)\n",
-				(core::ffi::c_ulong)ntohl((*reply).magic));
+				(kernel::ffi::c_ulong)ntohl((*reply).magic));
 		return -EPROTO;
 	}
 
@@ -1226,7 +1226,7 @@ static blk_status_t nbd_queue_rq(blk_mq_hw_ctx *hctx,
 	return ret;
 }
 
-static struct socket *nbd_get_socket(nbd_device *nbd, fd: core::ffi::c_ulong,
+static struct socket *nbd_get_socket(nbd_device *nbd, fd: kernel::ffi::c_ulong,
 				     int *err)
 {
 	struct socket *sock;
@@ -1290,7 +1290,7 @@ static void nbd_reclassify_socket(socket *sock)
 void nbd_reclassify_socket(socket *sock) {}
 // end conditional
 
-static int nbd_add_socket(nbd_device *nbd, arg: core::ffi::c_ulong,
+static int nbd_add_socket(nbd_device *nbd, arg: kernel::ffi::c_ulong,
 			  netlink: bool)
 {
 	'put_socket: {
@@ -1362,7 +1362,7 @@ static int nbd_add_socket(nbd_device *nbd, arg: core::ffi::c_ulong,
 	return err;
 }
 
-static int nbd_genl_reconnect_sock_cb(nbd_device *nbd, arg: core::ffi::c_ulong)
+static int nbd_genl_reconnect_sock_cb(nbd_device *nbd, arg: kernel::ffi::c_ulong)
 {
 	struct nbd_config *config = nbd->config;
 	struct socket *sock, *old;
@@ -1651,7 +1651,7 @@ static void nbd_set_cmd_timeout(nbd_device *nbd, timeout: u64)
 
 /* Must be called with config_lock held */
 static int __nbd_ioctl(block_device *bdev, nbd_device *nbd,
-		       cmd: core::ffi::c_uint, arg: core::ffi::c_ulong)
+		       cmd: kernel::ffi::c_uint, arg: kernel::ffi::c_ulong)
 {
 	struct nbd_config *config = nbd->config;
 	loff_t bytesize;
@@ -1698,7 +1698,7 @@ static int __nbd_ioctl(block_device *bdev, nbd_device *nbd,
 }
 
 static int nbd_ioctl(block_device *bdev, blk_mode_t mode,
-		     cmd: core::ffi::c_uint, arg: core::ffi::c_ulong)
+		     cmd: kernel::ffi::c_uint, arg: kernel::ffi::c_ulong)
 {
 	struct nbd_device *nbd = bdev->bd_disk->private_data;
 	struct nbd_config *config = nbd->config;
@@ -1950,7 +1950,7 @@ static void nbd_dbg_close(void)
 // end conditional
 
 static int nbd_init_request(blk_mq_tag_set *set, request *rq,
-			    hctx_idx: core::ffi::c_uint, int numa_node)
+			    hctx_idx: kernel::ffi::c_uint, int numa_node)
 {
 	struct nbd_cmd *cmd = blk_mq_rq_to_pdu(rq);
 	cmd->nbd = set->driver_data;
@@ -1966,7 +1966,7 @@ static const struct blk_mq_ops nbd_mq_ops = {
 	timeout: nbd_xmit_timeout,
 };
 
-static struct nbd_device *nbd_dev_add(int index, refs: core::ffi::c_uint,
+static struct nbd_device *nbd_dev_add(int index, refs: kernel::ffi::c_uint,
 				       int nr_hw_queues)
 {
 	'out: {
@@ -2150,7 +2150,7 @@ static int nbd_genl_size_set(genl_info *info, nbd_device *nbd)
  * Return the number of fds walked, or a negative errno.
  */
 static int nbd_genl_foreach_sock(genl_info *info,
-		int (*cb)(nbd_device *nbd, fd: core::ffi::c_ulong),
+		int (*cb)(nbd_device *nbd, fd: kernel::ffi::c_ulong),
 		nbd_device *nbd)
 {
 	struct nlattr *attr;
@@ -2191,7 +2191,7 @@ static int nbd_genl_foreach_sock(genl_info *info,
 	return count;
 }
 
-static int nbd_genl_connect_sock_cb(nbd_device *nbd, fd: core::ffi::c_ulong)
+static int nbd_genl_connect_sock_cb(nbd_device *nbd, fd: kernel::ffi::c_ulong)
 {
 	return nbd_add_socket(nbd, fd, true);
 }

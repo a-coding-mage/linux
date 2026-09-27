@@ -17,10 +17,10 @@ const SYST_CSR_ENABLE: u32 = 1u32 << 0;
 const SYSTICK_LOAD_RELOAD_MASK: u32 = 0x00ff_ffff;
 
 extern "C" {
-    fn of_iomap(np: *mut device_node, index: i32) -> *mut core::ffi::c_void;
+    fn of_iomap(np: *mut device_node, index: i32) -> *mut kernel::ffi::c_void;
     fn of_property_read_u32(
         np: *mut device_node,
-        propname: *const core::ffi::c_char,
+        propname: *const kernel::ffi::c_char,
         out_value: *mut u32,
     ) -> i32;
     fn of_clk_get(np: *mut device_node, index: i32) -> *mut clk;
@@ -28,17 +28,17 @@ extern "C" {
     fn clk_get_rate(clk: *mut clk) -> u32;
     fn clk_disable_unprepare(clk: *mut clk);
     fn clk_put(clk: *mut clk);
-    fn writel_relaxed(value: u32, address: *mut core::ffi::c_void);
+    fn writel_relaxed(value: u32, address: *mut kernel::ffi::c_void);
     fn clocksource_mmio_init(
-        address: *mut core::ffi::c_void,
-        name: *const core::ffi::c_char,
+        address: *mut kernel::ffi::c_void,
+        name: *const kernel::ffi::c_char,
         clock_rate: u32,
         rating: u32,
         bits: u32,
-        read: unsafe extern "C" fn(*mut core::ffi::c_void) -> u64,
+        read: unsafe extern "C" fn(*mut kernel::ffi::c_void) -> u64,
     ) -> i32;
-    fn clocksource_mmio_readl_down(address: *mut core::ffi::c_void) -> u64;
-    fn iounmap(address: *mut core::ffi::c_void);
+    fn clocksource_mmio_readl_down(address: *mut kernel::ffi::c_void) -> u64;
+    fn iounmap(address: *mut kernel::ffi::c_void);
 }
 
 #[repr(C)]
@@ -53,7 +53,7 @@ pub struct clk {
 
 unsafe fn system_timer_of_register(np: *mut device_node) -> i32 {
     let mut clk: *mut clk = core::ptr::null_mut();
-    let base: *mut core::ffi::c_void;
+    let base: *mut kernel::ffi::c_void;
     let mut rate: u32 = 0;
     let mut ret: i32;
 
@@ -65,7 +65,7 @@ unsafe fn system_timer_of_register(np: *mut device_node) -> i32 {
 
     ret = of_property_read_u32(
         np,
-        b"clock-frequency\0".as_ptr() as *const core::ffi::c_char,
+        b"clock-frequency\0".as_ptr() as *const kernel::ffi::c_char,
         &mut rate,
     );
     if ret != 0 {
@@ -103,7 +103,7 @@ unsafe fn system_timer_of_register(np: *mut device_node) -> i32 {
 
     ret = clocksource_mmio_init(
         base.add(SYST_CVR),
-        b"arm_system_timer\0".as_ptr() as *const core::ffi::c_char,
+        b"arm_system_timer\0".as_ptr() as *const kernel::ffi::c_char,
         rate,
         200,
         24,

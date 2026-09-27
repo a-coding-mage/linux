@@ -8,11 +8,11 @@ pub const DML_MAX_CLK_TABLE_SIZE: usize = 20;
 
 #[repr(C)]
 pub struct dml2_soc_derate_values {
-    pub dram_derate_percent_pixel: ::core::ffi::c_uint,
-    pub dram_derate_percent_vm: ::core::ffi::c_uint,
-    pub dram_derate_percent_pixel_and_vm: ::core::ffi::c_uint,
-    pub fclk_derate_percent: ::core::ffi::c_uint,
-    pub dcfclk_derate_percent: ::core::ffi::c_uint,
+    pub dram_derate_percent_pixel: ::kernel::ffi::c_uint,
+    pub dram_derate_percent_vm: ::kernel::ffi::c_uint,
+    pub dram_derate_percent_pixel_and_vm: ::kernel::ffi::c_uint,
+    pub fclk_derate_percent: ::kernel::ffi::c_uint,
+    pub dcfclk_derate_percent: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -26,41 +26,41 @@ pub struct dml2_soc_derates {
 
 #[repr(C)]
 pub struct dml2_dcn32x_soc_qos_params_urgent_latency_us {
-    pub base_latency_us: ::core::ffi::c_uint,
-    pub base_latency_pixel_vm_us: ::core::ffi::c_uint,
-    pub base_latency_vm_us: ::core::ffi::c_uint,
-    pub scaling_factor_fclk_us: ::core::ffi::c_uint,
-    pub scaling_factor_mhz: ::core::ffi::c_uint,
+    pub base_latency_us: ::kernel::ffi::c_uint,
+    pub base_latency_pixel_vm_us: ::kernel::ffi::c_uint,
+    pub base_latency_vm_us: ::kernel::ffi::c_uint,
+    pub scaling_factor_fclk_us: ::kernel::ffi::c_uint,
+    pub scaling_factor_mhz: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct dml2_dcn32x_soc_qos_params {
     pub urgent_latency_us: dml2_dcn32x_soc_qos_params_urgent_latency_us,
-    pub loaded_round_trip_latency_fclk_cycles: ::core::ffi::c_uint,
-    pub urgent_out_of_order_return_per_channel_pixel_only_bytes: ::core::ffi::c_uint,
-    pub urgent_out_of_order_return_per_channel_pixel_and_vm_bytes: ::core::ffi::c_uint,
-    pub urgent_out_of_order_return_per_channel_vm_only_bytes: ::core::ffi::c_uint,
+    pub loaded_round_trip_latency_fclk_cycles: ::kernel::ffi::c_uint,
+    pub urgent_out_of_order_return_per_channel_pixel_only_bytes: ::kernel::ffi::c_uint,
+    pub urgent_out_of_order_return_per_channel_pixel_and_vm_bytes: ::kernel::ffi::c_uint,
+    pub urgent_out_of_order_return_per_channel_vm_only_bytes: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct dml2_dcn4_uclk_dpm_dependent_qos_params {
-    pub minimum_uclk_khz: ::core::ffi::c_ulong,
-    pub urgent_ramp_uclk_cycles: ::core::ffi::c_uint,
-    pub trip_to_memory_uclk_cycles: ::core::ffi::c_uint,
-    pub meta_trip_to_memory_uclk_cycles: ::core::ffi::c_uint,
-    pub maximum_latency_when_urgent_uclk_cycles: ::core::ffi::c_uint,
-    pub average_latency_when_urgent_uclk_cycles: ::core::ffi::c_uint,
-    pub maximum_latency_when_non_urgent_uclk_cycles: ::core::ffi::c_uint,
-    pub average_latency_when_non_urgent_uclk_cycles: ::core::ffi::c_uint,
+    pub minimum_uclk_khz: ::kernel::ffi::c_ulong,
+    pub urgent_ramp_uclk_cycles: ::kernel::ffi::c_uint,
+    pub trip_to_memory_uclk_cycles: ::kernel::ffi::c_uint,
+    pub meta_trip_to_memory_uclk_cycles: ::kernel::ffi::c_uint,
+    pub maximum_latency_when_urgent_uclk_cycles: ::kernel::ffi::c_uint,
+    pub average_latency_when_urgent_uclk_cycles: ::kernel::ffi::c_uint,
+    pub maximum_latency_when_non_urgent_uclk_cycles: ::kernel::ffi::c_uint,
+    pub average_latency_when_non_urgent_uclk_cycles: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct dml2_dcn4x_soc_qos_params {
-    pub df_qos_response_time_fclk_cycles: ::core::ffi::c_uint,
-    pub max_round_trip_to_furthest_cs_fclk_cycles: ::core::ffi::c_uint,
-    pub mall_overhead_fclk_cycles: ::core::ffi::c_uint,
-    pub meta_trip_adder_fclk_cycles: ::core::ffi::c_uint,
-    pub average_transport_distance_fclk_cycles: ::core::ffi::c_uint,
+    pub df_qos_response_time_fclk_cycles: ::kernel::ffi::c_uint,
+    pub max_round_trip_to_furthest_cs_fclk_cycles: ::kernel::ffi::c_uint,
+    pub mall_overhead_fclk_cycles: ::kernel::ffi::c_uint,
+    pub meta_trip_adder_fclk_cycles: ::kernel::ffi::c_uint,
+    pub average_transport_distance_fclk_cycles: ::kernel::ffi::c_uint,
     pub umc_urgent_ramp_latency_margin: f64,
     pub umc_max_latency_margin: f64,
     pub umc_average_latency_margin: f64,
@@ -80,9 +80,9 @@ pub enum dml2_qos_param_type {
 // Unpopulated indicies should fallback to the global derate value.
 #[repr(C)]
 pub struct dml2_soc_derate_values_per_dpm {
-    pub dram_derate_percent_pixel: [::core::ffi::c_uint; DML_MAX_CLK_TABLE_SIZE],
-    pub fclk_derate_percent: [::core::ffi::c_uint; DML_MAX_CLK_TABLE_SIZE],
-    pub dcfclk_derate_percent: [::core::ffi::c_uint; DML_MAX_CLK_TABLE_SIZE],
+    pub dram_derate_percent_pixel: [::kernel::ffi::c_uint; DML_MAX_CLK_TABLE_SIZE],
+    pub fclk_derate_percent: [::kernel::ffi::c_uint; DML_MAX_CLK_TABLE_SIZE],
+    pub dcfclk_derate_percent: [::kernel::ffi::c_uint; DML_MAX_CLK_TABLE_SIZE],
 }
 
 #[repr(C)]
@@ -92,9 +92,9 @@ pub struct dml2_soc_derates_per_dpm {
 
 #[repr(C)]
 pub struct dml2_soc_qos_parameters_writeback {
-    pub base_latency_us: ::core::ffi::c_uint,
-    pub scaling_factor_us: ::core::ffi::c_uint,
-    pub scaling_factor_mhz: ::core::ffi::c_uint,
+    pub base_latency_us: ::kernel::ffi::c_uint,
+    pub scaling_factor_us: ::kernel::ffi::c_uint,
+    pub scaling_factor_mhz: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
@@ -130,20 +130,20 @@ pub struct dml2_soc_power_management_parameters {
     pub g6_temp_read_blackout_us: [f64; DML_MAX_CLK_TABLE_SIZE],
     pub type_b_dram_clk_change_blackout_us: f64,
     pub type_b_ppt_blackout_us: f64,
-    pub alternate_dram_carveout_size_mb: ::core::ffi::c_uint, // size per aperture - assumed same for both apertures for now
+    pub alternate_dram_carveout_size_mb: ::kernel::ffi::c_uint, // size per aperture - assumed same for both apertures for now
 }
 
 #[repr(C)]
 pub struct dml2_clk_table {
-    pub clk_values_khz: [::core::ffi::c_ulong; DML_MAX_CLK_TABLE_SIZE],
-    pub num_clk_values: ::core::ffi::c_uchar,
+    pub clk_values_khz: [::kernel::ffi::c_ulong; DML_MAX_CLK_TABLE_SIZE],
+    pub num_clk_values: ::kernel::ffi::c_uchar,
 }
 
 #[repr(C)]
 pub struct dml2_dram_params {
-    pub channel_width_bytes: ::core::ffi::c_uint,
-    pub channel_count: ::core::ffi::c_uint,
-    pub transactions_per_clock: ::core::ffi::c_uint,
+    pub channel_width_bytes: ::kernel::ffi::c_uint,
+    pub channel_count: ::kernel::ffi::c_uint,
+    pub transactions_per_clock: ::kernel::ffi::c_uint,
     pub alt_clock_bw_conversion: bool,
 }
 
@@ -167,8 +167,8 @@ pub struct dml2_soc_state_table {
 
 #[repr(C)]
 pub struct dml2_soc_vmin_clock_limits {
-    pub dispclk_khz: ::core::ffi::c_ulong,
-    pub dcfclk_khz: ::core::ffi::c_ulong,
+    pub dispclk_khz: ::kernel::ffi::c_ulong,
+    pub dcfclk_khz: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -180,74 +180,74 @@ pub struct dml2_soc_bb {
     pub lower_bound_bandwidth_dchub: f64,
     pub fraction_of_urgent_bandwidth_nominal_target: f64,
     pub fraction_of_urgent_bandwidth_flip_target: f64,
-    pub dprefclk_mhz: ::core::ffi::c_uint,
-    pub xtalclk_mhz: ::core::ffi::c_uint,
-    pub pcie_refclk_mhz: ::core::ffi::c_uint,
-    pub dchub_refclk_mhz: ::core::ffi::c_uint,
-    pub mall_allocated_for_dcn_mbytes: ::core::ffi::c_uint,
-    pub max_outstanding_reqs: ::core::ffi::c_uint,
-    pub fabric_datapath_to_dcn_data_return_bytes: ::core::ffi::c_ulong,
-    pub return_bus_width_bytes: ::core::ffi::c_ulong,
-    pub hostvm_min_page_size_kbytes: ::core::ffi::c_ulong,
-    pub gpuvm_min_page_size_kbytes: ::core::ffi::c_ulong,
-    pub hostvm_max_non_cached_page_table_levels: ::core::ffi::c_uint,
-    pub gpuvm_max_page_table_levels: ::core::ffi::c_uint,
+    pub dprefclk_mhz: ::kernel::ffi::c_uint,
+    pub xtalclk_mhz: ::kernel::ffi::c_uint,
+    pub pcie_refclk_mhz: ::kernel::ffi::c_uint,
+    pub dchub_refclk_mhz: ::kernel::ffi::c_uint,
+    pub mall_allocated_for_dcn_mbytes: ::kernel::ffi::c_uint,
+    pub max_outstanding_reqs: ::kernel::ffi::c_uint,
+    pub fabric_datapath_to_dcn_data_return_bytes: ::kernel::ffi::c_ulong,
+    pub return_bus_width_bytes: ::kernel::ffi::c_ulong,
+    pub hostvm_min_page_size_kbytes: ::kernel::ffi::c_ulong,
+    pub gpuvm_min_page_size_kbytes: ::kernel::ffi::c_ulong,
+    pub hostvm_max_non_cached_page_table_levels: ::kernel::ffi::c_uint,
+    pub gpuvm_max_page_table_levels: ::kernel::ffi::c_uint,
     pub phy_downspread_percent: f64,
     pub dcn_downspread_percent: f64,
     pub dispclk_dppclk_vco_speed_mhz: f64,
     pub no_dfs: bool,
     pub do_urgent_latency_adjustment: bool,
-    pub mem_word_bytes: ::core::ffi::c_uint,
-    pub num_dcc_mcaches: ::core::ffi::c_uint,
-    pub mcache_size_bytes: ::core::ffi::c_uint,
-    pub mcache_line_size_bytes: ::core::ffi::c_uint,
-    pub max_fclk_for_uclk_dpm_khz: ::core::ffi::c_ulong,
+    pub mem_word_bytes: ::kernel::ffi::c_uint,
+    pub num_dcc_mcaches: ::kernel::ffi::c_uint,
+    pub mcache_size_bytes: ::kernel::ffi::c_uint,
+    pub mcache_line_size_bytes: ::kernel::ffi::c_uint,
+    pub max_fclk_for_uclk_dpm_khz: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct dml2_ip_capabilities_fams2 {
-    pub max_allow_delay_us: ::core::ffi::c_uint,
-    pub scheduling_delay_us: ::core::ffi::c_uint,
-    pub vertical_interrupt_ack_delay_us: ::core::ffi::c_uint, // delay to acknowledge vline int
-    pub allow_programming_delay_us: ::core::ffi::c_uint, // time requires to program allow
-    pub min_allow_width_us: ::core::ffi::c_uint,
-    pub subvp_df_throttle_delay_us: ::core::ffi::c_uint,
-    pub subvp_programming_delay_us: ::core::ffi::c_uint,
-    pub subvp_prefetch_to_mall_delay_us: ::core::ffi::c_uint,
-    pub drr_programming_delay_us: ::core::ffi::c_uint,
-    pub lock_timeout_us: ::core::ffi::c_uint,
-    pub recovery_timeout_us: ::core::ffi::c_uint,
-    pub flip_programming_delay_us: ::core::ffi::c_uint,
+    pub max_allow_delay_us: ::kernel::ffi::c_uint,
+    pub scheduling_delay_us: ::kernel::ffi::c_uint,
+    pub vertical_interrupt_ack_delay_us: ::kernel::ffi::c_uint, // delay to acknowledge vline int
+    pub allow_programming_delay_us: ::kernel::ffi::c_uint, // time requires to program allow
+    pub min_allow_width_us: ::kernel::ffi::c_uint,
+    pub subvp_df_throttle_delay_us: ::kernel::ffi::c_uint,
+    pub subvp_programming_delay_us: ::kernel::ffi::c_uint,
+    pub subvp_prefetch_to_mall_delay_us: ::kernel::ffi::c_uint,
+    pub drr_programming_delay_us: ::kernel::ffi::c_uint,
+    pub lock_timeout_us: ::kernel::ffi::c_uint,
+    pub recovery_timeout_us: ::kernel::ffi::c_uint,
+    pub flip_programming_delay_us: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct dml2_ip_capabilities {
-    pub pipe_count: ::core::ffi::c_uint,
-    pub otg_count: ::core::ffi::c_uint,
-    pub TDLUT_33cube_count: ::core::ffi::c_uint,
-    pub num_dsc: ::core::ffi::c_uint,
-    pub max_num_dp2p0_streams: ::core::ffi::c_uint,
-    pub max_num_hdmi_frl_outputs: ::core::ffi::c_uint,
-    pub max_num_dp2p0_outputs: ::core::ffi::c_uint,
-    pub max_num_wb: ::core::ffi::c_uint,
-    pub rob_buffer_size_kbytes: ::core::ffi::c_uint,
-    pub config_return_buffer_size_in_kbytes: ::core::ffi::c_uint,
-    pub config_return_buffer_segment_size_in_kbytes: ::core::ffi::c_uint,
-    pub meta_fifo_size_in_kentries: ::core::ffi::c_uint,
-    pub compressed_buffer_segment_size_in_kbytes: ::core::ffi::c_uint,
-    pub cursor_buffer_size: ::core::ffi::c_uint,
-    pub max_flip_time_us: ::core::ffi::c_uint,
-    pub max_flip_time_lines: ::core::ffi::c_uint,
-    pub hostvm_mode: ::core::ffi::c_uint,
+    pub pipe_count: ::kernel::ffi::c_uint,
+    pub otg_count: ::kernel::ffi::c_uint,
+    pub TDLUT_33cube_count: ::kernel::ffi::c_uint,
+    pub num_dsc: ::kernel::ffi::c_uint,
+    pub max_num_dp2p0_streams: ::kernel::ffi::c_uint,
+    pub max_num_hdmi_frl_outputs: ::kernel::ffi::c_uint,
+    pub max_num_dp2p0_outputs: ::kernel::ffi::c_uint,
+    pub max_num_wb: ::kernel::ffi::c_uint,
+    pub rob_buffer_size_kbytes: ::kernel::ffi::c_uint,
+    pub config_return_buffer_size_in_kbytes: ::kernel::ffi::c_uint,
+    pub config_return_buffer_segment_size_in_kbytes: ::kernel::ffi::c_uint,
+    pub meta_fifo_size_in_kentries: ::kernel::ffi::c_uint,
+    pub compressed_buffer_segment_size_in_kbytes: ::kernel::ffi::c_uint,
+    pub cursor_buffer_size: ::kernel::ffi::c_uint,
+    pub max_flip_time_us: ::kernel::ffi::c_uint,
+    pub max_flip_time_lines: ::kernel::ffi::c_uint,
+    pub hostvm_mode: ::kernel::ffi::c_uint,
     pub dcn_mrq_present: bool,
-    pub subvp_drr_scheduling_margin_us: ::core::ffi::c_uint,
-    pub subvp_prefetch_end_to_mall_start_us: ::core::ffi::c_uint,
-    pub subvp_fw_processing_delay: ::core::ffi::c_uint,
-    pub max_vactive_det_fill_delay_us: ::core::ffi::c_uint,
-    pub ppt_max_allow_delay_us: ::core::ffi::c_uint,
-    pub temp_read_max_allow_delay_us: ::core::ffi::c_uint,
-    pub dummy_pstate_max_allow_delay_us: ::core::ffi::c_uint,
-    pub vblank_nom_default_us: ::core::ffi::c_uint,
+    pub subvp_drr_scheduling_margin_us: ::kernel::ffi::c_uint,
+    pub subvp_prefetch_end_to_mall_start_us: ::kernel::ffi::c_uint,
+    pub subvp_fw_processing_delay: ::kernel::ffi::c_uint,
+    pub max_vactive_det_fill_delay_us: ::kernel::ffi::c_uint,
+    pub ppt_max_allow_delay_us: ::kernel::ffi::c_uint,
+    pub temp_read_max_allow_delay_us: ::kernel::ffi::c_uint,
+    pub dummy_pstate_max_allow_delay_us: ::kernel::ffi::c_uint,
+    pub vblank_nom_default_us: ::kernel::ffi::c_uint,
     /* FAMS2 delays */
     pub fams2: dml2_ip_capabilities_fams2,
 }

@@ -8,16 +8,16 @@ const SCMI_QUIRKS_HT_SZ: usize = 4;
 #[repr(C)]
 pub struct scmi_quirk {
     pub enabled: bool,
-    pub name: *const core::ffi::c_char,
-    pub vendor: *const core::ffi::c_char,
-    pub sub_vendor_id: *const core::ffi::c_char,
-    pub impl_ver_range: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub vendor: *const kernel::ffi::c_char,
+    pub sub_vendor_id: *const kernel::ffi::c_char,
+    pub impl_ver_range: *const kernel::ffi::c_char,
     pub start_range: u32,
     pub end_range: u32,
     pub key: *mut static_key_false,
     pub hash: hlist_node,
     pub hkey: u32,
-    pub compats: *const *const core::ffi::c_char,
+    pub compats: *const *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -36,22 +36,22 @@ pub struct device {
 }
 
 extern "C" {
-    fn kasprintf(flags: u32, fmt: *const core::ffi::c_char, ...) -> *mut core::ffi::c_char;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn kmemdup(src: *const core::ffi::c_void, len: usize, flags: u32) -> *mut core::ffi::c_char;
-    fn strlen(s: *const core::ffi::c_char) -> usize;
-    fn strchr(s: *mut core::ffi::c_char, c: i32) -> *mut core::ffi::c_char;
-    fn kstrtouint(s: *const core::ffi::c_char, base: u32, result: *mut u32) -> i32;
-    fn of_machine_compatible_match(compats: *const *const core::ffi::c_char) -> bool;
+    fn kasprintf(flags: u32, fmt: *const kernel::ffi::c_char, ...) -> *mut kernel::ffi::c_char;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn kmemdup(src: *const kernel::ffi::c_void, len: usize, flags: u32) -> *mut kernel::ffi::c_char;
+    fn strlen(s: *const kernel::ffi::c_char) -> usize;
+    fn strchr(s: *mut kernel::ffi::c_char, c: i32) -> *mut kernel::ffi::c_char;
+    fn kstrtouint(s: *const kernel::ffi::c_char, base: u32, result: *mut u32) -> i32;
+    fn of_machine_compatible_match(compats: *const *const kernel::ffi::c_char) -> bool;
     fn static_branch_enable(key: *mut static_key_false);
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn dev_info(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_dbg(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn dev_info(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_dbg(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     fn partial_name_hash(c: u8, hash: u64) -> u64;
     fn end_name_hash(hash: u64) -> u32;
-    fn hash_add(table: *mut core::ffi::c_void, node: *mut hlist_node, key: u32);
-    fn hash_for_each_possible(table: *mut core::ffi::c_void, key: u32,
+    fn hash_add(table: *mut kernel::ffi::c_void, node: *mut hlist_node, key: u32);
+    fn hash_for_each_possible(table: *mut kernel::ffi::c_void, key: u32,
                               callback: extern "C" fn(*mut scmi_quirk));
 }
 
@@ -62,7 +62,7 @@ static NAME_CLOCK: &[u8] = b"quirk_clock_rates_triplet_out_of_spec\0";
 static NAME_PERF: &[u8] = b"quirk_perf_level_get_fc_force\0";
 static VENDOR_QUALCOMM: &[u8] = b"Qualcomm\0";
 static RANGE_PERF: &[u8] = b"0x20000-\0";
-static EMPTY_COMPATS: [*const core::ffi::c_char; 1] = [core::ptr::null()];
+static EMPTY_COMPATS: [*const kernel::ffi::c_char; 1] = [core::ptr::null()];
 
 static mut scmi_quirk_entry_clock_rates_triplet_out_of_spec: scmi_quirk = scmi_quirk {
     enabled: false, name: NAME_CLOCK.as_ptr() as _, vendor: core::ptr::null(),
@@ -86,7 +86,7 @@ static mut scmi_quirks_table: [*mut scmi_quirk; 3] = [
 
 static mut scmi_quirks_ht: [u8; SCMI_QUIRKS_HT_SZ] = [0; SCMI_QUIRKS_HT_SZ];
 
-unsafe fn scmi_quirk_signature(vend: *const core::ffi::c_char, sub_vend: *const core::ffi::c_char) -> u32 {
+unsafe fn scmi_quirk_signature(vend: *const kernel::ffi::c_char, sub_vend: *const kernel::ffi::c_char) -> u32 {
     let _ = (vend, sub_vend);
     // The kernel implementation allocates "|%s|%s|", lowercases it, and hashes it.
     0
@@ -125,8 +125,8 @@ pub unsafe fn scmi_quirks_initialize() {
     }
 }
 
-pub unsafe fn scmi_quirks_enable(dev: *mut device, vend: *const core::ffi::c_char,
-                                 subv: *const core::ffi::c_char, impl_: u32) {
+pub unsafe fn scmi_quirks_enable(dev: *mut device, vend: *const kernel::ffi::c_char,
+                                 subv: *const kernel::ffi::c_char, impl_: u32) {
     for i in (0..=3).rev() {
         let hkey = scmi_quirk_signature(if i > 1 { vend } else { core::ptr::null() },
                                         if i > 2 { subv } else { core::ptr::null() });

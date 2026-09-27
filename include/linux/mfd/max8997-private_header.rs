@@ -60,14 +60,14 @@ pub const MAX8997_NUM_GPIO: usize = 12;
 // External kernel types are supplied by other translated dependencies.
 #[repr(C)] pub struct max8997_dev {
     pub dev: *mut device, pub pdata: *mut max8997_platform_data, pub i2c: *mut i2c_client, pub rtc: *mut i2c_client, pub haptic: *mut i2c_client, pub muic: *mut i2c_client, pub iolock: mutex,
-    pub type_: libc::c_ulong, pub battery: *mut platform_device, pub irq: libc::c_int, pub ono: libc::c_int, pub irq_domain: *mut irq_domain, pub irqlock: mutex,
-    pub irq_masks_cur: [libc::c_int; max8997_irq_source::MAX8997_IRQ_GROUP_NR as usize], pub irq_masks_cache: [libc::c_int; max8997_irq_source::MAX8997_IRQ_GROUP_NR as usize],
+    pub type_: kernel::ffi::c_ulong, pub battery: *mut platform_device, pub irq: kernel::ffi::c_int, pub ono: kernel::ffi::c_int, pub irq_domain: *mut irq_domain, pub irqlock: mutex,
+    pub irq_masks_cur: [kernel::ffi::c_int; max8997_irq_source::MAX8997_IRQ_GROUP_NR as usize], pub irq_masks_cache: [kernel::ffi::c_int; max8997_irq_source::MAX8997_IRQ_GROUP_NR as usize],
     pub reg_dump: [u8; max8997_pmic_reg::MAX8997_REG_PMIC_END as usize + max8997_muic_reg::MAX8997_MUIC_REG_END as usize + max8997_haptic_reg::MAX8997_HAPTIC_REG_END as usize], pub gpio_status: [bool; MAX8997_NUM_GPIO],
 }
 // slave addr = 0x0c: using "2nd part" of rev4 datasheet
 #[repr(i32)] #[derive(Copy, Clone, Debug, PartialEq, Eq)] pub enum max8997_types { TYPE_MAX8997, TYPE_MAX8966 }
 
-extern "C" { pub fn max8997_irq_init(max8997: *mut max8997_dev) -> libc::c_int; pub fn max8997_irq_resume(max8997: *mut max8997_dev) -> libc::c_int; pub fn max8997_read_reg(i2c: *mut i2c_client, reg: u8, dest: *mut u8) -> libc::c_int; pub fn max8997_bulk_read(i2c: *mut i2c_client, reg: u8, count: libc::c_int, buf: *mut u8) -> libc::c_int; pub fn max8997_write_reg(i2c: *mut i2c_client, reg: u8, value: u8) -> libc::c_int; pub fn max8997_bulk_write(i2c: *mut i2c_client, reg: u8, count: libc::c_int, buf: *mut u8) -> libc::c_int; pub fn max8997_update_reg(i2c: *mut i2c_client, reg: u8, val: u8, mask: u8) -> libc::c_int; }
+extern "C" { pub fn max8997_irq_init(max8997: *mut max8997_dev) -> kernel::ffi::c_int; pub fn max8997_irq_resume(max8997: *mut max8997_dev) -> kernel::ffi::c_int; pub fn max8997_read_reg(i2c: *mut i2c_client, reg: u8, dest: *mut u8) -> kernel::ffi::c_int; pub fn max8997_bulk_read(i2c: *mut i2c_client, reg: u8, count: kernel::ffi::c_int, buf: *mut u8) -> kernel::ffi::c_int; pub fn max8997_write_reg(i2c: *mut i2c_client, reg: u8, value: u8) -> kernel::ffi::c_int; pub fn max8997_bulk_write(i2c: *mut i2c_client, reg: u8, count: kernel::ffi::c_int, buf: *mut u8) -> kernel::ffi::c_int; pub fn max8997_update_reg(i2c: *mut i2c_client, reg: u8, val: u8, mask: u8) -> kernel::ffi::c_int; }
 pub const MAX8997_GPIO_INT_BOTH:u8=0x3<<4; pub const MAX8997_GPIO_INT_RISE:u8=0x2<<4; pub const MAX8997_GPIO_INT_FALL:u8=0x1<<4; pub const MAX8997_GPIO_INT_MASK:u8=0x3<<4; pub const MAX8997_GPIO_DATA_MASK:u8=0x1<<2;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -29,7 +29,7 @@ pub struct fwnode_handle {
     pub dev: *mut device,
     pub suppliers: list_head,
     pub consumers: list_head,
-    pub flags: ::core::ffi::c_ulong,
+    pub flags: ::kernel::ffi::c_ulong,
 }
 
 pub const FWLINK_FLAG_CYCLE: u8 = 1 << 0;
@@ -46,8 +46,8 @@ pub struct fwnode_link {
 
 #[repr(C)]
 pub struct fwnode_endpoint {
-    pub port: ::core::ffi::c_uint,
-    pub id: ::core::ffi::c_uint,
+    pub port: ::kernel::ffi::c_uint,
+    pub id: ::kernel::ffi::c_uint,
     pub local_fwnode: *const fwnode_handle,
 }
 
@@ -58,7 +58,7 @@ pub const NR_FWNODE_REFERENCE_ARGS: usize = 16;
 #[repr(C)]
 pub struct fwnode_reference_args {
     pub fwnode: *mut fwnode_handle,
-    pub nargs: ::core::ffi::c_uint,
+    pub nargs: ::kernel::ffi::c_uint,
     pub args: [u64; NR_FWNODE_REFERENCE_ARGS],
 }
 
@@ -67,26 +67,26 @@ pub struct fwnode_operations {
     pub get: Option<unsafe extern "C" fn(*mut fwnode_handle) -> *mut fwnode_handle>,
     pub put: Option<unsafe extern "C" fn(*mut fwnode_handle)>,
     pub device_is_available: Option<unsafe extern "C" fn(*const fwnode_handle) -> bool>,
-    pub device_get_match_data: Option<unsafe extern "C" fn(*const fwnode_handle, *const device) -> *const ::core::ffi::c_void>,
+    pub device_get_match_data: Option<unsafe extern "C" fn(*const fwnode_handle, *const device) -> *const ::kernel::ffi::c_void>,
     pub device_dma_supported: Option<unsafe extern "C" fn(*const fwnode_handle) -> bool>,
     pub device_get_dma_attr: Option<unsafe extern "C" fn(*const fwnode_handle) -> dev_dma_attr>,
-    pub property_present: Option<unsafe extern "C" fn(*const fwnode_handle, *const ::core::ffi::c_char) -> bool>,
-    pub property_read_bool: Option<unsafe extern "C" fn(*const fwnode_handle, *const ::core::ffi::c_char) -> bool>,
-    pub property_read_int_array: Option<unsafe extern "C" fn(*const fwnode_handle, *const ::core::ffi::c_char, ::core::ffi::c_uint, *mut ::core::ffi::c_void, usize) -> ::core::ffi::c_int>,
-    pub property_read_string_array: Option<unsafe extern "C" fn(*const fwnode_handle, *const ::core::ffi::c_char, *mut *const ::core::ffi::c_char, usize) -> ::core::ffi::c_int>,
-    pub get_name: Option<unsafe extern "C" fn(*const fwnode_handle) -> *const ::core::ffi::c_char>,
-    pub get_name_prefix: Option<unsafe extern "C" fn(*const fwnode_handle) -> *const ::core::ffi::c_char>,
+    pub property_present: Option<unsafe extern "C" fn(*const fwnode_handle, *const ::kernel::ffi::c_char) -> bool>,
+    pub property_read_bool: Option<unsafe extern "C" fn(*const fwnode_handle, *const ::kernel::ffi::c_char) -> bool>,
+    pub property_read_int_array: Option<unsafe extern "C" fn(*const fwnode_handle, *const ::kernel::ffi::c_char, ::kernel::ffi::c_uint, *mut ::kernel::ffi::c_void, usize) -> ::kernel::ffi::c_int>,
+    pub property_read_string_array: Option<unsafe extern "C" fn(*const fwnode_handle, *const ::kernel::ffi::c_char, *mut *const ::kernel::ffi::c_char, usize) -> ::kernel::ffi::c_int>,
+    pub get_name: Option<unsafe extern "C" fn(*const fwnode_handle) -> *const ::kernel::ffi::c_char>,
+    pub get_name_prefix: Option<unsafe extern "C" fn(*const fwnode_handle) -> *const ::kernel::ffi::c_char>,
     pub get_parent: Option<unsafe extern "C" fn(*const fwnode_handle) -> *mut fwnode_handle>,
     pub get_next_child_node: Option<unsafe extern "C" fn(*const fwnode_handle, *mut fwnode_handle) -> *mut fwnode_handle>,
-    pub get_named_child_node: Option<unsafe extern "C" fn(*const fwnode_handle, *const ::core::ffi::c_char) -> *mut fwnode_handle>,
-    pub get_reference_args: Option<unsafe extern "C" fn(*const fwnode_handle, *const ::core::ffi::c_char, *const ::core::ffi::c_char, ::core::ffi::c_uint, ::core::ffi::c_uint, *mut fwnode_reference_args) -> ::core::ffi::c_int>,
+    pub get_named_child_node: Option<unsafe extern "C" fn(*const fwnode_handle, *const ::kernel::ffi::c_char) -> *mut fwnode_handle>,
+    pub get_reference_args: Option<unsafe extern "C" fn(*const fwnode_handle, *const ::kernel::ffi::c_char, *const ::kernel::ffi::c_char, ::kernel::ffi::c_uint, ::kernel::ffi::c_uint, *mut fwnode_reference_args) -> ::kernel::ffi::c_int>,
     pub graph_get_next_endpoint: Option<unsafe extern "C" fn(*const fwnode_handle, *mut fwnode_handle) -> *mut fwnode_handle>,
     pub graph_get_remote_endpoint: Option<unsafe extern "C" fn(*const fwnode_handle) -> *mut fwnode_handle>,
     pub graph_get_port_parent: Option<unsafe extern "C" fn(*mut fwnode_handle) -> *mut fwnode_handle>,
-    pub graph_parse_endpoint: Option<unsafe extern "C" fn(*const fwnode_handle, *mut fwnode_endpoint) -> ::core::ffi::c_int>,
-    pub iomap: Option<unsafe extern "C" fn(*mut fwnode_handle, ::core::ffi::c_int) -> *mut ::core::ffi::c_void>,
-    pub irq_get: Option<unsafe extern "C" fn(*const fwnode_handle, ::core::ffi::c_uint) -> ::core::ffi::c_int>,
-    pub add_links: Option<unsafe extern "C" fn(*mut fwnode_handle) -> ::core::ffi::c_int>,
+    pub graph_parse_endpoint: Option<unsafe extern "C" fn(*const fwnode_handle, *mut fwnode_endpoint) -> ::kernel::ffi::c_int>,
+    pub iomap: Option<unsafe extern "C" fn(*mut fwnode_handle, ::kernel::ffi::c_int) -> *mut ::kernel::ffi::c_void>,
+    pub irq_get: Option<unsafe extern "C" fn(*const fwnode_handle, ::kernel::ffi::c_uint) -> ::kernel::ffi::c_int>,
+    pub add_links: Option<unsafe extern "C" fn(*mut fwnode_handle) -> ::kernel::ffi::c_int>,
 }
 
 /* fwnode_has_op and the fwnode_call_* macros retain their C-side meaning. */
@@ -99,20 +99,20 @@ pub unsafe fn fwnode_init(fwnode: *mut fwnode_handle, ops: *const fwnode_operati
     (*fwnode).flags = 0;
 }
 
-pub unsafe fn fwnode_set_flag(fwnode: *mut fwnode_handle, bit: ::core::ffi::c_uint) {
-    (*fwnode).flags |= (1 as ::core::ffi::c_ulong).wrapping_shl(bit);
+pub unsafe fn fwnode_set_flag(fwnode: *mut fwnode_handle, bit: ::kernel::ffi::c_uint) {
+    (*fwnode).flags |= (1 as ::kernel::ffi::c_ulong).wrapping_shl(bit);
 }
 
-pub unsafe fn fwnode_clear_flag(fwnode: *mut fwnode_handle, bit: ::core::ffi::c_uint) {
-    (*fwnode).flags &= !(1 as ::core::ffi::c_ulong).wrapping_shl(bit);
+pub unsafe fn fwnode_clear_flag(fwnode: *mut fwnode_handle, bit: ::kernel::ffi::c_uint) {
+    (*fwnode).flags &= !(1 as ::kernel::ffi::c_ulong).wrapping_shl(bit);
 }
 
-pub unsafe fn fwnode_assign_flag(fwnode: *mut fwnode_handle, bit: ::core::ffi::c_uint, value: bool) {
+pub unsafe fn fwnode_assign_flag(fwnode: *mut fwnode_handle, bit: ::kernel::ffi::c_uint, value: bool) {
     if value { fwnode_set_flag(fwnode, bit); } else { fwnode_clear_flag(fwnode, bit); }
 }
 
-pub unsafe fn fwnode_test_flag(fwnode: *mut fwnode_handle, bit: ::core::ffi::c_uint) -> bool {
-    ((*fwnode).flags & (1 as ::core::ffi::c_ulong).wrapping_shl(bit)) != 0
+pub unsafe fn fwnode_test_flag(fwnode: *mut fwnode_handle, bit: ::kernel::ffi::c_uint) -> bool {
+    ((*fwnode).flags & (1 as ::kernel::ffi::c_ulong).wrapping_shl(bit)) != 0
 }
 
 pub unsafe fn fwnode_dev_initialized(fwnode: *mut fwnode_handle, initialized: bool) {
@@ -121,7 +121,7 @@ pub unsafe fn fwnode_dev_initialized(fwnode: *mut fwnode_handle, initialized: bo
 }
 
 extern "C" {
-    pub fn fwnode_link_add(con: *mut fwnode_handle, sup: *mut fwnode_handle, flags: u8) -> ::core::ffi::c_int;
+    pub fn fwnode_link_add(con: *mut fwnode_handle, sup: *mut fwnode_handle, flags: u8) -> ::kernel::ffi::c_int;
     pub fn fwnode_links_purge(fwnode: *mut fwnode_handle);
     pub fn fw_devlink_purge_absent_suppliers(fwnode: *mut fwnode_handle);
     pub fn fw_devlink_refresh_fwnode(fwnode: *mut fwnode_handle);

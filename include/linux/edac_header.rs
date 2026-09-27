@@ -1,7 +1,7 @@
 /* Generic EDAC defs (translated from linux/edac.h). */
 
 /* Kernel-provided types and constants are external dependencies. */
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub const EDAC_DEVICE_NAME_LEN: usize = 31;
 pub const EDAC_OPSTATE_INVAL: i32 = -1;
@@ -71,12 +71,12 @@ pub const OP_ALLOC: i32 = 0x100; pub const OP_RUNNING_POLL: i32 = 0x201; pub con
 
 /* Remaining structures retain the C ABI and refer to kernel-supplied types. */
 extern "C" {
-    pub fn edac_dev_register(parent: *mut device, dev_name: *mut c_char, parent_pvt_data: *mut core::ffi::c_void, num_features: i32, ras_features: *const edac_dev_feature) -> i32;
+    pub fn edac_dev_register(parent: *mut device, dev_name: *mut c_char, parent_pvt_data: *mut kernel::ffi::c_void, num_features: i32, ras_features: *const edac_dev_feature) -> i32;
 }
 
 #[repr(C)] pub struct device { _private: [u8; 0] }
 #[repr(C)] pub struct bus_type { _private: [u8; 0] }
-#[repr(C)] pub struct edac_dev_feature { pub ft_type: edac_dev_feat, pub instance: u8, pub ops: *const core::ffi::c_void, pub ctx: *mut core::ffi::c_void, pub ecs_info: edac_ecs_ex_info }
+#[repr(C)] pub struct edac_dev_feature { pub ft_type: edac_dev_feat, pub instance: u8, pub ops: *const kernel::ffi::c_void, pub ctx: *mut kernel::ffi::c_void, pub ecs_info: edac_ecs_ex_info }
 #[repr(C)] pub enum edac_dev_feat { RAS_FEAT_SCRUB, RAS_FEAT_ECS, RAS_FEAT_MEM_REPAIR, RAS_FEAT_MAX }
 #[repr(C)] pub struct edac_ecs_ex_info { pub num_media_frus: u16 }
 
@@ -85,9 +85,9 @@ extern "C" {
 #[repr(C)] pub struct csrow_info { pub dev: device, pub first_page: usize, pub last_page: usize, pub page_mask: usize, pub csrow_idx: i32, pub ue_count: u32, pub ce_count: u32, pub mci: *mut mem_ctl_info, pub nr_channels: u32, pub channels: *mut *mut rank_info }
 #[repr(C)] pub struct errcount_attribute_data { pub n_layers: i32, pub pos: [i32; EDAC_MAX_LAYERS], pub layer0: i32, pub layer1: i32, pub layer2: i32 }
 #[repr(C)] pub struct edac_raw_error_desc { pub location: [c_char; LOCATION_SIZE], pub label: [c_char; (EDAC_MC_LABEL_LEN+1+5)*EDAC_MAX_LABELS], pub grain: isize, pub error_count: u16, pub type_: hw_event_mc_err_type, pub top_layer: i32, pub mid_layer: i32, pub low_layer: i32, pub page_frame_number: usize, pub offset_in_page: usize, pub syndrome: usize, pub msg: *const c_char, pub other_detail: *const c_char }
-#[repr(C)] pub struct mem_ctl_info { pub dev: device, pub bus: *const bus_type, pub mtype_cap: usize, pub edac_ctl_cap: usize, pub edac_cap: usize, pub scrub_cap: usize, pub scrub_mode: scrub_type, pub set_sdram_scrub_rate: Option<unsafe extern "C" fn(*mut mem_ctl_info,u32)->i32>, pub get_sdram_scrub_rate: Option<unsafe extern "C" fn(*mut mem_ctl_info)->i32>, pub edac_check: Option<unsafe extern "C" fn(*mut mem_ctl_info)>, pub ctl_page_to_phys: Option<unsafe extern "C" fn(*mut mem_ctl_info,usize)->usize>, pub mc_idx: i32, pub csrows: *mut *mut csrow_info, pub nr_csrows: u32, pub num_cschannel: u32, pub csbased: bool, pub tot_dimms: u32, pub dimms: *mut *mut dimm_info, pub pdev: *mut device, pub mod_name: *const c_char, pub ctl_name: *const c_char, pub dev_name: *const c_char, pub pvt_info: *mut core::ffi::c_void, pub start_time: usize, pub ce_noinfo_count: u32, pub ue_noinfo_count: u32, pub ue_mc: u32, pub ce_mc: u32, pub error_desc: edac_raw_error_desc, pub op_state: i32, pub n_layers: u32, pub layers: [edac_mc_layer; 0] }
-#[repr(C)] pub struct edac_scrub_ops { pub read_addr: *const core::ffi::c_void, pub read_size: *const core::ffi::c_void, pub write_addr: *const core::ffi::c_void, pub write_size: *const core::ffi::c_void, pub get_enabled_bg: *const core::ffi::c_void, pub set_enabled_bg: *const core::ffi::c_void, pub get_min_cycle: *const core::ffi::c_void, pub get_max_cycle: *const core::ffi::c_void, pub get_cycle_duration: *const core::ffi::c_void, pub set_cycle_duration: *const core::ffi::c_void }
-#[repr(C)] pub struct edac_ecs_ops { pub get_log_entry_type: *const core::ffi::c_void, pub set_log_entry_type: *const core::ffi::c_void, pub get_mode: *const core::ffi::c_void, pub set_mode: *const core::ffi::c_void, pub reset: *const core::ffi::c_void, pub get_threshold: *const core::ffi::c_void, pub set_threshold: *const core::ffi::c_void }
-#[repr(C)] pub struct edac_mem_repair_ops { pub get_repair_type: *const core::ffi::c_void, pub get_persist_mode: *const core::ffi::c_void, pub set_persist_mode: *const core::ffi::c_void, pub get_repair_safe_when_in_use: *const core::ffi::c_void, pub get_hpa: *const core::ffi::c_void, pub set_hpa: *const core::ffi::c_void, pub get_min_hpa: *const core::ffi::c_void, pub get_max_hpa: *const core::ffi::c_void, pub get_dpa: *const core::ffi::c_void, pub set_dpa: *const core::ffi::c_void, pub do_repair: *const core::ffi::c_void }
+#[repr(C)] pub struct mem_ctl_info { pub dev: device, pub bus: *const bus_type, pub mtype_cap: usize, pub edac_ctl_cap: usize, pub edac_cap: usize, pub scrub_cap: usize, pub scrub_mode: scrub_type, pub set_sdram_scrub_rate: Option<unsafe extern "C" fn(*mut mem_ctl_info,u32)->i32>, pub get_sdram_scrub_rate: Option<unsafe extern "C" fn(*mut mem_ctl_info)->i32>, pub edac_check: Option<unsafe extern "C" fn(*mut mem_ctl_info)>, pub ctl_page_to_phys: Option<unsafe extern "C" fn(*mut mem_ctl_info,usize)->usize>, pub mc_idx: i32, pub csrows: *mut *mut csrow_info, pub nr_csrows: u32, pub num_cschannel: u32, pub csbased: bool, pub tot_dimms: u32, pub dimms: *mut *mut dimm_info, pub pdev: *mut device, pub mod_name: *const c_char, pub ctl_name: *const c_char, pub dev_name: *const c_char, pub pvt_info: *mut kernel::ffi::c_void, pub start_time: usize, pub ce_noinfo_count: u32, pub ue_noinfo_count: u32, pub ue_mc: u32, pub ce_mc: u32, pub error_desc: edac_raw_error_desc, pub op_state: i32, pub n_layers: u32, pub layers: [edac_mc_layer; 0] }
+#[repr(C)] pub struct edac_scrub_ops { pub read_addr: *const kernel::ffi::c_void, pub read_size: *const kernel::ffi::c_void, pub write_addr: *const kernel::ffi::c_void, pub write_size: *const kernel::ffi::c_void, pub get_enabled_bg: *const kernel::ffi::c_void, pub set_enabled_bg: *const kernel::ffi::c_void, pub get_min_cycle: *const kernel::ffi::c_void, pub get_max_cycle: *const kernel::ffi::c_void, pub get_cycle_duration: *const kernel::ffi::c_void, pub set_cycle_duration: *const kernel::ffi::c_void }
+#[repr(C)] pub struct edac_ecs_ops { pub get_log_entry_type: *const kernel::ffi::c_void, pub set_log_entry_type: *const kernel::ffi::c_void, pub get_mode: *const kernel::ffi::c_void, pub set_mode: *const kernel::ffi::c_void, pub reset: *const kernel::ffi::c_void, pub get_threshold: *const kernel::ffi::c_void, pub set_threshold: *const kernel::ffi::c_void }
+#[repr(C)] pub struct edac_mem_repair_ops { pub get_repair_type: *const kernel::ffi::c_void, pub get_persist_mode: *const kernel::ffi::c_void, pub set_persist_mode: *const kernel::ffi::c_void, pub get_repair_safe_when_in_use: *const kernel::ffi::c_void, pub get_hpa: *const kernel::ffi::c_void, pub set_hpa: *const kernel::ffi::c_void, pub get_min_hpa: *const kernel::ffi::c_void, pub get_max_hpa: *const kernel::ffi::c_void, pub get_dpa: *const kernel::ffi::c_void, pub set_dpa: *const kernel::ffi::c_void, pub do_repair: *const kernel::ffi::c_void }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

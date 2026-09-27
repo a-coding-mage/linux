@@ -38,11 +38,11 @@ pub struct nfsd_file_mark {
 #[repr(C)]
 pub struct nfsd_file {
     pub nf_rlist: rhlist_head,
-    pub nf_inode: *mut core::ffi::c_void,
+    pub nf_inode: *mut kernel::ffi::c_void,
     pub nf_file: *mut file,
     pub nf_cred: *const cred,
     pub nf_net: *mut net,
-    pub nf_flags: core::ffi::c_ulong,
+    pub nf_flags: kernel::ffi::c_ulong,
     pub nf_ref: refcount_t,
     pub nf_may: u8,
 
@@ -64,10 +64,10 @@ pub const NFSD_FILE_GC: u32 = 3;
 pub const NFSD_FILE_RECENT: u32 = 4;
 
 unsafe extern "C" {
-    pub fn nfsd_file_cache_init() -> core::ffi::c_int;
+    pub fn nfsd_file_cache_init() -> kernel::ffi::c_int;
     pub fn nfsd_file_cache_purge(net: *mut net);
     pub fn nfsd_file_cache_shutdown();
-    pub fn nfsd_file_cache_start_net(net: *mut net) -> core::ffi::c_int;
+    pub fn nfsd_file_cache_start_net(net: *mut net) -> kernel::ffi::c_int;
     pub fn nfsd_file_cache_shutdown_net(net: *mut net);
     pub fn nfsd_file_put(nf: *mut nfsd_file);
     pub fn nfsd_file_put_local(nf: *mut *mut nfsd_file) -> *mut net;
@@ -78,19 +78,19 @@ unsafe extern "C" {
     pub fn nfsd_file_net_dispose(nn: *mut nfsd_net);
     pub fn nfsd_file_is_cached(inode: *mut inode) -> bool;
     pub fn nfsd_file_acquire_gc(rqstp: *mut svc_rqst, fhp: *mut svc_fh,
-        may_flags: core::ffi::c_uint, nfp: *mut *mut nfsd_file) -> __be32;
+        may_flags: kernel::ffi::c_uint, nfp: *mut *mut nfsd_file) -> __be32;
     pub fn nfsd_file_acquire(rqstp: *mut svc_rqst, fhp: *mut svc_fh,
-        may_flags: core::ffi::c_uint, nfp: *mut *mut nfsd_file) -> __be32;
+        may_flags: kernel::ffi::c_uint, nfp: *mut *mut nfsd_file) -> __be32;
     pub fn nfsd_file_acquire_opened(rqstp: *mut svc_rqst, fhp: *mut svc_fh,
-        may_flags: core::ffi::c_uint, file: *mut file,
+        may_flags: kernel::ffi::c_uint, file: *mut file,
         nfp: *mut *mut nfsd_file) -> __be32;
     pub fn nfsd_file_acquire_local(net: *mut net, cred: *mut svc_cred,
         client: *mut auth_domain, fhp: *mut svc_fh,
-        may_flags: core::ffi::c_uint, pnf: *mut *mut nfsd_file) -> __be32;
+        may_flags: kernel::ffi::c_uint, pnf: *mut *mut nfsd_file) -> __be32;
     pub fn nfsd_file_acquire_dir(rqstp: *mut svc_rqst, fhp: *mut svc_fh,
         pnf: *mut *mut nfsd_file) -> __be32;
-    pub fn nfsd_file_cache_stats_show(m: *mut seq_file, v: *mut core::ffi::c_void)
-        -> core::ffi::c_int;
+    pub fn nfsd_file_cache_stats_show(m: *mut seq_file, v: *mut kernel::ffi::c_void)
+        -> kernel::ffi::c_int;
     pub fn nfsd_fsnotify_recalc_mask(nf: *mut nfsd_file);
 }
 

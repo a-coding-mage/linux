@@ -6,16 +6,16 @@
 /* CONFIG_PPC_POWERNV selects the declaration versus no-op inline definitions. */
 #[cfg(CONFIG_PPC_POWERNV)]
 unsafe extern "C" {
-    pub fn powernv_set_nmmu_ptcr(ptcr: ::core::ffi::c_ulong);
+    pub fn powernv_set_nmmu_ptcr(ptcr: ::kernel::ffi::c_ulong);
 
-    pub fn pnv_program_cpu_hotplug_lpcr(cpu: ::core::ffi::c_uint, lpcr_val: u64);
+    pub fn pnv_program_cpu_hotplug_lpcr(cpu: ::kernel::ffi::c_uint, lpcr_val: u64);
 
     pub fn pnv_tm_init();
 }
 
 #[cfg(not(CONFIG_PPC_POWERNV))]
 #[inline]
-pub fn powernv_set_nmmu_ptcr(_ptcr: ::core::ffi::c_ulong) {}
+pub fn powernv_set_nmmu_ptcr(_ptcr: ::kernel::ffi::c_ulong) {}
 
 #[cfg(not(CONFIG_PPC_POWERNV))]
 #[inline]

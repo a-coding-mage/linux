@@ -11,15 +11,15 @@ extern "C" {
     pub fn vmalloc_init();
 
     pub fn vmap_pages_range_noflush(
-        addr: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
         prot: pgprot_t,
         pages: *mut *mut page,
-        page_shift: ::core::ffi::c_uint,
+        page_shift: ::kernel::ffi::c_uint,
         gfp_mask: gfp_t,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
-    pub fn get_vm_area_page_order(vm: *mut vm_struct) -> ::core::ffi::c_uint;
+    pub fn get_vm_area_page_order(vm: *mut vm_struct) -> ::kernel::ffi::c_uint;
 }
 
 #[cfg(not(CONFIG_MMU))]
@@ -29,13 +29,13 @@ pub fn vmalloc_init() {}
 #[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn vmap_pages_range_noflush(
-    _addr: ::core::ffi::c_ulong,
-    _end: ::core::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
+    _end: ::kernel::ffi::c_ulong,
     _prot: pgprot_t,
     _pages: *mut *mut page,
-    _page_shift: ::core::ffi::c_uint,
+    _page_shift: ::kernel::ffi::c_uint,
     _gfp_mask: gfp_t,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     // -EINVAL
     -22
 }
@@ -43,42 +43,42 @@ pub unsafe fn vmap_pages_range_noflush(
 #[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn vunmap_range_noflush(
-    _start: ::core::ffi::c_ulong,
-    _end: ::core::ffi::c_ulong,
+    _start: ::kernel::ffi::c_ulong,
+    _end: ::kernel::ffi::c_ulong,
 ) {
 }
 
 extern "C" {
     pub fn __get_vm_area_node(
-        size: ::core::ffi::c_ulong,
-        align: ::core::ffi::c_ulong,
-        shift: ::core::ffi::c_ulong,
-        vm_flags: ::core::ffi::c_ulong,
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
-        node: ::core::ffi::c_int,
+        size: ::kernel::ffi::c_ulong,
+        align: ::kernel::ffi::c_ulong,
+        shift: ::kernel::ffi::c_ulong,
+        vm_flags: ::kernel::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
+        node: ::kernel::ffi::c_int,
         gfp_mask: gfp_t,
-        caller: *const ::core::ffi::c_void,
+        caller: *const ::kernel::ffi::c_void,
     ) -> *mut vm_struct;
 
     pub fn clear_vm_uninitialized_flag(vm: *mut vm_struct);
 
     pub fn __vmap_pages_range_noflush(
-        addr: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        addr: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
         prot: pgprot_t,
         pages: *mut *mut page,
-        page_shift: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        page_shift: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn vunmap_range_noflush(
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
     );
 
     pub fn __vunmap_range_noflush(
-        start: ::core::ffi::c_ulong,
-        end: ::core::ffi::c_ulong,
+        start: ::kernel::ffi::c_ulong,
+        end: ::kernel::ffi::c_ulong,
     );
 }
 

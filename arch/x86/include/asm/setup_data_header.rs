@@ -8,10 +8,10 @@ pub struct pci_setup_rom {
     pub vendor: u16,
     pub devid: u16,
     pub pcilen: u64,
-    pub segment: core::ffi::c_ulong,
-    pub bus: core::ffi::c_ulong,
-    pub device: core::ffi::c_ulong,
-    pub function: core::ffi::c_ulong,
+    pub segment: kernel::ffi::c_ulong,
+    pub bus: kernel::ffi::c_ulong,
+    pub device: kernel::ffi::c_ulong,
+    pub function: kernel::ffi::c_ulong,
     pub romdata: [u8; 0],
 }
 

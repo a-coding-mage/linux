@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /* Rust translation of x86/include/asm/elf.h. */
 
-pub type ElfGregT = core::ffi::c_ulong;
+pub type ElfGregT = kernel::ffi::c_ulong;
 pub const ELF_NGREG: usize = core::mem::size_of::<UserRegsStruct>() / core::mem::size_of::<ElfGregT>();
 pub type ElfGregsetT = [ElfGregT; ELF_NGREG];
 pub type ElfFpregsetT = UserI387Struct;
@@ -77,11 +77,11 @@ extern "C" {
     pub fn arch_setup_additional_pages(bprm: *mut LinuxBinprm, uses_interp: i32) -> i32;
     pub fn compat_arch_setup_additional_pages(bprm: *mut LinuxBinprm, uses_interp: i32, x32: bool) -> i32;
     pub fn arch_syscall_is_vdso_sigreturn(regs: *mut PtRegs) -> bool;
-    pub fn task_size_32bit() -> core::ffi::c_ulong;
-    pub fn task_size_64bit(full_addr_space: i32) -> core::ffi::c_ulong;
-    pub fn get_mmap_base(is_legacy: i32) -> core::ffi::c_ulong;
-    pub fn mmap_address_hint_valid(addr: core::ffi::c_ulong, len: core::ffi::c_ulong) -> bool;
-    pub fn get_sigframe_size() -> core::ffi::c_ulong;
+    pub fn task_size_32bit() -> kernel::ffi::c_ulong;
+    pub fn task_size_64bit(full_addr_space: i32) -> kernel::ffi::c_ulong;
+    pub fn get_mmap_base(is_legacy: i32) -> kernel::ffi::c_ulong;
+    pub fn mmap_address_hint_valid(addr: kernel::ffi::c_ulong, len: kernel::ffi::c_ulong) -> bool;
+    pub fn get_sigframe_size() -> kernel::ffi::c_ulong;
     pub fn mmap_is_ia32() -> i32;
 }
 
@@ -123,8 +123,8 @@ pub const ALIGN_VA_64: i32 = 1 << 1;
 #[repr(C)]
 pub struct VaAlignment {
     pub flags: i32,
-    pub mask: core::ffi::c_ulong,
-    pub bits: core::ffi::c_ulong,
+    pub mask: kernel::ffi::c_ulong,
+    pub bits: kernel::ffi::c_ulong,
 }
 
 /* External types and constants below are supplied by the included kernel headers. */

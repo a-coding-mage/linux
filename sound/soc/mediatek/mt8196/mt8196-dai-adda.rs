@@ -12,8 +12,8 @@
 
 #[repr(C)]
 pub struct mtk_afe_adda_priv {
-    pub dl_rate: core::ffi::c_int,
-    pub ul_rate: core::ffi::c_int,
+    pub dl_rate: kernel::ffi::c_int,
+    pub ul_rate: kernel::ffi::c_int,
 }
 
 pub const UL_IIR_SW: u32 = 0;
@@ -52,8 +52,8 @@ pub const MTK_AFE_MTKAIF_RATE_352K: u32 = 0x15;
 
 unsafe fn adda_ul_rate_transform(
     afe: *mut mtk_base_afe,
-    rate: core::ffi::c_uint,
-) -> core::ffi::c_uint {
+    rate: kernel::ffi::c_uint,
+) -> kernel::ffi::c_uint {
     match rate {
         8000 => MTK_AFE_ADDA_UL_RATE_8K,
         16000 => MTK_AFE_ADDA_UL_RATE_16K,
@@ -70,8 +70,8 @@ unsafe fn adda_ul_rate_transform(
 
 unsafe fn mtkaif_rate_transform(
     afe: *mut mtk_base_afe,
-    rate: core::ffi::c_uint,
-) -> core::ffi::c_uint {
+    rate: kernel::ffi::c_uint,
+) -> kernel::ffi::c_uint {
     match rate {
         8000 => MTK_AFE_MTKAIF_RATE_8K,
         11025 => MTK_AFE_MTKAIF_RATE_11K,
@@ -96,7 +96,7 @@ pub const SUPPLY_SEQ_ADDA_FIFO: i32 = 1;
 pub const SUPPLY_SEQ_ADDA_AP_DMIC: i32 = 2;
 pub const SUPPLY_SEQ_ADDA_UL_ON: i32 = 3;
 
-unsafe fn mtk_adda_ul_src_set_dmic_phase_sync(afe: *mut mtk_base_afe) -> core::ffi::c_int {
+unsafe fn mtk_adda_ul_src_set_dmic_phase_sync(afe: *mut mtk_base_afe) -> kernel::ffi::c_int {
     dev_dbg((*afe).dev, c"set dmic phase sync\n".as_ptr());
     // ul0~1
     regmap_update_bits(
@@ -206,7 +206,7 @@ unsafe fn mtk_adda_ul_src_set_dmic_phase_sync(afe: *mut mtk_base_afe) -> core::f
 
 unsafe fn mtk_adda_ul_src_set_dmic_phase_sync_clock(
     afe: *mut mtk_base_afe,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     dev_dbg((*afe).dev, c"dmic turn on phase sync clk\n".as_ptr());
     regmap_update_bits(
         (*afe).regmap,
@@ -239,10 +239,10 @@ unsafe fn mtk_adda_ul_src_set_dmic_phase_sync_clock(
 
 unsafe fn mtk_adda_ul_src_enable_dmic(
     afe: *mut mtk_base_afe,
-    id: core::ffi::c_int,
-) -> core::ffi::c_int {
-    let mut reg_con0: core::ffi::c_uint = 0;
-    let mut reg_con1: core::ffi::c_uint = 0;
+    id: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
+    let mut reg_con0: kernel::ffi::c_uint = 0;
+    let mut reg_con1: kernel::ffi::c_uint = 0;
 
     dev_dbg((*afe).dev, c"id: %d\n".as_ptr(), id);
 
@@ -354,8 +354,8 @@ unsafe fn mtk_adda_ul_src_enable_dmic(
 unsafe fn mtk_adda_sleep_on_pmd_event(
     w: *mut snd_soc_dapm_widget,
     _kcontrol: *mut snd_kcontrol,
-    event: core::ffi::c_int,
-) -> core::ffi::c_int {
+    event: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let cmpnt: *mut snd_soc_component = snd_soc_dapm_to_component((*w).dapm);
     let afe: *mut mtk_base_afe = snd_soc_component_get_drvdata(cmpnt) as *mut mtk_base_afe;
 
@@ -384,13 +384,13 @@ pub const ADDA_UL_MUX_MTKAIF: i32 = 0;
 pub const ADDA_UL_MUX_AP_DMIC: i32 = 1;
 pub const ADDA_UL_MUX_AP_DMIC_MULTICH: i32 = 2;
 
-static adda_ul_mux_map: [*const core::ffi::c_char; 3] = [
+static adda_ul_mux_map: [*const kernel::ffi::c_char; 3] = [
     c"MTKAIF".as_ptr(),
     c"AP_DMIC".as_ptr(),
     c"AP_DMIC_MULTI_CH".as_ptr(),
 ];
 
-static mut adda_ul_map_value: [core::ffi::c_int; 3] = [
+static mut adda_ul_map_value: [kernel::ffi::c_int; 3] = [
     ADDA_UL_MUX_MTKAIF,
     ADDA_UL_MUX_AP_DMIC,
     ADDA_UL_MUX_AP_DMIC_MULTICH,
@@ -524,23 +524,23 @@ static mtk_dai_adda_routes: [snd_soc_dapm_route; 27] = [
 unsafe fn set_playback_hw_params(
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let afe: *mut mtk_base_afe = snd_soc_dai_get_drvdata(dai) as *mut mtk_base_afe;
     let afe_priv: *mut mt8196_afe_private = (*afe).platform_priv as *mut mt8196_afe_private;
-    let rate: core::ffi::c_uint = params_rate(params);
+    let rate: kernel::ffi::c_uint = params_rate(params);
     let adda_priv: *mut mtk_afe_adda_priv;
-    let mut mtkaif_rate: core::ffi::c_uint = 0;
-    let id: core::ffi::c_int = (*dai).id;
+    let mut mtkaif_rate: kernel::ffi::c_uint = 0;
+    let id: kernel::ffi::c_int = (*dai).id;
 
     adda_priv = (*afe_priv).dai_priv[id as usize] as *mut mtk_afe_adda_priv;
     if adda_priv.is_null() {
         return -EINVAL;
     }
 
-    (*adda_priv).dl_rate = rate as core::ffi::c_int;
+    (*adda_priv).dl_rate = rate as kernel::ffi::c_int;
 
     /* get mtkaif dl rate */
-    mtkaif_rate = mtkaif_rate_transform(afe, (*adda_priv).dl_rate as core::ffi::c_uint);
+    mtkaif_rate = mtkaif_rate_transform(afe, (*adda_priv).dl_rate as kernel::ffi::c_uint);
 
     if id == MT8196_DAI_ADDA {
         /* MTKAIF sample rate config */
@@ -571,25 +571,25 @@ unsafe fn set_playback_hw_params(
 unsafe fn set_capture_hw_params(
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let afe: *mut mtk_base_afe = snd_soc_dai_get_drvdata(dai) as *mut mtk_base_afe;
     let afe_priv: *mut mt8196_afe_private = (*afe).platform_priv as *mut mt8196_afe_private;
-    let rate: core::ffi::c_uint = params_rate(params);
+    let rate: kernel::ffi::c_uint = params_rate(params);
     let adda_priv: *mut mtk_afe_adda_priv;
-    let mut voice_mode: core::ffi::c_uint = 0;
-    let mut ul_src_con0: core::ffi::c_uint = 0;
-    let mut mtkaif_rate: core::ffi::c_uint = 0;
-    let id: core::ffi::c_int = (*dai).id;
+    let mut voice_mode: kernel::ffi::c_uint = 0;
+    let mut ul_src_con0: kernel::ffi::c_uint = 0;
+    let mut mtkaif_rate: kernel::ffi::c_uint = 0;
+    let id: kernel::ffi::c_int = (*dai).id;
 
     adda_priv = (*afe_priv).dai_priv[id as usize] as *mut mtk_afe_adda_priv;
     if adda_priv.is_null() {
         return -EINVAL;
     }
 
-    (*adda_priv).ul_rate = rate as core::ffi::c_int;
+    (*adda_priv).ul_rate = rate as kernel::ffi::c_int;
 
     /* get mtkaif dl rate */
-    mtkaif_rate = mtkaif_rate_transform(afe, (*adda_priv).ul_rate as core::ffi::c_uint);
+    mtkaif_rate = mtkaif_rate_transform(afe, (*adda_priv).ul_rate as kernel::ffi::c_uint);
 
     voice_mode = adda_ul_rate_transform(afe, rate);
 
@@ -693,9 +693,9 @@ unsafe fn mtk_dai_adda_hw_params(
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
     dai: *mut snd_soc_dai,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let afe: *mut mtk_base_afe = snd_soc_dai_get_drvdata(dai) as *mut mtk_base_afe;
-    let id: core::ffi::c_int = (*dai).id;
+    let id: kernel::ffi::c_int = (*dai).id;
 
     if id >= MT8196_DAI_NUM || id < 0 {
         return -EINVAL;
@@ -831,10 +831,10 @@ static mut mtk_dai_adda_driver: [snd_soc_dai_driver; 6] = [
     },
 ];
 
-unsafe fn init_adda_priv_data(afe: *mut mtk_base_afe) -> core::ffi::c_int {
+unsafe fn init_adda_priv_data(afe: *mut mtk_base_afe) -> kernel::ffi::c_int {
     let afe_priv: *mut mt8196_afe_private = (*afe).platform_priv as *mut mt8196_afe_private;
     let mut adda_priv: *mut mtk_afe_adda_priv;
-    static adda_dai_list: [core::ffi::c_int; 4] = [
+    static adda_dai_list: [kernel::ffi::c_int; 4] = [
         MT8196_DAI_ADDA,
         MT8196_DAI_ADDA_CH34,
         MT8196_DAI_ADDA_CH56,
@@ -852,7 +852,7 @@ unsafe fn init_adda_priv_data(afe: *mut mtk_base_afe) -> core::ffi::c_int {
             return -ENOMEM;
         }
 
-        (*afe_priv).dai_priv[adda_dai_list[i] as usize] = adda_priv as *mut core::ffi::c_void;
+        (*afe_priv).dai_priv[adda_dai_list[i] as usize] = adda_priv as *mut kernel::ffi::c_void;
         i += 1;
     }
 
@@ -865,9 +865,9 @@ unsafe fn init_adda_priv_data(afe: *mut mtk_base_afe) -> core::ffi::c_int {
     0
 }
 
-pub unsafe extern "C" fn mt8196_dai_adda_register(afe: *mut mtk_base_afe) -> core::ffi::c_int {
+pub unsafe extern "C" fn mt8196_dai_adda_register(afe: *mut mtk_base_afe) -> kernel::ffi::c_int {
     let dai: *mut mtk_base_afe_dai;
-    let ret: core::ffi::c_int;
+    let ret: kernel::ffi::c_int;
 
     dai = devm_kzalloc(
         (*afe).dev,
@@ -879,11 +879,11 @@ pub unsafe extern "C" fn mt8196_dai_adda_register(afe: *mut mtk_base_afe) -> cor
     }
 
     (*dai).dai_drivers = mtk_dai_adda_driver.as_mut_ptr();
-    (*dai).num_dai_drivers = mtk_dai_adda_driver.len() as core::ffi::c_int;
+    (*dai).num_dai_drivers = mtk_dai_adda_driver.len() as kernel::ffi::c_int;
     (*dai).dapm_widgets = mtk_dai_adda_widgets.as_ptr();
-    (*dai).num_dapm_widgets = mtk_dai_adda_widgets.len() as core::ffi::c_int;
+    (*dai).num_dapm_widgets = mtk_dai_adda_widgets.len() as kernel::ffi::c_int;
     (*dai).dapm_routes = mtk_dai_adda_routes.as_ptr();
-    (*dai).num_dapm_routes = mtk_dai_adda_routes.len() as core::ffi::c_int;
+    (*dai).num_dapm_routes = mtk_dai_adda_routes.len() as kernel::ffi::c_int;
 
     ret = init_adda_priv_data(afe);
     if ret != 0 {

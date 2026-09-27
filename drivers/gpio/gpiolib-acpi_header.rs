@@ -6,7 +6,7 @@
  */
 
 /* Declarations corresponding to the C header's kernel dependencies. */
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct device {
@@ -57,7 +57,7 @@ extern "C" {
         con_id: *const c_char,
         idx: u32,
         dflags: *mut gpiod_flags,
-        lookupflags: *mut ::core::ffi::c_ulong,
+        lookupflags: *mut ::kernel::ffi::c_ulong,
     ) -> *mut gpio_desc;
 
     pub fn acpi_gpio_count(fwnode: *const fwnode_handle, con_id: *const c_char) -> i32;
@@ -81,7 +81,7 @@ pub unsafe fn acpi_find_gpio(
     _con_id: *const c_char,
     _idx: u32,
     _dflags: *mut gpiod_flags,
-    _lookupflags: *mut ::core::ffi::c_ulong,
+    _lookupflags: *mut ::kernel::ffi::c_ulong,
 ) -> *mut gpio_desc {
     // ERR_PTR(-ENOENT), with Linux errno ENOENT = 2.
     (-2isize) as *mut gpio_desc

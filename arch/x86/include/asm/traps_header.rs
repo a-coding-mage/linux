@@ -13,8 +13,8 @@ extern "C" {
 }
 
 extern "C" {
-    pub fn ibt_selftest() -> ::core::ffi::c_int;
-    pub fn ibt_selftest_noendbr() -> ::core::ffi::c_int;
+    pub fn ibt_selftest() -> ::kernel::ffi::c_int;
+    pub fn ibt_selftest_noendbr() -> ::kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_X86_F00F_BUG)]
@@ -26,7 +26,7 @@ extern "C" {
 pub fn handle_bug(regs: *mut pt_regs) -> bool;
 
 #[inline]
-pub unsafe fn get_si_code(condition: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+pub unsafe fn get_si_code(condition: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     if condition & DR_STEP != 0 {
         TRAP_TRACE
     } else if condition & (DR_TRAP0 | DR_TRAP1 | DR_TRAP2 | DR_TRAP3) != 0 {
@@ -40,13 +40,13 @@ extern "C" {
     pub fn math_emulate(info: *mut math_emu_info);
 }
 
-pub fn fault_in_kernel_space(address: ::core::ffi::c_ulong) -> bool;
+pub fn fault_in_kernel_space(address: ::kernel::ffi::c_ulong) -> bool;
 
 #[cfg(CONFIG_VMAP_STACK)]
 extern "C" {
     pub fn handle_stack_overflow(
         regs: *mut pt_regs,
-        fault_address: ::core::ffi::c_ulong,
+        fault_address: ::kernel::ffi::c_ulong,
         info: *mut stack_info,
     ) -> !;
 }

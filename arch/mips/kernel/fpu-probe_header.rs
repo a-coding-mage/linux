@@ -5,25 +5,25 @@
 
 #[cfg(CONFIG_MIPS_FP_SUPPORT)]
 extern "C" {
-    pub static mut mips_fpu_disabled: ::core::ffi::c_int;
+    pub static mut mips_fpu_disabled: ::kernel::ffi::c_int;
 
-    pub fn __cpu_has_fpu() -> ::core::ffi::c_int;
+    pub fn __cpu_has_fpu() -> ::kernel::ffi::c_int;
     pub fn cpu_set_fpu_opts(c: *mut cpuinfo_mips);
     pub fn cpu_set_nofpu_opts(c: *mut cpuinfo_mips);
 }
 
 #[cfg(not(CONFIG_MIPS_FP_SUPPORT))]
-pub const mips_fpu_disabled: ::core::ffi::c_int = 1;
+pub const mips_fpu_disabled: ::kernel::ffi::c_int = 1;
 
 #[cfg(not(CONFIG_MIPS_FP_SUPPORT))]
 #[inline]
-pub unsafe fn cpu_get_fpu_id() -> ::core::ffi::c_ulong {
+pub unsafe fn cpu_get_fpu_id() -> ::kernel::ffi::c_ulong {
     FPIR_IMP_NONE
 }
 
 #[cfg(not(CONFIG_MIPS_FP_SUPPORT))]
 #[inline]
-pub unsafe fn __cpu_has_fpu() -> ::core::ffi::c_int {
+pub unsafe fn __cpu_has_fpu() -> ::kernel::ffi::c_int {
     0
 }
 

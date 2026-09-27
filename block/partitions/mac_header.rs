@@ -15,8 +15,8 @@ pub struct mac_partition {
     pub map_count: __be32,   /* # blocks in partition map */
     pub start_block: __be32, /* absolute starting block # of partition */
     pub block_count: __be32, /* number of blocks in partition */
-    pub name: [core::ffi::c_char; 32], /* partition name */
-    pub r#type: [core::ffi::c_char; 32], /* string type description */
+    pub name: [kernel::ffi::c_char; 32], /* partition name */
+    pub r#type: [kernel::ffi::c_char; 32], /* string type description */
     pub data_start: __be32, /* rel block # of first data block */
     pub data_count: __be32, /* number of data blocks */
     pub status: __be32,     /* partition status bits */
@@ -27,7 +27,7 @@ pub struct mac_partition {
     pub boot_entry: __be32,
     pub boot_entry2: __be32,
     pub boot_cksum: __be32,
-    pub processor: [core::ffi::c_char; 16], /* identifies ISA of boot */
+    pub processor: [kernel::ffi::c_char; 16], /* identifies ISA of boot */
     /* there is more stuff after this that we don't need */
 }
 

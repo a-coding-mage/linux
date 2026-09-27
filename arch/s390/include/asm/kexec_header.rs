@@ -52,7 +52,7 @@ pub struct kimage;
 #[repr(C)]
 pub struct s390_load_data {
     /* Pointer to the kernel buffer. Used to register cmdline etc.. */
-    pub kernel_buf: *mut core::ffi::c_void,
+    pub kernel_buf: *mut kernel::ffi::c_void,
 
     /* Load address of the kernel_buf. */
     pub kernel_mem: usize,
@@ -67,14 +67,14 @@ pub struct s390_load_data {
 }
 
 extern "C" {
-    pub fn s390_verify_sig(kernel: *const core::ffi::c_char, kernel_len: usize) -> i32;
+    pub fn s390_verify_sig(kernel: *const kernel::ffi::c_char, kernel_len: usize) -> i32;
     pub fn kexec_file_add_components(
         image: *mut kimage,
         add_kernel: Option<unsafe extern "C" fn(*mut kimage, *mut s390_load_data) -> i32>,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn arch_kexec_do_relocs(
         r_type: i32,
-        loc: *mut core::ffi::c_void,
+        loc: *mut kernel::ffi::c_void,
         val: usize,
         addr: usize,
     ) -> i32;
@@ -84,7 +84,7 @@ extern "C" {
 
 #[repr(C)]
 pub struct kimage_arch {
-    pub ipl_buf: *mut core::ffi::c_void,
+    pub ipl_buf: *mut kernel::ffi::c_void,
 }
 
 extern "C" {

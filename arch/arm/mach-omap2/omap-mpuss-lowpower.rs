@@ -2,20 +2,20 @@
 /* OMAP MPUSS low power code. C include dependencies and build-time CONFIG_PM/
  * CONFIG_SMP conditions are supplied by the surrounding kernel translation. */
 
-static mut sar_base: *mut core::ffi::c_void = core::ptr::null_mut();
+static mut sar_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut old_cpu1_ns_pa_addr: u32 = 0;
 
 #[repr(C)]
 struct omap4_cpu_pm_info {
     pwrdm: *mut powerdomain,
-    scu_sar_addr: *mut core::ffi::c_void,
-    wkup_sar_addr: *mut core::ffi::c_void,
-    l2x0_sar_addr: *mut core::ffi::c_void,
+    scu_sar_addr: *mut kernel::ffi::c_void,
+    wkup_sar_addr: *mut kernel::ffi::c_void,
+    l2x0_sar_addr: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 struct cpu_pm_ops {
-    finish_suspend: Option<unsafe extern "C" fn(unsigned_long: core::ffi::c_ulong) -> i32>,
+    finish_suspend: Option<unsafe extern "C" fn(unsigned_long: kernel::ffi::c_ulong) -> i32>,
     resume: Option<unsafe extern "C" fn()>,
     scu_prepare: Option<unsafe extern "C" fn(u32, u32)>,
     hotplug_restart: Option<unsafe extern "C" fn()>,
@@ -29,7 +29,7 @@ static mut omap4_pm_info: [omap4_cpu_pm_info; 2] = [
 static mut mpuss_pd: *mut powerdomain = core::ptr::null_mut();
 static mut cpu_context_offset: u32 = 0;
 
-unsafe extern "C" fn default_finish_suspend(_cpu_state: core::ffi::c_ulong) -> i32 { omap_do_wfi(); 0 }
+unsafe extern "C" fn default_finish_suspend(_cpu_state: kernel::ffi::c_ulong) -> i32 { omap_do_wfi(); 0 }
 unsafe extern "C" fn dummy_cpu_resume() {}
 unsafe extern "C" fn dummy_scu_prepare(_cpu_id: u32, _cpu_state: u32) {}
 static mut omap_pm_ops: cpu_pm_ops = cpu_pm_ops { finish_suspend: Some(default_finish_suspend), resume: Some(dummy_cpu_resume), scu_prepare: Some(dummy_scu_prepare), hotplug_restart: Some(dummy_cpu_resume) };
@@ -88,7 +88,7 @@ unsafe fn omap4_enter_lowpower(cpu: u32, power_state: u32, rcuidle: bool) -> i32
     set_cpu_wakeup_addr(cpu, __pa_symbol(omap_pm_ops.resume));
     (omap_pm_ops.scu_prepare.unwrap())(cpu, power_state);
     l2x0_pwrst_prepare(cpu, save_state);
-    if save_state != 0 { cpu_suspend(save_state, omap_pm_ops.finish_suspend); } else { (omap_pm_ops.finish_suspend.unwrap())(save_state as core::ffi::c_ulong); }
+    if save_state != 0 { cpu_suspend(save_state, omap_pm_ops.finish_suspend); } else { (omap_pm_ops.finish_suspend.unwrap())(save_state as kernel::ffi::c_ulong); }
     if IS_PM44XX_ERRATUM(PM_OMAP4_ROM_SMP_BOOT_ERRATUM_GICD) && cpu != 0 { gic_dist_enable(); }
     if rcuidle { ct_cpuidle_exit(); }
     pwrdm_set_next_pwrst(pm_info.pwrdm, PWRDM_POWER_ON);

@@ -40,7 +40,7 @@ unsafe fn damon_stat_idletime(r: *const damon_region) -> isize {
     }
 }
 
-unsafe extern "C" fn damon_stat_cmp_regions(a: *const core::ffi::c_void, b: *const core::ffi::c_void) -> i32 {
+unsafe extern "C" fn damon_stat_cmp_regions(a: *const kernel::ffi::c_void, b: *const kernel::ffi::c_void) -> i32 {
     let ra = *(a as *const *const damon_region);
     let rb = *(b as *const *const damon_region);
     damon_stat_idletime(ra).wrapping_sub(damon_stat_idletime(rb)) as i32
@@ -87,10 +87,10 @@ unsafe fn damon_stat_set_idletime_percentiles(c: *mut damon_ctx) {
             next_percentile += 1;
         }
     }
-    kfree(sorted_regions as *mut core::ffi::c_void);
+    kfree(sorted_regions as *mut kernel::ffi::c_void);
 }
 
-unsafe extern "C" fn damon_stat_damon_call_fn(data: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn damon_stat_damon_call_fn(data: *mut kernel::ffi::c_void) -> i32 {
     let c = data as *mut damon_ctx;
     if time_before_eq(jiffies(), DAMON_STAT_LAST_REFRESH_JIFFIES + secs_to_jiffies(5)) { return 0; }
     DAMON_STAT_LAST_REFRESH_JIFFIES = jiffies();
@@ -129,7 +129,7 @@ unsafe fn damon_stat_start() -> i32 {
 unsafe fn damon_stat_stop() { damon_stop(&mut DAMON_STAT_CONTEXT, 1); damon_destroy_ctx(DAMON_STAT_CONTEXT); DAMON_STAT_CONTEXT = core::ptr::null_mut(); }
 unsafe fn damon_stat_enabled() -> bool { !DAMON_STAT_CONTEXT.is_null() && damon_is_running(DAMON_STAT_CONTEXT) }
 
-unsafe fn damon_stat_enabled_store(val: *const core::ffi::c_char, _kp: *const kernel_param) -> i32 {
+unsafe fn damon_stat_enabled_store(val: *const kernel::ffi::c_char, _kp: *const kernel_param) -> i32 {
     let err = kstrtobool(val, &mut ENABLED);
     if err != 0 { return err; }
     if damon_stat_enabled() == ENABLED { return 0; }
@@ -137,13 +137,13 @@ unsafe fn damon_stat_enabled_store(val: *const core::ffi::c_char, _kp: *const ke
     if ENABLED { damon_stat_start() } else { damon_stat_stop(); 0 }
 }
 
-unsafe fn damon_stat_enabled_load(buffer: *mut core::ffi::c_char, _kp: *const kernel_param) -> i32 {
+unsafe fn damon_stat_enabled_load(buffer: *mut kernel::ffi::c_char, _kp: *const kernel_param) -> i32 {
     sprintf(buffer, "%c\n", if damon_stat_enabled() { 'Y' } else { 'N' })
 }
 
-unsafe fn damon_stat_kdamond_pid_store(_val: *const core::ffi::c_char, _kp: *const kernel_param) -> i32 { 0 }
+unsafe fn damon_stat_kdamond_pid_store(_val: *const kernel::ffi::c_char, _kp: *const kernel_param) -> i32 { 0 }
 
-unsafe fn damon_stat_kdamond_pid_load(buffer: *mut core::ffi::c_char, _kp: *const kernel_param) -> i32 {
+unsafe fn damon_stat_kdamond_pid_load(buffer: *mut kernel::ffi::c_char, _kp: *const kernel_param) -> i32 {
     let mut pid = -1;
     if !DAMON_STAT_CONTEXT.is_null() {
         pid = damon_kdamond_pid(DAMON_STAT_CONTEXT);

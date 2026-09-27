@@ -29,7 +29,7 @@ struct edac_scrub_dev_attr {
 
 #[repr(C)]
 struct edac_scrub_context {
-    name: [core::ffi::c_char; EDAC_FEAT_NAME_LEN],
+    name: [kernel::ffi::c_char; EDAC_FEAT_NAME_LEN],
     scrub_dev_attr: [edac_scrub_dev_attr; SCRUB_MAX_ATTRS as usize],
     scrub_attrs: [*mut attribute; SCRUB_MAX_ATTRS as usize + 1],
     group: attribute_group,
@@ -39,26 +39,26 @@ unsafe fn to_scrub_dev_attr<'a>(dev_attr: *mut device_attribute) -> &'a mut edac
     &mut *((dev_attr as *mut u8).suboffset_of(0) as *mut edac_scrub_dev_attr)
 }
 
-unsafe fn addr_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> isize {
+unsafe fn addr_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut kernel::ffi::c_char) -> isize {
     scrub_show(ras_feat_dev, attr, buf, 0)
 }
-unsafe fn size_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> isize {
+unsafe fn size_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut kernel::ffi::c_char) -> isize {
     scrub_show(ras_feat_dev, attr, buf, 1)
 }
-unsafe fn enable_background_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> isize {
+unsafe fn enable_background_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut kernel::ffi::c_char) -> isize {
     scrub_show(ras_feat_dev, attr, buf, 2)
 }
-unsafe fn min_cycle_duration_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> isize {
+unsafe fn min_cycle_duration_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut kernel::ffi::c_char) -> isize {
     scrub_show(ras_feat_dev, attr, buf, 3)
 }
-unsafe fn max_cycle_duration_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> isize {
+unsafe fn max_cycle_duration_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut kernel::ffi::c_char) -> isize {
     scrub_show(ras_feat_dev, attr, buf, 4)
 }
-unsafe fn current_cycle_duration_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> isize {
+unsafe fn current_cycle_duration_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut kernel::ffi::c_char) -> isize {
     scrub_show(ras_feat_dev, attr, buf, 5)
 }
 
-unsafe fn scrub_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut core::ffi::c_char, which: usize) -> isize {
+unsafe fn scrub_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf: *mut kernel::ffi::c_char, which: usize) -> isize {
     let inst = to_scrub_dev_attr(attr).instance;
     let ctx = dev_get_drvdata(ras_feat_dev) as *mut edac_dev_feat_ctx;
     let ops = (*ctx).scrub[inst as usize].scrub_ops;
@@ -72,12 +72,12 @@ unsafe fn scrub_show(ras_feat_dev: *mut device, attr: *mut device_attribute, buf
     sysfs_emit(buf, b"0x%llx\0".as_ptr() as *const _, data)
 }
 
-unsafe fn enable_background_store(dev: *mut device, attr: *mut device_attribute, buf: *const core::ffi::c_char, len: usize) -> isize { scrub_store(dev, attr, buf, len, 0) }
-unsafe fn current_cycle_duration_store(dev: *mut device, attr: *mut device_attribute, buf: *const core::ffi::c_char, len: usize) -> isize { scrub_store(dev, attr, buf, len, 1) }
-unsafe fn addr_store(dev: *mut device, attr: *mut device_attribute, buf: *const core::ffi::c_char, len: usize) -> isize { scrub_store(dev, attr, buf, len, 2) }
-unsafe fn size_store(dev: *mut device, attr: *mut device_attribute, buf: *const core::ffi::c_char, len: usize) -> isize { scrub_store(dev, attr, buf, len, 3) }
+unsafe fn enable_background_store(dev: *mut device, attr: *mut device_attribute, buf: *const kernel::ffi::c_char, len: usize) -> isize { scrub_store(dev, attr, buf, len, 0) }
+unsafe fn current_cycle_duration_store(dev: *mut device, attr: *mut device_attribute, buf: *const kernel::ffi::c_char, len: usize) -> isize { scrub_store(dev, attr, buf, len, 1) }
+unsafe fn addr_store(dev: *mut device, attr: *mut device_attribute, buf: *const kernel::ffi::c_char, len: usize) -> isize { scrub_store(dev, attr, buf, len, 2) }
+unsafe fn size_store(dev: *mut device, attr: *mut device_attribute, buf: *const kernel::ffi::c_char, len: usize) -> isize { scrub_store(dev, attr, buf, len, 3) }
 
-unsafe fn scrub_store(dev: *mut device, attr: *mut device_attribute, buf: *const core::ffi::c_char, len: usize, _which: usize) -> isize {
+unsafe fn scrub_store(dev: *mut device, attr: *mut device_attribute, buf: *const kernel::ffi::c_char, len: usize, _which: usize) -> isize {
     let _inst = to_scrub_dev_attr(attr).instance;
     let _ = (dev, buf);
     len as isize

@@ -3,7 +3,7 @@
 // Dependencies supplied by the Linux kernel, RV instrumentation, and the
 // monitor headers are intentionally left as external declarations.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 const MODULE_NAME: &[u8] = b"wwnr\0";
 const RV_MON_TYPE: i32 = RV_MON_PER_TASK;
@@ -16,12 +16,12 @@ extern "C" {
     fn da_monitor_reset_all();
 
     fn rv_attach_trace_probe(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         probe: *const c_void,
         handler: *const c_void,
     );
     fn rv_detach_trace_probe(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         probe: *const c_void,
         handler: *const c_void,
     );
@@ -36,8 +36,8 @@ pub struct task_struct {
 
 #[repr(C)]
 pub struct rv_monitor {
-    pub name: *const core::ffi::c_char,
-    pub description: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub description: *const kernel::ffi::c_char,
     pub enable: Option<unsafe extern "C" fn() -> i32>,
     pub disable: Option<unsafe extern "C" fn()>,
     pub reset: Option<unsafe extern "C" fn()>,
@@ -85,12 +85,12 @@ unsafe extern "C" fn enable_wwnr() -> i32 {
     }
 
     rv_attach_trace_probe(
-        b"wwnr\0".as_ptr() as *const core::ffi::c_char,
+        b"wwnr\0".as_ptr() as *const kernel::ffi::c_char,
         sched_switch,
         handle_switch as *const c_void,
     );
     rv_attach_trace_probe(
-        b"wwnr\0".as_ptr() as *const core::ffi::c_char,
+        b"wwnr\0".as_ptr() as *const kernel::ffi::c_char,
         sched_wakeup,
         handle_wakeup as *const c_void,
     );
@@ -102,12 +102,12 @@ unsafe extern "C" fn disable_wwnr() {
     rv_this.enabled = 0;
 
     rv_detach_trace_probe(
-        b"wwnr\0".as_ptr() as *const core::ffi::c_char,
+        b"wwnr\0".as_ptr() as *const kernel::ffi::c_char,
         sched_switch,
         handle_switch as *const c_void,
     );
     rv_detach_trace_probe(
-        b"wwnr\0".as_ptr() as *const core::ffi::c_char,
+        b"wwnr\0".as_ptr() as *const kernel::ffi::c_char,
         sched_wakeup,
         handle_wakeup as *const c_void,
     );
@@ -117,9 +117,9 @@ unsafe extern "C" fn disable_wwnr() {
 
 #[no_mangle]
 pub static mut rv_this: rv_monitor = rv_monitor {
-    name: b"wwnr\0".as_ptr() as *const core::ffi::c_char,
+    name: b"wwnr\0".as_ptr() as *const kernel::ffi::c_char,
     description: b"wakeup while not running per-task testing model.\0".as_ptr()
-        as *const core::ffi::c_char,
+        as *const kernel::ffi::c_char,
     enable: Some(enable_wwnr),
     disable: Some(disable_wwnr),
     reset: Some(da_monitor_reset_all),

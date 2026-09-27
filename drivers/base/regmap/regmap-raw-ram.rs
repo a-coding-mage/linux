@@ -9,7 +9,7 @@
 // C dependencies: linux/clk.h, linux/err.h, linux/io.h, linux/module.h,
 // linux/regmap.h, linux/slab.h, linux/swab.h, and internal.h.
 
-unsafe fn decode_reg(endian: regmap_endian, reg: *const core::ffi::c_void) -> u32 {
+unsafe fn decode_reg(endian: regmap_endian, reg: *const kernel::ffi::c_void) -> u32 {
     let r = reg as *const u16;
 
     if endian == REGMAP_ENDIAN_BIG {
@@ -20,10 +20,10 @@ unsafe fn decode_reg(endian: regmap_endian, reg: *const core::ffi::c_void) -> u3
 }
 
 unsafe extern "C" fn regmap_raw_ram_gather_write(
-    context: *mut core::ffi::c_void,
-    reg: *const core::ffi::c_void,
+    context: *mut kernel::ffi::c_void,
+    reg: *const kernel::ffi::c_void,
     reg_len: usize,
-    val: *const core::ffi::c_void,
+    val: *const kernel::ffi::c_void,
     val_len: usize,
 ) -> i32 {
     let data = context as *mut regmap_ram_data;
@@ -64,24 +64,24 @@ unsafe extern "C" fn regmap_raw_ram_gather_write(
 }
 
 unsafe extern "C" fn regmap_raw_ram_write(
-    context: *mut core::ffi::c_void,
-    data: *const core::ffi::c_void,
+    context: *mut kernel::ffi::c_void,
+    data: *const kernel::ffi::c_void,
     count: usize,
 ) -> i32 {
     regmap_raw_ram_gather_write(
         context,
         data,
         2,
-        (data as *const u8).add(2) as *const core::ffi::c_void,
+        (data as *const u8).add(2) as *const kernel::ffi::c_void,
         count - 2,
     )
 }
 
 unsafe extern "C" fn regmap_raw_ram_read(
-    context: *mut core::ffi::c_void,
-    reg: *const core::ffi::c_void,
+    context: *mut kernel::ffi::c_void,
+    reg: *const kernel::ffi::c_void,
     reg_len: usize,
-    val: *mut core::ffi::c_void,
+    val: *mut kernel::ffi::c_void,
     val_len: usize,
 ) -> i32 {
     let data = context as *mut regmap_ram_data;
@@ -125,7 +125,7 @@ unsafe extern "C" fn regmap_raw_ram_read(
     0
 }
 
-unsafe extern "C" fn regmap_raw_ram_free_context(context: *mut core::ffi::c_void) {
+unsafe extern "C" fn regmap_raw_ram_free_context(context: *mut kernel::ffi::c_void) {
     let data = context as *mut regmap_ram_data;
 
     kfree((*data).vals);
@@ -147,7 +147,7 @@ unsafe extern "C" fn __regmap_init_raw_ram(
     config: *const regmap_config,
     data: *mut regmap_ram_data,
     lock_key: *mut lock_class_key,
-    lock_name: *const core::ffi::c_char,
+    lock_name: *const kernel::ffi::c_char,
 ) -> *mut regmap {
     let map: *mut regmap;
 

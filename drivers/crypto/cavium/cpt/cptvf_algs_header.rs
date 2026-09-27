@@ -67,7 +67,7 @@ pub union EncrCtrl {
 
 #[repr(C)]
 pub struct CvmCipher {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub value: u8,
 }
 
@@ -112,7 +112,7 @@ pub struct CvmReqCtx {
 }
 
 extern "C" {
-    pub fn cptvf_do_request(cptvf: *mut core::ffi::c_void, req: *mut CptRequestInfo) -> i32;
+    pub fn cptvf_do_request(cptvf: *mut kernel::ffi::c_void, req: *mut CptRequestInfo) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

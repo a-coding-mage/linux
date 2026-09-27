@@ -33,10 +33,10 @@ pub struct owl_clk_common {
 #[repr(C)]
 pub struct owl_clk_desc {
     pub clks: *mut *mut owl_clk_common,
-    pub num_clks: libc::c_ulong,
+    pub num_clks: kernel::ffi::c_ulong,
     pub hw_clks: *mut clk_hw_onecell_data,
     pub resets: *const owl_reset_map,
-    pub num_resets: libc::c_ulong,
+    pub num_resets: kernel::ffi::c_ulong,
     pub regmap: *mut regmap,
 }
 
@@ -52,11 +52,11 @@ extern "C" {
     pub fn owl_clk_regmap_init(
         pdev: *mut platform_device,
         desc: *mut owl_clk_desc,
-    ) -> libc::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn owl_clk_probe(
         dev: *mut device,
         hw_clks: *mut clk_hw_onecell_data,
-    ) -> libc::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -13,20 +13,20 @@ pub struct unwind_table {
 
 #[repr(C)]
 pub struct mod_arch_specific_section {
-    pub stub_offset: core::ffi::c_ulong,
-    pub stub_entries: core::ffi::c_uint,
+    pub stub_offset: kernel::ffi::c_ulong,
+    pub stub_entries: kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct mod_arch_specific {
-    pub got_offset: core::ffi::c_ulong,
-    pub got_count: core::ffi::c_ulong,
-    pub got_max: core::ffi::c_ulong,
-    pub fdesc_offset: core::ffi::c_ulong,
-    pub fdesc_count: core::ffi::c_ulong,
-    pub fdesc_max: core::ffi::c_ulong,
+    pub got_offset: kernel::ffi::c_ulong,
+    pub got_count: kernel::ffi::c_ulong,
+    pub got_max: kernel::ffi::c_ulong,
+    pub fdesc_offset: kernel::ffi::c_ulong,
+    pub fdesc_count: kernel::ffi::c_ulong,
+    pub fdesc_max: kernel::ffi::c_ulong,
     pub section: *mut mod_arch_specific_section,
-    pub unwind_section: core::ffi::c_int,
+    pub unwind_section: kernel::ffi::c_int,
     pub unwind: *mut unwind_table,
 }
 

@@ -29,30 +29,30 @@
 extern "C" {
     fn mm_get_unmapped_area(
         file: *mut file,
-        addr: ::core::ffi::c_ulong,
-        len: ::core::ffi::c_ulong,
-        pgoff: ::core::ffi::c_ulong,
-        flags: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_ulong;
+        addr: ::kernel::ffi::c_ulong,
+        len: ::kernel::ffi::c_ulong,
+        pgoff: ::kernel::ffi::c_ulong,
+        flags: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_ulong;
 
     fn generic_file_read_iter(file: *mut file, iocb: *mut kiocb, iter: *mut iov_iter) -> isize;
     fn generic_file_write_iter(file: *mut file, iocb: *mut kiocb, iter: *mut iov_iter) -> isize;
-    fn generic_file_mmap_prepare(vma: *mut vm_area_struct, file: *mut file) -> ::core::ffi::c_int;
-    fn noop_fsync(file: *mut file, start: ::core::ffi::c_long, end: ::core::ffi::c_long, datasync: bool) -> ::core::ffi::c_int;
-    fn filemap_splice_read(pipe: *mut pipe_inode_info, out: *mut splice_desc, flags: ::core::ffi::c_uint) -> isize;
-    fn iter_file_splice_write(pipe: *mut pipe_inode_info, out: *mut splice_desc, flags: ::core::ffi::c_uint) -> isize;
-    fn generic_file_llseek(file: *mut file, offset: ::core::ffi::c_long, whence: ::core::ffi::c_int) -> ::core::ffi::c_long;
-    fn simple_setattr(id: *mut inode, attr: *mut iattr) -> ::core::ffi::c_int;
-    fn simple_getattr(mnt: *mut vfsmount, dentry: *mut dentry, stat: *mut kstat) -> ::core::ffi::c_int;
+    fn generic_file_mmap_prepare(vma: *mut vm_area_struct, file: *mut file) -> ::kernel::ffi::c_int;
+    fn noop_fsync(file: *mut file, start: ::kernel::ffi::c_long, end: ::kernel::ffi::c_long, datasync: bool) -> ::kernel::ffi::c_int;
+    fn filemap_splice_read(pipe: *mut pipe_inode_info, out: *mut splice_desc, flags: ::kernel::ffi::c_uint) -> isize;
+    fn iter_file_splice_write(pipe: *mut pipe_inode_info, out: *mut splice_desc, flags: ::kernel::ffi::c_uint) -> isize;
+    fn generic_file_llseek(file: *mut file, offset: ::kernel::ffi::c_long, whence: ::kernel::ffi::c_int) -> ::kernel::ffi::c_long;
+    fn simple_setattr(id: *mut inode, attr: *mut iattr) -> ::kernel::ffi::c_int;
+    fn simple_getattr(mnt: *mut vfsmount, dentry: *mut dentry, stat: *mut kstat) -> ::kernel::ffi::c_int;
 }
 
 unsafe fn ramfs_mmu_get_unmapped_area(
     file: *mut file,
-    addr: ::core::ffi::c_ulong,
-    len: ::core::ffi::c_ulong,
-    pgoff: ::core::ffi::c_ulong,
-    flags: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_ulong {
+    addr: ::kernel::ffi::c_ulong,
+    len: ::kernel::ffi::c_ulong,
+    pgoff: ::kernel::ffi::c_ulong,
+    flags: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_ulong {
     mm_get_unmapped_area(file, addr, len, pgoff, flags)
 }
 

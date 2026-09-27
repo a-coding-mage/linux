@@ -13,7 +13,7 @@
 // mt8188-afe-clk.h, mt8188-afe-common.h, mt8188-reg.h,
 // and ../common/mtk-dai-adda-common.h.
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+use kernel::ffi::{c_char, c_int, c_uint, c_void};
 use core::ptr;
 
 const ADDA_HIRES_THRES: c_uint = 48000;
@@ -105,7 +105,7 @@ struct snd_ctl_elem_value_integer {
     value: [c_long; 128],
 }
 
-type c_long = core::ffi::c_long;
+type c_long = kernel::ffi::c_long;
 
 #[repr(C)]
 struct snd_pcm_substream {

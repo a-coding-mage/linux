@@ -19,7 +19,7 @@ pub fn is_sier_available() -> bool {
 
 #[cfg(not(CONFIG_PPC_PERF_CTRS))]
 #[inline]
-pub fn get_pmcs_ext_regs(_idx: i32) -> libc::c_ulong {
+pub fn get_pmcs_ext_regs(_idx: i32) -> kernel::ffi::c_ulong {
     0
 }
 
@@ -53,7 +53,7 @@ macro_rules! perf_arch_fetch_caller_regs {
 #[cfg(CONFIG_PERF_EVENTS)]
 unsafe extern "C" {
     pub fn is_sier_available() -> bool;
-    pub fn get_pmcs_ext_regs(idx: i32) -> libc::c_ulong;
+    pub fn get_pmcs_ext_regs(idx: i32) -> kernel::ffi::c_ulong;
 }
 
 /* To define perf extended regs mask value */

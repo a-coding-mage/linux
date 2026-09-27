@@ -55,9 +55,9 @@ pub unsafe fn __disable_hw_exceptions() {
 extern "C" {
     pub fn full_exception(regs: *mut pt_regs, type_: u32, fsr: i32, addr: i32);
     pub fn sw_exception(regs: *mut pt_regs);
-    pub fn bad_page_fault(regs: *mut pt_regs, address: core::ffi::c_ulong, sig: i32);
-    pub fn die(str_: *const core::ffi::c_char, fp: *mut pt_regs, err: core::ffi::c_long);
-    pub fn _exception(signr: i32, regs: *mut pt_regs, code: i32, addr: core::ffi::c_ulong);
+    pub fn bad_page_fault(regs: *mut pt_regs, address: kernel::ffi::c_ulong, sig: i32);
+    pub fn die(str_: *const kernel::ffi::c_char, fp: *mut pt_regs, err: kernel::ffi::c_long);
+    pub fn _exception(signr: i32, regs: *mut pt_regs, code: i32, addr: kernel::ffi::c_ulong);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

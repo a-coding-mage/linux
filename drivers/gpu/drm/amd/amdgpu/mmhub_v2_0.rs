@@ -1,7 +1,7 @@
 /* Rust translation of mmhub_v2_0.c. */
 
 // Dependencies supplied by the surrounding kernel translation unit.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 const MM_DAGB0_CNTL_MISC2_SIENNA_CICHLID: u32 = 0x0070;
 const MM_DAGB0_CNTL_MISC2_SIENNA_CICHLID_BASE_IDX: u32 = 0;

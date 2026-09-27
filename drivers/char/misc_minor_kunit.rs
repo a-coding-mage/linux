@@ -4,7 +4,7 @@
 #[repr(C)]
 struct miscdevice {
     minor: i32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     fops: *const file_operations,
 }
 
@@ -19,7 +19,7 @@ struct inode;
 struct file;
 #[repr(C)]
 struct kunit {
-    param_value: *const core::ffi::c_void,
+    param_value: *const kernel::ffi::c_void,
 }
 #[repr(C)]
 struct kunit_suite;
@@ -32,13 +32,13 @@ extern "C" {
     static mut MISC_MAJOR: i32;
     fn misc_register(dev: *mut miscdevice) -> i32;
     fn misc_deregister(dev: *mut miscdevice);
-    fn kasprintf(flags: u32, fmt: *const core::ffi::c_char, ...) -> *mut core::ffi::c_char;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn kfree_const(ptr: *const core::ffi::c_void);
+    fn kasprintf(flags: u32, fmt: *const kernel::ffi::c_char, ...) -> *mut kernel::ffi::c_char;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn kfree_const(ptr: *const kernel::ffi::c_void);
     fn kunit_kmalloc_array(test: *mut kunit, n: usize, size: usize, flags: u32) -> *mut miscdevice;
-    fn init_mknod(path: *const core::ffi::c_char, mode: u32, dev: u64) -> i32;
-    fn init_unlink(path: *const core::ffi::c_char) -> i32;
-    fn filp_open(path: *const core::ffi::c_char, flags: i32, mode: u32) -> *mut file;
+    fn init_mknod(path: *const kernel::ffi::c_char, mode: u32, dev: u64) -> i32;
+    fn init_unlink(path: *const kernel::ffi::c_char) -> i32;
+    fn filp_open(path: *const kernel::ffi::c_char, flags: i32, mode: u32) -> *mut file;
     fn fput(file: *mut file);
     fn new_encode_dev(dev: u64) -> u64;
     fn MKDEV(major: i32, minor: i32) -> u64;
@@ -78,7 +78,7 @@ unsafe fn kunit_misc_dynamic_minor(test: *mut kunit) {
 
 #[repr(C)]
 struct miscdev_test_case {
-    str_: *const core::ffi::c_char,
+    str_: *const kernel::ffi::c_char,
     minor: i32,
 }
 
@@ -118,7 +118,7 @@ unsafe fn miscdev_find_minors(_suite: *mut kunit_suite) -> i32 {
 // The remaining KUnit test declarations retain the source-level registration and are
 // expressed through the kernel-provided Rust-compatible KUnit interface.
 extern "C" {
-    fn miscdev_gen_params() -> *mut core::ffi::c_void;
+    fn miscdev_gen_params() -> *mut kernel::ffi::c_void;
 }
 
 unsafe fn miscdev_test_can_open(_test: *mut kunit, misc: *mut miscdevice) {

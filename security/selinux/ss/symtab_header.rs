@@ -17,17 +17,17 @@ pub struct symtab {
 }
 
 unsafe extern "C" {
-    pub fn symtab_init(s: *mut symtab, size: u32) -> core::ffi::c_int;
+    pub fn symtab_init(s: *mut symtab, size: u32) -> kernel::ffi::c_int;
 
     pub fn symtab_insert(
         s: *mut symtab,
-        name: *mut core::ffi::c_char,
-        datum: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        name: *mut kernel::ffi::c_char,
+        datum: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
     pub fn symtab_search(
         s: *const symtab,
-        name: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_void;
+        name: *const kernel::ffi::c_char,
+    ) -> *mut kernel::ffi::c_void;
 }
 
 

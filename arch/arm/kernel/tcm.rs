@@ -15,12 +15,12 @@ static mut dtcm_present: bool = false;
 static mut itcm_present: bool = false;
 
 extern "C" {
-    static mut __itcm_start: core::ffi::c_char;
-    static mut __sitcm_text: core::ffi::c_char;
-    static mut __eitcm_text: core::ffi::c_char;
-    static mut __dtcm_start: core::ffi::c_char;
-    static mut __sdtcm_data: core::ffi::c_char;
-    static mut __edtcm_data: core::ffi::c_char;
+    static mut __itcm_start: kernel::ffi::c_char;
+    static mut __sitcm_text: kernel::ffi::c_char;
+    static mut __eitcm_text: kernel::ffi::c_char;
+    static mut __dtcm_start: kernel::ffi::c_char;
+    static mut __sdtcm_data: kernel::ffi::c_char;
+    static mut __edtcm_data: kernel::ffi::c_char;
 }
 
 static mut dtcm_end: u32 = DTCM_OFFSET;
@@ -55,15 +55,15 @@ static mut itcm_iomap: [map_desc; 1] = [map_desc {
 }];
 
 #[no_mangle]
-pub unsafe extern "C" fn tcm_alloc(len: usize) -> *mut core::ffi::c_void {
+pub unsafe extern "C" fn tcm_alloc(len: usize) -> *mut kernel::ffi::c_void {
     if tcm_pool.is_null() { return core::ptr::null_mut(); }
     let vaddr = gen_pool_alloc(tcm_pool, len);
     if vaddr == 0 { return core::ptr::null_mut(); }
-    vaddr as *mut core::ffi::c_void
+    vaddr as *mut kernel::ffi::c_void
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn tcm_free(addr: *mut core::ffi::c_void, len: usize) {
+pub unsafe extern "C" fn tcm_free(addr: *mut kernel::ffi::c_void, len: usize) {
     gen_pool_free(tcm_pool, addr as usize as u64, len);
 }
 

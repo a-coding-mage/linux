@@ -26,8 +26,8 @@ pub struct saa6588_command {
 /* These ioctls are internal to the kernel. */
 // The _IOW/_IOR ioctl encodings are supplied by the kernel translation
 // environment; these preserve the original macro expressions and intent.
-pub const SAA6588_CMD_CLOSE: _ = _IOW('R', 2, ::core::ffi::c_int);
-pub const SAA6588_CMD_READ: _ = _IOR('R', 3, ::core::ffi::c_int);
-pub const SAA6588_CMD_POLL: _ = _IOR('R', 4, ::core::ffi::c_int);
+pub const SAA6588_CMD_CLOSE: u32 = _IOW('R', 2, ::core::ffi::c_int);
+pub const SAA6588_CMD_READ: u32 = _IOR('R', 3, ::core::ffi::c_int);
+pub const SAA6588_CMD_POLL: u32 = _IOR('R', 4, ::core::ffi::c_int);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

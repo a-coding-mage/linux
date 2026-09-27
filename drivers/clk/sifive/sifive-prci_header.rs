@@ -144,7 +144,7 @@ pub const PRCI_PROCMONCFG_OFFSET: u32 = 0xf0;
 
 #[repr(C)]
 pub struct __prci_data {
-    pub va: *mut core::ffi::c_void,
+    pub va: *mut kernel::ffi::c_void,
     pub reset: reset_simple_data,
     pub hw_clks: clk_hw_onecell_data,
 }
@@ -160,8 +160,8 @@ pub struct __prci_wrpll_data {
 
 #[repr(C)]
 pub struct __prci_clock {
-    pub name: *const core::ffi::c_char,
-    pub parent_name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
+    pub parent_name: *const kernel::ffi::c_char,
     pub ops: *const clk_ops,
     pub hw: clk_hw,
     pub pwd: *mut __prci_wrpll_data,

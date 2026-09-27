@@ -34,34 +34,34 @@ pub enum show_regs_mode {
 
 extern "C" {
     pub fn die(
-        str_: *const ::core::ffi::c_char,
+        str_: *const ::kernel::ffi::c_char,
         regs: *mut pt_regs,
-        err: ::core::ffi::c_long,
+        err: ::kernel::ffi::c_long,
     );
     pub fn die_addr(
-        str_: *const ::core::ffi::c_char,
+        str_: *const ::kernel::ffi::c_char,
         regs: *mut pt_regs,
-        err: ::core::ffi::c_long,
-        gp_addr: ::core::ffi::c_long,
+        err: ::kernel::ffi::c_long,
+        gp_addr: ::kernel::ffi::c_long,
     );
     // __must_check
     pub fn __die(
-        str_: *const ::core::ffi::c_char,
+        str_: *const ::kernel::ffi::c_char,
         regs: *mut pt_regs,
-        err: ::core::ffi::c_long,
-    ) -> ::core::ffi::c_int;
+        err: ::kernel::ffi::c_long,
+    ) -> ::kernel::ffi::c_int;
     pub fn show_stack_regs(regs: *mut pt_regs);
     pub fn __show_regs(
         regs: *mut pt_regs,
         mode: show_regs_mode,
-        log_lvl: *const ::core::ffi::c_char,
+        log_lvl: *const ::kernel::ffi::c_char,
     );
-    pub fn show_iret_regs(regs: *mut pt_regs, log_lvl: *const ::core::ffi::c_char);
-    pub fn oops_begin() -> ::core::ffi::c_ulong;
+    pub fn show_iret_regs(regs: *mut pt_regs, log_lvl: *const ::kernel::ffi::c_char);
+    pub fn oops_begin() -> ::kernel::ffi::c_ulong;
     pub fn oops_end(
-        arg: ::core::ffi::c_ulong,
+        arg: ::kernel::ffi::c_ulong,
         regs: *mut pt_regs,
-        signr: ::core::ffi::c_int,
+        signr: ::kernel::ffi::c_int,
     );
 }
 

@@ -53,20 +53,20 @@ pub struct xfs_hook {
 #[cfg(CONFIG_XFS_LIVE_HOOKS)]
 pub type xfs_hook_fn_t = unsafe extern "C" fn(
     hook: *mut xfs_hook,
-    action: ::core::ffi::c_ulong,
-    data: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int;
+    action: ::kernel::ffi::c_ulong,
+    data: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int;
 
 #[cfg(CONFIG_XFS_LIVE_HOOKS)]
 extern "C" {
     pub fn xfs_hooks_init(chain: *mut xfs_hooks);
-    pub fn xfs_hooks_add(chain: *mut xfs_hooks, hook: *mut xfs_hook) -> ::core::ffi::c_int;
+    pub fn xfs_hooks_add(chain: *mut xfs_hooks, hook: *mut xfs_hook) -> ::kernel::ffi::c_int;
     pub fn xfs_hooks_del(chain: *mut xfs_hooks, hook: *mut xfs_hook);
     pub fn xfs_hooks_call(
         chain: *mut xfs_hooks,
-        action: ::core::ffi::c_ulong,
-        priv_: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        action: ::kernel::ffi::c_ulong,
+        priv_: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_XFS_LIVE_HOOKS)]

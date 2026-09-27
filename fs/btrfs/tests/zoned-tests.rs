@@ -20,7 +20,7 @@ struct LoadZoneInfoTestVector {
     degraded: bool,
     expected_result: i32,
     expected_alloc_offset: u64,
-    description: *const core::ffi::c_char,
+    description: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]

@@ -25,7 +25,7 @@ pub static TLB_FLUSH_REASON: &[(i32, &str)] = &[
 #[repr(C)]
 pub struct TlbFlushEntry {
     pub reason: i32,
-    pub pages: ::core::ffi::c_ulong,
+    pub pages: ::kernel::ffi::c_ulong,
 }
 
 // TRACE_EVENT(tlb_flush,

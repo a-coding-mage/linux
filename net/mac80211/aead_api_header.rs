@@ -3,7 +3,7 @@
 // Dependency declarations from <crypto/aead.h> and <linux/crypto.h> are
 // supplied by other translated files.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct crypto_aead {
@@ -26,7 +26,7 @@ extern "C" {
         data: *mut u8,
         data_len: usize,
         mic: *mut u8,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn aead_decrypt(
         tfm: *mut crypto_aead,
@@ -36,7 +36,7 @@ extern "C" {
         data: *mut u8,
         data_len: usize,
         mic: *mut u8,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn aead_key_free(tfm: *mut crypto_aead);
 }

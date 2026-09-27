@@ -22,7 +22,7 @@ static mut psr_attrs: *mut psr_attr = core::ptr::null_mut();
 unsafe fn psr_show(
 	 kobj: *mut kobject,
 	 attr: *mut kobj_attribute,
-	 buf: *mut core::ffi::c_char,
+	 buf: *mut kernel::ffi::c_char,
 ) -> isize {
 	 let psr_attr = container_of!(attr, psr_attr, attr);
 	 let mut msg: opal_msg = core::mem::zeroed();
@@ -44,7 +44,7 @@ unsafe fn psr_show(
 	 }
 
 	 ret = opal_get_power_shift_ratio((*psr_attr).handle, token,
-		 (__pa!((&raw mut psr) as *mut core::ffi::c_void)) as u32);
+		 (__pa!((&raw mut psr) as *mut kernel::ffi::c_void)) as u32);
 	 match ret {
 		 OPAL_ASYNC_COMPLETION => {
 			 ret = opal_async_wait_response(token, &raw mut msg);
@@ -75,7 +75,7 @@ unsafe fn psr_show(
 unsafe fn psr_store(
 	 kobj: *mut kobject,
 	 attr: *mut kobj_attribute,
-	 buf: *const core::ffi::c_char,
+	 buf: *const kernel::ffi::c_char,
 	 count: usize,
 ) -> isize {
 	 let psr_attr = container_of!(attr, psr_attr, attr);
@@ -171,7 +171,7 @@ unsafe fn opal_psr_init() {
 	 kobject_put(psr_kobj);
 	 }
 	 
-	 kfree(psr_attrs as *mut core::ffi::c_void);
+	 kfree(psr_attrs as *mut kernel::ffi::c_void);
 	 }
 	 
 	 of_node_put(psr);

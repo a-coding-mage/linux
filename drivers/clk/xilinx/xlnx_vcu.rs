@@ -33,14 +33,14 @@ pub struct xvcu_device {
     pub aclk: *mut clk,
     pub reset_gpio: *mut gpio_desc,
     pub logicore_reg_ba: *mut regmap,
-    pub vcu_slcr_ba: *mut core::ffi::c_void,
+    pub vcu_slcr_ba: *mut kernel::ffi::c_void,
     pub pll: *mut clk_hw,
     pub pll_post: *mut clk_hw,
     pub clk_data: *mut clk_hw_onecell_data,
 }
 
 #[repr(C)]
-pub struct regmap_config { pub name: *const core::ffi::c_char, pub reg_bits: u32, pub val_bits: u32, pub reg_stride: u32, pub max_register: u32, pub cache_type: u32 }
+pub struct regmap_config { pub name: *const kernel::ffi::c_char, pub reg_bits: u32, pub val_bits: u32, pub reg_stride: u32, pub max_register: u32, pub cache_type: u32 }
 static VCU_SETTINGS_REGMAP_CONFIG: regmap_config = regmap_config { name: b"regmap\0".as_ptr() as _, reg_bits: 32, val_bits: 32, reg_stride: 4, max_register: 0xfff, cache_type: 0 };
 
 #[repr(C)]
@@ -76,18 +76,18 @@ static XVCU_PLL_CFG: [xvcu_pll_cfg; 101] = [
 #[repr(C)] pub struct gpio_desc { pub _private: [u8; 0] }
 #[repr(C)] pub struct regmap { pub _private: [u8; 0] }
 #[repr(C)] pub struct clk_hw_onecell_data { pub num: u32, pub hws: [*mut clk_hw; 0] }
-#[repr(C)] pub struct vcu_pll { pub hw: clk_hw, pub reg_base: *mut core::ffi::c_void, pub fvco_min: usize, pub fvco_max: usize }
+#[repr(C)] pub struct vcu_pll { pub hw: clk_hw, pub reg_base: *mut kernel::ffi::c_void, pub fvco_min: usize, pub fvco_max: usize }
 
 extern "C" {
-    fn ioread32(addr: *mut core::ffi::c_void) -> u32;
-    fn iowrite32(value: u32, addr: *mut core::ffi::c_void);
+    fn ioread32(addr: *mut kernel::ffi::c_void) -> u32;
+    fn iowrite32(value: u32, addr: *mut kernel::ffi::c_void);
     fn jiffies() -> usize;
     fn msecs_to_jiffies(ms: u32) -> usize;
     fn usleep_range(min: u32, max: u32);
 }
 
-#[inline] unsafe fn xvcu_read(iomem: *mut core::ffi::c_void, offset: u32) -> u32 { ioread32(iomem.add(offset as usize)) }
-#[inline] unsafe fn xvcu_write(iomem: *mut core::ffi::c_void, offset: u32, value: u32) { iowrite32(value, iomem.add(offset as usize)); }
+#[inline] unsafe fn xvcu_read(iomem: *mut kernel::ffi::c_void, offset: u32) -> u32 { ioread32(iomem.add(offset as usize)) }
+#[inline] unsafe fn xvcu_write(iomem: *mut kernel::ffi::c_void, offset: u32, value: u32) { iowrite32(value, iomem.add(offset as usize)); }
 
 unsafe fn xvcu_find_cfg(div: i32) -> *const xvcu_pll_cfg {
     let mut i = 0; while i < XVCU_PLL_CFG.len() - 1 { if XVCU_PLL_CFG[i].fbdiv as i32 == div { return &XVCU_PLL_CFG[i]; } i += 1; } core::ptr::null()

@@ -50,7 +50,7 @@ pub unsafe fn afs_init_new_symlink(vnode: *mut afs_vnode, op: *mut afs_operation
     let symlink = (*op).create.symlink;
     let mut dsize: usize = 0;
     let size = strlen((*symlink).content) + 1;
-    let p: *mut core::ffi::c_char;
+    let p: *mut kernel::ffi::c_char;
 
     rcu_assign_pointer(&mut (*vnode).symlink, symlink);
     (*op).create.symlink = core::ptr::null_mut();
@@ -142,7 +142,7 @@ unsafe fn afs_read_symlink(vnode: *mut afs_vnode) -> isize {
     ret
 }
 
-unsafe extern "C" fn afs_put_link(arg: *mut core::ffi::c_void) {
+unsafe extern "C" fn afs_put_link(arg: *mut kernel::ffi::c_void) {
     afs_put_symlink(arg as *mut afs_symlink);
 }
 
@@ -150,7 +150,7 @@ pub unsafe fn afs_get_link(
     dentry: *mut dentry,
     inode: *mut inode,
     callback: *mut delayed_call,
-) -> *const core::ffi::c_char {
+) -> *const kernel::ffi::c_char {
     let mut symlink: *mut afs_symlink;
     let vnode = AFS_FS_I(inode);
     let mut ret: isize;
@@ -184,15 +184,15 @@ pub unsafe fn afs_get_link(
     afs_get_link_good(vnode, callback)
 }
 
-unsafe fn afs_get_link_good(vnode: *mut afs_vnode, callback: *mut delayed_call) -> *const core::ffi::c_char {
+unsafe fn afs_get_link_good(vnode: *mut afs_vnode, callback: *mut delayed_call) -> *const kernel::ffi::c_char {
     let symlink = rcu_dereference_protected((*vnode).symlink, lockdep_is_held(&(*vnode).validate_lock));
     refcount_inc(&mut (*symlink).ref_);
     up_read(&(*vnode).validate_lock);
-    set_delayed_call(callback, Some(afs_put_link), symlink as *mut core::ffi::c_void);
+    set_delayed_call(callback, Some(afs_put_link), symlink as *mut kernel::ffi::c_void);
     (*symlink).content.as_ptr()
 }
 
-pub unsafe fn afs_readlink(dentry: *mut dentry, buffer: *mut core::ffi::c_void, buflen: i32) -> i32 {
+pub unsafe fn afs_readlink(dentry: *mut dentry, buffer: *mut kernel::ffi::c_void, buflen: i32) -> i32 {
     let mut done = DELAYED_CALL_INIT;
     let content = afs_get_link(dentry, d_inode(dentry), &mut done);
     if IS_ERR(content) {

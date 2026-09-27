@@ -50,7 +50,7 @@ extern "C" {
      */
     pub fn media_device_usb_allocate(
         udev: *mut usb_device,
-        module_name: *const ::core::ffi::c_char,
+        module_name: *const ::kernel::ffi::c_char,
         owner: *mut module,
     ) -> *mut media_device;
 
@@ -67,7 +67,7 @@ extern "C" {
      */
     pub fn media_device_delete(
         mdev: *mut media_device,
-        module_name: *const ::core::ffi::c_char,
+        module_name: *const ::kernel::ffi::c_char,
         owner: *mut module,
     );
 }
@@ -76,7 +76,7 @@ extern "C" {
 #[inline]
 pub unsafe fn media_device_usb_allocate(
     _udev: *mut usb_device,
-    _module_name: *const ::core::ffi::c_char,
+    _module_name: *const ::kernel::ffi::c_char,
     _owner: *mut module,
 ) -> *mut media_device {
     core::ptr::null_mut()
@@ -86,7 +86,7 @@ pub unsafe fn media_device_usb_allocate(
 #[inline]
 pub unsafe fn media_device_delete(
     _mdev: *mut media_device,
-    _module_name: *const ::core::ffi::c_char,
+    _module_name: *const ::kernel::ffi::c_char,
     _owner: *mut module,
 ) {
 }

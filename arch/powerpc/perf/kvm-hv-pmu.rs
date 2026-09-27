@@ -26,7 +26,7 @@ enum KvmppcPmuEventid {
 unsafe fn kvmppc_events_sysfs_show(
     dev: *mut device,
     attr: *mut device_attribute,
-    page: *mut core::ffi::c_char,
+    page: *mut kernel::ffi::c_char,
 ) -> isize {
     let pmu_attr: *mut perf_pmu_events_attr = container_of!(attr, perf_pmu_events_attr, attr);
     sysfs_emit!(page, "event=0x{:02llx}\n", (*pmu_attr).id)

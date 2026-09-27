@@ -8,11 +8,11 @@
 #![allow(dead_code)]
 #![allow(improper_ctypes)]
 
-type u8 = core::ffi::c_uchar;
-type u16 = core::ffi::c_ushort;
-type u32 = core::ffi::c_uint;
-type c_int = core::ffi::c_int;
-type c_char = core::ffi::c_char;
+type u8 = kernel::ffi::c_uchar;
+type u16 = kernel::ffi::c_ushort;
+type u32 = kernel::ffi::c_uint;
+type c_int = kernel::ffi::c_int;
+type c_char = kernel::ffi::c_char;
 type snd_pcm_format_t = c_int;
 
 unsafe extern "C" {

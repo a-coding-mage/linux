@@ -22,7 +22,7 @@ unsafe fn gpr_get(target: *mut task_struct, _regset: *const user_regset, mut to:
     r
 }
 
-unsafe fn gpr_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const core::ffi::c_void, mut ubuf: *const core::ffi::c_void) -> i32 {
+unsafe fn gpr_set(target: *mut task_struct, _regset: *const user_regset, mut pos: u32, mut count: u32, mut kbuf: *const kernel::ffi::c_void, mut ubuf: *const kernel::ffi::c_void) -> i32 {
     let regs = task_pt_regs(target);
     let a0_start = core::mem::size_of::<u64>() * GPR_NUM;
     let era_start = a0_start + core::mem::size_of::<u64>();
@@ -44,21 +44,21 @@ unsafe fn fpr_get(target: *mut task_struct, _r: *const user_regset, mut to: memb
     r=membuf_write(&mut to,&mut (*target).thread.fpu.fcc as *mut _,core::mem::size_of_val(&(*target).thread.fpu.fcc));
     r=membuf_write(&mut to,&mut (*target).thread.fpu.fcsr as *mut _,core::mem::size_of_val(&(*target).thread.fpu.fcsr)); r
 }
-unsafe fn gfpr_set(target:*mut task_struct,pos:*mut u32,count:*mut u32,kbuf:*mut *const core::ffi::c_void,ubuf:*mut *const core::ffi::c_void)->i32 { user_regset_copyin(pos,count,kbuf,ubuf,(*target).thread.fpu.fpr.as_mut_ptr() as *mut _,0,NUM_FPU_REGS*core::mem::size_of::<elf_fpreg_t>()) }
-unsafe fn gfpr_set_simd(target:*mut task_struct,pos:*mut u32,count:*mut u32,kbuf:*mut *const core::ffi::c_void,ubuf:*mut *const core::ffi::c_void)->i32 { let mut v=0u64; for i in 0..NUM_FPU_REGS { if *count==0 { break; } let e=user_regset_copyin(pos,count,kbuf,ubuf,&mut v as *mut _ as *mut _,i*8,(i+1)*8); if e!=0{return e;} set_fpr64(&mut (*target).thread.fpu.fpr[i],0,v); } 0 }
-unsafe fn fpr_set(target:*mut task_struct,_r:*const user_regset,mut pos:u32,mut count:u32,mut kbuf:*const core::ffi::c_void,mut ubuf:*const core::ffi::c_void)->i32 { if count%core::mem::size_of::<elf_fpreg_t>() as u32!=0{return -EINVAL;} init_fp_ctx(target); let mut e=if core::mem::size_of_val(&(*target).thread.fpu.fpr[0])==core::mem::size_of::<elf_fpreg_t>(){gfpr_set(target,&mut pos,&mut count,&mut kbuf,&mut ubuf)}else{gfpr_set_simd(target,&mut pos,&mut count,&mut kbuf,&mut ubuf)}; if e!=0{return e;} let s=NUM_FPU_REGS*core::mem::size_of::<elf_fpreg_t>(); e|=user_regset_copyin(&mut pos,&mut count,&mut kbuf,&mut ubuf,&mut (*target).thread.fpu.fcc as *mut _,s,s+8); e|=user_regset_copyin(&mut pos,&mut count,&mut kbuf,&mut ubuf,&mut (*target).thread.fpu.fcsr as *mut _,s+8,s+12); e }
+unsafe fn gfpr_set(target:*mut task_struct,pos:*mut u32,count:*mut u32,kbuf:*mut *const kernel::ffi::c_void,ubuf:*mut *const kernel::ffi::c_void)->i32 { user_regset_copyin(pos,count,kbuf,ubuf,(*target).thread.fpu.fpr.as_mut_ptr() as *mut _,0,NUM_FPU_REGS*core::mem::size_of::<elf_fpreg_t>()) }
+unsafe fn gfpr_set_simd(target:*mut task_struct,pos:*mut u32,count:*mut u32,kbuf:*mut *const kernel::ffi::c_void,ubuf:*mut *const kernel::ffi::c_void)->i32 { let mut v=0u64; for i in 0..NUM_FPU_REGS { if *count==0 { break; } let e=user_regset_copyin(pos,count,kbuf,ubuf,&mut v as *mut _ as *mut _,i*8,(i+1)*8); if e!=0{return e;} set_fpr64(&mut (*target).thread.fpu.fpr[i],0,v); } 0 }
+unsafe fn fpr_set(target:*mut task_struct,_r:*const user_regset,mut pos:u32,mut count:u32,mut kbuf:*const kernel::ffi::c_void,mut ubuf:*const kernel::ffi::c_void)->i32 { if count%core::mem::size_of::<elf_fpreg_t>() as u32!=0{return -EINVAL;} init_fp_ctx(target); let mut e=if core::mem::size_of_val(&(*target).thread.fpu.fpr[0])==core::mem::size_of::<elf_fpreg_t>(){gfpr_set(target,&mut pos,&mut count,&mut kbuf,&mut ubuf)}else{gfpr_set_simd(target,&mut pos,&mut count,&mut kbuf,&mut ubuf)}; if e!=0{return e;} let s=NUM_FPU_REGS*core::mem::size_of::<elf_fpreg_t>(); e|=user_regset_copyin(&mut pos,&mut count,&mut kbuf,&mut ubuf,&mut (*target).thread.fpu.fcc as *mut _,s,s+8); e|=user_regset_copyin(&mut pos,&mut count,&mut kbuf,&mut ubuf,&mut (*target).thread.fpu.fcsr as *mut _,s+8,s+12); e }
 
 unsafe fn cfg_get(_target:*mut task_struct,_r:*const user_regset,mut to:membuf)->i32 { let mut i=0; let mut r=0; while to.left>0 { let mut v=read_cpucfg(i); i+=1; r=membuf_write(&mut to,&mut v,4); } r }
-unsafe fn cfg_set(_target:*mut task_struct,_r:*const user_regset,_p:u32,_c:u32,_k:*const core::ffi::c_void,_u:*const core::ffi::c_void)->i32 { 0 }
+unsafe fn cfg_set(_target:*mut task_struct,_r:*const user_regset,_p:u32,_c:u32,_k:*const kernel::ffi::c_void,_u:*const kernel::ffi::c_void)->i32 { 0 }
 
 #[cfg(CONFIG_CPU_HAS_LSX)]
 unsafe fn simd_get(target:*mut task_struct,regset:*const user_regset,mut to:membuf)->i32 { save_fpu_regs(target); membuf_write(&mut to,(*target).thread.fpu.fpr.as_mut_ptr() as *mut _, NUM_FPU_REGS*(*regset).size as usize); 0 }
 #[cfg(CONFIG_CPU_HAS_LSX)]
-unsafe fn simd_set(target:*mut task_struct,regset:*const user_regset,mut pos:u32,mut count:u32,mut k:*const core::ffi::c_void,mut u:*const core::ffi::c_void)->i32 { init_fp_ctx(target); user_regset_copyin(&mut pos,&mut count,&mut k,&mut u,(*target).thread.fpu.fpr.as_mut_ptr() as *mut _,0,NUM_FPU_REGS*(*regset).size as usize) }
+unsafe fn simd_set(target:*mut task_struct,regset:*const user_regset,mut pos:u32,mut count:u32,mut k:*const kernel::ffi::c_void,mut u:*const kernel::ffi::c_void)->i32 { init_fp_ctx(target); user_regset_copyin(&mut pos,&mut count,&mut k,&mut u,(*target).thread.fpu.fpr.as_mut_ptr() as *mut _,0,NUM_FPU_REGS*(*regset).size as usize) }
 
-#[repr(C)] pub struct pt_regs_offset { pub name:*const core::ffi::c_char, pub offset:i32 }
+#[repr(C)] pub struct pt_regs_offset { pub name:*const kernel::ffi::c_char, pub offset:i32 }
 static REG_NAMES:[&[u8];36]=[b"r0",b"r1",b"r2",b"r3",b"r4",b"r5",b"r6",b"r7",b"r8",b"r9",b"r10",b"r11",b"r12",b"r13",b"r14",b"r15",b"r16",b"r17",b"r18",b"r19",b"r20",b"r21",b"r22",b"r23",b"r24",b"r25",b"r26",b"r27",b"r28",b"r29",b"r30",b"r31",b"orig_a0",b"csr_era",b"csr_badvaddr",b"csr_crmd"];
-pub unsafe fn regs_query_register_offset(name:*const core::ffi::c_char)->i32 { for (i,n) in REG_NAMES.iter().enumerate(){ if strcmp(name,n.as_ptr() as *const _)==0{return (i*8) as i32;} } -EINVAL }
+pub unsafe fn regs_query_register_offset(name:*const kernel::ffi::c_char)->i32 { for (i,n) in REG_NAMES.iter().enumerate(){ if strcmp(name,n.as_ptr() as *const _)==0{return (i*8) as i32;} } -EINVAL }
 
 unsafe fn read_user(target:*mut task_struct,addr:usize,data:*mut usize)->i32 { let r=task_pt_regs(target); let v=match addr { 0..=31=>(*r).regs[addr], ARG0=>(*r).orig_a0 as usize, PC=>(*r).csr_era as usize, BADVADDR=>(*r).csr_badvaddr as usize, _=>return -EIO }; put_user(v,data) }
 unsafe fn write_user(target:*mut task_struct,addr:usize,data:usize)->i32 { let r=task_pt_regs(target); match addr {0..=31=>(*r).regs[addr]=data as u64,ARG0=>(*r).orig_a0=data as u64,PC=>(*r).csr_era=data as u64,BADVADDR=>(*r).csr_badvaddr=data as u64,_=>return -EIO};0 }

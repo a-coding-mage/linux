@@ -11,8 +11,8 @@ pub const NUM_ACTIVE_RCU_POLL_OLDSTATE: usize = 2;
 
 #[repr(C)]
 pub struct rcu_gp_seq {
-    pub norm: ::core::ffi::c_ulong,
-    pub exp: ::core::ffi::c_ulong,
+    pub norm: ::kernel::ffi::c_ulong,
+    pub exp: ::kernel::ffi::c_ulong,
 }
 
 pub type rcu_callback_t = Option<unsafe extern "C" fn(*mut rcu_head)>;
@@ -26,7 +26,7 @@ extern "C" {
     pub fn call_rcu(head: *mut rcu_head, func: rcu_callback_t);
     pub fn rcu_barrier_tasks();
     pub fn synchronize_rcu();
-    pub fn get_completed_synchronize_rcu() -> ::core::ffi::c_ulong;
+    pub fn get_completed_synchronize_rcu() -> ::kernel::ffi::c_ulong;
     pub fn get_completed_synchronize_rcu_full(gsp: *mut rcu_gp_seq);
     pub fn __rcu_read_lock();
     pub fn __rcu_read_unlock();
@@ -43,19 +43,19 @@ extern "C" {
     pub fn rcu_is_watching() -> bool;
     pub fn preemptible() -> bool;
     pub fn rcu_init();
-    pub static mut rcu_scheduler_active: ::core::ffi::c_int;
-    pub fn rcu_sched_clock_irq(user: ::core::ffi::c_int);
-    pub fn kvfree_call_rcu(head: *mut kvfree_rcu_head, ptr: *mut ::core::ffi::c_void);
-    pub fn kfree_call_rcu_nolock(head: *mut kvfree_rcu_head, ptr: *mut ::core::ffi::c_void);
+    pub static mut rcu_scheduler_active: ::kernel::ffi::c_int;
+    pub fn rcu_sched_clock_irq(user: ::kernel::ffi::c_int);
+    pub fn kvfree_call_rcu(head: *mut kvfree_rcu_head, ptr: *mut ::kernel::ffi::c_void);
+    pub fn kfree_call_rcu_nolock(head: *mut kvfree_rcu_head, ptr: *mut ::kernel::ffi::c_void);
     pub static mut rcu_lock_map: lockdep_map;
     pub static mut rcu_bh_lock_map: lockdep_map;
     pub static mut rcu_sched_lock_map: lockdep_map;
     pub static mut rcu_callback_map: lockdep_map;
-    pub static mut rcu_expedited: ::core::ffi::c_int;
-    pub static mut rcu_normal: ::core::ffi::c_int;
+    pub static mut rcu_expedited: ::kernel::ffi::c_int;
+    pub static mut rcu_normal: ::kernel::ffi::c_int;
 }
 
-#[inline] pub fn same_state_synchronize_rcu(a: ::core::ffi::c_ulong, b: ::core::ffi::c_ulong) -> bool { a == b }
+#[inline] pub fn same_state_synchronize_rcu(a: ::kernel::ffi::c_ulong, b: ::kernel::ffi::c_ulong) -> bool { a == b }
 
 #[inline] pub unsafe fn rcu_read_lock() { __rcu_read_lock(); }
 #[inline] pub unsafe fn rcu_read_unlock() { __rcu_read_unlock(); }
@@ -90,7 +90,7 @@ extern "C" {
 #[macro_export] macro_rules! kfree_rcu_mightsleep { ($p:expr) => { kvfree_rcu_arg_1!($p) }; }
 #[macro_export] macro_rules! kvfree_rcu_mightsleep { ($p:expr) => { kvfree_rcu_arg_1!($p) }; }
 
-#[inline] pub unsafe fn kvfree_rcu_arg_1(ptr: *mut ::core::ffi::c_void) { if !ptr.is_null() { kvfree_call_rcu(::core::ptr::null_mut(), ptr); } }
+#[inline] pub unsafe fn kvfree_rcu_arg_1(ptr: *mut ::kernel::ffi::c_void) { if !ptr.is_null() { kvfree_call_rcu(::core::ptr::null_mut(), ptr); } }
 #[inline] pub unsafe fn rcu_preempt_depth() -> i32 { 0 }
 #[inline] pub unsafe fn rcu_read_lock_held() -> i32 { 1 }
 #[inline] pub unsafe fn rcu_read_lock_bh_held() -> i32 { 1 }

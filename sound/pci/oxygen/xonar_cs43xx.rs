@@ -273,7 +273,7 @@ static front_panel_switch: snd_kcontrol_new = snd_kcontrol_new {
 };
 
 unsafe fn rolloff_info(_ctl: *mut snd_kcontrol, info: *mut snd_ctl_elem_info) -> i32 {
-    static names: [*const core::ffi::c_char; 2] = [
+    static names: [*const kernel::ffi::c_char; 2] = [
         c"Fast Roll-off".as_ptr(),
         c"Slow Roll-off".as_ptr(),
     ];

@@ -18,9 +18,9 @@ pub const IOMMU_NUM_CTXS: usize = 4096;
 
 #[repr(C)]
 pub struct iommu_arena {
-    pub map: *mut ::core::ffi::c_ulong,
-    pub hint: ::core::ffi::c_uint,
-    pub limit: ::core::ffi::c_uint,
+    pub map: *mut ::kernel::ffi::c_ulong,
+    pub hint: ::kernel::ffi::c_uint,
+    pub limit: ::kernel::ffi::c_uint,
 }
 
 pub const ATU_64_SPACE_SIZE: u64 = 0x8000_0000_0; /* 32G */
@@ -28,7 +28,7 @@ pub const ATU_64_SPACE_SIZE: u64 = 0x8000_0000_0; /* 32G */
 /* Data structures for SPARC ATU architecture */
 #[repr(C)]
 pub struct atu_iotsb {
-    pub table: *mut ::core::ffi::c_void, /* IOTSB table base virtual addr*/
+    pub table: *mut ::kernel::ffi::c_void, /* IOTSB table base virtual addr*/
     pub ra: u64,                         /* IOTSB table real addr */
     pub dvma_size: u64,                  /* ranges[3].size or OS slected 32G size */
     pub dvma_base: u64,                  /* ranges[3].base */
@@ -60,43 +60,43 @@ pub struct iommu {
     pub lock: spinlock_t,
     pub dma_addr_mask: u32,
     pub page_table: *mut iopte_t,
-    pub iommu_control: ::core::ffi::c_ulong,
-    pub iommu_tsbbase: ::core::ffi::c_ulong,
-    pub iommu_flush: ::core::ffi::c_ulong,
-    pub iommu_flushinv: ::core::ffi::c_ulong,
-    pub iommu_tags: ::core::ffi::c_ulong,
-    pub iommu_ctxflush: ::core::ffi::c_ulong,
-    pub write_complete_reg: ::core::ffi::c_ulong,
-    pub dummy_page: ::core::ffi::c_ulong,
-    pub dummy_page_pa: ::core::ffi::c_ulong,
-    pub ctx_lowest_free: ::core::ffi::c_ulong,
-    pub ctx_bitmap: [::core::ffi::c_ulong; IOMMU_NUM_CTXS / (core::mem::size_of::<::core::ffi::c_ulong>() * 8)],
+    pub iommu_control: ::kernel::ffi::c_ulong,
+    pub iommu_tsbbase: ::kernel::ffi::c_ulong,
+    pub iommu_flush: ::kernel::ffi::c_ulong,
+    pub iommu_flushinv: ::kernel::ffi::c_ulong,
+    pub iommu_tags: ::kernel::ffi::c_ulong,
+    pub iommu_ctxflush: ::kernel::ffi::c_ulong,
+    pub write_complete_reg: ::kernel::ffi::c_ulong,
+    pub dummy_page: ::kernel::ffi::c_ulong,
+    pub dummy_page_pa: ::kernel::ffi::c_ulong,
+    pub ctx_lowest_free: ::kernel::ffi::c_ulong,
+    pub ctx_bitmap: [::kernel::ffi::c_ulong; IOMMU_NUM_CTXS / (core::mem::size_of::<::kernel::ffi::c_ulong>() * 8)],
 }
 
 #[repr(C)]
 pub struct strbuf {
-    pub strbuf_enabled: ::core::ffi::c_int,
-    pub strbuf_control: ::core::ffi::c_ulong,
-    pub strbuf_pflush: ::core::ffi::c_ulong,
-    pub strbuf_fsync: ::core::ffi::c_ulong,
-    pub strbuf_err_stat: ::core::ffi::c_ulong,
-    pub strbuf_tag_diag: ::core::ffi::c_ulong,
-    pub strbuf_line_diag: ::core::ffi::c_ulong,
-    pub strbuf_ctxflush: ::core::ffi::c_ulong,
-    pub strbuf_ctxmatch_base: ::core::ffi::c_ulong,
-    pub strbuf_flushflag_pa: ::core::ffi::c_ulong,
-    pub strbuf_flushflag: *mut ::core::ffi::c_ulong,
-    pub __flushflag_buf: [::core::ffi::c_ulong; (64 + (64 - 1)) / core::mem::size_of::<::core::ffi::c_ulong>()],
+    pub strbuf_enabled: ::kernel::ffi::c_int,
+    pub strbuf_control: ::kernel::ffi::c_ulong,
+    pub strbuf_pflush: ::kernel::ffi::c_ulong,
+    pub strbuf_fsync: ::kernel::ffi::c_ulong,
+    pub strbuf_err_stat: ::kernel::ffi::c_ulong,
+    pub strbuf_tag_diag: ::kernel::ffi::c_ulong,
+    pub strbuf_line_diag: ::kernel::ffi::c_ulong,
+    pub strbuf_ctxflush: ::kernel::ffi::c_ulong,
+    pub strbuf_ctxmatch_base: ::kernel::ffi::c_ulong,
+    pub strbuf_flushflag_pa: ::kernel::ffi::c_ulong,
+    pub strbuf_flushflag: *mut ::kernel::ffi::c_ulong,
+    pub __flushflag_buf: [::kernel::ffi::c_ulong; (64 + (64 - 1)) / core::mem::size_of::<::kernel::ffi::c_ulong>()],
 }
 
 unsafe extern "C" {
     pub fn iommu_table_init(
         iommu: *mut iommu,
-        tsbsize: ::core::ffi::c_int,
+        tsbsize: ::kernel::ffi::c_int,
         dma_offset: u32,
         dma_addr_mask: u32,
-        numa_node: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        numa_node: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -23,8 +23,8 @@ unsafe fn cpu_get_fpu_id() -> ::core::primitive::c_ulong {
 }
 
 /* Check if the CPU has an external FPU. */
-pub unsafe fn __cpu_has_fpu() -> ::core::ffi::c_int {
-    ((cpu_get_fpu_id() & FPIR_IMP_MASK) != FPIR_IMP_NONE) as ::core::ffi::c_int
+pub unsafe fn __cpu_has_fpu() -> ::kernel::ffi::c_int {
+    ((cpu_get_fpu_id() & FPIR_IMP_MASK) != FPIR_IMP_NONE) as ::kernel::ffi::c_int
 }
 
 /* Determine the FCSR mask for FPU hardware. */
@@ -109,7 +109,7 @@ unsafe fn cpu_set_nan_2008(c: *mut cpuinfo_mips) {
 }
 
 /* The early_param("ieee754", ieee754_setup) registration is supplied by the kernel build. */
-unsafe fn ieee754_setup(s: *mut ::core::ffi::c_char) -> ::core::ffi::c_int {
+unsafe fn ieee754_setup(s: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int {
     if s.is_null() { return -1; }
     let name = ::core::ffi::CStr::from_ptr(s);
     ieee754 = if name.to_bytes() == b"strict" { Ieee754::STRICT } else if name.to_bytes() == b"emulated" { Ieee754::EMULATED } else if name.to_bytes() == b"legacy" { Ieee754::LEGACY } else if name.to_bytes() == b"2008" { Ieee754::STD2008 } else if name.to_bytes() == b"relaxed" { Ieee754::RELAXED } else { return -1 };
@@ -144,9 +144,9 @@ pub unsafe fn cpu_set_nofpu_opts(c: *mut cpuinfo_mips) {
     cpu_set_nofpu_2008(c); cpu_set_nan_2008(c); cpu_set_nofpu_id(c);
 }
 
-pub static mut mips_fpu_disabled: ::core::ffi::c_int = 0;
+pub static mut mips_fpu_disabled: ::kernel::ffi::c_int = 0;
 
-unsafe fn fpu_disable(_s: *mut ::core::ffi::c_char) -> ::core::ffi::c_int {
+unsafe fn fpu_disable(_s: *mut ::kernel::ffi::c_char) -> ::kernel::ffi::c_int {
     cpu_set_nofpu_opts(&mut boot_cpu_data); mips_fpu_disabled = 1; 1
 }
 

@@ -75,7 +75,7 @@ pub struct smc_hs_ctrl {
 
     /* public */
     /* unique name */
-    pub name: [core::ffi::c_char; SMC_HS_CTRL_NAME_MAX],
+    pub name: [kernel::ffi::c_char; SMC_HS_CTRL_NAME_MAX],
     pub flags: i32,
 
     /* Invoked before computing SMC option for SYN packets.

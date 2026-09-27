@@ -4,7 +4,7 @@
  * (C) Copyright TOSHIBA CORPORATION 2007
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 pub const NDFMC_PLAT_FLAG_USE_BSPRT: u32 = 0x01;
 pub const NDFMC_PLAT_FLAG_NO_RSTR: u32 = 0x02;

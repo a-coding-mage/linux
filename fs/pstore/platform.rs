@@ -12,11 +12,11 @@ static PSTORE_TYPE_NAMES: [&[u8]; 9] = [
 
 static mut PSTORE_NEW_ENTRY: i32 = 0;
 static mut PSINFO: *mut PstoreInfo = core::ptr::null_mut();
-static mut BACKEND: *mut core::ffi::c_char = core::ptr::null_mut();
-static mut COMPRESS: *mut core::ffi::c_char = b"deflate\0".as_ptr() as *mut _;
+static mut BACKEND: *mut kernel::ffi::c_char = core::ptr::null_mut();
+static mut COMPRESS: *mut kernel::ffi::c_char = b"deflate\0".as_ptr() as *mut _;
 static mut KMSG_BYTES: u32 = CONFIG_PSTORE_DEFAULT_KMSG_BYTES;
-static mut COMPRESS_WORKSPACE: *mut core::ffi::c_void = core::ptr::null_mut();
-static mut BIG_OOPS_BUF: *mut core::ffi::c_char = core::ptr::null_mut();
+static mut COMPRESS_WORKSPACE: *mut kernel::ffi::c_void = core::ptr::null_mut();
+static mut BIG_OOPS_BUF: *mut kernel::ffi::c_char = core::ptr::null_mut();
 static mut MAX_COMPRESSED_SIZE: usize = 0;
 static mut OOPSCOUNT: i32 = 0;
 
@@ -40,12 +40,12 @@ extern "C" {
 
 pub unsafe fn pstore_set_kmsg_bytes(bytes: u32) { KMSG_BYTES = bytes; }
 
-pub unsafe extern "C" fn pstore_type_to_name(type_: PstoreTypeId) -> *const core::ffi::c_char {
+pub unsafe extern "C" fn pstore_type_to_name(type_: PstoreTypeId) -> *const kernel::ffi::c_char {
     if type_ >= PSTORE_TYPE_MAX { return b"unknown\0".as_ptr() as *const _; }
     PSTORE_TYPE_NAMES[type_ as usize].as_ptr() as *const _
 }
 
-pub unsafe extern "C" fn pstore_name_to_type(name: *const core::ffi::c_char) -> PstoreTypeId {
+pub unsafe extern "C" fn pstore_name_to_type(name: *const kernel::ffi::c_char) -> PstoreTypeId {
     for i in 0..PSTORE_TYPE_MAX {
         if strcmp(PSTORE_TYPE_NAMES[i as usize].as_ptr() as *const _, name) == 0 { return i; }
     }
@@ -62,7 +62,7 @@ unsafe fn pstore_cannot_block_path(reason: KmsgDumpReason) -> bool {
     match reason { KMSG_DUMP_PANIC | KMSG_DUMP_EMERG => true, _ => false }
 }
 
-unsafe fn pstore_compress(in_: *const core::ffi::c_void, out: *mut core::ffi::c_void, inlen: u32, outlen: u32) -> i32 {
+unsafe fn pstore_compress(in_: *const kernel::ffi::c_void, out: *mut kernel::ffi::c_void, inlen: u32, outlen: u32) -> i32 {
     if !IS_ENABLED_CONFIG_PSTORE_COMPRESS { return -EINVAL; }
     let mut zstream = ZStream { next_in: in_, avail_in: inlen, next_out: out, avail_out: outlen, workspace: COMPRESS_WORKSPACE, ..core::mem::zeroed() };
     if zlib_deflate_init2(&mut zstream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY) != Z_OK { return -EINVAL; }
@@ -121,7 +121,7 @@ pub unsafe extern "C" fn pstore_unregister(psi: *mut PstoreInfo) {
     free_buf_for_compression(); PSINFO = core::ptr::null_mut(); kfree(BACKEND); BACKEND = core::ptr::null_mut(); mutex_unlock(&mut PSINFO_LOCK);
 }
 
-unsafe fn pstore_write_user_compat(record: *mut PstoreRecord, buf: *const core::ffi::c_void) -> i32 {
+unsafe fn pstore_write_user_compat(record: *mut PstoreRecord, buf: *const kernel::ffi::c_void) -> i32 {
     if !(*record).buf.is_null() { return -EINVAL; }
     (*record).buf = vmemdup_user(buf, (*record).size); if is_err((*record).buf) { let r = ptr_err((*record).buf); (*record).buf = core::ptr::null_mut(); return r; }
     let ret = ((*(*record).psi).write.unwrap())(record); kvfree((*record).buf); (*record).buf = core::ptr::null_mut(); if ret < 0 { ret } else { (*record).size as i32 }
@@ -152,7 +152,7 @@ unsafe fn pstore_dump(_dumper: *mut KmsgDumper, detail: *mut KmsgDumpDetail) {
 }
 
 #[cfg(CONFIG_PSTORE_CONSOLE)]
-unsafe fn pstore_console_write(_con: *mut Console, s: *const core::ffi::c_char, c: u32) { if c == 0 { return; } let mut r: PstoreRecord = core::mem::zeroed(); pstore_record_init(&mut r, PSINFO); r.type_ = PSTORE_TYPE_CONSOLE; r.buf = s as *mut _; r.size = c as usize; ((*PSINFO).write.unwrap())(&mut r); }
+unsafe fn pstore_console_write(_con: *mut Console, s: *const kernel::ffi::c_char, c: u32) { if c == 0 { return; } let mut r: PstoreRecord = core::mem::zeroed(); pstore_record_init(&mut r, PSINFO); r.type_ = PSTORE_TYPE_CONSOLE; r.buf = s as *mut _; r.size = c as usize; ((*PSINFO).write.unwrap())(&mut r); }
 
 unsafe fn decompress_record(record: *mut PstoreRecord, zstream: *mut ZStream) {
     if !IS_ENABLED_CONFIG_PSTORE_COMPRESS || !(*record).compressed || (*record).type_ != PSTORE_TYPE_DMESG || (*zstream).workspace.is_null() { return; }

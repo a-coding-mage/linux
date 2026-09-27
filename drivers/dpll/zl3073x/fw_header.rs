@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-use core::ffi::c_char;
-use core::ffi::c_int;
-use core::ffi::c_void;
+use kernel::ffi::c_char;
+use kernel::ffi::c_int;
+use kernel::ffi::c_void;
 
 /*
  * enum zl3073x_fw_component_id - Identifiers for possible flash components

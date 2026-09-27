@@ -48,23 +48,23 @@ pub enum file {}
  */
 pub type drm_ioctl_t = unsafe extern "C" fn(
     dev: *mut drm_device,
-    data: *mut core::ffi::c_void,
+    data: *mut kernel::ffi::c_void,
     file_priv: *mut drm_file,
-) -> core::ffi::c_int;
+) -> kernel::ffi::c_int;
 
 /** Compatibility DRM ioctl function type. */
 pub type drm_ioctl_compat_t = unsafe extern "C" fn(
     filp: *mut file,
-    cmd: core::ffi::c_uint,
-    arg: core::ffi::c_ulong,
-) -> core::ffi::c_int;
+    cmd: kernel::ffi::c_uint,
+    arg: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int;
 
 // _IOC_NR and _IOC_TYPE are supplied by asm/ioctl.h.
 #[inline]
-pub const fn DRM_IOCTL_NR(n: core::ffi::c_uint) -> core::ffi::c_uint { _IOC_NR(n) }
+pub const fn DRM_IOCTL_NR(n: kernel::ffi::c_uint) -> kernel::ffi::c_uint { _IOC_NR(n) }
 #[inline]
-pub const fn DRM_IOCTL_TYPE(n: core::ffi::c_uint) -> core::ffi::c_uint { _IOC_TYPE(n) }
-pub const DRM_MAJOR: core::ffi::c_uint = 226;
+pub const fn DRM_IOCTL_TYPE(n: kernel::ffi::c_uint) -> kernel::ffi::c_uint { _IOC_TYPE(n) }
+pub const DRM_MAJOR: kernel::ffi::c_uint = 226;
 
 /** DRM ioctl flags. */
 #[repr(i32)]
@@ -78,10 +78,10 @@ pub enum drm_ioctl_flags {
 /** DRM driver ioctl entry. */
 #[repr(C)]
 pub struct drm_ioctl_desc {
-    pub cmd: core::ffi::c_uint,
+    pub cmd: kernel::ffi::c_uint,
     pub flags: drm_ioctl_flags,
     pub func: Option<drm_ioctl_t>,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 // Small helper macro corresponding to DRM_IOCTL_DEF_DRV(). Rust macro_rules
@@ -95,27 +95,27 @@ macro_rules! DRM_IOCTL_DEF_DRV {
             cmd: DRM_IOCTL_NR($command),
             func: Some($func),
             flags: $flags,
-            name: concat!(stringify!($ioctl), "\0").as_ptr() as *const core::ffi::c_char,
+            name: concat!(stringify!($ioctl), "\0").as_ptr() as *const kernel::ffi::c_char,
         }
     };
 }
 
 extern "C" {
-    pub fn drm_ioctl(filp: *mut file, cmd: core::ffi::c_uint, arg: core::ffi::c_ulong) -> core::ffi::c_long;
-    pub fn drm_ioctl_kernel(filp: *mut file, func: drm_ioctl_t, data: *mut core::ffi::c_void, flags: u32) -> core::ffi::c_long;
+    pub fn drm_ioctl(filp: *mut file, cmd: kernel::ffi::c_uint, arg: kernel::ffi::c_ulong) -> kernel::ffi::c_long;
+    pub fn drm_ioctl_kernel(filp: *mut file, func: drm_ioctl_t, data: *mut kernel::ffi::c_void, flags: u32) -> kernel::ffi::c_long;
 
     // CONFIG_COMPAT selects the declaration below; otherwise C defines this
     // symbol as NULL for unconditional .compat_ioctl assignment.
     #[cfg(CONFIG_COMPAT)]
-    pub fn drm_compat_ioctl(filp: *mut file, cmd: core::ffi::c_uint, arg: core::ffi::c_ulong) -> core::ffi::c_long;
+    pub fn drm_compat_ioctl(filp: *mut file, cmd: kernel::ffi::c_uint, arg: kernel::ffi::c_ulong) -> kernel::ffi::c_long;
 
-    pub fn drm_ioctl_flags(nr: core::ffi::c_uint, flags: *mut core::ffi::c_uint) -> bool;
+    pub fn drm_ioctl_flags(nr: kernel::ffi::c_uint, flags: *mut kernel::ffi::c_uint) -> bool;
 
-    pub fn drm_noop(dev: *mut drm_device, data: *mut core::ffi::c_void, file_priv: *mut drm_file) -> core::ffi::c_int;
-    pub fn drm_invalid_op(dev: *mut drm_device, data: *mut core::ffi::c_void, file_priv: *mut drm_file) -> core::ffi::c_int;
+    pub fn drm_noop(dev: *mut drm_device, data: *mut kernel::ffi::c_void, file_priv: *mut drm_file) -> kernel::ffi::c_int;
+    pub fn drm_invalid_op(dev: *mut drm_device, data: *mut kernel::ffi::c_void, file_priv: *mut drm_file) -> kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_COMPAT))]
-pub const drm_compat_ioctl: Option<unsafe extern "C" fn(*mut file, core::ffi::c_uint, core::ffi::c_ulong) -> core::ffi::c_long> = None;
+pub const drm_compat_ioctl: Option<unsafe extern "C" fn(*mut file, kernel::ffi::c_uint, kernel::ffi::c_ulong) -> kernel::ffi::c_long> = None;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

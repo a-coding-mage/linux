@@ -132,7 +132,7 @@ pub struct Zram {
     /* This is the limit on amount of *uncompressed* worth of data
      * we can store in a disk. */
     pub disksize: u64, /* bytes */
-    pub comp_algs: [*const core::ffi::c_char; ZRAM_MAX_COMPS],
+    pub comp_algs: [*const kernel::ffi::c_char; ZRAM_MAX_COMPS],
     /* zram is claimed so open request will be failed */
     pub claim: bool, /* Protected by disk->open_mutex */
     #[cfg(CONFIG_ZRAM_WRITEBACK)]

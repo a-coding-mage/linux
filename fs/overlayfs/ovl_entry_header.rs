@@ -7,19 +7,19 @@
 
 #[repr(C)]
 pub struct ovl_config {
-    pub upperdir: *mut core::ffi::c_char,
-    pub workdir: *mut core::ffi::c_char,
-    pub lowerdirs: *mut *mut core::ffi::c_char,
+    pub upperdir: *mut kernel::ffi::c_char,
+    pub workdir: *mut kernel::ffi::c_char,
+    pub lowerdirs: *mut *mut kernel::ffi::c_char,
     pub default_permissions: bool,
-    pub redirect_mode: core::ffi::c_int,
-    pub verity_mode: core::ffi::c_int,
+    pub redirect_mode: kernel::ffi::c_int,
+    pub verity_mode: kernel::ffi::c_int,
     pub index: bool,
-    pub uuid: core::ffi::c_int,
+    pub uuid: kernel::ffi::c_int,
     pub nfs_export: bool,
-    pub xino: core::ffi::c_int,
+    pub xino: kernel::ffi::c_int,
     pub metacopy: bool,
     pub userxattr: bool,
-    pub fsync_mode: core::ffi::c_int,
+    pub fsync_mode: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -40,9 +40,9 @@ pub struct ovl_layer {
     pub trap: *mut inode,
     pub fs: *mut ovl_sb,
     /* Index of this layer in fs root (upper idx == 0) */
-    pub idx: core::ffi::c_int,
+    pub idx: kernel::ffi::c_int,
     /* One fsid per unique underlying sb (upper fsid == 0) */
-    pub fsid: core::ffi::c_int,
+    pub fsid: kernel::ffi::c_int,
     /* xwhiteouts were found on this layer */
     pub has_xwhiteouts: bool,
 }
@@ -55,25 +55,25 @@ pub struct ovl_path {
 
 #[repr(C)]
 pub struct ovl_entry {
-    pub __numlower: core::ffi::c_uint,
+    pub __numlower: kernel::ffi::c_uint,
     pub __lowerstack: [ovl_path; 0],
 }
 
 /* private information held for overlayfs's superblock */
 #[repr(C)]
 pub struct ovl_fs {
-    pub numlayer: core::ffi::c_uint,
+    pub numlayer: kernel::ffi::c_uint,
     /* Number of unique fs among layers including upper fs */
-    pub numfs: core::ffi::c_uint,
+    pub numfs: kernel::ffi::c_uint,
     /* Number of data-only lower layers */
-    pub numdatalayer: core::ffi::c_uint,
+    pub numdatalayer: kernel::ffi::c_uint,
     pub layers: *mut ovl_layer,
     pub fs: *mut ovl_sb,
     /* workbasedir is the path at workdir= mount option */
     pub workbasedir: *mut dentry,
     /* workdir is the 'work' or 'index' directory under workbasedir */
     pub workdir: *mut dentry,
-    pub namelen: core::ffi::c_long,
+    pub namelen: kernel::ffi::c_long,
     /* pathnames of lower and upper dirs, for show_options */
     pub config: ovl_config,
     /* creds of process who forced instantiation of super block */
@@ -88,7 +88,7 @@ pub struct ovl_fs {
     pub workbasedir_trap: *mut inode,
     pub workdir_trap: *mut inode,
     /* -1: disabled, 0: same fs, 1..32: number of unused ino bits */
-    pub xino_mode: core::ffi::c_int,
+    pub xino_mode: kernel::ffi::c_int,
     /* For allocation of non-persistent inode numbers */
     pub last_ino: atomic_long_t,
     /* Shared whiteout cache */
@@ -102,7 +102,7 @@ pub struct ovl_fs {
 
 /* Number of lower layers, not including data-only layers */
 #[inline]
-pub unsafe fn ovl_numlowerlayer(ofs: *mut ovl_fs) -> core::ffi::c_uint {
+pub unsafe fn ovl_numlowerlayer(ofs: *mut ovl_fs) -> kernel::ffi::c_uint {
     (*ofs).numlayer - (*ofs).numdatalayer - 1
 }
 
@@ -129,7 +129,7 @@ pub unsafe fn OVL_FS(sb: *mut super_block) -> *mut ovl_fs {
 }
 
 #[inline]
-pub unsafe fn ovl_numlower(oe: *mut ovl_entry) -> core::ffi::c_uint {
+pub unsafe fn ovl_numlower(oe: *mut ovl_entry) -> kernel::ffi::c_uint {
     if !oe.is_null() { (*oe).__numlower } else { 0 }
 }
 
@@ -158,22 +158,22 @@ pub unsafe fn ovl_lowerdata_dentry(oe: *mut ovl_entry) -> *mut dentry {
 
 /* private information held for every overlayfs dentry */
 #[inline]
-pub unsafe fn OVL_E_FLAGS(dentry: *mut dentry) -> *mut core::ffi::c_ulong {
+pub unsafe fn OVL_E_FLAGS(dentry: *mut dentry) -> *mut kernel::ffi::c_ulong {
     &mut (*dentry).d_fsdata as *mut _
 }
 
 #[repr(C)]
 pub union ovl_inode_union {
     pub cache: *mut ovl_dir_cache,
-    pub lowerdata_redirect: *const core::ffi::c_char,
+    pub lowerdata_redirect: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
 pub struct ovl_inode {
     pub anon: ovl_inode_union,
-    pub redirect: *const core::ffi::c_char,
+    pub redirect: *const kernel::ffi::c_char,
     pub version: u64,
-    pub flags: core::ffi::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     pub vfs_inode: inode,
     pub __upperdentry: *mut dentry,
     pub oe: *mut ovl_entry,

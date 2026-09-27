@@ -22,20 +22,20 @@ const SOCFPGA_PERIP_PLL_CLK: &str = "periph_pll";
 
 /* The definitions below are supplied by the surrounding clock framework. */
 extern "C" {
-    static mut clk_mgr_a10_base_addr: *mut core::ffi::c_void;
+    static mut clk_mgr_a10_base_addr: *mut kernel::ffi::c_void;
 }
 
 unsafe fn clk_pll_recalc_rate(
     hwclk: *mut clk_hw,
-    parent_rate: libc::c_ulong,
-) -> libc::c_ulong {
+    parent_rate: kernel::ffi::c_ulong,
+) -> kernel::ffi::c_ulong {
     let socfpgaclk = to_socfpga_clk(hwclk);
     let reg = readl((*socfpgaclk).hw.reg.add(0x4));
     let divf = (reg & SOCFPGA_PLL_DIVF_MASK) >> SOCFPGA_PLL_DIVF_SHIFT;
     let divq = (reg & SOCFPGA_PLL_DIVQ_MASK) >> SOCFPGA_PLL_DIVQ_SHIFT;
     let mut vco_freq = (parent_rate as u64).wrapping_mul((divf + 1) as u64);
     vco_freq /= (1 + divq) as u64;
-    vco_freq as libc::c_ulong
+    vco_freq as kernel::ffi::c_ulong
 }
 
 unsafe fn clk_pll_get_parent(hwclk: *mut clk_hw) -> u8 {
@@ -54,7 +54,7 @@ unsafe fn __socfpga_pll_init(node: *mut device_node, ops: *const clk_ops) {
     let mut hw_clk: *mut clk_hw;
     let pll_clk: *mut socfpga_pll;
     let mut clk_name = (*node).name;
-    let mut parent_name: [*const core::ffi::c_char; SOCFGPA_MAX_PARENTS] = [core::ptr::null(); SOCFGPA_MAX_PARENTS];
+    let mut parent_name: [*const kernel::ffi::c_char; SOCFGPA_MAX_PARENTS] = [core::ptr::null(); SOCFGPA_MAX_PARENTS];
     let mut init: clk_init_data = core::mem::zeroed();
     let clkmgr_np: *mut device_node;
     let rc: i32;
@@ -109,7 +109,7 @@ unsafe fn __socfpga_pll_init(node: *mut device_node, ops: *const clk_ops) {
 }
 
 unsafe fn goto_err_clk_hw_register(pll_clk: *mut socfpga_pll) {
-    kfree(pll_clk as *mut core::ffi::c_void);
+    kfree(pll_clk as *mut kernel::ffi::c_void);
 }
 
 pub unsafe fn socfpga_a10_pll_init(node: *mut device_node) {

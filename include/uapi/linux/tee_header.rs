@@ -49,11 +49,11 @@ pub const TEE_OPTEE_CAP_TZ: u32 = 1 << 0;
 
 #[repr(C)]
 pub struct tee_ioctl_version_data { pub impl_id: u32, pub impl_caps: u32, pub gen_caps: u32 }
-pub const TEE_IOC_VERSION: _ = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 0, tee_ioctl_version_data);
+pub const TEE_IOC_VERSION: u32 = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 0, tee_ioctl_version_data);
 
 #[repr(C)]
 pub struct tee_ioctl_shm_alloc_data { pub size: u64, pub flags: u32, pub id: i32 }
-pub const TEE_IOC_SHM_ALLOC: _ = _IOWR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 1, tee_ioctl_shm_alloc_data);
+pub const TEE_IOC_SHM_ALLOC: u32 = _IOWR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 1, tee_ioctl_shm_alloc_data);
 
 #[repr(C)]
 pub struct tee_ioctl_buf_data { pub buf_ptr: u64, pub buf_len: u64 }
@@ -98,44 +98,44 @@ pub struct tee_ioctl_open_session_arg {
     // C flexible array member; storage follows this header.
     pub params: [tee_ioctl_param; 0],
 }
-pub const TEE_IOC_OPEN_SESSION: _ = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 2, tee_ioctl_buf_data);
+pub const TEE_IOC_OPEN_SESSION: u32 = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 2, tee_ioctl_buf_data);
 
 #[repr(C)]
 pub struct tee_ioctl_invoke_arg {
     pub func: u32, pub session: u32, pub cancel_id: u32, pub ret: u32,
     pub ret_origin: u32, pub num_params: u32, pub params: [tee_ioctl_param; 0],
 }
-pub const TEE_IOC_INVOKE: _ = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 3, tee_ioctl_buf_data);
+pub const TEE_IOC_INVOKE: u32 = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 3, tee_ioctl_buf_data);
 
 #[repr(C)]
 pub struct tee_ioctl_cancel_arg { pub cancel_id: u32, pub session: u32 }
-pub const TEE_IOC_CANCEL: _ = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 4, tee_ioctl_cancel_arg);
+pub const TEE_IOC_CANCEL: u32 = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 4, tee_ioctl_cancel_arg);
 
 #[repr(C)]
 pub struct tee_ioctl_close_session_arg { pub session: u32 }
-pub const TEE_IOC_CLOSE_SESSION: _ = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 5, tee_ioctl_close_session_arg);
+pub const TEE_IOC_CLOSE_SESSION: u32 = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 5, tee_ioctl_close_session_arg);
 
 #[repr(C)]
 pub struct tee_iocl_supp_recv_arg { pub func: u32, pub num_params: u32, pub params: [tee_ioctl_param; 0] }
-pub const TEE_IOC_SUPPL_RECV: _ = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 6, tee_ioctl_buf_data);
+pub const TEE_IOC_SUPPL_RECV: u32 = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 6, tee_ioctl_buf_data);
 
 #[repr(C)]
 pub struct tee_iocl_supp_send_arg { pub ret: u32, pub num_params: u32, pub params: [tee_ioctl_param; 0] }
-pub const TEE_IOC_SUPPL_SEND: _ = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 7, tee_ioctl_buf_data);
+pub const TEE_IOC_SUPPL_SEND: u32 = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 7, tee_ioctl_buf_data);
 
 #[repr(C)]
 pub struct tee_ioctl_shm_register_data { pub addr: u64, pub length: u64, pub flags: u32, pub id: i32 }
 
 #[repr(C)]
 pub struct tee_ioctl_shm_register_fd_data { pub fd: i64, pub size: u64, pub flags: u32, pub id: i32 }
-pub const TEE_IOC_SHM_REGISTER_FD: _ = _IOWR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 8, tee_ioctl_shm_register_fd_data);
-pub const TEE_IOC_SHM_REGISTER: _ = _IOWR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 9, tee_ioctl_shm_register_data);
+pub const TEE_IOC_SHM_REGISTER_FD: u32 = _IOWR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 8, tee_ioctl_shm_register_fd_data);
+pub const TEE_IOC_SHM_REGISTER: u32 = _IOWR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 9, tee_ioctl_shm_register_data);
 
 #[repr(C)]
 pub struct tee_ioctl_object_invoke_arg {
     pub id: u64, pub op: u32, pub ret: u32, pub num_params: u32,
     pub _bindgen_anon_1: u32, pub params: [tee_ioctl_param; 0],
 }
-pub const TEE_IOC_OBJECT_INVOKE: _ = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 10, tee_ioctl_buf_data);
+pub const TEE_IOC_OBJECT_INVOKE: u32 = _IOR!(TEE_IOC_MAGIC, TEE_IOC_BASE + 10, tee_ioctl_buf_data);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

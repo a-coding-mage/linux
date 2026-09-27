@@ -6,21 +6,21 @@
 
 // C dependencies are supplied by the surrounding kernel translation unit.
 
-pub static mut hyp_nr_cpus: libc::c_ulong = 0;
+pub static mut hyp_nr_cpus: kernel::ffi::c_ulong = 0;
 
 // #define hyp_percpu_size ((unsigned long)__per_cpu_end - (unsigned long)__per_cpu_start)
 
-static mut vmemmap_base: *mut libc::c_void = core::ptr::null_mut();
-static mut vm_table_base: *mut libc::c_void = core::ptr::null_mut();
-static mut hyp_pgt_base: *mut libc::c_void = core::ptr::null_mut();
-static mut host_s2_pgt_base: *mut libc::c_void = core::ptr::null_mut();
-static mut selftest_base: *mut libc::c_void = core::ptr::null_mut();
-static mut ffa_proxy_pages: *mut libc::c_void = core::ptr::null_mut();
+static mut vmemmap_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
+static mut vm_table_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
+static mut hyp_pgt_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
+static mut host_s2_pgt_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
+static mut selftest_base: *mut kernel::ffi::c_void = core::ptr::null_mut();
+static mut ffa_proxy_pages: *mut kernel::ffi::c_void = core::ptr::null_mut();
 static mut pkvm_pgtable_mm_ops: kvm_pgtable_mm_ops = kvm_pgtable_mm_ops {};
 static mut hpool: hyp_pool = hyp_pool {};
 
-unsafe fn divide_memory_pool(virt: *mut libc::c_void, size: libc::c_ulong) -> libc::c_int {
-    let mut nr_pages: libc::c_ulong;
+unsafe fn divide_memory_pool(virt: *mut kernel::ffi::c_void, size: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
+    let mut nr_pages: kernel::ffi::c_ulong;
 
     hyp_early_alloc_init(virt, size);
 
@@ -28,7 +28,7 @@ unsafe fn divide_memory_pool(virt: *mut libc::c_void, size: libc::c_ulong) -> li
     selftest_base = hyp_early_alloc_contig(nr_pages);
     if nr_pages != 0 && selftest_base.is_null() { return -ENOMEM; }
 
-    nr_pages = hyp_vmemmap_pages(core::mem::size_of::<hyp_page>() as libc::c_ulong);
+    nr_pages = hyp_vmemmap_pages(core::mem::size_of::<hyp_page>() as kernel::ffi::c_ulong);
     vmemmap_base = hyp_early_alloc_contig(nr_pages);
     if vmemmap_base.is_null() { return -ENOMEM; }
 
@@ -51,23 +51,23 @@ unsafe fn divide_memory_pool(virt: *mut libc::c_void, size: libc::c_ulong) -> li
     0
 }
 
-unsafe fn pkvm_create_host_sve_mappings() -> libc::c_int {
+unsafe fn pkvm_create_host_sve_mappings() -> kernel::ffi::c_int {
     if !system_supports_sve() { return 0; }
 
     for i in 0..hyp_nr_cpus {
         let host_data = per_cpu_ptr(&raw mut kvm_host_data, i);
         let sve_regs = (*host_data).sve_regs;
         let start = kern_hyp_va(sve_regs);
-        let end = (start as usize + PAGE_ALIGN(pkvm_host_sve_state_size()) as usize) as *mut libc::c_void;
+        let end = (start as usize + PAGE_ALIGN(pkvm_host_sve_state_size()) as usize) as *mut kernel::ffi::c_void;
         let ret = pkvm_create_mappings(start, end, PAGE_HYP);
         if ret != 0 { return ret; }
     }
     0
 }
 
-unsafe fn recreate_hyp_mappings(phys: phys_addr_t, size: libc::c_ulong,
-                                per_cpu_base: *mut libc::c_ulong,
-                                hyp_va_bits: u32) -> libc::c_int {
+unsafe fn recreate_hyp_mappings(phys: phys_addr_t, size: kernel::ffi::c_ulong,
+                                per_cpu_base: *mut kernel::ffi::c_ulong,
+                                hyp_va_bits: u32) -> kernel::ffi::c_int {
     let virt = hyp_phys_to_virt(phys);
     let pgt_size = hyp_s1_pgtable_pages() << PAGE_SHIFT;
     hyp_early_alloc_init(hyp_pgt_base, pgt_size);
@@ -80,34 +80,34 @@ unsafe fn recreate_hyp_mappings(phys: phys_addr_t, size: libc::c_ulong,
     ret = pkvm_create_mappings(__hyp_data_start, __hyp_data_end, PAGE_HYP); if ret != 0 { return ret; }
     ret = pkvm_create_mappings(__hyp_rodata_start, __hyp_rodata_end, PAGE_HYP_RO); if ret != 0 { return ret; }
     ret = pkvm_create_mappings(__hyp_bss_start, __hyp_bss_end, PAGE_HYP); if ret != 0 { return ret; }
-    ret = pkvm_create_mappings(virt, (virt as usize + size as usize) as *mut libc::c_void, PAGE_HYP); if ret != 0 { return ret; }
+    ret = pkvm_create_mappings(virt, (virt as usize + size as usize) as *mut kernel::ffi::c_void, PAGE_HYP); if ret != 0 { return ret; }
     for i in 0..hyp_nr_cpus {
         let params = per_cpu_ptr(&raw mut kvm_init_params, i);
-        let start = kern_hyp_va(*per_cpu_base.add(i as usize)) as *mut libc::c_void;
-        let end = (start as usize + PAGE_ALIGN(hyp_percpu_size()) as usize) as *mut libc::c_void;
+        let start = kern_hyp_va(*per_cpu_base.add(i as usize)) as *mut kernel::ffi::c_void;
+        let end = (start as usize + PAGE_ALIGN(hyp_percpu_size()) as usize) as *mut kernel::ffi::c_void;
         ret = pkvm_create_mappings(start, end, PAGE_HYP); if ret != 0 { return ret; }
         ret = pkvm_create_stack((*params).stack_pa, &raw mut (*params).stack_hyp_va); if ret != 0 { return ret; }
     }
     pkvm_create_host_sve_mappings()
 }
 
-unsafe fn hyp_percpu_size() -> libc::c_ulong {
-    (__per_cpu_end as usize - __per_cpu_start as usize) as libc::c_ulong
+unsafe fn hyp_percpu_size() -> kernel::ffi::c_ulong {
+    (__per_cpu_end as usize - __per_cpu_start as usize) as kernel::ffi::c_ulong
 }
 
 unsafe fn update_nvhe_init_params() {
     for i in 0..hyp_nr_cpus {
         let params = per_cpu_ptr(&raw mut kvm_init_params, i);
         (*params).pgd_pa = __hyp_pa(pkvm_pgtable.pgd);
-        dcache_clean_inval_poc(params as libc::c_ulong, params as libc::c_ulong + core::mem::size_of::<kvm_nvhe_init_params>() as libc::c_ulong);
+        dcache_clean_inval_poc(params as kernel::ffi::c_ulong, params as kernel::ffi::c_ulong + core::mem::size_of::<kvm_nvhe_init_params>() as kernel::ffi::c_ulong);
     }
 }
 
-unsafe fn hyp_zalloc_hyp_page(_arg: *mut libc::c_void) -> *mut libc::c_void { hyp_alloc_pages(&raw mut hpool, 0) }
-unsafe fn hpool_get_page(addr: *mut libc::c_void) { hyp_get_page(&raw mut hpool, addr); }
-unsafe fn hpool_put_page(addr: *mut libc::c_void) { hyp_put_page(&raw mut hpool, addr); }
+unsafe fn hyp_zalloc_hyp_page(_arg: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void { hyp_alloc_pages(&raw mut hpool, 0) }
+unsafe fn hpool_get_page(addr: *mut kernel::ffi::c_void) { hyp_get_page(&raw mut hpool, addr); }
+unsafe fn hpool_put_page(addr: *mut kernel::ffi::c_void) { hyp_put_page(&raw mut hpool, addr); }
 
-unsafe fn fix_host_ownership_walker(ctx: *const kvm_pgtable_visit_ctx, _visit: kvm_pgtable_walk_flags) -> libc::c_int {
+unsafe fn fix_host_ownership_walker(ctx: *const kvm_pgtable_visit_ctx, _visit: kvm_pgtable_walk_flags) -> kernel::ffi::c_int {
     if !kvm_pte_valid((*ctx).old) { return 0; }
     if (*ctx).level != KVM_PGTABLE_LAST_LEVEL { return -EINVAL; }
     let phys = kvm_pte_to_phys((*ctx).old);
@@ -122,18 +122,18 @@ unsafe fn fix_host_ownership_walker(ctx: *const kvm_pgtable_visit_ctx, _visit: k
     }
 }
 
-unsafe fn fix_hyp_pgtable_refcnt_walker(ctx: *const kvm_pgtable_visit_ctx, _visit: kvm_pgtable_walk_flags) -> libc::c_int {
+unsafe fn fix_hyp_pgtable_refcnt_walker(ctx: *const kvm_pgtable_visit_ctx, _visit: kvm_pgtable_walk_flags) -> kernel::ffi::c_int {
     if kvm_pte_valid((*ctx).old) { ((*ctx).mm_ops).get_page.unwrap()((*ctx).ptep); }
     0
 }
 
-unsafe fn fix_host_ownership() -> libc::c_int {
+unsafe fn fix_host_ownership() -> kernel::ffi::c_int {
     let walker = kvm_pgtable_walker { cb: Some(fix_host_ownership_walker), flags: KVM_PGTABLE_WALK_LEAF, ..core::mem::zeroed() };
     for i in 0..hyp_memblock_nr { let reg = &hyp_memory[i as usize]; let ret = kvm_pgtable_walk(&raw mut pkvm_pgtable, hyp_phys_to_virt(reg.base) as u64, reg.size, &raw const walker); if ret != 0 { return ret; } }
     0
 }
 
-unsafe fn fix_hyp_pgtable_refcnt() -> libc::c_int {
+unsafe fn fix_hyp_pgtable_refcnt() -> kernel::ffi::c_int {
     let walker = kvm_pgtable_walker { cb: Some(fix_hyp_pgtable_refcnt_walker), flags: KVM_PGTABLE_WALK_LEAF | KVM_PGTABLE_WALK_TABLE_POST, arg: pkvm_pgtable.mm_ops, ..core::mem::zeroed() };
     kvm_pgtable_walk(&raw mut pkvm_pgtable, 0, BIT(pkvm_pgtable.ia_bits), &raw const walker)
 }
@@ -162,8 +162,8 @@ pub unsafe fn __pkvm_init_finalise() -> ! {
     __host_enter(host_ctxt);
 }
 
-pub unsafe fn __pkvm_init(phys: phys_addr_t, size: libc::c_ulong,
-                          per_cpu_base: *mut libc::c_ulong, hyp_va_bits: u32) -> libc::c_int {
+pub unsafe fn __pkvm_init(phys: phys_addr_t, size: kernel::ffi::c_ulong,
+                          per_cpu_base: *mut kernel::ffi::c_ulong, hyp_va_bits: u32) -> kernel::ffi::c_int {
     BUG_ON(kvm_check_pvm_sysreg_table());
     if !PAGE_ALIGNED(phys) || !PAGE_ALIGNED(size) { return -EINVAL; }
     hyp_spin_lock_init(&raw mut pkvm_pgd_lock);

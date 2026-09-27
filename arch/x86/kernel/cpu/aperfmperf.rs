@@ -37,7 +37,7 @@ unsafe fn init_counter_refs(_data: *mut c_void) {
     this_cpu_write!(cpu_samples.mperf, mperf);
 }
 
-#[cfg(all(target_arch = "x86_64", feature = "SMP"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_SMP))]
 {
     static mut arch_scale_freq_key: static_key_false = DEFINE_STATIC_KEY_FALSE!();
     static mut arch_turbo_freq_ratio: u64 = SCHED_CAPACITY_SCALE;
@@ -150,13 +150,13 @@ unsafe fn init_counter_refs(_data: *mut c_void) {
     unsafe fn scale_freq_tick_error() { pr_warn!("Scheduler frequency invariance went wobbly, disabling!\n"); schedule_work(&disable_freq_invariance_work); }
 }
 
-#[cfg(not(all(target_arch = "x86_64", feature = "SMP")))]
+#[cfg(not(all(target_arch = "x86_64", CONFIG_SMP)))]
 unsafe fn scale_freq_tick(_acnt: u64, _mcnt: u64) {}
 
 // The following scheduler-facing items preserve the corresponding C globals,
 // callbacks, and interfaces; kernel allocation, static-key, and per-CPU
 // primitives are supplied by the surrounding kernel bindings.
-#[cfg(all(target_arch = "x86_64", feature = "SMP"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_SMP))]
 unsafe fn freq_invariance_enable() {
     if static_branch_unlikely(&arch_scale_freq_key) { WARN_ON_ONCE!(1); return; }
     static_branch_enable_cpuslocked(&mut arch_scale_freq_key);
@@ -164,14 +164,14 @@ unsafe fn freq_invariance_enable() {
     pr_info!("Estimated ratio of average max frequency by base frequency (times 1024): {}\n", arch_max_freq_ratio);
 }
 
-#[cfg(all(target_arch = "x86_64", feature = "SMP"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_SMP))]
 pub unsafe fn freq_invariance_set_perf_ratio(ratio: u64, turbo_disabled: bool) {
     arch_turbo_freq_ratio = ratio;
     arch_set_max_freq_ratio(turbo_disabled);
     freq_invariance_enable();
 }
 
-#[cfg(all(target_arch = "x86_64", feature = "SMP"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_SMP))]
 unsafe fn bp_init_freq_invariance() {
     if boot_cpu_data.x86_vendor != X86_VENDOR_INTEL { return; }
     if intel_set_max_freq_ratio() {
@@ -181,28 +181,28 @@ unsafe fn bp_init_freq_invariance() {
     }
 }
 
-#[cfg(all(target_arch = "x86_64", feature = "SMP"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_SMP))]
 unsafe fn disable_freq_invariance_workfn(_work: *mut work_struct) {
     static_branch_disable(&mut arch_scale_freq_key);
     for_each_possible_cpu!(cpu, { per_cpu!(arch_freq_scale, cpu) = SCHED_CAPACITY_SCALE; });
 }
 
-#[cfg(all(target_arch = "x86_64", feature = "SMP"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_SMP))]
 static mut disable_freq_invariance_work: work_struct = DECLARE_WORK!(disable_freq_invariance_workfn);
 
-#[cfg(all(target_arch = "x86_64", feature = "SMP"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_SMP))]
 static mut arch_freq_scale: c_ulong = SCHED_CAPACITY_SCALE;
 
-#[cfg(all(target_arch = "x86_64", feature = "SMP"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_SMP))]
 static mut arch_hybrid_cap_scale_key: static_key_false = DEFINE_STATIC_KEY_FALSE!();
 
 #[repr(C)]
 pub struct arch_hybrid_cpu_scale { pub capacity: c_ulong, pub freq_ratio: c_ulong }
 
-#[cfg(all(target_arch = "x86_64", feature = "SMP"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_SMP))]
 static mut arch_cpu_scale: *mut arch_hybrid_cpu_scale = core::ptr::null_mut();
 
-#[cfg(all(target_arch = "x86_64", feature = "SMP"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_SMP))]
 pub unsafe fn arch_enable_hybrid_capacity_scale() -> bool {
     if static_branch_unlikely(&arch_hybrid_cap_scale_key) { WARN_ONCE!(1, "Hybrid CPU capacity scaling already enabled"); return true; }
     arch_cpu_scale = alloc_percpu::<arch_hybrid_cpu_scale>();
@@ -213,7 +213,7 @@ pub unsafe fn arch_enable_hybrid_capacity_scale() -> bool {
     true
 }
 
-#[cfg(all(target_arch = "x86_64", feature = "SMP"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_SMP))]
 pub unsafe fn arch_set_cpu_capacity(cpu: i32, cap: c_ulong, max_cap: c_ulong, cap_freq: c_ulong, base_freq: c_ulong) {
     if static_branch_likely(&arch_hybrid_cap_scale_key) {
         WRITE_ONCE!(per_cpu_ptr!(arch_cpu_scale, cpu).capacity, div_u64(cap << SCHED_CAPACITY_SHIFT, max_cap));
@@ -221,7 +221,7 @@ pub unsafe fn arch_set_cpu_capacity(cpu: i32, cap: c_ulong, max_cap: c_ulong, ca
     } else { WARN_ONCE!(1, "Hybrid CPU capacity scaling not enabled"); }
 }
 
-#[cfg(all(target_arch = "x86_64", feature = "SMP"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_SMP))]
 pub unsafe fn arch_scale_cpu_capacity(cpu: i32) -> c_ulong {
     if static_branch_unlikely(&arch_hybrid_cap_scale_key) { return READ_ONCE!(per_cpu_ptr!(arch_cpu_scale, cpu).capacity); }
     SCHED_CAPACITY_SCALE
@@ -249,7 +249,7 @@ pub unsafe fn arch_freq_get_on_cpu(cpu: i32) -> u32 {
 unsafe fn bp_init_aperfmperf() -> i32 {
     if !cpu_feature_enabled(X86_FEATURE_APERFMPERF) { return 0; }
     init_counter_refs(core::ptr::null_mut());
-    #[cfg(all(target_arch = "x86_64", feature = "SMP"))] { bp_init_freq_invariance(); }
+    #[cfg(all(target_arch = "x86_64", CONFIG_SMP))] { bp_init_freq_invariance(); }
     0
 }
 early_initcall!(bp_init_aperfmperf);

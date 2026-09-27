@@ -96,7 +96,7 @@ unsafe fn mtk_ccifreq_target(dev: *mut device, freq: *mut usize, _flags: u32) ->
     (*drv).pre_freq = *freq; mutex_unlock(&mut (*drv).reg_lock); 0
 }
 
-unsafe fn mtk_ccifreq_opp_notifier(nb: *mut notifier_block, event: usize, data: *mut core::ffi::c_void) -> i32 {
+unsafe fn mtk_ccifreq_opp_notifier(nb: *mut notifier_block, event: usize, data: *mut kernel::ffi::c_void) -> i32 {
     let opp = data as *mut dev_pm_opp;
     let drv = container_of(nb, "opp_nb") as *mut mtk_ccifreq_drv;
     if event == OPP_EVENT_ADJUST_VOLTAGE { mutex_lock(&mut (*drv).reg_lock); let freq = dev_pm_opp_get_freq(opp); if freq == (*drv).pre_freq { mtk_ccifreq_set_voltage(drv, dev_pm_opp_get_voltage(opp)); } mutex_unlock(&mut (*drv).reg_lock); }
@@ -130,7 +130,7 @@ static mt8186_platform_data: mtk_ccifreq_platform_data = mtk_ccifreq_platform_da
 };
 
 #[repr(C)]
-struct of_device_id { compatible: *const core::ffi::c_char, data: *const core::ffi::c_void }
+struct of_device_id { compatible: *const kernel::ffi::c_char, data: *const kernel::ffi::c_void }
 static mtk_ccifreq_machines: [of_device_id; 3] = [
     of_device_id { compatible: b"mediatek,mt8183-cci\0".as_ptr() as _, data: &mt8183_platform_data as *const _ as _ },
     of_device_id { compatible: b"mediatek,mt8186-cci\0".as_ptr() as _, data: &mt8186_platform_data as *const _ as _ },

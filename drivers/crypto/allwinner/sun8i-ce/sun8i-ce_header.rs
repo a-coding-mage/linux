@@ -78,7 +78,7 @@ pub const CE_MAX_HASH_BLOCK_SIZE: usize = SHA512_BLOCK_SIZE;
 
 #[repr(C)]
 pub struct ce_clock {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub freq: c_ulong,
     pub max_freq: c_ulong,
 }
@@ -118,7 +118,7 @@ pub struct sun8i_ce_flow {
 
 #[repr(C)]
 pub struct sun8i_ce_dev {
-    pub base: *mut core::ffi::c_void,
+    pub base: *mut kernel::ffi::c_void,
     pub ceclks: [*mut clk; CE_MAX_CLOCKS],
     pub reset: *mut reset_control, pub dev: *mut device,
     pub mlock: mutex, pub rnglock: mutex, pub chanlist: *mut sun8i_ce_flow,
@@ -184,7 +184,7 @@ extern "C" {
     pub fn sun8i_ce_des3_setkey(tfm: *mut crypto_skcipher, key: *const u8, keylen: c_uint) -> i32;
     pub fn sun8i_ce_cipher_init(tfm: *mut crypto_tfm) -> i32;
     pub fn sun8i_ce_cipher_exit(tfm: *mut crypto_tfm);
-    pub fn sun8i_ce_cipher_do_one(engine: *mut crypto_engine, areq: *mut core::ffi::c_void) -> i32;
+    pub fn sun8i_ce_cipher_do_one(engine: *mut crypto_engine, areq: *mut kernel::ffi::c_void) -> i32;
     pub fn sun8i_ce_skdecrypt(areq: *mut skcipher_request) -> i32;
     pub fn sun8i_ce_skencrypt(areq: *mut skcipher_request) -> i32;
     pub fn sun8i_ce_get_engine_number(ce: *mut sun8i_ce_dev) -> i32;
@@ -192,13 +192,13 @@ extern "C" {
     pub fn sun8i_ce_hash_init_tfm(tfm: *mut crypto_ahash) -> i32;
     pub fn sun8i_ce_hash_exit_tfm(tfm: *mut crypto_ahash);
     pub fn sun8i_ce_hash_init(areq: *mut ahash_request) -> i32;
-    pub fn sun8i_ce_hash_export(areq: *mut ahash_request, out: *mut core::ffi::c_void) -> i32;
-    pub fn sun8i_ce_hash_import(areq: *mut ahash_request, input: *const core::ffi::c_void) -> i32;
+    pub fn sun8i_ce_hash_export(areq: *mut ahash_request, out: *mut kernel::ffi::c_void) -> i32;
+    pub fn sun8i_ce_hash_import(areq: *mut ahash_request, input: *const kernel::ffi::c_void) -> i32;
     pub fn sun8i_ce_hash_final(areq: *mut ahash_request) -> i32;
     pub fn sun8i_ce_hash_update(areq: *mut ahash_request) -> i32;
     pub fn sun8i_ce_hash_finup(areq: *mut ahash_request) -> i32;
     pub fn sun8i_ce_hash_digest(areq: *mut ahash_request) -> i32;
-    pub fn sun8i_ce_hash_run(engine: *mut crypto_engine, breq: *mut core::ffi::c_void) -> i32;
+    pub fn sun8i_ce_hash_run(engine: *mut crypto_engine, breq: *mut kernel::ffi::c_void) -> i32;
     pub fn sun8i_ce_hwrng_register(ce: *mut sun8i_ce_dev) -> i32;
     pub fn sun8i_ce_hwrng_unregister(ce: *mut sun8i_ce_dev);
 }

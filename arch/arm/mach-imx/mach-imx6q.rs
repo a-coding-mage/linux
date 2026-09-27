@@ -9,32 +9,32 @@
 
 unsafe extern "C" {
     fn phy_write(phydev: *mut phy_device, regnum: u32, val: u16) -> i32;
-    fn of_machine_is_compatible(compat: *const core::ffi::c_char) -> bool;
+    fn of_machine_is_compatible(compat: *const kernel::ffi::c_char) -> bool;
     fn pci_read_config_dword(dev: *mut pci_dev, where_: u32, val: *mut u32) -> i32;
     fn pci_write_config_dword(dev: *mut pci_dev, where_: u32, val: u32) -> i32;
     fn msleep(msecs: u32);
     fn phy_register_fixup_for_uid(uid: u32, mask: u32, fixup: unsafe extern "C" fn(*mut phy_device) -> i32) -> i32;
-    fn of_find_compatible_node(from: *mut device_node, ty: *const core::ffi::c_char, compatible: *const core::ffi::c_char) -> *mut device_node;
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn of_clk_get_by_name(np: *mut device_node, name: *const core::ffi::c_char) -> *mut clk;
+    fn of_find_compatible_node(from: *mut device_node, ty: *const kernel::ffi::c_char, compatible: *const kernel::ffi::c_char) -> *mut device_node;
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn of_clk_get_by_name(np: *mut device_node, name: *const kernel::ffi::c_char) -> *mut clk;
     fn of_clk_get(np: *mut device_node, index: u32) -> *mut clk;
-    fn clk_get_sys(dev_id: *const core::ffi::c_char, con_id: *const core::ffi::c_char) -> *mut clk;
+    fn clk_get_sys(dev_id: *const kernel::ffi::c_char, con_id: *const kernel::ffi::c_char) -> *mut clk;
     fn clk_is_match(clk1: *mut clk, clk2: *mut clk) -> bool;
-    fn syscon_regmap_lookup_by_compatible(compatible: *const core::ffi::c_char) -> *mut regmap;
+    fn syscon_regmap_lookup_by_compatible(compatible: *const kernel::ffi::c_char) -> *mut regmap;
     fn regmap_update_bits(map: *mut regmap, reg: u32, mask: u32, val: u32) -> i32;
     fn clk_put(clk: *mut clk);
     fn of_node_put(np: *mut device_node);
     fn cpu_is_imx6q() -> bool;
     fn cpu_is_imx6dl() -> bool;
     fn imx_get_soc_revision() -> u32;
-    fn imx_print_silicon_rev(name: *const core::ffi::c_char, revision: u32);
+    fn imx_print_silicon_rev(name: *const kernel::ffi::c_char, revision: u32);
     fn imx_anatop_init();
     fn imx6q_pm_init();
     fn imx6dl_pm_init();
-    fn of_platform_default_populate(a: *mut core::ffi::c_void, b: *mut core::ffi::c_void, c: *mut core::ffi::c_void) -> i32;
+    fn of_platform_default_populate(a: *mut kernel::ffi::c_void, b: *mut kernel::ffi::c_void, c: *mut kernel::ffi::c_void) -> i32;
     fn imx6q_cpuidle_init();
-    fn platform_device_register_simple(name: *const core::ffi::c_char, id: i32, data: *mut core::ffi::c_void, size: u32) -> *mut platform_device;
+    fn platform_device_register_simple(name: *const kernel::ffi::c_char, id: i32, data: *mut kernel::ffi::c_void, size: u32) -> *mut platform_device;
     fn debug_ll_io_init();
     fn imx_scu_map_io();
     fn imx_gpc_check_dt();
@@ -42,7 +42,7 @@ unsafe extern "C" {
     fn imx_init_l2cache();
     fn imx_src_init();
     fn irqchip_init();
-    fn imx6_pm_ccm_init(compatible: *const core::ffi::c_char);
+    fn imx6_pm_ccm_init(compatible: *const kernel::ffi::c_char);
 }
 
 #[repr(C)]

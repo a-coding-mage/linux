@@ -13,7 +13,7 @@
 #[repr(C)]
 pub struct kunit_attr_filter {
     pub attr: *mut kunit_attr,
-    pub input: *mut core::ffi::c_char,
+    pub input: *mut kernel::ffi::c_char,
 }
 
 /*
@@ -21,7 +21,7 @@ pub struct kunit_attr_filter {
  */
 pub unsafe extern "C" fn kunit_attr_filter_name(
     filter: kunit_attr_filter,
-) -> *const core::ffi::c_char;
+) -> *const kernel::ffi::c_char;
 
 /*
  * Print all test attributes for a test case or suite.
@@ -29,25 +29,25 @@ pub unsafe extern "C" fn kunit_attr_filter_name(
  * Output format for test suites: "# <attribute>: <value>"
  */
 pub unsafe extern "C" fn kunit_print_attr(
-    test_or_suite: *mut core::ffi::c_void,
+    test_or_suite: *mut kernel::ffi::c_void,
     is_test: bool,
-    test_level: core::ffi::c_uint,
+    test_level: kernel::ffi::c_uint,
 );
 
 /*
  * Returns the number of fitlers in input.
  */
 pub unsafe extern "C" fn kunit_get_filter_count(
-    input: *mut core::ffi::c_char,
-) -> core::ffi::c_int;
+    input: *mut kernel::ffi::c_char,
+) -> kernel::ffi::c_int;
 
 /*
  * Parse attributes filter input and return an objects containing the
  * attribute object and the string input of the next filter.
  */
 pub unsafe extern "C" fn kunit_next_attr_filter(
-    filters: *mut *mut core::ffi::c_char,
-    err: *mut core::ffi::c_int,
+    filters: *mut *mut kernel::ffi::c_char,
+    err: *mut kernel::ffi::c_int,
 ) -> kunit_attr_filter;
 
 /*
@@ -56,8 +56,8 @@ pub unsafe extern "C" fn kunit_next_attr_filter(
 pub unsafe extern "C" fn kunit_filter_attr_tests(
     suite: *const kunit_suite,
     filter: kunit_attr_filter,
-    action: *mut core::ffi::c_char,
-    err: *mut core::ffi::c_int,
+    action: *mut kernel::ffi::c_char,
+    err: *mut kernel::ffi::c_int,
 ) -> *mut kunit_suite;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -40,27 +40,27 @@ pub const IRQ_STACK_SIZE: usize = THREAD_SIZE;
  */
 #[repr(C)]
 pub struct thread_info {
-    pub flags: core::ffi::c_ulong,
-    pub preempt_count: core::ffi::c_int,
+    pub flags: kernel::ffi::c_ulong,
+    pub preempt_count: kernel::ffi::c_int,
     /*
      * These stack pointers are overwritten on every system call or
      * exception.  SP is also saved to the stack it can be recovered when
      * overwritten.
      */
-    pub kernel_sp: core::ffi::c_long,
-    pub user_sp: core::ffi::c_long,
-    pub cpu: core::ffi::c_int,
-    pub syscall_work: core::ffi::c_ulong,
+    pub kernel_sp: kernel::ffi::c_long,
+    pub user_sp: kernel::ffi::c_long,
+    pub cpu: kernel::ffi::c_int,
+    pub syscall_work: kernel::ffi::c_ulong,
     #[cfg(CONFIG_SHADOW_CALL_STACK)]
-    pub scs_base: *mut core::ffi::c_void,
+    pub scs_base: *mut kernel::ffi::c_void,
     #[cfg(CONFIG_SHADOW_CALL_STACK)]
-    pub scs_sp: *mut core::ffi::c_void,
+    pub scs_sp: *mut kernel::ffi::c_void,
     #[cfg(CONFIG_64BIT)]
-    pub a0: core::ffi::c_ulong,
+    pub a0: kernel::ffi::c_ulong,
     #[cfg(CONFIG_64BIT)]
-    pub a1: core::ffi::c_ulong,
+    pub a1: kernel::ffi::c_ulong,
     #[cfg(CONFIG_64BIT)]
-    pub a2: core::ffi::c_ulong,
+    pub a2: kernel::ffi::c_ulong,
     #[cfg(CONFIG_RISCV_USER_CFI)]
     pub user_cfi_state: cfi_state,
 }
@@ -98,7 +98,7 @@ macro_rules! INIT_THREAD_INFO {
 
 unsafe extern "C" {
     pub fn arch_release_task_struct(tsk: *mut task_struct);
-    pub fn arch_dup_task_struct(dst: *mut task_struct, src: *mut task_struct) -> core::ffi::c_int;
+    pub fn arch_dup_task_struct(dst: *mut task_struct, src: *mut task_struct) -> kernel::ffi::c_int;
 }
 
 /* thread information flags */

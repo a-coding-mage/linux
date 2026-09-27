@@ -41,9 +41,9 @@ struct ClkPllData {
     has_pllctrl: bool,
     phy_pllm: u32,
     phy_pll_ctl0: u32,
-    pllm: *mut core::ffi::c_void,
-    pllod: *mut core::ffi::c_void,
-    pll_ctl0: *mut core::ffi::c_void,
+    pllm: *mut kernel::ffi::c_void,
+    pllod: *mut kernel::ffi::c_void,
+    pll_ctl0: *mut kernel::ffi::c_void,
     pllm_lower_mask: u32,
     pllm_upper_mask: u32,
     pllm_upper_shift: u32,
@@ -104,8 +104,8 @@ static CLK_PLL_OPS: ClkOps = ClkOps {
 
 unsafe fn clk_register_pll(
     dev: *mut Device,
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
     pll_data: *mut ClkPllData,
 ) -> *mut Clk {
     let pll = kzalloc_obj::<ClkPll>();
@@ -125,7 +125,7 @@ unsafe fn clk_register_pll(
 
     let clk = clk_register(core::ptr::null_mut(), &mut (*pll).hw);
     if is_err(clk) {
-        kfree(pll as *mut core::ffi::c_void);
+        kfree(pll as *mut kernel::ffi::c_void);
         return core::ptr::null_mut();
     }
     clk
@@ -152,7 +152,7 @@ unsafe fn _of_pll_clk_init(node: *mut DeviceNode, pllctrl: bool) {
     if (*pll_data).pll_ctl0.is_null() {
         pr_err!("%s: ioremap failed\n", "_of_pll_clk_init");
         iounmap((*pll_data).pllod);
-        kfree(pll_data as *mut core::ffi::c_void);
+        kfree(pll_data as *mut kernel::ffi::c_void);
         return;
     }
 
@@ -169,7 +169,7 @@ unsafe fn _of_pll_clk_init(node: *mut DeviceNode, pllctrl: bool) {
         if (*pll_data).pllm.is_null() {
             iounmap((*pll_data).pll_ctl0);
             iounmap((*pll_data).pllod);
-            kfree(pll_data as *mut core::ffi::c_void);
+            kfree(pll_data as *mut kernel::ffi::c_void);
             return;
         }
     }
@@ -181,7 +181,7 @@ unsafe fn _of_pll_clk_init(node: *mut DeviceNode, pllctrl: bool) {
     }
 
     pr_err!("%s: error initializing pll %pOFn\n", "_of_pll_clk_init", node);
-    kfree(pll_data as *mut core::ffi::c_void);
+    kfree(pll_data as *mut kernel::ffi::c_void);
 }
 
 /** of_keystone_pll_clk_init - PLL initialisation DT wrapper */

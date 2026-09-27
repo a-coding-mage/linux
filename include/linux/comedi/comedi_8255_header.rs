@@ -44,8 +44,8 @@ unsafe extern "C" {
     pub fn subdev_8255_io_init(
         dev: *mut comedi_device,
         s: *mut comedi_subdevice,
-        regbase: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        regbase: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_HAS_IOPORT))]
@@ -53,8 +53,8 @@ unsafe extern "C" {
 pub unsafe fn subdev_8255_io_init(
     _dev: *mut comedi_device,
     _s: *mut comedi_subdevice,
-    _regbase: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    _regbase: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     // -ENXIO from Linux errno.h.
     -6
 }
@@ -63,23 +63,23 @@ unsafe extern "C" {
     pub fn subdev_8255_mm_init(
         dev: *mut comedi_device,
         s: *mut comedi_subdevice,
-        regbase: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        regbase: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn subdev_8255_cb_init(
         dev: *mut comedi_device,
         s: *mut comedi_subdevice,
         io: Option<unsafe extern "C" fn(
             dev: *mut comedi_device,
-            dir: ::core::ffi::c_int,
-            port: ::core::ffi::c_int,
-            data: ::core::ffi::c_int,
-            context: ::core::ffi::c_ulong,
-        ) -> ::core::ffi::c_int>,
-        context: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+            dir: ::kernel::ffi::c_int,
+            port: ::kernel::ffi::c_int,
+            data: ::kernel::ffi::c_int,
+            context: ::kernel::ffi::c_ulong,
+        ) -> ::kernel::ffi::c_int>,
+        context: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 
-    pub fn subdev_8255_regbase(s: *mut comedi_subdevice) -> ::core::ffi::c_ulong;
+    pub fn subdev_8255_regbase(s: *mut comedi_subdevice) -> ::kernel::ffi::c_ulong;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

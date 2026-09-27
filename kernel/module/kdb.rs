@@ -13,7 +13,7 @@
  *	currently loaded kernel modules.
  *	Mostly taken from userland lsmod.
  */
-pub unsafe fn kdb_lsmod(argc: ::core::ffi::c_int, _argv: *const *const ::core::ffi::c_char) -> ::core::ffi::c_int {
+pub unsafe fn kdb_lsmod(argc: ::kernel::ffi::c_int, _argv: *const *const ::kernel::ffi::c_char) -> ::kernel::ffi::c_int {
     let mut mod_: *mut module;
 
     if argc != 0 {
@@ -32,7 +32,7 @@ pub unsafe fn kdb_lsmod(argc: ::core::ffi::c_int, _argv: *const *const ::core::f
         kdb_printf(c"/%8u".as_ptr(), (*mod_).mem[MOD_RO_AFTER_INIT].size);
         kdb_printf(c"/%8u".as_ptr(), (*mod_).mem[MOD_DATA].size);
 
-        kdb_printf(c"  0x%px ".as_ptr(), mod_ as *mut ::core::ffi::c_void);
+        kdb_printf(c"  0x%px ".as_ptr(), mod_ as *mut ::kernel::ffi::c_void);
         // CONFIG_MODULE_UNLOAD is a build-time condition from the C source.
         #[cfg(CONFIG_MODULE_UNLOAD)]
         kdb_printf(c"%4d ".as_ptr(), module_refcount(mod_));

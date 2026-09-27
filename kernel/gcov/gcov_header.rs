@@ -28,7 +28,7 @@ pub const fn gcov_tag_for_counter(count: u32) -> u32 {
 }
 
 #[cfg(target_pointer_width = "64")]
-pub type gcov_type = libc::c_long;
+pub type gcov_type = kernel::ffi::c_long;
 #[cfg(not(target_pointer_width = "64"))]
 pub type gcov_type = i64;
 
@@ -43,21 +43,21 @@ pub struct gcov_info {
 
 /* Interface to access gcov_info data  */
 unsafe extern "C" {
-	pub fn gcov_info_filename(info: *mut gcov_info) -> *const libc::c_char;
+	pub fn gcov_info_filename(info: *mut gcov_info) -> *const kernel::ffi::c_char;
 	pub fn gcov_info_version(info: *mut gcov_info) -> u32;
 	pub fn gcov_info_next(info: *mut gcov_info) -> *mut gcov_info;
 	pub fn gcov_info_link(info: *mut gcov_info);
 	pub fn gcov_info_unlink(prev: *mut gcov_info, info: *mut gcov_info);
 	pub fn gcov_info_within_module(info: *mut gcov_info, mod_: *mut crate::module) -> bool;
-	pub fn convert_to_gcda(buffer: *mut libc::c_char, info: *mut gcov_info) -> usize;
+	pub fn convert_to_gcda(buffer: *mut kernel::ffi::c_char, info: *mut gcov_info) -> usize;
 
 	/* Base interface. */
 	pub fn gcov_event(action: gcov_action, info: *mut gcov_info);
 	pub fn gcov_enable_events();
 
 	/* writing helpers */
-	pub fn store_gcov_u32(buffer: *mut libc::c_void, off: usize, v: u32) -> usize;
-	pub fn store_gcov_u64(buffer: *mut libc::c_void, off: usize, v: u64) -> usize;
+	pub fn store_gcov_u32(buffer: *mut kernel::ffi::c_void, off: usize, v: u32) -> usize;
+	pub fn store_gcov_u64(buffer: *mut kernel::ffi::c_void, off: usize, v: u64) -> usize;
 
 	/* gcov_info control. */
 	pub fn gcov_info_reset(info: *mut gcov_info);
@@ -83,7 +83,7 @@ pub enum gcov_link_dir {
 #[repr(C)]
 pub struct gcov_link {
 	pub dir: gcov_link_dir,
-	pub ext: *const libc::c_char,
+	pub ext: *const kernel::ffi::c_char,
 }
 
 unsafe extern "C" {

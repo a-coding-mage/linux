@@ -20,10 +20,10 @@ pub struct hfpll_data {
     pub config_val: u32,
     pub user_val: u32,
     pub user_vco_mask: u32,
-    pub low_vco_max_rate: ::core::ffi::c_ulong,
+    pub low_vco_max_rate: ::kernel::ffi::c_ulong,
 
-    pub min_rate: ::core::ffi::c_ulong,
-    pub max_rate: ::core::ffi::c_ulong,
+    pub min_rate: ::kernel::ffi::c_ulong,
+    pub max_rate: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]

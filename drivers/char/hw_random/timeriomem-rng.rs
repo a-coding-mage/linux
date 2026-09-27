@@ -25,7 +25,7 @@
 
 #[repr(C)]
 pub struct TimeriomemRngPrivate {
-    pub io_base: *mut core::ffi::c_void,
+    pub io_base: *mut kernel::ffi::c_void,
     pub period: KtimeT,
     pub present: u32,
     pub timer: Hrtimer,
@@ -34,7 +34,7 @@ pub struct TimeriomemRngPrivate {
 }
 
 extern "C" {
-    pub fn timeriomem_rng_read(hwrng: *mut Hwrng, data: *mut core::ffi::c_void,
+    pub fn timeriomem_rng_read(hwrng: *mut Hwrng, data: *mut kernel::ffi::c_void,
                                max: usize, wait: bool) -> i32;
     pub fn timeriomem_rng_trigger(timer: *mut Hrtimer) -> HrtimerRestart;
     pub fn timeriomem_rng_probe(pdev: *mut PlatformDevice) -> i32;
@@ -50,15 +50,15 @@ pub struct Hrtimer { _private: [u8; 0] }
 pub struct Completion { _private: [u8; 0] }
 #[repr(C)]
 pub struct Hwrng {
-    pub name: *const core::ffi::c_char,
-    pub read: Option<unsafe extern "C" fn(*mut Hwrng, *mut core::ffi::c_void, usize, bool) -> i32>,
+    pub name: *const kernel::ffi::c_char,
+    pub read: Option<unsafe extern "C" fn(*mut Hwrng, *mut kernel::ffi::c_void, usize, bool) -> i32>,
     pub quality: u32,
 }
 #[repr(C)]
 pub struct PlatformDevice { _private: [u8; 0] }
 #[repr(C)]
 pub struct OfDeviceId {
-    pub compatible: *const core::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
 }
 #[repr(C)]
 pub struct PlatformDriver {
@@ -68,7 +68,7 @@ pub struct PlatformDriver {
 }
 #[repr(C)]
 pub struct Driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub of_match_table: *const OfDeviceId,
 }
 #[repr(C)]
@@ -81,7 +81,7 @@ extern "C" {
     fn us_to_ktime(us: i32) -> KtimeT;
     fn wait_for_completion(completion: *mut Completion);
     fn usleep_range(min: i32, max: i32);
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
     fn reinit_completion(completion: *mut Completion);
     fn complete(completion: *mut Completion);
     fn hrtimer_forward_now(timer: *mut Hrtimer, period: KtimeT);
@@ -90,7 +90,7 @@ extern "C" {
 }
 
 pub unsafe extern "C" fn timeriomem_rng_read_impl(
-    hwrng: *mut Hwrng, mut data: *mut core::ffi::c_void,
+    hwrng: *mut Hwrng, mut data: *mut kernel::ffi::c_void,
     mut max: usize, wait: bool,
 ) -> i32 {
     let priv_: *mut TimeriomemRngPrivate =
@@ -113,7 +113,7 @@ pub unsafe extern "C" fn timeriomem_rng_read_impl(
 
         *(data as *mut u32) = readl((*priv_).io_base);
         retval += core::mem::size_of::<u32>() as i32;
-        data = (data as *mut u8).add(core::mem::size_of::<u32>()) as *mut core::ffi::c_void;
+        data = (data as *mut u8).add(core::mem::size_of::<u32>()) as *mut kernel::ffi::c_void;
         max -= core::mem::size_of::<u32>();
         if !(wait && max > core::mem::size_of::<u32>()) {
             break;
@@ -139,13 +139,13 @@ pub unsafe extern "C" fn timeriomem_rng_trigger_impl(timer: *mut Hrtimer) -> Hrt
 // The remaining probe, remove, driver registration, and module metadata are
 // represented by the externally supplied platform-driver integration.
 pub static mut TIMERIOMEM_RNG_MATCH: [OfDeviceId; 2] = [
-    OfDeviceId { compatible: b"timeriomem_rng\0".as_ptr() as *const core::ffi::c_char },
+    OfDeviceId { compatible: b"timeriomem_rng\0".as_ptr() as *const kernel::ffi::c_char },
     OfDeviceId { compatible: core::ptr::null() },
 ];
 
 pub static mut TIMERIOMEM_RNG_DRIVER: PlatformDriver = PlatformDriver {
     driver: Driver {
-        name: b"timeriomem_rng\0".as_ptr() as *const core::ffi::c_char,
+        name: b"timeriomem_rng\0".as_ptr() as *const kernel::ffi::c_char,
         of_match_table: unsafe { TIMERIOMEM_RNG_MATCH.as_ptr() },
     },
     probe: Some(timeriomem_rng_probe),

@@ -21,7 +21,7 @@ pub struct xt_ct_target_info {
     pub zone: u16,
     pub ct_events: u32,
     pub exp_events: u32,
-    pub helper: [core::ffi::c_char; 16],
+    pub helper: [kernel::ffi::c_char; 16],
 
     /* Used internally by the kernel */
     pub ct: *mut nf_conn,
@@ -33,8 +33,8 @@ pub struct xt_ct_target_info_v1 {
     pub zone: u16,
     pub ct_events: u32,
     pub exp_events: u32,
-    pub helper: [core::ffi::c_char; 16],
-    pub timeout: [core::ffi::c_char; 32],
+    pub helper: [kernel::ffi::c_char; 16],
+    pub timeout: [kernel::ffi::c_char; 32],
 
     /* Used internally by the kernel */
     pub ct: *mut nf_conn,

@@ -24,26 +24,26 @@ pub struct rzn1_dmamux_map {
 
 unsafe extern "C" {
     pub fn dev_get_drvdata(dev: *mut device) -> *mut rzn1_dmamux_data;
-    pub fn dev_dbg(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    pub fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    pub fn dev_dbg(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    pub fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
     pub fn clear_bit(nr: u32, addr: *mut usize);
-    pub fn kfree(ptr: *mut core::ffi::c_void);
+    pub fn kfree(ptr: *mut kernel::ffi::c_void);
     pub fn of_find_device_by_node(node: *mut device_node) -> *mut platform_device;
     pub fn platform_get_drvdata(pdev: *mut platform_device) -> *mut rzn1_dmamux_data;
-    pub fn kzalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
+    pub fn kzalloc(size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     pub fn test_and_set_bit(nr: u32, addr: *mut usize) -> bool;
     pub fn r9a06g032_sysctrl_set_dmamux(mask: u32, val: u32) -> i32;
     pub fn put_device(dev: *mut device);
     pub fn of_node_put(node: *mut device_node);
-    pub fn of_parse_phandle(node: *mut device_node, name: *const core::ffi::c_char, index: u32) -> *mut device_node;
-    pub fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    pub fn dev_err_probe(dev: *mut device, err: i32, fmt: *const core::ffi::c_char, ...) -> i32;
+    pub fn of_parse_phandle(node: *mut device_node, name: *const kernel::ffi::c_char, index: u32) -> *mut device_node;
+    pub fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    pub fn dev_err_probe(dev: *mut device, err: i32, fmt: *const kernel::ffi::c_char, ...) -> i32;
     pub fn of_match_node(matches: *const of_device_id, node: *mut device_node) -> *const of_device_id;
     pub fn platform_set_drvdata(pdev: *mut platform_device, data: *mut rzn1_dmamux_data);
-    pub fn of_dma_router_register(node: *mut device_node, allocate: unsafe extern "C" fn(*mut of_phandle_args, *mut of_dma) -> *mut core::ffi::c_void, router: *mut dma_router) -> i32;
+    pub fn of_dma_router_register(node: *mut device_node, allocate: unsafe extern "C" fn(*mut of_phandle_args, *mut of_dma) -> *mut kernel::ffi::c_void, router: *mut dma_router) -> i32;
 }
 
-#[repr(C)] pub struct dma_router { pub dev: *mut device, pub route_free: Option<unsafe extern "C" fn(*mut device, *mut core::ffi::c_void)> }
+#[repr(C)] pub struct dma_router { pub dev: *mut device, pub route_free: Option<unsafe extern "C" fn(*mut device, *mut kernel::ffi::c_void)> }
 #[repr(C)] pub struct device { pub of_node: *mut device_node }
 #[repr(C)] pub struct device_node;
 #[repr(C)] pub struct platform_device { pub dev: device }
@@ -51,7 +51,7 @@ unsafe extern "C" {
 #[repr(C)] pub struct of_phandle_args { pub np: *mut device_node, pub args_count: u32, pub args: [u32; 6] }
 #[repr(C)] pub struct of_device_id;
 
-unsafe fn rzn1_dmamux_free(dev: *mut device, route_data: *mut core::ffi::c_void) {
+unsafe fn rzn1_dmamux_free(dev: *mut device, route_data: *mut kernel::ffi::c_void) {
     let dmamux = dev_get_drvdata(dev);
     let map = route_data as *mut rzn1_dmamux_map;
     dev_dbg(dev, b"Unmapping DMAMUX request %u\0".as_ptr() as _, (*map).req_idx);
@@ -59,7 +59,7 @@ unsafe fn rzn1_dmamux_free(dev: *mut device, route_data: *mut core::ffi::c_void)
     kfree(map as _);
 }
 
-unsafe fn rzn1_dmamux_route_allocate(dma_spec: *mut of_phandle_args, ofdma: *mut of_dma) -> *mut core::ffi::c_void {
+unsafe fn rzn1_dmamux_route_allocate(dma_spec: *mut of_phandle_args, ofdma: *mut of_dma) -> *mut kernel::ffi::c_void {
     let pdev = of_find_device_by_node((*ofdma).of_node);
     let dmamux = platform_get_drvdata(pdev);
     let mut map: *mut rzn1_dmamux_map;
@@ -114,7 +114,7 @@ static RZN1_DMAMUX_MATCH: [of_device_id; 2] = [of_device_id, of_device_id];
 // C metadata: MODULE_DEVICE_TABLE(of, rzn1_dmamux_match)
 #[repr(C)]
 pub struct platform_driver { pub driver: driver, pub probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32> }
-#[repr(C)] pub struct driver { pub name: *const core::ffi::c_char, pub of_match_table: *const of_device_id }
+#[repr(C)] pub struct driver { pub name: *const kernel::ffi::c_char, pub of_match_table: *const of_device_id }
 
 static mut RZN1_DMAMUX_DRIVER: platform_driver = platform_driver {
     driver: driver { name: b"renesas,rzn1-dmamux\0".as_ptr() as _, of_match_table: RZN1_DMAMUX_MATCH.as_ptr() },

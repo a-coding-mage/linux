@@ -9,31 +9,31 @@
 // and asm/stacktrace/common.h.
 
 extern "C" {
-    pub fn dump_backtrace(regs: *mut pt_regs, tsk: *mut task_struct, loglvl: *const ::core::ffi::c_char);
+    pub fn dump_backtrace(regs: *mut pt_regs, tsk: *mut task_struct, loglvl: *const ::kernel::ffi::c_char);
 }
 
 extern "C" {
-    pub static mut irq_stack_ptr: *mut ::core::ffi::c_ulong;
+    pub static mut irq_stack_ptr: *mut ::kernel::ffi::c_ulong;
 }
 
 #[inline]
 pub unsafe fn stackinfo_get_irq() -> stack_info {
-    let low: ::core::ffi::c_ulong = raw_cpu_read(irq_stack_ptr) as ::core::ffi::c_ulong;
-    let high = low.wrapping_add(IRQ_STACK_SIZE as ::core::ffi::c_ulong);
+    let low: ::kernel::ffi::c_ulong = raw_cpu_read(irq_stack_ptr) as ::kernel::ffi::c_ulong;
+    let high = low.wrapping_add(IRQ_STACK_SIZE as ::kernel::ffi::c_ulong);
 
     stack_info { low, high }
 }
 
 #[inline]
-pub unsafe fn on_irq_stack(sp: ::core::ffi::c_ulong, size: ::core::ffi::c_ulong) -> bool {
+pub unsafe fn on_irq_stack(sp: ::kernel::ffi::c_ulong, size: ::kernel::ffi::c_ulong) -> bool {
     let info = stackinfo_get_irq();
     stackinfo_on_stack(&info, sp, size)
 }
 
 #[inline]
 pub unsafe fn stackinfo_get_task(tsk: *const task_struct) -> stack_info {
-    let low: ::core::ffi::c_ulong = task_stack_page(tsk) as ::core::ffi::c_ulong;
-    let high = low.wrapping_add(THREAD_SIZE as ::core::ffi::c_ulong);
+    let low: ::kernel::ffi::c_ulong = task_stack_page(tsk) as ::kernel::ffi::c_ulong;
+    let high = low.wrapping_add(THREAD_SIZE as ::kernel::ffi::c_ulong);
 
     stack_info { low, high }
 }
@@ -41,8 +41,8 @@ pub unsafe fn stackinfo_get_task(tsk: *const task_struct) -> stack_info {
 #[inline]
 pub unsafe fn on_task_stack(
     tsk: *const task_struct,
-    sp: ::core::ffi::c_ulong,
-    size: ::core::ffi::c_ulong,
+    sp: ::kernel::ffi::c_ulong,
+    size: ::kernel::ffi::c_ulong,
 ) -> bool {
     let info = stackinfo_get_task(tsk);
     stackinfo_on_stack(&info, sp, size)
@@ -56,13 +56,13 @@ macro_rules! on_thread_stack {
 }
 
 extern "C" {
-    pub static mut overflow_stack: [::core::ffi::c_ulong; OVERFLOW_STACK_SIZE / ::core::mem::size_of::<::core::ffi::c_ulong>()];
+    pub static mut overflow_stack: [::kernel::ffi::c_ulong; OVERFLOW_STACK_SIZE / ::core::mem::size_of::<::kernel::ffi::c_ulong>()];
 }
 
 #[inline]
 pub unsafe fn stackinfo_get_overflow() -> stack_info {
-    let low: ::core::ffi::c_ulong = raw_cpu_ptr(overflow_stack) as ::core::ffi::c_ulong;
-    let high = low.wrapping_add(OVERFLOW_STACK_SIZE as ::core::ffi::c_ulong);
+    let low: ::kernel::ffi::c_ulong = raw_cpu_ptr(overflow_stack) as ::kernel::ffi::c_ulong;
+    let high = low.wrapping_add(OVERFLOW_STACK_SIZE as ::kernel::ffi::c_ulong);
 
     stack_info { low, high }
 }
@@ -70,15 +70,15 @@ pub unsafe fn stackinfo_get_overflow() -> stack_info {
 // CONFIG_ARM_SDE_INTERFACE
 #[cfg(CONFIG_ARM_SDE_INTERFACE)]
 extern "C" {
-    pub static mut sdei_stack_normal_ptr: *mut ::core::ffi::c_ulong;
-    pub static mut sdei_stack_critical_ptr: *mut ::core::ffi::c_ulong;
+    pub static mut sdei_stack_normal_ptr: *mut ::kernel::ffi::c_ulong;
+    pub static mut sdei_stack_critical_ptr: *mut ::kernel::ffi::c_ulong;
 }
 
 #[cfg(CONFIG_ARM_SDE_INTERFACE)]
 #[inline]
 pub unsafe fn stackinfo_get_sdei_normal() -> stack_info {
-    let low: ::core::ffi::c_ulong = raw_cpu_read(sdei_stack_normal_ptr) as ::core::ffi::c_ulong;
-    let high = low.wrapping_add(SDEI_STACK_SIZE as ::core::ffi::c_ulong);
+    let low: ::kernel::ffi::c_ulong = raw_cpu_read(sdei_stack_normal_ptr) as ::kernel::ffi::c_ulong;
+    let high = low.wrapping_add(SDEI_STACK_SIZE as ::kernel::ffi::c_ulong);
 
     stack_info { low, high }
 }
@@ -86,8 +86,8 @@ pub unsafe fn stackinfo_get_sdei_normal() -> stack_info {
 #[cfg(CONFIG_ARM_SDE_INTERFACE)]
 #[inline]
 pub unsafe fn stackinfo_get_sdei_critical() -> stack_info {
-    let low: ::core::ffi::c_ulong = raw_cpu_read(sdei_stack_critical_ptr) as ::core::ffi::c_ulong;
-    let high = low.wrapping_add(SDEI_STACK_SIZE as ::core::ffi::c_ulong);
+    let low: ::kernel::ffi::c_ulong = raw_cpu_read(sdei_stack_critical_ptr) as ::kernel::ffi::c_ulong;
+    let high = low.wrapping_add(SDEI_STACK_SIZE as ::kernel::ffi::c_ulong);
 
     stack_info { low, high }
 }
@@ -113,8 +113,8 @@ extern "C" {
 #[cfg(CONFIG_EFI)]
 #[inline]
 pub unsafe fn stackinfo_get_efi() -> stack_info {
-    let high: ::core::ffi::c_ulong = efi_rt_stack_top as ::core::ffi::c_ulong;
-    let low = high.wrapping_sub(THREAD_SIZE as ::core::ffi::c_ulong);
+    let high: ::kernel::ffi::c_ulong = efi_rt_stack_top as ::kernel::ffi::c_ulong;
+    let low = high.wrapping_sub(THREAD_SIZE as ::kernel::ffi::c_ulong);
 
     stack_info { low, high }
 }

@@ -14,30 +14,30 @@ pub const TLS_NO_PEERID: i32 = 0;
 pub const TLS_NO_CERT: i32 = 0;
 pub const TLS_NO_PRIVKEY: i32 = 0;
 
-pub type tls_done_func_t = Option<unsafe extern "C" fn(data: *mut core::ffi::c_void,
-                                                        status: core::ffi::c_int,
+pub type tls_done_func_t = Option<unsafe extern "C" fn(data: *mut kernel::ffi::c_void,
+                                                        status: kernel::ffi::c_int,
                                                         peerid: key_serial_t)>;
 
 #[repr(C)]
 pub struct tls_handshake_args {
     pub ta_sock: *mut socket,
     pub ta_done: tls_done_func_t,
-    pub ta_data: *mut core::ffi::c_void,
-    pub ta_peername: *const core::ffi::c_char,
-    pub ta_timeout_ms: core::ffi::c_uint,
+    pub ta_data: *mut kernel::ffi::c_void,
+    pub ta_peername: *const kernel::ffi::c_char,
+    pub ta_timeout_ms: kernel::ffi::c_uint,
     pub ta_keyring: key_serial_t,
     pub ta_my_cert: key_serial_t,
     pub ta_my_privkey: key_serial_t,
-    pub ta_num_peerids: core::ffi::c_uint,
+    pub ta_num_peerids: kernel::ffi::c_uint,
     pub ta_my_peerids: [key_serial_t; 5],
 }
 
 unsafe extern "C" {
-    pub fn tls_client_hello_anon(args: *const tls_handshake_args, flags: gfp_t) -> core::ffi::c_int;
-    pub fn tls_client_hello_x509(args: *const tls_handshake_args, flags: gfp_t) -> core::ffi::c_int;
-    pub fn tls_client_hello_psk(args: *const tls_handshake_args, flags: gfp_t) -> core::ffi::c_int;
-    pub fn tls_server_hello_x509(args: *const tls_handshake_args, flags: gfp_t) -> core::ffi::c_int;
-    pub fn tls_server_hello_psk(args: *const tls_handshake_args, flags: gfp_t) -> core::ffi::c_int;
+    pub fn tls_client_hello_anon(args: *const tls_handshake_args, flags: gfp_t) -> kernel::ffi::c_int;
+    pub fn tls_client_hello_x509(args: *const tls_handshake_args, flags: gfp_t) -> kernel::ffi::c_int;
+    pub fn tls_client_hello_psk(args: *const tls_handshake_args, flags: gfp_t) -> kernel::ffi::c_int;
+    pub fn tls_server_hello_x509(args: *const tls_handshake_args, flags: gfp_t) -> kernel::ffi::c_int;
+    pub fn tls_server_hello_psk(args: *const tls_handshake_args, flags: gfp_t) -> kernel::ffi::c_int;
 
     pub fn tls_handshake_cancel(sk: *mut sock) -> bool;
     pub fn tls_handshake_close(sock: *mut socket);

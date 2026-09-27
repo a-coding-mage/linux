@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 // C dependencies and build-time configuration are supplied by the surrounding kernel translation.
 
-pub unsafe fn pxa_register_device(dev: *mut platform_device, data: *mut core::ffi::c_void) {
+pub unsafe fn pxa_register_device(dev: *mut platform_device, data: *mut kernel::ffi::c_void) {
     (*dev).dev.platform_data = data;
     let ret = platform_device_register(dev);
     if ret != 0 { dev_err(&mut (*dev).dev, c"unable to register device: %d\n", ret); }
@@ -51,10 +51,10 @@ uart_device!(PXA_RESOURCE_FFUART, 0x40100000, 0x40100023, IRQ_FFUART, pxa_device
 uart_device!(PXA_RESOURCE_BTUART, 0x40200000, 0x40200023, IRQ_BTUART, pxa_device_btuart, 1);
 uart_device!(PXA_RESOURCE_STUART, 0x40700000, 0x40700023, IRQ_STUART, pxa_device_stuart, 2);
 uart_device!(PXA_RESOURCE_HWUART, 0x41600000, 0x4160002f, IRQ_HWUART, pxa_device_hwuart, 3);
-pub unsafe fn pxa_set_ffuart_info(info: *mut core::ffi::c_void) { pxa_register_device(&raw mut pxa_device_ffuart, info); }
-pub unsafe fn pxa_set_btuart_info(info: *mut core::ffi::c_void) { pxa_register_device(&raw mut pxa_device_btuart, info); }
-pub unsafe fn pxa_set_stuart_info(info: *mut core::ffi::c_void) { pxa_register_device(&raw mut pxa_device_stuart, info); }
-pub unsafe fn pxa_set_hwuart_info(info: *mut core::ffi::c_void) { if cpu_is_pxa255() { pxa_register_device(&raw mut pxa_device_hwuart, info); } else { pr_info(c"UART: Ignoring attempt to register HWUART on non-PXA255 hardware"); } }
+pub unsafe fn pxa_set_ffuart_info(info: *mut kernel::ffi::c_void) { pxa_register_device(&raw mut pxa_device_ffuart, info); }
+pub unsafe fn pxa_set_btuart_info(info: *mut kernel::ffi::c_void) { pxa_register_device(&raw mut pxa_device_btuart, info); }
+pub unsafe fn pxa_set_stuart_info(info: *mut kernel::ffi::c_void) { pxa_register_device(&raw mut pxa_device_stuart, info); }
+pub unsafe fn pxa_set_hwuart_info(info: *mut kernel::ffi::c_void) { if cpu_is_pxa255() { pxa_register_device(&raw mut pxa_device_hwuart, info); } else { pr_info(c"UART: Ignoring attempt to register HWUART on non-PXA255 hardware"); } }
 
 static mut PXAI2C_RESOURCES: [resource; 2] = [resource { start: 0x40301680, end: 0x403016a3, flags: IORESOURCE_MEM, ..resource::ZERO }, resource { start: IRQ_I2C, end: IRQ_I2C, flags: IORESOURCE_IRQ, ..resource::ZERO }];
 pub static mut pxa_device_i2c: platform_device = platform_device { name: c"pxa2xx-i2c", id: 0, resource: unsafe { PXAI2C_RESOURCES.as_mut_ptr() }, num_resources: 2, ..platform_device::ZERO };
@@ -120,25 +120,25 @@ pub static mut pxa_resource_gpio: [resource; 4] = [
 #[cfg(any(CONFIG_PXA25x, CONFIG_PXA27x))]
 static mut PXA2XX_GPIO_INFO: pxa_gpio_platform_data = pxa_gpio_platform_data { irq_base: PXA_GPIO_TO_IRQ(0), gpio_set_wake: Some(gpio_set_wake), ..pxa_gpio_platform_data::ZERO };
 #[cfg(any(CONFIG_PXA25x, CONFIG_PXA27x))]
-pub static mut pxa25x_device_gpio: platform_device = platform_device { name: c"pxa25x-gpio", id: -1, num_resources: 4, resource: unsafe { pxa_resource_gpio.as_mut_ptr() }, dev: device { platform_data: unsafe { &raw mut PXA2XX_GPIO_INFO as *mut _ as *mut core::ffi::c_void }, ..device::ZERO }, ..platform_device::ZERO };
+pub static mut pxa25x_device_gpio: platform_device = platform_device { name: c"pxa25x-gpio", id: -1, num_resources: 4, resource: unsafe { pxa_resource_gpio.as_mut_ptr() }, dev: device { platform_data: unsafe { &raw mut PXA2XX_GPIO_INFO as *mut _ as *mut kernel::ffi::c_void }, ..device::ZERO }, ..platform_device::ZERO };
 #[cfg(any(CONFIG_PXA25x, CONFIG_PXA27x))]
-pub static mut pxa27x_device_gpio: platform_device = platform_device { name: c"pxa27x-gpio", id: -1, num_resources: 4, resource: unsafe { pxa_resource_gpio.as_mut_ptr() }, dev: device { platform_data: unsafe { &raw mut PXA2XX_GPIO_INFO as *mut _ as *mut core::ffi::c_void }, ..device::ZERO }, ..platform_device::ZERO };
+pub static mut pxa27x_device_gpio: platform_device = platform_device { name: c"pxa27x-gpio", id: -1, num_resources: 4, resource: unsafe { pxa_resource_gpio.as_mut_ptr() }, dev: device { platform_data: unsafe { &raw mut PXA2XX_GPIO_INFO as *mut _ as *mut kernel::ffi::c_void }, ..device::ZERO }, ..platform_device::ZERO };
 
 static mut PXA_DMA_RESOURCE: [resource; 2] = [resource { start: 0x40000000, end: 0x4000ffff, flags: IORESOURCE_MEM, ..resource::ZERO }, resource { start: IRQ_DMA, end: IRQ_DMA, flags: IORESOURCE_IRQ, ..resource::ZERO }];
 static mut PXADMA_DMAMASK: u64 = 0xffffffff;
 static mut PXA2XX_PXA_DMA: platform_device = platform_device { name: c"pxa-dma", id: 0, dev: device { dma_mask: unsafe { &raw mut PXADMA_DMAMASK }, coherent_dma_mask: 0xffffffff, ..device::ZERO }, num_resources: 2, resource: unsafe { PXA_DMA_RESOURCE.as_mut_ptr() }, ..platform_device::ZERO };
 pub unsafe fn pxa2xx_set_dmac_info(dma_pdata: *mut mmp_dma_platdata) { pxa_register_device(&raw mut PXA2XX_PXA_DMA, dma_pdata.cast()); }
-pub unsafe fn pxa_register_wdt(mut reset_status: u32) { let res = resource { start: OST_PHYS, end: OST_PHYS + OST_LEN - 1, flags: IORESOURCE_MEM, ..resource::ZERO }; reset_status &= RESET_STATUS_WATCHDOG; platform_device_register_resndata(core::ptr::null_mut(), c"sa1100_wdt", -1, &res, 1, &reset_status as *const _ as *const core::ffi::c_void, core::mem::size_of::<u32>()); }
+pub unsafe fn pxa_register_wdt(mut reset_status: u32) { let res = resource { start: OST_PHYS, end: OST_PHYS + OST_LEN - 1, flags: IORESOURCE_MEM, ..resource::ZERO }; reset_status &= RESET_STATUS_WATCHDOG; platform_device_register_resndata(core::ptr::null_mut(), c"sa1100_wdt", -1, &res, 1, &reset_status as *const _ as *const kernel::ffi::c_void, core::mem::size_of::<u32>()); }
 
 extern "C" {
     fn platform_device_register(dev: *mut platform_device) -> i32;
     fn platform_device_register_full(info: *const platform_device_info) -> *mut platform_device;
     fn PTR_ERR_OR_ZERO(ptr: *mut platform_device) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
     fn cpu_is_pxa255() -> bool;
-    fn platform_device_register_resndata(parent: *mut device, name: *const core::ffi::c_char, id: i32, res: *const resource, num: usize, data: *const core::ffi::c_void, size: usize);
+    fn platform_device_register_resndata(parent: *mut device, name: *const kernel::ffi::c_char, id: i32, res: *const resource, num: usize, data: *const kernel::ffi::c_void, size: usize);
     fn gpio_set_wake(_: u32, _: u32) -> i32;
 }
 

@@ -70,7 +70,7 @@ pub const TAS2781_RUNTIME_RE_REG: u32 = TASDEVICE_REG(0x64, 0x63, 0x44);
 #[repr(C)] pub enum dspbin_type { TASDEV_BASIC, TASDEV_ALPHA, TASDEV_BETA }
 
 #[repr(C)] pub struct bulk_reg_val { pub reg: i32, pub val: [u8; 4], pub val_len: u8, pub is_locked: bool }
-#[repr(C)] pub struct tasdevice { pub cali_data_backup: *mut bulk_reg_val, pub alp_cali_bckp: bulk_reg_val, pub cali_data_fmw: *mut tasdevice_fw, pub cali_specific: *mut core::ffi::c_void, pub dev_addr: u32, pub err_code: u32, pub cur_book: u8, pub cur_prog: i16, pub cur_conf: i16, pub is_loading: bool, pub is_loaderr: bool }
+#[repr(C)] pub struct tasdevice { pub cali_data_backup: *mut bulk_reg_val, pub alp_cali_bckp: bulk_reg_val, pub cali_data_fmw: *mut tasdevice_fw, pub cali_specific: *mut kernel::ffi::c_void, pub dev_addr: u32, pub err_code: u32, pub cur_book: u8, pub cur_prog: i16, pub cur_conf: i16, pub is_loading: bool, pub is_loaderr: bool }
 #[repr(C)] pub struct cali_reg { pub r0_reg: u32, pub r0_low_reg: u32, pub invr0_reg: u32, pub pow_reg: u32, pub tlimit_reg: u32 }
 #[repr(C)] pub struct calidata { pub data: *mut u8, pub total_sz: usize, pub cali_reg_array: cali_reg, pub cali_dat_sz_per_dev: u32 }
 
@@ -87,8 +87,8 @@ pub struct tasdevice_rca; pub struct tasdevice_fw; pub struct gpio_desc; pub str
     pub tasdevice: [tasdevice; TASDEVICE_MAX_CHANNELS], pub rcabin: tasdevice_rca, pub cali_data: calidata,
     #[cfg(CONFIG_SND_SOC_TAS2781_ACOUST_I2C)] pub acou_data: acoustic_data,
     pub fmw: *mut tasdevice_fw, pub reset: *mut gpio_desc, pub codec_lock: mutex, pub regmap: *mut regmap, pub dev: *mut device,
-    pub cal_binaryname: [[u8; 64]; TASDEVICE_MAX_CHANNELS], pub crc8_lkp_tbl: [u8; CRC8_TABLE_SIZE], pub coef_binaryname: [u8; 64], pub rca_binaryname: [u8; 64], pub dev_name: [u8; 32], pub dvc_tlv_table: *const [u8; 4], pub name_prefix: *const core::ffi::c_char, pub ndev: u8, pub dspbin_typ: u32, pub magic_num: u32, pub chip_id: u32, pub sysclk: u32, pub speaker_id: i32,
-    pub irq: i32, pub cur_prog: i32, pub cur_conf: i32, pub fw_state: i32, pub index: i32, pub client: *mut core::ffi::c_void, pub codec: *mut core::ffi::c_void, pub force_fwload_status: bool, pub playback_started: bool, pub isacpi: bool, pub isspi: bool, pub global_addr: u32,
+    pub cal_binaryname: [[u8; 64]; TASDEVICE_MAX_CHANNELS], pub crc8_lkp_tbl: [u8; CRC8_TABLE_SIZE], pub coef_binaryname: [u8; 64], pub rca_binaryname: [u8; 64], pub dev_name: [u8; 32], pub dvc_tlv_table: *const [u8; 4], pub name_prefix: *const kernel::ffi::c_char, pub ndev: u8, pub dspbin_typ: u32, pub magic_num: u32, pub chip_id: u32, pub sysclk: u32, pub speaker_id: i32,
+    pub irq: i32, pub cur_prog: i32, pub cur_conf: i32, pub fw_state: i32, pub index: i32, pub client: *mut kernel::ffi::c_void, pub codec: *mut kernel::ffi::c_void, pub force_fwload_status: bool, pub playback_started: bool, pub isacpi: bool, pub isspi: bool, pub global_addr: u32,
     pub fw_parse_variable_header: Option<unsafe extern "C" fn(*mut tasdevice_priv, *const firmware, i32) -> i32>,
     pub fw_parse_program_data: Option<unsafe extern "C" fn(*mut tasdevice_priv, *mut tasdevice_fw, *const firmware, i32) -> i32>, pub fw_parse_configuration_data: Option<unsafe extern "C" fn(*mut tasdevice_priv, *mut tasdevice_fw, *const firmware, i32) -> i32>, pub fw_parse_fct_param_address: Option<unsafe extern "C" fn(*mut tasdevice_priv, *mut tasdevice_fw, *const firmware, i32) -> i32>, pub tasdevice_load_block: Option<unsafe extern "C" fn(*mut tasdevice_priv, *mut tasdev_blk) -> i32>,
     pub change_chn_book: Option<unsafe extern "C" fn(*mut tasdevice_priv, u16, i32) -> i32>, pub update_bits: Option<unsafe extern "C" fn(*mut tasdevice_priv, u16, u32, u32, u32) -> i32>, pub dev_read: Option<unsafe extern "C" fn(*mut tasdevice_priv, u16, u32, *mut u32) -> i32>, pub dev_bulk_read: Option<unsafe extern "C" fn(*mut tasdevice_priv, u16, u32, *mut u8, u32) -> i32>,

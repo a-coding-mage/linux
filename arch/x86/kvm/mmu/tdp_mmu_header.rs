@@ -21,7 +21,7 @@ extern "C" {
     pub fn kvm_tdp_mmu_invalidate_roots(kvm: *mut kvm, root_types: kvm_tdp_mmu_root_types);
     pub fn kvm_tdp_mmu_zap_invalidated_roots(kvm: *mut kvm, shared: bool);
 
-    pub fn kvm_tdp_mmu_map(vcpu: *mut kvm_vcpu, fault: *mut kvm_page_fault) -> ::core::ffi::c_int;
+    pub fn kvm_tdp_mmu_map(vcpu: *mut kvm_vcpu, fault: *mut kvm_page_fault) -> ::kernel::ffi::c_int;
 
     pub fn kvm_tdp_mmu_unmap_gfn_range(kvm: *mut kvm, range: *mut kvm_gfn_range, flush: bool) -> bool;
     pub fn kvm_tdp_mmu_age_gfn_range(kvm: *mut kvm, range: *mut kvm_gfn_range) -> bool;
@@ -30,14 +30,14 @@ extern "C" {
     pub fn kvm_tdp_mmu_wrprot_slot(
         kvm: *mut kvm,
         slot: *const kvm_memory_slot,
-        min_level: ::core::ffi::c_int,
+        min_level: ::kernel::ffi::c_int,
     ) -> bool;
     pub fn kvm_tdp_mmu_clear_dirty_slot(kvm: *mut kvm, slot: *const kvm_memory_slot);
     pub fn kvm_tdp_mmu_clear_dirty_pt_masked(
         kvm: *mut kvm,
         slot: *mut kvm_memory_slot,
         gfn: gfn_t,
-        mask: ::core::ffi::c_ulong,
+        mask: ::kernel::ffi::c_ulong,
         wrprot: bool,
     );
     pub fn kvm_tdp_mmu_recover_huge_pages(kvm: *mut kvm, slot: *const kvm_memory_slot);
@@ -46,7 +46,7 @@ extern "C" {
         kvm: *mut kvm,
         slot: *mut kvm_memory_slot,
         gfn: gfn_t,
-        min_level: ::core::ffi::c_int,
+        min_level: ::kernel::ffi::c_int,
     ) -> bool;
 
     pub fn kvm_tdp_mmu_try_split_huge_pages(
@@ -54,7 +54,7 @@ extern "C" {
         slot: *const kvm_memory_slot,
         start: gfn_t,
         end: gfn_t,
-        target_level: ::core::ffi::c_int,
+        target_level: ::kernel::ffi::c_int,
         shared: bool,
     );
 
@@ -62,8 +62,8 @@ extern "C" {
         vcpu: *mut kvm_vcpu,
         addr: u64,
         sptes: *mut u64,
-        root_level: *mut ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        root_level: *mut ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn kvm_tdp_mmu_fast_pf_get_last_sptep(
         vcpu: *mut kvm_vcpu,
         gfn: gfn_t,

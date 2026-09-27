@@ -27,7 +27,7 @@ pub const TBSVC_MATCH_PROTOCOL_REVISION: u32 = 0x0008;
 #[repr(C)]
 pub struct tb_service_id {
     pub match_flags: u32,
-    pub protocol_key: [core::ffi::c_char; 8 + 1],
+    pub protocol_key: [kernel::ffi::c_char; 8 + 1],
     pub protocol_id: u32,
     pub protocol_version: u32,
     pub protocol_revision: u32,

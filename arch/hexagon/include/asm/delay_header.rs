@@ -6,8 +6,8 @@
 // Dependency intent: declarations from <asm/param.h> are supplied externally.
 
 extern "C" {
-    pub fn __delay(cycles: core::ffi::c_ulong);
-    pub fn __udelay(usecs: core::ffi::c_ulong);
+    pub fn __delay(cycles: kernel::ffi::c_ulong);
+    pub fn __udelay(usecs: kernel::ffi::c_ulong);
 }
 
 #[macro_export]

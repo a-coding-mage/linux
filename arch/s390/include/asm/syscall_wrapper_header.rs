@@ -23,7 +23,7 @@ macro_rules! SYSCALL_DEFINE0 {
         // retained here as macro intent; Rust identifier concatenation is a
         // build-environment concern.
         extern "C" {
-            fn __s390x_sys_$sname(__unused: *mut pt_regs) -> core::ffi::c_long;
+            fn __s390x_sys_$sname(__unused: *mut pt_regs) -> kernel::ffi::c_long;
         }
         ALLOW_ERROR_INJECTION!(__s390x_sys_$sname, ERRNO);
         // static inline long ::kernel::macros::paste!([<__do_sys_ $sname>])(void)

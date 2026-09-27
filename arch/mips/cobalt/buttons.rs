@@ -21,7 +21,7 @@ pub struct platform_device {
 unsafe extern "C" {
     static IORESOURCE_MEM: usize;
 
-    fn platform_device_alloc(name: *const core::ffi::c_char, id: i32) -> *mut platform_device;
+    fn platform_device_alloc(name: *const kernel::ffi::c_char, id: i32) -> *mut platform_device;
     fn platform_device_add_resources(
         pdev: *mut platform_device,
         resources: *const resource,

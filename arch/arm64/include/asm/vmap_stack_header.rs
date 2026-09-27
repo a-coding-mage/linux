@@ -13,8 +13,8 @@
 pub unsafe fn arch_alloc_vmap_stack(
     stack_size: usize,
     node: i32,
-) -> *mut core::ffi::c_ulong {
-    let p: *mut core::ffi::c_void;
+) -> *mut kernel::ffi::c_ulong {
+    let p: *mut kernel::ffi::c_void;
 
     p = __vmalloc_node(
         stack_size,
@@ -23,7 +23,7 @@ pub unsafe fn arch_alloc_vmap_stack(
         node,
         __builtin_return_address(0),
     );
-    kasan_reset_tag(p) as *mut core::ffi::c_ulong
+    kasan_reset_tag(p) as *mut kernel::ffi::c_ulong
 }
 
 extern "C" {
@@ -32,13 +32,13 @@ extern "C" {
         align: usize,
         gfp_mask: usize,
         node: i32,
-        caller: *mut core::ffi::c_void,
-    ) -> *mut core::ffi::c_void;
+        caller: *mut kernel::ffi::c_void,
+    ) -> *mut kernel::ffi::c_void;
 
-    fn kasan_reset_tag(ptr: *mut core::ffi::c_void) -> *mut core::ffi::c_void;
+    fn kasan_reset_tag(ptr: *mut kernel::ffi::c_void) -> *mut kernel::ffi::c_void;
 
     // C builtin retained as an external declaration for source-level parity.
-    fn __builtin_return_address(level: u32) -> *mut core::ffi::c_void;
+    fn __builtin_return_address(level: u32) -> *mut kernel::ffi::c_void;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

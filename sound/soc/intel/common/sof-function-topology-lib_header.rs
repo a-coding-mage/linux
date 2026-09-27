@@ -9,7 +9,7 @@
 // C header guard omitted in Rust:
 // _SND_SOC_ACPI_INTEL_GET_TPLG_H
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct snd_soc_card {

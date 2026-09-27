@@ -14,8 +14,8 @@ extern "C" {
 
     pub fn report_cfi_failure(
         regs: *mut pt_regs,
-        addr: libc::c_ulong,
-        target: *mut libc::c_ulong,
+        addr: kernel::ffi::c_ulong,
+        target: *mut kernel::ffi::c_ulong,
         type_: u32,
     ) -> bug_trap_type;
 }
@@ -24,7 +24,7 @@ extern "C" {
 #[inline]
 pub unsafe fn report_cfi_failure_noaddr(
     regs: *mut pt_regs,
-    addr: libc::c_ulong,
+    addr: kernel::ffi::c_ulong,
 ) -> bug_trap_type {
     report_cfi_failure(regs, addr, core::ptr::null_mut(), 0)
 }
@@ -33,18 +33,18 @@ pub unsafe fn report_cfi_failure_noaddr(
 // entry changes the compiler-emitted CFI prefix offset.
 #[cfg(CONFIG_CFI)]
 #[inline]
-pub fn cfi_get_offset() -> libc::c_int {
+pub fn cfi_get_offset() -> kernel::ffi::c_int {
     4
 }
 
 #[cfg(CONFIG_CFI)]
 #[inline]
-pub unsafe fn cfi_get_func_hash(func: *mut core::ffi::c_void) -> u32 {
+pub unsafe fn cfi_get_func_hash(func: *mut kernel::ffi::c_void) -> u32 {
     let mut hash: u32 = 0;
     // get_kernel_nofault is supplied by the kernel uaccess implementation.
     if get_kernel_nofault(
         &mut hash as *mut u32,
-        (func as *mut u8).offset(-(cfi_get_offset() as isize)) as *mut core::ffi::c_void,
+        (func as *mut u8).offset(-(cfi_get_offset() as isize)) as *mut kernel::ffi::c_void,
     ) != 0
     {
         return 0;
@@ -61,13 +61,13 @@ extern "C" {
 
 #[cfg(not(CONFIG_CFI))]
 #[inline]
-pub fn cfi_get_offset() -> libc::c_int {
+pub fn cfi_get_offset() -> kernel::ffi::c_int {
     0
 }
 
 #[cfg(not(CONFIG_CFI))]
 #[inline]
-pub fn cfi_get_func_hash(_func: *mut core::ffi::c_void) -> u32 {
+pub fn cfi_get_func_hash(_func: *mut kernel::ffi::c_void) -> u32 {
     0
 }
 
@@ -79,12 +79,12 @@ pub const cfi_bpf_subprog_hash: u32 = 0;
 
 #[cfg(CONFIG_ARCH_USES_CFI_TRAPS)]
 extern "C" {
-    pub fn is_cfi_trap(addr: libc::c_ulong) -> bool;
+    pub fn is_cfi_trap(addr: kernel::ffi::c_ulong) -> bool;
 }
 
 #[cfg(not(CONFIG_ARCH_USES_CFI_TRAPS))]
 #[inline]
-pub fn is_cfi_trap(_addr: libc::c_ulong) -> bool {
+pub fn is_cfi_trap(_addr: kernel::ffi::c_ulong) -> bool {
     false
 }
 

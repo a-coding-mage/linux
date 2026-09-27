@@ -12,7 +12,7 @@
 // Dependency supplied by the corresponding ptrace header.
 
 /* ELF register definitions */
-pub type elf_greg_t = ::core::ffi::c_ulong;
+pub type elf_greg_t = ::kernel::ffi::c_ulong;
 pub type elf_gregset_t = user_regs_struct;
 pub const ELF_NGREG: usize = ::core::mem::size_of::<elf_gregset_t>() / ::core::mem::size_of::<elf_greg_t>();
 

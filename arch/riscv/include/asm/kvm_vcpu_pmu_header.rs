@@ -35,7 +35,7 @@ pub struct kvm_pmc {
     /* Event monitoring status */
     pub started: bool,
     /* Monitoring event ID */
-    pub event_idx: ::core::ffi::c_ulong,
+    pub event_idx: ::kernel::ffi::c_ulong,
     pub vcpu: *mut kvm_vcpu,
 }
 
@@ -86,18 +86,18 @@ macro_rules! KVM_RISCV_VCPU_HPMCOUNTER_CSR_FUNCS {
 
 #[cfg(CONFIG_RISCV_PMU_SBI)]
 extern "C" {
-    pub fn kvm_riscv_vcpu_pmu_incr_fw(vcpu: *mut kvm_vcpu, fid: ::core::ffi::c_ulong) -> i32;
-    pub fn kvm_riscv_vcpu_pmu_read_hpm(vcpu: *mut kvm_vcpu, csr_num: u32, val: *mut ::core::ffi::c_ulong, new_val: ::core::ffi::c_ulong, wr_mask: ::core::ffi::c_ulong) -> i32;
+    pub fn kvm_riscv_vcpu_pmu_incr_fw(vcpu: *mut kvm_vcpu, fid: ::kernel::ffi::c_ulong) -> i32;
+    pub fn kvm_riscv_vcpu_pmu_read_hpm(vcpu: *mut kvm_vcpu, csr_num: u32, val: *mut ::kernel::ffi::c_ulong, new_val: ::kernel::ffi::c_ulong, wr_mask: ::kernel::ffi::c_ulong) -> i32;
     pub fn kvm_riscv_vcpu_pmu_num_ctrs(vcpu: *mut kvm_vcpu, retdata: *mut kvm_vcpu_sbi_return) -> i32;
-    pub fn kvm_riscv_vcpu_pmu_ctr_info(vcpu: *mut kvm_vcpu, cidx: ::core::ffi::c_ulong, retdata: *mut kvm_vcpu_sbi_return) -> i32;
-    pub fn kvm_riscv_vcpu_pmu_ctr_start(vcpu: *mut kvm_vcpu, ctr_base: ::core::ffi::c_ulong, ctr_mask: ::core::ffi::c_ulong, flags: ::core::ffi::c_ulong, ival: u64, retdata: *mut kvm_vcpu_sbi_return) -> i32;
-    pub fn kvm_riscv_vcpu_pmu_ctr_stop(vcpu: *mut kvm_vcpu, ctr_base: ::core::ffi::c_ulong, ctr_mask: ::core::ffi::c_ulong, flags: ::core::ffi::c_ulong, retdata: *mut kvm_vcpu_sbi_return) -> i32;
-    pub fn kvm_riscv_vcpu_pmu_ctr_cfg_match(vcpu: *mut kvm_vcpu, ctr_base: ::core::ffi::c_ulong, ctr_mask: ::core::ffi::c_ulong, flags: ::core::ffi::c_ulong, eidx: ::core::ffi::c_ulong, evtdata: u64, retdata: *mut kvm_vcpu_sbi_return) -> i32;
-    pub fn kvm_riscv_vcpu_pmu_fw_ctr_read(vcpu: *mut kvm_vcpu, cidx: ::core::ffi::c_ulong, retdata: *mut kvm_vcpu_sbi_return) -> i32;
-    pub fn kvm_riscv_vcpu_pmu_fw_ctr_read_hi(vcpu: *mut kvm_vcpu, cidx: ::core::ffi::c_ulong, retdata: *mut kvm_vcpu_sbi_return) -> i32;
+    pub fn kvm_riscv_vcpu_pmu_ctr_info(vcpu: *mut kvm_vcpu, cidx: ::kernel::ffi::c_ulong, retdata: *mut kvm_vcpu_sbi_return) -> i32;
+    pub fn kvm_riscv_vcpu_pmu_ctr_start(vcpu: *mut kvm_vcpu, ctr_base: ::kernel::ffi::c_ulong, ctr_mask: ::kernel::ffi::c_ulong, flags: ::kernel::ffi::c_ulong, ival: u64, retdata: *mut kvm_vcpu_sbi_return) -> i32;
+    pub fn kvm_riscv_vcpu_pmu_ctr_stop(vcpu: *mut kvm_vcpu, ctr_base: ::kernel::ffi::c_ulong, ctr_mask: ::kernel::ffi::c_ulong, flags: ::kernel::ffi::c_ulong, retdata: *mut kvm_vcpu_sbi_return) -> i32;
+    pub fn kvm_riscv_vcpu_pmu_ctr_cfg_match(vcpu: *mut kvm_vcpu, ctr_base: ::kernel::ffi::c_ulong, ctr_mask: ::kernel::ffi::c_ulong, flags: ::kernel::ffi::c_ulong, eidx: ::kernel::ffi::c_ulong, evtdata: u64, retdata: *mut kvm_vcpu_sbi_return) -> i32;
+    pub fn kvm_riscv_vcpu_pmu_fw_ctr_read(vcpu: *mut kvm_vcpu, cidx: ::kernel::ffi::c_ulong, retdata: *mut kvm_vcpu_sbi_return) -> i32;
+    pub fn kvm_riscv_vcpu_pmu_fw_ctr_read_hi(vcpu: *mut kvm_vcpu, cidx: ::kernel::ffi::c_ulong, retdata: *mut kvm_vcpu_sbi_return) -> i32;
     pub fn kvm_riscv_vcpu_pmu_init(vcpu: *mut kvm_vcpu);
-    pub fn kvm_riscv_vcpu_pmu_snapshot_set_shmem(vcpu: *mut kvm_vcpu, saddr_low: ::core::ffi::c_ulong, saddr_high: ::core::ffi::c_ulong, flags: ::core::ffi::c_ulong, retdata: *mut kvm_vcpu_sbi_return) -> i32;
-    pub fn kvm_riscv_vcpu_pmu_event_info(vcpu: *mut kvm_vcpu, saddr_low: ::core::ffi::c_ulong, saddr_high: ::core::ffi::c_ulong, num_events: ::core::ffi::c_ulong, flags: ::core::ffi::c_ulong, retdata: *mut kvm_vcpu_sbi_return) -> i32;
+    pub fn kvm_riscv_vcpu_pmu_snapshot_set_shmem(vcpu: *mut kvm_vcpu, saddr_low: ::kernel::ffi::c_ulong, saddr_high: ::kernel::ffi::c_ulong, flags: ::kernel::ffi::c_ulong, retdata: *mut kvm_vcpu_sbi_return) -> i32;
+    pub fn kvm_riscv_vcpu_pmu_event_info(vcpu: *mut kvm_vcpu, saddr_low: ::kernel::ffi::c_ulong, saddr_high: ::kernel::ffi::c_ulong, num_events: ::kernel::ffi::c_ulong, flags: ::kernel::ffi::c_ulong, retdata: *mut kvm_vcpu_sbi_return) -> i32;
     pub fn kvm_riscv_vcpu_pmu_deinit(vcpu: *mut kvm_vcpu);
     pub fn kvm_riscv_vcpu_pmu_reset(vcpu: *mut kvm_vcpu);
 }
@@ -107,7 +107,7 @@ extern "C" {
 pub struct kvm_pmu {}
 
 #[cfg(not(CONFIG_RISCV_PMU_SBI))]
-pub unsafe fn kvm_riscv_vcpu_pmu_read_legacy(vcpu: *mut kvm_vcpu, csr_num: u32, val: *mut ::core::ffi::c_ulong, _new_val: ::core::ffi::c_ulong, _wr_mask: ::core::ffi::c_ulong) -> i32 {
+pub unsafe fn kvm_riscv_vcpu_pmu_read_legacy(vcpu: *mut kvm_vcpu, csr_num: u32, val: *mut ::kernel::ffi::c_ulong, _new_val: ::kernel::ffi::c_ulong, _wr_mask: ::kernel::ffi::c_ulong) -> i32 {
     if csr_num == CSR_CYCLE || csr_num == CSR_INSTRET {
         *val = 0;
         KVM_INSN_CONTINUE_NEXT_SEPC
@@ -124,7 +124,7 @@ macro_rules! KVM_RISCV_VCPU_HPMCOUNTER_CSR_FUNCS {
 #[cfg(not(CONFIG_RISCV_PMU_SBI))]
 pub unsafe fn kvm_riscv_vcpu_pmu_init(_vcpu: *mut kvm_vcpu) {}
 #[cfg(not(CONFIG_RISCV_PMU_SBI))]
-pub unsafe fn kvm_riscv_vcpu_pmu_incr_fw(_vcpu: *mut kvm_vcpu, _fid: ::core::ffi::c_ulong) -> i32 { 0 }
+pub unsafe fn kvm_riscv_vcpu_pmu_incr_fw(_vcpu: *mut kvm_vcpu, _fid: ::kernel::ffi::c_ulong) -> i32 { 0 }
 #[cfg(not(CONFIG_RISCV_PMU_SBI))]
 pub unsafe fn kvm_riscv_vcpu_pmu_deinit(_vcpu: *mut kvm_vcpu) {}
 #[cfg(not(CONFIG_RISCV_PMU_SBI))]

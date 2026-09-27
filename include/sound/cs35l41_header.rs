@@ -781,29 +781,29 @@ pub enum cs35l41_cspl_mbox_status { CSPL_MBOX_STS_ERROR = u32::MAX, CSPL_MBOX_ST
 pub enum cs35l41_cspl_mbox_cmd { CSPL_MBOX_CMD_NONE = 0, CSPL_MBOX_CMD_PAUSE = 1, CSPL_MBOX_CMD_RESUME = 2, CSPL_MBOX_CMD_REINIT = 3, CSPL_MBOX_CMD_STOP_PRE_REINIT = 4, CSPL_MBOX_CMD_HIBERNATE = 5, CSPL_MBOX_CMD_OUT_OF_HIBERNATE = 6, CSPL_MBOX_CMD_SPK_OUT_ENABLE = 7, CSPL_MBOX_CMD_UNKNOWN_CMD = -1, CSPL_MBOX_CMD_INVALID_SEQUENCE = -2 }
 
 #[repr(C)]
-pub struct cs35l41_irq { pub irq: i32, pub name: *const core::ffi::c_char, pub handler: Option<unsafe extern "C" fn(i32, *mut core::ffi::c_void) -> i32> }
+pub struct cs35l41_irq { pub irq: i32, pub name: *const kernel::ffi::c_char, pub handler: Option<unsafe extern "C" fn(i32, *mut kernel::ffi::c_void) -> i32> }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub enum cs35l41_irq_list { CS35L41_BST_OVP_ERR_IRQ, CS35L41_BST_DCM_UVP_ERR_IRQ, CS35L41_BST_SHORT_ERR_IRQ, CS35L41_TEMP_WARN_IRQ, CS35L41_TEMP_ERR_IRQ, CS35L41_AMP_SHORT_ERR_IRQ, CS35L41_NUM_IRQ }
 
 extern "C" {
-    pub static mut cs35l41_regmap_i2c: core::ffi::c_void;
-    pub static mut cs35l41_regmap_spi: core::ffi::c_void;
-    pub fn cs35l41_test_key_unlock(dev: *mut core::ffi::c_void, regmap: *mut core::ffi::c_void) -> i32;
-    pub fn cs35l41_test_key_lock(dev: *mut core::ffi::c_void, regmap: *mut core::ffi::c_void) -> i32;
-    pub fn cs35l41_otp_unpack(dev: *mut core::ffi::c_void, regmap: *mut core::ffi::c_void) -> i32;
-    pub fn cs35l41_register_errata_patch(dev: *mut core::ffi::c_void, reg: *mut core::ffi::c_void, reg_revid: u32) -> i32;
-    pub fn cs35l41_set_channels(dev: *mut core::ffi::c_void, reg: *mut core::ffi::c_void, tx_num: u32, tx_slot: *const u32, rx_num: u32, rx_slot: *const u32) -> i32;
-    pub fn cs35l41_gpio_config(regmap: *mut core::ffi::c_void, hw_cfg: *mut cs35l41_hw_cfg) -> i32;
-    pub fn cs35l41_configure_cs_dsp(dev: *mut core::ffi::c_void, reg: *mut core::ffi::c_void, dsp: *mut core::ffi::c_void);
-    pub fn cs35l41_set_cspl_mbox_cmd(dev: *mut core::ffi::c_void, regmap: *mut core::ffi::c_void, cmd: cs35l41_cspl_mbox_cmd) -> i32;
-    pub fn cs35l41_write_fs_errata(dev: *mut core::ffi::c_void, regmap: *mut core::ffi::c_void) -> i32;
-    pub fn cs35l41_enter_hibernate(dev: *mut core::ffi::c_void, regmap: *mut core::ffi::c_void, b_type: cs35l41_boost_type) -> i32;
-    pub fn cs35l41_exit_hibernate(dev: *mut core::ffi::c_void, regmap: *mut core::ffi::c_void) -> i32;
-    pub fn cs35l41_init_boost(dev: *mut core::ffi::c_void, regmap: *mut core::ffi::c_void, hw_cfg: *mut cs35l41_hw_cfg) -> i32;
-    pub fn cs35l41_safe_reset(regmap: *mut core::ffi::c_void, b_type: cs35l41_boost_type) -> bool;
-    pub fn cs35l41_mdsync_up(regmap: *mut core::ffi::c_void) -> i32;
-    pub fn cs35l41_global_enable(dev: *mut core::ffi::c_void, regmap: *mut core::ffi::c_void, b_type: cs35l41_boost_type, enable: i32, dsp: *mut core::ffi::c_void) -> i32;
+    pub static mut cs35l41_regmap_i2c: kernel::ffi::c_void;
+    pub static mut cs35l41_regmap_spi: kernel::ffi::c_void;
+    pub fn cs35l41_test_key_unlock(dev: *mut kernel::ffi::c_void, regmap: *mut kernel::ffi::c_void) -> i32;
+    pub fn cs35l41_test_key_lock(dev: *mut kernel::ffi::c_void, regmap: *mut kernel::ffi::c_void) -> i32;
+    pub fn cs35l41_otp_unpack(dev: *mut kernel::ffi::c_void, regmap: *mut kernel::ffi::c_void) -> i32;
+    pub fn cs35l41_register_errata_patch(dev: *mut kernel::ffi::c_void, reg: *mut kernel::ffi::c_void, reg_revid: u32) -> i32;
+    pub fn cs35l41_set_channels(dev: *mut kernel::ffi::c_void, reg: *mut kernel::ffi::c_void, tx_num: u32, tx_slot: *const u32, rx_num: u32, rx_slot: *const u32) -> i32;
+    pub fn cs35l41_gpio_config(regmap: *mut kernel::ffi::c_void, hw_cfg: *mut cs35l41_hw_cfg) -> i32;
+    pub fn cs35l41_configure_cs_dsp(dev: *mut kernel::ffi::c_void, reg: *mut kernel::ffi::c_void, dsp: *mut kernel::ffi::c_void);
+    pub fn cs35l41_set_cspl_mbox_cmd(dev: *mut kernel::ffi::c_void, regmap: *mut kernel::ffi::c_void, cmd: cs35l41_cspl_mbox_cmd) -> i32;
+    pub fn cs35l41_write_fs_errata(dev: *mut kernel::ffi::c_void, regmap: *mut kernel::ffi::c_void) -> i32;
+    pub fn cs35l41_enter_hibernate(dev: *mut kernel::ffi::c_void, regmap: *mut kernel::ffi::c_void, b_type: cs35l41_boost_type) -> i32;
+    pub fn cs35l41_exit_hibernate(dev: *mut kernel::ffi::c_void, regmap: *mut kernel::ffi::c_void) -> i32;
+    pub fn cs35l41_init_boost(dev: *mut kernel::ffi::c_void, regmap: *mut kernel::ffi::c_void, hw_cfg: *mut cs35l41_hw_cfg) -> i32;
+    pub fn cs35l41_safe_reset(regmap: *mut kernel::ffi::c_void, b_type: cs35l41_boost_type) -> bool;
+    pub fn cs35l41_mdsync_up(regmap: *mut kernel::ffi::c_void) -> i32;
+    pub fn cs35l41_global_enable(dev: *mut kernel::ffi::c_void, regmap: *mut kernel::ffi::c_void, b_type: cs35l41_boost_type, enable: i32, dsp: *mut kernel::ffi::c_void) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

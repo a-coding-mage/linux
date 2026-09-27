@@ -43,14 +43,14 @@ pub struct ex_ecid {
 pub struct ex_chunk_dir {
     pub r_id: u8,
     pub r_len: [u8; 3],
-    pub r_start: core::ffi::c_ulong,
+    pub r_start: kernel::ffi::c_ulong,
     pub d: ex_chunk_dir_d,
 }
 
 #[repr(C)]
 pub union ex_chunk_dir_d {
-    pub string: [core::ffi::c_char; 256],
-    pub data: [core::ffi::c_char; 1],
+    pub string: [kernel::ffi::c_char; 256],
+    pub data: [kernel::ffi::c_char; 1],
 }
 
 #[inline]
@@ -68,7 +68,7 @@ pub unsafe fn c_len(x: *const ex_chunk_dir) -> u32 {
 }
 
 #[inline]
-pub unsafe fn c_start(x: *const ex_chunk_dir) -> core::ffi::c_ulong {
+pub unsafe fn c_start(x: *const ex_chunk_dir) -> kernel::ffi::c_ulong {
     unsafe { (*x).r_start }
 }
 

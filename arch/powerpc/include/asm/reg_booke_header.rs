@@ -110,6 +110,6 @@ pub const TMRN_TMCFG0:u32=16; pub const TMRN_TMCFG0_NPRIBITS:u32=0x003f0000; pub
 /* C's dbcr_dac/task and assembly-only mftmr/mttmr are intentionally retained
  * as dependency-facing interfaces; their implementation depends on kernel
  * task layout and the external PowerPC opcode macros. */
-extern "C" { pub static mut global_dbcr0: [core::ffi::c_ulong; 0]; }
+extern "C" { pub static mut global_dbcr0: [kernel::ffi::c_ulong; 0]; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

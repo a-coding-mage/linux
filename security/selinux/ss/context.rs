@@ -11,11 +11,11 @@
 // #include "context.h"
 // #include "mls.h"
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 use core::ptr;
 
 extern "C" {
-    fn full_name_hash(salt: *const c_void, name: *const core::ffi::c_char, len: u32) -> u32;
+    fn full_name_hash(salt: *const c_void, name: *const kernel::ffi::c_char, len: u32) -> u32;
     fn jhash_3words(a: u32, b: u32, c: u32, initval: u32) -> u32;
     fn mls_range_hash(range: *const mls_range, hash: u32) -> u32;
 }

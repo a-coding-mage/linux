@@ -19,8 +19,8 @@ pub struct devfreq_event_dev {
 
 #[repr(C)]
 pub struct devfreq_event_data {
-    pub load_count: ::core::ffi::c_ulong,
-    pub total_count: ::core::ffi::c_ulong,
+    pub load_count: ::kernel::ffi::c_ulong,
+    pub total_count: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -39,9 +39,9 @@ pub struct devfreq_event_ops {
 
 #[repr(C)]
 pub struct devfreq_event_desc {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub event_type: u32,
-    pub driver_data: *mut ::core::ffi::c_void,
+    pub driver_data: *mut ::kernel::ffi::c_void,
     pub ops: *const devfreq_event_ops,
 }
 
@@ -59,12 +59,12 @@ extern "C" {
     pub fn devfreq_event_reset_event(edev: *mut devfreq_event_dev) -> i32;
     pub fn devfreq_event_get_edev_by_phandle(
         dev: *mut device,
-        phandle_name: *const ::core::ffi::c_char,
+        phandle_name: *const ::kernel::ffi::c_char,
         index: i32,
     ) -> *mut devfreq_event_dev;
     pub fn devfreq_event_get_edev_count(
         dev: *mut device,
-        phandle_name: *const ::core::ffi::c_char,
+        phandle_name: *const ::kernel::ffi::c_char,
     ) -> i32;
     pub fn devfreq_event_add_edev(
         dev: *mut device,
@@ -79,7 +79,7 @@ extern "C" {
 }
 
 #[inline]
-pub unsafe fn devfreq_event_get_drvdata(edev: *mut devfreq_event_dev) -> *mut ::core::ffi::c_void {
+pub unsafe fn devfreq_event_get_drvdata(edev: *mut devfreq_event_dev) -> *mut ::kernel::ffi::c_void {
     (*(*edev).desc).driver_data
 }
 
@@ -104,10 +104,10 @@ pub unsafe fn devfreq_event_get_event(_edev: *mut devfreq_event_dev, _edata: *mu
 pub unsafe fn devfreq_event_reset_event(_edev: *mut devfreq_event_dev) -> i32 { -22 }
 #[cfg(not(CONFIG_PM_DEVFREQ_EVENT))]
 #[inline]
-pub unsafe fn devfreq_event_get_edev_by_phandle(_dev: *mut device, _phandle_name: *const ::core::ffi::c_char, _index: i32) -> *mut devfreq_event_dev { ERR_PTR(-EINVAL) }
+pub unsafe fn devfreq_event_get_edev_by_phandle(_dev: *mut device, _phandle_name: *const ::kernel::ffi::c_char, _index: i32) -> *mut devfreq_event_dev { ERR_PTR(-EINVAL) }
 #[cfg(not(CONFIG_PM_DEVFREQ_EVENT))]
 #[inline]
-pub unsafe fn devfreq_event_get_edev_count(_dev: *mut device, _phandle_name: *const ::core::ffi::c_char) -> i32 { -22 }
+pub unsafe fn devfreq_event_get_edev_count(_dev: *mut device, _phandle_name: *const ::kernel::ffi::c_char) -> i32 { -22 }
 #[cfg(not(CONFIG_PM_DEVFREQ_EVENT))]
 #[inline]
 pub unsafe fn devfreq_event_add_edev(_dev: *mut device, _desc: *mut devfreq_event_desc) -> *mut devfreq_event_dev { ERR_PTR(-EINVAL) }
@@ -122,6 +122,6 @@ pub unsafe fn devm_devfreq_event_add_edev(_dev: *mut device, _desc: *mut devfreq
 pub unsafe fn devm_devfreq_event_remove_edev(_dev: *mut device, _edev: *mut devfreq_event_dev) {}
 #[cfg(not(CONFIG_PM_DEVFREQ_EVENT))]
 #[inline]
-pub unsafe fn devfreq_event_get_drvdata(_edev: *mut devfreq_event_dev) -> *mut ::core::ffi::c_void { ::core::ptr::null_mut() }
+pub unsafe fn devfreq_event_get_drvdata(_edev: *mut devfreq_event_dev) -> *mut ::kernel::ffi::c_void { ::core::ptr::null_mut() }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

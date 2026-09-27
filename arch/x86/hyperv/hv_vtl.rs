@@ -46,13 +46,13 @@ extern "C" {
     fn native_read_cr0() -> u64;
     fn __native_read_cr3() -> u64;
     fn native_read_cr4() -> u64;
-    fn hv_do_hypercall(code: u64, input: *mut hv_enable_vp_vtl, output: *mut core::ffi::c_void) -> u64;
+    fn hv_do_hypercall(code: u64, input: *mut hv_enable_vp_vtl, output: *mut kernel::ffi::c_void) -> u64;
     fn hv_result_success(status: u64) -> bool;
     fn hv_result(status: u64) -> u64;
     fn hv_apicid_to_vp_index(apicid: u32) -> i32;
     fn cpu_feature_enabled(feature: u32) -> bool;
-    fn panic(msg: *const core::ffi::c_char) -> !;
-    fn apic_update_callback(old: *const core::ffi::c_void, new: *const core::ffi::c_void);
+    fn panic(msg: *const kernel::ffi::c_char) -> !;
+    fn apic_update_callback(old: *const kernel::ffi::c_void, new: *const kernel::ffi::c_void);
     fn smp_processor_id() -> usize;
     fn kernel_fpu_begin_mask(mask: u32);
     fn fxrstor(state: *const [u8; 512]);
@@ -74,7 +74,7 @@ unsafe fn hv_vtl_emergency_restart() -> ! {
     loop { idt_invalidate(); core::arch::asm!("int3"); }
 }
 
-unsafe fn hv_vtl_restart(_cmd: *mut core::ffi::c_char) -> ! { hv_vtl_emergency_restart() }
+unsafe fn hv_vtl_restart(_cmd: *mut kernel::ffi::c_char) -> ! { hv_vtl_emergency_restart() }
 
 unsafe fn hv_vtl_is_private_mmio_tdx(addr: u64) -> bool {
     let mb_addr = acpi_get_mp_wakeup_mailbox_paddr();

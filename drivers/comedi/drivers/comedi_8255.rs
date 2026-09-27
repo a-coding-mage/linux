@@ -30,51 +30,51 @@
 
 #[repr(C)]
 pub struct Subdev8255Private {
-    pub context: ::core::ffi::c_ulong,
+    pub context: ::kernel::ffi::c_ulong,
     pub io: Option<unsafe extern "C" fn(
-        *mut ComediDevice, ::core::ffi::c_int, ::core::ffi::c_int,
-        ::core::ffi::c_int, ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int>,
+        *mut ComediDevice, ::kernel::ffi::c_int, ::kernel::ffi::c_int,
+        ::kernel::ffi::c_int, ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int>,
 }
 
-#[repr(C)] pub struct ComediDevice { pub iobase: ::core::ffi::c_ulong, pub mmio: *mut u8 }
+#[repr(C)] pub struct ComediDevice { pub iobase: ::kernel::ffi::c_ulong, pub mmio: *mut u8 }
 #[repr(C)] pub struct ComediSubdevice {
-    pub private: *mut ::core::ffi::c_void,
+    pub private: *mut ::kernel::ffi::c_void,
     pub state: u32,
     pub io_bits: u32,
-    pub type_: ::core::ffi::c_uint,
-    pub subdev_flags: ::core::ffi::c_uint,
-    pub n_chan: ::core::ffi::c_uint,
-    pub range_table: *const ::core::ffi::c_void,
-    pub maxdata: ::core::ffi::c_uint,
-    pub insn_bits: Option<unsafe extern "C" fn(*mut ComediDevice, *mut ComediSubdevice, *mut ComediInsn, *mut u32) -> ::core::ffi::c_int>,
-    pub insn_config: Option<unsafe extern "C" fn(*mut ComediDevice, *mut ComediSubdevice, *mut ComediInsn, *mut u32) -> ::core::ffi::c_int>,
+    pub type_: ::kernel::ffi::c_uint,
+    pub subdev_flags: ::kernel::ffi::c_uint,
+    pub n_chan: ::kernel::ffi::c_uint,
+    pub range_table: *const ::kernel::ffi::c_void,
+    pub maxdata: ::kernel::ffi::c_uint,
+    pub insn_bits: Option<unsafe extern "C" fn(*mut ComediDevice, *mut ComediSubdevice, *mut ComediInsn, *mut u32) -> ::kernel::ffi::c_int>,
+    pub insn_config: Option<unsafe extern "C" fn(*mut ComediDevice, *mut ComediSubdevice, *mut ComediInsn, *mut u32) -> ::kernel::ffi::c_int>,
 }
-#[repr(C)] pub struct ComediInsn { pub chanspec: u32, pub n: ::core::ffi::c_uint }
+#[repr(C)] pub struct ComediInsn { pub chanspec: u32, pub n: ::kernel::ffi::c_uint }
 
 extern "C" {
-    static range_digital: ::core::ffi::c_void;
+    static range_digital: ::kernel::ffi::c_void;
     fn comedi_dio_update_state(s: *mut ComediSubdevice, data: *mut u32) -> u32;
-    fn comedi_dio_insn_config(dev: *mut ComediDevice, s: *mut ComediSubdevice, insn: *mut ComediInsn, data: *mut u32, mask: u32) -> ::core::ffi::c_int;
-    fn comedi_alloc_spriv(s: *mut ComediSubdevice, size: usize) -> *mut ::core::ffi::c_void;
-    fn outb(value: u8, port: ::core::ffi::c_ulong);
-    fn inb(port: ::core::ffi::c_ulong) -> u8;
+    fn comedi_dio_insn_config(dev: *mut ComediDevice, s: *mut ComediSubdevice, insn: *mut ComediInsn, data: *mut u32, mask: u32) -> ::kernel::ffi::c_int;
+    fn comedi_alloc_spriv(s: *mut ComediSubdevice, size: usize) -> *mut ::kernel::ffi::c_void;
+    fn outb(value: u8, port: ::kernel::ffi::c_ulong);
+    fn inb(port: ::kernel::ffi::c_ulong) -> u8;
     fn writeb(value: u8, addr: *mut u8);
     fn readb(addr: *mut u8) -> u8;
 }
 
-const I8255_DATA_A_REG: ::core::ffi::c_int = 0;
-const I8255_DATA_B_REG: ::core::ffi::c_int = 1;
-const I8255_DATA_C_REG: ::core::ffi::c_int = 2;
-const I8255_CTRL_REG: ::core::ffi::c_int = 3;
-const I8255_CTRL_CW: ::core::ffi::c_int = 0x80;
-const I8255_CTRL_A_IO: ::core::ffi::c_int = 0x10;
-const I8255_CTRL_B_IO: ::core::ffi::c_int = 0x02;
-const I8255_CTRL_C_LO_IO: ::core::ffi::c_int = 0x01;
-const I8255_CTRL_C_HI_IO: ::core::ffi::c_int = 0x08;
-const COMEDI_SUBD_DIO: ::core::ffi::c_uint = 0;
-const SDF_READABLE: ::core::ffi::c_uint = 1;
-const SDF_WRITABLE: ::core::ffi::c_uint = 2;
+const I8255_DATA_A_REG: ::kernel::ffi::c_int = 0;
+const I8255_DATA_B_REG: ::kernel::ffi::c_int = 1;
+const I8255_DATA_C_REG: ::kernel::ffi::c_int = 2;
+const I8255_CTRL_REG: ::kernel::ffi::c_int = 3;
+const I8255_CTRL_CW: ::kernel::ffi::c_int = 0x80;
+const I8255_CTRL_A_IO: ::kernel::ffi::c_int = 0x10;
+const I8255_CTRL_B_IO: ::kernel::ffi::c_int = 0x02;
+const I8255_CTRL_C_LO_IO: ::kernel::ffi::c_int = 0x01;
+const I8255_CTRL_C_HI_IO: ::kernel::ffi::c_int = 0x08;
+const COMEDI_SUBD_DIO: ::kernel::ffi::c_uint = 0;
+const SDF_READABLE: ::kernel::ffi::c_uint = 1;
+const SDF_WRITABLE: ::kernel::ffi::c_uint = 2;
 
 unsafe extern "C" fn subdev_8255_io(dev: *mut ComediDevice, dir: i32, port: i32, data: i32, regbase: usize) -> i32 {
     if dir != 0 { outb(data as u8, (*dev).iobase.wrapping_add(regbase as u64).wrapping_add(port as u64)); return 0; }

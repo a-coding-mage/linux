@@ -28,7 +28,7 @@ static mut chan_6ghz_105: ieee80211_channel = ieee80211_channel {
 };
 
 struct chandef_compat_case {
-    desc: *const core::ffi::c_char,
+    desc: *const kernel::ffi::c_char,
     // leave c1 empty for tests for identical
     c1: cfg80211_chan_def,
     c2: cfg80211_chan_def,
@@ -69,7 +69,7 @@ unsafe fn test_chandef_compat(test: *mut kunit) {
 }
 
 struct chandef_dbe_case {
-    desc: *const core::ffi::c_char,
+    desc: *const kernel::ffi::c_char,
     c: cfg80211_chan_def,
     dbe: [u8; 3],
     fails: bool,
@@ -97,7 +97,7 @@ unsafe fn test_chandef_dbe(test: *mut kunit) {
     let params = (*test).param_value as *const chandef_dbe_case;
     let mut c = (*params).c;
     KUNIT_EXPECT_EQ!(test, cfg80211_chandef_valid(&(*params).c), true);
-    let ret = cfg80211_chandef_add_dbe(&mut c, (*params).dbe.as_ptr() as *const core::ffi::c_void);
+    let ret = cfg80211_chandef_add_dbe(&mut c, (*params).dbe.as_ptr() as *const kernel::ffi::c_void);
     KUNIT_EXPECT_EQ!(test, ret != 0, (*params).fails);
     if (*params).fails { return; }
     KUNIT_EXPECT_EQ!(test, c.center_freq1, (*params).cf1);

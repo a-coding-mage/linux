@@ -4,14 +4,14 @@
 // Dependencies supplied by the surrounding kernel translation:
 // uapi/linux/audit.h, linux/compat.h, linux/err.h, and asm/ptrace.h.
 
-pub const NR_syscalls: _ = __NR_Linux_syscalls;
+pub const NR_syscalls: usize = __NR_Linux_syscalls;
 
-pub unsafe fn syscall_get_nr(tsk: *mut task_struct, regs: *mut pt_regs) -> libc::c_long {
+pub unsafe fn syscall_get_nr(tsk: *mut task_struct, regs: *mut pt_regs) -> kernel::ffi::c_long {
     let _ = tsk;
-    (*regs).gr[20] as libc::c_long
+    (*regs).gr[20] as kernel::ffi::c_long
 }
 
-pub unsafe fn syscall_set_nr(tsk: *mut task_struct, regs: *mut pt_regs, nr: libc::c_int) {
+pub unsafe fn syscall_set_nr(tsk: *mut task_struct, regs: *mut pt_regs, nr: kernel::ffi::c_int) {
     let _ = tsk;
     (*regs).gr[20] = nr as _;
 }
@@ -19,7 +19,7 @@ pub unsafe fn syscall_set_nr(tsk: *mut task_struct, regs: *mut pt_regs, nr: libc
 pub unsafe fn syscall_get_arguments(
     tsk: *mut task_struct,
     regs: *mut pt_regs,
-    args: *mut libc::c_ulong,
+    args: *mut kernel::ffi::c_ulong,
 ) {
     let _ = tsk;
     (*args.add(5)) = (*regs).gr[21];
@@ -33,7 +33,7 @@ pub unsafe fn syscall_get_arguments(
 pub unsafe fn syscall_set_arguments(
     tsk: *mut task_struct,
     regs: *mut pt_regs,
-    args: *mut libc::c_ulong,
+    args: *mut kernel::ffi::c_ulong,
 ) {
     let _ = tsk;
     (*regs).gr[21] = *args.add(5);
@@ -47,25 +47,25 @@ pub unsafe fn syscall_set_arguments(
 pub unsafe fn syscall_get_error(
     task: *mut task_struct,
     regs: *mut pt_regs,
-) -> libc::c_long {
+) -> kernel::ffi::c_long {
     let _ = task;
     let error = (*regs).gr[28];
-    if IS_ERR_VALUE(error) { error as libc::c_long } else { 0 }
+    if IS_ERR_VALUE(error) { error as kernel::ffi::c_long } else { 0 }
 }
 
 pub unsafe fn syscall_get_return_value(
     task: *mut task_struct,
     regs: *mut pt_regs,
-) -> libc::c_long {
+) -> kernel::ffi::c_long {
     let _ = task;
-    (*regs).gr[28] as libc::c_long
+    (*regs).gr[28] as kernel::ffi::c_long
 }
 
 pub unsafe fn syscall_set_return_value(
     task: *mut task_struct,
     regs: *mut pt_regs,
-    error: libc::c_int,
-    val: libc::c_long,
+    error: kernel::ffi::c_int,
+    val: kernel::ffi::c_long,
 ) {
     let _ = task;
     (*regs).gr[28] = if error != 0 { error as _ } else { val as _ };
@@ -76,7 +76,7 @@ pub unsafe fn syscall_rollback(task: *mut task_struct, regs: *mut pt_regs) {
     /* do nothing */
 }
 
-pub unsafe fn syscall_get_arch(task: *mut task_struct) -> libc::c_int {
+pub unsafe fn syscall_get_arch(task: *mut task_struct) -> kernel::ffi::c_int {
     let mut arch = AUDIT_ARCH_PARISC;
     #[cfg(CONFIG_64BIT)]
     if !__is_compat_task(task) {

@@ -8,14 +8,14 @@
 // C header guard: _LINUX_SUNRPC_XPRTSOCK_H
 
 extern "C" {
-    pub fn init_socket_xprt() -> ::core::ffi::c_int;
+    pub fn init_socket_xprt() -> ::kernel::ffi::c_int;
     pub fn cleanup_socket_xprt();
 }
 
-pub const RPC_MIN_RESVPORT: ::core::ffi::c_uint = 1u32;
-pub const RPC_MAX_RESVPORT: ::core::ffi::c_uint = 65535u32;
-pub const RPC_DEF_MIN_RESVPORT: ::core::ffi::c_uint = 665u32;
-pub const RPC_DEF_MAX_RESVPORT: ::core::ffi::c_uint = 1023u32;
+pub const RPC_MIN_RESVPORT: ::kernel::ffi::c_uint = 1u32;
+pub const RPC_MAX_RESVPORT: ::kernel::ffi::c_uint = 65535u32;
+pub const RPC_DEF_MIN_RESVPORT: ::kernel::ffi::c_uint = 665u32;
+pub const RPC_DEF_MAX_RESVPORT: ::kernel::ffi::c_uint = 1023u32;
 
 #[repr(C)]
 pub struct SockXprt {
@@ -41,7 +41,7 @@ pub struct SockXprt {
     /*
      * Connection of transports
      */
-    pub sock_state: ::core::ffi::c_ulong,
+    pub sock_state: ::kernel::ffi::c_ulong,
     pub connect_worker: delayed_work,
     pub error_worker: work_struct,
     pub recv_worker: work_struct,
@@ -49,7 +49,7 @@ pub struct SockXprt {
     pub handshake_done: completion,
     pub srcaddr: sockaddr_storage,
     pub srcport: u16,
-    pub xprt_err: ::core::ffi::c_int,
+    pub xprt_err: ::kernel::ffi::c_int,
     pub clnt: *mut rpc_clnt,
 
     /*
@@ -76,7 +76,7 @@ pub struct SockXprtRecv {
     pub calldir: __be32,
     pub offset: u32,
     pub len: u32,
-    pub copied: ::core::ffi::c_ulong,
+    pub copied: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
@@ -87,15 +87,15 @@ pub struct SockXprtXmit {
 /*
  * TCP RPC flags
  */
-pub const XPRT_SOCK_CONNECTING: ::core::ffi::c_uint = 1u32;
-pub const XPRT_SOCK_DATA_READY: ::core::ffi::c_uint = 2u32;
-pub const XPRT_SOCK_UPD_TIMEOUT: ::core::ffi::c_uint = 3u32;
-pub const XPRT_SOCK_WAKE_ERROR: ::core::ffi::c_uint = 4u32;
-pub const XPRT_SOCK_WAKE_WRITE: ::core::ffi::c_uint = 5u32;
-pub const XPRT_SOCK_WAKE_PENDING: ::core::ffi::c_uint = 6u32;
-pub const XPRT_SOCK_WAKE_DISCONNECT: ::core::ffi::c_uint = 7u32;
-pub const XPRT_SOCK_CONNECT_SENT: ::core::ffi::c_uint = 8u32;
-pub const XPRT_SOCK_NOSPACE: ::core::ffi::c_uint = 9u32;
-pub const XPRT_SOCK_IGNORE_RECV: ::core::ffi::c_uint = 10u32;
+pub const XPRT_SOCK_CONNECTING: ::kernel::ffi::c_uint = 1u32;
+pub const XPRT_SOCK_DATA_READY: ::kernel::ffi::c_uint = 2u32;
+pub const XPRT_SOCK_UPD_TIMEOUT: ::kernel::ffi::c_uint = 3u32;
+pub const XPRT_SOCK_WAKE_ERROR: ::kernel::ffi::c_uint = 4u32;
+pub const XPRT_SOCK_WAKE_WRITE: ::kernel::ffi::c_uint = 5u32;
+pub const XPRT_SOCK_WAKE_PENDING: ::kernel::ffi::c_uint = 6u32;
+pub const XPRT_SOCK_WAKE_DISCONNECT: ::kernel::ffi::c_uint = 7u32;
+pub const XPRT_SOCK_CONNECT_SENT: ::kernel::ffi::c_uint = 8u32;
+pub const XPRT_SOCK_NOSPACE: ::kernel::ffi::c_uint = 9u32;
+pub const XPRT_SOCK_IGNORE_RECV: ::kernel::ffi::c_uint = 10u32;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

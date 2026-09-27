@@ -18,14 +18,14 @@ pub unsafe fn xfs_buftarg_is_mem(btp: *const xfs_buftarg) -> bool {
 extern "C" {
     pub fn xmbuf_alloc(
         mp: *mut xfs_mount,
-        descr: *const ::core::ffi::c_char,
+        descr: *const ::kernel::ffi::c_char,
         btpp: *mut *mut xfs_buftarg,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn xmbuf_free(btp: *mut xfs_buftarg);
 
     pub fn xmbuf_verify_daddr(btp: *mut xfs_buftarg, daddr: xfs_daddr_t) -> bool;
     pub fn xmbuf_trans_bdetach(tp: *mut xfs_trans, bp: *mut xfs_buf);
-    pub fn xmbuf_finalize(bp: *mut xfs_buf) -> ::core::ffi::c_int;
+    pub fn xmbuf_finalize(bp: *mut xfs_buf) -> ::kernel::ffi::c_int;
 }
 
 // When CONFIG_XFS_MEMORY_BUFS is not set, the C variadic macros expand to false.
@@ -42,7 +42,7 @@ pub const fn xmbuf_verify_daddr() -> bool {
 }
 
 extern "C" {
-    pub fn xmbuf_map_backing_mem(bp: *mut xfs_buf) -> ::core::ffi::c_int;
+    pub fn xmbuf_map_backing_mem(bp: *mut xfs_buf) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -6,8 +6,8 @@
 
 #[repr(C)]
 pub struct xfs_log_iovec {
-    pub i_addr: *mut core::ffi::c_void,
-    pub i_len: core::ffi::c_int,
+    pub i_addr: *mut kernel::ffi::c_void,
+    pub i_len: kernel::ffi::c_int,
     pub i_type: uint,
 }
 
@@ -15,13 +15,13 @@ pub struct xfs_log_iovec {
 pub struct xfs_log_vec {
     pub lv_list: list_head,
     pub lv_order_id: u32,
-    pub lv_niovecs: core::ffi::c_int,
+    pub lv_niovecs: kernel::ffi::c_int,
     pub lv_iovecp: *mut xfs_log_iovec,
     pub lv_item: *mut xfs_log_item,
-    pub lv_buf: *mut core::ffi::c_char,
-    pub lv_bytes: core::ffi::c_int,
-    pub lv_buf_used: core::ffi::c_int,
-    pub lv_alloc_size: core::ffi::c_int,
+    pub lv_buf: *mut kernel::ffi::c_char,
+    pub lv_bytes: kernel::ffi::c_int,
+    pub lv_buf_used: kernel::ffi::c_int,
+    pub lv_alloc_size: kernel::ffi::c_int,
 }
 
 #[inline]
@@ -43,12 +43,12 @@ pub enum xlog_iclog_state {
 pub const XLOG_ICL_NEED_FLUSH: uint = 1u << 0;
 pub const XLOG_ICL_NEED_FUA: uint = 1u << 1;
 pub const XLOG_TIC_PERM_RESERV: uint = 1u << 0;
-pub const XLOG_STATE_COVER_IDLE: core::ffi::c_int = 0;
-pub const XLOG_STATE_COVER_NEED: core::ffi::c_int = 1;
-pub const XLOG_STATE_COVER_DONE: core::ffi::c_int = 2;
-pub const XLOG_STATE_COVER_NEED2: core::ffi::c_int = 3;
-pub const XLOG_STATE_COVER_DONE2: core::ffi::c_int = 4;
-pub const XLOG_COVER_OPS: core::ffi::c_int = 5;
+pub const XLOG_STATE_COVER_IDLE: kernel::ffi::c_int = 0;
+pub const XLOG_STATE_COVER_NEED: kernel::ffi::c_int = 1;
+pub const XLOG_STATE_COVER_DONE: kernel::ffi::c_int = 2;
+pub const XLOG_STATE_COVER_NEED2: kernel::ffi::c_int = 3;
+pub const XLOG_STATE_COVER_DONE2: kernel::ffi::c_int = 4;
+pub const XLOG_COVER_OPS: kernel::ffi::c_int = 5;
 
 #[repr(C)]
 pub struct xlog_ticket {
@@ -56,12 +56,12 @@ pub struct xlog_ticket {
     pub t_task: *mut task_struct,
     pub t_tid: xlog_tid_t,
     pub t_ref: atomic_t,
-    pub t_curr_res: core::ffi::c_int,
-    pub t_unit_res: core::ffi::c_int,
-    pub t_ocnt: core::ffi::c_char,
-    pub t_cnt: core::ffi::c_char,
+    pub t_curr_res: kernel::ffi::c_int,
+    pub t_unit_res: kernel::ffi::c_int,
+    pub t_ocnt: kernel::ffi::c_char,
+    pub t_cnt: kernel::ffi::c_char,
     pub t_flags: u8,
-    pub t_iclog_hdrs: core::ffi::c_int,
+    pub t_iclog_hdrs: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -74,8 +74,8 @@ pub struct xlog_in_core {
     pub ic_size: u32,
     pub ic_offset: u32,
     pub ic_state: xlog_iclog_state,
-    pub ic_flags: core::ffi::c_uint,
-    pub ic_datap: *mut core::ffi::c_void,
+    pub ic_flags: kernel::ffi::c_uint,
+    pub ic_datap: *mut kernel::ffi::c_void,
     pub ic_callbacks: list_head,
     pub ic_refcnt: atomic_t,
     pub ic_header: *mut xlog_rec_header,
@@ -119,7 +119,7 @@ pub struct xlog_cil_pcp {
 #[repr(C)]
 pub struct xfs_cil {
     pub xc_log: *mut xlog,
-    pub xc_flags: core::ffi::c_ulong,
+    pub xc_flags: kernel::ffi::c_ulong,
     pub xc_iclog_hdrs: atomic_t,
     pub xc_push_wq: *mut workqueue_struct,
     pub xc_ctx_lock: rw_semaphore,
@@ -132,20 +132,20 @@ pub struct xfs_cil {
     pub xc_start_wait: wait_queue_head_t,
     pub xc_current_sequence: xfs_csn_t,
     pub xc_push_wait: wait_queue_head_t,
-    pub xc_pcp: *mut core::ffi::c_void,
+    pub xc_pcp: *mut kernel::ffi::c_void,
 }
 
-pub const XLOG_CIL_EMPTY: core::ffi::c_ulong = 1;
-pub const XLOG_CIL_PCP_SPACE: core::ffi::c_ulong = 2;
+pub const XLOG_CIL_EMPTY: kernel::ffi::c_ulong = 1;
+pub const XLOG_CIL_PCP_SPACE: kernel::ffi::c_ulong = 2;
 
 #[inline]
-pub unsafe fn XLOG_CIL_SPACE_LIMIT(log: *mut xlog) -> core::ffi::c_int {
-    min_t(core::ffi::c_int, (*log).l_logsize >> 3,
+pub unsafe fn XLOG_CIL_SPACE_LIMIT(log: *mut xlog) -> kernel::ffi::c_int {
+    min_t(kernel::ffi::c_int, (*log).l_logsize >> 3,
         BBTOB(XLOG_TOTAL_REC_SHIFT(log)) << 4)
 }
 
 #[inline]
-pub unsafe fn XLOG_CIL_BLOCKING_SPACE_LIMIT(log: *mut xlog) -> core::ffi::c_int {
+pub unsafe fn XLOG_CIL_BLOCKING_SPACE_LIMIT(log: *mut xlog) -> kernel::ffi::c_int {
     XLOG_CIL_SPACE_LIMIT(log) * 2
 }
 
@@ -164,25 +164,25 @@ pub struct xlog {
     pub l_targ: *mut xfs_buftarg,
     pub l_ioend_workqueue: *mut workqueue_struct,
     pub l_work: delayed_work,
-    pub l_opstate: core::ffi::c_long,
+    pub l_opstate: kernel::ffi::c_long,
     pub l_quotaoffs_flag: uint,
     pub l_buf_cancel_table: *mut list_head,
     pub r_dfops: list_head,
-    pub l_iclog_hsize: core::ffi::c_int,
+    pub l_iclog_hsize: kernel::ffi::c_int,
     pub l_sectBBsize: uint,
-    pub l_iclog_size: core::ffi::c_int,
-    pub l_iclog_bufs: core::ffi::c_int,
+    pub l_iclog_size: kernel::ffi::c_int,
+    pub l_iclog_bufs: kernel::ffi::c_int,
     pub l_logBBstart: xfs_daddr_t,
-    pub l_logsize: core::ffi::c_int,
-    pub l_logBBsize: core::ffi::c_int,
+    pub l_logsize: kernel::ffi::c_int,
+    pub l_logBBsize: kernel::ffi::c_int,
     pub l_flush_wait: wait_queue_head_t,
-    pub l_covered_state: core::ffi::c_int,
+    pub l_covered_state: kernel::ffi::c_int,
     pub l_iclog: *mut xlog_in_core,
     pub l_icloglock: spinlock_t,
-    pub l_curr_cycle: core::ffi::c_int,
-    pub l_prev_cycle: core::ffi::c_int,
-    pub l_curr_block: core::ffi::c_int,
-    pub l_prev_block: core::ffi::c_int,
+    pub l_curr_cycle: kernel::ffi::c_int,
+    pub l_prev_cycle: kernel::ffi::c_int,
+    pub l_curr_block: kernel::ffi::c_int,
+    pub l_prev_block: kernel::ffi::c_int,
     pub l_tail_lsn: atomic64_t,
     pub l_reserve_head: xlog_grant_head,
     pub l_write_head: xlog_grant_head,
@@ -192,11 +192,11 @@ pub struct xlog {
     pub l_iclog_roundoff: u32,
 }
 
-pub const XLOG_ACTIVE_RECOVERY: core::ffi::c_int = 0;
-pub const XLOG_RECOVERY_NEEDED: core::ffi::c_int = 1;
-pub const XLOG_IO_ERROR: core::ffi::c_int = 2;
-pub const XLOG_TAIL_WARN: core::ffi::c_int = 3;
-pub const XLOG_SHUTDOWN_STARTED: core::ffi::c_int = 4;
+pub const XLOG_ACTIVE_RECOVERY: kernel::ffi::c_int = 0;
+pub const XLOG_RECOVERY_NEEDED: kernel::ffi::c_int = 1;
+pub const XLOG_IO_ERROR: kernel::ffi::c_int = 2;
+pub const XLOG_TAIL_WARN: kernel::ffi::c_int = 3;
+pub const XLOG_SHUTDOWN_STARTED: kernel::ffi::c_int = 4;
 
 #[inline]
 pub unsafe fn xlog_recovery_needed(log: *mut xlog) -> bool { test_bit(XLOG_RECOVERY_NEEDED, &mut (*log).l_opstate) }
@@ -211,21 +211,21 @@ pub unsafe fn xlog_shutdown_wait(log: *mut xlog) {
 }
 
 extern "C" {
-    pub fn xlog_recover(log: *mut xlog) -> core::ffi::c_int;
-    pub fn xlog_recover_finish(log: *mut xlog) -> core::ffi::c_int;
+    pub fn xlog_recover(log: *mut xlog) -> kernel::ffi::c_int;
+    pub fn xlog_recover_finish(log: *mut xlog) -> kernel::ffi::c_int;
     pub fn xlog_recover_cancel(log: *mut xlog);
-    pub fn xlog_cksum(log: *mut xlog, rhead: *mut xlog_rec_header, dp: *mut core::ffi::c_char, hdrsize: core::ffi::c_uint, size: core::ffi::c_uint) -> __le32;
+    pub fn xlog_cksum(log: *mut xlog, rhead: *mut xlog_rec_header, dp: *mut kernel::ffi::c_char, hdrsize: kernel::ffi::c_uint, size: kernel::ffi::c_uint) -> __le32;
     pub static mut xfs_log_ticket_cache: *mut kmem_cache;
-    pub fn xlog_ticket_alloc(log: *mut xlog, unit_bytes: core::ffi::c_int, count: core::ffi::c_int, permanent: bool) -> *mut xlog_ticket;
+    pub fn xlog_ticket_alloc(log: *mut xlog, unit_bytes: kernel::ffi::c_int, count: kernel::ffi::c_int, permanent: bool) -> *mut xlog_ticket;
     pub fn xlog_print_tic_res(mp: *mut xfs_mount, ticket: *mut xlog_ticket);
     pub fn xlog_print_trans(tp: *mut xfs_trans);
-    pub fn xlog_write(log: *mut xlog, ctx: *mut xfs_cil_ctx, lv_chain: *mut list_head, tic: *mut xlog_ticket, len: u32) -> core::ffi::c_int;
-    pub fn xlog_write_one_vec(log: *mut xlog, ctx: *mut xfs_cil_ctx, reg: *mut xfs_log_iovec, ticket: *mut xlog_ticket) -> core::ffi::c_int;
+    pub fn xlog_write(log: *mut xlog, ctx: *mut xfs_cil_ctx, lv_chain: *mut list_head, tic: *mut xlog_ticket, len: u32) -> kernel::ffi::c_int;
+    pub fn xlog_write_one_vec(log: *mut xlog, ctx: *mut xfs_cil_ctx, reg: *mut xfs_log_iovec, ticket: *mut xlog_ticket) -> kernel::ffi::c_int;
     pub fn xfs_log_ticket_ungrant(log: *mut xlog, ticket: *mut xlog_ticket);
     pub fn xfs_log_ticket_regrant(log: *mut xlog, ticket: *mut xlog_ticket);
-    pub fn xlog_state_switch_iclogs(log: *mut xlog, iclog: *mut xlog_in_core, eventual_size: core::ffi::c_int);
-    pub fn xlog_state_release_iclog(log: *mut xlog, iclog: *mut xlog_in_core, ticket: *mut xlog_ticket) -> core::ffi::c_int;
-    pub fn xlog_cil_init(log: *mut xlog) -> core::ffi::c_int;
+    pub fn xlog_state_switch_iclogs(log: *mut xlog, iclog: *mut xlog_in_core, eventual_size: kernel::ffi::c_int);
+    pub fn xlog_state_release_iclog(log: *mut xlog, iclog: *mut xlog_in_core, ticket: *mut xlog_ticket) -> kernel::ffi::c_int;
+    pub fn xlog_cil_init(log: *mut xlog) -> kernel::ffi::c_int;
     pub fn xlog_cil_init_post_recovery(log: *mut xlog);
     pub fn xlog_cil_destroy(log: *mut xlog);
     pub fn xlog_cil_empty(log: *mut xlog) -> bool;
@@ -233,7 +233,7 @@ extern "C" {
     pub fn xlog_cil_set_ctx_write_state(ctx: *mut xfs_cil_ctx, iclog: *mut xlog_in_core);
     pub fn xlog_cil_flush(log: *mut xlog);
     pub fn xlog_cil_force_seq(log: *mut xlog, sequence: xfs_csn_t) -> xfs_lsn_t;
-    pub fn xlog_wait_on_iclog(iclog: *mut xlog_in_core) -> core::ffi::c_int;
+    pub fn xlog_wait_on_iclog(iclog: *mut xlog_in_core) -> kernel::ffi::c_int;
     pub fn xlog_grant_return_space(log: *mut xlog, old_head: xfs_lsn_t, new_head: xfs_lsn_t);
 }
 
@@ -282,7 +282,7 @@ pub unsafe fn xlog_valid_lsn(log: *mut xlog, lsn: xfs_lsn_t) -> bool {
 }
 
 #[inline]
-pub unsafe fn xlog_kvmalloc(buf_size: usize) -> *mut core::ffi::c_void {
+pub unsafe fn xlog_kvmalloc(buf_size: usize) -> *mut kernel::ffi::c_void {
     let mut flags = GFP_KERNEL;
     flags &= !__GFP_DIRECT_RECLAIM;
     flags |= __GFP_NOWARN | __GFP_NORETRY;
@@ -294,13 +294,13 @@ pub unsafe fn xlog_kvmalloc(buf_size: usize) -> *mut core::ffi::c_void {
 }
 
 #[inline]
-pub fn xlog_item_space(mut niovecs: core::ffi::c_uint, mut nbytes: core::ffi::c_uint) -> core::ffi::c_uint {
+pub fn xlog_item_space(mut niovecs: kernel::ffi::c_uint, mut nbytes: kernel::ffi::c_uint) -> kernel::ffi::c_uint {
     nbytes += niovecs * (core::mem::size_of::<u64>() as u32 + core::mem::size_of::<xlog_op_header>() as u32);
     round_up(nbytes, core::mem::size_of::<u64>() as u32)
 }
 
 #[inline]
-pub unsafe fn xlog_cycle_data(rhead: *mut xlog_rec_header, i: core::ffi::c_uint) -> *mut __be32 {
+pub unsafe fn xlog_cycle_data(rhead: *mut xlog_rec_header, i: kernel::ffi::c_uint) -> *mut __be32 {
     if i >= XLOG_CYCLE_DATA_SIZE {
         let j = i / XLOG_CYCLE_DATA_SIZE;
         let k = i % XLOG_CYCLE_DATA_SIZE;

@@ -10,7 +10,7 @@
 // External declarations supplied by the kernel and architecture dependencies.
 unsafe extern "C" {
     fn fw_init_cmdline();
-    fn fw_getenvl(name: *const core::ffi::c_char) -> usize;
+    fn fw_getenvl(name: *const kernel::ffi::c_char) -> usize;
     static mut initrd_start: usize;
     static mut initrd_end: usize;
     fn KSEG0ADDR(address: usize) -> usize;
@@ -22,11 +22,11 @@ pub unsafe extern "C" fn prom_init() {
     // CONFIG_BLK_DEV_INITRD: read the initrd address from the firmware environment.
     #[cfg(CONFIG_BLK_DEV_INITRD)]
     {
-        initrd_start = fw_getenvl(b"initrd_start\0".as_ptr() as *const core::ffi::c_char);
+        initrd_start = fw_getenvl(b"initrd_start\0".as_ptr() as *const kernel::ffi::c_char);
         if initrd_start != 0 {
             initrd_start = KSEG0ADDR(initrd_start);
             initrd_end = initrd_start.wrapping_add(
-                fw_getenvl(b"initrd_size\0".as_ptr() as *const core::ffi::c_char),
+                fw_getenvl(b"initrd_size\0".as_ptr() as *const kernel::ffi::c_char),
             );
         }
     }

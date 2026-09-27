@@ -51,7 +51,7 @@ extern "C" {
     pub static mut microcode_rev: [u32; NR_CPUS];
     pub static mut base_rev: u32;
 
-    pub fn find_microcode_in_initrd(path: *const core::ffi::c_char) -> CpioData;
+    pub fn find_microcode_in_initrd(path: *const kernel::ffi::c_char) -> CpioData;
 }
 
 pub const MAX_UCODE_COUNT: u32 = 128;

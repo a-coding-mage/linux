@@ -2,7 +2,7 @@
 
 // Translated from the RISC-V stacktrace header.
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 #[repr(C)]
 pub struct stackframe {
@@ -24,7 +24,7 @@ extern "C" {
     pub fn dump_backtrace(
         regs: *mut pt_regs,
         task: *mut task_struct,
-        loglvl: *const core::ffi::c_char,
+        loglvl: *const kernel::ffi::c_char,
     );
 }
 

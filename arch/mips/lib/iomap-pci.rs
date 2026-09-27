@@ -13,11 +13,11 @@
 #[cfg(CONFIG_PCI_DRIVERS_LEGACY)]
 pub unsafe fn __pci_ioport_map(
     dev: *mut pci_dev,
-    port: ::core::ffi::c_ulong,
-    _nr: ::core::ffi::c_uint,
-) -> *mut ::core::ffi::c_void {
+    port: ::kernel::ffi::c_ulong,
+    _nr: ::kernel::ffi::c_uint,
+) -> *mut ::kernel::ffi::c_void {
     let ctrl: *mut pci_controller = (*(*dev).bus).sysdata;
-    let mut base: ::core::ffi::c_ulong = (*ctrl).io_map_base;
+    let mut base: ::kernel::ffi::c_ulong = (*ctrl).io_map_base;
 
     /* This will eventually become a BUG_ON but for now be gentle */
     if unlikely((*ctrl).io_map_base == 0) {
@@ -41,13 +41,13 @@ pub unsafe fn __pci_ioport_map(
         panic(c"To avoid data corruption io_map_base MUST be set with multiple PCI domains.");
     }
 
-    (base.wrapping_add(port)) as *mut ::core::ffi::c_void
+    (base.wrapping_add(port)) as *mut ::kernel::ffi::c_void
 }
 
 #[cfg(CONFIG_PCI_DRIVERS_LEGACY)]
-pub unsafe fn pci_iounmap(dev: *mut pci_dev, addr: *mut ::core::ffi::c_void) {
+pub unsafe fn pci_iounmap(dev: *mut pci_dev, addr: *mut ::kernel::ffi::c_void) {
     let ctrl: *mut pci_controller = (*(*dev).bus).sysdata;
-    let base = (*ctrl).io_map_base as *mut ::core::ffi::c_void;
+    let base = (*ctrl).io_map_base as *mut ::kernel::ffi::c_void;
 
     if (addr as usize) < (base as usize)
         || (addr as usize)
@@ -59,7 +59,7 @@ pub unsafe fn pci_iounmap(dev: *mut pci_dev, addr: *mut ::core::ffi::c_void) {
 
 #[cfg(CONFIG_PCI_DRIVERS_LEGACY)]
 #[no_mangle]
-pub static EXPORT_SYMBOL_pci_iounmap: unsafe extern "C" fn(*mut pci_dev, *mut ::core::ffi::c_void) =
+pub static EXPORT_SYMBOL_pci_iounmap: unsafe extern "C" fn(*mut pci_dev, *mut ::kernel::ffi::c_void) =
     pci_iounmap;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

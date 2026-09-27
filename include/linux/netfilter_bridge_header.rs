@@ -5,7 +5,7 @@
 
 #[repr(C)]
 pub struct nf_bridge_frag_data {
-    pub mac: [core::ffi::c_char; ETH_HLEN],
+    pub mac: [kernel::ffi::c_char; ETH_HLEN],
     pub vlan_present: bool,
     pub vlan_tci: u16,
     pub vlan_proto: u16, // __be16
@@ -19,7 +19,7 @@ extern "C" {
         net: *mut net,
         sk: *mut sock,
         skb: *mut sk_buff,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_BRIDGE_NETFILTER)]
@@ -46,7 +46,7 @@ pub unsafe fn nf_bridge_info_exists(skb: *const sk_buff) -> bool {
 
 #[cfg(CONFIG_BRIDGE_NETFILTER)]
 #[inline]
-pub unsafe fn nf_bridge_get_physinif(skb: *const sk_buff) -> core::ffi::c_int {
+pub unsafe fn nf_bridge_get_physinif(skb: *const sk_buff) -> kernel::ffi::c_int {
     let nf_bridge: *const nf_bridge_info = nf_bridge_info_get(skb);
 
     if nf_bridge.is_null() {
@@ -58,7 +58,7 @@ pub unsafe fn nf_bridge_get_physinif(skb: *const sk_buff) -> core::ffi::c_int {
 
 #[cfg(CONFIG_BRIDGE_NETFILTER)]
 #[inline]
-pub unsafe fn nf_bridge_get_physoutif(skb: *const sk_buff) -> core::ffi::c_int {
+pub unsafe fn nf_bridge_get_physoutif(skb: *const sk_buff) -> kernel::ffi::c_int {
     let nf_bridge: *const nf_bridge_info = nf_bridge_info_get(skb);
 
     if nf_bridge.is_null() {

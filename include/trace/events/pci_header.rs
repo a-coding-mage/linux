@@ -5,7 +5,7 @@
  * declarations and data descriptions; their framework implementation is an
  * external dependency. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* PCI hotplug event values are supplied by the PCI tracepoint definitions. */
 pub const PCI_HOTPLUG_LINK_UP: i32 = 0;
@@ -40,15 +40,15 @@ pub const LNKSTA_FLAGS: &[(&str, u32)] = &[
 
 #[repr(C)]
 pub struct PciBus {
-    pub self_: *mut core::ffi::c_void,
+    pub self_: *mut kernel::ffi::c_void,
     pub cur_bus_speed: u32,
     pub max_bus_speed: u32,
     pub flit_mode: u32,
 }
 
 unsafe extern "C" {
-    pub fn pci_name(dev: *const core::ffi::c_void) -> *const c_char;
-    pub fn pci_pcie_type(dev: *const core::ffi::c_void) -> u32;
+    pub fn pci_name(dev: *const kernel::ffi::c_void) -> *const c_char;
+    pub fn pci_pcie_type(dev: *const kernel::ffi::c_void) -> u32;
 }
 
 #[repr(C)]

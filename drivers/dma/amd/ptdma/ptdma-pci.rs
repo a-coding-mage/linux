@@ -14,7 +14,7 @@
 
 #[repr(C)]
 pub struct pt_msix {
-    pub msix_count: core::ffi::c_int,
+    pub msix_count: kernel::ffi::c_int,
     pub msix_entry: msix_entry,
 }
 
@@ -26,7 +26,7 @@ pub struct msix_entry {
 
 // External kernel and PTDMA declarations are supplied by other translated files.
 extern "C" {
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn init_list_head(list: *mut list_head);
     fn to_pci_dev(dev: *mut device) -> *mut pci_dev;
     fn pci_enable_msix_range(pdev: *mut pci_dev, entries: *mut msix_entry, min: i32, max: i32) -> i32;
@@ -35,15 +35,15 @@ extern "C" {
     fn pci_disable_msi(pdev: *mut pci_dev);
     fn pcim_enable_device(pdev: *mut pci_dev) -> i32;
     fn pci_select_bars(pdev: *mut pci_dev, flags: u32) -> i32;
-    fn pcim_iomap_regions(pdev: *mut pci_dev, mask: i32, name: *const core::ffi::c_char) -> i32;
-    fn pcim_iomap_table(pdev: *mut pci_dev) -> *mut *mut core::ffi::c_void;
+    fn pcim_iomap_regions(pdev: *mut pci_dev, mask: i32, name: *const kernel::ffi::c_char) -> i32;
+    fn pcim_iomap_table(pdev: *mut pci_dev) -> *mut *mut kernel::ffi::c_void;
     fn pci_set_master(pdev: *mut pci_dev);
     fn dma_set_mask_and_coherent(dev: *mut device, mask: u64) -> i32;
-    fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
+    fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
     fn pt_core_init(pt: *mut pt_device) -> i32;
     fn pt_core_destroy(pt: *mut pt_device);
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)] pub struct device { pub private: [u8; 0] }
@@ -56,7 +56,7 @@ extern "C" {
     pub pt_msix: *mut pt_msix,
     pub pt_irq: i32,
     pub dev_vdata: *mut pt_dev_vdata,
-    pub io_regs: *mut core::ffi::c_void,
+    pub io_regs: *mut kernel::ffi::c_void,
 }
 
 unsafe fn pt_alloc_struct(dev: *mut device) -> *mut pt_device {

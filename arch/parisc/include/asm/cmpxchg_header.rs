@@ -14,7 +14,7 @@ unsafe extern "C" {
 
 /* __xchg32/64 defined in arch/parisc/lib/bitops.c */
 unsafe extern "C" {
-    pub fn __xchg8(x: core::ffi::c_char, ptr: *mut core::ffi::c_char) -> usize;
+    pub fn __xchg8(x: kernel::ffi::c_char, ptr: *mut kernel::ffi::c_char) -> usize;
     pub fn __xchg32(x: i32, ptr: *mut i32) -> usize;
     /* CONFIG_64BIT */
     pub fn __xchg64(x: usize, ptr: *mut usize) -> usize;
@@ -22,12 +22,12 @@ unsafe extern "C" {
 
 /* optimizer better get rid of switch since size is a constant */
 #[inline]
-pub unsafe fn __arch_xchg(x: usize, ptr: *mut core::ffi::c_void, size: i32) -> usize {
+pub unsafe fn __arch_xchg(x: usize, ptr: *mut kernel::ffi::c_void, size: i32) -> usize {
     match size {
         /* CONFIG_64BIT: case 8 */
         8 => unsafe { __xchg64(x, ptr.cast::<usize>()) },
         4 => unsafe { __xchg32(x as i32, ptr.cast::<i32>()) },
-        1 => unsafe { __xchg8(x as core::ffi::c_char, ptr.cast::<core::ffi::c_char>()) },
+        1 => unsafe { __xchg8(x as kernel::ffi::c_char, ptr.cast::<kernel::ffi::c_char>()) },
         _ => {
             unsafe { __xchg_called_with_bad_pointer() };
             x
@@ -61,7 +61,7 @@ unsafe extern "C" {
 
 /* don't worry...optimizer will get rid of most of this */
 #[inline]
-pub unsafe fn __cmpxchg(ptr: *mut core::ffi::c_void, old: usize, new_: usize, size: i32) -> usize {
+pub unsafe fn __cmpxchg(ptr: *mut kernel::ffi::c_void, old: usize, new_: usize, size: i32) -> usize {
     match size {
         /* CONFIG_64BIT: size == 8 */
         8 => unsafe { __cmpxchg_u64(ptr.cast(), old as u64, new_ as u64) as usize },
@@ -77,12 +77,12 @@ pub unsafe fn __cmpxchg(ptr: *mut core::ffi::c_void, old: usize, new_: usize, si
 
 /* Supplied by <asm-generic/cmpxchg-local.h>. */
 unsafe extern "C" {
-    pub fn __generic_cmpxchg_local(ptr: *mut core::ffi::c_void, old: usize, new_: usize, size: i32) -> usize;
+    pub fn __generic_cmpxchg_local(ptr: *mut kernel::ffi::c_void, old: usize, new_: usize, size: i32) -> usize;
     pub fn __generic_cmpxchg64_local<T>(ptr: *mut T, old: T, new_: T) -> T;
 }
 
 #[inline]
-pub unsafe fn __cmpxchg_local(ptr: *mut core::ffi::c_void, old: usize, new_: usize, size: i32) -> usize {
+pub unsafe fn __cmpxchg_local(ptr: *mut kernel::ffi::c_void, old: usize, new_: usize, size: i32) -> usize {
     match size {
         /* CONFIG_64BIT: case 8 */
         8 => unsafe { __cmpxchg_u64(ptr.cast(), old as u64, new_ as u64) as usize },

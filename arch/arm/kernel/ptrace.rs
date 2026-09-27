@@ -15,7 +15,7 @@ const BREAKINST_THUMB: u32 = 0xde01;
 
 #[repr(C)]
 struct pt_regs_offset {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     offset: i32,
 }
 
@@ -41,7 +41,7 @@ static regoffset_table: [pt_regs_offset; 19] = [
     pt_regs_offset { name: core::ptr::null(), offset: 0 },
 ];
 
-pub unsafe fn regs_query_register_offset(name: *const core::ffi::c_char) -> i32 {
+pub unsafe fn regs_query_register_offset(name: *const kernel::ffi::c_char) -> i32 {
     for r in &regoffset_table {
         if r.name.is_null() { break; }
         if strcmp(r.name, name) == 0 { return r.offset; }
@@ -49,7 +49,7 @@ pub unsafe fn regs_query_register_offset(name: *const core::ffi::c_char) -> i32 
     -EINVAL
 }
 
-pub unsafe fn regs_query_register_name(offset: u32) -> *const core::ffi::c_char {
+pub unsafe fn regs_query_register_name(offset: u32) -> *const kernel::ffi::c_char {
     for r in &regoffset_table {
         if r.name.is_null() { break; }
         if r.offset == offset as i32 { return r.name; }
@@ -113,7 +113,7 @@ unsafe fn ptrace_write_user(tsk: *mut task_struct, off: ulong, val: ulong) -> i3
 }
 
 #[cfg(CONFIG_IWMMXT)]
-unsafe fn ptrace_getwmmxregs(tsk: *mut task_struct, ufp: *mut core::ffi::c_void) -> i32 {
+unsafe fn ptrace_getwmmxregs(tsk: *mut task_struct, ufp: *mut kernel::ffi::c_void) -> i32 {
     let thread = task_thread_info(tsk);
     if !test_ti_thread_flag(thread, TIF_USING_IWMMXT) { return -ENODATA; }
     iwmmxt_task_disable(thread);
@@ -121,7 +121,7 @@ unsafe fn ptrace_getwmmxregs(tsk: *mut task_struct, ufp: *mut core::ffi::c_void)
 }
 
 #[cfg(CONFIG_IWMMXT)]
-unsafe fn ptrace_setwmmxregs(tsk: *mut task_struct, ufp: *const core::ffi::c_void) -> i32 {
+unsafe fn ptrace_setwmmxregs(tsk: *mut task_struct, ufp: *const kernel::ffi::c_void) -> i32 {
     let thread = task_thread_info(tsk);
     if !test_ti_thread_flag(thread, TIF_USING_IWMMXT) { return -EACCES; }
     iwmmxt_task_release(thread);

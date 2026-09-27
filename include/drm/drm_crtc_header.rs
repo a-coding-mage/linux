@@ -30,7 +30,7 @@ pub enum list_head {}
 pub enum dentry {}
 pub enum drm_modeset_lock {}
 pub enum ktime_t {}
-pub type spinlock_t = core::ffi::c_void;
+pub type spinlock_t = kernel::ffi::c_void;
 pub type drm_scaling_filter = u32;
 
 #[repr(C)]
@@ -85,9 +85,9 @@ pub struct drm_crtc_funcs {
     pub atomic_get_property: Option<unsafe extern "C" fn(*mut drm_crtc, *const drm_crtc_state, *mut drm_property, *mut u64) -> i32>,
     pub late_register: Option<unsafe extern "C" fn(*mut drm_crtc) -> i32>,
     pub early_unregister: Option<unsafe extern "C" fn(*mut drm_crtc)>,
-    pub set_crc_source: Option<unsafe extern "C" fn(*mut drm_crtc, *const core::ffi::c_char) -> i32>,
-    pub verify_crc_source: Option<unsafe extern "C" fn(*mut drm_crtc, *const core::ffi::c_char, *mut usize) -> i32>,
-    pub get_crc_sources: Option<unsafe extern "C" fn(*mut drm_crtc, *mut usize) -> *const *const core::ffi::c_char>,
+    pub set_crc_source: Option<unsafe extern "C" fn(*mut drm_crtc, *const kernel::ffi::c_char) -> i32>,
+    pub verify_crc_source: Option<unsafe extern "C" fn(*mut drm_crtc, *const kernel::ffi::c_char, *mut usize) -> i32>,
+    pub get_crc_sources: Option<unsafe extern "C" fn(*mut drm_crtc, *mut usize) -> *const *const kernel::ffi::c_char>,
     pub atomic_print_state: Option<unsafe extern "C" fn(*mut drm_printer, *const drm_crtc_state)>,
     pub get_vblank_counter: Option<unsafe extern "C" fn(*mut drm_crtc) -> u32>,
     pub enable_vblank: Option<unsafe extern "C" fn(*mut drm_crtc) -> i32>,
@@ -98,7 +98,7 @@ pub struct drm_crtc_funcs {
 #[repr(C)]
 pub struct drm_crtc {
     pub dev: *mut drm_device, pub port: *mut device_node, pub head: list_head,
-    pub name: *mut core::ffi::c_char, pub mutex: drm_modeset_lock, pub base: drm_mode_object,
+    pub name: *mut kernel::ffi::c_char, pub mutex: drm_modeset_lock, pub base: drm_mode_object,
     pub primary: *mut drm_plane, pub cursor: *mut drm_plane, pub index: u32,
     pub cursor_x: i32, pub cursor_y: i32, pub enabled: bool, pub mode: drm_display_mode,
     pub hwmode: drm_display_mode, pub x: i32, pub y: i32,
@@ -107,7 +107,7 @@ pub struct drm_crtc {
     pub scaling_filter_property: *mut drm_property, pub sharpness_strength_property: *mut drm_property,
     pub state: *mut drm_crtc_state, pub commit_list: list_head, pub commit_lock: spinlock_t,
     pub debugfs_entry: *mut dentry, pub crc: drm_crtc_crc, pub fence_context: u32,
-    pub fence_lock: spinlock_t, pub fence_seqno: usize, pub timeline_name: [core::ffi::c_char; 32],
+    pub fence_lock: spinlock_t, pub fence_seqno: usize, pub timeline_name: [kernel::ffi::c_char; 32],
     pub self_refresh_data: *mut drm_self_refresh_data,
 }
 
@@ -118,10 +118,10 @@ pub struct drm_mode_set {
 }
 
 extern "C" {
-    pub fn drm_crtc_init_with_planes(dev: *mut drm_device, crtc: *mut drm_crtc, primary: *mut drm_plane, cursor: *mut drm_plane, funcs: *const drm_crtc_funcs, name: *const core::ffi::c_char, ...) -> i32;
-    pub fn drmm_crtc_init_with_planes(dev: *mut drm_device, crtc: *mut drm_crtc, primary: *mut drm_plane, cursor: *mut drm_plane, funcs: *const drm_crtc_funcs, name: *const core::ffi::c_char, ...) -> i32;
+    pub fn drm_crtc_init_with_planes(dev: *mut drm_device, crtc: *mut drm_crtc, primary: *mut drm_plane, cursor: *mut drm_plane, funcs: *const drm_crtc_funcs, name: *const kernel::ffi::c_char, ...) -> i32;
+    pub fn drmm_crtc_init_with_planes(dev: *mut drm_device, crtc: *mut drm_crtc, primary: *mut drm_plane, cursor: *mut drm_plane, funcs: *const drm_crtc_funcs, name: *const kernel::ffi::c_char, ...) -> i32;
     pub fn drm_crtc_cleanup(crtc: *mut drm_crtc);
-    pub fn __drmm_crtc_alloc_with_planes(dev: *mut drm_device, size: usize, offset: usize, primary: *mut drm_plane, cursor: *mut drm_plane, funcs: *const drm_crtc_funcs, name: *const core::ffi::c_char, ...) -> *mut core::ffi::c_void;
+    pub fn __drmm_crtc_alloc_with_planes(dev: *mut drm_device, size: usize, offset: usize, primary: *mut drm_plane, cursor: *mut drm_plane, funcs: *const drm_crtc_funcs, name: *const kernel::ffi::c_char, ...) -> *mut kernel::ffi::c_void;
     pub fn drm_mode_set_config_internal(set: *mut drm_mode_set) -> i32;
     pub fn drm_crtc_from_index(dev: *mut drm_device, idx: i32) -> *mut drm_crtc;
     pub fn drm_crtc_create_scaling_filter_property(crtc: *mut drm_crtc, supported_filters: u32) -> i32;

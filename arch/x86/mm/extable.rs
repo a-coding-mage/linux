@@ -75,22 +75,137 @@ unsafe fn ex_handler_ucopy_len(fixup: *const exception_table_entry, regs: *mut p
 
 pub unsafe fn ex_get_fixup_type(ip: c_ulong) -> i32 { let e = search_exception_tables(ip); if e.is_null() { EX_TYPE_NONE } else { field_get(EX_DATA_TYPE_MASK, (*e).data) } }
 
+#[cfg(CONFIG_X86_FRED)]
+unsafe fn ex_handler_eretu(fixup: *const exception_table_entry, regs: *mut pt_regs, error_code: c_ulong) -> bool {
+    let uregs = ((*regs).sp - core::mem::offset_of!(pt_regs, orig_ax) as c_ulong) as *mut pt_regs;
+    let ss = (*uregs).ss.ss;
+    let cs = (*uregs).cs.cs;
+
+    /*
+     * Move the NMI bit from the invalid stack frame, which caused ERETU
+     * to fault, to the fault handler's stack frame, thus to unblock NMI
+     * with the fault handler's ERETS instruction ASAP if NMI is blocked.
+     */
+    (*regs).ss.fred_ss.set_nmi((*uregs).ss.fred_ss.nmi());
+
+    /*
+     * Sync event information to uregs, i.e., the ERETU return frame, but
+     * is it safe to write to the ERETU return frame which is just above
+     * current event stack frame?
+     *
+     * The RSP used by FRED to push a stack frame is not the value in %rsp,
+     * it is calculated from %rsp with the following 2 steps:
+     * 1) RSP = %rsp - (IA32_FRED_CONFIG & 0x1c0)    // Reserve N*64 bytes
+     * 2) RSP = RSP & ~0x3f        // Align to a 64-byte cache line
+     * when an event delivery doesn't trigger a stack level change.
+     *
+     * Here is an example with N*64 (N=1) bytes reserved:
+     *
+     *  64-byte cache line ==>  ______________
+     *                         |___Reserved___|
+     *                         |__Event_data__|
+     *                         |_____SS_______|
+     *                         |_____RSP______|
+     *                         |_____FLAGS____|
+     *                         |_____CS_______|
+     *                         |_____IP_______|
+     *  64-byte cache line ==> |__Error_code__| <== ERETU return frame
+     *                         |______________|
+     *                         |______________|
+     *                         |______________|
+     *                         |______________|
+     *                         |______________|
+     *                         |______________|
+     *                         |______________|
+     *  64-byte cache line ==> |______________| <== RSP after step 1) and 2)
+     *                         |___Reserved___|
+     *                         |__Event_data__|
+     *                         |_____SS_______|
+     *                         |_____RSP______|
+     *                         |_____FLAGS____|
+     *                         |_____CS_______|
+     *                         |_____IP_______|
+     *  64-byte cache line ==> |__Error_code__| <== ERETS return frame
+     *
+     * Thus a new FRED stack frame will always be pushed below a previous
+     * FRED stack frame ((N*64) bytes may be reserved between), and it is
+     * safe to write to a previous FRED stack frame as they never overlap.
+     */
+    (*fred_info(uregs)).edata = fred_event_data(regs) as _;
+    (*uregs).ss.ssx = (*regs).ss.ssx;
+    (*uregs).ss.fred_ss.set_ss(ss as u64);
+    (*uregs).ss.fred_ss.set_nmi(0);
+    (*uregs).cs.csx = (*regs).cs.csx;
+    (*uregs).cs.fred_cs.set_sl(0);
+    (*uregs).cs.fred_cs.set_wfe(0);
+    (*uregs).cs.cs = cs;
+    (*uregs).orig_ax = error_code;
+
+    ex_handler_default(fixup, regs)
+}
+
 pub unsafe fn fixup_exception(regs: *mut pt_regs, trapnr: i32, error_code: c_ulong, fault_addr: c_ulong) -> i32 {
-    let e = search_exception_tables((*regs).ip); if e.is_null() { return 0; }
-    let typ = field_get(EX_DATA_TYPE_MASK, (*e).data); let reg = field_get(EX_DATA_REG_MASK, (*e).data); let imm = field_get_signed(EX_DATA_IMM_MASK, (*e).data);
-    match typ {
+    #[cfg(CONFIG_PNPBIOS)]
+    if unlikely(SEGMENT_IS_PNP_CODE((*regs).cs)) {
+        extern "C" {
+            static pnp_bios_fault_eip: u32;
+            static pnp_bios_fault_esp: u32;
+            static mut pnp_bios_is_utter_crap: u32;
+        }
+        pnp_bios_is_utter_crap = 1;
+        printk(c"\x012PNPBIOS fault.. attempting recovery.\n".as_ptr());
+        core::arch::asm!(
+            "movl {esp}, %esp",
+            "jmp *{eip}",
+            esp = in(reg) pnp_bios_fault_esp,
+            eip = in(reg) pnp_bios_fault_eip,
+            options(att_syntax, noreturn),
+        );
+    }
+
+    let e = search_exception_tables((*regs).ip);
+    if e.is_null() {
+        return 0;
+    }
+
+    let typ = field_get(EX_DATA_TYPE_MASK, (*e).data);
+    let reg = field_get(EX_DATA_REG_MASK, (*e).data);
+    let imm = field_get_signed(EX_DATA_IMM_MASK, (*e).data);
+
+    let handled: bool = match typ {
         EX_TYPE_DEFAULT | EX_TYPE_DEFAULT_MCE_SAFE => ex_handler_default(e, regs),
         EX_TYPE_FAULT | EX_TYPE_FAULT_MCE_SAFE => ex_handler_fault(e, regs, trapnr),
         EX_TYPE_UACCESS => ex_handler_uaccess(e, regs, trapnr, fault_addr),
-        EX_TYPE_CLEAR_FS => ex_handler_clear_fs(e, regs), EX_TYPE_FPU_RESTORE => ex_handler_fprestore(e, regs),
-        EX_TYPE_BPF => ex_handler_bpf(e, regs), EX_TYPE_WRMSR => ex_handler_msr(e, regs, true, false, reg), EX_TYPE_RDMSR => ex_handler_msr(e, regs, false, false, reg),
-        EX_TYPE_WRMSR_SAFE => ex_handler_msr(e, regs, true, true, reg), EX_TYPE_RDMSR_SAFE => ex_handler_msr(e, regs, false, true, reg),
-        EX_TYPE_WRMSR_IN_MCE => { ex_handler_msr_mce(regs, true); true }, EX_TYPE_RDMSR_IN_MCE => { ex_handler_msr_mce(regs, false); true },
-        EX_TYPE_POP_REG => { (*regs).sp = (*regs).sp.wrapping_add(core::mem::size_of::<c_long>() as c_ulong); ex_handler_imm_reg(e, regs, reg, imm) },
-        EX_TYPE_IMM_REG => ex_handler_imm_reg(e, regs, reg, imm), EX_TYPE_FAULT_SGX => ex_handler_sgx(e, regs, trapnr),
-        EX_TYPE_UCOPY_LEN => ex_handler_ucopy_len(e, regs, trapnr, fault_addr, reg, imm), EX_TYPE_ZEROPAD => ex_handler_zeropad(e, regs, fault_addr),
-        _ => { bug!(); false }
-    } as i32
+        EX_TYPE_CLEAR_FS => ex_handler_clear_fs(e, regs),
+        EX_TYPE_FPU_RESTORE => ex_handler_fprestore(e, regs),
+        EX_TYPE_BPF => ex_handler_bpf(e, regs),
+        EX_TYPE_WRMSR => ex_handler_msr(e, regs, true, false, reg),
+        EX_TYPE_RDMSR => ex_handler_msr(e, regs, false, false, reg),
+        EX_TYPE_WRMSR_SAFE => ex_handler_msr(e, regs, true, true, reg),
+        EX_TYPE_RDMSR_SAFE => ex_handler_msr(e, regs, false, true, reg),
+        EX_TYPE_WRMSR_IN_MCE => {
+            ex_handler_msr_mce(regs, true);
+            BUG()
+        }
+        EX_TYPE_RDMSR_IN_MCE => {
+            ex_handler_msr_mce(regs, false);
+            BUG()
+        }
+        EX_TYPE_POP_REG => {
+            (*regs).sp = (*regs).sp.wrapping_add(core::mem::size_of::<c_long>() as c_ulong);
+            /* fallthrough */
+            ex_handler_imm_reg(e, regs, reg, imm)
+        }
+        EX_TYPE_IMM_REG => ex_handler_imm_reg(e, regs, reg, imm),
+        EX_TYPE_FAULT_SGX => ex_handler_sgx(e, regs, trapnr),
+        EX_TYPE_UCOPY_LEN => ex_handler_ucopy_len(e, regs, trapnr, fault_addr, reg, imm),
+        EX_TYPE_ZEROPAD => ex_handler_zeropad(e, regs, fault_addr),
+        #[cfg(CONFIG_X86_FRED)]
+        EX_TYPE_ERETU => ex_handler_eretu(e, regs, error_code),
+        _ => BUG(),
+    };
+    let _ = error_code;
+    handled as i32
 }
 
 extern "C" { static mut early_recursion_flag: u32; }

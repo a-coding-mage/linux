@@ -20,7 +20,7 @@ pub struct pci_dev {
 
 #[repr(C)]
 pub struct pci_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id_table: *const pci_device_id,
     pub probe: Option<unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> i32>,
 }
@@ -29,14 +29,14 @@ extern "C" {
     fn inw(port: u32) -> u16;
     fn inl(port: u32) -> u32;
     fn outl(value: u32, port: u32);
-    fn request_region(start: u32, length: u32, name: *const core::ffi::c_char) -> *mut core::ffi::c_void;
+    fn request_region(start: u32, length: u32, name: *const kernel::ffi::c_char) -> *mut kernel::ffi::c_void;
     fn release_region(start: u32, length: u32);
     fn pci_resource_start(dev: *mut pci_dev, bar: u32) -> u32;
     fn pci_read_config_dword(dev: *mut pci_dev, where_: u32, value: *mut u32) -> i32;
     fn pci_register_driver(driver: *mut pci_driver) -> i32;
     fn pci_unregister_driver(driver: *mut pci_driver);
-    fn mutex_lock(lock: *mut core::ffi::c_void);
-    fn mutex_unlock(lock: *mut core::ffi::c_void);
+    fn mutex_lock(lock: *mut kernel::ffi::c_void);
+    fn mutex_unlock(lock: *mut kernel::ffi::c_void);
 }
 
 // External constants supplied by the SCx200 and PCI headers.
@@ -62,7 +62,7 @@ macro_rules! scx200_cb_probe {
 pub static mut scx200_gpio_base: u32 = 0;
 pub static mut scx200_gpio_shadow: [u64; 2] = [0; 2];
 pub static mut scx200_cb_base: u32 = 0;
-static mut scx200_gpio_config_lock: core::ffi::c_void = core::ffi::c_void {};
+static mut scx200_gpio_config_lock: kernel::ffi::c_void = kernel::ffi::c_void {};
 
 static mut scx200_tbl: [pci_device_id; 5] = [
     pci_device_id { data: [0; 8] },
@@ -79,7 +79,7 @@ unsafe extern "C" fn scx200_probe(pdev: *mut pci_dev, _ent: *const pci_device_id
        (*pdev).device == PCI_DEVICE_ID_NS_SC1100_BRIDGE {
         base = pci_resource_start(pdev, 0);
 
-        if request_region(base, SCx200_GPIO_SIZE, b"NatSemi SCx200 GPIO\0".as_ptr() as *const core::ffi::c_char).is_null() {
+        if request_region(base, SCx200_GPIO_SIZE, b"NatSemi SCx200 GPIO\0".as_ptr() as *const kernel::ffi::c_char).is_null() {
             return -16; // -EBUSY
         }
 
@@ -126,7 +126,7 @@ pub unsafe fn scx200_gpio_configure(index: u32, mask: u32, bits: u32) -> u32 {
 }
 
 static mut scx200_pci_driver: pci_driver = pci_driver {
-    name: b"scx200\0".as_ptr() as *const core::ffi::c_char,
+    name: b"scx200\0".as_ptr() as *const kernel::ffi::c_char,
     id_table: unsafe { scx200_tbl.as_ptr() },
     probe: Some(scx200_probe),
 };

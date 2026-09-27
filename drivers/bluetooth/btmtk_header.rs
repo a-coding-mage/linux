@@ -79,7 +79,7 @@ pub struct reg_read_cmd { pub type_: u8, pub rsv: u8, pub num: u8, pub addr: u32
 pub struct reg_write_cmd { pub type_: u8, pub rsv: u8, pub num: u8, pub addr: u32, pub data: u32, pub mask: u32 }
 
 #[repr(C)]
-pub struct btmtk_hci_wmt_params { pub op: u8, pub flag: u8, pub dlen: u16, pub data: *const core::ffi::c_void, pub status: *mut u32 }
+pub struct btmtk_hci_wmt_params { pub op: u8, pub flag: u8, pub dlen: u16, pub data: *const kernel::ffi::c_void, pub status: *mut u32 }
 pub const BTMTK_TX_WAIT_VND_EVT: u32 = 0;
 pub const BTMTK_FIRMWARE_LOADED: u32 = 1;
 pub const BTMTK_HW_RESET_ACTIVE: u32 = 2;
@@ -87,12 +87,12 @@ pub const BTMTK_ISOPKT_OVER_INTR: u32 = 3;
 pub const BTMTK_ISOPKT_RUNNING: u32 = 4;
 pub const BTMTK_FIRMWARE_DL_RETRY: u32 = 5;
 
-pub type btmtk_reset_sync_func_t = unsafe extern "C" fn(*mut hci_dev, *mut core::ffi::c_void) -> i32;
+pub type btmtk_reset_sync_func_t = unsafe extern "C" fn(*mut hci_dev, *mut kernel::ffi::c_void) -> i32;
 #[repr(C)]
-pub struct btmtk_coredump_info { pub driver_name: *const core::ffi::c_char, pub fw_version: u32, pub cnt: u16, pub state: i32 }
+pub struct btmtk_coredump_info { pub driver_name: *const kernel::ffi::c_char, pub fw_version: u32, pub cnt: u16, pub state: i32 }
 #[repr(C)]
 pub struct btmtk_data {
-    pub drv_name: *const core::ffi::c_char, pub flags: usize, pub dev_id: u32,
+    pub drv_name: *const kernel::ffi::c_char, pub flags: usize, pub dev_id: u32,
     pub reset_sync: Option<btmtk_reset_sync_func_t>, pub cd_info: btmtk_coredump_info,
     pub udev: *mut usb_device, pub intf: *mut usb_interface, pub ctrl_anchor: *mut usb_anchor,
     pub evt_skb: *mut sk_buff, pub isopkt_tx_ep: *mut usb_endpoint_descriptor,
@@ -105,12 +105,12 @@ pub type wmt_cmd_sync_func_t = unsafe extern "C" fn(*mut hci_dev, *mut btmtk_hci
 /* The following declarations are enabled when CONFIG_BT_MTK is enabled. */
 extern "C" {
     pub fn btmtk_set_bdaddr(hdev: *mut hci_dev, bdaddr: *const bdaddr_t) -> i32;
-    pub fn btmtk_setup_firmware_79xx(hdev: *mut hci_dev, fwname: *const core::ffi::c_char, wmt_cmd_sync: Option<wmt_cmd_sync_func_t>, dev_id: u32) -> i32;
-    pub fn btmtk_setup_firmware(hdev: *mut hci_dev, fwname: *const core::ffi::c_char, wmt_cmd_sync: Option<wmt_cmd_sync_func_t>) -> i32;
+    pub fn btmtk_setup_firmware_79xx(hdev: *mut hci_dev, fwname: *const kernel::ffi::c_char, wmt_cmd_sync: Option<wmt_cmd_sync_func_t>, dev_id: u32) -> i32;
+    pub fn btmtk_setup_firmware(hdev: *mut hci_dev, fwname: *const kernel::ffi::c_char, wmt_cmd_sync: Option<wmt_cmd_sync_func_t>) -> i32;
     pub fn btmtk_reset_sync(hdev: *mut hci_dev);
-    pub fn btmtk_register_coredump(hdev: *mut hci_dev, name: *const core::ffi::c_char, fw_version: u32) -> i32;
+    pub fn btmtk_register_coredump(hdev: *mut hci_dev, name: *const kernel::ffi::c_char, fw_version: u32) -> i32;
     pub fn btmtk_process_coredump(hdev: *mut hci_dev, skb: *mut sk_buff) -> i32;
-    pub fn btmtk_fw_get_filename(buf: *mut core::ffi::c_char, size: usize, dev_id: u32, fw_ver: u32, fw_flavor: u32);
+    pub fn btmtk_fw_get_filename(buf: *mut kernel::ffi::c_char, size: usize, dev_id: u32, fw_ver: u32, fw_flavor: u32);
     pub fn btmtk_usb_subsys_reset(hdev: *mut hci_dev, dev_id: u32) -> i32;
     pub fn btmtk_usb_recv_acl(hdev: *mut hci_dev, skb: *mut sk_buff) -> i32;
     pub fn alloc_mtk_intr_urb(hdev: *mut hci_dev, skb: *mut sk_buff, tx_complete: usb_complete_t) -> *mut urb;

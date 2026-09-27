@@ -26,9 +26,9 @@ pub struct allocinfo_content_id {
 #[repr(C)]
 pub struct allocinfo_tag {
     /* Longer names are trimmed */
-    pub modname: [core::ffi::c_char; ALLOCINFO_STR_SIZE],
-    pub function: [core::ffi::c_char; ALLOCINFO_STR_SIZE],
-    pub filename: [core::ffi::c_char; ALLOCINFO_STR_SIZE],
+    pub modname: [kernel::ffi::c_char; ALLOCINFO_STR_SIZE],
+    pub function: [kernel::ffi::c_char; ALLOCINFO_STR_SIZE],
+    pub filename: [kernel::ffi::c_char; ALLOCINFO_STR_SIZE],
     pub lineno: __u64,
 }
 

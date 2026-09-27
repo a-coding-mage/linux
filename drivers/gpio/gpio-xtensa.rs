@@ -30,78 +30,78 @@
 
 #[cfg(xchal_have_cp)]
 #[inline]
-unsafe fn enable_cp(cpenable: *mut libc::c_ulong) -> libc::c_ulong {
-    let mut flags: libc::c_ulong = 0;
+unsafe fn enable_cp(cpenable: *mut kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
+    let mut flags: kernel::ffi::c_ulong = 0;
     local_irq_save(&mut flags);
     *cpenable = xtensa_get_sr(cpenable);
-    xtensa_set_sr(*cpenable | ((1 as libc::c_ulong) << XCHAL_CP_ID_XTIOP), cpenable);
+    xtensa_set_sr(*cpenable | ((1 as kernel::ffi::c_ulong) << XCHAL_CP_ID_XTIOP), cpenable);
     flags
 }
 
 #[cfg(xchal_have_cp)]
 #[inline]
-unsafe fn disable_cp(flags: libc::c_ulong, cpenable: libc::c_ulong) {
+unsafe fn disable_cp(flags: kernel::ffi::c_ulong, cpenable: kernel::ffi::c_ulong) {
     xtensa_set_sr(cpenable, cpenable);
     local_irq_restore(flags);
 }
 
 #[cfg(not(xchal_have_cp))]
 #[inline]
-unsafe fn enable_cp(cpenable: *mut libc::c_ulong) -> libc::c_ulong {
+unsafe fn enable_cp(cpenable: *mut kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     *cpenable = 0; // avoid uninitialized value warning
     0
 }
 
 #[cfg(not(xchal_have_cp))]
 #[inline]
-unsafe fn disable_cp(_flags: libc::c_ulong, _cpenable: libc::c_ulong) {}
+unsafe fn disable_cp(_flags: kernel::ffi::c_ulong, _cpenable: kernel::ffi::c_ulong) {}
 
 unsafe extern "C" fn xtensa_impwire_get_direction(
     _gc: *mut gpio_chip,
-    _offset: libc::c_uint,
-) -> libc::c_int {
+    _offset: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     GPIO_LINE_DIRECTION_IN // input only
 }
 
 unsafe extern "C" fn xtensa_impwire_get_value(
     _gc: *mut gpio_chip,
-    offset: libc::c_uint,
-) -> libc::c_int {
-    let mut saved_cpenable: libc::c_ulong = 0;
+    offset: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
+    let mut saved_cpenable: kernel::ffi::c_ulong = 0;
     let flags = enable_cp(&mut saved_cpenable);
     let mut impwire: u32;
     core::arch::asm!("read_impwire {0}", out(reg) impwire);
     disable_cp(flags, saved_cpenable);
-    ((impwire & (1u32 << offset)) != 0) as libc::c_int
+    ((impwire & (1u32 << offset)) != 0) as kernel::ffi::c_int
 }
 
 unsafe extern "C" fn xtensa_expstate_get_direction(
     _gc: *mut gpio_chip,
-    _offset: libc::c_uint,
-) -> libc::c_int {
+    _offset: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
     GPIO_LINE_DIRECTION_OUT // output only
 }
 
 unsafe extern "C" fn xtensa_expstate_get_value(
     _gc: *mut gpio_chip,
-    offset: libc::c_uint,
-) -> libc::c_int {
-    let mut saved_cpenable: libc::c_ulong = 0;
+    offset: kernel::ffi::c_uint,
+) -> kernel::ffi::c_int {
+    let mut saved_cpenable: kernel::ffi::c_ulong = 0;
     let flags = enable_cp(&mut saved_cpenable);
     let mut expstate: u32;
     core::arch::asm!("rur.expstate {0}", out(reg) expstate);
     disable_cp(flags, saved_cpenable);
-    ((expstate & (1u32 << offset)) != 0) as libc::c_int
+    ((expstate & (1u32 << offset)) != 0) as kernel::ffi::c_int
 }
 
 unsafe extern "C" fn xtensa_expstate_set_value(
     _gc: *mut gpio_chip,
-    offset: libc::c_uint,
-    value: libc::c_int,
-) -> libc::c_int {
+    offset: kernel::ffi::c_uint,
+    value: kernel::ffi::c_int,
+) -> kernel::ffi::c_int {
     let mask = 1u32 << offset;
     let val = if value != 0 { 1u32 << offset } else { 0 };
-    let mut saved_cpenable: libc::c_ulong = 0;
+    let mut saved_cpenable: kernel::ffi::c_ulong = 0;
     let flags = enable_cp(&mut saved_cpenable);
     core::arch::asm!("wrmsk_expstate {0}, {1}", in(reg) val, in(reg) mask);
     disable_cp(flags, saved_cpenable);
@@ -109,7 +109,7 @@ unsafe extern "C" fn xtensa_expstate_set_value(
 }
 
 static mut impwire_chip: gpio_chip = gpio_chip {
-    label: b"impwire\\0".as_ptr() as *const libc::c_char,
+    label: b"impwire\\0".as_ptr() as *const kernel::ffi::c_char,
     base: -1,
     ngpio: 32,
     get_direction: Some(xtensa_impwire_get_direction),
@@ -118,7 +118,7 @@ static mut impwire_chip: gpio_chip = gpio_chip {
 };
 
 static mut expstate_chip: gpio_chip = gpio_chip {
-    label: b"expstate\\0".as_ptr() as *const libc::c_char,
+    label: b"expstate\\0".as_ptr() as *const kernel::ffi::c_char,
     base: -1,
     ngpio: 32,
     get_direction: Some(xtensa_expstate_get_direction),
@@ -127,7 +127,7 @@ static mut expstate_chip: gpio_chip = gpio_chip {
     ..gpio_chip::ZERO
 };
 
-unsafe extern "C" fn xtensa_gpio_probe(_pdev: *mut platform_device) -> libc::c_int {
+unsafe extern "C" fn xtensa_gpio_probe(_pdev: *mut platform_device) -> kernel::ffi::c_int {
     let ret = gpiochip_add_data(&raw mut impwire_chip, core::ptr::null_mut());
     if ret != 0 {
         return ret;
@@ -137,16 +137,16 @@ unsafe extern "C" fn xtensa_gpio_probe(_pdev: *mut platform_device) -> libc::c_i
 
 static mut xtensa_gpio_driver: platform_driver = platform_driver {
     driver: device_driver {
-        name: b"xtensa-gpio\\0".as_ptr() as *const libc::c_char,
+        name: b"xtensa-gpio\\0".as_ptr() as *const kernel::ffi::c_char,
         ..device_driver::ZERO
     },
     probe: Some(xtensa_gpio_probe),
     ..platform_driver::ZERO
 };
 
-unsafe extern "C" fn xtensa_gpio_init() -> libc::c_int {
+unsafe extern "C" fn xtensa_gpio_init() -> kernel::ffi::c_int {
     let pdev = platform_device_register_simple(
-        b"xtensa-gpio\\0".as_ptr() as *const libc::c_char,
+        b"xtensa-gpio\\0".as_ptr() as *const kernel::ffi::c_char,
         0,
         core::ptr::null(),
         0,

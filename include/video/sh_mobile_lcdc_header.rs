@@ -133,22 +133,22 @@ pub struct sh_mobile_lcdc_sys_bus_cfg { pub ldmt2r: usize, pub ldmt3r: usize, pu
 
 #[repr(C)]
 pub struct sh_mobile_lcdc_sys_bus_ops {
-    pub write_index: Option<unsafe extern "C" fn(*mut core::ffi::c_void, usize)>,
-    pub write_data: Option<unsafe extern "C" fn(*mut core::ffi::c_void, usize)>,
-    pub read_data: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> usize>,
+    pub write_index: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, usize)>,
+    pub write_data: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, usize)>,
+    pub read_data: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> usize>,
 }
 
 #[repr(C)]
 pub struct sh_mobile_lcdc_panel_cfg {
     pub width: usize, pub height: usize,
-    pub setup_sys: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut sh_mobile_lcdc_sys_bus_ops) -> i32>,
-    pub start_transfer: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut sh_mobile_lcdc_sys_bus_ops)>,
+    pub setup_sys: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut sh_mobile_lcdc_sys_bus_ops) -> i32>,
+    pub start_transfer: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut sh_mobile_lcdc_sys_bus_ops)>,
     pub display_on: Option<unsafe extern "C" fn()>, pub display_off: Option<unsafe extern "C" fn()>,
 }
 
 #[repr(C)]
 pub struct sh_mobile_lcdc_bl_info {
-    pub name: *const core::ffi::c_char, pub max_brightness: i32,
+    pub name: *const kernel::ffi::c_char, pub max_brightness: i32,
     pub set_brightness: Option<unsafe extern "C" fn(i32) -> i32>,
 }
 

@@ -33,12 +33,12 @@ pub struct irq_data {
 }
 
 unsafe extern "C" {
-    fn writel(value: u32, address: *mut core::ffi::c_void);
+    fn writel(value: u32, address: *mut kernel::ffi::c_void);
     fn irq_alloc_generic_chip(
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
         num_ct: u32,
         irq_base: u32,
-        reg_base: *mut core::ffi::c_void,
+        reg_base: *mut kernel::ffi::c_void,
         handler: unsafe extern "C" fn(),
     ) -> *mut irq_chip_generic;
     fn irq_gc_mask_clr_bit(data: *mut irq_data);
@@ -66,7 +66,7 @@ const fn irq_msk(bits: u32) -> u32 {
 
 pub unsafe extern "C" fn orion_irq_init(
     irq_start: u32,
-    maskaddr: *mut core::ffi::c_void,
+    maskaddr: *mut kernel::ffi::c_void,
 ) {
     let gc: *mut irq_chip_generic;
     let ct: *mut irq_chip_type;
@@ -79,7 +79,7 @@ pub unsafe extern "C" fn orion_irq_init(
     let name = b"orion_irq\0";
     gc = unsafe {
         irq_alloc_generic_chip(
-            name.as_ptr() as *const core::ffi::c_char,
+            name.as_ptr() as *const kernel::ffi::c_char,
             1,
             irq_start,
             maskaddr,

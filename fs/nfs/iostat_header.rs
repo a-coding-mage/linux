@@ -14,8 +14,8 @@
 
 #[repr(C)]
 pub struct nfs_iostats {
-    pub bytes: [::core::ffi::c_ulonglong; __NFSIOS_BYTESMAX],
-    pub events: [::core::ffi::c_ulong; __NFSIOS_COUNTSMAX],
+    pub bytes: [::kernel::ffi::c_ulonglong; __NFSIOS_BYTESMAX],
+    pub events: [::kernel::ffi::c_ulong; __NFSIOS_COUNTSMAX],
 }
 
 #[inline]
@@ -38,7 +38,7 @@ pub unsafe fn nfs_inc_stats(
 pub unsafe fn nfs_add_server_stats(
     server: *const nfs_server,
     stat: nfs_stat_bytecounters,
-    addend: ::core::ffi::c_long,
+    addend: ::kernel::ffi::c_long,
 ) {
     this_cpu_add((*server).io_stats.bytes[stat as usize], addend);
 }
@@ -47,7 +47,7 @@ pub unsafe fn nfs_add_server_stats(
 pub unsafe fn nfs_add_stats(
     inode: *const inode,
     stat: nfs_stat_bytecounters,
-    addend: ::core::ffi::c_long,
+    addend: ::kernel::ffi::c_long,
 ) {
     nfs_add_server_stats(NFS_SERVER(inode), stat, addend);
 }

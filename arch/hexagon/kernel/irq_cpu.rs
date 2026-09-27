@@ -17,7 +17,7 @@ type IrqWakeHandler = unsafe extern "C" fn(*mut irq_data, u32) -> i32;
 
 #[repr(C)]
 pub struct irq_chip {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub irq_mask: Option<IrqHandler>,
     pub irq_unmask: Option<IrqHandler>,
     pub irq_set_wake: Option<IrqWakeHandler>,
@@ -62,7 +62,7 @@ unsafe extern "C" fn set_wake(_data: *mut irq_data, _on: u32) -> i32 {
 }
 
 static mut hexagon_irq_chip: irq_chip = irq_chip {
-    name: b"HEXAGON\0".as_ptr() as *const core::ffi::c_char,
+    name: b"HEXAGON\0".as_ptr() as *const kernel::ffi::c_char,
     irq_mask: Some(mask_irq),
     irq_unmask: Some(unmask_irq),
     irq_set_wake: Some(set_wake),

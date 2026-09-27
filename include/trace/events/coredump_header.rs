@@ -14,8 +14,8 @@
 /// providing a stable interface for monitoring coredump events.
 #[repr(C)]
 pub struct CoredumpEntry {
-    pub sig: ::core::ffi::c_int,
-    pub comm: [::core::ffi::c_char; TASK_COMM_LEN],
+    pub sig: ::kernel::ffi::c_int,
+    pub comm: [::kernel::ffi::c_char; TASK_COMM_LEN],
 }
 
 // TP_PROTO(int sig)
@@ -29,8 +29,8 @@ pub struct CoredumpEntry {
 #[inline]
 pub unsafe fn coredump_fast_assign(
     entry: *mut CoredumpEntry,
-    sig: ::core::ffi::c_int,
-    current_comm: *const ::core::ffi::c_char,
+    sig: ::kernel::ffi::c_int,
+    current_comm: *const ::kernel::ffi::c_char,
 ) {
     (*entry).sig = sig;
     ::core::ptr::copy_nonoverlapping(

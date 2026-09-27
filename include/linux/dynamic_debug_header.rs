@@ -4,10 +4,10 @@
 
 #[repr(C)]
 pub struct _ddebug {
-    pub modname: *const core::ffi::c_char,
-    pub function: *const core::ffi::c_char,
-    pub filename: *const core::ffi::c_char,
-    pub format: *const core::ffi::c_char,
+    pub modname: *const kernel::ffi::c_char,
+    pub function: *const kernel::ffi::c_char,
+    pub filename: *const kernel::ffi::c_char,
+    pub format: *const kernel::ffi::c_char,
     // C bit-fields: lineno:18, class_id:6, flags:8.
     pub lineno: u32,
     pub class_id: u32,
@@ -58,10 +58,10 @@ pub enum class_map_type {
 pub struct ddebug_class_map {
     pub link: list_head,
     pub r#mod: *mut module,
-    pub mod_name: *const core::ffi::c_char,
-    pub class_names: *const *const core::ffi::c_char,
-    pub length: core::ffi::c_int,
-    pub base: core::ffi::c_int,
+    pub mod_name: *const kernel::ffi::c_char,
+    pub class_names: *const *const kernel::ffi::c_char,
+    pub length: kernel::ffi::c_int,
+    pub base: kernel::ffi::c_int,
     pub map_type: class_map_type,
 }
 
@@ -75,25 +75,25 @@ pub struct _ddebug_info {
 
 #[repr(C)]
 pub union ddebug_class_param_bits {
-    pub bits: *mut core::ffi::c_ulong,
+    pub bits: *mut kernel::ffi::c_ulong,
     pub lvl: *mut u32,
 }
 
 #[repr(C)]
 pub struct ddebug_class_param {
     pub value: ddebug_class_param_bits,
-    pub flags: [core::ffi::c_char; 8],
+    pub flags: [kernel::ffi::c_char; 8],
     pub map: *const ddebug_class_map,
 }
 
 extern "C" {
-    pub fn __dynamic_pr_debug(descriptor: *mut _ddebug, fmt: *const core::ffi::c_char, ...);
-    pub fn __dynamic_dev_dbg(descriptor: *mut _ddebug, dev: *const device, fmt: *const core::ffi::c_char, ...);
-    pub fn __dynamic_netdev_dbg(descriptor: *mut _ddebug, dev: *const net_device, fmt: *const core::ffi::c_char, ...);
-    pub fn __dynamic_ibdev_dbg(descriptor: *mut _ddebug, ibdev: *const ib_device, fmt: *const core::ffi::c_char, ...);
-    pub fn ddebug_dyndbg_module_param_cb(param: *mut core::ffi::c_char, val: *mut core::ffi::c_char, modname: *const core::ffi::c_char) -> core::ffi::c_int;
-    pub fn param_set_dyndbg_classes(instr: *const core::ffi::c_char, kp: *const kernel_param) -> core::ffi::c_int;
-    pub fn param_get_dyndbg_classes(buffer: *mut core::ffi::c_char, kp: *const kernel_param) -> core::ffi::c_int;
+    pub fn __dynamic_pr_debug(descriptor: *mut _ddebug, fmt: *const kernel::ffi::c_char, ...);
+    pub fn __dynamic_dev_dbg(descriptor: *mut _ddebug, dev: *const device, fmt: *const kernel::ffi::c_char, ...);
+    pub fn __dynamic_netdev_dbg(descriptor: *mut _ddebug, dev: *const net_device, fmt: *const kernel::ffi::c_char, ...);
+    pub fn __dynamic_ibdev_dbg(descriptor: *mut _ddebug, ibdev: *const ib_device, fmt: *const kernel::ffi::c_char, ...);
+    pub fn ddebug_dyndbg_module_param_cb(param: *mut kernel::ffi::c_char, val: *mut kernel::ffi::c_char, modname: *const kernel::ffi::c_char) -> kernel::ffi::c_int;
+    pub fn param_set_dyndbg_classes(instr: *const kernel::ffi::c_char, kp: *const kernel_param) -> kernel::ffi::c_int;
+    pub fn param_get_dyndbg_classes(buffer: *mut kernel::ffi::c_char, kp: *const kernel_param) -> kernel::ffi::c_int;
     pub static param_ops_dyndbg_classes: kernel_param_ops;
 }
 
@@ -111,14 +111,14 @@ extern "C" {
 }
 
 #[cfg(not(CONFIG_DYNAMIC_DEBUG_CORE))]
-pub unsafe fn ddebug_dyndbg_module_param_cb(param: *mut core::ffi::c_char, val: *mut core::ffi::c_char, modname: *const core::ffi::c_char) -> core::ffi::c_int {
+pub unsafe fn ddebug_dyndbg_module_param_cb(param: *mut kernel::ffi::c_char, val: *mut kernel::ffi::c_char, modname: *const kernel::ffi::c_char) -> kernel::ffi::c_int {
     let _ = (param, val, modname);
     0
 }
 
 #[cfg(not(CONFIG_DYNAMIC_DEBUG_CORE))]
-pub unsafe fn param_set_dyndbg_classes(_instr: *const core::ffi::c_char, _kp: *const kernel_param) -> core::ffi::c_int { 0 }
+pub unsafe fn param_set_dyndbg_classes(_instr: *const kernel::ffi::c_char, _kp: *const kernel_param) -> kernel::ffi::c_int { 0 }
 #[cfg(not(CONFIG_DYNAMIC_DEBUG_CORE))]
-pub unsafe fn param_get_dyndbg_classes(_buffer: *mut core::ffi::c_char, _kp: *const kernel_param) -> core::ffi::c_int { 0 }
+pub unsafe fn param_get_dyndbg_classes(_buffer: *mut kernel::ffi::c_char, _kp: *const kernel_param) -> kernel::ffi::c_int { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

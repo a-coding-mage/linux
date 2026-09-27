@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* Routines for Asahi Kasei AK4114. */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 pub const AK4114_REG_PWRDN: u8 = 0x00;
 pub const AK4114_REG_FORMAT: u8 = 0x01;
@@ -89,7 +89,7 @@ pub const AK4114_QCRC_ERRORS: usize = 2; pub const AK4114_CCRC_ERRORS: usize = 3
     pub card: *mut snd_card, pub write: Option<ak4114_write_t>, pub read: Option<ak4114_read_t>, pub private_data: *mut c_void,
     pub wq_processing: atomic_t, pub reinit_mutex: mutex, pub lock: spinlock_t, pub regmap: [u8; 6], pub txcsb: [u8; 5],
     pub kctls: [*mut snd_kcontrol; AK4114_CONTROLS], pub playback_substream: *mut snd_pcm_substream, pub capture_substream: *mut snd_pcm_substream,
-    pub errors: [core::ffi::c_ulong; AK4114_NUM_ERRORS], pub rcs0: u8, pub rcs1: u8, pub work: delayed_work, pub check_flags: u32,
+    pub errors: [kernel::ffi::c_ulong; AK4114_NUM_ERRORS], pub rcs0: u8, pub rcs1: u8, pub work: delayed_work, pub check_flags: u32,
     pub change_callback_private: *mut c_void,
     pub change_callback: Option<unsafe extern "C" fn(*mut ak4114, u8, u8)>,
 }

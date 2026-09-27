@@ -87,7 +87,7 @@ pub struct nilfs_super_block {
     pub s_def_resgid: __le16, pub s_first_ino: __le32, pub s_inode_size: __le16,
     pub s_dat_entry_size: __le16, pub s_checkpoint_size: __le16,
     pub s_segment_usage_size: __le16, pub s_uuid: [__u8; 16],
-    pub s_volume_name: [core::ffi::c_char; 80], pub s_c_interval: __le32,
+    pub s_volume_name: [kernel::ffi::c_char; 80], pub s_c_interval: __le32,
     pub s_c_block_max: __le32, pub s_feature_compat: __le64,
     pub s_feature_compat_ro: __le64, pub s_feature_incompat: __le64,
     pub s_reserved: [__u32; 186],
@@ -127,7 +127,7 @@ pub const NILFS_MAX_BLOCK_SIZE: u32 = 65536;
 #[repr(C)]
 pub struct nilfs_dir_entry {
     pub inode: __le64, pub rec_len: __le16, pub name_len: __u8, pub file_type: __u8,
-    pub name: [core::ffi::c_char; NILFS_NAME_LEN], pub pad: core::ffi::c_char,
+    pub name: [kernel::ffi::c_char; NILFS_NAME_LEN], pub pad: kernel::ffi::c_char,
 }
 
 pub const NILFS_FT_UNKNOWN: u32 = 0;

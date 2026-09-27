@@ -5,7 +5,7 @@
 pub struct pt_regs;
 
 unsafe extern "C" {
-    pub fn bad_trap(regs: *mut pt_regs, arg: core::ffi::c_long);
+    pub fn bad_trap(regs: *mut pt_regs, arg: kernel::ffi::c_long);
 }
 
 /* Grossly misnamed. */

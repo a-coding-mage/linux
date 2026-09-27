@@ -65,16 +65,16 @@ pub const UCODE_MAX_PSP_PACKAGING: usize = (256usize.saturating_sub(core::mem::s
 #[repr(C)] pub struct amdgpu_psp_funcs { _private: [u8;0] }
 #[repr(C)] pub struct mutex { _private: [u8;0] }
 #[repr(C)] pub struct kicker_device { pub device:u16, pub revision:u8 }
-#[repr(C)] pub struct amdgpu_firmware_info { pub ucode_id:AMDGPU_UCODE_ID, pub fw:*const firmware, pub mc_addr:u64, pub kaddr:*mut core::ffi::c_void, pub ucode_size:u32, pub tmr_mc_addr_lo:u32, pub tmr_mc_addr_hi:u32 }
-#[repr(C)] pub struct amdgpu_firmware { pub ucode:[amdgpu_firmware_info; AMDGPU_UCODE_ID::AMDGPU_UCODE_ID_MAXIMUM as usize], pub load_type:amdgpu_firmware_load_type, pub fw_buf:*mut amdgpu_bo, pub fw_size:u32, pub max_ucodes:u32, pub funcs:*const amdgpu_psp_funcs, pub rbuf:*mut amdgpu_bo, pub mutex:mutex, pub gpu_info_fw:*const firmware, pub fw_buf_ptr:*mut core::ffi::c_void, pub fw_buf_mc:u64, pub pldm_version:u32 }
+#[repr(C)] pub struct amdgpu_firmware_info { pub ucode_id:AMDGPU_UCODE_ID, pub fw:*const firmware, pub mc_addr:u64, pub kaddr:*mut kernel::ffi::c_void, pub ucode_size:u32, pub tmr_mc_addr_lo:u32, pub tmr_mc_addr_hi:u32 }
+#[repr(C)] pub struct amdgpu_firmware { pub ucode:[amdgpu_firmware_info; AMDGPU_UCODE_ID::AMDGPU_UCODE_ID_MAXIMUM as usize], pub load_type:amdgpu_firmware_load_type, pub fw_buf:*mut amdgpu_bo, pub fw_size:u32, pub max_ucodes:u32, pub funcs:*const amdgpu_psp_funcs, pub rbuf:*mut amdgpu_bo, pub mutex:mutex, pub gpu_info_fw:*const firmware, pub fw_buf_ptr:*mut kernel::ffi::c_void, pub fw_buf_mc:u64, pub pldm_version:u32 }
 extern "C" {
-    pub fn amdgpu_ucode_request(adev:*mut amdgpu_device, fw:*mut *const firmware, required:amdgpu_ucode_required, fmt:*const core::ffi::c_char, ...)->i32;
+    pub fn amdgpu_ucode_request(adev:*mut amdgpu_device, fw:*mut *const firmware, required:amdgpu_ucode_required, fmt:*const kernel::ffi::c_char, ...)->i32;
     pub fn amdgpu_ucode_release(fw:*mut *const firmware);
     pub fn amdgpu_ucode_hdr_version(hdr:*mut amdgpu_firmware_header, hdr_major:u16, hdr_minor:u16)->bool;
     pub fn amdgpu_ucode_init_bo(adev:*mut amdgpu_device)->i32; pub fn amdgpu_ucode_create_bo(adev:*mut amdgpu_device)->i32; pub fn amdgpu_ucode_sysfs_init(adev:*mut amdgpu_device)->i32; pub fn amdgpu_ucode_free_bo(adev:*mut amdgpu_device); pub fn amdgpu_ucode_sysfs_fini(adev:*mut amdgpu_device);
     pub fn amdgpu_ucode_get_load_type(adev:*mut amdgpu_device, load_type:i32)->amdgpu_firmware_load_type;
-    pub fn amdgpu_ucode_name(ucode_id:AMDGPU_UCODE_ID)->*const core::ffi::c_char;
-    pub fn amdgpu_ucode_ip_version_decode(adev:*mut amdgpu_device, block_type:i32, ucode_prefix:*mut core::ffi::c_char, len:i32);
+    pub fn amdgpu_ucode_name(ucode_id:AMDGPU_UCODE_ID)->*const kernel::ffi::c_char;
+    pub fn amdgpu_ucode_ip_version_decode(adev:*mut amdgpu_device, block_type:i32, ucode_prefix:*mut kernel::ffi::c_char, len:i32);
     pub fn amdgpu_is_kicker_fw(adev:*mut amdgpu_device)->bool;
 }
 

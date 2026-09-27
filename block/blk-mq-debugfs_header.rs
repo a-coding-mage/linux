@@ -4,7 +4,7 @@
 
 /* CONFIG_BLK_DEBUG_FS declarations. */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub enum blk_mq_hw_ctx {}
 
@@ -12,9 +12,9 @@ pub enum blk_mq_hw_ctx {}
 pub struct blk_mq_debugfs_attr {
     pub name: *const c_char,
     pub mode: umode_t,
-    pub show: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut seq_file) -> i32>,
+    pub show: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void, *mut seq_file) -> i32>,
     pub write: Option<unsafe extern "C" fn(
-        *mut core::ffi::c_void,
+        *mut kernel::ffi::c_void,
         *const c_char,
         usize,
         *mut loff_t,
@@ -25,7 +25,7 @@ pub struct blk_mq_debugfs_attr {
 
 extern "C" {
     pub fn __blk_mq_debugfs_rq_show(m: *mut seq_file, rq: *mut request) -> i32;
-    pub fn blk_mq_debugfs_rq_show(m: *mut seq_file, v: *mut core::ffi::c_void) -> i32;
+    pub fn blk_mq_debugfs_rq_show(m: *mut seq_file, v: *mut kernel::ffi::c_void) -> i32;
 
     pub fn blk_mq_debugfs_register(q: *mut request_queue);
     pub fn blk_mq_debugfs_register_hctx(q: *mut request_queue, hctx: *mut blk_mq_hw_ctx);
@@ -82,12 +82,12 @@ pub unsafe fn blk_mq_debugfs_register_rq_qos_disabled(_q: *mut request_queue) {}
 
 /* CONFIG_BLK_DEV_ZONED && CONFIG_BLK_DEBUG_FS. */
 extern "C" {
-    pub fn queue_zone_wplugs_show(data: *mut core::ffi::c_void, m: *mut seq_file) -> i32;
+    pub fn queue_zone_wplugs_show(data: *mut kernel::ffi::c_void, m: *mut seq_file) -> i32;
 }
 
 #[inline]
 pub unsafe fn queue_zone_wplugs_show_disabled(
-    _data: *mut core::ffi::c_void,
+    _data: *mut kernel::ffi::c_void,
     _m: *mut seq_file,
 ) -> i32 {
     0

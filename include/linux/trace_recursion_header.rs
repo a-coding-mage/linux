@@ -67,7 +67,7 @@ extern "C" {
     pub fn preempt_enable_notrace();
     pub fn barrier();
     pub fn rcu_is_watching() -> bool;
-    pub fn WARN_ONCE(condition: bool, format: *const core::ffi::c_char, ...);
+    pub fn WARN_ONCE(condition: bool, format: *const kernel::ffi::c_char, ...);
     pub fn ftrace_record_recursion(ip: u64, parent_ip: u64);
     pub fn current_trace_recursion() -> *mut u32;
 }

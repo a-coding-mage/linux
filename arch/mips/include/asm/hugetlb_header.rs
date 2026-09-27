@@ -12,9 +12,9 @@ pub const __HAVE_ARCH_HUGE_PTEP_GET_AND_CLEAR: bool = true;
 
 pub unsafe fn huge_ptep_get_and_clear(
     mm: *mut mm_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
-    _sz: ::core::ffi::c_ulong,
+    _sz: ::kernel::ffi::c_ulong,
 ) -> pte_t {
     // C assigns pte_val(clear) from invalid_pte_table.  The transmute preserves
     // the source representation assignment; pte_t is supplied by asm/page.h.
@@ -31,7 +31,7 @@ pub const __HAVE_ARCH_HUGE_PTEP_CLEAR_FLUSH: bool = true;
 
 pub unsafe fn huge_ptep_clear_flush(
     vma: *mut vm_area_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
 ) -> pte_t {
     let sz = huge_page_size(hstate_vma(vma));
@@ -48,7 +48,7 @@ pub unsafe fn huge_ptep_clear_flush(
 
 pub const __HAVE_ARCH_HUGE_PTE_NONE: bool = true;
 
-pub unsafe fn huge_pte_none(pte: pte_t) -> ::core::ffi::c_int {
+pub unsafe fn huge_pte_none(pte: pte_t) -> ::kernel::ffi::c_int {
     let val = pte_val(pte) & !_PAGE_GLOBAL;
     if val == 0 || val == invalid_pte_table as usize {
         1
@@ -61,11 +61,11 @@ pub const __HAVE_ARCH_HUGE_PTEP_SET_ACCESS_FLAGS: bool = true;
 
 pub unsafe fn huge_ptep_set_access_flags(
     vma: *mut vm_area_struct,
-    addr: ::core::ffi::c_ulong,
+    addr: ::kernel::ffi::c_ulong,
     ptep: *mut pte_t,
     pte: pte_t,
-    _dirty: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    _dirty: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let changed = if !pte_same(*ptep, pte) { 1 } else { 0 };
 
     if changed != 0 {

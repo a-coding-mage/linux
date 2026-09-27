@@ -21,18 +21,18 @@ extern "C" {
     fn flipper_pic_get_irq() -> i32;
     fn udbg_progress();
     fn of_platform_bus_probe(
-        root: *mut core::ffi::c_void,
+        root: *mut kernel::ffi::c_void,
         matches: *const OfDeviceId,
-        parent: *mut core::ffi::c_void,
+        parent: *mut kernel::ffi::c_void,
     ) -> i32;
 }
 
 #[repr(C)]
 pub struct OfDeviceId {
-    pub name: *const core::ffi::c_char,
-    pub type_: *const core::ffi::c_char,
-    pub compatible: *const core::ffi::c_char,
-    pub data: *const core::ffi::c_void,
+    pub name: *const kernel::ffi::c_char,
+    pub type_: *const kernel::ffi::c_char,
+    pub compatible: *const kernel::ffi::c_char,
+    pub data: *const kernel::ffi::c_void,
 }
 
 unsafe extern "C" fn gamecube_spin() -> ! {
@@ -42,7 +42,7 @@ unsafe extern "C" fn gamecube_spin() -> ! {
     }
 }
 
-unsafe extern "C" fn gamecube_restart(_cmd: *mut core::ffi::c_char) -> ! {
+unsafe extern "C" fn gamecube_restart(_cmd: *mut kernel::ffi::c_char) -> ! {
     local_irq_disable();
     flipper_platform_reset();
     gamecube_spin();

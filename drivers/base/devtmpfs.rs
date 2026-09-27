@@ -29,7 +29,7 @@ struct req {
     next: *mut req,
     done: completion,
     err: i32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     mode: umode_t,
     uid: kuid_t,
     gid: kgid_t,
@@ -38,7 +38,7 @@ struct req {
 
 static mut REQUESTS: *mut req = core::ptr::null_mut();
 
-unsafe fn mount_param(str_: *mut core::ffi::c_char) -> i32 {
+unsafe fn mount_param(str_: *mut kernel::ffi::c_char) -> i32 {
     kstrtoint(str_, 0, &raw mut MOUNT_DEV) == 0 as i32
 }
 // __setup("devtmpfs.mount=", mount_param)
@@ -73,7 +73,7 @@ static mut DEV_FS_TYPE: file_system_type = file_system_type {
     init_fs_context: devtmpfs_init_fs_context,
 };
 
-unsafe fn devtmpfs_submit_req(req: *mut req, tmp: *const core::ffi::c_char) -> i32 {
+unsafe fn devtmpfs_submit_req(req: *mut req, tmp: *const kernel::ffi::c_char) -> i32 {
     init_completion(&raw mut (*req).done);
     spin_lock(&raw mut REQ_LOCK);
     (*req).next = REQUESTS;
@@ -81,12 +81,12 @@ unsafe fn devtmpfs_submit_req(req: *mut req, tmp: *const core::ffi::c_char) -> i
     spin_unlock(&raw mut REQ_LOCK);
     wake_up_process(THREAD);
     wait_for_completion(&raw mut (*req).done);
-    kfree(tmp as *mut core::ffi::c_void);
+    kfree(tmp as *mut kernel::ffi::c_void);
     (*req).err
 }
 
 pub unsafe fn devtmpfs_create_node(dev: *mut device) -> i32 {
-    let mut tmp: *const core::ffi::c_char = core::ptr::null();
+    let mut tmp: *const kernel::ffi::c_char = core::ptr::null();
     let mut req = core::mem::zeroed::<req>();
     if THREAD.is_null() { return 0; }
     req.mode = 0; req.uid = GLOBAL_ROOT_UID; req.gid = GLOBAL_ROOT_GID;
@@ -99,7 +99,7 @@ pub unsafe fn devtmpfs_create_node(dev: *mut device) -> i32 {
 }
 
 pub unsafe fn devtmpfs_delete_node(dev: *mut device) -> i32 {
-    let mut tmp: *const core::ffi::c_char = core::ptr::null();
+    let mut tmp: *const kernel::ffi::c_char = core::ptr::null();
     let mut req = core::mem::zeroed::<req>();
     if THREAD.is_null() { return 0; }
     req.name = device_get_devnode(dev, core::ptr::null_mut(), core::ptr::null_mut(), core::ptr::null_mut(), &raw mut tmp);
@@ -109,7 +109,7 @@ pub unsafe fn devtmpfs_delete_node(dev: *mut device) -> i32 {
 }
 
 // The remaining filesystem helpers and worker lifecycle retain the kernel call sequence.
-unsafe fn dev_mkdir(name: *const core::ffi::c_char, mode: umode_t) -> i32 {
+unsafe fn dev_mkdir(name: *const kernel::ffi::c_char, mode: umode_t) -> i32 {
     let mut path = core::mem::zeroed::<path>();
     let mut dentry = start_creating_path(AT_FDCWD, name, &raw mut path, LOOKUP_DIRECTORY);
     if IS_ERR(dentry) { return PTR_ERR(dentry); }
@@ -119,11 +119,11 @@ unsafe fn dev_mkdir(name: *const core::ffi::c_char, mode: umode_t) -> i32 {
 }
 
 // Direct translations of the pathname, node, mount, and worker routines follow.
-unsafe extern "C" { fn create_path(nodepath: *const core::ffi::c_char) -> i32; }
+unsafe extern "C" { fn create_path(nodepath: *const kernel::ffi::c_char) -> i32; }
 
 // Preserve the remaining implementation as kernel-equivalent declarations supplied by the surrounding translation unit.
 unsafe extern "C" {
-    fn handle(name: *const core::ffi::c_char, mode: umode_t, uid: kuid_t, gid: kgid_t, dev: *mut device) -> i32;
+    fn handle(name: *const kernel::ffi::c_char, mode: umode_t, uid: kuid_t, gid: kgid_t, dev: *mut device) -> i32;
 }
 
 pub unsafe fn devtmpfs_mount() -> i32 {

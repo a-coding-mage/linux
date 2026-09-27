@@ -48,7 +48,7 @@ pub struct pci_device_id {
 
 #[repr(C)]
 pub struct pci_driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub id_table: *const pci_device_id,
     pub probe: Option<unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> i32>,
     pub remove: Option<unsafe extern "C" fn(*mut pci_dev)>,
@@ -89,10 +89,10 @@ pub struct sof_dev_desc {
     pub chip_info: *const sof_amd_acp_desc,
     pub ipc_supported_mask: u32,
     pub ipc_default: usize,
-    pub default_fw_path: [*const ::core::ffi::c_char; 4],
-    pub default_tplg_path: [*const ::core::ffi::c_char; 4],
-    pub default_fw_filename: [*const ::core::ffi::c_char; 4],
-    pub nocodec_tplg_filename: *const ::core::ffi::c_char,
+    pub default_fw_path: [*const ::kernel::ffi::c_char; 4],
+    pub default_tplg_path: [*const ::kernel::ffi::c_char; 4],
+    pub default_fw_filename: [*const ::kernel::ffi::c_char; 4],
+    pub nocodec_tplg_filename: *const ::kernel::ffi::c_char,
     pub ops: *const sof_ops,
     pub ops_init: Option<unsafe extern "C" fn(*mut snd_sof_dev) -> i32>,
 }
@@ -116,7 +116,7 @@ unsafe extern "C" {
     static snd_soc_acpi_amd_sof_machines: snd_soc_acpi_mach;
     static sof_renoir_ops: sof_ops;
     static sof_pci_pm: dev_pm_ops;
-    static KBUILD_MODNAME: ::core::ffi::c_char;
+    static KBUILD_MODNAME: ::kernel::ffi::c_char;
 
     static ACP3X_PGFSM_BASE: u32;
     static ACP3X_EXT_INTR_STAT: u32;
@@ -161,21 +161,21 @@ static renoir_desc: sof_dev_desc = sof_dev_desc {
         ::core::ptr::null(),
         ::core::ptr::null(),
         ::core::ptr::null(),
-        b"amd/sof\0".as_ptr() as *const ::core::ffi::c_char,
+        b"amd/sof\0".as_ptr() as *const ::kernel::ffi::c_char,
     ],
     default_tplg_path: [
         ::core::ptr::null(),
         ::core::ptr::null(),
         ::core::ptr::null(),
-        b"amd/sof-tplg\0".as_ptr() as *const ::core::ffi::c_char,
+        b"amd/sof-tplg\0".as_ptr() as *const ::kernel::ffi::c_char,
     ],
     default_fw_filename: [
         ::core::ptr::null(),
         ::core::ptr::null(),
         ::core::ptr::null(),
-        b"sof-rn.ri\0".as_ptr() as *const ::core::ffi::c_char,
+        b"sof-rn.ri\0".as_ptr() as *const ::kernel::ffi::c_char,
     ],
-    nocodec_tplg_filename: b"sof-acp.tplg\0".as_ptr() as *const ::core::ffi::c_char,
+    nocodec_tplg_filename: b"sof-acp.tplg\0".as_ptr() as *const ::kernel::ffi::c_char,
     ops: unsafe { &sof_renoir_ops },
     ops_init: Some(sof_renoir_ops_init),
 };

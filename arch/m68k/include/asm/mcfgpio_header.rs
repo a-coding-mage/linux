@@ -35,7 +35,7 @@ pub unsafe fn gpio_direction_output(gpio: u32, value: i32) -> i32 {
 }
 
 #[cfg(not(CONFIG_GPIOLIB))]
-pub unsafe fn gpio_request(gpio: u32, _label: *const core::ffi::c_char) -> i32 {
+pub unsafe fn gpio_request(gpio: u32, _label: *const kernel::ffi::c_char) -> i32 {
     if gpio < MCFGPIO_PIN_MAX { __mcfgpio_request(gpio) } else { -EINVAL }
 }
 

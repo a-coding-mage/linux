@@ -31,7 +31,7 @@ pub struct regmap_config {
 
 #[repr(C)]
 pub struct spi_device_id {
-    pub name: [::core::ffi::c_char; 32],
+    pub name: [::kernel::ffi::c_char; 32],
     pub driver_data: usize,
 }
 
@@ -42,14 +42,14 @@ pub struct of_device_id {
 
 #[repr(C)]
 pub struct device_driver {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const ::kernel::ffi::c_char,
     pub of_match_table: *const of_device_id,
 }
 
 #[repr(C)]
 pub struct spi_driver {
     pub driver: device_driver,
-    pub probe: Option<unsafe extern "C" fn(*mut spi_device) -> ::core::ffi::c_int>,
+    pub probe: Option<unsafe extern "C" fn(*mut spi_device) -> ::kernel::ffi::c_int>,
     pub id_table: *const spi_device_id,
 }
 
@@ -67,7 +67,7 @@ unsafe extern "C" {
         dev: *mut device,
         regmap: *mut regmap,
         switch_mode: Option<unsafe extern "C" fn(*mut device)>,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 unsafe extern "C" fn adau1372_spi_switch_mode(dev: *mut device) {
@@ -84,7 +84,7 @@ unsafe extern "C" fn adau1372_spi_switch_mode(dev: *mut device) {
     }
 }
 
-unsafe extern "C" fn adau1372_spi_probe(spi: *mut spi_device) -> ::core::ffi::c_int {
+unsafe extern "C" fn adau1372_spi_probe(spi: *mut spi_device) -> ::kernel::ffi::c_int {
     let mut config: regmap_config;
 
     config = unsafe { adau1372_regmap_config };
@@ -102,14 +102,14 @@ unsafe extern "C" fn adau1372_spi_probe(spi: *mut spi_device) -> ::core::ffi::c_
 static adau1372_spi_id: [spi_device_id; 2] = [
     spi_device_id {
         name: [
-            b'a' as ::core::ffi::c_char,
-            b'd' as ::core::ffi::c_char,
-            b'a' as ::core::ffi::c_char,
-            b'u' as ::core::ffi::c_char,
-            b'1' as ::core::ffi::c_char,
-            b'3' as ::core::ffi::c_char,
-            b'7' as ::core::ffi::c_char,
-            b'2' as ::core::ffi::c_char,
+            b'a' as ::kernel::ffi::c_char,
+            b'd' as ::kernel::ffi::c_char,
+            b'a' as ::kernel::ffi::c_char,
+            b'u' as ::kernel::ffi::c_char,
+            b'1' as ::kernel::ffi::c_char,
+            b'3' as ::kernel::ffi::c_char,
+            b'7' as ::kernel::ffi::c_char,
+            b'2' as ::kernel::ffi::c_char,
             0,
             0,
             0,

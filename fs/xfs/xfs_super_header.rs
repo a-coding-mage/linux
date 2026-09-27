@@ -9,7 +9,7 @@
 
 #[cfg(CONFIG_XFS_QUOTA)]
 extern "C" {
-    pub fn xfs_qm_init() -> ::core::ffi::c_int;
+    pub fn xfs_qm_init() -> ::kernel::ffi::c_int;
     pub fn xfs_qm_exit();
 }
 
@@ -116,7 +116,7 @@ extern "C" {
     pub static xfs_quotactl_operations: quotactl_ops;
     pub fn xfs_reinit_percpu_counters(mp: *mut xfs_mount);
     pub static mut xfs_discard_wq: *mut workqueue_struct;
-    pub fn xfs_debugfs_mkdir(name: *const ::core::ffi::c_char, parent: *mut dentry) -> *mut dentry;
+    pub fn xfs_debugfs_mkdir(name: *const ::kernel::ffi::c_char, parent: *mut dentry) -> *mut dentry;
 }
 
 // External types supplied by other translated headers.

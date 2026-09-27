@@ -32,8 +32,8 @@ pub unsafe fn invalid_user_sp(sp: c_ulong) -> bool {
  */
 #[inline]
 pub unsafe fn __read_user_stack(
-    ptr: *const core::ffi::c_void,
-    ret: *mut core::ffi::c_void,
+    ptr: *const kernel::ffi::c_void,
+    ret: *mut kernel::ffi::c_void,
     size: usize,
 ) -> c_int {
     let addr = ptr as c_ulong;
@@ -46,14 +46,14 @@ pub unsafe fn __read_user_stack(
 }
 
 // Required external symbols and C-compatible integer types.
-type c_ulong = core::ffi::c_ulong;
-type c_int = core::ffi::c_int;
+type c_ulong = kernel::ffi::c_ulong;
+type c_int = kernel::ffi::c_int;
 
 extern "C" {
     fn is_32bit_task() -> bool;
     fn copy_from_user_nofault(
-        ret: *mut core::ffi::c_void,
-        ptr: *const core::ffi::c_void,
+        ret: *mut kernel::ffi::c_void,
+        ptr: *const kernel::ffi::c_void,
         size: usize,
     ) -> c_int;
 }

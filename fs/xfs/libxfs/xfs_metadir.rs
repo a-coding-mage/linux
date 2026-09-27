@@ -4,7 +4,7 @@
 // C dependencies supplied by the surrounding XFS translation unit.
 
 #[inline]
-unsafe fn xfs_metadir_set_xname(xname: *mut xfs_name, path: *const core::ffi::c_char, ftype: u8) {
+unsafe fn xfs_metadir_set_xname(xname: *mut xfs_name, path: *const kernel::ffi::c_char, ftype: u8) {
     (*xname).name = path as *const u8;
     (*xname).len = strlen(path);
     (*xname).type_ = ftype;
@@ -41,7 +41,7 @@ unsafe fn xfs_metadir_lookup(tp: *mut xfs_trans, dp: *mut xfs_inode,
 }
 
 pub unsafe fn xfs_metadir_load(tp: *mut xfs_trans, dp: *mut xfs_inode,
-    path: *const core::ffi::c_char, metafile_type: xfs_metafile_type,
+    path: *const kernel::ffi::c_char, metafile_type: xfs_metafile_type,
     ipp: *mut *mut xfs_inode) -> i32 {
     let mut xname: xfs_name = core::mem::zeroed();
     let mut ino = 0;
@@ -163,8 +163,8 @@ unsafe fn xfs_metadir_cancel(upd: *mut xfs_metadir_update, error: i32) {
 }
 
 pub unsafe fn xfs_metadir_create_file(upd: *mut xfs_metadir_update, mode: umode_t,
-    create: Option<unsafe extern "C" fn(*mut xfs_metadir_update, *mut core::ffi::c_void) -> i32>,
-    priv_: *mut core::ffi::c_void, ipp: *mut *mut xfs_inode) -> i32 {
+    create: Option<unsafe extern "C" fn(*mut xfs_metadir_update, *mut kernel::ffi::c_void) -> i32>,
+    priv_: *mut kernel::ffi::c_void, ipp: *mut *mut xfs_inode) -> i32 {
     if xfs_is_shutdown((*(*upd).dp).i_mount) { return -EIO; }
     let mut error = xfs_metadir_start_create(upd); if error != 0 { return error; }
     error = xfs_metadir_create(upd, mode);
@@ -178,7 +178,7 @@ pub unsafe fn xfs_metadir_create_file(upd: *mut xfs_metadir_update, mode: umode_
     xfs_finish_inode_setup((*upd).ip); *ipp = (*upd).ip; 0
 }
 
-pub unsafe fn xfs_metadir_mkdir(dp: *mut xfs_inode, path: *const core::ffi::c_char,
+pub unsafe fn xfs_metadir_mkdir(dp: *mut xfs_inode, path: *const kernel::ffi::c_char,
     ipp: *mut *mut xfs_inode) -> i32 {
     let mut upd: xfs_metadir_update = core::mem::zeroed();
     upd.dp = dp; upd.path = path; upd.metafile_type = XFS_METAFILE_DIR;

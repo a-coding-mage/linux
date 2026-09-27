@@ -8,10 +8,10 @@ const ADF_RP_INT_SRC_SEL_F_FALL_MASK: u32 = (1u32 << 3) - 1;
 const ADF_RP_INT_SRC_SEL_RANGE_WIDTH: u32 = 4;
 
 unsafe fn check_stat(
-    op: unsafe extern "C" fn(*mut core::ffi::c_void, u32) -> u32,
+    op: unsafe extern "C" fn(*mut kernel::ffi::c_void, u32) -> u32,
     expect_val: u32,
-    name: *const core::ffi::c_char,
-    base: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    base: *mut kernel::ffi::c_void,
     bank: u32,
 ) -> i32 {
     let actual_val = op(base, bank);
@@ -26,7 +26,7 @@ unsafe fn check_stat(
 
 unsafe fn bank_state_save(
     ops: *mut adf_hw_csr_ops,
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     bank: u32,
     state: *mut adf_bank_state,
     num_rings: u32,
@@ -57,7 +57,7 @@ unsafe fn bank_state_save(
 }
 
 unsafe fn bank_state_restore(
-    ops: *mut adf_hw_csr_ops, base: *mut core::ffi::c_void, bank: u32,
+    ops: *mut adf_hw_csr_ops, base: *mut kernel::ffi::c_void, bank: u32,
     state: *mut adf_bank_state, num_rings: u32, tx_rx_gap: i32,
 ) -> i32 {
     for i in 0..num_rings { ((*ops).write_csr_ring_base)(base, bank, i, (*state).rings[i as usize].base); }

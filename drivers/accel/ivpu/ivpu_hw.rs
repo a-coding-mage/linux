@@ -6,12 +6,12 @@
 // Dependencies supplied by the surrounding driver and kernel bindings are intentionally external.
 
 #[cfg(feature = "config_fault_injection")]
-static mut IVPU_FAIL_HW: *mut ::core::ffi::c_char = ::core::ptr::null_mut();
+static mut IVPU_FAIL_HW: *mut ::kernel::ffi::c_char = ::core::ptr::null_mut();
 
 const FW_SHARED_MEM_ALIGNMENT: u64 = SZ_512K;
 const ECC_MCA_SIGNAL_ENABLE_MASK: u64 = 0xff;
 
-unsafe fn platform_to_str(platform: u32) -> *const ::core::ffi::c_char {
+unsafe fn platform_to_str(platform: u32) -> *const ::kernel::ffi::c_char {
     match platform {
         IVPU_PLATFORM_SILICON => b"SILICON\0".as_ptr() as *const _,
         IVPU_PLATFORM_SIMICS => b"SIMICS\0".as_ptr() as *const _,
@@ -109,7 +109,7 @@ pub unsafe fn ivpu_irq_handlers_init(vdev:*mut ivpu_device){(*(*vdev).hw).irq.ip
 pub unsafe fn ivpu_hw_irq_enable(vdev:*mut ivpu_device){ivpu_hw_ip_irq_enable(vdev);ivpu_hw_btrs_irq_enable(vdev)}
 pub unsafe fn ivpu_hw_irq_disable(vdev:*mut ivpu_device){ivpu_hw_btrs_irq_disable(vdev);ivpu_hw_ip_irq_disable(vdev)}
 
-pub unsafe fn ivpu_hw_irq_handler(irq:i32,ptr:*mut ::core::ffi::c_void)->irqreturn_t{let vdev=ptr as *mut ivpu_device;ivpu_hw_btrs_global_int_disable(vdev);let btrs_handled=ivpu_hw_btrs_irq_handler(vdev,irq);let ip_handled=if !ivpu_hw_is_idle(vdev)||!btrs_handled{ivpu_hw_ip_irq_handler(vdev,irq)}else{false};ivpu_hw_btrs_global_int_enable(vdev);if !ip_handled&&!btrs_handled{return IRQ_NONE;}pm_runtime_mark_last_busy((*vdev).drm.dev);if ip_handled{IRQ_WAKE_THREAD}else{IRQ_HANDLED}}
+pub unsafe fn ivpu_hw_irq_handler(irq:i32,ptr:*mut ::kernel::ffi::c_void)->irqreturn_t{let vdev=ptr as *mut ivpu_device;ivpu_hw_btrs_global_int_disable(vdev);let btrs_handled=ivpu_hw_btrs_irq_handler(vdev,irq);let ip_handled=if !ivpu_hw_is_idle(vdev)||!btrs_handled{ivpu_hw_ip_irq_handler(vdev,irq)}else{false};ivpu_hw_btrs_global_int_enable(vdev);if !ip_handled&&!btrs_handled{return IRQ_NONE;}pm_runtime_mark_last_busy((*vdev).drm.dev);if ip_handled{IRQ_WAKE_THREAD}else{IRQ_HANDLED}}
 
 pub unsafe fn ivpu_hw_uses_ecc_mca_signal(vdev:*mut ivpu_device)->bool{if ivpu_hw_ip_gen(vdev)<IVPU_HW_IP_50XX{return false;}let mut msr_integrity_caps=0u64;let ret=rdmsrq_safe(MSR_INTEGRITY_CAPS,&mut msr_integrity_caps);if ret!=0{ivpu_warn(vdev,b"Error reading MSR_INTEGRITY_CAPS: %d\0".as_ptr() as _,ret);return false;}ivpu_dbg(vdev,MISC,b"MSR_INTEGRITY_CAPS: 0x%llx\n\0".as_ptr() as _,msr_integrity_caps);msr_integrity_caps&ECC_MCA_SIGNAL_ENABLE_MASK!=0}
 

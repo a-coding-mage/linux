@@ -19,23 +19,23 @@ pub const NO_SYSCALL: i32 = -1;
  */
 #[repr(C)]
 pub struct pt_regs {
-    pub pc: core::ffi::c_ulong,          /*   4 */
-    pub ps: core::ffi::c_ulong,          /*   8 */
-    pub depc: core::ffi::c_ulong,        /*  12 */
-    pub exccause: core::ffi::c_ulong,    /*  16 */
-    pub excvaddr: core::ffi::c_ulong,    /*  20 */
-    pub debugcause: core::ffi::c_ulong,  /*  24 */
-    pub wmask: core::ffi::c_ulong,       /*  28 */
-    pub lbeg: core::ffi::c_ulong,        /*  32 */
-    pub lend: core::ffi::c_ulong,        /*  36 */
-    pub lcount: core::ffi::c_ulong,      /*  40 */
-    pub sar: core::ffi::c_ulong,         /*  44 */
-    pub windowbase: core::ffi::c_ulong,  /*  48 */
-    pub windowstart: core::ffi::c_ulong, /*  52 */
-    pub syscall: core::ffi::c_ulong,     /*  56 */
-    pub icountlevel: core::ffi::c_ulong, /*  60 */
-    pub scompare1: core::ffi::c_ulong,   /*  64 */
-    pub threadptr: core::ffi::c_ulong,   /*  68 */
+    pub pc: kernel::ffi::c_ulong,          /*   4 */
+    pub ps: kernel::ffi::c_ulong,          /*   8 */
+    pub depc: kernel::ffi::c_ulong,        /*  12 */
+    pub exccause: kernel::ffi::c_ulong,    /*  16 */
+    pub excvaddr: kernel::ffi::c_ulong,    /*  20 */
+    pub debugcause: kernel::ffi::c_ulong,  /*  24 */
+    pub wmask: kernel::ffi::c_ulong,       /*  28 */
+    pub lbeg: kernel::ffi::c_ulong,        /*  32 */
+    pub lend: kernel::ffi::c_ulong,        /*  36 */
+    pub lcount: kernel::ffi::c_ulong,      /*  40 */
+    pub sar: kernel::ffi::c_ulong,         /*  44 */
+    pub windowbase: kernel::ffi::c_ulong,  /*  48 */
+    pub windowstart: kernel::ffi::c_ulong, /*  52 */
+    pub syscall: kernel::ffi::c_ulong,     /*  56 */
+    pub icountlevel: kernel::ffi::c_ulong, /*  60 */
+    pub scompare1: kernel::ffi::c_ulong,   /*  64 */
+    pub threadptr: kernel::ffi::c_ulong,   /*  68 */
 
     /* Additional configurable registers that are used by the compiler. */
     pub xtregs_opt: xtregs_opt_t,
@@ -43,7 +43,7 @@ pub struct pt_regs {
     /* Current register frame.
      * Note: The ESF for kernel exceptions ends after 16 registers!
      */
-    pub areg: [core::ffi::c_ulong; XCHAL_NUM_AREGS],
+    pub areg: [kernel::ffi::c_ulong; XCHAL_NUM_AREGS],
 }
 
 pub const fn arch_has_single_step() -> i32 { 1 }
@@ -59,15 +59,15 @@ pub unsafe fn user_mode(regs: *const pt_regs) -> bool {
     ((*regs).ps & 0x00000020) != 0
 }
 
-pub unsafe fn instruction_pointer(regs: *const pt_regs) -> core::ffi::c_ulong {
+pub unsafe fn instruction_pointer(regs: *const pt_regs) -> kernel::ffi::c_ulong {
     (*regs).pc
 }
 
-pub unsafe fn return_pointer(regs: *const pt_regs) -> core::ffi::c_ulong {
+pub unsafe fn return_pointer(regs: *const pt_regs) -> kernel::ffi::c_ulong {
     MAKE_PC_FROM_RA((*regs).areg[0], (*regs).pc)
 }
 
-pub unsafe fn profile_pc(regs: *const pt_regs) -> core::ffi::c_ulong {
+pub unsafe fn profile_pc(regs: *const pt_regs) -> kernel::ffi::c_ulong {
     #[cfg(not(CONFIG_SMP))]
     {
         instruction_pointer(regs)
@@ -82,12 +82,12 @@ pub unsafe fn profile_pc(regs: *const pt_regs) -> core::ffi::c_ulong {
     }
 }
 
-pub unsafe fn user_stack_pointer(regs: *const pt_regs) -> core::ffi::c_ulong {
+pub unsafe fn user_stack_pointer(regs: *const pt_regs) -> kernel::ffi::c_ulong {
     (*regs).areg[1]
 }
 
 #[inline]
-pub unsafe fn regs_return_value(regs: *mut pt_regs) -> core::ffi::c_ulong {
+pub unsafe fn regs_return_value(regs: *mut pt_regs) -> kernel::ffi::c_ulong {
     (*regs).areg[2]
 }
 
@@ -101,9 +101,9 @@ extern "C" {
 extern "Rust" {
     static XCHAL_NUM_AREGS: usize;
     type xtregs_opt_t;
-    fn task_stack_page<T>(tsk: *mut T) -> *mut core::ffi::c_void;
-    fn MAKE_PC_FROM_RA(ra: core::ffi::c_ulong, pc: core::ffi::c_ulong) -> core::ffi::c_ulong;
-    fn in_lock_functions(pc: core::ffi::c_ulong) -> bool;
+    fn task_stack_page<T>(tsk: *mut T) -> *mut kernel::ffi::c_void;
+    fn MAKE_PC_FROM_RA(ra: kernel::ffi::c_ulong, pc: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong;
+    fn in_lock_functions(pc: kernel::ffi::c_ulong) -> bool;
 }
 
 // __ASSEMBLER__ branch:

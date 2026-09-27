@@ -44,36 +44,36 @@ macro_rules! LP_BASE {
 #[cfg(feature = "LP_STATS")]
 #[repr(C)]
 pub struct lp_stats {
-    pub chars: ::core::ffi::c_ulong,
-    pub sleeps: ::core::ffi::c_ulong,
-    pub maxrun: ::core::ffi::c_uint,
-    pub maxwait: ::core::ffi::c_uint,
-    pub meanwait: ::core::ffi::c_uint,
-    pub mdev: ::core::ffi::c_uint,
+    pub chars: ::kernel::ffi::c_ulong,
+    pub sleeps: ::kernel::ffi::c_ulong,
+    pub maxrun: ::kernel::ffi::c_uint,
+    pub maxwait: ::kernel::ffi::c_uint,
+    pub meanwait: ::kernel::ffi::c_uint,
+    pub mdev: ::kernel::ffi::c_uint,
 }
 
 #[repr(C)]
 pub struct lp_struct {
     pub dev: *mut pardevice,
-    pub flags: ::core::ffi::c_ulong,
-    pub chars: ::core::ffi::c_uint,
-    pub time: ::core::ffi::c_uint,
-    pub wait: ::core::ffi::c_uint,
-    pub lp_buffer: *mut ::core::ffi::c_char,
+    pub flags: ::kernel::ffi::c_ulong,
+    pub chars: ::kernel::ffi::c_uint,
+    pub time: ::kernel::ffi::c_uint,
+    pub wait: ::kernel::ffi::c_uint,
+    pub lp_buffer: *mut ::kernel::ffi::c_char,
     #[cfg(feature = "LP_STATS")]
-    pub lastcall: ::core::ffi::c_uint,
+    pub lastcall: ::kernel::ffi::c_uint,
     #[cfg(feature = "LP_STATS")]
-    pub runchars: ::core::ffi::c_uint,
+    pub runchars: ::kernel::ffi::c_uint,
     #[cfg(feature = "LP_STATS")]
     pub stats: lp_stats,
     pub waitq: wait_queue_head_t,
-    pub last_error: ::core::ffi::c_uint,
+    pub last_error: ::kernel::ffi::c_uint,
     pub port_mutex: mutex,
     pub dataq: wait_queue_head_t,
-    pub timeout: ::core::ffi::c_long,
-    pub best_mode: ::core::ffi::c_uint,
-    pub current_mode: ::core::ffi::c_uint,
-    pub bits: ::core::ffi::c_ulong,
+    pub timeout: ::kernel::ffi::c_long,
+    pub best_mode: ::kernel::ffi::c_uint,
+    pub current_mode: ::kernel::ffi::c_uint,
+    pub bits: ::kernel::ffi::c_ulong,
 }
 
 /*

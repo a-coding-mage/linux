@@ -11,42 +11,42 @@
 
 #[repr(C, align(32))]
 struct g2_channel {
-    g2_addr: ::core::ffi::c_ulong,    // G2 bus address
-    root_addr: ::core::ffi::c_ulong,  // Root bus (SH-4) address
-    size: ::core::ffi::c_ulong,       // Size (in bytes), 32-byte aligned
-    direction: ::core::ffi::c_ulong,  // Transfer direction
-    ctrl: ::core::ffi::c_ulong,       // Transfer control
-    chan_enable: ::core::ffi::c_ulong, // Channel enable
-    xfer_enable: ::core::ffi::c_ulong, // Transfer enable
-    xfer_stat: ::core::ffi::c_ulong,  // Transfer status
+    g2_addr: ::kernel::ffi::c_ulong,    // G2 bus address
+    root_addr: ::kernel::ffi::c_ulong,  // Root bus (SH-4) address
+    size: ::kernel::ffi::c_ulong,       // Size (in bytes), 32-byte aligned
+    direction: ::kernel::ffi::c_ulong,  // Transfer direction
+    ctrl: ::kernel::ffi::c_ulong,       // Transfer control
+    chan_enable: ::kernel::ffi::c_ulong, // Channel enable
+    xfer_enable: ::kernel::ffi::c_ulong, // Transfer enable
+    xfer_stat: ::kernel::ffi::c_ulong,  // Transfer status
 }
 
 #[repr(C, align(16))]
 struct g2_status {
-    g2_addr: ::core::ffi::c_ulong,
-    root_addr: ::core::ffi::c_ulong,
-    size: ::core::ffi::c_ulong,
-    status: ::core::ffi::c_ulong,
+    g2_addr: ::kernel::ffi::c_ulong,
+    root_addr: ::kernel::ffi::c_ulong,
+    size: ::kernel::ffi::c_ulong,
+    status: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C, align(256))]
 struct g2_dma_info {
     channel: [g2_channel; G2_NR_DMA_CHANNELS],
-    pad1: [::core::ffi::c_ulong; G2_NR_DMA_CHANNELS],
-    wait_state: ::core::ffi::c_ulong,
-    pad2: [::core::ffi::c_ulong; 10],
-    magic: ::core::ffi::c_ulong,
+    pad1: [::kernel::ffi::c_ulong; G2_NR_DMA_CHANNELS],
+    wait_state: ::kernel::ffi::c_ulong,
+    pad2: [::kernel::ffi::c_ulong; 10],
+    magic: ::kernel::ffi::c_ulong,
     status: [g2_status; G2_NR_DMA_CHANNELS],
 }
 
 static mut g2_dma: *mut g2_dma_info = 0xa05f7800 as *mut g2_dma_info;
 
 #[inline]
-unsafe fn g2_bytes_remaining(i: usize) -> ::core::ffi::c_ulong {
+unsafe fn g2_bytes_remaining(i: usize) -> ::kernel::ffi::c_ulong {
     ((*g2_dma).channel[i].size.wrapping_sub((*g2_dma).status[i].size)) & 0x0fffffff
 }
 
-unsafe fn g2_dma_interrupt(irq: ::core::ffi::c_int, dev_id: *mut ::core::ffi::c_void) -> irqreturn_t {
+unsafe fn g2_dma_interrupt(irq: ::kernel::ffi::c_int, dev_id: *mut ::kernel::ffi::c_void) -> irqreturn_t {
     let _ = irq;
     for i in 0..G2_NR_DMA_CHANNELS {
         if (*g2_dma).status[i].status & 0x20000000 != 0 {
@@ -62,21 +62,21 @@ unsafe fn g2_dma_interrupt(irq: ::core::ffi::c_int, dev_id: *mut ::core::ffi::c_
     IRQ_NONE
 }
 
-unsafe fn g2_enable_dma(chan: *mut dma_channel) -> ::core::ffi::c_int {
+unsafe fn g2_enable_dma(chan: *mut dma_channel) -> ::kernel::ffi::c_int {
     let chan_nr = (*chan).chan as usize;
     (*g2_dma).channel[chan_nr].chan_enable = 1;
     (*g2_dma).channel[chan_nr].xfer_enable = 1;
     0
 }
 
-unsafe fn g2_disable_dma(chan: *mut dma_channel) -> ::core::ffi::c_int {
+unsafe fn g2_disable_dma(chan: *mut dma_channel) -> ::kernel::ffi::c_int {
     let chan_nr = (*chan).chan as usize;
     (*g2_dma).channel[chan_nr].chan_enable = 0;
     (*g2_dma).channel[chan_nr].xfer_enable = 0;
     0
 }
 
-unsafe fn g2_xfer_dma(chan: *mut dma_channel) -> ::core::ffi::c_int {
+unsafe fn g2_xfer_dma(chan: *mut dma_channel) -> ::kernel::ffi::c_int {
     let chan_nr = (*chan).chan as usize;
     if (*chan).sar & 31 != 0 {
         printk!("g2dma: unaligned source 0x%lx\n", (*chan).sar);
@@ -94,7 +94,7 @@ unsafe fn g2_xfer_dma(chan: *mut dma_channel) -> ::core::ffi::c_int {
     (*chan).dar = (*chan).dar.wrapping_add(0xa0800000);
     // Fixup direction
     (*chan).mode = !(*chan).mode;
-    flush_icache_range((*chan).sar as ::core::ffi::c_ulong, (*chan).count);
+    flush_icache_range((*chan).sar as ::kernel::ffi::c_ulong, (*chan).count);
     g2_disable_dma(chan);
     (*g2_dma).channel[chan_nr].g2_addr = (*chan).dar & 0x1fffffe0;
     (*g2_dma).channel[chan_nr].root_addr = (*chan).sar & 0x1fffffe0;
@@ -115,8 +115,8 @@ unsafe fn g2_xfer_dma(chan: *mut dma_channel) -> ::core::ffi::c_int {
     0
 }
 
-unsafe fn g2_get_residue(chan: *mut dma_channel) -> ::core::ffi::c_int {
-    g2_bytes_remaining((*chan).chan as usize) as ::core::ffi::c_int
+unsafe fn g2_get_residue(chan: *mut dma_channel) -> ::kernel::ffi::c_int {
+    g2_bytes_remaining((*chan).chan as usize) as ::kernel::ffi::c_int
 }
 
 static mut g2_dma_ops: dma_ops = dma_ops { xfer: Some(g2_xfer_dma), get_residue: Some(g2_get_residue) };
@@ -127,7 +127,7 @@ static mut g2_dma_info: dma_info = dma_info {
     flags: DMAC_CHANNELS_TEI_CAPABLE,
 };
 
-unsafe fn g2_dma_init() -> ::core::ffi::c_int {
+unsafe fn g2_dma_init() -> ::kernel::ffi::c_int {
     let mut ret = request_irq(HW_EVENT_G2_DMA, Some(g2_dma_interrupt), 0, "g2 DMA handler", &mut g2_dma_info as *mut _ as *mut _);
     if unlikely(ret != 0) { return -EINVAL; }
     // Magic

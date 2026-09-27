@@ -9,10 +9,10 @@
 // <linux/syscalls.h>, <linux/keyctl.h>, <linux/compat.h>,
 // <linux/slab.h>, and "internal.h".
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
-pub type u32 = core::ffi::c_uint;
-pub type c_long = core::ffi::c_long;
+pub type u32 = kernel::ffi::c_uint;
+pub type c_long = kernel::ffi::c_long;
 
 unsafe extern "C" {
     static KEYCTL_GET_KEYRING_ID: u32;
@@ -49,8 +49,8 @@ unsafe extern "C" {
     static KEYCTL_CAPABILITIES: u32;
     static KEYCTL_WATCH_KEY: u32;
 
-    static EINVAL: core::ffi::c_int;
-    static EOPNOTSUPP: core::ffi::c_int;
+    static EINVAL: kernel::ffi::c_int;
+    static EOPNOTSUPP: kernel::ffi::c_int;
 
     fn compat_ptr(arg: u32) -> *mut c_void;
 

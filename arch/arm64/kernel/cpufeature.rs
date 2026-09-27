@@ -107,9 +107,9 @@ static DECLARE_BITMAP(elf_hwcap, MAX_CPU_FEATURES) __read_mostly;
 // 				 COMPAT_HWCAP_FAST_MULT|COMPAT_HWCAP_EDSP|\
 // 				 COMPAT_HWCAP_TLS|COMPAT_HWCAP_IDIV|\
 // 				 COMPAT_HWCAP_LPAE)
-core::ffi::c_uint compat_elf_hwcap __read_mostly = COMPAT_ELF_HWCAP_DEFAULT;
-core::ffi::c_uint compat_elf_hwcap2 __read_mostly;
-core::ffi::c_uint compat_elf_hwcap3 __read_mostly;
+kernel::ffi::c_uint compat_elf_hwcap __read_mostly = COMPAT_ELF_HWCAP_DEFAULT;
+kernel::ffi::c_uint compat_elf_hwcap2 __read_mostly;
+kernel::ffi::c_uint compat_elf_hwcap3 __read_mostly;
 // C preprocessor endif
 
 DECLARE_BITMAP(system_cpucaps, ARM64_NCAPS);
@@ -217,7 +217,7 @@ void dump_cpu_features(void)
 
 static void cpu_enable_cnp(arm64_cpu_capabilities const *cap);
 
-static bool __system_matches_cap(n: core::ffi::c_uint);
+static bool __system_matches_cap(n: kernel::ffi::c_uint);
 
 /*
  * NOTE: Any changes to the visibility of features should be kept in
@@ -878,7 +878,7 @@ static const struct __ftr_reg_entry {
 
 static int search_cmp_ftr_reg(const void *id, const void *regp)
 {
-	return (int)(core::ffi::c_ulong)id - (*(int)((const struct __ftr_reg_entry *)regp)).sys_id;
+	return (int)(kernel::ffi::c_ulong)id - (*(int)((const struct __ftr_reg_entry *)regp)).sys_id;
 }
 
 /*
@@ -895,7 +895,7 @@ static struct arm64_ftr_reg *get_arm64_ftr_reg_nowarn(sys_id: u32)
 {
 	const struct __ftr_reg_entry *ret;
 
-	ret = bsearch((const void *)(core::ffi::c_ulong)sys_id,
+	ret = bsearch((const void *)(kernel::ffi::c_ulong)sys_id,
 			arm64_ftr_regs,
 			ARRAY_SIZE(arm64_ftr_regs),
 			sizeof(arm64_ftr_regs[0]),
@@ -964,21 +964,21 @@ s64 arm64_ftr_safe_value(const struct arm64_ftr_bits *ftrp, s64 new,
 
 static void __init sort_ftr_regs(void)
 {
-	core::ffi::c_uint i;
+	kernel::ffi::c_uint i;
 
 	for (i = 0; i < ARRAY_SIZE(arm64_ftr_regs); i++) {
 		const struct arm64_ftr_reg *ftr_reg = arm64_ftr_regs[i].reg;
 		const struct arm64_ftr_bits *ftr_bits = (*ftr_reg).ftr_bits;
-		core::ffi::c_uint j = 0;
+		kernel::ffi::c_uint j = 0;
 
 		/*
 		 * Features here must be sorted in descending order with respect
 		 * to their shift values and should not overlap with each other.
 		 */
 		for (; (*ftr_bits).width != 0; ftr_bits++, j++) {
-			core::ffi::c_uint width = (*ftr_reg).ftr_bits[j].width;
-			core::ffi::c_uint shift = (*ftr_reg).ftr_bits[j].shift;
-			core::ffi::c_uint prev_shift;
+			kernel::ffi::c_uint width = (*ftr_reg).ftr_bits[j].width;
+			kernel::ffi::c_uint shift = (*ftr_reg).ftr_bits[j].shift;
+			kernel::ffi::c_uint prev_shift;
 
 			WARN((shift  + width) > 64,
 				"%s has invalid feature at shift %d\n",
@@ -1209,7 +1209,7 @@ void __init init_cpu_features(cpuinfo_arm64 *info)
 
 	if (IS_ENABLED(CONFIG_ARM64_SVE) &&
 	    id_aa64pfr0_sve(read_sanitised_ftr_reg(SYS_ID_AA64PFR0_EL1))) {
-		core::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sve();
+		kernel::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sve();
 
 		vec_init_vq_map(ARM64_VEC_SVE);
 
@@ -1218,7 +1218,7 @@ void __init init_cpu_features(cpuinfo_arm64 *info)
 
 	if (IS_ENABLED(CONFIG_ARM64_SME) &&
 	    id_aa64pfr1_sme(read_sanitised_ftr_reg(SYS_ID_AA64PFR1_EL1))) {
-		core::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sme();
+		kernel::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sme();
 
 		vec_init_vq_map(ARM64_VEC_SME);
 
@@ -1462,7 +1462,7 @@ void update_cpu_features(int cpu,
 	if (IS_ENABLED(CONFIG_ARM64_SVE) &&
 	    id_aa64pfr0_sve(read_sanitised_ftr_reg(SYS_ID_AA64PFR0_EL1))) {
 		if (!system_capabilities_finalized()) {
-			core::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sve();
+			kernel::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sve();
 
 			vec_update_vq_map(ARM64_VEC_SVE);
 
@@ -1472,7 +1472,7 @@ void update_cpu_features(int cpu,
 
 	if (IS_ENABLED(CONFIG_ARM64_SME) &&
 	    id_aa64pfr1_sme(read_sanitised_ftr_reg(SYS_ID_AA64PFR1_EL1))) {
-		core::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sme();
+		kernel::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sme();
 
 		/* Probe vector lengths */
 		if (!system_capabilities_finalized())
@@ -1909,7 +1909,7 @@ static bool has_nv1(const struct arm64_cpu_capabilities *entry, int scope)
 // C preprocessor if defined(ID_AA64MMFR0_EL1_TGRAN_LPA2) && defined(ID_AA64MMFR0_EL1_TGRAN_2_SUPPORTED_LPA2)
 static bool has_lpa2_at_stage1(mmfr0: u64)
 {
-	core::ffi::c_uint tgran;
+	kernel::ffi::c_uint tgran;
 
 	tgran = cpuid_feature_extract_unsigned_field(mmfr0,
 					ID_AA64MMFR0_EL1_TGRAN_SHIFT);
@@ -1918,7 +1918,7 @@ static bool has_lpa2_at_stage1(mmfr0: u64)
 
 static bool has_lpa2_at_stage2(mmfr0: u64)
 {
-	core::ffi::c_uint tgran;
+	kernel::ffi::c_uint tgran;
 
 	tgran = cpuid_feature_extract_unsigned_field(mmfr0,
 					ID_AA64MMFR0_EL1_TGRAN_2_SHIFT);
@@ -1943,7 +1943,7 @@ static bool has_lpa2(const struct arm64_cpu_capabilities *entry, int scope)
 static bool has_pmuv3(const struct arm64_cpu_capabilities *entry, int scope)
 {
 	u64 dfr0 = read_sanitised_ftr_reg(SYS_ID_AA64DFR0_EL1);
-	core::ffi::c_uint pmuver;
+	kernel::ffi::c_uint pmuver;
 
 	pmuver = cpuid_feature_extract_unsigned_field(dfr0,
 						      ID_AA64DFR0_EL1_PMUVer_SHIFT);
@@ -3742,7 +3742,7 @@ static void verify_local_elf_hwcaps(void)
 
 static void verify_sve_features(void)
 {
-	core::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sve();
+	kernel::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sve();
 
 	if (vec_verify_vq_map(ARM64_VEC_SVE)) {
 		pr_crit("CPU%d: SVE: vector length support mismatch\n",
@@ -3755,7 +3755,7 @@ static void verify_sve_features(void)
 
 static void verify_sme_features(void)
 {
-	core::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sme();
+	kernel::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sme();
 
 	if (vec_verify_vq_map(ARM64_VEC_SME)) {
 		pr_crit("CPU%d: SME: vector length support mismatch\n",
@@ -3770,7 +3770,7 @@ static void verify_hyp_capabilities(void)
 {
 	safe_mmfr1: u64, mmfr0, mmfr1;
 	int parange, ipa_max;
-	safe_vmid_bits: core::ffi::c_uint, vmid_bits;
+	safe_vmid_bits: kernel::ffi::c_uint, vmid_bits;
 
 	if (!IS_ENABLED(CONFIG_KVM))
 		return;
@@ -3878,7 +3878,7 @@ void check_local_cpu_capabilities(void)
 		verify_local_cpu_capabilities();
 }
 
-bool this_cpu_has_cap(n: core::ffi::c_uint)
+bool this_cpu_has_cap(n: kernel::ffi::c_uint)
 {
 	if (!WARN_ON(preemptible()) && n < ARM64_NCAPS) {
 		const struct arm64_cpu_capabilities *cap = cpucap_ptrs[n];
@@ -3896,7 +3896,7 @@ EXPORT_SYMBOL_GPL(this_cpu_has_cap);
  * - The system wide safe registers are set with all the SMP CPUs and,
  * - The SYSTEM_FEATURE system_cpucaps may not have been set.
  */
-static bool __maybe_unused __system_matches_cap(n: core::ffi::c_uint)
+static bool __maybe_unused __system_matches_cap(n: kernel::ffi::c_uint)
 {
 	if (n < ARM64_NCAPS) {
 		const struct arm64_cpu_capabilities *cap = cpucap_ptrs[n];
@@ -3907,18 +3907,18 @@ static bool __maybe_unused __system_matches_cap(n: core::ffi::c_uint)
 	return false;
 }
 
-void cpu_set_feature(num: core::ffi::c_uint)
+void cpu_set_feature(num: kernel::ffi::c_uint)
 {
 	set_bit(num, elf_hwcap);
 }
 
-bool cpu_have_feature(num: core::ffi::c_uint)
+bool cpu_have_feature(num: kernel::ffi::c_uint)
 {
 	return test_bit(num, elf_hwcap);
 }
 EXPORT_SYMBOL_GPL(cpu_have_feature);
 
-core::ffi::c_ulong cpu_get_elf_hwcap(void)
+kernel::ffi::c_ulong cpu_get_elf_hwcap(void)
 {
 	/*
 	 * We currently only populate the first 32 bits of AT_HWCAP. Please
@@ -3928,12 +3928,12 @@ core::ffi::c_ulong cpu_get_elf_hwcap(void)
 	return elf_hwcap[0];
 }
 
-core::ffi::c_ulong cpu_get_elf_hwcap2(void)
+kernel::ffi::c_ulong cpu_get_elf_hwcap2(void)
 {
 	return elf_hwcap[1];
 }
 
-core::ffi::c_ulong cpu_get_elf_hwcap3(void)
+kernel::ffi::c_ulong cpu_get_elf_hwcap3(void)
 {
 	return elf_hwcap[2];
 }
@@ -4044,7 +4044,7 @@ void __init setup_user_features(void)
 	minsigstksz_setup();
 }
 
-static int enable_mismatched_32bit_el0(cpu: core::ffi::c_uint)
+static int enable_mismatched_32bit_el0(cpu: kernel::ffi::c_uint)
 {
 	/*
 	 * The first 32-bit-capable CPU we detected and so can no longer

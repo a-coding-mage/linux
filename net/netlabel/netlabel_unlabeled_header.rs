@@ -207,18 +207,18 @@ extern "C" {
     /* Static/Fallback label management functions */
     pub fn netlbl_unlhsh_add(
         net: *mut net,
-        dev_name: *const core::ffi::c_char,
-        addr: *const core::ffi::c_void,
-        mask: *const core::ffi::c_void,
+        dev_name: *const kernel::ffi::c_char,
+        addr: *const kernel::ffi::c_void,
+        mask: *const kernel::ffi::c_void,
         addr_len: u32,
         secid: u32,
         audit_info: *mut netlbl_audit,
     ) -> i32;
     pub fn netlbl_unlhsh_remove(
         net: *mut net,
-        dev_name: *const core::ffi::c_char,
-        addr: *const core::ffi::c_void,
-        mask: *const core::ffi::c_void,
+        dev_name: *const kernel::ffi::c_char,
+        addr: *const kernel::ffi::c_void,
+        mask: *const kernel::ffi::c_void,
         addr_len: u32,
         audit_info: *mut netlbl_audit,
     ) -> i32;

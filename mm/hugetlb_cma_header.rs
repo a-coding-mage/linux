@@ -7,18 +7,18 @@
 extern "C" {
     pub fn hugetlb_cma_free_frozen_folio(folio: *mut folio);
     pub fn hugetlb_cma_alloc_frozen_folio(
-        order: core::ffi::c_int,
+        order: kernel::ffi::c_int,
         gfp_mask: gfp_t,
-        nid: core::ffi::c_int,
+        nid: kernel::ffi::c_int,
         nodemask: *mut nodemask_t,
     ) -> *mut folio;
     pub fn hugetlb_cma_alloc_bootmem(
         h: *mut hstate,
-        nid: core::ffi::c_int,
+        nid: kernel::ffi::c_int,
         node_exact: bool,
-    ) -> *mut core::ffi::c_void;
+    ) -> *mut kernel::ffi::c_void;
     pub fn hugetlb_cma_exclusive_alloc() -> bool;
-    pub fn hugetlb_cma_total_size() -> core::ffi::c_ulong;
+    pub fn hugetlb_cma_total_size() -> kernel::ffi::c_ulong;
     pub fn hugetlb_cma_validate_params();
     pub fn hugetlb_early_cma(h: *mut hstate) -> bool;
 }
@@ -30,9 +30,9 @@ pub unsafe fn hugetlb_cma_free_frozen_folio(_folio: *mut folio) {}
 #[cfg(not(CONFIG_CMA))]
 #[inline]
 pub unsafe fn hugetlb_cma_alloc_frozen_folio(
-    _order: core::ffi::c_int,
+    _order: kernel::ffi::c_int,
     _gfp_mask: gfp_t,
-    _nid: core::ffi::c_int,
+    _nid: kernel::ffi::c_int,
     _nodemask: *mut nodemask_t,
 ) -> *mut folio {
     core::ptr::null_mut()
@@ -42,9 +42,9 @@ pub unsafe fn hugetlb_cma_alloc_frozen_folio(
 #[inline]
 pub unsafe fn hugetlb_cma_alloc_bootmem(
     _h: *mut hstate,
-    _nid: core::ffi::c_int,
+    _nid: kernel::ffi::c_int,
     _node_exact: bool,
-) -> *mut core::ffi::c_void {
+) -> *mut kernel::ffi::c_void {
     core::ptr::null_mut()
 }
 
@@ -56,7 +56,7 @@ pub unsafe fn hugetlb_cma_exclusive_alloc() -> bool {
 
 #[cfg(not(CONFIG_CMA))]
 #[inline]
-pub unsafe fn hugetlb_cma_total_size() -> core::ffi::c_ulong {
+pub unsafe fn hugetlb_cma_total_size() -> kernel::ffi::c_ulong {
     0
 }
 

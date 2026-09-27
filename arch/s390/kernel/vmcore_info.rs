@@ -4,7 +4,7 @@
 // linux/vmcore_info.h, linux/mm.h, asm/abs_lowcore.h, asm/sections.h, asm/setup.h
 
 extern "C" {
-    fn vmcoreinfo_append_str(format: *const core::ffi::c_char, ...);
+    fn vmcoreinfo_append_str(format: *const kernel::ffi::c_char, ...);
     fn get_abs_lowcore() -> *mut lowcore;
     fn paddr_vmcoreinfo_note() -> usize;
     fn put_abs_lowcore(abs_lc: *mut lowcore);
@@ -45,23 +45,23 @@ pub unsafe fn arch_crash_save_vmcoreinfo() {
     VMCOREINFO_SYMBOL!(high_memory);
     VMCOREINFO_LENGTH!(lowcore_ptr, NR_CPUS);
     vmcoreinfo_append_str(
-        b"SAMODE31=%lx\n\0".as_ptr() as *const core::ffi::c_char,
+        b"SAMODE31=%lx\n\0".as_ptr() as *const kernel::ffi::c_char,
         __samode31 as usize,
     );
     vmcoreinfo_append_str(
-        b"EAMODE31=%lx\n\0".as_ptr() as *const core::ffi::c_char,
+        b"EAMODE31=%lx\n\0".as_ptr() as *const kernel::ffi::c_char,
         __eamode31 as usize,
     );
     vmcoreinfo_append_str(
-        b"IDENTITYBASE=%lx\n\0".as_ptr() as *const core::ffi::c_char,
+        b"IDENTITYBASE=%lx\n\0".as_ptr() as *const kernel::ffi::c_char,
         __identity_base,
     );
     vmcoreinfo_append_str(
-        b"KERNELOFFSET=%lx\n\0".as_ptr() as *const core::ffi::c_char,
+        b"KERNELOFFSET=%lx\n\0".as_ptr() as *const kernel::ffi::c_char,
         kaslr_offset(),
     );
     vmcoreinfo_append_str(
-        b"KERNELOFFPHYS=%lx\n\0".as_ptr() as *const core::ffi::c_char,
+        b"KERNELOFFPHYS=%lx\n\0".as_ptr() as *const kernel::ffi::c_char,
         __kaslr_offset_phys,
     );
     abs_lc = get_abs_lowcore();

@@ -20,7 +20,7 @@ pub const KEXEC_CONTROL_MEMORY_LIMIT: usize = usize::MAX;
 /* Reserve a page for the control code buffer. */
 pub const KEXEC_CONTROL_PAGE_SIZE: usize = PAGE_SIZE;
 
-pub const KEXEC_ARCH: _ = KEXEC_ARCH_RISCV;
+pub const KEXEC_ARCH: u32 = KEXEC_ARCH_RISCV;
 
 extern "C" {
     pub fn riscv_crash_save_regs(newregs: *mut pt_regs);
@@ -43,7 +43,7 @@ pub unsafe fn crash_setup_regs(newregs: *mut pt_regs, oldregs: *const pt_regs) {
 #[repr(C)]
 pub struct kimage_arch {
     /* For CONFIG_KEXEC_FILE. */
-    pub fdt: *mut core::ffi::c_void,
+    pub fdt: *mut kernel::ffi::c_void,
     pub fdt_addr: usize,
 }
 
@@ -99,9 +99,9 @@ extern "C" {
         image: *mut kimage,
         kernel_start: usize,
         kernel_len: usize,
-        initrd: *mut core::ffi::c_char,
+        initrd: *mut kernel::ffi::c_char,
         initrd_len: usize,
-        cmdline: *mut core::ffi::c_char,
+        cmdline: *mut kernel::ffi::c_char,
         cmdline_len: usize,
     ) -> i32;
 }

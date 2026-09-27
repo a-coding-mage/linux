@@ -11,13 +11,13 @@ use core::mem::{offset_of, size_of};
 extern "C" {
     fn bpf_prog_create(ret: *mut *mut bpf_prog, program: *mut sock_fprog_kern) -> i32;
     fn bpf_prog_get_type(fd: i32, prog_type: u32) -> *mut bpf_prog;
-    fn bpf_prog_get_type_path(path: *const core::ffi::c_char, prog_type: u32) -> *mut bpf_prog;
+    fn bpf_prog_get_type_path(path: *const kernel::ffi::c_char, prog_type: u32) -> *mut bpf_prog;
     fn bpf_prog_run(prog: *mut bpf_prog, skb: *const sk_buff) -> bool;
     fn bpf_prog_run_save_cb(prog: *mut bpf_prog, skb: *mut sk_buff) -> u32;
     fn bpf_prog_destroy(prog: *mut bpf_prog);
     fn xt_register_matches(matches: *mut xt_match, count: usize) -> i32;
     fn xt_unregister_matches(matches: *mut xt_match, count: usize);
-    fn strnlen(s: *const core::ffi::c_char, maxlen: usize) -> usize;
+    fn strnlen(s: *const kernel::ffi::c_char, maxlen: usize) -> usize;
 }
 
 #[repr(C)]
@@ -43,17 +43,17 @@ pub struct sk_buff {
 
 #[repr(C)]
 pub struct xt_mtchk_param {
-    pub matchinfo: *mut core::ffi::c_void,
+    pub matchinfo: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct xt_action_param {
-    pub matchinfo: *mut core::ffi::c_void,
+    pub matchinfo: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct xt_mtdtor_param {
-    pub matchinfo: *mut core::ffi::c_void,
+    pub matchinfo: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -67,7 +67,7 @@ pub struct xt_bpf_info {
 pub struct xt_bpf_info_v1 {
     pub mode: u32,
     pub fd: i32,
-    pub path: [core::ffi::c_char; XT_BPF_PATH_MAX],
+    pub path: [kernel::ffi::c_char; XT_BPF_PATH_MAX],
     pub bpf_program: *mut sock_filter,
     pub bpf_program_num_elem: u16,
     pub filter: *mut bpf_prog,
@@ -75,7 +75,7 @@ pub struct xt_bpf_info_v1 {
 
 #[repr(C)]
 pub struct xt_match {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub revision: u8,
     pub family: u16,
     pub checkentry: Option<unsafe extern "C" fn(*const xt_mtchk_param) -> i32>,
@@ -83,7 +83,7 @@ pub struct xt_match {
     pub destroy: Option<unsafe extern "C" fn(*const xt_mtdtor_param)>,
     pub matchsize: usize,
     pub usersize: usize,
-    pub me: *mut core::ffi::c_void,
+    pub me: *mut kernel::ffi::c_void,
 }
 
 const XT_BPF_MAX_NUM_INSTR: u16 = 4096;
@@ -123,7 +123,7 @@ unsafe fn __bpf_mt_check_fd(fd: i32, ret: *mut *mut bpf_prog) -> i32 {
 }
 
 unsafe fn __bpf_mt_check_path(
-    path: *const core::ffi::c_char,
+    path: *const kernel::ffi::c_char,
     ret: *mut *mut bpf_prog,
 ) -> i32 {
     if strnlen(path, XT_BPF_PATH_MAX) == XT_BPF_PATH_MAX {

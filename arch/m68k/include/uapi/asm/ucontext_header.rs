@@ -23,11 +23,11 @@ pub const MCONTEXT_VERSION: i32 = 2;
 
 #[repr(C)]
 pub struct Ucontext {
-    pub uc_flags: core::ffi::c_ulong,
+    pub uc_flags: kernel::ffi::c_ulong,
     pub uc_link: *mut Ucontext,
     pub uc_stack: stack_t,
     pub uc_mcontext: Mcontext,
-    pub uc_filler: [core::ffi::c_ulong; 80],
+    pub uc_filler: [kernel::ffi::c_ulong; 80],
     pub uc_sigmask: sigset_t, // mask last for extensibility
 }
 

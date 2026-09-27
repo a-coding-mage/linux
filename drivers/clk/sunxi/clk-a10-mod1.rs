@@ -18,9 +18,9 @@ unsafe fn sun4i_mod1_clk_setup(node: *mut device_node) {
     let mut clk: *mut clk = core::ptr::null_mut();
     let mut mux: *mut clk_mux = core::ptr::null_mut();
     let mut gate: *mut clk_gate = core::ptr::null_mut();
-    let mut parents: [*const core::ffi::c_char; 4] = [core::ptr::null(); 4];
-    let mut clk_name: *const core::ffi::c_char = (*node).name;
-    let mut reg: *mut core::ffi::c_void;
+    let mut parents: [*const kernel::ffi::c_char; 4] = [core::ptr::null(); 4];
+    let mut clk_name: *const kernel::ffi::c_char = (*node).name;
+    let mut reg: *mut kernel::ffi::c_void;
     let mut i: i32;
 
     reg = of_io_request_and_map(node, 0, of_node_full_name(node));
@@ -36,7 +36,7 @@ unsafe fn sun4i_mod1_clk_setup(node: *mut device_node) {
 
     gate = kzalloc_obj::<clk_gate>();
     if gate.is_null() {
-        kfree(mux as *mut core::ffi::c_void);
+        kfree(mux as *mut kernel::ffi::c_void);
         goto_err_unmap(reg);
         return;
     }
@@ -66,8 +66,8 @@ unsafe fn sun4i_mod1_clk_setup(node: *mut device_node) {
         CLK_SET_RATE_PARENT,
     );
     if IS_ERR(clk) {
-        kfree(gate as *mut core::ffi::c_void);
-        kfree(mux as *mut core::ffi::c_void);
+        kfree(gate as *mut kernel::ffi::c_void);
+        kfree(mux as *mut kernel::ffi::c_void);
         goto_err_unmap(reg);
         return;
     }
@@ -76,7 +76,7 @@ unsafe fn sun4i_mod1_clk_setup(node: *mut device_node) {
     return;
 }
 
-unsafe fn goto_err_unmap(reg: *mut core::ffi::c_void) {
+unsafe fn goto_err_unmap(reg: *mut kernel::ffi::c_void) {
     iounmap(reg);
 }
 

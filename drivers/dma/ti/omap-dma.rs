@@ -28,10 +28,10 @@ const OMAP_SDMA_CHANNELS	32
 
 struct omap_dma_config {
 	int lch_end;
-	core::ffi::c_uint rw_priority:1;
-	core::ffi::c_uint needs_busy_check:1;
-	core::ffi::c_uint may_lose_context:1;
-	core::ffi::c_uint needs_lch_clear:1;
+	kernel::ffi::c_uint rw_priority:1;
+	kernel::ffi::c_uint needs_busy_check:1;
+	kernel::ffi::c_uint may_lose_context:1;
+	kernel::ffi::c_uint needs_lch_clear:1;
 };
 
 struct omap_dma_context {
@@ -606,7 +606,7 @@ static void omap_dma_callback(int ch, status: u16, void *data)
 {
 	struct omap_chan *c = data;
 	struct omap_desc *d;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave((*&c).vc.lock, flags);
 	d = (*c).desc;
@@ -886,7 +886,7 @@ static enum dma_status omap_dma_tx_status(dma_chan *chan,
 	'out: {
 	struct omap_chan *c = to_omap_dma_chan(chan);
 	enum dma_status ret;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	struct omap_desc *d = NULL;
 
 	ret = dma_cookie_status(chan, cookie, txstate);
@@ -945,7 +945,7 @@ static enum dma_status omap_dma_tx_status(dma_chan *chan,
 static void omap_dma_issue_pending(dma_chan *chan)
 {
 	struct omap_chan *c = to_omap_dma_chan(chan);
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	spin_lock_irqsave(&c->vc.lock, flags);
 	if (vchan_issue_pending(&c->vc) && !c->desc)
@@ -955,7 +955,7 @@ static void omap_dma_issue_pending(dma_chan *chan)
 
 static struct dma_async_tx_descriptor *omap_dma_prep_slave_sg(
 	dma_chan *chan, scatterlist *sgl, unsigned sglen,
-	dma_transfer_direction dir, tx_flags: core::ffi::c_ulong, void *context)
+	dma_transfer_direction dir, tx_flags: kernel::ffi::c_ulong, void *context)
 {
 	struct omap_dmadev *od = to_omap_dma_dev(chan->device);
 	struct omap_chan *c = to_omap_dma_chan(chan);
@@ -1136,7 +1136,7 @@ static struct dma_async_tx_descriptor *omap_dma_prep_slave_sg(
 
 static struct dma_async_tx_descriptor *omap_dma_prep_dma_cyclic(
 	dma_chan *chan, dma_addr_t buf_addr, size_t buf_len,
-	size_t period_len, dma_transfer_direction dir, flags: core::ffi::c_ulong)
+	size_t period_len, dma_transfer_direction dir, flags: kernel::ffi::c_ulong)
 {
 	struct omap_dmadev *od = to_omap_dma_dev(chan->device);
 	struct omap_chan *c = to_omap_dma_chan(chan);
@@ -1237,7 +1237,7 @@ static struct dma_async_tx_descriptor *omap_dma_prep_dma_cyclic(
 
 static struct dma_async_tx_descriptor *omap_dma_prep_dma_memcpy(
 	dma_chan *chan, dma_addr_t dest, dma_addr_t src,
-	size_t len, tx_flags: core::ffi::c_ulong)
+	size_t len, tx_flags: kernel::ffi::c_ulong)
 {
 	struct omap_chan *c = to_omap_dma_chan(chan);
 	struct omap_desc *d;
@@ -1283,7 +1283,7 @@ static struct dma_async_tx_descriptor *omap_dma_prep_dma_memcpy(
 
 static struct dma_async_tx_descriptor *omap_dma_prep_dma_interleaved(
 	dma_chan *chan, dma_interleaved_template *xt,
-	flags: core::ffi::c_ulong)
+	flags: kernel::ffi::c_ulong)
 {
 	struct omap_chan *c = to_omap_dma_chan(chan);
 	struct omap_desc *d;
@@ -1384,7 +1384,7 @@ static int omap_dma_slave_config(dma_chan *chan, dma_slave_config *cfg)
 static int omap_dma_terminate_all(dma_chan *chan)
 {
 	struct omap_chan *c = to_omap_dma_chan(chan);
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	LIST_HEAD(head);
 
 	spin_lock_irqsave(&c->vc.lock, flags);
@@ -1424,7 +1424,7 @@ static int omap_dma_pause(dma_chan *chan)
 	'out: {
 	struct omap_chan *c = to_omap_dma_chan(chan);
 	struct omap_dmadev *od = to_omap_dma_dev(chan->device);
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int ret = -EINVAL;
 	bool can_pause = false;
 
@@ -1478,7 +1478,7 @@ static int omap_dma_resume(dma_chan *chan)
 {
 	struct omap_chan *c = to_omap_dma_chan(chan);
 	struct omap_dmadev *od = to_omap_dma_dev(chan->device);
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int ret = -EINVAL;
 
 	spin_lock_irqsave(&od->irq_lock, flags);
@@ -1547,7 +1547,7 @@ static bool omap_dma_busy(omap_dmadev *od)
 
 /* Currently only used for omap2. For omap1, also a check for lcd_dma is needed */
 static int omap_dma_busy_notifier(notifier_block *nb,
-				  cmd: core::ffi::c_ulong, void *v)
+				  cmd: kernel::ffi::c_ulong, void *v)
 {
 	struct omap_dmadev *od;
 
@@ -1599,7 +1599,7 @@ static void omap_dma_context_restore(omap_dmadev *od)
 
 /* Currently only used for omap3 */
 static int omap_dma_context_notifier(notifier_block *nb,
-				     cmd: core::ffi::c_ulong, void *v)
+				     cmd: kernel::ffi::c_ulong, void *v)
 {
 	struct omap_dmadev *od;
 

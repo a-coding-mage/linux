@@ -9,10 +9,10 @@
 // Linux kernel and machine-specific dependencies are supplied by other files.
 
 unsafe extern "C" {
-    fn gpio_request(gpio: i32, label: *const core::ffi::c_char) -> i32;
+    fn gpio_request(gpio: i32, label: *const kernel::ffi::c_char) -> i32;
     fn gpio_direction_output(gpio: i32, value: i32) -> i32;
     fn gpio_free(gpio: i32);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
     fn h3xxx_map_io();
     fn h3xxx_mach_init();
     fn sa11x0_register_lcd(info: *mut sa1100fb_mach_info);

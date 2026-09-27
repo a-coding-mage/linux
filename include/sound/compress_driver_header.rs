@@ -16,21 +16,21 @@ pub struct snd_compr_task_runtime {
     pub output_size: u64,
     pub flags: u32,
     pub state: u8,
-    pub private_value: *mut core::ffi::c_void,
+    pub private_value: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
 pub struct snd_compr_runtime {
     pub state: snd_pcm_state_t,
     pub ops: *mut snd_compr_ops,
-    pub buffer: *mut core::ffi::c_void,
+    pub buffer: *mut kernel::ffi::c_void,
     pub buffer_size: u64,
     pub fragment_size: u32,
     pub fragments: u32,
     pub total_bytes_available: u64,
     pub total_bytes_transferred: u64,
     pub sleep: wait_queue_head_t,
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
     pub dma_area: *mut u8,
     pub dma_addr: dma_addr_t,
     pub dma_bytes: usize,
@@ -47,7 +47,7 @@ pub struct snd_compr_runtime {
 
 #[repr(C)]
 pub struct snd_compr_stream {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub ops: *mut snd_compr_ops,
     pub runtime: *mut snd_compr_runtime,
     pub device: *mut snd_compr,
@@ -57,48 +57,48 @@ pub struct snd_compr_stream {
     pub next_track: bool,
     pub partial_drain: bool,
     pub pause_in_draining: bool,
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
     pub dma_buffer: snd_dma_buffer,
 }
 
 #[repr(C)]
 pub struct snd_compr_ops {
-    pub open: Option<unsafe extern "C" fn(*mut snd_compr_stream) -> core::ffi::c_int>,
-    pub free: Option<unsafe extern "C" fn(*mut snd_compr_stream) -> core::ffi::c_int>,
-    pub set_params: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_params) -> core::ffi::c_int>,
-    pub get_params: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_codec) -> core::ffi::c_int>,
-    pub set_metadata: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_metadata) -> core::ffi::c_int>,
-    pub get_metadata: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_metadata) -> core::ffi::c_int>,
-    pub trigger: Option<unsafe extern "C" fn(*mut snd_compr_stream, core::ffi::c_int) -> core::ffi::c_int>,
-    pub pointer: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_tstamp64) -> core::ffi::c_int>,
-    pub copy: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut core::ffi::c_char, usize) -> core::ffi::c_int>,
-    pub mmap: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut vm_area_struct) -> core::ffi::c_int>,
-    pub ack: Option<unsafe extern "C" fn(*mut snd_compr_stream, usize) -> core::ffi::c_int>,
-    pub get_caps: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_caps) -> core::ffi::c_int>,
-    pub get_codec_caps: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_codec_caps) -> core::ffi::c_int>,
+    pub open: Option<unsafe extern "C" fn(*mut snd_compr_stream) -> kernel::ffi::c_int>,
+    pub free: Option<unsafe extern "C" fn(*mut snd_compr_stream) -> kernel::ffi::c_int>,
+    pub set_params: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_params) -> kernel::ffi::c_int>,
+    pub get_params: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_codec) -> kernel::ffi::c_int>,
+    pub set_metadata: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_metadata) -> kernel::ffi::c_int>,
+    pub get_metadata: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_metadata) -> kernel::ffi::c_int>,
+    pub trigger: Option<unsafe extern "C" fn(*mut snd_compr_stream, kernel::ffi::c_int) -> kernel::ffi::c_int>,
+    pub pointer: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_tstamp64) -> kernel::ffi::c_int>,
+    pub copy: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut kernel::ffi::c_char, usize) -> kernel::ffi::c_int>,
+    pub mmap: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut vm_area_struct) -> kernel::ffi::c_int>,
+    pub ack: Option<unsafe extern "C" fn(*mut snd_compr_stream, usize) -> kernel::ffi::c_int>,
+    pub get_caps: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_caps) -> kernel::ffi::c_int>,
+    pub get_codec_caps: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_codec_caps) -> kernel::ffi::c_int>,
     #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
-    pub task_create: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_task_runtime) -> core::ffi::c_int>,
+    pub task_create: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_task_runtime) -> kernel::ffi::c_int>,
     #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
-    pub task_start: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_task_runtime) -> core::ffi::c_int>,
+    pub task_start: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_task_runtime) -> kernel::ffi::c_int>,
     #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
-    pub task_stop: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_task_runtime) -> core::ffi::c_int>,
+    pub task_stop: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_task_runtime) -> kernel::ffi::c_int>,
     #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
-    pub task_free: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_task_runtime) -> core::ffi::c_int>,
+    pub task_free: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_task_runtime) -> kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 pub struct snd_compr {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub dev: *mut device,
     pub ops: *mut snd_compr_ops,
-    pub private_data: *mut core::ffi::c_void,
+    pub private_data: *mut kernel::ffi::c_void,
     pub card: *mut snd_card,
-    pub direction: core::ffi::c_uint,
+    pub direction: kernel::ffi::c_uint,
     pub lock: mutex,
-    pub device: core::ffi::c_int,
+    pub device: kernel::ffi::c_int,
     pub use_pause_in_draining: bool,
     #[cfg(CONFIG_SND_VERBOSE_PROCFS)]
-    pub id: [core::ffi::c_char; 64],
+    pub id: [kernel::ffi::c_char; 64],
     #[cfg(CONFIG_SND_VERBOSE_PROCFS)]
     pub proc_root: *mut snd_info_entry,
     #[cfg(CONFIG_SND_VERBOSE_PROCFS)]
@@ -106,12 +106,12 @@ pub struct snd_compr {
 }
 
 extern "C" {
-    pub fn snd_compress_new(card: *mut snd_card, device: core::ffi::c_int,
-                            type_: core::ffi::c_int, id: *const core::ffi::c_char,
-                            compr: *mut snd_compr) -> core::ffi::c_int;
-    pub fn snd_compr_malloc_pages(stream: *mut snd_compr_stream, size: usize) -> core::ffi::c_int;
-    pub fn snd_compr_free_pages(stream: *mut snd_compr_stream) -> core::ffi::c_int;
-    pub fn snd_compr_stop_error(stream: *mut snd_compr_stream, state: snd_pcm_state_t) -> core::ffi::c_int;
+    pub fn snd_compress_new(card: *mut snd_card, device: kernel::ffi::c_int,
+                            type_: kernel::ffi::c_int, id: *const kernel::ffi::c_char,
+                            compr: *mut snd_compr) -> kernel::ffi::c_int;
+    pub fn snd_compr_malloc_pages(stream: *mut snd_compr_stream, size: usize) -> kernel::ffi::c_int;
+    pub fn snd_compr_free_pages(stream: *mut snd_compr_stream) -> kernel::ffi::c_int;
+    pub fn snd_compr_stop_error(stream: *mut snd_compr_stream, state: snd_pcm_state_t) -> kernel::ffi::c_int;
     #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
     pub fn snd_compr_task_finished(stream: *mut snd_compr_stream, task: *mut snd_compr_task_runtime);
 }

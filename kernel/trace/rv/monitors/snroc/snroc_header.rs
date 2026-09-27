@@ -29,8 +29,8 @@ pub enum events_snroc {
 
 #[repr(C)]
 pub struct automaton_snroc {
-    pub state_names: [*const core::ffi::c_char; states_snroc::state_max_snroc as usize],
-    pub event_names: [*const core::ffi::c_char; events_snroc::event_max_snroc as usize],
+    pub state_names: [*const kernel::ffi::c_char; states_snroc::state_max_snroc as usize],
+    pub event_names: [*const kernel::ffi::c_char; events_snroc::event_max_snroc as usize],
     pub function:
         [[u8; events_snroc::event_max_snroc as usize]; states_snroc::state_max_snroc as usize],
     pub initial_state: u8,
@@ -39,13 +39,13 @@ pub struct automaton_snroc {
 
 pub static automaton_snroc: automaton_snroc = automaton_snroc {
     state_names: [
-        b"other_context\0".as_ptr() as *const core::ffi::c_char,
-        b"own_context\0".as_ptr() as *const core::ffi::c_char,
+        b"other_context\0".as_ptr() as *const kernel::ffi::c_char,
+        b"own_context\0".as_ptr() as *const kernel::ffi::c_char,
     ],
     event_names: [
-        b"sched_set_state\0".as_ptr() as *const core::ffi::c_char,
-        b"sched_switch_in\0".as_ptr() as *const core::ffi::c_char,
-        b"sched_switch_out\0".as_ptr() as *const core::ffi::c_char,
+        b"sched_set_state\0".as_ptr() as *const kernel::ffi::c_char,
+        b"sched_switch_in\0".as_ptr() as *const kernel::ffi::c_char,
+        b"sched_switch_out\0".as_ptr() as *const kernel::ffi::c_char,
     ],
     function: [
         [

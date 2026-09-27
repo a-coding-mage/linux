@@ -10,52 +10,52 @@ extern "C" {
         folio: *mut folio,
         p_blkno: *mut u64,
         inode: *mut inode,
-        from: ::core::ffi::c_uint,
-        to: ::core::ffi::c_uint,
-        new: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        from: ::kernel::ffi::c_uint,
+        to: ::kernel::ffi::c_uint,
+        new: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 
-    pub fn ocfs2_unlock_and_free_folios(folios: *mut *mut folio, num_folios: ::core::ffi::c_int);
+    pub fn ocfs2_unlock_and_free_folios(folios: *mut *mut folio, num_folios: ::kernel::ffi::c_int);
 
     pub fn walk_page_buffers(
         handle: *mut handle_t,
         head: *mut buffer_head,
-        from: ::core::ffi::c_uint,
-        to: ::core::ffi::c_uint,
-        partial: *mut ::core::ffi::c_int,
-        func: Option<unsafe extern "C" fn(*mut handle_t, *mut buffer_head) -> ::core::ffi::c_int>,
-    ) -> ::core::ffi::c_int;
+        from: ::kernel::ffi::c_uint,
+        to: ::kernel::ffi::c_uint,
+        partial: *mut ::kernel::ffi::c_int,
+        func: Option<unsafe extern "C" fn(*mut handle_t, *mut buffer_head) -> ::kernel::ffi::c_int>,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn ocfs2_write_end_nolock(
         mapping: *mut address_space,
         pos: loff_t,
-        len: ::core::ffi::c_uint,
-        copied: ::core::ffi::c_uint,
-        fsdata: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        len: ::kernel::ffi::c_uint,
+        copied: ::kernel::ffi::c_uint,
+        fsdata: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn ocfs2_write_begin_nolock(
         mapping: *mut address_space,
         pos: loff_t,
-        len: ::core::ffi::c_uint,
+        len: ::kernel::ffi::c_uint,
         type_: ocfs2_write_type_t,
         foliop: *mut *mut folio,
-        fsdata: *mut *mut ::core::ffi::c_void,
+        fsdata: *mut *mut ::kernel::ffi::c_void,
         di_bh: *mut buffer_head,
         mmap_folio: *mut folio,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn ocfs2_read_inline_data(inode: *mut inode, folio: *mut folio, di_bh: *mut buffer_head)
-        -> ::core::ffi::c_int;
+        -> ::kernel::ffi::c_int;
     pub fn ocfs2_size_fits_inline_data(di_bh: *mut buffer_head, new_size: u64)
-        -> ::core::ffi::c_int;
+        -> ::kernel::ffi::c_int;
 
     pub fn ocfs2_get_block(
         inode: *mut inode,
         iblock: sector_t,
         bh_result: *mut buffer_head,
-        create: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        create: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -68,17 +68,17 @@ pub enum ocfs2_write_type_t {
 
 /* all ocfs2_dio_end_io()'s fault */
 #[inline]
-pub unsafe fn ocfs2_iocb_is_rw_locked(iocb: *mut kiocb) -> ::core::ffi::c_int {
-    test_bit(0, &mut (*iocb).private as *mut _ as *mut ::core::ffi::c_ulong)
+pub unsafe fn ocfs2_iocb_is_rw_locked(iocb: *mut kiocb) -> ::kernel::ffi::c_int {
+    test_bit(0, &mut (*iocb).private as *mut _ as *mut ::kernel::ffi::c_ulong)
 }
 
 #[inline]
-pub unsafe fn ocfs2_iocb_set_rw_locked(iocb: *mut kiocb, level: ::core::ffi::c_int) {
-    set_bit(0, &mut (*iocb).private as *mut _ as *mut ::core::ffi::c_ulong);
+pub unsafe fn ocfs2_iocb_set_rw_locked(iocb: *mut kiocb, level: ::kernel::ffi::c_int) {
+    set_bit(0, &mut (*iocb).private as *mut _ as *mut ::kernel::ffi::c_ulong);
     if level != 0 {
-        set_bit(1, &mut (*iocb).private as *mut _ as *mut ::core::ffi::c_ulong);
+        set_bit(1, &mut (*iocb).private as *mut _ as *mut ::kernel::ffi::c_ulong);
     } else {
-        clear_bit(1, &mut (*iocb).private as *mut _ as *mut ::core::ffi::c_ulong);
+        clear_bit(1, &mut (*iocb).private as *mut _ as *mut ::kernel::ffi::c_ulong);
     }
 }
 
@@ -101,14 +101,14 @@ pub unsafe fn ocfs2_iocb_init_rw_locked(iocb: *mut kiocb) {
 
 #[inline]
 pub unsafe fn ocfs2_iocb_clear_rw_locked(iocb: *mut kiocb) {
-    clear_bit(OCFS2_IOCB_RW_LOCK as ::core::ffi::c_ulong,
-              &mut (*iocb).private as *mut _ as *mut ::core::ffi::c_ulong);
+    clear_bit(OCFS2_IOCB_RW_LOCK as ::kernel::ffi::c_ulong,
+              &mut (*iocb).private as *mut _ as *mut ::kernel::ffi::c_ulong);
 }
 
 #[inline]
-pub unsafe fn ocfs2_iocb_rw_locked_level(iocb: *mut kiocb) -> ::core::ffi::c_int {
-    test_bit(OCFS2_IOCB_RW_LOCK_LEVEL as ::core::ffi::c_ulong,
-             &mut (*iocb).private as *mut _ as *mut ::core::ffi::c_ulong)
+pub unsafe fn ocfs2_iocb_rw_locked_level(iocb: *mut kiocb) -> ::kernel::ffi::c_int {
+    test_bit(OCFS2_IOCB_RW_LOCK_LEVEL as ::kernel::ffi::c_ulong,
+             &mut (*iocb).private as *mut _ as *mut ::kernel::ffi::c_ulong)
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

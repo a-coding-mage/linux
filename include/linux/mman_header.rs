@@ -4,12 +4,12 @@
 // left as external Rust names.
 
 /* Arrange for legacy / undefined architecture-specific flags to be ignored. */
-pub const MAP_32BIT: _ = 0;
-pub const MAP_ABOVE4G: _ = 0;
-pub const MAP_HUGE_2MB: _ = 0;
-pub const MAP_HUGE_1GB: _ = 0;
-pub const MAP_UNINITIALIZED: _ = 0;
-pub const MAP_SYNC: _ = 0;
+pub const MAP_32BIT: u32 = 0;
+pub const MAP_ABOVE4G: u32 = 0;
+pub const MAP_HUGE_2MB: u32 = 0;
+pub const MAP_HUGE_1GB: u32 = 0;
+pub const MAP_UNINITIALIZED: u32 = 0;
+pub const MAP_SYNC: u32 = 0;
 
 /*
  * The historical set of flags that all mmap implementations implicitly
@@ -17,7 +17,7 @@ pub const MAP_SYNC: _ = 0;
  * MAP_EXECUTABLE and MAP_DENYWRITE are completely ignored throughout the
  * kernel.
  */
-pub const LEGACY_MAP_MASK: _ = MAP_SHARED
+pub const LEGACY_MAP_MASK: i32 = MAP_SHARED
     | MAP_PRIVATE
     | MAP_FIXED
     | MAP_ANONYMOUS
@@ -44,10 +44,10 @@ unsafe extern "C" {
     pub static mut vm_committed_as_batch: i32;
     pub fn mm_compute_batch(overcommit_policy: i32);
 
-    pub fn vm_memory_committed() -> libc::c_ulong;
+    pub fn vm_memory_committed() -> kernel::ffi::c_ulong;
     pub fn percpu_counter_add_batch(
         fbc: *mut percpu_counter,
-        amount: libc::c_long,
+        amount: kernel::ffi::c_long,
         batch: i32,
     );
 }
@@ -58,7 +58,7 @@ unsafe extern "C" {
 pub unsafe fn mm_compute_batch_no_smp(_overcommit_policy: i32) {}
 
 #[inline]
-pub unsafe fn vm_acct_memory(pages: libc::c_long) {
+pub unsafe fn vm_acct_memory(pages: kernel::ffi::c_long) {
     percpu_counter_add_batch(
         core::ptr::addr_of_mut!(vm_committed_as),
         pages,
@@ -67,35 +67,35 @@ pub unsafe fn vm_acct_memory(pages: libc::c_long) {
 }
 
 #[inline]
-pub unsafe fn vm_unacct_memory(pages: libc::c_long) {
+pub unsafe fn vm_unacct_memory(pages: kernel::ffi::c_long) {
     vm_acct_memory(pages.wrapping_neg());
 }
 
 /* Architecture-specific overrides may replace these definitions. */
 #[inline]
-pub const fn arch_calc_vm_prot_bits(_prot: libc::c_ulong, _pkey: libc::c_ulong) -> libc::c_ulong {
+pub const fn arch_calc_vm_prot_bits(_prot: kernel::ffi::c_ulong, _pkey: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     0
 }
 
 #[inline]
-pub const fn arch_calc_vm_flag_bits(_file: *mut file, _flags: libc::c_ulong) -> libc::c_ulong {
+pub const fn arch_calc_vm_flag_bits(_file: *mut file, _flags: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     0
 }
 
 /* PROT_GROWSDOWN and PROT_GROWSUP have already been masked out. */
 #[inline]
-pub const fn arch_validate_prot(prot: libc::c_ulong, _addr: libc::c_ulong) -> bool {
+pub const fn arch_validate_prot(prot: kernel::ffi::c_ulong, _addr: kernel::ffi::c_ulong) -> bool {
     (prot & !(PROT_READ | PROT_WRITE | PROT_EXEC | PROT_SEM)) == 0
 }
 
 #[inline]
-pub const fn arch_validate_flags(_flags: libc::c_ulong) -> bool {
+pub const fn arch_validate_flags(_flags: kernel::ffi::c_ulong) -> bool {
     true
 }
 
 /* Equivalent to: (x & bit1) ? bit2 : 0; bit1 and bit2 must be single bits. */
 #[inline]
-pub const fn _calc_vm_trans(x: libc::c_ulong, bit1: libc::c_ulong, bit2: libc::c_ulong) -> libc::c_ulong {
+pub const fn _calc_vm_trans(x: kernel::ffi::c_ulong, bit1: kernel::ffi::c_ulong, bit2: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     if bit1 == 0 || bit2 == 0 {
         0
     } else if bit1 <= bit2 {
@@ -106,7 +106,7 @@ pub const fn _calc_vm_trans(x: libc::c_ulong, bit1: libc::c_ulong, bit2: libc::c
 }
 
 #[inline]
-pub fn calc_vm_prot_bits(prot: libc::c_ulong, pkey: libc::c_ulong) -> vm_flags_t {
+pub fn calc_vm_prot_bits(prot: kernel::ffi::c_ulong, pkey: kernel::ffi::c_ulong) -> vm_flags_t {
     (_calc_vm_trans(prot, PROT_READ, VM_READ)
         | _calc_vm_trans(prot, PROT_WRITE, VM_WRITE)
         | _calc_vm_trans(prot, PROT_EXEC, VM_EXEC)
@@ -114,7 +114,7 @@ pub fn calc_vm_prot_bits(prot: libc::c_ulong, pkey: libc::c_ulong) -> vm_flags_t
 }
 
 #[inline]
-pub unsafe fn calc_vm_flag_bits(file: *mut file, flags: libc::c_ulong) -> vm_flags_t {
+pub unsafe fn calc_vm_flag_bits(file: *mut file, flags: kernel::ffi::c_ulong) -> vm_flags_t {
     (_calc_vm_trans(flags, MAP_GROWSDOWN, VM_GROWSDOWN)
         | _calc_vm_trans(flags, MAP_LOCKED, VM_LOCKED)
         | _calc_vm_trans(flags, MAP_SYNC, VM_SYNC)
@@ -124,7 +124,7 @@ pub unsafe fn calc_vm_flag_bits(file: *mut file, flags: libc::c_ulong) -> vm_fla
 }
 
 unsafe extern "C" {
-    pub fn vm_commit_limit() -> libc::c_ulong;
+    pub fn vm_commit_limit() -> kernel::ffi::c_ulong;
 }
 
 #[inline]

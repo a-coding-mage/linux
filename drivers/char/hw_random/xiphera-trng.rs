@@ -2,7 +2,7 @@
 /* Copyright (C) 2020 Xiphera Ltd. */
 
 // Kernel dependencies supplied by the surrounding Rust environment.
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 const CONTROL_REG: usize = 0x00000000;
 const STATUS_REG: usize = 0x00000004;
@@ -30,7 +30,7 @@ pub struct xiphera_trng {
 // External kernel declarations supplied by other files.
 #[repr(C)]
 pub struct hwrng {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub read: Option<unsafe extern "C" fn(*mut hwrng, *mut c_void, usize, bool) -> i32>,
     pub quality: i32,
 }
@@ -38,7 +38,7 @@ pub struct hwrng {
 #[repr(C)]
 pub struct platform_device {
     pub dev: device,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -54,7 +54,7 @@ extern "C" {
     fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut c_void;
     fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32) -> *mut c_void;
     fn devm_hwrng_register(dev: *mut device, rng: *mut hwrng) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
 }
 
 const GFP_KERNEL: u32 = 0;
@@ -159,7 +159,7 @@ unsafe extern "C" fn xiphera_trng_probe(pdev: *mut platform_device) -> i32 {
 
 #[repr(C)]
 pub struct of_device_id {
-    compatible: *const core::ffi::c_char,
+    compatible: *const kernel::ffi::c_char,
 }
 
 static XIPHERA_TRNG_OF_MATCH: [of_device_id; 2] = [

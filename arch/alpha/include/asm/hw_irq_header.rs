@@ -3,13 +3,13 @@
 // `irq_err_count` is a volatile C global; accesses must use volatile
 // operations when read or written from Rust.
 unsafe extern "C" {
-    pub static mut irq_err_count: core::ffi::c_ulong;
+    pub static mut irq_err_count: kernel::ffi::c_ulong;
 }
 
 // C DECLARE_PER_CPU(unsigned long, irq_pmi_count);
 // The storage is provided by the platform's per-CPU implementation.
 unsafe extern "C" {
-    pub static mut irq_pmi_count: core::ffi::c_ulong;
+    pub static mut irq_pmi_count: kernel::ffi::c_ulong;
 }
 
 // CONFIG_ALPHA_GENERIC selects the platform-specific interrupt count.

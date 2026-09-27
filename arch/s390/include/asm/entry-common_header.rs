@@ -3,7 +3,7 @@
 // Dependencies supplied by the surrounding kernel translation are intentionally
 // left external; the C preprocessor header guard is not represented in Rust.
 
-pub const ARCH_EXIT_TO_USER_MODE_WORK: ::core::ffi::c_ulong =
+pub const ARCH_EXIT_TO_USER_MODE_WORK: ::kernel::ffi::c_ulong =
     _TIF_GUARDED_STORAGE | _TIF_PER_TRAP;
 
 extern "C" {
@@ -23,7 +23,7 @@ pub unsafe fn arch_enter_from_user_mode(regs: *mut pt_regs) {
 #[inline(always)]
 pub unsafe fn arch_exit_to_user_mode_work(
     regs: *mut pt_regs,
-    ti_work: ::core::ffi::c_ulong,
+    ti_work: ::kernel::ffi::c_ulong,
 ) {
     if ti_work & _TIF_PER_TRAP != 0 {
         clear_thread_flag(TIF_PER_TRAP);

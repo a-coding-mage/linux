@@ -54,24 +54,24 @@ pub struct input_dev {
 #[repr(C)]
 pub struct matrix_keymap_data {
     pub keymap: *const u32,
-    pub keymap_size: core::ffi::c_uint,
+    pub keymap_size: kernel::ffi::c_uint,
 }
 
 unsafe extern "C" {
     pub fn matrix_keypad_build_keymap(
         keymap_data: *const matrix_keymap_data,
-        keymap_name: *const core::ffi::c_char,
-        rows: core::ffi::c_uint,
-        cols: core::ffi::c_uint,
-        keymap: *mut core::ffi::c_ushort,
+        keymap_name: *const kernel::ffi::c_char,
+        rows: kernel::ffi::c_uint,
+        cols: kernel::ffi::c_uint,
+        keymap: *mut kernel::ffi::c_ushort,
         input_dev: *mut input_dev,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn matrix_keypad_parse_properties(
         dev: *mut device,
-        rows: *mut core::ffi::c_uint,
-        cols: *mut core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        rows: *mut kernel::ffi::c_uint,
+        cols: *mut kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

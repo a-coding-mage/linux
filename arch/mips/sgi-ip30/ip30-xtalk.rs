@@ -26,22 +26,22 @@ const fn ip30_swin_base(widget: usize) -> usize {
 // IO_BASE, device constants, register types, and kernel interfaces are external dependencies.
 extern "C" {
     static IO_BASE: usize;
-    fn __raw_readl(addr: *const core::ffi::c_void) -> u32;
-    fn platform_device_alloc(name: *const core::ffi::c_char, id: i32) -> *mut platform_device;
+    fn __raw_readl(addr: *const kernel::ffi::c_void) -> u32;
+    fn platform_device_alloc(name: *const kernel::ffi::c_char, id: i32) -> *mut platform_device;
     fn platform_device_add_resources(pdev: *mut platform_device, res: *const resource, n: usize) -> i32;
-    fn platform_device_add_data(pdev: *mut platform_device, data: *const core::ffi::c_void, size: usize) -> i32;
+    fn platform_device_add_data(pdev: *mut platform_device, data: *const kernel::ffi::c_void, size: usize) -> i32;
     fn platform_device_add(pdev: *mut platform_device) -> i32;
     fn platform_device_put(pdev: *mut platform_device);
     fn platform_device_unregister(pdev: *mut platform_device);
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn pr_warn(fmt: *const core::ffi::c_char, ...);
-    fn pr_info(fmt: *const core::ffi::c_char, ...);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn pr_warn(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_info(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)] struct platform_device { _private: [u8; 0] }
 #[repr(C)] struct bridge_regs { b_nic: u32 }
-#[repr(C)] struct resource { start: usize, end: usize, name: *const core::ffi::c_char, flags: usize }
-#[repr(C)] struct sgi_w1_platform_data { dev_id: [core::ffi::c_char; 32] }
+#[repr(C)] struct resource { start: usize, end: usize, name: *const kernel::ffi::c_char, flags: usize }
+#[repr(C)] struct sgi_w1_platform_data { dev_id: [kernel::ffi::c_char; 32] }
 #[repr(C)] struct xtalk_bridge_platform_data {
     bridge_addr: usize, intr_addr: usize, nasid: i32, masterwid: i32,
     mem: resource, mem_offset: usize, io: resource, io_offset: usize,

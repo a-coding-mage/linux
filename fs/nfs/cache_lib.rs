@@ -37,27 +37,27 @@ static mut nfs_cache_getent_prog: [u8; NFS_CACHE_UPCALL_PATHLEN] = {
     value[20] = b'n';
     value
 };
-static mut nfs_cache_getent_timeout: libc::c_ulong = NFS_CACHE_UPCALL_TIMEOUT as libc::c_ulong;
+static mut nfs_cache_getent_timeout: kernel::ffi::c_ulong = NFS_CACHE_UPCALL_TIMEOUT as kernel::ffi::c_ulong;
 
-pub unsafe fn nfs_cache_upcall(cd: *mut cache_detail, entry_name: *mut libc::c_char) -> libc::c_int {
-    static mut ENVP: [*mut libc::c_char; 4] = [
-        b"HOME=/\0".as_ptr() as *mut libc::c_char,
-        b"TERM=linux\0".as_ptr() as *mut libc::c_char,
-        b"PATH=/sbin:/usr/sbin:/bin:/usr/bin\0".as_ptr() as *mut libc::c_char,
+pub unsafe fn nfs_cache_upcall(cd: *mut cache_detail, entry_name: *mut kernel::ffi::c_char) -> kernel::ffi::c_int {
+    static mut ENVP: [*mut kernel::ffi::c_char; 4] = [
+        b"HOME=/\0".as_ptr() as *mut kernel::ffi::c_char,
+        b"TERM=linux\0".as_ptr() as *mut kernel::ffi::c_char,
+        b"PATH=/sbin:/usr/sbin:/bin:/usr/bin\0".as_ptr() as *mut kernel::ffi::c_char,
         core::ptr::null_mut(),
     ];
-    let argv: [*mut libc::c_char; 4] = [
-        nfs_cache_getent_prog.as_mut_ptr() as *mut libc::c_char,
+    let argv: [*mut kernel::ffi::c_char; 4] = [
+        nfs_cache_getent_prog.as_mut_ptr() as *mut kernel::ffi::c_char,
         (*cd).name,
         entry_name,
         core::ptr::null_mut(),
     ];
-    let mut ret: libc::c_int = -EACCES;
+    let mut ret: kernel::ffi::c_int = -EACCES;
 
     if nfs_cache_getent_prog[0] == b'\0' {
         return if ret > 0 { 0 } else { ret };
     }
-    ret = call_usermodehelper(argv[0], argv.as_ptr() as *mut *mut libc::c_char,
+    ret = call_usermodehelper(argv[0], argv.as_ptr() as *mut *mut kernel::ffi::c_char,
         ENVP.as_mut_ptr(), UMH_WAIT_EXEC);
     // Disable the upcall mechanism on ENOENT or EACCES; sysfs may re-enable it.
     if ret == -ENOENT || ret == -EACCES {
@@ -68,11 +68,11 @@ pub unsafe fn nfs_cache_upcall(cd: *mut cache_detail, entry_name: *mut libc::c_c
 
 pub unsafe fn nfs_cache_defer_req_put(dreq: *mut nfs_cache_defer_req) {
     if refcount_dec_and_test(&mut (*dreq).count) {
-        kfree(dreq as *mut libc::c_void);
+        kfree(dreq as *mut kernel::ffi::c_void);
     }
 }
 
-unsafe fn nfs_dns_cache_revisit(d: *mut cache_deferred_req, _toomany: libc::c_int) {
+unsafe fn nfs_dns_cache_revisit(d: *mut cache_deferred_req, _toomany: kernel::ffi::c_int) {
     let dreq = container_of!(d, nfs_cache_defer_req, deferred_req);
     complete(&mut (*dreq).completion);
     nfs_cache_defer_req_put(dreq);
@@ -95,22 +95,22 @@ pub unsafe fn nfs_cache_defer_req_alloc() -> *mut nfs_cache_defer_req {
     dreq
 }
 
-pub unsafe fn nfs_cache_wait_for_upcall(dreq: *mut nfs_cache_defer_req) -> libc::c_int {
+pub unsafe fn nfs_cache_wait_for_upcall(dreq: *mut nfs_cache_defer_req) -> kernel::ffi::c_int {
     if wait_for_completion_timeout(&mut (*dreq).completion,
-        nfs_cache_getent_timeout * HZ as libc::c_ulong) == 0 {
+        nfs_cache_getent_timeout * HZ as kernel::ffi::c_ulong) == 0 {
         return -ETIMEDOUT;
     }
     0
 }
 
-pub unsafe fn nfs_cache_register_sb(sb: *mut super_block, cd: *mut cache_detail) -> libc::c_int {
-    let dir = rpc_d_lookup_sb(sb, b"cache\0".as_ptr() as *const libc::c_char);
+pub unsafe fn nfs_cache_register_sb(sb: *mut super_block, cd: *mut cache_detail) -> kernel::ffi::c_int {
+    let dir = rpc_d_lookup_sb(sb, b"cache\0".as_ptr() as *const kernel::ffi::c_char);
     let ret = sunrpc_cache_register_pipefs(dir, (*cd).name, 0o600, cd);
     dput(dir);
     ret
 }
 
-pub unsafe fn nfs_cache_register_net(net: *mut net, cd: *mut cache_detail) -> libc::c_int {
+pub unsafe fn nfs_cache_register_net(net: *mut net, cd: *mut cache_detail) -> kernel::ffi::c_int {
     let mut ret = 0;
     sunrpc_init_cache_detail(cd);
     let pipefs_sb = rpc_get_sb_net(net);

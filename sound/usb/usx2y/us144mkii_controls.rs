@@ -69,7 +69,7 @@ unsafe extern "C" fn tascam_line_out_put(
     let mut changed = 0;
 
     if (*ucontrol).value.enumerated.item[0] > 1 {
-        return -libc::EINVAL;
+        return -EINVAL;
     }
 
     // scoped_guard(spinlock_irqsave, &tascam->lock) equivalent
@@ -136,7 +136,7 @@ unsafe extern "C" fn tascam_digital_out_put(
     let mut changed = 0;
 
     if (*ucontrol).value.enumerated.item[0] > 1 {
-        return -libc::EINVAL;
+        return -EINVAL;
     }
 
     // scoped_guard(spinlock_irqsave, &tascam->lock) equivalent
@@ -220,7 +220,7 @@ unsafe extern "C" fn tascam_capture_12_put(
     let mut changed = 0;
 
     if (*ucontrol).value.enumerated.item[0] > 1 {
-        return -libc::EINVAL;
+        return -EINVAL;
     }
 
     // scoped_guard(spinlock_irqsave, &tascam->lock) equivalent
@@ -288,7 +288,7 @@ unsafe extern "C" fn tascam_capture_34_put(
     let mut changed = 0;
 
     if (*ucontrol).value.enumerated.item[0] > 1 {
-        return -libc::EINVAL;
+        return -EINVAL;
     }
 
     // scoped_guard(spinlock_irqsave, &tascam->lock) equivalent
@@ -361,7 +361,7 @@ unsafe extern "C" fn tascam_samplerate_get(
 
     let buf = kmalloc(3, GFP_KERNEL) as *mut u8;
     if buf.is_null() {
-        return -libc::ENOMEM;
+        return -ENOMEM;
     }
 
     let err = usb_control_msg(

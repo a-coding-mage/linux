@@ -31,11 +31,11 @@ pub const THREAD_SHIFT: usize = PAGE_SHIFT << THREAD_SIZE_ORDER;
  */
 #[repr(C)]
 pub struct thread_info {
-    pub flags: ::core::ffi::c_ulong,       /* low level flags */
-    pub ksp: ::core::ffi::c_ulong,         /* kernel mode stack top in __switch_to */
-    pub preempt_count: ::core::ffi::c_int, /* 0 => preemptible, <0 => BUG */
-    pub cpu: ::core::ffi::c_int,           /* current CPU */
-    pub thr_ptr: ::core::ffi::c_ulong,     /* TLS ptr */
+    pub flags: ::kernel::ffi::c_ulong,       /* low level flags */
+    pub ksp: ::kernel::ffi::c_ulong,         /* kernel mode stack top in __switch_to */
+    pub preempt_count: ::kernel::ffi::c_int, /* 0 => preemptible, <0 => BUG */
+    pub cpu: ::kernel::ffi::c_int,           /* current CPU */
+    pub thr_ptr: ::kernel::ffi::c_ulong,     /* TLS ptr */
     pub task: *mut task_struct,            /* main task structure */
 }
 

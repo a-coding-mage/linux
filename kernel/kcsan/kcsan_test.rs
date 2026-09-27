@@ -52,7 +52,7 @@
 static void (*access_kernels[2])(void);
 
 static struct task_struct **threads; /* Lists of threads. */
-static core::ffi::c_ulong end_time;       /* End time of test. */
+static kernel::ffi::c_ulong end_time;       /* End time of test. */
 
 /* Report as observed from console. */
 static struct {
@@ -102,7 +102,7 @@ __no_kcsan
 static void probe_console(void *ignore, const char *buf, size_t len)
 {
 	'out: {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int nlines;
 
 	/*
@@ -165,7 +165,7 @@ static bool __report_matches(const struct expect_report *r)
 	'out: {
 	const bool is_assert = ((*r).access[0].type | (*r).access[1].type) & KCSAN_ACCESS_ASSERT;
 	bool ret = false;
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	typeof(*observed.lines) *expect;
 	const char *end;
 	char *cur;
@@ -463,7 +463,7 @@ static noinline void test_kernel_jiffies_reader(void)
 
 static noinline void test_kernel_seqlock_reader(void)
 {
-	core::ffi::c_uint seq;
+	kernel::ffi::c_uint seq;
 
 	do {
 		seq = read_seqbegin(&test_seqlock);
@@ -473,7 +473,7 @@ static noinline void test_kernel_seqlock_reader(void)
 
 static noinline void test_kernel_seqlock_writer(void)
 {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 
 	write_seqlock_irqsave(&test_seqlock, flags);
 	test_var++;
@@ -1474,10 +1474,10 @@ __no_kcsan
 static void access_thread_timer(timer_list *timer)
 {
 	static atomic_t cnt = ATOMIC_INIT(0);
-	core::ffi::c_uint idx;
+	kernel::ffi::c_uint idx;
 	void (*func)(void);
 
-	idx = (core::ffi::c_uint)atomic_inc_return(&cnt) % ARRAY_SIZE(access_kernels);
+	idx = (kernel::ffi::c_uint)atomic_inc_return(&cnt) % ARRAY_SIZE(access_kernels);
 	/* Acquire potential initialization. */
 	func = smp_load_acquire(&access_kernels[idx]);
 	if (func)
@@ -1489,8 +1489,8 @@ __no_kcsan
 static int access_thread(void *arg)
 {
 	struct timer_list timer;
-	core::ffi::c_uint cnt = 0;
-	core::ffi::c_uint idx;
+	kernel::ffi::c_uint cnt = 0;
+	kernel::ffi::c_uint idx;
 	void (*func)(void);
 
 	timer_setup_on_stack(&timer, access_thread_timer, 0);
@@ -1519,7 +1519,7 @@ __no_kcsan
 static int test_init(kunit *test)
 {
 	'err: {
-	core::ffi::c_ulong flags;
+	kernel::ffi::c_ulong flags;
 	int nthreads;
 	int i;
 

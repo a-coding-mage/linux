@@ -39,7 +39,7 @@ struct PrmBuffer {
 
 #[repr(C, packed)]
 struct PrmContextBuffer {
-    signature: [libc::c_char; ACPI_NAMESEG_SIZE],
+    signature: [kernel::ffi::c_char; ACPI_NAMESEG_SIZE],
     revision: u16,
     reserved: u16,
     identifier: Guid,
@@ -52,7 +52,7 @@ static mut PRM_MODULE_LIST: ListHead = ListHead { next: core::ptr::null_mut(), p
 #[repr(C)]
 struct PrmHandlerInfo {
     guid: EfiGuid,
-    handler_addr: Option<unsafe extern "efiapi" fn(u64, *mut core::ffi::c_void) -> EfiStatus>,
+    handler_addr: Option<unsafe extern "efiapi" fn(u64, *mut kernel::ffi::c_void) -> EfiStatus>,
     static_data_buffer_addr: u64,
     acpi_param_buffer_addr: u64,
     handler_list: ListHead,
@@ -102,17 +102,17 @@ unsafe fn acpi_parse_prmt(header: *mut AcpiSubtableHeaders, _end: usize) -> i32 
     let mmio_count: *mut u64;
     if (*module_info).mmio_list_pointer != 0 {
         mmio_count = memremap((*module_info).mmio_list_pointer, 8, MEMREMAP_WB) as *mut u64;
-        if mmio_count.is_null() { kfree(tm as *mut core::ffi::c_void); return -ENOMEM; }
+        if mmio_count.is_null() { kfree(tm as *mut kernel::ffi::c_void); return -ENOMEM; }
         let mmio_range_size = core::mem::size_of::<PrmMmioInfo>()
             + (*mmio_count as usize) * core::mem::size_of::<PrmMmioAddrRange>();
         (*tm).mmio_info = kmalloc(mmio_range_size, GFP_KERNEL) as *mut PrmMmioInfo;
-        if (*tm).mmio_info.is_null() { memunmap(mmio_count as *mut core::ffi::c_void); kfree(tm as *mut core::ffi::c_void); return -ENOMEM; }
+        if (*tm).mmio_info.is_null() { memunmap(mmio_count as *mut kernel::ffi::c_void); kfree(tm as *mut kernel::ffi::c_void); return -ENOMEM; }
         let temp_mmio = memremap((*module_info).mmio_list_pointer, mmio_range_size, MEMREMAP_WB);
-        if temp_mmio.is_null() { kfree((*tm).mmio_info as *mut core::ffi::c_void); memunmap(mmio_count as *mut core::ffi::c_void); kfree(tm as *mut core::ffi::c_void); return -ENOMEM; }
-        memmove((*tm).mmio_info as *mut core::ffi::c_void, temp_mmio, mmio_range_size);
+        if temp_mmio.is_null() { kfree((*tm).mmio_info as *mut kernel::ffi::c_void); memunmap(mmio_count as *mut kernel::ffi::c_void); kfree(tm as *mut kernel::ffi::c_void); return -ENOMEM; }
+        memmove((*tm).mmio_info as *mut kernel::ffi::c_void, temp_mmio, mmio_range_size);
     } else {
         (*tm).mmio_info = kmalloc(core::mem::size_of::<PrmMmioInfo>(), GFP_KERNEL) as *mut PrmMmioInfo;
-        if (*tm).mmio_info.is_null() { kfree(tm as *mut core::ffi::c_void); return -ENOMEM; }
+        if (*tm).mmio_info.is_null() { kfree(tm as *mut kernel::ffi::c_void); return -ENOMEM; }
         (*(*tm).mmio_info).mmio_count = 0;
     }
 
@@ -138,7 +138,7 @@ unsafe fn acpi_parse_prmt(header: *mut AcpiSubtableHeaders, _end: usize) -> i32 
 const GET_MODULE: u8 = 0;
 const GET_HANDLER: u8 = 1;
 
-unsafe fn find_guid_info(guid: *const Guid, mode: u8) -> *mut core::ffi::c_void {
+unsafe fn find_guid_info(guid: *const Guid, mode: u8) -> *mut kernel::ffi::c_void {
     let mut cur_module: *mut PrmModuleInfo;
     list_for_each_entry!(cur_module, PRM_MODULE_LIST, module_list, {
         for i in 0..(*cur_module).handler_count as usize {
@@ -168,7 +168,7 @@ const PRM_HANDLER_GUID_NOT_FOUND: u8 = 3;
 const UPDATE_LOCK_ALREADY_HELD: u8 = 4;
 const UPDATE_UNLOCK_WITHOUT_LOCK: u8 = 5;
 
-pub unsafe fn acpi_call_prm_handler(handler_guid: Guid, param_buffer: *mut core::ffi::c_void) -> i32 {
+pub unsafe fn acpi_call_prm_handler(handler_guid: Guid, param_buffer: *mut kernel::ffi::c_void) -> i32 {
     let handler = find_prm_handler(&handler_guid);
     let module = find_prm_module(&handler_guid);
     if handler.is_null() || module.is_null() { return -ENODEV; }
@@ -180,7 +180,7 @@ pub unsafe fn acpi_call_prm_handler(handler_guid: Guid, param_buffer: *mut core:
     efi_status_to_err(efi_call_acpi_prm_handler!((*handler).handler_addr, param_buffer as u64, &mut context))
 }
 
-unsafe fn acpi_platformrt_space_handler(_function: u32, _addr: AcpiPhysicalAddress, _bits: u32, value: *mut AcpiInteger, _handler_context: *mut core::ffi::c_void, _region_context: *mut core::ffi::c_void) -> AcpiStatus {
+unsafe fn acpi_platformrt_space_handler(_function: u32, _addr: AcpiPhysicalAddress, _bits: u32, value: *mut AcpiInteger, _handler_context: *mut kernel::ffi::c_void, _region_context: *mut kernel::ffi::c_void) -> AcpiStatus {
     let buffer = value as *mut PrmBuffer;
     if !efi_enabled!(EFI_RUNTIME_SERVICES) { return AE_NO_HANDLER; }
     match (*buffer).prm_cmd {

@@ -31,7 +31,7 @@
 #[cfg(max_dma_channels)]
 struct DmaChan {
     lock: i32,
-    device_id: *const core::ffi::c_char,
+    device_id: *const kernel::ffi::c_char,
 }
 
 #[cfg(max_dma_channels)]
@@ -42,7 +42,7 @@ static mut DMA_CHAN_BUSY: [DmaChan; MAX_DMA_CHANNELS] = {
     }; MAX_DMA_CHANNELS];
     channels[4] = DmaChan {
         lock: 1,
-        device_id: b"cascade\0".as_ptr() as *const core::ffi::c_char,
+        device_id: b"cascade\0".as_ptr() as *const kernel::ffi::c_char,
     };
     channels
 };
@@ -55,7 +55,7 @@ static mut DMA_CHAN_BUSY: [DmaChan; MAX_DMA_CHANNELS] = {
 #[cfg(max_dma_channels)]
 pub unsafe fn request_dma(
     dmanr: u32,
-    device_id: *const core::ffi::c_char,
+    device_id: *const kernel::ffi::c_char,
 ) -> i32 {
     if dmanr >= MAX_DMA_CHANNELS as u32 {
         return -EINVAL;
@@ -91,7 +91,7 @@ pub unsafe fn free_dma(dmanr: u32) {
 } // free_dma
 
 #[cfg(not(max_dma_channels))]
-pub fn request_dma(_dmanr: u32, _device_id: *const core::ffi::c_char) -> i32 {
+pub fn request_dma(_dmanr: u32, _device_id: *const kernel::ffi::c_char) -> i32 {
     -EINVAL
 }
 
@@ -99,7 +99,7 @@ pub fn request_dma(_dmanr: u32, _device_id: *const core::ffi::c_char) -> i32 {
 pub fn free_dma(_dmanr: u32) {}
 
 #[cfg(all(config_proc_fs, max_dma_channels))]
-unsafe fn proc_dma_show(m: *mut SeqFile, _v: *mut core::ffi::c_void) -> i32 {
+unsafe fn proc_dma_show(m: *mut SeqFile, _v: *mut kernel::ffi::c_void) -> i32 {
     let mut i = 0;
     while i < MAX_DMA_CHANNELS {
         if DMA_CHAN_BUSY[i].lock != 0 {
@@ -111,7 +111,7 @@ unsafe fn proc_dma_show(m: *mut SeqFile, _v: *mut core::ffi::c_void) -> i32 {
 }
 
 #[cfg(all(config_proc_fs, not(max_dma_channels)))]
-unsafe fn proc_dma_show(m: *mut SeqFile, _v: *mut core::ffi::c_void) -> i32 {
+unsafe fn proc_dma_show(m: *mut SeqFile, _v: *mut kernel::ffi::c_void) -> i32 {
     seq_puts!(m, "No DMA\n");
     0
 }

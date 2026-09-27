@@ -85,22 +85,22 @@
 unsafe extern "C" {
     pub fn do_signal(regs: *mut pt_regs);
     pub fn do_notify_resume(regs: *mut pt_regs);
-    pub fn do_privilege_fault(arg: libc::c_ulong, regs: *mut pt_regs) -> libc::c_int;
-    pub fn do_extension_fault(arg: libc::c_ulong, regs: *mut pt_regs) -> libc::c_int;
-    pub fn insterror_is_error(arg: libc::c_ulong, regs: *mut pt_regs) -> libc::c_int;
-    pub fn do_memory_error(arg: libc::c_ulong, regs: *mut pt_regs) -> libc::c_int;
-    pub fn trap_is_brkpt(arg: libc::c_ulong, regs: *mut pt_regs) -> libc::c_int;
-    pub fn do_misaligned_error(arg: libc::c_ulong, regs: *mut pt_regs) -> libc::c_int;
-    pub fn do_trap5_error(arg: libc::c_ulong, regs: *mut pt_regs) -> libc::c_int;
+    pub fn do_privilege_fault(arg: kernel::ffi::c_ulong, regs: *mut pt_regs) -> kernel::ffi::c_int;
+    pub fn do_extension_fault(arg: kernel::ffi::c_ulong, regs: *mut pt_regs) -> kernel::ffi::c_int;
+    pub fn insterror_is_error(arg: kernel::ffi::c_ulong, regs: *mut pt_regs) -> kernel::ffi::c_int;
+    pub fn do_memory_error(arg: kernel::ffi::c_ulong, regs: *mut pt_regs) -> kernel::ffi::c_int;
+    pub fn trap_is_brkpt(arg: kernel::ffi::c_ulong, regs: *mut pt_regs) -> kernel::ffi::c_int;
+    pub fn do_misaligned_error(arg: kernel::ffi::c_ulong, regs: *mut pt_regs) -> kernel::ffi::c_int;
+    pub fn do_trap5_error(arg: kernel::ffi::c_ulong, regs: *mut pt_regs) -> kernel::ffi::c_int;
     pub fn do_misaligned_access(
-        arg: libc::c_ulong,
+        arg: kernel::ffi::c_ulong,
         regs: *mut pt_regs,
         callee: *mut callee_regs,
-    ) -> libc::c_int;
-    pub fn do_machine_check_fault(arg: libc::c_ulong, regs: *mut pt_regs);
-    pub fn do_non_swi_trap(arg: libc::c_ulong, regs: *mut pt_regs);
-    pub fn do_insterror_or_kprobe(arg: libc::c_ulong, regs: *mut pt_regs);
-    pub fn do_page_fault(arg: libc::c_ulong, regs: *mut pt_regs);
+    ) -> kernel::ffi::c_int;
+    pub fn do_machine_check_fault(arg: kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_non_swi_trap(arg: kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_insterror_or_kprobe(arg: kernel::ffi::c_ulong, regs: *mut pt_regs);
+    pub fn do_page_fault(arg: kernel::ffi::c_ulong, regs: *mut pt_regs);
 }
 
 

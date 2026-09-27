@@ -2,7 +2,7 @@
 
 // Dependency supplied by linux/netfilter/nfnetlink_acct.h.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 pub struct nf_acct;
 

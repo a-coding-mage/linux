@@ -20,7 +20,7 @@ pub struct davinci_id {
     pub part_no: u16,         /* JTAG ID bits 27:12 */
     pub manufacturer: u16,    /* JTAG ID bits 11:1 */
     pub cpu_id: u32,
-    pub name: *mut core::ffi::c_char,
+    pub name: *mut kernel::ffi::c_char,
 }
 
 /* Can use lower 16 bits of cpu id  for a variant when required */

@@ -27,7 +27,7 @@ enum mxs_gpio_id {
 
 #[repr(C)]
 struct mxs_gpio_port {
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     id: i32,
     irq: i32,
     domain: *mut irq_domain,
@@ -128,7 +128,7 @@ unsafe fn mxs_gpio_get_direction(gc: *mut gpio_chip, offset: u32) -> i32 {
 }
 
 #[repr(C)]
-struct of_device_id { compatible: *const core::ffi::c_char, data: *const core::ffi::c_void }
+struct of_device_id { compatible: *const kernel::ffi::c_char, data: *const kernel::ffi::c_void }
 
 static MXS_GPIO_DT_IDS: [of_device_id; 3] = [
     of_device_id { compatible: b"fsl,imx23-gpio\0".as_ptr() as *const _, data: IMX23_GPIO as usize as *const _ },

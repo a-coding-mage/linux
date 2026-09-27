@@ -9,8 +9,8 @@
  * declarations remain external dependencies of this translation. */
 
 extern "C" {
-    static mut dma_list_mutex: core::ffi::c_int;
-    static mut dmaengine_ref_count: core::ffi::c_long;
+    static mut dma_list_mutex: kernel::ffi::c_int;
+    static mut dmaengine_ref_count: kernel::ffi::c_long;
 }
 
 // The implementation is intentionally kept as a faithful low-level port.

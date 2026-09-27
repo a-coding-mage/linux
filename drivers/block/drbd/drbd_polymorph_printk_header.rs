@@ -12,10 +12,10 @@ extern "C" {
 // These declarations mirror the C header's external kernel interfaces and
 // are supplied by the surrounding translation unit.
 extern "C" {
-    pub fn printk(level_and_format: *const ::core::ffi::c_char, ...);
-    pub fn __dynamic_pr_debug(descriptor: *const ::core::ffi::c_void,
-                              format: *const ::core::ffi::c_char, ...);
-    pub fn __ratelimit(state: *mut ::core::ffi::c_void) -> bool;
+    pub fn printk(level_and_format: *const ::kernel::ffi::c_char, ...);
+    pub fn __dynamic_pr_debug(descriptor: *const ::kernel::ffi::c_void,
+                              format: *const ::kernel::ffi::c_char, ...);
+    pub fn __ratelimit(state: *mut ::kernel::ffi::c_void) -> bool;
 }
 
 #[macro_export]

@@ -8,16 +8,16 @@
  */
 
 // Dependency supplied by the corresponding Linux ioctl definitions.
-pub const SPIOCSTYPE: core::ffi::c_ulong =
-    _IOW(b'q' as core::ffi::c_ulong, 0x01, core::mem::size_of::<core::ffi::c_ulong>());
+pub const SPIOCSTYPE: kernel::ffi::c_ulong =
+    _IOW(b'q' as kernel::ffi::c_ulong, 0x01, core::mem::size_of::<kernel::ffi::c_ulong>());
 
 /*
  * bit masks for use in "interrupt" flags (3rd argument)
  */
-pub const SERIO_TIMEOUT: core::ffi::c_ulong = 1 as core::ffi::c_ulong;
-pub const SERIO_PARITY: core::ffi::c_ulong = (1 as core::ffi::c_ulong) << 1;
-pub const SERIO_FRAME: core::ffi::c_ulong = (1 as core::ffi::c_ulong) << 2;
-pub const SERIO_OOB_DATA: core::ffi::c_ulong = (1 as core::ffi::c_ulong) << 3;
+pub const SERIO_TIMEOUT: kernel::ffi::c_ulong = 1 as kernel::ffi::c_ulong;
+pub const SERIO_PARITY: kernel::ffi::c_ulong = (1 as kernel::ffi::c_ulong) << 1;
+pub const SERIO_FRAME: kernel::ffi::c_ulong = (1 as kernel::ffi::c_ulong) << 2;
+pub const SERIO_OOB_DATA: kernel::ffi::c_ulong = (1 as kernel::ffi::c_ulong) << 3;
 
 /*
  * Serio types

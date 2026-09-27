@@ -18,8 +18,8 @@ static TI_INTERFACE_CLK_OPS: clk_ops = clk_ops {
 
 unsafe fn _register_interface(
     node: *mut device_node,
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
     reg: *mut clk_omap_reg,
     bit_idx: u8,
     ops: *const clk_hw_omap_ops,
@@ -47,7 +47,7 @@ unsafe fn _register_interface(
 
     let clk = of_ti_clk_register_omap_hw(node, &mut (*clk_hw).hw, name);
     if IS_ERR(clk) {
-        kfree(clk_hw as *mut core::ffi::c_void);
+        kfree(clk_hw as *mut kernel::ffi::c_void);
     }
     clk
 }

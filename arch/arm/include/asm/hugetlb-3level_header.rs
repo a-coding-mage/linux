@@ -22,7 +22,7 @@ pub const __HAVE_ARCH_HUGE_PTEP_GET: bool = true;
 
 pub unsafe fn huge_ptep_get(
     _mm: *mut mm_struct,
-    _addr: libc::c_ulong,
+    _addr: kernel::ffi::c_ulong,
     ptep: *mut pte_t,
 ) -> pte_t {
     let mut retval = core::ptr::read(ptep);

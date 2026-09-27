@@ -13,7 +13,7 @@ pub struct rsnd_cmd {
     pub mod_: rsnd_mod,
 }
 
-pub const CMD_NAME: *const ::core::ffi::c_char = b"cmd\0".as_ptr() as *const ::core::ffi::c_char;
+pub const CMD_NAME: *const ::kernel::ffi::c_char = b"cmd\0".as_ptr() as *const ::kernel::ffi::c_char;
 
 #[inline]
 unsafe fn rsnd_cmd_nr(priv_: *mut rsnd_priv) -> i32 {
@@ -35,7 +35,7 @@ unsafe extern "C" fn rsnd_cmd_init(
     mod_: *mut rsnd_mod,
     io: *mut rsnd_dai_stream,
     priv_: *mut rsnd_priv,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let dvc: *mut rsnd_mod = unsafe { rsnd_io_to_mod_dvc(io) };
     let mix: *mut rsnd_mod = unsafe { rsnd_io_to_mod_mix(io) };
     let dev: *mut device = unsafe { rsnd_priv_to_dev(priv_) };
@@ -63,7 +63,7 @@ unsafe extern "C" fn rsnd_cmd_init(
 
     if !mix.is_null() {
         let mut rdai: *mut rsnd_dai = ::core::ptr::null_mut();
-        let mut i: ::core::ffi::c_int = 0;
+        let mut i: ::kernel::ffi::c_int = 0;
 
         /*
          * it is assuming that integrater is well understanding about
@@ -99,7 +99,7 @@ unsafe extern "C" fn rsnd_cmd_init(
     }
 
     unsafe {
-        dev_dbg(dev, b"ctu/mix path = 0x%08x\n\0".as_ptr() as *const ::core::ffi::c_char, data);
+        dev_dbg(dev, b"ctu/mix path = 0x%08x\n\0".as_ptr() as *const ::kernel::ffi::c_char, data);
 
         rsnd_mod_write(mod_, CMD_ROUTE_SLCT, data);
         rsnd_mod_write(mod_, CMD_BUSIF_MODE, rsnd_get_busif_shift(io, mod_) | 1);
@@ -115,7 +115,7 @@ unsafe extern "C" fn rsnd_cmd_start(
     mod_: *mut rsnd_mod,
     io: *mut rsnd_dai_stream,
     priv_: *mut rsnd_priv,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     unsafe {
         rsnd_mod_write(mod_, CMD_CTRL, 0x10);
     }
@@ -127,7 +127,7 @@ unsafe extern "C" fn rsnd_cmd_stop(
     mod_: *mut rsnd_mod,
     io: *mut rsnd_dai_stream,
     priv_: *mut rsnd_priv,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     unsafe {
         rsnd_mod_write(mod_, CMD_CTRL, 0);
     }
@@ -165,7 +165,7 @@ static mut rsnd_cmd_ops: rsnd_mod_ops = rsnd_mod_ops {
     debug_info: Some(rsnd_cmd_debug_info),
 };
 
-unsafe fn rsnd_cmd_mod_get(priv_: *mut rsnd_priv, mut id: ::core::ffi::c_int) -> *mut rsnd_mod {
+unsafe fn rsnd_cmd_mod_get(priv_: *mut rsnd_priv, mut id: ::kernel::ffi::c_int) -> *mut rsnd_mod {
     if unsafe { WARN_ON(id < 0 || id >= rsnd_cmd_nr(priv_)) } {
         id = 0;
     }
@@ -176,8 +176,8 @@ unsafe fn rsnd_cmd_mod_get(priv_: *mut rsnd_priv, mut id: ::core::ffi::c_int) ->
 #[no_mangle]
 pub unsafe extern "C" fn rsnd_cmd_attach(
     io: *mut rsnd_dai_stream,
-    id: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    id: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let priv_: *mut rsnd_priv = unsafe { rsnd_io_to_priv(io) };
     let mod_: *mut rsnd_mod = unsafe { rsnd_cmd_mod_get(priv_, id) };
 
@@ -185,11 +185,11 @@ pub unsafe extern "C" fn rsnd_cmd_attach(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn rsnd_cmd_probe(priv_: *mut rsnd_priv) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn rsnd_cmd_probe(priv_: *mut rsnd_priv) -> ::kernel::ffi::c_int {
     let dev: *mut device = unsafe { rsnd_priv_to_dev(priv_) };
     let mut cmd: *mut rsnd_cmd;
-    let mut i: ::core::ffi::c_int = 0;
-    let nr: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int = 0;
+    let nr: ::kernel::ffi::c_int;
 
     /* same number as DVC */
     nr = unsafe { (*priv_).dvc_nr };
@@ -211,11 +211,11 @@ pub unsafe extern "C" fn rsnd_cmd_probe(priv_: *mut rsnd_priv) -> ::core::ffi::c
 
     unsafe {
         (*priv_).cmd_nr = nr;
-        (*priv_).cmd = cmd as *mut ::core::ffi::c_void;
+        (*priv_).cmd = cmd as *mut ::kernel::ffi::c_void;
     }
 
     for_each_rsnd_cmd!(cmd, priv_, i, {
-        let ret: ::core::ffi::c_int = unsafe {
+        let ret: ::kernel::ffi::c_int = unsafe {
             rsnd_mod_init(
                 priv_,
                 rsnd_mod_get(cmd),
@@ -237,7 +237,7 @@ pub unsafe extern "C" fn rsnd_cmd_probe(priv_: *mut rsnd_priv) -> ::core::ffi::c
 #[no_mangle]
 pub unsafe extern "C" fn rsnd_cmd_remove(priv_: *mut rsnd_priv) {
     let mut cmd: *mut rsnd_cmd = ::core::ptr::null_mut();
-    let mut i: ::core::ffi::c_int = 0;
+    let mut i: ::kernel::ffi::c_int = 0;
 
     for_each_rsnd_cmd!(cmd, priv_, i, {
         unsafe {

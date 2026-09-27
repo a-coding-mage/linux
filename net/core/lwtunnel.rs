@@ -7,7 +7,7 @@
  */
 
 #[cfg(feature = "config_modules")]
-unsafe fn lwtunnel_encap_str(encap_type: lwtunnel_encap_types) -> *const core::ffi::c_char {
+unsafe fn lwtunnel_encap_str(encap_type: lwtunnel_encap_types) -> *const kernel::ffi::c_char {
     match encap_type {
         LWTUNNEL_ENCAP_MPLS => b"MPLS\0".as_ptr() as *const _,
         LWTUNNEL_ENCAP_ILA => b"ILA\0".as_ptr() as *const _,
@@ -47,7 +47,7 @@ pub unsafe fn lwtunnel_encap_del_ops(ops: *const lwtunnel_encap_ops, encap_type:
 }
 
 pub unsafe fn lwtunnel_build_state(net: *mut net, encap_type: u16, encap: *mut nlattr,
-    family: u32, cfg: *const core::ffi::c_void, lws: *mut *mut lwtunnel_state,
+    family: u32, cfg: *const kernel::ffi::c_void, lws: *mut *mut lwtunnel_state,
     extack: *mut netlink_ext_ack) -> i32 {
     let mut found = false;
     let mut ret = -EINVAL;

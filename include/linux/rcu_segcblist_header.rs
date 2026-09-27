@@ -18,7 +18,7 @@
 pub struct RcuCblist {
     pub head: *mut RcuHead,
     pub tail: *mut *mut RcuHead,
-    pub len: core::ffi::c_long,
+    pub len: kernel::ffi::c_long,
 }
 
 #[macro_export]
@@ -85,8 +85,8 @@ pub struct RcuSegcblist {
     #[cfg(CONFIG_RCU_NOCB_CPU)]
     pub len: AtomicLong,
     #[cfg(not(CONFIG_RCU_NOCB_CPU))]
-    pub len: core::ffi::c_long,
-    pub seglen: [core::ffi::c_long; RCU_CBLIST_NSEGS],
+    pub len: kernel::ffi::c_long,
+    pub seglen: [kernel::ffi::c_long; RCU_CBLIST_NSEGS],
     pub flags: u8,
 }
 

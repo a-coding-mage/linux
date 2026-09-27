@@ -8,62 +8,62 @@
 
 extern "C" {
     pub fn pci_sun4v_iommu_map(
-        devhandle: ::core::ffi::c_ulong,
-        tsbid: ::core::ffi::c_ulong,
-        num_ttes: ::core::ffi::c_ulong,
-        io_attributes: ::core::ffi::c_ulong,
-        io_page_list_pa: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_long;
+        devhandle: ::kernel::ffi::c_ulong,
+        tsbid: ::kernel::ffi::c_ulong,
+        num_ttes: ::kernel::ffi::c_ulong,
+        io_attributes: ::kernel::ffi::c_ulong,
+        io_page_list_pa: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_long;
     pub fn pci_sun4v_iommu_demap(
-        devhandle: ::core::ffi::c_ulong,
-        tsbid: ::core::ffi::c_ulong,
-        num_ttes: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_ulong;
+        devhandle: ::kernel::ffi::c_ulong,
+        tsbid: ::kernel::ffi::c_ulong,
+        num_ttes: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_ulong;
     pub fn pci_sun4v_iommu_getmap(
-        devhandle: ::core::ffi::c_ulong,
-        tsbid: ::core::ffi::c_ulong,
-        io_attributes: *mut ::core::ffi::c_ulong,
-        real_address: *mut ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_ulong;
+        devhandle: ::kernel::ffi::c_ulong,
+        tsbid: ::kernel::ffi::c_ulong,
+        io_attributes: *mut ::kernel::ffi::c_ulong,
+        real_address: *mut ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_ulong;
     pub fn pci_sun4v_config_get(
-        devhandle: ::core::ffi::c_ulong,
-        pci_device: ::core::ffi::c_ulong,
-        config_offset: ::core::ffi::c_ulong,
-        size: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_ulong;
+        devhandle: ::kernel::ffi::c_ulong,
+        pci_device: ::kernel::ffi::c_ulong,
+        config_offset: ::kernel::ffi::c_ulong,
+        size: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_ulong;
     pub fn pci_sun4v_config_put(
-        devhandle: ::core::ffi::c_ulong,
-        pci_device: ::core::ffi::c_ulong,
-        config_offset: ::core::ffi::c_ulong,
-        size: ::core::ffi::c_ulong,
-        data: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_int;
+        devhandle: ::kernel::ffi::c_ulong,
+        pci_device: ::kernel::ffi::c_ulong,
+        config_offset: ::kernel::ffi::c_ulong,
+        size: ::kernel::ffi::c_ulong,
+        data: ::kernel::ffi::c_ulong,
+    ) -> ::kernel::ffi::c_int;
 
-    pub fn pci_sun4v_msiq_conf(devhandle: ::core::ffi::c_ulong, msiqid: ::core::ffi::c_ulong, msiq_paddr: ::core::ffi::c_ulong, num_entries: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msiq_info(devhandle: ::core::ffi::c_ulong, msiqid: ::core::ffi::c_ulong, msiq_paddr: *mut ::core::ffi::c_ulong, num_entries: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msiq_getvalid(devhandle: ::core::ffi::c_ulong, msiqid: ::core::ffi::c_ulong, valid: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msiq_setvalid(devhandle: ::core::ffi::c_ulong, msiqid: ::core::ffi::c_ulong, valid: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msiq_getstate(devhandle: ::core::ffi::c_ulong, msiqid: ::core::ffi::c_ulong, state: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msiq_setstate(devhandle: ::core::ffi::c_ulong, msiqid: ::core::ffi::c_ulong, state: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msiq_gethead(devhandle: ::core::ffi::c_ulong, msiqid: ::core::ffi::c_ulong, head: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msiq_sethead(devhandle: ::core::ffi::c_ulong, msiqid: ::core::ffi::c_ulong, head: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msiq_gettail(devhandle: ::core::ffi::c_ulong, msiqid: ::core::ffi::c_ulong, head: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msi_getvalid(devhandle: ::core::ffi::c_ulong, msinum: ::core::ffi::c_ulong, valid: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msi_setvalid(devhandle: ::core::ffi::c_ulong, msinum: ::core::ffi::c_ulong, valid: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msi_getmsiq(devhandle: ::core::ffi::c_ulong, msinum: ::core::ffi::c_ulong, msiq: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msi_setmsiq(devhandle: ::core::ffi::c_ulong, msinum: ::core::ffi::c_ulong, msiq: ::core::ffi::c_ulong, msitype: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msi_getstate(devhandle: ::core::ffi::c_ulong, msinum: ::core::ffi::c_ulong, state: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msi_setstate(devhandle: ::core::ffi::c_ulong, msinum: ::core::ffi::c_ulong, state: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msg_getmsiq(devhandle: ::core::ffi::c_ulong, msinum: ::core::ffi::c_ulong, msiq: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msg_setmsiq(devhandle: ::core::ffi::c_ulong, msinum: ::core::ffi::c_ulong, msiq: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msg_getvalid(devhandle: ::core::ffi::c_ulong, msinum: ::core::ffi::c_ulong, valid: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_msg_setvalid(devhandle: ::core::ffi::c_ulong, msinum: ::core::ffi::c_ulong, valid: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
+    pub fn pci_sun4v_msiq_conf(devhandle: ::kernel::ffi::c_ulong, msiqid: ::kernel::ffi::c_ulong, msiq_paddr: ::kernel::ffi::c_ulong, num_entries: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msiq_info(devhandle: ::kernel::ffi::c_ulong, msiqid: ::kernel::ffi::c_ulong, msiq_paddr: *mut ::kernel::ffi::c_ulong, num_entries: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msiq_getvalid(devhandle: ::kernel::ffi::c_ulong, msiqid: ::kernel::ffi::c_ulong, valid: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msiq_setvalid(devhandle: ::kernel::ffi::c_ulong, msiqid: ::kernel::ffi::c_ulong, valid: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msiq_getstate(devhandle: ::kernel::ffi::c_ulong, msiqid: ::kernel::ffi::c_ulong, state: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msiq_setstate(devhandle: ::kernel::ffi::c_ulong, msiqid: ::kernel::ffi::c_ulong, state: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msiq_gethead(devhandle: ::kernel::ffi::c_ulong, msiqid: ::kernel::ffi::c_ulong, head: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msiq_sethead(devhandle: ::kernel::ffi::c_ulong, msiqid: ::kernel::ffi::c_ulong, head: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msiq_gettail(devhandle: ::kernel::ffi::c_ulong, msiqid: ::kernel::ffi::c_ulong, head: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msi_getvalid(devhandle: ::kernel::ffi::c_ulong, msinum: ::kernel::ffi::c_ulong, valid: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msi_setvalid(devhandle: ::kernel::ffi::c_ulong, msinum: ::kernel::ffi::c_ulong, valid: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msi_getmsiq(devhandle: ::kernel::ffi::c_ulong, msinum: ::kernel::ffi::c_ulong, msiq: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msi_setmsiq(devhandle: ::kernel::ffi::c_ulong, msinum: ::kernel::ffi::c_ulong, msiq: ::kernel::ffi::c_ulong, msitype: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msi_getstate(devhandle: ::kernel::ffi::c_ulong, msinum: ::kernel::ffi::c_ulong, state: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msi_setstate(devhandle: ::kernel::ffi::c_ulong, msinum: ::kernel::ffi::c_ulong, state: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msg_getmsiq(devhandle: ::kernel::ffi::c_ulong, msinum: ::kernel::ffi::c_ulong, msiq: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msg_setmsiq(devhandle: ::kernel::ffi::c_ulong, msinum: ::kernel::ffi::c_ulong, msiq: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msg_getvalid(devhandle: ::kernel::ffi::c_ulong, msinum: ::kernel::ffi::c_ulong, valid: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_msg_setvalid(devhandle: ::kernel::ffi::c_ulong, msinum: ::kernel::ffi::c_ulong, valid: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
 
     /* Sun4v HV IOMMU v2 APIs */
-    pub fn pci_sun4v_iotsb_conf(devhandle: ::core::ffi::c_ulong, ra: ::core::ffi::c_ulong, table_size: ::core::ffi::c_ulong, page_size: ::core::ffi::c_ulong, dvma_base: ::core::ffi::c_ulong, iotsb_num: *mut u64) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_iotsb_bind(devhandle: ::core::ffi::c_ulong, iotsb_num: ::core::ffi::c_ulong, pci_device: ::core::ffi::c_uint) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_iotsb_map(devhandle: ::core::ffi::c_ulong, iotsb_num: ::core::ffi::c_ulong, iotsb_index_iottes: ::core::ffi::c_ulong, io_attributes: ::core::ffi::c_ulong, io_page_list_pa: ::core::ffi::c_ulong, mapped: *mut ::core::ffi::c_long) -> ::core::ffi::c_ulong;
-    pub fn pci_sun4v_iotsb_demap(devhandle: ::core::ffi::c_ulong, iotsb_num: ::core::ffi::c_ulong, iotsb_index: ::core::ffi::c_ulong, iottes: ::core::ffi::c_ulong, demapped: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
+    pub fn pci_sun4v_iotsb_conf(devhandle: ::kernel::ffi::c_ulong, ra: ::kernel::ffi::c_ulong, table_size: ::kernel::ffi::c_ulong, page_size: ::kernel::ffi::c_ulong, dvma_base: ::kernel::ffi::c_ulong, iotsb_num: *mut u64) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_iotsb_bind(devhandle: ::kernel::ffi::c_ulong, iotsb_num: ::kernel::ffi::c_ulong, pci_device: ::kernel::ffi::c_uint) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_iotsb_map(devhandle: ::kernel::ffi::c_ulong, iotsb_num: ::kernel::ffi::c_ulong, iotsb_index_iottes: ::kernel::ffi::c_ulong, io_attributes: ::kernel::ffi::c_ulong, io_page_list_pa: ::kernel::ffi::c_ulong, mapped: *mut ::kernel::ffi::c_long) -> ::kernel::ffi::c_ulong;
+    pub fn pci_sun4v_iotsb_demap(devhandle: ::kernel::ffi::c_ulong, iotsb_num: ::kernel::ffi::c_ulong, iotsb_index: ::kernel::ffi::c_ulong, iottes: ::kernel::ffi::c_ulong, demapped: *mut ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_ulong;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

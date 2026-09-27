@@ -34,8 +34,8 @@ struct regmap_config {
 
 #[repr(C)]
 struct gpio_chip {
-    label: *const core::ffi::c_char,
-    owner: *mut core::ffi::c_void,
+    label: *const kernel::ffi::c_char,
+    owner: *mut kernel::ffi::c_void,
     get_direction: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>,
     direction_input: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> i32>,
     direction_output: Option<unsafe extern "C" fn(*mut gpio_chip, u32, i32) -> i32>,
@@ -49,8 +49,8 @@ struct gpio_chip {
 
 #[repr(C)]
 struct of_device_id {
-    compatible: *const core::ffi::c_char,
-    data: *const core::ffi::c_void,
+    compatible: *const kernel::ffi::c_char,
+    data: *const kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -75,12 +75,12 @@ extern "C" {
     fn regmap_read(map: *mut regmap, reg: u32, val: *mut u32) -> i32;
     fn regmap_write(map: *mut regmap, reg: u32, val: u32) -> i32;
     fn regmap_update_bits(map: *mut regmap, reg: u32, mask: u32, val: u32) -> i32;
-    fn device_property_read_u32(dev: *mut device, name: *const core::ffi::c_char, val: *mut u32) -> i32;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn device_get_match_data(dev: *mut device) -> *const core::ffi::c_void;
+    fn device_property_read_u32(dev: *mut device, name: *const kernel::ffi::c_char, val: *mut u32) -> i32;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn device_get_match_data(dev: *mut device) -> *const kernel::ffi::c_void;
     fn devm_regmap_init_i2c(client: *mut i2c_client, config: *const regmap_config) -> *mut regmap;
-    fn devm_gpiochip_add_data(dev: *mut device, chip: *mut gpio_chip, data: *mut core::ffi::c_void) -> i32;
-    fn i2c_set_clientdata(client: *mut i2c_client, data: *mut core::ffi::c_void);
+    fn devm_gpiochip_add_data(dev: *mut device, chip: *mut gpio_chip, data: *mut kernel::ffi::c_void) -> i32;
+    fn i2c_set_clientdata(client: *mut i2c_client, data: *mut kernel::ffi::c_void);
     fn ptr_err(ptr: *mut regmap) -> i32;
 }
 
@@ -172,7 +172,7 @@ static ts4900_gpio_driver: *mut i2c_driver = core::ptr::null_mut();
 
 #[repr(C)]
 struct ts4900_gpio_id_entry {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
 }
 
 static ts4900_gpio_id_table: [ts4900_gpio_id_entry; 2] = [

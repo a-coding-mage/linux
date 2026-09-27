@@ -18,14 +18,14 @@
  * <linux/dma-mapping.h>, <linux/pm_runtime.h>, "amd.h", "acp-mach.h".
  */
 
-const DRV_NAME: *const core::ffi::c_char = b"acp_asoc_renoir\0".as_ptr() as *const core::ffi::c_char;
+const DRV_NAME: *const kernel::ffi::c_char = b"acp_asoc_renoir\0".as_ptr() as *const kernel::ffi::c_char;
 
 static mut acp_renoir_dai: [snd_soc_dai_driver; 3] = [
     snd_soc_dai_driver {
-        name: b"acp-i2s-sp\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp-i2s-sp\0".as_ptr() as *const kernel::ffi::c_char,
         id: I2S_SP_INSTANCE,
         playback: snd_soc_pcm_stream {
-            stream_name: b"I2S SP Playback\0".as_ptr() as *const core::ffi::c_char,
+            stream_name: b"I2S SP Playback\0".as_ptr() as *const kernel::ffi::c_char,
             rates: SNDRV_PCM_RATE_8000_96000,
             formats: SNDRV_PCM_FMTBIT_S16_LE
                 | SNDRV_PCM_FMTBIT_S8
@@ -38,7 +38,7 @@ static mut acp_renoir_dai: [snd_soc_dai_driver; 3] = [
             ..unsafe { core::mem::zeroed() }
         },
         capture: snd_soc_pcm_stream {
-            stream_name: b"I2S SP Capture\0".as_ptr() as *const core::ffi::c_char,
+            stream_name: b"I2S SP Capture\0".as_ptr() as *const kernel::ffi::c_char,
             rates: SNDRV_PCM_RATE_8000_48000,
             formats: SNDRV_PCM_FMTBIT_S16_LE
                 | SNDRV_PCM_FMTBIT_S8
@@ -54,10 +54,10 @@ static mut acp_renoir_dai: [snd_soc_dai_driver; 3] = [
         ..unsafe { core::mem::zeroed() }
     },
     snd_soc_dai_driver {
-        name: b"acp-i2s-bt\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp-i2s-bt\0".as_ptr() as *const kernel::ffi::c_char,
         id: I2S_BT_INSTANCE,
         playback: snd_soc_pcm_stream {
-            stream_name: b"I2S BT Playback\0".as_ptr() as *const core::ffi::c_char,
+            stream_name: b"I2S BT Playback\0".as_ptr() as *const kernel::ffi::c_char,
             rates: SNDRV_PCM_RATE_8000_96000,
             formats: SNDRV_PCM_FMTBIT_S16_LE
                 | SNDRV_PCM_FMTBIT_S8
@@ -70,7 +70,7 @@ static mut acp_renoir_dai: [snd_soc_dai_driver; 3] = [
             ..unsafe { core::mem::zeroed() }
         },
         capture: snd_soc_pcm_stream {
-            stream_name: b"I2S BT Capture\0".as_ptr() as *const core::ffi::c_char,
+            stream_name: b"I2S BT Capture\0".as_ptr() as *const kernel::ffi::c_char,
             rates: SNDRV_PCM_RATE_8000_48000,
             formats: SNDRV_PCM_FMTBIT_S16_LE
                 | SNDRV_PCM_FMTBIT_S8
@@ -86,7 +86,7 @@ static mut acp_renoir_dai: [snd_soc_dai_driver; 3] = [
         ..unsafe { core::mem::zeroed() }
     },
     snd_soc_dai_driver {
-        name: b"acp-pdm-dmic\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp-pdm-dmic\0".as_ptr() as *const kernel::ffi::c_char,
         id: DMIC_INSTANCE,
         capture: snd_soc_pcm_stream {
             rates: SNDRV_PCM_RATE_8000_48000,
@@ -102,17 +102,17 @@ static mut acp_renoir_dai: [snd_soc_dai_driver; 3] = [
     },
 ];
 
-unsafe extern "C" fn renoir_audio_probe(pdev: *mut platform_device) -> core::ffi::c_int {
+unsafe extern "C" fn renoir_audio_probe(pdev: *mut platform_device) -> kernel::ffi::c_int {
     let dev: *mut device = unsafe { &mut (*pdev).dev };
     let chip: *mut acp_chip_info;
-    let ret: core::ffi::c_int;
+    let ret: kernel::ffi::c_int;
 
     chip = unsafe { dev_get_platdata(&mut (*pdev).dev) as *mut acp_chip_info };
     if chip.is_null() || unsafe { (*chip).base.is_null() } {
         unsafe {
             dev_err(
                 &mut (*pdev).dev,
-                b"ACP chip data is NULL\n\0".as_ptr() as *const core::ffi::c_char,
+                b"ACP chip data is NULL\n\0".as_ptr() as *const kernel::ffi::c_char,
             );
         }
         return -ENODEV;
@@ -122,7 +122,7 @@ unsafe extern "C" fn renoir_audio_probe(pdev: *mut platform_device) -> core::ffi
         unsafe {
             dev_err(
                 &mut (*pdev).dev,
-                b"Un-supported ACP Revision %d\n\0".as_ptr() as *const core::ffi::c_char,
+                b"Un-supported ACP Revision %d\n\0".as_ptr() as *const kernel::ffi::c_char,
                 (*chip).acp_rev,
             );
         }
@@ -140,7 +140,7 @@ unsafe extern "C" fn renoir_audio_probe(pdev: *mut platform_device) -> core::ffi
         unsafe {
             dev_err(
                 dev,
-                b"ACP en-interrupts failed\n\0".as_ptr() as *const core::ffi::c_char,
+                b"ACP en-interrupts failed\n\0".as_ptr() as *const kernel::ffi::c_char,
             );
         }
         return ret;
@@ -161,14 +161,14 @@ unsafe extern "C" fn renoir_audio_probe(pdev: *mut platform_device) -> core::ffi
 unsafe extern "C" fn renoir_audio_remove(pdev: *mut platform_device) {
     let dev: *mut device = unsafe { &mut (*pdev).dev };
     let chip: *mut acp_chip_info = unsafe { dev_get_platdata(dev) as *mut acp_chip_info };
-    let ret: core::ffi::c_int;
+    let ret: kernel::ffi::c_int;
 
     ret = unsafe { acp_hw_dis_interrupts(chip) };
     if ret != 0 {
         unsafe {
             dev_err(
                 dev,
-                b"ACP dis-interrupts failed\n\0".as_ptr() as *const core::ffi::c_char,
+                b"ACP dis-interrupts failed\n\0".as_ptr() as *const kernel::ffi::c_char,
             );
         }
     }
@@ -178,7 +178,7 @@ unsafe extern "C" fn renoir_audio_remove(pdev: *mut platform_device) {
     }
 }
 
-unsafe extern "C" fn rn_pcm_resume(dev: *mut device) -> core::ffi::c_int {
+unsafe extern "C" fn rn_pcm_resume(dev: *mut device) -> kernel::ffi::c_int {
     let chip: *mut acp_chip_info = unsafe { dev_get_drvdata((*dev).parent) as *mut acp_chip_info };
     let mut stream: *mut acp_stream;
     let mut substream: *mut snd_pcm_substream;
@@ -217,7 +217,7 @@ static mut renoir_driver: platform_driver = platform_driver {
     probe: Some(renoir_audio_probe),
     remove: Some(renoir_audio_remove),
     driver: device_driver {
-        name: b"acp_asoc_renoir\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp_asoc_renoir\0".as_ptr() as *const kernel::ffi::c_char,
         pm: pm_ptr!(&rn_dma_pm_ops),
         ..unsafe { core::mem::zeroed() }
     },

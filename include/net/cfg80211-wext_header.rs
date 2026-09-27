@@ -21,78 +21,78 @@ extern "C" {
         dev: *mut crate::net_device,
         info: *mut crate::iw_request_info,
         wrqu: *mut crate::iwreq_data,
-        extra: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        extra: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 
     pub fn cfg80211_wext_siwmode(
         dev: *mut crate::net_device,
         info: *mut crate::iw_request_info,
         wrqu: *mut crate::iwreq_data,
-        extra: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        extra: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 
     pub fn cfg80211_wext_giwmode(
         dev: *mut crate::net_device,
         info: *mut crate::iw_request_info,
         wrqu: *mut crate::iwreq_data,
-        extra: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        extra: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 
     pub fn cfg80211_wext_siwscan(
         dev: *mut crate::net_device,
         info: *mut crate::iw_request_info,
         wrqu: *mut crate::iwreq_data,
-        extra: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        extra: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 
     pub fn cfg80211_wext_giwscan(
         dev: *mut crate::net_device,
         info: *mut crate::iw_request_info,
         wrqu: *mut crate::iwreq_data,
-        extra: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        extra: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 
     pub fn cfg80211_wext_giwrange(
         dev: *mut crate::net_device,
         info: *mut crate::iw_request_info,
         wrqu: *mut crate::iwreq_data,
-        extra: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        extra: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 
     pub fn cfg80211_wext_siwrts(
         dev: *mut crate::net_device,
         info: *mut crate::iw_request_info,
         wrqu: *mut crate::iwreq_data,
-        extra: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        extra: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 
     pub fn cfg80211_wext_giwrts(
         dev: *mut crate::net_device,
         info: *mut crate::iw_request_info,
         wrqu: *mut crate::iwreq_data,
-        extra: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        extra: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 
     pub fn cfg80211_wext_siwfrag(
         dev: *mut crate::net_device,
         info: *mut crate::iw_request_info,
         wrqu: *mut crate::iwreq_data,
-        extra: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        extra: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 
     pub fn cfg80211_wext_giwfrag(
         dev: *mut crate::net_device,
         info: *mut crate::iw_request_info,
         wrqu: *mut crate::iwreq_data,
-        extra: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        extra: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 
     pub fn cfg80211_wext_giwretry(
         dev: *mut crate::net_device,
         info: *mut crate::iw_request_info,
         wrqu: *mut crate::iwreq_data,
-        extra: *mut core::ffi::c_char,
-    ) -> core::ffi::c_int;
+        extra: *mut kernel::ffi::c_char,
+    ) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -62,7 +62,7 @@ pub struct soc_pcmcia_socket {
     pub cpufreq_nb: notifier_block,
     pub poll_timer: timer_list,
     pub node: list_head,
-    pub driver_data: *mut core::ffi::c_void,
+    pub driver_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -70,7 +70,7 @@ pub struct soc_pcmcia_socket_stat {
     pub gpio: i32,
     pub desc: *mut gpio_desc,
     pub irq: u32,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 pub const SOC_STAT_CD: i32 = 0; // Card detect
@@ -117,7 +117,7 @@ pub struct pcmcia_low_level {
         Option<unsafe extern "C" fn(*mut soc_pcmcia_socket, u32, u32) -> u32>,
     pub set_timing: Option<unsafe extern "C" fn(*mut soc_pcmcia_socket) -> i32>,
     pub show_timing:
-        Option<unsafe extern "C" fn(*mut soc_pcmcia_socket, *mut core::ffi::c_char) -> i32>,
+        Option<unsafe extern "C" fn(*mut soc_pcmcia_socket, *mut kernel::ffi::c_char) -> i32>,
 
     // Conditional on CONFIG_CPU_FREQ in the C build.
     /*

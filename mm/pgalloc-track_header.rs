@@ -9,7 +9,7 @@
 pub unsafe fn p4d_alloc_track(
     mm: *mut mm_struct,
     pgd: *mut pgd_t,
-    address: ::core::ffi::c_ulong,
+    address: ::kernel::ffi::c_ulong,
     mod_mask: *mut pgtbl_mod_mask,
 ) -> *mut p4d_t {
     if pgd_none(*pgd) {
@@ -27,7 +27,7 @@ pub unsafe fn p4d_alloc_track(
 pub unsafe fn pud_alloc_track(
     mm: *mut mm_struct,
     p4d: *mut p4d_t,
-    address: ::core::ffi::c_ulong,
+    address: ::kernel::ffi::c_ulong,
     mod_mask: *mut pgtbl_mod_mask,
 ) -> *mut pud_t {
     if p4d_none(*p4d) {
@@ -45,7 +45,7 @@ pub unsafe fn pud_alloc_track(
 pub unsafe fn pmd_alloc_track(
     mm: *mut mm_struct,
     pud: *mut pud_t,
-    address: ::core::ffi::c_ulong,
+    address: ::kernel::ffi::c_ulong,
     mod_mask: *mut pgtbl_mod_mask,
 ) -> *mut pmd_t {
     if pud_none(*pud) {

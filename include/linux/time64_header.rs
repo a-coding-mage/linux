@@ -10,7 +10,7 @@ pub type timeu64_t = u64;
 #[derive(Copy, Clone)]
 pub struct timespec64 {
     pub tv_sec: time64_t, /* seconds */
-    pub tv_nsec: ::core::ffi::c_long, /* nanoseconds */
+    pub tv_nsec: ::kernel::ffi::c_long, /* nanoseconds */
 }
 
 #[repr(C)]
@@ -21,7 +21,7 @@ pub struct itimerspec64 {
 }
 
 /* Parameters used to convert the timespec values: */
-pub const PSEC_PER_NSEC: ::core::ffi::c_long = 1000;
+pub const PSEC_PER_NSEC: ::kernel::ffi::c_long = 1000;
 
 /* Located here for timespec[64]_valid_strict */
 pub const TIME64_MAX: i64 = !(1u64 << 63) as i64;
@@ -137,7 +137,7 @@ pub unsafe fn timespec64_add_ns(a: *mut timespec64, mut ns: u64) {
         NSEC_PER_SEC as u64,
         &mut ns,
     ) as i64);
-    (*a).tv_nsec = ns as ::core::ffi::c_long;
+    (*a).tv_nsec = ns as ::kernel::ffi::c_long;
 }
 
 /* timespec64_add_safe assumes both values are positive and checks for overflow. */

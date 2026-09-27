@@ -5,7 +5,7 @@
  * supplied by the surrounding translation unit.
  */
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 /* Opaque types supplied by other kernel headers or translation units. */
 pub enum module {}
@@ -19,10 +19,10 @@ pub type acpi_handle = *mut c_void;
 #[repr(C)]
 pub struct ipmi_recv_msg {
     pub link: list_head,
-    pub recv_type: ::core::ffi::c_int,
+    pub recv_type: ::kernel::ffi::c_int,
     pub user: *mut ipmi_user,
     pub addr: ipmi_addr,
-    pub msgid: ::core::ffi::c_long,
+    pub msgid: ::kernel::ffi::c_long,
     pub msg: kernel_ipmi_msg,
     pub user_msg_data: *mut c_void,
     pub done: Option<unsafe extern "C" fn(msg: *mut ipmi_recv_msg)>,
@@ -59,48 +59,48 @@ extern "C" {
         handler: *const ipmi_user_hndl,
         handler_data: *mut c_void,
         user: *mut *mut ipmi_user,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn ipmi_destroy_user(user: *mut ipmi_user);
     pub fn ipmi_get_version(
         user: *mut ipmi_user,
         major: *mut u8,
         minor: *mut u8,
-    ) -> ::core::ffi::c_int;
-    pub fn ipmi_set_my_address(user: *mut ipmi_user, channel: u32, address: u8) -> ::core::ffi::c_int;
-    pub fn ipmi_get_my_address(user: *mut ipmi_user, channel: u32, address: *mut u8) -> ::core::ffi::c_int;
-    pub fn ipmi_set_my_LUN(user: *mut ipmi_user, channel: u32, lun: u8) -> ::core::ffi::c_int;
-    pub fn ipmi_get_my_LUN(user: *mut ipmi_user, channel: u32, lun: *mut u8) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn ipmi_set_my_address(user: *mut ipmi_user, channel: u32, address: u8) -> ::kernel::ffi::c_int;
+    pub fn ipmi_get_my_address(user: *mut ipmi_user, channel: u32, address: *mut u8) -> ::kernel::ffi::c_int;
+    pub fn ipmi_set_my_LUN(user: *mut ipmi_user, channel: u32, lun: u8) -> ::kernel::ffi::c_int;
+    pub fn ipmi_get_my_LUN(user: *mut ipmi_user, channel: u32, lun: *mut u8) -> ::kernel::ffi::c_int;
     pub fn ipmi_request_settime(
-        user: *mut ipmi_user, addr: *mut ipmi_addr, msgid: ::core::ffi::c_long,
-        msg: *mut kernel_ipmi_msg, user_msg_data: *mut c_void, priority: ::core::ffi::c_int,
-        max_retries: ::core::ffi::c_int, retry_time_ms: u32,
-    ) -> ::core::ffi::c_int;
+        user: *mut ipmi_user, addr: *mut ipmi_addr, msgid: ::kernel::ffi::c_long,
+        msg: *mut kernel_ipmi_msg, user_msg_data: *mut c_void, priority: ::kernel::ffi::c_int,
+        max_retries: ::kernel::ffi::c_int, retry_time_ms: u32,
+    ) -> ::kernel::ffi::c_int;
     pub fn ipmi_request_supply_msgs(
-        user: *mut ipmi_user, addr: *mut ipmi_addr, msgid: ::core::ffi::c_long,
+        user: *mut ipmi_user, addr: *mut ipmi_addr, msgid: ::kernel::ffi::c_long,
         msg: *mut kernel_ipmi_msg, user_msg_data: *mut c_void, supplied_smi: *mut c_void,
-        supplied_recv: *mut ipmi_recv_msg, priority: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        supplied_recv: *mut ipmi_recv_msg, priority: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn ipmi_poll_interface(user: *mut ipmi_user);
-    pub fn ipmi_register_for_cmd(user: *mut ipmi_user, netfn: u8, cmd: u8, chans: u32) -> ::core::ffi::c_int;
-    pub fn ipmi_unregister_for_cmd(user: *mut ipmi_user, netfn: u8, cmd: u8, chans: u32) -> ::core::ffi::c_int;
-    pub fn ipmi_get_maintenance_mode(user: *mut ipmi_user) -> ::core::ffi::c_int;
-    pub fn ipmi_set_maintenance_mode(user: *mut ipmi_user, mode: ::core::ffi::c_int) -> ::core::ffi::c_int;
-    pub fn ipmi_set_gets_events(user: *mut ipmi_user, val: bool) -> ::core::ffi::c_int;
+    pub fn ipmi_register_for_cmd(user: *mut ipmi_user, netfn: u8, cmd: u8, chans: u32) -> ::kernel::ffi::c_int;
+    pub fn ipmi_unregister_for_cmd(user: *mut ipmi_user, netfn: u8, cmd: u8, chans: u32) -> ::kernel::ffi::c_int;
+    pub fn ipmi_get_maintenance_mode(user: *mut ipmi_user) -> ::kernel::ffi::c_int;
+    pub fn ipmi_set_maintenance_mode(user: *mut ipmi_user, mode: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
+    pub fn ipmi_set_gets_events(user: *mut ipmi_user, val: bool) -> ::kernel::ffi::c_int;
 }
 
 #[repr(C)]
 pub struct ipmi_smi_watcher {
     pub link: list_head,
     pub owner: *mut module,
-    pub new_smi: Option<unsafe extern "C" fn(::core::ffi::c_int, *mut device)>,
-    pub smi_gone: Option<unsafe extern "C" fn(::core::ffi::c_int)>,
+    pub new_smi: Option<unsafe extern "C" fn(::kernel::ffi::c_int, *mut device)>,
+    pub smi_gone: Option<unsafe extern "C" fn(::kernel::ffi::c_int)>,
 }
 
 extern "C" {
-    pub fn ipmi_smi_watcher_register(watcher: *mut ipmi_smi_watcher) -> ::core::ffi::c_int;
-    pub fn ipmi_smi_watcher_unregister(watcher: *mut ipmi_smi_watcher) -> ::core::ffi::c_int;
-    pub fn ipmi_addr_length(addr_type: ::core::ffi::c_int) -> u32;
-    pub fn ipmi_validate_addr(addr: *mut ipmi_addr, len: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn ipmi_smi_watcher_register(watcher: *mut ipmi_smi_watcher) -> ::kernel::ffi::c_int;
+    pub fn ipmi_smi_watcher_unregister(watcher: *mut ipmi_smi_watcher) -> ::kernel::ffi::c_int;
+    pub fn ipmi_addr_length(addr_type: ::kernel::ffi::c_int) -> u32;
+    pub fn ipmi_validate_addr(addr: *mut ipmi_addr, len: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
 }
 
 #[repr(C)]
@@ -119,7 +119,7 @@ pub enum ipmi_addr_src {
 }
 
 extern "C" {
-    pub fn ipmi_addr_src_to_str(src: ipmi_addr_src) -> *const ::core::ffi::c_char;
+    pub fn ipmi_addr_src_to_str(src: ipmi_addr_src) -> *const ::kernel::ffi::c_char;
 }
 
 #[repr(C)]
@@ -141,11 +141,11 @@ pub struct ipmi_smi_info {
 }
 
 extern "C" {
-    pub fn ipmi_get_smi_info(if_num: ::core::ffi::c_int, data: *mut ipmi_smi_info) -> ::core::ffi::c_int;
-    pub fn ipmb_checksum(data: *mut u8, size: ::core::ffi::c_int) -> u8;
+    pub fn ipmi_get_smi_info(if_num: ::kernel::ffi::c_int, data: *mut ipmi_smi_info) -> ::kernel::ffi::c_int;
+    pub fn ipmb_checksum(data: *mut u8, size: ::kernel::ffi::c_int) -> u8;
     pub fn ipmi_panic_request_and_wait(user: *mut ipmi_user, addr: *mut ipmi_addr, msg: *mut kernel_ipmi_msg);
 }
 
-pub const GET_DEVICE_ID_MAX_RETRY: ::core::ffi::c_int = 5;
+pub const GET_DEVICE_ID_MAX_RETRY: ::kernel::ffi::c_int = 5;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

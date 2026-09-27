@@ -10,8 +10,8 @@ pub const __ARCH_HW_BREAKPOINT_H: bool = true;
  */
 #[repr(C)]
 pub struct arch_hw_breakpoint {
-    pub address: core::ffi::c_ulong,
-    pub mask: core::ffi::c_ulong,
+    pub address: kernel::ffi::c_ulong,
+    pub mask: kernel::ffi::c_ulong,
     pub len: u8,
     pub r#type: u8,
 }
@@ -62,19 +62,19 @@ pub struct notifier_block {
 }
 
 extern "C" {
-    pub fn arch_check_bp_in_kernelspace(hw: *mut arch_hw_breakpoint) -> core::ffi::c_int;
+    pub fn arch_check_bp_in_kernelspace(hw: *mut arch_hw_breakpoint) -> kernel::ffi::c_int;
     pub fn hw_breakpoint_arch_parse(
         bp: *mut perf_event,
         attr: *const perf_event_attr,
         hw: *mut arch_hw_breakpoint,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
     pub fn hw_breakpoint_exceptions_notify(
         unused: *mut notifier_block,
-        val: core::ffi::c_ulong,
-        data: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        val: kernel::ffi::c_ulong,
+        data: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
 
-    pub fn arch_install_hw_breakpoint(bp: *mut perf_event) -> core::ffi::c_int;
+    pub fn arch_install_hw_breakpoint(bp: *mut perf_event) -> kernel::ffi::c_int;
     pub fn arch_uninstall_hw_breakpoint(bp: *mut perf_event);
     pub fn hw_breakpoint_pmu_read(bp: *mut perf_event);
     pub fn hw_breakpoint_pmu_unthrottle(bp: *mut perf_event);
@@ -82,23 +82,23 @@ extern "C" {
     pub fn arch_fill_perf_breakpoint(bp: *mut perf_event);
 
     pub fn encode_dr7(
-        drnum: core::ffi::c_int,
-        len: core::ffi::c_uint,
-        r#type: core::ffi::c_uint,
-    ) -> core::ffi::c_ulong;
+        drnum: kernel::ffi::c_int,
+        len: kernel::ffi::c_uint,
+        r#type: kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_ulong;
     pub fn decode_dr7(
-        dr7: core::ffi::c_ulong,
-        bpnum: core::ffi::c_int,
-        len: *mut core::ffi::c_uint,
-        r#type: *mut core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        dr7: kernel::ffi::c_ulong,
+        bpnum: kernel::ffi::c_int,
+        len: *mut kernel::ffi::c_uint,
+        r#type: *mut kernel::ffi::c_uint,
+    ) -> kernel::ffi::c_int;
 
     pub fn arch_bp_generic_fields(
-        x86_len: core::ffi::c_int,
-        x86_type: core::ffi::c_int,
-        gen_len: *mut core::ffi::c_int,
-        gen_type: *mut core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        x86_len: kernel::ffi::c_int,
+        x86_type: kernel::ffi::c_int,
+        gen_len: *mut kernel::ffi::c_int,
+        gen_type: *mut kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 
     pub static mut perf_ops_bp: pmu;
 }

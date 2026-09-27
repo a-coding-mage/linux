@@ -74,7 +74,7 @@ extern "C" {
     ) -> *mut xfs_group;
     pub fn xfs_group_intent_put(rtg: *mut xfs_group);
 
-    pub fn xfs_group_intent_drain(xg: *mut xfs_group) -> libc::c_int;
+    pub fn xfs_group_intent_drain(xg: *mut xfs_group) -> core::ffi::c_int;
     pub fn xfs_group_intent_busy(xg: *mut xfs_group) -> bool;
 }
 

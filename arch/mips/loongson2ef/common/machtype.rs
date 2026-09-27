@@ -6,7 +6,7 @@
  * Copyright (c) 2009 Zhang Le <r0bertz@gentoo.org>
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* Dependency declarations supplied by the surrounding kernel sources. */
 extern "C" {

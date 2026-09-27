@@ -10,18 +10,18 @@
 
 #[repr(C)]
 pub struct stacktrace_ops {
-    pub address: Option<unsafe extern "C" fn(data: *mut core::ffi::c_void,
-                                               address: libc::c_ulong,
-                                               reliable: libc::c_int)>,
+    pub address: Option<unsafe extern "C" fn(data: *mut kernel::ffi::c_void,
+                                               address: kernel::ffi::c_ulong,
+                                               reliable: kernel::ffi::c_int)>,
 }
 
 extern "C" {
     pub fn dump_trace(
         tsk: *mut task_struct,
         regs: *mut pt_regs,
-        stack: *mut libc::c_ulong,
+        stack: *mut kernel::ffi::c_ulong,
         ops: *const stacktrace_ops,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     );
 }
 

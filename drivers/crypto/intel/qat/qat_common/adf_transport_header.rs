@@ -13,27 +13,27 @@ pub struct adf_etr_ring_data {
     _private: [u8; 0],
 }
 
-pub type adf_callback_fn = Option<unsafe extern "C" fn(resp_msg: *mut core::ffi::c_void)>;
+pub type adf_callback_fn = Option<unsafe extern "C" fn(resp_msg: *mut kernel::ffi::c_void)>;
 
 extern "C" {
     pub fn adf_create_ring(
         accel_dev: *mut adf_accel_dev,
-        section: *const core::ffi::c_char,
+        section: *const kernel::ffi::c_char,
         bank_num: u32,
         num_mgs: u32,
         msg_size: u32,
-        ring_name: *const core::ffi::c_char,
+        ring_name: *const kernel::ffi::c_char,
         callback: adf_callback_fn,
-        poll_mode: core::ffi::c_int,
+        poll_mode: kernel::ffi::c_int,
         ring_ptr: *mut *mut adf_etr_ring_data,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn adf_ring_nearly_full(ring: *mut adf_etr_ring_data) -> bool;
 
     pub fn adf_send_message(
         ring: *mut adf_etr_ring_data,
         msg: *mut u32,
-    ) -> core::ffi::c_int;
+    ) -> kernel::ffi::c_int;
 
     pub fn adf_remove_ring(ring: *mut adf_etr_ring_data);
 }

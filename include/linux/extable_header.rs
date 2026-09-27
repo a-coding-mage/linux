@@ -20,7 +20,7 @@ unsafe extern "C" {
     pub fn search_extable(
         base: *const exception_table_entry,
         num: usize,
-        value: ::core::ffi::c_ulong,
+        value: ::kernel::ffi::c_ulong,
     ) -> *const exception_table_entry;
 
     pub fn sort_extable(
@@ -33,10 +33,10 @@ unsafe extern "C" {
     pub fn trim_init_extable(m: *mut module);
 
     /* Given an address, look for it in the exception tables */
-    pub fn search_exception_tables(add: ::core::ffi::c_ulong)
+    pub fn search_exception_tables(add: ::kernel::ffi::c_ulong)
         -> *const exception_table_entry;
 
-    pub fn search_kernel_exception_table(addr: ::core::ffi::c_ulong)
+    pub fn search_kernel_exception_table(addr: ::kernel::ffi::c_ulong)
         -> *const exception_table_entry;
 }
 
@@ -44,28 +44,28 @@ unsafe extern "C" {
 // The CONFIG_MODULES condition is preserved as a Rust cfg feature.
 #[cfg(CONFIG_MODULES)]
 unsafe extern "C" {
-    pub fn search_module_extables(addr: ::core::ffi::c_ulong)
+    pub fn search_module_extables(addr: ::kernel::ffi::c_ulong)
         -> *const exception_table_entry;
 }
 
 #[cfg(not(CONFIG_MODULES))]
 #[inline]
 pub unsafe fn search_module_extables(
-    _addr: ::core::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
 ) -> *const exception_table_entry {
     core::ptr::null()
 }
 
 #[cfg(CONFIG_BPF_JIT)]
 unsafe extern "C" {
-    pub fn search_bpf_extables(addr: ::core::ffi::c_ulong)
+    pub fn search_bpf_extables(addr: ::kernel::ffi::c_ulong)
         -> *const exception_table_entry;
 }
 
 #[cfg(not(CONFIG_BPF_JIT))]
 #[inline]
 pub unsafe fn search_bpf_extables(
-    _addr: ::core::ffi::c_ulong,
+    _addr: ::kernel::ffi::c_ulong,
 ) -> *const exception_table_entry {
     core::ptr::null()
 }

@@ -4,8 +4,8 @@
 
 #[repr(C)]
 pub struct dml2_policy_parameters {
-    pub odm_combine_dispclk_threshold_khz: ::core::ffi::c_ulong,
-    pub max_immediate_flip_latency: ::core::ffi::c_uint,
+    pub odm_combine_dispclk_threshold_khz: ::kernel::ffi::c_ulong,
+    pub max_immediate_flip_latency: ::kernel::ffi::c_uint,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

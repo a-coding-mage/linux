@@ -94,8 +94,8 @@ pub const WIDGET_NULL_PART_NUM: i32 = -1;
 pub struct widget_ident {
     pub mfgr: u32,
     pub part: u32,
-    pub name: *const core::ffi::c_char,
-    pub revs: [*const core::ffi::c_char; 16],
+    pub name: *const kernel::ffi::c_char,
+    pub revs: [*const kernel::ffi::c_char; 16],
 }
 
 pub static widget_idents: &[widget_ident] = &[

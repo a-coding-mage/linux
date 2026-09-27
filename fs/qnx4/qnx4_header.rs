@@ -8,7 +8,7 @@ pub const QNX4_DEBUG: i32 = 0;
 
 #[repr(C)]
 pub struct qnx4_sb_info {
-    pub Version: core::ffi::c_uint, // may be useful
+    pub Version: kernel::ffi::c_uint, // may be useful
     pub BitMap: *mut qnx4_inode_entry, // useful
 }
 
@@ -20,18 +20,18 @@ pub struct qnx4_inode_info {
 }
 
 extern "C" {
-    pub fn qnx4_iget(sb: *mut super_block, ino: core::ffi::c_ulong) -> *mut inode;
+    pub fn qnx4_iget(sb: *mut super_block, ino: kernel::ffi::c_ulong) -> *mut inode;
     pub fn qnx4_lookup(
         dir: *mut inode,
         dentry: *mut dentry,
-        flags: core::ffi::c_uint,
+        flags: kernel::ffi::c_uint,
     ) -> *mut dentry;
-    pub fn qnx4_count_free_blocks(sb: *mut super_block) -> core::ffi::c_ulong;
-    pub fn qnx4_block_map(inode: *mut inode, iblock: core::ffi::c_long) -> core::ffi::c_ulong;
+    pub fn qnx4_count_free_blocks(sb: *mut super_block) -> kernel::ffi::c_ulong;
+    pub fn qnx4_block_map(inode: *mut inode, iblock: kernel::ffi::c_long) -> kernel::ffi::c_ulong;
 
     pub static qnx4_dir_inode_operations: inode_operations;
     pub static qnx4_dir_operations: file_operations;
-    pub fn qnx4_is_free(sb: *mut super_block, block: core::ffi::c_long) -> core::ffi::c_int;
+    pub fn qnx4_is_free(sb: *mut super_block, block: kernel::ffi::c_long) -> kernel::ffi::c_int;
 }
 
 #[inline]
@@ -80,7 +80,7 @@ pub unsafe fn qnx4_raw_inode(inode: *mut inode) -> *mut qnx4_inode_entry {
  */
 #[repr(C)]
 pub struct qnx4_directory_entry_name {
-    pub de_name: [core::ffi::c_char; 48],
+    pub de_name: [kernel::ffi::c_char; 48],
     pub de_pad: [u8; 15],
     pub de_status: u8,
 }
@@ -95,8 +95,8 @@ pub union qnx4_directory_entry {
 #[inline]
 pub unsafe fn get_entry_fname(
     de: *mut qnx4_directory_entry,
-    size: *mut core::ffi::c_int,
-) -> *const core::ffi::c_char {
+    size: *mut kernel::ffi::c_int,
+) -> *const kernel::ffi::c_char {
     // C BUILD_BUG_ON checks preserve the required layout invariants.
     if (*de).de.de_name[0] == 0 {
         return core::ptr::null();
@@ -105,9 +105,9 @@ pub unsafe fn get_entry_fname(
         return core::ptr::null();
     }
     if ((*de).de.de_status & QNX4_FILE_LINK) == 0 {
-        *size = core::mem::size_of::<qnx4_inode_entry>() as core::ffi::c_int;
+        *size = core::mem::size_of::<qnx4_inode_entry>() as kernel::ffi::c_int;
     } else {
-        *size = core::mem::size_of::<qnx4_link_info>() as core::ffi::c_int;
+        *size = core::mem::size_of::<qnx4_link_info>() as kernel::ffi::c_int;
     }
 
     let limit = *size as usize;
@@ -115,7 +115,7 @@ pub unsafe fn get_entry_fname(
     while length < limit && (*de).de.de_name[length] != 0 {
         length += 1;
     }
-    *size = length as core::ffi::c_int;
+    *size = length as kernel::ffi::c_int;
 
     (*de).de.de_name.as_ptr()
 }

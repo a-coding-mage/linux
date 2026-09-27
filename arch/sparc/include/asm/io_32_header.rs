@@ -14,28 +14,28 @@ pub const IO_SPACE_LIMIT: u32 = 0xffff_ffff;
  * This is why we have no bus number argument to ioremap().
  */
 unsafe extern "C" {
-    pub fn ioremap(offset: phys_addr_t, size: usize) -> *mut core::ffi::c_void;
-    pub fn iounmap(addr: *mut core::ffi::c_void);
+    pub fn ioremap(offset: phys_addr_t, size: usize) -> *mut kernel::ffi::c_void;
+    pub fn iounmap(addr: *mut kernel::ffi::c_void);
 }
 
-pub unsafe fn _memset_io(dst: *mut core::ffi::c_void, c: i32, mut n: usize) {
+pub unsafe fn _memset_io(dst: *mut kernel::ffi::c_void, c: i32, mut n: usize) {
     let mut d = dst as *mut u8;
     while n != 0 {
-        writeb(c as u8, d as *mut core::ffi::c_void);
+        writeb(c as u8, d as *mut kernel::ffi::c_void);
         d = d.add(1);
         n -= 1;
     }
 }
 
 pub unsafe fn _memcpy_fromio(
-    dst: *mut core::ffi::c_void,
-    src: *const core::ffi::c_void,
+    dst: *mut kernel::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     mut n: usize,
 ) {
     let mut d = dst as *mut i8;
     let mut s = src as *const u8;
     while n != 0 {
-        let tmp = readb(s as *const core::ffi::c_void);
+        let tmp = readb(s as *const kernel::ffi::c_void);
         *d = tmp as i8;
         d = d.add(1);
         s = s.add(1);
@@ -44,15 +44,15 @@ pub unsafe fn _memcpy_fromio(
 }
 
 pub unsafe fn _memcpy_toio(
-    dst: *mut core::ffi::c_void,
-    src: *const core::ffi::c_void,
+    dst: *mut kernel::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     mut n: usize,
 ) {
     let mut s = src as *const i8;
     let mut d = dst as *mut u8;
     while n != 0 {
         let tmp = *s as u8;
-        writeb(tmp, d as *mut core::ffi::c_void);
+        writeb(tmp, d as *mut kernel::ffi::c_void);
         s = s.add(1);
         d = d.add(1);
         n -= 1;
@@ -65,51 +65,51 @@ pub unsafe fn _memcpy_toio(
  * SBus has only one, memory mapped, I/O space.
  * We do not need to flip bytes for SBus of course.
  */
-pub unsafe fn sbus_readb(addr: *const core::ffi::c_void) -> u8 {
+pub unsafe fn sbus_readb(addr: *const kernel::ffi::c_void) -> u8 {
     core::ptr::read_volatile(addr as *const u8)
 }
 
-pub unsafe fn sbus_readw(addr: *const core::ffi::c_void) -> u16 {
+pub unsafe fn sbus_readw(addr: *const kernel::ffi::c_void) -> u16 {
     core::ptr::read_volatile(addr as *const u16)
 }
 
-pub unsafe fn sbus_readl(addr: *const core::ffi::c_void) -> u32 {
+pub unsafe fn sbus_readl(addr: *const kernel::ffi::c_void) -> u32 {
     core::ptr::read_volatile(addr as *const u32)
 }
 
-pub unsafe fn sbus_writeb(b: u8, addr: *mut core::ffi::c_void) {
+pub unsafe fn sbus_writeb(b: u8, addr: *mut kernel::ffi::c_void) {
     core::ptr::write_volatile(addr as *mut u8, b);
 }
 
-pub unsafe fn sbus_writew(w: u16, addr: *mut core::ffi::c_void) {
+pub unsafe fn sbus_writew(w: u16, addr: *mut kernel::ffi::c_void) {
     core::ptr::write_volatile(addr as *mut u16, w);
 }
 
-pub unsafe fn sbus_writel(l: u32, addr: *mut core::ffi::c_void) {
+pub unsafe fn sbus_writel(l: u32, addr: *mut kernel::ffi::c_void) {
     core::ptr::write_volatile(addr as *mut u32, l);
 }
 
 pub unsafe fn sbus_memset_io(
-    mut dst: *mut core::ffi::c_void,
+    mut dst: *mut kernel::ffi::c_void,
     c: i32,
     mut n: usize,
 ) {
     while n != 0 {
         sbus_writeb(c as u8, dst);
-        dst = (dst as *mut u8).add(1) as *mut core::ffi::c_void;
+        dst = (dst as *mut u8).add(1) as *mut kernel::ffi::c_void;
         n -= 1;
     }
 }
 
 pub unsafe fn sbus_memcpy_fromio(
-    dst: *mut core::ffi::c_void,
-    src: *const core::ffi::c_void,
+    dst: *mut kernel::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     mut n: usize,
 ) {
     let mut d = dst as *mut i8;
     let mut s = src as *const u8;
     while n != 0 {
-        let tmp = sbus_readb(s as *const core::ffi::c_void);
+        let tmp = sbus_readb(s as *const kernel::ffi::c_void);
         *d = tmp as i8;
         d = d.add(1);
         s = s.add(1);
@@ -118,8 +118,8 @@ pub unsafe fn sbus_memcpy_fromio(
 }
 
 pub unsafe fn sbus_memcpy_toio(
-    dst: *mut core::ffi::c_void,
-    src: *const core::ffi::c_void,
+    dst: *mut kernel::ffi::c_void,
+    src: *const kernel::ffi::c_void,
     mut n: usize,
 ) {
     let mut s = src as *const i8;
@@ -128,15 +128,15 @@ pub unsafe fn sbus_memcpy_toio(
         let tmp = *s as u8;
         sbus_writeb(tmp, d);
         s = s.add(1);
-        d = (d as *mut u8).add(1) as *mut core::ffi::c_void;
+        d = (d as *mut u8).add(1) as *mut kernel::ffi::c_void;
         n -= 1;
     }
 }
 
 /* Create a virtual mapping cookie for an IO port range */
 unsafe extern "C" {
-    pub fn ioport_map(port: core::ffi::c_ulong, nr: u32) -> *mut core::ffi::c_void;
-    pub fn ioport_unmap(addr: *mut core::ffi::c_void);
+    pub fn ioport_map(port: kernel::ffi::c_ulong, nr: u32) -> *mut kernel::ffi::c_void;
+    pub fn ioport_unmap(addr: *mut kernel::ffi::c_void);
 }
 
 /* Create a virtual mapping cookie for a PCI BAR (memory or IO) */
@@ -146,7 +146,7 @@ pub struct pci_dev {
 }
 
 unsafe extern "C" {
-    pub fn pci_iounmap(dev: *mut pci_dev, addr: *mut core::ffi::c_void);
+    pub fn pci_iounmap(dev: *mut pci_dev, addr: *mut kernel::ffi::c_void);
 }
 
 pub const fn sbus_can_dma_64bit() -> i32 {

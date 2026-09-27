@@ -17,10 +17,10 @@ pub struct request_key_auth {
     pub target_key: *mut key,
     pub dest_keyring: *mut key,
     pub cred: *const cred,
-    pub callout_info: *mut core::ffi::c_void,
+    pub callout_info: *mut kernel::ffi::c_void,
     pub callout_len: usize,
     pub pid: pid_t,
-    pub op: [core::ffi::c_char; 8],
+    pub op: [kernel::ffi::c_char; 8],
 }
 
 pub unsafe fn get_request_key_auth(key: *const key) -> *mut request_key_auth {

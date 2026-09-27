@@ -118,8 +118,8 @@
 // C dependency: #include "core/dev.h"
 
 // Conditional dependency: #ifdef CONFIG_NET_RX_BUSY_POLL
-core::ffi::c_uint sysctl_net_busy_read __read_mostly;
-core::ffi::c_uint sysctl_net_busy_poll __read_mostly;
+kernel::ffi::c_uint sysctl_net_busy_read __read_mostly;
+kernel::ffi::c_uint sysctl_net_busy_poll __read_mostly;
 // Conditional end: #endif
 
 static ssize_t sock_read_iter(kiocb *iocb, iov_iter *to);
@@ -129,15 +129,15 @@ static int sock_mmap(file *file, vm_area_struct *vma);
 static int sock_close(inode *inode, file *file);
 static __poll_t sock_poll(file *file,
 			      poll_table_struct *wait);
-static long sock_ioctl(file *file, cmd: core::ffi::c_uint, arg: core::ffi::c_ulong);
+static long sock_ioctl(file *file, cmd: kernel::ffi::c_uint, arg: kernel::ffi::c_ulong);
 // Conditional dependency: #ifdef CONFIG_COMPAT
 static long compat_sock_ioctl(file *file,
-			      cmd: core::ffi::c_uint, arg: core::ffi::c_ulong);
+			      cmd: kernel::ffi::c_uint, arg: kernel::ffi::c_ulong);
 // Conditional end: #endif
 static int sock_fasync(int fd, file *filp, int on);
 static ssize_t sock_splice_read(file *file, loff_t *ppos,
 				pipe_inode_info *pipe, size_t len,
-				flags: core::ffi::c_uint);
+				flags: kernel::ffi::c_uint);
 static void sock_splice_eof(file *file);
 
 // Conditional dependency: #ifdef CONFIG_PROC_FS
@@ -1205,7 +1205,7 @@ EXPORT_SYMBOL(kernel_recvmsg);
 
 static ssize_t sock_splice_read(file *file, loff_t *ppos,
 				pipe_inode_info *pipe, size_t len,
-				flags: core::ffi::c_uint)
+				flags: kernel::ffi::c_uint)
 {
 	struct socket *sock = (*file).private_data;
 	const struct proto_ops *ops;
@@ -1278,10 +1278,10 @@ static ssize_t sock_write_iter(kiocb *iocb, iov_iter *from)
  */
 
 static DEFINE_MUTEX(br_ioctl_mutex);
-static int (*br_ioctl_hook)(net *net, cmd: core::ffi::c_uint,
+static int (*br_ioctl_hook)(net *net, cmd: kernel::ffi::c_uint,
 			    void __user *uarg);
 
-void brioctl_set(int (*hook)(net *net, cmd: core::ffi::c_uint,
+void brioctl_set(int (*hook)(net *net, cmd: kernel::ffi::c_uint,
 			     void __user *uarg))
 {
 	mutex_lock(&br_ioctl_mutex);
@@ -1290,7 +1290,7 @@ void brioctl_set(int (*hook)(net *net, cmd: core::ffi::c_uint,
 }
 EXPORT_SYMBOL(brioctl_set);
 
-int br_ioctl_call(net *net, cmd: core::ffi::c_uint, void __user *uarg)
+int br_ioctl_call(net *net, cmd: kernel::ffi::c_uint, void __user *uarg)
 {
 	int err = -ENOPKG;
 
@@ -1317,7 +1317,7 @@ void vlan_ioctl_set(int (*hook) (net *, void __user *))
 EXPORT_SYMBOL(vlan_ioctl_set);
 
 static long sock_do_ioctl(net *net, socket *sock,
-			  cmd: core::ffi::c_uint, arg: core::ffi::c_ulong)
+			  cmd: kernel::ffi::c_uint, arg: kernel::ffi::c_ulong)
 {
 	const struct proto_ops *ops = READ_ONCE((*sock).ops);
 	struct ifreq ifr;
@@ -1353,7 +1353,7 @@ static long sock_do_ioctl(net *net, socket *sock,
  *	what to do with it - that's up to the protocol still.
  */
 
-static long sock_ioctl(file *file, unsigned cmd, arg: core::ffi::c_ulong)
+static long sock_ioctl(file *file, unsigned cmd, arg: kernel::ffi::c_ulong)
 {
 	const struct proto_ops  *ops;
 	struct socket *sock;
@@ -2007,7 +2007,7 @@ int __sys_listen_socket(socket *sock, int backlog)
 	int somaxconn, err;
 
 	somaxconn = READ_ONCE((*sock_net((*sock).sk)).core.sysctl_somaxconn);
-	if ((core::ffi::c_uint)backlog > somaxconn)
+	if ((kernel::ffi::c_uint)backlog > somaxconn)
 		backlog = somaxconn;
 
 	err = security_socket_listen(sock, backlog);
@@ -2261,7 +2261,7 @@ SYSCALL_DEFINE3(getpeername, int, fd, sockaddr __user *, usockaddr,
  *	space and check the user space data area is readable before invoking
  *	the protocol.
  */
-int __sys_sendto(int fd, void __user *buff, size_t len, flags: core::ffi::c_uint,
+int __sys_sendto(int fd, void __user *buff, size_t len, flags: kernel::ffi::c_uint,
 		 sockaddr __user *addr,  int addr_len)
 {
 	struct socket *sock;
@@ -2300,7 +2300,7 @@ int __sys_sendto(int fd, void __user *buff, size_t len, flags: core::ffi::c_uint
 }
 
 SYSCALL_DEFINE6(sendto, int, fd, void __user *, buff, size_t, len,
-		core::ffi::c_uint, flags, sockaddr __user *, addr,
+		kernel::ffi::c_uint, flags, sockaddr __user *, addr,
 		int, addr_len)
 {
 	return __sys_sendto(fd, buff, len, flags, addr, addr_len);
@@ -2311,7 +2311,7 @@ SYSCALL_DEFINE6(sendto, int, fd, void __user *, buff, size_t, len,
  */
 
 SYSCALL_DEFINE4(send, int, fd, void __user *, buff, size_t, len,
-		core::ffi::c_uint, flags)
+		kernel::ffi::c_uint, flags)
 {
 	return __sys_sendto(fd, buff, len, flags, NULL, 0);
 }
@@ -2321,7 +2321,7 @@ SYSCALL_DEFINE4(send, int, fd, void __user *, buff, size_t, len,
  *	sender. We verify the buffers are writable and if needed move the
  *	sender address from kernel to user space.
  */
-int __sys_recvfrom(int fd, void __user *ubuf, size_t size, flags: core::ffi::c_uint,
+int __sys_recvfrom(int fd, void __user *ubuf, size_t size, flags: kernel::ffi::c_uint,
 		   sockaddr __user *addr, int __user *addr_len)
 {
 	struct sockaddr_storage address;
@@ -2358,7 +2358,7 @@ int __sys_recvfrom(int fd, void __user *ubuf, size_t size, flags: core::ffi::c_u
 }
 
 SYSCALL_DEFINE6(recvfrom, int, fd, void __user *, ubuf, size_t, size,
-		core::ffi::c_uint, flags, sockaddr __user *, addr,
+		kernel::ffi::c_uint, flags, sockaddr __user *, addr,
 		int __user *, addr_len)
 {
 	return __sys_recvfrom(fd, ubuf, size, flags, addr, addr_len);
@@ -2369,7 +2369,7 @@ SYSCALL_DEFINE6(recvfrom, int, fd, void __user *, ubuf, size_t, size,
  */
 
 SYSCALL_DEFINE4(recv, int, fd, void __user *, ubuf, size_t, size,
-		core::ffi::c_uint, flags)
+		kernel::ffi::c_uint, flags)
 {
 	return __sys_recvfrom(fd, ubuf, size, flags, NULL, NULL);
 }
@@ -2604,7 +2604,7 @@ SYSCALL_DEFINE2(shutdown, int, fd, int, how)
 
 struct used_address {
 	struct sockaddr_storage name;
-	core::ffi::c_uint name_len;
+	kernel::ffi::c_uint name_len;
 };
 
 int __copy_msghdr(msghdr *kmsg,
@@ -2674,15 +2674,15 @@ static int copy_msghdr_from_user(msghdr *kmsg,
 }
 
 static int ____sys_sendmsg(socket *sock, msghdr *msg_sys,
-			   flags: core::ffi::c_uint, used_address *used_address,
-			   allowed_msghdr_flags: core::ffi::c_uint)
+			   flags: kernel::ffi::c_uint, used_address *used_address,
+			   allowed_msghdr_flags: kernel::ffi::c_uint)
 {
 	'out: {
 	'out_freectl: {
-	core::ffi::c_uchar ctl[sizeof(cmsghdr) + 20]
+	kernel::ffi::c_uchar ctl[sizeof(cmsghdr) + 20]
 				__aligned(sizeof(__kernel_size_t));
 	/* 20 is size of ipv6_pktinfo */
-	core::ffi::c_uchar *ctl_buf = ctl;
+	kernel::ffi::c_uchar *ctl_buf = ctl;
 	int ctl_len;
 	ssize_t err;
 
@@ -2773,9 +2773,9 @@ static int sendmsg_copy_msghdr(msghdr *msg,
 }
 
 static int ___sys_sendmsg(socket *sock, user_msghdr __user *msg,
-			 msghdr *msg_sys, flags: core::ffi::c_uint,
+			 msghdr *msg_sys, flags: kernel::ffi::c_uint,
 			 used_address *used_address,
-			 allowed_msghdr_flags: core::ffi::c_uint)
+			 allowed_msghdr_flags: kernel::ffi::c_uint)
 {
 	struct sockaddr_storage address;
 	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
@@ -2797,12 +2797,12 @@ static int ___sys_sendmsg(socket *sock, user_msghdr __user *msg,
  *	BSD sendmsg interface
  */
 long __sys_sendmsg_sock(socket *sock, msghdr *msg,
-			flags: core::ffi::c_uint)
+			flags: kernel::ffi::c_uint)
 {
 	return ____sys_sendmsg(sock, msg, flags, NULL, 0);
 }
 
-long __sys_sendmsg(int fd, user_msghdr __user *msg, flags: core::ffi::c_uint,
+long __sys_sendmsg(int fd, user_msghdr __user *msg, flags: kernel::ffi::c_uint,
 		   forbid_cmsg_compat: bool)
 {
 	struct msghdr msg_sys;
@@ -2822,7 +2822,7 @@ long __sys_sendmsg(int fd, user_msghdr __user *msg, flags: core::ffi::c_uint,
 	return ___sys_sendmsg(sock, msg, &msg_sys, flags, NULL, 0);
 }
 
-SYSCALL_DEFINE3(sendmsg, int, fd, user_msghdr __user *, msg, core::ffi::c_uint, flags)
+SYSCALL_DEFINE3(sendmsg, int, fd, user_msghdr __user *, msg, kernel::ffi::c_uint, flags)
 {
 	return __sys_sendmsg(fd, msg, flags, true);
 }
@@ -2831,8 +2831,8 @@ SYSCALL_DEFINE3(sendmsg, int, fd, user_msghdr __user *, msg, core::ffi::c_uint, 
  *	Linux sendmmsg interface
  */
 
-int __sys_sendmmsg(int fd, mmsghdr __user *mmsg, vlen: core::ffi::c_uint,
-		   flags: core::ffi::c_uint, forbid_cmsg_compat: bool)
+int __sys_sendmmsg(int fd, mmsghdr __user *mmsg, vlen: kernel::ffi::c_uint,
+		   flags: kernel::ffi::c_uint, forbid_cmsg_compat: bool)
 {
 	int err, datagrams;
 	struct socket *sock;
@@ -2840,7 +2840,7 @@ int __sys_sendmmsg(int fd, mmsghdr __user *mmsg, vlen: core::ffi::c_uint,
 	struct compat_mmsghdr __user *compat_entry;
 	struct msghdr msg_sys;
 	struct used_address used_address;
-	core::ffi::c_uint oflags = flags;
+	kernel::ffi::c_uint oflags = flags;
 
 	if (forbid_cmsg_compat && (flags & MSG_CMSG_COMPAT))
 		return -EINVAL;
@@ -2901,7 +2901,7 @@ int __sys_sendmmsg(int fd, mmsghdr __user *mmsg, vlen: core::ffi::c_uint,
 }
 
 SYSCALL_DEFINE4(sendmmsg, int, fd, mmsghdr __user *, mmsg,
-		core::ffi::c_uint, vlen, core::ffi::c_uint, flags)
+		kernel::ffi::c_uint, vlen, kernel::ffi::c_uint, flags)
 {
 	return __sys_sendmmsg(fd, mmsg, vlen, flags, true);
 }
@@ -2930,19 +2930,19 @@ static int recvmsg_copy_msghdr(msghdr *msg,
 static int ____sys_recvmsg(socket *sock, msghdr *msg_sys,
 			   user_msghdr __user *msg,
 			   sockaddr __user *uaddr,
-			   flags: core::ffi::c_uint, int nosec)
+			   flags: kernel::ffi::c_uint, int nosec)
 {
 	'out: {
 	struct compat_msghdr __user *msg_compat =
 					(compat_msghdr __user *) msg;
 	int __user *uaddr_len = COMPAT_NAMELEN(msg);
 	struct sockaddr_storage addr;
-	core::ffi::c_ulong cmsg_ptr;
+	kernel::ffi::c_ulong cmsg_ptr;
 	int len;
 	ssize_t err;
 
 	msg_sys->msg_name = &addr;
-	cmsg_ptr = (core::ffi::c_ulong)msg_sys->msg_control;
+	cmsg_ptr = (kernel::ffi::c_ulong)msg_sys->msg_control;
 	msg_sys->msg_flags = flags & (MSG_CMSG_CLOEXEC|MSG_CMSG_COMPAT);
 
 	/* We assume all kernel code knows the size of sockaddr_storage */
@@ -2972,10 +2972,10 @@ static int ____sys_recvmsg(socket *sock, msghdr *msg_sys,
 	if (err)
 		break 'out;
 	if (MSG_CMSG_COMPAT & flags)
-		err = __put_user((core::ffi::c_ulong)msg_sys->msg_control - cmsg_ptr,
+		err = __put_user((kernel::ffi::c_ulong)msg_sys->msg_control - cmsg_ptr,
 				 &msg_compat->msg_controllen);
 	else
-		err = __put_user((core::ffi::c_ulong)msg_sys->msg_control - cmsg_ptr,
+		err = __put_user((kernel::ffi::c_ulong)msg_sys->msg_control - cmsg_ptr,
 				 &msg->msg_controllen);
 	if (err)
 		break 'out;
@@ -2986,7 +2986,7 @@ static int ____sys_recvmsg(socket *sock, msghdr *msg_sys,
 }
 
 static int ___sys_recvmsg(socket *sock, user_msghdr __user *msg,
-			 msghdr *msg_sys, flags: core::ffi::c_uint, int nosec)
+			 msghdr *msg_sys, flags: kernel::ffi::c_uint, int nosec)
 {
 	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
 	/* user mode address pointers */
@@ -3008,12 +3008,12 @@ static int ___sys_recvmsg(socket *sock, user_msghdr __user *msg,
 
 long __sys_recvmsg_sock(socket *sock, msghdr *msg,
 			user_msghdr __user *umsg,
-			sockaddr __user *uaddr, flags: core::ffi::c_uint)
+			sockaddr __user *uaddr, flags: kernel::ffi::c_uint)
 {
 	return ____sys_recvmsg(sock, msg, umsg, uaddr, flags, 0);
 }
 
-long __sys_recvmsg(int fd, user_msghdr __user *msg, flags: core::ffi::c_uint,
+long __sys_recvmsg(int fd, user_msghdr __user *msg, flags: kernel::ffi::c_uint,
 		   forbid_cmsg_compat: bool)
 {
 	struct msghdr msg_sys;
@@ -3034,7 +3034,7 @@ long __sys_recvmsg(int fd, user_msghdr __user *msg, flags: core::ffi::c_uint,
 }
 
 SYSCALL_DEFINE3(recvmsg, int, fd, user_msghdr __user *, msg,
-		core::ffi::c_uint, flags)
+		kernel::ffi::c_uint, flags)
 {
 	return __sys_recvmsg(fd, msg, flags, true);
 }
@@ -3044,7 +3044,7 @@ SYSCALL_DEFINE3(recvmsg, int, fd, user_msghdr __user *, msg,
  */
 
 static int do_recvmmsg(int fd, mmsghdr __user *mmsg,
-			  vlen: core::ffi::c_uint, flags: core::ffi::c_uint,
+			  vlen: kernel::ffi::c_uint, flags: kernel::ffi::c_uint,
 			  timespec64 *timeout)
 {
 	int err = 0, datagrams;
@@ -3152,7 +3152,7 @@ static int do_recvmmsg(int fd, mmsghdr __user *mmsg,
 }
 
 int __sys_recvmmsg(int fd, mmsghdr __user *mmsg,
-		   vlen: core::ffi::c_uint, flags: core::ffi::c_uint,
+		   vlen: kernel::ffi::c_uint, flags: kernel::ffi::c_uint,
 		   __kernel_timespec __user *timeout,
 		   old_timespec32 __user *timeout32)
 {
@@ -3183,7 +3183,7 @@ int __sys_recvmmsg(int fd, mmsghdr __user *mmsg,
 }
 
 SYSCALL_DEFINE5(recvmmsg, int, fd, mmsghdr __user *, mmsg,
-		core::ffi::c_uint, vlen, core::ffi::c_uint, flags,
+		kernel::ffi::c_uint, vlen, kernel::ffi::c_uint, flags,
 		__kernel_timespec __user *, timeout)
 {
 	if (flags & MSG_CMSG_COMPAT)
@@ -3194,7 +3194,7 @@ SYSCALL_DEFINE5(recvmmsg, int, fd, mmsghdr __user *, mmsg,
 
 // Conditional dependency: #ifdef CONFIG_COMPAT_32BIT_TIME
 SYSCALL_DEFINE5(recvmmsg_time32, int, fd, mmsghdr __user *, mmsg,
-		core::ffi::c_uint, vlen, core::ffi::c_uint, flags,
+		kernel::ffi::c_uint, vlen, kernel::ffi::c_uint, flags,
 		old_timespec32 __user *, timeout)
 {
 	if (flags & MSG_CMSG_COMPAT)
@@ -3207,7 +3207,7 @@ SYSCALL_DEFINE5(recvmmsg_time32, int, fd, mmsghdr __user *, mmsg,
 // Conditional dependency: #ifdef __ARCH_WANT_SYS_SOCKETCALL
 /* Argument list sizes for sys_socketcall */
 // C macro: #define AL(x) ((x) * sizeof(unsigned long))
-static core::ffi::c_uchar nargs[21] = {
+static kernel::ffi::c_uchar nargs[21] = {
 	AL(0), AL(3), AL(3), AL(3), AL(2), AL(3),
 	AL(3), AL(3), AL(4), AL(4), AL(4), AL(6),
 	AL(6), AL(2), AL(5), AL(5), AL(3), AL(3),
@@ -3224,12 +3224,12 @@ static core::ffi::c_uchar nargs[21] = {
  *  it is set by the callees.
  */
 
-SYSCALL_DEFINE2(socketcall, int, call, core::ffi::c_ulong __user *, args)
+SYSCALL_DEFINE2(socketcall, int, call, kernel::ffi::c_ulong __user *, args)
 {
-	core::ffi::c_ulong a[AUDITSC_ARGS];
-	a0: core::ffi::c_ulong, a1;
+	kernel::ffi::c_ulong a[AUDITSC_ARGS];
+	a0: kernel::ffi::c_ulong, a1;
 	int err;
-	core::ffi::c_uint len;
+	kernel::ffi::c_uint len;
 
 	if (call < 1 || call > SYS_SENDMMSG)
 		return -EINVAL;
@@ -3243,7 +3243,7 @@ SYSCALL_DEFINE2(socketcall, int, call, core::ffi::c_ulong __user *, args)
 	if (copy_from_user(a, args, len))
 		return -EFAULT;
 
-	err = audit_socketcall(nargs[call] / sizeof(core::ffi::c_ulong), a);
+	err = audit_socketcall(nargs[call] / sizeof(kernel::ffi::c_ulong), a);
 	if (err)
 		return err;
 
@@ -3546,7 +3546,7 @@ static int compat_siocwandev(net *net, compat_ifreq __user *uifr32)
 }
 
 /* Handle ioctls that use ifreq::ifr_data and just need struct ifreq converted */
-static int compat_ifr_data_ioctl(net *net, cmd: core::ffi::c_uint,
+static int compat_ifr_data_ioctl(net *net, cmd: kernel::ffi::c_uint,
 				 compat_ifreq __user *u_ifreq32)
 {
 	struct ifreq ifreq;
@@ -3562,7 +3562,7 @@ static int compat_ifr_data_ioctl(net *net, cmd: core::ffi::c_uint,
 }
 
 static int compat_sock_ioctl_trans(file *file, socket *sock,
-			 cmd: core::ffi::c_uint, arg: core::ffi::c_ulong)
+			 cmd: kernel::ffi::c_uint, arg: kernel::ffi::c_ulong)
 {
 	void __user *argp = compat_ptr(arg);
 	struct sock *sk = sock->sk;
@@ -3570,7 +3570,7 @@ static int compat_sock_ioctl_trans(file *file, socket *sock,
 	const struct proto_ops *ops;
 
 	if (cmd >= SIOCDEVPRIVATE && cmd <= (SIOCDEVPRIVATE + 15))
-		return sock_ioctl(file, cmd, (core::ffi::c_ulong)argp);
+		return sock_ioctl(file, cmd, (kernel::ffi::c_ulong)argp);
 
 	switch (cmd) {
 	case SIOCWANDEV:
@@ -3658,8 +3658,8 @@ static int compat_sock_ioctl_trans(file *file, socket *sock,
 	return -ENOIOCTLCMD;
 }
 
-static long compat_sock_ioctl(file *file, cmd: core::ffi::c_uint,
-			      arg: core::ffi::c_ulong)
+static long compat_sock_ioctl(file *file, cmd: kernel::ffi::c_uint,
+			      arg: kernel::ffi::c_ulong)
 {
 	struct socket *sock = file->private_data;
 	const struct proto_ops *ops = READ_ONCE(sock->ops);

@@ -12,38 +12,38 @@
 // Linux and SuperH declarations are supplied by the surrounding kernel.
 
 extern "C" {
-    fn pgd_offset(mm: *mut mm_struct, addr: libc::c_ulong) -> *mut pgd_t;
+    fn pgd_offset(mm: *mut mm_struct, addr: kernel::ffi::c_ulong) -> *mut pgd_t;
     fn p4d_alloc(
         mm: *mut mm_struct,
         pgd: *mut pgd_t,
-        addr: libc::c_ulong,
+        addr: kernel::ffi::c_ulong,
     ) -> *mut p4d_t;
     fn pud_alloc(
         mm: *mut mm_struct,
         p4d: *mut p4d_t,
-        addr: libc::c_ulong,
+        addr: kernel::ffi::c_ulong,
     ) -> *mut pud_t;
     fn pmd_alloc(
         mm: *mut mm_struct,
         pud: *mut pud_t,
-        addr: libc::c_ulong,
+        addr: kernel::ffi::c_ulong,
     ) -> *mut pmd_t;
     fn pte_alloc_huge(
         mm: *mut mm_struct,
         pmd: *mut pmd_t,
-        addr: libc::c_ulong,
+        addr: kernel::ffi::c_ulong,
     ) -> *mut pte_t;
-    fn p4d_offset(pgd: *mut pgd_t, addr: libc::c_ulong) -> *mut p4d_t;
-    fn pud_offset(p4d: *mut p4d_t, addr: libc::c_ulong) -> *mut pud_t;
-    fn pmd_offset(pud: *mut pud_t, addr: libc::c_ulong) -> *mut pmd_t;
-    fn pte_offset_huge(pmd: *mut pmd_t, addr: libc::c_ulong) -> *mut pte_t;
+    fn p4d_offset(pgd: *mut pgd_t, addr: kernel::ffi::c_ulong) -> *mut p4d_t;
+    fn pud_offset(p4d: *mut p4d_t, addr: kernel::ffi::c_ulong) -> *mut pud_t;
+    fn pmd_offset(pud: *mut pud_t, addr: kernel::ffi::c_ulong) -> *mut pmd_t;
+    fn pte_offset_huge(pmd: *mut pmd_t, addr: kernel::ffi::c_ulong) -> *mut pte_t;
 }
 
 pub unsafe fn huge_pte_alloc(
     mm: *mut mm_struct,
     vma: *mut vm_area_struct,
-    addr: libc::c_ulong,
-    sz: libc::c_ulong,
+    addr: kernel::ffi::c_ulong,
+    sz: kernel::ffi::c_ulong,
 ) -> *mut pte_t {
     let pgd: *mut pgd_t;
     let p4d: *mut p4d_t;
@@ -70,8 +70,8 @@ pub unsafe fn huge_pte_alloc(
 
 pub unsafe fn huge_pte_offset(
     mm: *mut mm_struct,
-    addr: libc::c_ulong,
-    sz: libc::c_ulong,
+    addr: kernel::ffi::c_ulong,
+    sz: kernel::ffi::c_ulong,
 ) -> *mut pte_t {
     let pgd: *mut pgd_t;
     let p4d: *mut p4d_t;

@@ -29,14 +29,14 @@ extern "C" {
     fn ipv6_addr_type(addr: *const in6_addr) -> i32;
     fn ipv6_hdr(skb: *const sk_buff) -> *mut ipv6hdr;
     fn l3mdev_master_ifindex_rcu(dev: *const net_device) -> i32;
-    fn sock_net_uid(net: *mut net, sk: *mut core::ffi::c_void) -> u32;
+    fn sock_net_uid(net: *mut net, sk: *mut kernel::ffi::c_void) -> u32;
     fn ip6_route_lookup(net: *mut net, fl6: *mut flowi6, skb: *const sk_buff, flags: i32) -> *mut rt6_info;
     fn ip6_rt_put(rt: *mut rt6_info);
     fn xt_in(par: *const xt_action_param) -> *const net_device;
     fn xt_net(par: *const xt_action_param) -> *mut net;
     fn xt_register_match(m: *mut xt_match) -> i32;
     fn xt_unregister_match(m: *mut xt_match);
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
 }
 
 #[repr(C)] pub struct in6_addr { pub s6_addr: [u8; 16] }
@@ -49,9 +49,9 @@ extern "C" {
 #[repr(C)] pub struct rt6_info { pub dst: dst_entry, pub rt6i_flags: u32, pub rt6i_idev: *const inet6_dev }
 #[repr(C)] pub struct flowi6 { pub flowi6_iif: i32, pub flowi6_l3mdev: i32, pub flowlabel: u32, pub flowi6_proto: u8, pub flowi6_uid: u32, pub daddr: in6_addr, pub saddr: in6_addr, pub flowi6_mark: u32, pub flowi6_oif: i32 }
 #[repr(C)] pub struct xt_rpfilter_info { pub flags: u8 }
-#[repr(C)] pub struct xt_action_param { pub matchinfo: *const core::ffi::c_void }
-#[repr(C)] pub struct xt_mtchk_param { pub matchinfo: *const core::ffi::c_void, pub table: *const core::ffi::c_char }
-#[repr(C)] pub struct xt_match { pub name: *const core::ffi::c_char, pub family: u16, pub checkentry: Option<unsafe extern "C" fn(*const xt_mtchk_param) -> i32>, pub r#match: Option<unsafe extern "C" fn(*const sk_buff, *mut xt_action_param) -> bool>, pub matchsize: usize, pub hooks: u32, pub me: *mut core::ffi::c_void }
+#[repr(C)] pub struct xt_action_param { pub matchinfo: *const kernel::ffi::c_void }
+#[repr(C)] pub struct xt_mtchk_param { pub matchinfo: *const kernel::ffi::c_void, pub table: *const kernel::ffi::c_char }
+#[repr(C)] pub struct xt_match { pub name: *const kernel::ffi::c_char, pub family: u16, pub checkentry: Option<unsafe extern "C" fn(*const xt_mtchk_param) -> i32>, pub r#match: Option<unsafe extern "C" fn(*const sk_buff, *mut xt_action_param) -> bool>, pub matchsize: usize, pub hooks: u32, pub me: *mut kernel::ffi::c_void }
 
 unsafe fn rpfilter_addr_unicast(addr: *const in6_addr) -> bool { ipv6_addr_type(addr) & IPV6_ADDR_UNICAST != 0 }
 unsafe fn rpfilter_addr_linklocal(addr: *const in6_addr) -> bool { ipv6_addr_type(addr) & IPV6_ADDR_LINKLOCAL != 0 }

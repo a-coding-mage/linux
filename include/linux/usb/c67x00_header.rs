@@ -28,8 +28,8 @@ pub const C67X00_SIE2_PERIPHERAL_B: i32 = C67X00_SIE_PERIPHERAL_B << 4;
 
 #[repr(C)]
 pub struct c67x00_platform_data {
-    pub sie_config: core::ffi::c_int, /* SIEs config (C67X00_SIEx_*) */
-    pub hpi_regstep: core::ffi::c_ulong, /* Step between HPI registers */
+    pub sie_config: kernel::ffi::c_int, /* SIEs config (C67X00_SIEx_*) */
+    pub hpi_regstep: kernel::ffi::c_ulong, /* Step between HPI registers */
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

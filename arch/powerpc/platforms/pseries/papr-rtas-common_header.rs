@@ -15,7 +15,7 @@ pub const RTAS_SEQ_START_OVER: i32 = -4; // Data changed, restart call sequence.
  */
 #[repr(C)]
 pub struct papr_rtas_blob {
-    pub data: *const core::ffi::c_char,
+    pub data: *const kernel::ffi::c_char,
     pub len: usize,
 }
 
@@ -34,14 +34,14 @@ pub struct papr_rtas_blob {
 #[repr(C)]
 pub struct papr_rtas_sequence {
     pub error: i32,
-    pub params: *mut core::ffi::c_void,
+    pub params: *mut kernel::ffi::c_void,
     pub begin: Option<unsafe extern "C" fn(seq: *mut papr_rtas_sequence)>,
     pub end: Option<unsafe extern "C" fn(seq: *mut papr_rtas_sequence)>,
     pub work: Option<
         unsafe extern "C" fn(
             seq: *mut papr_rtas_sequence,
             len: *mut usize,
-        ) -> *const core::ffi::c_char,
+        ) -> *const kernel::ffi::c_char,
     >,
 }
 
@@ -67,7 +67,7 @@ unsafe extern "C" {
     pub fn papr_rtas_setup_file_interface(
         seq: *mut papr_rtas_sequence,
         fops: *const file_operations,
-        name: *mut core::ffi::c_char,
+        name: *mut kernel::ffi::c_char,
     ) -> isize;
     pub fn papr_rtas_sequence_should_stop(
         seq: *const papr_rtas_sequence,
@@ -76,7 +76,7 @@ unsafe extern "C" {
     ) -> bool;
     pub fn papr_rtas_common_handle_read(
         file: *mut file,
-        buf: *mut core::ffi::c_char,
+        buf: *mut kernel::ffi::c_char,
         size: usize,
         off: *mut i64,
     ) -> isize;

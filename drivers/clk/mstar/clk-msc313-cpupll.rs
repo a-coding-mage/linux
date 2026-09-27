@@ -24,7 +24,7 @@ const MULTIPLIER: u64 = MULTIPLIER_1 * MULTIPLIER_2;
 
 #[repr(C)]
 struct Msc313Cpupll {
-    base: *mut core::ffi::c_void,
+    base: *mut kernel::ffi::c_void,
     clk_hw: ClkHw,
 }
 
@@ -35,7 +35,7 @@ struct ClkHw {
 
 #[repr(C)]
 struct ClkInitData {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     ops: *const ClkOps,
     parent_data: *const ClkParentData,
     num_parents: u32,
@@ -60,13 +60,13 @@ struct ClkOps {
 }
 
 extern "C" {
-    fn ioread16(addr: *mut core::ffi::c_void) -> u16;
-    fn iowrite16(value: u16, addr: *mut core::ffi::c_void);
+    fn ioread16(addr: *mut kernel::ffi::c_void) -> u16;
+    fn iowrite16(value: u16, addr: *mut kernel::ffi::c_void);
     fn ktime_get() -> i64;
     fn ktime_add_ns(time: i64, nsec: i64) -> i64;
     fn ktime_after(lhs: i64, rhs: i64) -> bool;
     fn cpu_relax();
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
 }
 
 unsafe fn msc313_cpupll_reg_read32(cpupll: *mut Msc313Cpupll, reg: u32) -> u32 {

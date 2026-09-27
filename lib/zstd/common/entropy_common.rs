@@ -3,15 +3,15 @@
 
 // Dependencies are supplied by the surrounding translation unit.
 
-pub unsafe fn FSE_versionNumber() -> ::core::ffi::c_uint { FSE_VERSION_NUMBER }
-pub unsafe fn FSE_isError(code: usize) -> ::core::ffi::c_uint { ERR_isError(code) }
-pub unsafe fn FSE_getErrorName(code: usize) -> *const ::core::ffi::c_char { ERR_getErrorName(code) }
-pub unsafe fn HUF_isError(code: usize) -> ::core::ffi::c_uint { ERR_isError(code) }
-pub unsafe fn HUF_getErrorName(code: usize) -> *const ::core::ffi::c_char { ERR_getErrorName(code) }
+pub unsafe fn FSE_versionNumber() -> ::kernel::ffi::c_uint { FSE_VERSION_NUMBER }
+pub unsafe fn FSE_isError(code: usize) -> ::kernel::ffi::c_uint { ERR_isError(code) }
+pub unsafe fn FSE_getErrorName(code: usize) -> *const ::kernel::ffi::c_char { ERR_getErrorName(code) }
+pub unsafe fn HUF_isError(code: usize) -> ::kernel::ffi::c_uint { ERR_isError(code) }
+pub unsafe fn HUF_getErrorName(code: usize) -> *const ::kernel::ffi::c_char { ERR_getErrorName(code) }
 
 pub unsafe fn FSE_readNCount_body(
-    normalizedCounter: *mut i16, maxSVPtr: *mut ::core::ffi::c_uint,
-    tableLogPtr: *mut ::core::ffi::c_uint, headerBuffer: *const ::core::ffi::c_void,
+    normalizedCounter: *mut i16, maxSVPtr: *mut ::kernel::ffi::c_uint,
+    tableLogPtr: *mut ::kernel::ffi::c_uint, headerBuffer: *const ::kernel::ffi::c_void,
     hbSize: usize,
 ) -> usize {
     let istart = headerBuffer as *const u8;
@@ -22,7 +22,7 @@ pub unsafe fn FSE_readNCount_body(
     let mut threshold: i32;
     let mut bitStream: u32;
     let mut bitCount: i32;
-    let mut charnum: ::core::ffi::c_uint = 0;
+    let mut charnum: ::kernel::ffi::c_uint = 0;
     let maxSV1 = *maxSVPtr + 1;
     let mut previous0 = false;
 
@@ -93,15 +93,15 @@ pub unsafe fn FSE_readNCount_body(
     ip.add(((bitCount + 7) >> 3) as usize).offset_from(istart) as usize
 }
 
-pub unsafe fn FSE_readNCount_bmi2(a:*mut i16,b:*mut u32,c:*mut u32,d:*const ::core::ffi::c_void,e:usize,_bmi2:i32)->usize { FSE_readNCount_body(a,b,c,d,e) }
-pub unsafe fn FSE_readNCount(a:*mut i16,b:*mut u32,c:*mut u32,d:*const ::core::ffi::c_void,e:usize)->usize { FSE_readNCount_bmi2(a,b,c,d,e,0) }
+pub unsafe fn FSE_readNCount_bmi2(a:*mut i16,b:*mut u32,c:*mut u32,d:*const ::kernel::ffi::c_void,e:usize,_bmi2:i32)->usize { FSE_readNCount_body(a,b,c,d,e) }
+pub unsafe fn FSE_readNCount(a:*mut i16,b:*mut u32,c:*mut u32,d:*const ::kernel::ffi::c_void,e:usize)->usize { FSE_readNCount_bmi2(a,b,c,d,e,0) }
 
-pub unsafe fn HUF_readStats(huffWeight:*mut u8,hwSize:usize,rankStats:*mut u32,nbSymbolsPtr:*mut u32,tableLogPtr:*mut u32,src:*const ::core::ffi::c_void,srcSize:usize)->usize {
+pub unsafe fn HUF_readStats(huffWeight:*mut u8,hwSize:usize,rankStats:*mut u32,nbSymbolsPtr:*mut u32,tableLogPtr:*mut u32,src:*const ::kernel::ffi::c_void,srcSize:usize)->usize {
     let mut wksp = [0u32; HUF_READ_STATS_WORKSPACE_SIZE_U32 as usize];
     HUF_readStats_wksp(huffWeight,hwSize,rankStats,nbSymbolsPtr,tableLogPtr,src,srcSize,wksp.as_mut_ptr() as *mut _,core::mem::size_of_val(&wksp),0)
 }
 
-pub unsafe fn HUF_readStats_body(huffWeight:*mut u8,hwSize:usize,rankStats:*mut u32,nbSymbolsPtr:*mut u32,tableLogPtr:*mut u32,src:*const ::core::ffi::c_void,srcSize:usize,_workSpace:*mut ::core::ffi::c_void,_wkspSize:usize,_bmi2:i32)->usize {
+pub unsafe fn HUF_readStats_body(huffWeight:*mut u8,hwSize:usize,rankStats:*mut u32,nbSymbolsPtr:*mut u32,tableLogPtr:*mut u32,src:*const ::kernel::ffi::c_void,srcSize:usize,_workSpace:*mut ::kernel::ffi::c_void,_wkspSize:usize,_bmi2:i32)->usize {
     if srcSize == 0 { return ERROR(srcSize_wrong); }
     let ip = src as *const u8; let mut iSize = *ip as usize; let oSize;
     if iSize >= 128 { oSize = iSize - 127; iSize = (oSize + 1) / 2; if iSize + 1 > srcSize || oSize >= hwSize { return ERROR(corruption_detected); } for n in (0..oSize).step_by(2) { *huffWeight.add(n)=*ip.add(1+n/2)>>4; if n+1<oSize {*huffWeight.add(n+1)=*ip.add(1+n/2)&15;} } }
@@ -110,6 +110,6 @@ pub unsafe fn HUF_readStats_body(huffWeight:*mut u8,hwSize:usize,rankStats:*mut 
     for n in 0..oSize { let w=*huffWeight.add(n) as u32; if w>HUF_TABLELOG_MAX{return ERROR(corruption_detected);} *rankStats.add(w as usize)+=1; total += (1<<w)>>1; }
     if total==0{return ERROR(corruption_detected);} let log=ZSTD_highbit32(total)+1; if log>HUF_TABLELOG_MAX{return ERROR(corruption_detected);} *tableLogPtr=log; let rest=(1<<log)-total; let last=ZSTD_highbit32(rest)+1; if (1<<ZSTD_highbit32(rest))!=rest{return ERROR(corruption_detected);} *huffWeight.add(oSize)=last as u8; *rankStats.add(last as usize)+=1; if *rankStats.add(1)<2 || (*rankStats.add(1)&1)!=0{return ERROR(corruption_detected);} *nbSymbolsPtr=(oSize+1) as u32; iSize+1
 }
-pub unsafe fn HUF_readStats_wksp(a:*mut u8,b:usize,c:*mut u32,d:*mut u32,e:*mut u32,f:*const ::core::ffi::c_void,g:usize,h:*mut ::core::ffi::c_void,i:usize,_flags:i32)->usize { HUF_readStats_body(a,b,c,d,e,f,g,h,i,0) }
+pub unsafe fn HUF_readStats_wksp(a:*mut u8,b:usize,c:*mut u32,d:*mut u32,e:*mut u32,f:*const ::kernel::ffi::c_void,g:usize,h:*mut ::kernel::ffi::c_void,i:usize,_flags:i32)->usize { HUF_readStats_body(a,b,c,d,e,f,g,h,i,0) }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

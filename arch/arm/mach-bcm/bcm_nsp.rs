@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 // Copyright (C) 2015 Broadcom Corporation
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Equivalent of the C __initconst compatibility table.
 static BCM_NSP_DT_COMPAT: [*const c_char; 2] = [

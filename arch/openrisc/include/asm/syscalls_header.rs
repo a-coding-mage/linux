@@ -14,15 +14,15 @@
 
 // C header guard: __ASM_OPENRISC_SYSCALLS_H
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 // `asmlinkage` is an architecture/compiler calling-convention annotation in C.
 unsafe extern "C" {
     pub fn sys_or1k_atomic(
-        type_: core::ffi::c_ulong,
-        v1: *mut core::ffi::c_ulong,
-        v2: *mut core::ffi::c_ulong,
-    ) -> core::ffi::c_long;
+        type_: kernel::ffi::c_ulong,
+        v1: *mut kernel::ffi::c_ulong,
+        v2: *mut kernel::ffi::c_ulong,
+    ) -> kernel::ffi::c_long;
 }
 
 // Dependency intent preserved from: #include <asm-generic/syscalls.h>
@@ -30,16 +30,16 @@ unsafe extern "C" {
 // `struct clone_args` and `size_t` are supplied by other headers/dependencies.
 unsafe extern "C" {
     pub fn __sys_clone(
-        clone_flags: core::ffi::c_ulong,
-        newsp: core::ffi::c_ulong,
+        clone_flags: kernel::ffi::c_ulong,
+        newsp: kernel::ffi::c_ulong,
         parent_tid: *mut c_void,
         child_tid: *mut c_void,
-        tls: core::ffi::c_int,
-    ) -> core::ffi::c_long;
+        tls: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_long;
 
-    pub fn __sys_clone3(uargs: *mut clone_args, size: usize) -> core::ffi::c_long;
+    pub fn __sys_clone3(uargs: *mut clone_args, size: usize) -> kernel::ffi::c_long;
 
-    pub fn __sys_fork() -> core::ffi::c_long;
+    pub fn __sys_fork() -> kernel::ffi::c_long;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

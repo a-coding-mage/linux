@@ -7,12 +7,12 @@
  */
 
 #[cfg(target_arch = "powerpc64")]
-pub type __kernel_old_dev_t = ::core::ffi::c_ulong;
+pub type __kernel_old_dev_t = ::kernel::ffi::c_ulong;
 
 /* C self-referential macro: #define __kernel_old_dev_t __kernel_old_dev_t */
 
 #[cfg(not(target_arch = "powerpc64"))]
-pub type __kernel_ipc_pid_t = ::core::ffi::c_short;
+pub type __kernel_ipc_pid_t = ::kernel::ffi::c_short;
 
 /* C self-referential macro: #define __kernel_ipc_pid_t __kernel_ipc_pid_t */
 

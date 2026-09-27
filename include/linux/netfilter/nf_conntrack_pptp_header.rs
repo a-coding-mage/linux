@@ -4,7 +4,7 @@
 /* Declarations from the included kernel headers are external dependencies. */
 
 unsafe extern "C" {
-    pub fn pptp_msg_name(msg: __u16) -> *const core::ffi::c_char;
+    pub fn pptp_msg_name(msg: __u16) -> *const kernel::ffi::c_char;
 }
 
 #[repr(C)]

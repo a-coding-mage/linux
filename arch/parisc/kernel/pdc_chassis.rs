@@ -21,7 +21,7 @@ static mut pdc_chassis_enabled: u32 = 1;
 /// `str`: configuration param: 0 to disable chassis log.
 /// Returns 1.
 #[cfg(CONFIG_PDC_CHASSIS)]
-unsafe fn pdc_chassis_setup(mut str_: *mut core::ffi::c_char) -> i32 {
+unsafe fn pdc_chassis_setup(mut str_: *mut kernel::ffi::c_char) -> i32 {
     // panic_timeout = simple_strtoul(str, NULL, 0);
     get_option(&mut str_, &raw mut pdc_chassis_enabled);
     1
@@ -40,7 +40,7 @@ unsafe fn pdc_chassis_setup(mut str_: *mut core::ffi::c_char) -> i32 {
 unsafe extern "C" fn pdc_chassis_panic_event(
     _this: *mut notifier_block,
     _event: u64,
-    _ptr: *mut core::ffi::c_void,
+    _ptr: *mut kernel::ffi::c_void,
 ) -> i32 {
     pdc_chassis_send_status(PDC_CHASSIS_DIRECT_PANIC);
     NOTIFY_DONE
@@ -57,7 +57,7 @@ static mut pdc_chassis_panic_block: notifier_block = notifier_block {
 unsafe extern "C" fn pdc_chassis_reboot_event(
     _this: *mut notifier_block,
     _event: u64,
-    _ptr: *mut core::ffi::c_void,
+    _ptr: *mut kernel::ffi::c_void,
 ) -> i32 {
     pdc_chassis_send_status(PDC_CHASSIS_DIRECT_SHUTDOWN);
     NOTIFY_DONE
@@ -132,7 +132,7 @@ pub unsafe extern "C" fn pdc_chassis_send_status(message: i32) -> i32 {
 }
 
 #[cfg(all(CONFIG_PDC_CHASSIS_WARN, CONFIG_PROC_FS))]
-unsafe extern "C" fn pdc_chassis_warn_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn pdc_chassis_warn_show(m: *mut seq_file, _v: *mut kernel::ffi::c_void) -> i32 {
     let mut warn: u64 = 0;
     let warnreg: u32;
 

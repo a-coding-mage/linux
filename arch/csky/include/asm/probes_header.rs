@@ -6,7 +6,7 @@
 pub type probe_opcode_t = u32;
 pub type probes_handler_t = unsafe extern "C" fn(
     opcode: u32,
-    addr: core::ffi::c_long,
+    addr: kernel::ffi::c_long,
     regs: *mut pt_regs,
 );
 
@@ -16,7 +16,7 @@ pub struct arch_probe_insn {
     pub insn: *mut probe_opcode_t,
     pub handler: *mut probes_handler_t,
     /// Restore address after simulation.
-    pub restore: core::ffi::c_ulong,
+    pub restore: kernel::ffi::c_ulong,
 }
 
 // Preserved from the C build-time condition: compile the following declarations

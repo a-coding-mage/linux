@@ -6,23 +6,23 @@
 extern "C" {
     pub fn do_sparc_fault(
         regs: *mut pt_regs,
-        text_fault: core::ffi::c_int,
-        write: core::ffi::c_int,
-        address: core::ffi::c_ulong,
+        text_fault: kernel::ffi::c_int,
+        write: kernel::ffi::c_int,
+        address: kernel::ffi::c_ulong,
     );
 }
 
 extern "C" {
     pub fn window_overflow_fault();
-    pub fn window_underflow_fault(sp: core::ffi::c_ulong);
+    pub fn window_underflow_fault(sp: kernel::ffi::c_ulong);
     pub fn window_ret_fault(regs: *mut pt_regs);
 }
 
 /* srmmu.c */
 extern "C" {
-    pub static mut srmmu_name: *mut core::ffi::c_char;
-    pub static mut viking_mxcc_present: core::ffi::c_int;
-    pub static mut flush_page_for_dma_global: core::ffi::c_int;
+    pub static mut srmmu_name: *mut kernel::ffi::c_char;
+    pub static mut viking_mxcc_present: kernel::ffi::c_int;
+    pub static mut flush_page_for_dma_global: kernel::ffi::c_int;
 
     pub static mut poke_srmmu: Option<unsafe extern "C" fn()>;
 }

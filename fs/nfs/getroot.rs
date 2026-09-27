@@ -21,10 +21,10 @@ pub unsafe fn nfs_get_root(s: *mut super::super::super::super::bindings::super_b
     let mut fsinfo;
     let mut root;
     let mut inode;
-    let mut name: *mut core::ffi::c_char;
+    let mut name: *mut kernel::ffi::c_char;
     let mut error: i32 = -ENOMEM;
-    let mut kflags: core::ffi::c_ulong = 0;
-    let mut kflags_out: core::ffi::c_ulong = 0;
+    let mut kflags: kernel::ffi::c_ulong = 0;
+    let mut kflags_out: kernel::ffi::c_ulong = 0;
 
     name = kstrdup((*fc).source, GFP_KERNEL);
     if name.is_null() {

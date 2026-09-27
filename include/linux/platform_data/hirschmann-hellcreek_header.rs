@@ -10,7 +10,7 @@
 
 #[repr(C)]
 pub struct hellcreek_platform_data {
-    pub name: *const core::ffi::c_char, // Switch name
+    pub name: *const kernel::ffi::c_char, // Switch name
     pub num_ports: i32,                 // Amount of switch ports
     pub is_100_mbits: i32,              // Is it configured to 100 or 1000 mbit/s
     pub qbv_support: i32,               // Qbv support on front TSN ports

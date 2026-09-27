@@ -20,10 +20,10 @@ pub const RT_SDCA_CTL_HIDTX_MESSAGE_OFFSET: u32 = 0x12;
 
 #[repr(C)]
 pub struct rt_sdca_dmic_kctrl_priv {
-    pub reg_base: ::core::ffi::c_uint,
-    pub count: ::core::ffi::c_uint,
-    pub max: ::core::ffi::c_uint,
-    pub invert: ::core::ffi::c_uint,
+    pub reg_base: ::kernel::ffi::c_uint,
+    pub count: ::kernel::ffi::c_uint,
+    pub max: ::kernel::ffi::c_uint,
+    pub invert: ::kernel::ffi::c_uint,
 }
 
 #[macro_export]
@@ -34,7 +34,7 @@ macro_rules! RT_SDCA_PR_VALUE {
             count: $xcount,
             max: $xmax,
             invert: $xinvert,
-        } as *const crate::rt_sdca_dmic_kctrl_priv as ::core::ffi::c_ulong
+        } as *const crate::rt_sdca_dmic_kctrl_priv as ::kernel::ffi::c_ulong
     }};
 }
 
@@ -75,34 +75,34 @@ macro_rules! RT_SDCA_EXT_TLV {
 unsafe extern "C" {
     pub fn rt_sdca_index_write(
         map: *mut regmap,
-        nid: ::core::ffi::c_uint,
-        reg: ::core::ffi::c_uint,
-        value: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        nid: ::kernel::ffi::c_uint,
+        reg: ::kernel::ffi::c_uint,
+        value: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
     pub fn rt_sdca_index_read(
         map: *mut regmap,
-        nid: ::core::ffi::c_uint,
-        reg: ::core::ffi::c_uint,
-        value: *mut ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        nid: ::kernel::ffi::c_uint,
+        reg: ::kernel::ffi::c_uint,
+        value: *mut ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
     pub fn rt_sdca_index_update_bits(
         map: *mut regmap,
-        nid: ::core::ffi::c_uint,
-        reg: ::core::ffi::c_uint,
-        mask: ::core::ffi::c_uint,
-        val: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
-    pub fn rt_sdca_btn_type(buffer: *mut ::core::ffi::c_uchar) -> ::core::ffi::c_int;
+        nid: ::kernel::ffi::c_uint,
+        reg: ::kernel::ffi::c_uint,
+        mask: ::kernel::ffi::c_uint,
+        val: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
+    pub fn rt_sdca_btn_type(buffer: *mut ::kernel::ffi::c_uchar) -> ::kernel::ffi::c_int;
     pub fn rt_sdca_headset_detect(
         map: *mut regmap,
-        entity_id: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        entity_id: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
     pub fn rt_sdca_button_detect(
         map: *mut regmap,
-        entity_id: ::core::ffi::c_uint,
-        hid_buf_addr: ::core::ffi::c_uint,
-        hid_id: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        entity_id: ::kernel::ffi::c_uint,
+        hid_buf_addr: ::kernel::ffi::c_uint,
+        hid_id: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

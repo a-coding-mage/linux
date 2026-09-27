@@ -54,19 +54,19 @@ static rt711_rt1316_group_adr: [snd_soc_acpi_adr_device; 3] = [
         adr: 0x000030025D071101u64,
         num_endpoints: 1,
         endpoints: &single_endpoint,
-        name_prefix: b"rt711\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"rt711\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x000030025D131601u64,
         num_endpoints: 1,
         endpoints: &spk_l_endpoint,
-        name_prefix: b"rt1316-1\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"rt1316-1\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x000032025D131601u64,
         num_endpoints: 1,
         endpoints: &spk_r_endpoint,
-        name_prefix: b"rt1316-2\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"rt1316-2\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
 ];
 
@@ -74,7 +74,7 @@ static rt714_adr: [snd_soc_acpi_adr_device; 1] = [snd_soc_acpi_adr_device {
     adr: 0x130025d071401u64,
     num_endpoints: 1,
     endpoints: &single_endpoint,
-    name_prefix: b"rt714\0".as_ptr() as *const ::core::ffi::c_char,
+    name_prefix: b"rt714\0".as_ptr() as *const ::kernel::ffi::c_char,
 }];
 
 static acp63_4_in_1_sdca: [snd_soc_acpi_link_adr; 3] = [
@@ -120,7 +120,7 @@ static rt722_0_single_adr: [snd_soc_acpi_adr_device; 1] = [snd_soc_acpi_adr_devi
     adr: 0x000030025d072201u64,
     num_endpoints: rt722_endpoints.len(),
     endpoints: rt722_endpoints.as_ptr(),
-    name_prefix: b"rt722\0".as_ptr() as *const ::core::ffi::c_char,
+    name_prefix: b"rt722\0".as_ptr() as *const ::kernel::ffi::c_char,
 }];
 
 static cs42l43_endpoints: [snd_soc_acpi_endpoint; 4] = [
@@ -159,25 +159,25 @@ static cs35l56x4_l1u3210_adr: [snd_soc_acpi_adr_device; 4] = [
         adr: 0x00013301FA355601u64,
         num_endpoints: 1,
         endpoints: &spk_l_endpoint,
-        name_prefix: b"AMP1\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP1\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00013201FA355601u64,
         num_endpoints: 1,
         endpoints: &spk_r_endpoint,
-        name_prefix: b"AMP2\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP2\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00013101FA355601u64,
         num_endpoints: 1,
         endpoints: &spk_2_endpoint,
-        name_prefix: b"AMP3\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP3\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00013001FA355601u64,
         num_endpoints: 1,
         endpoints: &spk_3_endpoint,
-        name_prefix: b"AMP4\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP4\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
 ];
 
@@ -186,13 +186,13 @@ static cs35l63x2_l0u01_adr: [snd_soc_acpi_adr_device; 2] = [
         adr: 0x00003001FA356301u64,
         num_endpoints: 1,
         endpoints: &spk_l_endpoint,
-        name_prefix: b"AMP1\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP1\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00003101FA356301u64,
         num_endpoints: 1,
         endpoints: &spk_r_endpoint,
-        name_prefix: b"AMP2\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP2\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
 ];
 
@@ -201,13 +201,13 @@ static cs35l63x2_l1u01_adr: [snd_soc_acpi_adr_device; 2] = [
         adr: 0x00013001FA356301u64,
         num_endpoints: 1,
         endpoints: &spk_l_endpoint,
-        name_prefix: b"AMP1\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP1\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00013101FA356301u64,
         num_endpoints: 1,
         endpoints: &spk_r_endpoint,
-        name_prefix: b"AMP2\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP2\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
 ];
 
@@ -216,13 +216,13 @@ static cs35l63x2_l1u13_adr: [snd_soc_acpi_adr_device; 2] = [
         adr: 0x00013101FA356301u64,
         num_endpoints: 1,
         endpoints: &spk_l_endpoint,
-        name_prefix: b"AMP1\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP1\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00013301FA356301u64,
         num_endpoints: 1,
         endpoints: &spk_r_endpoint,
-        name_prefix: b"AMP2\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP2\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
 ];
 
@@ -231,25 +231,25 @@ static cs35l63x4_l0u0246_adr: [snd_soc_acpi_adr_device; 4] = [
         adr: 0x00003001FA356301u64,
         num_endpoints: 1,
         endpoints: &spk_l_endpoint,
-        name_prefix: b"AMP1\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP1\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00003201FA356301u64,
         num_endpoints: 1,
         endpoints: &spk_r_endpoint,
-        name_prefix: b"AMP2\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP2\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00003401FA356301u64,
         num_endpoints: 1,
         endpoints: &spk_2_endpoint,
-        name_prefix: b"AMP3\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP3\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00003601FA356301u64,
         num_endpoints: 1,
         endpoints: &spk_3_endpoint,
-        name_prefix: b"AMP4\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP4\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
 ];
 
@@ -257,21 +257,21 @@ static cs42l43_l0u0_adr: [snd_soc_acpi_adr_device; 1] = [snd_soc_acpi_adr_device
     adr: 0x00003001FA424301u64,
     num_endpoints: cs42l43_endpoints.len(),
     endpoints: cs42l43_endpoints.as_ptr(),
-    name_prefix: b"cs42l43\0".as_ptr() as *const ::core::ffi::c_char,
+    name_prefix: b"cs42l43\0".as_ptr() as *const ::kernel::ffi::c_char,
 }];
 
 static cs42l43_l0u1_adr: [snd_soc_acpi_adr_device; 1] = [snd_soc_acpi_adr_device {
     adr: 0x00003101FA424301u64,
     num_endpoints: cs42l43_endpoints.len(),
     endpoints: cs42l43_endpoints.as_ptr(),
-    name_prefix: b"cs42l43\0".as_ptr() as *const ::core::ffi::c_char,
+    name_prefix: b"cs42l43\0".as_ptr() as *const ::kernel::ffi::c_char,
 }];
 
 static cs42l43b_l0u1_adr: [snd_soc_acpi_adr_device; 1] = [snd_soc_acpi_adr_device {
     adr: 0x00003101FA2A3B01u64,
     num_endpoints: cs42l43_endpoints.len(),
     endpoints: cs42l43_endpoints.as_ptr(),
-    name_prefix: b"cs42l43\0".as_ptr() as *const ::core::ffi::c_char,
+    name_prefix: b"cs42l43\0".as_ptr() as *const ::kernel::ffi::c_char,
 }];
 
 static cs42l43_l1u0_cs35l56x4_l1u0123_adr: [snd_soc_acpi_adr_device; 5] = [
@@ -279,31 +279,31 @@ static cs42l43_l1u0_cs35l56x4_l1u0123_adr: [snd_soc_acpi_adr_device; 5] = [
         adr: 0x00013001FA424301u64,
         num_endpoints: cs42l43_endpoints.len(),
         endpoints: cs42l43_endpoints.as_ptr(),
-        name_prefix: b"cs42l43\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"cs42l43\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00013001FA355601u64,
         num_endpoints: 1,
         endpoints: &spk_l_endpoint,
-        name_prefix: b"AMP1\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP1\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00013101FA355601u64,
         num_endpoints: 1,
         endpoints: &spk_r_endpoint,
-        name_prefix: b"AMP2\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP2\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00013201FA355601u64,
         num_endpoints: 1,
         endpoints: &spk_2_endpoint,
-        name_prefix: b"AMP3\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP3\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_adr_device {
         adr: 0x00013301FA355601u64,
         num_endpoints: 1,
         endpoints: &spk_3_endpoint,
-        name_prefix: b"AMP4\0".as_ptr() as *const ::core::ffi::c_char,
+        name_prefix: b"AMP4\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
 ];
 
@@ -312,7 +312,7 @@ static cs42l45_l0u0_adr: [snd_soc_acpi_adr_device; 1] = [snd_soc_acpi_adr_device
     /* Re-use endpoints, but cs42l45 has no speaker */
     num_endpoints: cs42l43_endpoints.len() - 1,
     endpoints: cs42l43_endpoints.as_ptr(),
-    name_prefix: b"cs42l45\0".as_ptr() as *const ::core::ffi::c_char,
+    name_prefix: b"cs42l45\0".as_ptr() as *const ::kernel::ffi::c_char,
 }];
 
 static cs42l45_l1u0_adr: [snd_soc_acpi_adr_device; 1] = [snd_soc_acpi_adr_device {
@@ -320,7 +320,7 @@ static cs42l45_l1u0_adr: [snd_soc_acpi_adr_device; 1] = [snd_soc_acpi_adr_device
     /* Re-use endpoints, but cs42l45 has no speaker */
     num_endpoints: cs42l43_endpoints.len() - 1,
     endpoints: cs42l43_endpoints.as_ptr(),
-    name_prefix: b"cs42l45\0".as_ptr() as *const ::core::ffi::c_char,
+    name_prefix: b"cs42l45\0".as_ptr() as *const ::kernel::ffi::c_char,
 }];
 
 static acp63_cs35l56x4_l1u3210: [snd_soc_acpi_link_adr; 2] = [
@@ -522,10 +522,10 @@ pub static snd_soc_acpi_amd_acp63_sof_sdw_machines: [snd_soc_acpi_mach; 2] = [
     snd_soc_acpi_mach {
         link_mask: BIT(0) | BIT(1),
         links: acp63_4_in_1_sdca.as_ptr(),
-        drv_name: b"amd_sof_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sof_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: b"sof-acp_6_3-rt711-l0-rt1316-l0-rt714-l1.tplg\0".as_ptr()
-            as *const ::core::ffi::c_char,
-        fw_filename: b"sof-acp_6_3.ri\0".as_ptr() as *const ::core::ffi::c_char,
+            as *const ::kernel::ffi::c_char,
+        fw_filename: b"sof-acp_6_3.ri\0".as_ptr() as *const ::kernel::ffi::c_char,
     },
     snd_soc_acpi_mach {
         link_mask: 0,
@@ -542,98 +542,98 @@ pub static snd_soc_acpi_amd_acp63_sdw_machines: [snd_soc_acpi_mach; 15] = [
     snd_soc_acpi_mach {
         link_mask: BIT(0),
         links: acp63_rt722_only.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(0) | BIT(1),
         links: acp63_4_in_1_sdca.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(0) | BIT(1),
         links: acp63_cs42l43_l0u0_cs35l56x4_l1u3210.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(0) | BIT(1),
         links: acp63_cs42l45_l1u0_cs35l63x4_l0u0246.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(0) | BIT(1),
         links: acp63_cs42l45_l0u0_cs35l63x2_l1u01.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(0) | BIT(1),
         links: acp63_cs42l45_l0u0_cs35l63x2_l1u13.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(0) | BIT(1),
         links: acp63_cs42l45_l1u0_cs35l63x2_l0u01.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(1),
         links: acp63_cs42l43_l1u0_cs35l56x4_l1u0123.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(1),
         links: acp63_cs35l56x4_l1u3210.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(0),
         links: acp63_cs35l63x4_l0u0246.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(0),
         links: acp63_cs42l43_l0u1.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(0),
         links: acp63_cs42l43b_l0u1.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(0),
         links: acp63_cs42l45_l0u0.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },
     snd_soc_acpi_mach {
         link_mask: BIT(1),
         links: acp63_cs42l45_l1u0.as_ptr(),
-        drv_name: b"amd_sdw\0".as_ptr() as *const ::core::ffi::c_char,
+        drv_name: b"amd_sdw\0".as_ptr() as *const ::kernel::ffi::c_char,
         sof_tplg_filename: ::core::ptr::null(),
         fw_filename: ::core::ptr::null(),
     },

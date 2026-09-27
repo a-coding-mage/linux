@@ -32,7 +32,7 @@ pub enum fixed_addresses {
 pub const FIXADDR_SIZE: usize = (__end_of_fixed_addresses as usize) << PAGE_SHIFT;
 /* FIXADDR_BOTTOM might be a better name here... */
 pub const FIXADDR_START: usize = FIXADDR_TOP - FIXADDR_SIZE;
-pub const FIXMAP_PAGE_IO: _ = PAGE_KERNEL_NOCACHE;
+pub const FIXMAP_PAGE_IO: pgprot_t = PAGE_KERNEL_NOCACHE;
 
 pub extern "C" fn __set_fixmap(
     idx: fixed_addresses,

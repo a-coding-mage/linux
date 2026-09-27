@@ -9,8 +9,8 @@ pub const NR_GRANT_FRAMES: u32 = 4;
 #[repr(C)]
 pub struct gnttab_free_callback {
     pub next: *mut gnttab_free_callback,
-    pub fn_: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
-    pub arg: *mut core::ffi::c_void,
+    pub fn_: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>,
+    pub arg: *mut kernel::ffi::c_void,
     pub count: u16,
 }
 
@@ -19,13 +19,13 @@ pub type gnttab_unmap_refs_done = Option<unsafe extern "C" fn(i32, *mut gntab_un
 #[repr(C)]
 pub struct gntab_unmap_queue_data {
     pub gnttab_work: delayed_work,
-    pub data: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
     pub done: gnttab_unmap_refs_done,
     pub unmap_ops: *mut gnttab_unmap_grant_ref,
     pub kunmap_ops: *mut gnttab_unmap_grant_ref,
     pub pages: *mut *mut page,
-    pub count: core::ffi::c_uint,
-    pub age: core::ffi::c_uint,
+    pub count: kernel::ffi::c_uint,
+    pub age: kernel::ffi::c_uint,
 }
 
 extern "C" {
@@ -47,16 +47,16 @@ extern "C" {
     pub fn gnttab_claim_grant_reference(pprivate_head: *mut grant_ref_t) -> i32;
     pub fn gnttab_release_grant_reference(private_head: *mut grant_ref_t, release: grant_ref_t);
     pub fn gnttab_request_free_callback(callback: *mut gnttab_free_callback,
-        fn_: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>, arg: *mut core::ffi::c_void, count: u16);
+        fn_: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)>, arg: *mut kernel::ffi::c_void, count: u16);
     pub fn gnttab_cancel_free_callback(callback: *mut gnttab_free_callback);
     pub fn gnttab_grant_foreign_access_ref(reference: grant_ref_t, domid: domid_t, frame: c_ulong, readonly: i32);
     pub fn xen_page_to_gfn(page: *mut page) -> xen_pfn_t;
     pub fn xen_pv_domain() -> bool;
     pub fn __pa(addr: phys_addr_t) -> phys_addr_t;
     pub fn arch_gnttab_init(nr_shared: c_ulong, nr_status: c_ulong) -> i32;
-    pub fn arch_gnttab_map_shared(frames: *mut xen_pfn_t, nr_gframes: c_ulong, max_nr_gframes: c_ulong, shared: *mut *mut core::ffi::c_void) -> i32;
+    pub fn arch_gnttab_map_shared(frames: *mut xen_pfn_t, nr_gframes: c_ulong, max_nr_gframes: c_ulong, shared: *mut *mut kernel::ffi::c_void) -> i32;
     pub fn arch_gnttab_map_status(frames: *mut u64, nr_gframes: c_ulong, max_nr_gframes: c_ulong, shared: *mut *mut grant_status_t) -> i32;
-    pub fn arch_gnttab_unmap(shared: *mut core::ffi::c_void, nr_gframes: c_ulong);
+    pub fn arch_gnttab_unmap(shared: *mut kernel::ffi::c_void, nr_gframes: c_ulong);
     pub fn gnttab_max_grant_frames() -> c_uint;
     pub fn gnttab_setup_auto_xlat_frames(addr: phys_addr_t) -> i32;
     pub fn gnttab_free_auto_xlat_frames();
@@ -74,12 +74,12 @@ extern "C" {
     pub fn gnttab_unmap_refs_sync(item: *mut gntab_unmap_queue_data) -> i32;
     pub fn gnttab_batch_map(batch: *mut gnttab_map_grant_ref, count: c_uint);
     pub fn gnttab_batch_copy(batch: *mut gnttab_copy, count: c_uint);
-    pub fn gnttab_foreach_grant_in_range(page: *mut page, offset: c_uint, len: c_uint, fn_: xen_grant_fn_t, data: *mut core::ffi::c_void);
-    pub fn gnttab_foreach_grant(pages: *mut *mut page, nr_grefs: c_uint, fn_: xen_grant_fn_t, data: *mut core::ffi::c_void);
+    pub fn gnttab_foreach_grant_in_range(page: *mut page, offset: c_uint, len: c_uint, fn_: xen_grant_fn_t, data: *mut kernel::ffi::c_void);
+    pub fn gnttab_foreach_grant(pages: *mut *mut page, nr_grefs: c_uint, fn_: xen_grant_fn_t, data: *mut kernel::ffi::c_void);
 }
 
-pub type c_ulong = core::ffi::c_ulong;
-pub type c_uint = core::ffi::c_uint;
+pub type c_ulong = kernel::ffi::c_ulong;
+pub type c_uint = kernel::ffi::c_uint;
 
 #[cfg(not(CONFIG_HIBERNATE_CALLBACKS))]
 pub unsafe fn gnttab_suspend() -> i32 { 0 }
@@ -108,11 +108,11 @@ pub unsafe fn gnttab_set_unmap_op(unmap: *mut gnttab_unmap_grant_ref, addr: phys
 }
 
 #[repr(C)]
-pub struct grant_frames { pub pfn: *mut xen_pfn_t, pub count: c_uint, pub vaddr: *mut core::ffi::c_void }
+pub struct grant_frames { pub pfn: *mut xen_pfn_t, pub count: c_uint, pub vaddr: *mut kernel::ffi::c_void }
 extern "C" { pub static mut xen_auto_xlat_grant_frames: grant_frames; }
 
 #[inline]
-pub unsafe fn gnttab_map_vaddr(map: &gnttab_map_grant_ref) -> *mut core::ffi::c_void { map.host_virt_addr as *mut core::ffi::c_void }
+pub unsafe fn gnttab_map_vaddr(map: &gnttab_map_grant_ref) -> *mut kernel::ffi::c_void { map.host_virt_addr as *mut kernel::ffi::c_void }
 
 #[repr(C)]
 pub struct gnttab_page_cache {
@@ -130,7 +130,7 @@ pub struct gnttab_dma_alloc_args {
     pub nr_pages: i32,
     pub pages: *mut *mut page,
     pub frames: *mut xen_pfn_t,
-    pub vaddr: *mut core::ffi::c_void,
+    pub vaddr: *mut kernel::ffi::c_void,
     pub dev_bus_addr: dma_addr_t,
 }
 
@@ -148,10 +148,10 @@ pub unsafe fn xen_page_foreign(page: *mut page) -> *mut xen_page_foreign {
     (*page).private as *mut xen_page_foreign
 }
 
-pub type xen_grant_fn_t = Option<unsafe extern "C" fn(c_ulong, c_uint, c_uint, *mut core::ffi::c_void)>;
+pub type xen_grant_fn_t = Option<unsafe extern "C" fn(c_ulong, c_uint, c_uint, *mut kernel::ffi::c_void)>;
 
 #[inline]
-pub unsafe fn gnttab_for_one_grant(page: *mut page, offset: c_uint, mut len: c_uint, fn_: xen_grant_fn_t, data: *mut core::ffi::c_void) {
+pub unsafe fn gnttab_for_one_grant(page: *mut page, offset: c_uint, mut len: c_uint, fn_: xen_grant_fn_t, data: *mut kernel::ffi::c_void) {
     len = core::cmp::min(XEN_PAGE_SIZE - (offset & !XEN_PAGE_MASK), len);
     gnttab_foreach_grant_in_range(page, offset, len, fn_, data);
 }

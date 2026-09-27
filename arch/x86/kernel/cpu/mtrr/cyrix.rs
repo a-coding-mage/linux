@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0
 
 unsafe fn cyrix_get_arr(
-    reg: ::core::ffi::c_uint,
-    base: *mut ::core::ffi::c_ulong,
-    size: *mut ::core::ffi::c_ulong,
+    reg: ::kernel::ffi::c_uint,
+    base: *mut ::kernel::ffi::c_ulong,
+    size: *mut ::kernel::ffi::c_ulong,
     typ: *mut mtrr_type,
 ) {
     let arr: u8;
     let ccr3: u8;
     let rcr: u8;
     let shift: u8;
-    let mut flags: ::core::ffi::c_ulong = 0;
+    let mut flags: ::kernel::ffi::c_ulong = 0;
 
     arr = CX86_ARR_BASE.wrapping_add((reg << 1) as u8).wrapping_add(reg as u8);
 
@@ -68,14 +68,14 @@ unsafe fn cyrix_get_arr(
  * Returns: the index of the region on success, else -1 on error.
  */
 unsafe fn cyrix_get_free_region(
-    _base: ::core::ffi::c_ulong,
-    size: ::core::ffi::c_ulong,
-    replace_reg: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let mut lbase: ::core::ffi::c_ulong = 0;
-    let mut lsize: ::core::ffi::c_ulong = 0;
+    _base: ::kernel::ffi::c_ulong,
+    size: ::kernel::ffi::c_ulong,
+    replace_reg: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
+    let mut lbase: ::kernel::ffi::c_ulong = 0;
+    let mut lsize: ::kernel::ffi::c_ulong = 0;
     let mut ltype: mtrr_type = MTRR_TYPE_UNCACHABLE;
-    let mut i: ::core::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
 
     match replace_reg {
         7 if size < 0x40 => {}
@@ -92,7 +92,7 @@ unsafe fn cyrix_get_free_region(
     } else {
         i = 0;
         while i < 7 {
-            cyrix_get_arr(i as ::core::ffi::c_uint, &mut lbase, &mut lsize, &mut ltype);
+            cyrix_get_arr(i as ::kernel::ffi::c_uint, &mut lbase, &mut lsize, &mut ltype);
             if lsize == 0 {
                 return i;
             }
@@ -102,7 +102,7 @@ unsafe fn cyrix_get_free_region(
          * ARR0-ARR6 isn't free
          * try ARR7 but its size must be at least 256K
          */
-        cyrix_get_arr(i as ::core::ffi::c_uint, &mut lbase, &mut lsize, &mut ltype);
+        cyrix_get_arr(i as ::kernel::ffi::c_uint, &mut lbase, &mut lsize, &mut ltype);
         if lsize == 0 && size >= 0x40 {
             return i;
         }
@@ -150,9 +150,9 @@ unsafe fn post_set() {
 }
 
 unsafe fn cyrix_set_arr(
-    reg: ::core::ffi::c_uint,
-    mut base: ::core::ffi::c_ulong,
-    mut size: ::core::ffi::c_ulong,
+    reg: ::kernel::ffi::c_uint,
+    mut base: ::kernel::ffi::c_ulong,
+    mut size: ::kernel::ffi::c_ulong,
     typ: mtrr_type,
 ) {
     let arr = CX86_ARR_BASE.wrapping_add((reg << 1) as u8).wrapping_add(reg as u8);

@@ -16,16 +16,16 @@ pub static mut IronECC: *mut igcsr32 = core::ptr::null_mut();
 
 unsafe fn mk_conf_addr(
     pbus: *mut pci_bus,
-    device_fn: libc::c_uint,
-    where_: libc::c_int,
-    pci_addr: *mut libc::c_ulong,
-    type1: *mut libc::c_uchar,
-) -> libc::c_int {
+    device_fn: kernel::ffi::c_uint,
+    where_: kernel::ffi::c_int,
+    pci_addr: *mut kernel::ffi::c_ulong,
+    type1: *mut kernel::ffi::c_uchar,
+) -> kernel::ffi::c_int {
     let bus: u8 = (*pbus).number;
     *type1 = (bus != 0) as u8;
-    let addr = ((bus as libc::c_ulong) << 16)
-        | ((device_fn as libc::c_ulong) << 8)
-        | (where_ as libc::c_ulong)
+    let addr = ((bus as kernel::ffi::c_ulong) << 16)
+        | ((device_fn as kernel::ffi::c_ulong) << 8)
+        | (where_ as kernel::ffi::c_ulong)
         | IRONGATE_CONF;
     *pci_addr = addr;
     0
@@ -33,13 +33,13 @@ unsafe fn mk_conf_addr(
 
 unsafe fn irongate_read_config(
     bus: *mut pci_bus,
-    devfn: libc::c_uint,
-    where_: libc::c_int,
-    size: libc::c_int,
+    devfn: kernel::ffi::c_uint,
+    where_: kernel::ffi::c_int,
+    size: kernel::ffi::c_int,
     value: *mut u32,
-) -> libc::c_int {
-    let mut addr: libc::c_ulong = 0;
-    let mut type1: libc::c_uchar = 0;
+) -> kernel::ffi::c_int {
+    let mut addr: kernel::ffi::c_ulong = 0;
+    let mut type1: kernel::ffi::c_uchar = 0;
     if mk_conf_addr(bus, devfn, where_, &mut addr, &mut type1) != 0 {
         return PCIBIOS_DEVICE_NOT_FOUND;
     }
@@ -54,13 +54,13 @@ unsafe fn irongate_read_config(
 
 unsafe fn irongate_write_config(
     bus: *mut pci_bus,
-    devfn: libc::c_uint,
-    where_: libc::c_int,
-    size: libc::c_int,
+    devfn: kernel::ffi::c_uint,
+    where_: kernel::ffi::c_int,
+    size: kernel::ffi::c_int,
     value: u32,
-) -> libc::c_int {
-    let mut addr: libc::c_ulong = 0;
-    let mut type1: libc::c_uchar = 0;
+) -> kernel::ffi::c_int {
+    let mut addr: kernel::ffi::c_ulong = 0;
+    let mut type1: kernel::ffi::c_uchar = 0;
     if mk_conf_addr(bus, devfn, where_, &mut addr, &mut type1) != 0 {
         return PCIBIOS_DEVICE_NOT_FOUND;
     }
@@ -78,7 +78,7 @@ pub static mut irongate_pci_ops: pci_ops = pci_ops {
     write: Some(irongate_write_config),
 };
 
-pub unsafe fn irongate_pci_clr_err() -> libc::c_int {
+pub unsafe fn irongate_pci_clr_err() -> kernel::ffi::c_int {
     let mut nmi_ctl: u32 = 0;
     let mut irongate_jd: u32;
     loop {
@@ -103,7 +103,7 @@ pub unsafe fn irongate_pci_clr_err() -> libc::c_int {
     0
 }
 
-const IRONGATE_3GB: libc::c_ulong = 0xc0000000;
+const IRONGATE_3GB: kernel::ffi::c_ulong = 0xc0000000;
 
 unsafe fn albacore_init_arch() {
     let memtop = max_low_pfn << PAGE_SHIFT;
@@ -149,13 +149,13 @@ pub unsafe fn irongate_init_arch() {
     __direct_map_size = 0xffffffff;
 }
 
-pub unsafe fn irongate_ioremap(addr: libc::c_ulong, size: libc::c_ulong) -> *mut core::ffi::c_void {
+pub unsafe fn irongate_ioremap(addr: kernel::ffi::c_ulong, size: kernel::ffi::c_ulong) -> *mut kernel::ffi::c_void {
     if alpha_agpgart_size == 0 { return (addr + IRONGATE_MEM) as *mut _; }
-    let gart_bus_addr = ((*IRONGATE0).bar0 as libc::c_ulong) & PCI_BASE_ADDRESS_MEM_MASK;
+    let gart_bus_addr = ((*IRONGATE0).bar0 as kernel::ffi::c_ulong) & PCI_BASE_ADDRESS_MEM_MASK;
     if !(addr >= gart_bus_addr && addr + size - 1 < gart_bus_addr + alpha_agpgart_size) {
         return (addr + IRONGATE_MEM) as *mut _;
     }
-    let mmio_regs = (((( (*IRONGATE0).bar1 as libc::c_ulong) & PCI_BASE_ADDRESS_MEM_MASK) + IRONGATE_MEM) as *mut u32);
+    let mmio_regs = (((( (*IRONGATE0).bar1 as kernel::ffi::c_ulong) & PCI_BASE_ADDRESS_MEM_MASK) + IRONGATE_MEM) as *mut u32);
     let gatt_pages = phys_to_virt(*mmio_regs.add(1)) as *mut u32;
     if addr & !PAGE_MASK != 0 { printk!("AGP ioremap failed... addr not page aligned (0x%lx)\n", addr); return (addr + IRONGATE_MEM) as *mut _; }
     let last = addr + size - 1;
@@ -163,20 +163,20 @@ pub unsafe fn irongate_ioremap(addr: libc::c_ulong, size: libc::c_ulong) -> *mut
     let area = get_vm_area(size, VM_IOREMAP);
     if area.is_null() { return core::ptr::null_mut(); }
     let mut baddr = addr;
-    let mut vaddr = (*area).addr as libc::c_ulong;
+    let mut vaddr = (*area).addr as kernel::ffi::c_ulong;
     while baddr <= last {
-        let cur_gatt = phys_to_virt((gatt_pages[(baddr >> 22) as usize] as libc::c_ulong) & !1) as *mut u32;
+        let cur_gatt = phys_to_virt((gatt_pages[(baddr >> 22) as usize] as kernel::ffi::c_ulong) & !1) as *mut u32;
         let pte = *cur_gatt[((baddr & 0x003ff000) >> 12) as usize] & !1;
-        if __alpha_remap_area_pages(vaddr, pte as libc::c_ulong, PAGE_SIZE, 0) != 0 { printk!("AGP ioremap: FAILED to map...\n"); vfree((*area).addr); return core::ptr::null_mut(); }
+        if __alpha_remap_area_pages(vaddr, pte as kernel::ffi::c_ulong, PAGE_SIZE, 0) != 0 { printk!("AGP ioremap: FAILED to map...\n"); vfree((*area).addr); return core::ptr::null_mut(); }
         baddr += PAGE_SIZE; vaddr += PAGE_SIZE;
     }
     flush_tlb_all();
-    ((*area).addr as libc::c_ulong + (addr & !PAGE_MASK)) as *mut _
+    ((*area).addr as kernel::ffi::c_ulong + (addr & !PAGE_MASK)) as *mut _
 }
 
-pub unsafe fn irongate_iounmap(xaddr: *mut core::ffi::c_void) {
-    let addr = xaddr as libc::c_ulong;
-    if ((addr as libc::c_long) >> 41) == -2 { return; }
+pub unsafe fn irongate_iounmap(xaddr: *mut kernel::ffi::c_void) {
+    let addr = xaddr as kernel::ffi::c_ulong;
+    if ((addr as kernel::ffi::c_long) >> 41) == -2 { return; }
     if addr != 0 { vfree((PAGE_MASK & addr) as *mut _); }
 }
 

@@ -6,7 +6,7 @@
  * Copyright (C) 2005 John Williams <jwilliams@itee.uq.edu.au>
  */
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 // Types and functions supplied by the surrounding kernel environment.
 #[repr(C)]

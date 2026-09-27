@@ -52,7 +52,7 @@ pub struct btrfs_delayed_node {
     pub refs: refcount_t,
     pub count: i32,
     pub index_cnt: u64,
-    pub flags: libc::c_ulong,
+    pub flags: kernel::ffi::c_ulong,
     /*
      * The size of the next batch of dir index items to insert (if this
      * node is from a directory inode). Protected by @mutex.
@@ -96,12 +96,12 @@ pub struct btrfs_delayed_item {
     pub logged: bool,
     /* The maximum leaf size is 64K, so u16 is more than enough. */
     pub data_len: u16,
-    pub data: [libc::c_char; 0],
+    pub data: [kernel::ffi::c_char; 0],
 }
 
 unsafe extern "C" {
     pub fn btrfs_init_delayed_root(delayed_root: *mut btrfs_delayed_root);
-    pub fn btrfs_insert_delayed_dir_index(trans: *mut btrfs_trans_handle, name: *const libc::c_char, name_len: i32, dir: *mut btrfs_inode, disk_key: *const btrfs_disk_key, flags: u8, index: u64) -> i32;
+    pub fn btrfs_insert_delayed_dir_index(trans: *mut btrfs_trans_handle, name: *const kernel::ffi::c_char, name_len: i32, dir: *mut btrfs_inode, disk_key: *const btrfs_disk_key, flags: u8, index: u64) -> i32;
     pub fn btrfs_delete_delayed_dir_index(trans: *mut btrfs_trans_handle, dir: *mut btrfs_inode, index: u64) -> i32;
     pub fn btrfs_inode_delayed_dir_index_count(inode: *mut btrfs_inode) -> i32;
     pub fn btrfs_run_delayed_items(trans: *mut btrfs_trans_handle) -> i32;
@@ -140,7 +140,7 @@ pub const BTRFS_DELAYED_NODE_REF_TRACKER_DISPLAY_LIMIT: u32 = 16;
 #[cfg(CONFIG_BTRFS_DEBUG)]
 pub unsafe fn btrfs_delayed_node_ref_tracker_dir_init(node: *mut btrfs_delayed_node) {
     if !btrfs_test_opt((*(*node).root).fs_info, REF_TRACKER) { return; }
-    ref_tracker_dir_init(&mut (*node).ref_dir.dir, BTRFS_DELAYED_NODE_REF_TRACKER_QUARANTINE_COUNT, b"delayed_node\0".as_ptr() as *const libc::c_char);
+    ref_tracker_dir_init(&mut (*node).ref_dir.dir, BTRFS_DELAYED_NODE_REF_TRACKER_QUARANTINE_COUNT, b"delayed_node\0".as_ptr() as *const kernel::ffi::c_char);
 }
 
 #[cfg(CONFIG_BTRFS_DEBUG)]

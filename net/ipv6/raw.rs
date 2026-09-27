@@ -132,7 +132,7 @@ extern "C" {
     fn rawv6_setsockopt(sk: *mut sock, level: i32, optname: i32,
                         optval: sockptr_t, optlen: u32) -> i32;
     fn rawv6_getsockopt(sk: *mut sock, level: i32, optname: i32,
-                        optval: *mut core::ffi::c_char, optlen: *mut i32) -> i32;
+                        optval: *mut kernel::ffi::c_char, optlen: *mut i32) -> i32;
     fn rawv6_ioctl(sk: *mut sock, cmd: i32, karg: *mut i32) -> i32;
 }
 

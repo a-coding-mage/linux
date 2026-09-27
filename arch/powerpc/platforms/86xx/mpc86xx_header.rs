@@ -11,8 +11,8 @@
 extern "C" {
     pub fn mpc86xx_smp_init();
     pub fn mpc86xx_init_irq();
-    pub fn mpc86xx_time_init() -> core::ffi::c_long;
-    pub fn mpc86xx_common_publish_devices() -> core::ffi::c_int;
+    pub fn mpc86xx_time_init() -> kernel::ffi::c_long;
+    pub fn mpc86xx_common_publish_devices() -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

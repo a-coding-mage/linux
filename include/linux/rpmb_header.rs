@@ -21,12 +21,12 @@ pub struct rpmb_descr {
     pub route_frames: Option<unsafe extern "C" fn(
         dev: *mut device,
         req: *mut u8,
-        req_len: libc::c_uint,
+        req_len: core::ffi::c_uint,
         resp: *mut u8,
-        resp_len: libc::c_uint,
-    ) -> libc::c_int>,
+        resp_len: core::ffi::c_uint,
+    ) -> core::ffi::c_int>,
     pub dev_id: *mut u8,
-    pub dev_id_len: libc::size_t,
+    pub dev_id_len: usize,
     pub reliable_wr_count: u16,
     pub capacity: u16,
 }
@@ -34,7 +34,7 @@ pub struct rpmb_descr {
 #[repr(C)]
 pub struct rpmb_dev {
     pub dev: device,
-    pub id: libc::c_int,
+    pub id: core::ffi::c_int,
     pub list_node: list_head,
     pub descr: rpmb_descr,
 }
@@ -67,21 +67,21 @@ extern "C" {
     pub fn rpmb_dev_get(rdev: *mut rpmb_dev) -> *mut rpmb_dev;
     pub fn rpmb_dev_put(rdev: *mut rpmb_dev);
     pub fn rpmb_dev_find_device(
-        data: *const libc::c_void,
+        data: *const core::ffi::c_void,
         start: *const rpmb_dev,
-        r#match: Option<unsafe extern "C" fn(*mut device, *const libc::c_void) -> libc::c_int>,
+        r#match: Option<unsafe extern "C" fn(*mut device, *const core::ffi::c_void) -> core::ffi::c_int>,
     ) -> *mut rpmb_dev;
-    pub fn rpmb_interface_register(intf: *mut class_interface) -> libc::c_int;
+    pub fn rpmb_interface_register(intf: *mut class_interface) -> core::ffi::c_int;
     pub fn rpmb_interface_unregister(intf: *mut class_interface);
     pub fn rpmb_dev_register(dev: *mut device, descr: *mut rpmb_descr) -> *mut rpmb_dev;
-    pub fn rpmb_dev_unregister(rdev: *mut rpmb_dev) -> libc::c_int;
+    pub fn rpmb_dev_unregister(rdev: *mut rpmb_dev) -> core::ffi::c_int;
     pub fn rpmb_route_frames(
         rdev: *mut rpmb_dev,
         req: *mut u8,
-        req_len: libc::c_uint,
+        req_len: core::ffi::c_uint,
         resp: *mut u8,
-        resp_len: libc::c_uint,
-    ) -> libc::c_int;
+        resp_len: core::ffi::c_uint,
+    ) -> core::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_RPMB))]
@@ -94,15 +94,15 @@ pub unsafe fn rpmb_dev_put(_rdev: *mut rpmb_dev) {}
 
 #[cfg(not(CONFIG_RPMB))]
 pub unsafe fn rpmb_dev_find_device(
-    _data: *const libc::c_void,
+    _data: *const core::ffi::c_void,
     _start: *const rpmb_dev,
-    _match: Option<unsafe extern "C" fn(*mut device, *const libc::c_void) -> libc::c_int>,
+    _match: Option<unsafe extern "C" fn(*mut device, *const core::ffi::c_void) -> core::ffi::c_int>,
 ) -> *mut rpmb_dev {
     core::ptr::null_mut()
 }
 
 #[cfg(not(CONFIG_RPMB))]
-pub unsafe fn rpmb_interface_register(_intf: *mut class_interface) -> libc::c_int {
+pub unsafe fn rpmb_interface_register(_intf: *mut class_interface) -> core::ffi::c_int {
     -95
 }
 
@@ -115,7 +115,7 @@ pub unsafe fn rpmb_dev_register(_dev: *mut device, _descr: *mut rpmb_descr) -> *
 }
 
 #[cfg(not(CONFIG_RPMB))]
-pub unsafe fn rpmb_dev_unregister(_dev: *mut rpmb_dev) -> libc::c_int {
+pub unsafe fn rpmb_dev_unregister(_dev: *mut rpmb_dev) -> core::ffi::c_int {
     0
 }
 
@@ -123,10 +123,10 @@ pub unsafe fn rpmb_dev_unregister(_dev: *mut rpmb_dev) -> libc::c_int {
 pub unsafe fn rpmb_route_frames(
     _rdev: *mut rpmb_dev,
     _req: *mut u8,
-    _req_len: libc::c_uint,
+    _req_len: core::ffi::c_uint,
     _resp: *mut u8,
-    _resp_len: libc::c_uint,
-) -> libc::c_int {
+    _resp_len: core::ffi::c_uint,
+) -> core::ffi::c_int {
     -95
 }
 

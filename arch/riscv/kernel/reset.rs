@@ -7,8 +7,8 @@
 extern "C" {
     fn wait_for_interrupt() -> !;
     fn efi_enabled(feature: u32) -> bool;
-    fn efi_reboot(mode: i32, cmd: *mut core::ffi::c_void);
-    fn do_kernel_restart(cmd: *mut core::ffi::c_char);
+    fn efi_reboot(mode: i32, cmd: *mut kernel::ffi::c_void);
+    fn do_kernel_restart(cmd: *mut kernel::ffi::c_char);
     fn do_kernel_power_off();
 
     static mut reboot_mode: i32;
@@ -28,7 +28,7 @@ unsafe fn default_power_off() -> ! {
 pub static mut pm_power_off: Option<unsafe extern "C" fn()> = None;
 // EXPORT_SYMBOL(pm_power_off);
 
-pub unsafe extern "C" fn machine_restart(cmd: *mut core::ffi::c_char) {
+pub unsafe extern "C" fn machine_restart(cmd: *mut kernel::ffi::c_char) {
     /*
      * UpdateCapsule() depends on the system being reset via ResetSystem().
      */

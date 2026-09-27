@@ -46,7 +46,7 @@ pub unsafe extern "C" fn machine_power_off() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn machine_restart(command: *mut core::ffi::c_char) {
+pub unsafe extern "C" fn machine_restart(command: *mut kernel::ffi::c_char) {
     // CONFIG_SMP
     preempt_disable();
     smp_send_stop();

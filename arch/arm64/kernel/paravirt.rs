@@ -21,7 +21,7 @@ static mut stolen_time_region: pv_time_stolen_time_region = pv_time_stolen_time_
 static mut steal_acc: bool = true;
 
 // early_param("no-steal-acc", parse_no_stealacc)
-unsafe extern "C" fn parse_no_stealacc(_arg: *mut core::ffi::c_char) -> i32 {
+unsafe extern "C" fn parse_no_stealacc(_arg: *mut kernel::ffi::c_char) -> i32 {
     steal_acc = false;
     0
 }
@@ -59,7 +59,7 @@ unsafe extern "C" fn stolen_time_cpu_down_prepare(_cpu: u32) -> i32 {
 
     kaddr = rcu_replace_pointer(&mut (*reg).kaddr, core::ptr::null_mut(), true);
     synchronize_rcu();
-    memunmap(kaddr as *mut core::ffi::c_void);
+    memunmap(kaddr as *mut kernel::ffi::c_void);
 
     0
 }
@@ -99,7 +99,7 @@ unsafe extern "C" fn stolen_time_cpu_online(_cpu: u32) -> i32 {
 unsafe fn pv_time_init_stolen_time() -> i32 {
     let ret = cpuhp_setup_state(
         CPUHP_AP_ONLINE_DYN,
-        "hypervisor/arm/pvtime:online\0".as_ptr() as *const core::ffi::c_char,
+        "hypervisor/arm/pvtime:online\0".as_ptr() as *const kernel::ffi::c_char,
         Some(stolen_time_cpu_online),
         Some(stolen_time_cpu_down_prepare),
     );

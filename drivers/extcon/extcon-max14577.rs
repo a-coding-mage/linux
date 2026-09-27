@@ -30,7 +30,7 @@ enum Max14577MuicStatus {
 #[repr(C)]
 struct Max14577MuicIrq {
     irq: u32,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     virq: u32,
 }
 
@@ -152,7 +152,7 @@ unsafe fn max14577_muic_get_cable_type(info: *mut Max14577MuicInfo, group: Max14
 // The remaining driver routines preserve the original implementation's external kernel calls and ordering.
 // They are declared here as translation units' externally supplied symbols.
 extern "C" {
-    fn max14577_update_reg(regmap: *mut core::ffi::c_void, reg: u32, mask: u32, val: u32) -> i32;
+    fn max14577_update_reg(regmap: *mut kernel::ffi::c_void, reg: u32, mask: u32, val: u32) -> i32;
 }
 
 unsafe fn max14577_muic_jig_handler(info: *mut Max14577MuicInfo, cable_type: i32, attached: bool) -> i32 {

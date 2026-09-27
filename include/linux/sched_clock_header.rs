@@ -17,13 +17,13 @@ pub struct clock_read_data {
 
 #[cfg(CONFIG_GENERIC_SCHED_CLOCK)]
 unsafe extern "C" {
-    pub fn sched_clock_read_begin(seq: *mut core::ffi::c_uint) -> *mut clock_read_data;
-    pub fn sched_clock_read_retry(seq: core::ffi::c_uint) -> core::ffi::c_int;
+    pub fn sched_clock_read_begin(seq: *mut kernel::ffi::c_uint) -> *mut clock_read_data;
+    pub fn sched_clock_read_retry(seq: kernel::ffi::c_uint) -> kernel::ffi::c_int;
     pub fn generic_sched_clock_init();
     pub fn sched_clock_register(
         read: Option<unsafe extern "C" fn() -> u64>,
-        bits: core::ffi::c_int,
-        rate: core::ffi::c_ulong,
+        bits: kernel::ffi::c_int,
+        rate: kernel::ffi::c_ulong,
     );
 }
 
@@ -35,8 +35,8 @@ pub const fn generic_sched_clock_init() {}
 #[inline]
 pub fn sched_clock_register(
     _read: Option<unsafe extern "C" fn() -> u64>,
-    _bits: core::ffi::c_int,
-    _rate: core::ffi::c_ulong,
+    _bits: kernel::ffi::c_int,
+    _rate: kernel::ffi::c_ulong,
 ) {
 }
 

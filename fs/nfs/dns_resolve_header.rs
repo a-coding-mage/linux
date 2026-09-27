@@ -47,7 +47,7 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn nfs_dns_resolve_name(
         net: *mut net,
-        name: *mut core::ffi::c_char,
+        name: *mut kernel::ffi::c_char,
         namelen: usize,
         sa: *mut sockaddr_storage,
         salen: usize,

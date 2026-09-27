@@ -2,7 +2,7 @@
 // Translated from the SH atomic IRQ header.
 // The original include supplies raw_local_irq_save/raw_local_irq_restore.
 
-use core::ffi::c_ulong;
+use kernel::ffi::c_ulong;
 
 unsafe extern "C" {
     fn raw_local_irq_save(flags: *mut c_ulong);

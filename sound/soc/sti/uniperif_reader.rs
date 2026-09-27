@@ -7,7 +7,7 @@
 
 // Dependencies from <sound/soc.h> and "uniperif.h" are provided externally.
 
-use core::ffi::{c_int, c_uint, c_void};
+use kernel::ffi::{c_int, c_uint, c_void};
 
 const UNIPERIF_READER_I2S_IN: c_int = 0; /* reader id connected to I2S/TDM TX bus */
 
@@ -221,7 +221,7 @@ unsafe extern "C" {
     fn SET_UNIPERIF_ITM_BCLR(reader: *mut uniperif, value: c_uint);
 }
 
-type c_ulong = core::ffi::c_ulong;
+type c_ulong = kernel::ffi::c_ulong;
 
 /*
  * Note: snd_pcm_hardware is linked to DMA controller but is declared here to

@@ -25,7 +25,7 @@ pub struct taskstats {
     pub swapin_delay_total: __u64,
     pub cpu_run_real_total: __u64,
     pub cpu_run_virtual_total: __u64,
-    pub ac_comm: [::core::ffi::c_char; TS_COMM_LEN],
+    pub ac_comm: [::kernel::ffi::c_char; TS_COMM_LEN],
     pub ac_sched: __u8,
     pub ac_pad: [__u8; 3],
     pub ac_uid: __u32,

@@ -42,7 +42,7 @@ pub struct sdca_dev {
 pub struct sdca_function_desc {
     pub node: *mut fwnode_handle,
     pub func_dev: *mut sdca_dev,
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub r#type: u32,
     pub adr: u8,
     pub duplicate: bool,

@@ -39,7 +39,7 @@ macro_rules! ACARD_SINGLE_RANGE_EXT_TLV {
                 min: $xmin,
                 max: $xmax,
                 invert: $xinvert,
-            } as *const soc_mixer_control as ::core::ffi::c_ulong,
+            } as *const soc_mixer_control as ::kernel::ffi::c_ulong,
         }
     };
 }
@@ -76,50 +76,50 @@ pub struct tas2781_hda {
     pub dsp_conf_ctl: *mut snd_kcontrol,
     pub prof_ctl: *mut snd_kcontrol,
     pub catlog_id: device_catlog_id,
-    pub hda_priv: *mut ::core::ffi::c_void,
+    pub hda_priv: *mut ::kernel::ffi::c_void,
 }
 
 unsafe extern "C" {
     pub static tasdev_fct_efi_guid: [efi_guid_t; 0];
 
-    pub fn tas2781_save_calibration(p: *mut tas2781_hda) -> ::core::ffi::c_int;
+    pub fn tas2781_save_calibration(p: *mut tas2781_hda) -> ::kernel::ffi::c_int;
     pub fn tas2781_hda_remove(dev: *mut device, ops: *const component_ops);
     pub fn tasdevice_info_profile(
         kctl: *mut snd_kcontrol,
         uctl: *mut snd_ctl_elem_info,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn tasdevice_info_programs(
         kctl: *mut snd_kcontrol,
         uctl: *mut snd_ctl_elem_info,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn tasdevice_info_config(
         kctl: *mut snd_kcontrol,
         uctl: *mut snd_ctl_elem_info,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn tasdevice_set_profile_id(
         kctl: *mut snd_kcontrol,
         uctl: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn tasdevice_get_profile_id(
         kctl: *mut snd_kcontrol,
         uctl: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn tasdevice_program_get(
         kctl: *mut snd_kcontrol,
         uctl: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn tasdevice_program_put(
         kctl: *mut snd_kcontrol,
         uctl: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn tasdevice_config_put(
         kctl: *mut snd_kcontrol,
         uctl: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn tasdevice_config_get(
         kctl: *mut snd_kcontrol,
         uctl: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

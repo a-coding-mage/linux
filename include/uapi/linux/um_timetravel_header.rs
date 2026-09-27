@@ -71,7 +71,7 @@ pub struct um_timetravel_schedshm_client_fields {
 #[derive(Copy, Clone)]
 pub union um_timetravel_schedshm_client {
     pub fields: um_timetravel_schedshm_client_fields,
-    pub reserve: [core::ffi::c_char; 128],
+    pub reserve: [kernel::ffi::c_char; 128],
 }
 
 #[repr(C)]
@@ -89,7 +89,7 @@ pub struct um_timetravel_schedshm_header_fields {
 #[derive(Copy, Clone)]
 pub union um_timetravel_schedshm_header {
     pub fields: um_timetravel_schedshm_header_fields,
-    pub hdr: [core::ffi::c_char; 4096],
+    pub hdr: [kernel::ffi::c_char; 4096],
 }
 
 #[repr(C)]

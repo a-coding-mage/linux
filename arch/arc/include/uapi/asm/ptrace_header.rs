@@ -9,7 +9,7 @@
  * Amit Bhor, Sameer Dhavale: Codito Technologies 2004
  */
 
-pub const PTRACE_GET_THREAD_AREA: ::core::ffi::c_int = 25;
+pub const PTRACE_GET_THREAD_AREA: ::kernel::ffi::c_int = 25;
 
 /* The declarations below are omitted when this header is consumed by an assembler. */
 /*
@@ -30,63 +30,63 @@ pub const PTRACE_GET_THREAD_AREA: ::core::ffi::c_int = 25;
  */
 #[repr(C)]
 pub struct user_regs_struct {
-    pub pad: ::core::ffi::c_ulong,
+    pub pad: ::kernel::ffi::c_ulong,
     pub scratch: user_regs_struct_scratch,
-    pub pad2: ::core::ffi::c_ulong,
+    pub pad2: ::kernel::ffi::c_ulong,
     pub callee: user_regs_struct_callee,
-    pub efa: ::core::ffi::c_ulong, /* break pt addr, for break points in delay slots */
-    pub stop_pc: ::core::ffi::c_ulong, /* give dbg stop_pc after ensuring brkpt trap */
+    pub efa: ::kernel::ffi::c_ulong, /* break pt addr, for break points in delay slots */
+    pub stop_pc: ::kernel::ffi::c_ulong, /* give dbg stop_pc after ensuring brkpt trap */
 }
 
 #[repr(C)]
 pub struct user_regs_struct_scratch {
-    pub bta: ::core::ffi::c_ulong,
-    pub lp_start: ::core::ffi::c_ulong,
-    pub lp_end: ::core::ffi::c_ulong,
-    pub lp_count: ::core::ffi::c_ulong,
-    pub status32: ::core::ffi::c_ulong,
-    pub ret: ::core::ffi::c_ulong,
-    pub blink: ::core::ffi::c_ulong,
-    pub fp: ::core::ffi::c_ulong,
-    pub gp: ::core::ffi::c_ulong,
-    pub r12: ::core::ffi::c_ulong,
-    pub r11: ::core::ffi::c_ulong,
-    pub r10: ::core::ffi::c_ulong,
-    pub r9: ::core::ffi::c_ulong,
-    pub r8: ::core::ffi::c_ulong,
-    pub r7: ::core::ffi::c_ulong,
-    pub r6: ::core::ffi::c_ulong,
-    pub r5: ::core::ffi::c_ulong,
-    pub r4: ::core::ffi::c_ulong,
-    pub r3: ::core::ffi::c_ulong,
-    pub r2: ::core::ffi::c_ulong,
-    pub r1: ::core::ffi::c_ulong,
-    pub r0: ::core::ffi::c_ulong,
-    pub sp: ::core::ffi::c_ulong,
+    pub bta: ::kernel::ffi::c_ulong,
+    pub lp_start: ::kernel::ffi::c_ulong,
+    pub lp_end: ::kernel::ffi::c_ulong,
+    pub lp_count: ::kernel::ffi::c_ulong,
+    pub status32: ::kernel::ffi::c_ulong,
+    pub ret: ::kernel::ffi::c_ulong,
+    pub blink: ::kernel::ffi::c_ulong,
+    pub fp: ::kernel::ffi::c_ulong,
+    pub gp: ::kernel::ffi::c_ulong,
+    pub r12: ::kernel::ffi::c_ulong,
+    pub r11: ::kernel::ffi::c_ulong,
+    pub r10: ::kernel::ffi::c_ulong,
+    pub r9: ::kernel::ffi::c_ulong,
+    pub r8: ::kernel::ffi::c_ulong,
+    pub r7: ::kernel::ffi::c_ulong,
+    pub r6: ::kernel::ffi::c_ulong,
+    pub r5: ::kernel::ffi::c_ulong,
+    pub r4: ::kernel::ffi::c_ulong,
+    pub r3: ::kernel::ffi::c_ulong,
+    pub r2: ::kernel::ffi::c_ulong,
+    pub r1: ::kernel::ffi::c_ulong,
+    pub r0: ::kernel::ffi::c_ulong,
+    pub sp: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct user_regs_struct_callee {
-    pub r25: ::core::ffi::c_ulong,
-    pub r24: ::core::ffi::c_ulong,
-    pub r23: ::core::ffi::c_ulong,
-    pub r22: ::core::ffi::c_ulong,
-    pub r21: ::core::ffi::c_ulong,
-    pub r20: ::core::ffi::c_ulong,
-    pub r19: ::core::ffi::c_ulong,
-    pub r18: ::core::ffi::c_ulong,
-    pub r17: ::core::ffi::c_ulong,
-    pub r16: ::core::ffi::c_ulong,
-    pub r15: ::core::ffi::c_ulong,
-    pub r14: ::core::ffi::c_ulong,
-    pub r13: ::core::ffi::c_ulong,
+    pub r25: ::kernel::ffi::c_ulong,
+    pub r24: ::kernel::ffi::c_ulong,
+    pub r23: ::kernel::ffi::c_ulong,
+    pub r22: ::kernel::ffi::c_ulong,
+    pub r21: ::kernel::ffi::c_ulong,
+    pub r20: ::kernel::ffi::c_ulong,
+    pub r19: ::kernel::ffi::c_ulong,
+    pub r18: ::kernel::ffi::c_ulong,
+    pub r17: ::kernel::ffi::c_ulong,
+    pub r16: ::kernel::ffi::c_ulong,
+    pub r15: ::kernel::ffi::c_ulong,
+    pub r14: ::kernel::ffi::c_ulong,
+    pub r13: ::kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct user_regs_arcv2 {
-    pub r30: ::core::ffi::c_ulong,
-    pub r58: ::core::ffi::c_ulong,
-    pub r59: ::core::ffi::c_ulong,
+    pub r30: ::kernel::ffi::c_ulong,
+    pub r58: ::kernel::ffi::c_ulong,
+    pub r59: ::kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -14,81 +14,81 @@
 
 extern "C" {
     fn pcxhr_enable_dsp(mgr: *mut pcxhr_mgr);
-    fn pcxhr_init_rmh(rmh: *mut pcxhr_rmh, cmd: ::core::ffi::c_int);
-    fn pcxhr_send_msg(mgr: *mut pcxhr_mgr, rmh: *mut pcxhr_rmh) -> ::core::ffi::c_int;
-    fn hr222_sub_init(mgr: *mut pcxhr_mgr) -> ::core::ffi::c_int;
+    fn pcxhr_init_rmh(rmh: *mut pcxhr_rmh, cmd: ::kernel::ffi::c_int);
+    fn pcxhr_send_msg(mgr: *mut pcxhr_mgr, rmh: *mut pcxhr_rmh) -> ::kernel::ffi::c_int;
+    fn hr222_sub_init(mgr: *mut pcxhr_mgr) -> ::kernel::ffi::c_int;
     fn pcxhr_write_io_num_reg_cont(
         mgr: *mut pcxhr_mgr,
-        reg: ::core::ffi::c_int,
-        mask: ::core::ffi::c_int,
-        value: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        reg: ::kernel::ffi::c_int,
+        mask: ::kernel::ffi::c_int,
+        value: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
     fn pcxhr_reset_dsp(mgr: *mut pcxhr_mgr);
     fn pcxhr_reset_xilinx_com(mgr: *mut pcxhr_mgr);
     fn pcxhr_set_pipe_cmd_params(
         rmh: *mut pcxhr_rmh,
-        is_capture: ::core::ffi::c_int,
-        pin: ::core::ffi::c_int,
-        audio_count: ::core::ffi::c_int,
-        stream_count: ::core::ffi::c_int,
+        is_capture: ::kernel::ffi::c_int,
+        pin: ::kernel::ffi::c_int,
+        audio_count: ::kernel::ffi::c_int,
+        stream_count: ::kernel::ffi::c_int,
     );
     fn pcxhr_set_pipe_state(
         mgr: *mut pcxhr_mgr,
-        playback_mask: ::core::ffi::c_int,
-        capture_mask: ::core::ffi::c_int,
-        start: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        playback_mask: ::kernel::ffi::c_int,
+        capture_mask: ::kernel::ffi::c_int,
+        start: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     fn pcxhr_load_xilinx_binary(
         mgr: *mut pcxhr_mgr,
         dsp: *const firmware,
-        second: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
-    fn pcxhr_load_eeprom_binary(mgr: *mut pcxhr_mgr, dsp: *const firmware) -> ::core::ffi::c_int;
-    fn pcxhr_load_boot_binary(mgr: *mut pcxhr_mgr, dsp: *const firmware) -> ::core::ffi::c_int;
-    fn pcxhr_load_dsp_binary(mgr: *mut pcxhr_mgr, dsp: *const firmware) -> ::core::ffi::c_int;
-    fn pcxhr_create_pcm(chip: *mut snd_pcxhr) -> ::core::ffi::c_int;
-    fn pcxhr_create_mixer(mgr: *mut pcxhr_mgr) -> ::core::ffi::c_int;
-    fn snd_card_register(card: *mut snd_card) -> ::core::ffi::c_int;
+        second: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
+    fn pcxhr_load_eeprom_binary(mgr: *mut pcxhr_mgr, dsp: *const firmware) -> ::kernel::ffi::c_int;
+    fn pcxhr_load_boot_binary(mgr: *mut pcxhr_mgr, dsp: *const firmware) -> ::kernel::ffi::c_int;
+    fn pcxhr_load_dsp_binary(mgr: *mut pcxhr_mgr, dsp: *const firmware) -> ::kernel::ffi::c_int;
+    fn pcxhr_create_pcm(chip: *mut snd_pcxhr) -> ::kernel::ffi::c_int;
+    fn pcxhr_create_mixer(mgr: *mut pcxhr_mgr) -> ::kernel::ffi::c_int;
+    fn snd_card_register(card: *mut snd_card) -> ::kernel::ffi::c_int;
     fn request_firmware(
         fw: *mut *const firmware,
-        name: *const ::core::ffi::c_char,
+        name: *const ::kernel::ffi::c_char,
         device: *mut device,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     fn release_firmware(fw: *const firmware);
 }
 
 extern "C" {
-    fn dev_dbg(dev: *mut device, fmt: *const ::core::ffi::c_char, ...);
-    fn dev_err(dev: *mut device, fmt: *const ::core::ffi::c_char, ...);
-    fn sprintf(s: *mut ::core::ffi::c_char, fmt: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
+    fn dev_dbg(dev: *mut device, fmt: *const ::kernel::ffi::c_char, ...);
+    fn dev_err(dev: *mut device, fmt: *const ::kernel::ffi::c_char, ...);
+    fn sprintf(s: *mut ::kernel::ffi::c_char, fmt: *const ::kernel::ffi::c_char, ...) -> ::kernel::ffi::c_int;
 }
 
 extern "C" {
-    static mut CMD_SUPPORTED: ::core::ffi::c_int;
-    static mut CMD_VERSION: ::core::ffi::c_int;
-    static mut CMD_ACCESS_IO_READ: ::core::ffi::c_int;
-    static mut CMD_ACCESS_IO_WRITE: ::core::ffi::c_int;
-    static mut CMD_RES_PIPE: ::core::ffi::c_int;
-    static mut CMD_FREE_PIPE: ::core::ffi::c_int;
+    static mut CMD_SUPPORTED: ::kernel::ffi::c_int;
+    static mut CMD_VERSION: ::kernel::ffi::c_int;
+    static mut CMD_ACCESS_IO_READ: ::kernel::ffi::c_int;
+    static mut CMD_ACCESS_IO_WRITE: ::kernel::ffi::c_int;
+    static mut CMD_RES_PIPE: ::kernel::ffi::c_int;
+    static mut CMD_FREE_PIPE: ::kernel::ffi::c_int;
     static mut MASK_FIRST_FIELD: u32;
-    static mut FIELD_SIZE: ::core::ffi::c_int;
-    static mut PCXHR_PLAYBACK_STREAMS: ::core::ffi::c_int;
+    static mut FIELD_SIZE: ::kernel::ffi::c_int;
+    static mut PCXHR_PLAYBACK_STREAMS: ::kernel::ffi::c_int;
     static mut IO_NUM_REG_STATUS: u32;
     static mut REG_STATUS_OPTIONS: u32;
     static mut REG_STATUS_OPT_DAUGHTER_MASK: u32;
     static mut REG_STATUS_OPT_ANALOG_BOARD: u32;
-    static mut REG_CONT_UNMUTE_INPUTS: ::core::ffi::c_int;
+    static mut REG_CONT_UNMUTE_INPUTS: ::kernel::ffi::c_int;
     static mut IO_NUM_REG_MUTE_OUT: u32;
-    static mut PCXHR_FIRMWARE_DSP_MAIN_INDEX: ::core::ffi::c_int;
-    static mut PCXHR_FIRMWARE_DSP_EPRM_INDEX: ::core::ffi::c_int;
-    static mut PCXHR_FIRMWARE_XLX_COM_INDEX: ::core::ffi::c_int;
-    static mut PCXHR_FIRMWARE_XLX_INT_INDEX: ::core::ffi::c_int;
-    static mut PCXHR_FIRMWARE_DSP_BOOT_INDEX: ::core::ffi::c_int;
-    static mut PCXHR_PIPE_DEFINED: ::core::ffi::c_int;
-    static mut PCXHR_PIPE_UNDEFINED: ::core::ffi::c_int;
-    static mut EINVAL: ::core::ffi::c_int;
-    static mut EFAULT: ::core::ffi::c_int;
-    static mut ENOENT: ::core::ffi::c_int;
+    static mut PCXHR_FIRMWARE_DSP_MAIN_INDEX: ::kernel::ffi::c_int;
+    static mut PCXHR_FIRMWARE_DSP_EPRM_INDEX: ::kernel::ffi::c_int;
+    static mut PCXHR_FIRMWARE_XLX_COM_INDEX: ::kernel::ffi::c_int;
+    static mut PCXHR_FIRMWARE_XLX_INT_INDEX: ::kernel::ffi::c_int;
+    static mut PCXHR_FIRMWARE_DSP_BOOT_INDEX: ::kernel::ffi::c_int;
+    static mut PCXHR_PIPE_DEFINED: ::kernel::ffi::c_int;
+    static mut PCXHR_PIPE_UNDEFINED: ::kernel::ffi::c_int;
+    static mut EINVAL: ::kernel::ffi::c_int;
+    static mut EFAULT: ::kernel::ffi::c_int;
+    static mut ENOENT: ::kernel::ffi::c_int;
 }
 
 extern "C" {
@@ -103,13 +103,13 @@ pub struct pcxhr_mgr {
 pub struct pcxhr_rmh {
     pub cmd: [u32; 16],
     pub stat: [u32; 16],
-    pub cmd_len: ::core::ffi::c_int,
+    pub cmd_len: ::kernel::ffi::c_int,
 }
 #[repr(C)]
 pub struct pcxhr_pipe {
-    pub is_capture: ::core::ffi::c_int,
-    pub first_audio: ::core::ffi::c_int,
-    pub status: ::core::ffi::c_int,
+    pub is_capture: ::kernel::ffi::c_int,
+    pub first_audio: ::kernel::ffi::c_int,
+    pub status: ::kernel::ffi::c_int,
 }
 #[repr(C)]
 pub struct snd_pcxhr {
@@ -132,8 +132,8 @@ pub struct device {
  * these opaque structs in the final integration environment.
  */
 
-unsafe extern "C" fn pcxhr_sub_init(mgr: *mut pcxhr_mgr) -> ::core::ffi::c_int {
-    let mut err: ::core::ffi::c_int;
+unsafe extern "C" fn pcxhr_sub_init(mgr: *mut pcxhr_mgr) -> ::kernel::ffi::c_int {
+    let mut err: ::kernel::ffi::c_int;
     let mut rmh: pcxhr_rmh = ::core::mem::zeroed();
 
     /* get options */
@@ -174,10 +174,10 @@ unsafe extern "C" fn pcxhr_sub_init(mgr: *mut pcxhr_mgr) -> ::core::ffi::c_int {
 /*
  * get basic information and init pcxhr card
  */
-unsafe extern "C" fn pcxhr_init_board(mgr: *mut pcxhr_mgr) -> ::core::ffi::c_int {
-    let mut err: ::core::ffi::c_int;
+unsafe extern "C" fn pcxhr_init_board(mgr: *mut pcxhr_mgr) -> ::kernel::ffi::c_int {
+    let mut err: ::kernel::ffi::c_int;
     let mut rmh: pcxhr_rmh = ::core::mem::zeroed();
-    let mut card_streams: ::core::ffi::c_int;
+    let mut card_streams: ::kernel::ffi::c_int;
 
     /* calc the number of all streams used */
     if (*mgr).mono_capture != 0 {
@@ -283,12 +283,12 @@ pub unsafe extern "C" fn pcxhr_reset_board(mgr: *mut pcxhr_mgr) {
 unsafe extern "C" fn pcxhr_dsp_allocate_pipe(
     mgr: *mut pcxhr_mgr,
     pipe: *mut pcxhr_pipe,
-    is_capture: ::core::ffi::c_int,
-    pin: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
-    let stream_count: ::core::ffi::c_int;
-    let audio_count: ::core::ffi::c_int;
-    let err: ::core::ffi::c_int;
+    is_capture: ::kernel::ffi::c_int,
+    pin: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
+    let stream_count: ::kernel::ffi::c_int;
+    let audio_count: ::kernel::ffi::c_int;
+    let err: ::kernel::ffi::c_int;
     let mut rmh: pcxhr_rmh = ::core::mem::zeroed();
 
     if is_capture != 0 {
@@ -306,7 +306,7 @@ unsafe extern "C" fn pcxhr_dsp_allocate_pipe(
         &mut (*(*mgr).pci).dev,
         b"snd_add_ref_pipe pin(%d) pcm%c0\n\0".as_ptr() as *const _,
         pin,
-        if is_capture != 0 { b'c' as ::core::ffi::c_int } else { b'p' as ::core::ffi::c_int },
+        if is_capture != 0 { b'c' as ::kernel::ffi::c_int } else { b'p' as ::kernel::ffi::c_int },
     );
     (*pipe).is_capture = is_capture;
     (*pipe).first_audio = pin;
@@ -339,7 +339,7 @@ unsafe extern "C" fn pcxhr_dsp_allocate_pipe(
  * Original C source had this function inside #if 0.
  *
  * unsafe extern "C" fn pcxhr_dsp_free_pipe(mgr: *mut pcxhr_mgr, pipe: *mut pcxhr_pipe)
- *     -> ::core::ffi::c_int
+ *     -> ::kernel::ffi::c_int
  * {
  *     let mut rmh: pcxhr_rmh = ::core::mem::zeroed();
  *     let mut capture_mask = 0;
@@ -373,10 +373,10 @@ unsafe extern "C" fn pcxhr_dsp_allocate_pipe(
  * }
  */
 
-unsafe extern "C" fn pcxhr_config_pipes(mgr: *mut pcxhr_mgr) -> ::core::ffi::c_int {
-    let mut err: ::core::ffi::c_int;
-    let mut i: ::core::ffi::c_int;
-    let mut j: ::core::ffi::c_int;
+unsafe extern "C" fn pcxhr_config_pipes(mgr: *mut pcxhr_mgr) -> ::kernel::ffi::c_int {
+    let mut err: ::kernel::ffi::c_int;
+    let mut i: ::kernel::ffi::c_int;
+    let mut j: ::kernel::ffi::c_int;
     let mut chip: *mut snd_pcxhr;
     let mut pipe: *mut pcxhr_pipe;
 
@@ -411,12 +411,12 @@ unsafe extern "C" fn pcxhr_config_pipes(mgr: *mut pcxhr_mgr) -> ::core::ffi::c_i
     0
 }
 
-unsafe extern "C" fn pcxhr_start_pipes(mgr: *mut pcxhr_mgr) -> ::core::ffi::c_int {
-    let mut i: ::core::ffi::c_int;
-    let mut j: ::core::ffi::c_int;
+unsafe extern "C" fn pcxhr_start_pipes(mgr: *mut pcxhr_mgr) -> ::kernel::ffi::c_int {
+    let mut i: ::kernel::ffi::c_int;
+    let mut j: ::kernel::ffi::c_int;
     let mut chip: *mut snd_pcxhr;
-    let mut playback_mask: ::core::ffi::c_int = 0;
-    let mut capture_mask: ::core::ffi::c_int = 0;
+    let mut playback_mask: ::kernel::ffi::c_int = 0;
+    let mut capture_mask: ::kernel::ffi::c_int = 0;
 
     /* start all the pipes on the dsp */
     i = 0;
@@ -437,11 +437,11 @@ unsafe extern "C" fn pcxhr_start_pipes(mgr: *mut pcxhr_mgr) -> ::core::ffi::c_in
 
 unsafe extern "C" fn pcxhr_dsp_load(
     mgr: *mut pcxhr_mgr,
-    index: ::core::ffi::c_int,
+    index: ::kernel::ffi::c_int,
     dsp: *const firmware,
-) -> ::core::ffi::c_int {
-    let mut err: ::core::ffi::c_int;
-    let mut card_index: ::core::ffi::c_int;
+) -> ::kernel::ffi::c_int {
+    let mut err: ::kernel::ffi::c_int;
+    let mut card_index: ::kernel::ffi::c_int;
 
     dev_dbg(
         &mut (*(*mgr).pci).dev,
@@ -523,7 +523,7 @@ unsafe extern "C" fn pcxhr_dsp_load(
 /*
  * fw loader entry
  */
-pub unsafe extern "C" fn pcxhr_setup_firmware(mgr: *mut pcxhr_mgr) -> ::core::ffi::c_int {
+pub unsafe extern "C" fn pcxhr_setup_firmware(mgr: *mut pcxhr_mgr) -> ::kernel::ffi::c_int {
     static FW_0_0: &[u8] = b"xlxint.dat\0";
     static FW_0_1: &[u8] = b"xlxc882hr.dat\0";
     static FW_0_2: &[u8] = b"dspe882.e56\0";
@@ -542,7 +542,7 @@ pub unsafe extern "C" fn pcxhr_setup_firmware(mgr: *mut pcxhr_mgr) -> ::core::ff
     static FW_4_4: &[u8] = b"dspd222.d56\0";
     static FW_5_1: &[u8] = b"xlxc924.dat\0";
 
-    static FW_FILES: [[*const ::core::ffi::c_char; 5]; 6] = [
+    static FW_FILES: [[*const ::kernel::ffi::c_char; 5]; 6] = [
         [
             FW_0_0.as_ptr() as *const _,
             FW_0_1.as_ptr() as *const _,
@@ -586,11 +586,11 @@ pub unsafe extern "C" fn pcxhr_setup_firmware(mgr: *mut pcxhr_mgr) -> ::core::ff
             FW_4_4.as_ptr() as *const _,
         ],
     ];
-    let mut path: [::core::ffi::c_char; 32] = [0; 32];
+    let mut path: [::kernel::ffi::c_char; 32] = [0; 32];
 
-    let mut i: ::core::ffi::c_int;
-    let mut err: ::core::ffi::c_int;
-    let fw_set: ::core::ffi::c_int = (*mgr).fw_file_set;
+    let mut i: ::kernel::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
+    let fw_set: ::kernel::ffi::c_int = (*mgr).fw_file_set;
 
     i = 0;
     while i < 5 {

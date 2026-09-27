@@ -29,17 +29,17 @@ pub enum Apci16xxBoardId {
 
 #[repr(C)]
 pub struct Apci16xxBoardinfo {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub n_chan: i32,
 }
 
 pub static APCI16XX_BOARDTYPES: [Apci16xxBoardinfo; 2] = [
     Apci16xxBoardinfo {
-        name: b"apci1648\0".as_ptr() as *const core::ffi::c_char,
+        name: b"apci1648\0".as_ptr() as *const kernel::ffi::c_char,
         n_chan: 48, // 2 subdevices
     },
     Apci16xxBoardinfo {
-        name: b"apci1696\0".as_ptr() as *const core::ffi::c_char,
+        name: b"apci1696\0".as_ptr() as *const kernel::ffi::c_char,
         n_chan: 96, // 3 subdevices
     },
 ];
@@ -65,8 +65,8 @@ extern "C" {
 
 #[repr(C)]
 pub struct comedi_device {
-    pub board_ptr: *const core::ffi::c_void,
-    pub board_name: *const core::ffi::c_char,
+    pub board_ptr: *const kernel::ffi::c_void,
+    pub board_name: *const kernel::ffi::c_char,
     pub iobase: usize,
     pub subdevices: *mut comedi_subdevice,
 }
@@ -111,7 +111,7 @@ pub unsafe extern "C" fn apci16xx_auto_attach(
     let pcidev = comedi_to_pci_dev(dev);
     let board = APCI16XX_BOARDTYPES.get(context);
     let board = match board { Some(b) => b as *const _, None => return -19 };
-    (*dev).board_ptr = board as *const core::ffi::c_void;
+    (*dev).board_ptr = board as *const kernel::ffi::c_void;
     (*dev).board_name = (*board).name;
     let ret = comedi_pci_enable(dev); if ret != 0 { return ret; }
     (*dev).iobase = pci_resource_start(pcidev, 0);
@@ -136,13 +136,13 @@ pub unsafe extern "C" fn apci16xx_auto_attach(
 
 #[repr(C)]
 pub struct comedi_driver {
-    pub driver_name: *const core::ffi::c_char,
-    pub module: *mut core::ffi::c_void,
+    pub driver_name: *const kernel::ffi::c_char,
+    pub module: *mut kernel::ffi::c_void,
     pub auto_attach: Option<unsafe extern "C" fn(*mut comedi_device, usize) -> i32>,
     pub detach: Option<unsafe extern "C" fn(*mut comedi_device) -> i32>,
 }
 pub static mut APCI16XX_DRIVER: comedi_driver = comedi_driver {
-    driver_name: b"addi_apci_16xx\0".as_ptr() as *const core::ffi::c_char,
+    driver_name: b"addi_apci_16xx\0".as_ptr() as *const kernel::ffi::c_char,
     module: core::ptr::null_mut(), // THIS_MODULE
     auto_attach: Some(apci16xx_auto_attach),
     detach: None, // comedi_pci_detach
@@ -162,7 +162,7 @@ pub static APCI16XX_PCI_TABLE: [pci_device_id; 3] = [
 
 #[repr(C)]
 pub struct pci_driver {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub id_table: *const pci_device_id,
     pub probe: Option<unsafe extern "C" fn(*mut pci_dev, *const pci_device_id) -> i32>,
     pub remove: Option<unsafe extern "C" fn(*mut pci_dev) -> i32>,
@@ -176,7 +176,7 @@ pub unsafe extern "C" fn apci16xx_pci_probe(
 }
 
 pub static APCI16XX_PCI_DRIVER: pci_driver = pci_driver {
-    name: b"addi_apci_16xx\0".as_ptr() as *const core::ffi::c_char,
+    name: b"addi_apci_16xx\0".as_ptr() as *const kernel::ffi::c_char,
     id_table: APCI16XX_PCI_TABLE.as_ptr(),
     probe: Some(apci16xx_pci_probe),
     remove: None, // comedi_pci_auto_unconfig

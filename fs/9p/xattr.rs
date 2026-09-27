@@ -9,8 +9,8 @@
 
 pub unsafe fn v9fs_fid_xattr_get(
     fid: *mut p9_fid,
-    name: *const ::core::ffi::c_char,
-    buffer: *mut ::core::ffi::c_void,
+    name: *const ::kernel::ffi::c_char,
+    buffer: *mut ::kernel::ffi::c_void,
     buffer_size: usize,
 ) -> isize {
     let mut retval: isize;
@@ -18,7 +18,7 @@ pub unsafe fn v9fs_fid_xattr_get(
     let mut attr_fid: *mut p9_fid;
     let kvec = kvec { iov_base: buffer, iov_len: buffer_size };
     let mut to: iov_iter;
-    let mut err: ::core::ffi::c_int = 0;
+    let mut err: ::kernel::ffi::c_int = 0;
 
     iov_iter_kvec(&mut to, ITER_DEST, &kvec, 1, buffer_size);
 
@@ -58,8 +58,8 @@ pub unsafe fn v9fs_fid_xattr_get(
  */
 pub unsafe fn v9fs_xattr_get(
     dentry: *mut dentry,
-    name: *const ::core::ffi::c_char,
-    buffer: *mut ::core::ffi::c_void,
+    name: *const ::kernel::ffi::c_char,
+    buffer: *mut ::kernel::ffi::c_void,
     buffer_size: usize,
 ) -> isize {
     let fid: *mut p9_fid;
@@ -82,28 +82,28 @@ pub unsafe fn v9fs_xattr_get(
  * Returns 0, or a negative error number on failure.
  */
 pub unsafe fn v9fs_xattr_set(
-    dentry: *mut dentry, name: *const ::core::ffi::c_char,
-    value: *const ::core::ffi::c_void, value_len: usize, flags: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    dentry: *mut dentry, name: *const ::kernel::ffi::c_char,
+    value: *const ::kernel::ffi::c_void, value_len: usize, flags: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let fid = v9fs_fid_lookup(dentry);
-    if IS_ERR(fid) { return PTR_ERR(fid) as ::core::ffi::c_int; }
+    if IS_ERR(fid) { return PTR_ERR(fid) as ::kernel::ffi::c_int; }
     let ret = v9fs_fid_xattr_set(fid, name, value, value_len, flags);
     p9_fid_put(fid);
     ret
 }
 
 pub unsafe fn v9fs_fid_xattr_set(
-    mut fid: *mut p9_fid, name: *const ::core::ffi::c_char,
-    value: *const ::core::ffi::c_void, value_len: usize, flags: ::core::ffi::c_int,
-) -> ::core::ffi::c_int {
+    mut fid: *mut p9_fid, name: *const ::kernel::ffi::c_char,
+    value: *const ::kernel::ffi::c_void, value_len: usize, flags: ::kernel::ffi::c_int,
+) -> ::kernel::ffi::c_int {
     let kvec = kvec { iov_base: value as *mut _, iov_len: value_len };
     let mut from: iov_iter;
-    let mut retval: ::core::ffi::c_int;
-    let mut err: ::core::ffi::c_int;
+    let mut retval: ::kernel::ffi::c_int;
+    let mut err: ::kernel::ffi::c_int;
     iov_iter_kvec(&mut from, ITER_SOURCE, &kvec, 1, value_len);
     p9_debug(P9_DEBUG_VFS, c"name = %s value_len = %zu flags = %d\\n".as_ptr(), name, value_len, flags);
     fid = clone_fid(fid);
-    if IS_ERR(fid) { return PTR_ERR(fid) as ::core::ffi::c_int; }
+    if IS_ERR(fid) { return PTR_ERR(fid) as ::kernel::ffi::c_int; }
     retval = p9_client_xattrcreate(fid, name, value_len, flags);
     if retval < 0 { p9_debug(P9_DEBUG_VFS, c"p9_client_xattrcreate failed %d\\n".as_ptr(), retval); }
     else { p9_client_write(fid, 0, &mut from, &mut retval); }
@@ -112,17 +112,17 @@ pub unsafe fn v9fs_fid_xattr_set(
     retval
 }
 
-pub unsafe fn v9fs_listxattr(dentry: *mut dentry, buffer: *mut ::core::ffi::c_char, buffer_size: usize) -> isize {
+pub unsafe fn v9fs_listxattr(dentry: *mut dentry, buffer: *mut ::kernel::ffi::c_char, buffer_size: usize) -> isize {
     // Txattrwalk with an empty string lists xattrs instead.
     v9fs_xattr_get(dentry, c"".as_ptr(), buffer as *mut _, buffer_size)
 }
 
-unsafe fn v9fs_xattr_handler_get(handler: *const xattr_handler, dentry: *mut dentry, _inode: *mut inode, name: *const ::core::ffi::c_char, buffer: *mut ::core::ffi::c_void, size: usize) -> ::core::ffi::c_int {
+unsafe fn v9fs_xattr_handler_get(handler: *const xattr_handler, dentry: *mut dentry, _inode: *mut inode, name: *const ::kernel::ffi::c_char, buffer: *mut ::kernel::ffi::c_void, size: usize) -> ::kernel::ffi::c_int {
     let full_name = xattr_full_name(handler, name);
-    v9fs_xattr_get(dentry, full_name, buffer, size) as ::core::ffi::c_int
+    v9fs_xattr_get(dentry, full_name, buffer, size) as ::kernel::ffi::c_int
 }
 
-unsafe fn v9fs_xattr_handler_set(handler: *const xattr_handler, _idmap: *mut mnt_idmap, dentry: *mut dentry, _inode: *mut inode, name: *const ::core::ffi::c_char, value: *const ::core::ffi::c_void, size: usize, flags: ::core::ffi::c_int) -> ::core::ffi::c_int {
+unsafe fn v9fs_xattr_handler_set(handler: *const xattr_handler, _idmap: *mut mnt_idmap, dentry: *mut dentry, _inode: *mut inode, name: *const ::kernel::ffi::c_char, value: *const ::kernel::ffi::c_void, size: usize, flags: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int {
     let full_name = xattr_full_name(handler, name);
     v9fs_xattr_set(dentry, full_name, value, size, flags)
 }

@@ -5,8 +5,8 @@
 
 #[repr(C)]
 pub union OffsetUnion {
-    pub un: libc::c_ulong,
-    pub sn: libc::c_long,
+    pub un: kernel::ffi::c_ulong,
+    pub sn: kernel::ffi::c_long,
 }
 
 #[repr(C)]
@@ -18,7 +18,7 @@ pub struct PtRegs {
 extern "C" {
     fn get_user<T>(dst: *mut T, src: *const T) -> i32;
     fn put_user<T>(val: T, dst: *mut T) -> i32;
-    fn instruction_pointer(regs: *const PtRegs) -> libc::c_ulong;
+    fn instruction_pointer(regs: *const PtRegs) -> kernel::ffi::c_ulong;
     fn compat_thumb_mode(regs: *const PtRegs) -> bool;
     fn perf_sw_event(event: u32, count: u64, regs: *mut PtRegs, addr: u32);
     fn arm64_skip_faulting_instruction(regs: *mut PtRegs, size: i32);
@@ -56,13 +56,13 @@ fn regmask_bits(i: u32) -> u32 { i & 0xffff }
 #[inline]
 fn is_t32(hi16: u16) -> bool { (hi16 & 0xe000) == 0xe000 && (hi16 & 0x1800) != 0 }
 
-unsafe fn do_alignment_finish_ldst(mut addr: libc::c_ulong, instr: u32, regs: *mut PtRegs, mut offset: OffsetUnion) {
+unsafe fn do_alignment_finish_ldst(mut addr: kernel::ffi::c_ulong, instr: u32, regs: *mut PtRegs, mut offset: OffsetUnion) {
     if ldst_u_bit(instr) == 0 { offset.un = 0usize.wrapping_sub(offset.un); }
     if ldst_p_bit(instr) == 0 { addr = addr.wrapping_add(offset.un); }
     if ldst_p_bit(instr) == 0 || ldst_w_bit(instr) != 0 { (*regs).regs[rn_bits(instr)] = addr as u32; }
 }
 
-unsafe fn do_alignment_ldrdstrd(addr: libc::c_ulong, instr: u32, regs: *mut PtRegs) -> i32 {
+unsafe fn do_alignment_ldrdstrd(addr: kernel::ffi::c_ulong, instr: u32, regs: *mut PtRegs) -> i32 {
     let rd = rd_bits(instr);
     let (rd2, load) = if instr & 0xfe000000 == 0xe8000000 {
         (((instr >> 8) & 0xf) as usize, ldst_l_bit(instr) != 0)
@@ -77,9 +77,9 @@ unsafe fn do_alignment_ldrdstrd(addr: libc::c_ulong, instr: u32, regs: *mut PtRe
     TYPE_LDST
 }
 
-unsafe fn do_alignment_ldmstm(mut addr: libc::c_ulong, instr: u32, regs: *mut PtRegs) -> i32 {
-    let rn = rn_bits(instr); let mut nr_regs = hweight16(regmask_bits(instr)) as libc::c_ulong * 4;
-    let mut newaddr = (*regs).regs[rn] as libc::c_ulong; let mut eaddr = newaddr;
+unsafe fn do_alignment_ldmstm(mut addr: kernel::ffi::c_ulong, instr: u32, regs: *mut PtRegs) -> i32 {
+    let rn = rn_bits(instr); let mut nr_regs = hweight16(regmask_bits(instr)) as kernel::ffi::c_ulong * 4;
+    let mut newaddr = (*regs).regs[rn] as kernel::ffi::c_ulong; let mut eaddr = newaddr;
     if ldst_u_bit(instr) == 0 { nr_regs = 0usize.wrapping_sub(nr_regs); }
     newaddr = newaddr.wrapping_add(nr_regs); if ldst_u_bit(instr) == 0 { eaddr = newaddr; }
     if ldst_p_eq_u(instr) { eaddr = eaddr.wrapping_add(4); }
@@ -102,21 +102,21 @@ unsafe fn thumb2arm(tinstr: u16) -> u32 {
 }
 
 // Thumb-2 conversion handler. The returned function reuses the ARM handlers.
-unsafe fn do_alignment_t32_to_handler(pinstr: *mut u32, regs: *mut PtRegs, poffset: *mut OffsetUnion) -> Option<unsafe fn(libc::c_ulong,u32,*mut PtRegs)->i32> {
+unsafe fn do_alignment_t32_to_handler(pinstr: *mut u32, regs: *mut PtRegs, poffset: *mut OffsetUnion) -> Option<unsafe fn(kernel::ffi::c_ulong,u32,*mut PtRegs)->i32> {
     let instr = *pinstr; let tinst1 = (instr >> 16) as u16; let tinst2 = instr as u16;
     match tinst1 & 0xffe0 {
         0xe880 | 0xe8a0 | 0xe900 | 0xe920 => Some(do_alignment_ldmstm),
         0xf840 => { if rn_bits(instr)==13 && (tinst2 & 0x09ff)==0x0904 { let l=if ldst_l_bit(instr)!=0 {1} else {0}; let s=[0xe92d0000,0xe8bd0000]; *pinstr=s[l] | (1<<rd_bits(instr)); Some(do_alignment_ldmstm) } else { None } }
-        0xe860 | 0xe960 | 0xe8e0 | 0xe9e0 => { (*poffset).un=((tinst2 as u32&0xff)<<2) as libc::c_ulong; Some(do_alignment_ldrdstrd) }
+        0xe860 | 0xe960 | 0xe8e0 | 0xe9e0 => { (*poffset).un=((tinst2 as u32&0xff)<<2) as kernel::ffi::c_ulong; Some(do_alignment_ldrdstrd) }
         0xe940 | 0xe9c0 => Some(do_alignment_ldrdstrd),
         _ => None,
     }
 }
 
-pub unsafe fn do_compat_alignment_fixup(mut addr: libc::c_ulong, regs: *mut PtRegs) -> i32 {
+pub unsafe fn do_compat_alignment_fixup(mut addr: kernel::ffi::c_ulong, regs: *mut PtRegs) -> i32 {
     let instrptr = instruction_pointer(regs); let mut instr = 0u32; let mut isize = 4;
     if compat_thumb_mode(regs) { let ptr = (instrptr & !1) as *const u16; let mut t = 0u16; if get_user(&mut t, ptr) != 0 { return 1; } if is_t32(t) { let mut t2=0u16; if get_user(&mut t2, ptr.add(1)) != 0 { return 1; } instr=((t as u32)<<16)|t2 as u32; } else { isize=2; instr=thumb2arm(t); } } else if get_user(&mut instr, instrptr as *const u32) != 0 { return 1; }
-    let mut offset=OffsetUnion{un:0}; let handler: Option<unsafe fn(libc::c_ulong,u32,*mut PtRegs)->i32> = match coding_bits(instr) { 0 => { if ldsthd_i_bit(instr)!=0 { offset.un=((instr&0xf00)>>4 | instr&15) as libc::c_ulong; } else { offset.un=(*regs).regs[rm_bits(instr)] as libc::c_ulong; } if instr&0x001000f0==0xd0 || instr&0x001000f0==0xf0 { Some(do_alignment_ldrdstrd) } else { return 1 } }, 0x08000000 => Some(do_alignment_ldmstm), _ => return 1 };
+    let mut offset=OffsetUnion{un:0}; let handler: Option<unsafe fn(kernel::ffi::c_ulong,u32,*mut PtRegs)->i32> = match coding_bits(instr) { 0 => { if ldsthd_i_bit(instr)!=0 { offset.un=((instr&0xf00)>>4 | instr&15) as kernel::ffi::c_ulong; } else { offset.un=(*regs).regs[rm_bits(instr)] as kernel::ffi::c_ulong; } if instr&0x001000f0==0xd0 || instr&0x001000f0==0xf0 { Some(do_alignment_ldrdstrd) } else { return 1 } }, 0x08000000 => Some(do_alignment_ldmstm), _ => return 1 };
     let typ=handler.unwrap()(addr,instr,regs); if typ==TYPE_ERROR || typ==TYPE_FAULT { return 1; } if typ==TYPE_LDST { do_alignment_finish_ldst(addr,instr,regs,offset); } perf_sw_event(0,1,regs,(*regs).pc); arm64_skip_faulting_instruction(regs,isize); 0
 }
 

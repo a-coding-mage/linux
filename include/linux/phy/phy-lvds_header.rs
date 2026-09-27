@@ -22,7 +22,7 @@
 #[repr(C)]
 pub struct phy_configure_opts_lvds {
     pub bits_per_lane_and_dclk_cycle: u32,
-    pub differential_clk_rate: core::ffi::c_ulong,
+    pub differential_clk_rate: kernel::ffi::c_ulong,
     pub lanes: u32,
     pub is_slave: bool,
 }

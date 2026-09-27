@@ -32,19 +32,19 @@ pub struct netlink_callback {
 }
 
 unsafe extern "C" {
-    pub static mut batadv_routing_algo: [::core::ffi::c_char; 0];
+    pub static mut batadv_routing_algo: [::kernel::ffi::c_char; 0];
 
     pub fn batadv_algo_init();
-    pub fn batadv_algo_get(name: *const ::core::ffi::c_char) -> *mut batadv_algo_ops;
-    pub fn batadv_algo_register(bat_algo_ops: *mut batadv_algo_ops) -> ::core::ffi::c_int;
+    pub fn batadv_algo_get(name: *const ::kernel::ffi::c_char) -> *mut batadv_algo_ops;
+    pub fn batadv_algo_register(bat_algo_ops: *mut batadv_algo_ops) -> ::kernel::ffi::c_int;
     pub fn batadv_algo_select(
         bat_priv: *mut batadv_priv,
-        name: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        name: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
     pub fn batadv_algo_dump(
         msg: *mut sk_buff,
         cb: *mut netlink_callback,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

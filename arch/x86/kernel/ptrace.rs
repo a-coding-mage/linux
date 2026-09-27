@@ -7,16 +7,16 @@ pub enum X86Regset32 { General, Fp, Xfp, Xstate, Tls, Ioperm }
 pub enum X86Regset64 { General, Fp, Ioperm, Xstate, Ssp }
 
 #[repr(C)]
-pub struct PtRegsOffset { pub name: *const core::ffi::c_char, pub offset: i32 }
+pub struct PtRegsOffset { pub name: *const kernel::ffi::c_char, pub offset: i32 }
 
 extern "C" {
     static regoffset_table: [PtRegsOffset; 0];
-    fn strcmp(a: *const core::ffi::c_char, b: *const core::ffi::c_char) -> i32;
+    fn strcmp(a: *const kernel::ffi::c_char, b: *const kernel::ffi::c_char) -> i32;
     fn task_pt_regs(task: *mut TaskStruct) -> *mut PtRegs;
     fn test_tsk_thread_flag(task: *mut TaskStruct, flag: i32) -> bool;
     fn clear_tsk_thread_flag(task: *mut TaskStruct, flag: i32);
     fn user_disable_single_step(task: *mut TaskStruct);
-    fn force_sig_fault(sig: i32, code: i32, addr: *mut core::ffi::c_void);
+    fn force_sig_fault(sig: i32, code: i32, addr: *mut kernel::ffi::c_void);
     fn user_mode(regs: *mut PtRegs) -> bool;
 }
 
@@ -42,12 +42,12 @@ extern "C" {
 
 #[inline] unsafe fn invalid_selector(value:u16)->bool { value != 0 && (value & 3) != 3 }
 
-pub unsafe fn regs_query_register_offset(name:*const core::ffi::c_char)->i32 {
+pub unsafe fn regs_query_register_offset(name:*const kernel::ffi::c_char)->i32 {
     let mut r = regoffset_table.as_ptr();
     while !(*r).name.is_null() { if strcmp((*r).name,name)==0 { return (*r).offset; } r=r.add(1); }
     -22
 }
-pub unsafe fn regs_query_register_name(offset:u32)->*const core::ffi::c_char {
+pub unsafe fn regs_query_register_name(offset:u32)->*const kernel::ffi::c_char {
     let mut r=regoffset_table.as_ptr(); while !(*r).name.is_null() { if (*r).offset as u32==offset{return (*r).name;} r=r.add(1); } core::ptr::null()
 }
 
@@ -61,7 +61,7 @@ unsafe fn set_flags(task:*mut TaskStruct, value:usize)->i32 { (*task_pt_regs(tas
 unsafe fn getreg(task:*mut TaskStruct, offset:usize)->usize { match offset { _ => *pt_regs_access(task_pt_regs(task),offset) } }
 unsafe fn putreg(task:*mut TaskStruct, offset:usize, value:usize)->i32 { match offset { _ => {*pt_regs_access(task_pt_regs(task),offset)=value;0} } }
 
-unsafe fn ptrace_triggered(_bp:*mut PerfEvent,_data:*mut core::ffi::c_void,_regs:*mut PtRegs) {}
+unsafe fn ptrace_triggered(_bp:*mut PerfEvent,_data:*mut kernel::ffi::c_void,_regs:*mut PtRegs) {}
 unsafe fn ptrace_get_dr7(bp:*mut *mut PerfEvent)->usize { let mut v=0; for i in 0..4 { let b=*bp.add(i); if !b.is_null() && !(*b).attr.disabled { v |= 1usize << (i*2); } } v }
 unsafe fn ptrace_set_debugreg(tsk:*mut TaskStruct,n:i32,val:usize)->i32 { if n<4 { (*tsk).thread.ptrace_bps[n as usize]=core::ptr::null_mut(); 0 } else if n==6 { (*tsk).thread.virtual_dr6=val;0 } else if n==7 { (*tsk).thread.ptrace_dr7=val;0 } else {-5} }
 

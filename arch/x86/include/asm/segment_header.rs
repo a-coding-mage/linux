@@ -124,10 +124,10 @@ pub unsafe fn vdso_read_cpunode(cpu: *mut u32, node: *mut u32) {
 pub const EARLY_IDT_HANDLER_SIZE: usize = 9 + 4; // ENDBR_INSN_SIZE
 pub const XEN_EARLY_IDT_HANDLER_SIZE: usize = 8 + 4; // ENDBR_INSN_SIZE
 extern "C" {
-    pub static early_idt_handler_array: [[core::ffi::c_char; EARLY_IDT_HANDLER_SIZE]; NUM_EXCEPTION_VECTORS];
+    pub static early_idt_handler_array: [[kernel::ffi::c_char; EARLY_IDT_HANDLER_SIZE]; NUM_EXCEPTION_VECTORS];
     pub fn early_ignore_irq();
     #[cfg(feature = "config_xen_pv")]
-    pub static xen_early_idt_handler_array: [[core::ffi::c_char; XEN_EARLY_IDT_HANDLER_SIZE]; NUM_EXCEPTION_VECTORS];
+    pub static xen_early_idt_handler_array: [[kernel::ffi::c_char; XEN_EARLY_IDT_HANDLER_SIZE]; NUM_EXCEPTION_VECTORS];
 }
 
 #[inline(always)]

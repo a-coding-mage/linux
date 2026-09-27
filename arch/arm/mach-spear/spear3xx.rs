@@ -18,8 +18,8 @@ pub struct Pl022SspController {
     pub bus_id: i32,
     pub enable_dma: i32,
     pub dma_filter: Option<unsafe extern "C" fn() -> bool>,
-    pub dma_tx_param: *const core::ffi::c_char,
-    pub dma_rx_param: *const core::ffi::c_char,
+    pub dma_tx_param: *const kernel::ffi::c_char,
+    pub dma_rx_param: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]
@@ -51,14 +51,14 @@ extern "C" {
     pub fn __phys_to_pfn(phys: usize) -> usize;
     pub fn iotable_init(desc: *mut MapDesc, size: usize);
     pub fn spear3xx_clk_init(misc_base: usize, soc_config_base: usize);
-    pub fn clk_get_sys(dev_id: *const core::ffi::c_char, con_id: *const core::ffi::c_char) -> *mut Clk;
-    pub fn clk_get(dev_id: *const core::ffi::c_char, con_id: *const core::ffi::c_char) -> *mut Clk;
+    pub fn clk_get_sys(dev_id: *const kernel::ffi::c_char, con_id: *const kernel::ffi::c_char) -> *mut Clk;
+    pub fn clk_get(dev_id: *const kernel::ffi::c_char, con_id: *const kernel::ffi::c_char) -> *mut Clk;
     pub fn IS_ERR(ptr: *mut Clk) -> bool;
     pub fn clk_set_parent(clk: *mut Clk, parent: *mut Clk) -> i32;
     pub fn clk_put(clk: *mut Clk);
     pub fn spear_setup_of_timer();
     pub fn bug();
-    pub fn pr_err(fmt: *const core::ffi::c_char, ...);
+    pub fn pr_err(fmt: *const kernel::ffi::c_char, ...);
 }
 
 // ssp device registration
@@ -67,8 +67,8 @@ pub static mut pl022_plat_data: Pl022SspController = Pl022SspController {
     bus_id: 0,
     enable_dma: 1,
     dma_filter: Some(pl08x_filter_id),
-    dma_tx_param: b"ssp0_tx\0".as_ptr() as *const core::ffi::c_char,
-    dma_rx_param: b"ssp0_rx\0".as_ptr() as *const core::ffi::c_char,
+    dma_tx_param: b"ssp0_tx\0".as_ptr() as *const kernel::ffi::c_char,
+    dma_rx_param: b"ssp0_rx\0".as_ptr() as *const kernel::ffi::c_char,
 };
 
 // dmac device registration

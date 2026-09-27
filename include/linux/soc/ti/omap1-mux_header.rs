@@ -154,11 +154,11 @@ pub enum omap1xxx_index {
 
 #[cfg(CONFIG_OMAP_MUX)]
 extern "C" {
-    pub fn omap_cfg_reg(reg_cfg: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
+    pub fn omap_cfg_reg(reg_cfg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_OMAP_MUX))]
 #[inline]
-pub fn omap_cfg_reg(_reg_cfg: ::core::ffi::c_ulong) -> ::core::ffi::c_int { 0 }
+pub fn omap_cfg_reg(_reg_cfg: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

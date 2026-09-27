@@ -34,7 +34,7 @@ unsafe fn tomoyo_check_env_acl(
  *
  * Returns 0 on success, negative value otherwise.
  */
-unsafe fn tomoyo_audit_env_log(r: *mut tomoyo_request_info) -> libc::c_int {
+unsafe fn tomoyo_audit_env_log(r: *mut tomoyo_request_info) -> kernel::ffi::c_int {
     /*
      * Original C annotation:
      * __must_hold_shared(&tomoyo_ss)
@@ -58,10 +58,10 @@ unsafe fn tomoyo_audit_env_log(r: *mut tomoyo_request_info) -> libc::c_int {
  */
 pub unsafe fn tomoyo_env_perm(
     r: *mut tomoyo_request_info,
-    env: *const libc::c_char,
-) -> libc::c_int {
+    env: *const kernel::ffi::c_char,
+) -> kernel::ffi::c_int {
     let mut environ: tomoyo_path_info = core::mem::zeroed();
-    let mut error: libc::c_int;
+    let mut error: kernel::ffi::c_int;
 
     if env.is_null() || *env == 0 {
         return 0;
@@ -107,14 +107,14 @@ unsafe fn tomoyo_same_env_acl(
  *
  * Caller holds tomoyo_read_lock().
  */
-unsafe fn tomoyo_write_env(param: *mut tomoyo_acl_param) -> libc::c_int {
+unsafe fn tomoyo_write_env(param: *mut tomoyo_acl_param) -> kernel::ffi::c_int {
     let mut e: tomoyo_env_acl = core::mem::zeroed();
     e.head.type_ = TOMOYO_TYPE_ENV_ACL;
-    let mut error: libc::c_int = -libc::ENOMEM;
-    let data: *const libc::c_char = tomoyo_read_token(param);
+    let mut error: kernel::ffi::c_int = -ENOMEM;
+    let data: *const kernel::ffi::c_char = tomoyo_read_token(param);
 
-    if !tomoyo_correct_word(data) || !libc::strchr(data, b'=' as libc::c_int).is_null() {
-        return -libc::EINVAL;
+    if !tomoyo_correct_word(data) || !strchr(data, b'=' as kernel::ffi::c_int).is_null() {
+        return -EINVAL;
     }
     e.env = tomoyo_get_name(data);
     if e.env.is_null() {
@@ -138,11 +138,11 @@ unsafe fn tomoyo_write_env(param: *mut tomoyo_acl_param) -> libc::c_int {
  *
  * Returns 0 on success, negative value otherwise.
  */
-pub unsafe fn tomoyo_write_misc(param: *mut tomoyo_acl_param) -> libc::c_int {
+pub unsafe fn tomoyo_write_misc(param: *mut tomoyo_acl_param) -> kernel::ffi::c_int {
     if tomoyo_str_starts(&mut (*param).data, c"env ".as_ptr()) {
         return tomoyo_write_env(param);
     }
-    -libc::EINVAL
+    -EINVAL
 }
 
 

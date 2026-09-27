@@ -56,7 +56,7 @@ pub struct amdgpu_ptl {
     /* PTL disable reference counting */
     pub disable_ref: atomic_t,
     pub mutex: mutex,
-    pub disable_bitmap: [core::ffi::c_ulong; 1],
+    pub disable_bitmap: [kernel::ffi::c_ulong; 1],
     pub ptl_sysfs_created: bool,
 }
 

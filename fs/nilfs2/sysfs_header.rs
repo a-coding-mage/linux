@@ -31,57 +31,57 @@ pub struct nilfs_sysfs_dev_subgroups {
 #[repr(C)]
 pub struct nilfs_feature_attr {
     pub attr: attribute,
-    pub show: Option<unsafe extern "C" fn(*mut kobject, *mut kobj_attribute, *mut core::ffi::c_char) -> isize>,
-    pub store: Option<unsafe extern "C" fn(*mut kobject, *mut kobj_attribute, *const core::ffi::c_char, usize) -> isize>,
+    pub show: Option<unsafe extern "C" fn(*mut kobject, *mut kobj_attribute, *mut kernel::ffi::c_char) -> isize>,
+    pub store: Option<unsafe extern "C" fn(*mut kobject, *mut kobj_attribute, *const kernel::ffi::c_char, usize) -> isize>,
 }
 
 #[repr(C)]
 pub struct nilfs_dev_attr {
     pub attr: attribute,
-    pub show: Option<unsafe extern "C" fn(*mut nilfs_dev_attr, *mut the_nilfs, *mut core::ffi::c_char) -> isize>,
-    pub store: Option<unsafe extern "C" fn(*mut nilfs_dev_attr, *mut the_nilfs, *const core::ffi::c_char, usize) -> isize>,
+    pub show: Option<unsafe extern "C" fn(*mut nilfs_dev_attr, *mut the_nilfs, *mut kernel::ffi::c_char) -> isize>,
+    pub store: Option<unsafe extern "C" fn(*mut nilfs_dev_attr, *mut the_nilfs, *const kernel::ffi::c_char, usize) -> isize>,
 }
 
 #[repr(C)]
 pub struct nilfs_segments_attr {
     pub attr: attribute,
-    pub show: Option<unsafe extern "C" fn(*mut nilfs_segments_attr, *mut the_nilfs, *mut core::ffi::c_char) -> isize>,
-    pub store: Option<unsafe extern "C" fn(*mut nilfs_segments_attr, *mut the_nilfs, *const core::ffi::c_char, usize) -> isize>,
+    pub show: Option<unsafe extern "C" fn(*mut nilfs_segments_attr, *mut the_nilfs, *mut kernel::ffi::c_char) -> isize>,
+    pub store: Option<unsafe extern "C" fn(*mut nilfs_segments_attr, *mut the_nilfs, *const kernel::ffi::c_char, usize) -> isize>,
 }
 
 #[repr(C)]
 pub struct nilfs_mounted_snapshots_attr {
     pub attr: attribute,
-    pub show: Option<unsafe extern "C" fn(*mut nilfs_mounted_snapshots_attr, *mut the_nilfs, *mut core::ffi::c_char) -> isize>,
-    pub store: Option<unsafe extern "C" fn(*mut nilfs_mounted_snapshots_attr, *mut the_nilfs, *const core::ffi::c_char, usize) -> isize>,
+    pub show: Option<unsafe extern "C" fn(*mut nilfs_mounted_snapshots_attr, *mut the_nilfs, *mut kernel::ffi::c_char) -> isize>,
+    pub store: Option<unsafe extern "C" fn(*mut nilfs_mounted_snapshots_attr, *mut the_nilfs, *const kernel::ffi::c_char, usize) -> isize>,
 }
 
 #[repr(C)]
 pub struct nilfs_checkpoints_attr {
     pub attr: attribute,
-    pub show: Option<unsafe extern "C" fn(*mut nilfs_checkpoints_attr, *mut the_nilfs, *mut core::ffi::c_char) -> isize>,
-    pub store: Option<unsafe extern "C" fn(*mut nilfs_checkpoints_attr, *mut the_nilfs, *const core::ffi::c_char, usize) -> isize>,
+    pub show: Option<unsafe extern "C" fn(*mut nilfs_checkpoints_attr, *mut the_nilfs, *mut kernel::ffi::c_char) -> isize>,
+    pub store: Option<unsafe extern "C" fn(*mut nilfs_checkpoints_attr, *mut the_nilfs, *const kernel::ffi::c_char, usize) -> isize>,
 }
 
 #[repr(C)]
 pub struct nilfs_superblock_attr {
     pub attr: attribute,
-    pub show: Option<unsafe extern "C" fn(*mut nilfs_superblock_attr, *mut the_nilfs, *mut core::ffi::c_char) -> isize>,
-    pub store: Option<unsafe extern "C" fn(*mut nilfs_superblock_attr, *mut the_nilfs, *const core::ffi::c_char, usize) -> isize>,
+    pub show: Option<unsafe extern "C" fn(*mut nilfs_superblock_attr, *mut the_nilfs, *mut kernel::ffi::c_char) -> isize>,
+    pub store: Option<unsafe extern "C" fn(*mut nilfs_superblock_attr, *mut the_nilfs, *const kernel::ffi::c_char, usize) -> isize>,
 }
 
 #[repr(C)]
 pub struct nilfs_segctor_attr {
     pub attr: attribute,
-    pub show: Option<unsafe extern "C" fn(*mut nilfs_segctor_attr, *mut the_nilfs, *mut core::ffi::c_char) -> isize>,
-    pub store: Option<unsafe extern "C" fn(*mut nilfs_segctor_attr, *mut the_nilfs, *const core::ffi::c_char, usize) -> isize>,
+    pub show: Option<unsafe extern "C" fn(*mut nilfs_segctor_attr, *mut the_nilfs, *mut kernel::ffi::c_char) -> isize>,
+    pub store: Option<unsafe extern "C" fn(*mut nilfs_segctor_attr, *mut the_nilfs, *const kernel::ffi::c_char, usize) -> isize>,
 }
 
 #[repr(C)]
 pub struct nilfs_snapshot_attr {
     pub attr: attribute,
-    pub show: Option<unsafe extern "C" fn(*mut nilfs_snapshot_attr, *mut nilfs_root, *mut core::ffi::c_char) -> isize>,
-    pub store: Option<unsafe extern "C" fn(*mut nilfs_snapshot_attr, *mut nilfs_root, *const core::ffi::c_char, usize) -> isize>,
+    pub show: Option<unsafe extern "C" fn(*mut nilfs_snapshot_attr, *mut nilfs_root, *mut kernel::ffi::c_char) -> isize>,
+    pub store: Option<unsafe extern "C" fn(*mut nilfs_snapshot_attr, *mut nilfs_root, *const kernel::ffi::c_char, usize) -> isize>,
 }
 
 /* C token-pasting attribute-construction macros are preserved as Rust macro interfaces. */

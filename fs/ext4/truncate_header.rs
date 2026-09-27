@@ -28,7 +28,7 @@ pub unsafe fn ext4_truncate_failed_write(inode: *mut inode) {
  * truncate transaction.
  */
 #[inline]
-pub unsafe fn ext4_blocks_for_truncate(inode: *mut inode) -> libc::c_ulong {
+pub unsafe fn ext4_blocks_for_truncate(inode: *mut inode) -> kernel::ffi::c_ulong {
     let mut needed: ext4_lblk_t;
 
     needed = (*inode).i_blocks >> ((*(*inode).i_sb).s_blocksize_bits - 9);

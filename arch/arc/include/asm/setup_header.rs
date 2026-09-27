@@ -14,33 +14,33 @@ pub const COMMAND_LINE_SIZE: usize = 256;
  */
 #[repr(C)]
 pub struct id_to_str {
-    pub id: core::ffi::c_int,
-    pub str: *const core::ffi::c_char,
+    pub id: kernel::ffi::c_int,
+    pub str: *const kernel::ffi::c_char,
 }
 
 unsafe extern "C" {
-    pub static mut root_mountflags: core::ffi::c_int;
-    pub static mut end_mem: core::ffi::c_int;
+    pub static mut root_mountflags: kernel::ffi::c_int;
+    pub static mut end_mem: kernel::ffi::c_int;
 
     pub fn setup_processor();
     // C declaration carries the __init section annotation.
     pub fn setup_arch_memory();
     // C declaration carries the __init section annotation.
-    pub fn arc_get_mem_sz() -> core::ffi::c_long;
+    pub fn arc_get_mem_sz() -> kernel::ffi::c_long;
 
     pub fn arc_mmu_init();
     pub fn arc_mmu_mumbojumbo(
-        cpu_id: core::ffi::c_int,
-        buf: *mut core::ffi::c_char,
-        len: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        cpu_id: kernel::ffi::c_int,
+        buf: *mut kernel::ffi::c_char,
+        len: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 
     pub fn arc_cache_init();
     pub fn arc_cache_mumbojumbo(
-        cpu_id: core::ffi::c_int,
-        buf: *mut core::ffi::c_char,
-        len: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        cpu_id: kernel::ffi::c_int,
+        buf: *mut kernel::ffi::c_char,
+        len: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
 
     // C declaration carries the __init section annotation.
     pub fn handle_uboot_args();

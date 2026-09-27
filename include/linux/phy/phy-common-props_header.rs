@@ -7,7 +7,7 @@
 
 // Dependency provided by <dt-bindings/phy/phy.h> in the C source.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct fwnode_handle {

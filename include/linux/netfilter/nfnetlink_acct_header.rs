@@ -25,11 +25,11 @@ pub struct sk_buff {
 unsafe extern "C" {
     pub fn nfnl_acct_find_get(
         net: *mut net,
-        filter_name: *const core::ffi::c_char,
+        filter_name: *const kernel::ffi::c_char,
     ) -> *mut nf_acct;
     pub fn nfnl_acct_put(acct: *mut nf_acct);
     pub fn nfnl_acct_update(skb: *const sk_buff, nfacct: *mut nf_acct);
-    pub fn nfnl_acct_overquota(net: *mut net, nfacct: *mut nf_acct) -> core::ffi::c_int;
+    pub fn nfnl_acct_overquota(net: *mut net, nfacct: *mut nf_acct) -> kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

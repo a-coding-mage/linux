@@ -13,9 +13,9 @@ pub enum xdp_mem_type {
 
 extern "C" {
     pub fn __xdp_rxq_info_reg(xdp_rxq: *mut xdp_rxq_info, dev: *mut net_device, queue_index: u32, napi_id: u32, frag_size: u32) -> i32;
-    pub fn xdp_rxq_info_reg_mem_model(xdp_rxq: *mut xdp_rxq_info, type_: xdp_mem_type, allocator: *mut core::ffi::c_void) -> i32;
+    pub fn xdp_rxq_info_reg_mem_model(xdp_rxq: *mut xdp_rxq_info, type_: xdp_mem_type, allocator: *mut kernel::ffi::c_void) -> i32;
     pub fn xdp_rxq_info_unreg_mem_model(xdp_rxq: *mut xdp_rxq_info);
-    pub fn xdp_reg_mem_model(mem: *mut xdp_mem_info, type_: xdp_mem_type, allocator: *mut core::ffi::c_void) -> i32;
+    pub fn xdp_reg_mem_model(mem: *mut xdp_mem_info, type_: xdp_mem_type, allocator: *mut kernel::ffi::c_void) -> i32;
     pub fn xdp_unreg_mem_model(mem: *mut xdp_mem_info);
     pub fn xdp_reg_page_pool(pool: *mut page_pool) -> i32;
     pub fn xdp_unreg_page_pool(pool: *const page_pool);
@@ -116,10 +116,10 @@ pub struct xdp_buff_fields { pub frame_sz: u32, pub flags: u32 }
 
 #[repr(C)]
 pub struct xdp_buff {
-    pub data: *mut core::ffi::c_void,
-    pub data_end: *mut core::ffi::c_void,
-    pub data_meta: *mut core::ffi::c_void,
-    pub data_hard_start: *mut core::ffi::c_void,
+    pub data: *mut kernel::ffi::c_void,
+    pub data_end: *mut kernel::ffi::c_void,
+    pub data_meta: *mut kernel::ffi::c_void,
+    pub data_hard_start: *mut kernel::ffi::c_void,
     pub rxq: *mut xdp_rxq_info,
     pub txq: *mut xdp_txq_info,
     pub flags_union: xdp_buff_flags_union,
@@ -138,7 +138,7 @@ pub struct xdp_buff {
 
 extern "C" {
     pub fn xdp_return_frag(netmem: netmem_ref, xdp: *const xdp_buff);
-    pub fn xdp_warn(msg: *const core::ffi::c_char, func: *const core::ffi::c_char, line: i32);
+    pub fn xdp_warn(msg: *const kernel::ffi::c_char, func: *const kernel::ffi::c_char, line: i32);
     pub fn xdp_build_skb_from_buff(xdp: *const xdp_buff) -> *mut sk_buff;
     pub fn xdp_build_skb_from_zc(xdp: *mut xdp_buff) -> *mut sk_buff;
     pub fn xdp_convert_zc_to_xdp_frame(xdp: *mut xdp_buff) -> *mut xdp_frame;
@@ -152,7 +152,7 @@ extern "C" {
 }
 
 #[repr(C)]
-pub struct xdp_frame { pub data: *mut core::ffi::c_void, pub len: u32, pub headroom: u32, pub metasize: u32, pub mem_type: xdp_mem_type, pub dev_rx: *mut net_device, pub frame_sz: u32, pub flags: u32 }
+pub struct xdp_frame { pub data: *mut kernel::ffi::c_void, pub len: u32, pub headroom: u32, pub metasize: u32, pub mem_type: xdp_mem_type, pub dev_rx: *mut net_device, pub frame_sz: u32, pub flags: u32 }
 #[inline(always)] pub unsafe fn xdp_frame_has_frags(frame: *const xdp_frame) -> bool { ((*frame).flags & XDP_FLAGS_HAS_FRAGS) != 0 }
 #[inline(always)] pub unsafe fn xdp_frame_get_skb_flags(frame: *const xdp_frame) -> u32 { (*frame).flags }
 pub const XDP_BULK_QUEUE_SIZE: usize = 16;

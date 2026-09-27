@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 /* Common masks */
 pub const PMT_CAP_TELEM: u32 = 1 << 0;

@@ -8,11 +8,11 @@
 
 // Declarations supplied by the Linux kernel and architecture support.
 unsafe extern "C" {
-    fn of_machine_is_compatible(compat: *const core::ffi::c_char) -> bool;
-    fn ioremap(phys_addr: usize, size: usize) -> *mut core::ffi::c_void;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn iounmap(addr: *mut core::ffi::c_void);
-    fn of_clk_init(clk_match: *const core::ffi::c_void);
+    fn of_machine_is_compatible(compat: *const kernel::ffi::c_char) -> bool;
+    fn ioremap(phys_addr: usize, size: usize) -> *mut kernel::ffi::c_void;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn iounmap(addr: *mut kernel::ffi::c_void);
+    fn of_clk_init(clk_match: *const kernel::ffi::c_void);
     fn timer_probe();
 }
 
@@ -20,7 +20,7 @@ const GPT6_CON_MT65XX: usize = 0x10008060;
 const GPT_ENABLE: u32 = 0x31;
 
 unsafe fn mediatek_timer_init() {
-    let mut gpt_base: *mut core::ffi::c_void;
+    let mut gpt_base: *mut kernel::ffi::c_void;
 
     if of_machine_is_compatible(c"mediatek,mt6589".as_ptr())
         || of_machine_is_compatible(c"mediatek,mt7623".as_ptr())
@@ -39,7 +39,7 @@ unsafe fn mediatek_timer_init() {
     timer_probe();
 }
 
-static mediatek_board_dt_compat: [*const core::ffi::c_char; 10] = [
+static mediatek_board_dt_compat: [*const kernel::ffi::c_char; 10] = [
     c"mediatek,mt2701".as_ptr(),
     c"mediatek,mt6572".as_ptr(),
     c"mediatek,mt6582".as_ptr(),

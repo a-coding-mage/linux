@@ -17,27 +17,27 @@ const ASS_CLK_DIV: usize = 0x4;
 const ASS_CLK_GATE: usize = 0x8;
 
 extern "C" {
-    static mut lock: core::ffi::c_ulong;
-    static mut reg_base: *mut core::ffi::c_void;
+    static mut lock: kernel::ffi::c_ulong;
+    static mut reg_base: *mut kernel::ffi::c_void;
     static mut clk_data: *mut clk_hw_onecell_data;
 
-    fn readl(addr: *mut core::ffi::c_void) -> u32;
-    fn writel(value: u32, addr: *mut core::ffi::c_void);
-    fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32) -> *mut core::ffi::c_void;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn devm_clk_get(dev: *mut device, name: *const core::ffi::c_char) -> *mut clk;
-    fn __clk_get_name(clk: *mut clk) -> *const core::ffi::c_char;
-    fn clk_hw_register_mux(parent: *mut core::ffi::c_void, name: *const core::ffi::c_char,
-        parents: *const *const core::ffi::c_char, num_parents: usize, flags: u32,
-        reg: *mut core::ffi::c_void, shift: u8, width: u8, clk_flags: u8,
-        lock: *mut core::ffi::c_ulong) -> *mut clk_hw;
-    fn clk_hw_register_divider(parent: *mut core::ffi::c_void, name: *const core::ffi::c_char,
-        parent_name: *const core::ffi::c_char, flags: u32, reg: *mut core::ffi::c_void,
-        shift: u8, width: u8, clk_flags: u8, lock: *mut core::ffi::c_ulong) -> *mut clk_hw;
-    fn clk_hw_register_gate(parent: *mut core::ffi::c_void, name: *const core::ffi::c_char,
-        parent_name: *const core::ffi::c_char, flags: u32, reg: *mut core::ffi::c_void,
-        bit_idx: u8, clk_flags: u8, lock: *mut core::ffi::c_ulong) -> *mut clk_hw;
-    fn of_clk_add_hw_provider(node: *mut core::ffi::c_void, get: *mut core::ffi::c_void,
+    fn readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn writel(value: u32, addr: *mut kernel::ffi::c_void);
+    fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: u32) -> *mut kernel::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn devm_clk_get(dev: *mut device, name: *const kernel::ffi::c_char) -> *mut clk;
+    fn __clk_get_name(clk: *mut clk) -> *const kernel::ffi::c_char;
+    fn clk_hw_register_mux(parent: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char,
+        parents: *const *const kernel::ffi::c_char, num_parents: usize, flags: u32,
+        reg: *mut kernel::ffi::c_void, shift: u8, width: u8, clk_flags: u8,
+        lock: *mut kernel::ffi::c_ulong) -> *mut clk_hw;
+    fn clk_hw_register_divider(parent: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char,
+        parent_name: *const kernel::ffi::c_char, flags: u32, reg: *mut kernel::ffi::c_void,
+        shift: u8, width: u8, clk_flags: u8, lock: *mut kernel::ffi::c_ulong) -> *mut clk_hw;
+    fn clk_hw_register_gate(parent: *mut kernel::ffi::c_void, name: *const kernel::ffi::c_char,
+        parent_name: *const kernel::ffi::c_char, flags: u32, reg: *mut kernel::ffi::c_void,
+        bit_idx: u8, clk_flags: u8, lock: *mut kernel::ffi::c_ulong) -> *mut clk_hw;
+    fn of_clk_add_hw_provider(node: *mut kernel::ffi::c_void, get: *mut kernel::ffi::c_void,
         data: *mut clk_hw_onecell_data) -> i32;
     fn clk_hw_unregister(hw: *mut clk_hw);
     fn register_syscore(syscore: *mut syscore);
@@ -50,11 +50,11 @@ struct clk_hw_onecell_data { num: usize, hws: [*mut clk_hw; 0] }
 #[repr(C)] struct clk;
 #[repr(C)] struct device;
 #[repr(C)] struct platform_device { dev: device }
-#[repr(C)] struct syscore_ops { suspend: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>, resume: Option<unsafe extern "C" fn(*mut core::ffi::c_void)> }
+#[repr(C)] struct syscore_ops { suspend: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void) -> i32>, resume: Option<unsafe extern "C" fn(*mut kernel::ffi::c_void)> }
 #[repr(C)] struct syscore { ops: *const syscore_ops }
-#[repr(C)] struct of_device_id { compatible: *const core::ffi::c_char }
+#[repr(C)] struct of_device_id { compatible: *const kernel::ffi::c_char }
 #[repr(C)] struct platform_driver { driver: driver, probe: Option<unsafe extern "C" fn(*mut platform_device) -> i32> }
-#[repr(C)] struct driver { name: *const core::ffi::c_char, suppress_bind_attrs: bool, of_match_table: *const of_device_id }
+#[repr(C)] struct driver { name: *const kernel::ffi::c_char, suppress_bind_attrs: bool, of_match_table: *const of_device_id }
 
 const ASS_MAX_CLKS: usize = 10;
 const CLK_MOUT_AUDSS: usize = 0;
@@ -73,13 +73,13 @@ const CLK_HCLK_RP: usize = 10;
 static mut reg_save: [[u32; 2]; 3] = [[ASS_CLK_SRC as u32, 0], [ASS_CLK_DIV as u32, 0], [ASS_CLK_GATE as u32, 0]];
 
 #[cfg(CONFIG_PM_SLEEP)]
-unsafe extern "C" fn s5pv210_audss_clk_suspend(_data: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn s5pv210_audss_clk_suspend(_data: *mut kernel::ffi::c_void) -> i32 {
     for i in 0..reg_save.len() { reg_save[i][1] = readl(reg_base.add(reg_save[i][0] as usize)); }
     0
 }
 
 #[cfg(CONFIG_PM_SLEEP)]
-unsafe extern "C" fn s5pv210_audss_clk_resume(_data: *mut core::ffi::c_void) {
+unsafe extern "C" fn s5pv210_audss_clk_resume(_data: *mut kernel::ffi::c_void) {
     for i in 0..reg_save.len() { writel(reg_save[i][1], reg_base.add(reg_save[i][0] as usize)); }
 }
 

@@ -20,7 +20,7 @@ extern "C" {
         mode: i32,
         priority: i32,
         handler: unsafe extern "C" fn(*mut crate::sys_off_data) -> i32,
-        data: *mut core::ffi::c_void,
+        data: *mut kernel::ffi::c_void,
     );
     fn read_lock(lock: *mut crate::spinlock_t);
     fn read_unlock(lock: *mut crate::spinlock_t);
@@ -60,7 +60,7 @@ pub unsafe extern "C" fn uml_cleanup() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn machine_restart(_unused: *mut core::ffi::c_char) {
+pub unsafe extern "C" fn machine_restart(_unused: *mut kernel::ffi::c_char) {
     uml_cleanup();
     reboot_skas();
 }

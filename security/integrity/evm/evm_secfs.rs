@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Copyright (C) 2010 IBM Corporation */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 use core::ptr;
 
 extern "C" {
@@ -14,21 +14,21 @@ extern "C" {
     fn simple_setattr(_: *const mnt_idmap, _: *mut dentry, _: *mut iattr) -> i32;
     fn inode_lock(_: *mut inode); fn inode_unlock(_: *mut inode);
     fn mutex_lock_interruptible(_: *mut mutex) -> i32; fn mutex_lock(_: *mut mutex); fn mutex_unlock(_: *mut mutex);
-    fn kmalloc(_: usize, _: u32) -> *mut core::ffi::c_void; fn kfree(_: *mut core::ffi::c_void);
+    fn kmalloc(_: usize, _: u32) -> *mut kernel::ffi::c_void; fn kfree(_: *mut kernel::ffi::c_void);
     fn strlen(_: *const c_char) -> usize; fn sprintf(_: *mut c_char, _: *const c_char, ...) -> i32;
     fn strncmp(_: *const c_char, _: *const c_char, _: usize) -> i32; fn strcmp(_: *const c_char, _: *const c_char) -> i32;
     fn snprintf(_: *mut c_char, _: usize, _: *const c_char, ...) -> i32;
     fn memdup_user_nul(_: *const c_char, _: usize) -> *mut c_char;
-    fn audit_context() -> *mut core::ffi::c_void;
-    fn audit_log_start(_: *mut core::ffi::c_void, _: u32, _: u32) -> *mut audit_buffer;
+    fn audit_context() -> *mut kernel::ffi::c_void;
+    fn audit_log_start(_: *mut kernel::ffi::c_void, _: u32, _: u32) -> *mut audit_buffer;
     fn audit_log_format(_: *mut audit_buffer, _: *const c_char, ...);
     fn audit_log_untrustedstring(_: *mut audit_buffer, _: *const c_char); fn audit_log_end(_: *mut audit_buffer);
     fn securityfs_create_dir(_: *const c_char, _: *mut dentry) -> *mut dentry;
-    fn securityfs_create_file(_: *const c_char, _: u32, _: *mut dentry, _: *mut core::ffi::c_void, _: *const file_operations) -> *mut dentry;
-    fn securityfs_create_symlink(_: *const c_char, _: *mut dentry, _: *const c_char, _: *mut core::ffi::c_void) -> *mut dentry;
+    fn securityfs_create_file(_: *const c_char, _: u32, _: *mut dentry, _: *mut kernel::ffi::c_void, _: *const file_operations) -> *mut dentry;
+    fn securityfs_create_symlink(_: *const c_char, _: *mut dentry, _: *const c_char, _: *mut kernel::ffi::c_void) -> *mut dentry;
     fn securityfs_remove(_: *mut dentry); fn integrity_fs_init() -> i32; fn integrity_fs_fini(); fn evm_init_key() -> i32;
     fn capable(_: u32) -> bool; fn kstrtouint_from_user(_: *const c_char, _: usize, _: u32, _: *mut u32) -> i32;
-    fn IS_ENABLED(_: u32) -> bool; fn IS_ERR(_: *const core::ffi::c_void) -> bool; fn PTR_ERR(_: *const core::ffi::c_void) -> i32;
+    fn IS_ENABLED(_: u32) -> bool; fn IS_ERR(_: *const kernel::ffi::c_void) -> bool; fn PTR_ERR(_: *const kernel::ffi::c_void) -> i32;
 }
 type dentry; type file; type audit_buffer; type iattr; type inode; type mnt_idmap;
 

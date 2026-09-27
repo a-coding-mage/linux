@@ -18,7 +18,7 @@
 /// Ownership of the link matches ownership of the target.
 pub unsafe fn kernfs_create_link(
     parent: *mut kernfs_node,
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     target: *mut kernfs_node,
 ) -> *mut kernfs_node {
     let mut kn: *mut kernfs_node;
@@ -54,7 +54,7 @@ pub unsafe fn kernfs_create_link(
 unsafe fn kernfs_get_target_path(
     parent: *mut kernfs_node,
     target: *mut kernfs_node,
-    path: *mut core::ffi::c_char,
+    path: *mut kernel::ffi::c_char,
 ) -> i32 {
     let mut base: *mut kernfs_node;
     let mut kn: *mut kernfs_node;
@@ -77,7 +77,7 @@ unsafe fn kernfs_get_target_path(
             return -ENAMETOOLONG;
         }
 
-        core::ptr::copy_nonoverlapping(b"../\0".as_ptr() as *const core::ffi::c_char, s, 4);
+        core::ptr::copy_nonoverlapping(b"../\0".as_ptr() as *const kernel::ffi::c_char, s, 4);
         s = s.add(3);
         base = kernfs_parent(base);
     }
@@ -108,7 +108,7 @@ unsafe fn kernfs_get_target_path(
         memcpy(s.add(len as usize), name, slen as usize);
         if len != 0 {
             len -= 1;
-            *s.add(len as usize) = b'/' as core::ffi::c_char;
+            *s.add(len as usize) = b'/' as kernel::ffi::c_char;
         }
 
         kn = kernfs_parent(kn);
@@ -117,7 +117,7 @@ unsafe fn kernfs_get_target_path(
     0
 }
 
-unsafe fn kernfs_getlink(inode: *mut inode, path: *mut core::ffi::c_char) -> i32 {
+unsafe fn kernfs_getlink(inode: *mut inode, path: *mut kernel::ffi::c_char) -> i32 {
     let kn = (*inode).i_private as *mut kernfs_node;
     let parent: *mut kernfs_node;
     let target = (*kn).symlink.target_kn;
@@ -136,8 +136,8 @@ unsafe fn kernfs_iop_get_link(
     dentry: *mut dentry,
     inode: *mut inode,
     done: *mut delayed_call,
-) -> *const core::ffi::c_char {
-    let body: *mut core::ffi::c_char;
+) -> *const kernel::ffi::c_char {
+    let body: *mut kernel::ffi::c_char;
     let error: i32;
 
     if dentry.is_null() {
@@ -149,7 +149,7 @@ unsafe fn kernfs_iop_get_link(
     }
     error = kernfs_getlink(inode, body);
     if error < 0 {
-        kfree(body as *mut core::ffi::c_void);
+        kfree(body as *mut kernel::ffi::c_void);
         return ERR_PTR(error);
     }
     set_delayed_call(done, kfree_link, body);

@@ -22,7 +22,7 @@
  * Authors: AMD
  */
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 // Supplied by the translated dependency represented by dm_services.h.
 #[repr(C)]
@@ -32,7 +32,7 @@ pub struct dc {
 
 #[repr(C)]
 pub struct mod_stats {
-    pub dummy: core::ffi::c_int,
+    pub dummy: kernel::ffi::c_int,
 }
 
 #[repr(C)]

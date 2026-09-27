@@ -10,15 +10,15 @@
 // The declarations below are supplied by the surrounding kernel translation.
 unsafe extern "C" {
     fn read_c0_index() -> u32;
-    fn read_c0_entryhi() -> libc::c_ulong;
-    fn read_c0_entrylo0() -> libc::c_ulong;
+    fn read_c0_entryhi() -> kernel::ffi::c_ulong;
+    fn read_c0_entrylo0() -> kernel::ffi::c_ulong;
     fn write_c0_index(value: i32);
-    fn write_c0_entryhi(value: libc::c_ulong);
-    fn cpu_asid_mask(cpu: *const CurrentCpuData) -> libc::c_ulong;
+    fn write_c0_entryhi(value: kernel::ffi::c_ulong);
+    fn cpu_asid_mask(cpu: *const CurrentCpuData) -> kernel::ffi::c_ulong;
     static current_cpu_data: CurrentCpuData;
-    fn printk(format: *const libc::c_char, ...);
-    fn pr_info(format: *const libc::c_char, ...);
-    fn pr_cont(format: *const libc::c_char, ...);
+    fn printk(format: *const kernel::ffi::c_char, ...);
+    fn pr_info(format: *const kernel::ffi::c_char, ...);
+    fn pr_cont(format: *const kernel::ffi::c_char, ...);
 }
 
 #[repr(C)]
@@ -27,23 +27,23 @@ pub struct CurrentCpuData {
 }
 
 pub unsafe fn dump_tlb_regs() {
-    pr_info(b"Index    : %0x\n\0".as_ptr() as *const libc::c_char,
+    pr_info(b"Index    : %0x\n\0".as_ptr() as *const kernel::ffi::c_char,
             read_c0_index());
-    pr_info(b"EntryHi  : %0lx\n\0".as_ptr() as *const libc::c_char,
+    pr_info(b"EntryHi  : %0lx\n\0".as_ptr() as *const kernel::ffi::c_char,
             read_c0_entryhi());
-    pr_info(b"EntryLo  : %0lx\n\0".as_ptr() as *const libc::c_char,
+    pr_info(b"EntryLo  : %0lx\n\0".as_ptr() as *const kernel::ffi::c_char,
             read_c0_entrylo0());
 }
 
 unsafe fn dump_tlb(first: i32, last: i32) {
     let mut i: i32;
-    let mut asid: libc::c_uint;
-    let mut entryhi: libc::c_ulong;
-    let mut entrylo0: libc::c_ulong;
-    let asid_mask: libc::c_ulong;
+    let mut asid: kernel::ffi::c_uint;
+    let mut entryhi: kernel::ffi::c_ulong;
+    let mut entrylo0: kernel::ffi::c_ulong;
+    let asid_mask: kernel::ffi::c_ulong;
 
     asid_mask = cpu_asid_mask(&current_cpu_data);
-    asid = (read_c0_entryhi() & asid_mask) as libc::c_uint;
+    asid = (read_c0_entryhi() & asid_mask) as kernel::ffi::c_uint;
 
     i = first;
     while i <= last {
@@ -59,16 +59,16 @@ unsafe fn dump_tlb(first: i32, last: i32) {
         /* Unused entries have a virtual address of KSEG0.  */
         if (entryhi & PAGE_MASK) != KSEG0
             && ((entrylo0 & R3K_ENTRYLO_G) != 0
-                || (entryhi & asid_mask) == asid as libc::c_ulong)
+                || (entryhi & asid_mask) == asid as kernel::ffi::c_ulong)
         {
             /*
              * Only print entries in use
              */
-            printk(b"Index: %2d \0".as_ptr() as *const libc::c_char, i);
+            printk(b"Index: %2d \0".as_ptr() as *const kernel::ffi::c_char, i);
 
             pr_cont(
                 b"va=%08lx asid=%08lx  [pa=%06lx n=%d d=%d v=%d g=%d]\0"
-                    .as_ptr() as *const libc::c_char,
+                    .as_ptr() as *const kernel::ffi::c_char,
                 entryhi & PAGE_MASK,
                 entryhi & asid_mask,
                 entrylo0 & PAGE_MASK,
@@ -80,9 +80,9 @@ unsafe fn dump_tlb(first: i32, last: i32) {
         }
         i += 1;
     }
-    printk(b"\n\0".as_ptr() as *const libc::c_char);
+    printk(b"\n\0".as_ptr() as *const kernel::ffi::c_char);
 
-    write_c0_entryhi(asid as libc::c_ulong);
+    write_c0_entryhi(asid as kernel::ffi::c_ulong);
 }
 
 pub unsafe fn dump_tlb_all() {

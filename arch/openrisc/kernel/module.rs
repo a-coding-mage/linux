@@ -13,8 +13,8 @@
 // Dependencies supplied by the Linux module loader and ELF headers.
 
 unsafe extern "C" {
-    fn pr_debug(fmt: *const core::ffi::c_char, ...);
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn pr_debug(fmt: *const kernel::ffi::c_char, ...);
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
 }
 
 const R_OR1K_32: u32 = 1;
@@ -46,7 +46,7 @@ pub struct Elf32_Sym {
 
 #[repr(C)]
 pub struct module {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[inline]
@@ -61,7 +61,7 @@ unsafe fn elf32_r_type(info: u32) -> u32 {
 
 pub unsafe fn apply_relocate_add(
     sechdrs: *mut Elf32_Shdr,
-    _strtab: *const core::ffi::c_char,
+    _strtab: *const kernel::ffi::c_char,
     symindex: u32,
     relsec: u32,
     me: *mut module,
@@ -69,7 +69,7 @@ pub unsafe fn apply_relocate_add(
     let rel = (*sechdrs.add(relsec as usize)).sh_addr as usize as *mut Elf32_Rela;
 
     pr_debug(
-        b"Applying relocate section %u to %u\n\0".as_ptr() as *const core::ffi::c_char,
+        b"Applying relocate section %u to %u\n\0".as_ptr() as *const kernel::ffi::c_char,
         relsec,
         (*sechdrs.add(relsec as usize)).sh_info,
     );
@@ -120,7 +120,7 @@ pub unsafe fn apply_relocate_add(
             _ => {
                 pr_err(
                     b"module %s: Unknown relocation: %u\n\0".as_ptr()
-                        as *const core::ffi::c_char,
+                        as *const kernel::ffi::c_char,
                     (*me).name,
                     elf32_r_type((*rel.add(i)).r_info),
                 );

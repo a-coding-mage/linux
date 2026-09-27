@@ -19,7 +19,7 @@ pub struct ccwgroup_device {
     pub onoff: atomic_t,
     pub reg_mutex: mutex,
     /* public: */
-    pub count: ::core::ffi::c_uint,
+    pub count: ::kernel::ffi::c_uint,
     pub dev: device,
     pub ungroup_work: work_struct,
     pub cdev: *mut *mut ccw_device,
@@ -44,32 +44,32 @@ pub enum ccwgroup_device_state {
  */
 #[repr(C)]
 pub struct ccwgroup_driver {
-    pub setup: Option<unsafe extern "C" fn(*mut ccwgroup_device) -> ::core::ffi::c_int>,
+    pub setup: Option<unsafe extern "C" fn(*mut ccwgroup_device) -> ::kernel::ffi::c_int>,
     pub remove: Option<unsafe extern "C" fn(*mut ccwgroup_device)>,
-    pub set_online: Option<unsafe extern "C" fn(*mut ccwgroup_device) -> ::core::ffi::c_int>,
-    pub set_offline: Option<unsafe extern "C" fn(*mut ccwgroup_device) -> ::core::ffi::c_int>,
+    pub set_online: Option<unsafe extern "C" fn(*mut ccwgroup_device) -> ::kernel::ffi::c_int>,
+    pub set_offline: Option<unsafe extern "C" fn(*mut ccwgroup_device) -> ::kernel::ffi::c_int>,
     pub shutdown: Option<unsafe extern "C" fn(*mut ccwgroup_device)>,
     pub driver: device_driver,
     pub ccw_driver: *mut ccw_driver,
 }
 
 extern "C" {
-    pub fn ccwgroup_driver_register(cdriver: *mut ccwgroup_driver) -> ::core::ffi::c_int;
+    pub fn ccwgroup_driver_register(cdriver: *mut ccwgroup_driver) -> ::kernel::ffi::c_int;
     pub fn ccwgroup_driver_unregister(cdriver: *mut ccwgroup_driver);
     pub fn ccwgroup_create_dev(
         root: *mut device,
         gdrv: *mut ccwgroup_driver,
-        num_devices: ::core::ffi::c_int,
-        buf: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        num_devices: ::kernel::ffi::c_int,
+        buf: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
 
-    pub fn ccwgroup_set_online(gdev: *mut ccwgroup_device) -> ::core::ffi::c_int;
+    pub fn ccwgroup_set_online(gdev: *mut ccwgroup_device) -> ::kernel::ffi::c_int;
     pub fn ccwgroup_set_offline(
         gdev: *mut ccwgroup_device,
         call_gdrv: bool,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
-    pub fn ccwgroup_probe_ccwdev(cdev: *mut ccw_device) -> ::core::ffi::c_int;
+    pub fn ccwgroup_probe_ccwdev(cdev: *mut ccw_device) -> ::kernel::ffi::c_int;
     pub fn ccwgroup_remove_ccwdev(cdev: *mut ccw_device);
 }
 

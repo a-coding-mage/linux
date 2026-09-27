@@ -35,11 +35,11 @@ pub struct pcmcia_device_id {
     pub prod_id_hash: [u32; 4],
 
     /* not matched against in kernelspace */
-    pub prod_id: [*const core::ffi::c_char; 4],
+    pub prod_id: [*const kernel::ffi::c_char; 4],
 
     /* not matched against */
     pub driver_info: kernel_ulong_t,
-    pub cisfile: *mut core::ffi::c_char,
+    pub cisfile: *mut kernel::ffi::c_char,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

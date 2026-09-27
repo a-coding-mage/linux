@@ -3,7 +3,7 @@
 // C dependencies: <linux/tty.h>, <linux/interrupt.h>, <linux/keyboard.h>
 
 extern "C" {
-    pub static mut func_table: [*mut ::core::ffi::c_char; MAX_NR_FUNC];
+    pub static mut func_table: [*mut ::kernel::ffi::c_char; MAX_NR_FUNC];
 }
 
 /*

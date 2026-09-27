@@ -10,7 +10,7 @@ pub struct nf_ct_timeout {
     pub l3num: __u16,
     pub l4proto: *const nf_conntrack_l4proto,
     pub rcu: rcu_head,
-    pub data: [::core::ffi::c_char; 0],
+    pub data: [::kernel::ffi::c_char; 0],
 }
 
 #[repr(C)]
@@ -41,7 +41,7 @@ pub unsafe fn nf_ct_timeout_put(ct: *const nf_conn) {
 #[inline]
 pub unsafe fn nf_ct_timeout_data(
     t: *const nf_conn_timeout,
-) -> *mut ::core::ffi::c_uint {
+) -> *mut ::kernel::ffi::c_uint {
     #[cfg(CONFIG_NF_CONNTRACK_TIMEOUT)]
     {
         let timeout: *mut nf_ct_timeout;
@@ -51,7 +51,7 @@ pub unsafe fn nf_ct_timeout_data(
             return ::core::ptr::null_mut();
         }
 
-        return (*timeout).data.as_mut_ptr() as *mut ::core::ffi::c_uint;
+        return (*timeout).data.as_mut_ptr() as *mut ::kernel::ffi::c_uint;
     }
     #[cfg(not(CONFIG_NF_CONNTRACK_TIMEOUT))]
     {
@@ -102,8 +102,8 @@ pub unsafe fn nf_ct_timeout_ext_add(
 }
 
 #[inline]
-pub unsafe fn nf_ct_timeout_lookup(ct: *const nf_conn) -> *mut ::core::ffi::c_uint {
-    let mut timeouts: *mut ::core::ffi::c_uint = ::core::ptr::null_mut();
+pub unsafe fn nf_ct_timeout_lookup(ct: *const nf_conn) -> *mut ::kernel::ffi::c_uint {
+    let mut timeouts: *mut ::kernel::ffi::c_uint = ::core::ptr::null_mut();
     #[cfg(CONFIG_NF_CONNTRACK_TIMEOUT)]
     {
         let timeout_ext = nf_ct_timeout_find(ct);
@@ -122,8 +122,8 @@ extern "C" {
         ct: *mut nf_conn,
         l3num: u8,
         l4num: u8,
-        timeout_name: *const ::core::ffi::c_char,
-    ) -> ::core::ffi::c_int;
+        timeout_name: *const ::kernel::ffi::c_char,
+    ) -> ::kernel::ffi::c_int;
     pub fn nf_ct_destroy_timeout(ct: *mut nf_conn);
 }
 
@@ -134,8 +134,8 @@ pub unsafe fn nf_ct_set_timeout(
     _ct: *mut nf_conn,
     _l3num: u8,
     _l4num: u8,
-    _timeout_name: *const ::core::ffi::c_char,
-) -> ::core::ffi::c_int {
+    _timeout_name: *const ::kernel::ffi::c_char,
+) -> ::kernel::ffi::c_int {
     -EOPNOTSUPP
 }
 
@@ -147,7 +147,7 @@ pub unsafe fn nf_ct_destroy_timeout(_ct: *mut nf_conn) {}
 #[repr(C)]
 pub struct nf_ct_timeout_hooks {
     pub timeout_find_get:
-        Option<unsafe extern "C" fn(*mut net, *const ::core::ffi::c_char) -> *mut nf_ct_timeout>,
+        Option<unsafe extern "C" fn(*mut net, *const ::kernel::ffi::c_char) -> *mut nf_ct_timeout>,
     pub timeout_put: Option<unsafe extern "C" fn(*mut nf_ct_timeout)>,
 }
 

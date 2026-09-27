@@ -3,7 +3,7 @@
 // Dependencies supplied by the corresponding Linux headers are represented
 // here as external declarations.
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct device {

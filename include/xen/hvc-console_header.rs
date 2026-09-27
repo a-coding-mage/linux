@@ -16,9 +16,9 @@ unsafe extern "C" {
 #[cfg(CONFIG_HVC_XEN)]
 unsafe extern "C" {
     pub fn xen_console_resume();
-    pub fn xen_raw_console_write(str_: *const core::ffi::c_char);
+    pub fn xen_raw_console_write(str_: *const kernel::ffi::c_char);
     // C declaration carries __printf(1, 2).
-    pub fn xen_raw_printk(fmt: *const core::ffi::c_char, ...);
+    pub fn xen_raw_printk(fmt: *const kernel::ffi::c_char, ...);
 }
 
 #[cfg(not(CONFIG_HVC_XEN))]
@@ -27,10 +27,10 @@ pub fn xen_console_resume() {}
 
 #[cfg(not(CONFIG_HVC_XEN))]
 #[inline]
-pub fn xen_raw_console_write(_str: *const core::ffi::c_char) {}
+pub fn xen_raw_console_write(_str: *const kernel::ffi::c_char) {}
 
 #[cfg(not(CONFIG_HVC_XEN))]
 #[inline]
-pub unsafe fn xen_raw_printk(_fmt: *const core::ffi::c_char, ...) {}
+pub unsafe fn xen_raw_printk(_fmt: *const kernel::ffi::c_char, ...) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

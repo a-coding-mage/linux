@@ -34,7 +34,7 @@ extern "C" {
     pub fn unix_add_edges(fpl: *mut scm_fp_list, receiver: *mut unix_sock);
     pub fn unix_del_edges(fpl: *mut scm_fp_list);
     pub fn unix_update_edges(receiver: *mut unix_sock);
-    pub fn unix_prepare_fpl(fpl: *mut scm_fp_list) -> ::core::ffi::c_int;
+    pub fn unix_prepare_fpl(fpl: *mut scm_fp_list) -> ::kernel::ffi::c_int;
     pub fn unix_destroy_fpl(fpl: *mut scm_fp_list);
     pub fn unix_peek_fpl(fpl: *mut scm_fp_list);
     pub fn unix_schedule_gc(user: *mut user_struct);
@@ -42,20 +42,20 @@ extern "C" {
 
 /* SOCK_DIAG */
 extern "C" {
-    pub fn unix_inq_len(sk: *mut sock) -> ::core::ffi::c_long;
-    pub fn unix_outq_len(sk: *mut sock) -> ::core::ffi::c_long;
+    pub fn unix_inq_len(sk: *mut sock) -> ::kernel::ffi::c_long;
+    pub fn unix_outq_len(sk: *mut sock) -> ::kernel::ffi::c_long;
 }
 
 /* sysctl */
 #[cfg(CONFIG_SYSCTL)]
 extern "C" {
-    pub fn unix_sysctl_register(net: *mut net) -> ::core::ffi::c_int;
+    pub fn unix_sysctl_register(net: *mut net) -> ::kernel::ffi::c_int;
     pub fn unix_sysctl_unregister(net: *mut net);
 }
 
 #[cfg(not(CONFIG_SYSCTL))]
 #[inline]
-pub unsafe fn unix_sysctl_register(_net: *mut net) -> ::core::ffi::c_int {
+pub unsafe fn unix_sysctl_register(_net: *mut net) -> ::kernel::ffi::c_int {
     0
 }
 
@@ -69,14 +69,14 @@ extern "C" {
         sk: *mut sock,
         msg: *mut msghdr,
         size: usize,
-        flags: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        flags: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn __unix_stream_recvmsg(
         sk: *mut sock,
         msg: *mut msghdr,
         size: usize,
-        flags: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        flags: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 }
 
 #[cfg(CONFIG_BPF_SYSCALL)]
@@ -88,12 +88,12 @@ extern "C" {
         sk: *mut sock,
         psock: *mut sk_psock,
         restore: bool,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn unix_stream_bpf_update_proto(
         sk: *mut sock,
         psock: *mut sk_psock,
         restore: bool,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     // __init
     pub fn unix_bpf_build_proto();
 }

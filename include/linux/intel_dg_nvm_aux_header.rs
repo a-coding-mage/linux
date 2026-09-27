@@ -10,7 +10,7 @@ pub const INTEL_DG_NVM_REGIONS: usize = 13;
 
 #[repr(C)]
 pub struct intel_dg_nvm_region {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
 }
 
 #[repr(C)]

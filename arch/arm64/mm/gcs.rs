@@ -3,11 +3,11 @@
 // Dependency declarations and architecture-specific constants are supplied by
 // the surrounding kernel translation unit.
 
-unsafe fn alloc_gcs(addr: libc::c_ulong, size: libc::c_ulong) -> libc::c_ulong {
+unsafe fn alloc_gcs(addr: kernel::ffi::c_ulong, size: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     vm_mmap_shadow_stack(addr, size, 0)
 }
 
-unsafe fn gcs_size(mut size: libc::c_ulong) -> libc::c_ulong {
+unsafe fn gcs_size(mut size: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong {
     if size != 0 {
         return PAGE_ALIGN(size);
     }
@@ -23,9 +23,9 @@ unsafe fn gcs_size(mut size: libc::c_ulong) -> libc::c_ulong {
 pub unsafe fn gcs_alloc_thread_stack(
     tsk: *mut task_struct,
     args: *const kernel_clone_args,
-) -> libc::c_ulong {
-    let mut addr: libc::c_ulong;
-    let mut size: libc::c_ulong;
+) -> kernel::ffi::c_ulong {
+    let mut addr: kernel::ffi::c_ulong;
+    let mut size: kernel::ffi::c_ulong;
 
     if !system_supports_gcs() {
         return 0;
@@ -49,21 +49,21 @@ pub unsafe fn gcs_alloc_thread_stack(
 
     (*tsk).thread.gcs_base = addr;
     (*tsk).thread.gcs_size = size;
-    (*tsk).thread.gcspr_el0 = addr + size - core::mem::size_of::<u64>() as libc::c_ulong;
+    (*tsk).thread.gcspr_el0 = addr + size - core::mem::size_of::<u64>() as kernel::ffi::c_ulong;
 
     addr
 }
 
 pub unsafe fn map_shadow_stack(
-    mut addr: libc::c_ulong,
-    size: libc::c_ulong,
-    flags: libc::c_uint,
-) -> libc::c_long {
-    let alloc_size: libc::c_ulong;
-    let mut cap_ptr: *mut libc::c_ulong;
-    let mut cap_val: libc::c_ulong;
-    let mut ret: libc::c_int = 0;
-    let cap_offset: libc::c_int;
+    mut addr: kernel::ffi::c_ulong,
+    size: kernel::ffi::c_ulong,
+    flags: kernel::ffi::c_uint,
+) -> kernel::ffi::c_long {
+    let alloc_size: kernel::ffi::c_ulong;
+    let mut cap_ptr: *mut kernel::ffi::c_ulong;
+    let mut cap_val: kernel::ffi::c_ulong;
+    let mut ret: kernel::ffi::c_int = 0;
+    let cap_offset: kernel::ffi::c_int;
 
     if !system_supports_gcs() {
         return -EOPNOTSUPP;
@@ -90,7 +90,7 @@ pub unsafe fn map_shadow_stack(
 
     addr = alloc_gcs(addr, alloc_size);
     if IS_ERR_VALUE(addr) {
-        return addr as libc::c_long;
+        return addr as kernel::ffi::c_long;
     }
 
     /*
@@ -106,8 +106,8 @@ pub unsafe fn map_shadow_stack(
         }
 
         cap_ptr = (addr + size
-            - (cap_offset as libc::c_ulong * core::mem::size_of::<libc::c_ulong>() as libc::c_ulong))
-            as *mut libc::c_ulong;
+            - (cap_offset as kernel::ffi::c_ulong * core::mem::size_of::<kernel::ffi::c_ulong>() as kernel::ffi::c_ulong))
+            as *mut kernel::ffi::c_ulong;
         cap_val = GCS_CAP(cap_ptr);
 
         put_user_gcs(cap_val, cap_ptr, &mut ret);
@@ -120,7 +120,7 @@ pub unsafe fn map_shadow_stack(
         gcsb_dsync();
     }
 
-    addr as libc::c_long
+    addr as kernel::ffi::c_long
 }
 
 /* Apply the GCS mode configured for the specified task to the hardware. */
@@ -151,10 +151,10 @@ pub unsafe fn gcs_free(task: *mut task_struct) {
     (*task).thread.gcs_size = 0;
 }
 
-pub unsafe fn arch_set_shadow_stack_status(task: *mut task_struct, arg: libc::c_ulong) -> libc::c_int {
-    let mut gcs: libc::c_ulong;
-    let mut size: libc::c_ulong;
-    let ret: libc::c_int;
+pub unsafe fn arch_set_shadow_stack_status(task: *mut task_struct, arg: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
+    let mut gcs: kernel::ffi::c_ulong;
+    let mut size: kernel::ffi::c_ulong;
+    let ret: kernel::ffi::c_int;
 
     if !system_supports_gcs() || is_compat_thread(task_thread_info(task)) {
         return -EINVAL;
@@ -176,9 +176,9 @@ pub unsafe fn arch_set_shadow_stack_status(task: *mut task_struct, arg: libc::c_
         size = gcs_size(0);
         gcs = alloc_gcs(0, size);
         if IS_ERR_VALUE(gcs) {
-            return gcs as libc::c_int;
+            return gcs as kernel::ffi::c_int;
         }
-        (*task).thread.gcspr_el0 = gcs + size - core::mem::size_of::<u64>() as libc::c_ulong;
+        (*task).thread.gcspr_el0 = gcs + size - core::mem::size_of::<u64>() as kernel::ffi::c_ulong;
         (*task).thread.gcs_base = gcs;
         (*task).thread.gcs_size = size;
         if task == current {
@@ -194,15 +194,15 @@ pub unsafe fn arch_set_shadow_stack_status(task: *mut task_struct, arg: libc::c_
 
 pub unsafe fn arch_get_shadow_stack_status(
     task: *mut task_struct,
-    arg: *mut libc::c_ulong,
-) -> libc::c_int {
+    arg: *mut kernel::ffi::c_ulong,
+) -> kernel::ffi::c_int {
     if !system_supports_gcs() || is_compat_thread(task_thread_info(task)) {
         return -EINVAL;
     }
     put_user((*task).thread.gcs_el0_mode, arg)
 }
 
-pub unsafe fn arch_lock_shadow_stack_status(task: *mut task_struct, arg: libc::c_ulong) -> libc::c_int {
+pub unsafe fn arch_lock_shadow_stack_status(task: *mut task_struct, arg: kernel::ffi::c_ulong) -> kernel::ffi::c_int {
     if !system_supports_gcs() || is_compat_thread(task_thread_info(task)) {
         return -EINVAL;
     }

@@ -9,7 +9,7 @@
 
 static mut vas_debugfs: *mut dentry = core::ptr::null_mut();
 
-unsafe fn cop_to_str(cop: core::ffi::c_int) -> *const core::ffi::c_char {
+unsafe fn cop_to_str(cop: kernel::ffi::c_int) -> *const kernel::ffi::c_char {
     match cop {
         VAS_COP_TYPE_FAULT => c"Fault".as_ptr(),
         VAS_COP_TYPE_842 => c"NX-842 Normal Priority".as_ptr(),
@@ -21,7 +21,7 @@ unsafe fn cop_to_str(cop: core::ffi::c_int) -> *const core::ffi::c_char {
     }
 }
 
-unsafe fn info_show(s: *mut seq_file, _private: *mut core::ffi::c_void) -> core::ffi::c_int {
+unsafe fn info_show(s: *mut seq_file, _private: *mut kernel::ffi::c_void) -> kernel::ffi::c_int {
     let window = (*s).private as *mut pnv_vas_window;
 
     mutex_lock(&raw mut vas_mutex);
@@ -44,11 +44,11 @@ unsafe fn info_show(s: *mut seq_file, _private: *mut core::ffi::c_void) -> core:
 
 #[inline]
 unsafe fn print_reg(s: *mut seq_file, win: *mut pnv_vas_window,
-                    name: *const core::ffi::c_char, reg: u32) {
+                    name: *const kernel::ffi::c_char, reg: u32) {
     seq_printf(s, c"0x%016llx %s\n".as_ptr(), read_hvwc_reg(win, name, reg), name);
 }
 
-unsafe fn hvwc_show(s: *mut seq_file, _private: *mut core::ffi::c_void) -> core::ffi::c_int {
+unsafe fn hvwc_show(s: *mut seq_file, _private: *mut kernel::ffi::c_void) -> kernel::ffi::c_int {
     let window = (*s).private as *mut pnv_vas_window;
 
     mutex_lock(&raw mut vas_mutex);

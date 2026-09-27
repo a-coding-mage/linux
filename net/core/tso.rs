@@ -4,7 +4,7 @@
 
 pub unsafe fn tso_build_hdr(
     skb: *const sk_buff,
-    mut hdr: *mut core::ffi::c_char,
+    mut hdr: *mut kernel::ffi::c_char,
     tso: *mut tso_t,
     size: i32,
     is_last: bool,

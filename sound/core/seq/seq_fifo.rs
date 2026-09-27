@@ -89,7 +89,7 @@ unsafe extern "C" {
     static mut current: *mut task_struct;
 
     fn kzalloc_obj_snd_seq_fifo() -> *mut snd_seq_fifo;
-    fn kfree(ptr: *mut core::ffi::c_void);
+    fn kfree(ptr: *mut kernel::ffi::c_void);
     fn snd_seq_pool_new(poolsize: i32) -> *mut snd_seq_pool;
     fn snd_seq_pool_init(pool: *mut snd_seq_pool) -> i32;
     fn snd_seq_pool_delete(pool: *mut *mut snd_seq_pool);
@@ -98,8 +98,8 @@ unsafe extern "C" {
     fn spin_lock_init(lock: *mut spinlock_t);
     fn spin_lock_irq(lock: *mut spinlock_t);
     fn spin_unlock_irq(lock: *mut spinlock_t);
-    fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut core::ffi::c_ulong);
-    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: core::ffi::c_ulong);
+    fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut kernel::ffi::c_ulong);
+    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: kernel::ffi::c_ulong);
     fn snd_use_lock_init(lock: *mut snd_use_lock_t);
     fn snd_use_lock_sync(lock: *mut snd_use_lock_t);
     fn snd_seq_fifo_use_lock(f: *mut snd_seq_fifo);
@@ -118,8 +118,8 @@ unsafe extern "C" {
         event: *mut snd_seq_event,
         cellp: *mut *mut snd_seq_event_cell,
         nonblock: i32,
-        file: *mut core::ffi::c_void,
-        tmppool: *mut core::ffi::c_void,
+        file: *mut kernel::ffi::c_void,
+        tmppool: *mut kernel::ffi::c_void,
     ) -> i32;
     fn snd_seq_cell_free(cell: *mut snd_seq_event_cell);
     fn snd_seq_unused_cells(pool: *mut snd_seq_pool) -> i32;
@@ -151,12 +151,12 @@ pub unsafe extern "C" fn snd_seq_fifo_new(poolsize: i32) -> *mut snd_seq_fifo {
 
     (*f).pool = snd_seq_pool_new(poolsize);
     if (*f).pool.is_null() {
-        kfree(f as *mut core::ffi::c_void);
+        kfree(f as *mut kernel::ffi::c_void);
         return ptr::null_mut();
     }
     if snd_seq_pool_init((*f).pool) < 0 {
         snd_seq_pool_delete(&mut (*f).pool);
-        kfree(f as *mut core::ffi::c_void);
+        kfree(f as *mut kernel::ffi::c_void);
         return ptr::null_mut();
     }
 
@@ -204,7 +204,7 @@ pub unsafe extern "C" fn snd_seq_fifo_delete(fifo: *mut *mut snd_seq_fifo) {
         snd_seq_pool_delete(&mut (*f).pool);
     }
 
-    kfree(f as *mut core::ffi::c_void);
+    kfree(f as *mut kernel::ffi::c_void);
 }
 
 /* clear queue */
@@ -264,7 +264,7 @@ pub unsafe extern "C" fn snd_seq_fifo_event_in(
 
         /* append new cells to fifo */
         linked = false;
-        let mut flags: core::ffi::c_ulong = 0;
+        let mut flags: kernel::ffi::c_ulong = 0;
         spin_lock_irqsave(&mut (*f).lock, &mut flags);
         if (*cell).pool == (*f).pool {
             if !(*f).tail.is_null() {
@@ -326,7 +326,7 @@ pub unsafe extern "C" fn snd_seq_fifo_cell_out(
     nonblock: i32,
 ) -> i32 {
     let mut cell: *mut snd_seq_event_cell;
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     let mut wait: wait_queue_entry_t = core::mem::zeroed();
 
     if snd_BUG_ON(f.is_null()) {
@@ -371,7 +371,7 @@ pub unsafe extern "C" fn snd_seq_fifo_cell_putback(
     let mut linked = false;
 
     if !cell.is_null() {
-        let mut flags: core::ffi::c_ulong = 0;
+        let mut flags: kernel::ffi::c_ulong = 0;
         spin_lock_irqsave(&mut (*f).lock, &mut flags);
         if (*cell).pool == (*f).pool {
             (*cell).next = (*f).head;
@@ -466,7 +466,7 @@ pub unsafe extern "C" fn snd_seq_fifo_unused_cells(f: *mut snd_seq_fifo) -> i32 
     }
 
     snd_seq_fifo_use_lock(f);
-    let mut flags: core::ffi::c_ulong = 0;
+    let mut flags: kernel::ffi::c_ulong = 0;
     spin_lock_irqsave(&mut (*f).lock, &mut flags);
     ret = snd_seq_unused_cells((*f).pool);
     spin_unlock_irqrestore(&mut (*f).lock, flags);

@@ -4,35 +4,35 @@
 
 #[repr(C)]
 pub struct ptdump_range {
-    pub start: core::ffi::c_ulong,
-    pub end: core::ffi::c_ulong,
+    pub start: kernel::ffi::c_ulong,
+    pub end: kernel::ffi::c_ulong,
 }
 
 #[repr(C)]
 pub struct ptdump_state {
     pub note_page_pte: Option<unsafe extern "C" fn(
         st: *mut ptdump_state,
-        addr: core::ffi::c_ulong,
+        addr: kernel::ffi::c_ulong,
         pte: pte_t,
     )>,
     pub note_page_pmd: Option<unsafe extern "C" fn(
         st: *mut ptdump_state,
-        addr: core::ffi::c_ulong,
+        addr: kernel::ffi::c_ulong,
         pmd: pmd_t,
     )>,
     pub note_page_pud: Option<unsafe extern "C" fn(
         st: *mut ptdump_state,
-        addr: core::ffi::c_ulong,
+        addr: kernel::ffi::c_ulong,
         pud: pud_t,
     )>,
     pub note_page_p4d: Option<unsafe extern "C" fn(
         st: *mut ptdump_state,
-        addr: core::ffi::c_ulong,
+        addr: kernel::ffi::c_ulong,
         p4d: p4d_t,
     )>,
     pub note_page_pgd: Option<unsafe extern "C" fn(
         st: *mut ptdump_state,
-        addr: core::ffi::c_ulong,
+        addr: kernel::ffi::c_ulong,
         pgd: pgd_t,
     )>,
     pub note_page_flush: Option<unsafe extern "C" fn(st: *mut ptdump_state)>,

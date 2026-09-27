@@ -26,7 +26,7 @@
 
 #[repr(C)]
 pub struct pcl724_board {
-    pub name: *const core::ffi::c_char,
+    pub name: *const kernel::ffi::c_char,
     pub io_range: u32,
     pub min_io_start: u32,
     pub max_io_end: u32,

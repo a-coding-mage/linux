@@ -5,12 +5,12 @@
 
 // C header dependencies are supplied by the surrounding kernel translation.
 
-pub unsafe fn page_is_ram(pfn: ::core::ffi::c_ulong) -> bool {
+pub unsafe fn page_is_ram(pfn: ::kernel::ffi::c_ulong) -> bool {
     let addr = PFN_PHYS(pfn);
     memblock_is_memory(addr) && !memblock_is_reserved(addr)
 }
 
-pub unsafe fn arch_zone_limits_init(max_zone_pfns: *mut ::core::ffi::c_ulong) {
+pub unsafe fn arch_zone_limits_init(max_zone_pfns: *mut ::kernel::ffi::c_ulong) {
     #[cfg(CONFIG_ZONE_DMA32)]
     {
         *max_zone_pfns.add(ZONE_DMA32 as usize) = MAX_DMA32_PFN;
@@ -28,8 +28,8 @@ pub unsafe fn free_initmem() {
 
 #[cfg(CONFIG_HIGHMEM)]
 pub unsafe fn fixrange_init(
-    start: ::core::ffi::c_ulong,
-    end: ::core::ffi::c_ulong,
+    start: ::kernel::ffi::c_ulong,
+    end: ::kernel::ffi::c_ulong,
     pgd_base: *mut pgd_t,
 ) {
     let mut vaddr = start;
@@ -50,7 +50,7 @@ pub unsafe fn fixrange_init(
                         panic!("{}: Failed to allocate {} bytes align={:x}\n", "fixrange_init", PAGE_SIZE, PAGE_SIZE);
                     }
                     kernel_pte_init(pte);
-                    set_pmd(pmd, __pmd(pte as ::core::ffi::c_ulong));
+                    set_pmd(pmd, __pmd(pte as ::kernel::ffi::c_ulong));
                     BUG_ON(pte != pte_offset_kernel(pmd, 0));
                 }
                 pmd = pmd.add(1);
@@ -68,7 +68,7 @@ pub unsafe fn fixrange_init(
 }
 
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
-pub unsafe fn arch_add_memory(nid: ::core::ffi::c_int, start: u64, size: u64, params: *mut mhp_params) -> ::core::ffi::c_int {
+pub unsafe fn arch_add_memory(nid: ::kernel::ffi::c_int, start: u64, size: u64, params: *mut mhp_params) -> ::kernel::ffi::c_int {
     let start_pfn = start >> PAGE_SHIFT;
     let nr_pages = size >> PAGE_SHIFT;
     let ret = __add_pages(nid, start_pfn, nr_pages, params);
@@ -86,14 +86,14 @@ pub unsafe fn arch_remove_memory(start: u64, size: u64, altmap: *mut vmem_altmap
 }
 
 #[cfg(CONFIG_SPARSEMEM_VMEMMAP)]
-pub unsafe fn vmemmap_set_pmd(pmd: *mut pmd_t, p: *mut ::core::ffi::c_void, _node: ::core::ffi::c_int, addr: ::core::ffi::c_ulong, _next: ::core::ffi::c_ulong) {
+pub unsafe fn vmemmap_set_pmd(pmd: *mut pmd_t, p: *mut ::kernel::ffi::c_void, _node: ::kernel::ffi::c_int, addr: ::kernel::ffi::c_ulong, _next: ::kernel::ffi::c_ulong) {
     let mut entry = pfn_pmd(virt_to_pfn(p), PAGE_KERNEL);
     pmd_val(entry) |= _PAGE_HUGE | _PAGE_HGLOBAL;
     set_pmd_at(&init_mm, addr, pmd, entry);
 }
 
 #[cfg(CONFIG_SPARSEMEM_VMEMMAP)]
-pub unsafe fn vmemmap_populate(start: ::core::ffi::c_ulong, end: ::core::ffi::c_ulong, node: ::core::ffi::c_int, _altmap: *mut vmem_altmap) -> ::core::ffi::c_int {
+pub unsafe fn vmemmap_populate(start: ::kernel::ffi::c_ulong, end: ::kernel::ffi::c_ulong, node: ::kernel::ffi::c_int, _altmap: *mut vmem_altmap) -> ::kernel::ffi::c_int {
     #[cfg(CONFIG_PGTABLE_LEVELS_2)]
     { vmemmap_populate_basepages(start, end, node, core::ptr::null_mut()) }
     #[cfg(not(CONFIG_PGTABLE_LEVELS_2))]
@@ -101,9 +101,9 @@ pub unsafe fn vmemmap_populate(start: ::core::ffi::c_ulong, end: ::core::ffi::c_
 }
 
 #[cfg(all(CONFIG_SPARSEMEM_VMEMMAP, CONFIG_MEMORY_HOTPLUG))]
-pub unsafe fn vmemmap_free(_start: ::core::ffi::c_ulong, _end: ::core::ffi::c_ulong, _altmap: *mut vmem_altmap) {}
+pub unsafe fn vmemmap_free(_start: ::kernel::ffi::c_ulong, _end: ::kernel::ffi::c_ulong, _altmap: *mut vmem_altmap) {}
 
-pub unsafe fn populate_kernel_pte(addr: ::core::ffi::c_ulong) -> *mut pte_t {
+pub unsafe fn populate_kernel_pte(addr: ::kernel::ffi::c_ulong) -> *mut pte_t {
     let pgd = pgd_offset_k(addr);
     let p4d = p4d_offset(pgd, addr);
     let pud;

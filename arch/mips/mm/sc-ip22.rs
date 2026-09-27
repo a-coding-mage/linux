@@ -8,37 +8,37 @@
 
 // Linux kernel dependencies supplied by the surrounding translation unit.
 extern "C" {
-    static mut scache_size: libc::c_ulong;
+    static mut scache_size: kernel::ffi::c_ulong;
     static mut sgimc: *mut SgiMc;
     static mut bcops: *mut BcacheOps;
-    fn ip22_eeprom_read(eeprom: *mut libc::c_uchar, index: libc::c_int) -> libc::c_uint;
-    fn printk(fmt: *const libc::c_char, ...);
-    fn local_irq_save(flags: *mut libc::c_ulong);
-    fn local_irq_restore(flags: libc::c_ulong);
+    fn ip22_eeprom_read(eeprom: *mut kernel::ffi::c_uchar, index: kernel::ffi::c_int) -> kernel::ffi::c_uint;
+    fn printk(fmt: *const kernel::ffi::c_char, ...);
+    fn local_irq_save(flags: *mut kernel::ffi::c_ulong);
+    fn local_irq_restore(flags: kernel::ffi::c_ulong);
     fn bug_on(condition: bool);
 }
 
 #[repr(C)]
-struct SgiMc { eeprom: [libc::c_uchar; 0] }
+struct SgiMc { eeprom: [kernel::ffi::c_uchar; 0] }
 
 #[repr(C)]
 struct BcacheOps {
     bc_enable: Option<unsafe extern "C" fn()>,
     bc_disable: Option<unsafe extern "C" fn()>,
-    bc_wback_inv: Option<unsafe extern "C" fn(libc::c_ulong, libc::c_ulong)>,
-    bc_inv: Option<unsafe extern "C" fn(libc::c_ulong, libc::c_ulong)>,
+    bc_wback_inv: Option<unsafe extern "C" fn(kernel::ffi::c_ulong, kernel::ffi::c_ulong)>,
+    bc_inv: Option<unsafe extern "C" fn(kernel::ffi::c_ulong, kernel::ffi::c_ulong)>,
 }
 
-const SC_SIZE: libc::c_ulong = 0x0008_0000;
-const SC_LINE: libc::c_ulong = 32;
-const CI_MASK: libc::c_ulong = SC_SIZE - SC_LINE;
+const SC_SIZE: kernel::ffi::c_ulong = 0x0008_0000;
+const SC_LINE: kernel::ffi::c_ulong = 32;
+const CI_MASK: kernel::ffi::c_ulong = SC_SIZE - SC_LINE;
 
 #[inline]
-fn sc_index(n: libc::c_ulong) -> libc::c_ulong { n & CI_MASK }
+fn sc_index(n: kernel::ffi::c_ulong) -> kernel::ffi::c_ulong { n & CI_MASK }
 
 #[inline]
-unsafe fn indy_sc_wipe(mut first: libc::c_ulong, mut last: libc::c_ulong) {
-    let mut tmp: libc::c_ulong;
+unsafe fn indy_sc_wipe(mut first: kernel::ffi::c_ulong, mut last: kernel::ffi::c_ulong) {
+    let mut tmp: kernel::ffi::c_ulong;
     // The original MIPS inline assembly is retained verbatim in intent.
     core::arch::asm!(
         ".set push; .set noreorder; .set mips3; .set noat",
@@ -52,7 +52,7 @@ unsafe fn indy_sc_wipe(mut first: libc::c_ulong, mut last: libc::c_ulong) {
     );
 }
 
-unsafe extern "C" fn indy_sc_wback_invalidate(addr: libc::c_ulong, size: libc::c_ulong) {
+unsafe extern "C" fn indy_sc_wback_invalidate(addr: kernel::ffi::c_ulong, size: kernel::ffi::c_ulong) {
     bug_on(size == 0);
     let first_line = sc_index(addr);
     let last_line = sc_index(addr.wrapping_add(size).wrapping_sub(1));
@@ -68,24 +68,24 @@ unsafe extern "C" fn indy_sc_wback_invalidate(addr: libc::c_ulong, size: libc::c
 }
 
 unsafe extern "C" fn indy_sc_enable() {
-    let mut addr: libc::c_ulong;
-    let mut tmp1: libc::c_ulong;
-    let mut tmp2: libc::c_ulong;
+    let mut addr: kernel::ffi::c_ulong;
+    let mut tmp1: kernel::ffi::c_ulong;
+    let mut tmp2: kernel::ffi::c_ulong;
     core::arch::asm!(".set push; .set noreorder; .set mips3; mfc0 {addr}, $12; li {tmp2}, 0x80; mtc0 {tmp2}, $12; li {tmp1}, 1; dsll {tmp1}, 31; lui {tmp2}, 0x9000; dsll32 {tmp2}, 0; or {tmp1}, {tmp2}, {tmp1}; sb $0, 0({tmp1}); mtc0 $0, $12; mtc0 {addr}, $12; .set pop", addr = lateout(reg) addr, tmp1 = lateout(reg) tmp1, tmp2 = lateout(reg) tmp2, options(nostack));
 }
 
 unsafe extern "C" fn indy_sc_disable() {
-    let mut tmp1: libc::c_ulong;
-    let mut tmp2: libc::c_ulong;
-    let mut tmp3: libc::c_ulong;
+    let mut tmp1: kernel::ffi::c_ulong;
+    let mut tmp2: kernel::ffi::c_ulong;
+    let mut tmp3: kernel::ffi::c_ulong;
     core::arch::asm!(".set push; .set noreorder; .set mips3; li {tmp1}, 1; dsll {tmp1}, 31; lui {tmp2}, 0x9000; dsll32 {tmp2}, 0; or {tmp1}, {tmp2}, {tmp1}; mfc0 {tmp3}, $12; li {tmp2}, 0x80; mtc0 {tmp2}, $12; sh $0, 0({tmp1}); mtc0 $0, $12; mtc0 {tmp3}, $12; .set pop", tmp1 = lateout(reg) tmp1, tmp2 = lateout(reg) tmp2, tmp3 = lateout(reg) tmp3, options(nostack));
 }
 
 #[inline]
-unsafe extern "C" fn indy_sc_probe() -> libc::c_int {
+unsafe extern "C" fn indy_sc_probe() -> kernel::ffi::c_int {
     let size = ip22_eeprom_read((*sgimc).eeprom.as_mut_ptr(), 17);
     if size == 0 { return 0; }
-    scache_size = ((size as libc::c_ulong) << PAGE_SHIFT) as libc::c_ulong;
+    scache_size = ((size as kernel::ffi::c_ulong) << PAGE_SHIFT) as kernel::ffi::c_ulong;
     1
 }
 

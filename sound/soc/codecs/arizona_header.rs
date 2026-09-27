@@ -61,7 +61,7 @@ pub const ARIZONA_NOTIFY_VOICE_TRIGGER: u32 = 0x1;
 
 #[repr(C)]
 pub struct arizona_dai_priv {
-    pub clk: ::core::ffi::c_int,
+    pub clk: ::kernel::ffi::c_int,
 
     pub constraint: snd_pcm_hw_constraint_list,
 }
@@ -70,19 +70,19 @@ pub struct arizona_dai_priv {
 pub struct arizona_priv {
     pub adsp: [wm_adsp; ARIZONA_MAX_ADSP],
     pub arizona: *mut arizona,
-    pub sysclk: ::core::ffi::c_int,
-    pub asyncclk: ::core::ffi::c_int,
+    pub sysclk: ::kernel::ffi::c_int,
+    pub asyncclk: ::kernel::ffi::c_int,
     pub dai: [arizona_dai_priv; ARIZONA_MAX_DAI],
 
-    pub num_inputs: ::core::ffi::c_int,
-    pub in_pending: ::core::ffi::c_uint,
+    pub num_inputs: ::kernel::ffi::c_int,
+    pub in_pending: ::kernel::ffi::c_uint,
 
-    pub out_up_pending: ::core::ffi::c_uint,
-    pub out_up_delay: ::core::ffi::c_uint,
-    pub out_down_pending: ::core::ffi::c_uint,
-    pub out_down_delay: ::core::ffi::c_uint,
+    pub out_up_pending: ::kernel::ffi::c_uint,
+    pub out_up_delay: ::kernel::ffi::c_uint,
+    pub out_down_pending: ::kernel::ffi::c_uint,
+    pub out_down_delay: ::kernel::ffi::c_uint,
 
-    pub dvfs_reqs: ::core::ffi::c_uint,
+    pub dvfs_reqs: ::kernel::ffi::c_uint,
     pub dvfs_lock: mutex,
     pub dvfs_cached: bool,
 
@@ -98,13 +98,13 @@ pub struct arizona_priv {
 
     pub last_jackdet: u16,
 
-    pub micd_mode: ::core::ffi::c_int,
+    pub micd_mode: ::kernel::ffi::c_int,
     pub micd_modes: *const arizona_micd_config,
-    pub micd_num_modes: ::core::ffi::c_int,
+    pub micd_num_modes: ::kernel::ffi::c_int,
 
-    pub micd_button_mask: ::core::ffi::c_int,
+    pub micd_button_mask: ::kernel::ffi::c_int,
     pub micd_ranges: *const arizona_micd_range,
-    pub num_micd_ranges: ::core::ffi::c_int,
+    pub num_micd_ranges: ::kernel::ffi::c_int,
 
     pub micd_reva: bool,
     pub micd_clamp: bool,
@@ -116,24 +116,24 @@ pub struct arizona_priv {
     pub mic: bool,
     pub detecting: bool,
 
-    pub num_hpdet_res: ::core::ffi::c_int,
-    pub hpdet_res: [::core::ffi::c_uint; 3],
+    pub num_hpdet_res: ::kernel::ffi::c_int,
+    pub hpdet_res: [::kernel::ffi::c_uint; 3],
 
-    pub jack_flips: ::core::ffi::c_int,
-    pub hpdet_ip_version: ::core::ffi::c_int,
+    pub jack_flips: ::kernel::ffi::c_int,
+    pub hpdet_ip_version: ::kernel::ffi::c_int,
 }
 
 #[repr(C)]
 pub struct arizona_voice_trigger_info {
-    pub core: ::core::ffi::c_int,
+    pub core: ::kernel::ffi::c_int,
 }
 
 pub const ARIZONA_NUM_MIXER_INPUTS: usize = 104;
 
 unsafe extern "C" {
-    pub static arizona_mixer_tlv: [::core::ffi::c_uint; 0];
-    pub static arizona_mixer_texts: [*const ::core::ffi::c_char; ARIZONA_NUM_MIXER_INPUTS];
-    pub static mut arizona_mixer_values: [::core::ffi::c_uint; ARIZONA_NUM_MIXER_INPUTS];
+    pub static arizona_mixer_tlv: [::kernel::ffi::c_uint; 0];
+    pub static arizona_mixer_texts: [*const ::kernel::ffi::c_char; ARIZONA_NUM_MIXER_INPUTS];
+    pub static mut arizona_mixer_values: [::kernel::ffi::c_uint; ARIZONA_NUM_MIXER_INPUTS];
 }
 
 /* ARIZONA_GAINMUX_CONTROLS(name, base):
@@ -222,10 +222,10 @@ pub const ARIZONA_SAMPLE_RATE_ENUM_SIZE: usize = 14;
 pub const ARIZONA_JACK_MASK: u32 = SND_JACK_HEADSET | SND_JACK_LINEOUT | SND_JACK_MECHANICAL;
 
 unsafe extern "C" {
-    pub static arizona_rate_text: [*const ::core::ffi::c_char; ARIZONA_RATE_ENUM_SIZE];
-    pub static arizona_rate_val: [::core::ffi::c_uint; ARIZONA_RATE_ENUM_SIZE];
-    pub static arizona_sample_rate_text: [*const ::core::ffi::c_char; ARIZONA_SAMPLE_RATE_ENUM_SIZE];
-    pub static arizona_sample_rate_val: [::core::ffi::c_uint; ARIZONA_SAMPLE_RATE_ENUM_SIZE];
+    pub static arizona_rate_text: [*const ::kernel::ffi::c_char; ARIZONA_RATE_ENUM_SIZE];
+    pub static arizona_rate_val: [::kernel::ffi::c_uint; ARIZONA_RATE_ENUM_SIZE];
+    pub static arizona_sample_rate_text: [*const ::kernel::ffi::c_char; ARIZONA_SAMPLE_RATE_ENUM_SIZE];
+    pub static arizona_sample_rate_val: [::kernel::ffi::c_uint; ARIZONA_SAMPLE_RATE_ENUM_SIZE];
 
     pub static arizona_isrc_fsl: [soc_enum; 0];
     pub static arizona_isrc_fsh: [soc_enum; 0];
@@ -257,45 +257,45 @@ unsafe extern "C" {
     pub fn arizona_in_ev(
         w: *mut snd_soc_dapm_widget,
         kcontrol: *mut snd_kcontrol,
-        event: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        event: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn arizona_out_ev(
         w: *mut snd_soc_dapm_widget,
         kcontrol: *mut snd_kcontrol,
-        event: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        event: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn arizona_hp_ev(
         w: *mut snd_soc_dapm_widget,
         kcontrol: *mut snd_kcontrol,
-        event: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        event: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn arizona_anc_ev(
         w: *mut snd_soc_dapm_widget,
         kcontrol: *mut snd_kcontrol,
-        event: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        event: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 
     pub fn arizona_eq_coeff_put(
         kcontrol: *mut snd_kcontrol,
         ucontrol: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn arizona_lhpf_coeff_put(
         kcontrol: *mut snd_kcontrol,
         ucontrol: *mut snd_ctl_elem_value,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
     pub fn arizona_clk_ev(
         w: *mut snd_soc_dapm_widget,
         kcontrol: *mut snd_kcontrol,
-        event: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        event: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn arizona_set_sysclk(
         component: *mut snd_soc_component,
-        clk_id: ::core::ffi::c_int,
-        source: ::core::ffi::c_int,
-        freq: ::core::ffi::c_uint,
-        dir: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        clk_id: ::kernel::ffi::c_int,
+        source: ::kernel::ffi::c_int,
+        freq: ::kernel::ffi::c_uint,
+        dir: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
 
     pub static arizona_dai_ops: snd_soc_dai_ops;
     pub static arizona_simple_dai_ops: snd_soc_dai_ops;
@@ -306,93 +306,93 @@ pub const ARIZONA_FLL_NAME_LEN: usize = 20;
 #[repr(C)]
 pub struct arizona_fll {
     pub arizona: *mut arizona,
-    pub id: ::core::ffi::c_int,
-    pub base: ::core::ffi::c_uint,
-    pub vco_mult: ::core::ffi::c_uint,
+    pub id: ::kernel::ffi::c_int,
+    pub base: ::kernel::ffi::c_uint,
+    pub vco_mult: ::kernel::ffi::c_uint,
 
-    pub fout: ::core::ffi::c_uint,
-    pub sync_src: ::core::ffi::c_int,
-    pub sync_freq: ::core::ffi::c_uint,
-    pub ref_src: ::core::ffi::c_int,
-    pub ref_freq: ::core::ffi::c_uint,
+    pub fout: ::kernel::ffi::c_uint,
+    pub sync_src: ::kernel::ffi::c_int,
+    pub sync_freq: ::kernel::ffi::c_uint,
+    pub ref_src: ::kernel::ffi::c_int,
+    pub ref_freq: ::kernel::ffi::c_uint,
 
-    pub lock_name: [::core::ffi::c_char; ARIZONA_FLL_NAME_LEN],
-    pub clock_ok_name: [::core::ffi::c_char; ARIZONA_FLL_NAME_LEN],
+    pub lock_name: [::kernel::ffi::c_char; ARIZONA_FLL_NAME_LEN],
+    pub clock_ok_name: [::kernel::ffi::c_char; ARIZONA_FLL_NAME_LEN],
 }
 
 unsafe extern "C" {
     pub fn arizona_dvfs_up(
         component: *mut snd_soc_component,
-        flags: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        flags: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
     pub fn arizona_dvfs_down(
         component: *mut snd_soc_component,
-        flags: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        flags: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
     pub fn arizona_dvfs_sysclk_ev(
         w: *mut snd_soc_dapm_widget,
         kcontrol: *mut snd_kcontrol,
-        event: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        event: ::kernel::ffi::c_int,
+    ) -> ::kernel::ffi::c_int;
     pub fn arizona_init_dvfs(priv_: *mut arizona_priv);
 
     pub fn arizona_init_fll(
         arizona: *mut arizona,
-        id: ::core::ffi::c_int,
-        base: ::core::ffi::c_int,
-        lock_irq: ::core::ffi::c_int,
-        ok_irq: ::core::ffi::c_int,
+        id: ::kernel::ffi::c_int,
+        base: ::kernel::ffi::c_int,
+        lock_irq: ::kernel::ffi::c_int,
+        ok_irq: ::kernel::ffi::c_int,
         fll: *mut arizona_fll,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
     pub fn arizona_set_fll_refclk(
         fll: *mut arizona_fll,
-        source: ::core::ffi::c_int,
-        Fref: ::core::ffi::c_uint,
-        Fout: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        source: ::kernel::ffi::c_int,
+        Fref: ::kernel::ffi::c_uint,
+        Fout: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
     pub fn arizona_set_fll(
         fll: *mut arizona_fll,
-        source: ::core::ffi::c_int,
-        Fref: ::core::ffi::c_uint,
-        Fout: ::core::ffi::c_uint,
-    ) -> ::core::ffi::c_int;
+        source: ::kernel::ffi::c_int,
+        Fref: ::kernel::ffi::c_uint,
+        Fout: ::kernel::ffi::c_uint,
+    ) -> ::kernel::ffi::c_int;
 
-    pub fn arizona_init_spk(component: *mut snd_soc_component) -> ::core::ffi::c_int;
-    pub fn arizona_init_gpio(component: *mut snd_soc_component) -> ::core::ffi::c_int;
-    pub fn arizona_init_mono(component: *mut snd_soc_component) -> ::core::ffi::c_int;
+    pub fn arizona_init_spk(component: *mut snd_soc_component) -> ::kernel::ffi::c_int;
+    pub fn arizona_init_gpio(component: *mut snd_soc_component) -> ::kernel::ffi::c_int;
+    pub fn arizona_init_mono(component: *mut snd_soc_component) -> ::kernel::ffi::c_int;
 
-    pub fn arizona_init_common(arizona: *mut arizona) -> ::core::ffi::c_int;
-    pub fn arizona_init_vol_limit(arizona: *mut arizona) -> ::core::ffi::c_int;
+    pub fn arizona_init_common(arizona: *mut arizona) -> ::kernel::ffi::c_int;
+    pub fn arizona_init_vol_limit(arizona: *mut arizona) -> ::kernel::ffi::c_int;
 
-    pub fn arizona_init_spk_irqs(arizona: *mut arizona) -> ::core::ffi::c_int;
-    pub fn arizona_free_spk_irqs(arizona: *mut arizona) -> ::core::ffi::c_int;
+    pub fn arizona_init_spk_irqs(arizona: *mut arizona) -> ::kernel::ffi::c_int;
+    pub fn arizona_free_spk_irqs(arizona: *mut arizona) -> ::kernel::ffi::c_int;
 
-    pub fn arizona_init_dai(priv_: *mut arizona_priv, id: ::core::ffi::c_int) -> ::core::ffi::c_int;
+    pub fn arizona_init_dai(priv_: *mut arizona_priv, id: ::kernel::ffi::c_int) -> ::kernel::ffi::c_int;
 
     pub fn arizona_set_output_mode(
         component: *mut snd_soc_component,
-        output: ::core::ffi::c_int,
+        output: ::kernel::ffi::c_int,
         diff: bool,
-    ) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
 
-    pub fn arizona_input_analog(component: *mut snd_soc_component, shift: ::core::ffi::c_int) -> bool;
+    pub fn arizona_input_analog(component: *mut snd_soc_component, shift: ::kernel::ffi::c_int) -> bool;
 
-    pub fn arizona_sample_rate_val_to_name(rate_val: ::core::ffi::c_uint)
-        -> *const ::core::ffi::c_char;
+    pub fn arizona_sample_rate_val_to_name(rate_val: ::kernel::ffi::c_uint)
+        -> *const ::kernel::ffi::c_char;
 }
 
 pub type arizona_notifier_fn = unsafe extern "C" fn(
     nb: *mut notifier_block,
-    action: ::core::ffi::c_ulong,
-    data: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int;
+    action: ::kernel::ffi::c_ulong,
+    data: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int;
 
 #[inline]
 pub unsafe fn arizona_register_notifier(
     component: *mut snd_soc_component,
     nb: *mut notifier_block,
     notify: arizona_notifier_fn,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let priv_ = unsafe { snd_soc_component_get_drvdata(component) as *mut arizona_priv };
     let arizona = unsafe { (*priv_).arizona };
 
@@ -406,7 +406,7 @@ pub unsafe fn arizona_register_notifier(
 pub unsafe fn arizona_unregister_notifier(
     component: *mut snd_soc_component,
     nb: *mut notifier_block,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let priv_ = unsafe { snd_soc_component_get_drvdata(component) as *mut arizona_priv };
     let arizona = unsafe { (*priv_).arizona };
 
@@ -414,19 +414,19 @@ pub unsafe fn arizona_unregister_notifier(
 }
 
 unsafe extern "C" {
-    pub fn arizona_of_get_audio_pdata(arizona: *mut arizona) -> ::core::ffi::c_int;
+    pub fn arizona_of_get_audio_pdata(arizona: *mut arizona) -> ::kernel::ffi::c_int;
 
     pub fn arizona_jack_codec_dev_probe(
         info: *mut arizona_priv,
         dev: *mut device,
-    ) -> ::core::ffi::c_int;
-    pub fn arizona_jack_codec_dev_remove(info: *mut arizona_priv) -> ::core::ffi::c_int;
+    ) -> ::kernel::ffi::c_int;
+    pub fn arizona_jack_codec_dev_remove(info: *mut arizona_priv) -> ::kernel::ffi::c_int;
 
     pub fn arizona_jack_set_jack(
         component: *mut snd_soc_component,
         jack: *mut snd_soc_jack,
-        data: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        data: *mut ::kernel::ffi::c_void,
+    ) -> ::kernel::ffi::c_int;
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

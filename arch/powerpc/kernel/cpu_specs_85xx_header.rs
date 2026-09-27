@@ -3,7 +3,7 @@
  *  Copyright (C) 2001 Ben. Herrenschmidt (benh@kernel.crashing.org)
  */
 
-const COMMON_USER_BOOKE: _ = PPC_FEATURE_32 | PPC_FEATURE_HAS_MMU | PPC_FEATURE_BOOKE;
+const COMMON_USER_BOOKE: u32 = PPC_FEATURE_32 | PPC_FEATURE_HAS_MMU | PPC_FEATURE_BOOKE;
 
 static mut cpu_specs: [cpu_spec; 3] = [
     cpu_spec {

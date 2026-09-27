@@ -71,7 +71,7 @@ pub const PROM_NV_GET: i32 = 53; /* XXX */
 pub const PROM_NV_SET: i32 = 54; /* XXX */
 
 unsafe extern "C" {
-    pub fn prom_getenv(name: *mut core::ffi::c_char) -> *mut core::ffi::c_char;
+    pub fn prom_getenv(name: *mut kernel::ffi::c_char) -> *mut kernel::ffi::c_char;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

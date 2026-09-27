@@ -13,7 +13,7 @@
 #[repr(C)]
 pub struct clk_pfdv2 {
     pub hw: clk_hw,
-    pub reg: *mut core::ffi::c_void,
+    pub reg: *mut kernel::ffi::c_void,
     pub gate_bit: u8,
     pub vld_bit: u8,
     pub frac_off: u8,
@@ -147,9 +147,9 @@ static clk_pfdv2_ops: clk_ops = clk_ops {
 
 pub unsafe fn imx_clk_hw_pfdv2(
     type_: imx_pfdv2_type,
-    name: *const core::ffi::c_char,
-    parent_name: *const core::ffi::c_char,
-    reg: *mut core::ffi::c_void,
+    name: *const kernel::ffi::c_char,
+    parent_name: *const kernel::ffi::c_char,
+    reg: *mut kernel::ffi::c_void,
     idx: u8,
 ) -> *mut clk_hw {
     WARN_ON(idx > 3);
@@ -174,7 +174,7 @@ pub unsafe fn imx_clk_hw_pfdv2(
     let hw = &mut (*pfd).hw as *mut clk_hw;
     let ret = clk_hw_register(core::ptr::null_mut(), hw);
     if ret != 0 {
-        kfree(pfd as *mut core::ffi::c_void);
+        kfree(pfd as *mut kernel::ffi::c_void);
         return ERR_PTR(ret);
     }
     hw

@@ -18,21 +18,21 @@
 
 #[repr(C)]
 pub union CpgCoreClkParent {
-    pub parent_names: *const *const core::ffi::c_char,
+    pub parent_names: *const *const kernel::ffi::c_char,
     pub dtable: *const ClkDivTable,
 }
 
 #[repr(C)]
 pub struct CpgCoreClk {
     /* Common */
-    pub name: *const core::ffi::c_char,
-    pub id: core::ffi::c_uint,
-    pub type_: core::ffi::c_uint,
+    pub name: *const kernel::ffi::c_char,
+    pub id: kernel::ffi::c_uint,
+    pub type_: kernel::ffi::c_uint,
     /* Depending on type */
-    pub parent: core::ffi::c_uint, /* Core Clocks only */
-    pub div: core::ffi::c_uint,
-    pub mult: core::ffi::c_uint,
-    pub offset: core::ffi::c_uint,
+    pub parent: kernel::ffi::c_uint, /* Core Clocks only */
+    pub div: kernel::ffi::c_uint,
+    pub mult: kernel::ffi::c_uint,
+    pub offset: kernel::ffi::c_uint,
     pub parent_or_dtable: CpgCoreClkParent,
     pub conf: u32,
     pub flag: u16,
@@ -51,8 +51,8 @@ pub struct CpgCoreClk {
  */
 #[repr(C)]
 pub struct CpgMssrPub {
-    pub base0: *mut core::ffi::c_void,
-    pub base1: *mut core::ffi::c_void,
+    pub base0: *mut kernel::ffi::c_void,
+    pub base1: *mut kernel::ffi::c_void,
     pub notifiers: RawNotifierHead,
     pub rmw_lock: SpinlockT,
     pub clks: *mut *mut Clk,
@@ -96,19 +96,19 @@ macro_rules! DEF_RATE { ($name:expr, $id:expr, $rate:expr) => {{ let mut x = DEF
 /* Definitions of Module Clocks */
 #[repr(C)]
 pub struct MssrModClk {
-    pub name: *const core::ffi::c_char,
-    pub id: core::ffi::c_uint,
-    pub parent: core::ffi::c_uint, /* Add MOD_CLK_BASE for Module Clocks */
+    pub name: *const kernel::ffi::c_char,
+    pub id: kernel::ffi::c_uint,
+    pub parent: kernel::ffi::c_uint, /* Add MOD_CLK_BASE for Module Clocks */
 }
 
 /* Convert from sparse base-100 to packed index space */
-#[inline] pub const fn mod_clk_pack(x: core::ffi::c_uint) -> core::ffi::c_uint { x - (x / 100) * (100 - 32) }
-#[inline] pub const fn mod_clk_id(x: core::ffi::c_uint) -> core::ffi::c_uint { MOD_CLK_BASE + mod_clk_pack(x) }
+#[inline] pub const fn mod_clk_pack(x: kernel::ffi::c_uint) -> kernel::ffi::c_uint { x - (x / 100) * (100 - 32) }
+#[inline] pub const fn mod_clk_id(x: kernel::ffi::c_uint) -> kernel::ffi::c_uint { MOD_CLK_BASE + mod_clk_pack(x) }
 macro_rules! DEF_MOD { ($name:expr, $mod_:expr, $parent:expr) => { MssrModClk { name: $name, id: mod_clk_id($mod_), parent: $parent } }; }
 
 /* Convert from sparse base-10 to packed index space */
-#[inline] pub const fn mod_clk_pack_10(x: core::ffi::c_uint) -> core::ffi::c_uint { (x / 10) * 32 + (x % 10) }
-#[inline] pub const fn mod_clk_id_10(x: core::ffi::c_uint) -> core::ffi::c_uint { MOD_CLK_BASE + mod_clk_pack_10(x) }
+#[inline] pub const fn mod_clk_pack_10(x: kernel::ffi::c_uint) -> kernel::ffi::c_uint { (x / 10) * 32 + (x % 10) }
+#[inline] pub const fn mod_clk_id_10(x: kernel::ffi::c_uint) -> kernel::ffi::c_uint { MOD_CLK_BASE + mod_clk_pack_10(x) }
 macro_rules! DEF_MOD_STB { ($name:expr, $mod_:expr, $parent:expr) => { MssrModClk { name: $name, id: mod_clk_id_10($mod_), parent: $parent } }; }
 
 pub enum DeviceNode {}
@@ -125,22 +125,22 @@ pub enum ClkRegLayout {
 #[repr(C)]
 pub struct CpgMssrInfo {
     pub early_core_clks: *const CpgCoreClk,
-    pub num_early_core_clks: core::ffi::c_uint,
+    pub num_early_core_clks: kernel::ffi::c_uint,
     pub early_mod_clks: *const MssrModClk,
-    pub num_early_mod_clks: core::ffi::c_uint,
+    pub num_early_mod_clks: kernel::ffi::c_uint,
     pub core_clks: *const CpgCoreClk,
-    pub num_core_clks: core::ffi::c_uint,
-    pub last_dt_core_clk: core::ffi::c_uint,
-    pub num_total_core_clks: core::ffi::c_uint,
+    pub num_core_clks: kernel::ffi::c_uint,
+    pub last_dt_core_clk: kernel::ffi::c_uint,
+    pub num_total_core_clks: kernel::ffi::c_uint,
     pub reg_layout: ClkRegLayout,
     pub mod_clks: *const MssrModClk,
-    pub num_mod_clks: core::ffi::c_uint,
-    pub num_hw_mod_clks: core::ffi::c_uint,
-    pub crit_mod_clks: *const core::ffi::c_uint,
-    pub num_crit_mod_clks: core::ffi::c_uint,
-    pub core_pm_clks: *const core::ffi::c_uint,
-    pub num_core_pm_clks: core::ffi::c_uint,
-    pub init: Option<unsafe extern "C" fn(*mut Device) -> core::ffi::c_int>,
+    pub num_mod_clks: kernel::ffi::c_uint,
+    pub num_hw_mod_clks: kernel::ffi::c_uint,
+    pub crit_mod_clks: *const kernel::ffi::c_uint,
+    pub num_crit_mod_clks: kernel::ffi::c_uint,
+    pub core_pm_clks: *const kernel::ffi::c_uint,
+    pub num_core_pm_clks: kernel::ffi::c_uint,
+    pub init: Option<unsafe extern "C" fn(*mut Device) -> kernel::ffi::c_int>,
     pub cpg_clk_register: Option<unsafe extern "C" fn(*mut Device, *const CpgCoreClk, *const CpgMssrInfo, *mut CpgMssrPub) -> *mut Clk>,
 }
 
@@ -172,7 +172,7 @@ extern "C" {
     pub static r9a09g077_cpg_mssr_info: CpgMssrInfo;
 
     pub fn cpg_mssr_early_init(np: *mut DeviceNode, info: *const CpgMssrInfo);
-    pub fn mssr_mod_nullify(mod_clks: *mut MssrModClk, num_mod_clks: core::ffi::c_uint, clks: *const core::ffi::c_uint, n: core::ffi::c_uint);
+    pub fn mssr_mod_nullify(mod_clks: *mut MssrModClk, num_mod_clks: kernel::ffi::c_uint, clks: *const kernel::ffi::c_uint, n: kernel::ffi::c_uint);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

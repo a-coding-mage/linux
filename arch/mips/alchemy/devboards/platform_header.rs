@@ -11,17 +11,17 @@ extern "C" {
         pcmcia_mem_end: phys_addr_t,
         pcmcia_io_start: phys_addr_t,
         pcmcia_io_end: phys_addr_t,
-        card_irq: core::ffi::c_int,
-        cd_irq: core::ffi::c_int,
-        stschg_irq: core::ffi::c_int,
-        eject_irq: core::ffi::c_int,
-        id: core::ffi::c_int,
+        card_irq: kernel::ffi::c_int,
+        cd_irq: kernel::ffi::c_int,
+        stschg_irq: kernel::ffi::c_int,
+        eject_irq: kernel::ffi::c_int,
+        id: kernel::ffi::c_int,
     );
 
     pub fn db1x_register_norflash(
-        size: core::ffi::c_ulong,
-        width: core::ffi::c_int,
-        swapped: core::ffi::c_int,
+        size: kernel::ffi::c_ulong,
+        width: kernel::ffi::c_int,
+        swapped: kernel::ffi::c_int,
     );
 }
 

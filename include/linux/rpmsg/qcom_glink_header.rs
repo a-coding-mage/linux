@@ -2,7 +2,7 @@
 
 // C dependency: <linux/device.h>
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct device {

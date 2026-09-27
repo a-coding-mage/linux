@@ -11,7 +11,7 @@
  */
 
 // Dependencies supplied by other translated kernel headers.
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct list_head {

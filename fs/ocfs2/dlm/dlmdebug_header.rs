@@ -7,7 +7,7 @@
 
 // C header guard: DLMDEBUG_H
 
-use core::ffi::c_char;
+use kernel::ffi::c_char;
 
 #[repr(C)]
 pub struct dlm_master_list_entry {

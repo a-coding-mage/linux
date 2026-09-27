@@ -37,11 +37,11 @@ macro_rules! DEFINE_PARTS {
  */
 #[repr(C)]
 pub struct spear_smi_flash_info {
-    pub name: *mut ::core::ffi::c_char,
-    pub mem_base: ::core::ffi::c_ulong,
-    pub size: ::core::ffi::c_ulong,
+    pub name: *mut ::kernel::ffi::c_char,
+    pub mem_base: ::kernel::ffi::c_ulong,
+    pub size: ::kernel::ffi::c_ulong,
     pub partitions: *mut mtd_partition,
-    pub nr_partitions: ::core::ffi::c_int,
+    pub nr_partitions: ::kernel::ffi::c_int,
     pub fast_mode: u8,
 }
 
@@ -55,8 +55,8 @@ pub struct spear_smi_flash_info {
  */
 #[repr(C)]
 pub struct spear_smi_plat_data {
-    pub clk_rate: ::core::ffi::c_ulong,
-    pub num_flashes: ::core::ffi::c_int,
+    pub clk_rate: ::kernel::ffi::c_ulong,
+    pub num_flashes: ::kernel::ffi::c_int,
     pub board_flash_info: *mut spear_smi_flash_info,
     pub np: [*mut device_node; MAX_NUM_FLASH_CHIP],
 }

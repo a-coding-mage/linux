@@ -9,63 +9,63 @@
 // linux/pm_runtime.h, sound/pcm_params.h, sound/soc.h, sound/soc-dai.h,
 // and "acp3x.h".
 
-const DRV_NAME: *const core::ffi::c_char = b"acp3x_rv_i2s_dma\0".as_ptr() as *const core::ffi::c_char;
+const DRV_NAME: *const kernel::ffi::c_char = b"acp3x_rv_i2s_dma\0".as_ptr() as *const kernel::ffi::c_char;
 
 extern "C" {
     static acp3x_pcm_hardware_playback: snd_pcm_hardware;
     static acp3x_pcm_hardware_capture: snd_pcm_hardware;
 
-    fn rv_readl(addr: *mut core::ffi::c_void) -> u32;
-    fn rv_writel(val: u32, addr: *mut core::ffi::c_void);
+    fn rv_readl(addr: *mut kernel::ffi::c_void) -> u32;
+    fn rv_writel(val: u32, addr: *mut kernel::ffi::c_void);
     fn snd_pcm_period_elapsed(substream: *mut snd_pcm_substream);
     fn snd_soc_substream_to_rtd(substream: *mut snd_pcm_substream) -> *mut snd_soc_pcm_runtime;
     fn snd_soc_rtdcom_lookup(
         rtd: *mut snd_soc_pcm_runtime,
-        name: *const core::ffi::c_char,
+        name: *const kernel::ffi::c_char,
     ) -> *mut snd_soc_component;
-    fn dev_get_drvdata(dev: *mut device) -> *mut core::ffi::c_void;
-    fn kzalloc(size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn snd_pcm_hw_constraint_integer(runtime: *mut snd_pcm_runtime, var: u32) -> core::ffi::c_int;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn snd_soc_card_get_drvdata(card: *mut snd_soc_card) -> *mut core::ffi::c_void;
-    fn pr_err(fmt: *const core::ffi::c_char, ...);
+    fn dev_get_drvdata(dev: *mut device) -> *mut kernel::ffi::c_void;
+    fn kzalloc(size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn kfree(ptr: *mut kernel::ffi::c_void);
+    fn snd_pcm_hw_constraint_integer(runtime: *mut snd_pcm_runtime, var: u32) -> kernel::ffi::c_int;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn snd_soc_card_get_drvdata(card: *mut snd_soc_card) -> *mut kernel::ffi::c_void;
+    fn pr_err(fmt: *const kernel::ffi::c_char, ...);
     fn params_buffer_bytes(params: *mut snd_pcm_hw_params) -> u64;
-    fn acp_get_byte_count(rtd: *mut i2s_stream_instance, stream: core::ffi::c_int) -> u64;
+    fn acp_get_byte_count(rtd: *mut i2s_stream_instance, stream: kernel::ffi::c_int) -> u64;
     fn frames_to_bytes(runtime: *mut snd_pcm_runtime, frames: snd_pcm_uframes_t) -> u32;
     fn bytes_to_frames(runtime: *mut snd_pcm_runtime, bytes: u32) -> snd_pcm_uframes_t;
     fn snd_pcm_set_managed_buffer_all(
         pcm: *mut snd_pcm,
-        ty: core::ffi::c_int,
+        ty: kernel::ffi::c_int,
         dev: *mut device,
         min: usize,
         max: usize,
     );
     fn platform_get_resource(
         pdev: *mut platform_device,
-        ty: core::ffi::c_uint,
-        num: core::ffi::c_uint,
+        ty: kernel::ffi::c_uint,
+        num: kernel::ffi::c_uint,
     ) -> *mut resource;
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
-    fn devm_ioremap(dev: *mut device, offset: resource_size_t, size: resource_size_t) -> *mut core::ffi::c_void;
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
+    fn devm_ioremap(dev: *mut device, offset: resource_size_t, size: resource_size_t) -> *mut kernel::ffi::c_void;
     fn resource_size(res: *mut resource) -> resource_size_t;
-    fn platform_get_irq(pdev: *mut platform_device, num: core::ffi::c_uint) -> core::ffi::c_int;
-    fn dev_set_drvdata(dev: *mut device, data: *mut core::ffi::c_void);
+    fn platform_get_irq(pdev: *mut platform_device, num: kernel::ffi::c_uint) -> kernel::ffi::c_int;
+    fn dev_set_drvdata(dev: *mut device, data: *mut kernel::ffi::c_void);
     fn devm_snd_soc_register_component(
         dev: *mut device,
         cmpnt_drv: *const snd_soc_component_driver,
         dai_drv: *mut snd_soc_dai_driver,
-        num_dai: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        num_dai: kernel::ffi::c_int,
+    ) -> kernel::ffi::c_int;
     fn devm_request_irq(
         dev: *mut device,
-        irq: core::ffi::c_uint,
+        irq: kernel::ffi::c_uint,
         handler: irq_handler_t,
-        irqflags: core::ffi::c_ulong,
-        devname: *const core::ffi::c_char,
-        dev_id: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
-    fn pm_runtime_set_autosuspend_delay(dev: *mut device, delay: core::ffi::c_int);
+        irqflags: kernel::ffi::c_ulong,
+        devname: *const kernel::ffi::c_char,
+        dev_id: *mut kernel::ffi::c_void,
+    ) -> kernel::ffi::c_int;
+    fn pm_runtime_set_autosuspend_delay(dev: *mut device, delay: kernel::ffi::c_int);
     fn pm_runtime_use_autosuspend(dev: *mut device);
     fn pm_runtime_mark_last_busy(dev: *mut device);
     fn pm_runtime_set_active(dev: *mut device);
@@ -76,8 +76,8 @@ extern "C" {
 type dma_addr_t = u64;
 type snd_pcm_uframes_t = u64;
 type resource_size_t = u64;
-type irqreturn_t = core::ffi::c_uint;
-type irq_handler_t = Option<unsafe extern "C" fn(core::ffi::c_int, *mut core::ffi::c_void) -> irqreturn_t>;
+type irqreturn_t = kernel::ffi::c_uint;
+type irq_handler_t = Option<unsafe extern "C" fn(kernel::ffi::c_int, *mut kernel::ffi::c_void) -> irqreturn_t>;
 
 #[repr(C)]
 struct snd_pcm_hardware {
@@ -98,7 +98,7 @@ struct snd_pcm_hardware {
 #[repr(C)]
 struct snd_pcm_runtime {
     hw: snd_pcm_hardware,
-    private_data: *mut core::ffi::c_void,
+    private_data: *mut kernel::ffi::c_void,
     dma_addr: dma_addr_t,
     buffer_size: snd_pcm_uframes_t,
 }
@@ -106,7 +106,7 @@ struct snd_pcm_runtime {
 #[repr(C)]
 struct snd_pcm_substream {
     runtime: *mut snd_pcm_runtime,
-    stream: core::ffi::c_int,
+    stream: kernel::ffi::c_int,
 }
 
 #[repr(C)]
@@ -134,28 +134,28 @@ struct snd_soc_dai_driver;
 
 #[repr(C)]
 struct acp3x_platform_info {
-    play_i2s_instance: core::ffi::c_int,
-    cap_i2s_instance: core::ffi::c_int,
+    play_i2s_instance: kernel::ffi::c_int,
+    cap_i2s_instance: kernel::ffi::c_int,
 }
 
 #[repr(C)]
 struct i2s_stream_instance {
-    acp3x_base: *mut core::ffi::c_void,
+    acp3x_base: *mut kernel::ffi::c_void,
     dma_addr: dma_addr_t,
     num_pages: u16,
-    i2s_instance: core::ffi::c_int,
+    i2s_instance: kernel::ffi::c_int,
     bytescount: u64,
     xfer_resolution: u32,
 }
 
 #[repr(C)]
 struct i2s_dev_data {
-    acp3x_base: *mut core::ffi::c_void,
+    acp3x_base: *mut kernel::ffi::c_void,
     play_stream: *mut snd_pcm_substream,
     i2ssp_play_stream: *mut snd_pcm_substream,
     capture_stream: *mut snd_pcm_substream,
     i2ssp_capture_stream: *mut snd_pcm_substream,
-    i2s_irq: core::ffi::c_int,
+    i2s_irq: kernel::ffi::c_int,
     tdm_mode: u32,
     tdm_fmt: u32,
 }
@@ -163,7 +163,7 @@ struct i2s_dev_data {
 #[repr(C)]
 struct device {
     parent: *mut device,
-    platform_data: *mut core::ffi::c_void,
+    platform_data: *mut kernel::ffi::c_void,
 }
 
 #[repr(C)]
@@ -178,45 +178,45 @@ struct resource {
 
 #[repr(C)]
 struct dev_pm_ops {
-    runtime_suspend: Option<unsafe extern "C" fn(*mut device) -> core::ffi::c_int>,
-    runtime_resume: Option<unsafe extern "C" fn(*mut device) -> core::ffi::c_int>,
-    resume: Option<unsafe extern "C" fn(*mut device) -> core::ffi::c_int>,
+    runtime_suspend: Option<unsafe extern "C" fn(*mut device) -> kernel::ffi::c_int>,
+    runtime_resume: Option<unsafe extern "C" fn(*mut device) -> kernel::ffi::c_int>,
+    resume: Option<unsafe extern "C" fn(*mut device) -> kernel::ffi::c_int>,
 }
 
 #[repr(C)]
 struct platform_driver_driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     pm: *const dev_pm_ops,
 }
 
 #[repr(C)]
 struct platform_driver {
-    probe: Option<unsafe extern "C" fn(*mut platform_device) -> core::ffi::c_int>,
+    probe: Option<unsafe extern "C" fn(*mut platform_device) -> kernel::ffi::c_int>,
     remove: Option<unsafe extern "C" fn(*mut platform_device)>,
     driver: platform_driver_driver,
 }
 
 #[repr(C)]
 struct snd_soc_component_driver {
-    name: *const core::ffi::c_char,
+    name: *const kernel::ffi::c_char,
     open: Option<
-        unsafe extern "C" fn(*mut snd_soc_component, *mut snd_pcm_substream) -> core::ffi::c_int,
+        unsafe extern "C" fn(*mut snd_soc_component, *mut snd_pcm_substream) -> kernel::ffi::c_int,
     >,
     close: Option<
-        unsafe extern "C" fn(*mut snd_soc_component, *mut snd_pcm_substream) -> core::ffi::c_int,
+        unsafe extern "C" fn(*mut snd_soc_component, *mut snd_pcm_substream) -> kernel::ffi::c_int,
     >,
     hw_params: Option<
         unsafe extern "C" fn(
             *mut snd_soc_component,
             *mut snd_pcm_substream,
             *mut snd_pcm_hw_params,
-        ) -> core::ffi::c_int,
+        ) -> kernel::ffi::c_int,
     >,
     pointer: Option<
         unsafe extern "C" fn(*mut snd_soc_component, *mut snd_pcm_substream) -> snd_pcm_uframes_t,
     >,
     pcm_new: Option<
-        unsafe extern "C" fn(*mut snd_soc_component, *mut snd_soc_pcm_runtime) -> core::ffi::c_int,
+        unsafe extern "C" fn(*mut snd_soc_component, *mut snd_soc_pcm_runtime) -> kernel::ffi::c_int,
     >,
 }
 
@@ -237,8 +237,8 @@ const fn PAGE_ALIGN(size: u64) -> u64 {
 }
 
 unsafe extern "C" fn i2s_irq_handler(
-    _irq: core::ffi::c_int,
-    dev_id: *mut core::ffi::c_void,
+    _irq: kernel::ffi::c_int,
+    dev_id: *mut kernel::ffi::c_void,
 ) -> irqreturn_t {
     let rv_i2s_data: *mut i2s_dev_data;
     let mut play_flag: u16;
@@ -294,7 +294,7 @@ unsafe extern "C" fn i2s_irq_handler(
     }
 }
 
-unsafe fn config_acp3x_dma(rtd: *mut i2s_stream_instance, direction: core::ffi::c_int) {
+unsafe fn config_acp3x_dma(rtd: *mut i2s_stream_instance, direction: kernel::ffi::c_int) {
     let mut page_idx: u16;
     let mut low: u32;
     let mut high: u32;
@@ -416,12 +416,12 @@ unsafe fn config_acp3x_dma(rtd: *mut i2s_stream_instance, direction: core::ffi::
 unsafe extern "C" fn acp3x_dma_open(
     mut component: *mut snd_soc_component,
     substream: *mut snd_pcm_substream,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let runtime: *mut snd_pcm_runtime;
     let prtd: *mut snd_soc_pcm_runtime;
     let adata: *mut i2s_dev_data;
     let i2s_data: *mut i2s_stream_instance;
-    let ret: core::ffi::c_int;
+    let ret: kernel::ffi::c_int;
 
     runtime = (*substream).runtime;
     prtd = snd_soc_substream_to_rtd(substream);
@@ -443,12 +443,12 @@ unsafe extern "C" fn acp3x_dma_open(
     ret = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
     if ret < 0 {
         dev_err((*component).dev, b"set integer constraint failed\n\0".as_ptr() as *const _);
-        kfree(i2s_data as *mut core::ffi::c_void);
+        kfree(i2s_data as *mut kernel::ffi::c_void);
         return ret;
     }
 
     (*i2s_data).acp3x_base = (*adata).acp3x_base;
-    (*runtime).private_data = i2s_data as *mut core::ffi::c_void;
+    (*runtime).private_data = i2s_data as *mut kernel::ffi::c_void;
     ret
 }
 
@@ -456,7 +456,7 @@ unsafe extern "C" fn acp3x_dma_hw_params(
     component: *mut snd_soc_component,
     substream: *mut snd_pcm_substream,
     params: *mut snd_pcm_hw_params,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let rtd: *mut i2s_stream_instance;
     let prtd: *mut snd_soc_pcm_runtime;
     let card: *mut snd_soc_card;
@@ -528,7 +528,7 @@ unsafe extern "C" fn acp3x_dma_pointer(
 unsafe extern "C" fn acp3x_dma_new(
     component: *mut snd_soc_component,
     rtd: *mut snd_soc_pcm_runtime,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let parent: *mut device = (*(*component).dev).parent;
     snd_pcm_set_managed_buffer_all((*rtd).pcm, SNDRV_DMA_TYPE_DEV, parent, MIN_BUFFER, MAX_BUFFER);
     0
@@ -537,7 +537,7 @@ unsafe extern "C" fn acp3x_dma_new(
 unsafe extern "C" fn acp3x_dma_close(
     mut component: *mut snd_soc_component,
     substream: *mut snd_pcm_substream,
-) -> core::ffi::c_int {
+) -> kernel::ffi::c_int {
     let prtd: *mut snd_soc_pcm_runtime;
     let adata: *mut i2s_dev_data;
     let ins: *mut i2s_stream_instance;
@@ -582,17 +582,17 @@ static acp3x_i2s_component: snd_soc_component_driver = snd_soc_component_driver 
     pcm_new: Some(acp3x_dma_new),
 };
 
-unsafe extern "C" fn acp3x_audio_probe(pdev: *mut platform_device) -> core::ffi::c_int {
+unsafe extern "C" fn acp3x_audio_probe(pdev: *mut platform_device) -> kernel::ffi::c_int {
     let res: *mut resource;
     let adata: *mut i2s_dev_data;
-    let irqflags: core::ffi::c_uint;
-    let mut status: core::ffi::c_int;
+    let irqflags: kernel::ffi::c_uint;
+    let mut status: kernel::ffi::c_int;
 
     if (*pdev).dev.platform_data.is_null() {
         dev_err(&mut (*pdev).dev, b"platform_data not retrieved\n\0".as_ptr() as *const _);
         return -ENODEV;
     }
-    irqflags = *((*pdev).dev.platform_data as *mut core::ffi::c_uint);
+    irqflags = *((*pdev).dev.platform_data as *mut kernel::ffi::c_uint);
 
     res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
     if res.is_null() {
@@ -620,7 +620,7 @@ unsafe extern "C" fn acp3x_audio_probe(pdev: *mut platform_device) -> core::ffi:
     }
     (*adata).i2s_irq = status;
 
-    dev_set_drvdata(&mut (*pdev).dev, adata as *mut core::ffi::c_void);
+    dev_set_drvdata(&mut (*pdev).dev, adata as *mut kernel::ffi::c_void);
     status = devm_snd_soc_register_component(
         &mut (*pdev).dev,
         &acp3x_i2s_component,
@@ -636,11 +636,11 @@ unsafe extern "C" fn acp3x_audio_probe(pdev: *mut platform_device) -> core::ffi:
     }
     status = devm_request_irq(
         &mut (*pdev).dev,
-        (*adata).i2s_irq as core::ffi::c_uint,
+        (*adata).i2s_irq as kernel::ffi::c_uint,
         Some(i2s_irq_handler),
-        irqflags as core::ffi::c_ulong,
+        irqflags as kernel::ffi::c_ulong,
         b"ACP3x_I2S_IRQ\0".as_ptr() as *const _,
-        adata as *mut core::ffi::c_void,
+        adata as *mut kernel::ffi::c_void,
     );
     if status != 0 {
         dev_err(&mut (*pdev).dev, b"ACP3x I2S IRQ request failed\n\0".as_ptr() as *const _);
@@ -659,7 +659,7 @@ unsafe extern "C" fn acp3x_audio_remove(pdev: *mut platform_device) {
     pm_runtime_disable(&mut (*pdev).dev);
 }
 
-unsafe extern "C" fn acp3x_resume(dev: *mut device) -> core::ffi::c_int {
+unsafe extern "C" fn acp3x_resume(dev: *mut device) -> kernel::ffi::c_int {
     let adata: *mut i2s_dev_data;
     let mut val: u32;
     let mut reg_val: u32;
@@ -710,7 +710,7 @@ unsafe extern "C" fn acp3x_resume(dev: *mut device) -> core::ffi::c_int {
     0
 }
 
-unsafe extern "C" fn acp3x_pcm_runtime_suspend(dev: *mut device) -> core::ffi::c_int {
+unsafe extern "C" fn acp3x_pcm_runtime_suspend(dev: *mut device) -> kernel::ffi::c_int {
     let adata: *mut i2s_dev_data;
 
     adata = dev_get_drvdata(dev) as *mut i2s_dev_data;
@@ -720,7 +720,7 @@ unsafe extern "C" fn acp3x_pcm_runtime_suspend(dev: *mut device) -> core::ffi::c
     0
 }
 
-unsafe extern "C" fn acp3x_pcm_runtime_resume(dev: *mut device) -> core::ffi::c_int {
+unsafe extern "C" fn acp3x_pcm_runtime_resume(dev: *mut device) -> kernel::ffi::c_int {
     let adata: *mut i2s_dev_data;
 
     adata = dev_get_drvdata(dev) as *mut i2s_dev_data;
@@ -739,7 +739,7 @@ static mut acp3x_dma_driver: platform_driver = platform_driver {
     probe: Some(acp3x_audio_probe),
     remove: Some(acp3x_audio_remove),
     driver: platform_driver_driver {
-        name: b"acp3x_rv_i2s_dma\0".as_ptr() as *const core::ffi::c_char,
+        name: b"acp3x_rv_i2s_dma\0".as_ptr() as *const kernel::ffi::c_char,
         pm: &acp3x_pm_ops,
     },
 };

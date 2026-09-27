@@ -23,7 +23,7 @@ extern "C" {
 }
 
 #[inline]
-pub unsafe fn prom_putchar(c: core::ffi::c_char) {
+pub unsafe fn prom_putchar(c: kernel::ffi::c_char) {
     let mut flags: usize = 0;
     local_irq_save(&mut flags as *mut usize);
 
@@ -39,7 +39,7 @@ pub unsafe fn prom_putchar(c: core::ffi::c_char) {
     #[cfg(not(target_endian = "big"))]
     let tbuf = (LTQ_EARLY_ASC + 0x0020) as *mut u8;
 
-    if c == b'\n' as core::ffi::c_char {
+    if c == b'\n' as kernel::ffi::c_char {
         ltq_w8(b'\r', tbuf);
     }
     ltq_w8(c as u8, tbuf);

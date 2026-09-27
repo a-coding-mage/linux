@@ -20,9 +20,9 @@ pub struct bcma_host_ops {
     pub write16: Option<unsafe extern "C" fn(*mut bcma_device, u16, u16)>,
     pub write32: Option<unsafe extern "C" fn(*mut bcma_device, u16, u32)>,
     #[cfg(CONFIG_BCMA_BLOCKIO)]
-    pub block_read: Option<unsafe extern "C" fn(*mut bcma_device, *mut core::ffi::c_void, usize, u16, u8)>,
+    pub block_read: Option<unsafe extern "C" fn(*mut bcma_device, *mut kernel::ffi::c_void, usize, u16, u8)>,
     #[cfg(CONFIG_BCMA_BLOCKIO)]
-    pub block_write: Option<unsafe extern "C" fn(*mut bcma_device, *const core::ffi::c_void, usize, u16, u8)>,
+    pub block_write: Option<unsafe extern "C" fn(*mut bcma_device, *const kernel::ffi::c_void, usize, u16, u8)>,
     pub aread32: Option<unsafe extern "C" fn(*mut bcma_device, u16) -> u32>,
     pub awrite32: Option<unsafe extern "C" fn(*mut bcma_device, u16, u32)>,
 }
@@ -221,17 +221,17 @@ pub const BCMA_BOARD_TYPE_BCM943142HM: u32 = 0x05E0;
 #[repr(C)]
 pub struct bcma_device {
     pub bus: *mut bcma_bus, pub id: bcma_device_id, pub dev: device, pub dma_dev: *mut device,
-    pub irq: core::ffi::c_uint, pub dev_registered: bool, pub core_index: u8, pub core_unit: u8,
-    pub addr: u32, pub addr_s: [u32; 8], pub wrap: u32, pub io_addr: *mut core::ffi::c_void,
-    pub io_wrap: *mut core::ffi::c_void, pub drvdata: *mut core::ffi::c_void,
+    pub irq: kernel::ffi::c_uint, pub dev_registered: bool, pub core_index: u8, pub core_unit: u8,
+    pub addr: u32, pub addr_s: [u32; 8], pub wrap: u32, pub io_addr: *mut kernel::ffi::c_void,
+    pub io_wrap: *mut kernel::ffi::c_void, pub drvdata: *mut kernel::ffi::c_void,
     pub list: list_head,
 }
-pub unsafe fn bcma_get_drvdata(core: *mut bcma_device) -> *mut core::ffi::c_void { (*core).drvdata }
-pub unsafe fn bcma_set_drvdata(core: *mut bcma_device, drvdata: *mut core::ffi::c_void) { (*core).drvdata = drvdata; }
+pub unsafe fn bcma_get_drvdata(core: *mut bcma_device) -> *mut kernel::ffi::c_void { (*core).drvdata }
+pub unsafe fn bcma_set_drvdata(core: *mut bcma_device, drvdata: *mut kernel::ffi::c_void) { (*core).drvdata = drvdata; }
 
 #[repr(C)]
 pub struct bcma_driver {
-    pub name: *const core::ffi::c_char, pub id_table: *const bcma_device_id,
+    pub name: *const kernel::ffi::c_char, pub id_table: *const bcma_device_id,
     pub probe: Option<unsafe extern "C" fn(*mut bcma_device) -> i32>,
     pub remove: Option<unsafe extern "C" fn(*mut bcma_device)>,
     pub suspend: Option<unsafe extern "C" fn(*mut bcma_device) -> i32>,
@@ -245,7 +245,7 @@ extern "C" { pub fn bcma_arch_register_fallback_sprom(cb: Option<unsafe extern "
 
 #[repr(C)]
 pub struct bcma_bus {
-    pub dev: *mut device, pub mmio: *mut core::ffi::c_void, pub ops: *const bcma_host_ops,
+    pub dev: *mut device, pub mmio: *mut kernel::ffi::c_void, pub ops: *const bcma_host_ops,
     pub hosttype: bcma_hosttype, pub host_is_pcie2: bool, pub host_pci: *mut pci_dev,
     pub chipinfo: bcma_chipinfo, pub boardinfo: bcma_boardinfo, pub mapped_core: *mut bcma_device,
     pub cores: list_head, pub nr_cores: u8, pub num: u8, pub drv_cc: bcma_drv_cc,
@@ -262,9 +262,9 @@ pub unsafe fn bcma_write32(core: *mut bcma_device, offset: u16, value: u32) { ((
 pub unsafe fn bcma_aread32(core: *mut bcma_device, offset: u16) -> u32 { ((*(*core).bus).ops).as_ref().unwrap().aread32.unwrap()(core, offset) }
 pub unsafe fn bcma_awrite32(core: *mut bcma_device, offset: u16, value: u32) { ((*(*core).bus).ops).as_ref().unwrap().awrite32.unwrap()(core, offset, value); }
 #[cfg(CONFIG_BCMA_BLOCKIO)]
-pub unsafe fn bcma_block_read(core: *mut bcma_device, buffer: *mut core::ffi::c_void, count: usize, offset: u16, reg_width: u8) { ((*(*core).bus).ops).as_ref().unwrap().block_read.unwrap()(core, buffer, count, offset, reg_width); }
+pub unsafe fn bcma_block_read(core: *mut bcma_device, buffer: *mut kernel::ffi::c_void, count: usize, offset: u16, reg_width: u8) { ((*(*core).bus).ops).as_ref().unwrap().block_read.unwrap()(core, buffer, count, offset, reg_width); }
 #[cfg(CONFIG_BCMA_BLOCKIO)]
-pub unsafe fn bcma_block_write(core: *mut bcma_device, buffer: *const core::ffi::c_void, count: usize, offset: u16, reg_width: u8) { ((*(*core).bus).ops).as_ref().unwrap().block_write.unwrap()(core, buffer, count, offset, reg_width); }
+pub unsafe fn bcma_block_write(core: *mut bcma_device, buffer: *const kernel::ffi::c_void, count: usize, offset: u16, reg_width: u8) { ((*(*core).bus).ops).as_ref().unwrap().block_write.unwrap()(core, buffer, count, offset, reg_width); }
 pub unsafe fn bcma_mask32(cc: *mut bcma_device, offset: u16, mask: u32) { bcma_write32(cc, offset, bcma_read32(cc, offset) & mask); }
 pub unsafe fn bcma_set32(cc: *mut bcma_device, offset: u16, set: u32) { bcma_write32(cc, offset, bcma_read32(cc, offset) | set); }
 pub unsafe fn bcma_maskset32(cc: *mut bcma_device, offset: u16, mask: u32, set: u32) { bcma_write32(cc, offset, (bcma_read32(cc, offset) & mask) | set); }
@@ -281,7 +281,7 @@ extern "C" {
     pub fn bcma_core_pll_ctl(core: *mut bcma_device, req: u32, status: u32, on: bool);
     pub fn bcma_chipco_pll_read(cc: *mut bcma_drv_cc, offset: u32) -> u32;
     pub fn bcma_core_dma_translation(core: *mut bcma_device) -> u32;
-    pub fn bcma_core_irq(core: *mut bcma_device, num: i32) -> core::ffi::c_uint;
+    pub fn bcma_core_irq(core: *mut bcma_device, num: i32) -> kernel::ffi::c_uint;
 }
 pub unsafe fn bcma_find_core(bus: *mut bcma_bus, coreid: u16) -> *mut bcma_device { bcma_find_core_unit(bus, coreid, 0) }
 /* CONFIG_BCMA_HOST_PCI selects external implementations; otherwise these are no-op stubs. */

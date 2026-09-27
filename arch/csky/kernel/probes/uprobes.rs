@@ -5,13 +5,13 @@
 
 // Dependencies supplied by the surrounding kernel translation unit.
 
-pub const UPROBE_TRAP_NR: ::core::ffi::c_uint = ::core::ffi::c_uint::MAX;
+pub const UPROBE_TRAP_NR: ::kernel::ffi::c_uint = ::kernel::ffi::c_uint::MAX;
 
 extern "C" {
     fn is_insn32(insn: probe_opcode_t) -> bool;
     fn csky_probe_decode_insn(insn: *mut probe_opcode_t, api: *mut arch_uprobe_api) -> insn_decode_result;
-    fn instruction_pointer(regs: *mut pt_regs) -> ::core::ffi::c_ulong;
-    fn instruction_pointer_set(regs: *mut pt_regs, value: ::core::ffi::c_ulong);
+    fn instruction_pointer(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong;
+    fn instruction_pointer_set(regs: *mut pt_regs, value: ::kernel::ffi::c_ulong);
     fn user_enable_single_step(task: *mut task_struct);
     fn user_disable_single_step(task: *mut task_struct);
     fn uprobe_pre_sstep_notifier(regs: *mut pt_regs) -> bool;
@@ -37,23 +37,23 @@ extern "C" {
     static INSN_REJECTED: insn_decode_result;
     static INSN_GOOD_NO_SLOT: insn_decode_result;
     static UPROBE_SWBP_INSN: uprobe_opcode_t;
-    static NOTIFY_DONE: ::core::ffi::c_int;
+    static NOTIFY_DONE: ::kernel::ffi::c_int;
 }
 
 #[inline]
 pub unsafe fn is_swbp_insn(insn: *mut uprobe_opcode_t) -> bool {
-    (*insn as ::core::ffi::c_ulong & 0xffff) == UPROBE_SWBP_INSN as ::core::ffi::c_ulong
+    (*insn as ::kernel::ffi::c_ulong & 0xffff) == UPROBE_SWBP_INSN as ::kernel::ffi::c_ulong
 }
 
-pub unsafe fn uprobe_get_swbp_addr(regs: *mut pt_regs) -> ::core::ffi::c_ulong {
+pub unsafe fn uprobe_get_swbp_addr(regs: *mut pt_regs) -> ::kernel::ffi::c_ulong {
     instruction_pointer(regs)
 }
 
 pub unsafe fn arch_uprobe_analyze_insn(
     auprobe: *mut arch_uprobe,
     _mm: *mut mm_struct,
-    _addr: ::core::ffi::c_ulong,
-) -> ::core::ffi::c_int {
+    _addr: ::kernel::ffi::c_ulong,
+) -> ::kernel::ffi::c_int {
     let mut insn: probe_opcode_t = *(&(*auprobe).insn[0] as *const _ as *const probe_opcode_t);
     (*auprobe).insn_size = if is_insn32(insn) { 4 } else { 2 };
 
@@ -70,7 +70,7 @@ pub unsafe fn arch_uprobe_analyze_insn(
 pub unsafe fn arch_uprobe_pre_xol(
     _auprobe: *mut arch_uprobe,
     regs: *mut pt_regs,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let utask = (*current).utask;
     (*utask).autask.saved_trap_no = (*current).thread.trap_no;
     (*current).thread.trap_no = UPROBE_TRAP_NR as _;
@@ -82,7 +82,7 @@ pub unsafe fn arch_uprobe_pre_xol(
 pub unsafe fn arch_uprobe_post_xol(
     auprobe: *mut arch_uprobe,
     regs: *mut pt_regs,
-) -> ::core::ffi::c_int {
+) -> ::kernel::ffi::c_int {
     let utask = (*current).utask;
     WARN_ON_ONCE((*current).thread.trap_no != UPROBE_TRAP_NR as _);
     (*current).thread.trap_no = (*utask).autask.saved_trap_no;
@@ -126,9 +126,9 @@ pub unsafe fn arch_uretprobe_is_alive(
 }
 
 pub unsafe fn arch_uretprobe_hijack_return_addr(
-    trampoline_vaddr: ::core::ffi::c_ulong,
+    trampoline_vaddr: ::kernel::ffi::c_ulong,
     regs: *mut pt_regs,
-) -> ::core::ffi::c_ulong {
+) -> ::kernel::ffi::c_ulong {
     let ra = (*regs).lr;
     (*regs).lr = trampoline_vaddr;
     ra
@@ -136,15 +136,15 @@ pub unsafe fn arch_uretprobe_hijack_return_addr(
 
 pub unsafe fn arch_uprobe_exception_notify(
     _self: *mut notifier_block,
-    _val: ::core::ffi::c_ulong,
-    _data: *mut ::core::ffi::c_void,
-) -> ::core::ffi::c_int { NOTIFY_DONE as _ }
+    _val: ::kernel::ffi::c_ulong,
+    _data: *mut ::kernel::ffi::c_void,
+) -> ::kernel::ffi::c_int { NOTIFY_DONE as _ }
 
-pub unsafe fn uprobe_breakpoint_handler(regs: *mut pt_regs) -> ::core::ffi::c_int {
+pub unsafe fn uprobe_breakpoint_handler(regs: *mut pt_regs) -> ::kernel::ffi::c_int {
     if uprobe_pre_sstep_notifier(regs) { 1 } else { 0 }
 }
 
-pub unsafe fn uprobe_single_step_handler(regs: *mut pt_regs) -> ::core::ffi::c_int {
+pub unsafe fn uprobe_single_step_handler(regs: *mut pt_regs) -> ::kernel::ffi::c_int {
     if uprobe_post_sstep_notifier(regs) { 1 } else { 0 }
 }
 

@@ -35,12 +35,12 @@ extern "C" {
     fn gpiochip_get_data(gc: *mut gpio_chip) -> *mut tps65219_gpio;
     fn regmap_read(regmap: *mut regmap, reg: u32, val: *mut i32) -> i32;
     fn regmap_update_bits(regmap: *mut regmap, reg: u32, mask: i32, val: i32) -> i32;
-    fn dev_err(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn dev_warn(dev: *mut device, fmt: *const core::ffi::c_char, ...);
-    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut core::ffi::c_void;
+    fn dev_err(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn dev_warn(dev: *mut device, fmt: *const kernel::ffi::c_char, ...);
+    fn devm_kzalloc(dev: *mut device, size: usize, flags: u32) -> *mut kernel::ffi::c_void;
     fn platform_get_device_id(pdev: *mut platform_device) -> *mut platform_device_id;
     fn dev_get_drvdata(dev: *mut device) -> *mut tps65219;
-    fn devm_gpiochip_add_data(dev: *mut device, gc: *mut gpio_chip, data: *mut core::ffi::c_void) -> i32;
+    fn devm_gpiochip_add_data(dev: *mut device, gc: *mut gpio_chip, data: *mut kernel::ffi::c_void) -> i32;
 }
 
 #[repr(C)] pub struct gpio_chip { _private: [u8; 0] }
@@ -48,7 +48,7 @@ extern "C" {
 #[repr(C)] pub struct regmap { _private: [u8; 0] }
 #[repr(C)] pub struct device { pub parent: *mut device }
 #[repr(C)] pub struct platform_device { pub dev: device }
-#[repr(C)] pub struct platform_device_id { pub name: *const core::ffi::c_char, pub driver_data: usize }
+#[repr(C)] pub struct platform_device_id { pub name: *const kernel::ffi::c_char, pub driver_data: usize }
 
 const GPIO_LINE_DIRECTION_IN: i32 = 0;
 const GPIO_LINE_DIRECTION_OUT: i32 = 1;
@@ -147,11 +147,11 @@ unsafe fn tps65219_gpio_probe(pdev: *mut platform_device) -> i32 {
         (*gpio).change_dir = Some(tps65219_gpio_change_direction);
     } else { return -ENODATA; }
     (*gpio).tps = tps;
-    devm_gpiochip_add_data(&mut (*pdev).dev, &mut (*gpio).gpio_chip, gpio as *mut core::ffi::c_void)
+    devm_gpiochip_add_data(&mut (*pdev).dev, &mut (*gpio).gpio_chip, gpio as *mut kernel::ffi::c_void)
 }
 
 #[repr(C)]
-pub struct tps6521x_gpio_id { pub name: *const core::ffi::c_char, pub driver_data: usize }
+pub struct tps6521x_gpio_id { pub name: *const kernel::ffi::c_char, pub driver_data: usize }
 
 // Platform ID table, module metadata, and driver registration supplied by the
 // kernel module framework.
@@ -165,7 +165,7 @@ pub static tps6521x_gpio_id_table: [tps6521x_gpio_id; 3] = [
 extern "C" {
     static mut tps65214_template_chip: gpio_chip;
     static mut tps65219_template_chip: gpio_chip;
-    static mut tps65219_gpio_driver: core::ffi::c_void;
+    static mut tps65219_gpio_driver: kernel::ffi::c_void;
 }
 
 // MODULE_AUTHOR("Jonathan Cormier <jcormier@criticallink.com>");

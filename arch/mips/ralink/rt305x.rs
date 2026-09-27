@@ -12,8 +12,8 @@
 
 static mut soc_info_ptr: *mut ralink_soc_info = core::ptr::null_mut();
 
-unsafe fn rt5350_get_mem_size() -> ::core::ffi::c_ulong {
-    let mut ret: ::core::ffi::c_ulong;
+unsafe fn rt5350_get_mem_size() -> ::kernel::ffi::c_ulong {
+    let mut ret: ::kernel::ffi::c_ulong;
     let mut t: u32;
 
     t = __raw_readl(RT305X_SYSC_BASE + SYSC_REG_SYSTEM_CONFIG);

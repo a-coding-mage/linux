@@ -3,7 +3,7 @@
 // C dependencies: <linux/io.h>, <linux/slab.h>, <linux/vmalloc.h>,
 // <mm/mmu_decl.h>
 
-use core::ffi::c_void;
+use kernel::ffi::c_void;
 
 // These types, constants, globals, and functions are supplied by the surrounding
 // kernel translation units.
@@ -34,8 +34,8 @@ extern "C" {
 }
 
 // Build-time kernel definitions supplied externally.
-type c_ulong = core::ffi::c_ulong;
-type c_int = core::ffi::c_int;
+type c_ulong = kernel::ffi::c_ulong;
+type c_int = kernel::ffi::c_int;
 type phys_addr_t = u64;
 type pgprot_t = usize;
 

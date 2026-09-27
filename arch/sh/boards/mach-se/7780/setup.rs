@@ -58,7 +58,7 @@ unsafe extern "C" {
     fn platform_add_devices(devices: *mut *mut platform_device, count: usize) -> i32;
     fn __raw_writew(value: u16, address: usize);
     fn __raw_readw(address: usize) -> u16;
-    fn printk(format: *const core::ffi::c_char, ...);
+    fn printk(format: *const kernel::ffi::c_char, ...);
     fn init_se7780_IRQ();
 }
 
@@ -75,7 +75,7 @@ const GPIO_PHCR: usize = 0xFFEA000E;
 const GPIO_PMSELR: usize = 0xFFEA0080;
 const GPIO_PECR: usize = 0xFFEA0008;
 
-unsafe fn se7780_setup(_cmdline_p: *mut *mut core::ffi::c_char) {
+unsafe fn se7780_setup(_cmdline_p: *mut *mut kernel::ffi::c_char) {
     /* "SH-Linux" on LED Display */
     __raw_writew(b'S' as u16, PA_LED_DISP + (DISP_SEL0_ADDR << 1));
     __raw_writew(b'H' as u16, PA_LED_DISP + (DISP_SEL1_ADDR << 1));
@@ -86,7 +86,7 @@ unsafe fn se7780_setup(_cmdline_p: *mut *mut core::ffi::c_char) {
     __raw_writew(b'u' as u16, PA_LED_DISP + (DISP_SEL6_ADDR << 1));
     __raw_writew(b'x' as u16, PA_LED_DISP + (DISP_SEL7_ADDR << 1));
 
-    printk(b"Hitachi UL Solutions Engine 7780SE03 support.\n\0".as_ptr() as *const core::ffi::c_char);
+    printk(b"Hitachi UL Solutions Engine 7780SE03 support.\n\0".as_ptr() as *const kernel::ffi::c_char);
 
     /*
      * PCI REQ/GNT setting

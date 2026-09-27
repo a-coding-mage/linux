@@ -6,31 +6,31 @@
 #[repr(C)]
 pub struct switch_stack {
     #[cfg(CONFIG_CPU_HAS_HILO)]
-    pub rhi: core::ffi::c_ulong,
+    pub rhi: kernel::ffi::c_ulong,
     #[cfg(CONFIG_CPU_HAS_HILO)]
-    pub rlo: core::ffi::c_ulong,
+    pub rlo: kernel::ffi::c_ulong,
     #[cfg(CONFIG_CPU_HAS_HILO)]
-    pub cr14: core::ffi::c_ulong,
+    pub cr14: kernel::ffi::c_ulong,
     #[cfg(CONFIG_CPU_HAS_HILO)]
-    pub pad: core::ffi::c_ulong,
+    pub pad: kernel::ffi::c_ulong,
 
-    pub r4: core::ffi::c_ulong,
-    pub r5: core::ffi::c_ulong,
-    pub r6: core::ffi::c_ulong,
-    pub r7: core::ffi::c_ulong,
-    pub r8: core::ffi::c_ulong,
-    pub r9: core::ffi::c_ulong,
-    pub r10: core::ffi::c_ulong,
-    pub r11: core::ffi::c_ulong,
+    pub r4: kernel::ffi::c_ulong,
+    pub r5: kernel::ffi::c_ulong,
+    pub r6: kernel::ffi::c_ulong,
+    pub r7: kernel::ffi::c_ulong,
+    pub r8: kernel::ffi::c_ulong,
+    pub r9: kernel::ffi::c_ulong,
+    pub r10: kernel::ffi::c_ulong,
+    pub r11: kernel::ffi::c_ulong,
 
-    pub r15: core::ffi::c_ulong,
-    pub r16: core::ffi::c_ulong,
-    pub r17: core::ffi::c_ulong,
-    pub r26: core::ffi::c_ulong,
-    pub r27: core::ffi::c_ulong,
-    pub r28: core::ffi::c_ulong,
-    pub r29: core::ffi::c_ulong,
-    pub r30: core::ffi::c_ulong,
+    pub r15: kernel::ffi::c_ulong,
+    pub r16: kernel::ffi::c_ulong,
+    pub r17: kernel::ffi::c_ulong,
+    pub r26: kernel::ffi::c_ulong,
+    pub r27: kernel::ffi::c_ulong,
+    pub r28: kernel::ffi::c_ulong,
+    pub r29: kernel::ffi::c_ulong,
+    pub r30: kernel::ffi::c_ulong,
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

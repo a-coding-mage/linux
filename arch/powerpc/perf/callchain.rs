@@ -12,7 +12,7 @@
  * The next frame may be in a different stack area but should not go
  * back down in the same stack area.
  */
-unsafe fn valid_next_sp(sp: ::core::ffi::c_ulong, prev_sp: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
+unsafe fn valid_next_sp(sp: ::kernel::ffi::c_ulong, prev_sp: ::kernel::ffi::c_ulong) -> ::kernel::ffi::c_int {
     if sp & 0xf != 0 {
         return 0; // must be 16-byte aligned
     }
@@ -39,12 +39,12 @@ pub unsafe fn perf_callchain_kernel(
     entry: *mut perf_callchain_entry_ctx,
     mut regs: *mut pt_regs,
 ) {
-    let mut sp: ::core::ffi::c_ulong;
-    let mut next_sp: ::core::ffi::c_ulong;
-    let mut next_ip: ::core::ffi::c_ulong;
-    let mut lr: ::core::ffi::c_ulong;
-    let mut level: ::core::ffi::c_long = 0;
-    let mut fp: *mut ::core::ffi::c_ulong;
+    let mut sp: ::kernel::ffi::c_ulong;
+    let mut next_sp: ::kernel::ffi::c_ulong;
+    let mut next_ip: ::kernel::ffi::c_ulong;
+    let mut lr: ::kernel::ffi::c_ulong;
+    let mut level: ::kernel::ffi::c_long = 0;
+    let mut fp: *mut ::kernel::ffi::c_ulong;
 
     lr = (*regs).link;
     sp = (*regs).gpr[1];
@@ -55,7 +55,7 @@ pub unsafe fn perf_callchain_kernel(
     }
 
     loop {
-        fp = sp as *mut ::core::ffi::c_ulong;
+        fp = sp as *mut ::kernel::ffi::c_ulong;
         next_sp = *fp.add(0);
 
         if next_sp == sp.wrapping_add(STACK_INT_FRAME_SIZE)

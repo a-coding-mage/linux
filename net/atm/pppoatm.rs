@@ -31,8 +31,8 @@ struct pppoatm_vcc {
     old_owner: *mut module,
     encaps: pppoatm_encaps,
     inflight: atomic_t,
-    blocked: ::core::ffi::c_ulong,
-    flags: ::core::ffi::c_int,
+    blocked: ::kernel::ffi::c_ulong,
+    flags: ::kernel::ffi::c_int,
     chan: ppp_channel,
     wakeup_tasklet: tasklet_struct,
 }
@@ -86,7 +86,7 @@ unsafe fn pppoatm_unassign_vcc(atmvcc: *mut atm_vcc) {
     tasklet_kill(&mut (*pvcc).wakeup_tasklet);
     ppp_unregister_channel(&mut (*pvcc).chan);
     (*atmvcc).user_back = core::ptr::null_mut();
-    kfree(pvcc as *mut ::core::ffi::c_void);
+    kfree(pvcc as *mut ::kernel::ffi::c_void);
 }
 
 unsafe extern "C" fn pppoatm_push(atmvcc: *mut atm_vcc, skb: *mut sk_buff) {
@@ -151,13 +151,13 @@ unsafe extern "C" fn pppoatm_send(chan: *mut ppp_channel, skb: *mut sk_buff) -> 
     bh_unlock_sock(sk_atm(vcc)); ret
 }
 
-unsafe extern "C" fn pppoatm_devppp_ioctl(chan: *mut ppp_channel, cmd: u32, arg: ::core::ffi::c_ulong) -> i32 {
+unsafe extern "C" fn pppoatm_devppp_ioctl(chan: *mut ppp_channel, cmd: u32, arg: ::kernel::ffi::c_ulong) -> i32 {
     match cmd { PPPIOCGFLAGS => if put_user((*chan_to_pvcc(chan)).flags, arg as *mut i32) != 0 { -EFAULT } else { 0 }, PPPIOCSFLAGS => if get_user(&mut (*chan_to_pvcc(chan)).flags, arg as *const i32) != 0 { -EFAULT } else { 0 }, _ => -ENOTTY }
 }
 
 static pppoatm_ops: ppp_channel_ops = ppp_channel_ops { start_xmit: Some(pppoatm_send), ioctl: Some(pppoatm_devppp_ioctl) };
 
-unsafe extern "C" fn pppoatm_assign_vcc(atmvcc: *mut atm_vcc, arg: *mut ::core::ffi::c_void) -> i32 {
+unsafe extern "C" fn pppoatm_assign_vcc(atmvcc: *mut atm_vcc, arg: *mut ::kernel::ffi::c_void) -> i32 {
     let mut be: atm_backend_ppp = core::mem::zeroed();
     if copy_from_user(&mut be, arg, core::mem::size_of::<atm_backend_ppp>()) != 0 { return -EFAULT; }
     if be.encaps != PPPOATM_ENCAPS_AUTODETECT && be.encaps != PPPOATM_ENCAPS_VC && be.encaps != PPPOATM_ENCAPS_LLC { return -EINVAL; }
@@ -186,9 +186,9 @@ unsafe extern "C" fn pppoatm_assign_vcc(atmvcc: *mut atm_vcc, arg: *mut ::core::
     0
 }
 
-unsafe extern "C" fn pppoatm_ioctl(sock: *mut socket, cmd: u32, arg: ::core::ffi::c_ulong) -> i32 {
+unsafe extern "C" fn pppoatm_ioctl(sock: *mut socket, cmd: u32, arg: ::kernel::ffi::c_ulong) -> i32 {
     let atmvcc = ATM_SD(sock);
-    let argp = arg as *mut ::core::ffi::c_void;
+    let argp = arg as *mut ::kernel::ffi::c_void;
     if cmd != ATM_SETBACKEND && (*atmvcc).push != Some(pppoatm_push) { return -ENOIOCTLCMD; }
     match cmd {
         ATM_SETBACKEND => {

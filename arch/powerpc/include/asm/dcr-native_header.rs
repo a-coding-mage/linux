@@ -10,7 +10,7 @@
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct dcr_host_native_t {
-    pub base: core::ffi::c_uint,
+    pub base: kernel::ffi::c_uint,
 }
 
 #[inline]
@@ -47,14 +47,14 @@ macro_rules! dcr_write_native {
 
 /* Table based DCR accessors. */
 extern "C" {
-    pub fn __mtdcr(reg: core::ffi::c_uint, val: core::ffi::c_uint);
-    pub fn __mfdcr(reg: core::ffi::c_uint) -> core::ffi::c_uint;
+    pub fn __mtdcr(reg: kernel::ffi::c_uint, val: kernel::ffi::c_uint);
+    pub fn __mfdcr(reg: kernel::ffi::c_uint) -> kernel::ffi::c_uint;
 }
 
 /* mfdcrx/mtdcrx instruction based accessors. */
 #[inline]
-pub unsafe fn mfdcrx(reg: core::ffi::c_uint) -> core::ffi::c_uint {
-    let ret: core::ffi::c_uint;
+pub unsafe fn mfdcrx(reg: kernel::ffi::c_uint) -> kernel::ffi::c_uint {
+    let ret: kernel::ffi::c_uint;
     core::arch::asm!(
         ".long 0x7c000206 | ({0} << 21) | ({1} << 16)",
         out(reg) ret,
@@ -64,7 +64,7 @@ pub unsafe fn mfdcrx(reg: core::ffi::c_uint) -> core::ffi::c_uint {
 }
 
 #[inline]
-pub unsafe fn mtdcrx(reg: core::ffi::c_uint, val: core::ffi::c_uint) {
+pub unsafe fn mtdcrx(reg: kernel::ffi::c_uint, val: kernel::ffi::c_uint) {
     core::arch::asm!(
         ".long 0x7c000306 | ({0} << 21) | ({1} << 16)",
         in(reg) val,
@@ -77,7 +77,7 @@ pub unsafe fn mtdcrx(reg: core::ffi::c_uint, val: core::ffi::c_uint) {
 #[macro_export]
 macro_rules! mfdcr {
     ($rn:expr) => {{
-        let rn: core::ffi::c_uint = $rn;
+        let rn: kernel::ffi::c_uint = $rn;
         if cpu_has_feature(CPU_FTR_INDEXED_DCR) {
             unsafe { $crate::mfdcrx($rn) }
         } else {
@@ -89,8 +89,8 @@ macro_rules! mfdcr {
 #[macro_export]
 macro_rules! mtdcr {
     ($rn:expr, $v:expr) => {{
-        let rn: core::ffi::c_uint = $rn;
-        let v: core::ffi::c_uint = $v;
+        let rn: kernel::ffi::c_uint = $rn;
+        let v: kernel::ffi::c_uint = $v;
         if cpu_has_feature(CPU_FTR_INDEXED_DCR) {
             unsafe { $crate::mtdcrx($rn, $v) }
         } else {
@@ -105,8 +105,8 @@ extern "C" {
 }
 
 #[inline]
-pub unsafe fn __mfdcri(base_addr: i32, base_data: i32, reg: i32) -> core::ffi::c_uint {
-    let mut flags: core::ffi::c_ulong = 0;
+pub unsafe fn __mfdcri(base_addr: i32, base_data: i32, reg: i32) -> kernel::ffi::c_uint {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let val;
     spin_lock_irqsave(&mut dcr_ind_lock, &mut flags);
     if cpu_has_feature(CPU_FTR_INDEXED_DCR) {
@@ -121,8 +121,8 @@ pub unsafe fn __mfdcri(base_addr: i32, base_data: i32, reg: i32) -> core::ffi::c
 }
 
 #[inline]
-pub unsafe fn __mtdcri(base_addr: i32, base_data: i32, reg: i32, val: core::ffi::c_uint) {
-    let mut flags: core::ffi::c_ulong = 0;
+pub unsafe fn __mtdcri(base_addr: i32, base_data: i32, reg: i32, val: kernel::ffi::c_uint) {
+    let mut flags: kernel::ffi::c_ulong = 0;
     spin_lock_irqsave(&mut dcr_ind_lock, &mut flags);
     if cpu_has_feature(CPU_FTR_INDEXED_DCR) {
         mtdcrx(base_addr as _, reg as _);
@@ -136,8 +136,8 @@ pub unsafe fn __mtdcri(base_addr: i32, base_data: i32, reg: i32, val: core::ffi:
 
 #[inline]
 pub unsafe fn __dcri_clrset(base_addr: i32, base_data: i32, reg: i32,
-                             clr: core::ffi::c_uint, set: core::ffi::c_uint) {
-    let mut flags: core::ffi::c_ulong = 0;
+                             clr: kernel::ffi::c_uint, set: kernel::ffi::c_uint) {
+    let mut flags: kernel::ffi::c_ulong = 0;
     let val;
     spin_lock_irqsave(&mut dcr_ind_lock, &mut flags);
     if cpu_has_feature(CPU_FTR_INDEXED_DCR) {
